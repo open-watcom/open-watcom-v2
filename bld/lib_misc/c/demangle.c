@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C++ name demangling.
 *
 ****************************************************************************/
 
@@ -44,7 +43,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
+#include "walloca.h"
+#include "watcom.h"
 #include "demangle.h"
 
 #ifndef _WCI86FAR
@@ -265,26 +265,27 @@ typedef struct assoc_desc {
     key_desc            u;
     char _WCI86FAR      *name;
 } assoc_desc;
+
 static assoc_desc const _WCI86FAR watcomObject[] = {
-    { "A*",  "__internal" },
-    { "BI",  "__onceonly" },
-    { "DA",  "__arrdtorblk" },
-    { "DF",  "__defarg" },
-    { "DI",  "__debuginfo" },
-    { "DO",  "__dtorobjblk" },
-    { "MP",  "__mbrptrthunk" },
-    { "SI",  "__staticinit" },
-    { "TH",  "__throwblk" },
-    { "TI",  "__typeid" },
-    { "TS",  "__typesig" },
-    { "VA",  "__rtti" },
-    { "VB",  "__vbtbl" },
-    { "VF",  "__vftbl" },
-    { "VM",  "__vmtbl" },
-    { "VT",  "__vfthunk" },
-    { "ST",  "__typstattab" },
-    { "CM",  "__stattabcmd" },
-    { "UN",  "<unique>" },
+    { {"A*"},  "__internal" },
+    { {"BI"},  "__onceonly" },
+    { {"DA"},  "__arrdtorblk" },
+    { {"DF"},  "__defarg" },
+    { {"DI"},  "__debuginfo" },
+    { {"DO"},  "__dtorobjblk" },
+    { {"MP"},  "__mbrptrthunk" },
+    { {"SI"},  "__staticinit" },
+    { {"TH"},  "__throwblk" },
+    { {"TI"},  "__typeid" },
+    { {"TS"},  "__typesig" },
+    { {"VA"},  "__rtti" },
+    { {"VB"},  "__vbtbl" },
+    { {"VF"},  "__vftbl" },
+    { {"VM"},  "__vmtbl" },
+    { {"VT"},  "__vfthunk" },
+    { {"ST"},  "__typstattab" },
+    { {"CM"},  "__stattabcmd" },
+    { {"UN"},  "<unique>" },
 };
 #define MAX_WATCOM_OBJECT       num_elements( watcomObject )
 
@@ -292,6 +293,11 @@ static assoc_desc const _WCI86FAR watcomObject[] = {
 int no_errors;
 unsigned errors;
 #endif
+
+static int scoped_name( output_desc *data, state_desc *state );
+static int type_encoding( output_desc *data, state_desc *state );
+static int recursive_mangled_name( output_desc *data, state_desc *state );
+static size_t terminateOutput( output_desc *data );
 
 static void zapSpace( output_desc *data )
 {
@@ -597,7 +603,7 @@ static void demangleEmit( void **cookie, dm_pts dp, int value, char const *ptr )
 // everything before this point deals with output to the demangled name
 // ==========================================================================
 
-static int typeChar( char c, int grouping )
+static int typeChar( int c, int grouping )
 {
     c -= LOWER_TABLE_LIMIT;
     if( c < num_elements( translate_type_encoding ) ) {
@@ -673,6 +679,14 @@ static unsigned char_to_digit( char c )
     return( -1 );
 }
 
+static unsigned char_to_digit_62( char c )
+{
+    if( c >= '0' && c <= '9' ) return( c - '0' );
+    if( c >= 'A' && c <= 'Z' ) return( c - 'A' + 10 );
+    if( c >= 'a' && c <= 'z' ) return( c - 'a' + 36 );
+    return( -1 );
+}
+
 static int base_32_num( output_desc *data, int *value )
 {
     unsigned    dig;
@@ -705,6 +719,7 @@ static int base_10_num( output_desc *data, int *value )
     return( TRUE );
 }
 
+#if 0
 static int base_36_2digit( output_desc *data, size_t *value )
 {
     unsigned    first;
@@ -717,6 +732,25 @@ static int base_36_2digit( output_desc *data, size_t *value )
         if( second < 36 ) {
             advanceChar( data );
             *value = (first * 36) + second;
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+#endif
+
+static int base_62_2digit( output_desc *data, size_t *value )
+{
+    unsigned    first;
+    unsigned    second;
+
+    first = char_to_digit_62( nextChar( data ) );
+    if( first < 62 ) {
+        advanceChar( data );
+        second = char_to_digit_62( nextChar( data ) );
+        if( second < 62 ) {
+            advanceChar( data );
+            *value = (first * 62) + second;
             return( TRUE );
         }
     }
@@ -820,7 +854,7 @@ static int array( output_desc *data, state_desc *state )
 static int function( output_desc *data, state_desc *state )
 {
     auto state_desc new_state;
-    size_t          conv_offset;
+    size_t          conv_offset = 0;
     int             first_arg = 0;
     char            c;
 
@@ -966,7 +1000,7 @@ static int based_encoding( output_desc *data, state_desc *state )
         break;
     case 'L':
         advanceChar( data );
-        if( base_36_2digit( data, &len ) ) {
+        if( base_62_2digit( data, &len ) ) {
             _output1( DM_BASED_STRING_PREFIX );
             _output3( DM_IDENTIFIER, len, data->input );
             while( len-- ) {
@@ -1147,7 +1181,7 @@ static int watcom_object( output_desc *data, state_desc *state )
             _output2( DM_WATCOM_OBJECT, 0 );
         }
     }
-    if( base_36_2digit( data, &len ) ) {
+    if( base_62_2digit( data, &len ) ) {
         while( len-- ) {
             advanceChar( data );
         }
@@ -1343,7 +1377,7 @@ static int op_name( output_desc *data, state_desc *state )
 
 static int name( output_desc *data, state_desc *state )
 {
-    char c;
+    int c;
 
     c = nextChar( data );
     if( isdigit( c ) ) {
@@ -1421,7 +1455,7 @@ static int sym_name( output_desc *data, state_desc *state )
     }
 }
 
-static int scope( output_desc *data, state_desc *state )
+static int scope( output_desc *data, state_desc *state, size_t *symbol_length )
 {
     char c;
 
@@ -1439,23 +1473,30 @@ static int scope( output_desc *data, state_desc *state )
         auto state_desc new_state;
         advanceChar( data );
         new_state = *state;
-        new_state.suffix = data->count - state->prefix;
+        new_state.suffix = data->count - state->prefix - *symbol_length;
         return( template_name( data, &new_state ) );
     } else {
-        return( sym_name( data, state ) );
+        int rc = sym_name( data, state );
+        *symbol_length = data->index - state->prefix - 1;
+        return( rc );
     }
     return( FALSE );
 }
 
 static int scoped_name( output_desc *data, state_desc *state )
 {
+    size_t symbol_length;
+
     _output1( DM_SCOPED_NAME );
     if( sym_name( data, state ) ) {
+        symbol_length = data->index - state->prefix - 1;
         while( nextChar( data ) == SCOPE_PREFIX ) {
             _output2( DM_SET_INDEX, state->prefix );
-            _output1( DM_SCOPE_SEPARATOR );
+            if( *(data->input + 1) != TEMPLATE_PREFIX ) {
+                _output1( DM_SCOPE_SEPARATOR );
+            }
             advanceChar( data );
-            if( !scope( data, state ) ) {
+            if( !scope( data, state, &symbol_length ) ) {
                 return( FALSE );
             }
             _output1( DM_ZAP_SPACE );
@@ -1520,7 +1561,6 @@ static void do_demangle( output_desc *data )
     if( !full_mangled_name( data ) ) {
         #if 0 || defined(TEST)
         if( ! no_errors ) {
-            size_t terminateOutput( output_desc * );
             ++errors;
             printf( "ERROR: full_mangled_name failed\n" );
             printf( "in:-->%s<--\n", input );
@@ -2096,17 +2136,33 @@ test_stream testVector[] = {
         "_trmem_open",
         "_trmem_open",
     "W?s$n$Stack$::1ni0az?ok$n()v$",
-        "<int near,10,void near ok()>::Stack near s",
+        "Stack<int near,10,void near ok()> near s",
         "s",
         "s",
     "W?dummy$:Stack$::1ni0az?ok$n()vn()v",
-        "void near <int near,10,void near ok()>::Stack::dummy()",
+        "void near Stack<int near,10,void near ok()>::dummy()",
         "dummy",
         "dummy",
     "W?$CT:Stack$::1ni0ay?ok$n()vn()_",
-        "near <int near,-10,void near ok()>::Stack::Stack()",
+        "near Stack<int near,-10,void near ok()>::Stack()",
         "$CT",
         "Stack",
+    "W?s$n$Inner$:Stack$::1ni0az?ok$n()v:xyz$$",
+        "xyz::Stack<int near,10,void near ok()>::Inner near s",
+        "s",
+        "s",
+    "W?s$n$Inner$:Stack$::1ni0az1n$xyz$::1ni$:abc$$",
+        "abc::Stack<int near,10,xyz<int near > near >::Inner near s",
+        "s",
+        "s",
+    "W?dummy$:Stack$::1ni0az?ok$n()v:xyz$n()v",
+        "void near xyz::Stack<int near,10,void near ok()>::dummy()",
+        "dummy",
+        "dummy",
+    "W?dummy$:Stack$::1ni0az?ok$n()v:xyz$::1nin()v",
+        "void near xyz<int near >::Stack<int near,10,void near ok()>::dummy()",
+        "dummy",
+        "dummy",
     "W?a$:.1$:?foo$n()vn[]i",
         "int near void near foo()::.1::a[]",
         "a",
@@ -2359,7 +2415,7 @@ void main( int argc )
     }
     for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
         p = malloc( ALLOC_SIZE );
-        len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, realloc );
+        len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, (char *(*)(char *, size_t))realloc );
         if( argc > 1 ) {
             printf( "%s -->%s<-- (%u)\n", testVector[i].mangle, p, len );
         }
@@ -2387,7 +2443,7 @@ void main( int argc )
     }
     for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
         p = malloc( ALLOC_SIZE );
-        len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, realloc );
+        len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, (char *(*)(char *, size_t))realloc );
         if( strcmp( p, testVector[i].full_demangle ) ) {
             printf( "ERROR:\n%s\ndemangle should yield -->%s<--\n", testVector[i].mangle, testVector[i].full_demangle );
             printf(             "          but yielded -->%s<-- (%u)\n", p, len );
@@ -2447,7 +2503,7 @@ void main( int argc )
             for( j = max ; j > 0 ; j-- ) {
                 testVector[i].mangle[j] = '\0';
                 p = malloc( ALLOC_SIZE );
-                __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, realloc );
+                __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, (char *(*)(char *, size_t))realloc );
                 printf( "truncated demangle yielded -->%s<-- (%u)\n", p, len );
                 free( p );
             }
@@ -2455,5 +2511,22 @@ void main( int argc )
     }
     printf( "...test completed.\n" );
     exit( 0 );
+}
+#endif
+
+#if 0 || defined(UTIL)
+
+#define BUF_SIZE 4096
+
+void main( int argc, char **argv )
+{
+    char    buffer[BUF_SIZE];
+
+    if( argc < 2) {
+        printf( "Usage: demangle <mangled name>\n" );
+        return;
+    }
+    __demangle_l( argv[1], strlen( argv[1] ), buffer, BUF_SIZE );
+    puts( buffer );
 }
 #endif

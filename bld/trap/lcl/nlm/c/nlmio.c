@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Novell NetWare NLM trap file I/O.
 *
 ****************************************************************************/
 
@@ -41,11 +40,12 @@
 #undef NULL
 
 #include "miniproc.h"
-#ifdef __NW40__
+#if defined ( __NW40__ )
     #include "datamig.h"
-#else
+#elif defined ( __NW30__ )
     #include "cconfig.h"
 #endif
+
 #include "locks.h"
 #include "bits.h"
 
@@ -60,6 +60,14 @@ extern LONG ConvertPathString(
 
 
 #define FIRST_HANDLE    5
+
+#define     FILE_ATTRIB_MASK    (_A_NORMAL | _A_HIDDEN | _A_RDONLY)
+/*
+//  RWPRIVS | DENYW -
+//  as 0x0B is 1011 I don't know which one is which or has two bits
+//  though I would hazard a guess as RWPRIVS
+*/
+#define     FILE_OPEN_PRIVS 0x0B
 
 /* From NLMCLIB.C */
 
@@ -137,7 +145,7 @@ static long ReadDOS( long handle, long pos, void *buffer, long requested )
 }
 
 
-static long OpenServer( LONG (*routine)(), BYTE *name,
+static long OpenServer( LONG (*routine)(), char *name,
                  LONG *handle, LONG attr, LONG privs )
 {
    LONG volumeNumber, pathBase, pathCount, entryNumber;
@@ -146,7 +154,7 @@ static long OpenServer( LONG (*routine)(), BYTE *name,
    void *Entry;
 
    fileName[1] = '\0';
-   fileName[0] = AppendStr( fileName+1, name );
+   fileName[0] = AppendStr( (char *)fileName + 1, name );
 
    if (ConvertPathString(0, 0, fileName, &volumeNumber,
          &pathBase, pathString, &pathCount) != 0)
@@ -160,13 +168,13 @@ static long OpenServer( LONG (*routine)(), BYTE *name,
 }
 
 
-static int ErrorCode()
+static int ErrorCode( void )
 {
     return( 0xFFFF0000 | ccode );
 }
 
 
-static my_file *FindFile()
+static my_file *FindFile( void )
 {
     int i;
     my_file     *p;
@@ -194,7 +202,7 @@ int IOCreat( char *name )
 //  if( !MayRelinquishControl ) return( -1 );
                                                                     _DBG_IO(( "Creating %s. Open RC(%d)\r\n", name, ccode ));
     ccode = OpenServer( OpenFile, name, &handle,
-                        0x06, RWPRIVS | DENYW );
+                        FILE_ATTRIB_MASK, FILE_OPEN_PRIVS );
     if( ccode == 0 ) {
         ccode = WriteFile( 0, handle, 0, 0, "" );
     } else {
@@ -228,11 +236,11 @@ void StringToNLMPath( char *name, char *res )
     }
     name[i] = '\0';
 
-    ccode = OpenFileUsingSearchPath( name, &handle, &isdos,
-                                     res, filename, FALSE,
+    ccode = OpenFileUsingSearchPath( (BYTE *)name, &handle, &isdos,
+                                     (BYTE *)res, filename, FALSE,
                     4, ".NLM", ".DSK", ".LAN", ".NAM" );
     if( ccode == 0 ) {
-        AppendStr( res, filename );
+        AppendStr( res, (char *)filename );
         if( isdos ) {
             ccode = INWDOSClose( handle );
         } else {
@@ -255,13 +263,13 @@ int IOOpen( char *openname, int openmode )
 
 //  if( !MayRelinquishControl ) return( -1 );
     if( openmode == O_RDONLY ) {
-        ccode = OpenFileUsingSearchPath( openname, &handle, &isdos,
+        ccode = OpenFileUsingSearchPath( (BYTE *)openname, &handle, &isdos,
                                          loadpath, filename, FALSE, 0 );
-        AppendStr( loadpath, filename );
+        AppendStr( (char *)loadpath, (char *)filename );
                                                                     _DBG_IO(( ( ccode==0 ? "Opened %s." : "" ), loadpath ));
     } else {
         ccode = OpenServer( OpenFile, openname, &handle,
-                            0x06, RWPRIVS | DENYW );
+                            FILE_ATTRIB_MASK, FILE_OPEN_PRIVS );
                                                                     _DBG_IO(( "Opened %s.", openname ));
         isdos = FALSE;
     }
@@ -289,7 +297,7 @@ int IOOpen( char *openname, int openmode )
     return( ccode ? ErrorCode() : ( p->handlenum + FIRST_HANDLE ) );
 }
 
-static void BadFile()
+static void BadFile( void )
 {
     Abend( "Debug server detected an invalid file (Close)\r\n" );
 }

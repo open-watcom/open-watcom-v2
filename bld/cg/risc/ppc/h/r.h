@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Reductions used by the PowerPC cg (see ppctable.c).
 *
 ****************************************************************************/
 
@@ -44,7 +43,7 @@ _R_( R_FORCEOP1MEM,     rOP1MEM ),
 _R_( R_FORCEOP2MEM,     rOP2MEM ),
 _R_( R_CONSTLOAD,       rCONSTLOAD ),
 _R_( R_SWAPCMP,         rSWAPCMP ),
-_R_( R_SPLITCMP,        rSPLITCMP ),
+_R_( R_SIMPCMP,         rSIMPCMP ),
 _R_( R_DOSET,           rDOSET ),
 _R_( R_FORCEOP1CMEM,    rOP1CMEM ),
 _R_( R_FORCEOP2CMEM,    rOP2CMEM ),
@@ -58,3 +57,11 @@ _R_( R_BIN2INT,         rBIN2INT ),
 _R_( R_SHR,             rSHR ),
 _R_( R_MOVEXX_4,        rMOVEXX_4 ),
 _R_( R_MOD2DIV,         rMOD2DIV ),
+_R_( R_SPLITMOVE,       rSPLITMOVE ),
+_R_( R_SPLITOP,         rSPLITOP ),
+_R_( R_SPLITCMP,        rSPLITCMP ),
+_R_( R_SPLITNEG,        rSPLITNEG ),
+_R_( R_SPLITUNARY,      rSPLITUNARY ),
+_R_( R_CLRHI_4,         rCLRHI_4 ),
+_R_( R_SEX_4TO8,        rSEX_4TO8 ),
+_R_( R_MOVELOW,         rMOVELOW ),

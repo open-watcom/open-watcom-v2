@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP instruction formats and encodings.
 *
 ****************************************************************************/
 
@@ -119,6 +118,7 @@ static owl_reloc_type reloc_translate[] = {
     OWL_RELOC_ABSOLUTE,     // Corresponds to ASM_RELOC_UNSPECIFIED
     OWL_RELOC_WORD,
     OWL_RELOC_HALF_HI,
+    OWL_RELOC_HALF_HA,
     OWL_RELOC_HALF_LO,
     OWL_RELOC_BRANCH_REL,   // j^ reloc
     OWL_RELOC_JUMP_REL,     // jump hint
@@ -378,6 +378,54 @@ static unsigned forceLoadAddressComplete( uint_8 d_reg, uint_8 s_reg, ins_operan
 }
 #endif
 
+
+static unsigned load32BitLiteral( uint_32 *buffer, ins_operand *op0, ins_operand *op1, domov_option m_opt ) {
+//***********************************************************************************************************
+
+    op_const        val;
+
+    if( m_opt == DOMOV_ABS ) {
+        val = abs( op0->constant );
+    } else {
+        val = op0->constant;
+    }
+    return( ldaConst32( buffer, RegIndex( op1->reg ), ZERO_REG_IDX,
+                        op0, val, NULL, FALSE ) );
+}
+
+static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt ) {
+//*********************************************************************************
+
+    ins_operand     *op0, *op1;
+    uint_32         extra;
+    uint_32         abs_val;
+    bool            ready = TRUE;
+
+    op0 = operands[0];
+    op1 = operands[1];
+    if( op0->type == OP_GPR ) {
+        extra = _Rb( RegIndex( op0->reg ) );
+    } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
+        extra = _LIT( op0->constant ); // this lit is between 0..255
+        (void)ensureOpAbsolute( op0, 0 );
+    } else if( m_opt == DOMOV_ABS &&
+               ( ( ( abs_val = abs( op0->constant ) ) & 0xff ) == abs_val ) ) {
+        extra = _LIT( abs_val ); // this lit is between 0..255
+        // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
+    } else {
+        ready = FALSE;
+    }
+    if( ready ) {
+        doOpcodeFcRaRc( buffer, OPCODE_BIS, FUNCCODE_BIS,
+                        ZERO_REG_IDX, RegIndex( op1->reg ), extra );
+        return;
+    }
+    // Otherwise it's OP_IMMED with a greater than 8-bit literal.
+    // We'll then use multiple LDA, LDAH instructions to load the literal.
+    if( !ensureOpAbsolute( op0, 0 ) ) return;
+    numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
+}
+
 static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //**************************************************************************************************
 
@@ -516,6 +564,20 @@ static void doMemJump( uint_32 *buffer, ins_table *table, uint_8 ra, uint_8 rb, 
     doReloc( reloc, addr_op, OWL_RELOC_JUMP_REL, buffer );
 }
 
+static void opError( instruction *ins, op_type actual, op_type wanted, int i ) {
+//******************************************************************************
+// Stuff out an error message.
+
+    ins = ins;
+    actual = actual;
+    wanted = wanted;    // it's a set of flags
+    if( ( wanted & OP_NOTHING ) != OP_NOTHING ) {
+        Error( OPERAND_INCORRECT, i );
+    } else {
+        Error( OPERAND_UNEXPECTED, i );
+    }
+}
+
 static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, unsigned num_var ) {
 //**************************************************************************************************
 
@@ -554,7 +616,7 @@ static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op ) {
                                      { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING }};
     static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
-    ot_array        *verify_table[3] = { &verify1, &verify2, &verify3 };
+    ot_array        *verify_table[3] = { (ot_array *)&verify1, &verify2, (ot_array *)&verify3 };
     unsigned        num_var;
 
     if( num_op == 0 ) return( TRUE );
@@ -664,7 +726,7 @@ static bool retOperandsValidate( instruction *ins, ins_opcount num_op ) {
                                      { OP_REG_INDIRECT, OP_IMMED, OP_NOTHING }};
     static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
-    ot_array        *verify_table[3] = { &verify1, &verify2, &verify3 };
+    ot_array        *verify_table[3] = { (ot_array *)&verify1, (ot_array *)&verify2, (ot_array *)&verify3 };
     unsigned        num_var;
 
     if( num_op == 0 ) return( TRUE );
@@ -867,53 +929,6 @@ static void ITPseudoFclr( ins_table *table, instruction *ins, uint_32 *buffer, a
               RegIndex( ins->operands[0]->reg ), table->funccode );
 }
 
-static unsigned load32BitLiteral( uint_32 *buffer, ins_operand *op0, ins_operand *op1, domov_option m_opt ) {
-//***********************************************************************************************************
-
-    op_const        val;
-
-    if( m_opt == DOMOV_ABS ) {
-        val = abs( op0->constant );
-    } else {
-        val = op0->constant;
-    }
-    return( ldaConst32( buffer, RegIndex( op1->reg ), ZERO_REG_IDX,
-                        op0, val, NULL, FALSE ) );
-}
-
-static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt ) {
-//*********************************************************************************
-
-    ins_operand     *op0, *op1;
-    uint_32         extra;
-    uint_32         abs_val;
-    bool            ready = TRUE;
-
-    op0 = operands[0];
-    op1 = operands[1];
-    if( op0->type == OP_GPR ) {
-        extra = _Rb( RegIndex( op0->reg ) );
-    } else if( ( op0->constant & 0xff ) == op0->constant ) { // OP_IMMED implied
-        extra = _LIT( op0->constant ); // this lit is between 0..255
-        (void)ensureOpAbsolute( op0, 0 );
-    } else if( m_opt == DOMOV_ABS &&
-               ( ( ( abs_val = abs( op0->constant ) ) & 0xff ) == abs_val ) ) {
-        extra = _LIT( abs_val ); // this lit is between 0..255
-        // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
-    } else {
-        ready = FALSE;
-    }
-    if( ready ) {
-        doOpcodeFcRaRc( buffer, OPCODE_BIS, FUNCCODE_BIS,
-                        ZERO_REG_IDX, RegIndex( op1->reg ), extra );
-        return;
-    }
-    // Otherwise it's OP_IMMED with a greater than 8-bit literal.
-    // We'll then use multiple LDA, LDAH instructions to load the literal.
-    if( !ensureOpAbsolute( op0, 0 ) ) return;
-    numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
-}
-
 static void ITPseudoMov( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //************************************************************************************************
 
@@ -1040,3 +1055,171 @@ static void ITPseudoAbs( ins_table *table, instruction *ins, uint_32 *buffer, as
 }
 
 static void ITCallPAL( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
+//**********************************************************************************************
+
+    ins_operand     *op;
+    op_const        constant;
+    uint_32         opcode;
+
+    assert( ins->num_operands == 1 );
+    table = table;
+    reloc = reloc;
+    op = ins->operands[0];
+    (void)ensureOpAbsolute( op, 0 );
+    constant = op->constant;
+    opcode = ( constant & 0xfC000000 ) >> 26;
+    if( opcode != 0x00 &&
+        opcode != 0x19 &&
+        opcode != 0x1b &&
+        opcode != 0x1d &&
+        opcode != 0x1e &&
+        opcode != 0x1f ) {
+        Error( INVALID_PALCODE );
+    }
+    *buffer = constant;
+}
+
+alpha_format AlphaFormatTable[] = {
+    #define PICK( a, b, c, d, e )       { b, { c, d, e } },
+    #include "alphafmt.inc"
+    #undef PICK
+};
+
+bool AlphaValidate( instruction *ins ) {
+//**************************************
+// Make sure that all operands of the given instruction
+// are of the type we are expecting. If not, we print
+// out an error message.
+
+    int                 i;
+    alpha_format        *fmt;
+    ins_operand         *op;
+
+    fmt = &AlphaFormatTable[ ins->format->table_entry->template ];
+    for( i = 0; i < ins->num_operands; i++ ) {
+        op = ins->operands[ i ];
+        if( ( op->type & fmt->ops[ i ] ) != op->type ) {
+            opError( ins, op->type, fmt->ops[ i ], i );
+            return( FALSE );
+        }
+    }
+    if( i < MAX_OPERANDS ) {
+        if( ( fmt->ops[ i ] & OP_NOTHING ) != OP_NOTHING ) {
+            Error( NOT_ENOUGH_INSOP );
+            return( FALSE );
+        }
+    }   // NOTE: It might not catch all improper operand combinations
+        // because we're using flags here
+    return( TRUE );
+}
+
+#ifdef _STANDALONE_
+static void emitIns( owl_section_handle hdl, char *inscode, int size ) {
+//**********************************************************************
+
+    ObjEmitData( hdl, inscode, size, TRUE );
+}
+#else
+static void emitIns( char *inscode, int size ) {
+//**********************************************
+
+    ObjEmitData( inscode, size, TRUE );
+}
+#endif
+
+#ifdef _STANDALONE_
+void AlphaEmit( owl_section_handle hdl, instruction *ins ) {
+//**********************************************************
+#else
+void AlphaEmit( instruction *ins ) {
+//**********************************
+#endif
+// Encode the given instruction (including emitting any
+// relocs to the appropriate places), and emit the code
+// to the given section.
+
+    int             ctr;
+    ins_table       *table;
+    asm_reloc       reloc = { NULL, NULL };
+    reloc_list      curr_reloc;
+    #ifdef _STANDALONE_
+    uint_8          old_alignment;
+
+    if( OWLTellSectionType( hdl ) & OWL_SEC_ATTR_BSS ) {
+        Error( INVALID_BSS_STATEMENT );
+        return;
+    }
+    old_alignment = CurrAlignment;
+    if( CurrAlignment < 2 ) { // Instructions should at least be dword aligned
+        CurrAlignment = 2;
+    }
+    #endif
+    table = ins->format->table_entry;
+    AlphaFormatTable[ table->template ].func( table, ins, result, &reloc );
+    for( ctr = 0; ctr <= numExtendedIns; ctr++ ) {
+        if( ( curr_reloc = reloc.first ) != NULL ) {
+            assert( curr_reloc->loc >= ctr * sizeof( *result ) );
+            if( curr_reloc->loc == ctr * sizeof( *result ) ) {
+                reloc.first = curr_reloc->next;
+                if( curr_reloc->is_named ) {
+                    #ifdef _STANDALONE_
+                    ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ),
+                                  curr_reloc->type, TRUE, TRUE );
+                    #else
+                    ObjEmitReloc( SymName( curr_reloc->target.ptr ),
+                                  curr_reloc->type, TRUE, TRUE );
+                    #endif
+                } else {
+                    #ifdef _STANDALONE_
+                    ObjEmitReloc( hdl, &curr_reloc->target.label,
+                                  curr_reloc->type, TRUE, FALSE );
+                    #else
+                    ObjEmitReloc( &curr_reloc->target.label,
+                                  curr_reloc->type, TRUE, FALSE );
+                    #endif
+                }
+#ifndef NDEBUG
+                switch( curr_reloc->type ) {
+                case OWL_RELOC_WORD:
+                    _DBGMSG1( "word" ); break;
+                case OWL_RELOC_HALF_LO:
+                    _DBGMSG1( "l^" ); break;
+                case OWL_RELOC_HALF_HI:
+                    _DBGMSG1( "h^" ); break;
+                case OWL_RELOC_BRANCH_REL:
+                    _DBGMSG1( "j^" ); break;
+                case OWL_RELOC_JUMP_REL:
+                    _DBGMSG1( "jump hint" ); break;
+                default:
+                    _DBGMSG1( "absolute (shouldn't use)" ); break;
+                }
+                _DBGMSG1( " reloc emitted for the instruction.\n" );
+#endif
+                MemFree( curr_reloc );
+            }
+        }
+        #ifdef _STANDALONE_
+        emitIns( hdl, (char *)&result[ctr], sizeof( uint_32 ) );
+        #else
+        emitIns( (char *)&result[ctr], sizeof( uint_32 ) );
+        #endif
+#ifndef NDEBUG
+        #ifdef _STANDALONE_
+        if( _IsOption( DUMP_INSTRUCTIONS ) ) {
+            printf( " [%#010x]\n", result[ctr] );
+        }
+        #endif
+#endif
+    }
+    assert( reloc.first == NULL ); // Should all be emitted already!
+    reloc.last = NULL;
+    if( numExtendedIns != 0 ) {
+        if( !_DirIsSet( MACRO ) ) {
+            Warning( MACRO_INSTRUCTION );
+        }
+        numExtendedIns = 0;
+    }
+    #ifdef _STANDALONE_
+    CurrAlignment = old_alignment;
+    #endif
+}

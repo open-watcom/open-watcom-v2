@@ -24,37 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expression tree utility routines.
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
 
+
 TREEPTR ExprNodeList;
 int     NodeCount;
 
-void InitExprTree()
+void InitExprTree( void )
 {
     ExprNodeList = NULL;
 }
 
-void AllocMoreExprNodes()
+void AllocMoreExprNodes( void )
 {
     TREEPTR     node;
     int         i;
 
-    node = (TREEPTR)CMemAlloc( 500 * sizeof(EXPRNODE) );
+    node = (TREEPTR)CMemAlloc( 500 * sizeof( EXPRNODE ) );
     ExprNodeList = node;
-    for( i = 0; i < (500-1); i++ ) {
+    for( i = 0; i < (500 - 1); i++ ) {
         node->left = node + 1;
         ++node;
     }
     node->left = NULL;
 }
 
-TREEPTR ExprNode( TREEPTR left, int opcode, TREEPTR right )
+TREEPTR ExprNode( TREEPTR left, opr_code opcode, TREEPTR right )
 {
     TREEPTR     node;
 
@@ -63,16 +63,17 @@ TREEPTR ExprNode( TREEPTR left, int opcode, TREEPTR right )
     }
     node = ExprNodeList;
     ExprNodeList = node->left;
-    node->visit  = FALSE;
-    node->left = left;
-    node->right = right;
-    node->op.opr = opcode;
-    node->op.flags = 0;
+    node->left     = left;
+    node->right    = right;
+    node->op.opr   = opcode;
+    node->op.flags = OPFLAG_NONE;
+    node->visit    = FALSE;
+    node->checked  = FALSE;
     ++NodeCount;
     return( node );
 }
 
-TREEPTR LeafNode( int opr )
+TREEPTR LeafNode( opr_code opr )
 {
     return( ExprNode( NULL, opr, NULL ) );
 }
@@ -92,7 +93,7 @@ void FreeExprNode( TREEPTR node )
                 CMemFree( cse );
             }
             CMemFree( sw );
-        }else if ( node->op.opr == OPR_CALL ){
+        } else if ( node->op.opr == OPR_CALL ) {
             ChkCallNode( node );
         }
         --NodeCount;

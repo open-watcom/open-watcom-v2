@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of near _heapmin() and _nheapmin().
 *
 ****************************************************************************/
 
@@ -39,13 +38,15 @@
 #include "heapacc.h"
 #if defined(__DOS_EXT__)
  #include "extender.h"
- extern void __FreeDPMIBlocks( void );
 #endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
  #include "windows.h"
 #endif
 #if defined(__OS2__)
  #include <wos2.h>
+#endif
+#if defined(__RDOS__)
+ #include <rdos.h>
 #endif
 #if defined(__WINDOWS_386__)
  extern int __pascal DPMIFree(unsigned long);   // windows extender function
@@ -57,26 +58,28 @@
 #if defined(__SMALL_DATA__)
 
 _WCRTLINK int _heapshrink( void )
-    {
-        return( _nheapshrink() );
-    }
+{
+    return( _nheapshrink() );
+}
+
 _WCRTLINK int _heapmin( void )
-    {
-        return( _nheapshrink() );
-    }
+{
+    return( _nheapshrink() );
+}
 
 #endif
 
 _WCRTLINK int _nheapmin( void )
-    {
-        return( _nheapshrink() );
-    }
+{
+    return( _nheapshrink() );
+}
 
 #if defined(__WARP__)        || \
     defined(__WINDOWS_286__) || \
     defined(__WINDOWS_386__) || \
     defined(__NT__)          || \
-    defined(__CALL21__)
+    defined(__CALL21__)      || \
+    defined(__RDOS__)
 static int __ReturnMemToSystem( mheapptr mhp )
 {
         mheapptr pnext;
@@ -95,6 +98,8 @@ static int __ReturnMemToSystem( mheapptr mhp )
 #elif defined(__CALL21__)
         // No way to free storage under OSI
         if( mhp ) return( -1 );
+#elif defined(__RDOS__)
+        RdosFreeMem(mhp);
 #endif
         if( __MiniHeapRover == mhp ) {  // Update rovers
             if( pnext ) {
@@ -103,6 +108,11 @@ static int __ReturnMemToSystem( mheapptr mhp )
                 __MiniHeapRover = __nheapbeg;
                 __LargestSizeB4MiniHeapRover = 0;
             }
+        }
+        // Re-test rover; if we freed the only mini-heap, we might end up
+        // pointing back to it
+        if( __MiniHeapRover == mhp ) {
+            __MiniHeapRover = 0;
         }
         if( __MiniHeapFreeRover == mhp ) {
             __MiniHeapFreeRover = 0;
@@ -135,8 +145,9 @@ _WCRTLINK int _nheapshrink( void )
 #if !defined(__WARP__)        && \
     !defined(__WINDOWS_286__) && \
     !defined(__WINDOWS_386__) && \
+    !defined(__NT__)          && \
     !defined(__CALL21__)      && \
-    !defined(__NT__)
+    !defined(__RDOS__)
     // Shrink by adjusting _curbrk
 
     frlptr last_free;
@@ -222,7 +233,6 @@ _WCRTLINK int _nheapshrink( void )
                 __LargestSizeB4MiniHeapRover = 0;
             }
         }
-        __nheap_clean = 0;
 
         if( __brk( new_brk ) == (void _WCNEAR *) -1 ) {
             _ReleaseNHeap();

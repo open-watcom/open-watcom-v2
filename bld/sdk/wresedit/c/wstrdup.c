@@ -30,25 +30,24 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wmem.h"
 #include "wstrdup.h"
 
-char *WStrDup ( const char *src )
+char *WStrDup( const char *src )
 {
     char *dest;
 
-    if ( !src ) {
-        return ( NULL );
+    if( src == NULL ) {
+        return( NULL );
     }
 
-    dest = WMemAlloc ( strlen ( src ) + 1 );
+    dest = WMemAlloc( strlen( src ) + 1 );
 
-    if ( dest ) {
-        strcpy ( dest, src );
+    if( dest != NULL ) {
+        strcpy( dest, src );
     }
 
-    return ( dest );
+    return( dest );
 }
-

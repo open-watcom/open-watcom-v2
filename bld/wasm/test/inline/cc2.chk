@@ -1,0 +1,45 @@
+ add al,0fH
+ add al,7fH
+ add al,0ffH
+ add ax,0fH
+ add ax,7fH
+ add ax,0ffH
+ add ax,7fffH
+ add ax,0ffffH
+ add eax,0fH
+ add eax,7fH
+ add eax,0ffH
+ add eax,7fffH
+ add eax,0ffffH
+ add eax,7fffffffH
+ add eax,0ffffffffH
+ add dl,0fH
+ add dl,7fH
+ add dl,0ffH
+ add dx,0fH
+ add dx,7fH
+ add dx,0ffH
+ add dx,7fffH
+ add dx,0ffffH
+ add edx,0fH
+ add edx,7fH
+ add edx,0ffH
+ add edx,7fffH
+ add edx,0ffffH
+ add edx,7fffffffH
+ add edx,0ffffffffH
+ add byte ptr x,0fH
+ add byte ptr x,7fH
+ add byte ptr x,0ffH
+ add word ptr x,0fH
+ add word ptr x,7fH
+ add word ptr x,0ffH
+ add word ptr x,7fffH
+ add word ptr x,0ffffH
+ add dword ptr x,0fH
+ add dword ptr x,7fH
+ add dword ptr x,0ffH
+ add dword ptr x,7fffH
+ add dword ptr x,0ffffH
+ add dword ptr x,7fffffffH
+ add dword ptr x,0ffffffffH

@@ -24,18 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI library sample application.
 *
 ****************************************************************************/
 
 
 #include "app.h"
 #include "watcom.h"
-#if !defined( __AXP__ ) && !defined( UNIX )
-#include "dpmi.h"
-#include "i86.h"
-#endif
 #include "stdui.h"
 
 wnd_update_list WndFlags = 0;
@@ -72,6 +67,7 @@ void Ring()
     // ring the bell
 }
 #endif
+
 typedef struct {
     unsigned    key;
     char        *name;
@@ -133,7 +129,8 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
     WndMainMenuProc( wnd, menu );
     return( TRUE );
 }
-#ifdef DOS
+
+#ifdef __DOS__
 extern void BIOSSetPage( char pagenb );
 #pragma aux BIOSSetPage =                               \
         " push   bp             ",                      \
@@ -176,21 +173,6 @@ static gui_colour_set   WndDlgColours[] = {
 
 gui_resource MainIcon = { ICON_MAIN, "main_icon" };
 
-#ifndef UNIX
-static short rm()
-{
-    static short   rms;
-    long    result;
-
-    if( rms == 0 ) {
-        result = DPMIAllocateLDTDescriptors( 1 );
-        rms = result & 0xffff;
-        DPMISetSegmentLimit( rms, 0xfffff );
-    }
-    return( rms );
-}
-#endif
-
 extern a_window *WndMain;
 void GUImain( void )
 {
@@ -207,7 +189,7 @@ void GUImain( void )
     }
     while( *p == ' ' ) ++p;
     if( p[0] == '-' && p[1] == '1' ) {
-        #ifdef DOS
+        #ifdef __DOS__
             BIOSSetPage( 1 ); // just make sure it works for the debugger
         #endif
         p += 2;
@@ -221,170 +203,3 @@ void GUImain( void )
     WndMainMenuProc( WndMain, MENU_OPEN1 );
 } // returning starts the events rolling
 
-/*===========================================================*/
-/*===========================================================*/
-/*===========================================================*/
-/*===========================================================*/
-
-#if 0
-
-
-
-/*****************************************************************************\
- *                                                                           *
- *            Replacement routines for User Interface library                *
- *                                                                           *
-\*****************************************************************************/
-
-#define GetBIOSData( off, var ) var =                                        \
-                                sizeof( var ) == 1 ?                         \
-                                    *(uint_8 __far *)MK_PM( BD_SEG, off ) :     \
-                                sizeof( var ) == 2 ?                         \
-                                    *(uint_16 __far *)MK_PM( BD_SEG, off ) :    \
-                                *(uint_32 __far *)MK_PM( BD_SEG, off );
-
-#define SetBIOSData( off, var ) ( sizeof( var ) == 1 ) ?                             \
-                                    ( *(uint_8 __far *)MK_PM( BD_SEG, off )          \
-                                        = var ) :                            \
-                                ( ( sizeof( var ) == 2 ) ?                           \
-                                    ( *(uint_16 __far *)MK_PM( BD_SEG, off )         \
-                                        = var ) :                            \
-                                ( *(uint_32 __far *)MK_PM( BD_SEG, off ) = var ) );
-
-#define MK_PM( s, o )           MK_FP( rm(), ((s) << 4) + (o) )
-
-static uint_16                  VIDPort;
-static uint_8                   OldRow;
-static uint_8                   OldCol;
-static uint_8                   OldTyp;
-static uint_16                  CurOffst;
-static uint_16                  RegCur;
-static uint_16                  InsCur;
-static uint_16                  NoCur;
-
-#define VIDMONOINDXREG                  0x03b4
-#define VIDCOLRINDXREG                  0x03d4
-#define NORM_CURSOR_OFF         0x2000
-
-enum {
-    BD_SEG          = 0x40,
-    BD_EQUIP_LIST   = 0x10,
-    BD_CURR_MODE    = 0x49,
-    BD_REGEN_LEN    = 0x4c,
-    BD_CURPOS       = 0x50,
-    BD_MODE_CTRL    = 0x65,
-    BD_VID_CTRL1    = 0x87,
-};
-
-extern uint_8 _ReadCRTCReg( uint_16 vidport, uint_8 regnb );
-#pragma aux _ReadCRTCReg =                      \
-        "out    dx, al          ",              \
-        "inc    dx              ",              \
-        "in     al, dx          "               \
-        parm [ dx ] [ al ]                      \
-        modify exact [ al dx ];
-
-extern void _WriteCRTCReg( uint_16 vidport, uint_8 regnb, uint_8 value );
-#pragma aux _WriteCRTCReg =                     \
-        "out    dx, al          ",              \
-        "inc    dx              ",              \
-        "mov    al, ah          ",              \
-        "out    dx, al          "               \
-        parm [ dx ] [ al ] [ ah ]               \
-        modify exact [ al dx ];
-
-#define CURS_LOCATION_LOW       0xf
-#define CURS_LOCATION_HI        0xe
-#define CURS_START_SCANLINE     0xa
-#define CURS_END_SCANLINE       0xb
-
-static uint_8 VIDGetRow( uint_16 vidport )
-{
-    return( _ReadCRTCReg( vidport, CURS_LOCATION_LOW ) );
-}
-
-static void VIDSetRow( uint_16 vidport, uint_8 row )
-{
-    _WriteCRTCReg( vidport, CURS_LOCATION_LOW, row );
-}
-
-static void VIDSetCol( uint_16 vidport, uint_8 col )
-{
-    _WriteCRTCReg( vidport, CURS_LOCATION_HI, col );
-}
-
-static void VIDSetPos( uint_16 vidport, uint_16 cursorpos )
-{
-    VIDSetRow( vidport, cursorpos & 0xff );
-    VIDSetCol( vidport, cursorpos >> 8 );
-}
-
-static void VIDSetCurTyp( uint_16 vidport, uint_16 cursortyp )
-{
-    _WriteCRTCReg( vidport, CURS_START_SCANLINE, cursortyp >> 8 );
-    _WriteCRTCReg( vidport, CURS_END_SCANLINE, cursortyp & 0xf );
-}
-
-static uint_16 VIDGetCurTyp( uint_16 vidport )
-{
-    return( (uint_16)_ReadCRTCReg( vidport, CURS_START_SCANLINE ) << 8 |
-            _ReadCRTCReg( vidport, CURS_END_SCANLINE ) );
-}
-
-extern void uiinitcursor( void )
-{
-    VIDPort = VIDCOLRINDXREG;
-        RegCur = VIDGetCurTyp( VIDPort );
-        NoCur = NORM_CURSOR_OFF;
-    InsCur = ( ( ( RegCur + 0x100 ) >> 1 & 0xff00 ) + 0x100 ) |
-             ( RegCur & 0x00ff );
-}
-
-#pragma off( unreferenced );
-void uisetcursor( ORD row, ORD col, int typ, int attr )
-#pragma off( unreferenced );
-{
-    uint_16     bios_cur_pos;
-
-    if( typ == C_OFF ) {
-        uioffcursor();
-    } else if( VIDPort &&
-               ( ( row != OldRow ) || ( col != OldCol ) ||
-               ( typ != OldTyp ) ) ) {
-        OldTyp = typ;
-        OldRow = row;
-        OldCol = col;
-        bios_cur_pos = BD_CURPOS;
-//      if( FlipMech == FLIP_PAGE ) {
-//          bios_cur_pos += 2;
-//      }
-        SetBIOSData( bios_cur_pos + 0, OldCol );
-        SetBIOSData( bios_cur_pos + 1, OldRow );
-        VIDSetPos( VIDPort, CurOffst + row * UIData->width + col );
-        VIDSetCurTyp( VIDPort, typ == C_INSERT ? InsCur : RegCur );
-    }
-}
-
-extern void uioffcursor( void )
-{
-    if( ( VIDPort != NULL ) ) {
-        OldTyp = C_OFF;
-        VIDSetCurTyp( VIDPort, NoCur );
-    }
-}
-
-extern void uiswapcursor( void )
-{
-}
-
-extern void uifinicursor( void )
-{
-}
-
-void uirefresh()
-{
-    extern void uidorefresh(void);
-
-    uidorefresh();
-}
-#endif

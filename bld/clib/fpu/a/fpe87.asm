@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  80x87 interrupt handler.
 ;*
 ;*****************************************************************************
 
 
-;
-;   FPEHNDLR    : 80x87 interrupt handler
-;
 .8087
 .286
 
@@ -56,12 +52,12 @@ DGROUP group _emu_init_start,_emu_init_end
 
         extrn   __8087          : byte
 ifdef   __MT__
-        extrn   __threadid      : dword
+        extrn   "C",_threadid   : dword
         extrn   "C",__ThreadData: word
 else
         extrn   "C",_STACKLOW   : word
 endif
-        extrn   ___FPE_handler  : dword
+        extrn   "C",__FPE_handler: dword
 ifndef  __OS2__
         extrn   "C",__FPE_int   : byte  ; defined in \clib\math\c\fpeint.c
 endif
@@ -79,41 +75,15 @@ SaveSS  dw      1 dup(?)
 SaveSP  dw      1 dup(?)
         endbss
 
-CW_MASK equ      CW_IM+CW_ZM+CW_OM
-
 ifndef  __OS2__
 Save87  dw      0
         dw      0
 endif
 
-    if __WASM__ ge 100
-        xdefp   "C",__Enable_FPE
         ifndef  __OS2__
             xdefp       "C",__Init_FPE_handler
             xdefp       "C",__Fini_FPE_handler
         endif
-        else
-        xdefp   <"C",__Enable_FPE>
-        ifndef  __OS2__
-            xdefp       <"C",__Init_FPE_handler>
-            xdefp       <"C",__Fini_FPE_handler>
-        endif
-    endif
-
-defp    __Enable_FPE
-        push    BP                      ; save BP
-        sub     SP,2                    ; allocate space for control word
-        mov     BP,SP                   ; point to space for control word
-        fstcw   word ptr [BP]           ; get control word
-        fwait                           ; ...
-        and     word ptr [BP],not CW_MASK; set new control word
-        fldcw   word ptr [BP]           ; ...
-        fwait                           ; ...
-        add     SP,2                    ; remove temporary
-        pop     BP                      ; restore BP
-        ret                             ; return
-endproc __Enable_FPE
-
 
 ifndef  __OS2__
 
@@ -140,7 +110,6 @@ defp    __Init_FPE_handler
           pop   DS                      ; - ...
           mov   DX,offset __FPEHandler  ; - ...
           int   21h                     ; - ...
-          call  __Enable_FPE            ; - enable floating-point exceptions
           pop   ES                      ; - restore registers
           pop   DS                      ; - ...
           pop   DX                      ; - ...
@@ -194,8 +163,7 @@ __FPEHandler proc far
         _if     ne                      ; if we have an emulator
         fstenv [BP]                     ; - get 80x87 environment
         _else                           ; else
-      ; fnstenv [BP]                    ; - get 80x87 environment
-        db      0d9H,76H,00H            ; - (please forgive us, we know not ...)
+        fnstenv [BP]                    ; - get 80x87 environment
         _endif                          ; endif
         fwait                           ; wait for 80x87
 ifndef  __OS2__
@@ -305,7 +273,7 @@ endif
           mov   SS,SI                   ; - get new stack pointer
           mov   SP,DX                   ; - ...
 ifdef __MT__
-          les   si,__threadid           ; - get thread id
+          les   si,_threadid            ; - get thread id
           mov   si,es:[si]              ; - ...
           shl   si,1                    ; - turn into index
           shl   si,1                    ; - ...
@@ -315,14 +283,16 @@ ifdef __MT__
           xchg  ax,es:[si]              ; - set new stack low, and get old one
           push  ax                      ; - save current stack low
           mov   ax,cx                   ; - set floating point status
-          call  ___FPE_handler          ; - call user's handler
+          call  __FPE_handler           ; - call user's handler
           pop   es:[si]                 ; - restore stack low
 
 else
           push  _STACKLOW               ; - save current stack low
           mov   _STACKLOW,AX            ; - set new stack low
           mov   AX,CX                   ; - set floating point status
-          call  ___FPE_handler          ; - call user's handler
+          call  __FPE_handler           ; - call user's handler
+          mov   AX,seg DGROUP           ; - get data segment again because
+          mov   DS,AX                   ; - __FPE_handler may have changed DS
           pop   _STACKLOW               ; - restore old stack low value
 endif
           mov   SS,SaveSS               ; - restore stack pointer
@@ -344,6 +314,9 @@ endif
         fwait                           ; make sure 80x87 is ready
         add     SP,ENV_SIZE             ; clean up stack
         pop     BP                      ; ...
+ifdef __OS2__
+        add     SP,2                    ; OS/2 stored the FP status word on stack!
+endif
         iret                            ; return from interrupt handler
 endproc __FPEHandler
 

@@ -1,0 +1,1961 @@
+/*
+ *  afxcmn1.inl Inline implementation of functions declared in afxcmn.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE int CImageList::Add( CBitmap *pbmImage, CBitmap *pbmMask )
+/*******************************************************************/
+{
+    return( ::ImageList_Add( m_hImageList, (HBITMAP)pbmImage->GetSafeHandle(),
+                             (HBITMAP)pbmMask->GetSafeHandle() ) );
+}
+
+AFX_INLINE int CImageList::Add( CBitmap *pbmImage, COLORREF crMask )
+/******************************************************************/
+{
+    return( ::ImageList_AddMasked( m_hImageList, (HBITMAP)pbmImage->GetSafeHandle(),
+                                   crMask ) );
+}
+
+AFX_INLINE int CImageList::Add( HICON hIcon )
+/*******************************************/
+{
+    return( ::ImageList_ReplaceIcon( m_hImageList, -1, hIcon ) );
+}
+
+AFX_INLINE BOOL CImageList::BeginDrag( int nImage, CPoint ptHotSpot )
+/*******************************************************************/
+{
+    return( ::ImageList_BeginDrag( m_hImageList, nImage, ptHotSpot.x, ptHotSpot.y ) );
+}
+
+AFX_INLINE BOOL CImageList::Create( int cx, int cy, UINT nFlags, int nInitial,
+                                    int nGrow )
+/*********************************************/
+{
+    return( Attach( ::ImageList_Create( cx, cy, nFlags, nInitial, nGrow ) ) );
+}
+
+AFX_INLINE BOOL CImageList::Create( UINT nBitmapID, int cx, int nGrow, COLORREF crMask )
+/**************************************************************************************/
+{
+    return( Attach( ::ImageList_LoadImage( AfxGetResourceHandle(),
+                                           MAKEINTRESOURCE( nBitmapID ), cx, nGrow,
+                                           crMask, IMAGE_BITMAP, 0 ) ) );
+}
+
+AFX_INLINE BOOL CImageList::Create( LPCTSTR lpszBitmapID, int cx, int nGrow,
+                                    COLORREF crMask )
+/***************************************************/
+{
+    return( Attach( ::ImageList_LoadImage( AfxGetResourceHandle(), lpszBitmapID, cx,
+                                           nGrow, crMask, IMAGE_BITMAP, 0 ) ) );
+}
+
+AFX_INLINE BOOL CImageList::Create( CImageList &imagelist1, int nImage1,
+                                    CImageList &imagelist2, int nImage2, int dx, int dy )
+/***************************************************************************************/
+{
+    return( Attach( ::ImageList_Merge( imagelist1.m_hImageList, nImage1,
+                                       imagelist2.m_hImageList, nImage2, dx, dy ) ) );
+}
+
+AFX_INLINE BOOL CImageList::DeleteImageList()
+/*******************************************/
+{
+    return( ::ImageList_Destroy( Detach() ) );
+}
+
+AFX_INLINE BOOL CImageList::Draw( CDC *pDC, int nImage, POINT pt, UINT nStyle )
+/*****************************************************************************/
+{
+    return( ::ImageList_Draw( m_hImageList, nImage, pDC->GetSafeHdc(), pt.x, pt.y,
+                              nStyle ) );
+}
+
+AFX_INLINE BOOL CImageList::DrawEx( CDC *pDC, int nImage, POINT pt, SIZE sz,
+                                    COLORREF clrBk, COLORREF clrFg, UINT nStyle )
+/*******************************************************************************/
+{
+    return( ::ImageList_DrawEx( m_hImageList, nImage, pDC->GetSafeHdc(), pt.x, pt.y,
+                                sz.cx, sz.cy, clrBk, clrFg, nStyle ) );
+}
+
+AFX_INLINE HICON CImageList::ExtractIcon( int nImage )
+/****************************************************/
+{
+    return( ::ImageList_GetIcon( m_hImageList, nImage, 0 ) );
+}
+
+AFX_INLINE COLORREF CImageList::GetBkColor() const
+/************************************************/
+{
+    return( ::ImageList_GetBkColor( m_hImageList ) );
+}
+
+AFX_INLINE int CImageList::GetImageCount() const
+/**********************************************/
+{
+    return( ::ImageList_GetImageCount( m_hImageList ) );
+}
+
+AFX_INLINE BOOL CImageList::GetImageInfo( int nImage, IMAGEINFO *pImageInfo ) const
+/*********************************************************************************/
+{
+    return( ::ImageList_GetImageInfo( m_hImageList, nImage, pImageInfo ) );
+}
+
+AFX_INLINE HIMAGELIST CImageList::GetSafeHandle() const
+/*****************************************************/
+{
+    return( this == NULL ? NULL : m_hImageList );
+}
+
+AFX_INLINE BOOL CImageList::Remove( int nImage )
+/**********************************************/
+{
+    return( ::ImageList_Remove( m_hImageList, nImage ) );
+}
+
+AFX_INLINE BOOL CImageList::Replace( int nImage, CBitmap *pbmImage, CBitmap *pbmMask )
+/************************************************************************************/
+{
+    return( ::ImageList_Replace( m_hImageList, nImage,
+                                 (HBITMAP)pbmImage->GetSafeHandle(),
+                                 (HBITMAP)pbmMask->GetSafeHandle() ) );
+}
+
+AFX_INLINE BOOL CImageList::Replace( int nImage, HICON hIcon )
+/************************************************************/
+{
+    return( ::ImageList_ReplaceIcon( m_hImageList, nImage, hIcon ) );
+}
+
+AFX_INLINE COLORREF CImageList::SetBkColor( COLORREF cr )
+/*******************************************************/
+{
+    return( ::ImageList_SetBkColor( m_hImageList, cr ) );
+}
+
+AFX_INLINE BOOL CImageList::SetDragCursorImage( int nDrag, CPoint ptHotSpot )
+/***************************************************************************/
+{
+    return( ::ImageList_SetDragCursorImage( m_hImageList, nDrag, ptHotSpot.x,
+                                            ptHotSpot.y ) );
+}
+
+AFX_INLINE BOOL CImageList::SetOverlayImage( int nImage, int nOverlay )
+/*********************************************************************/
+{
+    return( ::ImageList_SetOverlayImage( m_hImageList, nImage, nOverlay ) );
+}
+
+AFX_INLINE BOOL PASCAL CImageList::DragEnter( CWnd *pWndLock, CPoint point )
+/**************************************************************************/
+{
+    return( ::ImageList_DragEnter( pWndLock->GetSafeHwnd(), point.x, point.y ) );
+}
+
+AFX_INLINE BOOL PASCAL CImageList::DragLeave( CWnd *pWndLock )
+/************************************************************/
+{
+    return( ::ImageList_DragLeave( pWndLock->GetSafeHwnd() ) );
+}
+
+AFX_INLINE BOOL PASCAL CImageList::DragMove( CPoint pt )
+/******************************************************/
+{
+    return( ::ImageList_DragMove( pt.x, pt.y ) );
+}
+
+AFX_INLINE BOOL PASCAL CImageList::DragShowNolock( BOOL bShow )
+/*************************************************************/
+{
+    return( ::ImageList_DragShowNolock( bShow ) );
+}
+
+AFX_INLINE void PASCAL CImageList::EndDrag()
+/******************************************/
+{
+    ::ImageList_EndDrag();
+}
+
+AFX_INLINE CImageList * PASCAL CImageList::GetDragImage( LPPOINT lpPoint,
+                                                         LPPOINT lpPointHotSpot )
+/*******************************************************************************/
+{
+    return( CImageList::FromHandle( ::ImageList_GetDragImage( lpPoint,
+                                                              lpPointHotSpot ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::AddButtons( int nNumButtons, LPTBBUTTON lpButtons )
+/*******************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ADDBUTTONS, nNumButtons,
+                                 (LPARAM)lpButtons ) );
+}
+
+AFX_INLINE int CToolBarCtrl::AddString( UINT nStringID )
+/******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_ADDSTRING, (WPARAM)AfxGetResourceHandle(),
+                                nStringID ) );
+}
+
+AFX_INLINE int CToolBarCtrl::AddStrings( LPCTSTR lpszStrings )
+/************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_ADDSTRING, 0, (LPARAM)lpszStrings ) );
+}
+
+AFX_INLINE void CToolBarCtrl::AutoSize()
+/**************************************/
+{
+    ::SendMessage( m_hWnd, TB_AUTOSIZE, 0, 0L );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::ChangeBitmap( int idButton, int iBitmap )
+/*********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_CHANGEBITMAP, idButton,
+                                 MAKELPARAM( iBitmap, 0 ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::CheckButton( int nID, BOOL bCheck )
+/***************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_CHECKBUTTON, nID,
+                                 MAKELPARAM( bCheck, 0 ) ) );
+}
+
+AFX_INLINE UINT CToolBarCtrl::CommandToIndex( UINT nID ) const
+/************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TB_COMMANDTOINDEX, nID, 0L ) );
+}
+
+AFX_INLINE void CToolBarCtrl::Customize()
+/***************************************/
+{
+    ::SendMessage( m_hWnd, TB_CUSTOMIZE, 0, 0L );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::DeleteButton( int nIndex )
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_DELETEBUTTON, nIndex, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::EnableButton( int nID, BOOL bEnable )
+/*****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ENABLEBUTTON, nID,
+                                 MAKELPARAM( bEnable, 0 ) ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetBitmap( int nID ) const
+/*****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETBITMAP, nID, 0L ) );
+}
+
+AFX_INLINE UINT CToolBarCtrl::GetBitmapFlags() const
+/**************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TB_GETBITMAPFLAGS, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetButton( int nIndex, LPTBBUTTON lpButton ) const
+/******************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETBUTTON, nIndex, (LPARAM)lpButton ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetButtonCount() const
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_BUTTONCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetItemRect( int nIndex, LPRECT lpRect ) const
+/**************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETITEMRECT, nIndex, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetRows() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETROWS, 0, 0L ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetState( int nID ) const
+/****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETSTATE, nID, 0L ) );
+}
+
+AFX_INLINE CToolTipCtrl *CToolBarCtrl::GetToolTips() const
+/********************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        TB_GETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::HideButton( int nID, BOOL bHide )
+/*************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_HIDEBUTTON, nID, MAKELPARAM( bHide, 0 ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::Indeterminate( int nID, BOOL bIndeterminate )
+/*************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_INDETERMINATE, nID,
+                                 MAKELPARAM( bIndeterminate, 0 ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::InsertButton( int nIndex, LPTBBUTTON lpButton )
+/***************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_INSERTBUTTON, nIndex, (LPARAM)lpButton ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonChecked( int nID ) const
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONCHECKED, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonEnabled( int nID ) const
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONENABLED, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonHidden( int nID ) const
+/***********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONHIDDEN, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonIndeterminate( int nID ) const
+/******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONINDETERMINATE, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonPressed( int nID ) const
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONPRESSED, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::PressButton( int nID, BOOL fPress )
+/***************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_PRESSBUTTON, nID,
+                                 MAKELPARAM( fPress, 0 ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::ReplaceBitmap( LPTBREPLACEBITMAP pReplaceBitmap )
+/*****************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_REPLACEBITMAP, 0, (LPARAM)pReplaceBitmap ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetBitmapSize( CSize size )
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETBITMAPSIZE, 0,
+                                 MAKELPARAM( size.cx, size.cy ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetButtonSize( CSize size )
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETBUTTONSIZE, 0,
+                                 MAKELPARAM( size.cx, size.cy ) ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetButtonStructSize( int nSize )
+/************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_BUTTONSTRUCTSIZE, nSize, 0L );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetCmdID( int nIndex, UINT nID )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETCMDID, nIndex, nID ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetOwner( CWnd *pWnd )
+/**************************************************/
+{
+    ::SendMessage( m_hWnd, TB_SETPARENT, (WPARAM)pWnd->GetSafeHwnd(), 0L );
+}
+
+AFX_INLINE void CToolBarCtrl::SetRows( int nRows, BOOL bLarger, LPRECT lpRect )
+/*****************************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_SETROWS, MAKEWPARAM( nRows, bLarger ), (LPARAM)lpRect );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetState( int nID, UINT nState )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETSTATE, nID, MAKELPARAM( nState, 0 ) ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetToolTips( CToolTipCtrl *pTip )
+/*************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_SETTOOLTIPS, (WPARAM)pTip->GetSafeHwnd(), 0L );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE DWORD CToolBarCtrl::GetButtonSize() const
+/**************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_GETBUTTONSIZE, 0, 0L ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::GetDisabledImageList() const
+/***************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_GETDISABLEDIMAGELIST, 0, 0L ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::GetHotImageList() const
+/**********************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_GETHOTIMAGELIST, 0, 0L ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::GetImageList() const
+/*******************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, TB_GETIMAGELIST,
+                                                               0, 0L ) ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetMaxTextRows() const
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETTEXTROWS, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetRect( int nID, LPRECT lpRect ) const
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETRECT, nID, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE DWORD CToolBarCtrl::GetStyle() const
+/*********************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_GETSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE void CToolBarCtrl::LoadImages( int iBitmapID, HINSTANCE hinst )
+/************************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_LOADIMAGES, iBitmapID, (LPARAM)hinst );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetButtonWidth( int cxMin, int cxMax )
+/******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETBUTTONWIDTH, 0,
+                                 MAKELPARAM( cxMin, cxMax ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::SetDisabledImageList( CImageList *pImageList )
+/*********************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_SETDISABLEDIMAGELIST, 0, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::SetHotImageList( CImageList *pImageList )
+/****************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_SETHOTIMAGELIST, 0, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::SetImageList( CImageList *pImageList )
+/*************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_SETIMAGELIST, 0, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetIndent( int iIndent )
+/****************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETINDENT, iIndent, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetMaxTextRows( int iMaxRows )
+/**********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETMAXTEXTROWS, iMaxRows, 0L ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetStyle( DWORD dwStyle )
+/*****************************************************/
+{
+    ::SendMessage( m_hWnd, TB_SETSTYLE, 0, dwStyle );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE BOOL CToolBarCtrl::GetAnchorHighlight() const
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETANCHORHIGHLIGHT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetButtonInfo( int nID, TBBUTTONINFO *ptbbi ) const
+/*******************************************************************************/
+{
+    ASSERT( ptbbi != NULL );
+    ptbbi->cbSize = sizeof( TBBUTTONINFO );
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETBUTTONINFO, nID, (LPARAM)ptbbi ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetColorScheme( COLORSCHEME *lpColorScheme ) const
+/******************************************************************************/
+{
+    ASSERT( lpColorScheme != NULL );
+    lpColorScheme->dwSize = sizeof( COLORSCHEME );
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETCOLORSCHEME, 0, (LPARAM)lpColorScheme ) );
+}
+
+AFX_INLINE HRESULT CToolBarCtrl::GetDropTarget( IDropTarget **ppDropTarget ) const
+/********************************************************************************/
+{
+    return( (HRESULT)::SendMessage( m_hWnd, TB_GETOBJECT, (WPARAM)&IID_IDropTarget,
+                                    (LPARAM)ppDropTarget ) );
+}
+
+AFX_INLINE DWORD CToolBarCtrl::GetExtendedStyle() const
+/*****************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_GETEXTENDEDSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetHotItem() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETHOTITEM, 0, 0L ) );
+}
+
+AFX_INLINE void CToolBarCtrl::GetInsertMark( TBINSERTMARK *ptbim ) const
+/**********************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_GETINSERTMARK, 0, (LPARAM)ptbim );
+}
+
+AFX_INLINE COLORREF CToolBarCtrl::GetInsertMarkColor() const
+/**********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TB_GETINSERTMARKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::GetMaxSize( LPSIZE lpSize ) const
+/*************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_GETMAXSIZE, 0, (LPARAM)lpSize ) );
+}
+
+AFX_INLINE int CToolBarCtrl::HitTest( LPPOINT ppt ) const
+/*******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_HITTEST, 0, (LPARAM)ppt ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::InsertMarkHitTest( LPPOINT ppt,
+                                                 LPTBINSERTMARK ptbim ) const
+/***************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_INSERTMARKHITTEST, (WPARAM)ppt,
+                                 (LPARAM)ptbim ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::IsButtonHighlighted( int nID ) const
+/****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_ISBUTTONHIGHLIGHTED, nID, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::MapAccelerator( TCHAR chAccel, UINT *pIDBtn )
+/*************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_MAPACCELERATOR, (WPARAM)chAccel,
+                                 (LPARAM)pIDBtn ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::MarkButton( int nID, BOOL fHighlight )
+/******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_MARKBUTTON, nID,
+                                 MAKELPARAM( fHighlight, 0 ) ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::MoveButton( UINT nOldPos, UINT nNewPos )
+/********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_MOVEBUTTON, nOldPos, nNewPos ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetAnchorHighlight( BOOL fAnchor )
+/**************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETANCHORHIGHLIGHT, fAnchor, 0L ) );
+}
+
+AFX_INLINE BOOL CToolBarCtrl::SetButtonInfo( int nID, TBBUTTONINFO *ptbbi )
+/*************************************************************************/
+{
+    ASSERT( ptbbi != NULL );
+    ptbbi->cbSize = sizeof( TBBUTTONINFO );
+    return( (BOOL)::SendMessage( m_hWnd, TB_SETBUTTONINFO, nID, (LPARAM)ptbbi ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetColorScheme( const COLORSCHEME *lpColorScheme )
+/******************************************************************************/
+{
+    ASSERT( lpColorScheme != NULL );
+    ((COLORSCHEME *)lpColorScheme)->dwSize = sizeof( COLORSCHEME );
+    ::SendMessage( m_hWnd, TB_SETCOLORSCHEME, 0, (LPARAM)lpColorScheme );
+}
+
+AFX_INLINE DWORD CToolBarCtrl::SetDrawTextFlags( DWORD dwMask, DWORD dwDTFlags )
+/******************************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_SETDRAWTEXTFLAGS, dwMask, dwDTFlags ) );
+}
+
+AFX_INLINE DWORD CToolBarCtrl::SetExtendedStyle( DWORD dwExStyle )
+/****************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_SETEXTENDEDSTYLE, 0, dwExStyle ) );
+}
+
+AFX_INLINE int CToolBarCtrl::SetHotItem( int nHot )
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_SETHOTITEM, nHot, 0L ) );
+}
+
+AFX_INLINE void CToolBarCtrl::SetInsertMark( TBINSERTMARK *ptbim )
+/****************************************************************/
+{
+    ::SendMessage( m_hWnd, TB_SETINSERTMARK, 0, (LPARAM)ptbim );
+}
+
+AFX_INLINE COLORREF CToolBarCtrl::SetInsertMarkColor( COLORREF clrNew )
+/*********************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TB_SETINSERTMARKCOLOR, 0, clrNew ) );
+}
+
+AFX_INLINE DWORD CToolBarCtrl::SetPadding( int nHorzPadding, int nVertPadding )
+/*****************************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TB_SETPADDING, 0,
+                                  MAKELPARAM( nHorzPadding, nVertPadding ) ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE int CToolBarCtrl::GetString( int nString, LPTSTR lpstrString,
+                                        int cchMaxLen ) const
+/***********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_GETSTRING, MAKEWPARAM( cchMaxLen, nString ),
+                                (LPARAM)lpstrString ) );
+}
+
+AFX_INLINE int CToolBarCtrl::GetString( int nString, CString &str ) const
+/***********************************************************************/
+{
+    LPTSTR lpString = str.GetBuffer( 256 );
+    int nResult = (int)::SendMessage( m_hWnd, TB_GETSTRING, MAKEWPARAM( 255, nString ),
+                                      (LPARAM)lpString );
+    str.ReleaseBuffer( nResult );
+    return( nResult );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE void CToolBarCtrl::GetMetrics( LPTBMETRICS ptbm ) const
+/****************************************************************/
+{
+    ASSERT( ptbm != NULL );
+    ptbm->cbSize = sizeof( TBMETRICS );
+    ::SendMessage( m_hWnd, TB_GETMETRICS, 0, (LPARAM)ptbm );
+}
+
+AFX_INLINE void CToolBarCtrl::SetMetrics( LPTBMETRICS ptbm )
+/**********************************************************/
+{
+    ASSERT( ptbm != NULL );
+    ptbm->cbSize = sizeof( TBMETRICS );
+    ::SendMessage( m_hWnd, TB_SETMETRICS, 0, (LPARAM)ptbm );
+}
+
+AFX_INLINE HRESULT CToolBarCtrl::SetWindowTheme( LPCWSTR pszSubAppName )
+/**********************************************************************/
+{
+    return( (HRESULT)::SendMessage( m_hWnd, TB_SETWINDOWTHEME, 0,
+                                    (LPARAM)pszSubAppName ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE CImageList *CToolBarCtrl::GetPressedImageList() const
+/**************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_GETPRESSEDIMAGELIST, 0, 0L ) ) );
+}
+
+AFX_INLINE CImageList *CToolBarCtrl::SetPressedImageList( int iImageID,
+                                                          CImageList *pImageList )
+/********************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TB_SETPRESSEDIMAGELIST, iImageID, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE BOOL CStatusBarCtrl::GetBorders( int *pBorders ) const
+/***************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_GETBORDERS, 0, (LPARAM)pBorders ) );
+}
+
+AFX_INLINE int CStatusBarCtrl::GetParts( int nParts, int *pParts ) const
+/**********************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, SB_GETPARTS, nParts, (LPARAM)pParts ) );
+}
+
+AFX_INLINE BOOL CStatusBarCtrl::GetRect( int iPane, LPRECT lpRect ) const
+/***********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_GETRECT, iPane, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE void CStatusBarCtrl::SetMinHeight( int nMin )
+/******************************************************/
+{
+    ::SendMessage( m_hWnd, SB_SETMINHEIGHT, nMin, 0L );
+}
+
+AFX_INLINE BOOL CStatusBarCtrl::SetParts( int nParts, int *pWidths )
+/******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_SETPARTS, nParts, (LPARAM)pWidths ) );
+}
+
+AFX_INLINE BOOL CStatusBarCtrl::SetSimple( BOOL bSimple )
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_SIMPLE, bSimple, 0L ) );
+}
+
+AFX_INLINE BOOL CStatusBarCtrl::SetText( LPCTSTR lpszText, int nPane, int nType )
+/*******************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_SETTEXT, nPane | nType, (LPARAM)lpszText ) );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE BOOL CStatusBarCtrl::IsSimple() const
+/**********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_ISSIMPLE, 0, 0L ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE HICON CStatusBarCtrl::GetIcon( int iPart ) const
+/*********************************************************/
+{
+    return( (HICON)::SendMessage( m_hWnd, SB_GETICON, iPart, 0L ) );
+}
+
+AFX_INLINE CString CStatusBarCtrl::GetTipText( int nPane ) const
+/**************************************************************/
+{
+    CString str;
+    LPTSTR  lpString = str.GetBuffer( 256 );
+    ::SendMessage( m_hWnd, SB_GETTIPTEXT, MAKEWPARAM( nPane, 255 ), (LPARAM)lpString );
+    return( str );
+}
+
+AFX_INLINE COLORREF CStatusBarCtrl::SetBkColor( COLORREF cr )
+/***********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, SB_SETBKCOLOR, 0, cr ) );
+}
+
+AFX_INLINE BOOL CStatusBarCtrl::SetIcon( int nPane, HICON hIcon )
+/***************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, SB_SETICON, nPane, (LPARAM)hIcon ) );
+}
+
+AFX_INLINE void CStatusBarCtrl::SetTipText( int nPane, LPCTSTR pszTipText )
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, SB_SETTIPTEXT, nPane, (LPARAM)pszTipText );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE BOOL CReBarCtrl::DeleteBand( UINT uBand )
+/**************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_DELETEBAND, uBand, 0L ) );
+}
+
+AFX_INLINE UINT CReBarCtrl::GetBandCount() const
+/**********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, RB_GETBANDCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::GetBandInfo( UINT uBand, REBARBANDINFO *prbbi ) const
+/*******************************************************************************/
+{
+    ASSERT( prbbi != NULL );
+    prbbi->cbSize = sizeof( REBARBANDINFO );
+    return( (BOOL)::SendMessage( m_hWnd, RB_GETBANDINFO, uBand, (LPARAM)prbbi ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::GetBarInfo( REBARINFO *prbi ) const
+/*************************************************************/
+{
+    ASSERT( prbi != NULL );
+    prbi->cbSize = sizeof( REBARINFO );
+    return( (BOOL)::SendMessage( m_hWnd, RB_GETBARINFO, 0, (LPARAM)prbi ) );
+}
+
+AFX_INLINE UINT CReBarCtrl::GetRowCount() const
+/*********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, RB_GETROWCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE UINT CReBarCtrl::GetRowHeight( UINT uRow ) const
+/*********************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, RB_GETROWHEIGHT, uRow, 0L ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::InsertBand( UINT uIndex, REBARBANDINFO *prbbi )
+/*************************************************************************/
+{
+    ASSERT( prbbi != NULL );
+    prbbi->cbSize = sizeof( REBARBANDINFO );
+    return( (BOOL)::SendMessage( m_hWnd, RB_INSERTBAND, uIndex, (LPARAM)prbbi ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::SetBandInfo( UINT uBand, REBARBANDINFO *prbbi )
+/*************************************************************************/
+{
+    ASSERT( prbbi != NULL );
+    prbbi->cbSize = sizeof( REBARBANDINFO );
+    return( (BOOL)::SendMessage( m_hWnd, RB_SETBANDINFO, uBand, (LPARAM)prbbi ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::SetBarInfo( REBARINFO *prbi )
+/*******************************************************/
+{
+    ASSERT( prbi != NULL );
+    prbi->cbSize = sizeof( REBARINFO );
+    return( (BOOL)::SendMessage( m_hWnd, RB_SETBARINFO, 0, (LPARAM)prbi ) );
+}
+
+AFX_INLINE CWnd *CReBarCtrl::SetOwner( CWnd *pWnd )
+/*************************************************/
+{
+    return( CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, RB_SETPARENT,
+                                                   (WPARAM)pWnd->GetSafeHwnd(), 0L ) ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE void CReBarCtrl::BeginDrag( UINT uBand, DWORD dwPos )
+/**************************************************************/
+{
+    ::SendMessage( m_hWnd, RB_BEGINDRAG, uBand, dwPos );
+}
+
+AFX_INLINE void CReBarCtrl::DragMove( DWORD dwPos )
+/*************************************************/
+{
+    ::SendMessage( m_hWnd, RB_DRAGMOVE, 0, dwPos );
+}
+
+AFX_INLINE void CReBarCtrl::EndDrag()
+/***********************************/
+{
+    ::SendMessage( m_hWnd, RB_ENDDRAG, 0, 0L );
+}
+
+AFX_INLINE void CReBarCtrl::GetBandBorders( UINT uBand, LPRECT prc ) const
+/************************************************************************/
+{
+    ::SendMessage( m_hWnd, RB_GETBANDBORDERS, uBand, (LPARAM)prc );
+}
+
+AFX_INLINE UINT CReBarCtrl::GetBarHeight() const
+/**********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, RB_GETBARHEIGHT, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CReBarCtrl::GetBkColor() const
+/************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, RB_GETBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::GetColorScheme( COLORSCHEME *lpcs ) const
+/*******************************************************************/
+{
+    ASSERT( lpcs != NULL );
+    lpcs->dwSize = sizeof( COLORSCHEME );
+    return( (BOOL)::SendMessage( m_hWnd, RB_GETCOLORSCHEME, 0, (LPARAM)lpcs ) );
+}
+
+AFX_INLINE IDropTarget *CReBarCtrl::GetDropTarget() const
+/*******************************************************/
+{
+    IDropTarget *pDropTarget = NULL;
+    ::SendMessage( m_hWnd, RB_GETDROPTARGET, 0, (LPARAM)&pDropTarget );
+    return( pDropTarget );
+}
+
+AFX_INLINE CPalette *CReBarCtrl::GetPalette() const
+/*************************************************/
+{
+    return( CPalette::FromHandle( (HPALETTE)::SendMessage( m_hWnd, RB_GETPALETTE,
+                                                           0, 0L ) ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::GetRect( UINT uBand, LPRECT prc ) const
+/*****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_GETRECT, uBand, (LPARAM)prc ) );
+}
+
+AFX_INLINE COLORREF CReBarCtrl::GetTextColor() const
+/**************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, RB_GETTEXTCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE CToolTipCtrl *CReBarCtrl::GetToolTips() const
+/******************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        RB_GETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE int CReBarCtrl::HitTest( RBHITTESTINFO *prbht )
+/********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, RB_HITTEST, 0, (LPARAM)prbht ) );
+}
+
+AFX_INLINE int CReBarCtrl::IDToIndex( UINT uBandID ) const
+/********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, RB_IDTOINDEX, uBandID, 0L ) );
+}
+
+AFX_INLINE void CReBarCtrl::MaximizeBand( UINT uBand )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, RB_MAXIMIZEBAND, uBand, 0L );
+}
+
+AFX_INLINE void CReBarCtrl::MinimizeBand( UINT uBand )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, RB_MINIMIZEBAND, uBand, 0L );
+}
+
+AFX_INLINE BOOL CReBarCtrl::MoveBand( UINT uFrom, UINT uTo )
+/**********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_MOVEBAND, uFrom, uTo ) );
+}
+
+AFX_INLINE void CReBarCtrl::RestoreBand( UINT uBand )
+/***************************************************/
+{
+    ::SendMessage( m_hWnd, RB_MAXIMIZEBAND, uBand, 1L );
+}
+
+AFX_INLINE COLORREF CReBarCtrl::SetBkColor( COLORREF clr )
+/********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, RB_SETBKCOLOR, 0, clr ) );
+}
+
+AFX_INLINE void CReBarCtrl::SetColorScheme( const COLORSCHEME *lpcs )
+/*******************************************************************/
+{
+    ASSERT( lpcs != NULL );
+    ((COLORSCHEME *)lpcs)->dwSize = sizeof( COLORSCHEME );
+    ::SendMessage( m_hWnd, RB_SETCOLORSCHEME, 0, (LPARAM)lpcs );
+}
+
+AFX_INLINE CPalette *CReBarCtrl::SetPalette( HPALETTE hPal )
+/**********************************************************/
+{
+    return( CPalette::FromHandle( (HPALETTE)::SendMessage( m_hWnd, RB_SETPALETTE,
+                                                           0, (LPARAM)hPal ) ) );
+}
+
+AFX_INLINE COLORREF CReBarCtrl::SetTextColor( COLORREF clr )
+/**********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, RB_SETTEXTCOLOR, 0, clr ) );
+}
+
+AFX_INLINE void CReBarCtrl::SetToolTips( CToolTipCtrl *pToolTip )
+/***************************************************************/
+{
+    ::SendMessage( m_hWnd, RB_SETTOOLTIPS, (WPARAM)pToolTip->GetSafeHwnd(), 0L );
+}
+
+AFX_INLINE BOOL CReBarCtrl::ShowBand( UINT uBand, BOOL fShow )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_SHOWBAND, uBand, fShow ) );
+}
+
+AFX_INLINE BOOL CReBarCtrl::SizeToRect( CRect &rect )
+/***************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_SIZETORECT, 0, (LPARAM)&rect ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE void CReBarCtrl::PushChevron( UINT uBand, LPARAM lAppValue )
+/*********************************************************************/
+{
+    ::SendMessage( m_hWnd, RB_PUSHCHEVRON, uBand, lAppValue );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_IE >= 0x0600)
+
+AFX_INLINE DWORD CReBarCtrl::GetExtendedStyle() const
+/***************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, RB_GETEXTENDEDSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CReBarCtrl::SetExtendedStyle( DWORD dwMask, DWORD dwStyleEx )
+/****************************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, RB_SETEXTENDEDSTYLE, dwMask, dwStyleEx ) );
+}
+
+#endif // (_WIN32_IE >= 0x0600)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE void CReBarCtrl::GetBandMargins( PMARGINS pMargins ) const
+/*******************************************************************/
+{
+    ::SendMessage( m_hWnd, RB_GETBANDMARGINS, 0, (LPARAM)pMargins );
+}
+
+AFX_INLINE HRESULT CReBarCtrl::SetWindowTheme( LPCWSTR pszSubAppName )
+/********************************************************************/
+{
+    return( (HRESULT)::SendMessage( m_hWnd, RB_SETWINDOWTHEME, 0,
+                                    (LPARAM)pszSubAppName ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE BOOL CReBarCtrl::SetBandWidth( UINT uBand, int cxWidth )
+/*****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, RB_SETBANDWIDTH, uBand, cxWidth ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE void CToolTipCtrl::Activate( BOOL bActivate )
+/******************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_ACTIVATE, bActivate, 0L );
+}
+
+AFX_INLINE int CToolTipCtrl::GetToolCount() const
+/***********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TTM_GETTOOLCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE void CToolTipCtrl::RelayEvent( LPMSG lpMsg )
+/*****************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_RELAYEVENT, 0, (LPARAM)lpMsg );
+}
+
+AFX_INLINE void CToolTipCtrl::SetDelayTime( UINT nDelay )
+/*******************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_SETDELAYTIME, 0, nDelay );
+}
+
+AFX_INLINE void CToolTipCtrl::SetDelayTime( DWORD dwDuration, int iTime )
+/***********************************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_SETDELAYTIME, dwDuration, MAKELPARAM( iTime, 0 ) );
+}
+
+AFX_INLINE void CToolTipCtrl::SetToolInfo( LPTOOLINFO lpToolInfo )
+/****************************************************************/
+{
+    ASSERT( lpToolInfo != NULL );
+    lpToolInfo->cbSize = sizeof( TOOLINFO );
+    ::SendMessage( m_hWnd, TTM_SETTOOLINFO, 0, (LPARAM)lpToolInfo );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE int CToolTipCtrl::GetDelayTime( DWORD dwDuration ) const
+/*****************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TTM_GETDELAYTIME, dwDuration, 0L ) );
+}
+
+AFX_INLINE void CToolTipCtrl::GetMargin( LPRECT lprc ) const
+/**********************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_GETMARGIN, 0, (LPARAM)lprc );
+}
+
+AFX_INLINE int CToolTipCtrl::GetMaxTipWidth() const
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TTM_GETMAXTIPWIDTH, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CToolTipCtrl::GetTipBkColor() const
+/*****************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TTM_GETTIPBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CToolTipCtrl::GetTipTextColor() const
+/*******************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TTM_GETTIPTEXTCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE void CToolTipCtrl::Pop()
+/*********************************/
+{
+    ::SendMessage( m_hWnd, TTM_POP, 0, 0L );
+}
+
+AFX_INLINE void CToolTipCtrl::SetMargin( LPRECT lprc )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_SETMARGIN, 0, (LPARAM)lprc );
+}
+
+AFX_INLINE int CToolTipCtrl::SetMaxTipWidth( int iWidth )
+/*******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TTM_SETMAXTIPWIDTH, 0, iWidth ) );
+}
+
+AFX_INLINE void CToolTipCtrl::SetTipBkColor( COLORREF clr )
+/*********************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_SETTIPBKCOLOR, clr, 0L );
+}
+
+AFX_INLINE void CToolTipCtrl::SetTipTextColor( COLORREF clr )
+/***********************************************************/
+{
+    ::SendMessage( m_hWnd, TTM_SETTIPTEXTCOLOR, clr, 0L );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE void CToolTipCtrl::Update()
+/************************************/
+{
+    ::SendMessage( m_hWnd, TTM_UPDATE, 0, 0L );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE BOOL CToolTipCtrl::AdjustRect( LPRECT lprc, BOOL bLarger )
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TTM_ADJUSTRECT, bLarger, (LPARAM)lprc ) );
+}
+
+AFX_INLINE CSize CToolTipCtrl::GetBubbleSize( LPTOOLINFO lpToolInfo ) const
+/*************************************************************************/
+{
+    return( CSize( (DWORD)::SendMessage( m_hWnd, TTM_GETBUBBLESIZE, 0,
+                                         (LPARAM)lpToolInfo ) ) );
+}
+
+AFX_INLINE BOOL CToolTipCtrl::SetTitle( UINT uIcon, LPCTSTR lpstrTitle )
+/**********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TTM_SETTITLE, uIcon, (LPARAM)lpstrTitle ) );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE HRESULT CToolTipCtrl::SetWindowTheme( LPCWSTR pszSubAppName )
+/**********************************************************************/
+{
+    return( (HRESULT)::SendMessage( m_hWnd, TTM_SETWINDOWTHEME, 0,
+                                    (LPARAM)pszSubAppName ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE BOOL CAnimateCtrl::Close()
+/***********************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_OPEN, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CAnimateCtrl::Open( LPCTSTR lpszFileName )
+/********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_OPEN, 0, (LPARAM)lpszFileName ) );
+}
+
+AFX_INLINE BOOL CAnimateCtrl::Open( UINT nID )
+/********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_OPEN, 0, (LPARAM)nID ) );
+}
+
+AFX_INLINE BOOL CAnimateCtrl::Play( UINT nFrom, UINT nTo, UINT nRep )
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_PLAY, nRep, MAKELPARAM( nFrom, nTo ) ) );
+}
+
+AFX_INLINE BOOL CAnimateCtrl::Seek( UINT nTo )
+/********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_PLAY, 1, MAKELPARAM( nTo, nTo ) ) );
+}
+
+AFX_INLINE BOOL CAnimateCtrl::Stop()
+/**********************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_STOP, 0, 0L ) );
+}
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE BOOL CAnimateCtrl::IsPlaying() const
+/*********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, ACM_ISPLAYING, 0, 0L ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE int CProgressCtrl::OffsetPos( int nPos )
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_DELTAPOS, nPos, 0L ) );
+}
+
+AFX_INLINE int CProgressCtrl::SetPos( int nPos )
+/**********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_SETPOS, nPos, 0L ) );
+}
+
+AFX_INLINE void CProgressCtrl::SetRange( short nLower, short nUpper )
+/*******************************************************************/
+{
+    ::SendMessage( m_hWnd, PBM_SETRANGE, 0, MAKELPARAM( nLower, nUpper ) );
+}
+
+AFX_INLINE int CProgressCtrl::SetStep( int nStep )
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_SETSTEP, nStep, 0L ) );
+}
+
+AFX_INLINE int CProgressCtrl::StepIt()
+/************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_STEPIT, 0, 0L ) );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE int CProgressCtrl::GetPos() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_GETPOS, 0, 0L ) );
+}
+
+AFX_INLINE void CProgressCtrl::GetRange( int &nLower, int &nUpper ) const
+/***********************************************************************/
+{
+    nLower = (int)::SendMessage( m_hWnd, PBM_GETRANGE, TRUE, 0L );
+    nUpper = (int)::SendMessage( m_hWnd, PBM_GETRANGE, FALSE, 0L );
+}
+
+AFX_INLINE void CProgressCtrl::SetRange32( int nLower, int nUpper )
+/*****************************************************************/
+{
+    ::SendMessage( m_hWnd, PBM_SETRANGE32, nLower, nUpper );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE COLORREF CProgressCtrl::SetBarColor( COLORREF clrBar )
+/***************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PBM_SETBARCOLOR, 0, clrBar ) );
+}
+
+AFX_INLINE COLORREF CProgressCtrl::SetBkColor( COLORREF clrNew )
+/**************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PBM_SETBKCOLOR, 0, clrNew ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE BOOL CProgressCtrl::SetMarquee( BOOL fMarqueeMode, int nInterval )
+/***************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, PBM_SETMARQUEE, fMarqueeMode, nInterval ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE COLORREF CProgressCtrl::GetBarColor() const
+/****************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PBM_GETBARCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CProgressCtrl::GetBkColor() const
+/***************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PBM_GETBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE int CProgressCtrl::GetState() const
+/********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_GETSTATE, 0, 0L ) );
+}
+
+AFX_INLINE int CProgressCtrl::GetStep() const
+/*******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_GETSTEP, 0, 0L ) );
+}
+
+AFX_INLINE int CProgressCtrl::SetState( int iState )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PBM_SETSTATE, iState, 0L ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE void CSliderCtrl::ClearSel( BOOL bRedraw )
+/***************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_CLEARSEL, bRedraw, 0L );
+}
+
+AFX_INLINE void CSliderCtrl::ClearTics( BOOL bRedraw )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_CLEARTICS, bRedraw, 0L );
+}
+
+AFX_INLINE void CSliderCtrl::GetChannelRect( LPRECT lprc ) const
+/**************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_GETCHANNELRECT, 0, (LPARAM)lprc );
+}
+
+AFX_INLINE int CSliderCtrl::GetLineSize() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETLINESIZE, 0, 0L ) );
+}
+
+AFX_INLINE UINT CSliderCtrl::GetNumTics() const
+/*********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TBM_GETNUMTICS, 0, 0L ) );
+}
+
+AFX_INLINE int CSliderCtrl::GetPageSize() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETPAGESIZE, 0, 0L ) );
+}
+
+AFX_INLINE int CSliderCtrl::GetPos() const
+/****************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETPOS, 0, 0L ) );
+}
+
+AFX_INLINE void CSliderCtrl::GetRange( int &nMin, int &nMax ) const
+/*****************************************************************/
+{
+    nMin = (int)::SendMessage( m_hWnd, TBM_GETRANGEMIN, 0, 0L );
+    nMax = (int)::SendMessage( m_hWnd, TBM_GETRANGEMAX, 0, 0L );
+}
+
+AFX_INLINE int CSliderCtrl::GetRangeMax() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETRANGEMAX, 0, 0L ) );
+}
+
+AFX_INLINE int CSliderCtrl::GetRangeMin() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETRANGEMIN, 0, 0L ) );
+}
+
+AFX_INLINE void CSliderCtrl::GetSelection( int &nMin, int &nMax ) const
+/*********************************************************************/
+{
+    nMin = (int)::SendMessage( m_hWnd, TBM_GETSELSTART, 0, 0L );
+    nMax = (int)::SendMessage( m_hWnd, TBM_GETSELEND, 0, 0L );
+}
+
+AFX_INLINE int CSliderCtrl::GetThumbLength() const
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETTHUMBLENGTH, 0, 0L ) );
+}
+
+AFX_INLINE void CSliderCtrl::GetThumbRect( LPRECT lprc ) const
+/************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_GETTHUMBRECT, 0, (LPARAM)lprc );
+}
+
+AFX_INLINE int CSliderCtrl::GetTic( int nTic ) const
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETTIC, nTic, 0L ) );
+}
+
+AFX_INLINE DWORD *CSliderCtrl::GetTicArray() const
+/************************************************/
+{
+    return( (DWORD *)::SendMessage( m_hWnd, TBM_GETPTICS, 0, 0L ) );
+}
+
+AFX_INLINE int CSliderCtrl::GetTicPos( int nTic ) const
+/*****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_GETTICPOS, nTic, 0L ) );
+}
+
+AFX_INLINE int CSliderCtrl::SetLineSize( int nSize )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_SETLINESIZE, 0, nSize ) );
+}
+
+AFX_INLINE int CSliderCtrl::SetPageSize( int nSize )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_SETPAGESIZE, 0, nSize ) );
+}
+
+AFX_INLINE void CSliderCtrl::SetPos( int nPos )
+/*********************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETPOS, TRUE, nPos );
+}
+
+AFX_INLINE void CSliderCtrl::SetRange( int nMin, int nMax, BOOL bRedraw )
+/***********************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETRANGE, bRedraw, MAKELPARAM( nMin, nMax ) );
+}
+
+AFX_INLINE void CSliderCtrl::SetRangeMax( int nMax, BOOL bRedraw )
+/****************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETRANGEMAX, bRedraw, nMax );
+}
+
+AFX_INLINE void CSliderCtrl::SetRangeMin( int nMin, BOOL bRedraw )
+/****************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETRANGEMIN, bRedraw, nMin );
+}
+
+AFX_INLINE void CSliderCtrl::SetSelection( int nMin, int nMax )
+/*************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETSEL, TRUE, MAKELPARAM( nMin, nMax ) );
+}
+
+AFX_INLINE void CSliderCtrl::SetThumbLength( int nLength )
+/********************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETTHUMBLENGTH, nLength, 0L );
+}
+
+AFX_INLINE BOOL CSliderCtrl::SetTic( int nTic )
+/*********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TBM_SETTIC, 0, nTic ) );
+}
+
+AFX_INLINE void CSliderCtrl::SetTicFreq( int nFreq )
+/**************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETTICFREQ, nFreq, 0L );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CWnd *CSliderCtrl::GetBuddy( BOOL fLocation ) const
+/************************************************************/
+{
+    return( CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, TBM_GETBUDDY,
+                                                   fLocation, 0L ) ) );
+}
+
+AFX_INLINE CToolTipCtrl *CSliderCtrl::GetToolTips() const
+/*******************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        TBM_SETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE CWnd *CSliderCtrl::SetBuddy( CWnd *pWndBuddy, BOOL fLocation )
+/***********************************************************************/
+{
+    return( CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, TBM_SETBUDDY, fLocation,
+        (LPARAM)pWndBuddy->GetSafeHwnd() ) ) );
+}
+
+AFX_INLINE int CSliderCtrl::SetTipSide( int nLocation )
+/*****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TBM_SETTIPSIDE, nLocation, 0L ) );
+}
+
+AFX_INLINE void CSliderCtrl::SetToolTips( CToolTipCtrl *pWndTip )
+/***************************************************************/
+{
+    ::SendMessage( m_hWnd, TBM_SETTOOLTIPS, (WPARAM)pWndTip->GetSafeHwnd(), 0L );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+AFX_INLINE UINT CSpinButtonCtrl::GetAccel( int nAccel, UDACCEL *pAccel ) const
+/****************************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, UDM_GETACCEL, nAccel, (LPARAM)pAccel ) );
+}
+
+AFX_INLINE UINT CSpinButtonCtrl::GetBase() const
+/**********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, UDM_GETBASE, 0, 0L ) );
+}
+
+AFX_INLINE CWnd *CSpinButtonCtrl::GetBuddy() const
+/************************************************/
+{
+    return( CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, UDM_GETBUDDY, 0, 0L ) ) );
+}
+
+AFX_INLINE int CSpinButtonCtrl::GetPos() const
+/********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, UDM_GETPOS, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CSpinButtonCtrl::GetRange() const
+/************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, UDM_GETRANGE, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CSpinButtonCtrl::SetAccel( int nAccel, UDACCEL *pAccel )
+/**********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, UDM_SETACCEL, nAccel, (LPARAM)pAccel ) );
+}
+
+AFX_INLINE int CSpinButtonCtrl::SetBase( int nBase )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, UDM_SETBASE, nBase, 0L ) );
+}
+
+AFX_INLINE CWnd *CSpinButtonCtrl::SetBuddy( CWnd *pWndBuddy )
+/***********************************************************/
+{
+    return( CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, UDM_SETBUDDY,
+        (WPARAM)pWndBuddy->GetSafeHwnd(), 0L ) ) );
+}
+
+AFX_INLINE int CSpinButtonCtrl::SetPos( int nPos )
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, UDM_SETPOS, 0, MAKELPARAM( nPos, 0 ) ) );
+}
+
+AFX_INLINE void CSpinButtonCtrl::SetRange( short nLower, short nUpper )
+/*********************************************************************/
+{
+    ::SendMessage( m_hWnd, UDM_SETRANGE, 0, MAKELPARAM( nUpper, nLower ) );
+}
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE void CSpinButtonCtrl::GetRange32( int &lower, int &upper ) const
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, UDM_GETRANGE32, (WPARAM)&lower, (LPARAM)&upper );
+}
+
+AFX_INLINE void CSpinButtonCtrl::SetRange32( int nLower, int nUpper )
+/*******************************************************************/
+{
+    ::SendMessage( m_hWnd, UDM_SETRANGE32, nLower, nUpper );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE int CSpinButtonCtrl::GetPos32( LPBOOL lpbError ) const
+/***************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, UDM_GETPOS32, 0, (LPARAM)lpbError ) );
+}
+
+AFX_INLINE int CSpinButtonCtrl::SetPos32( int nPos )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, UDM_SETPOS32, 0, nPos ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+AFX_INLINE DWORD CHotKeyCtrl::GetHotKey() const
+/*********************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, HKM_GETHOTKEY, 0, 0L ) );
+}
+
+AFX_INLINE void CHotKeyCtrl::SetHotKey( WORD wVirtualKeyCode, WORD wModifiers )
+/*****************************************************************************/
+{
+    ::SendMessage( m_hWnd, HKM_SETHOTKEY, MAKEWPARAM( MAKEWORD( wVirtualKeyCode,
+                                                                wModifiers ), 0 ), 0L );
+}
+
+AFX_INLINE void CHotKeyCtrl::SetRules( WORD wInvalidComb, WORD wModifiers )
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, HKM_SETRULES, wInvalidComb, MAKELPARAM( wModifiers, 0 ) );
+}
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE void CIPAddressCtrl::ClearAddress()
+/********************************************/
+{
+    ::SendMessage( m_hWnd, IPM_CLEARADDRESS, 0, 0L );
+}
+
+AFX_INLINE int CIPAddressCtrl::GetAddress( DWORD &dwAddress )
+/***********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, IPM_GETADDRESS, 0, (LPARAM)&dwAddress ) );
+}
+
+AFX_INLINE BOOL CIPAddressCtrl::IsBlank() const
+/*********************************************/
+{
+    return( ::SendMessage( m_hWnd, IPM_ISBLANK, 0, 0L ) );
+}
+
+AFX_INLINE void CIPAddressCtrl::SetAddress( BYTE nField0, BYTE nField1, BYTE nField2,
+                                            BYTE nField3 )
+/********************************************************/
+{
+    ::SendMessage( m_hWnd, IPM_SETADDRESS, 0, MAKEIPADDRESS( nField0, nField1, nField2,
+                                                             nField3 ) );
+}
+
+AFX_INLINE void CIPAddressCtrl::SetAddress( DWORD dwAddress )
+/***********************************************************/
+{
+    ::SendMessage( m_hWnd, IPM_SETADDRESS, 0, dwAddress );
+}
+
+AFX_INLINE void CIPAddressCtrl::SetFieldFocus( WORD nField )
+/**********************************************************/
+{
+    ::SendMessage( m_hWnd, IPM_SETFOCUS, nField, 0L );
+}
+
+AFX_INLINE void CIPAddressCtrl::SetFieldRange( int nField, BYTE nLower, BYTE nUpper )
+/***********************************************************************************/
+{
+    ::SendMessage( m_hWnd, IPM_SETRANGE, nField, MAKEIPRANGE( nLower, nUpper ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+AFX_INLINE BOOL CHeaderCtrl::DeleteItem( int nPos )
+/*************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_DELETEITEM, nPos, 0L ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::GetItem( int nPos, HDITEM *pHeaderItem ) const
+/*************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_GETITEM, nPos, (LPARAM)pHeaderItem ) );
+}
+
+AFX_INLINE int CHeaderCtrl::GetItemCount() const
+/**********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_GETITEMCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::HitTest( LPHDHITTESTINFO phdhti )
+/***********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_HITTEST, 0, (LPARAM)phdhti ) );
+}
+
+AFX_INLINE int CHeaderCtrl::InsertItem( int nPos, HDITEM *phdi )
+/**************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_INSERTITEM, nPos, (LPARAM)phdi ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::Layout( HDLAYOUT *pHeaderLayout )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_LAYOUT, 0, (LPARAM)pHeaderLayout ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::SetItem( int nPos, HDITEM *pHeaderItem )
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_SETITEM, nPos, (LPARAM)pHeaderItem ) );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CImageList *CHeaderCtrl::CreateDragImage( int nIndex )
+/***************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        HDM_CREATEDRAGIMAGE, nIndex, 0L ) ) );
+}
+
+AFX_INLINE CImageList *CHeaderCtrl::GetImageList() const
+/******************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, HDM_GETIMAGELIST,
+                                                               HDSIL_NORMAL, 0L ) ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::GetItemRect( int nIndex, LPRECT lpRect ) const
+/*************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_GETITEMRECT, nIndex, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::GetOrderArray( LPINT piArray, int iCount ) const
+/***************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_GETORDERARRAY, iCount, (LPARAM)piArray ) );
+}
+
+AFX_INLINE int CHeaderCtrl::OrderToIndex( int nOrder ) const
+/**********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_ORDERTOINDEX, nOrder, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::SetHotDivider( CPoint pt )
+/****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_SETHOTDIVIDER, TRUE,
+                                MAKELPARAM( pt.x, pt.y ) ) );
+}
+
+AFX_INLINE int CHeaderCtrl::SetHotDivider( int nIndex )
+/*****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_SETHOTDIVIDER, FALSE, nIndex ) );
+}
+
+AFX_INLINE CImageList *CHeaderCtrl::SetImageList( CImageList *pImageList )
+/************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, HDM_SETIMAGELIST,
+        HDSIL_NORMAL, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::SetOrderArray( int iCount, LPINT piArray )
+/*********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_SETORDERARRAY, iCount, (LPARAM)piArray ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE int CHeaderCtrl::ClearAllFilters()
+/*******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_CLEARFILTER, -1, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::ClearFilter( int nColumn )
+/****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_CLEARFILTER, nColumn, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::EditFilter( int nColumn, BOOL fDiscardChanges )
+/*************************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_EDITFILTER, nColumn,
+                                MAKELPARAM( fDiscardChanges, 0 ) ) );
+}
+
+AFX_INLINE int CHeaderCtrl::GetBitmapMargin() const
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_GETBITMAPMARGIN, 0, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::SetBitmapMargin( int nWidth )
+/*******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_SETBITMAPMARGIN, nWidth, 0L ) );
+}
+
+AFX_INLINE int CHeaderCtrl::SetFilterChangeTimeout( DWORD dwTimeOut )
+/*******************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_SETFILTERCHANGETIMEOUT, 0, dwTimeOut ) );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE int CHeaderCtrl::GetFocusedItem() const
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, HDM_GETFOCUSEDITEM, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::GetItemDropDownRect( int iItem, LPRECT lpRect ) const
+/********************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_GETITEMDROPDOWNRECT, iItem,
+                                 (LPARAM)lpRect ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::GetOverflowRect( LPRECT lpRect ) const
+/*****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_GETOVERFLOWRECT, 0, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE BOOL CHeaderCtrl::SetFocusedItem( int iItem )
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, HDM_SETFOCUSEDITEM, 0, iItem ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of spawnlp() and _wspawnlp().
 *
 ****************************************************************************/
 
@@ -43,38 +42,37 @@
 
 _WCRTLINK int __F_NAME(spawnlp,_wspawnlp)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-        va_list   ap;
-        int       rc;
-#if defined(__AXP__)
-        va_list   bp;
-        const CHAR_TYPE **a;
-        const CHAR_TYPE **tmp;
-        int       num;
+    va_list             ap;
+    int                 rc;
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    va_list             bp;
+    const CHAR_TYPE     **a;
+    const CHAR_TYPE     **tmp;
+    int                 num;
 #endif
 
-        arg0 = arg0;
-        va_start(ap, path);
+    arg0 = arg0;
+    va_start(ap, path);
 
-#if defined(__AXP__)
-        memcpy(&bp, &ap, sizeof(ap));
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    memcpy( &bp, &ap, sizeof( ap ) );
 
-        for(num = 1; va_arg(ap, CHAR_TYPE*); ++num)
-                ;
+    for( num = 1; va_arg( ap, CHAR_TYPE * ); ++num )
+        ;
 
-        a = (const CHAR_TYPE**) alloca(num * sizeof(CHAR_TYPE*));
-        if (!a)
-        {
-                __set_errno(ENOMEM);
-                return -1;
-        }
+    a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
+    if( !a ) {
+        __set_errno( ENOMEM );
+        return( -1 );
+    }
 
-        for(tmp = a; num > 0; --num)
-                *tmp++ = (CHAR_TYPE*)va_arg(bp, CHAR_TYPE*);
+    for( tmp = a; num > 0; --num )
+        *tmp++ = (CHAR_TYPE *)va_arg( bp, CHAR_TYPE * );
 
-        rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, a );
+    rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, a );
 #else
-        rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, (const CHAR_TYPE**)ap[0] );
-        va_end( ap );
+    rc = __F_NAME(spawnvp,_wspawnvp)( mode, path, (const CHAR_TYPE **)ap[0] );
+    va_end( ap );
 #endif
-        return( rc );
+    return( rc );
 } /* spawnlp() */

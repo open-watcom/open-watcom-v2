@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include "malloc.h"
-#include "unistd.h"
-#include "fcntl.h"
+#include <unistd.h>
+#include <fcntl.h>
 
 extern void *ProfAlloc(size_t size);
 extern void ProfFree(void *ptr);

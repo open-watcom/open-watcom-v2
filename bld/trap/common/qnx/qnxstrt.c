@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX trap file startup and cover routines.
 *
 ****************************************************************************/
 
@@ -36,8 +35,8 @@
 #include "trpimp.h"
 #include "trpqimp.h"
 
-void *_slib_func[2];
-char **environ;   /*  pointer to environment table        */
+void                            *_slib_func[2];
+char                            **dbg_environ;  /* pointer to environment strings */
 const trap_callbacks            *Client;
 extern const trap_requests      ImpInterface;
 
@@ -47,7 +46,7 @@ const trap_requests *TRAPLOAD( trap_callbacks *client )
 {
     Client = client;
     if( Client->len <= offsetof(trap_callbacks,signal) ) return( NULL );
-    environ = *Client->environ;
+    dbg_environ = *Client->environ;
     _slib_func[0] = Client->_slib_func[0];
     _slib_func[1] = Client->_slib_func[1];
     return( &ImpInterface );

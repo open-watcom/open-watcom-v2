@@ -1,0 +1,94 @@
+#
+# Note: Since the benchmarks must be executed to be of any real use,
+# the makefiles assume that target platform equals host platform (ie. no
+# cross compilation)
+#
+# Set up host OS and CPU architecture
+!ifdef __NT386__
+host_os  = nt
+host_cpu = 386
+!else ifdef __OS2__
+host_os  = os2
+host_cpu = 386
+!else
+! error No default host_os and host_cpu
+!endif
+
+!ifeq compiler msvc
+! ifndef %MSVCDir
+!  error MSVC data unset - run VCVARS32.BAT
+! endif
+msvc_root=$(%MSVCDir)
+!endif
+
+!ifeq compiler ibmc
+! ifndef %CXXMAIN
+!  error IBM VisualAge C++ environment not set
+! endif
+ibmc_root=$(%CXXMAIN)
+!endif
+
+!ifndef cflags_watcom
+# Note: most optimization flags should be supplied via extra_w_opts
+cflags_watcom   = -ot -s -d1 -zq -w3 -fpi87 $(extra_w_opts)
+# cflags_watcom = -otexan -d1 -zq -w3 -zm -fpi87 -fp5 -6r $(extra_w_opts)
+# cflags_watcom = -obmilertan -s -d1 -zq -w3 $(extra_w_opts)
+!endif
+!ifndef cflags_msvc
+cflags_msvc     = -c -O2 -Ox -nologo $(extra_m_opts)
+!endif
+!ifndef cflags_ibmc
+cflags_ibmc     = -c -O+ -G5 -Q -Wpro- -Wcnd-
+!endif
+
+lflags_watcom   = debug all op quiet op map
+lflags_msvc     = -nologo
+lflags_ibmc     = -nologo
+
+!ifeq compiler watcom
+cc  = wcc386
+!ifdef %bench_wpp_386
+cpp = $(%bench_wpp_386)
+!else
+cpp = wpp386
+!endif
+
+#.before:
+#        @set include=$(lang_root)\h;$(lang_root)\h\nt
+
+.c.obj: .AUTODEPEND
+        $(cc) $(cflags_watcom) $(extra_cflags) $(extra_defines) $[@
+
+.cpp.obj: .AUTODEPEND
+        $(cpp) $(cflags_watcom) $(extra_cflags) $(extra_defines) $[@
+
+deflink = wlink $(lflags_watcom) name $^. file { $< } lib $(bench_dir)\support\watcom\support.lib
+
+!else ifeq compiler msvc
+.before:
+        @set include=$(msvc_root)\include
+
+.c.obj:
+        $(msvc_root)\bin\cl $(cflags_msvc) $(extra_cflags) $(extra_defines) $[@
+
+.cpp.obj:
+        $(msvc_root)\bin\cl $(cflags_msvc) $(extra_cflags) $(extra_defines) $[@
+
+deflink = $(msvc_root)\bin\link $(lflags_msvc) /out:$^. $(bench_dir)\support\msvc\support.lib $<
+!else ifeq compiler ibmc
+.c.obj:
+        $(ibmc_root)\bin\icc $(cflags_ibmc) $(extra_cflags) $(extra_defines) $[@
+
+.cpp.obj:
+        $(ibmc_root)\bin\icc $(cflags_ibmc) $(extra_cflags) $(extra_defines) $[@
+
+.asm.obj:
+        wasm -q $[@
+
+deflink = $(ibmc_root)\bin\ilink $(lflags_ibmc) /out:$^. $(bench_dir)\support\ibmc\support.lib $<
+!else
+!error unknown compiler
+!endif
+
+clean: .SYMBOLIC .EXPLICIT
+        rm -f *.?bj *.lnk *.exe *.lib *.res *.clb *.lst *.err *.map *.sym *.tmp *.out

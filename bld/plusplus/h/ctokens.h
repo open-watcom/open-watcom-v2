@@ -161,6 +161,10 @@ pick( T_DOT_STAR,      ".*",            TC_A1 ),
   prec( NO_PREC )
 pick( T_ID,            "identifier",    TC_A1 ),
   prec( NO_PREC )
+pick( T_UNKNOWN_ID,    "identifier",    TC_A1 ),
+  prec( NO_PREC )
+pick( T_TEMPLATE_ID,   "identifier",    TC_A1 ),
+  prec( NO_PREC )
 pick( T_CONSTANT,      "constant",      TC_A3 ),
   prec( NO_PREC )
 pick( T_PPNUMBER,      "pp-number",     TC_A2 ),
@@ -193,6 +197,10 @@ pick( T_MACRO_SHARP,   "#",             TC_A2 ),
   prec( NO_PREC )
 pick( T_GLOBAL_ID,"::<id>",             TC_A1 ),
   prec( NO_PREC )
+pick( T_GLOBAL_UNKNOWN_ID,"::<id>",     TC_A1 ),
+  prec( NO_PREC )
+pick( T_GLOBAL_TEMPLATE_ID,"::<id>",    TC_A1 ),
+  prec( NO_PREC )
 pick( T_GLOBAL_TYPE_NAME,"::<type-name>",TC_A2 ),
   prec( NO_PREC )
 pick( T_GLOBAL_TEMPLATE_NAME,"::<template-name>",           TC_A2 ),
@@ -209,6 +217,10 @@ pick( T_GLOBAL_DELETE,"::delete",       TC_A3 ),
   prec( NO_PREC )
 pick( T_SCOPED_ID,"C::<id>",            TC_A0 ),
   prec( NO_PREC )
+pick( T_SCOPED_UNKNOWN_ID,"C::<id>",    TC_A0 ),
+  prec( NO_PREC )
+pick( T_SCOPED_TEMPLATE_ID,"C::<id>",   TC_A0 ),
+  prec( NO_PREC )
 pick( T_SCOPED_TYPE_NAME,"C::<type-name>",TC_A1 ),
   prec( NO_PREC )
 pick( T_SCOPED_TEMPLATE_NAME,"C::<template-name>",TC_A1 ),
@@ -221,7 +233,11 @@ pick( T_SCOPED_TILDE,"C::~",            TC_A3 ),
   prec( NO_PREC )
 pick( T_SCOPED_TIMES,"C::*",            TC_A3 ),
   prec( NO_PREC )
-pick( T_TEMPLATE_SCOPED_ID,      "T<>::<id>",           TC_A2 ),
+pick( T_TEMPLATE_SCOPED_ID,"T<>::<id>", TC_A2 ),
+  prec( NO_PREC )
+pick( T_TEMPLATE_SCOPED_UNKNOWN_ID,"T<>::<id>",         TC_A2 ),
+  prec( NO_PREC )
+pick( T_TEMPLATE_SCOPED_TEMPLATE_ID,"T<>::<id>",        TC_A2 ),
   prec( NO_PREC )
 pick( T_TEMPLATE_SCOPED_TYPE_NAME,"T<>::<type-name>",   TC_A3 ),
   prec( NO_PREC )
@@ -258,6 +274,45 @@ pick( T_FILLER7,         "",            TC_A3 ),
 pick( T_FILLER8,         "",            TC_A3 ),
   prec( NO_PREC )
 pick( T_FILLER9,         "",            TC_A3 ),
+
+/* digraphs */
+  prec( NO_PREC )
+pick( T_ALT_LEFT_BRACKET, "<:",         TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_RIGHT_BRACKET, ":>",        TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_LEFT_BRACE,  "<%",          TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_RIGHT_BRACE, "%>",          TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_SHARP,       "%:",          TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_SHARP_SHARP, "%:%:",        TC_A3 ),
+
+/* alternative tokens */
+  prec( 9 )
+pick( T_ALT_AND,         "bitand",      TC_A1 ),
+  prec( NO_PREC )
+pick( T_ALT_AND_EQUAL,   "andeq",       TC_A2 ),
+  prec( 6 )
+pick( T_ALT_AND_AND,     "and",         TC_A0 ),
+  prec( 7 )
+pick( T_ALT_OR,          "bitor",       TC_A2 ),
+  prec( NO_PREC )
+pick( T_ALT_OR_EQUAL,    "or_eq",       TC_A2 ),
+  prec( 5 )
+pick( T_ALT_OR_OR,       "or",          TC_A1 ),
+  prec( 8 )
+pick( T_ALT_XOR,         "xor",         TC_A0 ),
+  prec( NO_PREC )
+pick( T_ALT_XOR_EQUAL,   "xor_eq",      TC_A1 ),
+  prec( PREC_UNARY )
+pick( T_ALT_EXCLAMATION, "not",         TC_A0 ),
+  prec( 10 )
+pick( T_ALT_NE,          "not_eq",      TC_A1 ),
+  prec( PREC_UNARY )
+pick( T_ALT_TILDE,       "compl",       TC_A2 ),
+
   prec( NO_PREC )
 pick( T_BEFORE_KEYWORDS, "",            TC_A3 ),
 
@@ -270,6 +325,10 @@ pick( T_BEFORE_KEYWORDS, "",            TC_A3 ),
 
 #define LAST_KEYWORD    (T_AFTER_KEYWORDS-1)
 pick( T_AFTER_KEYWORDS, "",             TC_A3 ),
+  prec( NO_PREC )
+pick( T_MACRO_VAR_PARM, "macro var parm", TC_A1 ),
+  prec( NO_PREC )
+pick( T_MACRO_EMPTY_VAR_PARM, "macro var empty parm", TC_A1 ),
 pick( T_LAST_TOKEN,    "LAST",          TC_A3 )
 
 #endif

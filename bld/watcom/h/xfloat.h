@@ -24,45 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C/C++ run-time library floating-point definitions.
 *
 ****************************************************************************/
 
 
-// C/C++ run-time library floating-point definitions
 #ifndef _XFLOAT_H_INCLUDED
 #define _XFLOAT_H_INCLUDED
 
 #include <stddef.h>     // for wchar_t
+#include <float.h>      // for LDBL_DIG
 
-#ifndef _WCNEAR
-  #if defined(_M_IX86)
-    #define _WCNEAR __near
-  #elif defined(__AXP__)
-    #define _WCNEAR
-  #elif defined(__PPC__)
-    #define _WCNEAR
-  #endif
-#endif
 #ifndef _WMRTLINK
-  #if defined(__SW_BR)
-    #if defined(__NT__)
-      #define _WMRTLINK __declspec(dllimport)
-    #elif defined(__OS2__) && (defined(__386__)||defined(__PPC__))
-      #define _WMRTLINK
-    #else
-      #define _WMRTLINK
-    #endif
-  #else
-    #define _WMRTLINK
-  #endif
+    #define _WMRTLINK   // This SUCKS!
 #endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(__386__) || defined(M_I86)
+#if defined( _M_IX86 ) && defined(__WATCOMC__)
  #define _LONG_DOUBLE_
 #endif
 
@@ -79,13 +60,29 @@ typedef struct {                // This layout matches Intel 8087
   #endif
 } long_double;
 
+typedef struct {                // Layout of IEEE 754 double (FD)
+    union {
+        double          value;  // - double value
+        unsigned long   word[2];// - so we can access bits
+    };
+} float_double;
+
+typedef struct {                // Layout of IEEE 754 single (FS)
+    union {
+        float           value;  // - double value
+        unsigned long   word;   // - so we can access bits
+    };
+} float_single;
+
+/* NB: The following values *must* match FP_ macros in math.h! */
 enum    ld_classification {
     __ZERO      = 0,
-    __NONZERO   = 1,
-    __NAN       = 2,
-    __INFINITY  = 3,
-    __DENORMAL  = 4
+    __DENORMAL  = 1,
+    __NONZERO   = 2,
+    __NAN       = 3,
+    __INFINITY  = 4
 };
+
 enum    ldcvt_flags {
     E_FMT       = 0x0001,       // 'E' format
     F_FMT       = 0x0002,       // 'F' format
@@ -94,12 +91,14 @@ enum    ldcvt_flags {
     F_DOT       = 0x0010,       // always put '.' in result
     LONG_DOUBLE = 0x0020,       // number is true long double
     NO_TRUNC    = 0x0040,       // always provide ndigits in buffer
+    IN_CAPS     = 0x0080,       // 'inf'/'nan' is uppercased
+    IS_INF_NAN  = 0x0100,       // number is inf/nan (output flag)
 };
 
 typedef struct cvt_info {
       int       ndigits;        // INPUT: number of digits
       int       scale;          // INPUT: FORTRAN scale factor
-      int       flags;          // INPUT: flags (see ldcvt_flags)
+      int       flags;          // INPUT/OUTPUT: flags (see ldcvt_flags)
       int       expchar;        // INPUT: exponent character to use
       int       expwidth;       // INPUT/OUTPUT: number of exponent digits
       int       sign;           // OUTPUT: 0 => +ve; otherwise -ve
@@ -110,28 +109,60 @@ typedef struct cvt_info {
       int       nz2;            // OUTPUT: followed by this many '0's
 } CVT_INFO;
 
-_WMRTLINK
-extern  void    __LDcvt( long_double *pld,      // pointer to long_double
-              CVT_INFO  *cvt,                   // conversion info
-              char      *buf );                 // buffer
-extern  int     __LDClass(long_double *);
-extern  void    __ZBuf2LD(char _WCNEAR *, long_double _WCNEAR *);
-extern  void    _LDScale10x(long_double _WCNEAR *,int);
+/* Depending on the target, some functions expect near pointer arguments
+ * to be pointing into the stack segment, while in other cases they must
+ * point into the data segment.
+ */
+
+#if defined( _M_I86 )
+typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
+typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
+typedef float       __based( __segname( "_STACK" ) )    *flt_arg;
+typedef char        __based( __segname( "_STACK" ) )    *buf_arg;
+#else
+typedef long_double _WCNEAR                             *ld_arg;
+typedef double      _WCNEAR                             *dbl_arg;
+typedef float       _WCNEAR                             *flt_arg;
+typedef char        _WCNEAR                             *buf_arg;
+#endif
+
+_WMRTLINK extern void __LDcvt(
+                         long_double *pld,      // pointer to long_double
+                         CVT_INFO  *cvt,        // conversion info
+                         char      *buf );      // buffer
+#if defined( __WATCOMC__ )
+_WMRTLINK extern int __Strtold(
+                        const char *bufptr,
+                        long_double *pld,
+                        char **endptr );
+#endif
+extern  int     __LDClass( long_double * );
+extern  void    __ZBuf2LD( buf_arg, ld_arg );
+extern  void    _LDScale10x( ld_arg, int );
+_WMRTLINK extern void  __cnvd2ld( double _WCNEAR *src, long_double _WCNEAR *dst );
+_WMRTLINK extern void  __cnvs2d( char *buf, double *value );
+_WMRTLINK extern int   __cnvd2f( double *src, float *tgt );
 #ifdef _LONG_DOUBLE_
-extern  void    __iLDFD(long_double _WCNEAR *, double _WCNEAR *);
-extern  void    __iLDFS(long_double _WCNEAR *, float _WCNEAR *);
-extern  void    __iFDLD(double _WCNEAR *,long_double _WCNEAR *);
-extern  void    __iFSLD(float _WCNEAR *,long_double _WCNEAR *);
-extern  long    __LDI4(long_double _WCNEAR *);
-extern  void    __I4LD(long,long_double _WCNEAR *);
+extern  void    __iLDFD( ld_arg, dbl_arg );
+extern  void    __iLDFS( ld_arg, flt_arg );
+extern  void    __iFDLD( dbl_arg, ld_arg );
+extern  void    __iFSLD( flt_arg, ld_arg );
+extern  long    __LDI4( ld_arg );
+extern  void    __I4LD( long, ld_arg );
 extern  void    __U4LD(unsigned long,long_double _WCNEAR *);
+//The 64bit types change depending on what's being built.
+//(u)int64* (un)signed_64* don't seem suitable, and we use void* instead.
+extern  void    __LDI8(long_double _WCNEAR *, void _WCNEAR *);
+extern  void    __I8LD(void _WCNEAR *, long_double _WCNEAR *);
+extern  void    __U8LD(void _WCNEAR *, long_double _WCNEAR *);
 extern void __FLDA(long_double _WCNEAR *,long_double _WCNEAR *,long_double _WCNEAR *);
-extern void __FLDS(long_double _WCNEAR *,long_double _WCNEAR *,long_double _WCNEAR *);
-extern void __FLDM(long_double _WCNEAR *,long_double _WCNEAR *,long_double _WCNEAR *);
-extern void __FLDD(long_double _WCNEAR *,long_double _WCNEAR *,long_double _WCNEAR *);
+extern void __FLDS( ld_arg, ld_arg, ld_arg );
+extern void __FLDM( ld_arg, ld_arg, ld_arg );
+extern void __FLDD( ld_arg, ld_arg, ld_arg );
 extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
 #endif
 
+#ifdef __WATCOMC__
 #if defined(__386__)
  #pragma aux    __ZBuf2LD       "*"  parm caller [eax] [edx];
  #if defined(__FPI__)
@@ -140,6 +171,7 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
   #pragma aux   __Get87CW = \
                 "push 0"\
         float   "fstcw [esp]"\
+        float   "fwait"\
                 "pop eax"\
                 value [eax];
   #pragma aux   __Set87CW = \
@@ -172,8 +204,11 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
         float   "fstp tbyte ptr [ebx]"\
                 parm caller [eax] [edx] [ebx];
   #pragma aux   __FLDC = \
-        float   "fld tbyte ptr [eax]"\
+                /* ST(1) */\
         float   "fld tbyte ptr [edx]"\
+                /* ST(0) */\
+        float   "fld tbyte ptr [eax]"\
+                /* compare ST(0) with ST(1) */\
         float   "fcompp"\
         float   "fstsw  ax"\
                 "sahf"\
@@ -189,6 +224,7 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 "push  eax"\
                 "push  eax"\
         float   "fstcw [esp]"\
+        float   "fwait"\
                 "pop eax"\
                 "push eax"\
                 "or ah,0x0c"\
@@ -214,6 +250,41 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 "pop   eax"\
         float   "fstp tbyte ptr [edx]"\
                 parm caller [eax] [edx];
+  #pragma aux   __LDI8 = \
+        float   "fld tbyte ptr [eax]"\
+                "push  eax"\
+                "push  eax"\
+        float   "fstcw [esp]"\
+        float   "fwait"\
+                "pop eax"\
+                "push eax"\
+                "or ah,0x0c"\
+                "push eax"\
+        float   "fldcw [esp]"\
+                "pop eax"\
+        float   "fistp qword ptr [edx]"\
+        float   "fldcw [esp]"\
+                "pop   eax"\
+                "pop   eax"\
+                parm caller [eax] [edx];
+  #pragma aux   __I8LD = \
+        float   "fild  qword ptr [eax]"\
+        float   "fstp  tbyte ptr [edx]"\
+                parm caller [eax] [edx];
+  #pragma aux   __U8LD = \
+                "push  [eax+4]"\
+                "and   [esp],0x7fffffff"\
+                "push  [eax]"\
+        float   "fild  qword ptr [esp]"\
+                "push  [eax+4]"\
+                "and   [esp],0x80000000"\
+                "push  0"\
+        float   "fild  qword ptr [esp]"\
+        float   "fchs"\
+        float   "faddp st(1),st"\
+        float   "fstp  tbyte ptr [edx]"\
+                "lea   esp,[esp+16]"\
+                parm caller [eax] [edx];
   #pragma aux   __iFDLD = \
         float   "fld  qword ptr [eax]"\
         float   "fstp tbyte ptr [edx]"\
@@ -238,13 +309,16 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
   #pragma aux   __LDI4  "*"  parm caller [eax] value [eax];
   #pragma aux   __I4LD  "*"  parm caller [eax] [edx];
   #pragma aux   __U4LD  "*"  parm caller [eax] [edx];
+  #pragma aux   __LDI8  "*"  parm caller [eax] [edx];
+  #pragma aux   __I8LD  "*"  parm caller [eax] [edx];
+  #pragma aux   __U8LD  "*"  parm caller [eax] [edx];
   #pragma aux   __iFDLD "*"  parm caller [eax] [edx];
   #pragma aux   __iFSLD "*"  parm caller [eax] [edx];
   #pragma aux   __iLDFD "*"  parm caller [eax] [edx];
   #pragma aux   __iLDFS "*"  parm caller [eax] [edx];
   #pragma aux   __FLDC  "*"  parm caller [eax] [edx] value [eax];
  #endif
-#elif defined(M_I86)            // 16-bit pragmas
+#elif defined( _M_I86 )            // 16-bit pragmas
  #pragma aux     __ZBuf2LD      "*"  parm caller [ax] [dx];
  #if defined(__FPI__)
   extern unsigned __Get87CW(void);
@@ -254,6 +328,7 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 "push bp"\
                 "mov  bp,sp"\
         float   "fstcw 2[bp]"\
+        float   "fwait"\
                 "pop bp"\
                 "pop ax"\
                 value [ax];
@@ -311,14 +386,18 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 parm caller [ax] [dx] [bx];
   #pragma aux   __FLDC = \
                 "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
                 "mov  bp,dx"\
+                /* ST(1) */\
         float   "fld  tbyte ptr [bp]"\
+                "mov  bp,ax"\
+                /* ST(0) */\
+        float   "fld  tbyte ptr [bp]"\
+                /* compare ST(0) with ST(1) */\
         float   "fcompp"\
                 "push ax"\
                 "mov  bp,sp"\
         float   "fstsw 0[bp]"\
+        float   "fwait"\
                 "pop  ax"\
                 "sahf"\
                 "sbb  dx,dx"\
@@ -330,18 +409,19 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 "pop  bp"\
                 parm caller [ax] [dx] value [dx];
   #pragma aux   __LDI4 = \
-                "push bp"\
-                "mov  bp,ax"\
-        float   "fld  tbyte ptr [bp]"\
-                "push dx"\
-                "push ax"\
-                "push ax"\
-                "mov  bp,sp"\
+                "push  bp"\
+                "mov   bp,ax"\
+        float   "fld   tbyte ptr [bp]"\
+                "push  dx"\
+                "push  ax"\
+                "push  ax"\
+                "mov   bp,sp"\
         float   "fstcw [bp]"\
-                "pop  ax"\
-                "push ax"\
-                "or   ah,0x0c"\
-                "mov  2[bp],ax"\
+        float   "fwait"\
+                "pop   ax"\
+                "push  ax"\
+                "or    ah,0x0c"\
+                "mov   2[bp],ax"\
         float   "fldcw 2[bp]"\
         float   "fistp dword ptr 2[bp]"\
         float   "fldcw [bp]"\
@@ -372,15 +452,70 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
                 "sub   ax,ax"\
                 "mov   4[bp],ax"\
                 "mov   6[bp],ax"\
-        float   "fild  qword ptr 2[bp]"\
+        float   "fild  qword ptr [bp]"\
                 "pop   ax"\
                 "pop   dx"\
-                "pop   ax"\
-                "pop   ax"\
+                "pop   bp"\
+                "pop   bp"\
                 "mov   bp,bx"\
         float   "fstp  tbyte ptr [bp]"\
                 "pop   bp"\
                 parm caller [dx ax] [bx];
+  #pragma aux   __LDI8 = \
+                "push  bp"\
+                "mov   bp,ax"\
+        float   "fld   tbyte ptr [bp]"\
+                "push  ax"\
+                "push  ax"\
+                "mov   bp,sp"\
+        float   "fstcw [bp]"\
+        float   "fwait"\
+                "pop   ax"\
+                "push  ax"\
+                "or    ah,0x0c"\
+                "push  ax"\
+        float   "fldcw [bp-2]"\
+                "pop   ax"\
+                "mov   bp,dx"\
+        float   "fistp qword ptr [bp]"\
+                "mov   bp,sp"\
+        float   "fldcw [bp]"\
+                "pop   ax"\
+                "pop   ax"\
+                "pop   bp"\
+                parm caller [ax] [dx];
+  #pragma aux   __I8LD = \
+                "push  bp"\
+                "mov   bp,ax"\
+        float   "fild  qword ptr [bp]"\
+                "mov   bp,dx"\
+        float   "fstp  tbyte ptr [bp]"\
+                "pop   bp"\
+                parm caller [ax] [dx];
+  #pragma aux   __U8LD = \
+                "push  bp"\
+                "mov   bp,ax"\
+                "push  6[bp]"\
+                "push  4[bp]"\
+                "push  2[bp]"\
+                "push  [bp]"\
+                "push  6[bp]"\
+                "mov   bp,0"\
+                "push  bp"\
+                "push  bp"\
+                "push  bp"\
+                "mov   bp,sp"\
+                "and   byte ptr [bp+8+7],0x7f"\
+        float   "fild  qword ptr [bp+8]"\
+                "and   word ptr [bp+6],0x8000"\
+        float   "fild  qword ptr [bp]"\
+        float   "fchs"\
+        float   "faddp st(1),st"\
+                "mov   bp,dx"\
+        float   "fstp  tbyte ptr [bp]"\
+                "add   sp,16"\
+                "pop   bp"\
+                parm caller [ax] [dx];
   #pragma aux   __iFDLD = \
                 "push  bp"\
                 "mov   bp,ax"\
@@ -421,12 +556,16 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
   #pragma aux   __LDI4  "*"  parm caller [ax] value [dx ax];
   #pragma aux   __I4LD  "*"  parm caller [dx ax] [bx];
   #pragma aux   __U4LD  "*"  parm caller [dx ax] [bx];
+  #pragma aux   __LDI8  "*"  parm caller [ax] [dx];
+  #pragma aux   __I8LD  "*"  parm caller [ax] [dx];
+  #pragma aux   __U8LD  "*"  parm caller [ax] [dx];
   #pragma aux   __iFDLD "*"  parm caller [ax] [dx];
   #pragma aux   __iFSLD "*"  parm caller [ax] [dx];
   #pragma aux   __iLDFD "*"  parm caller [ax] [dx];
   #pragma aux   __iLDFS "*"  parm caller [ax] [dx];
   #pragma aux   __FLDC  "*"  parm caller [ax] [dx] value [ax];
  #endif
+#endif
 #endif
 
 #ifdef _LONG_DOUBLE_
@@ -436,6 +575,26 @@ extern int  __FLDC(long_double _WCNEAR *,long_double _WCNEAR *);
   #define __LDFD __iLDFD
   #define __LDFS __iLDFS
 #endif
+
+// define number of significant digits for long double numbers (80-bit)
+// it will be defined in float.h as soon as OW support long double
+// used in mathlib/c/ldcvt.c
+
+#ifdef _LONG_DOUBLE_
+#if LDBL_DIG == 15
+#undef LDBL_DIG
+#define LDBL_DIG        19
+#else
+#error LDBL_DIG has changed from 15
+#endif
+#endif
+
+// floating point conversion buffer length definition
+// used by various floating point conversion routines
+// used in clib/startup/c/cvtbuf.c and lib_misc/h/thread.h
+// it must be equal maximum FP precision ( LDBL_DIG )
+
+#define __FPCVT_BUFFERLEN  19
 
 #ifdef __cplusplus
 };

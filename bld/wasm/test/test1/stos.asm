@@ -15,20 +15,28 @@ rep stosb
 rep stosw
 rep stosd
 
-stos byte ptr [eax]
-stos word ptr [eax]
-stos dword ptr [eax]
-
 stos foo
 stos bar
 stos sam
+
+rep stos foo
+rep stos bar
+rep stos sam
+
+stos byte ptr [eax]
+stos word ptr [eax]
+stos dword ptr [eax]
 
 rep stos byte ptr [eax]
 rep stos word ptr [eax]
 rep stos dword ptr [eax]
 
-rep stos foo
-rep stos bar
-rep stos sam
+stos byte ptr [bx]
+stos word ptr [bx]
+stos dword ptr [bx]
+
+rep stos byte ptr [bx]
+rep stos word ptr [bx]
+rep stos dword ptr [bx]
 
 end

@@ -30,22 +30,20 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
-#include "vi.h"
 
 static int closeAFile( void );
 
 /*
  * FileExists - test if a file exists
  */
-int FileExists( char *name )
+vi_rc FileExists( char *name )
 {
-    int i,rc,en;
+    int     i, en;
+    vi_rc   rc;
 
     while( TRUE ) {
         i = open( name, O_RDWR | O_BINARY, 0 );
@@ -60,12 +58,33 @@ int FileExists( char *name )
             if( en == EACCES )  {
                 return( ERR_READ_ONLY_FILE );
             }
+            if ( en == EIO ) {
+                /*
+                 * Trying to open file as writable in read only network share will cause EIO, so
+                 * try to open it as read only to determine that share is read only.
+                 */
+                i = open( name, O_RDONLY | O_BINARY, 0 );
+                if( i == - 1 ) {
+                    en = errno;
+                    if( en == -1 ) {
+                        en = ENOENT;    /* CLIB BUG in OS2 libraries */
+                    }
+                    if( en == EMFILE ) {
+                        closeAFile();
+                    }
+                    return( ERR_FILE_OPEN );
+                } else {
+                    /* If got owe did success now open file, report it as a read only */
+                    close( i );
+                    return( ERR_READ_ONLY_FILE );
+                }
+            }
             if( en != EMFILE ) {
                 return( ERR_FILE_OPEN );
             }
-            i = closeAFile();
-            if( i ) {
-                return( i );
+            rc = closeAFile();
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
         } else {
             if( isatty( i ) ) {
@@ -83,17 +102,18 @@ int FileExists( char *name )
 /*
  * FileOpen - open a file, conditional on exist flag
  */
-int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
+vi_rc FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
 {
-    int         i,handle,en;
+    int         handle, en;
+    vi_rc       rc;
 
     /*
      * test if file exists
      */
     if( existflag ) {
-        i = FileExists( name );
-        if( i ) {
-            return( i );
+        rc = FileExists( name );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
 
@@ -108,9 +128,9 @@ int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
             if( en != EMFILE ) {
                 return( ERR_FILE_OPEN );
             }
-            i = closeAFile();
-            if( i ) {
-                return( i );
+            rc = closeAFile();
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
         } else {
             if( handle >= 0 && isatty( handle ) ) {
@@ -129,9 +149,9 @@ int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
 /*
  * FileSeek - seek location in swap file
  */
-int FileSeek( int handle, long where )
+vi_rc FileSeek( int handle, long where )
 {
-    long        i,relo,lastpos;
+    long        i, relo, lastpos;
 
     lastpos = tell( handle );
     if( lastpos < 0 ) {
@@ -156,16 +176,14 @@ int FileSeek( int handle, long where )
  */
 static int closeAFile( void )
 {
-info *cinfo;
+    info    *cinfo;
 
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( cinfo->CurrentFile->handle >= 0 ) {
             close( cinfo->CurrentFile->handle );
             cinfo->CurrentFile->handle = -1;
             return( ERR_NO_ERR );
         }
-        cinfo = cinfo->next;
     }
     return( ERR_FILE_CLOSE );
 
@@ -176,7 +194,7 @@ info *cinfo;
  */
 FILE *GetFromEnvAndOpen( char *path )
 {
-    char        tmppath[_MAX_PATH];
+    char        tmppath[FILENAME_MAX];
 
     GetFromEnv( path, tmppath );
     if( tmppath[0] != 0 ) {
@@ -191,15 +209,15 @@ FILE *GetFromEnvAndOpen( char *path )
  */
 void GetFromEnv( char *what, char *path )
 {
-    _searchenv(what,"EDPATH",path );
+    _searchenv( what, "EDPATH", path );
     if( path[0] != 0 ) {
         return;
     }
-    _searchenv(what,"PATH",path );
+    _searchenv( what, "PATH", path );
 
 } /* GetFromEnv */
 
-#if defined(__QNX__)
+#if defined(__UNIX__)
 static char altTmpDir[] = "/tmp";
 #else
 static char altTmpDir[] = "c:";
@@ -210,8 +228,8 @@ static char altTmpDir[] = "c:";
  */
 void VerifyTmpDir( void )
 {
-    int i;
-    char *env_tmpdir;
+    int     i;
+    char    *env_tmpdir;
 
     if( TmpDir != NULL ) {
         i = strlen( TmpDir ) - 1;
@@ -227,12 +245,12 @@ void VerifyTmpDir( void )
             return;
         }
     }
-    env_tmpdir = getenv( "tmpdir" );
+    env_tmpdir = getenv( "tmp" );
     if( env_tmpdir != NULL ) {
-        if( env_tmpdir[strlen(env_tmpdir)-1] == '\\' ) {
-            char buf[_MAX_PATH];
+        if( env_tmpdir[strlen( env_tmpdir ) - 1] == '\\' ) {
+            char buf[FILENAME_MAX];
             strcpy( buf, env_tmpdir );
-            buf[strlen(buf)-1] = '\0';
+            buf[strlen( buf ) - 1] = '\0';
             AddString2( &TmpDir, buf );
         } else {
             AddString2( &TmpDir, env_tmpdir );
@@ -251,7 +269,7 @@ void MakeTmpPath( char *out, char *in )
 {
     out[0] = 0;
     if( TmpDir == NULL ) {
-        char *env_tmpdir = getenv( "tmpdir" );
+        char *env_tmpdir = getenv( "tmp" );
         if( env_tmpdir != NULL ) {
             StrMerge( 3, out, env_tmpdir, FILE_SEP_STR, in );
         } else {
@@ -266,14 +284,14 @@ void MakeTmpPath( char *out, char *in )
 /*
  * TmpFileOpen - open a tmp file
  */
-int TmpFileOpen( char *inname, int *_handle )
+vi_rc TmpFileOpen( char *inname, int *_handle )
 {
-    char        file[_MAX_PATH];
+    char        file[FILENAME_MAX];
 
     tmpnam( inname );
     MakeTmpPath( file, inname );
     return( FileOpen( file, FALSE, O_TRUNC | O_RDWR | O_BINARY | O_CREAT,
-                0, _handle ) );
+                      0, _handle ) );
 
 } /* TmpFileOpen */
 
@@ -282,7 +300,7 @@ int TmpFileOpen( char *inname, int *_handle )
  */
 void TmpFileClose( int handle, char *name )
 {
-    char        file[_MAX_PATH];
+    char        file[FILENAME_MAX];
 
     if( handle < 0 ) {
         return;
@@ -298,7 +316,7 @@ void TmpFileClose( int handle, char *name )
  */
 void FileLower( char *str )
 {
-#ifndef __QNX__
+#ifndef __UNIX__
         strlwr( str );
 #else
         str = str;
@@ -316,14 +334,18 @@ bool FileTemplateMatch( char *name, char *template )
     while( 1 ) {
         if( *template == '*' ) {
             if( inExtension == FALSE ) {
-                while( *( name + 1 ) && *( name + 1 ) != '.' ) {
+                while( *(name + 1) && *(name + 1) != '.' ) {
                     name++;
                 }
                 inExtension = TRUE;
             } else {
                 return( TRUE );
             }
+#ifndef __UNIX__
+        } else if( *template != '?' && tolower( *template ) != tolower( *name ) ) {
+#else
         } else if( *template != '?' && *template != *name ) {
+#endif
             return( FALSE );
         }
         name++;
@@ -333,11 +355,16 @@ bool FileTemplateMatch( char *name, char *template )
         }
     }
 
+#ifndef __UNIX__
+    if( tolower( *template ) == tolower( *name ) ) {
+#else
     if( *template == *name ) {
+#endif
         return( TRUE );
     }
     return( FALSE );
-}
+
+} /* FileTemplateMatch */
 
 /*
  * StripPath - return pointer to where actual filename begins
@@ -345,10 +372,12 @@ bool FileTemplateMatch( char *name, char *template )
 char *StripPath( char *name )
 {
     char *ptr;
-    if( name == NULL ) return( NULL );
+    if( name == NULL ) {
+        return( NULL );
+    }
     ptr = name + strlen( name ) - 1;
 
-    while( ptr != name &&( *ptr != '\\' && *ptr != '/')  ) {
+    while( ptr != name && (*ptr != '\\' && *ptr != '/') ) {
         ptr--;
     }
     if( *ptr == '\\' ) {
@@ -356,4 +385,5 @@ char *StripPath( char *name )
     }
 
     return( ptr );
-}
+
+} /* StripPath */

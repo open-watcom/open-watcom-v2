@@ -1,0 +1,1356 @@
+/*
+:segment !WINSOCK2
+ *  winsock.h   Windows Sockets functions
+:endsegment
+:segment WINSOCK2
+ *  winsock2.h  Windows Sockets (version 2) functions
+:endsegment
+ *
+:include crwatcnt.sp
+ */
+
+:segment !WINSOCK2
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+:endsegment
+:segment WINSOCK2
+#ifndef _WINSOCK2API_
+#define _WINSOCK2API_
+:endsegment
+
+:include readonly.sp
+
+:segment WINSOCK2
+#define _WINSOCKAPI_
+:endsegment
+#ifndef _WINDOWS_
+    #include <windows.h>
+#endif
+#include <inaddr.h>
+#include <qos.h>
+
+:include cpluspro.sp
+
+:segment WINSOCK2
+/* Macro to specify socket functions */
+#define WINSOCK_API_LINKAGE DECLSPEC_IMPORT
+
+/* Calling convention for socket functions */
+#define WSAAPI  PASCAL
+
+:endsegment
+/* Primitive types from Unix */
+typedef unsigned char       u_char;
+typedef unsigned short      u_short;
+typedef unsigned int        u_int;
+typedef unsigned long       u_long;
+:segment WINSOCK2
+#if (_WIN32_WINNT >= 0x0501)
+typedef unsigned __int64    u_int64;
+#endif
+
+#include <ws2def.h>
+:endsegment
+
+/* Socket data type */
+typedef UINT_PTR    SOCKET;
+
+:segment WINSOCK2
+/* Group data type */
+typedef unsigned int    GROUP;
+
+/* Alternate names of Win32 data types */
+#define WSAEVENT        HANDLE
+#define LPWSAEVENT      LPHANDLE
+#define WSAOVERLAPPED   OVERLAPPED
+typedef OVERLAPPED      *LPWSAOVERLAPPED;
+
+/* Alternate names of Win32 constants */
+#define WSA_WAIT_FAILED         WAIT_FAILED
+#define WSA_WAIT_EVENT_0        WAIT_OBJECT_0
+#define WSA_WAIT_IO_COMPLETION  WAIT_IO_COMPLETION
+#define WSA_WAIT_TIMEOUT        WAIT_TIMEOUT
+#define WSA_INFINITE            INFINITE
+
+:endsegment
+/* Number of sockets in fd_set (can be overriden by the user) */
+#ifndef FD_SETSIZE
+    #define FD_SETSIZE  64
+#endif
+
+/* Flags to define ioctlsocket() commands */
+#define IOCPARM_MASK    0x0000007F
+#define IOC_VOID        0x20000000
+#define IOC_OUT         0x40000000
+#define IOC_IN          0x80000000
+#define IOC_INOUT       (IOC_IN | IOC_OUT)
+
+/* Macros to define ioctlsocket() commands */
+#define _IO( p1, p2 )       (IOC_VOID | ((p1) << 8) | (p2))
+#define _IOR( p1, p2, p3 ) \
+    (IOC_OUT | (((long)sizeof( p3 ) & IOCPARM_MASK) << 16) | ((p1) << 8) | (p2))
+#define _IOW( p1, p2, p3 ) \
+    (IOC_IN | (((long)sizeof( p3 ) & IOCPARM_MASK) << 16) | ((p1) << 8) | (p2))
+
+/* Commands for ioctlsocket() */
+#define FIONREAD    _IOR( 'f', 127, u_long )
+#define FIONBIO     _IOW( 'f', 126, u_long )
+#define FIOASYNC    _IOW( 'f', 125, u_long )
+#define SIOCSHIWAT  _IOW( 's', 0, u_long )
+#define SIOCGHIWAT  _IOR( 's', 1, u_long )
+#define SIOCSLOWAT  _IOW( 's', 2, u_long )
+#define SIOCGLOWAT  _IOR( 's', 3, u_long )
+#define SIOCATMARK  _IOR( 's', 7, u_long )
+
+:segment !WINSOCK2
+/* IP protocols */
+#define IPPROTO_IP      0
+#define IPPROTO_ICMP    1
+#define IPPROTO_IGMP    2
+#define IPPROTO_GGP     3
+#define IPPROTO_TCP     6
+#define IPPROTO_PUP     12
+#define IPPROTO_UDP     17
+#define IPPROTO_IDP     22
+#define IPPROTO_ND      77
+#define IPPROTO_RAW     255
+#define IPPROTO_MAX     256
+
+:endsegment
+/* IP port numbers */
+#define IPPORT_ECHO         7
+#define IPPORT_DISCARD      9
+#define IPPORT_SYSTAT       11
+#define IPPORT_DAYTIME      13
+#define IPPORT_NETSTAT      15
+#define IPPORT_FTP          21
+#define IPPORT_TELNET       23
+#define IPPORT_SMTP         25
+#define IPPORT_TIMESERVER   37
+#define IPPORT_NAMESERVER   42
+#define IPPORT_WHOIS        43
+#define IPPORT_MTP          57
+#define IPPORT_TFTP         69
+#define IPPORT_RJE          77
+#define IPPORT_FINGER       79
+#define IPPORT_TTYLINK      87
+#define IPPORT_SUPDUP       95
+#define IPPORT_EXECSERVER   512
+#define IPPORT_LOGINSERVER  513
+#define IPPORT_CMDSERVER    514
+#define IPPORT_EFSSERVER    520
+#define IPPORT_BIFFUDP      512
+#define IPPORT_WHOSERVER    513
+#define IPPORT_ROUTESERVER  520
+#define IPPORT_RESERVED     1024
+
+/* Link numbers */
+#define IMPLINK_IP          155
+#define IMPLINK_LOWEXPER    156
+#define IMPLINK_HIGHEXPER   158
+
+:segment !WINSOCK2
+/* Constants to manipulate Internet addresses */
+#define IN_CLASSA_NET       0xFF000000L
+#define IN_CLASSA_NSHIFT    24
+#define IN_CLASSA_HOST      0x00FFFFFFL
+#define IN_CLASSA_MAX       128
+#define IN_CLASSB_NET       0xFFFF0000L
+#define IN_CLASSB_NSHIFT    16
+#define IN_CLASSB_HOST      0x0000FFFFL
+#define IN_CLASSB_MAX       65536
+#define IN_CLASSC_NET       0xFFFFFF00L
+#define IN_CLASSC_NSHIFT    8
+#define IN_CLASSC_HOST      0x000000FFL
+#define INADDR_ANY          0x00000000L
+#define INADDR_LOOPBACK     0x7F000001L
+#define INADDR_BROADCAST    0xFFFFFFFFL
+#define INADDR_NONE         0xFFFFFFFFL
+
+/* Macros to manipulate Internet addresses */
+#define IN_CLASSA( x )  (((long)(x) & 0x80000000L) == 0)
+#define IN_CLASSB( x )  (((long)(x) & 0xC0000000L) == 0x80000000L)
+#define IN_CLASSC( x )  (((long)(x) & 0xE0000000L) == 0xC0000000L)
+
+:endsegment
+/* String lengths */
+#define WSADESCRIPTION_LEN  256
+#define WSASYS_STATUS_LEN   128
+
+:segment !WINSOCK2
+/* IP options for getsockopt() and setsockopt() */
+#define IP_OPTIONS          1
+#define IP_MULTICAST_IF     2
+#define IP_MULTICAST_TTL    3
+#define IP_MULTICAST_LOOP   4
+#define IP_ADD_MEMBERSHIP   5
+#define IP_DROP_MEMBERSHIP  6
+#define IP_TTL              7
+#define IP_TOS              8
+#define IP_DONTFRAGMENT     9
+
+/* Miscellaneous IP constants */
+#define IP_DEFAULT_MULTICAST_TTL    1
+#define IP_DEFAULT_MULTICAST_LOOP   1
+#define IP_MAX_MEMBERSHIPS          20
+
+:endsegment
+/* Socket special values */
+#define INVALID_SOCKET  0xFFFFFFFF
+#define SOCKET_ERROR    (-1)
+
+:segment WINSOCK2
+/* Address family special value */
+#define FROM_PROTOCOL_INFO  (-1)
+
+:endsegment
+/* Socket types */
+#define SOCK_STREAM     1
+#define SOCK_DGRAM      2
+#define SOCK_RAW        3
+#define SOCK_RDM        4
+#define SOCK_SEQPACKET  5
+
+/* Socket option flags */
+#define SO_DEBUG            0x0001
+#define SO_ACCEPTCONN       0x0002
+#define SO_REUSEADDR        0x0004
+#define SO_KEEPALIVE        0x0008
+#define SO_DONTROUTE        0x0010
+#define SO_BROADCAST        0x0020
+#define SO_USELOOPBACK      0x0040
+#define SO_LINGER           0x0080
+#define SO_OOBINLINE        0x0100
+:segment !WINSOCK2
+#define SO_DONTLINGER       (u_int)(~SO_LINGER)
+:endsegment
+:segment WINSOCK2
+#define SO_DONTLINGER       (int)(~SO_LINGER)
+#define SO_EXCLUSIVEADDRUSE (int)(~SO_REUSEADDR)
+:endsegment
+
+/* Other socket options */
+#define SO_SNDBUF                   0x1001
+#define SO_RCVBUF                   0x1002
+#define SO_SNDLOWAT                 0x1003
+#define SO_RCVLOWAT                 0x1004
+#define SO_SNDTIMEO                 0x1005
+#define SO_RCVTIMEO                 0x1006
+#define SO_ERROR                    0x1007
+#define SO_TYPE                     0x1008
+:segment WINSOCK2
+#define SO_GROUP_ID                 0x2001
+#define SO_GROUP_PRIORITY           0x2002
+#define SO_MAX_MSG_SIZE             0x2003
+#define SO_PROTOCOL_INFOA           0x2004
+#define SO_PROTOCOL_INFOW           0x2005
+#define PVD_CONFIG                  0x3001
+#define SO_CONDITIONAL_ACCEPT       0x3002
+#ifdef UNICODE
+    #define SO_PROTOCOL_INFO        SO_PROTOCOL_INFOW
+#else
+    #define SO_PROTOCOL_INFO        SO_PROTOCOL_INFOA
+#endif
+:endsegment
+:segment !WINSOCK2
+#define SO_CONNDATA                 0x7000
+#define SO_CONNOPT                  0x7001
+#define SO_DISCDATA                 0x7002
+#define SO_DISCOPT                  0x7003
+#define SO_CONNDATALEN              0x7004
+#define SO_CONNOPTLEN               0x7005
+#define SO_DISCDATALEN              0x7006
+#define SO_DISCOPTLEN               0x7007
+#define SO_OPENTYPE                 0x7008
+#define SO_MAXDG                    0x7009
+#define SO_MAXPATHDG                0x700A
+#define SO_UPDATE_ACCEPT_CONTEXT    0x700B
+#define SO_CONNECT_TIME             0x700C
+
+/* Socket option synchronous alert flags */
+#define SO_SYNCHRONOUS_ALERT    0x0010
+#define SO_SYNCHRONOUS_NONALERT 0x0020
+
+/* TCP options */
+#define TCP_NODELAY     0x0001
+#define TCP_BSDURGENT   0x7000
+
+/* Address families */
+#define AF_UNSPEC       0
+#define AF_UNIX         1
+#define AF_INET         2
+#define AF_IMPLINK      3
+#define AF_PUP          4
+#define AF_CHAOS        5
+#define AF_IPX          6
+#define AF_NS           6
+#define AF_ISO          7
+#define AF_OSI          AF_ISO
+#define AF_ECMA         8
+#define AF_DATAKIT      9
+#define AF_CCITT        10
+#define AF_SNA          11
+#define AF_DECnet       12
+#define AF_DLI          13
+#define AF_LAT          14
+#define AF_HYLINK       15
+#define AF_APPLETALK    16
+#define AF_NETBIOS      17
+#define AF_VOICEVIEW    18
+#define AF_FIREFOX      19
+#define AF_UNKNOWN1     20
+#define AF_BAN          21
+#define AF_MAX          22
+:endsegment
+
+/* Protocol families */
+#define PF_UNSPEC       AF_UNSPEC
+#define PF_UNIX         AF_UNIX
+#define PF_INET         AF_INET
+#define PF_IMPLINK      AF_IMPLINK
+#define PF_PUP          AF_PUP
+#define PF_CHAOS        AF_CHAOS
+#define PF_NS           AF_NS
+#define PF_IPX          AF_IPX
+#define PF_ISO          AF_ISO
+#define PF_OSI          AF_OSI
+#define PF_ECMA         AF_ECMA
+#define PF_DATAKIT      AF_DATAKIT
+#define PF_CCITT        AF_CCITT
+#define PF_SNA          AF_SNA
+#define PF_DECnet       AF_DECnet
+#define PF_DLI          AF_DLI
+#define PF_LAT          AF_LAT
+#define PF_HYLINK       AF_HYLINK
+#define PF_APPLETALK    AF_APPLETALK
+#define PF_VOICEVIEW    AF_VOICEVIEW
+#define PF_FIREFOX      AF_FIREFOX
+#define PF_UNKNOWN1     AF_UNKNOWN1
+#define PF_BAN          AF_BAN
+:segment WINSOCK2
+#define PF_ATM          AF_ATM
+#define PF_INET6        AF_INET6
+#if (_WIN32_WINNT >= 0x0600)
+    #define PF_BTH      AF_BTH
+#endif
+:endsegment
+#define PF_MAX          AF_MAX
+
+/* Special level number for getsockopt() and setsockopt() */
+#define SOL_SOCKET  0xFFFF
+
+/* Maximum queue length for listen() */
+#define SOMAXCONN   5
+
+/* Socket message flags */
+#define MSG_OOB         0x00000001L
+#define MSG_PEEK        0x00000002L
+#define MSG_DONTROUTE   0x00000004L
+:segment WINSOCK2
+#if (_WIN32_WINNT >= 0x0502)
+    #define MSG_WAITALL 0x00000008L
+#endif
+#define MSG_INTERRUPT   0x00000010L
+:endsegment
+#define MSG_PARTIAL     0x00008000L
+:segment WINSOCK2
+#define MSG_MAXIOVLEN   16
+:endsegment
+
+/* Maximum size of a gethostby*() structure */
+#define MAXGETHOSTSTRUCT    1024
+
+:segment WINSOCK2
+/* Network event bits and indices */
+#define FD_READ_BIT                     0
+#define FD_WRITE_BIT                    1
+#define FD_OOB_BIT                      2
+#define FD_ACCEPT_BIT                   3
+#define FD_CONNECT_BIT                  4
+#define FD_CLOSE_BIT                    5
+#define FD_QOS_BIT                      6
+#define FD_GROUP_QOS_BIT                7
+#define FD_ROUTING_INTERFACE_CHANGE_BIT 8
+#define FD_ADDRESS_LIST_CHANGE_BIT      9
+#define FD_MAX_EVENTS                   10
+#define FD_READ                         (1 << FD_READ_BIT)
+#define FD_WRITE                        (1 << FD_WRITE_BIT)
+#define FD_OOB                          (1 << FD_OOB_BIT)
+#define FD_ACCEPT                       (1 << FD_ACCEPT_BIT)
+#define FD_CONNECT                      (1 << FD_CONNECT_BIT)
+#define FD_CLOSE                        (1 << FD_CLOSE_BIT)
+#define FD_QOS                          (1 << FD_QOS_BIT)
+#define FD_GROUP_QOS                    (1 << FD_GROUP_QOS_BIT)
+#define FD_ROUTING_INTERFACE_CHANGE     (1 << FD_ROUTING_INTERFACE_CHANGE_BIT)
+#define FD_ADDRESS_LIST_CHANGE          (1 << FD_ADDRESS_LIST_CHANGE_BIT)
+#define FD_ALL_EVENTS                   ((1 << FD_MAX_EVENTS) - 1)
+
+:endsegment
+:segment !WINSOCK2
+/* WSAAsyncSelect() flags */
+#define FD_READ     0x01
+#define FD_WRITE    0x02
+#define FD_OOB      0x04
+#define FD_ACCEPT   0x08
+#define FD_CONNECT  0x10
+#define FD_CLOSE    0x20
+
+:endsegment
+/* Old names of socket error codes (defined in winerror.h) */
+#define HOST_NOT_FOUND  WSAHOST_NOT_FOUND
+#define TRY_AGAIN       WSATRY_AGAIN
+#define NO_RECOVERY     WSANO_RECOVERY
+#define NO_DATA         WSANO_DATA
+#define WSANO_ADDRESS   WSANO_DATA
+#define NO_ADDRESS      WSANO_ADDRESS
+
+:segment WINSOCK2
+/* Alternate names of Win32 errors */
+#define WSA_IO_PENDING          ERROR_IO_PENDING
+#define WSA_IO_INCOMPLETE       ERROR_IO_INCOMPLETE
+#define WSA_INVALID_HANDLE      ERROR_INVALID_HANDLE
+#define WSA_INVALID_PARAMETER   ERROR_INVALID_PARAMETER
+#define WSA_NOT_ENOUGH_MEMORY   ERROR_NOT_ENOUGH_MEMORY
+#define WSA_OPERATION_ABORTED   ERROR_OPERATION_ABORTED
+
+/* Miscellaneous socket constants */
+#define WSA_INVALID_EVENT       ((WSAEVENT)NULL)
+#define WSA_MAXIMUM_WAIT_EVENTS MAXIMUM_WAIT_OBJECTS
+#define WSA_WAIT_FAILED         WAIT_FAILED
+#define WSA_WAIT_EVENT_0        WAIT_OBJECT_0
+#define WSA_WAIT_IO_COMPLETION  WAIT_IO_COMPLETION
+#define WSA_WAIT_TIMEOUT        WAIT_TIMEOUT
+#define WSA_INFINITE            INFINITE
+
+/* Condition function return values */
+#define CF_ACCEPT   0x0000
+#define CF_REJECT   0x0001
+#define CF_DEFER    0x0002
+
+/* Constants for shutdown() */
+#define SD_RECEIVE  0x00
+#define SD_SEND     0x01
+#define SD_BOTH     0x02
+
+/* Socket group constants */
+#define SG_UNCONSTRAINED_GROUP  0x01
+#define SG_CONSTRAINED_GROUP    0x02
+
+/* Maximum number of protocol chain entries */
+#define MAX_PROTOCOL_CHAIN  7
+
+/* Protocol types */
+#define BASE_PROTOCOL       1
+#define LAYERED_PROTOCOL    0
+
+/* Protocol length */
+#define WSAPROTOCOL_LEN 255
+
+/* Provider flags */
+#define PFL_MULTIPLE_PROTO_ENTRIES  0x00000001L
+#define PFL_RECOMMENDED_PROTO_ENTRY 0x00000002L
+#define PFL_HIDDEN                  0x00000004L
+#define PFL_MATCHES_PROTOCOL_ZERO   0x00000008L
+#define PFL_NETWORKDIRECT_PROVIDER  0x00000010L
+
+/* Service flags */
+#define XP1_CONNECTIONLESS              0x00000001L
+#define XP1_GUARANTEED_DELIVERY         0x00000002L
+#define XP1_GUARANTEED_ORDER            0x00000004L
+#define XP1_MESSAGE_ORIENTED            0x00000008L
+#define XP1_PSEUDO_STREAM               0x00000010L
+#define XP1_GRACEFUL_CLOSE              0x00000020L
+#define XP1_EXPEDITED_DATA              0x00000040L
+#define XP1_CONNECT_DATA                0x00000080L
+#define XP1_DISCONNECT_DATA             0x00000100L
+#define XP1_SUPPORT_BROADCAST           0x00000200L
+#define XP1_SUPPORT_MULTIPOINT          0x00000400L
+#define XP1_MULTIPOINT_CONTROL_PLANE    0x00000800L
+#define XP1_MULTIPOINT_DATA_PLANE       0x00001000L
+#define XP1_QOS_SUPPORTED               0x00002000L
+#define XP1_INTERRUPT                   0x00004000L
+#define XP1_UNI_SEND                    0x00008000L
+#define XP1_UNI_RECV                    0x00010000L
+#define XP1_IFS_HANDLES                 0x00020000L
+#define XP1_PARTIAL_MESSAGE             0x00040000L
+#define XP1_SAN_SUPPORT_SDP             0x00080000L
+
+/* WSAJoinLeaf() flags */
+#define JL_SENDER_ONLY      0x01
+#define JL_RECEIVER_ONLY    0x02
+#define JL_BOTH             0x04
+
+/* WSASocket() flags */
+#define WSA_FLAG_OVERLAPPED             0x01
+#define WSA_FLAG_MULTIPOINT_C_ROOT      0x02
+#define WSA_FLAG_MULTIPOINT_C_LEAF      0x04
+#define WSA_FLAG_MULTIPOINT_D_ROOT      0x08
+#define WSA_FLAG_MULTIPOINT_D_LEAF      0x10
+#define WSA_FLAG_ACCESS_SYSTEM_SECURITY 0x40
+
+/* WSANSPIoctl() commands */
+#if (_WIN32_WINNT >= 0x0501)
+    #define SIO_NSP_NOTIFY_CHANGE   _WSAIOW( IOC_WS2, 25 )
+#endif
+
+/* SIO_TRANSLATE_HANDLE flags */
+#define TH_NETDEV   0x00000001L
+#define TH_TAPI     0x00000002L
+
+/* Service installation flags */
+#define SERVICE_MULTIPLE    0x00000001L
+
+/* WSAGetAddressByName() resolution flags */
+#define RES_UNUSED_1    0x00000001L
+#define RES_FLUSH_CACHE 0x00000002L
+#define RES_SERVICE     0x00000004L
+
+/* Service type names */
+#define SERVICE_TYPE_VALUE_IPXPORTA     "IpxSocket"
+#define SERVICE_TYPE_VALUE_IPXPORTW     L"IpxSocket"
+#define SERVICE_TYPE_VALUE_SAPIDA       "SapId"
+#define SERVICE_TYPE_VALUE_SAPIDW       L"SapId"
+#define SERVICE_TYPE_VALUE_TCPPORTA     "TcpPort"
+#define SERVICE_TYPE_VALUE_TCPPORTW     L"TcpPort"
+#define SERVICE_TYPE_VALUE_UDPPORTA     "UdpPort"
+#define SERVICE_TYPE_VALUE_UDPPORTW     L"UdpPort"
+#define SERVICE_TYPE_VALUE_OBJECTIDA    "ObjectId"
+#define SERVICE_TYPE_VALUE_OBJECTIDW    L"ObjectId"
+#ifdef UNICODE
+    #define SERVICE_TYPE_VALUE_IPXPORT  SERVICE_TYPE_VALUE_IPXPORTW
+    #define SERVICE_TYPE_VALUE_SAPID    SERVICE_TYPE_VALUE_SAPIDW
+    #define SERVICE_TYPE_VALUE_TCPPORT  SERVICE_TYPE_VALUE_TCPPORTW
+    #define SERVICE_TYPE_VALUE_UDPPORT  SERVICE_TYPE_VALUE_UDPPORTW
+    #define SERVICE_TYPE_VALUE_OBJECTID SERVICE_TYPE_VALUE_OBJECTIDW
+#else
+    #define SERVICE_TYPE_VALUE_IPXPORT  SERVICE_TYPE_VALUE_IPXPORTA
+    #define SERVICE_TYPE_VALUE_SAPID    SERVICE_TYPE_VALUE_SAPIDA
+    #define SERVICE_TYPE_VALUE_TCPPORT  SERVICE_TYPE_VALUE_TCPPORTA
+    #define SERVICE_TYPE_VALUE_UDPPORT  SERVICE_TYPE_VALUE_UDPPORTA
+    #define SERVICE_TYPE_VALUE_OBJECTID SERVICE_TYPE_VALUE_OBJECTIDA
+#endif
+
+/* Lookup control flags */
+#define LUP_DEEP                    0x00000001L
+#define LUP_CONTAINERS              0x00000002L
+#define LUP_NOCONTAINERS            0x00000004L
+#define LUP_NEAREST                 0x00000008L
+#define LUP_RETURN_NAME             0x00000010L
+#define LUP_RETURN_TYPE             0x00000020L
+#define LUP_RETURN_VERSION          0x00000040L
+#define LUP_RETURN_COMMENT          0x00000080L
+#define LUP_RETURN_ADDR             0x00000100L
+#define LUP_RETURN_BLOB             0x00000200L
+#define LUP_RETURN_ALIASES          0x00000400L
+#define LUP_RETURN_QUERY_STRING     0x00000800L
+#define LUP_RETURN_ALL              0x00000FF0L
+#define LUP_RES_SERVICE             0x00008000L
+#define LUP_FLUSHCACHE              0x00001000L
+#define LUP_FLUSHPREVIOUS           0x00002000L
+#define LUP_NON_AUTHORITATIVE       0x00004000L
+#define LUP_SECURE                  0x00008000L
+#define LUP_RETURN_PREFERRED_NAMES  0x00010000L
+#define LUP_ADDRCONFIG              0x00100000L
+#define LUP_DUAL_ADDR               0x00200000L
+#define LUP_FILESERVER              0x00400000L
+
+/* Result flags */
+#define RESULT_IS_ALIAS         0x0001
+#if (_WIN32_WINNT >= 0x0501)
+    #define RESULT_IS_ADDED     0x0010
+    #define RESULT_IS_CHANGED   0x0020
+    #define RESULT_IS_DELETED   0x0040
+#endif
+
+/* WSAPoll() event flags */
+#if (_WIN32_WINNT >= 0x0600)
+    #define POLLRDNORM  0x0100
+    #define POLLRDBAND  0x0200
+    #define POLLIN      (POLLRDNORM | POLLRDBAND)
+    #define POLLPRI     0x0400
+    #define POLLWRNORM  0x0010
+    #define POLLOUT     POLLWRNORM
+    #define POLLWRBAND  0x0020
+    #define POLLERR     0x0001
+    #define POLLHUP     0x0002
+    #define POLLNVAL    0x0004
+#endif
+
+:endsegment
+:segment !WINSOCK2
+/* TransmitFile() flags */
+#define TF_DISCONNECT   0x00000001L
+#define TF_REUSE_SOCKET 0x00000002L
+#define TF_WRITE_BEHIND 0x00000004L
+
+:endsegment
+/* Set of sockets */
+typedef struct fd_set {
+    u_int   fd_count;
+    SOCKET  fd_array[FD_SETSIZE];
+} fd_set;
+
+/* Time value */
+struct timeval {
+    long    tv_sec;
+    long    tv_usec;
+};
+
+/* Host entity */
+struct hostent {
+    char    *h_name;
+    char    **h_aliases;
+    short   h_addrtype;
+    short   h_length;
+    char    **h_addr_list;
+};
+#define h_addr  h_addr_list[0]
+
+/* Network entity */
+struct netent {
+    char    *n_name;
+    char    **n_aliases;
+    short   n_addrtype;
+    u_long  n_net;
+};
+
+/* Server entity */
+struct servent {
+    char    *s_name;
+    char    **s_aliases;
+    short   s_port;
+    char    *s_proto;
+};
+
+/* Protocol entity */
+struct protoent {
+    char    *p_name;
+    char    **p_aliases;
+    short   p_proto;
+};
+
+:segment !WINSOCK2
+/* Internet socket address */
+struct sockaddr_in {
+    short           sin_family;
+    u_short         sin_port;
+    struct in_addr  sin_addr;
+    char            sin_zero[8];
+};
+
+:endsegment
+/* WSA data */
+typedef struct WSAData {
+    WORD            wVersion;
+    WORD            wHighVersion;
+    char            szDescription[WSADESCRIPTION_LEN + 1];
+    char            szSystemStatus[WSASYS_STATUS_LEN + 1];
+    unsigned short  iMaxSockets;
+    unsigned short  iMaxUdpDg;
+    char            *lpVendorInfo;
+} WSADATA;
+typedef WSADATA *LPWSADATA;
+
+:segment !WINSOCK2
+/* IP_ADD_MEMBERSHIP and IP_DROP_MEMBERSHIP parameters */
+struct ip_mreq {
+    struct in_addr  imr_multiaddr;
+    struct in_addr  imr_interface;
+};
+
+/* Socket address */
+struct sockaddr {
+    u_short sa_family;
+    char    sa_data[14];
+};
+
+:endsegment
+/* Socket protocol */
+struct sockproto {
+    u_short sp_family;
+    u_short sp_protocol;
+};
+
+/* SO_LINGER information */
+struct linger {
+    u_short l_onoff;
+    u_short l_linger;
+};
+
+:segment WINSOCK2
+/* Quality of Service */
+typedef struct _QualityOfService {
+    FLOWSPEC    SendingFlowspec;
+    FLOWSPEC    ReceivingFlowspec;
+    WSABUF      ProviderSpecific;
+} QOS;
+typedef QOS *LPQOS;
+
+/* Windows Sockets network events */
+typedef struct _WSANETWORKEVENTS {
+    long    lNetworkEvents;
+    int     iErrorCode[FD_MAX_EVENTS];
+} WSANETWORKEVENTS;
+typedef WSANETWORKEVENTS    *LPWSANETWORKEVENTS;
+
+/* Windows Sockets protocol chain */
+typedef struct _WSAPROTOCOLCHAIN {
+    int     ChainLen;
+    DWORD   ChainEntries[MAX_PROTOCOL_CHAIN];
+} WSAPROTOCOLCHAIN;
+typedef WSAPROTOCOLCHAIN    *LPWSAPROTOCOLCHAIN;
+
+/* Windows Sockets protocol information */
+typedef struct _WSAPROTOCOL_INFOA {
+    DWORD               dwServiceFlags1;
+    DWORD               dwServiceFlags2;
+    DWORD               dwServiceFlags3;
+    DWORD               dwServiceFlags4;
+    DWORD               dwProviderFlags;
+    GUID                ProviderId;
+    DWORD               dwCatalogEntryId;
+    WSAPROTOCOLCHAIN    ProtocolChain;
+    int                 iVersion;
+    int                 iAddressFamily;
+    int                 iMaxSockAddr;
+    int                 iMinSockAddr;
+    int                 iSocketType;
+    int                 iProtocol;
+    int                 iProtocolMaxOffset;
+    int                 iNetworkByteOrder;
+    int                 iSecurityScheme;
+    DWORD               dwMessageSize;
+    DWORD               dwProviderReserved;
+    CHAR                szProtocol[WSAPROTOCOL_LEN + 1];
+} WSAPROTOCOL_INFOA;
+typedef WSAPROTOCOL_INFOA   *LPWSAPROTOCOL_INFOA;
+typedef struct _WSAPROTOCOL_INFOW {
+    DWORD               dwServiceFlags1;
+    DWORD               dwServiceFlags2;
+    DWORD               dwServiceFlags3;
+    DWORD               dwServiceFlags4;
+    DWORD               dwProviderFlags;
+    GUID                ProviderId;
+    DWORD               dwCatalogEntryId;
+    WSAPROTOCOLCHAIN    ProtocolChain;
+    int                 iVersion;
+    int                 iAddressFamily;
+    int                 iMaxSockAddr;
+    int                 iMinSockAddr;
+    int                 iSocketType;
+    int                 iProtocol;
+    int                 iProtocolMaxOffset;
+    int                 iNetworkByteOrder;
+    int                 iSecurityScheme;
+    DWORD               dwMessageSize;
+    DWORD               dwProviderReserved;
+    WCHAR               szProtocol[WSAPROTOCOL_LEN + 1];
+} WSAPROTOCOL_INFOW;
+typedef WSAPROTOCOL_INFOW   *LPWSAPROTOCOL_INFOW;
+#ifdef UNICODE
+typedef WSAPROTOCOL_INFOW   WSAPROTOCOL_INFO;
+typedef LPWSAPROTOCOL_INFOW LPWSAPROTOCOL_INFO;
+#else
+typedef WSAPROTOCOL_INFOA   WSAPROTOCOL_INFO;
+typedef LPWSAPROTOCOL_INFOA LPWSAPROTOCOL_INFO;
+#endif
+
+/* Windows Sockets callbacks */
+typedef int (CALLBACK *LPCONDITIONPROC)( LPWSABUF, LPWSABUF, LPQOS, LPQOS, LPWSABUF, LPWSABUF, GROUP *, DWORD_PTR );
+typedef void (CALLBACK *LPWSAOVERLAPPED_COMPLETION_ROUTINE)( DWORD, DWORD, LPWSAOVERLAPPED, DWORD );
+
+/* Windows Sockets completion types */
+#if (_WIN32_WINNT >= 0x0501)
+typedef enum _WSACOMPLETIONTYPE {
+    NSP_NOTIFY_IMMEDIATELY  = 0,
+    NSP_NOTIFY_HWND         = 1,
+    NSP_NOTIFY_EVENT        = 2,
+    NSP_NOTIFY_PORT         = 3,
+    NSP_NOTIFY_APC          = 4
+} WSACOMPLETIONTYPE;
+typedef WSACOMPLETIONTYPE   *PWSACOMPLETIONTYPE;
+typedef WSACOMPLETIONTYPE   *LPWSACOMPLETIONTYPE;
+#endif
+
+/* Windows Sockets completion information */
+#if (_WIN32_WINNT >= 0x0501)
+typedef struct _WSACOMPLETION {
+    WSACOMPLETIONTYPE   Type;
+    union {
+        struct {
+            HWND    hWnd;
+            UINT    uMsg;
+            WPARAM  context;
+        } WindowMessage;
+        struct {
+            LPWSAOVERLAPPED lpOverlapped;
+        } Event;
+        struct {
+            LPWSAOVERLAPPED                     lpOverlapped;
+            LPWSAOVERLAPPED_COMPLETION_ROUTINE  lpfnCompletionProc;
+        } Apc;
+        struct {
+            LPWSAOVERLAPPED lpOverlapped;
+            HANDLE          hPort;
+            ULONG_PTR       Key;
+        } Port;
+    } Parameters;
+} WSACOMPLETION;
+typedef WSACOMPLETION   *PWSACOMPLETION;
+typedef WSACOMPLETION   *LPWSACOMPLETION;
+#endif
+
+:include blob.sp
+
+/* Address family protocols */
+typedef struct _AFPROTOCOLS {
+    INT iAddressFamily;
+    INT iProtocol;
+} AFPROTOCOLS;
+typedef AFPROTOCOLS *PAFPROTOCOLS;
+typedef AFPROTOCOLS *LPAFPROTOCOLS;
+
+/* Windows Sockets comparators */
+typedef enum _WSAEcomparator {
+    COMP_EQUAL      = 0,
+    COMP_NOTLESS    = 1
+} WSAECOMPARATOR;
+typedef WSAECOMPARATOR  *PWSAECOMPARATOR;
+typedef WSAECOMPARATOR  *LPWSAECOMPARATOR;
+
+/* Windows Sockets version */
+typedef struct _WSAVersion {
+    DWORD           dwVersion;
+    WSAECOMPARATOR  ecHow;
+} WSAVERSION;
+typedef WSAVERSION  *PWSAVERSION;
+typedef WSAVERSION  *LPWSAVERSION;
+
+/* Windows Sockets query set */
+typedef struct _WSAQuerySetA {
+    DWORD           dwSize;
+    LPSTR           lpszServiceInstanceName;
+    LPGUID          lpServiceClassId;
+    LPWSAVERSION    lpVersion;
+    LPSTR           lpszComment;
+    DWORD           dwNameSpace;
+    LPGUID          lpNSProviderId;
+    LPSTR           lpszContext;
+    DWORD           dwNumberOfProtocols;
+    LPAFPROTOCOLS   lpafpProtocols;
+    LPSTR           lpszQueryString;
+    DWORD           dwNumberOfCsAddrs;
+    LPCSADDR_INFO   lpcsaBuffer;
+    DWORD           dwOutputFlags;
+    LPBLOB          lpBlob;
+} WSAQUERYSETA;
+typedef WSAQUERYSETA    *PWSAQUERYSETA;
+typedef WSAQUERYSETA    *LPWSAQUERYSETA;
+typedef struct _WSAQuerySetW {
+    DWORD           dwSize;
+    LPWSTR          lpszServiceInstanceName;
+    LPGUID          lpServiceClassId;
+    LPWSAVERSION    lpVersion;
+    LPWSTR          lpszComment;
+    DWORD           dwNameSpace;
+    LPGUID          lpNSProviderId;
+    LPWSTR          lpszContext;
+    DWORD           dwNumberOfProtocols;
+    LPAFPROTOCOLS   lpafpProtocols;
+    LPWSTR          lpszQueryString;
+    DWORD           dwNumberOfCsAddrs;
+    LPCSADDR_INFO   lpcsaBuffer;
+    DWORD           dwOutputFlags;
+    LPBLOB          lpBlob;
+} WSAQUERYSETW;
+typedef WSAQUERYSETW    *PWSAQUERYSETW;
+typedef WSAQUERYSETW    *LPWSAQUERYSETW;
+#ifdef UNICODE
+typedef WSAQUERYSETW    WSAQUERYSET;
+typedef PWSAQUERYSETW   PWSAQUERYSET;
+typedef LPWSAQUERYSETW  LPWSAQUERYSET;
+#else
+typedef WSAQUERYSETA    WSAQUERYSET;
+typedef PWSAQUERYSETA   PWSAQUERYSET;
+typedef LPWSAQUERYSETA  LPWSAQUERYSET;
+#endif
+
+/* Windows Sockets query set (version 2) */
+typedef struct _WSAQuerySet2A {
+    DWORD           dwSize;
+    LPSTR           lpszServiceInstanceName;
+    LPWSAVERSION    lpVersion;
+    LPSTR           lpszComment;
+    DWORD           dwNameSpace;
+    LPGUID          lpNSProviderId;
+    LPSTR           lpszContext;
+    DWORD           dwNumberOfProtocols;
+    LPAFPROTOCOLS   lpafpProtocols;
+    LPSTR           lpszQueryString;
+    DWORD           dwNumberOfCsAddrs;
+    LPCSADDR_INFO   lpcsaBuffer;
+    DWORD           dwOutputFlags;
+    LPBLOB          lpBlob;
+} WSAQUERYSET2A;
+typedef WSAQUERYSET2A   *PWSAQUERYSET2A;
+typedef WSAQUERYSET2A   *LPWSAQUERYSET2A;
+typedef struct _WSAQuerySet2W {
+    DWORD           dwSize;
+    LPWSTR          lpszServiceInstanceName;
+    LPWSAVERSION    lpVersion;
+    LPWSTR          lpszComment;
+    DWORD           dwNameSpace;
+    LPGUID          lpNSProviderId;
+    LPWSTR          lpszContext;
+    DWORD           dwNumberOfProtocols;
+    LPAFPROTOCOLS   lpafpProtocols;
+    LPWSTR          lpszQueryString;
+    DWORD           dwNumberOfCsAddrs;
+    LPCSADDR_INFO   lpcsaBuffer;
+    DWORD           dwOutputFlags;
+    LPBLOB          lpBlob;
+} WSAQUERYSET2W;
+typedef WSAQUERYSET2W   *PWSAQUERYSET2W;
+typedef WSAQUERYSET2W   *LPWSAQUERYSET2W;
+#ifdef UNICODE
+typedef WSAQUERYSET2W   WSAQUERYSET2;
+typedef PWSAQUERYSET2W  PWSAQUERYSET2;
+typedef LPWSAQUERYSET2W LPWSAQUERYSET2;
+#else
+typedef WSAQUERYSET2A   WSAQUERYSET2;
+typedef PWSAQUERYSET2A  PWSAQUERYSET2;
+typedef LPWSAQUERYSET2A LPWSAQUERYSET2;
+#endif
+
+/* Windows Sockets service options */
+typedef enum _WSAESETSERVICEOP {
+    RNRSERVICE_REGISTER     = 0,
+    RNRSERVICE_DEREGISTER   = 1,
+    RNRSERVICE_DELETE       = 2
+} WSAESETSERVICEOP;
+typedef WSAESETSERVICEOP    *PWSAESETSERVICEOP;
+typedef WSAESETSERVICEOP    *LPWSAESETSERVICEOP;
+
+/* Windows Sockets namespace class information */
+typedef struct _WSANSClassInfoA {
+    LPSTR   lpszName;
+    DWORD   dwNameSpace;
+    DWORD   dwValueType;
+    DWORD   dwValueSize;
+    LPVOID  lpValue;
+} WSANSCLASSINFOA;
+typedef WSANSCLASSINFOA     *PWSANSCLASSINFOA;
+typedef WSANSCLASSINFOA     *LPWSANSCLASSINFOA;
+typedef struct _WSANSClassInfoW {
+    LPWSTR  lpszName;
+    DWORD   dwNameSpace;
+    DWORD   dwValueType;
+    DWORD   dwValueSize;
+    LPVOID  lpValue;
+} WSANSCLASSINFOW;
+typedef WSANSCLASSINFOW     *PWSANSCLASSINFOW;
+typedef WSANSCLASSINFOW     *LPWSANSCLASSINFOW;
+#ifdef UNICODE
+typedef WSANSCLASSINFOW     WSANSCLASSINFO;
+typedef PWSANSCLASSINFOW    PWSANSCLASSINFO;
+typedef LPWSANSCLASSINFOW   LPWSANSCLASSINFO;
+#else
+typedef WSANSCLASSINFOA     WSANSCLASSINFO;
+typedef PWSANSCLASSINFOA    PWSANSCLASSINFO;
+typedef LPWSANSCLASSINFOA   LPWSANSCLASSINFO;
+#endif
+
+/* Windows Sockets service class information */
+typedef struct _WSAServiceClassInfoA {
+    LPGUID              lpServiceClassId;
+    LPSTR               lpszServiceClassName;
+    DWORD               dwCount;
+    LPWSANSCLASSINFOA   lpClassInfos;
+} WSASERVICECLASSINFOA;
+typedef WSASERVICECLASSINFOA    *PWSASERVICECLASSINFOA;
+typedef WSASERVICECLASSINFOA    *LPWSASERVICECLASSINFOA;
+typedef struct _WSAServiceClassInfoW {
+    LPGUID              lpServiceClassId;
+    LPWSTR              lpszServiceClassName;
+    DWORD               dwCount;
+    LPWSANSCLASSINFOW   lpClassInfos;
+} WSASERVICECLASSINFOW;
+typedef WSASERVICECLASSINFOW    *PWSASERVICECLASSINFOW;
+typedef WSASERVICECLASSINFOW    *LPWSASERVICECLASSINFOW;
+#ifdef UNICODE
+typedef WSASERVICECLASSINFOW    WSASERVICECLASSINFO;
+typedef PWSASERVICECLASSINFOW   PWSASERVICECLASSINFO;
+typedef LPWSASERVICECLASSINFOW  LPWSASERVICECLASSINFO;
+#else
+typedef WSASERVICECLASSINFOA    WSASERVICECLASSINFO;
+typedef PWSASERVICECLASSINFOA   PWSASERVICECLASSINFO;
+typedef LPWSASERVICECLASSINFOA  LPWSASERVICECLASSINFO;
+#endif
+
+/* Windows Sockets namespace information */
+typedef struct _WSANAMESPACE_INFOA {
+    GUID    NSProviderId;
+    DWORD   dwNameSpace;
+    BOOL    fActive;
+    DWORD   dwVersion;
+    LPSTR   lpszIdentifier;
+} WSANAMESPACE_INFOA;
+typedef WSANAMESPACE_INFOA      *PWSANAMESPACE_INFOA;
+typedef WSANAMESPACE_INFOA      *LPWSANAMESPACE_INFOA;
+typedef struct _WSANAMESPACE_INFOW {
+    GUID    NSProviderId;
+    DWORD   dwNameSpace;
+    BOOL    fActive;
+    DWORD   dwVersion;
+    LPWSTR  lpszIdentifier;
+} WSANAMESPACE_INFOW;
+typedef WSANAMESPACE_INFOW      *PWSANAMESPACE_INFOW;
+typedef WSANAMESPACE_INFOW      *LPWSANAMESPACE_INFOW;
+#ifdef UNICODE
+typedef WSANAMESPACE_INFOW      WSANAMESPACE_INFO;
+typedef PWSANAMESPACE_INFOW     PWSANAMESPACE_INFO;
+typedef LPWSANAMESPACE_INFOW    LPWSANAMESPACE_INFO;
+#else
+typedef WSANAMESPACE_INFOA      WSANAMESPACE_INFO;
+typedef PWSANAMESPACE_INFOA     PWSANAMESPACE_INFO;
+typedef LPWSANAMESPACE_INFOA    LPWSANAMESPACE_INFO;
+#endif
+
+/* Windows Sockets namespace information (extended version) */
+typedef struct _WSANAMESPACE_INFOEXA {
+    GUID    NSProviderId;
+    DWORD   dwNameSpace;
+    BOOL    fActive;
+    DWORD   dwVersion;
+    LPSTR   lpszIdentifier;
+    BLOB    ProviderSpecific;
+} WSANAMESPACE_INFOEXA;
+typedef WSANAMESPACE_INFOEXA    *PWSANAMESPACE_INFOEXA;
+typedef WSANAMESPACE_INFOEXA    *LPWSANAMESPACE_INFOEXA;
+typedef struct _WSANAMESPACE_INFOEXW {
+    GUID    NSProviderId;
+    DWORD   dwNameSpace;
+    BOOL    fActive;
+    DWORD   dwVersion;
+    LPWSTR  lpszIdentifier;
+    BLOB    ProviderSpecific;
+} WSANAMESPACE_INFOEXW;
+typedef WSANAMESPACE_INFOEXW    *PWSANAMESPACE_INFOEXW;
+typedef WSANAMESPACE_INFOEXW    *LPWSANAMESPACE_INFOEXW;
+#ifdef UNICODE
+typedef WSANAMESPACE_INFOEXW    WSANAMESPACE_INFOEX;
+typedef PWSANAMESPACE_INFOEXW   PWSANAMESPACE_INFOEX;
+typedef LPWSANAMESPACE_INFOEXW  LPWSANAMESPACE_INFOEX;
+#else
+typedef WSANAMESPACE_INFOEXA    WSANAMESPACE_INFOEX;
+typedef PWSANAMESPACE_INFOEXA   PWSANAMESPACE_INFOEX;
+typedef LPWSANAMESPACE_INFOEXA  LPWSANAMESPACE_INFOEX;
+#endif
+
+/* WSAPoll() parameters */
+#if (_WIN32_WINNT >= 0x0600)
+typedef struct pollfd {
+    SOCKET  fd;
+    SHORT   events;
+    SHORT   revents;
+} WSAPOLLFD;
+typedef WSAPOLLFD   *PWSAPOLLFD;
+typedef WSAPOLLFD   *LPWSAPOLLFD;
+#endif
+
+:endsegment
+:segment !WINSOCK2
+/* TransmitFile() buffers */
+typedef struct _TRANSMIT_FILE_BUFFERS {
+    PVOID   Head;
+    DWORD   HeadLength;
+    PVOID   Tail;
+    DWORD   TailLength;
+} TRANSMIT_FILE_BUFFERS;
+typedef TRANSMIT_FILE_BUFFERS   *PTRANSMIT_FILE_BUFFERS;
+typedef TRANSMIT_FILE_BUFFERS   *LPTRANSMIT_FILE_BUFFERS;
+
+:endsegment
+/* Win32-style names for structures */
+:segment !WINSOCK2
+typedef struct sockaddr     SOCKADDR;
+typedef struct sockaddr     *PSOCKADDR;
+typedef struct sockaddr     *LPSOCKADDR;
+typedef struct sockaddr_in  SOCKADDR_IN;
+typedef struct sockaddr_in  *PSOCKADDR_IN;
+:endsegment
+typedef struct sockaddr_in  *LPSOCKADDR_IN;
+typedef struct linger       LINGER;
+typedef struct linger       *PLINGER;
+typedef struct linger       *LPLINGER;
+typedef struct fd_set       FD_SET;
+typedef struct fd_set       *PFD_SET;
+typedef struct fd_set       *LPFD_SET;
+typedef struct hostent      HOSTENT;
+typedef struct hostent      *PHOSTENT;
+typedef struct hostent      *LPHOSTENT;
+typedef struct servent      SERVENT;
+typedef struct servent      *PSERVENT;
+typedef struct servent      *LPSERVENT;
+typedef struct protoent     PROTOENT;
+typedef struct protoent     *PPROTOENT;
+typedef struct protoent     *LPPROTOENT;
+typedef struct timeval      TIMEVAL;
+typedef struct timeval      *PTIMEVAL;
+typedef struct timeval      *LPTIMEVAL;
+
+:segment !WINSOCK2
+/* Functions in WSOCK32.DLL */
+BOOL PASCAL             AcceptEx( SOCKET, SOCKET, PVOID, DWORD, DWORD, DWORD, LPDWORD, LPOVERLAPPED );
+VOID PASCAL             GetAcceptExSockaddrs( PVOID, DWORD, DWORD, DWORD, struct sockaddr **, LPINT, struct sockaddr **, LPINT );
+BOOL PASCAL             TransmitFile( SOCKET, HANDLE, DWORD, DWORD, LPOVERLAPPED, LPTRANSMIT_FILE_BUFFERS, DWORD );
+HANDLE PASCAL           WSAAsyncGetHostByAddr( HWND, u_int, const char *, int, int, char *, int );
+HANDLE PASCAL           WSAAsyncGetHostByName( HWND, u_int, const char *, char *, int );
+HANDLE PASCAL           WSAAsyncGetProtoByName( HWND, u_int, const char *, char *, int );
+HANDLE PASCAL           WSAAsyncGetProtoByNumber( HWND, u_int, int, char *, int );
+HANDLE PASCAL           WSAAsyncGetServByName( HWND, u_int, const char *, const char *, char *, int );
+HANDLE PASCAL           WSAAsyncGetServByPort( HWND, u_int, int, const char *, char *, int );
+int PASCAL              WSAAsyncSelect( SOCKET, HWND, u_int, long );
+int PASCAL              WSACancelAsyncRequest( HANDLE );
+int PASCAL              WSACancelBlockingCall( void );
+int PASCAL              WSACleanup( void );
+int PASCAL              WSAGetLastError( void );
+BOOL PASCAL             WSAIsBlocking( void );
+int PASCAL              WSARecvEx( SOCKET, char *, int, int * );
+FARPROC PASCAL          WSASetBlockingHook( FARPROC );
+void PASCAL             WSASetLastError( int );
+int PASCAL              WSAStartup( WORD, LPWSADATA );
+int PASCAL              WSAUnhookBlockingHook( void );
+int PASCAL              __WSAFDIsSet( SOCKET, fd_set * );
+SOCKET PASCAL           accept( SOCKET, struct sockaddr *, int * );
+int PASCAL              bind( SOCKET, const struct sockaddr *, int );
+int PASCAL              closesocket( SOCKET );
+int PASCAL              connect( SOCKET, const struct sockaddr *, int );
+struct hostent * PASCAL gethostbyaddr( const char *, int, int );
+struct hostent * PASCAL gethostbyname( const char * );
+int PASCAL              gethostname( char *, int );
+int PASCAL              getpeername( SOCKET, struct sockaddr *, int * );
+struct protoent * PASCAL    getprotobyname( const char * );
+struct protoent * PASCAL    getprotobynumber( int );
+struct servent * PASCAL getservbyname( const char *, const char * );
+struct servent * PASCAL getservbyport( int, const char * );
+int PASCAL              getsockname( SOCKET, struct sockaddr *, int * );
+int PASCAL              getsockopt( SOCKET, int, int, char *, int * );
+u_long PASCAL           htonl( u_long );
+u_short PASCAL          htons( u_short );
+unsigned long PASCAL    inet_addr( const char * );
+char * PASCAL           inet_ntoa( struct in_addr );
+int PASCAL              ioctlsocket( SOCKET, long, u_long * );
+int PASCAL              listen( SOCKET, int );
+u_long PASCAL           ntohl( u_long );
+u_short PASCAL          ntohs( u_short );
+int PASCAL              recv( SOCKET, char *, int, int );
+int PASCAL              recvfrom( SOCKET, char *, int, int, struct sockaddr *, int * );
+int PASCAL              select( int, fd_set *, fd_set *, fd_set *, const struct timeval * );
+int PASCAL              send( SOCKET, const char *, int, int );
+int PASCAL              sendto( SOCKET, const char *, int, int, const struct sockaddr *, int );
+int PASCAL              setsockopt( SOCKET, int, int, const char *, int );
+int PASCAL              shutdown( SOCKET, int );
+SOCKET PASCAL           socket( int, int, int );
+:endsegment
+:segment WINSOCK2
+/* Functions in WS2_32.DLL */
+WINSOCK_API_LINKAGE SOCKET WSAAPI   WSAAccept( SOCKET, struct sockaddr *, LPINT, LPCONDITIONPROC, DWORD_PTR );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAAddressToStringA( LPSOCKADDR, DWORD, LPWSAPROTOCOL_INFOA, LPSTR, LPDWORD );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAAddressToStringW( LPSOCKADDR, DWORD, LPWSAPROTOCOL_INFOW, LPWSTR, LPDWORD );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetHostByAddr( HWND, u_int, const char *, int, int, char *, int );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetHostByName( HWND, u_int, const char *, char *, int );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetProtoByName( HWND, u_int, const char *, char *, int );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetProtoByNumber( HWND, u_int, int, char *, int );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetServByName( HWND, u_int, const char *, const char *, char *, int );
+WINSOCK_API_LINKAGE HANDLE WSAAPI   WSAAsyncGetServByPort( HWND, u_int, int, const char *, char *, int );
+WINSOCK_API_LINKAGE int WSAAPI      WSAAsyncSelect( SOCKET, HWND, u_int, long );
+WINSOCK_API_LINKAGE int WSAAPI      WSACancelAsyncRequest( HANDLE );
+WINSOCK_API_LINKAGE int WSAAPI      WSACancelBlockingCall( void );
+WINSOCK_API_LINKAGE int WSAAPI      WSACleanup( void );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSACloseEvent( WSAEVENT );
+WINSOCK_API_LINKAGE int WSAAPI      WSAConnect( SOCKET, const struct sockaddr *, int, LPWSABUF, LPWSABUF, LPQOS, LPQOS );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAConnectByList( SOCKET, PSOCKET_ADDRESS_LIST, LPDWORD, LPSOCKADDR, LPDWORD, LPSOCKADDR, const struct timeval *, LPWSAOVERLAPPED );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAConnectByNameA( SOCKET, LPCSTR, LPCSTR, LPDWORD, LPSOCKADDR, LPDWORD, LPSOCKADDR, const struct timeval *, LPWSAOVERLAPPED );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAConnectByNameW( SOCKET, LPWSTR, LPWSTR, LPDWORD, LPSOCKADDR, LPDWORD, LPSOCKADDR, const struct timeval *, LPWSAOVERLAPPED );
+WINSOCK_API_LINKAGE WSAEVENT WSAAPI WSACreateEvent( void );
+WINSOCK_API_LINKAGE int WSAAPI      WSADuplicateSocketA( SOCKET, DWORD, LPWSAPROTOCOL_INFOA );
+WINSOCK_API_LINKAGE int WSAAPI      WSADuplicateSocketW( SOCKET, DWORD, LPWSAPROTOCOL_INFOW );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAEnumNameSpaceProvidersA( LPDWORD, LPWSANAMESPACE_INFOA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAEnumNameSpaceProvidersW( LPDWORD, LPWSANAMESPACE_INFOW );
+WINSOCK_API_LINKAGE int WSAAPI      WSAEnumNetworkEvents( SOCKET, WSAEVENT, LPWSANETWORKEVENTS );
+WINSOCK_API_LINKAGE int WSAAPI      WSAEnumProtocolsA( LPINT, LPWSAPROTOCOL_INFOA, LPDWORD );
+WINSOCK_API_LINKAGE int WSAAPI      WSAEnumProtocolsW( LPINT, LPWSAPROTOCOL_INFOW, LPDWORD );
+WINSOCK_API_LINKAGE int WSAAPI      WSAEventSelect( SOCKET, WSAEVENT, long );
+WINSOCK_API_LINKAGE int WSAAPI      WSAGetLastError( void );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAGetOverlappedResult( SOCKET, LPWSAOVERLAPPED, LPDWORD, BOOL, LPDWORD );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAGetQOSByName( SOCKET, LPWSABUF, LPQOS );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAGetServiceClassInfoA( LPGUID, LPGUID, LPDWORD, LPWSASERVICECLASSINFOA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAGetServiceClassInfoW( LPGUID, LPGUID, LPDWORD, LPWSASERVICECLASSINFOW );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAGetServiceClassNameByClassIdA( LPGUID, LPSTR, LPDWORD );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAGetServiceClassNameByClassIdW( LPGUID, LPWSTR, LPDWORD );
+WINSOCK_API_LINKAGE int WSAAPI      WSAHtonl( SOCKET, u_long, u_long * );
+WINSOCK_API_LINKAGE int WSAAPI      WSAHtons( SOCKET, u_short, u_short * );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAInstallServiceClassA( LPWSASERVICECLASSINFOA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAInstallServiceClassW( LPWSASERVICECLASSINFOW );
+WINSOCK_API_LINKAGE int WSAAPI      WSAIoctl( SOCKET, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAIsBlocking( void );
+WINSOCK_API_LINKAGE SOCKET WSAAPI   WSAJoinLeaf( SOCKET, const struct sockaddr *, int, LPWSABUF, LPWSABUF, LPQOS, LPQOS, DWORD );
+WINSOCK_API_LINKAGE INT WSAAPI      WSALookupServiceBeginA( LPWSAQUERYSETA, DWORD, LPHANDLE );
+WINSOCK_API_LINKAGE INT WSAAPI      WSALookupServiceBeginW( LPWSAQUERYSETW, DWORD, LPHANDLE );
+WINSOCK_API_LINKAGE INT WSAAPI      WSALookupServiceEnd( HANDLE );
+WINSOCK_API_LINKAGE INT WSAAPI      WSALookupServiceNextA( HANDLE, DWORD, LPDWORD, LPWSAQUERYSETA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSALookupServiceNextW( HANDLE, DWORD, LPDWORD, LPWSAQUERYSETW );
+WINSOCK_API_LINKAGE int WSAAPI      WSANtohl( SOCKET, u_long, u_long * );
+WINSOCK_API_LINKAGE int WSAAPI      WSANtohs( SOCKET, u_short, u_short * );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAProviderConfigChange( LPHANDLE, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE int WSAAPI      WSARecv( SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE int WSAAPI      WSARecvDisconnect( SOCKET, LPWSABUF );
+WINSOCK_API_LINKAGE int WSAAPI      WSARecvFrom( SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, struct sockaddr *, LPINT, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE INT WSAAPI      WSARemoveServiceClass( LPGUID );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSAResetEvent( WSAEVENT );
+WINSOCK_API_LINKAGE int WSAAPI      WSASend( SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE int WSAAPI      WSASendDisconnect( SOCKET, LPWSABUF );
+WINSOCK_API_LINKAGE int WSAAPI      WSASendMsg( SOCKET, LPWSABUF, DWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE int WSAAPI      WSASendTo( SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, const struct sockaddr *, int, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE );
+WINSOCK_API_LINKAGE FARPROC WSAAPI  WSASetBlockingHook( FARPROC );
+WINSOCK_API_LINKAGE BOOL WSAAPI     WSASetEvent( WSAEVENT );
+WINSOCK_API_LINKAGE void WSAAPI     WSASetLastError( int );
+WINSOCK_API_LINKAGE INT WSAAPI      WSASetServiceA( LPWSAQUERYSETA, WSAESETSERVICEOP, DWORD );
+WINSOCK_API_LINKAGE INT WSAAPI      WSASetServiceW( LPWSAQUERYSETW, WSAESETSERVICEOP, DWORD );
+WINSOCK_API_LINKAGE SOCKET WSAAPI   WSASocketA( int, int, int, LPWSAPROTOCOL_INFOA, GROUP, DWORD );
+WINSOCK_API_LINKAGE SOCKET WSAAPI   WSASocketW( int, int, int, LPWSAPROTOCOL_INFOW, GROUP, DWORD );
+WINSOCK_API_LINKAGE int WSAAPI      WSAStartup( WORD, LPWSADATA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAStringToAddressA( LPSTR, INT, LPWSAPROTOCOL_INFOA, LPSOCKADDR, LPINT );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAStringToAddressW( LPWSTR, INT, LPWSAPROTOCOL_INFOW, LPSOCKADDR, LPINT );
+WINSOCK_API_LINKAGE int WSAAPI      WSAUnhookBlockingHost( void );
+WINSOCK_API_LINKAGE DWORD WSAAPI    WSAWaitForMultipleEvents( DWORD, const WSAEVENT *, BOOL, DWORD, BOOL );
+WINSOCK_API_LINKAGE int WSAAPI      __WSAFDIsSet( SOCKET, fd_set * );
+WINSOCK_API_LINKAGE SOCKET WSAAPI   accept( SOCKET, struct sockaddr *, int * );
+WINSOCK_API_LINKAGE int WSAAPI      bind( SOCKET, const struct sockaddr *, int );
+WINSOCK_API_LINKAGE int WSAAPI      closesocket( SOCKET );
+WINSOCK_API_LINKAGE int WSAAPI      connect( SOCKET, const struct sockaddr *, int );
+WINSOCK_API_LINKAGE struct hostent * WSAAPI gethostbyaddr( const char *, int, int );
+WINSOCK_API_LINKAGE struct hostent * WSAAPI gethostbyname( const char * );
+WINSOCK_API_LINKAGE int WSAAPI      gethostname( char *, int );
+WINSOCK_API_LINKAGE int WSAAPI      getpeername( SOCKET, struct sockaddr *, int * );
+WINSOCK_API_LINKAGE struct protoent * WSAAPI    getprotobyname( const char * );
+WINSOCK_API_LINKAGE struct protoent * WSAAPI    getprotobynumber( int );
+WINSOCK_API_LINKAGE struct servent * WSAAPI getservbyname( const char *, const char * );
+WINSOCK_API_LINKAGE struct servent * WSAAPI getservbyport( int, const char * );
+WINSOCK_API_LINKAGE int WSAAPI      getsockname( SOCKET, struct sockaddr *, int * );
+WINSOCK_API_LINKAGE int WSAAPI      getsockopt( SOCKET, int, int, char *, int * );
+WINSOCK_API_LINKAGE u_long WSAAPI   htonl( u_long );
+WINSOCK_API_LINKAGE u_short WSAAPI  htons( u_short );
+WINSOCK_API_LINKAGE unsigned long WSAAPI    inet_addr( const char * );
+WINSOCK_API_LINKAGE char * WSAAPI   inet_ntoa( struct in_addr );
+WINSOCK_API_LINKAGE int WSAAPI      ioctlsocket( SOCKET, long, u_long * );
+WINSOCK_API_LINKAGE int WSAAPI      listen( SOCKET, int );
+WINSOCK_API_LINKAGE u_long WSAAPI   ntohl( u_long );
+WINSOCK_API_LINKAGE u_short WSAAPI  ntohs( u_short );
+WINSOCK_API_LINKAGE int WSAAPI      recv( SOCKET, char *, int, int );
+WINSOCK_API_LINKAGE int WSAAPI      recvfrom( SOCKET, char *, int, int, struct sockaddr *, int * );
+WINSOCK_API_LINKAGE int WSAAPI      select( int, fd_set *, fd_set *, fd_set *, const struct timeval * );
+WINSOCK_API_LINKAGE int WSAAPI      send( SOCKET, const char *, int, int );
+WINSOCK_API_LINKAGE int WSAAPI      sendto( SOCKET, const char *, int, int, const struct sockaddr *, int );
+WINSOCK_API_LINKAGE int WSAAPI      setsockopt( SOCKET, int, int, const char *, int );
+WINSOCK_API_LINKAGE int WSAAPI      shutdown( SOCKET, int );
+WINSOCK_API_LINKAGE SOCKET WSAAPI   socket( int, int, int );
+#if (_WIN32_WINNT >= 0x0501)
+WINSOCK_API_LINKAGE INT WSAAPI      WSANSPIoctl( HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPWSACOMPLETION );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+WINSOCK_API_LINKAGE INT WSAAPI      WSAEnumNameSpaceProvidersExA( LPDWORD, LPWSANAMESPACE_INFOEXA );
+WINSOCK_API_LINKAGE INT WSAAPI      WSAEnumNameSpaceProvidersExW( LPDWORD, LPWSANAMESPACE_INFOEXW );
+WINSOCK_API_LINKAGE int WSAAPI      WSAPoll( LPWSAPOLLFD, ULONG, INT );
+#endif
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define WSAAddressToString              WSAAddressToStringW
+    #define WSAConnectByName                WSAConnectByNameW
+    #define WSADuplicateSocket              WSADuplicateSocketW
+    #define WSAEnumNameSpaceProviders       WSAEnumNameSpaceProvidersW
+    #define WSAEnumProtocols                WSAEnumProtocolsW
+    #define WSAGetServiceClassInfo          WSAGetServiceClassInfoW
+    #define WSAGetServiceClassNameByClassId WSAGetServiceClassNameByClassIdW
+    #define WSAInstallServiceClass          WSAInstallServiceClassW
+    #define WSALookupServiceBegin           WSALookupServiceBeginW
+    #define WSALookupServiceNext            WSALookupServiceNextW
+    #define WSASetService                   WSASetServiceW
+    #define WSASocket                       WSASocketW
+    #define WSAStringToAddress              WSAStringToAddressW
+    #if (_WIN32_WINNT >= 0x0600)
+        #define WSAEnumNameSpaceProvidersEx WSAEnumNameSpaceProvidersExW
+    #endif
+#else
+    #define WSAAddressToString              WSAAddressToStringA
+    #define WSAConnectByName                WSAConnectByNameA
+    #define WSADuplicateSocket              WSADuplicateSocketA
+    #define WSAEnumNameSpaceProviders       WSAEnumNameSpaceProvidersA
+    #define WSAEnumProtocols                WSAEnumProtocolsA
+    #define WSAGetServiceClassInfo          WSAGetServiceClassInfoA
+    #define WSAGetServiceClassNameByClassId WSAGetServiceClassNameByClassIdA
+    #define WSAInstallServiceClass          WSAInstallServiceClassA
+    #define WSALookupServiceBegin           WSALookupServiceBeginA
+    #define WSALookupServiceNext            WSALookupServiceNextA
+    #define WSASetService                   WSASetServiceA
+    #define WSASocket                       WSASocketA
+    #define WSAStringToAddress              WSAStringToAddressA
+    #if (_WIN32_WINNT >= 0x0600)
+        #define WSAEnumNameSpaceProvidersEx WSAEnumNameSpaceProvidersExA
+    #endif
+#endif
+
+:endsegment
+
+/* Macros to manipulate the fd_set structure */
+#define FD_CLR( p1, p2 ) \
+    { \
+        u_int __counter; \
+        __counter = 0; \
+        while( __counter < ((fd_set *)(p2))->fd_count && \
+            ((fd_set *)(p2))->fd_array[__counter] != p1 ) { \
+            __counter++; \
+        } \
+        if( ((fd_set *)(p2))->fd_array[__counter] == p1 ) { \
+            for( ; __counter < ((fd_set *)(p2))->fd_count - 1; __counter++ ) { \
+                ((fd_set *)(p2))->fd_array[__counter] = \
+                    ((fd_set *)(p2))->fd_array[__counter - 1]; \
+            } \
+            ((fd_set *)(p2))->fd_count--; \
+        } \
+    }
+#define FD_SET( p1, p2 ) \
+    if( ((fd_set *)(p2))->fd_count < FD_SETSIZE ) { \
+        ((fd_set *)(p2))->fd_array[((fd_set *)(p2))->fd_count++] = p1; \
+    }
+#define FD_ZERO( x )        (((fd_set *)(x))->fd_count = 0)
+#define FD_ISSET( p1, p2 )  __WSAFDIsSet( (SOCKET)(p1), (fd_set *)(p2) )
+
+/* Macros to manipulate time values */
+#define timerisset( x )         ((x)->tv_sec || (x)->tv_usec)
+#define timercmp( p1, p2, p3 ) \
+    ((p1)->tv_sec p3 (p2)->tv_sec || ((p1)->tv_sec == (p2)->tv_sec && \
+    (p1)->tv_usec p3 (p2)->tv_usec))
+#define timerclear( x )         ((x)->tv_sec = (x)->tv_usec = 0)
+
+/* Macros to manipulate the parameters to asynchronous completion messages */
+#define WSAMAKEASYNCREPLY( p1, p2 )     MAKELONG( p1, p2 )
+#define WSAMAKESELECTREPLY( p1, p2 )    MAKELONG( p1, p2 )
+#define WSAGETASYNCBUFLEN( x )          LOWORD( x )
+#define WSAGETASYNCERROR( x )           HIWORD( x )
+#define WSAGETSELECTEVENT( x )          LOWORD( x )
+#define WSAGETSELECTERROR( x )          HIWORD( x )
+
+/* Macro for compatiblity */
+#define h_errno WSAGetLastError()
+
+:include cplusepi.sp
+
+:segment !WINSOCK2
+#endif /* _WINSOCKAPI_ */
+:endsegment
+:segment WINSOCK2
+#endif /* _WINSOCK2API_ */
+:endsegment

@@ -108,10 +108,10 @@ static gui_menu_struct MacMenu[] = {
 };
 
 
-DLGPICKTEXT WndGetName;
-static char *WndGetName( char ***from, int i )
+static DLGPICKTEXT WndGetName;
+static char *WndGetName( void *from, int i )
 {
-    return( *from[i] );
+    return( *((char ***)from)[i] );
 }
 
 #ifdef DEADCODE
@@ -168,6 +168,8 @@ static void MacChangeMac( a_window *wnd, wnd_macro *mac, unsigned key,
     *owner = curr;
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
+
+static void     MacModify( a_window *wnd, int row, int piece );
 
 static bool MacModWhat( a_window *wnd, wnd_row row )
 {
@@ -539,17 +541,9 @@ static  bool    MacGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static int MacCompare( wnd_macro **pa, wnd_macro **pb )
+static int MacCompare( void *pa, void *pb )
 {
-    return( (*pa)->key - (*pb)->key );
-}
-
-static WNDREFRESH MacRefresh;
-static void     MacRefresh( a_window *wnd )
-{
-    MacReSize( wnd );
-    WndNoSelect( wnd );
-    WndRepaint( wnd );
+    return( (*(wnd_macro **)pa)->key - (*(wnd_macro **)pb)->key );
 }
 
 static void MacReSize( a_window *wnd )
@@ -584,6 +578,14 @@ static void MacReSize( a_window *wnd )
                         max[ PIECE_WHERE ] + 2 * WndAvgCharX( wnd );
     Indents[ PIECE_TEXT ] =  Indents[ PIECE_WHAT ] +
                         max[ PIECE_WHAT ] + 2 * WndAvgCharX( wnd );
+}
+
+static WNDREFRESH MacRefresh;
+static void     MacRefresh( a_window *wnd )
+{
+    MacReSize( wnd );
+    WndNoSelect( wnd );
+    WndRepaint( wnd );
 }
 
 static WNDCALLBACK MacEventProc;

@@ -74,8 +74,8 @@ enum {
 #define ONE_CASE( c )   ((c)|'\x20')
 #endif
 
-extern char CharSet[];  // character characterizations
-extern unsigned JIS2Unicode( unsigned );
-extern char TokValue[];
+extern unsigned char    CharSet[];  // character characterizations
+extern unsigned         JIS2Unicode( unsigned );
+extern unsigned char    TokValue[];
 
 #endif // __SCAN_H__

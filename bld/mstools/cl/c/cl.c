@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft CL clone utility.
 *
 ****************************************************************************/
 
@@ -43,6 +42,7 @@
 #include "message.h"
 #include "optparse.h"
 #include "parse.h"
+#include "pathconv.h"
 #include "translat.h"
 #include "system.h"
 
@@ -70,51 +70,6 @@
 #define LINK_SUCCESS            0
 #define LINK_NOACTION           (-1)
 #define LINK_ERROR              (-2)
-
-
-/*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    CmdLine *           compCmdLine;
-    CmdLine *           linkCmdLine;
-    int                 itemsParsed;
-    int                 compRc = COMPILE_NOACTION;
-    int                 linkRc = LINK_NOACTION;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    compCmdLine = InitCmdLine( CL_C_NUM_SECTIONS );
-    linkCmdLine = InitCmdLine( CL_L_NUM_SECTIONS );
-    SetDefaultFile( TYPE_C_FILE, "source" );
-    AllowTypeFile( TYPE_C_FILE, TYPE_CPP_FILE, TYPE_DEF_FILE, TYPE_OBJ_FILE,
-                   TYPE_LIB_FILE, TYPE_INVALID_FILE );
-    InitMacro();
-
-    /*** Parse the command line and translate to Watcom options ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed==0 || cmdOpts.help ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-    OptionsTranslate( &cmdOpts, compCmdLine, linkCmdLine );
-
-    /*** Spawn the compiler ***/
-    compRc = compile( &cmdOpts, compCmdLine );
-    if( compRc == COMPILE_ERROR )  exit( EXIT_FAILURE );
-    if( !cmdOpts.c ) {
-        linkRc = link( &cmdOpts, linkCmdLine );
-    }
-    if( compRc == COMPILE_NOACTION  &&  linkRc == LINK_NOACTION ) {
-        FatalError( "Nothing to do!" );
-    }
-    FiniParse( &cmdOpts );
-    exit( EXIT_SUCCESS );
-}
 
 
 /*
@@ -168,6 +123,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
     char                drive[_MAX_DRIVE];
     char                dir[_MAX_DIR];
     char                fname[_MAX_FNAME];
+    char                ext[_MAX_EXT];
     char                fullPath[_MAX_PATH];
     int                 count;
 
@@ -185,8 +141,8 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
             compiler = C_COMPILER;
             AppendCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION, compiler );
             AppendCmdLine( cloneCmdLine, CL_C_FILENAMES_SECTION, filename );
-            if (!cmdOpts->nowopts) {
-                AppendCmdLine(cloneCmdLine, CL_C_OPTS_SECTION, "-aa");
+            if( !cmdOpts->nowopts ) {
+                AppendCmdLine( cloneCmdLine, CL_C_OPTS_SECTION, "-aa" );
             }
             args = MergeCmdLine( cloneCmdLine, CL_C_PROGNAME_SECTION,
                                  CL_C_MACROS_SECTION, CL_C_OPTS_SECTION,
@@ -208,7 +164,8 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
         }
 
         /*** Spawn the compiler ***/
-        fprintf( stderr, "%s\n", filename ); /* print name of file we're compiling */
+        _splitpath( filename, drive, dir, fname, ext );
+        fprintf( stderr, "%s%s\n", fname, ext ); /* print name of file we're compiling */
         if( cmdOpts->showwopts ) {
             for( count=0; args[count]!=NULL; count++ ) {
                 fprintf( stderr, "%s ", args[count] );
@@ -226,10 +183,13 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
             }
         }
 
-        /*** Add the object file to the linker list ***/
-        _splitpath( filename, drive, dir, fname, NULL );
-        _makepath( fullPath, drive, dir, fname, ".obj" );
-        AddFile( TYPE_OBJ_FILE, fullPath );
+        /*** Add the object file to the linker list, observe -Fo ***/
+        if( cmdOpts->Fo ) {
+            AddFile( TYPE_OBJ_FILE, PathConvert( cmdOpts->Fo_value->data, '"' ) );
+        } else {
+            _makepath( fullPath, NULL, NULL, fname, ".obj" );
+            AddFile( TYPE_OBJ_FILE, fullPath );
+        }
 
         /*** Prepare for the next iteration ***/
         DestroyCmdLine( cloneCmdLine );
@@ -263,7 +223,7 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *linkCmdLine )
 
     /*** Process all object and library file names ***/
     for( numFiles=0; ; numFiles++ ) {
-        filename = GetNextFile( &fileType, TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_INVALID_FILE );
+        filename = GetNextFile( &fileType, TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE, TYPE_INVALID_FILE );
         if( filename == NULL )  break;
         AppendCmdLine( linkCmdLine, CL_L_FILENAMES_SECTION, filename );
     }
@@ -295,4 +255,51 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *linkCmdLine )
         }
     }
     return( LINK_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    CmdLine *           compCmdLine;
+    CmdLine *           linkCmdLine;
+    int                 itemsParsed;
+    int                 compRc = COMPILE_NOACTION;
+    int                 linkRc = LINK_NOACTION;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    compCmdLine = InitCmdLine( CL_C_NUM_SECTIONS );
+    linkCmdLine = InitCmdLine( CL_L_NUM_SECTIONS );
+    SetDefaultFile( TYPE_C_FILE, "source" );
+    AllowTypeFile( TYPE_C_FILE, TYPE_CPP_FILE, TYPE_DEF_FILE, TYPE_OBJ_FILE,
+                   TYPE_LIB_FILE, TYPE_RES_FILE, TYPE_INVALID_FILE );
+    InitMacro();
+
+    /*** Parse the command line and translate to Watcom options ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed==0 || cmdOpts.help ) {
+        if( !cmdOpts.nologo )
+            BannerMessage();
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+    OptionsTranslate( &cmdOpts, compCmdLine, linkCmdLine );
+
+    /*** Spawn the compiler ***/
+    compRc = compile( &cmdOpts, compCmdLine );
+    if( compRc == COMPILE_ERROR )  exit( EXIT_FAILURE );
+    if( !cmdOpts.c ) {
+        linkRc = link( &cmdOpts, linkCmdLine );
+    }
+    if( compRc == COMPILE_NOACTION  &&  linkRc == LINK_NOACTION ) {
+        FatalError( "Nothing to do!" );
+    }
+    FiniParse( &cmdOpts );
+    exit( EXIT_SUCCESS );
 }

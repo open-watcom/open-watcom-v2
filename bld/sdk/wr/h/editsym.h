@@ -40,4 +40,3 @@
 #define IDB_SYM_SHOW_UNUSED     118
 #define IDB_SYM_SYMTEXT         119
 #define IDB_SYM_SYMVALUE        120
-

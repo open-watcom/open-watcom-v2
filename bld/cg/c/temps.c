@@ -31,12 +31,14 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "procdef.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "cgaux.h"
 #include "feprotos.h"
+#include "zoiks.h"
 
 typedef struct stack_temp {
         struct stack_temp       *others;
@@ -59,7 +61,7 @@ extern  void            TransferTempFlags(void);
 extern  void            PushLocals(void);
 extern  void            SetTempLocation(name*,type_length);
 extern  type_length     TempLocation( name * );
-extern  bool            TempAllocBefore( name *, name * );
+extern  bool            TempAllocBefore( void *, void * );
 
 extern    name          *Names[];
 extern    proc_def      *CurrProc;
@@ -74,22 +76,54 @@ static    stack_entry   *StackMap;
 #define USED_ONCE       USE_WITHIN_BLOCK
 #define USED_TWICE      USE_IN_ANOTHER_BLOCK
 
-extern  void    AssignTemps() {
-/*****************************/
 
+static  void    StackEntry( stack_temp *st_temp, name *temp )
+/***********************************************************/
+{
+    stack_entry *new;
 
-/*   Parameters on stack have already been assigned locations*/
-
-    TransferTempFlags();        /* make sure whole structure goes in mem*/
-    ParmPropagate();            /* assign temps which may use parm memory*/
-    PushLocals();               /* assign locals which may be pushed */
-    AssignOtherLocals();        /* assign memory to all other locals*/
+    new = CGAlloc( sizeof( stack_entry ) );
+    new->link = StackMap;
+    new->size = temp->n.size;
+    new->location = temp->t.location;
+    new->temp.first = st_temp->first;
+    new->temp.last = st_temp->last;
+    new->temp.others = NULL;
+    StackMap = new;
 }
 
 
-static  void    TellTempLocs() {
-/*******************************
+extern  void    InitStackMap( void )
+/**********************************/
+{
+    StackMap = NULL;
+}
 
+
+static  void    ReInitStackMap( void )
+/************************************/
+/* we are flushing blocks so make all stack locations from block flushed*/
+/* reusable in the next block to be flushed*/
+{
+    stack_entry *stack;
+    stack_temp  *other;
+
+    stack = StackMap;
+    while( stack != NULL ) {
+        while( stack->temp.others != NULL ) {
+            other = stack->temp.others;
+            stack->temp.others = stack->temp.others->others;
+            CGFree( other );
+        }
+        stack->temp.first = LAST_INS_ID;
+        stack->temp.last = FIRST_INS_ID;
+        stack = stack->link;
+    }
+}
+
+
+static  void    TellTempLocs( void )
+/***********************************
     C++ front end wants to know where all the temps are in memory
     for exception handling. They really only care about the relative
     displacements between the temps, so we don't have to worry about
@@ -103,7 +137,7 @@ static  void    TellTempLocs() {
     just add in CurrProc->locals.size. This doesn't affect them on the
     Intel as the relative values are still the same.
 */
-
+{
     name        *temp;
     int         ans;
 
@@ -119,9 +153,357 @@ static  void    TellTempLocs() {
     }
 }
 
-extern  void    AssignOtherLocals() {
-/***********************************/
 
+static  stack_entry     *ReUsableStack(stack_temp *st_temp,name *temp)
+/********************************************************************/
+{
+    type_length size;
+    stack_entry *stack;
+    stack_temp  *others;
+
+    stack = StackMap;
+    size = temp->n.size;
+    while( stack != NULL ) {
+        others = &stack->temp;
+        if( size <= stack->size ) {
+            for( ;; ) {
+                if( others->first <= st_temp->last
+                   && others->last >= st_temp->first ) break;
+                others = others->others;
+                if( others == NULL ) return( stack );
+            }
+        }
+        stack = stack->link;
+    }
+    return( stack );
+}
+
+
+static bool SetLastUse( name *op, name *temp,
+                        stack_temp *new, instruction *ins )
+/*********************************************************/
+{
+    if( op->n.class == N_INDEXED && op->i.base != NULL ) {
+        op = op->i.base;
+    }
+    if( op->n.class == N_TEMP ) {
+        if( DeAlias( op ) == temp ) {
+            _INS_NOT_BLOCK ( ins );
+            new->last = ins->id;
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+
+
+static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
+/***********************************************************************/
+{
+    instruction *ins;
+    int         i;
+
+    ins = blk->ins.hd.prev;
+    for( ;; ) {
+        if( ins->head.opcode == OP_BLOCK ) {
+            new->last = new->first;
+            return;
+        }
+        if( ins->result != NULL && ins->result->n.class == N_TEMP
+         && DeAlias( ins->result ) == temp ) {
+            if( SideEffect( ins ) ) {
+                new->last = new->first + 1;
+                return;
+            } else {
+                DoNothing( ins );
+            }
+        } else {
+            i = ins->num_operands;
+            while( --i >= 0 ) {
+                if( SetLastUse( ins->operands[i], temp, new, ins ) ) return;
+            }
+            if( ins->result != NULL ) {
+                if( SetLastUse( ins->result, temp, new, ins ) ) return;
+            }
+        }
+        ins = ins->head.prev;
+    }
+}
+
+
+static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
+/*************************************************************************/
+{
+    instruction *ins;
+    int         i;
+
+    ins = blk->ins.hd.next;
+    for(;;) {
+        if( ins->head.opcode == OP_BLOCK ) {
+            new->first = FIRST_INS_ID;
+            return;
+        }
+        if( ins->result != NULL ) {
+            if( ins->result->n.class == N_TEMP ) {
+                if( DeAlias( ins->result ) == temp ) {
+                    new->first = ins->id;
+                    return;
+                }
+             }
+        }
+        i = ins->num_operands;
+        while( --i >= 0 ) {
+            if( ins->operands[i]->n.class == N_TEMP ) {
+                if( DeAlias( ins->operands[ i ] ) == temp ) {
+                    new->first = ins->id;
+                    return;
+                }
+            }
+        }
+        ins = ins->head.next;
+    }
+}
+
+
+static  void    CalcRange( stack_temp *new, name *temp )
+/******************************************************/
+{
+    block       *blk;
+
+    blk = HeadBlock;
+    while( blk->id != temp->t.u.block_id ) {
+        blk = blk->next_block;
+    }
+    ScanForFirstDefn( blk, new, temp );
+    ScanForLastUse( blk, new, temp );
+}
+
+
+static  bool    In( name *op, name *name )
+/****************************************/
+{
+    if( op->n.class == N_INDEXED ) {
+        if( In( op->i.index, name ) ) return( TRUE );
+        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+            return( In( op->i.base, name ) );
+        }
+    } else if( op->n.class == N_TEMP ) {
+        if( DeAlias( op ) == name ) return( TRUE );
+    }
+    return( FALSE );
+}
+
+
+static  bool    UsedByLA( instruction *ins, name *temp )
+/******************************************************/
+{
+    if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
+        if( ins->operands[ 0 ] == temp ) return( TRUE );
+    }
+    return( FALSE );
+}
+
+
+static  instruction     *FindOnlyIns( name *name, bool *any_references )
+/**********************************************************************/
+{
+    block       *blk;
+    instruction *ins;
+    instruction *onlyins;
+    int         i;
+
+    if( name->v.block_usage == USED_NEVER ) {
+        *any_references = FALSE;
+        return( NULL );
+    }
+    if( name->v.block_usage == USED_TWICE ) {
+        *any_references = TRUE;
+        return( NULL );
+    }
+    *any_references = TRUE;
+    blk = HeadBlock;
+    onlyins = NULL;
+    while( blk != NULL ) {
+        ins = blk->ins.hd.next;
+        while( ins->head.opcode != OP_BLOCK ) {
+            i = ins->num_operands;
+            while( --i >= 0 ) {
+                if( In( ins->operands[ i ], name ) ) {
+                    if( onlyins != NULL ) return( NULL );
+                    onlyins = ins;
+                }
+            }
+            if( ins->result != NULL ) {
+                if( In( ins->result, name ) ) {
+                    if( onlyins != NULL ) return( NULL );
+                    onlyins = ins;
+                }
+            }
+            ins = ins->head.next;
+        }
+        blk = blk->next_block;
+    }
+    if( onlyins == NULL ) {
+        *any_references = FALSE;
+    }
+    return( onlyins );
+}
+
+
+extern  void    PropLocal( name *temp )
+/*************************************/
+{
+    name        *scan;
+
+    scan = temp->t.alias;
+    while( scan != temp ) {
+        scan->t.location = temp->t.location;
+        scan->v.usage |= HAS_MEMORY;
+        scan = scan->t.alias;
+    }
+}
+
+
+static  void    NewLocation( name *temp, type_length size )
+/*********************************************************/
+{
+    SetTempLocation( temp, size );
+    temp->v.usage |= HAS_MEMORY;
+    PropLocal( temp );
+}
+
+
+static  void    AllocNewLocal( name *temp )
+/*****************************************/
+{
+    type_length size;
+    stack_entry *stack;
+    stack_temp  *new_st_temp;
+    instruction *ins;
+    stack_temp  st_temp;
+    bool        any_references;
+
+#if 0
+    // this is disabled because users can generate code which
+    // may be incorrect (most likely) but which we don't want
+    // to trigger this assert.
+    /* such as:
+    enum MonthEnum { InvalidMonth = 0, January, February, March };
+    long       IntoDays() {
+        MonthEnum i = January;
+        for ( ; i <= 11; ((short&) i)++ ) ;
+        return 0;
+    } */
+    // run through the aliases making sure that none
+    // are larger than the master  BBB - May 26, 1997
+    {
+        name    *t;
+
+        for( t = temp->t.alias; t != temp; t = t->t.alias ) {
+            if( t->t.temp_flags & CG_INTRODUCED ) continue;
+            assert( t->n.size <= temp->n.size );
+        }
+    }
+#endif
+    size = _RoundUp( temp->n.size, REG_SIZE ); /* align size*/
+    if( ( temp->v.usage & ( USE_IN_ANOTHER_BLOCK | USE_ADDRESS ) ) == EMPTY
+     && temp->t.u.block_id != NO_BLOCK_ID ) {
+        CalcRange( &st_temp, temp );
+        if( st_temp.first != st_temp.last ) { /*% actually needed*/
+            stack = ReUsableStack( &st_temp, temp );
+            if( stack != NULL ) {
+                temp->t.location = stack->location;
+                new_st_temp = CGAlloc( sizeof( stack_temp ) );
+                new_st_temp->first = st_temp.first;
+                new_st_temp->last = st_temp.last;
+                new_st_temp->others = stack->temp.others;
+                stack->temp.others = new_st_temp;
+            } else {
+                SetTempLocation( temp, size );
+                StackEntry( &st_temp, temp );
+            }
+            temp->v.usage |= HAS_MEMORY;
+            PropLocal( temp );
+        } else {
+            temp->v.usage &= ~NEEDS_MEMORY;
+        }
+    } else {
+        if( BlockByBlock || ( temp->v.usage & USE_ADDRESS ) != EMPTY ) {
+            NewLocation( temp, size );
+            return;
+        }
+        ins = FindOnlyIns( temp, &any_references );
+        if( ins == NULL || UsedByLA( ins, temp ) || SideEffect( ins ) ) {
+            if( any_references ) {
+                NewLocation( temp, size );
+            } else {
+                temp->v.usage &= ~NEEDS_MEMORY;
+            }
+            return;
+        }
+        DoNothing( ins );
+        temp->v.usage &= ~NEEDS_MEMORY;
+    }
+}
+
+
+static  void    MarkUsage( name *op )
+/***********************************/
+{
+    if( op->n.class == N_INDEXED ) {
+        if( op->i.index != NULL ) {
+            MarkUsage( op->i.index );
+        }
+        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+            MarkUsage( op->i.base );
+        }
+    } else if( op->n.class == N_TEMP ) {
+        op = DeAlias( op );
+        if( op->v.block_usage == USED_NEVER ) {
+            op->v.block_usage = USED_ONCE;
+        } else {
+            op->v.block_usage = USED_TWICE;
+        }
+    }
+}
+
+
+static  void    CalcNumberOfUses( void )
+/**************************************/
+{
+    name        *temp;
+    block       *blk;
+    instruction *ins;
+    int         i;
+
+    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+        if( temp->t.temp_flags & STACK_PARM ) {
+            temp->v.block_usage = USED_TWICE;
+        } else {
+            temp->v.block_usage = USED_NEVER;
+        }
+    }
+    blk = HeadBlock;
+    while( blk != NULL ) {
+        ins = blk->ins.hd.next;
+        while( ins->head.opcode != OP_BLOCK ) {
+            i = ins->num_operands;
+            while( --i >= 0 ) {
+                MarkUsage( ins->operands[i] );
+            }
+            if( ins->result != NULL ) {
+                MarkUsage( ins->result );
+            }
+            ins = ins->head.next;
+        }
+        blk = blk->next_block;
+    }
+}
+
+
+extern  void    AssignOtherLocals( void )
+/***************************************/
+{
     name        *temp;
     name        **owner;
     name        *rest;
@@ -171,9 +553,9 @@ static void PropAParm( name *temp )
 }
 
 
-extern  void    ParmPropagate() {
-/*******************************/
-
+extern  void    ParmPropagate( void )
+/***********************************/
+{
     instruction *ins;
     block       *blk;
     int         i;
@@ -196,256 +578,9 @@ extern  void    ParmPropagate() {
 }
 
 
-static  stack_entry     *ReUsableStack(stack_temp *st_temp,name *temp) {
-/**********************************************************************/
-
-    type_length size;
-    stack_entry *stack;
-    stack_temp  *others;
-
-    stack = StackMap;
-    size = temp->n.size;
-    while( stack != NULL ) {
-        others = &stack->temp;
-        if( size <= stack->size ) {
-            for(;;) {
-                if( others->first <= st_temp->last
-                   && others->last >= st_temp->first ) break;
-                others = others->others;
-                if( others == NULL ) return( stack );
-            }
-        }
-        stack = stack->link;
-    }
-    return( stack );
-}
-
-
-static  bool    In( name *op, name *name ) {
-/******************************************/
-
-
-    if( op->n.class == N_INDEXED ) {
-        if( In( op->i.index, name ) ) return( TRUE );
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
-            return( In( op->i.base, name ) );
-        }
-    } else if( op->n.class == N_TEMP ) {
-        if( DeAlias( op ) == name ) return( TRUE );
-    }
-    return( FALSE );
-}
-
-
-static  instruction     *FindOnlyIns( name *name, bool *any_references ) {
-/************************************************************************/
-
-    block       *blk;
-    instruction *ins;
-    instruction *onlyins;
-    int         i;
-
-    if( name->v.block_usage == USED_NEVER ) {
-        *any_references = FALSE;
-        return( NULL );
-    }
-    if( name->v.block_usage == USED_TWICE ) {
-        *any_references = TRUE;
-        return( NULL );
-    }
-    *any_references = TRUE;
-    blk = HeadBlock;
-    onlyins = NULL;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( In( ins->operands[ i ], name ) ) {
-                    if( onlyins != NULL ) return( NULL );
-                    onlyins = ins;
-                }
-            }
-            if( ins->result != NULL ) {
-                if( In( ins->result, name ) ) {
-                    if( onlyins != NULL ) return( NULL );
-                    onlyins = ins;
-                }
-            }
-            ins = ins->head.next;
-        }
-        blk = blk->next_block;
-    }
-    if( onlyins == NULL ) {
-        *any_references = FALSE;
-    }
-    return( onlyins );
-}
-
-
-static  bool    UsedByLA( instruction *ins, name *temp ) {
-/********************************************************/
-
-    if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
-        if( ins->operands[ 0 ] == temp ) return( TRUE );
-    }
-    return( FALSE );
-}
-
-static  void    AllocNewLocal( name *temp ) {
-/*******************************************/
-
-    type_length size;
-    stack_entry *stack;
-    stack_temp  *new_st_temp;
-    instruction *ins;
-    stack_temp  st_temp;
-    bool        any_references;
-
-#if 0
-    // this is disabled because users can generate code which
-    // may be incorrect (most likely) but which we don't want
-    // to trigger this assert.
-    /* such as:
-    enum MonthEnum { InvalidMonth = 0, January, February, March };
-    long       IntoDays() {
-        MonthEnum i = January;
-        for ( ; i <= 11; ((short&) i)++ ) ;
-        return 0;
-    } */
-    // run through the aliases making sure that none
-    // are larger than the master  BBB - May 26, 1997
-    {
-        name    *t;
-
-        for( t = temp->t.alias; t != temp; t = t->t.alias ) {
-            if( t->t.temp_flags & CG_INTRODUCED ) continue;
-            assert( t->n.size <= temp->n.size );
-        }
-    }
-#endif
-    size = _RoundUp( temp->n.size, REG_SIZE ); /* align size*/
-    if( ( temp->v.usage & ( USE_IN_ANOTHER_BLOCK | USE_ADDRESS ) ) == EMPTY
-     && temp->t.u.block_id != NO_BLOCK_ID ) {
-        CalcRange( &st_temp, temp );
-        if( st_temp.first != st_temp.last ) { /*% actually needed*/
-            stack = ReUsableStack( &st_temp, temp );
-            if( stack != NULL ) {
-                temp->t.location = stack->location;
-                _Alloc( new_st_temp, sizeof( stack_temp ) );
-                new_st_temp->first = st_temp.first;
-                new_st_temp->last = st_temp.last;
-                new_st_temp->others = stack->temp.others;
-                stack->temp.others = new_st_temp;
-            } else {
-                SetTempLocation( temp, size );
-                StackEntry( &st_temp, temp );
-            }
-            temp->v.usage |= HAS_MEMORY;
-            PropLocal( temp );
-        } else {
-            temp->v.usage &= ~NEEDS_MEMORY;
-        }
-    } else {
-        if( BlockByBlock || ( temp->v.usage & USE_ADDRESS ) != EMPTY ) {
-            NewLocation( temp, size );
-            return;
-        }
-        ins = FindOnlyIns( temp, &any_references );
-        if( ins == NULL || UsedByLA( ins, temp ) || SideEffect( ins ) ) {
-            if( any_references ) {
-                NewLocation( temp, size );
-            } else {
-                temp->v.usage &= ~NEEDS_MEMORY;
-            }
-            return;
-        }
-        DoNothing( ins );
-        temp->v.usage &= ~NEEDS_MEMORY;
-    }
-}
-
-
-static  void    NewLocation( name *temp, type_length size ) {
-/***********************************************************/
-
-    SetTempLocation( temp, size );
-    temp->v.usage |= HAS_MEMORY;
-    PropLocal( temp );
-}
-
-
-static  void    MarkUsage( name *op ) {
-/*************************************/
-
-    if( op->n.class == N_INDEXED ) {
-        if( op->i.index != NULL ) {
-            MarkUsage( op->i.index );
-        }
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
-            MarkUsage( op->i.base );
-        }
-    } else if( op->n.class == N_TEMP ) {
-        op = DeAlias( op );
-        if( op->v.block_usage == USED_NEVER ) {
-            op->v.block_usage = USED_ONCE;
-        } else {
-            op->v.block_usage = USED_TWICE;
-        }
-    }
-}
-
-
-static  void    CalcNumberOfUses() {
-/**********************************/
-
-    name        *temp;
-    block       *blk;
-    instruction *ins;
-    int         i;
-
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->t.temp_flags & STACK_PARM ) {
-            temp->v.block_usage = USED_TWICE;
-        } else {
-            temp->v.block_usage = USED_NEVER;
-        }
-    }
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                MarkUsage( ins->operands[i] );
-            }
-            if( ins->result != NULL ) {
-                MarkUsage( ins->result );
-            }
-            ins = ins->head.next;
-        }
-        blk = blk->next_block;
-    }
-}
-
-
-extern  void    PropLocal( name *temp ) {
+extern  void    AllocALocal( name *name )
 /***************************************/
-
-    name        *scan;
-
-    scan = temp->t.alias;
-    while( scan != temp ) {
-        scan->t.location = temp->t.location;
-        scan->v.usage |= HAS_MEMORY;
-        scan = scan->t.alias;
-    }
-}
-
-
-extern  void    AllocALocal( name *name ) {
-/*****************************************/
-
+{
     name = DeAlias( name );
     if( ( name->v.usage & HAS_MEMORY ) == EMPTY ) {
         name->v.block_usage = USED_ONCE;
@@ -475,10 +610,38 @@ static void AssgnATemp( name *temp, block_num curr_id )
 }
 
 
-extern  void    AssgnMoreTemps( block_num curr_id ) {
-/***************************************************/
+extern  void    FiniStackMap( void )
+/**********************************/
+{
+    stack_entry *junk1;
+    stack_temp  *junk2;
+    name        *temp;
 
-    /* run the block list. It's faster if we're using /od */
+    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+        if( ( temp->t.temp_flags & ALIAS ) != EMPTY ) continue;
+        if( ( temp->v.usage & USE_ADDRESS ) == EMPTY ) continue;
+        if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) continue;
+        AllocNewLocal( temp );
+    }
+
+    while( StackMap != NULL ) {
+        junk1 = StackMap;
+        StackMap = StackMap->link;
+        while( junk1->temp.others != NULL ) {
+            junk2 = junk1->temp.others;
+            junk1->temp.others = junk1->temp.others->others;
+            CGFree( junk2 );
+        }
+        CGFree( junk1 );
+    }
+    TellTempLocs();
+}
+
+
+extern  void    AssgnMoreTemps( block_num curr_id )
+/*************************************************/
+/* run the block list. It's faster if we're using /od */
+{
     instruction *ins;
     block       *blk;
     int         i;
@@ -507,182 +670,9 @@ extern  void    AssgnMoreTemps( block_num curr_id ) {
 }
 
 
-extern  void    InitStackMap() {
-/******************************/
-
-    StackMap = NULL;
-}
-
-
-static  void    ReInitStackMap() {
-/********************************/
-
-/* we are flushing blocks so make all stack locations from block flushed*/
-/* reusable in the next block to be flushed*/
-
-    stack_entry *stack;
-    stack_temp  *other;
-
-    stack = StackMap;
-    while( stack != NULL ) {
-        while( stack->temp.others != NULL ) {
-            other = stack->temp.others;
-            stack->temp.others = stack->temp.others->others;
-            _Free( other, sizeof( stack_temp ) );
-        }
-        stack->temp.first = LAST_INS_ID;
-        stack->temp.last = FIRST_INS_ID;
-        stack = stack->link;
-    }
-}
-
-
-extern  void    FiniStackMap() {
-/******************************/
-
-    stack_entry *junk1;
-    stack_temp  *junk2;
-    name        *temp;
-
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( ( temp->t.temp_flags & ALIAS ) != EMPTY ) continue;
-        if( ( temp->v.usage & USE_ADDRESS ) == EMPTY ) continue;
-        if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) continue;
-        AllocNewLocal( temp );
-    }
-
-    while( StackMap != NULL ) {
-        junk1 = StackMap;
-        StackMap = StackMap->link;
-        while( junk1->temp.others != NULL ) {
-            junk2 = junk1->temp.others;
-            junk1->temp.others = junk1->temp.others->others;
-            _Free( junk2, sizeof( stack_temp ) );
-        }
-        _Free( junk1, sizeof( stack_entry ) );
-    }
-    TellTempLocs();
-}
-
-
-static  void    StackEntry( stack_temp *st_temp, name *temp ) {
-/*************************************************************/
-
-    stack_entry *new;
-
-    _Alloc( new, sizeof( stack_entry ) );
-    new->link = StackMap;
-    new->size = temp->n.size;
-    new->location = temp->t.location;
-    new->temp.first = st_temp->first;
-    new->temp.last = st_temp->last;
-    new->temp.others = NULL;
-    StackMap = new;
-}
-
-
-static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp ) {
-/***************************************************************************/
-
-    instruction *ins;
-    int         i;
-
-    ins = blk->ins.hd.next;
-    for(;;) {
-        if( ins->head.opcode == OP_BLOCK ) {
-            new->first = FIRST_INS_ID;
-            return;
-        }
-        if( ins->result != NULL ) {
-            if( ins->result->n.class == N_TEMP ) {
-                if( DeAlias( ins->result ) == temp ) {
-                    new->first = ins->id;
-                    return;
-                }
-             }
-        }
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            if( ins->operands[i]->n.class == N_TEMP ) {
-                if( DeAlias( ins->operands[ i ] ) == temp ) {
-                    new->first = ins->id;
-                    return;
-                }
-            }
-        }
-        ins = ins->head.next;
-    }
-}
-
-
-static bool SetLastUse( name *op, name *temp,
-                        stack_temp *new, instruction *ins ) {
-/***********************************************************/
-
-    if( op->n.class == N_INDEXED && op->i.base != NULL ) {
-        op = op->i.base;
-    }
-    if( op->n.class == N_TEMP ) {
-        if( DeAlias( op ) == temp ) {
-            new->last = ins->id;
-            return( TRUE );
-        }
-    }
-    return( FALSE );
-}
-
-
-static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp ) {
-/*************************************************************************/
-
-    instruction *ins;
-    int         i;
-
-    ins = blk->ins.hd.prev;
-    for(;;) {
-        if( ins->head.opcode == OP_BLOCK ) {
-            new->last = new->first;
-            return;
-        }
-        if( ins->result != NULL && ins->result->n.class == N_TEMP
-         && DeAlias( ins->result ) == temp ) {
-            if( SideEffect( ins ) ) {
-                new->last = new->first + 1;
-                return;
-            } else {
-                DoNothing( ins );
-            }
-        } else {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                if( SetLastUse( ins->operands[i], temp, new, ins ) ) return;
-            }
-            if( ins->result != NULL ) {
-                if( SetLastUse( ins->result, temp, new, ins ) ) return;
-            }
-        }
-        ins = ins->head.prev;
-    }
-}
-
-
-static  void    CalcRange( stack_temp *new, name *temp ) {
-/********************************************************/
-
-    block       *blk;
-
-    blk = HeadBlock;
-    while( blk->id != temp->t.u.block_id ) {
-        blk = blk->next_block;
-    }
-    ScanForFirstDefn( blk, new, temp );
-    ScanForLastUse( blk, new, temp );
-}
-
-
-extern  void            CountTempRefs() {
-/***************************************/
-
+extern  void            CountTempRefs( void )
+/*******************************************/
+{
     block               *blk;
     instruction         *ins;
     int                 i;
@@ -710,4 +700,15 @@ extern  void            CountTempRefs() {
         }
         blk = blk->next_block;
     }
+}
+
+
+extern  void    AssignTemps( void )
+/*********************************/
+/*   Parameters on stack have already been assigned locations*/
+{
+    TransferTempFlags();        /* make sure whole structure goes in mem*/
+    ParmPropagate();            /* assign temps which may use parm memory*/
+    PushLocals();               /* assign locals which may be pushed */
+    AssignOtherLocals();        /* assign memory to all other locals*/
 }

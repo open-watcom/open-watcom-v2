@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "gui.h"
-#include "windows.h"
+#include "guiwind.h"
 
-void TrayCallBack( HWND hwnd, UINT wParam, LONG lParam ) {
+void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
+{
     return;
 }
 
-
-void WndSizeChange( HWND hwnd, UINT wparam, LONG lparam ) {
+void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam )
+{
     return;
 }

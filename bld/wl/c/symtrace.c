@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  symbol/module tracing routines
 *
 ****************************************************************************/
 
-
-/*
- *  SYMTRACE : symbol/module tracing routines
- *
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -44,9 +38,9 @@
 #include "overlays.h"
 #include "symtrace.h"
 
-static trace_info *     CurrTrace;
+static trace_info       *CurrTrace;
 
-trace_info *     TraceList;
+trace_info       *TraceList;
 
 void ResetSymTrace( void )
 /************************/
@@ -56,13 +50,13 @@ void ResetSymTrace( void )
 
 static void CheckFileTrace( section * );
 
-extern void CheckTraces( void )
+void CheckTraces( void )
 /*****************************/
 // first check for .obj files being traced, then check libraries
 {
-    trace_info *    info;
-    trace_info *    next;
-    file_list *     lib;
+    trace_info      *info;
+    trace_info      *next;
+    file_list       *lib;
     trace_info **   prev;
 
     prev = &TraceList;
@@ -70,8 +64,7 @@ extern void CheckTraces( void )
         next = info->next;
         if( info->member == NULL ) {
             CurrTrace = info;
-            CheckFileTrace( Root );
-            ProcAllOvl( CheckFileTrace );
+            WalkAllSects( CheckFileTrace );
             if( !info->found ) {
                 LnkMsg( WRN+MSG_TRACE_OBJ_NOT_FOUND, "s", info->u.name );
                 _LnkFree( info->u.name );
@@ -93,12 +86,13 @@ extern void CheckTraces( void )
     *prev = NULL;
 }
 
-static void CheckFileTrace( section * sect )
+static void CheckFileTrace( section *sect )
 /******************************************/
 {
-    file_list *     list;
+    file_list       *list;
 
-    if( CurrTrace->found ) return;
+    if( CurrTrace->found )
+        return;
     for( list = sect->files; list != NULL; list = list->next_file ) {
         if( FNAMECMPSTR( list->file->name, CurrTrace->u.name ) == 0 ) {
             CurrTrace->found = TRUE;
@@ -109,10 +103,10 @@ static void CheckFileTrace( section * sect )
     }
 }
 
-extern void CheckLibTrace( file_list * lib )
+void CheckLibTrace( file_list *lib )
 /******************************************/
 {
-    trace_info *    info;
+    trace_info      *info;
 
     for( info = TraceList; info != NULL; info = info->next ) {
         if( !info->found ) {
@@ -126,11 +120,11 @@ extern void CheckLibTrace( file_list * lib )
     }
 }
 
-extern bool FindLibTrace( mod_entry *mod )
+bool FindLibTrace( mod_entry *mod )
 /****************************************/
 {
     trace_info **   prev;
-    trace_info *    info;
+    trace_info      *info;
 
     prev = &TraceList;
     for( info = TraceList; info != NULL; info = info->next ) {
@@ -147,10 +141,10 @@ extern bool FindLibTrace( mod_entry *mod )
     return( FALSE );
 }
 
-extern void PrintBadTraces( void )
+void PrintBadTraces( void )
 /********************************/
 {
-    trace_info *    info;
+    trace_info      *info;
 
     for( info = TraceList; info != NULL; info = info->next ) {
         if( info->found ) {
@@ -164,7 +158,7 @@ extern void PrintBadTraces( void )
     CleanTraces();
 }
 
-extern void CleanTraces( void )
+void CleanTraces( void )
 /*****************************/
 {
     trace_info *next;
@@ -180,4 +174,3 @@ extern void CleanTraces( void )
     }
     TraceList = NULL;
 }
-

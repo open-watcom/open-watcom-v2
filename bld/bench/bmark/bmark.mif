@@ -1,0 +1,18 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\bmark\c
+.h: $(bench_dir)\bmark\h
+
+extra_cflags = -I$(bench_dir)\bmark\h -I$(bench_dir)\support
+
+obj_files = emfloat.obj nbench0.obj nbench1.obj misc.obj sysspec.obj
+
+run: bmark.exe .SYMBOLIC
+	copy ..\nnet.dat .
+	bmark
+	del nnet.dat
+    
+build: bmark.exe .SYMBOLIC
+
+bmark.exe : $(obj_files)
+	$(deflink)

@@ -87,13 +87,6 @@ extern void * _wpi_realloc( void *ptr, size_t size );
     #include "new_os2.h"
 #endif
 
-#ifdef _WPI_TEST2_
-    /*
-     * This is used by david to add new functions.  It is temporary.
-     */
-    #include "djb_os2.h"
-#endif
-
 #else
 
     /*

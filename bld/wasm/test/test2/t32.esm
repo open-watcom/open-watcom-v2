@@ -1,0 +1,30 @@
+.387
+_data		SEGMENT	BYTE PUBLIC USE16 'data'
+L$1:
+    DB	74H, 68H, 69H, 73H, 20H, 69H, 73H, 20H
+    DB	61H, 20H, 73H, 74H, 72H, 69H, 6eH, 67H
+    DB	0
+
+_data		ENDS
+_data2		SEGMENT	BYTE PUBLIC USE16 'data'
+L$2:
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	0
+
+_data2		ENDS
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    cld         
+    mov         cx,0bH
+    mov         ax,_data
+    mov         ds,ax
+    mov         si,offset L$1
+    mov         ax,_data2
+    mov         es,ax
+    mov         di,offset L$2
+    rep movsb   
+_TEXT		ENDS
+		END

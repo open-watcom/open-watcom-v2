@@ -41,7 +41,7 @@
 
 char *OptEnvVar="sleep";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: sleep [-?] [@env] time",
     "\tenv                : environment variable to expand",
     "\ttime               : time to sleep in seconds, or a time description",

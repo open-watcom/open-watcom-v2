@@ -181,7 +181,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         sd.TraceOpt = SSF_TRACEOPT_NONE;
         sd.PgmTitle = NULL;
         sd.PgmName = (char *)(const char *)fn;
-        sd.PgmInputs = (char *)cmdline;
+        sd.PgmInputs = (PBYTE)cmdline;
         sd.TermQ = NULL;
         sd.Environment = NULL;
         sd.InheritOpt = SSF_INHERTOPT_PARENT;

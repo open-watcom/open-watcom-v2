@@ -1,0 +1,425 @@
+$# just in case anyone is curious ...
+!ifdef %WCL386
+!    error WCL386 environment variable must not be set
+!endif
+!ifdef %WCL
+!    error WCL environment variable must not be set
+!endif
+!ifdef %WCC
+!    error WCC environment variable must not be set
+!endif
+!ifdef %WCC386
+!    error WCC386 environment variable must not be set
+!endif
+!ifdef %TESTMODE
+!    error You're building in test mode fool!
+!endif
+
+# don't output reams of junk by default
+!ifdef %VERBOSE
+verbose = 1
+!else
+verbose = 0
+!endif
+
+# don't ask, just nuke the files
+.ERASE
+
+# it prevents different target header path mixing
+!ifndef bootstrap
+.BEFORE
+     @set include= 
+!endif
+
+# if you wish to build debug version
+!ifdef %DEBUG_BUILD
+debug_build = $(%DEBUG_BUILD)
+!endif
+# default windowing support
+!ifdef %DEFAULT_WINDOWING
+default_windowing = $(%DEFAULT_WINDOWING)
+!endif
+
+os2_toolkit     = $(%OS2TKROOT)
+
+!ifndef __LINUX__
+
+tools_root      = $(%TOOLDR)\tools
+nlang_root      = $(%DWATCOM)
+build_root      = $(%DEVDIR)
+utils_root      = $(build_root)
+# a good enough location for any OS specific support files that may be needed.
+os_supp_dir     = $(build_root)\os_supp
+
+# The NOVELLNDK environment variable should be added during install. If not, the default location is
+# C:\NOVELL\NDK\NWSDK.
+nwndk_root      = $(%NOVELLNDK)
+ow_nwoss_root   = $(os_supp_dir)\novell
+
+# define compilers
+comp286=*wcc
+#
+# use these to override compilers if necessary
+#
+!ifdef %BWCC
+comp286 += @BWCC
+!endif
+
+!ifdef msc
+comp386=$(msvc_dir)\bin\cl
+!else
+comp386=*wcc386
+!ifdef %BWCC386
+comp386 += @BWCC386
+!endif
+!endif
+
+compaxp = $(nlang_root)\binnt\wccaxp
+!ifdef %BWCCAXP
+compaxp += @BWCCAXP
+!endif
+
+#
+# C++ stuff
+#
+# do not use '*' prefix because C++ MAKEFILEs already compact the cmdline
+# do not use /r or /r7/fpr because C++ has no existing customer base
+
+comp286plus=wpp
+
+!ifdef msc
+comp386plus=$(msvc_dir)\bin\cl
+!else
+comp386plus=wpp386
+!endif
+
+libaxp=$(nlang_root)\binnt\wlibaxp.exe
+
+
+# define library utility
+
+!ifdef msc
+lib=$(msvc_dir)\bin\lib /MACHINE:IX86 /NOLOGO
+!else
+lib=*wlib
+!endif
+
+
+# define linker
+
+!ifdef msc
+linker=$(msvc_dir)\bin\link /MACHINE:IX86 /NOLOGO
+!else
+linker=*wlink
+!endif
+
+
+# define assemblers
+
+asm386=386asm
+asm286=optasm
+wasm=wasm
+
+
+# define resource compilers
+
+!ifdef msc
+rc = $(msdev_dir)\bin\rc
+!else
+rc = rc
+!endif
+
+wrc = wrc
+wrce = wrc -zk
+wrck = wrc -zk
+
+# define resource converter
+
+!ifdef msc
+cvtres = $(msvc_dir)\bin\cvtres /MACHINE:IX86 /NOLOGO
+!else
+cvtres = rem
+!endif
+
+# define yacc
+
+runyacc = yacc
+
+
+#
+# define directories (with trailing \)
+#
+pharlap=$(tools_root)\
+flashtek=$(tools_root)\x32\
+c_dir=$(lang_root)\
+misc_h=$(tools_root)\misc_h\
+toolsdir=$(tools_root)\
+fddir=$(tools_root)\uiforms\
+fdos2dir=$(tools_root)\os2forms\
+wdisasmdir=$(build_root)\wdisasm\
+wldir=$(build_root)\wl\
+wvdir=$(build_root)\wv\
+wsampledir=$(build_root)\wsample\
+watcomdir=$(build_root)\watcom\
+
+#
+# Why the duplicates ?
+#
+sdkdir=$(build_root)\sdk
+wresdir=$(build_root)sdk\rc\wres
+#
+# define directories (without trailing \)
+#
+
+win386dir=$(build_root)\win386
+batchdir=$(build_root)\idebatch
+wclassdir=$(build_root)\wclass
+waxsvr_dir=$(build_root)\waxsvr
+uidir=$(build_root)\ui
+guidir=$(build_root)\gui
+auidir=$(build_root)\aui
+altsym_dir=$(build_root)\altsym
+startup=$(build_root)\src\startup
+ecsdir=$(tools_root)\ecslib
+plsdir=$(tools_root)\dilib
+adsdir=$(tools_root)\adslib
+rsilib=$(tools_root)\rsilib
+nwos2dir=$(tools_root)\nwos2lib
+#nwdir=$(tools_root)\nwclib
+#nwsrc=$(tools_root)\src
+#nw40src=$(tools_root)\nw40src
+#nw40dir=$(tools_root)\nw40clib
+new_clib=$(build_root)\clib
+clibdir=$(new_clib)
+new_mlib=$(build_root)\mathlib
+emu386=$(build_root)\emu
+emu286=$(build_root)\emu86
+viperdir=$(build_root)\viper
+browsedir=$(build_root)\browser
+wl95_dir=$(build_root)\wl95
+nwclass_dir=$(build_root)\nwclass
+ide_dir=$(build_root)\buildeng
+
+#
+# define substructure of WATCOM project - DON'T ADD MORE. just use watcom_dir
+#
+wat_utils=$(build_root)\watcom
+watcom_nt_h=$(lang_root)\h\nt
+watcom_h=$(wat_utils)\h
+watcom_lib=$(wat_utils)\lib
+
+datactl_dir=$(tools_root)\datactl
+win_h=$(lang_root)\h\win
+asm_h=$(wat_utils)\h
+ui_h=$(build_root)\ui\h
+hdr_proj=$(build_root)\hdr
+bld_h=$(hdr_proj)\dos
+uiutil_h=$(build_root)\uiforms\util
+new_qnx_h=$(hdr_proj)\qnx
+qnx_h=$(lang_root)\qh
+oshdrs=$(watcom_h)
+wasmdir=$(build_root)\wasm
+dwarfdir=$(build_root)\dwarf
+editdll = $(build_root)\editdll
+risc_dir = $(build_root)
+
+#
+# define OS2/DOS bound app stuff
+#
+binder=$(tools_root)
+bindcalls=$(build_root)\watcom\lib\doscalls.lib
+doscalls=$(build_root)\watcom\lib\doscalls.lib
+apilib=$(build_root)\watcom\lib\api.lib
+
+os2386=$(lang_root)\lib386\os2\os2386.lib
+os2286=$(lang_root)\lib286\os2\os2.lib
+
+#
+# in order to build CLIB (replaces drive.mif/drive386.mif)
+#
+lib_drv = $(build_root)
+inc_drv = $(tools_root)
+obj_drv = $(build_root)
+
+!else
+
+tools_root      = $(%TOOLDR)/tools
+nlang_root      = $(%DWATCOM)
+build_root      = $(%DEVDIR)
+utils_root      = $(build_root)
+# a good enough location for any OS specific support files that may be needed.
+os_supp_dir     = $(build_root)/os_supp
+
+# The NOVELLNDK environment variable should be added during install. If not, the default location is
+# C:\NOVELL\NDK\NWSDK.
+nwndk_root      = $(%NOVELLNDK)
+ow_nwoss_root   = $(os_supp_dir)/novell
+
+# define compilers
+comp286=*wcc
+#
+# use these to override compilers if necessary
+#
+!ifdef %BWCC
+comp286 += @BWCC
+!endif
+
+!ifdef gcc
+comp386=gcc
+!else
+comp386=*wcc386
+!ifdef %BWCC386
+comp386 += @BWCC386
+!endif
+!endif
+
+compaxp = $(nlang_root)/binnt/wccaxp
+!ifdef %BWCCAXP
+compaxp += @BWCCAXP
+!endif
+
+#
+# C++ stuff
+#
+# do not use '*' prefix because C++ MAKEFILEs already compact the cmdline
+# do not use /r or /r7/fpr because C++ has no existing customer base
+
+comp286plus=wpp
+
+!ifdef gcc
+comp386plus=ld
+!else
+comp386plus=wpp386
+!endif
+
+libaxp=$(nlang_root)/binnt/wlibaxp.exe
+
+
+# define library utility
+
+!ifdef gcc
+lib=ar
+!else
+lib=*wlib
+!endif
+
+
+# define linker
+
+!ifdef gcc
+linker=ld
+!else
+linker=*wlink
+!endif
+
+
+# define assemblers
+
+asm386=386asm
+asm286=optasm
+wasm=wasm
+
+
+# define resource compilers
+
+rc = rc
+wrc = wrc
+wrce = wrc -zk
+wrck = wrc -zk
+
+# define resource converter
+
+cvtres = rem
+
+# define yacc
+
+runyacc = wyacc
+
+
+#
+# define directories (with trailing \)
+#
+pharlap=$(tools_root)/
+flashtek=$(tools_root)/x32/
+c_dir=$(lang_root)/
+misc_h=$(tools_root)/misc_h/
+toolsdir=$(tools_root)/
+fddir=$(tools_root)/uiforms/
+fdos2dir=$(tools_root)/os2forms/
+wdisasmdir=$(build_root)/wdisasm/
+wldir=$(build_root)/wl/
+wvdir=$(build_root)/wv/
+wsampledir=$(build_root)/wsample/
+watcomdir=$(build_root)/watcom/
+
+#
+# Why the duplicates ?
+#
+sdkdir=$(build_root)/sdk
+wresdir=$(build_root)sdk/rc/wres
+#
+# define directories (without trailing /)
+#
+bin_root_wv=$(build_root)/bin
+win386dir=$(build_root)/win386
+batchdir=$(build_root)/idebatch
+wclassdir=$(build_root)/wclass
+waxsvr_dir=$(build_root)/waxsvr
+uidir=$(build_root)/ui
+guidir=$(build_root)/gui
+auidir=$(build_root)/aui
+altsym_dir=$(build_root)/altsym
+startup=$(build_root)/src/startup
+plsdir=$(tools_root)/dilib
+adsdir=$(tools_root)/adslib
+rsilib=$(tools_root)/rsilib
+nwos2dir=$(tools_root)/nwos2lib
+new_clib=$(build_root)/clib
+clibdir=$(new_clib)
+new_mlib=$(build_root)/mathlib
+emu386=$(build_root)/emu
+emu286=$(build_root)/emu86
+viperdir=$(build_root)/viper
+browsedir=$(build_root)/browser
+wl95_dir=$(build_root)/wl95
+nwclass_dir=$(build_root)/nwclass
+ide_dir=$(build_root)/buildeng
+
+#
+# define substructure of WATCOM project - DON'T ADD MORE. just use watcom_dir
+#
+wat_utils=$(build_root)/watcom
+watcom_nt_h=$(lang_root)/h/nt
+watcom_h=$(wat_utils)/h
+watcom_lib=$(wat_utils)/lib
+
+win_h=$(lang_root)/h/win
+asm_h=$(wat_utils)/h
+ui_h=$(build_root)/ui/h
+hdr_proj=$(build_root)/hdr
+bld_h=$(hdr_proj)/dos
+uiutil_h=$(build_root)/uiforms/util
+new_qnx_h=$(hdr_proj)/qnx
+qnx_h=$(lang_root)/qh
+oshdrs=$(watcom_h)
+wasmdir=$(build_root)/wasm
+dwarfdir=$(build_root)/dwarf
+editdll = $(build_root)/editdll
+risc_dir = $(build_root)
+
+#
+# define OS2/DOS bound app stuff
+#
+binder=$(tools_root)
+bindcalls=$(build_root)/watcom/lib/doscalls.lib
+doscalls=$(build_root)/watcom/lib/doscalls.lib
+apilib=$(build_root)/watcom/lib/api.lib
+
+os2386=$(lang_root)/lib386/os2/os2386.lib
+os2286=$(lang_root)/lib286/os2/os2.lib
+
+lib_drv = $(build_root)
+inc_drv = $(tools_root)
+obj_drv = $(build_root)
+
+!endif

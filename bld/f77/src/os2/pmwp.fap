@@ -1,0 +1,45 @@
+c$ifdef INCL_WINWORKPLACE
+c$define INCL_WPCLASS
+c$endif
+   
+c$ifdef INCL_WPCLASS
+      
+c$pragma aux (__syscall) WinRegisterObjectClass parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinDeregisterObjectClass parm( value*4 )
+      
+c$pragma aux (__syscall) WinReplaceObjectClass parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinEnumObjectClasses parm( reference, \
+c		reference )
+      
+c$pragma aux (__syscall) WinCreateObject parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$endif
+   
+c$define INCL_WPERRORS
+
+c$pragma aux (__syscall) WinSetFileIcon parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinFreeFileIcon parm( value*4 )
+      
+c$pragma aux (__syscall) WinLoadFileIcon parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinStoreWindowPos parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinRestoreWindowPos parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinShutdownSystem parm( value*4, \
+c		value*4 )

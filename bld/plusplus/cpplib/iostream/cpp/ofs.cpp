@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: This master file includes the source of the ofstream
+*              member functions.
 *
 ****************************************************************************/
-
 
 #include    "ofsconde.cpp"
 #include    "ofsconfd.cpp"

@@ -24,24 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy message filter function.
 *
 ****************************************************************************/
 
 
+#include "spy.h"
 #include <stdio.h>
 #include <string.h>
-#include "spy.h"
 
 /*
  * HandleMessage
  */
 void CALLBACK HandleMessage( LPMSG pmsg )
 {
-
-    static char res[SPYOUT_LENGTH+1];
     static char msg[80];
+    static char class_name[80];
     int         i;
 
     if( SpyState != ON ) {
@@ -51,7 +49,7 @@ void CALLBACK HandleMessage( LPMSG pmsg )
         return;
     }
     if( WindowCount != 0 ) {
-        for( i=0;i<WindowCount;i++ ) {
+        for( i = 0; i < WindowCount; i++ ) {
             if( pmsg->hwnd == WindowList[i] ) {
                 break;
             }
@@ -60,10 +58,11 @@ void CALLBACK HandleMessage( LPMSG pmsg )
             return;
         }
     }
-    ProcessIncomingMessage( pmsg->message, msg );
+    GetClassName( pmsg->hwnd, class_name, 80 );
+    ProcessIncomingMessage( pmsg->message, class_name, msg );
     if( msg[0] != 0 ) {
-        FormatSpyMessage( msg, pmsg, res );
-        SpyOut( res );
+        SpyOut( msg, pmsg );
     }
 
 } /* HandleMessage */
+

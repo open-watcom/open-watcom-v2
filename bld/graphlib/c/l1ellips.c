@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  High level ellipse drawing routines.
 *
 ****************************************************************************/
 
@@ -57,11 +56,14 @@ static struct line_entry    VectB;
 static struct ellipse_info  EllInfo;
 
 
-static void             FastPlot();
-static void             SlowPlot();
-static void             ArcPlot();
-static void             EllFill();
-static void             ArcFill();
+static void             FastPlot( short x, short y, short q );
+static void             SlowPlot( short x, short y, short q );
+static void             ArcPlot( short x, short y, short q );
+static void             EllFill( short x, short y, short q );
+static void             ArcFill( short x, short y, short q );
+static void             InitLineMasks( short x1, short y1, short x2, short y2 );
+static void             HollowArc( short x1, short y1, short x2, short y2, short a, short b );
+static void             FilledArc( short x1, short y1, short x2, short y2, short a, short b );
 #endif
 
 
@@ -180,7 +182,7 @@ void _L1Ellipse( short fill, short x1, short y1, short x2, short y2 )
         EllInfo.prev_y = -1;            // no previous line
         _L0Ellipse( x1, y1, x2, y2, EllFill );
     } else {
-        if( clip1 == clip2 && _LineStyle == 0xffff ) {
+        if( clip1 == clip2 && _LineStyle == SOLID_LINE ) {
             // no clipping and solid line
             _L0Ellipse( x1, y1, x2, y2, FastPlot );
         } else {
@@ -201,8 +203,8 @@ static void FastPlot( short x, short y, short q )
 // plot the ellipse point (x,y)
 
 {
-    void                ( *setup ) ();
-    void DOT_FUNC       ( near *putdot )();
+    void                (*setup )( short, short, short );
+    put_dot_fn near     *putdot;
     gr_device _FARD     *dev_ptr;
 
     dev_ptr = _CurrState->deviceptr;
@@ -230,12 +232,12 @@ static void FastPlot( short x, short y, short q )
 }
 
 
-static void PutDot( short x, short y, short q )
-//=============================================
+static void PutDot( int x, int y, int q )
+//=======================================
 
 {
-    void                ( *setup ) ();
-    void DOT_FUNC       ( near *putdot )();
+    void                (*setup )( short, short, short );
+    put_dot_fn near     *putdot;
     gr_device _FARD     *dev_ptr;
 
     if( _L1OutCode( x, y ) == 0 ) {     // inside viewport
@@ -309,8 +311,8 @@ static void CountPlot( short x, short y, short q )
 }
 
 
-static void DummyPlot( short x, short y, short q )
-//================================================
+static void DummyPlot( int x, int y, int q )
+//==========================================
 
 {
     x = x;
@@ -608,7 +610,7 @@ void _L1Arc( short fill, short x1, short y1, short x2, short y2,
     if( fill == _GFILLINTERIOR ) {
         FilledArc( x1, y1, x2, y2, a, b );
     } else {
-        if( _LineStyle == 0xffff ) {
+        if( _LineStyle == SOLID_LINE ) {
             EllInfo.line_mask[ 0 ] = _LineStyle;
             EllInfo.line_mask[ 1 ] = _LineStyle;
             EllInfo.line_mask[ 2 ] = _LineStyle;
@@ -703,8 +705,8 @@ static struct xycoord Cal_Coord( float x, float y, float a, float b )
     if( x != 0 ) {
         delta = atan2( b * x,  a * y );
         gamma = delta;
-        _GR_sin( &delta );
-        _GR_cos( &gamma );
+        delta = sin( delta );
+        gamma = cos( gamma );
         point.xcoord = round( a * delta ) + _ArcInfo.centre.xcoord;
         point.ycoord = round( b * gamma ) + _ArcInfo.centre.ycoord;
     } else {

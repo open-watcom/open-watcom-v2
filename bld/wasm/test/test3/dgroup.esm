@@ -1,0 +1,14 @@
+.387
+		PUBLIC	DoReadWord_
+DGROUP		GROUP	_DATA,_TEXT
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	0, 0, 0, 0
+
+_DATA		ENDS
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:DGROUP, DS:DGROUP, SS:DGROUP
+DoReadWord_:
+    mov         ax,word ptr gs:[ebx]
+    int         3
+_TEXT		ENDS
+		END

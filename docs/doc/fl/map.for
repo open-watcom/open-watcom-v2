@@ -1,0 +1,26 @@
+      STRUCTURE /MAPINT/
+	  UNION
+	      MAP
+		  INTEGER*4 LONG
+	      END MAP
+	      MAP
+		  INTEGER*2 LO_WORD
+		  INTEGER*2 HI_WORD
+	      END MAP
+	      MAP
+		  INTEGER*1 BYTE_0
+		  INTEGER*1 BYTE_1
+		  INTEGER*1 BYTE_2
+		  INTEGER*1 BYTE_3
+	      END MAP
+	  END UNION
+      END STRUCTURE
+
+      RECORD /MAPINT/ I
+
+      I%LONG = '01020304'x
+      PRINT '(Z8)', I%LONG
+      PRINT '(Z4,1X,Z4)', I%LO_WORD, I%HI_WORD
+      PRINT '(Z2,3(1X,Z2))', I%BYTE_0, I%BYTE_1,
+     $			     I%BYTE_2, I%BYTE_3
+      END

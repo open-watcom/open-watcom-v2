@@ -1,0 +1,162 @@
+#
+# 32-bit OS/2 headers
+#
+[ DEFAULT type="s" dir="h/os2" where="c f77 ac" cond="os2targ" ]
+usr="acb.h"
+usr="basemid.h"
+usr="bdcalls.h"
+usr="bse.h"
+usr="bsedev.h"
+usr="bsedos.h"
+usr="bseerr.h"
+usr="bseord.h"
+usr="bsesub.h"
+usr="bsexcpt.h"
+usr="callconv.h"
+usr="codec.h"
+usr="dive.h"
+usr="driver.h"
+usr="evcb.h"
+usr="exe.h"
+usr="exe386.h"
+usr="fourcc.h"
+usr="ftpapi.h"
+usr="genio.h"
+usr="mciapi.h"
+usr="mcios2.h"
+usr="meerror.h"
+usr="mididll.h"
+usr="midios2.h"
+usr="mmdrvos2.h"
+usr="mmioos2.h"
+usr="nerrno.h"
+usr="netdb.h"
+usr="newexe.h"
+usr="os2.h"
+usr="os2def.h"
+usr="os2me.h"
+usr="os2medef.h"
+usr="pm.h"
+usr="pmavio.h"
+usr="pmdev.h"
+usr="pmerr.h"
+usr="pmgpi.h"
+usr="pmhelp.h"
+usr="pmsei.h"
+usr="pmspl.h"
+usr="pmstddlg.h"
+usr="pmtypes.h"
+usr="pmwin.h"
+usr="pmwp.h"
+usr="rexxsaa.h"
+usr="ssm.h"
+usr="sw.h"
+usr="tcpustd.h"
+usr="types.h"
+usr="uconv.h"
+usr="ulserrno.h"
+usr="ulsitem.h"
+usr="unidef.h"
+usr="upm.h"
+usr="utils.h"
+
+[ DEFAULT type="s" dir="h/os2/arpa" where="c f77 ac" cond="os2targ" ]
+usr="inet.h"
+
+[ DEFAULT type="s" dir="h/os2/GL" where="c f77 ac" cond="os2targ" ]
+usr="gl.h"
+usr="glaux.h"
+usr="glu.h"
+usr="glut.h"
+usr="pgl.h"
+usr="tk.h"
+
+[ DEFAULT type="s" dir="h/os2/machine" where="c f77 ac" cond="os2targ" ]
+usr="ansi.h"
+usr="endian.h"
+usr="types.h"
+
+[ DEFAULT type="s" dir="h/os2/net" where="c f77 ac" cond="os2targ" ]
+usr="if.h"
+usr="if_arp.h"
+usr="if_dl.h"
+usr="route.h"
+
+[ DEFAULT type="s" dir="h/os2/netinet" where="c f77 ac" cond="os2targ" ]
+usr="icmp_var.h"
+usr="if_ether.h"
+usr="in.h"
+usr="in_systm.h"
+usr="ip.h"
+usr="ip_icmp.h"
+usr="ip_var.h"
+usr="tcp.h"
+usr="tcp_var.h"
+usr="udp.h"
+usr="udp_var.h"
+
+[ DEFAULT type="s" dir="h/os2/protocol" where="c f77 ac" cond="os2targ" ]
+usr="routed.h"
+usr="rwhod.h"
+usr="talkd.h"
+usr="timed.h"
+
+[ DEFAULT type="s" dir="h/os2/sys" where="c f77 ac" cond="os2targ" ]
+usr="cdefs.h"
+usr="filio.h"
+usr="ioccom.h"
+usr="ioctl.h"
+usr="ioctlos2.h"
+usr="lipcpar.h"
+usr="param.h"
+usr="select.h"
+usr="socket.h"
+usr="sockio.h"
+usr="sysctl.h"
+usr="time.h"
+usr="uio.h"
+usr="un.h"
+
+#
+# 32-bit OS/2 libraries
+#
+[ DEFAULT type="l" dir="lib386/os2" where="c f77 ac" cond="os2targ" ]
+usr="ftpapi.lib"
+usr="glut.lib"
+usr="libconv.lib"
+usr="libtk.lib"
+usr="libuls.lib"
+usr="mmpm2.lib"
+usr="opengl.lib"
+usr="os2386.lib"
+usr="rexx.lib"
+usr="rtmidi.lib"
+usr="tcpip32.lib"
+usr="upm32.lib"
+
+#
+# 16-bit OS/2 headers
+#
+[ DEFAULT type="s" dir="h/os21x" where="c f77 ac" cond="os2targ tools16" ]
+usr="bse.h"
+usr="bsedev.h"
+usr="bsedos.h"
+usr="bseerr.h"
+usr="bsesub.h"
+usr="os2.h"
+usr="os2def.h"
+usr="pm.h"
+usr="pmbitmap.h"
+usr="pmdev.h"
+usr="pmerr.h"
+usr="pmgpi.h"
+usr="pmhelp.h"
+usr="pmmle.h"
+usr="pmshl.h"
+usr="pmwin.h"
+
+#
+# 16-bit OS/2 libraries
+#
+[ DEFAULT type="l" dir="lib286/os2" where="c f77 ac" cond="os2targ tools16" ]
+usr="os2.lib"

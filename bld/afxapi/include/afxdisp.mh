@@ -1,0 +1,119 @@
+/*
+ *  afxdisp.mh  Application Framework automation classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXDISP_H__
+#define __AFXDISP_H__
+
+:include readonly.sp
+
+// Variant types for parameter information
+#define VTS_I2          "\x02"
+#define VTS_I4          "\x03"
+#define VTS_R4          "\x04"
+#define VTS_R8          "\x05"
+#define VTS_CY          "\x06"
+#define VTS_DATE        "\x07"
+#define VTS_WBSTR       "\x08"
+#define VTS_DISPATCH    "\x09"
+#define VTS_SCODE       "\x0A"
+#define VTS_BOOL        "\x0B"
+#define VTS_VARIANT     "\x0C"
+#define VTS_UNKNOWN     "\x0D"
+#ifdef _UNICODE
+    #define VTS_BSTR    VTS_WBSTR
+#else
+    #define VTS_BSTR    "\x0E"
+#endif
+#define VTS_I1          "\x10"
+#define VTS_UI1         "\x11"
+#define VTS_UI2         "\x12"
+#define VTS_UI4         "\x13"
+#define VTS_I8          "\x14"
+#define VTS_UI8         "\x15"
+#define VTS_PI2         "\x42"
+#define VTS_PI4         "\x43"
+#define VTS_PR4         "\x44"
+#define VTS_PR8         "\x45"
+#define VTS_PCY         "\x46"
+#define VTS_PDATE       "\x47"
+#define VTS_PBSTR       "\x48"
+#define VTS_PDISPATCH   "\x49"
+#define VTS_PSCODE      "\x4A"
+#define VTS_PBOOL       "\x4B"
+#define VTS_PVARIANT    "\x4C"
+#define VTS_PUNKNOWN    "\x4D"
+#define VTS_PI1         "\x50"
+#define VTS_PUI1        "\x51"
+#define VTS_PUI2        "\x52"
+#define VTS_PUI4        "\x53"
+#define VTS_PI8         "\x54"
+#define VTS_PUI8        "\x55"
+
+// Special variant type used with AFX
+#define VT_BSTRA    14
+
+class _AFXLINK COleException : public CException {
+public:
+    SCODE   m_sc;
+
+    DECLARE_DYNAMIC( COleException )
+    
+public:
+    COleException();
+
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext = NULL );
+
+    static SCODE PASCAL Process( CException* pAnyException );
+};
+
+class _AFXLINK COleDispatchException : public CException {
+public:
+    WORD    m_wCode;
+    CString m_strDescription;
+    DWORD   m_dwHelpContext;
+    CString m_strHelpFile;
+    CString m_strSource;
+
+    DECLARE_DYNAMIC( COleDispatchException )
+
+public:
+    COleDispatchException( LPCTSTR lpszDescription, UINT nHelpID, WORD wCode );
+
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext = NULL );
+};
+
+class _AFXLINK COleDispatchDriver {
+public:
+    LPDISPATCH  m_lpDispatch;
+    BOOL        m_bAutoRelease;
+
+    COleDispatchDriver();
+    COleDispatchDriver( LPDISPATCH lpDispatch, BOOL bAutoRelease = TRUE );
+    COleDispatchDriver( const COleDispatchDriver &dispatchSrc );
+    ~COleDispatchDriver();
+
+    void        AttachDispatch( LPDISPATCH lpDispatch, BOOL bAutoRelease = TRUE );
+    BOOL        CreateDispatch( REFCLSID clsid, COleException *pError = NULL );
+    BOOL        CreateDispatch( LPCTSTR lpszProgID, COleException *pError = NULL );
+    LPDISPATCH  DetachDispatch();
+    void        GetProperty( DISPID dwDispID, VARTYPE vtProp, void *pvProp ) const;
+    void        InvokeHelperV( DISPID dwDispID, WORD wFlags, VARTYPE vtRet, void *pvRet, const BYTE *pbParamInfo, va_list argList );
+    void        ReleaseDispatch();
+
+    void AFX_CDECL  InvokeHelper( DISPID dwDispID, WORD wFlags, VARTYPE vtRet, void *pvRet, const BYTE *pbParamInfo, ... );
+    void AFX_CDECL  SetProperty( DISPID dwDispID, VARTYPE vtProp, ... );
+};
+
+_AFXLINK void AFXAPI    AfxThrowOleDispatchException( WORD wCode, LPCTSTR lpszDescription, UINT nHelpID = 0 );
+_AFXLINK void AFXAPI    AfxThrowOleDispatchException( WORD wCode, UINT nDescriptionID, UINT nHelpID = -1 );
+_AFXLINK void AFXAPI    AfxThrowOleException( SCODE sc );
+_AFXLINK void AFXAPI    AfxThrowOleException( HRESULT hr );
+
+#ifndef _DEBUG
+    #include "afxdisp.inl"
+#endif
+
+#endif /* __AFXDISP_H__ */

@@ -1,0 +1,7 @@
+c$include windefn.fi
+c$include winmgr.fi
+c$include wingdi.fi
+c$include winssi.fi
+c$ifdef __386__
+c$include win386.fi
+c$endif

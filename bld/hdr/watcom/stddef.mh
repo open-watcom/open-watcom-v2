@@ -1,47 +1,102 @@
-/*
- *  stddef.h    Standard definitions
+/***************************************************************************
+ * FILE: stddef.h/cstddef (Standard definitions)
  *
 :include crwat.sp
- */
+ *
+ * Description: This header is part of the C/C++ standard library. It
+ *              introduces certain commonly needed type names and
+ *              supplies the offsetof macro.
+ ***************************************************************************/
+:segment CNAME
+#ifndef _CSTDDEF_INCLUDED
+#define _CSTDDEF_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _STDDEF_H_INCLUDED
 #define _STDDEF_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+:include readonly.sp
+
+#ifdef __cplusplus
+
+#include <cstddef>
+
+// C99 types in stddef.h
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED_
+using std::size_t;
+#endif
+#ifndef _PTRDIFF_T_DEFINED
+#define _PTRDIFF_T_DEFINED
+#define _PTRDIFF_T_DEFIEND_
+using std::ptrdiff_t;
 #endif
 
+#else /* __cplusplus not defined */
+:endsegment
+
+:include owrtlink.sp
+
+:segment CNAME
+:include cpluspro.sp
+
+:endsegment
 :include sizet.sp
 
+:segment !CNAME
 :include wchar_t.sp
 
+:endsegment
 :include null.sp
 
 :include ptrdiff.sp
 
-#ifdef __cplusplus
+:segment !CNAME
+:include saferpro.sp
+
+:include rsizet.sp
+
+:include saferepi.sp
+
+:endsegment
+:segment CNAME
 #define offsetof(__typ,__id) __offsetof(__typ,__id)
-#else
-#define offsetof(__typ,__id) ((size_t)&(((__typ*)0)->__id))
-#endif
-:segment QNX
+:elsesegment
+:: Use subtraction so that the result before cast is of ptrdiff_t type;
+:: without this, we have a problem in environments where size_t is
+:: not large enough for far pointers
+#define offsetof(__typ,__id) ((size_t)((char *)&(((__typ*)0)->__id) - (char *)0))
+:endsegment
+
+:segment QNX | LINUX
 #if defined(__386__)
  _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
  #define _threadid (__threadid())
 #endif
 :elsesegment DOS
 :include ext.sp
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+#if defined(_M_I86)
+ _WCRTDATA extern int _WCFAR *_threadid;        /* pointer to thread id */
+#else
  _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
  #define _threadid (__threadid())
  #if defined(__NT__)
   _WCRTLINK extern unsigned long __threadhandle( void );
  #endif
-#else
- _WCRTLINK extern int _WCFAR *_threadid;        /* pointer to thread id */
 #endif
-#endif
+:include extepi.sp
 :endsegment
+
+:segment CNAME
 :include cplusepi.sp
+:elsesegment
+#endif /* __cplusplus not defined */
+
+:include intptr.sp
+:endsegment
+
 #endif

@@ -1,0 +1,4 @@
+pre07(5): Error(E33): errors will follow on lines 7 and 10
+pre07(7): Warning(W20): Command list does not belong to any target
+pre07(10): Warning(W20): Command list does not belong to any target
+Error(E02): Make execution terminated

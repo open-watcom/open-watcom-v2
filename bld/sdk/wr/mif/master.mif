@@ -1,219 +1,114 @@
-#  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#  %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
-#  %       reserved. No part of this software may be reproduced      %
-#  %       in any form or by any means - graphic, electronic or      %
-#  %       mechanical, including photocopying, recording, taping     %
-#  %       or information storage and retrieval systems - except     %
-#  %       with the written permission of WATCOM Systems Inc.        %
-#  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#  Date         By              Reason
-#  ----         --              ------
-#  21 May 93    Wes Nelson      initial implementation
-#
-
 proj_name = wr
 name = wr
 
-CPPFILE=pp
+!ifndef wr_autodepends
+wr_autodepends = .AUTODEPEND
+!endif
 
-.extensions:
-.extensions: .lib .dll .mbj .cbj .rbj .obj .tbj
-.extensions: .$(CPPFILE) .rpp .res .c .rc
-.extensions: .dlg .h .tmp .msg .mif
+memory_model_i86 = l
 
-.mif : $(mif_path)
 sys_dll = 1
+suppress_bd = 1
+
+wr_trmem = 1
+
 !include cproj.mif
-MODEL = l
+!include deftarg.mif
+!include defrule.mif
+
+.EXTENSIONS: .msg .res .rc
+
 WINDOWS = 1
 !include wres.mif
-wres_lib_dir = $(wres_dir)\lib
+
+!include trmem.mif
 
 object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
-                wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
-                wrsvexe.obj wrsvres.obj &
-                wridfile.obj wrinfo.obj wrstrdup.obj &
-                wrrcmem.obj wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
-                wrdata.obj wrnamoor.obj wrwresid.obj &
-                wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
-                wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
-                wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
-            trmem.tbj trmemcvr.tbj &
-            preproc.cbj ppexpr.cbj ppmacro.cbj &
-            rcerrprt.obj &
-            palette.mbj ldstr.mbj jdlg.mbj &
-            pass2.rbj exeseg.rbj exeres.rbj rcstr.rbj ppalloc.rbj &
-                exeutil.rbj exeobj.rbj exerespe.rbj rcio.rbj &
-                global.rbj semstr.rbj semsingl.rbj semantic.rbj semraw.rbj &
-                errors.rbj tmpctl.rbj autodep.rbj layer0.rbj param.rbj &
-                dbtable.rbj swchar.rbj sharedio.rbj
+            wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
+            wrsvexe.obj wrsvres.obj &
+            wridfile.obj wrinfo.obj wrstrdup.obj &
+            wrrcmem.obj wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
+            wrdata.obj wrnamoor.obj wrwresid.obj &
+            wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
+            wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
+            wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
+            $(trmem_objs) &
+            preproc.obj ppexpr.obj ppmacro.obj &
+            rcerrprt.obj rcgetenv.obj &
+            wrstubs.obj &
+            pass2.obj exeseg.obj exeres.obj rcstr.obj ppalloc.obj &
+            exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
+            global.obj semstr.obj semsingl.obj semantic.obj semraw.obj &
+            errors.obj tmpctl.obj autodep.obj layer0.obj incdirs.obj &
+            dbtable.obj sharedio.obj rcspawn.obj
 
-!ifndef on_build_machine
-!ifdef build_root
-!ifeq host_OS nt
-!ifeq host_CPU 386
-copy_to=$(build_root)\nt\
-!else
-copy_to=$(build_root)\axp\
-!endif
-!else
-copy_to=$(build_root)\win\
-!endif
-!endif
-!endif
+msgfiles = $(wrc_dir)/h/rc.msg ../h/wr.msg
 
-!ifeq host_CPU axp
-OF =
-!else
-OF = -of+
-!endif
+extra_c_flags     = -DWIN_GUI -s
 
-extra_c_flags_nt_386    = -fpc
-extra_c_flags_nt        = $(extra_c_flags_nt_$(host_CPU))-s
-extra_c_flags_win       = -fpc-s-zc-zu-zw
-extra_c_flags           = -DWIN_GUI -DSTRICT -we
+extra_c_flags_win = -zu-zw-zc
 
-extra_c_flags_trmem     = $(OF) $(TRMEM)
-extra_c_flags_trmemcvr  = $(OF) $(TRMEM)
-extra_c_flags_wrsvexe   = -DWR_COMPILED
-extra_c_flags_wrmem     = $(TRMEM)
-extra_c_flags_wrmain    = -bd
+# wr objects
+extra_c_flags_wrmem = -bd $(trmem_cover_cflags)
 
-!ifeq wr_trmem 1
-TRMEM = -dTRMEM
-!else
-TRMEM =
-!endif
+extra_c_flags_trmem = $(trmem_cflags)
 
-wbind           = wbind
-rc_opts_nt      = -bt=NT
-rc_opts_win     = -bt=windows
-rc_opts         = -q $(rc_opts_$(host_OS))
+.c:   ../c;$(trmem_dir);$(cpp_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-!ifeq host_OS nt
-rc_opts         += -d__NT__
-!else
-#rc_opts        += -zm
-!endif
+inc_dirs = -I. -I"../h" -I$(cpp_dir) -I"$(wres_dir)/h" -I"$(wrc_dir)/h"
+inc_dirs += -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 
-.c:   c;$(wr_dir)\c;$(trmem_dir);$(wrc_dir)\c;$(misc_dir);$(cpp_dir)
-.h:   h;$(wr_dir)\h;$(trmem_dir);$(wrc_dir)\h;$(misc_dir);$(cpp_dir)
-.msg: $(wr_dir)\h;$(wrc_dir)\h
-.rc : $(wr_dir)\h
-.dlg : $(wr_dir)\h
-
-inc_dirs = h;$(wr_dir)\h;$(misc_dir);$(wrc_dir)\h;$(trmem_dir);$(wres_dir)\h;
-inc_dirs += $(cpp_dir);$(watcom_dir)\h
-
-HOME__DIR       =$+ $(%cwd) $-
-
-.BEFORE
-        set INCLUDE=$(inc_path)
-        cd $(wrc_dir)\o
-        wmake -h -i rcmsg.h
-        wmake -h -i ytab.obj
-        cd $(HOME__DIR)
+xlibs = $(wres_lib) $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
 
 #------------- LIB
-$(name).lib: wrcmsg.h $(copy_to)$(name).dll
-        $(librarian) -b-q-n $(name) +$]@
+$(name).lib: $(name).dll $(__MAKEFILES__)
+        $(librarian) $(libflags) +$[@
 
 #------------- LINK
-extra_l_flags = libpath $(misc_dir) op map,v,static
+extra_l_flags = libpath $(misc_dir) op map
 extra_l_flags_nt = op stack=32k,heap=16k commit heap=8k
-!ifndef TOOLS_10_0
-!ifeq host_CPU 386
-#extra_l_flags_nt += runtime windows=4.0 option offset=69900000
-extra_l_flags_nt += runtime windows=4.0
-!endif
-!endif
-extra_l_flags_win = op rwr,stack=16k
+extra_l_flags_nt += option offset=0x69900000
+extra_l_flags_win = op rwr,stack=16k export WEP RESIDENT
 #extra_l_flags_win += segment  _TEXT PRELOAD FIXED
 #extra_l_flags_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
 #extra_l_flags_win += segment  CLASS 'CODE' PRELOAD
 
-$(copy_to)$(name).dll: $(object) $(wres_lib) $(name).res
-        *$(linker)  d a $(lflags) name $(name).dll lib $(wres_lib) file {$(object)}
-        $(rc) $(rc_opts) -k $(name).res $(name).dll
-!ifdef TOOLS_10_0
-!ifeq host_OS nt
-!ifeq host_CPU 386
-        whack $(name).dll
-!endif
-!endif
-!endif
-!ifdef copy_to
-        copy $(name).dll $^@
-!endif
+# systems where version resources must be added to .DLL
+version_res_nt_386 = version.res
 
+$(name).dll: ytab.gh rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        $(linker) $(lflags) name $^@ file {$(object)} lib {$(xlibs)}
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(name).res $^@
+!endif
 
 #---------- TEST
 test_system_win_i86= windows
 test_system_nt_386 = nt_win
 test_system_nt_axp = ntaxp_win
-test_system = $(test_system_$(host_OS)_$(host_CPU))
+test_system = $(test_system_$(host_os)_$(host_cpu))
 
-test_lflags = system $(test_system) name test debug all libpath $(watcom_dir)\lib
+test_lflags = system $(test_system) name test debug all libpath $(watcom_dir)/lib
 test_lflags += option quiet, map, elim, v, static
 
 test.exe: $(name).lib $(TESTLNK) test.obj
-        *$(linker) $(test_lflags) library $(name) file test
+        $(linker) $(test_lflags) library $(name) file test
 
-test.obj: test.c
+rcmsg.gh: wrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
 
-$(name).res: $(name).rc wrcmsg.h
+wrmsg.gh: ../h/master.msg $(msgfiles)
+        $(c_pp) -zk0 -I"../h" -I"$(wrc_dir)/h" $[@ >$^@
 
-$(name).rc: addsym.dlg editsym.dlg selft.dlg selimage.dlg memflags.dlg &
-            addsym.h editsym.h selft.h selimage.h memflags.h
-        @%null
+ytab.gh : $(wrc_dir)/y/rc.y $(wrc_dir)/y/yydriver.c $(wrc_dir)/h/rcmem.h
+        $(byacc) -d -b $[@ $(wrc_dir)/y/yydriver.c >$(nulldevice)
+        @cp ytab.h ytab.gh
+        @rm -f ytab.h
+        @rm -f ytab.c # ytab.c isn't used
 
-.c.obj: .AUTODEPEND
-        $(cc) $(cflags) $(extra_c_flags_$[&) -fhq $[@
+$(name).res: ../h/wr.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad $(inc_path) $[@ -fo=$^@
 
-wrsvexe.obj: .AUTODEPEND
-        $(cc) $(cflags) $(extra_c_flags_$[&) $^&
-
-.c.tbj: .AUTODEPEND
-        $(cc) $(cflags) $(extra_c_flags_$[&) $(trmem_dir)\$^& -fo=$^&.tbj
-
-.c.rbj: .AUTODEPEND
-        *$(cc) $(cflags) $(extra_c_flags_$[&) -i=$(wrc_dir)\h -zm $(wrc_dir)\c\$^& -DWR_COMPILED -fo=$^&.rbj
-
-.c.cbj: .AUTODEPEND
-        $(cc) $(cflags) $(extra_c_flags_$[&)-zm $(cpp_dir)\$^& -fo=$^&.cbj
-
-ldstr.mbj: .AUTODEPEND
-        $(cc) $(cflags) -zm $(misc_dir)\$^& -DWR_NO_RCFPRINTF -fo=$^&.mbj
-
-.c.mbj: .AUTODEPEND
-        $(cc) $(cflags) $(extra_c_flags_$[&) -zm $(misc_dir)\$^& -fo=$^&.mbj
-
-.rc.res:
-        $(rc) $(rc_opts) -DWR_COMPILED -r -fo=.\$^&.res ..\h\$^&.rc
-
-wrcmsg.h: wrtemp.h
-        vi -q -i -s $(sdk_dir)\misc\msgtoh.vi -p"wrcmsg.h" wrtemp.h
-#       copy tmp.h ..\h\wrcmsg.h
-
-wrtemp.h: ..\h\master.msg rc.msg wr.msg
-        $(cc) $(cflags) -p ..\h\master.msg > wrtemp.h
-
-.c.$(CPPFILE):
-        $(cc) $(cflags) -pc ..\c\$^& > $^&.$(CPPFILE)
-
-.c.rpp:
-        $(cc) $(cflags) $(RC__DIR)\c\$^& -DWR_COMPILED -pc > $^&.rpp
-
-clean : .SYMBOLIC
-        @-rm *.?bj
-        @-rm *.lib
-        @-rm *.dll
-        @-rm *.map
-        @-rm *.lnk
-        @-rm *.res
-        @-rm *.err
-        @-rm *.pp
-        @-rm *.h
-        @-rm *.pch
-        @-rm *.sym
+!include verrc.mif

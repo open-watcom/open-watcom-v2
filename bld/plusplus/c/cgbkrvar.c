@@ -57,7 +57,7 @@ static SYMBOL makeCgVar(        // MAKE CODEGEN VARIABLE OF A CERTAIN TYPE
     if( id == SC_AUTO ) {
         CGAutoDecl( (cg_sym_handle)var, CgTypeSym( var ) );
     } else {
-        var = ScopeInsert( FileScope, var, name );
+        var = ScopeInsert( GetFileScope(), var, name );
         LinkageSet( var, "C++" );
         CgSegId( var );
     }

@@ -1,0 +1,95 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference [Int31h Overview]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">2.0 - DPMI functions -
+Overview<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+DOS/32 Advanced DOS Extender has a built-in Advanced DOS Protected Mode
+Interface (ADPMI) which provides your protected mode program with nearly
+full subset of DPMI v0.9 functions. The &quot;DPMI&quot; is a standard, which allows
+protected mode applications to get an access to the extended memory, switch
+into or out from protected mode and invoke real mode software. DPMI API is
+accessed through software interrupt INT 31h in protected mode with function
+number is placed in register AX. On successful return, registers will
+contain values/information returned by the DPMI host and the carry flag will
+be cleared. If the function is not supported by the DPMI host, or DPMI host
+could not perform the action desired by  the function, it will return with
+carry flag set and an error code placed in register AX. Note that some
+implementations of DPMI do not return error codes, but only set the carry
+flag. DOS/32 Advanced built-in DPMI will always return error codes in AX.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">On startup, DOS/32 Advanced
+DOS Extender will detect what system is in place and if there is an external
+DPMI host present. Depending on configuration, the DOS Extender will look
+for VCPI and DPMI in different orders. If configured to look for VCPI first
+and DPMI second, the DOS Extender will detect and initialize the VCPI server
+even though a DPMI host might be present. However, a DPMI host may always
+deny the presence of VCPI. In that case the DOS Extender will detect and
+initialize DPMI instead. If neither VCPI nor DPMI are installed, DOS/32
+Advanced will look for XMS and if even it is not present, initialize and
+use Clean (INT 15h) system.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When running under Clean,
+XMS or VCPI system softwares, DOS/32 Advanced will always install its built-in
+DPMI server, ADPMI. Otherwise, the present DPMI host (&quot;external DPMI&quot;)
+will be initialized and used. Note that some of DPMI implementations can be
+quite buggy and unpredictable; some of them will run your protected mode
+code at CPL 0, some at CPL 3, some will execute real mode calls in Real
+mode and some in Virtual 8086 mode. Due to all this complications DOS/32
+Advanced will try to be very careful when accessing external DPMI hosts and
+interfere with them as little as possible.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The following information
+about DOS/32 Advanced built-in DPMI host will show its major capabilities:</font></p>
+
+<p>
+<ul>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">descriptors reside in the GDT</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">protected mode code runs at CPL 0</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">user configurable order of detection of VCPI/DPMI servers</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">real mode INTs/IRQs/callbacks executed in actual Real mode under Clean (INT 15h) and XMS systems, and in Virtual 8086 mode under VCPI</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">modifiable number of selectors/callbacks/real&amp;protected mode stacks that will be allocated at startup</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for exception handling which can be turned off</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for debugging through INT 1 and INT 3 software interrupts</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for trapping software INTs in range INT 08-0Fh issued to emulate hardware IRQs 0-7 when not remapped (can be disabled)</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for auto-callbacking of IRQs 0-7 and 8-15 from real mode to protected mode when installing a protected mode handler for those</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for auto-checking of integrity of extended memory blocks at run-time when allocating using DPMI functions 05xxh (can be disabled)</font>
+	<li><font size=-1 face="Verdana, Arial, Helvetica">support for vendor-specific API extensions (entry point can be obtained from DPMI function 0A00h)</font>
+</ul>
+</td></tr>
+</table>
+</center></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">More detailed information
+about DOS/32 Advanced DPMI kernel and its configuration can be found in
+the <a href="../tech.html">DOS/32 Advanced Technical Reference</a> documentation manual.<br>
+</font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

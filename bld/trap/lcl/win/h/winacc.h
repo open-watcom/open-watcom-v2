@@ -40,5 +40,5 @@ enum {
     WINERR_LAST
 };
 
-extern FAR PASCAL SetEventHook( void far * );
+extern void FAR PASCAL SetEventHook( void far * );
 long FindFilePath( char *pgm, char *buffer, char *ext_list );

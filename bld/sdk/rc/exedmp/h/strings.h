@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PE Dump Utility user visible strings.
 *
 ****************************************************************************/
 
@@ -71,10 +70,11 @@
 #define LBL_NO                          "no"
 
 #define MSG_BANNER \
-        "ExeDmp Utility Version 1.0\n" \
-        "Copyright by Sybase Inc., and its subsidiaries, 1997.\n" \
-        "All rights reserved.\n" \
-        "--------------------\n\n"
+        banner1w( "PE ExeDmp Utility", "1.0" )"\n" \
+        banner2("1997") "\n" \
+        banner3         "\n" \
+        banner3a        "\n\n"
+
 #define MSG_HELP \
         " Usage:\n" \
         "       exedmp [options] <filename> [options]\n" \

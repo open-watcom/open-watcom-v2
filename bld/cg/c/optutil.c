@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Optimizer utility routines.
 *
 ****************************************************************************/
 
@@ -43,12 +42,6 @@ extern  void            AddLblRef(ins_entry*);
 extern  void            AddLblDef(ins_entry*);
 extern  void            InsertQueue(ins_entry*,ins_entry*);
 extern  void            FreeInstr(ins_entry*);
-
-extern    ins_entry     *FirstIns;
-extern    ins_entry     *LastIns;
-extern    ins_entry     *RetList;
-extern    ins_entry     *PendingDeletes;
-extern    bool          InsDelete;
 
 
 extern  ins_entry       *ValidIns( ins_entry *instr ) {
@@ -159,6 +152,23 @@ extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
         break;
     }
   optend
+}
+
+
+extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
+/***************************************************************/
+
+    ins_entry   *curr;
+
+  optbegin
+    for(;;) {
+        curr = *owner;
+        if( curr == instr ) break;
+        owner = (ins_entry **)&_LblRef( curr );
+    }
+    *owner = _LblRef( curr );
+  optend
+}
 
 
 extern  void    UnLinkInstr( ins_entry *old ) {
@@ -170,11 +180,13 @@ extern  void    UnLinkInstr( ins_entry *old ) {
     old->ins.prev = PendingDeletes;
     PendingDeletes = old;
   optend
+}
 
 
-static  ins_entry       *DelInstr_Helper( ins_entry *old ) {
-/**************************************************/
+static  pointer DelInstr_Helper( pointer olde ) {
+/***********************************************/
 
+    ins_entry   *old = olde;
     ins_entry   *next;
 
     UnLinkInstr( old );
@@ -229,21 +241,6 @@ extern  ins_entry       *DelInstr( ins_entry *old ) {
 }
 
 
-extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
-/***************************************************************/
-
-    ins_entry   *curr;
-
-  optbegin
-    for(;;) {
-        curr = *owner;
-        if( curr == instr ) break;
-        owner = &_LblRef( curr );
-    }
-    *owner = _LblRef( curr );
-  optend
-
-
 extern  void    FreePendingDeletes() {
 /************************************/
 
@@ -256,3 +253,4 @@ extern  void    FreePendingDeletes() {
         PendingDeletes = temp;
     }
   optend
+}

@@ -29,29 +29,20 @@
 *
 ****************************************************************************/
 
-
-typedef unsigned local_ret_t;
-
-extern void LocalTime( int *hour, int *min, int *sec, int *hundredths );
-extern void LocalDate( int *year, int *month, int *day, int *weekday );
-extern int LocalInteractive( sys_handle );
-extern void LocalGetBuff( char *, unsigned );
-//extern local_ret_t LocalCreate( char *, bool );
-//extern local_ret_t LocalOpen( char *, unsigned, bool );
-//extern void LocalClose( handle );
-//extern local_ret_t LocalRead( handle, void far *, unsigned );
-//extern local_ret_t LocalWrite( handle, void *, unsigned );
-//extern local_ret_t LocalErase( char * );
-//extern local_ret_t LocalRename( char *, char * );
-//extern local_ret_t LocalMkDir( char * );
-//extern local_ret_t LocalRmDir( char * );
-//extern local_ret_t LocalSetDrv( int );
-//extern int LocalGetDrv( void );
-//extern local_ret_t LocalSetCWD( char * );
-//extern local_ret_t LocalGetFileAttr( char * );
-//extern local_ret_t LocalGetFreeSpace( int );
-//extern local_ret_t LocalDateTime( handle, int *, int *, int );
-//extern local_ret_t LocalGetCwd( int, char * );
-//extern local_ret_t LocalFindFirst( char *, void *, unsigned, int );
-//extern local_ret_t LocalFindNext( void *, unsigned );
-//extern local_ret_t LocalSetFileAttr( char *, long );
+extern unsigned LocalMkDir( char * );
+extern unsigned LocalRmDir( char * );
+extern unsigned LocalGetCwd( int, char * );
+extern unsigned LocalSetCWD( char * );
+extern int      LocalGetDrv( void );
+extern unsigned LocalSetDrv( int );
+extern unsigned LocalFindFirst( char *, void *, unsigned, int );
+extern unsigned LocalFindNext( void *, unsigned );
+extern long     LocalGetFileAttr( char * );
+extern unsigned LocalSetFileAttr( char *, long );
+extern long     LocalGetFreeSpace( int );
+extern unsigned LocalRename( char *, char * );
+extern void     LocalTime( int *hour, int *min, int *sec, int *hundredths );
+extern void     LocalDate( int *year, int *month, int *day, int *weekday );
+extern unsigned LocalDateTime( sys_handle, int *, int *, int );
+extern int      LocalInteractive( sys_handle );
+extern void     LocalGetBuff( char *, unsigned );

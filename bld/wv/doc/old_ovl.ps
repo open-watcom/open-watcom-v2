@@ -1,0 +1,678 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator:  WATCOM Script/GML V4.0 PC/DOS
+%%Title: WATCOM Script/GML
+%%CreationDate: 14:41:33 January 26, 1994
+%%Pages: (atend)
+%%BoundingBox: 0 0 8500 10920
+%%EndComments
+/@uline {
+   currentpoint exch /@underx exch def
+   currentfont /FontInfo get dup
+   /UnderlineThickness get 0
+   currentfont /FontMatrix get transform pop
+   /@underthick exch def
+   /UnderlinePosition get 0
+   currentfont /FontMatrix get transform pop
+   add @underthick sub
+   /@undery exch def } def
+/@euline {
+   currentpoint exch dup
+   @underx @undery moveto
+   @underx sub 0 rlineto
+   @underthick setlinewidth stroke
+   exch moveto } def
+/graphhead {
+   /@scale exch def
+   /@yoff exch def
+   /@xoff exch def
+   /@depth exch def
+   /@width exch def
+   /@y exch def
+   /@x exch def
+   1 setlinewidth /@clw currentlinewidth def
+   @x @clw 2 div sub @y @clw 2 div add moveto
+   0 @depth neg @clw sub rlineto
+   @width @clw add 0 rlineto
+   0 @depth @clw add rlineto
+   closepath clip newpath
+   @x @xoff sub dup @y @yoff add @depth add moveto
+   @y @yoff add translate
+   10 @scale mul 72 div dup scale
+ /restore {systemdict /restore get exec} bind def } def
+/plfdef {
+   /@fgmlname exch def
+   /@fdefname exch def
+   /@fptsiz exch def
+   /@fname exch def
+   /@bf @fname findfont @fptsiz 1000 mul 72 div scalefont def
+   /@nf @bf maxlength dict def
+   @bf { exch dup /FID ne { exch @nf 3 1 roll put } { pop pop }
+   ifelse} forall 
+   @nf /FontName @fdefname put
+   @fdefname @nf definefont pop
+   @fgmlname @fdefname /findfont cvx /setfont cvx 3 array astore cvx def } def
+/sd { exch currentpoint exch pop moveto shwd } def
+/shwd { show } def
+/am { moveto } def
+/Times-Roman 10.0 /@ft0 /@fs0 plfdef
+/Times-Italic 10.0 /@ft1 /@fs1 plfdef
+/Times-Bold 10.0 /@ft2 /@fs2 plfdef
+/Times-BoldItalic 10.0 /@ft3 /@fs3 plfdef
+/Times-Bold 16.0 /@ft4 /@fs4 plfdef
+/Times-BoldItalic 10.0 /@ft5 /@fs5 plfdef
+/Courier 9.0 /@ft6 /@fs6 plfdef
+/Courier-Bold 9.0 /@ft7 /@fs7 plfdef
+/Courier 10.0 /@ft8 /@fs8 plfdef
+/Courier-Bold 10.0 /@ft9 /@fs9 plfdef
+/Times-Roman 24.0 /@ft10 /@fs10 plfdef
+/Times-Bold 24.0 /@ft11 /@fs11 plfdef
+/Times-Roman 24.0 /@ft12 /@fs12 plfdef
+/Times-Roman 24.0 /@ft13 /@fs13 plfdef
+/Times-Roman 24.0 /@ft14 /@fs14 plfdef
+/Times-Roman 24.0 /@ft15 /@fs15 plfdef
+/Times-Roman 24.0 /@ft16 /@fs16 plfdef
+/Times-Roman 24.0 /@ft17 /@fs17 plfdef
+/Times-Roman 24.0 /@ft18 /@fs18 plfdef
+/Times-Roman 24.0 /@ft19 /@fs19 plfdef
+/Symbol 10.0 /@ft20 /@fs20 plfdef
+/draft{save exch dup () eq {pop (DRAFT)}if /drt exch def
+   /rm 7300 dup 0 le {pop 7000}if def
+   /pd 9000 dup 0 le {pop 9660}if def
+   .95 setgray /Helvetica-Bold findfont
+   rm rm mul pd pd mul add sqrt
+   .75 mul drt length 2 add div
+   scalefont setfont
+   10920 newpath 0 0 moveto (X) true charpath flattenpath pathbbox
+   3 -1 roll sub 3 1 roll exch sub rm add 2 div 3 1 roll pd add
+   2 div sub moveto 45 rotate drt stringwidth pop dup 1.25 mul
+   2 div neg 0 rmoveto .25 mul drt length div 0 drt ashow
+   restore}bind def
+%%EndProlog
+%%Page: # 1
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+
+@fs0 
+pageobj restore
+showpage
+%%Page: # 2
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs11 1977 7082 am (WVIDEO Overlay Manager) shwd 3351 6720 am (Interface) shwd 
+2988 5634 am (VERSION 1.0) shwd 
+@fs0 3670 3797 am (Copyright 1993 by WATCOM International Corp.) shwd 5540 3296
+ am (January 26, 1994) shwd 
+pageobj restore
+showpage
+%%Page: # 3
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 3987 10006 am (Table of Contents) shwd 
+@fs0 1500 9672 am (Overlay manager interface) shwd 3040 (.....................\
+..............................................................................\
+.................) sd 7430 (1) sd 1500 9338 am (1 The Hook Routine) shwd 2690 
+(.............................................................................\
+.................................................) sd 7430 (1) sd 1500 9004 am 
+(2 The Handler Routine) shwd 2830 (...........................................\
+..............................................................................\
+.) sd 7430 (2) sd 1700 8670 am (2.1 GET_STATE_SIZE) shwd 3110 (...............\
+..............................................................................\
+.....................) sd 7430 (2) sd 1700 8503 am (2.2 GET_OVERLAY_STATE)
+shwd 3460 (...................................................................\
+.....................................) sd 7430 (2) sd 1700 8336 am (2.3 SET_OV\
+ERLAY_STATE) shwd 3460 (......................................................\
+..................................................) sd 7430 (3) sd 1700 8169
+am (2.4 TRANSLATE_VECTOR_ADDR) shwd 3880 (....................................\
+........................................................) sd 7430 (3) sd 1700 
+8002 am (2.5 TRANSLATE_RETURN_ADDR) shwd 3880 (...............................\
+.............................................................) sd 7430 (3) sd 
+1700 7835 am (2.6 GET_OVL_TBL_ADDR) shwd 3390 (...............................\
+...........................................................................)
+sd 7430 (4) sd 1700 7668 am (2.7 GET_MOVED_SECTION) shwd 3460 (...............\
+..............................................................................\
+...........) sd 7430 (4) sd 1700 7501 am (2.8 GET_SECTION_DATA) shwd 3355 (...\
+..............................................................................\
+..........................) sd 7430 (5) sd 1500 7167 am (3 Overlay Table Struc\
+ture) shwd 3005 (.............................................................\
+........................................................) sd 7430 (5) sd 
+pageobj restore
+showpage
+%%Page: # 4
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs4 2000 9590 am (Overlay manager interface) shwd 
+@fs0 1500 8923 am (For) shwd 1741 (WVIDEO) sd 2354 (to) sd 2509 (be) sd 2687 (\
+able) sd 2966 (to) sd 3121 (debug) sd 3509 (overlays,) sd 4067 (it) sd 4191 (m\
+ust) sd 4508 (be) sd 4685 (able) sd 4963 (to) sd 5117 (make) sd 5464 (requests)
+ sd 5967 (of) sd 6129 (the) sd 6345 (overlay) sd 6810 (manager) sd 7336 (for)
+sd 1500 8756 am (certain) shwd 1941 (operations.) sd 2669 (The) sd 2946 (overl\
+ay) sd 3426 (manager) sd 3967 (must) sd 4298 (also) sd 4583 (be) sd 4775 (able)
+ sd 5068 (to) sd 5237 (inform) sd 5678 (WVIDEO) sd 6305 (when) sd 6667 (a) sd 
+6788 (new) sd 7080 (overlay) sd 1500 8589 am (section is loaded.) shwd 1500 
+8255 am (When WVIDEO loads a DOS program, it looks at the initial CS:IP value \
+for the following structure:) shwd 
+@fs6 1750 7838 am (struct ovl_header {) shwd 2050 7699 am (unsigned_8  short_j\
+mp_opcode;       /* == 0xeb */) shwd 2050 7560 am (signed_8    short_jmp_displ\
+acment;) shwd 2050 7421 am (unsigned_16 signature;) shwd 4750 (/* == 0x2112 */)
+ sd 2050 7282 am (void        \(far *hook\)\(\);) shwd 2050 7143 am (unsigned_\
+16 handler_offset;) shwd 1750 7004 am (};) shwd 
+@fs0 1500 6670 am (WVIDEO) shwd 2114 (checks) sd 2541 (to) sd 2697 (make) sd 
+3046 (sure) sd 3326 (that) sd 3583 (the) sd 3801 (first) sd 4074 (instruction)
+sd 4720 (is) sd 4860 (a) sd 4969 (short) sd 5296 (jump) sd 5629 (\(opcode) sd 
+6126 (0xeb\)) sd 6491 (and) sd 6739 (that) sd 6995 (the) sd 7212 (word) sd 1500
+ 6503 am (following) shwd 2119 (that) sd 2402 (instruction) sd 3074 (contains)
+sd 3613 (the) sd 3857 (value) sd 4233 (0x2112.) sd 4872 (If) sd 5039 (this) sd 
+5314 (occurs,) sd 5796 (WVIDEO) sd 6436 (assumes) sd 6973 (that) sd 7256 (it)
+sd 7407 (is) sd 1500 6336 am (debugging an overlaid application.) shwd 1500 
+6002 am (WVIDEO) shwd 2125 (then) sd 2424 (fills) sd 2700 (in) sd 2866 (the)
+sd 3094 () sd 
+@fs6 (hook) shwd 
+@fs0 3451 (field) sd 3765 (with) sd 4071 (the) sd 4299 (far) sd 4512 (address)
+sd 4988 (of) sd 5162 (a) sd 5281 (routine) sd 5735 (that) sd 6002 (is) sd 6152 
+(invoked) sd 6660 (with) sd 6966 (a) sd 7085 (far) sd 7298 (call) sd 1500 5835
+am (whenever) shwd 2130 (a) sd 2278 (change) sd 2759 (in) sd 2953 (the) sd 3209
+ (overlay) sd 3714 (state) sd 4055 (occurs.) sd 4675 (The) sd 4977 (initial)
+sd 5389 (CS) sd 5645 (value) sd 6033 (and) sd 6320 (the) sd 6576 (contents) sd 
+7127 (of) sd 7329 (the) sd 1500 5668 am () shwd 
+@fs6 (handler_offset) shwd 
+@fs0 2610 (field) sd 2927 (gives) sd 3282 (the) sd 3513 (far) sd 3729 (address)
+ sd 4208 (of) sd 4385 (the) sd 4616 (overlay) sd 5095 (manager) sd 5635 (routi\
+ne) sd 6091 (responsible) sd 6787 (for) sd 7010 (handling) sd 1500 5501 am (de\
+bugger requests.) shwd 
+@fs3 1500 5000 am (1) shwd 
+@fs2 ( The Hook Routine) shwd 
+@fs0 1500 4499 am (After) shwd 1850 (the) sd 2075 (routine) sd 2526 (addresses)
+ sd 3115 (have) sd 3433 (been) sd 3751 (exchanged,) sd 4443 (WVIDEO) sd 5064 (\
+starts) sd 5413 (the) sd 5638 (program) sd 6166 (executing,) sd 6803 (to) sd 
+6965 (allow) sd 7329 (the) sd 1500 4332 am (overlay) shwd 1962 (manager) sd 
+2485 (to) sd 2636 (initialize.) sd 3216 (After) sd 3554 (the) sd 3767 (manager)
+ sd 4290 (has) sd 4518 (finished) sd 5011 (its) sd 5185 (initialization,) sd 
+5971 (it) sd 6090 (performs) sd 6636 (a) sd 6739 (far) sd 6936 (call) sd 7179 
+(to) sd 7329 (the) sd 1500 4165 am (debugger) shwd 2087 (hook) sd 2433 (routin\
+e,) sd 2939 (with) sd 3254 (the) sd 3491 (return) sd 3892 (address) sd 4377 (o\
+n) sd 4583 (the) sd 4820 (stack) sd 5173 (being) sd 5550 (the) sd 5787 ("real")
+ sd 6177 (starting) sd 6663 (address) sd 7147 (of) sd 7329 (the) sd 1500 3998
+am (program being debugged. All register contents \(including flags\) should b\
+e preserved by the hook routine.) shwd 1500 3664 am (After) shwd 1838 (initial\
+ization,) sd 2625 (the) sd 2838 (debugger) sd 3401 (hook) sd 3723 (routine) sd 
+4162 (is) sd 4297 (invoked) sd 4790 (with) sd 5081 (a) sd 5185 (far) sd 5382 (\
+call) sd 5625 (every) sd 5977 (time) sd 6266 (a) sd 6369 (new) sd 6643 (overla\
+y) sd 7104 (section) sd 1500 3497 am (is) shwd 1634 (loaded) sd 2048 (into) sd 
+2307 (memory.) sd 2859 (In) sd 3017 (this) sd 3260 (case) sd 3541 (the) sd 3753
+ (AX) sd 3995 (register) sd 4455 (contains) sd 4961 (the) sd 5172 (section) sd 
+5608 (number) sd 6075 (that) sd 6325 (was) sd 6582 (just) sd 6824 (loaded.) sd 
+7283 (The) sd 1500 3330 am (DL) shwd 1759 (register) sd 2252 (contains) sd 2791
+ (a) sd 2926 (zero) sd 3240 (or) sd 3429 (non-zero) sd 3999 (value) sd 4374 (i\
+f) sd 4532 (the) sd 4775 (overlay) sd 5267 (load) sd 5580 (was) sd 5869 (cause\
+d) sd 6321 (by) sd 6533 (a) sd 6667 (call) sd 6941 (or) sd 7130 (return,) sd 
+1500 3163 am (respectively.) shwd 2260 (The) sd 2517 (CX:BX) sd 2984 (register\
+s) sd 3498 (form) sd 3810 (a) sd 3912 (far) sd 4108 (pointer) sd 4545 (to) sd 
+4693 (the) sd 4903 (last) sd 5136 (byte) sd 5416 (of) sd 5572 (the) sd 5782 (c\
+all) sd 6023 (instruction) sd 6661 (that) sd 6910 (caused) sd 7329 (the) sd 
+1500 2996 am (overlay) shwd 1968 (load) sd 2257 (\(in) sd 2461 (the) sd 2680 (\
+case) sd 2968 (of) sd 3133 (a) sd 3243 (overlay) sd 3711 (load) sd 4000 (being)
+ sd 4359 (caused) sd 4787 (by) sd 4975 (a) sd 5085 (return) sd 5468 (instructi\
+on) sd 6114 (\(DL) sd 6394 (is) sd 6534 (non-zero\)) sd 7126 (the) sd 7344 (fa\
+r) sd 1500 2829 am (pointer is to the last byte of the call instruction that t\
+he return is returning from.\)) shwd 
+@fs2 1500 2495 am (NOTE:) shwd 
+@fs0 (  More) shwd 2367 (sections) sd 2869 (than) sd 3162 (just) sd 3416 (the)
+sd 3639 (one) sd 3893 (identified) sd 4482 (by) sd 4674 (the) sd 4897 (section)
+ sd 5345 (number) sd 5824 (in) sd 5985 (AX) sd 6239 (may) sd 6531 (be) sd 6714 
+(loaded) sd 7138 (by) sd 7329 (the) sd 1977 2328 am (overlay) shwd 2441 (manag\
+er) sd 2965 (before) sd 3366 (the) sd 3580 (hook) sd 3903 (routine) sd 4343 (i\
+s) sd 4479 (called.) sd 4907 (The) sd 5167 (current) sd 5607 (overlay) sd 6070 
+(manager) sd 6594 (also) sd 6862 (loads) sd 7200 (all) sd 7383 (of) sd 1977 
+2161 am (the) shwd 2185 (ancestors) sd 2742 (of) sd 2896 (a) sd 2995 (section)
+sd 3428 (\(See) sd 3714 (the) sd 3922 (WLINK) sd 4425 (documentation) sd 5293 
+(in) sd 5439 (the) sd 5647 (Users') sd 6049 (Guide) sd 6427 (for) sd 6627 (a)
+sd 6725 (description) sd 7383 (of) sd 1500 1340 am (Overlay manager interface)
+shwd 7430 (1) sd 
+pageobj restore
+showpage
+%%Page: # 5
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1977 10173 am (what) shwd 2291 (an) sd 2465 (ancestor) sd 2973 (is\).) sd 3204 
+(To) sd 3401 (find) sd 3669 (out) sd 3890 (what) sd 4204 (sections) sd 4696 (a\
+re) sd 4909 (really) sd 5270 (in) sd 5421 (memory) sd 5928 (the) sd 6141 (debu\
+gger) sd 6704 (should) sd 7119 (invoke) sd 1977 10006 am (the handler routine \
+with a GET_OVERLAY_STATE request.) shwd 
+@fs3 1500 9505 am (2) shwd 
+@fs2 ( The Handler Routine) shwd 
+@fs0 1500 9004 am (The) shwd 1762 (handler) sd 2227 (routine) sd 2669 (is) sd 
+2807 (responsible) sd 3489 (for) sd 3698 (processing) sd 4341 (requests) sd 
+4844 (from) sd 5160 (the) sd 5375 (debugger) sd 5940 (pertaining) sd 6552 (to)
+sd 6705 (overlays.) sd 7277 (It) sd 7407 (is) sd 1500 8837 am (invoked) shwd 
+2006 (by) sd 2201 (the) sd 2427 (debugger) sd 3003 (by) sd 3198 (performing)
+sd 3883 (a) sd 4000 (far) sd 4211 (call) sd 4468 (with) sd 4772 (a) sd 4889 (r\
+equest) sd 5348 (number) sd 5830 (in) sd 5994 (the) sd 6220 (AX) sd 6477 (regi\
+ster.) sd 7027 (The) sd 7298 (AX) sd 1500 8670 am (register) shwd 1966 (is) sd 
+2105 (used) sd 2407 (to) sd 2562 (return) sd 2943 (the) sd 3160 (result) sd 
+3517 (or) sd 3680 (return) sd 4061 (status) sd 4425 (of) sd 4588 (the) sd 4805 
+(request.) sd 5312 (The) sd 5575 (CX) sd 5814 (and) sd 6061 (BX) sd 6300 (regi\
+sters) sd 6819 (are) sd 7035 (used) sd 7336 (for) sd 1500 8503 am (some reques\
+ts to pass a far pointer to memory.) shwd 1500 8169 am (There) shwd 1879 (are)
+sd 2103 (two) sd 2366 (structures) sd 2963 (that) sd 3226 (the) sd 3450 (handl\
+er) sd 3923 (routines) sd 4427 (deals) sd 4767 (with.) sd 5140 (The) sd 5410 (\
+first) sd 5689 (is) sd 5835 (called) sd 6222 (an) sd 6442 (overlay) sd 6915 (s\
+tate.) sd 7329 (An) sd 1500 8002 am (overlay) shwd 1984 (state) sd 2304 (consi\
+sts) sd 2810 (of) sd 2991 (a) sd 3116 (block) sd 3490 (of) sd 3670 (memory) sd 
+4198 (containing) sd 4852 (all) sd 5055 (the) sd 5289 (information) sd 6013 (n\
+ecessary) sd 6619 (for) sd 6846 (the) sd 7080 (overlay) sd 1500 7835 am (manag\
+er) shwd 2025 (to) sd 2178 (restore) sd 2603 (the) sd 2818 (overlays) sd 3336 
+(to) sd 3489 (their) sd 3790 (current) sd 4231 (condition) sd 4804 (at) sd 4949
+ (some) sd 5287 (later) sd 5580 (point) sd 5911 (in) sd 6063 (time.) sd 6406 (\
+The) sd 6666 (first) sd 6935 (portion) sd 7383 (of) sd 1500 7668 am (this)
+shwd 1742 (block) sd 2093 (is) sd 2226 (a) sd 2328 (bit) sd 2516 (vector,) sd 
+2941 (with) sd 3229 (each) sd 3524 (bit) sd 3711 (representing) sd 4442 (an)
+sd 4613 (overlay) sd 5072 (section.) sd 5550 (If) sd 5683 (the) sd 5893 (bit)
+sd 6080 (is) sd 6212 (a) sd 6313 (one,) sd 6590 (then) sd 6870 (the) sd 7080 (\
+overlay) sd 1500 7501 am (section) shwd 1938 (is) sd 2073 (currently) sd 2621 
+(in) sd 2772 (memory.) sd 3328 (If) sd 3464 (the) sd 3677 (bit) sd 3867 (is)
+sd 4002 (a) sd 4106 (zero) sd 4389 (then) sd 4672 (the) sd 4885 (overlay) sd 
+5347 (section) sd 5785 (is) sd 5920 (not) sd 6141 (in) sd 6292 (memory.) sd 
+6883 (To) sd 7080 (convert) sd 1500 7334 am (from a section number to a bit po\
+sition use the following formulas:) shwd 
+@fs6 1750 6917 am (byte_offset = \(section_number - 1\) / 8;) shwd 1750 6778
+am (bit_number  = \(section_number - 1\) % 8;) shwd 
+@fs0 1500 6444 am (Following the bit vector is information that the manager us\
+es to restore the overlay stack.) shwd 1500 6110 am (The) shwd 1756 (second)
+sd 2183 (structure) sd 2712 (used) sd 3007 (is) sd 3139 (an) sd 3310 (overlay)
+sd 3768 (address.) sd 4267 (This) sd 4553 (consists) sd 5033 (of) sd 5188 (a)
+sd 5288 (far) sd 5482 (pointer) sd 5917 (followed) sd 6453 (by) sd 6631 (a) sd 
+6731 (16-bit) sd 7104 (section) sd 1500 5943 am (number.) shwd 1500 5609 am (T\
+he following requests are recognized by the debug handler routine.) shwd 
+@fs3 1500 5108 am (2.1 GET_STATE_SIZE) shwd 
+@fs6 2050 4691 am (Inputs:) shwd 4450 (Outputs:) sd 2050 4552 am (AX = request\
+ number \(0\)) shwd 4450 (AX = size of overlay state) sd 
+@fs0 1500 4218 am (This request returns the number of bytes required for an ov\
+erlay state.) shwd 
+@fs3 1500 3717 am (2.2 GET_OVERLAY_STATE) shwd 
+@fs6 2050 3300 am (Inputs:) shwd 4450 (Outputs:) sd 2050 3161 am (AX = request\
+ number \(1\)) shwd 4450 (AX = 1) sd 2050 3022 am (CX:BX = far pointer to memo\
+ry) shwd 2650 2883 am (to store overlay state) shwd 
+@fs0 1500 2549 am (This) shwd 1789 (request) sd 2234 (copies) sd 2632 (the) sd 
+2844 (overlay) sd 3305 (state) sd 3602 (into) sd 3861 (the) sd 4072 (memory)
+sd 4577 (pointed) sd 5037 (at) sd 5178 (by) sd 5358 (the) sd 5569 (CX:BX) sd 
+6036 (registers.) sd 6596 (A) sd 6737 (one) sd 6979 (is) sd 7112 (always) sd 
+1500 2382 am (returned in AX.) shwd 1500 1340 am (Overlay manager interface)
+shwd 7430 (2) sd 
+pageobj restore
+showpage
+%%Page: # 6
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (2.3 SET_OVERLAY_STATE) shwd 
+@fs6 2050 9422 am (Inputs:) shwd 4450 (Outputs:) sd 2050 9283 am (AX = request\
+ number \(2\)) shwd 4450 (AX = 1) sd 2050 9144 am (CX:BX = far pointer to memo\
+ry) shwd 2650 9005 am (to load overlay state) shwd 
+@fs0 1500 8671 am (This) shwd 1797 (request) sd 2250 (takes) sd 2586 (a) sd 
+2697 (previously) sd 3337 (obtained) sd 3868 (overlay) sd 4337 (state) sd 4642 
+(and) sd 4893 (causes) sd 5306 (the) sd 5526 (overlay) sd 5994 (manager) sd 
+6523 (to) sd 6680 (return) sd 7063 (itself) sd 7391 (to) sd 1500 8504 am (that)
+ shwd 1767 (overlay) sd 2244 (configuration.) sd 3135 (A) sd 3293 (one) sd 3552
+ (is) sd 3702 (always) sd 4147 (returned) sd 4671 (in) sd 4837 (AX.) sd 5175 (\
+The) sd 5449 (overlay) sd 5925 (manager) sd 6462 (will) sd 6736 (not) sd 6971 
+(explicitly) sd 1500 8337 am (unload) shwd 2017 (a) sd 2215 (section) sd 2747 
+(that) sd 3093 (is) sd 3322 (not) sd 3637 (in) sd 3882 (memory) sd 4483 (accor\
+ding) sd 5171 (to) sd 5416 (the) sd 5723 (given) sd 6170 (overlay) sd 6726 (st\
+ate,) sd 7179 (so) sd 7438 (a) sd 1500 8170 am (GET_OVERLAY_STATE) shwd 3075 (\
+request) sd 3542 (following) sd 4150 (a) sd 4275 (SET_OVERLAY_STATE) sd 5827 (\
+may) sd 6130 (not) sd 6372 (return) sd 6770 (the) sd 7004 (same) sd 7352 (bit)
+sd 1500 8003 am (vector) shwd 1888 (portion.) sd 2372 (This) sd 2658 (request)
+sd 3100 (may) sd 3378 (also) sd 3641 (be) sd 3811 (used) sd 4105 (by) sd 4283 
+(the) sd 4492 (debugger) sd 5051 (to) sd 5198 (explicitly) sd 5765 (load) sd 
+6044 (a) sd 6143 (section,) sd 6612 (so) sd 6773 (the) sd 6981 (assembly) sd 
+1500 7836 am (code) shwd 1806 (may) sd 2088 (be) sd 2262 (examined,) sd 2884 (\
+perhaps.) sd 3410 (To) sd 3607 (do) sd 3789 (this,) sd 4070 (zero) sd 4353 (ou\
+t) sd 4574 (a) sd 4678 (block) sd 5031 (of) sd 5190 (memory) sd 5697 (the) sd 
+5910 (size) sd 6169 (of) sd 6328 (an) sd 6502 (overlay) sd 6964 (state,) sd 
+7298 (and) sd 1500 7669 am (then) shwd 1802 (turn) sd 2089 (on) sd 2290 (the)
+sd 2522 (appropriate) sd 3221 (section) sd 3678 (number) sd 4166 (in) sd 4336 
+(the) sd 4567 (bit) sd 4775 (vector,) sd 5226 (then) sd 5527 (make) sd 5889 (a)
+ sd 6011 (SET_OVERLAY_STATE) sd 1500 7502 am (request. Remember that not only \
+that section will be loaded, but all of its ancestor sections as well.) shwd 
+@fs3 1500 7001 am (2.4 TRANSLATE_VECTOR_ADDR) shwd 
+@fs6 2050 6584 am (Inputs:) shwd 4450 (Outputs:) sd 2050 6445 am (AX = request\
+ number \(3\)) shwd 4450 (AX = 1 if addr was translated,) sd 2050 6306 am (CX:\
+BX = far pointer to) shwd 4825 (0 otherwise) sd 2650 6167 am (overlay address)
+shwd 
+@fs0 1500 5833 am (This) shwd 1786 (request) sd 2228 (checks) sd 2646 (to) sd 
+2793 (see) sd 3009 (if) sd 3133 (the) sd 3342 (far) sd 3536 (pointer) sd 3971 
+(portion) sd 4414 (of) sd 4569 (the) sd 4778 (overlay) sd 5235 (address) sd 
+5691 (pointed) sd 6148 (at) sd 6286 (by) sd 6463 (CX:BX) sd 6927 (is) sd 7057 
+(actually) sd 1500 5666 am (an) shwd 1676 (overlay) sd 2140 (vector.) sd 2586 
+(If) sd 2724 (the) sd 2939 (address) sd 3402 (is) sd 3539 (a) sd 3645 (vector)
+sd 4039 (then) sd 4324 (the) sd 4539 (vector) sd 4933 (address) sd 5396 (is)
+sd 5532 (replaced) sd 6049 (by) sd 6232 (the) sd 6446 (true) sd 6707 (address)
+sd 7169 (of) sd 7329 (the) sd 1500 5499 am (routine) shwd 1947 (that) sd 2207 
+(the) sd 2428 (vector) sd 2828 (is) sd 2971 (for,) sd 3224 (and) sd 3476 (the)
+sd 3697 (section) sd 4143 (number) sd 4620 (portion) sd 5075 (is) sd 5218 (fil\
+led) sd 5564 (in) sd 5723 (with) sd 6022 (the) sd 6242 (section) sd 6687 (numb\
+er) sd 7163 (the) sd 7383 (of) sd 1500 5332 am (routine.) shwd 2015 (A) sd 2167
+ (one) sd 2420 (is) sd 2564 (returned) sd 3082 (in) sd 3242 (AX) sd 3495 (in)
+sd 3655 (this) sd 3908 (case.) sd 4266 (If) sd 4411 (the) sd 4633 (address) sd 
+5103 (is) sd 5247 (not) sd 5477 (an) sd 5659 (overlay) sd 6129 (vector,) sd 
+6568 (then) sd 6859 (the) sd 7080 (overlay) sd 1500 5165 am (address is untouc\
+hed and an zero is returned in AX.) shwd 
+@fs3 1500 4664 am (2.5 TRANSLATE_RETURN_ADDR) shwd 
+@fs6 2050 4247 am (Inputs:) shwd 4450 (Outputs:) sd 2050 4108 am (AX = request\
+ number \(4\)) shwd 4450 (AX = 1 if addr was translated,) sd 2050 3969 am (CX:\
+BX = far pointer to) shwd 4825 (0 otherwise) sd 2650 3830 am (overlay address)
+shwd 
+@fs0 1500 3496 am (In) shwd 1659 (order) sd 1997 (to) sd 2148 (handle) sd 2563 
+(parallel) sd 3025 (overlay) sd 3486 (calls,) sd 3819 (the) sd 4031 (overlay)
+sd 4492 (manager) sd 5014 (replaces) sd 5513 (the) sd 5725 (true) sd 5984 (ret\
+urn) sd 6360 (address) sd 6820 (on) sd 7001 (the) sd 7213 (stack) sd 1500 3329
+am (with) shwd 1803 (that) sd 2067 (of) sd 2238 (some) sd 2586 (special) sd 
+3028 (code) sd 3346 (\(the) sd 3618 (parallel) sd 4092 (return) sd 4481 (code\
+\).) sd 4952 (It) sd 5091 (then) sd 5385 (takes) sd 5725 (the) sd 5949 (origin\
+al) sd 6438 (return) sd 6826 (address) sd 7298 (and) sd 1500 3162 am (section)
+shwd 1947 (number) sd 2425 (an) sd 2608 (places) sd 3008 (them) sd 3337 (on)
+sd 3527 (the) sd 3748 (overlay) sd 4218 (stack.) sd 4620 (When) sd 5004 (a) sd 
+5116 (routine) sd 5563 (returns) sd 6002 (to) sd 6161 (the) sd 6382 (overlay)
+sd 6852 (manager,) sd 7422 (it) sd 1500 2995 am (pops) shwd 1806 (the) sd 2019 
+(top) sd 2240 (entry) sd 2570 (of) sd 2729 (the) sd 2942 (overlay) sd 3404 (st\
+ack,) sd 3770 (makes) sd 4168 (sure) sd 4443 (that) sd 4695 (the) sd 4908 (ori\
+ginal) sd 5385 (overlay) sd 5846 (section) sd 6283 (is) sd 6417 (loaded,) sd 
+6868 (and) sd 7111 (returns) sd 1500 2828 am (to the original return address.)
+shwd 1500 2494 am (This) shwd 1801 (function) sd 2321 (performs) sd 2879 (much)
+ sd 3242 (the) sd 3466 (same) sd 3805 (function) sd 4325 (as) sd 4494 (TRANSLA\
+TE_VECTOR_ADDR,) sd 6494 (except) sd 6911 (that) sd 7173 (rather) sd 1500 2327
+am (than) shwd 1788 (checking) sd 2340 (for) sd 2551 (a) sd 2660 (vector) sd 
+3057 (address,) sd 3561 (it) sd 3686 (checks) sd 4113 (to) sd 4269 (see) sd 
+4494 (if) sd 4627 (the) sd 4845 (address) sd 5311 (is) sd 5451 (that) sd 5707 
+(of) sd 5870 (the) sd 6087 (overlay) sd 6553 (manager) sd 7080 (parallel) sd 
+1500 2160 am (return) shwd 1872 (code.) sd 2212 (If) sd 2343 (it) sd 2458 (is)
+sd 2588 (then) sd 2866 (the) sd 3074 (section) sd 3507 (number) sd 3971 (in)
+sd 4117 (the) sd 4325 (overlay) sd 4782 (address) sd 5238 (is) sd 5368 (used)
+sd 5660 (as) sd 5812 (the) sd 6019 (number) sd 6482 (of) sd 6635 (entries) sd 
+7044 (down) sd 7391 (in) sd 1500 1993 am (the) shwd 1709 (overlay) sd 2167 (st\
+ack) sd 2492 (that) sd 2740 (the) sd 2949 (real) sd 3197 (return) sd 3570 (add\
+ress) sd 4026 (and) sd 4265 (section) sd 4698 (number) sd 5162 (is) sd 5292 (t\
+o) sd 5438 (be) sd 5607 (found) sd 5971 (\(zero) sd 6296 (is) sd 6426 (the) sd 
+6634 (top) sd 6850 (entry) sd 7175 (of) sd 7329 (the) sd 1500 1340 am (Overlay\
+ manager interface) shwd 7430 (3) sd 
+pageobj restore
+showpage
+%%Page: # 7
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (overlay) shwd 1981 (stack\).) sd 2461 (The) sd 2739 (true) sd 
+3017 (return) sd 3412 (address) sd 3891 (and) sd 4153 (section) sd 4609 (numbe\
+r) sd 5096 (then) sd 5397 (replaces) sd 5915 (the) sd 6146 (contents) sd 6672 
+(of) sd 6849 (the) sd 7080 (overlay) sd 1500 10006 am (address) shwd 1958 (and)
+ sd 2199 (a) sd 2300 (one) sd 2541 (is) sd 2673 (returned) sd 3179 (in) sd 3327
+ (AX.) sd 3610 (If) sd 3743 (the) sd 3952 (address) sd 4409 (is) sd 4540 (not)
+sd 4757 (the) sd 4966 (parallel) sd 5424 (return) sd 5797 (code,) sd 6135 (the\
+n) sd 6414 (the) sd 6623 (overlay) sd 7081 (address) sd 1500 9839 am (is left \
+untouched and a zero is returned in AX.) shwd 
+@fs3 1500 9338 am (2.6 GET_OVL_TBL_ADDR) shwd 
+@fs6 2050 8921 am (Inputs:) shwd 4450 (Outputs:) sd 2050 8782 am (AX = request\
+ number \(5\)) shwd 4450 (AX = 0) sd 2050 8643 am (CX:BX = far pointer to vari\
+able) shwd 2650 8504 am (of type far pointer to) shwd 2650 8365 am (be filled \
+in with) shwd 2650 8226 am (overlay table address) shwd 
+@fs0 1500 7892 am (This) shwd 1798 (request) sd 2252 (fills) sd 2520 (in) sd 
+2679 (the) sd 2900 (far) sd 3106 (pointer) sd 3553 (pointed) sd 4023 (at) sd 
+4174 (by) sd 4364 (CX:BX) sd 4841 (with) sd 5140 (the) sd 5361 (address) sd 
+5830 (of) sd 5996 (the) sd 6216 (overlay) sd 6685 (table) sd 7006 (so) sd 7179 
+(that) sd 7438 (a) sd 1500 7725 am (profiler) shwd 1965 (can) sd 2203 (find)
+sd 2473 (out) sd 2696 (where) sd 3082 (sections) sd 3576 (are) sd 3791 (locate\
+d) sd 4239 (in) sd 4392 (the) sd 4607 (executable,) sd 5286 (or) sd 5446 (over\
+lay) sd 5909 (files.) sd 6246 (The) sd 6506 (sampler) sd 6991 (program,) sd 
+1500 7558 am (when) shwd 1840 (it) sd 1955 (detects) sd 2380 (that) sd 2627 (i\
+t) sd 2742 (is) sd 2872 (sampling) sd 3421 (a) sd 3520 (overlaid) sd 4015 (app\
+lication,) sd 4708 (can) sd 4938 (perform) sd 5425 (this) sd 5663 (function)
+sd 6166 (and) sd 6404 (write) sd 6728 (the) sd 6935 (result) sd 7282 (into) sd 
+1500 7391 am (the) shwd 1718 (sample) sd 2160 (file.) sd 2450 (Since) sd 2807 
+(the) sd 3024 (overlay) sd 3490 (table) sd 3808 (is) sd 3947 (always) sd 4381 
+(in) sd 4536 (the) sd 4753 (root,) sd 5062 (the) sd 5279 (profiler) sd 5746 (c\
+an) sd 5986 (then) sd 6273 (find) sd 6545 (the) sd 6762 (overlay) sd 7228 (tab\
+le) sd 1500 7224 am (and) shwd 1744 (from) sd 2058 (that,) sd 2347 (find) sd 
+2615 (the) sd 2828 (other) sd 3158 (sections.) sd 3698 (It) sd 3826 (should)
+sd 4241 (be) sd 4415 (noted) sd 4767 (that) sd 5018 (the) sd 5230 (format) sd 
+5644 (of) sd 5802 (the) sd 6014 (overlay) sd 6475 (table) sd 6788 (may) sd 7069
+ (change,) sd 1500 7057 am (so this call should be avoided if at all possible.)
+ shwd 
+@fs3 1500 6556 am (2.7 GET_MOVED_SECTION) shwd 
+@fs6 2050 6139 am (Inputs:) shwd 4450 (Outputs:) sd 2050 6000 am (AX = request\
+ number \(6\)) shwd 4450 (AX = 1 if the section exists) sd 2050 5861 am (CX:BX\
+ = far pointer to) shwd 4825 (0 otherwise) sd 2650 5722 am (overlay address)
+shwd 
+@fs0 1500 5388 am (With) shwd 1825 (the) sd 2041 (dynamic) sd 2567 (overlay)
+sd 3032 (manager,) sd 3594 (sections) sd 4088 (may) sd 4372 (be) sd 4548 (load\
+ed,) sd 5002 (or) sd 5163 (moved,) sd 5624 (to) sd 5777 (positions) sd 6326 (o\
+ther) sd 6658 (than) sd 6943 (where) sd 7329 (the) sd 1500 5221 am (linker)
+shwd 1873 (originally) sd 2464 (placed) sd 2875 (them.) sd 3255 (The) sd 3518 
+(debugger) sd 4084 (must) sd 4400 (be) sd 4577 (informed) sd 5135 (of) sd 5297 
+(the) sd 5513 (new) sd 5791 (positions) sd 6341 (so) sd 6510 (that) sd 6765 (i\
+t) sd 6888 (can) sd 7127 (update) sd 1500 5054 am (the  locations  of  its  sy\
+mbolic  information.    The  GET_MOVED_SECTION  request  is  responsible) shwd 
+7336 (for) sd 1500 4887 am (informing) shwd 2109 (the) sd 2329 (debugger) sd 
+2899 (what) sd 3220 (sections) sd 3719 (have) sd 4032 (moved) sd 4461 (and) sd 
+4712 (their) sd 5017 (new) sd 5298 (locations.) sd 5948 (The) sd 6213 (debugge\
+r) sd 6782 (will) sd 7048 (call) sd 7298 (this) sd 1500 4720 am (request) shwd 
+1945 (after) sd 2243 (the) sd 2455 (hook) sd 2776 (routine) sd 3214 (has) sd 
+3440 (been) sd 3744 (called,) sd 4154 (or) sd 4311 (the) sd 4522 (debugger) sd 
+5083 (has) sd 5309 (invoked) sd 5800 (the) sd 6011 (SET_OVERLAY_STATE) sd 1500 
+4553 am (request.) shwd 1989 (The) sd 2246 (request) sd 2690 (returns) sd 3119 
+(the) sd 3330 (first) sd 3596 (section) sd 4032 (whose) sd 4429 (id) sd 4578 (\
+larger) sd 4945 (than) sd 5226 (the) sd 5437 (section) sd 5873 (number) sd 6340
+ (that) sd 6590 (is) sd 6722 (in) sd 6870 (the) sd 7080 (overlay) sd 1500 4386
+am (address) shwd 1959 (being) sd 2310 (passed) sd 2722 (in.) sd 2915 (The) sd 
+3172 (overlay) sd 3632 (manager) sd 4153 (will) sd 4411 (fill) sd 4615 (in) sd 
+4764 (the) sd 4974 (overlay) sd 5433 (address) sd 5891 (with) sd 6179 (the) sd 
+6389 (section) sd 6824 (number) sd 7290 (that) sd 1500 4219 am (has) shwd 1728 
+(moved) sd 2150 (and) sd 2394 (its) sd 2568 (new) sd 2843 (segment) sd 3350 (a\
+ddress.) sd 3860 (The) sd 4119 (offset) sd 4480 (portion) sd 4927 (of) sd 5085 
+(the) sd 5297 (overlay) sd 5758 (address) sd 6218 (is) sd 6352 (unused.) sd 
+6838 (The) sd 7096 (request) sd 1500 4052 am (will) shwd 1768 (return) sd 2153 
+(a) sd 2265 (one) sd 2517 (in) sd 2676 (AX.) sd 2991 (If) sd 3134 (there) sd 
+3463 (are) sd 3683 (no) sd 3872 (sections) sd 4371 (numbers) sd 4901 (larger)
+sd 5277 (than) sd 5567 (the) sd 5787 (one) sd 6038 (being) sd 6398 (passed) sd 
+6819 (in) sd 6977 (that) sd 7236 (have) sd 1500 3885 am (moved, a zero is retu\
+rned.) shwd 1500 3551 am (Here is some example debugger code:) shwd 
+@fs6 1750 3134 am (void CheckMovedSections\(\)) shwd 1750 2995 am ({) shwd 2050
+ 2856 am (overlay_address     addr;) shwd 2050 2551 am (addr.sect_id = 0;)
+shwd 2050 2412 am (while\( OvlHandler\( GET_MOVED_SECTION, &addr \) \) {) shwd 
+2350 2273 am (HandleMovedSection\( addr.sect_id, addr.segment \);) shwd 2050 
+2134 am (}) shwd 1750 1995 am (}) shwd 
+@fs0 1500 1340 am (Overlay manager interface) shwd 7430 (4) sd 
+pageobj restore
+showpage
+%%Page: # 8
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (2.8 GET_SECTION_DATA) shwd 
+@fs6 2050 9422 am (Inputs:) shwd 4450 (Outputs:) sd 2050 9283 am (AX = request\
+ number \(7\)) shwd 4450 (AX = 1 if the section exists) sd 2050 9144 am (CX:BX\
+ = far pointer to) shwd 4825 (0 otherwise) sd 2650 9005 am (overlay address)
+shwd 
+@fs0 1500 8671 am (This) shwd 1800 (request) sd 2256 (returns) sd 2697 (inform\
+ation) sd 3410 (on) sd 3602 (the) sd 3825 (current) sd 4273 (location) sd 4775 
+(of) sd 4943 (a) sd 5056 (section) sd 5503 (while) sd 5865 (it) sd 5994 (is)
+sd 6138 (in) sd 6298 (memory) sd 6814 (\(or) sd 7029 (where) sd 7422 (it) sd 
+1500 8504 am (would) shwd 1892 (be) sd 2066 (if) sd 2194 (it) sd 2314 (was) sd 
+2573 (loaded\).) sd 3081 (The) sd 3339 (section) sd 3776 (number) sd 4244 (por\
+tion) sd 4690 (of) sd 4848 (the) sd 5060 (overlay) sd 5521 (address) sd 5981 (\
+is) sd 6115 (filled) sd 6452 (in) sd 6602 (with) sd 6892 (the) sd 7104 (sectio\
+n) sd 1500 8337 am (id) shwd 1650 (that) sd 1901 (information) sd 2603 (is) sd 
+2737 (being) sd 3089 (requested) sd 3666 (about) sd 4018 (before) sd 4416 (the)
+ sd 4627 (request) sd 5071 (is) sd 5204 (made.) sd 5592 (The) sd 5849 (overlay)
+ sd 6309 (manager) sd 6830 (returns) sd 7259 (zero) sd 1500 8170 am (in) shwd 
+1665 (AX) sd 1923 (if) sd 2065 (the) sd 2292 (section) sd 2744 (does) sd 3056 
+(not) sd 3291 (exist.) sd 3688 (Otherwise) sd 4319 (it) sd 4453 (returns) sd 
+4898 (one) sd 5156 (and) sd 5413 (fills) sd 5686 (in) sd 5850 (the) sd 6076 (o\
+verlay) sd 6551 (address) sd 7025 (with) sd 7329 (the) sd 1500 8003 am (locati\
+on) shwd 1993 (that) sd 2245 (the) sd 2458 (section) sd 2896 (is) sd 3030 (in)
+sd 3180 (memory,) sd 3722 (or) sd 3880 (where) sd 4263 (it) sd 4382 (would) sd 
+4773 (currently) sd 5320 (go) sd 5501 (if) sd 5628 (it) sd 5747 (was) sd 6005 
+(loaded) sd 6419 (at) sd 6561 (that) sd 6812 (time.) sd 7148 (It) sd 7275 (als\
+o) sd 1500 7836 am (fills in the section number portion of the address with th\
+e size of the section in paragraphs.) shwd 
+@fs3 1500 7335 am (3) shwd 
+@fs2 ( Overlay Table Structure) shwd 
+@fs0 1500 6834 am (The pointer returned by the GET_OVL_TBL_ADDR request has th\
+e following format:) shwd 
+@fs6 1750 6417 am (typedef struct ovl_table {) shwd 2050 6278 am (unsigned_8  \
+    major;) shwd 2050 6139 am (unsigned_8      minor;) shwd 2050 6000 am (void)
+ shwd 3250 (far *start;) sd 2050 5861 am (unsigned_16     delta;) shwd 2050 
+5722 am (unsigned_16     ovl_size;) shwd 2050 5583 am (ovltab_entry    entries\
+[ 1 ];) shwd 1750 5444 am (} ovl_table;) shwd 
+@fs0 1535 5110 am (The) shwd 1791 (fields) sd 2141 () sd 
+@fs6 (major) shwd 
+@fs0 2554 (and) sd 2794 () sd 
+@fs6 (minor) shwd 
+@fs0 3207 (field) sd 3502 (contain) sd 3952 (version) sd 4402 (numbers) sd 4921
+ (for) sd 5123 (the) sd 5332 (overlay) sd 5790 (table) sd 6100 (structure.) sd 
+6669 (If) sd 6801 (an) sd 6971 (upwardly) sd 1500 4943 am (compatible) shwd 
+2171 (change) sd 2617 (in) sd 2776 (the) sd 2997 (structures) sd 3591 (is) sd 
+3734 (made,) sd 4125 (the) sd 4346 (minor) sd 4730 (number) sd 5207 (will) sd 
+5474 (be) sd 5655 (incremented.) sd 6460 (If) sd 6603 (a) sd 6714 (non-upwardl\
+y) sd 1500 4776 am (compatible) shwd 2180 (change) sd 2635 (to) sd 2803 (the)
+sd 3032 (structures) sd 3634 (is) sd 3785 (made,) sd 4185 (the) sd 4414 (major)
+ sd 4798 (field) sd 5113 (will) sd 5389 (be) sd 5579 (incremented.) sd 6444 (T\
+he) sd 6719 (current) sd 7174 (major) sd 1500 4609 am (version) shwd 1962 (is)
+sd 2105 (three,) sd 2473 (the) sd 2694 (current) sd 3140 (minor) sd 3523 (vers\
+ion) sd 3984 (is) sd 4126 (zero.) sd 4514 (The) sd 
+@fs6 4780 (start) sd 
+@fs0 5204 (field) sd 5510 (contains) sd 6025 (a) sd 6136 (32-bit) sd 6520 (far)
+ sd 6725 (pointer) sd 7171 (to) sd 7329 (the) sd 1500 4442 am ("actual") shwd 
+1994 (starting) sd 2460 (address) sd 2925 (of) sd 3088 (the) sd 3305 (program.)
+ sd 3882 (The) sd 4145 (overlay) sd 4611 (manager) sd 5138 (jumps) sd 5525 (to)
+ sd 5680 (this) sd 5928 (address) sd 6393 (after) sd 6695 (it) sd 6818 (has)
+sd 7049 (finished) sd 1500 4275 am (initializing.) shwd 2179 (\(If) sd 2356 (a)
+ sd 2454 (debugger/sampler) sd 3492 (is) sd 3621 (present) sd 4061 (then) sd 
+4338 (the) sd 4545 (overlay) sd 5001 (manager calls into the hook routine with\
+ this) sd 1500 4108 am (address) shwd 1980 (on) sd 2181 (the) sd 2413 (return)
+sd 2809 (stack.\)) sd 3238 (The) sd 3515 () sd 
+@fs6 (delta) shwd 
+@fs0 3950 (field) sd 4267 (contains) sd 4793 (the) sd 5024 (value) sd 5387 (to)
+ sd 5556 (be) sd 5748 (added) sd 6142 (to) sd 6311 (each) sd 6627 (of) sd 6804 
+(the) sd 7035 (segment) sd 1500 3941 am (relocations) shwd 2150 (when) sd 2489 
+(a) sd 2587 (section) sd 3019 (is) sd 3148 (loaded) sd 3557 (into) sd 3811 (me\
+mory) sd 4312 (\(it) sd 4473 (contains) sd 4975 (the segment value for the fir\
+st segment in the) sd 1500 3774 am (program.\)) shwd 2109 (The) sd 2379 () sd 
+@fs6 (ovl_size) shwd 
+@fs0 3032 (field) sd 3342 (contains) sd 3861 (the) sd 4085 (size) sd 4355 (of)
+sd 4525 (the) sd 4749 (overlay) sd 5222 (area.) sd 5579 (This) sd 5880 (is) sd 
+6026 (only) sd 6327 (used) sd 6635 (in) sd 6796 (the) sd 7019 (dynamic) sd 1500
+ 3607 am (overlay) shwd 1958 (manager.) sd 2551 (The) sd 2806 (final) sd 3101 
+(field,) sd 3431 () sd 
+@fs6 (entries) shwd 
+@fs0 (,) shwd 4028 (is) sd 4158 (a) sd 4257 (variable) sd 4745 (sized) sd 5069 
+(array) sd 5394 (containing) sd 6022 (one) sd 6261 (entry) sd 6586 (for) sd 
+6787 (each) sd 7080 (overlay) sd 1500 3440 am (section) shwd 1933 (in) sd 2079 
+(the) sd 2287 (program) sd 2798 (\(e.g.) sd 3087 (the) sd 3295 (tenth) sd 3612 
+(element) sd 4090 (in) sd 4235 (the) sd 4442 (array) sd 4766 (describes) sd 
+5322 (overlay) sd 5778 (section) sd 6210 (10.\)) sd 6468 (Each) sd 6783 (entry)
+ sd 7107 (has) sd 7329 (the) sd 1500 3273 am (following form:) shwd 1500 1340
+am (Overlay manager interface) shwd 7430 (5) sd 
+pageobj restore
+showpage
+%%Page: # 9
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 1750 10201 am (typedef struct ovltab_entry {) shwd 2050 10062 am (unsigne\
+d_16 ) shwd 3099 (flags_anc;) sd 2050 9923 am (unsigned_16 ) shwd 3099 (relocs\
+;) sd 2050 9784 am (unsigned_16 ) shwd 3099 (start_para;) sd 2050 9645 am (uns\
+igned_16 ) shwd 3099 (code_handle;) sd 2050 9506 am (unsigned_16 ) shwd 3099 (\
+num_paras;) sd 2050 9367 am (unsigned_16 ) shwd 3099 (fname;) sd 2050 9228 am 
+(unsigned_32 ) shwd 3099 (disk_addr;) sd 1750 9089 am (} ovltab_entry;) shwd 
+@fs0 1500 8755 am (The) shwd 1771 (top) sd 2004 (bit) sd 2206 (of) sd 2377 (th\
+e) sd 2602 () sd 
+@fs6 (flag_anc) shwd 
+@fs0 3256 (field) sd 3567 (contains) sd 4087 (an) sd 4273 (indicator,) sd 4865 
+(while) sd 5229 (the) sd 5453 (program) sd 5980 (is) sd 6126 (running,) sd 6655
+ (of) sd 6825 (whether) sd 7329 (the) sd 1500 8588 am (overlay) shwd 1959 (sec\
+tion) sd 2394 (is) sd 2526 (in) sd 2674 (memory) sd 3178 (\(value) sd 3567 (on\
+e\)) sd 3855 (or) sd 4011 (must) sd 4321 (be) sd 4492 (loaded) sd 4904 (from)
+sd 5215 (disk) sd 5487 (\(value) sd 5876 (zero\).) sd 6245 (The) sd 6500 (next)
+ sd 6779 (highest) sd 7221 (bit) sd 7407 (is) sd 1500 8421 am (filled) shwd 
+1837 (in) sd 1987 (by) sd 2168 (the) sd 2380 (linker) sd 2748 (and) sd 2991 (i\
+nforms) sd 3467 (the) sd 3679 (overlay) sd 4140 (manager) sd 4662 (that) sd 
+4913 (the) sd 5125 (section) sd 5562 (must) sd 5874 (be) sd 6047 (loaded) sd 
+6461 (during) sd 6868 (the) sd 7080 (overlay) sd 1500 8254 am (manager) shwd 
+2018 (initialization.) sd 2802 (The) sd 3056 (remaining) sd 3660 (bits) sd 3899
+ (contain) sd 4348 (the) sd 4556 (overlay) sd 5013 (number) sd 5477 (for) sd 
+5678 (the) sd 5886 (ancestor) sd 6389 (of) sd 6542 (this) sd 6780 (section) sd 
+7212 (\(zero) sd 1500 8087 am (if) shwd 1638 (there) sd 1970 (is) sd 2115 (non\
+e\).) sd 2590 (The) sd 2859 () sd 
+@fs6 (relocs) shwd 
+@fs0 3361 (field) sd 3670 (say) sd 3908 (how) sd 4201 (many) sd 4563 (segment)
+sd 5080 (relocation) sd 5692 (items) sd 6046 (there) sd 6378 (are) sd 6601 (fo\
+r) sd 6816 (this) sd 7069 (section,) sd 1500 7920 am (while) shwd 1861 (the)
+sd 2082 () sd 
+@fs6 (start_para) shwd 
+@fs0 2882 (field) sd 3189 (gives) sd 3534 (the) sd 3755 (location) sd 4256 (in)
+ sd 4415 (memory) sd 4930 (\(relative) sd 5446 (to) sd 5604 (the) sd 5824 (sta\
+rt) sd 6114 (of) sd 6280 (the) sd 6500 (program\)) sd 7070 (that) sd 7329 (the)
+ sd 1500 7753 am (section) shwd 1932 (should) sd 2341 (be) sd 2509 (placed) sd 
+2910 (when) sd 3249 (loaded.) sd 3695 (The) sd 3948 () sd 
+@fs6 (num_paras) shwd 
+@fs0 4659 (field) sd 4952 (contains) sd 5454 (the) sd 5661 (size) sd 5914 (of)
+sd 6067 (the) sd 6274 (section) sd 6706 (in) sd 6851 (paragraphs,) sd 1500 7586
+ am (and) shwd 1748 (the) sd 1965 () sd 
+@fs6 (code_handle) shwd 
+@fs0 2836 (field) sd 3139 (is) sd 3278 (used) sd 3580 (for) sd 3790 (various)
+sd 4248 (purposes) sd 4791 (inside) sd 5170 (the) sd 5386 (dynamic) sd 5912 (o\
+verlay) sd 6377 (loader.) sd 6863 (The) sd 7125 () sd 
+@fs6 (fname) shwd 
+@fs0 1500 7419 am (field) shwd 1794 (has) sd 2017 (the) sd 2225 (offset) sd 
+2581 (of) sd 2735 (the) sd 2943 (address) sd 3399 (of) sd 3553 (a) sd 3652 (ze\
+ro) sd 3929 (terminated) sd 4563 (string) sd 4918 (for) sd 5118 (the) sd 5325 
+(name) sd 5663 (of) sd 5816 (the) sd 6023 (file) sd 6246 (containing) sd 6873 
+(the) sd 7080 (overlay) sd 1500 7252 am (section) shwd 1932 (data) sd 2201 (an\
+d) sd 2439 (relocations) sd 3089 (\(The) sd 3389 (segment) sd 3890 (value) sd 
+4229 (is) sd 4358 (the) sd 4565 (same) sd 4887 (as) sd 5039 (the) sd 5246 (ove\
+rlay table\).) sd 6091 (If the top bit of the offset) sd 1500 7085 am (is)
+shwd 1644 (on,) sd 1874 (then) sd 2166 (the) sd 2388 (file) sd 2626 (is) sd 
+2770 (the) sd 2992 (original) sd 3479 (EXE) sd 3801 (file) sd 4039 (rather) sd 
+4417 (than) sd 4709 (a) sd 4822 (separate) sd 5330 (overlay) sd 5800 (file,)
+sd 6076 (and) sd 6328 (the) sd 6549 (overlay) sd 7019 (manager) sd 1500 6918
+am (should) shwd 1920 (use) sd 2153 (the) sd 2371 (program) sd 2892 (file) sd 
+3126 (name) sd 3474 (obtained) sd 4002 (from) sd 4320 (DOS) sd 4646 (\(if) sd 
+4825 (the) sd 5042 (version) sd 5500 (is) sd 5639 (3.0) sd 5860 (or) sd 6023 (\
+greater\).) sd 6562 (The) sd 6825 () sd 
+@fs6 (disk_addr) shwd 
+@fs0 1500 6751 am (field) shwd 1833 (gives) sd 2204 (the) sd 2451 (starting)
+sd 2947 (offset) sd 3342 (the) sd 3589 (overlay) sd 4085 (data) sd 4393 (in)
+sd 4577 (the) sd 4823 (overlay) sd 5318 (file.) sd 5731 (The) sd 6023 (segment)
+ sd 6563 (relocation) sd 7198 (items) sd 1500 6584 am (immediately follow the \
+data.) shwd 1500 6250 am (The) shwd 1759 (end) sd 2003 (of) sd 2162 (the) sd 
+2375 () sd 
+@fs6 (entries) shwd 
+@fs0 2942 (array) sd 3271 (is) sd 3405 (indicated) sd 3959 (when) sd 4303 (an)
+sd 4476 (element's) sd 
+@fs6 5060 (flags_anc) sd 
+@fs0 5776 (field) sd 6074 (contains) sd 6581 (the) sd 6793 (value) sd 7137 (0x\
+ffff.) sd 1500 6083 am (The remaining fields in that element contain garbage v\
+alues.) shwd 1500 1340 am (Overlay manager interface) shwd 7430 (6) sd 
+pageobj restore
+showpage
+%%Trailer
+%%Pages: 9

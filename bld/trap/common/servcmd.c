@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <process.h>
 #include "banner.h"
 #include "trpimp.h"
 #include "trperr.h"
@@ -63,7 +62,7 @@ static char *GetFilename( char *ptr, char *buff )
         if( *ptr == '\0' ) break;
         if( *ptr == ' ' ) break;
         if( *ptr == '\t' ) break;
-#if !defined(__QNX__)
+#if !defined(__QNX__) && !defined(__LINUX__)
         if( *ptr == '/' ) break;
         if( *ptr == '-' ) break;
 #endif
@@ -102,7 +101,7 @@ static char *CollectTrapParm( char *ptr, char *start )
     return( ptr );
 }
 
-#ifdef __QNX__
+#if defined(__QNX__) || defined(__LINUX__)
     #define IS_OPTION( c )      ((c) == '-')
 #else
     #define IS_OPTION( c )      ((c) == '-' || (c) == '/')

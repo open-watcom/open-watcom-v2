@@ -48,9 +48,9 @@ extern void             CollapseLazyExtdefs( void );
 extern segnode *        FindSegdata( seg_leader * );
 extern extnode *        FindExtHandle( void * );
 extern segdata *        AllocSegData( void );
-extern void             FreeSegData( segdata * );
+extern void             FreeSegData( void * );
 extern list_of_names *  MakeListName( char *, size_t );
-extern void             BadObjFormat( void );
+extern unsigned long    BadObjFormat( void );
 
 
 extern NODEARRAY *      ExtNodes;           // ptr to obj file import list

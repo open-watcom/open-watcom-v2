@@ -1,0 +1,75 @@
+c$pragma aux (__syscall) WinDestroyHelpInstance parm( value*4 )
+   
+c$pragma aux (__syscall) WinCreateHelpInstance parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinAssociateHelpInstance parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryHelpInstance parm( value*4 )
+   
+c$pragma aux (__syscall) WinLoadHelpTable parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCreateHelpTable parm( value*4, \
+c		reference )
+   
+c$ifdef INCL_DDF
+      
+c$pragma aux (__syscall) DdfInitialize parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfPara parm( reference )
+      
+c$pragma aux (__syscall) DdfSetFormat parm( reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfSetTextAlign parm( reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfSetColor parm( reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfInform parm( reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfSetFontStyle parm( reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfHyperText parm( reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfBeginList parm( reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfListItem parm( reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfEndList parm( reference )
+      
+c$pragma aux (__syscall) DdfMetafile parm( reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) DdfText parm( reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfSetFont parm( reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DdfBitmap parm( reference, \
+c		value*4, \
+c		value*4 )
+      
+c$endif

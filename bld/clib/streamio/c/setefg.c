@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routine to bring in real floating-point formatting code.
 *
 ****************************************************************************/
 
@@ -37,15 +36,13 @@
 
 /* This routine will be called by cstart if "_fltused" is referenced. */
 
-void __setEFGfmt()
-    {
-#ifndef IN_SLIB
-    #ifdef __SW_BR
-        __EFG_printf = __get_EFG_Format();
-        __EFG_scanf  = __get__cnvs2d();                 /* 27-mar-90 */
-    #else
-        __EFG_printf = _EFG_Format;
-        __EFG_scanf  = __cnvs2d;                        /* 27-mar-90 */
-    #endif
+void __setEFGfmt( void )
+{
+#ifdef __SW_BR
+    __EFG_printf = __get_EFG_Format();
+    __EFG_scanf  = __get__cnvs2d();                 /* 27-mar-90 */
+#else
+    __EFG_printf = _EFG_Format;
+    __EFG_scanf  = __cnvs2d;                        /* 27-mar-90 */
 #endif
-    }
+}

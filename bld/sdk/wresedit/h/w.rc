@@ -1,19 +1,5 @@
-/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
-   %       reserved. No part of this software may be reproduced      %
-   %       in any form or by any means - graphic, electronic or      %
-   %       mechanical, including photocopying, recording, taping     %
-   %       or information storage and retrieval systems - except     %
-   %       with the written permission of WATCOM Systems Inc.        %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-   Date         By              Reason
-   ----         --              ------
-   11 Nov 93    Wes Nelson      initial implementation
-*/
-
 /* private clipboard format bitmap */
-PrivateFmt   BITMAP clip.bmp
+"PrivateFmt"    BITMAP "clip.bmp"
 
 #include "rename.dlg"
 

@@ -1,14 +1,14 @@
 # Common stuff for naming executable images.
 # You define:
 #
-# 1. host_OS, host_CPU, proj_name.
+# 1. host_os, host_cpu, proj_name.
 # 2. bin_root [or bin_root_$(proj_name)] to the root of the directory tree
 #    containing executables if you don't want the executable in the current
 #    working directory (the one true way).
 # 3. bin_name - the base name of the executable. If it isn't defined,
 #    $(proj_name) is used.
 # 4. If a DLL, define sys_dll.
-# 5. host_MACHINE to one of the following:
+# 5. host_machine to one of the following:
 #               AT      - for AT class machines (this is the default)
 #               N98     - for Nec-98's
 
@@ -22,66 +22,82 @@
 !ifdef sys_dll
 bin_suffix_win  = w
 bin_type = dll
-!ifeq host_OS os2
+!ifeq host_os os2
+!ifdef __LINUX__
+dll_suffix = /dll
+!else
 dll_suffix = \dll
+!endif
 !endif
 !else
 bin_type = exe
 !endif
 
-!ifndef host_MACHINE
-host_MACHINE = AT
+!ifndef host_machine
+host_machine = AT
 !endif
-!ifneq host_OS dos
-!ifneq host_OS win
-host_machine=AT
+!ifneq host_os dos
+!ifneq host_os win
+host_machine = AT
 !endif
 !endif
 
 machine_suffix_AT  =
 machine_suffix_N98 = .nec
 
-bin_dir_dos_386 = bin
-bin_dir_dos_i86 = bin
-bin_dir_win_i86 = bin
-bin_dir_osi_386 = bin
-bin_dir_os2_386 = binp
-bin_dir_os2_i86 = binp
-bin_dir_nov_386 = nlm
-bin_dir_qnx_386 = qnx
-bin_dir_qnx_i86 = qnx
-bin_dir_nt_386  = binnt
-bin_dir_nt_axp  = axpnt
-bin_dir_nt_ppc  = ppcnt
+bin_dir_dos_386     = bin
+bin_dir_zdos_386    = binz
+bin_dir_dos_i86     = bin
+bin_dir_win_i86     = bin
+bin_dir_osi_386     = bin
+bin_dir_os2_386     = binp
+bin_dir_os2_i86     = binp
+bin_dir_nov_386     = nlm
+bin_dir_qnx_386     = qnx
+bin_dir_qnx_i86     = qnx
+bin_dir_linux_386   = binl
+bin_dir_nt_386      = binnt
+bin_dir_nt_axp      = axpnt
+bin_dir_nt_ppc      = ppcnt
 
-bin_ext_osi_exe = .exe
-bin_ext_dos_exe = .exe
-bin_ext_win_exe = .exe
-bin_ext_win_dll = .dll
-bin_ext_os2_exe = .exe
-bin_ext_os2_dll = .dll
-bin_ext_nt_exe  = .exe
-bin_ext_nt_dll  = .dll
-bin_ext_qnx_exe = .qnx
-bin_ext_nov_exe = .nlm
-bin_ext_nov_dll = .nlm
+bin_ext_osi_exe     = .exe
+bin_ext_dos_exe     = .exe
+bin_ext_zdos_exe    = .exe
+bin_ext_win_exe     = .exe
+bin_ext_win_dll     = .dll
+bin_ext_os2_exe     = .exe
+bin_ext_os2_dll     = .dll
+bin_ext_nt_exe      = .exe
+bin_ext_nt_dll      = .dll
+bin_ext_qnx_exe     = .qnx
+bin_ext_linux_exe   = .elf
+bin_ext_nov_exe     = .nlm
+bin_ext_nov_dll     = .nlm
 
 !ifdef bin_root_$(proj_name)
 bin_root = $(bin_root_$(proj_name))
 !endif
 
 !ifdef bin_root
-bin_dir         = $(bin_root)\$(bin_dir_$(host_OS)_$(host_CPU))$(machine_suffix_$(host_MACHINE))$(dll_suffix)
+!ifdef __LINUX__
+bin_dir         = $(bin_root)/$(bin_dir_$(host_os)_$(host_cpu))$(machine_suffix_$(host_machine))$(dll_suffix)
+!else
+bin_dir         = $(bin_root)\$(bin_dir_$(host_os)_$(host_cpu))$(machine_suffix_$(host_machine))$(dll_suffix)
+!endif
 !else
 bin_dir         = .
 !endif
 
-bin_suffix      = $(bin_suffix_$(host_OS))
+bin_suffix      = $(bin_suffix_$(host_os))
 
-bin_ext         = $(bin_ext_$(host_OS)_$(bin_type))
+bin_ext         = $(bin_ext_$(host_os)_$(bin_type))
 
 !ifndef bin_name
 bin_name        = $(proj_name)
 !endif
 
+!ifdef __LINUX__
+bin_path        = $(bin_dir)/$(bin_name)$(bin_suffix)$(bin_ext)
+!else
 bin_path        = $(bin_dir)\$(bin_name)$(bin_suffix)$(bin_ext)
+!endif

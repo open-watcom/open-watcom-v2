@@ -51,7 +51,7 @@ void ODirectory::Insert( const sst         subsection,
     _dirEntry.append(newEntry);
 }
 
-void ODirectory::Put( ExeMaker& eMaker ) const
+void ODirectory::Put( ExeMaker& eMaker )
 {
     eMaker.DumpToExe( &_dirHeader, sizeof(cv_subsection_directory) );
 /*    eMaker.DumpToExe( (unsigned_16) sizeof(cv_subsection_directory));

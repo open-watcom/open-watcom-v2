@@ -24,18 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of inpd().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+/* Inline variant must always be used, no equivalent exists */
+#ifndef __INLINE_FUNCTIONS__
+    #define __INLINE_FUNCTIONS__
+#endif
 #include "xconio.h"
 
 #undef  inpd
 
 _WCRTLINK unsigned (inpd)( unsigned port )
-    {
-        return( _inline_inpd( port ) );
-    }
+{
+    return( _inline_inpd( port ) );
+}

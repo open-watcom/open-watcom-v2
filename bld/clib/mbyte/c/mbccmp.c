@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Compare two characters.
 *
 ****************************************************************************/
 
@@ -36,22 +35,10 @@
 
 
 
-/****
-***** Compare two characters.
-****/
-
 _WCRTLINK int _NEARFAR((_mbccmp),(_fmbccmp))( const unsigned char _FFAR *s1, const unsigned char _FFAR *s2 )
 {
-    if( *s1 == *s2 ) {
-        if( _ismbblead(*s1) ) {
-            if( s1[1] == s2[1] )
-                return( 0 );
-            else
-                return( (s1[1]) - (s2[1]) );
-        }
-        else
-            return( 0 );
-    }
-    else
-        return( *s1 - *s2 );
+    int retval = *s1 - *s2;
+    if( retval == 0 && _ismbblead(*s1) )
+        return( (s1[1]) - (s2[1]) );
+    return( retval );
 }

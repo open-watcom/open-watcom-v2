@@ -47,11 +47,11 @@
 */
     /*  FAR_PTR pointer stored at n-th interrupt vector location */
 
-#define INT_LOCATE( nr )    ( *((void interrupt (FAR_PTR * FAR_PTR *)())  \
+#define INT_LOCATE( nr )    ( *((void interrupt (* FAR_PTR *)())  \
                                ((unsigned long)(unsigned)nr*4)) )
 #define MX_INTXX        8
 
-void interrupt                  (FAR_PTR *old_int03)();
+void interrupt                  (*old_int03)();
 
 /*
     located in INTRC.ASM
@@ -61,9 +61,9 @@ extern void interrupt   int21_handler( union INTPACK r );
 extern void interrupt   int13_handler( union INTPACK r );
 extern void interrupt   int03_handler( union INTPACK r );
 
-extern void interrupt   (FAR_PTR * FAR_PTR old_int13)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_int21)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_int28)();
+extern void interrupt   (* FAR_PTR old_int13)();
+extern void interrupt   (* FAR_PTR old_int21)();
+extern void interrupt   (* FAR_PTR old_int28)();
 
 extern void interrupt   intx0_handler( union INTPACK r );
 extern void interrupt   intx1_handler( union INTPACK r );
@@ -74,19 +74,19 @@ extern void interrupt   intx5_handler( union INTPACK r );
 extern void interrupt   intx6_handler( union INTPACK r );
 extern void interrupt   intx7_handler( union INTPACK r );
 
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx0)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx1)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx2)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx3)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx4)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx5)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx6)();
-extern void interrupt   (FAR_PTR * FAR_PTR old_intx7)();
+extern void interrupt   (* FAR_PTR old_intx0)();
+extern void interrupt   (* FAR_PTR old_intx1)();
+extern void interrupt   (* FAR_PTR old_intx2)();
+extern void interrupt   (* FAR_PTR old_intx3)();
+extern void interrupt   (* FAR_PTR old_intx4)();
+extern void interrupt   (* FAR_PTR old_intx5)();
+extern void interrupt   (* FAR_PTR old_intx6)();
+extern void interrupt   (* FAR_PTR old_intx7)();
 
-static void interrupt   (FAR_PTR * intxx_handlers[MX_INTXX])() =
+static void interrupt   (* intxx_handlers[MX_INTXX])() =
 { intx0_handler, intx1_handler, intx2_handler, intx3_handler,
   intx4_handler, intx5_handler, intx6_handler, intx7_handler };
-static void interrupt   (FAR_PTR * FAR_PTR * old_intxx_handlers[MX_INTXX])() =
+static void interrupt   (* FAR_PTR * old_intxx_handlers[MX_INTXX])() =
 { &old_intx0, &old_intx1, &old_intx2, &old_intx3,
   &old_intx4, &old_intx5, &old_intx6, &old_intx7 };
 
@@ -109,7 +109,7 @@ intrptr HookTimer( intrptr new_int08 )
     tailored ones (defined in INTERC.ASM module).
 */
 
-void InstallDOSIntercepts()
+void InstallDOSIntercepts( void )
 {
     int i;
 
@@ -127,16 +127,8 @@ void InstallDOSIntercepts()
     old_int21 = INT_LOCATE( 0x21 );
     INT_LOCATE( 0x21 ) = &int21_handler;
 
-#if defined(_FMR_PC)
-    old_int13 = INT_LOCATE( 0x93 );
-    INT_LOCATE( 0x93 ) = &int13_handler;
-#elif defined(_NEC_PC)
-    old_int13 = INT_LOCATE( 0x1b );
-    INT_LOCATE( 0x1b ) = &int13_handler;
-#else
     old_int13 = INT_LOCATE( 0x13 );
     INT_LOCATE( 0x13 ) = &int13_handler;
-#endif
 
     old_int03 = INT_LOCATE( 0x03 );
     INT_LOCATE( 0x03 ) = &int03_handler;
@@ -145,7 +137,7 @@ void InstallDOSIntercepts()
 }
 
 
-void RemoveDOSIntercepts()  /* will undo the above */
+void RemoveDOSIntercepts( void )    /* will undo the above */
 {
     int i;
 
@@ -157,13 +149,7 @@ void RemoveDOSIntercepts()  /* will undo the above */
     _disable();
     INT_LOCATE( 0x21 ) = old_int21;
     INT_LOCATE( 0x28 ) = old_int28;
-#if defined(_FMR_PC)
-    INT_LOCATE( 0x93 ) = old_int13;
-#elif defined(_NEC_PC)
-    INT_LOCATE( 0x1b ) = old_int13;
-#else
     INT_LOCATE( 0x13 ) = old_int13;
-#endif
     INT_LOCATE( 0x03 ) = old_int03;
     _enable();
 }

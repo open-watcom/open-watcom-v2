@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message window.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdarg.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
+#include "myprtf.h"
 
 static BOOL Init( window *, void * );
 static BOOL Fini( window *, void * );
@@ -50,8 +48,8 @@ window MessageBar = {
 LONG WINEXP MessageWindowProc( HWND, unsigned, UINT, LONG );
 
 static char *ClassName = "MessageWindow";
-static char msgString1[ MAX_STR ];
-static char msgString2[ MAX_STR ];
+static char msgString1[MAX_STR];
+static char msgString2[MAX_STR];
 static void msgString( int, char * );
 
 static BOOL Init( window *w, void *parm )
@@ -61,16 +59,16 @@ static BOOL Init( window *w, void *parm )
     w = w;
     parm = parm;
 
-    msgString1[ 0 ] = 0;
-    msgString2[ 0 ] = 0;
+    msgString1[0] = 0;
+    msgString2[0] = 0;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (LPVOID) MessageWindowProc;
+    wc.lpfnWndProc = (WNDPROC)MessageWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LPVOID );
     wc.hInstance = InstanceHandle;
-    wc.hIcon = LoadIcon( (HINSTANCE) NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (HINSTANCE) NULL, IDC_ARROW );
+    wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
@@ -99,10 +97,10 @@ LONG WINEXP MessageWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
             msgString( 2, msgString2 );
         }
         EndPaint( hwnd, &ps );
-        return( TRUE );
+        return( 0 );
     case WM_SETFOCUS:
         SetFocus( Root );
-        return( TRUE );
+        return( 0 );
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
 }
@@ -115,17 +113,17 @@ window_id NewMsgWindow( void )
     int         height;
 
     size = &MessageBar.area;
-    msgString1[ 0 ] = 0;
-    msgString2[ 0 ] = 0;
+    msgString1[0] = 0;
+    msgString2[0] = 0;
     height = size->bottom - size->top;
     if( !EditFlags.StatusInfo ) {
         height += 1;
     }
     msg = CreateWindow( ClassName, "Message",
-        WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
-        size->left-1, size->top,
-        size->right - size->left+2, height,
-        Root, (HMENU) NULL, InstanceHandle, NULL );
+                        WS_CHILD | WS_BORDER | WS_CLIPSIBLINGS,
+                        size->left - 1, size->top,
+                        size->right - size->left + 2, height,
+                        Root, (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( msg, SW_SHOWNORMAL );
     UpdateWindow( msg );
     return( msg );
@@ -137,21 +135,23 @@ static void msgString( int line_no, char *str )
     RECT    rect;
     HDC     hdc;
 
-    if( !AllowDisplay || BAD_ID( MessageWindow ) ) return;
+    if( !AllowDisplay || BAD_ID( MessageWindow ) ) {
+        return;
+    }
     GetClientRect( MessageWindow, &rect );
     height = FontHeight( WIN_FONT( &MessageBar ) );
-    rect.top += (line_no-1) * height;
+    rect.top += (line_no - 1) * height;
     rect.bottom = rect.top + height;
     hdc = TextGetDC( MessageWindow, WIN_STYLE( &MessageBar ) );
     FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &MessageBar ) ) );
     TextReleaseDC( MessageWindow, hdc );
     WriteString( MessageWindow, 0, rect.top, WIN_STYLE( &MessageBar ), str );
 }
-
+   
 void Message1( char *fmt, ... )
 {
     va_list     args;
-    char        tmp[ MAX_STR ];
+    char        tmp[MAX_STR];
 
     ClearWindow( MessageWindow );
     va_start( args, fmt );
@@ -161,10 +161,22 @@ void Message1( char *fmt, ... )
     msgString( 1, tmp );
 }
 
+void Message1Box( char *fmt, ... )
+{
+    va_list     args;
+    char        tmp[MAX_STR];
+
+    va_start( args, fmt );
+    MyVSprintf( tmp, fmt, args );
+    va_end( args );
+    strcpy( msgString1, tmp );
+    MessageBox( Root, tmp, NULL, MB_OK );
+}
+
 void Message2( char *fmt, ... )
 {
     va_list     args;
-    char        tmp[ MAX_STR ];
+    char        tmp[MAX_STR];
 
     va_start( args, fmt );
     MyVSprintf( tmp, fmt, args );

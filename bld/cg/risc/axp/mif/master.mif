@@ -1,8 +1,8 @@
-!include $(cg_dir)\risc\axp\mif\axp.mif
-!include $(cg_dir)\risc\mif\risc.mif
-!include $(cg_dir)\mif\master.mif
+!include $(cg_dir)/risc/axp/mif/axp.mif
+!include $(cg_dir)/risc/mif/risc.mif
+!include $(cg_dir)/mif/master.mif
 
 target_objs     = $(axp_objs) $(risc_objs) $(cg_objs)
 target_name     = axp
 
-!include $(cg_dir)\mif\target.mif
+!include $(cg_dir)/mif/target.mif

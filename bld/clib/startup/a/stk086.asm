@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for 16-bit DOS and Win16.
 ;*
 ;*****************************************************************************
 
@@ -36,10 +35,10 @@ include exitwmsg.inc
 
         modstart        stk
 
-_DATA   segment word public 'DATA'
+datasegment
         extrn   "C",_STACKLOW : word
 SS_seg  dw      0
-_DATA   ends
+enddata
 
 include xinit.inc
 
@@ -48,11 +47,7 @@ include xinit.inc
         assume  ds:DGROUP
 
         xdefp   __STK
-        if __WASM__ ge 100
-            xdefp       "C",__STKOVERFLOW
-        else
-            xdefp       <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
 
         defp    _init_stk
         mov     SS_seg,SS       ; save original SS value
@@ -97,6 +92,6 @@ __STKOVERFLOW:
         call    __fatal_runtime_error
         endproc __STK
 
-msg     db      "Stack Overflow!", 0dh, 0ah, 0
+msg     db      "Stack Overflow!", 0
         endmod
         end

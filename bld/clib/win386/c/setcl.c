@@ -35,7 +35,7 @@
 
 struct wndprocs *ClassProcList = 0;
 
-LONG PASCAL _Cover_GetClassLong( HWND wnd, int what )
+LONG PASCAL _Cover_GetClassLong( HWND wnd, short what )
 {
     LONG        value;
     struct wndprocs *list;
@@ -60,7 +60,7 @@ LONG PASCAL _Cover_GetClassLong( HWND wnd, int what )
     return( value );
 }
 
-LONG PASCAL _Cover_SetClassLong( HWND wnd, int what, LONG value )
+LONG PASCAL _Cover_SetClassLong( HWND wnd, short what, LONG value )
 {
     struct wndprocs *list;
 

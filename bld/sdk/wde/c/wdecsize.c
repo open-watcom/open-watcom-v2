@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 
 #include "wdeglbl.h"
@@ -44,7 +44,7 @@ static uint_32 WdeCalcStrlen( char *str, Bool is32bit )
     int         len;
 
     if( is32bit ) {
-        if( !str || !WRmbcs2unicode( str, NULL, &len ) ) {
+        if( str == NULL || !WRmbcs2unicode( str, NULL, &len ) ) {
             len = 2;
         }
     } else {
@@ -63,14 +63,14 @@ static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, Bool is32bit )
 
     if( name == NULL ) {
         if( is32bit ) {
-            size = sizeof(uint_16);
+            size = sizeof( uint_16 );
         } else {
-            size = sizeof(uint_8);
+            size = sizeof( uint_8 );
         }
     } else {
         if( is32bit ) {
             if( name->Class & 0x80 ) {
-                size = sizeof(uint_16) * 2;
+                size = sizeof( uint_16 ) * 2;
             } else {
                 size = WdeCalcStrlen( name->ClassName, is32bit );
             }
@@ -83,7 +83,7 @@ static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, Bool is32bit )
         }
     }
 
-    return ( size );
+    return( size );
 }
 
 static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
@@ -93,7 +93,7 @@ static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
 
     if( is32bit ) {
         /* JPK - Added for extended dialog support */
-        if( is32bitEx) {
+        if( is32bitEx ) {
             size = offsetof( DialogBoxExControl32, ClassID );
             size += sizeof( uint_16 );  /* Extra bytes */
         } else {
@@ -105,11 +105,11 @@ static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
         size += sizeof( uint_8 );       /* Extra bytes */
     }
 
-    size += WdeCalcSizeOfControlClass( GETCTL_CLASSID(control), is32bit );
+    size += WdeCalcSizeOfControlClass( GETCTL_CLASSID( control ), is32bit );
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETCTL_TEXT(control), is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( GETCTL_TEXT( control ), is32bit );
 
-    return ( size );
+    return( size );
 }
 
 static uint_32 WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
@@ -122,26 +122,26 @@ static uint_32 WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
         size = offsetof( DialogBoxHeader, MenuName );
     }
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_MENUNAME(header), header->is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_MENUNAME( header ), header->is32bit );
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_CLASSNAME(header), header->is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_CLASSNAME( header ), header->is32bit );
 
-    size += WdeCalcStrlen( GETHDR_CAPTION(header), header->is32bit );
+    size += WdeCalcStrlen( GETHDR_CAPTION( header ), header->is32bit );
 
-    if( GETHDR_STYLE(header) & DS_SETFONT ) {
-        size += sizeof(uint_16);   /* PointSize */
+    if( GETHDR_STYLE( header ) & DS_SETFONT ) {
+        size += sizeof( uint_16 );      /* PointSize */
 
-        if (header->is32bitEx) {
-            size += sizeof(uint_16);   /* FontWeight */
-            size += sizeof(uint_16);   /* FontItalic */
+        if( header->is32bitEx ) {
+            size += sizeof( uint_16 );  /* FontWeight */
+            size += sizeof( uint_16 );  /* FontItalic */
         }
 
-        size += WdeCalcStrlen( GETHDR_FONTNAME(header), header->is32bit );
+        size += WdeCalcStrlen( GETHDR_FONTNAME( header ), header->is32bit );
     }
 
-    if (header->is32bitEx) {
-        size += sizeof(uint_32);   /* HelpID */
-        size += 4;                 /* signature bytes */
+    if( header->is32bitEx ) {
+        size += sizeof( uint_32 );      /* HelpID */
+        size += 4;                      /* signature bytes */
     }
     return( size );
 }
@@ -158,26 +158,26 @@ uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     is32bit = info->dialog_header->is32bit;
     is32bitEx = info->dialog_header->is32bitEx;
 
-    if( !info ) {
+    if( info == NULL ) {
         return( 0 );
     }
 
     size = WdeCalcSizeOfDialogBoxHeader( info->dialog_header );
 
-    for( clist = info->control_list; clist; clist = ListNext(clist) ) {
+    for( clist = info->control_list; clist; clist = ListNext( clist ) ) {
         control = (WdeDialogBoxControl *)ListElement( clist );
         csize = WdeCalcSizeOfDialogBoxControl( control, is32bit, is32bitEx );
-        if( !csize ) {
-            return ( 0 );
+        if( csize == 0 ) {
+            return( 0 );
         }
         if( is32bit ) {
-            size = size + CALC_PAD( size, sizeof(uint_32) );
+            size = size + CALC_PAD( size, sizeof( uint_32 ) );
         }
         size = size + csize;
     }
 
     if( is32bit ) {
-        size = size + CALC_PAD( size, sizeof(uint_32) );
+        size = size + CALC_PAD( size, sizeof( uint_32 ) );
     }
 
     return( size );
@@ -189,26 +189,25 @@ uint_32 WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, Bool is32bit )
 
     if( name == NULL ) {
         if( is32bit ) {
-            size = sizeof(uint_16);
+            size = sizeof( uint_16 );
         } else {
-            size = sizeof(uint_8);
+            size = sizeof( uint_8 );
         }
     } else {
         if( is32bit ) {
             if( name->ord.fFlag == 0xff ) {
-                size = sizeof(uint_16) + sizeof(uint_16);
+                size = sizeof( uint_16 ) + sizeof( uint_16 );
             } else {
                 size = WdeCalcStrlen( name->name, is32bit );
             }
         } else {
             if( name->ord.fFlag == 0xff ) {
-                size = sizeof(uint_16) + sizeof(uint_8);
+                size = sizeof( uint_16 ) + sizeof( uint_8 );
             } else {
                 size = WdeCalcStrlen( name->name, is32bit );
             }
         }
     }
 
-    return ( size );
+    return( size );
 }
-

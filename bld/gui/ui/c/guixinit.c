@@ -56,6 +56,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 {
     gui_colour_set      background = { GUI_WHITE, GUI_BLUE };
 
+    GUIMemOpen();
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
     if( !GUISysInit( 2 ) ) {
@@ -71,14 +72,14 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
     GUISetBackgroundColour( &background );
     GUIInitDrawingChars( uiisdbcs() );
     if( !GUIHasCharRemap() ) {
-        UiGChar[ UI_BOX_TOP_LEFT ] = ' ';
-        UiGChar[ UI_BOX_TOP_RIGHT ] = ' ';
-        UiGChar[ UI_BOX_BOTTOM_RIGHT ] = ' ';
-        UiGChar[ UI_BOX_BOTTOM_LEFT ] = ' ';
-        UiGChar[ UI_BOX_TOP_LINE ] = ' ';
-        UiGChar[ UI_BOX_RIGHT_LINE ] = DRAW( LEFT_HALF );
-        UiGChar[ UI_BOX_BOTTOM_LINE ] = ' ';
-        UiGChar[ UI_BOX_LEFT_LINE ] = DRAW( RIGHT_HALF );
+        UiGChar[UI_BOX_TOP_LEFT] = ' ';
+        UiGChar[UI_BOX_TOP_RIGHT] = ' ';
+        UiGChar[UI_BOX_BOTTOM_RIGHT] = ' ';
+        UiGChar[UI_BOX_BOTTOM_LEFT] = ' ';
+        UiGChar[UI_BOX_TOP_LINE] = ' ';
+        UiGChar[UI_BOX_RIGHT_LINE] = DRAW( LEFT_HALF );
+        UiGChar[UI_BOX_BOTTOM_LINE] = ' ';
+        UiGChar[UI_BOX_LEFT_LINE] = DRAW( RIGHT_HALF );
     }
     GUIInitialized = TRUE;
     return( TRUE );

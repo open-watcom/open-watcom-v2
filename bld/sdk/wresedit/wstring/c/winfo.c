@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wglbl.h"
 #include "wmem.h"
@@ -57,36 +57,35 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WStringInfo * WINEXPORT WStrAllocStringInfo ( void )
+WStringInfo * WINEXPORT WStrAllocStringInfo( void )
 {
     WStringInfo *info;
 
-    info = (WStringInfo *) WMemAlloc ( sizeof(WStringInfo) );
+    info = (WStringInfo *)WMemAlloc( sizeof( WStringInfo ) );
 
-    memset ( info, 0, sizeof(WStringInfo) );
+    memset( info, 0, sizeof( WStringInfo ) );
 
-    return ( info );
+    return( info );
 }
 
 void WINEXPORT WStrFreeStringInfo( WStringInfo *info )
 {
     WStringNode *node;
 
-    if( info ) {
+    if( info != NULL ) {
         node = info->tables;
-        while( node ) {
-            if( node->block_name ) {
+        while( node != NULL ) {
+            if( node->block_name != NULL ) {
                 WMemFree( node->block_name );
             }
-            if ( node->data ) {
-                WMemFree ( node->data );
+            if( node->data != NULL ) {
+                WMemFree( node->data );
             }
             node = node->next;
         }
-        if ( info->file_name ) {
-            WMemFree ( info->file_name );
+        if( info->file_name != NULL ) {
+            WMemFree( info->file_name );
         }
-        WMemFree ( info );
+        WMemFree( info );
     }
 }
-

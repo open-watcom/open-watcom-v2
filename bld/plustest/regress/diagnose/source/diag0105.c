@@ -5,7 +5,9 @@
 #error <assert.h>
 #include <assert.h>
 #error <bios.h>
-#include <bios.h>
+#if !defined( __UNIX__ )
+  #include <bios.h>
+#endif
 #error <complex.h>
 #include <complex.h>
 #error <conio.h>
@@ -13,11 +15,17 @@
 #error <ctype.h>
 #include <ctype.h>
 #error <direct.h>
-#include <direct.h>
+#if !defined( __UNIX__ )
+  #include <direct.h>
+#endif
 #error <dos.h>
-#include <dos.h>
+#if !defined( __UNIX__ )
+  #include <dos.h>
+#endif
 #error <dosfunc.h>
-#include <dosfunc.h>
+#if !defined( __UNIX__ )
+  #include <dosfunc.h>
+#endif
 #error <env.h>
 #include <env.h>
 #error <errno.h>
@@ -33,13 +41,15 @@
 #error <generic.h>
 #include <generic.h>
 #error <graph.h>
-#include <graph.h>
-#error <graph98.h>
-#include <graph98.h>
+#if !defined( __LINUX__ )
+  #include <graph.h>
+#endif
 #error <i86.h>
 #include <i86.h>
 #error <io.h>
-#include <io.h>
+#if !defined( __UNIX__ )
+  #include <io.h>
+#endif
 #error <iomanip.h>
 #include <iomanip.h>
 #error <iostream.h>
@@ -55,7 +65,9 @@
 #error <new.h>
 #include <new.h>
 #error <pgchart.h>
-#include <pgchart.h>
+#if !defined( __LINUX__ )
+  #include <pgchart.h>
+#endif
 #error <process.h>
 #include <process.h>
 #error <search.h>
@@ -86,8 +98,12 @@
 #include <time.h>
 #error <unistd.h>
 #include <unistd.h>
+#error <utime.h>
+#include <utime.h>
 #error <windows.h>
-#include <windows.h>
+#if !defined( __UNIX__ )
+  #include <windows.h>
+#endif
 #error <wsample.h>
 #include <wsample.h>
 #error <sys/locking.h>
@@ -99,7 +115,9 @@
 #error <sys/types.h>
 #include <sys/types.h>
 #error <sys/utime.h>
-#include <sys/utime.h>
+#if !defined( __UNIX__ )
+  #include <sys/utime.h>
+#endif
 #error <custcntl.h>
 
 #error <dde.h>
@@ -178,7 +196,8 @@ struct x119 {
 #endif text
 void x124()
 {
-    for( unsigned i = 10; 0; --i ) {
+    unsigned i;
+    for( i = 10; 0; --i ) {
     }
     if( i < 0 ) {
     }

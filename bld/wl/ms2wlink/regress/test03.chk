@@ -1,0 +1,6 @@
+# This file produced by MS2WLINK
+system dos
+file 1.obj
+file 2.obj
+name 12.exe
+option map=34.map

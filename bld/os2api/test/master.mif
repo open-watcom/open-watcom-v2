@@ -1,0 +1,20 @@
+proj_name = os2apitest
+os2apitest_autodepends = .autodepend
+
+all : testc.exe testpp.exe .symbolic
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!ifeq host_cpu 386
+#inc_dirs = -I"../../os2386"
+!else
+#inc_dirs = -I"../../os2286"
+!endif
+
+testc.exe : testc.obj $(libs) $(cl_objs)
+    $(cl) $(clflags) $< $(cl_libs)
+
+testpp.exe : testpp.obj $(libs) $(cl_objs)
+    $(cl) $(clflags) $< $(cl_libs)

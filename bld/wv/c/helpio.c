@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Help file I/O functions (used by online help viewer).
 *
 ****************************************************************************/
 
@@ -35,14 +34,14 @@
 #include "dbgerr.h"
 #include "helpio.h"
 
-static int seekTypeConvTable[] = { SEEK_ORG, SEEK_CUR, SEEK_END };
+static int seekTypeConvTable[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
 HELPIO long int HelpFileLen( HelpFp fp )
 {
     long        old;
 
-    old = SeekStream( (handle)fp, 0, SEEK_END );
-    return( SeekStream( (handle)fp, old, SEEK_ORG ) );
+    old = SeekStream( (handle)fp, 0, DIO_SEEK_END );
+    return( SeekStream( (handle)fp, old, DIO_SEEK_ORG ) );
 }
 
 HELPIO int HelpRead( HelpFp fp, void *buf, int len )
@@ -62,7 +61,7 @@ HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where ) {
 
 HELPIO long int HelpTell( HelpFp fp )
 {
-    return( SeekStream( (handle)fp, 0, SEEK_CUR ) );
+    return( SeekStream( (handle)fp, 0, DIO_SEEK_CUR ) );
 }
 
 HELPIO HelpFp HelpOpen( char *path, unsigned long mode )

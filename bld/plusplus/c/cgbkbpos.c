@@ -120,7 +120,7 @@ void BlkPosnPush(               // PUSH A NEW BLOCK POSITION
     if( NULL == scope ) {
         fctl->dtor_method = DTM_DIRECT;
     } else {
-        if( scope->cg_stab ) {
+        if( scope->s.cg_stab ) {
             fctl->dtor_method = dtm;
         } else {
             fctl->dtor_method = DtmDirect( dtm );
@@ -284,7 +284,7 @@ boolean BlkPosnUseStab(         // TEST IF REALLY USING STATE TABLE IN SCOPE
     if( NULL == bpos->scope ) {
         retn = FALSE;
     } else {
-        retn = bpos->scope->cg_stab;
+        retn = bpos->scope->s.cg_stab;
     }
     return retn;
 }

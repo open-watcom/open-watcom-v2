@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include "uidef.h"
 
-extern          cdecl intern    farattrib( LPPIXEL, int, int, int );
-extern          cdecl intern    farattrflip( LPPIXEL, int, int );
+extern  void    cdecl intern    farattrib( LPPIXEL, int, int, int );
+extern  void    cdecl intern    farattrflip( LPPIXEL, int, int );
 
 
 void intern battribute( BUFFER *bptr, int row, int col,

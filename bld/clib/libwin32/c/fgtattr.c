@@ -35,12 +35,20 @@
 #include <string.h>
 #include <windows.h>
 #include "libwin32.h"
-
+#include "osver.h"
 
 /*
  * Apparently GetFileAttributes 3.51 sometimes gets confused when the
  * file in question is on a FAT drive.  Since FindFirstFile seems to
  * work, use it instead.
+ *
+ * Implementation with FindFirstFile / FindNextFile
+ * has bug for root of drive due to they can not work
+ * with it.
+ * Now (2009-01-31) this code is not used for Windows NT >= 4
+ * it call native GetFileAttributes
+ * We hold this problematic code for compatibility with 3.51 even if
+ * nowdays it is very archaic system.
  */
 
 #ifdef __WIDECHAR__
@@ -50,34 +58,26 @@
 #endif
 /*****************************************************/
 {
-    HANDLE                  handle;
-    #ifdef __WIDECHAR__
-        WIN32_FIND_DATAW    finddata;
-    #else
-        WIN32_FIND_DATAA    finddata;
-    #endif
+    HANDLE              handle;
+#ifdef __WIDECHAR__
+    WIN32_FIND_DATAW    finddata;
+#else
+    WIN32_FIND_DATAA    finddata;
+#endif
 
+    if( WIN32_IS_NT && _osmajor >= 4 ) {
+        return( __F_NAME(GetFileAttributesA,GetFileAttributesW)( lpFileName ) );
+    }
     /*** Fail if the filename contains a wildcard ***/
-    #ifdef __WIDECHAR__
-        if( wcschr( lpFileName, L'*' ) != NULL  ||
-            wcschr( lpFileName, L'?' ) != NULL ) {
-            return( 0xFFFFFFFF );
-        }
-    #else
-        if( strchr( lpFileName, '*' ) != NULL  ||
-            strchr( lpFileName, '?' ) != NULL ) {
-            return( 0xFFFFFFFF );
-        }
-    #endif
+    if( __F_NAME(strchr,wcschr)( lpFileName, STRING( '*' ) ) != NULL ||
+        __F_NAME(strchr,wcschr)( lpFileName, STRING( '?' ) ) != NULL ) {
+        return( INVALID_FILE_ATTRIBUTES );
+    }
 
     /*** Ok, use FindFirstFile to get the file attribute ***/
-    #ifdef __WIDECHAR__
-        handle = __lib_FindFirstFileW( lpFileName, &finddata );
-    #else
-        handle = FindFirstFileA( lpFileName, &finddata );
-    #endif
+    handle = __F_NAME(FindFirstFileA,__lib_FindFirstFileW)( lpFileName, &finddata );
     if( handle == INVALID_HANDLE_VALUE ) {
-        return( 0xFFFFFFFF );
+        return( INVALID_FILE_ATTRIBUTES );
     } else {
         FindClose( handle );
     }

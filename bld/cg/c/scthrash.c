@@ -36,18 +36,16 @@
 #include "pattern.h"
 #include "vergen.h"
 #include "score.h"
+#include "makeins.h"
 
 extern  void            ReplIns(instruction*,instruction*);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  bool            IndexRegOk(hw_reg_set,bool);
 extern  byte            *Copy(void*,void*,uint);
-extern  instruction     *NewIns(int);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  void            FreeIns(instruction*);
-extern  bool            ChangeIns(instruction*,name*,name**,change_type);
 extern  bool            UnChangeable(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      HighReg(hw_reg_set);
@@ -115,6 +113,13 @@ static  bool    CanChange( instruction **pins,
             if( opnd == frm ) {
                 new_ins->operands[ i ] = to;
                 opnd = to;
+            } else if( opnd->n.class == N_REGISTER ) {
+                // If operand overlaps with but wasn't identical to 'from'
+                // register, leave this instruction alone! In specific cases
+                // it might be possible to do the FindPiece trick like above
+                // but not in general.
+                if( HW_Ovlap( frm->r.reg, opnd->r.reg ) )
+                    return( FALSE );
             }
             if( opnd->n.class == N_INDEXED ) {
                 if( opnd->i.index == frm ) {
@@ -345,4 +350,3 @@ extern  bool    RegThrash( block *blk ) {
     }
     return( FALSE );
 }
-

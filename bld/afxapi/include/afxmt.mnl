@@ -1,0 +1,61 @@
+/*
+ *  afxmt.inl   Inline implementation of functions declared in afxmt.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE CSyncObject::operator HANDLE() const
+/*********************************************/
+{
+    return( this == NULL ? NULL : m_hObject );
+}
+
+AFX_INLINE CCriticalSection::operator CRITICAL_SECTION *()
+/********************************************************/
+{
+    return( this == NULL ? NULL : &m_sect );
+}
+
+AFX_INLINE BOOL CCriticalSection::Lock()
+/**************************************/
+{
+    ::EnterCriticalSection( &m_sect );
+    return( TRUE );
+}
+
+AFX_INLINE BOOL CEvent::PulseEvent()
+/**********************************/
+{
+    return( ::PulseEvent( m_hObject ) );
+}
+
+AFX_INLINE BOOL CEvent::ResetEvent()
+/**********************************/
+{
+    return( ::ResetEvent( m_hObject ) );
+}
+
+AFX_INLINE BOOL CEvent::SetEvent()
+/********************************/
+{
+    return( ::SetEvent( m_hObject ) );
+}
+
+AFX_INLINE CSingleLock::~CSingleLock()
+/************************************/
+{
+    Unlock();
+}
+
+AFX_INLINE BOOL CSingleLock::IsLocked()
+/*************************************/
+{
+    return( m_bAcquired );
+}
+
+AFX_INLINE BOOL CMultiLock::IsLocked( DWORD dwItem )
+/**************************************************/
+{
+    ASSERT( dwItem < m_dwCount );
+    return( m_bLockedArray[dwItem] );
+}

@@ -38,7 +38,7 @@
 
 const int POOLSIZE = 32;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool EnumType::_pool( sizeof( EnumType ), "EnumType", POOLSIZE );
 #pragma warning 549 3
 

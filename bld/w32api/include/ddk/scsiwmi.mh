@@ -1,0 +1,72 @@
+/*
+ *  scsiwmi.h   SCSI WMI definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _SCSIWMI_
+#define _SCSIWMI_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* WMI registration flags */
+#define WMIREG_FLAG_CALL_BY_NAME    0x40000000L
+
+/* SCSI WMI request context */
+typedef struct {
+    PVOID   UserContext;
+    ULONG   BufferSize;
+    PUCHAR  Buffer;
+    UCHAR   MinorFunction;
+    UCHAR   ReturnStatus;
+    ULONG   ReturnSize;
+} SCSIWMI_REQUEST_CONTEXT;
+typedef SCSIWMI_REQUEST_CONTEXT *PSCSIWMI_REQUEST_CONTEXT;
+
+/* SCSI WMI GUID registration information */
+typedef struct {
+    LPCGUID Guid;
+    ULONG   InstanceCount;
+    ULONG   Flags;
+} SCSIWMIGUIDREGINFO;
+typedef SCSIWMIGUIDREGINFO  *PSCSIWMIGUIDREGINFO;
+
+/* SCSI WMI enable/disable control */
+typedef enum {
+    ScsiWmiEventControl     = 0,
+    ScsiWmiDataBlockControl = 1
+} SCSIWMI_ENABLE_DISABLE_CONTROL;
+
+/* SCSI WMI callbacks */
+typedef UCHAR (NTAPI *PSCSIWMI_QUERY_REGINFO)( PVOID, PSCSIWMI_REQUEST_CONTEXT, PWCHAR );
+typedef BOOLEAN (NTAPI *PSCSIWMI_QUERY_DATABLOCK)( PVOID, PSCSIWMI_REQUEST_CONTEXT, ULONG, ULONG, ULONG, PULONG, ULONG, PUCHAR );
+typedef BOOLEAN (NTAPI *PSCSIWMI_SET_DATABLOCK)( PVOID, PSCSIWMI_REQUEST_CONTEXT, ULONG, ULONG, ULONG, PUCHAR );
+typedef BOOLEAN (NTAPI *PSCSIWMI_SET_DATAITEM)( PVOID, PSCSIWMI_REQUEST_CONTEXT, ULONG, ULONG, ULONG, ULONG, PUCHAR );
+typedef BOOLEAN (NTAPI *PSCSIWMI_EXECUTE_METHOD)( PVOID, PSCSIWMI_REQUEST_CONTEXT, ULONG, ULONG, ULONG, ULONG, ULONG, PUCHAR );
+typedef BOOLEAN (NTAPI *PSCSIWMI_FUNCTION_CONTROL)( PVOID, PSCSIWMI_REQUEST_CONTEXT, ULONG, SCSIWMI_ENABLE_DISABLE_CONTROL, BOOLEAN );
+
+/* SCSI WMILIB context */
+typedef struct _SCSIWMILIB_CONTEXT {
+    ULONG                       GuidCount;
+    PSCSIWMIGUIDREGINFO         GuidList;
+    PSCSIWMI_QUERY_REGINFO      QueryWmiRegInfo;
+    PSCSIWMI_QUERY_DATABLOCK    QueryWmiDataBlock;
+    PSCSIWMI_SET_DATABLOCK      SetWmiDataBlock;
+    PSCSIWMI_SET_DATAITEM       SetWmiDataItem;
+    PSCSIWMI_EXECUTE_METHOD     ExecuteWmiMethod;
+    PSCSIWMI_FUNCTION_CONTROL   WmiFunctionControl;
+} SCSI_WMILIB_CONTEXT;
+typedef SCSI_WMILIB_CONTEXT *PSCSI_WMILIB_CONTEXT;
+
+/* Functions implemented as macros */
+#define ScsiPortWmiGetReturnStatus( x )     ((x)->ReturnStatus)
+#define ScsiPortWmiGetReturnSize( x )       ((x)->ReturnSize)
+#if (NTDDI_VERSION >= 0x05020000)
+    #define ScsiPortWmiIsQueryAllData( x )  ((x)->MinorFunction == WMI_GET_ALL_DATA)
+#endif
+
+:include cplusepi.sp
+
+#endif /* _SCSIWMI_ */

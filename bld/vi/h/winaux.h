@@ -30,19 +30,19 @@
 ****************************************************************************/
 
 
-#define WIND_INFO_X1            0
-#define WIND_INFO_Y1            1
-#define WIND_INFO_X2            2
-#define WIND_INFO_Y2            3
-#define WIND_INFO_TEXT_LINES    4
-#define WIND_INFO_TEXT_COLS     5
-#define WIND_INFO_HEIGHT        6
-#define WIND_INFO_WIDTH         7
-#define WIND_INFO_HAS_BORDER    8
-#define WIND_INFO_MIN_SLOT      9
-#define WIND_INFO_TEXT_COLOR    10
-#define WIND_INFO_BACKGROUND_COLOR 11
-#define WIND_INFO_BORDER_COLOR1 12
-#define WIND_INFO_BORDER_COLOR2 13
-#define WIND_INFO_HAS_SCROLL_GADGETS 14
-#define WIND_INFO_TEXT_FONT     15
+#define WIND_INFO_X1                    0
+#define WIND_INFO_Y1                    1
+#define WIND_INFO_X2                    2
+#define WIND_INFO_Y2                    3
+#define WIND_INFO_TEXT_LINES            4
+#define WIND_INFO_TEXT_COLS             5
+#define WIND_INFO_HEIGHT                6
+#define WIND_INFO_WIDTH                 7
+#define WIND_INFO_HAS_BORDER            8
+#define WIND_INFO_MIN_SLOT              9
+#define WIND_INFO_TEXT_COLOR            10
+#define WIND_INFO_BACKGROUND_COLOR      11
+#define WIND_INFO_BORDER_COLOR1         12
+#define WIND_INFO_BORDER_COLOR2         13
+#define WIND_INFO_HAS_SCROLL_GADGETS    14
+#define WIND_INFO_TEXT_FONT             15

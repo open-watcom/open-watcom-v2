@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ferror() - check for stream error.
 *
 ****************************************************************************/
 
@@ -33,10 +32,10 @@
 #include "variety.h"
 #include <stdio.h>
 #include "fileacc.h"
-#undef  ferror
 
-_WCRTLINK int ferror( FILE *fp )
-    {
-        _ValidFile( fp, 0 );
-        return( fp->_flag & _SFERR );
-    }
+
+_WCRTLINK int (ferror)( FILE *fp )
+{
+    _ValidFile( fp, 0 );
+    return( fp->_flag & _SFERR );
+}

@@ -34,16 +34,18 @@
 #include <string.h>
 #include "guiscale.h"
 #include "guixwind.h"
-#include "wstatus.h"
+#include "statwnd.h"
 #include "guiutil.h"
 #include "guixhook.h"
 #include "guistr.h"
 #include "guixutil.h"
 
 extern  WPI_INST        GUIMainHInst;
+statwnd                 *GUIStatusWnd;
 
 static void FreeStatus( void )
 {
+    StatusWndDestroy( GUIStatusWnd );
     StatusWndFini();
 }
 
@@ -116,11 +118,12 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     }
     GUISetResizeStatus( &ResizeStatus );
     GUISetFreeStatus( &FreeStatus );
-    if( !StatusWndInit( GUIMainHInst, NULL, 0 ) ) {
+    if( !StatusWndInit( GUIMainHInst, NULL, 0, NULLHANDLE ) ) {
         return( FALSE );
     }
+    GUIStatusWnd = StatusWndStart();
     CalcStatusRect( wnd, x, height, &status_rect );
-    wnd->status = StatusWndCreate( wnd->root, &status_rect,
+    wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &status_rect,
                                    GUIMainHInst, NULL );
     if( wnd->status == NULLHANDLE ) {
         return( FALSE );
@@ -130,24 +133,24 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     return( TRUE );
 }
 
-bool GUIDrawStatusText( gui_window *wnd, char *text )
+bool GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     WPI_PRES    pres;
-    char        *out_text;
+    const char  *out_text;
 
     if( !GUIHasStatus( wnd) ) {
         return( FALSE );
     }
     pres = _wpi_getpres( wnd->status );
-    if( ( text == NULL ) || ( *text == 0 ) ) {
+    if( ( text == NULL ) || ( *text == '\0' ) ) {
         out_text = LIT( Blank );
     } else {
         out_text = text;
     }
-    StatusWndDrawLine( pres, wnd->font, out_text,
+    StatusWndDrawLine( GUIStatusWnd, pres, wnd->font, out_text,
                        DT_SINGLELINE | DT_VCENTER | DT_LEFT );
     _wpi_releasepres( wnd->status, pres );
-    if( ( text == NULL ) || ( *text == 0 ) ) {
+    if( ( text == NULL ) || ( *text == '\0' ) ) {
         GUIEVENTWND( wnd, GUI_STATUS_CLEARED, NULL );
     }
     return( TRUE );
@@ -166,7 +169,7 @@ bool GUICloseStatusWindow( gui_window *wnd )
         return( FALSE );
     }
     status = wnd->status;
-    wnd->status = NULL;
+    wnd->status = NULLHANDLE;
     DestroyWindow( status );
     GUIResizeBackground( wnd, TRUE );
     return( TRUE );

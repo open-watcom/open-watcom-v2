@@ -185,7 +185,7 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         return( TRUE );
     }
 
-    gadget = ( p_gadget )GUIAlloc( sizeof( a_gadget ) );
+    gadget = ( p_gadget )GUIMemAlloc( sizeof( a_gadget ) );
     if( gadget == NULL ) {
         *gadget_ptr = NULL;
         return( FALSE );

@@ -1,0 +1,64 @@
+c$ifdef INCL_ERRORS
+c$define INCL_DEVERRORS
+c$endif
+
+c$ifdef INCL_DDIDEFS
+c$define INCL_DEV
+c$endif
+
+c$ifdef INCL_DEV
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) DevOpenDC parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) DevCloseDC parm( value*4 )
+      
+c$pragma aux (__syscall) DevQueryCaps parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+
+c$endif
+   
+c$endif
+
+c$ifdef INCL_DEV
+   
+c$ifndef INCL_DDIDEFS
+         
+c$pragma aux (__syscall) DevEscape parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+         
+c$pragma aux (__syscall) DevQueryDeviceNames parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		reference )
+         
+c$pragma aux (__syscall) DevQueryHardcopyCaps parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+         
+c$pragma aux (__syscall) DevPostDeviceModes parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+         
+c$endif
+
+c$endif

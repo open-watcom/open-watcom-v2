@@ -1,43 +1,38 @@
-#pmake: build lcl win 16 32 support x86
-
-!ifndef bin_root
-!ifdef bin_root_wv
-bin_root = $(bin_root_wv)
-!endif
-!endif
-
-CFLAGS = -zq -s -oas -fpc -mc -w3 -d1 -i=$(%lang)\h;$(%lang)\h\win;$(watcom_dir)\h
+#pmake: build lcl os_win cpu_i86 cpu_386 support x86
+host_cpu = i86
+host_os = win
 
 NAME = wint32
-LNK = $(NAME).lnk
 
-OBJS =  intmain.obj ints.obj int32.obj
+memory_model_i86 = c
 
-w : .symbolic $(bin_root)\bin\$(name).dll
+sys_dll = 1
+
+objs =  intmain.obj ints.obj int32.obj
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+extra_c_flags = -s -fpc -zu -zw -3
+
+lflags_win_i86 += initinstance memory
+
+extra_l_flags = option map lib clibc file {$(objs)}
+extra_l_flags_win = op heapsize=1k, rwr
+extra_l_flags_win += export WEP.1 RESIDENT
+extra_l_flags_win += segment CLASS 'CODE' PRELOAD FIXED
+extra_l_flags_win += segment CLASS 'FAR_DATA' PRELOAD FIXED
+extra_l_flags_win += segment CLASS 'BEGDATA' PRELOAD FIXED
+extra_l_flags_win += segment CLASS 'DATA' PRELOAD FIXED
+extra_l_flags_win += segment CLASS 'BSS' PRELOAD FIXED
+
+w : .symbolic $(name).dll
         @%null
 
-$(bin_root)\bin\$(name).dll: $(OBJS) $(LNK)
-       wlink name $^@ @$(LNK)
+$(name).dll: $(objs)
+       $(linker) $(lflags) name $^@
 
-$(LNK) : $(__MAKEFILES__)
-        %create $(LNK)
-        @%append $(LNK) system windows dll initinstance memory
-        @%append $(LNK) library windows,clibc,toolhelp
-        @%append $(LNK) option map
-        @%append $(LNK) option heapsize=1k
-        @for %i in ($(objs)) do @%append $(LNK) file %i
-        @%append $(LNK) libfile libentry.obj
-        @%append $(LNK) exp WEP.1 resident
-        @%append $(LNK) segment CLASS 'CODE' PRELOAD FIXED
-        @%append $(LNK) segment CLASS 'FAR_DATA' PRELOAD FIXED
-        @%append $(LNK) segment CLASS 'BEGDATA' PRELOAD FIXED
-        @%append $(LNK) segment CLASS 'DATA' PRELOAD FIXED
-        @%append $(LNK) segment CLASS 'BSS' PRELOAD FIXED
+.c : ../c
 
-.c : ..\c
-.c.obj :
-        $(comp286) $[* $(CFLAGS) -zu -zw
-
-.asm : ..\asm
-.asm.obj :
-        wasm $[* $(CFLAGS)
+.asm : ../asm

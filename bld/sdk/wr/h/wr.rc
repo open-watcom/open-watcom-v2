@@ -11,7 +11,7 @@
 #define pick( a, b, c ) a, b
 STRINGTABLE
 BEGIN
-    #include "master.msg"
+    #include "wrmsg.gh"
 END
 
 #include "selft.dlg"
@@ -19,4 +19,3 @@ END
 #include "memflags.dlg"
 #include "editsym.dlg"
 #include "addsym.dlg"
-

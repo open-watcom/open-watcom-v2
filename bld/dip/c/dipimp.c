@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP imports interface.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
+#include <string.h>
 #include "dipimp.h"
 
 address                 NilAddr;
@@ -121,9 +121,13 @@ dip_imp_routines        ImpInterface = {
 };
 
 
-#if defined(__386__)
+#if defined( __386__ )
+
+#if defined( __WATCOMC__ )
 #pragma aux DIPLOAD "*"
-#elif defined( __WINDOWS__)
+#endif
+
+#elif defined( __WINDOWS__ )
 
 #include <stdlib.h>
 #include <windows.h>
@@ -134,7 +138,7 @@ dip_imp_routines        ImpInterface = {
 typedef void (DIPENTRY INTER_FUNC)();
 
 static HANDLE TaskId;
-static HANDLE ThisInst;
+static HINSTANCE ThisInst;
 
 extern dip_imp_routines *DIPLOAD( dip_status *, dip_client_routines * );
 
@@ -151,7 +155,7 @@ void DIPENTRY DIPUNLOAD()
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -187,22 +191,20 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
     }
     link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
     link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
 
     return( 0 );
 }
-#elif defined(M_I86)
+#elif defined( _M_I86 )
 #pragma aux DIPLOAD "*" loadds
-#elif defined(__AXP__)
-/* nothing to do */
 #else
-#error DIPIMP.C not configured for system
+/* nothing to do for Alpha, PowerPC etc. */
 #endif
 
-#if defined(__DOS__) || defined(__QNX__)
+#if defined( __DOS__ ) || defined( __UNIX__ )
     const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
 #endif
 
@@ -211,11 +213,11 @@ dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
     Client = client;
 #if defined(__WINDOWS__) && !defined(__386__)
     {
-        dip_status (DIPENTRY *start)(void);
+        FARPROC start;
 
-        start = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
-        *status = start();
-        FreeProcInstance( (FARPROC)start );
+        start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
+        *status = ((dip_status(DIPENTRY*)(void)) start)();
+        FreeProcInstance( start );
     }
 #else
     *status = DIPImpStartup();
@@ -227,6 +229,15 @@ dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
 void *DCAlloc( unsigned amount )
 {
     return( Client->alloc( amount ) );
+}
+
+void *DCAllocZ( unsigned amount )
+{
+    void *p = Client->alloc( amount );
+    if( p ) {
+        memset( p, 0, amount );
+    }
+    return( p );
 }
 
 void *DCRealloc( void *p, unsigned amount )
@@ -284,6 +295,17 @@ unsigned long DCSeek( dig_fhandle h, unsigned long p, dig_seek w )
 unsigned DCRead( dig_fhandle h, void *b, unsigned s )
 {
     return( Client->read( h, b, s ) );
+}
+
+dip_status DCReadAt( dig_fhandle h, void *b, unsigned s, unsigned long p )
+{
+    if( Client->seek( h, p, DIG_ORG ) != p ) {
+        return( DS_ERR | DS_FSEEK_FAILED );
+    }
+    if( Client->read( h, b, s ) != s ) {
+        return( DS_ERR | DS_FREAD_FAILED );
+    }
+    return( DS_OK );
 }
 
 unsigned DCWrite( dig_fhandle h, void *b, unsigned s )

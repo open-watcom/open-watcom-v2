@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Variable/memory usage analysis.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "conflict.h"
 #include "hwreg.h"
 
@@ -45,44 +44,346 @@ extern    conflict_node *ConfList;
 extern    bool          BlockByBlock;
 
 
-extern  void    FindReferences() {
-/*********************************
-    Traverse the blocks an allocate a data_flow_def for each one if it
-    is needed.  Then calculate which variables are USE_WITHIN_BLOCK,
-    USE_IN_OTHER_BLOCK, DEF_IN_BLOCK and turn on their bits in the
-    dataflo->def and dataflo->use sets.  Note that USE_WITHIN_BLOCK
-    means that a variable is used before it is defined.
-    DEF_WITHIN_BLOCK means that the entire variable is redefined by the
-    block, so that no definitition of it in a previous block could flow
-    through this block and be used in a subsequent block.  USE_IN_ANOTHER
-    block means that a variable is used in more than one block.
+static  void    Use( name *op, block *blk, var_usage usage )
+/***********************************************************
+    Mark "op" as used in "blk".  assume that if it hasn't already been
+    defined in this block, that it must be USE_IN_ANOTHER_BLOCK.  "usage"
+    may be set to USE_ADDRESS indicating that we are using the address
+    of the name.
 */
-
-    block       *curr;
-
-    curr = HeadBlock;
-    while( curr != NULL ) {
-        if( curr->dataflow == NULL ) {
-            _Alloc( curr->dataflow, sizeof( data_flow_def ) );
-        }
-        _GBitInit( curr->dataflow->def         , EMPTY );
-        _GBitInit( curr->dataflow->use         , EMPTY );
-        _GBitInit( curr->dataflow->in          , EMPTY );
-        _GBitInit( curr->dataflow->out         , EMPTY );
-        _GBitInit( curr->dataflow->call_exempt , EMPTY );
-        _GBitInit( curr->dataflow->need_load   , EMPTY );
-        _GBitInit( curr->dataflow->need_store  , EMPTY );
-        curr = curr->next_block;
+{
+    if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
+        Use( (name*)op->c.value, blk, USE_ADDRESS );
+        return;
     }
-    SearchDefUse();
+    if( op->n.class == N_TEMP ) {
+        op = DeAlias( op );
+    } else if( op->n.class != N_MEMORY ) {
+        return;
+    }
+    if( op->v.block_usage & DEF_WITHIN_BLOCK ) {
+        op->v.block_usage |= USE_WITHIN_BLOCK;
+    } else {
+        op->v.block_usage |= USE_IN_ANOTHER_BLOCK;
+        if( op->v.conflict != NULL ) {
+            _GBitTurnOn( blk->dataflow->use,
+                    op->v.conflict->id.out_of_block );
+        }
+    }
+    op->v.block_usage |= usage;
 }
 
 
-static  void    SearchDefUse() {
-/*******************************
+static  bool    CoveringDefinitions( name *op )
+/**********************************************
+    If we are only defining a piece of "op", we check all of its aliases
+    to see if they have been defined in this block as well.  Only if all
+    the definitions cause the entire name to be redefined do we mark the
+    master symbol table entry for the name as "DEF_WITHIN_BLOCK" and
+    flip on its bit in dataflo->def.
+*/
+{
+    name        *alias;
+    int         i;
+    uint        loc;
+    bool        covered[MAX_POSSIBLE_REG+1];
+
+    if( op->n.size > MAX_POSSIBLE_REG ) return( FALSE );
+    i = op->n.size;
+    while( --i >= 0 ) {
+        covered[ i ] = FALSE;
+    }
+    alias = op->t.alias;
+    while( alias != op ) {
+        if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
+            loc = alias->v.offset - op->v.offset;
+            i = alias->n.size;
+            while( --i >= 0 ) {
+                if( loc < sizeof( covered ) ) covered[ loc ] = TRUE;
+                ++loc;
+            }
+        }
+        alias = alias->t.alias;
+    }
+    i = op->n.size;
+    while( --i >= 0 ) {
+        if( covered[ i ] == FALSE ) return( FALSE );
+    }
+    return( TRUE );
+}
+
+
+static  void    Define( name *op, block *blk )
+/*********************************************
+    Mark "op" as defined within "blk".
+*/
+{
+    name        *actual;
+
+    actual = op;
+    actual->v.block_usage |= DEF_WITHIN_BLOCK;
+    if( op->n.class == N_TEMP ) op = DeAlias( op );
+    if( op->v.block_usage & USE_IN_ANOTHER_BLOCK ) return;
+    if( actual != op && CoveringDefinitions( op ) == FALSE ) return;
+    op->v.block_usage |= DEF_WITHIN_BLOCK;
+    if( op->v.conflict == NULL ) return;
+    _GBitTurnOn( blk->dataflow->def, op->v.conflict->id.out_of_block );
+}
+
+
+static  void    UseDefGlobals( block *blk )
+/******************************************
+    If a call instruction is encountered, all N_MEMORY names (visible
+    outside this procedure), could be both used and defined by the call.
+*/
+{
+    conflict_node       *conf;
+    var_usage           usage;
+
+    conf = ConfList;
+    while( conf != NULL ) {
+        if( conf->name->n.class == N_MEMORY ) {
+            usage = conf->name->v.block_usage;
+            Use( conf->name, blk, EMPTY );
+            Define( conf->name, blk );
+            _GBitTurnOn( blk->dataflow->def, conf->id.out_of_block );
+            if( ( usage & DEF_WITHIN_BLOCK ) == EMPTY ) {
+                _GBitTurnOn( blk->dataflow->use, conf->id.out_of_block );
+            }
+        }
+        conf = conf->next_conflict;
+    }
+}
+
+
+static void TransferBlockUsage( name *op )
+/*****************************************
+    Never have both USE_WITHIN_BLOCK and USE_IN_ANOTHER_BLOCK set.
+*/
+{
+    op->v.usage |= op->v.block_usage;
+    if( op->v.usage & USE_IN_ANOTHER_BLOCK ) {
+        op->v.usage &= ~ USE_WITHIN_BLOCK;
+    }
+    op->v.block_usage = EMPTY;
+}
+
+
+static void TransferOneTempBlockUsage( name *op )
+/************************************************
+    see TransferTempBlockUsage ^
+*/
+{
+    name        *alias;
+
+    if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
+        TransferOneTempBlockUsage( op->c.value );
+    } else if( op->n.class == N_INDEXED ) {
+        TransferOneTempBlockUsage( op->i.index );
+        if( HasTrueBase( op ) ) {
+            TransferOneTempBlockUsage( op->i.base );
+        }
+    } else if ( op->n.class == N_TEMP ) {
+        alias = op->t.alias;
+        for( ;; ) {
+            TransferBlockUsage( alias );
+            if( alias == op ) break;
+            alias = alias->t.alias;
+        }
+    }
+}
+
+
+static void TransferTempBlockUsage( block *blk )
+/***********************************************
+    Traverse the block "blk", and for each variable referenced by an
+    instruction within block, Make sure that USE_WITHIN_BLOCK and
+    USE_IN_OTHER_BLOCK are not on simultaneously for each variable and
+    all of its aliases.  We traverse the block rather than Names[N_TEMP]
+    since running down the list of temps could be very expensive (if
+    long).  Blocks on the other hand are always reasonably short
+*/
+{
+    instruction *ins;
+    int         i;
+
+    ins = blk->ins.hd.next;
+    while( ins->head.opcode != OP_BLOCK ) {
+        i = ins->num_operands;
+        while( --i >= 0 ) {
+            TransferOneTempBlockUsage( ins->operands[ i ] );
+        }
+        if( ins->result != NULL ) {
+            TransferOneTempBlockUsage( ins->result );
+        }
+        ins = ins->head.next;
+    }
+}
+
+
+static  void    TransferAllMemBlockUsage( void )
+/***********************************************
+    Like TransferTempBlockUsage.
+*/
+{
+    name        *mem;
+
+    for( mem = Names[N_MEMORY]; mem != NULL; mem = mem->n.next_name ) {
+        TransferBlockUsage( mem );
+    }
+}
+
+
+static void TransferOneMemBlockUsage( name *op )
+/***********************************************
+    see TransferMemBlockUsage ^
+*/
+{
+    if( op->n.class == N_INDEXED ) {
+        TransferOneMemBlockUsage( op->i.index );
+        if( HasTrueBase( op ) ) {
+            TransferOneMemBlockUsage( op->i.base );
+        }
+    } else if ( op->n.class == N_MEMORY ) {
+        TransferBlockUsage( op );
+    }
+}
+
+
+static  void    TransferMemBlockUsage( block *blk )
+/**************************************************
+    Like TransferTempBlockUsage.
+*/
+{
+    instruction *ins;
+    int         i;
+
+    ins = blk->ins.hd.next;
+    while( ins->head.opcode != OP_BLOCK ) {
+        i = ins->num_operands;
+        while( --i >= 0 ) {
+            TransferOneMemBlockUsage( ins->operands[ i ] );
+        }
+        if( ins->result != NULL ) {
+            TransferOneMemBlockUsage( ins->result );
+        }
+        ins = ins->head.next;
+    }
+}
+
+
+static void TransferOneTempFlag( name *t )
+/****************************************/
+{
+    name        *alias;
+    var_usage   usage;
+
+    if( t->n.class == N_TEMP ) {
+        t = DeAlias( t );
+        alias = t;
+        usage = EMPTY;
+        do {
+            usage |= alias->v.usage;
+            alias = alias->t.alias;
+        } while( alias != t );
+        alias = t;
+        do {
+            alias->v.usage |= usage;
+            alias = alias->t.alias;
+        } while( alias != t );
+    } else if( t->n.class == N_INDEXED ) {
+        TransferOneTempFlag( t->i.index );
+        if( HasTrueBase( t ) ) {
+            TransferOneTempFlag( t->i.base );
+        }
+    }
+}
+
+
+extern  void    TransferTempFlags( void )
+/****************************************
+    Run through the program and for each variable reference, transfer
+    the usage flags from each variable to all of its aliases.  (if we
+    use the address of T1, we're effectively using the address of T1+1
+    as well, etc).  We could traverse Names[N_TEMP] but it could be much
+    longer than the block list.
+*/
+{
+    block       *blk;
+    instruction *ins;
+    int         i;
+
+    blk = HeadBlock;
+    while( blk != NULL ) {
+        ins = blk->ins.hd.next;
+        while( ins->head.opcode != OP_BLOCK ) {
+            i = ins->num_operands;
+            while( --i >= 0 ) {
+                TransferOneTempFlag( ins->operands[ i ] );
+            }
+            if( ins->result != NULL ) {
+                TransferOneTempFlag( ins->result );
+            }
+            ins = ins->head.next;
+        }
+        blk = blk->next_block;
+    }
+    blk = HeadBlock;
+    while( blk != NULL ) {
+        TransferTempBlockUsage( blk );
+        blk = blk->next_block;
+    }
+}
+
+
+static  void    TransferMemoryFlags( void )
+/******************************************
+    If we use the address of FOOBAR, we're effectively using the address
+    of FOOBAR+1 as well
+*/
+{
+    name        *m;
+    name        *same_sym;
+    var_usage   usage;
+
+    m = Names[  N_MEMORY  ];
+    while( m != NULL ) {
+        m->m.memory_flags = MF_EMPTY;
+        m = m->n.next_name;
+    }
+
+    m = Names[  N_MEMORY  ];
+    while( m != NULL ) {
+        if( ( m->m.memory_flags & MF_VISITED ) == 0 ) {
+            if( m->m.same_sym != NULL ) {
+                // union together mem flags from all symbols that
+                // are same and set all v.usage's to this union
+                usage = m->v.usage;
+                same_sym = m->m.same_sym;
+                while( same_sym != m ) {
+                    usage |= same_sym->v.usage;
+                    same_sym = same_sym->m.same_sym;
+                }
+                m->v.usage = usage;
+                same_sym = m->m.same_sym;
+                while( same_sym != m ) {
+                    same_sym->v.usage |= usage;
+                    same_sym = same_sym->m.same_sym;
+                    same_sym->m.memory_flags |= MF_VISITED;
+                }
+            }
+            m->m.memory_flags |= MF_VISITED;
+        }
+        m = m->n.next_name;
+    }
+}
+
+
+static  void    SearchDefUse( void )
+/***********************************
     see FindReferences ^
 */
-
+{
     block       *blk;
     instruction *ins;
     name        *name;
@@ -90,7 +391,7 @@ static  void    SearchDefUse() {
     bool        touched_non_op;
 
     blk = HeadBlock;
-    for(;;) {
+    for( ;; ) {
         touched_non_op = FALSE;
         ins = blk->ins.hd.next;
         while( ins->head.opcode != OP_BLOCK ) {
@@ -151,336 +452,34 @@ static  void    SearchDefUse() {
 }
 
 
-static  void    UseDefGlobals( block *blk ) {
-/********************************************
-    If a call instruction is encountered, all N_MEMORY names (visible
-    outside this procedure), could be both used and defined by the call.
+extern  void    FindReferences( void )
+/*************************************
+    Traverse the blocks an allocate a data_flow_def for each one if it
+    is needed.  Then calculate which variables are USE_WITHIN_BLOCK,
+    USE_IN_OTHER_BLOCK, DEF_IN_BLOCK and turn on their bits in the
+    dataflo->def and dataflo->use sets.  Note that USE_WITHIN_BLOCK
+    means that a variable is used before it is defined.
+    DEF_WITHIN_BLOCK means that the entire variable is redefined by the
+    block, so that no definitition of it in a previous block could flow
+    through this block and be used in a subsequent block.  USE_IN_ANOTHER
+    block means that a variable is used in more than one block.
 */
+{
+    block       *curr;
 
-    conflict_node       *conf;
-    var_usage           usage;
-
-    conf = ConfList;
-    while( conf != NULL ) {
-        if( conf->name->n.class == N_MEMORY ) {
-            usage = conf->name->v.block_usage;
-            Use( conf->name, blk, EMPTY );
-            Define( conf->name, blk );
-            _GBitTurnOn( blk->dataflow->def, conf->id.out_of_block );
-            if( ( usage & DEF_WITHIN_BLOCK ) == EMPTY ) {
-                _GBitTurnOn( blk->dataflow->use, conf->id.out_of_block );
-            }
+    curr = HeadBlock;
+    while( curr != NULL ) {
+        if( curr->dataflow == NULL ) {
+            curr->dataflow = CGAlloc( sizeof( data_flow_def ) );
         }
-        conf = conf->next_conflict;
+        _GBitInit( curr->dataflow->def         , EMPTY );
+        _GBitInit( curr->dataflow->use         , EMPTY );
+        _GBitInit( curr->dataflow->in          , EMPTY );
+        _GBitInit( curr->dataflow->out         , EMPTY );
+        _GBitInit( curr->dataflow->call_exempt , EMPTY );
+        _GBitInit( curr->dataflow->need_load   , EMPTY );
+        _GBitInit( curr->dataflow->need_store  , EMPTY );
+        curr = curr->next_block;
     }
-}
-
-
-static  void    Use( name *op, block *blk, var_usage usage ) {
-/***************************************************************
-    Mark "op" as used in "blk".  assume that if it hasn't already been
-    defined in this block, that it must be USE_IN_ANOTHER_BLOCK.  "usage"
-    may be set to USE_ADDRESS indicating that we are using the address
-    of the name.
-*/
-
-    if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-        Use( (name*)op->c.value, blk, USE_ADDRESS );
-        return;
-    }
-    if( op->n.class == N_TEMP ) {
-        op = DeAlias( op );
-    } else if( op->n.class != N_MEMORY ) {
-        return;
-    }
-    if( op->v.block_usage & DEF_WITHIN_BLOCK ) {
-        op->v.block_usage |= USE_WITHIN_BLOCK;
-    } else {
-        op->v.block_usage |= USE_IN_ANOTHER_BLOCK;
-        if( op->v.conflict != NULL ) {
-            _GBitTurnOn( blk->dataflow->use,
-                    op->v.conflict->id.out_of_block );
-        }
-    }
-    op->v.block_usage |= usage;
-}
-
-
-static  bool    CoveringDefinitions( name *op ) {
-/************************************************
-    If we are only defining a piece of "op", we check all of its aliases
-    to see if they have been defined in this block as well.  Only if all
-    the definitions cause the entire name to be redefined do we mark the
-    master symbol table entry for the name as "DEF_WITHIN_BLOCK" and
-    flip on its bit in dataflo->def.
-*/
-
-    name        *alias;
-    int         i;
-    uint        loc;
-    bool        covered[MAX_POSSIBLE_REG+1];
-
-    if( op->n.size > MAX_POSSIBLE_REG ) return( FALSE );
-    i = op->n.size;
-    while( --i >= 0 ) {
-        covered[ i ] = FALSE;
-    }
-    alias = op->t.alias;
-    while( alias != op ) {
-        if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
-            loc = alias->v.offset - op->v.offset;
-            i = alias->n.size;
-            while( --i >= 0 ) {
-                if( loc < sizeof( covered ) ) covered[ loc ] = TRUE;
-                ++loc;
-            }
-        }
-        alias = alias->t.alias;
-    }
-    i = op->n.size;
-    while( --i >= 0 ) {
-        if( covered[ i ] == FALSE ) return( FALSE );
-    }
-    return( TRUE );
-}
-
-
-static  void    Define( name *op, block *blk ) {
-/***********************************************
-    Mark "op" as defined within "blk".
-*/
-
-    name        *actual;
-
-    actual = op;
-    actual->v.block_usage |= DEF_WITHIN_BLOCK;
-    if( op->n.class == N_TEMP ) op = DeAlias( op );
-    if( op->v.block_usage & USE_IN_ANOTHER_BLOCK ) return;
-    if( actual != op && CoveringDefinitions( op ) == FALSE ) return;
-    op->v.block_usage |= DEF_WITHIN_BLOCK;
-    if( op->v.conflict == NULL ) return;
-    _GBitTurnOn( blk->dataflow->def, op->v.conflict->id.out_of_block );
-}
-
-
-static void TransferTempBlockUsage( block *blk ) {
-/*************************************************
-    Traverse the block "blk", and for each variable referenced by an
-    instruction within block, Make sure that USE_WITHIN_BLOCK and
-    USE_IN_OTHER_BLOCK are not on simultaneously for each variable and
-    all of its aliases.  We traverse the block rather than Names[N_TEMP]
-    since running down the list of temps could be very expensive (if
-    long).  Blocks on the other hand are always reasonably short
-*/
-
-    instruction *ins;
-    int         i;
-
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            TransferOneTempBlockUsage( ins->operands[ i ] );
-        }
-        if( ins->result != NULL ) {
-            TransferOneTempBlockUsage( ins->result );
-        }
-        ins = ins->head.next;
-    }
-}
-
-static void TransferOneTempBlockUsage( name *op ) {
-/****************************************
-    see TransferTempBlockUsage ^
-*/
-
-    name        *alias;
-
-    if( op->n.class == N_CONSTANT && op->c.const_type == CONS_TEMP_ADDR ) {
-        TransferOneTempBlockUsage( op->c.value );
-    } else if( op->n.class == N_INDEXED ) {
-        TransferOneTempBlockUsage( op->i.index );
-        if( HasTrueBase( op ) ) {
-            TransferOneTempBlockUsage( op->i.base );
-        }
-    } else if ( op->n.class == N_TEMP ) {
-        alias = op->t.alias;
-        for(;;) {
-            TransferBlockUsage( alias );
-            if( alias == op ) break;
-            alias = alias->t.alias;
-        }
-    }
-}
-
-
-static  void    TransferAllMemBlockUsage() {
-/*******************************************
-    Like TransferTempBlockUsage.
-*/
-
-    name        *mem;
-
-    for( mem = Names[N_MEMORY]; mem != NULL; mem = mem->n.next_name ) {
-        TransferBlockUsage( mem );
-    }
-}
-
-
-static  void    TransferMemBlockUsage( block *blk ) {
-/****************************************************
-    Like TransferTempBlockUsage.
-*/
-
-    instruction *ins;
-    int         i;
-
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        i = ins->num_operands;
-        while( --i >= 0 ) {
-            TransferOneMemBlockUsage( ins->operands[ i ] );
-        }
-        if( ins->result != NULL ) {
-            TransferOneMemBlockUsage( ins->result );
-        }
-        ins = ins->head.next;
-    }
-}
-
-
-static void TransferOneMemBlockUsage( name *op ) {
-/*************************************************
-    see TransferMemBlockUsage ^
-*/
-
-    if( op->n.class == N_INDEXED ) {
-        TransferOneMemBlockUsage( op->i.index );
-        if( HasTrueBase( op ) ) {
-            TransferOneMemBlockUsage( op->i.base );
-        }
-    } else if ( op->n.class == N_MEMORY ) {
-        TransferBlockUsage( op );
-    }
-}
-
-
-static void TransferBlockUsage( name *op ) {
-/*******************************************
-    Never have both USE_WITHIN_BLOCK and USE_IN_ANOTHER_BLOCK set.
-*/
-
-    op->v.usage |= op->v.block_usage;
-    if( op->v.usage & USE_IN_ANOTHER_BLOCK ) {
-        op->v.usage &= ~ USE_WITHIN_BLOCK;
-    }
-    op->v.block_usage = EMPTY;
-}
-
-
-extern  void    TransferTempFlags() {
-/************************************
-    Run through the program and for each variable reference, transfer
-    the usage flags from each variable to all of its aliases.  (if we
-    use the address of T1, we're effectively using the address of T1+1
-    as well, etc).  We could traverse Names[N_TEMP] but it could be much
-    longer than the block list.
-*/
-
-
-    block       *blk;
-    instruction *ins;
-    int         i;
-
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        ins = blk->ins.hd.next;
-        while( ins->head.opcode != OP_BLOCK ) {
-            i = ins->num_operands;
-            while( --i >= 0 ) {
-                TransferOneTempFlag( ins->operands[ i ] );
-            }
-            if( ins->result != NULL ) {
-                TransferOneTempFlag( ins->result );
-            }
-            ins = ins->head.next;
-        }
-        blk = blk->next_block;
-    }
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        TransferTempBlockUsage( blk );
-        blk = blk->next_block;
-    }
-}
-
-
-static void TransferOneTempFlag( name *t ) {
-/*****************************************/
-
-    name        *alias;
-    var_usage   usage;
-
-    if( t->n.class == N_TEMP ) {
-        t = DeAlias( t );
-        alias = t;
-        usage = EMPTY;
-        do {
-            usage |= alias->v.usage;
-            alias = alias->t.alias;
-        } while( alias != t );
-        alias = t;
-        do {
-            alias->v.usage |= usage;
-            alias = alias->t.alias;
-        } while( alias != t );
-    } else if( t->n.class == N_INDEXED ) {
-        TransferOneTempFlag( t->i.index );
-        if( HasTrueBase( t ) ) {
-            TransferOneTempFlag( t->i.base );
-        }
-    }
-}
-
-static  void    TransferMemoryFlags() {
-/**************************************
-    If we use the address of FOOBAR, we're effectively using the address
-    of FOOBAR+1 as well
-*/
-
-
-    name        *m;
-    name        *same_sym;
-    var_usage   usage;
-
-    m = Names[  N_MEMORY  ];
-    while( m != NULL ) {
-        m->m.memory_flags = MF_EMPTY;
-        m = m->n.next_name;
-    }
-
-    m = Names[  N_MEMORY  ];
-    while( m != NULL ) {
-        if( ( m->m.memory_flags & MF_VISITED ) == 0 ) {
-            if( m->m.same_sym != NULL ) {
-                // union together mem flags from all symbols that
-                // are same and set all v.usage's to this union
-                usage = m->v.usage;
-                same_sym = m->m.same_sym;
-                while( same_sym != m ) {
-                    usage |= same_sym->v.usage;
-                    same_sym = same_sym->m.same_sym;
-                }
-                m->v.usage = usage;
-                same_sym = m->m.same_sym;
-                while( same_sym != m ) {
-                    same_sym->v.usage |= usage;
-                    same_sym = same_sym->m.same_sym;
-                    same_sym->m.memory_flags |= MF_VISITED;
-                }
-            }
-            m->m.memory_flags |= MF_VISITED;
-        }
-        m = m->n.next_name;
-    }
+    SearchDefUse();
 }

@@ -34,7 +34,7 @@
 #define WACCEL_INCLUDED
 
 #ifndef WINEXPORT
-#define WINEXPORT   __export PASCAL
+    #define WINEXPORT   __export PASCAL
 #endif
 
 #include "wresall.h"
@@ -74,18 +74,18 @@ typedef struct WAccelInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WAccelInfo         * WINEXPORT WAccAllocAccelInfo ( void );
-void                 WINEXPORT WAccFreeAccelInfo  ( WAccelInfo * );
+WAccelInfo *        WINEXPORT WAccAllocAccelInfo( void );
+void                WINEXPORT WAccFreeAccelInfo( WAccelInfo * );
 
-extern void          WINEXPORT WAccelInit         ( void );
-extern void          WINEXPORT WAccelFini         ( void );
-extern int           WINEXPORT WAccelCloseSession ( WAccelHandle, int );
-extern WAccelHandle  WINEXPORT WAccelStartEdit    ( WAccelInfo * );
-extern WAccelInfo  * WINEXPORT WAccelEndEdit      ( WAccelHandle );
-extern WAccelInfo  * WINEXPORT WAccelGetEditInfo  ( WAccelHandle );
-extern int           WINEXPORT WAccelIsModified   ( WAccelHandle );
-extern int           WINEXPORT WAccelIsDlgMsg     ( MSG *msg );
-extern void          WINEXPORT WAccelShowWindow   ( WAccelHandle hndl, int show );
-extern void          WINEXPORT WAccelBringToFront ( WAccelHandle hndl );
+extern void         WINEXPORT WAccelInit( void );
+extern void         WINEXPORT WAccelFini( void );
+extern int          WINEXPORT WAccelCloseSession( WAccelHandle, int );
+extern WAccelHandle WINEXPORT WAccelStartEdit( WAccelInfo * );
+extern WAccelInfo * WINEXPORT WAccelEndEdit( WAccelHandle );
+extern WAccelInfo * WINEXPORT WAccelGetEditInfo( WAccelHandle );
+extern int          WINEXPORT WAccelIsModified( WAccelHandle );
+extern int          WINEXPORT WAccelIsDlgMsg( MSG *msg );
+extern void         WINEXPORT WAccelShowWindow( WAccelHandle hndl, int show );
+extern void         WINEXPORT WAccelBringToFront( WAccelHandle hndl );
 
 #endif

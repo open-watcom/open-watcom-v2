@@ -24,8 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Special OS/2 runtime library startup module for
+;*               OSI programs.
 ;*
 ;*****************************************************************************
 
@@ -43,7 +43,7 @@ _TEXT   segment use32 word public 'CODE'
         public  _cstart_
         public  _LaunchPgm_
 
-OS_OS2  equ     1
+_OS_OS2 equ     1
 
         assume  cs:_TEXT
 
@@ -54,7 +54,7 @@ _cstart_ endp
 _LaunchPgm_ proc near
         push    cs              ; simulate far call
         mov     bx,cs           ; pass in our CS value
-        mov     ah,OS_OS2       ; indicate OS/2
+        mov     ah,_OS_OS2      ; indicate OS/2
         lea     ecx,_end        ; get address of stack low
         call    esi             ; invoke program
         ret                     ; return

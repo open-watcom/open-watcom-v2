@@ -193,7 +193,7 @@ STATIC int prsLnames( obj_rec *objr, pobj_state *state ) {
     uint_8  *p;
     uint_16 count;
     uint_16 idx;
-    char    *rewrite;
+    uint_8  *rewrite;
     uint_16 save;
 
 /**/myassert( objr != NULL );
@@ -211,16 +211,16 @@ STATIC int prsLnames( obj_rec *objr, pobj_state *state ) {
             ++len;
             idx = objr->d.lnames.first_idx + count;
             if( memcmp( p, WAT_DDTYPES, len ) == 0 ) {
-                rewrite = WAT_ZAP_DDTYPES;
+                rewrite = (uint_8 *)WAT_ZAP_DDTYPES;
                 loc.ddtypes_name_idx = idx;
             } else if( memcmp( p, WAT_DDSYMBOLS, len ) == 0 ) {
-                rewrite = WAT_ZAP_DDSYMBOLS;
+                rewrite = (uint_8 *)WAT_ZAP_DDSYMBOLS;
                 loc.ddsymbols_name_idx = idx;
             } else if( memcmp( p, WAT_DEBTYP, len ) == 0 ) {
-                rewrite = WAT_ZAP_DEBTYP;
+                rewrite = (uint_8 *)WAT_ZAP_DEBTYP;
                 loc.debtyp_idx = idx;
             } else if( memcmp( p, WAT_DEBSYM, len ) == 0 ) {
-                rewrite = WAT_ZAP_DEBSYM;
+                rewrite = (uint_8 *)WAT_ZAP_DEBSYM;
                 loc.debsym_idx = idx;
             } else {
                 rewrite = NULL;

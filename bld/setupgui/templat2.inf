@@ -1,0 +1,65 @@
+;
+; The '@' character in the "static_text" lines are replaced with the
+; name of the installation program.
+;
+[Application]
+AppName=WATCOM SQL Client for Windows
+DefDir=C:\WSQL
+DefPMGroup=wsql.grp, WATCOM SQL
+SpaceNeeded=10
+
+
+[Dirs]
+1=.,, 0
+2=h,,0
+
+[Dialog]
+name=DupDisk
+static_text="@ attempted to install the file:"
+dynamic_text=FileDesc," Watcom File "
+static_text="In This Directory: "
+dynamic_text=DiskDesc,"Watcom Diskette"
+static_text="But it currently exists in another directory."
+radio_button=Install,1,"Install the new file and keep existing file"
+radio_button=Replace,0,"Replace the existing file with the new file"
+radio_button=NoInstall,0,"Do not install the new file"
+static_text=
+push_button=OK
+push_button=Cancel
+
+
+
+[Files]
+wsqldde.exe, wsqldde, 1, 1, Y, .
+dbclienw.exe, dbclienw, 2, 1, Y, .
+isqlw.exe, isqlw, 1, 1, Y, .
+odbcadm.exe, odbcadme, 1, 1, Y, .
+
+[Disks]
+1=Disk 1
+
+[PM Info]
+wsqldde.exe,    ,DDE Server
+dbclienw.exe,   ,Database Client
+isqlw.exe,      ,ISQL
+odbcadm.exe,    ,ODBC Administrator
+
+[Profile]
+ODBC Drivers,   WATCOM SQL,        Installed,                      odbcinst.ini
+WATCOM SQL,     driver,            %root%\wsqlodbc.dll,            odbcinst.ini
+WATCOM SQL,     setup,             %root%\wsqlodbc.dll,            odbcinst.ini
+ODBC Data Sources, sample_server,  WATCOM SQL,                     odbc.ini
+sample_server,  driver,            %root%\wsqlodbc.dll,            odbc.ini
+sample_server,  description,       WATCOM SQL Client/Server,       odbc.ini
+sample_server,  Database,	       place_server_name_here,         odbc.ini
+sample_server,  Start,             dbclienw %d,                    odbc.ini
+
+[Autoexec]
+PATH=%root%
+WSQL=%root%
+
+[Config]
+FILES=20
+BUFFERS=30
+
+[End]

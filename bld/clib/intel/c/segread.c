@@ -33,28 +33,31 @@
 #include "variety.h"
 #include <i86.h>
 
-extern  unsigned short  _CS(), _DS(), _ES(), _SS();
+extern  unsigned short  _CS( void );
+extern  unsigned short  _DS( void );
+extern  unsigned short  _ES( void );
+extern  unsigned short  _SS( void );
 
 #pragma aux     _CS = 0x8C 0xC8 /* mov ax,cs */ value [ax];
 #pragma aux     _DS = 0x8C 0xD8 /* mov ax,ds */ value [ax];
 #pragma aux     _ES = 0x8C 0xC0 /* mov ax,es */ value [ax];
 #pragma aux     _SS = 0x8C 0xD0 /* mov ax,ss */ value [ax];
 #if defined(__386__)
-extern  unsigned short  _FS(), _GS();
+extern  unsigned short  _FS( void ), _GS( void );
 #pragma aux     _FS = 0x8C 0xE0 /* mov ax,fs */ value [ax];
 #pragma aux     _GS = 0x8C 0xE8 /* mov ax,gs */ value [ax];
 #endif
 
 
 _WCRTLINK void segread( struct SREGS *segregs )
-    {
-        __ptr_check( segregs, 0 );
-        segregs->cs = _CS();
-        segregs->ds = _DS();
-        segregs->es = _ES();
-        segregs->ss = _SS();
+{
+    __ptr_check( segregs, 0 );
+    segregs->cs = _CS();
+    segregs->ds = _DS();
+    segregs->es = _ES();
+    segregs->ss = _SS();
 #if defined(__386__)
-        segregs->fs = _FS();
-        segregs->gs = _GS();
+    segregs->fs = _FS();
+    segregs->gs = _GS();
 #endif
-    }
+}

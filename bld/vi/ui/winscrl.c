@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 
@@ -42,10 +39,10 @@
 void ShiftWindowUpDown( window_id id, int diff )
 {
     wind                *w;
-    int                 start,spl,i,j;
-    int                 sline,eline,add;
+    int                 start, spl, i, j;
+    int                 sline, eline, add;
     char_info           _FAR *scr_d;
-    char_info           *txt_s,*txt_d;
+    char_info           *txt_s, *txt_d;
 
     if( EditFlags.DisplayHold || EditFlags.Quiet ) {
         return;
@@ -59,11 +56,11 @@ void ShiftWindowUpDown( window_id id, int diff )
         spl = -1;
     }
     if( diff < 0 ) {
-        sline = w->text_lines+diff;
+        sline = w->text_lines + diff;
         eline = 1;
         add = -1;
     } else {
-        sline = diff+1;
+        sline = diff + 1;
         eline = w->text_lines;
         add = 1;
     }
@@ -75,16 +72,17 @@ void ShiftWindowUpDown( window_id id, int diff )
     eline += spl;
     i = sline;
     while( 1 ) {
-        txt_s = (char_info *) &w->text[(i*w->width+start)*sizeof(char_info)];
-        txt_d = (char_info *) &w->text[((i-diff)*w->width+start)*sizeof(char_info)];
-        scr_d = (char_info _FAR *) &Scrn[ (w->x1+start+(w->y1+i-diff)*
-                                WindMaxWidth)*sizeof(char_info)];
-        for( j=0;j<w->text_cols;j++ ) {
+        txt_s = (char_info *) &w->text[(i * w->width + start) * sizeof( char_info )];
+        txt_d = (char_info *) &w->text[((i - diff) * w->width + start) *
+                                       sizeof( char_info )];
+        scr_d = (char_info _FAR *) &Scrn[(w->x1 + start + (w->y1 + i - diff) *
+                                          WindMaxWidth) * sizeof( char_info )];
+        for( j = 0; j < w->text_cols; j++ ) {
             WRITE_SCREEN( scr_d[j], txt_s[j] );
             WRITE_SCREEN_DATA( txt_d[j], txt_s[j] );
         }
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned)((char *) scr_d-Scrn), w->text_cols );
+        MyVioShowBuf( (unsigned)((char *) scr_d - Scrn), w->text_cols );
 #endif
         if( i == eline ) {
             break;

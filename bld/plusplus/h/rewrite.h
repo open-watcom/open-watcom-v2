@@ -65,6 +65,9 @@ struct rewrite_package {
 extern void RewriteFree( REWRITE * );
 extern REWRITE *RewritePackageFunction( PTREE );
 extern REWRITE *RewritePackageDefArg( PTREE );
+extern REWRITE *RewritePackageTemplateArgument( void );
+extern REWRITE *RewritePackageTemplateDefArg( void );
+extern REWRITE *RewritePackagePassThrough( REWRITE * );
 extern REWRITE *RewritePackageMemInit( PTREE );
 extern REWRITE *RewritePackageClassTemplate( REWRITE *, TOKEN_LOCN * );
 extern REWRITE *RewritePackageClassTemplateMember( REWRITE *, TOKEN_LOCN * );

@@ -54,11 +54,7 @@ endif
         endm
 
         defp    _dos_read
-        if __WASM__ ge 100
-            xdefp   "C",_dos_read
-        else
-            xdefp   <"C",_dos_read>
-        endif
+        xdefp   "C",_dos_read
 ;
 ;       unsigned _dos_read( int handle,
 ;                           void far *buf,
@@ -87,12 +83,9 @@ else
         ret     2               ; return to caller
 endif
         endproc _dos_read
+
         defp    _dos_write
-        if __WASM__ ge 100
-            xdefp   "C",_dos_write
-        else
-            xdefp   <"C",_dos_write>
-        endif
+        xdefp   "C",_dos_write
 ;
 ;       unsigned _dos_write( int handle,
 ;                           void far *buf,

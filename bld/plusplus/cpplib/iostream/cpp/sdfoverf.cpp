@@ -29,51 +29,26 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/22    Greg Bentz      Make sure overflow() function sets up the
-//                              put area
-//  93/10/22    Raymond Tang    Split into separate files.
-//  93/11/09    Greg Bentz      Make sure overflow() trashes the get area
-//                              in the right order
-//  94/04/06    Greg Bentz      combine header files
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <iostream.h>
-#include <stdiobuf.h>
+#include <iostream>
+#include <stdiobuf>
 #endif
 #include "ioutil.h"
 
+// Handle allocating a buffer, if required. Handle overflow of the
+// output streambuf buffer. Take the contents of the buffer and send
+// them to the FILE stream found in file_pointer. Also send the
+// character "c", unless it's EOF.
+
 int stdiobuf::overflow( int c ) {
-/*******************************/
-// Handle allocating a buffer, if required.
-// Handle overflow of the output streambuf buffer.
-// Take the contents of the buffer and send them to the FILE stream
-// found in file_pointer.
-// Also send the character "c", unless it's EOF.
 
     int waiting;
     int written;
-    int result;
 
     __lock_it( __b_lock );
 
@@ -101,10 +76,6 @@ int stdiobuf::overflow( int c ) {
                                   , 1
                                   , __file_pointer );
                 if( written != sizeof( char ) ) {
-                    return( EOF );
-                }
-                result = ::fflush( __file_pointer );
-                if( result ) {
                     return( EOF );
                 }
             }
@@ -144,10 +115,6 @@ int stdiobuf::overflow( int c ) {
         } else {
             return( EOF );
         }
-    }
-    result = ::fflush( __file_pointer );
-    if( result ) {
-        return( EOF );
     }
     if( waiting ) {
         return( EOF );

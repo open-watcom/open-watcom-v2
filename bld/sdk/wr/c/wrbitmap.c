@@ -49,7 +49,7 @@
 #define START_OF_HEADER         sizeof( BITMAPFILEHEADER )
 #define HUGE_SHIFT              8
 #define CHUNK_SIZE              (48 * 1024)
-#define RGBQ_SIZE( bc )         ( sizeof(RGBQUAD) * ((1<<(bc))))
+#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * (1 << (bc)))
 #define SCANLINE_SIZE           32
 #define MAX_CHUNK               32768
 
@@ -64,21 +64,21 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BITMAPINFO       *WRReadDIBInfo  ( BYTE **data );
-static BITMAPCOREINFO   *WRReadCoreInfo ( BYTE **data );
-static HBITMAP          WRReadBitmap    ( BYTE *data, long offset, BOOL core,
-                                          bitmap_info *info );
+static BITMAPINFO       *WRReadDIBInfo( BYTE **data );
+static BITMAPCOREINFO   *WRReadCoreInfo( BYTE **data );
+static HBITMAP          WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *info );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  WResID  *BitmapName             = NULL;
+static WResID   *BitmapName = NULL;
 
-#if !defined(__386__) &&  !defined(__ALPHA__)
+#if !defined( __386__ ) && !defined( __ALPHA__ )
+
 #define _HUGE __huge
 #define __halloc halloc
 #define __hfree hfree
-static void HugeMemCopy( char far *dst, char far *src, unsigned bytes )
+static void HugeMemCopy( void far *dst, void far *src, unsigned bytes )
 {
     long                offset, selector;
     long                bytes_before_segment_end;
@@ -91,18 +91,20 @@ static void HugeMemCopy( char far *dst, char far *src, unsigned bytes )
         bytes -= bytes_before_segment_end;
         selector += HUGE_SHIFT;
         dst = MK_FP( selector, 0 );
-        src += bytes_before_segment_end;
+        src = (char *)src + bytes_before_segment_end;
     }
     _fmemcpy( dst, src, bytes );
 }
 #else
+
 #define HugeMemCopy( a, b, c ) memcpy( a, b, c )
 #ifdef _HUGE
-#undef _HUGE
+    #undef _HUGE
 #endif
 #define _HUGE
 #define __halloc( a, b ) malloc( a )
 #define __hfree free
+
 #endif
 
 static BITMAPINFO *WRReadDIBInfo( BYTE **data )
@@ -112,17 +114,17 @@ static BITMAPINFO *WRReadDIBInfo( BYTE **data )
     long                bitmap_size;
     int                 pos;
 
-    if( !data || !*data ) {
+    if( data == NULL || *data == NULL ) {
         return( NULL );
     }
 
     pos = START_OF_HEADER;
-    header = (BITMAPINFOHEADER *)((*data)+pos);
+    header = (BITMAPINFOHEADER *)((*data) + pos);
     bitmap_size = DIB_INFO_SIZE( header->biBitCount );
     bm = WRMemAlloc( bitmap_size );
     if( bm != NULL ) {
         memcpy( bm, header, bitmap_size );
-        *data += (pos+bitmap_size);
+        *data += pos + bitmap_size;
     }
 
     return( bm );
@@ -135,19 +137,19 @@ static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
     long                bitmap_size;
     int                 pos;
 
-    if( !data || !*data ) {
+    if( data == NULL || *data == NULL ) {
         return( NULL );
     }
 
     pos = START_OF_HEADER;
-    header = (BITMAPCOREHEADER *)((*data)+pos);
+    header = (BITMAPCOREHEADER *)(*data + pos);
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
     bm_core = WRMemAlloc( bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }
-    memcpy( bm_core, (*data)+pos, bitmap_size );
-    *data += ( pos + bitmap_size );
+    memcpy( bm_core, *data + pos, bitmap_size );
+    *data += pos + bitmap_size;
 
     return( bm_core );
 }
@@ -158,7 +160,7 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     WORD                chunk_size;
 
     chunk_size = CHUNK_SIZE;
-    while( chunk_size && ( ( buffer = WRMemAlloc( chunk_size ) ) == NULL ) ) {
+    while( chunk_size != 0 && (buffer = WRMemAlloc( chunk_size )) == NULL ) {
         chunk_size >>= 1;
     }
     if( buffer == NULL ) {
@@ -174,8 +176,7 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     memcpy( buffer, data, size );
     HugeMemCopy( dst, buffer, size );
     WRMemFree( buffer );
-
-} /* readInPieces */
+}
 
 static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *info )
 {
@@ -195,16 +196,14 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
         if( bm_core == NULL ) {
             return( bitmap_handle );
         }
-        size = BITS_TO_BYTES( bm_core->bmciHeader.bcWidth *
-                                  bm_core->bmciHeader.bcBitCount,
+        size = BITS_TO_BYTES( bm_core->bmciHeader.bcWidth * bm_core->bmciHeader.bcBitCount,
                               bm_core->bmciHeader.bcHeight );
     } else {
         bm_info = WRReadDIBInfo( &data );
         if( bm_info == NULL ) {
             return( bitmap_handle );
         }
-        size = BITS_TO_BYTES( bm_info->bmiHeader.biWidth *
-                                  bm_info->bmiHeader.biBitCount,
+        size = BITS_TO_BYTES( bm_info->bmiHeader.biWidth * bm_info->bmiHeader.biBitCount,
                               bm_info->bmiHeader.biHeight );
     }
 
@@ -220,17 +219,26 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
              * This will cause a GP Fault!
              */
             bitmap_handle = CreateBitmap( h->bcWidth, h->bcHeight, h->bcPlanes,
-                h->bcBitCount, mask_ptr );
+                                          h->bcBitCount, mask_ptr );
         } else {
-            new_palette = CreateDIBPalette( bm_info );
-            if( new_palette ) {
+            if( bm_info->bmiHeader.biBitCount < 9 ) {
+                /* Bitmap has palette, create it */            
+                new_palette = CreateDIBPalette( bm_info );
+                if( new_palette != NULL ) {
+                    hdc = GetDC( (HWND)NULL );
+                    old_palette = SelectPalette( hdc, new_palette, FALSE );
+                    RealizePalette( hdc );
+                    bitmap_handle = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
+                                                    mask_ptr, bm_info, DIB_RGB_COLORS );
+                    SelectPalette( hdc, old_palette, FALSE );
+                    DeleteObject( new_palette );
+                    ReleaseDC( (HWND)NULL, hdc );
+                }
+            } else {
+                /* Bitmap with no palette*/
                 hdc = GetDC( (HWND)NULL );
-                old_palette = SelectPalette( hdc, new_palette, FALSE );
-                RealizePalette( hdc );
-                bitmap_handle = CreateDIBitmap( hdc, &bm_info->bmiHeader,
-                                CBM_INIT, mask_ptr, bm_info, DIB_RGB_COLORS );
-                SelectPalette( hdc, old_palette, FALSE );
-                DeleteObject( new_palette );
+                bitmap_handle = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
+                                                mask_ptr, bm_info, DIB_RGB_COLORS );
                 ReleaseDC( (HWND)NULL, hdc );
             }
         }
@@ -250,7 +258,6 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
         }
     }
     return( bitmap_handle );
-
 }
 
 /*
@@ -277,11 +284,11 @@ HBITMAP WR_EXPORT WRBitmapFromData( BYTE *data, bitmap_info *info )
         return( bitmap_handle );
     }
 
-    pos = sizeof(BITMAPFILEHEADER);
-    size = (DWORD *)(data+pos);
+    pos = sizeof( BITMAPFILEHEADER );
+    size = (DWORD *)(data + pos);
 
-    core = ( *size == sizeof( BITMAPCOREHEADER ) );
-    if (!core) {
+    core = (*size == sizeof( BITMAPCOREHEADER ));
+    if( !core ) {
         offset = file_header->bfOffBits;
         bitmap_handle = WRReadBitmap( data, offset, core, info );
     }
@@ -291,7 +298,6 @@ HBITMAP WR_EXPORT WRBitmapFromData( BYTE *data, bitmap_info *info )
     }
 
     return( bitmap_handle );
-
 }
 
 void WRGetBitmapInfoHeader( BITMAPINFOHEADER *bmih, BITMAP *bm )
@@ -316,11 +322,11 @@ int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
     int                 num;
     HDC                 hdc;
 
-    if( !argbvals ) {
+    if( argbvals == NULL ) {
         return( FALSE );
     }
 
-    pe = (PALETTEENTRY *)MemAlloc( upperlimit*sizeof(PALETTEENTRY) );
+    pe = (PALETTEENTRY *)MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
     if( pe == NULL ) {
         return( FALSE );
     }
@@ -329,7 +335,7 @@ int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
     num = GetSystemPaletteEntries( hdc, 0, upperlimit, pe );
     ReleaseDC( HWND_DESKTOP, hdc );
 
-    for( i=0; i < min(upperlimit, num); ++i ) {
+    for( i = 0; i < min( upperlimit, num ); i++ ) {
         argbvals[i].rgbBlue = pe[i].peBlue;
         argbvals[i].rgbGreen = pe[i].peGreen;
         argbvals[i].rgbRed = pe[i].peRed;
@@ -346,22 +352,22 @@ int WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
     RGBQUAD     *rgb_quad;
     int         ret;
 
-    if( !bmi || !bm ) {
+    if( bmi == NULL || bm == NULL ) {
         return( FALSE );
     }
 
-    rgb_quad = MemAlloc( RGBQ_SIZE(bm->bmPlanes) );
+    rgb_quad = MemAlloc( RGBQ_SIZE( bm->bmPlanes ) );
     if( rgb_quad == NULL ) {
         return( FALSE );
     }
 
-    WRGetBitmapInfoHeader( &(bmi->bmiHeader), bm );
-    ret = WRSetRGBValues( rgb_quad, (1 << (bm->bmPlanes)) );
+    WRGetBitmapInfoHeader( &bmi->bmiHeader, bm );
+    ret = WRSetRGBValues( rgb_quad, 1 << bm->bmPlanes );
     if( ret ) {
-        memcpy( bmi->bmiColors, rgb_quad, RGBQ_SIZE(bm->bmPlanes) );
+        memcpy( bmi->bmiColors, rgb_quad, RGBQ_SIZE( bm->bmPlanes ) );
     }
 
-    MemFree(rgb_quad);
+    MemFree( rgb_quad );
 
     return( ret );
 }
@@ -375,7 +381,7 @@ BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     if( hbitmap == (HBITMAP)NULL ) {
         return( NULL );
     }
-    GetObject( hbitmap, sizeof(BITMAP), &bm );
+    GetObject( hbitmap, sizeof( BITMAP ), &bm );
     size = DIB_INFO_SIZE( bm.bmPlanes );
     bmi = (BITMAPINFO *)MemAlloc( size );
     if( bmi != NULL ) {
@@ -400,7 +406,7 @@ int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
     int         num_lines;
     long        byte_count;
 
-    if( !data || !*data || !size ) {
+    if( data == NULL || *data == NULL || size == NULL ) {
         return( FALSE );
     }
 
@@ -412,7 +418,7 @@ int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
     start = 0;
     num_lines = SCANLINE_SIZE;
     one_scanline_size = BITS_TO_BYTES( bmi->bmiHeader.biWidth *
-                                           bmi->bmiHeader.biBitCount, 1 );
+                                       bmi->bmiHeader.biBitCount, 1 );
     scanline_count = bmi->bmiHeader.biHeight;
     chunk_size = one_scanline_size * num_lines;
     while( chunk_size > MAX_CHUNK ) {
@@ -421,24 +427,21 @@ int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
     }
 
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, hbitmap, start, num_lines, *data + *size,
-                   bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, hbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
         *size += chunk_size;
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, hbitmap, start, scanline_count, *data + *size,
-               bmi, DIB_RGB_COLORS );
-    *size += ( scanline_count * one_scanline_size );
+    GetDIBits( memdc, hbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
+    *size += scanline_count * one_scanline_size;
 
     DeleteDC( memdc );
 
-    return(TRUE);
+    return( TRUE );
 }
 
-int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data,
-                                   uint_32 *size )
+int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -446,7 +449,7 @@ int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data,
     long                number_of_bytes;
     HDC                 hdc;
 
-    if( hbitmap == (HBITMAP)NULL || !data || !size ) {
+    if( hbitmap == (HBITMAP)NULL || data == NULL || size == NULL ) {
         return( FALSE );
     }
 
@@ -455,28 +458,26 @@ int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data,
         return( FALSE );
     }
 
-    number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
-                                     bmi->bmiHeader.biWidth,
+    number_of_bytes = BITS_TO_BYTES( bmi->bmiHeader.biBitCount * bmi->bmiHeader.biWidth,
                                      bmi->bmiHeader.biHeight );
 
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
     hdc = GetDC( (HWND)NULL );
-    GetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, NULL,
-               bmi, DIB_RGB_COLORS );
+    GetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, NULL, bmi, DIB_RGB_COLORS );
     ReleaseDC( (HWND)NULL, hdc );
 
-    if( bmi->bmiHeader.biSizeImage == 0) {
+    if( bmi->bmiHeader.biSizeImage == 0 ) {
         bmi->bmiHeader.biSizeImage = number_of_bytes;
     } else {
         number_of_bytes = bmi->bmiHeader.biSizeImage;
     }
 
     bmfh.bfType = BITMAP_TYPE;
-    bmfh.bfSize = sizeof(BITMAPFILEHEADER) + bitmap_size + number_of_bytes;
+    bmfh.bfSize = sizeof( BITMAPFILEHEADER ) + bitmap_size + number_of_bytes;
     bmfh.bfReserved1 = 0;
     bmfh.bfReserved2 = 0;
-    bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + bitmap_size;
+    bmfh.bfOffBits = sizeof( BITMAPFILEHEADER ) + bitmap_size;
 
     // make sure the bitmap can actually be malloc'd!!
     if( bmfh.bfSize > INT_MAX ) {
@@ -491,21 +492,21 @@ int WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data,
     }
     *size = 0;
 
-    memcpy( *data + *size, &bmfh, sizeof(BITMAPFILEHEADER) );
-    *size += sizeof(BITMAPFILEHEADER);
+    memcpy( *data + *size, &bmfh, sizeof( BITMAPFILEHEADER ) );
+    *size += sizeof( BITMAPFILEHEADER );
 
     memcpy( *data + *size, bmi, bitmap_size );
     *size += bitmap_size;
 
     if( !WRWriteDataInPiecesData( bmi, data, size, hbitmap ) ) {
         MemFree( bmi );
-        return(FALSE);
+        return( FALSE );
     }
 
     MemFree( bmi );
 
     return( TRUE );
-} /* saveBitmapToData */
+}
 
 int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
 {
@@ -515,15 +516,15 @@ int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     int                 hsize;
     int                 is_core;
 
-    if( !data || !size ) {
+    if( data == NULL || size == NULL ) {
         return( FALSE );
     }
 
-    is_core = ( *((DWORD *)(*data)) == sizeof( BITMAPCOREHEADER ) );
+    is_core = (*(DWORD *)*data == sizeof( BITMAPCOREHEADER ));
 
-    hsize = sizeof(BITMAPFILEHEADER);
+    hsize = sizeof( BITMAPFILEHEADER );
     *data = WRMemRealloc( *data, *size + hsize );
-    if( !*data ) {
+    if( *data == NULL ) {
         return( FALSE );
     }
     memmove( *data + hsize, *data, *size );
@@ -536,10 +537,10 @@ int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     bmfh->bfOffBits = hsize;
 
     if( is_core ) {
-        bmci = (BITMAPCOREINFO *)( *data + hsize );
+        bmci = (BITMAPCOREINFO *)(*data + hsize);
         bmfh->bfOffBits += CORE_INFO_SIZE( bmci->bmciHeader.bcBitCount );
     } else {
-        bmi  = (BITMAPINFO *)( *data + hsize );
+        bmi = (BITMAPINFO *)(*data + hsize);
         bmfh->bfOffBits += DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
     }
 
@@ -549,8 +550,8 @@ int WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
 int WR_EXPORT WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
 {
     int         bfhsize;
-    if( data && size ) {
-        bfhsize = sizeof(BITMAPFILEHEADER);
+    if( data != NULL && size != NULL ) {
+        bfhsize = sizeof( BITMAPFILEHEADER );
         memmove( *data, *data + bfhsize, *size - bfhsize );
         *size -= bfhsize;
         return( TRUE );
@@ -577,4 +578,3 @@ WResID * WR_EXPORT WRRecallBitmapName( void )
 {
     return( WRCopyWResID( BitmapName ) );
 }
-

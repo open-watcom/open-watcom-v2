@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic routines handling interactions with various objects.
 *
 ****************************************************************************/
 
-
-/* OBJECT.C - generic routines to handle interactions with various objects */
 
 #include <string.h>
 #include <windows.h>
@@ -48,27 +45,25 @@
 #define EDIT_MENU_FLAGS (MENU_DELETE | MENU_COPY | MENU_CUT | MENU_PASTE | MENU_ALIGN)
 
 
-static OBJPTR  (*InternalCreate[])() = {
-    NULL                        /* O_NONE     */
-,   EAtomCreate                 /* O_EATOM    */
-,   OItemCreate                 /* O_ITEM     */
-,   CurrObjCreate               /* O_CURROBJ  */
-,   CurrItemCreate              /* O_CURRITEM */
-,   NULL                        /* O_UNUSED_4 */
-,   NULL                        /* O_UNUSED_5 */
-,   NULL                        /* O_UNUSED_6 */
+static OBJPTR  (*InternalCreate[])(OBJPTR, RECT *, OBJPTR) = {
+    NULL,                       /* O_NONE     */
+    EAtomCreate,                /* O_EATOM    */
+    OItemCreate,                /* O_ITEM     */
+    CurrObjCreate,              /* O_CURROBJ  */
+    CurrItemCreate,             /* O_CURRITEM */
+    NULL,                       /* O_UNUSED_4 */
+    NULL,                       /* O_UNUSED_5 */
+    NULL                        /* O_UNUSED_6 */
 };
 
 void WINEXP AddFMEditMenus( HMENU submenu, int bitmap )
 /*****************************************************/
-
-/* insert the editor specific things into the edit menu */
-
-  {
+{
+    /* insert the editor specific things into the edit menu */
     HBITMAP     hbitmap;
     HMENU       alignmenu;
 
-    InsertMenu( submenu, -1, MF_BYPOSITION | MF_SEPARATOR, NULL, NULL );
+    InsertMenu( submenu, -1, MF_BYPOSITION | MF_SEPARATOR, 0, NULL );
     if( bitmap & MENU_CUT ) {
         InsertMenu( submenu, -1, MF_BYPOSITION | MF_STRING, IDM_CUTOBJECT,
                     "Cu&t\tShift+Del" );
@@ -89,54 +84,51 @@ void WINEXP AddFMEditMenus( HMENU submenu, int bitmap )
     if( bitmap & MENU_ALIGN ) {
         alignmenu = CreateMenu();
         if( bitmap & EDIT_MENU_FLAGS != MENU_ALIGN ) {
-            AppendMenu( submenu, MF_SEPARATOR, NULL, NULL );
+            AppendMenu( submenu, MF_SEPARATOR, 0, NULL );
         }
         AppendMenu( submenu, MF_POPUP, (UINT)alignmenu, "Group &Align" );
         hbitmap = LoadBitmap( GetInst(), "LEFT" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMLEFT, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, NULL, NULL );
+        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "HCENTRE" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMHCENTRE, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, NULL, NULL );
+        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "RIGHT" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMRIGHT, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, NULL, NULL );
+        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "TOP" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMTOP, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, NULL, NULL );
+        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "VCENTRE" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMVCENTRE, (LPSTR) hbitmap );
-        AppendMenu( alignmenu, MF_SEPARATOR, NULL, NULL );
+        AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
         hbitmap = LoadBitmap( GetInst(), "BOTTOM" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMBOTTOM, (LPSTR) hbitmap );
     }
-  }
+}
 
 
-static void FixMenuName( char * name, int len )
-/*********************************************/
-
-/* remove the '&' character from the menu name */
-
-  {
-    char *  mark;
+static void FixMenuName( char *name, int len )
+/********************************************/
+{
+    /* remove the '&' character from the menu name */
+    char *mark;
 
     mark = strchr( name, '&' );
     if( mark == NULL ) {
         return;
     }
-    memmove( mark, mark+1, len - (mark - name) );
-    name[len-1] = '\0';
-  }
+    memmove( mark, mark + 1, len - (mark - name) );
+    name[len - 1] = '\0';
+}
 
 
 extern void InitEditMenu( HWND wnd, int bitmap )
 /**********************************************/
-
-  {
+{
     HMENU       submenu;
     int         nummenus;
-    char        menuname[MAX_MENU+1];
+    char        menuname[MAX_MENU + 1];
     int         i;
     BOOL        editfound;
     int         len;
@@ -151,10 +143,9 @@ extern void InitEditMenu( HWND wnd, int bitmap )
         if( bitmap & EDIT_MENU_FLAGS ) {
             editfound = FALSE;
             for( i = 0; i < nummenus; ++i ) {
-                len = GetMenuString( mainmenu, i, menuname, MAX_MENU,
-                                     MF_BYPOSITION );
+                len = GetMenuString( mainmenu, i, menuname, MAX_MENU, MF_BYPOSITION );
                 FixMenuName( menuname, len );
-                if( !editfound && (stricmp( menuname, "EDIT" ) == 0)  ) {
+                if( !editfound && stricmp( menuname, "EDIT" ) == 0 ) {
                     editfound = TRUE;
                     AddFMEditMenus( GetSubMenu( mainmenu, i ), bitmap );
                 }
@@ -170,241 +161,198 @@ extern void InitEditMenu( HWND wnd, int bitmap )
         if( bitmap & MENU_SETUP ) {
             submenu = LoadMenu( GetInst(), "SetupMenu" );
             InsertMenu( mainmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP,
-                    (UINT) submenu, "&Setup" );
+                        (UINT) submenu, "&Setup" );
             DrawMenuBar( GetAppWnd() );
         }
     }
-  }
+}
 
 
 extern void InitializeObjects( CREATE_TABLE objtable )
 /****************************************************/
-
-/* initialize the application specific objects */
-
-  {
+{
+    /* initialize the application specific objects */
     SetObjects( objtable );
     CreateMainObject();
-  }
+}
 
 
-OBJPTR WINEXP Create( OBJ_ID id, OBJPTR parent, RECT * rect, OBJPTR handle )
-/**************************************************************************/
-
-/*  Create an object of the desired type at the passed location.  If
- *  there is a parent, remember it
- */
-
-  {
-    CREATE_TABLE  * appobjs;
+OBJPTR WINEXP Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
+/*************************************************************************/
+{
+    /*  Create an object of the desired type at the passed location.  If
+     *  there is a parent, remember it
+     */
+    CREATE_TABLE    *appobjs;
 
     appobjs = GetObjects();
     if( id < USER_OBJ ) {
         return( InternalCreate[id]( parent, rect, handle ) );
     } else {
-        return( (*appobjs)[id-USER_OBJ]( parent, rect, handle ) );
+        return( (*appobjs)[id - USER_OBJ]( parent, rect, handle ) );
     }
-  }
+}
 
 
-BOOL WINEXP Move( OBJECT * obj, POINT * p, BOOL user_action )
-/***********************************************************/
-
-/* perform a move operation on the object */
-
-  {
+BOOL WINEXP Move( OBJECT *obj, POINT *p, BOOL user_action )
+/*********************************************************/
+{
+    /* perform a move operation on the object */
     return( (*obj)( MOVE, obj, p, &user_action ) );
-  }
+}
 
 
-BOOL WINEXP Location( OBJECT * obj, RECT * rect )
-/***********************************************/
-
-/* return the location of the object */
-
-  {
-    return( (*obj)( LOCATE, obj, rect, NULL ) );
-  }
-
-
-BOOL WINEXP Resize( OBJECT * obj, RECT * r, BOOL user_action )
-/************************************************************/
-
-/* perform a resize operation on the object */
-
-  {
-    return( (*obj)( RESIZE, obj, r, &user_action ) );
-  }
-
-
-BOOL WINEXP Register( OBJECT * obj )
-/**********************************/
-
-/* perform a register operation on the object */
-
-  {
-    return( (*obj)( REGISTER, obj, NULL, NULL ) );
-  }
-
-
-BOOL WINEXP Recreate( OBJECT * obj, POINT * pt )
-/**********************************************/
-
-/* perform a register operation on the object */
-
-  {
-    return( (*obj)( RECREATE, obj, pt, NULL ) );
-  }
-
-
-BOOL WINEXP Draw( OBJECT * obj, RECT * rect, HDC hdc )
-/****************************************************/
-
-/* perform a draw operation on the object */
-
-  {
-    return( (*obj)( DRAW, obj, rect, &hdc ) );
-  }
-
-
-BOOL WINEXP Destroy( OBJECT * obj, BOOL first )
+BOOL WINEXP Location( OBJECT *obj, RECT *rect )
 /*********************************************/
+{
+    /* return the location of the object */
+    return( (*obj)( LOCATE, obj, rect, NULL ) );
+}
 
-/* destroy the object */
 
-  {
+BOOL WINEXP Resize( OBJECT *obj, RECT *r, BOOL user_action )
+/**********************************************************/
+{
+    /* perform a resize operation on the object */
+    return( (*obj)( RESIZE, obj, r, &user_action ) );
+}
+
+
+BOOL WINEXP Register( OBJECT *obj )
+/*********************************/
+{
+    /* perform a register operation on the object */
+    return( (*obj)( REGISTER, obj, NULL, NULL ) );
+}
+
+
+BOOL WINEXP Recreate( OBJECT *obj, POINT *pt )
+/********************************************/
+{
+    /* perform a register operation on the object */
+    return( (*obj)( RECREATE, obj, pt, NULL ) );
+}
+
+
+BOOL WINEXP Draw( OBJECT *obj, RECT *rect, HDC hdc )
+/**************************************************/
+{
+    /* perform a draw operation on the object */
+    return( (*obj)( DRAW, obj, rect, &hdc ) );
+}
+
+
+BOOL WINEXP Destroy( OBJECT *obj, BOOL first )
+/********************************************/
+{
+    /* destroy the object */
     ObjectDestroyed( obj );
     return( (*obj)( DESTROY, obj, &first, NULL ) );
-  }
+}
 
-BOOL WINEXP Notify( OBJECT * obj, NOTE_ID n, void * p )
-/******************************************************/
-
-/* notify an object about it's new parent */
-
-  {
+BOOL WINEXP Notify( OBJECT *obj, NOTE_ID n, void *p )
+/***************************************************/
+{
+    /* notify an object about it's new parent */
     return( (*obj)( NOTIFY, obj, &n, p ) );
-  }
+}
 
 
-BOOL WINEXP Define( OBJECT * obj, POINT * pt, void * init )
-/*********************************************************/
-
-/* define the characeristics of the object */
-
-  {
+BOOL WINEXP Define( OBJECT *obj, POINT *pt, void *init )
+/******************************************************/
+{
+    /* define the characeristics of the object */
     SetState( EDITING );
     SetBaseState( EDITING );
     return( (*obj)( DEFINE, obj, pt, init ) );
-  }
+}
 
 
 
-BOOL WINEXP FindObjList( OBJECT * obj, SUBOBJ_REQUEST * req, LIST ** lst )
-/**************************************************************************/
-
-/*  Find the list of objects within the parent object contained within the
- *  passed rect.
- */
-
-  {
+BOOL WINEXP FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
+/*********************************************************************/
+{
+    /*  Find the list of objects within the parent object contained within the
+     *  passed rect.
+     */
     return( (*obj)( FIND_SUBOBJECTS, obj, req, lst ) );
-  }
+}
 
 
-BOOL WINEXP Forward( OBJECT * obj, ACTION id, void * p1, void * p2 )
-/******************************************************************/
-
-/* foward the specified action to the specified object */
-
-  {
+BOOL WINEXP Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
+/***************************************************************/
+{
+    /* foward the specified action to the specified object */
     return( (*obj)( id, obj, p1, p2 ) );
-  }
+}
 
 
-BOOL WINEXP ValidateAction( OBJECT * obj, ACTION id, void * p2 )
-/**************************************************************/
-
-/* find out if action id is valid for object obj */
-
-  {
+BOOL WINEXP ValidateAction( OBJECT *obj, ACTION id, void *p2 )
+/************************************************************/
+{
+    /* find out if action id is valid for object obj */
     return( (*obj)( VALIDATE_ACTION, obj, &id, p2 ) );
-  }
+}
 
 extern BOOL WINEXP AddObject( OBJPTR obj, OBJPTR member )
 /*******************************************************/
-
-/*  Update the position of the passed member with in the given object. */
-
-  {
+{
+    /*  Update the position of the passed member with in the given object. */
     BOOL ret;
 
     ret = Forward( obj, ADD_SUBOBJECT, member, NULL );
     UpdateScroll();
     return( ret );
-  }
+}
 
 
 extern BOOL WINEXP RemoveObject( OBJPTR obj, OBJPTR member )
 /**********************************************************/
-
-/*  Update the position of the passed member with in the given object. */
-
-  {
+{
+    /*  Update the position of the passed member with in the given object. */
     BOOL ret;
 
     ret = Forward( obj, REMOVE_SUBOBJECT, member, NULL );
     UpdateScroll();
     return( ret );
-  }
+}
 
-extern BOOL WINEXP GetResizeInfo( OBJECT * obj, RESIZE_ID *info )
-/***************************************************************/
-
-/* Get information about what types of resizing are valid for the object */
-
-  {
+extern BOOL WINEXP GetResizeInfo( OBJECT *obj, RESIZE_ID *info )
+/**************************************************************/
+{
+    /* Get information about what types of resizing are valid for the object */
     return( (*obj)( RESIZE_INFO, obj, info, NULL ) );
-  }
+}
 
-extern BOOL WINEXP CutObject( OBJECT * obj, OBJPTR * copy )
-/*********************************************************/
-
-/* Ask the application to cut obj and supply a copy of obj at address copy */
-
-  {
+extern BOOL WINEXP CutObject( OBJECT *obj, OBJPTR *copy )
+/*******************************************************/
+{
+    /* Ask the application to cut obj and supply a copy of obj at address copy */
     return( (*obj)( CUT, obj, copy, NULL ) );
-  }
+}
 
-extern BOOL WINEXP CopyObject( OBJECT * obj, OBJPTR * copy, OBJPTR handle )
-/*************************************************************************/
-
-/* Ask the application to supply a copy of obj at address copy */
-
-  {
+extern BOOL WINEXP CopyObject( OBJECT *obj, OBJPTR *copy, OBJPTR handle )
+/***********************************************************************/
+{
+    /* Ask the application to supply a copy of obj at address copy */
     return( (*obj)( COPY, obj, copy, handle ) );
-  }
+}
 
-extern BOOL WINEXP PasteObject( OBJECT * obj, OBJPTR parent, POINT pt )
-/*********************************************************************/
-
-/* Paste object obj with parent parent */
-
-  {
+extern BOOL WINEXP PasteObject( OBJECT *obj, OBJPTR parent, POINT pt )
+/********************************************************************/
+{
+    /* Paste object obj with parent parent */
     return( (*obj)( PASTE, obj, parent, &pt ) );
-  }
+}
 
-OBJPTR WINEXP FindObject( SUBOBJ_REQUEST * req )
-/**********************************************/
-
-/*  Find an object at the specified point.  This is done by asking for the
- *  component item in the highest level object.
- */
-
-
-  {
-    OBJPTR         obj;
-    LIST *         subobj;
+OBJPTR WINEXP FindObject( SUBOBJ_REQUEST *req )
+/*********************************************/
+{
+    /*  Find an object at the specified point.  This is done by asking for the
+     *  component item in the highest level object.
+     */
+    OBJPTR  obj;
+    LIST    *subobj;
 
     obj = GetMainObject();
     for( ;; ) {
@@ -418,37 +366,35 @@ OBJPTR WINEXP FindObject( SUBOBJ_REQUEST * req )
         ListFree( subobj );
     }
     return( obj );
-  }
+}
 
-BOOL WINEXP FindObjectsPt( POINT pt, LIST ** list )
-/*************************************************/
+BOOL WINEXP FindObjectsPt( POINT pt, LIST **list )
+/************************************************/
 {
-    OBJECT *    obj;
+    OBJECT *obj;
 
     obj = GetMainObject();
     *list = NULL;
     return( (*obj)( FIND_OBJECTS_PT, obj, &pt, list ) );
-} /* FindObjectsPt */
+}
 
 OBJPTR WINEXP FindOneObjPt( POINT pt )
 /************************************/
 {
-    LIST *  list;
+    LIST *list;
     if( FindObjectsPt( pt, &list ) ) {
         return( ListElement( list ) );
     } else {
         return( NULL );
     }
-} /* FindOneObjPt */
+}
 
-OBJPTR WINEXP GetCurrObject()
-/***************************/
-
-/* return pointer to the current object */
-
-  {
-    OBJECT * obj;
-    OBJPTR   userobj;
+OBJPTR WINEXP GetCurrObject( void )
+/*********************************/
+{
+    /* return pointer to the current object */
+    OBJECT  *obj;
+    OBJPTR  userobj;
 
     obj = GetPrimaryObject();
     userobj = NULL;
@@ -456,87 +402,77 @@ OBJPTR WINEXP GetCurrObject()
         (*obj)(GET_OBJPTR, obj, &userobj, NULL );
     }
     return( userobj );
-  }
+}
 
-LIST * WINEXP GetCurrObjectList()
-/*******************************/
-
-/* return pointer to the current object */
-
-  {
-    OBJECT * currobj;
-    OBJPTR   userobj;
-    LIST *   objlist;
+LIST * WINEXP GetCurrObjectList( void )
+/*************************************/
+{
+    /* return pointer to the current object */
+    OBJECT  *currobj;
+    OBJPTR  userobj;
+    LIST    *objlist;
 
     objlist = NULL;
     for( currobj = GetECurrObject(); currobj != NULL;
          currobj = GetNextECurrObject( currobj ) ) {
         userobj = NULL;
-        (*currobj)(GET_OBJPTR, currobj, &userobj, NULL );
+        (*currobj)( GET_OBJPTR, currobj, &userobj, NULL );
         if( userobj != NULL ) {
             ListAddElt( &objlist, userobj );
         }
     }
     return( objlist );
-  }
+}
 
 
-extern CURROBJPTR GetECurrObject()
-/********************************/
-
-/* return pointer to the current object */
-
-  {
-    OBJPTR   obj;
-    OBJECT * currobj;
+extern CURROBJPTR GetECurrObject( void )
+/**************************************/
+{
+    /* return pointer to the current object */
+    OBJPTR  obj;
+    OBJECT  *currobj;
 
     currobj = GetCurrObj();
-    (*currobj)(GET_OBJECT, currobj, &obj, NULL );
+    (*currobj)( GET_OBJECT, currobj, &obj, NULL );
     return( obj );
-  }
+}
 
 
 extern CURROBJPTR GetNextECurrObject( CURROBJPTR obj )
 /****************************************************/
-
-/* return pointer to the next current object in the list, after obj */
-
-  {
-    CURROBJPTR newobj;
-    OBJECT *   currobj;
+{
+    /* return pointer to the next current object in the list, after obj */
+    CURROBJPTR  newobj;
+    OBJECT      *currobj;
 
     currobj = GetCurrObj();
-    (*currobj)(GET_OBJECT, currobj, &newobj, obj );
+    (*currobj)( GET_OBJECT, currobj, &newobj, obj );
     return( newobj );
-  }
+}
 
 extern void SetCurrObject( OBJPTR obj )
 /*************************************/
-
-/* make obj the only current object */
-
-  {
-    BOOL     reset;
-    OBJECT * currobj;
+{
+    /* make obj the only current object */
+    BOOL    reset;
+    OBJECT  *currobj;
 
     reset = TRUE;
     currobj = GetCurrObj();
-    (*currobj)(ADD_OBJECT, currobj, obj, &reset );
-  }
+    (*currobj)( ADD_OBJECT, currobj, obj, &reset );
+}
 
 extern void AddCurrObject( OBJPTR obj )
 /*************************************/
-
-/* add obj to the list of current objects */
-
-  {
+{
+    /* add obj to the list of current objects */
     BOOL        reset;
-    OBJECT *    currobj;
+    OBJECT      *currobj;
     CURROBJPTR  main_currobj;
 
     reset = FALSE;
     currobj = GetCurrObj();
-    (*currobj)(ADD_OBJECT, currobj, obj, &reset );
+    (*currobj)( ADD_OBJECT, currobj, obj, &reset );
 
     /* if the main object is in the list, remove it */
     /* so the main object can't be part of a multiple selection */
@@ -544,106 +480,95 @@ extern void AddCurrObject( OBJPTR obj )
     if( main_currobj != NULL ) {
         DeleteCurrObject( main_currobj );
     }
-  }
+}
 
 extern void DeleteCurrObject( OBJPTR obj )
 /****************************************/
-
-/* remove obj from the list of current objects */
-
-  {
-    OBJECT * currobj;
-    BOOL     curritem;
+{
+    /* remove obj from the list of current objects */
+    OBJECT  *currobj;
+    BOOL    curritem;
 
     curritem = TRUE;
     currobj = GetCurrObj();
-    (*currobj)(DELETE_OBJECT, currobj, obj, &curritem );
-  }
+    (*currobj)( DELETE_OBJECT, currobj, obj, &curritem );
+}
 
 extern void DeleteCurrObjptr( OBJPTR obj )
 /****************************************/
-
-/* Delete the current object associated with obj from the list of current
- * objects
- */
-
-  {
-    OBJECT * currobj;
-    BOOL     curritem;
+{
+    /* Delete the current object associated with obj from the list of current
+     * objects
+     */
+    OBJECT  *currobj;
+    BOOL    curritem;
 
     curritem = FALSE;
     currobj = GetCurrObj();
     if( currobj != NULL ) {
-        (*currobj)(DELETE_OBJECT, currobj, obj, &curritem );
+        (*currobj)( DELETE_OBJECT, currobj, obj, &curritem );
     }
-  }
+}
 
-extern CURROBJPTR GetPrimaryObject()
-/**********************************/
-
-/* return a pointer to the primary object */
-
-  {
-    CURROBJPTR primary;
-    OBJECT *   currobj;
-    BOOL       flag;
+extern CURROBJPTR GetPrimaryObject( void )
+/****************************************/
+{
+    /* return a pointer to the primary object */
+    CURROBJPTR  primary;
+    OBJECT      *currobj;
+    BOOL        flag;
 
     currobj = GetCurrObj();
     flag = TRUE;
-    (*currobj)(GET_PRIMARY, currobj, &primary, &flag );
+    (*currobj)( GET_PRIMARY, currobj, &primary, &flag );
     return( primary );
-  }
+}
 
 extern void SetPrimaryObject( CURROBJPTR obj )
 /********************************************/
-
-/* return a pointer to the primary object */
-
-  {
-    OBJECT *   currobj;
-    BOOL       flag;
+{
+    /* return a pointer to the primary object */
+    OBJECT  *currobj;
+    BOOL    flag;
 
     currobj = GetCurrObj();
 
     flag = FALSE;
-    (*currobj)(GET_PRIMARY, currobj, &obj, &flag );
-  }
+    (*currobj)( GET_PRIMARY, currobj, &obj, &flag );
+}
 
 extern void StartCurrObjMod( void )
 /*********************************/
 {
-    OBJPTR *    currobj;
+    OBJPTR      currobj;
 
     currobj = GetCurrObj();
     Notify( currobj, CURR_OBJ_MOD_BEGIN, NULL );
-} /* StartCurrObjMod */
+}
 
 extern void EndCurrObjMod( void )
 /*******************************/
 {
-    OBJPTR *    currobj;
+    OBJPTR      currobj;
 
     currobj = GetCurrObj();
     Notify( currobj, CURR_OBJ_MOD_END, NULL );
-} /* EndCurrObjMod */
+}
 
-extern OBJPTR GetObjptr( OBJECT * obj )
-/*************************************/
-
-/* Get a pointer to the object associated with the current object obj */
-
-  {
+extern OBJPTR GetObjptr( OBJECT *obj )
+/************************************/
+{
+    /* Get a pointer to the object associated with the current object obj */
     OBJPTR newobj;
 
     newobj = NULL;
-    (*obj)(GET_OBJPTR, obj, &newobj, NULL );
+    (*obj)( GET_OBJPTR, obj, &newobj, NULL );
     return( newobj );
-  }
+}
 
 extern CURROBJPTR GetCurrObjptr( OBJPTR obj )
 /*******************************************/
-
-  {
+{
     CURROBJPTR currobj;
 
     for( currobj = GetECurrObject(); currobj != NULL;
@@ -653,23 +578,20 @@ extern CURROBJPTR GetCurrObjptr( OBJPTR obj )
         }
     }
     return( NULL );
-  }
+}
 
-extern BOOL DeleteCurrItem( OBJECT * obj )
-/****************************************/
-
-/* Delete the current item obj.  That is, destroy the current object window
- * but don't destroy the object associated with that current object
- */
-
-  {
-    return( (*obj)(DELETE_OBJECT, obj, NULL, NULL ));
-  }
+extern BOOL DeleteCurrItem( OBJECT *obj )
+/***************************************/
+{
+    /* Delete the current item obj.  That is, destroy the current object window
+     * but don't destroy the object associated with that current object
+     */
+    return( (*obj)( DELETE_OBJECT, obj, NULL, NULL ) );
+}
 
 static BOOL CurrObjExist( CURROBJPTR findobj )
 /********************************************/
-
-  {
+{
     CURROBJPTR currobj;
 
     currobj = GetECurrObject();
@@ -680,26 +602,24 @@ static BOOL CurrObjExist( CURROBJPTR findobj )
         currobj = GetNextECurrObject( currobj );
     }
     return( FALSE );
-  }
+}
 
-BOOL WINEXP ExecuteCurrObject( ACTION id, void * p1, void * p2 )
-/***************************************************************/
-
-/* Perform action id on each of the objects in the current object list.
- * Always ensure that each object about to have the action performed
- * on it is still valid.  Remember that the action can be destroy,
- * which will make that object no longer in the current object list,
- * and can also affect other objects in that list (ie it's children).
- */
-
-  {
+BOOL WINEXP ExecuteCurrObject( ACTION id, void *p1, void *p2 )
+/************************************************************/
+{
+    /* Perform action id on each of the objects in the current object list.
+     * Always ensure that each object about to have the action performed
+     * on it is still valid.  Remember that the action can be destroy,
+     * which will make that object no longer in the current object list,
+     * and can also affect other objects in that list (ie it's children).
+     */
     CURROBJPTR currobj;
     CURROBJPTR nextobj;
 
     currobj = GetECurrObject();
     while( currobj != NULL ) {
         nextobj = GetNextECurrObject( currobj );
-        if( ( nextobj == NULL ) && ( !CurrObjExist( currobj ) ) ) {
+        if( nextobj == NULL && !CurrObjExist( currobj ) ) {
             currobj = GetECurrObject();
             nextobj = GetNextECurrObject( currobj );
         }
@@ -709,14 +629,12 @@ BOOL WINEXP ExecuteCurrObject( ACTION id, void * p1, void * p2 )
         currobj = nextobj;
     }
     return( TRUE );
-  }
+}
 
 extern void ObjMark( CURROBJPTR obj )
 /***********************************/
-
-/* invalidate the objects location for painting */
-
-  {
+{
+    /* invalidate the objects location for painting */
     RECT   rect;
     HRGN   little;
     HRGN   large;
@@ -729,20 +647,18 @@ extern void ObjMark( CURROBJPTR obj )
     GetOffset( &offset );
     OffsetRect( &rect, -offset.x, -offset.y );
     little = CreateRectRgn( rect.left, rect.top, rect.right, rect.bottom );
-    InflateRect( &rect, SQUAREWIDTH/2, SQUAREWIDTH/2 );
+    InflateRect( &rect, SQUAREWIDTH / 2, SQUAREWIDTH / 2 );
     large = CreateRectRgn( rect.left, rect.top, rect.right, rect.bottom );
     CombineRgn( large, large, little, RGN_DIFF );
     InvalidateRgn( GetAppWnd(), large, TRUE );
     DeleteObject( large );
     DeleteObject( little );
-  }
+}
 
 void WINEXP ResetCurrObject( BOOL draw )
 /**************************************/
-
-/* reset the current object */
-
-  {
+{
+    /* reset the current object */
     CURROBJPTR currobj;
     CURROBJPTR nextobj;
 
@@ -760,128 +676,109 @@ void WINEXP ResetCurrObject( BOOL draw )
     if( draw ) {
         UpdateWindow( GetAppWnd() );
     }
-  }
+}
 
-extern void MarkCurrObject()
-/**************************/
-
-/* mark the current object */
-
- {
+extern void MarkCurrObject( void )
+/********************************/
+{
+    /* mark the current object */
     CURROBJPTR currobj;
 
     currobj = GetPrimaryObject();
     if( currobj != NULL ) {
         ObjMark( currobj );
     }
-  }
+}
 
 void WINEXP ObjectDestroyed( OBJPTR obj )
 /***************************************/
-
-  {
+{
     DeleteCurrObjptr( obj );
-  }
+}
 
-BOOL WINEXP GetObjectParent( OBJECT * obj, OBJPTR * parent )
-/**********************************************************/
+BOOL WINEXP GetObjectParent( OBJECT *obj, OBJPTR *parent )
+/********************************************************/
+{
+    return( (*obj)( GET_PARENT, obj, parent, NULL ) );
+}
 
-  {
-    return( (*obj)(GET_PARENT, obj, parent, NULL ));
-  }
+extern void UndoMove( OBJECT *obj )
+/*********************************/
+{
+    (*obj)( UNDO_MOVE, obj, NULL, NULL );
+}
 
-extern void UndoMove( OBJECT * obj )
-/**********************************/
+extern void RemoveFromParent( OBJECT *obj )
+/*****************************************/
+{
+    (*obj)( REMOVE_FROM_PARENT, obj, NULL, NULL );
+}
 
-  {
-    (*obj)(UNDO_MOVE, obj, NULL, NULL );
-  }
+BOOL WINEXP GetPriority( OBJECT *obj, int *pri )
+/**********************************************/
+{
+    return( (*obj)( GET_PRIORITY, obj, pri, NULL ) );
+}
 
-extern void RemoveFromParent( OBJECT * obj )
-/******************************************/
-
-  {
-    (*obj)(REMOVE_FROM_PARENT, obj, NULL, NULL );
-  }
-
-BOOL WINEXP GetPriority( OBJECT * obj, int * pri )
-/************************************************/
-
-  {
-    return( (*obj)(GET_PRIORITY, obj, pri, NULL ));
-  }
-
-BOOL WINEXP ResizeIncrements( OBJECT * obj, POINT * pt )
-/******************************************************/
-
-  {
+BOOL WINEXP ResizeIncrements( OBJECT *obj, POINT *pt )
+/****************************************************/
+{
     if( ValidateAction( obj,  GET_RESIZE_INC, pt ) ) {
-        return( (*obj)( GET_RESIZE_INC, obj, pt, NULL ));
+        return( (*obj)( GET_RESIZE_INC, obj, pt, NULL ) );
     }
     return( FALSE );
-  }
+}
 
 
 void WINEXP MakeObjectCurrent( OBJPTR obj )
 /*****************************************/
-
-/* make the passes object current */
-
- {
-   ResetCurrObject( FALSE );
-   SetCurrObject( obj );
- }
+{
+    /* make the passes object current */
+    ResetCurrObject( FALSE );
+    SetCurrObject( obj );
+}
 
 
 void WINEXP AddCurrentObject( OBJPTR obj )
 /****************************************/
+{
+    /* make the passes object current */
+    AddCurrObject( obj );
+}
 
-/* make the passes object current */
-
- {
-   AddCurrObject( obj );
- }
-
-extern BOOL GetAnchor( OBJECT * obj, POINT * p )
-/**********************************************/
-
-
-  {
-    return( (*obj)(GET_ANCHOR, obj, p, NULL ));
-  }
+extern BOOL GetAnchor( OBJECT *obj, POINT *p )
+/********************************************/
+{
+    return( (*obj)( GET_ANCHOR, obj, p, NULL ) );
+}
 
 
-extern BOOL RequestScrollRect( RECT * r )
-/***************************************/
-
-
-  {
-    OBJECT * obj;
+extern BOOL RequestScrollRect( RECT *r )
+/**************************************/
+{
+    OBJECT  *obj;
 
     obj = GetMainObject();
-    return( (*obj)(GET_SCROLL_RECT, obj, r, NULL ));
-  }
+    return( (*obj)( GET_SCROLL_RECT, obj, r, NULL ) );
+}
 
 
-extern BOOL IsMarkValid( OBJECT * obj )
-/*************************************/
-
-
-  {
+extern BOOL IsMarkValid( OBJECT *obj )
+/************************************/
+{
     BOOL     isvalid;
 
     isvalid = TRUE;
     if( ValidateAction( obj,  IS_MARK_VALID, NULL ) ) {
         (*obj)( IS_MARK_VALID, obj, &isvalid, NULL );
-
     }
     return( isvalid );
-  }
+}
 
 extern void WINEXP NewOffset( POINT point )
 /*****************************************/
-// Set the offset to 'point' and reset the scrolling stuff
 {
+    // Set the offset to 'point' and reset the scrolling stuff
     SetOffset( point );
     UpdateScroll();
     InvalidateRect( GetAppWnd(), NULL, TRUE );

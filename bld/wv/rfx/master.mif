@@ -1,0 +1,62 @@
+#
+# Open Watcom Debugger makefile (RFX)
+#
+
+proj_name = rfx
+
+dig_os = $(host_os)
+!ifeq host_cpu 386
+!ifeq host_os os2
+dig_os = os2v2
+!endif
+!endif
+
+.EXTENSIONS : .str
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include $(dig_dir)/mif/trpcli.mif
+
+inc_dirs = -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h"
+
+extra_c_flags = -s -DBUILD_RFX
+
+extra_l_flags = op map
+
+objs = rfx.obj        &
+       rfxacc.obj     &
+       stubs.obj      &
+       remmisc.obj    &
+       remfile.obj    &
+       remenv.obj     &
+       doserr.obj     &
+       dbgfile.obj    &
+       local$(host_os).obj &
+       $(trap_objs)
+
+!ifeq dig_os os2v2
+objs += $(host_os)2flio.obj &
+!else
+objs += $(host_os)filio.obj &
+!endif
+
+!ifeq host_os dos
+objs += inthdlrs.obj
+!endif
+
+rfx.exe : litdef.gh $(objs)
+        $(linker) $(lflags) name $^@ file { $(objs) }
+
+.str: $(wv_dir)/h
+
+.c: ../$(host_os)$(host_cpu);..;$(wv_dir)/$(host_os)/c;$(wv_dir)/c;$(dig_srcs);../../win/c
+
+.asm: ../$(host_os)i86
+
+./mkstr.exe : mkstr.c wd.str wdengin.str menu.str $(dig_dir)/h/mad.str
+        $(bld_cl) -I"$(wv_dir)/h" -I"$(dig_dir)/h" $(wcl_util_opts) $[@
+
+litdef.gh : ./mkstr.exe
+        $[@ $^@

@@ -1,0 +1,20 @@
+name=FoundHelpObs
+dynamic_text=found_help_1,\
+        //1"@ has found Obsolete Win32 SDK Help Files"\
+        //2"@ has found Obsolete Win32 SDK Help Files"\
+        //0
+dynamic_text=found_help_2,\
+        //1"Newer versions of these helpfiles are included in %Appname%."\
+        //2"Newer versions of these helpfiles are included in %Appname%."\
+        //0
+static_text=\
+        //1"@ can remove them, freeing up considerable disk space."\
+        //2"@ はバージョン 2.1を削除して, かなりのディスク容量を解放できます."\
+        //0
+static_text=
+static_text=\
+        //1"Do you want @ to remove these help files for you now?"\
+        //2"Do you want @ to remove these help files for you now?"\
+        //0
+static_text=
+include=yesno.dlg

@@ -1,6 +1,12 @@
-proj_name = dwarf
+proj_name = dwarfw
+
+!ifndef dwarfw_autodepends
+dwarfw_autodepends = .AUTODEPEND
+!endif
+
 !include cproj.mif
 !include defrule.mif
+!include deftarg.mif
 
 objs = &
 dwabbrev.obj &
@@ -22,45 +28,26 @@ dwsym.obj &
 dwtype.obj &
 dwutils.obj
 
-!ifeq model s
-!ifeq host_cpu 386
-mem_model_386 = -ms
-!endif
-!endif
-
-!ifeq host_cpu 386
-extra_c_flags += -fpc
-!endif
-
-inc_dirs = $(watcom_dir)\h
-
-.BEFORE
-    @set include=$(inc_path)
-
 .c : $(dwarf_dir)/dw/c
 
-dw$(model).lib : dwabenum.i $(objs)
-        @%create tmp.lbc
-        @for %i in ($(objs)) do @%append tmp.lbc +%i
-        $(librarian) -n -b -q $^@ @tmp.lbc
-        wtouch compile.tim
+inc_dirs = -I. -I"../h"
 
-dwabenum.i dwabinfo.i : dwmakeab.exe
+dw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
+        $(librarian) $(libflags) $(objs)
+
+!ifndef bootstrap
+extra_c_flags = -s
+!endif
+
+extra_l_flags = op map
+
+./dwmakeab.exe : dwmakeab.c
+        $(bld_cl) $(wcl_util_opts) $[@
+
+dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
         $[@
 
-dwmakeab.tbj : dwmakeab.c
-        $(bld_cc) -d1 -fo=dwmakeab.tbj dwmakeab.c
+dwabbrev.obj : dwabbrev.c dwabinfo.gh
 
-dwutils.tbj : dwutils.c
-        $(bld_cc) -d1 -fo=dwutils.tbj  dwutils.c
-
-dwmakeab.exe : dwmakeab.tbj dwutils.tbj
-        $(bld_link) op quiet,map debug all file dwmakeab.tbj, dwutils.tbj
-
-dwabbrev.obj : dwabbrev.c dwabinfo.i
-
-testcli.exe : testcli.obj testtest.obj testdump.obj dw$(model).lib
-        $(link) $(lflags) op quiet,map file testcli,testtest,testdump lib dw$(model).lib
-
-clean : .symbolic
-        @rm -f *.obj *.exe *.map *.lib *.lbc *.err *.i *.tbj *.tim
+testcli.exe : testcli.obj testtest.obj testdump.obj dw.lib
+        $(linker) $(lflags) file testcli.obj,testtest.obj,testdump.obj lib dw.lib

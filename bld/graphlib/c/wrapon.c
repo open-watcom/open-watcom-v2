@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _wrapon( short newwrap )
+_WCRTLINK short _WCI86FAR _CGRAPH _wrapon( short newwrap )
 /*=========================================
 
    This routine toggles the text wrap flag. */

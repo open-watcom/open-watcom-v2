@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -50,27 +50,26 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WResID *WRECopyWResID ( WResID *src )
+WResID *WRECopyWResID( WResID *src )
 {
-    WResID *dest;
+    WResID  *dest;
     int     len;
 
-    if ( src == NULL ) {
-        return ( NULL );
+    if( src == NULL ) {
+        return( NULL );
     }
 
-    len = sizeof ( WResID );
+    len = sizeof( WResID );
 
-    if ( src->IsName ) {
+    if( src->IsName ) {
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResID *) WREMemAlloc ( len );
+    dest = (WResID *)WREMemAlloc( len );
 
-    if ( dest ) {
-        memcpy ( dest, src, len );
+    if( dest != NULL ) {
+        memcpy( dest, src, len );
     }
 
-    return ( dest );
+    return( dest );
 }
-

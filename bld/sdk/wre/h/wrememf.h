@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WREChangeMemFlags ( void );
+extern Bool WREChangeMemFlags( void );
 
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routine call flags and state data specific to x86.
 *
 ****************************************************************************/
 
@@ -47,6 +46,7 @@ typedef enum {
         ROUTINE_NO_8087_RETURNS         = 0x00004000,
         ROUTINE_LOADS_DS                = 0x00008000,
         ROUTINE_STACK_RESERVE           = 0x00010000,
+        ROUTINE_PREFER_REGS             = 0x00020000,
 
         /* don't use these directly -- use the macros below */
         ROUTINE_LONG                    = 0x00000002,

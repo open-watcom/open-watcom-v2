@@ -48,6 +48,23 @@ WEXPORT WToolBar::WToolBar( bool fixed )
 }
 
 
+WEXPORT WToolBar::WToolBar( bool fixed, bool use_tips )
+    : _rect( NULL )
+    , _parent( NULL )
+    , _changed( NULL )
+    , _changedClient( NULL ) {
+/****************************/
+
+    _flags = 0;
+    if( fixed ) {
+        _flags |= WToolFlagsFixed;
+    }
+    if( use_tips ) {
+        _flags |= WToolFlagsUseTips;
+    }
+}
+
+
 WEXPORT WToolBar::WToolBar( WRect r )
     : _rect( r )
     , _parent( NULL )
@@ -105,6 +122,14 @@ void WToolBar::attach( WWindow *win ) {
             trect.height = _rect.h();
             if( GUICreateFloatToolBar( win->handle(), fixed, 0, num_tools,
                               _toolBarItems, FALSE, NULL, NULL, &trect ) ) {
+                _parent = win;
+            } else {
+                delete _toolBarItems;
+                _toolBarItems = NULL;
+            }
+        } else if( _flags & WToolFlagsUseTips ) {
+            if( GUICreateToolBarWithTips( win->handle(), fixed, 0, num_tools,
+                                          _toolBarItems, FALSE, NULL, NULL ) ) {
                 _parent = win;
             } else {
                 delete _toolBarItems;

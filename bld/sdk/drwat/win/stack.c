@@ -48,8 +48,8 @@ stdata  std;
 /*
  * STDialog - show a stack frame
  */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam )
 {
     int         i;
 
@@ -158,8 +158,8 @@ void StartStackTraceDialog( HWND hwnd )
             }
             first_try = FALSE;
         }
-        fp = MakeProcInstance( STDialog, Instance );
-        rc = JDialogBox( Instance, "STACKTRACE", hwnd, fp );
+        fp = MakeProcInstance( (FARPROC)STDialog, Instance );
+        rc = JDialogBox( Instance, "STACKTRACE", hwnd, (DLGPROC)fp );
         FreeProcInstance( fp );
         oldcurrframe = currframe;
         if( rc == ST_NEXT ) {

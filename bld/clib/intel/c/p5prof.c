@@ -41,7 +41,7 @@
 extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #if defined(__386__)
  #pragma aux _Bin2String     "_*" parm routine [eax] [edx] [ebx];
-#elif defined(M_I86)
+#elif defined( _M_I86 )
  #pragma aux _Bin2String     "_*" parm routine [ax] [dx] [bx];
 #else
  #error unsupported platform

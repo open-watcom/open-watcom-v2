@@ -29,28 +29,14 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-
 #ifndef _SSFHDR_H_INCLUDED
 #define _SSFHDR_H_INCLUDED
 
-extern streampos __get_position( streamoff, ios::seekdir,
-                               char *, char *, char *, char * );
+extern std::streampos __get_position( std::streamoff,
+                                      std::ios::seekdir,
+                                      char *,
+                                      char *,
+                                      char *,
+                                      char * );
 
 #endif

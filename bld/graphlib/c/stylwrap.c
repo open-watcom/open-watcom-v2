@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _setstylewrap( short wrap )
+_WCRTLINK short _WCI86FAR _CGRAPH _setstylewrap( short wrap )
 /*============================================
 
    This routine sets the continue flag for drawing lines using a line

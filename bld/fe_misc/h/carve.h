@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Carver public interface.
 *
 ****************************************************************************/
 
@@ -65,7 +64,7 @@ typedef struct {
 
 void * StackCarveAlloc(         // CARVER ALLOC AND PUSH STACK
     carve_t carver,             // - carving control
-    void **stack_hdr )          // - addr[ stack hdr ]
+    void *stack_hdr )           // - addr[ stack hdr ]
 ;
 
 extern carve_t CarveCreate( size_t elm_size, size_t how_many );

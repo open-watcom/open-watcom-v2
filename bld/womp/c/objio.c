@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF (Object Module Format) I/O.
 *
 ****************************************************************************/
 
 
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>      /* for SEEK_SET, SEEK_CUR, SEEK_END */
 #include <string.h>
@@ -69,7 +69,7 @@ OBJ_RFILE *ObjReadOpen( const char *filename ) {
     OBJ_RFILE   *new;
 
     fh = open( filename, O_RDONLY | O_BINARY );
-    if( fh < 0 ) {
+    if( fh == -1 ) {
         return( NULL );
     }
     new = MemAlloc( sizeof( *new ) );
@@ -204,7 +204,7 @@ void ObjRSkipPage( OBJ_RFILE *obj, size_t page_len ) {
 
 #if _WOMP_OPT & _WOMP_WRITE
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define OP_MODE         (O_RDWR | O_CREAT | O_TRUNC)
 #define OP_PERM         (0666)
 #else
@@ -216,7 +216,7 @@ void ObjRSkipPage( OBJ_RFILE *obj, size_t page_len ) {
     Routines for buffered writing of an object file
 */
 
-STATIC void safeWrite( int fh, const char *buf, size_t len ) {
+STATIC void safeWrite( int fh, const uint_8 *buf, size_t len ) {
 
     if( write( fh, buf, len ) != len ) {
         Fatal( MSG_DISK_ERROR, "write" );
@@ -229,7 +229,7 @@ OBJ_WFILE *ObjWriteOpen( const char *filename ) {
     OBJ_WFILE    *new;
 
     fh = open( filename, OP_MODE, OP_PERM );
-    if( fh < 0 ) {
+    if( fh == -1 ) {
         return( NULL );
     }
     new = MemAlloc( sizeof( *new ) + OBJ_BUFFER_SIZE );
@@ -253,7 +253,7 @@ void ObjWriteClose( OBJ_WFILE *obj ) {
 
 void ObjWBegRec( OBJ_WFILE *obj, uint_8 command ) {
 /***********************************************/
-    char    buf[3];
+    uint_8  buf[3];
 
 /**/myassert( obj != NULL && !obj->in_rec );
 
@@ -271,7 +271,7 @@ static void objWFlushBuffer( OBJ_WFILE *obj ) {
 /*******************************************/
     size_t  len_to_write;
     uint_8  checksum;
-    char    *p;
+    uint_8  *p;
 
 /**/myassert( obj != NULL );
 
@@ -289,7 +289,7 @@ static void objWFlushBuffer( OBJ_WFILE *obj ) {
 
 void ObjWEndRec( OBJ_WFILE *obj ) {
 /*******************************/
-    char    buf[2];
+    uint_8  buf[2];
     uint_8  checksum;
 
 /**/myassert( obj != NULL && obj->in_rec );
@@ -349,10 +349,10 @@ void ObjWriteIndex( OBJ_WFILE *obj, uint_16 index ) {
     ObjWrite8( obj, index & 0xff );
 }
 
-void ObjWrite( OBJ_WFILE *obj, const char *buf, size_t length ) {
-/*************************************************************/
-    const char *write;
-    size_t amt;
+void ObjWrite( OBJ_WFILE *obj, const uint_8 *buf, size_t length ) {
+/***************************************************************/
+    const uint_8    *write;
+    size_t          amt;
 
 /**/myassert( obj != NULL && buf != NULL );
 
@@ -387,13 +387,13 @@ STATIC uint_8 checkSum( const uint_8 *buf, uint_16 length ) {
 }
 
 void ObjWriteRec( OBJ_WFILE *obj, uint_8 command, uint_16 length,
-    const char *contents ) {
+    const uint_8 *contents ) {
 /***************************************************************/
 /*
     Contents and length don't include checksum
 */
-    char buf[3];
-    uint_8 checksum;
+    uint_8  buf[3];
+    uint_8  checksum;
 
 /**/myassert( obj != NULL && !obj->in_rec );
 
@@ -422,7 +422,7 @@ obj_offset ObjWSkip32( OBJ_WFILE *obj ) {
 
 void ObjWRedo32( OBJ_WFILE *obj, obj_offset off, uint_32 dword ) {
 /*************************************************************/
-#if !LITTLE_ENDIAN
+#if defined( __BIG_ENDIAN__ )
     unsigned char    buf[4];
 #endif
     uint_16 rec_length;
@@ -431,21 +431,21 @@ void ObjWRedo32( OBJ_WFILE *obj, obj_offset off, uint_32 dword ) {
 
 /**/myassert( obj != NULL );
     safeSeek( obj->fh, off.rec_begin, SEEK_SET );
-    #if LITTLE_ENDIAN
-        safeRead( obj->fh, (char *)&rec_length, 2 );
-    #else
-        safeRead( obj->fh, buf, 2 );
-        rec_length = ReadU16( buf );
-    #endif
+#if defined( __BIG_ENDIAN__ )
+    safeRead( obj->fh, buf, 2 );
+    rec_length = ReadU16( buf );
+#else
+    safeRead( obj->fh, (char *)&rec_length, 2 );
+#endif
     safeSeek( obj->fh, off.offset, SEEK_CUR );
-    #if LITTLE_ENDIAN
-        safeWrite( obj->fh, (char *)&dword, 4 );
-    #else
-        for (i = 0; i < 4; i++) {
-            buf[ i ] = ((char*)&dword)[3-i];
-        }
-        safeWrite( obj->fh, buf, 4 );
-    #endif
+#if defined( __BIG_ENDIAN__ )
+    for (i = 0; i < 4; i++) {
+        buf[i] = ((char*)&dword)[3-i];
+    }
+    safeWrite( obj->fh, buf, 4 );
+#else
+    safeWrite( obj->fh, (char *)&dword, 4 );
+#endif
     safeSeek( obj->fh, (int_32)rec_length - off.offset - 5, SEEK_CUR );
     safeRead( obj->fh, &checksum, 1 );
     checksum = -checksum;
@@ -478,7 +478,7 @@ STATIC void safeRead( int fh, char *buf, size_t len ) {
 
 void ObjWRedo16( OBJ_WFILE *obj, obj_offset off, uint_16 word ) {
 /*************************************************************/
-#if !LITTLE_ENDIAN
+#if defined( __BIG_ENDIAN__ )
     char    buf[2];
 #endif
     uint_16 rec_length;
@@ -486,20 +486,20 @@ void ObjWRedo16( OBJ_WFILE *obj, obj_offset off, uint_16 word ) {
 
 /**/myassert( obj != NULL );
     safeSeek( obj->fh, off.rec_begin, SEEK_SET );
-    #if LITTLE_ENDIAN
-        safeRead( obj->fh, (char *)&rec_length, 2 );
-    #else
-        safeRead( obj->fh, buf, 2 );
-        rec_length = ReadU16( buf );
-    #endif
+#if defined( __BIG_ENDIAN__ )
+    safeRead( obj->fh, buf, 2 );
+    rec_length = ReadU16( buf );
+#else
+    safeRead( obj->fh, (char *)&rec_length, 2 );
+#endif
     safeSeek( obj->fh, off.offset, SEEK_CUR );
-    #if LITTLE_ENDIAN
-        safeWrite( obj->fh, (char *)&word, 2 );
-    #else
-        buf[ 0 ] = word & 0xff;
-        buf[ 1 ] = word >> 8;
-        safeWrite( obj->fh, buf, 2 );
-    #endif
+#if defined( __BIG_ENDIAN__ )
+    buf[0] = word & 0xff;
+    buf[1] = word >> 8;
+    safeWrite( obj->fh, buf, 2 );
+#else
+    safeWrite( obj->fh, (char *)&word, 2 );
+#endif
     safeSeek( obj->fh, (int_32)rec_length - off.offset - 3, SEEK_CUR );
     safeRead( obj->fh, &checksum, 1 );
     checksum = -checksum;

@@ -1,0 +1,16 @@
+static_text=\
+        //1"Select components to install:"\
+        //2"インストールするコンポーネントを選択してください:"\
+        //0
+static_text=\
+        //1"(Un-selected components will be removed)"\
+        //2"(選択されていないコンポーネントは削除されます)"\
+        //0
+static_text=
+check_box=clib,,"&C Library"
+check_box=cpplib,,"&Math Library"
+check_box=mathlib,,"C++ &Library"
+static_text=
+include=space.dlg
+static_text=
+include=pohc.dlg

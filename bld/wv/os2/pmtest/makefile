@@ -1,34 +1,17 @@
 #pmake: os_dos cpu_i86 i86 intel
-#===================================================================
-#
-#   Make file for HELLO sample program provided by IBM Corporation.
-#   Adapted by Watcom Systemms, Inc.
-#
-#===================================================================
-
-#===================================================================
-#   Sample application makefile, common definitions for the WATCOM C
-#   compiler environment
-#===================================================================
 
 .SUFFIXES:
 .SUFFIXES: .res .rc .lst .obj .c .asm .hlp .itl .ipf
 
-#===================================================================
-# Default compilation macros for sample programs
-#
-# Compile switches  that are enabled
-#
+CC         = wcc386 -d2 -i"$(lang_root)/h/os2"
 
-CC         = wcc386 -d2 -D_Optlink= /i\dev\watcom\os220_h
-
-AFLAGS  = /Mx -t -z
-ASM     = ml /c /Zm
+AFLAGS  = -Mx -t -z
+ASM     = ml -c -Zm
 LFLAGS  =
 LINK    = WLINK  $(LFLAGS)
 
 .obj.lst:
-    wdisasm $*/l/s
+    wdis -l-s $*
 
 .c.obj:
     $(CC) $*.c
@@ -37,7 +20,7 @@ LINK    = WLINK  $(LFLAGS)
     $(ASM)   $*.asm
 
 .ipf.hlp:
-        ipfc $*.ipf /W3
+        ipfc $*.ipf -W3
 
 .itl.hlp:
         cc  -P $*.itl
@@ -63,7 +46,7 @@ hello.obj: hello.c $(HEADERS)
 dbg.obj: dbg.c $(HEADERS)
 
 try.exe : try.c
-    wcc386 try /bw /d2 /i$(watcom_dir)\OS220_H
+    wcc386 try -bw -d2 -i"$(lang_root)/h/os2"
     wlink sys os2v2_pm @try
 
 hello.exe: hello.obj  hello.lnk hello.res
@@ -75,3 +58,8 @@ dbg.exe: dbg.obj dbg.lnk hello.res
     wlink @dbg.lnk op symfile
     rc -p -x hello.res dbg.exe
     copy/b dbg.exe+dbg.sym
+
+clean: .SYMBOLIC
+    @if exist *.obj @del *.obj
+    @if exist *.res @del *.res
+    @if exist *.exe @del *.exe

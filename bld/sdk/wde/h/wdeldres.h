@@ -42,7 +42,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeResInfo       *WdeLoadResource      ( const char * );
-extern WdeDialogBoxInfo *WdeLoadDialogFromRes ( WdeResInfo *,WResLangNode *, Bool );
+extern WdeResInfo       *WdeLoadResource( const char * );
+extern WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *,WResLangNode *, Bool );
 
 #endif

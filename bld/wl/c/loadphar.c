@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  LOADPHAR : routines for creating phar lap load files.
 *
 ****************************************************************************/
 
-
-/*
-   LOADPHAR : routines for creating phar lap load files.
-
-*/
 #include <string.h>
 #include "linkstd.h"
 #include "exephar.h"
@@ -49,23 +43,49 @@
 #include "fileio.h"
 #include "loadfile.h"
 
-static unsigned_32  WritePharData( unsigned );
-static unsigned_32  WritePharSegData( void );
-static unsigned_32  WriteRTPBlock( void );
-static unsigned_32  WriteSIT( void );
-static unsigned_32  WritePharRelocs( void );
+#define HEAD_SIZE 0x180
+#define RTP_SIZE  0x080
 
-extern void FiniPharLapLoadFile( void )
-/*************************************/
+typedef enum {
+    DR_IS_CODE  = 0x1,
+    DR_IS_APP   = 0x2,
+    DR_IS_USER  = 0x4,
+    DR_BASE     = 0x8,
+    DR_TSS      = 0x10
+} desc_flags;
+
+
+static unsigned_32 WritePharData( unsigned file_pos )
+/***************************************************/
 {
-    unsigned_32 start;
+    group_entry         *group;
+    outfilelist *       fnode;
+    bool                repos;
 
-    start = AppendToLoadFile( FmtData.u.phar.stub );
-    if( FmtData.type & (MK_PHAR_FLAT|MK_PHAR_MULTISEG) ) {
-        WritePharExtended( start );
-    } else {
-        WritePharSimple( start );
+    DEBUG(( DBG_BASE, "Writing data" ));
+    OrderGroups( CompareOffsets );
+    CurrSect = Root;        // needed for WriteInfo.
+    fnode = Root->outfile;
+    fnode->file_loc = file_pos;
+    Root->u.file_loc = file_pos;
+    Root->sect_addr = Groups->grp_addr;
+    for( group = Groups; group != NULL; group = group->next_group ) {
+        repos = WriteDOSGroup( group );
+        if( repos ) {
+            SeekLoad( fnode->file_loc );
+        }
     }
+    return( fnode->file_loc - file_pos );
+}
+
+static unsigned_32 WritePharRelocs( void )
+/****************************************/
+// write the relocations.
+{
+    RELOC_INFO  *temp;
+
+    temp = Root->reloclist;             // don't want to modify original
+    return DumpMaxRelocList( &temp, 0 );
 }
 
 static void WritePharSimple( unsigned_32 start )
@@ -80,14 +100,14 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_REX ) {
         SeekLoad( start + sizeof(simple_header) );
         extra = start + sizeof( simple_header ) + WritePharRelocs();
-        header_size = ROUND_UP( extra, 16 );
+        header_size = MAKE_PARA( extra );
         PadLoad( header_size - extra );
     } else {
-        SeekLoad( start + sizeof(simple_header) + 2 );
-        header_size = sizeof(simple_header) + 2;    // + 2 for para align.
+        SeekLoad( start + MAKE_PARA( sizeof(simple_header) ) );
+        header_size = MAKE_PARA( sizeof(simple_header) );    // para align.
     }
     file_size = header_size + WritePharData( start + header_size );
-    WriteDBI();
+    DBIWrite();
     if( FmtData.type & MK_PHAR_SIMPLE ) {
         _HostU16toTarg( SIMPLE_SIGNATURE, header.signature );
     } else {
@@ -117,148 +137,6 @@ static void WritePharSimple( unsigned_32 start )
         PadLoad( 2 );                   // header occupies a full paragraph.
     }
 }
-
-#define HEAD_SIZE 0x180
-#define RTP_SIZE  0x080
-
-static void WritePharExtended( unsigned_32 start )
-/************************************************/
-{
-    extended_header header;
-    unsigned_32     file_size;
-    unsigned_32     image_offset;
-    unsigned_32     temp;
-    unsigned_32     extra;
-
-    SeekLoad( start + HEAD_SIZE );
-    file_size = HEAD_SIZE;
-    if( FmtData.type & MK_PHAR_MULTISEG ) {
-        _HostU32toTarg( file_size, header.sit_offset );
-        temp = WriteSIT();
-        _HostU32toTarg( temp, header.sit_size );
-        file_size += temp;
-        _HostU16toTarg( sizeof(seg_info_table), header.sit_entry_size );
-        _HostU32toTarg( file_size, header.reloc_offset );
-        temp = WritePharRelocs();
-        _HostU32toTarg( temp, header.reloc_size );
-        file_size += temp;
-    } else {
-        _HostU32toTarg( 0, header.sit_offset );
-        _HostU32toTarg( 0, header.sit_size );
-        _HostU16toTarg( 0, header.sit_entry_size );
-        _HostU32toTarg( file_size, header.reloc_offset );
-        _HostU32toTarg( 0, header.reloc_size );
-    }
-    _HostU32toTarg( file_size, header.rtp_offset );
-    temp = WriteRTPBlock();
-    _HostU32toTarg( temp, header.rtp_size );
-    file_size += temp;
-    image_offset = file_size;
-    if( FmtData.type & MK_PHAR_MULTISEG ) {
-        file_size += WritePharSegData();
-    } else {
-        file_size += WritePharData( start + image_offset );
-    }
-    WriteDBI();
-    _HostU16toTarg( EXTENDED_SIGNATURE, header.signature );
-    if( FmtData.type & MK_PHAR_MULTISEG ) {
-        _HostU16toTarg( PHAR_FORMAT_SEGMENTED, header.format_level );
-    } else {
-        _HostU16toTarg( PHAR_FORMAT_FLAT, header.format_level );
-    }
-    _HostU16toTarg( HEAD_SIZE, header.header_size );
-    _HostU32toTarg( file_size, header.file_size );
-    _HostU16toTarg( 0, header.checksum );
-    _HostU32toTarg( image_offset, header.load_offset );
-    _HostU32toTarg( file_size - image_offset, header.load_size );
-    _HostU32toTarg( 0, header.sym_offset );
-    _HostU32toTarg( 0, header.sym_size );
-    if( FmtData.type & MK_PHAR_MULTISEG ) {
-        temp = sizeof(TSS);
-        _HostU32toTarg( temp, header.gdt_offset );
-        extra = NUM_GDT_DESCRIPTORS * sizeof(descriptor);
-        _HostU32toTarg( extra, header.gdt_size );
-        temp += extra;
-        extra = NUM_IDT_DESCRIPTORS * sizeof(descriptor);
-        _HostU32toTarg( temp, header.idt_offset );
-        _HostU32toTarg( extra, header.idt_size );
-        temp += extra;
-        extra = (NumGroups + 1) * sizeof(descriptor);
-        _HostU32toTarg( temp, header.ldt_offset );
-        _HostU32toTarg( extra, header.ldt_size );
-        _HostU32toTarg( 0, header.tss_offset );
-        _HostU32toTarg( sizeof(TSS), header.tss_size );
-        _HostU32toTarg( 0, header.min_extra );
-        _HostU32toTarg( 0, header.max_extra );
-        _HostU16toTarg( StackAddr.seg, header.SS );
-        _HostU16toTarg( StartInfo.addr.seg, header.CS );
-        _HostU16toTarg( 0x28, header.LDT );
-        _HostU16toTarg( 0x8, header.TSS );
-    } else {
-        _HostU32toTarg( 0, header.gdt_offset );
-        _HostU32toTarg( 0, header.gdt_size );
-        _HostU32toTarg( 0, header.idt_offset );
-        _HostU32toTarg( 0, header.idt_size );
-        _HostU32toTarg( 0, header.ldt_offset );
-        _HostU32toTarg( 0, header.ldt_size );
-        _HostU32toTarg( 0, header.tss_offset );
-        _HostU32toTarg( 0, header.tss_size );
-        extra = MemorySize() - file_size + image_offset;
-        temp = FmtData.u.phar.mindata + extra;
-        if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
-        _HostU32toTarg( temp, header.min_extra );
-        temp = FmtData.u.phar.maxdata + extra;
-        if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
-        _HostU32toTarg( temp, header.max_extra );
-        _HostU16toTarg( 0, header.SS );
-        _HostU16toTarg( 0, header.CS );
-        _HostU16toTarg( 0, header.LDT );
-        _HostU16toTarg( 0, header.TSS );
-    }
-    _HostU32toTarg( FmtData.base, header.offset );
-    _HostU32toTarg( StackAddr.off, header.ESP );
-    _HostU32toTarg( StartInfo.addr.off, header.EIP );
-    _HostU16toTarg( 0, header.flags );    // packing not yet implemented.
-    _HostU32toTarg( 0, header.reserved1 );
-    _HostU32toTarg( StackSize, header.stack_size );
-    header.mem_req = header.load_size;
-    SeekLoad( start );
-    WriteLoad( &header, sizeof( extended_header ) );
-    PadLoad( HEAD_SIZE - sizeof( extended_header ) );
-}
-
-static unsigned_32 WritePharData( unsigned file_pos )
-/***************************************************/
-{
-    group_entry         *group;
-    outfilelist *       fnode;
-    bool                repos;
-
-    DEBUG(( DBG_BASE, "Writing data" ));
-    OrderGroups( CompareOffsets );
-    CurrSect = Root;        // needed for WriteInfo.
-    fnode = Root->outfile;
-    fnode->file_loc = file_pos;
-    Root->u.file_loc = file_pos;
-    Root->sect_addr = Groups->grp_addr;
-    group = Groups;
-    while( group != NULL ) {
-        repos = WriteDOSGroup( group );
-        group = group->next_group;
-        if( repos ) {
-            SeekLoad( fnode->file_loc );
-        }
-    }
-    return( fnode->file_loc - file_pos );
-}
-
-typedef enum {
-    DR_IS_CODE  = 0x1,
-    DR_IS_APP   = 0x2,
-    DR_IS_USER  = 0x4,
-    DR_BASE     = 0x8,
-    DR_TSS      = 0x10
-} desc_flags;
 
 static void WriteDescriptor( unsigned_32 base, unsigned_32 limit,
                              desc_flags flags )
@@ -389,12 +267,121 @@ static unsigned_32 WriteSIT( void )
     return size;
 }
 
-static unsigned_32 WritePharRelocs( void )
-/****************************************/
-// write the relocations.
+static void WritePharExtended( unsigned_32 start )
+/************************************************/
 {
-    void *      temp;
+    extended_header header;
+    unsigned_32     file_size;
+    unsigned_32     image_offset;
+    unsigned_32     temp;
+    unsigned_32     extra;
 
-    temp = Root->reloclist;             // don't want to modify original
-    return DumpMaxRelocList( &temp, 0 );
+    SeekLoad( start + HEAD_SIZE );
+    file_size = HEAD_SIZE;
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        _HostU32toTarg( file_size, header.sit_offset );
+        temp = WriteSIT();
+        _HostU32toTarg( temp, header.sit_size );
+        file_size += temp;
+        _HostU16toTarg( sizeof(seg_info_table), header.sit_entry_size );
+        _HostU32toTarg( file_size, header.reloc_offset );
+        temp = WritePharRelocs();
+        _HostU32toTarg( temp, header.reloc_size );
+        file_size += temp;
+    } else {
+        _HostU32toTarg( 0, header.sit_offset );
+        _HostU32toTarg( 0, header.sit_size );
+        _HostU16toTarg( 0, header.sit_entry_size );
+        _HostU32toTarg( file_size, header.reloc_offset );
+        _HostU32toTarg( 0, header.reloc_size );
+    }
+    _HostU32toTarg( file_size, header.rtp_offset );
+    temp = WriteRTPBlock();
+    _HostU32toTarg( temp, header.rtp_size );
+    file_size += temp;
+    image_offset = file_size;
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        file_size += WritePharSegData();
+    } else {
+        file_size += WritePharData( start + image_offset );
+    }
+    DBIWrite();
+    _HostU16toTarg( EXTENDED_SIGNATURE, header.signature );
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        _HostU16toTarg( PHAR_FORMAT_SEGMENTED, header.format_level );
+    } else {
+        _HostU16toTarg( PHAR_FORMAT_FLAT, header.format_level );
+    }
+    _HostU16toTarg( HEAD_SIZE, header.header_size );
+    _HostU32toTarg( file_size, header.file_size );
+    _HostU16toTarg( 0, header.checksum );
+    _HostU32toTarg( image_offset, header.load_offset );
+    _HostU32toTarg( file_size - image_offset, header.load_size );
+    _HostU32toTarg( 0, header.sym_offset );
+    _HostU32toTarg( 0, header.sym_size );
+    if( FmtData.type & MK_PHAR_MULTISEG ) {
+        temp = sizeof(TSS);
+        _HostU32toTarg( temp, header.gdt_offset );
+        extra = NUM_GDT_DESCRIPTORS * sizeof(descriptor);
+        _HostU32toTarg( extra, header.gdt_size );
+        temp += extra;
+        extra = NUM_IDT_DESCRIPTORS * sizeof(descriptor);
+        _HostU32toTarg( temp, header.idt_offset );
+        _HostU32toTarg( extra, header.idt_size );
+        temp += extra;
+        extra = (NumGroups + 1) * sizeof(descriptor);
+        _HostU32toTarg( temp, header.ldt_offset );
+        _HostU32toTarg( extra, header.ldt_size );
+        _HostU32toTarg( 0, header.tss_offset );
+        _HostU32toTarg( sizeof(TSS), header.tss_size );
+        _HostU32toTarg( 0, header.min_extra );
+        _HostU32toTarg( 0, header.max_extra );
+        _HostU16toTarg( StackAddr.seg, header.SS );
+        _HostU16toTarg( StartInfo.addr.seg, header.CS );
+        _HostU16toTarg( 0x28, header.LDT );
+        _HostU16toTarg( 0x8, header.TSS );
+    } else {
+        _HostU32toTarg( 0, header.gdt_offset );
+        _HostU32toTarg( 0, header.gdt_size );
+        _HostU32toTarg( 0, header.idt_offset );
+        _HostU32toTarg( 0, header.idt_size );
+        _HostU32toTarg( 0, header.ldt_offset );
+        _HostU32toTarg( 0, header.ldt_size );
+        _HostU32toTarg( 0, header.tss_offset );
+        _HostU32toTarg( 0, header.tss_size );
+        extra = MemorySize() - file_size + image_offset;
+        temp = FmtData.u.phar.mindata + extra;
+        if( temp < FmtData.u.phar.mindata ) temp = 0xffffffff;
+        _HostU32toTarg( temp, header.min_extra );
+        temp = FmtData.u.phar.maxdata + extra;
+        if( temp < FmtData.u.phar.maxdata ) temp = 0xffffffff;
+        _HostU32toTarg( temp, header.max_extra );
+        _HostU16toTarg( 0, header.SS );
+        _HostU16toTarg( 0, header.CS );
+        _HostU16toTarg( 0, header.LDT );
+        _HostU16toTarg( 0, header.TSS );
+    }
+    _HostU32toTarg( FmtData.base, header.offset );
+    _HostU32toTarg( StackAddr.off, header.ESP );
+    _HostU32toTarg( StartInfo.addr.off, header.EIP );
+    _HostU16toTarg( 0, header.flags );    // packing not yet implemented.
+    _HostU32toTarg( 0, header.reserved1 );
+    _HostU32toTarg( StackSize, header.stack_size );
+    header.mem_req = header.load_size;
+    SeekLoad( start );
+    WriteLoad( &header, sizeof( extended_header ) );
+    PadLoad( HEAD_SIZE - sizeof( extended_header ) );
+}
+
+void FiniPharLapLoadFile( void )
+/*************************************/
+{
+    unsigned_32 start;
+
+    start = AppendToLoadFile( FmtData.u.phar.stub );
+    if( FmtData.type & (MK_PHAR_FLAT|MK_PHAR_MULTISEG) ) {
+        WritePharExtended( start );
+    } else {
+        WritePharSimple( start );
+    }
 }

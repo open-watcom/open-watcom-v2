@@ -5,12 +5,12 @@
  */
 #ifndef _JSTRING_H_INCLUDED
 #define _JSTRING_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include sizet.sp
 
@@ -64,63 +64,64 @@ _WCRTLINK extern int jisspace( JMOJI __c );
 _WCRTLINK extern int jisupper( JMOJI __c );
 _WCRTLINK extern int jiszen( JMOJI __c );
 
-_WCRTLINK extern JSTRING jgetmoji( const JCHAR *__s, JMOJI *__c );
+_WCRTLINK extern JSTRING  jgetmoji( const JCHAR *__s, JMOJI *__c );
 _WCRTLINK extern unsigned short jistojms( unsigned short __c );
 _WCRTLINK extern unsigned short jmstojis( unsigned short __msc );
-_WCRTLINK extern void jperror( const char *__msg );
-_WCRTLINK extern JSTRING jputmoji( JCHAR *__s, JMOJI __c );
-_WCRTLINK extern JSTRING jstradv( const JCHAR *__s, size_t __n );
-_WCRTLINK extern JSTRING jstrcat( JCHAR *__to, const JCHAR *__from );
-_WCRTLINK extern JSTRING jstrchr( const JCHAR *__s, JMOJI __c );
-_WCRTLINK extern int jstrcmp( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern size_t jstrcspn( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern void     jperror( const char *__msg );
+_WCRTLINK extern JSTRING  jputmoji( JCHAR *__s, JMOJI __c );
+_WCRTLINK extern JSTRING  jstradv( const JCHAR *__s, size_t __n );
+_WCRTLINK extern JSTRING  jstrcat( JCHAR *__to, const JCHAR *__from );
+_WCRTLINK extern JSTRING  jstrchr( const JCHAR *__s, JMOJI __c );
+_WCRTLINK extern int      jstrcmp( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern size_t   jstrcspn( const JCHAR *__s1, const JCHAR *__s2 );
 _WCRTLINK extern unsigned char *jstrerror( int __errnum );
-_WCRTLINK extern int jstricmp( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern size_t jstrlen( const JCHAR *__s );
-_WCRTLINK extern JSTRING jstrlwr( JCHAR *__s );
-_WCRTLINK extern JSTRING jstrmatch( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern JSTRING jstrncat( JCHAR *__to, const JCHAR *__from, size_t __n );
-_WCRTLINK extern int jstrncmp( const JCHAR *__s1, const JCHAR *__s2, size_t __n );
-_WCRTLINK extern JSTRING jstrncpy( JCHAR *__to, const JCHAR *__from, size_t __n );
-_WCRTLINK extern int jstrnicmp( const JCHAR *__s1, const JCHAR *__s2, size_t __n );
-_WCRTLINK extern JSTRING jstrnset( JCHAR *__s, JMOJI __c, size_t __n );
-_WCRTLINK extern JSTRING jstrrchr( const JCHAR *__s, JMOJI __c );
-_WCRTLINK extern JSTRING jstrrev( JCHAR *__s );
-_WCRTLINK extern JSTRING jstrset( JCHAR *__s, JMOJI __c );
-_WCRTLINK extern JSTRING jstrskip( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern size_t jstrspn( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern JSTRING jstrstr( const JCHAR *__s1, const JCHAR *__s2 );
-_WCRTLINK extern JSTRING jstrtok( JCHAR *__targ, const JCHAR *__brk );
-_WCRTLINK extern JSTRING jstrupr( JCHAR *__s );
+_WCRTLINK extern int      jstricmp( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern size_t   jstrlen( const JCHAR *__s );
+_WCRTLINK extern JSTRING  jstrlwr( JCHAR *__s );
+_WCRTLINK extern JSTRING  jstrmatch( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern JSTRING  jstrncat( JCHAR *__to, const JCHAR *__from, size_t __n );
+_WCRTLINK extern int      jstrncmp( const JCHAR *__s1, const JCHAR *__s2, size_t __n );
+_WCRTLINK extern JSTRING  jstrncpy( JCHAR *__to, const JCHAR *__from, size_t __n );
+_WCRTLINK extern int      jstrnicmp( const JCHAR *__s1, const JCHAR *__s2, size_t __n );
+_WCRTLINK extern JSTRING  jstrnset( JCHAR *__s, JMOJI __c, size_t __n );
+_WCRTLINK extern JSTRING  jstrrchr( const JCHAR *__s, JMOJI __c );
+_WCRTLINK extern JSTRING  jstrrev( JCHAR *__s );
+_WCRTLINK extern JSTRING  jstrset( JCHAR *__s, JMOJI __c );
+_WCRTLINK extern JSTRING  jstrskip( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern size_t   jstrspn( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern JSTRING  jstrstr( const JCHAR *__s1, const JCHAR *__s2 );
+_WCRTLINK extern JSTRING  jstrtok( JCHAR *__targ, const JCHAR *__brk );
+_WCRTLINK extern JSTRING  jstrupr( JCHAR *__s );
 /* ----------- memory model independent equivalents ----------- */
-_WCRTLINK extern size_t _WCI86FAR _fbtom( const JCHAR _WCFAR *__s, size_t __nb );
-_WCRTLINK extern size_t _WCI86FAR _fmtob( const JCHAR _WCFAR *__s, size_t __nm );
-_WCRTLINK extern int _WCI86FAR _fnthctype( const JCHAR _WCFAR *__string, size_t __n );
+_WCRTLINK extern size_t   _WCI86FAR _fbtom( const JCHAR _WCFAR *__s, size_t __nb );
+_WCRTLINK extern size_t   _WCI86FAR _fmtob( const JCHAR _WCFAR *__s, size_t __nm );
+_WCRTLINK extern int      _WCI86FAR _fnthctype( const JCHAR _WCFAR *__string, size_t __n );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjgetmoji( const JCHAR _WCFAR *__s, JMOJI _WCFAR *__c );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjputmoji( JCHAR _WCFAR *__s, JMOJI __c );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstradv( const JCHAR _WCFAR *__s, size_t __n );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrcat( JCHAR _WCFAR *__to, const JCHAR _WCFAR *__from );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrchr( const JCHAR _WCFAR *__s, JMOJI __c );
-_WCRTLINK extern int _WCI86FAR _fjstrcmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
-_WCRTLINK extern size_t _WCI86FAR _fjstrcspn( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
-_WCRTLINK extern int _WCI86FAR _fjstricmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
-_WCRTLINK extern size_t _WCI86FAR _fjstrlen( const JCHAR _WCFAR *__s );
+_WCRTLINK extern int      _WCI86FAR _fjstrcmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
+_WCRTLINK extern size_t   _WCI86FAR _fjstrcspn( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
+_WCRTLINK extern int      _WCI86FAR _fjstricmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
+_WCRTLINK extern size_t   _WCI86FAR _fjstrlen( const JCHAR _WCFAR *__s );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrlwr( JCHAR _WCFAR *__s );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrmatch( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrncat( JCHAR _WCFAR *__to, const JCHAR _WCFAR *__from, size_t __n );
-_WCRTLINK extern int _WCI86FAR _fjstrncmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2, size_t __n );
+_WCRTLINK extern int      _WCI86FAR _fjstrncmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2, size_t __n );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrncpy( JCHAR _WCFAR *__to, const JCHAR _WCFAR *__from, size_t __n );
-_WCRTLINK extern int _WCI86FAR _fjstrnicmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2, size_t __n );
+_WCRTLINK extern int      _WCI86FAR _fjstrnicmp( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2, size_t __n );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrnset( JCHAR _WCFAR *__s, JMOJI __c, size_t __n );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrrchr( const JCHAR _WCFAR *__s, JMOJI __c );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrrev( JCHAR _WCFAR *__s );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrset( JCHAR _WCFAR *__s, JMOJI __c );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrskip( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
-_WCRTLINK extern size_t _WCI86FAR _fjstrspn( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
+_WCRTLINK extern size_t   _WCI86FAR _fjstrspn( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrstr( const JCHAR _WCFAR *__s1, const JCHAR _WCFAR *__s2 );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrtok( JCHAR _WCFAR *__targ, const JCHAR _WCFAR *__brk );
 _WCRTLINK extern FJSTRING _WCI86FAR _fjstrupr( JCHAR _WCFAR *__s );
 /* ----------- end of memory model independent equivalents ----------- */
 
 :include cplusepi.sp
+
 #endif

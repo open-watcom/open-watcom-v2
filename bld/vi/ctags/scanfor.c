@@ -56,10 +56,10 @@ void ScanFortran( void )
             continue;
         }
         if( !MyStricmp( &buffptr, "character" ) ||
-                !MyStricmp( &buffptr, "complex" ) ||
-                !MyStricmp( &buffptr, "integer" ) ||
-                !MyStricmp( &buffptr, "logical" ) ||
-                !MyStricmp( &buffptr, "real" ) ) {
+            !MyStricmp( &buffptr, "complex" ) ||
+            !MyStricmp( &buffptr, "integer" ) ||
+            !MyStricmp( &buffptr, "logical" ) ||
+            !MyStricmp( &buffptr, "real" ) ) {
             while( isspace( *buffptr ) ) {
                 buffptr++;
             }
@@ -88,10 +88,10 @@ void ScanFortran( void )
         while( isspace( *buffptr ) ) {
             buffptr++;
         }
-        if( MyStricmp( &buffptr, "function" )
-                && MyStricmp( &buffptr, "program" )
-                && MyStricmp( &buffptr, "procedure" )
-                && MyStricmp( &buffptr, "subroutine" ) ) {
+        if( MyStricmp( &buffptr, "function" ) &&
+            MyStricmp( &buffptr, "program" ) &&
+            MyStricmp( &buffptr, "procedure" ) &&
+            MyStricmp( &buffptr, "subroutine" ) ) {
             continue;
         }
         while( isspace( *buffptr ) ) {

@@ -1,0 +1,22 @@
+*$noreference
+
+! Device-Context Functions:
+! -------------------------
+
+      external CreateCompatibleDC
+      external CreateDC
+      external CreateIC
+      external DeleteDC
+      external GetDCOrg
+      external RestoreDC
+      external SaveDC
+
+      integer*2 CreateCompatibleDC
+      integer*2 CreateDC
+      integer*2 CreateIC
+      integer*2 DeleteDC
+      integer*4 GetDCOrg
+      integer*2 RestoreDC
+      integer*2 SaveDC
+
+*$reference

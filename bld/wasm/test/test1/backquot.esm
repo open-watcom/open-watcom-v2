@@ -1,0 +1,24 @@
+.387
+.386p
+		PUBLIC	`W?fib$n(i)i`
+_TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+`W?fib$n(i)i`:
+    push      ebx
+    push      edx
+    mov       edx,eax
+    cmp       eax,1
+    je        L$1
+    dec       eax
+    call      near ptr `W?fib$n(i)i`
+    mov       ebx,eax
+    lea       eax,-2[edx]
+    call      near ptr `W?fib$n(i)i`
+    lea       edx,[ebx+eax]
+L$1:
+    mov       eax,edx
+    pop       edx
+    pop       ebx
+    ret       
+_TEXT		ENDS
+		END

@@ -65,7 +65,7 @@ typedef int boolean;
 #define BRI_MAX_COL   0x0000007ful
 
 #define TYPE_BRANCH     8
-#define TYPE_FULL( t )  ((t)->type_ids[TYPE_BRANCH-2]!=NULL)
+#define TYPE_FULL( t )  ((t)->type_ids[TYPE_BRANCH-2] != 0)
 #define TYPE_BOTTOM( t ) ((t)->next[0]==NULL)
 
 /******************************
@@ -438,7 +438,7 @@ BRI_HANDLE BRICreate( BRI_Routines const *rtns )
 
     memset( result, 0, sizeof( *result ) );
     result->rtns = *rtns;
-    result->io_cookie = NULL;
+    result->io_cookie = 0;
     result->start = 0;
     result->files = NULL;
     result->types = NULL;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for remote debug servers.
 *
 ****************************************************************************/
 
@@ -34,7 +33,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <process.h>
+#if defined(__WATCOMC__)
+    #include <process.h>
+#else
+    #include "clibext.h"
+#endif
 #if defined(__AXP__) && defined(__NT__)
     #include <windows.h>
 #endif
@@ -48,8 +51,8 @@
 extern trap_version     TrapVersion;
 static bool             OneShot;
 
-extern char  RWBuff[ 0x400 ];
-extern  char ServName[];
+extern char             RWBuff[ 0x400 ];
+extern char             ServName[];
 
 extern void             Output( char * );
 extern void             SayGNiteGracey( int );
@@ -91,10 +94,24 @@ void Initialize( void )
     }
 }
 
-main()
+void OpeningStatement( void )
 {
+    Output( "Open Watcom " );
+    Output( ServName );
+    Output( " Version " _XXXSERV_VERSION_ "\r\n" );
+    Output( banner2( "1988" ) "\r\n" );
+    Output( banner3 "\r\n" );
+    Output( banner3a "\r\n" );
+}
 
+int main( int argc, char **argv )
+{
     char key;
+
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
 
     Initialize();
     OpeningStatement();
@@ -129,11 +146,5 @@ main()
             SayGNiteGracey( 0 );
         }
     }
-}
-
-void OpeningStatement( void )
-{
-    Output( ServName );
-    Output( "\r\nVersion " _XXXSERV_VERSION_ "\r\n" );
-    Output( banner2( "1988" ) "\r\n" );
+    return( 0 );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level console support for Win32.
 *
 ****************************************************************************/
 
@@ -53,7 +52,7 @@ HANDLE          InputHandle;
 COORD           BSize;
 volatile int    BrkPending;
 static DWORD    oldInputMode;
-static DWORD    oldOutputMode;
+static HANDLE   oldOutputHandle;
 
 /*
  * consoleHandler - handle console ctrl c
@@ -83,9 +82,9 @@ int intern initbios( void )
     GetConsoleMode( InputHandle, &oldInputMode );
     SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_PROCESSED_INPUT );
 
+    oldOutputHandle = GetStdHandle( STD_OUTPUT_HANDLE );
     OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
                 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
-    GetConsoleMode( OutputHandle, &oldOutputMode  );
     SetConsoleMode( OutputHandle, 0 );
     SetConsoleActiveScreenBuffer( OutputHandle );
     SetConsoleCtrlHandler( consoleHandler, TRUE );
@@ -122,7 +121,7 @@ unsigned global uiclockdelay( unsigned milli )
 void intern finibios( void )
 {
     SetConsoleMode( InputHandle, oldInputMode );
-    SetConsoleMode( OutputHandle, oldOutputMode );
+    SetConsoleActiveScreenBuffer( oldOutputHandle );
     uifinicursor();
     finikeyboard();
     SetConsoleCtrlHandler( consoleHandler, FALSE );

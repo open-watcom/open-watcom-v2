@@ -1137,7 +1137,8 @@ these buffers is constant over the life of your editing session.  They
 retain their contents until you update them.
 :P.
 For more information on copy buffers, see the section
-:HDREF refid='cpybuff' in the chapter
+:HDREF refid='cpybuff'¨
+in the chapter
 :HDREF page=no refid='modes'
 :PERIOD.
 :P.

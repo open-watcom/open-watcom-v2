@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _getplotaction( void )
+_WCRTLINK short _WCI86FAR _CGRAPH _getplotaction( void )
 /*=======================================
 
    This function queries the plotting action for line drawing, area
@@ -56,7 +56,7 @@ short _WCI86FAR _CGRAPH _getplotaction( void )
 Entry( _GETPLOTACTION, _getplotaction ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _setplotaction( short action )
+_WCRTLINK short _WCI86FAR _CGRAPH _setplotaction( short action )
 /*===============================================
 
    This routine sets the plotting action for line drawing, area filling,

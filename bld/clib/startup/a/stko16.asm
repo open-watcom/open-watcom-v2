@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for 16-bit OS/2.
 ;*
 ;*****************************************************************************
 
@@ -37,7 +36,7 @@ include exitwmsg.inc
         .286C
 
 ifdef __MT__
-        extrn   __threadid          : dword
+        extrn   "C",_threadid       : dword
         extrn   "C",__ThreadData    : word
 else
         extrn   "C",_STACKLOW       : word
@@ -46,7 +45,7 @@ endif
         modstart        stk
 
 CONST   segment word public 'DATA'
-msg     db      "Stack Overflow!", 0dh, 0ah
+msg     db      "Stack Overflow!", 0
 CONST   ends
 
 _DATA   segment word public 'DATA'
@@ -56,11 +55,7 @@ _DATA   ends
         assume  ds:DGROUP
 
         xdefp   __STK
-        if __WASM__ ge 100
-            xdefp  "C",__STKOVERFLOW
-        else
-            xdefp  <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
 
 dgroupp dw      DGROUP
 
@@ -74,7 +69,7 @@ ifdef __MT__
         push    ds                      ; - save registers
         push    si                      ; - ...
         mov     ds,cs:dgroupp           ; - . . .
-        lds     si,__threadid           ; - get thread id
+        lds     si,_threadid            ; - get thread id
         mov     si,[si]                 ; - ...
         shl     si,1                    ; - turn into index
         shl     si,1                    ; - ...
@@ -100,7 +95,6 @@ endif
         _endguess                       ; endguess
 
 __STKOVERFLOW:
-        add     sp, 100H                ; get enough of the stack
         mov     dx,cs:dgroupp           ; set stk overflow msg
         mov     ax, offset DGROUP:msg
         mov     bx, 01h                 ; return error

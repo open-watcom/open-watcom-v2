@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap file for debugging PharLap DOS extended apps.
 *
 ****************************************************************************/
 
@@ -47,28 +46,24 @@
 #include "exepe.h"
 #include "madregs.h"
 
-extern bool     GrabVects(void);
-extern void     ReleVects(void);
+#include "x86cpu.h"
+#include "misc7386.h"
+#include "dosredir.h"
 
-extern char     NPXType();
+extern bool     GrabVects( void );
+extern void     ReleVects( void );
 
-extern void     GrabPrtScrn(void);
-extern void     RelePrtScrn(void);
-
-extern void     Read387( void * );
-extern void     Write387( void * );
+extern void     GrabPrtScrn( void );
+extern void     RelePrtScrn( void );
 
 extern bool     SetPSP( USHORT );
 
-extern short    GetDS();
-extern short    GetCS();
+extern short    GetDS( void );
+extern short    GetCS( void );
 
-extern unsigned GetCR0(void);
-extern void     SetCR0(unsigned);
+extern void     SetMSW(unsigned);
 
 extern unsigned ExceptionText( unsigned, char * );
-
-extern unsigned X86CPUType();
 
 #ifdef DEBUG_TRAP
 #define _DBG( x )  cputs x
@@ -128,10 +123,8 @@ char                    SavedByte;
 short                   InitialSS;
 short                   InitialCS;
 
-static int              SaveStdIn;
-static int              SaveStdOut;
-static unsigned         SaveCR0;
-static int              RealNPXType;
+static unsigned         SaveMSW;
+static unsigned_8       RealNPXType;
 #define BUFF_SIZE       256
 char                    UtilBuff[BUFF_SIZE];
 static MSB              Mach;
@@ -140,7 +133,6 @@ static bool             HavePSP;
 #define MAX_OBJECTS     128
 static unsigned long    ObjOffReloc[MAX_OBJECTS];
 
-#define NIL_DOS_HANDLE  ((short)0xFFFF)
 #define DBE_BASE        1000
 
 typedef struct watch {
@@ -180,6 +172,20 @@ typedef struct {
         long    reserved[4];
 } memory_stats;
 
+int SetUsrTask( void )
+{
+    if( HavePSP ) {
+        SetPSP( _dil_global._chpsp );
+        return( 1 );
+    }
+    return( 0 );
+}
+
+void SetDbgTask( void )
+{
+    SetPSP( _dil_global._psp );
+}
+
 unsigned ReqGet_sys_config()
 {
     get_sys_config_ret  *ret;
@@ -192,7 +198,7 @@ unsigned ReqGet_sys_config()
     ret->sys.cpu = X86CPUType();
     ret->sys.huge_shift = 12;
     if( HavePSP && !AtEnd ) {
-        if( Mach.msb_cr0 & CR0_EM ) {
+        if( Mach.msb_cr0 & MSW_EM ) {
             ret->sys.fpu = X86_EMU;
         } else {
             ret->sys.fpu = RealNPXType;
@@ -492,7 +498,7 @@ static void TaskFPExec( ULONG rtn, struct x86_fpu *regs )
     long        eax,eip,efl;
     short       cs,ds;
 
-    if( RealNPXType == 3 || RealNPXType == 2 || (Mach.msb_cr0 & CR0_EM) ) {
+    if( RealNPXType == X86_387 || RealNPXType == X86_287 || (Mach.msb_cr0 & MSW_EM) ) {
         ds = Mach.msb_ds;
         eax = Mach.msb_eax;
         cs = Mach.msb_cs;
@@ -655,35 +661,33 @@ static void CheckForPE( char *name )
 
 unsigned ReqProg_load()
 {
-    char        ch;
-    char        *src;
-    char        *dst;
-    char        *name;
-    prog_load_ret       *ret;
-    unsigned            len;
+    char            ch;
+    char            *src;
+    char            *dst;
+    char            *name;
+    prog_load_ret   *ret;
+    unsigned        len;
 
     _DBG(("AccLoadProg\r\n"));
     memset( ObjOffReloc, 0, sizeof( ObjOffReloc ) );
     AtEnd = FALSE;
     ReportedAlias = FALSE;
     dst = UtilBuff + 1;
-    name = GetInPtr( sizeof( prog_load_req ) );
-    src = name;
+    src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
-    while( *src != '\0' ) ++src;
-    ++src;
-    len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
-    for( ;; ) {
-        if( len == 0 ) break;
-        ch = *src;
-        if( ch == '\0' ) ch = ' ';
-        *dst = ch;
-        ++src;
-        ++dst;
-        --len;
+    while( *src++ != '\0' ) {}
+    len = GetTotalSize() - ( src - name ) - sizeof( prog_load_req );
+    if( len > 126 )
+        len = 126;
+    for( ; len > 0; -- len ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 1 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
     }
-    if( dst > UtilBuff ) --dst;
-
     *dst = '\r';
     UtilBuff[ 0 ] = dst - (UtilBuff + 1);
     ret->err = map_dbe( dbg_load( name, NULL, UtilBuff ) );
@@ -701,7 +705,7 @@ unsigned ReqProg_load()
         ret->task_id = 4;
         CheckForPE( name );
     } else {
-        _DBG(("Not Protected mode?????!!!!!!\r\n"));
+        _DBG(("Not Protected mode?!!!\r\n"));
         ret->flags = LD_FLAG_IS_32;
         ret->task_id = Mach.msb_ds;
     }
@@ -713,7 +717,7 @@ unsigned ReqProg_load()
 }
 
 #pragma aux finit = ".387" "finit" "wait"
-extern void finit(void);
+extern void finit( void );
 
 unsigned ReqProg_kill()
 {
@@ -721,16 +725,15 @@ unsigned ReqProg_kill()
 
     _DBG(("AccKillProg\r\n"));
     ret = GetOutPtr( 0 );
-    SaveStdIn = NIL_DOS_HANDLE;
-    SaveStdOut = NIL_DOS_HANDLE;
+    RedirectFini();
     AtEnd = TRUE;
-    if( RealNPXType != 0 ) {
+    if( RealNPXType != X86_NO ) {
         /* mask ALL floating point exception bits */
         finit();
         Mach.msb_87ctrl = 0x37f;
         dbg_wrmsb( &Mach );
     }
-    SetCR0( SaveCR0 );
+    SetMSW( SaveMSW );
     dbg_kill();
     HavePSP = FALSE;
     ret->err = 0;
@@ -990,70 +993,6 @@ unsigned ReqGet_next_alias()
     return( sizeof( *ret ) );
 }
 
-static unsigned Redirect( bool input )
-{
-    int             std_hndl;
-    int             *var;
-    int             handle;
-    char            *name;
-    redirect_stdout_ret *ret;
-
-    ret = GetOutPtr( 0 );
-    if( !HavePSP ) {
-        ret->err = 1;
-        return( sizeof( *ret ) );
-    }
-    SetPSP( _dil_global._chpsp );
-    name = GetInPtr( sizeof( redirect_stdout_req ) );
-    ret->err = 0;
-    if( input ) {
-        std_hndl = 0;
-        var = &SaveStdIn;
-    } else {
-        std_hndl = 1;
-        var = &SaveStdOut;
-    }
-    if( *name == '\0' ) {
-        if( *var != NIL_DOS_HANDLE ) {
-            if( dup2( *var, std_hndl ) == -1 ) {
-                ret->err = 1;
-            } else {
-                close( *var );
-                *var = NIL_DOS_HANDLE;
-            }
-        }
-    } else {
-        if( *var == NIL_DOS_HANDLE ) {
-            *var = dup( std_hndl );
-        }
-        if( input ) {
-            handle = open( name, O_BINARY | O_RDWR, 0 );
-        } else {
-            handle = open( name, O_BINARY | O_RDWR | O_TRUNC | O_CREAT, 0 );
-        }
-        if( handle == -1 ) {
-            ret->err = 1;
-        } else {
-            dup2( handle, std_hndl );
-            close( handle );
-        }
-    }
-    SetPSP( _dil_global._psp );
-    return( sizeof( *ret ) );
-}
-
-unsigned ReqRedirect_stdin()
-{
-    _DBG(("AccRedirectStdin\r\n"));
-    return( Redirect( TRUE ) );
-}
-
-unsigned ReqRedirect_stdout()
-{
-    _DBG(("AccRedirectStdOut\r\n"));
-    return( Redirect( FALSE ) );
-}
-
 unsigned ReqGet_err_text()
 {
     static char *DosErrMsgs[] = {
@@ -1126,9 +1065,8 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
     //ver.is_32 = TRUE;
-    SaveStdIn = NIL_DOS_HANDLE;
-    SaveStdOut = NIL_DOS_HANDLE;
-    SaveCR0 = GetCR0();
+    RedirectInit();
+    SaveMSW = GetMSW();
     RealNPXType = NPXType();
     _8087 = 0;
     HavePSP = FALSE;

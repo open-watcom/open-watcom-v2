@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 putch() implementation.
 *
 ****************************************************************************/
 
@@ -54,17 +53,21 @@ _WCRTLINK int putch( int c )
     HANDLE      h;
 
     ch = c;
+#ifdef DEFAULT_WINDOWING
     if( _WindowsPutch != 0 ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( STDOUT_FILENO );
         _WindowsPutch( res, c );
     } else {
+#endif
         written = 0;
         h = __NTConsoleOutput();            // obtain a console output handle
         if( h != INVALID_HANDLE_VALUE ) {
             WriteConsole( h, &ch, 1, &written, NULL );
         }
         if( written == 0 ) return( -1 );
+#ifdef DEFAULT_WINDOWING
     }
+#endif
     return( c );
 }

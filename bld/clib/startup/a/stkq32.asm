@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for 32-bit QNX.
 ;*
 ;*****************************************************************************
 
@@ -54,11 +53,7 @@ _DATA   ends
         xdefp   __STK
         xdefp   __CHK
         xdefp   __GRO
-        if __WASM__ ge 100
-            xdefp  "C",__STKOVERFLOW
-        else
-            xdefp  <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
 
 
 msg     db      "Stack Overflow at "
@@ -139,10 +134,6 @@ __STKOVERFLOW:
         call    _putw
         pop     ebx             ; get offset
         call    _putw           ; print low word
-        mov     al,0dh
-        stosb
-        mov     al,0ah
-        stosb
         mov     al,0
         stosb
         push    ss

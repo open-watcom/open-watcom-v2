@@ -73,7 +73,7 @@ int fputs( const char *b, FILE *fp )
     return( len );
 }
 
-char *fgets( char *b, size_t n, FILE *fp )
+char *fgets( char *b, int n, FILE *fp )
 {
     int         h;
     char        *start;

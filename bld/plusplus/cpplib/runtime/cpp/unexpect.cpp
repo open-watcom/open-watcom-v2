@@ -29,28 +29,18 @@
 *
 ****************************************************************************/
 
-
-// UNEXPECT.CPP -- default definition for unexpected()
-//              -- set_unexpected(), this routine is used to set the
-//                 handler to deal with unexpected exceptions
-//              -- the default handler is terminate()
-//
-// 92/07/20     -- Greg Bentz       -- defined
-// 92/11/11     -- J.W.Welch        -- get handler from thread-specific data
-//                                  -- add abortion message
-// 95/09/05     -- J.W.Welch        -- check for return from terminate()
-
 #include "cpplib.h"
 #include <stddef.h>
 #include "rtexcept.h"
-#include <except>
+#include <except.h>
 #include "rtmsgs.h"
 #include "exc_pr.h"
 
+namespace std {
 
-_WPRTLINK
-void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
-{
+  _WPRTLINK
+  void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
+  {
     PFV handler;                    // - current handler
     _RTCTL rt_ctl;                  // - run/time control
 
@@ -61,4 +51,6 @@ void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
     }
     (*handler)();
     CPPLIB(fatal_runtime_error)( RTMSG_RET_UNEXPECT, 1 );
+  }
+
 }

@@ -1,0 +1,1639 @@
+WATCOM C/C++ Version 11.0 - README
+----------------------------------
+
+Welcome to WATCOM C/C++ version 11.0.  This README provides helpful hints
+found during testing as well as updated information that was not available
+at the time the documentation was produced.
+
+This file includes:
+-------------------
+11.0 B-level Notes
+Fixes in version 11.0 B-level
+Fixes in version 11.0 A-level
+Changes in 11.0 that may Require Recompilation:
+Major Differences from Version 10.6:
+Other General Notes about version 11.0 
+Using Blue Sky Visual Programmer 2.50
+
+
+===========================================================
+11.0 B-level Notes
+===========================================================
+
+The SOM toolkit for OS/2 is no longer supported, and has
+been removed in this version.
+
+
+===========================================================
+Fixes in version 11.0 B-level
+===========================================================
+
+
+          ****************
+          ** C Compiler **
+          ****************
+
+    casting not getting flags like volatile correctly on pointers
+    casting of unlike pointers not getting done
+    __i64 numeric literals getting signed extended if number could fit in 32 bits
+    -v option putting const/volatile on wrong side of a pointer
+===========================================================
+
+    added a warning when trigraphs as used
+===========================================================
+
+    _asm sometimes causing lookup problems if followed by an id on the next c statement
+===========================================================
+
+     typedef function names not getting correct return type noticed when returning double 
+===========================================================
+
+    added warning for #if #endif pairs that come from different files
+===========================================================
+
+    -zpw giving error instead of a warning
+===========================================================
+
+    exceptions when getting a syntax error inside sizof operator 
+===========================================================
+
+    fixed looping bug in error recovery of declarations
+===========================================================
+
+    constant folding of (int)((struct *)0+1) always returning 0
+===========================================================
+
+    const ? struct : struct causes compiler error
+===========================================================
+
+    fixed a bug where typedef double (fortran_tc)(void) wasn't working as it did in 10.6.
+===========================================================
+
+    fixed a bug where using a typedef'ed function prototype no longer worked in 11.0 if the 
+    function prototype and its definition are in separate files
+===========================================================
+
+    wcc/wcc386 would crashes on the line #if ! after reporting: 
+    Error! E1063: Missing operand and then crashes, 
+    while wcc/wcc386 -p also crashes but does not report the error. 
+===========================================================
+
+    A single-line _asm statement without braces that refers to a variable 
+    would generate an error message. wpp/wpp386 compilers handle this 
+    sample correctly 
+===========================================================
+
+          ********************
+          ** Code Generator **
+          ********************
+
+    When static member functions are supplied to the ?: operator, no code was being generated
+===========================================================
+
+    added a compiler switch to disable the "common epilogue" optimization.
+===========================================================
+
+          ***************
+          ** C Library **
+          ***************
+    
+    Fixed a bug where an app was doing a chmod() on a file in a directory and 
+    is supposed to remove the file and then delete the directory itself. 
+    Under Win95 the directory was getting removed, however under NT it was not.
+    
+    use div in place of ldiv for 32-bit code, since they should be the same
+    
+    stripped out some unnecessary functions from the 32-bit Windows math DLLs
+    _GR_ceil(), _GR_cos(), _GR_ecvt(), _GR_fcvt(), _GR_log10(), _GR_log(), _GR_sin(), 
+    _GR_sqrt(). These are used by the Presentation Graphics (part of the graphics library) for 32-
+    bit DOS, so they can stripped out of the 32-bit Windows maths DLL's.
+    
+    Marked the Product Version as 11.0b for the RTL DLLs, such as CLBR110.DLL, 
+    CLBS110.DLL, MT7R110.DLL, MT7S110.DLL, MTHR110.DLL, MTHS110.DLL, 
+    PLBR110.DLL, PLBS110.DLL, 
+    so it is less difficult to distinguish them from older DLLs.
+===========================================================
+    
+    fixed a bug where Win386 DLLs would GPF every second time they are unloaded. 
+    To reproduce this, 
+    modify the samples in samples\fortran\win\dll by adding the line "call FreeLibrary( hlib )" 
+    before the line "FWinMain = 0" in gen*.for. When you run the samples, they GPF the first, 
+    third, fifth, etc. times when FreeLibrary is called. If you compile/link these modified samples 
+    with 10.6a or earlier versions, then the problem doc not occur. Reproduce this behaviour 
+    under WFW 3.11 and Win NT 4.0. Customer has reproed this under Win 95, and also reproed 
+    it when the DLLs are called from VB 4.0.
+===========================================================
+    
+    _wtof was missing from the 16-bit math libaries, 
+    and the 32-bit version was returning erroneous results.
+===========================================================
+    
+    Target: Win32: Using fmod() or modf() in code compiled with /br was giving 
+    undefined references.
+===========================================================
+    
+    fixed a bug with itoa() in win16 apps, where you couldn't run 
+    multiple instances of the app.  If you tried to, you got 
+    "Cannot start more than one copy of the specified program" under NT and 
+    "Error: Cannot <something> multiple writeable data segments" under Win 3.x. 
+===========================================================
+    
+    Win32 target only: feof() was not set when end-of-file occurs on an input pipe. 
+    ferror() was being set instead.
+===========================================================
+    
+    ftime() was not reporting correct timezone field in timeb struct when 
+    TZ is negative. 
+===========================================================
+    
+    Overflow range error in pow was not reported unless /fpc used. 
+===========================================================
+
+          ******************
+          ** C++ Compiler **
+          ******************
+    
+    fixed a bug where using /d2 /hd could cause the compiler to hang.
+===========================================================
+
+
+    fixed a C++ Preprocessor problem: where #if ( x > y ) could produce incorrect results 
+    when x and y are expressions.
+    
+===========================================================
+
+    An error was missing in the following case:
+        extern void f( int a, char *b );
+        extern void f( int a );
+        void *pf = f;
+    
+    Work around: none
+
+===========================================================
+
+    Anonymous structs or classes within unions could not always
+    be initialized properly.
+        struct s
+        {
+            union
+            {
+                struct
+                {
+                    float a, b;
+                };
+                float c[2];
+            };
+        };
+        s d = { 0.0, 0.1 };
+    
+    Work around: Set values in object manually.
+
+===========================================================
+
+    Output a warning if a #endif isn't in the same source
+    file as its companion #if.
+    
+    Example:
+
+    --- foo1.h ---
+    #ifndef FOO1
+    #define FOO1
+    #endif
+    #endif	// warning
+    --- foo2.h ---
+    #ifndef FOO2
+    #define FOO2
+    #include "foo1.h"
+    #endif
+    --- foo.c ---
+    #include "foo2.h"
+
+===========================================================
+
+               A
+              /
+         D   B
+          \ /
+           C
+	   
+    We no longer prefer the conversion from C->D over the conversion 
+    from C->A as the number of levels of conversion does not matter 
+    when D and A are not related.   
+
+===========================================================
+
+    Added level 3 warning for unary '-' of an unsigned
+    operand (result type is still unsigned). Cast operand
+    to signed type to remove warning.
+    
+    Example:
+    
+    void bar( int );
+    void bar( unsigned );
+    ...
+    // selects bar( unsigned )
+    foo( -2147483648 );
+
+===========================================================
+
+    Improved PCH reading of error message levels so that
+    header file changes are added to current message
+    levels rather than performing a complete replace of
+    the error message levels and ignoring any command
+    line adjustments.
+    
+===========================================================
+
+    Fixed problem with -d2s that caused run-time error
+    "undefined constructor or destructor called!" to occur.
+    
+===========================================================
+
+    Was not generating correct code for some default functions
+    in classes with modifiers.
+    
+    Work around: write definitions for required constructors,
+    	destructors, and operator = functions
+
+===========================================================
+
+    Was not generating correct code for the default operator =
+    when the class contained an array of elements where an element
+    could be byte-for-byte copied and also had virtual functions.
+
+===========================================================
+
+    Destruction sometimes was omitted following a delete which
+    followed a block closure which contained a destruction.
+    
+    Work around: introduce a destructable temporary before
+    the delete.
+
+===========================================================
+
+    Fixed scanning of large strings with escaped characters.
+    
+    Example:
+	
+	char *p = "\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
+	\n";
+
+    Work around: break string up into smaller strings and
+    let compiler concatenate them
+    "1234567890" --> "12345" "67890"
+
+===========================================================
+
+    Added warning from scanner whenever a trigraph
+    is processed.
+    
+    Example:
+	
+	// string expands to "(?]?~????"!
+	char *e = "(???)???-????";
+	// work around:
+	char *f = "(" "???" ")" "???" "-" "????";
+	char *g = "(\?\?\?)\?\?\?-\?\?\?\?";
+
+===========================================================
+
+    Fixed analysis of shift operators with regard to
+    result type.  Previously the result type was the
+    same as other binary arithmetic operators.  Now
+    the result type is the promoted type of the left
+    hand operand.
+    
+    Example:
+	
+	int f( int x, unsigned s ) {
+	    // should do signed right shift
+	    return x >> s;
+	}
+
+===========================================================
+
+    Compiler incorrectly warned that new/delete operators
+    were declared in a namespace when they were declared
+    as friends of a class.
+
+    Example:
+	
+	class N {
+	    friend void *operator new( unsigned );
+	    friend void operator delete( void * );
+	    friend void *operator new[]( unsigned );
+	    friend void operator delete[]( void * );
+	};
+	
+    Work around: disable warning
+
+===========================================================
+
+    Compiler incorrectly diagnosed an invalid constant
+    when inside a preprocessing #if region that should
+    have been excluded from such errors.
+
+    Example:
+	
+	#if 0
+	Version 35I63
+	#endif
+	
+    Work around: put constant in a comment (if possible)
+    
+===========================================================
+
+    Compiler now correctly evaluated all preprocessor 
+    expressions involving binary operators of the same
+    precedence.
+
+    Example:
+	
+	#if (0 < 2 - 1 + 3)
+
+    now correctly evaluates to TRUE.  It previously 
+    evaluated as if the expressions was 
+    
+    ( 0 < 2 - ( 1 + 3) )  	
+    
+    Note: this bug only occurred in preprocessor expressions.
+
+===========================================================
+
+    Compiler now initializes member pointers at link-time
+    in more cases than before (notably array initialization).
+
+===========================================================
+
+    Constant folding of 64-bit arithmetic would incorrectly
+    warn about overflow if the expression involved two 32-bit
+    quantities multiplied together to produce a 64-bit quantity.
+
+===========================================================
+
+    wpp: -zff and -zgf now generate code that doesn't save
+    fs/gs in the prologue/epilogue of the function (matches
+    behaviour of C compiler and ds/es).  The pop of fs/gs
+    would fault if the selector had been freed.
+
+===========================================================
+
+    Fixed error recovery for the following code fragment:
+    
+    template <class T : public Base > struct S {};
+
+===========================================================
+
+    wpp: optimized -3 code to use size override prefixes
+    when dealing with push and mov immed instructions.
+
+===========================================================
+
+    Under several combinations of options ?: did not generate
+    proper code to select static member functions.
+    
+    	typedef void (*void_func)();
+    
+	class A
+	{
+	  public:
+	     static void f();
+	     static void g();
+	};
+	
+	void_func func(bool b)
+	{
+	    return b ? A::f : A::g;
+	}
+    
+    Work around: Avoid use of ?:, for example,
+	
+	void_func func(bool b)
+	{
+	    if( b )
+	    	return A::f;
+	    else
+	    	return A::g;
+	}
+
+===========================================================
+
+    Fixed a problem where the compiler went into an infinite
+    loop generating Dwarf debug information with namespaces
+    that contained typedefs referencing types in other
+    namespaces.
+    
+    Work around: use -d3 instead of -d2
+    
+    Example:
+	class A {
+	public:
+	    virtual ~A() {}
+	};
+	
+	class B {};
+	
+	namespace N {
+	    class C {};
+	
+	    typedef B T;
+	
+	    class D {
+	    public:    
+		virtual ~D() {}
+	    };
+	    
+	    class E : public D, public A {
+	    public:
+		E() {}
+		B* getB() {
+		    return 0;
+		}
+		C* getC() {
+		    return 0;
+		}
+	    };
+	}
+
+===========================================================
+
+    Fixed a problem where function template instantiations
+    were not being set to C++ linkage.
+    
+    Work around: don't use function templates in extern "C"
+    		 blocks or functions
+    
+    Example:
+	template <class T>
+	    void tf(T) {
+		return;
+	    }
+	
+	struct A { } a;
+	
+	struct B { } b;
+	
+	extern "C" void bar() {
+	    tf(a);
+	    tf(b);
+	}
+
+===========================================================
+
+    Allow bool op= bool expressions
+    
+    Work around: break up expression A op= B into A = A op B
+    
+    Example:
+	void foo( bool a, bool b ) {
+	    a |= b;
+	}
+
+===========================================================
+
+    Fixed compiler GPF in situations where an abstract class
+    tries to create or return itself.  The GPF was caused by
+    the compiler trying to output a good error message with
+    all the unimplemented abstract methods.
+    
+    Example:
+	class A {
+	    virtual ~A() { }
+	    virtual void *fn( char *name ) = 0;
+	    A Next() { return( _next ); }
+	};
+	void foo( A *it )
+	{
+	    it->Next();
+	}
+
+===========================================================
+
+          ******************
+          ** Disassembler **
+          ******************
+
+    wdis couldn't  recognize "SHLD EDX,EAX,CL", "SHRD EDX,EAX,CL" 
+    and a few other instructions.
+===========================================================
+    
+    Wdis did not give the correct code when disassembling memchr(). 
+    It placed the label in the wrong position. 
+    This is because the code makes a jump into the 
+    middle of an opcode sequence depending on the result of memchr(). WDISASM with 10.6 
+    "knew" about this and issued DB instructions.
+===========================================================
+
+          *******************
+          ** Documentation **
+          *******************
+	  
+    Fixed the C library matherr example, so it works with the C++ compiler.
+===========================================================
+	
+    Watcom 10.6 aligns structure members on a byte boundary by default. 
+    Watcom 11.0 aligns structure members on an 8 byte boundary by default. 
+    Fixed some places where the documentation hadn't been updated from 10.6.
+===========================================================
+
+    Added - wlink's OPTION SHOWDEAD, which was not documented. 
+    This option is very useful as it shows in the map file which functions 
+    the linker stripped out.
+===========================================================
+
+    Added documentation for wcc/wcc386/wpp/wpp386 options /of & /of+. 
+===========================================================
+
+    Corrected the Programmer's Guide sample on 32-bit OS/2 DLLs. 
+    The dllsamp.c file was missing a: define EXTERNC.
+===========================================================
+
+    Upated Linker docs indicate that incremental linking is not 
+    supported for 16-bit DOS and NetWare targets. 
+===========================================================
+
+          ***************
+          ** Librarian **
+          ***************
+
+    Wlib wasn't giving a warning message if you tried to extract a nonexistent 
+    object file. 
+===========================================================
+
+          ************
+          ** Linker **
+          ************
+
+    Fixed output of QNX executables for a rare case of
+    internal buffer filling.
+    
+===========================================================
+
+    OP INC IS NOT SUPPORTED FOR 16-BIT DOS OR NetWare, 
+    in 11.0 you didn't get an error to indicate this
+===========================================================
+    
+    fixed a bug where
+    "wlink debug watcom types or debug watcom locals or debug watcom lines"
+    would all cause the linker to crash
+    debug watcom all was fine
+===========================================================
+    
+    NT linker was crashing if you ran it with no arguments, and typed something
+    at the WLINK> prompt
+===========================================================
+    
+    fixed a bug where WLINK was crashing while trying to link an app with
+    codeview debuggin info
+===========================================================
+
+          ************
+          ** WVIDEO **
+          ************
+
+    dwarf dip now exits gracefully if it failes to load debug info 
+===========================================================
+    
+    Fixed a bug on DOS or Win95 Host: 
+    binw\wd was crashing on loading DOS/4GW EXE. 
+    The debugger was running out of memory trying to read in a large app 
+    or large app + symbolic debugging info (.SYM) file.
+    Problem did not occur with the binnt debuggers under NT. 
+===========================================================
+    
+    binw\wd was crashing when inspecting ofstream structure with Watcom or Codeview 
+    debugging information. 
+===========================================================
+    
+    Debugger was crashing when double-clicking on an entry in calls window. 
+===========================================================
+    
+    If winserv terminated abnormally for any reason, you could not restart it 
+    unless you gave the server a different name. This is a bigger problem 
+    than appears at first, because the IDE uses an unnamed debug server. 
+    As such, if you were debugging DOS/4GW under Windows 95 and the application 
+    crashed the server, then you had to reboot before you can debug in the IDE 
+    to start the debugger again.
+    Winserv will now free the name and try again if it tries to connect to a server
+    and is unable to connect.
+===========================================================
+
+          ***************
+          ** Assembler **
+          ***************
+
+    Fixed a bug where wasm wouldn't assemble: 
+    "psrlq m1, dummy" 
+    where dummy is a quadword 
+    It gave an error: "Second operand too big". 
+===========================================================
+
+===========================================================
+Fixes in version 11.0 A-level
+===========================================================
+
+
+          ****************
+          ** C Compiler **
+          ****************
+
+    fixed folding bug with static intialization 
+    #line comming out after latline in include file at times
+    allowing macro expansion of #define 1230e+A2 where A2 is a macro
+    indirect functions call of non default call types ie. stdcall not working
+    .obj files sometime being created if error occurred in compile
+    incorrect calls somtimes being made with functions that have unspecified parm definitions
+===========================================================
+
+          ********************
+          ** Code Generator **
+          ********************
+
+    If optimizing for time, align procedures on 16-byte
+    boundaries for anything above a 486.
+===========================================================
+
+    Fixed a problem with short-circuit operators in which
+    a side effect would be discarded (ie ( (a=b) || 1 )
+    would get reduced to (1) and the (a=b) discarded. Ditto
+    for ( (a=b) && 0 ).
+===========================================================
+
+    Fixed a problem with long filenames in object file
+    generation.
+===========================================================
+
+    Fixed a problem with loopopts and far pointers - if
+    inductions optimizations introduced an add of an integer
+    to a far pointer, it was possible that the add would be
+    generated incorrectly, resulting in some highly suspicious
+    references to odd locations such as -1[bp] or 7[bp].
+===========================================================
+
+    Fixed a problem in which conversions between floats and 
+    ints (or floats and doubles) within a union might not 
+    be generated correctly.
+===========================================================
+
+          ***************
+          ** C Library **
+          ***************
+
+    _findfirst() has been changed to take a const char * instead of just a char *.
+===========================================================
+===========================================================
+
+    __FSU87 was trashing ecx - this routine is called to convert an unsigned __int64
+    to a float.
+===========================================================
+
+    Fixed memory leak, due to us not deallocating the _iomode array during fini rtns.
+    Also added _UnloadCLib call to library to allow user to properly unload 16 bit OS/2
+    user loadable DLLs.
+===========================================================
+
+    fixed a bug where fortran default windowing apps would sometimes appear 
+    to print lines  twice, when printing at the bottom of the screen.
+    Since they were being printed at the bottom of the window and
+    then not erased when the window scrolled up, leaving a 2nd copy at the bottom
+===========================================================
+
+    Input value range checking for strtod() has been improved for very
+    small values.
+===========================================================
+
+    The runtime dll support has been fixed to no longer leave a potentially
+    dangerous reference from the C runtime DLL into whichever DLL has
+    been most recently loaded into the process image.  The reference from 
+    the C runtime DLL now points directly into the Math runtime DLL.
+===========================================================
+
+    The _dos_getdiskfree() function for 32bit platforms now has an
+    expanded data structure.
+===========================================================
+
+    The assert() function for WIN32 and OS/2 platforms will attempt
+    to use stderr for output if it is available.
+===========================================================
+
+    The __declspec(thread) support for WIN32 platforms has been
+    improved.  In some, pathological cases, it could lead to a GPF
+    on program startup.
+===========================================================
+
+    The system() function for WIN32 platform no longer passes
+    posix file handles for inheritance by child processes by default.
+===========================================================
+
+    The delay() function for NEC98 machines used to hang on initialization.
+===========================================================
+
+    The race condition in the _beginthread() function related
+    to the saving of the child thread handle has been fixed.
+===========================================================
+
+    The multibyte init code for the C runtime library would
+    always crash on startup when running under the Pharlap
+    Run386 or TNT DOS extenders.
+===========================================================
+
+    The heapchk() function for 32bit platforms could, in some
+    cases, enter an infinite loop.
+===========================================================
+
+    The posix level open() function for WIN32 platforms did not
+    properly truncate existing files on NT server machines when
+    run from an NT workstation.
+===========================================================
+
+    The WIN32 stat() function now ensures that directories
+    cannot be marked as character mode devices.
+===========================================================
+
+    The WIN32 and OS/2 runtime shutdown code now does a better
+    job of releasing all resources on image shutdown.
+===========================================================
+
+          ******************
+          ** C++ Compiler **
+          ******************
+
+    Fixed a minor bug that caused spurious warnings to be
+    generated for pre-compiled headers containing integer
+    constants.
+    The following example, if used in a pre-compiled header,
+    would cause a warning about truncating integer constants:
+    
+        class Foo {
+            public:
+                int Bar(int, int=1);    // warning generated here
+        };
+    
+===========================================================
+
+    Was mis-diagnosing conversions from types of the form
+        Type cv1 * cv2 &
+    to types of the form
+        Type cv3 * cv4 &
+    when cv3,cv4 are more qualified than cv1,cv2 respectively
+    and cv4 does not contain "const" (it must for the
+    conversion to be legal).
+    
+    Work around: none, the conversion is illegal.
+
+===========================================================
+
+    Changed the alignment of doubles and long doubles to be
+    on 8-byte boundaries when not optimizing for space. This
+    will increase performance on many hardware configurations.
+===========================================================
+
+    Incorrect code was being generated for "?:" sequences
+    when the target is a class object and when the expression
+    between the "?" and the ":" was converted to the type of
+    the expression following the ":"
+    
+    work around: cast the expression between the "?" and the
+                 ":" to the type of the expression following
+                 the ":"
+                 
+    example:
+    
+        struct Cls {
+            Cls( int );
+            Cls( Cls const & );
+        };
+        
+        extern Cls target;
+        
+        void foo( bool test, int int_val, Cls const & class_val )
+        {
+            target = test ? int_val : class_val; // generated bad code
+        }
+        
+     The work-around is to re-code foo as follows:
+        
+        void foo( bool test, int int_val, Cls const & class_val )
+        {
+            target = test ? Cls( int_val ) : class_val;
+        }
+
+===========================================================
+
+    When the -za switch is not specified (i.e., when
+    extensions are enabled) the compiler was extended to
+    accept as member pointer values, class-qualified and naked
+    non-static member functions.  The proposed standard
+    requires that & precede a class-qualified name.
+    
+        struct S {
+            int foo( float );
+        };
+        
+        int (S::*mp)( float );  // a member-pointer variable
+        
+        ...
+        
+            // the following are all accepted:
+            
+            mp = &S::foo;       // standard
+            mp = S::foo;        // extension
+            mp = foo;           // extension (must be in scope)
+
+===========================================================
+
+    Fixed a bug that caused the compiler to crash under certain 
+    conditions when writing a pre-compiled header.
+    
+===========================================================
+
+    Fixed compiler so that floating point support is loaded
+    if you call a routine with the address of a double.
+    This is req'd if you need to skip floating point numbers
+    but never use them.
+    
+    e.g.,
+        scanf( "%d %f %d\n", &i1, &d1, &i2 );
+    
+===========================================================
+
+    Fixed compiler so that -dXXX="a-/ b" is allowed.
+    Compiler was terminating -d macro definition at
+    a -, /, or white space.
+    
+===========================================================
+
+    Fixed problem where a MI conversion was required before
+    initializing a const reference temporary.
+
+    Example:
+    
+    struct A { int a; };
+    struct C { int c; };
+    struct B : public C, public A { int b; };
+    
+    typedef A * T;
+    
+    T check;
+    
+    struct Array {
+        void Append( const T & t ) { if( t != check ) _fail; }
+        void Remove( const T & t ) { if( t != check ) _fail; }
+    };
+    
+    void Foo( B * b )
+    {
+        Array       arr;
+        A *         a = b;
+        arr.Append( a );
+        arr.Remove( b );
+    }
+    
+    int main()
+    {
+        B   b;
+        check = &b;
+        Foo( &b );
+        _PASS;
+    }
+    
+===========================================================
+
+    Fixed problem where direct calls to __stdcall dtors
+    were incorrectly routed through a calling convention
+    thunk normally used for table-driven destruction.
+    
+===========================================================
+
+    When generating preprocessed output, the compiler now
+    eliminates empty lines if you do not want #line
+    directives.
+    
+===========================================================
+
+    Correctly handle multibyte characters with the second
+    byte equal to 0x5c ('\\') when they terminate a C++
+    //-style comment (i.e., do not treat them as a line
+    splice).
+    
+    Example:
+    
+    // <0x81><0x5c>
+    
+===========================================================
+
+    A function that calls setjmp will have its local
+    variables marked as "stay in memory" but this
+    attribute incorrectly affected function template
+    generic type binding.
+    
+    Example:
+    
+        #include <setjmp.h>
+        
+        template <class T>
+            void delete_object( T*& object ) {
+                if( object ) {
+                    delete object;
+                    object = NULL;
+                }
+            }
+        
+        struct CValue {
+            int i;
+        };
+        
+        void foo() {
+            CValue *v;
+            jmp_buf b;
+        
+            setjmp(b);
+            delete_object(v);
+        }
+    
+===========================================================
+
+    Fixed problem with C++ empty base optimization that
+    caused spurious errors to be diagnosed.
+
+    Example:
+    
+        struct CClassBase {
+        };
+        
+        struct CClass2 : public CClassBase {
+            struct CClass1 {
+                CClass1(int) {}
+            };
+            CClass1 m_c;
+        protected: 
+            CClass2(void);
+        };
+        CClass2::CClass2(void)
+            : m_c(1) {
+        }
+    
+===========================================================
+
+    Fixed problem with macro expansion that triggered
+    boundary conditions in the compiler which in turn
+    caused incorrect macro expansion.
+
+    Example:
+    
+        #define example( b ) b ## _X Y_ ## b ## _Z
+        example( x123456789012345678901234567890 )
+        example( x12345678901234567890123456789 )
+        example( x1234567890123456789012345678 )
+        example( x123456789012345678901234567 )
+        example( x12345678901234567890123456 )
+        #undef example
+    
+===========================================================
+
+    Fixed problem with error recovery in complex
+    source code with __stdcall classes.
+    
+===========================================================
+
+    Return expressions with comma operators sometimes were compiled
+    incorrectly.
+    
+    This resulted in a bad library for multi-threaded Netware when
+    exceptions were used.
+    
+    Work around: assign the expression to a temporary and then
+    return the temporary.
+    
+        example:
+        
+            int x;
+            
+            void foo( int y ) {
+                return ( x = 1 , y + 1 );
+            }
+            
+        replace by:
+        
+            int x;
+            
+            void foo( int y ) {
+                int temp = ( x = 1 , y + 1 );
+                return temp;
+            }
+    
+===========================================================
+
+    If a source file doesn't end in a new-line, the C++
+    compiler now compensates for this to allow new-line
+    terminated preprocessing directives to work properly.
+    
+    Example:
+    
+        #define C 3 // file doesn't end in '\n'
+    
+===========================================================
+
+    Incorrect code was generated for an argument to an ellipsis
+    function (one declared with '...' ) which was computed as an
+    lvalue class value for a destructible class.
+    
+    Example:
+    
+        void foo( int, ... );
+        
+        class S {
+            . . .
+            ~S();
+            . . .
+        };
+        
+        S* p1;
+        S* p2;
+        bool b;
+        
+        . . .
+        
+            int i = foo( 1997, b ? *p1 : *p2 );
+    
+    Work around: use a cast to force underlying expressions
+        to be rvalues:
+        
+            int i = foo( 1997, b ? (S)*p1 : (S)*p2 );
+
+===========================================================
+
+    Compiler would crash when it could not generate RTTI
+    info into a 64k segment (only applies to 16-bit targets).
+    The error was reported properly but recovery resulted
+    in a memory fault in the compiler.
+    
+===========================================================
+
+    Compiler would crash (infinite loop or page fault) when
+    inlining functions that contained certain usages of
+    anonymous unions.
+
+    Example:
+    
+        inline int ii( int i ) {
+            union {
+                int x;
+                unsigned char y;
+            };
+            x = 0;
+            y = i;
+            return x;
+        }
+        ...
+        ii( q );
+    
+    Work around: #pragma inline_depth(0)
+
+===========================================================
+
+    Tweaked scanning of pp-number tokens in non-ISO/ANSI mode
+    so that old code continues to compile correctly.
+    
+    Example:
+        #define A10     3
+        #define A11     0x1e+A10
+        int v = A11;    // 0x1e + 3
+
+===========================================================
+
+    Added -mfi option to indicate to the compiler that interrupt
+    functions can assume the flat memory model is preserved.
+    If this option is not used, interrupt functions have to
+    assume that a different stack segment is being used and
+    so auto data must be manipulated as far data.
+    
+===========================================================
+
+    Fixed diagnostic of 'void' expression types in certain
+    contexts.
+
+    Example:
+        
+        void a();
+        int __u( int i ) {
+            return i == a() || a() == i;
+        }
+    
+===========================================================
+
+    Added diagnostic to identify cases where the calling
+    convention of a virtual function override has changed.
+
+    Example:
+        
+       struct B {
+            void __stdcall foo( int, int );
+       };
+       struct D : B {
+            void foo( int, int );
+       };
+    
+===========================================================
+
+    A function such as
+        Composed* ctor( Composed const & src )
+        {
+            AnotherDtorable stuff_1;
+            AnotherDtorable stuff_2;
+            AnotherDtorable stuff_3;
+            Composed* ptr = new( some_data ) Composed( src );
+            return ptr;
+        }
+    where AnotherDtorable and Composed are destructable objects could cause
+    the object located by ptr to also be destructed under some
+    combinations of options.
+    
+    Work around: place the new statement in a separate function.
+
+===========================================================
+
+    The following code generated a spurious warning, claiming that
+    fn was unreferenced.
+        extern void import( const void * );
+        static void fn() {}
+        void external()
+        {
+            const void * foo = fn;
+            import( foo );
+        }
+        
+    Work around: ignore that warning or disable it
+    
+===========================================================
+
+    Diagnose extra initialization arguments for parenthetical
+    initialization of non-class types.
+    
+    Example:
+	int h(1);
+	
+	int f(1,2,3);
+	
+	int g( int(1,2,3) );
+	
+	foo() {
+	    int q = 1, // <- notice comma
+	    f(1,2,3);
+	}
+
+===========================================================
+
+    Diagnose definition of member functions that are not
+    declared but match the signature of another member
+    function with default arguments.
+
+    Example:
+    
+	struct A {
+	    void f1( int, bool = false );
+	};
+	
+	void A::f1( int ) {	// error
+	}
+
+===========================================================
+
+    Corrected problem where a inline template function
+    was incorrectly diagnosed as undefined if it was
+    inside a namespace.
+
+    Example:
+    
+	namespace alpha {
+	    template <class T>
+		inline T & f (T & a) {
+		    return a;
+		}
+	    inline long b ( long a ) {
+		return f ( a );
+	    }
+	}
+	
+	void fn( void ) {
+	    long a = 100;
+	    long c;
+	    
+	    using namespace alpha;
+	    
+	    c = b ( a );
+	}
+
+===========================================================
+
+    Corrected problems where certain class hierarchies
+    caused problems in generating construction/destruction
+    code or exception handling state tables.  The problems
+    manifested themselves as incorrect code/data or compiler
+    faults.
+
+    Example:
+    
+	#include <fstream.h>
+	#include <stdlib.h>
+	#include <iostream.h>
+	
+	class TextFile {
+	   public:
+	   ifstream solidTextFile;
+	};
+	class SolidTextFile : public TextFile {
+	};
+	
+	
+	void main() {
+	    SolidTextFile aFile;
+	}
+
+===========================================================
+
+    Corrected problem where, in copy initialization, a 
+    user-defined conversion function from source class to a 
+    non-const reference of the target class would not be 
+    preferred over another ambiguous conversion.  
+
+    In this example, the conversion A::operator String() going
+    to String::String( String const & ) should be preferred over 
+    the ambiguous use of the String::String( char ) constructor
+    from either A::operator int() or A::operator float().
+    
+    Example:
+    
+	struct String {
+	    String();
+	    String( char );        
+	};
+	
+	struct A
+	{
+	    operator String() const;
+	    operator int() const;
+	    operator float() const;
+	};
+	
+	struct B
+	{
+	    const A& GetitsA();
+	};
+	
+	void foo(B b)
+	{
+	    String s;
+	    s = b.GetitsA();
+	}
+	    
+
+===========================================================
+
+    Fixed reading and writing of the precompiled header
+    file when it contained C++ EH information for classes.
+
+===========================================================
+
+          ******************
+          ** Disassembler **
+          ******************
+
+    fixed problem with disassembly of 3-operand imul instructions
+    (only 2 operands were displayed)
+===========================================================
+
+          ********************
+          ** C Header Files **
+          ********************
+
+    const qualifiers have been added to the char* parameters
+    to the findfirst and variant functions in io.h
+===========================================================
+
+    The register mode calling convention prototype for longjmp()
+    is no longer marked as "#pragma aborts" to facilitate
+    profiling support.
+===========================================================
+
+          **********************************************
+          ** Integrated Development Environment (IDE) **
+          **********************************************
+
+    Added pentium pro (p6) switches to the options pages
+    ( compiler, linker, assembler, etc. )
+===========================================================
+
+    added a switch for Watcom debugging info to the linker
+    options page - watcom was previously the default if you
+    selected debug all, now Dwarf is the default
+===========================================================
+
+    fixed a resource problem that was causing some of the
+    buttons and menu items to appear with no text
+===========================================================
+
+    Don't use incremental linking for DOS or Netware 
+    applications - it is not supported
+===========================================================
+
+    Changed the compiler options for Netware targets to use
+    -5s, -ms -- stack based, small model
+===========================================================
+
+    changed the linker options for 32-bit OS/2 DLL's
+    now uses op manyautodata, initinstance, terminstance
+===========================================================
+
+          **********
+          ** Make **
+          **********
+
+    In non-Microsoft mode, WMAKE will find and process
+    a file named "MAKEFINI" after all makefiles have been
+    processed.
+    
+===========================================================
+
+          ************
+          ** WVIDEO **
+          ************
+
+    Rolled back DOS4G extender to 1.96 to fix pharlap application debugging crashes.
+    
+===========================================================
+
+    fixed a bug where you couldn't debug "Large" DOS/4GW apps
+===========================================================
+
+
+Changes in 11.0 that may Require Recompilation:
+-----------------------------------------------
+clock()
+The clock function accuracy has changed from 100 ticks per second to 1000 ticks per second (i.e., CLOCKS_PER_SEC has changed).  Source code that uses the clock function and CLOCKS_PER_SEC in its calculations must be recompiled before linking the application with new libraries.
+
+
+Major Differences from Version 10.6:
+------------------------------------
+The following sections summarize the major differences from the previous release of Watcom C/C++.
+
+In general, we have improved Microsoft compatibility in our compilers 
+(more warnings instead of errors, support for MS extensions, etc.) and tools.
+Some of the Win32 and 32-bit OS/2 versions of our tools are now available in DLL form.
+
+      
+     EXE      DLL        Description
+     ------   -------    -----------------------
+     wcc      wccd       16-bit x86 C compiler
+     wcc386   wccd386    32-bit x86 C compiler
+     wpp      wppdi86    16-bit x86 C++ compiler
+     wpp386   wppd386    32-bit x86 C++ compiler
+     wlink    wlink      Watcom Linker
+     wlib     wlibd      Watcom Library Manager
+
+This provides better performance when using the Integrated Development Environment 
+or Watcom Make.  See the description of the !loaddll preprocessing directive 
+in Watcom Make for more information.
+
+Changes to the C++ Compiler for 11.0 
+------------------------------------
+We have added support for namespaces and RTTI (Run-Time Type Identification).
+We have improved (faster) pre-compiled header support.
+We have added "long long" (64-bit integer) support in the form of a new __int64 type.
+
+Changes to the C Compiler for 11.0 
+----------------------------------
+We have improved (faster) pre-compiled header support.
+We have added "long long" (64-bit integer) support in the form of a new __int64 type.
+
+Changes to the Code Generator for 11.0 
+--------------------------------------
+A new optimization, "branch prediction", has been added.  This optimization is enabled by the "ob" or "ox" compiler options.  The code generator tries to increase the density of cache use by predicting branches based upon heuristics (this optimization is especially important for Intel's Pentium Pro).
+We have added Multi-media Extensions (MMX) support to the in-line assemblers.
+We have added "long long" (64-bit integer) support in the form of a new __int64 type.
+
+Changes to the Compiler Tools for 11.0 
+--------------------------------------
+The Watcom Linker supports incremental linking.
+The Watcom Library Manager (WLIB) can now understand COFF and ELF format object files, as well as OMF et al.  The Watcom Library Manager can now read/write AR-format (Microsoft compatible), Multilib (used by IBM for PowerPC version of OS/2), or old-style OMF libraries.  The default output format is AR-format and this can be changed by switches.  The Watcom Library Manager can output various format import libraries.
+
+We have added Multi-media Extensions (MMX) support to the Watcom Assembler (WASM).
+A new version of the Watcom Disassembler (WDIS) is included.  It can process ELF, COFF or OMF object files and ELF, COFF or PE format (Win32) executables.
+
+The old disassembler (WDISASM) has been retired and is not included in the package.
+
+We have added new tool front-ends that emulate Microsoft tools.  These are:
+
+    nmake
+    cl
+    link
+    lib
+    rc
+    cvtres
+    mapsym
+
+These programs take the usual Microsoft arguments and translate them, where possible, into equivalent Watcom arguments and spawn the equivalent Watcom tools.
+
+Watcom Make now processes Microsoft format makefiles when the "ms" option is used.
+
+Changes to the C/C++ Libraries for 11.0 
+---------------------------------------
+We have added multi-byte and wide character (including UNICODE) support to the libraries.
+We include run-time DLLs for the C, Math and C++ Libraries.
+We have added Multi-media Extensions (MMX) support to the libraries.
+The following new functions were added to the library...
+
+mb functions
+
+The clock function accuracy has changed from 100 ticks per second to 1000 ticks per second (i.e., CLOCKS_PER_SEC has changed).
+
+Changes to the DOS Graphics Library for 11.0 
+--------------------------------------------
+The graphics library now performs the VESA test before testing for vendor specific graphics cards.  This fix is intended to broaden the number of graphics cards that are supported.
+
+Changes in Microsoft Foundation Classes Support for 11.0 
+--------------------------------------------------------
+Version 4.1 of the 32-bit MFC is included in the package.
+Version 2.52b of the 16-bit MFC is included in the package.
+
+Changes in Microsoft Win32 SDK Support for 11.0 
+-----------------------------------------------
+We include the full Win32 SDK (including all samples).
+The Win32 SDK is supported for Windows 95 and Windows NT platforms.
+
+Microsoft DirectX SDK Now Included in 11.0 
+------------------------------------------
+We have licensed the DirectX SDK from Microsoft for those customers who develop games.
+
+Changes in Blue Sky's Visual Programmer for 11.0 
+------------------------------------------------
+A new 32-bit version of Visual Programmer is included in the package.  This version runs on 32-bit Windows 95 and NT.  It also runs on 16-bit Windows when Win32s support is installed.  The 16-bit version of Visual Programmer is no longer included in the package.
+You can generate 16-bit applications with it, but you must be careful to avoid using Win95 controls.
+This new version fixes all known bugs in the previous version.
+
+
+For details on what was new in versions 10.6 and earlier, see the GETTING STARTED helpfile.
+
+Other notes:
+
+Note: %DstDir% represents the directory in which WATCOM C/C++ was installed.
+      %WinSysDir% represents your Windows 3.x system directory.
+   
+1.  When debugging a 32-bit Phar Lap, TNT or DOS/4GW application, make sure
+    that "run386.exe", "tnt.exe", or "dos4gw.exe" respectively, are in your
+    path.  Failure to do so, may cause your computer to hang.
+   
+2. When using the GUI debugger to debug Windows 3.x applications, certain
+   Windows applications may cause the debugger to behave in an unpredictable
+   way.  Typically, this occurs when debugging certain messages in window
+   callback functions.  For example, hitting a breakpoint in a window
+   function that is processing a WM_INITDIALOG message will crash the system.
+   If this happens, the character-mode version of the debugger should be
+   used.
+   
+3. When debugging the Windows 3.x MFC 2.52 samples contained in
+   "%DstDir%\src\mfc\v252" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v252\*.cpp
+	
+   Similarly, when debugging the Windows NT MFC 4.1 samples contained in
+   "%DstDir%\src\mfc\v41" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v41\*.cpp
+   
+   The source path can be changed by selecting "Source Path" in the "File"
+   menu.
+
+4. In order to use CodeWright with our IDE, you will need to change the
+   "cwright.ini" file.  This file contains the following line.
+
+	;LibPreload=cwdde.dll
+
+   Uncomment this line by removing the ';' character.  This is required to
+   enable communication between the IDE and CodeWright when "weditcw.dll"
+   is selected as the editor interface DLL from the IDE.
+    
+5. If you choose to not install help files onto your hard disk, you will not
+   be able to get help on the C library or MFC library from the editor.
+    
+6. Parallel remote debug servers now work in an OS/2 session. 
+    
+7. When configuring the browser to use the CodeWright editor interface, you
+   must specify "weditcw.dll" as the editor DLL, save the new options, exit
+   the browser, and restart the browser.  Failure to do this will cause an
+   exception to occur in the CodeWright interface DLL.
+   
+8. Under OS/2, if you are debugging a DOS application from the IDE, you
+   must ensure that %DstDir%\binw is in your DOS path so that when the IDE
+   starts a DOS session to debug your application, the remote server can find
+   its support files.
+   
+9. Under OS/2, you must ensure that the "Comet cursor" desktop setting is
+   disabled if you want to debug PM applications.  By default, this setting
+   is disabled.
+   
+10. The OS/2 Resource Comiler ( RC.EXE ) does not work correctly if the 
+    directory which contains RC.EXE occurs too late in your PATH environment 
+    variable ( > 250 characters ). If you experience problems with RC.EXE, 
+    you should change the PATH environment variable in your CONFIG.SYS file, 
+    by moving %WATCOM%\BINP and %WATCOM%\BINW earlier in the path.
+   
+Using Blue Sky Visual Programmer 2.50
+-------------------------------------
+
+Visual Programmer version 2.50 is a 32-bit windows program.  It will run on
+Windows NT, Windows 95 or Win32s.
+
+The following outlines the steps required to create a Visual Programmer
+application.
+
+1. Run the Watcom IDE.
+
+2. From the File menu, select the New project menu item.
+
+3. The "Project Filename" dialog will appear.  Choose a project file name and
+   directory.
+   
+	Example: c:\tmp\test.wpj
+	
+   Press <OK>.
+
+4. The "New Target" dialog will appear.   
+   Click the "MFC - 32-bit (4.1)" button or the "MFC - 16-bit (2.52)" button 
+   to choose the target type.
+   Type the target file name.  This is the name of the executable you want to
+   build.
+   
+	Example: c:\tmp\test.exe
+	
+   Press <OK>.
+    
+5. Run Visual programmer by selecting the Visual Programmer option from the
+   Targets menu.
+    
+6. The Visual Programmer "New" dialog will appear.  Select an application
+   template as a starting place for your application.  The working directory
+   and file name are determined by the target location specified in the
+   Watcom IDE.  Press <OK> when you are done.
+    
+7. Use Visual Programmer to develop the application.    
+
+   See Visual Programmer Help for more details.
+	
+   Be sure to try out the "Quick Run" option.  This tests the appearance of
+   the program without actually having to generate any code.
+    
+8. Return to the IDE by pressing the <Return to Watcom IDE> toolbar button.
+   Do not shut down Visual programmer until you have finished generating code.
+   To return to the IDE under Windows 95, use the task-bar.
+
+9. Press the <Make the Current Target> toolbar button or, from the Target
+   menu, select the Make option.
+    
+10. A Visual Programmer Message box will prompt you:
+
+    "Save and Generate code for current design"
+    
+    Press <Yes>.  This is the same as choosing the V.P. "Save & Generate code"
+    option.
+
+11. The Visual Programmer window will come to the front and the application
+    code will generated.
+
+12. The IDE window will then come back to the front and will finish the 
+    process of compiling and linking the program to create the executable
+    file.

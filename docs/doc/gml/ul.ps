@@ -1,0 +1,24 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator:  WATCOM GML V4.0 PC/DOS
+%%Title: Shorten Courier Font Underscore
+%%CreationDate: 22:21:27 November 12, 1996
+%%Pages: (atend)
+%%BoundingBox: 0 0 8500 10920
+%%EndComments
+%%Shorten up the Courier underscore character so that two
+%%adjacent ones will not touch.
+/Courier findfont
+  dup length dict begin {1 index /FID ne {def} {pop pop} ifelse} forall
+  CharStrings dup length dict begin {def} forall currentdict end
+  /CharStrings exch def
+  CharStrings /underscore
+  {pop
+     currentdict /FontInfo get /UnderlineThickness get .50 mul setlinewidth
+     currentdict /FontBBox get 2 get pop 600 dup
+     0 setcharwidth
+     newpath 0 0 moveto
+     dup .15 mul 0 rmoveto .75 mul 0 rlineto stroke
+  }bind put
+currentdict end
+/Courier exch definefont pop
+%%EndProlog

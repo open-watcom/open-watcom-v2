@@ -47,6 +47,10 @@ WEXPORT WGroupBox::WGroupBox( WStatDialog* parent, unsigned id,
 
 }
 
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
 WEXPORT WGroupBox::~WGroupBox() {
 /*******************************/
 }

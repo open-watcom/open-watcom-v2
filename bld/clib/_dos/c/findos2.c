@@ -76,12 +76,11 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
                                   struct find_t *buf ) {
 /******************************************************/
 
-    APIRET  rc;
-
 #if defined(__OS2_286__)
     if( _RWD_osmode == OS2_MODE ) {
 #endif
-        FF_BUFFER       dir_buff;
+        APIRET      rc;
+        FF_BUFFER   dir_buff;
         HDIR        handle = BAD_HANDLE;
         OS_UINT     searchcount;
 
@@ -91,20 +90,19 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 
         if( rc != 0 && rc != ERROR_EAS_DIDNT_FIT ) {
             HANDLE_OF( buf ) = BAD_HANDLE;
-            __set_errno_dos( rc );
-            return( rc );
+            return( __set_errno_dos_reterr( rc ) );
         }
         HANDLE_OF( buf ) = handle;
         copydir( buf, &dir_buff );      /* copy in other fields */
 
 #if defined(__OS2_286__)
     } else {                    /* real mode */
-        TinySetDTA( buf );      /* set our DTA */
+        tiny_ret_t  rc;
 
+        TinySetDTA( buf );      /* set our DTA */
         rc = TinyFindFirst( path, attr );
-        if( rc > 0 ) {
-            __set_errno_dos( rc );
-            return( rc );
+        if( TINY_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
         }
     }
 #endif
@@ -115,30 +113,30 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 /*****************************************************/
 
-    APIRET  rc;
-
 #if defined(__OS2_286__)
     if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
 #endif
+        APIRET  rc;
+
         FF_BUFFER       dir_buff;
         OS_UINT         searchcount = 1;
 
         rc = DosFindNext( HANDLE_OF( buf ), (PVOID)&dir_buff,
                     sizeof( dir_buff ), &searchcount );
         if( rc != 0 ) {
-            __set_errno_dos( rc );
-            return( rc );
+            return( __set_errno_dos_reterr( rc ) );
         }
 
         copydir( buf, &dir_buff );
 
 #if defined(__OS2_286__)
     } else {            /* real mode */
+        tiny_ret_t      rc;
+
         TinySetDTA( buf );
         rc = TinyFindNext();
-        if( rc > 0 ) {
-            __set_errno_dos( rc );
-            return( rc );
+        if( TINY_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
         }
     }
 #endif
@@ -157,8 +155,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
         if( HANDLE_OF( buf ) != BAD_HANDLE ) {
             rc = DosFindClose( HANDLE_OF( buf ) );
             if( rc != 0 ) {
-                __set_errno_dos( rc );
-                return( rc );
+                return( __set_errno_dos_reterr( rc ) );
             }
         }
 #if defined(__OS2_286__)

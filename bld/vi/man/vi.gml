@@ -5,7 +5,7 @@
         left_adjust = '0.5i'
 :eLAYOUT
 
-:set symbol="edname"	 value="WATCOM Editor".
+:set symbol="edname"     value="Open Watcom Editor".
 
 :GDOC.
 :FRONTM.
@@ -34,32 +34,32 @@
 .if &ishelp ne 1 .do begin
 :SEPSECT.Editor User's Guide
 .do end
-:cmt :INCLUDE file='intro'.
+:INCLUDE file='intro'.
 .if &ishelp ne 1 .do begin
-:cmt :INCLUDE file='basic'.
-:cmt :INCLUDE file='inter'.
-:cmt :INCLUDE file='advan'.
+:INCLUDE file='basic'.
+:INCLUDE file='inter'.
+:INCLUDE file='advan'.
 .if &ishelp ne 1 .do begin
 :SEPSECT.Windows Editor User's Guide
 .do end
 :SEPSECT.Editor Reference
 .do end
-:cmt :INCLUDE file='env'.
-:cmt :INCLUDE file='modes'.
-:cmt :INCLUDE file='cmds'.
-:cmt :INCLUDE file='win_menu'.
-.* :INCLUDE file='settings'.
-:cmt :INCLUDE file='regexp'.
-:cmt :INCLUDE file='scripts'.
+:INCLUDE file='env'.
+:INCLUDE file='modes'.
+:INCLUDE file='cmds'.
+:INCLUDE file='win_menu'.
+:INCLUDE file='settings'.
+:INCLUDE file='regexp'.
+:INCLUDE file='scripts'.
 .if &ishelp ne 1 .do begin
 :SEPSECT.Appendices
 .do end
 :APPENDIX
-:cmt :INCLUDE file='a_cmdmode'.
-:cmt :INCLUDE file='a_errmsg'.
-:cmt :INCLUDE file='a_ctags'.
-:cmt :INCLUDE file='a_symkeys'.
-:cmt :INCLUDE file='a_errcode'.
+:INCLUDE file='a_cmdmode'.
+:INCLUDE file='a_errmsg'.
+:INCLUDE file='a_ctags'.
+:INCLUDE file='a_symkeys'.
+:INCLUDE file='a_errcode'.
 :BACKM.
 :INDEX.
 :eGDOC.

@@ -34,49 +34,49 @@
 #ifndef _DOSEXT_INCLUDED
 
 struct ByteRegisters {
-        unsigned char al,ah;
-        unsigned char bl,bh;
-        unsigned char cl,ch;
-        unsigned char dl,dh;
+        unsigned char   al, ah;
+        unsigned char   bl, bh;
+        unsigned char   cl, ch;
+        unsigned char   dl, dh;
 };
 
 struct WordRegisters {
-        unsigned short ax;
-        unsigned short bx;
-        unsigned short cx;
-        unsigned short dx;
-        unsigned short bp;
-        unsigned short si;
-        unsigned short di;
-        unsigned short ds;
-        unsigned short es;
-        unsigned short flags;
+        unsigned short  ax;
+        unsigned short  bx;
+        unsigned short  cx;
+        unsigned short  dx;
+        unsigned short  bp;
+        unsigned short  si;
+        unsigned short  di;
+        unsigned short  ds;
+        unsigned short  es;
+        unsigned short  flags;
 };
 
 typedef union Registers {
-        struct ByteRegisters h;
-        struct WordRegisters x;
+        struct ByteRegisters    h;
+        struct WordRegisters    x;
 } Registers;
 
 typedef struct InterruptData {
-        short interrupt_no;
-        Registers regs;
+        short       interrupt_no;
+        Registers   regs;
 } InterruptData;
 
-#define    FLAG_CARRY           0x0001
-#define    FLAG_PARITY          0x0004
-#define    FLAG_AUX_CARRY       0x0010
-#define    FLAG_ZERO            0x0040
-#define    FLAG_SIGN            0x0080
-#define    FLAG_TRACE           0x0100
-#define    FLAG_INTERRUPT       0x0200
-#define    FLAG_DIRECTION       0x0400
-#define    FLAG_OVERFLOW        0x0800
+#define FLAG_CARRY          0x0001
+#define FLAG_PARITY         0x0004
+#define FLAG_AUX_CARRY      0x0010
+#define FLAG_ZERO           0x0040
+#define FLAG_SIGN           0x0080
+#define FLAG_TRACE          0x0100
+#define FLAG_INTERRUPT      0x0200
+#define FLAG_DIRECTION      0x0400
+#define FLAG_OVERFLOW       0x0800
 
-void     InterruptCPU( void );
+void    InterruptCPU( void );
 
 #ifndef __WATCOMC__
-#define MK_FP(__s,__o) ((void far*)(((unsigned long)(__s)<<16)|(unsigned)(__o)))
+    #define MK_FP(__s, __o) ((void far *) (((unsigned long)(__s) << 16) | (unsigned) (__o)))
 #endif
 
 #endif

@@ -46,7 +46,7 @@ include struct.inc
 ; Output: [EDX, EAX] = 64-bit integer
 
         xdefp   __FDU8
-        defp    __FDU8
+        defpe   __FDU8
         push    ECX             ; save ECX
         mov     CX,3ffh+64      ; maximum number 2^64-1
         call    __FDU           ; convert float to unsigned __int64
@@ -59,7 +59,7 @@ include struct.inc
 ; Output: [EDX, EAX] = 64-bit integer
 
         xdefp   __FDI8
-        defp    __FDI8
+        defpe   __FDI8
         push    ECX             ; save ECX
         mov     CX,3ffh+63      ; maximum number 2^63-1
         call    __FDI           ; convert float to signed __int64

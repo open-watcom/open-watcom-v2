@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _settextalign( short horiz, short vert )
+_WCRTLINK void _WCI86FAR _CGRAPH _settextalign( short horiz, short vert )
 /*========================================================
 
    This routine sets the alignment of output text within the text cell. */

@@ -1,0 +1,77 @@
+objs_msdos_086    = $(d16)
+objs_msdos_087    = $(d16)
+objs_msdos_286    = $(dpm)
+objs_msdos_287    = $(dpm)
+objs_msdos_386    = $(d32)
+objs_msdos_387    = $(d32)
+objs_netware_386  = $(nov)
+objs_netware_387  = $(nov)
+objs_os2_286      = $(o16)
+objs_os2_287      = $(o16)
+objs_os2_386      = $(o32)
+objs_os2_387      = $(o32)
+objs_os2_ppc      = $(op)
+objs_qnx_286      = $(q16)
+objs_qnx_287      = $(q16)
+objs_qnx_386      = $(q32)
+objs_qnx_387      = $(q32)
+objs_windows_086  = $(w16)
+objs_windows_087  = $(w16)
+objs_windows_386  = $(w32)
+objs_windows_387  = $(w32)
+objs_winnt_386    = $(nt)
+objs_winnt_387    = $(nt)
+objs_winnt_axp    = $(nta)
+objs_winnt_ppc    = $(ntp)
+objs_linux_386    = $(l32)
+objs_linux_387    = $(l32)
+
+!ifeq objsuffix files
+objfiles = $+ $(objs_$(system)_$(processor)) $-
+!else
+objs = $+ $(objs_$(system)_$(processor)) $-
+!endif
+
+objs_msdos_086    =
+objs_msdos_087    =
+objs_msdos_286    =
+objs_msdos_287    =
+objs_msdos_386    =
+objs_msdos_387    =
+objs_netware_386  =
+objs_netware_387  =
+objs_os2_286      =
+objs_os2_287      =
+objs_os2_386      =
+objs_os2_387      =
+objs_os2_ppc      =
+objs_qnx_286      =
+objs_qnx_287      =
+objs_qnx_386      =
+objs_qnx_387      =
+objs_windows_086  =
+objs_windows_087  =
+objs_windows_386  =
+objs_windows_387  =
+objs_winnt_386    =
+objs_winnt_387    =
+objs_winnt_axp    =
+objs_winnt_ppc    =
+objs_linux_386    =
+objs_linux_387    =
+
+d16 =
+d32 =
+dpm =
+nt  =
+nta =
+ntp =
+nov =
+o16 =
+o32 =
+op  =
+q16 =
+q32 =
+w16 =
+w32 =
+l32 =

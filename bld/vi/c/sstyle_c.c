@@ -24,19 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Support for C syntax.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
 #include "vi.h"
 #include "sstyle.h"
-#include "lang.h"
 
 
 /*----- LOCALS -----*/
@@ -45,6 +39,12 @@ static  ss_flags_c  flags;
 static  long        lenCComment = 0;
 static  char        *firstNonWS;
 
+#define DIRECTIVE_ERROR     "error"
+#define DIRECTIVE_IF        "if"
+#define DIRECTIVE_ELIF      "elif"
+#define DIRECTIVE_PRAGMA    "pragma"
+#define KEYWORD_DECLSPEC    "__declspec"
+#define KEYWORD_DEFINED     "defined"
 
 enum getFloatCommands {
     AFTER_ZERO,
@@ -76,6 +76,13 @@ static int issymbol( int c )
     }
 }
 
+static bool isdirective( char *text, char *directive )
+{
+    int len = strlen( directive );
+    return( strncmp( text, directive, len ) == 0 && !isalnum( *(text + len) ) &&
+            *(text + len) != '_' );
+}
+
 void InitCLine( char *text )
 {
     while( *text && isspace( *text ) ) {
@@ -104,13 +111,20 @@ static void getHex( ss_block *ss_new, char *start )
         if( tolower( *text ) == 'l' ) {
             text++;
         }
+        if( tolower( *text ) == 'l' ) {
+            text++;
+        }
     } else if( lastc == 'l' ) {
         text++;
+        if( tolower( *text ) == 'l' ) {
+            text++;
+        }
         if( tolower( *text ) == 'u' ) {
             text++;
         }
     }
     ss_new->len = text - start;
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
 }
 
 static void getFloat( ss_block *ss_new, char *start, int skip, int command )
@@ -144,8 +158,13 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
                     getFloat( ss_new, start, text - start + 1, AFTER_EXP );
                     return;
                 }
+                if( *text == 'f' || *text == 'F' || *text == 'l' || *text == 'L' ) {
+                    break;
+                }
                 if( *text && !isspace( *text ) && !issymbol( *text ) ) {
-                    if( *text ) text++;
+                    if( *text ) {
+                        text++;
+                    }
                     ss_new->type = SE_INVALIDTEXT;
                 }
                 break;
@@ -164,7 +183,9 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
                 text++;
             }
             if( !isdigit( *text ) ) {
-                if( *text ) text++;
+                if( *text ) {
+                    text++;
+                }
                 ss_new->type = SE_INVALIDTEXT;
                 break;
             }
@@ -183,6 +204,7 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
         text++;
     }
     ss_new->len = text - start;
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
 }
 
 static void getNumber( ss_block *ss_new, char *start, char top )
@@ -190,7 +212,7 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     int     lastc;
     char    *text = start + 1;
 
-    while( ( *text >= '0' ) && ( *text <= top ) ) {
+    while( (*text >= '0') && (*text <= top) ) {
         text++;
     }
     if( *text == '.' ) {
@@ -209,19 +231,28 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     /* feature!: we display 0 as an integer (it's really an octal)
      *           as it is so common & is usually thought of as such
      */
-    ss_new->type = ( top == '7' && ss_new->len > 1 ) ? SE_OCTAL : SE_INTEGER;
-    lastc = tolower ( *text );
+    ss_new->type = (top == '7' && ss_new->len > 1) ? SE_OCTAL : SE_INTEGER;
+    lastc = tolower( *text );
     if( lastc == 'u' ) {
         ss_new->len++;
-        if( tolower( *( text + 1 ) ) == 'l' ) {
+        if( tolower( *(text + 1) ) == 'l' ) {
+            text++;
+            ss_new->len++;
+        }
+        if( tolower( *(text + 1) ) == 'l' ) {
             ss_new->len++;
         }
     } else if( lastc == 'l' ) {
         ss_new->len++;
-        if( tolower( *( text + 1 ) ) == 'u' ) {
+        if( tolower( *(text + 1) ) == 'l' ) {
+            text++;
+            ss_new->len++;
+        }
+        if( tolower( *(text + 1) ) == 'u' ) {
             ss_new->len++;
         }
     }
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
 }
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
@@ -239,20 +270,33 @@ static void getText( ss_block *ss_new, char *start )
     char    *text = start + 1;
     char    save_char;
     bool    isKeyword;
+    bool    isPragma;
+    bool    isDeclspec;
     while( isalnum( *text ) || ( *text == '_' ) ) {
         text++;
     }
     save_char = *text;
     *text = '\0';
-    isKeyword = IsKeyword( start );
+    isKeyword = IsKeyword( start, FALSE );
+    isPragma = flags.inPragmaDir && IsPragma( start );
+    isDeclspec = flags.inDeclspec2 && IsDeclspec( start );
     *text = save_char;
 
     ss_new->type = SE_IDENTIFIER;
-    if( isKeyword ) {
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    if( isPragma ) {
+        ss_new->type = SE_PREPROCESSOR;
+    } else if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
-    } else
-    if( *text == ':' && firstNonWS == start &&
-        *( text + 1 ) != ':' && *( text + 1 ) != '>' ) {
+        if( isdirective( start, KEYWORD_DECLSPEC ) ) {
+            flags.inDeclspec = TRUE;
+        }
+    } else if( isDeclspec ) {
+        ss_new->type = SE_KEYWORD;
+    } else if( flags.inIfDir && isdirective( start, KEYWORD_DEFINED ) ) {
+        ss_new->type = SE_PREPROCESSOR;
+    } else if( *text == ':' && firstNonWS == start &&
+               *(text + 1) != ':' && *(text + 1) != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         text++;
         ss_new->type = SE_JUMPLABEL;
@@ -260,8 +304,10 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->len = text - start;
 }
 
-static void getSymbol( ss_block *ss_new )
+static void getSymbol( ss_block *ss_new, char *start )
 {
+    flags.inDeclspec2 = flags.inDeclspec && *start == '(';
+    flags.inDeclspec = FALSE;
     ss_new->type = SE_SYMBOL;
     ss_new->len = 1;
 }
@@ -274,8 +320,10 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     ss_new->type = SE_PREPROCESSOR;
 
     if( EditFlags.PPKeywordOnly ) {
+        char *directive;
+        
         // just grab the #xxx bit & go
-
+        
         // skip the #
         text++;
         // take any spaces present
@@ -283,8 +331,18 @@ static void getPreprocessor( ss_block *ss_new, char *start )
             text++;
         }
         // and then the keyword
-        while( *text && !isspace( *text ) ) {
+        directive = text;
+        while( *text && !isspace( *text ) && !issymbol( *text ) ) {
             text++;
+        }
+        if( isdirective( directive, DIRECTIVE_ERROR ) ) {
+            flags.inErrorDir = TRUE;
+        } else if( isdirective( directive, DIRECTIVE_IF ) ) {
+            flags.inIfDir = TRUE;
+        } else if( isdirective( directive, DIRECTIVE_ELIF ) ) {
+            flags.inIfDir = TRUE;
+        } else if( isdirective( directive, DIRECTIVE_PRAGMA ) ) {
+            flags.inPragmaDir = TRUE;
         }
         ss_new->len = text - start;
         flags.inPreprocessor = FALSE;
@@ -301,11 +359,11 @@ static void getPreprocessor( ss_block *ss_new, char *start )
             }
         }
         if( *text == '/' ) {
-            if( *( text + 1 ) == '*' && !withinQuotes ) {
+            if( *(text + 1) == '*' && !withinQuotes ) {
                 flags.inCComment = TRUE;
                 lenCComment = 0;
                 break;
-            } else if( *( text + 1 ) == '/' && !withinQuotes ) {
+            } else if( *(text + 1) == '/' && !withinQuotes ) {
                 flags.inCPPComment = TRUE;
                 flags.inPreprocessor = FALSE;
                 break;
@@ -316,7 +374,7 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     flags.inString = (bool)withinQuotes;
 
     if( *text == '\0' ) {
-        if( *( text - 1 ) != '\\' ) {
+        if( *(text - 1) != '\\' ) {
             flags.inPreprocessor = FALSE;
             if( flags.inString ) {
                 ss_new->type = SE_INVALIDTEXT;
@@ -332,12 +390,12 @@ static void getChar( ss_block *ss_new, char *start, int skip )
     char    *text = start + skip;
     ss_new->type = SE_CHAR;
 embedded:
-    while( ( *text ) && ( *text != '\'' ) ) {
+    while( (*text) && (*text != '\'') ) {
         text++;
     }
     if( *text == '\0' ) {
         ss_new->type = SE_INVALIDTEXT;
-    } else if( ( *( text - 1 ) == '\\' ) && ( *( text - 2 ) != '\\' ) ) {
+    } else if( (*(text - 1) == '\\') && (*(text - 2) != '\\') ) {
         text++;
         goto embedded;
     } else {
@@ -345,14 +403,15 @@ embedded:
     }
     ss_new->len = text - start;
     if(ss_new->len == 2) {
-        #if 0
+#if 0
         /* multibyte character constants are legal in the C standard */
-        (ss_new->len == 2) || ( (ss_new->len > 3) && (start[skip] != '\\') )
+        (ss_new->len == 2) || ((ss_new->len > 3) && (start[skip] != '\\'))
         // 2 or more length char constants not allowed if first char not '\'
-        #endif
+#endif
         // 0 length char constants not allowed
         ss_new->type = SE_INVALIDTEXT;
     }
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
 }
 
 static void getBeyondText( ss_block *ss_new )
@@ -365,6 +424,7 @@ static void getInvalidChar( ss_block *ss_new )
 {
     ss_new->type = SE_INVALIDTEXT;
     ss_new->len = 1;
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
 }
 
 static void getCComment( ss_block *ss_new, char *start, int skip )
@@ -414,19 +474,15 @@ static void getString( ss_block *ss_new, char *start, int skip )
     char    *text = nstart;
 
     ss_new->type = SE_STRING;
-again:
     while( *text && *text != '"' ) {
-        text++;
-    }
-    if( ( *text == '"' ) &&
-        ( *( text - 1 ) == '\\' ) &&
-        ( *( text - 2 ) != '\\' ) ) {
-        // a literal quote - skip over
-        text++;
-        goto again;
+        if( *text == '\\' && (*(text + 1) == '\\' || *(text + 1) == '"') ) {
+            text += 2;
+        } else {
+            text++;
+        }
     }
     if( *text == '\0' ) {
-        if( *( text - 1 ) != '\\' ) {
+        if( *(text - 1) != '\\' ) {
             // unterminated string
             ss_new->type = SE_INVALIDTEXT;
 
@@ -442,6 +498,19 @@ again:
         flags.inString = FALSE;
     }
     ss_new->len = text - start;
+    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+}
+
+static void getErrorMsg( ss_block *ss_new, char *start )
+{
+    char    *text = start;
+
+    ss_new->type = SE_IDENTIFIER;
+    while( *text ) {
+        text++;
+    }
+    ss_new->len = text - start;
+    flags.inErrorDir = FALSE;
 }
 
 void InitCFlagsGivenValues( ss_flags_c *newFlags )
@@ -464,21 +533,26 @@ void InitCFlags( linenum line_no )
     line    *thisline;
     line    *topline;
     char    topChar;
-    int     rc;
+    vi_rc   rc;
     int     withinQuotes = 0;
     line    *line;
     bool    inBlock = FALSE;
 
-    flags.inCComment = 0;
-    flags.inCPPComment = 0;
-    flags.inString = 0;
-    flags.inPreprocessor = 0;
+    flags.inCComment = FALSE;
+    flags.inCPPComment = FALSE;
+    flags.inString = FALSE;
+    flags.inPreprocessor = FALSE;
+    flags.inErrorDir = FALSE;
+    flags.inIfDir = FALSE;
+    flags.inPragmaDir = FALSE;
+    flags.inDeclspec = FALSE;
+    flags.inDeclspec2 = FALSE;
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
     rc = GimmePrevLinePtr( &fcb, &line );
     while( rc == ERR_NO_ERR ) {
-        if( line->data[ line->len - 1 ] != '\\' ) {
+        if( line->data[line->len - 1] != '\\' ) {
             break;
         }
         inBlock = TRUE;
@@ -515,8 +589,7 @@ void InitCFlags( linenum line_no )
                     if( *text == '"' ) {
                         if( !withinQuotes ) {
                             withinQuotes = TRUE;
-                        } else if( *( text - 1 ) != '\\' ||
-                                   *( text - 2 ) == '\\' ) {
+                        } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
                             withinQuotes = FALSE;
                         }
                     }
@@ -526,14 +599,14 @@ void InitCFlags( linenum line_no )
                     break;
                 }
                 if( !withinQuotes ) {
-                    if( *( text - 1 ) == '/' ) {
+                    if( *(text - 1) == '/' ) {
                         flags.inCPPComment = TRUE;
-                    } else if( *( text + 1 ) == '*' ) {
+                    } else if( *(text + 1) == '*' ) {
                         flags.inCComment = TRUE;
                         lenCComment = 100;
                     }
                 }
-                if( *( text - 1 ) == '*' && !withinQuotes ) {
+                if( *(text - 1) == '*' && !withinQuotes ) {
                     flags.inCComment = FALSE;
                 }
                 text++;
@@ -566,8 +639,7 @@ void InitCFlags( linenum line_no )
                 while( text != starttext && *text != '/' ) {
                     text--;
                 }
-                if( *( text + 1 ) == '*' && *text == '/' &&
-                    *( text - 1 ) != '/' ) {
+                if( *(text + 1) == '*' && *text == '/' && *(text - 1) != '/' ) {
                     if( text == starttext ) {
                         flags.inCComment = TRUE;
                         lenCComment = 100;
@@ -579,12 +651,10 @@ void InitCFlags( linenum line_no )
                         if( *text == '"' ) {
                             if( !withinQuotes ) {
                                 withinQuotes = TRUE;
-                            } else if( *( text - 1 ) != '\\' ||
-                                       *( text - 2 ) == '\\' ) {
+                            } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
                                 withinQuotes = FALSE;
                             }
-                        } else if( *text == '/' &&
-                                   *(text-1) == '/' &&
+                        } else if( *text == '/' && *(text - 1) == '/' &&
                                    !withinQuotes ) {
                             flags.inCPPComment = TRUE;
                         }
@@ -602,7 +672,7 @@ void InitCFlags( linenum line_no )
                 if( text == starttext ) {
                     break;
                 }
-                if( *( text - 1 ) == '*' ) {
+                if( *(text - 1) == '*' ) {
                     // we may actually be in a string, but that's extreme
                     // (if this becomes a problem, count the "s to beginning
                     // of line, check if multiline, etc. etc.)
@@ -620,7 +690,8 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
     line = line;
     line_no = line_no;
 
-    if( start[ 0 ] == '\0' ) {
+    if( start[0] == '\0' ) {
+        flags.inIfDir = flags.inPragmaDir = FALSE;
         if( firstNonWS == start ) {
             // line is empty -
             // do not flag following line as having anything to do
@@ -647,27 +718,31 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
         getString( ss_new, start, 0 );
         return;
     }
+    if( flags.inErrorDir ) {
+        getErrorMsg( ss_new, start );
+        return;
+    }
 
-    if( isspace( start[ 0 ] ) ) {
+    if( isspace( start[0] ) ) {
         getWhiteSpace( ss_new, start );
         return;
     }
 
     if( *firstNonWS == '#' &&
-        ( !EditFlags.PPKeywordOnly || firstNonWS == start ) ) {
+        (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
         getPreprocessor( ss_new, start );
         return;
     }
 
-    switch( start[ 0 ] ) {
+    switch( start[0] ) {
         case '"':
             getString( ss_new, start, 1 );
             return;
         case '/':
-            if( start[ 1 ] == '*' ) {
+            if( start[1] == '*' ) {
                 getCComment( ss_new, start, 2 );
                 return;
-            } else if( start[ 1 ] == '/' ) {
+            } else if( start[1] == '/' ) {
                 getCPPComment( ss_new, start );
                 return;
             }
@@ -676,20 +751,20 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             getChar( ss_new, start, 1 );
             return;
         case 'L':
-            if( start[ 1 ] == '\'' ) {
+            if( start[1] == '\'' ) {
                 // wide char constant
                 getChar( ss_new, start, 2 );
                 return;
             }
             break;
         case '.':
-            if( isdigit( start[ 1 ] ) ) {
+            if( isdigit( start[1] ) ) {
                 getFloat( ss_new, start, 1, AFTER_DOT );
                 return;
             }
             break;
         case '0':
-            if( start[ 1 ] == 'x' || start[ 1 ] == 'X' ) {
+            if( start[1] == 'x' || start[1] == 'X' ) {
                 getHex( ss_new, start );
                 return;
             } else {
@@ -699,17 +774,17 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             break;
     }
 
-    if( issymbol( start[ 0 ] ) ) {
-        getSymbol( ss_new );
+    if( issymbol( start[0] ) ) {
+        getSymbol( ss_new, start );
         return;
     }
 
-    if( isdigit( start[ 0 ] ) ) {
+    if( isdigit( start[0] ) ) {
         getNumber( ss_new, start, '9' );
         return;
     }
 
-    if( isalpha( *start ) || ( *start == '_' ) ) {
+    if( isalpha( *start ) || (*start == '_') ) {
         getText( ss_new, start );
         return;
     }

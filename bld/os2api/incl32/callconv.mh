@@ -1,0 +1,9 @@
+/*
+ *  callconv.h  Calling convention for ULS interfaces.
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#define CALLCONV _System

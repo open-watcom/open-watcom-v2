@@ -39,6 +39,7 @@
         D_MISC          = 8,
         D_IO            = 16,
         D_IPX           = 32,
+        D_NET           = 32,
         D_REQ           = 64,
         D_ERROR  = 128
     } debug_classes;
@@ -55,10 +56,11 @@
     #define _DBG_IO( x ) if( DebugClasses & D_IO ) { ConsolePrintf x; }
     #define _DBG_MISC( x ) if( DebugClasses & D_MISC ) { ConsolePrintf x; }
     #define _DBG_IPX( x ) if( DebugClasses & D_IPX ) { ConsolePrintf x; }
+    #define _DBG_NET( x ) if( DebugClasses & D_NET ) { ConsolePrintf x; }
     #define _DBG_REQ( x ) if( DebugClasses & D_REQ ) { ConsolePrintf x; }
     #define _DBG_ERROR( x ) if( DebugClasses & D_ERROR ) { ConsolePrintf x; }
 
-    extern int ConsolePrintf(char *,...);
+    extern void ConsolePrintf(char *,...);
 
 #else
 
@@ -68,6 +70,7 @@
     #define _DBG_IO( x )
     #define _DBG_MISC( x )
     #define _DBG_IPX( x )
+    #define _DBG_NET( x )
     #define _DBG_REQ( x )
     #define _DBG_ERROR( x )
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit assembly language source.
 *
 ****************************************************************************/
 
@@ -93,7 +92,7 @@ typedef enum {
     ASCIZ
 } string_type;
 
-int IsMasmOutput()
+int IsMasmOutput( void )
 {
     return( !( DFormat & DFF_X86_UNIX ) && ( GetFormat() == ORL_OMF ) );
 }
@@ -199,7 +198,7 @@ static orl_sec_offset printString( char * string, string_type type )
     return( 0 );
 }
 
-static orl_sec_offset tryDUP(char *string, orl_sec_offset i, orl_sec_size size)
+static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size size )
 {
     orl_sec_offset      d;
     unsigned int        dup;
@@ -208,25 +207,25 @@ static orl_sec_offset tryDUP(char *string, orl_sec_offset i, orl_sec_size size)
     if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) ) return( 0 );
 
     for( d = i + 8; d < ( size - 8 ); d += 8 ) {
-        if( memcmp( &string[i], &string[d], 8 ) ) return( 0 );
+        if( memcmp( &bytes[i], &bytes[d], 8 ) ) return( 0 );
     }
 
     d -= i;
     dup = d / 8;
     if( dup < MIN_DUP_LINES ) return( 0 );
 
-    BufferStore( "0%XH DUP(", dup, string[i] );
+    BufferStore( "0%XH DUP(", dup, bytes[i] );
 
     for( dup = 0; dup < 7; dup++ ) {
-        BufferHex( 2, string[i + dup] );
+        BufferHex( 2, bytes[i + dup] );
         BufferConcat( "," );
     }
-    BufferHex( 2, string[i + 7] );
+    BufferHex( 2, bytes[i + 7] );
     BufferConcat( ")" );
     return( d );
 }
 
-static void printRest( char *string, orl_sec_size size )
+static void printRest( unsigned_8 *bytes, orl_sec_size size )
 {
     orl_sec_offset      i;
     orl_sec_offset      d;
@@ -244,7 +243,7 @@ static void printRest( char *string, orl_sec_size size )
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
         if( is_masm && !( i % 8 ) ) {
-            d = tryDUP( string, i, size );
+            d = tryDUP( bytes, i, size );
             if( d > 0 ) {
                 i += d;
                 if( i < size ) {
@@ -256,7 +255,7 @@ static void printRest( char *string, orl_sec_size size )
             }
         }
 
-        BufferHex( 2, string[i] );
+        BufferHex( 2, bytes[i] );
         if( i < size-1 ) {
             if( ( i % 8 ) == 7 ) {
                 BufferConcatNL();
@@ -291,6 +290,9 @@ dis_value HandleAddend( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLTREL_24:
         bits = 24;
         break;
+    case ORL_RELOC_TYPE_WORD_26:
+        bits = 26;
+        break;
     case ORL_RELOC_TYPE_REL_16:
     case ORL_RELOC_TYPE_WORD_16:
     case ORL_RELOC_TYPE_HALF_HI:
@@ -312,6 +314,12 @@ dis_value HandleAddend( ref_entry r_entry )
     case ORL_RELOC_TYPE_JUMP:
     case ORL_RELOC_TYPE_SEC_REL:
     case ORL_RELOC_TYPE_REL_32:
+    case ORL_RELOC_TYPE_REL_32_NOADJ:
+    case ORL_RELOC_TYPE_REL_32_ADJ1:
+    case ORL_RELOC_TYPE_REL_32_ADJ2:
+    case ORL_RELOC_TYPE_REL_32_ADJ3:
+    case ORL_RELOC_TYPE_REL_32_ADJ4:
+    case ORL_RELOC_TYPE_REL_32_ADJ5:
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
     default:
@@ -341,6 +349,12 @@ int IsDataReloc( ref_entry r_entry )
     case ORL_RELOC_TYPE_WORD_32_NB:
     case ORL_RELOC_TYPE_SECTION:
     case ORL_RELOC_TYPE_REL_32:
+    case ORL_RELOC_TYPE_REL_32_NOADJ:
+    case ORL_RELOC_TYPE_REL_32_ADJ1:
+    case ORL_RELOC_TYPE_REL_32_ADJ2:
+    case ORL_RELOC_TYPE_REL_32_ADJ3:
+    case ORL_RELOC_TYPE_REL_32_ADJ4:
+    case ORL_RELOC_TYPE_REL_32_ADJ5:
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
     case ORL_RELOC_TYPE_WORD_64:
@@ -361,8 +375,15 @@ orl_sec_offset RelocSize( ref_entry r_entry )
     case ORL_RELOC_TYPE_SEC_REL:
     case ORL_RELOC_TYPE_REL_21_SH:
     case ORL_RELOC_TYPE_WORD_24:
+    case ORL_RELOC_TYPE_WORD_26:
     case ORL_RELOC_TYPE_REL_24:
     case ORL_RELOC_TYPE_REL_32:
+    case ORL_RELOC_TYPE_REL_32_NOADJ:
+    case ORL_RELOC_TYPE_REL_32_ADJ1:
+    case ORL_RELOC_TYPE_REL_32_ADJ2:
+    case ORL_RELOC_TYPE_REL_32_ADJ3:
+    case ORL_RELOC_TYPE_REL_32_ADJ4:
+    case ORL_RELOC_TYPE_REL_32_ADJ5:
     case ORL_RELOC_TYPE_PLTREL_24:
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
@@ -422,7 +443,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels && types[rv] ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((long *)data), 0, RFLAG_DEFAULT, r_entry->offset,
+        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -430,7 +451,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((long *)data), 0, RFLAG_DEFAULT, r_entry->offset,
+        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -438,7 +459,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((short*)data), 0, RFLAG_DEFAULT, r_entry->offset,
+        HandleAReference(*((unsigned_16 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -446,7 +467,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((char *)data), 0, RFLAG_DEFAULT, r_entry->offset,
+        HandleAReference(*((unsigned_8 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -454,7 +475,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference( 0, 0, RFLAG_DEFAULT, r_entry->offset,
+        HandleAReference( 0, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                           r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         if( *((long *)data)!=0 || *((long *)data+4)!=0 ) {
@@ -492,7 +513,7 @@ static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
                 }
                 string_left += curr_pos;
             } else {
-                printRest( string_left, size - (int)( string_left - string ) );
+                printRest( (unsigned_8 *)string_left, size - (int)( string_left - string ) );
                 break;
             }
         } else {
@@ -505,7 +526,7 @@ static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
 
 static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                                  orl_sec_offset curr_pos, orl_sec_offset end,
-                                 char *contents, char *buffer )
+                                 unsigned_8 *contents, char *buffer )
 {
     int         raw;
     int         is_masm;
@@ -514,18 +535,24 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 
     is_masm = IsMasmOutput();
 
-    while( l_entry && l_entry->offset == curr_pos ) {
+    while( l_entry != NULL
+        && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
         switch( l_entry->type ) {
+        case( LTYP_ABSOLUTE ):
+            // no print any absolute label here
+            break;
         case( LTYP_SECTION ):
-            if( is_masm ) break;
+            if( is_masm )
+                break;
             /* fall through */
         case( LTYP_NAMED ):
-            if( sec && !strncmp( l_entry->label.name, sec->name, 8 ) ) break;
+            if( strcmp( l_entry->label.name, sec->name ) == 0 )
+                break;
             /* fall through */
         case( LTYP_UNNAMED ):
 
             if( raw ) {
-                strncpy( buffer, (contents + curr_pos), sizeof( unsigned_32 ) );
+                strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
             }
             if( l_entry->type == LTYP_UNNAMED ) {
                 if( !(DFormat & DFF_ASM) ) {
@@ -535,7 +562,11 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                         printRawAndAddress( buffer, curr_pos );
                     }
                 } else {
-                    BufferStore( "%c$%d:", LabelChar, l_entry->label.number );
+                    if( l_entry->offset != curr_pos ) {
+                        BufferStore( "%c$%d equ $-%d", LabelChar, l_entry->label.number, curr_pos - l_entry->offset );
+                    } else {
+                        BufferStore( "%c$%d:", LabelChar, l_entry->label.number );
+                    }
                 }
             } else {
                 if( !(DFormat & DFF_ASM) ) {
@@ -545,7 +576,11 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                         printRawAndAddress( buffer, curr_pos );
                     }
                 } else {
-                    BufferStore( "%s:", l_entry->label.name );
+                    if( l_entry->offset != curr_pos ) {
+                        BufferStore( "%s equ $-%d", l_entry->label.name, curr_pos - l_entry->offset );
+                    } else {
+                        BufferStore( "%s:", l_entry->label.name );
+                    }
                 }
             }
             BufferConcatNL();
@@ -556,7 +591,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
     return( l_entry );
 }
 
-return_val DumpASMDataFromSection( char *contents, orl_sec_offset start,
+return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
                                    orl_sec_offset end, label_entry *labent,
                                    ref_entry *refent, section_ptr sec )
 {
@@ -566,7 +601,7 @@ return_val DumpASMDataFromSection( char *contents, orl_sec_offset start,
     orl_sec_size        size;
     label_entry         l_entry;
     ref_entry           r_entry;
-    char *              buffer;
+    char                *buffer;
 
     l_entry = *labent;
     r_entry = *refent;
@@ -624,10 +659,10 @@ return_val DumpASMDataFromSection( char *contents, orl_sec_offset start,
     return( OKAY );
 }
 
-return_val DumpASMSection( section_ptr sec, char * contents,
+return_val DumpASMSection( section_ptr sec, unsigned_8 *contents,
                         orl_sec_size size, unsigned pass )
 {
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_list          sec_label_list;
     label_entry         l_entry;
     ref_list            sec_ref_list;
@@ -683,57 +718,80 @@ return_val DumpASMSection( section_ptr sec, char * contents,
 static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
                                      label_entry l_entry )
 {
-    orl_sec_offset              offset = 0;
     orl_sec_offset              dsiz = 0;
     char                        *prefix;
+    label_entry                 prev_entry;
 
-    if( !size ) return( OKAY );
+    if( ( size == 0 ) && ( l_entry == NULL ) )
+        return( OKAY );
 
     PrintHeader( sec );
-    while( l_entry ) {
-        if( ( l_entry->type == LTYP_SECTION ) &&
-          !strcmp( l_entry->label.name, sec->name ) ) {
-            l_entry = l_entry->next;
-        } else if( offset >= l_entry->offset ) {
+    prev_entry = NULL;
+    for( ; l_entry != NULL; l_entry = l_entry->next ) {
+        if( ( l_entry->type == LTYP_SECTION )
+            && ( strcmp( l_entry->label.name, sec->name ) == 0 ) ) {
+            continue;
+        } else if( prev_entry == NULL ) {
+            prev_entry = l_entry;
+            continue;
+        } else if( prev_entry->offset > l_entry->offset ) {
+            continue;
+        } else if( prev_entry->offset == l_entry->offset ) {
             dsiz = 0;
             prefix = "";
-            if( !l_entry->next ) {
-                if( offset < size ) {
-                    dsiz = size - offset;
-                    prefix = "    .lcomm\t";
-                }
-            } else if( offset < l_entry->next->offset ) {
-                dsiz = l_entry->next->offset - offset;
-                prefix = "    .lcomm\t";
-            }
-
-            switch( l_entry->type ) {
-            case LTYP_UNNAMED:
-                BufferStore( "%s%c$%d", prefix, LabelChar,
-                             l_entry->label.number );
-                break;
-            case LTYP_SECTION:
-            case LTYP_NAMED:
-                BufferStore( "%s%s", prefix, l_entry->label.name );
-                break;
-            default:
-                break;
-            }
-
-            if( dsiz ) {
-                BufferStore( ", 0x%08x", dsiz );
-            } else {
-                BufferConcat( ":" );
-            }
-
-            l_entry = l_entry->next;
-            BufferConcatNL();
-            BufferPrint();
         } else {
-            offset = l_entry->offset;
+            dsiz = l_entry->offset - prev_entry->offset;
+            prefix = "    .lcomm\t";
         }
+        switch( prev_entry->type ) {
+        case LTYP_UNNAMED:
+            BufferStore( "%s%c$%d", prefix, LabelChar,
+                prev_entry->label.number );
+            break;
+        case LTYP_SECTION:
+        case LTYP_NAMED:
+            BufferStore( "%s%s", prefix, prev_entry->label.name );
+            break;
+        default:
+            break;
+        }
+        if( dsiz ) {
+            BufferStore( ", 0x%08x", dsiz );
+        } else {
+            BufferConcat( ":" );
+        }
+        BufferConcatNL();
+        BufferPrint();
+        prev_entry = l_entry;
     }
-
+    if( prev_entry != NULL ) {
+        if( prev_entry->offset < size ) {
+            dsiz = size - prev_entry->offset;
+            prefix = "    .lcomm\t";
+        } else {
+            dsiz = 0;
+            prefix = "";
+        }
+        switch( prev_entry->type ) {
+        case LTYP_UNNAMED:
+            BufferStore( "%s%c$%d", prefix, LabelChar,
+                prev_entry->label.number );
+            break;
+        case LTYP_SECTION:
+        case LTYP_NAMED:
+            BufferStore( "%s%s", prefix, prev_entry->label.name );
+            break;
+        default:
+            break;
+        }
+        if( dsiz ) {
+            BufferStore( ", 0x%08x", dsiz );
+        } else {
+            BufferConcat( ":" );
+        }
+        BufferConcatNL();
+        BufferPrint();
+    }
     BufferConcatNL();
     BufferPrint();
 
@@ -743,12 +801,12 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
 static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
                                      label_entry l_entry )
 {
-    int                         offset = -1;
+    int     offset = -1;
 
     PrintHeader( sec );
 
-    if( size > 0 ) {
-        while( l_entry ) {
+    for( ; l_entry != NULL; l_entry = l_entry->next ) {
+        if( l_entry->type != LTYP_SECTION ) {
             if( offset != l_entry->offset ) {
                 BufferStore( "    ORG " );
                 BufferHex( 8, l_entry->offset );
@@ -757,24 +815,30 @@ static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
                 BufferPrint();
             }
 
-            if( l_entry->type != LTYP_SECTION ) {
-                switch( l_entry->type ) {
-                    case LTYP_UNNAMED:
-                        BufferStore("%c$%d", LabelChar, l_entry->label.number );
-                        break;
-                    case LTYP_SECTION:
-                    case LTYP_NAMED:
-                        BufferStore("%s", l_entry->label.name );
-                        break;
-                }
-
-                BufferConcat( "    LABEL\tBYTE" );
-                BufferConcatNL();
-                BufferPrint();
+            switch( l_entry->type ) {
+            case LTYP_UNNAMED:
+                BufferStore("%c$%d", LabelChar, l_entry->label.number );
+                break;
+            case LTYP_SECTION:
+            case LTYP_NAMED:
+                BufferStore("%s", l_entry->label.name );
+                break;
             }
-            l_entry = l_entry->next;
-        }
 
+            BufferConcat( "    LABEL\tBYTE" );
+            BufferConcatNL();
+            BufferPrint();
+        }
+    }
+    if( offset == -1 ) {
+        if( size > 0 ) {
+            BufferStore( "    ORG 0" );
+            BufferConcatNL();
+            BufferPrint();
+        }
+        offset = 0;
+    }
+    if( size > offset ) {
         BufferStore( "    ORG " );
         BufferHex( 8, size );
         BufferConcatNL();
@@ -811,13 +875,15 @@ return_val BssASMSection( section_ptr sec, orl_sec_size size, unsigned pass )
     }
 }
 
-int SkipRef( ref_entry r_entry )
+char *SkipRef( ref_entry r_entry )
 {
+    hash_data   *data_ptr;
+
     if( SkipRefTable && ( r_entry->label->type == LTYP_EXTERNAL_NAMED ) ) {
-        if( HashTableQuery( SkipRefTable,
-                            (hash_value)(r_entry->label->label.name) ) ) {
-            return( 1 );
+        data_ptr = HashTableQuery( SkipRefTable, (hash_value)(r_entry->label->label.name) );
+        if( data_ptr != NULL ) {
+            return( (char *)*data_ptr );
         }
     }
-    return( 0 );
+    return( NULL );
 }

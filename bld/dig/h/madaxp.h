@@ -162,7 +162,8 @@ enum {
     AR_t12      = AR_r27,
     AR_at       = AR_r28,
     AR_gp       = AR_r29,
-    AR_sp       = AR_r30
+    AR_sp       = AR_r30,
+    AR_zero     = AR_r31
 };
 
 
@@ -185,7 +186,7 @@ struct axp_mad_registers {
         struct {
             unsigned_64         pc;
             unsigned_8          ps;
-        }       unix;
+        }       nix;
         struct {
             unsigned_64         pc;
             unsigned_64         psr;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Record or replay debugger events.
 *
 ****************************************************************************/
 
@@ -41,40 +40,41 @@
 #include "dui.h"
 #include <string.h>
 
-extern void             RecordPointStart(void);
-extern void             RecordNewProg(void);
+
+extern void             RecordPointStart( void );
+extern void             RecordNewProg( void );
 extern cmd_list         *AllocCmdList( char *start, unsigned len );
 extern void             FreeCmdList( cmd_list *cmds );
-extern void             PointFini();
+extern void             PointFini( void );
 extern void             PushCmdList( cmd_list *cmds );
 extern void             TypeInpStack( input_type set );
-extern int              GetStackPos();
+extern int              GetStackPos( void );
 extern char             *Format( char *buff, char *fmt, ... );
 extern char             *GetCmdName( int index );
-extern unsigned         UndoLevel();
-extern address          GetRegIP();
-extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
-extern void             InvokeAFile(char*);
-extern bool             ScanEOC();
+extern unsigned         UndoLevel( void );
+extern address          GetRegIP( void );
+extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
+extern void             InvokeAFile( char * );
+extern bool             ScanEOC( void );
 extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
-extern void             ReqEOC();
+extern void             ReqEOC( void );
 extern char             *StrCopy( char *src, char *dest );
-extern char             *StrAddr( address *addr, char *p ,unsigned);
+extern char             *StrAddr( address *addr, char *p, unsigned);
 extern unsigned         NewCurrRadix( unsigned rad );
-extern unsigned         ReqExpr();
-extern void             PushInpStack( void *handle, bool (*rtn)(), bool save_lang );
-extern char             *ScanPos();
+extern unsigned         ReqExpr( void );
+extern void             PushInpStack( void *handle, bool (*rtn)( void *, inp_rtn_action  ), bool save_lang );
+extern char             *ScanPos( void );
 extern char             *DupStr( char *str );
 extern void             UnAsm( address addr, unsigned, char *buff );
 extern char             *CopySourceLine( cue_handle *ch );
 extern char             *GetEventAddress( event_record *ev );
 extern void             ReplayTo( event_record *ev );
-extern void             ProcInput(void);
+extern void             ProcInput( void );
 extern void             DbgUpdate( update_list );
 
 extern char             *TxtBuff;
 extern address          NilAddr;
-extern unsigned char  CurrRadix;
+extern unsigned char    CurrRadix;
 
 event_record *EventList;
 static event_record **LastOwner;
@@ -101,12 +101,12 @@ static void FreeOneEvent( event_record *junk )
     _Free( junk );
 }
 
-void RecordInit()
+void RecordInit( void )
 {
     EventList = NULL;
 }
 
-void RecordFini()
+void RecordFini( void )
 {
     _SwitchOff( SW_HAD_ASYNCH_EVENT );
     while( EventList != NULL ) {
@@ -114,7 +114,7 @@ void RecordFini()
     }
 }
 
-void ShowReplay()
+void ShowReplay( void )
 {
     event_record        *ev;
     for( ev = EventList; ev != NULL; ev = ev->next ) {
@@ -123,7 +123,7 @@ void ShowReplay()
     }
 }
 
-bool OkToSaveReplay()
+bool OkToSaveReplay( void )
 {
     if( _IsOff( SW_HAD_ASYNCH_EVENT ) ) return( TRUE );
     if( DUIAskIfAsynchOk() ) return( TRUE );
@@ -143,7 +143,29 @@ void RestoreReplayFromFile( char *name )
     ReplayTo( NULL );
 }
 
-void ProcRecord()
+static void AddEvent( char *start, unsigned len, address ip )
+{
+    event_record        **owner;
+    event_record        *new;
+
+    owner = FindOwner( NULL );
+    _Alloc( new, sizeof( *new ) );
+    new->addr_string = NULL;
+    new->cue = NULL;
+    new->next = NULL;
+    new->cmd = AllocCmdList( start, len );
+    new->ip = ip;
+    new->after_asynch = FALSE;
+    new->rad = CurrRadix;
+    if( _IsOn( SW_HAD_ASYNCH_EVENT ) ) {
+        if( _IsOn( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
+            new->after_asynch = TRUE;
+        }
+    }
+    *owner = new;
+}
+
+void ProcRecord( void )
 {
     char        *start;
     unsigned    len;
@@ -163,7 +185,7 @@ void ProcRecord()
     }
 }
 
-void RecordStart()
+void RecordStart( void )
 {
     RecordFini();
     RecordNewProg();
@@ -217,35 +239,13 @@ void ReplayTo( event_record *ev )
 }
 
 
-void CheckEventRecorded()
+void CheckEventRecorded( void )
 {
     if( _IsOn( SW_EXECUTE_ABORTED ) ) {
         while( *LastOwner != NULL ) {
             FreeOneEvent( *LastOwner );
         }
     }
-}
-
-static void AddEvent( char *start, unsigned len, address ip )
-{
-    event_record        **owner;
-    event_record        *new;
-
-    owner = FindOwner( NULL );
-    _Alloc( new, sizeof( *new ) );
-    new->addr_string = NULL;
-    new->cue = NULL;
-    new->next = NULL;
-    new->cmd = AllocCmdList( start, len );
-    new->ip = ip;
-    new->after_asynch = FALSE;
-    new->rad = CurrRadix;
-    if( _IsOn( SW_HAD_ASYNCH_EVENT ) ) {
-        if( _IsOn( SW_EVENT_RECORDED_SINCE_ASYNCH ) ) {
-            new->after_asynch = TRUE;
-        }
-    }
-    *owner = new;
 }
 
 void RecordEvent( char *p )
@@ -276,7 +276,7 @@ void RecordEvent( char *p )
 }
 
 
-void RecordAsynchEvent()
+void RecordAsynchEvent( void )
 {
     _SwitchOn( SW_HAD_ASYNCH_EVENT );
     _SwitchOff( SW_EVENT_RECORDED_SINCE_ASYNCH );

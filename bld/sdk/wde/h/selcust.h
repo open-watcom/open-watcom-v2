@@ -33,4 +33,3 @@
 #define IDB_CUST_PREVIEW   111
 #define IDB_CUST_CLASSNAME 112
 #define IDB_CUST_DESC      113
-

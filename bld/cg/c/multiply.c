@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Strength reduction of multiplication operations.
 *
 ****************************************************************************/
 
@@ -33,18 +32,15 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
+#include "makeins.h"
 
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  void            FreeIns(instruction*);
-extern  int             SubCost();
-extern  int             AddCost();
+extern  int             SubCost(void);
+extern  int             AddCost(void);
 extern  int             MulCost(unsigned_32);
-extern  int             ShiftCost();
+extern  int             ShiftCost( int );
 extern  uint_32         CountBits( uint_32 );
 
 extern  block           *HeadBlock;
@@ -66,11 +62,12 @@ typedef struct op {
 static  op      Ops[MAXOPS];
 
 
-static  int     Factor( unsigned_32 num, int *cost ) {
-/*********************************************************/
-
+static  int     Factor( unsigned_32 num, int *cost )
+/**************************************************/
+{
     int         shlcnt;
     int         i;
+    int         j;
     unsigned    num_oprs;
     unsigned_32 test;
     unsigned_32 pow2;
@@ -80,7 +77,6 @@ static  int     Factor( unsigned_32 num, int *cost ) {
     if( num == 0 ) return( i );
     if( num == 0xFFFFFFFF ) return( i );
 
-    num_oprs = 0;
     test = num >> 1;
     do {
         pow2 = 1;
@@ -130,35 +126,50 @@ static  int     Factor( unsigned_32 num, int *cost ) {
             if( --i < 0 ) return( MAXOPS );
             Ops[i].op = DO_SHL;
             Ops[i].cnt= shlcnt;
-            *cost += ShiftCost();
-            ++num_oprs;
         }
         if( num == 1 ) break;
         if( --i < 0 ) return( MAXOPS );
         shlcnt = 0;
         if( ( num & 3 ) == 1 ) {
-            *cost += AddCost();
             Ops[i].op = DO_ADD;
             num >>= 1;
             shlcnt = 1;
         } else {
-            *cost += SubCost();
             Ops[i].op = DO_SUB;
             ++num;
         }
-        ++num_oprs;
     }
+
+    /* Now estimate the cost of the alternate instruction sequence. */
+    for( j = i; j < MAXOPS; ++j ) {
+        switch( Ops[j].op ) {
+        case DO_SHL:
+            *cost += ShiftCost( Ops[j].cnt );
+            break;
+        case DO_ADD:
+            *cost += AddCost();
+            break;
+        case DO_SUB:
+            *cost += SubCost();
+            break;
+        default:
+            *cost += 1;
+            break;
+        }
+    }
+
     /*
         Bump up cost estimate to allow for the fact that we're going to have
         [a lot] more instructions with the shift and add method.
     */
+    num_oprs = MAXOPS - i + 1;
     *cost += num_oprs;
     return( i );
 }
 
-static  instruction     *CheckMul( instruction *ins ) {
-/*****************************************************/
-
+static  instruction     *CheckMul( instruction *ins )
+/***************************************************/
+{
     signed_32           rhs;
     int                 i;
     bool                neg;
@@ -213,9 +224,9 @@ static  instruction     *CheckMul( instruction *ins ) {
 }
 
 
-extern  void    MulToShiftAdd() {
-/*******************************/
-
+extern  void    MulToShiftAdd( void )
+/***********************************/
+{
     block       *blk;
     instruction *ins;
     instruction *next;

@@ -126,7 +126,7 @@ void FiniScreen( void )
     uistop();
 }
 
-void *uifaralloc( unsigned size )
+void *uifaralloc( int size )
 {
     return( ExtraAlloc( size ) );
 }

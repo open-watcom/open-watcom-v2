@@ -1,11 +1,11 @@
 name = helpex
 LNK = $(name).lnk
 OBJS = helpex.obj
-CFLAGS += -i=..\..
+CFLAGS += -I"../.."
 resources = help.cur helpex.dlg
-lnk_dependencies = makefile ..\helpex.mif ..\..\master.mif
+lnk_dependencies = makefile ../helpex.mif ../../master.mif
 
 all: helpex.hlp $(name).exe
 
-helpex.hlp: ..\helpex.hlp
-        copy ..\helpex.hlp
+helpex.hlp: ../helpex.hlp
+        copy ../helpex.hlp

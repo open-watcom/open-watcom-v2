@@ -49,7 +49,6 @@
 #include "wrfindt.h"
 #include "wrctl3d.h"
 #include "wrlist.h"
-#include "wrcmsg.h"
 #include "wrhash.h"
 #include "editsym.h"
 #include "addsym.h"
@@ -90,10 +89,8 @@ typedef struct WRAddSymInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message,
-                                  WPARAM wParam, LPARAM lParam );
-BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message,
-                             WPARAM wParam, LPARAM lParam );
+BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -102,19 +99,18 @@ BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message,
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static SymInitStruct SymInit[] =
-{
-    { "IDOK"            , IDOK          }
-,   { "IDCANCEL"        , IDCANCEL      }
-,   { "IDABORT"         , IDABORT       }
-,   { "IDRETRY"         , IDRETRY       }
-,   { "IDIGNORE"        , IDIGNORE      }
-,   { "IDYES"           , IDYES         }
-,   { "IDNO"            , IDNO          }
-,   { NULL              , -1            }
+static SymInitStruct SymInit[] = {
+    { "IDOK",           IDOK          },
+    { "IDCANCEL",       IDCANCEL      },
+    { "IDABORT",        IDABORT       },
+    { "IDRETRY",        IDRETRY       },
+    { "IDIGNORE",       IDIGNORE      },
+    { "IDYES",          IDYES         },
+    { "IDNO",           IDNO          },
+    { NULL,             -1            }
 };
 
-#define NUM_INIT_ENTRIES ( sizeof( SymInit ) / sizeof( SymInitStruct ) - 1 )
+#define NUM_INIT_ENTRIES (sizeof( SymInit ) / sizeof( SymInitStruct ) - 1)
 
 static unsigned int WRGetNameHash( char *name )
 {
@@ -122,7 +118,7 @@ static unsigned int WRGetNameHash( char *name )
 
     hash = 0;
 
-    for( ; *name; ++name ) {
+    for( ; *name != '\0'; name++ ) {
         hash = (hash << 4) + toupper( *name );
         hash = (hash ^ _rotl( hash & 0xF000, 4 )) & 0x0FFF;
     }
@@ -132,7 +128,7 @@ static unsigned int WRGetNameHash( char *name )
 
 static unsigned int WRGetValueHash( WRHashValue value )
 {
-    return( ( (unsigned int) value ) % VALUE_SIZE );
+    return( (unsigned int)value % VALUE_SIZE );
 }
 
 static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, char *name )
@@ -140,12 +136,12 @@ static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, char *name )
     WRHashEntry         *entry;
     unsigned int        hash;
 
-    if( !table || !name ) {
+    if( table == NULL || name == NULL ) {
         return( NULL );
     }
 
-    hash = WRGetNameHash ( name );
-    for( entry = table->names[ hash ]; entry; entry = entry->name_next ) {
+    hash = WRGetNameHash( name );
+    for( entry = table->names[hash]; entry != NULL; entry = entry->name_next ) {
         if( stricmp( entry->name, name ) == 0 ) {
             return( entry );
         }
@@ -154,9 +150,12 @@ static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, char *name )
     return( NULL );
 }
 
-static int WRCompareHashEntry( WRHashEntry * const *e1, WRHashEntry * const *e2 )
+static int WRCompareHashEntry( void const *_e1, void const *_e2 )
 {
-    if( e1 && e2 && *e1 && *e2 ) {
+    WRHashEntry * const *e1 = _e1;
+    WRHashEntry * const *e2 = _e2;
+
+    if( e1 != NULL && e2 != NULL && *e1 != NULL && *e2 != NULL ) {
         if( (*e1)->value < (*e2)->value ) {
             return( -1 );
         } else if( (*e1)->value > (*e2)->value ) {
@@ -169,28 +168,28 @@ static int WRCompareHashEntry( WRHashEntry * const *e1, WRHashEntry * const *e2 
 
 BOOL WR_EXPORT WRIsDefaultHashTable( WRHashTable *table )
 {
-    if( table ) {
-        return(  table->count == NUM_INIT_ENTRIES );
+    if( table != NULL ) {
+        return( table->count == NUM_INIT_ENTRIES );
     }
     return( TRUE );
 }
 
 unsigned long WR_EXPORT WRNumInHashTable( WRHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         return( table->count );
     }
-    return ( 0 );
+    return( 0 );
 }
 
 BOOL WR_EXPORT WRIsHashTableDirty( WRHashTable *table )
 {
-    return( table && ( table->flags & WR_HASH_DIRTY ) );
+    return( table != NULL && (table->flags & WR_HASH_DIRTY) );
 }
 
 void WR_EXPORT WRMakeHashTableClean( WRHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         table->flags &= ~WR_HASH_DIRTY;
     }
 }
@@ -203,23 +202,23 @@ BOOL WR_EXPORT WRDeleteDLGInclude( WResDir dir )
     WResLangType        lang;
     BOOL                ok;
 
-    ok = ( dir != NULL );
+    ok = (dir != NULL);
 
     if( ok ) {
         tnode = WRFindTypeNode( dir, (uint_16)RT_RCDATA, NULL );
-        ok = ( tnode != NULL );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
         rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = ( rnode != NULL );
+        ok = (rnode != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -241,37 +240,36 @@ BOOL WR_EXPORT WRCreateDLGInclude( WResDir *dir, char *include )
     type = NULL;
     res = NULL;
     str = NULL;
-    ok = ( dir && include );
+    ok = (dir != NULL && include != NULL);
 
     if( ok ) {
         if( *dir == NULL ) {
             *dir = WResInitDir();
-            ok = ( *dir != NULL );
+            ok = (*dir != NULL);
         }
     }
 
     if( ok ) {
         WRDeleteDLGInclude( *dir );
         type = WResIDFromNum( (uint_16)RT_RCDATA );
-        ok = ( type != NULL );
+        ok = (type != NULL);
     }
 
     if( ok ) {
         res = WResIDFromStr( "DLGINCLUDE" );
-        ok = ( res != NULL );
+        ok = (res != NULL);
     }
 
     if( ok ) {
         str = WRStrDup( include );
-        ok = ( str != NULL );
+        ok = (str != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
-        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE,
-                               0, len, *dir, &lang, NULL );
+        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE, 0, len, *dir, &lang, NULL );
     }
 
     if( ok ) {
@@ -301,11 +299,11 @@ static void WRAddSymInitInfo( WRHashTable *table )
     int         i;
     WRHashEntry *new;
 
-    for( i=0; SymInit[i].symbol; i++ ) {
+    for( i = 0; SymInit[i].symbol != NULL; i++ ) {
         dup = FALSE;
         new = WRAddHashEntry( table, SymInit[i].symbol, SymInit[i].value,
                               &dup, FALSE, FALSE );
-        if( new ) {
+        if( new != NULL ) {
             new->flags |= WR_HASHENTRY_STANDARD;
             // standard symbols are always in use????
             new->flags &= ~WR_HASHENTRY_UNUSED;
@@ -319,12 +317,12 @@ WRHashTable * WR_EXPORT WRInitHashTable( void )
 {
     WRHashTable         *table;
 
-    table = (WRHashTable *)WRMemAlloc( sizeof(WRHashTable) );
+    table = (WRHashTable *)WRMemAlloc( sizeof( WRHashTable ) );
     if( table == NULL ) {
         return( NULL );
     }
 
-    memset( table, 0, sizeof(WRHashTable) );
+    memset( table, 0, sizeof( WRHashTable ) );
 
     table->next_default_value = FIRST_DEFAULT_ID;
 
@@ -339,7 +337,7 @@ void WR_EXPORT WRFreeHashTable( WRHashTable *table )
     WRHashEntry         *entry;
 
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
-        for( ; ; ) {
+        for( ;; ) {
             entry = table->names[nhash];
             if( entry == NULL ) {
                 break;
@@ -359,26 +357,25 @@ BOOL WR_EXPORT WRMergeHashTable( WRHashTable **dest, WRHashTable *src )
     unsigned int        nhash;
     BOOL                ok, dup;
 
-    if( dest ) {
-        if( !*dest ) {
+    if( dest != NULL ) {
+        if( *dest == NULL ) {
             *dest = WRInitHashTable();
         }
     } else {
         return( FALSE );
     }
 
-    if( !src ) {
+    if( src == NULL ) {
         return( TRUE );
     }
 
     ok = TRUE;
 
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
-        for( entry=src->names[nhash] ;entry; entry=entry->name_next ) {
+        for( entry = src->names[nhash]; entry != NULL; entry = entry->name_next ) {
             dup = FALSE;
-            new = WRAddHashEntry( *dest, entry->name, entry->value,
-                                  &dup, FALSE, FALSE );
-            ok = ( new != NULL );
+            new = WRAddHashEntry( *dest, entry->name, entry->value, &dup, FALSE, FALSE );
+            ok = (new != NULL);
         }
     }
 
@@ -395,8 +392,8 @@ BOOL WR_EXPORT WRCopyHashTable( WRHashTable **dest, WRHashTable *src )
     unsigned int        nhash;
     BOOL                ok, dup;
 
-    if( dest ) {
-        if( *dest ) {
+    if( dest != NULL ) {
+        if( *dest != NULL ) {
             WRFreeHashTable( *dest );
             *dest = NULL;
         }
@@ -404,25 +401,24 @@ BOOL WR_EXPORT WRCopyHashTable( WRHashTable **dest, WRHashTable *src )
         return( FALSE );
     }
 
-    if( !src ) {
+    if( src == NULL ) {
         return( TRUE );
     }
 
     *dest = WRInitHashTable();
 
-    if( !*dest ) {
+    if( *dest == NULL ) {
         return( FALSE );
     }
 
     ok = TRUE;
 
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
-        for( entry=src->names[nhash] ;entry; entry=entry->name_next ) {
-            if( !( entry->flags & WR_HASHENTRY_STANDARD ) ) {
+        for( entry = src->names[nhash]; entry != NULL; entry = entry->name_next ) {
+            if( !(entry->flags & WR_HASHENTRY_STANDARD) ) {
                 dup = FALSE;
-                new = WRAddHashEntry( *dest, entry->name, entry->value,
-                                      &dup, FALSE, FALSE );
-                if ( !new || dup ) {
+                new = WRAddHashEntry( *dest, entry->name, entry->value, &dup, FALSE, FALSE );
+                if( new == NULL || dup ) {
                     ok = FALSE;
                 }
             }
@@ -435,11 +431,9 @@ BOOL WR_EXPORT WRCopyHashTable( WRHashTable **dest, WRHashTable *src )
     return( ok );
 }
 
-static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg,
-                                       int id, WRHashEntryFlags flags,
-                                       UINT add_string_msg,
-                                       UINT add_data_msg,
-                                       UINT reset_msg,
+static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg, int id,
+                                       WRHashEntryFlags flags, UINT add_string_msg,
+                                       UINT add_data_msg, UINT reset_msg,
                                        LRESULT err, LRESULT errspace )
 {
     HWND                box;
@@ -458,11 +452,10 @@ static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg,
     SendMessage( box, reset_msg, 0, 0 );
 
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
-        for( entry=table->names[nhash] ;entry; entry=entry->name_next ) {
+        for( entry = table->names[nhash]; entry != NULL; entry = entry->name_next ) {
             if( entry->flags & flags ) {
-                ret = SendMessage( box, add_string_msg, 0,
-                                   (LPARAM)(LPCSTR)entry->name );
-                if( ( ret == err ) || ( ret == errspace ) ) {
+                ret = SendMessage( box, add_string_msg, 0, (LPARAM)(LPCSTR)entry->name );
+                if( ret == err || ret == errspace ) {
                     break;
                 }
                 SendMessage( box, add_data_msg, (WPARAM)ret, (LPARAM)entry );
@@ -480,19 +473,15 @@ static unsigned WRAddSymbolsToLorCBox( WRHashTable *table, HWND hDlg,
 unsigned WR_EXPORT WRAddSymbolsToListBox( WRHashTable *table, HWND hDlg,
                                           int id, WRHashEntryFlags flags )
 {
-    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags,
-                                   LB_ADDSTRING, LB_SETITEMDATA,
-                                   LB_RESETCONTENT,
-                                   LB_ERR, LB_ERRSPACE ) );
+    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, LB_ADDSTRING, LB_SETITEMDATA,
+                                   LB_RESETCONTENT, LB_ERR, LB_ERRSPACE ) );
 }
 
 unsigned WR_EXPORT WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg,
                                            int id, WRHashEntryFlags flags )
 {
-    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags,
-                                   CB_ADDSTRING, CB_SETITEMDATA,
-                                   CB_RESETCONTENT,
-                                   CB_ERR, CB_ERRSPACE ) );
+    return( WRAddSymbolsToLorCBox( table, hDlg, id, flags, CB_ADDSTRING, CB_SETITEMDATA,
+                                   CB_RESETCONTENT, CB_ERR, CB_ERRSPACE ) );
 }
 
 BOOL WR_EXPORT WRWriteSymbolsToFile( WRHashTable *table, char *filename )
@@ -506,27 +495,27 @@ BOOL WR_EXPORT WRWriteSymbolsToFile( WRHashTable *table, char *filename )
     int                 max_len;
     int                 len;
 
-    if( !table || !table->count || !filename ) {
+    if( table == NULL || table->count == 0 || filename == NULL ) {
         return( FALSE );
     }
 
     handle = fopen( filename, "wt" );
 
-    if( !handle ) {
+    if( handle == NULL ) {
         WRPrintErrorMsg( WR_FILEOPENFAILED, filename, strerror( errno ) );
         return( FALSE );
     }
 
-    tbl = (WRHashEntry **) WRMemAlloc( sizeof(WRHashEntry *)*table->count );
-    if( !tbl ) {
+    tbl = (WRHashEntry **)WRMemAlloc( sizeof( WRHashEntry * ) * table->count );
+    if( tbl == NULL ) {
         return( FALSE );
     }
 
     count = 0;
     max_len = 0;
     for( nhash = 0; nhash < NAME_SIZE; nhash++ ) {
-        for( entry=table->names[nhash] ;entry; entry=entry->name_next ) {
-            if( !( entry->flags & WR_HASHENTRY_STANDARD ) ) {
+        for( entry = table->names[nhash]; entry != NULL; entry = entry->name_next ) {
+            if( !(entry->flags & WR_HASHENTRY_STANDARD) ) {
                 tbl[count] = entry;
                 len = strlen( entry->name );
                 max_len = max( len, max_len );
@@ -535,11 +524,10 @@ BOOL WR_EXPORT WRWriteSymbolsToFile( WRHashTable *table, char *filename )
         }
     }
 
-    qsort( tbl, count, sizeof(WRHashEntry *), WRCompareHashEntry );
+    qsort( tbl, count, sizeof( WRHashEntry * ), WRCompareHashEntry );
 
     for( i = 0; i < count; i++ ) {
-        fprintf( handle, "#define %-*s %ld\n", max_len + 2,
-                 tbl[i]->name, tbl[i]->value );
+        fprintf( handle, "#define %-*s %ld\n", max_len + 2, tbl[i]->name, tbl[i]->value );
     }
 
     if( fclose( handle ) != 0 ) {
@@ -559,13 +547,12 @@ static BOOL WRDiscardChangesQuery( void )
     title = WRAllocRCString( WR_EDITSYMBOLSTITLE );
     msg = WRAllocRCString( WR_DISCARDCHANGESMSG );
 
-    ret = MessageBox( (HWND)NULL, msg, title,
-                      MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
+    ret = MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
 
-    if( msg ) {
+    if( msg != NULL ) {
         WRFreeRCString( msg );
     }
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 
@@ -581,13 +568,12 @@ static BOOL WRAddUniqueQuery( void )
     title = WRAllocRCString( WR_ADDSYMBOLTITLE );
     msg = WRAllocRCString( WR_QUERYUNIQUEMSG );
 
-    ret = MessageBox( (HWND)NULL, msg, title,
-                      MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
+    ret = MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
 
-    if( msg ) {
+    if( msg != NULL ) {
         WRFreeRCString( msg );
     }
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 
@@ -603,13 +589,12 @@ static BOOL WRForceAddQuery( void )
     title = WRAllocRCString( WR_ADDSYMBOLTITLE );
     msg = WRAllocRCString( WR_FORCEADDQUERYMSG );
 
-    ret = MessageBox( (HWND)NULL, msg, title,
-                      MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
+    ret = MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_YESNO | MB_TASKMODAL );
 
-    if( msg ) {
+    if( msg != NULL ) {
         WRFreeRCString( msg );
     }
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 
@@ -622,7 +607,7 @@ BOOL WR_EXPORT WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
     WRHashValue val;
     BOOL        found;
 
-    if( !table || !value ) {
+    if( table == NULL || value == NULL ) {
         return( FALSE );
     }
 
@@ -650,19 +635,18 @@ BOOL WR_EXPORT WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
     return( found );
 }
 
-WRHashEntry * WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name,
-                                           BOOL *dup )
+WRHashEntry * WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name, BOOL *dup )
 {
     WRHashEntry *entry;
     WRHashValue value;
 
-    if( !table || !name ) {
+    if( table == NULL || name == NULL ) {
         return( NULL );
     }
 
     entry = WRFindHashEntryFromName( table, name );
-    if( entry ) {
-        if( dup ) {
+    if( entry != NULL ) {
+        if( dup != NULL ) {
             *dup = TRUE;
         }
         return( entry );
@@ -673,16 +657,15 @@ WRHashEntry * WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name,
     }
 
     entry = WRAddHashEntry( table, name, value, dup, FALSE, TRUE );
-    if( entry ) {
+    if( entry != NULL ) {
         table->next_default_value = value++;
     }
 
     return( entry );
 }
 
-WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name,
-                                        WRHashValue value, BOOL *dup,
-                                        BOOL check_unique, BOOL query_force )
+WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name, WRHashValue value,
+                                        BOOL *dup, BOOL check_unique, BOOL query_force )
 {
     WRHashEntry         *entry;
     unsigned int        nhash;
@@ -690,7 +673,7 @@ WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name,
     unsigned int        size;
     char                *symbol;
 
-    if( !table || !name ) {
+    if( table == NULL || name == NULL ) {
         return( NULL );
     }
 
@@ -707,7 +690,7 @@ WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name,
 
     // we do not allow the modification of standard entries
     entry = WRFindHashEntryFromName( table, symbol );
-    if( entry ) {
+    if( entry != NULL ) {
         if( entry->flags & WR_HASHENTRY_STANDARD ) {
             return( NULL );
         }
@@ -719,7 +702,7 @@ WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name,
         }
     }
 
-    if( entry ) {
+    if( entry != NULL ) {
         if( !*dup && query_force ) {
             *dup = WRForceAddQuery();
         }
@@ -741,16 +724,16 @@ WRHashEntry * WR_EXPORT WRAddHashEntry( WRHashTable *table, char *name,
         vhash = WRGetValueHash( value );
         entry->name_prev  = NULL;
         entry->value_prev = NULL;
-        if( table->names[ nhash ] ) {
-            table->names[ nhash ]->name_prev = entry;
+        if( table->names[nhash] ) {
+            table->names[nhash]->name_prev = entry;
         }
-        if( table->values[ vhash ] ) {
-            table->values[ vhash ]->value_prev = entry;
+        if( table->values[vhash] ) {
+            table->values[vhash]->value_prev = entry;
         }
-        entry->name_next = table->names[ nhash ];
-        entry->value_next = table->values[ vhash ];
-        table->names[ nhash ] = entry;
-        table->values[ vhash ] = entry;
+        entry->name_next = table->names[nhash];
+        entry->value_next = table->values[vhash];
+        table->names[nhash] = entry;
+        table->values[vhash] = entry;
         strcpy( entry->name, symbol );
         strupr( entry->name );
         entry->value = value;
@@ -773,7 +756,7 @@ BOOL WR_EXPORT WRRemoveName( WRHashTable *table, char *name )
 
     entry = WRFindHashEntryFromName( table, name );
 
-    if( ( entry == NULL ) || ( entry->flags & WR_HASHENTRY_STANDARD ) ) {
+    if( entry == NULL || (entry->flags & WR_HASHENTRY_STANDARD) ) {
         return( FALSE );
     }
 
@@ -788,16 +771,16 @@ BOOL WR_EXPORT WRRemoveName( WRHashTable *table, char *name )
         table->values[vhash] = entry->value_next;
     }
 
-    if( entry->name_next ) {
+    if( entry->name_next != NULL ) {
         entry->name_next->name_prev = entry->name_prev;
     }
-    if( entry->name_prev ) {
+    if( entry->name_prev != NULL ) {
         entry->name_prev->name_next = entry->name_next;
     }
-    if( entry->value_next ) {
+    if( entry->value_next != NULL ) {
         entry->value_next->value_prev = entry->value_prev;
     }
-    if( entry->value_prev ) {
+    if( entry->value_prev != NULL ) {
         entry->value_prev->value_next = entry->value_next;
     }
 
@@ -812,7 +795,7 @@ void WR_EXPORT WRHashIncRefCount( WRHashEntry *entry )
 {
     if( entry != NULL ) {
         entry->ref_count++;
-        if( !( entry->flags & WR_HASHENTRY_STANDARD ) ) {
+        if( !(entry->flags & WR_HASHENTRY_STANDARD) ) {
             entry->flags &= ~WR_HASHENTRY_UNUSED;
         }
     }
@@ -821,10 +804,10 @@ void WR_EXPORT WRHashIncRefCount( WRHashEntry *entry )
 void WR_EXPORT WRHashDecRefCount( WRHashEntry *entry )
 {
     if( entry != NULL ) {
-        if( entry->ref_count ) {
+        if( entry->ref_count != 0 ) {
             entry->ref_count--;
-            if( !( entry->flags & WR_HASHENTRY_STANDARD ) ) {
-                if( !entry->ref_count ) {
+            if( !(entry->flags & WR_HASHENTRY_STANDARD) ) {
+                if( entry->ref_count == 0 ) {
                     entry->flags |= WR_HASHENTRY_UNUSED;
                 }
             }
@@ -848,7 +831,8 @@ BOOL WR_EXPORT WRLookupName( WRHashTable *table, char *name, WRHashValue *value 
     return( FALSE );
 }
 
-int WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value, BOOL check_unique )
+int WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value,
+                            BOOL check_unique )
 {
     WRHashEntry *entry;
     BOOL        dup;
@@ -857,7 +841,7 @@ int WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value, B
     dup = TRUE;
 
     entry = WRAddHashEntry( table, name, value, &dup, check_unique, FALSE );
-    if( entry ) {
+    if( entry != NULL ) {
         table->flags |= WR_HASH_DIRTY;
         return( TRUE );
     }
@@ -872,7 +856,7 @@ char * WR_EXPORT WRResolveValue( WRHashTable *table, WRHashValue value )
 
     name = NULL;
     vlist = WRLookupValue( table, value );
-    if( vlist ) {
+    if( vlist != NULL ) {
         if( vlist->next == NULL ) {
             name = WRStrDup( vlist->entry->name );
         }
@@ -886,7 +870,7 @@ static BOOL WRValueListInsert( WRHashValueList **list, WRHashEntry *entry )
 {
     WRHashValueList     *new;
 
-    if( !list || !entry ) {
+    if( list == NULL || entry == NULL ) {
         return( FALSE );
     }
 
@@ -925,7 +909,7 @@ WRHashValueList * WR_EXPORT WRLookupValue( WRHashTable *table, WRHashValue value
 
     list = NULL;
     hash = WRGetValueHash( value );
-    for( entry = table->values[ hash ]; entry; entry = entry->value_next ) {
+    for( entry = table->values[hash]; entry != NULL; entry = entry->value_next ) {
         if( entry->value == value ) {
             if( !WRValueListInsert( &list, entry ) ) {
                 WRValueListFree( list );
@@ -949,7 +933,7 @@ int WR_EXPORT WRValueExists( WRHashTable *table, WRHashValue value )
 
     count = 0;
     hash = WRGetValueHash( value );
-    for( entry = table->values[ hash ]; entry; entry = entry->value_next ) {
+    for( entry = table->values[hash]; entry != NULL; entry = entry->value_next ) {
         if( entry->value == value ) {
             count++;
         }
@@ -965,19 +949,19 @@ void WR_EXPORT WRStripSymbol( char *symbol )
 
 BOOL WR_EXPORT WRIsValidSymbol( char *symbol )
 {
-    if( !symbol ) {
+    if( symbol == NULL ) {
         return( FALSE );
     }
 
 
     // the following code was not mbcs'ized as WR does not allow
-    // non-ansi characters in symbol identifiers
-    if( !isalpha( *symbol ) && ( *symbol != '_' ) ) {
+    // non-ANSI characters in symbol identifiers
+    if( !isalpha( *symbol ) && *symbol != '_' ) {
         return( FALSE );
     }
 
-    for( ; *symbol; symbol++ ) {
-        if( !isalnum( *symbol ) && ( *symbol != '_' ) ) {
+    for( ; *symbol != '\0'; symbol++ ) {
+        if( !isalnum( *symbol ) && *symbol != '_' ) {
             return( FALSE );
         }
     }
@@ -997,7 +981,7 @@ BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
 
     tmp = NULL;
 
-    ok = ( table && *table && flags );
+    ok = (table != NULL && *table != NULL && flags != NULL);
 
     if( ok ) {
         ok = WRCopyHashTable( &tmp, *table );
@@ -1006,7 +990,7 @@ BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
     if( ok ) {
         inst = WRGetInstance();
         proc = MakeProcInstance( (FARPROC)WREditSymbolsProc, inst );
-        ok = ( proc != NULL );
+        ok = (proc != NULL);
     }
 
     if( ok ) {
@@ -1014,8 +998,7 @@ BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
         info.table = tmp;
         info.modified = FALSE;
         info.flags = *flags;
-        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc,
-                               (LPARAM)&info );
+        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc, (LPARAM)&info );
         FreeProcInstance( proc );
         ok = FALSE;
         if( ret ) {
@@ -1030,7 +1013,7 @@ BOOL WR_EXPORT WREditSym( HWND parent, WRHashTable **table,
         *flags = info.flags;
     }
 
-    if( tmp ) {
+    if( tmp != NULL ) {
         WRFreeHashTable( tmp );
     }
 
@@ -1045,26 +1028,26 @@ static BOOL WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
     BOOL        standard_entry;
     BOOL        ok;
 
-    _wtouch(table);
+    _wtouch( table );
 
     standard_entry = FALSE;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
     index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-    ok = ( index != LB_ERR );
+    ok = (index != LB_ERR);
 
     if( ok ) {
         WRSetEditWithULONG( (unsigned long)index, 10, hDlg, IDB_SYM_NUM );
-        ok = ( index != 0 );
+        ok = (index != 0);
     }
 
     if( ok ) {
         index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
-        ok = ( entry != NULL );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
-        standard_entry = ( ( entry->flags & WR_HASHENTRY_STANDARD ) != 0 );
+        standard_entry = ((entry->flags & WR_HASHENTRY_STANDARD) != 0);
     }
 
     EnableWindow( GetDlgItem( hDlg, IDB_SYM_MODIFY ), !standard_entry );
@@ -1083,7 +1066,7 @@ static BOOL WRAddSymbol( HWND hDlg, WRHashTable *table, BOOL force,
 
     dup = force;
 
-    ok = ( symbol && !WRIsStrSpace( symbol ) );
+    ok = (symbol != NULL && !WRIsStrSpace( symbol ));
 
     if( ok ) {
         WRStripSymbol( symbol );
@@ -1096,7 +1079,7 @@ static BOOL WRAddSymbol( HWND hDlg, WRHashTable *table, BOOL force,
     if( ok ) {
         strupr( symbol );
         entry = WRAddHashEntry( table, symbol, value, &dup, TRUE, TRUE );
-        ok = ( entry != NULL );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
@@ -1106,18 +1089,17 @@ static BOOL WRAddSymbol( HWND hDlg, WRHashTable *table, BOOL force,
     }
 
     if( ok && !force && dup ) {
-        ok = ( !force && dup );
+        ok = (!force && dup);
     }
 
     if( ok ) {
         if( dup ) {
             // this is neccessary if the value of the string was moified
-            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX,
-                                        LB_FINDSTRINGEXACT, 0,
-                                        (LPARAM)(LPCSTR) symbol );
+            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
+                                        (LPARAM)(LPCSTR)symbol );
         } else {
             index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
-                                        (LPARAM) (LPCSTR) symbol );
+                                        (LPARAM)(LPCSTR)symbol );
             SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
                                 (WPARAM)index, (LPARAM)entry );
         }
@@ -1137,7 +1119,7 @@ static WRHashEntry *getHashEntry( HWND hDlg )
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
     count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-    if( !count || ( count == LB_ERR ) ) {
+    if( count == 0 || count == LB_ERR ) {
         return( NULL );
     }
 
@@ -1151,8 +1133,7 @@ static WRHashEntry *getHashEntry( HWND hDlg )
     return( entry );
 }
 
-static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb,
-                            BOOL modify )
+static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, BOOL modify )
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
@@ -1161,7 +1142,7 @@ static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb,
     BOOL                modified;
     BOOL                ret;
 
-    if( !table ) {
+    if( table == NULL ) {
         return( FALSE );
     }
 
@@ -1181,16 +1162,15 @@ static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb,
     ret = FALSE;
 
     inst = WRGetInstance();
-    proc_inst = (DLGPROC) MakeProcInstance( (FARPROC)WRAddSymProc, inst );
-    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg,
-                                proc_inst, (LPARAM)&info );
+    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymProc, inst );
+    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, proc_inst, (LPARAM)&info );
     FreeProcInstance( (FARPROC)proc_inst );
 
     if( modified == IDOK ) {
         ret = WRAddSymbol( hDlg, table, modify, info.symbol, info.value );
     }
 
-    if( info.symbol ) {
+    if( info.symbol != NULL ) {
         WRMemFree( info.symbol );
     }
 
@@ -1207,7 +1187,7 @@ static BOOL WRRemoveSymbol( HWND hDlg, WRHashTable *table )
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
     count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-    if( !count || ( count == LB_ERR ) ) {
+    if( count == 0 || count == LB_ERR ) {
         return( TRUE );
     }
 
@@ -1224,8 +1204,8 @@ static BOOL WRRemoveSymbol( HWND hDlg, WRHashTable *table )
     }
 
     count = SendMessage( lbox, LB_DELETESTRING, index, 0 );
-    if( count ) {
-        if( index && ( index == count ) ) {
+    if( count != 0 ) {
+        if( index != 0 && index == count ) {
             index--;
         }
         SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, index, 0 );
@@ -1247,8 +1227,6 @@ static void InitTextWidth( HWND hDlg )
     TextWidth = rect.left;
     GetWindowRect( GetDlgItem( hDlg, IDB_SYM_SYMTEXT ), &rect );
     TextWidth -= rect.left;
-
-    return;
 }
 
 static void WRDrawHashLBItem( DRAWITEMSTRUCT *dis, WRHashEntry *entry )
@@ -1264,7 +1242,7 @@ static void WRDrawHashLBItem( DRAWITEMSTRUCT *dis, WRHashEntry *entry )
     oldDC = SaveDC( dis->hDC );
 
     // paint the item background
-    if( ( dis->itemState & ODS_SELECTED ) && entry ) {
+    if( (dis->itemState & ODS_SELECTED) && entry != NULL ) {
         bkcolor = GetSysColor( COLOR_HIGHLIGHT );
     } else {
         bkcolor = GetSysColor( COLOR_WINDOW );
@@ -1273,10 +1251,9 @@ static void WRDrawHashLBItem( DRAWITEMSTRUCT *dis, WRHashEntry *entry )
     FillRect( dis->hDC, &dis->rcItem, brush );
     DeleteObject( brush );
 
-    if( entry && entry->name ) {
+    if( entry != NULL && entry->name != NULL ) {
         // set the correct text color
-        if( ( dis->itemState & ODS_DISABLED ) ||
-            ( dis->itemState & ODS_GRAYED ) ) {
+        if( (dis->itemState & ODS_DISABLED) || (dis->itemState & ODS_GRAYED) ) {
             color = GetSysColor( COLOR_GRAYTEXT );
         } else {
             if( dis->itemState & ODS_SELECTED ) {
@@ -1296,11 +1273,10 @@ static void WRDrawHashLBItem( DRAWITEMSTRUCT *dis, WRHashEntry *entry )
 
         // set the text of the listbox item
         SelectObject( dis->hDC, GetStockObject( ANSI_VAR_FONT ) );
-        ExtTextOut( dis->hDC, text_rect.left, text_rect.top,
-                    ETO_CLIPPED, &text_rect,
+        ExtTextOut( dis->hDC, text_rect.left, text_rect.top, ETO_CLIPPED, &text_rect,
                     entry->name, strlen( entry->name ), NULL );
         //TextOut( dis->hDC, dis->rcItem.left + 1, dis->rcItem.top + 1,
-        //       entry->name, strlen( entry->name ) );
+        //         entry->name, strlen( entry->name ) );
 
         ltoa( (long)entry->value, vtext, 10 );
 
@@ -1308,13 +1284,12 @@ static void WRDrawHashLBItem( DRAWITEMSTRUCT *dis, WRHashEntry *entry )
         text_rect.left = text_rect.right + 2;
         text_rect.right = dis->rcItem.right - 1;
 
-        //draw the value text
+        // draw the value text
         ExtTextOut( dis->hDC, text_rect.left, text_rect.top,
-                    ETO_CLIPPED, &text_rect,
-                    vtext, strlen( vtext ), NULL );
+                    ETO_CLIPPED, &text_rect, vtext, strlen( vtext ), NULL );
 
         // if the item has been ref'd then draw the checkbox
-        if( entry->ref_count ) {
+        if( entry->ref_count != 0 ) {
             SelectObject( dis->hDC, GetStockObject( BLACK_PEN ) );
             pt.x = dis->rcItem.right - 4;
             pt.y = dis->rcItem.top + 2;
@@ -1341,7 +1316,7 @@ static void WRDrawHashListBoxItem( HWND hDlg, DRAWITEMSTRUCT *dis )
 {
     WRHashEntry *entry;
 
-    if( !dis ) {
+    if( dis == NULL ) {
         return;
     }
 
@@ -1365,10 +1340,8 @@ static void WRSetupEditSymDialog( HWND hDlg, WREditSymInfo *info, BOOL first )
     SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, 0, 0 );
     WRShowSelectedSymbol( hDlg, info->table );
     if( first ) {
-        CheckDlgButton( hDlg, IDB_SYM_SHOW_STANDARD,
-                        info->flags & WR_HASHENTRY_STANDARD );
-//      CheckDlgButton( hDlg, IDB_SYM_SHOW_UNUSED,
-//                      info->flags & WR_HASHENTRY_UNUSED );
+        CheckDlgButton( hDlg, IDB_SYM_SHOW_STANDARD, info->flags & WR_HASHENTRY_STANDARD );
+//      CheckDlgButton( hDlg, IDB_SYM_SHOW_UNUSED, info->flags & WR_HASHENTRY_UNUSED );
     }
 }
 
@@ -1380,9 +1353,9 @@ static WRHashEntryFlags WRGetEditSymEntryFlags( HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_SYM_SHOW_STANDARD ) ) {
         flags |= WR_HASHENTRY_STANDARD;
     }
-//    if( IsDlgButtonChecked( hDlg, IDB_SYM_SHOW_UNUSED ) ) {
+//  if( IsDlgButtonChecked( hDlg, IDB_SYM_SHOW_UNUSED ) ) {
         flags |= WR_HASHENTRY_UNUSED;
-//    }
+//  }
 
     return( flags );
 }
@@ -1398,8 +1371,7 @@ static BOOL WRHandleDELKey( HWND hDlg, WREditSymInfo *info )
     return( FALSE );
 }
 
-BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREditSymInfo       *info;
     BOOL                ret;
@@ -1408,103 +1380,103 @@ BOOL WR_EXPORT WREditSymbolsProc( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
-        case WM_SYSCOLORCHANGE:
-            WRCtl3dColorChange();
-            break;
+    case WM_SYSCOLORCHANGE:
+        WRCtl3dColorChange();
+        break;
 
-        case WM_INITDIALOG:
-            info = (WREditSymInfo *) lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG) info );
-            if( info == NULL ) {
-                EndDialog( hDlg, FALSE );
-                break;
+    case WM_INITDIALOG:
+        info = (WREditSymInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        if( info == NULL ) {
+            EndDialog( hDlg, FALSE );
+            break;
+        }
+        WRSetupEditSymDialog( hDlg, info, TRUE );
+        ret = TRUE;
+        break;
+
+    case WM_DRAWITEM:
+        WRDrawHashListBoxItem( hDlg, (DRAWITEMSTRUCT *)lParam );
+        ret = TRUE;
+        break;
+
+    case WM_VKEYTOITEM:
+        ret = -1;
+        info = (WREditSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        if( info != NULL && LOWORD( wParam ) == VK_DELETE ) {
+            if( WRHandleDELKey( hDlg, info ) ) {
+                ret = -2;
             }
-            WRSetupEditSymDialog( hDlg, info, TRUE );
+        }
+        break;
+
+    case WM_COMMAND:
+        info = (WREditSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        wp = LOWORD( wParam );
+        cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+        switch( wp ) {
+        case IDB_SYM_SHOW_STANDARD:
+//      case IDB_SYM_SHOW_UNUSED:
+            if( cmd == BN_CLICKED ) {
+                info->flags = WRGetEditSymEntryFlags( hDlg );
+                WRSetupEditSymDialog( hDlg, info, FALSE );
+            }
+            break;
+
+        case IDB_SYM_HELP:
+            if( info != NULL && info->hcb != NULL ) {
+                (*info->hcb)();
+            }
+            break;
+
+        case IDOK:
+            if( info != NULL ) {
+                info->flags = WRGetEditSymEntryFlags( hDlg );
+            }
+            EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
 
-        case WM_DRAWITEM:
-            WRDrawHashListBoxItem( hDlg, (DRAWITEMSTRUCT *)lParam );
+        case IDCANCEL:
             ret = TRUE;
-            break;
-
-        case WM_VKEYTOITEM:
-            ret = -1;
-            info = (WREditSymInfo *) GetWindowLong( hDlg, DWL_USER );
-            if( info && ( LOWORD( wParam ) == VK_DELETE ) ) {
-                if( WRHandleDELKey( hDlg, info ) ) {
-                    ret = -2;
+            if( info != NULL && info->modified ) {
+                if( !WRDiscardChangesQuery() ) {
+                    break;
                 }
             }
+            EndDialog( hDlg, FALSE );
             break;
 
-        case WM_COMMAND:
-            info = (WREditSymInfo *) GetWindowLong( hDlg, DWL_USER );
-            wp = LOWORD(wParam);
-            cmd = GET_WM_COMMAND_CMD(wParam,lParam);
-            switch( wp ) {
-                case IDB_SYM_SHOW_STANDARD:
-//              case IDB_SYM_SHOW_UNUSED:
-                    if( cmd == BN_CLICKED ) {
-                        info->flags = WRGetEditSymEntryFlags( hDlg );
-                        WRSetupEditSymDialog( hDlg, info, FALSE );
-                    }
-                    break;
-
-                case IDB_SYM_HELP:
-                    if( info && info->hcb ) {
-                        (*info->hcb)();
-                    }
-                    break;
-
-                case IDOK:
-                    if( info ) {
-                        info->flags = WRGetEditSymEntryFlags( hDlg );
-                    }
-                    EndDialog( hDlg, TRUE );
-                    ret = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    ret = TRUE;
-                    if( info && info->modified ) {
-                        if( !WRDiscardChangesQuery() ) {
-                            break;
-                        }
-                    }
-                    EndDialog( hDlg, FALSE );
-                    break;
-
-                case IDB_SYM_ADD:
-                case IDB_SYM_MODIFY:
-                    if( !info || !info->table ) {
-                        break;
-                    }
-                    if( WRAddNewSymbol( hDlg,info->table, info->hcb,
-                                    wp == IDB_SYM_MODIFY ) ) {
-                        info->modified = TRUE;
-                    }
-                    break;
-
-                case IDB_SYM_REMOVE:
-                    if( !info || !info->table ) {
-                        break;
-                    }
-                    if( WRRemoveSymbol( hDlg, info->table ) ) {
-                        info->modified = TRUE;
-                    }
-                    break;
-
-                case IDB_SYM_LISTBOX:
-                    switch( cmd ) {
-                        case LBN_SELCHANGE:
-                            if( info && info->table ) {
-                                WRShowSelectedSymbol( hDlg, info->table );
-                            }
-                            break;
-                    }
-                    break;
+        case IDB_SYM_ADD:
+        case IDB_SYM_MODIFY:
+            if( info == NULL || info->table == NULL ) {
+                break;
             }
+            if( WRAddNewSymbol( hDlg,info->table, info->hcb, wp == IDB_SYM_MODIFY ) ) {
+                info->modified = TRUE;
+            }
+            break;
+
+        case IDB_SYM_REMOVE:
+            if( info == NULL || info->table == NULL ) {
+                break;
+            }
+            if( WRRemoveSymbol( hDlg, info->table ) ) {
+                info->modified = TRUE;
+            }
+            break;
+
+        case IDB_SYM_LISTBOX:
+            switch( cmd ) {
+            case LBN_SELCHANGE:
+                if( info != NULL && info->table != NULL ) {
+                    WRShowSelectedSymbol( hDlg, info->table );
+                }
+                break;
+            }
+            break;
+        }
+        break;
     }
 
     return( ret );
@@ -1515,18 +1487,19 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
     WRHashValue value;
     char        *str;
 
-    if( info ) {
+    if( info != NULL ) {
         if( info->modify ) {
             str = WRAllocRCString( WR_MODIFYSYMBOLTITLE );
-            if( str ) {
+            if( str != NULL ) {
                 SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
                 WRFreeRCString( str );
             }
-            if( info->symbol ) {
+            if( info->symbol != NULL ) {
                 WRSetEditWithStr( info->symbol, hDlg, IDB_ADDSYM_SYM );
             }
         }
-        if( !WRFindUnusedHashValue( info->table, &value, info->table->next_default_value ) ) {
+        if( !WRFindUnusedHashValue( info->table, &value,
+                                    info->table->next_default_value ) ) {
             value = info->table->next_default_value;
         }
         WRSetEditWithSLONG( (signed long)value, 10, hDlg, IDB_ADDSYM_VAL );
@@ -1537,7 +1510,7 @@ static BOOL WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 {
     signed long val;
 
-    if( !info ) {
+    if( info == NULL ) {
         return( FALSE );
     }
 
@@ -1547,7 +1520,7 @@ static BOOL WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 
     info->value = (WRHashValue)val;
     info->symbol = WRGetStrFromEdit( hDlg, IDB_ADDSYM_SYM, NULL );
-    if( !info->symbol ) {
+    if( info->symbol == NULL ) {
         return( FALSE );
     }
 
@@ -1569,7 +1542,7 @@ static void WRSetAddSymOK( HWND hDlg )
 
     enable = FALSE;
     str = WRGetStrFromEdit( hDlg, IDB_ADDSYM_SYM, NULL );
-    if( str ) {
+    if( str != NULL ) {
         WRStripSymbol( str );
         enable = WRIsValidSymbol( str );
         WRMemFree( str );
@@ -1582,8 +1555,7 @@ static void WRSetAddSymOK( HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDOK ), enable );
 }
 
-BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message,
-                             WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRAddSymInfo        *info;
     WORD                cmd;
@@ -1592,51 +1564,51 @@ BOOL WR_EXPORT WRAddSymProc( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
-        case WM_INITDIALOG:
-            info = (WRAddSymInfo *)lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG)info );
-            WRSetAddSymInfo( hDlg, info );
-            WRSetAddSymOK( hDlg );
+    case WM_INITDIALOG:
+        info = (WRAddSymInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WRSetAddSymInfo( hDlg, info );
+        WRSetAddSymOK( hDlg );
+        ret = TRUE;
+        break;
+
+    case WM_SYSCOLORCHANGE:
+        WRCtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        info = (WRAddSymInfo *)GetWindowLong( hDlg, DWL_USER );
+        switch( LOWORD( wParam ) ) {
+        case IDB_ADDSYM_HELP:
+            if( info != NULL && info->hcb != NULL ) {
+                (*info->hcb)();
+            }
+            break;
+
+        case IDB_ADDSYM_SYM:
+        case IDB_ADDSYM_VAL:
+            cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+            switch( cmd ) {
+            case EN_CHANGE:
+                WRSetAddSymOK( hDlg );
+                break;
+            }
+            break;
+
+        case IDOK:
+            if( WRGetAddSymInfo( hDlg, info ) ) {
+                EndDialog( hDlg, TRUE );
+            }
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRCtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            info = (WRAddSymInfo *)GetWindowLong( hDlg, DWL_USER );
-            switch( LOWORD(wParam) ) {
-                case IDB_ADDSYM_HELP:
-                    if( info && info->hcb ) {
-                        (*info->hcb)();
-                    }
-                    break;
-
-                case IDB_ADDSYM_SYM:
-                case IDB_ADDSYM_VAL:
-                    cmd = GET_WM_COMMAND_CMD(wParam,lParam);
-                    switch( cmd ) {
-                        case EN_CHANGE:
-                            WRSetAddSymOK( hDlg );
-                            break;
-                    }
-                    break;
-
-                case IDOK:
-                    if( WRGetAddSymInfo( hDlg, info ) ) {
-                        EndDialog( hDlg, TRUE );
-                    }
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-            }
+        }
+        break;
     }
 
     return( ret );
 }
-

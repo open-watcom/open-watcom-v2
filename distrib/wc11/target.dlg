@@ -1,0 +1,18 @@
+name=Target
+static_text=\
+        //1"Select the target operating systems:"\
+        //2"ターゲットOSを選択してください:"\
+        //0
+static_text=
+check_box=dostarg,,"&DOS"
+check_box=wintarg,,"&Windows"
+check_box=os2targ,,"O&S/2"
+check_box=wnttarg,,"Windows &NT/Windows 95/Win32s"
+check_box=nectarg,,"N&EC-98",IsJapanese
+static_text=
+check_box=nlmtarg,,"Netware"
+check_box=adstarg,,"AutoCAD ADS"
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

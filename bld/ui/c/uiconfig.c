@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#ifdef UNIX
+#ifndef __WATCOMC__
     #include "clibext.h"
 #endif
 #include <stdio.h>
@@ -65,7 +65,7 @@ bool uiconfig( char *fn, char **envvars )
         colour = "ATTR_COL";
         slen = 8;
     }
-    #if !defined( NLM )
+    #if !defined( __NETWARE__ )
         for( ; envvars != NULL  &&  *envvars != NULL; ++envvars ) {
             _searchenv( fn, *envvars, buffer );
             if( buffer[0] != '\0' ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CodeView DIP module management.
 *
 ****************************************************************************/
 
@@ -33,10 +32,6 @@
 #include <stddef.h>
 #include "cvinfo.h"
 
-
-/*
-        Stuff dealing with module handles
-*/
 
 struct find_mod {
     IMP_MOD_WKR         *wk;
@@ -77,7 +72,7 @@ unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
 {
     cv_directory_entry  *cde;
     cv_sst_module       *mp;
-    unsigned_8          *name;
+    char                *name;
     char                *start;
     char                *end;
     unsigned            len;
@@ -89,8 +84,8 @@ unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
 
     mp = VMBlock( ii, cde->lfo, cde->cb );
     if( mp == NULL ) return( 0 );
-    name = (unsigned_8 *)&mp->SegInfo[ mp->cSeg ];
-    len = name[0];
+    name = (char *)&mp->SegInfo[ mp->cSeg ];
+    len = *(unsigned_8 *)name;
     ++name;
     start = name;
     end = name + len;
@@ -148,7 +143,11 @@ char            *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle
 dip_status      DIPENTRY DIPImpModInfo( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
-    static const unsigned DmndType[] = {0,0,sstSrcModule,sstAlignSym};
+    static const unsigned DmndType[] = {
+        0,
+        0, //sstGlobalTypes,
+        sstSrcModule,
+        sstAlignSym };
     unsigned            type;
     cv_directory_entry  *cde;
 

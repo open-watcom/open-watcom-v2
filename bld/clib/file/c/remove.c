@@ -32,11 +32,11 @@
 
 #include "variety.h"
 #include "widechar.h"
-#ifndef __QNX__
+#ifndef __UNIX__
     #include <io.h>
 #endif
 #include <stdio.h>
-#ifdef __QNX__
+#ifdef __UNIX__
     #include <unistd.h>
 #endif
 

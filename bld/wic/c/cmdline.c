@@ -62,15 +62,22 @@ pFDReadInd createFDReadInd(char *name, int readOnly) {
     return entry;
 }
 
-unsigned FDReadIndHashFunc(pFDReadInd entry, unsigned size) {
+unsigned FDReadIndHashFunc(void *_entry, unsigned size) {
+    pFDReadInd entry = _entry;
+
     return stringHashFunc(entry->name, size);;
 }
 
-int FDReadIndCmpFunc(pFDReadInd entry1, pFDReadInd entry2) {
+int FDReadIndCmpFunc(void *_entry1, void *_entry2) {
+    pFDReadInd entry1 = _entry1;
+    pFDReadInd entry2 = _entry2;
+
     return strcmp(entry1->name, entry2->name);
 }
 
-void zapFDReadInd(pFDReadInd entry) {
+void zapFDReadInd(void *_entry) {
+    pFDReadInd entry = _entry;
+
     if (entry == NULL) {
         return;
     }

@@ -37,25 +37,9 @@ typedef struct vecnode {
     symbol *            entry;
 } vecnode;
 
-/*-----------------------------TARGET-----------------------------------*/
+/*----------------------------------------------------------------------*/
 
 #include "ovltab.h"
-
-typedef struct lvec {               /* long overlay vector */
-    unsigned_8          call;
-    unsigned_16         loader;
-    unsigned_16         sec_num;
-    unsigned_8          jmpto;
-    dos_addr            target;
-} lvec;
-
-typedef struct svec {               /* short overlay vector */
-    unsigned_8          call;
-    unsigned_16         loader;
-    unsigned_16         sec_num;
-    unsigned_8          jmpto;
-    unsigned_16         target;
-} svec;
 
 #define DefOvlClass     "CODE"
 #define OVL_CL_LEN      ( sizeof( DefOvlClass ) - 1 )

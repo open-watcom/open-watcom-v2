@@ -32,34 +32,95 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
-#include "tinyio.h"
+#include <string.h>
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
-    #include <stdlib.h>
-    #include "mbwcconv.h"
+#include "_doslfn.h"
+
+#ifdef _M_I86
+  #ifdef __BIG_DATA__
+    #define AUX_INFO    \
+        parm caller     [dx ax] [es di] \
+        modify exact    [ax dx];
+  #else
+    #define AUX_INFO    \
+        parm caller     [dx] [di] \
+        modify exact    [ax];
+  #endif
+#else
+    #define AUX_INFO    \
+        parm caller     [edx] [edi] \
+        modify exact    [eax];
 #endif
 
+extern unsigned __rename_sfn( const char *old, const char *new );
+#pragma aux __rename_sfn = \
+        _SET_ESDI       \
+        _SET_DSDX       \
+        _MOV_AH DOS_RENAME \
+        _INT_21         \
+        _RST_DS         \
+        _RST_ES         \
+        "call __doserror_" \
+        AUX_INFO
+
+#if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
+static unsigned _rename_lfn( const char *old, const char *new )
+/*************************************************************/
+{
+#ifdef _M_I86
+    return( __rename_lfn( old, new ) );
+#else
+    call_struct     dpmi_rm;
+
+    strcpy( RM_TB_PARM1_LINEAR, old );
+    strcpy( RM_TB_PARM2_LINEAR, new );
+    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
+    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
+    dpmi_rm.edx = RM_TB_PARM1_OFFS;
+    dpmi_rm.es  = RM_TB_PARM2_SEGM;
+    dpmi_rm.edi = RM_TB_PARM2_OFFS;
+    dpmi_rm.eax = 0x7156;
+    dpmi_rm.flags = 1;
+    if( __dpmi_dos_call( &dpmi_rm ) ) {
+        return( -1 );
+    }
+    if( dpmi_rm.flags & 1 ) {
+        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+    }
+    return( 0 );
+#endif
+}
+#endif
 
 _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *new )
-    {
-        tiny_ret_t  rc;
+/***********************************************************************************/
+{
 #ifdef __WIDECHAR__
-        char        mbOld[MB_CUR_MAX*_MAX_PATH];    /* single-byte char */
-        char        mbNew[MB_CUR_MAX*_MAX_PATH];    /* single-byte char */
-#endif
+    char        mbOld[MB_CUR_MAX * _MAX_PATH];      /* single-byte char */
+    char        mbNew[MB_CUR_MAX * _MAX_PATH];      /* single-byte char */
 
-        #ifdef __WIDECHAR__
-            __filename_from_wide( mbOld, old );
-            __filename_from_wide( mbNew, new );
-            rc = TinyRename( mbOld, mbNew );
-        #else
-            rc = TinyRename( old, new );
-        #endif
-
-        if( TINY_ERROR(rc) ) {
-            return( __set_errno_dos( TINY_INFO(rc) ) );
-        }
-        return( 0 );            /* indicate no error */
+    if( wcstombs( mbOld, old, sizeof( mbOld ) ) == -1 ) {
+        mbOld[0] = '\0';
     }
+    if( wcstombs( mbNew, new, sizeof( mbNew ) ) == -1 ) {
+        mbNew[0] = '\0';
+    }
+    return( rename( mbOld, mbNew ) );
+#else
+  #if defined( __WATCOM_LFN__ )
+    unsigned    rc = 0;
+
+    if( _RWD_uselfn && (rc = _rename_lfn( old, new )) == 0 ) {
+        return( 0 );
+    }
+    if( IS_LFN_ERROR( rc ) ) {
+        return( -1 );
+    }
+  #endif
+    if( __rename_sfn( old, new ) ) {
+        return( -1 );
+    }
+    return( 0 );
+#endif
+}
+

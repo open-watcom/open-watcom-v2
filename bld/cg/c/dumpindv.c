@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump invariants.
 *
 ****************************************************************************/
 
@@ -46,58 +45,6 @@ extern  void            DumpBlkId(block*);
 extern  void            DumpPtr(pointer);
 extern  void            DumpIns(instruction*);
 extern  void            DumpNL();
-
-extern  void    DumpCurrLoop() {
-/******************************/
-
-    block               *blk;
-    block               *header;
-    interval_depth      depth;
-
-    DumpLiteral( "The Loop Is:" );
-    DumpNL();
-    DumpLiteral( "============" );
-    DumpNL();
-    blk = HeadBlock;
-    depth = MAX_INTERVAL_DEPTH;
-    while( blk != NULL ) {
-        if( blk->class & IN_LOOP ) {
-            if( blk->depth < depth ) {
-                header = blk;
-                depth = header->depth;
-            }
-        }
-        blk = blk->next_block;
-    }
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        DumpBlkId( blk );
-        if( blk->class & IN_LOOP ) {
-            if( blk == header ) {
-                DumpLiteral( " - Header" );
-            } else {
-                DumpLiteral( " - In for(;;) {" );
-            }
-            if( blk->class & LOOP_EXIT ) {
-                DumpLiteral( " Exits" );
-            }
-        }
-        DumpNL();
-        blk = blk->next_block;
-    }
-}
-
-extern  void    DumpIVList() {
-/****************************/
-
-    induction   *var;
-
-    var = IndVarList;
-    while( var != NULL ) {
-        DumpIV( var );
-        var = var->next;
-    }
-}
 
 extern  void    DumpIV( induction *var ) {
 /****************************************/
@@ -196,13 +143,16 @@ extern  void    DumpIV( induction *var ) {
     DumpNL();
 }
 
-extern  void    DumpInvariants() {
-/********************************/
+extern  void    DumpIVList() {
+/****************************/
 
-    DumpLiteral( "Temps: " );
-    DumpInv( Names[ N_TEMP ] );
-    DumpLiteral( "Memory: " );
-    DumpInv( Names[ N_MEMORY ] );
+    induction   *var;
+
+    var = IndVarList;
+    while( var != NULL ) {
+        DumpIV( var );
+        var = var->next;
+    }
 }
 
 static  void    DumpInv( name *name ) {
@@ -216,4 +166,54 @@ static  void    DumpInv( name *name ) {
         name = name->n.next_name;
     }
     DumpNL();
+}
+
+extern  void    DumpInvariants() {
+/********************************/
+
+    DumpLiteral( "Temps: " );
+    DumpInv( Names[ N_TEMP ] );
+    DumpLiteral( "Memory: " );
+    DumpInv( Names[ N_MEMORY ] );
+}
+
+extern  void    DumpCurrLoop() {
+/******************************/
+
+    block               *blk;
+    block               *header;
+    interval_depth      depth;
+
+    DumpLiteral( "The Loop Is:" );
+    DumpNL();
+    DumpLiteral( "============" );
+    DumpNL();
+    blk = HeadBlock;
+    depth = MAX_INTERVAL_DEPTH;
+    header = NULL;
+    while( blk != NULL ) {
+        if( blk->class & IN_LOOP ) {
+            if( blk->depth < depth ) {
+                header = blk;
+                depth = header->depth;
+            }
+        }
+        blk = blk->next_block;
+    }
+    blk = HeadBlock;
+    while( blk != NULL ) {
+        DumpBlkId( blk );
+        if( blk->class & IN_LOOP ) {
+            if( blk == header ) {
+                DumpLiteral( " - Header" );
+            } else {
+                DumpLiteral( " - In for(;;) {" );
+            }
+            if( blk->class & LOOP_EXIT ) {
+                DumpLiteral( " Exits" );
+            }
+        }
+        DumpNL();
+        blk = blk->next_block;
+    }
 }

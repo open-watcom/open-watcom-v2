@@ -41,6 +41,7 @@ typedef struct {
     uint_16     file_specified : 1;
     uint_16     usa_date_time : 1;
     uint_16     quiet : 1;
+    uint_16     recursive : 1;
 } touchflags;
 
 typedef struct {

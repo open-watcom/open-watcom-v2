@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Asian multi-byte character support.
 *
 ****************************************************************************/
 
 
 /*
-        Asian multi-byte character support
 
 Lattice                         Range of characters for first byte
 switch  Character Set           of a double-byte character
@@ -40,18 +38,21 @@ switch  Character Set           of a double-byte character
 -e1     Chinese and Taiwanese:  0x81 - 0xfc // JBS obsolete
 -e2     Korean:                 0x81 - 0xfd // JBS obsolete
 
-00000 - increment to force compile
 */
-#include <mbstring.h>
-#include <mbctype.h>
-
 #include "cvars.h"
+
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+    #include <mbstring.h>
+    #include <mbctype.h>
+#endif
+
 #include "scan.h"
 
 #define LEAD_BYTE_INIT  ( C_DB | C_EX )
+
 static void setRange( unsigned low, unsigned high )
 {
-    unsigned i;
+    unsigned    i;
 
     for( i = low; i <= high; ++i ) {
         CharSet[i] = LEAD_BYTE_INIT;
@@ -62,8 +63,6 @@ static void setRange( unsigned low, unsigned high )
 void SetDBChar( int character_set )
 /*********************************/
 {
-    unsigned i;
-
     switch( character_set ) {
     case 0: // KANJI
         setRange( 0x81, 0x9f );
@@ -79,12 +78,17 @@ void SetDBChar( int character_set )
         setRange( 0xa1, 0xfe );
         break;
     case -1:
-        _setmbcp( _MB_CP_ANSI );
-        for( i = 0x80; i <= 0x0ff; ++i ) {
-            if( _mbislead( i ) ) {
-                CharSet[i] = C_DB;
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+        {
+            unsigned    i;
+            _setmbcp( _MB_CP_ANSI );
+            for( i = 0x80; i <= 0x0ff; ++i ) {
+                if( _mbislead( i ) ) {
+                     CharSet[i] = C_DB;
+                }
             }
         }
+#endif
         break;
     }
 }

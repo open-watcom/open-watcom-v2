@@ -160,4 +160,5 @@ c$include winapi.fi
       call DeleteObject( blackpen )
       call DeleteObject( brightpen )
       call DeleteObject( shadowpen )
+      call DeleteObject( facepen )
       end

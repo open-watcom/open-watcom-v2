@@ -36,13 +36,13 @@ extern unsigned         PutBuffPacket( unsigned, void * );
 extern void             AddPacket( int, void * );
 extern unsigned         GetPacket(void);
 extern void             RemovePacket( int, void * );
-extern void             *GetPacketBuffPtr(void);
+extern char             *GetPacketBuffPtr(void);
 extern unsigned         MaxPacketSize(void);
 
 extern char             *RemoteLink(char *, char);
 extern char             RemoteConnect(void);
 extern void             RemoteDisco(void);
 extern void             RemoteUnLink(void);
-extern unsigned         RemotePut(void *, unsigned);
-extern unsigned         RemoteGet(void *, unsigned);
+extern unsigned         RemotePut(char *, unsigned);
+extern unsigned         RemoteGet(char *, unsigned);
 

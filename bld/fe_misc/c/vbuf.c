@@ -41,6 +41,8 @@
 
 #define MIN_VBUF_INC 32     // minimum increment allocated (power of 2)
 
+#define BUFFER_SIZE(x)   ((x+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
+#define FREE_BUFFER(x)   {if(x->len>1)_MemoryFree(x->buf);}
 
 // ************************************
 // Vbuf functions that manage size only
@@ -49,8 +51,8 @@
 void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
     VBUF *vbuf )                // - VBUF structure
 {
-    vbuf->buf = NULL;
-    vbuf->len = 0;
+    vbuf->buf = "";
+    vbuf->len = 1;
     vbuf->used = 0;
 }
 
@@ -58,16 +60,8 @@ void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
 void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 {
-    _MemoryFree( vbuf->buf );
+    FREE_BUFFER( vbuf );
     VbufInit( vbuf );
-}
-
-
-void VbufUsed(                  // ENSURE BUFFER IS USED FOR A CERTAIN SIZE
-    VBUF *vbuf,                 // - VBUF structure
-    size_t used )               // - used size
-{
-    vbuf->used = used;
 }
 
 
@@ -75,152 +69,160 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     VBUF *vbuf,                 // - VBUF structure
     size_t reqd )               // - required size
 {
-    char *old_buffer;           // - old buffer
+    char    *new_buffer;        // - old buffer
 
-    if( reqd > vbuf->len ) {
-        reqd = ( reqd + ( MIN_VBUF_INC - 1 ) ) & ( - MIN_VBUF_INC );
-        old_buffer = vbuf->buf;
-        vbuf->buf = _MemoryAllocate( reqd );
+    if( reqd >= vbuf->len ) {
+        reqd = BUFFER_SIZE( reqd );
+        new_buffer = _MemoryAllocate( reqd );
+        stvcpy( new_buffer, vbuf->buf, vbuf->used );
+        FREE_BUFFER( vbuf );
+        vbuf->buf = new_buffer;
         vbuf->len = reqd;
-        if( old_buffer != NULL ) {
-            memcpy( vbuf->buf, old_buffer, vbuf->used );
-            _MemoryFree( old_buffer );
-        }
     }
 }
 
+
+void VbufSetLen(                // SET BUFFER LENGTH
+    VBUF *vbuf,                 // - VBUF structure
+    size_t size )               // - new length
+{
+    if( vbuf->len > 1 ) {
+        vbuf->used = size;
+        vbuf->buf[size] = '\0';
+    }
+}
+
+
+// ****************************************************
+// Vbuf functions which manipulate with data in buffer
+// ****************************************************
 
 void VbufConcVector             // CONCATENATE A VECTOR
     ( VBUF *vbuf                // - VBUF structure
     , size_t size               // - size of vector
     , char const * vect )       // - vector
 {
-    VbufReqd( vbuf, size );
-    memcpy( &vbuf->buf[ vbuf->used ], vect, size );
-    vbuf->used += size;
+    if( size > 0 ) {
+        VbufReqd( vbuf, vbuf->used + size );
+        stvcpy( vbuf->buf + vbuf->used, vect, size );
+        vbuf->used += size;
+    }
 }
 
 
-// *************************************************
-// Vbuf functions which treat the buffer as a string
-// *************************************************
-
-void VStrNull(                  // CLEAR BUFFER
-    VBUF *vbuf )                // - VBUF structure
+void VbufConcVbuf               // CONCATENATE A VBUF
+    ( VBUF *vbuf1               // - VBUF structure
+    , VBUF *vbuf2 )             // - VBUF structure
 {
-    VbufReqd( vbuf, 1 );
-    vbuf->buf[0] = '\0';
-    vbuf->used = 1;
+    if( vbuf2->used > 0 ) {
+        VbufReqd( vbuf1, vbuf1->used + vbuf2->used );
+        stvcpy( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
+        vbuf1->used += vbuf2->used;
+    }
 }
 
 
-void VStrConcStr(               // CONCATENATE STRING TO vbuf->buf
+void VbufConcVbufRev(           // CONCATENATE STRING BACKWARDS TO vbuf->buf
+    VBUF *vbuf1,                // - VBUF structure
+    VBUF *vbuf2 )               // - VBUF structure to be concatenated backwards
+{
+    if( vbuf2->used > 0 ) {
+        VbufReqd( vbuf1, vbuf1->used + vbuf2->used );
+        stvcpyr( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
+        vbuf1->used += vbuf2->used;
+    }
+}
+
+
+void VbufPrepVbuf               // PREPEND A VBUF TO VBUF
+    ( VBUF *vbuf1               // - VBUF structure
+    , VBUF *vbuf2 )             // - VBUF structure to be prepended
+{
+    VBUF    temp;
+
+    if( vbuf2->used > 0 ) {
+        VbufInit( &temp );
+        VbufReqd( &temp, vbuf1->used + vbuf2->used );
+        stvcpy( temp.buf, vbuf2->buf, vbuf2->used );
+        stvcpy( temp.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
+        temp.used = vbuf1->used + vbuf2->used;
+        VbufFree( vbuf1 );
+        *vbuf1 = temp;
+    }
+}
+
+
+void VbufConcStr(               // CONCATENATE STRING TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated
 {
-    size_t new_size;            // - size of concatenated strings
-    size_t conc_size;           // - size of concatenation string
-
-    conc_size = strlen( string );
-    new_size = vbuf->used + conc_size;
-    VbufReqd( vbuf, new_size );
-    stvcpy( vbuf->buf + vbuf->used - 1, string, conc_size );
-    vbuf->used = new_size;
+    VbufConcVector( vbuf, strlen( string ), string );
 }
 
 
-void VStrConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
+void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    unsigned value )            // - value to be concatenated
+    unsigned long value )       // - value to be concatenated
 {
-    char buffer[16];            // - temp buffer
+    char    buffer[16];         // - temp buffer
 
     stdcpy( buffer, value );
-    VStrConcStr( vbuf, buffer );
+    VbufConcStr( vbuf, buffer );
 }
 
 
-void VStrConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
+void VbufConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    int value )                 // - value to be concatenated
+    long value )                // - value to be concatenated
 {
-    char buffer[16];            // - temp buffer
+    char    buffer[16];         // - temp buffer
 
     sticpy( buffer, value );
-    VStrConcStr( vbuf, buffer );
+    VbufConcStr( vbuf, buffer );
 }
 
-#ifdef FE_I64_MEANINGLESS
-void VStrConcI64(               // CONCATENATE I64 # TO vbuf->buf
+void VbufConcI64(               // CONCATENATE I64 # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    __int64 value )             // - value to be concatenated
+    signed_64 value )           // - value to be concatenated
 {
-    char buffer[16];            // - temp buffer
+    char    buffer[25];         // - temp buffer
 
     sti64cpy( buffer, value );
-    VStrConcStr( vbuf, buffer );
+    VbufConcStr( vbuf, buffer );
 }
-#endif
 
-void VStrConcChr(               // CONCATENATE CHAR TO vbuf->buf
+void VbufConcChr(               // CONCATENATE CHAR TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char chr )                  // - char to be concatenated
 {
-#if 0
-    char buffer[ 2 ];           // buffer passed to VStrConcStr
-
-    buffer[ 0 ] = chr;
-    buffer[ 1 ] = '\0';
-    VStrConcStr( vbuf, buffer );
-#else
-    char* tgt;                  // - target location
-    size_t reqd;                // - size afterwards
-
-    reqd = vbuf->used + 1;
-    if( reqd > vbuf->len ) {
-        VbufReqd( vbuf, reqd );
-        VStrConcChr( vbuf, chr );
-    } else {
-        vbuf->used = reqd;
-        tgt = vbuf->buf + reqd - 2;
-        tgt[0] = chr;
-        tgt[1] = '\0';
-    }
-#endif
+    VbufReqd( vbuf, vbuf->used + 1 );
+    vbuf->buf[ vbuf->used++ ] = chr;
+    vbuf->buf[ vbuf->used ] = '\0';
 }
 
 
-void VStrConcStrRev(            // CONCATENATE STRING BACKWARDS TO vbuf->buf
+void VbufConcStrRev(            // CONCATENATE STRING BACKWARDS TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated backwards
 {
-    size_t new_size;            // - size of concatenated strings
-    size_t conc_size;           // - size of concatenation string
+    size_t  conc_size;          // - size of concatenation string
 
     conc_size = strlen( string );
-    new_size = vbuf->used + conc_size;
-    VbufReqd( vbuf, new_size );
-    stvcpyr( vbuf->buf + vbuf->used - 1, string, conc_size );
-    vbuf->used = new_size;
+    if( conc_size > 0 ) {
+        VbufReqd( vbuf, vbuf->used + conc_size );
+        stvcpyr( vbuf->buf + vbuf->used, string, conc_size );
+        vbuf->used += conc_size;
+    }
 }
 
 
-unsigned VStrLen(               // RETURN STRLEN OF BUFFER
-    VBUF *vbuf )                // - VBUF structure
-{
-    return vbuf->used - 1;
-}
-
-
-void VStrTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
+void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
 {
     char    *ptr;
-    size_t size;
 
-    size = vbuf->used;
-    if( size > 1 ) {
-        ptr = vbuf->buf + size - 2;
+    if( vbuf->used > 0 ) {
+        ptr = vbuf->buf + vbuf->used - 1;
         while( isspace( *ptr ) ) {
             *ptr-- = '\0';
             vbuf->used--;
@@ -228,33 +230,33 @@ void VStrTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     }
 }
 
-void VStrPrepStr(               // PREPEND STRING TO vbuf->buf
+void VbufPrepStr(               // PREPEND STRING TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be prepended
 {
-    size_t prep_size;
-    size_t new_size;
-    VBUF   temp;
+    size_t  prep_size;
+    VBUF    temp;
 
     prep_size = strlen( string );
-    new_size = prep_size + vbuf->used;
-    VbufInit( &temp );
-    VbufReqd( &temp, new_size );
-    stvcpy( temp.buf, string, prep_size );
-    stvcpy( temp.buf + prep_size, vbuf->buf, vbuf->used-1 );
-    temp.used = new_size;
-    VbufFree( vbuf );
-    *vbuf = temp;
+    if( prep_size > 0 ) {
+        VbufInit( &temp );
+        VbufReqd( &temp, prep_size + vbuf->used );
+        stvcpy( temp.buf, string, prep_size );
+        stvcpy( temp.buf + prep_size, vbuf->buf, vbuf->used );
+        temp.used = prep_size + vbuf->used;
+        VbufFree( vbuf );
+        *vbuf = temp;
+    }
 }
 
 
-void VStrPrepChr(               // PREPEND CHAR TO vbuf->buf
+void VbufPrepChr(               // PREPEND CHAR TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char chr )                  // - char to be prepended
 {
-    char buffer[ 2 ];           // buffer passed to VStrPrepStr
+    char    buffer[ 2 ];        // buffer passed to VbufPrepStr
 
     buffer[ 0 ] = chr;
     buffer[ 1 ] = '\0';
-    VStrPrepStr( vbuf, buffer );
+    VbufPrepStr( vbuf, buffer );
 }

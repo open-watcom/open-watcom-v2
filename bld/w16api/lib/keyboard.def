@@ -1,0 +1,23 @@
+LIBRARY     KEYBOARD
+EXPORTS
+    INQUIRE                        @1
+    ENABLE                         @2
+    DISABLE                        @3
+    TOASCII                        @4
+    ANSITOOEM                      @5
+    OEMTOANSI                      @6
+    SETSPEED                       @7
+    WEP                            @8
+    SCREENSWITCHENABLE             @100
+    GETTABLESEG                    @126
+    NEWTABLE                       @127
+    OEMKEYSCAN                     @128
+    VKKEYSCAN                      @129
+    GETKEYBOARDTYPE                @130
+    MAPVIRTUALKEY                  @131
+    GETKBCODEPAGE                  @132
+    GETKEYNAMETEXT                 @133
+    ANSITOOEMBUFF                  @134
+    OEMTOANSIBUFF                  @135
+    ENABLEKBSYSREQ                 @136
+    GETBIOSKEYPROC                 @137

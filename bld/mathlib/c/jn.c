@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of jn() Bessel function.
 *
 ****************************************************************************/
 
@@ -39,48 +38,55 @@
 #define BIGNI   1.0e-10
 
 _WMRTLINK double jn( int n, double x )
-/**************************/
-    {
-        int     j, jsum, m;
-        double  ax, bj, bjm, bjp, sum, tox, ans;
+/************************************/
+{
+    int     j, jsum, m;
+    double  ax, bj, bjm, bjp, sum, tox, ans;
 
-        ax = fabs( x );
-        if( ax == 0.0 )  return( 0.0 );
-        tox = PDIV( 2.0 , x );
-        if( ax > (double) n ) { /* Use upwards recurrence from j0 and j1 */
-            bjm = j0( x );
-            bj  = j1( x );
-            for( j = 1; j < n; j++ ) {
-                bjp = j * tox * bj - bjm;
-                bjm = bj;
-                bj = bjp;
-            }
-            ans = bj;
-        } else {                /* Use downwards recurrence from an even m */
-            m = 2 * ( (n + (int)sqrt( ACC*n )) / 2 );
-            jsum = 0;
-            bjp = 0.0;
-            ans = 0.0;
-            sum = 0.0;
-            bj = 1.0;
-            for( j = m; j > 0; j-- ) {
-                bjm = j * tox * bj - bjp;
-                bjp = bj;
-                bj = bjm;
-                if( fabs(bj) > BIGNO ) { /* renormalize to prevent overflows */
-                    bj  *= BIGNI;
-                    bjp *= BIGNI;
-                    ans *= BIGNI;
-                    sum *= BIGNI;
-                }
-                if( jsum )  sum += bj;  /* accumulate the sum */
-                jsum = ! jsum;          /* change 0 to !0 and vice-versa */
-                if( j == n )  ans = bjp;/* save the unnormalized answer */
-            }
-            sum = 2.0 * sum - bj;
-            ans = PDIV( ans, sum );
-        }
-        if( x < 0.0  &&  n % 2 == 1 )  ans = -ans;
-        return( ans );
+    ax = fabs( x );
+    if( ax == 0.0 ) {
+        return( 0.0 );
     }
-
+    tox = PDIV( 2.0, x );
+    if( ax > (double)n ) { /* Use upwards recurrence from j0 and j1 */
+        bjm = j0( x );
+        bj  = j1( x );
+        for( j = 1; j < n; j++ ) {
+            bjp = j * tox * bj - bjm;
+            bjm = bj;
+            bj = bjp;
+        }
+        ans = bj;
+    } else {                /* Use downwards recurrence from an even m */
+        m = 2 * ( (n + (int)sqrt( ACC * n )) / 2 );
+        jsum = 0;
+        bjp = 0.0;
+        ans = 0.0;
+        sum = 0.0;
+        bj = 1.0;
+        for( j = m; j > 0; j-- ) {
+            bjm = j * tox * bj - bjp;
+            bjp = bj;
+            bj = bjm;
+            if( fabs(bj) > BIGNO ) { /* renormalize to prevent overflows */
+                bj  *= BIGNI;
+                bjp *= BIGNI;
+                ans *= BIGNI;
+                sum *= BIGNI;
+            }
+            if( jsum ) {
+                sum += bj;          /* accumulate the sum */
+            }
+            jsum = ! jsum;          /* change 0 to !0 and vice-versa */
+            if( j == n ) {
+                ans = bjp;          /* save the unnormalized answer */
+            }
+        }
+        sum = 2.0 * sum - bj;
+        ans = PDIV( ans, sum );
+    }
+    if( x < 0.0  &&  n % 2 == 1 ) {
+        ans = -ans;
+    }
+    return( ans );
+}

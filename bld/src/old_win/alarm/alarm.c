@@ -3,7 +3,7 @@
 #include <time.h>
 #include "alarm.h"
 
-HANDLE          MyInstance;
+HINSTANCE       MyInstance;
 char            AlarmClass[32]="AlarmClass";
 
 digit_index     NumberOfDigits = DIGITS_WITH_SECONDS;
@@ -34,10 +34,10 @@ BOOL            TwelveHour = TRUE;
 BOOL            Setting;
 unsigned        Tick;
 
-static BOOL FirstInstance( HANDLE this_inst );
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow );
+static BOOL FirstInstance( HINSTANCE this_inst );
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow );
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -70,7 +70,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
 
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 /********************************************
 
     Register window class for the application,
@@ -95,7 +95,7 @@ static BOOL FirstInstance( HANDLE this_inst )
 
 }
 
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow )
 /*******************************************************
 
     Do work required for every instance of the application:
@@ -341,8 +341,8 @@ static void DisplayAboutBox( HWND win_handle )
 {
     FARPROC     proc;
 
-    proc = MakeProcInstance( About, MyInstance );
-    DialogBox( MyInstance, "AboutBox", win_handle, proc );
+    proc = MakeProcInstance( (FARPROC)About, MyInstance );
+    DialogBox( MyInstance, "AboutBox", win_handle, (DLGPROC)proc );
     FreeProcInstance( proc );
 }
 

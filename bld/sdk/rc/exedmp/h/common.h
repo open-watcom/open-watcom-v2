@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PE Dump Utility common structures and constants.
 *
 ****************************************************************************/
 
 
-#include "stddef.h"
-#include "stdio.h"
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "watcom.h"
 #include "exepe.h"
 #include "exedos.h"

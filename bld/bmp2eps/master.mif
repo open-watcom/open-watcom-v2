@@ -1,0 +1,18 @@
+proj_name = bmp2eps
+bmp2eps_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h"
+
+.c: ../c
+
+objs =                  &
+        bmeps.obj       &
+        bmepsm.obj      &
+        bmepsoe.obj     &
+        bmpeps.obj
+
+!include exetarg.mif

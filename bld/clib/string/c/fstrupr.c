@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrupr() - far strupr().
 *
 ****************************************************************************/
 
@@ -34,19 +33,20 @@
 #include <ctype.h>
 #include <string.h>
 
-_WCRTLINK char _WCFAR *_fstrupr( char _WCFAR *str )
-    {
-        char _WCFAR *p;
-        unsigned char c;
 
-        p = str;
-        while( c = *p ) {
-            c -= 'a';
-            if( c <= 'z' - 'a' ) {
-                c += 'A';
-                *p = c;
-            }
-            ++p;
+_WCRTLINK char _WCFAR *_fstrupr( char _WCFAR *str )
+{
+    char _WCFAR     *p;
+    unsigned char   c;
+
+    p = str;
+    while( c = *p ) {
+        c -= 'a';
+        if( c <= 'z' - 'a' ) {
+            c += 'A';
+            *p = c;
         }
-        return( str );
+        ++p;
     }
+    return( str );
+}

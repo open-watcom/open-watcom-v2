@@ -1,20 +1,20 @@
 # C & Math library finders for those awkward cases where you haven't got a
 # main function. You need to define:
 
-# 1. host_OS and host_CPU
-# 2. If 32-bit stack-based, define STACK
+# 1. host_os and host_cpu
+# 2. If 32-bit stack-based, define 'stack'
 # 3. If 16-bit, define memory_model_i86 = l, m, c, or s ('l' is the default)
-# 4. Define FPCONV to fpc or fpi (fpi is the default)
+# 4. Define 'fpconv' to fpc or fpi (fpi is the default)
 
 # You get:
 #       clib_path       - path for C library
 #       mlib_path       - path for math library
 
-!ifndef FPCONV
-FPCONV = fpi
+!ifndef fpconv
+fpconv = fpi
 !endif
 
-!ifdef STACK
+!ifdef stack
 call_type       = s
 !else
 call_type       = r
@@ -32,16 +32,16 @@ mlib_suffix_386_fpc = 3$(call_type)
 mlib_suffix_386_fpi = 387$(call_type)
 
 
-!ifeq host_CPU i86
+!ifeq host_cpu i86
 pathpiece       = lib286
 !else
-pathpiece       = lib$(host_CPU)
+pathpiece       = lib$(host_cpu)
 !endif
 
-clib_path = $(lang_root)\$(pathpiece)\$(host_OS)\clib$(clib_suffix_$(host_CPU)).lib
+clib_path = $(lang_root)\$(pathpiece)\$(host_os)\clib$(clib_suffix_$(host_cpu)).lib
 
-!ifdef host_OS win
-mlib_path = $(lang_root)\$(pathpiece)\win\math$(mlib_suffix_$(host_CPU)_$(FPCONV)).lib
+!ifdef host_os win
+mlib_path = $(lang_root)\$(pathpiece)\win\math$(mlib_suffix_$(host_cpu)_$(fpconv)).lib
 !else
-mlib_path = $(lang_root)\$(pathpiece)\math$(mlib_suffix_$(host_CPU)_$(FPCONV)).lib
+mlib_path = $(lang_root)\$(pathpiece)\math$(mlib_suffix_$(host_cpu)_$(fpconv)).lib
 !endif

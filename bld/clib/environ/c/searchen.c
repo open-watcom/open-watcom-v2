@@ -24,97 +24,105 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This function searches for the specified file in the
+*               1) current directory or, failing that,
+*               2) the paths listed in the specified environment variable
+*               until it finds the first occurrence of the file.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
 #undef __INLINE_FUNCTIONS__
 #include <stdio.h>
 #include <stdlib.h>
-#if defined(__QNX__)
-  #include <unistd.h>
-#else
-  #include <io.h>
-  #include <direct.h>
+#include <unistd.h>
+#ifndef __UNIX__
+    #include <direct.h>
 #endif
 #include <string.h>
 #include "rtdata.h"
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include "wenviron.h"
-#endif
+#include "_environ.h"
 
-#if defined(__QNX__)
-    #ifdef __WIDECHAR__
-        #define PATH_SEPARATOR L'/'
-        #define LIST_SEPARATOR L':'
-    #else
-        #define PATH_SEPARATOR '/'
-        #define LIST_SEPARATOR ':'
-    #endif
+#if defined(__UNIX__)
+    #define PATH_SEPARATOR STRING('/')
+    #define LIST_SEPARATOR STRING(':')
 #else
-    #ifdef __WIDECHAR__
-        #define PATH_SEPARATOR L'\\'
-        #define LIST_SEPARATOR L';'
-    #else
-        #define PATH_SEPARATOR '\\'
-        #define LIST_SEPARATOR ';'
-    #endif
+    #define PATH_SEPARATOR STRING('\\')
+    #define LIST_SEPARATOR STRING(';')
 #endif
 
 
 _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CHAR_TYPE *env_var, CHAR_TYPE *buffer )
-    {
-        CHAR_TYPE *p, *p2;
-        int prev_errno;
+{
+    CHAR_TYPE   *p, *p2;
+    int         prev_errno;
+    size_t      len;
 
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-        #endif
-
-        prev_errno = _RWD_errno;
-        if( __F_NAME(access,_waccess)( name, 0 ) == 0 ) {
-            p = buffer;                                 /* JBS 90/3/30 */
-            for( ;; ) {
-                if( name[0] == PATH_SEPARATOR ) break;
-                if( name[0] == __F_NAME('.',L'.') ) break;
-#ifndef __QNX__
-                if( name[0] == __F_NAME('/',L'/') ) break;
-                if( name[0] != __F_NAME('\0',L'\0')  &&  name[1] == __F_NAME(':',L':') ) break;
+#ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL ) {
+        __create_wide_environment();
+    }
 #endif
-                __F_NAME(getcwd,_wgetcwd)( buffer, _MAX_PATH );
-                p = &buffer[ __F_NAME(strlen,wcslen)( buffer ) ];
-                if( p[-1] != PATH_SEPARATOR ) *p++ = PATH_SEPARATOR;
-                break;
-            }
-            __F_NAME(strcpy,wcscpy)( p, name );
-            return;
-        }
-        p = __F_NAME(getenv,_wgetenv)( env_var );
-        if( p != NULL ) {
-            for(;;) {
-                if( *p == __F_NAME('\0',L'\0') ) break;
-                p2 = buffer;
-                while( *p ) {
-                    if( *p == LIST_SEPARATOR ) break;
-                    if( *p != __F_NAME('"',L'"') ) *p2++ = *p; /* JBS 00/9/29 */
-                    p++;
+
+    prev_errno = _RWD_errno;
+    if( __F_NAME(access,_waccess)( name, F_OK ) == 0 ) {
+        p = buffer;                                 /* JBS 90/3/30 */
+        len = 0;                                    /* JBS 04/1/06 */
+        for( ;; ) {
+            if( name[0] == PATH_SEPARATOR ) break;
+            if( name[0] == STRING( '.' ) ) break;
+#ifndef __UNIX__
+            if( name[0] == STRING( '/' ) ) break;
+            if( name[0] != NULLCHAR && name[1] == STRING( ':' ) ) break;
+#endif
+            __F_NAME(getcwd,_wgetcwd)( buffer, _MAX_PATH );
+            len = __F_NAME(strlen,wcslen)( buffer );
+            p = &buffer[ len ];
+            if( p[-1] != PATH_SEPARATOR ) {
+                if( len < (_MAX_PATH - 1) ) {
+                    *p++ = PATH_SEPARATOR;
+                    len++;
                 }
-                /* check for zero-length prefix which represents CWD */
-                if( p2 != buffer ) {                    /* JBS 90/3/30 */
-                    if( p2[-1] != PATH_SEPARATOR
-#ifndef __QNX__
-                        &&  p2[-1] != __F_NAME('/','/')
-                        &&  p2[-1] != __F_NAME(':',':')
-#endif
-                        ) {
-                        *p2++ = PATH_SEPARATOR;
+            }
+            break;
+        }
+        *p = NULLCHAR;
+        __F_NAME(strncat,wcsncat)( p, name, (_MAX_PATH - 1) - len );
+        return;
+    }
+    p = __F_NAME(getenv,_wgetenv)( env_var );
+    if( p != NULL ) {
+        for( ;; ) {
+            if( *p == NULLCHAR ) break;
+            p2 = buffer;
+            len = 0;                                /* JBS 04/1/06 */
+            while( *p ) {
+                if( *p == LIST_SEPARATOR ) break;
+                if( *p != STRING( '"' ) ) {
+                    if( len < (_MAX_PATH-1) ) {
+                        *p2++ = *p; /* JBS 00/9/29 */
+                        len++;
                     }
-                    *p2 = '\0';
+                }
+                p++;
+            }
+            /* check for zero-length prefix which represents CWD */
+            if( p2 != buffer ) {                    /* JBS 90/3/30 */
+                if( p2[-1] != PATH_SEPARATOR
+#ifndef __UNIX__
+                    && p2[-1] != STRING( '/' ) && p2[-1] != STRING( ':' )
+#endif
+                    ) {
+                    if( len < (_MAX_PATH - 1) ) {
+                        *p2++ = PATH_SEPARATOR;
+                        len++;
+                    }
+                }
+                *p2 = NULLCHAR;
+                len += __F_NAME(strlen,wcslen)( name );/* JBS 04/12/23 */
+                if( len < _MAX_PATH ) {
                     __F_NAME(strcat,wcscat)( p2, name );
                     /* check to see if file exists */
                     if( __F_NAME(access,_waccess)( buffer, 0 ) == 0 ) {
@@ -122,10 +130,10 @@ _WCRTLINK void __F_NAME(_searchenv,_wsearchenv)( const CHAR_TYPE *name, const CH
                         return;
                     }
                 }
-                if( *p == '\0' ) break;
-                ++p;
             }
+            if( *p == NULLCHAR ) break;
+            ++p;
         }
-        buffer[0] = '\0';
     }
-
+    buffer[0] = NULLCHAR;
+}

@@ -40,40 +40,39 @@
 
 _WMRTLINK extern double __math1err( unsigned int, double *arg1 );
 _WMRTLINK extern double __math2err( unsigned int, double *arg1, double *arg2 );
-_WMRTLINK extern double __log87_err( double, unsigned int );
 
-#ifndef __func__
- #define __func__(code,name)  code
+#ifndef __math_func__
+ #define __math_func__(code,name)  code
  enum func_codes {
 #else
- #undef __func__
- #define __func__(code,name)  name
+ #undef __math_func__
+ #define __math_func__(code,name)  name
  static char *MathFuncNames[] = {
 #endif
 
-        __func__( FUNC_ACOS = 1,"acos" ),
-        __func__( FUNC_ASIN,    "asin" ),
-        __func__( FUNC_SQRT,    "sqrt" ),
-        __func__( FUNC_EXP,     "exp"  ),
-        __func__( FUNC_COSH,    "cosh" ),
-        __func__( FUNC_SINH,    "sinh" ),
-        __func__( FUNC_POW,     "pow"  ),
-        __func__( FUNC_ACOSH,   "acosh"),
-        __func__( FUNC_LOG2,    "log2" ),
-        __func__( FUNC_LOG,     "log"  ),
-        __func__( FUNC_LOG10,   "log10"),
-        __func__( FUNC_ATANH,   "atanh"),
-        __func__( FUNC_ATAN2,   "atan2"),
-        __func__( FUNC_IPOW,    "ipow" ),
-        __func__( FUNC_DPOWI,   "dpowi"),
-        __func__( FUNC_COS,     "cos"  ),
-        __func__( FUNC_SIN,     "sin"  ),
-        __func__( FUNC_TAN,     "tan"  ),
-        __func__( FUNC_Y0,      "y0"   ),
-        __func__( FUNC_Y1,      "y1"   ),
-        __func__( FUNC_YN,      "yn"   ),
-        __func__( FUNC_MOD,     "mod"  ),
-        __func__( FUNC_COTAN,   "cotan")
+        __math_func__( FUNC_ACOS = 1,"acos" ),
+        __math_func__( FUNC_ASIN,    "asin" ),
+        __math_func__( FUNC_SQRT,    "sqrt" ),
+        __math_func__( FUNC_EXP,     "exp"  ),
+        __math_func__( FUNC_COSH,    "cosh" ),
+        __math_func__( FUNC_SINH,    "sinh" ),
+        __math_func__( FUNC_POW,     "pow"  ),
+        __math_func__( FUNC_ACOSH,   "acosh"),
+        __math_func__( FUNC_LOG2,    "log2" ),
+        __math_func__( FUNC_LOG,     "log"  ),
+        __math_func__( FUNC_LOG10,   "log10"),
+        __math_func__( FUNC_ATANH,   "atanh"),
+        __math_func__( FUNC_ATAN2,   "atan2"),
+        __math_func__( FUNC_IPOW,    "ipow" ),
+        __math_func__( FUNC_DPOWI,   "dpowi"),
+        __math_func__( FUNC_COS,     "cos"  ),
+        __math_func__( FUNC_SIN,     "sin"  ),
+        __math_func__( FUNC_TAN,     "tan"  ),
+        __math_func__( FUNC_Y0,      "y0"   ),
+        __math_func__( FUNC_Y1,      "y1"   ),
+        __math_func__( FUNC_YN,      "yn"   ),
+        __math_func__( FUNC_MOD,     "mod"  ),
+        __math_func__( FUNC_COTAN,   "cotan")
 };
 #define FUNC_MASK       0x001F
 

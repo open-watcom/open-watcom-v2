@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hyperbolic arctangent routine.
 *
 ****************************************************************************/
 
@@ -34,28 +33,24 @@
 #include <math.h>
 #include "mathcode.h"
 #include "pdiv.h"
+#include "ifprag.h"
 
 //      atanh(x) = log( (1.0 + x) / (1.0 - x) ) / 2.0;
 
-#if defined(_M_IX86)
-  #pragma aux __atanh "IF@DATANH";
-#endif
-
 _WMRTLINK double __atanh( double x )
-    {
-        return( atanh( x ) );
-    }
+{
+    return( atanh( x ) );
+}
 
 _WMRTLINK double atanh( double x )
-/**********************/
-    {
-        double  z;
+/********************************/
+{
+    double  z;
 
-        if( fabs(x) >= 1.0 ) {
-//            z = _matherr( DOMAIN, "atanh", &x, &x, -HUGE_VAL );
-            z = __math1err( FUNC_ATANH | M_DOMAIN | V_NEG_HUGEVAL, &x );
-        } else {
-            z = log( PDIV( (1.0 + x) , (1.0 - x) ) ) / 2.0;
-        }
-        return( z );
+    if( fabs(x) >= 1.0 ) {
+        z = __math1err( FUNC_ATANH | M_DOMAIN | V_NEG_HUGEVAL, &x );
+    } else {
+        z = log( PDIV( (1.0 + x), (1.0 - x) ) ) / 2.0;
     }
+    return( z );
+}

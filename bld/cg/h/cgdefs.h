@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  public enumeration for cg operators and types
 *
 ****************************************************************************/
 
 
 #ifndef _CG_DEFS_INCLUDED
+#define _CG_DEFS_INCLUDED
 
 /*  Start of Internal Code Generator Operators ... Must correspond to */
 /*  code generator header file <opcodes.h> */
@@ -79,8 +79,7 @@ typedef enum {
         O_TANH,
 
         O_PTR_TO_NATIVE, // oh! ouch! the 386 really hurts my head!
-        O_PTR_TO_FORIEGN,
-        O_PTR_TO_FOREIGN = O_PTR_TO_FORIEGN,
+        O_PTR_TO_FOREIGN,
         O_PARENTHESIS,  /* optimization control - NOP for now */
 
         O_CONVERT,
@@ -200,61 +199,51 @@ typedef enum {
 
 /*  The first part must correspond to <typclass> */
 
-        T_UINT_1,       /*   0 */
-        T_INT_1,
-        T_UINT_2,
-        T_INT_2,
-        T_UINT_4,
-        T_INT_4,
-        T_UINT_8,
-        T_INT_8,
+        TY_UINT_1,       /*   0 */
+        TY_INT_1,
+        TY_UINT_2,
+        TY_INT_2,
+        TY_UINT_4,
+        TY_INT_4,
+        TY_UINT_8,
+        TY_INT_8,
 
-        T_LONG_POINTER,
-        T_HUGE_POINTER,
-        T_NEAR_POINTER,
-        T_LONG_CODE_PTR,
-        T_NEAR_CODE_PTR,
+        TY_LONG_POINTER,
+        TY_HUGE_POINTER,
+        TY_NEAR_POINTER,
+        TY_LONG_CODE_PTR,
+        TY_NEAR_CODE_PTR,
 
-        T_SINGLE,
-#ifdef BY_C_FRONT_END
+        TY_SINGLE,
         TY_DOUBLE,
-#else
-        T_DOUBLE,
+        TY_LONG_DOUBLE,
+
+        TY_UNKNOWN,
+        TY_DEFAULT,      /*  11  Use defaults */
+
+        TY_INTEGER,      /*  Default integer */
+        TY_UNSIGNED,     /*  Default unsigned */
+        TY_POINTER,      /*  Default data pointer */
+        TY_CODE_PTR,     /*  Default code pointer */
+        TY_BOOLEAN,      /*  Resultant type for O_FLOW, comparison ops */
+
+        TY_PROC_PARM,    /*  For Pascal procedural parameters */
+        TY_VA_LIST,      /*  For RISC-based O_VA_START support */
+
+        TY_FIRST_FREE,   /*  First user definable type */
+
+#if defined( BY_FORTRAN_FRONT_END )
+  #include "fetypes.h"
 #endif
-        T_LONG_DOUBLE,
 
-        T_UNKNOWN,
+        TY_LAST_FREE = 65530U - 1,
 
-#ifdef BY_C_FRONT_END
-        TY_DEFAULT,     /*  11  Use defaults */
-#else
-        T_DEFAULT,      /*  11  Use defaults */
-#endif
+        TY_NEAR_INTEGER,
+        TY_LONG_INTEGER,
+        TY_HUGE_INTEGER
+} cg_type;
 
-        T_INTEGER,      /*  Default integer */
-#ifdef BY_C_FRONT_END
-        TY_UNSIGNED,    /*  Default unsigned */
-#else
-        T_UNSIGNED,     /*  Default unsigned */
-#endif
-        T_POINTER,      /*  Default data pointer */
-        T_CODE_PTR,     /*  Default code pointer */
-        T_BOOLEAN,      /*  Resultant type for O_FLOW, comparison ops */
-
-        T_PROC_PARM,    /*  For Pascal procedural parameters */
-        T_VA_LIST,      /*  For RISC-based O_VA_START support */
-        T_FIRST_FREE    /*  First user definable type */
-} predefined_cg_types;
-
-#define T_HUGE_CODE_PTR T_LONG_CODE_PTR  /* for now */
-
-#define T_LAST_FREE     65530U
-
-typedef enum {
-        T_NEAR_INTEGER = T_LAST_FREE,
-        T_LONG_INTEGER,
-        T_HUGE_INTEGER
-} more_cg_types;
+#define TY_HUGE_CODE_PTR TY_LONG_CODE_PTR  /* for now */
 
 #define MIN_OP          O_NOP
 #define O_FIRST_COND    O_EQ
@@ -262,7 +251,4 @@ typedef enum {
 #define O_FIRST_FLOW    O_FLOW_AND
 #define O_LAST_FLOW     O_FLOW_NOT
 
-typedef unsigned short  cg_type;
-
-#define _CG_DEFS_INCLUDED
 #endif

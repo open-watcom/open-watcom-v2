@@ -24,13 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Structure packing control header. Only pack structs on x86.
 *
 ****************************************************************************/
 
 
+/* Don't do any packing when building with SunPro C. The compiler seems horribly
+ * broken and tends to emit "cannot use an address to initialize a field of a
+ * packed struct" error messages even when packing is not in force.
+ */ 
+#ifndef __SUNPRO_C
 #ifdef _M_IX86
-#pragma pack(push)
-#pragma pack(1)
+#include "pushpck1.h"
+#endif
 #endif

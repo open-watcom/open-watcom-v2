@@ -24,16 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of dbbit structure.
 *
 ****************************************************************************/
 
 
-#include "cgnoalgn.h"
 typedef struct dbbit {
-        unsigned_16     st;
-        unsigned_16     base;
-        unsigned_32     off;
+    unsigned_16     st;
+    unsigned_16     base;
+    unsigned_32     off;
 } dbbit;
-#include "cgrealgn.h"

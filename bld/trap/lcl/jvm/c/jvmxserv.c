@@ -72,7 +72,7 @@ static mx_entry     Out[1];
 static void AccTrap( bool want_return )
 {
     if( want_return ) {
-        PutBuffPacket( TrapRequest( 1, &In, 1, &Out ), (void *)RWBuff );
+        PutBuffPacket( TrapRequest( 1, &In, 1, &Out ), RWBuff );
     } else {
         TrapRequest( 1, &In, 0, NULL );
     }

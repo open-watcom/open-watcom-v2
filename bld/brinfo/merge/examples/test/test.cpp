@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <direct.h>
-#include "..\hpp\brmerge.hpp"
+#include "brmerge.hpp"
 
 MHandle handle;
 

@@ -35,11 +35,7 @@
         include struct.inc
 
         name    dospawn
-        if __WASM__ ge 100
-            xref    "C",_dosretax
-        else
-            xref    <"C",_dosretax>
-        endif
+        xref    "C",_dosretax
 
 _TEXT   segment byte public 'CODE'
 _TEXT   ends

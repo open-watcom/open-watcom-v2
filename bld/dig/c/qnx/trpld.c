@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for QNX.
 *
 ****************************************************************************/
 
 
 #include <string.h>
+#include <stdio.h>      // only for sprintf()
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
@@ -69,6 +69,13 @@ extern  int      PathOpen(char *,unsigned, char *);
 
 #define TRAPSIG 0x50415254UL
 
+void KillTrap( void )
+{
+    TrapFuncs->fini_func();
+    ReqFunc = NULL;
+    DIGCliFree( TrapCode );
+}
+
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                init_error[256];
@@ -82,7 +89,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
     filehndl = PathOpen( trapbuff, ptr - trapbuff, "trp" );
     if( filehndl <= 0 ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
     TrapCode = ReadInImp( filehndl );
@@ -94,7 +101,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     ld_func = (void *)TrapCode->init_rtn;
     TrapFuncs = ld_func( &TrapCallbacks );
     if( TrapFuncs == NULL ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
     *trap_ver = TrapFuncs->init_func( parm, init_error, trap_ver->remote );
@@ -109,12 +116,4 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     TrapVer = *trap_ver;
     ReqFunc = TrapFuncs->req_func;
     return( NULL );
-}
-
-
-void KillTrap()
-{
-    TrapFuncs->fini_func();
-    ReqFunc = NULL;
-    DIGCliFree( TrapCode );
 }

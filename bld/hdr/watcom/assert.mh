@@ -1,36 +1,59 @@
 /*
- *  assert.h
+ *  FILE: assert.h/cassert
  *
 :include crwat.sp
  */
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 #undef assert
 
 #ifdef NDEBUG
- #define assert(__ignore) ((void)0)
+ #define assert(ignore)    ((void)0)
 #else
  _WCRTLINK extern void _assert( char *, char *, int );
  _WCRTLINK extern void _wassert( char *, char *, int );
  _WCRTLINK extern void __assert( int, char *, char *, int );
  _WCRTLINK extern void __wassert( int, char *, char *, int );
+ _WCRTLINK extern void _assert99( char *, char *, char *, int );
+ _WCRTLINK extern void _wassert99( char *, char *, char *, int );
+ _WCRTLINK extern void __assert99( int, char *, char *, char *, int );
+ _WCRTLINK extern void __wassert99( int, char *, char *, char *, int );
+
 :include ext.sp
- #ifdef _UNICODE
-  #define assert(expr)   ((expr)?(void)0:_wassert(#expr,__FILE__,__LINE__))
+ #ifdef __C89
+  #ifdef _UNICODE
+   #define assert(expr)  ((expr)?(void)0:_wassert(#expr,__FILE__,__LINE__))
+  #else
+   #define assert(expr)  ((expr)?(void)0:_assert(#expr,__FILE__,__LINE__))
+  #endif
  #else
-  #define assert(expr)   ((expr)?(void)0:_assert(#expr,__FILE__,__LINE__))
+  #ifdef _UNICODE
+   #define assert(expr)  ((expr)?(void)0:_wassert99(#expr,__func__,__FILE__,__LINE__))
+  #else
+   #define assert(expr)  ((expr)?(void)0:_assert99(#expr,__func__,__FILE__,__LINE__))
+  #endif
  #endif
-#else
- #ifdef _UNICODE
-  #define assert(expr)  __wassert(expr,#expr,__FILE__,__LINE__)
+#else  /* extensions disabled */
+ #ifdef __C89
+  #ifdef _UNICODE
+   #define assert(expr)  __wassert(expr,#expr,__FILE__,__LINE__)
+  #else
+   #define assert(expr)  __assert(expr,#expr,__FILE__,__LINE__)
+  #endif
  #else
-  #define assert(expr)  __assert(expr,#expr,__FILE__,__LINE__)
+  #ifdef _UNICODE
+   #define assert(expr)  __wassert99(expr,#expr,__func__,__FILE__,__LINE__)
+  #else
+   #define assert(expr)  __assert99(expr,#expr,__func__,__FILE__,__LINE__)
+  #endif
  #endif
+#endif /* extensions disabled */
+
 #endif
-#endif
+
 :include cplusepi.sp

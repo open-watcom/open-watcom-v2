@@ -30,44 +30,30 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
 #include "vi.h"
+#include <malloc.h>
 #include "source.h"
 #include "stack.h"
 
-#ifdef __V__
-extern void ResetBPChain( void );
-
-#pragma aux ResetBPChain = \
-        "mov    bp,0" \
-        "push   bp" \
-        "mov    bp,sp";
-
-#else
-#define ResetBPChain()
-#endif
-
 void main( int argc, char *argv[] )
 {
-    #ifdef TRMEM
-        InitTRMEM();
-    #endif
+#ifdef TRMEM
+    InitTRMEM();
+#endif
 
     argc = argc;
     EXEName = argv[0];
     InitialStack();
     ResetBPChain();
-    VarAddGlobal( "OS", "dos" );
+    VarAddGlobalStr( "OS", "dos" );
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
     FinalStack();
     ResetBPChain();
     EditMain();
-    #ifdef TRMEM
-        DumpTRMEM();
-    #endif
+    
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
 
 } /* main */

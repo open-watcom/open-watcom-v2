@@ -1,0 +1,15 @@
+/*
+ *  tmschema.h  Theme Manager schema definition
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+/* This header is obsolete.  The Microsoft versions of tmschema.h and vssym32.h
+ * preprocess to virtually identical code.  Therefore, just include vssym32.h.
+ */
+#if (NTDDI_VERSION < 0x06000000)
+    #include <schemadef.h>
+#endif
+#include <vssym32.h>

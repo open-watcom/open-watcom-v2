@@ -38,12 +38,8 @@
 
 _WCRTLINK unsigned _dos_write( int hid, void const *buffer, unsigned count, unsigned *bytes )
 {
-    int         error;
-
-    error = 0;
     if( !WriteFile( __getOSHandle( hid ), buffer, count, (LPDWORD) bytes, NULL ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
+        return( __set_errno_nt_reterr() );
     }
-    return( error );
+    return( 0 );
 }

@@ -177,7 +177,7 @@ static unsigned SpecCueFile( imp_image_handle *ii, imp_cue_handle *ic,
  * GetLineInfo -- get the line number infomation for a module
  */
 
-static void UnlockLine()
+static void UnlockLine( void )
 {
     if( LinStart != NULL ) {
         InfoSpecUnlock( LinStart );
@@ -399,7 +399,7 @@ search_result DIPENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
     return( close.have );
 }
 
-unsigned long DIPENTRY DIPIMPCueLine( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned long DIPENTRY DIPImpCueLine( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
     unsigned    num;

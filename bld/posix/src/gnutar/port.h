@@ -50,4 +50,8 @@
 #define TERM_COREDUMP(status)   (((status) & 0x80) != 0)
 #define TERM_VALUE(status)      ((status) >> 8)
 
+extern char *index(char *s, int c);
+extern char *rindex(char *s, int c);
+extern char *valloc(unsigned size);
+extern void uprintf(int, char *, ... );
 

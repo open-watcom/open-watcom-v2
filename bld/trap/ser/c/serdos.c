@@ -86,20 +86,20 @@ static int CurrentBaud;
 static char Modem;
 unsigned Ticks;
 
-extern void ClearBuffer();
-extern int GetBufferByte();
-extern void Wait(int);
-extern void InitInts(void);
-extern void FiniInts(void);
+extern void ClearBuffer( void );
+extern int GetBufferByte( void );
+extern void Wait( int );
+extern void InitInts( void );
+extern void FiniInts( void );
 
 
-void ZeroWaitCount()
+void ZeroWaitCount( void )
 {
     Ticks = 0;
 }
 
 
-unsigned WaitCount()
+unsigned WaitCount( void )
 {
     return( Ticks );
 }
@@ -167,11 +167,11 @@ void SendByte( int value )
     outp( IOBase, value );
 }
 
-void StartBlockTrans()
+void StartBlockTrans( void )
 {
 }
 
-void StopBlockTrans()
+void StopBlockTrans( void )
 {
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
@@ -181,13 +181,13 @@ void StopBlockTrans()
     }
 }
 
-int GetByte()
+int GetByte( void )
 {
     return( GetBufferByte() );
 }
 
 
-void ClearCom()
+void ClearCom( void )
 {
     ClearBuffer();
 }
@@ -281,12 +281,12 @@ char *ParsePortSpec( char * *spec )
 }
 
 
-void DonePort(void)
+void DonePort( void )
 {
 }
 
 
-bool CheckPendingError()
+bool CheckPendingError( void )
 {
     int old_error;
 
@@ -298,7 +298,7 @@ bool CheckPendingError()
 }
 
 
-void ClearLastChar()
+void ClearLastChar( void )
 {
     /* wait for last character to be sent */
     do {

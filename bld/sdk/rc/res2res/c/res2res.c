@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom resource converter.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@
 #include "convert.h"
 #include "trmemcvr.h"
 
-static void PrintUsageMesage( char * progpath )
+static void PrintUsageMesage( const char * progpath )
 {
     char    progname[ _MAX_FNAME ];
 
@@ -45,16 +44,20 @@ static void PrintUsageMesage( char * progpath )
     strlwr( progname );
 
     printf( "Usage: %s {options} file1 [file2]\n", progname );
-    puts( "Converts a Microsoft .RES file to a WATCOM .RES "
+    puts( "Converts a Microsoft .RES file to a Watcom .RES "
                 "file or vice versa." );
-    puts( "valid options:   (-option also accepted)" );
-    puts( "/q  - operate quietly" );
-    puts( "/k  - keep name tables (default is not to)" );
+#ifdef __UNIX__
+    puts( "valid options:" );
+#else
+    puts( "valid options:   (/option also accepted)" );
+#endif
+    puts( "-q  - operate quietly" );
+    puts( "-k  - keep name tables (default is not to)" );
     puts( "If  file2  is not given  file1  will be replaced." );
 }
 
-int main( int argc, char * argv[] )
-/*********************************/
+int main( int argc, const char * argv[] )
+/***************************************/
 {
     int     error;          /* 1 if an error has occured, 0 otherwise */
     int     contok;         /* TRUE if OK to continue after scanning arg */

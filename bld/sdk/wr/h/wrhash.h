@@ -45,15 +45,15 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    WR_HASH_DIRTY       = 0x0001
-,   WR_HASH_LAST        = 0xffff
+    WR_HASH_DIRTY       = 0x0001,
+    WR_HASH_LAST        = 0xffff
 } WRHashFlags;
 
 typedef enum {
-    WR_HASHENTRY_STANDARD       = 0x0001
-,   WR_HASHENTRY_UNUSED         = 0x0002
-,   WR_HASHENTRY_ALL            = 0x0003
-,   WR_HASHENTRY_LAST           = 0xffff
+    WR_HASHENTRY_STANDARD       = 0x0001,
+    WR_HASHENTRY_UNUSED         = 0x0002,
+    WR_HASHENTRY_ALL            = 0x0003,
+    WR_HASHENTRY_LAST           = 0xffff
 } WRHashEntryFlags;
 
 typedef signed long WRHashValue;
@@ -86,33 +86,33 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WRHashTable      * WR_EXPORT WRInitHashTable     ( void );
-extern void             WR_EXPORT WRFreeHashTable       ( WRHashTable *);
-extern BOOL             WR_EXPORT WRFindUnusedHashValue ( WRHashTable *table, WRHashValue *value, WRHashValue start );
-extern WRHashEntry      * WR_EXPORT WRAddDefHashEntry   ( WRHashTable *table, char *name, BOOL *dup );
-extern WRHashEntry      * WR_EXPORT WRAddHashEntry      ( WRHashTable *, char *, WRHashValue, BOOL *, BOOL, BOOL );
-extern int              WR_EXPORT WRModifyName          ( WRHashTable *table, char *name, WRHashValue value, BOOL check_unique );
-extern BOOL             WR_EXPORT WRLookupName          ( WRHashTable *table, char *name, WRHashValue *value );
-extern BOOL             WR_EXPORT WRRemoveName          ( WRHashTable *, char *);
-extern unsigned long    WR_EXPORT WRNumInHashTable      ( WRHashTable * );
-extern BOOL             WR_EXPORT WRIsDefaultHashTable  ( WRHashTable *table );
-extern void             WR_EXPORT WRMakeHashTableClean  ( WRHashTable * );
-extern BOOL             WR_EXPORT WRIsHashTableDirty    ( WRHashTable * );
-extern unsigned         WR_EXPORT WRAddSymbolsToListBox ( WRHashTable *, HWND, int, WRHashEntryFlags );
-extern unsigned         WR_EXPORT WRAddSymbolsToComboBox( WRHashTable *, HWND, int, WRHashEntryFlags );
-extern BOOL             WR_EXPORT WRWriteSymbolsToFile  ( WRHashTable *, char * );
-extern BOOL             WR_EXPORT WRMergeHashTable      ( WRHashTable **, WRHashTable * );
-extern BOOL             WR_EXPORT WRCopyHashTable       ( WRHashTable **, WRHashTable * );
-extern void             WR_EXPORT WRHashIncRefCount     ( WRHashEntry * );
-extern void             WR_EXPORT WRHashDecRefCount     ( WRHashEntry * );
-extern void             WR_EXPORT WRStripSymbol         ( char *symbol );
-extern BOOL             WR_EXPORT WRIsValidSymbol       ( char *symbol );
-extern void             WR_EXPORT WRValueListFree       ( WRHashValueList *list );
-extern WRHashValueList  * WR_EXPORT WRLookupValue       ( WRHashTable *table, WRHashValue value );
-extern int              WR_EXPORT WRValueExists         ( WRHashTable *table, WRHashValue value );
-extern char             * WR_EXPORT WRResolveValue      ( WRHashTable *, WRHashValue );
-extern BOOL             WR_EXPORT WREditSym             ( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, FARPROC help_callback );
-extern BOOL             WR_EXPORT WRDeleteDLGInclude    ( WResDir dir );
-extern BOOL             WR_EXPORT WRCreateDLGInclude    ( WResDir *dir, char *include );
+extern WRHashTable *        WR_EXPORT WRInitHashTable( void );
+extern void                 WR_EXPORT WRFreeHashTable( WRHashTable *);
+extern BOOL                 WR_EXPORT WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value, WRHashValue start );
+extern WRHashEntry *        WR_EXPORT WRAddDefHashEntry( WRHashTable *table, char *name, BOOL *dup );
+extern WRHashEntry *        WR_EXPORT WRAddHashEntry( WRHashTable *, char *, WRHashValue, BOOL *, BOOL, BOOL );
+extern int                  WR_EXPORT WRModifyName( WRHashTable *table, char *name, WRHashValue value, BOOL check_unique );
+extern BOOL                 WR_EXPORT WRLookupName( WRHashTable *table, char *name, WRHashValue *value );
+extern BOOL                 WR_EXPORT WRRemoveName( WRHashTable *, char *);
+extern unsigned long        WR_EXPORT WRNumInHashTable( WRHashTable * );
+extern BOOL                 WR_EXPORT WRIsDefaultHashTable( WRHashTable *table );
+extern void                 WR_EXPORT WRMakeHashTableClean( WRHashTable * );
+extern BOOL                 WR_EXPORT WRIsHashTableDirty( WRHashTable * );
+extern unsigned             WR_EXPORT WRAddSymbolsToListBox( WRHashTable *, HWND, int, WRHashEntryFlags );
+extern unsigned             WR_EXPORT WRAddSymbolsToComboBox( WRHashTable *, HWND, int, WRHashEntryFlags );
+extern BOOL                 WR_EXPORT WRWriteSymbolsToFile( WRHashTable *, char * );
+extern BOOL                 WR_EXPORT WRMergeHashTable( WRHashTable **, WRHashTable * );
+extern BOOL                 WR_EXPORT WRCopyHashTable( WRHashTable **, WRHashTable * );
+extern void                 WR_EXPORT WRHashIncRefCount( WRHashEntry * );
+extern void                 WR_EXPORT WRHashDecRefCount( WRHashEntry * );
+extern void                 WR_EXPORT WRStripSymbol( char *symbol );
+extern BOOL                 WR_EXPORT WRIsValidSymbol( char *symbol );
+extern void                 WR_EXPORT WRValueListFree( WRHashValueList *list );
+extern WRHashValueList *    WR_EXPORT WRLookupValue( WRHashTable *table, WRHashValue value );
+extern int                  WR_EXPORT WRValueExists( WRHashTable *table, WRHashValue value );
+extern char *               WR_EXPORT WRResolveValue( WRHashTable *, WRHashValue );
+extern BOOL                 WR_EXPORT WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, FARPROC help_callback );
+extern BOOL                 WR_EXPORT WRDeleteDLGInclude( WResDir dir );
+extern BOOL                 WR_EXPORT WRCreateDLGInclude( WResDir *dir, char *include );
 
 #endif

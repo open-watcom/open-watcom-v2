@@ -30,15 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "menu.h"
 #include "parsecl.h"
 #include "source.h"
-#ifdef __WIN__
-#include "winvi.h"
-#endif
 #include "sstyle.h"
 #include "fts.h"
 
@@ -64,34 +59,36 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
 {
     char        *map;
     vi_key      *str;
-    int         i,j;
+    int         i;
+    int         j;
     int         len;
 
-    for( i=0;i<EventCount;i++ ) {
+    for( i = 0; i < MAX_EVENTS; i++ ) {
         if( maps[i].data != NULL ) {
-            MyFprintf( f,"map%s ", extra_str );
+            MyFprintf( f, "map%s ", extra_str );
             map = LookUpCharToken( i, FALSE );
             if( map == NULL ) {
-                MyFprintf( f,"%c ", i );
+                MyFprintf( f, "%c ", i );
             } else {
-                MyFprintf( f,"%s ", map );
+                MyFprintf( f, "%s ", map );
             }
             if( maps[i].no_input_window ) {
-                MyFprintf( f,"\\x" );
+                MyFprintf( f, "\\x" );
             }
             str = maps[i].data;
             // len = strlen( str );
-            for( len=0; str[len] != 0; len++ ); len--;
+            for( len = 0; str[len] != 0; len++ );
+            len--;
 
-            for( j=0;j<len;j++ ) {
+            for( j = 0; j < len; j++ ) {
                 map = LookUpCharToken( str[j], TRUE );
                 if( map == NULL ) {
-                    MyFprintf( f,"%c", str[j] );
+                    MyFprintf( f, "%c", str[j] );
                 } else {
                     if( map[1] == 0 ) {
-                        MyFprintf( f,"\\%s", map );
+                        MyFprintf( f, "\\%s", map );
                     } else {
-                        MyFprintf( f,"\\<%s>", map );
+                        MyFprintf( f, "\\<%s>", map );
                     }
                 }
             }
@@ -113,32 +110,54 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
     MyFprintf( f, "%s\n", token );
     if( !colour_only ) {
         MyFprintf( f, "    dimension %d %d %d %d\n", wi->x1, wi->y1,
-                            wi->x2, wi->y2 );
+                   wi->x2, wi->y2 );
         if( wi->has_border ) {
             MyFprintf( f, "    border 1 %d %d\n", wi->border_color1, wi->border_color2 );
         } else {
             MyFprintf( f, "    border -1\n" );
         }
     }
-    MyFprintf( f, "    text %d %d %d\n", wi->text.foreground, wi->text.background, wi->text.font );
-    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight.foreground, wi->hilight.background, wi->hilight.font );
+    MyFprintf( f, "    text %d %d %d\n", wi->text.foreground, wi->text.background,
+               wi->text.font );
+    MyFprintf( f, "    hilight %d %d %d\n", wi->hilight.foreground,
+               wi->hilight.background, wi->hilight.font );
     if( wi == &editw_info ) {
-        MyFprintf( f, "    whitespace %d %d %d\n", SEType[ SE_WHITESPACE ].foreground, SEType[ SE_WHITESPACE ].background, SEType[ SE_WHITESPACE ].font );
-        MyFprintf( f, "    selection %d %d %d\n", SEType[ SE_SELECTION ].foreground, SEType[ SE_SELECTION ].background, SEType[ SE_SELECTION ].font );
-        MyFprintf( f, "    eoftext %d %d %d\n", SEType[ SE_EOFTEXT ].foreground, SEType[ SE_EOFTEXT ].background, SEType[ SE_EOFTEXT ].font );
-        MyFprintf( f, "    keyword %d %d %d\n", SEType[ SE_KEYWORD ].foreground, SEType[ SE_KEYWORD ].background, SEType[ SE_KEYWORD ].font );
-        MyFprintf( f, "    octal %d %d %d\n", SEType[ SE_OCTAL ].foreground, SEType[ SE_OCTAL ].background, SEType[ SE_OCTAL ].font );
-        MyFprintf( f, "    hex %d %d %d\n", SEType[ SE_HEX ].foreground, SEType[ SE_HEX ].background, SEType[ SE_HEX ].font );
-        MyFprintf( f, "    integer %d %d %d\n", SEType[ SE_INTEGER ].foreground, SEType[ SE_INTEGER ].background, SEType[ SE_INTEGER ].font );
-        MyFprintf( f, "    char %d %d %d\n", SEType[ SE_CHAR ].foreground, SEType[ SE_CHAR ].background, SEType[ SE_CHAR ].font );
-        MyFprintf( f, "    preprocessor %d %d %d\n", SEType[ SE_PREPROCESSOR ].foreground, SEType[ SE_PREPROCESSOR ].background, SEType[ SE_PREPROCESSOR ].font );
-        MyFprintf( f, "    symbol %d %d %d\n", SEType[ SE_SYMBOL ].foreground, SEType[ SE_SYMBOL ].background, SEType[ SE_SYMBOL ].font );
-        MyFprintf( f, "    invalidtext %d %d %d\n", SEType[ SE_INVALIDTEXT ].foreground, SEType[ SE_INVALIDTEXT ].background, SEType[ SE_INVALIDTEXT ].font );
-        MyFprintf( f, "    identifier %d %d %d\n", SEType[ SE_IDENTIFIER ].foreground, SEType[ SE_IDENTIFIER ].background, SEType[ SE_IDENTIFIER ].font );
-        MyFprintf( f, "    jumplabel %d %d %d\n", SEType[ SE_JUMPLABEL ].foreground, SEType[ SE_JUMPLABEL ].background, SEType[ SE_JUMPLABEL ].font );
-        MyFprintf( f, "    comment %d %d %d\n", SEType[ SE_COMMENT ].foreground, SEType[ SE_COMMENT ].background, SEType[ SE_COMMENT ].font );
-        MyFprintf( f, "    float %d %d %d\n", SEType[ SE_FLOAT ].foreground, SEType[ SE_FLOAT ].background, SEType[ SE_FLOAT ].font );
-        MyFprintf( f, "    string %d %d %d\n", SEType[ SE_STRING ].foreground, SEType[ SE_STRING ].background, SEType[ SE_STRING ].font );
+        MyFprintf( f, "    whitespace %d %d %d\n", SEType[SE_WHITESPACE].foreground,
+                   SEType[SE_WHITESPACE].background, SEType[SE_WHITESPACE].font );
+        MyFprintf( f, "    selection %d %d %d\n", SEType[SE_SELECTION].foreground,
+                   SEType[SE_SELECTION].background, SEType[SE_SELECTION].font );
+        MyFprintf( f, "    eoftext %d %d %d\n", SEType[SE_EOFTEXT].foreground,
+                   SEType[SE_EOFTEXT].background, SEType[SE_EOFTEXT].font );
+        MyFprintf( f, "    keyword %d %d %d\n", SEType[SE_KEYWORD].foreground,
+                   SEType[SE_KEYWORD].background, SEType[SE_KEYWORD].font );
+        MyFprintf( f, "    octal %d %d %d\n", SEType[SE_OCTAL].foreground,
+                   SEType[SE_OCTAL].background, SEType[SE_OCTAL].font );
+        MyFprintf( f, "    hex %d %d %d\n", SEType[SE_HEX].foreground,
+                   SEType[SE_HEX].background, SEType[SE_HEX].font );
+        MyFprintf( f, "    integer %d %d %d\n", SEType[SE_INTEGER].foreground,
+                   SEType[SE_INTEGER].background, SEType[SE_INTEGER].font );
+        MyFprintf( f, "    char %d %d %d\n", SEType[SE_CHAR].foreground,
+                   SEType[SE_CHAR].background, SEType[SE_CHAR].font );
+        MyFprintf( f, "    preprocessor %d %d %d\n", SEType[SE_PREPROCESSOR].foreground,
+                   SEType[SE_PREPROCESSOR].background, SEType[SE_PREPROCESSOR].font );
+        MyFprintf( f, "    symbol %d %d %d\n", SEType[SE_SYMBOL].foreground,
+                   SEType[SE_SYMBOL].background, SEType[SE_SYMBOL].font );
+        MyFprintf( f, "    invalidtext %d %d %d\n", SEType[SE_INVALIDTEXT].foreground,
+                   SEType[SE_INVALIDTEXT].background, SEType[SE_INVALIDTEXT].font );
+        MyFprintf( f, "    identifier %d %d %d\n", SEType[SE_IDENTIFIER].foreground,
+                   SEType[SE_IDENTIFIER].background, SEType[SE_IDENTIFIER].font );
+        MyFprintf( f, "    jumplabel %d %d %d\n", SEType[SE_JUMPLABEL].foreground,
+                   SEType[SE_JUMPLABEL].background, SEType[SE_JUMPLABEL].font );
+        MyFprintf( f, "    comment %d %d %d\n", SEType[SE_COMMENT].foreground,
+                   SEType[SE_COMMENT].background, SEType[SE_COMMENT].font );
+        MyFprintf( f, "    float %d %d %d\n", SEType[SE_FLOAT].foreground,
+                   SEType[SE_FLOAT].background, SEType[SE_FLOAT].font );
+        MyFprintf( f, "    string %d %d %d\n", SEType[SE_STRING].foreground,
+                   SEType[SE_STRING].background, SEType[SE_STRING].font );
+        MyFprintf( f, "    variable %d %d %d\n", SEType[SE_VARIABLE].foreground,
+                   SEType[SE_VARIABLE].background, SEType[SE_VARIABLE].font );
+        MyFprintf( f, "    regexp %d %d %d\n", SEType[SE_REGEXP].foreground,
+                   SEType[SE_VARIABLE].background, SEType[SE_VARIABLE].font );
     }
     MyFprintf( f, "endwindow\n" );
 
@@ -180,7 +199,7 @@ static void doHookAssign( FILE *f, hooktype num )
 /*
  * GenerateConfiguration - write out a config file
  */
-int GenerateConfiguration( char *fname, bool is_cmdline )
+vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
 {
     FILE        *f;
     int         i;
@@ -206,10 +225,10 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
         setvbuf( f, buff, _IOFBF, VBUF_SIZE );
     }
     MyFprintf( f, "#\n# WATCOM %s %s configuration file\n# %s\n#\n",
-                TITLE, VERSION, AUTHOR );
+               TITLE, VERSIONT, AUTHOR );
     if( is_cmdline ) {
         GetDateTimeString( token );
-        MyFprintf( f,"# File generated on %s\n#\n", token );
+        MyFprintf( f, "# File generated on %s\n#\n", token );
     }
 
     writeTitle( f, "Hook script assignments" );
@@ -225,15 +244,15 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
 
     writeTitle( f, "General Settings" );
     num = GetNumberOfTokens( SetTokens1 );
-    for( i=0;i<num;i++ ) {
-        if( i == SET1_T_TILECOLOR || i == SET1_T_FIGNORE ||
-                i == SET1_T_FILENAME ) {
+    for( i = 0; i < num; i++ ) {
+        if( i == SET1_T_TILECOLOR || i == SET1_T_FIGNORE || i == SET1_T_FILENAME ) {
             continue;
         }
         strcpy( token, GetTokenString( SetTokens1, i ) );
         strlwr( token );
         res = GetASetVal( token );
-        if( i == SET1_T_STATUSSTRING || i == SET1_T_FILEENDSTRING ) {
+        if( i == SET1_T_STATUSSTRING || i == SET1_T_FILEENDSTRING ||
+            i == SET1_T_HISTORYFILE || i == SET1_T_TMPDIR ) {    /* strings with possible spaces */
             fmt = "set %s = \"%s\"\n";
         } else {
             fmt = "set %s = %s\n";
@@ -243,7 +262,7 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
 
     writeTitle( f, "Boolean Settings" );
     num = GetNumberOfTokens( SetTokens2 );
-    for( i=0;i<num;i++ ) {
+    for( i = 0; i < num; i++ ) {
         strcpy( token, GetTokenString( SetTokens2, i ) );
         strlwr( token );
         str = GetASetVal( token );
@@ -256,10 +275,10 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
         MyFprintf( f, "set %s%s\n", boolstr, token );
     }
     writeTitle( f, "Match pairs" );
-    for( i=INITIAL_MATCH_COUNT;i<MatchCount;i+=2 ) {
+    for( i = INITIAL_MATCH_COUNT; i < MatchCount; i += 2 ) {
         MyFprintf( f, "match /" );
         outputMatchData( f, MatchData[i] );
-        outputMatchData( f, MatchData[i+1] );
+        outputMatchData( f, MatchData[i + 1] );
         MyFprintf( f, "\n" );
     }
 
@@ -269,16 +288,16 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
     doMaps( f, InputKeyMaps, "!" );
 
     writeTitle( f, "Color Settings" );
-    for( i=0;i<GetNumColors();i++ ) {
+    for( i = 0; i < GetNumColors(); i++ ) {
         if( GetColorSetting( i, &c ) ) {
             MyFprintf( f, "setcolor %d %d %d %d\n", i, c.red, c.green, c.blue );
         }
     }
 
-    #ifdef __WIN__
-        writeTitle( f, "Font Settings" );
-        BarfFontData( f );
-    #endif
+#ifdef __WIN__
+    writeTitle( f, "Font Settings" );
+    BarfFontData( f );
+#endif
 
     writeTitle( f, "Window Configuration" );
     doWindow( f, PCL_T_COMMANDWINDOW, &cmdlinew_info, FALSE );
@@ -289,25 +308,25 @@ int GenerateConfiguration( char *fname, bool is_cmdline )
     doWindow( f, PCL_T_DIRWINDOW, &dirw_info, FALSE );
     doWindow( f, PCL_T_FILEWINDOW, &filelistw_info, FALSE );
     doWindow( f, PCL_T_MESSAGEWINDOW, &messagew_info, FALSE );
-    #ifndef __WIN__
-        doWindow( f, PCL_T_SETWINDOW, &setw_info, FALSE );
-        doWindow( f, PCL_T_LINENUMBERWINDOW, &linenumw_info, FALSE );
-        doWindow( f, PCL_T_EXTRAINFOWINDOW, &extraw_info, FALSE );
-        doWindow( f, PCL_T_SETVALWINDOW, &setvalw_info, FALSE );
-        doWindow( f, PCL_T_MENUWINDOW, &menuw_info, FALSE );
-        doWindow( f, PCL_T_MENUBARWINDOW, &menubarw_info, TRUE );
-        doWindow( f, PCL_T_ACTIVEMENUWINDOW, &activemenu_info, TRUE );
-        doWindow( f, PCL_T_GREYEDMENUWINDOW, &greyedmenu_info, TRUE );
-        doWindow( f, PCL_T_ACTIVEGREYEDMENUWINDOW, &activegreyedmenu_info, TRUE );
-    #endif
+#ifndef __WIN__
+    doWindow( f, PCL_T_SETWINDOW, &setw_info, FALSE );
+    doWindow( f, PCL_T_LINENUMBERWINDOW, &linenumw_info, FALSE );
+    doWindow( f, PCL_T_EXTRAINFOWINDOW, &extraw_info, FALSE );
+    doWindow( f, PCL_T_SETVALWINDOW, &setvalw_info, FALSE );
+    doWindow( f, PCL_T_MENUWINDOW, &menuw_info, FALSE );
+    doWindow( f, PCL_T_MENUBARWINDOW, &menubarw_info, TRUE );
+    doWindow( f, PCL_T_ACTIVEMENUWINDOW, &activemenu_info, TRUE );
+    doWindow( f, PCL_T_GREYEDMENUWINDOW, &greyedmenu_info, TRUE );
+    doWindow( f, PCL_T_ACTIVEGREYEDMENUWINDOW, &activegreyedmenu_info, TRUE );
+#endif
 
     writeTitle( f, "Menu Configuration" );
     BarfMenuData( f );
 
-    #ifdef __WIN__
-        writeTitle( f, "ToolBar Configuration" );
-        BarfToolBarData( f );
-    #endif
+#ifdef __WIN__
+    writeTitle( f, "ToolBar Configuration" );
+    BarfToolBarData( f );
+#endif
 
     writeTitle( f, "File Type Source" );
     FTSBarfData( f );

@@ -60,7 +60,7 @@ char *FEModuleName(             // RETURN MODULE NAME
 char *FEName(                   // RETURN THE SYMBOL'S NAME
     SYMBOL sym )                // - symbol
 ;
-int FEParmType(                 // ARGUMENT PROMOTION ?
+cg_type FEParmType(                 // ARGUMENT PROMOTION ?
     SYMBOL func,
     SYMBOL parm,
     cg_type tipe )

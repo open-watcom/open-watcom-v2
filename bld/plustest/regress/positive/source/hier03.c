@@ -56,7 +56,7 @@ int main( void ){
     c.T::c = &a;
     cd.c = 12.7;
 
-    d.T::c = &a;
+    d.::T::c = &a;
     if( c.c != &char_ptr ) fail(__LINE__);
     if( d.c != .5 ) fail(__LINE__);
     _PASS;

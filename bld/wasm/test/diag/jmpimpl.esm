@@ -1,0 +1,79 @@
+.387
+.386p
+_text16a		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$1:
+    nop         
+    jmp         L$1
+    jmp         L$1
+    jmp         word ptr cs:L$1
+    jmp         dword ptr cs:L$1
+    jmp         fword ptr cs:L$1
+    je          L$1
+    je          L$1
+    jmp         far ptr L$3
+    jne         L$2
+    jmp         far ptr L$3
+L$2:
+_text16a		ENDS
+_text16b		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$3:
+    nop         
+    jmp         far ptr L$1
+    jne         L$4
+    jmp         far ptr L$1
+L$4:
+    jmp         L$3
+    jmp         L$3
+    jmp         word ptr cs:L$3
+    jmp         dword ptr cs:L$3
+    jmp         fword ptr cs:L$3
+    je          L$3
+    je          L$3
+_text16b		ENDS
+_text32a		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$5:
+    nop         
+    jmp         L$5
+    jmp         L$5
+    jmp         word ptr cs:L$5
+    jmp         dword ptr cs:L$5
+    jmp         fword ptr cs:L$5
+    je          L$5
+    je          L$5
+    jmp         far ptr L$7
+    jne         L$6
+    jmp         far ptr L$7
+L$6:
+_text32a		ENDS
+_text32b		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$7:
+    nop         
+    jmp         far ptr L$5
+    jne         L$8
+    jmp         far ptr L$5
+L$8:
+    jmp         L$7
+    jmp         L$7
+    jmp         word ptr cs:L$7
+    jmp         dword ptr cs:L$7
+    jmp         fword ptr cs:L$7
+    je          L$7
+    je          L$7
+_text32b		ENDS
+		END

@@ -38,9 +38,12 @@
 #include <windows.h>
 #endif
 #include "iomode.h"
+#include "handleio.h"
 
 // these must be the same as is defined in iostream.h
 
+#undef __in
+#undef __out
 #define __in          0x0001    // - open for input
 #define __out         0x0002    // - open for output
 #define __atend       0x0004    // - seek to end after opening
@@ -61,7 +64,7 @@ _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
     flags=flags;
     // make a guess
     ios_mode |= __in | __out | __text;
-#elif defined(__QNX__)
+#elif defined(__UNIX__)
     if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
         return( -1 );
     }
@@ -75,6 +78,9 @@ _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
     } else {
         ios_mode |= __in|__out;
     }
+#elif __RDOS__
+    flags = 0;
+    ios_mode |= __in | __out | __text;
 #else
     flags = __GetIOMode( handle );
     if( flags & _APPEND ) {

@@ -1,0 +1,2710 @@
+All help topics must be stored in order of the ASCII collating sequence.
+Each topic is identified by a header consisting of a string of 4 colons
+followed by the topic name.  Any alphabetic characters must be entered in
+upper-case.
+::::ABS
+Definition:                        Usage:
+-----------                        ------
+
+Absolute value.                    r = ABS( a )
+If argument is complex,
+return magnitude of complex        "a" is of type INTEGER, REAL,
+number.                                DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+                                       If type of "a" is COMPLEX,
+                                       type of "r" is REAL.
+                                       If type of "a" is COMPLEX*16,
+                                       type of "r" is DOUBLE
+                                       PRECISION.
+::::ACOS
+Definition:                        Usage:
+-----------                        ------
+
+Arccosine.                         r = ACOS( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ADMIT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ADMIT                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+See <GUESS>.
+::::AIMAG
+Definition:                        Usage:
+-----------                        ------
+
+Imaginary part of complex number.  r = AIMAG( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type REAL.
+::::AINT
+Definition:                        Usage:
+-----------                        ------
+
+Truncation: int(a).                r = AINT( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ALGAMA
+Definition:                        Usage:
+-----------                        ------
+
+Natural log of gamma function.     r = ALGAMA( a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::ALLOCATE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ALLOCATE( arr([l:]u,...) {, arr([l:]u,...)} [,STAT=istat] )      ³
+³      or                                                            ³
+³   ALLOCATE( arr([l:]u,...) {, arr([l:]u,...)}, LOCATION=loc )      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     arr      is a dynamically allocatable array.
+
+     l        is an integer expression whose value is the lower bound.
+
+     u        is an integer expression whose value is the upper bound.
+
+     istat    is an integer variable or array element that contains
+              the status of the allocation.
+
+     loc      is an integer variable or array element that contains
+              the location of memory that is to be used for the array.
+              This allows the user to specify his own memory allocation
+              routine or an absolute memory location.
+::::ALLOCATED
+Definition:                        Usage:
+-----------                        ------
+
+Determine if allocatable array     r = ALLOCATED( a )
+is allocated.
+                                   "a" is an allocatable array
+
+                                   "r" is of type LOGICAL.
+::::ALOG
+Definition:                        Usage:
+-----------                        ------
+
+Natural logarithm.                 r = ALOG( a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::ALOG10
+Definition:                        Usage:
+-----------                        ------
+
+Common Logarithm.                  r = ALOG10( a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::AMAX0
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = AMAX0( a, ... )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type REAL.
+::::AMAX1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = AMAX1( a, ... )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::AMIN0
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = AMIN0( a, ... )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type REAL.
+::::AMIN1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = AMIN1( a, ... )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::AMOD
+Definition:                        Usage:
+-----------                        ------
+
+Remainder: a1-int(a1/a2)*a2        r = AMOD( a, a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type REAL.
+::::ANINT
+Definition:                        Usage:
+-----------                        ------
+
+Nearest whole number.              r = ANINT( a )
+If "a" >= 0, return int(a+.5).
+If "a" < 0, return int(a-.5).      "a" is of type REAL or
+                                   DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ASIN
+Definition:                        Usage:
+-----------                        ------
+
+Arcsine.                           r = ASIN( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ASSIGN
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ASSIGN s TO i                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s    is a statement label.
+
+     i    is an integer variable name.
+
+After a statement label has been assigned to an integer variable,
+that variable may only be used in the following ways.
+
+    1. in an assigned GOTO statement
+
+    2. as a format identifier in an i/o statement
+::::ATAN
+Definition:                        Usage:
+-----------                        ------
+
+Arctangent.                        r = ATAN( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ATAN2
+Definition:                        Usage:
+-----------                        ------
+
+Arctangent.                        r = ATAN2( a, a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ATEND
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ATEND DO    [: block_label]                                      ³
+³       or                                                           ³
+³   ATEND, statement                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     statement      is an executable statement.
+
+     block_label    is an optional block label.
+
+This statement allows a statement or a block of code following a
+READ statement to be executed when an end-of-file condition is
+encountered during the read.
+::::BACKSPACE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   BACKSPACE unit                                                   ³
+³       or                                                           ³
+³   BACKSPACE (iolist)                                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     unit      is an external unit identifier.
+
+     iolist    is a list of BACKSPACE specifiers separated by commas:
+
+                   [UNIT =] unit
+                   IOSTAT = ios
+                   ERR = s
+
+     ios       is an integer variable or array element.
+
+     s         is a statement label.
+::::BLOCKDATA
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   BLOCK DATA  [sub]                                                ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     sub    is the symbolic name of a block data subprogram.
+::::BTEST
+Definition:                        Usage:
+-----------                        ------
+
+Bit test.                          r = BTEST( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type LOGICAL.
+::::CABS
+Definition:                        Usage:
+-----------                        ------
+
+Magnitude of complex number.       r = CABS( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CALL
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CALL sub [( [a [, a] ...] )]                                     ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     sub    is the symbolic name of a subroutine.
+
+     a      is an actual argument.
+::::CASE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CASE case_list                                                   ³
+³       or                                                           ³
+³   CASE DEFAULT                                                     ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+     case_list    is a list, enclosed in parentheses, of one or more
+                  cases separated by commas.  A case is either:
+
+                      (a) a constant expression of type logical,
+                          integer or character.
+
+                      (b) an constant expression of type integer or
+                          character followed by a colon and a second
+                          constant expression of the same type.  This
+                          form of a case defines a range of values
+                          that are greater that or equal to the value
+                          of the expression preceding the colon and
+                          less than or equal to the value of the
+                          expression following the colon.
+::::CCOS
+Definition:                        Usage:
+-----------                        ------
+
+Cosine.                            r = CCOS( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CDABS
+Definition:                        Usage:
+-----------                        ------
+
+Magnitude of complex number.       r = CDABS( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CDCOS
+Definition:                        Usage:
+-----------                        ------
+
+Cosine.                            r = CDCOS( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CDEXP
+Definition:                        Usage:
+-----------                        ------
+
+Exponential.                       r = CDEXP( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CDLOG
+Definition:                        Usage:
+-----------                        ------
+
+Natural logarithm.                 r = CDLOG( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CDSIN
+Definition:                        Usage:
+-----------                        ------
+
+Sine.                              r = CDSIN( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CDSQRT
+Definition:                        Usage:
+-----------                        ------
+
+Square root.                       r = CDSQRT( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::CEXP
+Definition:                        Usage:
+-----------                        ------
+
+Exponential.                       r = CEXP( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CHAR
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to CHARACTER.           r = CHAR( a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type CHARACTER.
+::::CHARACTER
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CHARACTER[*len [,]] name[/cl/] [,name[/cl/]] ...                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+     name    is one of the following forms:
+
+             v[*len]
+
+             a(d)[*len]
+
+             a[*len](d)
+
+     v       is a variable name, symbolic name of a constant, function
+             name of dummy procedure name.
+
+     a       is an array name.
+
+     (d)     specifies the dimensions of an array.
+
+     len     is the length specifier (number of characters) and has
+             one of the following forms:
+
+             (1) an unsigned positive integer constant.
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses.
+
+             (3) an asterisk enclosed in parentheses.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::CLOG
+Definition:                        Usage:
+-----------                        ------
+
+Natural Logarithm.                 r = CLOG( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CLOSE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CLOSE (iolist)                                                   ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     iolist    is a list of CLOSE specifiers separated by commas:
+
+                   [UNIT =] u
+                   IOSTAT = ios
+                   ERR = s
+                   STATUS = sta
+
+     u         is an external unit identifier.
+
+     ios       is an integer variable or array element.
+
+     s         is a statement label.
+
+     sta       is a character expression whose value when leading and
+               trailing blanks are removed is 'KEEP' or 'DELETE'.
+::::CMPLX
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to COMPLEX.             r = CMPLX( a )
+
+                                   "a" is of type INTEGER, REAL,
+                                       DOUBLE PRECISION, COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type COMPLEX.
+
+                                   r = CMPLX( a, a )
+
+                                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of type COMPLEX.
+::::COMMON
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   COMMON [/cb/] nlist [[,]/[cb]/ nlist] ...                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     cb       is the symbolic name of a common block.
+
+     nlist    is a list of names separated by a comma.
+::::COMPLEX
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   COMPLEX[*len[,]] name[/cl/] [,name[/cl/]]                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is one of the following:
+
+             v[*len]
+
+             a[*len](d)
+
+             a(d)[*len]
+
+     v       is a variable name, symbolic name of a constant, function
+             name of dummy procedure name.
+
+     a       is an array name.
+
+     (d)     specifies the dimensions of an array.
+
+     len     is the length specifier (number of characters) and has
+             one of the following forms:
+
+             (1) an unsigned positive integer constant.
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses.
+
+             (3) an asterisk enclosed in parentheses.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::CONJG
+Definition:                        Usage:
+-----------                        ------
+
+Conjugate of complex number.       r = CONJG( a )
+
+                                   "a" is of type COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::CONTINUE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONTINUE                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+Execution of this statement has no effect.  It is often used as the
+terminal statement of a DO statement.
+::::COS
+Definition:                        Usage:
+-----------                        ------
+
+Cosine.                            r = COS( a )
+
+                                   "a" is of type REAL,
+                                       DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::COSH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic cosine.                 r = COSH( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::COTAN
+Definition:                        Usage:
+-----------                        ------
+
+Cotangent.                         r = COTAN( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::CSIN
+Definition:                        Usage:
+-----------                        ------
+
+Sine.                              r = CSIN( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CSQRT
+Definition:                        Usage:
+-----------                        ------
+
+Square root.                       r = CSQRT( a )
+
+                                   "a" is of type COMPLEX.
+
+                                   "r" is of type COMPLEX.
+::::CYCLE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CYCLE [: block_label]                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label.
+
+The CYCLE statement transfers control from within a loop to the
+terminal statement of a DO, DO WHILE, WHILE or LOOP statement.
+::::DABS
+Definition:                        Usage:
+-----------                        ------
+
+Absolute value.                    r = DABS( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DACOS
+Definition:                        Usage:
+-----------                        ------
+
+Arccosine.                         r = DACOS( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DASIN
+Definition:                        Usage:
+-----------                        ------
+
+Arcsine.                           r = DASIN( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DATA
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DATA nlist/clist/ [[,]nlist/clist/] ...                          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     nlist    is a list of variable names, array element names,
+              substring names and implied-DO lists.
+
+     clist    is a list of the form:
+
+              a [,a] ...
+
+     a        is one of the forms:
+
+              c
+
+              r*c (equivalent to "r" successive appearances of "c")
+
+     c        is a constant or the symbolic name of a constant
+
+     r        is an unsigned positive integer constant or the
+              symbolic name of a constant.
+::::DATAN
+Definition:                        Usage:
+-----------                        ------
+
+Arctangent.                        r = DATAN( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DATAN2
+Definition:                        Usage:
+-----------                        ------
+
+Arctangent.                        r = DATAN( a, a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DBLE
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to DOUBLE PRECISION.    r = DBLE( a )
+
+                                   "a" is of type INTEGER, REAL,
+                                       DOUBLE PRECISION, COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DCMPLX
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to COMPLEX*16.          r = DCMPLX( a )
+
+                                   "a" is of type INTEGER, REAL,
+                                       DOUBLE PRECISION, COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+
+                                   r = DCMPLX( a, a )
+
+                                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of type COMPLEX*16.
+::::DCONJG
+Definition:                        Usage:
+-----------                        ------
+
+Conjugate of complex number.       r = DCONJG( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type COMPLEX*16.
+::::DCOS
+Definition:                        Usage:
+-----------                        ------
+
+Cosine.                            r = DCOS( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DCOSH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic cosine.                 r = DCOSH( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DCOTAN
+Definition:                        Usage:
+-----------                        ------
+
+Cotangent.                         r = DCOTAN( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DDIM
+Definition:                        Usage:
+-----------                        ------
+
+Positive difference.               r = DDIM( a, a )
+a1-a2 if a1 > a2
+  0   if a1 <= a2                  "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DEALLOCATE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DEALLOCATE( arr {, arr } [,STAT=istat] )                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     arr      is a dynamically allocatable array.
+
+     istat    is an integer variable or array element that contains
+              the status of the deallocation.
+::::DERF
+Definition:                        Usage:
+-----------                        ------
+
+Error function.                    r = DERF( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DERFC
+Definition:                        Usage:
+-----------                        ------
+
+Complement of error function:      r = DERFC( a )
+1 - erf(a)
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DEXP
+Definition:                        Usage:
+-----------                        ------
+
+Exponential.                       r = DEXP( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DFLOAT
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to DOUBLE PRECISION.    r = DFLOAT( a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DGAMMA
+Definition:                        Usage:
+-----------                        ------
+
+Gamma function.                    r = DGAMMA( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DIM
+Definition:                        Usage:
+-----------                        ------
+
+Positive difference.               r = DIM( a, a )
+a1-a2 if a1 > a2
+  0   if a1 <= a2                  "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::DIMAG
+Definition:                        Usage:
+-----------                        ------
+
+Imaginary part of complex number.  r = AIMAG( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DIMENSION
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DIMENSION a(d) [,a(d)]                                           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     a    is the symbolic name of an array.
+
+     d    defines the dimension of the array and the range of its
+          subscripts.
+
+Allocatable arrays are declared by specifying only a colon for each
+dimension.  For example, the following statement declares an
+allocatable array of two dimensions.
+
+    DIMENSION ARRAY(:,:)
+
+The bounds of the dimensions of an allocatable array are established
+when the array is allocated by using an <ALLOCATE> statement.
+::::DINT
+Definition:                        Usage:
+-----------                        ------
+
+Truncation: int(a).                r = DINT( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DLGAMA
+Definition:                        Usage:
+-----------                        ------
+
+Natural log of gamma function.     r = DLGAMA( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DLOG
+Definition:                        Usage:
+-----------                        ------
+
+Natural logarithm.                 r = DLOG( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DLOG10
+Definition:                        Usage:
+-----------                        ------
+
+Common Logarithm.                  r = DLOG10( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DMAX1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = DMAX1( a, ... )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DMIN1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = DMIN1( a, ... )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DMOD
+Definition:                        Usage:
+-----------                        ------
+
+Remainder: a1-int(a1/a2)*a2        r = DMOD( a, a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DNINT
+Definition:                        Usage:
+-----------                        ------
+
+Nearest whole number.              r = DNINT( a )
+If "a" >= 0, return int(a+.5).
+If "a" < 0, return int(a-.5).      "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DO
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DO s [,] i = e1, e2 [,e3] [: block_label]                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s              is the statement label of an executable statement,
+                    DO called the terminal statement, which follows
+                    the DO statement.
+
+     i              is an INTEGER, REAL or DOUBLE PRECISION variable,
+                    called the DO-variable.
+
+     e1, e2, e3     are each of type INTEGER, REAL or DOUBLE
+                    PRECISION.
+
+     block_label    is an optional block label.
+::::DOUBLECOMPLEX
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DOUBLE COMPLEX name[/cl/] [,name[/cl/]] ...                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is a variable name, array name, array declarator,
+             symbolic name of a constant, function name or dummy
+             procedure name.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::DOUBLEPRECISION
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DOUBLE PRECISION name[/cl/] [,name[/cl/]] ...                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is a variable name, array name, array declarator,
+             symbolic name of a constant, function name or dummy
+             procedure name.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::DOWHILE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   DO [s[,]] WHILE (e) [: block_label]                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s              is the statement label of an executable statement,
+                    DO called the terminal statement, which follows
+                    the DO statement.
+
+     e              is a logical expression.
+
+     block_label    is an optional block label.
+::::DPROD
+Definition:                        Usage:
+-----------                        ------
+
+Double precision product: a1*a2    r = DPROD( a, a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DREAL
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to DOUBLE PRECISION.    r = DREAL( a )
+
+                                   "a" is of type COMPLEX*16.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DSIGN
+Definition:                        Usage:
+-----------                        ------
+
+Transfer of sign.                  r = DSIGN( a, a )
+³a1³ if a2 >= 0.
+-³a1³ if a2 > 0.                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DSIN
+Definition:                        Usage:
+-----------                        ------
+
+Sine.                              r = DSIN( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DSINH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic sine.                   r = DSINH( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DSQRT
+Definition:                        Usage:
+-----------                        ------
+
+Square root.                       r = DSQRT( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DTAN
+Definition:                        Usage:
+-----------                        ------
+
+Tangent.                           r = DTAN( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::DTANH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic tangent.                r = DTANH( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type DOUBLE PRECISION.
+::::ELSE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ELSE                                                             ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+See <IF>.
+::::ELSEIF
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ELSE IF (e) THEN                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e    is a logical expression.
+
+See <IF>.
+::::END
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   END                                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The END statement indicates the end of a sequence of statements of a
+program unit.
+::::ENDATEND
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   END ATEND                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The END ATEND statement is used to terminate an <ATEND> block.
+::::ENDBLOCK
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   END BLOCK                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The END BLOCK statement is used to terminate a <REMOTE> block.
+::::ENDDO
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   END DO                                                           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The END DO statement is used to terminate a structured DO or DO WHILE
+block.
+::::ENDFILE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDFILE unit                                                     ³
+³       or                                                           ³
+³   ENDFILE (iolist)                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     unit      is an external unit identifier.
+
+     iolist    is a list of ENDFILE specifiers separated by commas:
+
+                   [UNIT =] unit
+                   IOSTAT = ios
+                   ERR = s
+
+     ios       is an integer variable or array element.
+
+     s         is a statement label.
+::::ENDGUESS
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDGUESS                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDGUESS statement terminates the definition of a <GUESS> or
+<ADMIT> block.
+::::ENDIF
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDIF                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDIF statement terminates the definition of a <IF> or <ELSE>
+block.
+::::ENDLOOP
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDLOOP                                                          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDLOOP statement terminates the definition of a <LOOP> or <WHILE>
+block.
+::::ENDMAP
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDMAP                                                           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDMAP statement terminates the definition of a <MAP>.
+::::ENDSELECT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDSELECT                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDSELECT statement terminates the definition of a <SELECT> block.
+::::ENDSTRUCTURE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDSTRUCTURE                                                     ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDSTRUCTURE statement terminates the definition of a <STRUCTURE>.
+::::ENDUNION
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDUNION                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDUNION statement terminates the definition of a <UNION>.
+::::ENDWHILE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENDWHILE                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The ENDWHILE statement terminates the definition of a <WHILE> block.
+::::ENTRY
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   ENTRY name [( [d [, d] ...] )]                                   ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is the symbolic name of a subroutine or function.
+
+     d       is a variable name, array name, dummy procedure name,
+             or an asterisk.
+::::EQUIVALENCE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   EQUIVALENCE (nlist) [,(nlist)] ...                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     nlist    is a list of at least two names, each separated by a
+              comma.
+::::ERF
+Definition:                        Usage:
+-----------                        ------
+
+Error function.                    r = ERF( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::ERFC
+Definition:                        Usage:
+-----------                        ------
+
+Complement of error function:      r = ERFC( a )
+1 - erf(a)
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::EXECUTE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   EXECUTE name                                                     ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is the symbolic name of a remote block.
+::::EXIT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   EXIT [: block_label]                                             ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label.
+
+The EXIT statement transfers control:
+
+    1. from within a loop (DO, DO WHILE, WHILE or LOOP) to the
+       statement following the loop.
+
+    2. from within a GUESS or ADMIT block to the statement following
+       the ENDGUESS statement.
+
+    3. from within a remote block to the statement following the
+       EXECUTE statement that invoked the remote block.
+::::EXP
+Definition:                        Usage:
+-----------                        ------
+
+Exponential.                       r = EXP( a )
+
+                                   "a" is of type REAL,
+                                       DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::EXTERNAL
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   EXTERNAL p [, p]                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     p    is the name of an external procedure, dummy procedure, or
+          block data subprogram.
+::::FLOAT
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to REAL.                r = FLOAT( a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type REAL.
+::::FORMAT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   s FORMAT fs                                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s     is a statement label.
+
+     fs    is a format specification.
+::::FUNCTION
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   [type[*len]] FUNCTION fun[*len] ( [d [, d] ...] )                ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     type    is one of LOGICAL, INTEGER, REAL, DOUBLE PRECISION,
+             COMPLEX or CHARACTER.
+
+     fun     is the symbolic name of a function.
+
+     d       is a variable name, array name, or a duumy procedure
+             name.
+
+     len     is a length specification and has one of the following
+             forms:
+
+             (1) an unsigned positive integer constant.
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses.
+
+             (3) an asterisk enclosed in parentheses.
+::::GAMMA
+Definition:                        Usage:
+-----------                        ------
+
+Gamma function.                    r = GAMMA( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::GOTO
+Unconditional GOTO Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   GOTO s                                                           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s    is a statement label.
+
+Computed GOTO Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   GOTO (s [,s] ...) [,] i                                          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     s    is a statement label.
+
+     i    is an integer expression.
+
+Assigned GOTO Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   GOTO i [[,] (s [,s] ...)]                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     i    is an integer expression.
+
+     s    is a statement label.
+::::GUESS
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   GUESS [: block_label]                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label.
+
+The GUESS statement marks the beginning of a sequence of statements
+for which a certain assumption has been made.  The ADMIT statement
+may be used to mark the beginning of an alternate hypothesis.
+Testing the hypothesis by using logical IF statements in conjunction
+with QUIT statements allows control of execution to be transferred
+to an alternate hypothesis.
+
+Example:
+
+      GUESS    ! assume invalid sex code
+          IF( SEX .EQ. 'F' ) QUIT
+          IF( SEX .EQ. 'M' ) QUIT
+          ...
+      ADMIT    ! sex code is correct
+          ...
+      ENDGUESS
+::::HFIX
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to INTEGER*2.           r = HFIX( a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type INTEGER*2.
+::::IABS
+Definition:                        Usage:
+-----------                        ------
+
+Absolute value.                    r = IABS( a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IAND
+Definition:                        Usage:
+-----------                        ------
+
+Boolean AND.                       r = IAND( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IBCHNG
+Definition:                        Usage:
+-----------                        ------
+
+Bit change.                        r = IBCHNG( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IBCLR
+Definition:                        Usage:
+-----------                        ------
+
+Bit clear.                         r = IBCLR( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IBSET
+Definition:                        Usage:
+-----------                        ------
+
+Bit set.                           r = IBSET( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ICHAR
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to INTEGER.             r = ICHAR( a )
+
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type INTEGER.
+::::IDIM
+Definition:                        Usage:
+-----------                        ------
+
+Positive difference.               r = IDIM( a, a )
+a1-a2 if a1 > a2
+  0   if a1 <= a2                  "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IDINT
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to INTEGER.             r = IDINT( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type INTEGER.
+::::IDNINT
+Definition:                        Usage:
+-----------                        ------
+
+Nearest integer.                   r = IDNINT( a )
+If "a" >= 0, return int(a+.5).
+If "a" < 0, return int(a-.5).      "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type INTEGER.
+::::IEOR
+Definition:                        Usage:
+-----------                        ------
+
+Boolean exclusive OR.              r = IEOR( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::IF
+Arithmetic IF Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   IF (e) s1, s2, s3                                                ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e             is an INTEGER, REAL or DOUBLE PRECISION
+                   expression.
+
+     s1, s2, s3    are statement labels.
+
+Logical IF Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   IF (e) s                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e    is a logical expression.
+
+     s    is a statement label.
+
+Block IF Statement
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   IF (e) THEN [: block_label]                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e              is a logical expression.
+
+     block_label    is an optional block label.
+::::IFIX
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to INTEGER.             r = IFIX( a )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type INTEGER.
+::::IMAG
+Definition:                        Usage:
+-----------                        ------
+
+Imaginary part of complex number.  r = IMAG( a )
+
+                                   "a" is of type COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type REAL if "a" is of
+                                       type COMPLEX and DOUBLE
+                                       PRECISION if "a" is of type
+                                       COMPLEX*16.
+::::IMPLICIT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   IMPLICIT type[*len] (a [,a] ...) [,type[*len] (a [,a] ...)] ...  ³
+³       or                                                           ³
+³   IMPLICIT NONE                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     type    is one of LOGICAL, INTEGER, REAL, DOUBLE PRECISION,
+             COMPLEX or CHARACTER.
+
+     len     is a positive unsigned integer constant or a positive
+             integer constant expression enclosed in parentheses.
+             If "type" is CHARACTER, "(*)" is also allowed.  Possible
+             values of "len" are as follows.
+
+             (1) If "type" is LOGICAL, "len" can be 1 or 4.
+                 The default is 4.
+
+             (2) If "type" is INTEGER, "len" can be 1, 2 or 4.
+                 The default is 4.
+
+             (3) If "type" is REAL, "len" can be 4 or 8.
+                 The default is 4.
+
+             (4) If "type" is DOUBLE PRECISION, "len" cannot be
+                 specified.
+
+             (5) If "type" is COMPLEX, "len" can be 8 or 16.
+                 The default is 8.
+
+             (6) If "type" is CHARACTER, "len" can be "(*)" or any
+                 positive integer.
+::::INCLUDE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   INCLUDE 'fs'                                                     ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     fs    is a file specification for the file to be included in the
+           source input stream.
+::::INDEX
+Definition:                        Usage:
+-----------                        ------
+
+Location of substring a2 in        r = INDEX( a, a )
+string a1.
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type INTEGER.
+::::INQUIRE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   INQUIRE (iolist)                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     iolist    is a list of INQUIRE specifiers, each separated by a
+               comma.  Inquiry specifiers are:
+
+                   FILE = fn     UNIT = unit           IOSTAT = ios
+                   ERR = s       EXIST = ex            OPENED = od
+                   NUMBER = num  BLOCKSIZE = bsz       NAME = fn
+                   ACCESS = acc  SEQUENTIAL = seq      DIRECT = dir
+                   FORM = fm     UNFORMATTED = unf     RECL = rcl
+                   NEXTREC = nr  RECORDTYPE = rct      BLANK = blnk
+                   ACTION = act  CARRIAGECONTROL = cc  NAMED = nmd
+                   SHARE = shr
+
+     fn        is a character expression whose value when leading
+               and trailing blanks are removed is the name of the
+               file being inquired about.  When the "FILE="
+               specifier is specified the "UNIT=" specifier cannot
+               be specified.
+
+     unit      is an integer expression.  When the "UNIT="
+               specifier is specified the "FILE=" specified cannot
+               be specified.
+
+     ios       is an integer variable or array element.
+
+     s         is a statement label.
+
+     ex        is a logical variable or array element.
+
+     od        is a logical variable or array element.
+
+     num       is an integer variable or array element.
+
+     nmd       is a logical variable or array element.
+
+     fn        is a character variable or array element optionally
+               substrung.
+
+     acc       is a character variable or array element optionally
+               substrung.
+
+     seq       is a character variable or array element optionally
+               substrung.
+
+     dir       is a character variable or array element optionally
+               substrung.
+
+     fm        is a character variable or array element optionally
+               substrung.
+
+     unf       is a character variable or array element optionally
+               substrung.
+
+     rcl       is an integer variable or array element.
+
+     nr        is an integer variable or array element.
+
+     blnk      is a character variable or array element optionally
+               substrung.
+
+     rct       is a character variable or array element optionally
+               substrung.
+
+     act       is a character variable or array element optionally
+               substrung.
+
+     cc        is a character variable or array element optionally
+               substrung.
+
+     bsz       is an integer variable of array element.
+
+     shr       is a character variable or array element optionally
+               substrung.
+::::INT
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to INTEGER.             r = INT( a )
+
+                                   "a" is of type INTEGER, REAL,
+                                       DOUBLE PRECISION, COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type INTEGER.
+::::INTEGER
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   INTEGER[*len[,]] name[/cl/] [,name[/cl/]] ...                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is one of the following:
+
+             v[*len]
+
+             a[*len](d)
+
+             a(d)[*len]
+
+     v       is a variable name, symbolic name of a constant, function
+             name of dummy procedure name.
+
+     a       is an array name.
+
+     (d)     specifies the dimensions of an array.
+
+     len     is the length specifier (number of characters) and has
+             one of the following forms:
+
+             (1) an unsigned positive integer constant.
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses.
+
+             (3) an asterisk enclosed in parentheses.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::INTRINSIC
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   INTRINSIC f [,f] ...                                             ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     f    is the name of an intrinsic function.
+::::INTRINSIC FUNCTIONS
+<ABS>      <ACOS>     <AIMAG>    <AINT>     <ALGAMA>   <ALLOCATED>
+<ALOG>     <ALOG10>   <AMAX0>    <AMAX1>    <AMIN0>    <AMIN1>
+<AMOD>     <ANINT>    <ASIN>     <ATAN>     <ATAN2>    <BTEST>
+<CABS>     <CCOS>     <CDABS>    <CDCOS>    <CDEXP>    <CDLOG>
+<CDSIN>    <CDSQRT>   <CEXP>     <CHAR>     <CLOG>     <CMPLX>
+<CONJG>    <COS>      <COSH>     <COTAN>    <CSIN>     <CSQRT>
+<DABS>     <DACOS>    <DASIN>    <DATAN>    <DATAN2>   <DBLE>
+<DCMPLX>   <DCONJG>   <DCOS>     <DCOSH>    <DCOTAN>   <DDIM>
+<DERF>     <DERFC>    <DEXP>     <DFLOAT>   <DGAMMA>   <DIM>
+<DIMAG>    <DINT>     <DLGAMA>   <DLOG>     <DLOG10>   <DMAX1>
+<DMIN1>    <DMOD>     <DNINT>    <DPROD>    <DREAL>    <DSIGN>
+<DSIN>     <DSINH>    <DSQRT>    <DTAN>     <DTANH>    <ERF>
+<ERFC>     <EXP>      <FLOAT>    <GAMMA>    <HFIX>     <IABS>
+<IAND>     <IBCHNG>   <IBCLR>    <IBSET>    <ICHAR>    <IDIM>
+<IDINT>    <IDNINT>   <IEOR>     <IFIX>     <IMAG>     <INDEX>
+<INT>      <IOR>      <ISHA>     <ISHC>     <ISHFT>    <ISHL>
+<ISIGN>    <ISIZEOF>  <LEN>      <LENTRIM>  <LGAMMA>   <LGE>
+<LGT>      <LLE>      <LLT>      <LOC>      <LOG>      <LOG10>
+<MAX>      <MAX0>     <MAX1>     <MIN>      <MIN0>     <MIN1>
+<MOD>      <NINT>     <NOT>      <REAL>     <SIGN>     <SIN>
+<SINH>     <SNGL>     <SQRT>     <TAN>      <TANH>
+::::IOR
+Definition:                        Usage:
+-----------                        ------
+
+Boolean inclusive OR.              r = IOR( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISHA
+Definition:                        Usage:
+-----------                        ------
+
+Arithmetic shift.                  r = ISHA( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISHC
+Definition:                        Usage:
+-----------                        ------
+
+Circular shift.                    r = ISHC( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISHFT
+Definition:                        Usage:
+-----------                        ------
+
+Logical shift.                     r = ISHFT( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISHL
+Definition:                        Usage:
+-----------                        ------
+
+Logical shift.                     r = ISHL( a, a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISIGN
+Definition:                        Usage:
+-----------                        ------
+
+Transfer of sign.                  r = ISIGN( a, a )
+³a1³ if a2 >= 0.
+-³a1³ if a2 > 0.                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::ISIZEOF
+Definition:                        Usage:
+-----------                        ------
+
+Storage size of structure          r = ISIZEOF( a )
+or symbolic name.
+                                   "a" is structure or symbolic name.
+
+                                   "r" is of type INTEGER.
+::::LANG_HELP
+                         WATCOM FORTRAN 77
+                         =================
+
+Select the topic for which help is required. Press F1 if you want
+information on how to use the help system.
+
+<STATEMENTS>                    statement summary
+
+<INTRINSIC FUNCTIONS>           intrinsic function library
+::::LEN
+Definition:                        Usage:
+-----------                        ------
+
+Length of character entity.        r = LEN( a )
+
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type INTEGER.
+::::LENTRIM
+Definition:                        Usage:
+-----------                        ------
+
+Length of character entity         r = LENTRIM( a )
+with trailing blanks removed.
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type INTEGER.
+::::LGAMMA
+Definition:                        Usage:
+-----------                        ------
+
+Natural log of gamma function.     r = LGAMMA( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::LGE
+Definition:                        Usage:
+-----------                        ------
+
+Lexically greater than or          r = LGE( a, a )
+equal.
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type LOGICAL.
+::::LGT
+Definition:                        Usage:
+-----------                        ------
+
+Lexically greater than.            r = LGT( a, a )
+
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type LOGICAL.
+::::LLE
+Definition:                        Usage:
+-----------                        ------
+
+Lexically less than or             r = LLE( a, a )
+equal.
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type LOGICAL.
+::::LLT
+Definition:                        Usage:
+-----------                        ------
+
+Lexically less than.               r = LLT( a, a )
+
+                                   "a" is of type CHARACTER.
+
+                                   "r" is of type LOGICAL.
+::::LOC
+Definition:                        Usage:
+-----------                        ------
+
+Location (memory address) of       r = LOC( a )
+expression.
+                                   "a" is any expression.
+
+                                   "r" is of type INTEGER.
+::::LOG
+Definition:                        Usage:
+-----------                        ------
+
+Natural Logarithm.                 r = LOG( a )
+
+                                   "a" is of type REAL,
+                                       DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::LOG10
+Definition:                        Usage:
+-----------                        ------
+
+Common Logarithm.                  r = LOG10( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::LOGICAL
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   LOGICAL[*len[,]] name[/cl/] [,name[/cl/]] ...                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is one of the following:
+
+             v[*len]
+
+             a[*len](d)
+
+             a(d)[*len]
+
+     v       is a variable name, symbolic name of a constant, function
+             name of dummy procedure name.
+
+     a       is an array name.
+
+     (d)     specifies the dimensions of an array.
+
+     len     is the length specifier (number of characters) and has
+             one of the following forms:
+
+             (1) an unsigned positive integer constant.
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses.
+
+             (3) an asterisk enclosed in parentheses.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant.
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant.
+::::LOOP
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   LOOP [:block_label]                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label.
+
+The LOOP statement marks the beginning of a sequence of statements to
+be repeated.  An ENDLOOP or UNTIL statement can be used to terminate
+the loop.
+::::MAP
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   MAP                                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+A MAP definition can only appear within a <UNION> definition.  It may
+contain any number of variables of any type, including structures.
+Variables are stored in memory contiguously in the order they appear
+in the MAP definition.
+
+Example:
+
+      MAP
+          INTEGER I, J
+          REAL X
+      END MAP
+::::MAX
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = MAX( a, ... )
+
+                                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a"
+::::MAX0
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = MAX0( a, ... )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::MAX1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing largest value.            r = MAX1( a, ... )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type INTEGER.
+::::MIN
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = MIN( a, ... )
+
+                                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a"
+::::MIN0
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = MIN0( a, ... )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::MIN1
+Definition:                        Usage:
+-----------                        ------
+
+Choosing smallest value.           r = MIN1( a, ... )
+
+                                   "a" is of type REAL.
+
+                                   "r" is of type INTEGER.
+::::MOD
+Definition:                        Usage:
+-----------                        ------
+
+Remainder: a1-int(a1/a2)*a2        r = MOD( a, a )
+
+                                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::NAMELIST
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³  NAMELIST  /nml/ sym {, sym} { /nml/ sym {, sym} }                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     nml    is the group name.
+
+     sym    is a variable or array name.
+
+::::NINT
+Definition:                        Usage:
+-----------                        ------
+
+Nearest integer.                   r = NINT( a )
+If "a" >= 0, return int(a+.5).
+If "a" < 0, return int(a-.5).      "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of type INTEGER.
+::::NOT
+Definition:                        Usage:
+-----------                        ------
+
+Boolean complement.                r = NOT( a )
+
+                                   "a" is of type INTEGER.
+
+                                   "r" is of type INTEGER.
+::::OPEN
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   OPEN (iolist)                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     iolist    is a list of OPEN specifiers, each separated by a
+               comma.  An OPEN specifier is one of the following.
+
+                   [UNIT =] unit    (must be specified)
+                   IOSTAT = ios
+                   ERR = s
+                   FILE = fin
+                   STATUS = sta
+                   ACCESS = acc
+                   FORM = fm
+                   RECL = rcl
+                   BLANK = blnk
+                   ACTION = act
+                   CARRRIAGECONTROL = cc
+                   RECORDTYPE = rct
+                   BLOCKSIZE = bsz
+                   SHARE = shr
+
+     unit      is an integer expressions representing the external
+               unit identifier.
+
+     ios       is an integer variable or array element.
+
+     s         is a statmment number.
+
+     fin       is a character expression whose value when leading
+               and trailing blanks are removed is the name of the
+               file to be connected to the unit.
+
+     sta       is a character expression whose value when leading
+               and trailing blanks are removed is 'OLD', 'NEW',
+               'SCRATCH' or 'UNKNOWN'.
+
+     acc       is a character expression whose value when leading
+               and trailing blanks are removed is 'SEQUENTIAL',
+               'DIRECT' or 'APPEND'.
+
+     fm        is a character expression whose value when leading
+               and trailing blanks are removed is 'FORMATTED'
+               or 'UNFORMATTED'.
+
+     rcl       is an integer expression whose value must be
+               positive.  It specifies the length of each record
+               for a file connected for direct access or the maximum
+               record length for files connected for sequential
+               access.
+
+     blnk      is a character expression whose value when leading
+               and trailing blanks are removed is 'NULL' or 'ZERO'.
+
+     act       is a character expression whose value when leading
+               and trailing blanks are removed is 'NULL' or 'ZERO'.
+
+     cc        is a character expression whose value when leading
+               and trailing blanks are removed is 'YES' or 'NO'.
+
+     rct       is a character expression whose value when leading
+               and trailing blanks are removed specifies the type
+               of record (record structure) to be used for the file.
+
+     bsz       is an integer expression whose value must be
+               positive.  It specifies the size of the i/o buffer
+               used for the specified unit.
+
+     shr       is a character expression whose value when leading
+               and trailing blanks are removed specifies the method
+               of sharing that is allowed by subsequent accesses to
+               the file.
+::::OTHERWISE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   OTHERWISE                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+See <SELECT>.
+::::PARAMETER
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   PARAMETER (p=e [,p=e] ...)                                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     p    is the symbolic name of the parameter constant.
+
+     e    is a constant expression.
+::::PAUSE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   PAUSE [n]                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     n    is a character constant or an unsigned integer constant.
+::::PRINT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   PRINT f [,iolist]                                                ³
+³       or                                                           ³
+³   PRINT, iolist                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     f         is a format identifier.
+
+     iolist    is an output list.
+::::PROGRAM
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   PROGRAM pgm                                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     pgm    is the symbolic name of the main program.
+::::QUIT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   QUIT [:block_label]                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label.
+
+The QUIT statement can be used to transfer control to the first
+executable statement following the terminal statement of the block
+in which it is contained.
+::::READ
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   READ (iolist) [inplist]                                          ³
+³       or                                                           ³
+³   READ f [,inplist]                                                ³
+³       or                                                           ³
+³   READ, inplist                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     iolist     is a list of READ specifiers, each separated by
+                commas.
+
+                    [UNIT =] unit
+                    [FMT =] f
+                    REC = rn
+                    IOSTAT = ios
+                    ERR = s
+                    END = s
+
+     f          is a format identifier.  A format identifier is one
+                of the following.
+
+                (1) A statement label of a FORMAT statement.
+
+                (2) An integer variable that has been assigned the
+                    statement label of a FORMAT statement.
+
+                (3) A character array.
+
+                (4) A character expression including a character
+                    constant or the symbolic name of a character
+                    constant.
+
+                (5) An asterisk, indicating list-directed formatting.
+
+
+     inplist    is an input list.  It may contain one or more of the
+                following.
+
+                (1) A variable name.
+
+                (2) An array element name.
+
+                (3) A character substring name.
+
+                (4) An array name except an assumed-size dummy array.
+
+                (5) An implied-DO list of the form:
+
+                        ( dlist, i = e1, e2 [,e3] )
+
+                    where "dlist" is composed of one or more items (1)
+                    through (5).
+
+     unit       is an external unit identifier or an internal file
+                identifier.
+
+                (1) An external unit identifier is a non-negative
+                    integer expression or an asterisk in which case
+                    unit 5 is assumed.
+
+                (2) An internal file identifier is the name of a
+                    character variable, character array, character
+                    array element, or character substring.
+
+     rn         is an integer expression whose value is the number of
+                the record to be read when the file is connected for
+                direct access.  This value must be positive.
+
+     ios        is an integer variable or array element that is
+                defined with zero if no error occurs, a positive value
+                if an error occurs and a negative value of an
+                end-of-file occurs.
+
+     s          is a statement label.
+::::REAL
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to REAL.                r = REAL( a )
+
+                                   "a" is of type INTEGER, REAL,
+                                       DOUBLE PRECISION, COMPLEX or
+                                       COMPLEX*16.
+
+                                   "r" is of type REAL.
+::::REAL*4
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   REAL[*len[,]] name[/cl/] [,name[/cl/]] ...                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     name    is one of the following:
+
+             v[*len]
+
+             a[*len](d)
+
+             a(d)[*len]
+
+     v       is a variable name, symbolic name of a constant, function
+             name of dummy procedure name
+
+     a       is an array name
+
+     (d)     specifies the dimensions of an array
+
+     len     is the length specifier (number of characters) and has
+             one of the following forms:
+
+             (1) an unsigned positive integer constant
+
+             (2) a positive integer constant expression enclosed in
+                 parentheses
+
+             (3) an asterisk enclosed in parentheses.
+
+     cl      is a list of the form:
+
+             k [,k] ...
+
+     k       is on of the following:
+
+             c
+
+             r*c (equivalent to "r" successive appearances of "c")
+
+     c       is a constant or the symbolic name of a constant
+
+     r       is an unsigned positive integer constant or the symbolic
+             name of a constant
+::::RECORD
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   RECORD /struct/ var {, var}                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     struct    is the name of a <STRUCTURE>.
+
+     var       is a variable name.
+
+The variables specified in the RECORD statement are defined to be of
+the user-defined type specified by "struct".
+
+::::REMOTEBLOCK
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   REMOTE BLOCK rb                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     rb    is the symbolic name of a remote block.
+
+A REMOTE BLOCK statement defines a sequence of statements which may
+be invoked by the EXECUTE statement.  A remote block is similar in
+concept to a subroutine with the advantage that shared variables do
+not need to be placed in a common block or passed in an argument
+list.
+::::RETURN
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   RETURN [e]                                                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e    is an integer expression.
+::::REWIND
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   REWIND unit                                                      ³
+³       or                                                           ³
+³   REWIND (iolist)                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     unit      is an positive integer expression whose value is the
+               external unit identifier.
+
+     iolist    is a list of REWIND specifiers, each separated by
+               commas.
+
+                   [UNIT =] unit
+                   IOSTAT = ios
+                   ERR = s
+
+     ios        is an integer variable or array element that is
+                defined with zero if no error occurs and a positive
+                value if an error occurs.
+
+     s          is a statement label.
+::::SAVE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   SAVE [a [,a] ...]                                                ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     a    is a named common block preceded and followed by a slash,
+          a variable name, or an array name.
+::::SELECT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   SELECT [CASE] (e) [FROM] [: block_label]                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e              is an logical, integer or character expression.
+
+     block_label    is an optional block label.
+
+Example:
+
+      SELECT CASE ( CH )
+      CASE ( 'a' : 'z' )
+          PRINT *, 'lower case letter'
+      CASE ( 'A' : 'Z' )
+          PRINT *, 'upper case letter'
+      CASE ( '0' : '9' )
+          PRINT *, 'digit'
+      CASE DEFAULT
+          PRINT *, 'special character'
+      END SELECT
+::::SIGN
+Definition:                        Usage:
+-----------                        ------
+
+Transfer of sign.                  r = SIGN( a, a )
+³a1³ if a2 >= 0.
+-³a1³ if a2 > 0.                   "a" is of type INTEGER, REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::SIN
+Definition:                        Usage:
+-----------                        ------
+
+Sine.                              r = SIN( a )
+
+                                   "a" is of type REAL,
+                                       DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::SINH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic sine.                   r = SINH( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::SNGL
+Definition:                        Usage:
+-----------                        ------
+
+Conversion to REAL.                r = SNGL( a )
+
+                                   "a" is of type DOUBLE PRECISION.
+
+                                   "r" is of type REAL.
+::::SQRT
+Definition:                        Usage:
+-----------                        ------
+
+Square root.                       r = SQRT( a )
+
+                                   "a" is of type REAL,
+                                       DOUBLE PRECISION, COMPLEX, or
+                                       COMPLEX*16.
+
+                                   "r" is of same type as "a".
+::::STATEMENTS
+<ADMIT>           <ALLOCATE>      <ASSIGN>          <ATEND>
+<BACKSPACE>       <BLOCKDATA>     <CALL>            <CASE>
+<CHARACTER>       <CLOSE>         <COMMON>          <COMPLEX>
+<CONTINUE>        <CYCLE>         <DEALLOCATE>      <DIMENSION>
+<DO>              <DOUBLECOMPLEX> <DOUBLEPRECISION> <DOWHILE>
+<ELSE>            <ELSEIF>        <END>             <ENDATEND>
+<ENDBLOCK>        <ENDDO>         <ENDFILE>         <ENDGUESS>
+<ENDIF>           <ENDLOOP>       <ENDMAP>          <ENDSELECT>
+<ENDSTRUCTURE>    <ENDWHILE>      <ENDUNION>        <ENTRY>
+<EQUIVALENCE>     <EXECUTE>       <EXIT>            <EXTERNAL>
+<FORMAT>          <FUNCTION>      <GOTO>            <GUESS>
+<IF>              <IMPLICIT>      <INCLUDE>         <INQUIRE>
+<INTEGER>         <INTRINSIC>     <LOGICAL>         <LOOP>
+<MAP>             <NAMELIST>      <OPEN>            <OTHERWISE>
+<PARAMETER>       <PAUSE>         <PRINT>           <PROGRAM>
+<QUIT>            <READ>          <REAL*4>          <RECORD>
+<REMOTEBLOCK>     <RETURN>        <REWIND>          <SAVE>
+<SELECT>          <STOP>          <STRUCTURE>       <SUBROUTINE>
+<UNION>           <UNTIL>         <WHILE>           <WRITE>
+::::STOP
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   STOP [n]                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     n    is a character constant or an unsigned integer constant.
+::::STRUCTURE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   STRUCTURE /sym/                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     sym    is the name of the structure being defined
+
+Example:
+
+      STRUCTURE /PERSON/
+          CHARACTER*30  NAME
+          INTEGER       AGE
+      END STRUCTURE
+::::SUBROUTINE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   SUBROUTINE sub [( [d [, d] ...] )]                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     sub    is the symbolic name of a subroutine.
+
+     d      is a variable name, array name, or a dummy procedure name.
+::::TAN
+Definition:                        Usage:
+-----------                        ------
+
+Tangent.                           r = TAN( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::TANH
+Definition:                        Usage:
+-----------                        ------
+
+Hyperbolic tangent.                r = TANH( a )
+
+                                   "a" is of type REAL or
+                                       DOUBLE PRECISION.
+
+                                   "r" is of same type as "a".
+::::UNION
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   UNION                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+A UNION definition can only appear within a <STRUCTURE> definition.
+It allows two or more maps to occupy the same memory.  In the
+following example, the first two bytes of the variable LONG occupy the
+same memory as the variable LO_WORD and the last two bytes of the
+variable LONG occupy the same memory as the variable HI_WORD.
+
+Example:
+
+      UNION
+          MAP
+              INTEGER*4 LONG
+          END MAP
+          MAP
+              INTEGER*2 LO_WORD
+              INTEGER*2 HI_WORD
+          END MAP
+      END UNION
+::::UNTIL
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   UNTIL (e)                                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     e    is a logical expression.
+
+The UNTIL statement can be used to terminate a loop or while block.
+The loop is executed until the value of the logical expression "e"
+is true.
+::::WHILE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   WHILE (e) DO [: block_label]                                     ³
+³       or                                                           ³
+³   WHILE (e) s                                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     block_label    is an optional block label
+
+     e              is a logical expression
+
+     s              is a statement label.
+::::WRITE
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   WRITE (iolist) [outlist]                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+where:
+
+     iolist     is a list of WRITE specifiers, each separated by a
+                comma.
+
+                    [UNIT =] unit
+                    [FMT =] f
+                    REC = rn
+                    IOSTAT = ios
+                    ERR = s
+
+     outlist    is an output list.  It may contain one or more of the
+                following.
+
+                (1) A variable name.
+
+                (2) An array element name.
+
+                (3) A character substring name.
+
+                (4) An array name except an assumed-size dummy array.
+
+                (5) Any expression except a character expression
+                    involving concatenation of an operand whose length
+                    specification is an asterisk (unless the operand
+                    is the symbolic name of a character constant).
+
+                (6) An implied-DO list of the form:
+
+                        ( dlist, i = e1, e2 [,e3] )
+
+                    where "dlist" is composed of one or more items (1)
+                    through (6).
+
+     f          is a format identifier.  A format identifier is one
+                of the following.
+
+                (1) A statement label of a FORMAT statement.
+
+                (2) An integer variable that has been assigned the
+                    statement label of a FORMAT statement.
+
+                (3) A character array.
+
+                (4) A character expression including a character
+                    constant or the symbolic name of a character
+                    constant.
+
+                (5) An asterisk, indicating list-directed formatting.
+
+     unit       is an external unit identifier or an internal file
+                identifier.
+
+                (1) An external unit identifier is a non-negative
+                    integer expression or an asterisk in which case
+                    unit 6 is assumed.
+
+                (2) An internal file identifier is the name of a
+                    character variable, character array, character
+                    array element, or character substring.
+
+     rn         is an integer expression whose value is the number of
+                the record to be read when the file is connected for
+                direct access.  This value must be positive.
+
+     ios        is an integer variable or array element that is
+                defined with zero if no error occurs or a positive
+                value if an error occurs.
+
+     s          is a statement label.

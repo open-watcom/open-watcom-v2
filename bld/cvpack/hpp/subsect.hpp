@@ -46,17 +46,17 @@
 #include "typemap.hpp"
 #include "makeexe.hpp"
 #include "cssymbol.hpp"
-#include "typearray.hpp"
+#include "typearay.hpp"
 #include "retrieve.hpp"
 
 class SymbolStruct;
 
 extern TypeIndexMap TypeMap;
 
-static const ALIGN_LENGTH = 0x1000;
+static const int ALIGN_LENGTH = 0x1000;
 
-static const DEFAULT_NAME_HASH = 10;
-static const DEFAULT_ADDR_HASH = 12;
+static const int DEFAULT_NAME_HASH = 10;
+static const int DEFAULT_ADDR_HASH = 12;
 
 
 /******* TYPE *********/
@@ -65,7 +65,10 @@ class SstGlobalTypes {
 
     public :
 
-        SstGlobalTypes();
+        SstGlobalTypes() {
+            LFLeafStruct::SetGlobalTypeArray(_globalTypingInfo);
+            LFLeafStruct::SetLocalTypeArray(_localTypingInfo);
+        }
 
         virtual ~SstGlobalTypes() { }
 
@@ -131,7 +134,7 @@ class SstAlignSym : public SymbolSubsection {
             _symbolInfo.clearAndDestroy();
         }
 
-        void Insert( SymbolStruct* );
+        int Insert( SymbolStruct* );
 
         bool IsInGlobalScope() {
             return symStack.isEmpty();
@@ -145,7 +148,7 @@ class SstAlignSym : public SymbolSubsection {
 
     private :
 
-        void InsertOneRecord( SymbolStruct* );
+        int InsertOneRecord( SymbolStruct* );
 
         static WCStack< SymbolStruct*, WCPtrSList<SymbolStruct> > symStack;
 
@@ -266,11 +269,11 @@ class SstGlobalSym : public SymbolSubsection {
             _symbolInfo.clearAndDestroy();
         }
 
-        void Insert( SymbolStruct* sym ) {
-            _symbolInfo.append(sym);
+        int Insert( SymbolStruct* sym ) {
+            return _symbolInfo.append(sym);
         }
 
-        void Put( ExeMaker&, const uint ) const;
+        void Put( ExeMaker&, const uint );
 
     private :
 

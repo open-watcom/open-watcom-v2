@@ -1,51 +1,46 @@
-c_dirs_root = $(vi_dir)\$(host_OS)
+c_dirs_root = $(vi_dir)/$(host_os)
+!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
+c_dirs_root = $(vi_dir)/unix
+!endif
 !ifdef curses
-c_dirs_root = $(vi_dir)\curses
+c_dirs_root = $(vi_dir)/curses
 !endif
 
 !ifdef sys_windowed
-! ifeq host_OS nt
-c_dirs_root = $(vi_dir)\nt;$(vi_dir)\win
+! ifeq host_os nt
+c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
 ! else
-c_dirs_root = $(vi_dir)\win
+c_dirs_root = $(vi_dir)/win
 ! endif
-c_dirs = $(vi_dir)\c;$(c_dirs_root);$(vi_dir)\dos;$(sdk_dir)\misc;$(vi_dir)\ctl
+c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(vi_dir)/ctl;$(watcom_dir)/c
 !else
-c_dirs = $(vi_dir)\c;$(c_dirs_root);$(vi_dir)\ui
+c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 !endif
 
 .c : $(c_dirs)
-
 .asm : $(c_dirs)
-
 
 !ifeq vi_trmem 1
 extra_c_flags_trmem = -dTRMEM
-!endif
-!ifeq release 1
-extra_c_flags_debug = -dNDEBUG
 !endif
 
 
 !ifdef is286
 extra_c_flags_i86_dos = -D__286__ -2
-!else ifdef vroomed
-extra_c_flags_i86_dos = -D__V__ -2
 !else
 extra_c_flags_i86_dos = -D__86__
 !endif
 
 extra_c_flags_i86_os2 = -2
 extra_c_flags_i86_qnx = -2
-extra_c_flags_i86_win = -fpc -zW -2 -zc
+extra_c_flags_i86_win = -zW -2 -zc
 
-extra_c_flags_i86 = $(extra_c_flags_i86_$(host_OS))
-
+extra_c_flags_i86 = $(extra_c_flags_i86_$(host_os))
 
 !ifdef curses
 extra_c_flags_386_dos = -D__PHAR__ -D__CURSES__
 !else
-extra_c_flags_386_dos = -D__PHAR__
+extra_c_flags_386_dos = -zff -D__4G__
 !endif
 
 !ifdef sys_windowed
@@ -54,32 +49,11 @@ extra_c_flags_axp = -D__WIN__
 !endif
 extra_c_flags_386_win = -zw -s
 
-extra_c_flags_386 = $(extra_c_flags_386_$(host_OS))
+extra_c_flags_386 = $(extra_c_flags_386_$(host_os))
 
-extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -dNOUSE3D=1 -ai
-
-.c.obj:
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@ -fo=.obj
-.c.ybj:
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@ -fo=.ybj
-
-!ifdef vroomed
-.c.ubj:
-        $(cc) -zu $(cflags) $(extra_c_flags_$[&) $[@ -fo=.ubj
-!else
-.c.ubj:
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@ -fo=.ubj
-!endif
-
-
-!ifeq host_CPU 386
-wasm_flags = -3
-!endif
-.asm.obj:
-        wasm $(wasm_flags) $[*
-#       masm $(masm_flags) /Mx /Zd $[*;
+extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -DNOUSE3D=1 -fh
 
 .ctl.ch:
-        $(datactl_dir)\parsectl $[@ $[&.ch Ctl_$^&
+        $(parsectl) $[@ $[&.ch Ctl_$^&
 .dyn.dh:
-        $(datactl_dir)\parsedyn $[@ $[&.dh Dyn_$^&
+        $(parsedyn) $[@ $[&.dh Dyn_$^&

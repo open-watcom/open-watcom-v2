@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stream I/O initializer.
 *
 ****************************************************************************/
 
@@ -38,34 +37,31 @@
 #include "rtdata.h"
 #include "exitwmsg.h"
 
-#if defined(__NETWARE__)
-extern void __ioalloc( FILE* );
-#endif
 
-void __InitFiles()
+void __InitFiles( void )
 {
-    __stream_link _WCI86NEAR *    ptr;
-    __stream_link *             link;
-    FILE *                      fp;
+    __stream_link _WCI86NEAR    *ptr;
+    __stream_link               *link;
+    FILE                        *fp;
 
     fp = _RWD_iob;
-    #if defined(__NETWARE__)
-        stdout->_flag &= ~( _IONBF | _IOLBF | _IOFBF );
-        stdout->_flag |= _IONBF;
-    #endif
-    stderr->_flag &= ~( _IONBF | _IOLBF | _IOFBF );
+#if defined( __NETWARE__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    stdout->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
+    stdout->_flag |= _IONBF;
+#endif
+    stderr->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
     stderr->_flag |= _IONBF;
     for( fp = _RWD_iob; fp->_flag != 0; ++fp ) {
-        #ifdef __NETWARE__
-            ptr = lib_malloc( sizeof( __stream_link ) );
-        #else
-            ptr = lib_nmalloc( sizeof( __stream_link ) );
-        #endif
+#ifdef __NETWARE__
+        ptr = lib_malloc( sizeof( __stream_link ) );
+#else
+        ptr = lib_nmalloc( sizeof( __stream_link ) );
+#endif
         if( ptr == NULL ) {
             link = lib_malloc( sizeof( __stream_link ) );
             if( link == NULL ) {
                 __fatal_runtime_error(
-                    "Not enough memory to allocate file structures\r\n", 1 );
+                    "Not enough memory to allocate file structures", 1 );
             }
         } else {
             link = ptr;
@@ -73,14 +69,10 @@ void __InitFiles()
         link->stream = fp;
         link->next = _RWD_ostream;
         _RWD_ostream = link;
-        #if defined(__NETWARE__)
-            __ioalloc( fp );    // allocates a buffer
-        #else
-            fp->_link = link;
-            fp->_link->_base = NULL;
-            fp->_link->_tmpfchar = 0;
-            fp->_link->_orientation = _NOT_ORIENTED;
-        #endif
+        fp->_link = link;
+        fp->_link->_base = NULL;
+        fp->_link->_tmpfchar = 0;
+        fp->_link->_orientation = _NOT_ORIENTED;
     }
     _RWD_cstream = NULL;
 }

@@ -123,7 +123,7 @@ static TYPE getThisBaseType( SYMBOL sym )
 
     base = NULL;
     if( sym != NULL ) {
-        scope = SymScope( sym );
+        scope = ScopeNearestNonTemplate( SymScope( sym ) );
         if( scope != NULL ) {
             class_type = ScopeClass( scope );
             if( class_type != NULL ) {

@@ -37,11 +37,19 @@ imp_mad_state_data      *MADState;
 
 mad_status      DIGENTRY MIInit(void)
 {
-    return( MS_OK );
+    mad_status  ms;
+
+    ms = RegInit();
+    if( ms != MS_OK ) return ( ms );
+    ms = DisasmInit();
+    if( ms == MS_OK ) return( ms );
+    return( ms );
 }
 
 void            DIGENTRY MIFini(void)
 {
+    DisasmFini();
+    RegFini();
 }
 
 unsigned        DIGENTRY MIStateSize( void )
@@ -52,8 +60,9 @@ unsigned        DIGENTRY MIStateSize( void )
 void            DIGENTRY MIStateInit( imp_mad_state_data *new )
 {
     memset( new, 0, sizeof( *new ) );
-    new->cpu_toggles = CT_HEX;
-    new->mmx_toggles = MT_HEX | MT_BYTE;
+    new->reg_state[CPU_REG_SET] = CT_HEX;
+    new->reg_state[MMX_REG_SET] = MT_BYTE | MT_SIGNED;
+    new->reg_state[XMM_REG_SET] = XT_BYTE | XT_SIGNED;
 }
 
 void            DIGENTRY MIStateSet( imp_mad_state_data *new )

@@ -36,6 +36,12 @@
 #define PB_DLLDBG_CLASS         "PB_DLLDBG_CLASS"
 #define APPNAME                 "DLL Debugger"
 
+#ifdef __NT__    
+    #define hinstance_error(x) ( (x) == NULL )
+#else        
+    #define hinstance_error(x) ( (x) <= HINSTANCE_ERROR )
+#endif
+
 int     PB_DEBUGGER_STUB_OK_TO_END;
 int     PB_DEBUGGER_GOT_DLL_LOADED;
 static char     *dllName;
@@ -59,7 +65,7 @@ void PB_DLL_DEBUGGING_MAIN_LINE( HWND hwnd ) {
     KillTimer( hwnd, TIMER_ID );
 }
 
-BOOL __export FAR PASCAL MainWndProc( HWND hwnd, UINT msg, UINT wparam,
+BOOL __export FAR WINAPI MainWndProc( HWND hwnd, UINT msg, UINT wparam,
                                     LONG lparam )
 {
     int         rc;
@@ -99,7 +105,7 @@ BOOL InitFirstInst( HANDLE hinst ) {
     return( RegisterClass( &wc ) );
 }
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     HWND        hwnd;
 
@@ -138,12 +144,12 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     dllinst = LoadLibrary( cmdline );
     dllName = cmdline;
     PB_DEBUGGER_GOT_DLL_LOADED = TRUE;
-    if( dllinst <= HINSTANCE_ERROR ) {
+    if( hinstance_error(dllinst) ) {
         PB_DEBUGGER_GOT_DLL_LOADED = FALSE;
         PostMessage( hwnd, WM_CLOSE, 0, 0 );
     }
     PB_DLL_DEBUGGING_MAIN_LINE( hwnd );
-    if( dllinst > HINSTANCE_ERROR ) {
+    if( !hinstance_error(dllinst) ) {
         FreeLibrary( dllinst );
     }
     return( 0 );

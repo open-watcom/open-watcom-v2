@@ -72,7 +72,7 @@ static gui_window *getFirstGUIParent( HWND hwnd )
 #ifdef __OS2_PM__
 int CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, ULONG fs )
 #else
-DWORD CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
+LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
 {
     WPI_MSG             message;
@@ -136,11 +136,13 @@ void GUIHookF1( void )
         // we cant use a system wide hook because they only can be
         // used in DLL's
         #if defined(__NT__) && !defined(WILLOWS)
-            F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1ProcInst,
+            F1HookHandle = SetWindowsHookEx( WH_MSGFILTER,
+                                             (HOOKPROC)F1ProcInst,
                                              GUIMainHInst,
                                              (DWORD)GetCurrentThreadId() );
         #else
-            F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1ProcInst,
+            F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, 
+                                             (HOOKPROC)F1ProcInst,
                                              GUIMainHInst,
                                              GetCurrentTask() );
         #endif

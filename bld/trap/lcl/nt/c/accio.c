@@ -29,17 +29,13 @@
 *
 ****************************************************************************/
 
-
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include "stdnt.h"
 
-#define OP_TRUNC        0x08
-
-unsigned ReqFile_get_config()
+unsigned ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -56,14 +52,14 @@ unsigned ReqFile_get_config()
 
 unsigned ReqRead_user_keyboard( void )
 {
-    read_user_keyboard_req      *acc;
-    read_user_keyboard_ret      *ret;
-    DWORD                       delay;
+    read_user_keyboard_req  *acc;
+    read_user_keyboard_ret  *ret;
+    DWORD                   delay;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     delay = acc->wait * 1000;
-//  if( delay == 0 ) delay = 10000;
+    //  if( delay == 0 ) delay = 10000;
     Sleep( delay );
 
     //NYI: get user input
@@ -74,15 +70,15 @@ unsigned ReqRead_user_keyboard( void )
 
 unsigned ReqFile_open( void )
 {
-    HANDLE              h;
-    file_open_req       *acc;
-    file_open_ret       *ret;
-    void                *buff;
-    unsigned            mode;
-    static int          mapAcc[] = { 0, 1, 2 };
+    HANDLE                  h;
+    file_open_req           *acc;
+    file_open_ret           *ret;
+    void                    *buff;
+    unsigned                mode;
+    static unsigned const   mapAcc[] = { 0, 1, 2 };
 
     acc = GetInPtr( 0 );
-    buff = GetInPtr( sizeof(*acc) );
+    buff = GetInPtr( sizeof( *acc ) );
 
     ret = GetOutPtr( 0 );
 
@@ -103,10 +99,12 @@ unsigned ReqFile_open( void )
         extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access,
                                         LPDWORD attr );
         extern void __GetNTShareAttr( int share, LPDWORD share_mode );
-        DWORD   share_mode,desired_access,attr;
+        DWORD   share_mode;
+        DWORD   desired_access;
+        DWORD   attr;
         DWORD   create_disp;
 
-        mode = mapAcc[ (0x3 & acc->mode) -1 ];
+        mode = mapAcc[ ( 0x3 & acc->mode ) - 1];
         __GetNTAccessAttr( mode & 0x7, &desired_access, &attr );
         __GetNTShareAttr( mode & 0x70, &share_mode );
         if( acc->mode & TF_CREATE ) {
@@ -114,27 +112,27 @@ unsigned ReqFile_open( void )
         } else {
             create_disp = OPEN_EXISTING;
         }
-        h = CreateFile( (LPTSTR) buff, desired_access, share_mode, 0,
+        h = CreateFile( ( LPTSTR ) buff, desired_access, share_mode, 0,
                     create_disp, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h == (HANDLE)-1 ) {
+        if( h == ( HANDLE ) - 1 ) {
             ret->err = GetLastError();
             h = 0;
         }
 
     }
-    ret->handle = (DWORD) h;
+    ret->handle = ( DWORD ) h;
     return( sizeof( *ret ) );
 }
 
 unsigned ReqFile_seek( void )
 {
-    DWORD               rc;
-    file_seek_req       *acc;
-    file_seek_ret       *ret;
+    DWORD           rc;
+    file_seek_req   *acc;
+    file_seek_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = SetFilePointer( (HANDLE) acc->handle, acc->pos, 0,
+    rc = SetFilePointer( ( HANDLE ) acc->handle, acc->pos, 0,
                         acc->mode );
     if( rc == -1 ) {
         ret->err = GetLastError();
@@ -147,12 +145,12 @@ unsigned ReqFile_seek( void )
 
 unsigned ReqFile_write( void )
 {
-    DWORD               bytes;
-    BOOL                rc;
-    file_write_req      *acc;
-    file_write_ret      *ret;
-    int                 len;
-    void                *buff;
+    DWORD           bytes;
+    BOOL            rc;
+    file_write_req  *acc;
+    file_write_ret  *ret;
+    DWORD           len;
+    void            *buff;
 
     acc = GetInPtr( 0 );
     buff = GetInPtr( sizeof( *acc ) );
@@ -160,7 +158,7 @@ unsigned ReqFile_write( void )
 
     len = GetTotalSize() - sizeof( *acc );
 
-    rc = WriteFile( (HANDLE) acc->handle, buff, len, &bytes, NULL );
+    rc = WriteFile( ( HANDLE )acc->handle, buff, len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -173,13 +171,13 @@ unsigned ReqFile_write( void )
 
 unsigned ReqFile_write_console( void )
 {
-    DWORD               bytes;
-    BOOL                rc;
-    file_write_console_req      *acc;
-    file_write_console_ret      *ret;
-    int                 len;
-    void                *buff;
-    HANDLE              handle;
+    DWORD                   bytes;
+    BOOL                    rc;
+    file_write_console_req  *acc;
+    file_write_console_ret  *ret;
+    DWORD                   len;
+    void                    *buff;
+    HANDLE                  handle;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -187,7 +185,7 @@ unsigned ReqFile_write_console( void )
     len = GetTotalSize() - sizeof( *acc );
 
     handle = GetStdHandle( STD_ERROR_HANDLE );
-    if( DebugeePid != NULL ) {
+    if( DebugeePid ) {
         //NYI: write to program screen
     } else {
         rc = WriteFile( handle, buff, len, &bytes, NULL );
@@ -204,16 +202,16 @@ unsigned ReqFile_write_console( void )
 
 unsigned ReqFile_read( void )
 {
-    DWORD               bytes;
-    BOOL                rc;
-    file_read_req       *acc;
-    file_read_ret       *ret;
-    void                *buff;
+    DWORD           bytes;
+    BOOL            rc;
+    file_read_req   *acc;
+    file_read_ret   *ret;
+    void            *buff;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
-    rc = ReadFile( (HANDLE) acc->handle, buff, acc->len, &bytes, NULL );
+    rc = ReadFile( ( HANDLE ) acc->handle, buff, acc->len, &bytes, NULL );
     if( !rc ) {
         ret->err = GetLastError();
         bytes = 0;
@@ -225,9 +223,9 @@ unsigned ReqFile_read( void )
 
 unsigned ReqFile_close( void )
 {
-    file_close_req      *acc;
-    file_close_ret      *ret;
-    BOOL                rc;
+    file_close_req  *acc;
+    file_close_ret  *ret;
+    BOOL            rc;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -237,8 +235,8 @@ unsigned ReqFile_close( void )
      * we do not close the file handle if it was a magical one that
      * we remembered from a DLL load
      */
-    if( !IsMagicalFileHandle( (HANDLE) acc->handle ) ) {
-        rc = CloseHandle( (HANDLE) acc->handle );
+    if( !IsMagicalFileHandle( ( HANDLE ) acc->handle ) ) {
+        rc = CloseHandle( ( HANDLE ) acc->handle );
         if( !rc ) {
             ret->err = GetLastError();
         }
@@ -248,8 +246,8 @@ unsigned ReqFile_close( void )
 
 unsigned ReqFile_erase( void )
 {
-    file_erase_ret      *ret;
-    char                *buff;
+    file_erase_ret  *ret;
+    char            *buff;
 
     buff = GetInPtr( sizeof( file_erase_req ) );
     ret = GetOutPtr( 0 );
@@ -277,9 +275,9 @@ unsigned ReqFile_string_to_fullpath( void )
 {
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
-    char                *name;
-    char                *fullname;
-    char                *ext_list;
+    char                        *name;
+    char                        *fullname;
+    char                        *ext_list;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
@@ -297,6 +295,7 @@ unsigned ReqFile_string_to_fullpath( void )
         }
         ret->err = FindFilePath( name, fullname, ext_list );
     }
-    if( ret->err != 0 ) *fullname = '\0';
+    if( ret->err != 0 )
+        *fullname = '\0';
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }

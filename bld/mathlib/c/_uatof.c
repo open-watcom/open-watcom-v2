@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Wide character version of atof().
 *
 ****************************************************************************/
 
@@ -33,4 +32,4 @@
 // this file should remain an indirected file
 // it is done this way to support the reuse of the source file
 #define __WIDECHAR__
-#include "ATOF.C"
+#include "atof.c"

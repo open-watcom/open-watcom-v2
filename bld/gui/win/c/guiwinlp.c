@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library main message loop.
 *
 ****************************************************************************/
 
@@ -42,6 +41,7 @@ int GUIWinMessageLoop( void )
     WPI_QMSG    msg;
 
     while( _wpi_getmessage( GUIMainHInst, &msg, NULLHANDLE, 0, 0 ) ) {
+
         _wpi_translatemessage( &msg );
         _wpi_dispatchmessage( GUIMainHInst, &msg );
     }

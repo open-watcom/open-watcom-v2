@@ -37,45 +37,49 @@ extern void             Out_b( unsigned_16 port, unsigned_8  value );
 extern void             Out_w( unsigned_16 port, unsigned_16 value );
 extern void             Out_d( unsigned_16 port, unsigned_32 value );
 
-#pragma aux In_b =              \
-        "in     al,dx"          \
+#pragma aux In_b =      \
+        "in     al,dx"  \
         parm    routine [ dx ] value [ al ];
 
-#pragma aux Out_b =                     \
-        "out    dx,al"                  \
+#pragma aux Out_b =     \
+        "out    dx,al"  \
         parm    routine [ dx ] [ al ];
 
 
-#pragma aux In_w =              \
-        "in     ax,dx"          \
+#pragma aux In_w =      \
+        "in     ax,dx"  \
         parm    routine [ dx ] value [ ax ];
 
-#pragma aux Out_w =                     \
-        "out    dx,ax"                  \
+#pragma aux Out_w =     \
+        "out    dx,ax"  \
         parm    routine [ dx ] [ ax ];
 
 
 #if defined(__386__)
-#pragma aux In_d =              \
-        "in     eax,dx"         \
+
+#pragma aux In_d =      \
+        "in     eax,dx" \
         parm    routine [ dx ] value [ eax ];
 
-#pragma aux Out_d =                     \
-        "out    dx,eax"                 \
+#pragma aux Out_d =     \
+        "out    dx,eax" \
         parm    routine [ dx ] [ eax ];
+
 #else
-#pragma aux In_d =              \
-        ".386"                  \
-        "in     eax,dx"         \
-        "mov    edx,eax"        \
-        "shr    edx,16"         \
+
+#pragma aux In_d =      \
+        ".386p"         \
+        "in     eax,dx" \
+        "mov    edx,eax"\
+        "shr    edx,16" \
         parm    routine [ dx ] value [ dx ax ];
 
-#pragma aux Out_d =                     \
-        ".386"                          \
-        "ror    eax,16"                 \
-        "mov    ax,cx"                  \
-        "ror    eax,16"                 \
-        "out    dx,eax"                 \
+#pragma aux Out_d =     \
+        ".386p"         \
+        "ror    eax,16" \
+        "mov    ax,cx"  \
+        "ror    eax,16" \
+        "out    dx,eax" \
         parm    routine [ dx ] [ cx ax ];
+
 #endif

@@ -1,3 +1,4 @@
+c$define INCL_DOSPROCESS
 c$define INCL_PM
 c$include os2.fap
 
@@ -466,7 +467,7 @@ c$pragma aux (__syscall) main_proc parm( value, value, value, value )
 
       frame_hwnd = WinCreateStdWindow( HWND_DESKTOP, WS_VISIBLE,
      &                flags, 'DrawDemo'//char(0),
-     &                'Draw a Picture'//char(0),
+     &                'Draw a Picture OS/2 Version'//char(0),
      &                WS_VISIBLE, 0, 200, Main_hwnd)
 
       ! If window could not be created, return 'failure'

@@ -1,0 +1,93 @@
+c *
+c * MENU.H
+c *
+        integer    SUBMENU_FILE
+        parameter (SUBMENU_FILE=51)
+        integer    SUBMENU_BOUNDARY
+        parameter (SUBMENU_BOUNDARY=52)
+        integer    SUBMENU_PATTERN
+        parameter (SUBMENU_PATTERN=53)
+        integer    SUBMENU_MOUSE
+        parameter (SUBMENU_MOUSE=54)
+        integer    SUBMENU_CONTROL
+        parameter (SUBMENU_CONTROL=55)
+        integer    SUBMENU_SCREEN
+        parameter (SUBMENU_SCREEN=56)
+        integer    SUBMENU_BITMAP
+        parameter (SUBMENU_BITMAP=57)
+
+        integer    MENU_SAVE
+        parameter (MENU_SAVE=601)
+        integer    MENU_LOAD
+        parameter (MENU_LOAD=602)
+        integer    MENU_ABOUT
+        parameter (MENU_ABOUT=603)
+
+        integer    MENU_WRAP_AROUND
+        parameter (MENU_WRAP_AROUND=102)
+        integer    MENU_BOUNDED_EDGES
+        parameter (MENU_BOUNDED_EDGES=103)
+        integer    MENU_NEW_RULES
+        parameter (MENU_NEW_RULES=104)
+
+        integer    MENU_PAUSE
+        parameter (MENU_PAUSE=201)
+        integer    MENU_RESUME
+        parameter (MENU_RESUME=202)
+        integer    MENU_FASTEST
+        parameter (MENU_FASTEST=203)
+
+        integer    MENU_CLEAR
+        parameter (MENU_CLEAR=301)
+        integer    MENU_RANDOM
+        parameter (MENU_RANDOM=302)
+        integer    MENU_GRID
+        parameter (MENU_GRID=303)
+
+
+        integer    MENU_ROTATE_P90
+        parameter (MENU_ROTATE_P90=501)
+        integer    MENU_ROTATE_M90
+        parameter (MENU_ROTATE_M90=502)
+        integer    MENU_ROTATE_180
+        parameter (MENU_ROTATE_180=503)
+        integer    MENU_REFLECT_X
+        parameter (MENU_REFLECT_X=504)
+        integer    MENU_REFLECT_Y
+        parameter (MENU_REFLECT_Y=505)
+
+        integer    MENU_SINGLE_STEP
+        parameter (MENU_SINGLE_STEP=701)
+        integer    MENU_SELECT
+        parameter (MENU_SELECT=702)
+        integer    MENU_FLIP_PATTERNS
+        parameter (MENU_FLIP_PATTERNS=703)
+
+        integer    MENU_TINY_BIT
+        parameter (MENU_TINY_BIT=801)
+        integer    MENU_SMALL_BIT
+        parameter (MENU_SMALL_BIT=802)
+        integer    MENU_MED_BIT
+        parameter (MENU_MED_BIT=803)
+        integer    MENU_LARGE_BIT
+        parameter (MENU_LARGE_BIT=804)
+        integer    MENU_HUGE_BIT
+        parameter (MENU_HUGE_BIT=805)
+
+        integer    MENU_PATTERN
+        parameter (MENU_PATTERN=1000)
+
+        integer    MAX_MENU_SIZE_X
+        parameter (MAX_MENU_SIZE_X=50)
+        integer    MAX_MENU_SIZE_Y
+        parameter (MAX_MENU_SIZE_Y=50)
+
+        integer    MIN_MENU_SIZE_X
+        parameter (MIN_MENU_SIZE_X=30)
+        integer    MIN_MENU_SIZE_Y
+        parameter (MIN_MENU_SIZE_Y=30)
+
+        integer    RES_MENU_BITMAP
+        parameter (RES_MENU_BITMAP=2)
+        integer    RES_MAIN_MENU
+        parameter (RES_MAIN_MENU=3)

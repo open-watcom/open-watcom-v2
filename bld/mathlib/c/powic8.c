@@ -35,9 +35,9 @@
 #include "mathcode.h"
 
 
-_WMRTLINK complex _IF_C8PowI( single a, single b, intstar4 i ) {
-//=============================================================
-
+_WMRTLINK complex _IF_C8PowI( single a, single b, intstar4 i )
+//============================================================
+{
 // Complex power to an integer exponent.
 
     single      t;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor routine for address of _psp global.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned (*__get_psp_ptr()) {
-    return &_psp;
+_WCRTLINK unsigned *__get_psp_ptr( void )
+{
+    return( &_psp );
 }

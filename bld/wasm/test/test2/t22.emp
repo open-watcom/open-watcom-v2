@@ -1,0 +1,4 @@
+
+FIXUPP(9c) len:000ah, chksum:70h(70)
+    0001h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0004h Seg   OFFSET       Frame: SI(1)     Target: EI(1)

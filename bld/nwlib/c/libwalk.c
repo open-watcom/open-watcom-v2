@@ -30,24 +30,17 @@
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
 
-void BadLibrary( char *name )
-/***************************/
-{
-    FatalError( ERR_BAD_LIBRARY, name );
-}
-
-
-void AllocFNameTab( char *name, libfile io, arch_header *arch )
-/*************************************************************/
+static void AllocFNameTab( char *name, libfile io, arch_header *arch )
+/********************************************************************/
 {
     MemFree( arch->fnametab );
     GetFileContents( name, io, arch, &arch->fnametab );
 }
 
-void AllocFFNameTab( char *name, libfile io, arch_header *arch )
-/**************************************************************/
+static void AllocFFNameTab( char *name, libfile io, arch_header *arch )
+/*********************************************************************/
 {
     MemFree( arch->ffnametab );
     GetFileContents( name, io, arch, &arch->ffnametab );
@@ -57,7 +50,7 @@ void AllocFFNameTab( char *name, libfile io, arch_header *arch )
 
 
 void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
-/**********************************************************************/
+/******************************************************************************/
 {
     ar_header           ar;
     arch_header         arch;
@@ -68,9 +61,7 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
     dict_count = 0;
     arch.fnametab = NULL;
     arch.ffnametab = NULL;
-    for( ;; ) {
-        bytes_read = LibRead( io, &ar, AR_HEADER_SIZE );
-        if( bytes_read == 0 ) break;
+    while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
         if( bytes_read != AR_HEADER_SIZE ) {
             BadLibrary( name );
         }
@@ -79,7 +70,7 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
         }
         GetARHeaderValues( &ar, &arch );
         pos = LibTell( io );
-        if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
+        if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == ' ' && ar.name[ 2 ] == ' ' ) {
             // Ignore symbol table.
 /*
             dict_count++;
@@ -90,20 +81,61 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
                 updateNewArchive( &arch );
             }
 */
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
+        } else if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == '/' && ar.name[ 2 ] == ' ' ) {
             AllocFNameTab( name, io, &arch );
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
+        } else if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == '/' && ar.name[ 2 ] == '/' ) {
             AllocFFNameTab( name, io, &arch );
         } else {
-            arch.name = GetARName( &ar, &arch );
+            arch.name = GetARName( io, &ar, &arch );
             arch.ffname = GetFFName( &arch );
             rtn( &arch, io );
             MemFree( arch.name );
             MemFree( arch.ffname );
         }
-        if( arch.size & 1 ) ++arch.size;
+        if( arch.size & 1 )
+            ++arch.size;
         LibSeek( io, pos + arch.size, SEEK_SET );
     }
     MemFree( arch.fnametab );
     MemFree( arch.ffnametab );
+}
+
+void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) )
+/*************************************************************************************/
+{
+    long            pagelen;
+    long            offset;
+    arch_header     arch;
+    char            buff[ MAX_IMPORT_STRING ];
+    int             len;
+    unsigned_16     rec_len;
+    unsigned_8      type;
+
+    if( LibRead( io, &type, 1 ) != 1 )
+        return; // nyi - FALSE?
+    if( LibRead( io, &rec_len, 2 ) != 2 )
+        return;
+    offset = GET_LE_16( rec_len );
+    pagelen = offset + 3;
+    if( Options.page_size == 0 ) {
+        Options.page_size = pagelen;
+    }
+    LibSeek( io, offset, SEEK_CUR );
+    NewArchHeader( &arch, name );
+    offset = LibTell( io );
+    while( LibRead( io, &type, 1 ) == 1 && ( type == CMD_THEADR ) ) {
+        LibSeek( io, 2, SEEK_CUR );
+        if( LibRead( io, &type, 1 ) != 1 )
+            break;
+        len = type;
+        if( LibRead( io, buff, len ) != len )
+            break;
+        buff[ len ] = '\0';
+        arch.name = buff;
+        LibSeek( io, offset, SEEK_SET );
+        rtn( &arch, io );
+        offset = LibTell( io );
+        offset = ( offset + pagelen - 1 ) & ~( pagelen - 1 );
+        LibSeek( io, offset, SEEK_SET );
+    }
 }

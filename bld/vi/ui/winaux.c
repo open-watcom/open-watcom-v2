@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 
@@ -48,7 +45,7 @@ int WindowAuxInfo( window_id wn, int type )
         return( 1 );
     }
 
-    w = Windows[ wn ];
+    w = Windows[wn];
     switch( type ) {
     case WIND_INFO_X1: rc = w->x1; break;
     case WIND_INFO_Y1: rc = w->y1; break;
@@ -81,7 +78,7 @@ void WindowAuxUpdate( window_id wn, int type, int data )
         return;
     }
 
-    w = Windows[ wn ];
+    w = Windows[wn];
     switch( type ) {
     case WIND_INFO_MIN_SLOT: w->min_slot = (char) data; break;
     case WIND_INFO_TEXT_COLOR: w->text_color = data; break;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public interface to the AUI (Advanced UI) library.
 *
 ****************************************************************************/
 
@@ -117,7 +116,7 @@ typedef unsigned long wnd_switches;
 
 
 typedef int             wnd_row;
-typedef char            wnd_class;
+typedef unsigned char   wnd_class;
 typedef unsigned long   wnd_update_list;
 
 typedef struct wnd_line_piece {
@@ -168,23 +167,23 @@ typedef int wnd_menu_id;
 #define MENU_INITIALIZE ((wnd_menu_id)-1)
 
 typedef struct {
-        wnd_row                 row;
-        int                     piece;
-        int                     col;
+    wnd_row             row;
+    int                 piece;
+    int                 col;
 } wnd_coord;
 
 typedef struct {
-        wnd_row                 row;
-        int                     piece;
-        int                     col;
-        int                     end_col;
+    wnd_row             row;
+    int                 piece;
+    int                 col;
+    int                 end_col;
 } wnd_dirt;
 
 typedef struct {
-        wnd_row                 row;
-        int                     piece;
-        int                     col;
-        int                     end;
+    wnd_row             row;
+    int                 piece;
+    int                 col;
+    int                 end;
 } wnd_subpiece;
 
 typedef struct {
@@ -231,62 +230,62 @@ typedef struct {
 #define WndPopupMenu( wnd ) __WND_FIELD( wnd, popupmenu )
 
 typedef struct aui_private_window_structure {
-        gui_window              *gui;
-        union { // to avoid global recompiles
-            struct aui_private_window_structure *__free_field;
-            struct {
-                char            row;
-                char            piece;
-            } button_down;
-        } u;
-        void                    *extra;
-        struct wnd_info         *info;
-        char                    *popitem;
-        char                    *searchitem;
-        wnd_coord               sel_start;
-        wnd_coord               sel_end;
-        wnd_coord               current;
-        wnd_row                 rows;
-        gui_coord               max_char;
-        gui_ord                 width;
-        gui_ord                 max_indent;
-        int                     top;
-        char                    button_down_screen_row;
-        char                    keyindex;
-        char                    keypiece;
-        wnd_class               class;
-        wnd_switches            switches;
-        int                     vscroll_pending;
-        int                     hscroll_pending;
-        wnd_row                 max_row;
-        char                    *select_chars;
-        int                     title_size;
-        gui_ord                 avg_char_x;
-        gui_ord                 mid_char_x;
-        int                     last_popup;
-        int                     current_col;
-        char                    num_popups;
-        gui_menu_struct         *popupmenu;
-        char                    dirtyrects;
-        wnd_dirt                dirty[1];
+    gui_window              *gui;
+    union { // to avoid global recompiles
+        struct aui_private_window_structure *__free_field;
+        struct {
+            char            row;
+            char            piece;
+        } button_down;
+    } u;
+    void                    *extra;
+    struct wnd_info         *info;
+    char                    *popitem;
+    char                    *searchitem;
+    wnd_coord               sel_start;
+    wnd_coord               sel_end;
+    wnd_coord               current;
+    wnd_row                 rows;
+    gui_coord               max_char;
+    gui_ord                 width;
+    gui_ord                 max_indent;
+    int                     top;
+    char                    button_down_screen_row;
+    unsigned char           keyindex;
+    unsigned char           keypiece;
+    wnd_class               class;
+    wnd_switches            switches;
+    int                     vscroll_pending;
+    int                     hscroll_pending;
+    wnd_row                 max_row;
+    char                    *select_chars;
+    int                     title_size;
+    gui_ord                 avg_char_x;
+    gui_ord                 mid_char_x;
+    int                     last_popup;
+    int                     current_col;
+    char                    num_popups;
+    gui_menu_struct         *popupmenu;
+    char                    dirtyrects;
+    wnd_dirt                dirty[1];
 } aui_private_window_structure;
 
 
 
-typedef bool (WNDCALLBACK)(a_window*,gui_event,void*);
-typedef void (WNDREFRESH)(a_window*);
-typedef void (WNDMENU)(a_window*,unsigned,int,int);
-typedef void (WNDMODIFY)(a_window *,int,int);
-typedef int (WNDSCROLL)(a_window*,int);
-typedef int (WNDNUMROWS)(a_window*);
-typedef int (WNDNEXTROW)(a_window*,int,int);
-typedef bool (WNDGETLINE)(a_window *wnd, wnd_row row,int piece,wnd_line_piece*);
-typedef void (WNDNOTIFY)(a_window *wnd, wnd_row row,int piece);
-typedef void (WNDBEGPAINT)(a_window *wnd,wnd_row row,int num);
-typedef void (WNDENDPAINT)(a_window *wnd,wnd_row row,int num);
-typedef a_window * (WNDOPEN)();
-typedef a_window *(WNDCREATE)(char*, struct wnd_info*, wnd_class,void*);
-typedef void (WNDCLOSE)(a_window*);
+typedef bool (WNDCALLBACK)( a_window *, gui_event, void * );
+typedef void (WNDREFRESH)( a_window * );
+typedef void (WNDMENU)( a_window *, unsigned, int, int );
+typedef void (WNDMODIFY)( a_window *, int, int );
+typedef int (WNDSCROLL)( a_window *, int );
+typedef int (WNDNUMROWS)( a_window * );
+typedef int (WNDNEXTROW)( a_window *, int, int );
+typedef bool (WNDGETLINE)( a_window *wnd, wnd_row row, int piece, wnd_line_piece * );
+typedef void (WNDNOTIFY)( a_window *wnd, wnd_row row, int piece );
+typedef void (WNDBEGPAINT)( a_window *wnd, wnd_row row, int num );
+typedef void (WNDENDPAINT)( a_window *wnd, wnd_row row, int num );
+typedef a_window * (WNDOPEN)( void );
+typedef a_window *(WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
+typedef void (WNDCLOSE)( a_window * );
 
 
 typedef struct wnd_info {
@@ -307,63 +306,63 @@ typedef struct wnd_info {
 } wnd_info;
 
 
-typedef char*           DLGPICKTEXT(void*,int);
+typedef char*           DLGPICKTEXT( void *, int );
 typedef int             GUIPICKER( char *, PICKCALLBACK * );
 extern int              DlgPickWithRtn( char *text, void *from, int def, DLGPICKTEXT *rtn, unsigned );
 extern int              DlgPickWithRtn2( char *text, void *from, int def, DLGPICKTEXT *rtn, unsigned, GUIPICKER * );
 extern int              DlgPick( char *text, char **from, int def, unsigned num );
 extern bool             DlgNew( char *text, char *buff, int buff_len );
-extern void             DlgOpen(char*,int,int,gui_control_info*,int,GUICALLBACK*,void*);
-extern void             ResDlgOpen(GUICALLBACK*,void*,int);
+extern void             DlgOpen( char *, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+extern void             ResDlgOpen( GUICALLBACK *, void *, int );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path,
                                        unsigned len, unsigned long flags );
 
-extern a_window         **WndFindOwner(a_window *);
-extern a_window         *WndFirst();
+extern a_window         **WndFindOwner( a_window * );
+extern a_window         *WndFirst( void );
 
-extern gui_ord          WndExtentX(a_window *,char *);
+extern gui_ord          WndExtentX( a_window *, char * );
 
-extern void             WndFreshAll(void);
-extern bool             WndStopRefresh(bool);
+extern void             WndFreshAll( void );
+extern bool             WndStopRefresh( bool );
 
-extern void             WndNoMemory(void);
-extern void             WndMemInit();
-extern void             WndMemFini();
-extern void             *WndAlloc(unsigned int );
-extern void             *WndRealloc(void*, unsigned int );
-extern void             WndFree(void *);
-extern void             *WndMustAlloc(unsigned int );
-extern void             *WndMustRealloc(void*,unsigned int );
-extern void             WndCreateFloatingPopup(a_window*,gui_point*,char,
-                                               gui_menu_struct*, int*);
+extern void             WndNoMemory( void );
+extern void             WndMemInit( void );
+extern void             WndMemFini( void );
+extern void             *WndAlloc( unsigned int );
+extern void             *WndRealloc( void *, unsigned int );
+extern void             WndFree( void * );
+extern void             *WndMustAlloc( unsigned int );
+extern void             *WndMustRealloc( void *, unsigned int );
+extern void             WndCreateFloatingPopup( a_window *, gui_point *, char,
+                                               gui_menu_struct *, int * );
 
-extern void             WndFixedThumb(a_window *);
-extern void             WndSetThumbPos(a_window *,int );
-extern void             WndSetThumbPercent(a_window *,int );
-extern void             WndSetThumb(a_window * );
+extern void             WndFixedThumb( a_window * );
+extern void             WndSetThumbPos( a_window *, int );
+extern void             WndSetThumbPercent( a_window *, int );
+extern void             WndSetThumb( a_window * );
 extern WNDSCROLL        WndScroll;
 extern WNDSCROLL        WndScrollAbs;
 
 
-extern wnd_row          WndCurrRow(a_window *);
-extern bool             WndHasCurrent(a_window *);
-extern void             WndNewCurrent(a_window *,wnd_row, int);
+extern wnd_row          WndCurrRow( a_window * );
+extern bool             WndHasCurrent( a_window * );
+extern void             WndNewCurrent( a_window *, wnd_row, int );
 extern void             WndMoveCurrent( a_window *wnd, wnd_row row, int piece );
 extern void             WndGetCurrent( a_window *, wnd_row *, int *);
-extern void             WndNoCurrent(a_window *);
-extern bool             WndFirstCurrent(a_window *);
-extern bool             WndLastCurrent(a_window *);
+extern void             WndNoCurrent( a_window * );
+extern bool             WndFirstCurrent( a_window * );
+extern bool             WndLastCurrent( a_window * );
 
-extern void             WndNoSelect(a_window *);
+extern void             WndNoSelect( a_window * );
 
-extern void             WndCleanUp(void);
-extern a_window         *WndFindActive(void);
+extern void             WndCleanUp( void );
+extern a_window         *WndFindActive( void );
 
-extern void             WndDestroy(a_window *);
-extern void             WndClose(a_window *);
-extern void             WndRestoreToFront(a_window *);
-extern void             WndToFront(a_window *); // won't restore an icon!
+extern void             WndDestroy( a_window * );
+extern void             WndClose( a_window * );
+extern void             WndRestoreToFront( a_window * );
+extern void             WndToFront( a_window * );   // won't restore an icon!
 
 extern void             WndCurrToGUIPoint( a_window *wnd, gui_point *point );
 
@@ -371,17 +370,17 @@ extern WNDCREATE        WndCreate;
 extern void             WndInitCreateStruct( wnd_create_struct * );
 extern a_window         *WndCreateWithStruct( wnd_create_struct * );
 extern a_window         *WndCreateWithStructAndMenuRes( wnd_create_struct *, int );
-extern void             WndShrinkToMouse( a_window *wnd,wnd_metrics*);
-extern bool             WndInit(char*);
-extern bool             WndInitWithMenuRes(char*, int );
-extern bool             WndFini(void);
+extern void             WndShrinkToMouse( a_window *wnd, wnd_metrics * );
+extern bool             WndInit( char * );
+extern bool             WndInitWithMenuRes( char *, int );
+extern bool             WndFini( void );
 extern bool             WndMainMenuProc( a_window *, unsigned );
 extern void             WndSetSrchItem( a_window *wnd, char *expr );
-extern bool             WndSearch(a_window *,bool,int);
-extern void             WndInitNumRows( a_window* );
+extern bool             WndSearch( a_window *, bool, int );
+extern void             WndInitNumRows( a_window * );
 extern void             WndRXError( int );
 
-extern void             WndFreshAll(void);
+extern void             WndFreshAll( void );
 extern a_window         *WndNext( a_window * );
 
 extern WNDCALLBACK      NoEventProc;
@@ -424,20 +423,20 @@ extern bool             WndProcMacro( a_window *wnd, unsigned key );
 extern  void            WndSetTitle( a_window *, char * );
 extern  int             WndGetTitle( a_window *wnd, char *data, int max_length );
 
-extern void             Ring(void);
+extern void             Ring( void );
 
-extern void             WndSysInit(void);
-extern void             WndDoInput(void);
-extern void             WndStartFreshAll();
-extern void             WndEndFreshAll();
-extern void             WndZapped(a_window*);
+extern void             WndSysInit( void );
+extern void             WndDoInput( void );
+extern void             WndStartFreshAll( void );
+extern void             WndEndFreshAll( void );
+extern void             WndZapped( a_window * );
 
-extern a_window         *WndFindClass(a_window *,wnd_class );
+extern a_window         *WndFindClass( a_window *, wnd_class );
 extern void             WndForAllClass( wnd_class class, void (*rtn)( a_window * ) );
 
-extern int              SpawnP( void (*func)(void*), void *parm );
-extern int              Spawn( void (*func)(void) );
-extern void             Suicide();
+extern int              SpawnP( void (*func)( void * ), void *parm );
+extern int              Spawn( void (*func)( void ) );
+extern void             Suicide( void );
 
 #define WND_ALNUM_CHAR  '@'
 #define WND_ALNUM_STR   "@"
@@ -446,8 +445,8 @@ extern  char            *WndSetIDChars( a_window *, char * );
 extern  bool            WndIDChar( a_window *, char ch );
 extern  bool            WndKeyChar( char ch );
 
-extern bool             WndCursorRight( a_window *wnd );
-extern bool             WndCursorLeft( a_window *wnd );
+extern void             WndCursorRight( a_window *wnd );
+extern void             WndCursorLeft( a_window *wnd );
 extern bool             WndTabLeft( a_window *wnd, bool wrap );
 extern bool             WndTabRight( a_window *wnd, bool wrap );
 
@@ -465,9 +464,9 @@ extern void             WndScrollBottom( a_window *wnd );
 extern void             WndCursorUp( a_window *wnd );
 extern void             WndScrollUp( a_window *wnd );
 extern void             WndSetVScrollRange( a_window *wnd, wnd_row rows );
-extern void             WndChooseNew(void);
-extern void             WndKeyPopUp(a_window *,gui_menu_struct *);
-extern void             WndPopUp(a_window *,gui_menu_struct *);
+extern void             WndChooseNew( void );
+extern void             WndKeyPopUp( a_window *, gui_menu_struct * );
+extern void             WndPopUp( a_window *, gui_menu_struct * );
 extern void             WndMenuIgnoreAll( a_window *wnd );
 extern void             WndMenuRespectAll( a_window *wnd );
 extern void             WndMenuEnableAll( a_window *wnd );
@@ -482,18 +481,18 @@ extern void             WndEnableMainMenu( int id, bool enable );
 extern  void            WndPieceDirty( a_window *wnd, wnd_row row, int piece );
 extern void             WndRowDirty( a_window *wnd, wnd_row row );
 extern void             WndRowDirtyImmed( a_window *wnd, wnd_row row );
-extern void             WndDirty(a_window*);
-extern void             WndDirtyCurr(a_window*);
+extern void             WndDirty( a_window * );
+extern void             WndDirtyCurr( a_window * );
 extern void             WndSetColours( a_window *, int, gui_colour_set *);
 extern void             WndBackGround( gui_colour colour );
 extern void             WndDirtyRect( a_window *wnd, gui_ord x, wnd_row y,
                                       gui_ord width, wnd_row height );
 
-extern void             WndReDrawAll();
+extern void             WndReDrawAll( void );
 extern void             WndSetIcon( a_window *, gui_resource *);
 extern void             WndSetMainMenuText( gui_menu_struct * );
-extern void             WndShowAll();
-extern void             WndShowWndMain();
+extern void             WndShowAll( void );
+extern void             WndShowWndMain( void );
 extern void             WndInitWndMain( wnd_create_struct *);
 extern void             WndShowWindow( a_window *wnd );
 extern void             WndResizeWindow( a_window *wnd, gui_rect * );
@@ -504,29 +503,30 @@ extern bool             WndIsMaximized( a_window *wnd );
 extern void             WndRestoreWindow( a_window *wnd );
 extern void             WndGetRect( a_window *wnd, gui_rect *rect );
 
-extern void             WndStartChoose(a_window *wnd);
+extern void             WndStartChoose( a_window *wnd );
 
-extern void             WndCreateToolBar(gui_ord,bool,int,gui_toolbar_struct*);
-extern bool             WndHaveToolBar();
-extern void             WndCloseToolBar();
-extern gui_ord          WndToolHeight();
-extern bool             WndToolFixed();
+extern void             WndCreateToolBar( gui_ord, bool, int, gui_toolbar_struct * );
+extern void             WndCreateToolBarWithTips( gui_ord, bool, int, gui_toolbar_struct * );
+extern bool             WndHaveToolBar( void );
+extern void             WndCloseToolBar( void );
+extern gui_ord          WndToolHeight( void );
+extern bool             WndToolFixed( void );
 
 extern void             *WndHourGlass( void * );
-extern void             *WndHourCursor();
-extern void             *WndArrowCursor();
+extern void             *WndHourCursor( void );
+extern void             *WndArrowCursor( void );
 
 extern void             WndCreateStatusWindow( gui_colour_set * );
 extern bool             WndStatusText( char * );
-extern bool             WndHaveStatusWindow();
-extern void             WndCloseStatusWindow();
+extern bool             WndHaveStatusWindow( void );
+extern void             WndCloseStatusWindow( void );
 
-extern void             WndMainResized();
-extern bool             WndShutDownHook(void);
-extern bool             WndQueryEndSessionHook(void);
-extern void             WndEndSessionHook(void);
-extern void             WndResizeHook(a_window*);
-extern void             WndFontHook(a_window*);
+extern void             WndMainResized( void );
+extern bool             WndShutDownHook( void );
+extern bool             WndQueryEndSessionHook( void );
+extern void             WndEndSessionHook( void );
+extern void             WndResizeHook( a_window * );
+extern void             WndFontHook( a_window * );
 
 extern void             WndSetTitleSize( a_window *, int );
 extern void             WndForcePaint( a_window *wnd );
@@ -539,8 +539,8 @@ extern bool             WndSetFontInfo( a_window *,char* );
 extern bool             WndSetSysFont( a_window *, bool fixed );
 extern char             *WndGetFontInfo( a_window * );
 
-extern void             *WndInitHistory(void);
-extern void             WndFiniHistory(void*);
+extern void             *WndInitHistory( void );
+extern void             WndFiniHistory( void * );
 extern bool             WndNextFromHistory( save_area *save, char *cmd );
 extern bool             WndPrevFromHistory( save_area *save, char *cmd );
 extern void             WndSaveToHistory( save_area *save, char *cmd );
@@ -560,12 +560,12 @@ extern void     WndPosToRect( wnd_posn *posn, gui_rect *rect, gui_coord *scale )
 typedef bool (WNDCLICKHOOK)( a_window *wnd, unsigned id );
 extern void WndInstallClickHook( WNDCLICKHOOK *rtn );
 
-extern void     WndForceRefresh(void);
+extern void     WndForceRefresh( void );
 extern void     WndSetWndMainSize( wnd_create_struct *info );
 
 typedef int wnd_gadget_type;
 #define WND_GADGET_NONE ((wnd_gadget_type)-1)
-extern void             WndGadgetInit();
+extern void             WndGadgetInit( void );
 extern void             WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type, unsigned length );
 extern void             WndGetGadgetSize( wnd_gadget_type type, gui_coord * );
 extern wnd_gadget_type  WndGadgetSecondary;
@@ -589,7 +589,7 @@ extern char             WndBackgroundChar;
 #define WndSetPopUpMenu( wnd, x, num ) { \
     __WND_FIELD( wnd, num_popups ) = num; \
     __WND_FIELD( wnd, popupmenu ) = x; }
-#define DefPopUp( x ) ArraySize( x ), &x
+#define DefPopUp( x ) ArraySize( x ), x
 #define NoPopUp       0, NULL
 
 #define WndMenuSize( x ) ArraySize( x )

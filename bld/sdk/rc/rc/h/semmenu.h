@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions for processing menu resources.
 *
 ****************************************************************************/
 
@@ -34,6 +33,8 @@
 #define SEMMENU_INCLUDED
 
 #include "scan.h"
+
+#include "os2res.h"
 
 /**** Constant Definitions ****/
 
@@ -85,6 +86,21 @@ typedef struct FullMenuItem {
     } item;
 } FullMenuItem;
 
+typedef struct FullMenuOS2 {
+    struct FullMenuItemOS2 *       head;
+    struct FullMenuItemOS2 *       tail;
+} FullMenuOS2;
+
+typedef FullMenuOS2 * FullMenuPtrOS2;
+
+typedef struct FullMenuItemOS2 {
+    struct FullMenuItemOS2 *    next;
+    struct FullMenuItemOS2 *    prev;
+    MenuItemType                type;
+    MenuItemOS2                 item;
+    FullMenuPtrOS2              submenu;
+} FullMenuItemOS2;
+
 /**** Semantic routines ****/
 
 MenuFlags SemAddFirstMenuOption( uint_8 token );
@@ -92,5 +108,11 @@ MenuFlags SemAddMenuOption( MenuFlags oldflags, uint_8 token );
 FullMenu * SemNewMenu( FullMenuItem firstitem );
 FullMenu * SemAddMenuItem( FullMenu * currmenu, FullMenuItem curritem );
 void SemWriteMenu( WResID * name, ResMemFlags flags, FullMenu * menu, uint_16 );
+
+MenuFlags SemOS2AddFirstMenuOption( uint_8 token );
+MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, uint_8 token );
+FullMenuOS2 * SemOS2NewMenu( FullMenuItemOS2 firstitem );
+FullMenuOS2 * SemOS2AddMenuItem( FullMenuOS2 * currmenu, FullMenuItemOS2 curritem );
+void SemOS2WriteMenu( WResID * name, ResMemFlags flags, FullMenuOS2 * menu, uint_16, uint_32 codepage );
 
 #endif

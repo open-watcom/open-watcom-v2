@@ -78,6 +78,11 @@ global char    *DataSegName;   /* name of the data segment */
 global char    *CodeClassName; /* name of the code class */
 global char    *ModuleName;    /* name of module */
 global char    *ObjectFileName;/* name of object file */
+global char    *DependFileName;/* name of the autodep file */
+global char    *DependHeaderPath;/* name of paths for headers without one */
+global char    *TargetFileName;/* name of the target in the autodep file */
+global char    *SrcDepFileName;/* name of source depend in autodep file */
+global char     ForceSlash;    /* slash character to force autodep to */
 global unsigned PackAmount;    /* current packing alignment for fields */
 global unsigned GblPackAmount; /* packing alignment given on command line */
 

@@ -30,19 +30,17 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
-#include "keys.h"
 
 /*
  * Cut - cut out a block of text
  */
-int Cut( linenum s, int scol, linenum e, int ecol, int delflag )
+vi_rc Cut( linenum s, int scol, linenum e, int ecol, int delflag )
 {
-    fcb         *sfcb,*efcb;
+    fcb_list    fcblist;
     line        *cline;
-    int         i,rc,j;
+    int         i, j;
+    vi_rc       rc;
 
     // bloody computers!
     ecol++;
@@ -50,53 +48,53 @@ int Cut( linenum s, int scol, linenum e, int ecol, int delflag )
     /*
      * get entire range
      */
-    rc = GetCopyOfLineRange( s, e, &sfcb, &efcb );
-    if( rc ) {
+    rc = GetCopyOfLineRange( s, e, &fcblist );
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 
     /*
      * add un-deleted part of first line to work line
      */
-    cline = sfcb->line_head;
+    cline = fcblist.head->lines.head;
     strcpy( WorkLine->data, cline->data );
     WorkLine->data[scol] = 0;
 
     /*
      * prune start line
      */
-    sfcb->byte_cnt -= cline->len;
-    for( i=scol;i<=cline->len;i++ ) {
-        cline->data[i-scol] = cline->data[i];
+    fcblist.head->byte_cnt -= cline->len;
+    for( i = scol; i <= cline->len; i++ ) {
+        cline->data[i - scol] = cline->data[i];
     }
     cline->len = strlen( cline->data );
-    sfcb->byte_cnt += cline->len;
+    fcblist.head->byte_cnt += cline->len;
 
     /*
      * add un-deleted part of last line to work line
      */
-    cline = efcb->line_tail;
+    cline = fcblist.tail->lines.tail;
     j = strlen( WorkLine->data );
-    for( i=ecol;i<=cline->len;i++ ) {
-        WorkLine->data[i-ecol+j] = cline->data[i];
+    for( i = ecol; i <= cline->len; i++ ) {
+        WorkLine->data[i - ecol + j] = cline->data[i];
     }
     WorkLine->len = strlen( WorkLine->data );
 
     /*
      * prune last line
      */
-    efcb->byte_cnt -= cline->len;
+    fcblist.tail->byte_cnt -= cline->len;
     cline->data[ecol] = 0;
     cline->len = strlen( cline->data );
-    efcb->byte_cnt += cline->len;
+    fcblist.tail->byte_cnt += cline->len;
 
-    AddFcbsToSavebuf( sfcb, efcb, FALSE );
+    AddFcbsToSavebuf( &fcblist, FALSE );
 
     /*
      * check if just yanking; if so, then go back
      */
     if( !delflag ) {
-        LineYankMessage( s,e );
+        LineYankMessage( s, e );
         return( ERR_NO_ERR );
     }
 
@@ -105,7 +103,7 @@ int Cut( linenum s, int scol, linenum e, int ecol, int delflag )
      * set to first line
      */
     rc = SaveAndResetFilePos( s );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         EndUndoGroup( UndoStack );
         return( rc );
     }
@@ -122,8 +120,8 @@ int Cut( linenum s, int scol, linenum e, int ecol, int delflag )
     /*
      * delete all lines but first
      */
-    rc = DeleteLineRange( s+1, e, 0 );
-    if( rc ) {
+    rc = DeleteLineRange( s + 1, e, 0 );
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 

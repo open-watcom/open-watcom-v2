@@ -30,23 +30,19 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
 #include "vi.h"
 
 /*
  * ReadDataFile - do just that
  */
-int ReadDataFile( char *file, int *cnt, char **buffer, int **vallist,
-                        bool hasvals )
+vi_rc ReadDataFile( char *file, char **buffer, bool (*fn_alloc)( int ),
+                  bool (*fn_save)( int, char* ) )
 {
     GENERIC_FILE        gf;
-    int                 i,dcnt,len,size;
-    char                token[MAX_STR],buff[MAX_STR];
+    int                 i, dcnt, len, size;
+    char                token[MAX_STR], buff[MAX_STR];
     char                *buffdata;
-    int                 *valdata;
+    bool                hasvals;
 
     /*
      * get file and buffer
@@ -58,23 +54,19 @@ int ReadDataFile( char *file, int *cnt, char **buffer, int **vallist,
     /*
      * get counts
      */
-    if( SpecialFgets( buff,MAX_STR-1,&gf ) < 0 ) {
+    if( SpecialFgets( buff, MAX_STR - 1, &gf ) < 0 ) {
         SpecialFclose( &gf );
         return( ERR_INVALID_DATA_FILE );
     }
     dcnt = atoi( buff );
-    if( hasvals ) {
-        valdata = MemAlloc( dcnt * sizeof( int ) );
-    } else {
-        valdata = NULL;
-    }
+    hasvals = fn_alloc( dcnt );
     buffdata = NULL;
     size = 0;
 
     /*
      * read all tokens
      */
-    for( i=0;i<dcnt;i++ ) {
+    for( i = 0; i < dcnt; i++ ) {
 
         len = SpecialFgets( buff, sizeof( buff ) - 1, &gf );
         if( len < 0 ) {
@@ -88,10 +80,10 @@ int ReadDataFile( char *file, int *cnt, char **buffer, int **vallist,
                 return( ERR_INVALID_DATA_FILE );
             }
         } else {
-            memcpy( token, buff, len+1 );
+            memcpy( token, buff, len + 1 );
         }
         len++;
-        buffdata = MemReAlloc( buffdata, size + len + 1);
+        buffdata = MemReAlloc( buffdata, size + len + 1 );
         memcpy( &buffdata[size], token, len );
         size += len;
         buffdata[size] = 0;
@@ -100,17 +92,11 @@ int ReadDataFile( char *file, int *cnt, char **buffer, int **vallist,
                 SpecialFclose( &gf );
                 return( ERR_INVALID_DATA_FILE );
             }
-            valdata[i] = atoi( token );
+            fn_save( i, token );
         }
-
     }
-
     SpecialFclose( &gf );
-
     *buffer = buffdata;
-    *vallist = valdata;
-    *cnt = dcnt;
-
     return( ERR_NO_ERR );
 
 } /* ReadDataFile */

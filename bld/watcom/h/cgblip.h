@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <stdio.h>
 
 #define SHMEM_NAME      "WATCOM$CG$STATISTICS"
 
@@ -38,7 +38,7 @@
 
 typedef struct {
     char        debug_info;             // do we have debug info
-    char        src_name[ _MAX_PATH ];  // name of src file currently genning code for
+    char        src_name[ PATH_MAX+1 ]; // name of src file currently genning code for
     unsigned_32 src_line;               // line no we are on in current source file
 } debug_info;
 
@@ -51,7 +51,7 @@ typedef struct {
 } blip_info;
 
 typedef struct {
-    char        file_name[ _MAX_PATH ]; // name of file being compiled
+    char        file_name[ PATH_MAX+1 ];// name of file being compiled
     char        rtn_name[ MAX_RTN ];    // name of routine being genned
     debug_info  debug;
     mem_info    mem;

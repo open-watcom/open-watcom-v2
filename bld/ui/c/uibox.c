@@ -96,8 +96,8 @@ void intern blowup( register BUFFER     *bptr,
     }
 }
 
-void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, char *title )
-/****************************************************************/
+void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
+/**********************************************************************/
 {
     int         length;
     int         col;

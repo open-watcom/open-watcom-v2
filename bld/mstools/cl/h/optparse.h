@@ -24,27 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Include prototypes for generated parsing routines.
 *
 ****************************************************************************/
 
 
-#ifndef _OPTPARSE_H
-#define _OPTPARSE_H
+#ifndef OPTPARSE_H_INCLUDED
+#define OPTPARSE_H_INCLUDED
 
 #include "system.h"
 
 
 #if defined(__TARGET_386__)
-    #include "optdata.386"
+    #include "optp386h.gh"
 #elif defined(__TARGET_AXP__)
-    #include "optdata.axp"
+    #include "optpaxph.gh"
 #elif defined(__TARGET_PPC__)
-    #include "optdata.ppc"
+    #include "optpppch.gh"
 #else
     #error Unrecognized CPU type
 #endif
+
+void    OPT_INIT( OPT_STORAGE *data );
+void    OPT_FINI( OPT_STORAGE *data );
+int     OPT_PROCESS( OPT_STORAGE *data );
 
 
 #endif

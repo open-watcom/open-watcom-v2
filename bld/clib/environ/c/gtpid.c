@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getpid() for DOS and Win16.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include "rtdata.h"
 
 
-_WCRTLINK int getpid()                  /* get process id */
-    {
-        return( _RWD_psp );
-    }
+_WCRTLINK int getpid( void )            /* get process id */
+{
+    return( _RWD_psp );
+}

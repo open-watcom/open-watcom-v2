@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Miscellaneous BIOS services, 32-bit version.
 ;*
 ;*****************************************************************************
 
@@ -43,19 +42,11 @@ include struct.inc
 ;unsigned __ibm_bios_printer(unsigned __service,unsigned __port,unsigned __data);
 ;unsigned __ibm_bios_serialcom(unsigned __service,unsigned __port,unsigned __data);
 
-        if __WASM__ ge 100
-            xdefp   "C",__ibm_bios_equiplist
-            xdefp   "C",__ibm_bios_keybrd
-            xdefp   "C",__ibm_bios_memsize
-            xdefp   "C",__ibm_bios_printer
-            xdefp   "C",__ibm_bios_serialcom
-        else
-            xdefp   <"C",__ibm_bios_equiplist>
-            xdefp   <"C",__ibm_bios_keybrd>
-            xdefp   <"C",__ibm_bios_memsize>
-            xdefp   <"C",__ibm_bios_printer>
-            xdefp   <"C",__ibm_bios_serialcom>
-        endif
+        xdefp   "C",__ibm_bios_equiplist
+        xdefp   "C",__ibm_bios_keybrd
+        xdefp   "C",__ibm_bios_memsize
+        xdefp   "C",__ibm_bios_printer
+        xdefp   "C",__ibm_bios_serialcom
 
         defp    __ibm_bios_equiplist
 ;

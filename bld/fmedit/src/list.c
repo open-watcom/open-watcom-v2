@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to handle the operations on a LIST.
 *
 ****************************************************************************/
 
-
-
-/* LIST.C - routines to handle the operations on a LIST */
 
 #include <windows.h>
 
@@ -42,13 +38,11 @@
 #include "list.h"
 #include "global.h"
 
-void WINEXP ListAddElt( LIST ** head, OBJPTR obj )
-/************************************************/
-
-/* add a new element to the list */
-
-  {
-    LIST * new;
+void WINEXP ListAddElt( LIST **head, OBJPTR obj )
+/***********************************************/
+{
+    /* add a new element to the list */
+    LIST    *new;
 
     new = EdAlloc( sizeof( LIST ) );
     new->elt = obj;
@@ -58,62 +52,52 @@ void WINEXP ListAddElt( LIST ** head, OBJPTR obj )
         (*head)->prev = new;
     }
     *head = new;
-  }
+}
 
 
-void WINEXP ListFree( LIST * lst )
-/*********************************/
-
-/* free the passed list */
-
-  {
-    LIST * next;
+void WINEXP ListFree( LIST *lst )
+/*******************************/
+{
+    /* free the passed list */
+    LIST    *next;
 
     while( lst != NULL ) {
         next = lst->next;
         EdFree( lst );
         lst = next;
     }
-  }
+}
 
 
-OBJPTR WINEXP ListElement( LIST * lst )
-/*************************************/
-
-/* return the first elt of the list */
-
-  {
+OBJPTR WINEXP ListElement( LIST *lst )
+/************************************/
+{
+    /* return the first elt of the list */
     return( lst->elt );
-  }
+}
 
 
-LIST * WINEXP ListNext( LIST * curr )
-/***********************************/
-
-/* return the next element of the list */
-
-  {
+LIST * WINEXP ListNext( LIST *curr )
+/**********************************/
+{
+    /* return the next element of the list */
     return( curr->next );
-  }
+}
 
 
-LIST * WINEXP ListPrev( LIST * curr )
-/***********************************/
-
-/* return the next element of the list */
-
-  {
+LIST * WINEXP ListPrev( LIST *curr )
+/**********************************/
+{
+    /* return the next element of the list */
     return( curr->prev );
-  }
+}
 
 
-void WINEXP ListRemoveElt( LIST ** lst, OBJPTR obj )
-/***************************************************/
-
-/* delete the object from the list */
-
-  {
-    LIST * node;
+void WINEXP ListRemoveElt( LIST **lst, OBJPTR obj )
+/*************************************************/
+{
+    /* delete the object from the list */
+    LIST *node;
 
     for( node = *lst; node != NULL; node = node->next ) {
         if( node->elt == obj ) {
@@ -129,28 +113,24 @@ void WINEXP ListRemoveElt( LIST ** lst, OBJPTR obj )
             break;
         }
     }
-  }
+}
 
-LIST * WINEXP ListConsume( LIST * curr )
-/***************************************/
-
-/* free the current element and return the next element */
-
-  {
-    LIST * next;
+LIST * WINEXP ListConsume( LIST *curr )
+/*************************************/
+{
+    /* free the current element and return the next element */
+    LIST *next;
 
     next = curr->next;
     EdFree( curr );
     return( next );
-  }
+}
 
 
-LIST * WINEXP ListFindElt( LIST * l, OBJPTR  elt )
-/************************************************/
-
-/* find the given element in the list */
-
-  {
+LIST * WINEXP ListFindElt( LIST *l, OBJPTR elt )
+/**********************************************/
+{
+    /* find the given element in the list */
     while( l != NULL ) {
         if( l->elt == elt ) {
             break;
@@ -158,30 +138,26 @@ LIST * WINEXP ListFindElt( LIST * l, OBJPTR  elt )
         l = l->next;
     }
     return( l );
-  }
+}
 
 
-LIST * WINEXP ListCopy( LIST * l )
-/********************************/
-
-/* make a copy of the passed list */
-
-  {
-    LIST * head;
+LIST * WINEXP ListCopy( LIST *l )
+/*******************************/
+{
+    /* make a copy of the passed list */
+    LIST *head;
 
     head = NULL;
     for( ; l != NULL; l = l->next ) {
         ListAddElt( &head, l->elt );
     }
     return( head );
-  }
+}
 
-int WINEXP ListCount( LIST * l )
-/******************************/
-
-/* count the number of elements in the list */
-
-  {
+int WINEXP ListCount( LIST *l )
+/*****************************/
+{
+    /* count the number of elements in the list */
     int count;
 
     count = 0;
@@ -189,15 +165,13 @@ int WINEXP ListCount( LIST * l )
         ++count;
     }
     return( count );
-  }
+}
 
-void WINEXP ListInsertElt( LIST * prev, OBJPTR obj )
-/**************************************************/
-
-/* add a new element to the list */
-
-  {
-    LIST * new;
+void WINEXP ListInsertElt( LIST *prev, OBJPTR obj )
+/*************************************************/
+{
+    /* add a new element to the list */
+    LIST *new;
 
     new = EdAlloc( sizeof( LIST ) );
     new->elt = obj;
@@ -207,15 +181,14 @@ void WINEXP ListInsertElt( LIST * prev, OBJPTR obj )
     if( new->next != NULL ) {
         new->next->prev = new;
     }
-  }
+}
 
 
-void WINEXP ListMerge( LIST ** destlist, LIST * src)
-/**************************************************/
-
-  {
-    LIST * curr;
-    LIST * last;
+void WINEXP ListMerge( LIST **destlist, LIST *src )
+/*************************************************/
+{
+    LIST *curr;
+    LIST *last;
 
     last = NULL;
     if( *destlist == NULL ) {
@@ -227,5 +200,4 @@ void WINEXP ListMerge( LIST ** destlist, LIST * src)
     if( src != NULL ) {
         src->prev = curr;
     }
-    return;
-  }
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Reduce memory references to one per instruction.
 *
 ****************************************************************************/
 
@@ -33,20 +32,21 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
+#include "procdef.h"
+#include "addrname.h"
+#include "x87.h"
+#include "makeins.h"
+
 
 extern  block           *HeadBlock;
 
-extern  bool            FPIsStack(name*);
 extern  bool            IndexOkay(instruction*,name*);
 extern  bool            RTLeaveOp2(instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  void            FPSetStack(name*);
 extern  void            FixFPConsts(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
-extern  type_class_def  FPInsClass(instruction*);
 
 static byte NumTab[LAST_OP-FIRST_OP+1] = {
 /*****************************************
@@ -88,7 +88,7 @@ static byte NumTab[LAST_OP-FIRST_OP+1] = {
         1,                                      /* OP_SINH */
         1,                                      /* OP_TANH */
         1,                                      /* OP_PTR_TO_NATIVE */
-        1,                                      /* OP_PTR_TO_FORIEGN */
+        1,                                      /* OP_PTR_TO_FOREIGN */
         0,                                      /* OP_SLACK_19 */
         1,                                      /* OP_CONVERT*/
         1,                                      /* OP_LA*/

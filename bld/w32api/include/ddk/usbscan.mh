@@ -1,0 +1,197 @@
+/*
+ *  usbscan.h   USB scanner definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _USBSCAN_H_
+#define _USBSCAN_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Maximum number of pipes */
+#if (NTDDI_VERSION >= 0x05000000)
+    #ifndef MAX_NUM_PIPES
+        #define MAX_NUM_PIPES   8
+    #endif
+#endif
+
+/* Bulk in flag */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define BULKIN_FLAG 0x80
+#endif
+
+/* USB scanner device I/O control constants */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define FILE_DEVICE_USB_SCAN    0x8000
+    #define IOCTL_INDEX             0x0800
+#endif
+
+/* USB scanner device I/O control codes */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define IOCTL_GET_VERSION \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_CANCEL_IO \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 1, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_WAIT_ON_DEVICE_EVENT \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 2, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_READ_REGISTERS \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 3, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_WRITE_REGISTERS \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 4, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_GET_CHANNEL_ALIGN_RQST \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 5, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_GET_DEVICE_DESCRIPTOR \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 6, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_RESET_PIPE \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 7, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_GET_USB_DESCRIPTOR \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 8, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_SEND_USB_REQUEST \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 9, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+    #define IOCTL_GET_PIPE_CONFIGURATION \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 10, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    #define IOCTL_SET_TIMEOUT \
+        CTL_CODE( FILE_DEVICE_USB_SCAN, IOCTL_INDEX + 11, METHOD_BUFFERED, \
+        FILE_ANY_ACCESS )
+#endif
+
+/* Alternate names for a couple of constants */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define ALL                 ALL_PIPE
+    #define IOCTL_ABORT_PIPE    IOCTL_CANCEL_IO
+#endif
+
+/* Driver version */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _DRV_VERSION {
+    unsigned    major;
+    unsigned    minor;
+    unsigned    internal;
+} DRV_VERSION;
+typedef DRV_VERSION *PDRV_VERSION;
+#endif
+
+/* I/O block */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _IO_BLOCK {
+    unsigned    uOffset;
+    unsigned    uLength;
+    PUCHAR      pbyData;
+    unsigned    uIndex;
+} IO_BLOCK;
+typedef IO_BLOCK    *PIO_BLOCK;
+#endif
+
+/* I/O block (extended version) */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _IO_BLOCK_EX {
+    unsigned    uOffset;
+    unsigned    uLength;
+    PUCHAR      pbyData;
+    unsigned    uIndex;
+    UCHAR       bRequest;
+    UCHAR       bmRequestType;
+    UCHAR       fTransferDirectionIn;
+} IO_BLOCK_EX;
+typedef IO_BLOCK_EX *PIO_BLOCK_EX;
+#endif
+
+/* Channel information */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _CHANNEL_INFO {
+    unsigned    EventChannelSize;
+    unsigned    uReadDataAlignment;
+    unsigned    uWriteDataAlignment;
+} CHANNEL_INFO;
+typedef CHANNEL_INFO    *PCHANNEL_INFO;
+#endif
+
+/* Pipe types */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef enum {
+    EVENT_PIPE      = 0,
+    READ_DATA_PIPE  = 1,
+    WRITE_DATA_PIPE = 2,
+    ALL_PIPE        = 3
+} PIPE_TYPE;
+#endif
+
+/* USB scanner get descriptor */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _USBSCAN_GET_DESCRIPTOR {
+    UCHAR   DescriptorType;
+    UCHAR   Index;
+    USHORT  LanguageId;
+} USBSCAN_GET_DESCRIPTOR;
+typedef USBSCAN_GET_DESCRIPTOR  *PUSB_SCAN_GET_DESCRIPTOR;
+#endif
+
+/* Device descriptor */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _DEVICE_DESCRIPTOR {
+    USHORT  usVendorId;
+    USHORT  usProductId;
+    USHORT  usBcdDevice;
+    USHORT  usLanguageId;
+} DEVICE_DESCRIPTOR;
+typedef DEVICE_DESCRIPTOR   *PDEVICE_DESCRIPTOR;
+#endif
+
+/* Raw pipe types */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef enum _RAW_PIPE_TYPE {
+    USBSCAN_PIPE_CONTROL        = 0,
+    USBSCAN_PIPE_ISOCHRONOUS    = 1,
+    USBSCAN_PIPE_BULK           = 2,
+    USBSCAN_PIPE_INTERRUPT      = 3
+} RAW_PIPE_TYPE;
+#endif
+
+/* USB scanner pipe information */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _USBSCAN_PIPE_INFORMATION {
+    USHORT          MaximumPacketSize;
+    UCHAR           EndpointAddress;
+    UCHAR           Interval;
+    RAW_PIPE_TYPE   PipeType;
+} USBSCAN_PIPE_INFORMATION;
+typedef USBSCAN_PIPE_INFORMATION    *PUSBSCAN_PIPE_INFORMATION;
+#endif
+
+/* USB scanner pipe configuration */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _USBSCAN_PIPE_CONFIGURATION {
+    ULONG                       NumberOfPipes;
+    USBSCAN_PIPE_INFORMATION    PipeInfo[MAX_NUM_PIPES];
+} USBSCAN_PIPE_CONFIGURATION;
+typedef USBSCAN_PIPE_CONFIGURATION  *PUSBSCAN_PIPE_CONFIGURATION;
+#endif
+
+/* USB scanner timeout */
+#if (NTDDI_VERSION >= 0x05010000)
+typedef struct _USBSCAN_TIMEOUT {
+    ULONG   TimeoutRead;
+    ULONG   TimeoutWrite;
+    ULONG   TimeoutEvent;
+} USBSCAN_TIMEOUT;
+typedef USBSCAN_TIMEOUT *PUSBSCAN_TIMEOUT;
+#endif
+
+:include cplusepi.sp
+
+#endif /* _USBSCAN_H_ */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Determine whether two names overlap in storage.
 *
 ****************************************************************************/
 
@@ -37,9 +36,10 @@
 extern  name    *DeAlias( name * );
 extern  bool    Overlaps( name *, name * );
 
-static  bool    Conflicts( type_length start, type_length end,
-                        type_length start2, type_length end2 ) {
-/**************************************************************/
+static  bool    Conflicts( type_length start,  type_length end,
+                           type_length start2, type_length end2 )
+/***************************************************************/
+{
     if( ( start2 >= start && start2 <= end ) ||
         ( end2 >= start && end2 <= end ) ) {
         return( TRUE );
@@ -47,17 +47,23 @@ static  bool    Conflicts( type_length start, type_length end,
     return( FALSE );
 }
 
-static  bool    ovNo( name *op1, name *op2 ) {
+static  bool    ovNo( name *op1, name *op2 )
+/******************************************/
+{
     op1 = op2;
     return( FALSE );
 }
 
-static  bool    ovYes( name *op1, name *op2 ) {
+static  bool    ovYes( name *op1, name *op2 )
+/*******************************************/
+{
     op1 = op2;
     return( TRUE );
 }
 
-static  bool    ovTemp( name *op1, name *op2 ) {
+static  bool    ovTemp( name *op1, name *op2 )
+/********************************************/
+{
     if( DeAlias( op1 ) == DeAlias( op2 ) ) {
         return( Conflicts( op1->v.offset, op1->v.offset + op1->n.size,
                     op2->v.offset, op2->v.offset + op2->n.size ) );
@@ -65,17 +71,23 @@ static  bool    ovTemp( name *op1, name *op2 ) {
     return( FALSE );
 }
 
-static  bool    ovReg( name *op1, name *op2 ) {
+static  bool    ovReg( name *op1, name *op2 )
+/*******************************************/
+{
     return( HW_Ovlap( op1->r.reg, op2->r.reg ) );
 }
 
-static  bool    ovIndex( name *op1, name *op2 ) {
+static  bool    ovIndex( name *op1, name *op2 )
+/*********************************************/
+{
     /* this is overly pessimistic, but we shouldn't see mem->mem moves anyway */
     op1 = op2;
     return( TRUE );
 }
 
-static  bool    ovUses( name *op1, name *index ) {
+static  bool    ovUses( name *op1, name *index )
+/**********************************************/
+{
     return( Overlaps( index->i.index, op1 ) ||
             Overlaps( index->i.base, op1 ) );
 }
@@ -88,9 +100,21 @@ static  bool    (*OverlapTable[N_INDEXED+1][N_INDEXED+1])( name *, name * ) = {
 /* N_REGISTER   */   {  ovNo,   ovNo,   ovNo,   ovReg,  ovUses },
 /* N_INDEX      */   {  ovNo,   ovNo,   ovNo,   ovNo,   ovIndex } };
 
-extern  bool    Overlaps( name *result, name *op ) {
-/**************************************************/
+extern  bool    Overlaps( name *result, name *op )
+/************************************************/
+{
     if( result == NULL || op == NULL ) return( FALSE );
     if( result == op ) return( TRUE );
     return( OverlapTable[result->n.class][op->n.class]( result, op ) );
+}
+
+extern  bool    CondOverlaps( name *result, name *ccop )
+/*******************************************************
+    returns true if modifying "result" could cause "ccop"
+    to be modified as well.
+*/
+{
+    if( result == NULL || ccop == NULL ) return( TRUE );
+    if( result == ccop ) return( TRUE );
+    return( OverlapTable[result->n.class][ccop->n.class]( result, ccop ) );
 }

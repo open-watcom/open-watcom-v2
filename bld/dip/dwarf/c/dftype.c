@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Type handle support for DWARF DIP.
 *
 ****************************************************************************/
 
@@ -40,15 +39,14 @@
 #include "dfloc.h"
 #include "dfclean.h"
 
-/*
-    Stuff dealing with type handles.
-*/
 typedef struct {
     dr_handle curr;
     int       skip;
-}array_wlk_skip; /* and jump */
+} array_wlk_skip; /* and jump */
 
-static int ArrayIndexSkip( dr_handle index, int pos, array_wlk_skip *df ){
+static int ArrayIndexSkip( dr_handle index, int pos, void *_df )
+{
+    array_wlk_skip *df = _df;
     pos = pos;
     if( df->skip == 0 ){
         df->curr = index;
@@ -72,7 +70,7 @@ static dr_handle GetArrayDim( dr_handle index, int skip  ){
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ){
       index = df.curr;
     }else{
-      index = NULL;
+      index = 0;
     }
     return( index );
 }
@@ -127,6 +125,98 @@ static int  GetStrLen( imp_image_handle *ii,
     return( TRUE );
 }
 
+/***********************/
+/* Walk array dims     */
+/***********************/
+typedef struct{
+    int_32           low;
+    uint_32          count;
+    imp_image_handle *ii;
+    imp_type_handle  *it;
+    location_context *lc;
+    uint_32          num_elts;
+    int              dim;
+    int              cont;
+}array_wlk_wlk;
+
+static int ArraySubRange( dr_handle tsub, int index, void *df );
+static int ArrayEnumType( dr_handle tenu, int index, void *df );
+static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
+    ArraySubRange,
+    ArrayEnumType,
+    NULL
+};
+
+static void GetArraySize( imp_image_handle *ii,
+                          imp_type_handle  *it,
+                          location_context *lc ){
+//Calculate size of array starting at it->array.index;
+    dr_handle     dim;
+    array_wlk_wlk df;
+    uint_32       base_stride;
+    uint_32       n_el;
+
+    df.ii = ii;
+    df.it = it;
+    df.lc = lc;
+    df.count = 1;
+    df.dim = 0;
+    df.cont = FALSE;
+    DRWalkArraySibs( it->array.index, ArrayWlk, &df );
+    it->array.num_elts = df.count;
+    it->array.low = df.low;
+    df.cont = TRUE;
+    dim = GetArrayDim( it->array.index, 1 );
+    if( dim ) {
+        DRWalkArraySibs( dim, ArrayWlk, &df );
+    }
+    it->array.dims = df.dim;
+    it->typeinfo.size = df.count * it->array.base_stride;
+    if( !it->array.column_major ){
+        base_stride = it->typeinfo.size;
+        n_el = it->array.num_elts;
+        base_stride = n_el ? base_stride / n_el : 0;
+        it->array.base_stride = base_stride;
+    }
+    it->array.is_set = TRUE;
+    it->array.is_based = FALSE;
+}
+
+static void GetArraySubSize( imp_image_handle *ii,
+                          imp_type_handle  *it,
+                          location_context *lc ){
+// Calc array size one in from previous dim
+    array_wlk_wlk df;
+    uint_32         new_size;
+    uint_32         base_stride;
+    uint_32         n_el;
+
+    df.ii = ii;
+    df.it = it;
+    df.lc = lc;
+    df.count = 1;
+    df.dim = 0;
+    df.cont = FALSE;
+    DRWalkArraySibs( it->array.index, ArrayWlk, &df );
+    new_size = it->typeinfo.size;
+    n_el = it->array.num_elts;
+    new_size = n_el ? new_size / n_el : 0;
+    if( it->array.column_major ){
+        base_stride = it->array.base_stride;
+        base_stride *= it->array.num_elts;
+        it->array.base_stride = base_stride;
+    }else{
+        base_stride = it->typeinfo.size;
+        base_stride = df.count ? base_stride / df.count : 0;
+        it->array.base_stride = base_stride;
+    }
+    it->typeinfo.size = new_size;
+    it->array.num_elts = df.count;
+    it->array.low = df.low;
+    --it->array.dims;
+    it->array.is_set = TRUE;
+    it->array.is_based = FALSE;
+}
 
 static void InitTypeHandle( imp_image_handle *ii,
                             imp_type_handle  *it,
@@ -139,8 +229,9 @@ static void InitTypeHandle( imp_image_handle *ii,
     dr_handle       btype;
     dr_array_stat   stat;
     uint_32         base_stride;
+    uint_32         n_el;
 
-    if( it->state == DF_NOT ){
+    if( it->state == DF_NOT ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         DRGetTypeInfo( it->type, &it->typeinfo );
         it->state = DF_SET;
@@ -168,7 +259,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                 }else if( ii->mod_map[it->imx].lang == DR_LANG_FORTRAN ){
                     it->array.column_major = 1;
                 }
-                if( info.child == NULL ){ // set info now
+                if( info.child == 0 ) { // set info now
                     it->array.dims = 1;
                     it->array.low = 0;
                     it->array.index = 0;
@@ -183,7 +274,8 @@ static void InitTypeHandle( imp_image_handle *ii,
                     }
                     if( !it->array.column_major ){
                         base_stride = it->typeinfo.size;
-                        base_stride /= it->array.num_elts;
+                        n_el = it->array.num_elts;
+                        base_stride = n_el ? base_stride / n_el : 0;
                         it->array.base_stride = base_stride;
                     }
                     it->array.is_set = TRUE;
@@ -196,7 +288,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                 }
             }
         }else if( it->typeinfo.kind == DR_TYPEK_STRING ){
-            if( DRStringLengthAT( it->type ) != NULL ){
+            if( DRStringLengthAT( it->type ) ) {
                 if( !GetStrLen( ii, it->type, lc, &it->typeinfo ) ){
                     it->typeinfo.size = 1;
                 }
@@ -221,10 +313,9 @@ struct mod_type{
     walk_result     wr;
 };
 
-static int AType( dr_handle        type,
-                 struct mod_type   *typ_wlk,
-                 dr_search_context *cont ){
-/*************************************************/
+static int AType( dr_handle type, void *_typ_wlk, dr_search_context *cont ) {
+/***************************************************************************/
+    struct mod_type *typ_wlk = _typ_wlk;
     int             ret;
     imp_type_handle *it;
     dr_dbg_handle  saved;
@@ -339,12 +430,15 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti )
     }
     ti->kind = kind;
     ti->size = typeinfo->size;
+    ti->modifier = TM_NONE;
     switch( typeinfo->mclass ){
     case DR_MOD_BASE:
-        if( typeinfo->modifier.sign ){
-            ti->modifier = TM_SIGNED;
-        }else{
-            ti->modifier = TM_UNSIGNED;
+        if( (ti->kind == TK_INTEGER) || (ti->kind == TK_CHAR)) {
+            if( typeinfo->modifier.sign ) {
+                ti->modifier = TM_SIGNED;
+            } else {
+                ti->modifier = TM_UNSIGNED;
+            }
         }
         break;
     case DR_MOD_ADDR:
@@ -367,9 +461,6 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti )
         if( typeinfo->kind == DR_TYPEK_REF ){
             ti->modifier |= TM_FLAG_DEREF;
         }
-        break;
-    case DR_MOD_NONE:
-        ti->modifier = TM_NONE;
         break;
     }
 }
@@ -405,7 +496,6 @@ dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
-    dip_status ret;
     dr_handle  btype;
     /*
         Given an implementation type handle, fill in 'base' with the
@@ -421,47 +511,26 @@ dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
             base->array.is_set = FALSE;
         }
         base->array.is_based = TRUE;
-        if( base->array.index != NULL ){
+        if( base->array.index ) {
             return( DS_OK );
         }
     }
     btype =  DRSkipTypeChain( base->type ); /* skip modifiers and typedefs */
-    base->type = DRGetTypeAT( btype );    /* get base type */
-    if( base->type != NULL ){
-        base->state = DF_NOT;
-        ret = DS_OK;
-    }else{
-       ret = DS_FAIL;
+    base->type = DRGetTypeAT( btype );      /* get base type */
+    if( base->type == 0 ) {
+        base->type = DR_HANDLE_VOID;        /* no type means 'void' */
     }
-    return( ret );
+    base->state = DF_NOT;
+    return( DS_OK );
 }
-/***********************/
-/* Walk array dims     */
-/***********************/
-typedef struct{
-    int_32           low;
-    uint_32          count;
-    imp_image_handle *ii;
-    location_context *lc;
-    uint_32          num_elts;
-    int              dim;
-    int              cont;
-}array_wlk_wlk;
-
-static int ArraySubRange( dr_handle tsub, int index, array_wlk_wlk *df );
-static int ArrayEnumType( dr_handle tenu, int index, array_wlk_wlk *df );
-static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
-    ArraySubRange,
-    ArrayEnumType,
-    NULL
-};
 
 typedef struct {
     int_32 low;
     int_32 high;
 }enum_range;
 
-static int AEnum( dr_handle var, int index, enum_range *de ){
+static int AEnum( dr_handle var, int index, void *_de ) {
+    enum_range *de = _de;
     int_32  value;
 
     index = index;
@@ -476,12 +545,13 @@ static int AEnum( dr_handle var, int index, enum_range *de ){
     return( TRUE );
 }
 
-static int ArrayEnumType( dr_handle tenu, int index, array_wlk_wlk *df ){
-/************************************************************/
+static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
+/****************************************************************/
 // Find low, high bounds of enum
 //TODO:unsigned range
+    array_wlk_wlk  *df = _df;
     enum_range     de;
-    int_32        count;
+    int_32         count;
 
     index = index;
     de.low  = LONG_MIN;
@@ -509,7 +579,7 @@ static int  GetSymVal( imp_image_handle *ii,
     im_idx          imx;
 
     dr_type =  DRGetTypeAT( dr_sym );
-    if( dr_type == NULL ){
+    if( dr_type == 0 ) {
         return( FALSE );
     }
     DRGetTypeInfo( dr_type, typeinfo );
@@ -552,8 +622,9 @@ static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
     return( FALSE );
 }
 
-static int ArraySubRange( dr_handle tsub, int index, array_wlk_wlk *df ){
-/*************************************************/
+static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
+/****************************************************************/
+    array_wlk_wlk *df = _df;
     dr_subinfo info;
     int_32     low;
     int_32     high;
@@ -561,10 +632,15 @@ static int ArraySubRange( dr_handle tsub, int index, array_wlk_wlk *df ){
 
     index = index;
     DRGetSubrangeInfo( tsub, &info );
-    if( info.low.val_class == DR_VAL_NOT ){
-        return( FALSE );
+    /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
+    if( info.low.val_class == DR_VAL_NOT ) {
+        if( df->ii->mod_map[df->it->imx].lang == DR_LANG_FORTRAN )
+            low = 1;
+        else
+            low = 0;
+    } else {
+        GetDrVal( df, &info.low, &low );
     }
-    GetDrVal( df, &info.low, &low );
     if( info.count.val_class == DR_VAL_NOT ){
         if( info.high.val_class == DR_VAL_NOT ){
             return( FALSE );
@@ -579,73 +655,6 @@ static int ArraySubRange( dr_handle tsub, int index, array_wlk_wlk *df ){
     df->dim++;
     return( df->cont );
 }
-
-
-static void GetArraySize( imp_image_handle *ii,
-                          imp_type_handle  *it,
-                          location_context *lc ){
-//Calculate size of array starting at it->array.index;
-    dr_handle     dim;
-    array_wlk_wlk df;
-    uint_32       base_stride;
-
-    df.ii = ii;
-    df.lc = lc;
-    df.count = 1;
-    df.dim = 0;
-    df.cont = FALSE;
-    DRWalkArraySibs( it->array.index, ArrayWlk, &df );
-    it->array.num_elts = df.count;
-    it->array.low = df.low;
-    df.cont = TRUE;
-    dim = GetArrayDim( it->array.index, 1 );
-    if( dim != NULL ){
-        DRWalkArraySibs( dim, ArrayWlk, &df );
-    }
-    it->array.dims = df.dim;
-    it->typeinfo.size = df.count * it->array.base_stride;
-    if( !it->array.column_major ){
-        base_stride = it->typeinfo.size;
-        base_stride /= it->array.num_elts;
-        it->array.base_stride = base_stride;
-    }
-    it->array.is_set = TRUE;
-    it->array.is_based = FALSE;
-}
-
-static void GetArraySubSize( imp_image_handle *ii,
-                          imp_type_handle  *it,
-                          location_context *lc ){
-// Calc array size one in from previous dim
-    array_wlk_wlk df;
-    uint_32         new_size;
-    uint_32         base_stride;
-
-    df.ii = ii;
-    df.lc = lc;
-    df.count = 1;
-    df.dim = 0;
-    df.cont = FALSE;
-    DRWalkArraySibs( it->array.index, ArrayWlk, &df );
-    new_size = it->typeinfo.size;
-    new_size /= it->array.num_elts;
-    if( it->array.column_major ){
-        base_stride = it->array.base_stride;
-        base_stride *= it->array.num_elts;
-        it->array.base_stride = base_stride;
-    }else{
-        base_stride = it->typeinfo.size;
-        base_stride /= df.count;
-        it->array.base_stride = base_stride;
-    }
-    it->typeinfo.size = new_size;
-    it->array.num_elts = df.count;
-    it->array.low = df.low;
-    --it->array.dims;
-    it->array.is_set = TRUE;
-    it->array.is_based = FALSE;
-}
-
 
 dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
@@ -678,9 +687,9 @@ dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     ai->stride = array->array.base_stride;
     if( index != NULL ){
         index->imx = array->imx;
-        if( array->array.index == NULL ){  //Fake a type up
+        if( array->array.index == 0 ) { //Fake a type up
             index->state = DF_SET;
-            index->type = NULL;
+            index->type  = 0;
             index->typeinfo.size = 0;
             index->typeinfo.kind = DR_TYPEK_NONE;
             index->typeinfo.mclass = DR_MOD_NONE;
@@ -705,8 +714,9 @@ typedef struct {
     dr_handle       var;
 }parm_wlk;
 
-static int AParm( dr_handle var, int index, parm_wlk *df ){
-/*************************************************/
+static int AParm( dr_handle var, int index, void *_df ) {
+/*******************************************************/
+    parm_wlk *df = _df;
 
     index = index;
     ++df->count;
@@ -727,8 +737,8 @@ extern dr_handle GetParmN(  imp_image_handle *ii,dr_handle proc, int count ){
     df.count = 0;
     df.last = count;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    if( DRWalkBlock( proc,  DR_SRCH_parm, AParm, &df ) ){
-        ret = NULL;
+    if( DRWalkBlock( proc, DR_SRCH_parm, AParm, &df ) ) {
+        ret = 0;
     }else{
         ret = df.var;
     }
@@ -759,10 +769,10 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     if( n > 0 ){
         btype = GetParmN( ii, btype, n );
     }// if n == 0 just fall through and get type of function
-    if( btype != NULL ){
+    if( btype ) {
         parm_type = DRGetTypeAT( btype );    /* get type */
     }
-    if( parm_type != NULL ){
+    if( parm_type ) {
         parm->state = DF_NOT;
         parm->type = parm_type;
         parm->imx = proc->imx;
@@ -828,7 +838,7 @@ typedef struct {
 
 typedef struct {
     type_wlk_com     com;
-    int              (*comp)();
+    int              (*comp)(const void *, const void *, unsigned);
     lookup_item      *li;
     search_result     sr;
 }type_wlk_lookup;
@@ -861,9 +871,10 @@ static int AddBase( dr_handle base, inh_vbase **lnk ){
     return( TRUE );
 }
 
-static void FreeBases( inh_vbase **lnk ){
+static int FreeBases( void *_lnk ){
 /***************************************/
 //Free bases
+    inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
     inh_vbase   *old;
 
@@ -874,10 +885,11 @@ static void FreeBases( inh_vbase **lnk ){
         DCFree( old );
     }
     *lnk = NULL;
+    return 0;
 }
 
-static int AMem( dr_handle var, int index, type_wlk_wlk *d );
-static int AInherit( dr_handle inh, int index, type_wlk_wlk *d );
+static int AMem( dr_handle var, int index, void *d );
+static int AInherit( dr_handle inh, int index, void *d );
 static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
     AMem,
     AInherit,
@@ -899,15 +911,16 @@ static void SetSymHandle( type_wlk *d, imp_sym_handle  *is ){
     }
 }
 
-static int AMem( dr_handle var, int index, type_wlk_wlk *d ){
-/*************************************************/
+static int AMem( dr_handle var, int index, void *_d ) {
+/*****************************************************/
+    type_wlk_wlk   *d = _d;
     int            cont;
     imp_sym_handle  *is;
     dr_dbg_handle  saved;
 
     cont = TRUE;
     is = d->is;
-    SetSymHandle( d, is );
+    SetSymHandle( (type_wlk *)d, is );
     is->sym = var;
     switch( index ){
     case 0:
@@ -935,9 +948,10 @@ static int AMem( dr_handle var, int index, type_wlk_wlk *d ){
     return( cont );
 }
 
-static int AInherit( dr_handle inh, int index, type_wlk_wlk *d ){
+static int AInherit( dr_handle inh, int index, void *_d ) {
 /*************************************************/
 //TODO: Need to track virtual base as not to visit same place twice
+    type_wlk_wlk *d = _d;
     int         cont;
     dr_handle   btype;
     dr_handle   old_inh;
@@ -956,7 +970,7 @@ static int AInherit( dr_handle inh, int index, type_wlk_wlk *d ){
         }
     }
     is = d->is;
-    SetSymHandle( d, is );
+    SetSymHandle( (type_wlk *)d, is );
     is->sym = inh;
     is->sclass = SYM_MEM;     //  treat inherit like a var
     saved = DRGetDebug();
@@ -978,8 +992,8 @@ static int AInherit( dr_handle inh, int index, type_wlk_wlk *d ){
 }
 
 
-static int AMemLookup( dr_handle var, int index, type_wlk_lookup *d );
-static int AInheritLookup( dr_handle inh, int index, type_wlk_lookup *d );
+static int AMemLookup( dr_handle var, int index, void *d );
+static int AInheritLookup( dr_handle inh, int index, void *d );
 static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     AMemLookup,
     AInheritLookup,
@@ -988,8 +1002,9 @@ static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     NULL
 };
 
-static int AMemLookup( dr_handle var, int index, type_wlk_lookup *d ){
+static int AMemLookup( dr_handle var, int index, void *_d ){
 /*************************************************/
+    type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
     int    len;
@@ -1002,7 +1017,7 @@ static int AMemLookup( dr_handle var, int index, type_wlk_lookup *d ){
     len = strlen( name );
     if( len == d->li->name.len && d->comp(name, d->li->name.start,len)==0 ) {
         is = DCSymCreate( d->com.ii, d->com.d );
-        SetSymHandle( d, is );
+        SetSymHandle( (type_wlk *)d, is );
         is->sym = var;
         switch( index ){
         case 0:
@@ -1027,9 +1042,10 @@ static int AMemLookup( dr_handle var, int index, type_wlk_lookup *d ){
     return( TRUE );
 }
 
-static int AInheritLookup( dr_handle inh, int index, type_wlk_lookup *d ){
+static int AInheritLookup( dr_handle inh, int index, void *_d ){
 /*************************************************/
 //Push inherit handle and search
+    type_wlk_lookup *d = _d;
     dr_handle btype;
     dr_handle old_inh;
 
@@ -1048,8 +1064,9 @@ static int AInheritLookup( dr_handle inh, int index, type_wlk_lookup *d ){
     return( TRUE );
 }
 
-static int AEnumMem( dr_handle var, int index, type_wlk_wlk *d ){
-/*************************************************/
+static int AEnumMem( dr_handle var, int index, void *_d ) {
+/*********************************************************/
+    type_wlk_wlk   *d = _d;
     int            cont;
     imp_sym_handle  *is;
     dr_dbg_handle  saved;
@@ -1057,7 +1074,7 @@ static int AEnumMem( dr_handle var, int index, type_wlk_wlk *d ){
     index = index;
     cont = TRUE;
     is = d->is;
-    SetSymHandle( d, is );
+    SetSymHandle( (type_wlk *)d, is );
     is->sym = var;
     saved = DRGetDebug();
     d->wr = d->wk( d->com.ii, SWI_SYMBOL, is, d->com.d );
@@ -1068,8 +1085,9 @@ static int AEnumMem( dr_handle var, int index, type_wlk_wlk *d ){
     return( cont );
 }
 
-static int AEnumMemLookup( dr_handle var, int index, type_wlk_lookup *d ){
-/*************************************************/
+static int AEnumMemLookup( dr_handle var, int index, void *_d ) {
+/***************************************************************/
+    type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
     int    len;
@@ -1083,7 +1101,7 @@ static int AEnumMemLookup( dr_handle var, int index, type_wlk_lookup *d ){
     len = strlen( name );
     if( len == d->li->name.len && d->comp(name, d->li->name.start,len)==0 ) {
         is = DCSymCreate( d->com.ii, d->com.d );
-        SetSymHandle( d, is );
+        SetSymHandle( (type_wlk *)d, is );
         is->sym = var;
         d->sr = SR_EXACT;
     }
@@ -1110,7 +1128,7 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = NULL;
+    df.com.inh = 0;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;
@@ -1145,8 +1163,8 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
 extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                  lookup_item *li, void *d ){
 //Search for matching lookup item
-    dr_handle           btype;
-    type_wlk_lookup    df;
+    dr_handle       btype;
+    type_wlk_lookup df;
     df_cleaner      cleanup;
 
 
@@ -1163,7 +1181,7 @@ extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
-    df.com.inh = NULL;
+    df.com.inh = 0;
     df.com.vbase = NULL;
     cleanup.rtn = FreeBases;   //push cleanup
     cleanup.d = &df.com.vbase;
@@ -1217,7 +1235,7 @@ typedef struct type_wlk_inherit {
     bool             cont;
 }type_wlk_inherit;
 
-static int AInhFind( dr_handle inh, int index, type_wlk_inherit *df );
+static int AInhFind( dr_handle inh, int index, void *df );
 static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
     NULL,
     AInhFind,
@@ -1227,9 +1245,10 @@ static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
 };
 
 
-static int AInhFind( dr_handle inh, int index, type_wlk_inherit *df ){
+static int AInhFind( dr_handle inh, int index, void *_df ){
 /*************************************************/
 //Push inherit handle and search
+    type_wlk_inherit *df = _df;
     dr_handle       dr_derived;
     inh_path        head, *curr, **old_lnk;
 
@@ -1323,7 +1342,7 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     ++num;
     len = 0;
     dr_type = it->type;
-    while( dr_type != NULL ){
+    while( dr_type ) {
         name =  DRGetName( dr_type );
         if( name != NULL ){
             if(  --num == 0 )break;
@@ -1375,4 +1394,3 @@ dip_status DIPENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
     ii=ii;
     return(DS_OK);
 }
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Draw various character graphics.
 *
 ****************************************************************************/
 
@@ -43,15 +42,11 @@
 #include "guistat.h"
 #include "guixinit.h"
 #include "guixdlg.h"
-#include <malloc.h>
 #include <string.h>
-#if defined( UNIX )
-    #include <alloca.h>
-#endif
+#include "walloca.h"
 
-extern int uionnec();
 
-static char DrawIndex[] =
+static unsigned char DrawIndex[] =
 {
     DRAW_BLANK,                 // GUI_FRAME_TOP
     DRAW_BLANK,                 // GUI_FRAME_UL_CORNER
@@ -114,7 +109,8 @@ static char DrawIndex[] =
 };
 
 char DrawingChars[DRAW_LAST];
-#define GET_CHAR( val, inact ) ( &DrawingChars[ DrawIndex[val+ GUI_INACTIVE_OFFSET * inact] ] )
+
+#define GET_CHAR( val, inact ) ( DrawingChars[DrawIndex[val+ GUI_INACTIVE_OFFSET * inact]] )
 
 #define TOP( inact )            GET_CHAR( GUI_FRAME_TOP, inact )
 #define UL_CORNER( inact )      GET_CHAR( GUI_FRAME_UL_CORNER, inact )
@@ -144,43 +140,47 @@ extern gui_window *GUICurrWnd;
 
 void GUIInitDrawingChars( bool dbcs )
 {
+#ifdef __LINUX__
+    #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
+    #include "guidraw.h"
+    #undef draw_pick
+#else
     if( dbcs ) {
-        if( uionnec() ) {
-            #define draw_pick( a,b,c,d ) DrawingChars[DRAW_##a] = d;
-            #include "guidraw.h"
-            #undef draw_pick
-        } else {
-            #define draw_pick( a,b,c,d ) DrawingChars[DRAW_##a] = c;
-            #include "guidraw.h"
-            #undef draw_pick
-        }
+        #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = c;
+        #include "guidraw.h"
+        #undef draw_pick
     } else {
-        #define draw_pick( a,b,c,d ) DrawingChars[DRAW_##a] = b;
+        #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = b;
         #include "guidraw.h"
         #undef draw_pick
     }
+#endif
 }
 
 
-char GUIGetCharacter( gui_draw_char draw_char )
+int GUIGetCharacter( gui_draw_char draw_char )
 {
     if( draw_char < GUI_NUM_DRAW_CHARS ) {
-        return( DrawingChars[ (unsigned)DrawIndex[ draw_char ] ] );
+        return( (unsigned char)DrawingChars[DrawIndex[draw_char]] );
     }
-    return( (char)0 );
+    return( 0 );
 }
 
-void GUISetCharacter( gui_draw_char draw_char, char ch )
+void GUISetCharacter( gui_draw_char draw_char, int ch )
 {
-    ch=ch;draw_char=draw_char;
+    ch=ch; draw_char=draw_char;
     // not implemented in this revision
     // some apps do a
     // if an app calls GUISetCharacter( GUI_SCROLL_SLIDER, 177 );
     // just delete the call since that is the default now.
 }
 
-static void DrawText( gui_window *wnd, int row, int col, ATTR attr, char *buff,
-                      int length )
+static void DrawChar( gui_window *wnd, int row, int col, ATTR attr, char chr )
+{
+    uivtextput( &wnd->screen, row, col, attr, &chr, 1 );
+}
+
+static void DrawText( gui_window *wnd, int row, int col, ATTR attr, char *buff, int length )
 {
     if( length > 0 ) {
         uivtextput( &wnd->screen, row, col, attr, buff, length );
@@ -201,7 +201,9 @@ static void DrawFrame( gui_window *wnd )
     int         str_length;
     int         indent;
     int         title_extra, closer_amount;
-    char        *lgadget, *mgadget, *rgadget;
+    char        lgadget;
+    char        mgadget;
+    char        rgadget;
     int         inact;
     bool        inact_gadgets;
     int         len;
@@ -223,39 +225,37 @@ static void DrawFrame( gui_window *wnd )
     }
     inact_gadgets = GUIGetWindowStyles() & GUI_INACT_GADGETS;
     if( wnd->flags & FRAME_INVALID ) {
-        DrawText( wnd, wnd->screen.area.height-1, 0, attr,
-                  LL_CORNER( inact ), 1 );
-        DrawText( wnd, 0, 0, attr, UL_CORNER( inact ), 1 );
-        DrawText( wnd, 0, wnd->screen.area.width-1, attr,
-                  UR_CORNER( inact ), 1 );
-        DrawText( wnd, wnd->screen.area.height-1,
-                  wnd->screen.area.width-1, attr, LR_CORNER( inact ), 1 );
+        DrawChar( wnd, wnd->screen.area.height-1, 0, attr, LL_CORNER( inact ) );
+        DrawChar( wnd, 0, 0, attr, UL_CORNER( inact ) );
+        DrawChar( wnd, 0, wnd->screen.area.width-1, attr, UR_CORNER( inact ) );
+        DrawChar( wnd, wnd->screen.area.height-1, wnd->screen.area.width-1,
+                    attr, LR_CORNER( inact ) );
         /* bottom border */
         if( GUIUseGadget( wnd, wnd->hgadget ) ) {
             if( GUIDrawGadgetLine( wnd->hgadget ) ) {
-                DrawText( wnd, wnd->screen.area.height-1,
-                          wnd->screen.area.width-1-GUIGetScrollOffset(),
-                          attr, LRV_BAR( inact ), 1 );
+                DrawChar( wnd, wnd->screen.area.height - 1,
+                            wnd->screen.area.width - 1 - GUIGetScrollOffset(),
+                            attr, LRV_BAR( inact ) );
             }
         } else {
             area.col = 1;
             area.row = wnd->screen.area.height-1;
             area.height = 1;
             area.width = wnd->screen.area.width - 2;
-            uivfill( &wnd->screen, area, attr, *(BOTTOM( inact )) );
+            uivfill( &wnd->screen, area, attr, BOTTOM( inact ) );
         }
         /* right border */
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( GUIDrawGadgetLine( wnd->vgadget ) ) {
-                DrawText( wnd, wnd->screen.area.height-1-GUIGetScrollOffset(),
-                          wnd->screen.area.width-1, attr, LRH_BAR( inact ), 1 );
+                DrawChar( wnd, wnd->screen.area.height-1-GUIGetScrollOffset(),
+                            wnd->screen.area.width-1, attr, LRH_BAR( inact ) );
             }
         } else {
             area.row = 1;
             area.height = wnd->screen.area.height- 2;
             area.col = wnd->screen.area.width - 1;
             area.width = 1;
-            uivfill( &wnd->screen, area, attr, *(RIGHT( inact )) );
+            uivfill( &wnd->screen, area, attr, RIGHT( inact ) );
         }
 
         /* left border */
@@ -263,7 +263,7 @@ static void DrawFrame( gui_window *wnd )
         area.col = 0;
         area.height = wnd->screen.area.height-2;
         area.width = 1;
-        uivfill( &wnd->screen, area, attr, *(LEFT( inact )) );
+        uivfill( &wnd->screen, area, attr, LEFT( inact ) );
 
         wnd->flags &= ~FRAME_INVALID;
     }
@@ -286,9 +286,9 @@ static void DrawFrame( gui_window *wnd )
                 mgadget = MAX_GAD( inact );
             }
             rgadget = RG_MARK( inact );
-            DrawText( wnd, 0, CLOSER_COL-1, attr, LG_MARK( inact ), 1 );
-            DrawText( wnd, 0, CLOSER_COL,   attr, CLOSER( inact ), 1 );
-            DrawText( wnd, 0, CLOSER_COL+1, attr, RG_MARK( inact ), 1 );
+            DrawChar( wnd, 0, CLOSER_COL-1, attr, LG_MARK( inact ) );
+            DrawChar( wnd, 0, CLOSER_COL,   attr, CLOSER( inact ) );
+            DrawChar( wnd, 0, CLOSER_COL+1, attr, RG_MARK( inact ) );
         }
         if( GUI_RESIZE_GADGETS_USEABLE( wnd ) ) {
             width -= 2 * GADGET_WIDTH;
@@ -302,11 +302,11 @@ static void DrawFrame( gui_window *wnd )
                 }
                 rgadget = RG_MARK( inact );
             } else {
-                lgadget = mgadget = rgadget =  TOP( inact );
+                lgadget = mgadget = rgadget = TOP( inact );
             }
-            DrawText( wnd, 0, indent, attr, lgadget, 1 );
-            DrawText( wnd, 0, indent + 1, attr, mgadget, 1 );
-            DrawText( wnd, 0, indent + 2, attr, rgadget, 1 );
+            DrawChar( wnd, 0, indent, attr, lgadget );
+            DrawChar( wnd, 0, indent + 1, attr, mgadget );
+            DrawChar( wnd, 0, indent + 2, attr, rgadget );
 
             indent = wnd->screen.area.width - 2 * GADGET_WIDTH - 1;
             if( wnd->style & GUI_MINIMIZE ) {
@@ -318,17 +318,17 @@ static void DrawFrame( gui_window *wnd )
                 }
                 rgadget = RG_MARK( inact );
             } else {
-                lgadget = mgadget = rgadget =  TOP( inact );
+                lgadget = mgadget = rgadget = TOP( inact );
             }
-            DrawText( wnd, 0, indent, attr, lgadget, 1 );
-            DrawText( wnd, 0, indent + 1, attr, mgadget, 1 );
-            DrawText( wnd, 0, indent + 2, attr, rgadget, 1 );
+            DrawChar( wnd, 0, indent, attr, lgadget );
+            DrawChar( wnd, 0, indent + 1, attr, mgadget );
+            DrawChar( wnd, 0, indent + 2, attr, rgadget );
         }
     }
 
     buffer = alloca( wnd->screen.area.width + 1 );
     buff = buffer;
-    memset( buff, *(TOP( inact )), width ); /* width at least 1 */
+    memset( buff, TOP( inact ), width ); /* width at least 1 */
     if( wnd->screen.name != NULL && *wnd->screen.name != NULLCHAR ) {
         str_length = strlen( wnd->screen.name );
         if( ( str_length + TITLE_EXTRA_AMOUNT ) > width ) {
@@ -341,7 +341,7 @@ static void DrawFrame( gui_window *wnd )
         }
         len = ( width - str_length - title_extra ) / 2;
         if( title_extra != 0 ) {
-            memcpy( buff+len, LT_MARK( inact ), 1 );
+            buff[len] = LT_MARK( inact );
             len++;
         }
         if( len > 0 ) {
@@ -352,13 +352,13 @@ static void DrawFrame( gui_window *wnd )
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            memcpy( buff+len, TITLE_SP( inact ), 1 );
+            buff[len] = TITLE_SP( inact );
             len++;
         }
         memcpy( buff+len, wnd->screen.name, str_length );
         len += str_length;
         if( title_extra != 0 ) {
-            memcpy( buff+len, TITLE_SP( inact ), 1 );
+            buff[len] = TITLE_SP( inact );
             len++;
         }
         if( len > 0 ) {
@@ -369,7 +369,7 @@ static void DrawFrame( gui_window *wnd )
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            memcpy( buff+len, RT_MARK( inact ), 1 );
+            buff[len] = RT_MARK( inact );
             len++;
         }
         if( width - indent > 0 ) {
@@ -383,7 +383,7 @@ static void DrawFrame( gui_window *wnd )
     wnd->flags &= ~TITLE_INVALID;
 }
 
-static void WndClean( gui_window * wnd )
+static void WndClean( gui_window *wnd )
 {
     wnd->dirty.row = 0;
     wnd->dirty.col = 0;
@@ -441,7 +441,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
             }
         }
         uivfill( &wnd->screen, wnd->dirty, wnd->colours[GUI_BACKGROUND],
-                 wnd->background );
+                    wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && !( wnd->flags & DONT_SEND_PAINT ) ) {
             rownum.start = vscroll + area->row - frame_adjust;
@@ -457,7 +457,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
     WndClean( wnd );
 }
 
-static void DrawGadget( gui_window * wnd, p_gadget gadget, gui_flags flag )
+static void DrawGadget( gui_window *wnd, p_gadget gadget, gui_flags flag )
 {
     if( ( wnd->flags & flag ) && ( gadget != NULL ) ) {
         GUISetShowGadget( gadget, TRUE, FALSE, 0 );
@@ -468,7 +468,7 @@ static void DrawGadget( gui_window * wnd, p_gadget gadget, gui_flags flag )
  * GUIWndUpdate -- refresh the portions of the given window which require it
  */
 
-void GUIWndUpdate( gui_window * wnd )
+void GUIWndUpdate( gui_window *wnd )
 {
     if( !GUIIsOpen( wnd ) ) {
         return;

@@ -1,0 +1,6 @@
+IsFortranInstall=1
+AppName=Open Watcom FORTRAN
+InstallerName=Setup
+Setup=setup.exe
+DefPMGroup=wf7732.grp, Open Watcom FORTRAN, %DstDir%\watcom.ico
+include=common.inf

@@ -1,0 +1,1322 @@
+/*
+ *  cfgmgr32.h  Configuration manager functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _CFGMGR32_H_
+#define _CFGMGR32_H_
+
+:include readonly.sp
+
+#include <cfg.h>
+
+:include cpluspro.sp
+
+/* Macro to specify configuration manager functions */
+#define CMAPI   DECLSPEC_IMPORT
+
+/* Primitive data types */
+typedef CONST VOID      *PCVOID;
+typedef DWORD           RETURN_TYPE;
+typedef RETURN_TYPE     CONFIGRET;
+typedef DWORD           DEVNODE;
+typedef DWORD           DEVINST;
+typedef DEVNODE         *PDEVNODE;
+typedef DEVNODE         *PDEVINST;
+typedef DWORD_PTR       LOG_CONF;
+typedef LOG_CONF        *PLOG_CONF;
+typedef DWORD_PTR       RES_DES;
+typedef RES_DES         *PRES_DES;
+typedef ULONG           RESOURCEID;
+typedef RESOURCEID      *PRESOURCEID;
+typedef ULONG           PRIORITY;
+typedef PRIORITY        *PPRIORITY;
+typedef DWORD_PTR       RANGE_LIST;
+typedef RANGE_LIST      *PRANGE_LIST;
+typedef DWORD_PTR       RANGE_ELEMENT;
+typedef RANGE_ELEMENT   *PRANGE_ELEMENT;
+typedef HANDLE          HMACHINE;
+typedef HMACHINE        *PHMACHINE;
+typedef ULONG_PTR       CONFLICT_LIST;
+typedef CONFLICT_LIST   *PCONFLICT_LIST;
+typedef ULONG           REGDISPOSITION;
+
+/* String data types */
+typedef CHAR        *DEVNODEID_A;
+typedef CHAR        *DEVINSTID_A;
+typedef WCHAR       *DEVNODEID_W;
+typedef WCHAR       *DEVINSTID_W;
+#ifdef UNICODE
+typedef DEVNODEID_W DEVNODEID;
+typedef DEVINSTID_W DEVINSTID;
+#else
+typedef DEVNODEID_A DEVNODEID;
+typedef DEVINSTID_A DEVINSTID;
+#endif
+
+/* Maximum values */
+#define MAX_DEVICE_ID_LEN   200
+#define MAX_DEVNODE_ID_LEN  MAX_DEVICE_ID_LEN
+#define MAX_GUID_STRING_LEN 39
+#define MAX_CLASS_NAME_LEN  32
+#define MAX_PROFILE_LEN     80
+#define MAX_CONFIG_VALUE    9999
+#define MAX_INSTANCE_VALUE  9999
+#define MAX_MEM_REGISTERS   9
+#define MAX_IO_PORTS        20
+#define MAX_IRQS            7
+#define MAX_DMA_CHANNELS    7
+#define DWORD_MAX           0xFFFFFFFFL
+#define DWORDLONG_MAX       0xFFFFFFFFFFFFFFFFLL
+
+/* Configuration manager version */
+#define CONFIGMG_VERSION    0x0400
+
+/* Conflict details masks */
+#define CM_CDMASK_DEVINST       0x00000001L
+#define CM_CDMASK_RESDES        0x00000002L
+#define CM_CDMASK_FLAGS         0x00000004L
+#define CM_CDMASK_DESCRIPTION   0x00000008L
+#define CM_CDMASK_VALID         0x0000000FL
+
+/* Conflict details flags */
+#define CM_CDFLAGS_DRIVER       0x00000001L
+#define CM_CDFLAGS_ROOT_OWNED   0x00000002L
+
+/* Memory range attribute flags */
+#define mMD_MemoryType              0x00000001L
+#define fMD_MemoryType              mMD_MemoryType
+#define fMD_ROM                     0x00000000L
+#define fMD_RAM                     0x00000001L
+#define mMD_32_24                   0x00000002L
+#define fMD_32_24                   mMD_32_24
+#define fMD_24                      0x00000000L
+#define fMD_32                      0x00000002L
+#define mMD_Prefetchable            0x00000004L
+#define fMD_Prefetchable            mMD_Prefetchable
+#define fMD_Pref                    mMD_Prefetchable
+#define fMD_PrefetchDisallowed      0x00000000L
+#define fMD_PrefetchAllowed         0x00000004L
+#define mMD_Readable                0x00000008L
+#define fMD_Readable                mMD_Readable
+#define fMD_ReadAllowed             0x00000000L
+#define fMD_ReadDisallowed          0x00000008L
+#define mMD_CombinedWrite           0x00000010L
+#define fMD_CombinedWrite           mMD_CombinedWrite
+#define fMD_CombinedWriteDisallowed 0x00000000L
+#define fMD_CombinedWriteAllowed    0x00000010L
+#define mMD_Cacheable               0x00000020L
+#define fMD_NonCacheable            0x00000000L
+#define fMD_Cacheable               0x00000020L
+#define fMD_WINDOW_DECODE           0x00000040L
+#define fMD_MEMORY_BAR              0x00000080L
+
+/* I/O descriptor flags */
+#define fIOD_PortType           0x00000001L
+#define fIOD_Memory             0x00000000L
+#define fIOD_IO                 0x00000001L
+#define fIOD_DECODE             0x000000FCL
+#define fIOD_10_BIT_DECODE      0x00000004L
+#define fIOD_12_BIT_DECODE      0x00000008L
+#define fIOD_16_BIT_DECODE      0x00000010L
+#define fIOD_POSITIVE_DECODE    0x00000020L
+#define fIOD_PASSIVE_DECODE     0x00000040L
+#define fIOD_WINDOW_DECODE      0x00000080L
+#define fIOD_PORT_BAR           0x00000100L
+
+/* I/O alias flags */
+#define IO_ALIAS_10_BIT_DECODE      0x00000004L
+#define IO_ALIAS_12_BIT_DECODE      0x00000010L
+#define IO_ALIAS_16_BIT_DECODE      0x00000000L
+#define IO_ALIAS_POSITIVE_DECODE    0x000000FFL
+
+/* I/O local */
+#define IOA_Local   0x000000FFL
+
+/* DMA range flags */
+#define mDD_Width           0x00000003L
+#define fDD_BYTE            0x00000000L
+#define fDD_WORD            0x00000001L
+#define fDD_DWORD           0x00000002L
+#define fDD_BYTE_AND_WORD   0x00000003L
+#define mDD_BusMaster       0x00000004L
+#define fDD_NoBusMaster     0x00000000L
+#define fDD_BusMaster       0x00000004L
+#define mDD_Type            0x00000018L
+#define fDD_TypeStandard    0x00000000L
+#define fDD_TypeA           0x00000008L
+#define fDD_TypeB           0x00000010L
+#define fDD_TypeF           0x00000018L
+
+/* IRQ descriptor flags */
+#define mIRQD_Share         0x00000001L
+#define fIRQD_Exclusive     0x00000000L
+#define fIRQD_Share         0x00000001L
+#define fIRQD_Share_Bit     0
+#define fIRQD_Level_Bit     1
+#define mIRQD_Edge_Level    0x00000002L
+#define fIRQD_Level         0x00000000L
+#define fIRQD_Edge          0x00000002L
+
+/* Resource descriptor flags */
+#if (_WIN32_WINNT >= 0x0501)
+    #define CM_RESDES_WIDTH_DEFAULT 0x00000000L
+    #define CM_RESDES_WIDTH_32      0x00000001L
+    #define CM_RESDES_WIDTH_64      0x00000002L
+    #define CM_RESDES_WIDTH_BITS    0x00000003L
+#endif
+
+/* PC card configuration attribute flags */
+#define mPCD_IO_8_16                    0x00000001L
+#define fPCD_IO_8                       0x00000000L
+#define fPCD_IO_16                      0x00000001L
+#define mPCD_MEM_8_16                   0x00000002L
+#define fPCD_MEM_8                      0x00000000L
+#define fPCD_MEM_16                     0x00000002L
+#define mPCD_MEM_A_C                    0x0000000CL
+#define fPCD_MEM1_A                     0x00000004L
+#define fPCD_MEM2_A                     0x00000008L
+#define fPCD_IO_ZW_8                    0x00000010L
+#define fPCD_IO_SRC_16                  0x00000020L
+#define fPCD_IO_WS_16                   0x00000040L
+#define mPCD_MEM_WS                     0x00000300L
+#define fPCD_MEM_WS_ONE                 0x00000100L
+#define fPCD_MEM_WS_TWO                 0x00000200L
+#define fPCD_MEM_WS_THREE               0x00000300L
+#if (WINVER >= 0x0501)
+    #define fPCD_MEM_A                  0x00000004L
+    #define fPCD_ATTRIBUTES_PER_WINDOW  0x00008000L
+    #define fPCD_IO1_16                 0x00010000L
+    #define fPCD_IO1_ZW_8               0x00020000L
+    #define fPCD_IO1_SRC_16             0x00040000L
+    #define fPCD_IO1_WS_16              0x00080000L
+    #define fPCD_IO2_16                 0x00100000L
+    #define fPCD_IO2_ZW_8               0x00200000L
+    #define fPCD_IO2_SRC_16             0x00400000L
+    #define fPCD_IO2_WS_16              0x00800000L
+    #define mPCD_MEM1_WS                0x03000000L
+    #define fPCD_MEM1_WS_ONE            0x01000000L
+    #define fPCD_MEM1_WS_TWO            0x02000000L
+    #define fPCD_MEM1_WS_THREE          0x03000000L
+    #define fPCD_MEM1_16                0x04000000L
+    #define mPCD_MEM2_WS                0x30000000L
+    #define fPCD_MEM2_WS_ONE            0x10000000L
+    #define fPCD_MEM2_WS_TWO            0x20000000L
+    #define fPCD_MEM2_WS_THREE          0x30000000L
+    #define fPCD_MEM2_16                0x40000000L
+#endif
+
+/* PC card maximum values */
+#if (WINVER >= 0x0501)
+    #define PCD_MAX_MEMORY  2
+    #define PCD_MAX_IO      2
+#endif
+
+/* Multifunction PC card attribute flags */
+#define mPMF_AUDIO_ENABLE   0x00000008L
+#define fPMF_AUDIO_ENABLE   0x00000008L
+
+/* Hardware profile information flags */
+#define CM_HWPI_NOT_DOCKABLE    0x00000000L
+#define CM_HWPI_UNDOCKED        0x00000001L
+#define CM_HWPI_DOCKED          0x00000002L
+
+/* Resource types */
+#define ResType_All             0x00000000L
+#define ResType_None            0x00000000L
+#define ResType_Mem             0x00000001L
+#define ResType_IO              0x00000002L
+#define ResType_DMA             0x00000003L
+#define ResType_IRQ             0x00000004L
+#define ResType_DoNotUse        0x00000005L
+#define ResType_BusNumber       0x00000006L
+#define ResType_MemLarge        0x00000007L
+#define ResType_MAX             0x00000007L
+#define ResType_Ignored_Bit     0x00008000L
+#define ResType_ClassSpecific   0x0000FFFFL
+#define ResType_DevicePrivate   0x00008001L
+#define ResType_PcCardConfig    0x00008002L
+#define ResType_MfCardConfig    0x00008003L
+
+/* CM_Add_Range() flags */
+#define CM_ADD_RANGE_ADDIFCONFLICT      0x00000000L
+#define CM_ADD_RANGE_DONOTADDIFCONFLICT 0x00000001L
+#define CM_ADD_RANGE_BITS               0x00000001L
+
+/* CM_Get_First_Log_Conf() flags */
+#define BASIC_LOG_CONF      0x00000000L
+#define FILTERED_LOG_CONF   0x00000001L
+#define ALLOC_LOG_CONF      0x00000002L
+#define BOOT_LOG_CONF       0x00000003L
+#define FORCED_LOG_CONF     0x00000004L
+#define OVERRIDE_LOG_CONF   0x00000005L
+#define NUM_LOG_CONF        0x00000006L
+#define LOG_CONF_BITS       0x00000007L
+
+/* Priority values */
+#define PRIORITY_EQUAL_FIRST    0x00000008L
+#define PRIORITY_EQUAL_LAST     0x00000000L
+#define PRIORITY_BIT            0x00000008L
+
+/* Registry dispositions */
+#define RegDisposition_OpenAlways   0x00000000L
+#define RegDisposition_OpenExisting 0x00000001L
+#define RegDisposition_Bits         0x00000001L
+
+/* CM_Add_ID() flags */
+#define CM_ADD_ID_HARDWARE      0x00000000L
+#define CM_ADD_ID_COMPATIBLE    0x00000001L
+#define CM_ADD_ID_BITS          0x00000001L
+
+/* Device node creation flags */
+#define CM_CREATE_DEVNODE_NORMAL            0x00000000L
+#define CM_CREATE_DEVNODE_NO_WAIT_INSTALL   0x00000001L
+#define CM_CREATE_DEVNODE_PHANTOM           0x00000002L
+#define CM_CREATE_DEVNODE_GENERATE_ID       0x00000004L
+#define CM_CREATE_DEVNODE_DO_NOT_INSTALL    0x00000008L
+#define CM_CREATE_DEVNODE_BITS              0x0000000FL
+#define CM_CREATE_DEVINST_NORMAL            CM_CREATE_DEVNODE_NORMAL
+#define CM_CREATE_DEVINST_NO_WAIT_INSTALL   CM_CREATE_DEVNODE_NO_WAIT_INSTALL
+#define CM_CREATE_DEVINST_PHANTOM           CM_CREATE_DEVNODE_PHANTOM
+#define CM_CREATE_DEVINST_GENERATE_ID       CM_CREATE_DEVNODE_GENERATE_ID
+#define CM_CREATE_DEVINST_DO_NOT_INSTALL    CM_CREATE_DEVNODE_DO_NOT_INSTALL
+#define CM_CREATE_DEVINST_BITS              CM_CREATE_DEVNODE_BITS
+
+/* CM_Delete_Class_Key() flags */
+#define CM_DELETE_CLASS_ONLY            0x00000000L
+#define CM_DELETE_CLASS_SUBKEYS         0x00000001L
+#if (WINVER >= 0x0600)
+    #define CM_DELETE_CLASS_INTERFACE   0x00000002L
+#endif
+#define CM_DELETE_CLASS_BITS            0x00000003L
+
+/* CM_Run_Detection() flags */
+#define CM_DETECT_NEW_PROFILE       0x00000001L
+#define CM_DETECT_CRASHED           0x00000002L
+#define CM_DETECT_HWPROF_FIRST_BOOT 0x00000004L
+#define CM_DETECT_RUN               0x80000000L
+#define CM_DETECT_BITS              0x80000007L
+#define CM_DISABLE_POLITE           0x00000000L
+#define CM_DISABLE_ABSOLUTE         0x00000001L
+#define CM_DISABLE_HARDWARE         0x00000002L
+#define CM_DISABLE_UI_NOT_OK        0x00000004L
+#define CM_DISABLE_BITS             0x00000007L
+
+/* CM_Get_Device_ID_List() flags */
+#define CM_GETIDLIST_FILTER_NONE                    0x00000000L
+#define CM_GETIDLIST_FILTER_ENUMERATOR              0x00000001L
+#define CM_GETIDLIST_FILTER_SERVICE                 0x00000002L
+#define CM_GETIDLIST_FILTER_EJECTRELATIONS          0x00000004L
+#define CM_GETIDLIST_FILTER_REMOVALRELATIONS        0x00000008L
+#define CM_GETIDLIST_FILTER_POWERRELATIONS          0x00000010L
+#define CM_GETIDLIST_FILTER_BUSRELATIONS            0x00000020L
+#define CM_GETIDLIST_DONOTGENERATE                  0x10000040L
+#if (WINVER >= 0x0601)
+    #define CM_GETIDLIST_FILTER_TRANSPORTRELATIONS  0x00000080L
+    #define CM_GETIDLIST_FILTER_PRESENT             0x00000100L
+    #define CM_GETIDLIST_FILTER_CLASS               0x00000200L
+    #define CM_GETIDLIST_FILTER_BITS                0x100003FFL
+#else
+    #define CM_GETIDLIST_FILTER_BITS                0x1000007FL
+#endif
+
+/* CM_Get_Device_Interface_List() flags */
+#define CM_GET_DEVICE_INTERFACE_LIST_PRESENT        0x00000000L
+#define CM_GET_DEVICE_INTERFACE_LIST_ALL_DEVICES    0x00000001L
+#define CM_GET_DEVICE_INTERFACE_LIST_BITS           0x00000001L
+
+/* CM_Get_DevInst_Registry_Property() flags */
+#define CM_DRP_DEVICEDESC                       0x00000001L
+#define CM_DRP_HARDWAREID                       0x00000002L
+#define CM_DRP_COMPATIBLEIDS                    0x00000003L
+#define CM_DRP_SERVICE                          0x00000005L
+#define CM_DRP_CLASS                            0x00000008L
+#define CM_DRP_CLASSGUID                        0x00000009L
+#define CM_DRP_DRIVER                           0x0000000AL
+#define CM_DRP_CONFIGFLAGS                      0x0000000BL
+#define CM_DRP_MFG                              0x0000000CL
+#define CM_DRP_FRIENDLYNAME                     0x0000000DL
+#define CM_DRP_LOCATION_INFORMATION             0x0000000EL
+#define CM_DRP_PHYSICAL_DEVICE_OBJECT_NAME      0x0000000FL
+#define CM_DRP_CAPABILITIES                     0x00000010L
+#define CM_DRP_UI_NUMBER                        0x00000011L
+#define CM_DRP_UPPERFILTERS                     0x00000012L
+#define CM_DRP_LOWERFILTERS                     0x00000013L
+#define CM_DRP_BUSTYPEGUID                      0x00000014L
+#define CM_DRP_LEGACYBUSTYPE                    0x00000015L
+#define CM_DRP_BUSNUMBER                        0x00000016L
+#define CM_DRP_ENUMERATOR_NAME                  0x00000017L
+#define CM_DRP_SECURITY                         0x00000018L
+#define CM_DRP_SECURITY_SDS                     0x00000019L
+#define CM_DRP_DEVTYPE                          0x0000001AL
+#define CM_DRP_EXCLUSIVE                        0x0000001BL
+#define CM_DRP_CHARACTERISTICS                  0x0000001CL
+#define CM_DRP_ADDRESS                          0x0000001DL
+#define CM_DRP_UI_NUMBER_DESC_FORMAT            0x0000001EL
+#if (_WIN32_WINNT >= 0x0501)
+    #define CM_DRP_DEVICE_POWER_DATA            0x0000001FL
+    #define CM_DRP_REMOVAL_POLICY               0x00000020L
+    #define CM_DRP_REMOVAL_POLICY_HW_DEFAULT    0x00000021L
+    #define CM_DRP_REMOVAL_POLICY_OVERRIDE      0x00000022L
+    #define CM_DRP_INSTALL_STATE                0x00000023L
+#endif
+#if (WINVER >= 0x0502)
+    #define CM_DRP_LOCATION_PATHS               0x00000024L
+#endif
+#if (WINVER >= 0x0601)
+    #define CM_DRP_BASE_CONTAINERID             0x00000025L
+#endif
+#define CM_DRP_MIN                              0x00000001L
+#define CM_DRP_MAX                              0x00000025L
+
+/* CM_Get_Class_Registry_Property() flags */
+#if (_WIN32_WINNT >= 0x0600)
+    #define CM_CRP_UPPERFILTERS CM_DRP_UPPERFILTERS
+    #define CM_CRP_LOWERFILTERS CM_DRP_LOWERFILTERS
+#endif
+#define CM_CRP_SECURITY         CM_DRP_SECURITY
+#define CM_CRP_SECURITY_SDS     CM_DRP_SECURITY_SDS
+#define CM_CRP_DEVTYPE          CM_DRP_DEVTYPE
+#define CM_CRP_EXCLUSIVE        CM_DRP_EXCLUSIVE
+#define CM_CRP_CHARACTERISTICS  CM_DRP_CHARACTERISTICS
+#define CM_CRP_MIN              CM_DRP_MIN
+#define CM_CRP_MAX              CM_DRP_MAX
+
+/* Device instance capability flags */
+#define CM_DEVCAP_LOCKSUPPORTED     0x00000001L
+#define CM_DEVCAP_EJECTSUPPORTED    0x00000002L
+#define CM_DEVCAP_REMOVABLE         0x00000004L
+#define CM_DEVCAP_DOCKDEVICE        0x00000008L
+#define CM_DEVCAP_UNIQUEID          0x00000010L
+#define CM_DEVCAP_SILENTINSTALL     0x00000020L
+#define CM_DEVCAP_RAWDEVICEOK       0x00000040L
+#define CM_DEVCAP_SURPRISEREMOVALOK 0x00000080L
+#define CM_DEVCAP_HARDWAREDISABLED  0x00000100L
+#define CM_DEVCAP_NONDYNAMIC        0x00000200L
+
+/* Removal policies */
+#if (WINVER >= 0x0501)
+    #define CM_REMOVAL_POLICY_EXPECT_NO_REMOVAL         1
+    #define CM_REMOVAL_POLICY_EXPECT_ORDERLY_REMOVAL    2
+    #define CM_REMOVAL_POLICY_EXPECT_SURPRISE_REMOVAL   3
+#endif
+
+/* Install states */
+#if (WINVER >= 0x0501)
+    #define CM_INSTALL_STATE_INSTALLED          0
+    #define CM_INSTALL_STATE_NEEDS_REINSTALL    1
+    #define CM_INSTALL_STATE_FAILED_INSTALL     2
+    #define CM_INSTALL_STATE_FINISH_INSTALL     3
+#endif
+
+/* CM_Locate_DevNode() flags */
+#define CM_LOCATE_DEVNODE_NORMAL        0x00000000L
+#define CM_LOCATE_DEVNODE_PHANTOM       0x00000001L
+#define CM_LOCATE_DEVNODE_CANCELREMOVE  0x00000002L
+#define CM_LOCATE_DEVNODE_NOVALIDATION  0x00000004L
+#define CM_LOCATE_DEVNODE_BITS          0x00000007L
+#define CM_LOCATE_DEVINST_NORMAL        CM_LOCATE_DEVNODE_NORMAL
+#define CM_LOCATE_DEVINST_PHANTOM       CM_LOCATE_DEVNODE_PHANTOM
+#define CM_LOCATE_DEVINST_CANCELREMOVE  CM_LOCATE_DEVNODE_CANCELREMOVE
+#define CM_LOCATE_DEVINST_NOVALIDATION  CM_LOCATE_DEVNODE_NOVALIDATION
+#define CM_LOCATE_DEVINST_BITS          CM_LOCATE_DEVNODE_BITS
+
+/* CM_Open_Class_Key() flags */
+#define CM_OPEN_CLASS_KEY_INSTALLER 0x00000000L
+#define CM_OPEN_CLASS_KEY_INTERFACE 0x00000001L
+#define CM_OPEN_CLASS_KEY_BITS      0x00000001L
+
+/* CM_Query_And_Remove_SubTree() flags */
+#define CM_REMOVE_UI_OK             0x00000000L
+#define CM_REMOVE_UI_NOT_OK         0x00000001L
+#define CM_REMOVE_NO_RESTART        0x00000002L
+#define CM_REMOVE_BITS              0x00000003L
+#define CM_QUERY_REMOVE_UI_OK       CM_REMOVE_UI_OK
+#define CM_QUERY_REMOVE_UI_NOT_OK   CM_REMOVE_UI_NOT_OK
+#define CM_QUERY_REMOVE_BITS        (CM_QUERY_REMOVE_UI_OK | CM_QUERY_REMOVE_UI_NOT_OK)
+
+/* CM_Reenumerate_DevNode() flags */
+#define CM_REENUMERATE_NORMAL                   0x00000000L
+#define CM_REENUMERATE_SYNCHRONOUS              0x00000001L
+#if (WINVER >= 0x0501)
+    #define CM_REENUMERATE_RETRY_INSTALLATION   0x00000002L
+    #define CM_REENUMERATE_ASYNCHRONOUS         0x00000004L
+#endif
+#define CM_REENUMERATE_BITS                     0x00000007L
+
+/* CM_Register_Device_Driver() flags */
+#define CM_REGISTER_DEVICE_DRIVER_STATIC        0x00000000L
+#define CM_REGISTER_DEVICE_DRIVER_DISABLEABLE   0x00000001L
+#define CM_REGISTER_DEVICE_DRIVER_REMOVABLE     0x00000002L
+#define CM_REGISTER_DEVICE_DRIVER_BITS          0x00000003L
+
+/* Registry branch locations */
+#define CM_REGISTRY_HARDWARE    0x00000000L
+#define CM_REGISTRY_SOFTWARE    0x00000001L
+#define CM_REGISTRY_USER        0x00000100L
+#define CM_REGISTRY_CONFIG      0x00000200L
+#define CM_REGISTRY_BITS        0x00000301L
+
+/* CM_Set_DevNode_Problem() flags */
+#define CM_SET_DEVNODE_PROBLEM_NORMAL   0x00000000L
+#define CM_SET_DEVNODE_PROBLEM_OVERRIDE 0x00000001L
+#define CM_SET_DEVNODE_PROBLEM_BITS     0x00000001L
+#define CM_SET_DEVINST_PROBLEM_NORMAL   CM_SET_DEVNODE_PROBLEM_NORMAL
+#define CM_SET_DEVINST_PROBLEM_OVERRIDE CM_SET_DEVNODE_PROBLEM_OVERRIDE
+#define CM_SET_DEVINST_PROBLEM_BITS     CM_SET_DEVNODE_PROBLEM_BITS
+
+/* CM_Set_HW_Prof_Flags() flags */
+#define CM_SET_HW_PROF_FLAGS_UI_NOT_OK  0x00000001L
+#define CM_SET_HW_PROF_FLAGS_BITS       0x00000001L
+
+/* CM_Setup_DevInst() actions */
+#define CM_SETUP_DEVNODE_READY      0x00000000L
+#define CM_SETUP_DEVINST_READY      CM_SETUP_DEVNODE_READY
+#define CM_SETUP_DOWNLOAD           0x00000001L
+#define CM_SETUP_WRITE_LOG_CONFS    0x00000002L
+#define CM_SETUP_PROP_CHANGE        0x00000003L
+#if (WINVER >= 0x0501)
+    #define CM_SETUP_DEVNODE_RESET  0x00000004L
+    #define CM_SETUP_DEVINST_RESET  CM_SETUP_DEVNODE_RESET
+#endif
+#define CM_SETUP_BITS               0x00000007L
+
+/* CM_Query_Arbitrator_Free_Data() flags */
+#define CM_QUERY_ARBITRATOR_RAW         0x00000000L
+#define CM_QUERY_ARBITRATOR_TRANSLATED  0x00000001L
+#define CM_QUERY_ARBITRATOR_BITS        0x00000001L
+
+/* CM_Get_DevNode_Custom_Property() flags */
+#if (WINVER >= 0x0501)
+    #define CM_CUSTOMDEVPROP_MERGE_MULTISZ  0x00000001L
+    #define CM_CUSTOMDEVPROP_BITS           0x00000001L
+#endif
+
+/* Name attributes */
+#define CM_NAME_ATTRIBUTE_NAME_RETRIEVED_FROM_DEVICE    0x00000001L
+#define CM_NAME_ATTRIBUTE_USER_ASSIGNED_NAME            0x00000002L
+
+/* Global states */
+#define CM_GLOBAL_STATE_CAN_DO_UI           0x00000001L
+#define CM_GLOBAL_STATE_ON_BIG_STACK        0x00000002L
+#define CM_GLOBAL_STATE_SERVICES_AVAILABLE  0x00000004L
+#define CM_GLOBAL_STATE_SHUTTING_DOWN       0x00000008L
+#define CM_GLOBAL_STATE_DETECTION_PENDING   0x00000010L
+#if (WINVER >= 0x0601)
+    #define CM_GLOBAL_STATE_REBOOT_REQUIRED 0x00000020L
+#endif
+
+/* Configuration manager return codes */
+#define CR_SUCCESS                  0x00000000L
+#define CR_DEFAULT                  0x00000001L
+#define CR_OUT_OF_MEMORY            0x00000002L
+#define CR_INVALID_POINTER          0x00000003L
+#define CR_INVALID_FLAG             0x00000004L
+#define CR_INVALID_DEVNODE          0x00000005L
+#define CR_INVALID_DEVINST          CR_INVALID_DEVNODE
+#define CR_INVALID_RES_DES          0x00000006L
+#define CR_INVALID_LOG_CONF         0x00000007L
+#define CR_INVALID_ARBITRATOR       0x00000008L
+#define CR_INVALID_NODELIST         0x00000009L
+#define CR_DEVNODE_HAS_REQS         0x0000000AL
+#define CR_DEVINST_HAS_REQS         CR_DEVNODE_HAS_REQS
+#define CR_INVALID_RESOURCEID       0x0000000BL
+#define CR_DLVXD_NOT_FOUND          0x0000000CL
+#define CR_NO_SUCH_DEVNODE          0x0000000DL
+#define CR_NO_SUCH_DEVINST          CR_NO_SUCH_DEVNODE
+#define CR_NO_MORE_LOG_CONF         0x0000000EL
+#define CR_NO_MORE_RES_DES          0x0000000FL
+#define CR_ALREADY_SUCH_DEVNODE     0x00000010L
+#define CR_ALREADY_SUCH_DEVINST     CR_ALREADY_SUCH_DEVNODE
+#define CR_INVALID_RANGE_LIST       0x00000011L
+#define CR_INVALID_RANGE            0x00000012L
+#define CR_FAILURE                  0x00000013L
+#define CR_NO_SUCH_LOGICAL_DEV      0x00000014L
+#define CR_CREATE_BLOCKED           0x00000015L
+#define CR_NOT_SYSTEM_VM            0x00000016L
+#define CR_REMOTE_VETOED            0x00000017L
+#define CR_APM_VETOED               0x00000018L
+#define CR_INVALID_LOAD_TYPE        0x00000019L
+#define CR_BUFFER_SMALL             0x0000001AL
+#define CR_NO_ARBITRATOR            0x0000001BL
+#define CR_NO_REGISTRY_HANDLE       0x0000001CL
+#define CR_REGISTRY_ERROR           0x0000001DL
+#define CR_INVALID_DEVICE_ID        0x0000001EL
+#define CR_INVALID_DATA             0x0000001FL
+#define CR_INVALID_API              0x00000020L
+#define CR_DEVLOADER_NOT_READY      0x00000021L
+#define CR_NEED_RESTART             0x00000022L
+#define CR_NO_MORE_HW_PROFILES      0x00000023L
+#define CR_DEVICE_NOT_THERE         0x00000024L
+#define CR_NO_SUCH_VALUE            0x00000025L
+#define CR_WRONG_TYPE               0x00000026L
+#define CR_INVALID_PRIORITY         0x00000027L
+#define CR_NOT_DISABLEABLE          0x00000028L
+#define CR_FREE_RESOURCES           0x00000029L
+#define CR_QUERY_VETOED             0x0000002AL
+#define CR_CANT_SHARE_IRQ           0x0000002BL
+#define CR_NO_DEPENDENT             0x0000002CL
+#define CR_SAME_RESOURCES           0x0000002DL
+#define CR_NO_SUCH_REGISTRY_KEY     0x0000002EL
+#define CR_INVALID_MACHINENAME      0x0000002FL
+#define CR_REMOTE_COMM_FAILURE      0x00000030L
+#define CR_MACHINE_UNAVAILABLE      0x00000031L
+#define CR_NO_CM_SERVICES           0x00000032L
+#define CR_ACCESS_DENIED            0x00000033L
+#define CR_CALL_NOT_IMPLEMENTED     0x00000034L
+#define CR_INVALID_PROPERTY         0x00000035L
+#define CR_DEVICE_INTERFACE_ACTIVE  0x00000036L
+#define CR_NO_SUCH_DEVICE_INTERFACE 0x00000037L
+#define CR_INVALID_REFERENCE_STRING 0x00000038L
+#define CR_INVALID_CONFLICT_LIST    0x00000039L
+#define CR_INVALID_INDEX            0x0000003AL
+#define CR_INVALID_STRUCTURE_SIZE   0x0000003BL
+#define NUM_CR_RESULTS              0x0000003CL
+
+/* Conflict details */
+typedef struct _CONFLICT_DETAILS_A {
+    ULONG   CD_ulSize;
+    ULONG   CD_ulMask;
+    DEVINST CD_dnDevInst;
+    RES_DES CD_rdResDes;
+    ULONG   CD_ulFlags;
+    CHAR    CD_szDescription[MAX_PATH];
+} CONFLICT_DETAILS_A;
+typedef CONFLICT_DETAILS_A  *PCONFLICT_DETAILS_A;
+typedef struct _CONFLICT_DETAILS_W {
+    ULONG   CD_ulSize;
+    ULONG   CD_ulMas;
+    DEVINST CD_dnDevInst;
+    RES_DES CD_cdResDes;
+    ULONG   CD_ulFlags;
+    WCHAR   CD_szDescription[MAX_PATH];
+} CONFLICT_DETAILS_W;
+typedef CONFLICT_DETAILS_W  *PCONFLICT_DETAILS_W;
+#ifdef UNICODE
+typedef CONFLICT_DETAILS_W  CONFLICT_DETAILS;
+typedef PCONFLICT_DETAILS_W PCONFLICT_DETAILS;
+#else
+typedef CONFLICT_DETAILS_A  CONFLICT_DETAILS;
+typedef PCONFLICT_DETAILS_A PCONFLICT_DETAILS;
+#endif
+
+/* The following structures get one-byte packing. */
+#include <pshpack1.h>
+
+/* Memory range */
+typedef struct Mem_Range_s {
+    DWORDLONG   MR_Align;
+    ULONG       MR_nBytes;
+    DWORDLONG   MR_Min;
+    DWORDLONG   MR_Max;
+    DWORD       MR_Flags;
+    DWORD       MR_Reserved;
+} MEM_RANGE;
+typedef MEM_RANGE   *PMEM_RANGE;
+
+/* Memory descriptor */
+typedef struct Mem_Des_s {
+    DWORD       MD_Count;
+    DWORD       MD_Type;
+    DWORDLONG   MD_Alloc_Base;
+    DWORDLONG   MD_Alloc_End;
+    DWORD       MD_Flags;
+    DWORD       MD_Reserved;
+} MEM_DES;
+typedef MEM_DES *PMEM_DES;
+
+/* Memory resource */
+typedef struct Mem_Resource_s {
+    MEM_DES     MEM_Header;
+    MEM_RANGE   MEM_Data[ANYSIZE_ARRAY];
+} MEM_RESOURCE;
+typedef MEM_RESOURCE    *PMEM_RESOURCE;
+
+/* Memory large range */
+typedef struct Mem_Large_Range_s {
+    DWORDLONG   MLR_Align;
+    ULONGLONG   MLR_nBytes;
+    DWORDLONG   MLR_Min;
+    DWORDLONG   MLR_Max;
+    DWORD       MLR_Flags;
+    DWORD       MLR_Reserved;
+} MEM_LARGE_RANGE;
+typedef MEM_LARGE_RANGE *PMEM_LARGE_RANGE;
+
+/* Memory large descriptor */
+typedef struct Mem_Large_Des_s {
+    DWORD       MLD_Count;
+    DWORD       MLD_Type;
+    DWORDLONG   MLD_Alloc_Base;
+    DWORDLONG   MLD_Alloc_End;
+    DWORD       MLD_Flags;
+    DWORD       MLD_Reserved;
+} MEM_LARGE_DES;
+typedef MEM_LARGE_DES   *PMEM_LARGE_DES;
+
+/* Memory large resource */
+typedef struct Mem_Large_Resource_s {
+    MEM_LARGE_DES   MEM_LARGE_Header;
+    MEM_LARGE_RANGE MEM_LARGE_Data[ANYSIZE_ARRAY];
+} MEM_LARGE_RESOURCE;
+typedef MEM_LARGE_RESOURCE  *PMEM_LARGE_RESOURCE;
+
+/* I/O range */
+typedef struct IO_Range_s {
+    DWORDLONG   IOR_Align;
+    DWORD       IOR_nPorts;
+    DWORDLONG   IOR_Min;
+    DWORDLONG   IOR_Max;
+    DWORD       IOR_RangeFlags;
+    DWORDLONG   IOR_Alias;
+} IO_RANGE;
+typedef IO_RANGE    *PIO_RANGE;
+
+/* I/O descriptor */
+typedef struct IO_Des_s {
+    DWORD       IOD_Count;
+    DWORD       IOD_Type;
+    DWORDLONG   IOD_Alloc_Base;
+    DWORDLONG   IOD_Alloc_End;
+    DWORD       IOD_DesFlags;
+} IO_DES;
+typedef IO_DES  *PIO_DES;
+
+/* I/O resource */
+typedef struct IO_Resource_s {
+    IO_DES      IO_Header;
+    IO_RANGE    IO_Data[ANYSIZE_ARRAY];
+} IO_RESOURCE;
+typedef IO_RESOURCE *PIO_RESOURCE;
+
+/* DMA range */
+typedef struct DMA_Range_s {
+    ULONG   DR_Min;
+    ULONG   DR_Max;
+    ULONG   DR_Flags;
+} DMA_RANGE;
+typedef DMA_RANGE   *PDMA_RANGE;
+
+/* DMA descriptor */
+typedef struct DMA_Des_s {
+    DWORD   DD_Count;
+    DWORD   DD_Type;
+    DWORD   DD_Flags;
+    ULONG   DD_Alloc_Chan;
+} DMA_DES;
+typedef DMA_DES *PDMA_DES;
+
+/* DMA resource */
+typedef struct DMA_Resource_s {
+    DMA_DES     DMA_Header;
+    DMA_RANGE   DMA_Data[ANYSIZE_ARRAY];
+} DMA_RESOURCE;
+typedef DMA_RESOURCE    *PDMA_RESOURCE;
+
+/* IRQ range */
+typedef struct IRQ_Range_s {
+    ULONG   IRQR_Min;
+    ULONG   IRQR_Max;
+#ifdef NT_PROCESSOR_GROUPS
+    USHORT  IRQR_Flags;
+    USHORT  IRQR_Rsvdz;
+#else
+    ULONG   IRQR_Flags;
+#endif
+} IRQ_RANGE;
+typedef IRQ_RANGE   *PIRQ_RANGE;
+
+/* IRQ descriptor (32-bit version) */
+typedef struct IRQ_Des_32_s {
+    DWORD   IRQD_Count;
+    DWORD   IRQD_Type;
+#ifdef NT_PROCESSOR_GROUPS
+    USHORT  IRQD_Flags;
+    USHORT  IRQD_Group;
+#else
+    DWORD   IRQD_Flags;
+#endif
+    ULONG   IRQD_Alloc_Num;
+    ULONG32 IRQD_Affinity;
+} IRQ_DES_32;
+typedef IRQ_DES_32  *PIRQ_DES_32;
+
+/* IRQ descriptor (64-bit version) */
+typedef struct IRQ_Des_64_s {
+    DWORD   IRQD_Count;
+    DWORD   IRQD_Type;
+#ifdef NT_PROCESSOR_GROUPS
+    USHORT  IRQD_Flags;
+    USHORT  IRQD_Group;
+#else
+    DWORD   IRQD_Flags;
+#endif
+    ULONG   IRQD_Alloc_Num;
+    ULONG64 IRQD_Affinity;
+} IRQ_DES_64;
+typedef IRQ_DES_64  *PIRQ_DES_64;
+
+/* IRQ descriptor */
+typedef IRQ_DES_32  IRQ_DES;
+typedef PIRQ_DES_32 PIRQ_DES;
+
+/* IRQ resource (32-bit version) */
+typedef struct IRQ_Resource_32_s {
+    IRQ_DES_32  IRQ_Header;
+    IRQ_RANGE   IRQ_Data[ANYSIZE_ARRAY];
+} IRQ_RESOURCE_32;
+typedef IRQ_RESOURCE_32 *PIRQ_RESOURCE_32;
+
+/* IRQ resource (64-bit version) */
+typedef struct IRQ_Resource_64_s {
+    IRQ_DES_64  IRQ_Header;
+    IRQ_RANGE   IRQ_Data[ANYSIZE_ARRAY];
+} IRQ_RESOURCE_64;
+typedef IRQ_RESOURCE_64 *PIRQ_RESOURCE_64;
+
+/* IRQ resource */
+typedef IRQ_RESOURCE_64     IRQ_RESOURCE;
+typedef PIRQ_RESOURCE_64    PIRQ_RESOURCE;
+
+/* Device private range */
+typedef struct DevPrivate_Range_s {
+    DWORD   PR_Data1;
+    DWORD   PR_Data2;
+    DWORD   PR_Data3;
+} DEVPRIVATE_RANGE;
+typedef DEVPRIVATE_RANGE    *PDEVPRIVATE_RANGE;
+
+/* Device private descriptor */
+typedef struct DevPrivate_Des_s {
+    DWORD   PD_Count;
+    DWORD   PD_Type;
+    DWORD   PD_Data1;
+    DWORD   PD_Data2;
+    DWORD   PD_Data3;
+    DWORD   PD_Flags;
+} DEVPRIVATE_DES;
+typedef DEVPRIVATE_DES  *PDEVPRIVATE_DES;
+
+/* Device private resource */
+typedef struct DevPrivate_Resource_s {
+    DEVPRIVATE_DES      PRV_Header;
+    DEVPRIVATE_RANGE    PRV_Data[ANYSIZE_ARRAY];
+} DEVPRIVATE_RESOURCE;
+typedef DEVPRIVATE_RESOURCE *PDEVPRIVATE_RESOURCE;
+
+/* Class-specific descriptor */
+typedef struct CS_Des_s {
+    DWORD   CSD_SignatureLength;
+    DWORD   CSD_LegacyDataOffset;
+    DWORD   CSD_LegacyDataSize;
+    DWORD   CSD_Flags;
+    GUID    CSD_ClassGuid;
+    BYTE    CSD_Signature[ANYSIZE_ARRAY];
+} CS_DES;
+typedef CS_DES  *PCS_DES;
+
+/* Class-specific resource */
+typedef struct CS_Resource_s {
+    CS_DES  CS_Header;
+} CS_RESOURCE;
+typedef CS_RESOURCE *PCS_RESOURCE;
+
+/* PC card descriptor */
+typedef struct PcCard_Des_s {
+    DWORD   PCD_Count;
+    DWORD   PCD_Type;
+    DWORD   PCD_Flags;
+    BYTE    PCD_ConfigIndex;
+    BYTE    PCD_Reserved[4];
+    DWORD   PCD_MemoryCardBase1;
+    DWORD   PCD_MemoryCardBase2;
+#if (WINVER >= 0x0501)
+    DWORD   PCD_MemoryCardBase[PCD_MAX_MEMORY];
+    WORD    PCD_MemoryFlags[PCD_MAX_MEMORY];
+    BYTE    PCD_IoFlags[PCD_MAX_IO];
+#endif
+} PCCARD_DES;
+typedef PCCARD_DES  *PPCCARD_DES;
+
+/* PC card resource */
+typedef struct PcCard_Resource_s {
+    PCCARD_DES  PcCard_Header;
+} PCCARD_RESOURCE;
+typedef PCCARD_RESOURCE *PPCCARD_RESOURCE;
+
+/* Multifunction PC card descriptor */
+typedef struct MfCard_Des_s {
+    DWORD   PMF_Count;
+    DWORD   PMF_Type;
+    DWORD   PMF_Flags;
+    BYTE    PMF_ConfigOptions;
+    BYTE    PMF_IoResourceIndex;
+    BYTE    PMF_Reserved[2];
+    DWORD   PMF_ConfigRegisterBase;
+} MFCARD_DES;
+typedef MFCARD_DES  *PMFCARD_DES;
+
+/* Multifunction PC card resource */
+typedef struct MfCard_Resource_s {
+    MFCARD_DES  MfCard_Header;
+} MFCARD_RESOURCE;
+typedef MFCARD_RESOURCE *PMFCARD_RESOURCE;
+
+/* Bus number range */
+typedef struct BusNumber_Range_s {
+    ULONG   BUSR_Min;
+    ULONG   BUSR_Max;
+    ULONG   BUSR_nBusNumbers;
+    ULONG   BUSR_Flags;
+} BUSNUMBER_RANGE;
+typedef BUSNUMBER_RANGE *PBUSNUMBER_RANGE;
+
+/* Bus number descriptor */
+typedef struct BusNumber_Des_s {
+    DWORD   BUSD_Count;
+    DWORD   BUSD_Type;
+    DWORD   BUSD_Flags;
+    ULONG   BUSD_Alloc_Base;
+    ULONG   BUSD_Alloc_End;
+} BUSNUMBER_DES;
+typedef BUSNUMBER_DES   *PBUSNUMBER_DES;
+
+/* Bus number resource */
+typedef struct BusNumber_Resource_s {
+    BUSNUMBER_DES   BusNumber_Header;
+    BUSNUMBER_RANGE BusNumber_Data[ANYSIZE_ARRAY];
+} BUSNUMBER_RESOURCE;
+typedef BUSNUMBER_RESOURCE  *PBUSNUMBER_RESOURCE;
+
+/* Hardware profile information */
+typedef struct HWProfileInfo_sA {
+    ULONG   HWPI_ulHWProfile;
+    CHAR    HWPI_szFriendlyName[MAX_PROFILE_LEN];
+    DWORD   HWPI_dwFlags;
+} HWPROFILEINFO_A;
+typedef HWPROFILEINFO_A     *PHWPROFILEINFO_A;
+typedef struct HWProfileInfo_sW {
+    ULONG   HWPI_ulHWProfile;
+    WCHAR   HWPI_szFriendlyName[MAX_PROFILE_LEN];
+    DWORD   HWPI_dwFlags;
+} HWPROFILEINFO_W;
+typedef HWPROFILEINFO_W     *PHWPROFILEINFO_W;
+#ifdef UNICODE
+typedef HWPROFILEINFO_W     HWPROFILEINFO;
+typedef PHWPROFILEINFO_W    PHWPROFILEINFO;
+#else
+typedef HWPROFILEINFO_A     HWPROFILEINFO;
+typedef PHWPROFILEINFO_A    PHWPROFILEINFO;
+#endif
+
+/* Revert to default packing. */
+#include <poppack.h>
+
+/* Functions in CFGMGR32.DLL and SETUPAPI.DLL */
+CMAPI CONFIGRET WINAPI  CM_Add_Empty_Log_Conf( PLOG_CONF, DEVINST, PRIORITY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Add_Empty_Log_Conf_Ex( PLOG_CONF, DEVINST, PRIORITY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Add_IDA( DEVINST, PSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Add_IDW( DEVINST, PWSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Add_ID_ExA( DEVINST, PSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Add_ID_ExW( DEVINST, PWSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Add_Range( DWORDLONG, DWORDLONG, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Add_Res_Des( PRES_DES, LOG_CONF, RESOURCEID, PCVOID, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Add_Res_Des_Ex( PRES_DES, LOG_CONF, RESOURCEID, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Connect_MachineA( PCSTR, PHMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Connect_MachineW( PCWSTR, PHMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Create_DevNodeA( PDEVINST, DEVINSTID_A, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Create_DevNodeW( PDEVINST, DEVINSTID_W, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Create_DevNode_ExA( PDEVINST, DEVINSTID_A, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Create_DevNode_ExW( PDEVINST, DEVINSTID_W, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Create_Range_List( PRANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Delete_Class_Key( LPGUID, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Delete_Class_Key_Ex( LPGUID, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Delete_DevNode_Key( DEVNODE, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Delete_DevNode_Key_Ex( DEVNODE, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Delete_Range( DWORDLONG, DWORDLONG, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Detect_Resource_Conflict( DEVINST, RESOURCEID, PCVOID, ULONG, PBOOL, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Detect_Resource_Conflict_Ex( DEVINST, RESOURCEID, PCVOID, ULONG, PBOOL, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Disable_DevNode( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Disable_DevNode_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Disconnect_Machine( HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Dup_Range_List( RANGE_LIST, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Enable_DevNode( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Enable_DevNode_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_Classes( ULONG, LPGUID, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_Classes_Ex( ULONG, LPGUID, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_EnumeratorsA( ULONG, PSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_EnumeratorsW( ULONG, PWSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_Enumerators_ExA( ULONG, PSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Enumerate_Enumerators_ExW( ULONG, PWSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Find_Range( PDWORDLONG, DWORDLONG, ULONG, DWORDLONG, DWORDLONG, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_First_Range( RANGE_LIST, PDWORDLONG, PDWORDLONG, PRANGE_ELEMENT, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Free_Log_Conf( LOG_CONF, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Free_Log_Conf_Ex( LOG_CONF, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Free_Log_Conf_Handle( LOG_CONF );
+CMAPI CONFIGRET WINAPI  CM_Free_Range_List( RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Free_Res_Des( PRES_DES, RES_DES, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Free_Res_Des_Ex( PRES_DES, RES_DES, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Free_Res_Des_Handle( RES_DES );
+CMAPI CONFIGRET WINAPI  CM_Free_Resource_Conflict_Handle( CONFLICT_LIST );
+CMAPI CONFIGRET WINAPI  CM_Get_Child( PDEVINST, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Child_Ex( PDEVINST, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Key_NameA( LPGUID, LPSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Key_NameW( LPGUID, LPWSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Key_Name_ExA( LPGUID, LPSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Key_Name_ExW( LPGUID, LPWSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_NameA( LPGUID, PSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_NameW( LPGUID, PWSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Name_ExA( LPGUID, PSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Name_ExW( LPGUID, PWSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Registry_PropertyA( LPGUID, ULONG, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Class_Registry_PropertyW( LPGUID, ULONG, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Depth( PULONG, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Depth_Ex( PULONG, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Registry_PropertyA( DEVINST, ULONG, PULONG, PVOID, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Registry_PropertyW( DEVINST, ULONG, PULONG, PVOID, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Registry_Property_ExA( DEVINST, ULONG, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Registry_Property_ExW( DEVINST, ULONG, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Status( PULONG, PULONG, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Status_Ex( PULONG, PULONG, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_IDA( DEVINST, PSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_IDW( DEVINST, PWSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_ExA( DEVINST, PSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_ExW( DEVINST, PWSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_ListA( PCSTR, PCHAR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_ListW( PCWSTR, PWCHAR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_ExA( PCSTR, PCHAR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_ExW( PCWSTR, PWCHAR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_SizeA( PULONG, PCSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_SizeW( PULONG, PCWSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_Size_ExA( PULONG, PCSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_List_Size_ExW( PULONG, PCWSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_Size( PULONG, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_ID_Size_Ex( PULONG, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_AliasA( LPCSTR, LPGUID, LPSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_AliasW( LPCWSTR, LPGUID, LPWSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_Alias_ExA( LPCSTR, LPGUID, LPSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_Alias_ExW( LPCWSTR, LPGUID, LPWSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_ListA( LPGUID, DEVINSTID_A, PCHAR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_ListW( LPGUID, DEVINSTID_W, PWCHAR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_ExA( LPGUID, DEVINSTID_A, PCHAR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_ExW( LPGUID, DEVINSTID_W, PWCHAR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_SizeA( PULONG, LPGUID, DEVINSTID_A, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_SizeW( PULONG, LPGUID, DEVINSTID_W, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_Size_ExA( PULONG, LPGUID, DEVINSTID_A, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Device_Interface_List_Size_ExW( PULONG, LPGUID, DEVINSTID_W, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_First_Log_Conf( PLOG_CONF, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_First_Log_Conf_Ex( PLOG_CONF, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Global_State( PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Global_State_Ex( PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_HW_Prof_FlagsA( DEVINSTID_A, ULONG, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_HW_Prof_FlagsW( DEVINSTID_W, ULONG, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_HW_Prof_Flags_ExA( DEVINSTID_A, ULONG, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_HW_Prof_Flags_ExW( DEVINSTID_W, ULONG, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Hardware_Profile_InfoA( ULONG, PHWPROFILEINFO_A, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Hardware_Profile_InfoW( ULONG, PHWPROFILEINFO_W, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Hardware_Profile_Info_ExA( ULONG, PHWPROFILEINFO_A, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Hardware_Profile_Info_ExW( ULONG, PHWPROFILEINFO_W, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Log_Conf_Priority( LOG_CONF, PPRIORITY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Log_Conf_Priority_Ex( LOG_CONF, PPRIORITY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Next_Res_Des( PRES_DES, RES_DES, RESOURCEID, PRESOURCEID, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Next_Res_Des_Ex( PRES_DES, RES_DES, RESOURCEID, PRESOURCEID, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Next_Log_Conf( PLOG_CONF, LOG_CONF, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Next_Log_Conf_Ex( PLOG_CONF, LOG_CONF, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Parent( PDEVINST, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Parent_Ex( PDEVINST, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Res_Des_Data( RES_DES, PVOID, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Res_Des_Data_Ex( RES_DES, PVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Res_Des_Data_Size( PULONG, RES_DES, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Res_Des_Data_Size_Ex( PULONG, RES_DES, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_Resource_Conflict_Count( CONFLICT_LIST, PULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Resource_Conflict_DetailsA( CONFLICT_LIST, ULONG, PCONFLICT_DETAILS_A );
+CMAPI CONFIGRET WINAPI  CM_Get_Resource_Conflict_DetailsW( CONFLICT_LIST, ULONG, PCONFLICT_DETAILS_W );
+CMAPI CONFIGRET WINAPI  CM_Get_Sibling( PDEVINST, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_Sibling_Ex( PDEVINST, DEVINST, ULONG, HMACHINE );
+CMAPI WORD WINAPI       CM_Get_Version( VOID );
+CMAPI WORD WINAPI       CM_Get_Version_Ex( HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Intersect_Range_List( RANGE_LIST, RANGE_LIST, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Invert_Range_List( RANGE_LIST, RANGE_LIST, DWORDLONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Is_Dock_Station_Present( PBOOL );
+CMAPI CONFIGRET WINAPI  CM_Is_Dock_Station_Present_Ex( PBOOL, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Locate_DevNodeA( PDEVINST, DEVINSTID_A, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Locate_DevNodeW( PDEVINST, DEVINSTID_W, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Locate_DevNode_ExA( PDEVINST, DEVINSTID_A, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Locate_DevNode_ExW( PDEVINST, DEVINSTID_W, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Merge_Range_List( RANGE_LIST, RANGE_LIST, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Modify_Res_Des( PRES_DES, RES_DES, RESOURCEID, PCVOID, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Modify_Res_Des_Ex( PRES_DES, RES_DES, RESOURCEID, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Move_DevNode( DEVINST, DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Move_DevNode_Ex( DEVINST, DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Next_Range( PRANGE_ELEMENT, PDWORDLONG, PDWORDLONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_Class_KeyA( LPGUID, LPCSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_Class_KeyW( LPGUID, LPCWSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_Class_Key_ExA( LPGUID, LPCSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Open_Class_Key_ExW( LPGUID, LPCWSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Open_DevNode_Key( DEVINST, REGSAM, ULONG, REGDISPOSITION, PHKEY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_DevNode_Key_Ex( DEVINST, REGSAM, ULONG, REGDISPOSITION, PHKEY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_And_Remove_SubTreeA( DEVINST, PPNP_VETO_TYPE, LPSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Query_And_Remove_SubTreeW( DEVINST, PPNP_VETO_TYPE, LPWSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Query_And_Remove_SubTree_ExA( DEVINST, PPNP_VETO_TYPE, LPSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_And_Remove_SubTree_ExW( DEVINST, PPNP_VETO_TYPE, LPWSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_Arbitrator_Free_Data( PVOID, ULONG, DEVINST, RESOURCEID, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Query_Arbitrator_Free_Data_Ex( PVOID, ULONG, DEVINST, RESOURCEID, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_Arbitrator_Free_Size( PULONG, DEVINST, RESOURCEID, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Query_Arbitrator_Free_Size_Ex( PULONG, DEVINST, RESOURCEID, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_Remove_SubTree( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Query_Remove_SubTree_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Query_Resource_Conflict_List( PCONFLICT_LIST, DEVINST, RESOURCEID, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Reenumerate_DevNode( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Reenumerate_DevNode_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_Driver( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_Driver_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_InterfaceA( DEVINST, LPGUID, LPCSTR, LPSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_InterfaceW( DEVINST, LPGUID, LPCWSTR, LPWSTR, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_Interface_ExA( DEVINST, LPGUID, LPCSTR, LPSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Register_Device_Interface_ExW( DEVINST, LPGUID, LPCWSTR, LPWSTR, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Remove_SubTree( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Remove_SubTree_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Request_Device_EjectA( DEVINST, PPNP_VETO_TYPE, LPSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Request_Device_EjectW( DEVINST, PPNP_VETO_TYPE, LPWSTR, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Request_Device_Eject_ExA( DEVINST, PPNP_VETO_TYPE, LPSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Request_Device_Eject_ExW( DEVINST, PPNP_VETO_TYPE, LPWSTR, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Request_Eject_PC( VOID );
+CMAPI CONFIGRET WINAPI  CM_Request_Eject_PC_Ex( HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Run_Detection( ULONG );
+CMAPI CONFIGRET WINAPI  CM_Run_Detection_Ex( ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_Class_Registry_PropertyA( LPGUID, ULONG, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_Class_Registry_PropertyW( LPGUID, ULONG, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Problem( DEVINST, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Problem_Ex( DEVINST, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Registry_PropertyA( DEVINST, ULONG, PCVOID, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Registry_PropertyW( DEVINST, ULONG, PCVOID, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Registry_Property_ExA( DEVINST, ULONG, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_DevNode_Registry_Property_ExW( DEVINST, ULONG, PCVOID, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof( ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof_Ex( ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof_FlagsA( DEVINSTID_A, ULONG, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof_FlagsW( DEVINSTID_W, ULONG, ULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof_Flags_ExA( DEVINSTID_A, ULONG, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Set_HW_Prof_Flags_ExW( DEVINSTID_W, ULONG, ULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Setup_DevNode( DEVINST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Setup_DevNode_Ex( DEVINST, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Test_Range_Available( DWORDLONG, DWORDLONG, RANGE_LIST, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Uninstall_DevNode( DEVNODE, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Uninstall_DevNode_Ex( DEVNODE, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Unregister_Device_InterfaceA( LPCSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Unregister_Device_InterfaceW( LPCWSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Unregister_Device_Interface_ExA( LPCSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Unregister_Device_Interface_ExW( LPCWSTR, ULONG, HMACHINE );
+#if (WINVER >= 0x0500)
+CMAPI DWORD WINAPI      CMP_WaitNoPendingInstallEvents( DWORD );
+#endif
+#if (WINVER >= 0x0501)
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Custom_PropertyA( DEVINST, PCSTR, PULONG, PVOID, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Custom_PropertyW( DEVINST, PCWSTR, PULONG, PVOID, PULONG, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Custom_Property_ExA( DEVINST, PCSTR, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Get_DevNode_Custom_Property_ExW( DEVINST, PCWSTR, PULONG, PVOID, PULONG, ULONG, HMACHINE );
+CMAPI BOOL WINAPI       CM_Is_Version_Available( WORD );
+CMAPI BOOL WINAPI       CM_Is_Version_Available_Ex( WORD, HMACHINE );
+#endif
+#if (WINVER >= 0x0600)
+CMAPI CONFIGRET WINAPI  CM_Delete_Device_Interface_KeyA( LPCSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Delete_Device_Interface_KeyW( LPCWSTR, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Delete_Device_Interface_Key_ExA( LPCSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Delete_Device_Interface_Key_ExW( LPCWSTR, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Open_Device_Interface_KeyA( LPCSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_Device_Interface_KeyW( LPCWSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG );
+CMAPI CONFIGRET WINAPI  CM_Open_Device_Interface_Key_ExA( LPCSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Open_Device_Interface_Key_ExW( LPCWSTR, REGSAM, REGDISPOSITION, PHKEY, ULONG, HMACHINE );
+CMAPI CONFIGRET WINAPI  CM_Write_UserPowerKey( CONST GUID *, CONST GUID *, CONST GUID *, ULONG, ULONG, UCHAR *, DWORD, PDWORD );
+#endif
+
+/* Aliases */
+#define CM_Create_DevInstA                      CM_Create_DevNodeA
+#define CM_Create_DevInstW                      CM_Create_DevNodeW
+#define CM_Create_DevInst_ExA                   CM_Create_DevNode_ExA
+#define CM_Create_DevInst_ExW                   CM_Create_DevNode_ExW
+#define CM_Delete_DevInst_Key                   CM_Delete_DevNode_Key
+#define CM_Delete_DevInst_Key_Ex                CM_Delete_DevNode_Key_Ex
+#define CM_Disable_DevInst                      CM_Disable_DevNode
+#define CM_Disable_DevInst_Ex                   CM_Disable_DevNode_Ex
+#define CM_Enable_DevInst                       CM_Enable_DevInst
+#define CM_Enable_DevInst_Ex                    CM_Enable_DevInst_Ex
+#define CM_Get_DevInst_Registry_PropertyA       CM_Get_DevNode_Registry_PropertyA
+#define CM_Get_DevInst_Registry_PropertyW       CM_Get_DevNode_Registry_PropertyW
+#define CM_Get_DevInst_Registry_Property_ExA    CM_Get_DevNode_Registry_Property_ExA
+#define CM_Get_DevInst_Registry_Property_ExW    CM_Get_DevNode_Registry_Property_ExW
+#define CM_Get_DevInst_Status                   CM_Get_DevNode_Status
+#define CM_Get_DevInst_Status_Ex                CM_Get_DevNode_Status_Ex
+#define CM_Locate_DevInstA                      CM_Locate_DevNodeA
+#define CM_Locate_DevInstW                      CM_Locate_DevNodeW
+#define CM_Locate_DevInst_ExA                   CM_Locate_DevNode_ExA
+#define CM_Locate_DevInst_ExW                   CM_Locate_DevNode_ExW
+#define CM_Move_DevInst                         CM_Move_DevNode
+#define CM_Move_DevInst_Ex                      CM_Move_DevNode_Ex
+#define CM_Open_DevInst_Key                     CM_Open_DevNode_Key
+#define CM_Open_DevInst_Key_Ex                  CM_Open_DevNode_Key_Ex
+#define CM_Reenumerate_DevInst                  CM_Reenumerate_DevNode
+#define CM_Reenumerate_DevInst_Ex               CM_Reenumerate_DevNode_Ex
+#define CM_Set_DevInst_Problem                  CM_Set_DevNode_Problem
+#define CM_Set_DevInst_Problem_Ex               CM_Set_DevNode_Problem_Ex
+#define CM_Set_DevInst_Registry_PropertyA       CM_Set_DevNode_Registry_PropertyA
+#define CM_Set_DevInst_Registry_PropertyW       CM_Set_DevNode_Registry_PropertyW
+#define CM_Set_DevInst_Registry_Property_ExA    CM_Set_DevNode_Registry_Property_ExA
+#define CM_Set_DevInst_Registry_Property_ExW    CM_Set_DevNode_Registry_Property_ExW
+#define CM_Setup_DevInst                        CM_Setup_DevNode
+#define CM_Setup_DevInst_Ex                     CM_Setup_DevNode_Ex
+#define CM_Uninstall_DevInst                    CM_Uninstall_DevNode
+#define CM_Uninstall_DevInst_Ex                 CM_Uninstall_DevNode_Ex
+#if (WINVER >= 0x0500)
+    #define CM_WaitNoPendingInstallEvents       CMP_WaitNoPendingInstallEvents
+#endif
+#if (WINVER >= 0x0501)
+    #define CM_Get_DevInst_Custom_PropertyA     CM_Get_DevNode_Custom_PropertyA
+    #define CM_Get_DevInst_Custom_PropertyW     CM_Get_DevNode_Custom_PropertyW
+    #define CM_Get_DevInst_Custom_Property_ExA  CM_Get_DevNode_Custom_Property_ExA
+    #define CM_Get_DevInst_Custom_Property_ExW  CM_Get_DevNode_Custom_Property_ExW
+#endif
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define CM_Add_ID                               CM_Add_IDW
+    #define CM_Add_ID_Ex                            CM_Add_ID_ExW
+    #define CM_Connect_Machine                      CM_Connect_MachineW
+    #define CM_Create_DevInst                       CM_Create_DevInstW
+    #define CM_Create_DevInst_Ex                    CM_Create_DevInst_ExW
+    #define CM_Create_DevNode                       CM_Create_DevNodeW
+    #define CM_Create_DevNode_Ex                    CM_Create_DevNode_ExW
+    #define CM_Enumerate_Enumerators                CM_Enumerate_EnumeratorsW
+    #define CM_Enumerate_Enumerators_Ex             CM_Enumerate_Enumerators_ExW
+    #define CM_Get_Class_Key_Name                   CM_Get_Class_Key_NameW
+    #define CM_Get_Class_Key_Name_Ex                CM_Get_Class_Key_Name_ExW
+    #define CM_Get_Class_Name                       CM_Get_Class_NameW
+    #define CM_Get_Class_Name_Ex                    CM_Get_Class_Name_ExW
+    #define CM_Get_Class_Registry_Property          CM_Get_Class_Registry_PropertyW
+    #define CM_Get_DevInst_Registry_Property        CM_Get_DevInst_Registry_PropertyW
+    #define CM_Get_DevInst_Registry_Property_Ex     CM_Get_DevInst_Registry_Property_ExW
+    #define CM_Get_DevNode_Registry_Property        CM_Get_DevNode_Registry_PropertyW
+    #define CM_Get_DevNode_Registry_Property_Ex     CM_Get_DevNode_Registry_Property_ExW
+    #define CM_Get_Device_ID                        CM_Get_Device_IDW
+    #define CM_Get_Device_ID_Ex                     CM_Get_Device_ID_ExW
+    #define CM_Get_Device_ID_List                   CM_Get_Device_ID_ListW
+    #define CM_Get_Device_ID_List_Ex                CM_Get_Device_ID_List_ExW
+    #define CM_Get_Device_ID_Size                   CM_Get_Device_ID_SizeW
+    #define CM_Get_Device_ID_Size_Ex                CM_Get_Device_ID_Size_ExW
+    #define CM_Get_Device_Interface_Alias           CM_Get_Device_Interface_AliasW
+    #define CM_Get_Device_Interface_Alias_Ex        CM_Get_Device_Interface_Alias_ExW
+    #define CM_Get_Device_Interface_List            CM_Get_Device_Interface_ListW
+    #define CM_Get_Device_Interface_List_Ex         CM_Get_Device_Interface_List_ExW
+    #define CM_Get_Device_Interface_List_Size       CM_Get_Device_Interface_List_SizeW
+    #define CM_Get_Device_Interface_List_Size_Ex    CM_Get_Device_Interface_List_Size_ExW
+    #define CM_Get_HW_Prof_Flags                    CM_Get_HW_Prof_FlagsW
+    #define CM_Get_HW_Prof_Flags_Ex                 CM_Get_HW_Prof_Flags_ExW
+    #define CM_Get_Hardware_Profile_Info            CM_Get_Hardware_Profile_InfoW
+    #define CM_Get_Hardware_Profile_Info_Ex         CM_Get_Hardware_Profile_Info_ExW
+    #define CM_Get_Resource_Conflict_Details        CM_Get_Resource_Conflict_DetailsW
+    #define CM_Locate_DevInst                       CM_Locate_DevInstW
+    #define CM_Locate_DevInst_Ex                    CM_Locate_DevInst_ExW
+    #define CM_Locate_DevNode                       CM_Locate_DevNodeW
+    #define CM_Locate_DevNode_Ex                    CM_Locate_DevNode_ExW
+    #define CM_Open_Class_Key                       CM_Open_Class_KeyW
+    #define CM_Open_Class_Key_Ex                    CM_Open_Class_Key_ExW
+    #define CM_Query_And_Remove_SubTree             CM_Query_And_Remove_SubTreeW
+    #define CM_Query_And_Remove_SubTree_Ex          CM_Query_And_Remove_SubTree_ExW
+    #define CM_Register_Device_Interface            CM_Register_Device_InterfaceW
+    #define CM_Register_Device_Interface_Ex         CM_Register_Device_Interface_ExW
+    #define CM_Request_Device_Eject                 CM_Request_Device_EjectW
+    #define CM_Request_Device_Eject_Ex              CM_Request_Device_Eject_ExW
+    #define CM_Set_DevInst_Registry_Property        CM_Set_DevInst_Registry_PropertyW
+    #define CM_Set_DevInst_Registry_Property_Ex     CM_Set_DevInst_Registry_Property_ExW
+    #define CM_Set_DevNode_Registry_Property        CM_Set_DevNode_Registry_PropertyW
+    #define CM_Set_DevNode_Registry_Property_Ex     CM_Set_DevNode_Registry_Property_ExW
+    #define CM_Set_HW_Prof_Flags                    CM_Set_HW_Prof_FlagsW
+    #define CM_Set_HW_Prof_Flags_Ex                 CM_Set_HW_Prof_Flags_ExW
+    #define CM_Unregister_Device_Interface          CM_Unregister_Device_InterfaceW
+    #define CM_Unregister_Device_Interface_Ex       CM_Unregister_Device_Interface_ExW
+    #if (WINVER >= 0x0501)
+        #define CM_Get_DevInst_Custom_Property      CM_Get_DevInst_Custom_PropertyW
+        #define CM_Get_DevInst_Custom_Property_Ex   CM_Get_DevInst_Custom_Property_ExW
+        #define CM_Get_DevNode_Custom_Property      CM_Get_DevNode_Custom_PropertyW
+        #define CM_Get_DevNode_Custom_Property_Ex   CM_Get_DevNode_Custom_Property_ExW
+    #endif
+    #if (WINVER >= 0x0600)
+        #define CM_Delete_Device_Interface_Key      CM_Delete_Device_Interface_KeyW
+        #define CM_Delete_Device_Interface_Key_Ex   CM_Delete_Device_Interface_Key_ExW
+        #define CM_Open_Device_Interface_Key        CM_Open_Device_Interface_KeyW
+        #define CM_Open_Device_Interface_Key_Ex     CM_Open_Device_Interface_Key_ExW
+    #endif
+#else
+    #define CM_Add_ID                               CM_Add_IDA
+    #define CM_Add_ID_Ex                            CM_Add_ID_ExA
+    #define CM_Connect_Machine                      CM_Connect_MachineA
+    #define CM_Create_DevInst                       CM_Create_DevInstA
+    #define CM_Create_DevInst_Ex                    CM_Create_DevInst_ExA
+    #define CM_Create_DevNode                       CM_Create_DevNodeA
+    #define CM_Create_DevNode_Ex                    CM_Create_DevNode_ExA
+    #define CM_Enumerate_Enumerators                CM_Enumerate_EnumeratorsA
+    #define CM_Enumerate_Enumerators_Ex             CM_Enumerate_Enumerators_ExA
+    #define CM_Get_Class_Key_Name                   CM_Get_Class_Key_NameA
+    #define CM_Get_Class_Key_Name_Ex                CM_Get_Class_Key_Name_ExA
+    #define CM_Get_Class_Name                       CM_Get_Class_NameA
+    #define CM_Get_Class_Name_Ex                    CM_Get_Class_Name_ExA
+    #define CM_Get_DevInst_Registry_Property        CM_Get_DevInst_Registry_PropertyA
+    #define CM_Get_DevInst_Registry_Property_Ex     CM_Get_DevInst_Registry_Property_ExA
+    #define CM_Get_DevNode_Registry_Property        CM_Get_DevNode_Registry_PropertyA
+    #define CM_Get_DevNode_Registry_Property_Ex     CM_Get_DevNode_Registry_Property_ExA
+    #define CM_Get_Device_ID                        CM_Get_Device_IDA
+    #define CM_Get_Device_ID_Ex                     CM_Get_Device_ID_ExA
+    #define CM_Get_Device_ID_List                   CM_Get_Device_ID_ListA
+    #define CM_Get_Device_ID_List_Ex                CM_Get_Device_ID_List_ExA
+    #define CM_Get_Device_ID_Size                   CM_Get_Device_ID_SizeA
+    #define CM_Get_Device_ID_Size_Ex                CM_Get_Device_ID_Size_ExA
+    #define CM_Get_Device_Interface_Alias           CM_Get_Device_Interface_AliasA
+    #define CM_Get_Device_Interface_Alias_Ex        CM_Get_Device_Interface_Alias_ExA
+    #define CM_Get_Device_Interface_List            CM_Get_Device_Interface_ListA
+    #define CM_Get_Device_Interface_List_Ex         CM_Get_Device_Interface_List_ExA
+    #define CM_Get_Device_Interface_List_Size       CM_Get_Device_Interface_List_SizeA
+    #define CM_Get_Device_Interface_List_Size_Ex    CM_Get_Device_Interface_List_Size_ExA
+    #define CM_Get_HW_Prof_Flags                    CM_Get_HW_Prof_FlagsA
+    #define CM_Get_HW_Prof_Flags_Ex                 CM_Get_HW_Prof_Flags_ExA
+    #define CM_Get_Hardware_Profile_Info            CM_Get_Hardware_Profile_InfoA
+    #define CM_Get_Hardware_Profile_Info_Ex         CM_Get_Hardware_Profile_Info_ExA
+    #define CM_Get_Resource_Conflict_Details        CM_Get_Resource_Conflict_DetailsA
+    #define CM_Locate_DevInst                       CM_Locate_DevInstA
+    #define CM_Locate_DevInst_Ex                    CM_Locate_DevInst_ExA
+    #define CM_Locate_DevNode                       CM_Locate_DevNodeA
+    #define CM_Locate_DevNode_Ex                    CM_Locate_DevNode_ExA
+    #define CM_Open_Class_Key                       CM_Open_Class_KeyA
+    #define CM_Open_Class_Key_Ex                    CM_Open_Class_Key_ExA
+    #define CM_Query_And_Remove_SubTree             CM_Query_And_Remove_SubTreeA
+    #define CM_Query_And_Remove_SubTree_Ex          CM_Query_And_Remove_SubTree_ExA
+    #define CM_Register_Device_Interface            CM_Register_Device_InterfaceA
+    #define CM_Register_Device_Interface_Ex         CM_Register_Device_Interface_ExA
+    #define CM_Request_Device_Eject                 CM_Request_Device_EjectA
+    #define CM_Request_Device_Eject_Ex              CM_Request_Device_Eject_ExA
+    #define CM_Set_Class_Registry_Property          CM_Set_Class_Registry_PropertyA
+    #define CM_Set_DevInst_Registry_Property        CM_Set_DevInst_Registry_PropertyA
+    #define CM_Set_DevInst_Registry_Property_Ex     CM_Set_DevInst_Registry_Property_ExA
+    #define CM_Set_DevNode_Registry_Property        CM_Set_DevNode_Registry_PropertyA
+    #define CM_Set_DevNode_Registry_Property_Ex     CM_Set_DevNode_Registry_Property_ExA
+    #define CM_Set_HW_Prof_Flags                    CM_Set_HW_Prof_FlagsA
+    #define CM_Set_HW_Prof_Flags_Ex                 CM_Set_HW_Prof_Flags_ExA
+    #define CM_Unregister_Device_Interface          CM_Unregister_Device_InterfaceA
+    #define CM_Unregister_Device_Interface_Ex       CM_Unregister_Device_Interface_ExA
+    #if (WINVER >= 0x0501)
+        #define CM_Get_DevInst_Custom_Property      CM_Get_DevInst_Custom_PropertyA
+        #define CM_Get_DevInst_Custom_Property_Ex   CM_Get_DevInst_Custom_Property_ExA
+        #define CM_Get_DevNode_Custom_Property      CM_Get_DevNode_Custom_PropertyA
+        #define CM_Get_DevNode_Custom_Property_Ex   CM_Get_DevNode_Custom_Property_ExA
+    #endif
+    #if (WINVER >= 0x0600)
+        #define CM_Delete_Device_Interface_Key      CM_Delete_Device_Interface_KeyA
+        #define CM_Delete_Device_Interface_Key_Ex   CM_Delete_Device_Interface_Key_ExA
+        #define CM_Open_Device_Interface_Key        CM_Open_Device_Interface_KeyA
+        #define CM_Open_Device_Interface_Key_Ex     CM_Open_Device_Interface_Key_ExA
+    #endif
+#endif
+
+:include cplusepi.sp
+
+#endif /* _CFGMGR32_H_ */

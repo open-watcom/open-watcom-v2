@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Return the value of the next character in the string.
 *
 ****************************************************************************/
 
@@ -35,16 +34,10 @@
 #include "farfunc.h"
 
 
-
-/****
-***** Return the value of the next character in the string.
-****/
-
 _WCRTLINK unsigned int _NEARFAR(_mbsnextc,_fmbsnextc)( const unsigned char _FFAR *string )
 {
-    if( _ismbblead(*string) ) {
-        return( (((unsigned int)string[0]) << 8)  |  string[1] );
-    } else  {
-        return( (unsigned int) (0x0000 | string[0]) );
-    }
+    unsigned int retval = string[0];
+    if( _ismbblead(retval) )
+        retval = (retval << 8)  |  string[1];
+    return( retval );
 }

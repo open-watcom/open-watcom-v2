@@ -1,0 +1,1345 @@
+c$noreference
+
+c$ifdef INCL_GRE_ARCS
+
+        integer GreGetArcParameters
+        external GreGetArcParameters
+        integer  NGreGetArcParameters
+        parameter (NGreGetArcParameters = '00004000'x)
+
+        integer GreSetArcParameters
+        external GreSetArcParameters
+        integer  NGreSetArcParameters
+        parameter (NGreSetArcParameters = '00004001'x)
+
+        integer GreArc
+        external GreArc
+        integer  NGreArc
+        parameter (NGreArc = '00004002'x)
+
+        integer GreParialArc
+        external GreParialArc
+        integer  NGrePartialArc
+        parameter (NGrePartialArc = '00004003'x)
+
+        integer GreFillArcInterior
+        external GreFillArcInterior
+        integer  NGreFullArcInterior
+        parameter (NGreFullArcInterior = '00004004'x)
+
+        integer GreFullArcBoundary
+        external GreFullArcBoundary
+        integer  NGreFullArcBoundary
+        parameter (NGreFullArcBoundary = '00004005'x)
+
+        integer GreFullArcBoth
+        external GreFullArcBoth
+        integer  NGreFullArcBoth
+        parameter (NGreFullArcBoth = '00004006'x)
+
+        integer GreBoxInterior
+        external GreBoxInterior
+        integer  NGreBoxInterior
+        parameter (NGreBoxInterior = '00004007'x)
+
+        integer GreBoxBoundary
+        external GreBoxBoundary
+        integer  NGreBoxBoundary
+        parameter (NGreBoxBoundary = '00004008'x)
+
+        integer GreBoxBoth
+        external GreBoxBoth
+        integer  NGreBoxBoth
+        parameter (NGreBoxBoth = '00004009'x)
+
+        integer GrePolyFillet
+        external GrePolyFillet
+        integer  NGrePolyFillet
+        parameter (NGrePolyFillet = '0000400A'x)
+
+        integer GrePolyFilletSharp
+        external GrePolyFilletSharp
+        integer  NGrePolyFilletSharp
+        parameter (NGrePolyFilletSharp = '0000400B'x)
+
+        integer GrePolySpline
+        external GrePolySpline
+        integer  NGrePolySpline
+        parameter (NGrePolySpline = '0000400C'x)
+
+        integer GreDrawConicsInPath
+        external GreDrawConicsInPath
+        integer  NGreDrawConicsInPath
+        parameter (NGreDrawConicsInPath = '0000400D'x)
+
+        integer GreCookWholePath
+        external GreCookWholePath
+        integer  NGreCookWholePath
+        parameter (NGreCookWholePath = '0000400E'x)
+
+        integer GreCookPathCurves
+        external GreCookPathCurves
+        integer  NGreCookPathCurves
+        parameter (NGreCookPathCurves = '0000400F'x)
+
+        integer GreRenderPath
+        external GreRenderPath
+        integer  NGreRenderPath
+        parameter (NGreRenderPath = '00004011'x)
+
+c$endif
+
+c$ifdef INCL_GRE_LINES
+
+        integer GreDisjointLines
+        external GreDisjointLines
+        integer  NGreDisjointLines
+        parameter (NGreDisjointLines = '00004016'x)
+
+        integer GreGetCurrentPosition
+        external GreGetCurrentPosition
+        integer  NGreGetCurrentPosition
+        parameter (NGreGetCurrentPosition = '00004017'x)
+
+        integer GreSetCurrentPosition
+        external GreSetCurrentPosition
+        integer  NGreSetCurrentPosition
+        parameter (NGreSetCurrentPosition = '00004018'x)
+
+        integer GrePolyLine
+        external GrePolyLine
+        integer  NGrePolyLine
+        parameter (NGrePolyLine = '00004019'x)
+
+        integer GreDrawLinesInPath
+        external GreDrawLinesInPath
+        integer  NGreDrawLinesInPath
+        parameter (NGreDrawLinesInPath = '0000401A'x)
+
+        integer GrePolyShortLine
+        external GrePolyShortLine
+        integer  NGrePolyShortLine
+        parameter (NGrePolyShortLine = '0000401B'x)
+
+c$endif
+
+c$ifdef INCL_GRE_SCANS
+
+        integer GrePolyScanline
+        external GrePolyScanline
+        integer  NGrePolyScanline
+        parameter (NGrePolyScanline = '0000401C'x)
+
+c$endif
+
+c$ifdef INCL_GRE_BITMAPS
+
+        integer GreDrawBits
+        external GreDrawBits
+        integer  NGreDrawBits
+        parameter (NGreDrawBits = '00004022'x)
+
+        integer GreDeviceCreateBitmap
+        external GreDeviceCreateBitmap
+        integer  NGreDeviceCreateBitmap
+        parameter (NGreDeviceCreateBitmap = '00004023'x)
+
+        integer GreDeviceDeleteBitmap
+        external GreDeviceDeleteBitmap
+        integer  NGreDeviceDeleteBitmap
+        parameter (NGreDeviceDeleteBitmap = '00004024'x)
+
+        integer GreDeviceSelectBitmap
+        external GreDeviceSelectBitmap
+        integer  NGreDeviceSelectBitmap
+        parameter (NGreDeviceSelectBitmap = '00004025'x)
+
+        integer GreBitblt
+        external GreBitblt
+        integer  NGreBitblt
+        parameter (NGreBitblt = '00004026'x)
+
+        integer GreGetPel
+        external GreGetPel
+        integer  NGreGetPel
+        parameter (NGreGetPel = '00004027'x)
+
+        integer GreSetPel
+        external GreSetPel
+        integer  NGreSetPel
+        parameter (NGreSetPel = '00004028'x)
+
+        integer GreImageData
+        external GreImageData
+        integer  NGreImageData
+        parameter (NGreImageData = '00004029'x)
+
+        integer GreSaveScreenBits
+        external GreSaveScreenBits
+        integer  NGreSaveScreenBits
+        parameter (NGreSaveScreenBits = '0000402C'x)
+
+        integer GreRestoreScreenBits
+        external GreRestoreScreenBits
+        integer  NGreRestoreScreenBits
+        parameter (NGreRestoreScreenBits = '0000402D'x)
+
+        integer GreDrawBorder
+        external GreDrawBorder
+        integer  NGreDrawBorder
+        parameter (NGreDrawBorder = '0000402E'x)
+
+        integer GreDeviceSetCursor
+        external GreDeviceSetCursor
+        integer  NGreDeviceSetCursor
+        parameter (NGreDeviceSetCursor = '0000402F'x)
+
+        integer GreGetBitmapBits
+        external GreGetBitmapBits
+        integer  NGreGetBitmapBits
+        parameter (NGreGetBitmapBits = '00004030'x)
+
+        integer GreSetBitmapBits
+        external GreSetBitmapBits
+        integer  NGreSetBitmapBits
+        parameter (NGreSetBitmapBits = '00004031'x)
+
+c$endif
+
+c$ifdef INCL_WINPOINTERS
+
+        integer GreSetColorCursor
+        external GreSetColorCursor
+        integer  NGreSetColorCursor
+        parameter (NGreSetColorCursor = '00004032'x)
+
+c$endif
+
+c$ifdef INCL_GRE_STRINGS
+
+        integer GreCharString
+        external GreCharString
+        integer  NGreCharString
+        parameter (NGreCharString = '00004035'x)
+
+        integer GreCharStringPos
+        external GreCharStringPos
+        integer  NGreCharStringPos
+        parameter (NGreCharStringPos = '00004036'x)
+
+        integer GreQueryTextBox
+        external GreQueryTextBox
+        integer  NGreQueryTextBox
+        parameter (NGreQueryTextBox = '00004037'x)
+
+        integer GreQueryCharPositions
+        external GreQueryCharPositions
+        integer  NGreQueryCharPositions
+        parameter (NGreQueryCharPositions = '00004038'x)
+
+        integer GreQueryWidthTable
+        external GreQueryWidthTable
+        integer  NGreQueryWidthTable
+        parameter (NGreQueryWidthTable = '00004039'x)
+
+c$endif
+
+c$ifdef INCL_GRE_MARKERS
+
+        integer GrePolyMarker
+        external GrePolyMarker
+        integer  NGrePolyMarker
+        parameter (NGrePolyMarker = '0000403A'x)
+
+c$endif
+
+c$ifdef INCL_GRE_STRINGS
+
+        integer GreCharRect
+        external GreCharRect
+        integer  NGreCharRect
+        parameter (NGreCharRect = '0000403B'x)
+
+        integer GreCharStr
+        external GreCharStr
+        integer  NGreCharStr
+        parameter (NGreCharStr = '0000403C'x)
+
+        integer GreScrollRect
+        external GreScrollRect
+        integer  NGreScrollRect
+        parameter (NGreScrollRect = '0000403D'x)
+
+        integer GreUpdateCursor
+        external GreUpdateCursor
+        integer  NGreUpdateCursor
+        parameter (NGreUpdateCursor = '0000403E'x)
+
+c$endif
+
+c$ifdef INCL_GRE_PATHS
+
+        integer GreBeginArea
+        external GreBeginArea
+        integer  NGreBeginArea
+        parameter (NGreBeginArea = '00004046'x)
+
+        integer GreEndArea
+        external GreEndArea
+        integer  NGreEndArea
+        parameter (NGreEndArea = '00004047'x)
+
+        integer GreBeginPath
+        external GreBeginPath
+        integer  NGreBeginPath
+        parameter (NGreBeginPath = '00004048'x)
+
+        integer GreEndPath
+        external GreEndPath
+        integer  NGreEndPath
+        parameter (NGreEndPath = '00004049'x)
+
+        integer GreCloseFigure
+        external GreCloseFigure
+        integer  NGreCloseFigure
+        parameter (NGreCloseFigure = '0000404A'x)
+
+        integer GreFillPath
+        external GreFillPath
+        integer  NGreFillPath
+        parameter (NGreFillPath = '0000404B'x)
+
+        integer GreOutlinePath
+        external GreOutlinePath
+        integer  NGreOutlinePath
+        parameter (NGreOutlinePath = '0000404C'x)
+
+        integer GreModifyPath
+        external GreModifyPath
+        integer  NGreModifyPath
+        parameter (NGreModifyPath = '0000404D'x)
+
+        integer GreStrokePath
+        external GreStrokePath
+        integer  NGreStrokePath
+        parameter (NGreStrokePath = '0000404E'x)
+
+        integer GreSelectClipPath
+        external GreSelectClipPath
+        integer  NGreSelectClipPath
+        parameter (NGreSelectClipPath = '0000404F'x)
+
+        integer GreSavePath
+        external GreSavePath
+        integer  NGreSavePath
+        parameter (NGreSavePath = '00004050'x)
+
+        integer GreRestorePath
+        external GreRestorePath
+        integer  NGreRestorePath
+        parameter (NGreRestorePath = '00004051'x)
+
+        integer GreClip1DPath
+        external GreClip1DPath
+        integer  NGreClip1DPath
+        parameter (NGreClip1DPath = '00004052'x)
+
+        integer GreDrawRawPath
+        external GreDrawRawPath
+        integer  NGreDrawRawPath
+        parameter (NGreDrawRawPath = '00004053'x)
+
+        integer GreDrawCookedPath
+        external GreDrawCookedPath
+        integer  NGreDrawCookedPath
+        parameter (NGreDrawCookedPath = '00004054'x)
+
+        integer GreAreaSetAttributes
+        external GreAreaSetAttributes
+        integer  NGreAreaSetAttributes
+        parameter (NGreAreaSetAttributes = '00004055'x)
+
+c$endif
+
+c$ifdef INCL_GRE_REGIONS
+
+        integer GreGetRegionBox
+        external GreGetRegionBox
+        integer  NGreGetRegionBox
+        parameter (NGreGetRegionBox = '0000405D'x)
+
+        integer GreGetRegionRects
+        external GreGetRegionRects
+        integer  NGreGetRegionRects
+        parameter (NGreGetRegionRects = '0000405E'x)
+
+        integer GreOffsetRegion
+        external GreOffsetRegion
+        integer  NGreOffsetRegion
+        parameter (NGreOffsetRegion = '0000405F'x)
+
+        integer GrePtInRegion
+        external GrePtInRegion
+        integer  NGrePtInRegion
+        parameter (NGrePtInRegion = '00004060'x)
+
+        integer GreRectInRegion
+        external GreRectInRegion
+        integer  NGreRectInRegion
+        parameter (NGreRectInRegion = '00004061'x)
+
+        integer GreCreateRectRegion
+        external GreCreateRectRegion
+        integer  NGreCreateRectRegion
+        parameter (NGreCreateRectRegion = '00004062'x)
+
+        integer GreDestroyRegion
+        external GreDestroyRegion
+        integer  NGreDestroyRegion
+        parameter (NGreDestroyRegion = '00004063'x)
+
+        integer GreSetRectRegion
+        external GreSetRectRegion
+        integer  NGreSetRectRegion
+        parameter (NGreSetRectRegion = '00004064'x)
+
+        integer GreCombineRegion
+        external GreCombineRegion
+        integer  NGreCombineRegion
+        parameter (NGreCombineRegion = '00004065'x)
+
+        integer GreCombineRectRegion
+        external GreCombineRectRegion
+        integer  NGreCombineRectRegion
+        parameter (NGreCombineRectRegion = '00004066'x)
+
+        integer GreCombineShortLineRegion
+        external GreCombineShortLineRegion
+        integer  NGreCombineShortLineRegion
+        parameter (NGreCombineShortLineRegion = '00004067'x)
+
+        integer GreEqualRegion
+        external GreEqualRegion
+        integer  NGreEqualRegion
+        parameter (NGreEqualRegion = '00004068'x)
+
+        integer GrePaintRegion
+        external GrePaintRegion
+        integer  NGrePaintRegion
+        parameter (NGrePaintRegion = '00004069'x)
+
+        integer GreSetRegionOwner
+        external GreSetRegionOwner
+        integer  NGreSetRegionOwner
+        parameter (NGreSetRegionOwner = '0000406A'x)
+
+        integer GreFrameRegion
+        external GreFrameRegion
+        integer  NGreFrameRegion
+        parameter (NGreFrameRegion = '0000406B'x)
+
+c$endif
+
+c$ifdef INCL_GRE_CLIP
+
+        integer GreGetClipBox
+        external GreGetClipBox
+        integer  NGreGetClipBox
+        parameter (NGreGetClipBox = '0000406E'x)
+
+        integer GreGetClipRects
+        external GreGetClipRects
+        integer  NGreGetClipRects
+        parameter (NGreGetClipRects = '0000406F'x)
+
+        integer GreOffsetClipRegion
+        external GreOffsetClipRegion
+        integer  NGreOffsetClipRegion
+        parameter (NGreOffsetClipRegion = '00004070'x)
+
+        integer GrePtVisible
+        external GrePtVisible
+        integer  NGrePtVisible
+        parameter (NGrePtVisible = '00004071'x)
+
+        integer GreRectVisible
+        external GreRectVisible
+        integer  NGreRectVisible
+        parameter (NGreRectVisible = '00004072'x)
+
+        integer GreQueryClipRegion
+        external GreQueryClipRegion
+        integer  NGreQueryClipRegion
+        parameter (NGreQueryClipRegion = '00004073'x)
+
+        integer GreSelectClipRegion
+        external GreSelectClipRegion
+        integer  NGreSelectClipRegion
+        parameter (NGreSelectClipRegion = '00004074'x)
+
+        integer GreIntersectClipRectangle
+        external GreIntersectClipRectangle
+        integer  NGreIntersectClipRectangle
+        parameter (NGreIntersectClipRectangle = '00004075'x)
+
+        integer GreExcludeClipRectangle
+        external GreExcludeClipRectangle
+        integer  NGreExcludeClipRectangle
+        parameter (NGreExcludeClipRectangle = '00004076'x)
+
+        integer GreSetXfromRect
+        external GreSetXfromRect
+        integer  NGreSetXformRect
+        parameter (NGreSetXformRect = '00004077'x)
+
+        integer GreSaveRegion
+        external GreSaveRegion
+        integer  NGreSaveRegion
+        parameter (NGreSaveRegion = '0000407B'x)
+
+        integer GreRestoreRegion
+        external GreRestoreRegion
+        integer  NGreRestoreRegion
+        parameter (NGreRestoreRegion = '0000407C'x)
+
+        integer GreClipPathCurves
+        external GreClipPathCurves
+        integer  NGreClipPathCurves
+        parameter (NGreClipPathCurves = '0000407D'x)
+
+        integer GreSelectPathRegion
+        external GreSelectPathRegion
+        integer  NGreSelectPathRegion
+        parameter (NGreSelectPathRegion = '0000407E'x)
+
+        integer GreRegionSelectBitmap
+        external GreRegionSelectBitmap
+        integer  NGreRegionSelectBitmap
+        parameter (NGreRegionSelectBitmap = '0000407F'x)
+
+        integer GreCopyClipRegion
+        external GreCopyClipRegion
+        integer  NGreCopyClipRegion
+        parameter (NGreCopyClipRegion = '00004080'x)
+
+        integer GreSetupDC
+        external GreSetupDC
+        integer  NGreSetupDC
+        parameter (NGreSetupDC = '00004081'x)
+
+c$endif
+
+c$ifdef INCL_GRE_XFORMS
+
+        integer GreGetPageUnits
+        external GreGetPageUnits
+        integer  NGreGetPageUnits
+        parameter (NGreGetPageUnits = '00004083'x)
+
+        integer GreSetPageUnits
+        external GreSetPageUnits
+        integer  NGreSetPageUnits
+        parameter (NGreSetPageUnits = '00004084'x)
+
+        integer GreGetModelXform
+        external GreGetModelXform
+        integer  NGreGetModelXform
+        parameter (NGreGetModelXform = '00004085'x)
+
+        integer GreSetModelXform
+        external GreSetModelXform
+        integer  NGreSetModelXform
+        parameter (NGreSetModelXform = '00004086'x)
+
+        integer GreGetWindowViewportXform
+        external GreGetWindowViewportXform
+        integer  NGreGetWindowViewportXform
+        parameter (NGreGetWindowViewportXform = '00004087'x)
+
+        integer GreSetWindowViewportXform
+        external GreSetWindowViewportXform
+        integer  NGreSetWindowViewportXform
+        parameter (NGreSetWindowViewportXform = '00004088'x)
+
+        integer GreGetGlobalViewingXform
+        external GreGetGlobalViewingXform
+        integer  NGreGetGlobalViewingXform
+        parameter (NGreGetGlobalViewingXform = '00004089'x)
+
+        integer GreSetGlobalViewingXform
+        external GreSetGlobalViewingXform
+        integer  NGreSetGlobalViewingXform
+        parameter (NGreSetGlobalViewingXform = '0000408A'x)
+
+        integer GreSaveXformData
+        external GreSaveXformData
+        integer  NGreSaveXformData
+        parameter (NGreSaveXformData = '0000408B'x)
+
+        integer GreRestoreXformData
+        external GreRestoreXformData
+        integer  NGreRestoreXformData
+        parameter (NGreRestoreXformData = '0000408C'x)
+
+        integer GreGetPageViewport
+        external GreGetPageViewport
+        integer  NGreGetPageViewport
+        parameter (NGreGetPageViewport = '0000408D'x)
+
+        integer GreSetPageViewport
+        external GreSetPageViewport
+        integer  NGreSetPageViewport
+        parameter (NGreSetPageViewport = '0000408E'x)
+
+        integer GreGetGraphicsField
+        external GreGetGraphicsField
+        integer  NGreGetGraphicsField
+        parameter (NGreGetGraphicsField = '00004091'x)
+
+        integer GreSetGraphicsField
+        external GreSetGraphicsField
+        integer  NGreSetGraphicsField
+        parameter (NGreSetGraphicsField = '00004092'x)
+
+        integer GreGetViewingLimits
+        external GreGetViewingLimits
+        integer  NGreGetViewingLimits
+        parameter (NGreGetViewingLimits = '00004093'x)
+
+        integer GreSetViewingLimits
+        external GreSetViewingLimits
+        integer  NGreSetViewingLimits
+        parameter (NGreSetViewingLimits = '00004094'x)
+
+        integer GreQueryViewportSize
+        external GreQueryViewportSize
+        integer  NGreQueryViewportSize
+        parameter (NGreQueryViewportSize = '00004095'x)
+
+        integer GreConvert
+        external GreConvert
+        integer  NGreConvert
+        parameter (NGreConvert = '00004096'x)
+
+        integer GreConvertPath
+        external GreConvertPath
+        integer  NGreConvertPath
+        parameter (NGreConvertPath = '00004097'x)
+
+        integer GreSaveXform
+        external GreSaveXform
+        integer  NGreSaveXform
+        parameter (NGreSaveXform = '00004098'x)
+
+        integer GreRestoreXform
+        external GreRestoreXform
+        integer  NGreRestoreXform
+        parameter (NGreRestoreXform = '00004099'x)
+
+        integer GreMultiplyXforms
+        external GreMultiplyXforms
+        integer  NGreMultiplyXforms
+        parameter (NGreMultiplyXforms = '0000409A'x)
+
+        integer GreConvertWithMatrix
+        external GreConvertWithMatrix
+        integer  NGreConvertWithMatrix
+        parameter (NGreConvertWithMatrix = '0000409B'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC1
+
+        integer GreDeviceGetAttributes
+        external GreDeviceGetAttributes
+        integer  NGreDeviceGetAttributes
+        parameter (NGreDeviceGetAttributes = '0000409D'x)
+
+        integer GreDeviceSetAVIOFont2
+        external GreDeviceSetAVIOFont2
+        integer  NGreDeviceSetAVIOFont2
+        parameter (NGreDeviceSetAVIOFont2 = '0000409E'x)
+
+        integer GreGetPairKerningTable
+        external GreGetPairKerningTable
+        integer  NGreGetPairKerningTable
+        parameter (NGreGetPairKerningTable = '000040A0'x)
+
+        integer GreDeviceSetAVIOFont
+        external GreDeviceSetAVIOFont
+        integer  NGreDeviceSetAVIOFont
+        parameter (NGreDeviceSetAVIOFont = '000040A1'x)
+
+        integer GreDeviceSetAttributes
+        external GreDeviceSetAttributes
+        integer  NGreDeviceSetAttributes
+        parameter (NGreDeviceSetAttributes = '000040A2'x)
+
+        integer GreDeviceSetGlobalAttributes
+        external GreDeviceSetGlobalAttributes
+        integer  NGreDeviceSetGlobalAttribute
+        parameter (NGreDeviceSetGlobalAttribute = '000040A3'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC2
+
+        integer GreNotifyClipChange
+        external GreNotifyClipChange
+        integer  NGreNotifyClipChange
+        parameter (NGreNotifyClipChange = '000040A4'x)
+
+        integer GreNotifyTransformChange
+        external GreNotifyTransformChange
+        integer  NGreNotifyTransformChange
+        parameter (NGreNotifyTransformChange = '000040A5'x)
+
+        integer GreRealizeFont
+        external GreRealizeFont
+        integer  NGreRealizeFont
+        parameter (NGreRealizeFont = '000040A6'x)
+
+        integer GreErasePS
+        external GreErasePS
+        integer  NGreErasePS
+        parameter (NGreErasePS = '000040A7'x)
+
+        integer GreSetStyleRatio
+        external GreSetStyleRatio
+        integer  NGreSetStyleRatio
+        parameter (NGreSetStyleRatio = '000040A8'x)
+
+        integer GreDeviceQueryFontAttributes
+        external GreDeviceQueryFontAttributes
+        integer  NGreDeviceQueryFontAttributes
+        parameter (NGreDeviceQueryFontAttributes = '000040A9'x)
+
+        integer GreDeviceQueryFonts
+        external GreDeviceQueryFonts
+        integer  NGreDeviceQueryFonts
+        parameter (NGreDeviceQueryFonts = '000040AA'x)
+
+        integer GreDeviceInvalidateVisRegion
+        external GreDeviceInvalidateVisRegion
+        integer  NGreDeviceInvalidateVisRegion
+        parameter (NGreDeviceInvalidateVisRegion = '000040AB'x)
+
+c$endif
+
+c$ifdef INCL_GRE_PICK
+
+        integer GreGetPickWindow
+        external GreGetPickWindow
+        integer  NGreGetPickWindow
+        parameter (NGreGetPickWindow = '000040AC'x)
+
+        integer GreSetPickWindow
+        external GreSetPickWindow
+        integer  NGreSetPickWindow
+        parameter (NGreSetPickWindow = '000040AD'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC3
+
+        integer GreResetBounds
+        external GreResetBounds
+        integer  NGreResetBounds
+        parameter (NGreResetBounds = '000040AE'x)
+
+        integer GreGetBoundsData
+        external GreGetBoundsData
+        integer  NGreGetBoundsData
+        parameter (NGreGetBoundsData = '000040AF'x)
+
+        integer GreAccumulateBounds
+        external GreAccumulateBounds
+        integer  NGreAccumulateBounds
+        parameter (NGreAccumulateBounds = '000040B0'x)
+
+        integer GreGetCodePage
+        external GreGetCodePage
+        integer  NGreGetCodePage
+        parameter (NGreGetCodePage = '000040B3'x)
+
+        integer GreSetCodePage
+        external GreSetCodePage
+        integer  NGreSetCodePage
+        parameter (NGreSetCodePage = '000040B4'x)
+
+        integer GreLockDevice
+        external GreLockDevice
+        integer  NGreLockDevice
+        parameter (NGreLockDevice = '000040B5'x)
+
+        integer GreUnlockDevice
+        external GreUnlockDevice
+        integer  NGreUnlockDevice
+        parameter (NGreUnlockDevice = '000040B6'x)
+
+        integer GreDeath
+        external GreDeath
+        integer  NGreDeath
+        parameter (NGreDeath = '000040B7'x)
+
+        integer GreRessurection
+        external GreRessurection
+        integer  NGreResurrection
+        parameter (NGreResurrection = '000040B8'x)
+
+        integer GreGetDCOrigin
+        external GreGetDCOrigin
+        integer  NGreGetDCOrigin
+        parameter (NGreGetDCOrigin = '000040BA'x)
+
+        integer GreDeviceSetDCOrigin
+        external GreDeviceSetDCOrigin
+        integer  NGreDeviceSetDCOrigin
+        parameter (NGreDeviceSetDCOrigin = '000040BB'x)
+
+        integer GreGetLineOrigin
+        external GreGetLineOrigin
+        integer  NGreGetLineOrigin
+        parameter (NGreGetLineOrigin = '000040BC'x)
+
+        integer GreSetLineOrigin
+        external GreSetLineOrigin
+        integer  NGreSetLineOrigin
+        parameter (NGreSetLineOrigin = '000040BD'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC2
+
+        integer GreGetStyleRatio
+        external GreGetStyleRatio
+        integer  NGreGetStyleRatio
+        parameter (NGreGetStyleRatio = '000040BE'x)
+
+c$endif
+
+c$ifdef INCL_GRE_COLORTABLE
+
+        integer GreQueryColorData
+        external GreQueryColorData
+        integer  NGreQueryColorData
+        parameter (NGreQueryColorData = '000040C3'x)
+
+        integer GreQueryLogColorTable
+        external GreQueryLogColorTable
+        integer  NGreQueryLogColorTable
+        parameter (NGreQueryLogColorTable = '000040C4'x)
+
+        integer GreCreateLogColorTable
+        external GreCreateLogColorTable
+        integer  NGreCreateLogColorTable
+        parameter (NGreCreateLogColorTable = '000040C5'x)
+
+        integer GreRealizeColorTable
+        external GreRealizeColorTable
+        integer  NGreRealizeColorTable
+        parameter (NGreRealizeColorTable = '000040C6'x)
+
+        integer GreUnrealizeColorTable
+        external GreUnrealizeColorTable
+        integer  NGreUnrealizeColorTable
+        parameter (NGreUnrealizeColorTable = '000040C7'x)
+
+        integer GreQueryRealColors
+        external GreQueryRealColors
+        integer  NGreQueryRealColors
+        parameter (NGreQueryRealColors = '000040C8'x)
+
+        integer GreQueryNearestColor
+        external GreQueryNearestColor
+        integer  NGreQueryNearestColor
+        parameter (NGreQueryNearestColor = '000040C9'x)
+
+        integer GreQueryColorIndex
+        external GreQueryColorIndex
+        integer  NGreQueryColorIndex
+        parameter (NGreQueryColorIndex = '000040CA'x)
+
+        integer GreQueryRGBColor
+        external GreQueryRGBColor
+        integer  NGreQueryRGBColor
+        parameter (NGreQueryRGBColor = '000040CB'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVICE
+
+        integer GreQueryDeviceBitmaps
+        external GreQueryDeviceBitmaps
+        integer  NGreQueryDeviceBitmaps
+        parameter (NGreQueryDeviceBitmaps = '000040D0'x)
+
+        integer GreQueryDeviceCaps
+        external GreQueryDeviceCaps
+        integer  NGreQueryDeviceCaps
+        parameter (NGreQueryDeviceCaps = '000040D1'x)
+
+        integer GreEscape
+        external GreEscape
+        integer  NGreEscape
+        parameter (NGreEscape = '000040D2'x)
+
+        integer GreQueryHardcopyCaps
+        external GreQueryHardcopyCaps
+        integer  NGreQueryHardcopyCaps
+        parameter (NGreQueryHardcopyCaps = '000040D3'x)
+
+        integer GreQureyDevResource2
+        external GreQureyDevResource2
+        integer  NGreQueryDevResource2
+        parameter (NGreQueryDevResource2 = '000040D4'x)
+
+c$endif
+
+c$ifdef INCL_GRE_PALETTE
+
+        integer GreDeviceCreatePalette
+        external GreDeviceCreatePalette
+        integer  NGreDeviceCreatePalette
+        parameter (NGreDeviceCreatePalette = '000040D5'x)
+
+        integer GreDeviceDeletePalette
+        external GreDeviceDeletePalette
+        integer  NGreDeviceDeletePalette
+        parameter (NGreDeviceDeletePalette = '000040D6'x)
+
+        integer GreDeviceSetPaletteEntries
+        external GreDeviceSetPaletteEntries
+        integer  NGreDeviceSetPaletteEntries
+        parameter (NGreDeviceSetPaletteEntries = '000040D7'x)
+
+        integer GreDeviceAnimatePalette
+        external GreDeviceAnimatePalette
+        integer  NGreDeviceAnimatePalette
+        parameter (NGreDeviceAnimatePalette = '000040D8'x)
+
+        integer GreDeviceResizePalette
+        external GreDeviceResizePalette
+        integer  NGreDeviceResizePalette
+        parameter (NGreDeviceResizePalette = '000040D9'x)
+
+        integer GreRealizePalette
+        external GreRealizePalette
+        integer  NGreRealizePalette
+        parameter (NGreRealizePalette = '000040DA'x)
+
+        integer GreQueryHWPaletteInfo
+        external GreQueryHWPaletteInfo
+        integer  NGreQueryHWPaletteInfo
+        parameter (NGreQueryHWPaletteInfo = '000040DB'x)
+
+        integer GreUpdateColors
+        external GreUpdateColors
+        integer  NGreUpdateColors
+        parameter (NGreUpdateColors = '000040DC'x)
+
+        integer GreQueryPaletteRealization
+        external GreQueryPaletteRealization
+        integer  NGreQueryPaletteRealization
+        parameter (NGreQueryPaletteRealization = '000040DD'x)
+
+        integer GreGetVisRects
+        external GreGetVisRects
+        integer  NGreGetVisRects
+        parameter (NGreGetVisRects = '000040DE'x)
+
+        integer GreCreatePalette
+        external GreCreatePalette
+        integer  NGreCreatePalette
+        parameter (NGreCreatePalette = '00000240'x)
+
+        integer GreDeletePalette
+        external GreDeletePalette
+        integer  NGreDeletePalette
+        parameter (NGreDeletePalette = '00000241'x)
+
+        integer GreSelectPalette
+        external GreSelectPalette
+        integer  NGreSelectPalette
+        parameter (NGreSelectPalette = '00004242'x)
+
+        integer GreSetPaletteEntries
+        external GreSetPaletteEntries
+        integer  NGreSetPaletteEntries
+        parameter (NGreSetPaletteEntries = '00000243'x)
+
+        integer GreAnimatePalette
+        external GreAnimatePalette
+        integer  NGreAnimatePalette
+        parameter (NGreAnimatePalette = '00000244'x)
+
+        integer GreQueryPalette
+        external GreQueryPalette
+        integer  NGreQueryPalette
+        parameter (NGreQueryPalette = '00004245'x)
+
+        integer GreQueryPaletteInfo
+        external GreQueryPaletteInfo
+        integer  NGreQueryPaletteInfo
+        parameter (NGreQueryPaletteInfo = '00000246'x)
+
+        integer GreSetPaletteOwner
+        external GreSetPaletteOwner
+        integer  NGreSetPaletteOwner
+        parameter (NGreSetPaletteOwner = '00000247'x)
+
+        integer GreResizePalette
+        external GreResizePalette
+        integer  NGreResizePalette
+        parameter (NGreResizePalette = '00000248'x)
+
+        integer GreQueryDefaultPalette
+        external GreQueryDefaultPalette
+        integer  NGreQueryDefaultPaletteInfo
+        parameter (NGreQueryDefaultPaletteInfo = '00004249'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DCS
+
+        integer GreOpenDC
+        external GreOpenDC
+        integer  NGreOpenDC
+        parameter (NGreOpenDC = '00000200'x)
+
+        integer GreCloseDC
+        external GreCloseDC
+        integer  NGreCloseDC
+        parameter (NGreCloseDC = '00004201'x)
+
+        integer GreResetDC
+        external GreResetDC
+        integer  NGreResetDC
+        parameter (NGreResetDC = '00004202'x)
+
+        integer GreGetHandle
+        external GreGetHandle
+        integer  NGreGetHandle
+        parameter (NGreGetHandle = '00004203'x)
+
+        integer GreSetHandle
+        external GreSetHandle
+        integer  NGreSetHandle
+        parameter (NGreSetHandle = '00004204'x)
+
+        integer GreGetProcessControl
+        external GreGetProcessControl
+        integer  NGreGetProcessControl
+        parameter (NGreGetProcessControl = '00004205'x)
+
+        integer GreSetProcessControl
+        external GreSetProcessControl
+        integer  NGreSetProcessControl
+        parameter (NGreSetProcessControl = '00004206'x)
+
+        integer GreSaveDC
+        external GreSaveDC
+        integer  NGreSaveDC
+        parameter (NGreSaveDC = '00004207'x)
+
+        integer GreRestoreDC
+        external GreRestoreDC
+        integer  NGreRestoreDC
+        parameter (NGreRestoreDC = '00004208'x)
+
+        integer GreQueryDeviceNames
+        external GreQueryDeviceNames
+        integer  NGreQueryDeviceNames
+        parameter (NGreQueryDeviceNames = '00000209'x)
+
+        integer GreQueryEngineVersion
+        external GreQueryEngineVersion
+        integer  NGreQueryEngineVersion
+        parameter (NGreQueryEngineVersion = '0000020A'x)
+
+        integer GreSetDCOwner
+        external GreSetDCOwner
+        integer  NGreSetDCOwner
+        parameter (NGreSetDCOwner = '0000420B'x)
+
+c$endif
+
+c$ifdef INCL_GRE_DEVSUPPORT
+
+        integer GreInvalidateVisRegion
+        external GreInvalidateVisRegion
+        integer  NGreInvalidateVisRegion
+        parameter (NGreInvalidateVisRegion = '0000420F'x)
+
+        integer GreCreateBitmap
+        external GreCreateBitmap
+        integer  NGreCreateBitmap
+        parameter (NGreCreateBitmap = '00004210'x)
+
+        integer GreDeleteBitmap
+        external GreDeleteBitmap
+        integer  NGreDeleteBitmap
+        parameter (NGreDeleteBitmap = '00000211'x)
+
+        integer GreSelectBitmap
+        external GreSelectBitmap
+        integer  NGreSelectBitmap
+        parameter (NGreSelectBitmap = '00004212'x)
+
+        integer GreGetBitmapParameters
+        external GreGetBitmapParameters
+        integer  NGreGetBitmapParameters
+        parameter (NGreGetBitmapParameters = '00000213'x)
+
+        integer GreGetBitmapDimension
+        external GreGetBitmapDimension
+        integer  NGreGetBitmapDimension
+        parameter (NGreGetBitmapDimension = '00000214'x)
+
+        integer GreSetBitmapDimension
+        external GreSetBitmapDimension
+        integer  NGreSetBitmapDimension
+        parameter (NGreSetBitmapDimension = '00000215'x)
+
+        integer GreSetCursor
+        external GreSetCursor
+        integer  NGreSetCursor
+        parameter (NGreSetCursor = '00004216'x)
+
+        integer GreGetAttributes
+        external GreGetAttributes
+        integer  NGreGetAttributes
+        parameter (NGreGetAttributes = '00004217'x)
+
+        integer GreSetAttributes
+        external GreSetAttributes
+        integer  NGreSetAttributes
+        parameter (NGreSetAttributes = '00004218'x)
+
+        integer GreSetGlobalAttribute
+        external GreSetGlobalAttribute
+        integer  NGreSetGlobalAttribute
+        parameter (NGreSetGlobalAttribute = '00004219'x)
+
+        integer GreSetBitmapOwner
+        external GreSetBitmapOwner
+        integer  NGreSetBitmapOwner
+        parameter (NGreSetBitmapOwner = '0000021A'x)
+
+        integer GreGetDefaultAttributes
+        external GreGetDefaultAttributes
+        integer  NGreGetDefaultAttributes
+        parameter (NGreGetDefaultAttributes = '0000421B'x)
+
+        integer GreSetDefaultAttributes
+        external GreSetDefaultAttributes
+        integer  NGreSetDefaultAttributes
+        parameter (NGreSetDefaultAttributes = '0000421C'x)
+
+        integer GreGetDefaultArcParameters
+        external GreGetDefaultArcParameters
+        integer  NGreGetDefaultArcParameters
+        parameter (NGreGetDefaultArcParameters = '0000421D'x)
+
+        integer GreSetDefaultArcParameters
+        external GreSetDefaultArcParameters
+        integer  NGreSetDefaultArcParameters
+        parameter (NGreSetDefaultArcParameters = '0000421E'x)
+
+        integer GreGetDefaultViewingLimits
+        external GreGetDefaultViewingLimits
+        integer  NGreGetDefaultViewingLimits
+        parameter (NGreGetDefaultViewingLimits = '0000421F'x)
+
+        integer GreSetDefaultViewingLimits
+        external GreSetDefaultViewingLimits
+        integer  NGreSetDefaultViewingLimits
+        parameter (NGreSetDefaultViewingLimits = '00004220'x)
+
+        integer GreInitializeAttributes
+        external GreInitializeAttributes
+        integer  NGreInitializeAttributes
+        parameter (NGreInitializeAttributes = '00004221'x)
+
+c$endif
+
+c$ifdef INCL_GRE_SETID
+
+        integer GreDeleteSetId
+        external GreDeleteSetId
+        integer  NGreDeleteSetId
+        parameter (NGreDeleteSetId = '00004222'x)
+
+        integer GreQueryNumberSetIds
+        external GreQueryNumberSetIds
+        integer  NGreQueryNumberSetIds
+        parameter (NGreQueryNumberSetIds = '00004223'x)
+
+        integer GreQuerySetIds
+        external GreQuerySetIds
+        integer  NGreQuerySetIds
+        parameter (NGreQuerySetIds = '00004224'x)
+
+c$endif
+
+c$ifdef INCL_GRE_LCID
+
+        integer GreQueryBitmapHandle
+        external GreQueryBitmapHandle
+        integer  NGreQueryBitmapHandle
+        parameter (NGreQueryBitmapHandle = '00004225'x)
+
+        integer GreSetBitmapID
+        external GreSetBitmapID
+        integer  NGreSetBitmapID
+        parameter (NGreSetBitmapID = '00004226'x)
+
+        integer GreCopyDCLoadData
+        external GreCopyDCLoadData
+        integer  NGreCopyDCLoadData
+        parameter (NGreCopyDCLoadData = '00004227'x)
+
+c$endif
+
+c$ifdef INCL_GRE_FONTS
+
+        integer GreQueryLogicalFont
+        external GreQueryLogicalFont
+        integer  NGreQueryLogicalFont
+        parameter (NGreQueryLogicalFont = '0000422C'x)
+
+        integer GreCreateLogicalFont
+        external GreCreateLogicalFont
+        integer  NGreCreateLogicalFont
+        parameter (NGreCreateLogicalFont = '0000422D'x)
+
+        integer GreLoadFont
+        external GreLoadFont
+        integer  NGreLoadFont
+        parameter (NGreLoadFont = '0000022E'x)
+
+        integer GreUnloadFont
+        external GreUnloadFont
+        integer  NGreUnloadFont
+        parameter (NGreUnloadFont = '0000022F'x)
+
+        integer GreQueryFonts
+        external GreQueryFonts
+        integer  NGreQueryFonts
+        parameter (NGreQueryFonts = '00004230'x)
+
+        integer GreQueryFontAttributes
+        external GreQueryFontAttributes
+        integer  NGreQueryFontAttributes
+        parameter (NGreQueryFontAttributes = '00004231'x)
+
+        integer GreInstallIFI
+        external GreInstallIFI
+        integer  NGreInstallIFI
+        parameter (NGreInstallIFI = '00000232'x)
+
+        integer GreLoadPublicFont
+        external GreLoadPublicFont
+        integer  NGreLoadPublicFont
+        parameter (NGreLoadPublicFont = '00000233'x)
+
+        integer GreUnLoadPublicFont
+        external GreUnLoadPublicFont
+        integer  NGreUnLoadPublicFont
+        parameter (NGreUnLoadPublicFont = '00000234'x)
+
+        integer GreQueryCodePageVector
+        external GreQueryCodePageVector
+        integer  NGreQueryCodePageVector
+        parameter (NGreQueryCodePageVector = '00000235'x)
+
+        integer GreQueryFontFileDescriptions
+        external GreQueryFontFileDescriptions
+        integer  NGreQueryFontFileDescriptions
+        parameter (NGreQueryFontFileDescriptions = '00000236'x)
+
+c$endif
+
+c$ifdef INCL_GRE_JOURNALING
+
+        integer GreCreateJournalFile
+        external GreCreateJournalFile
+        integer  NGreCreateJournalFile
+        parameter (NGreCreateJournalFile = '0000023A'x)
+
+        integer GreDeleteJournalFile
+        external GreDeleteJournalFile
+        integer  NGreDeleteJournalFile
+        parameter (NGreDeleteJournalFile = '0000023B'x)
+
+        integer GreStartJournalFile
+        external GreStartJournalFile
+        integer  NGreStartJournalFile
+        parameter (NGreStartJournalFile = '0000023C'x)
+
+        integer GreStopJournalFile
+        external GreStopJournalFile
+        integer  NGreStopJournalFile
+        parameter (NGreStopJournalFile = '0000023D'x)
+
+        integer GrePlayJournalFile
+        external GrePlayJournalFile
+        integer  NGrePlayJournalFile
+        parameter (NGrePlayJournalFile = '0000023E'x)
+
+        integer GreOpenJournalFile
+        external GreOpenJournalFile
+        integer  NGreOpenJournalFile
+        parameter (NGreOpenJournalFile = '0000023F'x)
+
+c$endif
+
+c$ifdef INCL_GRE_HFONT
+
+        integer GreCreateFontHandle
+        external GreCreateFontHandle
+        integer  NGreCreateFontHandle
+        parameter (NGreCreateFontHandle = '00000250'x)
+
+        integer GreQueryFontHandle
+        external GreQueryFontHandle
+        integer  NGreQueryFontHandle
+        parameter (NGreQueryFontHandle = '00000251'x)
+
+        integer GreSelectFontHandle
+        external GreSelectFontHandle
+        integer  NGreSelectFontHandle
+        parameter (NGreSelectFontHandle = '00004252'x)
+
+        integer GreDeleteFontHandle
+        external GreDeleteFontHandle
+        integer  NGreDeleteFontHandle
+        parameter (NGreDeleteFontHandle = '00000253'x)
+
+        integer GreSetFontHandleOwner
+        external GreSetFontHandleOwner
+        integer  NGreSetFontHandleOwner
+        parameter (NGreSetFontHandleOwner = '00000254'x)
+
+c$endif
+
+c$ifdef INCL_GRE_POLYGON
+
+        integer GreDevicePolySet
+        external GreDevicePolySet
+        integer  NGreDevicePolySet
+        parameter (NGreDevicePolySet = '000040DF'x)
+
+        integer GreDrawRLE
+        external GreDrawRLE
+        integer  NGreDrawRLE
+        parameter (NGreDrawRLE = '00004255'x)
+
+        integer GrePolySet
+        external GrePolySet
+        integer  NGrePolySet
+        parameter (NGrePolySet = '00004256'x)
+
+c$endif
+
+c$reference

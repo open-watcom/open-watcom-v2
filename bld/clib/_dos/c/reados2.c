@@ -45,8 +45,7 @@ _WCRTLINK unsigned _dos_read( int handle,
 
         rc = DosRead( handle, buffer, count, (OS_PUINT)bytes );
         if( rc ) {
-            __set_errno_dos( rc );
-            return( rc );
+            return( __set_errno_dos_reterr( rc ) );
         }
         return( 0 );
     }

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Table translating generic cg "assembler" to PowerPC
+*               specific instructions.
 *
 ****************************************************************************/
 
@@ -118,7 +118,7 @@ _Un(     R,    R,    NONE ),       V_NO,           G_MOVE,       RG_##reg,FU_NO,
 _Un(     R,    M,    NONE ),       V_NO,           store,        RG_##reg,FU_MEM,       \
 _Un(     C,    M,    NONE ),       V_NO,           R_MOVOP1TEMP, RG_##reg,FU_NO,        \
 _Un(     M,    R,    NONE ),       V_NO,           load,         RG_##reg,FU_MEM,       \
-_Un(     C,    R,    NONE ),       V_OP1HIGHADDR,  G_LEA_HIGH,   RG_DWORD,FU_NO,        \
+_Un(     C,    R,    NONE ),       V_OP1HIGHADDR,  G_LEA_HIGH,   RG_##reg,FU_NO,        \
 _Un(     C,    R,    NONE ),       V_HALFWORDCONST1,G_LEA,       RG_##reg,FU_NO,        \
 _Un(     C,    R,    NONE ),       V_UHALFWORDCONST1,G_MOVE_UI,  RG_##reg,FU_NO,        \
 _Un(     C,    R,    NONE ),       V_NO,           R_CONSTLOAD,  RG_##reg,FU_NO,        \
@@ -129,7 +129,14 @@ _Un(     ANY,  ANY,  NONE ),       V_NO,           G_UNKNOWN,    RG_##reg##_NEED
 MOVE_TABLE( Move1, BYTE,  G_LOAD, G_STORE );
 MOVE_TABLE( Move2, WORD,  G_LOAD, G_STORE );
 MOVE_TABLE( Move4, DWORD, G_LOAD, G_STORE );
-MOVE_TABLE( Move8, QWORD, G_LOAD, G_STORE );
+
+opcode_entry    Move8[] = {
+/**************************/
+/*       op1   res   eq            verify          gen           reg      fu */
+_Un(     ANY,  ANY,  EQ_R1 ),      NVI(V_NO),      G_NO,         RG_,     FU_NO,
+_UnPP(   M,    M,    NONE  ),      NVI(V_SAME_LOCN),G_NO,        RG_,     FU_NO,
+_Un(     ANY,  ANY,  NONE ),       V_NO,           R_SPLITMOVE,  RG_,     FU_NO,
+};
 
 #define BINARY_TABLE( name, reg ) \
 opcode_entry    name[] = {                                                              \
@@ -189,6 +196,12 @@ _Bin(    ANY,  ANY,  ANY,  NONE ), V_NO,           G_UNKNOWN,    RG_##reg##_NEED
 N_BINARY_TABLE( NBinary1, BYTE  );
 N_BINARY_TABLE( NBinary2, WORD  );
 N_BINARY_TABLE( NBinary4, DWORD );
+
+static  opcode_entry    Binary8[] = {
+/***********************************/
+/*       op1   op2   res  eq      verify      gen           reg         fu*/
+_Bin(   ANY,  ANY,  ANY, NONE ),  V_NO,       R_SPLITOP,    RG_QWORD,   FU_NO,
+};
 
 opcode_entry    Push[] = {
 /************************/
@@ -342,7 +355,7 @@ static  opcode_entry    *OpcodeList[] = {
         Binary1,                /* BIN1 */
         Binary2,                /* BIN2 */
         Binary4,                /* BIN4 */
-        StubBinary,             /* BIN8 */
+        Binary8,                /* BIN8 */
         UBinary1,               /* UBIN1 */
         UBinary2,               /* UBIN2 */
         UBinary4,               /* UBIN4 */
@@ -389,8 +402,8 @@ static  opcode_entry    *OpcodeList[] = {
         DoNop,                  /* DONOTHING */
         NULL };                 /* BAD*/
 
-extern  opcode_entry    *OpcodeTable( table_def i ) {
-/***************************************************/
-
+extern  opcode_entry    *OpcodeTable( table_def i )
+/*************************************************/
+{
     return( OpcodeList[ i ] );
 }

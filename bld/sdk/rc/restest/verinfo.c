@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a version resource.
 *
 ****************************************************************************/
 
@@ -56,7 +55,8 @@ char *VerStringTypes[] = {
 
 int NumVerStrings = sizeof( VerStringTypes ) / sizeof( char * );
 
-void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info ) {
+void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info )
+{
     LBPrintf( lb, "FIXED INFO" );
     LBPrintf( lb, "    signature                 %08lX", info->dwSignature );
     LBPrintf( lb, "    StrucVersion              %08lX", info->dwStrucVersion );
@@ -73,8 +73,8 @@ void FormatFixedInfo( HWND lb, VS_FIXEDFILEINFO far *info ) {
     LBPrintf( lb, "    FileDateLS                %08lX", info->dwFileDateLS );
 }
 
-void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize ) {
-
+void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize )
+{
     LBPrintf( lb, "" );
     LBPrintf( lb, "Translation INFO" );
     while( infosize >= 4 ) {
@@ -83,12 +83,12 @@ void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize ) {
         infosize -=4;
     }
     if( infosize != 0 ) {
-        Error( "verinfo", "Tranlation Info size not a multiple of 4" );
+        Error( "verinfo", "Translation Info size not a multiple of 4" );
     }
 }
 
-void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize ) {
-
+void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize )
+{
     char        namebuf[100];
     WORD        i;
     void far    *ptr;
@@ -181,10 +181,12 @@ BOOL CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     }
     return( TRUE );
 }
-void DisplayVerInfo( void ) {
+
+void DisplayVerInfo( void )
+{
     FARPROC     fp;
 
-    fp = MakeProcInstance( VerInfoDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)VerInfoDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
 }

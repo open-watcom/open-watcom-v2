@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include "compcfg.h"
+#include "tgtenv.h"
+
 #include "cgfront.h"
 #include "cgback.h"
 #include "cgdata.h"
@@ -46,7 +47,6 @@
 #include "cginfo.h"
 #include "pcheader.h"
 #include "dbgsupp.h"
-#include "tgtenv.h"
 #include "initdefs.h"
 
 
@@ -171,7 +171,7 @@ static SYMBOL segEmitLabel(         // EMIT SEGMENT LABEL
     label = seg->label;
     if( label != NULL && ! seg->lab_gened ) {
         if( seg->seg_id == SEG_STACK ) {
-            CGAutoDecl( (cg_sym_handle)label, T_UINT_1 );
+            CGAutoDecl( (cg_sym_handle)label, TY_UINT_1 );
         } else {
             CgBackGenLabel( label );
         }
@@ -372,23 +372,22 @@ static PC_SEGMENT *addDefSeg(   // ADD A DEFAULT PC SEGMENT
     unsigned sa_control;        // - segmentAlloc control mask
 
     VbufInit( &seg_name );
-    VStrNull( &seg_name );
     ++def_seg->ctr;
     sa_control = SA_NULL;
     if( ads_control & ADS_MODULE_PREFIX ) {
         if(( ads_control & ADS_CODE_SEGMENT ) == 0 && DataSegName[0] != '\0' ) {
-            VStrConcStr( &seg_name, DataSegName );
+            VbufConcStr( &seg_name, DataSegName );
         } else {
-            VStrConcStr( &seg_name, ModuleName );
+            VbufConcStr( &seg_name, ModuleName );
         }
         sa_control |= SA_MODULE_PREFIX;
     }
     if( ads_control & ADS_STRING_SEGMENT ) {
         sa_control |= SA_DEFINE_ANYTIME;
     }
-    VStrConcStr( &seg_name, def_seg->pcseg->name );
+    VbufConcStr( &seg_name, def_seg->pcseg->name );
     if( ads_control & ADS_ZM_SEGMENT ) {
-        VStrConcDecimal( &seg_name, def_seg->ctr );
+        VbufConcDecimal( &seg_name, def_seg->ctr );
     }
     if( def_seg == &code_def_seg ) {
         attrs = SGAT_CODE_GEN;
@@ -398,9 +397,9 @@ static PC_SEGMENT *addDefSeg(   // ADD A DEFAULT PC SEGMENT
         } else {
             attrs = SGAT_DATA_PRIVATE_RW;
         }
-        VStrConcDecimal( &seg_name, def_seg->ctr );
+        VbufConcDecimal( &seg_name, def_seg->ctr );
     }
-    curr = segmentAlloc( seg_name.buf, NULL, SEG_NULL, attrs, sa_control );
+    curr = segmentAlloc( VbufString( &seg_name ), NULL, SEG_NULL, attrs, sa_control );
     if( 0 == ( attrs & EXEC ) ) {
         _markUsed( curr, TRUE );
     }
@@ -501,9 +500,12 @@ struct seg_look {                           // used to lookup segments
 
 
 static boolean same_segment(    // DETERMINE IF SAME SEGMENT
-    PC_SEGMENT *curr,           // - current segment
-    const struct seg_look*lk )  // - segment lookup structure
+    void * _curr,           // - current segment
+    const void * _lk )  // - segment lookup structure
 {
+    PC_SEGMENT *curr = _curr;
+    const struct seg_look* lk = _lk;
+
     target_offset_t     align_adjust;
     target_size_t       new_offset;
 
@@ -863,7 +865,7 @@ static SYMBOL segDefineLabel(   // DEFINE LABEL FOR SEGMENT, IF REQ'D
             label->id = SC_AUTO;
         } else {
             label->id = SC_STATIC;
-            InsertSymbol( FileScope, label, name );
+            InsertSymbol( GetFileScope(), label, name );
         }
         seg->label = label;
         _markUsed( seg, TRUE );
@@ -1038,8 +1040,7 @@ void SegmentCode(               // SET DEFAULT CODE SEGMENT
     unsigned control;           // - segmentAlloc control mask
 
     if( segname == NULL ) {
-        // will call SegmentCode()
-        CgFrontResetDefaultCodeSeg();
+        SegmentCode( TextSegName, NULL );
         return;
     }
     pruneDefSeg( &code_def_seg );

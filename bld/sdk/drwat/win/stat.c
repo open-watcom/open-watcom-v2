@@ -319,7 +319,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, UINT wparam,
                 str[4] = 0;
                 seg = atoi( str );
                 if( DoGlobalEntryModule( &ge, DTTaskEntry.hModule, seg ) ) {
-                    DispMem( Instance, hwnd, ge.hBlock, (ge.dwSize == 1) );
+                    DispMem( Instance, hwnd, (WORD)ge.hBlock, (ge.dwSize == 1) );
                 }
             }
             break;
@@ -368,8 +368,8 @@ BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, UINT wparam,
         switch( cmd ) {
 #ifndef __NT__
         case STAT_SEG_MAP:
-            fp = MakeProcInstance( SegMapDlgProc, Instance );
-            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, fp );
+            fp = MakeProcInstance( (FARPROC)SegMapDlgProc, Instance );
+            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, (DLGPROC)fp );
             FreeProcInstance( fp );
             break;
         case STAT_STACK_TRACE:
@@ -426,8 +426,8 @@ void DoStatDialog( HWND hwnd )
 {
     FARPROC     fp;
 
-    fp = MakeProcInstance( StatDialog, Instance );
-    JDialogBox( Instance, "TASKSTATUS", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)StatDialog, Instance );
+    JDialogBox( Instance, "TASKSTATUS", hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
 
 } /* DoStatDialog */

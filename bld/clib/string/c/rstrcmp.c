@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strcmp() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -38,16 +37,15 @@
 int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
 /*********************************************************************/
 {
-    UINT *           dw1 = ROUND(s1); // round down to dword
-    UINT *           dw2 = ROUND(s2);
-    UINT             dword1, dword2, tmpdword1, tmpdword2;
-    INT              tmpchar, shr1, shr2, shl1, shl2;
+    UINT            *dw1 = ROUND(s1);   // round down to dword
+    UINT            *dw2 = ROUND(s2);
+    UINT            dword1, dword2, tmpdword1, tmpdword2;
+    INT             tmpchar, shr1, shr2, shl1, shl2;
 
-    #ifdef __WIDECHAR__
-        if( OFFSET(s1) % 2  ||  OFFSET(s2) % 2 ) {
-            return( __simple_wcscmp( s1, s2 ) );
-        }
-    #endif
+#ifdef __WIDECHAR__
+    if( OFFSET(s1) % 2  ||  OFFSET(s2) % 2 )
+        return( __simple_wcscmp( s1, s2 ) );
+#endif
 
     /*** Initialize locals ***/
     shr1 = OFFSET(s1) << 3; // shift right  = offset * 8
@@ -55,16 +53,16 @@ int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
     shl1 = INT_SIZE - shr1; // shift left = 32 - shift right
     shl2 = INT_SIZE - shr2;
 
-    if (shr1 != 0) {
+    if( shr1 != 0 ) {
         dword1 = *dw1++;
     }
-    if (shr2 != 0) {
+    if( shr2 != 0 ) {
         dword2 = *dw2++;
     }
 
     /*** Scan in aligned 4-byte groups ***/
     for( ;; ) {
-        if (shr1 == 0) {
+        if( shr1 == 0 ) {
             tmpdword1 = *dw1++;
         } else {
             tmpdword1 = dword1 >> shr1;
@@ -72,7 +70,7 @@ int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
             tmpdword1 |= (dword1 << shl1);
         }
 
-        if (shr2 == 0) {
+        if( shr2 == 0 ) {
             tmpdword2 = *dw2++;
         } else {
             tmpdword2 = dword2 >> shr2;
@@ -81,77 +79,90 @@ int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s1, const CHAR_TYPE *s2 )
         }
 
         /*** Did s1 end already? ***/
-        if( GOT_NIL(tmpdword1) )  break;
+        if( GOT_NIL(tmpdword1) )
+            break;
         /*** Are s1 and s2 still the same? ***/
-        #ifdef __WIDECHAR__
-            if( tmpdword1 != tmpdword2 ) {
-                tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);
-                if( tmpchar )  return( tmpchar );
+#ifdef __WIDECHAR__
+        if( tmpdword1 != tmpdword2 ) {
+            tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);
+            if( tmpchar )
+                return( tmpchar );
 
-                return( CHR2(tmpdword1) - CHR2(tmpdword2) );
-            }
-        #else
-            if (tmpdword1 != tmpdword2) {
-                tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);
-                if (tmpchar) return ( tmpchar );
+            return( CHR2(tmpdword1) - CHR2(tmpdword2) );
+        }
+#else
+        if (tmpdword1 != tmpdword2) {
+            tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);
+            if( tmpchar )
+                return( tmpchar );
 
-                tmpchar = CHR2(tmpdword1) - CHR2(tmpdword2);
-                if (tmpchar) return ( tmpchar );
+            tmpchar = CHR2(tmpdword1) - CHR2(tmpdword2);
+            if( tmpchar )
+                return( tmpchar );
 
-                tmpchar = CHR3(tmpdword1) - CHR3(tmpdword2);
-                if (tmpchar) return ( tmpchar );
+            tmpchar = CHR3(tmpdword1) - CHR3(tmpdword2);
+            if( tmpchar )
+                return( tmpchar );
 
-                return ( CHR4(tmpdword1) - CHR4(tmpdword2) );
-            }
-        #endif
+            return( CHR4(tmpdword1) - CHR4(tmpdword2) );
+        }
+#endif
     }
 
     /*** Scan the last byte(s) in the string ***/
-    if( tmpdword1 == tmpdword2 )  return( 0 );
+    if( tmpdword1 == tmpdword2 )
+        return( 0 );
 
     /* we have a null char somewhere in the last dword */
-    #ifdef __WIDECHAR__
-        tmpchar = CHR1(tmpdword1);
-        if( tmpchar == 0 ) {                            /* 1st char is null */
-            return( tmpchar - CHR1(tmpdword2) );
-        }
+#ifdef __WIDECHAR__
+    tmpchar = CHR1(tmpdword1);
+    if( tmpchar == 0 ) {                            /* 1st char is null */
+        return( tmpchar - CHR1(tmpdword2) );
+    }
 
-        tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);    /* 2nd char is null */
-        if( tmpchar )  return( tmpchar );
-        return( CHR2(tmpdword1) - CHR2(tmpdword2) );
-    #else
-        tmpchar = CHR1(tmpdword1);
-        if( tmpchar == 0 ) {            // first char in the dword is null
-            return( tmpchar - CHR1(tmpdword2));
-        }
+    tmpchar = CHR1(tmpdword1) - CHR1(tmpdword2);    /* 2nd char is null */
+    if( tmpchar )
+        return( tmpchar );
+    return( CHR2(tmpdword1) - CHR2(tmpdword2) );
+#else
+    tmpchar = CHR1(tmpdword1);
+    if( tmpchar == 0 ) {            // first char in the dword is null
+        return( tmpchar - CHR1(tmpdword2));
+    }
 
-        if( CHR2(tmpdword1) == 0 ) {     // second char in the dword is null
-            tmpchar = tmpchar - CHR1(tmpdword2);
-            if (tmpchar) return ( tmpchar) ;
-
-            return ( CHR2(tmpdword1) - CHR2(tmpdword2) ) ;
-        }
-
-        if( CHR3(tmpdword1) == 0 ) {     // third char in the dword is null
-            tmpchar = tmpchar - CHR1(tmpdword2);
-            if (tmpchar) return ( tmpchar) ;
-
-            tmpchar = CHR2(tmpdword1) - CHR2(tmpdword2);
-            if (tmpchar) return ( tmpchar) ;
-
-            return ( CHR3(tmpdword1) - CHR3(tmpdword2) ) ;
-        }
-
-        // 4th char in the dword is null
+    if( CHR2(tmpdword1) == 0 ) {     // second char in the dword is null
         tmpchar = tmpchar - CHR1(tmpdword2);
-        if (tmpchar) return ( tmpchar );
+        if( tmpchar )
+            return ( tmpchar) ;
+
+        return( CHR2(tmpdword1) - CHR2(tmpdword2) ) ;
+    }
+
+    if( CHR3(tmpdword1) == 0 ) {     // third char in the dword is null
+        tmpchar = tmpchar - CHR1(tmpdword2);
+        if( tmpchar )
+            return( tmpchar) ;
 
         tmpchar = CHR2(tmpdword1) - CHR2(tmpdword2);
-        if (tmpchar) return ( tmpchar );
+        if( tmpchar )
+            return( tmpchar) ;
 
-        tmpchar = CHR3(tmpdword1) - CHR3(tmpdword2);
-        if (tmpchar) return ( tmpchar );
+        return( CHR3(tmpdword1) - CHR3(tmpdword2) ) ;
+    }
 
-        return ( CHR4(tmpdword1) - CHR4(tmpdword2) );
-    #endif
+    // 4th char in the dword is null
+    tmpchar = tmpchar - CHR1(tmpdword2);
+    if( tmpchar )
+        return( tmpchar );
+
+    tmpchar = CHR2(tmpdword1) - CHR2(tmpdword2);
+    if( tmpchar )
+        return( tmpchar );
+
+    tmpchar = CHR3(tmpdword1) - CHR3(tmpdword2);
+    if( tmpchar )
+        return( tmpchar );
+
+    return( CHR4(tmpdword1) - CHR4(tmpdword2) );
+#endif
 }

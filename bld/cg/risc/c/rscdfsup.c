@@ -36,7 +36,6 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -72,6 +71,7 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
     { ".debug_loc" },
     { ".debug_abbrev" },
     { ".debug_macinfo" },
+    { ".debug_str" },
     { ".WATCOM_reference" }
 };
 

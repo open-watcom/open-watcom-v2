@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 executable entry point.
 *
 ****************************************************************************/
 
@@ -40,72 +39,66 @@
 #include "ntex.h"
 #include "sigtab.h"
 #include "initfini.h"
+#include "initarg.h"
+
+extern void __InitThreadData( thread_data * );
 
 #ifdef __SW_BR
-    _WCRTLINK extern    void    (*__process_fini)(unsigned,unsigned);
-    _WCRTLINK extern    int     ___Argc;        /* argument count */
-    _WCRTLINK extern    int     ___wArgc;       /* argument count */
-    _WCRTLINK extern    char    **___Argv;      /* argument vector */
-    _WCRTLINK extern    wchar_t **___wArgv;     /* argument vector */
+    _WCRTLINK extern    void    (*__process_fini)( unsigned, unsigned );
     extern      void    __CommonInit( void );
     extern      int     wmain( int, wchar_t ** );
     extern      int     main( int, char ** );
 #else
     extern      void            __NTMainInit( void *, void * );
-    #ifdef __WIDECHAR__
-        extern  void            __wCMain( void );
-        #if defined(_M_IX86)
-            #pragma aux __wCMain  "*"
-        #endif
-    #else
-        extern  void            __CMain( void );
-        #if defined(_M_IX86)
-            #pragma aux __CMain  "*"
-        #endif
+  #ifdef __WIDECHAR__
+    extern  void            __wCMain( void );
+    #if defined(_M_IX86)
+        #pragma aux __wCMain  "*"
     #endif
+  #else
+    extern  void            __CMain( void );
+    #if defined(_M_IX86)
+        #pragma aux __CMain  "*"
+    #endif
+  #endif
     extern      unsigned        __ThreadDataSize;
+#endif
+
+#ifdef __WIDECHAR__
+  #if defined(_M_IX86)
+    #pragma aux __wNTMain "*"
+  #endif
+#else
+  #if defined(_M_IX86)
+    #pragma aux __NTMain "*"
+  #endif
 #endif
 
 void __F_NAME(__NTMain,__wNTMain)( void )
 /***************************************/
 {
+#if defined(__SW_BR)
+  #if defined(_M_IX86)
+    REGISTRATION_RECORD rr;
 
-    #if defined(__SW_BR)
-    {
-        #if defined(_M_IX86)
-            REGISTRATION_RECORD rr;
-            __NewExceptionHandler( &rr, 1 );
-        #endif
-        __process_fini = &__FiniRtns;
-        __InitRtns( 255 );
-        __CommonInit();
-        #ifdef __WIDECHAR__
-            exit( wmain( ___Argc, ___wArgv ) );
-        #else
-            exit( main( ___Argc, ___Argv ) );
-        #endif
-    }
-    #else
-    {
-        REGISTRATION_RECORD     rr;
-        thread_data             *tdata;
-        __InitRtns( 1 );
-        tdata = __alloca( __ThreadDataSize );
-        memset( tdata, 0, __ThreadDataSize );
-        // tdata->__allocated = 0;
-        tdata->__data_size = __ThreadDataSize;
-
-        __NTMainInit( &rr, tdata );
-        __F_NAME(__CMain,__wCMain)();
-    }
-    #endif
-}
-#ifdef __WIDECHAR__
-    #if defined(_M_IX86)
-        #pragma aux __wNTMain "*"
-    #endif
+    __NewExceptionFilter( &rr );
+  #endif
+    __process_fini = &__FiniRtns;
+    __InitRtns( 255 );
+    __CommonInit();
+    exit( __F_NAME(main( ___Argc, ___Argv ),wmain( ___wArgc, ___wArgv )) );
 #else
-    #if defined(_M_IX86)
-        #pragma aux __NTMain "*"
-    #endif
+    REGISTRATION_RECORD     rr;
+    thread_data             *tdata;
+
+    __InitRtns( INIT_PRIORITY_THREAD );
+    tdata = __alloca( __ThreadDataSize );
+    memset( tdata, 0, __ThreadDataSize );
+    // tdata->__allocated = 0;
+    tdata->__data_size = __ThreadDataSize;
+
+    __InitThreadData( tdata );
+    __NTMainInit( &rr, tdata );
+    __F_NAME(__CMain,__wCMain)();
 #endif
+}

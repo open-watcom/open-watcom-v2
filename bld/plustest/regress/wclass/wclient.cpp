@@ -5,7 +5,7 @@ WObjectMap WEXPORT WClient::_convMap;
 HDDEDATA _export _far _pascal clientCallback( UINT type, UINT /*fmt*/, HCONV hconv,
 		HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hdata*/, DWORD /*dwdata1*/, DWORD /*dwdata2*/ )
 {
-	WClient* client = (WClient*)WClient::_convMap.findThis( hconv );
+	WClient* client = (WClient*)WClient::_convMap.findThis( (HANDLE)hconv );
 	ifptr( client ) {
 		switch( type ) {
 		case XTYP_DISCONNECT:
@@ -18,7 +18,7 @@ HDDEDATA _export _far _pascal clientCallback( UINT type, UINT /*fmt*/, HCONV hco
 #define INITFLAGS APPCMD_CLIENTONLY\
 				| CBF_SKIP_REGISTRATIONS
 
-WEXPORT WClient::WClient( HANDLE inst, WObject* owner, cbc notify )
+WEXPORT WClient::WClient( HINSTANCE inst, WObject* owner, cbc notify )
 	: _service( 0 )
 	, _owner( owner )
 	, _notify( notify )
@@ -53,7 +53,7 @@ bool WEXPORT WClient::connect( char* service )
 	_service = DdeCreateStringHandle( _procid, service, CP_WINANSI );
 	_hconv = DdeConnect( _procid, _service, _service, NIL );
 	ifptr( _hconv ) {
-		_convMap.setThis( this, _hconv );
+		_convMap.setThis( this, (HANDLE)_hconv );
 		_connected = TRUE;
 		return TRUE;
 	}
@@ -63,7 +63,7 @@ bool WEXPORT WClient::connect( char* service )
 
 void WEXPORT WClient::disconnect()
 {
-	WClient* client = (WClient*)WClient::_convMap.findThis( _hconv );
+	WClient* client = (WClient*)WClient::_convMap.findThis( (HANDLE)_hconv );
 	ifptr( client ) {
 		DdeDisconnect( _hconv );
 		_convMap.clearThis( this );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap file loading for DOS extended debugger.
 *
 ****************************************************************************/
 
@@ -55,12 +54,7 @@ extern trap_version     TrapVer;
 extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
                                         unsigned, mx_entry * );
 
-#if defined(_NEC_PC)
- #define DOS4G_COMM_VECTOR      0x7f
-#else
- #define DOS4G_COMM_VECTOR      0x15
-#endif
-
+#define DOS4G_COMM_VECTOR       0x15
 #define NUM_BUFF_RELOCS         16
 #define DEFAULT_TRP_NAME        "STD"
 #define DEFAULT_TRP_EXT         "TRP"
@@ -69,14 +63,14 @@ extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
 #define PSP_ENVSEG_OFF          0x2c
 
 #define TRAP_SIGNATURE          0xdeaf
-typedef struct {
+typedef _Packed struct {
     unsigned_16         sig;
     addr32_off          init;
     addr32_off          req;
     addr32_off          fini;
 } trap_file_header;
 
-typedef struct {
+typedef _Packed struct {
     memptr      ptr;
     unsigned_16 len;
 } mx_entry16;
@@ -192,7 +186,7 @@ void call_prep (void);
         "mov edx, _D32NullPtrCheck"
 #endif
 
-P1616 __cdecl find_entry (void)
+P1616 __cdecl find_entry( void )
         {
         P1616 retval = 0;
 
@@ -207,7 +201,7 @@ P1616 __cdecl find_entry (void)
 /*      Returns 16:16 pointer to MONITOR array, describing state of hardware
         breakpoints.  You shouldn't care about the return value during your init.
 */
-int __cdecl D32NullPtrCheck (unsigned short on)
+int __cdecl D32NullPtrCheck( unsigned short on )
         {
         static int      old_state;
         int             old;
@@ -317,7 +311,7 @@ static uint_16 EnvAreaSize( char __far *envarea )
     return( envptr - envarea + 1 );
 }
 
-static char *CopyEnv()
+static char *CopyEnv( void )
 {
     char                __far *envarea;
     uint_16             envsize;
@@ -339,7 +333,7 @@ static char *CopyEnv()
     return( NULL );
 }
 
-static char *SetTrapHandler()
+static char *SetTrapHandler( void )
 {
     char                dummy;
     long                result;
@@ -397,7 +391,7 @@ static char *SetTrapHandler()
 
 static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
 {
-    struct {
+    _Packed struct {
         unsigned_16     remote;
         unsigned_16     retcode;
         trap_version    version;
@@ -411,7 +405,7 @@ static bool CallTrapInit( char *parm, char *errmsg, trap_version *trap_ver )
     callstruct->errmsg_off = sizeof( *callstruct ) + strlen( parm ) + 1;
     GoToRealMode( RMTrapInit );
     *trap_ver = callstruct->version;
-    _fstrcpy( errmsg, (uint_8 __far *)callstruct + callstruct->errmsg_off );
+    _fstrcpy( errmsg, (char __far *)callstruct + callstruct->errmsg_off );
     return( *errmsg == NULLCHAR );
 }
 
@@ -562,13 +556,13 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     dh = PathOpen( trapbuff, end - trapbuff, DEFAULT_TRP_EXT );
     if( dh == NIL_HANDLE ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
     err = ReadInTrap( GetSystemHandle( dh ) );
     FileClose( dh );
     if( err != NULL ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         KillTrap();
         return( buff );
     }

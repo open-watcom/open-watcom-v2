@@ -24,37 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS emulation routines for Win32.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
-#include "pragmas.h"
-#include "keys.h"
-#define _WINSOCKAPI_
-#include <windows.h>
+#include "vibios.h"
 
 typedef struct {
-    vi_key vk;
-    vi_key reg;
-    vi_key shift;
-    vi_key ctrl;
-    vi_key alt;
+    WORD    vk;
+    vi_key  reg;
+    vi_key  shift;
+    vi_key  ctrl;
+    vi_key  alt;
 } map;
 
 static const map events[] = {
-    { VK_BACK, VI_KEY( BS ), VI_KEY( BS ), VI_KEY( BS ), VI_KEY( BS  )},
-    { VK_TAB, VI_KEY( TAB ), VI_KEY( SHIFT_TAB ), VI_KEY( CTRL_TAB ), VI_KEY( ALT_TAB  )},
-    { VK_RETURN, VI_KEY( ENTER ), VI_KEY( ENTER ), VI_KEY( ENTER ), VI_KEY( ENTER  )},
-    { VK_ESCAPE, VI_KEY( ESC ), VI_KEY( ESC ), VI_KEY( ESC ), VI_KEY( ESC  )},
+    { VK_BACK, VI_KEY( BS ), VI_KEY( BS ), VI_KEY( BS ), VI_KEY( BS ) },
+    { VK_TAB, VI_KEY( TAB ), VI_KEY( SHIFT_TAB ), VI_KEY( CTRL_TAB ), VI_KEY( ALT_TAB ) },
+    { VK_RETURN, VI_KEY( ENTER ), VI_KEY( ENTER ), VI_KEY( ENTER ), VI_KEY( ENTER ) },
+    { VK_ESCAPE, VI_KEY( ESC ), VI_KEY( ESC ), VI_KEY( ESC ), VI_KEY( ESC ) },
     { VK_SPACE, ' ', ' ', ' ', ' ' },
-    { VK_PRIOR, VI_KEY( PAGEUP ), VI_KEY( SHIFT_PAGEUP ), VI_KEY( CTRL_PAGEUP ), VI_KEY( ALT_PAGEUP  )},
+    { VK_PRIOR, VI_KEY( PAGEUP ), VI_KEY( SHIFT_PAGEUP ), VI_KEY( CTRL_PAGEUP ), VI_KEY( ALT_PAGEUP ) },
     { VK_NEXT, VI_KEY( PAGEDOWN ), VI_KEY( SHIFT_PAGEDOWN ), VI_KEY( CTRL_PAGEDOWN ), VI_KEY( ALT_PAGEDOWN ) },
     { VK_END, VI_KEY( END ), VI_KEY( SHIFT_END ), VI_KEY( CTRL_END ), VI_KEY( ALT_END ) },
     { VK_HOME, VI_KEY( HOME ), VI_KEY( SHIFT_HOME ), VI_KEY( CTRL_HOME ), VI_KEY( ALT_HOME ) },
@@ -62,8 +55,8 @@ static const map events[] = {
     { VK_UP, VI_KEY( UP ), VI_KEY( SHIFT_UP ), VI_KEY( CTRL_UP ), VI_KEY( ALT_UP ) },
     { VK_RIGHT, VI_KEY( RIGHT ), VI_KEY( SHIFT_RIGHT ), VI_KEY( CTRL_RIGHT ), VI_KEY( ALT_RIGHT ) },
     { VK_DOWN, VI_KEY( DOWN ), VI_KEY( SHIFT_DOWN ), VI_KEY( CTRL_DOWN ), VI_KEY( ALT_DOWN ) },
-    { VK_INSERT, VI_KEY( INS ), VI_KEY( SHIFT_INS ), VI_KEY( CTRL_INS ), VI_KEY( ALT_INS )},
-    { VK_DELETE, VI_KEY( DEL ), VI_KEY( SHIFT_DEL ), VI_KEY( CTRL_DEL ), VI_KEY( ALT_DEL )},
+    { VK_INSERT, VI_KEY( INS ), VI_KEY( SHIFT_INS ), VI_KEY( CTRL_INS ), VI_KEY( ALT_INS ) },
+    { VK_DELETE, VI_KEY( DEL ), VI_KEY( SHIFT_DEL ), VI_KEY( CTRL_DEL ), VI_KEY( ALT_DEL ) },
     { 'A', 'a', 'A', VI_KEY( CTRL_A ), VI_KEY( ALT_A ) },
     { 'B', 'b', 'B', VI_KEY( CTRL_B ), VI_KEY( ALT_B ) },
     { 'C', 'c', 'C', VI_KEY( CTRL_C ), VI_KEY( ALT_C ) },
@@ -104,34 +97,29 @@ static const map events[] = {
     { VK_F12, VI_KEY( F12 ), VI_KEY( SHIFT_F12 ), VI_KEY( CTRL_F12 ), VI_KEY( ALT_F12 ) }
 };
 
-int CompareEvents( map *p1, map *p2 )
-{
-    return( p1->vk - p2->vk );
-}
-
-
 extern HANDLE   InputHandle, OutputHandle;
 extern COORD    BSize;
 
-#pragma off (unreferenced);
-char In61( void ) { return( 0 ); }
-void Out61( char a ) {}
-void Out43( char a ) {}
-void Out42( char a ) {}
+#pragma off( unreferenced );
 void BIOSGetColorPalette( void far *a ) {}
 long BIOSGetColorRegister( short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr() {}
-void BIOSSetBlinkAttr() {}
+void BIOSSetNoBlinkAttr( void ) {}
+void BIOSSetBlinkAttr( void ) {}
 void BIOSSetColorRegister( short reg, char r, char g, char b ) {}
-#pragma on (unreferenced);
+#pragma on( unreferenced );
 
 static COORD    _cpos;
+
+static int CompareEvents( const void *p1, const void *p2 )
+{
+    return( ((const map *)p1)->vk - ((const map *)p2)->vk );
+}
+
 /*
  * BIOSGetCursor - set current cursor postion
  */
 void BIOSSetCursor( char page, char row, char col )
 {
-
     page = page;
     _cpos.X = col;
     _cpos.Y = row;
@@ -158,21 +146,21 @@ short BIOSGetCursor( char page )
  */
 static BOOL eventWeWant( INPUT_RECORD *ir )
 {
-    WORD        vk;
-    DWORD       st;
-    DWORD       ss;
-    extern int  CurrMouseStatus;
-    extern int  CurrMouseCol;
-    extern int  CurrMouseRow;
-    static short alt_numpad_number;
+    WORD            vk;
+    DWORD           st;
+    DWORD           ss;
+    extern int      CurrMouseStatus;
+    extern int      CurrMouseCol;
+    extern int      CurrMouseRow;
+    static short    alt_numpad_number;
 
     if( ir->EventType == MOUSE_EVENT ) {
         CurrMouseCol = ir->Event.MouseEvent.dwMousePosition.X;
         CurrMouseRow = ir->Event.MouseEvent.dwMousePosition.Y;
         CurrMouseStatus = 0;
         st = ir->Event.MouseEvent.dwButtonState;
-        if( st & (FROM_LEFT_2ND_BUTTON_PRESSED|FROM_LEFT_3RD_BUTTON_PRESSED |
-                FROM_LEFT_4TH_BUTTON_PRESSED|FROM_LEFT_1ST_BUTTON_PRESSED ) ) {
+        if( st & (FROM_LEFT_2ND_BUTTON_PRESSED | FROM_LEFT_3RD_BUTTON_PRESSED |
+                  FROM_LEFT_4TH_BUTTON_PRESSED | FROM_LEFT_1ST_BUTTON_PRESSED ) ) {
             CurrMouseStatus |= MOUSE_LEFT_BUTTON_DOWN;
         }
         if( st & RIGHTMOST_BUTTON_PRESSED ) {
@@ -201,13 +189,15 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         return( FALSE );
     }
     vk = ir->Event.KeyEvent.wVirtualKeyCode;
-    if( vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU ) {
+    if( vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU || vk == VK_CAPITAL ) {
         return( FALSE );
     }
     ss = ir->Event.KeyEvent.dwControlKeyState;
-    if( ( ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED ) ) &&
-        !( ss &( ENHANCED_KEY ) ) ) {
-        if( alt_numpad_number == -1 ) alt_numpad_number = 0;
+    if( (ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED)) &&
+        !(ss &(ENHANCED_KEY)) ) {
+        if( alt_numpad_number == -1 ) {
+            alt_numpad_number = 0;
+        }
         alt_numpad_number *= 10;
         switch( ir->Event.KeyEvent.wVirtualScanCode ) {
         case 0x47: alt_numpad_number += 7; break;
@@ -234,16 +224,14 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
 /*
  * BIOSKeyboardHit - read the keyboard
  */
-short BIOSGetKeyboard( char x )
+vi_key BIOSGetKeyboard( int *scan )
 {
     INPUT_RECORD        ir;
-    DWORD               rd,ss;
+    DWORD               rd, ss;
     WORD                vk;
-    short               ascii;
-    BOOL                has_alt, has_shift, has_ctrl;
-    map                 *ev,what;
-
-    x = x;
+    BOOL                has_alt, has_shift, has_ctrl, has_capsl;
+    map                 *ev, what;
+    vi_key              key;
 
     do {
         ReadConsoleInput( InputHandle, &ir, 1, &rd );
@@ -252,60 +240,76 @@ short BIOSGetKeyboard( char x )
         return( VI_KEY( MOUSEEVENT ) );
     }
     vk = ir.Event.KeyEvent.wVirtualKeyCode;
-    ascii = ir.Event.KeyEvent.uChar.AsciiChar;
+    key = (unsigned char)ir.Event.KeyEvent.uChar.AsciiChar;
     ss = ir.Event.KeyEvent.dwControlKeyState;
 
-    has_shift =  ((ss & SHIFT_PRESSED) ? TRUE : FALSE);
-    has_shift ^= ((ss & CAPSLOCK_ON) ? TRUE : FALSE);
-    has_ctrl = ((ss & (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)) ? TRUE:FALSE);
-    has_alt =  ((ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED )) ? TRUE:FALSE);
+    has_shift = ((ss & SHIFT_PRESSED) ? TRUE : FALSE);
+    has_ctrl = ((ss & (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)) ? TRUE : FALSE);
+    has_alt = ((ss & (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)) ? TRUE : FALSE);
+    has_capsl = ((ss & CAPSLOCK_ON) ? TRUE : FALSE);
     what.vk = vk;
 
-    ev = bsearch( &what, events, sizeof( events )/sizeof( map ),
-                    sizeof( what ), (int (*)(const void*, const void*))CompareEvents );
+    ev = bsearch( &what, events, sizeof( events ) / sizeof( events[0] ),
+        sizeof( what ), CompareEvents );
     if( ev != NULL ) {
-        if( has_shift ) {
-            ascii = ev->shift;
+        if( has_ctrl && has_alt ) {
+            // it handles AltGr + key
         } else if( has_ctrl ) {
-            ascii = ev->ctrl;
+            key = ev->ctrl;
         } else if( has_alt ) {
-            ascii = ev->alt;
+            key = ev->alt;
+        // Caps lock has efect to keys which generate character
+        // don't apply to extended keys as down, up, page down,
+        // page up, insert, end, delete, ....
+        } else if( has_shift ^ ( key && has_capsl ) ) {
+            if( key == 0 ) {
+                key = ev->shift;
+            }
         } else {
-            ascii = ev->reg;
+            if( key == 0 ) {
+                key = ev->reg;
+            }
         }
-    } else if( ascii == 0 ) {
-        ascii = 128; /* why ? */
     }
-    return( ascii );
+    if( key == 0 ) {    // ignore unknown keys
+        key = VI_KEY( DUMMY );
+    }
+    if( scan != NULL ) {
+        *scan = 0;
+    }
+    return( key );
 
 } /* BIOSGetKeyboard */
 
 /*
  * BIOSKeyboardHit - test if a key is waiting
  */
-short BIOSKeyboardHit( char x )
+bool BIOSKeyboardHit( void )
 {
     DWORD               rd;
     INPUT_RECORD        ir;
+    bool                rc;
 
-    x = x;
     while( 1 ) {
         PeekConsoleInput( InputHandle, &ir, 1, &rd );
         if( rd == 0 ) {
-            return( FALSE );
+            rc = FALSE;
+            break;
         }
         if( eventWeWant( &ir ) ) {
-            return( TRUE );
+            rc = TRUE;
+            break;
         }
         ReadConsoleInput( InputHandle, &ir, 1, &rd );
     }
+    return( rc );
 
 } /* BIOSKeyboardHit */
 
 /*
- * MyVioShowBuf - update the screen
+ * BIOSUpdateScreen - update the screen
  */
-void MyVioShowBuf( unsigned offset, int nbytes )
+void  BIOSUpdateScreen( unsigned offset, unsigned nbytes )
 {
     SMALL_RECT  sr;
     COORD       bcoord;
@@ -317,13 +321,14 @@ void MyVioShowBuf( unsigned offset, int nbytes )
     }
 
     offset /= sizeof( char_info );
-    oend = offset+(nbytes-1);
+    oend = offset + (nbytes - 1);
 
-    bcoord.Y = sr.Top = offset/WindMaxWidth;
-    bcoord.X = sr.Left = offset - sr.Top*WindMaxWidth;
-    sr.Bottom = oend/WindMaxWidth;
-    sr.Right = oend - sr.Bottom*WindMaxWidth;
+    bcoord.Y = sr.Top = offset / WindMaxWidth;
+    bcoord.X = sr.Left = offset - sr.Top * WindMaxWidth;
+    sr.Bottom = oend / WindMaxWidth;
+    sr.Right = oend - sr.Bottom * WindMaxWidth;
 
-    WriteConsoleOutput( OutputHandle, (PCHAR_INFO) Scrn, BSize, bcoord, &sr );
+    WriteConsoleOutput( OutputHandle, (PCHAR_INFO)Scrn, BSize, bcoord, &sr );
 
-} /* MyVioShowBuf */
+} /* BIOSUpdateScreen */
+

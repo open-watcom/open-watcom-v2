@@ -1,4 +1,4 @@
-39
+40
 targetIdent
 0
 MProject
@@ -67,8 +67,8 @@ w????Path for include files:
 1
 17
 WString
-53
-..\;$(%watcom)\src\fortran\win;$(%watcom)\src\fortran
+52
+..;$(%WATCOM)\src\fortran\win;$(%WATCOM)\src\fortran
 0
 18
 MCState
@@ -116,7 +116,7 @@ WVList
 28
 MItem
 13
-..\btnwin.for
+../btnwin.for
 29
 WString
 6

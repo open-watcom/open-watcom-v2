@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "win1632.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wmsg.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 #include "wsetedit.h"
 #include "wedit.h"
 #include "wstrdup.h"
@@ -48,6 +48,9 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #define DEFAULT_STRING_ID       101
+
+#define MAX_ID_CHARS    14
+#define TAB_SIZE        8
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -74,13 +77,12 @@ static Bool WQueryReplaceString( HWND parent )
     text = WAllocRCString( W_QUERYREPLACESTRING );
     title = WAllocRCString( W_INSERTNEWSTRING );
 
-    ret = MessageBox( parent, text, title,
-                      MB_APPLMODAL | MB_ICONEXCLAMATION | MB_YESNO );
-    if( text ) {
+    ret = MessageBox( parent, text, title, MB_APPLMODAL | MB_ICONEXCLAMATION | MB_YESNO );
+    if( text != NULL ) {
         WFreeRCString( text );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WFreeRCString( title );
     }
 
@@ -93,24 +95,24 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
     Bool                ok;
     WStringBlock        *block;
 
-    ok = ( einfo && einfo->tbl && einfo->win && replace );
+    ok = (einfo != NULL && einfo->tbl != NULL && einfo->win != NULL && replace != NULL);
 
     if( ok ) {
         *replace = FALSE;
         block = WGetOrMakeStringBlock( einfo->tbl, id );
-        ok = ( block != NULL );
+        ok = (block != NULL);
     }
 
     if( ok ) {
-        if( block->block.String[ id & 0xf ] == NULL ) {
-            block->block.String[ id & 0xf ] = WResIDNameFromStr( text );
-            block->symbol[ id & 0xf ] = WStrDup( symbol );
+        if( block->block.String[id & 0xf] == NULL ) {
+            block->block.String[id & 0xf] = WResIDNameFromStr( text );
+            block->symbol[id & 0xf] = WStrDup( symbol );
             einfo->info->modified = TRUE;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
-                WMemFree( block->block.String[ id & 0xf ] );
-                block->block.String[ id & 0xf ] = WResIDNameFromStr( text );
-                block->symbol[ id & 0xf ] = WStrDup( symbol );
+                WMemFree( block->block.String[id & 0xf] );
+                block->block.String[id & 0xf] = WResIDNameFromStr( text );
+                block->symbol[id & 0xf] = WStrDup( symbol );
                 einfo->info->modified = TRUE;
                 *replace = TRUE;
             } else {
@@ -129,7 +131,7 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
     return( block );
 }
 
-Bool WInsertStringEntry ( WStringEditInfo *einfo )
+Bool WInsertStringEntry( WStringEditInfo *einfo )
 {
     HWND                lbox;
     Bool                ok;
@@ -144,21 +146,20 @@ Bool WInsertStringEntry ( WStringEditInfo *einfo )
     symbol = NULL;
     replace = FALSE;
 
-    ok = ( einfo && einfo->tbl && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->tbl != NULL && einfo->edit_dlg != NULL);
 
     if( ok ) {
         lbox = GetDlgItem ( einfo->edit_dlg, IDM_STREDLIST );
-        ok = ( lbox != NULL );
+        ok = (lbox != NULL);
     }
 
     if( ok ) {
         ok = WGetEditWindowText( einfo->edit_dlg, &text );
     }
 
-    if ( ok ) {
+    if( ok ) {
         ok = WGetEditWindowID( einfo->edit_dlg, &symbol, &id,
-                               einfo->info->symbol_table,
-                               einfo->combo_change );
+                               einfo->info->symbol_table, einfo->combo_change );
     }
 
     if( ok ) {
@@ -166,12 +167,12 @@ Bool WInsertStringEntry ( WStringEditInfo *einfo )
             id = DEFAULT_STRING_ID;
         }
         block = WInsertStringData( einfo, id, text, symbol, &replace );
-        ok = ( block != NULL );
+        ok = (block != NULL);
     }
 
     if( ok ) {
         pos = WFindStringPos( einfo->tbl, id );
-        ok = ( pos != -1 );
+        ok = (pos != -1);
     }
 
     if( ok ) {
@@ -182,17 +183,17 @@ Bool WInsertStringEntry ( WStringEditInfo *einfo )
     }
 
 
-    if ( ok ) {
-        WSetEditWindowID( einfo->edit_dlg, id, block->symbol[ id & 0xf ] );
-        ok = ( SendMessage ( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR );
-        if ( ok ) {
-            einfo->current_block  = block;
+    if( ok ) {
+        WSetEditWindowID( einfo->edit_dlg, id, block->symbol[id & 0xf] );
+        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        if( ok ) {
+            einfo->current_block = block;
             einfo->current_string = id;
-            einfo->current_pos    = pos;
+            einfo->current_pos = pos;
 #if 0
-            einfo->current_block  = NULL;
+            einfo->current_block = NULL;
             einfo->current_string = 0;
-            einfo->current_pos    = -1;
+            einfo->current_pos = -1;
             WHandleSelChange( einfo );
 #endif
         }
@@ -200,35 +201,34 @@ Bool WInsertStringEntry ( WStringEditInfo *einfo )
 
     if( ok ) {
         SetFocus( GetDlgItem( einfo->edit_dlg, IDM_STREDTEXT ) );
-        SendDlgItemMessage( einfo->edit_dlg, IDM_STREDTEXT, EM_SETSEL, GET_EM_SETSEL_MPS( 0, -1 ));
+        SendDlgItemMessage( einfo->edit_dlg, IDM_STREDTEXT, EM_SETSEL,
+                            GET_EM_SETSEL_MPS( 0, -1 ) );
     }
 
-    if( symbol ) {
+    if( symbol != NULL ) {
         WMemFree( symbol );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WMemFree( text );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block,
-                           int pos )
+Bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos )
 {
     int         i;
 
-    if( block ) {
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    if( block != NULL ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->block.String[i] != NULL ) {
                 if( !WAddEditWinLBoxEntry( einfo, block,
-                                           (block->blocknum & 0xfff0) + i,
-                                           pos ) ) {
+                                           (block->blocknum & 0xfff0) + i, pos ) ) {
                     return( FALSE );
                 }
                 if( pos != -1 ) {
-                    pos ++;
+                    pos++;
                 }
             }
         }
@@ -237,13 +237,13 @@ Bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block,
     return( TRUE );
 }
 
-Bool WAddEditWinLBoxEntry ( WStringEditInfo *einfo, WStringBlock *block,
-                            uint_16 string_id, int pos )
+Bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
+                           uint_16 string_id, int pos )
 {
     Bool    ok;
-    char   *n;
-    char   *lbtext;
-    char   *text;
+    char    *n;
+    char    *lbtext;
+    char    *text;
     char    idtext[35];
     int     tlen, idlen;
     HWND    lbox;
@@ -252,60 +252,56 @@ Bool WAddEditWinLBoxEntry ( WStringEditInfo *einfo, WStringBlock *block,
     lbtext = NULL;
     n = NULL;
 
-    ok = ( einfo && einfo->edit_dlg && block );
-
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_STREDLIST );
-        ok = ( lbox != NULL );
-    }
-
-    if ( ok ) {
-        text = WResIDNameToStr( block->block.String[ string_id & 0xf ] );
-        ok = ( text != NULL );
-    }
-
-#define MAX_ID_CHARS    14
-#define TAB_SIZE        8
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && block != NULL);
 
     if( ok ) {
-        if( block->symbol[ string_id & 0xf ] != NULL ) {
-            strncpy( idtext, block->symbol[ string_id & 0xf ], MAX_ID_CHARS );
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_STREDLIST );
+        ok = (lbox != NULL);
+    }
+
+    if( ok ) {
+        text = WResIDNameToStr( block->block.String[string_id & 0xf] );
+        ok = (text != NULL);
+    }
+
+    if( ok ) {
+        if( block->symbol[string_id & 0xf] != NULL ) {
+            strncpy( idtext, block->symbol[string_id & 0xf], MAX_ID_CHARS );
             idtext[MAX_ID_CHARS] = '\0';
         } else {
             utoa( (int)string_id, idtext, 10 );
         }
-        idlen = strlen(idtext);
-        idtext[ idlen ] = '\t';
+        idlen = strlen( idtext );
+        idtext[idlen] = '\t';
         ++idlen;
-        idtext[ idlen ] = '\0';
-        tlen = strlen(text);
-        lbtext = (char *) WMemAlloc( tlen + idlen + 4);
-        ok = ( lbtext != NULL );
+        idtext[idlen] = '\0';
+        tlen = strlen( text );
+        lbtext = (char *)WMemAlloc( tlen + idlen + 4 );
+        ok = (lbtext != NULL);
     }
 
     if( ok ) {
         memcpy( lbtext, idtext, idlen );
         lbtext[idlen] = ' ';
-        lbtext[idlen+1] = '\"';
-        memcpy( lbtext+idlen+2, text, tlen );
-        lbtext[ tlen + idlen + 2 ] = '\"';
-        lbtext[ tlen + idlen + 3 ] = '\0';
+        lbtext[idlen + 1] = '\"';
+        memcpy( lbtext + idlen + 2, text, tlen );
+        lbtext[tlen + idlen + 2] = '\"';
+        lbtext[tlen + idlen + 3] = '\0';
         n = WConvertStringFrom( lbtext, "\n", "n" );
         ok = WInsertLBoxWithStr( lbox, pos, n, (void *)string_id );
     }
 
-    if( n ) {
+    if( n != NULL ) {
         WMemFree( n );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WMemFree( text );
     }
 
-    if( lbtext ) {
+    if( lbtext != NULL ) {
         WMemFree( lbtext );
     }
 
     return( ok );
 }
-

@@ -74,13 +74,13 @@ unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
 
 static imp_image_handle *Images;
 
-extern DFAddImage( imp_image_handle *ii ){
+extern void DFAddImage( imp_image_handle *ii ){
 /**************************************/
     ii->next = Images;
     Images = ii;
 }
 
-extern DFFreeImage( imp_image_handle *ii ){
+extern void DFFreeImage( imp_image_handle *ii ){
 /**************************************/
     imp_image_handle *curr, **lnk;
 
@@ -121,7 +121,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpStartup()
+dip_status      DIPENTRY DIPImpStartup(void)
 {
 /*
         Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS/4G(W) 16-bit DOS stub program.
 *
 ****************************************************************************/
 
@@ -36,13 +35,14 @@
 #include <errno.h>
 #include <string.h>
 
+
 /* Add environment strings to be searched here */
 char *paths_to_check[] = {
         "DOS4GPATH",
         "PATH"};
 
 
-char *dos4g_path()
+char *dos4g_path( void )
 {
     int         i;
     char        *dos4gpath;
@@ -73,7 +73,7 @@ char *dos4g_path()
     return( "\\dos4gw.exe" );
 }
 
-main( int argc, char *argv[] )
+void main( int argc, char *argv[] )
 {
     char        *av[4];
     auto char   cmdline[128];
@@ -84,7 +84,7 @@ main( int argc, char *argv[] )
     av[3] = NULL;                   /* end of list */
 #ifdef QUIET
     putenv( "DOS4G=QUIET" );        /* disables DOS/4GW Copyright banner */
-                                        /* (note: you must display elsewhere) */
+                                    /* (note: you must display elsewhere) */
 #endif
     execvp( (const char *)av[0], (const char **)av );
     puts( "Stub exec failed:" );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line editing.
 *
 ****************************************************************************/
 
@@ -33,27 +32,28 @@
 #include "cmdedit.h"
 
 extern int      PrevCmd( char * );
-extern void     SetCursorType();
-extern void     FlipScreenCursor();
+extern void     SetCursorType( void );
+extern void     FlipScreenCursor( void );
 extern int      NextCmd( char * );
 
-void ToFirstCmd() {
-/************************/
 
+void ToFirstCmd( void )
+/*********************/
+{
     while( MaxCursor = PrevCmd( Line ) );
 }
 
 
-void ToLastCmd() {
-/***********************/
-
+void ToLastCmd( void )
+/********************/
+{
     while( MaxCursor = NextCmd( Line ) );
 }
 
 
-extern int WordSep( char ch ) {
-/*****************************/
-
+extern int WordSep( char ch )
+/***************************/
+{
     static char sep[] = { " \t:;,.<>/?'\"{}[]|\\`~!@$%^&*()-+=" };
     char *psep;
 
@@ -64,15 +64,15 @@ extern int WordSep( char ch ) {
     return( 0 );
 }
 
-void Left() {
-/***********/
-
+void Left( void )
+/***************/
+{
     if( Cursor != 0 ) --Cursor;
 }
 
-int LocateLeftWord() {
-/********************/
-
+int LocateLeftWord( void )
+/************************/
+{
     int cursor;
 
     if( Cursor == 0 ) return( 0 );
@@ -94,24 +94,51 @@ int LocateLeftWord() {
     return( cursor );
 }
 
-void LeftWord() {
-/***************/
-
+void LeftWord( void )
+/*******************/
+{
     Cursor = LocateLeftWord();
 }
 
-void DeleteBOW() {
-/****************/
+void Delete( void )
+/*****************/
+{
+    int i;
 
+    if ( MaxCursor != 0 ) {
+        if( Cursor != MaxCursor ) Edited = TRUE;
+        i = Cursor;
+        Line[ MaxCursor ] = ' ';
+        while( i < MaxCursor ) {
+            Line[ i ] = Line[ i + 1 ];
+            ++i;
+        }
+        --MaxCursor;
+    }
+    Draw = TRUE;
+}
+
+void BackSpace( void )
+/********************/
+{
+    if( Cursor != 0 ) {
+        Left();
+        Delete();
+    }
+}
+
+void DeleteBOW( void )
+/********************/
+{
     int cursor;
 
     cursor = LocateLeftWord();
     while( Cursor != cursor ) BackSpace();
 }
 
-void Right() {
-/************/
-
+void Right( void )
+/****************/
+{
     if( Cursor < Overflow ) {
         ++Cursor;
         if( Cursor > MaxCursor ) {
@@ -120,9 +147,9 @@ void Right() {
     }
 }
 
-int LocateRightWord() {
-/*********************/
-
+int LocateRightWord( void )
+/*************************/
+{
     int cursor;
 
     cursor = Cursor;
@@ -139,15 +166,15 @@ int LocateRightWord() {
     return( cursor );
 }
 
-void RightWord() {
-/****************/
-
+void RightWord( void )
+/********************/
+{
     Cursor = LocateRightWord();
 }
 
-void DeleteEOW() {
-/****************/
-
+void DeleteEOW( void )
+/********************/
+{
     int cursor;
 
     cursor = LocateRightWord();
@@ -158,15 +185,15 @@ void DeleteEOW() {
     }
 }
 
-void BOL() {
-/**********/
-
+void BOL( void )
+/**************/
+{
     Cursor = 0;
 }
 
-void EraseBOL() {
-/***************/
-
+void EraseBOL( void )
+/*******************/
+{
     while( Cursor != 0 ) {
         Left();
         Delete();
@@ -174,23 +201,23 @@ void EraseBOL() {
     BOL();
 }
 
-void EOL() {
-/**********/
-
+void EOL( void )
+/**************/
+{
     Cursor = MaxCursor;
 }
 
-void EraseEOL() {
-/***************/
-
+void EraseEOL( void )
+/*******************/
+{
     while( Cursor != MaxCursor ) {
         Delete();
     }
 }
 
-void FlipInsertMode() {
-/*********************/
-
+void FlipInsertMode( void )
+/*************************/
+{
     if( Insert ) {
         Cur.start += CursorDiff;
         Insert = FALSE;
@@ -201,27 +228,18 @@ void FlipInsertMode() {
     SetCursorType();
 }
 
-void BackSpace() {
-/****************/
-
-    if( Cursor != 0 ) {
-        Left();
-        Delete();
-    }
-}
-
-void ScreenCursorOff() {
-/**********************/
-
+void ScreenCursorOff( void )
+/**************************/
+{
     if( RowOffset != 0 ) {
         FlipScreenCursor();
         RowOffset = 0;
     }
 }
 
-void EraseLine() {
-/****************/
-
+void EraseLine( void )
+/********************/
+{
     ToLastCmd();
     Cursor = 0;
     if( Insert & !StickyInsert ) {
@@ -231,28 +249,9 @@ void EraseLine() {
     Draw = TRUE;
 }
 
-
-void Delete() {
-/*************/
-
-    int i;
-
-    if ( MaxCursor != 0 ) {
-        if( Cursor != MaxCursor ) Edited = TRUE;
-        i = Cursor;
-        Line[ MaxCursor ] = ' ';
-        while( i < MaxCursor ) {
-            Line[ i ] = Line[ i + 1 ];
-            ++i;
-        }
-        --MaxCursor;
-    }
-    Draw = TRUE;
-}
-
-void InsertChar() {
-/*****************/
-
+void InsertChar( void )
+/*********************/
+{
     int i;
 
     if( MaxCursor < Overflow ) {
@@ -269,10 +268,9 @@ void InsertChar() {
     }
 }
 
-void OverlayChar() {
-/******************/
-
-
+void OverlayChar( void )
+/**********************/
+{
     if( Cursor < Overflow ) {
         Edited = TRUE;
         Line[ Cursor ] = KbdChar.ascii;

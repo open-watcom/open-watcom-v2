@@ -5,27 +5,20 @@
  */
 #ifndef _SEARCH_H_INCLUDED
 #define _SEARCH_H_INCLUDED
+
 :include readonly.sp
+
+:include owrtlink.sp
+
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
-:segment PENPOINT
-_WCRTLINK extern char *lfind( void *__key, void *__base, unsigned *__num,
-                              unsigned __width,
-                              int (* __compare)(const void *, const void *) );
-_WCRTLINK extern char *lsearch( void *__key, void *__base, unsigned *__num,
-                                unsigned __width,
-                                int (* __compare)(const void *, const void *) );
-:elsesegment
 _WCRTLINK extern void *lfind( const void *__key, const void *__base,
                               unsigned *__num, unsigned __width,
                               int (* __compare)(const void *, const void *) );
 _WCRTLINK extern void *lsearch( const void *__key, void *__base,
                                 unsigned *__num, unsigned __width,
                                 int (* __compare)(const void *, const void *) );
-:endsegment
+
 :include cplusepi.sp
+
 #endif

@@ -1,0 +1,18 @@
+proj_name = exedmp
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h"
+
+.c: ../c
+
+objs =              &
+        main.obj    &
+        read.obj    &
+        format.obj  &
+        param.obj
+
+$(proj_name).exe : $(objs)
+        $(linker) $(lflags) name $^. file { $< }

@@ -45,7 +45,7 @@ void CenterDlg( HWND hwnd ) {
     RECT        area;
     WORD        x;
     WORD        y;
-    parent = GetWindowWord( hwnd, GWW_HWNDPARENT );
+    parent = (HWND)GetWindowWord( hwnd, GWW_HWNDPARENT );
     GetClientRect( parent, &area );
     x = -area.left;
     y = -area.top;
@@ -78,7 +78,7 @@ int ErrorBox( HWND hwnd, DWORD msgid, UINT type ) {
     int         ret;
     char        *msg;
 
-    msg = GetRCString( msgid );
+    msg = HWGetRCString( msgid );
     ret = MessageBox( hwnd, msg, HeapWalkName, type );
     if( ret == 0 ) {
         ret = MessageBox( hwnd, msg, HeapWalkName,

@@ -5,6 +5,7 @@
  */
 #ifndef _MEM_H_INCLUDED
 #define _MEM_H_INCLUDED
+
 :include readonly.sp
 
 :include ptrdiff.sp

@@ -1,0 +1,14 @@
+/Courier findfont
+  dup length dict begin {1 index /FID ne {def} {pop pop} ifelse} forall
+  CharStrings dup length dict begin {def} forall currentdict end
+  /CharStrings exch def
+  CharStrings /underscore
+  {pop
+     currentdict /FontInfo get /UnderlineThickness get .75 mul setlinewidth
+     currentdict /FontBBox get 2 get pop 600 dup
+     0 setcharwidth
+     newpath 0 0 moveto
+     dup .15 mul 0 rmoveto .75 mul 0 rlineto stroke
+  }bind put
+currentdict end
+/Courier exch definefont pop

@@ -1,0 +1,9 @@
+c$include os2def.fap
+
+c$ifndef INCL_NOBASEAPI
+c$include bse.fap
+c$endif
+
+c$ifndef INCL_NOPMAPI
+c$include pm.fap
+c$endif

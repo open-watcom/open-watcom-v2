@@ -1,22 +1,41 @@
-//
-//  new.h -- C++ default storage allocators
+///////////////////////////////////////////////////////////////////////////
+// FILE: new/new.h (Dynamic memory support)
 //
 :keep CPP_HDR
 :include crwat.sp
 //
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
 #ifndef _NEW_H_INCLUDED
 #define _NEW_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error new.h is for use with C++
+#ifndef _NEW_INCLUDED
+ #include <new>
 #endif
+:: No using declarations here. <new.h> exists only to support legacy
+:: programs. Thus access to new features (like std::bad_alloc) via
+:: <new.h> is not provided.
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
 #endif
+:elsesegment
+#ifndef _NEW_INCLUDED
+#define _NEW_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
+
 #ifndef _STDDEF_H_INCLUDED
  #include <stddef.h>
+#endif
+
+#ifndef _EXCEPTION_INCLUDED
+ #include <exceptio>
 #endif
 
 :include cpppfv.sp
@@ -29,13 +48,34 @@ extern void operator delete( void * );
 extern void operator delete []( void * );
 _WPRTLINK extern PFV set_new_handler( PFV );
 _WPRTLINK extern PFU _set_new_handler( PFU );
-:segment !QNX
+:segment DOS | LINUX
 #if defined(__SW_BR)
-  _WPRTLINK extern _PUP _set_op_new( _PUP );
-  _WPRTLINK extern _PUP _set_op_new_array( _PUP );
-  _WPRTLINK extern _PVV _set_op_delete( _PVV );
-  _WPRTLINK extern _PVV _set_op_delete_array( _PVV );
+ _WPRTLINK extern _PUP _set_op_new( _PUP );
+ _WPRTLINK extern _PUP _set_op_new_array( _PUP );
+ _WPRTLINK extern _PVV _set_op_delete( _PVV );
+ _WPRTLINK extern _PVV _set_op_delete_array( _PVV );
 #endif
 :endsegment
 
+// NOTE: Open Watcom currently does not throw std::bad_alloc on
+// allocation failures. This class is defined here to so that programs
+// that reference it will at least compile. Consider this a first step
+// in building an exception throwing implementation of operator new.
+
+namespace std {
+  class bad_alloc : public exception {
+  public:
+    bad_alloc( ) _WCTHROWS() :
+      exception( "unable to allocate memory" ) { }
+
+    bad_alloc( const bad_alloc & ) _WCTHROWS() { }
+
+    bad_alloc & operator=( bad_alloc & ) _WCTHROWS()
+        { return *this; }
+
+    virtual ~bad_alloc( ) _WCTHROWS() { }
+  };
+}
+
 #endif
+:endsegment

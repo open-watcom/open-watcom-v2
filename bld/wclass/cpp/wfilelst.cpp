@@ -32,3 +32,5 @@
 
 #define __WStringObjectList__
 #include "wfilelst.hpp"
+
+template class WStringObjectList<WFileName>;

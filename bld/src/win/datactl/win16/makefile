@@ -1,9 +1,10 @@
+platform = Win16
 CC = wcc
 CFLAGS = -zW
 res1_flags = -bt=windows -30
 
-!include ..\testctl.mif
-!include ..\..\master.mif
+!include ../testctl.mif
+!include ../../master.mif
 
 linkit : .PROCEDURE
     @%append $(LNK) system windows

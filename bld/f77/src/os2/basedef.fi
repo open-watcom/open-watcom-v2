@@ -1,0 +1,43 @@
+c$noreference
+
+        integer  CTRUE
+        parameter (CTRUE = 1)
+
+        integer  KSIZE
+        parameter (KSIZE = 1024)
+
+c$ifdef INCL_PAGE
+
+        integer  PAGESIZE
+        parameter (PAGESIZE = 4096)
+
+c$endif
+
+c$ifdef INCL_TYPES
+
+        structure /POINTL/
+            integer*4 x
+            integer*4 y
+        end structure
+
+        structure /RECTL/
+            integer*4 xLeft
+            integer*4 yBottom
+            integer*4 xRight
+            integer*4 yTop
+        end structure
+
+        structure /RGB/
+            integer*1 bBlue
+            integer*1 bGreen
+            integer*1 bRed
+        end structure
+
+        structure /RESULTCODES/
+            integer*2 codeTerminate
+            integer*2 codeResult
+        end structure
+
+c$endif
+
+c$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple client for testing remote communication transport.
 *
 ****************************************************************************/
 
@@ -78,11 +77,16 @@ void RunTime( test_type test, unsigned bytes, unsigned iterations )
 
     diff = clock() - start;
     total = (unsigned long) iterations * num * block_size;
-    printf( "%ld ticks to transfer %ld bytes in %d byte blocks - BPS = %ld\n",
-            diff, total, block_size, (total * CLOCKS_PER_SEC) / diff );
+    if( diff ) {
+        printf( "%ld ticks to transfer %ld bytes in %d byte blocks - BPS = %ld\n",
+                diff, total, block_size, (total * CLOCKS_PER_SEC) / diff );
+    } else {
+	printf( "%ld bytes in %d byte blocks were transferred too quickly\n",
+	        total, block_size );
+    }
 }
 
-main( unsigned argc, char *argv[] )
+int main( unsigned argc, char *argv[] )
 {
     char            *err;
     unsigned        iterations;
@@ -99,7 +103,7 @@ main( unsigned argc, char *argv[] )
     err = RemoteLink( argc > 1 ? argv[1] : "", 0 );
     if( err != NULL ) {
         printf( "Error: %s\n", err );
-        return;
+        return( 1 );
     }
     if( !RemoteConnect() ) {
         printf( "Error: can not connect to server\n" );
@@ -140,4 +144,5 @@ main( unsigned argc, char *argv[] )
         RemoteDisco();
     }
     RemoteUnLink();
+    return( 0 );
 }

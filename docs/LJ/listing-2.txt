@@ -1,0 +1,17 @@
+      PROGRAM Hello
+      IMPLICIT NONE
+      REAL A, B, C
+      REAL d, r1, r2
+
+      READ *, A, B, C
+      d = B * B - 4 * A * C
+      IF ( d .LT. 0 ) THEN
+         PRINT *, 'Complex Roots'
+      ELSE
+         r1 = ( -B + SQRT( d ) )/( 2 * A)
+         r2 = ( -B - SQRT( d ) )/( 2 * A)
+         PRINT *, r1, r2
+      ENDIF
+      END
+
+Caption: Classic test program, Fortran style.

@@ -103,7 +103,7 @@ static int hash_compare( const void *item1, const void *item2 )
 /*
  * Hash a symbol name.
  */
-static unsigned hash_symbol_name( const char *symbol )
+static unsigned hash_symbol_name( const void *symbol )
 /****************************************************/
 {
     char *              namecopy;
@@ -173,7 +173,7 @@ static unsigned hash_symbol_name( const char *symbol )
 /*
  * Used by ORL.
  */
-static void *obj_read( void *hdl, int len )
+static void *obj_read( void *hdl, size_t len )
 /*****************************************/
 {
     ListElem *          newelem;
@@ -508,9 +508,11 @@ void FiniFuzzy( void )
 /*
  * Check a hash table element during a walk of a hash table bucket.
  */
-static int matching_callback( const char *name, MatchingInfo *info )
-/******************************************************************/
+static int matching_callback( const void *name_, void *info_ )
+/************************************************************/
 {
+    const char          *name = name_;
+    MatchingInfo        *info = info_;
     char                matchstr[MAX_SYMBOL_LEN+1];
     int                 addit = 0;
     const char *        p;

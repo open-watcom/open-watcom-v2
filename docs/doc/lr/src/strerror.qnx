@@ -1,0 +1,144 @@
+.begpoint $compact $setptnt 8
+:DTHD.Error
+:DDHD.Message
+.point 0
+"No error"
+.point 1
+"Operation not permitted"
+.point 2
+"No such file or directory"
+.point 3
+"No such process"
+.point 4
+"Interrupted function call"
+.point 5
+"I/O error"
+.point 6
+"No such device or address"
+.point 7
+"Arg list too big"
+.point 8
+"Exec format error"
+.point 9
+"Bad file descriptor"
+.point 10
+"No child processes"
+.point 11
+"Resource unavailable; try again"
+.point 12
+"Not enough memory"
+.point 13
+"Permission denied"
+.point 14
+"Bad address"
+.point 15
+"Block device required"
+.point 16
+"Resource busy"
+.point 17
+"File exists"
+.point 18
+"Improper link"
+.point 19
+"No such device"
+.point 20
+"Not a directory"
+.point 21
+"Is a directory"
+.point 22
+"Invalid argument"
+.point 23
+"Too many files in the system"
+.point 24
+"Too many open files"
+.point 25
+"Inappropriate I/O control operation"
+.point 26
+"Text file busy"
+.point 27
+"File too large"
+.point 28
+"No space left on device"
+.point 29
+"Invalid seek"
+.point 30
+"Read-only file system"
+.point 31
+"Too many links"
+.point 32
+"Broken pipe"
+.point 33
+"Math arg out of domain of func"
+.point 34
+"Result too large"
+.point 35
+"No message of desired type"
+.point 36
+"Identifier removed"
+.point 37
+"Channel number out of range"
+.point 38
+"Level 2 not synchronized"
+.point 39
+"Level 3 halted"
+.point 40
+"Level 3 reset"
+.point 41
+"Link number out of range"
+.point 42
+"Protocol driver not attached"
+.point 43
+"No CSI structure available"
+.point 44
+"Level 2 halted"
+.point 45
+"Resource deadlock avoided"
+.point 46
+"No locks available"
+.point 62
+"Too many levels of symbolic links or prefixes"
+.point 78
+"Filename too long"
+.point 83
+"Can't access shared library"
+.point 84
+"Accessing a corrupted shared lib"
+.point 85
+".lib section in a.out corrupted"
+.point 86
+"Attempting to link in too many libs"
+.point 87
+"Attempting to exec a shared lib"
+.point 89
+"Function not implemented"
+.point 93
+"Directory not empty"
+.point 103
+"Operation not supported"
+.point 122
+"Potentially recoverable I/O error"
+.point 1000
+"Must be done on local machine"
+.point 1001
+"Need an NDP (8087...) to run"
+.point 1002
+"Corrupted file system detected"
+.point 1003
+"32 bit integer fields were used"
+.point 1004
+"no proc entry avail for virtual process"
+.point 1005
+"process manager-to-net enqueuing failed"
+.point 1006
+"could not find net manager for node no."
+.point 1007
+"told to allocate a vid buf too small"
+.point 1008
+"told to allocate a vid buf too big"
+.point 1009
+"More to do; send message again"
+.point 1010
+"Remap to controlling terminal"
+.point 1011
+"No license"
+.endpoint

@@ -1,0 +1,22 @@
+*$reference
+
+! Ellipse and Polygon Functions:
+! ------------------------------
+
+      external Chord
+      external Ellipse
+      external Pie
+      external Polygon
+      external PolyPolygon
+      external Rectangle
+      external RoundRect
+
+      integer*2 Chord
+      integer*2 Ellipse
+      integer*2 Pie
+      integer*2 Polygon
+      integer*2 PolyPolygon
+      integer*2 Rectangle
+      integer*2 RoundRect
+
+*$noreference

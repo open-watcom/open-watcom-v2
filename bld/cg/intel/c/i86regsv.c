@@ -44,7 +44,7 @@ extern  bool            BlockByBlock;
 extern  conflict_node   *ConfList;
 extern  block           *HeadBlock;
 
-extern  hw_reg_set      MustSaveRegs();
+extern  hw_reg_set      MustSaveRegs( void );
 extern  void            SetCost(save_def*,save_def);
 extern  void            SetLoopCost(uint);
 extern  void            AdjTimeSize(uint*,uint*);
@@ -142,7 +142,7 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
 }
 
 
-extern  void            ConstSavings() {
+extern  void            ConstSavings( void ) {
 /**************************************
 
     Ensure constants are cached last by making sure that all

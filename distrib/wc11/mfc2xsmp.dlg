@@ -1,0 +1,45 @@
+name=dMFC252SAMP
+any_check=mfc252samp
+static_text=\
+        //1"Select MFC 2.52 Samples:"\
+        //2"MFC 2.52 サンプルを選択してください:"\
+        //0
+static_text=
+check_box=         mfc252bin,,\
+        //1"&Include sample program executables"\
+        //2"サンプル・プログラムの実行可能ファイルを含めます (&I)"\
+        //0
+check_box         =mfc252samp_apstudio,,"apstudio"
+check_box_continue=mfc252samp_autoclik,,"autoclik"
+check_box_continue=mfc252samp_calcdriv,,"calcdriv"
+check_box_continue=mfc252samp_catalog,,"catalog"
+check_box         =mfc252samp_chkbook,,"chkbook"
+check_box_continue=mfc252samp_chatter,,"chatter"
+check_box_continue=mfc252samp_chatsrvr,,"chatsrvr"
+check_box_continue=mfc252samp_contain,,"contain"
+check_box          =mfc252samp_ctrlbars,,"ctrlbars"
+check_box_continue=mfc252samp_ctrltest,,"ctrltest"
+check_box_continue=mfc252samp_diblook,,"diblook"
+check_box_continue=mfc252samp_dllhusk,,"dllhusk"
+check_box          =mfc252samp_dlltrace,,"dlltrace"
+check_box_continue=mfc252samp_drawcli,,"drawcli"
+check_box_continue=mfc252samp_dynabind,,"dynabind"
+check_box_continue=mfc252samp_enroll,,"enroll"
+check_box          =mfc252samp_hello,,"hello"
+check_box_continue=mfc252samp_helloapp,,"helloapp"
+check_box_continue=mfc252samp_hiersvr,,"hiersvr"
+check_box_continue=mfc252samp_makehm,,"makehm"
+check_box          =mfc252samp_mdi,,"mdi"
+check_box_continue=mfc252samp_multipad,,"multipad"
+check_box_continue=mfc252samp_oclient,,"oclient"
+check_box_continue=mfc252samp_scribble,,"scribble"
+check_box          =mfc252samp_speakn,,"speakn"
+check_box_continue=mfc252samp_superpad,,"superpad"
+check_box_continue=mfc252samp_templdef,,"templdef"
+check_box_continue=mfc252samp_tracer,,"tracer"
+check_box          =mfc252samp_tracker,,"tracker"
+check_box_continue=mfc252samp_viewex,,"viewex"
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

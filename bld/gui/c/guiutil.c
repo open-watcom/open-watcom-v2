@@ -56,7 +56,7 @@ bool GUIStripTrailingBlanks( char *label, char **new )
     if( length <= 0 ) {
         *new = NULL;
     } else {
-        *new = (char *)GUIAlloc( length + 1 );
+        *new = (char *)GUIMemAlloc( length + 1 );
         if( *new == NULL ) {
             return( FALSE );
         } else {
@@ -71,15 +71,15 @@ bool GUIStrDup( char *text, char **new )
 {
     if( text == NULL ) {
         if( new == NULL ) {
-            new = GUIAlloc( sizeof( char * ) );
+            new = GUIMemAlloc( sizeof( char * ) );
         }
         *new = NULL;
         return( TRUE );
     } else {
         if( new == NULL ) {
-            new = GUIAlloc( sizeof( char * ) );
+            new = GUIMemAlloc( sizeof( char * ) );
         }
-        *new = (char *)GUIAlloc( strlen( text ) + 1 );
+        *new = (char *)GUIMemAlloc( strlen( text ) + 1 );
         if( *new == NULL ) {
             return( FALSE );
         }

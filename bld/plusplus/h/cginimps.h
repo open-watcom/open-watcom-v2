@@ -33,12 +33,16 @@
 #ifndef __CGINIMPS_H
 #define __CGINIMPS_H
 
-extern void CgInfoFreeImports( void );
+extern  void    CgInfoFreeImports( void );
+extern  void    CgInfoFreeImportsS( void );
 
-extern void CgInfoAddImport( char * );
+extern  void    CgInfoAddImport( char * );
+extern  void    CgInfoAddImportS( SYMBOL );
 
 // CGINFO iterators
-extern void *CgInfoImportNext( void * );
-extern char *CgInfoImportName( void * );
+extern  void    *CgInfoImportNext( void * );
+extern  char    *CgInfoImportName( void * );
+extern  void    *CgInfoImportNextS( void * );
+extern  SYMBOL  CgInfoImportNameS( void * );
 
 #endif

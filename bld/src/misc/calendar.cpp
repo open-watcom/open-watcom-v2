@@ -90,7 +90,7 @@ void Calendar( int month, int year, int row, int col, int width, char *title )
     Box( row, col, box_width, 8 );
     str = MonthName[ month ];
     PosCursor( row - 1, col + 1 + ( box_width - strlen( str ) - 5 ) / 2 );
-    printf( "%s 19%d\n", str, year );
+    printf( "%s %d\n", str, 1900 + year );
     fflush( stdout );
     PosCursor( row + 1, col + 1 );
     printf( title );

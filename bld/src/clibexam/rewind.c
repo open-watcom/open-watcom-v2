@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-static assemble_pass( int passno )
-  {
+static void assemble_pass( int passno )
+{
     printf( "Pass %d\n", passno );
-  }
+}
 
 void main()
-  {
+{
     FILE *fp;
 
     if( (fp = fopen( "program.asm", "r")) != NULL ) {
@@ -15,4 +15,4 @@ void main()
         assemble_pass( 2 );
         fclose( fp );
     }
-  }
+}

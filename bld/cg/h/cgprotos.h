@@ -33,18 +33,21 @@
 #ifndef _CG_PROTOS_INCLUDED
 #define _CG_PROTOS_INCLUDED
 
+#include "cgapi.h"
+
 // always want the plain prototypes
-#define CGAPIDEF(a,b,c)         extern b _CGAPI a##c;
+#define CGAPIDEF(a,b,c)         extern b _CGAPI a c;
 #include "cgfuntab.h"
 #undef CGAPIDEF
 
 #if defined( _CGDLL )
 
 typedef struct  cg_interface {
-#define CGAPIDEF( a, b, c )     b _CGAPI (*##a)##c;
+#define CGAPIDEF( a, b, c )     b _CGAPI (*a) c;
 #include "cgfuntab.h"
 #undef  CGAPIDEF
 } cg_interface;
+
 extern  struct cg_interface *CGFuncTable;
 
 #ifndef BY_CG

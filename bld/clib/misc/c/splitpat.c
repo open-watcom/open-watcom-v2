@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent _splitpath() implementation.
 *
 ****************************************************************************/
 
@@ -34,15 +33,13 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#ifndef __WIDECHAR__
+#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
     #include <mbstring.h>
 #endif
 
 #undef _splitpath
 
-#if defined(__PENPOINT__)
-  #define PC '\\'
-#elif defined(__QNX__)
+#if defined(__UNIX__)
   #define PC '/'
 #else   /* DOS, OS/2, Windows, Netware */
   #define PC '\\'
@@ -73,21 +70,22 @@
 static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
 {
     if( buf != NULL ) {
-        if( len > maxlen ) len = maxlen;
-        #ifdef __WIDECHAR__
-            memcpy( buf, p, len * CHARSIZE );  /* 07-jul-91 DJG */
-            /*strncpy( buf, p, len ); */
-            buf[ len ] = NULLCHAR;
-        #else
-            #ifdef __QNX__
-                memcpy( buf, p, len*CHARSIZE );
-                buf[len] = NULLCHAR;
-            #else
-                len = _mbsnccnt( p, len );          /* # chars in len bytes */
-                _mbsncpy( buf, p, len );            /* copy the chars */
-                buf[ _mbsnbcnt(buf,len) ] = NULLCHAR;
-            #endif
-        #endif
+        if( len > maxlen )
+            len = maxlen;
+#ifdef __WIDECHAR__
+        memcpy( buf, p, len * CHARSIZE );  /* 07-jul-91 DJG */
+        /*strncpy( buf, p, len ); */
+        buf[ len ] = NULLCHAR;
+#else
+  #ifdef __UNIX__
+        memcpy( buf, p, len * CHARSIZE );
+        buf[ len ] = NULLCHAR;
+  #else
+        len = _mbsnccnt( p, len );          /* # chars in len bytes */
+        _mbsncpy( buf, p, len );            /* copy the chars */
+        buf[ _mbsnbcnt( buf, len ) ] = NULLCHAR;
+  #endif
+#endif
     }
 }
 
@@ -98,21 +96,17 @@ static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
 #define _MAX_NODE   _MAX_DRIVE  /*  maximum length of node name w/ '\0' */
 #endif
 
-/* split full PENPOINT/QNX path name into its components */
+/* split full QNX path name into its components */
 
-/* Under PENPOINT/QNX we will map drive to node, dir to dir, and
+/* Under QNX we will map drive to node, dir to dir, and
  * filename to (filename and extension)
  *          or (filename) if no extension requested.
  */
 
 /* Under Netware, 'drive' maps to 'volume' */
 
-_WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( path, drive, dir, fname, ext )
-const CHAR_TYPE  *path;
-CHAR_TYPE           *drive,
-            *dir,
-            *fname,
-            *ext;
+_WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
+    CHAR_TYPE *drive, CHAR_TYPE *dir, CHAR_TYPE *fname, CHAR_TYPE *ext )
 {
     const CHAR_TYPE *dotp;
     const CHAR_TYPE *fnamep;
@@ -127,57 +121,59 @@ CHAR_TYPE           *drive,
 #endif
 
     /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> \\disk2\fred\filename.ext for PenPoint */
     /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
 
-#if defined(__PENPOINT__) || defined(__QNX__)
+#if defined(__UNIX__)
 
     /* process node/drive specification */
     startp = path;
-    if( path[0] == PC  &&  path[1] == PC ) {
+    if( path[ 0 ] == PC && path[ 1 ] == PC ) {
         path += 2;
         for( ;; ) {
-            if( *path == NULLCHAR ) break;
-            if( *path == PC ) break;
-            if( *path == '.' ) break;
-            #ifdef __WIDECHAR__
-                ++path;
-            #else
-                #ifdef __QNX__
-                    path++;
-                #else
-                    path = _mbsinc( path );
-                #endif
-            #endif
+            if( *path == NULLCHAR )
+                break;
+            if( *path == PC )
+                break;
+            if( *path == '.' )
+                break;
+  #ifdef __WIDECHAR__
+            ++path;
+  #else
+    #ifdef __UNIX__
+            path++;
+    #else
+            path = _mbsinc( path );
+    #endif
+  #endif
         }
     }
     copypart( drive, startp, path - startp, _MAX_NODE );
 
 #elif defined(__NETWARE__)
 
-    #ifdef __WIDECHAR__
+  #ifdef __WIDECHAR__
         ptr = wcschr( path, ':' );
+  #else
+    #ifdef __UNIX__
+        ptr = strchr( path, ':' );
     #else
-        #ifdef __QNX__
-            ptr = strchr( path, ':' );
-        #else
-            ptr = _mbschr( path, ':' );
-        #endif
+        ptr = _mbschr( path, ':' );
     #endif
+  #endif
     if( ptr != NULL ) {
         if( drive != NULL ) {
             copypart( drive, path, ptr - path + 1, _MAX_SERVER +
                       _MAX_VOLUME + 1 );
         }
-        #ifdef __WIDECHAR__
-            path = ptr + 1;
-        #else
-            #ifdef __QNX__
-                path = ptr + 1;
-            #else
-                path = _mbsinc( ptr );
-            #endif
-        #endif
+  #ifdef __WIDECHAR__
+        path = ptr + 1;
+  #else
+    #ifdef __UNIX__
+        path = ptr + 1;
+    #else
+        path = _mbsinc( ptr );
+    #endif
+  #endif
     } else if( drive != NULL ) {
         *drive = '\0';
     }
@@ -185,65 +181,63 @@ CHAR_TYPE           *drive,
 #else
 
     /* processs drive specification */
-    if( path[0] != NULLCHAR  &&  path[1] == ':' ) {
+    if( path[ 0 ] != NULLCHAR  &&  path[ 1 ] == ':' ) {
         if( drive != NULL ) {
-            drive[0] = path[0];
-            drive[1] = ':';
-            drive[2] = NULLCHAR;
+            drive[ 0 ] = path[ 0 ];
+            drive[ 1 ] = ':';
+            drive[ 2 ] = NULLCHAR;
         }
         path += 2;
     } else if( drive != NULL ) {
-        drive[0] = NULLCHAR;
+        drive[ 0 ] = NULLCHAR;
     }
 
 #endif
 
     /* process /user/fred/filename.ext for QNX */
-    /* process \fred\filename.ext for PenPoint, DOS, OS/2 */
     /* process /fred/filename.ext for DOS, OS/2 */
     dotp = NULL;
     fnamep = path;
     startp = path;
 
-    for(;;) {           /* 07-jul-91 DJG -- save *path in ch for speed */
-        if( *path == NULLCHAR )  break;
-        #ifdef __WIDECHAR__
-            ch = *path;
-        #else
-            #ifdef __QNX__
-                ch = *path;
-            #else
-                ch = _mbsnextc( path );
-            #endif
-        #endif
+    for( ;; ) {         /* 07-jul-91 DJG -- save *path in ch for speed */
+        if( *path == NULLCHAR )
+            break;
+#ifdef __WIDECHAR__
+        ch = *path;
+#else
+  #ifdef __UNIX__
+        ch = *path;
+  #else
+        ch = _mbsnextc( path );
+  #endif
+#endif
         if( ch == '.' ) {
             dotp = path;
             ++path;
             continue;
         }
-        #ifdef __WIDECHAR__
-            ++path;
-        #else
-            #ifdef __QNX__
-                path++;
-            #else
-                path = _mbsinc( path );
-            #endif
-        #endif
-#if defined(__PENPOINT__) || defined(__QNX__)
+#ifdef __WIDECHAR__
+        ++path;
+#else
+  #ifdef __UNIX__
+        path++;
+  #else
+        path = _mbsinc( path );
+  #endif
+#endif
+#if defined(__UNIX__)
         if( ch == PC ) {
 #else /* DOS, OS/2, Windows, Netware */
-        if( ch == PC  ||  ch == ALT_PC ) {
+        if( ch == PC || ch == ALT_PC ) {
 #endif
             fnamep = path;
             dotp = NULL;
         }
     }
     copypart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
-    if( dotp == NULL ) dotp = path;
-#if defined(__QNX__)
-    if( ext == NULL )  dotp = path;
-#endif
+    if( dotp == NULL )
+        dotp = path;
     copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
     copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Convert ASCII string to float.
 *
 ****************************************************************************/
 
@@ -36,9 +35,8 @@
 #undef  atof
 
 
-/* convert ascii string to float */
 _WMRTLINK double __F_NAME(atof,_wtof)( const CHAR_TYPE *nptr )
-/**********************************************/
+/************************************************************/
 {
     return( __F_NAME(strtod,wcstod)( nptr, (CHAR_TYPE **)NULL ) );
 }

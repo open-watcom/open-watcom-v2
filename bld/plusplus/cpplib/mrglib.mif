@@ -1,0 +1,71 @@
+proj_name = cpplib
+
+!include $(cpplib_dir)/libtarg.mif
+
+!include cproj.mif
+!include deftarg.mif
+
+!include $(define_library_include)
+
+!ifndef source_libs
+source_libs = $(libs)
+!endif
+
+!ifndef source_libs_x
+source_libs_x = $(libx)
+!endif
+
+lib_flags = -b-c-n-pa
+!ifneq release 0
+lib_flags += -s-t-zld
+!endif
+
+!ifeq linkage dynamic
+export_name=export.def
+exportx_name=exportx.def
+exp_lib_flags = -z=$(export_name)
+exp_libx_flags = -z=$(exportx_name)
+!else ifeq host_CPU axp
+exp_lib_flags =
+exp_libx_flags =
+!else
+exp_lib_flags = -z
+exp_libx_flags = -z
+!endif
+
+libs : .symbolic $(target_lib) $(target_lib_x)
+    @%null
+
+$(target_lib) : $(source_libs) $(__MAKEFILES__)
+!ifeq linkage dynamic
+    @rm -f $(export_name)
+!endif
+    %create $^&.lbc
+    @for %i in ($(source_libs)) do @%append $^&.lbc +%i
+    $(librarian) $(lib_flags) $(exp_lib_flags) $^@ @$^&.lbc
+!ifeq linkage dynamic
+    $(sed) -f $(lib_misc_dir)/sed/export.sed $(export_name) > tmp.def
+    @cp tmp.def $(export_name)
+    @rm tmp.def
+!endif
+
+!ifdef target_lib_x
+$(target_lib_x) : $(source_libs_x) $(__MAKEFILES__)
+!ifeq linkage dynamic
+    @rm -f $(exportx_name)
+!endif
+    %create $^&.lbc
+    @for %i in ($(source_libs_x)) do @%append $^&.lbc +%i
+    $(librarian) $(lib_flags) $(exp_libx_flags) $^@ @$^&.lbc
+!ifeq linkage dynamic
+    $(sed) -f $(lib_misc_dir)/sed/export.sed $(exportx_name) > tmp.def
+    @cp tmp.def $(exportx_name)
+    @rm tmp.def
+!endif
+!endif
+
+reference : .symbolic $(target_lib)
+    cp $(target_lib) $(plusplus_dir)/bin
+!ifdef target_lib_x
+    cp $(target_lib_x) $(plusplus_dir)/bin
+!endif

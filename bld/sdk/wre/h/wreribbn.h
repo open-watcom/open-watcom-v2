@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WREInitRibbon       ( HINSTANCE );
-extern void WREShutdownRibbon   ( void );
-extern Bool WRECreateRibbon     ( HWND );
-extern Bool WREResizeRibbon     ( RECT * );
-extern void WREShowRibbon       ( HMENU );
-extern void WREDestroyRibbon    ( void );
-extern int  WREGetRibbonHeight  ( void );
+extern Bool WREInitRibbon( HINSTANCE );
+extern void WREShutdownRibbon( void );
+extern Bool WRECreateRibbon( HWND );
+extern Bool WREResizeRibbon( RECT * );
+extern void WREShowRibbon( HMENU );
+extern void WREDestroyRibbon( void );
+extern int  WREGetRibbonHeight( void );
 
 #endif

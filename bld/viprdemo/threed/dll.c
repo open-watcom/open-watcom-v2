@@ -37,7 +37,7 @@
 
 HINSTANCE hInstDLL;             // Saved module handle.
 
-int FAR PASCAL LibMain( HANDLE inst, WORD dataseg,
+int WINAPI LibMain( HINSTANCE inst, WORD dataseg,
                         WORD heapsize, LPSTR cmdline  )
 /*****************************************************/
 
@@ -49,11 +49,11 @@ int FAR PASCAL LibMain( HANDLE inst, WORD dataseg,
     // Fix for malloc() & realloc() memory to belong to DLL
     __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    return( inst );
+    return( 1 );
   }
 
 
-int far PASCAL WEP( int parm )
+int WINAPI WEP( int parm )
 /*************************************/
 
 /* terminate the DLL */
@@ -73,9 +73,9 @@ int main()
 
 #include <windows.h>
 
-HANDLE hInstDLL;                // Saved module handle.
+HINSTANCE hInstDLL;                // Saved module handle.
 
-int __stdcall LibMain( HANDLE inst, ULONG reasoncalled, LPVOID reserved )
+int __stdcall LibMain( HINSTANCE inst, ULONG reasoncalled, LPVOID reserved )
 /********************************************************************/
 {
     reserved = reserved;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File access utilities.
 *
 ****************************************************************************/
 
@@ -34,11 +33,27 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <process.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-
 #include "common.h"
+
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+#include <windows.h>
+#endif
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
+#   include "tinyio.h"
+#elif defined( __OS2__ )
+#   define INCL_DOS
+#   include "os2.h"
+#elif defined( __UNIX__ )
+#   include <unistd.h>
+#   if defined( __WATCOMC__ )
+#       include <process.h>
+#   endif
+#else
+#   error OS not supported
+#endif
+
 #include "aui.h"
 #include "dip.h"
 #include "wpaui.h"
@@ -46,21 +61,7 @@
 #include "msg.h"
 #include "pathlist.h"
 
-#if _OS == _OS_WIN || _OS == _OS_NT
-#include <windows.h>
-#endif
-#if _OS == _OS_DOS || _OS == _OS_WIN || _OS == _OS_NT
-#   include "tinyio.h"
-#elif _OS == _OS_OS2
-#   define INCL_DOS
-#   include "os2.h"
-#elif _OS == _OS_QNX
-#   include "unistd.h"
-#else
-#   error _OS not supported
-#endif
-
-#if _OS == _OS_QNX
+#if defined(__UNIX__)
  #define PATH_SEPARATOR '/'
  #define LIST_SEPARATOR ':'
  #define PATH_NAME  "WD_PATH"
@@ -71,13 +72,10 @@
 #endif
 #define HELP_NAME  "WWINHELP"
 
-//#include "utils.def"
-//#include "msg.def"
-//#include "memutil.def"
-//#include "dipinter.def"
 extern void *ProfAlloc(size_t size);
 extern void fatal(char *msg,... );
 extern dig_fhandle DIGCliOpen(char *name,dig_open mode);
+extern void AddPath( path_list **path_var, char * path_data );
 
 path_list *     HelpPathList = NULL;
 path_list *     FilePathList = NULL;
@@ -95,7 +93,7 @@ extern void ReplaceExt( char * path, char * addext )
     char *      ext;
 
     _splitpath2( path, buff, &drive, &dir, &fname, &ext );
-#if _OS == _OS_QNX
+#if defined(__UNIX__)
     if( stricmp( ext, addext ) != 0 ) {
         strcat( path, addext );
     }
@@ -138,29 +136,36 @@ extern char * FindFile( char * path, char * name, path_list * path_tail )
 
 
 
-#if _OS == _OS_QNX || _OS == _OS_DOS
-extern dig_fhandle PathOpen( char * name, unsigned len, char * ext )
-/******************************************************************/
+#if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
+extern dig_fhandle FullPathOpen( char const *name, char *ext,
+                                 char *result, unsigned max_res )
+/***************************************************************/
 {
-    char        path[ _MAX_PATH2 ];
     char        realname[ _MAX_PATH2 ];
     char *      filename;
 
-    len = len;
     if( ext == NULL || *ext == '\0' ) {
         strcpy( realname, name );
     } else {
-        _splitpath2( name, path, NULL, NULL, &filename, NULL );
+        _splitpath2( name, result, NULL, NULL, &filename, NULL );
         _makepath( realname, NULL, NULL, filename, ext );
     }
-    filename = FindFile( path, realname, FilePathList );
+    filename = FindFile( result, realname, FilePathList );
     if( filename == NULL ) {
-        filename = FindFile( path, realname, DipExePathList );
+        filename = FindFile( result, realname, DipExePathList );
     }
     if( filename == NULL ) {
         return( -1 );
     }
     return( DIGCliOpen( filename, DIG_READ ) );
+}
+
+extern dig_fhandle PathOpen( char * name, unsigned len, char * ext )
+/******************************************************************/
+{
+    char        path[ _MAX_PATH2 ];
+
+    return( FullPathOpen( name, ext, path, sizeof( path ) ) );
 }
 #endif
 
@@ -170,7 +175,7 @@ extern void InitPaths()
 /*********************/
 {
     char *      env;
-#if _OS == _OS_QNX
+#if defined(__UNIX__)
     char        buff [ _MAX_PATH ];
     char        *p;
 #endif
@@ -184,7 +189,7 @@ extern void InitPaths()
     if( env != NULL && *env != '\0' ) {
         AddPath( &HelpPathList, env );
     }
-#if _OS == _OS_QNX
+#if defined(__UNIX__)
     if( _cmdname( buff ) != NULL ) {
         p = strrchr( buff, '/' );
         if( p != NULL ) {
@@ -210,8 +215,8 @@ extern void InitPaths()
 
 
 
-extern void AddPath( pointer * path_var, char * path_data )
-/*********************************************************/
+extern void AddPath( path_list **path_var, char *path_data )
+/**********************************************************/
 {
     char            path[_MAX_PATH];
     path_list *     path_tail;
@@ -251,7 +256,7 @@ extern void AddPath( pointer * path_var, char * path_data )
 
 
 
-#if _OS == _OS_QNX
+#if defined( __QNX__ )
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
@@ -298,7 +303,7 @@ extern unsigned BigRead( int fh, void * buff, unsigned size )
 
 
 
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
 extern void DoRingBell( void );
 #pragma aux DoRingBell =                                \
         " push   ebp            ",                      \
@@ -313,13 +318,13 @@ extern void DoRingBell( void );
 extern void Ring( void )
 /**********************/
 {
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
     DoRingBell();
-#elif _OS == _OS_WIN || _OS == _OS_NT
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
     MessageBeep( 0 );
-#elif _OS == _OS_QNX
+#elif defined( __QNX__ ) || defined( __LINUX__ )
     write( STDOUT_FILENO, "\a", 1 );
-#elif _OS == _OS_OS2
+#elif defined( __OS2__ )
     DosBeep( 1000, 250 );
 #endif
 }

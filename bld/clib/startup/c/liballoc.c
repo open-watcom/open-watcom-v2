@@ -33,10 +33,12 @@
 #include "variety.h"
 #include "liballoc.h"
 
-_WCRTLINK void *_plib_malloc( size_t size ) {
-    return lib_malloc( size );
+_WCRTLINK void *_plib_malloc( size_t size )
+{
+    return( lib_malloc( size ) );
 }
 
-_WCRTLINK void _plib_free( void *ptr ) {
+_WCRTLINK void _plib_free( void *ptr )
+{
     lib_free( ptr );
 }

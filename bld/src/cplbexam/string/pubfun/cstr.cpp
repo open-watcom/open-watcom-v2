@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String         s ("Watcom C++");
+    String         s ("Open Watcom C++");
     char const    *pch1, *pch2;
 
     pch1 = s.operator char const *();   // S1

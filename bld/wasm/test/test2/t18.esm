@@ -1,0 +1,11 @@
+.387
+dseg		SEGMENT	PARA PRIVATE USE16 'data'
+L$1:
+    DB	0, 0
+
+dseg		ENDS
+cseg		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:cseg, DS:DGROUP, SS:DGROUP
+    jmp       word ptr ss:L$1
+cseg		ENDS
+		END

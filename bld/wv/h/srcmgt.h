@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source file management interface.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "dbgio.h"
 #include "dbgmem.h"
 
-extern int TabIntervalGet();
+extern int TabIntervalGet( void );
 #define SMTabIntervalGet()              TabIntervalGet()
 
 #define _SMAlloc( pointer, size )       _Alloc( pointer, size )
@@ -48,9 +47,9 @@ extern int TabIntervalGet();
 #define SM_NO_MOD               NO_MOD
 #define SM_BUF_SIZE             512
 
-#define SMSeekStart( fp )               SeekStream( fp, 0L, SEEK_CUR )
-#define SMSeekOrg( fp, offset )         SeekStream( fp, offset, SEEK_ORG )
-#define SMSeekEnd( fp )                 SeekStream( fp, 0L, SEEK_END );
+#define SMSeekStart( fp )               SeekStream( fp, 0L, DIO_SEEK_CUR )
+#define SMSeekOrg( fp, offset )         SeekStream( fp, offset, DIO_SEEK_ORG )
+#define SMSeekEnd( fp )                 SeekStream( fp, 0L, DIO_SEEK_END );
 
 #define SMOpenRead( name )              FileOpen( name, OP_READ )
 #define SMNilHandle( fp)                ( fp == NIL_HANDLE )
@@ -61,10 +60,10 @@ extern int TabIntervalGet();
 #define SMFileRemote( fp )              ( (FileHandleInfo( hndl->file_ptr ) & OP_REMOTE) != 0 )
 
 extern struct browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id );
-extern void FDoneSource(struct browser *);
-extern unsigned long FSize(struct browser *);
-extern unsigned long FLastOffset(struct browser *);
-extern int FileIsRemote(struct browser *);
-extern char *FGetName(struct browser *);
-extern int FCurrLine(struct browser *);
-extern int FReadLine(struct browser *,int ,int ,char *,int );
+extern void FDoneSource( struct browser * );
+extern unsigned long FSize( struct browser * );
+extern unsigned long FLastOffset( struct browser * );
+extern int FileIsRemote( struct browser * );
+extern char *FGetName( struct browser * );
+extern int FCurrLine( struct browser * );
+extern int FReadLine( struct browser *, int, int, char *, int );

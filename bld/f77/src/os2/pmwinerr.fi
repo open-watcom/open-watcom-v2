@@ -1,0 +1,133 @@
+c$noreference
+
+        integer  PMERR_INVALID_HWND
+        parameter (PMERR_INVALID_HWND = '00001001'x)
+        integer  PMERR_INVALID_HMQ
+        parameter (PMERR_INVALID_HMQ = '00001002'x)
+        integer  PMERR_PARAMETER_OUT_OF_RANGE
+        parameter (PMERR_PARAMETER_OUT_OF_RANGE = '00001003'x)
+        integer  PMERR_WINDOW_LOCK_UNDERFLOW
+        parameter (PMERR_WINDOW_LOCK_UNDERFLOW = '00001004'x)
+        integer  PMERR_WINDOW_LOCK_OVERFLOW
+        parameter (PMERR_WINDOW_LOCK_OVERFLOW = '00001005'x)
+        integer  PMERR_BAD_WINDOW_LOCK_COUNT
+        parameter (PMERR_BAD_WINDOW_LOCK_COUNT = '00001006'x)
+        integer  PMERR_WINDOW_NOT_LOCKED
+        parameter (PMERR_WINDOW_NOT_LOCKED = '00001007'x)
+        integer  PMERR_INVALID_SELECTOR
+        parameter (PMERR_INVALID_SELECTOR = '00001008'x)
+        integer  PMERR_CALL_FROM_WRONG_THREAD
+        parameter (PMERR_CALL_FROM_WRONG_THREAD = '00001009'x)
+        integer  PMERR_RESOURCE_NOT_FOUND
+        parameter (PMERR_RESOURCE_NOT_FOUND = '0000100A'x)
+        integer  PMERR_INVALID_STRING_PARM
+        parameter (PMERR_INVALID_STRING_PARM = '0000100B'x)
+        integer  PMERR_INVALID_HHEAP
+        parameter (PMERR_INVALID_HHEAP = '0000100C'x)
+        integer  PMERR_INVALID_HEAP_POINTER
+        parameter (PMERR_INVALID_HEAP_POINTER = '0000100D'x)
+        integer  PMERR_INVALID_HEAP_SIZE_PARM
+        parameter (PMERR_INVALID_HEAP_SIZE_PARM = '0000100E'x)
+        integer  PMERR_INVALID_HEAP_SIZE
+        parameter (PMERR_INVALID_HEAP_SIZE = '0000100F'x)
+        integer  PMERR_INVALID_HEAP_SIZE_WORD
+        parameter (PMERR_INVALID_HEAP_SIZE_WORD = '00001010'x)
+        integer  PMERR_HEAP_OUT_OF_MEMORY
+        parameter (PMERR_HEAP_OUT_OF_MEMORY = '00001011'x)
+        integer  PMERR_HEAP_MAX_SIZE_REACHED
+        parameter (PMERR_HEAP_MAX_SIZE_REACHED = '00001012'x)
+        integer  PMERR_INVALID_HATOMTBL
+        parameter (PMERR_INVALID_HATOMTBL = '00001013'x)
+        integer  PMERR_INVALID_ATOM
+        parameter (PMERR_INVALID_ATOM = '00001014'x)
+        integer  PMERR_INVALID_ATOM_NAME
+        parameter (PMERR_INVALID_ATOM_NAME = '00001015'x)
+        integer  PMERR_INVALID_INTEGER_ATOM
+        parameter (PMERR_INVALID_INTEGER_ATOM = '00001016'x)
+        integer  PMERR_ATOM_NAME_NOT_FOUND
+        parameter (PMERR_ATOM_NAME_NOT_FOUND = '00001017'x)
+        integer  PMERR_QUEUE_TOO_LARGE
+        parameter (PMERR_QUEUE_TOO_LARGE = '00001018'x)
+        integer  PMERR_INVALID_FLAG
+        parameter (PMERR_INVALID_FLAG = '00001019'x)
+        integer  PMERR_INVALID_HACCEL
+        parameter (PMERR_INVALID_HACCEL = '0000101A'x)
+        integer  PMERR_INVALID_HPTR
+        parameter (PMERR_INVALID_HPTR = '0000101B'x)
+        integer  PMERR_INVALID_HENUM
+        parameter (PMERR_INVALID_HENUM = '0000101C'x)
+        integer  PMERR_INVALID_SRC_CODEPAGE
+        parameter (PMERR_INVALID_SRC_CODEPAGE = '0000101D'x)
+        integer  PMERR_INVALID_DST_CODEPAGE
+        parameter (PMERR_INVALID_DST_CODEPAGE = '0000101E'x)
+
+        integer  PMERR_UNKNOWN_COMPONENT_ID
+        parameter (PMERR_UNKNOWN_COMPONENT_ID = '0000101f'x)
+        integer  PMERR_UNKNOWN_ERROR_CODE
+        parameter (PMERR_UNKNOWN_ERROR_CODE = '00001020'x)
+        integer  PMERR_SEVERITY_LEVELS
+        parameter (PMERR_SEVERITY_LEVELS = '00001021'x)
+
+        integer  PMERR_INVALID_RESOURCE_FORMAT
+        parameter (PMERR_INVALID_RESOURCE_FORMAT = '00001034'x)
+
+        integer  PMERR_NO_MSG_QUEUE
+        parameter (PMERR_NO_MSG_QUEUE = '00001036'x)
+        integer  PMERR_WIN_DEBUGMSG
+        parameter (PMERR_WIN_DEBUGMSG = '00001037'x)
+        integer  PMERR_QUEUE_FULL
+        parameter (PMERR_QUEUE_FULL = '00001038'x)
+
+        integer  PMERR_LIBRARY_LOAD_FAILED
+        parameter (PMERR_LIBRARY_LOAD_FAILED = '00001039'x)
+        integer  PMERR_PROCEDURE_LOAD_FAILED
+        parameter (PMERR_PROCEDURE_LOAD_FAILED = '0000103A'x)
+        integer  PMERR_LIBRARY_DELETE_FAILED
+        parameter (PMERR_LIBRARY_DELETE_FAILED = '0000103B'x)
+        integer  PMERR_PROCEDURE_DELETE_FAILED
+        parameter (PMERR_PROCEDURE_DELETE_FAILED = '0000103C'x)
+        integer  PMERR_ARRAY_TOO_LARGE
+        parameter (PMERR_ARRAY_TOO_LARGE = '0000103D'x)
+        integer  PMERR_ARRAY_TOO_SMALL
+        parameter (PMERR_ARRAY_TOO_SMALL = '0000103E'x)
+        integer  PMERR_DATATYPE_ENTRY_BAD_INDEX
+        parameter (PMERR_DATATYPE_ENTRY_BAD_INDEX = '0000103F'x)
+        integer  PMERR_DATATYPE_ENTRY_CTL_BAD
+        parameter (PMERR_DATATYPE_ENTRY_CTL_BAD = '00001040'x)
+        integer  PMERR_DATATYPE_ENTRY_CTL_MISS
+        parameter (PMERR_DATATYPE_ENTRY_CTL_MISS = '00001041'x)
+        integer  PMERR_DATATYPE_ENTRY_INVALID
+        parameter (PMERR_DATATYPE_ENTRY_INVALID = '00001042'x)
+        integer  PMERR_DATATYPE_ENTRY_NOT_NUM
+        parameter (PMERR_DATATYPE_ENTRY_NOT_NUM = '00001043'x)
+        integer  PMERR_DATATYPE_ENTRY_NOT_OFF
+        parameter (PMERR_DATATYPE_ENTRY_NOT_OFF = '00001044'x)
+        integer  PMERR_DATATYPE_INVALID
+        parameter (PMERR_DATATYPE_INVALID = '00001045'x)
+        integer  PMERR_DATATYPE_NOT_UNIQUE
+        parameter (PMERR_DATATYPE_NOT_UNIQUE = '00001046'x)
+        integer  PMERR_DATATYPE_TOO_LONG
+        parameter (PMERR_DATATYPE_TOO_LONG = '00001047'x)
+        integer  PMERR_DATATYPE_TOO_SMALL
+        parameter (PMERR_DATATYPE_TOO_SMALL = '00001048'x)
+        integer  PMERR_DIRECTION_INVALID
+        parameter (PMERR_DIRECTION_INVALID = '00001049'x)
+        integer  PMERR_INVALID_HAB
+        parameter (PMERR_INVALID_HAB = '0000104A'x)
+        integer  PMERR_INVALID_HSTRUCT
+        parameter (PMERR_INVALID_HSTRUCT = '0000104D'x)
+        integer  PMERR_LENGTH_TOO_SMALL
+        parameter (PMERR_LENGTH_TOO_SMALL = '0000104E'x)
+        integer  PMERR_MSGID_TOO_SMALL
+        parameter (PMERR_MSGID_TOO_SMALL = '0000104F'x)
+        integer  PMERR_NO_HANDLE_ALLOC
+        parameter (PMERR_NO_HANDLE_ALLOC = '00001050'x)
+        integer  PMERR_NOT_IN_A_PM_SESSION
+        parameter (PMERR_NOT_IN_A_PM_SESSION = '00001051'x)
+        integer  PMERR_MSG_QUEUE_ALREADY_EXISTS
+        parameter (PMERR_MSG_QUEUE_ALREADY_EXISTS = '00001052'x)
+
+        integer  PMERR_OLD_RESOURCE
+        parameter (PMERR_OLD_RESOURCE = '00001055'x)
+
+c$reference

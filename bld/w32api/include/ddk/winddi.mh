@@ -1,0 +1,1907 @@
+/*
+ *  winddi.h    Win32 Device Driver Interface functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _WINDDI_
+#define _WINDDI_
+
+:include readonly.sp
+
+#include <ddrawint.h>
+
+:include cpluspro.sp
+
+/* Macro to specify graphics engine functions */
+#define ENGAPI  DECLSPEC_IMPORT
+
+/* Primitive data types */
+#if defined( _X86_ ) && !defined( USERMODE_DRIVER )
+typedef DWORD       FLOATL;
+#else
+typedef FLOAT       FLOATL;
+#endif
+typedef LONG        PTRDIFF;
+typedef PTRDIFF     *PPTRDIFF;
+typedef LONG        FIX;
+typedef FIX         *PFIX;
+typedef ULONG       ROP4;
+typedef ULONG       MIX;
+typedef ULONG       HGLYPH;
+typedef HGLYPH      *PHGLYPH;
+typedef ULONG       IDENT;
+typedef ULONG_PTR   HFF;
+typedef ULONG_PTR   HFC;
+typedef SHORT       FWORD;
+typedef LONG        LDECI4;
+
+/* Handle data types */
+DECLARE_HANDLE( HBM );
+DECLARE_HANDLE( HDEV );
+DECLARE_HANDLE( HSURF );
+DECLARE_HANDLE( DHSURF );
+DECLARE_HANDLE( DHPDEV );
+DECLARE_HANDLE( HDRVOBJ );
+DECLARE_HANDLE( HSEMAPHORE );
+#if (NTDDI_VERSION >= 0x06000000)
+DECLARE_HANDLE( HFASTMUTEX );
+#endif
+
+/* Handle special values */
+#define HGLYPH_INVALID  ((HGLYPH)-1)
+#define HFF_INVALID     ((HFF)-1)
+#define HHFC_INVALID    ((HFF)-1)
+
+/* Error values */
+#define FD_ERROR    0xFFFFFFFFL
+#define DDI_ERROR   0xFFFFFFFFL
+
+/* Conversion macros */
+#define LTOFX( x )          ((x) << 4)
+#define FXTOL( x )          ((x) >> 4)
+#define FXTOLFLOOR( x )     ((x) >> 4)
+#define FXTOLCEILING( x )   (((x) + 0x0F) >> 4)
+#define FXTOLROUND( x )     ((((x) >> 3) + 1) >> 1)
+
+/* Font description types */
+#define FDM_TYPE_BM_SIDE_CONST          0x00000001L
+#define FDM_TYPE_MAXEXT_EQUAL_BM_SIDE   0x00000002L
+#define FDM_TYPE_CHAR_INC_EQUAL_BM_SIDE 0x00000004L
+#define FDM_TYPE_ZERO_BEARINGS          0x00000008L
+#define FDM_TYPE_CONST_BEARINGS         0x00000010L
+
+/* Glyph support flags */
+#define GS_UNICODE_HANDLES  0x00000001L
+#define GS_8BIT_HANDLES     0x00000002L
+#define GS_16BIT_HANDLES    0x00000004L
+
+/* Font metrics version number */
+#define FM_VERSION_NUMBER   0
+
+/* Font metrics types */
+#define FM_TYPE_LICENSED    0x0002
+#define FM_READONLY_EMBED   0x0004
+#define FM_EDITABLE_EMBED   0x0008
+#define FM_NO_EMBEDDING     FM_TYPE_LICENSED
+
+/* Font metrics information indices */
+#define FM_INFO_TECH_TRUETYPE               0x00000001L
+#define FM_INFO_TECH_BITMAP                 0x00000002L
+#define FM_INFO_TECH_STROKE                 0x00000004L
+#define FM_INFO_TECH_OUTLINE_NOT_TRUETYPE   0x00000008L
+#define FM_INFO_ARB_XFORMS                  0x00000010L
+#define FM_INFO_1BPP                        0x00000020L
+#define FM_INFO_4BPP                        0x00000040L
+#define FM_INFO_8BPP                        0x00000080L
+#define FM_INFO_16BPP                       0x00000100L
+#define FM_INFO_24BPP                       0x00000200L
+#define FM_INFO_32BPP                       0x00000400L
+#define FM_INFO_INTEGER_WIDTH               0x00000800L
+#define FM_INFO_CONSTANT_WIDTH              0x00001000L
+#define FM_INFO_NOT_CONTIGUOUS              0x00002000L
+#define FM_INFO_TECH_MM                     0x00004000L
+#define FM_INFO_RETURNS_OUTLINES            0x00008000L
+#define FM_INFO_RETURNS_STROKES             0x00010000L
+#define FM_INFO_RETURNS_BITMAPS             0x00020000L
+#define FM_INFO_DSIG                        0x00040000L
+#define FM_INFO_RIGHT_HANDED                0x00080000L
+#define FM_INFO_INTEGRAL_SCALING            0x00100000L
+#define FM_INFO_90DEGREE_ROTATIONS          0x00200000L
+#define FM_INFO_OPTICALLY_FIXED_PITCH       0x00400000L
+#define FM_INFO_DO_NOT_ENUMERATE            0x00800000L
+#define FM_INFO_ISOTROPIC_SCALING_ONLY      0x01000000L
+#define FM_INFO_ANISOTROPIC_SCALING_ONLY    0x02000000L
+#define FM_INFO_TECH_CFF                    0x04000000L
+#define FM_INFO_FAMILY_EQUIV                0x08000000L
+#define FM_INFO_DBCS_FIXED_PITCH            0x10000000L
+#define FM_INFO_NONNEGATIVE_AC              0x20000000L
+#define FM_INFO_IGNORE_TC_RA_ABLE           0x40000000L
+#define FM_INFO_TECH_TYPE1                  0x80000000L
+
+/* Maximum number of character sets */
+#define MAXCHARSETS 16
+
+/* Font metrics PANOSE cultures */
+#define FM_PANOSE_CULTURE_LATIN 0x00000000L
+
+/* Font metrics selection flags */
+#define FM_SEL_ITALIC       0x0001
+#define FM_SEL_UNDERSCORE   0x0002
+#define FM_SEL_NEGATIVE     0x0004
+#define FM_SEL_OUTLINED     0x0008
+#define FM_SEL_STRIKEOUT    0x0010
+#define FM_SEL_BOLD         0x0020
+#define FM_SEL_REGULAR      0x0040
+
+/* OpenGL escapes */
+#define OPENGL_CMD      4352
+#define OPENGL_GETINFO  4353
+#define WNDOBJ_SETUP    4354
+
+/* Display driver version numbers */
+#define DDI_DRIVER_VERSION_NT4          0x00020000
+#define DDI_DRIVER_VERSION_SP3          0x00020003
+#define DDI_DRIVER_VERSION_NT5          0x00030000
+#define DDI_DRIVER_VERSION_NT5_01       0x00030100
+#define DDI_DRIVER_VERSION_NT5_01_SP1   0x00030101
+
+/* GDI driver version number */
+#define GDI_DRIVER_VERSION  0x4000
+
+/* Driver function indices */
+#define INDEX_DrvEnablePDEV                 0L
+#define INDEX_DrvCompletePDEV               1L
+#define INDEX_DrvDisablePDEV                2L
+#define INDEX_DrvEnableSurface              3L
+#define INDEX_DrvDisableSurface             4L
+#define INDEX_DrvAssertMode                 5L
+#define INDEX_DrvOffset                     6L
+#define INDEX_DrvResetPDEV                  7L
+#define INDEX_DrvDisableDriver              8L
+#define INDEX_DrvCreateDeviceBitmap         10L
+#define INDEX_DrvDeleteDeviceBitmap         11L
+#define INDEX_DrvRealizeBrush               12L
+#define INDEX_DrvDitherColor                13L
+#define INDEX_DrvStrokePath                 14L
+#define INDEX_DrvFillPath                   15L
+#define INDEX_DrvStrokeAndFillPath          16L
+#define INDEX_DrvPaint                      17L
+#define INDEX_DrvBitBlt                     18L
+#define INDEX_DrvCopyBits                   19L
+#define INDEX_DrvStretchBlt                 20L
+#define INDEX_DrvSetPalette                 22L
+#define INDEX_DrvTextOut                    23L
+#define INDEX_DrvEscape                     24L
+#define INDEX_DrvDrawEscape                 25L
+#define INDEX_DrvQueryFont                  26L
+#define INDEX_DrvQueryFontTree              27L
+#define INDEX_DrvQueryFontData              28L
+#define INDEX_DrvSetPointerShape            29L
+#define INDEX_DrvMovePointer                30L
+#define INDEX_DrvLineTo                     31L
+#define INDEX_DrvSendPage                   32L
+#define INDEX_DrvStartPage                  33L
+#define INDEX_DrvEndDoc                     34L
+#define INDEX_DrvStartDoc                   35L
+#define INDEX_DrvGetGlyphMode               37L
+#define INDEX_DrvSynchronize                38L
+#define INDEX_DrvSaveScreenBits             40L
+#define INDEX_DrvGetModes                   41L
+#define INDEX_DrvFree                       42L
+#define INDEX_DrvDestroyFont                43L
+#define INDEX_DrvQueryFontCaps              44L
+#define INDEX_DrvLoadFontFile               45L
+#define INDEX_DrvUnloadFontFile             46L
+#define INDEX_DrvFontManagement             47L
+#define INDEX_DrvQueryTrueTypeTable         48L
+#define INDEX_DrvQueryTrueTypeOutline       49L
+#define INDEX_DrvGetTrueTypeFile            50L
+#define INDEX_DrvQueryFontFile              51L
+#define INDEX_DrvMovePanning                52L
+#define INDEX_DrvQueryAdvanceWidths         53L
+#define INDEX_DrvSetPixelFormat             54L
+#define INDEX_DrvDescribePixelFormat        55L
+#define INDEX_DrvSwapBuffers                56L
+#define INDEX_DrvStartBending               57L
+#define INDEX_DrvNextBand                   58L
+#define INDEX_DrvGetDirectDrawInfo          59L
+#define INDEX_DrvEnableDirectDraw           60L
+#define INDEX_DrvDisableDirectDraw          61L
+#define INDEX_DrvQuerySpoolType             62L
+#define INDEX_DrvIcmCreateColorTransform    64L
+#define INDEX_DrvIcmDeleteColorTransform    65L
+#define INDEX_DrvIcmCheckBitmapBits         66L
+#define INDEX_DrvIcmSetDeviceGammaRamp      67L
+#define INDEX_DrvGradientFill               68L
+#define INDEX_DrvStretchBltROP              69L
+#define INDEX_DrvPlgBlt                     70L
+#define INDEX_DrvAlphaBlend                 71L
+#define INDEX_DrvSynthesizeFont             72L
+#define INDEX_DrvGetSynthesizedFontFiles    73L
+#define INDEX_DrvTransparentBlt             74L
+#define INDEX_DrvQueryPerBandInfo           75L
+#define INDEX_DrvQueryDeviceSupport         76L
+#define INDEX_DrvDeriveSurface              85L
+#define INDEX_DrvQueryGlyphAttrs            86L
+#define INDEX_DrvNotify                     87L
+#define INDEX_DrvSynchronizeSurface         88L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define INDEX_DrvResetDevice            89L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define INDEX_DrvRenderHint             93L
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    #define INDEX_DrvCreateDeviceBitmapEx   94L
+    #define INDEX_DrvDeleteDeviceBitmapEx   95L
+    #define INDEX_DrvAssociateSharedSurface 96L
+    #define INDEX_DrvSynchronizeRedirectionBitmaps  97L
+    #define INDEX_DrvAccumulateD3DDirtyRect 98L
+    #define INDEX_DrvStartDxInterop         99L
+    #define INDEX_DrvEndDxInterop           100L
+    #define INDEX_DrvLockDisplayArea        101L
+    #define INDEX_DrvUnlockDisplayArea      102L
+    #define INDEX_LAST                      103L
+#elif (NTDDI_VERSION >= 0x06000000)
+    #define INDEX_LAST                      94L
+#elif (NTDDI_VERSION >= 0x05010000)
+    #define INDEX_LAST                      93L
+#else
+    #define INDEX_LAST                      89L
+#endif
+
+/* Graphics capabilities */
+#define GCAPS_BEZIERS           0x00000001L
+#define GCAPS_GEOMETRICWIDE     0x00000002L
+#define GCAPS_ALTERNATEFILL     0x00000004L
+#define GCAPS_WINDINGFILL       0x00000008L
+#define GCAPS_HALFTONE          0x00000010L
+#define GCAPS_COLOR_DITHER      0x00000020L
+#define GCAPS_HORIZSTRIKE       0x00000040L
+#define GCAPS_VERTSTRIKE        0x00000080L
+#define GCAPS_OPAQUERECT        0x00000100L
+#define GCAPS_VECTORFONT        0x00000200L
+#define GCAPS_MONO_DITHER       0x00000400L
+#define GCAPS_ASYNCCHANGE       0x00000800L
+#define GCAPS_ASYNCMOVE         0x00001000L
+#define GCAPS_DONTJOURNAL       0x00002000L
+#define GCAPS_DIRECTDRAW        0x00004000L
+#define GCAPS_ARBRUSHOPAQUE     0x00008000L
+#define GCAPS_PANNING           0x00010000L
+#define GCAPS_HIGHRESTEXT       0x00040000L
+#define GCAPS_PALMANAGED        0x00080000L
+#define GCAPS_DITHERONREALIZE   0x00200000L
+#define GCAPS_NO64BITMEMACCESS  0x00400000L
+#define GCAPS_FORCEDITHER       0x00800000L
+#define GCAPS_GRAY16            0x01000000L
+#define GCAPS_ICM               0x02000000L
+#define GCAPS_CMYKCOLOR         0x04000000L
+#define GCAPS_LAYERED           0x08000000L
+#define GCAPS_ARBRUSHTEXT       0x10000000L
+#define GCAPS_SCREENPRECISION   0x20000000L
+#define GCAPS_FONT_RASTERIZER   0x40000000L
+#define GCAPS_NUP               0x80000000L
+
+/* Secondary graphics capabilities */
+#define GCAPS2_JPEGSRC                  0x00000001L
+#define GCAPS2_PNGSRC                   0x00000008L
+#define GCAPS2_CHANGEGAMMARAMP          0x00000010L
+#define GCAPS2_ALPHACURSOR              0x00000020L
+#define GCAPS2_SYNCFLUSH                0x00000040L
+#define GCAPS2_SYNCTIMER                0x00000080L
+#define GCAPS2_ICD_MULTIMON             0x00000100L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define GCAPS2_MOUSETRAILS          0x00000200L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define GCAPS2_EXCLUDELAYERED       0x00000800L
+    #define GCAPS2_INCLUDEAPIBITMAPS    0x00001000L
+    #define GCAPS2_SHOWHIDDENPOINTER    0x00002000L
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    #define GCAPS2_CLEARTYPE            0x00004000L
+#endif
+
+/* Line attribute flags */
+#define LA_GEOMETRIC    0x00000001L
+#define LA_ALTERNATE    0x00000002L
+#define LA_STARTGAP     0x00000004L
+#define LA_STYLED       0x00000008L
+
+/* Join types */
+#define JOIN_ROUND  0L
+#define JOIN_BEVEL  1L
+#define JOIN_MITER  2L
+
+/* End cap types */
+#define ENDCAP_ROUND    0L
+#define ENDCAP_SQUARE   1L
+#define ENDCAP_BUTT     2L
+
+/* Primary orders */
+#define PRIMARY_ORDER_ABC   0L
+#define PRIMARY_ORDER_ACB   1L
+#define PRIMARY_ORDER_BAC   2L
+#define PRIMARY_ORDER_BCA   3L
+#define PRIMARY_ORDER_CBA   4L
+#define PRIMARY_ORDER_CAB   5L
+
+/* Halftone pattern sizes */
+#define HT_PATSIZE_2x2          0L
+#define HT_PATSIZE_2x2_M        1L
+#define HT_PATSIZE_4x4          2L
+#define HT_PATSIZE_4x4_M        3L
+#define HT_PATSIZE_6x6          4L
+#define HT_PATSIZE_6x6_M        5L
+#define HT_PATSIZE_8x8          6L
+#define HT_PATSIZE_8x8_M        7L
+#define HT_PATSIZE_10x10        8L
+#define HT_PATSIZE_10x10_M      9L
+#define HT_PATSIZE_12x12        10L
+#define HT_PATSIZE_12x12_M      11L
+#define HT_PATSIZE_14x14        12L
+#define HT_PATSIZE_14x14_M      13L
+#define HT_PATSIZE_16x16        14L
+#define HT_PATSIZE_16x16_M      15L
+#define HT_PATSIZE_SUPERCELL    16L
+#define HT_PATSIZE_SUPERCELL_M  17L
+#define HT_PATSIZE_USER         18L
+#define HT_PATSIZE_MAX_INDEX    HT_PATSIZE_USER
+#define HT_PATSIZE_DEFAULT      HT_PATSIZE_SUPERCELL_M
+
+/* Halftone user-defined pattern dimensions */
+#define HT_USERPAT_CX_MIN   4
+#define HT_USERPAT_CX_MAX   256
+#define HT_USERPAT_CY_MIN   4
+#define HT_USERPAT_CY_MAX   256
+
+/* Halftone output formats */
+#define HT_FORMAT_1BPP      0L
+#define HT_FORMAT_4BPP      2L
+#define HT_FORMAT_4BPP_IRGB 3L
+#define HT_FORMAT_8BPP      4L
+#define HT_FORMAT_16BPP     5L
+#define HT_FORMAT_24BPP     6L
+#define HT_FORMAT_32BPP     7L
+
+/* Halftone flags */
+#define HT_FLAG_SQUARE_DEVICE_PEL           0x00000001L
+#define HT_FLAG_HAS_BLACK_DYE               0x00000002L
+#define HT_FLAG_ADDITIVE_PRIMS              0x00000004L
+#define HT_FLAG_USE_8BPP_BITMASK            0x00000008L
+#define HT_FLAG_INK_HIGH_ABSORPTION         0x00000010L
+#define HT_FLAG_INK_ABSORPTION_INDICES      0x00000060L
+#define HT_FLAG_DO_DEVCLR_XFORM             0x00000080L
+#define HT_FLAG_OUTPUT_CMY                  0x00000100L
+#define HT_FLAG_PRINT_DRAFT_MODE            0x00000200L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define HT_FLAG_INVERT_8BPP_BITMASK_IDX 0x00000400L
+#endif
+#define HT_FLAG_8BPP_CMY332_MASK            0xFF000000L
+
+/* Macro to make CMY masks */
+#define MAKE_CMYMASK_BYTE( p1, p2, p3 ) \
+    ((((BYTE)(p1) & 0x07) << 5) | (((BYTE)(p2) & 0x07) << 2) | ((BYTE)(p3) & 0x03))
+#define MAKE_CMY332_MASK( p1, p2, p3 ) \
+    ((((DWORD)(p1) & 0x07) < 29) | (((DWORD)(p2) & 0x07 << 26) | \
+    (((DWORD)(p3) & 0x03) << 24))
+
+/* Halftone ink absorption flags */
+#define HT_FLAG_INK_ABSORPTION_IDX0     0x00000000L
+#define HT_FLAG_INK_ABSORPTION_IDX1     0x00000020L
+#define HT_FLAG_INK_ABSORPTION_IDX2     0x00000040L
+#define HT_FLAG_INK_ABSORPTION_IDX3     0x00000060L
+#define HT_FLAG_HIGHEST_INK_ABSORPTION \
+    (HT_FLAG_INK_HIGH_ABSORPTION | HT_FLAG_INK_ABSORPTION_IDX3)
+#define HT_FLAG_HIGHER_INK_ABSORPTION \
+    (HT_FLAG_INK_HIGH_ABSORPTION | HT_FLAG_INK_ABSORPTION_IDX2)
+#define HT_FLAG_HIGH_INK_ABSORPTION \
+    (HT_FLAG_INK_HIGH_ABSORPTION | HT_FLAG_INK_ABSORPTION_IDX1)
+#define HT_FLAG_NORMAL_INK_ABSORPTION   HT_FLAG_INK_ABSORPTION_IDX0
+#define HT_FLAG_LOW_INK_ABSORPTION      HT_FLAG_INK_ABSORPTION_IDX1
+#define HT_FLAG_LOWER_INK_ABSORPTION    HT_FLAG_INK_ABSORPTION_IDX2
+#define HT_FLAG_LOWEST_INK_ABSORPTION   HT_FLAG_INK_ABSORPTION_IDX3
+
+/* Halftone bitmask macros */
+#if (NTDDI_VERSION >= 0x05010000)
+    #define HT_BITMASKPALRGB            ((DWORD)'0BGR')
+    #define HT_SET_BITMASKPAL2RGB( x )  (*((LPDWORD)(x)) = HT_BITMASKPALRGB)
+    #define HT_IS_BITMASKPAL2RGB( x )   (*((LPDWORD)(x)) == 0L)
+#endif
+
+/* Physical pixel characteristics */
+#define PPC_DEFAULT                         0x00000000L
+#define PPC_UNDEFINED                       0x00000001L
+#define PPC_RGB_ORDER_VERTICAL_STRIPES      0x00000002L
+#define PPC_BGR_ORDER_VERTICAL_STRIPES      0x00000003L
+#define PPC_RGB_ORDER_HORIZONTAL_STRIPES    0x00000004L
+#define PPC_BGR_ORDER_HORIZONTAL_STRIPES    0x00000005L
+
+/* Physical pixel gamma values */
+#define PPG_DEFAULT 0L
+#define PPG_SRGB    1L
+
+/* Brush object color types */
+#define BR_DEVICE_ICM       0x00000001L
+#define BR_HOST_ICM         0x00000002L
+#define BR_CMYKCOLOR        0x00000004L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define BR_ORIGCOLOR    0x00000008L
+#endif
+
+/* Font object types */
+#define FO_TYPE_RASTER              RASTER_FONTTYPE
+#define FO_TYPE_DEVICE              DEVICE_FONTTYPE
+#define FO_TYPE_TRUETYPE            TRUETYPE_FONTTYPE
+#define FO_SIM_BOLD                 0x00002000L
+#define FO_SIM_ITALIC               0x00004000L
+#define FO_EM_HEIGHT                0x00008000L
+#define FO_GRAY16                   0x00010000L
+#define FO_NOGRAY16                 0x00020000L
+#define FO_NOHINTS                  0x00040000L
+#define FO_NO_CHOICE                0x00080000L
+#define FO_CFF                      0x00100000L
+#define FO_POSTSCRIPT               0x00200000L
+#define FO_MULTIPLEMASTER           0x00400000L
+#define FO_VERT_FACE                0x00800000L
+#define FO_DBCS_FONT                0x01000000L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define FO_NOCLEARTYPE          0x02000000L
+    #define FO_CLEARTYPE_X          0x10000000L
+    #define FO_CLEARTYPE_Y          0x20000000L
+    #define FO_CLEARTYPENATURAL_X   0x40000000L
+#endif
+
+/* Clip object complexity values */
+#define DC_TRIVIAL  0
+#define DC_RECT     1
+#define DC_COMPLEX  3
+#define FC_RECT     1
+#define FC_RECT4    2
+#define FC_COMPLEX  3
+
+/* Clip object modes */
+#define TC_RECTANGLES   0
+#define TC_PATHOBJ      2
+
+/* Clip object options */
+#define OC_BANK_CLIP    1
+
+/* CLIPOBJ_cEnumStart() types */
+#define CT_RECTANGLES   0L
+
+/* CLIPOBJ_cEnumStart() directions */
+#define CD_RIGHTDOWN    0L
+#define CD_LEFTDOWN     1L
+#define CD_RIGHTUP      2L
+#define CD_LEFTUP       3L
+#define CD_ANY          4L
+#define CD_LEFTWARDS    1L
+#define CD_UPWARDS      2L
+
+/* DrvGetGlyphMode() return values */
+#define FO_HGLYPHS      0L
+#define FO_GLYPHBITS    1L
+#define FO_PATHOBJ      2L
+
+/* Old constant for compatibility */
+#define FD_NEGATIVE_FONT    1L
+
+/* Font capabilities */
+#define FO_DEVICE_FONT      1L
+#define FO_OUTLINE_CAPABLE  2L
+
+/* String object flags */
+#define SO_FLAG_DEFAULT_PLACEMENT           0x00000001L
+#define SO_HORIZONTAL                       0x00000002L
+#define SO_VERTICAL                         0x00000004L
+#define SO_REVERSED                         0x00000008L
+#define SO_ZERO_BEARINGS                    0x00000010L
+#define SO_CHAR_INC_EQUAL_BM_BASE           0x00000020L
+#define SO_MAXEXT_EQUAL_BM_SIDE             0x00000040L
+#define SO_DO_NOT_SUBSTITUTE_DEVICE_FONT    0x00000080L
+#define SO_GLYPHINDEX_TEXTOUT               0x00000100L
+#define SO_ESC_NOT_ORIENT                   0x00000200L
+#define SO_DXDY                             0x00000400L
+#define SO_CHARACTER_EXTRA                  0x00000800L
+#define SO_BREAK_EXTRA                      0x00001000L
+
+/* Font object attribute modes */
+#define FO_ATTR_MODE_ROTATE 1L
+
+/* Palette object flags */
+#define PAL_INDEXED     0x00000001L
+#define PAL_BITFIELDS   0x00000002L
+#define PAL_RGB         0x00000004L
+#define PAL_BGR         0x00000008L
+#define PAL_CMYK        0x00000010L
+
+/* Path object flags */
+#define PO_BEZIERS          0x00000001L
+#define PO_ELLIPSE          0x00000002L
+#define PO_ALL_INTEGERS     0x00000004L
+#define PO_ENUM_AS_INTEGERS 0x00000008L
+#if (NTDDI_VERSION >= 0x06010000)
+    #define PO_WIDENED      0x00000010L
+#endif
+
+/* Path data flags */
+#define PD_BEGINSUBPATH 0x00000001L
+#define PD_ENDSUBPATH   0x00000002L
+#define PD_RESETSTYLE   0x00000004L
+#define PD_CLOSEFIGURE  0x00000008L
+#define PD_BEZIERS      0x00000010L
+#define PD_ALL \
+    (PD_BEGINSUBPATH | PD_ENDSUBPATH | PD_RESETSTYLE | PD_CLOSEFIGURE | PD_BEZIERS)
+
+/* Surface object types */
+#define STYPE_BITMAP    0L
+#define STYPE_DEVICE    1L
+#define STYPE_DEVBITMAP 3L
+
+/* Bitmap formats */
+#define BMF_1BPP    1L
+#define BMF_4BPP    2L
+#define BMF_8BPP    3L
+#define BMF_16BPP   4L
+#define BMF_24BPP   5L
+#define BMF_32BPP   6L
+#define BMF_4RLE    7L
+#define BMF_8RLE    8L
+#define BMF_JPEG    9L
+#define BMF_PNG     10L
+
+/* Bitmap flags */
+#define BMF_TOPDOWN         0x0001
+#define BMF_NOZEROINIT      0x0002
+#define BMF_DONTCACHE       0x0004
+#define BMF_USERMEM         0x0008
+#define BMF_KMSECTION       0x0010
+#define BMF_NOTSYSMEM       0x0020
+#define BMF_WINDOW_BLT      0x0040
+#if (NTDDI_VERSION >= 0x05010000)
+    #define BMF_UMPDMEM     0x0080
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    #define BMF_TEMP_ALPHA  0x0100
+#endif
+
+/* XFORMOBJ_iGetXform() return values */
+#define GX_IDENTITY 0L
+#define GX_OFFSET   1L
+#define GX_SCALE    2L
+#define GX_GENERAL  3L
+
+/* XFORMOBJ_bApplyXform() modes */
+#define XF_LTOL         0L
+#define XF_INV_LTOL     1L
+#define XF_LTOFX        2L
+#define XF_INV_FXTOL    3L
+
+/* Translate object flags */
+#define XO_TRIVIAL      0x00000001L
+#define XO_TABLE        0x00000002L
+#define XO_TO_MONO      0x00000004L
+#define XO_FROM_CMYK    0x00000008L
+#define XO_DEVICE_ICM   0x00000010L
+#define XO_HOST_ICM     0x00000020L
+
+/* Translate object palette information types */
+#define XO_SRCPALETTE       1L
+#define XO_DESTPALETTE      2L
+#define XO_DESTDCPALETTE    3L
+#define XO_SRCBITFIELDS     4L
+#define XO_DESTBITFIELDS    5L
+
+/* EngAssociateSurface() hook flags */
+#define HOOK_BITBLT             0x00000001L
+#define HOOK_STRETCHBLT         0x00000002L
+#define HOOK_PLGBLT             0x00000004L
+#define HOOK_TEXTOUT            0x00000008L
+#define HOOK_PAINT              0x00000010L
+#define HOOK_STROKEPATH         0x00000020L
+#define HOOK_FILLPATH           0x00000040L
+#define HOOK_STROKEANDFILLPATH  0x00000080L
+#define HOOK_LINETO             0x00000100L
+#define HOOK_COPYBITS           0x00000400L
+#define HOOK_MOVEPANNING        0x00000800L
+#define HOOK_SYNCHRONIZE        0x00001000L
+#define HOOK_STRETCHBLTROP      0x00002000L
+#define HOOK_SYNCHRONIZEACCESS  0x00004000L
+#define HOOK_TRANSPARENTBLT     0x00008000L
+#define HOOK_ALPHABLEND         0x00010000L
+#define HOOK_GRADIENTFILL       0x00020000L
+#if (NTDDI_VERSION < 0x06000000)
+    #define HOOK_FLAGS          0x0003B5FFL
+#else
+    #define HOOK_FLAGS          0x0003B5EFL
+#endif
+
+/* EngModifySurface() flags */
+#define MS_NOTSHAREDMEMORY  0x00000001L
+#define MS_SHAREDACCESS     0x00000002L
+
+/* DrvQueryDriverInfo() modes */
+#define DRVQUERY_USERMODE   1L
+
+/* Maximum hatch style */
+#define HS_DDI_MAX  6L
+
+/* DrvResetDevice() return values */
+#if (NTDDI_VERSION >= 0x05010000)
+    #define DRD_SUCCESS 0L
+    #define DRD_ERROR   1L
+#endif
+
+/* DrvSaveScreenBits() modes */
+#define SS_SAVE     0L
+#define SS_RESTORE  1L
+#define SS_FREE     2L
+
+/* DrvCreateDeviceBitmapEx() flags */
+#if (NTDDI_VERSION >= 0x06010000)
+    #define CDBEX_REDIRECTION   0x00000001L
+    #define CDBEX_DXINTEROP     0x00000002L
+#endif
+
+/* DrvDitherColor() modes */
+#define DM_DEFAULT      0x00000001L
+#define DM_MONOCHROME   0x00000002L
+
+/* DrvSetPalette() maximum values */
+#define WINDDI_MAXSETPALETTECOLORS      256L
+#define WINDDI_MAXSETPALETTECOLORINDEX  255L
+
+/* DrvDitherColor() return values */
+#define DCR_SOLID       0L
+#define DCR_DRIVER      1L
+#define DCR_HALFTONE    2L
+
+/* DrvRealizeBrush() flags */
+#define RB_DITHERCOLOR  0x80000000L
+
+/* DrvQueryFontTree() modes */
+#define QFT_LIGATURES   1L
+#define QFT_KERNPAIRS   2L
+#define QFT_GLYPHSET    3L
+
+/* DrvQueryFontData() modes */
+#define QFD_GLYPHANDBITMAP      1L
+#define QFD_GLYPHANDOUTLINE     2L
+#define QFD_MAXEXTENTS          3L
+#define QFD_TT_GLYPHANDBITMAP   4L
+#define QFD_TT_GRAY1_BITMAP     5L
+#define QFD_TT_GRAY2_BITMAP     6L
+#define QFD_TT_GRAY4_BITMAP     8L
+#define QFD_TT_GRAY8_BITMAP     9L
+#define QFD_TT_MONO_BITMAP      QFD_TT_GRAY1_BITMAP
+
+/* DrvQueryCaps() capability flags */
+#define QC_OUTLINES         0x00000001L
+#define QC_1BIT             0x00000002L
+#define QC_4BIT             0x00000004L
+#define QC_FONTDRIVERCAPS   (QC_OUTLINES | QC_1BIT | QC_4BIT)
+
+/* Font file status values */
+#define FF_SIGNATURE_VERIFIED   0x00000001L
+#define FF_IGNORED_SIGNATURE    0x00000002L
+
+/* DrvQueryAdvanceWidths() modes */
+#define QAW_GETWIDTHS       0L
+#define QAW_GETEASYWIDTHS   1L
+
+/* DrvQueryTrueTypeOutline() metrics only values */
+#define TTO_METRICS_ONLY    1
+#define TTO_QUBICS          2
+#define TTO_UNHINTED        4
+
+/* DrvQueryFontFile() modes */
+#define QFF_DESCRIPTION 1L
+#define QFF_NUMFACES    2L
+
+/* DrvFillPath() options */
+#define FP_ALTERNATEMODE    1L
+#define FP_WINDINGMODE      2L
+
+/* DrvSetPointerShape() return values */
+#define SPS_ERROR               0L
+#define SPS_DECLINE             1L
+#define SPS_ACCEPT_NOEXCLUDE    2L
+#define SPS_ACCEPT_EXCLUDE      3L
+#define SPS_ACCEPT_SYNCHRONOUS  4L
+
+/* DrvSetPointerShape() flags */
+#define SPS_CHANGE          0x00000001L
+#define SPS_ASYNCCHANGE     0x00000002L
+#define SPS_ANIMATESTART    0x00000004L
+#define SPS_ANIMATEUPDATE   0x00000008L
+#define SPS_ALPHA           0x00000010L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define SPS_FLAGSMASK   0x000000FFL
+    #define SPS_LENGTHMASK  0x00000F00L
+    #define SPS_FREQMASK    0x000FF000L
+#endif
+
+/* DrvEndDoc() flags */
+#define ED_ABORTDOC 1L
+
+/* ICM gamma ramp formats */
+#define IGRF_RGB_256BYTES   0L
+#define IGRF_RGB_256WORDS   1L
+
+/* DrvQueryDeviceSupport() types */
+#define QDS_CHECKJPEGFORMAT 0L
+#define QDS_CHECKPNGFORMAT  1L
+
+/* DrvSynchronizeSurface() flags */
+#define DSS_TIMER_EVENT 0x00000001L
+#define DSS_FLUSH_EVENT 0x00000002L
+
+/* DrvNotify() types */
+#define DN_ACCELERATION_LEVEL   1L
+#define DN_DEVICE_ORIGIN        2L
+#define DN_SLEEP_MODE           3L
+#define DN_DRAWING_BEGIN        4L
+
+/* Window object change flags */
+#define WOC_RGN_CLIENT_DELTA    0x00000001L
+#define WOC_RGN_CLIENT          0x00000002L
+#define WOC_RGN_SURFACE_DELTA   0x00000004L
+#define WOC_RGN_SURFACE         0x00000008L
+#define WOC_CHANGED             0x00000010L
+#define WOC_DELETE              0x00000020L
+#define WOC_DRAWN               0x00000040L
+#define WOC_SPRITE_OVERLAP      0x00000080L
+#define WOC_SPRITE_NO_OVERLAP   0x00000100L
+#if (NTDDI_VERSION >= 0x06000000)
+    #define WOC_RGN_SPRITE      0x00000200L
+#endif
+
+/* Window object flags */
+#define WO_RGN_CLIENT_DELTA     0x00000001L
+#define WO_RGN_CLIENT           0x00000002L
+#define WO_RGN_SURFACE_DELTA    0x00000004L
+#define WO_RGN_SURFACE          0x00000008L
+#define WO_RGN_UPDATE_ALL       0x00000010L
+#define WO_RGN_WINDOW           0x00000020L
+#define WO_DRAW_NOTIFY          0x00000040L
+#define WO_SPRITE_NOTIFY        0x00000080L
+#define WO_RGN_DESKTOP_COORD    0x00000100L
+#if (NTDDI_VERSION >= 0x06000000)
+    #define WO_RGN_SPRITE       0x00000200L
+#endif
+
+/* EngHangNotification() return values */
+#if (NTDDI_VERSION >= 0x05010000)
+    #define EHN_RESTORED    0L
+    #define EHN_ERROR       1L
+#endif
+
+/* EngControlSprites() flags */
+#define ECS_TEARDOWN    0x00000001L
+#define ECS_REDRAW      0x00000002L
+
+/* Device halftone adjustment flags */
+#define DEVHTADJF_COLOR_DEVICE      0x00000001L
+#define DEVHTADJF_ADDITIVE_DEVICE   0x00000002L
+
+/* EngAllocMem() flags */
+#define FL_ZERO_MEMORY          0x00000001L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define FL_NONPAGED_MEMORY  0x00000002L
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    #define FL_NON_SESSION      0x00000004L
+#endif
+
+/* EngQuerySystemAttribute() flags */
+#define QSA_MMX         0x00000100L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define QSA_SSE     0x00002000L
+    #define QSA_3DNOW   0x00004000L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define QSA_SSE1    QSA_SSE
+    #define QSA_SSE2    0x00010000L
+    #define QSA_SSE3    0x00020000L
+#endif
+
+/* EngFntCacheFault() modes */
+#define ENG_FNT_CACHE_READ_FAULT    0x00000001L
+#define ENG_FNT_CACHE_WRITE_FAULT   0x00000002L
+
+/* DrvRenderHint() notification codes */
+#if (NTDDI_VERSION >= 0x06000000)
+    #define DRH_APIBITMAP   0x00000001L
+#endif
+
+/* Opaque data types */
+typedef struct _ENG_EVENT   *PEVENT;
+
+/* Point */
+typedef struct _POINTE {
+    FLOATL  x;
+    FLOATL  y;
+} POINTE;
+typedef POINTE  *PPOINTE;
+
+/* Float/long */
+typedef union _FLOAT_LONG {
+    FLOATL  e;
+    LONG    l;
+} FLOAT_LONG;
+typedef FLOAT_LONG  *PFLOAT_LONG;
+
+/* Fixed point */
+typedef struct _POINTFIX {
+    FIX x;
+    FIX y;
+} POINTFIX;
+typedef POINTFIX    *PPOINTFIX;
+
+/* Fixed rectangle */
+typedef struct _RECTFX {
+    FIX xLeft;
+    FIX yTop;
+    FIX xRight;
+    FIX yBottom;
+} RECTFX;
+typedef RECTFX  *PRECTFX;
+
+/* Font description transform */
+typedef struct _FD_XFORM {
+    FLOATL  eXX;
+    FLOATL  eXY;
+    FLOATL  eYX;
+    FLOATL  eYY;
+} FD_XFORM;
+typedef FD_XFORM    *PFD_XFORM;
+
+/* Font description device metrics */
+typedef struct _FD_DEVICEMETRICS {
+    FLONG       flRealizedType;
+    POINTE      pteBase;
+    POINTE      pteSide;
+    LONG        lD;
+    FIX         fxMaxAscender;
+    FIX         fxMaxDescender;
+    POINTL      ptlUnderline1;
+    POINTL      ptlStrikeOut;
+    POINTL      ptlULThickness;
+    POINTL      ptlSOThickness;
+    ULONG       cxMax;
+    ULONG       cyMax;
+    ULONG       cjGlyphMax;
+    FD_XFORM    fdxQuantized;
+    LONG        lNonLinearExtLeading;
+    LONG        lNonLinearIntLeading;
+    LONG        lNonLinearMaxCharWidth;
+    LONG        lNonLinearAvgCharWidth;
+    LONG        lMinA;
+    LONG        lMinC;
+    LONG        lMinD;
+    LONG        alReserved[1];
+} FD_DEVICEMETRICS;
+typedef FD_DEVICEMETRICS    *PFD_DEVICEMETRICS;
+
+/* Ligature */
+typedef struct _LIGATURE {
+    ULONG   culSize;
+    LPWSTR  pwsz;
+    ULONG   chglyph;
+    HGLYPH  ahglyph[1];
+} LIGATURE;
+typedef LIGATURE    *PLIGATURE;
+
+/* Font description ligature */
+typedef struct _FD_LIGATURE {
+    ULONG       culThis;
+    ULONG       ulType;
+    ULONG       cLigatures;
+    LIGATURE    alig[1];
+} FD_LIGATURE;
+
+/* Point */
+typedef struct _POINTQF {
+    LARGE_INTEGER   x;
+    LARGE_INTEGER   y;
+} POINTQF;
+typedef POINTQF *PPOINTQF;
+
+/* Unicode character run */
+typedef struct _WCRUN {
+    WCHAR   wcLow;
+    USHORT  cGlyphs;
+    HGLYPH  *phg;
+} WCRUN;
+typedef WCRUN   *PWCRUN;
+
+/* Font description glyph set */
+typedef struct _FD_GLYPHSET {
+    ULONG   cjThis;
+    FLONG   flAccel;
+    ULONG   cGlyphsSupported;
+    ULONG   cRuns;
+    WCRUN   awcrun[1];
+} FD_GLYPHSET;
+typedef FD_GLYPHSET *PFD_GLYPHSET;
+
+/* Font description glyph attribute */
+typedef struct _FD_GLYPHATTR {
+    ULONG   cjThis;
+    ULONG   cGlyphs;
+    ULONG   iMode;
+    BYTE    aGlyphAttr[1];
+} FD_GLYPHATTR;
+typedef FD_GLYPHATTR    *PFD_GLYPHATTR;
+
+/* Font description kerning pair */
+typedef struct _FD_KERNINGPAIR {
+    WCHAR   wcFirst;
+    WCHAR   wcSecond;
+    FWORD   fwdKern;
+} FD_KERNINGPAIR;
+typedef FD_KERNINGPAIR  *PFD_KERNINGPAIR;
+
+/* Font difference */
+typedef struct _FONTDIFF {
+    BYTE    jReserved1;
+    BYTE    jReserved2;
+    BYTE    jReserved3;
+    BYTE    bWeight;
+    USHORT  usWinWeight;
+    FSHORT  fsSelection;
+    FWORD   fwdAveCharWidth;
+    FWORD   fwdMaxCharInc;
+    POINTL  ptlCaret;
+} FONTDIFF;
+
+/* Font simulation */
+typedef struct _FONTSIM {
+    PTRDIFF dpBold;
+    PTRDIFF dpItalic;
+    PTRDIFF dpBoldItalic;
+} FONTSIM;
+
+/* Font metrics */
+typedef struct _IFIMETRICS {
+    ULONG   cjThis;
+    ULONG   cjIfiExtra;
+    PTRDIFF dpwszFamilyName;
+    PTRDIFF dpwszStyleName;
+    PTRDIFF dpwszFaceName;
+    PTRDIFF dpwszUniqueName;
+    PTRDIFF dpFontSim;
+    LONG    lEmbedId;
+    LONG    lItalicAngle;
+    LONG    lCharBias;
+    PTRDIFF dpCharSets;
+    BYTE    jWinCharSet;
+    BYTE    jWinPitchAndFamily;
+    USHORT  usWinWeight;
+    ULONG   flInfo;
+    USHORT  fsSelection;
+    USHORT  fsType;
+    FWORD   fwdUnitsPerEm;
+    FWORD   fwdLowestPPEm;
+    FWORD   fwdWinAscender;
+    FWORD   fwdWinDescender;
+    FWORD   fwdMacAscender;
+    FWORD   fwdMacDescender;
+    FWORD   fwdMacLineGap;
+    FWORD   fwdTypoAscender;
+    FWORD   fwdTypoDescender;
+    FWORD   fwdTypoLineGap;
+    FWORD   fwdAveCharWidth;
+    FWORD   fwdMaxCharInc;
+    FWORD   fwdCapHeight;
+    FWORD   fwdXHeight;
+    FWORD   fwdSubscriptXSize;
+    FWORD   fwdSubscriptYSize;
+    FWORD   fwdSubscriptXOffset;
+    FWORD   fwdSubscriptYOffset;
+    FWORD   fwdSuperscriptXSize;
+    FWORD   fwdSuperscriptYSize;
+    FWORD   fwdSuperscriptXOffset;
+    FWORD   fwdSuperscriptYOffset;
+    FWORD   fwdUnderscoreSize;
+    FWORD   fwdUnderscorePosition;
+    FWORD   fwdStrikeoutSize;
+    FWORD   fwdStrikeoutPosition;
+    BYTE    chFirstChar;
+    BYTE    chLastChar;
+    BYTE    chDefaultChar;
+    BYTE    chBreakChar;
+    WCHAR   wcFirstChar;
+    WCHAR   wcLastChar;
+    WCHAR   wcDefaultChar;
+    WCHAR   wcBreakChar;
+    POINTL  ptlBaseline;
+    POINTL  ptlAspect;
+    POINTL  ptlCaret;
+    RECTL   rclFontBox;
+    BYTE    achVendId[4];
+    ULONG   cKerningPairs;
+    ULONG   ulPanoseCulture;
+    PANOSE  panose;
+} IFIMETRICS;
+typedef IFIMETRICS  *PIFIMETRICS;
+
+/* Font metrics extra information */
+typedef struct _IFIEXTRA {
+    ULONG   ulIdentifier;
+    PTRDIFF dpFontSig;
+    ULONG   cig;
+    PTRDIFF dpDesignVector;
+    PTRDIFF dpAxesInfoW;
+    ULONG   aulReserved[1];
+} IFIEXTRA;
+typedef IFIEXTRA    *PIFIEXTRA;
+
+/* General function pointer */
+typedef LONG_PTR (APIENTRY *PFN)();
+
+/* Driver function */
+typedef struct _DRVFN {
+    ULONG   iFunc;
+    PFN     pfn;
+} DRVFN;
+typedef DRVFN   *PDRVFN;
+
+/* Driver enable data */
+typedef struct _DRVENABLEDATA {
+    ULONG   iDriverVersion;
+    ULONG   c;
+    DRVFN   *pdrvfn;
+} DRVENABLEDATA;
+typedef DRVENABLEDATA   *PDRVENABLEDATA;
+
+/* Device information */
+typedef struct tagDEVINFO {
+    FLONG       flGraphicsCaps;
+    LOGFONTW    lfDefaultFont;
+    LOGFONTW    lfAnsiVarFont;
+    LOGFONTW    lfAnsiFixFont;
+    ULONG       cFonts;
+    ULONG       iDitherFormat;
+    USHORT      cxDither;
+    USHORT      cyDither;
+    HPALETTE    hpalDefault;
+    FLONG       flGraphicsCaps2;
+} DEVINFO;
+typedef DEVINFO *PDEVINFO;
+
+/* Line attributes */
+typedef struct _LINEATTRS {
+    FLONG       fl;
+    ULONG       iJoin;
+    ULONG       iEndCap;
+    FLOAT_LONG  elWidth;
+    FLOATL      eMiterLimit;
+    ULONG       cstyle;
+    PFLOAT_LONG pstyle;
+    FLOAT_LONG  elStyleState;
+} LINEATTRS;
+typedef LINEATTRS   *PLINEATTRS;
+
+/* Transform */
+typedef struct _XFORML {
+    FLOATL  eM11;
+    FLOATL  eM12;
+    FLOATL  eM21;
+    FLOATL  eM22;
+    FLOATL  eDx;
+    FLOATL  eDy;
+} XFORML;
+typedef XFORML  *PXFORML;
+
+/* CIE chromaticity */
+typedef struct _CIECHROMA {
+    LDECI4  x;
+    LDECI4  y;
+    LDECI4  Y;
+} CIECHROMA;
+
+/* Color information */
+typedef struct _COLORINFO {
+    CIECHROMA   Red;
+    CIECHROMA   Green;
+    CIECHROMA   Blue;
+    CIECHROMA   Cyan;
+    CIECHROMA   Magenta;
+    CIECHROMA   Yellow;
+    CIECHROMA   AlignmentWhite;
+    LDECI4      RedGamma;
+    LDECI4      GreenGamma;
+    LDECI4      BlueGamma;
+    LDECI4      MagentaInCyanDye;
+    LDECI4      YellowInCyanDye;
+    LDECI4      CyanInMagentaDye;
+    LDECI4      YellowInMagentaDye;
+    LDECI4      CyanInYellowDye;
+    LDECI4      MagentaInYellowDye;
+} COLORINFO;
+typedef COLORINFO   *PCOLORINFO;
+
+/* GDI information */
+typedef struct _GDIINFO {
+    ULONG       ulVersion;
+    ULONG       ulTechnology;
+    ULONG       ulHorzSize;
+    ULONG       ulVertSize;
+    ULONG       ulHorzRes;
+    ULONG       ulVertRes;
+    ULONG       cBitsPixel;
+    ULONG       cPlanes;
+    ULONG       ulNumColors;
+    ULONG       flRaster;
+    ULONG       ulLogPixelsX;
+    ULONG       ulLogPixelsY;
+    ULONG       flTextCaps;
+    ULONG       ulDACRed;
+    ULONG       ulDACGreen;
+    ULONG       ulDACBlue;
+    ULONG       ulAspectX;
+    ULONG       ulAspectY;
+    ULONG       ulAspectXY;
+    LONG        xStyleStep;
+    LONG        yStyleStep;
+    LONG        denStyleStep;
+    POINTL      ptlPhysOffset;
+    SIZEL       szlPhysSize;
+    ULONG       ulNumPalReg;
+    COLORINFO   ciDevice;
+    ULONG       ulDevicePelsDPI;
+    ULONG       ulPrimaryOrder;
+    ULONG       ulHTPatternSize;
+    ULONG       ulHTOutputFormat;
+    ULONG       flHTFlags;
+    ULONG       ulVRefresh;
+    ULONG       ulBltAlignment;
+    ULONG       ulPanningHorzRes;
+    ULONG       ulPanningVertRes;
+    ULONG       xPanningAlignment;
+    ULONG       yPanningAlignment;
+    ULONG       cxHTPat;
+    ULONG       cyHTPat;
+    LPBYTE      pHTPatA;
+    LPBYTE      pHTPatB;
+    LPBYTE      pHTPatC;
+    ULONG       flShadeBlend;
+    ULONG       ulPhysicalPixelCharacteristics;
+    ULONG       ulPhysicalPixelGamma;
+} GDIINFO;
+typedef GDIINFO *PGDIINFO;
+
+/* Brush object */
+typedef struct _BRUSHOBJ {
+    ULONG   iSolidColor;
+    PVOID   pvRbrush;
+    FLONG   flColorType;
+} BRUSHOBJ;
+
+/* Clip object */
+typedef struct _CLIPOBJ {
+    ULONG   iUniq;
+    RECTL   rclBounds;
+    BYTE    iDComplexity;
+    BYTE    iFComplexity;
+    BYTE    iMode;
+    BYTE    fjOptions;
+} CLIPOBJ;
+
+/* Free object procedure */
+typedef BOOL (CALLBACK *FREEOBJPROC)( struct _DRIVEROBJ * );
+
+/* Driver object */
+typedef struct _DRIVEROBJ {
+    PVOID       pvObj;
+    FREEOBJPROC pFreeProc;
+    HDEV        hdev;
+    DHPDEV      dhpdev;
+} DRIVEROBJ;
+
+/* Font object */
+typedef struct _FONTOBJ {
+    ULONG       iUniq;
+    ULONG       iFace;
+    ULONG       cxMax;
+    FLONG       flFontType;
+    ULONG_PTR   iTTUniq;
+    ULONG_PTR   iFile;
+    SIZE        sizLogResPpi;
+    ULONG       ulStyleSize;
+    PVOID       pvConsumer;
+    PVOID       pvProducer;
+} FONTOBJ;
+
+/* Blend object */
+typedef struct _BLENDOBJ {
+    BLENDFUNCTION   BlendFunction;
+} BLENDOBJ;
+typedef BLENDOBJ    *PBLENDOBJ;
+
+/* Gamma tables */
+typedef BYTE    GAMMA_TABLES[2][256];
+
+/* Palette object */
+typedef struct _PALOBJ {
+    ULONG   ulReserved;
+} PALOBJ;
+
+/* Path object */
+typedef struct _PATHOBJ {
+    FLONG   fl;
+    ULONG   cCurves;
+} PATHOBJ;
+
+/* Surface object */
+typedef struct _SURFACEOBJ {
+    DHSURF  dhsurf;
+    HSURF   hsurf;
+    DHPDEV  dhpdev;
+    HDEV    hdev;
+    SIZEL   sizlBitmap;
+    ULONG   cjBits;
+    PVOID   pvBits;
+    PVOID   pvScan0;
+    LONG    lDelta;
+    ULONG   iUniq;
+    ULONG   iBitmapFormat;
+    USHORT  iType;
+    USHORT  fjBitmap;
+} SURFOBJ;
+
+/* Window object */
+typedef struct _WNDOBJ {
+    CLIPOBJ coClient;
+    PVOID   pvConsumer;
+    RECTL   rclClient;
+    SURFOBJ *psoOwner;
+} WNDOBJ;
+typedef WNDOBJ  *PWNDOBJ;
+
+/* Transform object */
+typedef struct _XFORMOBJ {
+    ULONG   ulReserved;
+} XFORMOBJ;
+
+/* Translate object */
+typedef struct _XLATEOBJ {
+    ULONG   iUniq;
+    FLONG   flXlate;
+    USHORT  iSrcType;
+    USHORT  iDstType;
+    ULONG   cEntries;
+    ULONG   *pulXlate;
+} XLATEOBJ;
+
+/* Rectangle enumeration information */
+typedef struct _ENUMRECTS {
+    ULONG   c;
+    RECTL   arcl[1];
+} ENUMRECTS;
+
+/* Glyph bits */
+typedef struct _GLYPHBITS {
+    POINTL  ptlOrigin;
+    SIZEL   sizlBitmap;
+    BYTE    aj[1];
+} GLYPHBITS;
+
+/* Glyph definition */
+typedef union _GLYPHDEF {
+    GLYPHBITS   *pgb;
+    PATHOBJ     *ppo;
+} GLYPHDEF;
+
+/* Glyph position */
+typedef struct _GLYPHPOS {
+    HGLYPH      hg;
+    GLYPHDEF    *pgdf;
+    POINTL      ptl;
+} GLYPHPOS;
+typedef GLYPHPOS    *PGLYPHPOS;
+
+/* Glyph data */
+typedef struct _GLYPHDATA {
+    GLYPHDEF    gdf;
+    HGLYPH      hg;
+    FIX         fxD;
+    FIX         fxA;
+    FIX         fxAB;
+    FIX         fxInkTop;
+    FIX         fxInkBottom;
+    RECTL       rclInk;
+    POINTQF     ptqD;
+} GLYPHDATA;
+
+/* String object */
+typedef struct _STROBJ {
+    ULONG       cGlyphs;
+    FLONG       flAccel;
+    ULONG       ulCharInc;
+    RECTL       rclBkGround;
+    GLYPHPOS    *pgp;
+    LPWSTR      pwszOrg;
+} STROBJ;
+
+/* Font information */
+typedef struct _FONTINFO {
+    ULONG   cjThis;
+    FLONG   flCaps;
+    ULONG   cGlyphsSupported;
+    ULONG   cjMaxGlyph1;
+    ULONG   cjMaxGlyph4;
+    ULONG   cjMaxGlyph8;
+    ULONG   cjMaxGlyph32;
+} FONTINFO;
+typedef FONTINFO    *PFONTINFO;
+
+/* Path data flags */
+typedef struct _PATHDATA {
+    FLONG       flags;
+    ULONG       count;
+    POINTFIX    *pptfx;
+} PATHDATA;
+typedef PATHDATA    *PPATHDATA;
+
+/* Run */
+typedef struct _RUN {
+    LONG    iStart;
+    LONG    iStop;
+} RUN;
+typedef RUN *PRUN;
+
+/* Clip line */
+typedef struct _CLIPLINE {
+    POINTFIX    ptfxA;
+    POINTFIX    ptfxB;
+    LONG        lStyleState;
+    ULONG       c;
+    RUN         arun[1];
+} CLIPLINE;
+typedef CLIPLINE    *PCLIPLINE;
+
+/* Per band information */
+typedef struct _PERBANDINFO {
+    BOOL    bRepeatThisBand;
+    SIZEL   szlBand;
+    ULONG   ulHorzRes;
+    ULONG   ulVertRes;
+} PERBANDINFO;
+typedef PERBANDINFO *PPERBANDINFO;
+
+/* Gamma ramp */
+typedef struct _GAMMARAMP {
+    WORD    Red[256];
+    WORD    Green[256];
+    WORD    Blue[256];
+} GAMMARAMP;
+typedef GAMMARAMP *PGAMMARAMP;
+
+/* Window object change procedure */
+typedef VOID (CALLBACK *WNDOBJCHANGEPROC)( WNDOBJ *, FLONG );
+
+/* Device halftone information */
+typedef struct _DEVHTINFO {
+    DWORD       HTFlags;
+    DWORD       HTPatternSize;
+    DWORD       DevPelsDPI;
+    COLORINFO   ColorInfo;
+} DEVHTINFO;
+typedef DEVHTINFO   *PDEVHTINFO;
+
+/* Device halftone adjustment data */
+typedef struct _DEVHTADJDATA {
+    DWORD       DeviceFlags;
+    DWORD       DeviceXDPI;
+    DWORD       DeviceYDPI;
+    PDEVHTINFO  pDefHTInfo;
+    PDEVHTINFO  pAdjHTInfo;
+} DEVHTADJDATA;
+typedef DEVHTADJDATA    *PDEVHTADJDATA;
+
+/* Type 1 font */
+typedef struct _TYPE1_FONT {
+    HANDLE  hPFM;
+    HANDLE  hPFB;
+    ULONG   ulIdentifier;
+} TYPE1_FONT;
+
+/* Safe semaphore */
+typedef struct _ENGSAFESEMAPHORE {
+    HSEMAPHORE  hsem;
+    LONG        lCount;
+} ENGSAFESEMAPHORE;
+
+/* Float object */
+#if defined( USERMODE_DRIVER ) && defined( _X86_ )
+typedef struct _FLOATOBJ {
+    ULONG   ul1;
+    ULONG   ul2;
+} FLOATOBJ;
+#else
+typedef FLOAT       FLOATOBJ;
+#endif
+typedef FLOATOBJ    *PFLOATOBJ;
+
+/* Float object transform */
+#ifdef USERMODE_DRIVER
+typedef XFORML          FLOATOBJ_XFORM;
+typedef XFORML          *PFLOATOBJ_XFORM;
+typedef XFORML          *LPFLOATOBJ_XFORM;
+#else
+typedef struct tagFLOATOBJ_XFORM {
+    FLOATOBJ    eM11;
+    FLOATOBJ    eM12;
+    FLOATOBJ    eM21;
+    FLOATOBJ    eM22;
+    FLOATOBJ    eDx;
+    FLOATOBJ    eDy;
+} FLOATOBJ_XFORM;
+typedef FLOATOBJ_XFORM  *PFLOATOBJ_XFORM;
+typedef FLOATOBJ_XFORM  *LPFLOATOBJ_XFORM;
+#endif
+
+/* Sort compare callback */
+typedef int (__cdecl *SORTCOMP)( const void *, const void * );
+
+/* Time fields */
+typedef struct _ENG_TIME_FIELDS {
+    USHORT  usYear;
+    USHORT  usMonth;
+    USHORT  usDay;
+    USHORT  usHour;
+    USHORT  usMinute;
+    USHORT  usSecond;
+    USHORT  usMilliseconds;
+    USHORT  usWeekday;
+} ENG_TIME_FIELDS;
+typedef ENG_TIME_FIELDS *PENG_TIME_FIELDS;
+
+/* System attributes */
+typedef enum _ENG_SYSTEM_ATTRIBUTE {
+    EngProcessorFeature             = -1,
+    EngNumberOfProcessors           = 0,
+    EngOptimumAvailableUserMemory   = 1,
+    EngOptimumAvailableSystemMemory = 2
+} ENG_SYSTEM_ATTRIBUTE;
+
+/* Device attributes */
+typedef enum _ENG_DEVICE_ATTRIBUTE {
+    QDA_ACCELERATION_LEVEL  = 1
+} ENG_DEVICE_ATTRIBUTE;
+
+/* MEF information */
+typedef struct {
+    DWORD   nSize;
+    HDC     hdc;
+    PBYTE   pvEMF;
+    PBYTE   pvCurrentRecord;
+} EMFINFO;
+typedef EMFINFO *PEMFINFO;
+
+/* DrvRenderHint() bitmap data */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _DRH_APIBITMAPDATA {
+    SURFOBJ *pso;
+    BOOL    b;
+} DRH_APIBITMAPDATA;
+typedef DRH_APIBITMAPDATA   *PDRH_APIBITMAPDATA;
+#endif
+
+/* Functions in WIN32K.SYS and GDI32.DLL */
+ENGAPI HANDLE APIENTRY          BRUSHOBJ_hGetColorTransform( BRUSHOBJ * );
+ENGAPI PVOID APIENTRY           BRUSHOBJ_pvAllocRbrush( BRUSHOBJ *, ULONG );
+ENGAPI PVOID APIENTRY           BRUSHOBJ_pvGetRbrush( BRUSHOBJ * );
+ENGAPI ULONG APIENTRY           BRUSHOBJ_ulGetBrushColor( BRUSHOBJ * );
+ENGAPI BOOL APIENTRY            CLIPOBJ_bEnum( CLIPOBJ *, ULONG, ULONG * );
+ENGAPI ULONG APIENTRY           CLIPOBJ_cEnumStart( CLIPOBJ *, BOOL, ULONG, ULONG, ULONG );
+ENGAPI PATHOBJ * APIENTRY       CLIPOBJ_ppoGetPath( CLIPOBJ * );
+ENGAPI VOID APIENTRY            EngAcquireSemaphore( HSEMAPHORE );
+ENGAPI BOOL APIENTRY            EngAlphaBlend( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, RECTL *, BLENDOBJ * );
+ENGAPI BOOL APIENTRY            EngAssociateSurface( HSURF, HDEV, FLONG );
+ENGAPI BOOL APIENTRY            EngBitBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, POINTL *, POINTL *, BRUSHOBJ *, POINTL *, ROP4 );
+ENGAPI BOOL APIENTRY            EngCheckAbort( SURFOBJ * );
+ENGAPI FD_GLYPHSET * APIENTRY   EngComputeGlyphSet( INT, INT, INT );
+ENGAPI BOOL APIENTRY            EngControlSprites( WNDOBJ *, FLONG );
+ENGAPI BOOL APIENTRY            EngCopyBits( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, POINTL * );
+ENGAPI HBITMAP APIENTRY         EngCreateBitmap( SIZEL, LONG, ULONG, FLONG, PVOID );
+ENGAPI CLIPOBJ * APIENTRY       EngCreateClip();
+ENGAPI HBITMAP APIENTRY         EngCreateDeviceBitmap( DHSURF, SIZEL, ULONG );
+ENGAPI HSURF APIENTRY           EngCreateDeviceSurface( DHSURF, SIZEL, ULONG );
+ENGAPI HDRVOBJ APIENTRY         EngCreateDriverObj( PVOID, FREEOBJPROC, HDEV );
+ENGAPI BOOL APIENTRY            EngCreateEvent( PEVENT * );
+ENGAPI HPALETTE APIENTRY        EngCreatePalette( ULONG, ULONG, ULONG *, FLONG, FLONG, FLONG );
+ENGAPI PATHOBJ * APIENTRY       EngCreatePath();
+ENGAPI HSEMAPHORE APIENTRY      EngCreateSemaphore( VOID );
+ENGAPI WNDOBJ * APIENTRY        EngCreateWnd( SURFOBJ *, HWND, WNDOBJCHANGEPROC, FLONG, int );
+ENGAPI VOID APIENTRY            EngDebugBreak( VOID );
+ENGAPI VOID APIENTRY            EngDebugPrint( PCHAR, PCHAR, va_list );
+ENGAPI VOID APIENTRY            EngDeleteClip( CLIPOBJ * );
+ENGAPI BOOL APIENTRY            EngDeleteDriverObj( HDRVOBJ, BOOL, BOOL );
+ENGAPI BOOL APIENTRY            EngDeleteEvent( PEVENT );
+ENGAPI BOOL APIENTRY            EngDeleteFile( LPWSTR );
+ENGAPI BOOL APIENTRY            EngDeletePalette( HPALETTE );
+ENGAPI VOID APIENTRY            EngDeletePath( PATHOBJ * );
+ENGAPI VOID APIENTRY            EngDeleteSafeSemaphore( ENGSAFESEMAPHORE * );
+ENGAPI VOID APIENTRY            EngDeleteSemaphore( HSEMAPHORE );
+ENGAPI BOOL APIENTRY            EngDeleteSurface( HSURF );
+ENGAPI VOID APIENTRY            EngDeleteWnd( WNDOBJ * );
+ENGAPI DWORD APIENTRY           EngDeviceIoControl( HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD );
+ENGAPI ULONG APIENTRY           EngDitherColor( HDEV, ULONG, ULONG, ULONG * );
+ENGAPI BOOL APIENTRY            EngEraseSurface( SURFOBJ *, RECTL *, ULONG );
+ENGAPI BOOL APIENTRY            EngFillPath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, BRUSHOBJ *, POINTL *, MIX, FLONG );
+ENGAPI PVOID APIENTRY           EngFindResource( HANDLE, int, int, PULONG );
+ENGAPI PVOID APIENTRY           EngFntCacheAlloc( ULONG, ULONG );
+ENGAPI VOID APIENTRY            EngFntCacheFault( ULONG, ULONG );
+ENGAPI PVOID APIENTRY           EngFntCacheLookUp( ULONG, ULONG * );
+ENGAPI VOID APIENTRY            EngFreeModule( HANDLE );
+ENGAPI VOID APIENTRY            EngGetCurrentCodePage( PUSHORT, PUSHORT );
+ENGAPI HANDLE APIENTRY          EngGetCurrentProcessId();
+ENGAPI HANDLE APIENTRY          EngGetCurrentThreadId();
+ENGAPI LPWSTR APIENTRY          EngGetDriverName( HDEV );
+ENGAPI BOOL APIENTRY            EngGetFileChangeTime( HANDLE, LARGE_INTEGER * );
+ENGAPI BOOL APIENTRY            EngGetFilePath( HANDLE, WCHAR (*)[MAX_PATH + 1] );
+ENGAPI LPWSTR APIENTRY          EngGetPrinterDataFileName( HDEV );
+ENGAPI HANDLE APIENTRY          EngGetProcessHandle();
+ENGAPI BOOL APIENTRY            EngGetType1FontList( HDEV, TYPE1_FONT *, ULONG, PULONG, PULONG, LARGE_INTEGER * );
+ENGAPI BOOL APIENTRY            EngGradientFill( SURFOBJ *, CLIPOBJ *, XLATEOBJ *, TRIVERTEX *, ULONG, PVOID, ULONG, RECTL *, POINTL *, ULONG );
+ENGAPI BOOL APIENTRY            EngInitializeSafeSemaphore( ENGSAFESEMAPHORE * );
+ENGAPI BOOL APIENTRY            EngLineTo( SURFOBJ *, CLIPOBJ *, BRUSHOBJ *, LONG, LONG, LONG, LONG, RECTL *, MIX );
+ENGAPI HANDLE APIENTRY          EngLoadModule( LPWSTR );
+ENGAPI HANDLE APIENTRY          EngLoadModuleForWrite( LPWSTR, ULONG );
+ENGAPI PDD_SURFACE_LOCAL APIENTRY   EngLockDirectDrawSurface( HANDLE );
+ENGAPI DRIVEROBJ * APIENTRY     EngLockDriverObj( HDRVOBJ );
+ENGAPI SURFOBJ * APIENTRY       EngLockSurface( HSURF );
+ENGAPI BOOL APIENTRY            EngLpkInstalled();
+ENGAPI PEVENT APIENTRY          EngMapEvent( HDEV, HANDLE, PVOID, PVOID, PVOID );
+ENGAPI PVOID APIENTRY           EngMapFile( LPWSTR, ULONG, ULONG_PTR * );
+ENGAPI BOOL APIENTRY            EngMapFontFile( ULONG_PTR, PULONG *, ULONG * );
+ENGAPI BOOL APIENTRY            EngMapFontFileFD( ULONG_PTR, PULONG *, ULONG * );
+ENGAPI BOOL APIENTRY            EngMarkBandingSurface( HSURF );
+ENGAPI BOOL APIENTRY            EngModifySurface( HSURF, HDEV, FLONG, FLONG, DHSURF, VOID *, LONG, VOID * );
+ENGAPI VOID APIENTRY            EngMovePointer( SURFOBJ *, LONG, LONG, RECTL * );
+ENGAPI VOID APIENTRY            EngMultiByteToUnicodeN( LPWSTR, ULONG, PULONG, PCHAR, ULONG );
+ENGAPI INT APIENTRY             EngMultiByteToWideChar( UINT, LPWSTR, INT, LPSTR, INT );
+ENGAPI BOOL APIENTRY            EngPaint( SURFOBJ *, CLIPOBJ *, BRUSHOBJ *, POINTL *, MIX );
+ENGAPI BOOL APIENTRY            EngPlgBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, POINTFIX *, RECTL *, POINTL *, ULONG );
+ENGAPI BOOL APIENTRY            EngQueryDeviceAttribute( HDEV, ENG_DEVICE_ATTRIBUTE, VOID *, ULONG, VOID *, ULONG );
+ENGAPI BOOL APIENTRY            EngQueryEMFInfo( HDEV, EMFINFO * );
+ENGAPI VOID APIENTRY            EngQueryLocalTime( PENG_TIME_FIELDS );
+ENGAPI ULONG APIENTRY           EngQueryPalette( HPALETTE, ULONG *, ULONG, ULONG * );
+ENGAPI VOID APIENTRY            EngQueryPerformanceCounter( LONGLONG * );
+ENGAPI VOID APIENTRY            EngQueryPerformanceFrequency( LONGLONG * );
+ENGAPI BOOL APIENTRY            EngQuerySystemAttribute( ENG_SYSTEM_ATTRIBUTE, PDWORD );
+ENGAPI VOID APIENTRY            EngReleaseSemaphore( HSEMAPHORE );
+ENGAPI BOOL APIENTRY            EngRestoreFloatingPointState( VOID * );
+ENGAPI ULONG APIENTRY           EngSaveFloatingPointState( VOID *, ULONG );
+ENGAPI HANDLE APIENTRY          EngSecureMem( PVOID, ULONG );
+ENGAPI LONG APIENTRY            EngSetEvent( PEVENT );
+ENGAPI ULONG APIENTRY           EngSetPointerShape( SURFOBJ *, SURFOBJ *, SURFOBJ *, XLATEOBJ *, LONG, LONG, LONG, LONG, RECTL *, FLONG );
+ENGAPI BOOL APIENTRY            EngSetPointerTag( HDEV, SURFOBJ *, SURFOBJ *, XLATEOBJ *, FLONG );
+ENGAPI VOID APIENTRY            EngSort( PBYTE, ULONG, ULONG, SORTCOMP );
+ENGAPI BOOL APIENTRY            EngStretchBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, RECTL *, RECTL *, POINTL *, ULONG );
+ENGAPI BOOL APIENTRY            EngStretchBltROP( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, RECTL *, RECTL *, POINTL *, ULONG, BRUSHOBJ *, DWORD );
+ENGAPI BOOL APIENTRY            EngStrokeAndFillPath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, XFORMOBJ *, BRUSHOBJ *, LINEATTRS *, BRUSHOBJ *, POINTL *, MIX, FLONG );
+ENGAPI BOOL APIENTRY            EngStrokePath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, XFORMOBJ *, BRUSHOBJ *, POINTL *, LINEATTRS *, MIX );
+ENGAPI BOOL APIENTRY            EngTextOut( SURFOBJ *, STROBJ *, FONTOBJ *, CLIPOBJ *, RECTL *, RECTL *, BRUSHOBJ *, BRUSHOBJ *, POINTL *, MIX );
+ENGAPI BOOL APIENTRY            EngTransparentBlt( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, RECTL *, ULONG, ULONG );
+ENGAPI VOID APIENTRY            EngUnicodeToMultiByteN( PCHAR, ULONG, PULONG, PWSTR, ULONG );
+ENGAPI BOOL APIENTRY            EngUnlockDirectDrawSurface( PDD_SURFACE_LOCAL );
+ENGAPI BOOL APIENTRY            EngUnlockDriverObj( HDRVOBJ );
+ENGAPI VOID APIENTRY            EngUnlockSurface( SURFOBJ * );
+ENGAPI BOOL APIENTRY            EngUnmapEvent( PEVENT );
+ENGAPI BOOL APIENTRY            EngUnmapFile( ULONG_PTR );
+ENGAPI VOID APIENTRY            EngUnmapFontFile( ULONG_PTR );
+ENGAPI VOID APIENTRY            EngUnmapFontFileFD( ULONG_PTR );
+ENGAPI VOID APIENTRY            EngUnsecureMem( HANDLE );
+ENGAPI BOOL APIENTRY            EngWaitForSingleObject( PEVENT, PLARGE_INTEGER );
+ENGAPI INT APIENTRY             EngWideCharToMultiByte( UINT, LPWSTR, INT, LPSTR, INT );
+ENGAPI ULONG APIENTRY           FONTOBJ_cGetAllGlyphHandles( FONTOBJ *, HGLYPH * );
+ENGAPI ULONG APIENTRY           FONTOBJ_cGetGlyphs( FONTOBJ *, ULONG, ULONG, HGLYPH *, PVOID * );
+ENGAPI PFD_GLYPHATTR APIENTRY   FONTOBJ_pQueryGlyphAttrs( FONTOBJ *, ULONG );
+ENGAPI FD_GLYPHSET * APIENTRY   FONTOBJ_pfdg( FONTOBJ * );
+ENGAPI IFIMETRICS * APIENTRY    FONTOBJ_pifi( FONTOBJ * );
+ENGAPI PBYTE APIENTRY           FONTOBJ_pjOpenTypeTablePointer( FONTOBJ *, ULONG, ULONG * );
+ENGAPI PVOID APIENTRY           FONTOBJ_pvTrueTypeFontFile( FONTOBJ *, ULONG * );
+ENGAPI LPWSTR APIENTRY          FONTOBJ_pwszFontFilePaths( FONTOBJ *, ULONG * );
+ENGAPI XFORMOBJ * APIENTRY      FONTOBJ_pxoGetXform( FONTOBJ * );
+ENGAPI VOID APIENTRY            FONTOBJ_vGetInfo( FONTOBJ *, ULONG, FONTINFO * );
+ENGAPI LONG APIENTRY            HT_ComputeRGBGammaTable( USHORT, USHORT, USHORT, USHORT, USHORT, LPBYTE );
+ENGAPI LONG APIENTRY            HT_Get8BPPFormatPalette( LPPALETTEENTRY, USHORT, USHORT, USHORT );
+ENGAPI LONG APIENTRY            HT_Get8BPPMaskPalette( LPPALETTEENTRY, BOOL, BYTE, USHORT, USHORT, USHORT );
+ENGAPI ULONG APIENTRY           PALOBJ_cGetColors( PALOBJ *, ULONG, ULONG, ULONG * );
+ENGAPI BOOL APIENTRY            PATHOBJ_bCloseFigure( PATHOBJ * );
+ENGAPI BOOL APIENTRY            PATHOBJ_bEnum( PATHOBJ *, PATHDATA * );
+ENGAPI BOOL APIENTRY            PATHOBJ_bEnumClipLines( PATHOBJ *, ULONG, CLIPLINE * );
+ENGAPI BOOL APIENTRY            PATHOBJ_bMoveTo( PATHOBJ *, POINTFIX );
+ENGAPI BOOL APIENTRY            PATHOBJ_bPolyBezierTo( PATHOBJ *, POINTFIX *, ULONG );
+ENGAPI BOOL APIENTRY            PATHOBJ_bPolyLineTo( PATHOBJ *, POINTFIX *, ULONG );
+ENGAPI VOID APIENTRY            PATHOBJ_vEnumStart( PATHOBJ * );
+ENGAPI VOID APIENTRY            PATHOBJ_vEnumStartClipLines( PATHOBJ *, CLIPOBJ *, SURFOBJ *, LINEATTRS * );
+ENGAPI VOID APIENTRY            PATHOBJ_vGetBounds( PATHOBJ *, PRECTFX );
+ENGAPI BOOL APIENTRY            STROBJ_bEnum( STROBJ *, ULONG *, PGLYPHPOS * );
+ENGAPI BOOL APIENTRY            STROBJ_bEnumPositionsOnly( STROBJ *, ULONG *, PGLYPHPOS * );
+ENGAPI BOOL APIENTRY            STROBJ_bGetAdvanceWidths( STROBJ *, ULONG, ULONG, POINTQF * );
+ENGAPI DWORD APIENTRY           STROBJ_dwGetCodePage( STROBJ * );
+ENGAPI FIX APIENTRY             STROBJ_fxBreakExtra( STROBJ * );
+ENGAPI FIX APIENTRY             STROBJ_fxCharacterExtra( STROBJ * );
+ENGAPI VOID APIENTRY            STROBJ_vEnumStart( STROBJ * );
+ENGAPI BOOL APIENTRY            WNDOBJ_bEnum( WNDOBJ *, ULONG, ULONG * );
+ENGAPI ULONG APIENTRY           WNDOBJ_cEnumStart( WNDOBJ *, ULONG, ULONG, ULONG );
+ENGAPI VOID APIENTRY            WNDOBJ_vSetConsumer( WNDOBJ *, PVOID );
+ENGAPI BOOL APIENTRY            XFORMOBJ_bApplyXform( XFORMOBJ *, ULONG, ULONG, PVOID, PVOID );
+ENGAPI ULONG APIENTRY           XFORMOBJ_iGetXform( XFORMOBJ *, XFORML * );
+ENGAPI ULONG APIENTRY           XLATEOBJ_cGetPalette( XLATEOBJ *, ULONG, ULONG, ULONG * );
+ENGAPI HANDLE APIENTRY          XLATEOBJ_hGetColorTransform( XLATEOBJ * );
+ENGAPI ULONG APIENTRY           XLATEOBJ_iXlate( XLATEOBJ *, ULONG );
+ENGAPI ULONG * APIENTRY         XLATEOBJ_piVector( XLATEOBJ * );
+#ifndef USERMODE_DRIVER
+ENGAPI PVOID APIENTRY           EngAllocMem( ULONG, ULONG, ULONG );
+ENGAPI PVOID APIENTRY           EngAllocPrivateUserMem( PDD_SURFACE_LOCAL, SIZE_T, ULONG );
+ENGAPI PVOID APIENTRY           EngAllocUserMem( SIZE_T, ULONG );
+ENGAPI BOOL APIENTRY            EngEnumForms( HANDLE, DWORD, LPBYTE, DWORD, LPDWORD, LPDWORD );
+ENGAPI PVOID APIENTRY           EngFindImageProcAddress( HANDLE, LPSTR );
+ENGAPI VOID APIENTRY            EngFreeMem( PVOID );
+ENGAPI VOID APIENTRY            EngFreePrivateUserMem( PDD_SURFACE_LOCAL, PVOID );
+ENGAPI VOID APIENTRY            EngFreeUserMem( PVOID );
+ENGAPI BOOL APIENTRY            EngGetForm( HANDLE, LPWSTR, DWORD, LPBYTE, DWORD, LPDWORD );
+ENGAPI ULONG APIENTRY           EngGetLastError();
+ENGAPI BOOL APIENTRY            EngGetPrinter( HANDLE, DWORD, LPBYTE, DWORD, LPDWORD );
+ENGAPI DWORD APIENTRY           EngGetPrinterData( HANDLE, LPWSTR, LPDWORD, LPBYTE, DWORD, LPDWORD );
+ENGAPI BOOL APIENTRY            EngGetPrinterDriver( HANDLE, LPWSTR, DWORD, BYTE *, DWORD, DWORD * );
+ENGAPI HANDLE APIENTRY          EngLoadImage( LPWSTR );
+ENGAPI PVOID APIENTRY           EngMapModule( HANDLE, PULONG );
+ENGAPI int APIENTRY             EngMulDiv( int, int, int );
+ENGAPI VOID APIENTRY            EngSetLastError( ULONG );
+ENGAPI DWORD APIENTRY           EngSetPrinterData( HANDLE, LPWSTR, DWORD, LPBYTE, DWORD );
+ENGAPI VOID APIENTRY            EngUnloadImage( HANDLE );
+ENGAPI BOOL APIENTRY            EngWritePrinter( HANDLE, LPVOID, DWORD, LPDWORD );
+ENGAPI ULONG APIENTRY           XFORMOBJ_iGetFloatObjXform( XFORMOBJ *, FLOATOBJ_XFORM * );
+#ifdef _X86_
+ENGAPI VOID APIENTRY            FLOATOBJ_Add( PFLOATOBJ, PFLOATOBJ );
+ENGAPI VOID APIENTRY            FLOATOBJ_AddFloat( PFLOATOBJ, FLOATL );
+ENGAPI VOID APIENTRY            FLOATOBJ_AddLong( PFLOATOBJ, LONG );
+ENGAPI VOID APIENTRY            FLOATOBJ_Div( PFLOATOBJ, PFLOATOBJ );
+ENGAPI VOID APIENTRY            FLOATOBJ_DivFloat( PFLOATOBJ, FLOATL );
+ENGAPI VOID APIENTRY            FLOATOBJ_DivLong( PFLOATOBJ, LONG );
+ENGAPI BOOL APIENTRY            FLOATOBJ_Equal( PFLOATOBJ, PFLOATOBJ );
+ENGAPI BOOL APIENTRY            FLOATOBJ_EqualLong( PFLOATOBJ, LONG );
+ENGAPI LONG APIENTRY            FLOATOBJ_GetFloat( PFLOATOBJ );
+ENGAPI LONG APIENTRY            FLOATOBJ_GetLong( PFLOATOBJ );
+ENGAPI BOOL APIENTRY            FLOATOBJ_GreaterThan( PFLOATOBJ, PFLOATOBJ );
+ENGAPI BOOL APIENTRY            FLOATOBJ_GreaterThanLong( PFLOATOBJ, LONG );
+ENGAPI BOOL APIENTRY            FLOATOBJ_LessThan( PFLOATOBJ, PFLOATOBJ );
+ENGAPI BOOL APIENTRY            FLOATOBJ_LessThanLong( PFLOATOBJ, LONG );
+ENGAPI VOID APIENTRY            FLOATOBJ_Mul( PFLOATOBJ, PFLOATOBJ );
+ENGAPI VOID APIENTRY            FLOATOBJ_MulFloat( PFLOATOBJ, FLOATL );
+ENGAPI VOID APIENTRY            FLOATOBJ_MulLong( PFLOATOBJ, LONG );
+ENGAPI VOID APIENTRY            FLOATOBJ_Neg( PFLOATOBJ );
+ENGAPI VOID APIENTRY            FLOATOBJ_SetFloat( PFLOATOBJ, FLOATL );
+ENGAPI VOID APIENTRY            FLOATOBJ_SetLong( PFLOATOBJ, LONG );
+ENGAPI VOID APIENTRY            FLOATOBJ_Sub( PFLOATOBJ, PFLOATOBJ );
+ENGAPI VOID APIENTRY            FLOATOBJ_SubFloat( PFLOATOBJ, FLOATL );
+ENGAPI VOID APIENTRY            FLOATOBJ_SubLong( PFLOATOBJ, LONG );
+#endif
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+ENGAPI VOID APIENTRY            EngClearEvent( PEVENT );
+ENGAPI ULONG APIENTRY           EngHangNotification( HDEV, PVOID );
+ENGAPI BOOL APIENTRY            EngIsSemaphoreOwned( HSEMAPHORE );
+ENGAPI BOOL APIENTRY            EngIsSemaphoreOwnedByCurrentThread( HSEMAPHORE );
+ENGAPI LONG APIENTRY            EngReadStateEvent( PEVENT );
+#ifndef USERMODE_DRIVER
+ENGAPI HRESULT APIENTRY         EngDxIoctl( ULONG, PVOID, ULONG );
+#endif
+#endif
+#if (NTDDI_VERSION >= 0x05010200)
+ENGAPI VOID APIENTRY            EngBugCheckEx( ULONG, ULONG_PTR, ULONG_PTR, ULONG_PTR, ULONG_PTR );
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+ENGAPI HANDLE APIENTRY          CLIPOBJ_GetRgn( CLIPOBJ * );
+ENGAPI VOID APIENTRY            EngAcquireFastMutex( HFASTMUTEX );
+ENGAPI BOOL APIENTRY            EngAcquireSemaphoreNoWait( HSEMAPHORE );
+ENGAPI VOID APIENTRY            EngAcquireSemaphoreShared( HSEMAPHORE );
+ENGAPI BOOL APIENTRY            EngAcquireSemaphoreSharedNoWait( HSEMAPHORE );
+ENGAPI INT APIENTRY             EngCombineRgn( HANDLE, HANDLE, HANDLE, int );
+ENGAPI INT APIENTRY             EngCopyRgn( HANDLE, HANDLE );
+ENGAPI HFASTMUTEX APIENTRY      EngCreateFastMutex();
+ENGAPI HANDLE APIENTRY          EngCreateRectRgn( INT, INT, INT, INT );
+ENGAPI VOID APIENTRY            EngDeleteFastMutex( HFASTMUTEX );
+ENGAPI VOID APIENTRY            EngDeleteRgn( HANDLE );
+ENGAPI BOOL APIENTRY            EngEqualRgn( HANDLE, HANDLE );
+ENGAPI INT APIENTRY             EngGetRgnBox( HANDLE, LPRECT );
+ENGAPI DWORD APIENTRY           EngGetRgnData( HANDLE, DWORD, LPRGNDATA );
+ENGAPI INT APIENTRY             EngIntersectRgn( HANDLE, HANDLE, HANDLE );
+ENGAPI BOOL APIENTRY            EngIsSemaphoreSharedByCurrentThread( HSEMAPHORE );
+ENGAPI INT APIENTRY             EngOffsetRgn( HANDLE, INT, INT );
+ENGAPI BOOL APIENTRY            EngRectInRgn( HANDLE, LPRECT );
+ENGAPI VOID APIENTRY            EngReleaseFastMutex( HFASTMUTEX );
+ENGAPI BOOL APIENTRY            EngSetRectRgn( HANDLE, INT, INT, INT, INT );
+ENGAPI INT APIENTRY             EngSubtractRgn( HANDLE, HANDLE, HANDLE );
+ENGAPI INT APIENTRY             EngUnionRgn( HANDLE, HANDLE, HANDLE );
+ENGAPI BOOL APIENTRY            EngUpdateDeviceSurface( SURFOBJ *, CLIPOBJ ** );
+ENGAPI INT APIENTRY             EngXorRgn( HANDLE, HANDLE, HANDLE );
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+ENGAPI ULONG APIENTRY           EngCTGetCurrentGamma( HDEV );
+ENGAPI VOID APIENTRY            EngCTGetGammaTable( ULONG, CONST BYTE **, CONST BYTE ** );
+ENGAPI HBITMAP APIENTRY         EngCreateRedirectionDeviceBitmap( DHSURF, SIZEL, ULONG );
+#endif
+
+/* Functions in WIN32K.SYS and GDI32.DLL with different signatures on different versions */
+#if (NTDDI_VERSION >= 0x05010000)
+ENGAPI VOID APIENTRY    EngProbeForRead( PVOID, SIZE_T, ULONG );
+ENGAPI VOID APIENTRY    EngProbeForReadAndWrite( PVOID, SIZE_T, ULONG );
+#else
+ENGAPI VOID APIENTRY    EngProbeForRead( PVOID, ULONG, ULONG );
+ENGAPI VOID APIENTRY    EngProbeForReadAndWrite( PVOID, ULONG, ULONG );
+#endif
+
+/* Functions exported by drivers */
+BOOL APIENTRY       DrvAlphaBlend( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, RECTL *, BLENDOBJ * );
+BOOL APIENTRY       DrvAssertMode( DHPDEV, BOOL );
+BOOL APIENTRY       DrvBitBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, POINTL *, POINTL *, BRUSHOBJ *, POINTL *, ROP4 );
+VOID APIENTRY       DrvCompletePDEV( DHPDEV, HDEV );
+BOOL APIENTRY       DrvCopyBits( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, POINTL * );
+HBITMAP APIENTRY    DrvCreateDeviceBitmap( DHPDEV, SIZEL, ULONG );
+VOID APIENTRY       DrvDeleteDeviceBitmap( DHSURF );
+HBITMAP APIENTRY    DrvDeriveSurface( DD_DIRECTDRAW_GLOBAL *, DD_SURFACE_LOCAL * );
+LONG APIENTRY       DrvDescribePixelFormat( DHPDEV, LONG, ULONG, PIXELFORMATDESCRIPTOR * );
+VOID APIENTRY       DrvDestroyFont( FONTOBJ * );
+VOID APIENTRY       DrvDisableDriver();
+VOID APIENTRY       DrvDisablePDEV( DHPDEV );
+VOID APIENTRY       DrvDisableSurface( DHPDEV );
+ULONG APIENTRY      DrvDitherColor( DHPDEV, ULONG, ULONG, ULONG * );
+VOID APIENTRY       DrvDisableDirectDraw( DHPDEV );
+ULONG APIENTRY      DrvDrawEscape( SURFOBJ *, ULONG, CLIPOBJ *, RECTL *, ULONG, PVOID );
+BOOL APIENTRY       DrvEnableDirectDraw( DHPDEV, DD_CALLBACKS *, DD_SURFACECALLBACKS *, DD_PALETTECALLBACKS * );
+BOOL APIENTRY       DrvEnableDriver( ULONG, ULONG, DRVENABLEDATA * );
+DHPDEV APIENTRY     DrvEnablePDEV( DEVMODEW *, LPWSTR, ULONG, HSURF *, ULONG, ULONG *, ULONG, DEVINFO *, HDEV, LPWSTR, HANDLE );
+HSURF APIENTRY      DrvEnableSurface( DHPDEV );
+BOOL APIENTRY       DrvEndDoc( SURFOBJ *, FLONG );
+ULONG APIENTRY      DrvEscape( SURFOBJ *, ULONG, ULONG, PVOID, ULONG, PVOID );
+BOOL APIENTRY       DrvFillPath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, BRUSHOBJ *, POINTL *, MIX, FLONG );
+ULONG APIENTRY      DrvFontManagement( SURFOBJ *, FONTOBJ *, ULONG, ULONG, PVOID, ULONG, PVOID );
+BOOL APIENTRY       DrvGetDirectDrawInfo( DHPDEV, DD_HALINFO *, DWORD *, VIDEOMEMORY *, DWORD *, DWORD * );
+ULONG APIENTRY      DrvGetGlyphMode( DHPDEV, FONTOBJ * );
+ULONG APIENTRY      DrvGetModes( HANDLE, ULONG, DEVMODEW * );
+PVOID APIENTRY      DrvGetTrueTypeFile( ULONG_PTR, ULONG * );
+BOOL APIENTRY       DrvGradientFill( SURFOBJ *, CLIPOBJ *, XLATEOBJ *, TRIVERTEX *, ULONG, PVOID, ULONG, RECTL *, POINTL *, ULONG );
+BOOL APIENTRY       DrvIcmCheckBitmapBits( DHPDEV, HANDLE, SURFOBJ *, PBYTE );
+HANDLE APIENTRY     DrvIcmCreateColorTransform( DHPDEV, LPLOGCOLORSPACEW, PVOID, ULONG, PVOID, ULONG, PVOID, ULONG, DWORD );
+BOOL APIENTRY       DrvIcmDeleteColorTransform( DHPDEV, HANDLE );
+BOOL APIENTRY       DrvIcmSetDeviceGammaRamp( DHPDEV, ULONG, LPVOID );
+BOOL APIENTRY       DrvLineTo( SURFOBJ *, CLIPOBJ *, BRUSHOBJ *, LONG, LONG, LONG, LONG, RECTL *, MIX );
+VOID APIENTRY       DrvMovePanning( LONG, LONG, FLONG );
+VOID APIENTRY       DrvMovePointer( SURFOBJ *, LONG, LONG, RECTL * );
+BOOL APIENTRY       DrvNextBand( SURFOBJ *, POINTL * );
+VOID APIENTRY       DrvNotify( SURFOBJ *, ULONG, PVOID );
+BOOL APIENTRY       DrvOffset( SURFOBJ *, LONG, LONG, FLONG );
+BOOL APIENTRY       DrvPaint( SURFOBJ *, CLIPOBJ *, BRUSHOBJ *, POINTL *, MIX );
+BOOL APIENTRY       DrvPlgBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, POINTFIX *, RECTL *, POINTL *, ULONG );
+BOOL APIENTRY       DrvQueryAdvanceWidths( DHPDEV, FONTOBJ *, ULONG, HGLYPH *, PVOID, ULONG );
+BOOL APIENTRY       DrvQueryDeviceSupport( SURFOBJ *, XLATEOBJ *, XFORMOBJ *, ULONG, ULONG, PVOID, ULONG, PVOID );
+BOOL APIENTRY       DrvQueryDriverInfo( DWORD, PVOID, DWORD, PDWORD );
+LONG APIENTRY       DrvQueryFontCaps( ULONG, ULONG * );
+LONG APIENTRY       DrvQueryFontData( DHPDEV, FONTOBJ *, ULONG, HGLYPH, GLYPHDATA *, PVOID, ULONG );
+LONG APIENTRY       DrvQueryFontFile( ULONG_PTR, ULONG, ULONG, ULONG * );
+ULONG APIENTRY      DrvQueryPerBandInfo( SURFOBJ *, PERBANDINFO * );
+BOOL APIENTRY       DrvQuerySpoolType( DHPDEV, LPWSTR );
+LONG APIENTRY       DrvQueryTrueTypeOutline( DHPDEV, FONTOBJ *, HGLYPH, BOOL, GLYPHDATA *, ULONG, TTPOLYGONHEADER * );
+LONG APIENTRY       DrvQueryTrueTypeTable( ULONG_PTR, ULONG, ULONG, PTRDIFF, ULONG, BYTE *, PBYTE *, ULONG * );
+BOOL APIENTRY       DrvRealizeBrush( BRUSHOBJ *, SURFOBJ *, SURFOBJ *, SURFOBJ *, XLATEOBJ *, ULONG );
+BOOL APIENTRY       DrvResetPDEV( DHPDEV, DHPDEV );
+ULONG_PTR APIENTRY  DrvSaveScreenBits( SURFOBJ *, ULONG, ULONG_PTR, RECTL * );
+BOOL APIENTRY       DrvSendPage( SURFOBJ * );
+BOOL APIENTRY       DrvSetPalette( DHPDEV, PALOBJ *, FLONG, ULONG, ULONG );
+BOOL APIENTRY       DrvSetPixelFormat( SURFOBJ *, LONG, HWND );
+ULONG APIENTRY      DrvSetPointerShape( SURFOBJ *, SURFOBJ *, SURFOBJ *, XLATEOBJ *, LONG, LONG, LONG, LONG, RECTL *, FLONG );
+BOOL APIENTRY       DrvStartBanding( SURFOBJ *, POINTL * );
+BOOL APIENTRY       DrvStartDoc( SURFOBJ *, LPWSTR, DWORD );
+BOOL APIENTRY       DrvStartPage( SURFOBJ * );
+BOOL APIENTRY       DrvStretchBlt( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, RECTL *, RECTL *, POINTL *, ULONG );
+BOOL APIENTRY       DrvStretchBltROP( SURFOBJ *, SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, COLORADJUSTMENT *, POINTL *, RECTL *, RECTL *, POINTL *, ULONG, BRUSHOBJ *, DWORD );
+BOOL APIENTRY       DrvStrokePath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, XFORMOBJ *, BRUSHOBJ *, POINTL *, LINEATTRS *, MIX );
+BOOL APIENTRY       DrvStrokeAndFillPath( SURFOBJ *, PATHOBJ *, CLIPOBJ *, XFORMOBJ *, BRUSHOBJ *, LINEATTRS *, BRUSHOBJ *, POINTL *, MIX, FLONG );
+BOOL APIENTRY       DrvSwapBuffers( SURFOBJ *, WNDOBJ * );
+VOID APIENTRY       DrvSynchronize( DHPDEV, RECTL * );
+VOID APIENTRY       DrvSynchronizeSurface( SURFOBJ *, RECTL *, FLONG );
+BOOL APIENTRY       DrvTextOut( SURFOBJ *, STROBJ *, FONTOBJ *, CLIPOBJ *, RECTL *, RECTL *, BRUSHOBJ *, BRUSHOBJ *, POINTL *, MIX );
+BOOL APIENTRY       DrvTransparentBlt( SURFOBJ *, SURFOBJ *, CLIPOBJ *, XLATEOBJ *, RECTL *, RECTL *, ULONG, ULONG );
+BOOL APIENTRY       DrvUnloadFontFile( ULONG_PTR );
+#if (NTDDI_VERSION >= 0x05010000)
+ULONG APIENTRY      DrvResetDevice( DHPDEV, PVOID );
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+LONG APIENTRY       DrvRenderHint( DHPDEV, ULONG, SIZE_T, PVOID );
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+BOOL APIENTRY       DrvAccumulateD3DDirtyRect( SURFOBJ *, RECTL * );
+BOOL APIENTRY       DrvAssociateSharedSurface( SURFOBJ *, HANDLE, HANDLE, SIZEL );
+HBITMAP APIENTRY    DrvCreateDeviceBitmapEx( DHPDEV, SIZEL, ULONG, DWORD, DHSURF, DWORD, HANDLE * );
+VOID APIENTRY       DrvDeleteDeviceBitmapEx( DHSURF );
+BOOL APIENTRY       DrvEndDxInterop( SURFOBJ *, BOOL, BOOL * );
+VOID APIENTRY       DrvLockDisplayArea( DHPDEV, RECTL * );
+BOOL APIENTRY       DrvStartDxInterop( SURFOBJ *, BOOL );
+LONG APIENTRY       DrvSynchronizeRedirectionBitmaps( DHPDEV, UINT64 * );
+VOID APIENTRY       DrvUnlockDisplayArea( DHPDEV, RECTL * );
+#endif
+
+/* Functions exported by drivers with different signatures on different versions */
+#if (NTDDI_VERSION >= 0x05010000)
+VOID APIENTRY           DrvFree( PVOID, ULONG_PTR );
+PIFIMETRICS APIENTRY    DrvQueryFont( DHPDEV, ULONG_PTR, ULONG, ULONG_PTR * );
+PVOID APIENTRY          DrvQueryFontTree( DHPDEV, ULONG_PTR, ULONG, ULONG, ULONG_PTR * );
+#else
+VOID APIENTRY           DrvFree( PVOID, ULONG );
+PIFIMETRICS APIENTRY    DrvQueryFont( DHPDEV, ULONG_PTR, ULONG, ULONG * );
+PVOID APIENTRY          DrvQueryFontTree( DHPDEV, ULONG_PTR, ULONG, ULONG, ULONG * );
+#endif
+#if (_WIN32_WINNT >= 0x0500)
+ULONG_PTR APIENTRY      DrvLoadFontFile( ULONG, ULONG_PTR *, PVOID *, ULONG *, DESIGNVECTOR *, ULONG, ULONG );
+#else
+ULONG APIENTRY          DrvLoadFontFile( ULONG, ULONG_PTR *, PVOID *, ULONG *, ULONG );
+#endif
+
+/* Functions implemented as macros */
+#ifdef USERMODE_DRIVER
+    #define EngAllocMem( p1, p2, p3 ) \
+        ((PVOID)GlobalAlloc( ((p1) & FL_ZERO_MEMORY) ? GPTR : GMEM_FIXED, p2 ))
+    #define EngFreeMem( x )                 GlobalFree( (HGLOBAL)(x) )
+    #define EngAllocUserMem( p1, p2 )       ((PVOID)GlobalAlloc( GMEM_FIXED, p1 ))
+    #define EngFreeUserMem( x )             GlobalFree( (HGLOBAL)(x) )
+    #define EngAllocPrivateUserMem( p1, p2, p3 ) \
+        ((PVOID)GlobalAlloc( GMEM_FIXED, p2 ))
+    #define EngFreePrivateUserMem( p1, p2 ) GlobalFree( (HGLOBAL)(x) )
+    #define EngLoadImage( x )               ((HANDLE)LoadLibraryW( x ))
+    #define EngFindImageProcAddress( x, p ) ((PVOID)GetProcAddress( x, p ))
+    #define EngUnloadImage( x )             FreeLibrary( (HMODULE)(x) )
+#endif
+#if !defined( _X86_ ) || defined( USERMODE_DRIVER )
+    #define FLOATOBJ_SetFloat( x, p )       { *(x) = (p); }
+    #define FLOATOBJ_SetLong( x, p )        { *(x) = (FLOAT)(p); }
+    #define FLOATOBJ_GetFloat( x )          *((PULONG)(x))
+    #define FLOATOBJ_GetLong( x )           (LONG)*(x)
+    #define FLOATOBJ_AddFloat( x, p )       { *(x) += (p); }
+    #define FLOATOBJ_AddLong( x, p )        { *(x) += (LONG)(p); }
+    #define FLOATOBJ_Add( x, p )            { *(x) += *(p); }
+    #define FLOATOBJ_SubFloat( x, p )       { *(x) -= (p); }
+    #define FLOATOBJ_SubLong( x, p )        { *(x) -= (LONG)(p); }
+    #define FLOATOBJ_Sub( x, p )            { *(x) -= *(p); }
+    #define FLOATOBJ_MulFloat( x, p )       { *(x) *= (p); }
+    #define FLOATOBJ_MulLong( x, p )        { *(x) *= (LONG)(p); }
+    #define FLOATOBJ_Mul( x, p )            { *(x) *= *(p); }
+    #define FLOATOBJ_DivFloat( x, p )       { *(x) /= (p); }
+    #define FLOATOBJ_DivLong( x, p )        { *(x) /= (LONG)(p); }
+    #define FLOATOBJ_Div( x, p )            { *(x) /= *(p); }
+    #define FLOATOBJ_Neg( x )               { *(x) = -*(x); }
+    #define FLOATOBJ_EqualLong( x, p )      (*(x) == (FLOAT)(p))
+    #define FLOATOBJ_GreaterThanLong( x, p )    (*(x) > (FLOAT)(p))
+    #define FLOATOBJ_LessThanLong( x, p )   (*(x) < (FLOAT)(p))
+    #define FLOATOBJ_Equal( x, p )          (*(x) == *(p))
+    #define FLOATOBJ_GreaterThan( x, p )    (*(x) > *(p))
+    #define FLOATOBJ_LessThan( x, p )       (*(x) < *(p))
+#endif
+
+/* Aliases */
+#ifdef USERMODE_DRIVER
+    #define EngEnumForms                EnumForms
+    #define EngGetForm                  GetForm
+    #define EngGetLastError             GetLastError
+    #define EngGetPrinter               GetPrinter
+    #define EngGetPrinterData           GetPrinterData
+    #define EngGetPrinterDriver         GetPrinterDriver
+    #define EngMulDiv                   MulDiv
+    #define EngSetLastError             SetLastError
+    #define EngSetPrinterData           SetPrinterData
+    #define EngWritePrinter             WritePrinter
+    #define XFORMOBJ_iGetFloatObjXform  XFORMOBJ_iGetXform
+#endif
+
+:include cplusepi.sp
+
+#endif /* _WINDDI_ */

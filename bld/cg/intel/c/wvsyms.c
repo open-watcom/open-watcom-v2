@@ -36,7 +36,7 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -44,13 +44,12 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include "wvdbg.h"
-#define BY_CG
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  type_def        *TypeAddress(cg_type);
 extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
@@ -58,9 +57,9 @@ extern  void            OutLabel(label_handle);
 extern  void            SetUpObj(bool);
 extern  seg_id          SetOP(seg_id);
 extern  sym_handle      AskForLblSym(label_handle);
-extern  offset          AskLocation();
+extern  offset          AskLocation(void);
 extern  offset          AskAddress(label_handle);
-extern  bool            NeedBaseSet();
+extern  bool            NeedBaseSet( void );
 extern  void            SetLocation(offset);
 extern  void            DataInt(short_offset);
 extern  void            BuffIndex(uint);
@@ -79,13 +78,18 @@ extern  sym_handle      LocSimpStatic(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
 extern  void            WVSrcCueLoc( void  );
 
+/* forward declarations */
+static  void            DumpDbgBlkStart( dbg_block *blk, offset lc );
+static  void            DumpParentPtr( dbg_block *blk );
+static  void            DumpLocals( dbg_local *local );
+static  void            DumpDbgBlk( dbg_block *blk, offset lc );
+
 extern    seg_id                DbgLocals;
 extern    seg_id                DbgTypes;
 extern    proc_def              *CurrProc;
 extern    unsigned_16           TypeIdx;
 
 static    offset        CodeOffset;
-
 
 typedef struct block_patch {
     struct block_patch  *link;
@@ -94,7 +98,7 @@ typedef struct block_patch {
 
 #define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
 
-extern  void    WVInitDbgInfo() {
+extern  void    WVInitDbgInfo( void ) {
 /******************************/
 
     TypeIdx   = 0;
@@ -103,13 +107,13 @@ extern  void    WVInitDbgInfo() {
 }
 
 
-extern  void    WVObjInitInfo() {
+extern  void    WVObjInitInfo( void ) {
 /******************************/
 // Called right after define seg's in Obj
     WVSrcCueLoc();
 }
 
-extern  void    WVFiniDbgInfo() {
+extern  void    WVFiniDbgInfo( void ) {
 /******************************/
 
 }
@@ -134,7 +138,7 @@ extern  void    WVGenStatic( sym_handle sym, dbg_loc loc ) {
     BuffEnd( DbgLocals );
 }
 
-extern  void    WVSetBase() {
+extern  void    WVSetBase( void ) {
 /****************************/
 
 
@@ -157,8 +161,8 @@ extern  void    WVSetBase() {
 extern  void    WVObjectPtr(  cg_type ptr_type ) {
 /**********************************************/
     switch( TypeAddress( ptr_type )->refno ) {
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
         CurrProc_debug->obj_ptr_type = POINTER_NEAR;
         break;
     default:
@@ -256,7 +260,7 @@ extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) {
         LocDump( parm->loc );
         junk = parm;
         parm = parm->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
     BuffWSLString( FEName( AskForLblSym( CurrProc->label ) ) );
     BuffEnd( DbgLocals );
@@ -280,7 +284,7 @@ static  void    DumpDbgBlkStart( dbg_block *blk, offset lc ) {
         SetLocation( patch->handle.offset );
         DataInt( off );
         SetLocation( off );
-        _Free( patch, sizeof( block_patch ) );
+        CGFree( patch );
     }
     SetOP( old );
     BuffOffset( blk->start - CodeOffset );
@@ -297,7 +301,7 @@ static  void    DumpParentPtr( dbg_block *blk ) {
     if( blk == NULL ) {
         BuffWord( 0 );
    } else {
-        _Alloc( patch, sizeof( block_patch ) );
+        patch = CGAlloc( sizeof( block_patch ) );
         patch->link = blk->patches;
         blk->patches = patch;
         BuffForward( &patch->handle );
@@ -328,6 +332,6 @@ static  void    DumpLocals( dbg_local *local ) {
         BuffEnd( DbgLocals );
         junk = local;
         local = local->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
 }

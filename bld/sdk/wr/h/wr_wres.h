@@ -46,6 +46,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WResID           *WRCopyWResID            ( WResID * );
+extern WResID   *WRCopyWResID( WResID * );
 
 #endif

@@ -33,8 +33,8 @@
 extern void             FiniObj( void );
 extern void             InitObj( void );
 extern obj_file         *OpenObjFile( char *name );
-extern void             CloseObjFile( obj_file *file );
+extern void             CloseObjFile( obj_file *ofile );
 extern obj_file         *OpenLibFile( char *name, libfile io );
-extern void             CloseLibFile( obj_file *file );
+extern void             CloseLibFile( obj_file *ofile );
 
 #define VALID_ORL_FLAGS (ORL_FILE_FLAG_32BIT_MACHINE | ORL_FILE_FLAG_LITTLE_ENDIAN)

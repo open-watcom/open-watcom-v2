@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Text character output.
 *
 ****************************************************************************/
 
@@ -37,101 +36,9 @@
 #endif
 
 
-#if defined( _NEC_PC )
+#if defined( _DEFAULT_WINDOWS )
 
 void _PutChar( short row, short col, short ch )
-//=============================================
-
-// Display the given character on the screen. The point has already been
-// clipped.
-
-{
-    short               x, y;
-    short               i, i_max;
-    short               prev_colour;
-    short               colour;
-    short               font_height;
-    short               font_width;
-    short               exchange;
-    short               offset;
-    short far           *p;
-    short far           *a;
-    char                mask[ 130 ];
-    gr_device _FARD     *dev_ptr;
-    void FILL_FUNC      (near* fill)();
-
-    if( IsTextMode ) {
-        offset = 2 * ( row * _CurrState->vc.numtextcols + col ) + _CurrActivePage * 4096;
-        p = MK_FP( _TextSeg, _TextOff + offset );
-        a = MK_FP( _AttrSeg, _AttrOff + offset );
-        if( ch > 255 ) {
-            exchange = ( ch & 0x7FFF ) - 0x2000;
-            *p = ( exchange << 8 ) + ( exchange >> 8 );
-            ++p;
-            exchange = ( ch | 0x8000 ) - 0x2000;
-            *p = ( exchange << 8 ) + ( exchange >> 8 );
-            *a = _CharAttr;
-            ++a;
-            *a = _CharAttr;
-        } else {
-            *p = ch;
-            *a = _CharAttr;
-        }
-    } else {
-        if( _getkanji( ch, mask ) == 0 ) return;
-        font_width = _CurrState->vc.numxpixels / _CurrState->vc.numtextcols;
-        font_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
-        x = col * font_width;
-        y = row * font_height;
-        _GrClear( x, y, x + font_width - 1, y + font_height - 1 );
-        colour = _SwapBits( _CharAttr >> 5 );
-        prev_colour = _getcolor();  // save previous colour
-        _setcolor( colour );        // select colour as Curr colour
-        _StartDevice();             // graphics charger will set to Curr colour
-        _setcolor( prev_colour );   // can reset graphics colour now
-        dev_ptr = _CurrState->deviceptr;
-        fill = dev_ptr->fill;
-
-        i_max = ((mask[ 0 ] >> 3) * mask[ 1 ]) + 2;
-        if( _CharAttr & 0x04 ) {    // reverse bit is on
-            for( i = 2; i < i_max; ++i ) {
-                mask[ i ] = ~mask[ i ];     // reverse each bit of the mask
-            }
-        }
-
-        if( font_width == 14 ) {
-            for( i = 2; i < 26; i++ ) {
-                ( *dev_ptr->setup )( x, y, colour );
-                ( *fill )( _Screen.mem, colour, 0x0200 | mask[ i ], 6,
-                                                    _Screen.bit_pos << 8 );
-                ( *dev_ptr->setup )( x + 6, y, colour );
-                ( *fill )( _Screen.mem, colour, mask[ i + 24 ], 8,
-                                                    _Screen.bit_pos << 8 );
-                y++;
-            }
-
-        } else {
-            // Normal byte bounded characters
-            for( i = 2; i < i_max; i++ ) {
-                ( *dev_ptr->setup )( x, y, colour );
-                ( *fill )( _Screen.mem, colour, mask[ i ], 8, 0 );
-                ++y;
-                if( i == mask[ 1 ] + 1 ) {
-                    // go to next column
-                    x += 8;
-                    y = row * font_height;
-                }
-            }
-        }
-
-        _ResetDevice();
-    }
-}
-
-
-#elif defined( _DEFAULT_WINDOWS )
-
-void _PutChar( short row, short col, char ch )
 //=============================================
 
 // Display the given character on the screen. The point has already been
@@ -228,9 +135,9 @@ void _PutChar( short row, short col, short ch )
     short               prev_action;
     char far            *p;
     short far           *screen;
-    char _WCI86FAR           *mask;
+    char _WCI86FAR      *mask;
     gr_device _FARD     *dev_ptr;
-    void FILL_FUNC      (near* fill)();
+    fill_fn near        *fill;
 
     if( IsTextMode ) {
         if( _CurrState->vc.mode == _TEXTMONO ) {

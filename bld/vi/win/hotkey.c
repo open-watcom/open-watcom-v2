@@ -30,24 +30,23 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include "hotkey.h"
-#include "keys.h"
+#include "vi.h"
 #include "subclass.h"
+#include "hotkey.h"
 
 /*
  * HotkeyProc - pass hotkeys on to root for various modeless 'bars'
  */
 long WINEXP HotkeyProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    int         ch;
+    vi_key      key;
 
     switch( msg ) {
     case WM_KEYDOWN:
-        ch = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
-        if( ch == VI_KEY( F7 ) ||
-            ch == VI_KEY( F8 ) ||
-            ch == VI_KEY( F9 ) ) {
+        key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
+        if( key == VI_KEY( F7 ) ||
+            key == VI_KEY( F8 ) ||
+            key == VI_KEY( F9 ) ) {
             return( SendMessage( Root, msg, wparam, lparam ) );
         }
         break;

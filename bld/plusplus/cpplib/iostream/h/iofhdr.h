@@ -24,30 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point support declaration for iostreams
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  93/05/26    Greg Bentz      pull floating point out of istream/ostream
-//  93/10/08    Greg Bentz      make LDFloatToString set scale_factor to 1
-//                              for _Ftos when 'G' format
-//  93/10/25    Raymond Tang    Split into separate files.
-//  95/06/19    Greg Bentz      indirect calls to math library
-//  99/10/12    J.B.Schueler    moved definition of enums to IOFOUTFL.CPP
-//                              where only they are used
 
 #ifndef __IOFHDR_H_INCLUDED
 #define __IOFHDR_H_INCLUDED
@@ -56,23 +35,31 @@
 #include <float.h>
 #include "xfloat.h"
 
-extern ios::iostate __GetLDFloat( streambuf *, char *);
-extern void __LDFloatToString( char *, double const *, int, ios::fmtflags);
+extern std::ios::iostate __GetLDFloat( streambuf *, char *);
 
-typedef void  (*_type_EFG_cnvs2d)( char *, double * );
-typedef int   (*_type_EFG_cnvd2f)( double *, float * );
-typedef void  (*_type_EFG_LDcvt)( long_double *, CVT_INFO *, char * );
-typedef char *(*_type_EFG_fcvt)( double, int, int *, int * );
+_WPRTLINK typedef void  (*_type_EFG_cnvs2d)( char *, double * );
+_WPRTLINK typedef int   (*_type_EFG_cnvd2f)( double *, float * );
+_WPRTLINK typedef void  (*_type_EFG_LDcvt)( long_double *, CVT_INFO *, char * );
+_WPRTLINK typedef char  *(*_type_EFG_fcvt)( double, int, int *, int * );
+#ifdef _LONG_DOUBLE_
+_WPRTLINK typedef void  (*_type_EFG__FDLD)( double _WCNEAR *, long_double _WCNEAR * );
+#endif
 
 _WPRTLINK extern _type_EFG_cnvs2d __EFG_cnvs2d;
 _WPRTLINK extern _type_EFG_cnvd2f __EFG_cnvd2f;
 _WPRTLINK extern _type_EFG_LDcvt  __EFG_LDcvt;
 _WPRTLINK extern _type_EFG_fcvt   __EFG_fcvt;
+#ifdef _LONG_DOUBLE_
+_WPRTLINK extern _type_EFG__FDLD  __EFG__FDLD;
+#endif
 
 // from math library
 extern "C" {
 _WMRTLINK extern void  __cnvs2d( char *, double * );
 _WMRTLINK extern int   __cnvd2f( double *, float * );
+#ifdef _LONG_DOUBLE_
+_WMRTLINK extern void  __cnvd2ld( double _WCNEAR *, long_double _WCNEAR * );
+#endif
 };
 
 #endif

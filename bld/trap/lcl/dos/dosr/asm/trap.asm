@@ -31,6 +31,7 @@
 
 
 include struct.inc
+include traps.inc
 
         extrn       _DOS_major:byte
         extrn       _DOS_minor:byte
@@ -51,6 +52,9 @@ _TEXT           segment byte public 'CODE'
 
                 extrn   TraceRtn                :word
                 extrn   TrapType                :byte
+
+                extrn   "C", FPUExpand          :near
+                extrn   "C", FPUContract        :near
 
                 ; these macros assume ES is pointing at the interrupt vector
                 ; segment and that AX and BX are available for use
@@ -251,7 +255,7 @@ EnterDebugger:  cli                     ; interrupts off
                 pop     SI
                 pop     DS
                 pop     ES
-                mov     AL,-1
+                mov     AL,TRAP_SKIP
                 xchg    AL,CS:TrapType  ; get cause of termination
                 cbw
                 ret                     ; return to caller
@@ -392,7 +396,7 @@ TimerHandler:
                 pop     bx              ; restore BX
                 pop     ds              ; restore DS
                 jne     NullHandler     ; quit if can't interrupt right now
-DoIntTask:      mov     byte ptr CS:TrapType,4  ; user interrupt request
+DoIntTask:      mov     byte ptr CS:TrapType,TRAP_USER  ; user interrupt request
                 mov     byte ptr UsrInt,0       ; clear pending request
                 jmp     DebugTask
 
@@ -551,7 +555,7 @@ terminate:      push    BP                      ; save BP
 not_an_int:     pop     DS                      ; restore DS
                 pop     BX                      ; restore BX
                 pop     BP                      ; restore BP
-                mov     byte ptr CS:TrapType,5  ; indicate program termintation
+                mov     byte ptr CS:TrapType,TRAP_TERMINATE ; indicate program termintation
                 jmp     DebugTask               ; enter the debugger
 
 
@@ -675,7 +679,7 @@ DOSLoadProg_    endp
 
 debugprogend:
                 mov     CS:TaskPSP,0            ; don't have a task anymore
-                mov     byte ptr CS:TrapType,5 ; program terminated
+                mov     byte ptr CS:TrapType,TRAP_TERMINATE ; program terminated
                 jmp     DebugTask
 
 
@@ -774,11 +778,13 @@ check_byte label byte
         db      0cdH, 039H, 037H ;fsave   ds:[bx]
         pop     bx
         pop     ds
+        call    FPUExpand
         ret
 Read87EmuState_ endp
 
         public  Write87EmuState_
 Write87EmuState_ proc near
+        call    FPUContract
         push    ds
         push    bx
         mov     ds,dx

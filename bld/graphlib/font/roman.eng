@@ -1,6 +1,6 @@
     name roman
     
-ifdef _386
+ifdef __386__
     _DATA segment word public 'DATA'
 else
     RomanFont_DATA segment para 'FONT_DATA'
@@ -359,7 +359,7 @@ db   20,  14,  22,  14,  24,  15,  25,  17, -99,   7,  15,   8,  17,  10
 db   18,  12,  18,  14,  17,  18,  14,  20,  13,  22,  13,  24,  14,  25
 db   17,  25,  19
 
-ifdef _386
+ifdef __386__
     _DATA ends
 else
     RomanFont_DATA ends

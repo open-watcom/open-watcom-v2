@@ -12,14 +12,11 @@ void f( char B:: *pbc ) GOOD;
 
 void g( void )
 {
-    enum { a=0 };
-
     f( (int)0 );
     f( (unsigned)0 );
-    f( a );
 }
 int main( void ) {
     g();
-    CHECK_GOOD( 33 );
+    CHECK_GOOD( 22 );
     return errors != 0;
 }

@@ -5,12 +5,20 @@
  */
 #ifndef _IO_H_INCLUDED
 #define _IO_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include lfndos.sp
+
+:include systypes.sp
+
+#ifndef _SYS_STAT_H_INCLUDED
+ #include <sys/stat.h>
 #endif
+
+:include cpluspro.sp
 
 :include pshpackl.sp
 
@@ -41,13 +49,13 @@
 #define STDIN_FILENO    0
 #define STDOUT_FILENO   1
 #define STDERR_FILENO   2
-#ifndef NO_EXT_KEYS     /* extensions enabled */
+
+:include ext.sp
 #if ! defined(__NT__)
 #define STDAUX_FILENO   3
 #define STDPRN_FILENO   4
 #endif
-#endif
-
+:include extepi.sp
 
 typedef unsigned long   _fsize_t;
 
@@ -101,37 +109,52 @@ struct _wfinddatai64_t {
 _WCRTLINK extern int  access(const char *__path,int __mode);
 _WCRTLINK extern int  _access(const char *__path,int __mode);
 _WCRTLINK extern int  chmod(const char *__path,int __pmode);
+_WCRTLINK extern int  _chmod(const char *__path,int __pmode);
 _WCRTLINK extern int  chsize(int __handle,long __size);
+_WCRTLINK extern int  _chsize(int __handle,long __size);
 _WCRTLINK extern int  close(int __handle);
 _WCRTLINK extern int  _close(int __handle);
+_WCRTLINK extern int  _commit(int __handle);
 _WCRTLINK extern int  creat(const char *__path,int __pmode);
+_WCRTLINK extern int  _creat(const char *__path,int __pmode);
 _WCRTLINK extern int  dup(int __handle);
 _WCRTLINK extern int  _dup(int __handle);
 _WCRTLINK extern int  dup2(int __handle1,int __handle2);
+_WCRTLINK extern int  _dup2(int __handle1,int __handle2);
 _WCRTLINK extern int  eof(int __handle);
+_WCRTLINK extern int  _eof(int __handle);
 _WCRTLINK extern long filelength(int __handle);
+_WCRTLINK extern long _filelength(int __handle);
 _WCRTLINK extern int  fsync( int __filedes );
 _WCRTLINK extern long _get_osfhandle( int __posixhandle );
 _WCRTLINK extern int  _hdopen(int __handle,int __mode);
 _WCRTLINK extern int  isatty(int __handle);
+_WCRTLINK extern int  _isatty(int __handle);
 _WCRTLINK extern int  lock(int __handle,unsigned long __offset,
                            unsigned long __nbytes);
-_WCRTLINK extern long lseek(int __handle,long __offset,int __origin);
-_WCRTLINK extern long _lseek(int __handle,long __offset,int __origin);
+_WCRTLINK extern off_t lseek(int __handle,off_t __offset,int __origin);
+_WCRTLINK extern off_t _lseek(int __handle,off_t __offset,int __origin);
 _WCRTLINK extern int  open(const char *__path,int __oflag,...);
 _WCRTLINK extern int  _open(const char *__path,int __oflag,...);
 _WCRTLINK extern int  _open_osfhandle( long __osfhandle, int __flags );
 _WCRTLINK extern int  _os_handle(int __handle);
 _WCRTLINK extern int  _pipe( int *__phandles, unsigned __psize, int __textmode );
 _WCRTLINK extern int  read(int __handle,void *__buf,unsigned int __len);
+_WCRTLINK extern int  _read(int __handle,void *__buf,unsigned int __len);
 _WCRTLINK extern int  setmode(int __handle,int __mode);
+_WCRTLINK extern int  _setmode(int __handle,int __mode);
 _WCRTLINK extern int  sopen(const char *__path,int __oflag,int __shflag,...);
-_WCRTLINK extern long tell(int __handle);
+_WCRTLINK extern int  _sopen(const char *__path,int __oflag,int __shflag,...);
+_WCRTLINK extern off_t tell(int __handle);
+_WCRTLINK extern off_t _tell(int __handle);
 _WCRTLINK extern int  umask(int __permission);
+_WCRTLINK extern int  _umask(int __permission);
 _WCRTLINK extern int  unlink(const char *__path);
+_WCRTLINK extern int  _unlink(const char *__path);
 _WCRTLINK extern int  unlock(int __handle,unsigned long __offset,
                              unsigned long __nbytes);
 _WCRTLINK extern int  write(int __handle,const void *__buf,unsigned int __len);
+_WCRTLINK extern int  _write(int __handle,const void *__buf,unsigned int __len);
 _WCRTLINK extern int  _waccess(const wchar_t *__path,int __mode);
 _WCRTLINK extern int  _wchmod( const wchar_t *__path, int __pmode );
 _WCRTLINK extern int  _wunlink(const wchar_t *__path);
@@ -146,8 +169,8 @@ _WCRTLINK extern int  _wfindnext( long __handle,
                                   struct _wfinddata_t *__fileinfo );
 _WCRTLINK extern int  _findclose( long __handle );
 
-_WCRTLINK extern char *     _mktemp( char *__template );
-_WCRTLINK extern wchar_t *  _wmktemp( wchar_t *__template );
+_WCRTLINK extern char       *_mktemp( char *__template );
+_WCRTLINK extern wchar_t    *_wmktemp( wchar_t *__template );
 
 #ifdef __WATCOM_INT64__
 _WCRTLINK extern long       _findfirsti64( const char *__filespec,
@@ -164,10 +187,8 @@ _WCRTLINK extern __int64    _lseeki64( int __handle, __int64 __offset,
 _WCRTLINK extern __int64    _telli64( int __handle );
 #endif
 
-#ifndef _STAT_H_INCLUDED
- #include <sys/stat.h>
-#endif
-
 :include poppack.sp
+
 :include cplusepi.sp
+
 #endif

@@ -24,15 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  _localtime() converts time_t to struct tm
 *
 ****************************************************************************/
-
-
-/*
- *      Convert time_t into struct tm
- */
 
 #include "variety.h"
 #include <time.h>
@@ -42,16 +36,19 @@
 
 _WCRTLINK struct tm *_localtime( const time_t *timer, struct tm *t )
 {
-    auto time_t tod;
+    time_t      tod;
 
     tzset();
     tod = *timer;
+    t->tm_isdst = -1;
+#ifdef __LINUX__
+    __check_tzfile( tod, t );
+#endif
     __brktime( DAYS_FROM_1900_TO_1970, tod, _RWD_timezone, t );
 
-    if( __isindst( t ) ) {
+    if( __isindst( t ) )
         __brktime( DAYS_FROM_1900_TO_1970, tod,
                    _RWD_timezone - _RWD_dst_adjust, t );
-    }
     return( t );
 }
 

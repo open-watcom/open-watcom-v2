@@ -1,135 +1,115 @@
-.mif: $(mif_path);..
+proj_name = ui
+name = ui
+
+target: $(name).lib
+
+ui_trmem = 1
+
+ui_autodepends = .autodepend
+
 !include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
-system_nt_386   = nt
-system_nt_axp   = ntaxp
+.c: ../c;../../c;$(extra_cdir);$(trmem_dir)
+.h: ../h;../../h;$(extra_hdir)
 
-compiler_i86    = $(comp286)
-compiler_386    = $(comp386)
-compiler_axp    = wccaxp
+inc_dirs += -I"../h" -I"../../h"
 
-librarian_i86   = wlib
-librarian_386   = $(librarian_i86)
-librarian_axp   = wlib
+# memory tracker routines
+extra_c_flags_trmem = $(trmem_cflags)
 
-includes_nt_386 = $(lang_root)\h\nt;$(lang_root)\h
-includes_nt_axp = $(lang_root)\h\nt;$(lang_root)\h
-includes_os2_i86= $(watcom_dir)\os21x_h;$(lang_root)\h
-includes_os2_386= $(watcom_dir)\os220_h;$(lang_root)\h
-includes_qnx_i86= $(lang_root)\qh
-includes_qnx_386= $(lang_root)\qh
+# memory tracker cover routines
+extra_c_flags_uialloc = $(trmem_cover_cflags)
 
-# database team uses fpi87 as default in 6.0
-!ifdef wsqlver
-!  ifeqi wsqlver 6.0
-!    define deffp /fpi87
-!  else
-!    define deffp /fpc
-!  endif
-!else
-!    define deffp /fpc
+objfiles = &
+        uialloc.obj  uiarea.obj   uiattr.obj   uiback.obj   &
+        uiballoc.obj uiband.obj   uibarf.obj   uibattr.obj  &
+        uibcopy.obj  uibfake.obj  uibfill.obj  uibgnd.obj   &
+        uibios.obj   uiblank.obj  uibox.obj    uibpix.obj   &
+        uibstr.obj   uicheck.obj  uiconfig.obj uicurs.obj   &
+        uidata.obj   uidchfld.obj uidebug.obj  uidevent.obj &
+        uidialcb.obj uidialog.obj uidirty.obj  uidlgfcn.obj &
+        uiev.obj     uifar.obj    uifmem.obj   uiforce.obj  &
+        uigadget.obj uigchar.obj  uiget.obj    uihotspt.obj &
+        uiinit.obj   uiledit.obj  uilist.obj   uilstbox.obj &
+        uimem.obj    uimenu.obj   uimenucr.obj uimget.obj   &
+        uimisc.obj   uimousev.obj uipad.obj    uipget.obj   &
+        uipopup.obj  uiprot.obj   uirefer.obj  uirfrsh.obj  &
+        uisnow.obj   uispawn.obj  uitab.obj    uivattr.obj  &
+        uivedit.obj  uivfill.obj  uivfld.obj   uivhide.obj  &
+        uivline.obj  uivmove.obj  uivopen.obj  uivscrn.obj  &
+        uivstr.obj   uivutil.obj  uiwin.obj    uiyield.obj
+
+# system type         dos  nlm  nt   os2  qnx  unix  win  rdos
+# builder builds      yes  no   yes  yes  no   yes   yes  yes
+#=============================================================
+!inject cdisp.obj                         qnx
+!inject cmouse.obj                        qnx
+!inject charmap.obj   dos
+!inject ctkeyb.obj                        qnx  unix
+!inject ctkeyb2.obj                            unix
+!inject gmouse.obj    dos
+!inject kbwait.obj                             unix
+!inject tdisp.obj                         qnx  unix
+!inject tixparse.obj                      qnx  unix
+!inject tixsupp.obj                       qnx  unix
+!inject tmouse.obj                        qnx  unix
+!inject trie.obj                          qnx  unix
+!inject uibmous.obj   dos  nlm  nt  os2   qnx  unix  win  rdos
+!inject uichlen.obj        nlm  nt  os2   qnx  unix  win
+!inject uicurshk.obj  dos
+!inject uievent.obj             nt                        rdos
+!inject uimous.obj    dos  nlm      os2   qnx  unix  win
+!inject uiextrn.obj                       qnx  unix
+!inject uihook.obj    dos                 qnx  unix
+!inject uikeyb.obj    dos  nlm      os2   qnx  unix  win
+!inject uimapch.obj   dos
+!inject uiproxy.obj                       qnx
+!inject uiscrnam.obj       nlm
+!inject uiutil.obj    dos
+!inject uivirt.obj                        qnx  unix
+
+# This check is partial! A full check is tedious. W.Briscoe 2004-11-26
+# extra_files must be set in including makefile as mapping of other data is not 1 to 1.
+!ifndef extra_files
+!error $$(extra_files) unset. Must be $$(dos), $$(nlm), $$(nt), $$(os2), $$(qnx), $$(unix) or $$(win)
 !endif
 
-!ifndef host_CPU
-!ifeq MODEL F
-host_CPU=386
-!else
-host_CPU=i86
+# $(trmem_objs) appended to objfiles = ... is ineffective W.Briscoe 2004-11-25
+objfiles += $(trmem_objs) $(extra_files)
+
+!ifeq release 1
+!ifndef bootstrap
+extra_c_flags += -os-s
 !endif
 !endif
 
-!ifndef INCLUDES
-INCLUDES=$(includes_$(host_OS)_$(host_CPU))
-!endif
+!include trmem.mif
 
-!ifndef TARG
-TARG=$(host_OS)
-!endif
+$(name).lib: $(objfiles)
+        $(librarian) $(libflags) $<
 
-!ifndef FORM
-FORM=$(system_$(host_OS)_$(host_CPU))
-!endif
-
-!ifndef EXE
-EXE=exe
-!endif
-
-!ifndef WCCEXE
-WCCEXE=$(compiler_$(host_CPU))
-!endif
-
-libname_i86     = uilib$(MODEL)
-libname_386     = $(libname_i86)
-libname_axp     = uilibaxp
-
-!ifndef LIBNAME
-LIBNAME=$(libname_$(host_CPU))
-!endif
-
-cflags_i86      = /m$(MODEL)
-cflags_386      = $(cflags_i86)
-cflags_axp      =
-!ifndef WCDEB
-WCDEB=/d1
-!endif
-CFLAGS=/bt=$(TARG) /os/s/w3$(WCDEB)/I..\h;..\..\h;$(INCLUDES);$(watcom_dir)\h $(cflags_$(host_CPU))$(EXTRA)
-
-WCC=$(WCCEXE) $[*.c $(CFLAGS) /zq
-
-.EXTENSIONS:
-.EXTENSIONS: .$(EXE) .obj .i .h .c .mif
-
-.JUST_ENOUGH
-
-.mif: ..
-
-target: ..\$(libname).lib .SYMBOLIC
-    @%null
-
-OBJ = obj
-!include objfiles.mif
-
-..\$(LIBNAME).lib: $(objfiles)
-        *$(librarian_$(host_CPU)) /q/b $* $(objfiles)
-
-.$(EXE): ..\x
 !ifeq SAMPLE_MODE WIN_C_M_J
-sample.$(EXE) : samplew.obj sampdial.obj ..\$(LIBNAME).lib
+sample.exe : samplew.obj sampdial.obj $(name).lib
         %create sample.lnk
-        %append sample.lnk system windows op m D A library ..\$(LIBNAME)
+        %append sample.lnk system windows op m D A library $(name).lib
         %append sample.lnk n sample
         %append sample.lnk f samplew f sampdial
         %append sample.lnk import DEATH GDI.121
         %append sample.lnk import RESURRECTION GDI.122
         wlink @sample.lnk
 !else ifeq SAMPLE_MODE WIN_C_M
-sample.$(EXE) : samplew.obj sampdial.obj swap.obj ..\$(LIBNAME).lib
+sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
         %create sample.lnk
-        %append sample.lnk system windows op m D A library ..\$(LIBNAME)
+        %append sample.lnk system windows op m D A library $(name).lib
         %append sample.lnk n sample
         %append sample.lnk f samplew f sampdial f swap
         %append sample.lnk import DEATH GDI.121
         %append sample.lnk import RESURRECTION GDI.122
         wlink @sample.lnk
 !else
-sample.$(EXE) : sample.obj sampdial.obj ..\$(LIBNAME).lib
-        !wlink system $(FORM) op m,st=32k D A library ..\$(LIBNAME) n sample f sample, sampdial
+sample.exe : sample.obj sampdial.obj $(name).lib
+        $(linker) $(lflags) op q,m,st=32k library $(name).lib n sample f sample, sampdial
 !endif
 
-.c: ..\c;..\..\c;$(extra_cdir)
-
-.c.obj :
-        $(WCC)
-
-.c.i :
-        $(WCC) -fo=.i -plc
-
-.h: ..\h;..\..\h;$(extra_hdir)
-
-make: .SYMBOLIC
-    %create mkmk.cmd
-    @%append mkmk.cmd  -c & -m objfiles.mif -q 50
-    @%append mkmk.cmd  nopath ..\c\*.c c\*.c h\*.h ..\h\*.h  path
-    @%append mkmk.cmd  -i.h -isample.c -isampdial.c -isamplew.c
-    mkmk @mkmk.cmd
-    erase mkmk.cmd

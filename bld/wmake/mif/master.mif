@@ -1,157 +1,131 @@
 #
 #   The master file for creating wmake.
 #
-#   Winter90    D.J.Gaudet      Re-Implementation of WMAKE
-#
-
 ##############################################################################
 
 proj_name   = wmake
 xname       = wmk
 
-.ERASE
-.CONTINUE
-
-.extensions:
-.extensions: . .qnx .exe .obj .wbj .asm .c .inc .h .mif
-
-.h      : ..\h;$(watcom_dir)\h;$(trmem_dir)
-.mif    : ..\mif;$(mif_path)
-.c      : ..\c;..\support;$(watcom_dir)\c;$(trmem_dir)
-.inc    : .;..\h
-
-!include cproj.mif
-!include defrule.mif
-
-!ifdef COMPACT
-MODEL = c
-!else ifdef MEDIUM
-MODEL = m
-!else ifdef LARGE
-MODEL = l
-!else
-MODEL = s
+!ifndef wmake_autodepends
+wmake_autodepends = .AUTODEPEND
 !endif
 
+# DOS code will not fit in 64k with /d2
+#!ifeq host_os dos
+#!ifeq host_cpu i86
+#wmake_release = 1
+#!endif
+#!endif
+
+!ifndef bootstrap
+!include idedlls.mif
+!endif
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.h      : ../h
+.h      : $(watcom_dir)/h
+.h      : $(trmem_dir)
+.c      : ../c
+.c      : $(watcom_dir)/c
+.c      : $(trmem_dir)
+.inc    : .
+.inc    : ../h
+
+!include $(orl_dir)/client.mif
 !include wres.mif
 
-cc16 = $(cc_i86)
-
-#asm     = optasm
 echo    = echo
 
 # Compiler Flags
 
-extra_c_flags_win = -zW
-!ifdef COMPACT
-mem_model_i86 = -mc -zt32
-!else ifdef MEDIUM
-mem_model_i86 = -mm -zt32
-!else ifdef LARGE
-mem_model_i86 = -ml -zt32
-!ifdef NEC_98_BUG
-extra_c_flags_dos += -DNEC_98_BUG
-!endif
-!else
-mem_model_i86 = -ms
-!endif
+extra_c_flags_i86 = -zt32
 
-# DOS, OS2 code will not fit in 64k with /d2
-!ifeq host_OS dos
-mode_cflags = -oaxs -d1
-!endif
-!ifeq host_OS os2
-!ifeq host_CPU 386
-mode_cflags = -oaxs -s -d2
-!else
-mode_cflags = -oaxs -s -d1
-!endif
-!endif
+inc_dirs = -I"$(wmake_dir)/h" -I"$(orl_dir)/h" -I$(trmem_dir)
 
-inc_dirs = $(wmake_dir)\h;$(watcom_dir)\h;$(orl_dir)\h;$(trmem_dir)
-
-extra_c_flags =
-!ifeq release 1
-extra_c_flags = -dNDEBUG
+!ifdef DLLS_IMPLEMENTED
+extra_c_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifdef cachestat
-extra_c_flags += -dCACHE_STATS
+extra_c_flags += -DCACHE_STATS
+!endif
+!ifdef wmake_causeway
+!ifeq host_cpu 386
+extra_c_flags_dos += -DCAUSEWAY
+!endif
 !endif
 
-!ifeq host_OS os2
-!ifeq host_CPU 386
-extra_c_flags += -i$(watcom_dir)\os220_h
-!endif
-!endif
 
-!include wmk.mif                    #   get our objs macro
+extra_rc_flags_dos   = -D__DOS__
+extra_rc_flags_linux = -D__LINUX__
+extra_rc_flags = $(extra_rc_flags_$(host_os))
 
-.BEFORE
-        set include=$(inc_path)
+!include ../mif/wmk.mif                    #   get our objs macro
 
 ##############################################################################
 
 ext_qnx = qnx
-!ifdef ext_$(host_OS)
-ext = $(ext_$(host_OS))
+ext_linux = elf
+!ifdef ext_$(host_os)
+ext = $(ext_$(host_os))
 !else
 ext = exe
 !endif
 
 # LINKER FLAGS
 
+extra_l_flags = NAME $(xname).$(ext) OPTION MAP,statics sort
+
 # large stacks are necessary for !loaddll support
 # os2 seems to crash with 128k stack and wccd386 - mjc
 extra_l_flags_os2 = option stack=96k
 extra_l_flags_nt = option stack=0x10000k commit stack=32k
 extra_l_flags_qnx = option stack=20k
-lflags_win_i86 = system windows mem font
-extra_l_flags_win = library windows,clibc export MAINDRIVER option stack=16k
 !ifdef LARGE
-extra_l_flags_dos = option stack=16k
+extra_l_flags_dos_i86 = option stack=16k
 !else ifdef COMPACT
-extra_l_flags_dos = option stack=16k
+extra_l_flags_dos_i86 = option stack=16k
 !else
-extra_l_flags_dos = option stack=4k
+extra_l_flags_dos_i86 = option stack=4k
 !endif
-extra_l_flags = NAME $(xname) option map=$(xname),quiet op symfile
+!ifdef wmake_causeway
+extra_l_flags_dos_386 = option stack=96k lib cwdll.lib
+!else
+extra_l_flags_dos_386 = option stack=4k
+!endif
+extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 
-libs_nt_386     = $(orl_dir)\o\orl.lib
-libs_nt_axp     = $(orl_dir)\axp\orl.lib
-libs_os2_386    = $(orl_dir)\os2\orl.lib
-libs_qnx_386    = $(orl_dir)\o\orl.lib
-libs            = $(libs_$(host_OS)_$(host_CPU))
+libs = $(wres_lib) $(orl_lib)
 
-.exe. : .symbolic   # so that "wmake wmk" works as expected
-    @%null
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
 
-$(xname).$(ext) :: usageend.h wmake.res $(objs) $(__MAKEFILES__)
-    $(linker) $(lflags) OPTION MAP FILE {$(objs) } LIBRARY { $(wres_lib) $(libs) }
+$(xname).$(ext) :: usageend.gh wmake.res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        $(linker) $(lflags) FILE {$(objs)} LIBRARY {$(libs)}
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK
-!ifeq host_OS win
-#    wstrip  wmk.exe . x.sym
-    rc wmk
-    rc wmkj
-#    copy /b wmk.exe+x.sym
-#    erase x.sym
-!endif
-    wstrip /q /a /r $(xname).$(ext) . wmake.res
+        wstrip -q -a -r $(xname).$(ext) . wmake.res
 
-wmake.res : ..\h\wmake.rc mrcmsg.h usage.rc usagej.rc
-        $(rc) /bt=windows /zk0 /q /r /fo=$^@ $[@
+wmake.res : ../h/wmake.rc mrcmsg.h usage.rc usagej.rc
+        $(rc_aui) $(extra_rc_flags) $[@ -fo=$^@
 
-usage.rc : ..\h\usage.sp
-        wsplice -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\""..\h\usage.sp usage.rc
+usage.rc : ../h/usage.sp
+        @%write usage.tmp -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< -o "%n%n%n%n" $^@
+        wsplice @usage.tmp
 
-usagej.rc : ..\h\usage.sp
-        wsplice -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\""..\h\usage.sp usagej.rc
+usagej.rc : ../h/usage.sp
+        @%write usage.tmp -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< -o "%n%n%n%n" $^@
+        wsplice @usage.tmp
 
-usageend.h : usage.rc usagej.rc
-        wsplice usage.rc -o "%n%n%n%n" usage.rcp
-        wsplice -f "%+" usage.rcp -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usageend.h
-        del usage.rcp
+usageend.gh : usage.rc usagej.rc
+        @%write usage.tmp -f "%+" usage.rc -o "$#define USAGE_LAST (USAGE_BASE+%$#)%n" $^@
+        wsplice @usage.tmp
 
 # usage.h : ..\h\usage.sp
 # I want the usage message codes to be generated on the fly, and also
@@ -160,20 +134,22 @@ usageend.h : usage.rc usagej.rc
 # make the final program any larger.  Oh well - the end justifying the
 # means, I suppose. CSK
 #       wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
-#       wsplice -f "$#define USAGE_LN_%$# (USAGE_BASE+%$#)%+"usage.h usage.h
+#       wsplice -f "$#define USAGE_LN_%$# (USAGE_BASE+%$#)%+" usage.h usage.h
 #       wsplice -f "%s%+"usage.h -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usage.h
 
+!include verrc.mif
 
 ##############################################################################
 # special case targets
 
-isarray.inc : cretype.exe
-    cretype >isarray.inc
+isarray.gh : ./cretype.exe
+    $< > $@
 
-cretype.exe : cretype.c
-    $(bld_cl) /d2 /zq /w4 $[@
+./cretype.exe : cretype.c
+    $(bld_cl) $(wcl_util_opts) $[@
 
-!include makedeps.mif               # dependencies on .h files
+# dependencies on .h files
+mglob.obj : isarray.gh .AUTODEPEND
 
 
 ##############################################################################
@@ -181,9 +157,9 @@ cretype.exe : cretype.c
 
 # print a list of unreferenced messages
 chkmsg :
-    sed -f ..\mif\msgdef.sed ..\h\msg.h | sort -u >chkmsg.1
-    awk -f ..\mif\msgref.awk chkmsg.1 >chkmsg.2
-    sed -f chkmsg.2 ..\c\*.c | sort -u >chkmsg.3
+    sed -f ../mif/msgdef.sed ../h/msg.h | sort -u >chkmsg.1
+    awk -f ../mif/msgref.awk chkmsg.1 >chkmsg.2
+    sed -f chkmsg.2 ../c/*.c | sort -u >chkmsg.3
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?
 
@@ -192,22 +168,14 @@ strip : .symbolic
     ls -l *.$(ext)
 
 deps : .symbolic
-    cd ..\c
-    ..\support\mmk >..\mif\makedeps.mif
+    cd ../c
+    ../support/mmk >../mif/makedeps.mif
 
 do : .symbolic
-    wmake -h -n | sed -f ..\mif\mkdo.sed >do.bat
+    wmake -h -n | sed -f ../mif/mkdo.sed >do.bat
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.lib del *.lib
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.h del *.h
-        @if exist *.sym del *.sym
-        @if exist *.map del *.map
-        @if exist *.rc del *.rc
-        @if exist *.inc del *.inc
+# In NT, failure of ..\regress\test does not set a failure return code.
+test : $(xname).$(ext) .always .symbolic
+    ..\regress\test $(%cwd)\$(xname).$(ext) # Works in NT, will fail in Linux
+    # ../regress/test $(%cwd)\$(xname).$(ext) # Fails in NT
+    # No Linux ../regress/test has been ported. W.Briscoe 2004-01-17

@@ -34,6 +34,7 @@
 #include "widechar.h"
 #include <wos2.h>
 #include <stdlib.h>
+#include <direct.h>
 #include "seterrno.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
@@ -42,32 +43,22 @@
 
 _WCRTLINK int __F_NAME(chdir,_wchdir)( const CHAR_TYPE *path )
 {
-#ifndef __WIDECHAR__
     APIRET              rc;
-
-    #if defined(__WARP__)
-        rc = DosSetCurrentDir( (PSZ)path );
-    #else
-        rc = DosChDir( (PSZ)path, 0 );
-    #endif
-#else
-    APIRET              rc;
+#ifdef __WIDECHAR__
     size_t              rcConvert;
-    char                mbcsPath[MB_CUR_MAX*_MAX_PATH];
-    unsigned char *     p;
+    char                mbcsPath[ MB_CUR_MAX * _MAX_PATH ];
+    unsigned char       *p;
 
     /*** Convert the wide character string to a multibyte string ***/
-    rcConvert = wcstombs( mbcsPath, path, MB_CUR_MAX*_MAX_PATH );
+    rcConvert = wcstombs( mbcsPath, path, sizeof( mbcsPath ) );
     p = _mbsninc( mbcsPath, rcConvert );
     *p = '\0';
-
-    #if defined(__WARP__)
-        rc = DosSetCurrentDir( mbcsPath );
-    #else
-        rc = DosChDir( mbcsPath, 0 );
-    #endif
 #endif
-
+#ifdef _M_I86
+    rc = DosChDir( __F_NAME((PSZ)path,mbcsPath), 0 );
+#else
+    rc = DosSetCurrentDir( __F_NAME((PSZ)path,mbcsPath) );
+#endif
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );
     }

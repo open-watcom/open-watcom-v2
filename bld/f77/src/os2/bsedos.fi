@@ -1,0 +1,1690 @@
+c$noreference
+
+c$ifdef INCL_DOS
+c$define INCL_DOSPROCESS
+c$define INCL_DOSFILEMGR
+c$define INCL_DOSMEMMGR
+c$define INCL_DOSSEMAPHORES
+c$define INCL_DOSDATETIME
+c$define INCL_DOSMODULEMGR
+c$define INCL_DOSRESOURCES
+c$define INCL_DOSNLS
+c$define INCL_DOSEXCEPTIONS
+c$define INCL_DOSMISC
+c$define INCL_DOSMONITORS
+c$define INCL_DOSQUEUES
+c$define INCL_DOSSESMGR
+c$define INCL_DOSDEVICES
+c$define INCL_DOSNMPIPES
+c$define INCL_DOSPROFILE
+c$define INCL_DOSMVDM
+c$endif
+
+c$ifdef INCL_ERRORS
+c$define INCL_DOSERRORS
+c$endif
+
+c$ifdef INCL_DOSPROCESS
+
+        external DosBeep
+        integer*4 DosBeep
+
+        external DosExit
+
+        integer  EXIT_THREAD
+        parameter (EXIT_THREAD = 0)
+        integer  EXIT_PROCESS
+        parameter (EXIT_PROCESS = 1)
+
+c$include bsetib.fi
+
+        external DosCreateThread
+        integer*4 DosCreateThread
+
+        external DosResumeThread
+        integer*4 DosResumeThread
+
+        external DosSuspendThread
+        integer*4 DosSuspendThread
+
+        external DosGetInfoBlocks
+        integer*4 DosGetInfoBlocks
+
+        external DosKillThread
+        integer*4 DosKillThread
+
+        integer  DCWA_PROCESS
+        parameter (DCWA_PROCESS = 0)
+        integer  DCWA_PROCESSTREE
+        parameter (DCWA_PROCESSTREE = 1)
+
+        integer  DCWW_WAIT
+        parameter (DCWW_WAIT = 0)
+        integer  DCWW_NOWAIT
+        parameter (DCWW_NOWAIT = 1)
+
+        structure /RESULTCODES/
+            integer*4 codeTerminate
+            integer*4 codeResult
+        end structure
+
+        external DosWaitChild
+        integer*4 DosWaitChild
+
+        external DosWaitThread
+        integer*4 DosWaitThread
+
+        external DosSleep
+        integer*4 DosSleep
+
+        external DosDebug
+        integer*4 DosDebug
+
+        integer  TC_EXIT
+        parameter (TC_EXIT = 0)
+        integer  TC_HARDERROR
+        parameter (TC_HARDERROR = 1)
+        integer  TC_TRAP
+        parameter (TC_TRAP = 2)
+        integer  TC_KILLPROCESS
+        parameter (TC_KILLPROCESS = 3)
+        integer  TC_EXCEPTION
+        parameter (TC_EXCEPTION = 4)
+
+        external DosEnterCritSec
+        integer*4 DosEnterCritSec
+
+        external DosExitCritSec
+        integer*4 DosExitCritSec
+
+        external DosExitList
+        integer*4 DosExitList
+
+        integer  EXLST_ADD
+        parameter (EXLST_ADD = 1)
+        integer  EXLST_REMOVE
+        parameter (EXLST_REMOVE = 2)
+        integer  EXLST_EXIT
+        parameter (EXLST_EXIT = 3)
+
+        external DosExecPgm
+        integer*4 DosExecPgm
+
+        integer  EXEC_SYNC
+        parameter (EXEC_SYNC = 0)
+        integer  EXEC_ASYNC
+        parameter (EXEC_ASYNC = 1)
+        integer  EXEC_ASYNCRESULT
+        parameter (EXEC_ASYNCRESULT = 2)
+        integer  EXEC_TRACE
+        parameter (EXEC_TRACE = 3)
+        integer  EXEC_BACKGROUND
+        parameter (EXEC_BACKGROUND = 4)
+        integer  EXEC_LOAD
+        parameter (EXEC_LOAD = 5)
+        integer  EXEC_ASYNCRESULTDB
+        parameter (EXEC_ASYNCRESULTDB = 6)
+
+        external DosSetPriority
+        integer*4 DosSetPriority
+
+        integer  PRTYS_PROCESS
+        parameter (PRTYS_PROCESS = 0)
+        integer  PRTYS_PROCESSTREE
+        parameter (PRTYS_PROCESSTREE = 1)
+        integer  PRTYS_THREAD
+        parameter (PRTYS_THREAD = 2)
+
+        integer  PRTYC_NOCHANGE
+        parameter (PRTYC_NOCHANGE = 0)
+        integer  PRTYC_IDLETIME
+        parameter (PRTYC_IDLETIME = 1)
+        integer  PRTYC_REGULAR
+        parameter (PRTYC_REGULAR = 2)
+        integer  PRTYC_TIMECRITICAL
+        parameter (PRTYC_TIMECRITICAL = 3)
+        integer  PRTYC_FOREGROUNDSERVER
+        parameter (PRTYC_FOREGROUNDSERVER = 4)
+
+        integer  PRTYD_MINIMUM
+        parameter (PRTYD_MINIMUM = -31)
+        integer  PRTYD_MAXIMUM
+        parameter (PRTYD_MAXIMUM = 31)
+
+        external DosKillProcess
+        integer*4 DosKillProcess
+
+        integer  DKP_PROCESSTREE
+        parameter (DKP_PROCESSTREE = 0)
+        integer  DKP_PROCESS
+        parameter (DKP_PROCESS = 1)
+
+c$endif
+
+        integer  CCHMAXPATH
+        parameter (CCHMAXPATH = 260)
+
+        integer  CCHMAXPATHCOMP
+        parameter (CCHMAXPATHCOMP = 256)
+
+c$ifdef INCL_DOSFILEMGR
+
+        integer  FILE_BEGIN
+        parameter (FILE_BEGIN = '00000000'x)
+        integer  FILE_CURRENT
+        parameter (FILE_CURRENT = '00000001'x)
+        integer  FILE_END
+        parameter (FILE_END = '00000002'x)
+
+        integer  HDIR_SYSTEM
+        parameter (HDIR_SYSTEM = 1)
+        integer  HDIR_CREATE
+        parameter (HDIR_CREATE = -1)
+
+        integer  DCPY_EXISTING
+        parameter (DCPY_EXISTING = '00000001'x)
+        integer  DCPY_APPEND
+        parameter (DCPY_APPEND = '00000002'x)
+        integer  DCPY_FAILEAS
+        parameter (DCPY_FAILEAS = '00000004'x)
+
+        integer  FILE_NORMAL
+        parameter (FILE_NORMAL = '00000000'x)
+        integer  FILE_READONLY
+        parameter (FILE_READONLY = '00000001'x)
+        integer  FILE_HIDDEN
+        parameter (FILE_HIDDEN = '00000002'x)
+        integer  FILE_SYSTEM
+        parameter (FILE_SYSTEM = '00000004'x)
+        integer  FILE_DIRECTORY
+        parameter (FILE_DIRECTORY = '00000010'x)
+        integer  FILE_ARCHIVED
+        parameter (FILE_ARCHIVED = '00000020'x)
+
+        integer  FILE_IGNORE
+        parameter (FILE_IGNORE = '00010000'x)
+
+        integer MUST_HAVE_READONLY
+        parameter (MUST_HAVE_READONLY =
+     +             (FILE_READONLY * 2**8) .or. FILE_READONLY)
+        integer MUST_HAVE_HIDDEN
+        parameter (MUST_HAVE_HIDDEN =
+     +             (FILE_HIDDEN * 2**8) .or. FILE_HIDDEN)
+        integer MUST_HAVE_SYSTEM
+        parameter (MUST_HAVE_SYSTEM =
+     +             (FILE_SYSTEM * 2**8) .or. FILE_SYSTEM)
+        integer MUST_HAVE_DIRECTORY
+        parameter (MUST_HAVE_DIRECTORY =
+     +             (FILE_DIRECTORY * 2**8) .or. FILE_DIRECTORY)
+        integer MUST_HAVE_ARCHIVED
+        parameter (MUST_HAVE_ARCHIVED =
+     +             (FILE_ARCHIVED * 2**8) .or. FILE_ARCHIVED)
+
+        integer  FILE_EXISTED
+        parameter (FILE_EXISTED = '00000001'x)
+        integer  FILE_CREATED
+        parameter (FILE_CREATED = '00000002'x)
+        integer  FILE_TRUNCATED
+        parameter (FILE_TRUNCATED = '00000003'x)
+
+        integer  FILE_OPEN
+        parameter (FILE_OPEN = '00000001'x)
+        integer  FILE_TRUNCATE
+        parameter (FILE_TRUNCATE = '00000002'x)
+        integer  FILE_CREATE
+        parameter (FILE_CREATE = '00000010'x)
+
+        integer  OPEN_ACTION_FAIL_IF_EXISTS
+        parameter (OPEN_ACTION_FAIL_IF_EXISTS = '00000000'x)
+        integer  OPEN_ACTION_OPEN_IF_EXISTS
+        parameter (OPEN_ACTION_OPEN_IF_EXISTS = '00000001'x)
+        integer  OPEN_ACTION_REPLACE_IF_EXISTS
+        parameter (OPEN_ACTION_REPLACE_IF_EXISTS = '00000002'x)
+
+        integer  OPEN_ACTION_FAIL_IF_NEW
+        parameter (OPEN_ACTION_FAIL_IF_NEW = '00000000'x)
+        integer  OPEN_ACTION_CREATE_IF_NEW
+        parameter (OPEN_ACTION_CREATE_IF_NEW = '00000010'x)
+
+        integer  OPEN_ACCESS_READONLY
+        parameter (OPEN_ACCESS_READONLY = '00000000'x)
+        integer  OPEN_ACCESS_WRITEONLY
+        parameter (OPEN_ACCESS_WRITEONLY = '00000001'x)
+        integer  OPEN_ACCESS_READWRITE
+        parameter (OPEN_ACCESS_READWRITE = '00000002'x)
+        integer  OPEN_SHARE_DENYREADWRITE
+        parameter (OPEN_SHARE_DENYREADWRITE = '00000010'x)
+        integer  OPEN_SHARE_DENYWRITE
+        parameter (OPEN_SHARE_DENYWRITE = '00000020'x)
+        integer  OPEN_SHARE_DENYREAD
+        parameter (OPEN_SHARE_DENYREAD = '00000030'x)
+        integer  OPEN_SHARE_DENYNONE
+        parameter (OPEN_SHARE_DENYNONE = '00000040'x)
+        integer  OPEN_FLAGS_NOINHERIT
+        parameter (OPEN_FLAGS_NOINHERIT = '00000080'x)
+        integer  OPEN_FLAGS_NO_LOCALITY
+        parameter (OPEN_FLAGS_NO_LOCALITY = '00000000'x)
+        integer  OPEN_FLAGS_SEQUENTIAL
+        parameter (OPEN_FLAGS_SEQUENTIAL = '00000100'x)
+        integer  OPEN_FLAGS_RANDOM
+        parameter (OPEN_FLAGS_RANDOM = '00000200'x)
+        integer  OPEN_FLAGS_RANDOMSEQUENTIAL
+        parameter (OPEN_FLAGS_RANDOMSEQUENTIAL = '00000300'x)
+        integer  OPEN_FLAGS_NO_CACHE
+        parameter (OPEN_FLAGS_NO_CACHE = '00001000'x)
+        integer  OPEN_FLAGS_FAIL_ON_ERROR
+        parameter (OPEN_FLAGS_FAIL_ON_ERROR = '00002000'x)
+        integer  OPEN_FLAGS_WRITE_THROUGH
+        parameter (OPEN_FLAGS_WRITE_THROUGH = '00004000'x)
+        integer  OPEN_FLAGS_DASD
+        parameter (OPEN_FLAGS_DASD = '00008000'x)
+        integer  OPEN_FLAGS_NONSPOOLED
+        parameter (OPEN_FLAGS_NONSPOOLED = '00040000'x)
+
+        integer  SEARCH_PATH
+        parameter (SEARCH_PATH = '00000000'x)
+        integer  SEARCH_CUR_DIRECTORY
+        parameter (SEARCH_CUR_DIRECTORY = '00000001'x)
+        integer  SEARCH_ENVIRONMENT
+        parameter (SEARCH_ENVIRONMENT = '00000002'x)
+        integer  SEARCH_IGNORENETERRS
+        parameter (SEARCH_IGNORENETERRS = '00000004'x)
+
+        integer  FIL_STANDARD
+        parameter (FIL_STANDARD = 1)
+        integer  FIL_QUERYEASIZE
+        parameter (FIL_QUERYEASIZE = 2)
+        integer  FIL_QUERYEASFROMLIST
+        parameter (FIL_QUERYEASFROMLIST = 3)
+
+        integer FIL_QUERYFULLNAME
+        parameter (FIL_QUERYFULLNAME = 5)
+
+        integer  FS_ATTACH
+        parameter (FS_ATTACH = 0)
+        integer  FS_DETACH
+        parameter (FS_DETACH = 1)
+        integer  FS_SPOOLATTACH
+        parameter (FS_SPOOLATTACH = 2)
+        integer  FS_SPOOLDETACH
+        parameter (FS_SPOOLDETACH = 3)
+
+        integer  FSCTL_HANDLE
+        parameter (FSCTL_HANDLE = 1)
+        integer  FSCTL_PATHNAME
+        parameter (FSCTL_PATHNAME = 2)
+        integer  FSCTL_FSDNAME
+        parameter (FSCTL_FSDNAME = 3)
+
+        integer  FSCTL_ERROR_INFO
+        parameter (FSCTL_ERROR_INFO = 1)
+        integer  FSCTL_MAX_EASIZE
+        parameter (FSCTL_MAX_EASIZE = 2)
+
+        structure /EASIZEBUF/
+            integer*2 cbMaxEASize
+            integer*4 cbMaxEAListSize
+        end structure
+
+        integer  FSAIL_QUERYNAME
+        parameter (FSAIL_QUERYNAME = 1)
+        integer  FSAIL_DEVNUMBER
+        parameter (FSAIL_DEVNUMBER = 2)
+        integer  FSAIL_DRVNUMBER
+        parameter (FSAIL_DRVNUMBER = 3)
+
+        integer  FSAT_CHARDEV
+        parameter (FSAT_CHARDEV = 1)
+        integer  FSAT_PSEUDODEV
+        parameter (FSAT_PSEUDODEV = 2)
+        integer  FSAT_LOCALDRV
+        parameter (FSAT_LOCALDRV = 3)
+        integer  FSAT_REMOTEDRV
+        parameter (FSAT_REMOTEDRV = 4)
+
+        structure /FSQBUFFER/
+            integer*2 iType
+            integer*2 cbName
+            integer*1 szName(1)
+            integer*2 cbFSDName
+            integer*1 szFSDName(1)
+            integer*2 cbFSAData
+            integer*1 rgFSAData(1)
+        end structure
+
+        structure /FSQBUFFER2/
+            integer*2 iType
+            integer*2 cbName
+            integer*2 cbFSDName
+            integer*2 cbFSAData
+            integer*1 szName(1)
+            integer*1 szFSDName(1)
+            integer*1 rgFSAData(1)
+        end structure
+
+        structure /SPOOLATTACH/
+            integer*2 hNmPipe
+            integer*4 ulKey
+        end structure
+
+        integer  FSIL_ALLOC
+        parameter (FSIL_ALLOC = 1)
+        integer  FSIL_VOLSER
+        parameter (FSIL_VOLSER = 2)
+
+        integer  FHT_DISKFILE
+        parameter (FHT_DISKFILE = '00000000'x)
+        integer  FHT_CHRDEV
+        parameter (FHT_CHRDEV = '00000001'x)
+        integer  FHT_PIPE
+        parameter (FHT_PIPE = '00000002'x)
+
+        integer  FHB_DSKREMOTE
+        parameter (FHB_DSKREMOTE = '00008000'x)
+        integer  FHB_CHRDEVREMOTE
+        parameter (FHB_CHRDEVREMOTE = '00008000'x)
+        integer  FHB_PIPEREMOTE
+        parameter (FHB_PIPEREMOTE = '00008000'x)
+
+! To get the seconds:   2 * IAND( ftime, '001f'x )
+! To get the minutes:   ISHFT( IAND( ftime, '07e0'x ), -5 )
+! To get the hours:     ISHFT( IAND( ftime, 'f800'x ), -11 )
+
+        structure /FTIME/
+            integer*2 ftime
+        end structure
+
+! To get the day:       IAND( fdate, '001f'x )
+! To get the month:     ISHFT( IAND( ftime, '01e0'x ), -5 )
+! To get the year:      ISHFT( IAND( ftime, 'fe00'x ), -9 )
+
+        structure /FDATE/
+            integer*2 fdate
+        end structure
+
+        structure /VOLUMELABEL/
+            integer*1 cch
+            integer*1 szVolLabel(12)
+        end structure
+
+        structure /FSINFO/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /VOLUMELABEL/ vol
+        end structure
+
+        integer  HANDTYPE_FILE
+        parameter (HANDTYPE_FILE = '00000000'x)
+        integer  HANDTYPE_DEVICE
+        parameter (HANDTYPE_DEVICE = '00000001'x)
+        integer  HANDTYPE_PIPE
+        parameter (HANDTYPE_PIPE = '00000002'x)
+        integer  HANDTYPE_NETWORK
+        parameter (HANDTYPE_NETWORK = '00008000'x)
+
+        structure /FILELOCK/
+            integer*4 lOffset
+            integer*4 lRange
+        end structure
+
+        external DosSetFileLocks
+        integer*4 DosSetFileLocks
+
+        external DosCancelLockRequest
+        integer*4 DosCancelLockRequest
+
+        structure /FILEFINDBUF/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*2 attrFile
+            integer*1 cchName
+            integer*1 achName(CCHMAXPATHCOMP)
+        end structure
+
+        structure /FILEFINDBUF2/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*2 attrFile
+            integer*4 cbList
+            integer*1 cchName
+            integer*1 achName(CCHMAXPATHCOMP)
+        end structure
+
+        structure /FILEFINDBUF3/
+            integer*4 oNextEntryOffset
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*4 attrFile
+            integer*1 cchName
+            integer*1 achName(CCHMAXPATHCOMP)
+        end structure
+
+        structure /FILEFINDBUF4/
+            integer*4 oNextEntryOffset
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*4 attrFile
+            integer*4 cbList
+            integer*1 cchName
+            integer*1 achName(CCHMAXPATHCOMP)
+        end structure
+
+        structure /GEA/
+            integer*1 cbName
+            integer*1 szName(1)
+        end structure
+
+        structure /GEALIST/
+            integer*4 cbList
+            record /GEA/ list(1)
+        end structure
+
+        structure /FEA/
+            integer*1 fEA
+            integer*1 cbName
+            integer*2 cbValue
+        end structure
+
+        integer  FEA_NEEDEA
+        parameter (FEA_NEEDEA = '00000080'x)
+
+        structure /FEALIST/
+            integer*4 cbList
+            record /FEA/ list(1)
+        end structure
+
+        structure /EAOP/
+            integer*4 fpGEAList
+            integer*4 fpFEAList
+            integer*4 oError
+        end structure
+
+        structure /FEA2/
+            integer*4 oNextEntryOffset
+            integer*1 fEA
+            integer*1 cbName
+            integer*2 cbValue
+            integer*1 szName(1)
+        end structure
+
+        structure /FEA2LIST/
+            integer*4 cbList
+            record /FEA2/ list(1)
+        end structure
+
+        structure /GEA2/
+            integer*4 oNextEntryOffset
+            integer*1 cbName
+            integer*1 szName(1)
+        end structure
+
+        structure /GEA2LIST/
+            integer*4 cbList
+            record /GEA2/ list(1)
+        end structure
+
+        structure /EAOP2/
+            integer*4 fpGEA2List
+            integer*4 fpFEA2List
+            integer*4 oError
+        end structure
+
+        integer  EAT_BINARY
+        parameter (EAT_BINARY = '0000FFFE'x)
+        integer  EAT_ASCII
+        parameter (EAT_ASCII = '0000FFFD'x)
+        integer  EAT_BITMAP
+        parameter (EAT_BITMAP = '0000FFFB'x)
+        integer  EAT_METAFILE
+        parameter (EAT_METAFILE = '0000FFFA'x)
+        integer  EAT_ICON
+        parameter (EAT_ICON = '0000FFF9'x)
+        integer  EAT_EA
+        parameter (EAT_EA = '0000FFEE'x)
+        integer  EAT_MVMT
+        parameter (EAT_MVMT = '0000FFDF'x)
+        integer  EAT_MVST
+        parameter (EAT_MVST = '0000FFDE'x)
+        integer  EAT_ASN1
+        parameter (EAT_ASN1 = '0000FFDD'x)
+
+        external DosOpen
+        integer*4 DosOpen
+
+        external DosClose
+        integer*4 DosClose
+
+        external DosRead
+        integer*4 DosRead
+
+        external DosWrite
+        integer*4 DosWrite
+
+        structure /FILESTATUS/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*2 attrFile
+        end structure
+
+        structure /FILESTATUS2/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*2 attrFile
+            integer*4 cbList
+        end structure
+
+        structure /FILESTATUS3/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*4 attrFile
+        end structure
+
+        structure /FILESTATUS4/
+            record /FDATE/ fdateCreation
+            record /FTIME/ ftimeCreation
+            record /FDATE/ fdateLastAccess
+            record /FTIME/ ftimeLastAccess
+            record /FDATE/ fdateLastWrite
+            record /FTIME/ ftimeLastWrite
+            integer*4 cbFile
+            integer*4 cbFileAlloc
+            integer*4 attrFile
+            integer*4 cbList
+        end structure
+
+        structure /FSALLOCATE/
+            integer*4 idFileSystem
+            integer*4 cSectorUnit
+            integer*4 cUnit
+            integer*4 cUnitAvail
+            integer*2 cbSector
+        end structure
+
+        external DosDelete
+        integer*4 DosDelete
+
+        external DosForceDelete
+        integer*4 DosForceDelete
+
+        external DosDupHandle
+        integer*4 DosDupHandle
+
+        external DosQueryFHState
+        integer*4 DosQueryFHState
+
+        external DosSetFHState
+        integer*4 DosSetFHState
+
+        external DosQueryHType
+        integer*4 DosQueryHType
+
+        external DosFindFirst
+        integer*4 DosFindFirst
+
+        external DosFindNext
+        integer*4 DosFindNext
+
+        external DosFindClose
+        integer*4 DosFindClose
+
+        external DosFSAttach
+        integer*4 DosFSAttach
+
+        external DosQueryFSAttach
+        integer*4 DosQueryFSAttach
+
+        external DosFSCtl
+        integer*4 DosFSCtl
+
+        external DosSetFileSize
+        integer*4 DosSetFileSize
+
+        external DosResetBuffer
+        integer*4 DosResetBuffer
+
+        external DosSetFilePtr
+        integer*4 DosSetFilePtr
+
+        external DosMove
+        integer*4 DosMove
+
+        external DosCopy
+        integer*4 DosCopy
+
+        external DosEditName
+        integer*4 DosEditName
+
+        external DosCreateDir
+        integer*4 DosCreateDir
+
+        external DosDeleteDir
+        integer*4 DosDeleteDir
+
+        external DosSetDefaultDisk
+        integer*4 DosSetDefaultDisk
+
+        external DosQueryCurrentDisk
+        integer*4 DosQueryCurrentDisk
+
+        external DosSetCurrentDir
+        integer*4 DosSetCurrentDir
+
+        external DosQueryCurrentDir
+        integer*4 DosQueryCurrentDir
+
+        external DosQueryFSInfo
+        integer*4 DosQueryFSInfo
+
+        external DosSetFSInfo
+        integer*4 DosSetFSInfo
+
+        external DosQueryVerify
+        integer*4 DosQueryVerify
+
+        external DosSetVerify
+        integer*4 DosSetVerify
+
+        external DosSetMaxFH
+        integer*4 DosSetMaxFH
+
+        external DosSetRelMaxFH
+        integer*4 DosSetRelMaxFH
+
+        external DosQueryFileInfo
+        integer*4 DosQueryFileInfo
+
+        external DosSetFileInfo
+        integer*4 DosSetFileInfo
+
+        external DosQueryPathInfo
+        integer*4 DosQueryPathInfo
+
+        external DosSetPathInfo
+        integer*4 DosSetPathInfo
+
+        integer  DSPI_WRTTHRU
+        parameter (DSPI_WRTTHRU = '00000010'x)
+
+        external DosShutdown
+        integer*4 DosShutdown
+
+        external DosEnumAttribute
+        integer*4 DosEnumAttribute
+
+        structure /DENA1/
+            integer*1 reserved
+            integer*1 cbName
+            integer*2 cbValue
+            integer*1 szName(1)
+        end structure
+
+        integer  ENUMEA_LEVEL_NO_VALUE
+        parameter (ENUMEA_LEVEL_NO_VALUE = 1)
+        integer  ENUMEA_REFTYPE_FHANDLE
+        parameter (ENUMEA_REFTYPE_FHANDLE = 0)
+        integer  ENUMEA_REFTYPE_PATH
+        parameter (ENUMEA_REFTYPE_PATH = 1)
+        integer  ENUMEA_REFTYPE_MAX
+        parameter (ENUMEA_REFTYPE_MAX = ENUMEA_REFTYPE_PATH)
+
+c$endif
+
+c$ifdef INCL_DOSMEMMGR
+
+        external DosAllocMem
+        integer*4 DosAllocMem
+
+        external DosFreeMem
+        integer*4 DosFreeMem
+
+        external DosSetMem
+        integer*4 DosSetMem
+
+        external DosGiveSharedMem
+        integer*4 DosGiveSharedMem
+
+        external DosGetSharedMem
+        integer*4 DosGetSharedMem
+
+        external DosGetNamedSharedMem
+        integer*4 DosGetNamedSharedMem
+
+        external DosAllocSharedMem
+        integer*4 DosAllocSharedMem
+
+        external DosQueryMem
+        integer*4 DosQueryMem
+
+        external DosSubAllocMem
+        integer*4 DosSubAllocMem
+
+        external DosSubFreeMem
+        integer*4 DosSubFreeMem
+
+        external DosSubSetMem
+        integer*4 DosSubSetMem
+
+        external DosSubUnsetMem
+        integer*4 DosSubUnsetMem
+
+c$include bsememf.fi
+
+c$endif
+
+c$ifdef INCL_DOSSEMAPHORES
+
+        integer  DC_SEM_SHARED
+        parameter (DC_SEM_SHARED = '00000001'x)
+        integer  DCMW_WAIT_ANY
+        parameter (DCMW_WAIT_ANY = '00000002'x)
+        integer  DCMW_WAIT_ALL
+        parameter (DCMW_WAIT_ALL = '00000004'x)
+
+        integer  SEM_INDEFINITE_WAIT
+        parameter (SEM_INDEFINITE_WAIT = -1)
+        integer  SEM_IMMEDIATE_RETURN
+        parameter (SEM_IMMEDIATE_RETURN = 0)
+
+        structure /SEMRECORD/
+            integer*4 hsemCur
+            integer*4 ulUser
+        end structure
+
+        external DosCreateEventSem
+        integer*4 DosCreateEventSem
+
+        external DosOpenEventSem
+        integer*4 DosOpenEventSem
+
+        external DosCloseEventSem
+        integer*4 DosCloseEventSem
+
+        external DosResetEventSem
+        integer*4 DosResetEventSem
+
+        external DosPostEventSem
+        integer*4 DosPostEventSem
+
+        external DosWaitEventSem
+        integer*4 DosWaitEventSem
+
+        external DosQueryEventSem
+        integer*4 DosQueryEventSem
+
+        external DosCreateMutexSem
+        integer*4 DosCreateMutexSem
+
+        external DosOpenMutexSem
+        integer*4 DosOpenMutexSem
+
+        external DosCloseMutexSem
+        integer*4 DosCloseMutexSem
+
+        external DosRequestMutexSem
+        integer*4 DosRequestMutexSem
+
+        external DosReleaseMutexSem
+        integer*4 DosReleaseMutexSem
+
+        external DosQueryMutexSem
+        integer*4 DosQueryMutexSem
+
+        external DosCreateMuxWaitSem
+        integer*4 DosCreateMuxWaitSem
+
+        external DosOpenMuxWaitSem
+        integer*4 DosOpenMuxWaitSem
+
+        external DosCloseMuxWaitSem
+        integer*4 DosCloseMuxWaitSem
+
+        external DosWaitMuxWaitSem
+        integer*4 DosWaitMuxWaitSem
+
+        external DosAddMuxWaitSem
+        integer*4 DosAddMuxWaitSem
+
+        external DosDeleteMuxWaitSem
+        integer*4 DosDeleteMuxWaitSem
+
+        external DosQueryMuxWaitSem
+        integer*4 DosQueryMuxWaitSem
+
+c$endif
+
+c$ifdef INCL_DOSDATETIME
+
+        structure /DATETIME/
+            integer*1 hours
+            integer*1 minutes
+            integer*1 seconds
+            integer*1 hundredths
+            integer*1 day
+            integer*1 month
+            integer*2 year
+            integer*2 timezone
+            integer*1 weekday
+        end structure
+
+        external DosGetDateTime
+        integer*4 DosGetDateTime
+
+        external DosSetDateTime
+        integer*4 DosSetDateTime
+
+        external DosAsyncTimer
+        integer*4 DosAsyncTimer
+
+        external DosStartTimer
+        integer*4 DosStartTimer
+
+        external DosStopTimer
+        integer*4 DosStopTimer
+
+c$endif
+
+c$ifdef INCL_DOSMODULEMGR
+
+        external DosLoadModule
+        integer*4 DosLoadModule
+
+        external DosFreeModule
+        integer*4 DosFreeModule
+
+        external DosQueryProcAddr
+        integer*4 DosQueryProcAddr
+
+        external DosQueryModuleHandle
+        integer*4 DosQueryModuleHandle
+
+        external DosQueryModuleName
+        integer*4 DosQueryModuleName
+
+        integer  PT_16BIT
+        parameter (PT_16BIT = 0)
+        integer  PT_32BIT
+        parameter (PT_32BIT = 1)
+
+        external DosQueryProcType
+        integer*4 DosQueryProcType
+
+c$endif
+
+c$ifdef INCL_DOSRESOURCES
+
+        integer  RT_POINTER
+        parameter (RT_POINTER = 1)
+        integer  RT_BITMAP
+        parameter (RT_BITMAP = 2)
+        integer  RT_MENU
+        parameter (RT_MENU = 3)
+        integer  RT_DIALOG
+        parameter (RT_DIALOG = 4)
+        integer  RT_STRING
+        parameter (RT_STRING = 5)
+        integer  RT_FONTDIR
+        parameter (RT_FONTDIR = 6)
+        integer  RT_FONT
+        parameter (RT_FONT = 7)
+        integer  RT_ACCELTABLE
+        parameter (RT_ACCELTABLE = 8)
+        integer  RT_RCDATA
+        parameter (RT_RCDATA = 9)
+        integer  RT_MESSAGE
+        parameter (RT_MESSAGE = 10)
+        integer  RT_DLGINCLUDE
+        parameter (RT_DLGINCLUDE = 11)
+        integer  RT_VKEYTBL
+        parameter (RT_VKEYTBL = 12)
+        integer  RT_KEYTBL
+        parameter (RT_KEYTBL = 13)
+        integer  RT_CHARTBL
+        parameter (RT_CHARTBL = 14)
+        integer  RT_DISPLAYINFO
+        parameter (RT_DISPLAYINFO = 15)
+
+        integer  RT_FKASHORT
+        parameter (RT_FKASHORT = 16)
+        integer  RT_FKALONG
+        parameter (RT_FKALONG = 17)
+
+        integer  RT_HELPTABLE
+        parameter (RT_HELPTABLE = 18)
+        integer  RT_HELPSUBTABLE
+        parameter (RT_HELPSUBTABLE = 19)
+
+        integer  RT_FDDIR
+        parameter (RT_FDDIR = 20)
+        integer  RT_FD
+        parameter (RT_FD = 21)
+
+        integer  RT_MAX
+        parameter (RT_MAX = 22)
+
+        integer  RF_ORDINALID
+        parameter (RF_ORDINALID = '80000000'x)
+
+        external DosGetResource
+        integer*4 DosGetResource
+
+        external DosFreeResource
+        integer*4 DosFreeResource
+
+        external DosQueryResourceSize
+        integer*4 DosQueryResourceSize
+
+c$endif
+
+c$ifdef INCL_DOSNLS
+
+        structure /COUNTRYCODE/
+            integer*4 country
+            integer*4 codepage
+        end structure
+
+        structure /COUNTRYINFO/
+            integer*4 country
+            integer*4 codepage
+            integer*4 fsDateFmt
+            integer*1 szCurrency(5)
+            integer*1 szThousandsSeparator(2)
+            integer*1 szDecimal(2)
+            integer*1 szDateSeparator(2)
+            integer*1 szTimeSeparator(2)
+            integer*1 fsCurrencyFmt
+            integer*1 cDecimalPlace
+            integer*1 fsTimeFmt
+            integer*2 abReserved1(2)
+            integer*1 szDataSeparator(2)
+            integer*2 abReserved2(5)
+        end structure
+
+        external DosQueryCtryInfo
+        integer*4 DosQueryCtryInfo
+
+        external DosQueryDBCSEnv
+        integer*4 DosQueryDBCSEnv
+
+        external DosMapCase
+        integer*4 DosMapCase
+
+        external DosQueryCollate
+        integer*4 DosQueryCollate
+
+        external DosQueryCp
+        integer*4 DosQueryCp
+
+        external DosSetProcessCp
+        integer*4 DosSetProcessCp
+
+c$endif
+
+c$ifdef INCL_DOSEXCEPTIONS
+
+        integer  SIG_UNSETFOCUS
+        parameter (SIG_UNSETFOCUS = 0)
+        integer  SIG_SETFOCUS
+        parameter (SIG_SETFOCUS = 1)
+
+c$include bsexcpt.fi
+
+        external DosSetExceptionHandler
+        integer*4 DosSetExceptionHandler
+
+        external DosUnsetExceptionHandler
+        integer*4 DosUnsetExceptionHandler
+
+        external DosRaiseException
+        integer*4 DosRaiseException
+
+        external DosSendSignalException
+        integer*4 DosSendSignalException
+
+        external DosUnwindException
+        integer*4 DosUnwindException
+
+        external DosSetSignalExceptionFocus
+        integer*4 DosSetSignalExceptionFocus
+
+        external DosEnterMustComplete
+        integer*4 DosEnterMustComplete
+
+        external DosExitMustComplete
+        integer*4 DosExitMustComplete
+
+        external DosAcknowledgeSignalException
+        integer*4 DosAcknowledgeSignalException
+
+c$endif
+
+c$ifdef INCL_DOSQUEUES
+
+c$ifdef INCL_DOSFILEMGR
+
+        structure /REQUESTDATA/
+            integer*4 pid
+            integer*4 ulData
+        end structure
+
+        integer  QUE_FIFO
+        parameter (QUE_FIFO = 0)
+        integer  QUE_LIFO
+        parameter (QUE_LIFO = 1)
+        integer  QUE_PRIORITY
+        parameter (QUE_PRIORITY = 2)
+        integer  QUE_NOCONVERT_ADDRESS
+        parameter (QUE_NOCONVERT_ADDRESS = 0)
+        integer  QUE_CONVERT_ADDRESS
+        parameter (QUE_CONVERT_ADDRESS = 4)
+
+        external DosCreatePipe
+        integer*4 DosCreatePipe
+
+        external DosCloseQueue
+        integer*4 DosCloseQueue
+
+        external DosCreateQueue
+        integer*4 DosCreateQueue
+
+        external DosOpenQueue
+        integer*4 DosOpenQueue
+
+        external DosPeekQueue
+        integer*4 DosPeekQueue
+
+        external DosPurgeQueue
+        integer*4 DosPurgeQueue
+
+        external DosQueryQueue
+        integer*4 DosQueryQueue
+
+        external DosReadQueue
+        integer*4 DosReadQueue
+
+        external DosWriteQueue
+        integer*4 DosWriteQueue
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_DOSMISC
+
+        integer  DSP_IMPLIEDCUR
+        parameter (DSP_IMPLIEDCUR = 1)
+        integer  DSP_PATHREF
+        parameter (DSP_PATHREF = 2)
+        integer  DSP_IGNORENETERR
+        parameter (DSP_IGNORENETERR = 4)
+
+        integer  QSV_MAX_PATH_LENGTH
+        parameter (QSV_MAX_PATH_LENGTH = 1)
+        integer  Q_MAX_PATH_LENGTH
+        parameter (Q_MAX_PATH_LENGTH = QSV_MAX_PATH_LENGTH)
+        integer  QSV_MAX_TEXT_SESSIONS
+        parameter (QSV_MAX_TEXT_SESSIONS = 2)
+        integer  QSV_MAX_PM_SESSIONS
+        parameter (QSV_MAX_PM_SESSIONS = 3)
+        integer  QSV_MAX_VDM_SESSIONS
+        parameter (QSV_MAX_VDM_SESSIONS = 4)
+        integer  QSV_BOOT_DRIVE
+        parameter (QSV_BOOT_DRIVE = 5)
+        integer  QSV_DYN_PRI_VARIATION
+        parameter (QSV_DYN_PRI_VARIATION = 6)
+        integer  QSV_MAX_WAIT
+        parameter (QSV_MAX_WAIT = 7)
+        integer  QSV_MIN_SLICE
+        parameter (QSV_MIN_SLICE = 8)
+        integer  QSV_MAX_SLICE
+        parameter (QSV_MAX_SLICE = 9)
+        integer  QSV_PAGE_SIZE
+        parameter (QSV_PAGE_SIZE = 10)
+        integer  QSV_VERSION_MAJOR
+        parameter (QSV_VERSION_MAJOR = 11)
+        integer  QSV_VERSION_MINOR
+        parameter (QSV_VERSION_MINOR = 12)
+        integer  QSV_VERSION_REVISION
+        parameter (QSV_VERSION_REVISION = 13)
+        integer  QSV_MS_COUNT
+        parameter (QSV_MS_COUNT = 14)
+        integer  QSV_TIME_LOW
+        parameter (QSV_TIME_LOW = 15)
+        integer  QSV_TIME_HIGH
+        parameter (QSV_TIME_HIGH = 16)
+        integer  QSV_TOTPHYSMEM
+        parameter (QSV_TOTPHYSMEM = 17)
+        integer  QSV_TOTRESMEM
+        parameter (QSV_TOTRESMEM = 18)
+        integer  QSV_TOTAVAILMEM
+        parameter (QSV_TOTAVAILMEM = 19)
+        integer  QSV_MAXPRMEM
+        parameter (QSV_MAXPRMEM = 20)
+        integer  QSV_MAXSHMEM
+        parameter (QSV_MAXSHMEM = 21)
+        integer  QSV_TIMER_INTERVAL
+        parameter (QSV_TIMER_INTERVAL = 22)
+        integer  QSV_MAX_COMP_LENGTH
+        parameter (QSV_MAX_COMP_LENGTH = 23)
+        integer  QSV_MAX
+        parameter (QSV_MAX = QSV_MAX_COMP_LENGTH)
+
+        integer  FERR_DISABLEHARDERR
+        parameter (FERR_DISABLEHARDERR = '00000000'x)
+        integer  FERR_ENABLEHARDERR
+        parameter (FERR_ENABLEHARDERR = '00000001'x)
+        integer  FERR_ENABLEEXCEPTION
+        parameter (FERR_ENABLEEXCEPTION = '00000000'x)
+        integer  FERR_DISABLEEXCEPTION
+        parameter (FERR_DISABLEEXCEPTION = '00000002'x)
+
+        integer  SIS_MMIOADDR
+        parameter (SIS_MMIOADDR = 0)
+        integer  SIS_MEC_TABLE
+        parameter (SIS_MEC_TABLE = 1)
+        integer  SIS_SYS_LOG
+        parameter (SIS_SYS_LOG = 2)
+
+        external DosError
+        integer*4 DosError
+
+        external DosGetMessage
+        integer*4 DosGetMessage
+
+        external DosErrClass
+        integer*4 DosErrClass
+
+        external DosInsertMessage
+        integer*4 DosInsertMessage
+
+        external DosPutMessage
+        integer*4 DosPutMessage
+
+        external DosQuerySysInfo
+        integer*4 DosQuerySysInfo
+
+        external DosScanEnv
+        integer*4 DosScanEnv
+
+        external DosSearchPath
+        integer*4 DosSearchPath
+
+        external DosQueryMessageCP
+        integer*4 DosQueryMessageCP
+
+        external DosQueryRASInfo
+        integer*4 DosQueryRASInfo
+
+c$endif
+
+c$ifdef INCL_DOSSESMGR
+
+        structure /STARTDATA/
+            integer*2 Length
+            integer*2 Related
+            integer*2 FgBg
+            integer*2 TraceOpt
+            integer*4 PgmTitle
+            integer*4 PgmName
+            integer*4 PgmInputs
+            integer*4 TermQ
+            integer*4 Environment
+            integer*2 InheritOpt
+            integer*2 SessionType
+            integer*4 IconFile
+            integer*4 PgmHandle
+            integer*2 PgmControl
+            integer*2 InitXPos
+            integer*2 InitYPos
+            integer*2 InitXSize
+            integer*2 InitYSize
+            integer*2 Reserved
+            integer*4 ObjectBuffer
+            integer*4 ObjectBuffLen
+        end structure
+
+        integer  SSF_RELATED_INDEPENDENT
+        parameter (SSF_RELATED_INDEPENDENT = 0)
+        integer  SSF_RELATED_CHILD
+        parameter (SSF_RELATED_CHILD = 1)
+
+        integer  SSF_FGBG_FORE
+        parameter (SSF_FGBG_FORE = 0)
+        integer  SSF_FGBG_BACK
+        parameter (SSF_FGBG_BACK = 1)
+
+        integer  SSF_TRACEOPT_NONE
+        parameter (SSF_TRACEOPT_NONE = 0)
+        integer  SSF_TRACEOPT_TRACE
+        parameter (SSF_TRACEOPT_TRACE = 1)
+        integer  SSF_TRACEOPT_TRACEALL
+        parameter (SSF_TRACEOPT_TRACEALL = 2)
+
+        integer  SSF_INHERTOPT_SHELL
+        parameter (SSF_INHERTOPT_SHELL = 0)
+        integer  SSF_INHERTOPT_PARENT
+        parameter (SSF_INHERTOPT_PARENT = 1)
+
+        integer  SSF_TYPE_DEFAULT
+        parameter (SSF_TYPE_DEFAULT = 0)
+        integer  SSF_TYPE_FULLSCREEN
+        parameter (SSF_TYPE_FULLSCREEN = 1)
+        integer  SSF_TYPE_WINDOWABLEVIO
+        parameter (SSF_TYPE_WINDOWABLEVIO = 2)
+        integer  SSF_TYPE_PM
+        parameter (SSF_TYPE_PM = 3)
+        integer  SSF_TYPE_VDM
+        parameter (SSF_TYPE_VDM = 4)
+        integer  SSF_TYPE_GROUP
+        parameter (SSF_TYPE_GROUP = 5)
+        integer  SSF_TYPE_DLL
+        parameter (SSF_TYPE_DLL = 6)
+        integer  SSF_TYPE_WINDOWEDVDM
+        parameter (SSF_TYPE_WINDOWEDVDM = 7)
+        integer  SSF_TYPE_PDD
+        parameter (SSF_TYPE_PDD = 8)
+        integer  SSF_TYPE_VDD
+        parameter (SSF_TYPE_VDD = 9)
+
+        integer  SSF_CONTROL_VISIBLE
+        parameter (SSF_CONTROL_VISIBLE = '00000000'x)
+        integer  SSF_CONTROL_INVISIBLE
+        parameter (SSF_CONTROL_INVISIBLE = '00000001'x)
+        integer  SSF_CONTROL_MAXIMIZE
+        parameter (SSF_CONTROL_MAXIMIZE = '00000002'x)
+        integer  SSF_CONTROL_MINIMIZE
+        parameter (SSF_CONTROL_MINIMIZE = '00000004'x)
+        integer  SSF_CONTROL_NOAUTOCLOSE
+        parameter (SSF_CONTROL_NOAUTOCLOSE = '00000008'x)
+        integer  SSF_CONTROL_SETPOS
+        parameter (SSF_CONTROL_SETPOS = '00008000'x)
+
+        structure /STATUSDATA/
+            integer*2 Length
+            integer*2 SelectInd
+            integer*2 BondInd
+        end structure
+
+        integer  SET_SESSION_UNCHANGED
+        parameter (SET_SESSION_UNCHANGED = 0)
+        integer  SET_SESSION_SELECTABLE
+        parameter (SET_SESSION_SELECTABLE = 1)
+        integer  SET_SESSION_NON_SELECTABLE
+        parameter (SET_SESSION_NON_SELECTABLE = 2)
+        integer  SET_SESSION_BOND
+        parameter (SET_SESSION_BOND = 1)
+        integer  SET_SESSION_NO_BOND
+        parameter (SET_SESSION_NO_BOND = 2)
+
+        integer  STOP_SESSION_SPECIFIED
+        parameter (STOP_SESSION_SPECIFIED = 0)
+        integer  STOP_SESSION_ALL
+        parameter (STOP_SESSION_ALL = 1)
+
+        external DosStartSession
+        integer*4 DosStartSession
+
+        external DosSetSession
+        integer*4 DosSetSession
+
+        external DosSelectSession
+        integer*4 DosSelectSession
+
+        external DosStopSession
+        integer*4 DosStopSession
+
+        external DosQueryAppType
+        integer*4 DosQueryAppType
+
+c$endif
+
+c$ifdef INCL_DOSSESMGR
+
+        integer  FAPPTYP_NOTSPEC
+        parameter (FAPPTYP_NOTSPEC = '00000000'x)
+        integer  FAPPTYP_NOTWINDOWCOMPAT
+        parameter (FAPPTYP_NOTWINDOWCOMPAT = '00000001'x)
+        integer  FAPPTYP_WINDOWCOMPAT
+        parameter (FAPPTYP_WINDOWCOMPAT = '00000002'x)
+        integer  FAPPTYP_WINDOWAPI
+        parameter (FAPPTYP_WINDOWAPI = '00000003'x)
+        integer  FAPPTYP_BOUND
+        parameter (FAPPTYP_BOUND = '00000008'x)
+        integer  FAPPTYP_DLL
+        parameter (FAPPTYP_DLL = '00000010'x)
+        integer  FAPPTYP_DOS
+        parameter (FAPPTYP_DOS = '00000020'x)
+        integer  FAPPTYP_PHYSDRV
+        parameter (FAPPTYP_PHYSDRV = '00000040'x)
+        integer  FAPPTYP_VIRTDRV
+        parameter (FAPPTYP_VIRTDRV = '00000080'x)
+        integer  FAPPTYP_PROTDLL
+        parameter (FAPPTYP_PROTDLL = '00000100'x)
+        integer  FAPPTYP_WINDOWSREAL
+        parameter (FAPPTYP_WINDOWSREAL = '00000200'x)
+        integer  FAPPTYP_WINDOWSPROT
+        parameter (FAPPTYP_WINDOWSPROT = '00000400'x)
+        integer  FAPPTYP_32BIT
+        parameter (FAPPTYP_32BIT = '00004000'x)
+        integer  FAPPTYP_EXETYPE
+        parameter (FAPPTYP_EXETYPE = FAPPTYP_WINDOWAPI)
+        integer FAPPTYP_RESERVED
+        parameter (FAPPTYP_RESERVED = .not. (FAPPTYP_WINDOWAPI .or.
+     +                 FAPPTYP_BOUND .or. FAPPTYP_DLL .or.
+     +                 FAPPTYP_DOS .or. FAPPTYP_PHYSDRV .or.
+     +                 FAPPTYP_VIRTDRV .or. FAPPTYP_PROTDLL .or.
+     +                 FAPPTYP_32BIT))
+
+c$ifdef INCL_DOSFILEMGR
+
+        integer  EAT_APPTYP_PMAPI
+        parameter (EAT_APPTYP_PMAPI = '00000000'x)
+        integer  EAT_APPTYP_DOS
+        parameter (EAT_APPTYP_DOS = '00000001'x)
+        integer  EAT_APPTYP_PMW
+        parameter (EAT_APPTYP_PMW = '00000002'x)
+        integer  EAT_APPTYP_NOPMW
+        parameter (EAT_APPTYP_NOPMW = '00000003'x)
+        integer  EAT_APPTYP_EXETYPE
+        parameter (EAT_APPTYP_EXETYPE = '00000003'x)
+        integer EAT_APPTYP_RESERVED
+        parameter (EAT_APPTYP_RESERVED = .not. EAT_APPTYP_EXETYPE)
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_DOSDEVICES
+
+        external DosDevConfig
+        integer*4 DosDevConfig
+
+        integer  DEVINFO_PRINTER
+        parameter (DEVINFO_PRINTER = 0)
+        integer  DEVINFO_RS232
+        parameter (DEVINFO_RS232 = 1)
+        integer  DEVINFO_FLOPPY
+        parameter (DEVINFO_FLOPPY = 2)
+        integer  DEVINFO_COPROCESSOR
+        parameter (DEVINFO_COPROCESSOR = 3)
+        integer  DEVINFO_SUBMODEL
+        parameter (DEVINFO_SUBMODEL = 4)
+        integer  DEVINFO_MODEL
+        parameter (DEVINFO_MODEL = 5)
+        integer  DEVINFO_ADAPTER
+        parameter (DEVINFO_ADAPTER = 6)
+
+        external DosDevIOCtl
+        integer*4 DosDevIOCtl
+
+        external DosPhysicalDisk
+        integer*4 DosPhysicalDisk
+
+        integer  INFO_COUNT_PARTITIONABLE_DISKS
+        parameter (INFO_COUNT_PARTITIONABLE_DISKS = 1)
+        integer  INFO_GETIOCTLHANDLE
+        parameter (INFO_GETIOCTLHANDLE = 2)
+        integer  INFO_FREEIOCTLHANDLE
+        parameter (INFO_FREEIOCTLHANDLE = 3)
+
+c$endif
+
+c$ifdef INCL_DOSNMPIPES
+
+        structure /AVAILDATA/
+            integer*2 cbpipe
+            integer*2 cbmessage
+        end structure
+
+        structure /PIPEINFO/
+            integer*2 cbOut
+            integer*2 cbIn
+            integer*1 cbMaxInst
+            integer*1 cbCurInst
+            integer*1 cbName
+            integer*1 szName(1)
+        end structure
+
+        structure /PIPESEMSTATE/
+            integer*1 fStatus
+            integer*1 fFlag
+            integer*2 usKey
+            integer*2 usAvail
+        end structure
+
+        integer  NP_INDEFINITE_WAIT
+        parameter (NP_INDEFINITE_WAIT = -1)
+        integer  NP_DEFAULT_WAIT
+        parameter (NP_DEFAULT_WAIT = 0)
+
+        integer  NP_STATE_DISCONNECTED
+        parameter (NP_STATE_DISCONNECTED = '00000001'x)
+        integer  NP_STATE_LISTENING
+        parameter (NP_STATE_LISTENING = '00000002'x)
+        integer  NP_STATE_CONNECTED
+        parameter (NP_STATE_CONNECTED = '00000003'x)
+        integer  NP_STATE_CLOSING
+        parameter (NP_STATE_CLOSING = '00000004'x)
+
+        integer  NP_ACCESS_INBOUND
+        parameter (NP_ACCESS_INBOUND = '00000000'x)
+        integer  NP_ACCESS_OUTBOUND
+        parameter (NP_ACCESS_OUTBOUND = '00000001'x)
+        integer  NP_ACCESS_DUPLEX
+        parameter (NP_ACCESS_DUPLEX = '00000002'x)
+        integer  NP_INHERIT
+        parameter (NP_INHERIT = '00000000'x)
+        integer  NP_NOINHERIT
+        parameter (NP_NOINHERIT = '00000080'x)
+        integer  NP_WRITEBEHIND
+        parameter (NP_WRITEBEHIND = '00000000'x)
+        integer  NP_NOWRITEBEHIND
+        parameter (NP_NOWRITEBEHIND = '00004000'x)
+
+        integer  NP_READMODE_BYTE
+        parameter (NP_READMODE_BYTE = '00000000'x)
+        integer  NP_READMODE_MESSAGE
+        parameter (NP_READMODE_MESSAGE = '00000100'x)
+        integer  NP_TYPE_BYTE
+        parameter (NP_TYPE_BYTE = '00000000'x)
+        integer  NP_TYPE_MESSAGE
+        parameter (NP_TYPE_MESSAGE = '00000400'x)
+        integer  NP_END_CLIENT
+        parameter (NP_END_CLIENT = '00000000'x)
+        integer  NP_END_SERVER
+        parameter (NP_END_SERVER = '00004000'x)
+        integer  NP_WAIT
+        parameter (NP_WAIT = '00000000'x)
+        integer  NP_NOWAIT
+        parameter (NP_NOWAIT = '00008000'x)
+        integer  NP_UNLIMITED_INSTANCES
+        parameter (NP_UNLIMITED_INSTANCES = '000000FF'x)
+
+        external DosCallNPipe
+        integer*4 DosCallNPipe
+
+        external DosConnectNPipe
+        integer*4 DosConnectNPipe
+
+        external DosDisConnectNPipe
+        integer*4 DosDisConnectNPipe
+
+        external DosCreateNPipe
+        integer*4 DosCreateNPipe
+
+        external DosPeekNPipe
+        integer*4 DosPeekNPipe
+
+        external DosQueryNPHState
+        integer*4 DosQueryNPHState
+
+        external DosQueryNPipeInfo
+        integer*4 DosQueryNPipeInfo
+
+        external DosQueryNPipeSemState
+        integer*4 DosQueryNPipeSemState
+
+        external DosRawReadNPipe
+        integer*4 DosRawReadNPipe
+
+        external DosRawWriteNPipe
+        integer*4 DosRawWriteNPipe
+
+        external DosSetNPHState
+        integer*4 DosSetNPHState
+
+        external DosSetNPipeSem
+        integer*4 DosSetNPipeSem
+
+        external DosTransactNPipe
+        integer*4 DosTransactNPipe
+
+        external DosWaitNPipe
+        integer*4 DosWaitNPipe
+
+        integer  NPSS_EOI
+        parameter (NPSS_EOI = 0)
+        integer  NPSS_RDATA
+        parameter (NPSS_RDATA = 1)
+        integer  NPSS_WSPACE
+        parameter (NPSS_WSPACE = 2)
+        integer  NPSS_CLOSE
+        parameter (NPSS_CLOSE = 3)
+
+        integer  NPSS_WAIT
+        parameter (NPSS_WAIT = '00000001'x)
+
+        integer  NP_NBLK
+        parameter (NP_NBLK = '00008000'x)
+        integer  NP_SERVER
+        parameter (NP_SERVER = '00004000'x)
+        integer  NP_WMESG
+        parameter (NP_WMESG = '00000400'x)
+        integer  NP_RMESG
+        parameter (NP_RMESG = '00000100'x)
+        integer  NP_ICOUNT
+        parameter (NP_ICOUNT = '000000FF'x)
+
+        integer  NP_DISCONNECTED
+        parameter (NP_DISCONNECTED = 1)
+        integer  NP_LISTENING
+        parameter (NP_LISTENING = 2)
+        integer  NP_CONNECTED
+        parameter (NP_CONNECTED = 3)
+        integer  NP_CLOSING
+        parameter (NP_CLOSING = 4)
+
+c$endif
+
+c$ifdef INCL_DOSPROFILE
+
+        external DosTmrQueryFreq
+        integer*4 DosTmrQueryFreq
+
+        external DosTmrQueryTime
+        integer*4 DosTmrQueryTime
+
+        external DosRegisterPerfCtrs
+        integer*4 DosRegisterPerfCtrs
+
+        integer  PROF_ORDINAL
+        parameter (PROF_ORDINAL = 133)
+
+        integer  PROF_SYSTEM
+        parameter (PROF_SYSTEM = 0)
+        integer  PROF_USER
+        parameter (PROF_USER = 1)
+        integer  PROF_USEDD
+        parameter (PROF_USEDD = 2)
+        integer  PROF_KERNEL
+        parameter (PROF_KERNEL = 4)
+        integer  PROF_VERBOSE
+        parameter (PROF_VERBOSE = 8)
+        integer  PROF_ENABLE
+        parameter (PROF_ENABLE = 16)
+
+        integer  PROF_ALLOC
+        parameter (PROF_ALLOC = 0)
+        integer  PROF_CLEAR
+        parameter (PROF_CLEAR = 1)
+        integer  PROF_ON
+        parameter (PROF_ON = 2)
+        integer  PROF_OFF
+        parameter (PROF_OFF = 3)
+        integer  PROF_DUMP
+        parameter (PROF_DUMP = 4)
+        integer  PROF_FREE
+        parameter (PROF_FREE = 5)
+
+        integer  PROF_SHIFT
+        parameter (PROF_SHIFT = 2)
+
+        integer  PROF_MOD_NAME_SIZE
+        parameter (PROF_MOD_NAME_SIZE = 10)
+
+        integer  PROF_END_OF_DATA
+        parameter (PROF_END_OF_DATA = 13)
+
+c$endif
+
+c$ifdef INCL_DOSMVDM
+
+        external DosOpenVDD
+        integer*4 DosOpenVDD
+
+        external DosRequestVDD
+        integer*4 DosRequestVDD
+
+        external DosCloseVDD
+        integer*4 DosCloseVDD
+
+        external DosQueryDOSProperty
+        integer*4 DosQueryDOSProperty
+
+        external DosSetDOSProperty
+        integer*4 DosSetDOSProperty
+
+c$endif
+
+c$reference

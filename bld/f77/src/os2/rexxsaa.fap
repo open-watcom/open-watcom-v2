@@ -1,0 +1,163 @@
+c$include os2.fap
+
+c$ifdef INCL_REXXSAA
+c$define INCL_RXSUBCOM
+c$define INCL_RXSHV
+c$define INCL_RXFUNC
+c$define INCL_RXSYSEXIT
+c$define INCL_RXMACRO
+c$define INCL_RXARI
+c$endif
+
+c$pragma aux MAKERXSTRING parm( reference, value, value )
+	
+c$pragma aux (__syscall) RexxStart parm( \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+
+c$ifdef INCL_RXSUBCOM
+
+c$pragma aux (__syscall) RexxSubcomHandler parm( reference, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) RexxRegisterSubcomDll parm( \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxRegisterSubcomExe parm( \
+c		value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) RexxQuerySubcom parm( \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) RexxDeregisterSubcom parm( \
+c		value*4, \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_RXSHV
+
+c$pragma aux (__syscall) RexxVariablePool parm( \
+c		reference )
+
+c$endif
+
+c$ifdef INCL_RXFUNC
+
+c$pragma aux (__syscall) RexxFunctionHandler parm( value, \
+c		value*4, \
+c		reference, \
+c		value, \
+c		reference )
+
+c$pragma aux (__syscall) RexxRegisterFunctionDll parm( \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxRegisterFunctionExe parm( \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) RexxDeregisterFunction parm( \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxQueryFunction parm( \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_RXSYSEXIT
+
+c$pragma aux (__syscall) RexxExitHandler parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) RexxRegisterExitDll parm( \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxRegisterExitExe parm( \
+c		value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) RexxDeregisterExit parm( \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxQueryExit parm( \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+
+c$endif
+
+c$ifdef INCL_RXARI
+
+c$pragma aux (__syscall) RexxSetHalt parm( \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxSetTrace parm( \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxResetTrace parm( \
+c		value*4, \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_RXMACRO
+
+c$pragma aux (__syscall) RexxAddMacro parm( \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxDropMacro parm( \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxSaveMacroSpace parm( \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxLoadMacroSpace parm( \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxQueryMacro parm( \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) RexxReorderMacro parm( \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) RexxClearMacroSpace parm()
+
+c$endif

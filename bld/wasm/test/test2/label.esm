@@ -1,0 +1,62 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov       ax,word ptr DGROUP:L$2
+    mov       ax,word ptr DGROUP:L$4
+    mov       ax,word ptr DGROUP:L$5
+    mov       ax,word ptr DGROUP:L$6
+    mov       ax,word ptr DGROUP:L$9
+    mov       ebx,dword ptr DGROUP:L$1
+    mov       ebx,dword ptr DGROUP:L$2
+    mov       ebx,dword ptr DGROUP:L$3
+    mov       ebx,dword ptr DGROUP:L$7
+    mov       ebx,dword ptr DGROUP:L$8
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	1
+L$1:
+    DB	0
+L$2:
+    DB	2
+L$3:
+    DB	0
+L$4:
+    DB	3
+L$5:
+    DB	0
+L$6:
+    DB	4
+L$7:
+    DB	0, 5
+L$8:
+    DB	0, 1, 0, 2
+L$9:
+    DB	0, 3, 0, 4, 0, 5, 0, 1
+    DB	0, 2, 0, 3, 0, 4, 0, 5
+    DB	0, 1, 0, 2, 0, 3, 0, 4
+    DB	0, 5, 0, 1, 0, 2, 0, 3
+    DB	0, 4, 0, 5, 0, 1, 0, 2
+    DB	0, 3, 0, 4, 0, 5, 0, 1
+    DB	0, 2, 0, 3, 0, 4, 0, 5
+    DB	0, 1, 0, 2, 0, 3, 0, 4
+    DB	0, 5, 0, 1, 0, 2, 0, 3
+    DB	0, 4, 0, 5, 0, 1, 0, 2
+    DB	0, 3, 0, 4, 0, 5, 0, 1
+    DB	0, 2, 0, 3, 0, 4, 0, 5
+    DB	0, 1, 0, 2, 0, 3, 0, 4
+    DB	0, 5, 0, 1, 0, 2, 0, 3
+    DB	0, 4, 0, 5, 0, 1, 0, 2
+    DB	0, 3, 0, 4, 0, 5, 0, 1
+    DB	0, 2, 0, 3, 0, 4, 0, 5
+    DB	0, 1, 0, 2, 0, 3, 0, 4
+    DB	0, 5, 0, 1, 0, 2, 0, 3
+    DB	0, 4, 0, 5, 0, 1, 0, 2
+    DB	0, 3, 0, 4, 0, 5, 0, 1
+    DB	0, 2, 0, 3, 0, 4, 0, 5
+    DB	0, 1, 0, 2, 0, 3, 0, 4
+    DB	0, 5, 0
+
+_DATA		ENDS
+		END

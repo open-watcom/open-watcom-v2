@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WDeleteMenuEntry        ( WMenuEditInfo * );
-extern Bool WDeleteEditWinLBoxEntry ( WMenuEditInfo *, int, Bool );
+extern Bool WDeleteMenuEntry( WMenuEditInfo * );
+extern Bool WDeleteEditWinLBoxEntry( WMenuEditInfo *, int, Bool );
 
 #endif

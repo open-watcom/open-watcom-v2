@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  _CRT_INIT function for Win32.
 *
 ****************************************************************************/
 
@@ -33,7 +32,11 @@
 #include "variety.h"
 #include <windows.h>
 
-_WCRTLINK BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved ) {
+#ifdef __MAKE_DLL_CLIB
+__declspec(dllexport)
+#endif
+BOOL WINAPI _CRT_INIT( HINSTANCE hDLL, DWORD dwReason, LPVOID reserved )
+{
     hDLL = hDLL;
     dwReason = dwReason;
     reserved = reserved;

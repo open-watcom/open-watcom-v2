@@ -251,9 +251,9 @@ void ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len ) {
     objr->curoff += len;
 }
 
-void ObjPutName( obj_rec *objr, const uint_8 *name, uint_8 len ) {
-/**************************************************************/
+void ObjPutName( obj_rec *objr, const char *name, uint_8 len ) {
+/************************************************************/
 /**/myassert( objr != NULL && objr->data != NULL );
     ObjPut8( objr, len );
-    ObjPut( objr, name, len );
+    ObjPut( objr, (uint_8 *)name, len );
 }

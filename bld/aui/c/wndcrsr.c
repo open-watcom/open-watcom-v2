@@ -193,7 +193,7 @@ bool WndTabLeft( a_window *wnd, bool wrap )
     }
 }
 
-bool WndCursorLeft( a_window *wnd )
+static bool WndCursorLeftCheck( a_window *wnd )
 {
     int         col;
     wnd_line_piece      line;
@@ -218,6 +218,11 @@ bool WndCursorLeft( a_window *wnd )
     }
 }
 
+void WndCursorLeft( a_window *wnd )
+{
+    WndCursorLeftCheck( wnd );
+}
+
 bool WndTabRight( a_window *wnd, bool wrap )
 {
     wnd_coord   curr;
@@ -233,7 +238,7 @@ bool WndTabRight( a_window *wnd, bool wrap )
     return( TRUE );
 }
 
-bool WndCursorRight( a_window *wnd )
+static bool WndCursorRightCheck( a_window *wnd )
 {
     wnd_line_piece      line;
     int                 col;
@@ -256,6 +261,11 @@ bool WndCursorRight( a_window *wnd )
     }
 }
 
+void WndCursorRight( a_window *wnd )
+{
+    WndCursorRightCheck( wnd );
+}
+
 void WndScrollTop( a_window *wnd )
 {
     WndDirtyCurr( wnd );
@@ -272,10 +282,10 @@ void WndScrollBottom( a_window *wnd )
 
 void WndCursorStart( a_window *wnd )
 {
-    while( WndCursorLeft( wnd ) );
+    while( WndCursorLeftCheck( wnd ) );
 }
 
 void WndCursorEnd( a_window *wnd )
 {
-    while( WndCursorRight( wnd ) );
+    while( WndCursorRightCheck( wnd ) );
 }

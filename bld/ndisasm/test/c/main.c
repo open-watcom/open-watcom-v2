@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Disassembler test program.
 *
 ****************************************************************************/
 
@@ -43,7 +42,7 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
 {
     memcpy( data, (char *)d + off, size );
     return( DR_OK );
@@ -74,6 +73,32 @@ unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     return( strlen( buff ) );
 }
 
+static void print_cpu_types( void )
+{
+    printf( "supported CPU types:\n" );
+#if DISCPU & DISCPU_axp
+    printf( "    %2x   - Alpha AXP\n", DISCPU_axp );
+#endif
+#if DISCPU & DISCPU_ppc
+    printf( "    %2x   - PowerPC\n", DISCPU_ppc );
+#endif
+#if DISCPU & DISCPU_x86
+    printf( "    %2x   - x86\n", DISCPU_x86 );
+#endif
+#if DISCPU & DISCPU_jvm
+    printf( "    %2x   - Java bytecode\n", DISCPU_jvm );
+#endif
+#if DISCPU & DISCPU_sparc
+    printf( "    %2x   - Sun SPARC\n", DISCPU_sparc );
+#endif
+#if DISCPU & DISCPU_mips
+    printf( "    %2x   - MIPS\n", DISCPU_mips );
+#endif
+#if DISCPU & DISCPU_x64
+    printf( "    %2x   - AMD64\n", DISCPU_x64 );
+#endif
+}
+
 int main( void )
 {
     char                op_buff[80];
@@ -93,27 +118,28 @@ int main( void )
     radix = 16;
     cpu = DISCPU_none;
     format = DFF_NONE;
-    flag = DIF_NONE;
+    flag.u.all = DIF_NONE;
     for( ;; ) {
-        printf("Enter an byte sequence or '?' for help:\n");
+        printf("Enter a byte sequence or '?' for help:\n");
         gets( op_buff );
         if( strcmp( op_buff, "?" ) == 0 ) {
             printf( "end          - terminate program\n" );
             printf( "cpu <num>    - set the active CPU\n" );
             printf( "flag <num>   - set the instruction flags\n" );
-            printf( "format <num> - set the formating flags\n" );
+            printf( "format <num> - set the formatting flags\n" );
             printf( "radix <num>  - set the input radix for byte sequences\n" );
         } else if( strcmp( op_buff, "end" ) == 0 ) {
             break;
         } else if( memcmp( op_buff, "cpu", 3 ) == 0 ) {
             if( cpu != DISCPU_none ) DisFini( &handle );
             cpu = strtoul( &op_buff[4], NULL, 16 );
-            if( DisInit( cpu, &handle ) != DR_OK ) {
+            if( DisInit( cpu, &handle, 0 ) != DR_OK ) {
                 printf("Init Failed\n");
+                print_cpu_types();
                 cpu = DISCPU_none;
             }
         } else if( memcmp( op_buff, "flag", 4 ) == 0 ) {
-            flag = strtoul( &op_buff[5], NULL, 16 );
+            flag.u.all = strtoul( &op_buff[5], NULL, 16 );
         } else if( memcmp( op_buff, "format", 6 ) == 0 ) {
             format = strtoul( &op_buff[7], NULL, 16 );
         } else if( memcmp( op_buff, "radix", 5 ) == 0 ) {

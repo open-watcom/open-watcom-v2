@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC instruction formats and encodings.
 *
 ****************************************************************************/
 
@@ -98,6 +97,7 @@ static owl_reloc_type reloc_translate[] = {
     OWL_RELOC_ABSOLUTE,     // Corresponds to ASM_RELOC_UNSPECIFIED
     OWL_RELOC_WORD,
     OWL_RELOC_HALF_HI,
+    OWL_RELOC_HALF_HA,
     OWL_RELOC_HALF_LO,
     OWL_RELOC_JUMP_REL,
     OWL_RELOC_BRANCH_REL,
@@ -195,9 +195,10 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
     }
     switch( default_type ) {
     case OWL_RELOC_HALF_HI:
+    case OWL_RELOC_HALF_HA:
     case OWL_RELOC_HALF_LO:
         if( ( ret = reloc_translate[type] ) != OWL_RELOC_HALF_HI &&
-            ret != OWL_RELOC_HALF_LO ) {
+            ret != OWL_RELOC_HALF_HA && ret != OWL_RELOC_HALF_LO ) {
             Error( INVALID_RELOC_MODIFIER );
         }
         break;
@@ -442,7 +443,7 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
 static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //***********************************************************************************************
 
-    ins_operand *op[4] *opRa, *opSimm;
+    ins_operand *op[4], *opRa, *opSimm;
     uint        crfIdx, L_bit, ctr;
     ins_opcount opcount;
     op_type     verify4[4] = { OP_CRF, OP_IMMED, OP_GPR, OP_IMMED };
@@ -1342,6 +1343,8 @@ void PPCEmit( instruction *ins ) {
             printf( "l^" ); break;
         case OWL_RELOC_HALF_HI:
             printf( "h^" ); break;
+        case OWL_RELOC_HALF_HA:
+            printf( "ha^" ); break;
         case OWL_RELOC_BRANCH_REL:
             printf( "br^" ); break;
         case OWL_RELOC_BRANCH_ABS:

@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for 32-bit OS/2.
 ;*
 ;*****************************************************************************
 
@@ -36,14 +35,14 @@ include exitwmsg.inc
 
         modstart        stk
 
-_DATA   segment dword public 'DATA'
+datasegment
 ifdef __MT__
         extrn   "C",__GetThreadPtr : dword
 else
         extrn   "C",_STACKLOW : dword
 endif
-msg     db      "Stack Overflow!", 0dh, 0ah, 0
-_DATA   ends
+msg     db      "Stack Overflow!", 0
+enddata
 
 include xinit.inc
 
@@ -55,11 +54,7 @@ include xinit.inc
         xdefp   __STK
         xdefp   __CHK
         xdefp   __GRO
-        if __WASM__ ge 100
-            xdefp  "C",__STKOVERFLOW
-        else
-            xdefp  <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
 
 
         defp    _init_stk

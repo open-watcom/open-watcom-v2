@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition/accessor of sys_errlist.
 *
 ****************************************************************************/
 
@@ -33,12 +32,9 @@
 #include "variety.h"
 #include <stdlib.h>
 #include "rtdata.h"
+#include "errstr.h"
 
-#ifdef __NETWARE__
-_WCRTLINK extern char *             sys_errlist[];/* strerror error message table */
-#define _sys_errlist                sys_errlist
-#endif
-
-_WCRTLINK char * (*__get_sys_errlist_ptr())[] {
-    return &_sys_errlist;
+_WCRTLINK char *(*__get_sys_errlist_ptr( void ))[]
+{
+    return( &_sys_errlist );
 }

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "iemem.h"
 
@@ -93,7 +94,7 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     clip_height = _wpi_getheightrect( clipRect.rect );
     /*
      * use getwrectvalues because we want top and left to be our origins
-     * (ie in PM the origin is the bottom)
+     * (i.e. in PM the origin is the bottom)
      */
     _wpi_getwrectvalues( clipRect.rect, &left, &top, &right, &bottom );
 
@@ -113,7 +114,7 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
     oldclipbitmap = _wpi_selectbitmap( clippres, hXorClipped );
 
-    _wpi_bitblt(clippres, 0, 0, width, height, mempres, left, top, SRCCOPY);
+    _wpi_bitblt( clippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
     _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_getoldbitmap( clippres, oldclipbitmap );
 
@@ -121,7 +122,7 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
     oldclipbitmap = _wpi_selectbitmap( clippres, hAndClipped );
 
-    _wpi_bitblt(clippres, 0, 0, width, height, mempres, left, top, SRCCOPY);
+    _wpi_bitblt( clippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
     _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_getoldbitmap( clippres, oldclipbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
@@ -130,17 +131,17 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     _wpi_deletebitmap( viewbitmap );
     _wpi_releasepres( node->viewhwnd, pres );
 
-    hmenu = GetMenu( _wpi_getframe(HMainWindow) );
+    hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
     _wpi_enablemenuitem( hmenu, IMGED_PASTE, TRUE, FALSE );
+
 } /* copyImageToClipboard */
 
 /*
- * RedrawPrevClip - After a region has been selected and copied to the
- *              clipboard, we want to redraw that area.  OR, if a region
- *              has been selected and then, another is selected (without a
- *              cut or copy in between).  The hwnd parameter indicates which
- *              window to draw the clip rect on.  If the hwnd does not match
- *              the one associated with clipRect, we return.
+ * RedrawPrevClip - redraw the area if a region has been selected and copied to the
+ *                  clipboard OR if a region has been selected and then another is
+ *                  selected (without a cut or copy in between)
+ *                - the hwnd parameter indicates which window to draw the clip rect on
+ *                - if the hwnd does not match the one associated with clipRect, we return
  */
 void RedrawPrevClip( HWND hwnd )
 {
@@ -157,12 +158,11 @@ void RedrawPrevClip( HWND hwnd )
     IMGED_DIM   bottom;
     img_node    *node;
 
-    if (!fEnableCutCopy || !(_wpi_iswindow(Instance, hwnd)) || clipRect.hwnd
-                                                                    != hwnd) {
+    if( !fEnableCutCopy || !_wpi_iswindow( Instance, hwnd ) || clipRect.hwnd != hwnd ) {
         return;
     }
 
-    pointsize = GetPointSize(hwnd);
+    pointsize = GetPointSize( hwnd );
 
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
@@ -177,13 +177,11 @@ void RedrawPrevClip( HWND hwnd )
 
     node = SelectImage( hwnd );
 #ifdef __OS2_PM__
-    _wpi_rectangle( pres, left*pointsize.x+1, bottom*pointsize.y+1,
-                                                        right*pointsize.x,
-                                                        top*pointsize.y );
+    _wpi_rectangle( pres, left * pointsize.x + 1, bottom * pointsize.y + 1,
+                    right * pointsize.x, top * pointsize.y );
 #else
-    _wpi_rectangle( pres, left*pointsize.x, top*pointsize.y,
-                                                        right*pointsize.x,
-                                                        bottom*pointsize.y );
+    _wpi_rectangle( pres, left * pointsize.x, top * pointsize.y,
+                    right * pointsize.x, bottom * pointsize.y );
 #endif
     _wpi_selectobject( pres, oldpen );
     _wpi_selectobject( pres, oldbrush );
@@ -191,13 +189,13 @@ void RedrawPrevClip( HWND hwnd )
     _wpi_releasepres( hwnd, pres );
     _wpi_deleteobject( whitepen );
     _wpi_deleteobject( blackbrush );
+
 } /* RedrawPrevClip */
 
 /*
- * SetClipRect - sets the value of the clipRect rectangle.
+ * SetClipRect - set the value of the clipping rectangle
  */
-void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt,
-                                                        WPI_POINT pointsize )
+void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT pointsize )
 {
     IMGED_DIM   left;
     IMGED_DIM   top;
@@ -207,28 +205,30 @@ void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt,
     CheckBounds( hwnd, startpt );
     CheckBounds( hwnd, endpt );
 
-    left = min(startpt->x / pointsize.x, endpt->x / pointsize.x);
-    right = max(startpt->x / pointsize.x, endpt->x / pointsize.x) + 1;
+    left = min( startpt->x / pointsize.x, endpt->x / pointsize.x );
+    right = max( startpt->x / pointsize.x, endpt->x / pointsize.x ) + 1;
 #ifdef __OS2_PM__
-    top = max(startpt->y / pointsize.y, endpt->y / pointsize.y) + 1;
-    bottom = min(startpt->y / pointsize.y, endpt->y / pointsize.y);
+    top = max( startpt->y / pointsize.y, endpt->y / pointsize.y ) + 1;
+    bottom = min( startpt->y / pointsize.y, endpt->y / pointsize.y );
 #else
-    top = min(startpt->y / pointsize.y, endpt->y / pointsize.y);
-    bottom = max(startpt->y / pointsize.y, endpt->y / pointsize.y) + 1;
+    top = min( startpt->y / pointsize.y, endpt->y / pointsize.y );
+    bottom = max( startpt->y / pointsize.y, endpt->y / pointsize.y ) + 1;
 #endif
-    _wpi_setrectvalues( &(clipRect.rect), left, top, right, bottom );
+    _wpi_setrectvalues( &clipRect.rect, left, top, right, bottom );
     clipRect.hwnd = hwnd;
 
     fEnableCutCopy = TRUE;
+
 } /* SetClipRect */
 
 /*
- * IECopyImage - Copies the current clipRect to the clipboard.  Here's how I go
- * about it: 1) copy the bitmap to the clipboard (so other apps can use it)
- *           2) make a copy of the XOR bitmap and the AND bitmaps so that if
- *              screen colours are involved, they will be preserved.
- *              Later, we check the owner of the clipboard to see if we really
- *              want to use the xor/and bitmaps or not.
+ * IECopyImage - copy the current clipping rectangle to the clipboard
+ *
+ * 1) Copy the bitmap to the clipboard (so other apps can use it).
+ * 2) Make a copy of the XOR bitmap and the AND bitmaps so that if
+ *    screen colors are involved, they will be preserved.
+ *    Later, we check the owner of the clipboard to see if we really
+ *    want to use the XOR/AND bitmaps or not.
  */
 void IECopyImage( void )
 {
@@ -237,11 +237,13 @@ void IECopyImage( void )
     img_node    *node;
 
     node = GetCurrentNode();
-    if ( !node ) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    if (!fEnableCutCopy) {
-        _wpi_setwrectvalues( &(clipRect.rect), 0, 0, (IMGED_DIM)node->width,
-                                                    (IMGED_DIM)node->height );
+    if( !fEnableCutCopy ) {
+        _wpi_setwrectvalues( &clipRect.rect, 0, 0, (IMGED_DIM)node->width,
+                                                   (IMGED_DIM)node->height );
         width = node->width;
         height = node->height;
     } else {
@@ -251,42 +253,44 @@ void IECopyImage( void )
 
     copyImageToClipboard( width, height, node );
 
-    if (!fEnableCutCopy) {
+    if( !fEnableCutCopy ) {
         PrintHintTextByID( WIE_ENTIREIMAGECOPIED, NULL );
     } else {
         PrintHintTextByID( WIE_AREACOPIED, NULL );
         RedrawPrevClip( node->hwnd );
         fEnableCutCopy = FALSE;
     }
+
 } /* IECopyImage */
 
 /*
- * PlaceAndPaste - Find out where the image is to be placed and then paste
- *                      it there.
+ * PlaceAndPaste - find out where the image is to be placed and then paste it there
  */
 void PlaceAndPaste( void )
 {
-    HBITMAP     hbitmap;
-    WPI_POINT   pointsize;
-    img_node    *node;
-    WPI_POINT   pt;
-    unsigned long       format;
-    int         bm_width;
-    int         bm_height;
+    HBITMAP         hbitmap;
+    WPI_POINT       pointsize;
+    img_node        *node;
+    WPI_POINT       pt;
+    unsigned long   format;
+    int             bm_width;
+    int             bm_height;
 
     format = format;
     node = GetCurrentNode();
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    if (!_wpi_isclipboardformatavailable( Instance, CF_BITMAP, &format)) {
+    if( !_wpi_isclipboardformatavailable( Instance, CF_BITMAP, &format ) ) {
         PrintHintTextByID( WIE_NOBITMAPINCLIPBOARD, NULL );
         return;
     }
 
     pointsize = GetPointSize( node->hwnd );
-    if (fEnableCutCopy) {
-        RedrawPrevClip(node->hwnd);
-        PasteImage(NULL, pointsize, node->hwnd);
+    if( fEnableCutCopy ) {
+        RedrawPrevClip( node->hwnd );
+        PasteImage( NULL, pointsize, node->hwnd );
         fEnableCutCopy = FALSE;
         return;
     }
@@ -311,15 +315,15 @@ void PlaceAndPaste( void )
     _wpi_setcapture( node->hwnd );
     firstTime = TRUE;
     DragClipBitmap( node->hwnd, &pt, pointsize );
+
 } /* PlaceAndPaste */
 
 /*
- * PasteImage - paste the image in the clipboard at the current point.  We
- *              first check to see if the image was cut/copied from our
- *              program.  If it was, then we use the hXorClipped and
- *              hAndClipped bitmaps we created.  Otherwise we just copy from
- *              the clip board.  (this is in order to preserve the screen
- *              colours if they were used.)
+ * PasteImage - paste the image in the clipboard at the current point
+ *            - first check to see if the image was cut/copied from our program
+ *            - if it was, then we use the hXorClipped and hAndClipped bitmaps
+ *              we created in order to preserve the screen colors if ther were used
+ *            - otherwise, just copy from the clipboard
  */
 void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
 {
@@ -350,8 +354,11 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
     IMGED_DIM   client_r;
     IMGED_DIM   client_t;
     IMGED_DIM   client_b;
+#ifdef __OS2_PM__
+    int         src_y, dest_y;
+#endif
 
-    if (fEnableCutCopy) {
+    if( fEnableCutCopy ) {
         _wpi_getwrectvalues( clipRect.rect, &left, &top, &right, &bottom );
         truept.x = left;
         truept.y = top;
@@ -365,18 +372,16 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
     node = SelectImage( hwnd );
     pres = _wpi_getpres( node->viewhwnd );
 
-    if ((_wpi_getclipboardowner(Instance) == HMainWindow) &&
-                                        (node->imgtype != BITMAP_IMG)) {
+    if( _wpi_getclipboardowner( Instance ) == HMainWindow && node->imgtype != BITMAP_IMG ) {
         _wpi_getbitmapdim( hAndClipped, &bm_width, &bm_height );
         GetClientRect( node->hwnd, &client );
-        if (fEnableCutCopy) {
+        if( fEnableCutCopy ) {
             width = (short)_wpi_getwidthrect( clipRect.rect );
             height = (short)_wpi_getheightrect( clipRect.rect );
         } else {
-            _wpi_getrectvalues( client, &client_l, &client_t, &client_r,
-                                                                &client_b );
-            width = (short)min(client_r/pointsize.x - truept.x, bm_width);
-            height = (short)min(client_b/pointsize.y - truept.y, bm_height);
+            _wpi_getrectvalues( client, &client_l, &client_t, &client_r, &client_b );
+            width = (short)min( client_r / pointsize.x - truept.x, bm_width );
+            height = (short)min( client_b / pointsize.y - truept.y, bm_height );
         }
 
         mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -386,19 +391,19 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
         oldbitmap2 = _wpi_selectbitmap( clippres, hAndClipped );
 
-        if (fstretchbmp == FALSE) {
+        if( fstretchbmp == FALSE ) {
             clipwidth = (short)min( bm_width, width );
             clipheight = (short)min( bm_height, height );
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, BLACKNESS );
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
-                                                clippres, 0, 0, SRCCOPY );
-        } else if (fstretchbmp == TRUE) {
-            _wpi_stretchblt(mempres, truept.x, truept.y, width, height,
-                            clippres, 0, 0, bm_width, bm_height, SRCCOPY);
+                         clippres, 0, 0, SRCCOPY );
+        } else if( fstretchbmp == TRUE ) {
+            _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
+                             clippres, 0, 0, bm_width, bm_height, SRCCOPY);
         } else {
-            _wpi_bitblt(mempres, truept.x, truept.y, width, height, clippres,
-                                                            0, 0, SRCCOPY);
+            _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
+                         0, 0, SRCCOPY );
         }
         _wpi_getoldbitmap( mempres, oldbitmap );
         oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
@@ -407,35 +412,31 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         _wpi_getoldbitmap( clippres, oldbitmap2 );
         oldbitmap2 = _wpi_selectbitmap( clippres, hbitmapdup );
 
-        if (fstretchbmp == FALSE) {
+        if( fstretchbmp == FALSE ) {
             clipwidth = (short)min( bm_width, width );
             clipheight = (short)min( bm_height, height );
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, WHITENESS );
 #ifdef __OS2_PM__
-            {
-                int     src_y, dest_y;
-
-                if (bm_height > height) {
-                    src_y = bm_height - height;
-                    dest_y = truept.y;
-                } else {
-                    src_y = 0;
-                    dest_y = truept.y + (height - bm_height);
-                }
-                _wpi_bitblt(mempres, truept.x, dest_y, clipwidth, clipheight,
-                                                clippres, 0, src_y, SRCCOPY);
+            if( bm_height > height ) {
+                src_y = bm_height - height;
+                dest_y = truept.y;
+            } else {
+                src_y = 0;
+                dest_y = truept.y + (height - bm_height);
             }
+            _wpi_bitblt( mempres, truept.x, dest_y, clipwidth, clipheight,
+                         clippres, 0, src_y, SRCCOPY );
 #else
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
-                                                clippres, 0, 0, SRCCOPY );
+                         clippres, 0, 0, SRCCOPY );
 #endif
-        } else if (fstretchbmp == TRUE) {
-            _wpi_stretchblt(mempres, truept.x, truept.y, width, height,
-                                clippres, 0, 0, bm_width, bm_height, SRCCOPY);
+        } else if( fstretchbmp == TRUE ) {
+            _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
+                             clippres, 0, 0, bm_width, bm_height, SRCCOPY );
         } else {
-            _wpi_bitblt(mempres, truept.x, truept.y, width, height, clippres,
-                                                            0, 0, SRCCOPY);
+            _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
+                         0, 0, SRCCOPY );
         }
         _wpi_getoldbitmap( mempres, oldbitmap );
         _wpi_getoldbitmap( clippres, oldbitmap2 );
@@ -443,7 +444,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         _wpi_deletecompatiblepres( mempres, memdc );
         _wpi_deletecompatiblepres( clippres, clipdc );
     } else {
-        if (node->imgtype != BITMAP_IMG) {
+        if( node->imgtype != BITMAP_IMG ) {
             CleanupClipboard();
         }
         _wpi_openclipboard( Instance, HMainWindow );
@@ -454,14 +455,13 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         _wpi_getbitmapdim( hbitmapdup, &bm_width, &bm_height );
         GetClientRect( node->hwnd, &client );
 
-        if (fEnableCutCopy) {
+        if( fEnableCutCopy ) {
             width = (short)_wpi_getwidthrect( clipRect.rect );
             height = (short)_wpi_getheightrect( clipRect.rect );
         } else {
-            _wpi_getrectvalues( client, &client_l, &client_t, &client_r,
-                                                                &client_b );
-            width = (short)min( client_r/pointsize.x - truept.x, bm_width );
-            height = (short)min( client_b/pointsize.y - truept.y, bm_height );
+            _wpi_getrectvalues( client, &client_l, &client_t, &client_r, &client_b );
+            width = (short)min( client_r / pointsize.x - truept.x, bm_width );
+            height = (short)min( client_b / pointsize.y - truept.y, bm_height );
         }
 
         clippres = _wpi_createcompatiblepres( pres, Instance, &clipdc );
@@ -471,35 +471,31 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         holddup = _wpi_selectbitmap( clippres, hbitmapdup );
         oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
 
-        if (fstretchbmp == FALSE) {
+        if( fstretchbmp == FALSE ) {
             clipwidth = (short)min( bm_width, width );
             clipheight = (short)min( bm_height, height );
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, WHITENESS );
 #ifdef __OS2_PM__
-            {
-                int     src_y, dest_y;
-
-                if (bm_height > height) {
-                    src_y = bm_height - height;
-                    dest_y = truept.y;
-                } else {
-                    src_y = 0;
-                    dest_y = truept.y + (height - bm_height);
-                }
-                _wpi_bitblt(mempres, truept.x, dest_y, clipwidth, clipheight,
-                                                clippres, 0, src_y, SRCCOPY);
+            if( bm_height > height ) {
+                src_y = bm_height - height;
+                dest_y = truept.y;
+            } else {
+                src_y = 0;
+                dest_y = truept.y + (height - bm_height);
             }
+            _wpi_bitblt( mempres, truept.x, dest_y, clipwidth, clipheight,
+                         clippres, 0, src_y, SRCCOPY );
 #else
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
-                                                clippres, 0, 0, SRCCOPY );
+                         clippres, 0, 0, SRCCOPY );
 #endif
-        } else if (fstretchbmp == TRUE) {
-            _wpi_stretchblt(mempres, truept.x, truept.y, width, height,
-                                clippres, 0, 0, bm_width, bm_height, SRCCOPY);
+        } else if( fstretchbmp == TRUE ) {
+            _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
+                             clippres, 0, 0, bm_width, bm_height, SRCCOPY );
         } else {
-            _wpi_bitblt(mempres, truept.x, truept.y, width, height, clippres,
-                                                             0, 0, SRCCOPY);
+            _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
+                         0, 0, SRCCOPY );
         }
         _wpi_getoldbitmap( clippres, holddup );
         _wpi_deletebitmap( hbitmapdup );
@@ -517,21 +513,22 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
     _wpi_releasepres( node->viewhwnd, pres );
 
     InvalidateRect( node->viewhwnd, NULL, TRUE );
-    if (!fEnableCutCopy) {
+    if( !fEnableCutCopy ) {
         _wpi_setcursor( prevCursor );
         _wpi_destroycursor( pointCursor );
         SetToolType( prevToolType );
     }
 
     fEnableCutCopy = FALSE;
-    RecordImage(hwnd);
+    RecordImage( hwnd );
     BlowupImage( NULL, NULL );
 
     PrintHintTextByID( WIE_BITMAPPASTED, NULL );
+
 } /* PasteImage */
 
 /*
- * CutImage - Cuts the current clipRect to the clipboard.
+ * CutImage - cuts the current clipping rectangle to the clipboard
  */
 void CutImage( void )
 {
@@ -549,11 +546,13 @@ void CutImage( void )
 
     node = GetCurrentNode();
 
-    if ( !node ) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    if (!fEnableCutCopy) {
-        _wpi_setwrectvalues(&(clipRect.rect), 0, 0, (IMGED_DIM)node->width,
-                                                    (IMGED_DIM)node->height);
+    if( !fEnableCutCopy ) {
+        _wpi_setwrectvalues( &clipRect.rect, 0, 0, (IMGED_DIM)node->width,
+                                                   (IMGED_DIM)node->height );
         width = node->width;
         height = node->height;
     } else {
@@ -577,15 +576,16 @@ void CutImage( void )
     _wpi_deletecompatiblepres( mempres, memdc );
 
     InvalidateRect( node->viewhwnd, NULL, FALSE );
-    RecordImage(node->hwnd);
+    RecordImage( node->hwnd );
 
-    if (!fEnableCutCopy) {
+    if( !fEnableCutCopy ) {
         PrintHintTextByID( WIE_ENTIREIMAGECUT, NULL );
     } else {
         PrintHintTextByID( WIE_AREACUT, NULL );
         fEnableCutCopy = FALSE;
     }
     BlowupImage( node->hwnd, NULL );
+
 } /* CutImage */
 
 /*
@@ -610,16 +610,15 @@ void DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize )
     hwhitepen = _wpi_createpen( PS_SOLID, 0, CLR_WHITE );
     holdpen = _wpi_selectobject( pres, hwhitepen );
 
-    if (!firstTime) {
-        _wpi_rectangle( pres, prevPoint.x*pointsize.x,
-                        prevPoint.y*pointsize.y,
-                        prevPoint.x*pointsize.x + dragWidth,
-                        prevPoint.y*pointsize.y + dragHeight);
+    if( !firstTime ) {
+        _wpi_rectangle( pres, prevPoint.x * pointsize.x, prevPoint.y * pointsize.y,
+                        prevPoint.x * pointsize.x + dragWidth,
+                        prevPoint.y * pointsize.y + dragHeight );
     }
 
-    _wpi_rectangle( pres, newpt->x*pointsize.x, newpt->y*pointsize.y,
-                        newpt->x*pointsize.x + dragWidth,
-                        newpt->y*pointsize.y + dragHeight);
+    _wpi_rectangle( pres, newpt->x * pointsize.x, newpt->y * pointsize.y,
+                          newpt->x * pointsize.x + dragWidth,
+                          newpt->y * pointsize.y + dragHeight );
 
     _wpi_selectobject( pres, holdpen );
     _wpi_selectobject( pres, holdbrush );
@@ -628,52 +627,55 @@ void DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize )
 
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );
-    memcpy( &prevPoint, newpt, sizeof(WPI_POINT) );
+    memcpy( &prevPoint, newpt, sizeof( WPI_POINT ) );
     firstTime = FALSE;
+
 } /* DragClipBitmap */
 
 /*
- * CheckForClipboard - checks to see if the CUT, COPY or PASTE menu items
- *                      can be enabled.
+ * CheckForClipboard - check to see if the paste menu item can be enabled
  */
 void CheckForClipboard( HMENU hmenu )
 {
     unsigned long       format;
 
     format = 0;
-    if ((_wpi_isclipboardformatavailable(Instance, CF_BITMAP, &format)) &&
-                                                        DoImagesExist()) {
+    if( _wpi_isclipboardformatavailable( Instance, CF_BITMAP, &format ) &&
+        DoImagesExist() ) {
         _wpi_enablemenuitem( hmenu, IMGED_PASTE, TRUE, FALSE );
     } else {
         _wpi_enablemenuitem( hmenu, IMGED_PASTE, FALSE, FALSE );
     }
+
 } /* CheckForClipboard */
 
 /*
- * SetRectExists - Sets whether or not there is a clipping rectangle on the
- *                      screen.  (indicated by fEnableCutCopy flag)
+ * SetRectExists - set whether or not there is a clipping rectangle on the
+ *                 screen (indicated by fEnableCutCopy flag)
  */
 void SetRectExists( BOOL does_rect_exist )
 {
     fEnableCutCopy = does_rect_exist;
+
 } /* SetRectExists */
 
 /*
- * CleanupClipboard - Cleans up the hAndClipped and hXorClipped bitmaps if
- *                    they were created by a cut or copy.
+ * CleanupClipboard - clean up the hAndClipped and hXorClipped bitmaps if
+ *                    they were created by a cut or copy
  */
 void CleanupClipboard( void )
 {
-    if (hXorClipped) {
+    if( hXorClipped ) {
         _wpi_deletebitmap( hXorClipped );
         _wpi_deletebitmap( hAndClipped );
         hXorClipped = NULL;
         hAndClipped = NULL;
     }
+
 } /* CleanupClipboard */
 
 /*
- * DontPaste - when escape is hit while dragging the image to paste.
+ * DontPaste - when escape is hit while dragging the image to paste
  */
 void DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize )
 {
@@ -684,26 +686,29 @@ void DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize )
     ReleaseCapture();
     SetToolType( prevToolType );
     PrintHintTextByID( WIE_PASTECANCELLED, NULL );
+
 } /* DontPaste */
 
 /*
- * DoesRectExist - returns whether or not a rectangle exists.
+ * DoesRectExist - return whether or not a rectangle exists
  */
 BOOL DoesRectExist( WPI_RECT *rc )
 {
-    if (fEnableCutCopy) {
+    if( fEnableCutCopy ) {
         *rc = clipRect.rect;
     } else {
         _wpi_setrectvalues( rc, 0, 0, 0, 0 );
     }
     return( fEnableCutCopy );
+
 } /* DoesRectExist */
 
 /*
- * SetDeviceClipRect - sets the new clip rect with device units of image
+ * SetDeviceClipRect - set the new clipping rectangle with device units of image
  */
 void SetDeviceClipRect( WPI_RECT *rect )
 {
     clipRect.rect = *rect;
     fEnableCutCopy = TRUE;
+
 } /* SetDeviceClipRect */

@@ -24,22 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of movedata().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+/* Inline variant must always be used, no equivalent exists */
+#ifndef __INLINE_FUNCTIONS__
+    #define __INLINE_FUNCTIONS__
+#endif
 #include "xstring.h"
 
 #undef  movedata
 
 
-_WCRTLINK void movedata( fromseg, fromoff, toseg, tooff, len )
-        unsigned fromseg, fromoff;
-        unsigned toseg, tooff;
-        unsigned len;
-    {
-        _inline_movedata( fromseg, fromoff, toseg, tooff, len );
-    }
+_WCRTLINK void movedata( unsigned fromseg, unsigned fromoff,
+    unsigned toseg, unsigned tooff, unsigned len )
+{
+    _inline_movedata( fromseg, fromoff, toseg, tooff, len );
+}

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  String utilities to convert filenames to more usable format.
+*               
 *
 ****************************************************************************/
 
@@ -38,6 +38,6 @@
  * Function prototypes.
  */
 extern char *   PathConvert( const char *path, char quote );
-
+extern char *   PathConvertWithoutQuotes( const char *path );
 
 #endif

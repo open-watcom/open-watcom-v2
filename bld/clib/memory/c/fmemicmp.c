@@ -34,12 +34,14 @@
 #include <string.h>
 #include <ctype.h>
 
-_WCRTLINK int _fmemicmp( const unsigned char _WCFAR *s1, const unsigned char _WCFAR *s2, size_t len )
+_WCRTLINK int _fmemicmp( const void _WCFAR *v1, const void _WCFAR *v2, size_t len )
     {
         unsigned char c1;
         unsigned char c2;
+        const unsigned char _WCFAR *s1;
+        const unsigned char _WCFAR *s2;
 
-        for( ; len; --len )  {
+        for( s1 = v1, s2 = v2 ; len; --len )  {
             c1 = *s1;
             if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
             c2 = *s2;

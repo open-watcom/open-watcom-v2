@@ -1,0 +1,18 @@
+
+ Here's what is missing in wrc but doesn't appear to be essential:
+ 
+- Currently wrc stuffs all resources into a single resource object. IBM's RC 
+ puts PRELOAD and LOADONCALL resources into different objects. We also ignore
+ the SEGALIGN attribute, while IBM's RC creates a new object for each
+ SEGALIGNed resource.
+ 
+- Page compression. IBM's RC supports two types of compression: Iterated
+ pages and a proprietary LZSS-ish algorithm. The former algorithm is supported
+ on OS/2 2.0 and later, the latter requires OS/2 Warp. Iterated pages use
+ trivial RLE compression, but the newer compression algorithm is completely
+ undocumented. However, lxLite source code ought to provide the necessary
+ information to anyone who can read Pascal and x86 assembly.
+
+  If compression were added to wrc, it would probably make good sense to
+ also add it to wlink, or perhaps give wrc the ability to compress
+ non-resource pages.

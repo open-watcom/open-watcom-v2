@@ -43,19 +43,19 @@
 /****************************************************************************/
 typedef enum
 {
-  WdeOptIsWResFmt = 1
-, WdeOptUseDefDlg
-, WdeOptReqGridX
-, WdeOptReqGridY
-, WdeOptIgnoreInc
-, WdeOptReqIncPath
-, WdeOptReqScreenRECT
-, WdeOptReqCntlsTBarPos
-, WdeOptIsScreenMax
-, WdeOptIsCntlsTBarVisible
-, WdeOptIsRibbonVisible
-, WdeOptUse3DEffects
-, WdeOptReqLastDir
+    WdeOptIsWResFmt = 1,
+    WdeOptUseDefDlg,
+    WdeOptReqGridX,
+    WdeOptReqGridY,
+    WdeOptIgnoreInc,
+    WdeOptReqIncPath,
+    WdeOptReqScreenRECT,
+    WdeOptReqCntlsTBarPos,
+    WdeOptIsScreenMax,
+    WdeOptIsCntlsTBarVisible,
+    WdeOptIsRibbonVisible,
+    WdeOptUse3DEffects,
+    WdeOptReqLastDir
 } WdeOptReq;
 
 /****************************************************************************/
@@ -67,16 +67,16 @@ extern char WdeSectionName[];
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void        WdeOptsShutdown         ( void );
-extern int         WdeGetOption            ( WdeOptReq );
-extern int         WdeSetOption            ( WdeOptReq, int );
-extern char       *WdeGetIncPathOption     ( void );
-extern void        WdeSetIncPathOption     ( char * );
-extern void        WdeGetScreenPosOption   ( RECT *pos );
-extern void        WdeSetScreenPosOption   ( RECT *pos );
-extern void        WdeGetCntlTBarPosOption ( RECT *pos );
-extern void        WdeSetCntlTBarPosOption ( RECT *pos );
-extern void        WdeInitOpts             ( void );
-extern Bool        WdeDisplayOptions       ( void );
+extern void WdeOptsShutdown( void );
+extern int  WdeGetOption( WdeOptReq );
+extern int  WdeSetOption( WdeOptReq, int );
+extern char *WdeGetIncPathOption( void );
+extern void WdeSetIncPathOption( char * );
+extern void WdeGetScreenPosOption( RECT *pos );
+extern void WdeSetScreenPosOption( RECT *pos );
+extern void WdeGetCntlTBarPosOption( RECT *pos );
+extern void WdeSetCntlTBarPosOption( RECT *pos );
+extern void WdeInitOpts( void );
+extern Bool WdeDisplayOptions( void );
 
 #endif

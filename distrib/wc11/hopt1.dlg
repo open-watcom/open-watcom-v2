@@ -1,0 +1,15 @@
+static_text=\
+        //1"Check 'Include 16-bit compilers' to create 16-bit programs."\
+        //2"16-bitの作成のため、'16ﾋﾞｯﾄｺﾝﾊﾟｲﾗを含めます'をチェックしてください."\
+        //0
+static_text=
+static_text=\
+        //1"Click on the Target, Host, 16-bit, 32-bit and Other buttons"\
+        //2"ターゲット,ホスト,16ビット,32ビットおよびその他のボタンを"\
+        //0
+static_text=\
+        //1"to select other options to be installed."\
+        //2"クリックして,インストールのオプションを選択してください."\
+        //0
+static_text=
+include=ok.dlg

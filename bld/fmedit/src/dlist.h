@@ -36,7 +36,7 @@ typedef struct {
 } DLIST_ELT;
 
 typedef struct dlist {
-    DLIST_ELT      elt;
-    struct dlist * next;
-    struct dlist * prev;
+    DLIST_ELT       elt;
+    struct dlist    *next;
+    struct dlist    *prev;
 } DLIST;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strcmp() and wcscmp().
 *
 ****************************************************************************/
 
@@ -46,13 +45,13 @@
 #else
  _WCRTLINK int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s, const CHAR_TYPE *t )
 #endif
-    {
+{
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( _inline_strcmp( s, t ) );
+    return( _inline_strcmp( s, t ) );
 #else
-        for( ; *s == *t; s++, t++ )
-            if( *s == NULLCHAR )
-                return( 0 );
-        return( *s - *t );
+    for( ; *s == *t; s++, t++ )
+        if( *s == NULLCHAR )
+            return( 0 );
+    return( *s - *t );
 #endif
-    }
+}

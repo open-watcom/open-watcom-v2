@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX compress utility
+*               Compresses files
 *
 ****************************************************************************/
 
@@ -644,7 +644,5 @@ int check_error()     /* returning OK continues with processing next file */
         unlink ( ofname );
     }
   exit(exit_stat);
-#ifndef __WATCOMC__
   return(ERROR);
-#endif
 }

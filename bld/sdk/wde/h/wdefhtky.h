@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHtKyCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeHtKyInit        ( Bool );
-extern void              WdeHtKyFini        ( void );
+extern OBJPTR WINEXPORT  WdeHtKyCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeHtKyInit( Bool );
+extern void              WdeHtKyFini( void );
 
 #endif

@@ -44,13 +44,13 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeInitRibbon         ( HINSTANCE );
-extern void WdeShutdownRibbon     ( void );
-extern Bool WdeCreateRibbon       ( HWND );
-extern Bool WdeResizeRibbon       ( RECT * );
-extern void WdeShowRibbon         ( void );
-extern void WdeDestroyRibbon      ( void );
-extern int  WdeGetRibbonHeight    ( void );
-extern void WdeSetRibbonItemState ( WORD, int );
+extern Bool WdeInitRibbon( HINSTANCE );
+extern void WdeShutdownRibbon( void );
+extern Bool WdeCreateRibbon( HWND );
+extern Bool WdeResizeRibbon( RECT * );
+extern void WdeShowRibbon( void );
+extern void WdeDestroyRibbon( void );
+extern int  WdeGetRibbonHeight( void );
+extern void WdeSetRibbonItemState( WORD, int );
 
 #endif

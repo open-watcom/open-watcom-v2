@@ -1,6 +1,6 @@
 all : empty.dir .symbolic
 	@if not exist empty.dir %abort
-	@rd empty.dir
+	@rmdir empty.dir
 
 empty.dir :
-	@md empty.dir
+	@mkdir empty.dir

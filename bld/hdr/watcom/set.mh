@@ -1,0 +1,152 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: set (...)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _SET_INCLUDED
+#define _SET_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef __RBTREE_H_INCLUDED
+ #include <_rbtree.h>
+#endif
+
+#ifndef _UTIILITY_INCLUDED
+ #include <utility>
+#endif
+
+#ifndef _MEMORY_INCLUDED
+ #include <memory>
+#endif
+
+#ifndef _ITERATOR_INCLUDED
+ #include <iterator>
+#endif
+
+#ifndef _FUNCTIONAL_INCLUDED
+ #include <function>
+#endif
+
+namespace std {
+
+//associative container set, as defined in incits/iso/iec14882-2003
+template< class Key,
+          class Compare = less< Key >, 
+          class Allocator = allocator< Key >,
+          class Implementation = _ow::RedBlackTree< Key, Compare, Allocator,
+                                                    _ow::TreeKeyWrapper<Key> > >
+class set : public Implementation{
+public:
+    typedef Key                                     key_type;
+    typedef Key                                     value_type;
+    typedef Compare                                 key_compare;
+    typedef Compare                                 value_compare;
+    typedef Allocator                               allocator_type;
+    typedef typename Allocator::reference           reference;
+    typedef typename Allocator::const_reference     const_reference;
+    typedef typename Allocator::pointer             pointer;
+    typedef typename Allocator::const_pointer       const_pointer;
+
+    explicit set(const Compare& comp = Compare(), const Allocator& = Allocator());
+    
+    template< class InputIterator >
+    set( InputIterator first,
+         InputIterator last,
+         Compare const & c, //= Compare(),
+         Allocator const & a )// = Allocator() )
+            : Implementation( first, last, c, a )
+            { }
+
+    set( const set& x ) : Implementation( x ) {}
+
+    ~set(){}
+
+    set& operator=( set const & x )
+        { Implementation::operator=( x ); return( *this ); }
+
+}; //template class set
+
+
+
+/* ==================================================================
+ * member functions
+ */
+
+/* ------------------------------------------------------------------
+ * ctors
+ */
+template< class Key, class Compare, class Allocator, class Implementation >
+set< Key, Compare, Allocator, Implementation >::set( 
+    const Compare& c,
+    const Allocator& a ) : Implementation( c, a )
+{
+    //cout<<"explicit set::ctor\n";
+}
+
+template<class Key, class Compare, class Allocator>
+    bool operator==(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+template<class Key, class Compare, class Allocator>
+    bool operator!=(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+template<class Key, class Compare, class Allocator>
+    bool operator<(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+template<class Key, class Compare, class Allocator>
+    bool operator>(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+template<class Key, class Compare, class Allocator>
+    bool operator>=(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+template<class Key, class Compare, class Allocator>
+    bool operator<=(const set<Key,Compare,Allocator>& x,
+                    const set<Key,Compare,Allocator>& y);
+//specialised algo
+template<class Key, class Compare, class Allocator>
+    void swap(set<Key,Compare,Allocator>& x,
+              set<Key,Compare,Allocator>& y);
+
+
+
+
+
+
+
+
+
+/* ==================================================================
+ * class multiset
+ */
+template< class Key,
+          class Compare = less< Key >,
+          class Allocator = allocator< Key >,
+          class Implementation = _ow::MultiListRBTree< Key, Compare, Allocator,
+                                        _ow::ListTreeKeyWrapper<Key> > >
+class multiset : public Implementation{
+public:
+    typedef Key                                     key_type;
+    typedef Key                                     value_type;
+    typedef Compare                                 key_compare;
+    typedef Compare                                 value_compare;
+    typedef Allocator                               allocator_type;
+    typedef typename Allocator::reference           reference;
+    typedef typename Allocator::const_reference     const_reference;
+    typedef typename Allocator::pointer             pointer;
+    typedef typename Allocator::const_pointer       const_pointer;
+
+    explicit multiset( const Compare& c = Compare(),
+                       const Allocator& a = Allocator() ) : Implementation( c, a ) {}
+
+
+};//class multiset
+
+
+} // namespace std
+
+#endif

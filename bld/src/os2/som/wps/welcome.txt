@@ -1,0 +1,28 @@
+Welcome to the Open Watcom Sample WPS Class
+
+This class OWObject implements this new welcome page within its properties notebook, and in the spinbutton field below, the value of a test member variable can be modified and is stored persistently. The class implements to set a default value within the method wpInitData.
+When creating an object of the OWObject class with Win/SysCreateObject, this value can be set with the setup string "TESTVALUE=n". If the object is given an object identifier on creation, this setup string can also be sent to already existing objects of OWObject via Win/SysSetObjectData. See the REXX script setval.cmd for an implementation sample. Note that the OWObject class implements code to automatically update the value in an opened properties notebook when being set from outside.
+
+The class OWObject is a subclass from the base Workplace Shell class WPAbstract. The following methods of WPAbstract are overridden:
+
+  wpInitData - initialize data and get resources for the object
+  wpUnInitData - free object resources obtained by wpInitData
+  wpSaveState - save member variables to persistant storage
+  wpRestoreState - restore member variables from persistent storage
+  wpAddSettingsPages - calls sampInsertWelcomePage (see below)
+  wpAddObjectWindowPage - removes "Window" page of WPAbstract
+  wpSetup - evaluates setting strings sent to the object
+  wpclsInitData - initialize and get resources for the metaclass
+  wpclsUnInitData - free metaclass resources obtained by wpclsInitData
+  wpclsQueryIconData - provide an icon for objects of OWObject class
+  wpclsQueryTitle - provide a class title for the folder details view
+  wpclsQueryStyle - hide the printing entry in the context menu
+  wpclsCreateDefaultTemplates - don't create a template by default
+  wpclsQueryDefaultView - makes the properties view the default view
+
+The following method is newly implemented by OWObject:
+  sampInsertWelcomePage - add welcome page to properties notebook
+
+See the source comments in owobject.c for more information about each method.
+
+If you plan to implement Workplace Shell classes with lots of settings strings, you may want to consider to use the "Settings and Details Manager" API of the "Workplace Shell Toolkit" (http://wpstk.netlabs.org). This automates the evaluation and validation of settings strings and also dialog maintenance for properties notebook pages for WPS classes.

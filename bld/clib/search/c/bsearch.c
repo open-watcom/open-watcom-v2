@@ -44,40 +44,42 @@
     after several iterations).
 */
 
-typedef int bcomp();
-#if defined(_M_IX86)
-    #pragma aux (__outside_CLIB) bcomp;
+typedef int bcomp(const void *, const void *);
+#if defined( _M_IX86 )
+    #pragma aux ( __outside_CLIB ) bcomp;
 #endif
 
 _WCRTLINK void * bsearch( const void * key,
                 const void * base,
                 size_t nmemb,
                 size_t size,
-                int (*cmp)() )
-    {
-        char *low;
-        char *high;
-        char *mid;
-        int cond;
-        bcomp *compar = cmp;
+                int (*cmp)(const void *, const void *) )
+{
+    char    *low;
+    char    *high;
+    char    *mid;
+    int     cond;
+    bcomp   *compar = cmp;
 
-        if( nmemb == 0 ) {
-            return( NULL );
-        }
-        low = (char *) base;
-        high = low + (nmemb-1) * size;
-// JBS  while( low <= high ) {
-        while( low < high ) {
-            mid = low + ( (high-low)/size/2 ) * size;
-            cond = (*compar)( key, mid );
-            if( cond == 0 ) return( mid );
-            if( cond < 0 ) {    /* key < mid */
-// JBS          high = mid - size;
-                high = mid;
-            } else {            /* key > mid */
-                low = mid + size;
-            }
-        }
-        if (low == high) return( (*compar)(key, low) ? NULL : low );
+    if( nmemb == 0 ) {
         return( NULL );
     }
+    low = (char *)base;
+    high = low + ( nmemb - 1 ) * size;
+// JBS  while( low <= high ) {
+    while( low < high ) {
+        mid = low + ( ( high - low ) / size / 2 ) * size;
+        cond = (*compar)( key, mid );
+        if( cond == 0 )
+            return( mid );
+        if( cond < 0 ) {    /* key < mid */
+// JBS      high = mid - size;
+            high = mid;
+        } else {            /* key > mid */
+            low = mid + size;
+        }
+    }
+    if( low == high )
+        return( (*compar)( key, low ) ? NULL : low );
+    return( NULL );
+}

@@ -37,7 +37,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <io.h>
+#include <unistd.h>
 #include <stdio.h>      /* for SEEK_SET/SEEK_END */
 #include <string.h>
 #include "ms2wlink.h"
@@ -48,6 +48,9 @@ extern char *       Msg3Splice( char *, char *, char * );
 extern char *       Msg2Splice( char *, char * );
 extern void         Suicide( void );
 extern void         MemFree( void * );
+
+/* forward prototype */
+extern void Error( char * msg );
 
 // file io routines
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrrev() - far strrev().
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#ifdef M_I86
+#ifdef _M_I86
 
 /*
   explanation of algorithm:
@@ -59,7 +58,7 @@
 *****************************************************************************
 */
 
-extern fast_rev( char _WCFAR * );
+extern void fast_rev( char _WCFAR * );
 
 #pragma aux     fast_rev = \
         0x1e            /* push ds */\
@@ -96,26 +95,26 @@ extern fast_rev( char _WCFAR * );
 #endif
 
 _WCRTLINK char _WCFAR *_fstrrev( char _WCFAR *str )  /* reverse characters in string */
-    {
-#if  defined(M_I86)
-        fast_rev( str );
-        return( str );
+{
+#if  defined( _M_I86 )
+    fast_rev( str );
+    return( str );
 #else
-        char _WCFAR *p1;
-        char _WCFAR *p2;
-        char c1;
-        char c2;
+    char _WCFAR     *p1;
+    char _WCFAR     *p2;
+    char            c1;
+    char            c2;
 
-        p1 = str;
-        p2 = p1 + _fstrlen( p1 ) - 1;
-        while( p1 < p2 ) {
-            c1 = *p1;
-            c2 = *p2;
-            *p1 = c2;
-            *p2 = c1;
-            ++p1;
-            --p2;
-        }
-        return( str );
-#endif
+    p1 = str;
+    p2 = p1 + _fstrlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
     }
+    return( str );
+#endif
+}

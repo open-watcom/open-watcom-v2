@@ -101,8 +101,8 @@ cg_name CgExprPopType(          // POP CG EXPRESSION and TYPE
     if( top == NULL ) {
         retn = NULL;
     } else if( top->garbage ) {
-        *a_type = T_UINT_4;
-        retn = CGInteger( 12345, T_UINT_4 );
+        *a_type = TY_UINT_4;
+        retn = CGInteger( 12345, TY_UINT_4 );
     } else {
         *a_type = top->type;
         retn = top->expr;
@@ -118,7 +118,7 @@ void CgPushGarbage(             // PUSH GARBAGE (TO BE TRASHED/POPPED)
 
     top = VstkPush( &expressions );
     top->expr = NULL;
-    top->type = NULL;
+    top->type = 0;
     top->garbage = TRUE;
 }
 

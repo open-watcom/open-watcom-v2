@@ -39,7 +39,6 @@ WCLASS WTypo : public WObject
         WEXPORT WTypo();
         WEXPORT WTypo( const WTypo& t );
         WEXPORT WTypo( const WString& good, const WString& bad ) { _good = good; _bad = bad; };
-        WEXPORT WTypo( const WTypo& t );
         virtual bool WEXPORT isEqual( const WTypo* t ) const { return( *t == _bad );  };
         virtual bool WEXPORT isEqual( const WObject *o ) const { return( WObject::isEqual( o ) ); };
         WString good() { return( _good ); };

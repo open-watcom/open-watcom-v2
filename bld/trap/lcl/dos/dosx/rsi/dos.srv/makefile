@@ -1,59 +1,56 @@
-#pmake: build serv lcl dos dsx 32 x86
+#pmake: serv lcl os_dos dsx cpu_386 x86 rsi
 
-os = rsi
-srv = rsi
-cpu = x86
+host_os  = dos
+host_cpu = i86
+
+os   = rsi
+srv  = rsi
+cpu  = x86
 name = rsihelp
+which = SERVER
 
 extra_objs = &
-        $(dosx_serv_objs) &
-        dosredir.obj &
-        squish87.obj &
-        x86cpu.obj &
-        npxtype.obj &
         rsiacc.obj &
-        rsi87.obj &
-        realmode.obj &
         dbglib.obj &
         dbgliba.obj &
         rmhdlr.obj &
-        sbrk.obj
-
-extra_cflags = -dDOS4G -dDOSXHELP -zdp -zu
-extra_incs = $(trap_dir)\lcl\dos\h
-extra_srcs = $(trap_dir)\lcl\dos\c;$(rsilib)
-
-!define substitute_linker
-
-!include $(trap_dir)\lcl\dos\dosx\dosx.mif
-!include $(trap_dir)\serv.mif
-
-objs = &
-        $(%WATCOM)\lib286\dos\dos16m.obj &
+        sbrk.obj &
         segs_16m.obj &
-        magicstr.obj &
-        $+$(objs)$-
+        magicstr.obj
 
-lf = $(%ramdisk)\tmp.lnk
-libnam  = d16libc
+extra_c_flags        = -DDOS4G -zu -zdp
+extra_c_flags_rsiacc = -3
 
-$(target) $(dtarget) : eraseall.obj $(objs) $(__MAKEFILES__)
-    @%create $(lf)
-    @%append $(lf) exp($^@) map($^&) log($^&.err)
-    @%append $(lf) -mpl -nod -DPMI -map -acg -farcall -auto -quiet -rtnerr 2
-    @for %i in ($(objs)) do @%append $(lf) %i
-    @%append $(lf) $(rsilib)\$(libnam).lib $(lang_root)\lib286\dos\clibc.lib
-    !$(tools_root)\glu @$(lf)
+extra_a_flags = -Dcompact -DDOS4G
+extra_a_flags_dbgliba = -zcm
 
-#until wasm gets fixed up
+extra_srcs = $(rsilib);
+inc_dirs = -I$(rsilib)
 
-assemble = $(tools_root)\masm /mx /s /zd /I$(rsilib) /Dcompact $[@;
+extra_libs = $(rsilib)/d16libc.lib
 
-segs_16m.obj : segs_16m.asm
-        $(assemble)
+!ifndef rsi_wlink
+!define substitute_linker
+!endif
 
-dbgliba.obj : dbgliba.asm
-        $(assemble)
+!include $(trap_dir)/lcl/dos/dosx/dosx.mif
+!include $(trap_dir)/master.mif
 
-rmhdlr.obj : rmhdlr.asm
-        $(assemble)
+!ifndef rsi_wlink
+
+objs += $(lang_root)/lib286/dos/dos16m.obj
+
+libs = $(lang_root)/lib286/dos/clibc.lib $(extra_libs)
+
+$(target) : $(libs) $(objs) $(__MAKEFILES__)
+    @%create tmp.lnk
+    @%append tmp.lnk exp($^@) map($^&) log($^&.err)
+!ifeq release 0
+    @%append tmp.lnk -codeview
+!endif
+    @%append tmp.lnk -mpl -nod -DPMI -map -acg -farcall -auto -quiet -rtnerr 2
+    @for %i in ($(objs)) do @%append tmp.lnk %i
+    @for %i in ($(libs)) do @%append tmp.lnk %i
+    -!$(tools_root)\glu @tmp.lnk
+
+!endif

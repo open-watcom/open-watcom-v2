@@ -1,0 +1,20 @@
+/*
+ *  ole2ver.h   Object Linking and Embedding (OLE) 2.0 version numbers
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _OLE2VER_H_
+#define _OLE2VER_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* OLE 2.0 version numbers */
+#define rmm 23
+#define rup 639
+
+:include cplusepi.sp
+
+#endif /* _OLE2VER_H_ */

@@ -41,120 +41,109 @@
 #include "wwindow.hpp"
 #include "wkeydefs.hpp"
 
-#define DEFAULT_EDITOR_NAME             "weditviw"
-#define DEFAULT_EDITOR_IS_DLL           TRUE
-#define DEFAULT_EDITOR_PARMS            ""
-
-#define DBCS_DEFAULT_EDITOR_NAME        "notepad"
-#define DBCS_DEFAULT_EDITOR_IS_DLL      FALSE
-#define DBCS_DEFAULT_EDITOR_PARMS       "%f"
-
-#define OS2_DEFAULT_EDITOR_NAME         "epmlink"
-#define OS2_DEFAULT_EDITOR_IS_DLL       TRUE
-#define OS2_DEFAULT_EDITOR_PARMS        ""
-
 #define LOG_HELP_WIDTH 3
 
-typedef int HostType;
 //these are used for indexing by MConfig::zapTargetMasks()
-#define HOST_WINDOWS    0
-#define HOST_PM         1
-#define HOST_NT         2
-#define HOST_WINOS2     3
-#define HOST_WIN95      4
-#define HOST_J_WIN      5
-#define HOST_NEC_WIN    6
-#define HOST_AXP_NT     7
+typedef enum HostType {
+    #undef pick
+    #define pick(enum,type,batchserv,editor,DLL,parms,descr) enum,
+    #include "hosttype.h"
+    HOST_UNDEFINED
+} HostType;
 
 WCLASS MTool;
 WCLASS MRule;
 WCLASS MConfig : public WObject
 {
-        Declare( MConfig )
-        public:
-                MConfig( WFileName& filename, bool debug=FALSE );
-                ~MConfig();
-                bool ok() { return _ok; }
-                const WString& errMsg() { return _errMsg; }
-                bool isDirty() { return _dirty; }
-                void setDirty( bool dirty=TRUE ) { _dirty = dirty; }
-                bool readConfig();
-                void writeConfig();
+    Declare( MConfig )
+    public:
+        MConfig( WFileName& filename, bool debug=FALSE, HostType host=HOST_UNDEFINED );
+        ~MConfig();
+        bool ok() { return _ok; }
+        const WString& errMsg() { return _errMsg; }
+        bool isDirty() { return _dirty; }
+        void setDirty( bool dirty=TRUE ) { _dirty = dirty; }
+        bool readConfig();
+        void writeConfig();
 
-                MTool* nilTool() { return _nilTool; }
-                MTool* findTool( WString& tooltag );
-                MRule* nilRule() { return _nilRule; }
-                MRule* findRule( WString& ruletag );
-                MRule* findMatchingRule( WFileName& fn, WString& mask );
-                int findMatchingRules( WFileName& fn, WString& mask, WVList& list );
-                MRule* findMatchingRule( WFileName& fn, MRule* tgtRule, WString& mask );
-                WPickList& tools() { return _tools; };
-                WPickList& rules() { return _rules; };
-                WPickList& targets() { return _targets; };
-                WPickList& toolItems() { return _toolItems; };
-                WPickList& actions() { return _actions; };
-                WVList& helpactions() { return _helpactions; };
-                WFileName& editor() { return _editor; }
-                WFileName& browse() { return _browse; }
-                WFileName& browseMerge() { return _browseMerge; }
-                WFileName& batserv() { return _batserv; }
-                WFileName& helpFile() { return _helpFile; }
-                const char* fileFilters() { return _fileFilters; }
-                const MCommand& before() const { return _before; }
-                const MCommand& after() const { return _after; }
-                static MConfig* _configPtr;
-                WFileName& filename() { return _filename; }
-                bool debug() { return _debug; }
-                WVList& logScanPatterns() { return _logScanPatterns; }
-                WVList& logHelpFiles() { return _logHelpFiles; }
-                int version() { return _version; }
-                void setKludge( int k ) { _kludge = k; }
-                void kludgeString( WString& str );
-                void zapMask( WString& mask );
-                HostType hostType() { return _hostType; }
-                void enumAccel( WObject *obj, bcbi fn );
-                WVList& targetOSs() { return _targetOSs; }
-                bool editorIsDLL() { return _editorIsDLL; }
-                WFileName& editorParms() { return _editorParms; }
-        private:
-                bool            _ok;
-                WString         _errMsg;
-                bool            _dirty;
-                WFileName       _filename;
-                bool            _debug;
-                WPickList       _tools;
-                WPickList       _rules;
-                WPickList       _actions;
-                WVList          _helpactions;
-                WPickList       _targets;
-                WVList          _targetOSs;
-                WPickList       _toolItems;
-                WFileName       _editor;
-                WFileName       _browse;
-                WFileName       _browseMerge;
-                WFileName       _batserv;
-                WFileName       _helpFile;
-                MCommand        _before;
-                MCommand        _after;
-                char*           _fileFilters;
-                int             _fileFilterSize;
-                MTool*          _nilTool;
-                MRule*          _nilRule;
-                void configMsgLog( WTokenFile& fil, WString& tok );
-                WVList          _logScanPatterns;
-                WVList          _logHelpFiles;
-                void configProject( WTokenFile& fil, WString& tok );
-                void addRules( WFileName& srcMask, WFileName& tgtMask, WVList& list, WString& tagMask );
-                bool readFile( const WFileName& filename, bool reqd=TRUE );
-                int             _version;
-                int             _kludge;
-                HostType        _hostType;
-                void zapTargetMasks();
-                WString         _hostMask;
-                void buildTargetOSList();
-                bool            _editorIsDLL;
-                WFileName       _editorParms;
-                void expandMacroes( WString &str );
+        MTool* nilTool() { return _nilTool; }
+        MTool* findTool( WString& tooltag );
+        MRule* nilRule() { return _nilRule; }
+        MRule* findRule( WString& ruletag );
+        MRule* findMatchingRule( WFileName& fn, WString& mask );
+        int findMatchingRules( WFileName& fn, WString& mask, WVList& list );
+        MRule* findMatchingRule( WFileName& fn, MRule* tgtRule, WString& mask );
+        WPickList& tools() { return _tools; };
+        WPickList& rules() { return _rules; };
+        WPickList& targets() { return _targets; };
+        WPickList& toolItems() { return _toolItems; };
+        WPickList& actions() { return _actions; };
+        WVList& helpactions() { return _helpactions; };
+        WFileName& editor() { return _editor; }
+        WFileName& browse() { return _browse; }
+        WFileName& browseMerge() { return _browseMerge; }
+        WFileName& batserv() { return _batserv; }
+        WFileName& helpFile() { return _helpFile; }
+        WFileName& htmlHelpFile() { return _htmlHelpFile; }
+        const char* fileFilters() { return _fileFilters; }
+        const MCommand& before() const { return _before; }
+        const MCommand& after() const { return _after; }
+        static MConfig* _configPtr;
+        WFileName& filename() { return _filename; }
+        bool debug() { return _debug; }
+        WVList& logScanPatterns() { return _logScanPatterns; }
+        WVList& logHelpFiles() { return _logHelpFiles; }
+        WVList& logHtmlHelpFiles() { return _logHtmlHelpFiles; }
+        int version() { return _version; }
+        void setKludge( int k ) { _kludge = k; }
+        void kludgeString( WString& str );
+        void zapMask( WString& mask );
+        HostType hostType() { return _hostType; }
+        void enumAccel( WObject *obj, bcbk fn );
+        WVList& targetOSs() { return _targetOSs; }
+        bool editorIsDLL() { return _editorIsDLL; }
+        WFileName& editorParms() { return _editorParms; }
+    private:
+        bool            _ok;
+        WString         _errMsg;
+        bool            _dirty;
+        WFileName       _filename;
+        bool            _debug;
+        WPickList       _tools;
+        WPickList       _rules;
+        WPickList       _actions;
+        WVList          _helpactions;
+        WPickList       _targets;
+        WVList          _targetOSs;
+        WPickList       _toolItems;
+        WFileName       _editor;
+        WFileName       _browse;
+        WFileName       _browseMerge;
+        WFileName       _batserv;
+        WFileName       _helpFile;
+        WFileName       _htmlHelpFile;
+        MCommand        _before;
+        MCommand        _after;
+        char*           _fileFilters;
+        int             _fileFilterSize;
+        MTool*          _nilTool;
+        MRule*          _nilRule;
+        void configMsgLog( WTokenFile& fil, WString& tok );
+        WVList          _logScanPatterns;
+        WVList          _logHelpFiles;
+        WVList          _logHtmlHelpFiles;
+        void configProject( WTokenFile& fil, WString& tok );
+        void addRules( WFileName& srcMask, WFileName& tgtMask, WVList& list, WString& tagMask );
+        bool readFile( const WFileName& filename, bool reqd=TRUE );
+        int             _version;
+        int             _kludge;
+        HostType        _hostType;
+        void zapTargetMasks();
+        WString         _hostMask;
+        void buildTargetOSList();
+        bool            _editorIsDLL;
+        WFileName       _editorParms;
+        void expandMacroes( WString &str );
 };
 
 #define _config MConfig::_configPtr

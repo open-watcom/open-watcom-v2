@@ -1,0 +1,22 @@
+WMAPCWD Documentation
+=====================
+
+The WMAPCWD utility converts a WLINK MAP file into a format that
+can be used by the CauseWay debugger CWD.  This process allows
+you to see symbolics in your Watcom program when using CWD, if
+you do not want to or cannot use the Watcom debugger WD on your
+application for whatever reason.
+
+Supply the source (Watcom) MAP file and the destination
+(CWD-readable) MAP file names as parameters after WMAPCWD.  If
+none are supplied WMAPCWD will prompt for them.
+
+Do note that you cannot use the same MAP file name for source
+and destination and that CWD will attempt to use the MAP file
+name with the base EXE file name.  This means that you must
+either rename the Watcom MAP file name prior to the WMAPCWD
+process, or force it to a different name than the EXE file.
+
+Not much to this utility, but what it does, it does properly.  C
+source has been included for those interested or who wish to add
+more features and intelligence.

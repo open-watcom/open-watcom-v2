@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Option parsing tags.
 *
 ****************************************************************************/
 
@@ -48,6 +47,7 @@ TAG( JUSAGE )
 TAG( JTITLE )
 TAG( MULTIPLE )
 TAG( NEGATE )
+TAG( NOCHAIN )
 TAG( NOEQUAL )
 TAG( NTARGET )
 TAG( NUMBER )

@@ -12,7 +12,7 @@ WEXPORT WMenuItem::WMenuItem( char* text, WObject* obj, cb pick )
 	, _pick( pick )
 {
 	_id = _menuIds++;
-	WWindow::_objMap.setThis( this, _id );
+	WWindow::_objMap.setThis( this, (HANDLE)_id );
 }
 
 WEXPORT WMenuItem::~WMenuItem()

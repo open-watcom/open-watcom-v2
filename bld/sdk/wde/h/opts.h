@@ -39,4 +39,3 @@
 #define IDB_OPT_SETDEFS    117
 #define IDB_OPT_IGNOREINC  118
 #define IDB_OPT_INCPATH    119
-

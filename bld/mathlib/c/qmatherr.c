@@ -32,8 +32,8 @@
 
 #include "variety.h"
 #include "mathcode.h"
-#undef __func__
-#define __func__
+#undef __math_func__
+#define __math_func__
 #include "mathcode.h"
 #include "cplx.h"
 

@@ -1,9 +1,8 @@
-#pmake:all large 16bit os2 startup iX86 static build os_os2 cpu_i86
+#pmake: build large 16bit os2 startup iX86 static os_os2 cpu_i86
 processor=286
 model=ml
 system=os2
 linkage=static
-fpi=1
-!include ..\..\..\objects.mif
-!include $(clib_dir)\master.mif
-!include $(clib_dir)\mklib.mif
+!include ../../../objects.mif
+!include $(clib_dir)/master.mif
+!include $(clib_dir)/mklib.mif

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX env utility
+*               Sets or displays environment variables
 *
 ****************************************************************************/
 
@@ -44,7 +44,7 @@
 
 char *OptEnvVar="env";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: env [-] [-?] [@var] [variable=value ...] [command arguments ...]",
     "\tvar                : environment variable to expand",
     "\tvariable=value     : set environment variable to value",
@@ -59,7 +59,7 @@ static void insertVar( char **env, char *var )
     char        *p;
     char         ch;
     unsigned     len;
-    char         delete = 0;
+    char         del = 0;
 
     p = strchr( var, '=' ) + 1;
 
@@ -68,14 +68,14 @@ static void insertVar( char **env, char *var )
         *p = '\0';
     } else {
         ch = '\0';
-        delete = 1;
+        del = 1;
     }
 
     len = strlen( var );
 
     for( ; *env != NULL; env++ ) {
         if( strnicmp( *env, var, len ) == 0 ) {
-            if( !delete ) {
+            if( !del ) {
                 *p = ch;
                 *env = var;
                 return;
@@ -122,8 +122,8 @@ static void printEnv( char **env )
 
 void main( int argc, char **argv )
 {
-    char        **envptr, **cmdptr;
-    char          alloc;
+    char       **envptr, **cmdptr;
+    char         alloc;
 
     argv = ExpandEnv( &argc, argv );
     GetOpt( &argc, argv, "", usageMsg );
@@ -169,7 +169,8 @@ void main( int argc, char **argv )
         printEnv( envptr );
     } else {
         errno = 0;
-        spawnvpe( P_WAIT, *cmdptr, cmdptr, envptr );
+        spawnvpe( P_WAIT, *cmdptr, (const char * const *)cmdptr,
+            (const char * const *)envptr );
 
         switch( errno ) {
             case E2BIG:

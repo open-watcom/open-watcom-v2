@@ -1,0 +1,122 @@
+/*
+ *  afxmt.h     Application Framework multithreading classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXMT_H__
+#define __AFXMT_H__
+
+:include readonly.sp
+
+class _AFXLINK CSyncObject : public CObject {
+public:
+    HANDLE  m_hObject;
+    
+    DECLARE_DYNAMIC( CSyncObject )
+    
+public:
+    explicit CSyncObject( LPCTSTR pstrName );
+    virtual ~CSyncObject();
+    
+    virtual BOOL    Lock( DWORD dwTimeout = INFINITE );
+    virtual BOOL    Unlock() = 0;
+    virtual BOOL    Unlock( LONG lCount, LPLONG lpPrevCount = NULL );
+    
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    operator HANDLE() const;
+};
+
+class _AFXLINK CCriticalSection : public CSyncObject {
+public:
+    CRITICAL_SECTION    m_sect;
+    
+    DECLARE_DYNAMIC( CCriticalSection )
+    
+public:
+    CCriticalSection();
+    virtual ~CCriticalSection();
+    
+    virtual BOOL    Lock( DWORD dwTimeout );
+    virtual BOOL    Unlock();
+    
+    BOOL    Lock();
+    
+    operator CRITICAL_SECTION *();
+};
+
+class _AFXLINK CMutex : public CSyncObject {
+    DECLARE_DYNAMIC( CMutex )
+    
+public:
+    CMutex( BOOL bInitiallyOwn = FALSE, LPCTSTR lpszName = NULL, LPSECURITY_ATTRIBUTES lpsaAttributes = NULL );
+    
+    virtual BOOL    Unlock();
+};
+
+class _AFXLINK CSemaphore : public CSyncObject {
+    DECLARE_DYNAMIC( CSemaphore )
+    
+public:
+    CSemaphore( LONG lInitialCount = 1, LONG lMaxCount = 1, LPCTSTR pstrName = NULL, LPSECURITY_ATTRIBUTES lpsaAttributes = NULL );
+    
+    virtual BOOL    Unlock();
+    virtual BOOL    Unlock( LONG lCount, LPLONG lpPrevCount = NULL );
+};
+
+class _AFXLINK CEvent : public CSyncObject {
+    DECLARE_DYNAMIC( CEvent )
+    
+public:
+    CEvent( BOOL bInitiallyOwn = FALSE, BOOL bManualReset = FALSE, LPCTSTR lpszName = NULL, LPSECURITY_ATTRIBUTES lpsaAttributes = NULL );
+    
+    virtual BOOL    Unlock();
+    
+    BOOL    PulseEvent();
+    BOOL    ResetEvent();
+    BOOL    SetEvent();
+};
+
+class _AFXLINK CSingleLock {
+protected:
+    CSyncObject *m_pObject;
+    HANDLE      m_hObject;
+    BOOL        m_bAcquired;
+    
+public:
+    explicit CSingleLock( CSyncObject *pObject, BOOL bInitialLock = FALSE );
+    ~CSingleLock();
+    
+    BOOL    IsLocked();
+    BOOL    Lock( DWORD dwTimeout = INFINITE );
+    BOOL    Unlock();
+    BOOL    Unlock( LONG lCount, LPLONG lpPrevCount = NULL );
+};
+
+class _AFXLINK CMultiLock {
+protected:
+    HANDLE              m_hPreallocated[8];
+    BOOL                m_bPreallocated[8];
+    CSyncObject * const *m_ppObjectArray;
+    HANDLE              *m_pHandleArray;
+    BOOL                *m_bLockedArray;
+    DWORD               m_dwCount;
+    
+public:
+    CMultiLock( CSyncObject *ppObjects[], DWORD dwCount, BOOL bInitialLock = FALSE );
+    ~CMultiLock();
+    
+    BOOL    IsLocked( DWORD dwItem );
+    DWORD   Lock( DWORD dwTimeout = INFINITE, BOOL bWaitForAll = TRUE, DWORD dwWakeMask = 0L );
+    BOOL    Unlock();
+    BOOL    Unlock( LONG lCount, LPLONG lpPrevCount = NULL );
+};
+
+#ifndef _DEBUG
+    #include <afxmt.inl>
+#endif
+
+#endif /* __AFXMT_H__ */

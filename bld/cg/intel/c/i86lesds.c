@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Optimize segment register usage and merge memory accesses.
 *
 ****************************************************************************/
 
@@ -39,28 +38,35 @@
 #include "vergen.h"
 #include "funits.h"
 #include "model.h"
+#include "makeins.h"
+
 
 extern  void            DoNothing(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *DeAlias(name*);
 extern  name            *AllocS32Const(signed_32);
-extern  void            FreeIns(instruction*);
+extern  name            *AllocIntConst( int );
+extern  bool            VolatileIns(instruction *);
+extern  hw_reg_set      Low16Reg( hw_reg_set regs );
+extern  hw_reg_set      High16Reg( hw_reg_set regs );
+extern  hw_reg_set      FullReg( hw_reg_set regs );
 
 extern  block           *HeadBlock;
 extern  type_length     TypeClassSize[];
 
 static opcode_entry LDSES = { 0, 0, G_LDSES, 0, FU_NO };
 
-static  bool    AdjacentMem( name *s, name *r, type_class_def tipe ) {
-/********************************************************************/
 
+static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
+/******************************************************************/
+{
     name        *base_s;
     name        *base_r;
     int         locn_s;
     int         locn_r;
     int         stride;
 
-    stride = TypeClassSize[ tipe ];
+    stride = TypeClassSize[tipe];
     if( s->n.class != r->n.class ) return( FALSE );
     if( s->n.class == N_MEMORY ) {
         if( s->v.symbol != r->v.symbol ) return( FALSE );
@@ -85,37 +91,41 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe ) {
     return( FALSE );
 }
 
-static bool     MemMove( instruction *ins ) {
-/*******************************************/
 
+static bool     MemMove( instruction *ins )
+/*****************************************/
+{
     if( ins->head.opcode == OP_MOV ) {
         switch( ins->result->n.class ) {
         case N_TEMP:
         case N_MEMORY:
         case N_INDEXED:
             return( TRUE );
+        default:
+            break;
         }
     }
     return( FALSE );
 }
 
-static bool     OptMemMove( instruction *ins, instruction *next ) {
-/*****************************************************************/
 
+static bool     OptMemMove( instruction *ins, instruction *next )
+/***************************************************************/
+{
     unsigned_32         shift;
     unsigned_32         lo;
     unsigned_32         hi;
-    type_class_def      result_type;
+    type_class_def      result_type = 0;
     unsigned_32         result_const;
     name                *result;
 
     assert( MemMove( ins ) && MemMove( next ) );
     if( ins->type_class == next->type_class ) {
-        if(  ins->operands[ 0 ]->n.class == N_CONSTANT &&
-             ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE &&
-            next->operands[ 0 ]->n.class == N_CONSTANT &&
-            next->operands[ 0 ]->c.const_type == CONS_ABSOLUTE ) {
-            switch( TypeClassSize[ ins->type_class ] ) {
+        if(  ins->operands[0]->n.class == N_CONSTANT &&
+             ins->operands[0]->c.const_type == CONS_ABSOLUTE &&
+            next->operands[0]->n.class == N_CONSTANT &&
+            next->operands[0]->c.const_type == CONS_ABSOLUTE ) {
+            switch( TypeClassSize[ins->type_class] ) {
             case 1:
                 shift = 8;
                 result_type = U2;
@@ -132,16 +142,18 @@ static bool     OptMemMove( instruction *ins, instruction *next ) {
                 break;
             default:
                 shift = 0;
+                result_type = 0;
                 break;
             }
             if( shift ) {
+                result = NULL;
                 if( AdjacentMem( ins->result, next->result, ins->type_class ) ) {
-                    hi =  ins->operands[ 0 ]->c.int_value;
-                    lo = next->operands[ 0 ]->c.int_value;
+                    hi =  ins->operands[0]->c.int_value;
+                    lo = next->operands[0]->c.int_value;
                     result = next->result;
                 } else if( AdjacentMem( next->result, ins->result, ins->type_class ) ) {
-                    lo =  ins->operands[ 0 ]->c.int_value;
-                    hi = next->operands[ 0 ]->c.int_value;
+                    lo =  ins->operands[0]->c.int_value;
+                    hi = next->operands[0]->c.int_value;
                     result = ins->result;
                 } else {
                     return( FALSE );
@@ -149,7 +161,7 @@ static bool     OptMemMove( instruction *ins, instruction *next ) {
                 lo &= ( ( 1 << shift ) - 1 );
                 hi &= ( ( 1 << shift ) - 1 );
                 result_const = lo | ( hi << shift );
-                ins->operands[ 0 ] = AllocS32Const( result_const );
+                ins->operands[0] = AllocS32Const( result_const );
                 ins->type_class = result_type;
                 ins->result = result;
                 DoNothing( next );
@@ -162,22 +174,25 @@ static bool     OptMemMove( instruction *ins, instruction *next ) {
 
 #if _TARGET & _TARG_IAPX86
 
-static bool isPushX2( instruction *ins ) {
-/****************************************/
-
+static bool isPushX2( instruction *ins )
+/**************************************/
+{
     if( ins->head.opcode == OP_PUSH ) {
         switch( ins->type_class ) {
         case U2:
         case I2:
             return( TRUE );
+        default:
+            break;
         }
     }
     return( FALSE );
 }
 
-static bool isOpConstant( name *op ) {
-/************************************/
 
+static bool isOpConstant( name *op )
+/**********************************/
+{
     if( op->n.class == N_CONSTANT ) {
         if( op->c.const_type == CONS_ABSOLUTE ) {
             return( TRUE );
@@ -186,11 +201,12 @@ static bool isOpConstant( name *op ) {
     return( FALSE );
 }
 
-static bool OptPushDWORDConstant( instruction *ins, instruction *next ) {
-/***********************************************************************/
 
-    name *opi;
-    name *opn;
+static bool OptPushDWORDConstant( instruction *ins, instruction *next )
+/*********************************************************************/
+{
+    name    *opi;
+    name    *opn;
 
     assert( isPushX2( ins ) && isPushX2( next ) );
     opi = ins->operands[0];
@@ -218,11 +234,12 @@ static bool OptPushDWORDConstant( instruction *ins, instruction *next ) {
     return( TRUE );
 }
 
-static bool OptPushDWORDMemory( instruction *ins, instruction *next ) {
-/*********************************************************************/
 
+static bool OptPushDWORDMemory( instruction *ins, instruction *next )
+/*******************************************************************/
+{
     assert( isPushX2( ins ) && isPushX2( next ) );
-    if( AdjacentMem( ins->operands[ 0 ], next->operands[ 0 ], U2 ) ) {
+    if( AdjacentMem( ins->operands[0], next->operands[0], U2 ) ) {
         DoNothing( ins );
         next->type_class = I4;
         return( TRUE );
@@ -231,18 +248,19 @@ static bool OptPushDWORDMemory( instruction *ins, instruction *next ) {
 }
 #endif
 
-static  bool    NotByteMove( instruction *ins ) {
-/***********************************************/
 
+static  bool    NotByteMove( instruction *ins )
+/*********************************************/
+{
     if( ins->head.opcode != OP_MOV ) return( FALSE );
     if( ins->type_class == U1 || ins->type_class == I1 ) return( FALSE );
     return( TRUE );
 }
 
 
-static  bool    IsLESDS( instruction *ins, instruction *next ) {
-/**************************************************************/
-
+static  bool    IsLESDS( instruction *ins, instruction *next )
+/************************************************************/
+{
     if( ins->u.gen_table->generate != G_RM1
         && ins->u.gen_table->generate != G_MOVAM ) return( FALSE );
     if( ins->type_class != WD && ins->type_class != SW ) return( FALSE );
@@ -252,20 +270,20 @@ static  bool    IsLESDS( instruction *ins, instruction *next ) {
 
 
 static  void    CheckLDSES( instruction *seg, instruction *reg,
-                            bool seg_first ) {
-/********************************************/
-
+                            bool seg_first )
+/*************************************************************/
+{
     hw_reg_set  tmp;
 
     if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_FS_GS ) ) return;
-    if( !AdjacentMem( seg->operands[ 0 ], reg->operands[ 0 ], U2 ) ) return;
-    if( seg->operands[ 0 ]->n.class == N_INDEXED ) {
+    if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) ) return;
+    if( seg->operands[0]->n.class == N_INDEXED ) {
         // special case of using result of seg
         if( seg_first ) {
             // don't think we can get here - using one of DS|ES|FS|GS as index reg?!?
-            if( HW_Ovlap( reg->operands[ 0 ]->i.index->r.reg, seg->result->r.reg ) ) return;
+            if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) return;
         } else {
-            if( HW_Ovlap( seg->operands[ 0 ]->i.index->r.reg, reg->result->r.reg ) ) return;
+            if( HW_Ovlap( seg->operands[0]->i.index->r.reg, reg->result->r.reg ) ) return;
         }
     }
     reg->u.gen_table = &LDSES;
@@ -276,9 +294,9 @@ static  void    CheckLDSES( instruction *seg, instruction *reg,
 }
 
 
-extern  void    OptSegs() {
-/*************************/
-
+extern  void    OptSegs( void )
+/*****************************/
+{
     block       *blk;
     instruction *ins;
     instruction *next;
@@ -299,7 +317,8 @@ extern  void    OptSegs() {
                         CheckLDSES( ins, next, TRUE );
                     }
                 }
-                if( MemMove( ins ) && MemMove( next ) ) {
+                if( MemMove( ins )  && !VolatileIns( ins )
+                 && MemMove( next ) && !VolatileIns( next ) ) {
                     // look for adjacent byte/word moves and combine them
                     if( OptMemMove( ins, next ) ) {
                         // tell ourselves to go around again in case
@@ -312,6 +331,8 @@ extern  void    OptSegs() {
                         case U2:
                             redo = TRUE;
                             break;
+                        default:
+                            break;
                         }
                         tmp = next->head.next;
                         FreeIns( next );
@@ -319,6 +340,38 @@ extern  void    OptSegs() {
                     }
                 }
     #if _TARGET & _TARG_IAPX86
+                /* The scoreboarder may split "and ax,imm" into
+                   "xor ah,ah; and al,imm". This is sometimes useful
+                   (ah can be eliminated for
+                      short a, b, c; a &= 0x01; b &= 0x0f; c = (a|b) & 0xff;)
+                   but produces longer code if it is not. Remerge them here.
+                */
+                if( 
+                 /* is next of the form "and byte, imm" ? */
+                    ( next->head.opcode == OP_AND )
+                 && ( next->type_class == I1 || next->type_class == U1 )
+                 && ( next->result->n.class == N_REGISTER )
+                 && ( next->operands[0] == next->result )
+                 && ( next->operands[1]->n.class == N_CONSTANT ) 
+
+                 /* is ins of the form "xor byte, byte" ? */
+                 && ( ins->head.opcode == OP_XOR )
+                 && ( ins->type_class == next->type_class )
+                 && ( ins->result->n.class == N_REGISTER )
+                 && ( ins->operands[0] == ins->result )
+                 && ( ins->operands[1] == ins->result ) ) {
+                    hw_reg_set full_reg = FullReg( next->result->r.reg );
+                    /* check if instructions operate on correct halves */
+                    if ( HW_Equal( Low16Reg( full_reg ), next->result->r.reg )
+                      && HW_Equal( High16Reg( full_reg ), ins->result->r.reg )
+                       ) {
+                        /* convert to "and fullreg, imm" */
+                        next->type_class = next->type_class == I1 ? I2 : U2;
+                        next->result->r.reg = full_reg;
+                        next->operands[1] = AllocIntConst( next->operands[1]->c.int_value & 0xFF );
+                        DoNothing(ins);
+                    }
+                }
                 if( _CPULevel( CPU_386 ) ) {
                     if( isPushX2( ins ) && isPushX2( next ) ) {
                         if( OptPushDWORDConstant( ins, next ) ) {

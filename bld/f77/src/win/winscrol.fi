@@ -1,0 +1,30 @@
+*$noreference
+
+! Scrolling Functions:
+! --------------------
+
+      external GetScrollPos
+      external GetScrollRange
+      external ScrollDC
+      external ScrollWindow
+      external SetScrollPos
+      external SetScrollRange
+      external ShowScrollBar
+
+      integer*2 GetScrollPos
+      integer*2 ScrollDC
+      integer*2 SetScrollPos
+
+! Scroll Bar Constants
+
+      integer SB_HORZ
+      integer SB_VERT
+      integer SB_CTL
+      integer SB_BOTH
+
+      parameter ( SB_HORZ             = 0 )
+      parameter ( SB_VERT             = 1 )
+      parameter ( SB_CTL              = 2 )
+      parameter ( SB_BOTH             = 3 )
+
+*$reference

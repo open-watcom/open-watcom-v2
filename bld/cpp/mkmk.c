@@ -29,14 +29,10 @@
 *
 ****************************************************************************/
 
-
-#include <stdio.h>
-#ifndef UNIX
+#include "preproc.h"
+#if !defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <conio.h>
 #endif
-#include <stdlib.h>
-#include "preproc.h"
-#include <malloc.h>
 
 extern char PreProcChar;
 
@@ -46,10 +42,8 @@ void MkMkDependency( char *filename, char *fullname, char *delim )
     printf( "%c%s%c\n", delim[0], fullname, delim[1] );
 }
 
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
-    int         c;
-
     if( argc < 2 ) {
         cprintf( "Usage: mkmk filename\r\n" );
         exit( 1 );
@@ -64,4 +58,5 @@ main( int argc, char *argv[] )
     // call PP_Define here to predefine any desired macros
     PP_Dependency_List( MkMkDependency );
     PP_Fini();
+    return( 0 );
 }

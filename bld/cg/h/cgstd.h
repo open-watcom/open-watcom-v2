@@ -35,7 +35,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <assert.h>
-#include "cgdll.h"
+#include "cgapi.h"
 
 #if INT_MAX == SHRT_MAX
     #define _HOST_INTEGER       16

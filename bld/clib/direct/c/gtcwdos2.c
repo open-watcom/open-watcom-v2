@@ -41,8 +41,8 @@
 #include <wos2.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include <direct.h>
 #ifdef __WIDECHAR__
-    #include <direct.h>
     #include <mbstring.h>
 #endif
 

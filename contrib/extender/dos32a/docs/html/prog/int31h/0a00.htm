@@ -1,0 +1,139 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.48 - DPMI function 0A00h
+- Get Vendor-Specific API Entry Point</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns an address which
+can be called to use host-specific extensions to the standard set of DPMI
+functions.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0A00h<br>
+<b>DS:ESI</b> = selector:offset of ASCIIZ (null-terminated) string which<br>
+identifies the DPMI host vendor</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>ES:EDI</b> = (code)selector:offset of extended API entry point<br>
+<b>DS, FS, GS, EAX, EBX, ECX, EDX, ESI,</b> and <b>EBP</b> may be modified.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8001h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - unsupported function (extension
+  not found)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The null-terminated
+  string specifies the host-specific vendor name or some other unique identifier
+  to obtain a specific extension entry point. The string comparison used
+  to look up the API entry point is case-sensitive.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) Clients must use a
+  FAR CALL to reach the extended API entry point.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) All extended API parameters
+  are specified by the vendor.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) DOS/32 Advanced recognizes
+  two ID-strings:</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">1) &quot;RATIONAL DOS/4G&quot;,\0<br>
+  2) &quot;SUNSYS DOS/32A&quot;,\0</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">When calling this function
+  with DS:ESI pointing to the first ID-string, ie &quot;RATIONAL DOS/4G&quot;,
+  DOS/32 Advanced will return in ES:EDI a pointer to the entry point of DOS/4G(W)
+  DPMI API extensions.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">*) Please note that DOS/4G(W)
+  DPMI API extensions are not supported by this version of DOS/32 Advanced
+  DPMI. A call to DOS/4G(W) extended DPMI API entry point will result in
+  a fatal error which will terminate the application immediately and return
+  to DOS.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">When calling this function
+  with DS:ESI pointing to the second ID-string, ie &quot;SUNSYS DOS/32A&quot;,
+  DOS/32 Advanced will return in ES:EDI a pointer to the entry point of DOS/32
+  Advanced DPMI API extensions, and an additional information in the following
+  registers:</font></p>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> = DOS Extender version number</font></p>
+  <blockquote>
+    <p><b><font size=-1 face="Verdana, Arial, Helvetica">AL</font></b><font
+     size=-1 face="Verdana, Arial, Helvetica"> = minor version number (binary)<br>
+    <b>AH</b> = major version number (binary)</font></p>
+  </blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">BL</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> = DPMI Kernel configuration
+  bits<br>
+  <b>BH</b> = System software type:</font></p>
+  <blockquote>
+    <p><font size=-1 face="Verdana, Arial, Helvetica">00h = Clean<br>
+    01h = XMS<br>
+    02h = VCPI<br>
+    03h = DPMI</font></p>
+  </blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">CL</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> = CPU type:</font></p>
+  <blockquote>
+    <p><font size=-1 face="Verdana, Arial, Helvetica">03h = 80386<br>
+    04h = 80486<br>
+    05h = 80586 (Pentium)<br>
+    06h = 80686 (Pentium Pro or Pentium II)<br>
+    07h-0FFh = reserved</font></p>
+  </blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">CH</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> = FPU type:</font></p>
+  <blockquote>
+    <p><font size=-1 face="Verdana, Arial, Helvetica">00h = none (no co-processor
+    is present)<br>
+    01h = 8087<br>
+    02h = 80287<br>
+    03h = 80387<br>
+    04h = 80486 with numeric coprocessor<br>
+    05h = 80586 (Pentium)<br>
+    06h = 80686 (Pentium Pro or Pentium II)</font></p>
+  </blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">DX</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> = PIC values (unrelocated)<br>
+  <b>ES:EDI</b> = (code)selector:offset of DOS/32 Advanced DPMI API extensions<br>
+  <b>DS:ESI, EBP, FS, GS</b> = unmodified</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">Please refer to the section
+  <i>2.52 - Vendor Specific DPMI API Extensions</i> to get full information
+  about DOS/32 Advanced extended DPMI API functions.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">Additional information
+  about value returned in BL register and about DOS/32 Advanced DPMI Kernel
+  configuration can be found in the document &quot;DOS/32 Advanced Technical
+  Reference&quot;. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

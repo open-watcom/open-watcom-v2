@@ -1,0 +1,45 @@
+Module: fpu5.asm
+
+Segment: S1 PARA USE16 00000002 bytes
+0000                L$1:
+0000  00 00                                           ..
+
+Segment: S2 PARA USE16 00000053 bytes
+                    ; FPU fixup FISRQQ
+0000  9B 36 DB 6F 01            fld     tbyte ptr ss:0x1[bx]
+                    ; FPU fixup FIDRQQ
+0005  9B DB E2              fclex
+0008  DB E2             fnclex
+                    ; FPU fixup FIDRQQ
+000A  9B DB E3              finit
+000D  DB E3             fninit
+                    ; FPU fixup FIDRQQ
+000F  9B DB E1              fdisi
+0012  DB E1             fndisi
+                    ; FPU fixup FIDRQQ
+0014  9B DB E0              feni
+0017  DB E0             fneni
+                    ; FPU fixup FISRQQ
+0019  9B 36 DD 36 00 00         fsave       ss:L$1
+001F  36 DD 36 00 00            fnsave      ss:L$1
+                    ; FPU fixup FISRQQ
+0024  9B 36 DD 26 00 00         frstor      ss:L$1
+                    ; FPU fixup FISRQQ
+002A  9B 36 D9 36 00 00         fstenv      ss:L$1
+0030  36 D9 36 00 00            fnstenv     ss:L$1
+                    ; FPU fixup FISRQQ
+0035  9B 36 D9 26 00 00         fldenv      ss:L$1
+                    ; FPU fixup FISRQQ
+003B  9B 36 D9 3E 00 00         fstcw       word ptr ss:L$1
+0041  36 D9 3E 00 00            fnstcw      word ptr ss:L$1
+                    ; FPU fixup FISRQQ
+0046  9B 36 DD 3E 00 00         fstsw       word ptr ss:L$1
+004C  36 DD 3E 00 00            fnstsw      word ptr ss:L$1
+                    ; FPU fixup FIWRQQ
+0051  90                nop
+0052  9B                fwait
+
+Routine Size: 83 bytes,    Routine Base: S2 + 0000
+
+No disassembly errors
+

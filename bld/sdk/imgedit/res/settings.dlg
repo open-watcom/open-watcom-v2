@@ -1,6 +1,6 @@
 CURRENT_SETTINGS DIALOG 54, 52, 264, 206
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "WATCOM Image Editor Current Settings"
+CAPTION "Open Watcom Image Editor Current Settings"
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Profile information", -1, 15, 15, 235, 30, WS_GROUP

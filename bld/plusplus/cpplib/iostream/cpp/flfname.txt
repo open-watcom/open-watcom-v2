@@ -1,61 +1,53 @@
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-   %     reserved.  No part of this software may be reproduced or        %
-   %     used in any form or by any means - graphic, electronic or       %
-   %     mechanical, including photocopying, recording, taping or        %
-   %     information storage and retrieval systems - except with the     %
-   %     written permission of WATCOM International Inc.                 %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     	  
 ******************************** FILEBUF *************************************
 
 Filename: flfoprot.cpp
 Declaration:
-  int const filebuf::openprot = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; Semantics: 0644
+  int const std::filebuf::openprot = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; Semantics: 0644
 Semantics: Default file protection
 
 
 Filename: flfconde.cpp 
 Declaration:
-    filebuf::filebuf() : __file_handle( EOF ) 
+    std::filebuf::filebuf() : __file_handle( EOF ) 
 Semantics: Create an empty constructor
 
 
 Filename: flfconfd.cpp  
 Declaration:
-    filebuf::filebuf( filedesc fd ) : __file_handle( EOF ) 
+    std::filebuf::filebuf( filedesc fd ) : __file_handle( EOF ) 
 Semantics: Create a filebuf object that is connected to an open file. 
 
 
 Filename: flfconsf.cpp
 Declaration:
-    filebuf::filebuf( filedesc fd, char *buf, int len ) : __file_handle( EOF ) 
+    std::filebuf::filebuf( filedesc fd, char *buf, int len ) : __file_handle( EOF ) 
 Semantics: Create a filebuf object that is connected to an open file and
 	   that uses the buffer specified by buf and len.
 
 
 Filename: flfdestr.cpp 
 Declaration:
-    filebuf::~filebuf() 
+    std::filebuf::~filebuf() 
 Semantics: Destroy the filebuf.
 
 
 Filename: flfattac.cpp 
 Declaration:
-    filebuf *filebuf::attach( filedesc fd ) 
+    filebuf *std::filebuf::attach( filedesc fd ) 
 Semantics: Attach an open file (described by fd) to this filebuf.
 
 
 Filename: flfopen.cpp 
 Declaration:
-    filebuf *filebuf::open( char const *name, ios::openmode p_mode, int prot )
+    filebuf *std::filebuf::open( char const *name, ios::openmode p_mode, int prot )
 Semantics: Open the named file and attach it to this filebuf.
 
 
 Filename: flfclose.cpp 
 Declaration:
-    filebuf *filebuf::close() 
+    filebuf *std::filebuf::close() 
 Semantics: Flush the file described by "handle".
   	   Close the file.
    	   Disconnect the file handle from the filebuf (set handle to EOF).
@@ -63,33 +55,33 @@ Semantics: Flush the file described by "handle".
 
 Filename: flfpbfai.cpp 
 Declaration:
-    int filebuf::pbackfail( int c )
+    int std::filebuf::pbackfail( int c )
 Semantics: Handle attempt to put back off the begining of the get area. 
 
 
 Filename: flfoverf.cpp 
 Declaration:
-    int filebuf::overflow( int c ) 
+    int std::filebuf::overflow( int c ) 
 Semantics: Handle allocating a buffer, if required.
            Handle overflow of the output streambuf buffer.
 
 
 Filename: flfundrf.cpp 
 Declaration:
-    int filebuf::underflow() 
+    int std::filebuf::underflow() 
 Semantics: Handle allocating a buffer, if required.
            Handle filling the get area of the streambuf.
 
 
 Filename: flfsetbf.cpp 
 Declaration:
-    streambuf *filebuf::setbuf( char *buf, int len ) 
+    streambuf *std::filebuf::setbuf( char *buf, int len ) 
 Semantics: Set up the filebuf using the specified buffer.
 
 
 Filename: flfseeko.cpp 
 Declaration:
-    streampos filebuf::seekoff( streamoff offset,
+    streampos std::filebuf::seekoff( streamoff offset,
                                ios::seekdir dir,
                                ios::openmode ) 
 Semantics: Seek to a new position in the file.
@@ -97,6 +89,6 @@ Semantics: Seek to a new position in the file.
 
 Filename: flfsync.cpp 
 Declaration:
-    int filebuf::sync() 
+    int std::filebuf::sync() 
 Semantics: Synchronize the output of this stream with the underlying
            C standard I/O.

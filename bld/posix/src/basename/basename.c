@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX basename utility
+*               Determines base portion of a pathname
 *
 ****************************************************************************/
 
@@ -41,7 +41,7 @@
 
 char *OptEnvVar="basename";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: basename [-?] [@env] filename [suffix]",
     "\tenv                : environment variable to expand",
     "\tfilename           : name of file to strip",

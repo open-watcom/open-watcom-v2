@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Far heap reallocation routines.
 *
 ****************************************************************************/
 
@@ -87,9 +86,10 @@ _WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
             return( NULL );
         }
         old_size = _fmsize( stg );
-        if( FP_SEG(stg) == _DGroup() ) {
+        if( FP_SEG( stg ) == _DGroup() ) {
             p = stg;
-            if( _nexpand( (void _WCNEAR *) stg, req_size ) == NULL ) p = NULL;
+            if( _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size ) == NULL )
+                p = NULL;
         } else {
             p = _fexpand( stg, req_size );
         }
@@ -99,8 +99,8 @@ _WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
                 _mymemcpy( p, stg, old_size );
                 _ffree( stg );
             } else {
-                if( FP_SEG(stg) == _DGroup() ) {
-                    _nexpand( (void _WCNEAR *) stg, old_size );
+                if( FP_SEG( stg ) == _DGroup() ) {
+                    _nexpand( (void _WCNEAR *)FP_OFF( stg ), old_size );
                 } else {
                     _fexpand( stg, old_size );
                 }

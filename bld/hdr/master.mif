@@ -1,238 +1,114 @@
 proj_name=hdr
-host_CPU=386
-host_OS=nt
+
+!include ../hfiles.mif
 
 !include cproj.mif
 
-splice = $(bld_bin)\wsplice -i.. -k$(system) $(options) ..\common.sp $[@ $^@
+dos_options   = -kDOS -kUNICODE
+linux_options = -kLINUX -t8 -u
+qnx_options   = -kQNX -t8 -u
+
+splice = wsplice -i.. $($(system)_options) ../common.sp $[@ $^@
+psplice = wsplice -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
+csplice = wsplice -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
 
 .EXTENSIONS
-.EXTENSIONS : .h .hpp .cnv .mh .mhp
-
-common = &
-        assert.h &
-        _comdef.h &
-        conio.h &
-        crtdbg.h &
-        ctype.h &
-        env.h &
-        errno.h &
-        fcntl.h &
-        float.h &
-        i86.h &
-        iso646.h &
-        limits.h &
-        malloc.h &
-        math.h &
-        mbctype.h &
-        mbstring.h &
-        mmintrin.h &
-        search.h &
-        setjmp.h &
-        signal.h &
-        stdarg.h &
-        stddef.h &
-        stdio.h &
-        stdlib.h &
-        string.h &
-        tchar.h &
-        time.h &
-        varargs.h &
-        wchar.h &
-        sys/stat.h &
-        sys/types.h
-
-dos_qnx_common = &
-        complex.h &
-        except.h &
-        exceptio.h &
-        exstring.h &
-        iomanip.h &
-        iostream.h &
-        fstream.h &
-        generic.h &
-        graph.h &
-        jctype.h &
-        jstring.h &
-        jtime.h &
-        pgchart.h &
-        locale.h &
-        mem.h &
-        new.h &
-        process.h &
-        share.h &
-        stdexcep.h &
-        stdiobuf.h &
-        streambu.h &
-        string.hpp &
-        strstrea.h &
-        typeinfo.h &
-        wcdefs.h &
-        wcexcept.h &
-        wchash.h &
-        wchbase.h &
-        wchiter.h &
-        wclbase.h &
-        wclcom.h &
-        wclibase.h &
-        wclist.h &
-        wclistit.h &
-        wcqueue.h &
-        wcsbase.h &
-        wcskip.h &
-        wcsibase.h &
-        wcskipit.h &
-        wcstack.h &
-        wcvbase.h &
-        wcvector.h &
-        sys/locking.h &
-        sys/timeb.h &
-
-DOS_files = &
-      $(common) &
-      $(dos_qnx_common) &
-        common.cnv &
-        direct.h &
-        dosfunc.h &
-        io.h &
-        bios.h &
-        bios98.h &
-        dos.h &
-        graph98.h &
-        setjmpex.h &
-        wsample.h &
-        win/_win386.h &
-        win/win16.h &
-        win/windows.h &
-        win/win386.h &
-        sys/utime.h &
-        unistd.h &
-        wdefwin.h &
-        memory.h &
-        eh.h
-
-QNX_files = &
-      $(common) &
-      $(dos_qnx_common) &
-        cdrom.h &
-        curses.h &
-        dir.h &
-        dirent.h &
-        form.h &
-        fnmatch.h &
-        ftw.h &
-        grp.h &
-        libc.h &
-        mig.h &
-        mqueue.h &
-        pwd.h &
-        queue.h &
-        regex.h &
-        semaphor.h &
-        sgtty.h &
-        shadow.h &
-        tar.h &
-        term.h &
-        termcap.h &
-        termios.h &
-        unistd.h &
-        unix.h &
-        ustat.h &
-        utime.h &
-        utmp.h &
-        syslog.h &
-        sys/cdrom.h &
-        sys/console.h &
-        sys/con_msg.h &
-        sys/debug.h &
-        sys/dev.h &
-        sys/dev_msg.h &
-        sys/dir.h &
-        sys/disk.h &
-        sys/dumper.h &
-        sys/fd.h &
-        sys/feedback.h &
-        sys/file.h &
-        sys/fsys.h &
-        sys/fsys_msg.h &
-        sys/inline.h &
-        sys/interact.h &
-        sys/io_msg.h &
-        sys/ioctl.h &
-        sys/irqinfo.h &
-        sys/kernel.h &
-        sys/keyboard.h &
-        sys/lmf.h &
-        sys/magic.h &
-        sys/mman.h &
-        sys/mouse.h &
-        sys/mous_msg.h &
-        sys/name.h &
-        sys/osinfo.h &
-        sys/osstat.h &
-        sys/param.h &
-        sys/prfx.h &
-        sys/pci.h &
-        sys/pointer.h &
-        sys/proc_msg.h &
-        sys/proxy.h &
-        sys/psinfo.h &
-        sys/qioctl.h &
-        sys/qnxterm.h &
-        sys/qnx_glob.h &
-        sys/sched.h &
-        sys/seginfo.h &
-        sys/select.h &
-        sys/sendmx.h &
-        sys/ser_msg.h &
-        sys/sidinfo.h &
-        sys/slib16.h &
-        sys/statfs.h &
-        sys/sys_msg.h &
-        sys/termio.h &
-        sys/time.h &
-        sys/timers.h &
-        sys/times.h &
-        sys/trace.h &
-        sys/tracecod.h &
-        sys/uio.h &
-        sys/uscsi.h &
-        sys/utsname.h &
-        sys/vc.h &
-        sys/wait.h &
-        sys/fsysinfo.h &
-        sys/sigconte.h &
-        sys/sysi86.h
-
+.EXTENSIONS : . .h .hpp .cnv .mh .mhp
 
 all : $($(system)_files) .symbolic
     @%null
 
-.mh:$(path)
-.mhp:$(path)
+dos_path   = ../watcom/dos
+linux_path = ../watcom/linux
+qnx_path   = ../quantum
+
+.mh:  $($(system)_path);../watcom
+.mhp: $($(system)_path);../watcom
 
 .mhp.hpp:
         $(splice)
 
 .mh.h:
-        $(splice)
+        $(csplice)
 
 .mh.cnv:
         $(splice)
 
 #
+# Handle C++ and cname style headers (files without extension)
+#
+.mh.:
+        $(psplice)
+
+#
 # Special case for sys/time.h since there is also a time.h
 #
-!ifeq system QNX
-sys/time.h : ..\quantum/sys_time.mh ..\poppack.sp ..\pshpackl.sp
+!ifeq system qnx
+sys/time.h : ../quantum/sys_time.mh $(packll)
+        $(splice)
+!endif
+!ifeq system linux
+sys/time.h : sys_time.mh ../crwatcnt.sp ../readonly.sp $(cplus) $(packlnxk)
+        $(splice)
+!endif
+#
+# Special case for sys/utime.h since there is also a utime.h
+#
+!ifeq system dos
+sys/utime.h : dos/sys_utim.mh ../crwat.sp ../readonly.sp
+        $(splice)
+
+sys/time.h : sys_time.mh ../crwatcnt.sp ../readonly.sp $(cplus) $(packll)
         $(splice)
 !endif
 
-!include ..\deps.mif
+!include ../deps.mif
+
+#
+# Special case for cname style headers
+#
+options_complex  = -kCPPCOMPLEX
+options_exceptio = -kCNAME
+options_fstream  = -kCNAME
+options_iomanip  = -kCNAME
+options_ios      = -kCNAME
+options_iosfwd   = -kCNAME
+options_iostream = -kCNAME
+options_istream  = -kCNAME
+options_limits   = -kCPPLIMITS
+options_locale   = -kCPPLOCALE
+options_memory   = -kCPPMEMORY
+options_new      = -kCNAME
+options_ostream  = -kCNAME
+options_sstream  = -kCNAME
+options_stdexcep = -kCNAME
+options_streambu = -kCNAME
+options_string   = -kCPPSTRING
+options_strstrea = -kCNAME
+options_typeinfo = -kCNAME
+
+#
+# Special case for included C++ cname style headers
+#   for optimize C++ declaration out of C part
+#
+options_c_ctype   = -kCONLY
+options_c_locale  = -kCONLY
+options_c_math    = -kCONLY
+options_c_signal  = -kCONLY
+options_c_stdarg  = -kCONLY
+options_c_stddef  = -kCONLY
+options_c_stdio   = -kCONLY
+options_c_stdlib  = -kCONLY
+options_c_string  = -kCONLY
+options_c_time    = -kCONLY
+options_c_wchar   = -kCONLY
+options_c_wctype  = -kCONLY
+
+
+dos_clean   = win/*.h
+linux_clean = arpa/*.h netinet/*.h
+qnx_clean   =
 
 clean: .SYMBOLIC
-      @if exist *.h @del *.h
-      @if exist sys\*.h @del sys\*.h
-      @if exist win\*.h @del win\*.h
-      @if exist *.hpp @del *.hpp
-      @if exist common.cnv @del common.cnv
+      rm -f *.h sys/*.h *.hpp common.cnv $($(system)_clean)
+      rm -f $(noext)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for command line parsing specific to DOS output.
 *
 ****************************************************************************/
 
@@ -42,7 +41,8 @@ extern bool     ProcDynamic( void );
 extern bool     ProcStandard( void );
 extern bool     ProcNoIndirect( void );
 extern bool     ProcArea( void );
-extern bool     ProcPadSections(void);
+extern bool     ProcPadSections( void );
+extern bool     ProcFullHeader( void );
 
 extern bool     ProcDos( void );
 extern bool     ProcCom( void );

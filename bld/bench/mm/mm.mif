@@ -1,0 +1,24 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\mm
+.h: $(bench_dir)\mm
+
+extra_cflags = -I$(bench_dir)\mm -I$(bench_dir)\support -DN=500
+
+obj_files = mm.obj
+
+run: mm.exe .SYMBOLIC
+	mm -n
+	mm -u 8
+	mm -t
+	mm -b 32
+	mm -m 20
+	mm -p
+	mm -v
+	mm -i
+	mm -w 50
+    
+build: mm.exe .SYMBOLIC
+
+mm.exe : $(obj_files)
+	$(deflink)

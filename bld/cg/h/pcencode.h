@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel instruction encodings.
 *
 ****************************************************************************/
 
@@ -102,9 +101,11 @@ extern void     Format(oc_class);
 #define B_KEY_FS        0x10
 #define B_KEY_POPSEG    1
 #define B_RMR_FMT_I8    0x28
+#define B_RMR_FMT_FL    0x28
 
 #define MF_FS   0x00
 #define MF_FD   0x04
+#define MF_FL   0x02
 #define MF_I2   0x06
 #define MF_I4   0x02
 #define MF_I8   0x06

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF location processing for the DIP interface.
 *
 ****************************************************************************/
 
@@ -38,8 +37,6 @@
 #include "dfaddsym.h"
 #include "dfsym.h"
 #include "dftype.h"
-
-/* taken from WATLOC.C */
 
 
 dip_status SafeDCItemLocation( location_context *lc, context_item ci, location_list *ll ){
@@ -159,6 +156,8 @@ typedef struct {
     unsigned    len     : 7;
 } reg_entry;
 
+/* WARNING: Must be kept in sync with dwreginf.h included above */
+
 static reg_entry const CLRegX86[DW_X86_MAX] = {
     { CI_EAX, 0, 32 },       //eax
     { CI_ECX, 0, 32 },       //ecx
@@ -166,8 +165,8 @@ static reg_entry const CLRegX86[DW_X86_MAX] = {
     { CI_EBX, 0, 32 },       //ebx
     { CI_ESP, 0, 32 },       //esp
     { CI_EBP, 0, 32 },       //ebp
-    { CI_EDI, 0, 32 },       //edi
     { CI_ESI, 0, 32 },       //esi
+    { CI_EDI, 0, 32 },       //edi
     { CI_EIP, 0, 32 },       //eip
     { CI_EFL, 0, 32 },       //eflags
     { 0     , 0, 0 },        //trapno
@@ -209,6 +208,8 @@ typedef enum {
     DW_REG( MAX )
     #undef DW_REG
 }dw_axp_regs;
+
+/* WARNING: Must be kept in sync with dwregaxp.h included above */
 
 static uint_16 const CLRegAXP[DW_AXP_MAX] = {
         /* Alpha architecture */
@@ -277,11 +278,178 @@ static uint_16 const CLRegAXP[DW_AXP_MAX] = {
         CI_AXP_f30,         //DW_AXP_f30
         CI_AXP_f31,         //DW_AXP_f31
 };
+
+typedef enum {
+    #define DW_REG( __n  )   DW_PPC_##__n,
+    #include "dwregppc.h"
+    DW_REG( MAX )
+    #undef DW_REG
+} dw_ppc_regs;
+
+typedef struct {
+    unsigned    ci      : 8;
+    unsigned    start   : 8;
+    unsigned    len     : 8;
+} ppcreg_entry;
+
+/* WARNING: Must be kept in sync with dwregppc.h included above */
+
+static ppcreg_entry const CLRegPPC[DW_PPC_MAX] = {
+    /* PowerPC architecture */
+    { CI_PPC_r0,  0, 32 },  //DW_PPC_r0
+    { CI_PPC_r1,  0, 32 },  //DW_PPC_r1
+    { CI_PPC_r2,  0, 32 },  //DW_PPC_r2
+    { CI_PPC_r3,  0, 32 },  //DW_PPC_r3
+    { CI_PPC_r4,  0, 32 },  //DW_PPC_r4
+    { CI_PPC_r5,  0, 32 },  //DW_PPC_r5
+    { CI_PPC_r6,  0, 32 },  //DW_PPC_r6
+    { CI_PPC_r7,  0, 32 },  //DW_PPC_r7
+    { CI_PPC_r8,  0, 32 },  //DW_PPC_r8
+    { CI_PPC_r9,  0, 32 },  //DW_PPC_r9
+    { CI_PPC_r10, 0, 32 },  //DW_PPC_r10
+    { CI_PPC_r11, 0, 32 },  //DW_PPC_r11
+    { CI_PPC_r12, 0, 32 },  //DW_PPC_r12
+    { CI_PPC_r13, 0, 32 },  //DW_PPC_r13
+    { CI_PPC_r14, 0, 32 },  //DW_PPC_r14
+    { CI_PPC_r15, 0, 32 },  //DW_PPC_r15
+    { CI_PPC_r16, 0, 32 },  //DW_PPC_r16
+    { CI_PPC_r17, 0, 32 },  //DW_PPC_r17
+    { CI_PPC_r18, 0, 32 },  //DW_PPC_r18
+    { CI_PPC_r19, 0, 32 },  //DW_PPC_r19
+    { CI_PPC_r20, 0, 32 },  //DW_PPC_r20
+    { CI_PPC_r21, 0, 32 },  //DW_PPC_r21
+    { CI_PPC_r22, 0, 32 },  //DW_PPC_r22
+    { CI_PPC_r23, 0, 32 },  //DW_PPC_r23
+    { CI_PPC_r24, 0, 32 },  //DW_PPC_r24
+    { CI_PPC_r25, 0, 32 },  //DW_PPC_r25
+    { CI_PPC_r26, 0, 32 },  //DW_PPC_r26
+    { CI_PPC_r27, 0, 32 },  //DW_PPC_r27
+    { CI_PPC_r28, 0, 32 },  //DW_PPC_r28
+    { CI_PPC_r29, 0, 32 },  //DW_PPC_r29
+    { CI_PPC_r30, 0, 32 },  //DW_PPC_r30
+    { CI_PPC_r31, 0, 32 },  //DW_PPC_r31
+    { CI_PPC_f0,  0, 64 },  //DW_PPC_f0
+    { CI_PPC_f1,  0, 64 },  //DW_PPC_f1
+    { CI_PPC_f2,  0, 64 },  //DW_PPC_f2
+    { CI_PPC_f3,  0, 64 },  //DW_PPC_f3
+    { CI_PPC_f4,  0, 64 },  //DW_PPC_f4
+    { CI_PPC_f5,  0, 64 },  //DW_PPC_f5
+    { CI_PPC_f6,  0, 64 },  //DW_PPC_f6
+    { CI_PPC_f7,  0, 64 },  //DW_PPC_f7
+    { CI_PPC_f8,  0, 64 },  //DW_PPC_f8
+    { CI_PPC_f9,  0, 64 },  //DW_PPC_f9
+    { CI_PPC_f10, 0, 64 },  //DW_PPC_f10
+    { CI_PPC_f11, 0, 64 },  //DW_PPC_f21
+    { CI_PPC_f12, 0, 64 },  //DW_PPC_f22
+    { CI_PPC_f13, 0, 64 },  //DW_PPC_f23
+    { CI_PPC_f14, 0, 64 },  //DW_PPC_f24
+    { CI_PPC_f15, 0, 64 },  //DW_PPC_f25
+    { CI_PPC_f16, 0, 64 },  //DW_PPC_f26
+    { CI_PPC_f17, 0, 64 },  //DW_PPC_f27
+    { CI_PPC_f18, 0, 64 },  //DW_PPC_f28
+    { CI_PPC_f19, 0, 64 },  //DW_PPC_f29
+    { CI_PPC_f20, 0, 64 },  //DW_PPC_f20
+    { CI_PPC_f21, 0, 64 },  //DW_PPC_f21
+    { CI_PPC_f22, 0, 64 },  //DW_PPC_f22
+    { CI_PPC_f23, 0, 64 },  //DW_PPC_f23
+    { CI_PPC_f24, 0, 64 },  //DW_PPC_f24
+    { CI_PPC_f25, 0, 64 },  //DW_PPC_f25
+    { CI_PPC_f26, 0, 64 },  //DW_PPC_f26
+    { CI_PPC_f27, 0, 64 },  //DW_PPC_f27
+    { CI_PPC_f28, 0, 64 },  //DW_PPC_f28
+    { CI_PPC_f29, 0, 64 },  //DW_PPC_f29
+    { CI_PPC_f30, 0, 64 },  //DW_PPC_f30
+    { CI_PPC_f31, 0, 64 },  //DW_PPC_f31
+};
+
+typedef enum {
+    #define DW_REG( __n  )   DW_MIPS_##__n,
+    #include "dwregmps.h"
+    DW_REG( MAX )
+    #undef DW_REG
+} dw_mips_regs;
+
+typedef struct {
+    unsigned    ci      : 8;
+    unsigned    start   : 8;
+    unsigned    len     : 8;
+} mipsreg_entry;
+
+/* WARNING: Must be kept in sync with dwregmips.h included above */
+
+static mipsreg_entry const CLRegMIPS[DW_MIPS_MAX] = {
+    /* MIPS architecture */
+    { CI_MIPS_r0,  0, 32 }, //DW_MIPS_r0
+    { CI_MIPS_r1,  0, 32 }, //DW_MIPS_r1
+    { CI_MIPS_r2,  0, 32 }, //DW_MIPS_r2
+    { CI_MIPS_r3,  0, 32 }, //DW_MIPS_r3
+    { CI_MIPS_r4,  0, 32 }, //DW_MIPS_r4
+    { CI_MIPS_r5,  0, 32 }, //DW_MIPS_r5
+    { CI_MIPS_r6,  0, 32 }, //DW_MIPS_r6
+    { CI_MIPS_r7,  0, 32 }, //DW_MIPS_r7
+    { CI_MIPS_r8,  0, 32 }, //DW_MIPS_r8
+    { CI_MIPS_r9,  0, 32 }, //DW_MIPS_r9
+    { CI_MIPS_r10, 0, 32 }, //DW_MIPS_r10
+    { CI_MIPS_r11, 0, 32 }, //DW_MIPS_r11
+    { CI_MIPS_r12, 0, 32 }, //DW_MIPS_r12
+    { CI_MIPS_r13, 0, 32 }, //DW_MIPS_r13
+    { CI_MIPS_r14, 0, 32 }, //DW_MIPS_r14
+    { CI_MIPS_r15, 0, 32 }, //DW_MIPS_r15
+    { CI_MIPS_r16, 0, 32 }, //DW_MIPS_r16
+    { CI_MIPS_r17, 0, 32 }, //DW_MIPS_r17
+    { CI_MIPS_r18, 0, 32 }, //DW_MIPS_r18
+    { CI_MIPS_r19, 0, 32 }, //DW_MIPS_r19
+    { CI_MIPS_r20, 0, 32 }, //DW_MIPS_r20
+    { CI_MIPS_r21, 0, 32 }, //DW_MIPS_r21
+    { CI_MIPS_r22, 0, 32 }, //DW_MIPS_r22
+    { CI_MIPS_r23, 0, 32 }, //DW_MIPS_r23
+    { CI_MIPS_r24, 0, 32 }, //DW_MIPS_r24
+    { CI_MIPS_r25, 0, 32 }, //DW_MIPS_r25
+    { CI_MIPS_r26, 0, 32 }, //DW_MIPS_r26
+    { CI_MIPS_r27, 0, 32 }, //DW_MIPS_r27
+    { CI_MIPS_r28, 0, 32 }, //DW_MIPS_r28
+    { CI_MIPS_r29, 0, 32 }, //DW_MIPS_r29
+    { CI_MIPS_r30, 0, 32 }, //DW_MIPS_r30
+    { CI_MIPS_r31, 0, 32 }, //DW_MIPS_r31
+    { CI_MIPS_f0,  0, 64 }, //DW_MIPS_f0
+    { CI_MIPS_f1,  0, 64 }, //DW_MIPS_f1
+    { CI_MIPS_f2,  0, 64 }, //DW_MIPS_f2
+    { CI_MIPS_f3,  0, 64 }, //DW_MIPS_f3
+    { CI_MIPS_f4,  0, 64 }, //DW_MIPS_f4
+    { CI_MIPS_f5,  0, 64 }, //DW_MIPS_f5
+    { CI_MIPS_f6,  0, 64 }, //DW_MIPS_f6
+    { CI_MIPS_f7,  0, 64 }, //DW_MIPS_f7
+    { CI_MIPS_f8,  0, 64 }, //DW_MIPS_f8
+    { CI_MIPS_f9,  0, 64 }, //DW_MIPS_f9
+    { CI_MIPS_f10, 0, 64 }, //DW_MIPS_f10
+    { CI_MIPS_f11, 0, 64 }, //DW_MIPS_f21
+    { CI_MIPS_f12, 0, 64 }, //DW_MIPS_f22
+    { CI_MIPS_f13, 0, 64 }, //DW_MIPS_f23
+    { CI_MIPS_f14, 0, 64 }, //DW_MIPS_f24
+    { CI_MIPS_f15, 0, 64 }, //DW_MIPS_f25
+    { CI_MIPS_f16, 0, 64 }, //DW_MIPS_f26
+    { CI_MIPS_f17, 0, 64 }, //DW_MIPS_f27
+    { CI_MIPS_f18, 0, 64 }, //DW_MIPS_f28
+    { CI_MIPS_f19, 0, 64 }, //DW_MIPS_f29
+    { CI_MIPS_f20, 0, 64 }, //DW_MIPS_f20
+    { CI_MIPS_f21, 0, 64 }, //DW_MIPS_f21
+    { CI_MIPS_f22, 0, 64 }, //DW_MIPS_f22
+    { CI_MIPS_f23, 0, 64 }, //DW_MIPS_f23
+    { CI_MIPS_f24, 0, 64 }, //DW_MIPS_f24
+    { CI_MIPS_f25, 0, 64 }, //DW_MIPS_f25
+    { CI_MIPS_f26, 0, 64 }, //DW_MIPS_f26
+    { CI_MIPS_f27, 0, 64 }, //DW_MIPS_f27
+    { CI_MIPS_f28, 0, 64 }, //DW_MIPS_f28
+    { CI_MIPS_f29, 0, 64 }, //DW_MIPS_f29
+    { CI_MIPS_f30, 0, 64 }, //DW_MIPS_f30
+    { CI_MIPS_f31, 0, 64 }, //DW_MIPS_f31
+};
+
 /*
     Stuff dealing with evaluating dwarf location expr's
 */
 
-typedef struct{
+typedef struct {
     imp_image_handle *ii;
     location_context *lc;  /* addr context          */
     location_list    *ll;  /* where to store addr   */
@@ -291,9 +459,12 @@ typedef struct{
     uint_32          value;/* value on top of stack  */
     int              val_count;
     uint_32          seg;
-}loc_handle;
+} loc_handle;
 
-static dr_loc_kind Init( loc_handle *d, uint_32 *where ){
+static dr_loc_kind Init( void *_d, uint_32 *where )
+{
+    loc_handle  *d = _d;
+
 // Set location expr initial value
     switch( d->init ){
     case DR_LOC_NONE:
@@ -308,12 +479,11 @@ static dr_loc_kind Init( loc_handle *d, uint_32 *where ){
 }
 
 
-static int Ref( loc_handle *d,
-                uint_32    offset,
-                uint_32    size,
-               dr_loc_kind kind  ){
+static int Ref( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
+{
 // Collect a reference from location expr and stuff in ret ll
 // Assume d->ll init num == 0, flags == 0
+    loc_handle  *d = _d;
     location_list tmp, *ll;
 
     if( kind == DR_LOC_ADDR ){
@@ -328,17 +498,42 @@ static int Ref( loc_handle *d,
         kind =  DCCurrMAD();
         switch( kind ){
         case MAD_X86:
-            areg = CLRegX86[ offset ].ci;
-            start = CLRegX86[ offset ].start;
+            areg = CLRegX86[offset].ci;
+            start = CLRegX86[offset].start;
             break;
         case MAD_AXP:
-            areg = CLRegAXP[ offset ];
+            areg = CLRegAXP[offset];
             start = 0;
             break;
         case MAD_PPC:
+            areg  = CLRegPPC[offset].ci;
+            // This should really be dynamic; anyway the registers are really
+            // stored as 64-bit values, so if we want to get at the lower 32
+            // bits only, we need to start 32 bits into the storage.
+#if defined( __BIG_ENDIAN__ )
+            if( CLRegPPC[offset].len == 32 )
+                start = 32;
+            else
+                start = 0;
+#else
+            start = CLRegPPC[offset].start;
+#endif
+            break;
+        case MAD_MIPS:
+            areg  = CLRegMIPS[offset].ci;
+            // See PowerPC comments above
+#if defined( __BIG_ENDIAN__ )
+            if( CLRegMIPS[offset].len == 32 )
+                start = 32;
+            else
+                start = 0;
+#else
+            start = CLRegMIPS[offset].start;
+#endif
+            break;
         case MAD_NIL:
         default:
-            DCStatus( DS_ERR|DS_BAD_LOCATION );
+            DCStatus( DS_ERR | DS_BAD_LOCATION );
             return( FALSE );
         }
         d->ret = SafeDCItemLocation( d->lc, areg, &tmp );
@@ -355,10 +550,11 @@ static int Ref( loc_handle *d,
 }
 
 
-static int DRef( loc_handle *d, uint_32 *where, uint_32 offset, uint_32 size ){
+static int DRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size ){
 // Dereference a value use default address space
 // The offset on top of the stack is relative to it
-    address a;
+    loc_handle  *d = _d;
+    address     a;
     location_list tmp;
     location_list ll;
 #if 1
@@ -383,9 +579,10 @@ static int DRef( loc_handle *d, uint_32 *where, uint_32 offset, uint_32 size ){
     return( TRUE );
 }
 
-static int DRefX( loc_handle *d, uint_32 *where, uint_32 offset,
-                  uint_32 seg, uint_16  size ){
+static int DRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_16 size )
+{
 // Dereference an extended address
+    loc_handle  *d = _d;
     address a;
     location_list tmp;
     location_list ll;
@@ -405,7 +602,9 @@ static int DRefX( loc_handle *d, uint_32 *where, uint_32 offset,
     return( TRUE );
 }
 
-static int Frame( loc_handle *d, uint_32 *where ){
+static int Frame( void *_d, uint_32 *where )
+{
+    loc_handle  *d = _d;
     location_list ll;
     mad_handle  kind;
 // Get frame location
@@ -420,8 +619,10 @@ static int Frame( loc_handle *d, uint_32 *where ){
     return( TRUE );
 }
 
-static int Reg( loc_handle *d, uint_32 *where, uint_16 reg ){
+static int Reg( void *_d, uint_32 *where, uint_16 reg )
+{
 // get value of reg
+    loc_handle  *d = _d;
     location_list ll;
     location_list tmp;
     mad_handle  kind;
@@ -432,12 +633,12 @@ static int Reg( loc_handle *d, uint_32 *where, uint_16 reg ){
     kind =  DCCurrMAD();
     switch( kind ){
     case MAD_X86:
-        areg = CLRegX86[ reg ].ci;
-        start = CLRegX86[ reg ].start;
-        size = CLRegX86[ reg ].len;
+        areg = CLRegX86[reg].ci;
+        start = CLRegX86[reg].start;
+        size = CLRegX86[reg].len;
         break;
     case MAD_AXP:
-        areg = CLRegAXP[ reg ];
+        areg = CLRegAXP[reg];
         start = 0;
         /* a massive kludge here */
         if( areg >= CI_AXP_f0 && areg <= CI_AXP_f31 ) {
@@ -447,9 +648,34 @@ static int Reg( loc_handle *d, uint_32 *where, uint_16 reg ){
         }
         break;
     case MAD_PPC:
+        areg  = CLRegPPC[reg].ci;
+        /* yep, another and even worse kludge */
+#if defined( __BIG_ENDIAN__ )
+        if( CLRegPPC[reg].len == 32 )
+            start = 32;
+        else
+            start = 0;
+#else
+        start = CLRegPPC[reg].start;
+#endif
+        size  = CLRegPPC[reg].len;
+        break;
+    case MAD_MIPS:
+        areg  = CLRegMIPS[reg].ci;
+        /* just as bad as PPC */
+#if defined( __BIG_ENDIAN__ )
+        if( CLRegMIPS[reg].len == 32 )
+            start = 32;
+        else
+            start = 0;
+#else
+        start = CLRegMIPS[reg].start;
+#endif
+        size  = CLRegMIPS[reg].len;
+        break;
     case MAD_NIL:
     default:
-        DCStatus( DS_ERR|DS_BAD_LOCATION );
+        DCStatus( DS_ERR | DS_BAD_LOCATION );
         return( FALSE );
     }
     d->ret = SafeDCItemLocation( d->lc, areg, &ll );
@@ -487,8 +713,10 @@ static int Reg( loc_handle *d, uint_32 *where, uint_16 reg ){
     return( TRUE );
 }
 
-static  int ACon( loc_handle *d, uint_32 *where, bool isfar ){
+static  int ACon( void *_d, uint_32 *where, bool isfar )
+{
 // relocate a map address constant
+    loc_handle  *d = _d;
 
     d->base.mach.offset = where[0];
     if( isfar ){ /* assume next in stack is a seg and an xdref is coming */
@@ -504,8 +732,10 @@ static  int ACon( loc_handle *d, uint_32 *where, bool isfar ){
     return( TRUE );
 }
 
-static int Live( loc_handle *d, uint_32 *where ){
+static int Live( void *_d, uint_32 *where )
+{
 // find the appropriate live range
+    loc_handle  *d = _d;
     location_list ll;
     dip_status    ret;
 // Get execution location
@@ -609,28 +839,33 @@ extern dip_status EvalLocation( imp_image_handle *ii,
 
 }
 
-static int NoFrame( loc_handle *d, uint_32 *where ){
+static int NoFrame( void *_d, uint_32 *where )
+{
 //For EvalParmLocation frame not valid
+    loc_handle  *d = _d;
 
     d->ret = DS_FAIL;
     *where = 0;
     return( FALSE  );
 }
-static int FakeLive( loc_handle *d, uint_32 *where ){
+
+static int FakeLive( void *_d, uint_32 *where )
+{
 // force loc to take first addr in live range hopefully the parm on entry
 // Get execution location
+    loc_handle  *d = _d;
+
     d->ret = DS_OK;
     *where  =  d->base.mach.offset;
     return( TRUE );
 }
 
-static int RegOnlyRef( loc_handle *d,
-                uint_32    offset,
-                uint_32    size,
-               dr_loc_kind kind  ){
+static int RegOnlyRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
+{
 // Collect a reference from location expr and stuff in ret ll
 // Assume d->ll init num == 0, flags == 0
 // if not reg return FALSE parmloc requirement
+    loc_handle  *d = _d;
     location_list tmp, *ll;
 
     if( kind == DR_LOC_ADDR ){
@@ -639,7 +874,7 @@ static int RegOnlyRef( loc_handle *d,
     }else{
         reg_entry  clreg;
 
-        clreg = CLRegX86[ offset ];
+        clreg = CLRegX86[offset];
         d->ret = SafeDCItemLocation( d->lc, clreg.ci, &tmp );
         if( d->ret != DS_OK ){
             DCStatus( d->ret );
@@ -653,8 +888,16 @@ static int RegOnlyRef( loc_handle *d,
     return( TRUE );
 }
 static dr_loc_callbck_def const ParmBck = {
-    Init, RegOnlyRef, DRef, DRefX, NoFrame, Reg, ACon, FakeLive
+    Init,
+    RegOnlyRef,
+    DRef,
+    DRefX,
+    NoFrame,
+    Reg,
+    ACon,
+    FakeLive
 };
+
 extern dip_status EvalParmLocation( imp_image_handle *ii,
                                     location_context *lc,
                                     dr_handle         sym,
@@ -707,8 +950,10 @@ extern dip_status EvalRetLocation( imp_image_handle *ii,
 
 }
 
-static dr_loc_kind AdjInit( loc_handle *d, uint_32 *where ){
+static dr_loc_kind AdjInit( void *_d, uint_32 *where ){
 // Set location expr initial value
+    loc_handle  *d = _d;
+
     switch( d->init ){
     case DR_LOC_NONE:
         break;
@@ -721,8 +966,16 @@ static dr_loc_kind AdjInit( loc_handle *d, uint_32 *where ){
     return( d->init );
 }
 static dr_loc_callbck_def const AdjBck = {
-    AdjInit, Ref, DRef, DRefX, Frame, Reg, ACon, Live
+    AdjInit,
+    Ref,
+    DRef,
+    DRefX,
+    Frame,
+    Reg,
+    ACon,
+    Live
 };
+
 extern dip_status EvalLocAdj( imp_image_handle *ii,
                                location_context *lc,
                                dr_handle         sym,
@@ -745,17 +998,33 @@ extern dip_status EvalLocAdj( imp_image_handle *ii,
             d.ret = DS_FAIL;
         }
     }
+    /* DWARF V2 spec is unclear at best, but DWARF V3 spells out that
+     * DW_AT_data_member_location may be a location expression, in which
+     * case the address of the "base" needs to be pushed on the stack and
+     * the expression is expected to include a plus operator to add to it.
+     * Alternatively, a constant may be specified for DW_AT_data_member_location
+     * and in that case it represents an offset from the base and must be
+     * explicitly added. Since I don't feel like ripping up the location
+     * expression processing right now, this is the easiest place to take
+     * care of it - if the location "stack" contains two entries, it means
+     * we have a base (which we pushed on the stack ourselves) and an
+     * offset (attribute value from DIE) that we must add to the base.
+     * Note: Open Watcom as well as GCC on x86 and PowerPC never seem to
+     * use constants, always location expressions. However GCC on MIPS
+     * uses constants.
+     */
+    if( (ll.num == 2) && (ll.e[0].type == LT_ADDR) && (ll.e[1].type == LT_ADDR) ) {
+        ll.e[0].u.addr.mach.offset += ll.e[1].u.addr.mach.offset;
+        ll.num = 1;
+    }
     *addr = ll.e[0].u.addr;
     return( d.ret );
-
 }
 
-static int Val( loc_handle *d,
-                uint_32    offset,
-                uint_32    size,
-               dr_loc_kind kind  ){
+static int Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
+{
 // Assume top of stack is value to get
-
+    loc_handle  *d = _d;
     size = size;
     if( kind == DR_LOC_ADDR ){
         if( ++d->val_count == 1 ){
@@ -772,13 +1041,20 @@ static int Val( loc_handle *d,
 }
 
 static dr_loc_callbck_def const ValBck = {
-    Init, Val, DRef, DRefX, Frame, Reg, ACon, Live
+    Init,
+    Val,
+    DRef,
+    DRefX,
+    Frame,
+    Reg,
+    ACon,
+    Live
 };
 
 extern dip_status EvalBasedPtr( imp_image_handle *ii,
                                 location_context *lc,
                                 dr_handle         sym,
-                                address          *addr ){
+                                address          *addr ) {
     loc_handle d;
     location_list ll;
 
@@ -804,7 +1080,7 @@ extern dip_status EvalBasedPtr( imp_image_handle *ii,
 
 }
 
-typedef struct{
+typedef struct {
     uint_32     offset;
     uint_32     size;
     dr_loc_kind kind;
@@ -820,7 +1096,8 @@ typedef struct{
     int live  :1;
 }nop_loc_handle;
 
-static dr_loc_kind NOPInit( nop_loc_handle *d, uint_32 *where ){
+static dr_loc_kind NOPInit( void *d, uint_32 *where )
+{
 // Set location expr initial value
     d = d;
     where = where;
@@ -828,10 +1105,9 @@ static dr_loc_kind NOPInit( nop_loc_handle *d, uint_32 *where ){
 }
 
 
-static int NOPRef( nop_loc_handle *d,
-                uint_32    offset,
-                uint_32    size,
-               dr_loc_kind kind  ){
+static int NOPRef( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
+{
+    nop_loc_handle  *d = _d;
 
     d->offset = offset;
     d->size = size;
@@ -839,19 +1115,22 @@ static int NOPRef( nop_loc_handle *d,
     return( d->ref );
 }
 
-static int NOPDRef( nop_loc_handle *d, uint_32 *where, uint_32 offset, uint_32 size ){
+static int NOPDRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size )
+{
 // Dereference a value use default address space
-    d = d;
+    nop_loc_handle  *d = _d;
+
     offset = offset;
     size = size;
     *where = 0;
     return( d->dref );
 }
 
-static int NOPDRefX( nop_loc_handle *d, uint_32 *where, uint_32 offset,
-                  uint_32 seg, uint_16  size ){
+static int NOPDRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uint_16 size )
+{
 // Dereference an extended address
-    d  = d;
+    nop_loc_handle  *d = _d;
+
     where = where;
     offset = offset;
     seg = seg;
@@ -859,30 +1138,39 @@ static int NOPDRefX( nop_loc_handle *d, uint_32 *where, uint_32 offset,
     return( d->drefx );
 }
 
-static int NOPFrame( nop_loc_handle *d, uint_32 *where ){
-    d = d;
+static int NOPFrame( void *_d, uint_32 *where )
+{
+    nop_loc_handle  *d = _d;
+
     *where = 0;
     return( d->frame );
 }
 
 
-static int NOPReg( nop_loc_handle *d, uint_32 *where, uint_16 reg ){
-    d = d;
+static int NOPReg( void *_d, uint_32 *where, uint_16 reg )
+{
+    nop_loc_handle  *d = _d;
+
     reg = reg;
     *where = 0;
     return( d->reg );
 }
 
-static  int NOPACon( nop_loc_handle *d, uint_32 *where, bool isfar ){
+static  int NOPACon( void *_d, uint_32 *where, bool isfar )
+{
 // relocate a map address constant
-    d = d;
+    nop_loc_handle  *d = _d;
+
     where = where;
     isfar = isfar;
     return( d->acon );
 }
 
-static int NOPLive( nop_loc_handle *d, uint_32 *where ){
+static int NOPLive( void *_d, uint_32 *where )
+{
 // find the appropriate live range
+    nop_loc_handle  *d = _d;
+
     *where = d->live_value;
     return( d->live );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strchr() and wcschr().
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include <string.h>
 #include "riscstr.h"
 
-#if defined(M_I86) && !defined(__WIDECHAR__)
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
 extern  char * _scan1();
 
@@ -113,18 +112,15 @@ extern  char * _scan1();
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple_wcschr( const CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__simple_wcschr( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif
-    {
-//#if defined(M_I86) && !defined(__WIDECHAR__)
-        //return( _scan1( (char _WCFAR *)s, c ) );
-//#else
-        CHAR_TYPE cc = c;
-        do {
-            if( *s == cc ) return( (CHAR_TYPE *)s );
-        } while( *s++ != NULLCHAR );
-        return( NULL );
-//#endif
-    }
+{
+    CHAR_TYPE   cc = c;
+    do {
+        if( *s == cc )
+            return( (CHAR_TYPE *)s );
+    } while( *s++ != NULLCHAR );
+    return( NULL );
+}

@@ -1,0 +1,15 @@
+name=Win32s
+condition=IsWin IsOS2DosBox ! ?%winsystemdir%\win32s\win32s.ini ! UnInstall ! MakeDisks ! MinimalInstall !
+check_box=win32s,,\
+        //1"&Install Microsoft Win32s"\
+        //2"Microsoft Win32s をインストールします (&I)"\
+        //0
+static_text=
+edit_control=winsys,%winsystemdir,\
+        //1"Windows system directory:"\
+        //2"Microsoft Win32s をインストールしません (&D)"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=pohc.dlg

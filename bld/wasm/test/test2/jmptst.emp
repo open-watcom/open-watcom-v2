@@ -1,0 +1,12 @@
+
+FIXUPP386(9d) len:0029h, chksum:bbh(bb)
+    0018h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    001fh Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    0026h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    002dh Seg   POINTER386   Frame: TARGET    Target: SI(1)
+    003dh Seg   POINTER386   Frame: TARGET    Target: SI(1)
+    0068h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    006fh Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    0076h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    0080h Seg   POINTER386   Frame: TARGET    Target: SI(1)
+    0091h Seg   POINTER386   Frame: TARGET    Target: SI(1)

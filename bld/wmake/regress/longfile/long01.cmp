@@ -1,4 +1,4 @@
 echo hello
 hello
-type "hello tmp.tmp"
+cat "hello tmp.tmp"
 LONGFILENAME OK 

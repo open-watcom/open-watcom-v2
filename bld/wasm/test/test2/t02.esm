@@ -1,0 +1,26 @@
+.387
+		PUBLIC	cde
+		EXTRN	poo:BYTE
+		EXTRN	foo:BYTE
+andrew		GROUP	don,patrick,daniel
+don		SEGMENT	PARA PUBLIC USE16 'data'
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 16H, 16H, 17H, 18H, 19H
+cde:
+    DB	0, 0
+
+don		ENDS
+patrick		SEGMENT	WORD PUBLIC USE16 'data'
+    DB	1, 0, 2, 0, 3, 0, 4, 0
+    DB	1, 0, 2, 0, 3, 0, 4, 0
+    DB	1, 0, 2, 0, 3, 0, 4, 0
+    DB	1, 0, 2, 0, 3, 0, 4, 0
+
+patrick		ENDS
+flora		SEGMENT	WORD PUBLIC USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov       bx,word ptr ss:cde
+flora		ENDS
+daniel		SEGMENT	WORD PUBLIC USE16 'data'
+daniel		ENDS
+		END

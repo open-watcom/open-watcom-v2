@@ -92,7 +92,7 @@ static void verifyNotInRing( RING *ring, RING *elt )
 
 
 void RINGNAME(Append) (         // APPEND ELEMENT TO RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be appended
 {
     RING **rhdr;                // - ring header
@@ -114,7 +114,7 @@ void RINGNAME(Append) (         // APPEND ELEMENT TO RING
 
 
 void* RINGNAME(Promote) (       // PROMOTE ELEMENT TO START OF RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *elt,                  // - element to be promoted
     void *prv )                 // - element just before element
 {
@@ -141,13 +141,13 @@ void* RINGNAME(Promote) (       // PROMOTE ELEMENT TO START OF RING
         /* last element in ring; rotate */
         last = prev;
     }
-    *hdr = last;
+    *(RING **)hdr = last;
     return element;
 }
 
 
 void RINGNAME(Insert) (         // INSERT ELEMENT INTO RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element,              // - element to be inserted
     void *insert )              // - insertion point (or NULL for start)
 {
@@ -227,7 +227,7 @@ void * RINGNAME(Pred)(          // FIND PREVIOUS ELEMENT IN A RING
 }
 
 void *RINGNAME(PruneWithPrev) ( // PRUNE ELEMENT FROM A RING (PREV ELT AVAILABLE)
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element,              // - element to be pruned
     void *prv )                 // - element just before element
 {
@@ -255,7 +255,7 @@ void *RINGNAME(PruneWithPrev) ( // PRUNE ELEMENT FROM A RING (PREV ELT AVAILABLE
 
 
 void *RINGNAME(Prune) (         // PRUNE ELEMENT FROM A RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be pruned
 {
     RING **rhdr;                // - addr( ring header )
@@ -270,18 +270,20 @@ void *RINGNAME(Prune) (         // PRUNE ELEMENT FROM A RING
 
 
 void* RINGNAME(Push) (          // INSERT ELEMENT AT START OF RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be pushed
 {
+    RING **rhdr;                // - addr( ring header )
     RING *last;                 // - last element
     RING *relement;             // - element to be pruned
 
-    last = *hdr;
+    rhdr = hdr;
+    last = *rhdr;
     relement = element;
     verifyNotInRing( last, relement );
     if( last == NULL ) {
         relement->next = relement;
-        *hdr = relement;
+        *rhdr = relement;
     } else {
         relement->next = last->next;
         last->next = relement;
@@ -302,17 +304,19 @@ void * RINGNAME(First) (        // RETURN FIRST ELEMENT IN THE RING
 }
 
 void * RINGNAME(Pop) (          // PRUNE FIRST ELEMENT IN THE RING
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 {
+    RING **rhdr;                // - addr( ring header )
     RING *last;                 // - last element
     RING *first;                // - first element
 
+    rhdr = hdr;
     first = NULL;
-    last = *hdr;
+    last = *rhdr;
     if( last != NULL ) {
         first = last->next;
         if( first == last ) {
-            *hdr = NULL;
+            *rhdr = NULL;
         } else {
             last->next = first->next;
         }
@@ -363,7 +367,7 @@ int RINGNAME(Count) (           // COUNT ELEMENTS IN A RING
 }
 
 void *RINGNAME(Alloc) (         // ALLOCATE AND APPEND NEW ELEMENT
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     size_t size )               // - size of entry to be allocated
 {
     void *new_element;          // - allocated element
@@ -375,7 +379,7 @@ void *RINGNAME(Alloc) (         // ALLOCATE AND APPEND NEW ELEMENT
 
 
 void RINGNAME(Dealloc) (        // DE-ALLOCATE A RING ELEMENT
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be de-allocated
 {
     RINGNAME(Prune)( hdr, element );
@@ -384,7 +388,7 @@ void RINGNAME(Dealloc) (        // DE-ALLOCATE A RING ELEMENT
 
 
 void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 {
     void *elt;
 
@@ -407,7 +411,7 @@ void RINGNAME(Free) (           // FREE ALL ELEMENTS IN A RING
 
 void* RINGNAME(CarveAlloc) (    // CARVER ALLOC AND APPEND AN ENTRY
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 {
     void *elt;
 
@@ -419,7 +423,7 @@ void* RINGNAME(CarveAlloc) (    // CARVER ALLOC AND APPEND AN ENTRY
 
 void RINGNAME(CarveFree) (      // CARVER FREE ALL ELEMENTS IN A RING
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 {
     void *elt;
 

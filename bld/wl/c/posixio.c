@@ -24,31 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX conforming versions of the linker I/O functions.
 *
 ****************************************************************************/
 
 
-/*
-  POSIXIO -- POSIX conforming versions of the linker i/o functions
-
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <process.h>
-#include <conio.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <termios.h>
 #include <sys/stat.h>
+#ifdef __WATCOMC__
+#include <process.h>
+#endif
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"
+#if defined( __QNX__ )
 #include <sys/proc_msg.h>
+#endif
 #include "wlnkmsg.h"
 #include "wressetr.h"   // from wres project
 #include "objio.h"
@@ -61,16 +58,13 @@ static bool     CaughtBreak = FALSE;    // set to TRUE if break hit.
 
 #define TOOMANY EMFILE
 
-extern void LnkFilesInit( void )
+void LnkFilesInit( void )
 /******************************/
-// the linker doesn't use stdaux or stdprn, so close these.
 {
     OpenFiles = 0;
-//    setmode( STDIN_HANDLE, O_BINARY );      // PROBLEM ---- not POSIX!!!!!
-//    setmode( STDOUT_HANDLE, O_BINARY );
 }
 
-extern void PrintIOError( unsigned msg, char *types, char *name )
+void PrintIOError( unsigned msg, char *types, char *name )
 /***************************************************************/
 {
     LnkMsg( msg, types, name, strerror( errno ) );
@@ -81,6 +75,7 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
 {
     int     h;
     int     perm;
+    struct stat st;
 
     perm = 0666;
     CheckBreak();
@@ -88,6 +83,8 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     mode |= O_BINARY;
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if ( ( mode & O_CREAT ) && !stat( name, &st) )
+            unlink( name );
         h = open( name, mode, perm );
         if( h != -1 ) {
             OpenFiles++;
@@ -103,7 +100,7 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     return( h );
 }
 
-extern f_handle QOpenR( char *name )
+f_handle QOpenR( char *name )
 /**********************************/
 {
     int     h;
@@ -114,7 +111,7 @@ extern f_handle QOpenR( char *name )
     return( NIL_HANDLE );
 }
 
-extern f_handle QOpenRW( char *name )
+f_handle QOpenRW( char *name )
 /***********************************/
 {
     int     h;
@@ -125,7 +122,7 @@ extern f_handle QOpenRW( char *name )
     return( NIL_HANDLE );
 }
 
-extern f_handle ExeCreate( char *name )
+f_handle ExeCreate( char *name )
 /**************************************/
 {
     int     h;
@@ -136,7 +133,7 @@ extern f_handle ExeCreate( char *name )
     return( NIL_HANDLE );
 }
 
-extern f_handle ExeOpen( char *name )
+f_handle ExeOpen( char *name )
 /***********************************/
 {
     int     h;
@@ -147,7 +144,7 @@ extern f_handle ExeOpen( char *name )
     return( NIL_HANDLE );
 }
 
-#if _OS == _QNX
+#if defined( __QNX__ )
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
@@ -197,7 +194,7 @@ static unsigned dowrite( int file, void *buffer, unsigned len )
 #endif
 
 
-extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
 /****************************************************************************/
 {
     int     h;
@@ -210,7 +207,7 @@ extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
     return( h );
 }
 
-extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 /*****************************************************************************/
 {
     int     h;
@@ -232,13 +229,13 @@ extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 
 char NLSeq[] = { "\n" };
 
-extern void QWriteNL( f_handle file, char *name )
+void QWriteNL( f_handle file, char *name )
 /***********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-extern void QClose( f_handle file, char *name )
+void QClose( f_handle file, char *name )
 /*********************************************/
 /* file close */
 {
@@ -251,7 +248,7 @@ extern void QClose( f_handle file, char *name )
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
 }
 
-extern long QLSeek( f_handle file, long position, int start, char *name )
+long QLSeek( f_handle file, long position, int start, char *name )
 /***********************************************************************/
 /* do a seek from a particular point */
 {
@@ -265,20 +262,20 @@ extern long QLSeek( f_handle file, long position, int start, char *name )
     return( h );
 }
 
-extern void QSeek( f_handle file, long position, char *name )
+void QSeek( f_handle file, long position, char *name )
 /***********************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
 
-extern unsigned long QPos( f_handle file )
+unsigned long QPos( f_handle file )
 /****************************************/
 {
     CheckBreak();
     return( lseek( file, 0L, SEEK_CUR ) );
 }
 
-extern unsigned long QFileSize( f_handle file )
+unsigned long QFileSize( f_handle file )
 /*********************************************/
 {
     unsigned long   curpos;
@@ -290,7 +287,7 @@ extern unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-extern void QDelete( char *name )
+void QDelete( char *name )
 /*******************************/
 {
     int   h;
@@ -302,7 +299,7 @@ extern void QDelete( char *name )
     }
 }
 
-extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
+bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 /**************************************************************************/
 /* quick read string (for reading directive file) */
 {
@@ -323,7 +320,7 @@ extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     return( eof );
 }
 
-extern bool QIsDevice( f_handle file )
+bool QIsDevice( f_handle file )
 /************************************/
 {
     struct stat     st;
@@ -342,19 +339,19 @@ static f_handle NSOpen( char *name, unsigned mode )
     return( NIL_HANDLE );
 }
 
-extern f_handle QObjOpen( char *name )
+f_handle QObjOpen( char *name )
 /************************************/
 {
     return( NSOpen( name, O_RDONLY ) );
 }
 
-extern f_handle TempFileOpen( char *name )
+f_handle TempFileOpen( char *name )
 /****************************************/
 {
     return( NSOpen( name, O_RDWR ) );
 }
 
-extern int ResOpen( const char *path, int access, ... )
+int ResOpen( const char *path, int access, ... )
 /*****************************************************/
 /* a simple open cover routine for wres stuff */
 {
@@ -364,7 +361,7 @@ extern int ResOpen( const char *path, int access, ... )
     return( open( path, access, perm ) );
 }
 
-extern int QMakeFileName( char **pos, char *name, char *fname )
+int QMakeFileName( char **pos, char *name, char *fname )
 /*************************************************************/
 {
     char                *pathptr;
@@ -372,12 +369,16 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     char                *file_ptr;
 
     pathptr = *pos;
-    if( pathptr == NULL ) return( 0 );
+    if( pathptr == NULL )
+        return( 0 );
     while( *pathptr != '\0' ) {
-        if( *pathptr == PATH_LIST_SEP ) *pos = ++pathptr;
+        if( IS_PATH_LIST_SEP( *pathptr ) )
+            *pos = ++pathptr;
         for(;;) {
-            if( *pathptr == '\0' ) break;
-            if( *pathptr == PATH_LIST_SEP ) break;
+            if( *pathptr == '\0' )
+                break;
+            if( IS_PATH_LIST_SEP( *pathptr ) )
+                break;
             pathptr++;
         }
         path_len = pathptr - *pos;
@@ -400,30 +401,30 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     return( 0 );
 }
 
-extern bool QHavePath( char *name )
+bool QHavePath( char *name )
 /*********************************/
 {
     return( IS_PATH_SEP( *name ) );
 }
 
-extern bool QSysHelp( char **cmd_ptr )
+bool QSysHelp( char **cmd_ptr )
 /************************************/
 {
-#ifdef __386__
-    cmd_ptr = cmd_ptr;
-    return FALSE;
-#else
-    extern  struct _proc_spawn *__cmd;
+#if defined( __I86__ ) && defined( __QNX__ )
+//    extern  struct _proc_spawn *__cmd;
     char    *p;
 
     cmd_ptr = cmd_ptr;
     p = __cmd->data;
     while( *p ) ++p; /* skip over executable name */
     return( p[1] == '?' );
+#else
+    cmd_ptr = cmd_ptr;
+    return FALSE;
 #endif
 }
 
-extern bool QModTime( char *name, time_t *time )
+bool QModTime( char *name, time_t *time )
 /**********************************************/
 {
     int         result;
@@ -434,7 +435,7 @@ extern bool QModTime( char *name, time_t *time )
     return result != 0;
 }
 
-extern time_t QFModTime( int handle )
+time_t QFModTime( int handle )
 /***********************************/
 {
     struct stat buf;
@@ -443,7 +444,7 @@ extern time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
-extern char WaitForKey( void )
+char WaitForKey( void )
 /****************************/
 {
     struct termios  old;
@@ -461,20 +462,20 @@ extern char WaitForKey( void )
     return result;
 }
 
-extern void GetCmdLine( char *buff )
+void GetCmdLine( char *buff )
 /**********************************/
 {
     getcmd( buff );
 }
 
-extern void TrapBreak( int sig_num )
+void TrapBreak( int sig_num )
 /**********************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
     CaughtBreak = TRUE;
 }
 
-static void CheckBreak( void )
+void CheckBreak( void )
 /****************************/
 {
     if( CaughtBreak ) {
@@ -483,12 +484,12 @@ static void CheckBreak( void )
     }
 }
 
-extern void SetBreak( void )
+void SetBreak( void )
 /**************************/
 {
 }
 
-extern void RestoreBreak( void )
+void RestoreBreak( void )
 /******************************/
 {
 }

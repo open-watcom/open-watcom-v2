@@ -1,0 +1,46 @@
+test_exes  = &
+    object01.$(exe) &
+    object02.$(exe) &
+    string01.$(exe) &
+    string02.$(exe) &
+    string03.$(exe) &
+    string04.$(exe) &
+    file01.$(exe) &
+    file02.$(exe) &
+    file03.$(exe) &
+    file04.$(exe) &
+    arch01.$(exe) &
+    arch02.$(exe) &
+    array01.$(exe) &
+    array02.$(exe) &
+    array03.$(exe) &
+    array04.$(exe) &
+    array05.$(exe) &
+    array06.$(exe) &
+    array07.$(exe) &
+    array08.$(exe) &
+    array09.$(exe) &
+    list01.$(exe) &
+    list02.$(exe) &
+    list03.$(exe) &
+    list04.$(exe) &
+    list05.$(exe) &
+    map01.$(exe) &
+    map02.$(exe) &
+    map03.$(exe) &
+    map04.$(exe) &
+    map05.$(exe) &
+    map06.$(exe) &
+    map07.$(exe) &
+    map08.$(exe) &
+    map09.$(exe) &
+    handle01.$(exe) &
+    rect01.$(exe) &
+    cmd01.$(exe) &
+    cmd02.$(exe) &
+    wnd01.$(exe) &
+    wnd02.$(exe) &
+    disp01.$(exe)
+
+
+ext = $(ext_$(arch))

@@ -6,6 +6,7 @@ template <class T>
 	}
     };
 
+template<>
 struct Stack<int> {
     int foo;
 };
@@ -17,3 +18,6 @@ void foo()
 {
     x.foo = 1;
 }
+
+template struct Stack<int>;
+template struct Stack<double>;

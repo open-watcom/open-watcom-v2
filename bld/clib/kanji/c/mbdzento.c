@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <mbctype.h>
+#include <mbstring.h>
 #include "hanzentb.h"
 
 

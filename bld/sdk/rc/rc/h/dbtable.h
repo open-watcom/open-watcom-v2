@@ -80,8 +80,8 @@ typedef struct {
 }DBIndexEntry;
 #pragma pack()
 
-int DBStringToUnicode( int len, const char *str, char *buf );
-RcStatus OpenTable( char *fname, char *path );
-extern void DbtableInitStatics( void );
-const uint_8 *GetLeadBytes( void );
-void FiniTable( void );
+extern int          DBStringToUnicode( int len, const char *str, char *buf );
+extern RcStatus     OpenTable( char *fname, char *path );
+extern void         DbtableInitStatics( void );
+extern const char   *GetLeadBytes( void );
+extern void         FiniTable( void );

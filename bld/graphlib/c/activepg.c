@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Active page get/set routines.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include "gbios.h"
 
 
-short _WCI86FAR _CGRAPH _getactivepage( void )
+_WCRTLINK short _WCI86FAR _CGRAPH _getactivepage( void )
 /*=======================================
 
    This function queries the current active page.   */
@@ -46,7 +45,7 @@ short _WCI86FAR _CGRAPH _getactivepage( void )
 Entry( _GETACTIVEPAGE, _getactivepage ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
+_WCRTLINK short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
 /*================================================
 
    This routine sets the active page for graphics output. */
@@ -65,9 +64,6 @@ short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
         }
     }
     pagenum %= _CurrState->vc.numvideopages;
-#if defined( _NEC_PC )
-    pos = 0;        // can't read cursor position
-#else
 //    #if defined( __386__ )
         _CurrState->screen_seg = _CurrState->screen_seg_base;
         _CurrState->screen_off = _CurrState->screen_off_base +
@@ -78,7 +74,6 @@ short _WCI86FAR _CGRAPH _setactivepage( short pagenum )
 //      _CurrState->screen_off = _CurrState->screen_off_base;
 //    #endif
     pos = *(short far *)_BIOS_data( CURSOR_POSN + 2 * pagenum );
-#endif
     _TextPos.row = pos >> 8;                        /* cursor position  */
     _TextPos.col = pos & 0xFF;                      /* on new page      */
     prev = _CurrActivePage;

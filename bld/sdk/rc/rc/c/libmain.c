@@ -24,35 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DLL main procedure
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
+#ifdef __OS2__
+#include <os2def.h>
+#else
 #include <windows.h>
-#include "rcdll.h"
+#endif
 
-BOOL IDEDLL_EXPORT LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
-/*********************************************************************/
+#ifdef __NT__
+
+BOOL WINAPI LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
+/**************************************************************/
 {
     inst = inst;
     reason = reason;
     ptr = ptr;
-
-    if( ImageName[0] == '\0' ) {
-        GetModuleFileName( inst, ImageName, sizeof( ImageName ) );
-    }
-
     return( TRUE );
 }
 
-int FAR PASCAL WEP( int res )
-/***************************/
+#elif defined(__WINDOWS__)
+
+int WINAPI LibMain( HANDLE inst, WORD wDataSeg, WORD wHeapSize, LPSTR lpszCmdLine )
+/*********************************************************************************/
+{
+    wDataSeg = wDataSeg;
+    wHeapSize = wHeapSize;
+    lpszCmdLine = lpszCmdLine;
+    inst = inst;
+    return( 1 );
+}
+
+int WINAPI WEP( int res )
+/***********************/
 {
     res = res;
 
     return( 1 );
 }
 
+#else
+
+unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
+/**************************************************************/
+{
+/*
+    if( termination != 0 ) {
+        return( __dll_terminate() );
+    }
+    return( __dll_initialize() );
+*/
+    return( 1 );
+}
+#endif

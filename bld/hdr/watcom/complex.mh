@@ -1,3 +1,4 @@
+:segment !CPPCOMPLEX
 //
 //  complex.h   Complex Numbers
 //
@@ -6,68 +7,169 @@
 //
 #ifndef _COMPLEX_H_INCLUDED
 #define _COMPLEX_H_INCLUDED
+
 :include readonly.sp
 
 #ifndef __cplusplus
-#error complex.h is for use with C++
+ #if __STDC_VERSION__ < 199901L
+  #error complex.h is for use with C++ or C99
+ #else
+
+#define complex _Complex
+/* NB. This will change, it's not C99 standard */
+#define _Complex_I ((float _Complex)(_Imaginary)1.0f)
+
+#define imaginary _Imaginary
+#define _Imaginary_I ((_Imaginary)_Complex_I)
+
+#define I _Imaginary_I
+
+/* Trigonometric Functions */
+double complex cacos(double complex z);
+float complex cacosf(float complex z);
+long double complex cacosl(long double complex z);
+
+double complex casin(double complex z);
+float complex casinf(float complex z);
+long double complex casinl(long double complex z);
+
+double complex catan(double complex z);
+float complex catanf(float complex z);
+long double complex catanl(long double complex z);
+
+double complex ccos(double complex z);
+float complex ccosf(float complex z);
+long double complex ccosl(long double complex z);
+
+double complex csin(double complex z);
+float complex csinf(float complex z);
+long double complex csinl(long double complex z);
+
+double complex ctan(double complex z);
+float complex ctanf(float complex z);
+long double complex ctanl(long double complex z);
+
+/* Hyperbolic Functions */
+double complex cacosh(double complex z);
+float complex cacosfh(float complex z);
+long double complex cacoshl(long double complex z);
+
+double complex casinh(double complex z);
+float complex casinhf(float complex z);
+long double complex casinhl(long double complex z);
+
+double complex catanh(double complex z);
+float complex catanhf(float complex z);
+long double complex catanhl(long double complex z);
+
+double complex ccosh(double complex z);
+float complex ccosfh(float complex z);
+long double complex ccoshl(long double complex z);
+
+double complex csinh(double complex z);
+float complex csinhf(float complex z);
+long double complex csinhl(long double complex z);
+
+double complex ctanh(double complex z);
+float complex ctanhf(float complex z);
+long double complex ctanhl(long double complex z);
+
+/* Exponential and Logarithmic Functions */
+double complex cexp(double complex z);
+float complex cexpf(float complex z);
+long double complex cexpl(long double complex z);
+
+double complex clog(double complex z);
+float complex clogf(float complex z);
+long double complex clogl(long double complex z);
+
+/* Power and Absolute-value Functions */
+double cabs(double complex z);
+float cabsf(float complex z);
+long double cabsl(long double complex z);
+
+double complex cpow(double complex x, double complex y);
+float complex cpowf(float complex x, float complex y);
+long double complex cpowl(long double complex x, long double complex y);
+
+double complex csqrt(double complex z);
+float complex csqrtf(float complex z);
+long double complex csqrtl(long double complex z);
+
+/* Manipulation Functions */
+double carg(double complex z);
+float cargf(float complex z);
+long double cargl(long double complex z);
+
+double cimag(double complex z);
+float cimagf(float complex z);
+long double cimagl(long double complex z);
+
+double complex conj(double complex z);
+float complex conjf(float complex z);
+long double complex conjl(long double complex z);
+
+double complex cproj(double complex z);
+float complex cprojf(float complex z);
+long double complex cprojl(long double complex z);
+
+double creal(double complex z);
+float crealf(float complex z);
+long double creall(long double complex z);
+
+ #endif
+#else  /* __cplusplus */
+
+#if !defined(_M_IX86)
+ #pragma library( "cplx.lib" )
+#elif defined(__SW_FPC)
+ #if defined(_M_I86)
+  #if defined(__MEDIUM__)
+   #pragma library ( "cplxm.lib" )
+  #elif defined(__COMPACT__)
+   #pragma library ( "cplxc.lib" )
+  #elif defined(__LARGE__)
+   #pragma library ( "cplxl.lib" )
+  #elif defined(__HUGE__)
+   #pragma library ( "cplxh.lib" )
+  #else
+   #pragma library ( "cplxs.lib" )
+  #endif
+ #else
+  #if defined(__3S__)
+   #pragma library ( "cplx3s.lib" )
+  #else
+   #pragma library ( "cplx3r.lib" )
+  #endif
+ #endif
+#else
+ #if defined(_M_I86)
+  #if defined(__MEDIUM__)
+   #pragma library ( "cplx7m.lib" )
+  #elif defined(__COMPACT__)
+   #pragma library ( "cplx7c.lib" )
+  #elif defined(__LARGE__)
+   #pragma library ( "cplx7l.lib" )
+  #elif defined(__HUGE__)
+   #pragma library ( "cplx7h.lib" )
+  #else
+   #pragma library ( "cplx7s.lib" )
+  #endif
+ #else
+  #if defined(__3S__)
+   #pragma library ( "cplx73s.lib" )
+  #else
+   #pragma library ( "cplx73r.lib" )
+  #endif
+ #endif
 #endif
 
-:segment !QNX
-#if defined( __AXP__) || defined( __PPC__ )
-#pragma library( "cplx.lib" )
-#else
-:endsegment
-#if defined(__SW_FPC)
-#if defined(__386__)
-#if defined(__3S__)
-#pragma library ( "cplx3s.lib" )
-#else
-#pragma library ( "cplx3r.lib" )
-#endif
-#else
-#if defined(__MEDIUM__)
-#pragma library ( "cplxm.lib" )
-#elif defined(__COMPACT__)
-#pragma library ( "cplxc.lib" )
-#elif defined(__LARGE__)
-#pragma library ( "cplxl.lib" )
-#elif defined(__HUGE__)
-#pragma library ( "cplxh.lib" )
-#else
-#pragma library ( "cplxs.lib" )
-#endif
-#endif
-#else
-#if defined(__386__)
-#if defined(__3S__)
-#pragma library ( "cplx73s.lib" )
-#else
-#pragma library ( "cplx73r.lib" )
-#endif
-#else
-#if defined(__MEDIUM__)
-#pragma library ( "cplx7m.lib" )
-#elif defined(__COMPACT__)
-#pragma library ( "cplx7c.lib" )
-#elif defined(__LARGE__)
-#pragma library ( "cplx7l.lib" )
-#elif defined(__HUGE__)
-#pragma library ( "cplx7h.lib" )
-#else
-#pragma library ( "cplx7s.lib" )
-#endif
-#endif
-#endif
-:segment !QNX
-#endif
-:endsegment
+:include owrtlink.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
 #ifndef _IOSTREAM_H_INCLUDED
  #include <iostream.h>
 #endif
+
 :include pshpackl.sp
 
 class _WPRTLINK Complex {
@@ -99,6 +201,7 @@ public:
     friend _WPRTLINK istream &operator >> ( istream &, Complex & );
     friend _WPRTLINK ostream &operator << ( ostream &, Complex const & );
 };
+
 :include poppack.sp
 
 typedef Complex complex;        // for compatibility
@@ -314,5 +417,502 @@ inline double norm( Complex const &__cv ) {
     return( __cv.real() * __cv.real() + __cv.imag() * __cv.imag() );
 }
 
+#endif /* __cplusplus */
 
 #endif
+:elsesegment
+:: Note that <complex> has nothing to do with <complex.h>. Both targets
+:: are being generated from this file because of their common name, not
+:: because they represent the same facility.
+::
+///////////////////////////////////////////////////////////////////////////
+// FILE: complex (Complex numbers)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              provides support for complex numbers with varying levels
+//              of precision.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _COMPLEX_INCLUDED
+#define _COMPLEX_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _CMATH_INCLUDED
+ #include <cmath>
+#endif
+
+namespace std {
+
+  template< class FloatT >
+  class complex {
+  public:
+    typedef FloatT value_type;
+
+    complex( const FloatT &r = FloatT( ), const FloatT &i = FloatT( ) ) :
+      re( r ), im( i )
+      { }
+
+    FloatT real( ) const { return( re ); }
+    FloatT imag( ) const { return( im ); }
+
+    complex &operator= ( const FloatT & );
+    complex &operator+=( const FloatT & );
+    complex &operator-=( const FloatT & );
+    complex &operator*=( const FloatT & );
+    complex &operator/=( const FloatT & );
+
+    complex &operator= ( const complex & );
+    complex &operator+=( const complex & );
+    complex &operator-=( const complex & );
+    complex &operator*=( const complex & );
+    complex &operator/=( const complex & );
+
+  private:
+    FloatT re;
+    FloatT im;
+  };
+
+  //
+  // Complex members.
+  //
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator=( const FloatT &num )
+  {
+    re = num;
+    im = FloatT( );
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator+=( const FloatT &num )
+  {
+    re += num;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator-=( const FloatT &num )
+  {
+    re -= num;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator*=( const FloatT &num )
+  {
+    re *= num;
+    im *= num;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator/=( const FloatT &num )
+  {
+    re /= num;
+    im /= num;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator=( const complex &num )
+  {
+    re = num.re;
+    im = num.im;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator+=( const complex &num )
+  {
+    re += num.re;
+    im += num.im;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator-=( const complex &num )
+  {
+    re -= num.re;
+    im -= num.im;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator*=( const complex &num )
+  {
+    FloatT new_re( re * num.re - im * num.im );
+    FloatT new_im( re * num.im + im * num.re );
+    re = new_re;
+    im = new_im;
+    return( *this );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > &complex< FloatT >::operator/=( const complex &num )
+  {
+    FloatT denom( num.re * num.re + num.im * num.im );
+    FloatT new_re( re * num.re + im * num.im );
+    FloatT new_im( im * num.re - re * num.im );
+    re = new_re / denom;
+    im = new_im / denom;
+    return( *this );
+  }
+
+  //
+  // Complex non-members.
+  //
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator+( const complex< FloatT > &x )
+  {
+    return( x );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator+(
+    const complex< FloatT > &x,
+    const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp += y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator+( const complex< FloatT > &x, const FloatT &y )
+  {
+    complex< FloatT > temp( x );
+    temp += y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator+( const FloatT &x, const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp += y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator-( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( -x.real( ), -x.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator-(
+    const complex< FloatT > &x,
+    const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp -= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator-( const complex< FloatT > &x, const FloatT &y )
+  {
+    complex< FloatT > temp( x );
+    temp -= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator-( const FloatT &x, const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp -= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator*(
+    const complex< FloatT > &x,
+    const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp *= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator*( const complex< FloatT > &x, const FloatT &y )
+  {
+    complex< FloatT > temp( x );
+    temp *= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator*( const FloatT &x, const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp *= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator/(
+    const complex< FloatT > &x,
+    const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp /= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator/( const complex< FloatT > &x, const FloatT &y )
+  {
+    complex< FloatT > temp( x );
+    temp /= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator/( const FloatT &x, const complex< FloatT > &y )
+  {
+    complex< FloatT > temp( x );
+    temp /= y;
+    return( temp );
+  }
+
+  template< class FloatT >
+  inline
+  bool operator==( const complex< FloatT > &x, const complex< FloatT > &y )
+  {
+    return( ( x.real( ) == y.real( ) ) && ( x.imag( ) == y.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator==( const complex< FloatT > &x, const FloatT &y )
+  {
+    return( ( x.real( ) == y ) && ( x.imag( ) == FloatT( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator==( const FloatT &x, const complex< FloatT > &y )
+  {
+    return( ( x == y.real( ) ) && ( FloatT( ) == y.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  bool operator!=( const complex< FloatT > &x, const complex< FloatT > &y )
+  {
+    return( ( x.real( ) != y.real( ) ) || ( x.imag( ) != y.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator!=( const complex< FloatT > &x, const FloatT &y )
+  {
+    return( ( x.real( ) != y ) || ( x.imag( ) != FloatT( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > operator!=( const FloatT &x, const complex< FloatT > &y )
+  {
+    return( ( x != y.real( ) ) || ( FloatT( ) != y.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  FloatT real( const complex< FloatT > &x )
+  {
+    return( x.real( ) );
+  }
+
+  template< class FloatT >
+  inline
+  FloatT imag( const complex< FloatT > &x )
+  {
+    return( x.imag( ) );
+  }
+
+  template< class FloatT >
+  inline
+  FloatT abs( const complex< FloatT > &x )
+  {
+    return( sqrt( x.real( ) * x.real( ) + x.imag( ) * x.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  FloatT arg( const complex< FloatT > &x )
+  {
+    return( atan2( x.imag( ), x.real( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  FloatT norm( const complex< FloatT > &x )
+  {
+    return( x.real( ) * x.real( ) + x.imag( ) * x.imag( ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > conj( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( x.real( ), -x.imag( ) ) );
+  }
+
+  template< class FloatT >
+  inline
+  complex< FloatT > polar( const FloatT &rho, const FloatT &theta )
+  {
+    return( complex< FloatT >( rho * cos( theta ), rho * sin( theta ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > cos( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >(  cos( x.real( ) ) * cosh( x.imag( ) ),
+                               -sin( x.real( ) ) * sinh( x.imag( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > cosh( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( cosh( x.real( ) ) * cos( x.imag( ) ),
+                               sinh( x.real( ) ) * sin( x.imag( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > exp( const complex< FloatT > &x )
+  {
+    FloatT multiplier( exp( x.real( ) ) );
+    return( complex< FloatT >( multiplier * cos( x.imag( ) ),
+                               multiplier * sin( x.imag( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > log( const complex< FloatT > &x )
+  {
+    FloatT mag_rp( abs( x.real( ) ) );
+    FloatT mag_ip( abs( x.imag( ) ) );
+
+    // Handle cases when mag_rp and mag_ip are very different.
+    if( mag_rp > 32 * mag_ip ) {
+      FloatT temp1( x.imag( ) / x.real( ) );
+      FloatT temp2( 1.0 + ( temp1 * temp1 ) );
+      return( complex< FloatT >( log( mag_rp ) + 0.5 * log( temp2 ),
+                                 atan2( x.imag( ), x.real( ) ) ) );
+    }
+    else if( mag_ip > 32 * mag_rp ) {
+      FloatT temp1( x.real( ) / x.imag( ) );
+      FloatT temp2( 1.0 + ( temp1 * temp1 ) );
+      return( complex< FloatT >( log( mag_ip ) + 0.5 * log( temp2 ),
+                                 atan2( x.imag( ), x.real( ) ) ) );
+    }
+
+    // Otherwise use the direct expression.
+    return( complex< FloatT >( 0.5 * log( x.real( ) * x.real( ) +
+                                          x.imag( ) * x.imag( ) ),
+                               atan2( x.imag( ), x.real( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > log10( const complex< FloatT > &x )
+  {
+    FloatT ten( 10.0 );  // So overload resolution chooses right log.
+    return( log( x ) / log( ten ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > pow( const complex< FloatT > &x, int y )
+  {
+    return( exp( static_cast< FloatT >( y ) * log( x ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > pow(
+    const complex< FloatT > &x, const complex< FloatT > &y )
+  {
+    return( exp( y * log( x ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > pow( const complex< FloatT > &x, const FloatT &y )
+  {
+    return( exp( y * log( x ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > pow( const FloatT &x, const complex< FloatT > &y )
+  {
+    return( exp( y * log( x ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > sin( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( sin( x.real( ) ) * cosh( x.imag( ) ),
+                               cos( x.real( ) ) * sinh( x.imag( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > sinh( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( sinh( x.real( ) ) * cos( x.imag( ) ),
+                               cosh( x.real( ) ) * sin( x.imag( ) ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > sqrt( const complex< FloatT > &x )
+  {
+    return( complex< FloatT >( polar( sqrt( abs( x ) ),
+                                      arg( x ) / 2 ) ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > tan( const complex< FloatT > &x )
+  {
+    return( sin( x ) / cos( x ) );
+  }
+
+  template< class FloatT >
+  complex< FloatT > tanh( const complex< FloatT > &x )
+  {
+    return( sinh( x ) / cosh( x ) );
+  }
+
+} // namespace std
+
+#endif
+:endsegment

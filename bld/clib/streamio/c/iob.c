@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of __iob array.
 *
 ****************************************************************************/
 
@@ -38,58 +37,26 @@
 #include "rtinit.h"
 #include "tmpfname.h"
 
-// *
-// * NetWare FILE struct
-// *
-//typedef struct  __iobuf {
-//        unsigned char   *_ptr;          /* next character position */
-//        int             _cnt;           /* number of characters left */
-//        unsigned char   *_base;         /* location of buffer */
-//        unsigned        _flag;          /* mode of file access */
-//        int             _handle;        /* file handle */
-//        unsigned        _bufsize;       /* size of buffer */
-//        unsigned char   _ungotten;      /* character placed here by ungetc */
-//        unsigned char   _tmpfchar;      /* tmpfile number */
-//} FILE;
-// *
-// * All others FILE struct
-// *
-//typedef struct  __iobuf {
-//    unsigned char        *_ptr;         /* next character position */
-//    int                   _cnt;         /* number of characters left */
-//    struct __stream_link *_link;        /* location of associated struct */
-//    unsigned              _flag;        /* mode of file access */
-//    int                   _handle;      /* file handle */
-//    unsigned              _bufsize;     /* size of buffer */
-//    unsigned short        _ungotten;    /* used by ungetc and ungetwc */
-//} FILE;
 
-
-#if defined(__NETWARE__)
-#define         NW_TMPFL        ,0
-#else
-#define         NW_TMPFL
+_WCRTDATA FILE _WCDATA __iob[_NFILES] = {
+    { NULL, 0, NULL, _READ,         0, 0, 0  }  /* stdin */
+   ,{ NULL, 0, NULL, _WRITE,        1, 0, 0  }  /* stdout */
+   ,{ NULL, 0, NULL, _WRITE,        2, 0, 0  }  /* stderr */
+#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
+   ,{ NULL, 0, NULL, _READ|_WRITE,  3, 0, 0  }  /* stdaux */
+   ,{ NULL, 0, NULL, _WRITE,        4, 0, 0  }  /* stdprn */
 #endif
-
-_WCRTLINK FILE _WCNEAR __iob[_NFILES] = {
-    { NULL, 0, NULL, _READ  ,       0, 0, 0 NW_TMPFL }  /* stdin */
-   ,{ NULL, 0, NULL, _WRITE ,       1, 0, 0 NW_TMPFL }  /* stdout */
-   ,{ NULL, 0, NULL, _WRITE ,       2, 0, 0 NW_TMPFL }  /* stderr */
-  #if !defined(__QNX__) && !defined(__NETWARE__) && !defined(__NT__)
-   ,{ NULL, 0, NULL, _READ|_WRITE , 3, 0, 0 NW_TMPFL }  /* stdaux */
-   ,{ NULL, 0, NULL, _WRITE ,       4, 0, 0 NW_TMPFL }  /* stdprn */
-  #endif
 };
 
 __stream_link *__ClosedStreams;
 __stream_link *__OpenStreams;
 
-#if !defined(__QNX__)
-_WCRTLINK int _WCNEAR _fmode = O_TEXT;  /* default file translation mode */
+#if !defined( __UNIX__ )
+_WCRTDATA int _WCDATA _fmode = O_TEXT;    /* default file translation mode */
 #endif
 
-extern void __InitFiles();
-extern void __full_io_exit();
+extern void __InitFiles( void );
+extern void __full_io_exit( void );
 
 AXI(__InitFiles,INIT_PRIORITY_LIBRARY);
 AYI(__full_io_exit,INIT_PRIORITY_LIBRARY);

@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GetClusterSize() - get cluster size
 *
 ****************************************************************************/
-
 
 /*
    GETCLSZ.C - get cluster size
@@ -38,35 +36,33 @@
    28-jan-92    Craig Eisler    split from ls.c
    25-mar-92    Craig Eisler    NT port
  */
-#if !(defined(__OS_qnx__) || defined(__OS_qnx16__))
+#if !( defined( __OS_qnx__ ) || defined( __OS_qnx16__ ) )
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
-#if defined(__OS_dosos2__) || defined(__OS_os2v2__)
+#if defined( __OS_dosos2__ ) || defined( __OS_os2v2__ )
 #define INCL_DOS
 #include <os2.h>
 #endif
-#if defined(__OS_nt__)
+#if defined( __OS_nt__ )
 #include <windows.h>
 #endif
 
-/*
- * GetClusterSize
- */
 long GetClusterSize( unsigned drive )
 {
-    if( drive == 0 ) _dos_getdrive( &drive );
-#if defined(__OS_nt__)
+    if( drive == 0 )
+        _dos_getdrive( &drive );
+#if defined( __OS_nt__ )
     {
         char    root[4];
         char    *proot;
-        DWORD   spc,bps,nofc,tnoc;
+        DWORD   spc, bps, nofc, tnoc;
 
         if( drive == 0 ) {
             proot = NULL;
         } else {
             proot = root;
-            root[0] = 'a'+drive-1;
+            root[0] = 'a' + drive - 1;
             root[1] = ':';
             root[2] = '\\';
             root[3] = 0;
@@ -74,17 +70,17 @@ long GetClusterSize( unsigned drive )
         GetDiskFreeSpace( root, &spc, &bps, &nofc, &tnoc );
         return( spc * bps );
     }
-#elif defined(__OS_dosos2__) || defined(__OS_os2v2__)
+#elif defined( __OS_dosos2__ ) || defined( __OS_os2v2__ )
     {
-        FSALLOCATE fs;
-        DosQFSInfo( drive, 1, (void *) &fs, sizeof( FSALLOCATE ) );
-        return( (long) fs.cbSector * (long) fs.cSectorUnit );
+        FSALLOCATE      fs;
+        DosQFSInfo( drive, 1, ( void *) & fs, sizeof( FSALLOCATE ) );
+        return( ( long ) fs.cbSector * ( long ) fs.cSectorUnit );
     }
 #else
     {
         struct diskfree_t       df;
         _dos_getdiskfree( drive, &df );
-        return( (long) df.bytes_per_sector * (long) df.sectors_per_cluster );
+        return( ( long ) df.bytes_per_sector * ( long ) df.sectors_per_cluster );
     }
 #endif
 }

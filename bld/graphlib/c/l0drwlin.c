@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Compile and run a line drawing function.
 *
 ****************************************************************************/
 
@@ -36,13 +35,10 @@
 #include "gbios.h"
 
 
-/*  Use PASCAL pragma to define our convention for
-    calling the 'compiled' line drawing routine.    */
-
-#define LINE_FUNC   pascal
+/*  Specify convention for calling the 'compiled' line drawing routine.    */
 
 #if defined( __386__ )
-    #pragma aux pascal "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi];
+    #pragma aux LINE_FUNC "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi];
     #define MAXLEN      25
     #if defined( __QNX__ )
       #define LINERET     0xCB  // QNX uses a segmented 32 bit model
@@ -50,27 +46,28 @@
       #define LINERET     0xC3
     #endif
 #else
-    #pragma aux pascal "*" far parm caller [es di] [ax] [bx] [cx] [dx] [si];
+    #pragma aux LINE_FUNC "*" far parm caller [es di] [ax] [bx] [cx] [dx] [si];
     #define MAXLEN      20
     #define LINERET     0xCB
 #endif
-
 
 #if defined( __QNX__ )
     #define COMP_FAR    _far            // compile into another segment
     #define FUNC_FAR    _far            // code segment is always far for QNX
 #else
     #define COMP_FAR                    // compile onto the stack
-    #define FUNC_FAR    _WCI86FAR               // near for 32-bit/far for 16-bit
+    #define FUNC_FAR    _WCI86FAR       // near for 32-bit/far for 16-bit
 #endif
 
+typedef void (FUNC_FAR line_fn)( char far *, int, int, int, int, int );
+#pragma aux (LINE_FUNC) line_fn;
 
 #define OutByte( p )    *stack++ = p;
 #define OutInt( p )     *( (unsigned int COMP_FAR *)stack ) = p; \
                         stack += sizeof( int );
 
 
-void _L0DrawLine( char far *screen_ptr, short color, short style,
+void _L0DrawLine( char far *screen_ptr, short color, unsigned short style,
 /*=============*/ short bit_mask, short majordif, short minordif,
                   void (near *majorfn)(), void (near *minorfn)(),
                   void (near *plot)() )
@@ -93,13 +90,13 @@ void _L0DrawLine( char far *screen_ptr, short color, short style,
 */
 
 {
-    short               size;
-    char                plot_len;
-    char                minor_len;
-    char                major_len;
-    char COMP_FAR       *stack;
-    char COMP_FAR       *start;
-    void LINE_FUNC      (FUNC_FAR * line)();
+    short                   size;
+    char                    plot_len;
+    char                    minor_len;
+    char                    major_len;
+    unsigned char COMP_FAR  *stack;
+    unsigned char COMP_FAR  *start;
+    line_fn                 *line;
 
     plot_len = *( (char FUNC_FAR *)plot - 1 );
     minor_len = *( (char FUNC_FAR *)minorfn - 1 );
@@ -116,18 +113,18 @@ void _L0DrawLine( char far *screen_ptr, short color, short style,
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
         return;         /* not enough memory to proceed */
     }
-    #if defined( __386__ )
-        line = (void LINE_FUNC *) stack;
-    #else
-        line = MK_FP( _StackSeg, FP_OFF( stack ) );
-    #endif
+  #if defined( __386__ )
+    line = (line_fn *)stack;
+  #else
+    line = MK_FP( _StackSeg, FP_OFF( stack ) );
+  #endif
 #endif
 
     start = stack;              /* save start address of compiled routine   */
-    if( style != -1 ) {             /* add instructions for a style line    */
-        #if defined ( __386__ )
-            OutByte( 0x66 );                    /* rotate only bx, not ebx  */
-        #endif
+    if( style != SOLID_LINE ) {             /* add instructions for a style line    */
+#if defined ( __386__ )
+        OutByte( 0x66 );                        /* rotate only bx, not ebx  */
+#endif
         OutByte( 0xD1 );                        /* rol      bx,1    */
         OutByte( 0xC3 );
         OutByte( 0x73 );                        /* jnc      xxx     */

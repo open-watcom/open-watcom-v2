@@ -41,18 +41,18 @@
 /****************************************************************************/
 typedef struct {
     OBJ_ID          obj_id;
-    char           *symbol;
-    WdeResInfo     *res_info;
-    void           *obj;
+    char            *symbol;
+    WdeResInfo      *res_info;
+    void            *obj;
     DialogSizeInfo  size;
     union {
         struct {
-            char             *caption;
-            WResID           *name;
+            char                *caption;
+            WResID              *name;
         } d;
         struct {
-            ResNameOrOrdinal *text;
-            uint_16           id;
+            ResNameOrOrdinal    *text;
+            uint_16             id;
         } c;
     };
 } WdeInfoStruct;
@@ -60,16 +60,16 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void   WdeSetFocusToInfo        ( void );
-extern HWND   WdeGetInfoWindowHandle   ( void );
-extern int    WdeGetInfoWindowDepth    ( void );
-extern Bool   WdeCreateInfoWindow      ( HWND, HINSTANCE );
-extern void   WdeResizeInfoWindow      ( RECT * );
-extern void   WdeInfoFini              ( void );
-extern void   WdeWriteObjectDimensions ( int, int, int, int );
-extern void   WdeWriteInfo             ( WdeInfoStruct * );
-extern void   WdeDestroyInfoWindow     ( void );
-extern void   WdeShowInfoWindow        ( Bool );
-extern BOOL   WdeIsInfoMessage         ( MSG *msg );
+extern void WdeSetFocusToInfo( void );
+extern HWND WdeGetInfoWindowHandle( void );
+extern int  WdeGetInfoWindowDepth( void );
+extern Bool WdeCreateInfoWindow( HWND, HINSTANCE );
+extern void WdeResizeInfoWindow( RECT * );
+extern void WdeInfoFini( void );
+extern void WdeWriteObjectDimensions( int, int, int, int );
+extern void WdeWriteInfo( WdeInfoStruct * );
+extern void WdeDestroyInfoWindow( void );
+extern void WdeShowInfoWindow( Bool );
+extern BOOL WdeIsInfoMessage( MSG *msg );
 
 #endif

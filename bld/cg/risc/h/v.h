@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic RISC instruction verification codes.
 *
 ****************************************************************************/
 
@@ -78,3 +77,5 @@ _V_( V_RESCONSTTEMP ),
 _V_( V_OP1_RES_AL8 ),
 _V_( V_OP1_RES_AL4 ),
 _V_( V_OP164BITCONST ),
+_V_( V_MIPSBRANCH ),
+_V_( V_SHIFT2BIG ),

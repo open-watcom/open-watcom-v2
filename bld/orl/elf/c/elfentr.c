@@ -231,22 +231,12 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    if( reloc_sec_hnd->type == ORL_SEC_TYPE_RELOCS ) {
-        for( index = 0; index < reloc_sec_hnd->size; index += sizeof( Elf32_Rel ) ) {
-            if( reloc->offset == sec_offset ) {
-                return_val = return_func( reloc );
-                if( return_val != ORL_OKAY ) return( return_val );
-            }
-            reloc++;
+    for( index = 0; index < reloc_sec_hnd->size; index += reloc_sec_hnd->entsize ) {
+        if( reloc->offset == sec_offset ) {
+            return_val = return_func( reloc );
+            if( return_val != ORL_OKAY ) return( return_val );
         }
-    } else {
-        for( index = 0; index < reloc_sec_hnd->size; index += sizeof( Elf32_Rela ) ) {
-            if( reloc->offset == sec_offset ) {
-                return_val = return_func( reloc );
-                if( return_val != ORL_OKAY ) return( return_val );
-            }
-            reloc++;
-        }
+        reloc++;
     }
     return( return_val );
 }
@@ -270,18 +260,10 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    if( reloc_sec_hnd->type == ORL_SEC_TYPE_RELOCS ) {
-        for( index = 0; index < reloc_sec_hnd->size; index += sizeof( Elf32_Rel ) ) {
-            return_val = return_func( reloc );
-            if( return_val != ORL_OKAY ) return( return_val );
-            reloc++;
-        }
-    } else {
-        for( index = 0; index < reloc_sec_hnd->size; index += sizeof( Elf32_Rela ) ) {
-            return_val = return_func( reloc );
-            if( return_val != ORL_OKAY ) return( return_val );
-            reloc++;
-        }
+    for( index = 0; index < reloc_sec_hnd->size; index += reloc_sec_hnd->entsize ) {
+        return_val = return_func( reloc );
+        if( return_val != ORL_OKAY ) return( return_val );
+        reloc++;
     }
     return( ORL_TRUE );
 }
@@ -332,18 +314,10 @@ orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = elf_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    if( elf_sec_hnd->type == ORL_SEC_TYPE_RELOCS ) {
-        for( index = 0; index < elf_sec_hnd->size; index += sizeof( Elf32_Rel ) ) {
-            return_val = return_func( reloc );
-            if( return_val != ORL_OKAY ) return( return_val );
-            reloc++;
-        }
-    } else {
-        for( index = 0; index < elf_sec_hnd->size; index += sizeof( Elf32_Rela ) ) {
-            return_val = return_func( reloc );
-            if( return_val != ORL_OKAY ) return( return_val );
-            reloc++;
-        }
+    for( index = 0; index < elf_sec_hnd->size; index += elf_sec_hnd->entsize ) {
+        return_val = return_func( reloc );
+        if( return_val != ORL_OKAY ) return( return_val );
+        reloc++;
     }
     return( ORL_TRUE );
 }
@@ -366,12 +340,22 @@ orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_ret
         default:
             return( ORL_ERROR );
     }
-    for( index = 0; index < elf_sec_hnd->size; index += sizeof( Elf32_Sym ) ) {
+    for( index = 0; index < elf_sec_hnd->size; index += elf_sec_hnd->entsize ) {
         error = return_func( (orl_symbol_handle) elf_symbol_hnd );
         if( error != ORL_OKAY ) return( error );
         elf_symbol_hnd++;
     }
     return( ORL_OKAY );
+}
+
+orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle hnd,
+                                    orl_note_callbacks *cb, void *cookie )
+/**************************************************************************/
+{
+    if( hnd->type != ORL_SEC_TYPE_NOTE ) return ORL_ERROR;
+    if( strcmp( hnd->name, ".drectve" ) != 0 ) return ORL_OKAY;
+    if( hnd->size == 0 ) return ORL_OKAY;
+    return( ElfParseDrectve( hnd->contents, hnd->size, cb, cookie ) );
 }
 
 char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
@@ -381,7 +365,7 @@ char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
 
 orl_symbol_value ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd )
 {
-    return( elf_symbol_hnd->symbol->st_value );
+    return( elf_symbol_hnd->value );
 }
 
 orl_symbol_binding ELFENTRY ElfSymbolGetBinding( elf_symbol_handle elf_symbol_hnd )
@@ -396,17 +380,22 @@ orl_symbol_type ELFENTRY ElfSymbolGetType( elf_symbol_handle elf_symbol_hnd )
 
 unsigned char ELFENTRY ElfSymbolGetRawInfo( elf_symbol_handle elf_symbol_hnd )
 {
-    return( elf_symbol_hnd->symbol->st_info );
+    return( elf_symbol_hnd->info );
 }
 
 elf_sec_handle ELFENTRY ElfSymbolGetSecHandle( elf_symbol_handle elf_symbol_hnd )
 {
-    switch( elf_symbol_hnd->symbol->st_shndx ) {
+    switch( elf_symbol_hnd->shndx ) {
         case SHN_ABS:
         case SHN_COMMON:
         case SHN_UNDEF:
             return( NULL );
         default:
-            return( elf_symbol_hnd->elf_file_hnd->orig_sec_hnd[elf_symbol_hnd->symbol->st_shndx - 1]);
+            return( elf_symbol_hnd->elf_file_hnd->orig_sec_hnd[elf_symbol_hnd->shndx - 1]);
     }
+}
+
+elf_symbol_handle ELFENTRY ElfSymbolGetAssociated( elf_symbol_handle elf_symbol_hnd )
+{
+    return elf_symbol_hnd;
 }

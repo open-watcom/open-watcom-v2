@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default Unicode conversion table.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@ FROM: John Bennett @ GO
 Code Page
 437          UNICODE     IBM ID          Name
 ---          -------     ------          ---- */
-unsigned short __FAR UniCode[] = {
+unsigned short  UniCode[] = {
 /* 0x00 */   0x0000,
 /* 0x01 */   0x0001,
 /* 0x02 */   0x0002,

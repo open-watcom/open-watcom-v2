@@ -1,0 +1,25 @@
+/*
+ *  _ialias.h    Automatic include aliases
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __IALIAS_H_INCLUDED
+#define __IALIAS_H_INCLUDED
+
+:include readonly.sp
+
+#pragma include_alias( <algorithm>,     <algorith>   )
+#pragma include_alias( <exception>,     <exceptio>   )
+#pragma include_alias( <exception.h>,   <exceptio.h> )
+#pragma include_alias( <functional>,    <function>   )
+#pragma include_alias( <stdexcept>,     <stdexcep>   )
+#pragma include_alias( <stdexcept.h>,   <stdexcep.h> )
+#pragma include_alias( <streambuf>,     <streambu>   )
+#pragma include_alias( <streambuf.h>,   <streambu.h> )
+#pragma include_alias( <strstream>,     <strstrea>   )
+#pragma include_alias( <strstream.h>,   <strstrea.h> )
+#pragma include_alias( <type_traits>,   <type_tra>   )
+#pragma include_alias( <unordered_set>, <unordere>   )
+
+#endif /* __IALIAS_H_INCLUDED */

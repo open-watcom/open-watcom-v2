@@ -1,0 +1,197 @@
+proj_name = cpplib
+
+suppress_zc = 1
+
+!include $(cpplib_dir)/libtarg.mif
+
+!ifdef mem_model_$(model)
+memory_model_i86 = $(mem_model_$(model))
+memory_model_386 = $(mem_model_$(model))
+!endif
+
+fp_option_086 = -fpc
+fp_option_087 = -fpi
+fp_option_286 = -fpc
+fp_option_287 = -fpi
+fp_option_386 = -fpc
+fp_option_387 = -fpi
+fp_option = $(fp_option_$(processor))
+
+fpu_flags_dos_i86    =$(fp_option)
+fpu_flags_dos_386    =$(fp_option)
+fpu_flags_os2_i86    =$(fp_option)
+fpu_flags_os2_386    =$(fp_option)
+fpu_flags_win_i86    =$(fp_option)
+fpu_flags_win_386    =$(fp_option)
+fpu_flags_qnx_i86    =$(fp_option)
+fpu_flags_qnx_386    =$(fp_option)
+fpu_flags_nov_386    =$(fp_option)
+fpu_flags_generic_i86=$(fp_option)
+fpu_flags_generic_386=$(fp_option)
+fpu_flags_nt_386     =$(fp_option)
+fpu_flags_linux_386  =$(fp_option)
+
+!include cproj.mif
+!include deftarg.mif
+
+!include $(define_library_include)
+
+!ifndef target_objs
+target_objs = $(objs)
+!endif
+
+!ifndef target_xbjs
+target_xbjs = $(xbjs)
+!endif
+
+lib_flags = -b-c-n-pa
+!ifneq release 0
+lib_flags += -s-t-zld
+!endif
+
+!ifdef target_lib_x
+libs : .symbolic $(target_lib) $(target_lib_x) $(files)
+!else
+libs : .symbolic $(target_lib) $(files)
+!endif
+    @%null
+
+$(target_lib) : $(target_objs) $(__MAKEFILES__)
+    %create $^&.lbc
+    @for %i in ($(target_objs)) do @%append $^&.lbc +%i
+    $(librarian) $(lib_flags) $^@ @$^&.lbc
+
+!ifdef target_lib_x
+$(target_lib_x) : $(target_xbjs) $(__MAKEFILES__)
+    %create $^&.lbc
+    @for %i in ($(target_xbjs)) do @%append $^&.lbc +%i
+    $(librarian) $(lib_flags) $^@ @$^&.lbc
+!endif
+
+define_c=-D__OBSCURE_STREAM_INTERNALS
+
+!ifdef mthreaded
+define_c +=-D__MT__
+!endif
+
+!ifdef fs_registration
+define_c +=-D__USE_FS
+!else ifdef pd_registration
+define_c +=-D__USE_PD
+!else ifdef sysind_registration
+define_c +=-D__USE_RW
+!endif
+
+# -xr has to be on in case the user uses -xr
+extra_c_flags=-zl-xr-fhwe
+
+# Include system headers in dependency lists
+extra_c_flags +=-D_ENABLE_AUTODEPEND
+
+!ifdef mthreaded
+extra_c_flags +=-bm
+!endif
+!ifdef profile
+extra_c_flags +=-etp
+!endif
+
+# -zv has to be on in case the user uses -zv
+# temporary fix until AXP targets support -zv properly
+extra_c_flags_i86 = -zv
+!ifneq model mm
+!ifneq model ms
+extra_c_flags_i86 += -zu
+!endif
+!endif
+extra_c_flags_386 = -zv
+!ifeq convention stack
+extra_c_flags_386 += -3s
+!else
+extra_c_flags_386 += -3r
+!endif
+!ifeq model ms
+!ifeq host_os generic
+extra_c_flags_386 += -r
+!else ifeq host_os qnx
+extra_c_flags_386 += -r
+!endif
+!endif
+
+extra_c_flags_win = -zW
+
+comp_flags = $(cflags) $(define_c)
+
+extra_a_flags  = -we
+!ifdef mthreaded
+extra_a_flags += -D__MT__
+!endif
+
+extra_a_flags_i86 = $(model_switch_i86)
+extra_a_flags_386 = $(model_switch_386)
+!ifeq convention stack
+extra_a_flags_386 += -3s
+!else
+extra_a_flags_386 += -3r
+!endif
+
+!ifeq linkage dynamic
+br_flags_=-D__MAKE_DLL_CPPLIB
+br_flags_yes=-br
+!else
+br_flags_=
+!endif
+
+c_inc_dirs_generic =-I"$(hdr_dir)/dos"
+c_inc_dirs_dos     =-I"$(hdr_dir)/dos"
+c_inc_dirs_nov     =-I"$(hdr_dir)/dos"
+c_inc_dirs_win     =-I"$(hdr_dir)/dos" -I"$(dev_dir)/w16api/wini86"
+c_inc_dirs_os2_i86 =-I"$(dev_dir)/os2api/os2286"
+c_inc_dirs_os2_386 =-I"$(dev_dir)/os2api/os2386"
+c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(c_inc_dirs_os2_$(host_cpu))
+c_inc_dirs_nt      =-I"$(hdr_dir)/dos" -I"$(dev_dir)/w32api/nt"
+c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
+c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
+
+inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(c_inc_dirs_$(host_os)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
+
+reference : .symbolic $(target_lib)
+    cp $(target_lib) $(plusplus_dir)/bin
+
+.EXTENSIONS:
+.EXTENSIONS: .exe .lnk .obj .xbj .c .cpp .asm
+
+!ifdef __LOADDLL__
+comp_cpp = rpp$(host_cpu)
+!else ifdef __UNIX__
+comp_cpp = $(plusplus_dir)/rpp.$(host_cpu)/rpp$(host_cpu).exe
+!else
+comp_cpp = $(plusplus_dir:/=\)\rpp.$(host_cpu)\rpp$(host_cpu).exe
+!endif
+
+.cpp : $(cpp_dirs)
+
+.asm : $(asm_dirs)
+
+.cpp.obj : .autodepend
+!ifeq verbose 1
+    *$(comp_cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+!else
+    @echo ref++ $@
+    @*$(comp_cpp) -zq $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.obj -nm=$[& $(pch_flags) $(extra_cpp_flags_$[&) $[@
+!endif
+
+.cpp.xbj : .autodepend
+!ifeq verbose 1
+    *$(comp_cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+!else
+    @echo xref++ $@
+    @*$(comp_cpp) -zq -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -fo=.xbj -nm=$[& $(pch_flags_x) $(extra_cpp_flags_x_$[&) $[@
+!endif
+
+.asm.obj : .autodepend
+!ifeq verbose 1
+    $(as) $(aflags) $[@
+!else
+    @echo as $@
+    @$(as) $(aflags) $[@
+!endif

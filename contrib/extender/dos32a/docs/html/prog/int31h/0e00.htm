@@ -1,0 +1,132 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.49 - DPMI function 0E00h
+- Get Coprocessor Status </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns information about
+whether or not a numeric coprocessor exists, the type of coprocessor available
+(if any), and whether or not the host or client is providing coprocessor
+emulation.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0E00h</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>AX</b> = coprocessor status</font></p>
+
+<p><table width="100%" height="437" border="0" cellspacing="0" cellpadding=
+"4">
+<tr>
+<td height="24" bgcolor="#dcdcdc"><b><font size=-1 face="Verdana, Arial, Helvetica">Bit</font></b></td>
+<td bgcolor="#dcdcdc"><b><font size=-1 face="Verdana, Arial, Helvetica">Significance</font></b></td></tr>
+<tr>
+<td height="60" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 MPv (MP bit in the virtual
+MSW/CR0)</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = numeric coprocessor is
+disabled for this client<br>
+1 = numeric coprocessor is enabled for this client</font></td></tr>
+<tr>
+<td height="60" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">1 EMv (EM bit in the virtual
+MSW/CR0)</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = client is not emulating
+coprocessor instructions<br>
+1 = client is emulating coprocessor instructions</font></td></tr>
+<tr>
+<td height="60" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">2 MPr (MP bit from the actual
+MSW/CR0)</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = numeric coprocessor is
+not present<br>
+1 = numeric coprocessor is present</font></td></tr>
+<tr>
+<td height="60" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">3 EMr (EM bit from the actual
+MSW/CR0)</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = host is not emulating
+coprocessor instructions<br>
+1 = host is emulating coprocessor instructions</font></td></tr>
+<tr>
+<td height="156" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">4-7 coprocessor type:</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">00h = no coprocessor<br>
+01h = 8087<br>
+02h = 80287<br>
+03h = 80387<br>
+04h = 80486 with numeric coprocessor<br>
+05h = 80586 (Pentium)<br>
+06h = 80686 (Pentium Pro or Pentium II)<br>
+07h-0Fh reserved for future numeric processors</font></td></tr>
+<tr>
+<td height="1" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">8-15 not applicable</font></td>
+<td height="1" bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">reserved</font></td></tr>
+</table>
+<br>
+</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) If the real EM (EMr)
+  bit is set, the host is supplying or is capable of supplying floating point
+  emulation.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) If the MPv bit is
+  not set, the host may not need to save the coprocessor state for this virtual
+  machine to improve system performance.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) MPr bit setting should
+  be consistent with the setting of coprocessor type information. Ignore
+  MPr bit information if it is in conflict with the coprocessor type information.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) If the virtual EM
+  (EMv) bit is set, the host delivers all coprocessor exceptions to the client,
+  and the client is performing its own floating point emulation (whether
+  or not a coprocessor is present or the host also has a floating point emulator).
+  In other words, if the EMv bit is set, the host sets the EM bit in the
+  real CR0 while the virtual machine is active, and reflects coprocessor
+  not present faults (INT 07h) to the virtual machine.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) A client can determine
+  the CPU type with DPMI function 0400h but a client should not draw any
+  conclusions about the presence or absence of a coprocessor based on the
+  CPU type alone.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) DOS/32 Advanced DPMI
+  will not distinguish between 80387 and 80487 (80486 with built-in FPU).
+  That is, if the CPU installed in machine is 80486SX, and an 80387 FPU is
+  present, DOS/32 Advanced DPMI will report the presence of an 80487.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">g) DOS/32 Advanced DPMI
+  does not have a built-in FPU emulator. That is, when client enables FPU
+  emulation (using Set Coprocessor Emulation DPMI function 0E01h), but does
+  not handle the exception 07h (Coprocessor not available), the first instruction
+  executed by the CPU that uses FPU will cause exception 07h which will be
+  trapped by DOS/32 Advanced which in its turn will terminate the client
+  and return to DOS with an error message. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

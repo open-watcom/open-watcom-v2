@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windowing 'system' routines.
 *
 ****************************************************************************/
 
@@ -40,7 +39,12 @@
 #include "dbgadget.h"
 #include "dbghook.h"
 #include "dbgio.h"
+#include <stdio.h>
 #include <ctype.h>
+#if defined( __NT__ ) && defined( __GUI__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+#endif
 
 extern screen_state     ScrnState;
 extern tokens           CurrToken;
@@ -50,53 +54,53 @@ extern char             *TxtBuff;
 extern a_window         *WndMain;
 extern gui_rect         WndMainRect;
 
-extern bool             UsrScrnMode(void);
-extern bool             UserScreen(void);
-extern bool             DebugScreen(void);
-extern bool             DebugScreenRecover(void);
-extern void             RemoteSetUserScreen();
-extern void             RemoteSetDebugScreen();
-extern void             PushCmdList(cmd_list *);
+extern bool             UsrScrnMode( void );
+extern bool             UserScreen( void );
+extern bool             DebugScreen( void );
+extern bool             DebugScreenRecover( void );
+extern void             RemoteSetUserScreen( void );
+extern void             RemoteSetDebugScreen( void );
+extern void             PushCmdList( cmd_list * );
 extern void             NewLang( char *lang );
-extern void             ProcACmd(void);
-extern void             CheckBPErrors();
-extern void             Ring(void);
-extern int              DlgSearch(a_window*,void*);
-extern bool             DlgSearchAll(char**,void*);
-extern unsigned int     ScanCmd(char *);
-extern void             ReqEOC();
+extern void             ProcACmd( void );
+extern void             CheckBPErrors( void );
+extern void             Ring( void );
+extern int              DlgSearch( a_window *, void * );
+extern bool             DlgSearchAll( char **, void * );
+extern unsigned int     ScanCmd( char * );
+extern void             ReqEOC( void );
 extern gui_colour_set   *GetWndColours( wnd_class class );
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern bool             WndDlgTxt(char*);
-extern a_window         *WndSrchOpen(char*);
-extern void             *GetWndFont(a_window*);
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             WndDlgTxt( char * );
+extern a_window         *WndSrchOpen( char * );
+extern void             *GetWndFont( a_window * );
 extern bool             AsmOpenGadget( a_window *, wnd_line_piece *, mod_handle );
 extern bool             FileOpenGadget( a_window *, wnd_line_piece *, mod_handle );
-extern bool             HookPendingPush(void);
+extern bool             HookPendingPush( void );
 extern void             WndPosToRect( wnd_posn*, gui_rect *, gui_coord * );
 extern bool             IsInternalMod( mod_handle );
 extern void             AccelMenuItem( gui_menu_struct *menu, bool is_main );
 extern char             LookUpCtrlKey( unsigned key );
 extern bool             MacKeyHit( a_window *wnd, unsigned key );
-extern gui_coord        *WndMainClientSize();
-extern char             *StrCopy( char*src, char*dest );
-extern void             FingClose();
+extern gui_coord        *WndMainClientSize( void );
+extern char             *StrCopy( char *src, char *dest );
+extern void             FingClose( void );
 extern char             *GetCmdName( int );
 extern void             SetUpdateFlags( update_list );
 extern void             ScrnSpawnStart( void );
 extern void             ScrnSpawnEnd( void );
 
-extern void             WndDumpFile(a_window*);
-extern void             WndDumpLog(a_window*);
-extern void             WndBadCmd(a_window*);
-extern void             ProcWndSearch(a_window*);
-extern void             ProcWndFindNext(a_window*);
-extern void             ProcWndFindPrev(a_window*);
-extern void             ProcWndPopUp(a_window*);
-extern void             ProcWndTabLeft(a_window*);
-extern void             ProcWndTabRight(a_window*);
-extern void             ProcPUINYI(a_window*);
-extern void             XDumpMenus();
+extern void             WndDumpFile( a_window * );
+extern void             WndDumpLog( a_window * );
+extern void             ProcWndSearch( a_window * );
+extern void             ProcWndFindNext( a_window * );
+extern void             ProcWndFindPrev( a_window * );
+extern void             ProcWndPopUp( a_window * );
+extern void             ProcWndTabLeft( a_window * );
+extern void             ProcWndTabRight( a_window * );
+extern void             ProcPUINYI( a_window * );
+extern void             XDumpMenus( void );
+static void             WndBadCmd( a_window * );
 
 #include "menudef.h"
 char *WndGadgetHint[] =
@@ -151,11 +155,12 @@ static char WindowNameTab[] =
     "PRevious\0"
 };
 
-static void ToWndChooseNew( a_window *p ){
+static void ToWndChooseNew( a_window *p )
+{
     WndChooseNew();
 }
 
-static void (*WndJmpTab[])(a_window*) =
+static void (*WndJmpTab[])( a_window * ) =
 {
     &WndBadCmd,
     &WndClose,
@@ -204,7 +209,7 @@ wnd_metrics *WndMetrics[] = {
 
 wnd_metrics NoMetrics = { 0, 0, 0, 0 };
 
-bool DbgWndSearch(a_window * wnd, bool from_top ,int direction )
+bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
 {
     bool        rc;
 
@@ -233,7 +238,7 @@ void ProcWndTabRight( a_window *wnd )
     WndTabRight( wnd, TRUE );
 }
 
-void ProcSearchAll()
+void ProcSearchAll( void )
 {
     char        *expr;
 
@@ -262,7 +267,7 @@ static void WndBadCmd( a_window *wnd )
     Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
-void ProcWindow()
+void ProcWindow( void )
 {
     a_window    *wnd = WndFindActive();
     unsigned    cmd;
@@ -275,11 +280,11 @@ void ProcWindow()
 }
 
 
-void WndSysStart()
+void WndSysStart( void )
 {
-    #if defined(__QNX__)
-        ScrnSpawnStart();
-    #endif
+#if defined(__UNIX__)
+    ScrnSpawnStart();
+#endif
     GUISpawnStart();
 }
 
@@ -287,31 +292,31 @@ void WndSysStart()
 void WndSysEnd( bool pause )
 {
     GUISpawnEnd();
-    #if defined(__QNX__)
-        ScrnSpawnEnd();
-    #endif
+#if defined(__UNIX__)
+    ScrnSpawnEnd();
+#endif
     pause=pause; // NYI - PUI
 }
 
 
-static bool DoScreenSwap()
+static bool DoScreenSwap( void )
 {
-    #if defined(__GUI__) && defined(__WINDOWS__)
-        return( FALSE );
-    #else
-        return( _IsOff( SW_REMOTE_LINK ) );
-    #endif
+#if defined(__GUI__) && defined(__WINDOWS__)
+    return( FALSE );
+#else
+    return( _IsOff( SW_REMOTE_LINK ) );
+#endif
 }
 
 
-void WndStop()
+void WndStop( void )
 {
     if( DoScreenSwap() ) {
         WndUser();
     }
 }
 
-void WndUser()
+void WndUser( void )
 {
     if( !(ScrnState & USR_SCRN_ACTIVE) ) {
         if( !(ScrnState & USR_SCRN_VISIBLE) ) RemoteSetUserScreen();
@@ -327,7 +332,7 @@ void WndUser()
 }
 
 
-void WndDebug()
+void WndDebug( void )
 {
     if( _IsOn( SW_MIGHT_HAVE_LOST_DISPLAY ) ) {
         if( ScrnState & DBG_SCRN_ACTIVE ) {
@@ -445,7 +450,7 @@ extern  bool    WndProcMacro( a_window *wnd, unsigned key )
 }
 
 
-extern void WndSysInit()
+extern void WndSysInit( void )
 {
     ScrnState = DBG_SCRN_ACTIVE | DBG_SCRN_VISIBLE;
 
@@ -474,7 +479,7 @@ void SetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_type type )
     WndSetGadgetLine( wnd, line, type, MaxGadgetLength );
 }
 
-void FiniGadget()
+void FiniGadget( void )
 {
     int                 i;
 
@@ -484,7 +489,7 @@ void FiniGadget()
     }
 }
 
-void InitGadget()
+void InitGadget( void )
 {
     int                 i;
     gui_coord           size;
@@ -522,17 +527,17 @@ bool CheckOpenGadget( a_window *wnd, wnd_row row,
     return( is_open );
 }
 
-extern void WndStartFreshAll()
+extern void WndStartFreshAll( void )
 {
     WndDebug();
 }
 
-extern void WndEndFreshAll()
+extern void WndEndFreshAll( void )
 {
     CheckBPErrors();
 }
 
-void WndFlushKeys()
+void WndFlushKeys( void )
 {
     GUIFlushKeys();
 }
@@ -551,7 +556,7 @@ extern void WndInfoBox( char *msg )
     }
 }
 
-void WndSetOpenNoShow()
+void WndSetOpenNoShow( void )
 {
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
@@ -663,7 +668,7 @@ static bool GetInitName( char *name, char *buff, unsigned len )
 void SaveMainScreen( char *name )
 {
     handle      f;
-    char        buff[256];
+    char        buff[FILENAME_MAX];
 
     if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
     f = FileOpen( buff, OP_WRITE|OP_CREATE );
@@ -675,7 +680,7 @@ void SaveMainScreen( char *name )
 void RestoreMainScreen( char *name )
 {
     handle      f;
-    char        buff[256];
+    char        buff[FILENAME_MAX];
 
     if( !GetInitName( name, buff, sizeof( buff ) ) ) return;
     f = FileOpen( buff, OP_READ );
@@ -686,6 +691,28 @@ void RestoreMainScreen( char *name )
 
 void WndSetWndMainSize( wnd_create_struct *info )
 {
+#ifdef __NT__
+    RECT        workarea;
+    gui_rect    screen;
+    int         sx;
+    int         sy;
+    int         w;
+    int         h;
+    SystemParametersInfo( SPI_GETWORKAREA, 0, &workarea, 0 );
+    GUIGetScale( &screen );
+    sx = screen.width / GetSystemMetrics( SM_CXSCREEN );
+    sy = screen.height / GetSystemMetrics( SM_CYSCREEN );
+    w = sx * (workarea.right - workarea.left);
+    h = sy * (workarea.bottom - workarea.top);
+#endif
     info->rect = WndMainRect;
+#ifdef __NT__
+    if( info->rect.width == 0 || info->rect.width > w ) {
+        info->rect.width = w;
+    }
+    if( info->rect.height == 0 || info->rect.height > h ) {
+        info->rect.height = h;
+    }
+#endif
 }
 #endif

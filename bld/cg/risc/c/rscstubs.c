@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stub functions for RISC codegens for functionality that
+*               cannot be or isn't implemented.
 *
 ****************************************************************************/
 
@@ -33,9 +33,11 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgdefs.h"
+#include "procdef.h"
 #include "regset.h"
 #include "addrname.h"
 #include "zoiks.h"
+#include "x87.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -174,12 +176,6 @@ extern  bool    FPStackOp( name *name ) {
     return( FALSE );
 }
 
-extern  bool    FPPreIns( instruction *ins ) {
-/********************************************/
-    ins = ins;
-    return( FALSE );
-}
-
 extern  int     FPStackExit( block *blk ) {
 /*****************************************/
     blk = blk;
@@ -221,9 +217,10 @@ extern  void    InitFP() {
 /************************/
 }
 
-extern void             FPPushParms( pn* parm ) {
-/***********************************************/
+extern void     FPPushParms( pn parm, call_state *state ) {
+/*********************************************************/
     parm = parm;
+    state = state;
 }
 
 
@@ -250,7 +247,7 @@ extern  cg_type NamePtrType( name *op ) {
 /*************************************/
 
     op = op;
-    return( T_NEAR_POINTER );
+    return( TY_NEAR_POINTER );
 }
 
 
@@ -266,6 +263,10 @@ extern  void    ZeroMoves() {
 
 }
 
+#if !(_TARGET & _TARG_MIPS)
+/* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
+ * have own version as well. Not sure about PowerPC.
+ */
 extern  bool    SetOnCondition() {
 /********************************/
 
@@ -277,6 +278,7 @@ extern  reg_set_index   SpecialPossible( instruction *ins ) {
     ins = ins;
     return( RL_ );
 }
+#endif
 
 extern  void    BuildIndex() {
 /****************************/

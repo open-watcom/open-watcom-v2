@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simplistic 'POSIX compatibility' header.
 *
 ****************************************************************************/
 
@@ -33,22 +32,60 @@
 #ifndef _POSIX_INCLUDED
 #define _POSIX_INCLUDED
 
-#ifdef __QNX__
-#include <unistd.h>
-#include <dirent.h>
-#include <sys\stat.h>
-#define _mkdir( a, b ) mkdir( a, b )
-#define DIRFLAGS S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
-#define ACCESS_WR W_OK
-#define ACCESS_RD R_OK
-#define WRITEATTRS      (CurrentFile->attr)
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#if defined( __UNIX__ )
+  #include <unistd.h>
+  #include <dirent.h>
+  #define _mkdir( a, b )    mkdir( a, b )
+  #define DIRFLAGS          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+  #define WRITEATTRS        (CurrentFile->attr)
 #else
-#include <direct.h>
-#include <io.h>
-#define _mkdir( a, b ) mkdir( a )
-#define DIRFLAGS 0
-// #define WRITEATTRS   0 was causing read-only files
-#define WRITEATTRS      (S_IRWXU)
+  #include <direct.h>
+  #include <io.h>
+  #define _mkdir( a, b )    mkdir( a )
+  #define DIRFLAGS 0
+  #define WRITEATTRS        (S_IRWXU)
+  #ifdef __IBMC__
+    typedef struct dirent DIR;
+  #endif
+#endif
+
+#ifndef R_OK
+  #define F_OK  0
+  #define W_OK  2
+  #define R_OK  4
+#endif
+
+#ifndef ACCESS_WR
+  #define ACCESS_WR W_OK
+  #define ACCESS_RD R_OK
+#endif
+
+#ifndef S_IRWXU
+  #define S_IRWXU    (S_IREAD | S_IWRITE | S_IEXEC)
+#endif
+
+#ifndef STDIN_FILENO
+  #define STDIN_FILENO    0
+  #define STDOUT_FILENO   1
+  #define STDERR_FILENO   2
+#endif
+
+#ifndef O_BINARY
+  #define O_BINARY 0
+#endif
+
+#ifndef O_TEXT
+  #define O_TEXT 0
+#endif
+
+#ifndef _MAX_DRIVE
+  #define _MAX_DRIVE    3
+  #define _MAX_DIR      260
+  #define _MAX_FNAME    256
+  #define _MAX_EXT      256
 #endif
 
 #endif

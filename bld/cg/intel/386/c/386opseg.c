@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Add register 'gblreg' to all memory references.
 *
 ****************************************************************************/
 
@@ -39,18 +38,18 @@
 zero_page_scheme        ZPageType;
 extern  block           *HeadBlock;
 
-extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      High64Reg(hw_reg_set);
-extern  name            *AllocRegName(hw_reg_set);
-extern  bool            SegIsCS(name*);
+extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
+extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
+extern  hw_reg_set      High64Reg( hw_reg_set );
+extern  name            *AllocRegName( hw_reg_set );
+extern  bool            SegIsCS( name * );
 
 
-static  void    CheckName( name **pop, name *gblreg ) {
-/******************************************************
+static  void    CheckName( name **pop, name *gblreg )
+/****************************************************
     add gblreg to a memory reference. eg: x[EAX*2] -> x[gblreg+EAX*2]
 */
-
+{
     name        *op;
     i_flags     flags;
     name        *index;
@@ -79,11 +78,11 @@ static  void    CheckName( name **pop, name *gblreg ) {
 }
 
 
-static  void    AddGlobalIndex() {
-/*********************************
+static  void    AddGlobalIndex( void )
+/*************************************
     add EBX to every memory reference in the program
 */
-
+{
     block       *blk;
     instruction *ins;
     int         i;
@@ -108,14 +107,14 @@ static  void    AddGlobalIndex() {
 }
 
 
-extern  void    InitZeroPage() {
-/*******************************
+extern  void    InitZeroPage( void )
+/***********************************
     This is here to handle the "indexed" globals option.
     It should really be in its own module, but
     the ZeroPage stuff was called at just the
     right time, and wasn't used by the 386 compiler
 */
-
+{
     ZPageType = ZP_USES_SS;
     if( _IsTargetModel( INDEXED_GLOBALS ) ) {
         AddGlobalIndex();
@@ -123,6 +122,7 @@ extern  void    InitZeroPage() {
 }
 
 
-extern  void    FiniZeroPage() {
-/******************************/
+extern  void    FiniZeroPage( void )
+/**********************************/
+{
 }

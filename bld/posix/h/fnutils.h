@@ -49,7 +49,7 @@ int     FNameCharCmp( char __a, char __b );
 
 #define FNameCompare                    stricmp
 #define FNameCompareN                   strnicmp
-#define FNameCharCmp( __a, __b )        ( tolower(__a) - tolower(__b) )
+#define FNameCharCmp( __a, __b )        ( tolower( __a ) - tolower( __b ) )
 
 int     IsDotOrDotDot( const char *__fname );
 

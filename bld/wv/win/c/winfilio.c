@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level Windows 3.x file I/O.
 *
 ****************************************************************************/
 
@@ -40,25 +39,16 @@
 #include <string.h>
 #include "trpfile.h"
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
+#include "doserr.h"
 
 extern char             _osmajor;
 
 file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
-
-extern char     **DosErrMsgs[];
-extern int      MaxDosErrMsg;
-
 void LocalErrMsg( sys_error code, char *buff )
 {
-    if( code > MaxDosErrMsg ) {
-        Format( buff, "ERR#%u", code );
-    } else {
-        StrCopy( *DosErrMsgs[ code ], buff );
-    }
+    GetDOSErrMsg( code, buff );
 }
 
 
@@ -114,14 +104,15 @@ unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
 {
-    tiny_ret_t  ret;
+    tiny_ret_t      ret;
+    unsigned long   pos;
 
-    ret = TinySeek( hdl, len, method );
+    ret = TinyLSeek( hdl, len, method, &pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( -1UL );
     }
-    return( ret );
+    return( pos );
 }
 
 unsigned LocalClose( sys_handle filehndl )

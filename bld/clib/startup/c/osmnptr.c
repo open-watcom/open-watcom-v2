@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor routine for address of _osminor global.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned char (*__get_osminor_ptr()) {
+_WCRTLINK unsigned char *__get_osminor_ptr( void )
+{
     return &_osminor;
 }

@@ -1,6 +1,6 @@
-@echo off
+@echo %verbose% off
 echo # ===========================
-echo # Start Preprocessor Test 
+echo # Start Preprocessor Test
 echo # ===========================
 
 if .%2 == . goto usage
@@ -9,13 +9,12 @@ echo # ---------------------------
 echo #   PreProcess Test 1
 echo # ---------------------------
 
-del tmp.out
-%1 -h -f PREP01 -l tmp.out
-diff -b PREP01.CMP tmp.out
+%1 -h -f prep01 > tmp.out 2>&1
+diff -b prep01.cmp tmp.out
 if errorlevel 1 goto err1
-    @echo # PREP01 successful
+    @echo # prep01 successful
     goto test2
-:err1 
+:err1
     @echo ## PREPROCESS ## >> %2
     @echo Error: PREPROCESS #1 unsuccessful!!! | tee -a %2
 
@@ -25,20 +24,52 @@ echo # ---------------------------
 echo #   PreProcess Test 2
 echo # ---------------------------
 
-del tmp.out
-%1 -h -f PREP02 -ms -l tmp.out
-diff PREP02.CMP tmp.out
+%1 -h -f prep02 -m -ms > tmp.out 2>&1
+diff prep02.cmp tmp.out
 if errorlevel 1 goto err2
-    @echo # PREP02 successful
+%1 -h -f prep02 -m     > tmp.out 2>&1
+diff prep02.cmp tmp.out
+if errorlevel 1 goto err2
+    @echo # prep02 successful
     goto test3
-:err2 
+:err2
     @echo ## PREPROCESS ## >> %2
     @echo Error: PREPROCESS #2 unsuccessful!!! | tee -a %2
 
 :test3
 
+echo # ---------------------------
+echo #   PreProcess Test 3
+echo # ---------------------------
+
+%1 -h -f prep03 > tmp.out 2>&1
+diff -b prep03.cmp tmp.out
+if errorlevel 1 goto err3
+    @echo # prep03 successful
+    goto test4
+:err3
+    @echo ## PREPROCESS ## >> %2
+    @echo Error: PREPROCESS #3 unsuccessful!!! | tee -a %2
+
+:test4
+
+echo # ---------------------------
+echo #   PreProcess Test 4
+echo # ---------------------------
+
+%1 -h -f prep04 > tmp.out 2>&1
+diff -b prep04.cmp tmp.out
+if errorlevel 1 goto err4
+    @echo # prep04 successful
+    goto test5
+:err4
+    @echo ## PREPROCESS ## >> %2
+    @echo Error: PREPROCESS #4 unsuccessful!!! | tee -a %2
+
+:test5
+
 goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-if exist tmp.out del tmp.out
+if exist tmp.out rm tmp.out

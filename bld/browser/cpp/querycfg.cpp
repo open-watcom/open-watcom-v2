@@ -97,6 +97,7 @@ void QueryConfig::initialize()
     int i;
     OptionManager * optMgr = WBRWinBase::optManager();
 
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();

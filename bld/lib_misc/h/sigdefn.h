@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Signal table definitions.
 *
 ****************************************************************************/
 
@@ -33,8 +32,8 @@
 #ifndef _SIGDEFN_H_INCLUDED
 #define _SIGDEFN_H_INCLUDED
 
-#if (!defined(__NT__) && !defined(__OS2__) && !defined(__NETWARE__) && !defined(__GENERIC__))
-#error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC
+#if !defined(__NT__) && !defined(__OS2__) && !defined(__NETWARE__) && !defined(__GENERIC__) && !defined(__SNAP__) && !defined(__RDOS__)
+#error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC of bt=SNAP or bt=RDOS
 #endif
 
 #include "variety.h"
@@ -42,14 +41,14 @@
 
 #define __SIGLAST       _SIGMAX
 
-// note that __NT__ and __NETWARE__ are always 32bit
+// note that __NT__, __NETWARE__ and __SNAP__ are always 32bit
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
     #if defined(__NETWARE__)
-        typedef void (*sigtab)( int );
+        typedef __sig_func sigtab;
     #else
         typedef struct sigtab {
-            void    (* func)(int);      /* user signal handler */
-            int     os_sig_code;        /* OS signal code */
+            __sig_func  func;           /* user signal handler */
+            int         os_sig_code;    /* OS signal code */
         } sigtab;
     #endif
 #else
@@ -58,10 +57,10 @@
     #include <wos2.h>
 
     typedef struct      sigtab {
-        void (* func)(int);     /* user signal handler */
+        __sig_func      func;     /* user signal handler */
         VOID (_WCI86FAR PASCAL *os_func)(USHORT, USHORT);
-        USHORT  prev_action;    /* previous action */
-        int     os_sig_code;    /* OS/2 1.x signal code */
+        USHORT  prev_action;      /* previous action */
+        int     os_sig_code;      /* OS/2 1.x signal code */
     } sigtab;
 #endif
 #endif

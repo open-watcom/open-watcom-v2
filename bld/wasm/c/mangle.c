@@ -24,112 +24,129 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol mangling routines.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include "asmglob.h"
-#include "asmsym.h"
-#include "asmalloc.h"
-#include "asmerr.h"
-#include "directiv.h"
 
-extern char *CMangler( struct asm_sym *sym, char *buffer );
-extern char *AsmMangler( struct asm_sym *sym, char *buffer );
+#include "asmalloc.h"
+#include "directiv.h"
+#include "mangle.h"
+
 
 /* constants used by the name manglers ( changes ) */
-#define     NORMAL              0
-#define     USCORE_FRONT        1
-#define     USCORE_BACK         2
-#define     REM_USCORE_FRONT    4
-#define     REM_USCORE_BACK     8
-#define     UPPERCASE           16
+enum changes {
+    NORMAL           = 0,
+    USCORE_FRONT     = 1,
+    USCORE_BACK      = 2
+};
 
-char *AsmMangler( struct asm_sym *sym, char *buffer )
-/***************************************************/
+#define USCORE "_"
+
+extern int SymIs32( struct asm_sym *sym );
+
+typedef char *(*mangle_func)( struct asm_sym *, char * );
+
+static char *AsmMangler( struct asm_sym *sym, char *buffer )
+/**********************************************************/
 {
-    char *name;
+    char        *name;
 
     if( buffer == NULL ) {
         name = AsmAlloc( strlen( sym->name ) + 1 );
-        strcpy( name, sym->name );
+    } else {
+        name = buffer;
+    }
+    strcpy( name, sym->name );
+    return( name );
+}
+
+static char *UCaseMangler( struct asm_sym *sym, char *buffer )
+/************************************************************/
+{
+    char        *name;
+
+    if( buffer == NULL ) {
+        name = AsmAlloc( strlen( sym->name ) + 1 );
+    } else {
+        name = buffer;
+    }
+    strcpy( name, sym->name );
+    strupr( name );
+    return( name );
+}
+
+static char *UScoreMangler( struct asm_sym *sym, char *buffer )
+/*************************************************************/
+{
+    char        *name;
+
+    if( buffer == NULL ) {
+        name = AsmAlloc( strlen( sym->name ) + 2 );
+    } else {
+        name = buffer;
+    }
+    strcpy( name, USCORE );
+    strcat( name, sym->name );
+    return( name );
+}
+
+static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
+/****************************************************************/
+{
+    if( !Options.mangle_stdcall )
+        return( AsmMangler( sym, buffer ) );
+
+    if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
+        int     parasize;
+        char    *name;
+
+        parasize = ((dir_node *)sym)->e.procinfo->parasize;
+        if( buffer == NULL ) {
+            int         count;
+
+            for( count = 2; parasize > 9; count++ )
+                parasize /= 10;
+            name = AsmAlloc( strlen( sym->name ) + 2 + count );
+            parasize = ((dir_node *)sym)->e.procinfo->parasize;
+        } else {
+            name = buffer;
+        }
+        sprintf( name, "_%s@%d", sym->name, parasize );
         return( name );
     } else {
-        strcpy( buffer, sym->name );
-        return( buffer );
+        return( UScoreMangler( sym, buffer ) );
     }
 }
 
-char *CMangler( struct asm_sym *sym, char *buffer )
-/*************************************************/
+static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
+/**************************************************************/
 {
     char                *name;
     char                *ptr = sym->name;
-    uint                changes = NORMAL;
-    proc_info           *info;
-    uint                additional_size = 1; // for null
+    enum changes        changes;
 
-    switch( Options.naming_convention ) {
-    case DO_NOTHING:
-        return( AsmMangler( sym, buffer ));
-    case ADD_USCORES:
-        if( sym->state == SYM_PROC ) {
-            changes |= USCORE_BACK;
-        } else {
-            switch( sym->mem_type ) {
-            case T_NEAR:
-            case T_FAR:
-            case EMPTY:
-                changes |= USCORE_BACK;
-                break;
-            default:
-                changes |= USCORE_FRONT;
-            }
-        }
-        break;
-    case REMOVE_USCORES:
-        if( sym->state == SYM_PROC ) {
-            changes |= REM_USCORE_BACK;
-        } else {
-            switch( sym->mem_type ) {
-            case T_NEAR:
-            case T_FAR:
-            case EMPTY:
-                changes |= REM_USCORE_BACK;
-                break;
-            default:
-                changes |= REM_USCORE_FRONT;
-            }
-        }
-    }
-    if( sym->state == SYM_PROC ) {
-        info = ((dir_node*)sym)->e.procinfo;
-        if( info->langtype == LANG_C || info->langtype == LANG_STDCALL ) {
-            changes |= USCORE_BACK;
-        } else if( info->langtype >= LANG_BASIC && info->langtype <= LANG_PASCAL ) {
-            changes |= UPPERCASE;
-        }
-    }
-    #define USCORE "_"
-
-    if( changes & USCORE_FRONT ) {
-        additional_size++;
-    }
-    if( changes & USCORE_BACK ) {
-        additional_size++;
-    }
-    if( changes & REM_USCORE_FRONT ) {
-        if( *ptr == '_' ) {
-            ptr++;
+    if( Options.watcom_parms_passed_by_regs == FALSE && SymIs32( sym ) ) {
+        changes = NORMAL;
+    } else if( sym->state == SYM_PROC ) {
+        changes = USCORE_BACK;
+    } else {
+        switch( sym->mem_type ) {
+        case MT_NEAR:
+        case MT_FAR:
+        case MT_EMPTY:
+        case MT_PROC:
+            changes = USCORE_BACK;
+            break;
+        default:
+            changes = USCORE_FRONT;
         }
     }
 
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( ptr ) + additional_size );
+        name = AsmAlloc( strlen( ptr ) + 2 );
     } else {
         name = buffer;
     }
@@ -140,63 +157,84 @@ char *CMangler( struct asm_sym *sym, char *buffer )
         strcpy( name, NULLS );
     }
     strcat( name, ptr );
-    if( changes & UPPERCASE ) {
-        strupr( name );
-    }
     if( changes & USCORE_BACK ) {
         strcat( name, USCORE );
-    } else if( changes & REM_USCORE_BACK ) {
-        ptr = name + strlen( name ) - 1;
-        if( *ptr == '_' ) {
-            *ptr = NULLC;
-        }
     }
     return( name );
 }
 
-typedef char *(*mangle_func)( struct asm_sym *, char * );
+static char *CMangler( struct asm_sym *sym, char *buffer )
+/********************************************************/
+{
+    return( UScoreMangler( sym, buffer ) );
+}
 
 static mangle_func GetMangler( char *mangle_type )
+/************************************************/
 {
-    mangle_func         mangle;
+    mangle_func         mangler;
 
-    mangle = NULL;
+    mangler = NULL;
     if( mangle_type != NULL ) {
         if( stricmp( mangle_type, "C" ) == 0 ) {
-            mangle = CMangler;
+            mangler = WatcomCMangler;
         } else if( stricmp( mangle_type, "N" ) == 0 ) {
-            mangle = AsmMangler;
+            mangler = AsmMangler;
         } else {
             AsmErr( UNKNOWN_MANGLER, mangle_type );
         }
     }
-    return( mangle );
+    return( mangler );
 }
 
 char *Mangle( struct asm_sym *sym, char *buffer )
+/***********************************************/
 {
-    mangle_func mangle;
+    mangle_func mangler;
 
-    mangle = sym->mangler;
-    if( mangle == NULL ) {
-        mangle = GetMangler( Options.default_name_mangler );
-        if( mangle == NULL ) mangle = AsmMangler;
-        sym->mangler = mangle;
+    switch( sym->langtype ) {
+    case LANG_SYSCALL:
+        mangler = AsmMangler;
+        break;
+    case LANG_STDCALL:
+        mangler = StdUScoreMangler;
+        break;
+    case LANG_BASIC:
+    case LANG_FORTRAN:
+    case LANG_PASCAL:
+        mangler = UCaseMangler;
+        break;
+    case LANG_WATCOM_C:
+        mangler = WatcomCMangler;
+        break;
+    case LANG_C:
+        mangler = CMangler;
+        break;
+    case LANG_NONE:
+        mangler = sym->mangler;
+        if( mangler == NULL )
+            mangler = GetMangler( Options.default_name_mangler );
+        if( mangler == NULL )
+            mangler = AsmMangler;
+        break;
     }
-    return( mangle( sym, buffer ) );
+    sym->mangler = mangler;
+    return( mangler( sym, buffer ) );
 }
 
-void SetMangler( struct asm_sym *sym, char *mangle_type )
-/*******************************************************/
+void SetMangler( struct asm_sym *sym, char *mangle_type, int langtype )
+/*********************************************************************/
 {
-    mangle_func mangle;
+    mangle_func mangler;
 
-    mangle = GetMangler( mangle_type );
-    if( mangle == NULL ) {
+    if( langtype != LANG_NONE )
+        sym->langtype = langtype;
+    mangler = GetMangler( mangle_type );
+    if( mangler == NULL ) {
         /* nothing to do */
     } else if( sym->mangler == NULL ) {
-        sym->mangler = mangle;
-    } else if( sym->mangler != mangle ) {
+        sym->mangler = mangler;
+    } else if( sym->mangler != mangler ) {
         AsmErr( CONFLICTING_MANGLER, sym->name );
     }
 }

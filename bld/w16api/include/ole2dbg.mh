@@ -1,0 +1,18 @@
+/*
+ *  ole2dbg.h   Object Linking and Embedding (OLE) 2.0 debugging functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __OLE2DBG_H
+#define __OLE2DBG_H
+
+:include readonly.sp
+
+/* Functions in OLE2.DLL */
+STDAPI_( void ) DbgDumpClassName( IUnknown FAR * );
+STDAPI_( void ) DbgDumpExternalObject( IUnknown FAR *, DWORD );
+STDAPI_( void ) DbgDumpObject( IUnknown FAR *, DWORD );
+STDAPI_( BOOL ) DbgIsObjectValid( IUnknown FAR * );
+
+#endif /* __OLE2DBG_H */

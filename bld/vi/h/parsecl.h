@@ -37,7 +37,7 @@
  * regular tokens
  */
 enum {
-    PCL_T_NO_COMMAND=-2,
+    PCL_T_NO_COMMAND = -2,
     PCL_T_INVALID,
     #define PICK( a,b ) b,
     #include "cmds.h"

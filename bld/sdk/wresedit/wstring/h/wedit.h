@@ -46,26 +46,26 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WInitEditWindows        ( HINSTANCE );
-extern void  WFiniEditWindows        ( void );
-extern void  WInitEditDlg            ( HINSTANCE inst, HWND parent );
-extern Bool  WCreateStringEditWindow ( WStringEditInfo *, HINSTANCE );
-extern Bool  WResizeStringEditWindow ( WStringEditInfo *, RECT * );
-extern Bool  WInitEditWindowListBox  ( WStringEditInfo * );
-extern void  WHandleSelChange        ( WStringEditInfo * );
-extern void  WDoHandleSelChange      ( WStringEditInfo *, Bool, Bool );
+extern void WInitEditWindows( HINSTANCE );
+extern void WFiniEditWindows( void );
+extern void WInitEditDlg( HINSTANCE inst, HWND parent );
+extern Bool WCreateStringEditWindow( WStringEditInfo *, HINSTANCE );
+extern Bool WResizeStringEditWindow( WStringEditInfo *, RECT * );
+extern Bool WInitEditWindowListBox( WStringEditInfo * );
+extern void WHandleSelChange( WStringEditInfo * );
+extern void WDoHandleSelChange( WStringEditInfo *, Bool, Bool );
 
-extern Bool  WSetEditWindowStringData( WStringEditInfo *, WStringBlock *, uint_16 );
-extern Bool  WGetEditWindowStringData( WStringEditInfo *, char **, char **, uint_16 * );
+extern Bool WSetEditWindowStringData( WStringEditInfo *, WStringBlock *, uint_16 );
+extern Bool WGetEditWindowStringData( WStringEditInfo *, char **, char **, uint_16 * );
 
-extern Bool  WGetEditWindowText     ( HWND, char ** );
-extern Bool  WGetEditWindowID       ( HWND, char **, uint_16 *, WRHashTable *, Bool );
+extern Bool WGetEditWindowText( HWND, char ** );
+extern Bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, Bool );
 
-extern Bool  WSetEditWindowText     ( HWND, char * );
-extern Bool  WSetEditWindowID       ( HWND, uint_16, char * );
+extern Bool WSetEditWindowText( HWND, char * );
+extern Bool WSetEditWindowID( HWND, uint_16, char * );
 
-extern void  WResetEditWindow       ( WStringEditInfo *einfo );
-extern Bool  WClipStringItem        ( WStringEditInfo *einfo, Bool cut );
-extern Bool  WPasteStringItem       ( WStringEditInfo *einfo );
+extern void WResetEditWindow( WStringEditInfo *einfo );
+extern Bool WClipStringItem( WStringEditInfo *einfo, Bool cut );
+extern Bool WPasteStringItem( WStringEditInfo *einfo );
 
 #endif

@@ -35,11 +35,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include <setjmp.h>
 
 #include "global.h"    /* this is a WRC header file */
 #include "rcio.h"      /* this is a WRC header file */
 #include "pass2.h"     /* this is a WRC header file */
+#include "rcspawn.h"   /* this is a WRC header file */
 
 #include "wrglbl.h"
 #include "wrmain.h"
@@ -47,7 +47,6 @@
 #include "wrsvres.h"
 #include "wrtmpfil.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 #include "wrsvexe.h"
 
 /****************************************************************************/
@@ -71,68 +70,67 @@ extern HANDLE_INFO           Instance;
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int WRExecRCPass2       ( void );
-static int WRPass2             ( void );
-static int WRSaveResourceToEXE ( WRInfo *, int, WRFileType );
+static int  WRExecRCPass2( void );
+static int  WRPass2( void );
+static int  WRSaveResourceToEXE( WRInfo *, int, WRFileType );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-jmp_buf RC_Dead_env;
+
+jmp_buf     jmpbuf_RCFatalError;
 
 /* this function duplicates Pass2 in rc.c of the WRC project */
-int WRPass2 ( void )
+int WRPass2( void )
 {
     int ok;
 
     ok = RcPass2IoInit();
 
-    if ( ok ) {
-        switch ( Pass2Info.OldFile.Type ) {
-            case EXE_TYPE_NE:
-                ok = MergeResExeNE();
-                break;
-            case EXE_TYPE_PE:
-                ok = MergeResExePE();
-                break;
+    if( ok ) {
+        switch( Pass2Info.OldFile.Type ) {
+        case EXE_TYPE_NE_WIN:
+            ok = MergeResExeNE();
+            break;
+        case EXE_TYPE_PE:
+            ok = MergeResExePE();
+            break;
         }
 
-        RcPass2IoShutdown ( ok );
+        RcPass2IoShutdown( ok );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-int WRExecRCPass2 ( void )
+int WRExecRCPass2( void )
 {
-    int     ret;
-    int    ok;
+    int ret;
+    int ok;
 
-    ret = setjmp ( RC_Dead_env );
+    ret = setjmp( &jmpbuf_RCFatalError );
 
-    if ( ret ) {
+    if( ret ) {
         ok = FALSE;
     } else {
-        ok = WRPass2 ();
+        ok = WRPass2();
     }
 
-    return ( ok );
+    return( ok );
 }
 
-int WRSaveResourceToWin16EXE ( WRInfo *info, int backup )
+int WRSaveResourceToWin16EXE( WRInfo *info, int backup )
 {
-    int        ok;
+    int ok;
 
-    ok = ( ( info->file_type != WR_WINNT_EXE ) &&
-           ( info->file_type != WR_WINNT_DLL ) );
+    ok = (info->file_type != WR_WINNT_EXE && info->file_type != WR_WINNT_DLL);
 
     if( !ok ) {
         WRDisplayErrorMsg( WR_NOCONV1632 );
     }
 
     if( ok ) {
-        ok = ( ( info->file_type == WR_WIN16_EXE ) ||
-               ( info->file_type == WR_WIN16_DLL ) );
+        ok = (info->file_type == WR_WIN16_EXE || info->file_type == WR_WIN16_DLL);
         if( !ok ) {
             WRDisplayErrorMsg( WR_NOTWIN16 );
         }
@@ -145,20 +143,18 @@ int WRSaveResourceToWin16EXE ( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveResourceToWinNTEXE ( WRInfo *info, int backup )
+int WRSaveResourceToWinNTEXE( WRInfo *info, int backup )
 {
-    int        ok;
+    int ok;
 
-    ok = ( ( info->file_type != WR_WIN16_EXE ) &&
-           ( info->file_type != WR_WIN16_DLL ) );
+    ok = (info->file_type != WR_WIN16_EXE && info->file_type != WR_WIN16_DLL);
 
     if( !ok ) {
         WRDisplayErrorMsg( WR_NOCONV1632 );
     }
 
     if( ok ) {
-        ok = ( ( info->file_type == WR_WINNT_EXE ) ||
-               ( info->file_type == WR_WINNT_DLL ) );
+        ok = (info->file_type == WR_WINNT_EXE || info->file_type == WR_WINNT_DLL);
         if( !ok ) {
             WRDisplayErrorMsg( WR_NOTWINNT );
         }
@@ -171,67 +167,66 @@ int WRSaveResourceToWinNTEXE ( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveResourceToEXE ( WRInfo *info, int backup, WRFileType ttype )
+int WRSaveResourceToEXE( WRInfo *info, int backup, WRFileType ttype )
 {
-    int        ok;
-    char       *tmp_res;
-    char       *sname;
+    int         ok;
+    char        *tmp_res;
+    char        *sname;
     WRFileType  stype;
 
     sname = NULL;
 
-    ok = ( info->file_name != NULL );
+    ok = (info->file_name != NULL);
 
-    ok = ( ok && ( ( tmp_res = WRGetTempFileName ( "res" ) ) != NULL ) );
+    ok = (ok && (tmp_res = WRGetTempFileName( "res" )) != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         sname = info->save_name;
         stype = info->save_type;
         info->save_name = tmp_res;
         info->save_type = ttype;
-        ok = WRSaveResource ( info, FALSE );
+        ok = WRSaveResource( info, FALSE );
     }
 
-    if ( ok ) {
-        if ( backup && WRFileExists ( sname ) ) {
-            ok = WRBackupFile ( sname, FALSE );
+    if( ok ) {
+        if( backup && WRFileExists( sname ) ) {
+            ok = WRBackupFile( sname, FALSE );
         }
     }
 
-    if ( ok ) {
-        memset ( &CmdLineParms, 0, sizeof ( CmdLineParms ) );
-        CmdLineParms.Pass2Only    = TRUE;
+    if( ok ) {
+        memset( &CmdLineParms, 0, sizeof( CmdLineParms ) );
+        CmdLineParms.Pass2Only = TRUE;
         CmdLineParms.VersionStamp = VERSION_31_STAMP;
-        if ( ttype == WR_WINNTW_RES ) {
+        if( ttype == WR_WINNTW_RES ) {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
         } else {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
         }
-        strcpy ( CmdLineParms.InFileName, tmp_res );
-        strcpy ( CmdLineParms.InExeFileName, info->file_name );
-        if ( stricmp ( sname, info->file_name ) ) {
-            strcpy ( CmdLineParms.OutExeFileName, sname );
+        strcpy( CmdLineParms.InFileName, tmp_res );
+        strcpy( CmdLineParms.InExeFileName, info->file_name );
+        if( stricmp( sname, info->file_name ) ) {
+            strcpy( CmdLineParms.OutExeFileName, sname );
         } else {
-            strcpy ( CmdLineParms.OutExeFileName, info->file_name );
+            strcpy( CmdLineParms.OutExeFileName, info->file_name );
         }
-        ok = WRExecRCPass2 ();
+        ok = WRExecRCPass2();
     }
 
-    if ( tmp_res ) {
-        WRDeleteFile ( tmp_res );
-        WRMemFree ( tmp_res );
+    if( tmp_res != NULL ) {
+        WRDeleteFile( tmp_res );
+        WRMemFree( tmp_res );
     }
 
-    if ( sname ) {
+    if( sname != NULL ) {
         info->save_name = sname;
         info->save_type = stype;
     }
 
-    return ( ok );
+    return( ok );
 }
 
-void  WRInitRcGlobal( HINSTANCE inst )
+void WRInitRcGlobal( HINSTANCE inst )
 {
     Instance.inst = inst;
 }
-

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -58,7 +58,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeTagProc ( HWND, UINT, WPARAM, LPARAM );
+extern LRESULT WINEXPORT WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -83,13 +83,13 @@ static HFONT      WdeTagFont            = NULL;
 
 static void WdeSetTagState( WdeOrderedEntry *oe )
 {
-    DWORD       result;
+    LRESULT     result;
     Bool        pressed;
 
-    if( oe && ( oe->tag != (HWND)NULL ) ) {
+    if( oe != NULL && oe->tag != (HWND)NULL ) {
         if( oe->mode == WdeSetOrder ) {
             result = SendMessage( oe->tag, BM_GETSTATE, 0, 0 );
-            pressed = ( ( result & 0x0004 ) != 0 );
+            pressed = ((result & 0x0004) != 0);
             if( pressed && !oe->pos_set ) {
                 SendMessage( oe->tag, BM_SETSTATE, FALSE, 0 );
             } else if( !pressed && oe->pos_set ) {
@@ -106,22 +106,22 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
     char        str[10];
     int         len;
 
-    if( oe && ( oe->tag != (HWND)NULL ) ) {
+    if( oe != NULL && oe->tag != (HWND)NULL ) {
         itoa( oe->pos, str, 10 );
-        len = strlen ( str );
+        len = strlen( str );
         switch( oe->mode ) {
-            case WdeSetTabs:
-                if( oe->tab_set ) {
-                    strcat( str, ":T" );
-                }
-                break;
-            case WdeSetGroups:
-                if( oe->grp_set ) {
-                    strcat( str, ":G" );
-                }
-                break;
+        case WdeSetTabs:
+            if( oe->tab_set ) {
+                strcat( str, ":T" );
+            }
+            break;
+        case WdeSetGroups:
+            if( oe->grp_set ) {
+                strcat( str, ":G" );
+            }
+            break;
         }
-        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM) (LPCSTR) str );
+        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 }
 
@@ -134,12 +134,12 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, Bool reorder )
         o->old_oe->present = TRUE;
         o->old_oe->pos_set = FALSE;
     } else {
-        o->new_oe = (WdeOrderedEntry *) WdeMemAlloc(sizeof(WdeOrderedEntry));
-        if( o->new_oe ) {
+        o->new_oe = (WdeOrderedEntry *)WdeMemAlloc( sizeof( WdeOrderedEntry ) );
+        if( o->new_oe != NULL ) {
             o->old_oe->pos_set = TRUE;
-            memcpy( o->new_oe, o->old_oe, sizeof ( WdeOrderedEntry ) );
+            memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
             o->old_oe->present = FALSE;
-            o->old_oe->pos     = 0;
+            o->old_oe->pos = 0;
             WdeInsertObject( &o->lists->newlist, o->new_oe );
         }
     }
@@ -147,8 +147,6 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, Bool reorder )
     if( reorder ) {
         WdeReorderTags( o->lists, FALSE );
     }
-
-    return;
 }
 
 static void WdeOrderPrevTags( WdeSetOrderStruct *o )
@@ -161,8 +159,8 @@ static void WdeOrderPrevTags( WdeSetOrderStruct *o )
         return;
     }
 
-    for( olist = o->lists->oldlist; olist; olist = ListNext( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement( olist );
+    for( olist = o->lists->oldlist; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
         os = WdeGetTagInfo( oentry->tag );
         if( os == o ) {
             break;
@@ -171,8 +169,6 @@ static void WdeOrderPrevTags( WdeSetOrderStruct *o )
             WdeSetTagOrder( os, FALSE );
         }
     }
-
-    return;
 }
 
 static void WdeTagDblClicked( WdeSetOrderStruct *o )
@@ -194,12 +190,12 @@ static void WdeTagDblClicked( WdeSetOrderStruct *o )
         o->lists->newlist = NULL;
     }
 
-    for( olist = o->lists->oldlist; olist; olist = ListNext( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement( olist );
+    for( olist = o->lists->oldlist; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
         oentry->present = TRUE;
         oentry->pos_set = FALSE;
         os = WdeGetTagInfo( oentry->tag );
-        if( os ) {
+        if( os != NULL ) {
             os->new_oe = NULL;
         }
     }
@@ -214,150 +210,148 @@ void WdeFreeOrderedList( LIST *l )
     LIST                *olist;
     WdeOrderedEntry     *oe;
 
-    for( olist = l; olist; olist = ListNext( olist ) ) {
+    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
         oe = (WdeOrderedEntry *)ListElement( olist );
-        if( oe ) {
+        if( oe != NULL ) {
             WdeMemFree( oe );
         }
     }
 
     ListFree( l );
-
-    return;
 }
 
-LIST *WdeCopyOrderedList ( LIST *src )
+LIST *WdeCopyOrderedList( LIST *src )
 {
     LIST            *dest;
 
     dest = NULL;
 
-    if ( !WdeListConcat ( &dest, src, sizeof ( WdeOrderedEntry ) ) ) {
-        WdeFreeOrderedList ( dest );
+    if( !WdeListConcat( &dest, src, sizeof( WdeOrderedEntry ) ) ) {
+        WdeFreeOrderedList( dest );
         dest = NULL;
     }
 
-    return ( dest );
+    return( dest );
 }
 
-LIST *WdeFindOrderedEntry ( LIST *l, OBJPTR obj )
+LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    for ( olist = l; olist; olist = ListNext ( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
-        if ( oentry->obj == obj ) {
-            return ( olist );
+    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
+        if( oentry->obj == obj ) {
+            return( olist );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-Bool WdeAddOrderedEntry ( LIST **l, OBJPTR obj )
+Bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if ( !l ) {
-        return ( FALSE );
+    if( l == NULL ) {
+        return( FALSE );
     }
 
-    if ( olist = WdeFindOrderedEntry ( *l, obj ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
+    if( (olist = WdeFindOrderedEntry( *l, obj )) != NULL ) {
+        oentry = (WdeOrderedEntry *)ListElement ( olist );
         oentry->present = TRUE;
-        return ( TRUE );
+        return( TRUE );
     }
 
-    oentry = (WdeOrderedEntry *) WdeMemAlloc ( sizeof ( WdeOrderedEntry ) );
-    if ( oentry ) {
-        memset ( oentry, 0, sizeof ( WdeOrderedEntry ) );
-        oentry->obj     = obj;
+    oentry = (WdeOrderedEntry *)WdeMemAlloc( sizeof( WdeOrderedEntry ) );
+    if( oentry != NULL ) {
+        memset( oentry, 0, sizeof( WdeOrderedEntry ) );
+        oentry->obj = obj;
         oentry->present = TRUE;
-        WdeInsertObject ( l, oentry );
+        WdeInsertObject( l, oentry );
     }
 
-    return ( oentry != NULL );
+    return( oentry != NULL );
 }
 
-Bool WdeRemoveOrderedEntry ( LIST *l, OBJPTR obj )
+Bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if ( olist = WdeFindOrderedEntry ( l, obj ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
+    if( (olist = WdeFindOrderedEntry( l, obj )) != NULL ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
         oentry->present = FALSE;
-        return ( TRUE );
+        return( TRUE );
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
 
-Bool WdeCleanOrderedList ( LIST **l )
+Bool WdeCleanOrderedList( LIST **l )
 {
     WdeOrderedEntry *oentry;
     LIST            *tlist;
     LIST            *olist;
 
-    if ( !l ) {
-        return ( FALSE );
+    if( l == NULL ) {
+        return( FALSE );
     }
 
-    tlist = WdeListCopy ( *l );
+    tlist = WdeListCopy( *l );
 
-    for ( olist = tlist; olist; olist = ListNext ( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
-        if ( !oentry->present ) {
-            ListRemoveElt ( l, oentry );
-            WdeMemFree ( oentry );
+    for( olist = tlist; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
+        if( oentry->present == NULL ) {
+            ListRemoveElt( l, oentry );
+            WdeMemFree( oentry );
         }
     }
 
-    if ( tlist ) {
-        ListFree ( tlist );
+    if( tlist != NULL ) {
+        ListFree( tlist );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WdeGetNextChild ( LIST **l, OBJPTR *obj, Bool up )
+Bool WdeGetNextChild( LIST **l, OBJPTR *obj, Bool up )
 {
     WdeOrderedEntry *oentry;
     LIST            *o;
 
-    WdeCleanOrderedList ( l );
+    WdeCleanOrderedList( l );
 
-    if ( l && *l && obj && *obj &&
-         ( o = WdeFindOrderedEntry ( *l, *obj ) ) ) {
-        if ( up ) {
-            o = ListNext ( o );
-            if ( !o ) {
+    if( l != NULL && *l != NULL && obj != NULL && *obj != NULL &&
+        (o = WdeFindOrderedEntry( *l, *obj )) != NULL ) {
+        if( up ) {
+            o = ListNext( o );
+            if( o == NULL ) {
                 o = *l;
             }
         } else {
-            o = ListPrev ( o );
-            if ( !o ) {
-                WdeListLastElt ( *l, &o );
+            o = ListPrev( o );
+            if( o == NULL ) {
+                WdeListLastElt( *l, &o );
             }
         }
-        oentry = ListElement ( o );
+        oentry = ListElement( o );
         *obj = oentry->obj;
-        return ( TRUE );
+        return( TRUE );
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
 
-void WdeFiniOrderStuff ( void )
+void WdeFiniOrderStuff( void )
 {
-    if ( WdeTagFont != (HFONT)NULL ) {
-        DeleteObject ( WdeTagFont );
+    if( WdeTagFont != (HFONT)NULL ) {
+        DeleteObject( WdeTagFont );
     }
 }
 
-Bool WdeRegisterTagClass ( HINSTANCE inst )
+Bool WdeRegisterTagClass( HINSTANCE inst )
 {
     WNDCLASS  wc;
 
@@ -365,27 +359,27 @@ Bool WdeRegisterTagClass ( HINSTANCE inst )
 
     WdeTagFont = WdeGetFont( TAG_FACENAME, TAG_POINTSIZE, FW_BOLD );
 
-    GetClassInfo ( (HINSTANCE)NULL, "BUTTON", &wc );
+    GetClassInfo( (HINSTANCE)NULL, "BUTTON", &wc );
 
     wc.style &= ~CS_GLOBALCLASS;
-    wc.style |= ( CS_HREDRAW | CS_VREDRAW );
+    wc.style |= CS_HREDRAW | CS_VREDRAW;
 
-    wc.hInstance     = inst;
+    wc.hInstance = inst;
     wc.lpszClassName = WdeTagClass;
 
-    WdeTagExtra    = wc.cbWndExtra;
-    wc.cbWndExtra += sizeof (WdeSetOrderStruct *);
+    WdeTagExtra = wc.cbWndExtra;
+    wc.cbWndExtra += sizeof( WdeSetOrderStruct * );
 
     WdeOriginalButtonProc = wc.lpfnWndProc;
-    wc.lpfnWndProc        = WdeTagProc;
+    wc.lpfnWndProc = WdeTagProc;
 
-    return ( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) );
 }
 
 void WdeDestroyTag ( HWND tag )
 {
-    if( ( tag != (HWND)NULL ) && IsWindow( tag ) ) {
-        DestroyWindow ( tag );
+    if( tag != (HWND)NULL && IsWindow( tag ) ) {
+        DestroyWindow( tag );
     }
 }
 
@@ -394,18 +388,16 @@ HWND WdeCreateTag( HWND parent, WdeSetOrderStruct *o )
     HWND        tag;
     RECT        rect;
 
-    if( !o || !o->res_info || ( parent == (HWND)NULL ) ) {
+    if( o == NULL || o->res_info == NULL || parent == (HWND)NULL ) {
         return( (HWND)NULL );
     }
 
     GetWindowRect( parent, &rect );
     MapWindowPoints( (HWND)NULL, o->res_info->forms_win, (POINT *)&rect, 2 );
 
-    tag = CreateWindow( WdeTagClass, NULL,
-                        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+    tag = CreateWindow( WdeTagClass, NULL, WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
                         rect.left, rect.top, TAG_WIDTH, TAG_HEIGHT,
-                        o->res_info->forms_win,
-                        (HMENU) NULL, WdeAppInst, o );
+                        o->res_info->forms_win, (HMENU)NULL, WdeAppInst, o );
 
     if( tag != NULL ) {
         if( WdeTagFont != (HFONT)NULL ) {
@@ -417,100 +409,99 @@ HWND WdeCreateTag( HWND parent, WdeSetOrderStruct *o )
     return( tag );
 }
 
-void WdeReorderTags ( WdeSetOrderLists *ol, Bool force_redraw )
+void WdeReorderTags( WdeSetOrderLists *ol, Bool force_redraw )
 {
-    int              pos;
+    int             pos;
     LIST            *olist;
     WdeOrderedEntry *oentry;
 
-    pos       = 1;
+    pos = 1;
 
-    for ( olist = ol->newlist; olist; olist = ListNext ( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
-        if ( oentry->present ) {
-            if ( force_redraw || ( oentry->pos != pos ) ) {
+    for( olist = ol->newlist; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( olist );
+        if( oentry->present ) {
+            if( force_redraw || oentry->pos != pos ) {
                 oentry->pos = pos;
-                WdeSetTagText ( oentry );
+                WdeSetTagText( oentry );
             }
-            WdeSetTagState ( oentry );
+            WdeSetTagState( oentry );
             pos++;
         }
     }
 
-    for ( olist = ol->oldlist; olist; olist = ListNext ( olist ) ) {
-        oentry = (WdeOrderedEntry *) ListElement ( olist );
-        if ( oentry->present ) {
-            if ( force_redraw || ( oentry->pos != pos ) ) {
+    for( olist = ol->oldlist; olist != NULL; olist = ListNext( olist ) ) {
+        oentry = (WdeOrderedEntry *)ListElement ( olist );
+        if( oentry->present ) {
+            if( force_redraw || oentry->pos != pos ) {
                 oentry->pos = pos;
-                WdeSetTagText ( oentry );
+                WdeSetTagText( oentry );
             }
-            WdeSetTagState ( oentry );
+            WdeSetTagState( oentry );
             pos++;
         }
     }
 }
 
-void WdeTagPressed ( WdeSetOrderStruct *o )
+void WdeTagPressed( WdeSetOrderStruct *o )
 {
     OBJPTR      parent;
     WORD        state;
     Bool        shift;
 
-
-    if ( o ) {
-        switch ( o->old_oe->mode ) {
-            case WdeSetOrder:
-                state = (WORD)GetKeyState( VK_SHIFT );
-                #ifdef __NT__
-                    shift = ( ( state & 0x8000 ) != 0x00 );
-                #else
-                    shift = ( ( state & 0x80 ) != 0x00 );
-                #endif
-                if( shift ) {
-                    WdeOrderPrevTags( o );
-                }
-                WdeSetTagOrder( o, TRUE );
-                break;
-            case WdeSetTabs:
-                o->old_oe->tab_set = !o->old_oe->tab_set;
-                if ( o->new_oe ) {
-                    o->new_oe->tab_set = o->old_oe->tab_set;
-                    WdeSetTagText ( o->new_oe );
-                } else {
-                    WdeSetTagText ( o->old_oe );
-                }
-                break;
-            case WdeSetGroups:
-                o->old_oe->grp_set = !o->old_oe->grp_set;
-                if ( o->new_oe ) {
-                    o->new_oe->grp_set = o->old_oe->grp_set;
-                    WdeSetTagText ( o->new_oe );
-                } else {
-                    WdeSetTagText ( o->old_oe );
-                }
-                break;
-            case WdeSelect:
-            default:
-                WdeWriteTrail ( "WdeTagPressed: Bad tag mode!" );
-                return;
+    if( o != NULL ) {
+        switch( o->old_oe->mode ) {
+        case WdeSetOrder:
+            state = (WORD)GetKeyState( VK_SHIFT );
+#ifdef __NT__
+            shift = ((state & 0x8000) != 0x00);
+#else
+            shift = ((state & 0x80) != 0x00 );
+#endif
+            if( shift ) {
+                WdeOrderPrevTags( o );
+            }
+            WdeSetTagOrder( o, TRUE );
+            break;
+        case WdeSetTabs:
+            o->old_oe->tab_set = !o->old_oe->tab_set;
+            if( o->new_oe != NULL ) {
+                o->new_oe->tab_set = o->old_oe->tab_set;
+                WdeSetTagText( o->new_oe );
+            } else {
+                WdeSetTagText( o->old_oe );
+            }
+            break;
+        case WdeSetGroups:
+            o->old_oe->grp_set = !o->old_oe->grp_set;
+            if( o->new_oe != NULL ) {
+                o->new_oe->grp_set = o->old_oe->grp_set;
+                WdeSetTagText( o->new_oe );
+            } else {
+                WdeSetTagText( o->old_oe );
+            }
+            break;
+        case WdeSelect:
+        default:
+            WdeWriteTrail( "WdeTagPressed: Bad tag mode!" );
+            return;
         }
         parent = NULL;
-        if ( GetObjectParent ( o->old_oe->obj, &parent ) && parent ) {
-            WdeDialogModified ( parent );
+        if( GetObjectParent( o->old_oe->obj, &parent ) && parent != NULL ) {
+            WdeDialogModified( parent );
         }
     }
 }
 
-WdeSetOrderStruct *WdeGetTagInfo ( HWND tag )
+WdeSetOrderStruct *WdeGetTagInfo( HWND tag )
 {
-    if( ( tag != (HWND)NULL ) && IsWindow( tag ) ) {
-        return ( (WdeSetOrderStruct *) GetWindowLong ( tag, WdeTagExtra ) );
+    if( tag != (HWND)NULL && IsWindow( tag ) ) {
+        return( (WdeSetOrderStruct *)GetWindowLong ( tag, WdeTagExtra ) );
     }
     return( NULL );
 }
 
-LRESULT WINEXPORT WdeTagProc ( HWND hWnd, UINT message, WPARAM wParam,
-                               volatile LPARAM lParam )
+LRESULT WINEXPORT WdeTagProc( HWND hWnd, UINT message, WPARAM wParam,
+                              volatile LPARAM lParam )
 {
     WdeSetOrderStruct   *o;
     Bool                pass_to_def;
@@ -521,73 +512,64 @@ LRESULT WINEXPORT WdeTagProc ( HWND hWnd, UINT message, WPARAM wParam,
     o = (WdeSetOrderStruct *)GetWindowLong( hWnd, WdeTagExtra );
 
     switch( message ) {
+    case WM_CREATE:
+        o = (WdeSetOrderStruct *)((CREATESTRUCT *)lParam)->lpCreateParams;
+        o->old_oe->tag = hWnd;
+        SetWindowLong( hWnd, WdeTagExtra, (LONG)o );
+        break;
 
-        case WM_CREATE:
-            o = (WdeSetOrderStruct *)
-                    ((CREATESTRUCT *)lParam)->lpCreateParams;
-            o->old_oe->tag = hWnd;
-            SetWindowLong( hWnd, WdeTagExtra, (LONG) o );
-            break;
+    case WM_ERASEBKGND:
+        pass_to_def = FALSE;
+        ret = TRUE;
+        break;
 
-        case WM_ERASEBKGND:
-            pass_to_def = FALSE;
-            ret = TRUE;
-            break;
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+        WdeTagDblClicked( o );
+        pass_to_def = FALSE;
+        ret = TRUE;
+        break;
 
-        case WM_LBUTTONDBLCLK:
-        case WM_MBUTTONDBLCLK:
-        case WM_RBUTTONDBLCLK:
-            WdeTagDblClicked( o );
-            pass_to_def = FALSE;
-            ret = TRUE;
-            break;
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+        if( o != NULL ) {
+            Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
+        }
+        pass_to_def = FALSE;
+        ret = TRUE;
+        break;
 
-        case WM_LBUTTONDOWN:
-        case WM_MBUTTONDOWN:
-        case WM_RBUTTONDOWN:
-            if( o ) {
-                Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
-            }
-            pass_to_def = FALSE;
-            ret = TRUE;
-            break;
+    case WM_NCLBUTTONDOWN:
+    case WM_NCMBUTTONDOWN:
+    case WM_NCRBUTTONDOWN:
+        if( o != NULL ) {
+            Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
+        }
+        pass_to_def = FALSE;
+        ret = TRUE;
+        break;
 
-
-        case WM_NCLBUTTONDOWN:
-        case WM_NCMBUTTONDOWN:
-        case WM_NCRBUTTONDOWN:
-            if( o ) {
-                Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
-            }
-            pass_to_def = FALSE;
-            ret = TRUE;
-            break;
-
-        case WM_NCLBUTTONUP:
-        case WM_NCMBUTTONUP:
-        case WM_NCRBUTTONUP:
-
-        case WM_LBUTTONUP:
-        case WM_MBUTTONUP:
-        case WM_RBUTTONUP:
-
-        case WM_NCLBUTTONDBLCLK:
-        case WM_NCMBUTTONDBLCLK:
-        case WM_NCRBUTTONDBLCLK:
-
-        case WM_NCMOUSEMOVE:
-        case WM_MOUSEMOVE:
-            pass_to_def = FALSE;
-            ret = TRUE;
-            break;
-
+    case WM_NCLBUTTONUP:
+    case WM_NCMBUTTONUP:
+    case WM_NCRBUTTONUP:
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_NCLBUTTONDBLCLK:
+    case WM_NCMBUTTONDBLCLK:
+    case WM_NCRBUTTONDBLCLK:
+    case WM_NCMOUSEMOVE:
+    case WM_MOUSEMOVE:
+        pass_to_def = FALSE;
+        ret = TRUE;
+        break;
     }
 
     if( pass_to_def ) {
-        ret = CallWindowProc( WdeOriginalButtonProc,
-                              hWnd, message, wParam, lParam );
+        ret = CallWindowProc( WdeOriginalButtonProc, hWnd, message, wParam, lParam );
     }
 
     return( ret );
 }
-

@@ -219,7 +219,7 @@ static void _DrawPie( chartenv _WCI86FAR* env,
 }
 
 
-short _WCI86FAR _CGRAPH _pg_chartpie( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_chartpie( chartenv _WCI86FAR *env,
                          char _WCI86FAR *_WCI86FAR *categories,
                          float _WCI86FAR *values, short _WCI86FAR *explode, short n )
 //=========================================================================

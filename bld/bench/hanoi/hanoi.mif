@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\hanoi
+.h: $(bench_dir)\hanoi
+
+extra_cflags = -I$(bench_dir)\hanoi -I$(bench_dir)\support
+
+obj_files = hanoi.obj
+
+run: hanoi.exe .SYMBOLIC
+	hanoi
+    
+build: hanoi.exe .SYMBOLIC
+
+hanoi.exe : $(obj_files)
+	$(deflink)

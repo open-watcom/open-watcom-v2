@@ -24,39 +24,45 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  routine for checking FPU type
 ;*
 ;*****************************************************************************
 
 
 include mdef.inc
-include struct.inc
 
         modstart init8087
 
-        xdefp   __init_80x87
-        defpe   __init_80x87
-        push    AX                      ; save initial control word value
+        xdefp   __x87id
+
+__x87id proc
+        sub     EAX,EAX
+        push    EAX                     ; allocate space for status word
         finit                           ; use default infinity mode
+        fstcw   word ptr [ESP]          ; save control word
+        fwait
+        pop     EAX
+        mov     AL,0
+        cmp     AH,3
+        jnz     nox87
+        push    EAX                     ; allocate space for status word
         fld1                            ; generate infinity by
         fldz                            ;   dividing 1 by 0
         fdiv                            ; ...
         fld     st                      ; form negative infinity
         fchs                            ; ...
         fcompp                          ; compare +/- infinity
-        fstsw   AX                      ; equal for 87/287
+        fstsw   word ptr [ESP]          ; equal for 87/287
+        fwait                           ; wait fstsw to complete
+        pop     EAX                     ; get NDP status word
         mov     AL,2                    ; assume 80287
         sahf                            ; store condition bits in flags
         jz      not387                  ; it's 287 if infinities equal
         mov     AL,3                    ; indicate 80387
-not387:
-        finit                           ; re-initialize the 8087
-        fldcw   word ptr [ESP]          ; .(affine,round nearest,64-bit prec)
-        xchg    AX,[ESP]                ; exchange register with memory
-        pop     AX                      ; restore indicator
+not387: finit                           ; re-initialize the 8087
+nox87:  mov     AH,0
         ret                             ; return
-        endproc __init_80x87
+__x87id endp
 
         endmod
         end

@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 trap file loading.
 *
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <windows.h>
 #include <dos.h>
 #include <string.h>
@@ -39,22 +39,22 @@
 #include "tcerr.h"
 
 static HANDLE   TrapFile;
-static trap_version (TRAPENTRY *InitFunc)();
-static void (TRAPENTRY *FiniFunc)();
+static trap_version (TRAPENTRY *InitFunc)(char *, char *, bool);
+static void (TRAPENTRY *FiniFunc)(void);
 static void (TRAPENTRY *InfoFunction)( HWND );
 
 extern trap_version     TrapVer;
 extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
                                         unsigned, mx_entry * );
 
-void TellHWND( HWND *hwnd )
+void TellHWND( HWND hwnd )
 {
     if( InfoFunction != NULL ) {
         InfoFunction( hwnd );
     }
 }
 
-void KillTrap()
+void KillTrap( void )
 {
     ReqFunc = NULL;
     if( FiniFunc != NULL ) FiniFunc();
@@ -104,8 +104,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
     TrapFile = LoadLibrary( trpfile );
     if( TrapFile == NULL ) {
-        TrapFile = 0;
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     InitFunc = (LPVOID) GetProcAddress( TrapFile, (LPSTR)1 );

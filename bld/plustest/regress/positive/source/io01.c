@@ -1,5 +1,5 @@
 #include "fail.h"
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <fstream.h>
 #include <stdio.h>

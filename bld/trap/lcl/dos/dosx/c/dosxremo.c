@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Extended DOS trap file main module.
 *
 ****************************************************************************/
 
@@ -36,8 +35,7 @@
 #include "trperr.h"
 #include "packet.h"
 #include "tinyio.h"
-#include "trapdbg1.h"
-#include "trapdbg2.h"
+#include "trapdbg.h"
 #include "winchk.h"
 #include "madregs.h"
 
@@ -54,7 +52,8 @@ static unsigned long    OrigVectors[256];       /* original int vectors */
 static unsigned long    LoadVectors[256];       /* int vectors after load */
 static unsigned long    CurrVectors[256];       /* current int vectors */
 
-static unsigned DoAccess()
+
+static unsigned DoAccess( void )
 {
     unsigned    left;
     unsigned    len;
@@ -79,9 +78,7 @@ static unsigned DoAccess()
         _DBG_Writeln( "GetPacket" );
         len = GetPacket();
         left = len;
-        i = 0;
-        for( ;; ) {
-            if( i >= Out_Mx_Num ) break;
+        for( i = 0; i < Out_Mx_Num && left > 0; ++i ) {
             if( left > Out_Mx_Ptr[i].len ) {
                 piece = Out_Mx_Ptr[i].len;
             } else {
@@ -89,9 +86,7 @@ static unsigned DoAccess()
             }
             _DBG_Writeln( "RemovePacket" );
             RemovePacket( piece, Out_Mx_Ptr[i].ptr );
-            i++;
             left -= piece;
-            if( left == 0 ) break;
         }
     } else {
         len = 0;
@@ -102,25 +97,25 @@ static unsigned DoAccess()
 }
 
 
-unsigned ReqGet_sys_config()
+unsigned ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
     if( !TaskLoaded ) {
         ret = GetOutPtr(0);
-        ret->sys.os = OS_PHARLAP;
+        ret->sys.os = OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
         ret->sys.fpu = X86_NO;
         ret->sys.huge_shift = 12;
-        ret->sys.cpu = 3;
+        ret->sys.cpu = X86_386;
         ret->sys.mad = MAD_X86;
         return( sizeof( *ret ) );
     }
     return( DoAccess() );
 }
 
-unsigned ReqGet_err_text()
+unsigned ReqGet_err_text( void )
 {
     static char *DosErrMsgs[] = {
 #include "dosmsgs.h"
@@ -144,7 +139,7 @@ unsigned ReqGet_err_text()
     return( DoAccess() );
 }
 
-unsigned ReqMap_addr()
+unsigned ReqMap_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -160,7 +155,7 @@ unsigned ReqMap_addr()
     return( DoAccess() );
 }
 
-unsigned ReqRead_io()
+unsigned ReqRead_io( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -168,7 +163,7 @@ unsigned ReqRead_io()
     return( DoAccess() );
 }
 
-unsigned ReqWrite_io()
+unsigned ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -181,7 +176,7 @@ unsigned ReqWrite_io()
 }
 
 // OBSOLETE - use ReqRead_regs
-unsigned ReqRead_cpu()
+unsigned ReqRead_cpu( void )
 {
     read_cpu_ret        *ret;
 
@@ -194,7 +189,7 @@ unsigned ReqRead_cpu()
 }
 
 // OBSOLETE - use ReqRead_regs
-unsigned ReqRead_fpu()
+unsigned ReqRead_fpu( void )
 {
     read_fpu_ret        *ret;
 
@@ -206,7 +201,7 @@ unsigned ReqRead_fpu()
     return( DoAccess() );
 }
 
-unsigned ReqRead_regs()
+unsigned ReqRead_regs( void )
 {
     mad_registers       *mr;
 
@@ -219,7 +214,7 @@ unsigned ReqRead_regs()
 }
 
 
-unsigned ReqChecksum_mem()
+unsigned ReqChecksum_mem( void )
 {
     checksum_mem_ret    *ret;
 
@@ -231,7 +226,7 @@ unsigned ReqChecksum_mem()
     return( DoAccess() );
 }
 
-unsigned ReqGet_next_alias()
+unsigned ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -244,7 +239,7 @@ unsigned ReqGet_next_alias()
     return( DoAccess() );
 }
 
-unsigned ReqProg_go()
+unsigned ReqProg_go( void )
 {
     prog_go_ret         *ret;
     unsigned            len;
@@ -262,7 +257,7 @@ unsigned ReqProg_go()
 }
 
 //OBSOLETE - use ReqMachine_data
-unsigned ReqAddr_info()
+unsigned ReqAddr_info( void )
 {
     addr_info_ret       *ret;
 
@@ -274,7 +269,7 @@ unsigned ReqAddr_info()
     return( DoAccess() );
 }
 
-unsigned ReqMachine_data()
+unsigned ReqMachine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -290,7 +285,7 @@ unsigned ReqMachine_data()
     return( DoAccess() );
 }
 
-unsigned ReqGet_lib_name()
+unsigned ReqGet_lib_name( void )
 {
     get_lib_name_ret    *ret;
 
@@ -303,7 +298,7 @@ unsigned ReqGet_lib_name()
     return( DoAccess() );
 }
 
-unsigned ReqRead_mem()
+unsigned ReqRead_mem( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -311,7 +306,7 @@ unsigned ReqRead_mem()
     return( DoAccess() );
 }
 
-unsigned ReqWrite_mem()
+unsigned ReqWrite_mem( void )
 {
     write_mem_ret       *ret;
 
@@ -332,12 +327,12 @@ static char DosXExtList[] = {
     ".exe\0"
 };
 
-char *GetExeExtensions()
+char *GetExeExtensions( void )
 {
     return( DosXExtList );
 }
 
-unsigned ReqProg_load()
+unsigned ReqProg_load( void )
 {
     char                buffer[160];
     char                *src;
@@ -353,23 +348,23 @@ unsigned ReqProg_load()
     _DBG_EnterFunc( "AccLoadProg()" );
     ret = GetOutPtr( 0 );
     src = name = GetInPtr( sizeof( prog_load_req ) );
-    rc = FindFilePath( src, (char *)buffer, DosXExtList );
-    endparm = LinkParm + strlen( LinkParm ) + 1;
+    rc = FindFilePath( src, buffer, DosXExtList );
+    endparm = LinkParm;
+    while( *endparm++ != '\0' ) {}      // skip program name
     strcpy( endparm, buffer );
     err = RemoteLink( LinkParm, 0 );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
-        TinyWrite( 2, LoadError, strlen( LoadError ) );
+        TinyWrite( TINY_ERR, err, strlen( err ) );
         LoadError = err;
         ret->err = 1;
+        len = 0;
     } else {
-        while( *src != '\0' ) ++src;
-        if( rc == 0 ) {
-            ++src;
-            len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
+        if( TINY_OK( rc ) ) {
+            while( *src++ != '\0' ) {}
+            len = GetTotalSize() - ( src - name ) - sizeof( prog_load_req );
             dst = (char *)buffer;
-            while( *dst != '\0' ) ++dst;
-            ++dst;
+            while( *dst++ != '\0' ) {};
             memcpy( dst, src, len );
             dst += len;
             _DBG_Writeln( "StartPacket" );
@@ -439,7 +434,7 @@ unsigned ReqProg_load()
     return( len );
 }
 
-unsigned ReqProg_kill()
+unsigned ReqProg_kill( void )
 {
     int         len;
     prog_kill_ret       *ret;
@@ -457,57 +452,57 @@ unsigned ReqProg_kill()
 }
 
 // OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_cpu()
+unsigned ReqWrite_cpu( void )
 {
     return( DoAccess() );
 }
 
 // OBSOLETE - use ReqWrite_regs
-unsigned ReqWrite_fpu()
+unsigned ReqWrite_fpu( void )
 {
     return( DoAccess() );
 }
-unsigned ReqWrite_regs()
-{
-    return( DoAccess() );
-}
-
-unsigned ReqSet_watch()
+unsigned ReqWrite_regs( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqClear_watch()
+unsigned ReqSet_watch( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqSet_break()
+unsigned ReqClear_watch( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqClear_break()
+unsigned ReqSet_break( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqGet_message_text()
+unsigned ReqClear_break( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqRedirect_stdin()
+unsigned ReqGet_message_text( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqRedirect_stdout()
+unsigned ReqRedirect_stdin( void )
 {
     return( DoAccess() );
 }
 
-unsigned ReqProg_step()
+unsigned ReqRedirect_stdout( void )
+{
+    return( DoAccess() );
+}
+
+unsigned ReqProg_step( void )
 {
     return( ReqProg_go() );
 }
@@ -518,12 +513,12 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error,
 #pragma on(unreferenced);
 {
     trap_version    ver;
-    extern     void InitPSP();
+    extern     void InitPSP( void );
 
     ver.remote = FALSE;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    if( !remote && DPMIVersion() == 90 ) {
+    if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
         strcpy( error, TRP_ERR_bad_dpmi );
         return( ver );
     }
@@ -537,7 +532,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error,
     return( ver );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
     _DBG_EnterFunc( "TrapFini()" );
     RemoteDisco(); // just for debugging

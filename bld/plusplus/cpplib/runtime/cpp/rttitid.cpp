@@ -29,22 +29,23 @@
 *
 ****************************************************************************/
 
-
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
-/*#include <string.h>*/
+#include <string.h>
+#include <wchar.h>
 
 #include "cpplib.h"
 #include "rt_rtti.h"
 
-#include <typeinfo>
+#include <typeinfo.h>
 // works around an EH problem
 #pragma inline_depth(0)
 
 static void foundNoTypeid( void )
 {
 #ifdef RT_EXC_ENABLED
-    throw bad_typeid( "typeid" );
+    throw bad_typeid( );
 #endif
 }
 

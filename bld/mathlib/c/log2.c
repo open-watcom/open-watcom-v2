@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Base 2 logarithm routine.
 *
 ****************************************************************************/
 
@@ -33,23 +32,20 @@
 #include "variety.h"
 #include <math.h>
 #include "mathcode.h"
+#include "ifprag.h"
+#include "mathlib.h"
 
 #define log2_of_e    1.44269504888963407
 
-#if defined(_M_IX86)
-  #pragma aux __log2 "IF@DLOG2";
-#endif
-
 _WMRTLINK double __log2( double x )
-    {
-        return( log2( x ) );
-    }
+{
+    return( log2( x ) );
+}
 
 _WMRTLINK double log2( double x )
-/*********************/
+/*******************************/
 {
     if( x <= 0.0 ) {
-//        x = _matherr( x == 0.0 ? SING : DOMAIN, "log2", &x, &x, -HUGE_VAL );
         x = __log87_err( x, FUNC_LOG2 );
     } else {
         x =  log(x) * log2_of_e;

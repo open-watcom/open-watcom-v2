@@ -1,0 +1,390 @@
+:CMT. This device definition is used for Apple LaserWriter printer
+:CMT. which supports PostScript.
+:CMT. Only a couple of the fonts available have been specified
+:CMT. as device fonts.  Additional font names for this printer can be
+:CMT. added to this definition.
+
+:CMT. Definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. PS                              ps
+
+:CMT. Corresponding driver
+:CMT. definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. PSDRV                           psdrv
+
+:CMT. Font definition files used      Font name
+:CMT. ------------------------------------------------------
+:CMT. PSTR                            times-roman
+:CMT. PSTRI                           times-italic
+:CMT. PSTRB                           times-bold
+:CMT. PSTRBI                          times-bolditalic
+:CMT. PSHV                            helvetica
+:CMT. PSHVB                           helvetica-bold
+:CMT. PSHVO                           helvetica-oblique
+:CMT. PSHVBO                          helvetica-boldoblique
+:CMT. PSCO                            courier
+:CMT. PSCB                            courier-bold
+:CMT. PSCOB                           courier-oblique
+:CMT. PSCOBO                          courier-boldoblique
+:CMT. PSSYM                           symbol
+:CMT. PSZAP                           zapfdingbats
+:CMT. PSPR                            palatino-roman
+:CMT. PSPI                            palatino-italic
+:CMT. PSPB                            palatino-bold
+:CMT. PSPBI                           palatino-bolditalic
+:CMT. PSNR                            newcenturyschlbk-roman
+:CMT. PSNI                            newcenturyschlbk-italic
+:CMT. PSNB                            newcenturyschlbk-bold
+:CMT. PSNBI                           newcenturyschlbk-bolditalic
+:CMT. PSHN                            helvetica-narrow
+:CMT. PSHNO                           helvetica-narrow-oblique
+:CMT. PSHNB                           helvetica-narrow-bold
+:CMT. PSHNBO                          helvetica-narrow-boldoblique
+:CMT. PSAD                            avantgarde-demi
+:CMT. PSADO                           avantgarde-demioblique
+:CMT. PSAB                            avantgarde-book
+:CMT. PSABO                           avantgarde-bookoblique
+:CMT. PSBL                            bookman-light
+:CMT. PSBD                            bookman-demi
+:CMT. PSBDI                           bookman-demiitalic
+:CMT. PSBLI                           bookman-lightitalic
+:CMT.eoc
+
+:DEVICE
+   defined_name          = 'ps'
+   member_name           = 'ps'
+   driver_name           = 'psdrv'
+   output_suffix         = 'ps'
+   output_name           = ''
+   page_width            = 8500
+   page_depth            = 10920
+   horizontal_base_units = 1000
+   vertical_base_units   = 1000
+
+:DEVICEFONT
+   fontname     = 'shadefill'
+   fontswitch   = 'Shade font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'times-roman'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'times-italic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'times-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'times-bolditalic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-oblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-boldoblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'courier'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'courier-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'courier-oblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'courier-boldoblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'symbol'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'zapfdingbats'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'palatino-roman'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'palatino-italic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'palatino-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'palatino-bolditalic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'newcenturyschlbk-roman'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'newcenturyschlbk-italic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'newcenturyschlbk-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'newcenturyschlbk-bolditalic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-narrow'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-narrow-oblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-narrow-bold'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'helvetica-narrow-boldoblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'avantgarde-demi'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'avantgarde-demioblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'avantgarde-book'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'avantgarde-bookoblique'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'bookman-light'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'bookman-demi'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'bookman-demiitalic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEVICEFONT
+   fontname     = 'bookman-lightitalic'
+   fontswitch   = 'PS font switch'
+   fontpause    = ''
+   resident     = yes
+:eDEVICEFONT.
+
+:DEFAULTFONT
+   font         = 0
+   fontname     = 'times-roman'
+   font_height  = 10
+   font_space   = 2
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 1
+   fontname     = 'times-italic'
+   font_height  = 10
+   font_space   = 2
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 2
+   fontname     = 'times-bold'
+   font_height  = 10
+   font_space   = 2
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 3
+   fontname     = 'times-bolditalic'
+   font_height  = 10
+   font_space   = 2
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:BOX
+   font             = 'courier'
+   font_height      = 10
+   font_space       = 2
+   horizontal_line  = '-'
+   vertical_line    = '|'
+   top_left         = '+'
+   top_right        = '+'
+   bottom_left      = '+'
+   bottom_right     = '+'
+   top_join         = '+'
+   bottom_join      = '+'
+   left_join        = '+'
+   right_join       = '+'
+   inside_join      = '+'
+:eBOX.
+
+:CMT. The (0,0) position is at the bottom left corner of the page.
+:PAGESTART
+   x_start      = 200
+   y_start      = 10800
+:ePAGESTART.
+
+:CMT. Position past the unprintable region of the page
+:PAGEOFFSET
+   x_start      = 200
+   y_start      = 200
+:ePAGEOFFSET.
+
+:INCLUDE file='intran.tbl'.
+
+:INTRANS
+* 175
+- 191
+D 178
+n 001
+:eINTRANS
+
+:OUTTRANS.
+\ \ \
+( \ (
+) \ )
+175 \ 2 6 7
+178 \ 2 6 2
+191 \ 3 2 0
+001 \ 0 0 1
+:eOUTTRANS.
+
+:eDEVICE.

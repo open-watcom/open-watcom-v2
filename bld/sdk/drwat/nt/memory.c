@@ -207,7 +207,7 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
 /*
  * MemInfoDlgProc
  */
-BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     MemDlgInfo  *info;

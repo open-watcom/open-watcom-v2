@@ -1,0 +1,49 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator:  WATCOM GML V4.0 PC/DOS
+%%Title: Define Shading Macros
+%%CreationDate: 15:59:52 March 11, 1992
+%%Pages: (atend)
+%%BoundingBox: 0 0 0 0
+%%EndComments
+%%Define macros to help with shading text.
+/shade_gray .96 def
+/var_array [] def
+
+/set_shadevars {
+        8 array astore var_array aload length 1 add array astore /var_array
+        exch def
+}bind def
+
+/adjust_shadevars {
+        shade_start (current) eq {/shade_start shade_currx def} if
+        shade_left (current) eq {/shade_left shade_currx def} if
+        shade_left shade_currx sub cvi 0 eq shade_ls (no) eq and {/shade_top
+        -140 def} if shade_top (none) eq {/shade_top 0 def}
+        {/shade_top shade_currh dup 100 div shade_top mul add def} ifelse
+        /shade_bottom shade_currh 100 div shade_bottom mul def
+}bind def
+
+/find_currxyh {shade_font cvx exec /shade_currx currentpoint /shade_curry exch
+               def def (X) true charpath flattenpath pathbbox exch pop exch sub
+               exch pop /shade_currh exch def newpath
+}bind def
+
+/init_shadevars {
+        var_array aload exch aload pop /shade_ls exch def /shade_type exch def
+        /shade_font exch def /shade_start exch def /shade_right exch def
+        /shade_left exch def /shade_top exch def /shade_bottom exch def
+        length 1 sub array astore /var_array exch def
+        save find_currxyh
+}bind def
+
+/shade {init_shadevars adjust_shadevars
+        shade_type (start) eq {shade_gray setgray} {1 setgray} ifelse
+        shade_start shade_curry shade_bottom sub moveto
+        0 shade_bottom shade_top add rlineto
+        shade_right shade_start sub 0 rlineto
+        shade_right 0 lineto
+        shade_left shade_right sub 0 rlineto
+        0 shade_curry shade_bottom sub rlineto
+        closepath fill
+restore}bind def
+%%EndProlog

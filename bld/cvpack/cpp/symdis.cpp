@@ -123,10 +123,20 @@ void SymbolDistributor::Build( const char*  ptr,
         }
         if ( alignSym.IsInGlobalScope() ) {
             // what if globalSym fail to insert the record?
-            _globalSym.Insert(symPtr);
+            int rc;
+            rc=_globalSym.Insert(symPtr);
+            if (!rc) {
+                cerr << "Error: failed to insert symbol to _globalSym";
+                cerr.flush();
+            }
             return;
         }
-        alignSym.Insert(symPtr);
+        int rc;
+        rc=alignSym.Insert(symPtr);
+        if (!rc) {
+            cerr << "Error: failed to insert symbol to alignSym";
+            cerr.flush();
+        }
     }
 }
 

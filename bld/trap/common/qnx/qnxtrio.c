@@ -120,7 +120,7 @@ static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
         if( *path == '\0' || *path == ':' ) {
             if( ptr != result ) *ptr++ = '/';
             end = StrCopy( name, ptr );
-            if( stat( (char *)result, tmp ) == 0 ) return( end - result );
+            if( stat( result, tmp ) == 0 ) return( end - result );
             if( *path == '\0' ) return( 0 );
             ++path;
             ptr = result;

@@ -1,19 +1,2 @@
-//
-//  cstdlib.h   Cover file to include stdlib.h
-//
-:keep CPP_HDR
-:include crwat.sp
-//
-#ifndef _CSTDLIB_H_INCLUDED
-#define _CSTDLIB_H_INCLUDED
-:include readonly.sp
-
-#ifndef __cplusplus
-#error cstdlib.h is for use with C++
-#endif
-
-#ifndef _STDLIB_H_INCLUDED
- #include <stdlib.h>
-#endif
-
-#endif
+:keep CNAME
+:include watcom/stdlib.mh

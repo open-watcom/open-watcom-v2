@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "jvm.h"
 #include "jvmtypes.h"
 #include "madregs.h"
@@ -65,7 +65,7 @@ unsigned DisCliGetAlign( void *d, unsigned off, unsigned align )
     return( off + ((align - mod) % align) );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;

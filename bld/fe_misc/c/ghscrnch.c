@@ -37,8 +37,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys\stat.h>
-#include <sys\utime.h>
+#include <sys/stat.h>
+#include <sys/utime.h>
 
 typedef struct record record;
 struct record                   // RECORD

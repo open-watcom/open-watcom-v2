@@ -24,8 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Thunk routine for calling 32-bit functions from 16-bit
+;*               OS/2 code.
 ;*
 ;*****************************************************************************
 

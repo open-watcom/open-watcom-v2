@@ -1,4 +1,6 @@
-#pmake: build serv lcl dos dsx 32 x86
+#pmake: serv lcl os_dos dsx cpu_386 x86 pls
+host_cpu = 386
+host_os  = dos
 
 #NOTE: This file is also included from the ..\DOSPED.SRV makefile
 
@@ -8,21 +10,33 @@ cpu = x86
 !ifndef name
 name = plshelp
 !endif
+which = SERVER
 
-extra_objs = $(dosx_serv_objs) plsacc.obj plsintr.obj x86cpu.obj dilglue.obj
-extra_cflags = -fi=wcc.h -dDOSXHELP $(compflags_$[&)
-extra_aflags = -w2
-extra_incs = $(trap_dir)\lcl\dos\h;..\h
-extra_srcs = $(trap_dir)\lcl\dos\c;$(plsdir)
+pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=cdecl -D_Far=__far -D_Near=__Near -I"$(plsdir)"
 
-compflags_dilglue = -3s
+extra_c_flags = -DPHARLAP $(compflags_$[&)
+
+extra_c_flags_dilglue = -3s $(pharlap_c_flags)
+extra_c_flags_dosxlink = $(pharlap_c_flags)
+extra_c_flags_plsacc = $(pharlap_c_flags)
+
+extra_a_flags = -dPHARLAP -ms
+
+inc_dirs = -I"../h"
+
+extra_objs = &
+    plsacc.obj &
+    plsintr.obj &
+    dilglue.obj
+
+extra_srcs = $(plsdir)
 
 !ifndef extra_linker
 extra_linker = &
         op maxdata=0 runtime maxreal=1023K,maxibuf=4K,flag=2 &
-        lib $(plsdir)\wdos32,$(plsdir)\wdosx32 &
-        file $(plsdir)\dilseg
+        lib $(plsdir)/wdos32.lib,$(plsdir)/wdosx32.lib &
+        file $(plsdir)/dilseg.obj
 !endif
 
-!include $(trap_dir)\lcl\dos\dosx\dosx.mif
-!include $(trap_dir)\serv.mif
+!include $(trap_dir)/lcl/dos/dosx/dosx.mif
+!include $(trap_dir)/master.mif

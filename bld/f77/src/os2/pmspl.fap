@@ -1,0 +1,248 @@
+c$ifdef INCL_ERRORS
+c$define INCL_SPLERRORS
+c$endif
+   
+c$pragma aux (__syscall) SplQpOpen parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) SplQpPrint parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQpClose parm( value*4 )
+   
+c$pragma aux (__syscall) SplQpControl parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQpQueryDt parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQpInstall parm( value*4 )
+   
+c$pragma aux (__syscall) SplQmOpen parm( value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) SplQmStartDoc parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) SplQmWrite parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQmEndDoc parm( value*4 )
+   
+c$pragma aux (__syscall) SplQmClose parm( value*4 )
+   
+c$pragma aux (__syscall) SplQmAbort parm( value*4 )
+   
+c$pragma aux (__syscall) SplQmAbortDoc parm( value*4 )
+   
+c$pragma aux (__syscall) SplMessageBox parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$ifdef INCL_SPLFSE
+	
+c$pragma aux (__syscall) PrtOpen parm( value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrtClose parm( value*4 )
+      
+c$pragma aux (__syscall) PrtWrite parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrtDevIOCtl parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrtAbort parm( value*4 )
+
+c$endif
+   
+c$pragma aux (__syscall) SplStdOpen parm( value*4 )
+   
+c$pragma aux (__syscall) SplStdClose parm( value*4 )
+   
+c$pragma aux (__syscall) SplStdStart parm( value*4 )
+   
+c$pragma aux (__syscall) SplStdStop parm( value*4 )
+   
+c$pragma aux (__syscall) SplStdDelete parm( value*4 )
+   
+c$pragma aux (__syscall) SplStdGetBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplStdQueryLength parm( value*4 )
+   
+c$pragma aux (__syscall) SplCreateDevice parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplControlDevice parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplDeleteDevice parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumDevice parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQueryDevice parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) SplSetDevice parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplReleaseJob parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplDeleteJob parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumJob parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQueryJob parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) SplHoldJob parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplSetJob parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplCreateQueue parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplReleaseQueue parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplDeleteQueue parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumQueue parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplQueryQueue parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) SplHoldQueue parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplPurgeQueue parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplSetQueue parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumDriver parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumPort parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumQueueProcessor parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplEnumPrinter parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) SplCopyJob parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )

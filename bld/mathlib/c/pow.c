@@ -37,44 +37,35 @@
 #include <limits.h>
 #include "ifprag.h"
 #include "mathcode.h"
+#include "mathlib.h"
 
-extern  int     __sgn(double);
-
-
-_WMRTLINK extern double _IF_dpow( double, double );
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_pow "IF@POW";
-  #pragma aux (if_rtn) _IF_dpow "IF@DPOW";
-#endif
 
 _WMRTLINK float _IF_pow( float x, float y )
-/********************************/
-    {
-        return( _IF_dpow( x, y ) );
-    }
+/*****************************************/
+{
+    return( _IF_dpow( x, y ) );
+}
 
 _WMRTLINK double (pow)( double x, double y )
-/********************************/
-    {
-        return( _IF_dpow( x, y ) );
-    }
+/******************************************/
+{
+    return( _IF_dpow( x, y ) );
+}
 
 _WMRTLINK double _IF_dpow( double x, double y )
-/**********************************/
+/*********************************************/
 {
-        unsigned int    err_code;
-        register int    sign;
-        double          z;
-        double          fraction;
-        long            exponent;
+    unsigned int    err_code;
+    int             sign;
+    double          z;
+    double          fraction;
+    long            exponent;
 
     sign = __sgn( x );
     if( sign == 0 ) {
         if( y < 0.0 ) {
-//            x = _matherr( DOMAIN, "pow", &x, &y, HUGE_VAL );
             x = __math2err( FUNC_POW | M_DOMAIN | V_HUGEVAL, &x, &y );
         } else if( y == 0.0 ) {
-//            x = _matherr( DOMAIN, "pow", &x, &y, 1.0 );
             x = __math2err( FUNC_POW | M_DOMAIN | V_ONE, &x, &y );
         }
     } else {
@@ -82,7 +73,6 @@ _WMRTLINK double _IF_dpow( double x, double y )
         exponent = z;
         if( sign < 0 ) {
             if( fraction != 0.0 ) {     /* negative ** fraction */
-//                return( _matherr( DOMAIN, "pow", &x, &y, 0.0 ) );
                 return( __math2err( FUNC_POW | M_DOMAIN | V_ZERO, &x, &y ) );
             }
             x = -x;
@@ -97,8 +87,6 @@ _WMRTLINK double _IF_dpow( double x, double y )
                 __set_ERANGE();
                 x = 0.0;                    /* - - set result to 0 */
             } else {                        /* - else */
-//                z = (sign > 0) ? HUGE_VAL : - HUGE_VAL;
-//                x = _matherr( OVERFLOW, "pow", &x, &y, z );
                 if( sign > 0 ) {
                     err_code = FUNC_POW | M_OVERFLOW | V_HUGEVAL;
                 } else {

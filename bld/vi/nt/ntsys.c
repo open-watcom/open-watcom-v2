@@ -24,21 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 specific system interface functions.:
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <dos.h>
 #include "vi.h"
+#include <dos.h>
 #include "win.h"
 #include "dosx.h"
-#define _WINSOCKAPI_
-#include <windows.h>
+#include "vibios.h"
 
 HANDLE  InputHandle, OutputHandle;
 COORD   BSize;
@@ -46,6 +41,7 @@ COORD   BSize;
 extern int PageCnt;
 
 static char oldDir[_MAX_PATH];
+
 /*
  * PushDirectory
  */
@@ -62,7 +58,6 @@ void PushDirectory( char *orig )
  */
 void PopDirectory( void )
 {
-
     if( oldDir[0] != 0 ) {
         ChangeDirectory( oldDir );
     }
@@ -93,7 +88,6 @@ void NewCursor( window_id id, cursor_type ct )
  */
 void MyBeep( void )
 {
-
     if( EditFlags.BeepFlag ) {
         Beep( 300, 75 );
     }
@@ -101,6 +95,7 @@ void MyBeep( void )
 } /* MyBeep */
 
 static char *oldConTitle;
+
 /*
  * ScreenInit - get screen info
  */
@@ -111,16 +106,15 @@ void ScreenInit( void )
     char                        tmp[256];
 
     InputHandle = CreateFile( "CONIN$", GENERIC_READ | GENERIC_WRITE,
-                        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                        OPEN_EXISTING, 0, NULL );
-    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_LINE_INPUT
-                           | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT );
+                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                              OPEN_EXISTING, 0, NULL );
+    SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_LINE_INPUT |
+                                 ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT );
 
     OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
-                0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
+                                              0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
     SetConsoleMode( OutputHandle, 0 );
     // SetConsoleActiveScreenBuffer( OutputHandle );
-
 
     GetConsoleScreenBufferInfo( OutputHandle, &sbi );
     WindMaxWidth = sbi.dwMaximumWindowSize.X;
@@ -138,7 +132,7 @@ void ScreenInit( void )
     GetConsoleTitle( tmp, sizeof( tmp ) );
     AddString( &oldConTitle, tmp );
     if( !EditFlags.Quiet ) {
-        SetConsoleTitle( "WATCOM VI for NT" );
+        SetConsoleTitle( "Open Watcom vi" );
     }
 
 } /* ScreenInit */
@@ -170,6 +164,7 @@ long MemSize( void )
 {
     // this value is not used for anything important.
     return( 0 );
+
 } /* MemSize */
 
 /*
@@ -184,7 +179,7 @@ void ScreenPage( int page )
 /*
  * ChangeDrive - change the working drive
  */
-int ChangeDrive( int drive )
+vi_rc ChangeDrive( int drive )
 {
     char        dir[4];
 
@@ -213,6 +208,7 @@ bool ShiftDown( void )
     // return( kbstate[VK_SHIFT] & 0x80 );
 
     return( FALSE );
+
 } /* ShiftDown */
 
 static bool hadCapsLock;
@@ -266,3 +262,19 @@ void SetCursorBlinkRate( int cbr )
     CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
+
+vi_key GetKeyboard( void )
+{
+    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, FALSE ) );
+}
+
+bool KeyboardHit( void )
+{
+    return( BIOSKeyboardHit() );
+}
+
+void MyVioShowBuf( unsigned offset, unsigned length )
+{
+    BIOSUpdateScreen( offset, length );
+}
+

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit main routines for executables and DLLs.
 *
 ****************************************************************************/
 
@@ -51,15 +50,15 @@
 #include "initfini.h"
 #include "rtinit.h"
 #include "liballoc.h"
+#include "widechar.h"
+#include "initarg.h"
 
 extern unsigned         __hmodule;
 unsigned short          __saved_CS;
 
 thread_data             *__FirstThreadData = NULL;
-thread_data             *__AllocInitThreadData( thread_data * );
-void                     __FreeInitThreadData( thread_data * );
 
-static void *__SingleThread()
+static struct thread_data *__SingleThread()
 {
     return( __FirstThreadData );
 }
@@ -69,7 +68,7 @@ static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTLINK void  *(*__GetThreadPtr)() = &__SingleThread;
+_WCRTDATA struct thread_data *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;
@@ -109,21 +108,13 @@ _WCRTLINK int *__threadid()
 static  void    NullSigInit() {}
 static  void    NullSigFini() {}
 
-void    (*__sig_init_rtn)(void) = { &NullSigInit };
-void    (*__sig_fini_rtn)(void) = { &NullSigFini };
+_WCRTLINK void  (*__sig_init_rtn)(void) = { &NullSigInit };
+_WCRTLINK void  (*__sig_fini_rtn)(void) = { &NullSigFini };
 
 #if defined(_M_IX86)
 #pragma aux _end "*"
 #endif
 extern  char            _end;
-
-extern  char            *_Envptr;
-
-_WCRTLINK extern char       *_LpCmdLine;    /* pointer to command line */
-_WCRTLINK extern char       *_LpPgmName;    /* pointer to program name */
-_WCRTLINK extern wchar_t    *_LpwCmdLine;   /* pointer to wide command line */
-_WCRTLINK extern wchar_t    *_LpwPgmName;   /* pointer to wide program name */
-
 
 int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 
@@ -150,15 +141,19 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     for( args = cmd; *args != '\0'; ++args ); /* skip over program name */
     ++args;
 
-    _Envptr = env;
+    _RWD_Envptr = env;
     _LpCmdLine = args;
+#ifdef _UNICODE
     _LpwCmdLine = lib_malloc( (strlen( _LpCmdLine ) + 1) * sizeof( wchar_t ) );
     _atouni( _LpwCmdLine, _LpCmdLine );
+#endif
     for( cmd_path = cmd - 2; *cmd_path != '\0'; --cmd_path );
     ++cmd_path;
     _LpPgmName = cmd_path;
+#ifdef _UNICODE
     _LpwPgmName = lib_malloc( (strlen( _LpPgmName ) + 1) * sizeof( wchar_t ) );
     _atouni( _LpwPgmName, _LpPgmName );
+#endif
 
     __hmodule = hmod;
     __OS2Init( FALSE, tdata );
@@ -166,7 +161,7 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
       initializers must be executed before signals initialized since
       __sig_init_rtn may get set by an initializer
     */
-    __InitRtns( 32 );
+    __InitRtns( INIT_PRIORITY_LIBRARY );
     __XCPTHANDLER = xcpt;
     __sig_init_rtn();
 #ifndef __SW_BM
@@ -183,8 +178,6 @@ void __OS2Init( int is_dll, thread_data *tdata )
     sys_info                    _sysinfo;
 
     __Is_DLL = is_dll;
-
-    tdata = __AllocInitThreadData( tdata );
     __FirstThreadData = tdata;
 
     DosQuerySysInfo( QSV_VERSION_MAJOR, QSV_VERSION_MINOR,
@@ -199,31 +192,14 @@ void __OS2Init( int is_dll, thread_data *tdata )
         _STACKLOW = (unsigned)&_end;            // cortns in F77
     }
 #endif
-    {
-        // Make sure the iomode array is of the proper length.
-        // This needs to be done before the InitRtns.
-        // Make sure we track the current number of file handles.
-        extern  void    __grow_iomode(int);
-        extern  void    __set_handles(int);
-
-        LONG    req_count;
-        ULONG   curr_max_fh;
-        APIRET  rc;
-
-        req_count = 0;
-        rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
-        if( rc == 0 ) {
-            __grow_iomode( curr_max_fh );
-            __set_handles( curr_max_fh );
-        }
-    }
 }
 
 void __OS2Fini( void )
 /********************/
 {
-    // calls to free memory have to be done before semaphores closed
-    __FreeInitThreadData( __FirstThreadData );
+    // Thread data is either freed by the module that allocated it (for DLLs)
+    // or not at all (for executables - allocated from stack). Here we just
+    // make sure the pointer gets invalidated.
     __FirstThreadData = NULL;
 }
 
@@ -243,10 +219,10 @@ _WCRTLINK void __exit( unsigned ret_code )
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
         if( __process_fini != 0 ) {
-            (*__process_fini)( 0, FINI_PRIORITY_EXIT-1 );
+            (*__process_fini)( 0, FINI_PRIORITY_EXIT - 1 );
         }
     } else {
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+        __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         __shutdown_stack_checking();
     }
 

@@ -1,0 +1,39 @@
+/*
+ *  grp.h group structure and prototypes
+ *
+:include crwatqnx.sp
+ */
+#ifndef _GRP_H_INCLUDED
+#define _GRP_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include systypes.sp
+
+:include cpluspro.sp
+
+:include pshpackl.sp
+
+struct group {
+    char        *gr_name;       /* group's name      */
+    char        *gr_passwd;     /* group's password  */
+    gid_t       gr_gid;         /* group ID number   */
+    char        **gr_mem;       /* group members     */
+};
+
+:include poppack.sp
+
+/*
+ *  POSIX 1003.1 Prototypes.
+ */
+_WCRTLINK extern struct group *getgrnam( const char *__name );
+_WCRTLINK extern struct group *getgruid( gid_t __gid );
+_WCRTLINK extern struct group *getgrent( void );
+_WCRTLINK extern int          setgrent( void );
+_WCRTLINK extern int          endgrent( void );
+
+:include cplusepi.sp
+
+#endif

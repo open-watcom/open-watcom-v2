@@ -1,50 +1,37 @@
-msgh = rcstr.h
-mastermsg = rcstr.msg
-msgfiles = ..\vi.msg $(sdk_dir)\misc\about.msg
-special = $(msgh)
+special = rcstr.gh
 
-objwiny  =  main.ybj mainwnd.ybj editwnd.ybj dosdir.ybj time.ybj &
-                stubs.ybj color.ybj wstatus.ybj font.ybj &
-                window.ybj display.ybj getkey.ybj cursor.ybj command.ybj &
-                utils.ybj menu.ybj filesel.ybj flist.ybj &
-                message.ybj windir.ybj contain.ybj bitmap.ybj palette.ybj &
-                dde.ybj srcwin.ybj srcdde.ybj tool.ybj wintica.ybj &
-                repcnt.ybj clipbrd.ybj asavedlg.ybj profile.ybj &
-                finddlg.ybj ectlsub.ybj grepdlg.ybj cmddlg.ybj &
-                statwnd.ybj toolbr.ybj ftbar.ybj about.ybj &
-                startdlg.ybj usage.ybj tagdlg.ybj ldstr.ybj &
-                hasshare.ybj getidata.ybj ctl3d32.ybj linedlg.ybj &
-                clrbar.ybj clrpick.ybj ftpick.ybj repdlg.ybj &
-                setfs.ybj setscr.ybj setgen.ybj util.ybj hotkey.ybj &
-                ssbar.ybj subclass.ybj snoop.ybj wwinhelp.ybj &
-                ideactiv.ybj
+objwiny  =  main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
+                stubs.obj color.obj wstatus.obj font.obj &
+                window.obj display.obj getkey.obj cursor.obj command.obj &
+                utils.obj menu.obj filesel.obj flist.obj &
+                message.obj windir.obj contain.obj &
+                dde.obj srcwin.obj srcdde.obj tool.obj wintica.obj &
+                repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
+                finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
+                ftbar.obj startdlg.obj usage.obj tagdlg.obj &
+                hasshare.obj getidata.obj linedlg.obj &
+                clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
+                setfs.obj setscr.obj setgen.obj util.obj hotkey.obj &
+                ssbar.obj subclass.obj snoop.obj &
+                ideactiv.obj hackdctl.obj filetype.obj
 
 extraobjs = $(objcb) $(objwiny)
 
-rc_deps = ..\win\viw.ico ..\win\filelist.dlg ..\win\fgrep.dlg &
-          ..\win\asavedlg.dlg ..\win\finddlg.dlg ..\win\grep.dlg ..\win\cmd.dlg &
-          ..\win\repdlg.dlg ..\win\snoop.dlg &
-          ..\win\startup.dlg  ..\win\usage.dlg ..\win\tagdlg.dlg &
-          ..\win\linedlg.dlg ..\win\clrbar.dlg ..\win\ftbar.dlg &
-          ..\win\dropclr.cur ..\win\nodrop.cur ..\win\dropft.cur &
-          ..\win\dropss.cur &
-          $(sdk_dir)\misc\about.dlg  &
-          ..\ctl\setfs.dlg ..\ctl\setscr.dlg ..\ctl\setgen.dlg
+rc_deps = ../win/viw.ico ../win/filelist.dlg ../win/fgrep.dlg &
+          ../win/asavedlg.dlg ../win/finddlg.dlg ../win/grep.dlg ../win/cmd.dlg &
+          ../win/repdlg.dlg ../win/snoop.dlg &
+          ../win/startup.dlg  ../win/usage.dlg ../win/tagdlg.dlg &
+          ../win/linedlg.dlg ../win/clrbar.dlg ../win/ftbar.dlg &
+          ../win/dropclr.cur ../win/nodrop.cur ../win/dropft.cur &
+          ../win/dropss.cur &
+          $(commonui_dir)/h/about.dlg  &
+          ../ctl/setfs.dlg ../ctl/setscr.dlg ../ctl/setgen.dlg
 
 !ifdef sys_windowed
-! ifeq host_OS nt
-!  ifeq host_CPU 386
-other = vintw.res
-!  else
-other = viaxpw.res
-!  endif
-extraobjs += spawn.ybj getfpath.ybj ntcmds.ybj
+other = vi.res
+! ifeq host_os nt
+extraobjs += spawn.obj ntcmds.obj
 ! else
-! ifeq host_CPU 386
-other = viwp.res
-! else
-other = viw.res
-! endif
-extraobjs += exec.ybj doscmds.ybj
+extraobjs += exec.obj doscmds.obj
 ! endif
 !endif

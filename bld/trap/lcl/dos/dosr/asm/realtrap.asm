@@ -34,6 +34,6 @@
 
 dummy   equ 0
 
-        include ..\asm\trap.asm
+        include ../asm/trap.asm
 
                 end

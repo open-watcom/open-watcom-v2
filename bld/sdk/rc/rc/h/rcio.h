@@ -37,24 +37,24 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "wresall.h"
-#include "types.h"
+#include "rctypes.h"
 #include "semstr.h"
 #include "semsingl.h"
 #include "sharedio.h"
-#ifdef UNIX
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
 #endif
 
 typedef struct RcResFileID {
     char                *filename;
-    int                 IsWatcomRes     : 1;
-    int                 IsOpen          : 1;
-    FullStringTable *   StringTable;
-    FullStringTable *   ErrorTable;
+    unsigned            IsWatcomRes     : 1;
+    unsigned            IsOpen          : 1;
+    FullStringTable     *StringTable;
+    FullStringTable     *ErrorTable;
     uint_16             NextCurOrIcon;
     WResDir             dir;                    /* don't write this if !IsWatcomRes */
     int                 handle;                 /* posix level I/O handle */
-    FullFontDir *       FontDir;
+    FullFontDir         *FontDir;
     char                namebuf[ _MAX_PATH ];   /* filename usually points here */
 } RcResFileID;
 
@@ -72,8 +72,6 @@ extern int RcPass1IoInit( void );
 extern void RcPass1IoShutdown( void );
 extern int RcPass2IoInit( void );
 extern void RcPass2IoShutdown( int noerror );
-extern void RcIoPrintBanner( void );
-extern void RcIoPrintHelp( const char * );
 extern void RcIoTextInputInit( void );
 extern int RcIoTextInputShutdown( void );
 extern int RcIoPushInputFile( char * filename );

@@ -24,38 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/19    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/08.03    Greg Bentz      make the attach() and open() member functions
-//                              clear ios::eofbit on success.
-//  93/10/20    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <fstream.h>
+#include <fstream>
 #endif
 
-fstream::fstream( filedesc fd, char *buf, int len )
-/*************************************************/
-       : fstreambase( fd, buf, len ) {
+namespace std {
+
+  fstream::fstream( filedesc fd, char *buf, int len )
+    : fstreambase( fd, buf, len ) {
+  }
+
 }

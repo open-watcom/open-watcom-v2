@@ -1,0 +1,13 @@
+LIBRARY RASSAPI.DLL
+EXPORTS
+RasAdminFreeBuffer@4
+RasAdminGetErrorString@12
+RasAdminGetUserAccountServer@12
+RasAdminGetUserParms@8
+RasAdminPortClearStatistics@8
+RasAdminPortDisconnect@8
+RasAdminPortEnum@12
+RasAdminPortGetInfo@0
+RasAdminSetUserParms@12
+RasAdminUserGetInfo@12
+RasAdminUserSetInfo@12

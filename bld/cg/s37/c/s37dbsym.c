@@ -40,7 +40,7 @@
 #include "cgdefs.h"
 #include "cg.h"
 #include "cgaux.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "offset.h"
 #include "s37bead.h"
 #include "model.h"
@@ -113,7 +113,7 @@ static  void    BegProcDef() {
 /** start procdef in parallel with obj generation**********/
 
     CurrProc->state.attr |= ROUTINE_WANTS_DEBUGGING;
-    _Alloc( CurrProc_debug, sizeof( dbg_rtn ) );
+    CurrProc_debug = CGAlloc( sizeof( dbg_rtn ) );
     CurrProc_debug->blk = NULL;
     CurrProc_debug->parms = NULL;
     CurrProc_debug->reeturn.class = 0;
@@ -130,7 +130,7 @@ static  void    DBModObj( sym_handle sym, fe_attr attr ) {
 
     name = FEName( sym );
     len = Length( name );
-    _Alloc( new, sizeof( *new )-1 +len );
+    new = CGAlloc( sizeof( *new )-1 +len );
     new->id.len = len;
     Copy( name, new->id.name, len );
     new->common.attr = attr;
@@ -177,7 +177,7 @@ extern  void    DBLocalSym( sym_handle sym, cg_type indirect ) {
             DBModObj( sym, attr );
         }else if( (attr & FE_IMPORT) == 0 ) {
             blk = CurrProc_debug->blk;
-            _Alloc( new, sizeof( dbg_local ) );
+            new = CGAlloc( sizeof( dbg_local ) );
             new->link = blk->locals;
             blk->locals = new;
             new->sym = sym;
@@ -202,7 +202,7 @@ static  void    MkBlock() {
 /** make a new scope block**/
     dbg_block   *new;
 
-    _Alloc( new, sizeof( dbg_block ) );
+    new = CGAlloc( sizeof( dbg_block ) );
     new->parent = CurrProc_debug->blk;
     CurrProc_debug->blk = new;
     new->locals = NULL;
@@ -229,7 +229,7 @@ extern  void    DbgParmLoc( name_def *parm ) {
     while( *owner != NULL ) {
        owner = &(*owner)->link;
     }
-    _Alloc( new, sizeof( location_list ) );
+    new = CGAlloc( sizeof( location_list ) );
     *owner = new;
     new->link = NULL;
     new->data.class = LOC_REG;
@@ -254,7 +254,7 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc ) {
 /****************************************************/
 #if 0
     DumpDbgLocals( blk->locals );
-    _Free( blk, sizeof( dbg_block ) );
+    CGFree( blk );
 #else
     blk = 0;
     lc = 0;
@@ -274,7 +274,7 @@ static  void    DbgRtnEnd( dbg_rtn *rtn ) {
     sym = AskForLblSym( CurrProc->label );
     name = FEName( sym  );
     len  = Length( name );
-    proc = _Alloc( proc, sizeof( *proc )-1 +len );
+    proc = CGAlloc( sizeof( *proc )-1 +len );
     proc->id.len = len;
     Copy( name, proc->id.name, len );
     proc->common.label = CurrProc->label;
@@ -291,11 +291,11 @@ static  void    DbgRtnEnd( dbg_rtn *rtn ) {
     while( parm != NULL ) {
         junk = parm;
         parm = parm->link;
-        _Free( junk, sizeof( location_list ) );
+        CGFree( junk );
     }
     DumpDbgLocals( rtn->blk->locals, proc );
-    _Free( rtn->blk, sizeof( dbg_block ) );
-    _Free( rtn, sizeof( dbg_rtn ) );
+    CGFree( rtn->blk );
+    CGFree( rtn );
     AddSym( proc );
 }
 
@@ -314,7 +314,7 @@ static  void   DumpDbgLocals( dbg_local *loc, cdebug_sym_procdef *proc ) {
     while( loc != NULL ) {
         name = FEName( loc->sym );
         len = Length( name );
-        _Alloc( new, sizeof( *new )-1+len );
+        new = CGAlloc( sizeof( *new )-1+len );
         new->id.len = len;
         Copy( name, new->id.name, len );
         new->tref = FEDbgType( loc->sym );
@@ -328,7 +328,7 @@ static  void   DumpDbgLocals( dbg_local *loc, cdebug_sym_procdef *proc ) {
         *next = NULL;
         junk = loc;
         loc = loc->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
     proc->lindex = lindex;
     proc->pindex = pindex;
@@ -486,9 +486,9 @@ static void YTags( handle dbgfile, cdebug_sym_any *list, int index ) {
         old  = list;
         list = list->common.next;
         if( attr & FE_IMPORT == 0 && attr & FE_PROC ){
-            _Free( old, sizeof( list->procdef )-1+id->len );
+            CGFree( old );
         }else{
-            _Free( old, sizeof( list->obj )-1+id->len );
+            CGFree( old );
         }
         refno++;
     }
@@ -542,7 +542,7 @@ static void LocalYTags( handle dbgfile, cdebug_local *list, int index ) {
         PutStream( dbgfile, tagbuff, tag-tagbuff );
         old = list;
         list = list->next;
-        _Free( old, sizeof( *old )-1 +old->id.len );
+        CGFree( old );
         refno++;
     }
 }

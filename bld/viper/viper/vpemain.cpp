@@ -24,11 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Viper (Open Watcom IDE) mainline.
 *
 ****************************************************************************/
 
+
+#include <io.h>
+#include <stdlib.h>
+
+extern "C" {
+    #include "rcdefs.h"
+    #include "banner.h"
+};
 
 #include "vpemain.hpp"
 #include "vmsglog.hpp"
@@ -66,14 +73,7 @@
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
 #include "ide.h"
-
-extern "C" {
-    #include <io.h>
-    #include "rcdefs.h"
-    #include "stdlib.h"
-    #include "banner.h"
-};
-
+#include "autoenv.h"
 
 #define OLDEST_SUPPORTED_VERSION 23
 #define LATEST_SUPPORTED_VERSION 40
@@ -90,7 +90,7 @@ MAINOBJECT( VpeMain, COORD_USER, 10240, 10240 )
 #define _pModel ((MProject*)model())
 
 Define( VpeMain )
-static char pFilter[] = { "Project Files(*.wpj)\0*.wpj\0All files(*.*)\0*.*\0\0" };
+static char pFilter[] = { "Project Files (*.wpj)\0*.wpj\0All Files (*.*)\0*.*\0\0" };
 
 static WHotSpots _hotSpotList( 4 );
 
@@ -107,18 +107,22 @@ struct mData {
     char*       hint;
     int         toolId;
     MenuPop*    pop;
+    char*       tip;
 };
 
-char _viperTitle[] = { "WATCOM IDE" };
+char _viperTitle[] = { "Open Watcom IDE" };
+char _viperAboutTitle[] = { "About Open Watcom IDE" };
 char _viperError[] = { "IDE Error" };
 char _viperRequest[] = { "IDE Request" };
 char _viperInfo[] = { "IDE Information" };
 
 #pragma warning 438 9
 const char* _viperDesc[] = {
+    "",
     banner1w( "Integrated Development Environment", _VIPER_VERSION_ ),
     banner2( "1993" ),
     banner3,
+    banner3a,
     NULL
 };
 
@@ -150,46 +154,16 @@ WEXPORT VpeMain::VpeMain()
     , _rcsClient( this )
     , _refuseFileLists( FALSE )
     , _autoRefresh( TRUE )
-    , _ddeServer( "WAT_IDE", "project", this, (sbc)&VpeMain::DdeCallback )
 {
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-    /* stuff to set up the BLUESKY env. var */
-    {
-        char drive[_MAX_DRIVE];
-        char path[_MAX_PATH];
-        char name[_MAX_FNAME];
-        char buff[_MAX_PATH];
-        #define ARB_CONST 128
-        int     len;
-
-        #ifdef __NT__
-            GetPrivateProfileString( "Blue Sky SWC32", "WVP", "", buff, ARB_CONST, "win.ini" );
-            len = strlen( buff );
-            if( len == 0 ) {
-                GetPrivateProfileString( "Blue Sky SWC", "WVP", "", buff, ARB_CONST, "win.ini" );
-            }
-            len = strlen( buff );
-        #else
-            GetPrivateProfileString( "Blue Sky SWC", "WVP", "", buff, ARB_CONST, "win.ini" );
-            len = strlen( buff );
-            if( len == 0 ) {
-                GetPrivateProfileString( "Blue Sky SWC32", "WVP", "", buff, ARB_CONST, "win.ini" );
-            }
-            len = strlen( buff );
-        #endif
-        if( len != 0 ) {
-            _splitpath( buff, drive, path, name, NULL );
-            _makepath( buff, drive, path, name, "exe" );
-            len = strlen( buff );
-            if( len != 0 && buff[len-1] == '\\' ) {
-                buff[len-1] = '\0';
-            }
-            strcpy( path, "bluesky=" );
-            strcat( path, buff );
-            putenv( strdup( path ) );
-        }
+    /* check and fix env vars if needed; this should perhaps be done in
+     * the GUI library and not here.
+     */
+    watcom_setup_env();
+    if( getenv( "WATCOM" ) == NULL ) {
+        WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
+        "WATCOM environment variable not set.\n"
+        "IDE will not function correctly" );
     }
-    #endif
 
     hookF1Key( TRUE );
 #if defined( __OS2__ )
@@ -247,7 +221,7 @@ WEXPORT VpeMain::VpeMain()
     if( !_config->ok() ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, (const char*)_config->errMsg() );
     }
-    _config->enumAccel( this, (bcbi)&VpeMain::registerAccel );
+    _config->enumAccel( this, (bcbk)&VpeMain::registerAccel );
 
     _editor = _config->editor();
     _editorIsDll = _config->editorIsDLL();
@@ -360,7 +334,7 @@ void WEXPORT VpeMain::writeSelf( WObjectFile& p )
 bool VpeMain::registerAccel( WKeyCode kc )
 {
     removeAccelKey( kc );
-    addAccelKey( kc, this, (bcbi)&VpeMain::kDynAccel );
+    addAccelKey( kc, this, (bcbk)&VpeMain::kDynAccel );
     return( FALSE );
 }
 
@@ -448,18 +422,19 @@ void VpeMain::buildMenuBar()
     WPopupMenu* pop6 = getMdiPopup();
     pop6->onPopup( this, (cbp)&VpeMain::onPopup6 );
     menuBar->insertPopup( pop6, 6 );
-    pop6->insertItem( new WMenuItem( "&Refresh", this, (cbm)&VpeMain::mRefresh, (cbh)&VpeMain::mHint, "Refresh target and file attributes from disk directories" ), 0 );
+    pop6->insertItem( new WMenuItem( "&Refresh", this, (cbm)&VpeMain::mRefresh, (cbh)&VpeMain::mHint, "Refresh target and file attributes from disk directories." ), 0 );
 
     unsigned    helpcnt;
     MAction     *action;
     WString     mname;
     WMenuItem   *mi;
+    int         i;
 
     WPopupMenu* pop7 = makeMenu( &popup7, toolBar );
     menuBar->insertPopup( pop7, 7 );
     helpcnt = _config->helpactions().count();
     if( helpcnt > 0 ) pop7->insertSeparator();
-    for( int i = 0; i < helpcnt; i++ ) {
+    for( i = 0; i < helpcnt; i++ ) {
         action = (MAction *)_config->helpactions()[i];
         action->menuName( &mname );
         mi = new WMenuItem( mname, this, (cbm)&VpeMain::mHelpItem,
@@ -468,9 +443,9 @@ void VpeMain::buildMenuBar()
         pop7->insertItem( mi );
     }
     pop7->insertSeparator();
-    mi = new WMenuItem( "&About the WATCOM IDE...", this,
+    mi = new WMenuItem( "&About...", this,
                         (cbm)&VpeMain::about, (cbh)&VpeMain::mHint,
-                        "About the WATCOM IDE" );
+                        "Display program information." );
     pop7->insertItem( mi );
 
     setMenu( menuBar );
@@ -483,7 +458,8 @@ void VpeMain::buildMenuBar()
     WVList& toolItems = _config->toolItems();
     for( i=0; i<toolItems.count(); i++ ) {
         MToolItem* mt = (MToolItem*)toolItems[i];
-        VToolItem* t = new VToolItem( mt->toolType(), mt->toolId(), this, (cbtbi)&VpeMain::toolPicked, mt->hint() );
+        VToolItem* t = new VToolItem( mt->toolType(), mt->toolId(), this,
+                       (cbtbi)&VpeMain::toolPicked, mt->hint(), mt->tip() );
         t->setTagPtr( mt );
         toolBar->addTool( t );
     }
@@ -491,11 +467,11 @@ void VpeMain::buildMenuBar()
     setToolBar( toolBar );
     _toolBarActive = TRUE;
 
-    addAccelKey( WKeyInsert, this, (bcbi)&VpeMain::kAddItem );
-    addAccelKey( WKeyDelete, this, (bcbi)&VpeMain::kRemoveItem );
-    addAccelKey( WKeyCtrlN, this, (bcbi)&VpeMain::kNewProject );
-    addAccelKey( WKeyCtrlO, this, (bcbi)&VpeMain::kOpenProject );
-    addAccelKey( WKeyCtrlS, this, (bcbi)&VpeMain::kSaveProject );
+    addAccelKey( WKeyInsert, this, (bcbk)&VpeMain::kAddItem );
+    addAccelKey( WKeyDelete, this, (bcbk)&VpeMain::kRemoveItem );
+    addAccelKey( WKeyCtrlN, this, (bcbk)&VpeMain::kNewProject );
+    addAccelKey( WKeyCtrlO, this, (bcbk)&VpeMain::kOpenProject );
+    addAccelKey( WKeyCtrlS, this, (bcbk)&VpeMain::kSaveProject );
     setUpdates();
 }
 
@@ -515,7 +491,7 @@ WPopupMenu* VpeMain::makeMenu( MenuPop* popup, VToolBar* tools )
                 WMenuItem* m = new WMenuItem( menu[i].name, this, menu[i].callback, (cbh)&VpeMain::mHint, menu[i].hint );
                 pop->insertItem( m, i );
                 if( tools && menu[i].toolId ) {
-                    VToolItem* t = new VToolItem( TOOL_MENU, menu[i].toolId, this, (cbtbi)&VpeMain::toolPicked, menu[i].hint );
+                    VToolItem* t = new VToolItem( TOOL_MENU, menu[i].toolId, this, (cbtbi)&VpeMain::toolPicked, menu[i].hint, menu[i].tip );
                     t->setTagPtr( m );
                     tools->addTool( t );
                 }
@@ -525,34 +501,35 @@ WPopupMenu* VpeMain::makeMenu( MenuPop* popup, VToolBar* tools )
     return( pop );
 }
 
-MenuPop VpeMain::popup0a = { "Set Sou&rce Control", (cbp)&VpeMain::onPopup0a, menu0a, 6 };
+MenuPop VpeMain::popup0a = { "Set Sou&rce Control", (cbp)&VpeMain::onPopup0a, menu0a, 7 };
 MenuData VpeMain::menu0a[] = {
-    "MKS &SI", (cbm)&VpeMain::setMksSi, "Use MKS Source Integrity revision control", 0, NULL,
-    "MKS &RCS", (cbm)&VpeMain::setMksRcs, "Use MKS RCS revision control", 0, NULL,
-    "&PVCS", (cbm)&VpeMain::setPvcs, "Use Intersolv PVCS revision control", 0, NULL,
-    "&Other", (cbm)&VpeMain::setOtherRcs, "Use another revision control system", 0, NULL,
-    "&None", (cbm)&VpeMain::setNoRcs, "Disable revision control functions", 0, NULL,
-    "Object &Cycle", (cbm)&VpeMain::setObjectCycle, "Use Object Cycle", 0, NULL,
+    "MKS &SI", (cbm)&VpeMain::setMksSi, "Use MKS Source Integrity revision control.", 0, NULL, NULL,
+    "MKS &RCS", (cbm)&VpeMain::setMksRcs, "Use MKS RCS revision control.", 0, NULL, NULL,
+    "&PVCS", (cbm)&VpeMain::setPvcs, "Use Intersolv PVCS revision control.", 0, NULL, NULL,
+    "&Other", (cbm)&VpeMain::setOtherRcs, "Use another revision control system.", 0, NULL, NULL,
+    "&None", (cbm)&VpeMain::setNoRcs, "Disable revision control functions.", 0, NULL, NULL,
+    "Object &Cycle", (cbm)&VpeMain::setObjectCycle, "Use Object Cycle.", 0, NULL, NULL,
+    "P&erforce", (cbm)&VpeMain::setPerforce, "Use Perforce.", 0, NULL, NULL
 };
 
 MenuPop VpeMain::popup0 = { "&File", (cbp)&VpeMain::onPopup0, menu0, 16 };
 MenuData VpeMain::menu0[] = {
-    "&New Project...\tCTRL+N", (cbm)&VpeMain::newProject, "Create a new project", B_newproj, NULL,
-    "&Open Project...\tCTRL+O", (cbm)&VpeMain::openProject, "Open existing project", B_openproj, NULL,
-    "&Save Project\tCTRL+S", (cbm)&VpeMain::saveProject, "Save current project", B_saveproj, NULL,
-    "Save Project &As...", (cbm)&VpeMain::saveProjectAs, "Save project with new name", 0, NULL,
-    "&Close Project", (cbm)&VpeMain::closeProject, "Close current project", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "Show &Tool Bar", (cbm)&VpeMain::toolBar, "Show/hide tool bar", 0, NULL,
-    "Show Stat&us Bar", (cbm)&VpeMain::statusBar, "Show/hide status bar", 0, NULL,
-    "Auto Refres&h", (cbm)&VpeMain::toggleAutoRefresh, "Turn frequent file list refreshes on/off", 0, NULL,
-    "Set Text E&ditor...", (cbm)&VpeMain::setEditor, "Set the text editor", 0, NULL,
-    "", NULL, NULL, 0, &popup0a,
-    NULL, NULL, NULL, 0, NULL,
-    "B&efore...", (cbm)&VpeMain::setBefore, "Setup commands to execute before any make", 0, NULL,
-    "A&fter...", (cbm)&VpeMain::setAfter, "Setup commands to execute after any successful make", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "E&xit", (cbm)&VpeMain::exit, "Terminate the session", 0, NULL,
+    "&New Project...\tCTRL+N", (cbm)&VpeMain::newProject, "Create a new project.", B_newproj, NULL, "New Project",
+    "&Open Project...\tCTRL+O", (cbm)&VpeMain::openProject, "Open existing project.", B_openproj, NULL, "Open Project",
+    "&Save Project\tCTRL+S", (cbm)&VpeMain::saveProject, "Save current project.", B_saveproj, NULL, "Save Project",
+    "Save Project &As...", (cbm)&VpeMain::saveProjectAs, "Save project with new name.", 0, NULL, NULL,
+    "&Close Project", (cbm)&VpeMain::closeProject, "Close current project.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "Show &Tool Bar", (cbm)&VpeMain::toolBar, "Show/hide toolbar.", 0, NULL, NULL,
+    "Show Stat&us Bar", (cbm)&VpeMain::statusBar, "Show/hide status bar.", 0, NULL, NULL,
+    "Auto Refres&h", (cbm)&VpeMain::toggleAutoRefresh, "Turn frequent file list refreshes on/off.", 0, NULL, NULL,
+    "Set Text E&ditor...", (cbm)&VpeMain::setEditor, "Set the text editor.", 0, NULL, NULL,
+    "", NULL, NULL, 0, &popup0a, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "B&efore...", (cbm)&VpeMain::setBefore, "Setup commands to execute before any make.", 0, NULL, NULL,
+    "A&fter...", (cbm)&VpeMain::setAfter, "Setup commands to execute after any successful make.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "E&xit", (cbm)&VpeMain::exit, "Exit the Open Watcom IDE.", 0, NULL, NULL,
 };
 
 void VpeMain::onPopup0a( WPopupMenu* pop )
@@ -582,6 +559,9 @@ void VpeMain::onPopup0a( WPopupMenu* pop )
         break;
     case PVCS:
         pop->checkItem( TRUE, 2 );
+        break;
+    case PERFORCE:
+        pop->checkItem( TRUE, 6 );
         break;
     }
 }
@@ -625,7 +605,7 @@ void VpeMain::onPopup0( WPopupMenu* pop )
 
 MenuPop VpeMain::popup1 = { "&Actions", (cbp)&VpeMain::onPopup1, menu1, 1 };
 MenuData VpeMain::menu1[] = {
-    "Dummy", (cbm)&VpeMain::mDummy, "Dummy", 0, NULL,
+    "Dummy", (cbm)&VpeMain::mDummy, "Dummy", 0, NULL, NULL
 };
 
 void VpeMain::onPopup1( WPopupMenu* pop )
@@ -637,7 +617,8 @@ void VpeMain::onPopup1( WPopupMenu* pop )
     }
 
     int icount = _config->actions().count();
-    for( int i=0; i<icount; i++ ) {
+    int i;
+    for( i=0; i<icount; i++ ) {
         MAction* action = (MAction*)_config->actions()[i];
         WString  mname;
         action->menuName( &mname );
@@ -648,7 +629,7 @@ void VpeMain::onPopup1( WPopupMenu* pop )
     WMenuItem* mi = new WMenuItem( "Source &Control Shell", this,
                                     (cbm)&VpeMain::mRcsShell,
                                     (cbh)&VpeMain::mHint,
-                                    "Invoke Source Control Shell" );
+                                    "Invoke Source Control Shell." );
     pop->insertItem( mi, i);
     if( _rcsClient.HasShell() ) {
         pop->enableItem( TRUE, i );
@@ -659,11 +640,11 @@ void VpeMain::onPopup1( WPopupMenu* pop )
 
 MenuPop VpeMain::popup2 = { "&Targets", (cbp)&VpeMain::onPopup2, menu2, 5 };
 MenuData VpeMain::menu2[] = {
-    "&New Target...", (cbm)&VpeMain::addComponent,"Create a new target", 0, NULL,
-    "Remo&ve Target", (cbm)&VpeMain::removeComponent, "Remove/delete current target", 0, NULL,
-    "Ren&ame Target...", (cbm)&VpeMain::renameComponent, "Rename current target", 0, NULL,
-    "", NULL, NULL, 0, &popup2a,
-    "Mar&k Target for Remake", (cbm)&VpeMain::touchComponent, "Mark current target and (optionally) all its components files for remake", 0, NULL,
+    "&New Target...", (cbm)&VpeMain::vAddComponent,"Create a new target.", 0, NULL, NULL,
+    "Remo&ve Target", (cbm)&VpeMain::removeComponent, "Remove/delete current target.", 0, NULL, NULL,
+    "Ren&ame Target...", (cbm)&VpeMain::renameComponent, "Rename current target.", 0, NULL, NULL,
+    "", NULL, NULL, 0, &popup2a, NULL,
+    "Mar&k Target for Remake", (cbm)&VpeMain::touchComponent, "Mark current target and (optionally) all its components files for remake.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup2( WPopupMenu* pop )
@@ -709,16 +690,16 @@ void VpeMain::onPopup2( WPopupMenu* pop )
 
 MenuPop VpeMain::popup2a = { "Target &Options", (cbp)&VpeMain::onPopup2a, menu2a, 10 };
 MenuData VpeMain::menu2a[] = {
-    "&Switches...", (cbm)&VpeMain::setupComponent, "Set switch values for making current target", 0, NULL,
-    "Show Make &Command...", (cbm)&VpeMain::showCompCommand, "Show command for making current target", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "Execute B&efore...", (cbm)&VpeMain::setCompBefore, "Setup commands to execute before making current target", 0, NULL,
-    "Execute A&fter...", (cbm)&VpeMain::setCompAfter, "Setup commands to do after successfully making current target", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "Use &Autodepend", (cbm)&VpeMain::mAutodepend, "Enable/disable autodepend feature of makefile", 0, NULL,
-    "Use &Autotrack", (cbm)&VpeMain::mAutotrack, "Enable/disable target autotrack feature", 0, NULL,
-    "Use De&velopment Switches", (cbm)&VpeMain::mDebugMode, "Use development switches during make", 0, NULL,
-    "Use Re&lease Switches", (cbm)&VpeMain::mDebugMode, "Use release switches during make", 0, NULL,
+    "&Switches...", (cbm)&VpeMain::setupComponent, "Set switch values for making current target.", 0, NULL, NULL,
+    "Show Make &Command...", (cbm)&VpeMain::showCompCommand, "Show command for making current target.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "Execute B&efore...", (cbm)&VpeMain::setCompBefore, "Setup commands to execute before making current target.", 0, NULL, NULL,
+    "Execute A&fter...", (cbm)&VpeMain::setCompAfter, "Setup commands to do after successfully making current target.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "Use &Autodepend", (cbm)&VpeMain::mAutodepend, "Enable/disable autodepend feature of makefile.", 0, NULL, NULL,
+    "Use &Autotrack", (cbm)&VpeMain::mAutotrack, "Enable/disable target autotrack feature.", 0, NULL, NULL,
+    "Use De&velopment Switches", (cbm)&VpeMain::mDebugMode, "Use development switches during make.", 0, NULL, NULL,
+    "Use Re&lease Switches", (cbm)&VpeMain::mDebugMode, "Use release switches during make.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup2a( WPopupMenu* pop )
@@ -763,15 +744,15 @@ void VpeMain::onPopup2a( WPopupMenu* pop )
 
 MenuPop VpeMain::popup3 = { "&Sources", (cbp)&VpeMain::onPopup3, menu3, 9 };
 MenuData VpeMain::menu3[] = {
-    "Check &Out Source", (cbm)&VpeMain::mCheckout, "Checkout the current source file", 0, NULL,
-    "&Check In Source", (cbm)&VpeMain::mCheckin, "Checkin the current source file", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "&New Source...\tIns", (cbm)&VpeMain::mAddItem, "Create/add a new source file to the target", 0, NULL,
-    "Remo&ve Source\tDel", (cbm)&VpeMain::mRemoveItem, "Remove current source file from target", 0, NULL,
-    "Ren&ame Source...", (cbm)&VpeMain::mRenameItem, "Rename current source file in the target", 0, NULL,
-    "", NULL, NULL, 0, &popup3a,
-    "Mar&k Source for Remake", (cbm)&VpeMain::mTouchItem, "Mark current source file for remake", 0, NULL,
-    "&Included Files...", (cbm)&VpeMain::mIncludedItems, "Edit included source files", 0, NULL,
+    "Check &Out Source", (cbm)&VpeMain::mCheckout, "Check out the current source file.", 0, NULL, NULL,
+    "&Check In Source", (cbm)&VpeMain::mCheckin, "Check in the current source file.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "&New Source...\tIns", (cbm)&VpeMain::mAddItem, "Create/add a new source file to the target.", 0, NULL, NULL,
+    "Remo&ve Source\tDel", (cbm)&VpeMain::mRemoveItem, "Remove current source file from target.", 0, NULL, NULL,
+    "Ren&ame Source...", (cbm)&VpeMain::mRenameItem, "Rename current source file in the target.", 0, NULL, NULL,
+    "", NULL, NULL, 0, &popup3a, NULL,
+    "Mar&k Source for Remake", (cbm)&VpeMain::mTouchItem, "Mark current source file for remake.", 0, NULL, NULL,
+    "&Included Files...", (cbm)&VpeMain::mIncludedItems, "Edit included source files.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup3( WPopupMenu* pop )
@@ -826,8 +807,8 @@ void VpeMain::onPopup3( WPopupMenu* pop )
 
 MenuPop VpeMain::popup3a = { "Source &Options", (cbp)&VpeMain::onPopup3a, menu3a, 2 };
 MenuData VpeMain::menu3a[] = {
-    "&Switches...", (cbm)&VpeMain::mSetupItem, "Set switch values for making current source file", 0, NULL,
-    "Show Make &Command...", (cbm)&VpeMain::showItemCommand, "Show command for making current source file", 0, NULL,
+    "&Switches...", (cbm)&VpeMain::mSetupItem, "Set switch values for making current source file.", 0, NULL, NULL,
+    "Show Make &Command...", (cbm)&VpeMain::showItemCommand, "Show command for making current source file.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup3a( WPopupMenu* pop )
@@ -855,10 +836,10 @@ void VpeMain::onPopup3a( WPopupMenu* pop )
                     pop->insertSeparator( base );
                     ii++;
                 }
-                WString n( action->name() ); n.concat( " switches..." );
+                WString n( action->name() ); n.concat( " Switches..." );
                 WString h( "Setup switches for '" );
                 action->text( h );
-                h.concat( "' action on selected source file" );
+                h.concat( "' action on selected source file." );
                 WMenuItem* mi = new WMenuItem( n, this, (cbm)&VpeMain::mActionItemSetup, (cbh)&VpeMain::mHint, h );
                 mi->setTagPtr( action );
                 pop->insertItem( mi, ii+base );
@@ -885,7 +866,7 @@ void VpeMain::onPopup3a( WPopupMenu* pop )
 
 MenuPop VpeMain::popup4 = { "&Options", (cbp)&VpeMain::onPopup4, menu4, 1 };
 MenuData VpeMain::menu4[] = {
-    "&Switches...", (cbm)&VpeMain::setupComponent, "Set switch values for making current target", 0, NULL,
+    "&Switches...", (cbm)&VpeMain::setupComponent, "Set switch values for making current target.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup4( WPopupMenu* pop )
@@ -922,11 +903,11 @@ void VpeMain::onPopup4( WPopupMenu* pop )
 
 MenuPop VpeMain::popup5 = { "&Log", (cbp)&VpeMain::onPopup5, menu5, 5 };
 MenuData VpeMain::menu5[] = {
-    "&Edit File", (cbm)&VpeMain::editLog, "Edit file whose name is in the message", 0, NULL,
-    "&Help on Message", (cbm)&VpeMain::helpLog, "Help on the message", 0, NULL,
-    "&Stop", (cbm)&VpeMain::cancelLog, "Stop the executing operation", 0, NULL,
-    NULL, NULL, NULL, 0, NULL,
-    "Save Log &As...", (cbm)&VpeMain::saveLogAs, "Save contents of the IDE log window to a disk file", 0, NULL,
+    "&Edit File", (cbm)&VpeMain::editLog, "Edit file whose name is in the message.", 0, NULL, NULL,
+    "&Help on Message", (cbm)&VpeMain::helpLog, "Display help on the message.", 0, NULL, NULL,
+    "&Stop", (cbm)&VpeMain::cancelLog, "Stop the executing operation.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "Save Log &As...", (cbm)&VpeMain::saveLogAs, "Save contents of the IDE log window to a disk file.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup5( WPopupMenu* pop )
@@ -949,19 +930,20 @@ void VpeMain::onPopup6( WPopupMenu* pop )
     pop->enableItem( isp, 0 ); //refresh
 }
 
-MenuPop VpeMain::popup7 = { "&Help", (cbp)&VpeMain::onPopup7, menu7, 3 };
+MenuPop VpeMain::popup7 = { "&Help", (cbp)&VpeMain::onPopup7, menu7, 4 };
 MenuData VpeMain::menu7[] = {
-    "&Contents", (cbm)&VpeMain::helpContents, "Help table of contents", 0, NULL,
-    "&Search for Help On...", (cbm)&VpeMain::helpSearch, "Search for help on a particular topic", 0, NULL,
-    "&How to Use Help", (cbm)&VpeMain::helpUsage, "Explanation on how to use the help facility", 0, NULL,
+    "&Contents", (cbm)&VpeMain::helpContents, "List Open Watcom IDE help topics.", 0, NULL, NULL,
+    "&Search for Help On...", (cbm)&VpeMain::helpSearch, "Search for help on a specific topic.", 0, NULL, NULL,
+    NULL, NULL, NULL, 0, NULL, NULL,
+    "&How to Use Help", (cbm)&VpeMain::helpUsage, "Display information on how to use help.", 0, NULL, NULL
 };
 
 void VpeMain::onPopup7( WPopupMenu* pop )
 {
     bool hp = ( _config->helpFile().size() > 0 );
     pop->enableItem( hp, 0 );                  //contents
-    pop->enableItem( hp , 1 );                 //search for help
-    pop->enableItem( hp , 2 );                 //help on help
+    pop->enableItem( hp, 1 );                  //search for help
+    pop->enableItem( hp, 3 );                  //help on help
     pop->enableItem( TRUE, 4 );                //about
 }
 
@@ -981,10 +963,10 @@ int VpeMain::addComponentActionSetups( WPopupMenu* pop, int base )
                         pop->insertSeparator( base );
                         ii++;
                     }
-                    WString n( action->name() ); n.concat( " switches..." );
+                    WString n( action->name() ); n.concat( " Switches..." );
                     WString h( "Setup switches for '" );
                     action->text( h );
-                    h.concat( "' action on selected target" );
+                    h.concat( "' action on selected target." );
                     WMenuItem* mi = new WMenuItem( n, this, (cbm)&VpeMain::mActionComponentSetup, (cbh)&VpeMain::mHint, h );
                     mi->setTagPtr( action );
                     pop->insertItem( mi, ii+base );
@@ -1014,10 +996,10 @@ int VpeMain::addComponentMaskSetups( WPopupMenu* pop, int base )
                 }
                 WString n;
                 tool->name( n );
-                n.concat( " switches..." );
+                n.concat( " Switches..." );
                 WString h( "Setup switches for '" );
                 tool->name( h );
-                h.concat( "' in selected target" );
+                h.concat( "' in selected target." );
                 WMenuItem* mi = new WMenuItem( n, this, (cbm)&VpeMain::mSetupItem2, (cbh)&VpeMain::mHint, h );
                 mi->setTagPtr( m );
                 pop->insertItem( mi, ii+base );
@@ -1062,7 +1044,7 @@ bool VpeMain::appActivate( bool activated ) {
 bool VpeMain::validateProjectName( WFileName& fn )
 {
     if( fn.size() > 0 ) {
-        fn.toLower();
+//        fn.toLower();
         if( fn.legal() ) {
             if( strlen( fn.ext() ) == 0 ) {
                 fn.setExt( ".wpj" );
@@ -1074,9 +1056,10 @@ bool VpeMain::validateProjectName( WFileName& fn )
     return( FALSE );
 }
 
-void VpeMain::kNewProject( WKeyCode )
+bool VpeMain::kNewProject( WKeyCode )
 {
     newProject( NULL );
+    return( FALSE );
 }
 
 void VpeMain::newProject( WMenuItem* )
@@ -1181,8 +1164,9 @@ bool VpeMain::unloadProject( const WFileName& fn, bool checkout )
     return( ok );
 }
 
-void VpeMain::kOpenProject( WKeyCode ) {
+bool VpeMain::kOpenProject( WKeyCode ) {
     openProject( NULL );
+    return FALSE;
 }
 
 void VpeMain::openProject( WMenuItem* )
@@ -1205,7 +1189,9 @@ void VpeMain::openProject( WMenuItem* )
 
 void VpeMain::addOldProject( const WFileName& filename )
 {
-    for( int i=0; i<_oldProjects.count(); i++ ) {
+    int i;
+
+    for( i=0; i<_oldProjects.count(); i++ ) {
         WFileName* fn = (WFileName*)_oldProjects[ i ];
         if( *fn == filename ) {
             delete _oldProjects.removeAt( i );
@@ -1213,7 +1199,7 @@ void VpeMain::addOldProject( const WFileName& filename )
         }
     }
     _oldProjects.insertAt( 0, new WFileName( filename ) );
-    for( i=_oldProjects.count(); i>4; ) {
+    for( i=_oldProjects.count(); i > MAXOLDPROJECTS; ) {
         i--;
         delete _oldProjects.removeAt( i );
     }
@@ -1279,7 +1265,7 @@ bool VpeMain::saveProjectAs( const WFileName& def )
         WFileDialog fd( this, pFilter );
         WFileName fn( fd.getSaveFileName( def, "Save Project as", WFSaveDefault ) );
         if( fn.legal() && okToReplace( fn ) ) {
-            fn.toLower();
+//            fn.toLower();
             _project->setFilename( fn );
             addOldProject( fn );
             return( unloadProject( fn ) );
@@ -1508,7 +1494,7 @@ WStyle VpeMain::vCompStyle()
 
 bool VpeMain::addComponent( WMenuItem* )
 {
-static char cFilter[] = { "Target Files(*.tgt)\0*.tgt\0Executables(*.exe)\0*.exe\0Static Libraries(*.lib)\0*.lib\0Dynamic Libraries(*.dll)\0*.dll\0All files(*.*)\0*.*\0\0" };
+static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
     bool ok = FALSE;
     HelpStack.push( HLP_ADDING_A_TARGET );
     VCompDialog dlg( this, "New Target", _project, cFilter );
@@ -1535,6 +1521,11 @@ static char cFilter[] = { "Target Files(*.tgt)\0*.tgt\0Executables(*.exe)\0*.exe
     }
     HelpStack.pop();
     return( ok );
+}
+
+void VpeMain::vAddComponent( WMenuItem* )
+{
+    addComponent();
 }
 
 bool VpeMain::attachTgtFile( WFileName& fn )
@@ -1568,8 +1559,8 @@ void VpeMain::renameComponent( WMenuItem* )
     HelpStack.push( HLP_RENAMING_A_TARGET );
     _activeVComp->setFocus();
     VComponent* vcomp = _activeVComp;
-//static char cFilter[] = { "Executables(*.exe)\0*.exe\0Static Libraries(*.lib)\0*.lib\0Dynamic Libraries(*.dll)\0*.dll\0All files(*.*)\0*.*\0\0" };
-static char cFilter[] = { "Target Files(*.tgt)\0*.tgt\0Executables(*.exe)\0*.exe\0Static Libraries(*.lib)\0*.lib\0Dynamic Libraries(*.dll)\0*.dll\0All files(*.*)\0*.*\0\0" };
+//static char cFilter[] = { "Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
+static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files(*.*)\0*.*\0\0" };
     VCompDialog dlg( this, "Rename Target", _project, cFilter );
     MComponent* comp = vcomp->component();
     WFileName fn( comp->relFilename() );
@@ -1659,11 +1650,12 @@ bool VpeMain::kDynAccel( WKeyCode kc ) {
 
     bool        done;
     MAction     *action;
+    int         i;
 
     done = FALSE;
     // search project level accelerators
     int icount = _config->actions().count();
-    for( int i=0; i<icount; i++ ) {
+    for( i=0; i<icount; i++ ) {
         action = (MAction*)_config->actions()[i];
         if( action->menuAccel() == kc ) {
             doAction( action );
@@ -1864,7 +1856,7 @@ void VpeMain::helpUsage( WMenuItem* )
 
 void VpeMain::about( WMenuItem* )
 {
-    WAbout about( this, &_hotSpotList, 4, _viperTitle, _viperDesc );
+    WAbout about( this, &_hotSpotList, 4, _viperAboutTitle, _viperDesc );
     about.process();
 }
 
@@ -2132,6 +2124,10 @@ void VpeMain::setMksSi( WMenuItem *) {
 
 void VpeMain::setObjectCycle( WMenuItem *) {
     setRcsScheme( O_CYCLE );
+}
+
+void VpeMain::setPerforce( WMenuItem *) {
+    setRcsScheme( PERFORCE );
 }
 
 void VpeMain::setPvcs( WMenuItem *) {

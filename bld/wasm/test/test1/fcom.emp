@@ -1,0 +1,4 @@
+
+FIXUPP(9c) len:000ah, chksum:6fh(6f)
+    0000h Seg   OFFSET       Frame: LOCATION  Target: EI(2)
+    0003h Seg   OFFSET       Frame: GI(1)     Target: EI(1)

@@ -24,13 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF Alpha AXP register definitions.
 *
 ****************************************************************************/
 
 
-/* AXP reg defn */
     DW_REG( r0 )
     DW_REG( r1 )
     DW_REG( r2 )

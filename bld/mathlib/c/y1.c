@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of y1() Bessel function.
 *
 ****************************************************************************/
 
@@ -43,25 +42,26 @@ extern  double _EvalPoly( double, const double *, int );
 
 
 static const double _Y1P[] = {
-                -0.38226957797667741489e-11,
-                 0.75102718193645142780e-8,
-                -0.69109541395518971099e-5,
-                 0.38153325235929440146e-2,
-                -0.13598277402886548477e+1,
-                 0.31686918865308367843e+3,
-                -0.47126666709422440249e+5,
-                 0.42115793110333106651e+7,
-                -0.20149795564786231889e+9,
-                 0.40594714152021800256e+10,
-                -0.14959278504009293871e+11
-             };
+    -0.38226957797667741489e-11,
+     0.75102718193645142780e-8,
+    -0.69109541395518971099e-5,
+     0.38153325235929440146e-2,
+    -0.13598277402886548477e+1,
+     0.31686918865308367843e+3,
+    -0.47126666709422440249e+5,
+     0.42115793110333106651e+7,
+    -0.20149795564786231889e+9,
+     0.40594714152021800256e+10,
+    -0.14959278504009293871e+11
+};
+
 static const double _Y1Q[] = {
-                1.0,
-                0.15792524288657566178e+4,
-                0.11492015934035314015e+7,
-                0.44562247550599141276e+9,
-                0.76300624755273366999e+11
-             };
+    1.0,
+    0.15792524288657566178e+4,
+    0.11492015934035314015e+7,
+    0.44562247550599141276e+9,
+    0.76300624755273366999e+11
+};
 
 extern const double _P1P[5];
 extern const double _P1Q[6];
@@ -70,24 +70,23 @@ extern const double _Q1Q[5];
 
 
 _WMRTLINK double y1( double x )         /* Bessel function y1(x) */
-/*******************/
-    {
-        double  xx, y, z;
+/*****************************/
+{
+    double  xx, y, z;
 
-        if( x < 0.0 ) {
-//            z = _matherr( DOMAIN, "y1", &x, &x, - HUGE_VAL );
-            z = __math1err( FUNC_Y1 | M_DOMAIN | V_NEG_HUGEVAL, &x );
-        } else if( x < 8.0 ) {
-            y = x * x;
-            z = PDIV( x * _EvalPoly( y, _Y1P, 10 )  ,  _EvalPoly( y, _Y1Q, 4 ) )
-                   + Two_over_pi * ( j1(x) * log(x) - PDIV(1.0,x) );
-        } else {
-            z = PDIV( 8.0 , x );
-            y = z * z;
-            xx = x - ThreePIby4;
-            z = sqrt( PDIV( Two_over_pi , x ) ) *
-                ( PDIV( sin(xx) * _EvalPoly( y, _P1P, 4 ) , _EvalPoly( y, _P1Q, 5 ) )
-            + z * cos(xx) *(PDIV(_EvalPoly( y, _Q1P, 4 ) , _EvalPoly( y, _Q1Q, 4 ))));
-        }
-        return( z );
+    if( x < 0.0 ) {
+        z = __math1err( FUNC_Y1 | M_DOMAIN | V_NEG_HUGEVAL, &x );
+    } else if( x < 8.0 ) {
+        y = x * x;
+        z = PDIV( x * _EvalPoly( y, _Y1P, 10 )  ,  _EvalPoly( y, _Y1Q, 4 ) )
+               + Two_over_pi * ( j1( x ) * log( x ) - PDIV( 1.0, x ) );
+    } else {
+        z = PDIV( 8.0, x );
+        y = z * z;
+        xx = x - ThreePIby4;
+        z = sqrt( PDIV( Two_over_pi, x ) ) *
+            ( PDIV( sin( xx ) * _EvalPoly( y, _P1P, 4 ) , _EvalPoly( y, _P1Q, 5 ) )
+        + z * cos( xx ) *(PDIV( _EvalPoly( y, _Q1P, 4 ) , _EvalPoly( y, _Q1Q, 4 ) )) );
     }
+    return( z );
+}

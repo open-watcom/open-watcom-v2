@@ -24,26 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This header helps with pre-compiled headers usage.
 *
 ****************************************************************************/
 
-
-// this header file is defined to ease the use of pre-compiled headers
 #include "variety.h"
 #include <ctype.h>
 #include <errno.h>
 #include <float.h>
-#include <fstream.h>
-#include <iomanip.h>
-#include <iostream.h>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <limits.h>
 #include <stdio.h>
 #include <stdiobuf.h>
 #include <stdlib.h>
-#include <streambu.h>
+#include <streambu>
 #include <string.h>
-#include <strstrea.h>
-#include <sys\stat.h>
+#include <strstrea>
+#include <sys/stat.h>
 #include <unistd.h>

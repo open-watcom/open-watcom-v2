@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <stdio.h>
 #include <string.h>
-#include "imgedit.h"
 #include "iconinfo.h"
 #include "iemem.h"
 
@@ -47,8 +48,7 @@ static index_table      *indexHead = NULL;
 static index_table      *indexTail = NULL;
 
 /*
- * deleteNodeData - deletes the bitmaps, checks for multiple icons, and frees
- *                  memory.
+ * deleteNodeData - delete the bitmaps, check for multiple icons, and free memory.
  */
 static void deleteNodeData( img_node *node )
 {
@@ -57,27 +57,28 @@ static void deleteNodeData( img_node *node )
     node->next = NULL;
     next_icon = node->nexticon;
 
-    while( node ) {
+    while( node != NULL ) {
         _wpi_deletebitmap( node->hxorbitmap );
         _wpi_deletebitmap( node->handbitmap );
         node->nexticon = NULL;
         node->hwnd = NULL;
         node->viewhwnd = NULL;
         node->num_of_images = 0;
-        if( node->wrinfo ) {
+        if( node->wrinfo != NULL ) {
             WRFreeWRInfo( node->wrinfo );
         }
         MemFree( node );
 
         node = next_icon;
-        if (node) {
+        if( node != NULL ) {
             next_icon = node->nexticon;
         }
     }
+
 } /* deleteNodeData */
 
 /*
- * removeIcon - removes the index(th) icon from the list.
+ * removeIcon - remove the index(th) icon from the list
  */
 static img_node *removeIcon( img_node *node, short index )
 {
@@ -86,13 +87,13 @@ static img_node *removeIcon( img_node *node, short index )
     img_node    *prevnode;
     short       i;
 
-    if (index == 0) {
+    if( index == 0 ) {
         delnode = node;
         prevnode = NULL;
         newnode = delnode->nexticon;
     } else {
         prevnode = node;
-        for (i=0; i < (index-1); ++i) {
+        for( i = 0; i < index - 1; i++ ) {
             prevnode = prevnode->nexticon;
         }
         delnode = prevnode->nexticon;
@@ -105,31 +106,33 @@ static img_node *removeIcon( img_node *node, short index )
     delnode = NULL;
 
     return( newnode );
+
 } /* removeIcon */
 
 /*
- * findPreviousNode - returns a pointer to the node whose 'next' field is
- *                    is a pointer to the given node.
+ * findPreviousNode - return a pointer to the node whose 'next' field is
+ *                    is a pointer to the given node
  */
 static img_node *findPreviousNode( img_node *node )
 {
     img_node    *prevnode;
 
-    if (imgHead == node) {
-        return(NULL);
+    if( imgHead == node ) {
+        return( NULL );
     }
 
     prevnode = imgHead;
 
-    while (prevnode->next != node) {
+    while( prevnode->next != node ) {
         prevnode = prevnode->next;
     }
 
-    return(prevnode);
+    return( prevnode );
+
 } /* findPreviousNode */
 
 /*
- * AddImageNode - Adds a node to the linked list.
+ * AddImageNode - add a node to the linked list
  */
 void AddImageNode( img_node *node )
 {
@@ -143,27 +146,27 @@ void AddImageNode( img_node *node )
 
     imagecount = node->num_of_images;
 
-    new_node = MemAlloc( sizeof(img_node) );
-    memcpy( new_node, node, sizeof(img_node) );
+    new_node = MemAlloc( sizeof( img_node ) );
+    memcpy( new_node, node, sizeof( img_node ) );
     new_node->next = NULL;
     prevnode = new_node;
     next_in_src = node->nexticon;
 
-    for (i=1; i < imagecount; ++i) {
-        next_icon = MemAlloc( sizeof(img_node) );
-        memcpy( next_icon, next_in_src, sizeof(img_node) );
+    for( i = 1; i < imagecount; i++ ) {
+        next_icon = MemAlloc( sizeof( img_node ) );
+        memcpy( next_icon, next_in_src, sizeof( img_node ) );
         prevnode->nexticon = next_icon;
         prevnode = next_icon;
         next_in_src = next_in_src->nexticon;
     }
     prevnode->nexticon = NULL;
 
-    new_index = MemAlloc( sizeof(index_table) );
+    new_index = MemAlloc( sizeof( index_table ) );
 
     new_index->index = 0;
     new_index->next = NULL;
 
-    if (!imgHead) {
+    if( imgHead == NULL ) {
         /*
          * Perform first time stuff ...
          */
@@ -178,14 +181,15 @@ void AddImageNode( img_node *node )
         indexTail->next = new_index;
         indexTail = new_index;
     }
+
 } /* AddImageNode */
 
 /*
- * SelectImage - This just uses a linear search - it's easy and since we
+ * SelectImage - this just uses a linear search - it's easy and since we
  *               aren't working with really large amounts of data, we can
- *               afford the time pretty easily.  For icons, this function
- *               returns the current icon being edited (not the root icon
- *               in the icon file).
+ *               afford the time pretty easily
+ *             - for icons, return the current icon being edited (not the root icon
+ *               in the icon file)
  */
 img_node *SelectImage( HWND hwnd )
 {
@@ -196,23 +200,23 @@ img_node *SelectImage( HWND hwnd )
     current_node = imgHead;
     tableptr = indexHead;
 
-    while (current_node) {
-        if (current_node->hwnd == hwnd) {
-            for (i=0; i < tableptr->index; ++i) {
+    while( current_node != NULL ) {
+        if( current_node->hwnd == hwnd ) {
+            for( i = 0; i < tableptr->index; i++ ) {
                 current_node = current_node->nexticon;
             }
-            return (current_node);
+            return( current_node );
         }
         current_node = current_node->next;
         tableptr = tableptr->next;
     }
 
     return( NULL );
+
 } /* SelectImage */
 
 /*
- * DeleteNode - Deletes the node (frees memory) corresponding to the hwnd
- *              given.
+ * DeleteNode - delete the node (frees memory) corresponding to the hwnd given
  */
 BOOL DeleteNode( HWND hwnd )
 {
@@ -227,8 +231,8 @@ BOOL DeleteNode( HWND hwnd )
     /*
      * First check the head and from then on check node->next ...
      */
-    if (imgHead->hwnd == hwnd) {
-        if (imgHead == imgTail) {
+    if( imgHead->hwnd == hwnd ) {
+        if( imgHead == imgTail ) {
             imgTail = NULL;
             imgHead = NULL;
         } else {
@@ -237,7 +241,7 @@ BOOL DeleteNode( HWND hwnd )
         deleteNodeData( node );
         node = NULL;
 
-        if (indexHead == indexTail) {
+        if( indexHead == indexTail ) {
             indexTail = NULL;
             indexTail = NULL;
         } else {
@@ -247,10 +251,10 @@ BOOL DeleteNode( HWND hwnd )
         return( TRUE );
     }
 
-    while (node->next) {
-        if (node->next->hwnd == hwnd) {
+    while( node->next != NULL ) {
+        if( node->next->hwnd == hwnd ) {
             delnode = node->next;
-            if (delnode == imgTail) {
+            if( delnode == imgTail ) {
                 imgTail = node;
             }
             node->next = delnode->next;
@@ -258,11 +262,11 @@ BOOL DeleteNode( HWND hwnd )
             delnode = NULL;
 
             delindex = index->next;
-            if (delindex == indexTail) {
+            if( delindex == indexTail ) {
                 indexTail = index;
             }
             index->next = delindex->next;
-            MemFree(delindex);
+            MemFree( delindex );
 
             return( TRUE );
         }
@@ -270,68 +274,71 @@ BOOL DeleteNode( HWND hwnd )
         index = index->next;
     }
 
-    return(FALSE);
+    return( FALSE );
+
 } /* DeleteNode */
 
 /*
- * DeleteList - deletes both the index table and the linked list of image
- *              data.
+ * DeleteList - delete both the index table and the linked list of image data
  */
 void DeleteList( void )
 {
     img_node    *node;
     index_table *index;
 
-    if (!DoImagesExist) {
+    if( !DoImagesExist ) {
         return;
     }
 
-    while (imgHead) {
+    while( imgHead != NULL ) {
         node = imgHead;
         imgHead = node->next;
-        deleteNodeData(node);
+        deleteNodeData( node );
         node = NULL;
 
         index = indexHead;
         indexHead = index->next;
-        MemFree(index);
+        MemFree( index );
     }
 
     imgTail = NULL;
+
 } /* DeleteList */
 
 /*
- * DoImagesExist - Checks to see if there are any opened/new images in the
- *                 linked list (checks to see if list is empty).  Returns
- *                 the number of images in the list.
+ * DoImagesExist - check to see if there are any opened/new images in the
+ *                 linked list (checks to see if list is empty)
+ *               - return the number of images in the list
  */
 int DoImagesExist( void )
 {
     int         img_count = 1;
     img_node    *node;
 
-    if (!imgHead) {
-        return(FALSE);
+    if( imgHead == NULL ) {
+        return( FALSE );
     }
 
     node = imgHead;
-    while (node != imgTail) {
-        ++img_count;
+    while( node != imgTail ) {
+        img_count++;
         node = node->next;
     }
     return( img_count );
+
 } /* DoImagesExist */
 
 /*
- * GetHeadNode - returns the head of the linked list.
+ * GetHeadNode - return the head of the linked list
  */
 img_node *GetHeadNode( void )
 {
     return( imgHead );
+
 } /* GetHeadNode */
 
 /*
- * GetNthIcon - gets the nth (index th) icon from the linked list.
+ * GetNthIcon - get the nth (index th) icon from the linked list
  */
 img_node *GetNthIcon( HWND hwnd, short index )
 {
@@ -342,83 +349,85 @@ img_node *GetNthIcon( HWND hwnd, short index )
     node = imgHead;
     tableptr = indexHead;
 
-    while (node) {
-        if (node->hwnd == hwnd) {
+    while( node != NULL ) {
+        if( node->hwnd == hwnd ) {
             break;
         }
         node = node->next;
         tableptr = tableptr->next;
     }
 
-    if (!node) {
+    if( node == NULL ) {
         WImgEditError( WIE_ERR_BAD_HWND, WIE_INTERNAL_006 );
-        return(NULL);
+        return( NULL );
     }
 
-    if (index > node->num_of_images) {
+    if( index > node->num_of_images ) {
         WImgEditError( WIE_ERR_BAD_ICONINDEX, WIE_INTERNAL_007 );
-        return(NULL);
+        return( NULL );
     }
 
-    for (i=1; i <= index; ++i) {
-        if (node->nexticon) {
+    for( i = 1; i <= index; i++ ) {
+        if( node->nexticon != NULL ) {
             node = node->nexticon;
         } else {
             break;
         }
     }
 
-    tableptr->index = min(i, index);
+    tableptr->index = min( i, index );
     return( node );
+
 } /* GetNthIcon */
 
 /*
- * GetImageNode - Gets the first node (ie the root of the list of icons) in
- *                the linked list corresponding the the given window handle.
+ * GetImageNode - get the first node (i.e. the root of the list of icons) in
+ *                the linked list corresponding the the given window handle
  */
 img_node *GetImageNode( HWND hwnd )
 {
     img_node            *node;
 
     node = imgHead;
-    while (node) {
-        if (node->hwnd == hwnd) {
-            return (node);
+    while( node != NULL ) {
+        if( node->hwnd == hwnd ) {
+            return( node );
         }
         node = node->next;
     }
 
     return( NULL );
+
 } /* GetImageNode */
 
 /*
- * AddIconToList - An icon can be a number of different images in one.
- *                 This adds an icon image to the current icon in the linked
- *                 list.
+ * AddIconToList - an icon can be a number of different images in one
+ *               - add an icon image to the current icon in the linked list
  */
-void AddIconToList( img_node *icon, img_node *current_node)
+void AddIconToList( img_node *icon, img_node *current_node )
 {
     img_node            *temp;
     img_node            *new_icon;
 
     temp = current_node;
 
-    new_icon = MemAlloc( sizeof(img_node) );
-    memcpy( new_icon, icon, sizeof(img_node) );
+    new_icon = MemAlloc( sizeof( img_node ) );
+    memcpy( new_icon, icon, sizeof( img_node ) );
 
-    while( temp ) {
-        if (!(temp->nexticon)) {
+    while( temp != NULL ) {
+        if( temp->nexticon == NULL ) {
             temp->nexticon = new_icon;
             break;
         }
         temp = temp->nexticon;
     }
+
 } /* AddIconToList */
 
 /*
- * RemoveIconFromList - removes an icon image from the current icon file.
- *                      After calling this routine, the 'node' variable
- *                      should no longer be used by the calling routine.
+ * RemoveIconFromList - remove an icon image from the current icon file
+ *                    - after calling this routine, the 'node' variable
+ *                      should no longer be used by the calling routine
  */
 img_node *RemoveIconFromList( img_node *node, int index )
 {
@@ -430,22 +439,23 @@ img_node *RemoveIconFromList( img_node *node, int index )
     prevnode = findPreviousNode( node );
     newnodelist = removeIcon( node, index );
 
-    if (!prevnode) {
+    if( prevnode == NULL ) {
         imgHead = newnodelist;
     } else {
         prevnode->next = newnodelist;
     }
     newnodelist->next = nextimage;
 
-    if (nextimage == NULL) {
+    if( nextimage == NULL ) {
         imgTail = newnodelist;
     }
     return( newnodelist );
+
 } /* RemoveIconFromList */
 
 /*
  * SelectFromViewHwnd - given the handle to the view window, this returns
- *                      the node corresponding to it.
+ *                      the node corresponding to it
  */
 img_node *SelectFromViewHwnd( HWND viewhwnd )
 {
@@ -456,16 +466,16 @@ img_node *SelectFromViewHwnd( HWND viewhwnd )
     current_node = imgHead;
     tableptr = indexHead;
 
-    while (current_node) {
-        if (current_node->viewhwnd == viewhwnd) {
-            for (i=0; i < tableptr->index; ++i) {
+    while( current_node != NULL ) {
+        if( current_node->viewhwnd == viewhwnd ) {
+            for( i = 0; i < tableptr->index; i++ ) {
                 current_node = current_node->nexticon;
             }
-            return (current_node);
+            return( current_node );
         }
         current_node = current_node->next;
         tableptr = tableptr->next;
     }
     return( NULL );
-} /* SelectFromViewHwnd */
 
+} /* SelectFromViewHwnd */

@@ -65,7 +65,7 @@ BOOL CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 
 void DisplayMessageTable( void ) {
 
-    FARPROC     fp;
+    DLGPROC     fp;
     DWORD       lang;
     DWORD       id;
     char        buf[256];
@@ -73,7 +73,7 @@ void DisplayMessageTable( void ) {
 
     /* get language id */
     getNumCaption = "Enter the language id for the message in hex";
-    fp = MakeProcInstance( GetMsgNumDlgProc, Instance );
+    fp = (DLGPROC)MakeProcInstance( GetMsgNumDlgProc, Instance );
     DialogBox( Instance, "GET_NUM_DLG" , NULL, fp );
     lang = lastNum;
 

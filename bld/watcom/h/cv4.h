@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CodeView debugging information, CV4 format.
 *
 ****************************************************************************/
 
@@ -54,10 +53,12 @@ typedef signed_64       i8;
 #define CV4_NB07        "NB07"
 #define CV4_NB08        "NB08"
 #define CV4_NB09        "NB09"
+#define CV4_NB10        "NB10"
+#define CV4_NB11        "NB11"
 
 /* leaf type codes as defined in CV4 doc 3.1 */
 
-typedef enum  lf_values{  /* type enumerations */
+typedef enum  lf_values {   /* type enumerations */
 /* predefined numeric types  add as needed */
     LF_TNOTYPE       =0x0000,
     LF_TSEGMENT      =0x0002,
@@ -76,7 +77,7 @@ typedef enum  lf_values{  /* type enumerations */
 #define _LFPAD( n, N, c )    LF_##N = c,
     #include "cv4pads.h"
 #undef _LFPAD
-}lf_values;
+} lf_values;
 
 /* leaf symbol codes as defined in CV4 doc 3.1 */
 
@@ -84,9 +85,10 @@ typedef enum s_values { /* symbol enumerations */
     #define SLMAC( n, N, c )    S_##N = c,
     #include "cv4syms.h"
     #undef SLMAC
-}s_values;
+} s_values;
 
-#pragma pack( 1 );
+#include "pushpck1.h"
+
 typedef enum {
     sstModule=0x120,
     sstTypes,
@@ -113,7 +115,7 @@ typedef enum {
 
 typedef struct {
     char        sig[CV_SIG_SIZE];
-    long        offset;
+    signed_32   offset;
 } cv_trailer;
 
 typedef struct {
@@ -138,7 +140,7 @@ typedef struct {
     unsigned_32 cbSeg;
 } cv_seginfo;
 
-#define CV_DEBUG_STYLE 'VC'
+#define CV_DEBUG_STYLE ('V' << 8 | 'C')
 
 typedef struct {
     unsigned_16 ovlNumber;
@@ -243,4 +245,4 @@ typedef struct {
     seg_desc    segdesc[1];
 } cv_sst_seg_map;
 
-#pragma pack();
+#include "poppck.h"

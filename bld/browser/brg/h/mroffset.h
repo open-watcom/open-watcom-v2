@@ -24,18 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Merge offset class declaration.
 *
 ****************************************************************************/
 
 
-#ifndef __MROFFSET_H__
-#define __MROFFSET_H__
+#ifndef MROFFSET_H_INCLUDED
+#define MROFFSET_H_INCLUDED
 
 #include "brmerge.h"
-
-// FIXME -- make fileIdx a typedef -- probably need more than 128!
 
 class MergeOffset {
 public:
@@ -52,7 +49,7 @@ inline  MergeOffset&    operator= ( const MergeOffset& other );
         const char *    getString() const;
     #endif
 
-    int_8               fileIdx;
+    fileidx_t           fileIdx;
     uint_32             offset;
 };
 
@@ -88,4 +85,4 @@ inline MergeOffset& MergeOffset::operator= ( const MergeOffset& other )
     return *this;
 }
 
-#endif // __MROFFSET_H__
+#endif // MROFFSET_H_INCLUDED

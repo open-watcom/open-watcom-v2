@@ -1,0 +1,4026 @@
+c$noreference
+
+c$ifdef INCL_WIN
+c$define INCL_WINWINDOWMGR
+c$define INCL_WINMESSAGEMGR
+c$define INCL_WININPUT
+c$define INCL_WINDIALOGS
+c$define INCL_WINSTATICS
+c$define INCL_WINBUTTONS
+c$define INCL_WINENTRYFIELDS
+c$define INCL_WINMLE
+c$define INCL_WINLISTBOXES
+c$define INCL_WINMENUS
+c$define INCL_WINSCROLLBARS
+c$define INCL_WINFRAMEMGR
+c$define INCL_WINFRAMECTLS
+c$define INCL_WINRECTANGLES
+c$define INCL_WINSYS
+c$define INCL_WINTIMER
+c$define INCL_WINACCELERATORS
+c$define INCL_WINTRACKRECT
+c$define INCL_WINCLIPBOARD
+c$define INCL_WINCURSORS
+c$define INCL_WINPOINTERS
+c$define INCL_WINHOOKS
+c$define INCL_WINSWITCHLIST
+c$define INCL_WINPROGRAMLIST
+c$define INCL_WINSHELLDATA
+c$define INCL_WINCOUNTRY
+c$define INCL_WINHEAP
+c$define INCL_WINATOM
+c$define INCL_WINERRORS
+c$define INCL_WINDDE
+c$define INCL_WINHELP
+c$define INCL_WINSEI
+c$define INCL_WINLOAD
+c$define INCL_WINTYPES
+c$define INCL_WINDESKTOP
+c$define INCL_WINPALETTE
+c$define INCL_WINTHUNKAPI
+c$define INCL_WINSTDDLGS
+c$endif
+
+c$ifdef INCL_WINMLE
+c$ifndef INCL_WINENTRYFIELDS
+c$define INCL_WINENTRYFIELDS
+c$endif
+c$endif
+
+c$ifdef INCL_WINCOMMON
+c$define INCL_WINWINDOWMGR
+c$endif
+
+c$ifdef INCL_ERRORS
+c$define INCL_WINERRORS
+c$endif
+
+        integer  MPVOID
+        parameter (MPVOID = 0)
+
+        integer*4 MPFROMP
+
+        integer*4 MPFROMHWND
+
+        integer*4 MPFROMCHAR
+
+        integer*4 MPFROMSHORT
+
+        integer*4 MPFROM2SHORT
+
+        integer*4 MPFROMSH2CH
+
+        integer*4 MPFROMLONG
+
+        integer*4 PVOIDFROMMP
+
+        integer*4 HWNDFROMMP
+
+        integer*1 CHAR1FROMMP
+
+        integer*1 CHAR2FROMMP
+
+        integer*1 CHAR3FROMMP
+
+        integer*1 CHAR4FROMMP
+
+        integer*4 SHORT1FROMMP
+
+        integer*4 SHORT2FROMMP
+
+        integer*4 LONGFROMMP
+
+        integer*4 MRFROMMP
+
+        integer*4 MRFROMSHORT
+
+        integer*4 MRFROM2SHORT
+
+        integer*4 MRFROMLONG
+
+        integer*4 PVOIDFROMMR
+
+        integer*4 SHORT1FROMMR
+
+        integer*4 SHORT2FROMMR
+
+        integer*4 LONGFROMMR
+
+        integer  HWND_DESKTOP
+        parameter (HWND_DESKTOP = 1)
+        integer  HWND_OBJECT
+        parameter (HWND_OBJECT = 2)
+
+        integer  HWND_TOP
+        parameter (HWND_TOP = 3)
+        integer  HWND_BOTTOM
+        parameter (HWND_BOTTOM = 4)
+
+        integer  HWND_THREADCAPTURE
+        parameter (HWND_THREADCAPTURE = 5)
+
+        integer  WC_FRAME
+        parameter (WC_FRAME = 'ffff0001'x)
+        integer  WC_COMBOBOX
+        parameter (WC_COMBOBOX = 'ffff0002'x)
+        integer  WC_BUTTON
+        parameter (WC_BUTTON = 'ffff0003'x)
+        integer  WC_MENU
+        parameter (WC_MENU = 'ffff0004'x)
+        integer  WC_STATIC
+        parameter (WC_STATIC = 'ffff0005'x)
+        integer  WC_ENTRYFIELD
+        parameter (WC_ENTRYFIELD = 'ffff0006'x)
+        integer  WC_LISTBOX
+        parameter (WC_LISTBOX = 'ffff0007'x)
+        integer  WC_SCROLLBAR
+        parameter (WC_SCROLLBAR = 'ffff0008'x)
+        integer  WC_TITLEBAR
+        parameter (WC_TITLEBAR = 'ffff0009'x)
+        integer  WC_MLE
+        parameter (WC_MLE = 'ffff000A'x)
+        integer  WC_APPSTAT
+        parameter (WC_APPSTAT = 'ffff0010'x)
+        integer  WC_KBDSTAT
+        parameter (WC_KBDSTAT = 'ffff0011'x)
+        integer  WC_PECIC
+        parameter (WC_PECIC = 'ffff0012'x)
+        integer  WC_DBE_KKPOPUP
+        parameter (WC_DBE_KKPOPUP = 'ffff0013'x)
+        integer  WC_SPINBUTTON
+        parameter (WC_SPINBUTTON = 'ffff0020'x)
+        integer  WC_CONTAINER
+        parameter (WC_CONTAINER = 'ffff0025'x)
+        integer  WC_SLIDER
+        parameter (WC_SLIDER = 'ffff0026'x)
+        integer  WC_VALUESET
+        parameter (WC_VALUESET = 'ffff0027'x)
+        integer  WC_NOTEBOOK
+        parameter (WC_NOTEBOOK = 'ffff0028'x)
+
+        integer  WS_VISIBLE
+        parameter (WS_VISIBLE = '80000000'x)
+        integer  WS_DISABLED
+        parameter (WS_DISABLED = '40000000'x)
+        integer  WS_CLIPCHILDREN
+        parameter (WS_CLIPCHILDREN = '20000000'x)
+        integer  WS_CLIPSIBLINGS
+        parameter (WS_CLIPSIBLINGS = '10000000'x)
+        integer  WS_PARENTCLIP
+        parameter (WS_PARENTCLIP = '08000000'x)
+        integer  WS_SAVEBITS
+        parameter (WS_SAVEBITS = '04000000'x)
+        integer  WS_SYNCPAINT
+        parameter (WS_SYNCPAINT = '02000000'x)
+        integer  WS_MINIMIZED
+        parameter (WS_MINIMIZED = '01000000'x)
+        integer  WS_MAXIMIZED
+        parameter (WS_MAXIMIZED = '00800000'x)
+        integer  WS_ANIMATE
+        parameter (WS_ANIMATE = '00400000'x)
+
+        integer  WS_GROUP
+        parameter (WS_GROUP = '00010000'x)
+        integer  WS_TABSTOP
+        parameter (WS_TABSTOP = '00020000'x)
+        integer  WS_MULTISELECT
+        parameter (WS_MULTISELECT = '00040000'x)
+
+        integer  CS_MOVENOTIFY
+        parameter (CS_MOVENOTIFY = '00000001'x)
+        integer  CS_SIZEREDRAW
+        parameter (CS_SIZEREDRAW = '00000004'x)
+        integer  CS_HITTEST
+        parameter (CS_HITTEST = '00000008'x)
+        integer  CS_PUBLIC
+        parameter (CS_PUBLIC = '00000010'x)
+        integer  CS_FRAME
+        parameter (CS_FRAME = '00000020'x)
+        integer  CS_CLIPCHILDREN
+        parameter (CS_CLIPCHILDREN = '20000000'x)
+        integer  CS_CLIPSIBLINGS
+        parameter (CS_CLIPSIBLINGS = '10000000'x)
+        integer  CS_PARENTCLIP
+        parameter (CS_PARENTCLIP = '08000000'x)
+        integer  CS_SAVEBITS
+        parameter (CS_SAVEBITS = '04000000'x)
+        integer  CS_SYNCPAINT
+        parameter (CS_SYNCPAINT = '02000000'x)
+
+c$ifdef INCL_WINWINDOWMGR
+
+        external WinRegisterClass
+        integer*4 WinRegisterClass
+
+        external WinDefWindowProc
+        integer*4 WinDefWindowProc
+
+        external WinDestroyWindow
+        integer*4 WinDestroyWindow
+
+        external WinShowWindow
+        integer*4 WinShowWindow
+
+        external WinQueryWindowRect
+        integer*4 WinQueryWindowRect
+
+        external WinGetPS
+        integer*4 WinGetPS
+
+        external WinReleasePS
+        integer*4 WinReleasePS
+
+        external WinEndPaint
+        integer*4 WinEndPaint
+
+        external WinGetClipPS
+        integer*4 WinGetClipPS
+
+        external WinIsWindowShowing
+        integer*4 WinIsWindowShowing
+
+        external WinBeginPaint
+        integer*4 WinBeginPaint
+
+        external WinOpenWindowDC
+        integer*4 WinOpenWindowDC
+
+        external WinScrollWindow
+        integer*4 WinScrollWindow
+
+        integer  PSF_LOCKWINDOWUPDATE
+        parameter (PSF_LOCKWINDOWUPDATE = '00000001'x)
+        integer  PSF_CLIPUPWARDS
+        parameter (PSF_CLIPUPWARDS = '00000002'x)
+        integer  PSF_CLIPDOWNWARDS
+        parameter (PSF_CLIPDOWNWARDS = '00000004'x)
+        integer  PSF_CLIPSIBLINGS
+        parameter (PSF_CLIPSIBLINGS = '00000008'x)
+        integer  PSF_CLIPCHILDREN
+        parameter (PSF_CLIPCHILDREN = '00000010'x)
+        integer  PSF_PARENTCLIP
+        parameter (PSF_PARENTCLIP = '00000020'x)
+
+        integer  SW_SCROLLCHILDREN
+        parameter (SW_SCROLLCHILDREN = '00000001'x)
+        integer  SW_INVALIDATERGN
+        parameter (SW_INVALIDATERGN = '00000002'x)
+
+        external WinFillRect
+        integer*4 WinFillRect
+
+        structure /QVERSDATA/
+            integer*2 environment
+            integer*2 version
+        end structure
+
+        integer  QV_OS2
+        parameter (QV_OS2 = '00000000'x)
+        integer  QV_CMS
+        parameter (QV_CMS = '00000001'x)
+        integer  QV_TSO
+        parameter (QV_TSO = '00000002'x)
+        integer  QV_TSOBATCH
+        parameter (QV_TSOBATCH = '00000003'x)
+        integer  QV_OS400
+        parameter (QV_OS400 = '00000004'x)
+
+        external WinQueryVersion
+        integer*4 WinQueryVersion
+
+        external WinInitialize
+        integer*4 WinInitialize
+
+        external WinTerminate
+        integer*4 WinTerminate
+
+        external WinQueryAnchorBlock
+        integer*4 WinQueryAnchorBlock
+
+c$endif
+
+        external WinCreateWindow
+        integer*4 WinCreateWindow
+
+        external WinEnableWindow
+        integer*4 WinEnableWindow
+
+        external WinIsWindowEnabled
+        integer*4 WinIsWindowEnabled
+
+        external WinEnableWindowUpdate
+        integer*4 WinEnableWindowUpdate
+
+        external WinIsWindowVisible
+        integer*4 WinIsWindowVisible
+
+        external WinQueryWindowText
+        integer*4 WinQueryWindowText
+
+        external WinSetWindowText
+        integer*4 WinSetWindowText
+
+        external WinQueryWindowTextLength
+        integer*4 WinQueryWindowTextLength
+
+        external WinWindowFromID
+        integer*4 WinWindowFromID
+
+        external WinIsWindow
+        integer*4 WinIsWindow
+
+        external WinQueryWindow
+        integer*4 WinQueryWindow
+
+        external WinMultWindowFromIDs
+        integer*4 WinMultWindowFromIDs
+
+        integer  QW_NEXT
+        parameter (QW_NEXT = 0)
+        integer  QW_PREV
+        parameter (QW_PREV = 1)
+        integer  QW_TOP
+        parameter (QW_TOP = 2)
+        integer  QW_BOTTOM
+        parameter (QW_BOTTOM = 3)
+        integer  QW_OWNER
+        parameter (QW_OWNER = 4)
+        integer  QW_PARENT
+        parameter (QW_PARENT = 5)
+        integer  QW_NEXTTOP
+        parameter (QW_NEXTTOP = 6)
+        integer  QW_PREVTOP
+        parameter (QW_PREVTOP = 7)
+        integer  QW_FRAMEOWNER
+        parameter (QW_FRAMEOWNER = 8)
+
+        external WinSetParent
+        integer*4 WinSetParent
+
+        external WinIsChild
+        integer*4 WinIsChild
+
+        external WinSetOwner
+        integer*4 WinSetOwner
+
+        external WinQueryWindowProcess
+        integer*4 WinQueryWindowProcess
+
+        external WinQueryObjectWindow
+        integer*4 WinQueryObjectWindow
+
+        external WinQueryDesktopWindow
+        integer*4 WinQueryDesktopWindow
+
+        structure /SWP/
+            integer*4 fl
+            integer*4 cy
+            integer*4 cx
+            integer*4 y
+            integer*4 x
+            integer*4 hwndInsertBehind
+            integer*4 hwnd
+            integer*4 ulReserved1
+            integer*4 ulReserved2
+        end structure
+
+        external WinSetWindowPos
+        integer*4 WinSetWindowPos
+
+        external WinSetMultWindowPos
+        integer*4 WinSetMultWindowPos
+
+        external WinQueryWindowPos
+        integer*4 WinQueryWindowPos
+
+        integer  AWP_MINIMIZED
+        parameter (AWP_MINIMIZED = '00010000'x)
+        integer  AWP_MAXIMIZED
+        parameter (AWP_MAXIMIZED = '00020000'x)
+        integer  AWP_RESTORED
+        parameter (AWP_RESTORED = '00040000'x)
+        integer  AWP_ACTIVATE
+        parameter (AWP_ACTIVATE = '00080000'x)
+        integer  AWP_DEACTIVATE
+        parameter (AWP_DEACTIVATE = '00100000'x)
+
+        integer  SWP_SIZE
+        parameter (SWP_SIZE = '00000001'x)
+        integer  SWP_MOVE
+        parameter (SWP_MOVE = '00000002'x)
+        integer  SWP_ZORDER
+        parameter (SWP_ZORDER = '00000004'x)
+        integer  SWP_SHOW
+        parameter (SWP_SHOW = '00000008'x)
+        integer  SWP_HIDE
+        parameter (SWP_HIDE = '00000010'x)
+        integer  SWP_NOREDRAW
+        parameter (SWP_NOREDRAW = '00000020'x)
+        integer  SWP_NOADJUST
+        parameter (SWP_NOADJUST = '00000040'x)
+        integer  SWP_ACTIVATE
+        parameter (SWP_ACTIVATE = '00000080'x)
+        integer  SWP_DEACTIVATE
+        parameter (SWP_DEACTIVATE = '00000100'x)
+        integer  SWP_EXTSTATECHANGE
+        parameter (SWP_EXTSTATECHANGE = '00000200'x)
+        integer  SWP_MINIMIZE
+        parameter (SWP_MINIMIZE = '00000400'x)
+        integer  SWP_MAXIMIZE
+        parameter (SWP_MAXIMIZE = '00000800'x)
+        integer  SWP_RESTORE
+        parameter (SWP_RESTORE = '00001000'x)
+        integer  SWP_FOCUSACTIVATE
+        parameter (SWP_FOCUSACTIVATE = '00002000'x)
+        integer  SWP_FOCUSDEACTIVATE
+        parameter (SWP_FOCUSDEACTIVATE = '00004000'x)
+
+        external WinUpdateWindow
+        integer*4 WinUpdateWindow
+
+        external WinInvalidateRect
+        integer*4 WinInvalidateRect
+
+        external WinInvalidateRegion
+        integer*4 WinInvalidateRegion
+
+        external WinInvertRect
+        integer*4 WinInvertRect
+
+        external WinDrawBitmap
+        integer*4 WinDrawBitmap
+
+        integer  DBM_NORMAL
+        parameter (DBM_NORMAL = '00000000'x)
+        integer  DBM_INVERT
+        parameter (DBM_INVERT = '00000001'x)
+        integer  DBM_HALFTONE
+        parameter (DBM_HALFTONE = '00000002'x)
+        integer  DBM_STRETCH
+        parameter (DBM_STRETCH = '00000004'x)
+        integer  DBM_IMAGEATTRS
+        parameter (DBM_IMAGEATTRS = '00000008'x)
+
+        external WinDrawText
+        integer*4 WinDrawText
+
+        integer  DT_LEFT
+        parameter (DT_LEFT = '00000000'x)
+        integer  DT_QUERYEXTENT
+        parameter (DT_QUERYEXTENT = '00000002'x)
+        integer  DT_UNDERSCORE
+        parameter (DT_UNDERSCORE = '00000010'x)
+        integer  DT_STRIKEOUT
+        parameter (DT_STRIKEOUT = '00000020'x)
+        integer  DT_TEXTATTRS
+        parameter (DT_TEXTATTRS = '00000040'x)
+        integer  DT_EXTERNALLEADING
+        parameter (DT_EXTERNALLEADING = '00000080'x)
+        integer  DT_CENTER
+        parameter (DT_CENTER = '00000100'x)
+        integer  DT_RIGHT
+        parameter (DT_RIGHT = '00000200'x)
+        integer  DT_TOP
+        parameter (DT_TOP = '00000000'x)
+        integer  DT_VCENTER
+        parameter (DT_VCENTER = '00000400'x)
+        integer  DT_BOTTOM
+        parameter (DT_BOTTOM = '00000800'x)
+        integer  DT_HALFTONE
+        parameter (DT_HALFTONE = '00001000'x)
+        integer  DT_MNEMONIC
+        parameter (DT_MNEMONIC = '00002000'x)
+        integer  DT_WORDBREAK
+        parameter (DT_WORDBREAK = '00004000'x)
+        integer  DT_ERASERECT
+        parameter (DT_ERASERECT = '00008000'x)
+
+        external WinDrawBorder
+        integer*4 WinDrawBorder
+
+        integer  DB_PATCOPY
+        parameter (DB_PATCOPY = '00000000'x)
+        integer  DB_PATINVERT
+        parameter (DB_PATINVERT = '00000001'x)
+        integer  DB_DESTINVERT
+        parameter (DB_DESTINVERT = '00000002'x)
+        integer  DB_AREAMIXMODE
+        parameter (DB_AREAMIXMODE = '00000003'x)
+
+        integer  DB_ROP
+        parameter (DB_ROP = '00000007'x)
+        integer  DB_INTERIOR
+        parameter (DB_INTERIOR = '00000008'x)
+        integer  DB_AREAATTRS
+        parameter (DB_AREAATTRS = '00000010'x)
+        integer  DB_STANDARD
+        parameter (DB_STANDARD = '00000100'x)
+        integer  DB_DLGBORDER
+        parameter (DB_DLGBORDER = '00000200'x)
+
+        external WinLoadString
+        integer*4 WinLoadString
+
+        external WinLoadMessage
+        integer*4 WinLoadMessage
+
+c$ifdef INCL_WINWINDOWMGR
+
+        external WinSetActiveWindow
+        integer*4 WinSetActiveWindow
+
+        structure /CREATESTRUCT/
+            integer*4 pPresParams
+            integer*4 pCtlData
+            integer*4 id
+            integer*4 hwndInsertBehind
+            integer*4 hwndOwner
+            integer*4 cy
+            integer*4 cx
+            integer*4 y
+            integer*4 x
+            integer*4 flStyle
+            integer*4 pszText
+            integer*4 pszClass
+            integer*4 hwndParent
+        end structure
+
+        structure /CLASSINFO/
+            integer*4 flClassStyle
+            integer*4 pfnWindowProc
+            integer*4 cbWindowData
+        end structure
+
+        external WinSubclassWindow
+        integer*4 WinSubclassWindow
+
+        external WinQueryClassName
+        integer*4 WinQueryClassName
+
+        external WinQueryClassInfo
+        integer*4 WinQueryClassInfo
+
+        external WinQueryActiveWindow
+        integer*4 WinQueryActiveWindow
+
+        external WinIsThreadActive
+        integer*4 WinIsThreadActive
+
+        external WinQuerySysModalWindow
+        integer*4 WinQuerySysModalWindow
+
+        external WinSetSysModalWindow
+        integer*4 WinSetSysModalWindow
+
+        external WinQueryWindowUShort
+        integer*2 WinQueryWindowUShort
+
+        external WinSetWindowUShort
+        integer*4 WinSetWindowUShort
+
+        external WinQueryWindowULong
+        integer*4 WinQueryWindowULong
+
+        external WinSetWindowULong
+        integer*4 WinSetWindowULong
+
+        external WinQueryWindowPtr
+        integer*4 WinQueryWindowPtr
+
+        external WinSetWindowPtr
+        integer*4 WinSetWindowPtr
+
+        external WinSetWindowBits
+        integer*4 WinSetWindowBits
+
+        integer  QWS_USER
+        parameter (QWS_USER = 0)
+        integer  QWS_ID
+        parameter (QWS_ID = -1)
+        integer  QWS_MIN
+        parameter (QWS_MIN = -1)
+
+        integer  QWL_USER
+        parameter (QWL_USER = 0)
+        integer  QWL_STYLE
+        parameter (QWL_STYLE = -2)
+        integer  QWP_PFNWP
+        parameter (QWP_PFNWP = -3)
+        integer  QWL_HMQ
+        parameter (QWL_HMQ = -4)
+        integer  QWL_RESERVED
+        parameter (QWL_RESERVED = -5)
+        integer  QWL_MIN
+        parameter (QWL_MIN = -6)
+
+        integer  QWL_HHEAP
+        parameter (QWL_HHEAP = '00000004'x)
+        integer  QWL_HWNDFOCUSSAVE
+        parameter (QWL_HWNDFOCUSSAVE = '00000018'x)
+        integer  QWL_DEFBUTTON
+        parameter (QWL_DEFBUTTON = '00000040'x)
+        integer  QWL_PSSCBLK
+        parameter (QWL_PSSCBLK = '00000048'x)
+        integer  QWL_PFEPBLK
+        parameter (QWL_PFEPBLK = '0000004c'x)
+        integer  QWL_PSTATBLK
+        parameter (QWL_PSTATBLK = '00000050'x)
+
+        integer  QWS_FLAGS
+        parameter (QWS_FLAGS = '00000008'x)
+        integer  QWS_RESULT
+        parameter (QWS_RESULT = '0000000a'x)
+        integer  QWS_XRESTORE
+        parameter (QWS_XRESTORE = '0000000c'x)
+        integer  QWS_YRESTORE
+        parameter (QWS_YRESTORE = '0000000e'x)
+        integer  QWS_CXRESTORE
+        parameter (QWS_CXRESTORE = '00000010'x)
+        integer  QWS_CYRESTORE
+        parameter (QWS_CYRESTORE = '00000012'x)
+        integer  QWS_XMINIMIZE
+        parameter (QWS_XMINIMIZE = '00000014'x)
+        integer  QWS_YMINIMIZE
+        parameter (QWS_YMINIMIZE = '00000016'x)
+
+        external WinBeginEnumWindows
+        integer*4 WinBeginEnumWindows
+
+        external WinGetNextWindow
+        integer*4 WinGetNextWindow
+
+        external WinEndEnumWindows
+        integer*4 WinEndEnumWindows
+
+        external WinWindowFromPoint
+        integer*4 WinWindowFromPoint
+
+        external WinMapWindowPoints
+        integer*4 WinMapWindowPoints
+
+        external WinValidateRect
+        integer*4 WinValidateRect
+
+        external WinValidateRegion
+        integer*4 WinValidateRegion
+
+        external WinWindowFromDC
+        integer*4 WinWindowFromDC
+
+        external WinQueryWindowDC
+        integer*4 WinQueryWindowDC
+
+        external WinGetScreenPS
+        integer*4 WinGetScreenPS
+
+        external WinLockWindowUpdate
+        integer*4 WinLockWindowUpdate
+
+        external WinLockVisRegions
+        integer*4 WinLockVisRegions
+
+        external WinQueryUpdateRect
+        integer*4 WinQueryUpdateRect
+
+        external WinQueryUpdateRegion
+        integer*4 WinQueryUpdateRegion
+
+        external WinExcludeUpdateRegion
+        integer*4 WinExcludeUpdateRegion
+
+c$endif
+
+c$ifdef INCL_WINMESSAGEMGR
+
+        structure /QMSG/
+            integer*4 hwnd
+            integer*4 msg
+            integer*4 mp1
+            integer*4 mp2
+            integer*4 time
+            record /POINTL/ ptl
+            integer*4 reserved
+        end structure
+
+        integer  WM_NULL
+        parameter (WM_NULL = '00000000'x)
+        integer  WM_CREATE
+        parameter (WM_CREATE = '00000001'x)
+        integer  WM_DESTROY
+        parameter (WM_DESTROY = '00000002'x)
+
+        integer  WM_ENABLE
+        parameter (WM_ENABLE = '00000004'x)
+        integer  WM_SHOW
+        parameter (WM_SHOW = '00000005'x)
+        integer  WM_MOVE
+        parameter (WM_MOVE = '00000006'x)
+        integer  WM_SIZE
+        parameter (WM_SIZE = '00000007'x)
+        integer  WM_ADJUSTWINDOWPOS
+        parameter (WM_ADJUSTWINDOWPOS = '00000008'x)
+
+        integer  WM_CALCVALIDRECTS
+        parameter (WM_CALCVALIDRECTS = '00000009'x)
+
+        integer  WM_SETWINDOWPARAMS
+        parameter (WM_SETWINDOWPARAMS = '0000000a'x)
+        integer  WM_QUERYWINDOWPARAMS
+        parameter (WM_QUERYWINDOWPARAMS = '0000000b'x)
+        integer  WM_HITTEST
+        parameter (WM_HITTEST = '0000000c'x)
+        integer  WM_ACTIVATE
+        parameter (WM_ACTIVATE = '0000000d'x)
+        integer  WM_SETFOCUS
+        parameter (WM_SETFOCUS = '0000000f'x)
+        integer  WM_SETSELECTION
+        parameter (WM_SETSELECTION = '00000010'x)
+
+        integer  WM_PPAINT
+        parameter (WM_PPAINT = '00000011'x)
+        integer  WM_PSETFOCUS
+        parameter (WM_PSETFOCUS = '00000012'x)
+        integer  WM_PSYSCOLORCHANGE
+        parameter (WM_PSYSCOLORCHANGE = '00000013'x)
+        integer  WM_PSIZE
+        parameter (WM_PSIZE = '00000014'x)
+        integer  WM_PACTIVATE
+        parameter (WM_PACTIVATE = '00000015'x)
+        integer  WM_PCONTROL
+        parameter (WM_PCONTROL = '00000016'x)
+
+        integer  WM_COMMAND
+        parameter (WM_COMMAND = '00000020'x)
+        integer  WM_SYSCOMMAND
+        parameter (WM_SYSCOMMAND = '00000021'x)
+        integer  WM_HELP
+        parameter (WM_HELP = '00000022'x)
+        integer  WM_PAINT
+        parameter (WM_PAINT = '00000023'x)
+
+        integer  WM_TIMER
+        parameter (WM_TIMER = '00000024'x)
+        integer  WM_SEM1
+        parameter (WM_SEM1 = '00000025'x)
+        integer  WM_SEM2
+        parameter (WM_SEM2 = '00000026'x)
+        integer  WM_SEM3
+        parameter (WM_SEM3 = '00000027'x)
+        integer  WM_SEM4
+        parameter (WM_SEM4 = '00000028'x)
+
+        integer  WM_CLOSE
+        parameter (WM_CLOSE = '00000029'x)
+        integer  WM_QUIT
+        parameter (WM_QUIT = '0000002a'x)
+        integer  WM_SYSCOLORCHANGE
+        parameter (WM_SYSCOLORCHANGE = '0000002b'x)
+        integer  WM_SYSVALUECHANGED
+        parameter (WM_SYSVALUECHANGED = '0000002d'x)
+        integer  WM_APPTERMINATENOTIFY
+        parameter (WM_APPTERMINATENOTIFY = '0000002e'x)
+        integer  WM_PRESPARAMCHANGED
+        parameter (WM_PRESPARAMCHANGED = '0000002f'x)
+
+        integer  WM_CONTROL
+        parameter (WM_CONTROL = '00000030'x)
+        integer  WM_VSCROLL
+        parameter (WM_VSCROLL = '00000031'x)
+        integer  WM_HSCROLL
+        parameter (WM_HSCROLL = '00000032'x)
+        integer  WM_INITMENU
+        parameter (WM_INITMENU = '00000033'x)
+        integer  WM_MENUSELECT
+        parameter (WM_MENUSELECT = '00000034'x)
+        integer  WM_MENUEND
+        parameter (WM_MENUEND = '00000035'x)
+        integer  WM_DRAWITEM
+        parameter (WM_DRAWITEM = '00000036'x)
+        integer  WM_MEASUREITEM
+        parameter (WM_MEASUREITEM = '00000037'x)
+        integer  WM_CONTROLPOINTER
+        parameter (WM_CONTROLPOINTER = '00000038'x)
+        integer  WM_QUERYDLGCODE
+        parameter (WM_QUERYDLGCODE = '0000003a'x)
+        integer  WM_INITDLG
+        parameter (WM_INITDLG = '0000003b'x)
+        integer  WM_SUBSTITUTESTRING
+        parameter (WM_SUBSTITUTESTRING = '0000003c'x)
+        integer  WM_MATCHMNEMONIC
+        parameter (WM_MATCHMNEMONIC = '0000003d'x)
+        integer  WM_SAVEAPPLICATION
+        parameter (WM_SAVEAPPLICATION = '0000003e'x)
+
+        integer  WM_HELPBASE
+        parameter (WM_HELPBASE = '00000F00'x)
+        integer  WM_HELPTOP
+        parameter (WM_HELPTOP = '00000FFF'x)
+
+        integer  WM_USER
+        parameter (WM_USER = '00001000'x)
+
+        integer  CMDSRC_PUSHBUTTON
+        parameter (CMDSRC_PUSHBUTTON = 1)
+        integer  CMDSRC_MENU
+        parameter (CMDSRC_MENU = 2)
+        integer  CMDSRC_ACCELERATOR
+        parameter (CMDSRC_ACCELERATOR = 3)
+        integer  CMDSRC_FONTDLG
+        parameter (CMDSRC_FONTDLG = 4)
+        integer  CMDSRC_FILEDLG
+        parameter (CMDSRC_FILEDLG = 5)
+        integer  CMDSRC_PRINTDLG
+        parameter (CMDSRC_PRINTDLG = 6)
+        integer  CMDSRC_COLORDLG
+        parameter (CMDSRC_COLORDLG = 7)
+        integer  CMDSRC_OTHER
+        parameter (CMDSRC_OTHER = 0)
+
+        structure /CMDMSG/
+            integer*2 cmd
+            integer*2 unused
+            integer*2 source
+            integer*2 fMouse
+        end structure
+
+        integer*4 COMMANDMSG
+        external COMMANDMSG
+
+        structure /MQINFO/
+            integer*4 cb
+            integer*4 pid
+            integer*4 tid
+            integer*4 cmsgs
+            integer*4 pReserved
+        end structure
+
+        external WinSendMsg
+        integer*4 WinSendMsg
+
+        external WinCreateMsgQueue
+        integer*4 WinCreateMsgQueue
+
+        external WinDestroyMsgQueue
+        integer*4 WinDestroyMsgQueue
+
+        external WinQueryQueueInfo
+        integer*4 WinQueryQueueInfo
+
+        external WinCancelShutdown
+        integer*4 WinCancelShutdown
+
+        external WinGetMsg
+        integer*4 WinGetMsg
+
+        external WinPeekMsg
+        integer*4 WinPeekMsg
+
+        external WinDispatchMsg
+        integer*4 WinDispatchMsg
+
+        external WinPostMsg
+        integer*4 WinPostMsg
+
+        external WinRegisterUserMsg
+        integer*4 WinRegisterUserMsg
+
+        external WinRegisterUserDatatype
+        integer*4 WinRegisterUserDatatype
+
+        external WinSetMsgMode
+        integer*4 WinSetMsgMode
+
+        external WinSetSynchroMode
+        integer*4 WinSetSynchroMode
+
+        integer  PM_REMOVE
+        parameter (PM_REMOVE = '00000001'x)
+        integer  PM_NOREMOVE
+        parameter (PM_NOREMOVE = '00000000'x)
+
+c$ifdef INCL_WINTYPES
+c$include pmtypes.fi
+c$endif
+
+        integer  RUM_IN
+        parameter (RUM_IN = 1)
+        integer  RUM_OUT
+        parameter (RUM_OUT = 2)
+        integer  RUM_INOUT
+        parameter (RUM_INOUT = 3)
+
+        integer  SMD_DELAYED
+        parameter (SMD_DELAYED = '00000001'x)
+        integer  SMD_IMMEDIATE
+        parameter (SMD_IMMEDIATE = '00000002'x)
+
+        integer  SSM_SYNCHRONOUS
+        parameter (SSM_SYNCHRONOUS = '00000001'x)
+        integer  SSM_ASYNCHRONOUS
+        parameter (SSM_ASYNCHRONOUS = '00000002'x)
+        integer  SSM_MIXED
+        parameter (SSM_MIXED = '00000003'x)
+
+c$endif
+
+c$ifdef INCL_WINMESSAGEMGR
+
+        integer  CVR_ALIGNLEFT
+        parameter (CVR_ALIGNLEFT = '00000001'x)
+        integer  CVR_ALIGNBOTTOM
+        parameter (CVR_ALIGNBOTTOM = '00000002'x)
+        integer  CVR_ALIGNRIGHT
+        parameter (CVR_ALIGNRIGHT = '00000004'x)
+        integer  CVR_ALIGNTOP
+        parameter (CVR_ALIGNTOP = '00000008'x)
+        integer  CVR_REDRAW
+        parameter (CVR_REDRAW = '00000010'x)
+
+        integer  HT_NORMAL
+        parameter (HT_NORMAL = 0)
+        integer  HT_TRANSPARENT
+        parameter (HT_TRANSPARENT = -1)
+        integer  HT_DISCARD
+        parameter (HT_DISCARD = -2)
+        integer  HT_ERROR
+        parameter (HT_ERROR = -3)
+
+        structure /WNDPARAMS/
+            integer*4 fsStatus
+            integer*4 cchText
+            integer*4 pszText
+            integer*4 cbPresParams
+            integer*4 pPresParams
+            integer*4 cbCtlData
+            integer*4 pCtlData
+        end structure
+
+        integer  WPM_TEXT
+        parameter (WPM_TEXT = '00000001'x)
+        integer  WPM_CTLDATA
+        parameter (WPM_CTLDATA = '00000002'x)
+        integer  WPM_PRESPARAMS
+        parameter (WPM_PRESPARAMS = '00000004'x)
+        integer  WPM_CCHTEXT
+        parameter (WPM_CCHTEXT = '00000008'x)
+        integer  WPM_CBCTLDATA
+        parameter (WPM_CBCTLDATA = '00000010'x)
+        integer  WPM_CBPRESPARAMS
+        parameter (WPM_CBPRESPARAMS = '00000020'x)
+
+        external WinInSendMsg
+        integer*4 WinInSendMsg
+
+        external WinBroadcastMsg
+        integer*4 WinBroadcastMsg
+
+        integer  BMSG_POST
+        parameter (BMSG_POST = '00000000'x)
+        integer  BMSG_SEND
+        parameter (BMSG_SEND = '00000001'x)
+        integer  BMSG_POSTQUEUE
+        parameter (BMSG_POSTQUEUE = '00000002'x)
+        integer  BMSG_DESCENDANTS
+        parameter (BMSG_DESCENDANTS = '00000004'x)
+        integer  BMSG_FRAMEONLY
+        parameter (BMSG_FRAMEONLY = '00000008'x)
+
+        external WinWaitMsg
+        integer*4 WinWaitMsg
+
+        external WinQueryQueueStatus
+        integer*4 WinQueryQueueStatus
+
+        integer  QS_KEY
+        parameter (QS_KEY = '00000001'x)
+        integer  QS_MOUSEBUTTON
+        parameter (QS_MOUSEBUTTON = '00000002'x)
+        integer  QS_MOUSEMOVE
+        parameter (QS_MOUSEMOVE = '00000004'x)
+        integer  QS_MOUSE
+        parameter (QS_MOUSE = '00000006'x)
+        integer  QS_TIMER
+        parameter (QS_TIMER = '00000008'x)
+        integer  QS_PAINT
+        parameter (QS_PAINT = '00000010'x)
+        integer  QS_POSTMSG
+        parameter (QS_POSTMSG = '00000020'x)
+        integer  QS_SEM1
+        parameter (QS_SEM1 = '00000040'x)
+        integer  QS_SEM2
+        parameter (QS_SEM2 = '00000080'x)
+        integer  QS_SEM3
+        parameter (QS_SEM3 = '00000100'x)
+        integer  QS_SEM4
+        parameter (QS_SEM4 = '00000200'x)
+        integer  QS_SENDMSG
+        parameter (QS_SENDMSG = '00000400'x)
+
+        external WinQueryMsgPos
+        integer*4 WinQueryMsgPos
+
+        external WinQueryMsgTime
+        integer*4 WinQueryMsgTime
+
+        external WinPostQueueMsg
+        integer*4 WinPostQueueMsg
+
+        integer  SMIM_ALL
+        parameter (SMIM_ALL = '00000EFF'x)
+        integer  SMI_NOINTEREST
+        parameter (SMI_NOINTEREST = '00000001'x)
+        integer  SMI_INTEREST
+        parameter (SMI_INTEREST = '00000002'x)
+        integer  SMI_RESET
+        parameter (SMI_RESET = '00000004'x)
+        integer  SMI_AUTODISPATCH
+        parameter (SMI_AUTODISPATCH = '00000008'x)
+
+        external WinSetMsgInterest
+        integer*4 WinSetMsgInterest
+
+        external WinSetClassMsgInterest
+        integer*4 WinSetClassMsgInterest
+
+c$endif
+
+c$ifdef INCL_WININPUT
+
+        external WinSetFocus
+        integer*4 WinSetFocus
+
+        external WinFocusChange
+        integer*4 WinFocusChange
+
+        integer  FC_NOSETFOCUS
+        parameter (FC_NOSETFOCUS = '00000001'x)
+        integer  FC_NOBRINGTOTOP
+        parameter (FC_NOBRINGTOTOP = FC_NOSETFOCUS)
+        integer  FC_NOLOSEFOCUS
+        parameter (FC_NOLOSEFOCUS = '00000002'x)
+        integer  FC_NOBRINGTOPFIRSTWINDOW
+        parameter (FC_NOBRINGTOPFIRSTWINDOW = FC_NOLOSEFOCUS)
+        integer  FC_NOSETACTIVE
+        parameter (FC_NOSETACTIVE = '00000004'x)
+        integer  FC_NOLOSEACTIVE
+        parameter (FC_NOLOSEACTIVE = '00000008'x)
+        integer  FC_NOSETSELECTION
+        parameter (FC_NOSETSELECTION = '00000010'x)
+        integer  FC_NOLOSESELECTION
+        parameter (FC_NOLOSESELECTION = '00000020'x)
+
+        integer  QFC_NEXTINCHAIN
+        parameter (QFC_NEXTINCHAIN = '00000001'x)
+        integer  QFC_ACTIVE
+        parameter (QFC_ACTIVE = '00000002'x)
+        integer  QFC_FRAME
+        parameter (QFC_FRAME = '00000003'x)
+        integer  QFC_SELECTACTIVE
+        parameter (QFC_SELECTACTIVE = '00000004'x)
+        integer  QFC_PARTOFCHAIN
+        parameter (QFC_PARTOFCHAIN = '00000005'x)
+
+        external WinSetCapture
+        integer*4 WinSetCapture
+
+        external WinQueryCapture
+        integer*4 WinQueryCapture
+
+        integer  WM_MOUSEFIRST
+        parameter (WM_MOUSEFIRST = '00000070'x)
+        integer  WM_MOUSELAST
+        parameter (WM_MOUSELAST = '00000079'x)
+        integer  WM_BUTTONCLICKFIRST
+        parameter (WM_BUTTONCLICKFIRST = '00000071'x)
+        integer  WM_BUTTONCLICKLAST
+        parameter (WM_BUTTONCLICKLAST = '00000079'x)
+
+        integer  WM_MOUSEMOVE
+        parameter (WM_MOUSEMOVE = '00000070'x)
+
+        integer  WM_BUTTON1DOWN
+        parameter (WM_BUTTON1DOWN = '00000071'x)
+
+        integer  WM_BUTTON1UP
+        parameter (WM_BUTTON1UP = '00000072'x)
+        integer  WM_BUTTON1DBLCLK
+        parameter (WM_BUTTON1DBLCLK = '00000073'x)
+        integer  WM_BUTTON2DOWN
+        parameter (WM_BUTTON2DOWN = '00000074'x)
+        integer  WM_BUTTON2UP
+        parameter (WM_BUTTON2UP = '00000075'x)
+        integer  WM_BUTTON2DBLCLK
+        parameter (WM_BUTTON2DBLCLK = '00000076'x)
+
+        integer  WM_BUTTON3DOWN
+        parameter (WM_BUTTON3DOWN = '00000077'x)
+        integer  WM_BUTTON3UP
+        parameter (WM_BUTTON3UP = '00000078'x)
+        integer  WM_BUTTON3DBLCLK
+        parameter (WM_BUTTON3DBLCLK = '00000079'x)
+
+        integer  WM_EXTMOUSEFIRST
+        parameter (WM_EXTMOUSEFIRST = '00000410'x)
+        integer  WM_EXTMOUSELAST
+        parameter (WM_EXTMOUSELAST = '00000419'x)
+
+        integer  WM_CHORD
+        parameter (WM_CHORD = '00000410'x)
+        integer  WM_BUTTON1MOTIONSTART
+        parameter (WM_BUTTON1MOTIONSTART = '00000411'x)
+        integer  WM_BUTTON1MOTIONEND
+        parameter (WM_BUTTON1MOTIONEND = '00000412'x)
+        integer  WM_BUTTON1CLICK
+        parameter (WM_BUTTON1CLICK = '00000413'x)
+        integer  WM_BUTTON2MOTIONSTART
+        parameter (WM_BUTTON2MOTIONSTART = '00000414'x)
+        integer  WM_BUTTON2MOTIONEND
+        parameter (WM_BUTTON2MOTIONEND = '00000415'x)
+        integer  WM_BUTTON2CLICK
+        parameter (WM_BUTTON2CLICK = '00000416'x)
+        integer  WM_BUTTON3MOTIONSTART
+        parameter (WM_BUTTON3MOTIONSTART = '00000417'x)
+        integer  WM_BUTTON3MOTIONEND
+        parameter (WM_BUTTON3MOTIONEND = '00000418'x)
+        integer  WM_BUTTON3CLICK
+        parameter (WM_BUTTON3CLICK = '00000419'x)
+
+        integer  WM_MOUSETRANSLATEFIRST
+        parameter (WM_MOUSETRANSLATEFIRST = '00000420'x)
+        integer  WM_MOUSETRANSLATELAST
+        parameter (WM_MOUSETRANSLATELAST = '00000428'x)
+
+        integer  WM_BEGINDRAG
+        parameter (WM_BEGINDRAG = '00000420'x)
+        integer  WM_ENDDRAG
+        parameter (WM_ENDDRAG = '00000421'x)
+        integer  WM_SINGLESELECT
+        parameter (WM_SINGLESELECT = '00000422'x)
+        integer  WM_OPEN
+        parameter (WM_OPEN = '00000423'x)
+        integer  WM_CONTEXTMENU
+        parameter (WM_CONTEXTMENU = '00000424'x)
+        integer  WM_CONTEXTHELP
+        parameter (WM_CONTEXTHELP = '00000425'x)
+        integer  WM_TEXTEDIT
+        parameter (WM_TEXTEDIT = '00000426'x)
+        integer  WM_BEGINSELECT
+        parameter (WM_BEGINSELECT = '00000427'x)
+        integer  WM_ENDSELECT
+        parameter (WM_ENDSELECT = '00000428'x)
+
+        external WinQueryFocus
+        integer*4 WinQueryFocus
+
+        integer  WM_CHAR
+        parameter (WM_CHAR = '0000007a'x)
+        integer  WM_VIOCHAR
+        parameter (WM_VIOCHAR = '0000007b'x)
+
+        integer  KC_NONE
+        parameter (KC_NONE = '00000000'x)
+        integer  KC_CHAR
+        parameter (KC_CHAR = '00000001'x)
+        integer  KC_VIRTUALKEY
+        parameter (KC_VIRTUALKEY = '00000002'x)
+        integer  KC_SCANCODE
+        parameter (KC_SCANCODE = '00000004'x)
+
+        integer  KC_SHIFT
+        parameter (KC_SHIFT = '00000008'x)
+        integer  KC_CTRL
+        parameter (KC_CTRL = '00000010'x)
+        integer  KC_ALT
+        parameter (KC_ALT = '00000020'x)
+        integer  KC_KEYUP
+        parameter (KC_KEYUP = '00000040'x)
+        integer  KC_PREVDOWN
+        parameter (KC_PREVDOWN = '00000080'x)
+        integer  KC_LONEKEY
+        parameter (KC_LONEKEY = '00000100'x)
+        integer  KC_DEADKEY
+        parameter (KC_DEADKEY = '00000200'x)
+        integer  KC_COMPOSITE
+        parameter (KC_COMPOSITE = '00000400'x)
+        integer  KC_INVALIDCOMP
+        parameter (KC_INVALIDCOMP = '00000800'x)
+
+        integer  KC_TOGGLE
+        parameter (KC_TOGGLE = '00001000'x)
+        integer  KC_INVALIDCHAR
+        parameter (KC_INVALIDCHAR = '00002000'x)
+        integer  KC_DBCSRSRVD1
+        parameter (KC_DBCSRSRVD1 = '00004000'x)
+        integer  KC_DBCSRSRVD2
+        parameter (KC_DBCSRSRVD2 = '00008000'x)
+
+        structure /MSEMSG/
+            integer*2 x
+            integer*2 y
+            integer*2 codeHitTest
+            integer*2 fsInp
+        end structure
+
+        integer*4 MOUSEMSG
+        external MOUSEMSG
+
+        structure /CHRMSG/
+            integer*2 fs
+            integer*1 cRepeat
+            integer*1 scancode
+            integer*2 chr
+            integer*2 vkey
+        end structure
+
+        integer*4 CHARMSG
+        external CHARMSG
+
+        integer  INP_NONE
+        parameter (INP_NONE = '00000000'x)
+        integer  INP_KBD
+        parameter (INP_KBD = '00000001'x)
+        integer  INP_MULT
+        parameter (INP_MULT = '00000002'x)
+        integer  INP_RES2
+        parameter (INP_RES2 = '00000004'x)
+        integer  INP_SHIFT
+        parameter (INP_SHIFT = '00000008'x)
+        integer  INP_CTRL
+        parameter (INP_CTRL = '00000010'x)
+        integer  INP_ALT
+        parameter (INP_ALT = '00000020'x)
+        integer  INP_RES3
+        parameter (INP_RES3 = '00000040'x)
+        integer  INP_RES4
+        parameter (INP_RES4 = '00000080'x)
+        integer  INP_IGNORE
+        parameter (INP_IGNORE = '0000FFFF'x)
+
+        integer  VK_BUTTON1
+        parameter (VK_BUTTON1 = '00000001'x)
+        integer  VK_BUTTON2
+        parameter (VK_BUTTON2 = '00000002'x)
+        integer  VK_BUTTON3
+        parameter (VK_BUTTON3 = '00000003'x)
+        integer  VK_BREAK
+        parameter (VK_BREAK = '00000004'x)
+        integer  VK_BACKSPACE
+        parameter (VK_BACKSPACE = '00000005'x)
+        integer  VK_TAB
+        parameter (VK_TAB = '00000006'x)
+        integer  VK_BACKTAB
+        parameter (VK_BACKTAB = '00000007'x)
+        integer  VK_NEWLINE
+        parameter (VK_NEWLINE = '00000008'x)
+        integer  VK_SHIFT
+        parameter (VK_SHIFT = '00000009'x)
+        integer  VK_CTRL
+        parameter (VK_CTRL = '0000000A'x)
+        integer  VK_ALT
+        parameter (VK_ALT = '0000000B'x)
+        integer  VK_ALTGRAF
+        parameter (VK_ALTGRAF = '0000000C'x)
+        integer  VK_PAUSE
+        parameter (VK_PAUSE = '0000000D'x)
+        integer  VK_CAPSLOCK
+        parameter (VK_CAPSLOCK = '0000000E'x)
+        integer  VK_ESC
+        parameter (VK_ESC = '0000000F'x)
+        integer  VK_SPACE
+        parameter (VK_SPACE = '00000010'x)
+        integer  VK_PAGEUP
+        parameter (VK_PAGEUP = '00000011'x)
+        integer  VK_PAGEDOWN
+        parameter (VK_PAGEDOWN = '00000012'x)
+        integer  VK_END
+        parameter (VK_END = '00000013'x)
+        integer  VK_HOME
+        parameter (VK_HOME = '00000014'x)
+        integer  VK_LEFT
+        parameter (VK_LEFT = '00000015'x)
+        integer  VK_UP
+        parameter (VK_UP = '00000016'x)
+        integer  VK_RIGHT
+        parameter (VK_RIGHT = '00000017'x)
+        integer  VK_DOWN
+        parameter (VK_DOWN = '00000018'x)
+        integer  VK_PRINTSCRN
+        parameter (VK_PRINTSCRN = '00000019'x)
+        integer  VK_INSERT
+        parameter (VK_INSERT = '0000001A'x)
+        integer  VK_DELETE
+        parameter (VK_DELETE = '0000001B'x)
+        integer  VK_SCRLLOCK
+        parameter (VK_SCRLLOCK = '0000001C'x)
+        integer  VK_NUMLOCK
+        parameter (VK_NUMLOCK = '0000001D'x)
+        integer  VK_ENTER
+        parameter (VK_ENTER = '0000001E'x)
+        integer  VK_SYSRQ
+        parameter (VK_SYSRQ = '0000001F'x)
+        integer  VK_F1
+        parameter (VK_F1 = '00000020'x)
+        integer  VK_F2
+        parameter (VK_F2 = '00000021'x)
+        integer  VK_F3
+        parameter (VK_F3 = '00000022'x)
+        integer  VK_F4
+        parameter (VK_F4 = '00000023'x)
+        integer  VK_F5
+        parameter (VK_F5 = '00000024'x)
+        integer  VK_F6
+        parameter (VK_F6 = '00000025'x)
+        integer  VK_F7
+        parameter (VK_F7 = '00000026'x)
+        integer  VK_F8
+        parameter (VK_F8 = '00000027'x)
+        integer  VK_F9
+        parameter (VK_F9 = '00000028'x)
+        integer  VK_F10
+        parameter (VK_F10 = '00000029'x)
+        integer  VK_F11
+        parameter (VK_F11 = '0000002A'x)
+        integer  VK_F12
+        parameter (VK_F12 = '0000002B'x)
+        integer  VK_F13
+        parameter (VK_F13 = '0000002C'x)
+        integer  VK_F14
+        parameter (VK_F14 = '0000002D'x)
+        integer  VK_F15
+        parameter (VK_F15 = '0000002E'x)
+        integer  VK_F16
+        parameter (VK_F16 = '0000002F'x)
+        integer  VK_F17
+        parameter (VK_F17 = '00000030'x)
+        integer  VK_F18
+        parameter (VK_F18 = '00000031'x)
+        integer  VK_F19
+        parameter (VK_F19 = '00000032'x)
+        integer  VK_F20
+        parameter (VK_F20 = '00000033'x)
+        integer  VK_F21
+        parameter (VK_F21 = '00000034'x)
+        integer  VK_F22
+        parameter (VK_F22 = '00000035'x)
+        integer  VK_F23
+        parameter (VK_F23 = '00000036'x)
+        integer  VK_F24
+        parameter (VK_F24 = '00000037'x)
+        integer  VK_ENDDRAG
+        parameter (VK_ENDDRAG = '00000038'x)
+
+        integer  VK_MENU
+        parameter (VK_MENU = VK_F10)
+
+c$ifdef INCL_NLS
+
+        integer  VK_DBCSFIRST
+        parameter (VK_DBCSFIRST = '00000080'x)
+        integer  VK_DBCSLAST
+        parameter (VK_DBCSLAST = '000000ff'x)
+
+c$endif
+
+        integer  VK_USERFIRST
+        parameter (VK_USERFIRST = '00000100'x)
+        integer  VK_USERLAST
+        parameter (VK_USERLAST = '000001ff'x)
+
+        external WinGetKeyState
+        integer*4 WinGetKeyState
+
+        external WinGetPhysKeyState
+        integer*4 WinGetPhysKeyState
+
+        external WinEnablePhysInput
+        integer*4 WinEnablePhysInput
+
+        external WinIsPhysInputEnabled
+        integer*4 WinIsPhysInputEnabled
+
+        external WinSetKeyboardStateTable
+        integer*4 WinSetKeyboardStateTable
+
+        integer  WM_JOURNALNOTIFY
+        parameter (WM_JOURNALNOTIFY = '0000007c'x)
+
+        integer  JRN_QUEUESTATUS
+        parameter (JRN_QUEUESTATUS = '00000001'x)
+        integer  JRN_PHYSKEYSTATE
+        parameter (JRN_PHYSKEYSTATE = '00000002'x)
+
+c$endif
+
+c$ifdef INCL_WINDIALOGS
+
+        external WinGetDlgMsg
+        integer*4 WinGetDlgMsg
+
+        external WinLoadDlg
+        integer*4 WinLoadDlg
+
+        external WinDlgBox
+        integer*4 WinDlgBox
+
+        external WinDismissDlg
+        integer*4 WinDismissDlg
+
+        external WinQueryDlgItemShort
+        integer*4 WinQueryDlgItemShort
+
+        external WinSetDlgItemShort
+        integer*4 WinSetDlgItemShort
+
+        external WinSetDlgItemText
+        integer*4 WinSetDlgItemText
+
+        external WinQueryDlgItemText
+        integer*4 WinQueryDlgItemText
+
+        external WinQueryDlgItemTextLength
+        integer*4 WinQueryDlgItemTextLength
+
+        external WinDefDlgProc
+        integer*4 WinDefDlgProc
+
+        integer  DID_OK
+        parameter (DID_OK = 1)
+        integer  DID_CANCEL
+        parameter (DID_CANCEL = 2)
+        integer  DID_ERROR
+        parameter (DID_ERROR = '0000ffff'x)
+
+        external WinAlarm
+        integer*4 WinAlarm
+
+        integer  WA_WARNING
+        parameter (WA_WARNING = 0)
+        integer  WA_NOTE
+        parameter (WA_NOTE = 1)
+        integer  WA_ERROR
+        parameter (WA_ERROR = 2)
+        integer  WA_CWINALARMS
+        parameter (WA_CWINALARMS = 3)
+
+        external WinMessageBox
+        integer*4 WinMessageBox
+
+        integer  MB_OK
+        parameter (MB_OK = '00000000'x)
+        integer  MB_OKCANCEL
+        parameter (MB_OKCANCEL = '00000001'x)
+        integer  MB_RETRYCANCEL
+        parameter (MB_RETRYCANCEL = '00000002'x)
+        integer  MB_ABORTRETRYIGNORE
+        parameter (MB_ABORTRETRYIGNORE = '00000003'x)
+        integer  MB_YESNO
+        parameter (MB_YESNO = '00000004'x)
+        integer  MB_YESNOCANCEL
+        parameter (MB_YESNOCANCEL = '00000005'x)
+        integer  MB_CANCEL
+        parameter (MB_CANCEL = '00000006'x)
+        integer  MB_ENTER
+        parameter (MB_ENTER = '00000007'x)
+        integer  MB_ENTERCANCEL
+        parameter (MB_ENTERCANCEL = '00000008'x)
+
+        integer  MB_NOICON
+        parameter (MB_NOICON = '00000000'x)
+        integer  MB_CUANOTIFICATION
+        parameter (MB_CUANOTIFICATION = '00000000'x)
+        integer  MB_ICONQUESTION
+        parameter (MB_ICONQUESTION = '00000010'x)
+        integer  MB_ICONEXCLAMATION
+        parameter (MB_ICONEXCLAMATION = '00000020'x)
+        integer  MB_CUAWARNING
+        parameter (MB_CUAWARNING = '00000020'x)
+        integer  MB_ICONASTERISK
+        parameter (MB_ICONASTERISK = '00000030'x)
+        integer  MB_ICONHAND
+        parameter (MB_ICONHAND = '00000040'x)
+        integer  MB_CUACRITICAL
+        parameter (MB_CUACRITICAL = '00000040'x)
+        integer  MB_QUERY
+        parameter (MB_QUERY = MB_ICONQUESTION)
+        integer  MB_WARNING
+        parameter (MB_WARNING = MB_CUAWARNING)
+        integer  MB_INFORMATION
+        parameter (MB_INFORMATION = MB_ICONASTERISK)
+        integer  MB_CRITICAL
+        parameter (MB_CRITICAL = MB_CUACRITICAL)
+        integer  MB_ERROR
+        parameter (MB_ERROR = MB_CRITICAL)
+
+        integer  MB_DEFBUTTON1
+        parameter (MB_DEFBUTTON1 = '00000000'x)
+        integer  MB_DEFBUTTON2
+        parameter (MB_DEFBUTTON2 = '00000100'x)
+        integer  MB_DEFBUTTON3
+        parameter (MB_DEFBUTTON3 = '00000200'x)
+
+        integer  MB_APPLMODAL
+        parameter (MB_APPLMODAL = '00000000'x)
+        integer  MB_SYSTEMMODAL
+        parameter (MB_SYSTEMMODAL = '00001000'x)
+        integer  MB_HELP
+        parameter (MB_HELP = '00002000'x)
+        integer  MB_MOVEABLE
+        parameter (MB_MOVEABLE = '00004000'x)
+
+        integer  MBID_OK
+        parameter (MBID_OK = 1)
+        integer  MBID_CANCEL
+        parameter (MBID_CANCEL = 2)
+        integer  MBID_ABORT
+        parameter (MBID_ABORT = 3)
+        integer  MBID_RETRY
+        parameter (MBID_RETRY = 4)
+        integer  MBID_IGNORE
+        parameter (MBID_IGNORE = 5)
+        integer  MBID_YES
+        parameter (MBID_YES = 6)
+        integer  MBID_NO
+        parameter (MBID_NO = 7)
+        integer  MBID_HELP
+        parameter (MBID_HELP = 8)
+        integer  MBID_ENTER
+        parameter (MBID_ENTER = 9)
+        integer  MBID_ERROR
+        parameter (MBID_ERROR = '0000ffff'x)
+
+        integer*4 WinCheckButton
+        external WinCheckButton
+
+        integer*4 WinQueryButtonCheckState
+        external WinQueryButtonCheckState
+
+        integer*4 WinEnableControl
+        external WinEnableControl
+
+        integer*4 WinIsControlEnabled
+        external WinIsControlEnabled
+
+        integer  DLGC_ENTRYFIELD
+        parameter (DLGC_ENTRYFIELD = '00000001'x)
+        integer  DLGC_BUTTON
+        parameter (DLGC_BUTTON = '00000002'x)
+        integer  DLGC_RADIOBUTTON
+        parameter (DLGC_RADIOBUTTON = '00000004'x)
+        integer  DLGC_STATIC
+        parameter (DLGC_STATIC = '00000008'x)
+        integer  DLGC_DEFAULT
+        parameter (DLGC_DEFAULT = '00000010'x)
+        integer  DLGC_PUSHBUTTON
+        parameter (DLGC_PUSHBUTTON = '00000020'x)
+        integer  DLGC_CHECKBOX
+        parameter (DLGC_CHECKBOX = '00000040'x)
+        integer  DLGC_SCROLLBAR
+        parameter (DLGC_SCROLLBAR = '00000080'x)
+        integer  DLGC_MENU
+        parameter (DLGC_MENU = '00000100'x)
+        integer  DLGC_TABONCLICK
+        parameter (DLGC_TABONCLICK = '00000200'x)
+        integer  DLGC_MLE
+        parameter (DLGC_MLE = '00000400'x)
+
+        external WinProcessDlg
+        integer*4 WinProcessDlg
+
+        external WinSendDlgItemMsg
+        integer*4 WinSendDlgItemMsg
+
+        external WinMapDlgPoints
+        integer*4 WinMapDlgPoints
+
+        external WinEnumDlgItem
+        integer*4 WinEnumDlgItem
+
+        external WinSubstituteStrings
+        integer*4 WinSubstituteStrings
+
+        integer  EDI_FIRSTTABITEM
+        parameter (EDI_FIRSTTABITEM = 0)
+        integer  EDI_LASTTABITEM
+        parameter (EDI_LASTTABITEM = 1)
+        integer  EDI_NEXTTABITEM
+        parameter (EDI_NEXTTABITEM = 2)
+        integer  EDI_PREVTABITEM
+        parameter (EDI_PREVTABITEM = 3)
+        integer  EDI_FIRSTGROUPITEM
+        parameter (EDI_FIRSTGROUPITEM = 4)
+        integer  EDI_LASTGROUPITEM
+        parameter (EDI_LASTGROUPITEM = 5)
+        integer  EDI_NEXTGROUPITEM
+        parameter (EDI_NEXTGROUPITEM = 6)
+        integer  EDI_PREVGROUPITEM
+        parameter (EDI_PREVGROUPITEM = 7)
+
+        structure /DLGTITEM/
+            integer*2 fsItemStatus
+            integer*2 cChildren
+            integer*2 cchClassName
+            integer*2 offClassName
+            integer*2 cchText
+            integer*2 offText
+            integer*4 flStyle
+            integer*2 x
+            integer*2 y
+            integer*2 cx
+            integer*2 cy
+            integer*2 id
+            integer*2 offPresParams
+            integer*2 offCtlData
+        end structure
+
+        structure /DLGTEMPLATE/
+            integer*2 cbTemplate
+            integer*2 type
+            integer*2 codepage
+            integer*2 offadlgti
+            integer*2 fsTemplateStatus
+            integer*2 iItemFocus
+            integer*2 coffPresParams
+            record /DLGTITEM/ adlgti(1)
+        end structure
+
+        external WinCreateDlg
+        integer*4 WinCreateDlg
+
+c$endif
+
+c$ifdef INCL_WINSTATICS
+
+        integer  SS_TEXT
+        parameter (SS_TEXT = '00000001'x)
+        integer  SS_GROUPBOX
+        parameter (SS_GROUPBOX = '00000002'x)
+        integer  SS_ICON
+        parameter (SS_ICON = '00000003'x)
+        integer  SS_BITMAP
+        parameter (SS_BITMAP = '00000004'x)
+        integer  SS_FGNDRECT
+        parameter (SS_FGNDRECT = '00000005'x)
+        integer  SS_HALFTONERECT
+        parameter (SS_HALFTONERECT = '00000006'x)
+        integer  SS_BKGNDRECT
+        parameter (SS_BKGNDRECT = '00000007'x)
+        integer  SS_FGNDFRAME
+        parameter (SS_FGNDFRAME = '00000008'x)
+        integer  SS_HALFTONEFRAME
+        parameter (SS_HALFTONEFRAME = '00000009'x)
+        integer  SS_BKGNDFRAME
+        parameter (SS_BKGNDFRAME = '0000000a'x)
+        integer  SS_SYSICON
+        parameter (SS_SYSICON = '0000000b'x)
+        integer  SS_AUTOSIZE
+        parameter (SS_AUTOSIZE = '00000040'x)
+
+        integer  SM_SETHANDLE
+        parameter (SM_SETHANDLE = '00000100'x)
+        integer  SM_QUERYHANDLE
+        parameter (SM_QUERYHANDLE = '00000101'x)
+
+c$endif
+
+c$ifdef INCL_WINBUTTONS
+
+        integer  BS_PUSHBUTTON
+        parameter (BS_PUSHBUTTON = 0)
+        integer  BS_CHECKBOX
+        parameter (BS_CHECKBOX = 1)
+        integer  BS_AUTOCHECKBOX
+        parameter (BS_AUTOCHECKBOX = 2)
+        integer  BS_RADIOBUTTON
+        parameter (BS_RADIOBUTTON = 3)
+        integer  BS_AUTORADIOBUTTON
+        parameter (BS_AUTORADIOBUTTON = 4)
+        integer  BS_3STATE
+        parameter (BS_3STATE = 5)
+        integer  BS_AUTO3STATE
+        parameter (BS_AUTO3STATE = 6)
+        integer  BS_USERBUTTON
+        parameter (BS_USERBUTTON = 7)
+        integer  BS_PRIMARYSTYLES
+        parameter (BS_PRIMARYSTYLES = '0000000f'x)
+
+        integer  BS_BITMAP
+        parameter (BS_BITMAP = '00000040'x)
+        integer  BS_ICON
+        parameter (BS_ICON = '00000080'x)
+        integer  BS_HELP
+        parameter (BS_HELP = '00000100'x)
+        integer  BS_SYSCOMMAND
+        parameter (BS_SYSCOMMAND = '00000200'x)
+        integer  BS_DEFAULT
+        parameter (BS_DEFAULT = '00000400'x)
+        integer  BS_NOPOINTERFOCUS
+        parameter (BS_NOPOINTERFOCUS = '00000800'x)
+        integer  BS_NOBORDER
+        parameter (BS_NOBORDER = '00001000'x)
+        integer  BS_NOCURSORSELECT
+        parameter (BS_NOCURSORSELECT = '00002000'x)
+        integer  BS_AUTOSIZE
+        parameter (BS_AUTOSIZE = '00004000'x)
+
+        structure /BTNCDATA/
+            integer*2 cb
+            integer*2 fsCheckState
+            integer*2 fsHiliteState
+            integer*4 hImage
+        end structure
+
+        structure /USERBUTTON/
+            integer*4 hwnd
+            integer*4 hps
+            integer*4 fsState
+            integer*4 fsStateOld
+        end structure
+
+        integer  BM_CLICK
+        parameter (BM_CLICK = '00000120'x)
+        integer  BM_QUERYCHECKINDEX
+        parameter (BM_QUERYCHECKINDEX = '00000121'x)
+        integer  BM_QUERYHILITE
+        parameter (BM_QUERYHILITE = '00000122'x)
+        integer  BM_SETHILITE
+        parameter (BM_SETHILITE = '00000123'x)
+        integer  BM_QUERYCHECK
+        parameter (BM_QUERYCHECK = '00000124'x)
+        integer  BM_SETCHECK
+        parameter (BM_SETCHECK = '00000125'x)
+        integer  BM_SETDEFAULT
+        parameter (BM_SETDEFAULT = '00000126'x)
+
+        integer  BN_CLICKED
+        parameter (BN_CLICKED = 1)
+        integer  BN_DBLCLICKED
+        parameter (BN_DBLCLICKED = 2)
+        integer  BN_PAINT
+        parameter (BN_PAINT = 3)
+
+        integer  BDS_HILITED
+        parameter (BDS_HILITED = '00000100'x)
+        integer  BDS_DISABLED
+        parameter (BDS_DISABLED = '00000200'x)
+        integer  BDS_DEFAULT
+        parameter (BDS_DEFAULT = '00000400'x)
+
+c$endif
+
+c$ifdef INCL_WINENTRYFIELDS
+
+        integer  ES_LEFT
+        parameter (ES_LEFT = '00000000'x)
+        integer  ES_CENTER
+        parameter (ES_CENTER = '00000001'x)
+        integer  ES_RIGHT
+        parameter (ES_RIGHT = '00000002'x)
+
+        integer  ES_AUTOSCROLL
+        parameter (ES_AUTOSCROLL = '00000004'x)
+
+        integer  ES_MARGIN
+        parameter (ES_MARGIN = '00000008'x)
+        integer  ES_AUTOTAB
+        parameter (ES_AUTOTAB = '00000010'x)
+        integer  ES_READONLY
+        parameter (ES_READONLY = '00000020'x)
+        integer  ES_COMMAND
+        parameter (ES_COMMAND = '00000040'x)
+        integer  ES_UNREADABLE
+        parameter (ES_UNREADABLE = '00000080'x)
+        integer  ES_AUTOSIZE
+        parameter (ES_AUTOSIZE = '00000200'x)
+
+c$ifdef INCL_NLS
+
+        integer  ES_ANY
+        parameter (ES_ANY = '00000000'x)
+        integer  ES_SBCS
+        parameter (ES_SBCS = '00001000'x)
+        integer  ES_DBCS
+        parameter (ES_DBCS = '00002000'x)
+        integer  ES_MIXED
+        parameter (ES_MIXED = '00003000'x)
+
+c$endif
+
+        integer  CBS_SIMPLE
+        parameter (CBS_SIMPLE = '00000001'x)
+        integer  CBS_DROPDOWN
+        parameter (CBS_DROPDOWN = '00000002'x)
+        integer  CBS_DROPDOWNLIST
+        parameter (CBS_DROPDOWNLIST = '00000004'x)
+
+        integer  CBID_LIST
+        parameter (CBID_LIST = '0000029A'x)
+        integer  CBID_EDIT
+        parameter (CBID_EDIT = '0000029B'x)
+
+        integer  CBM_SHOWLIST
+        parameter (CBM_SHOWLIST = '00000170'x)
+        integer  CBM_HILITE
+        parameter (CBM_HILITE = '00000171'x)
+        integer  CBM_ISLISTSHOWING
+        parameter (CBM_ISLISTSHOWING = '00000172'x)
+
+        integer  CBN_EFCHANGE
+        parameter (CBN_EFCHANGE = 1)
+        integer  CBN_EFSCROLL
+        parameter (CBN_EFSCROLL = 2)
+        integer  CBN_MEMERROR
+        parameter (CBN_MEMERROR = 3)
+        integer  CBN_LBSELECT
+        parameter (CBN_LBSELECT = 4)
+        integer  CBN_LBSCROLL
+        parameter (CBN_LBSCROLL = 5)
+        integer  CBN_SHOWLIST
+        parameter (CBN_SHOWLIST = 6)
+        integer  CBN_ENTER
+        parameter (CBN_ENTER = 7)
+
+
+        structure /ENTRYFDATA/
+            integer*2 cb
+            integer*2 cchEditLimit
+            integer*2 ichMinSel
+            integer*2 ichMaxSel
+        end structure
+
+        integer  EM_QUERYCHANGED
+        parameter (EM_QUERYCHANGED = '00000140'x)
+        integer  EM_QUERYSEL
+        parameter (EM_QUERYSEL = '00000141'x)
+        integer  EM_SETSEL
+        parameter (EM_SETSEL = '00000142'x)
+        integer  EM_SETTEXTLIMIT
+        parameter (EM_SETTEXTLIMIT = '00000143'x)
+
+        integer  EM_CUT
+        parameter (EM_CUT = '00000144'x)
+        integer  EM_COPY
+        parameter (EM_COPY = '00000145'x)
+        integer  EM_CLEAR
+        parameter (EM_CLEAR = '00000146'x)
+        integer  EM_PASTE
+        parameter (EM_PASTE = '00000147'x)
+        integer  EM_QUERYFIRSTCHAR
+        parameter (EM_QUERYFIRSTCHAR = '00000148'x)
+        integer  EM_SETFIRSTCHAR
+        parameter (EM_SETFIRSTCHAR = '00000149'x)
+        integer  EM_QUERYREADONLY
+        parameter (EM_QUERYREADONLY = '0000014a'x)
+        integer  EM_SETREADONLY
+        parameter (EM_SETREADONLY = '0000014b'x)
+        integer  EM_SETINSERTMODE
+        parameter (EM_SETINSERTMODE = '0000014c'x)
+
+        integer  EN_SETFOCUS
+        parameter (EN_SETFOCUS = '00000001'x)
+        integer  EN_KILLFOCUS
+        parameter (EN_KILLFOCUS = '00000002'x)
+        integer  EN_CHANGE
+        parameter (EN_CHANGE = '00000004'x)
+        integer  EN_SCROLL
+        parameter (EN_SCROLL = '00000008'x)
+        integer  EN_MEMERROR
+        parameter (EN_MEMERROR = '00000010'x)
+        integer  EN_OVERFLOW
+        parameter (EN_OVERFLOW = '00000020'x)
+        integer  EN_INSERTMODETOGGLE
+        parameter (EN_INSERTMODETOGGLE = '00000040'x)
+
+c$endif
+
+c$ifdef INCL_WINMLE
+c$include pmmle.fi
+c$endif
+
+c$ifdef INCL_WINLISTBOXES
+
+        integer  LS_MULTIPLESEL
+        parameter (LS_MULTIPLESEL = '00000001'x)
+
+        integer  LS_OWNERDRAW
+        parameter (LS_OWNERDRAW = '00000002'x)
+
+        integer  LS_NOADJUSTPOS
+        parameter (LS_NOADJUSTPOS = '00000004'x)
+        integer  LS_HORZSCROLL
+        parameter (LS_HORZSCROLL = '00000008'x)
+
+        integer  LS_EXTENDEDSEL
+        parameter (LS_EXTENDEDSEL = '00000010'x)
+
+        integer  LN_SELECT
+        parameter (LN_SELECT = 1)
+        integer  LN_SETFOCUS
+        parameter (LN_SETFOCUS = 2)
+        integer  LN_KILLFOCUS
+        parameter (LN_KILLFOCUS = 3)
+        integer  LN_SCROLL
+        parameter (LN_SCROLL = 4)
+        integer  LN_ENTER
+        parameter (LN_ENTER = 5)
+
+        integer  LM_QUERYITEMCOUNT
+        parameter (LM_QUERYITEMCOUNT = '00000160'x)
+        integer  LM_INSERTITEM
+        parameter (LM_INSERTITEM = '00000161'x)
+        integer  LM_SETTOPINDEX
+        parameter (LM_SETTOPINDEX = '00000162'x)
+        integer  LM_DELETEITEM
+        parameter (LM_DELETEITEM = '00000163'x)
+        integer  LM_SELECTITEM
+        parameter (LM_SELECTITEM = '00000164'x)
+        integer  LM_QUERYSELECTION
+        parameter (LM_QUERYSELECTION = '00000165'x)
+        integer  LM_SETITEMTEXT
+        parameter (LM_SETITEMTEXT = '00000166'x)
+        integer  LM_QUERYITEMTEXTLENGTH
+        parameter (LM_QUERYITEMTEXTLENGTH = '00000167'x)
+        integer  LM_QUERYITEMTEXT
+        parameter (LM_QUERYITEMTEXT = '00000168'x)
+
+        integer  LM_SETITEMHANDLE
+        parameter (LM_SETITEMHANDLE = '00000169'x)
+        integer  LM_QUERYITEMHANDLE
+        parameter (LM_QUERYITEMHANDLE = '0000016a'x)
+        integer  LM_SEARCHSTRING
+        parameter (LM_SEARCHSTRING = '0000016b'x)
+        integer  LM_SETITEMHEIGHT
+        parameter (LM_SETITEMHEIGHT = '0000016c'x)
+        integer  LM_QUERYTOPINDEX
+        parameter (LM_QUERYTOPINDEX = '0000016d'x)
+        integer  LM_DELETEALL
+        parameter (LM_DELETEALL = '0000016e'x)
+
+        integer  LIT_CURSOR
+        parameter (LIT_CURSOR = -4)
+        integer  LIT_ERROR
+        parameter (LIT_ERROR = -3)
+        integer  LIT_MEMERROR
+        parameter (LIT_MEMERROR = -2)
+        integer  LIT_NONE
+        parameter (LIT_NONE = -1)
+        integer  LIT_FIRST
+        parameter (LIT_FIRST = -1)
+
+        integer  LIT_END
+        parameter (LIT_END = -1)
+        integer  LIT_SORTASCENDING
+        parameter (LIT_SORTASCENDING = -2)
+        integer  LIT_SORTDESCENDING
+        parameter (LIT_SORTDESCENDING = -3)
+
+        integer  LSS_SUBSTRING
+        parameter (LSS_SUBSTRING = '00000001'x)
+        integer  LSS_PREFIX
+        parameter (LSS_PREFIX = '00000002'x)
+        integer  LSS_CASESENSITIVE
+        parameter (LSS_CASESENSITIVE = '00000004'x)
+
+        integer*4 WinDeleteLboxItem
+        external WinDeleteLBoxItem
+
+        integer*4 WinInsertLboxItem
+        external WinInsertLboxItem
+
+        integer*4 WinQueryLboxCount
+        external WinQueryLboxCount
+
+        integer*4 WinQueryLboxItemText
+        external WinQueryLboxItemText
+
+        integer*2 WinQueryLboxItemTextLength
+        external WinQueryLboxItemTextLength
+
+        integer*4 WinSetLboxItemText
+        external WinSetLboxItemText
+
+        integer*4 WinQueryLboxSelectedItem
+        external WinQueryLboxSelectedItem
+
+c$endif
+
+c$ifdef INCL_WINMENUS
+
+        integer  MS_ACTIONBAR
+        parameter (MS_ACTIONBAR = '00000001'x)
+        integer  MS_TITLEBUTTON
+        parameter (MS_TITLEBUTTON = '00000002'x)
+        integer  MS_VERTICALFLIP
+        parameter (MS_VERTICALFLIP = '00000004'x)
+
+        external WinLoadMenu
+        integer*4 WinLoadMenu
+
+        integer  MM_INSERTITEM
+        parameter (MM_INSERTITEM = '00000180'x)
+        integer  MM_DELETEITEM
+        parameter (MM_DELETEITEM = '00000181'x)
+        integer  MM_QUERYITEM
+        parameter (MM_QUERYITEM = '00000182'x)
+        integer  MM_SETITEM
+        parameter (MM_SETITEM = '00000183'x)
+        integer  MM_QUERYITEMCOUNT
+        parameter (MM_QUERYITEMCOUNT = '00000184'x)
+        integer  MM_STARTMENUMODE
+        parameter (MM_STARTMENUMODE = '00000185'x)
+        integer  MM_ENDMENUMODE
+        parameter (MM_ENDMENUMODE = '00000186'x)
+        integer  MM_REMOVEITEM
+        parameter (MM_REMOVEITEM = '00000188'x)
+        integer  MM_SELECTITEM
+        parameter (MM_SELECTITEM = '00000189'x)
+        integer  MM_QUERYSELITEMID
+        parameter (MM_QUERYSELITEMID = '0000018a'x)
+        integer  MM_QUERYITEMTEXT
+        parameter (MM_QUERYITEMTEXT = '0000018b'x)
+        integer  MM_QUERYITEMTEXTLENGTH
+        parameter (MM_QUERYITEMTEXTLENGTH = '0000018c'x)
+        integer  MM_SETITEMHANDLE
+        parameter (MM_SETITEMHANDLE = '0000018d'x)
+        integer  MM_SETITEMTEXT
+        parameter (MM_SETITEMTEXT = '0000018e'x)
+        integer  MM_ITEMPOSITIONFROMID
+        parameter (MM_ITEMPOSITIONFROMID = '0000018f'x)
+        integer  MM_ITEMIDFROMPOSITION
+        parameter (MM_ITEMIDFROMPOSITION = '00000190'x)
+        integer  MM_QUERYITEMATTR
+        parameter (MM_QUERYITEMATTR = '00000191'x)
+        integer  MM_SETITEMATTR
+        parameter (MM_SETITEMATTR = '00000192'x)
+        integer  MM_ISITEMVALID
+        parameter (MM_ISITEMVALID = '00000193'x)
+        integer  MM_QUERYITEMRECT
+        parameter (MM_QUERYITEMRECT = '00000194'x)
+
+        external WinCreateMenu
+        integer*4 WinCreateMenu
+
+        structure /OWNERITEM/
+            integer*4 hwnd
+            integer*4 hps
+            integer*4 fsState
+            integer*4 fsAttribute
+            integer*4 fsStateOld
+            integer*4 fsAttributeOld
+            record /RECTL/ rclItem
+            integer*4 idItem
+            integer*4 hItem
+        end structure
+
+        structure /MENUITEM/
+            integer*2 iPosition
+            integer*2 afStyle
+            integer*2 afAttribute
+            integer*2 id
+            integer*4 hwndSubMenu
+            integer*4 hItem
+        end structure
+
+        integer  MIT_END
+        parameter (MIT_END = -1)
+        integer  MIT_NONE
+        parameter (MIT_NONE = -1)
+        integer  MIT_MEMERROR
+        parameter (MIT_MEMERROR = -1)
+        integer  MIT_ERROR
+        parameter (MIT_ERROR = -1)
+        integer  MIT_FIRST
+        parameter (MIT_FIRST = -2)
+        integer  MIT_LAST
+        parameter (MIT_LAST = -3)
+        integer  MID_NONE
+        parameter (MID_NONE = MIT_NONE)
+        integer  MID_ERROR
+        parameter (MID_ERROR = -1)
+
+        integer  MIS_TEXT
+        parameter (MIS_TEXT = '00000001'x)
+
+        integer  MIS_BITMAP
+        parameter (MIS_BITMAP = '00000002'x)
+        integer  MIS_SEPARATOR
+        parameter (MIS_SEPARATOR = '00000004'x)
+
+        integer  MIS_OWNERDRAW
+        parameter (MIS_OWNERDRAW = '00000008'x)
+
+        integer  MIS_SUBMENU
+        parameter (MIS_SUBMENU = '00000010'x)
+        integer  MIS_MULTMENU
+        parameter (MIS_MULTMENU = '00000020'x)
+        integer  MIS_SYSCOMMAND
+        parameter (MIS_SYSCOMMAND = '00000040'x)
+        integer  MIS_HELP
+        parameter (MIS_HELP = '00000080'x)
+        integer  MIS_STATIC
+        parameter (MIS_STATIC = '00000100'x)
+        integer  MIS_BUTTONSEPARATOR
+        parameter (MIS_BUTTONSEPARATOR = '00000200'x)
+        integer  MIS_BREAK
+        parameter (MIS_BREAK = '00000400'x)
+        integer  MIS_BREAKSEPARATOR
+        parameter (MIS_BREAKSEPARATOR = '00000800'x)
+        integer  MIS_GROUP
+        parameter (MIS_GROUP = '00001000'x)
+        integer  MIS_SINGLE
+        parameter (MIS_SINGLE = '00002000'x)
+
+        integer  MIA_NODISMISS
+        parameter (MIA_NODISMISS = '00000020'x)
+        integer  MIA_FRAMED
+        parameter (MIA_FRAMED = '00001000'x)
+        integer  MIA_CHECKED
+        parameter (MIA_CHECKED = '00002000'x)
+        integer  MIA_DISABLED
+        parameter (MIA_DISABLED = '00004000'x)
+        integer  MIA_HILITED
+        parameter (MIA_HILITED = '00008000'x)
+
+        external WinPopupMenu
+        integer*4 WinPopupMenu
+
+        integer  PU_POSITIONONITEM
+        parameter (PU_POSITIONONITEM = '00000001'x)
+
+        integer  PU_HCONSTRAIN
+        parameter (PU_HCONSTRAIN = '00000002'x)
+        integer  PU_VCONSTRAIN
+        parameter (PU_VCONSTRAIN = '00000004'x)
+
+        integer  PU_NONE
+        parameter (PU_NONE = '00000000'x)
+        integer  PU_MOUSEBUTTON1DOWN
+        parameter (PU_MOUSEBUTTON1DOWN = '00000008'x)
+        integer  PU_MOUSEBUTTON2DOWN
+        parameter (PU_MOUSEBUTTON2DOWN = '00000010'x)
+        integer  PU_MOUSEBUTTON3DOWN
+        parameter (PU_MOUSEBUTTON3DOWN = '00000018'x)
+
+        integer  PU_SELECTITEM
+        parameter (PU_SELECTITEM = '00000020'x)
+
+        integer  PU_MOUSEBUTTON1
+        parameter (PU_MOUSEBUTTON1 = '00000040'x)
+        integer  PU_MOUSEBUTTON2
+        parameter (PU_MOUSEBUTTON2 = '00000080'x)
+        integer  PU_MOUSEBUTTON3
+        parameter (PU_MOUSEBUTTON3 = '00000100'x)
+        integer  PU_KEYBOARD
+        parameter (PU_KEYBOARD = '00000200'x)
+
+        integer*4 WinCheckMenuItem
+        external WinCheckMenuItem
+
+        integer*4 WinIsMenuItemChecked
+        external WinIsMenuItemChecked
+
+        integer*4 WinEnableMenuItem
+        external WinEnableMenuItem
+
+        integer*4 WinIsMenuItemEnabled
+        external WinIsMenuItemEnabled
+
+        integer*4 WinSetMenuItemText
+        external WinSetMenuItemText
+
+        integer*4 WinIsMenuItemValid
+        external WinIsMenuItemValid
+
+c$endif
+
+c$ifdef INCL_WINSCROLLBARS
+
+        integer  SBS_HORZ
+        parameter (SBS_HORZ = 0)
+        integer  SBS_VERT
+        parameter (SBS_VERT = 1)
+        integer  SBS_THUMBSIZE
+        parameter (SBS_THUMBSIZE = 2)
+        integer  SBS_AUTOTRACK
+        parameter (SBS_AUTOTRACK = 4)
+        integer  SBS_AUTOSIZE
+        parameter (SBS_AUTOSIZE = '00002000'x)
+
+        integer  SBM_SETSCROLLBAR
+        parameter (SBM_SETSCROLLBAR = '000001a0'x)
+        integer  SBM_SETPOS
+        parameter (SBM_SETPOS = '000001a1'x)
+        integer  SBM_QUERYPOS
+        parameter (SBM_QUERYPOS = '000001a2'x)
+        integer  SBM_QUERYRANGE
+        parameter (SBM_QUERYRANGE = '000001a3'x)
+        integer  SBM_SETTHUMBSIZE
+        parameter (SBM_SETTHUMBSIZE = '000001a6'x)
+
+        integer  SB_LINEUP
+        parameter (SB_LINEUP = 1)
+        integer  SB_LINEDOWN
+        parameter (SB_LINEDOWN = 2)
+        integer  SB_LINELEFT
+        parameter (SB_LINELEFT = 1)
+        integer  SB_LINERIGHT
+        parameter (SB_LINERIGHT = 2)
+        integer  SB_PAGEUP
+        parameter (SB_PAGEUP = 3)
+        integer  SB_PAGEDOWN
+        parameter (SB_PAGEDOWN = 4)
+        integer  SB_PAGELEFT
+        parameter (SB_PAGELEFT = 3)
+        integer  SB_PAGERIGHT
+        parameter (SB_PAGERIGHT = 4)
+        integer  SB_SLIDERTRACK
+        parameter (SB_SLIDERTRACK = 5)
+        integer  SB_SLIDERPOSITION
+        parameter (SB_SLIDERPOSITION = 6)
+        integer  SB_ENDSCROLL
+        parameter (SB_ENDSCROLL = 7)
+
+        structure /SBCDATA/
+            integer*2 cb
+            integer*2 sHilite
+            integer*2 posFirst
+            integer*2 posLast
+            integer*2 posThumb
+            integer*2 cVisible
+            integer*2 cTotal
+        end structure
+
+c$endif
+
+c$ifdef INCL_WINFRAMEMGR
+
+        structure /FRAMECDATA/
+            integer*2 cb
+            integer*4 flCreateFlags
+            integer*2 hmodResources
+            integer*2 idResources
+        end structure
+
+        integer  FCF_TITLEBAR
+        parameter (FCF_TITLEBAR = '00000001'x)
+        integer  FCF_SYSMENU
+        parameter (FCF_SYSMENU = '00000002'x)
+        integer  FCF_MENU
+        parameter (FCF_MENU = '00000004'x)
+        integer  FCF_SIZEBORDER
+        parameter (FCF_SIZEBORDER = '00000008'x)
+        integer  FCF_MINBUTTON
+        parameter (FCF_MINBUTTON = '00000010'x)
+        integer  FCF_MAXBUTTON
+        parameter (FCF_MAXBUTTON = '00000020'x)
+        integer  FCF_MINMAX
+        parameter (FCF_MINMAX = '00000030'x)
+        integer  FCF_VERTSCROLL
+        parameter (FCF_VERTSCROLL = '00000040'x)
+        integer  FCF_HORZSCROLL
+        parameter (FCF_HORZSCROLL = '00000080'x)
+        integer  FCF_DLGBORDER
+        parameter (FCF_DLGBORDER = '00000100'x)
+        integer  FCF_BORDER
+        parameter (FCF_BORDER = '00000200'x)
+        integer  FCF_SHELLPOSITION
+        parameter (FCF_SHELLPOSITION = '00000400'x)
+        integer  FCF_TASKLIST
+        parameter (FCF_TASKLIST = '00000800'x)
+        integer  FCF_NOBYTEALIGN
+        parameter (FCF_NOBYTEALIGN = '00001000'x)
+        integer  FCF_NOMOVEWITHOWNER
+        parameter (FCF_NOMOVEWITHOWNER = '00002000'x)
+        integer  FCF_ICON
+        parameter (FCF_ICON = '00004000'x)
+        integer  FCF_ACCELTABLE
+        parameter (FCF_ACCELTABLE = '00008000'x)
+        integer  FCF_SYSMODAL
+        parameter (FCF_SYSMODAL = '00010000'x)
+        integer  FCF_SCREENALIGN
+        parameter (FCF_SCREENALIGN = '00020000'x)
+        integer  FCF_MOUSEALIGN
+        parameter (FCF_MOUSEALIGN = '00040000'x)
+        integer  FCF_PALETTE_NORMAL
+        parameter (FCF_PALETTE_NORMAL = '00080000'x)
+        integer  FCF_PALETTE_HELP
+        parameter (FCF_PALETTE_HELP = '00100000'x)
+        integer  FCF_PALETTE_POPUPODD
+        parameter (FCF_PALETTE_POPUPODD = '00200000'x)
+        integer  FCF_PALETTE_POPUPEVEN
+        parameter (FCF_PALETTE_POPUPEVEN = '00400000'x)
+c$ifdef INCL_NLS
+        integer  FCF_DBE_APPSTAT
+        parameter (FCF_DBE_APPSTAT = '80000000'x)
+c$endif
+        integer  FCF_AUTOICON
+        parameter (FCF_AUTOICON = '40000000'x)
+
+        integer  FCF_STANDARD
+        parameter (FCF_STANDARD = '0008CC3F'x)
+
+        integer  FS_ICON
+        parameter (FS_ICON = '00000001'x)
+        integer  FS_ACCELTABLE
+        parameter (FS_ACCELTABLE = '00000002'x)
+
+        integer  FS_SHELLPOSITION
+        parameter (FS_SHELLPOSITION = '00000004'x)
+
+        integer  FS_TASKLIST
+        parameter (FS_TASKLIST = '00000008'x)
+        integer  FS_NOBYTEALIGN
+        parameter (FS_NOBYTEALIGN = '00000010'x)
+        integer  FS_NOMOVEWITHOWNER
+        parameter (FS_NOMOVEWITHOWNER = '00000020'x)
+        integer  FS_SYSMODAL
+        parameter (FS_SYSMODAL = '00000040'x)
+        integer  FS_DLGBORDER
+        parameter (FS_DLGBORDER = '00000080'x)
+        integer  FS_BORDER
+        parameter (FS_BORDER = '00000100'x)
+        integer  FS_SCREENALIGN
+        parameter (FS_SCREENALIGN = '00000200'x)
+        integer  FS_MOUSEALIGN
+        parameter (FS_MOUSEALIGN = '00000400'x)
+        integer  FS_SIZEBORDER
+        parameter (FS_SIZEBORDER = '00000800'x)
+        integer  FS_AUTOICON
+        parameter (FS_AUTOICON = '00001000'x)
+c$ifdef INCL_NLS
+        integer  FS_DBE_APPSTAT
+        parameter (FS_DBE_APPSTAT = '00008000'x)
+c$endif
+
+        integer  FS_STANDARD
+        parameter (FS_STANDARD = '0000000F'x)
+
+        integer  FF_FLASHWINDOW
+        parameter (FF_FLASHWINDOW = '00000001'x)
+        integer  FF_ACTIVE
+        parameter (FF_ACTIVE = '00000002'x)
+        integer  FF_FLASHHILITE
+        parameter (FF_FLASHHILITE = '00000004'x)
+        integer  FF_OWNERHIDDEN
+        parameter (FF_OWNERHIDDEN = '00000008'x)
+        integer  FF_DLGDISMISSED
+        parameter (FF_DLGDISMISSED = '00000010'x)
+        integer  FF_OWNERDISABLED
+        parameter (FF_OWNERDISABLED = '00000020'x)
+        integer  FF_SELECTED
+        parameter (FF_SELECTED = '00000040'x)
+        integer  FF_NOACTIVATESWP
+        parameter (FF_NOACTIVATESWP = '00000080'x)
+
+        external WinCreateStdWindow
+        integer*4 WinCreateStdWindow
+
+c$endif
+
+c$ifdef INCL_WINFRAMEMGR
+
+        external WinFlashWindow
+        integer*4 WinFlashWindow
+
+        integer  WM_FLASHWINDOW
+        parameter (WM_FLASHWINDOW = '00000040'x)
+        integer  WM_FORMATFRAME
+        parameter (WM_FORMATFRAME = '00000041'x)
+        integer  WM_UPDATEFRAME
+        parameter (WM_UPDATEFRAME = '00000042'x)
+        integer  WM_FOCUSCHANGE
+        parameter (WM_FOCUSCHANGE = '00000043'x)
+
+        integer  WM_SETBORDERSIZE
+        parameter (WM_SETBORDERSIZE = '00000044'x)
+        integer  WM_TRACKFRAME
+        parameter (WM_TRACKFRAME = '00000045'x)
+        integer  WM_MINMAXFRAME
+        parameter (WM_MINMAXFRAME = '00000046'x)
+        integer  WM_SETICON
+        parameter (WM_SETICON = '00000047'x)
+        integer  WM_QUERYICON
+        parameter (WM_QUERYICON = '00000048'x)
+        integer  WM_SETACCELTABLE
+        parameter (WM_SETACCELTABLE = '00000049'x)
+        integer  WM_QUERYACCELTABLE
+        parameter (WM_QUERYACCELTABLE = '0000004a'x)
+        integer  WM_TRANSLATEACCEL
+        parameter (WM_TRANSLATEACCEL = '0000004b'x)
+        integer  WM_QUERYTRACKINFO
+        parameter (WM_QUERYTRACKINFO = '0000004c'x)
+        integer  WM_QUERYBORDERSIZE
+        parameter (WM_QUERYBORDERSIZE = '0000004d'x)
+        integer  WM_NEXTMENU
+        parameter (WM_NEXTMENU = '0000004e'x)
+        integer  WM_ERASEBACKGROUND
+        parameter (WM_ERASEBACKGROUND = '0000004f'x)
+        integer  WM_QUERYFRAMEINFO
+        parameter (WM_QUERYFRAMEINFO = '00000050'x)
+        integer  WM_QUERYFOCUSCHAIN
+        parameter (WM_QUERYFOCUSCHAIN = '00000051'x)
+        integer  WM_OWNERPOSCHANGE
+        parameter (WM_OWNERPOSCHANGE = '00000052'x)
+        integer  WM_CALCFRAMERECT
+        parameter (WM_CALCFRAMERECT = '00000053'x)
+        integer  WM_WINDOWPOSCHANGED
+        parameter (WM_WINDOWPOSCHANGED = '00000055'x)
+        integer  WM_ADJUSTFRAMEPOS
+        parameter (WM_ADJUSTFRAMEPOS = '00000056'x)
+        integer  WM_QUERYFRAMECTLCOUNT
+        parameter (WM_QUERYFRAMECTLCOUNT = '00000059'x)
+        integer  WM_QUERYHELPINFO
+        parameter (WM_QUERYHELPINFO = '0000005B'x)
+        integer  WM_SETHELPINFO
+        parameter (WM_SETHELPINFO = '0000005C'x)
+        integer  WM_ERROR
+        parameter (WM_ERROR = '0000005D'x)
+        integer  WM_REALIZEPALETTE
+        parameter (WM_REALIZEPALETTE = '0000005E'x)
+
+        integer  FI_FRAME
+        parameter (FI_FRAME = '00000001'x)
+        integer  FI_OWNERHIDE
+        parameter (FI_OWNERHIDE = '00000002'x)
+        integer  FI_ACTIVATEOK
+        parameter (FI_ACTIVATEOK = '00000004'x)
+        integer  FI_NOMOVEWITHOWNER
+        parameter (FI_NOMOVEWITHOWNER = '00000008'x)
+
+        external WinCreateFrameControls
+        integer*4 WinCreateFrameControls
+
+        external WinCalcFrameRect
+        integer*4 WinCalcFrameRect
+
+        external WinGetMinPosition
+        integer*4 WinGetMinPosition
+
+        external WinGetMaxPosition
+        integer*4 WinGetMaxPosition
+
+        external WinSaveWindowPos
+        integer*4 WinSaveWindowPos
+
+        integer  FID_SYSMENU
+        parameter (FID_SYSMENU = '00008002'x)
+        integer  FID_TITLEBAR
+        parameter (FID_TITLEBAR = '00008003'x)
+        integer  FID_MINMAX
+        parameter (FID_MINMAX = '00008004'x)
+        integer  FID_MENU
+        parameter (FID_MENU = '00008005'x)
+        integer  FID_VERTSCROLL
+        parameter (FID_VERTSCROLL = '00008006'x)
+        integer  FID_HORZSCROLL
+        parameter (FID_HORZSCROLL = '00008007'x)
+        integer  FID_CLIENT
+        parameter (FID_CLIENT = '00008008'x)
+
+        integer  FID_DBE_APPSTAT
+        parameter (FID_DBE_APPSTAT = '00008010'x)
+        integer  FID_DBE_KBDSTAT
+        parameter (FID_DBE_KBDSTAT = '00008011'x)
+        integer  FID_DBE_PECIC
+        parameter (FID_DBE_PECIC = '00008012'x)
+        integer  FID_DBE_KKPOPUP
+        parameter (FID_DBE_KKPOPUP = '00008013'x)
+
+        integer  SC_SIZE
+        parameter (SC_SIZE = '00008000'x)
+        integer  SC_MOVE
+        parameter (SC_MOVE = '00008001'x)
+        integer  SC_MINIMIZE
+        parameter (SC_MINIMIZE = '00008002'x)
+        integer  SC_MAXIMIZE
+        parameter (SC_MAXIMIZE = '00008003'x)
+        integer  SC_CLOSE
+        parameter (SC_CLOSE = '00008004'x)
+        integer  SC_NEXT
+        parameter (SC_NEXT = '00008005'x)
+        integer  SC_APPMENU
+        parameter (SC_APPMENU = '00008006'x)
+        integer  SC_SYSMENU
+        parameter (SC_SYSMENU = '00008007'x)
+        integer  SC_RESTORE
+        parameter (SC_RESTORE = '00008008'x)
+        integer  SC_NEXTFRAME
+        parameter (SC_NEXTFRAME = '00008009'x)
+        integer  SC_NEXTWINDOW
+        parameter (SC_NEXTWINDOW = '00008010'x)
+        integer  SC_TASKMANAGER
+        parameter (SC_TASKMANAGER = '00008011'x)
+        integer  SC_HELPKEYS
+        parameter (SC_HELPKEYS = '00008012'x)
+        integer  SC_HELPINDEX
+        parameter (SC_HELPINDEX = '00008013'x)
+        integer  SC_HELPEXTENDED
+        parameter (SC_HELPEXTENDED = '00008014'x)
+        integer  SC_SWITCHPANELIDS
+        parameter (SC_SWITCHPANELIDS = '00008015'x)
+        integer  SC_DBE_FIRST
+        parameter (SC_DBE_FIRST = '00008018'x)
+        integer  SC_DBE_LAST
+        parameter (SC_DBE_LAST = '0000801F'x)
+
+        integer  SC_BEGINDRAG
+        parameter (SC_BEGINDRAG = '00008020'x)
+        integer  SC_ENDDRAG
+        parameter (SC_ENDDRAG = '00008021'x)
+        integer  SC_SELECT
+        parameter (SC_SELECT = '00008022'x)
+        integer  SC_OPEN
+        parameter (SC_OPEN = '00008023'x)
+        integer  SC_CONTEXTMENU
+        parameter (SC_CONTEXTMENU = '00008024'x)
+        integer  SC_CONTEXTHELP
+        parameter (SC_CONTEXTHELP = '00008025'x)
+        integer  SC_TEXTEDIT
+        parameter (SC_TEXTEDIT = '00008026'x)
+        integer  SC_BEGINSELECT
+        parameter (SC_BEGINSELECT = '00008027'x)
+        integer  SC_ENDSELECT
+        parameter (SC_ENDSELECT = '00008028'x)
+        integer  SC_WINDOW
+        parameter (SC_WINDOW = '00008029'x)
+
+c$endif
+
+c$ifdef INCL_WINFRAMECTLS
+
+        integer  TBM_SETHILITE
+        parameter (TBM_SETHILITE = '000001e3'x)
+        integer  TBM_QUERYHILITE
+        parameter (TBM_QUERYHILITE = '000001e4'x)
+
+        external WinCopyRect
+        integer*4 WinCopyRect
+
+        external WinSetRect
+        integer*4 WinSetRect
+
+        external WinIsRectEmpty
+        integer*4 WinIsRectEmpty
+
+        external WinEqualRect
+        integer*4 WinEqualRect
+
+        external WinSetRectEmpty
+        integer*4 WinSetRectEmpty
+
+        external WinOffsetRect
+        integer*4 WinOffsetRect
+
+        external WinInflateRect
+        integer*4 WinInflateRect
+
+        external WinPtInRect
+        integer*4 WinPtInRect
+
+        external WinIntersectRect
+        integer*4 WinIntersectRect
+
+        external WinUnionRect
+        integer*4 WinUnionRect
+
+        external WinSubtractRect
+        integer*4 WinSubtractRect
+
+        external WinMakeRect
+        integer*4 WinMakeRect
+
+        external WinMakePoints
+        integer*4 WinMakePoints
+
+c$endif
+
+c$ifdef INCL_WINSYS
+
+        external WinQuerySysValue
+        integer*4 WinQuerySysValue
+
+        external WinSetSysValue
+        integer*4 WinSetSysValue
+
+        integer  SV_SWAPBUTTON
+        parameter (SV_SWAPBUTTON = 0)
+        integer  SV_DBLCLKTIME
+        parameter (SV_DBLCLKTIME = 1)
+        integer  SV_CXDBLCLK
+        parameter (SV_CXDBLCLK = 2)
+        integer  SV_CYDBLCLK
+        parameter (SV_CYDBLCLK = 3)
+        integer  SV_CXSIZEBORDER
+        parameter (SV_CXSIZEBORDER = 4)
+        integer  SV_CYSIZEBORDER
+        parameter (SV_CYSIZEBORDER = 5)
+        integer  SV_ALARM
+        parameter (SV_ALARM = 6)
+
+        integer  SV_RESERVEDFIRST1
+        parameter (SV_RESERVEDFIRST1 = 7)
+        integer  SV_RESERVEDLAST1
+        parameter (SV_RESERVEDLAST1 = 8)
+
+        integer  SV_CURSORRATE
+        parameter (SV_CURSORRATE = 9)
+        integer  SV_FIRSTSCROLLRATE
+        parameter (SV_FIRSTSCROLLRATE = 10)
+        integer  SV_SCROLLRATE
+        parameter (SV_SCROLLRATE = 11)
+        integer  SV_NUMBEREDLISTS
+        parameter (SV_NUMBEREDLISTS = 12)
+        integer  SV_WARNINGFREQ
+        parameter (SV_WARNINGFREQ = 13)
+        integer  SV_NOTEFREQ
+        parameter (SV_NOTEFREQ = 14)
+        integer  SV_ERRORFREQ
+        parameter (SV_ERRORFREQ = 15)
+        integer  SV_WARNINGDURATION
+        parameter (SV_WARNINGDURATION = 16)
+        integer  SV_NOTEDURATION
+        parameter (SV_NOTEDURATION = 17)
+        integer  SV_ERRORDURATION
+        parameter (SV_ERRORDURATION = 18)
+
+        integer  SV_RESERVEDFIRST
+        parameter (SV_RESERVEDFIRST = 19)
+        integer  SV_RESERVEDLAST
+        parameter (SV_RESERVEDLAST = 19)
+
+        integer  SV_CXSCREEN
+        parameter (SV_CXSCREEN = 20)
+        integer  SV_CYSCREEN
+        parameter (SV_CYSCREEN = 21)
+        integer  SV_CXVSCROLL
+        parameter (SV_CXVSCROLL = 22)
+        integer  SV_CYHSCROLL
+        parameter (SV_CYHSCROLL = 23)
+        integer  SV_CYVSCROLLARROW
+        parameter (SV_CYVSCROLLARROW = 24)
+        integer  SV_CXHSCROLLARROW
+        parameter (SV_CXHSCROLLARROW = 25)
+        integer  SV_CXBORDER
+        parameter (SV_CXBORDER = 26)
+        integer  SV_CYBORDER
+        parameter (SV_CYBORDER = 27)
+        integer  SV_CXDLGFRAME
+        parameter (SV_CXDLGFRAME = 28)
+        integer  SV_CYDLGFRAME
+        parameter (SV_CYDLGFRAME = 29)
+        integer  SV_CYTITLEBAR
+        parameter (SV_CYTITLEBAR = 30)
+        integer  SV_CYVSLIDER
+        parameter (SV_CYVSLIDER = 31)
+        integer  SV_CXHSLIDER
+        parameter (SV_CXHSLIDER = 32)
+        integer  SV_CXMINMAXBUTTON
+        parameter (SV_CXMINMAXBUTTON = 33)
+        integer  SV_CYMINMAXBUTTON
+        parameter (SV_CYMINMAXBUTTON = 34)
+        integer  SV_CYMENU
+        parameter (SV_CYMENU = 35)
+        integer  SV_CXFULLSCREEN
+        parameter (SV_CXFULLSCREEN = 36)
+        integer  SV_CYFULLSCREEN
+        parameter (SV_CYFULLSCREEN = 37)
+        integer  SV_CXICON
+        parameter (SV_CXICON = 38)
+        integer  SV_CYICON
+        parameter (SV_CYICON = 39)
+        integer  SV_CXPOINTER
+        parameter (SV_CXPOINTER = 40)
+        integer  SV_CYPOINTER
+        parameter (SV_CYPOINTER = 41)
+
+        integer  SV_DEBUG
+        parameter (SV_DEBUG = 42)
+        integer  SV_CMOUSEBUTTONS
+        parameter (SV_CMOUSEBUTTONS = 43)
+        integer  SV_CPOINTERBUTTONS
+        parameter (SV_CPOINTERBUTTONS = 43)
+        integer  SV_POINTERLEVEL
+        parameter (SV_POINTERLEVEL = 44)
+        integer  SV_CURSORLEVEL
+        parameter (SV_CURSORLEVEL = 45)
+        integer  SV_TRACKRECTLEVEL
+        parameter (SV_TRACKRECTLEVEL = 46)
+
+        integer  SV_CTIMERS
+        parameter (SV_CTIMERS = 47)
+
+        integer  SV_MOUSEPRESENT
+        parameter (SV_MOUSEPRESENT = 48)
+
+        integer  SV_CXBYTEALIGN
+        parameter (SV_CXBYTEALIGN = 49)
+        integer  SV_CXALIGN
+        parameter (SV_CXALIGN = 49)
+        integer  SV_CYBYTEALIGN
+        parameter (SV_CYBYTEALIGN = 50)
+        integer  SV_CYALIGN
+        parameter (SV_CYALIGN = 50)
+
+        integer  SV_NOTRESERVED
+        parameter (SV_NOTRESERVED = 56)
+        integer  SV_EXTRAKEYBEEP
+        parameter (SV_EXTRAKEYBEEP = 57)
+
+        integer  SV_SETLIGHTS
+        parameter (SV_SETLIGHTS = 58)
+        integer  SV_INSERTMODE
+        parameter (SV_INSERTMODE = 59)
+
+        integer  SV_MENUROLLDOWNDELAY
+        parameter (SV_MENUROLLDOWNDELAY = 64)
+        integer  SV_MENUROLLUPDELAY
+        parameter (SV_MENUROLLUPDELAY = 65)
+        integer  SV_ALTMNEMONIC
+        parameter (SV_ALTMNEMONIC = 66)
+        integer  SV_TASKLISTMOUSEACCESS
+        parameter (SV_TASKLISTMOUSEACCESS = 67)
+
+        integer  SV_CXICONTEXTWIDTH
+        parameter (SV_CXICONTEXTWIDTH = 68)
+        integer  SV_CICONTEXTLINES
+        parameter (SV_CICONTEXTLINES = 69)
+
+        integer  SV_CHORDTIME
+        parameter (SV_CHORDTIME = 70)
+        integer  SV_CXCHORD
+        parameter (SV_CXCHORD = 71)
+        integer  SV_CYCHORD
+        parameter (SV_CYCHORD = 72)
+        integer  SV_CXMOTION
+        parameter (SV_CXMOTION = 73)
+        integer  SV_CYMOTION
+        parameter (SV_CYMOTION = 74)
+
+        integer  SV_BEGINDRAG
+        parameter (SV_BEGINDRAG = 75)
+        integer  SV_ENDDRAG
+        parameter (SV_ENDDRAG = 76)
+        integer  SV_SINGLESELECT
+        parameter (SV_SINGLESELECT = 77)
+        integer  SV_OPEN
+        parameter (SV_OPEN = 78)
+        integer  SV_CONTEXTMENU
+        parameter (SV_CONTEXTMENU = 79)
+        integer  SV_CONTEXTHELP
+        parameter (SV_CONTEXTHELP = 80)
+        integer  SV_TEXTEDIT
+        parameter (SV_TEXTEDIT = 81)
+        integer  SV_BEGINSELECT
+        parameter (SV_BEGINSELECT = 82)
+        integer  SV_ENDSELECT
+        parameter (SV_ENDSELECT = 83)
+
+        integer  SV_BEGINDRAGKB
+        parameter (SV_BEGINDRAGKB = 84)
+        integer  SV_ENDDRAGKB
+        parameter (SV_ENDDRAGKB = 85)
+        integer  SV_SELECTKB
+        parameter (SV_SELECTKB = 86)
+        integer  SV_OPENKB
+        parameter (SV_OPENKB = 87)
+        integer  SV_CONTEXTMENUKB
+        parameter (SV_CONTEXTMENUKB = 88)
+        integer  SV_CONTEXTHELPKB
+        parameter (SV_CONTEXTHELPKB = 89)
+        integer  SV_TEXTEDITKB
+        parameter (SV_TEXTEDITKB = 90)
+        integer  SV_BEGINSELECTKB
+        parameter (SV_BEGINSELECTKB = 91)
+        integer  SV_ENDSELECTKB
+        parameter (SV_ENDSELECTKB = 92)
+
+        integer  SV_ANIMATION
+        parameter (SV_ANIMATION = 93)
+        integer  SV_ANIMATIONSPEED
+        parameter (SV_ANIMATIONSPEED = 94)
+
+        integer  SV_MONOICONS
+        parameter (SV_MONOICONS = 95)
+
+        integer  SV_KBDALTERED
+        parameter (SV_KBDALTERED = 96)
+
+        integer  SV_PRINTSCREEN
+        parameter (SV_PRINTSCREEN = 97)
+
+        integer  SV_CSYSVALUES
+        parameter (SV_CSYSVALUES = 98)
+
+        structure /PARAM/
+            integer*4 id
+            integer*4 cb
+            integer*1 ab(1)
+        end structure
+
+        structure /PRESPARAMS/
+            integer*4 cb
+            record /PARAM/ aparam(1)
+        end structure
+
+        external WinSetPresParam
+        integer*4 WinSetPresParam
+
+        external WinQueryPresParam
+        integer*4 WinQueryPresParam
+
+        external WinRemovePresParam
+        integer*4 WinRemovePresParam
+
+        integer  PP_FOREGROUNDCOLOR
+        parameter (PP_FOREGROUNDCOLOR = 1)
+        integer  PP_FOREGROUNDCOLORINDEX
+        parameter (PP_FOREGROUNDCOLORINDEX = 2)
+        integer  PP_BACKGROUNDCOLOR
+        parameter (PP_BACKGROUNDCOLOR = 3)
+        integer  PP_BACKGROUNDCOLORINDEX
+        parameter (PP_BACKGROUNDCOLORINDEX = 4)
+        integer  PP_HILITEFOREGROUNDCOLOR
+        parameter (PP_HILITEFOREGROUNDCOLOR = 5)
+        integer  PP_HILITEFOREGROUNDCOLORINDEX
+        parameter (PP_HILITEFOREGROUNDCOLORINDEX = 6)
+        integer  PP_HILITEBACKGROUNDCOLOR
+        parameter (PP_HILITEBACKGROUNDCOLOR = 7)
+        integer  PP_HILITEBACKGROUNDCOLORINDEX
+        parameter (PP_HILITEBACKGROUNDCOLORINDEX = 8)
+        integer  PP_DISABLEDFOREGROUNDCOLOR
+        parameter (PP_DISABLEDFOREGROUNDCOLOR = 9)
+        integer  PP_DISABLEDFOREGROUNDCOLORINDEX
+        parameter (PP_DISABLEDFOREGROUNDCOLORINDEX = 10)
+        integer  PP_DISABLEDBACKGROUNDCOLOR
+        parameter (PP_DISABLEDBACKGROUNDCOLOR = 11)
+        integer  PP_DISABLEDBACKGROUNDCOLORINDEX
+        parameter (PP_DISABLEDBACKGROUNDCOLORINDEX = 12)
+        integer  PP_BORDERCOLOR
+        parameter (PP_BORDERCOLOR = 13)
+        integer  PP_BORDERCOLORINDEX
+        parameter (PP_BORDERCOLORINDEX = 14)
+        integer  PP_FONTNAMESIZE
+        parameter (PP_FONTNAMESIZE = 15)
+        integer  PP_FONTHANDLE
+        parameter (PP_FONTHANDLE = 16)
+        integer  PP_RESERVED
+        parameter (PP_RESERVED = 17)
+        integer  PP_ACTIVECOLOR
+        parameter (PP_ACTIVECOLOR = 18)
+        integer  PP_ACTIVECOLORINDEX
+        parameter (PP_ACTIVECOLORINDEX = 19)
+        integer  PP_INACTIVECOLOR
+        parameter (PP_INACTIVECOLOR = 20)
+        integer  PP_INACTIVECOLORINDEX
+        parameter (PP_INACTIVECOLORINDEX = 21)
+        integer  PP_ACTIVETEXTFGNDCOLOR
+        parameter (PP_ACTIVETEXTFGNDCOLOR = 22)
+        integer  PP_ACTIVETEXTFGNDCOLORINDEX
+        parameter (PP_ACTIVETEXTFGNDCOLORINDEX = 23)
+        integer  PP_ACTIVETEXTBGNDCOLOR
+        parameter (PP_ACTIVETEXTBGNDCOLOR = 24)
+        integer  PP_ACTIVETEXTBGNDCOLORINDEX
+        parameter (PP_ACTIVETEXTBGNDCOLORINDEX = 25)
+        integer  PP_INACTIVETEXTFGNDCOLOR
+        parameter (PP_INACTIVETEXTFGNDCOLOR = 26)
+        integer  PP_INACTIVETEXTFGNDCOLORINDEX
+        parameter (PP_INACTIVETEXTFGNDCOLORINDEX = 27)
+        integer  PP_INACTIVETEXTBGNDCOLOR
+        parameter (PP_INACTIVETEXTBGNDCOLOR = 28)
+        integer  PP_INACTIVETEXTBGNDCOLORINDEX
+        parameter (PP_INACTIVETEXTBGNDCOLORINDEX = 29)
+        integer  PP_SHADOW
+        parameter (PP_SHADOW = 30)
+        integer  PP_MENUFOREGROUNDCOLOR
+        parameter (PP_MENUFOREGROUNDCOLOR = 31)
+        integer  PP_MENUFOREGROUNDCOLORINDEX
+        parameter (PP_MENUFOREGROUNDCOLORINDEX = 32)
+        integer  PP_MENUBACKGROUNDCOLOR
+        parameter (PP_MENUBACKGROUNDCOLOR = 33)
+        integer  PP_MENUBACKGROUNDCOLORINDEX
+        parameter (PP_MENUBACKGROUNDCOLORINDEX = 34)
+        integer  PP_MENUHILITEFGNDCOLOR
+        parameter (PP_MENUHILITEFGNDCOLOR = 35)
+        integer  PP_MENUHILITEFGNDCOLORINDEX
+        parameter (PP_MENUHILITEFGNDCOLORINDEX = 36)
+        integer  PP_MENUHILITEBGNDCOLOR
+        parameter (PP_MENUHILITEBGNDCOLOR = 37)
+        integer  PP_MENUHILITEBGNDCOLORINDEX
+        parameter (PP_MENUHILITEBGNDCOLORINDEX = 38)
+        integer  PP_MENUDISABLEDFGNDCOLOR
+        parameter (PP_MENUDISABLEDFGNDCOLOR = 39)
+        integer  PP_MENUDISABLEDFGNDCOLORINDEX
+        parameter (PP_MENUDISABLEDFGNDCOLORINDEX = 40)
+        integer  PP_MENUDISABLEDBGNDCOLOR
+        parameter (PP_MENUDISABLEDBGNDCOLOR = 41)
+        integer  PP_MENUDISABLEDBGNDCOLORINDEX
+        parameter (PP_MENUDISABLEDBGNDCOLORINDEX = 42)
+
+        integer  PP_USER
+        parameter (PP_USER = '00008000'x)
+
+        integer  QPF_NOINHERIT
+        parameter (QPF_NOINHERIT = '00000001'x)
+        integer  QPF_ID1COLORINDEX
+        parameter (QPF_ID1COLORINDEX = '00000002'x)
+        integer  QPF_ID2COLORINDEX
+        parameter (QPF_ID2COLORINDEX = '00000004'x)
+        integer  QPF_PURERGBCOLOR
+        parameter (QPF_PURERGBCOLOR = '00000008'x)
+        integer  QPF_VALIDFLAGS
+        parameter (QPF_VALIDFLAGS = '0000000F'x)
+
+        external WinQuerySysColor
+        integer*4 WinQuerySysColor
+
+        external WinSetSysColors
+        integer*4 WinSetSysColors
+
+        integer  SYSCLR_ENTRYFIELD
+        parameter (SYSCLR_ENTRYFIELD = -47)
+        integer  SYSCLR_MENUDISABLEDTEXT
+        parameter (SYSCLR_MENUDISABLEDTEXT = -46)
+        integer  SYSCLR_MENUHILITE
+        parameter (SYSCLR_MENUHILITE = -45)
+        integer  SYSCLR_MENUHILITEBGND
+        parameter (SYSCLR_MENUHILITEBGND = -44)
+        integer  SYSCLR_PAGEBACKGROUND
+        parameter (SYSCLR_PAGEBACKGROUND = -43)
+        integer  SYSCLR_FIELDBACKGROUND
+        parameter (SYSCLR_FIELDBACKGROUND = -42)
+        integer  SYSCLR_BUTTONLIGHT
+        parameter (SYSCLR_BUTTONLIGHT = -41)
+        integer  SYSCLR_BUTTONMIDDLE
+        parameter (SYSCLR_BUTTONMIDDLE = -40)
+        integer  SYSCLR_BUTTONDARK
+        parameter (SYSCLR_BUTTONDARK = -39)
+        integer  SYSCLR_BUTTONDEFAULT
+        parameter (SYSCLR_BUTTONDEFAULT = -38)
+        integer  SYSCLR_TITLEBOTTOM
+        parameter (SYSCLR_TITLEBOTTOM = -37)
+        integer  SYSCLR_SHADOW
+        parameter (SYSCLR_SHADOW = -36)
+        integer  SYSCLR_ICONTEXT
+        parameter (SYSCLR_ICONTEXT = -35)
+        integer  SYSCLR_DIALOGBACKGROUND
+        parameter (SYSCLR_DIALOGBACKGROUND = -34)
+        integer  SYSCLR_HILITEFOREGROUND
+        parameter (SYSCLR_HILITEFOREGROUND = -33)
+        integer  SYSCLR_HILITEBACKGROUND
+        parameter (SYSCLR_HILITEBACKGROUND = -32)
+        integer  SYSCLR_INACTIVETITLETEXTBGND
+        parameter (SYSCLR_INACTIVETITLETEXTBGND = -31)
+        integer  SYSCLR_ACTIVETITLETEXTBGND
+        parameter (SYSCLR_ACTIVETITLETEXTBGND = -30)
+        integer  SYSCLR_INACTIVETITLETEXT
+        parameter (SYSCLR_INACTIVETITLETEXT = -29)
+        integer  SYSCLR_ACTIVETITLETEXT
+        parameter (SYSCLR_ACTIVETITLETEXT = -28)
+        integer  SYSCLR_OUTPUTTEXT
+        parameter (SYSCLR_OUTPUTTEXT = -27)
+        integer  SYSCLR_WINDOWSTATICTEXT
+        parameter (SYSCLR_WINDOWSTATICTEXT = -26)
+        integer  SYSCLR_SCROLLBAR
+        parameter (SYSCLR_SCROLLBAR = -25)
+        integer  SYSCLR_BACKGROUND
+        parameter (SYSCLR_BACKGROUND = -24)
+        integer  SYSCLR_ACTIVETITLE
+        parameter (SYSCLR_ACTIVETITLE = -23)
+        integer  SYSCLR_INACTIVETITLE
+        parameter (SYSCLR_INACTIVETITLE = -22)
+        integer  SYSCLR_MENU
+        parameter (SYSCLR_MENU = -21)
+        integer  SYSCLR_WINDOW
+        parameter (SYSCLR_WINDOW = -20)
+        integer  SYSCLR_WINDOWFRAME
+        parameter (SYSCLR_WINDOWFRAME = -19)
+        integer  SYSCLR_MENUTEXT
+        parameter (SYSCLR_MENUTEXT = -18)
+        integer  SYSCLR_WINDOWTEXT
+        parameter (SYSCLR_WINDOWTEXT = -17)
+        integer  SYSCLR_TITLETEXT
+        parameter (SYSCLR_TITLETEXT = -16)
+        integer  SYSCLR_ACTIVEBORDER
+        parameter (SYSCLR_ACTIVEBORDER = -15)
+        integer  SYSCLR_INACTIVEBORDER
+        parameter (SYSCLR_INACTIVEBORDER = -14)
+        integer  SYSCLR_APPWORKSPACE
+        parameter (SYSCLR_APPWORKSPACE = -13)
+        integer  SYSCLR_HELPBACKGROUND
+        parameter (SYSCLR_HELPBACKGROUND = -12)
+        integer  SYSCLR_HELPTEXT
+        parameter (SYSCLR_HELPTEXT = -11)
+        integer  SYSCLR_HELPHILITE
+        parameter (SYSCLR_HELPHILITE = -10)
+
+        integer  SYSCLR_CSYSCOLORS
+        parameter (SYSCLR_CSYSCOLORS = 38)
+
+c$endif
+
+c$ifdef INCL_WINTIMER
+
+        external WinStartTimer
+        integer*4 WinStartTimer
+
+        external WinStopTimer
+        integer*4 WinStopTimer
+
+        external WinGetCurrentTime
+        integer*4 WinGetCurrentTime
+
+        integer  TID_CURSOR
+        parameter (TID_CURSOR = '0000ffff'x)
+        integer  TID_SCROLL
+        parameter (TID_SCROLL = '0000fffe'x)
+        integer  TID_FLASHWINDOW
+        parameter (TID_FLASHWINDOW = '0000fffd'x)
+        integer  TID_USERMAX
+        parameter (TID_USERMAX = '00007fff'x)
+
+c$endif
+
+c$ifdef INCL_WINACCELERATORS
+
+        integer  AF_CHAR
+        parameter (AF_CHAR = '00000001'x)
+        integer  AF_VIRTUALKEY
+        parameter (AF_VIRTUALKEY = '00000002'x)
+        integer  AF_SCANCODE
+        parameter (AF_SCANCODE = '00000004'x)
+        integer  AF_SHIFT
+        parameter (AF_SHIFT = '00000008'x)
+        integer  AF_CONTROL
+        parameter (AF_CONTROL = '00000010'x)
+        integer  AF_ALT
+        parameter (AF_ALT = '00000020'x)
+        integer  AF_LONEKEY
+        parameter (AF_LONEKEY = '00000040'x)
+        integer  AF_SYSCOMMAND
+        parameter (AF_SYSCOMMAND = '00000100'x)
+        integer  AF_HELP
+        parameter (AF_HELP = '00000200'x)
+
+        structure /ACCEL/
+            integer*2 fs
+            integer*2 key
+            integer*2 cmd
+        end structure
+
+        structure /ACCELTABLE/
+            integer*2 cAccel
+            integer*2 codepage
+            record /ACCEL/ aaccel(1)
+        end structure
+
+        external WinLoadAccelTable
+        integer*4 WinLoadAccelTable
+
+        external WinCopyAccelTable
+        integer*4 WinCopyAccelTable
+
+        external WinCreateAccelTable
+        integer*4 WinCreateAccelTable
+
+        external WinDestroyAccelTable
+        integer*4 WinDestroyAccelTable
+
+        external WinTranslateAccel
+        integer*4 WinTranslateAccel
+
+        external WinSetAccelTable
+        integer*4 WinSetAccelTable
+
+        external WinQueryAccelTable
+        integer*4 WinQueryAccelTable
+
+c$endif
+
+        integer  EAF_DEFAULTOWNER
+        parameter (EAF_DEFAULTOWNER = '00000001'x)
+        integer  EAF_UNCHANGEABLE
+        parameter (EAF_UNCHANGEABLE = '00000002'x)
+        integer  EAF_REUSEICON
+        parameter (EAF_REUSEICON = '00000004'x)
+
+c$ifdef INCL_WINTRACKRECT
+
+        structure /TRACKINFO/
+            integer*4 cxBorder
+            integer*4 cyBorder
+            integer*4 cxGrid
+            integer*4 cyGrid
+            integer*4 cxKeyboard
+            integer*4 cyKeyboard
+            record /RECTL/ rclTrack
+            record /RECTL/ rclBoundary
+            record /POINTL/ ptlMinTrackSize
+            record /POINTL/ ptlMaxTrackSize
+            integer*4 fs
+        end structure
+
+        external WinTrackRect
+        integer*4 WinTrackRect
+
+        external WinShowTrackRect
+        integer*4 WinShowTrackRect
+
+        integer  TF_LEFT
+        parameter (TF_LEFT = '00000001'x)
+        integer  TF_TOP
+        parameter (TF_TOP = '00000002'x)
+        integer  TF_RIGHT
+        parameter (TF_RIGHT = '00000004'x)
+        integer  TF_BOTTOM
+        parameter (TF_BOTTOM = '00000008'x)
+        integer  TF_MOVE
+        parameter (TF_MOVE = '0000000F'x)
+
+        integer  TF_SETPOINTERPOS
+        parameter (TF_SETPOINTERPOS = '00000010'x)
+        integer  TF_GRID
+        parameter (TF_GRID = '00000020'x)
+        integer  TF_STANDARD
+        parameter (TF_STANDARD = '00000040'x)
+        integer  TF_ALLINBOUNDARY
+        parameter (TF_ALLINBOUNDARY = '00000080'x)
+        integer  TF_VALIDATETRACKRECT
+        parameter (TF_VALIDATETRACKRECT = '00000100'x)
+        integer  TF_PARTINBOUNDARY
+        parameter (TF_PARTINBOUNDARY = '00000200'x)
+
+c$endif
+
+c$ifdef INCL_WINCLIPBOARD
+
+        integer  WM_RENDERFMT
+        parameter (WM_RENDERFMT = '00000060'x)
+        integer  WM_RENDERALLFMTS
+        parameter (WM_RENDERALLFMTS = '00000061'x)
+        integer  WM_DESTROYCLIPBOARD
+        parameter (WM_DESTROYCLIPBOARD = '00000062'x)
+        integer  WM_PAINTCLIPBOARD
+        parameter (WM_PAINTCLIPBOARD = '00000063'x)
+        integer  WM_SIZECLIPBOARD
+        parameter (WM_SIZECLIPBOARD = '00000064'x)
+        integer  WM_HSCROLLCLIPBOARD
+        parameter (WM_HSCROLLCLIPBOARD = '00000065'x)
+        integer  WM_VSCROLLCLIPBOARD
+        parameter (WM_VSCROLLCLIPBOARD = '00000066'x)
+        integer  WM_DRAWCLIPBOARD
+        parameter (WM_DRAWCLIPBOARD = '00000067'x)
+
+        integer  CF_TEXT
+        parameter (CF_TEXT = 1)
+        integer  CF_BITMAP
+        parameter (CF_BITMAP = 2)
+        integer  CF_DSPTEXT
+        parameter (CF_DSPTEXT = 3)
+        integer  CF_DSPBITMAP
+        parameter (CF_DSPBITMAP = 4)
+        integer  CF_METAFILE
+        parameter (CF_METAFILE = 5)
+        integer  CF_DSPMETAFILE
+        parameter (CF_DSPMETAFILE = 6)
+        integer  CF_PALETTE
+        parameter (CF_PALETTE = 9)
+        character*3      SZFMT_TEXT
+        parameter (SZFMT_TEXT = '#1'//char(0))
+        character*3      SZFMT_BITMAP
+        parameter (SZFMT_BITMAP = '#2'//char(0))
+        character*3      SZFMT_DSPTEXT
+        parameter (SZFMT_DSPTEXT = '#3'//char(0))
+        character*3      SZFMT_DSPBITMAP
+        parameter (SZFMT_DSPBITMAP = '#4'//char(0))
+        character*3      SZFMT_METAFILE
+        parameter (SZFMT_METAFILE = '#5'//char(0))
+        character*3      SZFMT_DSPMETAFILE
+        parameter (SZFMT_DSPMETAFILE = '#6'//char(0))
+        character*3      SZFMT_PALETTE
+        parameter (SZFMT_PALETTE = '#9'//char(0))
+        character*5      SZFMT_SYLK
+        parameter (SZFMT_SYLK = 'Sylk'//char(0))
+        character*4      SZFMT_DIF
+        parameter (SZFMT_DIF = 'Dif'//char(0))
+        character*5      SZFMT_TIFF
+        parameter (SZFMT_TIFF = 'Tiff'//char(0))
+        character*8      SZFMT_OEMTEXT
+        parameter (SZFMT_OEMTEXT = 'OemText'//char(0))
+        character*4      SZFMT_DIB
+        parameter (SZFMT_DIB = 'Dib'//char(0))
+        character*13     SZFMT_OWNERDISPLAY
+        parameter (SZFMT_OWNERDISPLAY = 'OwnerDisplay'//char(0))
+        character*5      SZFMT_LINK
+        parameter (SZFMT_LINK = 'Link'//char(0))
+        character*13     SZFMT_METAFILEPICT
+        parameter (SZFMT_METAFILEPICT = 'MetaFilePict'//char(0))
+        character*16     SZFMT_DSPMETAFILEPICT
+        parameter (SZFMT_DSPMETAFILEPICT = 'DspMetaFilePict'//char(0))
+        character*14     SZFMT_CPTEXT
+        parameter (SZFMT_CPTEXT = 'Codepage Text'//char(0))
+        character*17     SZDDEFMT_RTF
+        parameter (SZDDEFMT_RTF = 'Rich Text Format'//char(0))
+        character*16     SZDDEFMT_PTRPICT
+        parameter (SZDDEFMT_PTRPICT = 'Printer_Picture'//char(0))
+
+        structure /MFP/
+            record /POINTL/ sizeBounds
+            record /POINTL/ sizeMM
+            integer*4 cbLength
+            integer*2 mapMode
+            integer*2 reserved
+            integer*1 abData(1)
+        end structure
+
+        structure /CPTEXT/
+            integer*2 idCountry
+            integer*2 usCodepage
+            integer*2 usLangID
+            integer*2 usSubLangID
+            integer*1 abText(1)
+        end structure
+
+        external WinSetClipbrdOwner
+        integer*4 WinSetClipbrdOwner
+
+        external WinSetClipbrdData
+        integer*4 WinSetClipbrdData
+
+        external WinQueryClipbrdData
+        integer*4 WinQueryClipbrdData
+
+        external WinQueryClipbrdFmtInfo
+        integer*4 WinQueryClipbrdFmtInfo
+
+        external WinSetClipbrdViewer
+        integer*4 WinSetClipbrdViewer
+
+        integer  CFI_OWNERFREE
+        parameter (CFI_OWNERFREE = '00000001'x)
+        integer  CFI_OWNERDISPLAY
+        parameter (CFI_OWNERDISPLAY = '00000002'x)
+        integer  CFI_POINTER
+        parameter (CFI_POINTER = '00000400'x)
+        integer  CFI_HANDLE
+        parameter (CFI_HANDLE = '00000200'x)
+
+        external WinEnumClipbrdFmts
+        integer*4 WinEnumClipbrdFmts
+
+        external WinEmptyClipbrd
+        integer*4 WinEmptyClipbrd
+
+        external WinOpenClipbrd
+        integer*4 WinOpenClipbrd
+
+        external WinCloseClipbrd
+        integer*4 WinCloseClipbrd
+
+        external WinQueryClipbrdOwner
+        integer*4 WinQueryClipbrdOwner
+
+        external WinQueryClipbrdViewer
+        integer*4 WinQueryClipbrdViewer
+
+c$endif
+
+c$ifdef INCL_WINCURSORS
+
+        external WinDestroyCursor
+        integer*4 WinDestroyCursor
+
+        external WinShowCursor
+        integer*4 WinShowCursor
+
+        external WinCreateCursor
+        integer*4 WinCreateCursor
+
+        integer  CURSOR_SOLID
+        parameter (CURSOR_SOLID = '00000000'x)
+        integer  CURSOR_HALFTONE
+        parameter (CURSOR_HALFTONE = '00000001'x)
+        integer  CURSOR_FRAME
+        parameter (CURSOR_FRAME = '00000002'x)
+        integer  CURSOR_FLASH
+        parameter (CURSOR_FLASH = '00000004'x)
+        integer  CURSOR_SETPOS
+        parameter (CURSOR_SETPOS = '00008000'x)
+
+        structure /CURSORINFO/
+            integer*4 hwnd
+            integer*4 x
+            integer*4 y
+            integer*4 cx
+            integer*4 cy
+            integer*4 fs
+            record /RECTL/ rclClip
+        end structure
+
+        external WinQueryCursorInfo
+        integer*4 WinQueryCursorInfo
+
+c$endif
+
+
+c$ifdef INCL_WINPOINTERS
+
+        external WinSetPointer
+        integer*4 WinSetPointer
+
+        external WinSetPointerOwner
+        integer*4 WinSetPointerOwner
+
+        external WinShowPointer
+        integer*4 WinShowPointer
+
+        external WinQuerySysPointer
+        integer*4 WinQuerySysPointer
+
+        integer  SPTR_ARROW
+        parameter (SPTR_ARROW = 1)
+        integer  SPTR_TEXT
+        parameter (SPTR_TEXT = 2)
+        integer  SPTR_WAIT
+        parameter (SPTR_WAIT = 3)
+        integer  SPTR_SIZE
+        parameter (SPTR_SIZE = 4)
+        integer  SPTR_MOVE
+        parameter (SPTR_MOVE = 5)
+        integer  SPTR_SIZENWSE
+        parameter (SPTR_SIZENWSE = 6)
+        integer  SPTR_SIZENESW
+        parameter (SPTR_SIZENESW = 7)
+        integer  SPTR_SIZEWE
+        parameter (SPTR_SIZEWE = 8)
+        integer  SPTR_SIZENS
+        parameter (SPTR_SIZENS = 9)
+        integer  SPTR_APPICON
+        parameter (SPTR_APPICON = 10)
+
+        integer  SPTR_ICONINFORMATION
+        parameter (SPTR_ICONINFORMATION = 11)
+        integer  SPTR_ICONQUESTION
+        parameter (SPTR_ICONQUESTION = 12)
+        integer  SPTR_ICONERROR
+        parameter (SPTR_ICONERROR = 13)
+        integer  SPTR_ICONWARNING
+        parameter (SPTR_ICONWARNING = 14)
+        integer  SPTR_CPTR
+        parameter (SPTR_CPTR = 14)
+
+        integer  SPTR_ILLEGAL
+        parameter (SPTR_ILLEGAL = 18)
+        integer  SPTR_FILE
+        parameter (SPTR_FILE = 19)
+        integer  SPTR_FOLDER
+        parameter (SPTR_FOLDER = 20)
+        integer  SPTR_MULTFILE
+        parameter (SPTR_MULTFILE = 21)
+        integer  SPTR_PROGRAM
+        parameter (SPTR_PROGRAM = 22)
+
+        integer  SPTR_HANDICON
+        parameter (SPTR_HANDICON = SPTR_ICONERROR)
+        integer  SPTR_QUESICON
+        parameter (SPTR_QUESICON = SPTR_ICONQUESTION)
+        integer  SPTR_BANGICON
+        parameter (SPTR_BANGICON = SPTR_ICONWARNING)
+        integer  SPTR_NOTEICON
+        parameter (SPTR_NOTEICON = SPTR_ICONINFORMATION)
+
+        external WinLoadPointer
+        integer*4 WinLoadPointer
+
+        external WinCreatePointer
+        integer*4 WinCreatePointer
+
+        external WinSetPointerPos
+        integer*4 WinSetPointerPos
+
+        external WinDestroyPointer
+        integer*4 WinDestroyPointer
+
+        external WinQueryPointer
+        integer*4 WinQueryPointer
+
+        external WinQueryPointerPos
+        integer*4 WinQueryPointerPos
+
+        structure /POINTERINFO/
+            integer*4 fPointer
+            integer*4 xHotspot
+            integer*4 yHotspot
+            integer*4 hbmPointer
+            integer*4 hbmColor
+            integer*4 hbmMiniPointer
+            integer*4 hbmMiniColor
+        end structure
+
+        external WinCreatePointerIndirect
+        integer*4 WinCreatePointerIndirect
+
+        external WinQueryPointerInfo
+        integer*4 WinQueryPointerInfo
+
+        external WinDrawPointer
+        integer*4 WinDrawPointer
+
+        integer  DP_NORMAL
+        parameter (DP_NORMAL = '00000000'x)
+        integer  DP_HALFTONED
+        parameter (DP_HALFTONED = '00000001'x)
+        integer  DP_INVERTED
+        parameter (DP_INVERTED = '00000002'x)
+
+        external WinGetSysBitmap
+        integer*4 WinGetSysBitmap
+
+        integer  SBMP_OLD_SYSMENU
+        parameter (SBMP_OLD_SYSMENU = 1)
+        integer  SBMP_OLD_SBUPARROW
+        parameter (SBMP_OLD_SBUPARROW = 2)
+        integer  SBMP_OLD_SBDNARROW
+        parameter (SBMP_OLD_SBDNARROW = 3)
+        integer  SBMP_OLD_SBRGARROW
+        parameter (SBMP_OLD_SBRGARROW = 4)
+        integer  SBMP_OLD_SBLFARROW
+        parameter (SBMP_OLD_SBLFARROW = 5)
+        integer  SBMP_MENUCHECK
+        parameter (SBMP_MENUCHECK = 6)
+        integer  SBMP_OLD_CHECKBOXES
+        parameter (SBMP_OLD_CHECKBOXES = 7)
+        integer  SBMP_BTNCORNERS
+        parameter (SBMP_BTNCORNERS = 8)
+        integer  SBMP_OLD_MINBUTTON
+        parameter (SBMP_OLD_MINBUTTON = 9)
+        integer  SBMP_OLD_MAXBUTTON
+        parameter (SBMP_OLD_MAXBUTTON = 10)
+        integer  SBMP_OLD_RESTOREBUTTON
+        parameter (SBMP_OLD_RESTOREBUTTON = 11)
+        integer  SBMP_OLD_CHILDSYSMENU
+        parameter (SBMP_OLD_CHILDSYSMENU = 12)
+        integer  SBMP_DRIVE
+        parameter (SBMP_DRIVE = 15)
+        integer  SBMP_FILE
+        parameter (SBMP_FILE = 16)
+        integer  SBMP_FOLDER
+        parameter (SBMP_FOLDER = 17)
+        integer  SBMP_TREEPLUS
+        parameter (SBMP_TREEPLUS = 18)
+        integer  SBMP_TREEMINUS
+        parameter (SBMP_TREEMINUS = 19)
+        integer  SBMP_PROGRAM
+        parameter (SBMP_PROGRAM = 22)
+        integer  SBMP_MENUATTACHED
+        parameter (SBMP_MENUATTACHED = 23)
+        integer  SBMP_SIZEBOX
+        parameter (SBMP_SIZEBOX = 24)
+
+        integer  SBMP_SYSMENU
+        parameter (SBMP_SYSMENU = 25)
+        integer  SBMP_MINBUTTON
+        parameter (SBMP_MINBUTTON = 26)
+        integer  SBMP_MAXBUTTON
+        parameter (SBMP_MAXBUTTON = 27)
+        integer  SBMP_RESTOREBUTTON
+        parameter (SBMP_RESTOREBUTTON = 28)
+        integer  SBMP_CHILDSYSMENU
+        parameter (SBMP_CHILDSYSMENU = 29)
+        integer  SBMP_SYSMENUDEP
+        parameter (SBMP_SYSMENUDEP = 30)
+        integer  SBMP_MINBUTTONDEP
+        parameter (SBMP_MINBUTTONDEP = 31)
+        integer  SBMP_MAXBUTTONDEP
+        parameter (SBMP_MAXBUTTONDEP = 32)
+        integer  SBMP_RESTOREBUTTONDEP
+        parameter (SBMP_RESTOREBUTTONDEP = 33)
+        integer  SBMP_CHILDSYSMENUDEP
+        parameter (SBMP_CHILDSYSMENUDEP = 34)
+        integer  SBMP_SBUPARROW
+        parameter (SBMP_SBUPARROW = 35)
+        integer  SBMP_SBDNARROW
+        parameter (SBMP_SBDNARROW = 36)
+        integer  SBMP_SBLFARROW
+        parameter (SBMP_SBLFARROW = 37)
+        integer  SBMP_SBRGARROW
+        parameter (SBMP_SBRGARROW = 38)
+        integer  SBMP_SBUPARROWDEP
+        parameter (SBMP_SBUPARROWDEP = 39)
+        integer  SBMP_SBDNARROWDEP
+        parameter (SBMP_SBDNARROWDEP = 40)
+        integer  SBMP_SBLFARROWDEP
+        parameter (SBMP_SBLFARROWDEP = 41)
+        integer  SBMP_SBRGARROWDEP
+        parameter (SBMP_SBRGARROWDEP = 42)
+        integer  SBMP_SBUPARROWDIS
+        parameter (SBMP_SBUPARROWDIS = 43)
+        integer  SBMP_SBDNARROWDIS
+        parameter (SBMP_SBDNARROWDIS = 44)
+        integer  SBMP_SBLFARROWDIS
+        parameter (SBMP_SBLFARROWDIS = 45)
+        integer  SBMP_SBRGARROWDIS
+        parameter (SBMP_SBRGARROWDIS = 46)
+        integer  SBMP_COMBODOWN
+        parameter (SBMP_COMBODOWN = 47)
+        integer  SBMP_CHECKBOXES
+        parameter (SBMP_CHECKBOXES = 48)
+
+c$endif
+
+c$ifdef INCL_WINHOOKS
+
+        external WinSetHook
+        integer*4 WinSetHook
+
+        external WinReleaseHook
+        integer*4 WinReleaseHook
+
+        external WinCallMsgFilter
+        integer*4 WinCallMsgFilter
+
+        integer  HK_SENDMSG
+        parameter (HK_SENDMSG = 0)
+
+        integer  HK_INPUT
+        parameter (HK_INPUT = 1)
+
+        integer  HK_MSGFILTER
+        parameter (HK_MSGFILTER = 2)
+
+        integer  HK_JOURNALRECORD
+        parameter (HK_JOURNALRECORD = 3)
+
+        integer  HK_JOURNALPLAYBACK
+        parameter (HK_JOURNALPLAYBACK = 4)
+
+        integer  HK_HELP
+        parameter (HK_HELP = 5)
+
+        integer  HK_LOADER
+        parameter (HK_LOADER = 6)
+
+        integer  HK_REGISTERUSERMSG
+        parameter (HK_REGISTERUSERMSG = 7)
+
+        integer  HK_MSGCONTROL
+        parameter (HK_MSGCONTROL = 8)
+
+        integer  HK_PLIST_ENTRY
+        parameter (HK_PLIST_ENTRY = 9)
+
+        integer  HK_PLIST_EXIT
+        parameter (HK_PLIST_EXIT = 10)
+
+        integer  HK_FINDWORD
+        parameter (HK_FINDWORD = 11)
+
+        integer  HK_CODEPAGECHANGED
+        parameter (HK_CODEPAGECHANGED = 12)
+
+        integer  HK_WINDOWDC
+        parameter (HK_WINDOWDC = 15)
+
+        integer  HK_DESTROYWINDOW
+        parameter (HK_DESTROYWINDOW = 16)
+
+        integer  HK_CHECKMSGFILTER
+        parameter (HK_CHECKMSGFILTER = 20)
+
+        integer  HMQ_CURRENT
+        parameter (HMQ_CURRENT = 1)
+
+        integer  MSGF_DIALOGBOX
+        parameter (MSGF_DIALOGBOX = 1)
+        integer  MSGF_MESSAGEBOX
+        parameter (MSGF_MESSAGEBOX = 2)
+        integer  MSGF_TRACK
+        parameter (MSGF_TRACK = 8)
+        integer  MSGF_DDEPOSTMSG
+        parameter (MSGF_DDEPOSTMSG = 3)
+
+        integer  HLPM_FRAME
+        parameter (HLPM_FRAME = -1)
+        integer  HLPM_WINDOW
+        parameter (HLPM_WINDOW = -2)
+        integer  HLPM_MENU
+        parameter (HLPM_MENU = -3)
+
+        integer  PM_MODEL_1X
+        parameter (PM_MODEL_1X = 0)
+        integer  PM_MODEL_2X
+        parameter (PM_MODEL_2X = 1)
+
+        structure /SMHSTRUCT/
+            integer*4 mp2
+            integer*4 mp1
+            integer*4 msg
+            integer*4 hwnd
+            integer*4 model
+        end structure
+
+        integer  LHK_DELETEPROC
+        parameter (LHK_DELETEPROC = 1)
+        integer  LHK_DELETELIB
+        parameter (LHK_DELETELIB = 2)
+        integer  LHK_LOADPROC
+        parameter (LHK_LOADPROC = 3)
+        integer  LHK_LOADLIB
+        parameter (LHK_LOADLIB = 4)
+
+        integer  MCHK_MSGINTEREST
+        parameter (MCHK_MSGINTEREST = 1)
+        integer  MCHK_CLASSMSGINTEREST
+        parameter (MCHK_CLASSMSGINTEREST = 2)
+        integer  MCHK_SYNCHRONISATION
+        parameter (MCHK_SYNCHRONISATION = 3)
+        integer  MCHK_MSGMODE
+        parameter (MCHK_MSGMODE = 4)
+
+        integer  RUMHK_DATATYPE
+        parameter (RUMHK_DATATYPE = 1)
+        integer  RUMHK_MSG
+        parameter (RUMHK_MSG = 2)
+
+c$endif
+
+c$ifdef INCL_WINTHUNKAPI
+
+        external WinSetClassThunkProc
+        integer*4 WinSetClassThunkProc
+
+        external WinQueryClassThunkProc
+        integer*4 WinQueryClassThunkProc
+
+        external WinSetWindowThunkProc
+        integer*4 WinSetWindowThunkProc
+
+        external WinQueryWindowThunkProc
+        integer*4 WinQueryWindowThunkProc
+
+        external WinQueryWindowModel
+        integer*4 WinQueryWindowModel
+
+c$endif
+
+c$include pmshl.fi
+
+c$ifdef INCL_WINCOUNTRY
+
+        external WinQueryCp
+        integer*4 WinQueryCp
+
+        external WinSetCp
+        integer*4 WinSetCp
+
+        external WinQueryCpList
+        integer*4 WinQueryCpList
+
+        external WinCpTranslateString
+        integer*4 WinCpTranslateString
+
+        external WinCpTranslateChar
+        integer*1 WinCpTranslateChar
+
+        external WinUpper
+        integer*4 WinUpper
+
+        external WinUpperChar
+        integer*4 WinUpperChar
+
+        external WinNextChar
+        integer*4 WinNextChar
+
+        external WinPrevChar
+        integer*4 WinPrevChar
+
+        external WinCompareStrings
+        integer*4 WinCompareStrings
+
+        integer  WCS_ERROR
+        parameter (WCS_ERROR = 0)
+        integer  WCS_EQ
+        parameter (WCS_EQ = 1)
+        integer  WCS_LT
+        parameter (WCS_LT = 2)
+        integer  WCS_GT
+        parameter (WCS_GT = 3)
+
+c$endif
+
+c$ifdef INCL_WINATOM
+
+        external WinQuerySystemAtomTable
+        integer*4 WinQuerySystemAtomTable
+
+        external WinCreateAtomTable
+        integer*4 WinCreateAtomTable
+
+        external WinDestroyAtomTable
+        integer*4 WinDestroyAtomTable
+
+        external WinAddAtom
+        integer*4 WinAddAtom
+
+        external WinFindAtom
+        integer*4 WinFindAtom
+
+        external WinDeleteAtom
+        integer*4 WinDeleteAtom
+
+        external WinQueryAtomUsage
+        integer*4 WinQueryAtomUsage
+
+        external WinQueryAtomLength
+        integer*4 WinQueryAtomLength
+
+        external WinQueryAtomName
+        integer*4 WinQueryAtomName
+
+        integer*4 MAKEINTATOM
+        external MAKEINTATOM
+
+c$endif
+
+c$ifdef INCL_WINERRORS
+
+c$include pmwinerr.fi
+
+        integer  WINDBG_HWND_NOT_DESTROYED
+        parameter (WINDBG_HWND_NOT_DESTROYED = '00001022'x)
+        integer  WINDBG_HPTR_NOT_DESTROYED
+        parameter (WINDBG_HPTR_NOT_DESTROYED = '00001023'x)
+        integer  WINDBG_HACCEL_NOT_DESTROYED
+        parameter (WINDBG_HACCEL_NOT_DESTROYED = '00001024'x)
+        integer  WINDBG_HENUM_NOT_DESTROYED
+        parameter (WINDBG_HENUM_NOT_DESTROYED = '00001025'x)
+        integer  WINDBG_VISRGN_SEM_BUSY
+        parameter (WINDBG_VISRGN_SEM_BUSY = '00001026'x)
+        integer  WINDBG_USER_SEM_BUSY
+        parameter (WINDBG_USER_SEM_BUSY = '00001027'x)
+        integer  WINDBG_DC_CACHE_BUSY
+        parameter (WINDBG_DC_CACHE_BUSY = '00001028'x)
+        integer  WINDBG_HOOK_STILL_INSTALLED
+        parameter (WINDBG_HOOK_STILL_INSTALLED = '00001029'x)
+        integer  WINDBG_WINDOW_STILL_LOCKED
+        parameter (WINDBG_WINDOW_STILL_LOCKED = '0000102a'x)
+        integer  WINDBG_UPDATEPS_ASSERTION_FAIL
+        parameter (WINDBG_UPDATEPS_ASSERTION_FAIL = '0000102b'x)
+        integer  WINDBG_SENDMSG_WITHIN_USER_SEM
+        parameter (WINDBG_SENDMSG_WITHIN_USER_SEM = '0000102c'x)
+        integer  WINDBG_USER_SEM_NOT_ENTERED
+        parameter (WINDBG_USER_SEM_NOT_ENTERED = '0000102d'x)
+        integer  WINDBG_PROC_NOT_EXPORTED
+        parameter (WINDBG_PROC_NOT_EXPORTED = '0000102e'x)
+        integer  WINDBG_BAD_SENDMSG_HWND
+        parameter (WINDBG_BAD_SENDMSG_HWND = '0000102f'x)
+        integer  WINDBG_ABNORMAL_EXIT
+        parameter (WINDBG_ABNORMAL_EXIT = '00001030'x)
+        integer  WINDBG_INTERNAL_REVISION
+        parameter (WINDBG_INTERNAL_REVISION = '00001031'x)
+        integer  WINDBG_INITSYSTEM_FAILED
+        parameter (WINDBG_INITSYSTEM_FAILED = '00001032'x)
+        integer  WINDBG_HATOMTBL_NOT_DESTROYED
+        parameter (WINDBG_HATOMTBL_NOT_DESTROYED = '00001033'x)
+        integer  WINDBG_WINDOW_UNLOCK_WAIT
+        parameter (WINDBG_WINDOW_UNLOCK_WAIT = '00001035'x)
+
+        structure /ERRINFO/
+            integer*4 cbFixedErrInfo
+            integer*4 idError
+            integer*4 cDetailLevel
+            integer*4 offaoffszMsg
+            integer*4 offBinaryData
+        end structure
+
+        external WinGetLastError
+        integer*4 WinGetLastError
+
+        external WinGetErrorInfo
+        integer*4 WinGetErrorInfo
+
+        external WinFreeErrorInfo
+        integer*4 WinFreeErrorInfo
+
+c$endif
+
+c$ifdef INCL_WINSEI
+c$ifndef SEI_PMWINP
+c$define SEI_PMWIN
+c$include pmsei.fi
+c$endif
+c$endif
+
+c$ifdef INCL_WINDDE
+
+        character*7      SZDDESYS_TOPIC
+        parameter (SZDDESYS_TOPIC = 'System'//char(0))
+        character*7      SZDDESYS_ITEM_TOPICS
+        parameter (SZDDESYS_ITEM_TOPICS = 'Topics'//char(0))
+        character*9      SZDDESYS_ITEM_SYSITEMS
+        parameter (SZDDESYS_ITEM_SYSITEMS = 'SysItems'//char(0))
+        character*14     SZDDESYS_ITEM_RTNMSG
+        parameter (SZDDESYS_ITEM_RTNMSG = 'ReturnMessage'//char(0))
+        character*7      SZDDESYS_ITEM_STATUS
+        parameter (SZDDESYS_ITEM_STATUS = 'Status'//char(0))
+        character*8      SZDDESYS_ITEM_FORMATS
+        parameter (SZDDESYS_ITEM_FORMATS = 'Formats'//char(0))
+        character*9      SZDDESYS_ITEM_SECURITY
+        parameter (SZDDESYS_ITEM_SECURITY = 'Security'//char(0))
+        character*12     SZDDESYS_ITEM_ITEMFORMATS
+        parameter (SZDDESYS_ITEM_ITEMFORMATS = 'ItemFormats'//char(0))
+        character*5      SZDDESYS_ITEM_HELP
+        parameter (SZDDESYS_ITEM_HELP = 'Help'//char(0))
+        character*10     SZDDESYS_ITEM_PROTOCOLS
+        parameter (SZDDESYS_ITEM_PROTOCOLS = 'Protocols'//char(0))
+        character*8      SZDDESYS_ITEM_RESTART
+        parameter (SZDDESYS_ITEM_RESTART = 'Restart'//char(0))
+
+        structure /CONVCONTEXT/
+            integer*4 cb
+            integer*4 fsContext
+            integer*4 idCountry
+            integer*4 usCodepage
+            integer*4 usLangID
+            integer*4 usSubLangID
+        end structure
+
+        integer  DDECTXT_CASESENSITIVE
+        parameter (DDECTXT_CASESENSITIVE = '00000001'x)
+
+        structure /DDEINIT/
+            integer*4 cb
+            integer*4 pszAppName
+            integer*4 pszTopic
+            integer*4 offConvContext
+        end structure
+
+        structure /DDESTRUCT/
+            integer*4 cbData
+            integer*2 fsStatus
+            integer*2 usFormat
+            integer*2 offszItemName
+            integer*2 offabData
+        end structure
+
+        integer  DDE_FACK
+        parameter (DDE_FACK = '00000001'x)
+        integer  DDE_FBUSY
+        parameter (DDE_FBUSY = '00000002'x)
+        integer  DDE_FNODATA
+        parameter (DDE_FNODATA = '00000004'x)
+        integer  DDE_FACKREQ
+        parameter (DDE_FACKREQ = '00000008'x)
+        integer  DDE_FRESPONSE
+        parameter (DDE_FRESPONSE = '00000010'x)
+        integer  DDE_NOTPROCESSED
+        parameter (DDE_NOTPROCESSED = '00000020'x)
+        integer  DDE_FRESERVED
+        parameter (DDE_FRESERVED = '000000C0'x)
+        integer  DDE_FAPPSTATUS
+        parameter (DDE_FAPPSTATUS = '0000FF00'x)
+
+        integer  DDEFMT_TEXT
+        parameter (DDEFMT_TEXT = '00000001'x)
+
+        external WinDdeInitiate
+        integer*4 WinDdeInitiate
+
+        external WinDdeRespond
+        integer*4 WinDdeRespond
+
+        external WinDdePostMsg
+        integer*4 WinDdePostMsg
+
+        integer  DDEPM_RETRY
+        parameter (DDEPM_RETRY = '00000001'x)
+        integer  DDEPM_NOFREE
+        parameter (DDEPM_NOFREE = '00000002'x)
+
+        integer  WM_DDE_FIRST
+        parameter (WM_DDE_FIRST = '000000A0'x)
+        integer  WM_DDE_INITIATE
+        parameter (WM_DDE_INITIATE = '000000A0'x)
+        integer  WM_DDE_REQUEST
+        parameter (WM_DDE_REQUEST = '000000A1'x)
+        integer  WM_DDE_ACK
+        parameter (WM_DDE_ACK = '000000A2'x)
+        integer  WM_DDE_DATA
+        parameter (WM_DDE_DATA = '000000A3'x)
+        integer  WM_DDE_ADVISE
+        parameter (WM_DDE_ADVISE = '000000A4'x)
+        integer  WM_DDE_UNADVISE
+        parameter (WM_DDE_UNADVISE = '000000A5'x)
+        integer  WM_DDE_POKE
+        parameter (WM_DDE_POKE = '000000A6'x)
+        integer  WM_DDE_EXECUTE
+        parameter (WM_DDE_EXECUTE = '000000A7'x)
+        integer  WM_DDE_TERMINATE
+        parameter (WM_DDE_TERMINATE = '000000A8'x)
+        integer  WM_DDE_INITIATEACK
+        parameter (WM_DDE_INITIATEACK = '000000A9'x)
+        integer  WM_DDE_LAST
+        parameter (WM_DDE_LAST = '000000AF'x)
+
+        integer*4 DDES_PSZITEMANE
+        external DDES_PSZITEMNAME
+
+        integer*4 DDES_PABDATA
+        external DDES_PABDATA
+
+        integer*4 DDEI_PCONVCONTEXT
+        external DDEI_PCONVCONTEXT
+
+c$endif
+
+c$ifdef INCL_NLS
+
+        integer  WM_DBCSFIRST
+        parameter (WM_DBCSFIRST = '000000b0'x)
+        integer  WM_DBCSLAST
+        parameter (WM_DBCSLAST = '000000cf'x)
+
+c$endif
+
+c$ifdef INCL_WINWINDOWMGR
+
+        integer  WM_QUERYCONVERTPOS
+        parameter (WM_QUERYCONVERTPOS = '000000b0'x)
+
+        integer  QCP_CONVERT
+        parameter (QCP_CONVERT = '00000001'x)
+        integer  QCP_NOCONVERT
+        parameter (QCP_NOCONVERT = '00000000'x)
+
+c$endif
+
+c$ifdef INCL_WINHELP
+c$include pmhelp.fi
+c$endif
+
+c$ifdef INCL_WINLOAD
+
+        external WinDeleteProcedure
+        integer*4 WinDeleteProcedure
+
+        external WinDeleteLibrary
+        integer*4 WinDeleteLibrary
+
+        external WinLoadProcedure
+        integer*4 WinLoadProcedure
+
+        external WinLoadLibrary
+        integer*4 WinLoadLibrary
+
+c$endif
+
+c$ifdef INCL_WINDESKTOP
+
+        structure /DESKTOP/
+            integer*4 cbSize
+            integer*4 hbm
+            integer*4 x
+            integer*4 y
+            integer*4 fl
+            integer*4 lTileCount
+            integer*1 szFile(260)
+        end structure
+
+        external WinSetDesktopBkgnd
+        integer*4 WinSetDesktopBkgnd
+
+        external WinQueryDesktopBkgnd
+        integer*4 WinQueryDesktopBkgnd
+
+        integer  SDT_DESTROY
+        parameter (SDT_DESTROY = '00000001'x)
+        integer  SDT_NOBKGND
+        parameter (SDT_NOBKGND = '00000002'x)
+        integer  SDT_TILE
+        parameter (SDT_TILE = '00000004'x)
+        integer  SDT_SCALE
+        parameter (SDT_SCALE = '00000008'x)
+        integer  SDT_PATTERN
+        parameter (SDT_PATTERN = '00000010'x)
+        integer  SDT_CENTER
+        parameter (SDT_CENTER = '00000020'x)
+        integer  SDT_RETAIN
+        parameter (SDT_RETAIN = '00000040'x)
+        integer  SDT_LOADFILE
+        parameter (SDT_LOADFILE = '00000080'x)
+
+c$endif
+
+c$ifdef INCL_WINPALETTE
+
+        external WinRealizePalette
+        integer*4 WinRealizePalette
+
+c$endif
+
+c$ifdef INCL_REMAPDLL
+
+        character*9      STR_DLLNAME
+        parameter (STR_DLLNAME = 'keyremap'//char(0))
+
+c$endif
+
+c$reference

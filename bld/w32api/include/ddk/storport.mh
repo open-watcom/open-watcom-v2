@@ -1,0 +1,705 @@
+/*
+ *  storport.h  Storage port functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTSTORPORT_
+#define _NTSTORPORT_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Macro to specify storage port functions */
+#ifdef _NTDDK_
+    #define STORPORT_API
+#else
+    #define STORPORT_API    DECLSPEC_IMPORT
+#endif
+
+/* Primitive data types */
+typedef PHYSICAL_ADDRESS    STOR_PHYSICAL_ADDRESS;
+typedef PHYSICAL_ADDRESS    *PSTOR_PHYSICAL_ADDRESS;
+
+/* Storage synchronization models */
+typedef enum _STOR_SYNCHRONIZATION_MODEL {
+    StorSynchronizeHalfDuplex   = 0,
+    StorSynchronizeFullDuplex   = 1
+} STOR_SYNCHRONIZATION_MODEL;
+
+/* Hardware message signaled interrupt routine */
+typedef BOOLEAN (NTAPI *PHW_MESSAGE_SIGNALED_INTERRUPT_ROUTINE)( PVOID, ULONG );
+
+/* Interrupt synchronization modes */
+typedef enum _INTERRUPT_SYNCHRONIZATION_MODE {
+    InterruptSupportNone            = 0,
+    InterruptSynchronizeAll         = 1,
+    InterruptSynchronizePerMessage  = 2
+} INTERRUPT_SYNCHRONIZATION_MODE;
+
+typedef struct _MEMORY_REGION {
+    PUCHAR              VirtualBase;
+    PHYSICAL_ADDRESS    PhysicalBase;
+    ULONG               Length;
+} MEMORY_REGION;
+typedef MEMORY_REGION   *PMEMORY_REGION;
+
+/* Hardware build I/O callback */
+typedef BOOLEAN (NTAPI *PHW_BUILDIO)( PVOID, struct SCSI_REQUEST_BLOCK * );
+
+/* The Microsoft version of storport.h is mostly a lot of the same stuff that's in
+ * other headers.  To save space, include those headers and just define those constants
+ * and structures that are unique to this header.
+ */
+#include <scsi.h>
+#include <srb.h>
+
+/* Storage map constants */
+#define STOR_MAP_NO_BUFFERS             0
+#define STOR_MAP_ALL_BUFFERS            1
+#define STOR_MAP_NON_READ_WRITE_BUFFERS 2
+
+/* Extended flags */
+#define EXTENDED_FLAG_POWER 0x00000001L
+
+/* SCSI 64-bit DMA flags */
+#define SCSI_DMA64_SYSTEM_SUPPORTED                 0x80
+#define SCSI_DMA64_MINIPORT_SUPPORTED               0x01
+#if (NTDDI_VERSION >= 0x05020100)
+    #define SCSI_DMA64_MINIPORT_FULL64BIT_SUPPORTED 0x02
+#endif
+
+/* Storage performance flags */
+#define STOR_PERF_DPC_REDIRECTION                           0x00000001L
+#define STOR_PERF_CONCURRENT_CHANNELS                       0x00000002L
+#define STOR_PERF_INTERRUPT_MESSAGE_RANGES                  0x00000004L
+#define STOR_PERF_ADV_CONFIG_LOCALITY                       0x00000008L
+#define STOR_PERF_OPTIMIZE_FOR_COMPLETION_DURING_STARTIO    0x00000010L
+
+/* Storage performance version number */
+#define STOR_PERF_VERSION   0x00000003L
+
+/* Storage status codes */
+#define STOR_STATUS_SUCCESS                 0x00000000L
+#define STOR_STATUS_UNSUCCCESSFUL           0xC1000001L
+#define STOR_STATUS_NOT_IMPLEMENTED         0xC1000002L
+#define STOR_STATUS_INSUFFICIENT_RESOURCES  0xC1000003L
+#define STOR_STATUS_BUFFER_TOO_SMALL        0xC1000004L
+#define STOR_STATUS_ACCESS_DENIED           0xC1000005L
+#define STOR_STATUS_INVALID_PARAMETER       0xC1000006L
+#define STOR_STATUS_INVALID_DEVICE_REQUEST  0xC1000007L
+#define STOR_STATUS_INVALID_IRQL            0xC1000008L
+#define STOR_STATUS_INVALID_DEVICE_STATE    0xC1000009L
+#define STOR_STATUS_INVALID_BUFFER_SIZE     0xC100000AL
+#define STOR_STATUS_UNSUPPORTED_VERSION     0xC100000BL
+
+/* Miniport dump constants */
+#define DUMP_MINIPORT_VERSION_1     0x0100
+#define DUMP_MINIPORT_VERSION       0x0200
+#define DUMP_MINIPORT_NAME_LENGTH   15
+
+/* Storage current log interface revision number */
+#define STOR_CURRENT_LOG_INTERFACE_REVISION 0x0100
+
+/* Miniport registry value types */
+#define MINIPORT_REG_SZ     1
+#define MINIPORT_REG_BINARY 3
+#define MINIPORT_REG_DWORD  4
+
+/* Message interrupt information */
+typedef struct _MESSAGE_INTERRUPT_INFORMATION {
+    ULONG                   MessageId;
+    ULONG                   MessageData;
+    STOR_PHYSICAL_ADDRESS   MessageAddress;
+    ULONG                   InterruptVector;
+    ULONG                   InterruptLevel;
+    KINTERRUPT_MODE         InterruptMode;
+} MESSAGE_INTERRUPT_INFORMATION;
+typedef MESSAGE_INTERRUPT_INFORMATION   *PMESSAGE_INTERRUPT_INFORMATION;
+
+/* Storage scatter/gather element */
+typedef struct _STOR_SCATTER_GATHER_ELEMENT {
+    STOR_PHYSICAL_ADDRESS   PhysicalAddress;
+    ULONG                   Length;
+    ULONG_PTR               Reserved;
+} STOR_SCATTER_GATHER_ELEMENT;
+typedef STOR_SCATTER_GATHER_ELEMENT *PSTOR_SCATTER_GATHER_ELEMENT;
+
+/* Storage scatter/gather list */
+typedef struct _STOR_SCATTER_GATHER_LIST {
+    ULONG                       NumberOfElements;
+    ULONG_PTR                   Reserved;
+    STOR_SCATTER_GATHER_ELEMENT List[1];
+} STOR_SCATTER_GATHER_LIST;
+typedef STOR_SCATTER_GATHER_LIST    *PSTOR_SCATTER_GATHER_LIST;
+
+/* Scatter/gather status codes */
+typedef enum _GETSGSTATUS {
+    SG_ALLOCATED        = 0,
+    SG_BUFFER_TOO_SMALL = 1
+} GETSGSTATUS;
+typedef GETSGSTATUS *PGETSGSTATUS;
+
+/* Deferred procedure call buffer */
+typedef struct _DPC_BUFFER {
+    CSHORT  Type;
+    UCHAR   Number;
+    UCHAR   Importance;
+    struct {
+        PVOID   F;
+        PVOID   B;
+    };
+    PVOID   DeferredRoutine;
+    PVOID   DeferredContext;
+    PVOID   SystemArgument1;
+    PVOID   SystemArgument2;
+    PVOID   DpcData;
+} DPC_BUFFER;
+
+/* Storage deferred procedure call */
+typedef struct _STOR_DPC {
+    DPC_BUFFER  Dpc;
+    ULONG_PTR   Lock;
+} STOR_DPC;
+typedef STOR_DPC    *PSTOR_DPC;
+
+/* Storage spin lock */
+typedef enum _STOR_SPINLOCK {
+    DpcLock         = 1,
+    StartIoLock     = 2,
+    InterruptLock   = 3
+} STOR_SPINLOCK;
+
+/* Storage lock handles */
+typedef struct _STOR_LOCK_HANDLE {
+    STOR_SPINLOCK   Lock;
+    struct {
+        struct {
+            PVOID   Next;
+            PVOID   Lock;
+        } LockQueue;
+        KIRQL   OldIrql;
+    } Context;
+} STOR_LOCK_HANDLE;
+typedef STOR_LOCK_HANDLE    *PSTOR_LOCK_HANDLE;
+
+/* Performance configuration data */
+typedef struct _PERF_CONFIGURATION_DATA {
+    ULONG   Version;
+    ULONG   Size;
+    ULONG   Flags;
+    ULONG   ConcurrentChannels;
+    ULONG   FirstRedirectionMessageNumber;
+    ULONG   LastRedirectionMessageNumber;
+} PERF_CONFIGURATION_DATA;
+typedef PERF_CONFIGURATION_DATA *PPERF_CONFIGURATION_DATA;
+
+/* Start I/O performance parameters */
+typedef struct _STARTIO_PERFORMANCE_PARAMETERS {
+    ULONG   Version;
+    ULONG   Size;
+    ULONG   MessageNumber;
+    ULONG   ChannelNumber;
+} STARTIO_PERFORMANCE_PARAMETERS;
+typedef STARTIO_PERFORMANCE_PARAMETERS  *PSTARTIO_PERFORMANCE_PARAMETERS;
+
+/* Hardware callbacks */
+typedef BOOLEAN (NTAPI *PHW_PASSIVE_INITIALIZE_ROUTINE)( PVOID );
+typedef VOID (NTAPI *PHW_DPC_ROUTINE)( PSTOR_DPC, PVOID, PVOID, PVOID );
+typedef VOID (NTAPI *PHW_FREE_ADAPTER_RESOURCES)( PVOID );
+typedef VOID (NTAPI *PHW_PROCESS_SERVICE_REQUEST)( PVOID, PVOID );
+typedef VOID (NTAPI *PHW_COMPLETE_SERVICE_IRP)( PVOID );
+typedef VOID (NTAPI *PHW_INITIALIZE_TRACING)( PVOID, PVOID );
+typedef VOID (NTAPI *PHW_CLEANUP_TRACING)( PVOID );
+typedef ULONG (NTAPI *PVIRTUAL_HW_FIND_ADAPTER)( PVOID, PVOID, PVOID, PVOID, PCHAR, PPORT_CONFIGURATION_INFORMATION, PBOOLEAN );
+
+/* Storage port callbacks */
+typedef BOOLEAN (NTAPI *PStorPortGetMessageInterruptInformation)( PVOID, ULONG, PMESSAGE_INTERRUPT_INFORMATION );
+typedef VOID (NTAPI *PStorPortPutScatterGatherList)( PVOID, PSTOR_SCATTER_GATHER_LIST, BOOLEAN );
+typedef VOID (NTAPI *PpostScaterGatherExecute)( PVOID *, PVOID *, PSTOR_SCATTER_GATHER_LIST, PVOID );
+typedef GETSGSTATUS (NTAPI *PStorPortBuildScatterGatherList)( PVOID, PVOID, PVOID, ULONG, PpostScaterGatherExecute, PVOID, BOOLEAN, PVOID, ULONG );
+typedef VOID (NTAPI *PStorPortFreePool)( PVOID, PVOID, PVOID );
+typedef PVOID (NTAPI *PStorPortAllocatePool)( ULONG, ULONG, PVOID, PVOID * );
+typedef PVOID (NTAPI *PStorPortGetSystemAddress)( PSCSI_REQUEST_BLOCK );
+typedef ULONG (NTAPI *PStorPortAcquireMSISpinLock)( PVOID, ULONG );
+typedef VOID (NTAPI *PStorPortReleaseMSISpinLock)( PVOID, ULONG, ULONG );
+typedef VOID (NTAPI *PStorPortCompleteServiceIrp)( PVOID, PVOID );
+typedef PVOID (NTAPI *PStorPortGetOriginalMdl)( PSCSI_REQUEST_BLOCK );
+
+/* Storage port extended functions */
+typedef struct _STORPORT_EXTENDED_FUNCTIONS {
+    ULONG                                   Version;
+    PStorPortGetMessageInterruptInformation GetMessageInterruptInformation;
+    PStorPortPutScatterGatherList           PutScatterGatherList;
+    PStorPortBuildScatterGatherList         BuildScatterGatherList;
+    PStorPortFreePool                       FreePool;
+    PStorPortAllocatePool                   AllocatePool;
+    PStorPortGetSystemAddress               GetSystemAddress;
+    PStorPortAcquireMSISpinLock             AcquireMSISpinLock;
+    PStorPortReleaseMSISpinLock             ReleaseMSISpinLock;
+    PStorPortCompleteServiceIrp             CompleteServiceIrp;
+    PStorPortGetOriginalMdl                 GetOriginalMdl;
+} STORPORT_EXTENDED_FUNCTIONS;
+typedef STORPORT_EXTENDED_FUNCTIONS *PSTORPORT_EXTENDED_FUNCTIONS;
+
+/* Storage port function codes */
+typedef enum _STORPORT_FUNCTION_CODE {
+    ExtFunctionAllocatePool                         = 0,
+    ExtFunctionFreePool                             = 1,
+    ExtFunctionAllocateMdl                          = 2,
+    ExtFunctionFreeMdl                              = 3,
+    ExtFunctionBuildMdlForNonPagedPool              = 4,
+    ExtFunctionGetSystemAddress                     = 5,
+    ExtFunctionGetOriginalMdl                       = 6,
+    ExtFunctionCompleteServiceIrp                   = 7,
+    ExtFunctionGetDeviceObjects                     = 8,
+    ExtFunctionBuildScatterGatherList               = 9,
+    ExtFunctionPutScatterGatherList                 = 10,
+    ExtFunctionAcquireMSISpinLock                   = 11,
+    ExtFunctionReleaseMSISpinLock                   = 12,
+    ExtFunctionGetMessageInterruptInformation       = 13,
+    ExtFunctionInitializePerformanceOptimizations   = 14,
+    ExtFunctionGetStartIoPerformanceParameters      = 15,
+    ExtFunctionLogSystemEvent                       = 16,
+    ExtFunctionGetCurrentProcessorNumber            = 17,
+    ExtFunctionGetActiveGroupCount                  = 18,
+    ExtFunctionGetGroupAffinity                     = 19,
+    ExtFunctionGetActiveNodeCount                   = 20,
+    ExtFunctionGetNodeAffinity                      = 21,
+    ExtFunctionGetHighestNodeNumber                 = 22,
+    ExtFunctionGetLogicalProcessorRelationship      = 23,
+    ExtFunctionAllocateContiguousMemorySpecifyCacheNode = 24,
+    ExtFunctionFreeContiguousMemorySpecifyCache     = 25
+} STORPORT_FUNCTION_CODE;
+typedef STORPORT_FUNCTION_CODE  *PSTORPORT_FUNCTION_CODE;
+
+/* Virtual hardware initialization data */
+typedef struct _VIRTUAL_HW_INITIALIZATION_DATA {
+    ULONG                       HwInitializationDataSize;
+    INTERFACE_TYPE              AdapterInterfaceType;
+    PHW_INITIALIZE              HwInitialize;
+    PHW_STARTIO                 HwStartIo;
+    PHW_INTERRUPT               HwInterrupt;
+    PVIRTUAL_HW_FIND_ADAPTER    HwFindAdapter;
+    PHW_RESET_BUS               HwResetBus;
+    PHW_DMA_STARTED             HwDmaStarted;
+    PHW_ADAPTER_STATE           HwAdapterState;
+    ULONG                       DeviceExtensionSize;
+    ULONG                       SpecificLuExtensionSize;
+    ULONG                       SrbExtensionSize;
+    ULONG                       NumberOfAccessRanges;
+    PVOID                       Reserved;
+    UCHAR                       MapBuffers;
+    BOOLEAN                     NeedPhysicalAddresses;
+    BOOLEAN                     TaggedQueuing;
+    BOOLEAN                     AutoRequestSense;
+    BOOLEAN                     MultipleRequestPerLu;
+    BOOLEAN                     ReceiveEvent;
+    USHORT                      VendorIdLength;
+    PVOID                       VendorId;
+    union {
+        USHORT  ReservedUshort;
+        USHORT  PortVersionFlags;
+    };
+    USHORT                      DeviceIdLength;
+    PVOID                       DeviceId;
+    PHW_ADAPTER_CONTROL         HwAdapterControl;
+    PHW_BUILDIO                 HwBuildIo;
+    PHW_FREE_ADAPTER_RESOURCES  HwFreeAdapterResources;
+    PHW_PROCESS_SERVICE_REQUEST HwProcessServiceRequest;
+    PHW_COMPLETE_SERVICE_IRP    HwCompleteServiceIrp;
+    PHW_INITIALIZE_TRACING      HwInitializeTracing;
+    PHW_CLEANUP_TRACING         HwCleanupTracing;
+} VIRTUAL_HW_INITIALIZATION_DATA;
+typedef VIRTUAL_HW_INITIALIZATION_DATA  *PVIRTUAL_HW_INITIALIZATION_DATA;
+
+/* Miniport mappings */
+typedef struct _MINIPORT_MAPPINGS {
+    USHORT  Version;
+    PVOID   IBFTable;
+    PVOID   Nic0Map;
+    PVOID   Nic1Map;
+    ULONG   NumberOfAdditionalNic;
+    PVOID   NicMap[];
+} MINIPORT_MAPPINGS;
+typedef MINIPORT_MAPPINGS   *PMINIPORT_MAPPINGS;
+
+/* Miniport dump pointers */
+typedef struct _MINIPORT_DUMP_POINTERS {
+    USHORT                  Version;
+    USHORT                  Size;
+    WCHAR                   DriverName[DUMP_MINIPORT_NAME_LENGTH];
+    struct _ADAPTER_OBJECT  *AdapterObject;
+    PVOID                   MappedRegisterBase;
+    ULONG                   CommonBufferSize;
+    PVOID                   MiniportPrivateDumpData;
+    ULONG                   SystemIoBusNumber;
+    INTERFACE_TYPE          AdapterInterfaceType;
+    ULONG                   MaximumTransferLength;
+    ULONG                   NumberOfPhysicalBreaks;
+    ULONG                   AlignmentMask;
+    ULONG                   NumberOfAccessRanges;
+    ACCESS_RANGE            (*AccessRanges)[];
+    UCHAR                   NumberOfBuses;
+    BOOLEAN                 Master;
+    BOOLEAN                 MapBuffers;
+    UCHAR                   MaximumNumberOfTargets;
+} MINIPORT_DUMP_POINTERS;
+typedef MINIPORT_DUMP_POINTERS  *PMINIPORT_DUMP_POINTERS;
+
+/* Storage event association enumeration */
+typedef enum _STOR_EVENT_ASSOCIATION_ENUM {
+    StorEventAdapterAssociation     = 0,
+    StorEventLunAssociation         = 1,
+    StorEventTargetAssociation      = 2,
+    StorEventInvalidAssociation     = 3
+} STOR_EVENT_ASSOCIATION_ENUM;
+
+/* Storage log event details */
+typedef struct _STOR_LOG_EVENT_DETAILS {
+    ULONG                       InterfaceRevision;
+    ULONG                       Size;
+    ULONG                       Flags;
+    STOR_EVENT_ASSOCIATION_ENUM EventAssociation;
+    ULONG                       PathId;
+    ULONG                       TargetId;
+    ULONG                       LunId;
+    BOOLEAN                     StorportSpecificErrorCode;
+    ULONG                       ErrorCode;
+    ULONG                       UniqueId;
+    ULONG                       DumpDataSize;
+    PVOID                       DumpData;
+    ULONG                       StringCount;
+    PWSTR                       *StringList;
+} STOR_LOG_EVENT_DETAILS;
+typedef STOR_LOG_EVENT_DETAILS  *PSTOR_LOG_EVENT_DETAILS;
+
+/* Storage callbacks */
+typedef BOOLEAN (NTAPI *PSTOR_SYNCHRONIZED_ACCESS)( PVOID, PVOID );
+
+/* Functions in STORPORT.SYS */
+STORPORT_API PUCHAR NTAPI   StorPortAllocateRegistryBuffer( PVOID, PULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortBusy( PVOID, ULONG );
+STORPORT_API VOID NTAPI     StorPortCompleteRequest( PVOID, UCHAR, UCHAR, UCHAR, UCHAR );
+STORPORT_API STOR_PHYSICAL_ADDRESS NTAPI    StorPortConvertUlongToPhysicalAddress( ULONG_PTR );
+STORPORT_API VOID __cdecl   StorPortDebugPrint( ULONG, PCCHAR, ... );
+STORPORT_API BOOLEAN NTAPI  StorPortDeviceBusy( PVOID, UCHAR, UCHAR, UCHAR, ULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortDeviceReady( PVOID, UCHAR, UCHAR, UCHAR );
+STORPORT_API ULONG __cdecl  StorPortExtendedFunction( STORPORT_FUNCTION_CODE, PVOID, ... );
+STORPORT_API VOID NTAPI     StorPortFreeDeviceBase( PVOID, PVOID );
+STORPORT_API VOID NTAPI     StorPortFreeRegistryBuffer( PVOID, PUCHAR );
+STORPORT_API ULONG NTAPI    StorPortGetBusData( PVOID, ULONG, ULONG, ULONG, PVOID, ULONG );
+STORPORT_API PVOID NTAPI    StorPortGetDeviceBase( PVOID, INTERFACE_TYPE, ULONG, STOR_PHYSICAL_ADDRESS, ULONG, BOOLEAN );
+STORPORT_API PVOID NTAPI    StorPortGetLogicalUnit( PVOID, UCHAR, UCHAR, UCHAR );
+STORPORT_API STOR_PHYSICAL_ADDRESS NTAPI    StorPortGetPhysicalAddress( PVOID, PSCSI_REQUEST_BLOCK, PVOID, ULONG * );
+STORPORT_API PSTOR_SCATTER_GATHER_LIST NTAPI    StorPortGetScatterGatherList( PVOID, PSCSI_REQUEST_BLOCK );
+STORPORT_API PVOID NTAPI    StorPortGetUncachedExtension( PVOID, PPORT_CONFIGURATION_INFORMATION, ULONG );
+STORPORT_API PVOID NTAPI    StorPortGetVirtualAddress( PVOID, STOR_PHYSICAL_ADDRESS );
+STORPORT_API ULONG NTAPI    StorPortInitialize( PVOID, PVOID, struct _HW_INITIALIZATION_DATA *, PVOID );
+STORPORT_API VOID NTAPI     StorPortLogError( PVOID, PSCSI_REQUEST_BLOCK, UCHAR, UCHAR, UCHAR, ULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortMoveMemory( PVOID, PVOID, ULONG );
+STORPORT_API VOID __cdecl   StorPortNotification( SCSI_NOTIFICATION_TYPE, PVOID, ... );
+STORPORT_API BOOLEAN NTAPI  StorPortPause( PVOID, ULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortPauseDevice( PVOID, UCHAR, UCHAR, UCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortQuerySystemTime( PLARGE_INTEGER );
+STORPORT_API VOID NTAPI     StorPortReadPortBufferUchar( PVOID, PUCHAR, PUCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortReadPortBufferUlong( PVOID, PULONG, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortReadPortBufferUshort( PVOID, PUSHORT, PUSHORT, ULONG );
+STORPORT_API UCHAR NTAPI    StorPortReadPortUchar( PVOID, PUCHAR );
+STORPORT_API ULONG NTAPI    StorPortReadPortUlong( PVOID, PULONG );
+STORPORT_API USHORT NTAPI   StorPortReadPortUshort( PVOID, PUSHORT );
+STORPORT_API VOID NTAPI     StorPortReadRegisterBufferUchar( PVOID, PUCHAR, PUCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortReadRegisterBufferUlong( PVOID, PULONG, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortReadRegisterBufferUshort( PVOID, PUSHORT, PUSHORT, ULONG );
+STORPORT_API UCHAR NTAPI    StorPortReadRegisterUchar( PVOID, PUCHAR );
+STORPORT_API ULONG NTAPI    StorPortReadRegisterUlong( PVOID, PULONG );
+STORPORT_API USHORT NTAPI   StorPortReadRegisterUshort( PVOID, PUSHORT );
+STORPORT_API BOOLEAN NTAPI  StorPortReady( PVOID );
+STORPORT_API BOOLEAN NTAPI  StorPortRegistryRead( PVOID, PUCHAR, ULONG, ULONG, PUCHAR, PULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortRegistryWrite( PVOID, PUCHAR, ULONG, ULONG, PUCHAR, ULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortResume( PVOID );
+STORPORT_API BOOLEAN NTAPI  StorPortResumeDevice( PVOID, UCHAR, UCHAR, UCHAR );
+STORPORT_API ULONG NTAPI    StorPortSetBusDataByOffset( PVOID, ULONG, ULONG, ULONG, PVOID, ULONG, ULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortSetDeviceQueueDepth( PVOID, UCHAR, UCHAR, UCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortStallExecution( ULONG );
+STORPORT_API BOOLEAN NTAPI  StorPortSynchronizeAccess( PVOID, PSTOR_SYNCHRONIZED_ACCESS, PVOID );
+STORPORT_API BOOLEAN NTAPI  StorPortValidateRange( PVOID, INTERFACE_TYPE, ULONG, STOR_PHYSICAL_ADDRESS, ULONG, BOOLEAN );
+STORPORT_API VOID NTAPI     StorPortWritePortBufferUchar( PVOID, PUCHAR, PUCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortWritePortBufferUlong( PVOID, PULONG, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortWritePortBufferUshort( PVOID, PUSHORT, PUSHORT, ULONG );
+STORPORT_API VOID NTAPI     StorPortWritePortUchar( PVOID, PUCHAR, UCHAR );
+STORPORT_API VOID NTAPI     StorPortWritePortUlong( PVOID, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortWritePortUshort( PVOID, PUSHORT, USHORT );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterBufferUchar( PVOID, PUCHAR, PUCHAR, ULONG );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterBufferUlong( PVOID, PULONG, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterBufferUshort( PVOID, PUSHORT, PUSHORT, ULONG );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterUchar( PVOID, PUCHAR, UCHAR );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterUlong( PVOID, PULONG, ULONG );
+STORPORT_API VOID NTAPI     StorPortWriteRegisterUshort( PVOID, PUSHORT, USHORT );
+
+/* Functions implemented as macros */
+#define StorPortConvertPhysicalAddressToUlong( x )      ((x).LowPart)
+#define StorPortConvertPhysicalAddressToULong64( x )    ((x).QuadPart)
+#if (NTDDI_VERSION >= 0x05020100)
+    #define StorPortCopyMemory( p1, p2, p3 )            memcpy( p1, p2, p3 )
+#endif
+#undef DebugPrint
+#if DBG
+    #define DebugPrint( x )                             StorPortDebugPrint x
+#else
+    #define DebugPrint( x )
+#endif
+
+/* Aliases */
+#ifdef STOR_USE_SCSI_ALIASES
+    #define ScsiDebugPrint                  StorPortDebugPrint
+    #define ScsiPortCompleteRequest         StorPortCompleteRequest
+    #define ScsiPortConvertPhysicalAddressToUlong   StorPortConvertPhysicalAddressToUlong
+    #define ScsiPortConvertUlongToPhysicalAddress   StorPortConvertUlongToPhysicalAddress
+    #define ScsiPortFlushDma                StorPortFlushDma
+    #define ScsiPortFreeDeviceBase          StorPortFreeDeviceBase
+    #define ScsiPortGetBusData              StorPortGetBusData
+    #define ScsiPortGetDeviceBase           StorPortGetDeviceBase
+    #define ScsiPortGetLogicalUnit          StorPortGetLogicalUnit
+    #define ScsiPortGetPhysicalAddress      StorPortGetPhysicalAddress
+    #define ScsiPortGetSrb                  StorPortGetSrb
+    #define ScsiPortGetUncachedExtension    StorPortGetUncachedExtension
+    #define ScsiPortGetVirtualAddress       StorPortGetVirtualAddress
+    #define ScsiPortInitialize              StorPortInitialize
+    #define ScsiPortIoMapTransfer           StorPortIoMapTransfer
+    #define ScsiPortLogError                StorPortLogError
+    #define ScsiPortMoveMemory              StorPortMoveMemory
+    #define ScsiPortNotification            StorPortNotification
+    #define ScsiPortQuerySystemTime         StorPortQuerySystemTime
+    #define ScsiPortReadPortBufferUchar( p1, p2, p3 ) \
+        StorPortReadPortBufferUchar( NULL, p1, p2, p3 )
+    #define ScsiPortReadPortBufferUlong( p1, p2, p3 ) \
+        StorPortReadPortBufferUlong( NULL, p1, p2, p3 )
+    #define ScsiPortReadPortBufferUshort( p1, p2, p3 ) \
+        StorPortReadPortBufferUshort( NULL, p1, p2, p3 )
+    #define ScsiPortReadPortUchar( x )      StorPortReadPortUchar( NULL, x )
+    #define ScsiPortReadPortUlong( x )      StorPortReadPortUlong( NULL, x )
+    #define ScsiPortReadPortUshort( x )     StorPortReadPortUshort( NULL, x )
+    #define ScsiPortReadRegisterBufferUchar( p1, p2, p3 ) \
+        ScsiPortReadRegisterBufferUchar( NULL, p1, p2, p3 )
+    #define ScsiPortReadRegisterBufferUlong( p1, p2, p3 ) \
+        ScsiPortReadRegisterBufferUlong( NULL, p1, p2, p3 )
+    #define ScsiPortReadRegisterBufferUshort( p1, p2, p3 ) \
+        ScsiPortReadRegisterBufferUshort( NULL, p1, p2, p3 )
+    #define ScsiPortReadRegisterUchar( x )  StorPortReadRegisterUchar( NULL, x )
+    #define ScsiPortReadRegisterUlong( x )  StorPortReadRegisterUlong( NULL, x )
+    #define ScsiPortReadRegisterUshort( x ) StorPortReadRegisterUshort( NULL, x )
+    #define ScsiPortSetBusDataByOffset      StorPortSetBusDataByOffset
+    #define ScsiPortStallExecution          StorPortStallExecution
+    #define ScsiPortValidateRange           StorPortValidateRange
+    #define ScsiPortWritePortBufferUchar( p1, p2, p3 ) \
+        StorPortWritePortBufferUchar( NULL, p1, p2, p3 )
+    #define ScsiPortWritePortBufferUlong( p1, p2, p3 ) \
+        StorPortWritePortBufferUlong( NULL, p1, p2, p3 )
+    #define ScsiPortWritePortBufferUshort( p1, p2, p3 ) \
+        StorPortWritePortBufferUshort( NULL, p1, p2, p3 )
+    #define ScsiPortWritePortUchar( p1, p2 ) \
+        StorPortWritePortUchar( NULL, p1, p2 )
+    #define ScsiPortWritePortUlong( p1, p2 ) \
+        StorPortWritePortUlong( NULL, p1, p2 )
+    #define ScsiPortWritePortUshort( p1, p2 ) \
+        StorPortWritePortUshort( NULL, p1, p2 )
+    #define ScsiPortWriteRegisterBufferUchar( p1, p2, p3 ) \
+        StorPortWriteRegisterBufferUchar( NULL, p1, p2, p3 )
+    #define ScsiPortWriteRegisterBufferUlong( p1, p2, p3 ) \
+        StorPortWriteRegisterBufferUlong( NULL, p1, p2, p3 )
+    #define ScsiPortWriteRegisterBufferUshort( p1, p2, p3 ) \
+        StorPortWriteRegisterBufferUshort( NULL, p1, p2, p3 )
+    #define ScsiPortWriteRegisterUchar( p1, p2 ) \
+        StorPortWriteRegisterUchar( NULL, p1, p2 )
+    #define ScsiPortWriteRegisterUlong( p1, p2 ) \
+        StorPortWriteRegisterUlong( NULL, p1, p2 )
+    #define ScsiPortWriteRegisterUshort( p1, p2 ) \
+        StorPortWriteRegisterUshort( NULL, p1, p2 )
+#endif
+
+__inline BOOLEAN StorPortEnablePassiveInitialization( PVOID p1,
+                                                      PHW_PASSIVE_INITIALIZE_ROUTINE p2 )
+{
+    LONG    v;
+    v = FALSE;
+    StorPortNotification( EnablePassiveInitialization, p1, p2, &v );
+    return( (BOOLEAN)v );
+}
+
+__inline VOID StorPortInitializeDpc( PVOID p1, PSTOR_DPC p2, PHW_DPC_ROUTINE p3 )
+{
+    StorPortNotification( InitializeDpc, p1, p2, p3 );
+}
+
+__inline BOOLEAN StorPortIssueDpc( PVOID p1, PSTOR_DPC p2, PVOID p3, PVOID p4 )
+{
+    LONG    v;
+    v = FALSE;
+    StorPortNotification( IssueDpc, p1, p2, p3, p4, &v );
+    return( (BOOLEAN)v );
+}
+
+__inline VOID StorPortAcquireSpinLock( PVOID p1, STOR_SPINLOCK p2, PVOID p3,
+                                       PSTOR_LOCK_HANDLE p4 )
+{
+    StorPortNotification( AcquireSpinLock, p1, p2, p3, p4 );
+}
+
+__inline VOID StorPortReleaseSpinLock( PVOID p1, PSTOR_LOCK_HANDLE p2 )
+{
+    StorPortNotification( ReleaseSpinLock, p1, p2 );
+}
+
+__inline ULONG StorPortAllocatePool( PVOID p1, ULONG p2, ULONG p3, PVOID *p4 )
+{
+    return( StorPortExtendedFunction( ExtFunctionAllocatePool, p1, p2, p3, p4 ) );
+}
+
+__inline ULONG StorPortFreePool( PVOID p1, PVOID p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionFreePool, p1, p2 ) );
+}
+
+__inline ULONG StorPortAllocateMdl( PVOID p1, PVOID p2, ULONG p3, PVOID *p4 )
+{
+    return( StorPortExtendedFunction( ExtFunctionAllocateMdl, p1, p2, p3, p4 ) );
+}
+
+__inline ULONG StorPortFreeMdl( PVOID p1, PVOID p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionFreeMdl, p1, p2 ) );
+}
+
+__inline ULONG StorPortBuildMdlForNonPagedPool( PVOID p1, PVOID p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionBuildMdlForNonPagedPool, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetSystemAddress( PVOID p1, PSCSI_REQUEST_BLOCK p2, PVOID *p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetSystemAddress, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortGetOriginalMdl( PVOID p1, PSCSI_REQUEST_BLOCK p2, PVOID *p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetOriginalMdl, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortCompleteServiceIrp( PVOID p1, PVOID p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionCompleteServiceIrp, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetDeviceObjects( PVOID p1, PVOID *p2, PVOID *p3, PVOID *p4 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetDeviceObjects, p1, p2, p3, p4 ) );
+}
+
+__inline ULONG StorPortBuildScatterGatherList( PVOID p1, PVOID p2, PVOID p3, ULONG p4,
+                                               PpostScaterGatherExecute p5, PVOID p6,
+                                               BOOLEAN p7, PVOID p8, ULONG p9 )
+{
+    return( StorPortExtendedFunction( ExtFunctionBuildScatterGatherList, p1, p2, p3, p4,
+                                      p5, p6, p7, p8, p9 ) );
+}
+
+__inline ULONG StorPortPutScatterGatherList( PVOID p1, PSTOR_SCATTER_GATHER_LIST p2,
+                                             BOOLEAN p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionPutScatterGatherList, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortAcquireMSISpinLock( PVOID p1, ULONG p2, PULONG p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionAcquireMSISpinLock, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortReleaseMSISpinLock( PVOID p1, ULONG p2, ULONG p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionReleaseMSISpinLock, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortGetMSIInfo( PVOID p1, ULONG p2,
+                                   PMESSAGE_INTERRUPT_INFORMATION p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetMessageInterruptInformation, p1, p2,
+                                      p3 ) );
+}
+
+__inline ULONG StorPortInitializePerfOpts( PVOID p1, BOOLEAN p2,
+                                           PPERF_CONFIGURATION_DATA p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionInitializePerformanceOptimizations, p1,
+                                      p2, p3 ) );
+}
+
+__inline ULONG StorPortGetStartIoPerfParams( PVOID p1, PSCSI_REQUEST_BLOCK p2,
+                                             PSTARTIO_PERFORMANCE_PARAMETERS p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetStartIoPerformanceParameters, p1, p2,
+                                      p3 ) );
+}
+
+__inline ULONG StorPortLogSystemEvent( PVOID p1, PSTOR_LOG_EVENT_DETAILS p2, PULONG p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionLogSystemEvent, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortGetCurrentProcessorNumber( PVOID p1, PPROCESSOR_NUMBER p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetCurrentProcessorNumber, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetGroupAffinity( PVOID p1, USHORT p2, PKAFFINITY p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetGroupAffinity, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortGetActiveGroupCount( PVOID p1, PUSHORT p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetActiveGroupCount, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetNodeAffinity( PVOID p1, ULONG p2, PGROUP_AFFINITY p3 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetNodeAffinity, p1, p2, p3 ) );
+}
+
+__inline ULONG StorPortGetActiveNodeCount( PVOID p1, PULONG p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetActiveNodeCount, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetHighestNodeNumber( PVOID p1, PULONG p2 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetHighestNodeNumber, p1, p2 ) );
+}
+
+__inline ULONG StorPortGetLogicalProcessorRelationship( PVOID p1, PPROCESSOR_NUMBER p2,
+    LOGICAL_PROCESSOR_RELATIONSHIP p3, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX p4,
+    PULONG p5 )
+{
+    return( StorPortExtendedFunction( ExtFunctionGetLogicalProcessorRelationship, p1, p2,
+                                      p3, p4, p5 ) );
+}
+
+__inline ULONG StorPortAllocateContiguousMemorySpecifyCacheNode( PVOID p1, SIZE_T p2,
+    PHYSICAL_ADDRESS p3, PHYSICAL_ADDRESS p4, PHYSICAL_ADDRESS p5,
+    MEMORY_CACHING_TYPE p6, NODE_REQUIREMENT p7, PVOID *p8 )
+{
+    return( StorPortExtendedFunction( ExtFunctionAllocateContiguousMemorySpecifyCacheNode,
+                                      p1, p2, p3, p4, p5, p6, p7, p8 ) );
+}
+
+__inline ULONG StorPortFreeContiguousMemorySpecifyCache( PVOID p1, PVOID p2, SIZE_T p3,
+                                                         MEMORY_CACHING_TYPE p4 )
+{
+    return( StorPortExtendedFunction( ExtFunctionFreeContiguousMemorySpecifyCache, p1,
+                                      p2, p3, p4 ) );
+}
+
+:include cplusepi.sp
+
+#endif /* _NTSTORPORT_ */

@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "memmgr.h"
 #include "stringl.h"
 #include "ptree.h"

@@ -1,0 +1,428 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: iterator (Iterator utilities)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines a number of helper templates that are useful
+//              when creating or manipulating iterators.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _ITERATOR_INCLUDED
+#define _ITERATOR_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
+#endif
+
+namespace std {
+
+  struct input_iterator_tag  { };
+  struct output_iterator_tag { };
+  struct forward_iterator_tag       : public input_iterator_tag         { };
+  struct bidirectional_iterator_tag : public forward_iterator_tag       { };
+  struct random_access_iterator_tag : public bidirectional_iterator_tag { };
+
+  // iterator_traits
+  // ***************
+
+  template< class Iterator >
+  struct iterator_traits {
+    typedef typename Iterator::difference_type   difference_type;
+    typedef typename Iterator::value_type        value_type;
+    typedef typename Iterator::pointer           pointer;
+    typedef typename Iterator::reference         reference;
+    typedef typename Iterator::iterator_category iterator_category;
+  };
+
+  template< class Type >
+  struct iterator_traits< Type * > {
+    typedef ptrdiff_t                  difference_type;
+    typedef Type                       value_type;
+    typedef Type                      *pointer;
+    typedef Type                      &reference;
+    typedef random_access_iterator_tag iterator_category;
+  };
+
+  template< class Type >
+  struct iterator_traits< const Type * > {
+    typedef ptrdiff_t                  difference_type;
+    typedef const Type                 value_type;
+    typedef const Type                *pointer;
+    typedef const Type                &reference;
+    typedef random_access_iterator_tag iterator_category;
+  };
+
+  // iterator
+  // ********
+
+  template< class Category,
+            class Type,
+            class Distance = ptrdiff_t,
+            class Pointer = Type*,
+            class Reference = Type& >
+  struct iterator {
+    typedef Type      value_type;
+    typedef Distance  difference_type;
+    typedef Pointer   pointer;
+    typedef Reference reference;
+    typedef Category  iterator_category;
+  };
+
+  // advance( Iterator &, Distance )
+  // *******************************
+
+  template< class InputIterator, class Distance >
+  void advance( InputIterator &it, Distance n, input_iterator_tag )
+  {
+    for( Distance i = 0; i < n; ++i ) ++it;
+  }
+
+  template< class OutputIterator, class Distance >
+  void advance( OutputIterator &it, Distance n, output_iterator_tag )
+  {
+    for( Distance i = 0; i < n; ++i ) ++it;
+  }
+
+  template< class Forward, class Distance >
+  void advance( Forward &it, Distance n, forward_iterator_tag )
+  {
+    for( Distance i = 0; i < n; ++i ) ++it;
+  }
+
+  template< class Bidirectional, class Distance >
+  void advance( Bidirectional &it, Distance n, bidirectional_iterator_tag )
+  {
+    if( n >= 0 ) {
+      for( Distance i = 0; i < n; ++i ) ++it;
+    }
+    else {
+      for( Distance i = 0; i > n; --i ) --it;
+    }
+  }
+
+  template< class RandomAccess, class Distance >
+  inline
+  void advance( RandomAccess &it, Distance n, random_access_iterator_tag )
+  {
+    it = it + n;
+  }
+
+  template< class InputIterator, class Distance >
+  inline
+  void advance( InputIterator &it, Distance n )
+  {
+    advance(
+      it, n, typename iterator_traits< InputIterator >::iterator_category( )
+    );
+  }
+
+  // distance( Iterator, Iterator )
+  // ******************************
+
+  template< class InputIterator >
+  typename iterator_traits< InputIterator >::difference_type
+    _distance( InputIterator first, InputIterator last )
+  {
+    typename iterator_traits< InputIterator >::difference_type count(0);
+    while( first != last ) {
+      ++count;
+      ++first;
+    }
+    return( count );
+  }
+
+  template< class InputIterator >
+  inline
+  typename iterator_traits< InputIterator >::difference_type
+    distance( InputIterator first, InputIterator last, input_iterator_tag )
+  {
+    return( _distance( first, last ) );
+  }
+
+  template< class Forward >
+  inline
+  typename iterator_traits< Forward >::difference_type
+    distance( Forward first, Forward last, forward_iterator_tag )
+  {
+    return( _distance( first, last ) );
+  }
+
+  template< class Bidirectional >
+  inline
+  typename iterator_traits< Bidirectional >::difference_type
+    distance( Bidirectional first, Bidirectional last, bidirectional_iterator_tag )
+  {
+    return( _distance( first, last ) );
+  }
+
+  template< class RandomAccess >
+  inline
+  typename iterator_traits< RandomAccess >::difference_type
+    distance( RandomAccess first, RandomAccess last, random_access_iterator_tag )
+  {
+    return( last - first );
+  }
+
+  template< class InputIterator >
+  inline
+  typename iterator_traits< InputIterator >::difference_type
+    distance( InputIterator first, InputIterator last )
+  {
+    return( distance(
+      first, last, iterator_traits< InputIterator >::iterator_category( )
+    ) );
+  }
+
+  // reverse_iterator
+  // ****************
+
+  template< class Iterator >
+  class reverse_iterator : public
+    iterator<typename iterator_traits< Iterator >::iterator_category,
+             typename iterator_traits< Iterator >::value_type,
+             typename iterator_traits< Iterator >::difference_type,
+             typename iterator_traits< Iterator >::pointer,
+             typename iterator_traits< Iterator >::reference > {
+  protected:
+    Iterator current;
+
+  public:
+    typedef Iterator iterator_type;
+    typedef typename iterator_traits< Iterator >::difference_type difference_type;
+    typedef typename iterator_traits< Iterator >::reference reference;
+    typedef typename iterator_traits< Iterator >::pointer pointer;
+
+    reverse_iterator( ) : current( )
+      { }
+
+    explicit reverse_iterator( Iterator it ) : current( it )
+      { }
+      
+    template< class OtherIterator >
+    reverse_iterator( const reverse_iterator< OtherIterator > &other ) :
+      current( other.current ) { }
+
+    Iterator base( ) const
+      { return( current ); }
+
+    reference operator*( ) const
+      { Iterator temp(current); --temp; return( *temp ); }
+
+    pointer operator->( ) const
+      { Iterator temp(current); --temp; return( &*temp ); }
+
+    reverse_iterator &operator++( )
+      { --current; return( *this ); }
+
+    reverse_iterator  operator++( int )
+      { reverse_iterator temp(current); --current; return( temp ); }
+
+    reverse_iterator &operator--( )
+      { ++current; return( *this ); }
+
+    reverse_iterator  operator--( int )
+      { reverse_iterator temp(current); ++current; return( temp ); }
+
+    reverse_iterator operator+( difference_type n ) const
+    {
+      Iterator adjusted( current );
+      advance( adjusted, -n );
+      return( reverse_iterator( adjusted ) );
+    }
+      
+    reverse_iterator &operator+=( difference_type n )
+      { advance( current, -n ); return( *this ); }
+      
+    reverse_iterator operator-( difference_type n ) const
+    {
+      Iterator adjusted( current );
+      advance( adjusted, n );
+      return( reverse_iterator( adjusted ) );
+    }
+    
+    reverse_iterator &operator-=( difference_type n )
+      { advance( current, n ); return( *this ); }
+      
+    reference operator[]( difference_type n ) const
+      { return( current[ -n - 1 ] ); }
+  };
+
+  template< class Iterator >
+  inline
+  bool operator==(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) == y.base( ) );
+  }
+
+  template< class Iterator >
+  inline
+  bool operator!=(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) != y.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  bool operator<(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) > y.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  bool operator>(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) < y.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  bool operator<=(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) >= y.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  bool operator>=(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( x.base( ) <= y.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  typename reverse_iterator< Iterator >::difference_type operator-(
+    const reverse_iterator< Iterator > &x,
+    const reverse_iterator< Iterator > &y )
+  {
+    return( y.base( ) - x.base( ) );
+  }
+  
+  template< class Iterator >
+  inline
+  reverse_iterator< Iterator > operator+(
+    typename reverse_iterator< Iterator >::difference_type n,
+    const reverse_iterator< Iterator> &x )
+  {
+    return( reverse_iterator< Iterator >( x.base( ) - n ) );
+  }
+
+  // back_insert_iterator
+  // ********************
+
+  template< class Container >
+  class back_insert_iterator :
+    public iterator< output_iterator_tag, void, void, void, void > {
+  protected:
+    Container *container;
+
+  public:
+    typedef Container container_type;
+
+    explicit back_insert_iterator( Container &c ) : container( &c )
+      { }
+
+    back_insert_iterator &operator=( typename Container::const_reference value )
+      { container->push_back( value ); return( *this ); }
+
+    back_insert_iterator &operator*( )
+      { return( *this ); }
+
+    back_insert_iterator &operator++( )
+      { return( *this ); }
+
+    back_insert_iterator  operator++( int )
+      { return( *this ); }
+  };
+
+  template< class Container >
+  back_insert_iterator< Container > back_inserter( Container &c )
+    { return( back_insert_iterator< Container >( c ) ); }
+
+  // front_insert_iterator
+  // *********************
+
+  template< class Container >
+  class front_insert_iterator :
+    public iterator< output_iterator_tag, void, void, void, void > {
+  protected:
+    Container *container;
+
+  public:
+    typedef Container container_type;
+
+    explicit front_insert_iterator( Container &c ) : container( &c )
+      { }
+
+    front_insert_iterator &operator=( typename Container::const_reference value )
+      { container->push_front( value ); return( *this ); }
+
+    front_insert_iterator &operator*( )
+      { return( *this ); }
+
+    front_insert_iterator &operator++( )
+      { return( *this ); }
+
+    front_insert_iterator  operator++( int )
+      { return( *this ); }
+  };
+
+  template< class Container >
+  front_insert_iterator< Container > front_inserter( Container &c )
+    { return( front_insert_iterator< Container >( c ) ); }
+
+  // insert_iterator
+  // ***************
+
+  template< class Container >
+  class insert_iterator :
+    public iterator< output_iterator_tag, void, void, void, void > {
+  protected:
+    Container *container;
+    typename Container::iterator iter;
+
+  public:
+    typedef Container container_type;
+
+    insert_iterator( Container &c, typename Container::iterator it )
+      : container( &c ), iter( it )
+      { }
+
+    insert_iterator &operator=( typename Container::const_reference value )
+      { iter = container->insert( iter, value ); ++iter; return( *this ); }
+
+    insert_iterator &operator*( )
+      { return( *this ); }
+
+    insert_iterator &operator++( )
+      { return( *this ); }
+
+    insert_iterator  operator++( int )
+      { return( *this ); }
+  };
+
+  template< class Container, class Inserter >
+  insert_iterator< Container > inserter( Container &c, Inserter it )
+    { return( insert_iterator< Container >
+        ( c, typename Container::iterator( it ) ) ); }
+
+} // namespace std
+
+#endif

@@ -5,3 +5,4 @@ option oneautodata
 option map
 option heapsize=32K
 libfile libentry
+export WEP RESIDENT

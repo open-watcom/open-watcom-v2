@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker binary i/o interface routines (DOS flavour).
 *
 ****************************************************************************/
 
-
-/*
-  LINKIO -- linker binary i/o interface routines
-
-*/
 
 #include <stdio.h>
 #include <dos.h>
@@ -41,6 +35,7 @@
 #include <stdlib.h>
 #include <process.h>
 #include <conio.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include "linkstd.h"
 #include "msg.h"
@@ -67,31 +62,36 @@ static char         Rc_Buffer[RESOURCE_MAX_SIZE];
 #define     TOOMANY             4
 #define     ACCESS_DENIED       5
 
-extern void LnkFilesInit( void )
+void LnkFilesInit( void )
 /******************************/
 // the linker doesn't use stdaux or stdprn, so close these.
 {
     CaughtBreak = NOT_HIT;
-#if 0
     if( !AuxFilesClosed ) {
         OpenFiles = 2;      // will be 0 when done closing stdaux & stdprn.
         QClose( STDAUX_HANDLE, "stdaux" );
         QClose( STDPRN_HANDLE, "stdprn" );
         AuxFilesClosed = TRUE;
+        OpenFiles = 0;
     }
-#else
-    AuxFilesClosed = TRUE;
-    OpenFiles = 0;
-#endif
 }
 
-extern void PrintIOError( unsigned msg, char *types, char *name )
+void PrintIOError( unsigned msg, char *types, char *name )
 /***************************************************************/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
 
     Msg_Get( MSG_IOERRLIST_0 + LastResult, rc_buff );
     LnkMsg( msg, types, name, rc_buff );
+}
+
+void CheckBreak( void )
+/****************************/
+{
+    if( CaughtBreak == BREAK_DETECTED ) {
+        CaughtBreak = BREAK_HANDLED;
+        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
+    }
 }
 
 static tiny_ret_t DoOpen( char *name, bool create, unsigned mode )
@@ -126,7 +126,7 @@ static char *QErrMsg( unsigned status )
 }
 
 
-extern f_handle QOpenR( char *name )
+f_handle QOpenR( char *name )
 /**********************************/
 {
     tiny_ret_t h;
@@ -138,7 +138,7 @@ extern f_handle QOpenR( char *name )
 }
 
 
-extern f_handle QOpenRW( char *name )
+f_handle QOpenRW( char *name )
 /***********************************/
 {
     tiny_ret_t h;
@@ -149,7 +149,7 @@ extern f_handle QOpenRW( char *name )
     return( NIL_HANDLE );
 }
 
-extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
 /****************************************************************************/
 /* read into far memory */
 {
@@ -192,7 +192,7 @@ static unsigned TestWrite( f_handle file, void *buffer, unsigned len, char *name
     return( TINY_INFO(h) );
 }
 
-extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 /*****************************************************************************/
 {
     while( len > (16*1024) ) {
@@ -205,13 +205,13 @@ extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 
 char    NLSeq[] = { "\r\n" };
 
-extern void QWriteNL( f_handle file, char *name )
+void QWriteNL( f_handle file, char *name )
 /***********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-extern void QClose( f_handle file, char *name )
+void QClose( f_handle file, char *name )
 /*********************************************/
 /* file close */
 {
@@ -224,46 +224,54 @@ extern void QClose( f_handle file, char *name )
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
 }
 
-extern long QLSeek( f_handle file, long position, int start, char *name )
+long QLSeek( f_handle file, long position, int start, char *name )
 /***********************************************************************/
 {
-    tiny_ret_t h;
+    tiny_ret_t    rc;
+    unsigned long pos;
 
     CheckBreak();
-    h = TinySeek( file, position, start );
-    if( TINY_ERROR( h ) && name != NULL ) {
-        LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
-        return( -1 );   /* for xmem checking */
+    rc = TinyLSeek( file, position, start, (void __near *)&pos );
+    if( TINY_ERROR( rc ) ) {
+        if( name != NULL )
+            LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( rc ) ) );
+        return( -1L );   /* for xmem checking */
     }
-    return( h );
+    return( pos );
 }
 
-extern void QSeek( f_handle file, long position, char *name )
+void QSeek( f_handle file, long position, char *name )
 /***********************************************************/
 {
     QLSeek( file, position, TIO_SEEK_START, name );
 }
 
-extern unsigned long QPos( f_handle file )
+unsigned long QPos( f_handle file )
 /****************************************/
 {
+    unsigned long pos;
+
     CheckBreak();
-    return( TinySeek( file, 0L, TIO_SEEK_CURR ) );
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CURR, (void __near *)&pos ) ) ) {
+        return( -1L );
+    }
+    return( pos );
 }
 
-extern unsigned long QFileSize( f_handle file )
+unsigned long QFileSize( f_handle file )
 /*********************************************/
 {
     unsigned long   curpos;
     unsigned long   size;
 
     curpos = QPos( file );
-    size = TinySeek( file, 0L, TIO_SEEK_END );
+    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_END, (void __near *)&size ) ) )
+        size = 0;
     TinySeek( file, curpos, TIO_SEEK_START );
     return( size );
 }
 
-extern void QDelete( char *name )
+void QDelete( char *name )
 /*******************************/
 {
     tiny_ret_t   h;
@@ -278,7 +286,7 @@ extern void QDelete( char *name )
 }
 
 
-extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
+bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 /**************************************************************************/
 /* quick read string (for reading directive file) */
 {
@@ -299,7 +307,7 @@ extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     return( eof );
 }
 
-extern bool QIsDevice( f_handle file )
+bool QIsDevice( f_handle file )
 /************************************/
 {
     if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
@@ -309,7 +317,7 @@ extern bool QIsDevice( f_handle file )
     }
 }
 
-extern f_handle ExeCreate( char *name )
+f_handle ExeCreate( char *name )
 /*************************************/
 {
     tiny_ret_t      h;
@@ -331,26 +339,26 @@ static f_handle NSOpen( char *name, unsigned mode )
     return( NIL_HANDLE );
 }
 
-extern f_handle ExeOpen( char *name )
+f_handle ExeOpen( char *name )
 /***********************************/
 {
     return( NSOpen( name, TIO_READ_WRITE ) );
 }
 
-extern f_handle QObjOpen( char *name )
+f_handle QObjOpen( char *name )
 /************************************/
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-extern f_handle TempFileOpen( char *name )
+f_handle TempFileOpen( char *name )
 /****************************************/
 // open without suiciding. Don't create the file
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-extern int QMakeFileName( char **pos, char *name, char *fname )
+int QMakeFileName( char **pos, char *name, char *fname )
 /*************************************************************/
 {
     char                *pathptr;
@@ -358,12 +366,16 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     char                *file_ptr;
 
     pathptr = *pos;
-    if( pathptr == NULL ) return( 0 );
+    if( pathptr == NULL )
+        return( 0 );
     while( *pathptr != '\0' ) {
-        if( *pathptr == PATH_LIST_SEP ) *pos = ++pathptr;
-        for(;;) {
-            if( *pathptr == '\0' ) break;
-            if( *pathptr == PATH_LIST_SEP ) break;
+        if( IS_PATH_LIST_SEP( *pathptr ) )
+            *pos = ++pathptr;
+        for( ;; ) {
+            if( *pathptr == '\0' )
+                break;
+            if( IS_PATH_LIST_SEP( *pathptr ) )
+                break;
             pathptr++;
         }
         path_len = pathptr - *pos;
@@ -386,19 +398,19 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     return( 0 );
 }
 
-extern bool QHavePath( char *name )
+bool QHavePath( char *name )
 /*********************************/
 {
     return( *name == '\\' || *name == '/' || *(name + 1) == ':' );
 }
 
-extern bool QSysHelp( char **cmd_ptr )
+bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
     return( FALSE );
 }
 
-extern bool QModTime( char *name, time_t *time )
+bool QModTime( char *name, time_t *time )
 /**********************************************/
 {
     int         result;
@@ -409,7 +421,7 @@ extern bool QModTime( char *name, time_t *time )
     return result != 0;
 }
 
-extern time_t QFModTime( int handle )
+time_t QFModTime( int handle )
 /***********************************/
 {
     struct stat buf;
@@ -418,7 +430,6 @@ extern time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
-#if _LINKER != _WATFOR77
 int ResOpen( const char *name, int access, ... )
 /******************************************/
 /* this just ignores the access parameter, and assumes it knows what the
@@ -428,21 +439,19 @@ int ResOpen( const char *name, int access, ... )
     return( NSOpen( (char *) name, TIO_READ ) );
 }
 
-#endif
-
-extern char WaitForKey( void )
+char WaitForKey( void )
 /****************************/
 {
     return getch();
 }
 
-extern void GetCmdLine( char *buff )
+void GetCmdLine( char *buff )
 /**********************************/
 {
     getcmd( buff );
 }
 
-extern void TrapBreak( int sig_num )
+void TrapBreak( int sig_num )
 /**********************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
@@ -451,23 +460,14 @@ extern void TrapBreak( int sig_num )
     }
 }
 
-extern void CheckBreak( void )
-/****************************/
-{
-    if( CaughtBreak == BREAK_DETECTED ) {
-        CaughtBreak = BREAK_HANDLED;
-        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
-    }
-}
-
-extern void SetBreak( void )
+void SetBreak( void )
 /**************************/
 {
     BreakCond = TinyGetCtrlBreak();
     TinySetCtrlBreak( 1 );
 }
 
-extern void RestoreBreak( void )
+void RestoreBreak( void )
 /******************************/
 {
     TinySetCtrlBreak( BreakCond );

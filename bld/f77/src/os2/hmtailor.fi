@@ -1,0 +1,63 @@
+c$noreference
+
+        integer  IDM_CHILDVPSYSMENU
+        parameter (IDM_CHILDVPSYSMENU = 810)
+
+        integer  IDM_FILE
+        parameter (IDM_FILE = '00007F00'x)
+        integer  IDM_SEARCH
+        parameter (IDM_SEARCH = '00007F01'x)
+        integer  IDM_PRINT
+        parameter (IDM_PRINT = '00007F02'x)
+        integer  IDM_VIEWPORT
+        parameter (IDM_VIEWPORT = '00007F05'x)
+
+        integer  IDM_EDIT
+        parameter (IDM_EDIT = '00007F10'x)
+        integer  IDM_CLIP_COPY
+        parameter (IDM_CLIP_COPY = '00007F11'x)
+        integer  IDM_CLIP_CF
+        parameter (IDM_CLIP_CF = '00007F12'x)
+        integer  IDM_CLIP_AF
+        parameter (IDM_CLIP_AF = '00007F13'x)
+        integer  IDM_LIBRARIES
+        parameter (IDM_LIBRARIES = '00007F14'x)
+
+        integer  IDM_OPTIONS
+        parameter (IDM_OPTIONS = '00007F20'x)
+        integer  IDM_VIEWPAGES
+        parameter (IDM_VIEWPAGES = '00007F21'x)
+        integer  IDM_TOC
+        parameter (IDM_TOC = '00007F23'x)
+        integer  IDM_OPTION_EXPLEVEL
+        parameter (IDM_OPTION_EXPLEVEL = '00007F24'x)
+        integer  IDM_OPTION_EXPBRANCH
+        parameter (IDM_OPTION_EXPBRANCH = '00007F25'x)
+        integer  IDM_OPTION_EXPALL
+        parameter (IDM_OPTION_EXPALL = '00007F26'x)
+        integer  IDM_OPTION_COLBRANCH
+        parameter (IDM_OPTION_COLBRANCH = '00007F27'x)
+        integer  IDM_OPTION_COLALL
+        parameter (IDM_OPTION_COLALL = '00007F28'x)
+        integer  IDM_PREVIOUS
+        parameter (IDM_PREVIOUS = '00007F29'x)
+
+        integer  IDM_HELP
+        parameter (IDM_HELP = '00007F30'x)
+        integer  IDM_HELPHELP
+        parameter (IDM_HELPHELP = '00007F31'x)
+        integer  IDM_HELP_EXTENDED
+        parameter (IDM_HELP_EXTENDED = '00007F32'x)
+        integer  IDM_USING_HELP
+        parameter (IDM_USING_HELP = IDM_HELPHELP)
+        integer  IDM_GENERAL_HELP
+        parameter (IDM_GENERAL_HELP = IDM_HELP_EXTENDED)
+        integer  IDM_HELP_KEYS
+        parameter (IDM_HELP_KEYS = '00007F33'x)
+        integer  IDM_HELP_INDEX
+        parameter (IDM_HELP_INDEX = '00007F34'x)
+
+        integer  IDM_TUTORIAL
+        parameter (IDM_TUTORIAL = '00007F37'x)
+
+c$reference

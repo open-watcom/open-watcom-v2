@@ -35,10 +35,7 @@
 
 #define VER_CALC_SIZE   0xFFFF
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct VerBlockHeader {
     uint_16     Size;           // includes size of nested blocks
     uint_16     ValSize;        // size of the value array that follow header
@@ -70,10 +67,7 @@ typedef struct VerFixedInfo {
     uint_32     FileDateHigh;
     uint_32     FileDateLow;
 } VerFixedInfo;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 /* Why theses two values? Cause that's what Microsoft uses. */
 #define VER_FIXED_SIGNATURE     0xfeef04bd

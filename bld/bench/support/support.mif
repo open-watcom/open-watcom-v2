@@ -1,0 +1,33 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\support
+.h: $(bench_dir)\support
+.asm: $(bench_dir)\support
+
+extra_includes	= $(bench_dir)\support
+extra_cflags	=
+
+!ifeq host_os nt
+obj_files = timer.obj report.obj
+!else ifeq host_os os2
+obj_files = timero32.obj report.obj
+!ifneq compiler watcom
+obj_files += readp5.obj
+!endif
+!else
+!error Unsupported host_os
+!endif
+
+support.lib : $(obj_files)
+	%make lib
+
+lib: .PROCEDURE
+!ifeq compiler watcom
+	@if exist tmp.clb @erase tmp.clb
+	@for %i in ($?) do @%append tmp.clb -+%i
+	wlib -b -q $* @tmp.clb
+!else ifeq compiler ibmc
+        ilib /nologo /out:$^. $?
+!else
+	lib $^. $?
+!endif

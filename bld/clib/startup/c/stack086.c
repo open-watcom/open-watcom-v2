@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of stackavail() for 16-bit x86 platforms.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include "stacklow.h"
 
-_WCRTLINK unsigned stackavail()
-    {
-        return( _SP() - _STACKLOW );
-    }
+_WCRTLINK unsigned stackavail( void )
+{
+    return( _SP() - _STACKLOW );
+}

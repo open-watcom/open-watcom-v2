@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern unsigned         CurrSP();
+extern unsigned         CurrSP( void );
 #if defined( __386__ )
   #pragma aux CurrSP    = "mov eax,esp" value [eax];
 #else

@@ -1,0 +1,941 @@
+/*
+ *  pmgpi.h     OS/2 Presentation Manager Graphics Programming Interface
+ *              include file for 16-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#ifdef INCL_GPI
+    #define INCL_GPICONTROL
+    #define INCL_GPICORRELATION
+    #define INCL_GPIBITMAPS
+    #define INCL_GPIDEFAULTS
+    #define INCL_GPILCIDS
+    #define INCL_GPILOGCOLORTABLE
+    #define INCL_GPIMETAFILES
+    #define INCL_GPIPATHS
+    #define INCL_GPIPRIMITIVES
+    #define INCL_GPIREGIONS
+    #define INCL_GPISEGMENTS
+    #define INCL_GPISEGEDITING
+    #define INCL_GPITRANSFORMS
+#endif
+
+#ifdef INCL_ERRORS
+    #define INCL_GPIERRORS
+#endif
+
+#define GPI_ERROR      0L
+#define GPI_OK         1L
+#define GPI_ALTERROR (-1L)
+#define CLR_NOINDEX (-254L)
+
+#define MAKEFIXED(intpart,fractpart) MAKELONG(fractpart,intpart)
+#define FIXEDFRAC(fx)                (LOUSHORT(fx))
+#define FIXEDINT(fx)                 ((SHORT)HIUSHORT(fx))
+
+
+typedef  LONG FIXED, FAR *PFIXED;
+typedef  USHORT FIXED88;
+typedef  USHORT FIXED114;
+
+typedef struct _SIZEL {
+    LONG cx;
+    LONG cy;
+} SIZEL, FAR *PSIZEL;
+
+#if defined(INCL_GPICONTROL) || !defined(INCL_NOCOMMON)
+
+#define PU_ARBITRARY 0x0004L
+#define PU_PELS      0x0008L
+#define PU_LOMETRIC  0x000CL
+#define PU_HIMETRIC  0x0010L
+#define PU_LOENGLISH 0x0014L
+#define PU_HIENGLISH 0x0018L
+#define PU_TWIPS     0x001CL
+
+#define GPIF_DEFAULT      0L
+#define GPIF_SHORT   0x0100L
+#define GPIF_LONG    0x0200L
+
+#define GPIT_NORMAL       0L
+#define GPIT_MICRO   0x1000L
+
+#define GPIA_NOASSOC      0L
+#define GPIA_ASSOC   0x4000L
+
+#define HDC_ERROR ((HDC)-1L)
+
+BOOL APIENTRY GpiAssociate(HPS,HDC);
+HPS  APIENTRY GpiCreatePS(HAB,HDC,PSIZEL,ULONG);
+BOOL APIENTRY GpiDestroyPS(HPS);
+BOOL APIENTRY GpiErase(HPS);
+HDC  APIENTRY GpiQueryDevice(HPS);
+BOOL APIENTRY GpiRestorePS(HPS,LONG);
+LONG APIENTRY GpiSavePS(HPS);
+
+#endif
+
+#ifdef INCL_GPICONTROL
+
+#define GRES_ATTRS    0x0001L
+#define GRES_SEGMENTS 0x0002L
+#define GRES_ALL      0x0004L
+
+#define PS_UNITS     0x00FCL
+#define PS_FORMAT    0x0F00L
+#define PS_TYPE      0x1000L
+#define PS_MODE      0x2000L
+#define PS_ASSOCIATE 0x4000L
+#define PS_NORESET   0x8000L
+
+#define GPIE_SEGMENT 0L
+#define GPIE_ELEMENT 1L
+#define GPIE_DATA    2L
+
+#define DCTL_ERASE     1L
+#define DCTL_DISPLAY   2L
+#define DCTL_BOUNDARY  3L
+#define DCTL_DYNAMIC   4L
+#define DCTL_CORRELATE 5L
+
+#define DCTL_ERROR (-1L)
+#define DCTL_OFF     0L
+#define DCTL_ON      1L
+
+#define SDW_ERROR (-1L)
+#define SDW_OFF     0L
+#define SDW_ON      1L
+
+#define DM_ERROR         0L
+#define DM_DRAW          1L
+#define DM_RETAIN        2L
+#define DM_DRAWANDRETAIN 3L
+
+LONG  APIENTRY GpiErrorSegmentData(HPS,PLONG,PLONG);
+LONG  APIENTRY GpiQueryDrawControl(HPS,LONG);
+LONG  APIENTRY GpiQueryDrawingMode(HPS);
+ULONG APIENTRY GpiQueryPS(HPS,PSIZEL);
+LONG  APIENTRY GpiQueryStopDraw(HPS);
+BOOL  APIENTRY GpiResetPS(HPS,ULONG);
+BOOL  APIENTRY GpiSetDrawControl(HPS,LONG,LONG);
+BOOL  APIENTRY GpiSetDrawingMode(HPS,LONG);
+BOOL  APIENTRY GpiSetPS(HPS,PSIZEL,ULONG);
+BOOL  APIENTRY GpiSetStopDraw(HPS,LONG);
+
+#endif
+
+#ifdef INCL_GPICORRELATION
+
+#define PICKAP_DEFAULT 0L
+#define PICKAP_REC     2L
+
+#define PICKSEL_VISIBLE 0L
+#define PICKSEL_ALL     1L
+
+#define GPI_HITS 2L
+
+LONG  APIENTRY GpiCorrelateChain(HPS,LONG,PPOINTL,LONG,LONG,PLONG);
+LONG  APIENTRY GpiCorrelateFrom(HPS,LONG,LONG,LONG,PPOINTL,LONG,LONG,PLONG);
+LONG  APIENTRY GpiCorrelateSegment(HPS,LONG,LONG,PPOINTL,LONG,LONG,PLONG);
+BOOL  APIENTRY GpiQueryBoundaryData(HPS,PRECTL);
+BOOL  APIENTRY GpiQueryPickAperturePosition(HPS,PPOINTL);
+BOOL  APIENTRY GpiQueryPickApertureSize(HPS,PSIZEL);
+BOOL  APIENTRY GpiQueryTag(HPS,PLONG);
+BOOL  APIENTRY GpiResetBoundaryData(HPS);
+BOOL  APIENTRY GpiSetPickAperturePosition(HPS,PPOINTL);
+BOOL  APIENTRY GpiSetPickApertureSize(HPS,LONG,PSIZEL);
+BOOL  APIENTRY GpiSetTag(HPS,LONG);
+
+#endif
+
+#ifdef INCL_GPISEGMENTS
+
+#define DFORM_NOCONV    0L
+#define DFORM_S370SHORT 1L
+#define DFORM_PCSHORT   2L
+#define DFORM_PCLONG    4L
+
+#define ATTR_ERROR          (-1L)
+#define ATTR_DETECTABLE       1L
+#define ATTR_VISIBLE          2L
+#define ATTR_CHAINED          6L
+#define ATTR_DYNAMIC          8L
+#define ATTR_FASTCHAIN        9L
+#define ATTR_PROP_DETECTABLE 10L
+#define ATTR_PROP_VISIBLE    11L
+#define ATTR_OFF              0L
+#define ATTR_ON               1L
+
+#define LOWER_PRI (-1L)
+#define HIGHER_PRI  1L
+
+BOOL APIENTRY GpiCloseSegment(HPS);
+BOOL APIENTRY GpiDeleteSegment(HPS,LONG);
+BOOL APIENTRY GpiDeleteSegments(HPS,LONG,LONG);
+BOOL APIENTRY GpiDrawChain(HPS);
+BOOL APIENTRY GpiDrawDynamics(HPS);
+BOOL APIENTRY GpiDrawFrom(HPS,LONG,LONG);
+BOOL APIENTRY GpiDrawSegment(HPS,LONG);
+LONG APIENTRY GpiGetData(HPS,LONG,PLONG,LONG,LONG,PBYTE);
+BOOL APIENTRY GpiOpenSegment(HPS,LONG);
+LONG APIENTRY GpiPutData(HPS,LONG,PLONG,PBYTE);
+LONG APIENTRY GpiQueryInitialSegmentAttrs(HPS,LONG);
+LONG APIENTRY GpiQuerySegmentAttrs(HPS,LONG,LONG);
+LONG APIENTRY GpiQuerySegmentNames(HPS,LONG,LONG,LONG,PLONG);
+LONG APIENTRY GpiQuerySegmentPriority(HPS,LONG,LONG);
+BOOL APIENTRY GpiRemoveDynamics(HPS,LONG,LONG);
+BOOL APIENTRY GpiSetInitialSegmentAttrs(HPS,LONG,LONG);
+BOOL APIENTRY GpiSetSegmentAttrs(HPS,LONG,LONG,LONG);
+BOOL APIENTRY GpiSetSegmentPriority(HPS,LONG,LONG,LONG);
+
+#endif
+
+#ifdef INCL_GPISEGEDITING
+
+#define SEGEM_ERROR   0L
+#define SEGEM_INSERT  1L
+#define SEGEM_REPLACE 2L
+
+BOOL  APIENTRY GpiBeginElement(HPS,LONG,PSZ);
+BOOL  APIENTRY GpiDeleteElement(HPS);
+BOOL  APIENTRY GpiDeleteElementRange(HPS,LONG,LONG);
+BOOL  APIENTRY GpiDeleteElementsBetweenLabels(HPS,LONG,LONG);
+BOOL  APIENTRY GpiEndElement(HPS);
+LONG  APIENTRY GpiElement(HPS,LONG,PSZ,LONG,PBYTE);
+BOOL  APIENTRY GpiLabel(HPS,LONG);
+BOOL  APIENTRY GpiOffsetElementPointer(HPS,LONG);
+LONG  APIENTRY GpiQueryEditMode(HPS);
+LONG  APIENTRY GpiQueryElement(HPS,LONG,LONG,PBYTE);
+LONG  APIENTRY GpiQueryElementPointer(HPS);
+LONG  APIENTRY GpiQueryElementType(HPS,PLONG,LONG,PSZ);
+BOOL  APIENTRY GpiSetEditMode(HPS,LONG);
+BOOL  APIENTRY GpiSetElementPointer(HPS,LONG);
+BOOL  APIENTRY GpiSetElementPointerAtLabel(HPS,LONG);
+
+#endif
+
+#ifdef INCL_GPITRANSFORMS
+
+#define CVTC_WORLD       1L
+#define CVTC_MODEL       2L
+#define CVTC_DEFAULTPAGE 3L
+#define CVTC_PAGE        4L
+#define CVTC_DEVICE      5L
+
+#define TRANSFORM_REPLACE 0L
+#define TRANSFORM_ADD     1L
+#define TRANSFORM_PREEMPT 2L
+
+typedef struct _MATRIXLF {
+    FIXED fxM11;
+    FIXED fxM12;
+    LONG  lM13;
+    FIXED fxM21;
+    FIXED fxM22;
+    LONG  lM23;
+    LONG  lM31;
+    LONG  lM32;
+    LONG  lM33;
+} MATRIXLF, FAR *PMATRIXLF;
+
+BOOL APIENTRY GpiConvert(HPS,LONG,LONG,LONG,PPOINTL);
+LONG APIENTRY GpiCallSegmentMatrix(HPS,LONG,LONG,PMATRIXLF,LONG);
+BOOL APIENTRY GpiQueryDefaultViewMatrix(HPS,LONG,PMATRIXLF);
+BOOL APIENTRY GpiQueryGraphicsField(HPS,PRECTL);
+BOOL APIENTRY GpiQueryModelTransformMatrix(HPS,LONG,PMATRIXLF);
+BOOL APIENTRY GpiQueryPageViewport(HPS,PRECTL);
+BOOL APIENTRY GpiQuerySegmentTransformMatrix(HPS,LONG,LONG,PMATRIXLF);
+BOOL APIENTRY GpiQueryViewingTransformMatrix(HPS,LONG,PMATRIXLF);
+BOOL APIENTRY GpiQueryViewingLimits(HPS,PRECTL);
+BOOL APIENTRY GpiRotate(HPS,PMATRIXLF,LONG,FIXED,PPOINTL);
+BOOL APIENTRY GpiScale(HPS,PMATRIXLF,LONG,PFIXED,PPOINTL);
+BOOL APIENTRY GpiSetDefaultViewMatrix(HPS,LONG,PMATRIXLF,LONG);
+BOOL APIENTRY GpiSetGraphicsField(HPS,PRECTL);
+BOOL APIENTRY GpiSetModelTransformMatrix(HPS,LONG,PMATRIXLF,LONG);
+BOOL APIENTRY GpiSetPageViewport(HPS,PRECTL);
+BOOL APIENTRY GpiSetSegmentTransformMatrix(HPS,LONG,LONG,PMATRIXLF,LONG);
+BOOL APIENTRY GpiSetViewingLimits(HPS,PRECTL);
+BOOL APIENTRY GpiSetViewingTransformMatrix(HPS,LONG,PMATRIXLF,LONG);
+BOOL APIENTRY GpiTranslate(HPS,PMATRIXLF,LONG,PPOINTL);
+
+#endif
+
+#ifdef INCL_GPIPATHS
+
+#define FPATH_ALTERNATE 0L
+#define FPATH_WINDING   2L
+
+#define MPATH_STROKE 6L
+
+#define SCP_ALTERNATE 0L
+#define SCP_WINDING   2L
+#define SCP_AND       4L
+#define SCP_RESET     0L
+
+BOOL APIENTRY GpiBeginPath(HPS,LONG);
+BOOL APIENTRY GpiCloseFigure(HPS);
+BOOL APIENTRY GpiEndPath(HPS);
+LONG APIENTRY GpiFillPath(HPS,LONG,LONG);
+BOOL APIENTRY GpiModifyPath(HPS,LONG,LONG);
+LONG APIENTRY GpiOutlinePath(HPS,LONG,LONG);
+BOOL APIENTRY GpiSetClipPath(HPS,LONG,LONG);
+LONG APIENTRY GpiStrokePath(HPS,LONG,ULONG);
+
+#endif
+
+#ifdef INCL_GPILOGCOLORTABLE
+
+#define LCOL_RESET      0x0001L
+#define LCOL_REALIZABLE 0x0002L
+#define LCOL_PURECOLOR  0x0004L
+
+#define LCOLF_DEFAULT   0L
+#define LCOLF_INDRGB    1L
+#define LCOLF_CONSECRGB 2L
+#define LCOLF_RGB       3L
+
+#define LCOLOPT_REALIZED 1L
+#define LCOLOPT_INDEX    2L
+
+#define QLCT_ERROR     (-1L)
+#define QLCT_RGB       (-2L)
+#define QLCT_NOTLOADED (-1L)
+
+#define QCD_LCT_FORMAT  0L
+#define QCD_LCT_LOINDEX 1L
+#define QCD_LCT_HIINDEX 2L
+
+BOOL  APIENTRY GpiCreateLogColorTable(HPS,ULONG,LONG,LONG,LONG,PLONG);
+BOOL  APIENTRY GpiQueryColorData(HPS,LONG,PLONG);
+LONG  APIENTRY GpiQueryColorIndex(HPS,ULONG,LONG);
+LONG  APIENTRY GpiQueryLogColorTable(HPS,ULONG,LONG,LONG,PLONG);
+LONG  APIENTRY GpiQueryNearestColor(HPS,ULONG,LONG);
+LONG  APIENTRY GpiQueryRealColors(HPS,ULONG,LONG,LONG,PLONG);
+LONG  APIENTRY GpiQueryRGBColor(HPS,ULONG,LONG);
+BOOL  APIENTRY GpiRealizeColorTable(HPS);
+BOOL  APIENTRY GpiUnrealizeColorTable(HPS);
+
+#endif
+
+#if defined(INCL_GPIPRIMITIVES) || !defined(INCL_NOCOMMON)
+
+#define CLR_FALSE       (-5L)
+#define CLR_TRUE        (-4L)
+#define CLR_ERROR     (-255L)
+#define CLR_DEFAULT     (-3L)
+#define CLR_WHITE       (-2L)
+#define CLR_BLACK       (-1L)
+#define CLR_BACKGROUND    0L
+#define CLR_BLUE          1L
+#define CLR_RED           2L
+#define CLR_PINK          3L
+#define CLR_GREEN         4L
+#define CLR_CYAN          5L
+#define CLR_YELLOW        6L
+#define CLR_NEUTRAL       7L
+#define CLR_DARKGRAY      8L
+#define CLR_DARKBLUE      9L
+#define CLR_DARKRED      10L
+#define CLR_DARKPINK     11L
+#define CLR_DARKGREEN    12L
+#define CLR_DARKCYAN     13L
+#define CLR_BROWN        14L
+#define CLR_PALEGRAY     15L
+
+#define RGB_ERROR       (-255L)
+#define RGB_BLACK  0x00000000L
+#define RGB_BLUE   0x000000FFL
+#define RGB_GREEN  0x0000FF00L
+#define RGB_CYAN   0x0000FFFFL
+#define RGB_RED    0x00FF0000L
+#define RGB_PINK   0x00FF00FFL
+#define RGB_YELLOW 0x00FFFF00L
+#define RGB_WHITE  0x00FFFFFFL
+
+#define BA_NOBOUNDARY 0L
+#define BA_BOUNDARY   1L
+#define BA_ALTERNATE  0L
+#define BA_WINDING    2L
+
+#define DRO_FILL        1L
+#define DRO_OUTLINE     2L
+#define DRO_OUTLINEFILL 3L
+
+#define PATSYM_ERROR   (-1L)
+#define PATSYM_DEFAULT   0L
+#define PATSYM_DENSE1    1L
+#define PATSYM_DENSE2    2L
+#define PATSYM_DENSE3    3L
+#define PATSYM_DENSE4    4L
+#define PATSYM_DENSE5    5L
+#define PATSYM_DENSE6    6L
+#define PATSYM_DENSE7    7L
+#define PATSYM_DENSE8    8L
+#define PATSYM_VERT      9L
+#define PATSYM_HORIZ    10L
+#define PATSYM_DIAG1    11L
+#define PATSYM_DIAG2    12L
+#define PATSYM_DIAG3    13L
+#define PATSYM_DIAG4    14L
+#define PATSYM_NOSHADE  15L
+#define PATSYM_SOLID    16L
+#define PATSYM_HALFTONE 17L
+#define PATSYM_BLANK    64L
+
+#define LCID_ERROR   (-1L)
+#define LCID_DEFAULT   0L
+
+BOOL  APIENTRY GpiBeginArea(HPS,ULONG);
+LONG  APIENTRY GpiBox(HPS,LONG,PPOINTL,LONG,LONG);
+LONG  APIENTRY GpiCharString(HPS,LONG,PCH);
+LONG  APIENTRY GpiCharStringAt(HPS,PPOINTL,LONG,PCH);
+LONG  APIENTRY GpiEndArea(HPS);
+LONG  APIENTRY GpiLine(HPS,PPOINTL);
+BOOL  APIENTRY GpiMove(HPS,PPOINTL);
+LONG  APIENTRY GpiPolyLine(HPS,LONG,PPOINTL);
+LONG  APIENTRY GpiQueryColor(HPS);
+LONG  APIENTRY GpiQueryPattern(HPS);
+BOOL  APIENTRY GpiSetColor(HPS,LONG);
+BOOL  APIENTRY GpiSetPattern(HPS,LONG);
+
+#endif
+
+#ifdef INCL_GPIPRIMITIVES
+
+#define AM_ERROR      (-1L)
+#define AM_PRESERVE     0L
+#define AM_NOPRESERVE   1L
+
+#define FM_ERROR      (-1L)
+#define FM_DEFAULT      0L
+#define FM_OR           1L
+#define FM_OVERPAINT    2L
+#define FM_XOR          4L
+#define FM_LEAVEALONE   5L
+#define FM_AND          6L
+#define FM_SUBTRACT     7L
+#define FM_MASKSRCNOT   8L
+#define FM_ZERO         9L
+#define FM_NOTMERGESRC 10L
+#define FM_NOTXORSRC   11L
+#define FM_INVERT      12L
+#define FM_MERGESRCNOT 13L
+#define FM_NOTCOPYSRC  14L
+#define FM_MERGENOTSRC 15L
+#define FM_NOTMASKSRC  16L
+#define FM_ONE         17L
+
+#define BM_ERROR      (-1L)
+#define BM_DEFAULT      0L
+#define BM_OR           1L
+#define BM_OVERPAINT    2L
+#define BM_XOR          4L
+#define BM_LEAVEALONE   5L
+
+#define LINETYPE_ERROR         (-1L)
+#define LINETYPE_DEFAULT         0L
+#define LINETYPE_DOT             1L
+#define LINETYPE_SHORTDASH       2L
+#define LINETYPE_DASHDOT         3L
+#define LINETYPE_DOUBLEDOT       4L
+#define LINETYPE_LONGDASH        5L
+#define LINETYPE_DASHDOUBLEDOT   6L
+#define LINETYPE_SOLID           7L
+#define LINETYPE_INVISIBLE       8L
+#define LINETYPE_ALTERNATE       9L
+
+#define LINEWIDTH_ERROR          (-1L)
+#define LINEWIDTH_DEFAULT          0L
+#define LINEWIDTH_NORMAL  0x00010000L
+
+#define LINEWIDTHGEOM_ERROR (-1L)
+
+#define LINEEND_ERROR   (-1L)
+#define LINEEND_DEFAULT   0L
+#define LINEEND_FLAT      1L
+#define LINEEND_SQUARE    2L
+#define LINEEND_ROUND     3L
+
+#define LINEJOIN_ERROR   (-1L)
+#define LINEJOIN_DEFAULT   0L
+#define LINEJOIN_BEVEL     1L
+#define LINEJOIN_ROUND     2L
+#define LINEJOIN_MITRE     3L
+
+#define CHDIRN_ERROR     (-1L)
+#define CHDIRN_DEFAULT     0L
+#define CHDIRN_LEFTRIGHT   1L
+#define CHDIRN_TOPBOTTOM   2L
+#define CHDIRN_RIGHTLEFT   3L
+#define CHDIRN_BOTTOMTOP   4L
+
+#define CM_ERROR   (-1L)
+#define CM_DEFAULT   0L
+#define CM_MODE1     1L
+#define CM_MODE2     2L
+#define CM_MODE3     3L
+
+#define MARKSYM_ERROR          (-1L)
+#define MARKSYM_DEFAULT          0L
+#define MARKSYM_CROSS            1L
+#define MARKSYM_PLUS             2L
+#define MARKSYM_DIAMOND          3L
+#define MARKSYM_SQUARE           4L
+#define MARKSYM_SIXPOINTSTAR     5L
+#define MARKSYM_EIGHTPOINTSTAR   6L
+#define MARKSYM_SOLIDDIAMOND     7L
+#define MARKSYM_SOLIDSQUARE      8L
+#define MARKSYM_DOT              9L
+#define MARKSYM_SMALLCIRCLE     10L
+#define MARKSYM_BLANK           64L
+
+#define CHS_OPAQUE   0x0001L
+#define CHS_VECTOR   0x0002L
+#define CHS_LEAVEPOS 0x0008L
+#define CHS_CLIP     0x0010L
+
+#define PRIM_LINE   1L
+#define PRIM_CHAR   2L
+#define PRIM_MARKER 3L
+#define PRIM_AREA   4L
+#define PRIM_IMAGE  5L
+
+#define ABB_COLOR         0x0001L
+#define ABB_BACK_COLOR    0x0002L
+#define ABB_MIX_MODE      0x0004L
+#define ABB_BACK_MIX_MODE 0x0008L
+#define ABB_SET           0x0010L
+#define ABB_SYMBOL        0x0020L
+#define ABB_REF_POINT     0x0040L
+
+#define CBB_COLOR         0x0001L
+#define CBB_BACK_COLOR    0x0002L
+#define CBB_MIX_MODE      0x0004L
+#define CBB_BACK_MIX_MODE 0x0008L
+#define CBB_SET           0x0010L
+#define CBB_MODE          0x0020L
+#define CBB_BOX           0x0040L
+#define CBB_ANGLE         0x0080L
+#define CBB_SHEAR         0x0100L
+#define CBB_DIRECTION     0x0200L
+
+#define IBB_COLOR         0x0001L
+#define IBB_BACK_COLOR    0x0002L
+#define IBB_MIX_MODE      0x0004L
+#define IBB_BACK_MIX_MODE 0x0008L
+
+#define LBB_COLOR      0x0001L
+#define LBB_MIX_MODE   0x0004L
+#define LBB_WIDTH      0x0010L
+#define LBB_GEOM_WIDTH 0x0020L
+#define LBB_TYPE       0x0040L
+#define LBB_END        0x0080L
+#define LBB_JOIN       0x0100L
+
+#define MBB_COLOR         0x0001L
+#define MBB_BACK_COLOR    0x0002L
+#define MBB_MIX_MODE      0x0004L
+#define MBB_BACK_MIX_MODE 0x0008L
+#define MBB_SET           0x0010L
+#define MBB_SYMBOL        0x0020L
+#define MBB_BOX           0x0040L
+
+#define TXTBOX_TOPLEFT     0L
+#define TXTBOX_BOTTOMLEFT  1L
+#define TXTBOX_TOPRIGHT    2L
+#define TXTBOX_BOTTOMRIGHT 3L
+#define TXTBOX_CONCAT      4L
+#define TXTBOX_COUNT       5L
+
+#define PVIS_ERROR     0L
+#define PVIS_INVISIBLE 1L
+#define PVIS_VISIBLE   2L
+
+#define RVIS_ERROR     0L
+#define RVIS_INVISIBLE 1L
+#define RVIS_PARTIAL   2L
+#define RVIS_VISIBLE   3L
+
+typedef PVOID PBUNDLE;
+
+typedef struct _ARCPARAMS {
+    LONG lP;
+    LONG lQ;
+    LONG lR;
+    LONG lS;
+} ARCPARAMS, FAR *PARCPARAMS;
+
+typedef struct _SIZEF {
+    FIXED cx;
+    FIXED cy;
+} SIZEF, FAR *PSIZEF;
+
+typedef struct _GRADIENTL {
+    LONG x;
+    LONG y;
+} GRADIENTL, FAR *PGRADIENTL;
+
+typedef struct _LINEBUNDLE {
+    LONG   lColor;
+    LONG   lReserved;
+    USHORT usMixMode;
+    USHORT usReserved;
+    FIXED  fxWidth;
+    LONG   lGeomWidth;
+    USHORT usType;
+    USHORT usEnd;
+    USHORT usJoin;
+} LINEBUNDLE;
+
+typedef struct _CHARBUNDLE {
+    LONG   lColor;
+    LONG   lBackColor;
+    USHORT usMixMode;
+    USHORT usBackMixMode;
+    USHORT usSet;
+    USHORT usPrecision;
+    SIZEF  sizfxCell;
+    POINTL ptlAngle;
+    POINTL ptlShear;
+    USHORT usDirection;
+} CHARBUNDLE;
+
+typedef struct _MARKERBUNDLE {
+    LONG   lColor;
+    LONG   lBackColor;
+    USHORT usMixMode;
+    USHORT usBackMixMode;
+    USHORT usSet;
+    USHORT usSymbol;
+    SIZEF  sizfxCell;
+} MARKERBUNDLE;
+
+typedef struct _AREABUNDLE {
+    LONG   lColor;
+    LONG   lBackColor;
+    USHORT usMixMode;
+    USHORT usBackMixMode;
+    USHORT usSet;
+    USHORT usSymbol;
+    POINTL ptlRefPoint ;
+} AREABUNDLE;
+
+typedef struct _IMAGEBUNDLE {
+    LONG   lColor;
+    LONG   lBackColor;
+    USHORT usMixMode;
+    USHORT usBackMixMode;
+} IMAGEBUNDLE;
+
+LONG  APIENTRY GpiCharStringPos(HPS,PRECTL,ULONG,LONG,PCH,PLONG);
+LONG  APIENTRY GpiCharStringPosAt(HPS,PPOINTL,PRECTL,ULONG,LONG,PCH,PLONG);
+BOOL  APIENTRY GpiComment(HPS,LONG,PBYTE);
+LONG  APIENTRY GpiFullArc(HPS,LONG,FIXED);
+LONG  APIENTRY GpiImage(HPS,LONG,PSIZEL,LONG,PBYTE);
+LONG  APIENTRY GpiMarker(HPS,PPOINTL);
+LONG  APIENTRY GpiPartialArc(HPS,PPOINTL,FIXED,FIXED,FIXED);
+LONG  APIENTRY GpiPointArc(HPS,PPOINTL);
+LONG  APIENTRY GpiPolyFillet(HPS,LONG,PPOINTL);
+LONG  APIENTRY GpiPolyFilletSharp(HPS,LONG,PPOINTL,PFIXED);
+LONG  APIENTRY GpiPolyMarker(HPS,LONG,PPOINTL);
+LONG  APIENTRY GpiPolySpline(HPS,LONG,PPOINTL);
+BOOL  APIENTRY GpiPop(HPS,LONG);
+LONG  APIENTRY GpiPtVisible(HPS,PPOINTL);
+BOOL  APIENTRY GpiQueryArcParams(HPS,PARCPARAMS);
+LONG  APIENTRY GpiQueryAttrMode(HPS);
+LONG  APIENTRY GpiQueryAttrs(HPS,LONG,ULONG,PBUNDLE);
+LONG  APIENTRY GpiQueryBackColor(HPS);
+LONG  APIENTRY GpiQueryBackMix(HPS);
+BOOL  APIENTRY GpiQueryCharAngle(HPS,PGRADIENTL);
+BOOL  APIENTRY GpiQueryCharBox(HPS,PSIZEF);
+LONG  APIENTRY GpiQueryCharDirection(HPS);
+LONG  APIENTRY GpiQueryCharMode(HPS);
+LONG  APIENTRY GpiQueryCharSet(HPS);
+BOOL  APIENTRY GpiQueryCharShear(HPS,PPOINTL);
+BOOL  APIENTRY GpiQueryCharStringPos(HPS,ULONG,LONG,PCH,PLONG,PPOINTL);
+BOOL  APIENTRY GpiQueryCharStringPosAt(HPS,PPOINTL,ULONG,LONG,PCH,PLONG,PPOINTL);
+BOOL  APIENTRY GpiQueryCurrentPosition(HPS,PPOINTL);
+BOOL  APIENTRY GpiQueryDefCharBox(HPS,PSIZEL);
+LONG  APIENTRY GpiQueryLineEnd(HPS);
+LONG  APIENTRY GpiQueryLineJoin(HPS);
+LONG  APIENTRY GpiQueryLineType(HPS);
+FIXED APIENTRY GpiQueryLineWidth(HPS);
+LONG  APIENTRY GpiQueryLineWidthGeom(HPS);
+LONG  APIENTRY GpiQueryMarker(HPS);
+BOOL  APIENTRY GpiQueryMarkerBox(HPS,PSIZEF);
+LONG  APIENTRY GpiQueryMarkerSet(HPS);
+LONG  APIENTRY GpiQueryMix(HPS);
+BOOL  APIENTRY GpiQueryPatternRefPoint(HPS,PPOINTL);
+LONG  APIENTRY GpiQueryPatternSet(HPS);
+BOOL  APIENTRY GpiQueryTextBox(HPS,LONG,PCH,LONG,PPOINTL);
+LONG  APIENTRY GpiRectVisible(HPS,PRECTL);
+BOOL  APIENTRY GpiSetArcParams(HPS,PARCPARAMS);
+BOOL  APIENTRY GpiSetAttrMode(HPS,LONG);
+BOOL  APIENTRY GpiSetAttrs(HPS,LONG,ULONG,ULONG,PBUNDLE);
+BOOL  APIENTRY GpiSetBackColor(HPS,LONG);
+BOOL  APIENTRY GpiSetBackMix(HPS,LONG);
+BOOL  APIENTRY GpiSetCharAngle(HPS,PGRADIENTL);
+BOOL  APIENTRY GpiSetCharBox(HPS,PSIZEF);
+BOOL  APIENTRY GpiSetCharDirection(HPS,LONG);
+BOOL  APIENTRY GpiSetCharMode(HPS,LONG);
+BOOL  APIENTRY GpiSetCharSet(HPS,LONG);
+BOOL  APIENTRY GpiSetCharShear(HPS,PPOINTL);
+BOOL  APIENTRY GpiSetCurrentPosition(HPS,PPOINTL);
+BOOL  APIENTRY GpiSetLineEnd(HPS,LONG);
+BOOL  APIENTRY GpiSetLineJoin(HPS,LONG);
+BOOL  APIENTRY GpiSetLineType(HPS,LONG);
+BOOL  APIENTRY GpiSetLineWidth(HPS,FIXED);
+BOOL  APIENTRY GpiSetLineWidthGeom(HPS,LONG);
+BOOL  APIENTRY GpiSetMarker(HPS,LONG);
+BOOL  APIENTRY GpiSetMarkerBox(HPS,PSIZEF);
+BOOL  APIENTRY GpiSetMarkerSet(HPS,LONG);
+BOOL  APIENTRY GpiSetMix(HPS,LONG);
+BOOL  APIENTRY GpiSetPatternRefPoint(HPS,PPOINTL);
+BOOL  APIENTRY GpiSetPatternSet(HPS,LONG);
+
+#endif
+
+#ifdef INCL_GPILCIDS
+
+#define FONT_DEFAULT 1L
+#define FONT_MATCH   2L
+
+#define LCIDT_FONT   6L
+#define LCIDT_BITMAP 7L
+
+#define LCID_ALL   (-1L)
+
+#define QF_PUBLIC                  0x0001L
+#define QF_PRIVATE                 0x0002L
+
+typedef CHAR FFDESCS[2][FACESIZE], FAR *PFFDESCS;
+
+typedef struct _KERNINGPAIRS {
+    SHORT sFirstChar;
+    SHORT sSecondChar;
+    SHORT sKerningAmount;
+} KERNINGPAIRS, FAR *PKERNINGPAIRS;
+
+LONG   APIENTRY GpiCreateLogFont(HPS,PSTR8,LONG,PFATTRS);
+BOOL   APIENTRY GpiDeleteSetId(HPS,LONG);
+BOOL   APIENTRY GpiLoadFonts(HAB,PSZ);
+USHORT APIENTRY GpiQueryCp(HPS);
+LONG   APIENTRY GpiQueryFontFileDescriptions(HAB,PSZ,PLONG,PFFDESCS);
+LONG   APIENTRY GpiQueryFonts(HPS,ULONG,PSZ,PLONG,LONG,PFONTMETRICS);
+BOOL   APIENTRY GpiQueryFontMetrics(HPS,LONG,PFONTMETRICS);
+LONG   APIENTRY GpiQueryKerningPairs(HPS,LONG,PKERNINGPAIRS);
+LONG   APIENTRY GpiQueryNumberSetIds(HPS);
+BOOL   APIENTRY GpiQuerySetIds(HPS,LONG,PLONG,PSTR8,PLONG);
+BOOL   APIENTRY GpiQueryWidthTable(HPS,LONG,LONG,PLONG);
+BOOL   APIENTRY GpiSetCp(HPS,USHORT);
+BOOL   APIENTRY GpiUnloadFonts(HAB,PSZ);
+
+#endif
+
+#if defined(INCL_GPIBITMAPS) || !defined(INCL_NOCOMMON)
+
+#define ROP_SRCCOPY     0x00CCL
+#define ROP_SRCPAINT    0x00EEL
+#define ROP_SRCAND      0x0088L
+#define ROP_SRCINVERT   0x0066L
+#define ROP_SRCERASE    0x0044L
+#define ROP_NOTSRCCOPY  0x0033L
+#define ROP_NOTSRCERASE 0x0011L
+#define ROP_MERGECOPY   0x00C0L
+#define ROP_MERGEPAINT  0x00BBL
+#define ROP_PATCOPY     0x00F0L
+#define ROP_PATPAINT    0x00FBL
+#define ROP_PATINVERT   0x005AL
+#define ROP_DSTINVERT   0x0055L
+#define ROP_ZERO        0x0000L
+#define ROP_ONE         0x00FFL
+
+#define BBO_OR     0L
+#define BBO_AND    1L
+#define BBO_IGNORE 2L
+
+#define HBM_ERROR ((HBITMAP)-1L)
+
+LONG    APIENTRY GpiBitBlt(HPS,HPS,LONG,PPOINTL,LONG,ULONG);
+BOOL    APIENTRY GpiDeleteBitmap(HBITMAP);
+HBITMAP APIENTRY GpiLoadBitmap(HPS,HMODULE,USHORT,LONG,LONG);
+HBITMAP APIENTRY GpiSetBitmap(HPS,HBITMAP);
+LONG    APIENTRY GpiWCBitBlt(HPS,HBITMAP,LONG,PPOINTL,LONG,ULONG);
+
+#endif
+
+#ifdef INCL_GPIBITMAPS
+
+#define CBM_INIT  4L
+
+#define BMB_ERROR (-1L)
+
+typedef struct _BITMAPINFOHEADER {
+    ULONG  cbFix;
+    USHORT cx;
+    USHORT cy;
+    USHORT cPlanes;
+    USHORT cBitCount;
+} BITMAPINFOHEADER, FAR *PBITMAPINFOHEADER;
+
+typedef struct _RGB {
+    BYTE bBlue;
+    BYTE bGreen;
+    BYTE bRed;
+} RGB;
+
+typedef struct _BITMAPINFO {
+    ULONG  cbFix;
+    USHORT cx;
+    USHORT cy;
+    USHORT cPlanes;
+    USHORT cBitCount;
+    RGB    argbColor[1];
+} BITMAPINFO, FAR *PBITMAPINFO;
+
+HBITMAP APIENTRY GpiCreateBitmap(HPS,PBITMAPINFOHEADER,ULONG,PBYTE,PBITMAPINFO);
+LONG    APIENTRY GpiQueryBitmapBits(HPS,LONG,LONG,PBYTE,PBITMAPINFO);
+BOOL    APIENTRY GpiQueryBitmapDimension(HBITMAP,PSIZEL);
+HBITMAP APIENTRY GpiQueryBitmapHandle(HPS,LONG);
+BOOL    APIENTRY GpiQueryBitmapParameters(HBITMAP,PBITMAPINFOHEADER);
+BOOL    APIENTRY GpiQueryDeviceBitmapFormats(HPS,LONG,PLONG);
+LONG    APIENTRY GpiQueryPel(HPS,PPOINTL);
+LONG    APIENTRY GpiSetBitmapBits(HPS,LONG,LONG,PBYTE,PBITMAPINFO);
+BOOL    APIENTRY GpiSetBitmapDimension(HBITMAP,PSIZEL);
+BOOL    APIENTRY GpiSetBitmapId(HPS,HBITMAP,LONG);
+LONG    APIENTRY GpiSetPel(HPS,PPOINTL);
+
+#endif
+
+#ifdef INCL_GPIREGIONS
+
+#define CRGN_OR   1L
+#define CRGN_COPY 2L
+#define CRGN_XOR  4L
+#define CRGN_AND  6L
+#define CRGN_DIFF 7L
+
+#define RECTDIR_LFRT_TOPBOT 1L
+#define RECTDIR_RTLF_TOPBOT 2L
+#define RECTDIR_LFRT_BOTTOP 3L
+#define RECTDIR_RTLF_BOTTOP 4L
+
+#define RGN_ERROR   0L
+#define RGN_NULL    1L
+#define RGN_RECT    2L
+#define RGN_COMPLEX 3L
+
+#define PRGN_ERROR   0L
+#define PRGN_OUTSIDE 1L
+#define PRGN_INSIDE  2L
+
+#define RRGN_ERROR   0L
+#define RRGN_OUTSIDE 1L
+#define RRGN_PARTIAL 2L
+#define RRGN_INSIDE  3L
+
+#define EQRGN_ERROR    0L
+#define EQRGN_NOTEQUAL 1L
+#define EQRGN_EQUAL    2L
+
+#define HRGN_ERROR ((HRGN)-1L)
+
+typedef struct _RGNRECT {
+    USHORT ircStart;
+    USHORT crc;
+    USHORT crcReturned;
+    USHORT usDirection;
+} RGNRECT, FAR *PRGNRECT;
+
+LONG  APIENTRY GpiCombineRegion(HPS,HRGN,HRGN,HRGN,LONG);
+HRGN  APIENTRY GpiCreateRegion(HPS,LONG,PRECTL);
+BOOL  APIENTRY GpiDestroyRegion(HPS,HRGN);
+LONG  APIENTRY GpiEqualRegion(HPS,HRGN,HRGN);
+LONG  APIENTRY GpiExcludeClipRectangle(HPS,PRECTL);
+LONG  APIENTRY GpiIntersectClipRectangle(HPS,PRECTL);
+LONG  APIENTRY GpiOffsetClipRegion(HPS,PPOINTL);
+BOOL  APIENTRY GpiOffsetRegion(HPS,HRGN,PPOINTL);
+LONG  APIENTRY GpiPaintRegion(HPS,HRGN);
+LONG  APIENTRY GpiPtInRegion(HPS,HRGN,PPOINTL);
+LONG  APIENTRY GpiQueryRegionBox(HPS,HRGN,PRECTL);
+BOOL  APIENTRY GpiQueryRegionRects(HPS,HRGN,PRECTL,PRGNRECT,PRECTL);
+LONG  APIENTRY GpiRectInRegion(HPS,HRGN,PRECTL);
+BOOL  APIENTRY GpiSetRegion(HPS,HRGN,LONG,PRECTL);
+LONG  APIENTRY GpiSetClipRegion(HPS,HRGN,PHRGN);
+HRGN  APIENTRY GpiQueryClipRegion(HPS);
+LONG  APIENTRY GpiQueryClipBox(HPS,PRECTL);
+
+#endif
+
+#ifdef INCL_GPIMETAFILES
+
+#define PMF_SEGBASE         0
+#define PMF_LOADTYPE        1
+#define PMF_RESOLVE         2
+#define PMF_LCIDS           3
+#define PMF_RESET           4
+#define PMF_SUPPRESS        5
+#define PMF_COLORTABLES     6
+#define PMF_COLORREALIZABLE 7
+#define PMF_DEFAULTS        8
+
+#define RS_DEFAULT      0L
+#define RS_NODISCARD    1L
+#define LC_DEFAULT      0L
+#define LC_NOLOAD       1L
+#define LC_LOADDISC     3L
+#define LT_DEFAULT      0L
+#define LT_NOMODIFY     1L
+#define LT_ORIGINALVIEW 4L
+#define RES_DEFAULT     0L
+#define RES_NORESET     1L
+#define RES_RESET       2L
+#define SUP_DEFAULT     0L
+#define SUP_NOSUPPRESS  1L
+#define SUP_SUPPRESS    2L
+#define CTAB_DEFAULT    0L
+#define CTAB_NOMODIFY   1L
+#define CTAB_REPLACE    3L
+#define CREA_DEFAULT    0L
+#define CREA_REALIZE    1L
+#define CREA_NOREALIZE  2L
+#define DDEF_DEFAULT    0L
+#define DDEF_IGNORE     1L
+#define DDEF_LOADDISC   3L
+#define RSP_DEFAULT     0L
+#define RSP_NODISCARD   1L
+
+HMF   APIENTRY GpiCopyMetaFile(HMF);
+BOOL  APIENTRY GpiDeleteMetaFile(HMF);
+HMF   APIENTRY GpiLoadMetaFile(HAB,PSZ);
+LONG  APIENTRY GpiPlayMetaFile(HPS,HMF,LONG,PLONG,PLONG,LONG,PSZ);
+BOOL  APIENTRY GpiQueryMetaFileBits(HMF,LONG,LONG,PBYTE);
+LONG  APIENTRY GpiQueryMetaFileLength(HMF);
+BOOL  APIENTRY GpiSaveMetaFile(HMF,PSZ);
+BOOL  APIENTRY GpiSetMetaFileBits(HMF,LONG,LONG,PBYTE);
+
+#endif
+
+#ifdef INCL_GPIDEFAULTS
+
+BOOL  APIENTRY GpiQueryDefArcParams(HPS,PARCPARAMS);
+BOOL  APIENTRY GpiQueryDefAttrs(HPS,LONG,ULONG,PBUNDLE);
+BOOL  APIENTRY GpiQueryDefTag(HPS,PLONG);
+BOOL  APIENTRY GpiQueryDefViewingLimits(HPS,PRECTL);
+BOOL  APIENTRY GpiSetDefArcParams(HPS,PARCPARAMS);
+BOOL  APIENTRY GpiSetDefAttrs(HPS,LONG,ULONG,PBUNDLE);
+BOOL  APIENTRY GpiSetDefTag(HPS,LONG);
+BOOL  APIENTRY GpiSetDefViewingLimits(HPS,PRECTL);
+
+#endif
+
+:include cplusepi.sp
+
+#ifdef INCL_GPIERRORS
+#include <pmerr.h>
+#endif

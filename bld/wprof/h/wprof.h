@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined(_OS2_PM)
+#if defined( __OS2_PM__ )
 
 /* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */
 

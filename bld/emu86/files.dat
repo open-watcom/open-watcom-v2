@@ -1,0 +1,6 @@
+#EMU86 files.dat 
+[ DEFAULT type="s" where="c jc f77 jf77" ]
+dir="lib286/dos"	usr="emu87.lib" cond="dostarg"
+dir="lib286/os2"	usr="emu87.lib" cond="os2targ"
+dir="lib286/win"	usr="emu87.lib" cond="wintarg"
+dir="lib286"		usr="noemu87.lib"

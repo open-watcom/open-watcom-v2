@@ -1,5 +1,5 @@
 2c2
-< BOO
+< BOO#me
 ---
 > BOO2
 1c1
@@ -11,4 +11,4 @@
 < BOO2
 ---
 > HELLO1
-> BOO
+> BOO#me

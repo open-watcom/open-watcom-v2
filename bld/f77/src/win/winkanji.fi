@@ -1,0 +1,153 @@
+*$noreference
+
+! VK from the keyboard driver
+
+      integer VK_KANA
+      integer VK_ROMAJI
+      integer VK_ZENKAKU
+      integer VK_HIRAGANA
+      integer VK_KANJI
+
+      parameter ( VK_KANA             = '15'x )
+      parameter ( VK_ROMAJI           = '16'x )
+      parameter ( VK_ZENKAKU          = '17'x )
+      parameter ( VK_HIRAGANA         = '18'x )
+      parameter ( VK_KANJI            = '19'x )
+
+! VK to send to Applications
+
+      integer VK_CONVERT
+      integer VK_NONCONVERT
+      integer VK_ACCEPT
+      integer VK_MODECHANGE
+
+      parameter ( VK_CONVERT          = '1C'x )
+      parameter ( VK_NONCONVERT       = '1D'x )
+      parameter ( VK_ACCEPT           = '1E'x )
+      parameter ( VK_MODECHANGE       = '1F'x )
+
+! Conversion function numbers
+
+      integer KNJ_START
+      integer KNJ_END
+      integer KNJ_QUERY
+
+      integer KNJ_LEARN_MODE
+      integer KNJ_GETMODE
+      integer KNJ_SETMODE
+
+      integer KNJ_CODECONVERT
+      integer KNJ_CONVERT
+      integer KNJ_NEXT
+      integer KNJ_PREVIOUS
+      integer KNJ_ACCEPT
+
+      integer KNJ_LEARN
+      integer KNJ_REGISTER
+      integer KNJ_REMOVE
+      integer KNJ_CHANGE_UDIC
+
+      parameter ( KNJ_START           = '01'x )
+      parameter ( KNJ_END             = '02'x )
+      parameter ( KNJ_QUERY           = '03'x )
+
+      parameter ( KNJ_LEARN_MODE      = '10'x )
+      parameter ( KNJ_GETMODE         = '11'x )
+      parameter ( KNJ_SETMODE         = '12'x )
+
+      parameter ( KNJ_CODECONVERT     = '20'x )
+      parameter ( KNJ_CONVERT         = '21'x )
+      parameter ( KNJ_NEXT            = '22'x )
+      parameter ( KNJ_PREVIOUS        = '23'x )
+      parameter ( KNJ_ACCEPT          = '24'x )
+
+      parameter ( KNJ_LEARN           = '30'x )
+      parameter ( KNJ_REGISTER        = '31'x )
+      parameter ( KNJ_REMOVE          = '32'x )
+      parameter ( KNJ_CHANGE_UDIC     = '33'x )
+
+! NOTE: DEFAULT        = 0
+!       JIS1           = 1
+!       JIS2           = 2
+!       SJIS2          = 3
+!       JIS1KATAKANA   = 4
+!       SJIS2HIRAGANA  = 5
+!       SJIS2KATAKANA  = 6
+!       OEM            = F
+
+      integer KNJ_JIS1toJIS1KATAKANA
+      integer KNJ_JIS1toSJIS2
+      integer KNJ_JIS1toSJIS2HIRAGANA
+      integer KNJ_JIS1toSJIS2KATAKANA
+      integer KNJ_JIS1toDEFAULT
+      integer KNJ_JIS1toSJIS2OEM
+      integer KNJ_JIS2toSJIS2
+      integer KNJ_SJIS2toJIS2
+
+      integer KNJ_MD_ALPHA
+      integer KNJ_MD_HIRAGANA
+      integer KNJ_MD_HALF
+      integer KNJ_MD_JIS
+      integer KNJ_MD_SPECIAL
+
+      integer KNJ_CVT_NEXT
+      integer KNJ_CVT_PREV
+      integer KNJ_CVT_KATAKANA
+      integer KNJ_CVT_HIRAGANA
+      integer KNJ_CVT_JIS1
+      integer KNJ_CVT_SJIS2
+      integer KNJ_CVT_DEFAULT
+      integer KNJ_CVT_TYPED
+
+      parameter ( KNJ_JIS1toJIS1KATAKANA  = '14'x )
+      parameter ( KNJ_JIS1toSJIS2         = '13'x )
+      parameter ( KNJ_JIS1toSJIS2HIRAGANA = '15'x )
+      parameter ( KNJ_JIS1toSJIS2KATAKANA = '16'x )
+      parameter ( KNJ_JIS1toDEFAULT       = '10'x )
+      parameter ( KNJ_JIS1toSJIS2OEM      = '1F'x )
+      parameter ( KNJ_JIS2toSJIS2         = '23'x )
+      parameter ( KNJ_SJIS2toJIS2         = '32'x )
+
+      parameter ( KNJ_MD_ALPHA            = '01'x )
+      parameter ( KNJ_MD_HIRAGANA         = '02'x )
+      parameter ( KNJ_MD_HALF             = '04'x )
+      parameter ( KNJ_MD_JIS              = '08'x )
+      parameter ( KNJ_MD_SPECIAL          = '10'x )
+
+      parameter ( KNJ_CVT_NEXT            = '01'x )
+      parameter ( KNJ_CVT_PREV            = '02'x )
+      parameter ( KNJ_CVT_KATAKANA        = '03'x )
+      parameter ( KNJ_CVT_HIRAGANA        = '04'x )
+      parameter ( KNJ_CVT_JIS1            = '05'x )
+      parameter ( KNJ_CVT_SJIS2           = '06'x )
+      parameter ( KNJ_CVT_DEFAULT         = '07'x )
+      parameter ( KNJ_CVT_TYPED           = '08'x )
+
+      structure /KANJISTRUCT/
+          integer*2             fnc
+          integer*2             wParam
+          integer*4             lpSource
+          integer*4             lpDest
+          integer*2             wCount
+          integer*4             lpReserved1
+          integer*4             lpReserved2
+      end structure
+
+      external ConvertRequest
+      external IsTwoByteCharPrefix
+      external SetConvertParams
+      external SetConvertHook
+
+      integer*2 ConvertRequest
+      integer*2 IsTwoByteCharPrefix
+      integer*2 SetConvertParams
+
+      integer CP_HWND
+      integer CP_OPEN
+      integer CP_DIRECT
+
+      parameter ( CP_HWND             = 0 )
+      parameter ( CP_OPEN             = 1 )
+      parameter ( CP_DIRECT           = 2 )
+
+*$reference

@@ -617,14 +617,13 @@ void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
 
 #ifdef RW_REGISTRATION
 
-_WPRTLINK
-unsigned FS_REGISTRATION_CONVENTION CPPLIB( fs_handler_rtn ) // HANDLER FOR FS REGISTRATIONS
+FSREGAPI unsigned CPPLIB( fs_handler_rtn ) // HANDLER FOR FS REGISTRATIONS
     ( FsExcRec* rec_exc         // - exception record
     , RW_DTREG* rw              // - current R/W block
     , FsCtxRec* rec_ctx         // - context record
     , unsigned context          // - dispatch context
-    )
-;
+    );
+
 THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
     ( RW_DTREG** a_last )       // - addr[ ptr to last WATCOM entry ]
 ;

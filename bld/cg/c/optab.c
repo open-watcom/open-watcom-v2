@@ -31,6 +31,7 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "tables.h"
@@ -57,7 +58,7 @@ extern  opcode_entry    *CodeTable( instruction *ins ) {
     if( idx == BAD ) {
         _Zoiks( ZOIKS_052 );
     }
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+#if _TARGET & _TARG_RISC
     if( idx == NYI ) {
         _Zoiks( ZOIKS_091 );
     }

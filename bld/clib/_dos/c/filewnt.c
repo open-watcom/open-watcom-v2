@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NT specific implementation of _dos file functions.
 *
 ****************************************************************************/
 
@@ -35,10 +34,11 @@
 #include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <share.h>
 #include <direct.h>
 #include <windows.h>
+#include <dos.h>
 #include "iomode.h"
 #include "fileacc.h"
 #include "ntex.h"
@@ -54,14 +54,12 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
     DWORD       desired_access,attr;
     unsigned    iomode_flags;
     int         hid;
-    int         error;
 
     // First try to get the required slot.
     // No point in creating a file only to not use it.  JBS 99/11/01
     hid = __allocPOSIXHandle( DUMMY_HANDLE );
     if( hid == -1 ) {
-        __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
-        return( ERROR_NOT_ENOUGH_MEMORY );
+        return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
     rwmode = mode & OPENMODE_ACCESS_MASK;
@@ -69,44 +67,43 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
     __GetNTAccessAttr( rwmode, &desired_access, &attr );
     __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK|OPENMODE_ACCESS_MASK),
                       &share_mode );
-    error = 0;
     handle = CreateFile( (LPTSTR) name, desired_access, share_mode, 0,
                         OPEN_EXISTING, attr, NULL );
     if( handle == (HANDLE)-1 ) {
-        error = GetLastError();
-        __set_errno_dos( error );
         __freePOSIXHandle( hid );
-    } else {
-        // Now use the slot we got.
-        __setOSHandle( hid, handle );   // JBS 99/11/01
-
-        *posix_handle = hid;
-
-        if( rwmode == O_RDWR )  iomode_flags = _READ | _WRITE;
-        if( rwmode == O_RDONLY) iomode_flags = _READ;
-        if( rwmode == O_WRONLY) iomode_flags = _WRITE;
-        __SetIOMode( hid, iomode_flags );
+        return( __set_errno_nt_reterr() );
     }
+    // Now use the slot we got.
+    __setOSHandle( hid, handle );   // JBS 99/11/01
 
-    return( error );
+    *posix_handle = hid;
+
+    if( rwmode == O_RDWR )  iomode_flags = _READ | _WRITE;
+    if( rwmode == O_RDONLY) iomode_flags = _READ;
+    if( rwmode == O_WRONLY) iomode_flags = _WRITE;
+    __SetIOMode( hid, iomode_flags );
+    return( 0 );
 }
 
 _WCRTLINK unsigned _dos_close( int hid )
 {
-    close( hid );
-    return( _doserrno );
+    HANDLE  h;
+
+    h = __getOSHandle( hid );
+    __SetIOMode_nogrow( hid, 0 );
+    __freePOSIXHandle( hid );
+    if( !CloseHandle( h ) ) {
+        return( __set_errno_nt_reterr() );
+    }
+    return( 0 );
 }
 
 _WCRTLINK unsigned _dos_commit( int hid )
 {
-    int         error;
-
     __handle_check( hid, ERROR_INVALID_HANDLE );
 
-    error = 0;
     if( !FlushFileBuffers( __getOSHandle( hid ) ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
+        return( __set_errno_nt_reterr() );
     }
-    return( error );
+    return( 0 );
 }

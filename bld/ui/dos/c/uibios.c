@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level screen output and DBCS setup routines.
 *
 ****************************************************************************/
 
@@ -50,7 +49,7 @@ typedef struct {
     long            real_edx;
 } PHARLAP_block;
 
-void intern DBCSCharacterMap();
+void intern DBCSCharacterMap( void );
 
 static          MONITOR                 ui_data         =       {
                 25,
@@ -82,6 +81,28 @@ void far *firstmeg( unsigned segment, unsigned offset )
 }
 #endif
 
+#ifdef __386__
+void IdleInterrupt( void )
+{
+#ifdef __OSI__
+    return;     /* Can't do anything */
+#else
+    if( _IsRational() ) {
+        DPMIIdle(); /* Assume DPMI if Rational; else dunno */
+    }
+    return;
+#endif
+}
+#else
+extern void DOSIdleInterrupt( void );
+#pragma aux DOSIdleInterrupt = "int 28h";
+
+void IdleInterrupt( void )
+{
+    DOSIdleInterrupt();
+}
+#endif
+
 void intern setvideomode( unsigned mode )
 /***************************************/
 {
@@ -89,8 +110,8 @@ void intern setvideomode( unsigned mode )
 }
 
 
-bool global uiset80col()
-/**********************/
+bool global uiset80col( void )
+/****************************/
 
 {
     register    bool            status;
@@ -166,17 +187,35 @@ typedef struct {
     unsigned char       end_range;
 } dbcs_pair;
 
+/* Some DOS environments ignore INT 21h, fn 63h altogether (NTVDM).
+ * Others return success but do not modify DS:SI (US DOS 3.x). We need
+ * to return a dummy DBCS pair table in that case.
+ */
 #ifndef __386__
 
-extern dbcs_pair far *  dbcs_vector_table( void );
-#pragma aux             dbcs_vector_table = \
+extern dbcs_pair far *  dos_dbcs_vector_table( void );
+#pragma aux             dos_dbcs_vector_table = \
         "push ds"       \
+        "xor ax,ax"     /* pre-set DS:SI to zero */ \
+        "mov ds,ax"     \
+        "mov si,ax"     \
         "mov ax,6300h"  /* get DBCS vector table */ \
         "int 21h"       \
         "mov di,ds"     \
         "pop ds"        \
         value           [di si] \
         modify          [ax];
+
+dbcs_pair far * intern dbcs_vector_table( void )
+/***************************************************/
+{
+    static dbcs_pair    dbcs_dummy = { 0, 0 };
+    dbcs_pair far       *dbcs_table;
+
+    if( UIData->colour == M_MONO ) return( &dbcs_dummy );
+    dbcs_table = dos_dbcs_vector_table();
+    return( dbcs_table ? dbcs_table : &dbcs_dummy );
+}
 
 #else
 
@@ -209,7 +248,7 @@ dbcs_pair far * intern dbcs_vector_table( void )
         memset( &dblock, 0, sizeof( dblock ) );
         dblock.eax = 0x6300;                    /* get DBCS vector table */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
-        if( (dblock.flags & 1) == 0 ) {
+        if( (dblock.flags & 1) == 0 && dblock.ds ) {
             return( firstmeg( dblock.ds, dblock.esi ) );
         }
     }
@@ -221,7 +260,7 @@ dbcs_pair far * intern dbcs_vector_table( void )
 static dbcs_pair        Pairs[5];       // safe enough for now
 static int              Init;
 
-void intern initdbcs()
+void intern initdbcs( void )
 {
     dbcs_pair           *p;
     dbcs_pair           far *s;
@@ -239,15 +278,10 @@ void intern initdbcs()
     Init = TRUE;
 }
 
-int global uiisdbcs()
+int global uiisdbcs( void )
 {
     if( !Init ) initdbcs();
     return( Pairs[0].start_range != 0 );
-}
-
-int global uionnec()
-{
-    return( FALSE );
 }
 
 int global uicharlen( int ch )
@@ -335,8 +369,8 @@ int IsTextMode( void )
     return( text_mode );
 }
 
-bool intern initmonitor()
-/***********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     register    bool                    ega;
     register    unsigned char           mode;
@@ -380,8 +414,8 @@ bool intern initmonitor()
 }
 
 
-int intern initbios()
-/*******************/
+int intern initbios( void )
+/*************************/
 {
     int                                 initialized;
     unsigned short far                  *poffset;
@@ -436,8 +470,8 @@ unsigned global uiclockdelay( unsigned milli )
 }
 
 
-void intern finibios()
-/********************/
+void intern finibios( void )
+/**************************/
 {
     uifinicursor();
 }
@@ -461,7 +495,7 @@ void intern physupdate( SAREA *area )
             union       REGPACK                 regs;
 #else
             #pragma aux desqview_update = 0xcd 0x10 parm [ah] [es] [di] [cx];
-            extern void desqview_update( char, unsigned, unsigned, unsigned );
+            extern void desqview_update( unsigned char, unsigned, unsigned, unsigned );
 #endif
 
         if( UIData->desqview ) {

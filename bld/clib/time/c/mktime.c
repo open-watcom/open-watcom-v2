@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent mktime() implementation.
 *
 ****************************************************************************/
-
 
 #include "variety.h"
 #include <stdio.h>
@@ -38,139 +36,34 @@
 #include "rtdata.h"
 #include "timedata.h"
 
-#define MONTH_YR        (12)
-#define DAY_YR          (365)
-#define HOUR_YR         (DAY_YR*24)
-#define MINUTE_YR       (HOUR_YR*60)
-#define SECOND_YR       (MINUTE_YR*60)
-#define __MONTHS        (INT_MIN/MONTH_YR)
-#define __DAYS          (INT_MIN/DAY_YR)
-
-// these ones can underflow in 16bit environments,
-// so check the relative values first
-#if (HOUR_YR) < (INT_MAX/60)
- #define __MINUTES      (INT_MIN/MINUTE_YR)
- #if (MINUTE_YR) < (INT_MAX/60)
-  #define __SECONDS     (INT_MIN/SECOND_YR)
- #else
-  #define __SECONDS     (0)
- #endif
-#else
- #define __MINUTES      (0)
- #define __SECONDS      (0)
-#endif
-
-#define SMALLEST_YEAR_VALUE (__MONTHS+__DAYS+__MINUTES+__SECONDS)
-
 _WCRTLINK time_t mktime( struct tm *t )
 {
-    int         month;
-    int         year;
     long        days;
     long        seconds;
-    short const *month_start;
+    long        day_seconds;
 
-    month_start = __diyr;
-    month = t->tm_mon % 12;             /* put tm_mon into range */
-    year = t->tm_year;
-    if( year < SMALLEST_YEAR_VALUE ) {
-        return( (time_t)-1 );
-    }
-    year += t->tm_mon / 12;
-    while( month < 0 ) {
-        --year;
-        month += 12;
-    }
-    if( year < 0 ) return( (time_t)-1 );
-    if( __leapyear( year + 1900 ) ) month_start = __dilyr;
-    days = (unsigned)year * 365L        /* # of days in the years */
-         + ((year + 3) / 4)             /* add # of leap years before year */
-         - ((year + 99) / 100)          /* sub # of leap centuries */
-         + ((year + 399 - 100) / 400)   /* add # of leap 4 centuries */
-                                        /* adjust for 1900 offset */
-                                        /* note: -100 == 300 (mod 400) */
-         + month_start[ month ]         /* # of days to 1st of month*/
-         + t->tm_mday - 1;              /* day of the month */
-    seconds = (((long)(t->tm_hour))*60L + (long)(t->tm_min))*60L + t->tm_sec;
-    /* seconds needs to be positive for __brktime */
-    while( seconds < 0 ) {
-        days -= 1;
-        seconds += SECONDS_PER_DAY;
-    }
-    __brktime( days, seconds, 0L, t );
+    seconds = __local_mktime( t, &days, &day_seconds );
+    __brktime( (unsigned long) days, (time_t) day_seconds, 0L, t );
     tzset();
-    seconds += _RWD_timezone;       /* add in seconds from GMT */
-    /* if we are in d.s.t. then subtract __dst_adjust from seconds */
-    if( t->tm_isdst < 0 ) {         /* if we are not sure */
-        __isindst( t );             /* - determine if we are in d.s.t. */
-    }
-    if( t->tm_isdst > 0 ) {
-        seconds -= _RWD_dst_adjust;
-    }
-    while( seconds < 0 ) {
-        days -= 1;
-        seconds += SECONDS_PER_DAY;
-    }
-
-    if( days < (DAYS_FROM_1900_TO_1970 - 1) ) {
-        return( (time_t)-1 );
-    }
-    if( days == (DAYS_FROM_1900_TO_1970 - 1) ) {
-        seconds -= SECONDS_PER_DAY;
-        if( (_RWD_timezone <= 0) || (seconds < 0) ) {
-            return( (time_t)-1 );
-        }
-    } else {
-        seconds += (days - DAYS_FROM_1900_TO_1970) * SECONDS_PER_DAY;
-    }
-    return( seconds );
-}
-
-#if defined(__PENPOINT__)
-_WCRTLINK time_t _gmmktime( struct tm *t )
-{
-    int         month;
-    int         year;
-    long        days;
-    long        seconds;
-    short const *month_start;
-
-    month_start = __diyr;
-    month = t->tm_mon % 12;                 /* put tm_mon into range */
-    year = t->tm_year + t->tm_mon / 12;
-    while( month < 0 ) {
-        --year;
-        month += 12;
-    }
-    if( year < 0 ) return( (time_t)-1 );
-    if( __leapyear( year + 1900 ) ) month_start = __dilyr;
-    days = (unsigned)year * 365         /* # of days in the years */
-         + ((year + 3 ) >> 2)           /* # of leap years before year*/
-         + month_start[ month ]         /* # of days to 1st of month*/
-         + t->tm_mday - 1;              /* day of the month */
-    if( year !=0 ) --days;              /* 1900 is not a leap year */
-    seconds = (((long)(t->tm_hour))*60L + (long)(t->tm_min))*60L + t->tm_sec;
-    /* seconds needs to be positive for __brktime */
-    while( seconds < 0 ) {
-        days -= 1;
-        seconds += SECONDS_PER_DAY;
-    }
-    __brktime( days, seconds, 0L, t );
-    while( seconds < 0 ) {
-        days -= 1;
-        seconds += SECONDS_PER_DAY;
-    }
-    if( days < (DAYS_FROM_1900_TO_1970 - 1) ) {
-        return( (time_t)-1 );
-    }
-    if( days == (DAYS_FROM_1900_TO_1970 - 1) ) {
-        seconds -= SECONDS_PER_DAY;
-        if( seconds < 0 ) {
-            return( (time_t)-1 );
-        }
-    } else {
-        seconds += (days - DAYS_FROM_1900_TO_1970) * SECONDS_PER_DAY;
-    }
-    return( seconds );
-}
+    seconds += _RWD_timezone; /* add in seconds from GMT */
+#ifdef __LINUX__
+    if( t->tm_isdst < 0 )
+        __check_tzfile( seconds, t );
 #endif
+    /* if we are in d.s.t. then subtract __dst_adjust from seconds */
+    if( __isindst( t ) )  /* - determine if we are in d.s.t. */
+        seconds -= _RWD_dst_adjust;
+#ifdef __UNIX__               /* time_t is signed */
+    if( seconds < 0 )
+        return( ( time_t ) -1 );
+#else /* time_t is unsigned, special day check needed for 31 dec 1969 */
+    /* check for overflow; days == 75277 && seconds == 23296 returns 0, but
+       adjusted for dst may still be fine */
+    if( days >= 75279 ||
+        ( seconds >= 0 && days >= 75276 ) ||
+        ( seconds < 0 && days <= DAYS_FROM_1900_TO_1970 ) )
+        return( (time_t) -1 );
+    /* 0 is year = 206, mon = 1, mday = 7, hour = 6, min = 28, sec = 16 */
+#endif
+    return( ( time_t ) seconds );
+}

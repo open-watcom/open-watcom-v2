@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point exception handler wrapper.
 *
 ****************************************************************************/
 
@@ -39,16 +38,15 @@
 */
 
 #if defined(__386__)
-  #define parmreg eax
+    #define parmreg eax
 #else
-  #define parmreg ax
+    #define parmreg ax
 #endif
 
 void __FPE_exception( int fpe_type );
 #pragma aux __FPE_exception "*_" parm caller [parmreg];
 
 void __FPE_exception( int fpe_type )
-    {
-        _RWD_FPE_handler( fpe_type );
-    }
-
+{
+    _RWD_FPE_handler( fpe_type );
+}

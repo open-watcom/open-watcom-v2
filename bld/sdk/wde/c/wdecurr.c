@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wdeglbl.h"
 #include "wderesin.h"
 #include "wderes.h"
@@ -70,4 +70,3 @@ LIST *WdeGetCurrObjectList( void )
 
     return( olist );
 }
-

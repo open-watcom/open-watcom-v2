@@ -58,7 +58,7 @@
 
 char *OptEnvVar="fmt";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: fmt [-?Xcnj] [-l length] [-p offset] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : files to format",

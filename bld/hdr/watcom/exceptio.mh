@@ -1,52 +1,99 @@
-//
-//  exception.h Exceptions
+///////////////////////////////////////////////////////////////////////////
+// FILE: exception.h/exception (Basic exception classes)
 //
 :keep CPP_HDR
 :include crwat.sp
 //
+// Description: This header is part of the C++ standard library. It
+//              defines the base class of the exception classes as
+//              well as a number of helper functions related to
+//              exception handling.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
 #ifndef _EXCEPTION_H_INCLUDED
 #define _EXCEPTION_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error exception.h is for use with C++
+#ifndef _EXCEPTION_INCLUDED
+ #include <exceptio>
 #endif
+using std::exception;
+using std::bad_exception;
+using std::unexpected_handler;
+using std::set_unexpected;
+using std::unexpected;
+using std::terminate_handler;
+using std::set_terminate;
+using std::terminate;
+// using std::uncaught_exception;
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+// Needed for compatibility with Watcom legacy code?
+// #include <stdexcep.h>
+
 #endif
+:elsesegment
+#ifndef _EXCEPTION_INCLUDED
+#define _EXCEPTION_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
 
 :include cpppfv.sp
 
 :include watexc.sp
 
-// corresponds to Header<exception>
+:include throws.sp
 
-#include <stdexcep.h>
+namespace std {
 
-class _WPRTLINK bad_exception : public exception {
-public:
-    bad_exception( void ) _WCTHROWS(())
-        : exception( "exception missing from function exception specification" ) {
-    }
-    bad_exception( bad_exception const & ) _WCTHROWS(()) {
-    }
-    bad_exception & operator=( bad_exception & ) _WCTHROWS(()) {
-        return *this;
-    }
-    virtual ~bad_exception( void ) _WCTHROWS(()) {
-    }
-    virtual char const * what( void ) const _WCTHROWS(()) {
-        return exception::what();
-    }
-};
+  class _WPRTLINK exception {
+    const char *_what_val;
+  public:
+    exception( ) _WCTHROWS() { }
 
-typedef void (*unexpected_handler)( void );
-typedef void (*terminate_handler)( void );
+    exception( const exception &src ) _WCTHROWS()
+        : _what_val( src._what_val ) { }
 
-_WPRTLINK extern void terminate( void );
-_WPRTLINK extern terminate_handler set_terminate( terminate_handler );
-_WPRTLINK extern void unexpected( void );
-_WPRTLINK extern unexpected_handler set_unexpected( unexpected_handler );
+    exception( const char *what_val ) _WCTHROWS()
+        : _what_val( what_val ) { }
+
+    exception& operator=( const exception &src ) _WCTHROWS()
+        { _what_val = src._what_val; return *this; }
+
+    virtual ~exception( ) _WCTHROWS() { }
+
+    virtual const char *what( ) const _WCTHROWS()
+        { return _what_val; }
+  };
+
+
+  class _WPRTLINK bad_exception : public exception {
+  public:
+    bad_exception( ) _WCTHROWS()
+        : exception( "exception missing from exception specification" ) { }
+
+    bad_exception( const bad_exception & ) _WCTHROWS() { }
+
+    bad_exception & operator=( bad_exception & ) _WCTHROWS()
+        { return *this; }
+
+    virtual ~bad_exception( ) _WCTHROWS() { }
+  };
+
+
+  typedef void (*unexpected_handler)( );
+  typedef void (*terminate_handler)( );
+
+  _WPRTLINK extern void terminate( );
+  _WPRTLINK extern terminate_handler set_terminate( terminate_handler );
+  _WPRTLINK extern void unexpected( );
+  _WPRTLINK extern unexpected_handler set_unexpected( unexpected_handler );
+
+} // namespace std
 
 #endif
+:endsegment

@@ -1,3 +1,3 @@
-scasb
-scasw
-scasd
+ scasb
+ scasw
+ scasd

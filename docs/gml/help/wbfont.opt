@@ -1,0 +1,13 @@
+( font 0 times-roman    2 10
+( font 1 times-italic   2 10
+( font 2 times-bold     2 10
+( font 3 times-bolditalic 2 10
+( font 4 times-bold     2 16
+( font 6 courier        1 8
+( font 7 courier-bold   1 8
+( font 8 courier        1 10
+( font 9 courier-bold   1 10
+( font 10 times-roman   2 24
+( font 11 times-bold    2 24
+( font 20 symbol        2 10
+( font 21 zapfdingbats  2 10

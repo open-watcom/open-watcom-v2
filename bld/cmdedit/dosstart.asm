@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS specific code for cmdedit (TSR stuff etc.).
 ;*
 ;*****************************************************************************
 
@@ -46,7 +45,7 @@ stk     db 512 dup(?)
 top     db 0
 l_in        db 0,0
 l_out       db 0,0
-alias       db "\ALIAS.DOS",0
+alias_      db "\ALIAS.DOS",0
 _data ends
 
 const segment para public 'data'

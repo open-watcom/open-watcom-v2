@@ -34,7 +34,7 @@
 #include "rotate.h"
 
 
-short _WCI86FAR _CGRAPH _lineto( short x, short y )
+_WCRTLINK short _WCI86FAR _CGRAPH _lineto( short x, short y )
 /*============================================
 
    This function draws a line from the current position to the specified

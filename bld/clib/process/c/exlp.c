@@ -42,7 +42,7 @@ _WCRTLINK int __F_NAME(execlp,_wexeclp)( const CHAR_TYPE *path, const CHAR_TYPE 
 
         arg0 = arg0;
         va_start( ap, path );
-        #if defined(__AXP__)
+        #if defined(__AXP__) || defined(__MIPS__)
             return( __F_NAME(execvp,_wexecvp)( path,
                 (const CHAR_TYPE**)ap.__base ) );
         #else

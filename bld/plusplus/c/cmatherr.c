@@ -34,7 +34,7 @@
 #include <math.h>
 #include <errno.h>
 
-double _matherr( struct exception *p )
+double _matherr( struct _exception *p )
 /************************************/
 {
     return( p->retval );

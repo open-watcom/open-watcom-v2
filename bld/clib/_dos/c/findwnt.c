@@ -41,7 +41,6 @@
 #include "ntex.h"
 #include "seterrno.h"
 
-
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
 {
     HANDLE              h;
@@ -52,19 +51,16 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
 
     if( h == (HANDLE)-1 ) {
         HANDLE_OF( buf ) = BAD_HANDLE;
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
 //  if( attr == _A_NORMAL ) {
 //      attr = ~(_A_SUBDIR|_A_VOLID);
 //  }
     if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
         error = GetLastError();
-        __set_errno_dos( error );
         HANDLE_OF( buf ) = BAD_HANDLE;
         FindClose( h );
-        return( error );
+        return( __set_errno_dos_reterr( error ) );
     }
     HANDLE_OF( buf ) = h;
     ATTR_OF( buf ) = attr;
@@ -75,18 +71,13 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
 
 _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 {
-    int                 error;
     WIN32_FIND_DATA     ffd;
 
     if( !FindNextFile( HANDLE_OF( buf ), &ffd ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     if( !__NTFindNextFileWithAttr( HANDLE_OF( buf ), ATTR_OF( buf ), &ffd ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     __GetNTDirInfo( (struct dirent *) buf, &ffd );
 
@@ -95,13 +86,9 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 
 _WCRTLINK unsigned _dos_findclose( struct find_t *buf )
 {
-    int                 error;
-
     if( HANDLE_OF( buf ) != BAD_HANDLE ) {
         if( !FindClose( HANDLE_OF( buf ) ) ) {
-            error = GetLastError();
-            __set_errno_dos( error );
-            return( error );
+            return( __set_errno_nt_reterr() );
         }
     }
     return( 0 );

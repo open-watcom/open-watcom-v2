@@ -143,6 +143,6 @@ void CgBackFreeHandle(          // FREE A BACK HANDLE FOR A SYMBOL
 void CgBackFreeFileHandles(     // FREE HANDLES FOR FILE SCOPE
     void )
 {
-    ScopeWalkSymbols( FileScope, &CgBackFreeHandle );
+    ScopeWalkSymbols( GetFileScope(), &CgBackFreeHandle );
     cgBackStatHandlesFree();
 }

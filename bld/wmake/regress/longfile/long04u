@@ -1,0 +1,36 @@
+#
+#  LONGFILE TEST 04U
+#  Test that paths with spaces work fine in dependency 
+#  search paths. Unix path separators.
+#
+
+.EXTENSIONS: .out .txt
+
+PATHS = "Test Path";Another" Pa"th;
+FILES = "Test Path/Long Filename.out" 
+FILES+= "Another Path/Long Filename.out"
+
+.txt: $(PATHS)
+
+.txt.out:
+    cp "$[@" "$^@"
+
+test: .symbolic create $(FILES) clean    
+
+create: .symbolic
+    -mkdir "Test Path"
+    @echo Creating <<"Test Path/Long Filename.txt"
+OK
+<< keep
+    -mkdir "Another Path"
+    @echo Creating <<"Another Path/Long Filename.txt"
+OK
+<< keep
+
+clean: .symbolic
+    -rm "Test Path/Long Filename.txt"
+    -rm "Another Path/Long Filename.txt"
+    -rm "Test Path/Long Filename.out"
+    -rm "Another Path/Long Filename.out"
+    -rmdir "Test Path"
+    -rmdir "Another Path"

@@ -1,0 +1,24 @@
+[ DEFAULT type="e" ]
+dir="binw"	usr="wcl.exe"		cond="tools16"		where="c jc"	desc=" Compile and link utility for 16-bit C and C++ compiler" old="binb"
+dir="binw"	usr="wcl386.exe"				where="c jc ac"	desc=" Compile and link utility for 32-bit C and C++ compiler" old="binb"
+dir="binw"	usr="wclaxp.exe"	cond="wnthost"		where="ac"
+dir="binw"	usr="owcc.exe"					where="c jc"	desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s"    dir="binw"	usr="specs.owc"					where="c jc ac"	desc=" POSIX style Compile and link utility control file"
+
+dir="binnt"	usr="wcl.exe"		cond="wnthost tools16"	where="c jc"	desc=" Compile and link utility for 16-bit C and C++ compiler"
+dir="binnt"	usr="wcl386.exe"	cond="wnthost"		where="c jc ac"	desc=" Compile and link utility for 32-bit C and C++ compiler"
+dir="binnt"	usr="wclaxp.exe"	cond="wnthost"		where="ac"
+dir="binnt"	usr="owcc.exe"		cond="wnthost"		where="c jc"	desc=" POSIX style Compile and link utility for C and C++ compiler"
+
+dir="axpnt"	usr="wclaxp.exe"	cond="alphahost"	where="ac"
+dir="axpnt"	usr="wcl386.exe"	cond="alphahost"	where="ac"
+dir="axpnt"	usr="wcl.exe"		cond="alphahost"	where="ac"
+
+dir="binp"	usr="wcl.exe"		cond="os2host tools16"	where="c jc"	desc=" Compile and link utility for 16-bit C and C++ compiler"
+dir="binp"	usr="wcl386.exe"	cond="os2host"		where="c jc"	desc=" Compile and link utility for 32-bit C and C++ compiler"
+dir="binp"	usr="owcc.exe"		cond="os2host"		where="c jc"	desc=" POSIX style Compile and link utility for C and C++ compiler"
+
+dir="binl"	usr="wcl"		cond="lnxhost tools16"	where="c jc"	desc=" Compile and link utility for 16-bit C and C++ compiler"
+dir="binl"	usr="wcl386"		cond="lnxhost"		where="c jc"	desc=" Compile and link utility for 32-bit C and C++ compiler"
+dir="binl"	usr="owcc"		cond="lnxhost"		where="c jc"	desc=" POSIX style Compile and link utility for C and C++ compiler"
+type="s"    dir="binl"	usr="specs.owc"		cond="lnxhost"		where="c jc"	desc=" POSIX style Compile and link utility control file"

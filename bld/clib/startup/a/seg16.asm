@@ -24,18 +24,14 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Thunk routines for calling __far16 functions from
+;*               32-bit flat OS/2 code
 ;*
 ;*****************************************************************************
 
 
-;
-; Interface routine to call _far16 functions from 32-bit Flat OS/2 2.0
-;
-
-extrn           DOSFLATTOSEL    : near
-extrn           DOSSELTOFLAT    : near
+extrn           DosFlatToSel    : near
+extrn           DosSelToFlat    : near
 
                 name    far16fun
 
@@ -67,7 +63,7 @@ prol32          macro   n, p
                 push    ss                      ; save 32-bit SS:ESP
                 push    ebp                     ; ...
 ifidn           <p>,<1>
-                call    DOSFLATTOSEL            ; convert func addr to _far16
+                call    DosFlatToSel            ; convert func addr to _far16
 endif
                 push    eax                     ; save address of function
                 add     ecx,3                   ; parms size to multiple of 4
@@ -79,7 +75,7 @@ endif
                 shr     ecx,1                   ; calc number of words
                 rep     movsw                   ; copy the parms
                 mov     eax,esp                 ; get stack pointer
-                call    DOSFLATTOSEL            ; convert to _far16 format
+                call    DosFlatToSel            ; convert to _far16 format
                 push    eax                     ; ...
                 add     bp,ax                   ; ss:bp points to address of
                 endm                            ; ... 16:16 function
@@ -90,13 +86,8 @@ endif
 ;=============================================================================
 jump16          macro   n, p
                 lss     sp,dword ptr [esp]      ; load 16-bit SS:SP
-                ifdef __WASM__
-                jmp     far ptr l16&n&&p        ; jump to 16-bit code segment
-ret32&n&&p      label   far
-                else
                 jmp     far ptr l16&n&p         ; jump to 16-bit code segment
 ret32&n&p       label   far
-                endif
                 lss     esp,fword ptr 4[ebp]    ; load 32-bit SS:ESP
                 endm
 
@@ -118,13 +109,8 @@ epi32           macro   n, p
 ;
 ;=============================================================================
 proc16          macro   n, p
-ifdef __WASM__
-p16&n&&p        proc    far
-l16&n&&p        label   far
-else
 p16&n&p         proc    far
 l16&n&p         label   far
-endif
                 mov     cx,ss                   ; set up 16-bit seg registers
                 mov     ds,cx                   ; ...
                 mov     es,cx                   ; ...
@@ -132,13 +118,8 @@ ifidn           <n>,<Pascal>
                 push    ax
 endif
                 call    dword ptr [bp]          ; call 16:16 function
-                ifdef __WASM__
-                jmp     far ptr _TEXT:ret32&n&&p; jump back to 32-bit segment
-p16&n&&p        endp
-                else
                 jmp     far ptr _TEXT:ret32&n&p ; jump back to 32-bit segment
 p16&n&p         endp
-                endif
                 endm
 
 
@@ -187,7 +168,7 @@ __Far16Func     endp
 __Far16Pascal2  proc near export                ; for pascal style struct return
                 prol32  Pascal, 0               ; set up the stack
                 mov     eax,ebx                 ; convert the struct pointer
-                call    DOSFLATTOSEL            ; ...
+                call    DosFlatToSel            ; ...
                 jump16  Pascal, 0               ; jump to the 16 bit function
                 epi32   Pascal, 0               ; restore stack etc
                 ret
@@ -205,7 +186,7 @@ __Far16Pascal2  endp
 __Far16Pascal   proc near export                ; for pascal style struct return
                 prol32  Pascal, 1               ; set up the stack
                 mov     eax,ebx                 ; convert the struct pointer
-                call    DOSFLATTOSEL            ; ...
+                call    DosFlatToSel            ; ...
                 jump16  Pascal, 1               ; jump to the 16 bit function
                 epi32   Pascal, 1               ; restore stack etc
                 ret
@@ -227,7 +208,7 @@ __Far16Cdecl2   proc near export                ; for cdecl style struct return
                 mov     ax,ds                   ; ...
                 rol     eax,16                  ; ...
                 epi32   Cdecl, 0                ; restore stack etc
-                call    DOSSELTOFLAT            ; convert the struct pointer
+                call    DosSelToFlat            ; convert the struct pointer
                 ret
 __Far16Cdecl2   endp
 
@@ -247,7 +228,7 @@ __Far16Cdecl    proc near export                ; for cdecl style struct return
                 mov     ax,ds                   ; ...
                 rol     eax,16                  ; ...
                 epi32   Cdecl, 1                ; restore stack etc
-                call    DOSSELTOFLAT            ; convert the struct pointer
+                call    DosSelToFlat            ; convert the struct pointer
                 ret
 __Far16Cdecl    endp
 
@@ -260,7 +241,7 @@ __Far16Cdecl    endp
                 public          __FlatToFar16
 __FlatToFar16   proc near export
         or      eax,eax
-        jnz     DOSFLATTOSEL
+        jnz     DosFlatToSel
         ret
 __FlatToFar16   endp
 
@@ -273,7 +254,7 @@ __FlatToFar16   endp
                 public          __Far16ToFlat
 __Far16ToFlat   proc near export
         or      eax,eax
-        jnz     DOSSELTOFLAT
+        jnz     DosSelToFlat
         ret
 __Far16ToFlat   endp
 

@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Structured Exception Handling runtime support (Win32, OS/2).
 ;*
 ;*****************************************************************************
 
@@ -71,12 +70,8 @@ scope_index     equ     16      ; current _try scope index
 unwindflag      equ     17      ; unwindflag 0 => not unwinding
 unwind_index    equ     18      ; scope index to unwind to
 unused_byte     equ     19      ; ***unused***
-exception_info  equ     20      ; pointer to pointer to exeception info
-exception_infop equ     24      ; pointer to exeception info
-;;;
-;;; exeception info consists of exception_record and context_record pointers
-;;;
-;;;context_record       equ     24      ; pointer to context record
+exception_rec   equ     20      ; pointer to exeception record
+context_record  equ     24      ; pointer to context record
 
 ;
 ;       layout of _try scope table
@@ -85,9 +80,15 @@ parent_scope    equ     0       ; BYTE - scope index of parent scope
 try_type        equ     1       ; BYTE - 0 => _except, 1 => _finally
 func_ptr        equ     2       ; DWORD - addr of _except filter or _finally
 
+;       the following equates are OS dependent
+ifdef __OS2__
+ExceptionContinueExecution      equ     0xFFFFFFFF
+ExceptionContinueSearch         equ     0
+else
 ExceptionContinueExecution      equ     0
 ExceptionContinueSearch         equ     1
 ExceptionNestedException        equ     2
+endif
 
 UNWINDING       equ     6
 ;
@@ -135,26 +136,16 @@ __TryHandler proc near export
         push    ecx                     ; ...
         push    ebx                     ; ...
         mov     edi,EstablisherFrame[ebp]; get address of registration record
-        mov     eax,ContextRecord[ebp]  ; copy context record address to
-        push    eax                     ; ... stack
         mov     eax,ExceptionRecord[ebp]; get exception record address
-        push    eax                     ; ...
         test    dword ptr 4[eax],UNWINDING; check to see if we are unwinding
         _if     ne                      ; if we are unwinding, then
           mov   ebp,edi                 ; - get address of establisher Frame
           mov   byte ptr unwind_index[ebp],0ffh ; - do full local unwind
           call  __local_unwind          ; - do local unwind
         _else                           ; else
-;;;       mov   exception_rec[edi],eax  ; - save exception record address
-;;;
-;;; The compiler is generating too many levels of indirection
-;;; so we have to create a pointer to a pointer to the exception_info
-;;;
-          mov   exception_infop[edi],esp; - save ptr to exception info
-          lea   eax,exception_infop[edi]; - get address of ptr
-          mov   exception_info[edi],eax ; - save ptr to ptr to exception_info
-;;;       mov   eax,ContextRecord[ebp]  ; - copy context record address to
-;;;       mov   context_record[edi],eax ; - ... registration record
+          mov   exception_rec[edi],eax  ; - save exception record address
+          mov   eax,ContextRecord[ebp]  ; - copy context record address to
+          mov   context_record[edi],eax ; - ... registration record
           mov   ebp,edi                 ; - save address of establisher frame
           mov   edi,scope_table[ebp]    ; - get address of scope table
           sub   ebx,ebx                 ; - zero ebx
@@ -189,8 +180,6 @@ __Except proc near export
         _endif                          ; endif
         mov     eax,ExceptionContinueSearch ; indicate CONTINUE_SEARCH
 exit_handler:
-        pop     ebx                     ; remove exception record and
-        pop     ebx                     ; .. context record pointers
         pop     ebx                     ; restore registers
         pop     ecx                     ; ...
         pop     edx                     ; ...
@@ -229,7 +218,10 @@ __global_unwind proc    near
         push    edx                     ; ...
         push    ecx                     ; ...
         push    ebx                     ; ...
+ifdef __OS2__                   ; DosUnwindException only has 3 arguments!
+else
         push    0                       ; 0
+endif
         push    0                       ; 0
         push    offset done_unwind      ; address of where to continue
         push    ebp                     ; push address of establisher frame
@@ -239,6 +231,10 @@ else
         call    _RtlUnwind@16           ; do global unwind
 endif
 done_unwind:
+ifdef __OS2__
+        add             esp,12  ; adjust stack! I don't understand why RtlUnwind
+                                        ; doesn't need that??
+endif
         pop     ebx                     ; restore registers
         pop     ecx                     ; ...
         pop     edx                     ; ...

@@ -1,0 +1,48 @@
+The gml files in this directory are a testbed used to try out some functionality.
+They are not ment to produce good looking output.
+
+In the future they may serve for producing comparison files between wgml 4.0 and the new WGML.
+
+tsys06.gml      lists all system variables of form SYSx, x = 1 to 6 letters
+                runtime is very long
+sysvar.gml      result of tsys06.gml run(s)
+cwcofoju.gml    testfile for .co .fo .ju
+tcwli.gml       testfile for .li
+tcwpe.gml       testfile for .pe
+tcwti.gml       testfile for .ti
+tdocx.gml       testfile for section changes
+terrs.gml       error tests; intended to eventually trip all possible error
+                messages related to control word and tag parsing
+thpxsf.gml      testfile for :HPx and :SF tags
+thpxsf2.inc     testfile for :HPx and :SF tags
+tlayfull.gml    testfile for :layout tags (only for new wgml)
+tlayout.gml     testfile for :layout tags
+tlayno.gml      testfile short without :layout tags
+tnote.gml       testfile for :note tag
+tpacp.gml       testfile for .pa .cp
+trefid.gml      testfile for :Hx :HDREF
+tsimpin.inc     included from tsimp00.gml, tsimp01.gml, ... for testing different layouts
+tsimpNN.gml     masterfile(s) for different layouts  NN = 00 to ??
+tsimpNNi.inc    Layout specification for tsimpNN.gml
+ts.inc          .ty for several variables (included from other files)
+tstpchar.gml    testfile for stop chars (.?!:)
+txl.gml         testfile for :ol, :sl, :ul and other list tags
+txl2.inc        testfile for :ol, :sl, :ul and other list tags
+txl3.inc        testfile for :ol, :sl, :ul and other list tags
+txmp.gml        testfile for :xmp and list tags
+
+This file is intended to be used to compare horizontal positioning in wgml 4.0
+and the new WGML:
+
+ocdoc1.gml      based on outcheck output, except for reduced sub/sup tests
+
+This file is intended to show what the new WGML can do which wgml 4.0 can not:
+
+ocdoc2.gml      based on outcheck output, including the full sub/sup tests
+
+These files were developed for testing TB and contain a lot of text, macros, and symbols from the OW Documents. They may be useful in tracking down some residual problems, and should provide a good test for BX when BX is implemented:
+
+tabtest.gml     the test file
+ttmacs.gml      the macros used in tabtest.gml
+ttsyms.gml      the symbols used in tabtest.gml
+

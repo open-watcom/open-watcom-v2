@@ -1,0 +1,14 @@
+LIBRARY     LZEXPAND
+EXPORTS
+    LZCOPY                         @1
+    LZOPENFILE                     @2
+    LZINIT                         @3
+    LZSEEK                         @4
+    LZREAD                         @5
+    LZCLOSE                        @6
+    LZSTART                        @7
+    COPYLZFILE                     @8
+    LZDONE                         @9
+    GETEXPANDEDNAME                @10
+    WEP                            @11
+    ___EXPORTEDSTUB                @12

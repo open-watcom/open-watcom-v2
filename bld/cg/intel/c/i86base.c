@@ -52,11 +52,15 @@ extern  block           *HeadBlock;
     #define     LONG_COST       6
 #endif
 
+static  int             CalcBaseSave( type_length bp, name *temp );
+static  void            SetTempLocations(void);
+static  void            SortTemps(void);
+
 extern  name            *DeAlias(name*);
-extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
+extern  void            *SortList(void *,unsigned,bool (*)(name*,name*) );
 extern  void            CountTempRefs(void);
 
-extern  type_length     AdjustBase() {
+extern  type_length     AdjustBase( void ) {
 /*************************************
     Decide how far we should adjust BP away from SP, based on the number
     of short v.s.  long x[bp] references we would have.  It works like
@@ -131,8 +135,8 @@ static  int             CalcBaseSave( type_length bp, name *temp ) {
 }
 
 
-static  void            SetTempLocations() {
-/******************************************/
+static  void            SetTempLocations(void) {
+/**********************************************/
 
     name                *base;
     name                *temp;
@@ -156,8 +160,8 @@ static  bool    TempBefore( name *t1, name *t2 ) {
 }
 
 
-static  void    SortTemps() {
-/****************************/
+static  void    SortTemps(void) {
+/*******************************/
 
     Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ),
                                 TempBefore );

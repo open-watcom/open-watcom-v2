@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#if defined( M_I86 ) || defined( M_I386 )
+#if defined( _M_IX86 )
 
 #pragma aux REVERSED parm reverse;
 #define __reversed __pragma( "REVERSED" )

@@ -35,7 +35,6 @@
 #include <mbstring.h>
 #include <stdlib.h>
 #include <string.h>
-#include "mbwcconv.h"
 #include "seterrno.h"
 
 // define code as in Win32 or OS/2
@@ -45,17 +44,19 @@ _WCRTLINK unsigned _wdos_findfirst( const wchar_t *path, unsigned attr, struct _
 {
     int                 rc;
     struct find_t       mbBuf;
-    char                mbPath[MB_CUR_MAX*_MAX_PATH];
+    char                mbPath[MB_CUR_MAX * _MAX_PATH];
 
     /*** Find using MBCS buffer ***/
-    __filename_from_wide( mbPath, path );
+    if( wcstombs( mbPath, path, sizeof( mbPath ) ) == -1 ) {
+        mbPath[0] = '\0';
+    }
     rc = _dos_findfirst( mbPath, attr, &mbBuf );
-
     if( rc == 0 ) {
         /*** Transfer returned info to _wfind_t buffer ***/
-        memcpy( buf, &mbBuf, sizeof(struct find_t) );
-        if( mbstowcs( buf->name, mbBuf.name, _MAX_PATH )  ==  -1 )
-            rc = __set_errno_dos( ERROR_FILE_NOT_FOUND );
+        memcpy( buf, &mbBuf, sizeof( struct find_t ) );
+        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == -1 ) {
+            return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
+        }
     }
     return( rc );
 }
@@ -67,16 +68,17 @@ _WCRTLINK unsigned _wdos_findnext( struct _wfind_t *buf )
     struct find_t       mbBuf;
 
     /*** Find using MBCS buffer ***/
-    memcpy( &mbBuf, buf, sizeof(struct find_t) );
-    if( wcstombs( mbBuf.name, buf->name, _MAX_PATH*MB_CUR_MAX )  ==  -1 )
+    memcpy( &mbBuf, buf, sizeof( struct find_t ) );
+    if( wcstombs( mbBuf.name, buf->name, sizeof( mbBuf.name ) ) == -1 )
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
 
     rc = _dos_findnext( &mbBuf );
     if( rc == 0 ) {
         /*** Transfer returned info to _wfind_t buffer ***/
-        memcpy( buf, &mbBuf, sizeof(struct find_t) );
-        if( mbstowcs( buf->name, mbBuf.name, _MAX_PATH )  ==  -1 )
-            rc = __set_errno_dos( ERROR_FILE_NOT_FOUND );
+        memcpy( buf, &mbBuf, sizeof( struct find_t ) );
+        if( mbstowcs( buf->name, mbBuf.name, sizeof( buf->name ) / sizeof( wchar_t ) ) == -1 ) {
+            return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
+        }
     }
     return( rc );
 }
@@ -84,5 +86,5 @@ _WCRTLINK unsigned _wdos_findnext( struct _wfind_t *buf )
 
 _WCRTLINK unsigned _wdos_findclose( struct _wfind_t *buf )
 {
-    return( _dos_findclose( (struct find_t*)buf ) );
+    return( _dos_findclose( (struct find_t *)buf ) );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level pixel reading routine.
 *
 ****************************************************************************/
 
@@ -47,7 +46,7 @@ short _L1GetDot( short x, short y )
     WPI_COLOUR          RGB_color;
 #else
     gr_device _FARD     *dev_ptr;
-    short DOT_FUNC      (near *getdot)();
+    get_dot_fn near     *getdot;
 #endif
 
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
@@ -56,18 +55,14 @@ short _L1GetDot( short x, short y )
         RGB_color = _wpi_getpixel( _Mem_dc, x, y );
         color = _RGB2Col( RGB_color );          // Convert back to our color
 #else
-  #if !defined( _NEC_PC )       // We don't want the graphics charger here
         _StartDevice();
-  #endif
 
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, 0 );
         getdot = dev_ptr->getdot;
         color = ( *getdot )( _Screen.mem, 0, _Screen.bit_pos );
 
-  #if !defined( _NEC_PC )
         _ResetDevice();
-  #endif
 #endif
     } else {
         _ErrorStatus = _GRNOOUTPUT;

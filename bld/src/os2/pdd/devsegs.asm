@@ -1,7 +1,7 @@
 ;/=================================================================\
 ;|                                                                 |
 ;|      OS/2 Physical Device Driver Segment Ordering               |
-;|                  for Watcom C/C++ 10.x                          |
+;|                  for Open Watcom C/C++                          |
 ;|                                                                 |
 ;\=================================================================/
 
@@ -50,7 +50,7 @@ _DATA       ends
 
 
 _TEXT       segment word public use16 'CODE'
-            assume cs:CGROUP, ds:DGROUP, es:NOTHING, ss:NOTHING
+            assume cs:_TEXT, ds:DGROUP, es:NOTHING, ss:NOTHING
 _TEXT       ends
 
 

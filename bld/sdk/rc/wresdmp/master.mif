@@ -1,0 +1,33 @@
+proj_name = wresdmp
+
+wresdmp_autodepeds = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include wres.mif
+
+inc_dirs = -I"../h" -I"$(wres_dir)/h" -I"$(trmem_dir)"
+
+.c: ../c;$(trmem_dir);$(watcom_dir)/c
+
+objs =   dmpcont.obj &
+         dmpcurgr.obj &
+         dmpdiag.obj &
+         dmpfile.obj &
+         dmpicogr.obj &
+         dmpmenu.obj &
+         dmpstr.obj &
+         fatal.obj &
+         flag.obj &
+         global.obj &
+         layer0.obj &
+         param.obj &
+         wresdmp.obj
+
+objs += trmemcvr.obj trmem.obj
+
+libs = $(wres_lib)
+
+!include exetarg.mif

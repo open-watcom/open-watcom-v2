@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Keyboard input for Windows.
 *
 ****************************************************************************/
 
@@ -39,12 +38,11 @@
 #include "uishift.h"
 #include "windows.h"
 
-extern unsigned far _child;   /* fake out CG */
 
 typedef struct {
-char value;
-char regular;
-char shifted;
+    unsigned char   value;
+    char            regular;
+    char            shifted;
 } keytable;
 
 static keytable kt[] = {
@@ -66,16 +64,7 @@ static unsigned         LastKey;
 static volatile bool    HaveKey;
 
 #pragma aux set_carry = 0xf9;
-extern void set_carry(void);
-
-#pragma aux push_ds = 0x1e;
-extern void push_ds(void);
-
-#pragma aux mov_ds_bx = 0x8e 0xdb parm [bx];
-extern void mov_ds_bx( unsigned );
-
-#pragma aux pop_ds = 0x1f;
-extern void pop_ds(void);
+extern void set_carry( void );
 
 extern void WindowsMouseEvent( unsigned, unsigned );
 
@@ -271,13 +260,18 @@ static void MyHookRtn( unsigned event, unsigned info )
     }
 }
 
-void far HookRtn( unsigned event, unsigned info )
+/*
+ * The handler installed by SetEventHook uses non-standard calling convention.
+ * Arguments are passed in ax and cx, and setting carry flag before exit
+ * may cause the message to be discarded. Also, the routine has to set ds
+ * to the proper value (ie. no multiple instances - but it may not be possible
+ * to register multiple event hooks anyway). See Undocumented Windows.
+ *
+ * Note - this keyboard input method looks like a really ugly hack.
+ */ 
+void __far __loadds HookRtn( unsigned event, unsigned info )
 {
-    /* this stuff is to get around a CG bug */
-    push_ds();
-    mov_ds_bx( FP_SEG( &_child ) );
     MyHookRtn( event, info );
-    pop_ds();
     set_carry();
 }
 
@@ -303,8 +297,8 @@ static          EVENT                   EventsRelease[] = {
                 EV_INSERT_RELEASE
 };
 
-unsigned int intern getkey()
-/**************************/
+unsigned int intern getkey( void )
+/********************************/
 {
     int       ev;
 
@@ -316,15 +310,15 @@ unsigned int intern getkey()
 }
 
 
-int intern checkkey()
-/*******************/
+int intern checkkey( void )
+/*************************/
 {
     return( HaveKey );
 }
 
 
-void intern flushkey()
-/********************/
+void intern flushkey( void )
+/**************************/
 {
     while( checkkey() ) {
         getkey();
@@ -332,8 +326,8 @@ void intern flushkey()
 }
 
 
-unsigned char intern checkshift()
-/*******************************/
+unsigned char intern checkshift( void )
+/*************************************/
 {
     return( ShiftState );
 }
@@ -357,22 +351,22 @@ void HookOutQueue( void )
 
 extern void far pascal SetEventHook( LPVOID );
 
-bool intern initkeyboard()
-/************************/
+bool intern initkeyboard( void )
+/******************************/
 {
     SetEventHook( &HookRtn );
     return( FALSE );
 }
 
-void intern finikeyboard()
-/************************/
+void intern finikeyboard( void )
+/******************************/
 {
     SetEventHook( NULL );
 }
 
 
-EVENT intern keyboardevent()
-/**************************/
+EVENT intern keyboardevent( void )
+/********************************/
 {
     register    unsigned int            key;
     register    unsigned int            scan;
@@ -433,8 +427,8 @@ EVENT intern keyboardevent()
     return( ev );
 }
 
-unsigned char global uicheckshift()
-/*******************************/
+unsigned char global uicheckshift( void )
+/***************************************/
 {
     return( ShiftState );
 }
@@ -444,8 +438,8 @@ void WindowsMessageLoop( int yield )
 {
 MSG msg;
 
-        while( PeekMessage( &msg, NULL, NULL, NULL, PM_NOREMOVE | PM_NOYIELD ) ) {
-            GetMessage( &msg, NULL, NULL, NULL );
+        while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE | PM_NOYIELD ) ) {
+            GetMessage( &msg, NULL, 0, 0 );
             TranslateMessage( &msg );
             DispatchMessage( &msg );
         }

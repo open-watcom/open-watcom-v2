@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Button library for Windows.
 *
 ****************************************************************************/
 
@@ -160,4 +159,5 @@ void draw_button( int button_id, DRAWITEMSTRUCT FAR * draw )
     DeleteObject( blackpen );
     DeleteObject( brightpen );
     DeleteObject( shadowpen );
+    DeleteObject( facepen );
 }

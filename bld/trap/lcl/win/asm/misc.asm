@@ -36,10 +36,7 @@
 ;***                                                                      ***
 ;****************************************************************************
 
-no87        ; no87 to turn off emulation fixups
-
 .386p
-.387
 
 DGROUP group _DATA
 
@@ -52,8 +49,6 @@ _CopySize       dw      0               ; size for CopyMemory
 _DATA ends
 
 _TEXT segment word public 'CODE' use16
-
-assume cs:_TEXT
 
 assume ds:DGROUP
 assume ss:DGROUP
@@ -89,84 +84,6 @@ public _CopyMemory_
 
 _CopyMemory_ ENDP
 
-;**********************************
-;****                           ***
-;**** Read8087 - get 8087 state ***
-;****                           ***
-;**********************************
-Read8087_ PROC
-        public  Read8087_
-        push    ds
-        push    bx
-        mov     ds,dx
-        mov     bx,ax
-        fsave   [bx]
-        frstor  [bx]
-        wait
-        pop     bx
-        pop     ds
-        ret
-Read8087_ ENDP
+_TEXT   ends
 
-;**********************************
-;****                           ***
-;**** Write8087 - change 8087   ***
-;****                           ***
-;**********************************
-Write8087_ PROC
-        public  Write8087_
-        push    ds
-        push    bx
-        mov     ds,dx
-        mov     bx,ax
-        fsave   [bx]
-        frstor  [bx]
-        wait
-        pop     bx
-        pop     ds
-        ret
-Write8087_ ENDP
-
-;************************************
-;****                             ***
-;**** Read80387 - get 80387 state ***
-;****                             ***
-;************************************
-Read80387_ PROC
-        public  Read80387_
-        push    ds
-        push    bx
-        mov     ds,dx
-        mov     bx,ax
-        db      66H
-        fnsave   ds:[bx]
-        wait
-        db      66H
-        frstor  ds:[bx]
-        wait
-        pop     bx
-        pop     ds
-        ret
-Read80387_ ENDP
-
-;**********************************
-;****                           ***
-;**** Write80387 - change 80387 ***
-;****                           ***
-;**********************************
-Write80387_ PROC
-        public  Write80387_
-        push    ds
-        push    bx
-        mov     ds,dx
-        mov     bx,ax
-        db      66h
-        frstor  ds:[bx]
-        wait
-        pop     bx
-        pop     ds
-        ret
-Write80387_ endp
-
-_TEXT ends
         end

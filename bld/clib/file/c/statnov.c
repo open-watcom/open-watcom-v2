@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _stat().
 *
 ****************************************************************************/
 
 
-#include <sys\stat.h>
+#include <sys/stat.h>
 
 int _stat(char const *path, struct stat *buf)
 {

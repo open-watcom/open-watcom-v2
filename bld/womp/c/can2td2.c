@@ -60,7 +60,7 @@ STATIC void symbChangeSeg( symb_handle symb ) {
     seg = CanAFind( symb->d.cseg.seg );
     fix = seg->fixup;
 /**/myassert( fix->self_relative == 0 );  /* no self-relative */
-    if( fix->lr.target != T_SEGWD ) {
+    if( fix->lr.target != TARGET_SEGWD ) {
         Fatal( MSG_INVALID_FIXUP );
     }
     switch( fix->loc_method ) {
@@ -194,7 +194,7 @@ STATIC void symbMemLoc( symb_handle symb ) {
     mem_loc = CanAFind( symb->d.memloc.mem_hdl );
     fix = mem_loc->fixup;
     switch( fix->lr.frame ) {
-    case F_GRP:
+    case FRAME_GRP:
         grp_idx = fix->lr.frame_datum;
         break;
     default:
@@ -202,7 +202,7 @@ STATIC void symbMemLoc( symb_handle symb ) {
         grp_idx = 0;
         break;
     }
-    if( fix->lr.target != T_SEGWD ) {
+    if( fix->lr.target != TARGET_SEGWD ) {
         Fatal( MSG_INVALID_FIXUP );
     }
     type = CanTFind( symb->d.nat.type_hdl );

@@ -24,18 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sample Code Checker mainline.
 *
 ****************************************************************************/
 
 
-/*****************************************************************************
-*   Sample Code Checker:
-*  Written by:  Mike Neame,Jan 19, 1998
-*  File: main.cpp: contains the program mainline.
-*
-*****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,7 +68,6 @@ int CheckForError(char const *fileName, char const *errCode) {
 
 
 void main(int argc, char *argv[]) {
-    int retVal;
     char *errCode;
     char sysCommand[BUFF_SIZE];
     GMLFile *codeFrags;
@@ -133,17 +125,4 @@ void main(int argc, char *argv[]) {
             system("del /Q codeout.*");
         }
     }
-
-
-
-
 }
-
-
-
-
-
-
-
-
-

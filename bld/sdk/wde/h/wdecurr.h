@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern  OBJPTR  WdeGetCurrObject        ( void );
-extern  LIST    *WdeGetCurrObjectList   ( void );
+extern OBJPTR   WdeGetCurrObject( void );
+extern LIST     *WdeGetCurrObjectList( void );
 
 #endif

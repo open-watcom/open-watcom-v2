@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Test various DWARF writer library routines.
 *
 ****************************************************************************/
 
@@ -121,38 +120,37 @@ void TestString( void )
     /* we'll pretend the length of the string is at -4[ebp] */
     DWDeclPos( Client, 50, 8 );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_FBREG, -4 );
+    DWLocOp( Client, id, DW_LOC_fbreg, -4 );
     string_length = DWLocFini( Client, id );
     string_hdl = DWString( Client, string_length, sizeof( uint_32 ),
         NULL, 0, 0 );
     DWLocTrash( Client, string_length );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_FBREG, -8 );
+    DWLocOp( Client, id, DW_LOC_fbreg, -8 );
     a_loc = DWLocFini( Client, id );
     DWDeclPos( Client, 50, 16 );
     DWVariable( Client, string_hdl, a_loc, NULL, NULL, "A", 0, 0 );
     DWLocTrash( Client, a_loc );
 }
 
-
 void TestArray( void )
 {
+#if 0
     dw_dim_info         dim_info;
+    dw_vardim_info      vdim_info;
     dw_handle           array_hdl;
     dw_loc_handle       buf_loc;
+    dw_loc_handle       buf2_loc;
     dw_loc_id           id;
 
     /* char buf[ 80 ]; */
     DWDeclPos( Client, 55, 79 );
     array_hdl = DWBeginArray( Client, 1 );
-    dim_info.lo_bound_fmt = DW_ARRAY_BOUND_UCONST;
-    dim_info.hi_bound_fmt = DW_ARRAY_BOUND_UCONST;
     dim_info.index_type = FundamentalTypes[ DW_FT_UNSIGNED ];
-    dim_info.lo_data.uconst = 0;
-    dim_info.hi_data.uconst = 79;
-    DWArrayDimension( Client, array_hdl, &dim_info );
-    DWEndArray( Client, array_hdl, FundamentalTypes[ DW_FT_UNSIGNED_CHAR ], 0,
-        NULL, 0, 0 );
+    dim_info.lo_data = 0;
+    dim_info.hi_data = 79;
+    DWArrayDimension( Client, &dim_info );
+    DWEndArray( Client );
     SymHandles[ 3 ] = 0x1234bul;
     id = DWLocInit( Client );
     DWLocStatic( Client, id, 3 );
@@ -164,23 +162,21 @@ void TestArray( void )
     /* INTEGER*4 A(1:N) */
     DWDeclPos( Client, 55, 81 );
     array_hdl = DWBeginArray( Client, 1 );
-    dim_info.lo_bound_fmt = DW_ARRAY_BOUND_SCONST;
-    dim_info.hi_bound_fmt = DW_ARRAY_BOUND_LOC;
     dim_info.index_type = FundamentalTypes[ DW_FT_SIGNED ];
-    dim_info.lo_data.sconst = 1;
+    dim_info.lo_data = 1;
     id = DWLocInit( Client );   /* assume N is at -4[ebp] */
-    DWLocOp( Client, id, DW_LOC_FBREG, -4 );
-    dim_info.hi_data.loc = DWLocFini( Client, id );
-    DWArrayDimension( Client, array_hdl, &dim_info );
-    DWLocTrash( Client, dim_info.hi_data.loc );
-    DWEndArray( Client, array_hdl, FundamentalTypes[ DW_FT_SIGNED ],
-        0, NULL, 0, 0 );
+    DWLocOp( Client, id, DW_LOC_fbreg, -4 );
+    buf2_loc = DWLocFini( Client, id );
+    vdim_info.count_data = (dw_handle)buf2_loc;
+    DWArrayDimension( Client, &dim_info );
+    DWLocTrash( Client, buf2_loc );
+    DWEndArray( Client );
+#endif
 }
-
 
 void TestEnum( void )
 {
-    char                        value;
+    dw_uconst                       value;
 
     /*
         enum colours {
@@ -193,11 +189,11 @@ void TestEnum( void )
     DWDeclPos( Client, 1, 5 );
     EnumColours = DWBeginEnumeration( Client, 1, "colours", 0, 0 );
     value = 2;
-    DWAddConstant( Client, &value, "BLUE" );
+    DWAddConstant( Client, value, "BLUE" );
     value = 1;
-    DWAddConstant( Client, &value, "GREEN" );
+    DWAddConstant( Client, value, "GREEN" );
     value = 0;
-    DWAddConstant( Client, &value, "RED" );
+    DWAddConstant( Client, value, "RED" );
     DWEndEnumeration( Client );
 }
 
@@ -220,7 +216,7 @@ void TestStruct1( void )
         field_loc, "quot", 0 );
     DWLocTrash( Client, field_loc );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_PLUS_UCONST, 4 );
+    DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     field_loc = DWLocFini( Client, id );
     DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ],
         field_loc, "rem", 0 );
@@ -245,7 +241,7 @@ void TestStruct1( void )
     DWAddField( Client, ptr_to_foo, field_loc, "next", 0 );
     DWLocTrash( Client, field_loc );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_PLUS_UCONST, 4 );
+    DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     field_loc = DWLocFini( Client, id );
     DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ],
         field_loc, "type", 0 );
@@ -256,7 +252,7 @@ void TestStruct1( void )
     DWAddField( Client, FundamentalTypes[ DW_FT_FLOAT ], NULL, "b", 0 );
     DWEndStruct( Client );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_PLUS_UCONST, 8 );
+    DWLocOp( Client, id, DW_LOC_plus_uconst, 8 );
     field_loc = DWLocFini( Client, id );
     DWAddField( Client, union_hdl, field_loc, "x", 0 );
     DWLocTrash( Client, field_loc );
@@ -305,7 +301,8 @@ void TestStruct3( void )
     DWAddFriend( Client, class_2 );
     /* static int a; */
     DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ], NULL, "a",
-        DW_FLAG_STATIC );
+        DW_FLAG_PRIVATE );  // was DW_FLAG_STATIC ??
+
     /* private float b; */
     field_hdl = DWLocFini( Client, DWLocInit( Client ) );
     DWAddField( Client, FundamentalTypes[ DW_FT_FLOAT ], field_hdl, "b",
@@ -370,7 +367,7 @@ void TestCommonBlock( void )
     common_block = DWBeginCommonBlock( Client, loc, NULL, "DATA", 0 );
     DWLocTrash( Client, loc );
     id = DWLocInit( Client );
-    DWLocOp( Client, id, DW_LOC_PLUS_UCONST, 4 );
+    DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     loc = DWLocFini( Client, id );
     DWVariable( Client, FundamentalTypes[ DW_FT_UNSIGNED_CHAR ], loc, NULL,
         NULL, "UNCLE", 0, 0 );

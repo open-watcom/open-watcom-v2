@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction scoring related structs, enums and defines.
 *
 ****************************************************************************/
 
@@ -49,7 +48,7 @@ typedef enum {
 } ins_mod;
 
 typedef struct score_reg {
-        struct register_name    *reg_name;
+        union name              *reg_name;
         hw_reg_set              reg;
         int                     low;    /*  index of low part of reg, if any */
         int                     high;   /*  index of high part of reg, if any */
@@ -69,6 +68,7 @@ typedef struct score_info {
           void                  *p;
         } symbol;
         int                     index_reg;      /*  indexed names only */
+        int                     scale;          /*  indexed names only */
         name_class_def          class;
 } score_info;
 
@@ -88,3 +88,62 @@ typedef struct score {
         byte                    generation;
         unsigned_16             __pad_to_16;
 } score;
+
+
+// scdata.c
+extern  score_reg       **ScoreList;
+extern  int             ScoreCount;
+extern  score_info      *ScZero;
+extern  pointer         *ScListFrl;
+
+// scblock.c
+bool    DoScore( block *blk );
+byte    HasZero( score *sc, name *n );
+
+// scinfo.c
+bool    ScoreLookup( score *p, score_info *info );
+bool    ScoreEqual( score *p, int index, score_info *info );
+void    ScoreAssign( score *p, int index, score_info *info );
+void    ScoreInfo( score_info *info, name *op );
+bool    ScoreLAInfo( score_info *info, name *op );
+void    ScoreKillInfo( score *sc, name *op, score_info *info, hw_reg_set except );
+
+// scins.c
+bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags );
+bool    FindRegOpnd( score *sc, instruction *ins );
+void    ScoreMakeEqual( score *sc, name *op1, name *op2 );
+bool    ScoreMove( score *sc, instruction *ins );
+bool    ScoreLA( score *sc, instruction *ins );
+void    ScZeroCheck( score *sc, instruction *ins );
+
+// scregs.c
+void    RegInsert( score *sc, int dst_idx, int src_idx );
+bool    RegsEqual( score *sc, int i1, int i2 );
+void    RegKill( score *sc, hw_reg_set regs );
+void    RegAdd( score *sc, int dst_idx, int src_idx );
+
+// scthrash.c
+bool    RegThrash( block *blk );
+
+// scutil.c
+pointer ScAlloc( int size );
+void    ScFree( pointer chunk, int size );
+void    ScoreCalcList( void );
+void    ScoreClear( score *p );
+void    FreeScListEntry( score_list *list );
+void    ScoreFreeList( score *p );
+void    FreeScoreBoard( score *p );
+void    MemChanged( score *p, bool statics_too );
+bool    ScoreFrlFree( void );
+score_list      *NewScListEntry( void );
+
+// sczero.c
+bool    ScoreZero( score *sc, instruction **pins );
+
+// cpu-specific
+void    ScInitRegs( score *sc );
+void    ScoreSegments( score *sc );
+bool    ScConvert( instruction *ins );
+bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 );
+void    AddRegs( void );
+bool    ScRealRegister( name *reg );

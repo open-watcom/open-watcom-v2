@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of _HugeValue (IEEE-double infinity).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-_WCRTLINK unsigned short const _HUGEDATA _HugeValue[] = { 0x0000, 0x0000, 0x0000, 0x7ff0 };
+_WCRTDATA unsigned short const _HUGEDATA _HugeValue[] = { 0x0000, 0x0000, 0x0000, 0x7ff0 };

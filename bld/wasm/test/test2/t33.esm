@@ -1,0 +1,61 @@
+.387
+_data		SEGMENT	BYTE PUBLIC USE16 'data'
+L$1:
+    DB	74H, 68H, 69H, 73H, 20H, 69H, 73H, 20H
+    DB	61H, 20H, 73H, 74H, 72H, 69H, 6eH, 67H
+    DB	74H, 68H, 69H, 73H, 20H, 69H, 73H, 20H
+    DB	61H, 20H, 73H, 74H, 72H, 69H, 6eH, 67H
+    DB	0cH, 0, 62H, 61H, 64H, 63H, 7bH, 0
+    DB	0, 0, 66H, 64H, 73H, 61H, 64H, 65H
+    DB	72H, 66H, 41H, 41H, 41H, 41H, 41H, 41H
+    DB	41H, 41H, 41H, 41H, 6cH, 6fH, 6eH, 67H
+    DB	20H, 73H, 74H, 72H, 69H, 6eH, 67H, 20H
+    DB	74H, 68H, 61H, 74H, 20H, 69H, 73H, 20H
+    DB	73H, 70H, 6cH, 69H, 74H, 20H, 74H, 6fH
+    DB	20H, 74H, 77H, 6fH, 20H, 6cH, 69H, 6eH
+    DB	65H, 73H, 2eH, 41H, 41H, 41H, 41H, 41H
+    DB	41H, 41H, 41H, 41H, 41H, 6cH, 6fH, 6eH
+    DB	67H, 20H, 73H, 74H, 72H, 69H, 6eH, 67H
+    DB	20H, 74H, 68H, 61H, 74H, 20H, 69H, 73H
+    DB	20H, 73H, 70H, 6cH, 69H, 74H, 20H, 74H
+    DB	6fH, 20H, 74H, 77H, 6fH, 20H, 6cH, 69H
+    DB	6eH, 65H, 73H, 2eH, 41H, 41H, 41H, 41H
+    DB	41H, 41H, 41H, 41H, 41H, 41H, 6cH, 6fH
+    DB	6eH, 67H, 20H, 73H, 74H, 72H, 69H, 6eH
+    DB	67H, 20H, 74H, 68H, 61H, 74H, 20H, 69H
+    DB	73H, 20H, 73H, 70H, 6cH, 69H, 74H, 20H
+    DB	74H, 6fH, 20H, 74H, 77H, 6fH, 20H, 6cH
+    DB	69H, 6eH, 65H, 73H, 2eH, 41H, 41H, 41H
+    DB	41H, 41H, 41H, 41H, 41H, 41H, 41H, 72H
+    DB	65H, 61H, 6cH, 6cH, 79H, 20H, 6cH, 6fH
+    DB	6eH, 67H, 20H, 73H, 74H, 72H, 69H, 6eH
+    DB	67H, 2cH, 20H, 73H, 70H, 6cH, 69H, 74H
+    DB	20H, 74H, 6fH, 20H, 6eH, 6fH, 74H, 20H
+    DB	6aH, 75H, 73H, 74H, 20H, 32H, 20H, 62H
+    DB	75H, 74H, 20H, 33H, 20H, 6cH, 69H, 6eH
+    DB	65H, 73H, 41H, 41H, 41H, 41H, 41H, 41H
+    DB	41H, 41H, 41H, 41H, 0, 0
+
+_data		ENDS
+_data2		SEGMENT	BYTE PUBLIC USE16 'data'
+L$2:
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	20H, 20H, 20H, 20H, 20H, 20H, 20H, 20H
+    DB	0
+
+_data2		ENDS
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    cld         
+    mov         cx,0bH
+    mov         ax,_data
+    mov         ds,ax
+    mov         si,offset L$1
+    mov         ax,_data2
+    mov         es,ax
+    mov         di,offset L$2
+    rep movsb   
+_TEXT		ENDS
+		END

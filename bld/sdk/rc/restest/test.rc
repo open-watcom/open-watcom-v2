@@ -12,7 +12,7 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "CompanyName", "WATCOM\0"
+      VALUE "CompanyName", "Open Watcom\0"
     END
   END
 END
@@ -81,7 +81,7 @@ BEGIN
 4,      "above is all kanji"
 END
 
-#ifdef __NT__
+#ifdef __NT__X
 LANGUAGE 0x9, 0x1
-1 11 MSG00001.bin
+1 11 msg00001.bin
 #endif

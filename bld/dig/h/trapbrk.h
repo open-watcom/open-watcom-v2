@@ -45,6 +45,7 @@ enum {
     COND_EXCEPTION      = 0x0800,
     COND_MESSAGE        = 0x1000,
     COND_STOP           = 0x2000,
+    COND_RUNNING        = 0x4000,
     COND_STOPPERS       = (COND_TRACE|COND_BREAK|COND_WATCH|COND_USER
                                 |COND_TERMINATE|COND_EXCEPTION|COND_STOP)
 };

@@ -44,7 +44,9 @@ extern int      CmdScanRecogCharExact( int ch );
 
 extern char *   CmdScanString( void );
 extern char *   CmdScanFileName( void );
+extern char *   CmdScanFileNameWithoutQuotes( void );
 extern int      CmdScanNumber( unsigned *num );
 
+extern int      Quoted;
 
 #endif

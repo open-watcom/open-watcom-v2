@@ -1,0 +1,59 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: iosfwd/iosfwd.h (iostream forwarding declarations)
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              declares several iostream classes incompletely to serve
+//              as forwarding declarations in cases where the overhead
+//              of full class declarations is not necessary.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
+#ifndef _IOSFWD_H_INCLUDED
+#define _IOSFWD_H_INCLUDED
+
+:include readonly.sp
+
+#ifndef _IOSFWD_INCLUDED
+ #include <iosfwd>
+#endif
+using std::ios;
+using std::streambuf;
+using std::istream;
+using std::ostream;
+using std::iostream;
+using std::filebuf;
+using std::ifstream;
+using std::ofstream;
+using std::fstream;
+
+#endif
+:elsesegment
+#ifndef _IOSFWD_INCLUDED
+#define _IOSFWD_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
+
+namespace std {
+  class _WPRTLINK ios;
+
+  // Basic streams.
+  class _WPRTLINK streambuf;
+  class _WPRTLINK istream;
+  class _WPRTLINK ostream;
+  class _WPRTLINK iostream;
+
+  // File streams.
+  class _WPRTLINK filebuf;
+  class _WPRTLINK ifstream;
+  class _WPRTLINK ofstream;
+  class _WPRTLINK fstream;
+}
+
+#endif
+:endsegment

@@ -45,12 +45,10 @@
 /****** constants describing global data ******/
 /* this is the size of the text input buffer for pass 1 and the data trasfer */
 /* buffer for pass 2 */
+#if defined( _STANDALONE_ ) || defined( __NT__ )
 #define IO_BUFFER_SIZE  0x8000      /* 32k */
-#ifdef WR_COMPILED
-#ifndef __NT__
-#undef  IO_BUFFER_SIZE
+#else
 #define IO_BUFFER_SIZE  0x4000      /* 16 */
-#endif
 #endif
 
 /****** uninitialized global data ******/
@@ -58,7 +56,7 @@ RCEXTERN struct RCParams     CmdLineParms;
 RCEXTERN RcResFileID         CurrResFile;
 RCEXTERN RcPass2Info         Pass2Info;
 RCEXTERN char               *NewIncludeDirs;
-RCEXTERN char                CharSet[256];
+RCEXTERN char                CharSetLen[256];
 RCEXTERN HANDLE_INFO         Instance;
 RCEXTERN bool                StopInvoked;
 

@@ -2,8 +2,8 @@
 
 void main( void ) {
 
-    String    s1 ("Watcom C++"), s2, s3;
-    char     *pch = "Watcom C++ compiler";
+    String    s1 ("Open Watcom C++"), s2, s3;
+    char     *pch = "Open Watcom C++ compiler";
 
     s2 = s1;
     s3 = pch;

@@ -1,0 +1,353 @@
+c$noreference
+
+c$ifdef INCL_ERRORS
+c$define INCL_DEVERRORS
+c$endif
+
+c$ifdef INCL_DDIDEFS
+c$define INCL_DEV
+c$endif
+
+c$ifdef INCL_DEV
+
+        integer  DEV_ERROR
+        parameter (DEV_ERROR = 0)
+        integer  DEV_OK
+        parameter (DEV_OK = 1)
+
+        integer  OD_QUEUED
+        parameter (OD_QUEUED = 2)
+        integer  OD_DIRECT
+        parameter (OD_DIRECT = 5)
+        integer  OD_INFO
+        parameter (OD_INFO = 6)
+        integer  OD_METAFILE
+        parameter (OD_METAFILE = 7)
+        integer  OD_MEMORY
+        parameter (OD_MEMORY = 8)
+        integer  OD_METAFILE_NOQUERY
+        parameter (OD_METAFILE_NOQUERY = 9)
+
+        integer  CAPS_FAMILY
+        parameter (CAPS_FAMILY = 0)
+        integer  CAPS_IO_CAPS
+        parameter (CAPS_IO_CAPS = 1)
+        integer  CAPS_TECHNOLOGY
+        parameter (CAPS_TECHNOLOGY = 2)
+        integer  CAPS_DRIVER_VERSION
+        parameter (CAPS_DRIVER_VERSION = 3)
+        integer  CAPS_WIDTH
+        parameter (CAPS_WIDTH = 4)
+        integer  CAPS_HEIGHT
+        parameter (CAPS_HEIGHT = 5)
+        integer  CAPS_WIDTH_IN_CHARS
+        parameter (CAPS_WIDTH_IN_CHARS = 6)
+        integer  CAPS_HEIGHT_IN_CHARS
+        parameter (CAPS_HEIGHT_IN_CHARS = 7)
+        integer  CAPS_HORIZONTAL_RESOLUTION
+        parameter (CAPS_HORIZONTAL_RESOLUTION = 8)
+        integer  CAPS_VERTICAL_RESOLUTION
+        parameter (CAPS_VERTICAL_RESOLUTION = 9)
+        integer  CAPS_CHAR_WIDTH
+        parameter (CAPS_CHAR_WIDTH = 10)
+        integer  CAPS_CHAR_HEIGHT
+        parameter (CAPS_CHAR_HEIGHT = 11)
+        integer  CAPS_SMALL_CHAR_WIDTH
+        parameter (CAPS_SMALL_CHAR_WIDTH = 12)
+        integer  CAPS_SMALL_CHAR_HEIGHT
+        parameter (CAPS_SMALL_CHAR_HEIGHT = 13)
+        integer  CAPS_COLORS
+        parameter (CAPS_COLORS = 14)
+        integer  CAPS_COLOR_PLANES
+        parameter (CAPS_COLOR_PLANES = 15)
+        integer  CAPS_COLOR_BITCOUNT
+        parameter (CAPS_COLOR_BITCOUNT = 16)
+        integer  CAPS_COLOR_TABLE_SUPPORT
+        parameter (CAPS_COLOR_TABLE_SUPPORT = 17)
+        integer  CAPS_MOUSE_BUTTONS
+        parameter (CAPS_MOUSE_BUTTONS = 18)
+        integer  CAPS_FOREGROUND_MIX_SUPPORT
+        parameter (CAPS_FOREGROUND_MIX_SUPPORT = 19)
+        integer  CAPS_BACKGROUND_MIX_SUPPORT
+        parameter (CAPS_BACKGROUND_MIX_SUPPORT = 20)
+        integer  CAPS_DEVICE_WINDOWING
+        parameter (CAPS_DEVICE_WINDOWING = 31)
+        integer  CAPS_ADDITIONAL_GRAPHICS
+        parameter (CAPS_ADDITIONAL_GRAPHICS = 32)
+        integer  CAPS_VIO_LOADABLE_FONTS
+        parameter (CAPS_VIO_LOADABLE_FONTS = 21)
+        integer  CAPS_WINDOW_BYTE_ALIGNMENT
+        parameter (CAPS_WINDOW_BYTE_ALIGNMENT = 22)
+        integer  CAPS_BITMAP_FORMATS
+        parameter (CAPS_BITMAP_FORMATS = 23)
+        integer  CAPS_RASTER_CAPS
+        parameter (CAPS_RASTER_CAPS = 24)
+        integer  CAPS_MARKER_HEIGHT
+        parameter (CAPS_MARKER_HEIGHT = 25)
+        integer  CAPS_MARKER_WIDTH
+        parameter (CAPS_MARKER_WIDTH = 26)
+        integer  CAPS_DEVICE_FONTS
+        parameter (CAPS_DEVICE_FONTS = 27)
+        integer  CAPS_GRAPHICS_SUBSET
+        parameter (CAPS_GRAPHICS_SUBSET = 28)
+        integer  CAPS_GRAPHICS_VERSION
+        parameter (CAPS_GRAPHICS_VERSION = 29)
+        integer  CAPS_GRAPHICS_VECTOR_SUBSET
+        parameter (CAPS_GRAPHICS_VECTOR_SUBSET = 30)
+        integer  CAPS_PHYS_COLORS
+        parameter (CAPS_PHYS_COLORS = 33)
+        integer  CAPS_COLOR_INDEX
+        parameter (CAPS_COLOR_INDEX = 34)
+        integer  CAPS_GRAPHICS_CHAR_WIDTH
+        parameter (CAPS_GRAPHICS_CHAR_WIDTH = 35)
+        integer  CAPS_GRAPHICS_CHAR_HEIGHT
+        parameter (CAPS_GRAPHICS_CHAR_HEIGHT = 36)
+        integer  CAPS_HORIZONTAL_FONT_RES
+        parameter (CAPS_HORIZONTAL_FONT_RES = 37)
+        integer  CAPS_VERTICAL_FONT_RES
+        parameter (CAPS_VERTICAL_FONT_RES = 38)
+        integer  CAPS_DEVICE_FONT_SIM
+        parameter (CAPS_DEVICE_FONT_SIM = 39)
+        integer  CAPS_LINEWIDTH_THICK
+        parameter (CAPS_LINEWIDTH_THICK = 40)
+
+        integer  CAPS_IO_DUMMY
+        parameter (CAPS_IO_DUMMY = 1)
+        integer  CAPS_IO_SUPPORTS_OP
+        parameter (CAPS_IO_SUPPORTS_OP = 2)
+        integer  CAPS_IO_SUPPORTS_IP
+        parameter (CAPS_IO_SUPPORTS_IP = 3)
+        integer  CAPS_IO_SUPPORTS_IO
+        parameter (CAPS_IO_SUPPORTS_IO = 4)
+
+        integer  CAPS_TECH_UNKNOWN
+        parameter (CAPS_TECH_UNKNOWN = 0)
+        integer  CAPS_TECH_VECTOR_PLOTTER
+        parameter (CAPS_TECH_VECTOR_PLOTTER = 1)
+        integer  CAPS_TECH_RASTER_DISPLAY
+        parameter (CAPS_TECH_RASTER_DISPLAY = 2)
+        integer  CAPS_TECH_RASTER_PRINTER
+        parameter (CAPS_TECH_RASTER_PRINTER = 3)
+        integer  CAPS_TECH_RASTER_CAMERA
+        parameter (CAPS_TECH_RASTER_CAMERA = 4)
+        integer  CAPS_TECH_POSTSCRIPT
+        parameter (CAPS_TECH_POSTSCRIPT = 5)
+
+        integer  CAPS_COLTABL_RGB_8
+        parameter (CAPS_COLTABL_RGB_8 = 1)
+        integer  CAPS_COLTABL_RGB_8_PLUS
+        parameter (CAPS_COLTABL_RGB_8_PLUS = 2)
+        integer  CAPS_COLTABL_TRUE_MIX
+        parameter (CAPS_COLTABL_TRUE_MIX = 4)
+        integer  CAPS_COLTABL_REALIZE
+        parameter (CAPS_COLTABL_REALIZE = 8)
+
+        integer  CAPS_FM_OR
+        parameter (CAPS_FM_OR = 1)
+        integer  CAPS_FM_OVERPAINT
+        parameter (CAPS_FM_OVERPAINT = 2)
+        integer  CAPS_FM_XOR
+        parameter (CAPS_FM_XOR = 8)
+        integer  CAPS_FM_LEAVEALONE
+        parameter (CAPS_FM_LEAVEALONE = 16)
+        integer  CAPS_FM_AND
+        parameter (CAPS_FM_AND = 32)
+        integer  CAPS_FM_GENERAL_BOOLEAN
+        parameter (CAPS_FM_GENERAL_BOOLEAN = 64)
+
+        integer  CAPS_BM_OR
+        parameter (CAPS_BM_OR = 1)
+        integer  CAPS_BM_OVERPAINT
+        parameter (CAPS_BM_OVERPAINT = 2)
+        integer  CAPS_BM_XOR
+        parameter (CAPS_BM_XOR = 8)
+        integer  CAPS_BM_LEAVEALONE
+        parameter (CAPS_BM_LEAVEALONE = 16)
+        integer  CAPS_BM_AND
+        parameter (CAPS_BM_AND = 32)
+        integer  CAPS_BM_GENERAL_BOOLEAN
+        parameter (CAPS_BM_GENERAL_BOOLEAN = 64)
+
+        integer  CAPS_DEV_WINDOWING_SUPPORT
+        parameter (CAPS_DEV_WINDOWING_SUPPORT = 1)
+
+        integer  CAPS_VDD_DDB_TRANSFER
+        parameter (CAPS_VDD_DDB_TRANSFER = 1)
+        integer  CAPS_GRAPHICS_KERNING_SUPPORT
+        parameter (CAPS_GRAPHICS_KERNING_SUPPORT = 2)
+        integer  CAPS_FONT_OUTLINE_DEFAULT
+        parameter (CAPS_FONT_OUTLINE_DEFAULT = 4)
+        integer  CAPS_FONT_IMAGE_DEFAULT
+        parameter (CAPS_FONT_IMAGE_DEFAULT = 8)
+        integer  CAPS_SCALED_DEFAULT_MARKERS
+        parameter (CAPS_SCALED_DEFAULT_MARKERS = 64)
+        integer  CAPS_COLOR_CURSOR_SUPPORT
+        parameter (CAPS_COLOR_CURSOR_SUPPORT = 128)
+        integer  CAPS_PALETTE_MANAGER
+        parameter (CAPS_PALETTE_MANAGER = 256)
+        integer  CAPS_COSMETIC_WIDELINE_SUPPORT
+        parameter (CAPS_COSMETIC_WIDELINE_SUPPORT = 512)
+
+        integer  CAPS_BYTE_ALIGN_REQUIRED
+        parameter (CAPS_BYTE_ALIGN_REQUIRED = 0)
+        integer  CAPS_BYTE_ALIGN_RECOMMENDED
+        parameter (CAPS_BYTE_ALIGN_RECOMMENDED = 1)
+        integer  CAPS_BYTE_ALIGN_NOT_REQUIRED
+        parameter (CAPS_BYTE_ALIGN_NOT_REQUIRED = 2)
+
+        integer  CAPS_RASTER_BITBLT
+        parameter (CAPS_RASTER_BITBLT = 1)
+        integer  CAPS_RASTER_BANDING
+        parameter (CAPS_RASTER_BANDING = 2)
+        integer  CAPS_RASTER_BITBLT_SCALING
+        parameter (CAPS_RASTER_BITBLT_SCALING = 4)
+        integer  CAPS_RASTER_SET_PEL
+        parameter (CAPS_RASTER_SET_PEL = 16)
+        integer  CAPS_RASTER_FONTS
+        parameter (CAPS_RASTER_FONTS = 32)
+        integer  CAPS_RASTER_FLOOD_FILL
+        parameter (CAPS_RASTER_FLOOD_FILL = 64)
+
+c$ifndef INCL_DDIDEFS
+
+        external DevOpenDC
+        integer*4 DevOpenDC
+
+        external DevCloseDC
+        integer*4 DevCloseDC
+
+        external DevQueryCaps
+        integer*4 DevQueryCaps
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_DEV
+
+        structure /VIOSIZECOUNT/
+            integer*4 maxcount
+            integer*4 count
+        end structure
+
+        structure /VIOFONTCELLSIZE/
+            integer*4 cx
+            integer*4 cy
+        end structure
+
+        structure /SFACTORS/
+            integer*4 x
+            integer*4 y
+        end structure
+
+        structure /BANDRECT/
+            integer*4 xleft
+            integer*4 ybottom
+            integer*4 xright
+            integer*4 ytop
+        end structure
+
+        integer  DEVESC_ERROR
+        parameter (DEVESC_ERROR = -1)
+        integer  DEVESC_NOTIMPLEMENTED
+        parameter (DEVESC_NOTIMPLEMENTED = 0)
+
+        integer  DEVESC_QUERYESCSUPPORT
+        parameter (DEVESC_QUERYESCSUPPORT = 0)
+        integer  DEVESC_GETSCALINGFACTOR
+        parameter (DEVESC_GETSCALINGFACTOR = 1)
+        integer  DEVESC_QUERYVIOCELLSIZES
+        parameter (DEVESC_QUERYVIOCELLSIZES = 2)
+        integer  DEVESC_GETCP
+        parameter (DEVESC_GETCP = 8000)
+
+        integer  DEVESC_STARTDOC
+        parameter (DEVESC_STARTDOC = 8150)
+        integer  DEVESC_ENDDOC
+        parameter (DEVESC_ENDDOC = 8151)
+        integer  DEVESC_NEXTBAND
+        parameter (DEVESC_NEXTBAND = 8152)
+        integer  DEVESC_ABORTDOC
+        parameter (DEVESC_ABORTDOC = 8153)
+
+        integer  DEVESC_NEWFRAME
+        parameter (DEVESC_NEWFRAME = 16300)
+        integer  DEVESC_DRAFTMODE
+        parameter (DEVESC_DRAFTMODE = 16301)
+        integer  DEVESC_FLUSHOUTPUT
+        parameter (DEVESC_FLUSHOUTPUT = 16302)
+        integer  DEVESC_RAWDATA
+        parameter (DEVESC_RAWDATA = 16303)
+        integer  DEVESC_SETMODE
+        parameter (DEVESC_SETMODE = 16304)
+
+        integer  DEVESC_DBE_FIRST
+        parameter (DEVESC_DBE_FIRST = 24450)
+        integer  DEVESC_DBE_LAST
+        parameter (DEVESC_DBE_LAST = 24455)
+
+        integer  DEVESC_CHAR_EXTRA
+        parameter (DEVESC_CHAR_EXTRA = 16998)
+        integer  DEVESC_BREAK_EXTRA
+        parameter (DEVESC_BREAK_EXTRA = 16999)
+
+        integer  DEVESC_STD_JOURNAL
+        parameter (DEVESC_STD_JOURNAL = 32600)
+
+        structure /ESCMODE/
+            integer*4 mode
+            integer*1 modedata(1)
+        end structure
+
+        integer  DPDM_ERROR
+        parameter (DPDM_ERROR = -1)
+        integer  DPDM_NONE
+        parameter (DPDM_NONE = 0)
+
+        integer  DPDM_POSTJOBPROP
+        parameter (DPDM_POSTJOBPROP = 0)
+        integer  DPDM_CHANGEPROP
+        parameter (DPDM_CHANGEPROP = 1)
+        integer  DPDM_QUERYJOBPROP
+        parameter (DPDM_QUERYJOBPROP = 2)
+
+        integer  DQHC_ERROR
+        parameter (DQHC_ERROR = -1)
+
+        integer  HCAPS_CURRENT
+        parameter (HCAPS_CURRENT = 1)
+        integer  HCAPS_SELECTABLE
+        parameter (HCAPS_SELECTABLE = 2)
+
+        structure /HCINFO/
+            integer*1 szFormname(32)
+            integer*4 cx
+            integer*4 cy
+            integer*4 xLeftClip
+            integer*4 yBottomClip
+            integer*4 xRightClip
+            integer*4 yTopClip
+            integer*4 xPels
+            integer*4 yPels
+            integer*4 flAttributes
+        end structure
+
+c$ifndef INCL_DDIDEFS
+
+        external DevEscape
+        integer*4 DevEscape
+
+        external DevQueryDeviceNames
+        integer*4 DevQueryDeviceNames
+
+        external DevQueryHardcopyCaps
+        integer*4 DevQueryHardcopyCaps
+
+        external DevPostDeviceModes
+        integer*4 DevPostDeviceModes
+
+c$endif
+
+c$endif
+
+c$reference

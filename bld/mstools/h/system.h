@@ -33,16 +33,6 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
-
-/*
- * Ensure the __TARGET_xxx__ macros are being used.
- */
-#if !defined(__TARGET_386__)  &&  !defined(__TARGET_AXP__)  &&  \
-    !defined(__TARGET_PPC__)
-    #error __TARGET_xxx__ macros are not being used.
-#endif
-
-
 /*
  * Define the CPU name string.
  */
@@ -55,6 +45,5 @@
 #else
     #error Unrecognized CPU type
 #endif
-
 
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-typedef struct oitem{
+typedef struct oitem {
     FARPROC invoke;
     OBJPTR  parent;
     OBJPTR  handle;

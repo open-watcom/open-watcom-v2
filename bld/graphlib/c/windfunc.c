@@ -91,7 +91,7 @@ short _WtoScaleY( double y )
 }
 
 
-struct _wxycoord _WCI86FAR _CGRAPH _getwindowcoord( short x, short y )
+_WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _getwindowcoord( short x, short y )
 /*===============================================================
 
    Map (x,y) from viewport coordinates to window coordinates.   */
@@ -121,7 +121,7 @@ struct _wxycoord _WCI86FAR _CGRAPH _getwindowcoord( short x, short y )
 Entry( _GETWINDOWCOORD, _getwindowcoord ) // alternate entry-point
 
 
-struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w( double x, double y )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w( double x, double y )
 /*===============================================================
 
    Map (x,y) from window coordinates to viewport coordinates.   */
@@ -142,7 +142,7 @@ struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w( double x, double y )
 Entry( _GETVIEWCOORD_W, _getviewcoord_w ) // alternate entry-point
 
 
-struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w_87( double x, double y )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w_87( double x, double y )
 /*================================================================*/
 
 {
@@ -152,7 +152,7 @@ struct xycoord _WCI86FAR _CGRAPH _getviewcoord_w_87( double x, double y )
 Entry( _GETVIEWCOORD_W_87, _getviewcoord_w_87 ) // alternate entry-point
 
 
-struct xycoord _WCI86FAR _CGRAPH _getviewcoord_wxy( struct _wxycoord _WCI86FAR * pt )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getviewcoord_wxy( struct _wxycoord _WCI86FAR * pt )
 /*=========================================================================
 
    Map (x,y) from window coordinates to viewport coordinates.   */
@@ -164,7 +164,7 @@ struct xycoord _WCI86FAR _CGRAPH _getviewcoord_wxy( struct _wxycoord _WCI86FAR *
 Entry( _GETVIEWCOORD_WXY, _getviewcoord_wxy ) // alternate entry-point
 
 
-struct _wxycoord _WCI86FAR _CGRAPH _getcurrentposition_w( void )
+_WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _getcurrentposition_w( void )
 /*=========================================================
 
    This function returns the current output position in window coordinates. */
@@ -176,7 +176,7 @@ struct _wxycoord _WCI86FAR _CGRAPH _getcurrentposition_w( void )
 Entry( _GETCURRENTPOSITION_W, _getcurrentposition_w ) // alternate entry-point
 
 
-void _resetscalefactor()
+void _resetscalefactor( void )
 //======================
 
 {

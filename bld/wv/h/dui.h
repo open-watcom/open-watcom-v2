@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DUI (Debugger User Interface) prototypes.
 *
 ****************************************************************************/
 
@@ -35,45 +34,44 @@ extern void DUIStatusText( char *text );
 extern void DUIMsgBox( char *text );
 extern bool DUIDlgTxt( char *text );
 extern void DUIInfoBox( char *text );
-extern void DUIStop();
-extern void DUIFini();
-extern void DUIInitHistory();
-extern void DUIFiniHistory();
-extern bool DUIClose();
-extern void DUIInit();
-extern void DUIFreshAll();
+extern void DUIStop( void );
+extern void DUIFini( void );
+extern void DUIInitHistory( void );
+extern void DUIFiniHistory( void );
+extern bool DUIClose( void );
+extern void DUIInit( void );
+extern void DUIFreshAll( void );
 extern bool DUIStopRefresh( bool ok );
-extern void DUIShow();
-extern void DUIWndUser();
-extern void DUIWndDebug();
-extern void DUIShowLogWindow();
-extern void DUIRedrawRegisters();
-extern int DUIGetMonitorType();
-extern int DUIScreenSizeX();
-extern int DUIScreenSizeY();
-extern void DUIRedrawSources();
+extern void DUIShow( void );
+extern void DUIWndUser( void );
+extern void DUIWndDebug( void );
+extern void DUIShowLogWindow( void );
+extern void DUIRedrawRegisters( void );
+extern int  DUIGetMonitorType( void );
+extern int  DUIScreenSizeX( void );
+extern int  DUIScreenSizeY( void );
+extern void DUIRedrawSources( void );
 extern void DUIErrorBox( char *buff );
-extern void DUIArrowCursor();
+extern void DUIArrowCursor( void );
 extern char *DUILoadString( int i );
-extern bool DUIAskIfAsynchOk();
-extern void DUIFlushKeys();
+extern bool DUIAskIfAsynchOk( void );
+extern void DUIFlushKeys( void );
 extern void DUIPlayDead( bool );
-extern void DUISysStart();
+extern void DUISysStart( void );
 extern void DUISysEnd( bool pause );
-extern void DUIRingBell();
+extern void DUIRingBell( void );
 extern void DUIProcPendingPaint(void);
-extern bool DUIInfoRelease(void);
+extern bool DUIInfoRelease( void );
 extern void *DUIHourGlass( void *x );
-extern void DUIEnterCriticalSection();
-extern void DUIExitCriticalSection();
-extern void DUIInitLiterals();
-extern void DUIFiniLiterals();
-extern bool DUIIsDBCS();
-extern int DUIEnvLkup(char *,char *, int);
-extern void DUIDirty();
+extern void DUIEnterCriticalSection( void );
+extern void DUIExitCriticalSection( void );
+extern void DUIInitLiterals( void );
+extern void DUIFiniLiterals( void );
+extern bool DUIIsDBCS( void );
+extern int  DUIEnvLkup( char *, char *, int );
+extern void DUIDirty( void );
 extern void DUISrcOrAsmInspect( address );
 extern void DUIAddrInspect( address );
 extern bool DUICopyCancelled( void * );
 extern void DUICopySize( void *, long );
 extern void DUICopyCopied( void *, long );
-

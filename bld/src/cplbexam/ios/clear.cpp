@@ -16,7 +16,7 @@ void main ( void ) {
     cout << endl;
     test.clear();                              // clear the iostate
     test.seekp( pos );
-    test << "Watcom C++ users." << endl;
+    test << "Open Watcom C++ users." << endl;
     test.seekg( 0 );
     while( (test >> ch).good() ) {
         cout << ch << flush;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Near heap expansion routines.
 *
 ****************************************************************************/
 
@@ -38,30 +37,23 @@
 #include "heapacc.h"
 #if defined(__DOS_EXT__)
  #include "extender.h"
- extern void *__ExpandDPMIBlock(frlptr,unsigned);
 #endif
 
 #if defined(__SMALL_DATA__)
 
 _WCRTLINK void *_expand( void *stg, size_t amount )
-    {
-        return( _nexpand( stg, amount ) );
-    }
+{
+    return( _nexpand( stg, amount ) );
+}
 
 #endif
 
-#if defined(__AXP__) || defined(__PPC__)
-    #define _SEGMENT int
-#else
-    #define _SEGMENT __segment
-#endif
-
-int __HeapManager_expand( _SEGMENT seg,
+int __HeapManager_expand( __segment seg,
                           unsigned offset,
                           size_t req_size,
                           size_t *growth_size )
 {
-    #if defined(M_I86)
+    #if defined( _M_I86 )
         typedef struct freelistp __based(seg) *fptr;
         typedef char __based(void) *cptr;
 
@@ -108,7 +100,7 @@ int __HeapManager_expand( _SEGMENT seg,
                             (fptr)((PTR)hblk+hblk->len) > (fptr)offset ) break;
                     }
                 }
-                #if defined(M_I86)
+                #if defined( _M_I86 )
                     else {      // Based heap
                         hblk = 0;
                     }
@@ -124,7 +116,6 @@ int __HeapManager_expand( _SEGMENT seg,
                     pnext->prev = pprev;
                     p1->len += free_size;
                     hblk->numfree--;
-                    __fheap_clean = 0;
                     if( free_size >= *growth_size ) {
                         return( __HM_SUCCESS );
                     }
@@ -138,7 +129,6 @@ int __HeapManager_expand( _SEGMENT seg,
                     pprev->next = p2;
                     pnext->prev = p2;
                     p1->len += *growth_size;
-                    __fheap_clean = 0;
                     return( __HM_SUCCESS );
                 }
             }
@@ -158,13 +148,13 @@ int __HeapManager_expand( _SEGMENT seg,
                         (fptr)((PTR)hblk+hblk->len) > (fptr)offset ) break;
                 }
             }
-            #if defined(M_I86)
+            #if defined( _M_I86 )
                 else    // Based heap
                     hblk = 0;
             #endif
             /* _bfree will decrement 'numalloc' 08-jul-91 */
             hblk->numalloc++;
-            #if defined(M_I86)
+            #if defined( _M_I86 )
                 _bfree( seg, (cptr)p1 + TAG_SIZE );
                 /* free the top portion */
             #else

@@ -45,7 +45,9 @@ typedef struct {
 /*
  * MsgBoxMain
  */
-void MsgBoxMain( MsgBoxInfo *info ) {
+void MsgBoxMain( void *_info ) {
+    MsgBoxInfo          *info = _info;
+
     MessageBox( info->hwnd, info->text, info->title, info->flags );
     MemFree( info->text );
     MemFree( info->title );
@@ -68,11 +70,7 @@ void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
     strcpy( info->text, text );
     info->title = MemAlloc( strlen( title ) + 1 );
     strcpy( info->title, title );
-#if (__WATCOMC__ < 1080 )
-    _beginthread( MsgBoxMain, NULL, 0, info );
-#else
     _beginthread( MsgBoxMain, 0, info );
-#endif
 }
 
 /*
@@ -152,8 +150,9 @@ static BOOL addRunningProcess( DWORD pid ) {
 /*
  * DebuggerMain - thread that acts as the debugger for attatched processes
  */
-void DebuggerMain( ProcAttatchInfo *info ) {
+void DebuggerMain( void *_info ) {
 
+    ProcAttatchInfo            *info = _info;
     STARTUPINFO                 startup;
     PROCESS_INFORMATION         procinfo;
     CommunicationBuffer         data;
@@ -230,8 +229,7 @@ void DebuggerMain( ProcAttatchInfo *info ) {
 /*
  * CallProcCtl
  */
-void CallProcCtl( DWORD event, void *info,
-                  void (*hdler)(ProcAttatchInfo *) )
+void CallProcCtl( DWORD event, void *info, void (*hdler)(void *) )
 {
     ProcAttatchInfo     *threadinfo;
 
@@ -246,9 +244,5 @@ void CallProcCtl( DWORD event, void *info,
         break;
     }
     threadinfo->errhdler = hdler;
-#if (__WATCOMC__ < 1080 )
-    _beginthread( DebuggerMain, NULL, 0, threadinfo );
-#else
     _beginthread( DebuggerMain, 0, threadinfo );
-#endif
 }

@@ -24,10 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Operating system specific include file for execution sampler.
 *
 ****************************************************************************/
 
 
-#include <dos.h>
+#if defined(__DOS__)
+    #include <dos.h>
+#endif

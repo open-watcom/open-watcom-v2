@@ -1,0 +1,311 @@
+c$noreference
+
+        integer  OCODE_GNOP1
+        parameter (OCODE_GNOP1 = '00000000'x)
+        integer  OCODE_GESD
+        parameter (OCODE_GESD = '000000FF'x)
+
+        integer  OCODE2_1
+        parameter (OCODE2_1 = '00000080'x)
+        integer  OCODE2_2
+        parameter (OCODE2_2 = '00000088'x)
+
+        integer  OCODE_GBAR
+        parameter (OCODE_GBAR = '00000068'x)
+        integer  OCODE_GCFIG
+        parameter (OCODE_GCFIG = '0000007D'x)
+        integer  OCODE_GEEL
+        parameter (OCODE_GEEL = '00000049'x)
+        integer  OCODE_GEPTH
+        parameter (OCODE_GEPTH = '0000007F'x)
+        integer  OCODE_GEPROL
+        parameter (OCODE_GEPROL = '0000003E'x)
+        integer  OCODE_GPOP
+        parameter (OCODE_GPOP = '0000003F'x)
+        integer  OCODE_GSBMX
+        parameter (OCODE_GSBMX = '0000000D'x)
+        integer  OCODE_GPSBMX
+        parameter (OCODE_GPSBMX = '0000004D'x)
+        integer  OCODE_GSCD
+        parameter (OCODE_GSCD = '0000003A'x)
+        integer  OCODE_GPSCD
+        parameter (OCODE_GPSCD = '0000007A'x)
+        integer  OCODE_GSCR
+        parameter (OCODE_GSCR = '00000039'x)
+        integer  OCODE_GPSCR
+        parameter (OCODE_GPSCR = '00000079'x)
+        integer  OCODE_GSCS
+        parameter (OCODE_GSCS = '00000038'x)
+        integer  OCODE_GPSCS
+        parameter (OCODE_GPSCS = '00000078'x)
+        integer  OCODE_GSCOL
+        parameter (OCODE_GSCOL = '0000000A'x)
+        integer  OCODE_GPSCOL
+        parameter (OCODE_GPSCOL = '0000004A'x)
+        integer  OCODE_GSLE
+        parameter (OCODE_GSLE = '0000001A'x)
+        integer  OCODE_GPSLE
+        parameter (OCODE_GPSLE = '0000005A'x)
+        integer  OCODE_GSLJ
+        parameter (OCODE_GSLJ = '0000001B'x)
+        integer  OCODE_GPSLJ
+        parameter (OCODE_GPSLJ = '0000005B'x)
+        integer  OCODE_GSLT
+        parameter (OCODE_GSLT = '00000018'x)
+        integer  OCODE_GPSLT
+        parameter (OCODE_GPSLT = '00000058'x)
+        integer  OCODE_GSLW
+        parameter (OCODE_GSLW = '00000019'x)
+        integer  OCODE_GPSLW
+        parameter (OCODE_GPSLW = '00000059'x)
+        integer  OCODE_GSMP
+        parameter (OCODE_GSMP = '0000003B'x)
+        integer  OCODE_GPSMP
+        parameter (OCODE_GPSMP = '0000007B'x)
+        integer  OCODE_GSMS
+        parameter (OCODE_GSMS = '0000003C'x)
+        integer  OCODE_GPSMS
+        parameter (OCODE_GPSMS = '0000007C'x)
+        integer  OCODE_GSMT
+        parameter (OCODE_GSMT = '00000029'x)
+        integer  OCODE_GPSMT
+        parameter (OCODE_GPSMT = '00000069'x)
+        integer  OCODE_GSMX
+        parameter (OCODE_GSMX = '0000000C'x)
+        integer  OCODE_GPSMX
+        parameter (OCODE_GPSMX = '0000004C'x)
+        integer  OCODE_GSPS
+        parameter (OCODE_GSPS = '00000008'x)
+        integer  OCODE_GPSPS
+        parameter (OCODE_GPSPS = '00000048'x)
+        integer  OCODE_GSPT
+        parameter (OCODE_GSPT = '00000028'x)
+        integer  OCODE_GPSPT
+        parameter (OCODE_GPSPT = '00000009'x)
+
+        integer  OCODE_VLONG
+        parameter (OCODE_VLONG = '000000FE'x)
+
+        integer  OCODE_GEAR
+        parameter (OCODE_GEAR = '00000060'x)
+        integer  OCODE_GEIMG
+        parameter (OCODE_GEIMG = '00000093'x)
+
+        integer  OCODE_GCCHST
+        parameter (OCODE_GCCHST = '00000083'x)
+
+        integer  OCODE_GCHST
+        parameter (OCODE_GCHST = '000000C3'x)
+
+        integer  OCODE_GCCHSTM
+        parameter (OCODE_GCCHSTM = '000000B1'x)
+
+        integer  OCODE_GCHSTM
+        parameter (OCODE_GCHSTM = '000000F1'x)
+
+        integer  OCODE_GCOMT
+        parameter (OCODE_GCOMT = '00000001'x)
+
+        integer  OCODE_GIMD
+        parameter (OCODE_GIMD = '00000092'x)
+
+        integer  OCODE_GCFARC
+        parameter (OCODE_GCFARC = '00000087'x)
+        integer  OCODE_GFARC
+        parameter (OCODE_GFARC = '000000C7'x)
+
+        integer  OCODE_GLABL
+        parameter (OCODE_GLABL = '000000D3'x)
+
+        integer  OCODE_GSCP
+        parameter (OCODE_GSCP = '00000021'x)
+        integer  OCODE_GPSCP
+        parameter (OCODE_GPSCP = '00000061'x)
+
+        integer  OCODE_GCBEZ
+        parameter (OCODE_GCBEZ = '000000A5'x)
+
+        integer  OCODE_GBEZ
+        parameter (OCODE_GBEZ = '000000E5'x)
+
+        integer  OCODE_GCFLT
+        parameter (OCODE_GCFLT = '00000085'x)
+
+        integer  OCODE_GFLT
+        parameter (OCODE_GFLT = '000000C5'x)
+
+        integer  OCODE_GCLINE
+        parameter (OCODE_GCLINE = '00000081'x)
+
+        integer  OCODE_GLINE
+        parameter (OCODE_GLINE = '000000C1'x)
+
+        integer  OCODE_GCMRK
+        parameter (OCODE_GCMRK = '00000082'x)
+
+        integer  OCODE_GMRK
+        parameter (OCODE_GMRK = '000000C2'x)
+
+        integer  OCODE_GCRLINE
+        parameter (OCODE_GCRLINE = '000000A1'x)
+
+        integer  OCODE_GRLINE
+        parameter (OCODE_GRLINE = '000000E1'x)
+
+        integer  OCODE_GSBCOL
+        parameter (OCODE_GSBCOL = '00000025'x)
+        integer  OCODE_GPSBCOL
+        parameter (OCODE_GPSBCOL = '00000065'x)
+
+        integer  OCODE_GSECOL
+        parameter (OCODE_GSECOL = '00000026'x)
+        integer  OCODE_GPSECOL
+        parameter (OCODE_GPSECOL = '00000066'x)
+
+        integer  OCODE_GSCA
+        parameter (OCODE_GSCA = '00000034'x)
+        integer  OCODE_GPSCA
+        parameter (OCODE_GPSCA = '00000074'x)
+
+        integer  OCODE_GSCH
+        parameter (OCODE_GSCH = '00000035'x)
+        integer  OCODE_GPSCH
+        parameter (OCODE_GPSCH = '00000075'x)
+
+        integer  OCODE_GSFLW
+        parameter (OCODE_GSFLW = '00000011'x)
+        integer  OCODE_GPSFLW
+        parameter (OCODE_GPSFLW = '00000051'x)
+
+        integer  OCODE_GSPIK
+        parameter (OCODE_GSPIK = '00000043'x)
+        integer  OCODE_GPSPIK
+        parameter (OCODE_GPSPIK = '00000023'x)
+
+        integer  OCODE_GCARC
+        parameter (OCODE_GCARC = '00000086'x)
+        integer  OCODE_GARC
+        parameter (OCODE_GARC = '000000C6'x)
+
+        integer  OCODE_GBEL
+        parameter (OCODE_GBEL = '000000D2'x)
+
+        integer  OCODE_GCBIMG
+        parameter (OCODE_GCBIMG = '00000091'x)
+        integer  OCODE_GBIMG
+        parameter (OCODE_GBIMG = '000000D1'x)
+
+        integer  OCODE_GBPTH
+        parameter (OCODE_GBPTH = '000000D0'x)
+
+        integer  OCODE_GCBOX
+        parameter (OCODE_GCBOX = '00000080'x)
+        integer  OCODE_GBOX
+        parameter (OCODE_GBOX = '000000C0'x)
+
+        integer  OCODE_GCALLS
+        parameter (OCODE_GCALLS = '00000007'x)
+
+        integer  OCODE_GFPTH
+        parameter (OCODE_GFPTH = '000000D7'x)
+
+        integer  OCODE_GOPTH
+        parameter (OCODE_GOPTH = '000000D4'x)
+
+        integer  OCODE_GMPTH
+        parameter (OCODE_GMPTH = '000000D8'x)
+
+        integer  OCODE_GCPARC
+        parameter (OCODE_GCPARC = '000000A3'x)
+        integer  OCODE_GPARC
+        parameter (OCODE_GPARC = '000000E3'x)
+
+        integer  OCODE_GSCPTH
+        parameter (OCODE_GSCPTH = '000000B4'x)
+
+        integer  OCODE_GSAP
+        parameter (OCODE_GSAP = '00000022'x)
+        integer  OCODE_GPSAP
+        parameter (OCODE_GPSAP = '00000062'x)
+
+        integer  OCODE_GSBICOL
+        parameter (OCODE_GSBICOL = '000000A7'x)
+        integer  OCODE_GPSBICOL
+        parameter (OCODE_GPSBICOL = '000000E7'x)
+        integer  OCODE_GSICOL
+        parameter (OCODE_GSICOL = '000000A6'x)
+        integer  OCODE_GPSICOL
+        parameter (OCODE_GPSICOL = '000000E6'x)
+
+        integer  OCODE_GSCC
+        parameter (OCODE_GSCC = '00000033'x)
+        integer  OCODE_GPSCC
+        parameter (OCODE_GPSCC = '00000003'x)
+
+        integer  OCODE_GSMC
+        parameter (OCODE_GSMC = '00000037'x)
+        integer  OCODE_GPSMC
+        parameter (OCODE_GPSMC = '00000077'x)
+
+        integer  OCODE_GSPRP
+        parameter (OCODE_GSPRP = '000000A0'x)
+        integer  OCODE_GPSPRP
+        parameter (OCODE_GPSPRP = '000000E0'x)
+
+        integer  OCODE_GSIA
+        parameter (OCODE_GSIA = '00000014'x)
+        integer  OCODE_GPSIA
+        parameter (OCODE_GPSIA = '00000054'x)
+
+        integer  OCODE_GSTM
+        parameter (OCODE_GSTM = '00000024'x)
+        integer  OCODE_GPSTM
+        parameter (OCODE_GPSTM = '00000064'x)
+
+        integer  OCODE_GSTV
+        parameter (OCODE_GSTV = '00000031'x)
+
+        integer  OCODE_GSSB
+        parameter (OCODE_GSSB = '00000032'x)
+        integer  OCODE_GSVW
+        parameter (OCODE_GSVW = '00000027'x)
+        integer  OCODE_GPSVW
+        parameter (OCODE_GPSVW = '00000067'x)
+
+        integer  OCODE_GSGCH
+        parameter (OCODE_GSGCH = '00000004'x)
+
+        integer  OCODE_GSSLW
+        parameter (OCODE_GSSLW = '00000015'x)
+        integer  OCODE_GPSSLW
+        parameter (OCODE_GPSSLW = '00000055'x)
+
+        integer  OCODE_GCSFLT
+        parameter (OCODE_GCSFLT = '000000A4'x)
+        integer  OCODE_GSFLT
+        parameter (OCODE_GSFLT = '000000E4'x)
+
+        integer  OCODE_GBBLT
+        parameter (OCODE_GBBLT = '000000D6'x)
+
+        integer  OCODE_GSCE
+        parameter (OCODE_GSCE = '00000017'x)
+        integer  OCODE_GPSCE
+        parameter (OCODE_GPSCE = '00000057'x)
+        integer  OCODE_GSCBE
+        parameter (OCODE_GSCBE = '00000005'x)
+        integer  OCODE_GPSCBE
+        parameter (OCODE_GPSCBE = '00000045'x)
+
+        integer  OCODE_GESCP
+        parameter (OCODE_GESCP = '000000D5'x)
+
+        integer  OCODEQ_GCCHSTE
+        parameter (OCODEQ_GCCHSTE = '000000B0'x)
+        integer  OCODEQ_GCHSTE
+        parameter (OCODEQ_GCHSTE = '000000F0'x)
+
+        integer  OCODEQ_GEESCP
+        parameter (OCODEQ_GEESCP = '000000D5'x)
+
+c$reference

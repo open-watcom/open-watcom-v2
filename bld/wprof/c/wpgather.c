@@ -63,7 +63,7 @@ extern bint GetCurrentGather( sio_data * curr_sio )
     } else if( curr_sio->level_open == LEVEL_FILE ) {
         gather_active = curr_sio->curr_file->gather_active;
     } else {
-        gather_active = B_FALSE;
+        gather_active = P_FALSE;
     }
     return( gather_active );
 }
@@ -128,9 +128,9 @@ extern void GatherImage( sio_data * curr_sio, bint gather_active )
         while( count-- > 0 ) {
             curr_image = curr_sio->images[image_count++];
             if( curr_image->gather_image ) {
-                curr_image->ignore_gather = B_TRUE;
+                curr_image->ignore_gather = P_TRUE;
             } else {
-                curr_image->ignore_gather = B_FALSE;
+                curr_image->ignore_gather = P_FALSE;
             }
         }
     } else {
@@ -145,15 +145,15 @@ extern void GatherImage( sio_data * curr_sio, bint gather_active )
                    && !curr_image->ignore_unknown_image ) {
                 curr_sio->number_gathered++;
                 agg_count += curr_image->agg_count;
-                curr_image->ignore_gather = B_TRUE;
+                curr_image->ignore_gather = P_TRUE;
             }
         }
         if( curr_sio->number_gathered > 0 ) {
             gather_image->agg_count = agg_count;
-            gather_image->ignore_gather = B_FALSE;
+            gather_image->ignore_gather = P_FALSE;
         } else {
-            curr_sio->gather_active = B_FALSE;
-            gather_image->ignore_gather = B_TRUE;
+            curr_sio->gather_active = P_FALSE;
+            gather_image->ignore_gather = P_TRUE;
         }
     }
 }
@@ -181,9 +181,9 @@ extern void GatherMod( sio_data * curr_sio, bint gather_active )
         while( count-- > 0 ) {
             curr_mod = curr_image->module[mod_count++];
             if( curr_mod->gather_module ) {
-                curr_mod->ignore_gather = B_TRUE;
+                curr_mod->ignore_gather = P_TRUE;
             } else {
-                curr_mod->ignore_gather = B_FALSE;
+                curr_mod->ignore_gather = P_FALSE;
             }
         }
     } else {
@@ -198,15 +198,15 @@ extern void GatherMod( sio_data * curr_sio, bint gather_active )
                    && !curr_mod->ignore_unknown_mod ) {
                 curr_image->number_gathered++;
                 agg_count += curr_mod->agg_count;
-                curr_mod->ignore_gather = B_TRUE;
+                curr_mod->ignore_gather = P_TRUE;
             }
         }
         if( curr_image->number_gathered > 0 ) {
             gather_mod->agg_count = agg_count;
-            gather_mod->ignore_gather = B_FALSE;
+            gather_mod->ignore_gather = P_FALSE;
         } else {
-            curr_image->gather_active = B_FALSE;
-            gather_mod->ignore_gather = B_TRUE;
+            curr_image->gather_active = P_FALSE;
+            gather_mod->ignore_gather = P_TRUE;
         }
     }
 }
@@ -234,9 +234,9 @@ extern void GatherFile( sio_data * curr_sio, bint gather_active )
         while( count-- > 0 ) {
             curr_file = curr_mod->mod_file[file_count++];
             if( curr_file->gather_file ) {
-                curr_file->ignore_gather = B_TRUE;
+                curr_file->ignore_gather = P_TRUE;
             } else {
-                curr_file->ignore_gather = B_FALSE;
+                curr_file->ignore_gather = P_FALSE;
             }
         }
     } else {
@@ -251,15 +251,15 @@ extern void GatherFile( sio_data * curr_sio, bint gather_active )
                    && !curr_file->ignore_unknown_file ) {
                 curr_mod->number_gathered++;
                 agg_count += curr_file->agg_count;
-                curr_file->ignore_gather = B_TRUE;
+                curr_file->ignore_gather = P_TRUE;
             }
         }
         if( curr_mod->number_gathered > 0 ) {
             gather_file->agg_count = agg_count;
-            gather_file->ignore_gather = B_FALSE;
+            gather_file->ignore_gather = P_FALSE;
         } else {
-            curr_mod->gather_active = B_FALSE;
-            gather_file->ignore_gather = B_TRUE;
+            curr_mod->gather_active = P_FALSE;
+            gather_file->ignore_gather = P_TRUE;
         }
     }
 }
@@ -287,9 +287,9 @@ extern void GatherRtn( sio_data * curr_sio, bint gather_active )
         while( count-- > 0 ) {
             curr_rtn = curr_file->routine[rtn_count++];
             if( curr_rtn->gather_routine ) {
-                curr_rtn->ignore_gather = B_TRUE;
+                curr_rtn->ignore_gather = P_TRUE;
             } else {
-                curr_rtn->ignore_gather = B_FALSE;
+                curr_rtn->ignore_gather = P_FALSE;
             }
         }
     } else {
@@ -304,15 +304,15 @@ extern void GatherRtn( sio_data * curr_sio, bint gather_active )
                    && !curr_rtn->ignore_unknown_rtn ) {
                 curr_file->number_gathered++;
                 agg_count += curr_rtn->tick_count;
-                curr_rtn->ignore_gather = B_TRUE;
+                curr_rtn->ignore_gather = P_TRUE;
             }
         }
         if( curr_file->number_gathered > 0 ) {
             gather_rtn->tick_count = agg_count;
-            gather_rtn->ignore_gather = B_FALSE;
+            gather_rtn->ignore_gather = P_FALSE;
         } else {
-            curr_file->gather_active = B_FALSE;
-            gather_rtn->ignore_gather = B_TRUE;
+            curr_file->gather_active = P_FALSE;
+            gather_rtn->ignore_gather = P_TRUE;
         }
     }
 }

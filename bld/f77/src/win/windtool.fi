@@ -1,0 +1,152 @@
+*$noreference
+
+! Drawing-Tool Functions:
+! -----------------------
+
+      external CreateBrushIndirect
+      external CreateDIBPatternBrush
+      external CreateHatchBrush
+      external CreatePatternBrush
+      external CreatePen
+      external CreatePenIndirect
+      external CreateSolidBrush
+      external DeleteObject
+      external EnumObjects
+      external GetBrushOrg
+      external GetObject
+      external GetStockObject
+      external SelectObject
+      external SetBrushOrg
+      external UnrealizeObject
+
+      integer*2 CreateBrushIndirect
+      integer*2 CreateDIBPatternBrush
+      integer*2 CreateHatchBrush
+      integer*2 CreatePatternBrush
+      integer*2 CreatePen
+      integer*2 CreatePenIndirect
+      integer*2 CreateSolidBrush
+      integer*2 DeleteObject
+      integer*2 EnumObjects
+      integer*4 GetBrushOrg
+      integer*2 GetObject
+      integer*2 GetStockObject
+      integer*2 SelectObject
+      integer*4 SetBrushOrg
+      integer*2 UnrealizeObject
+
+! Brush Styles
+
+      integer BS_SOLID
+      integer BS_NULL
+      integer BS_HOLLOW
+      integer BS_HATCHED
+      integer BS_PATTERN
+      integer BS_INDEXED
+      integer BS_DIBPATTERN
+
+      parameter ( BS_SOLID            = 0 )
+      parameter ( BS_NULL             = 1 )
+      parameter ( BS_HOLLOW           = BS_NULL )
+      parameter ( BS_HATCHED          = 2 )
+      parameter ( BS_PATTERN          = 3 )
+      parameter ( BS_INDEXED          = 4 )
+      parameter ( BS_DIBPATTERN       = 5 )
+
+! Hatch Styles
+
+      integer HS_HORIZONTAL
+      integer HS_VERTICAL
+      integer HS_FDIAGONAL
+      integer HS_BDIAGONAL
+      integer HS_CROSS
+      integer HS_DIAGCROSS
+
+      parameter ( HS_HORIZONTAL       = 0 )       ! -----
+      parameter ( HS_VERTICAL         = 1 )       ! |||||
+      parameter ( HS_FDIAGONAL        = 2 )       ! \\\\\
+      parameter ( HS_BDIAGONAL        = 3 )       ! /////
+      parameter ( HS_CROSS            = 4 )       ! +++++
+      parameter ( HS_DIAGCROSS        = 5 )       ! xxxxx
+
+! Pen Styles
+
+      integer PS_SOLID
+      integer PS_DASH
+      integer PS_DOT
+      integer PS_DASHDOT
+      integer PS_DASHDOTDOT
+      integer PS_NULL
+      integer PS_INSIDEFRAME
+
+      parameter ( PS_SOLID            = 0 )
+      parameter ( PS_DASH             = 1 )       ! -------
+      parameter ( PS_DOT              = 2 )       ! .......
+      parameter ( PS_DASHDOT          = 3 )       ! _._._._
+      parameter ( PS_DASHDOTDOT       = 4 )       ! _.._.._
+      parameter ( PS_NULL             = 5 )
+      parameter ( PS_INSIDEFRAME      = 6 )
+
+! Object Definitions for EnumObjects()
+
+      integer OBJ_PEN
+      integer OBJ_BRUSH
+
+      parameter ( OBJ_PEN                      = 1 )
+      parameter ( OBJ_BRUSH                    = 2 )
+
+! Stock Logical Objects
+
+      integer WHITE_BRUSH
+      integer LTGRAY_BRUSH
+      integer GRAY_BRUSH
+      integer DKGRAY_BRUSH
+      integer BLACK_BRUSH
+      integer NULL_BRUSH
+      integer HOLLOW_BRUSH
+      integer WHITE_PEN
+      integer BLACK_PEN
+      integer NULL_PEN
+      integer OEM_FIXED_FONT
+      integer ANSI_FIXED_FONT
+      integer ANSI_VAR_FONT
+      integer SYSTEM_FONT
+      integer DEVICE_DEFAULT_FONT
+      integer DEFAULT_PALETTE
+      integer SYSTEM_FIXED_FONT
+
+      parameter ( WHITE_BRUSH         = 0 )
+      parameter ( LTGRAY_BRUSH        = 1 )
+      parameter ( GRAY_BRUSH          = 2 )
+      parameter ( DKGRAY_BRUSH        = 3 )
+      parameter ( BLACK_BRUSH         = 4 )
+      parameter ( NULL_BRUSH          = 5 )
+      parameter ( HOLLOW_BRUSH        = NULL_BRUSH )
+      parameter ( WHITE_PEN           = 6 )
+      parameter ( BLACK_PEN           = 7 )
+      parameter ( NULL_PEN            = 8 )
+      parameter ( OEM_FIXED_FONT      = 10 )
+      parameter ( ANSI_FIXED_FONT     = 11 )
+      parameter ( ANSI_VAR_FONT       = 12 )
+      parameter ( SYSTEM_FONT         = 13 )
+      parameter ( DEVICE_DEFAULT_FONT = 14 )
+      parameter ( DEFAULT_PALETTE     = 15 )
+      parameter ( SYSTEM_FIXED_FONT   = 16 )
+
+! Logical Brush (or Pattern)
+
+      structure /LOGBRUSH/
+          integer*2           lbStyle
+          integer*4           lbColor
+          integer*2           lbHatch
+      end structure
+
+! Logical Pen
+
+      structure /LOGPEN/
+          integer*2           lopnStyle
+          record /POINT/      lopnWidth
+          integer*4           lopnColor
+      end structure
+
+*$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  __CVTBuffer() implementation.
 *
 ****************************************************************************/
 
@@ -36,26 +35,16 @@
 #include "liballoc.h"
 #include "rtdata.h"
 #include "exitwmsg.h"
+#include "xfloat.h"
 #if defined(__SW_BM)
 #include "thread.h"
 #endif
 
-#ifndef __PENPOINT__
-    #ifndef __SW_BM
-        static MAX_CHAR_TYPE    cvt_buffer[20];
-    #endif
+#if !defined(__SW_BM)
+    static MAX_CHAR_TYPE    cvt_buffer[ __FPCVT_BUFFERLEN + 1 ];
 #endif
 
-_WCRTLINK CHAR_TYPE *__CVTBuffer()
+_WCRTLINK CHAR_TYPE *__CVTBuffer( void )
 {
-#if defined(__PENPOINT__)
-    if( _RWD_cvtbuf == NULL ) {
-        _RWD_cvtbuf = lib_malloc( 20 * sizeof( wchar_t ) );
-        if( _RWD_cvtbuf == NULL ) {
-            __fatal_runtime_error(
-                "Not enough memory to allocate cvt buffer\r\n", 1 );
-        }
-    }
-#endif
     return( (CHAR_TYPE *)_RWD_cvtbuf );
 }

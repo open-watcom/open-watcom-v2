@@ -24,19 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory manager interface.
 *
 ****************************************************************************/
 
 
 #include "hostsys.h"
 
-extern pointer  MemAlloc(uint);
-extern void     MemFree(pointer);
-extern void     MemInit();
-extern void     MemFini();
-extern void     MemCoalesce();
+extern pointer  MemAlloc( uint );
+extern void     MemFree( pointer );
+extern void     MemInit( void );
+extern void     MemFini( void );
+extern void     MemCoalesce( void );
 
 #define _SysAlloc        MemAlloc
 #define _SysFree         MemFree

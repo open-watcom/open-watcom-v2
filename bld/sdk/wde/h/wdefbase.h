@@ -46,9 +46,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeBaseCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeBaseInit        ( Bool );
-extern void              WdeBaseFini        ( void );
+extern OBJPTR WINEXPORT  WdeBaseCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeBaseInit( Bool );
+extern void              WdeBaseFini( void );
 
 extern BOOL WdeCheckBaseScrollbars( BOOL in_resize );
 

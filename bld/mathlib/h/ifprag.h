@@ -42,14 +42,10 @@
 #elif defined(__386__)
     #pragma aux if_rtn parm [EAX EBX ECX EDX 8087];
     #if defined(__SW_3S)
-        #if __WATCOMC__ < 900
-            #pragma aux (if_rtn) if_rtn modify [ FS GS ];
+        #ifdef __FLAT__
+            #pragma aux (if_rtn) if_rtn modify [ GS ];
         #else
-            #ifdef __FLAT__
-                #pragma aux (if_rtn) if_rtn modify [ GS ];
-            #else
-                #pragma aux (if_rtn) if_rtn modify [ GS FS ES ];
-            #endif
+            #pragma aux (if_rtn) if_rtn modify [ GS FS ES ];
         #endif
         #if defined(__FPI__)
             #pragma aux (if_rtn) if_rtn value [8087];
@@ -58,3 +54,98 @@
 #else
     #pragma aux if_rtn parm [AX BX CX DX 8087];
 #endif
+
+_WMRTLINK extern float _IF_acos( float );
+_WMRTLINK extern double _IF_dacos( double );
+_WMRTLINK extern float _IF_asin( float );
+_WMRTLINK extern double _IF_dasin( double );
+_WMRTLINK extern float _IF_atan( float );
+_WMRTLINK extern double _IF_datan( double );
+_WMRTLINK extern float _IF_atan2( float, float );
+_WMRTLINK extern double _IF_datan2( double, double );
+_WMRTLINK extern float _IF_cosh( float );
+_WMRTLINK extern double _IF_dcosh( double );
+_WMRTLINK extern float _IF_exp( float );
+_WMRTLINK extern double _IF_dexp( double );
+_WMRTLINK extern float _IF_fabs( float );
+_WMRTLINK extern double _IF_dfabs( double );
+_WMRTLINK extern float _IF_fmod( float, float );
+_WMRTLINK extern double _IF_dfmod( double, double );
+_WMRTLINK extern float _IF_log( float );
+_WMRTLINK extern double _IF_dlog( double );
+_WMRTLINK extern float _IF_log10( float );
+_WMRTLINK extern double _IF_dlog10( double );
+_WMRTLINK extern float _IF_pow( float, float );
+_WMRTLINK extern double _IF_dpow( double, double );
+_WMRTLINK extern float _IF_sin( float );
+_WMRTLINK extern double _IF_dsin( double );
+_WMRTLINK extern float _IF_cos( float );
+_WMRTLINK extern double _IF_dcos( double );
+_WMRTLINK extern float _IF_tan( float );
+_WMRTLINK extern double _IF_dtan( double );
+_WMRTLINK extern float _IF_sinh( float );
+_WMRTLINK extern double _IF_dsinh( double );
+_WMRTLINK extern float _IF_sqrt( float );
+_WMRTLINK extern double _IF_dsqrt( double );
+_WMRTLINK extern float _IF_tanh( float );
+_WMRTLINK extern double _IF_dtanh( double );
+
+_WMRTLINK double __acosh( double x );
+_WMRTLINK double __asinh( double x );
+_WMRTLINK double __atanh( double x );
+_WMRTLINK double __log2( double x );
+_WMRTLINK long _IF_ipow( long base, long power );
+_WMRTLINK extern float _IF_powi( float, long );
+_WMRTLINK extern double _IF_dpowi( double, long );
+//_WMRTLINK double _IF_PowRI( double base, intstar4 power );
+//_WMRTLINK intstar4 _IF_powii( intstar4 base, intstar4 power );
+
+#if defined(_M_IX86)
+  #pragma aux (if_rtn) _IF_acos "IF@ACOS";
+  #pragma aux (if_rtn) _IF_dacos "IF@DACOS";
+  #pragma aux (if_rtn) _IF_asin "IF@ASIN";
+  #pragma aux (if_rtn) _IF_dasin "IF@DASIN";
+  #pragma aux (if_rtn) _IF_atan "IF@ATAN";
+  #pragma aux (if_rtn) _IF_datan "IF@DATAN";
+  #pragma aux (if_rtn) _IF_atan2 "IF@ATAN2";
+  #pragma aux (if_rtn) _IF_datan2 "IF@DATAN2";
+  #pragma aux (if_rtn) _IF_cosh "IF@COSH";
+  #pragma aux (if_rtn) _IF_dcosh "IF@DCOSH";
+  #pragma aux (if_rtn) _IF_exp "IF@EXP";
+  #pragma aux (if_rtn) _IF_dexp "IF@DEXP";
+  #pragma aux (if_rtn) _IF_fabs "IF@FABS";
+  #pragma aux (if_rtn) _IF_dfabs "IF@DFABS";
+  #pragma aux (if_rtn) _IF_fmod "IF@FMOD";
+  #pragma aux (if_rtn) _IF_dfmod "IF@DFMOD";
+  #pragma aux (if_rtn) _IF_log "IF@LOG";
+  #pragma aux (if_rtn) _IF_dlog "IF@DLOG";
+  #pragma aux (if_rtn) _IF_log10 "IF@LOG10";
+  #pragma aux (if_rtn) _IF_dlog10 "IF@DLOG10";
+  #pragma aux (if_rtn) _IF_pow "IF@POW";
+  #pragma aux (if_rtn) _IF_dpow "IF@DPOW";
+  #pragma aux (if_rtn) _IF_sin "IF@SIN";
+  #pragma aux (if_rtn) _IF_dsin "IF@DSIN";
+  #pragma aux (if_rtn) _IF_cos "IF@COS";
+  #pragma aux (if_rtn) _IF_dcos "IF@DCOS";
+  #pragma aux (if_rtn) _IF_tan "IF@TAN";
+  #pragma aux (if_rtn) _IF_dtan "IF@DTAN";
+  #pragma aux (if_rtn) _IF_sinh "IF@SINH";
+  #pragma aux (if_rtn) _IF_dsinh "IF@DSINH";
+  #pragma aux (if_rtn) _IF_sqrt "IF@SQRT";
+  #pragma aux (if_rtn) _IF_dsqrt "IF@DSQRT";
+  #pragma aux (if_rtn) _IF_tanh "IF@TANH";
+  #pragma aux (if_rtn) _IF_dtanh "IF@DTANH";
+
+  #pragma aux __acosh "IF@DACOSH";
+  #pragma aux __asinh "IF@DASINH";
+  #pragma aux __atanh "IF@DATANH";
+  #pragma aux __log2 "IF@DLOG2";
+#if defined(__386__)
+  #pragma aux (if_rtn) _IF_ipow "IF@IPOW" value [EAX];
+#elif defined( _M_I86 )
+  #pragma aux (if_rtn) _IF_ipow "IF@IPOW";
+#endif
+  #pragma aux (if_rtn) _IF_dpowi "IF@DPOWI";
+  #pragma aux (if_rtn) _IF_powi "IF@POWI";
+#endif
+

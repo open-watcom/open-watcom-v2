@@ -24,15 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Version strings for vi.
 *
 ****************************************************************************/
 
 
+#include "control.h"
 #include "banner.h"
 
-char near DATESTAMP_T[] = __TIME__;
-char near DATESTAMP_D[] = __DATE__;
-char near AUTHOR[] = banner2( "1991" );
-char near VERSION[] = _VI_VERSION_;
+char _NEAR  DATESTAMP_T[] = __TIME__;
+char _NEAR  DATESTAMP_D[] = __DATE__;
+char _NEAR  AUTHOR[] = banner2( "1991" );
+char _NEAR  VERSIONT[] = _VI_VERSION_;

@@ -24,76 +24,90 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of the ANSI/ISO clock() function.
 *
 ****************************************************************************/
 
-
 #include "variety.h"
 #include <time.h>
-#ifdef __QNX__
+#if defined( __QNX__ )
 #include <sys/types.h>
 #include <sys/timers.h>
+#elif defined( __LINUX__ )
+#include <sys/times.h>
+#include <errno.h>
 #endif
 #include <rtinit.h>
 #include "timedata.h"
 
-#define MAX_CLOCK_T   ~((clock_t)0)
-#define MAX_SECONDS   ((time_t)(MAX_CLOCK_T / CLOCKS_PER_SEC) - 1)
+#ifdef __LINUX__
+
+_WCRTLINK clock_t clock( void )
+{
+    struct tms  buf;
+    int         save_errno = errno;
+    clock_t     clk = times( &buf );
+    errno = save_errno;
+    return clk;
+}
+
+#else
+
+#define MAX_CLOCK_T   ~( ( clock_t ) 0 )
+#define MAX_SECONDS   ( ( time_t ) ( MAX_CLOCK_T / CLOCKS_PER_SEC ) - 1 )
 
 static clock_t init_milliseconds;
 static time_t  init_seconds;
 
-static void get_clock_time(time_t *secs, clock_t *milliseconds)
+static void get_clock_time( time_t *secs, clock_t *milliseconds )
 {
-#ifdef __QNX__
-    struct timespec timer;
+#if defined( __QNX__ )
+    struct timespec     timer;
 
-    getclock(TIMEOFDAY, &timer);
-    *secs       = (time_t)timer.tv_sec;
-    *milliseconds = (clock_t)(timer.tv_nsec / (1000000000 / CLOCKS_PER_SEC));
+    getclock( TIMEOFDAY, &timer );
+    *secs = ( time_t ) timer.tv_sec;
+    *milliseconds = ( clock_t ) ( timer.tv_nsec / ( 1000000000 / CLOCKS_PER_SEC ) );
 #else
     struct tm t;
 
-    *milliseconds = (clock_t)__getctime(&t);
-    *secs       = mktime(&t);
+    *milliseconds = ( clock_t ) __getctime( &t );
+    *secs = __local_mktime( &t, NULL, NULL );
 #endif
 } /* get_clock_time() */
 
-
-_WCRTLINK clock_t clock(void)
+_WCRTLINK clock_t clock( void )
 {
-    time_t  new_seconds;
-    clock_t ticks;
+    time_t      new_seconds;
+    clock_t     ticks;
 
     /*
      * Get the change in seconds and milliseconds of seconds since startup.
      */
-    get_clock_time(&new_seconds, &ticks);
-    ticks       -= init_milliseconds;
+    get_clock_time( &new_seconds, &ticks );
+    ticks -= init_milliseconds;
     new_seconds -= init_seconds;
 
     /*
      * Make sure we won't overflow.
      */
-    if (new_seconds > MAX_SECONDS)
-            return -1;
+    if( new_seconds > MAX_SECONDS )
+        return( ( clock_t ) -1 );
 
     /*
      * `ticks' right now contains the number of milliseconds of seconds since
      * startup.  We still need to account for the number of full seconds that
      * may have passed.
      */
-    ticks += (clock_t)(new_seconds * CLOCKS_PER_SEC);
+    ticks += ( clock_t ) ( new_seconds * CLOCKS_PER_SEC );
 
-    return ticks;
-} /* clock() */
+    return( ticks );
+}
 
-
-static void __clock_init(void)
+static void __clock_init( void )
 {
-    get_clock_time(&init_seconds, &init_milliseconds);
-} /* __clock_init() */
+    get_clock_time( &init_seconds, &init_milliseconds );
+}
 
 AXI( __clock_init, INIT_PRIORITY_LIBRARY )
+
+#endif

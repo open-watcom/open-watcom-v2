@@ -1,0 +1,106 @@
+*$noreference
+
+! Hook Functions:
+! ---------------
+
+      external CallMsgFilter
+      external DefHookProc
+      external SetWindowsHook
+      external UnhookWindowsHook
+
+      integer*2 CallMsgFilter
+      integer*4 DefHookProc
+      integer*4 SetWindowsHook
+      integer*2 UnhookWindowsHook
+
+! SetWindowsHook() codes
+
+      integer WH_MSGFILTER
+      integer WH_JOURNALRECORD
+      integer WH_JOURNALPLAYBACK
+      integer WH_KEYBOARD
+      integer WH_GETMESSAGE
+      integer WH_CALLWNDPROC
+      integer WH_CBT
+      integer WH_SYSMSGFILTER
+      integer WH_WINDOWMGR
+
+      parameter ( WH_MSGFILTER        = -1 )
+      parameter ( WH_JOURNALRECORD    = 0 )
+      parameter ( WH_JOURNALPLAYBACK  = 1 )
+      parameter ( WH_KEYBOARD         = 2 )
+      parameter ( WH_GETMESSAGE       = 3 )
+      parameter ( WH_CALLWNDPROC      = 4 )
+      parameter ( WH_CBT              = 5 )
+      parameter ( WH_SYSMSGFILTER     = 6 )
+      parameter ( WH_WINDOWMGR        = 7 )
+
+! Hook Codes
+
+      integer HC_LPLPFNNEXT
+      integer HC_LPFNNEXT
+      integer HC_ACTION
+      integer HC_GETNEXT
+      integer HC_SKIP
+      integer HC_NOREM
+      integer HC_NOREMOVE
+      integer HC_SYSMODALON
+      integer HC_SYSMODALOFF
+
+      parameter ( HC_LPLPFNNEXT       = -2 )
+      parameter ( HC_LPFNNEXT         = -1 )
+      parameter ( HC_ACTION           = 0 )
+      parameter ( HC_GETNEXT          = 1 )
+      parameter ( HC_SKIP             = 2 )
+      parameter ( HC_NOREM            = 3 )
+      parameter ( HC_NOREMOVE         = 3 )
+      parameter ( HC_SYSMODALON       = 4 )
+      parameter ( HC_SYSMODALOFF      = 5 )
+
+! CBT Hook Codes
+
+      integer HCBT_MOVESIZE
+      integer HCBT_MINMAX
+      integer HCBT_QS
+
+      parameter ( HCBT_MOVESIZE       = 0 )
+      parameter ( HCBT_MINMAX         = 1 )
+      parameter ( HCBT_QS             = 2 )
+
+! WH_MSGFILTER Filter Proc Codes
+
+      integer MSGF_DIALOGBOX
+      integer MSGF_MESSAGEBOX
+      integer MSGF_MENU
+      integer MSGF_MOVE
+      integer MSGF_SIZE
+      integer MSGF_SCROLLBAR
+      integer MSGF_NEXTWINDOW
+
+      parameter ( MSGF_DIALOGBOX      = 0 )
+      parameter ( MSGF_MESSAGEBOX     = 1 )
+      parameter ( MSGF_MENU           = 2 )
+      parameter ( MSGF_MOVE           = 3 )
+      parameter ( MSGF_SIZE           = 4 )
+      parameter ( MSGF_SCROLLBAR      = 5 )
+      parameter ( MSGF_NEXTWINDOW     = 6 )
+
+! Window Manager Hook Codes
+
+      integer WC_INIT
+      integer WC_SWP
+      integer WC_DEFWINDOWPROC
+      integer WC_MINMAX
+      integer WC_MOVE
+      integer WC_SIZE
+      integer WC_DRAWCAPTION
+
+      parameter ( WC_INIT             = 1 )
+      parameter ( WC_SWP              = 2 )
+      parameter ( WC_DEFWINDOWPROC    = 3 )
+      parameter ( WC_MINMAX           = 4 )
+      parameter ( WC_MOVE             = 5 )
+      parameter ( WC_SIZE             = 6 )
+      parameter ( WC_DRAWCAPTION      = 7 )
+
+*$reference

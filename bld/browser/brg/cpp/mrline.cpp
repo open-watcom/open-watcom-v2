@@ -127,12 +127,12 @@ MergeLineSection::~MergeLineSection()
 {
     #if INSTRUMENTS
         Log.printf( "\nMergeLineSection\n----------------\n" );
-        Log.printf( "MergeLineSection::_directoriesByName:  %u entries, loaded %%%3.2f\n", _directoriesByName->entries(), 100.0 * ((double)_directoriesByName->entries() / (double)_directoriesByName->buckets()) );
-        Log.printf( "MergeLineSection::_directoriesReloc:   %u entries, loaded %%%3.2f\n", _directoriesReloc->entries(), 100.0 * ((double)_directoriesReloc->entries() / (double)_directoriesReloc->buckets()) );
-        Log.printf( "MergeLineSection::_directories:        %u entries\n", _directories->entries() );
-        Log.printf( "MergeLineSection::_filesByName:        %u entries, loaded %%%3.2f\n", _filesByName->entries(), 100.0 * ((double)_filesByName->entries() / (double)_filesByName->buckets()) );
-        Log.printf( "MergeLineSection::_filesReloc:         %u entries, loaded %%%3.2f\n", _filesReloc->entries(), 100.0 * ((double)_filesReloc->entries() / (double)_filesReloc->buckets()) );
-        Log.printf( "MergeLineSection::_files:              %u entries\n", _files->entries() );
+        Log.printf( "MergeLineSection::_directoriesByName:  %5u entries, loaded %3.1f%%\n", _directoriesByName->entries(), 100.0 * ((double)_directoriesByName->entries() / (double)_directoriesByName->buckets()) );
+        Log.printf( "MergeLineSection::_directoriesReloc:   %5u entries, loaded %3.1f%%\n", _directoriesReloc->entries(), 100.0 * ((double)_directoriesReloc->entries() / (double)_directoriesReloc->buckets()) );
+        Log.printf( "MergeLineSection::_directories:        %5u entries\n", _directories->entries() );
+        Log.printf( "MergeLineSection::_filesByName:        %5u entries, loaded %3.1f%%\n", _filesByName->entries(), 100.0 * ((double)_filesByName->entries() / (double)_filesByName->buckets()) );
+        Log.printf( "MergeLineSection::_filesReloc:         %5u entries, loaded %3.1f%%\n", _filesReloc->entries(), 100.0 * ((double)_filesReloc->entries() / (double)_filesReloc->buckets()) );
+        Log.printf( "MergeLineSection::_files:              %5u entries\n", _files->entries() );
     #endif
 
     delete _directoriesByName;
@@ -344,16 +344,16 @@ uint_16 MergeLineSection::getNewFileIdx( uint_8 mbrFile, uint_16 oldIdx )
 
     #if INSTRUMENTS
     if( !_filesReloc->contains( key ) ) {
-        Log.printf( "Could not find a relocation record for <%d,%d>\n", mbrFile, oldIdx );
+        Log.printf( "Could not find a relocation record for <%d, %d>\n", mbrFile, oldIdx );
         Log.printf( "_fileReloc:\n" );
         WCValHashDictIter<MergeFileRelocKey,uint_16> iter( *_filesReloc );
 
         while( iter.operator++() ) {
-            Log.printf( "<%hu,%u|%u>\n", iter.key().mbrFile, iter.key().oldIdx, iter.value() );
+            Log.printf( "<%hu, %u|%u>\n", iter.key().mbrFile, iter.key().oldIdx, iter.value() );
         }
         Log.printf( "_files:\n" );
         for( int i = 0; i < _files->entries(); i += 1 ) {
-            Log.printf( "<%d|%s,%d>\n", i, (*_files)[i].name.getString(), (*_files)[i].directoryIdx );
+            Log.printf( "<%d|%s, %d>\n", i, (*_files)[i].name.getString(), (*_files)[i].directoryIdx );
         }
     }
     #endif

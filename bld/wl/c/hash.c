@@ -34,30 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
-/*------------------ Generic Hash Table -----------------------------*/
-
-typedef struct _HTElem {
-    void *userData;
-    struct _HTElem* next;
-} * pHTElem;
-
-struct _TAG_HTable
-{
-    pHTElem *tbl;
-    unsigned size;
-    int allowDoubles;
-    pHashFunc hashFunc;
-    pHashElemCmp compareFunc; // Take two elements of the table;
-              // Return 0 iff elem1 == elem2
-    pAllocFunc allocFunc;
-    pFreeFunc freeFunc;
-
-    struct {
-        long numElems;
-        int longestChainLen;
-    } stats;
-} *pHTable;
+#include "debug.h"
 
 /* ----------------------------------------------------------------------- */
 pHTable CreateHTable( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
@@ -154,7 +131,7 @@ void* FindHTableElem( pHTable table, void *elem ) {
 }
 
 /* ----------------------------------------------------------------------- */
-int WalkHTableElem( pHTable table, void *elem, void* (action)( void * ) ) {
+int WalkHTableElem( pHTable table, void *elem, void (*action)( void * ) ) {
     pHTElem tblElem;
     int numElem = 0;
     int key = table->hashFunc( elem, table->size );
@@ -169,7 +146,7 @@ int WalkHTableElem( pHTable table, void *elem, void* (action)( void * ) ) {
 }
 
 /* ----------------------------------------------------------------------- */
-void WalkHTableCookie( pHTable table, void* (action)( void *, void *),
+void WalkHTableCookie( pHTable table, void (*action)( void *, void *),
                        void* cookie ) {
     int i;
     pHTElem *tblPtr = table->tbl;
@@ -186,7 +163,7 @@ void WalkHTableCookie( pHTable table, void* (action)( void *, void *),
     }
 }
 
-void WalkHTable( pHTable table, void* (action)( void * ) ) {
+void WalkHTable( pHTable table, void (*action)( void * ) ) {
     /* For speed, do not use WalkHTableCookie */
     int i;
     pHTElem *tblPtr = table->tbl;
@@ -230,7 +207,7 @@ void RehashHTable( pHTable table ) {
 }
 
 /* ----------------------------------------------------------------------- */
-void ZapHTable( pHTable table, void* (zapElemAction)( void * ) ) {
+void ZapHTable( pHTable table, void (*zapElemAction)( void * ) ) {
     int i;
     pHTElem *tblPtr;
     pHTElem tblElem, temp;
@@ -284,7 +261,8 @@ unsigned StringHashFunc( char *s, unsigned size ) {
 }
 
 /* ----------------------------------------------------------------------- */
-unsigned StringiHashFunc( char *s, unsigned size ) {
+unsigned StringiHashFunc( void *_s, unsigned size ) {
+    char *s = _s;
     enum { b = 101 };
     unsigned long key = 0;
     int i;

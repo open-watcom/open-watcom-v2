@@ -1,0 +1,99 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: User's Reference [Using w/ WATCOM Linker]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- User's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">6.0 - DOS/32 Advanced -
+Using with WATCOM Linker<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">As DOS/32 Advanced is
+an add-on tool for WATCOM C/C++ development package, no Executable Linker
+is provided with the DOS Extender, which instead relies on WATCOM Linker
+supplied with WATCOM C/C++ and FORTRAN compilers. DOS/32 Advanced, apart
+from its native &quot;LC&quot; file format, supports the &quot;LE&quot;
+and &quot;LX&quot; executable file formats, and fully accepts output produced
+by WATCOM Linker, as well as by any other linker capable of generating the
+two above said executable file formats.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">To help the programmers
+who use WATCOM Linker to create protected mode applications for use with
+DOS/32 Advanced DOS Extender, DOS/32 Advanced DOS Extender Editions include
+a special WATCOM Linker system definition file, <i>dos32a.lnk</i>,
+which is originally located in the directory into which the DOS Extender
+was installed, subdirectory <i>.\BINW</i> , but also copied by the installation
+program into default WATCOM directory, subdirectory <i>.\BINW</i> . Note that the
+install program will automatically update the <i>wlink.lnk</i> files
+in the WATCOM directories <i>.\BINW</i> and <i>.\BINNT</i> if you let it to
+automatically update your system at install time. The following WATCOM Linker
+systems will be available
+for use with DOS/32 Advanced DOS Extender directly after the installation:</font></p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4"
+height="225">
+<tr>
+<td bgcolor="#eeeeee" height="34"><b><font size=-1 face="Verdana, Arial, Helvetica">System Name</font></b></td>
+<td bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">Description</font></b></td>
+<td bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">File Format</font></b></td></tr>
+<tr>
+<td width="18%" height="32"><font size=-1 face="Verdana, Arial, Helvetica">dos32a</font></td>
+<td width="60%"><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender</font></td>
+<td width="22%"><font size=-1 face="Verdana, Arial, Helvetica">LE-style</font></td></tr>
+<tr>
+<td height="32"><font size=-1 face="Verdana, Arial, Helvetica">dos32x</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">LX-style</font></td></tr>
+<tr>
+<td height="32"><font size=-1 face="Verdana, Arial, Helvetica">stub32a</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">DOS/32A DOS Extender w/ Standard
+stub</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">LE-style</font></td></tr>
+<tr>
+<td height="32"><font size=-1 face="Verdana, Arial, Helvetica">stub32x</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">DOS/32A DOS Extender w/ Standard
+stub</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">LX-style</font></td></tr>
+<tr>
+<td height="5"><font size=-1 face="Verdana, Arial, Helvetica">stub32ac</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">DOS/32A DOS Extender w/ Configurable
+stub</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">LE-style</font></td></tr>
+<tr>
+<td height="32"><font size=-1 face="Verdana, Arial, Helvetica">stub32xc</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">DOS/32A DOS Extender w/ Configurable
+stub</font></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">LX-style</font></td></tr>
+</table>
+<br>
+<br>
+</center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">In order to create LC-style
+compressed executables, which are natively supported by DOS/32 Advanced you must use
+SUNSYS Compress Utility program <i>sc.exe</i>, included in DOS/32 Advanced
+DOS Extender Editions, as WATCOM Linker cannot output Linear Compressed
+executable file format. Please refer to <a href="../util/2.html">SUNSYS Compress
+Utility</a> documentation for
+information on how to use SUNSYS Compress Utility and to learn more about
+LC-style compressed executable file format.</font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

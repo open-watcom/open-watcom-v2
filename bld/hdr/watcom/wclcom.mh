@@ -7,20 +7,15 @@
 //
 #ifndef _WCLCOM_H_INCLUDED
 #define _WCLCOM_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wclcom.h is for use with C++
-#endif
-
+:include cpponly.sp
 
 //
 //  The techniques for specifying the list classes are from
 //  'The C++ Programming Language', 2nd Edition, Bjarne Stroustrup.
 //
-
-
-
 
 //
 //  The WCSLink class is used as a basis for manipulating a number of

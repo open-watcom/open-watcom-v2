@@ -75,7 +75,7 @@ void InternalError( int line, const char *file )
 /**********************************************/
 {
     (*bannerFunc)();
-    fprintf( stderr, "Internal error on line %d of %s; please contact Watcom\n",
+    fprintf( stderr, "Internal error on line %d of %s. Please contact the Open Watcom maintainers at http://www.openwatcom.com\n",
              line, file );
     exit( EXIT_FAILURE );
 }

@@ -1,0 +1,27 @@
+#
+#  List of orl library object files
+#
+
+omf_objs =  omfload.obj &
+            omfmunge.obj &
+            omfentr.obj &
+            omfflhn.obj &
+            omfdrctv.obj
+
+elf_objs  = elfentr.obj &
+            elflwlv.obj &
+            elfflhn.obj &
+            elfload.obj
+
+coff_objs = coffentr.obj &
+            cofflwlv.obj &
+            coffflhn.obj &
+            coffload.obj &
+            coffimpl.obj
+
+orl_objs  = orlentry.obj &
+            orlflhnd.obj &
+            orlhash.obj &
+            $(omf_objs) &
+            $(elf_objs) &
+            $(coff_objs)

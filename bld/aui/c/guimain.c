@@ -48,7 +48,7 @@ static gui_mouse_cursor wndCursorType;
 static char *           BusyString;
 
 
-int WndGetDClick()
+int WndGetDClick( void )
 {
     return( WndDClick );
 }
@@ -59,7 +59,7 @@ void WndSetDClick( int new )
     GUISetDClickRate( new );
 }
 
-static void Rescale()
+static void Rescale( void )
 {
     gui_coord   scale;
     gui_rect    rect;
@@ -114,12 +114,12 @@ bool WndInitWithMenuRes( char *str, int resource_menu )
     return( WndInitBody( str, resource_menu ) );
 }
 
-void WndShowWndMain()
+void WndShowWndMain( void )
 {
     WndShowWindow( WndMain );
 }
 
-bool WndFini()
+bool WndFini( void )
 {
     if( !WndShutDownHook() ) return( FALSE );
     GUIDestroyWnd( NULL );
@@ -524,7 +524,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
 }
 
 
-void *WndHourCursor()
+void *WndHourCursor( void )
 {
     if( GUIIsGUI() ) {
         wndCursorType = GUI_HOURGLASS_CURSOR;
@@ -538,7 +538,7 @@ void *WndHourCursor()
     }
 }
 
-void *WndArrowCursor()
+void *WndArrowCursor( void )
 {
     if( GUIIsGUI() ) {
         wndCursorType = GUI_ARROW_CURSOR;

@@ -46,8 +46,8 @@ static          ORD                     OldCursorRow;
 static          ORD                     OldCursorCol;
 static          int                     OldCursorType;
 
-void global _uioffcursor()
-/***********************/
+void global _uioffcursor( void )
+/******************************/
 {
     union       REGS                    r;
 
@@ -63,8 +63,8 @@ void global _uioffcursor()
 }
 
 
-void global _uioncursor()
-/**********************/
+void global _uioncursor( void )
+/*****************************/
 {
     union       REGS                    r;
 
@@ -105,8 +105,8 @@ void global _uioncursor()
     UIData->cursor_on = TRUE;
 }
 
-static void savecursor()
-/**********************/
+static void savecursor( void )
+/****************************/
 {
     union       REGS                    r;
 
@@ -134,8 +134,8 @@ static void savecursor()
 }
 
 
-static void newcursor()
-/*********************/
+static void newcursor( void )
+/***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
         uioffcursor();
@@ -145,8 +145,8 @@ static void newcursor()
 }
 
 
-static void swapcursor()
-/**********************/
+static void swapcursor( void )
+/****************************/
 {
     _swap( UIData->cursor_type, OldCursorType );
     _swap( UIData->cursor_col, OldCursorCol );
@@ -202,16 +202,16 @@ void global _uisetcursor( ORD row, ORD col, int typ, int attr )
 }
 
 
-void global _uiswapcursor()
-/************************/
+void global _uiswapcursor( void )
+/*******************************/
 {
     swapcursor();
     newcursor();
 }
 
 
-void global _uiinitcursor()
-/************************/
+void global _uiinitcursor( void )
+/*******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
@@ -219,8 +219,8 @@ void global _uiinitcursor()
 }
 
 
-void _uifinicursor()
-/*****************/
+void _uifinicursor( void )
+/************************/
 {
     _uioncursor();
 }

@@ -1,0 +1,17 @@
+*$include windc.fi
+*$include windtool.fi
+*$include winpalet.fi
+*$include windattr.fi
+*$include winmap.fi
+*$include wincoord.fi
+*$include winrgn.fi
+*$include winclip.fi
+*$include winline.fi
+*$include winellps.fi
+*$include winbmap.fi
+*$include wintext.fi
+*$include winfont.fi
+*$include winmeta.fi
+*$include winesc.fi
+*$include winenv.fi
+*$include windev.fi

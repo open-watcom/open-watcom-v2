@@ -9,11 +9,15 @@ all : setup targa targb clean .symbolic
     @%null
 
 setup : .symbolic
+!ifdef __UNIX__
+    @echo "Should get Error(E42) on (upd04a1) and (upd04b1.d)"
+!else
     @echo Should get Error(E42) on (upd04a1) and (upd04b1.d)
+!endif
     @wtouch upd04b1.1 upd04b2.2
 
 clean : .symbolic
-    @rm -f -s upd04a2 upd04b1.1 upd04b2.2 upd04b2.d
+    @rm -f upd04a2 upd04b1.1 upd04b2.2 upd04b2.d
 
 #
 # example using explicit rules

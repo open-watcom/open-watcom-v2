@@ -1,0 +1,86 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.29 - DPMI function 0306h
+- Get Raw Mode Switch Addresses </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns addresses that
+can be called for low-level mode switching.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0306h</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">CF</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> clear<br>
+<b>BX:CX</b> = real-to-protected mode switch address<br>
+<b>SI:EDI</b> = protected-to-real mode switch address</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The address returned
+  in BX:CX must only be called in real mode to switch into protected mode.
+  The address returned in SI:EDI must only be called in protected mode to
+  switch into real mode.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) The mode switch procedures
+  are entered by a FAR JMP to the appropriate address with the following
+  parameters:</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">AX = new DS<br>
+  CX = new ES<br>
+  DX = new SS<br>
+  (E)BX = new (E)SP<br>
+  SI = new CS<br>
+  (E)DI = new (E)IP</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">The processor is placed
+  into the desired mode, and the DS, ES, SS, (E)SP, CS, and (E)IP registers
+  are updated with the specified values; in other words, execution of the
+  client continues in the requested mode at the address provided in registers
+  SI:EDI. The values specified to be placed into the segment registers must
+  be appropriate for the destination mode; if invalid selectors are supplied
+  when switching into protected mode, an exception will occur.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">The values in (E)AX,
+  (E)BX, (E)CX, (E)DX, (E)SI, and (E)DI after the mode switch are undefined.
+  (E)BP will be preserved across the mode switch call so it can be used as
+  a pointer. The FS and GS segment registers will contain zero after the
+  mode switch.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">If interrupts are disabled
+  when the mode switch procedure is invoked, they will not be re-enabled
+  by the DPMI host (even temporarily).</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) It is up to the client
+  to save and restore the state of the task when using this function to switch
+  modes. This usually requires using the state save/restore procedures whose
+  addresses are returned by DPMI function 0305h.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) Clients may find it
+  more convenient to use DPMI functions 0300h, 0301h, and 0302h for mode
+  switching than this function. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

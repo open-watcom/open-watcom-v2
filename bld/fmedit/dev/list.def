@@ -1,9 +1,8 @@
 #ifndef _LIST_INCLUDE
-
 #define _LIST_INCLUDE 
 
 #ifndef FM_EXPORT
-#define FM_EXPORT   __export PASCAL
+    #define FM_EXPORT   __export PASCAL
 #endif
 
 typedef struct list LIST;

@@ -1,0 +1,11 @@
+#pmake: bootstrap 
+
+bootstrap = 1
+
+host_os  = $(%BOOTSTRAP_OS)
+host_cpu = $(%BOOTSTRAP_CPU)
+extra_files = $(unix)
+
+inc_dirs = -I"$(ncurses_dir)/h"
+
+!include ../../ui.mif

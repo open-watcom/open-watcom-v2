@@ -36,8 +36,7 @@ include struct.inc
 
         extrn   main_   : near
         extrn   exit_   : near
-        extrn   __Envseg: word
-        extrn   __Envptr: dword
+        extrn   __Envptr: fword
 
 _TEXT   segment use32 dword public 'CODE'
         assume  cs:_TEXT
@@ -45,9 +44,8 @@ _TEXT   segment use32 dword public 'CODE'
         public  __CMain
 __CMain proc    near
         mov     bx,ds                   ; save DS
-        mov     esi,__Envptr            ; point to environment strings
+        lds     esi,__Envptr            ; point to environment strings
         mov     ecx,esi                 ; save starting address
-        mov     ds,__Envseg             ; ...
         _loop                           ; loop (for each string)
           _loop                         ; - loop (find end of string)
             lodsb                       ; - - get byte
@@ -67,7 +65,7 @@ __CMain proc    near
         rep     movsb                   ; copy it
         mov     ds,bx                   ; restore ds
         mov     es,bx                   ; and es
-        mov     __Envptr,esp            ; save pointer to environment strings
+        mov     dword ptr __Envptr,esp  ; save pointer to environment strings
         call    main_                   ; call main
         call    exit_                   ; and exit
 __CMain endp

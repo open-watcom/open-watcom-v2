@@ -1,0 +1,4 @@
+radio_button=FullCDInstall,false,\
+        //1"F&ull installation leaving help files on CD-ROM"\
+        //2"ヘルプファイルをCD-ROMに残しそれ以外を全てｲﾝｽﾄｰﾙ(&u)"\
+        //0,SrcIsCD

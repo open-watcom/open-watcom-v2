@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Screen zoom utility.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <string.h>
 #include "wzoom.h"
 #ifndef NOUSE3D
-#include "ctl3d.h"
+#include "ctl3dcvr.h"
 #endif
 
 #define MAIN_CLASS      "WZOOM_FIXED_CLASS"
@@ -41,9 +40,9 @@
 
 /*
  * FirstInstInit - register classes and do other initializiation that
- *                 is only done by the first instance of the spy
+ *                 is only done by the first instance of the zoom
  */
-static BOOL FirstInstInit()
+static BOOL FirstInstInit( void )
 {
     WNDCLASS    wc;
 
@@ -64,15 +63,16 @@ static BOOL FirstInstInit()
 }
 
 /*
- * EveryInstInit - do initialization required by every instance of the spy
+ * EveryInstInit - do initialization required by every instance of zoom
  */
-static BOOL EveryInstInit( int cmdshow ) {
-
+static BOOL EveryInstInit( int cmdshow )
+{
     MainWndInfo         *info;
 
 #ifndef NOUSE3D
-    Ctl3dRegister( Instance );
-    Ctl3dAutoSubclass( Instance );
+    CvrCtl3DInit( Instance );
+    CvrCtl3dRegister( Instance );
+    CvrCtl3dAutoSubclass( Instance );
 #endif
     MemStart();
     LoadConfig();
@@ -99,7 +99,7 @@ static BOOL EveryInstInit( int cmdshow ) {
     return( TRUE );
 }
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     MSG         msg;
 
@@ -116,7 +116,8 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
         DispatchMessage(&msg);
     }
 #ifndef NOUSE3D
-    Ctl3dUnregister( Instance );
+    CvrCtl3dUnregister( Instance );
+    CvrCtl3DFini( Instance );
 #endif
     return( 1 );
 }

@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <dos.h>
 #include <malloc.h>
@@ -318,9 +318,9 @@ static WORD horkyFindSegment( HMODULE mod, WORD seg ) {
     }
     do {
         if( ge.hOwner == mod && ge.wType == GT_MODULE ) {
-            ReadMem( ge.hBlock, 0x22, &offset, sizeof( offset ) );
+            ReadMem( (WORD)ge.hBlock, 0x22, &offset, sizeof( offset ) );
             offset += 8 + ( 10 * seg );
-            ReadMem( ge.hBlock, offset, &sel, sizeof( sel ) );
+            ReadMem( (WORD)ge.hBlock, offset, &sel, sizeof( sel ) );
             return( sel );
         }
     } while( GlobalNext( &ge, GLOBAL_ALL ) );
@@ -364,7 +364,7 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *info ) {
         GlobalUnlock( ge.hBlock );
         sel = FP_SEG( ptr );
         if( sel == NULL ) {
-            sel = ge.hBlock + 1;
+            sel = (WORD)ge.hBlock + 1;
         }
         addr->segment = sel;
         addr->offset = 0;
@@ -436,7 +436,7 @@ void DIGCLIENT DIPCliAddrSection( address *addr ) {
 /*
  * DIPCliOpen
  */
-dig_fhandle DIGCLIENT DIGCliOpen( char *path, dig_open mode ) {
+dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
 
     dig_fhandle         ret;
     int                 flags;
@@ -508,7 +508,7 @@ void DIGCLIENT DIGCliClose( dig_fhandle hdl ) {
 /*
  * DIPCliRemove
  */
-void DIGCLIENT DIGCliRemove( char *path, dig_open mode ) {
+void DIGCLIENT DIGCliRemove( const char *path, dig_open mode ) {
     mode = mode;
     remove( path );
 }

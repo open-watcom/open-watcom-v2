@@ -1,6 +1,0 @@
-%s/(^.*$)/\#-1+USAGE_MSG_BASE, "\1"
-%s/0*//
-1
-exec 0iSTRINGTABLE\nBEGIN\n\e
-exec Go\e0iEND\n\e
-x

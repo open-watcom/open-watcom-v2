@@ -1,0 +1,299 @@
+c$noreference
+
+c$ifdef INCL_ERRORS
+c$define INCL_SHLERRORS
+c$endif
+
+c$ifndef SESMGR
+
+        integer  MAXNAMEL
+        parameter (MAXNAMEL = 60)
+
+        integer HINI_PROFILE
+        parameter (HINI_PROFILE = 0)
+        integer HINI_USERPROFILE
+        parameter (HINI_USERPROFILE = -1)
+        integer HINI_SYSTEMPROFILE
+        parameter (HINI_SYSTEMPROFILE = -2)
+        integer  HINI_USER
+        parameter (HINI_USER = HINI_USERPROFILE)
+        integer  HINI_SYSTEM
+        parameter (HINI_SYSTEM = HINI_SYSTEMPROFILE)
+
+        structure /PRFPROFILE/
+            integer*4 cchUserName
+            integer*4 pszUserName
+            integer*4 cchSysName
+            integer*4 pszSysName
+        end structure
+
+c$endif
+
+c$ifdef INCL_WINPROGRAMLIST
+
+c$ifndef SESMGR
+
+        integer  MAXPATHL
+        parameter (MAXPATHL = 128)
+
+        integer  SGH_ROOT
+        parameter (SGH_ROOT = -1)
+
+        structure /HPROGARRAY/
+            integer*4 ahprog(1)
+        end structure
+
+c$endif
+
+        integer  PROG_DEFAULT
+        parameter (PROG_DEFAULT = 0)
+        integer  PROG_FULLSCREEN
+        parameter (PROG_FULLSCREEN = 1)
+        integer  PROG_WINDOWABLEVIO
+        parameter (PROG_WINDOWABLEVIO = 2)
+        integer  PROG_PM
+        parameter (PROG_PM = 3)
+        integer  PROG_GROUP
+        parameter (PROG_GROUP = 5)
+        integer  PROG_REAL
+        parameter (PROG_REAL = 4)
+        integer  PROG_VDM
+        parameter (PROG_VDM = 4)
+        integer  PROG_WINDOWEDVDM
+        parameter (PROG_WINDOWEDVDM = 7)
+        integer  PROG_DLL
+        parameter (PROG_DLL = 6)
+        integer  PROG_PDD
+        parameter (PROG_PDD = 8)
+        integer  PROG_VDD
+        parameter (PROG_VDD = 9)
+        integer  PROG_WINDOW_REAL
+        parameter (PROG_WINDOW_REAL = 10)
+        integer  PROG_WINDOW_PROT
+        parameter (PROG_WINDOW_PROT = 11)
+        integer  PROG_WINDOW_AUTO
+        parameter (PROG_WINDOW_AUTO = 12)
+        integer  PROG_SEAMLESSVDM
+        parameter (PROG_SEAMLESSVDM = 13)
+        integer  PROG_RESERVED
+        parameter (PROG_RESERVED = 255)
+
+c$ifndef SESMGR
+
+        structure /PROGTYPE/
+            integer*4 progc
+            integer*4 fbVisible
+        end structure
+
+        integer  SHE_VISIBLE
+        parameter (SHE_VISIBLE = '00000000'x)
+        integer  SHE_INVISIBLE
+        parameter (SHE_INVISIBLE = '00000001'x)
+        integer  SHE_RESERVED
+        parameter (SHE_RESERVED = '000000FF'x)
+
+        integer  SHE_UNPROTECTED
+        parameter (SHE_UNPROTECTED = '00000000'x)
+        integer  SHE_PROTECTED
+        parameter (SHE_PROTECTED = '00000002'x)
+
+        structure /XYWINSIZE/
+            integer*2 x
+            integer*2 y
+            integer*2 cx
+            integer*2 cy
+            integer*2 fsWindow
+        end structure
+
+        integer  XYF_NOAUTOCLOSE
+        parameter (XYF_NOAUTOCLOSE = '00000008'x)
+        integer  XYF_MINIMIZED
+        parameter (XYF_MINIMIZED = '00000004'x)
+        integer  XYF_MAXIMIZED
+        parameter (XYF_MAXIMIZED = '00000002'x)
+        integer  XYF_INVISIBLE
+        parameter (XYF_INVISIBLE = '00000001'x)
+        integer  XYF_NORMAL
+        parameter (XYF_NORMAL = '00000000'x)
+
+        structure /PROGDETAILS/
+            integer*4 Length
+            record /PROGTYPE/ progt
+            integer*4 pszTitle
+            integer*4 pszExecutable
+            integer*4 pszParameters
+            integer*4 pszStartupDir
+            integer*4 pszIcon
+            integer*4 pszEnvironment
+            record /SWP/ swpInitial
+        end structure
+
+        structure /PROGTITLE/
+            integer*4 hprog
+            record /PROGTYPE/ progt
+            integer*4 pszTitle
+        end structure
+
+        external PrfQueryProgramTitles
+        integer*4 PrfQueryProgramTitles
+
+        external PrfAddProgram
+        integer*4 PrfAddProgram
+
+        external PrfChangeProgram
+        integer*4 PrfChangeProgram
+
+        external PrfQueryDefinition
+        integer*4 PrfQueryDefinition
+
+        external PrfRemoveProgram
+        integer*4 PrfRemoveProgram
+
+        external PrfQueryProgramHandle
+        integer*4 PrfQueryProgramHandle
+
+        external PrfCreateGroup
+        integer*4 PrfCreateGroup
+
+        external PrfDestroyGroup
+        integer*4 PrfDestroyGroup
+
+        external PrfQueryProgramCategory
+        integer*4 PrfQueryProgramCategory
+
+        external WinStartApp
+        integer*4 WinStartApp
+
+        integer  SAF_INSTALLEDCMDLINE
+        parameter (SAF_INSTALLEDCMDLINE = '00000001'x)
+        integer  SAF_STARTCHILDAPP
+        parameter (SAF_STARTCHILDAPP = '00000002'x)
+
+        external WinTerminateApp
+        integer*4 WinTerminateApp
+
+c$endif
+
+c$endif
+
+c$ifndef SESMGR
+
+c$ifdef INCL_WINSWITCHLIST
+
+        structure /SWCNTRL/
+            integer*4 hwnd
+            integer*4 hwndIcon
+            integer*4 hprog
+            integer*4 idProcess
+            integer*4 idSession
+            integer*4 uchVisibility
+            integer*4 fbJump
+            integer*1 szSwtitle(MAXNAMEL+4)
+            integer*4 bProgType
+        end structure
+
+        integer  SWL_VISIBLE
+        parameter (SWL_VISIBLE = '00000004'x)
+        integer  SWL_INVISIBLE
+        parameter (SWL_INVISIBLE = '00000001'x)
+        integer  SWL_GRAYED
+        parameter (SWL_GRAYED = '00000002'x)
+
+        integer  SWL_JUMPABLE
+        parameter (SWL_JUMPABLE = '00000002'x)
+        integer  SWL_NOTJUMPABLE
+        parameter (SWL_NOTJUMPABLE = '00000001'x)
+
+        external WinAddSwitchEntry
+        integer*4 WinAddSwitchEntry
+
+        external WinRemoveSwitchEntry
+        integer*4 WinRemoveSwitchEntry
+
+c$endif
+
+c$ifdef INCL_WINSWITCHLIST
+
+        structure /SWENTRY/
+            integer*4 hswitch
+            record /SWCNTRL/ swctl
+        end structure
+
+        structure /SWBLOCK/
+            integer*4 cswentry
+            record /SWENTRY/ aswentry(1)
+        end structure
+
+        external WinChangeSwitchEntry
+        integer*4 WinChangeSwitchEntry
+
+        external WinCreateSwitchEntry
+        integer*4 WinCreateSwitchEntry
+
+        external WinQuerySessionTitle
+        integer*4 WinQuerySessionTitle
+
+        external WinQuerySwitchEntry
+        integer*4 WinQuerySwitchEntry
+
+        external WinQuerySwitchHandle
+        integer*4 WinQuerySwitchHandle
+
+        external WinQuerySwitchList
+        integer*4 WinQuerySwitchList
+
+        external WinQueryTaskSizePos
+        integer*4 WinQueryTaskSizePos
+
+        external WinQueryTaskTitle
+        integer*4 WinQueryTaskTitle
+
+        external WinSwitchToProgram
+        integer*4 WinSwitchToProgram
+
+c$endif
+
+c$ifdef INCL_WINSHELLDATA
+
+        external PrfQueryProfileInt
+        integer*4 PrfQueryProfileInt
+
+        external PrfQueryProfileString
+        integer*4 PrfQueryProfileString
+
+        external PrfWriteProfileString
+        integer*4 PrfWriteProfileString
+
+        external PrfQueryProfileSize
+        integer*4 PrfQueryProfileSize
+
+        external PrfQueryProfileData
+        integer*4 PrfQueryProfileData
+
+        external PrfWriteProfileData
+        integer*4 PrfWriteProfileData
+
+        external PrfOpenProfile
+        integer*4 PrfOpenProfile
+
+        external PrfCloseProfile
+        integer*4 PrfCloseProfile
+
+        external PrfReset
+        integer*4 PrfReset
+
+        external PrfQueryProfile
+        integer*4 PrfQueryProfile
+
+        integer  PL_ALTERED
+        parameter (PL_ALTERED = '0000008E'x)
+
+c$endif
+
+c$ifdef INCL_SHLERRORS
+c$include pmshlerr.fi
+c$endif
+
+c$endif
+
+c$reference

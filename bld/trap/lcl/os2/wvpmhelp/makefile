@@ -1,82 +1,66 @@
-#pmake: build os2 lcl 32 support x86
+#pmake: os_os2 lcl cpu_386 support
 #
 # Create WDPMHELP.EXE, WDPMHOOK.DLL
 #
+host_os  = os2
+host_cpu = i86
 
-.EXTENSIONS
-.EXTENSIONS : .dll .lbj .obj .c .asm .res .rc
+proj_name = wvpmhelp
 
-!ifndef bin_root
-!ifdef bin_root_wv
-bin_root = $(bin_root_wv)
-!endif
-!endif
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
-bdir = $(bin_root)\binp
-
-w d : $(bdir)\dll\wdpmhook.dll $(bdir)\wdpmhelp.exe .SYMBOLIC
+w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null
 
-tmplnk = $(%ramdisk)\tmp.lnk
+wdpmhook.dll: pmhook.obj loadstd.obj
+    @%write  $^&.lnk name $^@ sys os2 dll initglobal
+    @%append $^&.lnk debug all op symfile
+    @%append $^&.lnk option dosseg,quiet
+    @%append $^&.lnk option map
+    @%append $^&.lnk file loadstd.obj,pmhook.obj
+    @%append $^&.lnk library os2.lib
+    @%append $^&.lnk export SENDMSGHOOKPROC.1,SETHMQDEBUGEE.2
+    @%append $^&.lnk segment class 'DATA' shared
+    @%append $^&.lnk segment class 'BSS' shared
+    $(linker) @$^&.lnk
 
-$(bdir)\dll\wdpmhook.dll: pmhook.obj loadstd.obj
-    @%write  $(tmplnk) name $(bdir)\dll\wdpmhook.dll sys os2 dll initglobal
-    @%append $(tmplnk) debug all op symfile
-    @%append $(tmplnk) option dosseg,quiet
-    @%append $(tmplnk) option map
-    @%append $(tmplnk) file loadstd,pmhook
-    @%append $(tmplnk) library $(watcom_dir)\lib\os2.lib
-    @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
-    @%append $(tmplnk) segment class 'DATA' shared
-    @%append $(tmplnk) segment class 'BSS' shared
-    $(linker) @$(tmplnk)
+wdpmhelp.exe: _err.gh pmhelp.res pmhelp.obj
+    @%write  $^&.lnk name $^@ system os2 pm
+    @%append $^&.lnk debug all op symfile
+    @%append $^&.lnk file pmhelp.obj
+    @%append $^&.lnk library clibl.lib
+    @%append $^&.lnk library os2.lib
+    @%append $^&.lnk option alignment=16
+    @%append $^&.lnk option nodefaultlibs,quiet
+    @%append $^&.lnk option modname=wdpmhelp
+    @%append $^&.lnk option description 'OS/2 Presentation Manager Sample'
+    @%append $^&.lnk option manyautodata
+    @%append $^&.lnk option stack=4096
+    @%append $^&.lnk option heapsize=1024
+    @%append $^&.lnk option protmode
+    $(linker) @$^&.lnk
+    $(rc) pmhelp.res wdpmhelp.exe
 
-$(bdir)\wdpmhelp.exe: pmhelp.lbj pmhelp.res
-    @%write  $(tmplnk) name $(bdir)\wdpmhelp.exe system os2 pm
-    @%append $(tmplnk) debug all op symfile
-    @%append $(tmplnk) file pmhelp.lbj
-    @%append $(tmplnk) library clibl.lib
-    @%append $(tmplnk) library $(watcom_dir)\lib\os2.lib
-    @%append $(tmplnk) option alignment=16
-    @%append $(tmplnk) option nodefaultlibs,quiet
-    @%append $(tmplnk) option modname=wdpmhelp
-    @%append $(tmplnk) option description 'OS/2 Presentation Manager Sample'
-    @%append $(tmplnk) option manyautodata
-    @%append $(tmplnk) option stack=4096
-    @%append $(tmplnk) option heapsize=1024
-    @%append $(tmplnk) option protmode
-    $(linker) @$(tmplnk)
-    $(os2_tools_root)\rc pmhelp.res $(bdir)\wdpmhelp.exe
+.c: ../c
+.asm: ../asm
 
-.c: ..\c
+extra_c_flags = -s -zu -fpc
 
-.c.obj:
-        $(comp286) $[* -bt=os2 -zq-fpc-d1-oais-s-w3-mc-zu-i$(watcom_dir)\h;$(watcom_dir)\os21x_h;$(watcom_dir)\os220_h;$(trap_dir)\h
+extra_c_flags_pmhook = -mc -oais
+extra_c_flags_pmhelp = -ml
 
-.c.lbj
-        $(comp286) $[* -bt=os2 -zq-fpc-d1-ml-zu-w3-s-i$(watcom_dir)\os21x_h;$(trap_dir)\h -fo=.lbj
+inc_dirs = -i"$(watcom_dir)/h;$(lang_root)/h/os21x;$(lang_root)/h/os2;$(trap_dir)/h"
 
-.asm: ..\asm
+extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
-.asm.obj:
-        wasm -zq -2 -bt=os2 $[*
+pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
-pmlock.obj : pmlock.c ..\h\wdpmhelp.h
+./mkstr.exe: $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
+    $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" $[@
 
-#.rc.res:
-#       @set oinc=$(%include)
-#       set include=$(watcom_dir)\os220_h;$(%include)
-#       set opath=$(%path)
-#       set path=$(%toolkit)\os2bin
-#        $(%toolkit)\os2bin\rc -r $*.rc
-#       set path=$(%opath)
-#       @set include=$(%oinc)
+_err.gh : ./mkstr.exe
+    $[@ $^@
 
-pmhelp.res: pmhelp.rc ..\h\wdpmhelp.h
-        @set oinc=$(%include)
-        @set include=$(watcom_dir)\os21x_h;..\h;$(%include)
-        @set opath=$(%path)
-        @set path=$(os2_tools_root)
-        $(os2_tools_root)\rc -r pmhelp.rc
-        @set path=$(%opath)
-        @set include=$(%oinc)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PharLap style OMF output routines.
 *
 ****************************************************************************/
 
@@ -94,7 +93,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     OBJ_WFILE   *out;
     uint_8      acbp;
     uint_8      align;
-    char        buf[ FIX_GEN_MAX ];
+    uint_8      buf[ FIX_GEN_MAX ];
     size_t      len;
     uint_8      access;
 
@@ -144,7 +143,7 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
 
     OBJ_WFILE   *out;
     fixup       *walk;
-    char        buf[ FIX_GEN_MAX ];
+    uint_8      buf[ FIX_GEN_MAX ];
     size_t      len;
     size_t      len_written;
 
@@ -285,7 +284,7 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
     coment = ObjNewRec( CMD_COMENT );
     coment->d.coment.attr = 0x80;
     coment->d.coment.class = CMT_EASY_OMF;
-    ObjAttachData( coment, EASY_OMF_SIGNATURE, 5 );
+    ObjAttachData( coment, (uint_8 *)EASY_OMF_SIGNATURE, 5 );
     ObjRSeek( coment, 0 );
     writeComent( coment, state );       /* write the EASY OMF comment */
     ObjKillRec( coment );
@@ -294,9 +293,9 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
 
 STATIC int writeModend( obj_rec *objr, pobj_state *state ) {
 
-    char    buf[ 1 + FIX_GEN_MAX ];
+    uint_8  buf[ 1 + FIX_GEN_MAX ];
     size_t  len;
-    char    is_log;
+    uint_8  is_log;
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_MODEND );
@@ -354,7 +353,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
             ObjWrite8( out, name_len );
-            ObjWrite( out, name, (size_t)name_len );
+            ObjWrite( out, (uint_8 *)name, (size_t)name_len );
             ObjWrite32( out, pubdata->offset );
             ObjWriteIndex( out, pubdata->type.idx );
             ++pubdata;
@@ -367,10 +366,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
 STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
 
 /**/myassert( out != NULL );
-#if LITTLE_ENDIAN
-    ObjWrite( out, (char *)objr->d.linnum.lines, 6 * objr->d.linnum.num_lines );
-/**/myassert( sizeof( linnum_data ) == 6 );
-#else
+#if defined( __BIG_ENDIAN__ )
     {
         linnum_data *cur;
         linnum_data *stop;
@@ -383,6 +379,9 @@ STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
             ++cur;
         }
     }
+#else
+    ObjWrite( out, (uint_8 *)objr->d.linnum.lines, 6 * objr->d.linnum.num_lines );
+/**/myassert( sizeof( linnum_data ) == 6 );
 #endif
 }
 
@@ -430,6 +429,7 @@ STATIC int writeBakpat( obj_rec *objr, pobj_state *state ) {
     }
     /* NYI: convert 16-bit BAKPATs to 32-bit... */
     Fatal( MSG_NO_16BIT_BAKPAT );
+    return 0;
 }
 
 STATIC int writeComdat( obj_rec *objr, pobj_state *state ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor function for 'environ' global variable.
 *
 ****************************************************************************/
 
@@ -34,10 +33,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-#ifdef __NETWARE__
-_WCRTLINK extern char **_WCDATA environ;        /*  pointer to environment table */
-#endif
-
-_WCRTLINK char ** (*__get_environ_ptr()) {
-    return &environ;
+_WCRTLINK char ***__get_environ_ptr( void )
+{
+    return( &environ );
 }

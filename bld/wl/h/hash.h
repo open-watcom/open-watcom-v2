@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+#ifndef HASH_H
+#define HASH_H
 
 /*================= Generic Hash Table and some hash functions =========*/
 
@@ -47,7 +49,28 @@ typedef HashFunc *pHashFunc;
 typedef int HashElemCmp( const void *elem1, const void *elem2 );
 typedef HashElemCmp *pHashElemCmp;
 
-typedef struct _TAG_HTable * pHTable;
+/*------------------ Generic Hash Table -----------------------------*/
+
+typedef struct _HTElem {
+    void *userData;
+    struct _HTElem* next;
+} * pHTElem;
+
+typedef struct _TAG_HTable {
+    pHTElem *tbl;
+    unsigned size;
+    int allowDoubles;
+    pHashFunc hashFunc;
+    pHashElemCmp compareFunc; // Take two elements of the table;
+              // Return 0 iff elem1 == elem2
+    pAllocFunc allocFunc;
+    pFreeFunc freeFunc;
+
+    struct {
+        long numElems;
+        int longestChainLen;
+    } stats;
+} * pHTable;
 
 /*----------------------- Functions -----------------------*/
 
@@ -88,14 +111,14 @@ void* FindHTableElem( pHTable table, void *elem );
 /*  WalkHTableElem -- Perform 'action' for every elememnt 'elem' in hash table.
     Return number of 'elem' in hash table.
 */
-int WalkHTableElem( pHTable table, void *elem, void* (action)( void * ) );
+int WalkHTableElem( pHTable table, void *elem, void (*action)( void * ) );
 
 /*  WalkHTable[Cookie] -- Perform 'action' for every single element in hash
     table. Use Cookie as an extra parameter to 'action'.
 */
-void WalkHTableCookie( pHTable table, void* (action)( void *, void * ),
+void WalkHTableCookie( pHTable table, void (*action)( void *, void * ),
                        void* cookie );
-void WalkHTable( pHTable table, void* (action)( void * ) );
+void WalkHTable( pHTable table, void (*action)( void * ) );
 
 /*  RehashHTable -- rehash the table. Useful if the entries of the table
     have changed. Important: If during changes to elements of hash table
@@ -107,7 +130,7 @@ void RehashHTable( pHTable table );
     then remove the table from memory.  zapElemAction may be NULL, in
     which case it is not called.
 */
-void ZapHTable( pHTable table, void* (zapElemAction)( void * ) );
+void ZapHTable( pHTable table, void (*zapElemAction)( void * ) );
 
 /*  GetHTableStats -- Get statistics about the hash table.  Useful for
     evaluating performance of a hash table to determine if a larger
@@ -126,7 +149,7 @@ unsigned StringHashFunc( char *s, unsigned size );
 /*  StringiHashFunc -- Hash function for null-terminated strings.
     The same as StringHashFunc, but ignore the case. Size must be a power of 2.
 */
-unsigned StringiHashFunc( char *s, unsigned size );
+unsigned StringiHashFunc( void *s, unsigned size );
 
 /* Hash a pointer. Size must be a power of 2. */
 unsigned PtrHashFunc(void *p, unsigned size);
@@ -137,3 +160,4 @@ unsigned DataHashFunc( void *data, unsigned n, unsigned size);
 /* Collect distribution of a table */
 void CollectHTableDistribution(pHTable table, unsigned *stat);
 
+#endif

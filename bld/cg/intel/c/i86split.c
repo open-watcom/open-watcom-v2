@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel i86/386 instruction spliting reductions.
 *
 ****************************************************************************/
 
@@ -41,6 +40,7 @@
 #include "model.h"
 #include "system.h"
 #include "zoiks.h"
+#include "makeins.h"
 
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
@@ -54,13 +54,9 @@ extern  instruction     *ClrHighDbl(instruction*);
 extern  instruction     *ExtPush1(instruction*);
 extern  instruction     *ExtPush2(instruction*);
 extern  instruction     *HighCmp(instruction*);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  instruction     *MakeFNeg(instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  instruction     *MakeU2(instruction*);
 extern  instruction     *MakeU4(instruction*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  instruction     *MoveConst(unsigned_32,name*,type_class_def);
 extern  instruction     *Split4Neg(instruction*);
 extern  instruction     *SplitCPPush(instruction*);
@@ -102,8 +98,10 @@ extern  void            RevCond(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
+extern  byte            *Copy(void*,void*,uint);
 
 extern  instruction             *rCHANGESHIFT(instruction*);
+extern  instruction             *rFIXSHIFT(instruction *);
 extern  instruction             *rCLRHI_BW(instruction*);
 extern  instruction             *rCONVERT_LOW(instruction*);
 extern  instruction             *rCYPHIGH(instruction*);
@@ -194,16 +192,20 @@ extern  instruction             *rSPLIT8TST( instruction * );
 extern  instruction             *rSPLIT8CMP( instruction * );
 extern  instruction             *rMOVE8LOW( instruction * );
 extern  instruction             *rCMPCP( instruction * );
+extern  instruction             *rMOVPTI8( instruction * );
+extern  instruction             *rMOVI8PT( instruction * );
 
+/* forward declaration */
+extern  void                    CnvOpToInt( instruction * ins, int op );
 
 extern  opcode_entry    String[];
-extern  opcode_entry    Move2[];
-extern  opcode_entry    Move4[];
+extern  opcode_entry    *Move2;
+extern  opcode_entry    *Move4;
 extern  type_class_def  DoubleClass[];
 extern  bool            OptForSize;
 
 
-extern instruction *(*ReduceTab[])() = {
+instruction *(*ReduceTab[])( instruction * ) = {
 /**************************************/
 
 #undef _R_
@@ -318,7 +320,7 @@ extern instruction      *rMULREGISTER( instruction *ins ) {
     ins2 = MakeUnary( OP_MOV, name1, ins->result, ins->type_class );
     ins2->base_type_class = DoubleClass[  ins->type_class  ];
     ins->result = name2;
-    ins->zap = AllocRegName( ZapReg( ins ) );
+    ins->zap = &AllocRegName( ZapReg( ins ) )->r;
     MoveSegRes( ins, ins2 );
     SuffixIns( ins, ins2 );
     return( new_ins );
@@ -343,7 +345,7 @@ extern instruction      *rDIVREGISTER( instruction *ins ) {
     name2 = AllocRegName( ResultReg( ins ) );
     ins2 = MakeMove( name2, ins->result, ins->type_class );
     ins->result = name2;
-    ins->zap = AllocRegName( ZapReg( ins ) );
+    ins->zap = &AllocRegName( ZapReg( ins ) )->r;
     MoveSegRes( ins, ins2 );
     SuffixIns( ins, ins2 );
     return( new_ins );
@@ -433,7 +435,7 @@ bool UseRepForm( unsigned size )
 */
 {
     unsigned    count;
-    unsigned    extra;
+    unsigned    extra = 0;
     unsigned    rep_startup;
     unsigned    rep_iter;
     unsigned    movs_cost;
@@ -620,7 +622,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     HW_CTurnOff( new_op1, HW_SP );
     HW_CTurnOff( new_op1, HW_ES );
     HW_CTurnOff( new_op1, HW_DS );
-    ins->zap = AllocRegName( new_op1 );
+    ins->zap = &AllocRegName( new_op1 )->r;
     if( ins->head.opcode == OP_MOV ) {
         ins->result = FakeIndex( ins->result, ES_DI );
     } else {
@@ -848,15 +850,46 @@ extern instruction      *rCHPPT( instruction *ins ) {
 }
 
 
+/* NB: The following two routines are intended for 386 only */
+
+extern instruction      *rMOVPTI8( instruction *ins )
+/***************************************************/
+{
+    instruction         *new_ins;
+    instruction         *ins2;
+
+    new_ins = MakeMove( OffsetPart( ins->operands[0] ), LowPart( ins->result, U4 ), U4 );
+    ins2    = MakeConvert( SegmentPart( ins->operands[0] ), HighPart( ins->result, U4 ), U4, U2 );
+    DupSegRes( ins, ins2 );
+    SuffixIns( ins, ins2 );
+    ReplIns( ins, new_ins );
+    return( new_ins );
+}
+
+extern instruction      *rMOVI8PT( instruction *ins )
+/***************************************************/
+{
+    instruction         *new_ins;
+    instruction         *ins2;
+
+    new_ins = MakeMove( LowPart( ins->operands[0], U4 ), OffsetPart( ins->result ), U4 );
+    ins2    = MakeMove( HighPart( ins->operands[0], U2 ), SegmentPart( ins->result ), U2 );
+    DupSegRes( ins, ins2 );
+    SuffixIns( ins, ins2 );
+    ReplIns( ins, new_ins );
+    return( new_ins );
+}
+
+
 extern  void    CheckCC( instruction *ins, instruction *new_ins ) {
 /*****************************************************************/
 
 
     if( ins->head.opcode == OP_EXT_ADD || ins->head.opcode == OP_EXT_SUB ) {
     #if _TARGET & _TARG_80386
-        new_ins->table = &Move4; /* ensure it doesn't set the condition codes */
+        new_ins->table = Move4; /* ensure it doesn't set the condition codes */
     #else
-        new_ins->table = &Move2; /* ensure it doesn't set the condition codes */
+        new_ins->table = Move2; /* ensure it doesn't set the condition codes */
     #endif
         new_ins->ins_flags |= INS_CC_USED;
     }
@@ -870,9 +903,9 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
     instruction         *new_ins;
     instruction         *first_ins;
     name                *op;
-    name                *new_op;
+    name                *new_op = NULL;
 
-    size = size + (WORD_SIZE-1) &~(WORD_SIZE-1);
+    size = (size + (WORD_SIZE-1)) &~(WORD_SIZE-1);
     op = ins->operands[ 0 ];
     first_ins = NULL;
     for( ;; ) {
@@ -963,7 +996,7 @@ extern  name    *OpAdjusted( name *op, int bias, type_class_def type ) {
     amount specified by 'bias'.
 
 */
-    name        *new_op;
+    name        *new_op = NULL;
 
     switch( op->n.class ) {
     case N_MEMORY:
@@ -1006,14 +1039,26 @@ extern  instruction     *rTEMP2CONST( instruction *ins ) {
 
     int         i;
     name        *op;
+    instruction *new;
 
-    for( i = ins->num_operands-1; i >= 0; --i ) {
+    /* 2005-05-14 RomanT
+     * Never modify const temps operands "in place" - ReplIns() will be
+     * unable to move conflict edges and they will point to nowhere.
+     * Instead, new instruction must be created and ReplIns()'ed.
+     */
+    new = NewIns( ins->num_operands );
+    Copy( ins, new, sizeof( instruction ) );  // without operands
+    i = ins->num_operands;
+    while ( --i >= 0 ) {
         op = ins->operands[i];
-        if( op->n.class != N_TEMP ) continue;
-        if( !(op->t.temp_flags & CONST_TEMP) ) continue;
-        ins->operands[i] = op->v.symbol;
+        if ( _ConstTemp( op ) ) {
+            new->operands[i] = op->v.symbol;
+        } else {
+            new->operands[i] = op;
+        }
     }
-    return( ins );
+    ReplIns( ins, new );
+    return ( new );
 }
 
 
@@ -1040,6 +1085,8 @@ extern  void            CnvOpToInt( instruction * ins, int op ) {
         }
         break;
 #endif
+    default:
+        break;
     }
 }
 

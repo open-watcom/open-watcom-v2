@@ -36,8 +36,8 @@
 #include "rtdata.h"
 #include "rtcheck.h"
 #include "seterrno.h"
-
-extern int __close( int handle );
+#include <unistd.h>
+#include "close.h"
 
 _WCRTLINK int close( int handle )
 {

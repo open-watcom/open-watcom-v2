@@ -1,0 +1,208 @@
+*$noreference
+
+! Metafile Functions:
+! -------------------
+
+      external CloseMetaFile
+      external CopyMetaFile
+      external CreateMetaFile
+      external DeleteMetaFile
+      external EnumMetaFile
+      external GetMetaFile
+      external GetMetaFileBits
+      external PlayMetaFile
+      external PlayMetaFileRecord
+      external SetMetaFileBits
+
+      integer*2 CloseMetaFile
+      integer*2 CopyMetaFile
+      integer*2 CreateMetaFile
+      integer*2 DeleteMetaFile
+      integer*2 EnumMetaFile
+      integer*2 GetMetaFile
+      integer*2 GetMetaFileBits
+      integer*2 PlayMetaFile
+      integer*2 SetMetaFileBits
+
+! Metafile Functions
+
+      integer META_SETBKCOLOR
+      integer META_SETBKMODE
+      integer META_SETMAPMODE
+      integer META_SETROP2
+      integer META_SETRELABS
+      integer META_SETPOLYFILLMODE
+      integer META_SETSTRETCHBLTMODE
+      integer META_SETTEXTCHAREXTRA
+      integer META_SETTEXTCOLOR
+      integer META_SETTEXTJUSTIFICATION
+      integer META_SETWINDOWORG
+      integer META_SETWINDOWEXT
+      integer META_SETVIEWPORTORG
+      integer META_SETVIEWPORTEXT
+      integer META_OFFSETWINDOWORG
+      integer META_SCALEWINDOWEXT
+      integer META_OFFSETVIEWPORTORG
+      integer META_SCALEVIEWPORTEXT
+      integer META_LINETO
+      integer META_MOVETO
+      integer META_EXCLUDECLIPRECT
+      integer META_INTERSECTCLIPRECT
+      integer META_ARC
+      integer META_ELLIPSE
+      integer META_FLOODFILL
+      integer META_PIE
+      integer META_RECTANGLE
+      integer META_ROUNDRECT
+      integer META_PATBLT
+      integer META_SAVEDC
+      integer META_SETPIXEL
+      integer META_OFFSETCLIPRGN
+      integer META_TEXTOUT
+      integer META_BITBLT
+      integer META_STRETCHBLT
+      integer META_POLYGON
+      integer META_POLYLINE
+      integer META_ESCAPE
+      integer META_RESTOREDC
+      integer META_FILLREGION
+      integer META_FRAMEREGION
+      integer META_INVERTREGION
+      integer META_PAINTREGION
+      integer META_SELECTCLIPREGION
+      integer META_SELECTOBJECT
+      integer META_SETTEXTALIGN
+      integer META_DRAWTEXT
+
+      integer META_CHORD
+      integer META_SETMAPPERFLAGS
+      integer META_EXTTEXTOUT
+      integer META_SETDIBTODEV
+      integer META_SELECTPALETTE
+      integer META_REALIZEPALETTE
+      integer META_ANIMATEPALETTE
+      integer META_SETPALENTRIES
+      integer META_POLYPOLYGON
+      integer META_RESIZEPALETTE
+
+      integer META_DIBBITBLT
+      integer META_DIBSTRETCHBLT
+      integer META_DIBCREATEPATTERNBRUSH
+      integer META_STRETCHDIB
+
+      integer META_DELETEOBJECT
+
+      integer META_CREATEPALETTE
+      integer META_CREATEBRUSH
+      integer META_CREATEPATTERNBRUSH
+      integer META_CREATEPENINDIRECT
+      integer META_CREATEFONTINDIRECT
+      integer META_CREATEBRUSHINDIRECT
+      integer META_CREATEBITMAPINDIRECT
+      integer META_CREATEBITMAP
+      integer META_CREATEREGION
+
+      parameter ( META_SETBKCOLOR              = '0201'x )
+      parameter ( META_SETBKMODE               = '0102'x )
+      parameter ( META_SETMAPMODE              = '0103'x )
+      parameter ( META_SETROP2                 = '0104'x )
+      parameter ( META_SETRELABS               = '0105'x )
+      parameter ( META_SETPOLYFILLMODE         = '0106'x )
+      parameter ( META_SETSTRETCHBLTMODE       = '0107'x )
+      parameter ( META_SETTEXTCHAREXTRA        = '0108'x )
+      parameter ( META_SETTEXTCOLOR            = '0209'x )
+      parameter ( META_SETTEXTJUSTIFICATION    = '020A'x )
+      parameter ( META_SETWINDOWORG            = '020B'x )
+      parameter ( META_SETWINDOWEXT            = '020C'x )
+      parameter ( META_SETVIEWPORTORG          = '020D'x )
+      parameter ( META_SETVIEWPORTEXT          = '020E'x )
+      parameter ( META_OFFSETWINDOWORG         = '020F'x )
+      parameter ( META_SCALEWINDOWEXT          = '0400'x )
+      parameter ( META_OFFSETVIEWPORTORG       = '0211'x )
+      parameter ( META_SCALEVIEWPORTEXT        = '0412'x )
+      parameter ( META_LINETO                  = '0213'x )
+      parameter ( META_MOVETO                  = '0214'x )
+      parameter ( META_EXCLUDECLIPRECT         = '0415'x )
+      parameter ( META_INTERSECTCLIPRECT       = '0416'x )
+      parameter ( META_ARC                     = '0817'x )
+      parameter ( META_ELLIPSE                 = '0418'x )
+      parameter ( META_FLOODFILL               = '0419'x )
+      parameter ( META_PIE                     = '081A'x )
+      parameter ( META_RECTANGLE               = '041B'x )
+      parameter ( META_ROUNDRECT               = '061C'x )
+      parameter ( META_PATBLT                  = '061D'x )
+      parameter ( META_SAVEDC                  = '001E'x )
+      parameter ( META_SETPIXEL                = '041F'x )
+      parameter ( META_OFFSETCLIPRGN           = '0220'x )
+      parameter ( META_TEXTOUT                 = '0521'x )
+      parameter ( META_BITBLT                  = '0922'x )
+      parameter ( META_STRETCHBLT              = '0B23'x )
+      parameter ( META_POLYGON                 = '0324'x )
+      parameter ( META_POLYLINE                = '0325'x )
+      parameter ( META_ESCAPE                  = '0626'x )
+      parameter ( META_RESTOREDC               = '0127'x )
+      parameter ( META_FILLREGION              = '0228'x )
+      parameter ( META_FRAMEREGION             = '0429'x )
+      parameter ( META_INVERTREGION            = '012A'x )
+      parameter ( META_PAINTREGION             = '012B'x )
+      parameter ( META_SELECTCLIPREGION        = '012C'x )
+      parameter ( META_SELECTOBJECT            = '012D'x )
+      parameter ( META_SETTEXTALIGN            = '012E'x )
+      parameter ( META_DRAWTEXT                = '062F'x )
+
+      parameter ( META_CHORD                   = '0830'x )
+      parameter ( META_SETMAPPERFLAGS          = '0231'x )
+      parameter ( META_EXTTEXTOUT              = '0a32'x )
+      parameter ( META_SETDIBTODEV             = '0d33'x )
+      parameter ( META_SELECTPALETTE           = '0234'x )
+      parameter ( META_REALIZEPALETTE          = '0035'x )
+      parameter ( META_ANIMATEPALETTE          = '0436'x )
+      parameter ( META_SETPALENTRIES           = '0037'x )
+      parameter ( META_POLYPOLYGON             = '0538'x )
+      parameter ( META_RESIZEPALETTE           = '0139'x )
+
+      parameter ( META_DIBBITBLT               = '0940'x )
+      parameter ( META_DIBSTRETCHBLT           = '0b41'x )
+      parameter ( META_DIBCREATEPATTERNBRUSH   = '0142'x )
+      parameter ( META_STRETCHDIB              = '0f43'x )
+
+      parameter ( META_DELETEOBJECT            = '01f0'x )
+
+      parameter ( META_CREATEPALETTE           = '00f7'x )
+      parameter ( META_CREATEBRUSH             = '00F8'x )
+      parameter ( META_CREATEPATTERNBRUSH      = '01F9'x )
+      parameter ( META_CREATEPENINDIRECT       = '02FA'x )
+      parameter ( META_CREATEFONTINDIRECT      = '02FB'x )
+      parameter ( META_CREATEBRUSHINDIRECT     = '02FC'x )
+      parameter ( META_CREATEBITMAPINDIRECT    = '02FD'x )
+      parameter ( META_CREATEBITMAP            = '06FE'x )
+      parameter ( META_CREATEREGION            = '06FF'x )
+
+! Metafile Data Structures
+
+      structure /METAHEADER/
+          integer*2           mtType
+          integer*2           mtHeaderSize
+          integer*2           mtVersion
+          integer*4           mtSize
+          integer*2           mtNoObjects
+          integer*4           mtMaxRecord
+          integer*2           mtNoParameters
+      end structure
+
+      structure /METARECORD/
+          integer*4           rdSize
+          integer*2           rdFunction
+          integer*2           rdParm(1)
+      end structure
+
+! Clipboard Metafile Picture Structure
+
+      structure /METAFILEPICT/
+          integer*2           mm
+          integer*2           xExt
+          integer*2           yExt
+          integer*2           hMF
+      end structure
+
+*$reference

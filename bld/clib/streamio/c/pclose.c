@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _pclose() for OS/2 and Win32.
 *
 ****************************************************************************/
 
@@ -42,16 +41,20 @@ _WCRTLINK int _pclose( FILE *fp )
     int                 status;
 
     /*** Get the return code of the process ***/
-    if( _FP_PIPEDATA(fp).isPipe == 0 )  return( -1 );   /* must be a pipe */
-    if( fclose( fp ) )  return( -1 );   /* must close pipe before cwait */
+    if( _FP_PIPEDATA(fp).isPipe == 0 ) {
+        return( -1 );                       /* must be a pipe */
+    }
+    if( fclose( fp ) ) {
+        return( -1 );                       /* must close pipe before cwait */
+    }
     if( cwait( &status, _FP_PIPEDATA(fp).pid, WAIT_CHILD ) == -1 ) {
         return( -1 );
     }
 
     /*** Handle the return code ***/
-    if( (status&0x00FF) == 0 ) {
-        return( (status&0xFF00) >> 8 ); /* normal termination */
+    if( (status & 0x00FF) == 0 ) {
+        return( (status & 0xFF00) >> 8 );   /* normal termination */
     } else {
-        return( status >> 8 );          /* abnormal termination */
+        return( status >> 8 );              /* abnormal termination */
     }
 }

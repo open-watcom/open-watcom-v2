@@ -166,16 +166,16 @@ typedef struct hw_reg_set {
                             HW_7( HW_COMMA x (__7(a)+__7(b)+__7(c)+__7(d)+__7(e)))\
 
 
-#define    HW_D_1(a        )    HW_Op1(a        ,+)
-#define HW_NotD_1(a        )    HW_Op1(a        ,~)
-#define    HW_D_2(a,b      )    HW_Op2(a,b      ,+)
-#define HW_NotD_2(a,b      )    HW_Op2(a,b      ,~)
-#define    HW_D_3(a,b,c    )    HW_Op3(a,b,c    ,+)
-#define HW_NotD_3(a,b,c    )    HW_Op3(a,b,c    ,~)
-#define    HW_D_4(a,b,c,d  )    HW_Op4(a,b,c,d  ,+)
-#define HW_NotD_4(a,b,c,d  )    HW_Op4(a,b,c,d  ,~)
-#define    HW_D_5(a,b,c,d,e)    HW_Op5(a,b,c,d,e,+)
-#define HW_NotD_5(a,b,c,d,e)    HW_Op5(a,b,c,d,e,~)
+#define    HW_D_1(a        )    {HW_Op1(a        ,+)}
+#define HW_NotD_1(a        )    {HW_Op1(a        ,~)}
+#define    HW_D_2(a,b      )    {HW_Op2(a,b      ,+)}
+#define HW_NotD_2(a,b      )    {HW_Op2(a,b      ,~)}
+#define    HW_D_3(a,b,c    )    {HW_Op3(a,b,c    ,+)}
+#define HW_NotD_3(a,b,c    )    {HW_Op3(a,b,c    ,~)}
+#define    HW_D_4(a,b,c,d  )    {HW_Op4(a,b,c,d  ,+)}
+#define HW_NotD_4(a,b,c,d  )    {HW_Op4(a,b,c,d  ,~)}
+#define    HW_D_5(a,b,c,d,e)    {HW_Op5(a,b,c,d,e,+)}
+#define HW_NotD_5(a,b,c,d,e)    {HW_Op5(a,b,c,d,e,~)}
 
 #define    HW_D( x )       HW_D_1( x )
 #define HW_NotD( x )    HW_NotD_1( x )

@@ -1,7 +1,7 @@
 ( sets $draft no
 ( dev ps
 ( wscript
-( lay nb7x9lay.lay
+( lay nb7x9lay
 ( font  0 times-roman                      2 10
 ( font  1 times-italic                     2 10
 ( font  2 times-bold                       2 10

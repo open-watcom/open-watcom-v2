@@ -1,0 +1,9 @@
+/*
+ *  pshpack2.h  Push 2-byte packing
+ *
+:include crwatcnt.sp
+ */
+ 
+:include readonly.sp
+
+#pragma pack( push, 2 )

@@ -1,2 +1,2 @@
-extra_srcs +=;$(trap_dir)\lcl\c;$(trap_dir)\lcl\asm
-extra_incs +=;$(trap_dir)\lcl\h
+extra_srcs +=;$(trap_dir)/lcl/c;$(trap_dir)/lcl/asm
+inc_dirs   += -I"$(trap_dir)/lcl/h"

@@ -57,20 +57,19 @@ typedef struct WRMFInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WRMemFlagsProc ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WR_EXPORT WRMemFlagsProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WRSetWinInfo          ( HWND, WRMFInfo * );
-static void         WRGetWinInfo          ( HWND, WRMFInfo * );
+static void         WRSetWinInfo( HWND, WRMFInfo * );
+static void         WRGetWinInfo( HWND, WRMFInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-int WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags,
-                                FARPROC hcb )
+int WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
 {
     WRMFInfo    info;
     DLGPROC     proc;
@@ -81,30 +80,28 @@ int WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags,
         return( FALSE );
     }
 
-    info.hcb    = hcb;
-    info.name   = name;
+    info.hcb = hcb;
+    info.name = name;
     info.mflags = *mflags;
-    inst        = WRGetInstance();
+    inst = WRGetInstance();
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC) WRMemFlagsProc, inst );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRMemFlags", parent,
-                                proc, (LPARAM) &info );
+    modified = JDialogBoxParam( inst, "WRMemFlags", parent, proc, (LPARAM)&info );
 
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
     if( modified == IDOK ) {
         *mflags = info.mflags;
     }
 
-    return( ( modified != -1 ) && ( modified == IDOK ) );
+    return( modified != -1 && modified == IDOK );
 }
 
 void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 {
-    if( info ) {
-        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0,
-                            (LPARAM) (LPCSTR) info->name );
+    if( info != NULL ) {
+        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
 
         if( info->mflags & MEMFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, 1 );
@@ -127,12 +124,10 @@ void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 }
 
 void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
-
 {
-    if( info ) {
-        info->mflags = info->mflags & ~( MEMFLAG_MOVEABLE |
-                                         MEMFLAG_DISCARDABLE |
-                                         MEMFLAG_PURE | MEMFLAG_PRELOAD );
+    if( info != NULL ) {
+        info->mflags = info->mflags &
+            ~(MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_PRELOAD);
 
         if( IsDlgButtonChecked( hDlg, IDM_MFMV ) ) {
             info->mflags |= MEMFLAG_MOVEABLE;
@@ -152,8 +147,7 @@ void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
     }
 }
 
-BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message,
-                               WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRMFInfo    *info;
     BOOL        ret;
@@ -161,50 +155,49 @@ BOOL WR_EXPORT WRMemFlagsProc( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
+    case WM_DESTROY:
+        WRUnregisterDialog( hDlg );
+        break;
 
-        case WM_DESTROY:
-            WRUnregisterDialog( hDlg );
+    case WM_INITDIALOG:
+        info = (WRMFInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WRRegisterDialog( hDlg );
+        WRSetWinInfo( hDlg, info );
+        ret = TRUE;
+        break;
+
+    case WM_SYSCOLORCHANGE:
+        WRCtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDM_MFHELP:
+            info = (WRMFInfo *)GetWindowLong( hDlg, DWL_USER );
+            if( info != NULL && info->hcb != NULL ) {
+                (*info->hcb)();
+            }
             break;
 
-        case WM_INITDIALOG:
-            info = (WRMFInfo *) lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG) info );
-            WRRegisterDialog( hDlg );
-            WRSetWinInfo( hDlg, info );
+        case IDOK:
+            info = (WRMFInfo *)GetWindowLong( hDlg, DWL_USER );
+            if( info != NULL ) {
+                WRGetWinInfo( hDlg, info );
+                EndDialog( hDlg, TRUE );
+            } else {
+                EndDialog( hDlg, FALSE );
+            }
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRCtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            switch( LOWORD(wParam) ) {
-                case IDM_MFHELP:
-                    info = (WRMFInfo *) GetWindowLong( hDlg, DWL_USER );
-                    if( info && info->hcb ) {
-                        (*info->hcb)();
-                    }
-                    break;
-
-                case IDOK:
-                    info = (WRMFInfo *) GetWindowLong( hDlg, DWL_USER );
-                    if( info != NULL ) {
-                        WRGetWinInfo( hDlg, info );
-                        EndDialog( hDlg, TRUE );
-                    } else {
-                        EndDialog( hDlg, FALSE );
-                    }
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog ( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-            }
+        }
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
-

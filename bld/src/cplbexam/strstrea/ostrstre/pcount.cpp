@@ -7,7 +7,7 @@ void main( void ) {
 
     pch = new char [len];
     ostrstream    output ( pch, len );
-    output << "Watcom C++" << ends;        // write string into the object
+    output << "Open Watcom C++" << ends;        // write string into the object
     pc1 = output.pcount();
     cout << "There are " << pc1
          << " characters have been written in the object." << endl;

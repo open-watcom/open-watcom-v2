@@ -1,0 +1,776 @@
+*$noreference
+
+! Window messages
+
+      integer WM_NULL
+      integer WM_CREATE
+      integer WM_DESTROY
+      integer WM_MOVE
+      integer WM_SIZE
+      integer WM_ACTIVATE
+      integer WM_SETFOCUS
+      integer WM_KILLFOCUS
+      integer WM_ENABLE
+      integer WM_SETREDRAW
+      integer WM_SETTEXT
+      integer WM_GETTEXT
+      integer WM_GETTEXTLENGTH
+      integer WM_PAINT
+      integer WM_CLOSE
+      integer WM_QUERYENDSESSION
+      integer WM_QUIT
+      integer WM_QUERYOPEN
+      integer WM_ERASEBKGND
+      integer WM_SYSCOLORCHANGE
+      integer WM_ENDSESSION
+      integer WM_SHOWWINDOW
+      integer WM_CTLCOLOR
+      integer WM_WININICHANGE
+      integer WM_DEVMODECHANGE
+      integer WM_ACTIVATEAPP
+      integer WM_FONTCHANGE
+      integer WM_TIMECHANGE
+      integer WM_CANCELMODE
+      integer WM_SETCURSOR
+      integer WM_MOUSEACTIVATE
+      integer WM_CHILDACTIVATE
+      integer WM_QUEUESYNC
+      integer WM_GETMINMAXINFO
+      integer WM_PAINTICON
+      integer WM_ICONERASEBKGND
+      integer WM_NEXTDLGCTL
+      integer WM_SPOOLERSTATUS
+      integer WM_DRAWITEM
+      integer WM_MEASUREITEM
+      integer WM_DELETEITEM
+      integer WM_VKEYTOITEM
+      integer WM_CHARTOITEM
+      integer WM_SETFONT
+      integer WM_GETFONT
+
+      integer WM_QUERYDRAGICON
+
+      integer WM_COMPAREITEM
+      integer WM_COMPACTING
+
+      integer WM_NCCREATE
+      integer WM_NCDESTROY
+      integer WM_NCCALCSIZE
+      integer WM_NCHITTEST
+      integer WM_NCPAINT
+      integer WM_NCACTIVATE
+      integer WM_GETDLGCODE
+      integer WM_NCMOUSEMOVE
+      integer WM_NCLBUTTONDOWN
+      integer WM_NCLBUTTONUP
+      integer WM_NCLBUTTONDBLCLK
+      integer WM_NCRBUTTONDOWN
+      integer WM_NCRBUTTONUP
+      integer WM_NCRBUTTONDBLCLK
+      integer WM_NCMBUTTONDOWN
+      integer WM_NCMBUTTONUP
+      integer WM_NCMBUTTONDBLCLK
+
+      integer WM_KEYFIRST
+      integer WM_KEYDOWN
+      integer WM_KEYUP
+      integer WM_CHAR
+      integer WM_DEADCHAR
+      integer WM_SYSKEYDOWN
+      integer WM_SYSKEYUP
+      integer WM_SYSCHAR
+      integer WM_SYSDEADCHAR
+      integer WM_KEYLAST
+
+      integer WM_INITDIALOG
+      integer WM_COMMAND
+      integer WM_SYSCOMMAND
+      integer WM_TIMER
+      integer WM_HSCROLL
+      integer WM_VSCROLL
+      integer WM_INITMENU
+      integer WM_INITMENUPOPUP
+      integer WM_MENUSELECT
+      integer WM_MENUCHAR
+      integer WM_ENTERIDLE
+
+      integer WM_MOUSEFIRST
+      integer WM_MOUSEMOVE
+      integer WM_LBUTTONDOWN
+      integer WM_LBUTTONUP
+      integer WM_LBUTTONDBLCLK
+      integer WM_RBUTTONDOWN
+      integer WM_RBUTTONUP
+      integer WM_RBUTTONDBLCLK
+      integer WM_MBUTTONDOWN
+      integer WM_MBUTTONUP
+      integer WM_MBUTTONDBLCLK
+      integer WM_MOUSELAST
+
+      integer WM_PARENTNOTIFY
+      integer WM_MDICREATE
+      integer WM_MDIDESTROY
+      integer WM_MDIACTIVATE
+      integer WM_MDIRESTORE
+      integer WM_MDINEXT
+      integer WM_MDIMAXIMIZE
+      integer WM_MDITILE
+      integer WM_MDICASCADE
+      integer WM_MDIICONARRANGE
+      integer WM_MDIGETACTIVE
+      integer WM_MDISETMENU
+
+      integer WM_CUT
+      integer WM_COPY
+      integer WM_PASTE
+      integer WM_CLEAR
+      integer WM_UNDO
+      integer WM_RENDERFORMAT
+      integer WM_RENDERALLFORMATS
+      integer WM_DESTROYCLIPBOARD
+      integer WM_DRAWCLIPBOARD
+      integer WM_PAINTCLIPBOARD
+      integer WM_VSCROLLCLIPBOARD
+      integer WM_SIZECLIPBOARD
+      integer WM_ASKCBFORMATNAME
+      integer WM_CHANGECBCHAIN
+      integer WM_HSCROLLCLIPBOARD
+      integer WM_QUERYNEWPALETTE
+      integer WM_PALETTEISCHANGING
+      integer WM_PALETTECHANGED
+
+      parameter ( WM_NULL                     = '0000'x )
+      parameter ( WM_CREATE                   = '0001'x )
+      parameter ( WM_DESTROY                  = '0002'x )
+      parameter ( WM_MOVE                     = '0003'x )
+      parameter ( WM_SIZE                     = '0005'x )
+      parameter ( WM_ACTIVATE                 = '0006'x )
+      parameter ( WM_SETFOCUS                 = '0007'x )
+      parameter ( WM_KILLFOCUS                = '0008'x )
+      parameter ( WM_ENABLE                   = '000A'x )
+      parameter ( WM_SETREDRAW                = '000B'x )
+      parameter ( WM_SETTEXT                  = '000C'x )
+      parameter ( WM_GETTEXT                  = '000D'x )
+      parameter ( WM_GETTEXTLENGTH            = '000E'x )
+      parameter ( WM_PAINT                    = '000F'x )
+      parameter ( WM_CLOSE                    = '0010'x )
+      parameter ( WM_QUERYENDSESSION          = '0011'x )
+      parameter ( WM_QUIT                     = '0012'x )
+      parameter ( WM_QUERYOPEN                = '0013'x )
+      parameter ( WM_ERASEBKGND               = '0014'x )
+      parameter ( WM_SYSCOLORCHANGE           = '0015'x )
+      parameter ( WM_ENDSESSION               = '0016'x )
+      parameter ( WM_SHOWWINDOW               = '0018'x )
+      parameter ( WM_CTLCOLOR                 = '0019'x )
+      parameter ( WM_WININICHANGE             = '001A'x )
+      parameter ( WM_DEVMODECHANGE            = '001B'x )
+      parameter ( WM_ACTIVATEAPP              = '001C'x )
+      parameter ( WM_FONTCHANGE               = '001D'x )
+      parameter ( WM_TIMECHANGE               = '001E'x )
+      parameter ( WM_CANCELMODE               = '001F'x )
+      parameter ( WM_SETCURSOR                = '0020'x )
+      parameter ( WM_MOUSEACTIVATE            = '0021'x )
+      parameter ( WM_CHILDACTIVATE            = '0022'x )
+      parameter ( WM_QUEUESYNC                = '0023'x )
+      parameter ( WM_GETMINMAXINFO            = '0024'x )
+      parameter ( WM_PAINTICON                = '0026'x )
+      parameter ( WM_ICONERASEBKGND           = '0027'x )
+      parameter ( WM_NEXTDLGCTL               = '0028'x )
+      parameter ( WM_SPOOLERSTATUS            = '002A'x )
+      parameter ( WM_DRAWITEM                 = '002B'x )
+      parameter ( WM_MEASUREITEM              = '002C'x )
+      parameter ( WM_DELETEITEM               = '002D'x )
+      parameter ( WM_VKEYTOITEM               = '002E'x )
+      parameter ( WM_CHARTOITEM               = '002F'x )
+      parameter ( WM_SETFONT                  = '0030'x )
+      parameter ( WM_GETFONT                  = '0031'x )
+
+      parameter ( WM_QUERYDRAGICON            = '0037'x )
+
+      parameter ( WM_COMPAREITEM              = '0039'x )
+      parameter ( WM_COMPACTING               = '0041'x )
+
+      parameter ( WM_NCCREATE                 = '0081'x )
+      parameter ( WM_NCDESTROY                = '0082'x )
+      parameter ( WM_NCCALCSIZE               = '0083'x )
+      parameter ( WM_NCHITTEST                = '0084'x )
+      parameter ( WM_NCPAINT                  = '0085'x )
+      parameter ( WM_NCACTIVATE               = '0086'x )
+      parameter ( WM_GETDLGCODE               = '0087'x )
+      parameter ( WM_NCMOUSEMOVE              = '00A0'x )
+      parameter ( WM_NCLBUTTONDOWN            = '00A1'x )
+      parameter ( WM_NCLBUTTONUP              = '00A2'x )
+      parameter ( WM_NCLBUTTONDBLCLK          = '00A3'x )
+      parameter ( WM_NCRBUTTONDOWN            = '00A4'x )
+      parameter ( WM_NCRBUTTONUP              = '00A5'x )
+      parameter ( WM_NCRBUTTONDBLCLK          = '00A6'x )
+      parameter ( WM_NCMBUTTONDOWN            = '00A7'x )
+      parameter ( WM_NCMBUTTONUP              = '00A8'x )
+      parameter ( WM_NCMBUTTONDBLCLK          = '00A9'x )
+
+      parameter ( WM_KEYFIRST                 = '0100'x )
+      parameter ( WM_KEYDOWN                  = '0100'x )
+      parameter ( WM_KEYUP                    = '0101'x )
+      parameter ( WM_CHAR                     = '0102'x )
+      parameter ( WM_DEADCHAR                 = '0103'x )
+      parameter ( WM_SYSKEYDOWN               = '0104'x )
+      parameter ( WM_SYSKEYUP                 = '0105'x )
+      parameter ( WM_SYSCHAR                  = '0106'x )
+      parameter ( WM_SYSDEADCHAR              = '0107'x )
+      parameter ( WM_KEYLAST                  = '0108'x )
+
+      parameter ( WM_INITDIALOG               = '0110'x )
+      parameter ( WM_COMMAND                  = '0111'x )
+      parameter ( WM_SYSCOMMAND               = '0112'x )
+      parameter ( WM_TIMER                    = '0113'x )
+      parameter ( WM_HSCROLL                  = '0114'x )
+      parameter ( WM_VSCROLL                  = '0115'x )
+      parameter ( WM_INITMENU                 = '0116'x )
+      parameter ( WM_INITMENUPOPUP            = '0117'x )
+      parameter ( WM_MENUSELECT               = '011F'x )
+      parameter ( WM_MENUCHAR                 = '0120'x )
+      parameter ( WM_ENTERIDLE                = '0121'x )
+
+      parameter ( WM_MOUSEFIRST               = '0200'x )
+      parameter ( WM_MOUSEMOVE                = '0200'x )
+      parameter ( WM_LBUTTONDOWN              = '0201'x )
+      parameter ( WM_LBUTTONUP                = '0202'x )
+      parameter ( WM_LBUTTONDBLCLK            = '0203'x )
+      parameter ( WM_RBUTTONDOWN              = '0204'x )
+      parameter ( WM_RBUTTONUP                = '0205'x )
+      parameter ( WM_RBUTTONDBLCLK            = '0206'x )
+      parameter ( WM_MBUTTONDOWN              = '0207'x )
+      parameter ( WM_MBUTTONUP                = '0208'x )
+      parameter ( WM_MBUTTONDBLCLK            = '0209'x )
+      parameter ( WM_MOUSELAST                = '0209'x )
+
+      parameter ( WM_PARENTNOTIFY             = '0210'x )
+      parameter ( WM_MDICREATE                = '0220'x )
+      parameter ( WM_MDIDESTROY               = '0221'x )
+      parameter ( WM_MDIACTIVATE              = '0222'x )
+      parameter ( WM_MDIRESTORE               = '0223'x )
+      parameter ( WM_MDINEXT                  = '0224'x )
+      parameter ( WM_MDIMAXIMIZE              = '0225'x )
+      parameter ( WM_MDITILE                  = '0226'x )
+      parameter ( WM_MDICASCADE               = '0227'x )
+      parameter ( WM_MDIICONARRANGE           = '0228'x )
+      parameter ( WM_MDIGETACTIVE             = '0229'x )
+      parameter ( WM_MDISETMENU               = '0230'x )
+
+      parameter ( WM_CUT                      = '0300'x )
+      parameter ( WM_COPY                     = '0301'x )
+      parameter ( WM_PASTE                    = '0302'x )
+      parameter ( WM_CLEAR                    = '0303'x )
+      parameter ( WM_UNDO                     = '0304'x )
+      parameter ( WM_RENDERFORMAT             = '0305'x )
+      parameter ( WM_RENDERALLFORMATS         = '0306'x )
+      parameter ( WM_DESTROYCLIPBOARD         = '0307'x )
+      parameter ( WM_DRAWCLIPBOARD            = '0308'x )
+      parameter ( WM_PAINTCLIPBOARD           = '0309'x )
+      parameter ( WM_VSCROLLCLIPBOARD         = '030A'x )
+      parameter ( WM_SIZECLIPBOARD            = '030B'x )
+      parameter ( WM_ASKCBFORMATNAME          = '030C'x )
+      parameter ( WM_CHANGECBCHAIN            = '030D'x )
+      parameter ( WM_HSCROLLCLIPBOARD         = '030E'x )
+      parameter ( WM_QUERYNEWPALETTE          = '030F'x )
+      parameter ( WM_PALETTEISCHANGING        = '0310'x )
+      parameter ( WM_PALETTECHANGED           = '0311'x )
+
+! NOTE: All Message Numbers below '0400'x are RESERVED.
+
+! Private Window Messages Start Here:
+
+      integer WM_USER
+
+      parameter ( WM_USER             = '0400'x )
+
+! Button Control Messages
+
+      integer BM_GETCHECK
+      integer BM_SETCHECK
+      integer BM_GETSTATE
+      integer BM_SETSTATE
+      integer BM_SETSTYLE
+
+      integer DM_GETDEFID
+      integer DM_SETDEFID
+
+      parameter ( BM_GETCHECK        = WM_USER+0 )
+      parameter ( BM_SETCHECK        = WM_USER+1 )
+      parameter ( BM_GETSTATE        = WM_USER+2 )
+      parameter ( BM_SETSTATE        = WM_USER+3 )
+      parameter ( BM_SETSTYLE        = WM_USER+4 )
+
+      parameter ( DM_GETDEFID        = WM_USER+0 )
+      parameter ( DM_SETDEFID        = WM_USER+1 )
+
+! Edit Control Messages
+
+      integer EM_GETSEL
+      integer EM_SETSEL
+      integer EM_GETRECT
+      integer EM_SETRECT
+      integer EM_SETRECTNP
+      integer EM_SCROLL
+      integer EM_LINESCROLL
+      integer EM_GETMODIFY
+      integer EM_SETMODIFY
+      integer EM_GETLINECOUNT
+      integer EM_LINEINDEX
+      integer EM_SETHANDLE
+      integer EM_GETHANDLE
+      integer EM_GETTHUMB
+      integer EM_LINELENGTH
+      integer EM_REPLACESEL
+      integer EM_SETFONT
+      integer EM_GETLINE
+      integer EM_LIMITTEXT
+      integer EM_CANUNDO
+      integer EM_UNDO
+      integer EM_FMTLINES
+      integer EM_LINEFROMCHAR
+      integer EM_SETWORDBREAK
+      integer EM_SETTABSTOPS
+      integer EM_SETPASSWORDCHAR
+      integer EM_EMPTYUNDOBUFFER
+      integer EM_MSGMAX
+
+      parameter ( EM_GETSEL          = WM_USER+0 )
+      parameter ( EM_SETSEL          = WM_USER+1 )
+      parameter ( EM_GETRECT         = WM_USER+2 )
+      parameter ( EM_SETRECT         = WM_USER+3 )
+      parameter ( EM_SETRECTNP       = WM_USER+4 )
+      parameter ( EM_SCROLL          = WM_USER+5 )
+      parameter ( EM_LINESCROLL      = WM_USER+6 )
+      parameter ( EM_GETMODIFY       = WM_USER+8 )
+      parameter ( EM_SETMODIFY       = WM_USER+9 )
+      parameter ( EM_GETLINECOUNT    = WM_USER+10 )
+      parameter ( EM_LINEINDEX       = WM_USER+11 )
+      parameter ( EM_SETHANDLE       = WM_USER+12 )
+      parameter ( EM_GETHANDLE       = WM_USER+13 )
+      parameter ( EM_GETTHUMB        = WM_USER+14 )
+      parameter ( EM_LINELENGTH      = WM_USER+17 )
+      parameter ( EM_REPLACESEL      = WM_USER+18 )
+      parameter ( EM_SETFONT         = WM_USER+19 )
+      parameter ( EM_GETLINE         = WM_USER+20 )
+      parameter ( EM_LIMITTEXT       = WM_USER+21 )
+      parameter ( EM_CANUNDO         = WM_USER+22 )
+      parameter ( EM_UNDO            = WM_USER+23 )
+      parameter ( EM_FMTLINES        = WM_USER+24 )
+      parameter ( EM_LINEFROMCHAR    = WM_USER+25 )
+      parameter ( EM_SETWORDBREAK    = WM_USER+26 )
+      parameter ( EM_SETTABSTOPS     = WM_USER+27 )
+      parameter ( EM_SETPASSWORDCHAR = WM_USER+28 )
+      parameter ( EM_EMPTYUNDOBUFFER = WM_USER+29 )
+      parameter ( EM_MSGMAX          = WM_USER+30 )
+
+! Listbox messages
+
+      integer LB_ADDSTRING
+      integer LB_INSERTSTRING
+      integer LB_DELETESTRING
+      integer LB_RESETCONTENT
+      integer LB_SETSEL
+      integer LB_SETCURSEL
+      integer LB_GETSEL
+      integer LB_GETCURSEL
+      integer LB_GETTEXT
+      integer LB_GETTEXTLEN
+      integer LB_GETCOUNT
+      integer LB_SELECTSTRING
+      integer LB_DIR
+      integer LB_GETTOPINDEX
+      integer LB_FINDSTRING
+      integer LB_GETSELCOUNT
+      integer LB_GETSELITEMS
+      integer LB_SETTABSTOPS
+      integer LB_GETHORIZONTALEXTENT
+      integer LB_SETHORIZONTALEXTENT
+      integer LB_SETCOLUMNWIDTH
+      integer LB_SETTOPINDEX
+      integer LB_GETITEMRECT
+      integer LB_GETITEMDATA
+      integer LB_SETITEMDATA
+      integer LB_SELITEMRANGE
+      integer LB_MSGMAX
+
+      parameter ( LB_ADDSTRING           = WM_USER+1 )
+      parameter ( LB_INSERTSTRING        = WM_USER+2 )
+      parameter ( LB_DELETESTRING        = WM_USER+3 )
+      parameter ( LB_RESETCONTENT        = WM_USER+5 )
+      parameter ( LB_SETSEL              = WM_USER+6 )
+      parameter ( LB_SETCURSEL           = WM_USER+7 )
+      parameter ( LB_GETSEL              = WM_USER+8 )
+      parameter ( LB_GETCURSEL           = WM_USER+9 )
+      parameter ( LB_GETTEXT             = WM_USER+10 )
+      parameter ( LB_GETTEXTLEN          = WM_USER+11 )
+      parameter ( LB_GETCOUNT            = WM_USER+12 )
+      parameter ( LB_SELECTSTRING        = WM_USER+13 )
+      parameter ( LB_DIR                 = WM_USER+14 )
+      parameter ( LB_GETTOPINDEX         = WM_USER+15 )
+      parameter ( LB_FINDSTRING          = WM_USER+16 )
+      parameter ( LB_GETSELCOUNT         = WM_USER+17 )
+      parameter ( LB_GETSELITEMS         = WM_USER+18 )
+      parameter ( LB_SETTABSTOPS         = WM_USER+19 )
+      parameter ( LB_GETHORIZONTALEXTENT = WM_USER+20 )
+      parameter ( LB_SETHORIZONTALEXTENT = WM_USER+21 )
+      parameter ( LB_SETCOLUMNWIDTH      = WM_USER+22 )
+      parameter ( LB_SETTOPINDEX         = WM_USER+24 )
+      parameter ( LB_GETITEMRECT         = WM_USER+25 )
+      parameter ( LB_GETITEMDATA         = WM_USER+26 )
+      parameter ( LB_SETITEMDATA         = WM_USER+27 )
+      parameter ( LB_SELITEMRANGE        = WM_USER+28 )
+      parameter ( LB_MSGMAX              = WM_USER+33 )
+
+! Listbox Return Values
+
+      integer LB_OKAY
+      integer LB_ERR
+      integer LB_ERRSPACE
+
+      parameter ( LB_OKAY             = 0 )
+      parameter ( LB_ERR              = -1 )
+      parameter ( LB_ERRSPACE         = -2 )
+
+! Combo Box messages
+
+      integer CB_GETEDITSEL
+      integer CB_LIMITTEXT
+      integer CB_SETEDITSEL
+      integer CB_ADDSTRING
+      integer CB_DELETESTRING
+      integer CB_DIR
+      integer CB_GETCOUNT
+      integer CB_GETCURSEL
+      integer CB_GETLBTEXT
+      integer CB_GETLBTEXTLEN
+      integer CB_INSERTSTRING
+      integer CB_RESETCONTENT
+      integer CB_FINDSTRING
+      integer CB_SELECTSTRING
+      integer CB_SETCURSEL
+      integer CB_SHOWDROPDOWN
+      integer CB_GETITEMDATA
+      integer CB_SETITEMDATA
+      integer CB_GETDROPPEDCONTROLRECT
+      integer CB_MSGMAX
+
+      parameter ( CB_GETEDITSEL            = WM_USER+0 )
+      parameter ( CB_LIMITTEXT             = WM_USER+1 )
+      parameter ( CB_SETEDITSEL            = WM_USER+2 )
+      parameter ( CB_ADDSTRING             = WM_USER+3 )
+      parameter ( CB_DELETESTRING          = WM_USER+4 )
+      parameter ( CB_DIR                   = WM_USER+5 )
+      parameter ( CB_GETCOUNT              = WM_USER+6 )
+      parameter ( CB_GETCURSEL             = WM_USER+7 )
+      parameter ( CB_GETLBTEXT             = WM_USER+8 )
+      parameter ( CB_GETLBTEXTLEN          = WM_USER+9 )
+      parameter ( CB_INSERTSTRING          = WM_USER+10 )
+      parameter ( CB_RESETCONTENT          = WM_USER+11 )
+      parameter ( CB_FINDSTRING            = WM_USER+12 )
+      parameter ( CB_SELECTSTRING          = WM_USER+13 )
+      parameter ( CB_SETCURSEL             = WM_USER+14 )
+      parameter ( CB_SHOWDROPDOWN          = WM_USER+15 )
+      parameter ( CB_GETITEMDATA           = WM_USER+16 )
+      parameter ( CB_SETITEMDATA           = WM_USER+17 )
+      parameter ( CB_GETDROPPEDCONTROLRECT = WM_USER+18 )
+      parameter ( CB_MSGMAX                = WM_USER+19 )
+
+! Combo Box return Values
+
+      integer CB_OKAY
+      integer CB_ERR
+      integer CB_ERRSPACE
+
+      parameter ( CB_OKAY             = 0 )
+      parameter ( CB_ERR              = -1 )
+      parameter ( CB_ERRSPACE         = -2 )
+
+! User Button Notification Codes
+
+      integer BN_CLICKED
+      integer BN_PAINT
+      integer BN_HILITE
+      integer BN_UNHILITE
+      integer BN_DISABLE
+      integer BN_DOUBLECLICKED
+
+      parameter ( BN_CLICKED         = 0 )
+      parameter ( BN_PAINT           = 1 )
+      parameter ( BN_HILITE          = 2 )
+      parameter ( BN_UNHILITE        = 3 )
+      parameter ( BN_DISABLE         = 4 )
+      parameter ( BN_DOUBLECLICKED   = 5 )
+
+! Edit Control Notification Codes
+
+      integer EN_SETFOCUS
+      integer EN_KILLFOCUS
+      integer EN_CHANGE
+      integer EN_UPDATE
+      integer EN_ERRSPACE
+      integer EN_MAXTEXT
+      integer EN_HSCROLL
+      integer EN_VSCROLL
+
+      parameter ( EN_SETFOCUS         = '0100'x )
+      parameter ( EN_KILLFOCUS        = '0200'x )
+      parameter ( EN_CHANGE           = '0300'x )
+      parameter ( EN_UPDATE           = '0400'x )
+      parameter ( EN_ERRSPACE         = '0500'x )
+      parameter ( EN_MAXTEXT          = '0501'x )
+      parameter ( EN_HSCROLL          = '0601'x )
+      parameter ( EN_VSCROLL          = '0602'x )
+
+! Listbox Notification Codes
+
+      integer LBN_ERRSPACE
+      integer LBN_SELCHANGE
+      integer LBN_DBLCLK
+      integer LBN_SELCANCEL
+      integer LBN_SETFOCUS
+      integer LBN_KILLFOCUS
+
+      parameter ( LBN_ERRSPACE        = -2 )
+      parameter ( LBN_SELCHANGE       = 1 )
+      parameter ( LBN_DBLCLK          = 2 )
+      parameter ( LBN_SELCANCEL       = 3 )
+      parameter ( LBN_SETFOCUS        = 4 )
+      parameter ( LBN_KILLFOCUS       = 5 )
+
+! Combo Box Notification Codes
+
+      integer CBN_ERRSPACE
+      integer CBN_SELCHANGE
+      integer CBN_DBLCLK
+      integer CBN_SETFOCUS
+      integer CBN_KILLFOCUS
+      integer CBN_EDITCHANGE
+      integer CBN_EDITUPDATE
+      integer CBN_DROPDOWN
+
+      parameter ( CBN_ERRSPACE        = -1 )
+      parameter ( CBN_SELCHANGE       = 1 )
+      parameter ( CBN_DBLCLK          = 2 )
+      parameter ( CBN_SETFOCUS        = 3 )
+      parameter ( CBN_KILLFOCUS       = 4 )
+      parameter ( CBN_EDITCHANGE      = 5 )
+      parameter ( CBN_EDITUPDATE      = 6 )
+      parameter ( CBN_DROPDOWN        = 7 )
+
+! Key State Masks for Mouse Messages
+
+      integer MK_LBUTTON
+      integer MK_RBUTTON
+      integer MK_SHIFT
+      integer MK_CONTROL
+      integer MK_MBUTTON
+
+      parameter ( MK_LBUTTON          = '0001'x )
+      parameter ( MK_RBUTTON          = '0002'x )
+      parameter ( MK_SHIFT            = '0004'x )
+      parameter ( MK_CONTROL          = '0008'x )
+      parameter ( MK_MBUTTON          = '0010'x )
+
+! Scroll Bar Code
+
+      integer SB_LINEUP
+      integer SB_LINELEFT
+      integer SB_LINEDOWN
+      integer SB_LINERIGHT
+      integer SB_PAGEUP
+      integer SB_PAGELEFT
+      integer SB_PAGEDOWN
+      integer SB_PAGERIGHT
+      integer SB_THUMBPOSITION
+      integer SB_THUMBTRACK
+      integer SB_TOP
+      integer SB_LEFT
+      integer SB_BOTTOM
+      integer SB_RIGHT
+      integer SB_ENDSCROLL
+
+      parameter ( SB_LINEUP           = 0 )
+      parameter ( SB_LINELEFT         = 0 )
+      parameter ( SB_LINEDOWN         = 1 )
+      parameter ( SB_LINERIGHT        = 1 )
+      parameter ( SB_PAGEUP           = 2 )
+      parameter ( SB_PAGELEFT         = 2 )
+      parameter ( SB_PAGEDOWN         = 3 )
+      parameter ( SB_PAGERIGHT        = 3 )
+      parameter ( SB_THUMBPOSITION    = 4 )
+      parameter ( SB_THUMBTRACK       = 5 )
+      parameter ( SB_TOP              = 6 )
+      parameter ( SB_LEFT             = 6 )
+      parameter ( SB_BOTTOM           = 7 )
+      parameter ( SB_RIGHT            = 7 )
+      parameter ( SB_ENDSCROLL        = 8 )
+
+! Hit-Test Codes
+
+      integer HTERROR
+      integer HTTRANSPARENT
+      integer HTNOWHERE
+      integer HTCLIENT
+      integer HTCAPTION
+      integer HTSYSMENU
+      integer HTGROWBOX
+      integer HTSIZE
+      integer HTMENU
+      integer HTHSCROLL
+      integer HTVSCROLL
+      integer HTREDUCE
+      integer HTZOOM
+      integer HTLEFT
+      integer HTRIGHT
+      integer HTTOP
+      integer HTTOPLEFT
+      integer HTTOPRIGHT
+      integer HTBOTTOM
+      integer HTBOTTOMLEFT
+      integer HTBOTTOMRIGHT
+      integer HTSIZEFIRST
+      integer HTSIZELAST
+
+      parameter ( HTERROR             = -2 )
+      parameter ( HTTRANSPARENT       = -1 )
+      parameter ( HTNOWHERE           = 0 )
+      parameter ( HTCLIENT            = 1 )
+      parameter ( HTCAPTION           = 2 )
+      parameter ( HTSYSMENU           = 3 )
+      parameter ( HTGROWBOX           = 4 )
+      parameter ( HTSIZE              = HTGROWBOX )
+      parameter ( HTMENU              = 5 )
+      parameter ( HTHSCROLL           = 6 )
+      parameter ( HTVSCROLL           = 7 )
+      parameter ( HTREDUCE            = 8 )
+      parameter ( HTZOOM              = 9 )
+      parameter ( HTLEFT              = 10 )
+      parameter ( HTRIGHT             = 11 )
+      parameter ( HTTOP               = 12 )
+      parameter ( HTTOPLEFT           = 13 )
+      parameter ( HTTOPRIGHT          = 14 )
+      parameter ( HTBOTTOM            = 15 )
+      parameter ( HTBOTTOMLEFT        = 16 )
+      parameter ( HTBOTTOMRIGHT       = 17 )
+      parameter ( HTSIZEFIRST         = HTLEFT )
+      parameter ( HTSIZELAST          = HTBOTTOMRIGHT )
+
+! WM_SYNCTASK Commands
+
+      integer ST_BEGINSWP
+      integer ST_ENDSWP
+
+      parameter ( ST_BEGINSWP         = 0 )
+      parameter ( ST_ENDSWP           = 1 )
+
+! WM_MOUSEACTIVATE Return Codes
+
+      integer MA_ACTIVATE
+      integer MA_ACTIVATEANDEAT
+      integer MA_NOACTIVATE
+
+      parameter ( MA_ACTIVATE         = 1 )
+      parameter ( MA_ACTIVATEANDEAT   = 2 )
+      parameter ( MA_NOACTIVATE       = 3 )
+
+! WM_SIZE Message Commands
+
+      integer SIZENORMAL
+      integer SIZEICONIC
+      integer SIZEFULLSCREEN
+      integer SIZEZOOMSHOW
+      integer SIZEZOOMHIDE
+
+      parameter ( SIZENORMAL          = 0 )
+      parameter ( SIZEICONIC          = 1 )
+      parameter ( SIZEFULLSCREEN      = 2 )
+      parameter ( SIZEZOOMSHOW        = 3 )
+      parameter ( SIZEZOOMHIDE        = 4 )
+
+! Color Types for WM_CTLCOLOR Message
+
+      integer CTLCOLOR_MSGBOX
+      integer CTLCOLOR_EDIT
+      integer CTLCOLOR_LISTBOX
+      integer CTLCOLOR_BTN
+      integer CTLCOLOR_DLG
+      integer CTLCOLOR_SCROLLBAR
+      integer CTLCOLOR_STATIC
+      integer CTLCOLOR_MAX
+
+      parameter ( CTLCOLOR_MSGBOX         = 0 )
+      parameter ( CTLCOLOR_EDIT           = 1 )
+      parameter ( CTLCOLOR_LISTBOX        = 2 )
+      parameter ( CTLCOLOR_BTN            = 3 )
+      parameter ( CTLCOLOR_DLG            = 4 )
+      parameter ( CTLCOLOR_SCROLLBAR      = 5 )
+      parameter ( CTLCOLOR_STATIC         = 6 )
+      parameter ( CTLCOLOR_MAX            = 8 )   ! three bits max
+
+! System Menu Command Values for WM_SYSCOMMAND Message
+
+      integer SC_SIZE
+      integer SC_MOVE
+      integer SC_MINIMIZE
+      integer SC_MAXIMIZE
+      integer SC_NEXTWINDOW
+      integer SC_PREVWINDOW
+      integer SC_CLOSE
+      integer SC_VSCROLL
+      integer SC_HSCROLL
+      integer SC_MOUSEMENU
+      integer SC_KEYMENU
+      integer SC_ARRANGE
+      integer SC_RESTORE
+      integer SC_TASKLIST
+
+      integer SC_ICON
+      integer SC_ZOOM
+
+      parameter ( SC_SIZE         = 'F000'x )
+      parameter ( SC_MOVE         = 'F010'x )
+      parameter ( SC_MINIMIZE     = 'F020'x )
+      parameter ( SC_MAXIMIZE     = 'F030'x )
+      parameter ( SC_NEXTWINDOW   = 'F040'x )
+      parameter ( SC_PREVWINDOW   = 'F050'x )
+      parameter ( SC_CLOSE        = 'F060'x )
+      parameter ( SC_VSCROLL      = 'F070'x )
+      parameter ( SC_HSCROLL      = 'F080'x )
+      parameter ( SC_MOUSEMENU    = 'F090'x )
+      parameter ( SC_KEYMENU      = 'F100'x )
+      parameter ( SC_ARRANGE      = 'F110'x )
+      parameter ( SC_RESTORE      = 'F120'x )
+      parameter ( SC_TASKLIST     = 'F130'x )
+
+      parameter ( SC_ICON         = SC_MINIMIZE )
+      parameter ( SC_ZOOM         = SC_MAXIMIZE )
+
+! Dialog Codes
+
+      integer DLGC_WANTARROWS
+      integer DLGC_WANTTAB
+      integer DLGC_WANTALLKEYS
+      integer DLGC_WANTMESSAGE
+      integer DLGC_HASSETSEL
+      integer DLGC_DEFPUSHBUTTON
+      integer DLGC_UNDEFPUSHBUTTON
+      integer DLGC_RADIOBUTTON
+      integer DLGC_WANTCHARS
+      integer DLGC_STATIC
+      integer DLGC_BUTTON
+
+      parameter ( DLGC_WANTARROWS      = '0001'x ) ! Control wants arrow keys
+      parameter ( DLGC_WANTTAB         = '0002'x ) ! Control wants tab keys
+      parameter ( DLGC_WANTALLKEYS     = '0004'x ) ! Control wants all keys
+      parameter ( DLGC_WANTMESSAGE     = '0004'x ) ! Pass message to control
+      parameter ( DLGC_HASSETSEL       = '0008'x ) ! Understands EM_SETSEL
+                                                   ! message
+      parameter ( DLGC_DEFPUSHBUTTON   = '0010'x ) ! Default pushbutton
+      parameter ( DLGC_UNDEFPUSHBUTTON = '0020'x ) ! Non-default pushbutton
+      parameter ( DLGC_RADIOBUTTON     = '0040'x ) ! Radio button
+      parameter ( DLGC_WANTCHARS       = '0080'x ) ! Want WM_CHAR messages
+      parameter ( DLGC_STATIC          = '0100'x ) ! Static item: don't include
+      parameter ( DLGC_BUTTON          = '2000'x ) ! Button item: can be checked
+
+*$reference

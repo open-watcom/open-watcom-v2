@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sleep() for Win32.
 *
 ****************************************************************************/
 
@@ -34,11 +33,12 @@
 #include <dos.h>
 #include <windows.h>
 
-_WCRTLINK void sleep( unsigned seconds )
+_WCRTLINK unsigned sleep( unsigned seconds )
 {
     /*
      * Don't use Sleep because on AXPs wlink will get confused trying to
      * export 'sleep' and import 'Sleep', which differ only in case.
      */
     SleepEx( seconds * 1000L, FALSE );
+    return( 0 );
 }

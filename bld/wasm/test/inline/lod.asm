@@ -1,3 +1,3 @@
-lodsb
-lodsw
-lodsd
+ lodsb
+ lodsw
+ lodsd

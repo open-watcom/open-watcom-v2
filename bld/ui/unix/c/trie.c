@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trie implementation for UI lib.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <alloca.h>
+#include "walloca.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -42,7 +41,6 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <ctype.h>
-#include "clibext.h"
 #include "uidef.h"
 #include "uishift.h"
 
@@ -218,13 +216,7 @@ static int child_comp( const int *pkey, const eNode *pbase )
     return( *pkey - pbase->c );
 }
 
-#if defined( SUN )
-    #define __alloca( x ) _alloca( (x) )
-#elif defined( SGI ) || defined( HP ) || defined( LINUX )
-    #define __alloca( x ) alloca( (x) )
-#endif
-
-EVENT TrieRead()
+EVENT TrieRead( void )
 {
     eTrie       *trie;
     char        *buf;
@@ -235,7 +227,7 @@ EVENT TrieRead()
     eNode       *node;
     int         timeout;
 
-    buf = (char *)__alloca( KeyTrieDepth + 1 );
+    buf = alloca( KeyTrieDepth + 1 );
 
     trie = &KeyTrie;
     buf[0] = '\0';
@@ -243,6 +235,7 @@ EVENT TrieRead()
     for( ;; ) {
         c = nextc(timeout);
         if( c <= 0 ) break;
+        if( c == 256 ) return( EV_MOUSE_PRESS );
         buf[cpos++] = c;
 
         if( trie->num_child == 0 ) break;

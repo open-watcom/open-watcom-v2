@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include <dos.h>
 #include <fcntl.h>
-#include "winvi.h"
 
 #ifndef __NT__
 static int lockFileRegion( int handle )
@@ -75,7 +72,7 @@ static void unlockFileRegion( int handle )
  */
 int HasShare( void )
 {
-    char        buff[_MAX_PATH];
+    char        buff[FILENAME_MAX];
     int         handle;
     int         has_share;
 

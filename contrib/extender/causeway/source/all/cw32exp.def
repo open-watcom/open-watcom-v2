@@ -1,0 +1,16 @@
+name	causeway_kernal
+
+export	__cwAPI_CreatePSP
+export	__cwAPI_DeletePSP
+
+export	__cwAPI_ExecModule
+
+export	__cwAPI_DSizeSelector
+
+export	__cwAPI_FindModule
+export	__cwAPI_UnFindModule
+export	__cwAPI_FindFunction
+
+export	__cwAPI_GetMemLinear32
+export	__cwAPI_ResMemLinear32
+export	__cwAPI_RelMemLinear32

@@ -33,17 +33,12 @@
 #ifndef _LOCK_H_INCLUDED
 #ifdef __MT__
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
 #pragma warning 604 9
 #pragma warning 594 9
 #include "osthread.h"
 #pragma warning 604 1
 #pragma warning 594 1
-#if defined( __cplusplus )
-};
-#endif
+
 //#include <stddef.h>
 #define  __lock_first( __a, __b )  ((__a) < (__b) ? (__a) : (__b))
 #define  __lock_second( __a, __b ) ((__a) > (__b) ? (__a) : (__b))

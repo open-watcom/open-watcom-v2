@@ -85,10 +85,14 @@ extern bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                        int num_toolbar_items, gui_toolbar_struct *toolinfo,
                        bool excl, gui_colour_set *plain, gui_colour_set *standout,
                        gui_rect *rect );
+extern bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                       int num_toolbar_items, gui_toolbar_struct *toolinfo,
+                       bool excl, gui_colour_set *plain, gui_colour_set *standout,
+                       gui_rect *rect, bool use_tips );
 
 extern bool GUIXCloseToolBar( gui_window *wnd );
 
-extern void GUIXDrawText( gui_window *wnd, char *text, int length, gui_coord *pos,
+extern void GUIXDrawText( gui_window *wnd, const char *text, int length, gui_coord *pos,
                           gui_attr attr, gui_ord extentx, bool draw_extent );
 extern void GUIXDrawTextRGB( gui_window *wnd, char *text, int length, gui_coord *pos,
                              gui_rgb fore, gui_rgb back, gui_ord extentx, bool draw_extent );

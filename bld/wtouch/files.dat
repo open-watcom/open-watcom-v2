@@ -1,0 +1,8 @@
+# WTOUCH component of install manifest
+
+[ DEFAULT type="e" ]
+dir="binw"	usr="wtouch.exe"	cond="doshost winhost |"	where="c jc f77 jf77"
+dir="binp"	usr="wtouch.exe"	cond="os2host"			where="c jc f77 jf77"
+dir="binnt"	usr="wtouch.exe"	cond="wnthost"			where="c jc f77 jf77 ac"
+dir="axpnt"	usr="wtouch.exe"	cond="alphahost"		where="ac"
+dir="binl"	usr="wtouch"		cond="lnxhost"			where="c jc f77 jf77"

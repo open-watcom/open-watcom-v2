@@ -24,20 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Optimizer global data definition
 *
 ****************************************************************************/
 
 
 #include "optwif.h"
 
-        ins_link        *FirstIns;
-        ins_link        *LastIns;
-        ins_link        *PendingDeletes;
+        ins_entry       *FirstIns;
+        ins_entry       *LastIns;
+        ins_entry       *PendingDeletes;
         bool            InsDelete;
         uint            QCount;
-        label_def       *Handles;
+        code_lbl        *Handles;
         ins_entry       *RetList;
         pointer         *InstrFrl;
 //      pointer         *CodeLblFrl;

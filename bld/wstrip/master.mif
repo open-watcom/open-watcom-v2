@@ -1,82 +1,81 @@
-proj_name = wstrip
-name = strip
+proj_name = strip
 
-.extensions:
-.extensions: .exe .qnx .obj .3bj .qbj .asm .h .c .rc .msg .sp .mif
+name = wstripx
 
-.mif: $(mif_path)
+!if defined(bootstrap) || defined(prebuild)
+incl_msgtext = 1
+!endif
+
 !include cproj.mif
+!include deftarg.mif
 !include defrule.mif
 
-MODEL = l
 !include wres.mif
+
+.EXTENSIONS: .gh .rc .msg .sp
+
+inc_dirs = -I. -I"$(dip_dir)/watcom/h"
 
 .c .rc .msg .sp: ..
 
-inc_dirs = $(dip_dir)\watcom\h;..;$(watcom_dir)\h
+.c : $(watcom_dir)/c
 
-lnk = $(%ramdisk)\tmp.lnk
+rc_defines_linux = -DRC_UNIX
+rc_defines_qnx   = -DRC_UNIX
+rc_defines_bsd   = -DRC_UNIX
+rc_defines_osx   = -DRC_UNIX
 
-OBJS = $(name).obj output.obj
-
-res_qnx = qwstrip.res
-res_dos = owstrip.res
-res_nt = owstrip.res
-dependants_qnx = qwstrip.u $(res_qnx)
-dependants_dos = $(res_dos)
-dependants_nt = $(res_nt)
-
-dependants = $(dependants_$(host_OS)) $(OBJS)
-
-extra_l_flags = library $(wres_lib) option map op st=8k
-extra_l_flags_qnx = option res=qwstrip.u, off=8k
-
-.BEFORE
-        set include=$(inc_path)
-
-$(name).exe : $(dependants)
-        $(linker) $(lflags) name $^@ file {$(OBJS)}
-!ifeq host_OS dos
-        copy $^@ $(name).dos
-        $(linker) debug all op symfile name $^@ system os2 pmc op newfile,stub=$(name).dos file {$(OBJS)} library $(wres_lib)
+objs = strip.obj output.obj
+!ifdef bootstrap
+objs += clibext.obj
 !endif
-        wstrip -q -a -r $^@ . $(res_$(host_OS))
 
-msg.gh : wstrip.msg
-#       vi -q -d -i "-k:g!/^pick/d\n:w!msg.tmp\n:q!\n" $[@
-#       vi -q -d -i "-k:set magic\n:%s/^.*\\\\( ([A-Z0-9_]*).*$$/$#define \\\\1 (MSG_RC_BASE+0x\\\\\$#)/\n:wq\n" $^@
-#       vi -q -d -i "-k:%s/^.*( \\([A-Z0-9_]*\\).*$$/$#define \\1 (MSG_RC_BASE+0x\\$#)/\n:w!msg.gh\n:q!\n" msg.tmp
-        vi -q -s..\go.vi
+!ifdef incl_msgtext
+extra_c_flags = -DINCL_MSGTEXT
+!else
+extra_l_flags = lib $(wres_lib)
+!endif
 
-owstrip.res : wstrip.rc wstrip.msg msg.gh ousage.rc ousagej.rc
-        $(rc) /r /fo=$^@ -zk0 -DDOS $[@ /bt=windows
+# systems where version resources must be added to .EXE
+!ifndef bootstrap
+version_res_nt_386 = exever.res
+!endif
 
-qwstrip.res : wstrip.rc wstrip.msg msg.gh qusage.rc
-        $(rc) /r /fo=$^@ -zk0 -DQNX $[@ /bt=windows
+!ifdef incl_msgtext
+dependants = msg.gh incltext.gh
+!else
+dependants = msg.gh wstrip.res $(wres_lib)
+!endif
 
-ousage.rc : usage.sp
-        wsplice -kIS_RC -kDOS -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ $^@
+$(name).exe : $(dependants) $(objs) $(version_res_$(host_os)_$(host_cpu))
+!ifdef bootstrap
+        $(cc) $(objs) -o $@
+!else
+        $(linker) option quiet $(lflags) name $^. file { $(objs) }
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+!ifndef incl_msgtext
+        wstrip -q -a -r $^@ . wstrip.res
+!endif
+!endif
 
-ousagej.rc : usage.sp
-        wsplice -kIS_RC -kDOS -kJAPANESE -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $[@ $^@
+msg.gh : wstrip.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
 
-qusage.rc : usage.sp
-        wsplice -kIS_RC -kENGLISH -kQNX -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ $^@
+incltext.gh : ../wstrip.msg
+        $(c_pp) -zk0 $(rc_defines_$(host_os)) >$^@ <<
+$#define pick(c,e,j) e,
+"",
+$#include "$[@"
+$#undef pick
+<<
 
-qwstrip.u : usage.sp
-        wsplice -kENGLISH -kQNX -t8 -u $[@ $^@
+wstrip.gh : ../wstrip.msg
+        $(c_pp) -zk0 $(rc_defines_$(host_os)) $[@ >$@
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.lib del *.lib
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.gh del *.gh
-        @if exist *.rc del *.rc
-        @if exist *.map del *.map
-        @if exist *.dos del *.dos
-        @if exist *.u del *.u
-        @if exist *.sym del *.sym
+wstrip.res : ../wstrip.rc msg.gh
+        $(rc_aui) -ad $(rc_defines_$(host_os)) $(inc_dirs) $[@ -fo=$^@
+
+verrc_exe = wstrip
+!include verrc.mif

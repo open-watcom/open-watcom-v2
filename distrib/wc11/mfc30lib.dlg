@@ -1,0 +1,36 @@
+name=dMFC30LIB
+any_check=mfc30lib
+static_text=\
+        //1"Select MFC 3.0 Library Options:"\
+        //2"MFC 3.0 ライブラリ・オプションを選択してください:"\
+        //0
+static_text=
+check_box=mfc30src,,\
+        //1"&Include source code and makefiles"\
+        //2"ソースコードとメイクファイルを含めます (&I)"\
+        //0
+check_box=mfc30libdbg,,\
+        //1"Include debug &versions"\
+        //2"デバッグ版を含めます (&v)"\
+        //0
+check_box=mfc30libuni,,\
+        //1"Include &Unicode version"\
+        //2"Unicode版を含めます (&U)"\
+        //0
+static_text=
+check_box=mfc30libdll,,\
+        //1"D&ynamic link libraries for Windows"\
+        //2"Windows 用ダイナミック・リンク・ライブラリ (&y)"\
+        //0
+check_box=mfc30libste,,\
+        //1"Static link libraries for Windows &EXE files"\
+        //2"Windows EXE ファイル用スタティック・リンク・ライブラリ (&E)"\
+        //0
+check_box=mfc30libstd,,\
+        //1"Static link libraries for Windows &DLL files"\
+        //2"Windows DLL ファイル用スタティック・リンク・ライブラリ (&D)"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

@@ -36,7 +36,7 @@ DWORD AllocHugeAlias16( void *offset, DWORD size )
 {
     DWORD       ptr;
 
-    if( DPMIGetHugeAlias( (DWORD) offset, &ptr, size ) ) return( NULL );
+    if( DPMIGetHugeAlias( (DWORD) offset, &ptr, size ) ) return( 0 );
     return( ptr );
 
 } /* AllocHugeAlias16 */

@@ -24,15 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interface DLL for communicating to EPM (OS/2 system editor)
 *
 ****************************************************************************/
-
-
-//
-// EPMLINK      : interface DLL for communicating to EPM (OS/2 system editor)
-//
 
 #include <process.h>
 #include <string.h>
@@ -100,9 +94,9 @@ static char             StartingSessionInProgress;
 #define RESOURCE_ID_BASE        19999
 
 
-static void *MemAlloc( unsigned size ) {
-/**************************************/
-
+static void *MemAlloc( unsigned size )
+/************************************/
+{
     void        *p;
 
     p = malloc( size );
@@ -113,17 +107,17 @@ static void *MemAlloc( unsigned size ) {
 }
 
 
-static void MemFree( void *p ) {
-/******************************/
-
+static void MemFree( void *p )
+/****************************/
+{
     free( p );
     --AllocatedBlocks;
 }
 
 
-static session *FindSession( char *fn ) {
-/***************************************/
-
+static session *FindSession( char *fn )
+/*************************************/
+{
     session     *sess;
 
     for( sess = SessionList; sess != NULL; sess = sess->link ) {
@@ -133,9 +127,9 @@ static session *FindSession( char *fn ) {
 }
 
 
-static session *FindSessionByHWND( HWND hwnd ) {
-/**********************************************/
-
+static session *FindSessionByHWND( HWND hwnd )
+/********************************************/
+{
     session     *sess;
 
     for( sess = SessionList; sess != NULL; sess = sess->link ) {
@@ -145,9 +139,9 @@ static session *FindSessionByHWND( HWND hwnd ) {
 }
 
 
-static session *NewSession( char *fn, char *hlib ) {
-/**************************************************/
-
+static session *NewSession( char *fn, char *hlib )
+/************************************************/
+{
     int         len_fn;
     int         len_hlib;
     session     *new_session;
@@ -174,9 +168,9 @@ static session *NewSession( char *fn, char *hlib ) {
 }
 
 
-static void FreeSession( session *sess ) {
-/****************************************/
-
+static void FreeSession( session *sess )
+/**************************************/
+{
     if( sess->msg != NULL ) {
         MemFree( sess->msg );
     }
@@ -184,9 +178,9 @@ static void FreeSession( session *sess ) {
 }
 
 
-static void DeleteSession( HWND hwnd ) {
-/**************************************/
-
+static void DeleteSession( HWND hwnd )
+/************************************/
+{
     session     **owner;
     session     *curr;
 
@@ -201,17 +195,17 @@ static void DeleteSession( HWND hwnd ) {
 }
 
 
-static void LinkSession( session *sess ) {
-/****************************************/
-
+static void LinkSession( session *sess )
+/**************************************/
+{
     sess->link = SessionList;
     SessionList = sess;
 }
 
 
-static void FreeSessions() {
-/**************************/
-
+static void FreeSessions( void )
+/******************************/
+{
     session     *link;
 
     while( SessionList != NULL ) {
@@ -222,24 +216,24 @@ static void FreeSessions() {
 }
 
 
-static void InitSessions() {
-/**************************/
-
+static void InitSessions( void )
+/******************************/
+{
     SessionList = NULL;
 }
 
 
-static void Connect() {
-/*********************/
-
+static void Connect( void )
+/*************************/
+{
     WinDdeInitiate( hwndDDE, "WB Editor", CurrSession->file_name, &ConvContext );
 }
 
 
 static message *BuildMsg( long lRow, int nCol, int nLen,
-                          int resourceid, char *error_msg ) {
-/***********************************************************/
-
+                          int resourceid, char *error_msg )
+/*********************************************************/
+{
     message     *msg;
 
     if( error_msg == NULL ) {
@@ -264,9 +258,9 @@ static message *BuildMsg( long lRow, int nCol, int nLen,
 
 static DDESTRUCT *MakeDDEObject( HWND hwnd, char *item_name,
                                  USHORT fsStatus, USHORT usFormat,
-                                 void *data, int data_len ) {
-/***********************************************************/
-
+                                 void *data, int data_len )
+/****************************************************************/
+{
     DDESTRUCT   *dde;
     int         item_len;
     PID         pid;
@@ -305,9 +299,9 @@ static DDESTRUCT *MakeDDEObject( HWND hwnd, char *item_name,
 }
 
 
-static char SendData( message *msg, char send_init ) {
-/****************************************************/
-
+static char SendData( message *msg, char send_init )
+/**************************************************/
+{
     initiate_data       *idata;
     goto_data           *gdata;
     DDESTRUCT           *dde;
@@ -353,9 +347,9 @@ static char SendData( message *msg, char send_init ) {
 }
 
 
-MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
-/****************************************************************************/
-
+MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
+/**************************************************************************/
+{
     switch( msg ) {
     case WM_DDE_INITIATE: { // editor has started
         DDEINIT *ddei = (PDDEINIT)mp2;
@@ -375,9 +369,11 @@ MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
     } case WM_DDE_INITIATEACK: { // response from EPM after WinDdeInitiate()
         DDEINIT *ddei = (PDDEINIT)mp2;
         session *sess = FindSessionByHWND( (HWND)mp1 );
-        sess->connected = TRUE;
-        if( sess->msg != NULL ) {
-            SendData( sess->msg, TRUE );
+        if (sess != NULL) {
+          sess->connected = TRUE;
+          if( sess->msg != NULL ) {
+              SendData( sess->msg, TRUE );
+          }
         }
         DosFreeMem( ddei );
         return( (MRESULT)TRUE );
@@ -387,7 +383,8 @@ MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         break;
     } case WM_DDE_DATA: { // request to send "Goto" message to EPM
         session *sess = FindSessionByHWND( (HWND)mp1 );
-        SendData( sess->msg, FALSE );
+        if (sess != NULL)
+          SendData( sess->msg, FALSE );
         break;
     } case WM_DDE_TERMINATE: {
         WinDdePostMsg( (HWND)mp1, hwndDDE, WM_DDE_TERMINATE, NULL, 0 );
@@ -400,10 +397,9 @@ MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
 }
 
 
-#pragma linkage( EDITConnect, system )
-int __export EDITConnect() {
-/**************************/
-
+int __export _System EDITConnect( void )
+/**************************************/
+{
     ULONG       style = 0;
 
     if( hwndDDE != NULLHANDLE ) return( TRUE );
@@ -417,16 +413,10 @@ int __export EDITConnect() {
 }
 
 
-#pragma linkage( EDITFile, system )
-int __export EDITFile( char *fn, char *hlib ) {
-/*********************************************/
-
-    char        full_fn[_MAX_PATH];
-
-    if( _fullpath( full_fn, fn, _MAX_PATH ) == NULL ) {
-        return( NULL );
-    }
-    CurrSession = FindSession( full_fn );
+int __export _System EDITFile( char *fn, char *hlib )
+/***************************************************/
+{
+    CurrSession = FindSession( fn );
     if( CurrSession == NULL ) {
         if( StartingSessionInProgress ) {
             return( FALSE );
@@ -434,27 +424,26 @@ int __export EDITFile( char *fn, char *hlib ) {
         StartingSessionInProgress = TRUE;
         // new session must be created before we start the editor so
         // that we can process the WM_DDE_INITIATE message properly
-        CurrSession = NewSession( full_fn, hlib );
+        CurrSession = NewSession( fn, hlib );
         if( CurrSession == NULL ) {
             return( FALSE );
         }
-        if( spawnlp( P_NOWAIT, _Editor, _Editor, "/W", full_fn, NULL ) == -1 ) {
-            FreeSession( CurrSession );
+        LinkSession( CurrSession );
+        if( spawnlp( P_NOWAIT, _Editor, _Editor, "/W", fn, NULL ) == -1 ) {
+            DeleteSession( NULLHANDLE );
             CurrSession = NULL;
             return( FALSE );
         }
-        LinkSession( CurrSession );
     }
     WinSetFocus( HWND_DESKTOP, CurrSession->hwnd );
     return( TRUE );
 }
 
 
-#pragma linkage( EDITLocateError, system )
-int __export EDITLocateError( long lRow, int nCol, int nLen,
-                              int resourceid, char *error_msg ) {
-/***************************************************************/
-
+int __export _System EDITLocateError( long lRow, int nCol, int nLen,
+                                      int resourceid, char *error_msg )
+/*********************************************************************/
+{
     // queue the request in case the connection to the editor has
     // not fully completed
     if( CurrSession->msg != NULL ) {
@@ -475,27 +464,24 @@ int __export EDITLocateError( long lRow, int nCol, int nLen,
 }
 
 
-#pragma linkage( EDITLocate, system )
-int __export EDITLocate( long lRow, int nCol, int nLen ) {
-/********************************************************/
-
+int __export _System EDITLocate( long lRow, int nCol, int nLen )
+/**************************************************************/
+{
     return( EDITLocateError( lRow, nCol, nLen, 0, NULL ) );
 }
 
 
-#pragma linkage( EDITShowWindow, system )
-int __export EDITShowWindow( int nCmdShow ) {
-/*******************************************/
-
+int __export _System EDITShowWindow( int nCmdShow )
+/*************************************************/
+{
     nCmdShow = nCmdShow;
     return( TRUE );
 }
 
 
-#pragma linkage( EDITDisconnect, system )
-int __export EDITDisconnect( void ) {
-/***********************************/
-
+int __export _System EDITDisconnect( void )
+/*****************************************/
+{
     session     *sess;
 
     for( sess = SessionList; sess != NULL; sess = sess->link ) {
@@ -509,21 +495,20 @@ int __export EDITDisconnect( void ) {
 }
 
 
-int     __dll_initialize( void ) {
-/********************************/
-
-    InitSessions();
-    CurrSession = NULL;
-    AllocatedBlocks = 0;
-    StartingSessionInProgress = FALSE;
-    return( 1 );
-}
-
-
-int     __dll_terminate( void ) {
-/*******************************/
-
-    FreeSessions();
-    CurrSession = NULL;
+ULONG LibMain( ULONG hModule, ULONG ulReason )
+/********************************************/
+{
+    if( ulReason ) {
+        // Terminating
+        FreeSessions();
+        CurrSession = NULL;
+    }
+    else {
+        // Initializing
+        InitSessions();
+        CurrSession = NULL;
+        AllocatedBlocks = 0;
+        StartingSessionInProgress = FALSE;
+        }
     return( 1 );
 }

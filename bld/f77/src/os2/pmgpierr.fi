@@ -1,0 +1,568 @@
+c$noreference
+
+        integer  PMERR_OK
+        parameter (PMERR_OK = '00000000'x)
+        integer  PMERR_ALREADY_IN_AREA
+        parameter (PMERR_ALREADY_IN_AREA = '00002001'x)
+        integer  PMERR_ALREADY_IN_ELEMENT
+        parameter (PMERR_ALREADY_IN_ELEMENT = '00002002'x)
+        integer  PMERR_ALREADY_IN_PATH
+        parameter (PMERR_ALREADY_IN_PATH = '00002003'x)
+        integer  PMERR_ALREADY_IN_SEG
+        parameter (PMERR_ALREADY_IN_SEG = '00002004'x)
+        integer  PMERR_AREA_INCOMPLETE
+        parameter (PMERR_AREA_INCOMPLETE = '00002005'x)
+        integer  PMERR_BASE_ERROR
+        parameter (PMERR_BASE_ERROR = '00002006'x)
+        integer  PMERR_BITBLT_LENGTH_EXCEEDED
+        parameter (PMERR_BITBLT_LENGTH_EXCEEDED = '00002007'x)
+        integer  PMERR_BITMAP_IN_USE
+        parameter (PMERR_BITMAP_IN_USE = '00002008'x)
+        integer  PMERR_BITMAP_IS_SELECTED
+        parameter (PMERR_BITMAP_IS_SELECTED = '00002009'x)
+        integer  PMERR_BITMAP_NOT_FOUND
+        parameter (PMERR_BITMAP_NOT_FOUND = '0000200A'x)
+        integer  PMERR_BITMAP_NOT_SELECTED
+        parameter (PMERR_BITMAP_NOT_SELECTED = '0000200B'x)
+        integer  PMERR_BOUNDS_OVERFLOW
+        parameter (PMERR_BOUNDS_OVERFLOW = '0000200C'x)
+        integer  PMERR_CALLED_SEG_IS_CHAINED
+        parameter (PMERR_CALLED_SEG_IS_CHAINED = '0000200D'x)
+        integer  PMERR_CALLED_SEG_IS_CURRENT
+        parameter (PMERR_CALLED_SEG_IS_CURRENT = '0000200E'x)
+        integer  PMERR_CALLED_SEG_NOT_FOUND
+        parameter (PMERR_CALLED_SEG_NOT_FOUND = '0000200F'x)
+        integer  PMERR_CANNOT_DELETE_ALL_DATA
+        parameter (PMERR_CANNOT_DELETE_ALL_DATA = '00002010'x)
+        integer  PMERR_CANNOT_REPLACE_ELEMENT_0
+        parameter (PMERR_CANNOT_REPLACE_ELEMENT_0 = '00002011'x)
+        integer  PMERR_COL_TABLE_NOT_REALIZABLE
+        parameter (PMERR_COL_TABLE_NOT_REALIZABLE = '00002012'x)
+        integer  PMERR_COL_TABLE_NOT_REALIZED
+        parameter (PMERR_COL_TABLE_NOT_REALIZED = '00002013'x)
+        integer  PMERR_COORDINATE_OVERFLOW
+        parameter (PMERR_COORDINATE_OVERFLOW = '00002014'x)
+        integer  PMERR_CORR_FORMAT_MISMATCH
+        parameter (PMERR_CORR_FORMAT_MISMATCH = '00002015'x)
+        integer  PMERR_DATA_TOO_LONG
+        parameter (PMERR_DATA_TOO_LONG = '00002016'x)
+        integer  PMERR_DC_IS_ASSOCIATED
+        parameter (PMERR_DC_IS_ASSOCIATED = '00002017'x)
+        integer  PMERR_DESC_STRING_TRUNCATED
+        parameter (PMERR_DESC_STRING_TRUNCATED = '00002018'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_1
+        parameter (PMERR_DEVICE_DRIVER_ERROR_1 = '00002019'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_2
+        parameter (PMERR_DEVICE_DRIVER_ERROR_2 = '0000201A'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_3
+        parameter (PMERR_DEVICE_DRIVER_ERROR_3 = '0000201B'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_4
+        parameter (PMERR_DEVICE_DRIVER_ERROR_4 = '0000201C'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_5
+        parameter (PMERR_DEVICE_DRIVER_ERROR_5 = '0000201D'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_6
+        parameter (PMERR_DEVICE_DRIVER_ERROR_6 = '0000201E'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_7
+        parameter (PMERR_DEVICE_DRIVER_ERROR_7 = '0000201F'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_8
+        parameter (PMERR_DEVICE_DRIVER_ERROR_8 = '00002020'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_9
+        parameter (PMERR_DEVICE_DRIVER_ERROR_9 = '00002021'x)
+        integer  PMERR_DEVICE_DRIVER_ERROR_10
+        parameter (PMERR_DEVICE_DRIVER_ERROR_10 = '00002022'x)
+        integer  PMERR_DEV_FUNC_NOT_INSTALLED
+        parameter (PMERR_DEV_FUNC_NOT_INSTALLED = '00002023'x)
+        integer  PMERR_DOSOPEN_FAILURE
+        parameter (PMERR_DOSOPEN_FAILURE = '00002024'x)
+        integer  PMERR_DOSREAD_FAILURE
+        parameter (PMERR_DOSREAD_FAILURE = '00002025'x)
+        integer  PMERR_DRIVER_NOT_FOUND
+        parameter (PMERR_DRIVER_NOT_FOUND = '00002026'x)
+        integer  PMERR_DUP_SEG
+        parameter (PMERR_DUP_SEG = '00002027'x)
+        integer  PMERR_DYNAMIC_SEG_SEQ_ERROR
+        parameter (PMERR_DYNAMIC_SEG_SEQ_ERROR = '00002028'x)
+        integer  PMERR_DYNAMIC_SEG_ZERO_INV
+        parameter (PMERR_DYNAMIC_SEG_ZERO_INV = '00002029'x)
+        integer  PMERR_ELEMENT_INCOMPLETE
+        parameter (PMERR_ELEMENT_INCOMPLETE = '0000202A'x)
+        integer  PMERR_ESC_CODE_NOT_SUPPORTED
+        parameter (PMERR_ESC_CODE_NOT_SUPPORTED = '0000202B'x)
+        integer  PMERR_EXCEEDS_MAX_SEG_LENGTH
+        parameter (PMERR_EXCEEDS_MAX_SEG_LENGTH = '0000202C'x)
+        integer  PMERR_FONT_AND_MODE_MISMATCH
+        parameter (PMERR_FONT_AND_MODE_MISMATCH = '0000202D'x)
+        integer  PMERR_FONT_FILE_NOT_LOADED
+        parameter (PMERR_FONT_FILE_NOT_LOADED = '0000202E'x)
+        integer  PMERR_FONT_NOT_LOADED
+        parameter (PMERR_FONT_NOT_LOADED = '0000202F'x)
+        integer  PMERR_FONT_TOO_BIG
+        parameter (PMERR_FONT_TOO_BIG = '00002030'x)
+        integer  PMERR_HARDWARE_INIT_FAILURE
+        parameter (PMERR_HARDWARE_INIT_FAILURE = '00002031'x)
+        integer  PMERR_HBITMAP_BUSY
+        parameter (PMERR_HBITMAP_BUSY = '00002032'x)
+        integer  PMERR_HDC_BUSY
+        parameter (PMERR_HDC_BUSY = '00002033'x)
+        integer  PMERR_HRGN_BUSY
+        parameter (PMERR_HRGN_BUSY = '00002034'x)
+        integer  PMERR_HUGE_FONTS_NOT_SUPPORTED
+        parameter (PMERR_HUGE_FONTS_NOT_SUPPORTED = '00002035'x)
+        integer  PMERR_ID_HAS_NO_BITMAP
+        parameter (PMERR_ID_HAS_NO_BITMAP = '00002036'x)
+        integer  PMERR_IMAGE_INCOMPLETE
+        parameter (PMERR_IMAGE_INCOMPLETE = '00002037'x)
+        integer  PMERR_INCOMPAT_COLOR_FORMAT
+        parameter (PMERR_INCOMPAT_COLOR_FORMAT = '00002038'x)
+        integer  PMERR_INCOMPAT_COLOR_OPTIONS
+        parameter (PMERR_INCOMPAT_COLOR_OPTIONS = '00002039'x)
+        integer  PMERR_INCOMPATIBLE_BITMAP
+        parameter (PMERR_INCOMPATIBLE_BITMAP = '0000203A'x)
+        integer  PMERR_INCOMPATIBLE_METAFILE
+        parameter (PMERR_INCOMPATIBLE_METAFILE = '0000203B'x)
+        integer  PMERR_INCORRECT_DC_TYPE
+        parameter (PMERR_INCORRECT_DC_TYPE = '0000203C'x)
+        integer  PMERR_INSUFFICIENT_DISK_SPACE
+        parameter (PMERR_INSUFFICIENT_DISK_SPACE = '0000203D'x)
+        integer  PMERR_INSUFFICIENT_MEMORY
+        parameter (PMERR_INSUFFICIENT_MEMORY = '0000203E'x)
+        integer  PMERR_INV_ANGLE_PARM
+        parameter (PMERR_INV_ANGLE_PARM = '0000203F'x)
+        integer  PMERR_INV_ARC_CONTROL
+        parameter (PMERR_INV_ARC_CONTROL = '00002040'x)
+        integer  PMERR_INV_AREA_CONTROL
+        parameter (PMERR_INV_AREA_CONTROL = '00002041'x)
+        integer  PMERR_INV_ARC_POINTS
+        parameter (PMERR_INV_ARC_POINTS = '00002042'x)
+        integer  PMERR_INV_ATTR_MODE
+        parameter (PMERR_INV_ATTR_MODE = '00002043'x)
+        integer  PMERR_INV_BACKGROUND_COL_ATTR
+        parameter (PMERR_INV_BACKGROUND_COL_ATTR = '00002044'x)
+        integer  PMERR_INV_BACKGROUND_MIX_ATTR
+        parameter (PMERR_INV_BACKGROUND_MIX_ATTR = '00002045'x)
+        integer  PMERR_INV_BITBLT_MIX
+        parameter (PMERR_INV_BITBLT_MIX = '00002046'x)
+        integer  PMERR_INV_BITBLT_STYLE
+        parameter (PMERR_INV_BITBLT_STYLE = '00002047'x)
+        integer  PMERR_INV_BITMAP_DIMENSION
+        parameter (PMERR_INV_BITMAP_DIMENSION = '00002048'x)
+        integer  PMERR_INV_BOX_CONTROL
+        parameter (PMERR_INV_BOX_CONTROL = '00002049'x)
+        integer  PMERR_INV_BOX_ROUNDING_PARM
+        parameter (PMERR_INV_BOX_ROUNDING_PARM = '0000204A'x)
+        integer  PMERR_INV_CHAR_ANGLE_ATTR
+        parameter (PMERR_INV_CHAR_ANGLE_ATTR = '0000204B'x)
+        integer  PMERR_INV_CHAR_DIRECTION_ATTR
+        parameter (PMERR_INV_CHAR_DIRECTION_ATTR = '0000204C'x)
+        integer  PMERR_INV_CHAR_MODE_ATTR
+        parameter (PMERR_INV_CHAR_MODE_ATTR = '0000204D'x)
+        integer  PMERR_INV_CHAR_POS_OPTIONS
+        parameter (PMERR_INV_CHAR_POS_OPTIONS = '0000204E'x)
+        integer  PMERR_INV_CHAR_SET_ATTR
+        parameter (PMERR_INV_CHAR_SET_ATTR = '0000204F'x)
+        integer  PMERR_INV_CHAR_SHEAR_ATTR
+        parameter (PMERR_INV_CHAR_SHEAR_ATTR = '00002050'x)
+        integer  PMERR_INV_CLIP_PATH_OPTIONS
+        parameter (PMERR_INV_CLIP_PATH_OPTIONS = '00002051'x)
+        integer  PMERR_INV_CODEPAGE
+        parameter (PMERR_INV_CODEPAGE = '00002052'x)
+        integer  PMERR_INV_COLOR_ATTR
+        parameter (PMERR_INV_COLOR_ATTR = '00002053'x)
+        integer  PMERR_INV_COLOR_DATA
+        parameter (PMERR_INV_COLOR_DATA = '00002054'x)
+        integer  PMERR_INV_COLOR_FORMAT
+        parameter (PMERR_INV_COLOR_FORMAT = '00002055'x)
+        integer  PMERR_INV_COLOR_INDEX
+        parameter (PMERR_INV_COLOR_INDEX = '00002056'x)
+        integer  PMERR_INV_COLOR_OPTIONS
+        parameter (PMERR_INV_COLOR_OPTIONS = '00002057'x)
+        integer  PMERR_INV_COLOR_START_INDEX
+        parameter (PMERR_INV_COLOR_START_INDEX = '00002058'x)
+        integer  PMERR_INV_COORD_OFFSET
+        parameter (PMERR_INV_COORD_OFFSET = '00002059'x)
+        integer  PMERR_INV_COORD_SPACE
+        parameter (PMERR_INV_COORD_SPACE = '0000205A'x)
+        integer  PMERR_INV_COORDINATE
+        parameter (PMERR_INV_COORDINATE = '0000205B'x)
+        integer  PMERR_INV_CORRELATE_DEPTH
+        parameter (PMERR_INV_CORRELATE_DEPTH = '0000205C'x)
+        integer  PMERR_INV_CORRELATE_TYPE
+        parameter (PMERR_INV_CORRELATE_TYPE = '0000205D'x)
+        integer  PMERR_INV_CURSOR_BITMAP
+        parameter (PMERR_INV_CURSOR_BITMAP = '0000205E'x)
+        integer  PMERR_INV_DC_DATA
+        parameter (PMERR_INV_DC_DATA = '0000205F'x)
+        integer  PMERR_INV_DC_TYPE
+        parameter (PMERR_INV_DC_TYPE = '00002060'x)
+        integer  PMERR_INV_DEVICE_NAME
+        parameter (PMERR_INV_DEVICE_NAME = '00002061'x)
+        integer  PMERR_INV_DEV_MODES_OPTIONS
+        parameter (PMERR_INV_DEV_MODES_OPTIONS = '00002062'x)
+        integer  PMERR_INV_DRAW_CONTROL
+        parameter (PMERR_INV_DRAW_CONTROL = '00002063'x)
+        integer  PMERR_INV_DRAW_VALUE
+        parameter (PMERR_INV_DRAW_VALUE = '00002064'x)
+        integer  PMERR_INV_DRAWING_MODE
+        parameter (PMERR_INV_DRAWING_MODE = '00002065'x)
+        integer  PMERR_INV_DRIVER_DATA
+        parameter (PMERR_INV_DRIVER_DATA = '00002066'x)
+        integer  PMERR_INV_DRIVER_NAME
+        parameter (PMERR_INV_DRIVER_NAME = '00002067'x)
+        integer  PMERR_INV_DRAW_BORDER_OPTION
+        parameter (PMERR_INV_DRAW_BORDER_OPTION = '00002068'x)
+        integer  PMERR_INV_EDIT_MODE
+        parameter (PMERR_INV_EDIT_MODE = '00002069'x)
+        integer  PMERR_INV_ELEMENT_OFFSET
+        parameter (PMERR_INV_ELEMENT_OFFSET = '0000206A'x)
+        integer  PMERR_INV_ELEMENT_POINTER
+        parameter (PMERR_INV_ELEMENT_POINTER = '0000206B'x)
+        integer  PMERR_INV_END_PATH_OPTIONS
+        parameter (PMERR_INV_END_PATH_OPTIONS = '0000206C'x)
+        integer  PMERR_INV_ESC_CODE
+        parameter (PMERR_INV_ESC_CODE = '0000206D'x)
+        integer  PMERR_INV_ESCAPE_DATA
+        parameter (PMERR_INV_ESCAPE_DATA = '0000206E'x)
+        integer  PMERR_INV_EXTENDED_LCID
+        parameter (PMERR_INV_EXTENDED_LCID = '0000206F'x)
+        integer  PMERR_INV_FILL_PATH_OPTIONS
+        parameter (PMERR_INV_FILL_PATH_OPTIONS = '00002070'x)
+        integer  PMERR_INV_FIRST_CHAR
+        parameter (PMERR_INV_FIRST_CHAR = '00002071'x)
+        integer  PMERR_INV_FONT_ATTRS
+        parameter (PMERR_INV_FONT_ATTRS = '00002072'x)
+        integer  PMERR_INV_FONT_FILE_DATA
+        parameter (PMERR_INV_FONT_FILE_DATA = '00002073'x)
+        integer  PMERR_INV_FOR_THIS_DC_TYPE
+        parameter (PMERR_INV_FOR_THIS_DC_TYPE = '00002074'x)
+        integer  PMERR_INV_FORMAT_CONTROL
+        parameter (PMERR_INV_FORMAT_CONTROL = '00002075'x)
+        integer  PMERR_INV_FORMS_CODE
+        parameter (PMERR_INV_FORMS_CODE = '00002076'x)
+        integer  PMERR_INV_FONTDEF
+        parameter (PMERR_INV_FONTDEF = '00002077'x)
+        integer  PMERR_INV_GEOM_LINE_WIDTH_ATTR
+        parameter (PMERR_INV_GEOM_LINE_WIDTH_ATTR = '00002078'x)
+        integer  PMERR_INV_GETDATA_CONTROL
+        parameter (PMERR_INV_GETDATA_CONTROL = '00002079'x)
+        integer  PMERR_INV_GRAPHICS_FIELD
+        parameter (PMERR_INV_GRAPHICS_FIELD = '0000207A'x)
+        integer  PMERR_INV_HBITMAP
+        parameter (PMERR_INV_HBITMAP = '0000207B'x)
+        integer  PMERR_INV_HDC
+        parameter (PMERR_INV_HDC = '0000207C'x)
+        integer  PMERR_INV_HJOURNAL
+        parameter (PMERR_INV_HJOURNAL = '0000207D'x)
+        integer  PMERR_INV_HMF
+        parameter (PMERR_INV_HMF = '0000207E'x)
+        integer  PMERR_INV_HPS
+        parameter (PMERR_INV_HPS = '0000207F'x)
+        integer  PMERR_INV_HRGN
+        parameter (PMERR_INV_HRGN = '00002080'x)
+        integer  PMERR_INV_ID
+        parameter (PMERR_INV_ID = '00002081'x)
+        integer  PMERR_INV_IMAGE_DATA_LENGTH
+        parameter (PMERR_INV_IMAGE_DATA_LENGTH = '00002082'x)
+        integer  PMERR_INV_IMAGE_DIMENSION
+        parameter (PMERR_INV_IMAGE_DIMENSION = '00002083'x)
+        integer  PMERR_INV_IMAGE_FORMAT
+        parameter (PMERR_INV_IMAGE_FORMAT = '00002084'x)
+        integer  PMERR_INV_IN_AREA
+        parameter (PMERR_INV_IN_AREA = '00002085'x)
+        integer  PMERR_INV_IN_CALLED_SEG
+        parameter (PMERR_INV_IN_CALLED_SEG = '00002086'x)
+        integer  PMERR_INV_IN_CURRENT_EDIT_MODE
+        parameter (PMERR_INV_IN_CURRENT_EDIT_MODE = '00002087'x)
+        integer  PMERR_INV_IN_DRAW_MODE
+        parameter (PMERR_INV_IN_DRAW_MODE = '00002088'x)
+        integer  PMERR_INV_IN_ELEMENT
+        parameter (PMERR_INV_IN_ELEMENT = '00002089'x)
+        integer  PMERR_INV_IN_IMAGE
+        parameter (PMERR_INV_IN_IMAGE = '0000208A'x)
+        integer  PMERR_INV_IN_PATH
+        parameter (PMERR_INV_IN_PATH = '0000208B'x)
+        integer  PMERR_INV_IN_RETAIN_MODE
+        parameter (PMERR_INV_IN_RETAIN_MODE = '0000208C'x)
+        integer  PMERR_INV_IN_SEG
+        parameter (PMERR_INV_IN_SEG = '0000208D'x)
+        integer  PMERR_INV_IN_VECTOR_SYMBOL
+        parameter (PMERR_INV_IN_VECTOR_SYMBOL = '0000208E'x)
+        integer  PMERR_INV_INFO_TABLE
+        parameter (PMERR_INV_INFO_TABLE = '0000208F'x)
+        integer  PMERR_INV_JOURNAL_OPTION
+        parameter (PMERR_INV_JOURNAL_OPTION = '00002090'x)
+        integer  PMERR_INV_KERNING_FLAGS
+        parameter (PMERR_INV_KERNING_FLAGS = '00002091'x)
+        integer  PMERR_INV_LENGTH_OR_COUNT
+        parameter (PMERR_INV_LENGTH_OR_COUNT = '00002092'x)
+        integer  PMERR_INV_LINE_END_ATTR
+        parameter (PMERR_INV_LINE_END_ATTR = '00002093'x)
+        integer  PMERR_INV_LINE_JOIN_ATTR
+        parameter (PMERR_INV_LINE_JOIN_ATTR = '00002094'x)
+        integer  PMERR_INV_LINE_TYPE_ATTR
+        parameter (PMERR_INV_LINE_TYPE_ATTR = '00002095'x)
+        integer  PMERR_INV_LINE_WIDTH_ATTR
+        parameter (PMERR_INV_LINE_WIDTH_ATTR = '00002096'x)
+        integer  PMERR_INV_LOGICAL_ADDRESS
+        parameter (PMERR_INV_LOGICAL_ADDRESS = '00002097'x)
+        integer  PMERR_INV_MARKER_BOX_ATTR
+        parameter (PMERR_INV_MARKER_BOX_ATTR = '00002098'x)
+        integer  PMERR_INV_MARKER_SET_ATTR
+        parameter (PMERR_INV_MARKER_SET_ATTR = '00002099'x)
+        integer  PMERR_INV_MARKER_SYMBOL_ATTR
+        parameter (PMERR_INV_MARKER_SYMBOL_ATTR = '0000209A'x)
+        integer  PMERR_INV_MATRIX_ELEMENT
+        parameter (PMERR_INV_MATRIX_ELEMENT = '0000209B'x)
+        integer  PMERR_INV_MAX_HITS
+        parameter (PMERR_INV_MAX_HITS = '0000209C'x)
+        integer  PMERR_INV_METAFILE
+        parameter (PMERR_INV_METAFILE = '0000209D'x)
+        integer  PMERR_INV_METAFILE_LENGTH
+        parameter (PMERR_INV_METAFILE_LENGTH = '0000209E'x)
+        integer  PMERR_INV_METAFILE_OFFSET
+        parameter (PMERR_INV_METAFILE_OFFSET = '0000209F'x)
+        integer  PMERR_INV_MICROPS_DRAW_CONTROL
+        parameter (PMERR_INV_MICROPS_DRAW_CONTROL = '000020A0'x)
+        integer  PMERR_INV_MICROPS_FUNCTION
+        parameter (PMERR_INV_MICROPS_FUNCTION = '000020A1'x)
+        integer  PMERR_INV_MICROPS_ORDER
+        parameter (PMERR_INV_MICROPS_ORDER = '000020A2'x)
+        integer  PMERR_INV_MIX_ATTR
+        parameter (PMERR_INV_MIX_ATTR = '000020A3'x)
+        integer  PMERR_INV_MODE_FOR_OPEN_DYN
+        parameter (PMERR_INV_MODE_FOR_OPEN_DYN = '000020A4'x)
+        integer  PMERR_INV_MODE_FOR_REOPEN_SEG
+        parameter (PMERR_INV_MODE_FOR_REOPEN_SEG = '000020A5'x)
+        integer  PMERR_INV_MODIFY_PATH_MODE
+        parameter (PMERR_INV_MODIFY_PATH_MODE = '000020A6'x)
+        integer  PMERR_INV_MULTIPLIER
+        parameter (PMERR_INV_MULTIPLIER = '000020A7'x)
+        integer  PMERR_INV_NESTED_FIGURES
+        parameter (PMERR_INV_NESTED_FIGURES = '000020A8'x)
+        integer  PMERR_INV_OR_INCOMPAT_OPTIONS
+        parameter (PMERR_INV_OR_INCOMPAT_OPTIONS = '000020A9'x)
+        integer  PMERR_INV_ORDER_LENGTH
+        parameter (PMERR_INV_ORDER_LENGTH = '000020AA'x)
+        integer  PMERR_INV_ORDERING_PARM
+        parameter (PMERR_INV_ORDERING_PARM = '000020AB'x)
+        integer  PMERR_INV_OUTSIDE_DRAW_MODE
+        parameter (PMERR_INV_OUTSIDE_DRAW_MODE = '000020AC'x)
+        integer  PMERR_INV_PAGE_VIEWPORT
+        parameter (PMERR_INV_PAGE_VIEWPORT = '000020AD'x)
+        integer  PMERR_INV_PATH_ID
+        parameter (PMERR_INV_PATH_ID = '000020AE'x)
+        integer  PMERR_INV_PATH_MODE
+        parameter (PMERR_INV_PATH_MODE = '000020AF'x)
+        integer  PMERR_INV_PATTERN_ATTR
+        parameter (PMERR_INV_PATTERN_ATTR = '000020B0'x)
+        integer  PMERR_INV_PATTERN_REF_PT_ATTR
+        parameter (PMERR_INV_PATTERN_REF_PT_ATTR = '000020B1'x)
+        integer  PMERR_INV_PATTERN_SET_ATTR
+        parameter (PMERR_INV_PATTERN_SET_ATTR = '000020B2'x)
+        integer  PMERR_INV_PATTERN_SET_FONT
+        parameter (PMERR_INV_PATTERN_SET_FONT = '000020B3'x)
+        integer  PMERR_INV_PICK_APERTURE_OPTION
+        parameter (PMERR_INV_PICK_APERTURE_OPTION = '000020B4'x)
+        integer  PMERR_INV_PICK_APERTURE_POSN
+        parameter (PMERR_INV_PICK_APERTURE_POSN = '000020B5'x)
+        integer  PMERR_INV_PICK_APERTURE_SIZE
+        parameter (PMERR_INV_PICK_APERTURE_SIZE = '000020B6'x)
+        integer  PMERR_INV_PICK_NUMBER
+        parameter (PMERR_INV_PICK_NUMBER = '000020B7'x)
+        integer  PMERR_INV_PLAY_METAFILE_OPTION
+        parameter (PMERR_INV_PLAY_METAFILE_OPTION = '000020B8'x)
+        integer  PMERR_INV_PRIMITIVE_TYPE
+        parameter (PMERR_INV_PRIMITIVE_TYPE = '000020B9'x)
+        integer  PMERR_INV_PS_SIZE
+        parameter (PMERR_INV_PS_SIZE = '000020BA'x)
+        integer  PMERR_INV_PUTDATA_FORMAT
+        parameter (PMERR_INV_PUTDATA_FORMAT = '000020BB'x)
+        integer  PMERR_INV_QUERY_ELEMENT_NO
+        parameter (PMERR_INV_QUERY_ELEMENT_NO = '000020BC'x)
+        integer  PMERR_INV_RECT
+        parameter (PMERR_INV_RECT = '000020BD'x)
+        integer  PMERR_INV_REGION_CONTROL
+        parameter (PMERR_INV_REGION_CONTROL = '000020BE'x)
+        integer  PMERR_INV_REGION_MIX_MODE
+        parameter (PMERR_INV_REGION_MIX_MODE = '000020BF'x)
+        integer  PMERR_INV_REPLACE_MODE_FUNC
+        parameter (PMERR_INV_REPLACE_MODE_FUNC = '000020C0'x)
+        integer  PMERR_INV_RESERVED_FIELD
+        parameter (PMERR_INV_RESERVED_FIELD = '000020C1'x)
+        integer  PMERR_INV_RESET_OPTIONS
+        parameter (PMERR_INV_RESET_OPTIONS = '000020C2'x)
+        integer  PMERR_INV_RGBCOLOR
+        parameter (PMERR_INV_RGBCOLOR = '000020C3'x)
+        integer  PMERR_INV_SCAN_START
+        parameter (PMERR_INV_SCAN_START = '000020C4'x)
+        integer  PMERR_INV_SEG_ATTR
+        parameter (PMERR_INV_SEG_ATTR = '000020C5'x)
+        integer  PMERR_INV_SEG_ATTR_VALUE
+        parameter (PMERR_INV_SEG_ATTR_VALUE = '000020C6'x)
+        integer  PMERR_INV_SEG_CH_LENGTH
+        parameter (PMERR_INV_SEG_CH_LENGTH = '000020C7'x)
+        integer  PMERR_INV_SEG_NAME
+        parameter (PMERR_INV_SEG_NAME = '000020C8'x)
+        integer  PMERR_INV_SEG_OFFSET
+        parameter (PMERR_INV_SEG_OFFSET = '000020C9'x)
+        integer  PMERR_INV_SETID
+        parameter (PMERR_INV_SETID = '000020CA'x)
+        integer  PMERR_INV_SETID_TYPE
+        parameter (PMERR_INV_SETID_TYPE = '000020CB'x)
+        integer  PMERR_INV_SET_VIEWPORT_OPTION
+        parameter (PMERR_INV_SET_VIEWPORT_OPTION = '000020CC'x)
+        integer  PMERR_INV_SHARPNESS_PARM
+        parameter (PMERR_INV_SHARPNESS_PARM = '000020CD'x)
+        integer  PMERR_INV_SOURCE_OFFSET
+        parameter (PMERR_INV_SOURCE_OFFSET = '000020CE'x)
+        integer  PMERR_INV_STOP_DRAW_VALUE
+        parameter (PMERR_INV_STOP_DRAW_VALUE = '000020CF'x)
+        integer  PMERR_INV_TRANSFORM_TYPE
+        parameter (PMERR_INV_TRANSFORM_TYPE = '000020D0'x)
+        integer  PMERR_INV_USAGE_PARM
+        parameter (PMERR_INV_USAGE_PARM = '000020D1'x)
+        integer  PMERR_INV_VIEWING_LIMITS
+        parameter (PMERR_INV_VIEWING_LIMITS = '000020D2'x)
+        integer  PMERR_JFILE_BUSY
+        parameter (PMERR_JFILE_BUSY = '000020D3'x)
+        integer  PMERR_JNL_FUNC_DATA_TOO_LONG
+        parameter (PMERR_JNL_FUNC_DATA_TOO_LONG = '000020D4'x)
+        integer  PMERR_KERNING_NOT_SUPPORTED
+        parameter (PMERR_KERNING_NOT_SUPPORTED = '000020D5'x)
+        integer  PMERR_LABEL_NOT_FOUND
+        parameter (PMERR_LABEL_NOT_FOUND = '000020D6'x)
+        integer  PMERR_MATRIX_OVERFLOW
+        parameter (PMERR_MATRIX_OVERFLOW = '000020D7'x)
+        integer  PMERR_METAFILE_INTERNAL_ERROR
+        parameter (PMERR_METAFILE_INTERNAL_ERROR = '000020D8'x)
+        integer  PMERR_METAFILE_IN_USE
+        parameter (PMERR_METAFILE_IN_USE = '000020D9'x)
+        integer  PMERR_METAFILE_LIMIT_EXCEEDED
+        parameter (PMERR_METAFILE_LIMIT_EXCEEDED = '000020DA'x)
+        integer  PMERR_NAME_STACK_FULL
+        parameter (PMERR_NAME_STACK_FULL = '000020DB'x)
+        integer  PMERR_NOT_CREATED_BY_DEVOPENDC
+        parameter (PMERR_NOT_CREATED_BY_DEVOPENDC = '000020DC'x)
+        integer  PMERR_NOT_IN_AREA
+        parameter (PMERR_NOT_IN_AREA = '000020DD'x)
+        integer  PMERR_NOT_IN_DRAW_MODE
+        parameter (PMERR_NOT_IN_DRAW_MODE = '000020DE'x)
+        integer  PMERR_NOT_IN_ELEMENT
+        parameter (PMERR_NOT_IN_ELEMENT = '000020DF'x)
+        integer  PMERR_NOT_IN_IMAGE
+        parameter (PMERR_NOT_IN_IMAGE = '000020E0'x)
+        integer  PMERR_NOT_IN_PATH
+        parameter (PMERR_NOT_IN_PATH = '000020E1'x)
+        integer  PMERR_NOT_IN_RETAIN_MODE
+        parameter (PMERR_NOT_IN_RETAIN_MODE = '000020E2'x)
+        integer  PMERR_NOT_IN_SEG
+        parameter (PMERR_NOT_IN_SEG = '000020E3'x)
+        integer  PMERR_NO_BITMAP_SELECTED
+        parameter (PMERR_NO_BITMAP_SELECTED = '000020E4'x)
+        integer  PMERR_NO_CURRENT_ELEMENT
+        parameter (PMERR_NO_CURRENT_ELEMENT = '000020E5'x)
+        integer  PMERR_NO_CURRENT_SEG
+        parameter (PMERR_NO_CURRENT_SEG = '000020E6'x)
+        integer  PMERR_NO_METAFILE_RECORD_HANDLE
+        parameter (PMERR_NO_METAFILE_RECORD_HANDLE = '000020E7'x)
+        integer  PMERR_ORDER_TOO_BIG
+        parameter (PMERR_ORDER_TOO_BIG = '000020E8'x)
+        integer  PMERR_OTHER_SET_ID_REFS
+        parameter (PMERR_OTHER_SET_ID_REFS = '000020E9'x)
+        integer  PMERR_OVERRAN_SEG
+        parameter (PMERR_OVERRAN_SEG = '000020EA'x)
+        integer  PMERR_OWN_SET_ID_REFS
+        parameter (PMERR_OWN_SET_ID_REFS = '000020EB'x)
+        integer  PMERR_PATH_INCOMPLETE
+        parameter (PMERR_PATH_INCOMPLETE = '000020EC'x)
+        integer  PMERR_PATH_LIMIT_EXCEEDED
+        parameter (PMERR_PATH_LIMIT_EXCEEDED = '000020ED'x)
+        integer  PMERR_PATH_UNKNOWN
+        parameter (PMERR_PATH_UNKNOWN = '000020EE'x)
+        integer  PMERR_PEL_IS_CLIPPED
+        parameter (PMERR_PEL_IS_CLIPPED = '000020EF'x)
+        integer  PMERR_PEL_NOT_AVAILABLE
+        parameter (PMERR_PEL_NOT_AVAILABLE = '000020F0'x)
+        integer  PMERR_PRIMITIVE_STACK_EMPTY
+        parameter (PMERR_PRIMITIVE_STACK_EMPTY = '000020F1'x)
+        integer  PMERR_PROLOG_ERROR
+        parameter (PMERR_PROLOG_ERROR = '000020F2'x)
+        integer  PMERR_PROLOG_SEG_ATTR_NOT_SET
+        parameter (PMERR_PROLOG_SEG_ATTR_NOT_SET = '000020F3'x)
+        integer  PMERR_PS_BUSY
+        parameter (PMERR_PS_BUSY = '000020F4'x)
+        integer  PMERR_PS_IS_ASSOCIATED
+        parameter (PMERR_PS_IS_ASSOCIATED = '000020F5'x)
+        integer  PMERR_RAM_JNL_FILE_TOO_SMALL
+        parameter (PMERR_RAM_JNL_FILE_TOO_SMALL = '000020F6'x)
+        integer  PMERR_REALIZE_NOT_SUPPORTED
+        parameter (PMERR_REALIZE_NOT_SUPPORTED = '000020F7'x)
+        integer  PMERR_REGION_IS_CLIP_REGION
+        parameter (PMERR_REGION_IS_CLIP_REGION = '000020F8'x)
+        integer  PMERR_RESOURCE_DEPLETION
+        parameter (PMERR_RESOURCE_DEPLETION = '000020F9'x)
+        integer  PMERR_SEG_AND_REFSEG_ARE_SAME
+        parameter (PMERR_SEG_AND_REFSEG_ARE_SAME = '000020FA'x)
+        integer  PMERR_SEG_CALL_RECURSIVE
+        parameter (PMERR_SEG_CALL_RECURSIVE = '000020FB'x)
+        integer  PMERR_SEG_CALL_STACK_EMPTY
+        parameter (PMERR_SEG_CALL_STACK_EMPTY = '000020FC'x)
+        integer  PMERR_SEG_CALL_STACK_FULL
+        parameter (PMERR_SEG_CALL_STACK_FULL = '000020FD'x)
+        integer  PMERR_SEG_IS_CURRENT
+        parameter (PMERR_SEG_IS_CURRENT = '000020FE'x)
+        integer  PMERR_SEG_NOT_CHAINED
+        parameter (PMERR_SEG_NOT_CHAINED = '000020FF'x)
+        integer  PMERR_SEG_NOT_FOUND
+        parameter (PMERR_SEG_NOT_FOUND = '00002100'x)
+        integer  PMERR_SEG_STORE_LIMIT_EXCEEDED
+        parameter (PMERR_SEG_STORE_LIMIT_EXCEEDED = '00002101'x)
+        integer  PMERR_SETID_IN_USE
+        parameter (PMERR_SETID_IN_USE = '00002102'x)
+        integer  PMERR_SETID_NOT_FOUND
+        parameter (PMERR_SETID_NOT_FOUND = '00002103'x)
+        integer  PMERR_STARTDOC_NOT_ISSUED
+        parameter (PMERR_STARTDOC_NOT_ISSUED = '00002104'x)
+        integer  PMERR_STOP_DRAW_OCCURRED
+        parameter (PMERR_STOP_DRAW_OCCURRED = '00002105'x)
+        integer  PMERR_TOO_MANY_METAFILES_IN_USE
+        parameter (PMERR_TOO_MANY_METAFILES_IN_USE = '00002106'x)
+        integer  PMERR_TRUNCATED_ORDER
+        parameter (PMERR_TRUNCATED_ORDER = '00002107'x)
+        integer  PMERR_UNCHAINED_SEG_ZERO_INV
+        parameter (PMERR_UNCHAINED_SEG_ZERO_INV = '00002108'x)
+        integer  PMERR_UNSUPPORTED_ATTR
+        parameter (PMERR_UNSUPPORTED_ATTR = '00002109'x)
+        integer  PMERR_UNSUPPORTED_ATTR_VALUE
+        parameter (PMERR_UNSUPPORTED_ATTR_VALUE = '0000210A'x)
+        integer  PMERR_ENDDOC_NOT_ISSUED
+        parameter (PMERR_ENDDOC_NOT_ISSUED = '0000210B'x)
+        integer  PMERR_PS_NOT_ASSOCIATED
+        parameter (PMERR_PS_NOT_ASSOCIATED = '0000210C'x)
+        integer  PMERR_INV_FLOOD_FILL_OPTIONS
+        parameter (PMERR_INV_FLOOD_FILL_OPTIONS = '0000210D'x)
+        integer  PMERR_INV_FACENAME
+        parameter (PMERR_INV_FACENAME = '0000210E'x)
+        integer  PMERR_PALETTE_SELECTED
+        parameter (PMERR_PALETTE_SELECTED = '0000210F'x)
+        integer  PMERR_NO_PALETTE_SELECTED
+        parameter (PMERR_NO_PALETTE_SELECTED = '00002110'x)
+        integer  PMERR_INV_HPAL
+        parameter (PMERR_INV_HPAL = '00002111'x)
+        integer  PMERR_PALETTE_BUSY
+        parameter (PMERR_PALETTE_BUSY = '00002112'x)
+        integer  PMERR_START_POINT_CLIPPED
+        parameter (PMERR_START_POINT_CLIPPED = '00002113'x)
+        integer  PMERR_NO_FILL
+        parameter (PMERR_NO_FILL = '00002114'x)
+        integer  PMERR_INV_FACENAMEDESC
+        parameter (PMERR_INV_FACENAMEDESC = '00002115'x)
+        integer  PMERR_INV_BITMAP_DATA
+        parameter (PMERR_INV_BITMAP_DATA = '00002116'x)
+        integer  PMERR_INV_CHAR_ALIGN_ATTR
+        parameter (PMERR_INV_CHAR_ALIGN_ATTR = '00002117'x)
+        integer  PMERR_INV_HFONT
+        parameter (PMERR_INV_HFONT = '00002118'x)
+        integer  PMERR_HFONT_IS_SELECTED
+        parameter (PMERR_HFONT_IS_SELECTED = '00002119'x)
+
+c$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module to invoke floating-point support initialiation.
 *
 ****************************************************************************/
 
@@ -33,10 +32,10 @@
 #include "variety.h"
 #include "rtinit.h"
 
-#if defined(__AXP__) || defined(__386__) || defined(__PPC__)
-unsigned _fltused_ = 0;
-#else
+#ifdef _M_I86
 unsigned _fltused_ = 1;
+#else
+unsigned _fltused_ = 0;
 #endif
 
 #if defined(_M_IX86)

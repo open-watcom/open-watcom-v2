@@ -55,6 +55,14 @@ public:
                 return r;
             }
 
+    WRect scale( const WRect & r ) {
+                WRect res( r.x() * _average.x() / DIALOG_HORIZONTAL_SCALE,
+                           r.y() * _average.y() / DIALOG_VERTICAL_SCALE,
+                           r.w() * _average.x() / DIALOG_HORIZONTAL_SCALE,
+                           r.h() * _average.y() / DIALOG_VERTICAL_SCALE );
+
+                return res;
+            }
 private:
     WPoint  _average;
     WPoint  _max;

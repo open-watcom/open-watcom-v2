@@ -1,0 +1,13 @@
+name=dwin32sdk_samples
+any_check=sdk_samp
+static_text=\
+        //1"Select Win32 SDK Samples:"\
+        //2"Select Win32 SDK Samples:"\
+        //0
+        //0
+check_box         =sdk_samp_autoclik,,"autoclik"
+check_box_continue=sdk_samp_autodriv,,"autodriv"
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Convert a wide character to a multibyte character.
 *
 ****************************************************************************/
 
@@ -40,10 +39,6 @@
 #include "farfunc.h"
 
 
-
-/****
-***** Convert a wide character to a multibyte character.
-****/
 
 _WCRTLINK int _NEARFAR(wctomb,_fwctomb)( char _FFAR *ch, wchar_t wchar )
 {

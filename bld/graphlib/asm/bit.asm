@@ -57,7 +57,7 @@ include bitmac.inc
 ;       Bit Tables                                              =
 ;================================================================
 
-        modstart bit
+        modstart bit,WORD
 
         xdefp   BitReplace
         xdefp   BitAnd
@@ -79,7 +79,7 @@ MaskTable       db 001h,003h,007h,00fh,01fh,03fh,07fh,0ffh
 
 endif
 
-ifdef _386
+ifdef __386__
 
     DGROUP  group _DATA
     assume  ds:DGROUP,ss:DGROUP
@@ -96,8 +96,8 @@ else
     BitSingle       dw BitRepSingle
     BitString       dw BitRepString
 
-    bit_seg     equ <cs>
-    size_ptr    equ <word ptr>
+    bit_seg     equ cs
+    size_ptr    equ word ptr
 
 endif
 
@@ -130,26 +130,26 @@ endif
 
 BitRepSingle:
         and     al,ch           ; new_bits &= right_mask
-        mov     ah,es:[edi]     ; target &= ~ right_mask
+        mov     ah,es:[_edi]     ; target &= ~ right_mask
         or      ah,ch           ; ...
         xor     ah,ch           ; ...
         or      al,ah           ; target |= new_bits
-        mov     es:[edi],al     ; dst@ := target
+        mov     es:[_edi],al     ; dst@ := target
         ret
 
 BitRepString:
         cmp     cl,8            ; if right_shift = 8
         _if     e
-          xchg   ecx,ebx          ; Copy( src, dst, count )
+          xchg   _ecx,_ebx          ; Copy( src, dst, count )
           rep    movsb            ; ...
-          xchg   ecx,ebx          ; ...
+          xchg   _ecx,_ebx          ; ...
         _else                   ; else
           _loop                   ; loop
             lodsw                   ; new_bit := Fetchword( src++ )
-            dec     esi
+            dec     _esi
             bit_shift               ; special macro
             stosb                   ; dst++@ := new_bit
-            dec     ebx             ; -- count
+            dec     _ebx             ; -- count
           _until e                ; until count = 0
         _endif                  ; endif
         ret
@@ -161,17 +161,17 @@ BitAndSingle:
         mov     ah,ch           ; new_bits |= ~ mask
         not     ah              ; ...
         or      al,ah           ; ...
-        and     es:[edi],al     ; dst@ &= new_bits
+        and     es:[_edi],al     ; dst@ &= new_bits
         ret
 
 BitAndString:
         _loop                   ; loop
           lodsw                   ; new_bit := Fetchword( src++ )
-          dec     esi
+          dec     _esi
           bit_shift               ; special macro
-          and     es:[edi],al     ; dst++@ &= new_bit
-          inc     edi             ; ...
-          dec     ebx             ; -- count
+          and     es:[_edi],al     ; dst++@ &= new_bit
+          inc     _edi             ; ...
+          dec     _ebx             ; -- count
         _until e                ; until count = 0
         ret
 
@@ -179,17 +179,17 @@ BitAndString:
 
 BitOrSingle:
         and     al,ch           ; new_bits &= right_mask
-        or      es:[edi],al     ; dst@ |= new_bits
+        or      es:[_edi],al     ; dst@ |= new_bits
         ret
 
 BitOrString:
         _loop                   ; loop
           lodsw                   ; new_bit := Fetchword( src++ )
-          dec     esi
+          dec     _esi
           bit_shift               ; special macro
-          or      es:[edi],al     ; dst++@ |= new_bit
-          inc     edi             ; ...
-          dec     ebx             ; -- count
+          or      es:[_edi],al     ; dst++@ |= new_bit
+          inc     _edi             ; ...
+          dec     _ebx             ; -- count
         _until e                ; until count = 0
         ret
 
@@ -197,17 +197,17 @@ BitOrString:
 
 BitXorSingle:
         and     al,ch           ; new_bits &= right_mask
-        xor     es:[edi],al     ; dst@ &= new_bits
+        xor     es:[_edi],al     ; dst@ &= new_bits
         ret
 
 BitXorString:
         _loop                   ; loop
           lodsw                   ; new_bit := Fetchword( src++ )
-          dec     esi
+          dec     _esi
           bit_shift               ; special macro
-          xor     es:[edi],al     ; dst++@ xor= new_bit
-          inc     edi             ; ...
-          dec     ebx             ; -- count
+          xor     es:[_edi],al     ; dst++@ xor= new_bit
+          inc     _edi             ; ...
+          dec     _ebx             ; -- count
         _until e                ; until count = 0
         ret
 
@@ -245,49 +245,49 @@ BitXor:
 ;================================================================
 
 BitCopy:
-        xor     ebx,ebx
+        xor     _ebx,_ebx
         mov     bl,dh           ; right_mask := RightTable[dst.bit#]
-        mov     bh,cs:RightTable[ebx]
+        mov     bh,cs:RightTable[_ebx]
         sub     bl,dl           ; right_shift := (8 - src.bit#) + dst.bit#
         add     bl,8            ; (8 - src.bit#) will left align bits in al
                                 ; dst.bit# will move bits to proper pos'n in al
-        xchg    ebx,ecx         ; cl = right_shift, ch mask, bx count
+        xchg    _ebx,_ecx         ; cl = right_shift, ch mask, bx count
         test    dh,dh           ; if dst.bit# <> 0
         _if     ne                ; copy first (8-dst.bit#) bits
-          mov     ax,[esi]        ; new_bits := Fetchword( src ) >> right_shift
+          mov     ax,[_esi]        ; new_bits := Fetchword( src ) >> right_shift
           bit_shift               ; special macro
           add     bl,dh           ; count -= 8 - dst.bit#
           adc     bh,0            ; ...
-          sub     ebx,8           ; ...
+          sub     _ebx,8           ; ...
           _if     b               ; if count < 0
-            add     ebx,8           ; count += 8 (count := original + dst.bit#)
+            add     _ebx,8           ; count += 8 (count := original + dst.bit#)
             add     dl,bl           ; src.bit# += original count
             sub     dl,dh           ; i.e. src.bit# += count - dst.bit#
             cmp     dl,8            ; if src.bit# >= 8
             _if     ae              ; then
-              inc     esi             ; src ++
+              inc     _esi             ; src ++
               sub     dl,8            ; src.bit# -= 8
             _endif
             mov     dh,bl           ; dst.bit# := dst.bit# + original count
-            and     ch,cs:(LeftTable-1)[ebx]; right_mask &= LeftTable[dst.bit#-1]
+            and     ch,cs:(LeftTable-1)[_ebx]; right_mask &= LeftTable[dst.bit#-1]
             jmp     size_ptr bit_seg:BitSingle   ; do the byte & return
           _endif                  ; endif
           add     dl,8            ; src.bit += 8 - dst.bit#
           sub     dl,dh           ; ...
           cmp     dl,8            ; if src.bit# >= 8
           _if     ae              ; then
-            inc     esi             ; src ++
+            inc     _esi             ; src ++
             sub     dl,8            ; src.bit# -= 8
           _endif                  ; endif
           call    size_ptr bit_seg:BitSingle     ; call single byte routine
-          inc     edi             ; dst++
+          inc     _edi             ; dst++
         _endif                  ; endif
         mov     cl,8            ; right_shift := 8 - src.bit#
         sub     cl,dl           ; ...
         mov     dh,bl           ; dst.bit# := count
-        shr     ebx,1           ; count /= 8
-        shr     ebx,1           ; ...
-        shr     ebx,1           ; ...
+        shr     _ebx,1           ; count /= 8
+        shr     _ebx,1           ; ...
+        shr     _ebx,1           ; ...
         _if     ne              ; if count <> 0
           call  size_ptr bit_seg:BitString   ; call string routine
         _endif                  ; endif
@@ -295,15 +295,15 @@ BitCopy:
         _if     ne              ; if dst.bit# <> 0
           mov     bl,dh           ; left_mask := LeftTable[dst.bit#-1]
 ;;;;      mov     bh,0            ; NB bh was 0 from BitString
-          mov     ch,cs:(LeftTable-1)[ebx]
-          mov     ax,[esi]        ; new_bit := FetchWord( src )
+          mov     ch,cs:(LeftTable-1)[_ebx]
+          mov     ax,[_esi]        ; new_bit := FetchWord( src )
           bit_shift
           call    size_ptr bit_seg:BitSingle ; store new bits according to action
           or      dl,0f8h         ; to get carry set if need be
           add     dl,dh           ; src.bit# += dst.bit#
-          adc     esi,0           ; if src.bit# >=8 then src++
+          adc     _esi,0           ; if src.bit# >=8 then src++
           and     dl,7            ; src.bit# &= 7
-          inc     edi             ; move to next byte
+          inc     _edi             ; move to next byte
         _endif                  ; endif
         ret                     ; return
 

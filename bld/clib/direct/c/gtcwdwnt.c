@@ -37,43 +37,41 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include "dos.h"
+#include <dos.h>
+#include <direct.h>
 #include <windows.h>
 #include "libwin32.h"
 #include "rtdata.h"
 #include "seterrno.h"
 #include "liballoc.h"
 
-
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
-    CHAR_TYPE           path[_MAX_PATH];
+    CHAR_TYPE           path[ _MAX_PATH ];
     DWORD               realsize;
 
     /*** Get the current directory ***/
-    #ifdef __WIDECHAR__
-        realsize = __lib_GetCurrentDirectoryW( _MAX_PATH, path );
-    #else
-        realsize = GetCurrentDirectoryA( _MAX_PATH, path );
-    #endif
+#ifdef __WIDECHAR__
+    realsize = __lib_GetCurrentDirectoryW( _MAX_PATH, path );
+#else
+    realsize = GetCurrentDirectoryA( _MAX_PATH, path );
+#endif
 
     if( realsize == 0 ) {
         __set_errno_nt();
         return( NULL );
     }
     if( buf == NULL ) {
-        buf = lib_malloc( max(size,realsize+1) * CHARSIZE );
+        buf = lib_malloc( max( size, realsize + 1 ) * CHARSIZE );
         if( buf == NULL ) {
             __set_errno( ENOMEM );
             return( NULL );
         }
     } else {
-        if( realsize > size ) {
+        if( realsize + 1 > size ) {
             __set_errno( ERANGE );
             return( NULL );
         }
     }
-
-    memcpy( buf, path, (realsize+1)*CHARSIZE );
-    return( buf );
+    return( memcpy( buf, path, ( realsize + 1 ) * CHARSIZE ) );
 }

@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "vi.h"
+#include <time.h>
 #include "win.h"
 
 #define MAX_CSTATUS_STRLEN      10
@@ -63,42 +60,43 @@ static int      lastStatus;
  */
 void GetModeString( char *st )
 {
-    strcpy( st, currStatus[ lastStatus ] );
+    strcpy( st, currStatus[lastStatus] );
+
 } /* GetModeString */
 
 /*
  * UpdateCurrentStatus - maintain current status info
  */
-int UpdateCurrentStatus( status_type st )
+status_type UpdateCurrentStatus( status_type st )
 {
-    int         ost;
+    status_type ost;
 
     ost = lastStatus;
     lastStatus = st;
 #ifndef __WIN__
     if( EditFlags.Menus ) {
-        char    str[ 20 ];
+        char    str[20];
         int     i;
 
         if( EditFlags.CurrentStatus ) {
             memset( str, ' ', MAX_CSTATUS_STRLEN );
-            str[ MAX_CSTATUS_STRLEN ] = 0;
-            memcpy( str, currStatus[ lastStatus ], strlen( currStatus[ lastStatus ] ) );
-            for( i=0;i<MAX_CSTATUS_STRLEN;i++ ) {
-                SetCharInWindowWithColor( MenuWindow,1, CurrentStatusColumn+i,
+            str[MAX_CSTATUS_STRLEN] = 0;
+            memcpy( str, currStatus[lastStatus], strlen( currStatus[lastStatus] ) );
+            for( i = 0; i < MAX_CSTATUS_STRLEN; i++ ) {
+                SetCharInWindowWithColor( MenuWindow, 1, CurrentStatusColumn + i,
                         str[i], &menubarw_info.text );
             }
         } else {
-        #if 0
+#if 0
             /* this is real lame - no time to fix it now */
             memset( str, ' ', 15 );
             str[15] = 0;
-            for( i=0;i<14;i++ ) {
+            for( i = 0; i < 14; i++ ) {
                 SetCharInWindowWithColor( MenuWindow, 1,
-                        CurrentStatusColumn+i-6, str[i],
+                        CurrentStatusColumn + i - 6, str[i],
                         &menubarw_info.text );
             }
-        #endif
+#endif
         }
     }
 #endif

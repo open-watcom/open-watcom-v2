@@ -1,0 +1,326 @@
+c$noreference
+
+        integer  KC_DBE_INTERIMCHAR
+        parameter (KC_DBE_INTERIMCHAR = KC_DBCSRSRVD2)
+
+        integer  RID_DBE_OFFSET
+        parameter (RID_DBE_OFFSET = '0001000'x)
+        integer  STR_DBE_OFFSET
+        parameter (STR_DBE_OFFSET = '0001000'x)
+
+        integer  VK_DBE_FIRST
+        parameter (VK_DBE_FIRST = '0000080'x)
+        integer  VK_DBE_LAST
+        parameter (VK_DBE_LAST = '00000ff'x)
+
+        integer  VK_DBE_IMEFIRST
+        parameter (VK_DBE_IMEFIRST = VK_DBE_FIRST + '0000001f'x)
+        integer  VK_DBE_IMELAST
+        parameter (VK_DBE_IMELAST = VK_DBE_LAST)
+
+        integer  VK_DBE_ALPHANUMERIC
+        parameter (VK_DBE_ALPHANUMERIC = '00000080'x)
+        integer  VK_DBE_KATAKANA
+        parameter (VK_DBE_KATAKANA = '00000081'x)
+        integer  VK_DBE_HIRAGANA
+        parameter (VK_DBE_HIRAGANA = '00000082'x)
+        integer  VK_DBE_SBCSCHAR
+        parameter (VK_DBE_SBCSCHAR = '00000083'x)
+        integer  VK_DBE_DBCSCHAR
+        parameter (VK_DBE_DBCSCHAR = '00000084'x)
+        integer  VK_DBE_SBCSDBCSCHAR
+        parameter (VK_DBE_SBCSDBCSCHAR = '00000085'x)
+        integer  VK_DBE_ROMAN
+        parameter (VK_DBE_ROMAN = '00000086'x)
+
+        integer  VK_DBE_HANJA
+        parameter (VK_DBE_HANJA = '00000087'x)
+        integer  VK_DBE_HANGEUL
+        parameter (VK_DBE_HANGEUL = '00000088'x)
+        integer  VK_DBE_JAMO
+        parameter (VK_DBE_JAMO = '00000089'x)
+
+        integer  VK_DBE_HANZI
+        parameter (VK_DBE_HANZI = '0000008A'x)
+
+        integer  VK_DBE_TSANGJYE
+        parameter (VK_DBE_TSANGJYE = '0000008C'x)
+        integer  VK_DBE_PHONETIC
+        parameter (VK_DBE_PHONETIC = '0000008D'x)
+
+        integer  VK_DBE_KANJI
+        parameter (VK_DBE_KANJI = '000000a0'x)
+        integer  VK_DBE_IMEACTIVATE
+        parameter (VK_DBE_IMEACTIVATE = '000000a0'x)
+        integer  VK_DBE_CONV
+        parameter (VK_DBE_CONV = '000000a1'x)
+        integer  VK_DBE_NOCONV
+        parameter (VK_DBE_NOCONV = '000000a2'x)
+        integer  VK_DBE_TANGO
+        parameter (VK_DBE_TANGO = '000000a3'x)
+        integer  VK_DBE_WORDREGISTER
+        parameter (VK_DBE_WORDREGISTER = '000000a3'x)
+        integer  VK_DBE_IMEDIALOG
+        parameter (VK_DBE_IMEDIALOG = '000000a4'x)
+        integer  VK_DBE_IME_MBSELECTED
+        parameter (VK_DBE_IME_MBSELECTED = '000000a5'x)
+        integer  VK_DBE_IME_LBSELECTED
+        parameter (VK_DBE_IME_LBSELECTED = '000000a6'x)
+        integer  VK_DBE_CODEINPUT
+        parameter (VK_DBE_CODEINPUT = '000000a7'x)
+        integer  VK_DBE_ALLCANDIDATE
+        parameter (VK_DBE_ALLCANDIDATE = '000000a8'x)
+        integer  VK_DBE_PREVCANDIDATE
+        parameter (VK_DBE_PREVCANDIDATE = '000000a9'x)
+        integer  VK_DBE_IMEDEACTIVATE
+        parameter (VK_DBE_IMEDEACTIVATE = '000000aa'x)
+        integer  VK_DBE_IME_WORDREGISTED
+        parameter (VK_DBE_IME_WORDREGISTED = '000000ab'x)
+        integer  VK_DBE_IMECONTROL
+        parameter (VK_DBE_IMECONTROL = '000000ac'x)
+        integer  VK_DBE_IME_FREEPS
+        parameter (VK_DBE_IME_FREEPS = '000000ad'x)
+        integer  VK_DBE_IMEMODEEXIT
+        parameter (VK_DBE_IMEMODEEXIT = '000000ae'x)
+
+        integer  WC_DBE_KBDSTAT
+        parameter (WC_DBE_KBDSTAT = ((PSZ)0xffff0011))
+        integer  WC_DBE_PECIC
+        parameter (WC_DBE_PECIC = ((PSZ)0xffff0012))
+        integer  WC_DBE_APPSTAT
+        parameter (WC_DBE_APPSTAT = ((PSZ)0xffff0010))
+
+        integer  WM_DBCSFIRST
+        parameter (WM_DBCSFIRST = '00000b0'x)
+        integer  WM_DBCSLAST
+        parameter (WM_DBCSLAST = '00000cf'x)
+        integer  WM_QUERYCONVERTPOS
+        parameter (WM_QUERYCONVERTPOS = '000000b0'x)
+        integer  WM_DBE_NOTIFYSETCP
+        parameter (WM_DBE_NOTIFYSETCP = '000000cf'x)
+        integer  WM_DBE_SETAPPLSTAT
+        parameter (WM_DBE_SETAPPLSTAT = '00000b6'x)
+        integer  WM_QUERYCURRENTFONT
+        parameter (WM_QUERYCURRENTFONT = '00000b8'x)
+        integer  WM_DBE_SHLDNOTIFYSETCP
+        parameter (WM_DBE_SHLDNOTIFYSETCP = '000000bb'x)
+        integer  WM_DBE_KKCPARAMS
+        parameter (WM_DBE_KKCPARAMS = '000000bc'x)
+
+        integer  QCP_VERTICAL
+        parameter (QCP_VERTICAL = '0000002'x)
+
+        integer  FCF_DBE_STATAREA
+        parameter (FCF_DBE_STATAREA = '0000000'x)
+
+        structure /KEYSTSDATA/
+            integer*2 wpmctlflag
+            integer*2 textlength
+            integer*4 lpTextString
+            integer*4 lpAttrString
+            integer*4 lpRomanString
+        end structure
+
+        structure /WPMCTLPARAMS/
+            integer*2 wpmctlflag
+            integer*2 textlength
+            integer*4 lpTextString
+            integer*4 lpAttrString
+        end structure
+
+        integer  DBE_KSF_ALPHANUMERIC
+        parameter (DBE_KSF_ALPHANUMERIC = '0000001'x)
+        integer  DBE_KSF_KATAKANA
+        parameter (DBE_KSF_KATAKANA = '0000002'x)
+        integer  DBE_KSF_HIRAGANA
+        parameter (DBE_KSF_HIRAGANA = '0000004'x)
+        integer  DBE_KSF_CAPS
+        parameter (DBE_KSF_CAPS = '0000008'x)
+        integer  DBE_KSF_ROMAN
+        parameter (DBE_KSF_ROMAN = '0000010'x)
+        integer  DBE_KSF_HANKAKU
+        parameter (DBE_KSF_HANKAKU = '0000020'x)
+        integer  DBE_KSF_ZENKAKU
+        parameter (DBE_KSF_ZENKAKU = '0000040'x)
+        integer  DBE_KSF_SBCS
+        parameter (DBE_KSF_SBCS = DBE_KSF_HANKAKU)
+        integer  DBE_KSF_DBCS
+        parameter (DBE_KSF_DBCS = DBE_KSF_ZENKAKU)
+        integer  DBE_KSF_UPPER
+        parameter (DBE_KSF_UPPER = '0000080'x)
+        integer  DBE_KSF_LOWER
+        parameter (DBE_KSF_LOWER = '0000100'x)
+        integer  DBE_KSF_TEXT
+        parameter (DBE_KSF_TEXT = '0000200'x)
+        integer  DBE_KSF_NOROMAN
+        parameter (DBE_KSF_NOROMAN = '0000400'x)
+        integer  DBE_KSF_DISABLEONTHESPOT
+        parameter (DBE_KSF_DISABLEONTHESPOT = '0000800'x)
+        integer  DBE_KSF_ROMANTEXT
+        parameter (DBE_KSF_ROMANTEXT = '0001000'x)
+
+        integer  DBE_KSF_JAMO
+        parameter (DBE_KSF_JAMO = '0000002'x)
+        integer  DBE_KSF_HANGEUL
+        parameter (DBE_KSF_HANGEUL = '0000004'x)
+
+        integer  DBE_KSF_PHONETIC
+        parameter (DBE_KSF_PHONETIC = '0000002'x)
+        integer  DBE_KSF_TSANGJYE
+        parameter (DBE_KSF_TSANGJYE = '0000004'x)
+
+        structure /PECICDATA/
+            integer*2 wpmctlflag
+            integer*2 textlength
+            integer*4 lpTextString
+            integer*4 lpAttrString
+            integer*2 CursorPos
+            integer*2 CursorAttr
+        end structure
+
+        integer  DBE_WPM_APPLSTAT_VISIBILITY
+        parameter (DBE_WPM_APPLSTAT_VISIBILITY = '0000004'x)
+
+        integer  DBE_AS_APPLTOP
+        parameter (DBE_AS_APPLTOP = '0000001'x)
+        integer  DBE_AS_KBDTOP
+        parameter (DBE_AS_KBDTOP = '0000002'x)
+        integer  DBE_AS_PECICTOP
+        parameter (DBE_AS_PECICTOP = '0000004'x)
+        integer  DBE_AS_APPLBOTTOM
+        parameter (DBE_AS_APPLBOTTOM = '0000008'x)
+
+        structure /KKCPARAMS/
+            integer*2 lenKKCParams
+            integer*2 fRequest
+            integer*2 fKKCParams
+            integer*4 lpKKCData
+            integer*4 Reserved
+        end structure
+
+        integer  DBE_KKCPARAMS_SET
+        parameter (DBE_KKCPARAMS_SET = '0000001'x)
+        integer  DBE_KKCPARAMS_QUERY
+        parameter (DBE_KKCPARAMS_QUERY = '0000002'x)
+
+        integer  DBE_KKCPARAMS_PHYSICALATTRIBUTE
+        parameter (DBE_KKCPARAMS_PHYSICALATTRIBUTE = '0000001'x)
+        integer  DBE_KKCPARAMS_PECICCURSORPOS
+        parameter (DBE_KKCPARAMS_PECICCURSORPOS = '0000002'x)
+
+        structure /LEVEL/
+            integer*1 attri1
+            integer*1 attri2
+        end structure
+
+        structure /COLORLOOKUPTBL/
+            integer*2 nAttr
+            record /LEVEL/ PhysicalLevel(32)
+        end structure
+
+        integer  DBE_IMCTL_QUERY
+        parameter (DBE_IMCTL_QUERY = '0000001'x)
+        integer  DBE_IMCTL_SET
+        parameter (DBE_IMCTL_SET = '0000002'x)
+
+        structure /IMEMODE/
+            integer*2 lenIMEMODE
+            integer*2 fIMEMode
+            integer*2 hIME
+            integer*2 hModIME
+        end structure
+
+        integer  DBE_IMCTL_IMEENABLE
+        parameter (DBE_IMCTL_IMEENABLE = '0000001'x)
+        integer  DBE_IMCTL_IMEDISABLE
+        parameter (DBE_IMCTL_IMEDISABLE = '0000002'x)
+        integer  DBE_IMCTL_IMEMODE
+        parameter (DBE_IMCTL_IMEMODE = '0000004'x)
+        integer  DBE_IMCTL_NOTIMEMODE
+        parameter (DBE_IMCTL_NOTIMEMODE = '0000008'x)
+        integer  DBE_IMCTL_INHERIT_PFRAME
+        parameter (DBE_IMCTL_INHERIT_PFRAME = '0000100'x)
+        integer  DBE_IMCTL_INTERIMREQUEST
+        parameter (DBE_IMCTL_INTERIMREQUEST = '0008000'x)
+
+        external WinDBCSIMEControl
+        integer*4 WinDBCSIMEControl
+
+        external WinDBCSModeControl
+        integer*4 WinDBCSModeControl
+
+        integer  DBE_MCTL_QUERY
+        parameter (DBE_MCTL_QUERY = '0000001'x)
+        integer  DBE_MCTL_SET
+        parameter (DBE_MCTL_SET = '0000002'x)
+
+        integer  DBE_MCTL_INPUTMODEREQUEST
+        parameter (DBE_MCTL_INPUTMODEREQUEST = '0000001'x)
+        integer  DBE_MCTL_JAPANREQ
+        parameter (DBE_MCTL_JAPANREQ = '00000001'x)
+
+        integer  DBE_MCTL_ALPHANUMERIC
+        parameter (DBE_MCTL_ALPHANUMERIC = '0000001'x)
+        integer  DBE_MCTL_KATAKANA
+        parameter (DBE_MCTL_KATAKANA = '0000002'x)
+        integer  DBE_MCTL_HIRAGANA
+        parameter (DBE_MCTL_HIRAGANA = '0000004'x)
+        integer  DBE_MCTL_SBCSCHAR
+        parameter (DBE_MCTL_SBCSCHAR = '0000008'x)
+        integer  DBE_MCTL_DBCSCHAR
+        parameter (DBE_MCTL_DBCSCHAR = '0000010'x)
+        integer  DBE_MCTL_ROMAN
+        parameter (DBE_MCTL_ROMAN = '0000020'x)
+        integer  DBE_MCTL_NOROMAN
+        parameter (DBE_MCTL_NOROMAN = '0000040'x)
+
+        integer  DBE_MCTL_KKCREQ
+        parameter (DBE_MCTL_KKCREQ = '0001000'x)
+        integer  DBE_MCTL_CP932REQ
+        parameter (DBE_MCTL_CP932REQ = '0000001'x)
+        integer  DBE_MCTL_KKCENABLE
+        parameter (DBE_MCTL_KKCENABLE = '0001000'x)
+        integer  DBE_MCTL_KKCDISABLE
+        parameter (DBE_MCTL_KKCDISABLE = '0002000'x)
+        integer  DBE_MCTL_HANKAKU
+        parameter (DBE_MCTL_HANKAKU = '0000008'x)
+        integer  DBE_MCTL_ZENKAKU
+        parameter (DBE_MCTL_ZENKAKU = '0000010'x)
+
+        integer  DBE_MCTL_JAMO
+        parameter (DBE_MCTL_JAMO = '0000002'x)
+        integer  DBE_MCTL_HANGEUL
+        parameter (DBE_MCTL_HANGEUL = '0000004'x)
+        integer  DBE_MCTL_INTERIMREQUEST
+        parameter (DBE_MCTL_INTERIMREQUEST = '0000080'x)
+
+        integer  DBE_MCTL_PHONETIC
+        parameter (DBE_MCTL_PHONETIC = '0000002'x)
+        integer  DBE_MCTL_TSANGJYE
+        parameter (DBE_MCTL_TSANGJYE = '0000004'x)
+
+        integer  DBE_MCTL_INHERIT_PFRAME
+        parameter (DBE_MCTL_INHERIT_PFRAME = '0000100'x)
+
+        structure /FD_DESC/
+            integer*4 flType
+            integer*1 str64Desc(64)
+        end structure
+
+        integer*4 WinDBCSLoadFontDriver
+        external WinDBCSLoadFontDriver
+
+        integer*4 WinDBCSUnLoadFontDriver
+        external WinDBCSUnLoadFontDriver
+
+        integer*4 WinDBCSQueryFDDescription
+        external WinDBCSQueryFDDescription
+
+        integer  DBE_FD_DESC_SYSTEM
+        parameter (DBE_FD_DESC_SYSTEM = '0000001'x)
+        integer  DBE_FD_DESC_PUBLIC
+        parameter (DBE_FD_DESC_PUBLIC = '0000002'x)
+        integer  DBE_FD_DESC_PRIVATE
+        parameter (DBE_FD_DESC_PRIVATE = '0000004'x)
+
+c$reference

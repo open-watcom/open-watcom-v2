@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _getimage_w( double x1, double y1, double x2, double y2,
+_WCRTLINK void _WCI86FAR _CGRAPH _getimage_w( double x1, double y1, double x2, double y2,
 /*==========================*/ char _WCI86HUGE *image )
 
 /* This routine places the rectangle defined by ( x1, y1 ) and ( x2, y2 ),
@@ -50,7 +50,7 @@ void _WCI86FAR _CGRAPH _getimage_w( double x1, double y1, double x2, double y2,
 Entry( _GETIMAGE_W, _getimage_w ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _getimage_wxy( struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK void _WCI86FAR _CGRAPH _getimage_wxy( struct _wxycoord _WCI86FAR * p1,
 /*============================*/ struct _wxycoord _WCI86FAR * p2,
                                  char _WCI86HUGE *image )
 
@@ -64,7 +64,7 @@ void _WCI86FAR _CGRAPH _getimage_wxy( struct _wxycoord _WCI86FAR * p1,
 Entry( _GETIMAGE_WXY, _getimage_wxy ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _getimage_w_87( double x1, double y1, double x2, double y2,
+_WCRTLINK void _WCI86FAR _CGRAPH _getimage_w_87( double x1, double y1, double x2, double y2,
 /*=============================*/ char _WCI86HUGE *image )
 
 {

@@ -24,103 +24,117 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Processing of assembly directives.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
+#include "asmglob.h"
 #include <ctype.h>
 
-#include "asmglob.h"
 #include "asmalloc.h"
-#include "asmerr.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins1.h"
-#include "namemgr.h"
-#include "asmsym.h"
-#include "asmerr.h"
-
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
+#include "directiv.h"
+#include "queues.h"
+#include "asmexpnd.h"
+#include "asmfixup.h"
+#include "mangle.h"
+#include "asmlabel.h"
+#include "asminput.h"
+#include "asmeval.h"
 #include "myassert.h"
-#include "fixup.h"
-#include "queue.h"
-#include "expand.h"
+#include "asmdefs.h"
 
-#include "directiv.h"
-#undef _DIRECT_H_
-#define _DIRECT_FIX_
-#include "directiv.h"
+#define BIT16           0
+#define BIT32           1
+
+#define MAGIC_FLAT_GROUP        ModuleInfo.flat_grp
+
+#define INIT_ALIGN      0x1
+#define INIT_COMBINE    0x2
+#define INIT_USE        0x4
+#define INIT_CLASS      0x8
+#define INIT_MEMORY     0x10
+#define INIT_STACK      0x20
+
+typedef struct {
+      char      *string;        // the token string
+      uint      value;          // value connected to this token
+      uint      init;           // explained in direct.c ( look at SegDef() )
+} typeinfo;
+
+typedef struct {
+    asm_sym             *symbol;        /* segment or group that is to
+                                           be associated with the register */
+    unsigned            error:1;        // the register is assumed to ERROR
+    unsigned            flat:1;         // the register is assumed to FLAT
+} assume_info;
+
+typedef enum {
+    SIM_CODE = 0,           // .CODE or CODESEG
+    SIM_STACK,              // .STACK or STACK
+    SIM_DATA,               // .DATA or DATASEG
+    SIM_DATA_UN,            // .DATA? or UDATASEG
+    SIM_FARDATA,            // .FARDATA or FARDATA
+    SIM_FARDATA_UN,         // .FARDATA? or UFARDATA
+    SIM_CONST,              // .CONST or CONST
+    SIM_NONE,
+    SIM_LAST = SIM_NONE
+} sim_seg;
+
+typedef struct {
+    sim_seg     seg;                    // segment id
+    char        close[MAX_LINE];        // closing line for this segment
+    int_16      stack_size;             // size of stack segment
+} last_seg_info;        // information about last opened simplified segment
+
+enum {
+#undef pick
+#define pick(token,string,value,init_val)   token
+#include "directd.h"
+};
+
+
+static typeinfo TypeInfo[] = {
+#undef pick
+#define pick(token,string,value,init_val)   { string, value, init_val }
+#include "directd.h"
+};
 
 #define LOCAL_DEFAULT_SIZE      2
 #define DEFAULT_STACK_SIZE      1024
-#define SIM_CODE_OFFSET         5       // strlen("_TEXT")
-#define SIM_DATA_OFFSET         5       // strlen("_DATA")
-#define FAROFFSET(seg)          ( seg == SIM_FARDATA ? 8 : 7 )
-                                /* strlen of "FAR_DATA" or "FAR_BSS" */
 
-#define ARGUMENT_STRING         " [bp+ "
-#define ARGUMENT_STRING_32      " [ebp+ "
-#define LOCAL_STRING            " [bp- "
-#define LOCAL_STRING_32         " [ebp- "
+#define ARGUMENT_STRING          "[bp+"
+#define ARGUMENT_STRING_32       "[ebp+"
+#define LOCAL_STRING             "[bp-"
+#define LOCAL_STRING_32          "[ebp-"
+#define IDEAL_ARGUMENT_STRING    "bp+"
+#define IDEAL_ARGUMENT_STRING_32 "ebp+"
+#define IDEAL_LOCAL_STRING       "bp-"
+#define IDEAL_LOCAL_STRING_32    "ebp-"
 
-extern char             *ScanLine( char * );
-extern void             FlushCurrSeg( void );
-extern void             AsmError( int );
-extern int              InputQueueFile( char * );
-extern int              AsmScan( char *, char * );
-extern struct fixup     *CreateFixupRec( int );
-extern void             InputQueueLine( char * );
-extern void             AsmTakeOut( char * );
-extern int              EvalExpr( int, int, int );
-extern void             GetInsString( enum asm_token, char *, int );
-extern void             MakeConstant( long );
-extern void             SetMangler( struct asm_sym *sym, char *mangle_type );
+static char             *Check4Mangler( int *i );
+static int              token_cmp( char **token, int start, int end );
+static void             ModelAssumeInit( void );
 
-static char *Check4Mangler( int *i );
-
-extern  const struct asm_ins    ASMFAR AsmOpTable[];
-extern  uint            LineNumber;
 extern  char            write_to_file;  // write if there is no error
 extern  uint_32         BufSize;
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
-extern  struct AsmCodeName AsmOpcode[];
-extern  char            StringBuf[];
-extern  char            Parse_Pass;     // phase of parsing
-extern  int_8           Frame;
-extern  uint_8          Frame_Datum;
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern dir_node         *CurrProc;
-extern int_8            Use32;          // if 32-bit code is use
-extern File_Info        AsmFiles;
-extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
-extern char             AsmChars[];
-extern int              Token_Count;    // number of tokens on line
+extern struct asm_sym   *SegOverride;
+extern void             FreeASym( struct asm_sym *sym );
+extern struct asmfixup  *ModendFixup;   // start address fixup
 
-qdesc                   *LnameQueue = NULL; // queue of LNAME structs
 seg_list                *CurrSeg;       // points to stack of opened segments
-uint                    LnamesIdx;      // Number of LNAMES definition
-obj_rec                 *ModendRec;     // Record for Modend
-extern struct asm_code  *Code;
 
-assume_info             AssumeTable[ASSUME_LAST];
+int                     in_prologue;
+
+static assume_info      AssumeTable[ASSUME_LAST];
+
 symbol_queue            Tables[TAB_LAST];// tables of definitions
-qdesc                   *PubQueue = NULL; // queue of pubdefs
-qdesc                   *GlobalQueue = NULL; // queue of global / externdefs
-qdesc                   *AliasQueue = NULL; // queue of aliases
 module_info             ModuleInfo;
 
-//proc_stack_node               *ProcStackTop = NULL;
-seg_list                *ProcStack = NULL;
+static seg_list         *ProcStack = NULL;
 
 static char *StartupDosNear[] = {
         " mov     dx,DGROUP",
@@ -142,8 +156,8 @@ static char *StartupDosFar[] = {
         " mov     ds,dx",
         NULL
 };
-static char *ExitOS2[] = { /* mov al, retval  followed by: */
-        " xor ah, ah",
+static char *ExitOS2[] = { /* mov al,retval  followed by: */
+        " xor ah,ah",
         " push 01h",
         " push ax",
         " call far DOSEXIT",
@@ -154,52 +168,91 @@ static char *ExitDos[] = { /* mov al, retval  followed by: */
         " int     21h",
         NULL
 };
-static char *RetVal = " mov    al, ";
+static char *RetVal = " mov    al,";
 
 static char *StartAddr = "`symbol_reserved_for_start_address`";
-char StartupDirectiveFound = FALSE;
+static char StartupDirectiveFound = FALSE;
+
+#define DEFAULT_CODE_CLASS      "CODE"
+#define DEFAULT_CODE_NAME       "_TEXT"
+#define DEFAULT_DATA_NAME       "_DATA"
+#define SIM_DATA_OFFSET         5        // strlen("_DATA")
+#define SIM_FARDATA_OFFSET      8        // strlen("FAR_DATA")
 
 /* code generated by @startup */
 
-char            *SimCodeBegin[2][ SIM_LAST ] = {
-    {   "_TEXT SEGMENT WORD PUBLIC 'CODE' IGNORE",
-        "STACK SEGMENT PARA STACK 'STACK' IGNORE",
-        "_DATA SEGMENT WORD PUBLIC 'DATA' IGNORE",
-        "_BSS SEGMENT WORD PUBLIC 'BSS' IGNORE",
-        "FAR_DATA SEGMENT PARA PRIVATE 'FAR_DATA' IGNORE",
-        "FAR_BSS SEGMENT PARA PRIVATE 'FAR_DATA?' IGNORE",
-        "CONST SEGMENT WORD PUBLIC 'CONST' IGNORE",             },
-
-    {   "_TEXT SEGMENT DWORD USE32 PUBLIC 'CODE' IGNORE",
-        "STACK SEGMENT PARA USE32 STACK 'STACK' IGNORE",
-        "_DATA SEGMENT DWORD USE32 PUBLIC 'DATA' IGNORE",
-        "_BSS SEGMENT DWORD USE32 PUBLIC 'BSS' IGNORE",
-        "FAR_DATA SEGMENT PARA USE32 PRIVATE 'FAR_DATA' IGNORE",
-        "FAR_BSS SEGMENT PARA USE32 PRIVATE 'FAR_DATA?' IGNORE",
-        "CONST SEGMENT DWORD PUBLIC 'CONST' IGNORE",            },
+static char *SimCodeBegin[2][2][SIM_LAST] = {
+    {
+        {
+            "_TEXT SEGMENT WORD PUBLIC 'CODE' IGNORE",
+            "STACK SEGMENT PARA STACK 'STACK' IGNORE",
+            "_DATA SEGMENT WORD PUBLIC 'DATA' IGNORE",
+            "_BSS  SEGMENT WORD PUBLIC 'BSS' IGNORE",
+            "FAR_DATA SEGMENT PARA PRIVATE 'FAR_DATA' IGNORE",
+            "FAR_BSS  SEGMENT PARA PRIVATE 'FAR_BSS' IGNORE",
+            "CONST SEGMENT WORD PUBLIC 'CONST' READONLY IGNORE"
+        },
+        {
+            "_TEXT SEGMENT DWORD USE32 PUBLIC 'CODE' IGNORE",
+            "STACK SEGMENT DWORD USE32 STACK 'STACK' IGNORE",
+            "_DATA SEGMENT DWORD USE32 PUBLIC 'DATA' IGNORE",
+            "_BSS  SEGMENT DWORD USE32 PUBLIC 'BSS' IGNORE",
+            "FAR_DATA SEGMENT DWORD USE32 PRIVATE 'FAR_DATA' IGNORE",
+            "FAR_BSS  SEGMENT DWORD USE32 PRIVATE 'FAR_BSS' IGNORE",
+            "CONST SEGMENT DWORD USE32 PUBLIC 'CONST' READONLY IGNORE"
+        }
+    },
+    {
+        {
+            "SEGMENT _TEXT WORD PUBLIC 'CODE' IGNORE",
+            "SEGMENT STACK PARA STACK 'STACK' IGNORE",
+            "SEGMENT _DATA WORD PUBLIC 'DATA' IGNORE",
+            "SEGMENT _BSS  WORD PUBLIC 'BSS' IGNORE",
+            "SEGMENT FAR_DATA PARA PRIVATE 'FAR_DATA' IGNORE",
+            "SEGMENT FAR_BSS  PARA PRIVATE 'FAR_BSS' IGNORE",
+            "SEGMENT CONST WORD PUBLIC 'CONST' READONLY IGNORE"
+        },
+        {
+            "SEGMENT _TEXT DWORD USE32 PUBLIC 'CODE' IGNORE",
+            "SEGMENT STACK DWORD USE32 STACK 'STACK' IGNORE",
+            "SEGMENT _DATA DWORD USE32 PUBLIC 'DATA' IGNORE",
+            "SEGMENT _BSS  DWORD USE32 PUBLIC 'BSS' IGNORE",
+            "SEGMENT FAR_DATA DWORD USE32 PRIVATE 'FAR_DATA' IGNORE",
+            "SEGMENT FAR_BSS  DWORD USE32 PRIVATE 'FAR_BSS' IGNORE",
+            "SEGMENT CONST DWORD USE32 PUBLIC 'CONST' READONLY IGNORE"
+        }
+    }
 };
 
-char    *SimCodeEnd[ SIM_LAST ] = {
+static char *SimCodeEnd[2][ SIM_LAST ] = {
+    {
         "_TEXT ENDS",
         "STACK ENDS",
         "_DATA ENDS",
-        "_BSS ENDS",
+        "_BSS  ENDS",
         "FAR_DATA ENDS",
-        "FAR_BSS ENDS",
+        "FAR_BSS  ENDS",
         "CONST ENDS"
+    },
+    {
+        "ENDS _TEXT",
+        "ENDS STACK",
+        "ENDS _DATA",
+        "ENDS _BSS",
+        "ENDS FAR_DATA",
+        "ENDS FAR_BSS",
+        "ENDS CONST"
+    }
 };
 
 /* Code generated by simplified segment definitions */
 
-       uint             segdefidx;      // Number of Segment definition
-static uint             grpdefidx;      // Number of Group definition
-       uint             extdefidx;      // Number of External definition
 static last_seg_info    lastseg;        // last opened simplified segment
 
-char *parm_reg[3][4]= {
-    { " AL ", " DL ", " BL ", " CL " },
-    { " AX ", " DX ", " BX ", " CX " },
-    { " EAX ", " EDX ", " EBX ", " ECX " },
+static char *parm_reg[3][4]= {
+    { "al", "dl", "bl", "cl" },
+    { "ax", "dx", "bx", "cx" },
+    { "eax", "edx", "ebx ", "ecx" },
 };
 
 enum regsize {
@@ -208,102 +261,148 @@ enum regsize {
     A_DWORD,
 };
 
+static char         code_segment_name[ MAX_LINE_LEN ];
+static asm_tok      const_CodeSize = { TC_NUM, NULL, 0 };
+static asm_tok      const_DataSize = { TC_NUM, NULL, 0 };
+static asm_tok      const_Model = { TC_NUM, NULL, 0 };
+static asm_tok      const_Interface = { TC_NUM, NULL, 0 };
+static asm_tok      const_data = { TC_ID, NULL, 0 };
+static asm_tok      const_code = { TC_ID, code_segment_name, 0 };
+
+static const_info   info_CodeSize = { TRUE, 0, 0, TRUE, &const_CodeSize };
+static const_info   info_DataSize = { TRUE, 0, 0, TRUE, &const_DataSize };
+static const_info   info_Model = { TRUE, 0, 0, TRUE, &const_Model };
+static const_info   info_Interface = { TRUE, 0, 0, TRUE, &const_Interface };
+static const_info   info_data = { TRUE, 0, 0, TRUE, &const_data };
+static const_info   info_code = { TRUE, 0, 0, TRUE, &const_code };
+
 
 #define ROUND_UP( i, r ) (((i)+((r)-1)) & ~((r)-1))
 
-int get_watcom_argument_string( char *buffer, uint_8 size, uint_8 *parm_number )
-/******************************************************************************/
-/* get the register for parms 0 to 3,
- * using the watcom register parm passing conventions ( A D B C ) */
+int AddPredefinedConstant( char *name, const_info *info )
+/*******************************************************/
+{
+    dir_node            *dir;
+
+    dir = (dir_node *)AsmGetSymbol( name );
+    if( dir == NULL ) {
+        dir = dir_insert( name, TAB_CONST );
+        if( dir == NULL ) {
+            return( ERROR );
+        }
+    } else if( dir->sym.state == SYM_UNDEFINED ) {
+        dir_change( dir, TAB_CONST );
+    } else if( dir->sym.state != SYM_CONST ) {
+        AsmError( LABEL_ALREADY_DEFINED );
+        return( ERROR );
+    }
+    if( !dir->e.constinfo->predef ) {
+        FreeInfo( dir );
+        dir->e.constinfo = info;
+    }
+    return( NOT_ERROR );
+}
+
+static int get_watcom_argument( int size, int *parm_number )
+/* returns status for a parameter using the watcom register parm passing
+   conventions ( A D B C ) */
 {
     int parm = *parm_number;
 
-    if( parm > 3 ) return( FALSE );
     switch( size ) {
     case 1:
-        sprintf( buffer, parm_reg[A_BYTE][parm] );
-        break;
     case 2:
-        sprintf( buffer, parm_reg[A_WORD][parm] );
-        break;
+        if( parm > 3 )
+            return( TRUE );
+        return( FALSE );
     case 4:
         if( Use32 ) {
-            sprintf( buffer, parm_reg[A_DWORD][parm] );
-            break;
+            if( parm > 3 )
+                return( TRUE );
         } else {
-            switch( parm ) {
-            case 0:
-                sprintf( buffer, " [DX AX]" );
-                buffer[0] = 0;
-                *parm_number = 1; // take up 0 and 1
-                break;
-            case 1:
-            case 2:
-                sprintf( buffer, " [CX BX]" );
-                buffer[0] = 0;
-                *parm_number = 3; // take up 2 and 3
-                break;
-            default:
-                // passed on stack ... it's ok
-                return( FALSE );
-            }
-            return( TRUE );
+            if( parm > 2 )
+                return( TRUE );
+            *parm_number = ++parm;
         }
+        return( FALSE );
     case 10:
         AsmErr( TBYTE_NOT_SUPPORTED );
         return( ERROR );
     case 6:
-        if( Use32 ) {
-            switch( parm ) {
-            case 0:
-                sprintf( buffer, " [DX EAX]" );
-                buffer[0]=0;
-                *parm_number = 1; // take up 0 and 1
-                break;
-            case 1:
-            case 2:
-                sprintf( buffer, " [CX EBX]" );
-                buffer[0]=0;
-                *parm_number = 3; // take up 2 and 3
-                break;
-            default:
-                // passed on stack ... it's ok
-                return( FALSE );
-            }
-            return( TRUE );
-        }
-        // fall through for 16 bit to default
     case 8:
         if( Use32 ) {
-            switch( parm ) {
-            case 0:
-                sprintf( buffer, " [EDX EAX]" );
-                buffer[0]=0;
-                *parm_number = 1; // take up 0 and 1
-                break;
-            case 1:
-            case 2:
-                sprintf( buffer, " [ECX EBX]" );
-                buffer[0]=0;
-                *parm_number = 3; // take up 2 and 3
-                break;
-            default:
-                // passed on stack ... it's ok
-                return( FALSE );
-            }
-            return( TRUE );
+            if( parm > 2 )
+                return( TRUE );
+            *parm_number = ++parm;
+            return( FALSE );
         }
-        // fall through for 16 bit to default
     default:
         // something wierd
         AsmError( STRANGE_PARM_TYPE );
         return( ERROR );
     }
-    return( TRUE );
+}
+
+static int get_watcom_argument_string( char *buffer, int size, int *parm_number )
+/*************************************************************************************/
+/* get the register for parms 0 to 3,
+   using the watcom register parm passing conventions ( A D B C ) */
+{
+    int parm = *parm_number;
+
+   if( parm > 3 )
+      return( TRUE );
+    switch( size ) {
+    case 1:
+        sprintf( buffer, parm_reg[A_BYTE][parm] );
+        return( FALSE );
+    case 2:
+        sprintf( buffer, parm_reg[A_WORD][parm] );
+        return( FALSE );
+    case 4:
+        if( Use32 ) {
+            sprintf( buffer, parm_reg[A_DWORD][parm] );
+        } else {
+            if( parm > 2 )
+                return( TRUE );
+            sprintf( buffer, " %s %s", parm_reg[A_WORD][parm],
+                     parm_reg[A_WORD][parm + 1] );
+            *parm_number = ++parm;
+        }
+        return( FALSE );
+    case 10:
+            AsmErr( TBYTE_NOT_SUPPORTED );
+            return( ERROR );
+    case 6:
+        if( Use32 ) {
+            if( parm < 3 ) {
+                sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm],
+                         parm_reg[A_WORD][parm + 1] );
+                *parm_number = ++parm;
+                return( FALSE );
+            }
+            return( TRUE );
+        }
+    case 8:
+        if( Use32 ) {
+            if( parm < 3 ) {
+                sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm],
+                         parm_reg[A_DWORD][parm + 1] );
+                *parm_number = ++parm;
+                return( FALSE );
+            }
+            return( TRUE );
+        }
+    default:
+        // something wierd
+        AsmError( STRANGE_PARM_TYPE );
+        return( ERROR );
+    }
 }
 
 #ifdef DEBUG_OUT
 void heap( char *func ) // for debugging only
+/*********************/
 {
     switch(_heapchk()) {
     case _HEAPBADNODE:
@@ -318,19 +417,32 @@ void heap( char *func ) // for debugging only
 }
 #endif
 
-void IdxInit( void )
-/******************/
+static int SetAssumeCSCurrSeg( void )
+/*************************************/
 {
-    LnamesIdx   = 0;
-    segdefidx   = 0;
-    grpdefidx   = 0;
-    extdefidx   = 0;
+    assume_info     *info;
+
+    info = &(AssumeTable[ ASSUME_CS ]);
+    if( CurrSeg == NULL ) {
+        info->symbol = NULL;
+        info->flat = FALSE;
+        info->error = TRUE;
+    } else {
+        if( CurrSeg->seg->e.seginfo->group != NULL )
+            info->symbol = GetGrp( &CurrSeg->seg->sym );
+        else
+            info->symbol = &CurrSeg->seg->sym;
+        info->flat = FALSE;
+        info->error = FALSE;
+    }
+    return( NOT_ERROR );
 }
 
-void push( void **stack, void *elt )
-/**********************************/
+void push( void *stk, void *elt )
+/*******************************/
 {
-    stacknode *node;
+    void        **stack = stk;
+    stacknode   *node;
 
     node = AsmAlloc( sizeof( stacknode ));
     node->next = *stack;
@@ -338,9 +450,10 @@ void push( void **stack, void *elt )
     *stack = node;
 }
 
-void *pop( void **stack )
-/***********************/
+void *pop( void *stk )
+/********************/
 {
+    void        **stack = stk;
     stacknode   *node;
     void        *elt;
 
@@ -350,7 +463,6 @@ void *pop( void **stack )
     AsmFree( node );
     return( elt );
 }
-
 
 static int push_seg( dir_node *seg )
 /**********************************/
@@ -365,6 +477,7 @@ static int push_seg( dir_node *seg )
         }
     }
     push( &CurrSeg, seg );
+    SetAssumeCSCurrSeg();
     return( NOT_ERROR );
 }
 
@@ -372,8 +485,12 @@ static dir_node *pop_seg( void )
 /******************************/
 /* Pop a segment out of the current segment stack */
 {
+    dir_node    *seg;
+
     /**/myassert( CurrSeg != NULL );
-    return( (dir_node *)pop( &CurrSeg ) );
+    seg = pop( &CurrSeg );
+    SetAssumeCSCurrSeg();
+    return( seg );
 }
 
 static void push_proc( dir_node *proc )
@@ -384,13 +501,15 @@ static void push_proc( dir_node *proc )
 }
 
 static dir_node *pop_proc( void )
-/***********************************/
+/*******************************/
 {
-    if( ProcStack == NULL ) return( NULL );
+    if( ProcStack == NULL )
+        return( NULL );
     return( (dir_node *)pop( &ProcStack ) );
 }
 
-static dir_add( dir_node *new, int tab )
+static void dir_add( dir_node *new, int tab )
+/*******************************************/
 {
     /* note: this is only for those above which do NOT return right away */
     /* put the new entry into the queue for its type of symbol */
@@ -405,97 +524,181 @@ static dir_add( dir_node *new, int tab )
     }
 }
 
-dir_node *dir_insert( char *name, int tab )
-/*****************************************/
-/* Insert a node into the table specified by tab */
+void dir_init( dir_node *dir, int tab )
+/********************************************/
+/* Change node and insert it into the table specified by tab */
 {
-    dir_node            *new;
-    struct asm_sym      *sym;
-
-    new = AsmAlloc( sizeof( dir_node ) );
-    new->next = NULL;
-    new->line = LineNumber;
-    new->sym.name = AsmAlloc( strlen( name ) + 1 );
-    strcpy( new->sym.name, name );
-    new->next = new->prev = NULL;
-
-    if( tab != TAB_CLASS_LNAME ) {
-        sym = AsmAdd( (struct asm_sym*)new );
-    } else {
-        /* don't put class lnames into the symbol table - separate name space */
-        sym = (struct asm_sym*)new;
-    }
-
-    /**/myassert( name != NULL );
+    dir->line_num = LineNumber;
+    dir->next = dir->prev = NULL;
 
     switch( tab ) {
     case TAB_SEG:
-        new->e.seginfo = AsmAlloc( sizeof( seg_info ) );
-        new->e.seginfo->lname_idx = 0;
+        dir->sym.state = SYM_SEG;
+        dir->e.seginfo = AsmAlloc( sizeof( seg_info ) );
+        dir->e.seginfo->idx = 0;
+        dir->e.seginfo->group = NULL;
         break;
     case TAB_GRP:
-        new->e.grpinfo = AsmAlloc( sizeof( grp_info ) );
-        new->e.grpinfo->idx = ++grpdefidx;
-        new->e.grpinfo->seglist = NULL;
-        new->e.grpinfo->numseg = 0;
-        new->e.grpinfo->lname_idx = 0;
+        dir->sym.state = SYM_GRP;
+        dir->e.grpinfo = AsmAlloc( sizeof( grp_info ) );
+        dir->e.grpinfo->idx = 0;
+        dir->e.grpinfo->seglist = NULL;
+        dir->e.grpinfo->numseg = 0;
         break;
     case TAB_EXT:
-        new->e.extinfo = AsmAlloc( sizeof( ext_info ) );
+        dir->sym.state = SYM_EXTERNAL;
+        dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
+        dir->e.extinfo->idx = 0;
+        dir->e.extinfo->use32 = Use32;
+        dir->e.extinfo->comm = 0;
+        dir->e.extinfo->global = 0;
         break;
     case TAB_COMM:
-        new->e.comminfo = AsmAlloc( sizeof( comm_info ) );
-        new->e.comminfo->size = 1;
+        dir->sym.state = SYM_EXTERNAL;
+        dir->sym.referenced = TRUE;
+        dir->e.comminfo = AsmAlloc( sizeof( comm_info ) );
+        dir->e.comminfo->idx = 0;
+        dir->e.comminfo->use32 = Use32;
+        dir->e.comminfo->comm = 1;
+        tab = TAB_EXT;
         break;
     case TAB_CONST:
-        sym->state = SYM_CONST;
-        sym->grpidx = sym->segidx = sym->offset = 0;
-        new->e.constinfo = AsmAlloc( sizeof( const_info ) );
-        return( new );
+        dir->sym.state = SYM_CONST;
+        dir->sym.segment = NULL;
+        dir->sym.offset = 0;
+        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+        dir->e.constinfo->data = NULL;
+        dir->e.constinfo->count = 0;
+        dir->e.constinfo->predef = FALSE;
+        return;
     case TAB_PROC:
-        new->e.procinfo = AsmAlloc( sizeof( proc_info ) );
-        new->e.procinfo->regslist = NULL;
-        new->e.procinfo->paralist = NULL;
-        new->e.procinfo->locallist = NULL;
+        dir->sym.state = SYM_PROC;
+        dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
+        dir->e.procinfo->regslist = NULL;
+        dir->e.procinfo->paralist = NULL;
+        dir->e.procinfo->locallist = NULL;
+        dir->e.procinfo->labellist = NULL;
         break;
     case TAB_MACRO:
-        new->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
-        new->e.macroinfo->parmlist = NULL;
-        new->e.macroinfo->data = NULL;
-        new->e.macroinfo->filename = NULL;
-        new->e.macroinfo->start_line = LineNumber;
+        dir->sym.state = SYM_MACRO;
+        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
+        dir->e.macroinfo->parmlist = NULL;
+        dir->e.macroinfo->data = NULL;
+        dir->e.macroinfo->srcfile = NULL;
         break;
     case TAB_CLASS_LNAME:
-    case TAB_LNAME:
-        sym->state = tab == TAB_LNAME ? SYM_LNAME : SYM_CLASS_LNAME;
-        new->e.lnameinfo = AsmAlloc( sizeof( lname_info ) );
-        new->e.lnameinfo->idx = LnamesIdx;
-        // fixme
-        return( new );
-    case TAB_PUB:
-        sym->state = SYM_UNDEFINED;
-        sym->public = TRUE;
-        return( new );
-    case TAB_GLOBAL:
-        sym->state = SYM_UNDEFINED;
-        return( new );
+        dir->sym.state = SYM_CLASS_LNAME;
+        dir->e.lnameinfo = AsmAlloc( sizeof( lname_info ) );
+        dir->e.lnameinfo->idx = 0;
+        break;
     case TAB_STRUCT:
-        sym->state = SYM_STRUCT;
-        new->e.structinfo = AsmAlloc( sizeof( struct_info ) );
-        new->e.structinfo->size = 0;
-        new->e.structinfo->alignment = 0;
-        new->e.structinfo->head = NULL;
-        new->e.structinfo->tail = NULL;
-        sym->total_size = 0;
-        sym->total_length = 0;
-        sym->first_size = 0;
-        sym->first_length = 0;
-        return( new );
+        dir->sym.state = SYM_STRUCT;
+        dir->e.structinfo = AsmAlloc( sizeof( struct_info ) );
+        dir->e.structinfo->size = 0;
+        dir->e.structinfo->alignment = 0;
+        dir->e.structinfo->head = NULL;
+        dir->e.structinfo->tail = NULL;
+        return;
+    case TAB_LIB:
+        break;
     default:
+        // unknown table
+        /**/myassert( 0 );
         break;
     }
-    dir_add( new, tab );
+    dir_add( dir, tab );
+    return;
+}
 
+static void dir_to_tail( dir_node *dir, int tab )
+/***********************************************/
+{
+    if( dir->next == NULL )
+        return;
+    if( dir->prev == NULL ) {
+        Tables[tab].head = dir->next;
+        dir->next->prev = NULL;
+    } else {
+        dir->prev->next = dir->next;
+        dir->next->prev = dir->prev;
+    }
+    dir->prev = Tables[tab].tail;
+    dir->prev->next = dir;
+    Tables[tab].tail = dir;
+    dir->next = NULL;
+}
+
+static dir_node *RemoveFromTable( dir_node *dir )
+/***********************************************/
+{
+    int tab;
+
+    if( dir->prev != NULL && dir->next != NULL ) {
+        dir->next->prev = dir->prev;
+        dir->prev->next = dir->next;
+    } else {
+        switch( dir->sym.state ) {
+        case SYM_EXTERNAL:
+            tab = TAB_EXT;
+            break;
+        case SYM_SEG:
+            tab = TAB_SEG;
+            break;
+        case SYM_GRP:
+            tab = TAB_GRP;
+            break;
+        case SYM_PROC:
+            tab = TAB_PROC;
+            break;
+        case SYM_MACRO:
+            tab = TAB_MACRO;
+            break;
+        default:
+            return( NULL );
+        }
+        if( dir->next != NULL ) {
+            dir->next->prev = NULL;
+            Tables[tab].head = dir->next;
+        } else if( dir->prev != NULL ) {
+            dir->prev->next = NULL;
+            Tables[tab].tail = dir->prev;
+        } else {
+            Tables[tab].head = Tables[tab].tail = NULL;
+        }
+    }
+    return( dir->next );
+}
+
+void dir_to_sym( dir_node *dir )
+/******************************/
+/* Remove node type/info to be symbol only again */
+{
+    FreeInfo( dir );
+    RemoveFromTable( dir);
+    dir->sym.state = SYM_UNDEFINED;
+}
+
+void dir_change( dir_node *dir, int tab )
+/***************************************/
+/* Change node type and insert it into the table specified by tab */
+{
+    FreeInfo( dir );
+    RemoveFromTable( dir);
+    dir_init( dir, tab );
+}
+
+dir_node *dir_insert( const char *name, int tab )
+/***********************************************/
+/* Insert a node into the table specified by tab */
+{
+    dir_node            *new;
+
+    /**/myassert( name != NULL );
+
+    /* don't put class lnames into the symbol table - separate name space */
+    new = (dir_node *)AllocDSym( name, ( tab != TAB_CLASS_LNAME ) );
+    if( new != NULL )
+        dir_init( new, tab );
     return( new );
 }
 
@@ -515,7 +718,8 @@ void FreeInfo( dir_node *dir )
                 for( ;; ) {
                     segnext = segcurr->next;
                     AsmFree( segcurr );
-                    if( segnext == NULL ) break;
+                    if( segnext == NULL )
+                        break;
                     segcurr = segnext;
                 }
             }
@@ -523,31 +727,38 @@ void FreeInfo( dir_node *dir )
         }
         break;
     case SYM_SEG:
-        ObjKillRec( dir->e.seginfo->segrec );
         AsmFree( dir->e.seginfo );
         break;
     case SYM_EXTERNAL:
         AsmFree( dir->e.extinfo );
         break;
-    case SYM_LNAME:
+    case SYM_CLASS_LNAME:
         AsmFree( dir->e.lnameinfo );
         break;
     case SYM_CONST:
-        DebugMsg(( "freeing const: %s = ", dir->sym.name ));
-
-        for( i=0; i < dir->e.constinfo->count; i++ ) {
-            #ifdef DEBUG_OUT
-            if( dir->e.constinfo->data[i].token == T_NUM ) {
-                DebugMsg(( "%d ", dir->e.constinfo->data[i].value ));
+        if( !dir->e.constinfo->predef ) {
+#ifdef DEBUG_OUT
+            if( ( dir->e.constinfo->count > 0 )
+                && ( dir->e.constinfo->data[0].class != TC_NUM ) ) {
+                DebugMsg( ( "freeing const(String): %s = ", dir->sym.name ) );
             } else {
-                DebugMsg(( "%s ", dir->e.constinfo->data[i].string_ptr ));
+                DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
             }
-            #endif
-            AsmFree( dir->e.constinfo->data[i].string_ptr );
+#endif
+            for( i=0; i < dir->e.constinfo->count; i++ ) {
+#ifdef DEBUG_OUT
+                if( dir->e.constinfo->data[i].class == TC_NUM ) {
+                    DebugMsg(( "%d ", dir->e.constinfo->data[i].u.value ));
+                } else {
+                    DebugMsg(( "%s ", dir->e.constinfo->data[i].string_ptr ));
+                }
+#endif
+                AsmFree( dir->e.constinfo->data[i].string_ptr );
+            }
+            DebugMsg(( "\n" ));
+            AsmFree( dir->e.constinfo->data );
+            AsmFree( dir->e.constinfo );
         }
-        DebugMsg(( "\n" ));
-        AsmFree( dir->e.constinfo->data );
-        AsmFree( dir->e.constinfo );
         break;
     case SYM_PROC:
         {
@@ -563,7 +774,8 @@ void FreeInfo( dir_node *dir )
                     AsmFree( labelcurr->label );
                     AsmFree( labelcurr->replace );
                     AsmFree( labelcurr );
-                    if( labelnext == NULL ) break;
+                    if( labelnext == NULL )
+                        break;
                     labelcurr = labelnext;
                 }
             }
@@ -575,7 +787,23 @@ void FreeInfo( dir_node *dir )
                     AsmFree( labelcurr->label );
                     AsmFree( labelcurr->replace );
                     AsmFree( labelcurr );
-                    if( labelnext == NULL ) break;
+                    if( labelnext == NULL )
+                        break;
+                    labelcurr = labelnext;
+                }
+            }
+
+            labelcurr = dir->e.procinfo->labellist;
+            if( labelcurr != NULL ) {
+                for( ;; ) {
+                    labelnext = labelcurr->next;
+                    AsmFree( labelcurr->label );
+                    AsmFree( labelcurr->replace );
+                    if( labelcurr->sym != NULL )
+                        FreeASym( labelcurr->sym );
+                    AsmFree( labelcurr );
+                    if( labelnext == NULL )
+                        break;
                     labelcurr = labelnext;
                 }
             }
@@ -586,7 +814,8 @@ void FreeInfo( dir_node *dir )
                     regnext = regcurr->next;
                     AsmFree( regcurr->reg );
                     AsmFree( regcurr );
-                    if( regnext == NULL ) break;
+                    if( regnext == NULL )
+                        break;
                     regcurr = regnext;
                 }
             }
@@ -613,7 +842,8 @@ void FreeInfo( dir_node *dir )
                         AsmFree( labelcurr->def );
                     }
                     AsmFree( labelcurr );
-                    if( labelnext == NULL ) break;
+                    if( labelnext == NULL )
+                        break;
                     labelcurr = labelnext;
                 }
             }
@@ -625,12 +855,10 @@ void FreeInfo( dir_node *dir )
                     datanext = datacurr->next;
                     AsmFree( datacurr->line );
                     AsmFree( datacurr );
-                    if( datanext == NULL ) break;
+                    if( datanext == NULL )
+                        break;
                     datacurr = datanext;
                 }
-            }
-            if( dir->e.macroinfo->filename != NULL ) {
-                AsmFree( dir->e.macroinfo->filename );
             }
             AsmFree( dir->e.macroinfo );
         }
@@ -643,193 +871,64 @@ void FreeInfo( dir_node *dir )
             for( ptr = dir->e.structinfo->head; ptr != NULL; ptr = next ) {
                 AsmFree( ptr->initializer );
                 AsmFree( ptr->value );
+                if( ptr->sym != NULL )
+                    FreeASym( ptr->sym );
                 next = ptr->next;
                 AsmFree( ptr );
             }
             AsmFree( dir->e.structinfo );
         }
+        break;
     default:
         break;
     }
 }
 
-direct_idx GetLnameIdx( char *name )
-/**********************************/
-{
-    struct asm_sym      *sym;
-    dir_node            *dir;
-
-    sym = AsmGetSymbol( name );
-    if( sym == NULL ) return( LNAME_NULL );
-    dir = (dir_node *)sym;
-
-    if( sym->state == SYM_UNDEFINED ) {
-        return( LNAME_NULL );
-    } else if( sym->state == SYM_GRP ) {
-        return( dir->e.grpinfo->lname_idx );
-    } else if( sym->state == SYM_SEG ) {
-        return( dir->e.seginfo->lname_idx );
-    } else {    /* it is an lname record */
-        return( dir->e.lnameinfo->idx );
-    }
-}
-
-direct_idx InsertClassLname( char *name )
-/***************************************/
+static struct asm_sym *InsertClassLname( char *name )
+/***************************************************/
 {
     dir_node            *dir;
-    struct queuenode    *node;
 
     if( strlen( name ) > MAX_LNAME ) {
         AsmError( LNAME_TOO_LONG );
-        return( LNAME_NULL );
+        return( NULL );
     }
-
-    LnamesIdx++;
-
-    dir = dir_insert( name, TAB_CLASS_LNAME );
-
-    /* put it into the lname table */
-
-    node = AsmAlloc( sizeof( queuenode ) );
-    node ->data = (void *)dir;
-
-    if( LnameQueue == NULL ) {
-        LnameQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( LnameQueue );
-    }
-    QEnqueue( LnameQueue, node );
-
-    return( LnamesIdx );
-}
-
-direct_idx FindClassLnameIdx( char *name )
-/****************************************/
-{
-    void                **ptr;
-    queuenode           *node;
-    dir_node            *dir;
-
-    if( LnameQueue == NULL ) return( LNAME_NULL);
-    for( ptr = LnameQueue->head; ptr != NULL; ptr = *(void**)ptr ) {
-        node = (queuenode *)ptr;
-        dir = (dir_node *)node->data;
-        if( dir->sym.state != SYM_CLASS_LNAME ) continue;
+    for( dir = Tables[ TAB_CLASS_LNAME ].head; dir != NULL; dir = dir->next ) {
         if( stricmp( dir->sym.name, name ) == 0 ) {
-            return( dir->e.lnameinfo->idx );
+            return( &dir->sym );
         }
     }
-    return( LNAME_NULL );
-}
-
-direct_idx LnameInsert( char *name )
-/**********************************/
-{
-    struct asm_sym      *sym;
-    dir_node            *dir;
-    struct queuenode    *node;
-
-    sym = AsmGetSymbol( name );
-
-    if( sym != NULL ) {
-        dir = (dir_node *)sym;
-        /* The name is already in the table*/
-        if( sym->state == SYM_GRP ) {
-            if( dir->e.grpinfo->lname_idx == 0 ) {
-                dir->e.grpinfo->lname_idx = ++LnamesIdx;
-            }
-        } else if( sym->state == SYM_SEG ) {
-            if( dir->e.seginfo->lname_idx == 0 ) {
-                dir->e.seginfo->lname_idx = ++LnamesIdx;
-            }
-        } else {
-            return( ERROR );
-        }
-    } else {
-        if( strlen( name ) > MAX_LNAME ) {
-            AsmError( LNAME_TOO_LONG );
-            return( ERROR );
-        }
-
-        LnamesIdx++;
-
-        dir = dir_insert( name, TAB_LNAME );
-    }
-
-    /* put it into the lname table */
-
-    node = AsmAlloc( sizeof( queuenode ) );
-    node ->data = (void *)dir;
-
-    if( LnameQueue == NULL ) {
-        LnameQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( LnameQueue );
-    }
-    QEnqueue( LnameQueue, node );
-
-    return( LnamesIdx );
-}
-
-void FreePubQueue( void )
-/***********************/
-{
-    if( PubQueue != NULL ) {
-        while( PubQueue->head != NULL ) {
-            AsmFree( QDequeue( PubQueue ) );
-        }
-        AsmFree( PubQueue );
-    }
-}
-
-void FreeAliasQueue( void )
-/*************************/
-{
-    if( AliasQueue != NULL ) {
-        while( AliasQueue->head != NULL ) {
-            AsmFree( QDequeue( AliasQueue ) );
-        }
-        AsmFree( AliasQueue );
-    }
-}
-
-void FreeLnameQueue( void )
-/***********************/
-{
-    dir_node *dir;
-    queuenode *node;
-
-    if( LnameQueue != NULL ) {
-        while( LnameQueue->head != NULL ) {
-            node = QDequeue( LnameQueue );
-            dir = (dir_node *)node->data;
-            if( dir->sym.state == SYM_CLASS_LNAME ) {
-                AsmFree( dir->e.lnameinfo );
-                AsmFree( dir->sym.name );
-                AsmFree( dir );
-            }
-            AsmFree( node );
-        }
-        AsmFree( LnameQueue );
-    }
+    dir = dir_insert( name, TAB_CLASS_LNAME );
+    if( dir == NULL )
+        return( NULL );
+    AddLnameData( dir );
+    return( &dir->sym );
 }
 
 void wipe_space( char *token )
+/****************************/
 /* wipe out the spaces at the beginning of a token */
 {
     char        *start;
 
-    if( token == NULL ) return;
-    if( strlen( token ) == 0 ) return;
+    if( token == NULL )
+        return;
+    if( strlen( token ) == 0 )
+        return;
 
     for( start = token;; start++ ){
-        if( *start != ' ' && *start != '\t' ) break;
+        if( *start != ' ' && *start != '\t' ) {
+            break;
+        }
     }
-    if( start == token ) return;
+    if( start == token )
+        return;
 
     memmove( token, start, strlen( start ) + 1 );
 }
 
 static uint checkword( char **token )
+/***********************************/
 /* wipes out prceding and tailing spaces, and make sure token contains only
    one word */
 {
@@ -838,7 +937,9 @@ static uint checkword( char **token )
 
     /* strip the space in the front */
     for( ptrhead = *token; ; ptrhead++ ) {
-        if( *(ptrhead) != ' ' && *(ptrhead) != '\t' ) break;
+        if( ( *ptrhead != ' ' ) && ( *ptrhead != '\t' ) ) {
+            break;
+        }
     }
 
     /* Then search for the first ending space */
@@ -855,7 +956,7 @@ static uint checkword( char **token )
         *ptrend = '\0';
         ptrend++;
         while( *ptrend != '\0' ) {
-            if( *ptrend != ' ' && *ptrend != '\t' && *ptrend != '\n' ) {
+            if( ( *ptrend != ' ' ) && ( *ptrend != '\t' ) && ( *ptrend != '\n' ) ) {
                 return( ERROR );
             }
             ptrend++;
@@ -866,59 +967,35 @@ static uint checkword( char **token )
     return( NOT_ERROR );
 }
 
-uint GetDirIdx( char *name, int tab )
-/************************************/
-{
-    dir_node            *dir;
-    struct asm_sym              *sym;
-
-    sym = AsmGetSymbol( name );
-
-    dir = (dir_node *)sym;
-    /**/myassert( dir != NULL );
-
-    switch( tab ) {
-        case TAB_SEG:
-            return( dir->e.seginfo->segrec->d.segdef.idx );
-        case TAB_EXT:
-            return( dir->e.extinfo->idx );
-        case TAB_COMM:
-            return( dir->e.comminfo->idx );
-        case TAB_GRP:
-            return( dir->e.grpinfo->idx );
-        default:
-            /**/myassert( 0 ); /* should only be called with the above values */
-    }
-    return( ERROR );
-}
-
 uint_32 GetCurrAddr( void )
 /*************************/
 {
-    if( CurrSeg == NULL ) return( 0 );
-//    return( CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length );
+    if( CurrSeg == NULL )
+        return( 0 );
     return( CurrSeg->seg->e.seginfo->current_loc );
 }
 
-uint GetCurrSeg( void )
-/*********************/
+dir_node *GetCurrSeg( void )
+/**************************/
 {
-    if( CurrSeg == NULL ) return( 0 );
-    return( CurrSeg->seg->e.seginfo->segrec->d.segdef.idx );
+    if( CurrSeg == NULL )
+        return( NULL );
+    return( CurrSeg->seg );
 }
 
 uint_32 GetCurrSegAlign( void )
 /*****************************/
 {
-    if( CurrSeg == NULL ) return( 0 );
-    switch( CurrSeg->seg->e.seginfo->segrec->d.segdef.align ) {
-    case ALIGN_ABS: // same as byte aligned ?
+    if( CurrSeg == NULL )
+        return( 0 );
+    switch( CurrSeg->seg->e.seginfo->align ) {
     case ALIGN_BYTE:
         return( 1 );
     case ALIGN_WORD:
         return( 2 );
     case ALIGN_DWORD:
         return( 4 );
+    case ALIGN_ABS: /* Paragraph aligned by definition. */
     case ALIGN_PARA:
         return( 16 );
     case ALIGN_PAGE:
@@ -931,148 +1008,73 @@ uint_32 GetCurrSegAlign( void )
 }
 
 uint_32 GetCurrSegStart( void )
-/******************************/
+/*****************************/
 {
-    if( CurrSeg == NULL ) return( 0 );
-//    /**/myassert(  ( CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length - BufSize ) == CurrSeg->seg->e.seginfo->start_loc );
-    /**/myassert(  !write_to_file ||
-                ( CurrSeg->seg->e.seginfo->current_loc - BufSize )
+    if( CurrSeg == NULL )
+        return( 0 );
+    /**/myassert( !write_to_file
+                || ( CurrSeg->seg->e.seginfo->current_loc - BufSize )
                      == CurrSeg->seg->e.seginfo->start_loc );
     return( CurrSeg->seg->e.seginfo->start_loc );
 }
 
-uint GetCurrGrp( void )
-/*********************/
-{
-    dir_node    *grp;
-    seg_list    *seg;
-    seg_list    *curr;
-
-    if( CurrSeg == NULL ) return( 0 );
-    curr = CurrSeg;
-    // fixme  - cleanup?
-    for( grp = Tables[TAB_GRP].head; grp; grp = grp->next ) {
-        for( seg = grp->e.grpinfo->seglist; seg; seg = seg->next ) {
-            if( curr->seg == seg->seg ) {
-                return( grp->e.grpinfo->idx);
-            }
-        }
-    }
-    return( 0 );
-}
-
-int GlobalDef( int i )
-/********************/
+int CheckForLang( int i )
+/***********************/
 {
     char        *token;
-    char        *mangle_type = NULL;
-    char        *typetoken;
-    int         type;
-    struct asm_sym *sym;
-    dir_node    *dir;
-    struct queuenode    *qnode;
+    int         lang;
 
-    mangle_type = Check4Mangler( &i );
-    for( ; i < Token_Count; i++ ) {
-        /* get the symbol name */
-        token = AsmBuffer[i++]->string_ptr;
-
-        /* go past the colon */
-        if( AsmBuffer[i]->token != T_COLON ) {
-            AsmError( COLON_EXPECTED );
-            return( ERROR );
-        }
-        i++;
-
-        typetoken = AsmBuffer[i]->string_ptr;
-        type = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_ABS );
-
-        if( type == ERROR ) {
-            AsmError( INVALID_QUALIFIED_TYPE );
-            return( ERROR );
-        }
-        for( ; i< Token_Count && AsmBuffer[i]->token != T_COMMA; i++ );
-
-        sym = AsmGetSymbol( token );
-
-        if( sym != NULL && sym->mem_type != SYM_UNDEFINED ) {
-            return( PubDef( 0 ) ); // it is defined here, so make a pubdef
-        }
-
-        if( sym == NULL ) {
-            dir = dir_insert( token, TAB_GLOBAL );
-            sym = (struct asm_sym*)dir;
+    if( AsmBuffer[i]->class == TC_ID) {
+        token = AsmBuffer[i]->string_ptr;
+        // look up the type of token
+        if( Options.mode & MODE_TASM ) {
+            lang = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
         } else {
-            dir = (dir_node*)sym;
+            lang = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
         }
-
-        if( dir == NULL ) return( ERROR );
-
-        GetSymInfo( sym );
-        sym->state = SYM_UNDEFINED;
-        sym->offset = 0;
-        sym->mem_type = TypeInfo[type].value;
-
-        SetMangler( sym, mangle_type );
-
-        /* put the symbol in the globaldef table */
-        qnode = AsmAlloc( sizeof( queuenode ) );
-        qnode->data = (void *)dir;
-
-        if( GlobalQueue == NULL ) {
-            GlobalQueue = AsmAlloc( sizeof( qdesc ) );
-            QInit( GlobalQueue );
+        if( lang != ERROR ) {
+            return( TypeInfo[lang].value );
         }
-        QEnqueue( GlobalQueue, qnode );
     }
-    return( NOT_ERROR );
+    return( ERROR );
 }
 
-asm_sym *MakeExtern( char *name, int type, bool already_defd )
-/************************************************************/
+static int GetLangType( int *i )
+/******************************/
 {
-    dir_node    *ext;
-    struct asm_sym *sym;
+    int         lang_type;
 
-    if( already_defd ) {
-        char    *tmp;
-        // in case sym->name was passed in
-        tmp = AsmTmpAlloc( strlen( name ) + 1 );
-        strcpy( tmp, name );
-        AsmTakeOut( name );
-        name = tmp;
+    lang_type = CheckForLang( *i );
+    if( lang_type == ERROR ) {
+        return( ModuleInfo.langtype );
+    } else {
+        (*i)++;
     }
-    ext = dir_insert( name, TAB_EXT );
-
-    if( ext == NULL ) return( NULL );
-    sym = (struct asm_sym *)ext;
-    ext->e.extinfo->idx = ++extdefidx;
-
-    GetSymInfo( sym );
-    sym->state = SYM_EXTERNAL;
-    sym->offset = 0;
-    sym->mem_type = type;
-    return( sym );
+    return( lang_type );
 }
 
-int ExtDef( int i )
-/*****************/
+int ExtDef( int i, bool glob_def )
+/********************************/
 {
     char                *token;
     char                *mangle_type = NULL;
     char                *typetoken;
     int                 type;
-    int                 mem_type;
-    struct asm_sym      *sym;
-    struct asm_sym      *struct_sym;
+    memtype             mem_type;
+    dir_node            *dir;
+    int                 lang_type;
 
     mangle_type = Check4Mangler( &i );
     for( ; i < Token_Count; i++ ) {
+
+        /* get the symbol language type if present */
+        lang_type = GetLangType( &i );
+
         /* get the symbol name */
         token = AsmBuffer[i++]->string_ptr;
 
         /* go past the colon */
-        if( AsmBuffer[i]->token != T_COLON ) {
+        if( AsmBuffer[i]->class != TC_COLON ) {
             AsmError( COLON_EXPECTED );
             return( ERROR );
         }
@@ -1082,36 +1084,49 @@ int ExtDef( int i )
         type = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_ABS );
 
         if( type == ERROR ) {
-            struct_sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
-            if( struct_sym == NULL || struct_sym->state != SYM_STRUCT ) {
+            if( glob_def || !IsLabelStruct( AsmBuffer[i]->string_ptr ) ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( ERROR );
             }
-            mem_type = T_STRUCT;
+            mem_type = MT_STRUCT;
         } else {
             mem_type = TypeInfo[type].value;
         }
-        for( ; i< Token_Count && AsmBuffer[i]->token != T_COMMA; i++ );
+        for( ; i< Token_Count && AsmBuffer[i]->class != TC_COMMA; i++ );
 
-        sym = AsmGetSymbol( token );
-
-        if( sym != NULL ) {
-            if( sym->mem_type == SYM_UNDEFINED ) {
-                if( MakeExtern( token, mem_type, TRUE ) == NULL ) {
-                    return( ERROR );
-                }
-            } else if( sym->mem_type != mem_type ) {
-                AsmError( EXT_DEF_DIFF );
+        dir = (dir_node *)AsmGetSymbol( token );
+        if( dir == NULL ) {
+            dir = dir_insert( token, TAB_EXT );
+            if( dir == NULL ) {
                 return( ERROR );
             }
+        } else if( dir->sym.state == SYM_UNDEFINED ) {
+            dir_change( dir, TAB_EXT );
+        } else if( dir->sym.mem_type != mem_type ) {
+            AsmError( EXT_DEF_DIFF );
+            return( ERROR );
+        } else if( dir->sym.state != SYM_EXTERNAL ) {
+            SetMangler( &dir->sym, mangle_type, lang_type );
+            if( glob_def && !dir->sym.public ) {
+                AddPublicData( dir );
+            }
+            return( NOT_ERROR );
         } else {
-            if( MakeExtern( token, mem_type, FALSE ) == NULL ) {
-                return( ERROR );
-            }
+            SetMangler( &dir->sym, mangle_type, lang_type );
+            return( NOT_ERROR );
         }
+
+        if( glob_def ) {
+            dir->e.extinfo->global = TRUE;
+        } else {
+            dir->sym.referenced = TRUE;
+        }
+        GetSymInfo( &dir->sym );
+        dir->sym.offset = 0;
+        // FIXME !! symbol can have different type
+        dir->sym.mem_type = mem_type;
+        SetMangler( &dir->sym, mangle_type, lang_type );
     }
-    sym = AsmGetSymbol( token );
-    SetMangler( sym, mangle_type );
     return( NOT_ERROR );
 }
 
@@ -1120,10 +1135,10 @@ static char *Check4Mangler( int *i )
 {
     char *mangle_type = NULL;
 
-    if( AsmBuffer[*i]->token == T_STRING ) {
+    if( AsmBuffer[*i]->class == TC_STRING ) {
         mangle_type = AsmBuffer[*i]->string_ptr;
         (*i)++;
-        if( AsmBuffer[*i]->token != T_COMMA ) {
+        if( AsmBuffer[*i]->class != TC_COMMA ) {
             AsmWarn( 2, EXPECTING_COMMA );
         } else {
             (*i)++;
@@ -1132,79 +1147,47 @@ static char *Check4Mangler( int *i )
     return( mangle_type );
 }
 
-static void MakePublic( void *node )
-{
-    struct queuenode    *qnode;
-
-    qnode = AsmAlloc( sizeof( queuenode ) );
-    qnode->data = node;
-
-    if( PubQueue == NULL ) {
-        PubQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( PubQueue );
-    }
-    QEnqueue( PubQueue, qnode );
-}
-
 int PubDef( int i )
 /*****************/
 {
     char                *mangle_type = NULL;
     char                *token;
-    struct asm_sym      *sym;
-    dir_node            *node;
+    dir_node            *dir;
+    int                 lang_type;
 
     mangle_type = Check4Mangler( &i );
     for( ; i < Token_Count; i+=2 ) {
-        token = AsmBuffer[i]->string_ptr;
-        /* Add the public name */
 
+        /* get the symbol language type if present */
+        lang_type = GetLangType( &i );
+
+        /* get the symbol name */
+        token = AsmBuffer[i]->string_ptr;
+
+        /* Add the public name */
         if( checkword( &token ) == ERROR ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
 
-        sym = AsmGetSymbol( token );
-        if( sym != NULL ) {
-            node = (dir_node *)sym;
-            if( sym->state == SYM_CONST ) {
-                /* check if the symbol expands to another symbol,
-                 * and if so, expand it */
-                 if( node->e.constinfo->data[0].token == T_ID ) {
-                    ExpandTheWorld( i, FALSE );
-                    return( PubDef( i ) );
-                 }
+        dir = (dir_node *)AsmGetSymbol( token );
+        if( dir == NULL ) {
+            dir = (dir_node *)AllocDSym( token, TRUE );
+            AddPublicData( dir );
+        } else if( dir->sym.state == SYM_CONST ) {
+            /* check if the symbol expands to another symbol,
+             * and if so, expand it */
+            if( dir->e.constinfo->data[0].class == TC_ID ) {
+                ExpandTheWorld( i, FALSE, TRUE );
+                return( PubDef( i ) );
             }
-            /* make the existing symbol public */
-
-            switch( sym->state ) {
-            case SYM_UNDEFINED:
-            case SYM_INTERNAL:
-            case SYM_EXTERNAL:
-            case SYM_STACK:
-            case SYM_CONST:
-                if( sym->public ) {
-                    return( NOT_ERROR );
-                }
-                sym->public = TRUE;
-                // fixme
-                break;
-            case SYM_PROC:
-                sym->public = TRUE;
-                if( node->e.procinfo->visibility != VIS_EXPORT ) {
-                    node->e.procinfo->visibility = VIS_PUBLIC;
-                }
-                break;
-            }
-        } else {
-            node = dir_insert( token, TAB_PUB );
         }
-        SetMangler( &node->sym, mangle_type );
-        /* put it into the pub table */
-
-        MakePublic( node );
+        SetMangler( &dir->sym, mangle_type, lang_type );
+        if( !dir->sym.public ) {
+            /* put it into the pub table */
+            AddPublicData( dir );
+        }
     }
-
     return( NOT_ERROR );
 }
 
@@ -1217,13 +1200,10 @@ static dir_node *CreateGroup( char *name )
 
     if( grp == NULL ) {
         grp = dir_insert( name, TAB_GRP );
-
-        myassert( grp->sym.state == SYM_UNDEFINED );
-        grp->sym.segidx = 0;
-        grp->sym.grpidx = grpdefidx;
-        grp->sym.state = SYM_GRP;
-        grp->sym.offset = 0;
-        LnameInsert( name );
+        AddLnameData( grp );
+    } else if( grp->sym.state == SYM_UNDEFINED ) {
+        dir_change( grp, TAB_GRP );
+        AddLnameData( grp );
     } else if( grp->sym.state != SYM_GRP ) {
         AsmErr( SYMBOL_PREVIOUSLY_DEFINED, name );
         grp = NULL;
@@ -1232,21 +1212,28 @@ static dir_node *CreateGroup( char *name )
 }
 
 int GrpDef( int i )
+/*****************/
 {
     char        *name;
     dir_node    *grp;
     seg_list    *new;
     seg_list    *curr;
-    seg_list    **owner;
+    dir_node    *seg;
+    int         n;
 
-    if( i < 0 ) {
+    if( Options.mode & MODE_IDEAL ) {
+        n = i + 1;
+    } else {
+        n = --i;
+    }
+    if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {    /* name present? */
         AsmError( GRP_NAME_MISSING );
         return( ERROR );
     }
-
-    name = AsmBuffer[i]->string_ptr;
+    name = AsmBuffer[n]->string_ptr;
     grp = CreateGroup( name );
-    if( grp == NULL ) return( ERROR );
+    if( grp == NULL )
+        return( ERROR );
 
     for( i+=2;              // skip over the GROUP directive
          i < Token_Count;   // stop at the end of the line
@@ -1259,384 +1246,461 @@ int GrpDef( int i )
             return( ERROR );
         }
 
-        new = AsmAlloc( sizeof(seg_list) );
-        new->seg = (dir_node *)AsmGetSymbol( name );
-        if( new->seg == NULL ) {
-            // fixme
-            new->seg = dir_insert( name, TAB_SEG );
-            new->seg->e.seginfo->lname_idx = 0;
-        } else if( new->seg->sym.state != SYM_SEG ) {
+        seg = (dir_node *)AsmGetSymbol( name );
+        if( seg == NULL ) {
+            seg = dir_insert( name, TAB_SEG );
+        } else if( seg->sym.state == SYM_UNDEFINED ) {
+            dir_change( seg, TAB_SEG );
+        } else if( seg->sym.state != SYM_SEG ) {
             AsmErr( SYMBOL_PREVIOUSLY_DEFINED, name );
             return( ERROR );
-        } else {
-            /* set the grp index of the segment */
-            new->seg->e.seginfo->idx = grp->sym.grpidx;
         }
-        /* set the new symbol's grpidx, as a flag that it was properly def'd
-         * by a group stmt. */
-        new->seg->sym.grpidx = grp->sym.grpidx;
+        if( seg->e.seginfo->group == &grp->sym )    // segment is in group already
+            continue;
+        if( seg->e.seginfo->group != NULL ) {      // segment is in another group
+            AsmError( SEGMENT_IN_GROUP );
+            return( ERROR );
+        }
+        /* set the grp index of the segment */
+        seg->e.seginfo->group = &grp->sym;
 
-        /* insert the seg. into the linked list */
-        owner = &grp->e.grpinfo->seglist;
-        for( ;; ) {
-            curr = *owner;
-            if( curr == NULL ) {
-                *owner = new;
-                new->next = NULL;
-                grp->e.grpinfo->numseg++;
-                break;
+        new = AsmAlloc( sizeof(seg_list) );
+        new->seg = seg;
+        new->next = NULL;
+        grp->e.grpinfo->numseg++;
+
+        /* insert the segment at the end of linked list */
+        if( grp->e.grpinfo->seglist == NULL ) {
+            grp->e.grpinfo->seglist = new;
+        } else {
+            curr = grp->e.grpinfo->seglist;
+            while( curr->next != NULL ) {
+                curr = curr->next;
             }
-            if( curr->seg == new->seg ) {
-                /* seg is already in the group */
-                AsmFree( new );
-                break;
-            }
-            owner = &curr->next;
+            curr->next = new;
         }
     }
     return( NOT_ERROR );
+}
+
+static int SetUse32( void )
+/*************************/
+{
+    if( CurrSeg == NULL ) {
+        Use32 = ModuleInfo.defUse32;
+    } else {
+        Globals.code_seg = SEGISCODE( CurrSeg );
+        Use32 = CurrSeg->seg->e.seginfo->use_32;
+        if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 ) ) {
+            AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
+            return( ERROR );
+        }
+    }
+    return( NOT_ERROR );
+}
+
+int SetUse32Def( bool flag )
+/**************************/
+{
+    if( ( CurrSeg == NULL )               // outside any segments
+        && ( ModuleInfo.model == MOD_NONE             // model not defined
+            || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
+        ModuleInfo.defUse32 = flag;
+    }
+    return( SetUse32() );
 }
 
 int  SetCurrSeg( int i )
 /**********************/
 {
     char        *name;
-    struct asm_sym      *sym;
+    dir_node    *seg;
 
-    name = AsmBuffer[i]->string_ptr;
-    Use32 = ModuleInfo.use32;
-
-    if( write_to_file ) {
-        switch( AsmBuffer[i+1]->value ) {
-        case T_SEGMENT:
-
-            /* Flushes the data in current segment, then set up the new
-               current segment */
-
-            FlushCurrSeg();
-
-            sym = AsmGetSymbol( name );
-
-            /**/ myassert( sym != NULL );
-            push_seg( (dir_node *)sym );
-
-            break;
-        case T_ENDS:
-            FlushCurrSeg();
-            pop_seg();
-            break;
-        default:
-            break;
-        }
-    }
-    if( CurrSeg != NULL ) {
-        if( CurrSeg->seg->e.seginfo->segrec->d.segdef.class_name_idx
-            == FindClassLnameIdx( "code" ) ) {
-            Globals.code_seg = TRUE;
+    switch( AsmBuffer[i]->u.token ) {
+    case T_SEGMENT:
+        FlushCurrSeg();
+        if( Options.mode & MODE_IDEAL ) {
+            name = AsmBuffer[i+1]->string_ptr;
         } else {
-            Globals.code_seg = FALSE;
+            name = AsmBuffer[i-1]->string_ptr;
         }
+        seg = (dir_node *)AsmGetSymbol( name );
+        /**/ myassert( seg != NULL );
+        push_seg( seg );
+        break;
+    case T_ENDS:
+        FlushCurrSeg();
+        pop_seg();
+        break;
+    default:
+        break;
     }
-    find_use32();
-    return( NOT_ERROR );
+    return( SetUse32() );
 }
 
 static int token_cmp( char **token, int start, int end )
+/******************************************************/
 /* compare token against those specified in TypeInfo[ start...end ] */
 {
     int         i;
     char        *str;
+    char        *tkn;
 
     str = *token;
 
-    /* Check to see if it is a class name */
-    if( (*str == '\'') || (*str == '"') ) {
-        // it is the class name
-        (*token)++;
-        for( str = *token; ; str++ ) {
-            if( ( *str == '\'' ) || ( *str == '"' ) ) {
-                if( *(str+1) == '\0' ) {
-                    break;
-                } else {
-                    *str = '\0'; // so that the following 'if' statement
-                                 // will detect an error
-                }
-            }
-            if( *str == '\0' ) {
-                AsmError( SEGMENT_DEF_ERROR );
-                return( ERROR );
-            }
+    for( i = start; i <= end; i++ ) {
+        tkn = TypeInfo[i].string;
+        if( tkn == NULL )
+            continue;
+        if( stricmp( tkn, str ) == 0 ) {
+            // type is found
+            return( i );
         }
-        *str = '\0';    // replace the ' with \0
-        return( TOK_CLASS );
-
-    } else {
-
-        for( i = start; i <= end; i++ ) {
-            if( stricmp( TypeInfo[i].string, str ) == 0 ) {
-                // type is found
-                return( i );
-            }
-        }
-        return( ERROR );        // No type is found
     }
+    return( ERROR );        // No type is found
 }
 
-static void find_use32( void )
+static seg_type ClassNameType( char *name )
+/*****************************************/
 {
-    if( CurrSeg == NULL ) {
-        Use32 = ModuleInfo.use32;
-    } else {
-        Use32 = CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32;
+    int     slen;
+    char    uname[257];
+
+    if( name == NULL )
+        return( SEGTYPE_UNDEF );
+    if( ModuleInfo.model != MOD_NONE ) {
+        if( stricmp( name, Options.code_class ) == 0 ) {
+            return( SEGTYPE_ISCODE );
+        }
+    }
+    slen = strlen( name );
+    strcpy( uname, name );
+    strupr( uname );
+    switch( slen ) {
+    default:
+    case 5:
+        // 'CONST'
+        if( memcmp( uname, "CONST", 6 ) == 0 )
+            return( SEGTYPE_ISDATA );
+        // 'STACK'
+        if( memcmp( uname, "STACK", 6 ) == 0 )
+            return( SEGTYPE_ISDATA );
+        // 'DBTYP'
+        if( memcmp( uname, "DBTYP", 6 ) == 0 )
+            return( SEGTYPE_ISDATA );
+        // 'DBSYM'
+        if( memcmp( uname, "DBSYM", 6 ) == 0 )
+            return( SEGTYPE_ISDATA );
+    case 4:
+        // 'CODE'
+        if( memcmp( uname , "CODE", 5 ) == 0 )
+            return( SEGTYPE_ISCODE );
+        // '...DATA'
+        if( memcmp( uname + slen - 4, "DATA", 4 ) == 0 )
+            return( SEGTYPE_ISDATA );
+    case 3:
+        // '...BSS'
+        if( memcmp( uname + slen - 3, "BSS", 3 ) == 0 )
+            return( SEGTYPE_ISDATA );
+    case 2:
+    case 1:
+    case 0:
+        return( SEGTYPE_UNDEF );
     }
 }
+
+static seg_type SegmentNameType( char *name )
+/*******************************************/
+{
+    int     slen;
+    char    uname[257];
+
+    slen = strlen( name );
+    strcpy( uname, name );
+    strupr( uname );
+    switch( slen ) {
+    default:
+    case 5:
+        // '..._TEXT'
+        if( memcmp( uname + slen - 5, DEFAULT_CODE_NAME, 5 ) == 0 )
+            return( SEGTYPE_ISCODE );
+        // '..._DATA'
+        if( memcmp( uname + slen - 5, DEFAULT_DATA_NAME, 5 ) == 0 )
+            return( SEGTYPE_ISDATA );
+        // 'CONST'
+        if( memcmp( uname, "CONST", 5 ) == 0 )
+            return( SEGTYPE_ISDATA );
+    case 4:
+        // '..._BSS'
+        if( memcmp( uname + slen - 4, "_BSS", 4 ) == 0 )
+            return( SEGTYPE_ISDATA );
+    case 3:
+    case 2:
+    case 1:
+    case 0:
+        return( SEGTYPE_UNDEF );
+    }
+}
+
 
 int SegDef( int i )
 /*****************/
 {
-    char                defined = FALSE;
     char                *token;
-    obj_rec             *seg;
-    obj_rec             *oldobj;
-    direct_idx          classidx;
-    uint                type;           // type of option
-    uint                initstate = 0;  // to show if a field is initialized
-    char                oldreadonly;    // readonly value of a defined segment
-    bool                ignore;
-    dir_node            *dirnode;
+    seg_info            *new;
+    seg_info            *old;
+    uint                type;       // type of option
+    uint                initstate;  // to show if a field is initialized
+    dir_node            *seg;
     char                *name;
-    struct asm_sym      *sym;
-
-    if( i < 0 ) {
-        AsmError( SEG_NAME_MISSING );
-        return( ERROR );
+    int                 n;
+    if( Options.mode & MODE_IDEAL ) {
+        n = i + 1;
+        if( ( AsmBuffer[n]->class == TC_DIRECTIVE ) &&
+            ( ( AsmBuffer[n]->u.token == T_STACK ) ||
+              ( AsmBuffer[n]->u.token == T_CONST ) ) )
+            AsmBuffer[n]->class = TC_ID;
+        if( ( AsmBuffer[i]->u.token == T_SEGMENT ) &&
+            ( AsmBuffer[n]->class != TC_ID ) ) {
+            AsmError( SEG_NAME_MISSING );
+            return( ERROR );
+        }
+    } else {
+        n = i - 1;
+        if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {
+            AsmError( SEG_NAME_MISSING );
+            return( ERROR );
+        }
     }
-
-    name = AsmBuffer[i]->string_ptr;
-
-    switch( AsmBuffer[i+1]->value ) {
-
-        case T_SEGMENT:
-            seg = ObjNewRec( CMD_SEGDEF );
-
-            /* Check to see if the segment is already defined */
-            sym = AsmGetSymbol( name );
-            if( sym != NULL && ( sym->state == SYM_SEG || sym->grpidx != 0 ) ) {
-                // segment already defined
-                dirnode = (dir_node *)sym;
-                defined = TRUE;
-                oldreadonly = dirnode->e.seginfo->readonly;
-                ignore = dirnode->e.seginfo->ignore;
-                if( dirnode->e.seginfo->lname_idx == 0 ) {
-                    // segment was mentioned in a group statement, but not really set up
-                    defined = FALSE;
-                    LnameInsert( name );
-                    seg->d.segdef.idx = ++segdefidx;
-                }
+    name = AsmBuffer[n]->string_ptr;
+    switch( AsmBuffer[i]->u.token ) {
+    case T_SEGMENT:
+        /* Check to see if the segment is already defined */
+        seg = (dir_node *)AsmGetSymbol( name );
+        if( seg == NULL ) {
+            // segment is not defined
+            seg = dir_insert( name, TAB_SEG );
+            old = new = seg->e.seginfo;
+        } else if ( seg->sym.state == SYM_SEG ) {
+            // segment already defined
+            old = seg->e.seginfo;
+            if( seg->sym.segment == NULL ) {
+                // segment was mentioned in a group statement, but not really set up
+                new = old;
             } else {
-                if( sym != NULL && sym->state != SYM_SEG ) {
-                    AsmTakeOut( name );
-                }
-                dirnode = dir_insert( name, TAB_SEG );
-                seg->d.segdef.idx = ++segdefidx;
+                new = AsmAlloc( sizeof( seg_info ) );
             }
+        } else {
+            // symbol is different kind, change to segment
+            dir_change( seg, TAB_SEG );
+            old = new = seg->e.seginfo;
+        }
 
-            /* Setting up default values */
-            if( !defined ) {
-                seg->d.segdef.align = ALIGN_PARA;
-                seg->d.segdef.combine = COMB_INVALID;
-                seg->d.segdef.use_32 = ( (Code->info.cpu&P_CPU_MASK) >= P_386 ) ? TRUE : FALSE;
-                seg->d.segdef.class_name_idx = 1;
-                /* null class name, in case none is mentioned */
-                dirnode->e.seginfo->readonly = FALSE;
+        /* Setting up default values */
+        if( new == old ) {
+            new->align = ALIGN_PARA;
+            new->combine = COMB_INVALID;
+            new->use_32 = ModuleInfo.defUse32;
+            new->class_name = InsertClassLname( "" );
+            new->readonly = FALSE;
+            new->iscode = SEGTYPE_UNDEF;
+        } else {
+            new->readonly = old->readonly;
+            new->iscode = old->iscode;
+            new->align = old->align;
+            new->combine = old->combine;
+            if( !old->ignore ) {
+                new->use_32 = old->use_32;
             } else {
-                oldobj = dirnode->e.seginfo->segrec;
-                dirnode->e.seginfo->readonly = oldreadonly;
-                seg->d.segdef.align = oldobj->d.segdef.align;
-                seg->d.segdef.combine = oldobj->d.segdef.combine;
-                if( !ignore ) {
-                    seg->d.segdef.use_32 = oldobj->d.segdef.use_32;
-                } else {
-                    seg->d.segdef.use_32 = ( (Code->info.cpu&P_CPU_MASK) >= P_386 ) ? TRUE : FALSE;
-                }
-                seg->d.segdef.class_name_idx = oldobj->d.segdef.class_name_idx;
+                new->use_32 = ModuleInfo.defUse32;
             }
-            dirnode->e.seginfo->ignore = FALSE; // always false unless set explicitly
-            seg->d.segdef.access_valid = FALSE;
-            seg->d.segdef.seg_length = 0;
+            new->class_name = old->class_name;
+        }
+        new->ignore = FALSE; // always false unless set explicitly
+        new->length = 0;
 
-            if( lastseg.stack_size > 0 ) {
-                seg->d.segdef.seg_length = lastseg.stack_size;
-                lastseg.stack_size = 0;
-            }
+        if( lastseg.stack_size > 0 ) {
+            new->length = lastseg.stack_size;
+            lastseg.stack_size = 0;
+        }
 
-            i+=2; /* go past segment name and "SEGMENT " */
+        initstate = 0;
+        if( Options.mode & MODE_IDEAL ) {
+            i += 2;     /* Go past SEGMENT and name */
+        } else {
+            i++;        /* Go past SEGMENT */
+        }
+        for( ; i < Token_Count; i ++ ) {
+            if( AsmBuffer[i]->class == TC_STRING ) {
 
-            for( ; i < Token_Count; i ++ ) {
-                if( AsmBuffer[i]->token == T_STRING ) {
-                    /* the class name - the only token which is of type STRING */
-                    token = AsmBuffer[i]->string_ptr;
-
-                    classidx = FindClassLnameIdx( token );
-                    if( classidx == LNAME_NULL ) {
-                        classidx = InsertClassLname( token );
-                        if( classidx == LNAME_NULL ) return( ERROR );
-                    }
-                    seg->d.segdef.class_name_idx = classidx;
-                    Globals.code_seg = ( stricmp( token, "code" ) == 0 );
-                    continue;
-                }
-
-                /* go through all tokens EXCEPT the class name */
+                /* the class name - the only token which is of type STRING */
                 token = AsmBuffer[i]->string_ptr;
-
-                // look up the type of token
-                type = token_cmp( &token, TOK_READONLY, TOK_AT );
-                if( type == ERROR ) {
-                    AsmError( UNDEFINED_SEGMENT_OPTION );
-                    return( ERROR );
+                new->class_name = InsertClassLname( token );
+                if( new->class_name == NULL ) {
+                    goto error;
                 }
-
-                /* initstate is used to check if any field is already
-                   initialized */
-
-                if( ( initstate & TypeInfo[type].init ) ) {
-                    AsmError( SEGMENT_PARA_DEFINED ); // initialized already
-                    return( ERROR );
-                } else {
-                    initstate |= TypeInfo[type].init; // mark it initialized
-                }
-                switch( type ) {
-                    case TOK_READONLY:
-                        dirnode->e.seginfo->readonly = TRUE;
-                        break;
-                    case TOK_BYTE:
-                    case TOK_WORD:
-                    case TOK_DWORD:
-                    case TOK_PARA:
-                    case TOK_PAGE:
-                        seg->d.segdef.align = TypeInfo[type].value;
-                        break;
-                    case TOK_PRIVATE:
-                    case TOK_PUBLIC:
-                    case TOK_STACK:
-                    case TOK_COMMON:
-                    case TOK_MEMORY:
-                        seg->d.segdef.combine = TypeInfo[type].value;
-                        break;
-                    case TOK_USE16:
-                    case TOK_USE32:
-                        seg->d.segdef.use_32 = TypeInfo[type].value;
-                        break;
-                    case TOK_IGNORE:
-                        dirnode->e.seginfo->ignore = TRUE;
-                        break;
-                    case TOK_AT:
-                        AsmError( SEGDEF_AT_NOT_SUPPORTED );
-                        return( ERROR );
-                        break;
-                    default:
-                        AsmError( UNDEFINED_SEGMENT_OPTION );
-                        return( ERROR );
-                }
+                continue;
             }
 
-            if( defined && !ignore && !dirnode->e.seginfo->ignore ) {
-                /* Check if new definition is different from previous one */
+            /* go through all tokens EXCEPT the class name */
+            token = AsmBuffer[i]->string_ptr;
 
-                oldobj = dirnode->e.seginfo->segrec;
-                if( oldreadonly != dirnode->e.seginfo->readonly ||
-                    oldobj->d.segdef.align != seg->d.segdef.align ||
-                    oldobj->d.segdef.combine != seg->d.segdef.combine ||
-                    oldobj->d.segdef.use_32 != seg->d.segdef.use_32 ||
-                    oldobj->d.segdef.class_name_idx !=  seg->d.segdef.class_name_idx
-                  ) {
-                    ObjKillRec( seg );
-                    AsmError( SEGDEF_CHANGED );
-                    return( ERROR );
-                } else {
-                    // definition is the same as before
-                    ObjKillRec( seg );
-                    if( push_seg( dirnode ) == ERROR ) {
-                        return( ERROR );
-                    }
-                }
-            } else if( defined && ignore ) {
-                /* reset to the new values */
-                oldobj = dirnode->e.seginfo->segrec;
-                oldobj->d.segdef.align = seg->d.segdef.align;
-                oldobj->d.segdef.combine = seg->d.segdef.combine;
-                oldobj->d.segdef.use_32 = seg->d.segdef.use_32;
-                oldobj->d.segdef.class_name_idx = seg->d.segdef.class_name_idx;
-                dirnode->sym.state = SYM_SEG;
+            // look up the type of token
+            type = token_cmp( &token, TOK_READONLY, TOK_AT );
+            if( type == ERROR ) {
+                AsmError( UNDEFINED_SEGMENT_OPTION );
+                goto error;
+            }
 
-                ObjKillRec( seg );
-                if( push_seg( dirnode ) == ERROR ) {
-                    return( ERROR );
-                }
-            } else if( defined && dirnode->e.seginfo->ignore ) {
-                /* keep the old values */
-                dirnode->e.seginfo->readonly = oldreadonly;
-                dirnode->e.seginfo->ignore = ignore;
-                ObjKillRec( seg );
-                if( push_seg( dirnode ) == ERROR ) {
-                    return( ERROR );
-                }
+            /* initstate is used to check if any field is already
+            initialized */
+
+            if( initstate & TypeInfo[type].init ) {
+                AsmError( SEGMENT_PARA_DEFINED ); // initialized already
+                goto error;
             } else {
-                /* A new definition */
-                dirnode->e.seginfo->segrec = seg;
-                dirnode->e.seginfo->start_loc = 0;
-                dirnode->e.seginfo->current_loc = 0;
-                if( push_seg( dirnode ) == ERROR ) {
-                    return( ERROR );
+                initstate |= TypeInfo[type].init; // mark it initialized
+            }
+            switch( type ) {
+            case TOK_READONLY:
+                new->readonly = TRUE;
+                break;
+            case TOK_BYTE:
+            case TOK_WORD:
+            case TOK_DWORD:
+            case TOK_PARA:
+            case TOK_PAGE:
+                new->align = TypeInfo[type].value;
+                break;
+            case TOK_PRIVATE:
+            case TOK_PUBLIC:
+            case TOK_STACK:
+            case TOK_COMMON:
+            case TOK_MEMORY:
+                new->combine = TypeInfo[type].value;
+                break;
+            case TOK_USE16:
+            case TOK_USE32:
+                new->use_32 = TypeInfo[type].value;
+                break;
+            case TOK_IGNORE:
+                new->ignore = TRUE;
+                break;
+            case TOK_AT:
+                new->align = SEGDEF_ALIGN_ABS;
+                ExpandTheWorld( i + 1, FALSE, TRUE);
+                if( AsmBuffer[i+1]->class == TC_NUM ) {
+                    i++;
+                    new->abs_frame = AsmBuffer[i]->u.value;
+                } else {
+                    AsmError( UNDEFINED_SEGMENT_OPTION );
+                    goto error;
                 }
-                sym = (struct asm_sym *)dirnode;
-                myassert( sym->state == SYM_UNDEFINED );
-                sym->state = SYM_SEG;
-                GetSymInfo( sym );
-                sym->offset = 0;
-                LnameInsert( name );
+                break;
+            default:
+                AsmError( UNDEFINED_SEGMENT_OPTION );
+                goto error;
+            }
+        }
+        token = new->class_name->name;
+        if( new->iscode != SEGTYPE_ISCODE ) {
+            seg_type res;
 
+            res = ClassNameType( token );
+            if( res != SEGTYPE_UNDEF ) {
+                new->iscode = res;
+            } else {
+                res = SegmentNameType( name );
+                new->iscode = res;
             }
-            break;
-        case T_ENDS:
-            if( CurrSeg == NULL ) {
-                AsmError( SEGMENT_NOT_OPENED );
-                return( ERROR );
-            }
+        }
 
-            sym = AsmGetSymbol( name );
-            if( sym == NULL ) {
-                AsmError( SEG_NOT_DEFINED );
-                return( ERROR );
+        if( new == old ) {
+            /* A new definition */
+            new->start_loc = 0;
+            new->current_loc = 0;
+            seg->sym.segment = &seg->sym;
+            seg->sym.offset = 0;
+            dir_to_tail( seg, TAB_SEG );
+            AddLnameData( seg );
+        } else if( !old->ignore && !new->ignore ) {
+            /* Check if new definition is different from previous one */
+            if( ( old->readonly != new->readonly )
+                || ( old->align != new->align )
+                || ( old->combine != new->combine )
+                || ( old->use_32 != new->use_32 )
+                || ( old->class_name != new->class_name ) ) {
+                AsmError( SEGDEF_CHANGED );
+                goto error;
+            } else {
+                // definition is the same as before
             }
-            if( (struct dir_node *)sym != CurrSeg->seg ) {
+        } else if( old->ignore ) {
+            /* reset to the new values */
+            old->align = new->align;
+            old->combine = new->combine;
+            old->readonly = new->readonly;
+            old->iscode = new->iscode;
+            old->ignore = new->ignore;
+            old->use_32 = new->use_32;
+            old->class_name = new->class_name;
+        } else {    // new->ignore
+            /* keep the old values */
+            new->align = old->align;
+            new->combine = old->combine;
+            new->readonly = old->readonly;
+            new->iscode = old->iscode;
+            new->ignore = old->ignore;
+            new->use_32 = old->use_32;
+            new->class_name = old->class_name;
+        }
+        if( !ModuleInfo.mseg && ( seg->e.seginfo->use_32 != ModuleInfo.use32 ) ) {
+            ModuleInfo.mseg = TRUE;
+        }
+        if( seg->e.seginfo->use_32 ) {
+            ModuleInfo.use32 = TRUE;
+        }
+        if( new != old )
+            AsmFree( new );
+        if( push_seg( seg ) == ERROR ) {
+            return( ERROR );
+        }
+        break;
+    case T_ENDS:
+        if( CurrSeg == NULL ) {
+            AsmError( SEGMENT_NOT_OPENED );
+            return( ERROR );
+        }
+        if( AsmBuffer[n]->class == TC_ID ) {
+            seg = (dir_node *)AsmGetSymbol( name );
+            if( seg == NULL ) {
+                AsmErr( SEG_NOT_DEFINED, name );
+                return( ERROR );
+            } else if( seg != CurrSeg->seg ) {
                 AsmError( BLOCK_NESTING_ERROR );
                 return( ERROR );
             }
-            pop_seg();
-            if( CurrSeg == NULL ) break;
-            if( CurrSeg->seg->e.seginfo->segrec->d.segdef.class_name_idx
-                == FindClassLnameIdx( "code" ) ) {
-                Globals.code_seg = TRUE;
-            } else {
-                Globals.code_seg = FALSE;
-            }
-            break;
-        default:
-            return( ERROR );
+        }
+        pop_seg();
+        break;
+    default:
+        return( ERROR );
     }
-    find_use32();
-    return( NOT_ERROR );
+    return( SetUse32() );
+
+error:
+    if( new != old )
+        AsmFree( new );
+    return( ERROR );
 }
 
 int Include( int i )
 /******************/
 {
-    switch( AsmBuffer[i]->token ) {
-    case T_ID:
-    case T_STRING:
-    case T_PATH:
+    switch( AsmBuffer[i]->class ) {
+    case TC_ID:
+    case TC_STRING:
+    case TC_PATH:
         return( InputQueueFile( AsmBuffer[i]->string_ptr ) );
     default:
         AsmError( EXPECTED_FILE_NAME );
@@ -1666,67 +1730,75 @@ int IncludeLib( int i )
     return( NOT_ERROR );
 }
 
-static int find_bit( void )
-{
-    if( ModuleInfo.use32 ) {
-        return( BIT32 );
-    } else {
-        return( BIT16 );
-    }
-}
-
-static void input_group( int type )
+static void input_group( asm_token type, char *name )
+/***************************************************/
 /* emit any GROUP instruction */
 {
     char        buffer[MAX_LINE_LEN];
 
-    if( ModuleInfo.model == MOD_FLAT ) return;
-    strcpy( buffer, "DGROUP GROUP " );
-
-    switch( type ) {
-        case T_DATA:
-            strcat( buffer, "_DATA" );
+    if( ModuleInfo.model == MOD_FLAT )
+        return;
+    if( Options.mode & MODE_IDEAL ) {
+        strcpy( buffer, "GROUP DGROUP " );
+    } else {
+        strcpy( buffer, "DGROUP GROUP " );
+    }
+    if( name != NULL ) {
+        strcat( buffer, name );
+    } else {
+        switch( type ) {
+        case T_DOT_DATA:
+        case T_DATASEG:
+            strcat( buffer, DEFAULT_DATA_NAME );
             break;
-        case T_DATA_UN:
+        case T_DOT_DATA_UN:
+        case T_UDATASEG:
             strcat( buffer, "_BSS" );
             break;
+        case T_DOT_CONST:
         case T_CONST:
             strcat( buffer, "CONST" );
             break;
+        case T_DOT_STACK:
         case T_STACK:
             strcat( buffer, "STACK" );
+            break;
+        }
     }
     InputQueueLine( buffer );
 }
 
 static void close_lastseg( void )
+/*******************************/
 /* close the last opened simplified segment */
 {
     if( lastseg.seg != SIM_NONE ) {
         lastseg.seg = SIM_NONE;
-        if( CurrSeg == NULL && *lastseg.close != '\0' ) {
+        if( ( CurrSeg == NULL ) && ( *lastseg.close != '\0' ) ) {
             AsmError( DONT_MIX_SIM_WITH_REAL_SEGDEFS );
             return;
         }
         InputQueueLine( lastseg.close );
     }
 }
+
 int Startup( int i )
 /******************/
 {
-    /* handles .STARTUP directive */
+    /* handles .STARTUP/STARTUPCODE and .EXIT/EXITCODE directives */
 
     int         count;
     char        buffer[ MAX_LINE_LEN ];
 
-    if( !ModuleInfo.init ) {
+    if( ModuleInfo.model == MOD_NONE ) {
         AsmError( MODEL_IS_NOT_DECLARED );
         return( ERROR );
     }
     ModuleInfo.cmdline = FALSE;
 
-    switch( AsmBuffer[i]->value ) {
-    case T_STARTUP:
+    switch( AsmBuffer[i]->u.token ) {
+    case T_DOT_STARTUP:
+    case T_STARTUPCODE:
         count = 0;
         strcpy( buffer, StartAddr );
         strcat( buffer, ":" );
@@ -1744,10 +1816,11 @@ int Startup( int i )
         }
         StartupDirectiveFound = TRUE;
         break;
-    case T_EXIT:
+    case T_DOT_EXIT:
+    case T_EXITCODE:
         i++;
-        if( AsmBuffer[i]->string_ptr != NULL &&
-             *(AsmBuffer[i]->string_ptr) != '\0' ) {
+        if( ( AsmBuffer[i]->string_ptr != NULL )
+            && ( *(AsmBuffer[i]->string_ptr) != '\0' ) ) {
             strcpy( buffer, RetVal );
             strcat( buffer, AsmBuffer[i]->string_ptr );
             InputQueueLine( buffer );
@@ -1769,6 +1842,39 @@ int Startup( int i )
     return( NOT_ERROR );
 }
 
+static char *get_sim_code_beg( char *buffer, char *name, int bit )
+/****************************************************************/
+{
+    if( Options.mode & MODE_IDEAL ) {
+        strcpy( buffer, "SEGMENT " );
+        strcat( buffer, name );
+    } else {
+        strcpy( buffer, name );
+        strcat( buffer, " SEGMENT" );
+    }
+    if( bit == BIT16 ) {
+        strcat( buffer, " WORD PUBLIC '" );
+    } else {
+        strcat( buffer, " DWORD USE32 PUBLIC '" );
+    }
+    strcat( buffer, Options.code_class );
+    strcat( buffer, "' IGNORE");
+    return( buffer );
+}
+
+static char *get_sim_code_end( char *buffer, char *name )
+/*******************************************************/
+{
+    if( Options.mode & MODE_IDEAL ) {
+        strcpy( buffer, "ENDS ");
+        strcat( buffer, name );
+    } else {
+        strcpy( buffer, name );
+        strcat( buffer, " ENDS");
+    }
+    return( buffer );
+}
+
 int SimSeg( int i )
 /*****************/
 /* Handles simplified segment, based on optasm pg. 142-146 */
@@ -1776,138 +1882,136 @@ int SimSeg( int i )
     char        buffer[ MAX_LINE_LEN ];
     int         bit;
     char        *string;
-    int         type;
+    asm_token   type;
     int         seg;
+    int         ideal;
 
-    if( !ModuleInfo.init ) {
+    if( ModuleInfo.model == MOD_NONE ) {
         AsmError( MODEL_IS_NOT_DECLARED );
         return( ERROR );
     }
     ModuleInfo.cmdline = FALSE;
-
-    if( AsmBuffer[i]->value != T_STACK ) {
-        close_lastseg();
-    }
+    close_lastseg();
     buffer[0] = '\0';
-    bit = find_bit();
-    type = AsmBuffer[i]->value;
+    bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
+    type = AsmBuffer[i]->u.token;
     i++; /* get past the directive token */
     if( i < Token_Count ) {
         string = AsmBuffer[i]->string_ptr;
     } else {
-        switch( type ) {
-        case T_CODE:
-            string = Options.text_seg;
-            break;
-        case T_DATA:
-            string = Options.data_seg;
-            break;
-        default:
-            string = NULL;
-        }
+        string = NULL;
     }
-
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     switch( type ) {
-    case T_CODE:
-        strcpy( buffer, string );
-        /* we already have a name */
-        strcat( buffer, SimCodeBegin[bit][SIM_CODE] + SIM_CODE_OFFSET  );
-        InputQueueLine( buffer );
-        strcpy( lastseg.close, string );
-        strcat( lastseg.close, SimCodeEnd[SIM_CODE] + SIM_CODE_OFFSET );
+    case T_DOT_CODE:
+    case T_CODESEG:
+        if( string == NULL )
+            string = Options.text_seg;
+        strcpy( code_segment_name, string );
+        InputQueueLine( get_sim_code_beg( buffer, string, bit ) );
+        get_sim_code_end( lastseg.close, string );
         lastseg.seg = SIM_CODE;
 
-        switch( ModuleInfo.model ) {
-            case MOD_TINY:
-                InputQueueLine( "ASSUME CS:DGROUP" );
-                break;
-            case MOD_SMALL:
-            case MOD_COMPACT:
-            case MOD_FLAT:                              // may not be correct
-                strcpy( buffer, "ASSUME CS: " );
-                if( string != NULL ) {
-                    strcat( buffer, string );
-                } else {
-                    strcat( buffer, "_TEXT" );
-                }
-                InputQueueLine( buffer );
-                break;
-            case MOD_MEDIUM:
-            case MOD_LARGE:
-            case MOD_HUGE:
-                strcpy( buffer, "ASSUME CS:" );
-                if( string != NULL ) {
-                    strcat( buffer, string );
-                } else {
-                    strcat( buffer, ModuleInfo.name );
-                    strcat( buffer, "_TEXT" );
-                }
-                InputQueueLine( buffer );
-                break;
-            default:
-                break;
+        if( ModuleInfo.model == MOD_TINY ) {
+            InputQueueLine( "ASSUME CS:DGROUP" );
+        } else {
+            strcpy( buffer, "ASSUME CS:" );
+            strcat( buffer, string );
+            InputQueueLine( buffer );
         }
         break;
+    case T_DOT_STACK:
     case T_STACK:
-        InputQueueLine( SimCodeBegin[bit][SIM_STACK] );
-        input_group( type );
-        InputQueueLine( SimCodeEnd[SIM_STACK] );
+        InputQueueLine( SimCodeBegin[ideal][bit][SIM_STACK] );
+        input_group( type, NULL );
+        InputQueueLine( SimCodeEnd[ideal][SIM_STACK] );
         if( i < Token_Count ) {
-            if( AsmBuffer[i]->token != T_NUM ) {
+            if( AsmBuffer[i]->class != TC_NUM ) {
                 AsmError( CONSTANT_EXPECTED );
                 return( ERROR );
             } else {
-                lastseg.stack_size = AsmBuffer[i]->value;
+                lastseg.stack_size = AsmBuffer[i]->u.value;
             }
         } else {
             lastseg.stack_size = DEFAULT_STACK_SIZE;
         }
         break;
-    case T_DATA:
-    case T_DATA_UN:             // .data?
+    case T_DOT_DATA:
+    case T_DOT_DATA_UN:             // .data?
+    case T_DOT_CONST:
+    case T_DATASEG:
+    case T_UDATASEG:
     case T_CONST:
-        if( type == T_DATA ) {
+        if( ( type == T_DOT_DATA ) || ( type == T_DATASEG ) ) {
+            if( string == NULL )
+                string = Options.data_seg;
             seg = SIM_DATA;
-        } else if( type == T_DATA_UN ) {
+        } else if( ( type == T_DOT_DATA_UN ) || ( type == T_UDATASEG ) ) {
             seg = SIM_DATA_UN;
+            string = NULL;
         } else {
             seg = SIM_CONST;
+            string = NULL;
         }
 
-        if( string != NULL && type == T_DATA ) {
-            strcpy( buffer, string );
-            /* we already have a name */
-            strcat( buffer, SimCodeBegin[bit][seg] + SIM_DATA_OFFSET  );
+        if( string != NULL ) {
+            if( ideal ) {
+                strcpy( buffer, "SEGMENT " );
+                strcat( buffer, string );
+                strcat( buffer, SimCodeBegin[ideal][bit][seg] + SIM_DATA_OFFSET + 8 );
+            } else {
+                strcpy( buffer, string );
+                strcat( buffer, SimCodeBegin[ideal][bit][seg] + SIM_DATA_OFFSET  );
+            }
         } else {
-            strcpy( buffer, SimCodeBegin[bit][seg] );
+            strcpy( buffer, SimCodeBegin[ideal][bit][seg] );
         }
         InputQueueLine( buffer );
         InputQueueLine( "ASSUME CS:ERROR" );
-        input_group( type );
+        input_group( type, string );
         lastseg.seg = seg;
         if( string != NULL ) {
-            strcpy( lastseg.close, string );
-            strcat( lastseg.close, SimCodeEnd[seg] + SIM_DATA_OFFSET );
+            if( ideal ) {
+                strcpy( lastseg.close, "ENDS " );
+                strcat( lastseg.close, string );
+            } else {
+                strcpy( lastseg.close, string );
+                strcat( lastseg.close, " ENDS" );
+            }
         } else {
-            strcpy( lastseg.close, SimCodeEnd[seg] );
+            strcpy( lastseg.close, SimCodeEnd[ideal][seg] );
         }
         break;
+    case T_DOT_FARDATA:
+    case T_DOT_FARDATA_UN:  // .fardata?
     case T_FARDATA:
-    case T_FARDATA_UN:  // .fardata?
-        seg = type == T_FARDATA ? SIM_FARDATA : SIM_FARDATA_UN;
+    case T_UFARDATA:
+        seg = ( ( type == T_DOT_FARDATA ) ||
+                ( type == T_FARDATA )  ) ? SIM_FARDATA : SIM_FARDATA_UN;
         if( string != NULL ) {
-            strcpy( buffer, string );
-            strcat( buffer, SimCodeBegin[bit][seg] + FAROFFSET(seg) );
+            if( ideal ) {
+                strcpy( buffer, "SEGMENT " );
+                strcat( buffer, string );
+                strcat( buffer, SimCodeBegin[ideal][bit][seg] + SIM_FARDATA_OFFSET + 8 );
+            } else {
+                strcpy( buffer, string );
+                strcat( buffer, SimCodeBegin[ideal][bit][seg] + SIM_FARDATA_OFFSET  );
+            }
         } else {
-            strcpy( buffer, SimCodeBegin[bit][seg] );
+            strcpy( buffer, SimCodeBegin[ideal][bit][seg] );
         }
         InputQueueLine( buffer );
         InputQueueLine( "ASSUME CS:ERROR" );
         if( string != NULL ) {
-            strcpy( lastseg.close, string );
-            strcat( lastseg.close, SimCodeEnd[seg] + FAROFFSET(seg) );
+            if( ideal ) {
+                strcpy( lastseg.close, "ENDS " );
+                strcat( lastseg.close, string );
+            } else {
+                strcpy( lastseg.close, string );
+                strcat( lastseg.close, " ENDS" );
+            }
         } else {
-            strcpy( lastseg.close, SimCodeEnd[seg] );
+            strcpy( lastseg.close, SimCodeEnd[ideal][seg] );
         }
         lastseg.seg = seg;
         break;
@@ -1919,75 +2023,117 @@ int SimSeg( int i )
 }
 
 static void module_prologue( int type )
+/*************************************/
 /* Generates codes for .MODEL; based on optasm pg.142-146 */
 {
-    int         bit;
+    int         bit, ideal;
     char        buffer[ MAX_LINE_LEN ];
 
-    bit = find_bit();
+    if( type == MOD_FLAT ) {
+        const_data.string_ptr = "FLAT";
+    } else {
+        const_data.string_ptr = "DGROUP";
+    }
+    AddPredefinedConstant( "@data", &info_data );
+    strcpy( code_segment_name, Options.text_seg );
+    AddPredefinedConstant( "@code", &info_code );
+
+    bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
 
     /* Generates codes for code segment */
-    strcpy( buffer, Options.text_seg );
-    strcat( buffer, SimCodeBegin[bit][SIM_CODE] + SIM_CODE_OFFSET );
-    InputQueueLine( buffer );
-    strcpy( buffer + strlen( Options.text_seg ), SimCodeEnd[SIM_CODE] + SIM_CODE_OFFSET );
-    InputQueueLine( buffer );
+    InputQueueLine( get_sim_code_beg( buffer, Options.text_seg, bit ) );
+    InputQueueLine( get_sim_code_end( buffer, Options.text_seg ) );
 
     /* Generates codes for data segment */
-    if( type != MOD_TINY ) {
-        InputQueueLine( SimCodeBegin[bit][SIM_DATA] );
-        InputQueueLine( SimCodeEnd[SIM_DATA] );
-    }
+    InputQueueLine( SimCodeBegin[ideal][bit][SIM_DATA] );
+    InputQueueLine( SimCodeEnd[ideal][SIM_DATA] );
 
-    /* Generates codes for grouping */
-    switch( type ) {
-        case MOD_TINY:
-            InputQueueLine( "DGROUP GROUP _TEXT" );
-            break;
-        case MOD_SMALL:
-        case MOD_COMPACT:
-        case MOD_MEDIUM:
-        case MOD_LARGE:
-        case MOD_HUGE:
-            InputQueueLine( "DGROUP GROUP _DATA" );
-            break;
-    }
-
-    /* Generates codes for assume */
-    if( type == MOD_FLAT ) {
-        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
-    } else {
-        InputQueueLine( "ASSUME DS:DGROUP, SS:DGROUP" );
-        switch( type ) {
-            case MOD_TINY:
-                InputQueueLine( "ASSUME CS:DGROUP, ES:DGROUP" );
-                break;
-            case MOD_SMALL:
-            case MOD_COMPACT:
-            case MOD_MEDIUM:
-            case MOD_LARGE:
-            case MOD_HUGE:
-                strcpy( buffer, "ASSUME CS:" );
-                strcat( buffer, Options.text_seg );
-                InputQueueLine( buffer );
-                break;
+    if( type != MOD_FLAT ) {
+        /* Generates codes for grouping */
+        if( ideal )
+            strcpy( buffer, "GROUP DGROUP " );
+        else
+            strcpy( buffer, "DGROUP GROUP " );
+        if( type == MOD_TINY ) {
+            strcat( buffer, Options.text_seg );
+            strcat( buffer, "," );
         }
+        strcat( buffer, Options.data_seg );
+        InputQueueLine( buffer );
     }
+
+    ModelAssumeInit();
+
+// FIXME !!
+// it is temporary fix for PROC parameters
+// but PTR operator should be resolved globaly
+    /* Fix up PTR size */
+    switch( type ) {
+    case MOD_COMPACT:
+    case MOD_LARGE:
+    case MOD_HUGE:
+    case MOD_FLAT:
+        TypeInfo[TOK_EXT_PTR].value = MT_DWORD;
+        break;
+    }
+
+    /* Set @CodeSize */
+    switch( type ) {
+    case MOD_MEDIUM:
+    case MOD_LARGE:
+    case MOD_HUGE:
+        const_CodeSize.u.value = 1;
+        break;
+    default:
+        const_CodeSize.u.value = 0;
+        break;
+    }
+    AddPredefinedConstant( "@CodeSize", &info_CodeSize );
+
+    /* Set @DataSize */
+    switch( type ) {
+    case MOD_COMPACT:
+    case MOD_LARGE:
+        const_DataSize.u.value = 1;
+        break;
+    case MOD_HUGE:
+        const_DataSize.u.value = 2;
+        break;
+    default:
+        const_DataSize.u.value = 0;
+        break;
+    }
+    AddPredefinedConstant( "@DataSize", &info_DataSize );
+
+    /* Set @Model */
+    const_Model.u.value = ModuleInfo.model;
+    AddPredefinedConstant( "@Model", &info_Model );
+
+    /* Set @Interface */
+    const_Interface.u.value = ModuleInfo.langtype;
+    AddPredefinedConstant( "@Interface", &info_Interface );
 }
 
 void ModuleInit( void )
-/**********************/
+/*********************/
 {
     ModuleInfo.model = MOD_NONE;
     ModuleInfo.distance = STACK_NONE;
     ModuleInfo.langtype = LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
     ModuleInfo.use32 = FALSE;
-    ModuleInfo.init = FALSE;
+    ModuleInfo.defUse32 = FALSE;
     ModuleInfo.cmdline = FALSE;
+    ModuleInfo.mseg = FALSE;
+    ModuleInfo.flat_grp = NULL;
+    *ModuleInfo.name = 0;
+    // add source file to autodependency list
+    ModuleInfo.srcfile = AddFlist( AsmFiles.fname[ASM] );
 }
 
 static void get_module_name( void )
+/*********************************/
 {
     char dummy[_MAX_EXT];
     char        *p;
@@ -1995,61 +2141,58 @@ static void get_module_name( void )
     /**/myassert( AsmFiles.fname[ASM] != NULL );
     _splitpath( AsmFiles.fname[ASM], NULL, NULL, ModuleInfo.name, dummy );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
-        if( !(isalnum( *p ) || *p == '_' || *p == '$' || *p == '@' || *p == '?') ) {
+        if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
+            || ( *p == '@' ) || ( *p == '?') ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }
     }
     /* first character can't be a number either */
-    if( isdigit( ModuleInfo.name[0] ) ) ModuleInfo.name[0] = '_';
-
+    if( isdigit( ModuleInfo.name[0] ) ) {
+        ModuleInfo.name[0] = '_';
+    }
 }
 
-#if 0
-void MakeConstant( long token )
-/*****************************/
-{
-    char buffer[20];
-
-    /* define a macro */
-    buffer[0]='\0';
-    strcat( buffer, "__" );
-    GetInsString( (enum asm_token)token, buffer+2, 18 );
-    strcat( buffer, "__" );
-    strupr( buffer );
-    StoreConstant( buffer, "1", TRUE );
-}
-#endif
-
-void set_text_seg_name( void )
-/****************************/
+static void set_def_seg_name( void )
+/***********************************/
 {
     int len;
 
+    /* set Options.code_class */
+    if( Options.code_class == NULL ) {
+        Options.code_class = AsmAlloc( sizeof( DEFAULT_CODE_CLASS ) + 1 );
+        strcpy( Options.code_class, DEFAULT_CODE_CLASS );
+    }
     /* set Options.text_seg based on module name */
     if( Options.text_seg == NULL ) {
-        if( ModuleInfo.model >= MOD_MEDIUM ) {
-            len = strlen( ModuleInfo.name ) + 1 + SIM_CODE_OFFSET;
+        switch( ModuleInfo.model ) {
+        case MOD_MEDIUM:
+        case MOD_LARGE:
+        case MOD_HUGE:
+            len = strlen( ModuleInfo.name ) + sizeof( DEFAULT_CODE_NAME ) + 1;
             Options.text_seg = AsmAlloc( len );
-            Options.text_seg[len-1] = 0;
             strcpy( Options.text_seg, ModuleInfo.name );
-            strncat( Options.text_seg, SimCodeBegin[Use32][SIM_CODE], SIM_CODE_OFFSET );
-        } else {
-            Options.text_seg = AsmAlloc( SIM_CODE_OFFSET + 1 );
-            Options.text_seg[SIM_CODE_OFFSET] = 0;
-            strncpy( Options.text_seg, SimCodeBegin[Use32][SIM_CODE], SIM_CODE_OFFSET );
+            strcat( Options.text_seg, DEFAULT_CODE_NAME );
+            break;
+        default:
+            Options.text_seg = AsmAlloc( sizeof( DEFAULT_CODE_NAME ) + 1 );
+            strcpy( Options.text_seg, DEFAULT_CODE_NAME );
+            break;
         }
+    }
+    /* set Options.data_seg */
+    if( Options.data_seg == NULL ) {
+        Options.data_seg = AsmAlloc( sizeof( DEFAULT_DATA_NAME ) + 1 );
+        strcpy( Options.data_seg, DEFAULT_DATA_NAME );
     }
     return;
 }
 
-void DefFlatGroup()
+void DefFlatGroup( void )
+/***********************/
 {
-    dir_node    *grp;
-
-    if( ModuleInfo.flat_idx == 0 ) {
-        grp = CreateGroup( "FLAT" );
-        if( grp != NULL ) ModuleInfo.flat_idx = grp->sym.grpidx;
+    if( MAGIC_FLAT_GROUP == NULL ) {
+        MAGIC_FLAT_GROUP = &CreateGroup( "FLAT" )->sym;
     }
 }
 
@@ -2060,13 +2203,28 @@ int Model( int i )
     int         initstate = 0;
     uint        type;           // type of option
 
-    if( ModuleInfo.init && !ModuleInfo.cmdline ) {
+    if( Parse_Pass != PASS_1 ) {
+        ModelAssumeInit();
+        return( NOT_ERROR );
+    }
+
+    if( ModuleInfo.model != MOD_NONE && !ModuleInfo.cmdline ) {
         AsmError( MODEL_DECLARED_ALREADY );
         return( ERROR );
     }
     ModuleInfo.cmdline = FALSE;
 
     get_module_name();
+
+    if( Options.mode & MODE_IDEAL ) {
+        token = AsmBuffer[i + 1]->string_ptr;
+        wipe_space( token );
+        type = token_cmp( &token, TOK_USE16, TOK_USE32 );
+        if( type != ERROR ) {
+            SetUse32Def( TypeInfo[type].value );
+            i++;
+        }
+    }
 
     for( i++; i < Token_Count; i++ ) {
 
@@ -2077,7 +2235,11 @@ int Model( int i )
         // look up the type of token
         type = token_cmp( &token, TOK_TINY, TOK_FARSTACK );
         if( type == ERROR ) {
-            type = token_cmp( &token, TOK_PROC_BASIC, TOK_PROC_SYSCALL );
+            if( Options.mode & MODE_TASM ) {
+                type = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
+            } else {
+                type = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
+            }
             if( type == ERROR ) {
                 type = token_cmp( &token, TOK_OS_OS2, TOK_OS_DOS );
                 if( type == ERROR ) {
@@ -2086,7 +2248,7 @@ int Model( int i )
                 }
             }
         }
-        MakeConstant( AsmBuffer[i]->value );
+        MakeConstantUnderscored( token );
 
         if( initstate & TypeInfo[type].init ) {
             AsmError( MODEL_PARA_DEFINED ); // initialized already
@@ -2095,39 +2257,42 @@ int Model( int i )
             initstate |= TypeInfo[type].init; // mark it initialized
         }
         switch( type ) {
-            case TOK_FLAT:
-                DefFlatGroup();
-            case TOK_TINY:
-            case TOK_SMALL:
-            case TOK_COMPACT:
-            case TOK_MEDIUM:
-            case TOK_LARGE:
-            case TOK_HUGE:
-                ModuleInfo.model = TypeInfo[type].value;
-                set_text_seg_name();
-                module_prologue( ModuleInfo.model );
-                break;
-            case TOK_NEARSTACK:
-            case TOK_FARSTACK:
-                ModuleInfo.distance = TypeInfo[type].value;
-                break;
-            case TOK_PROC_BASIC:
-            case TOK_PROC_FORTRAN:
-            case TOK_PROC_PASCAL:
-            case TOK_PROC_C:
-            case TOK_PROC_STDCALL:
-            case TOK_PROC_SYSCALL:
-                ModuleInfo.langtype = TypeInfo[type].value;
-                break;
-            case TOK_OS_DOS:
-            case TOK_OS_OS2:
-                ModuleInfo.ostype = TypeInfo[type].value;
-                break;
+        case TOK_FLAT:
+            DefFlatGroup();
+            SetUse32Def( TRUE );
+            // fall through
+        case TOK_TINY:
+        case TOK_SMALL:
+        case TOK_COMPACT:
+        case TOK_MEDIUM:
+        case TOK_LARGE:
+        case TOK_HUGE:
+            ModuleInfo.model = TypeInfo[type].value;
+            set_def_seg_name();
+            break;
+        case TOK_NEARSTACK:
+        case TOK_FARSTACK:
+            ModuleInfo.distance = TypeInfo[type].value;
+            break;
+        case TOK_LANG_BASIC:
+        case TOK_LANG_FORTRAN:
+        case TOK_LANG_PASCAL:
+        case TOK_LANG_C:
+        case TOK_LANG_WATCOM_C:
+        case TOK_LANG_STDCALL:
+        case TOK_LANG_SYSCALL:
+        case TOK_LANG_NOLANG:
+            ModuleInfo.langtype = TypeInfo[type].value;
+            break;
+        case TOK_OS_DOS:
+        case TOK_OS_OS2:
+            ModuleInfo.ostype = TypeInfo[type].value;
+            break;
         }
         i++;
 
         /* go past comma */
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->class != TC_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -2138,9 +2303,9 @@ int Model( int i )
         return( ERROR );
     }
 
+    module_prologue( ModuleInfo.model );
     lastseg.seg = SIM_NONE;
     lastseg.stack_size = 0;
-    ModuleInfo.init = TRUE;
     ModuleInfo.cmdline = (LineNumber == 0);
     return(NOT_ERROR);
 }
@@ -2148,12 +2313,38 @@ int Model( int i )
 void AssumeInit( void )
 /*********************/
 {
-    uint reg;
+    enum assume_reg reg;
 
-    for( reg = ASSUME_DS; reg <= ASSUME_CS; reg++ ) {
+    for( reg = ASSUME_FIRST; reg < ASSUME_LAST; reg++ ) {
         AssumeTable[reg].symbol = NULL;
         AssumeTable[reg].error = FALSE;
         AssumeTable[reg].flat = FALSE;
+    }
+}
+
+static void ModelAssumeInit( void )
+/**********************************/
+{
+    char        buffer[ MAX_LINE_LEN ];
+
+    /* Generates codes for assume */
+    switch( ModuleInfo.model ) {
+    case MOD_FLAT:
+        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
+        break;
+    case MOD_TINY:
+        InputQueueLine( "ASSUME CS:DGROUP, DS:DGROUP, ES:DGROUP, SS:DGROUP" );
+        break;
+    case MOD_SMALL:
+    case MOD_COMPACT:
+    case MOD_MEDIUM:
+    case MOD_LARGE:
+    case MOD_HUGE:
+        strcpy( buffer, "ASSUME CS:" );
+        strcat( buffer, Options.text_seg );
+        strcat( buffer, ", DS:DGROUP, SS:DGROUP" );
+        InputQueueLine( buffer );
+        break;
     }
 }
 
@@ -2161,32 +2352,32 @@ int SetAssume( int i )
 /********************/
 /* Handles ASSUME statement */
 {
-    char        *token;
-    char        *segloc;
-    uint        reg;
-    assume_info *info;
-    struct asm_sym      *sym;
+    char            *token;
+    char            *segloc;
+    int             reg;
+    assume_info     *info;
+    struct asm_sym  *sym;
 
 
     for( i++; i < Token_Count; i++ ) {
-        if( AsmBuffer[i]->token==T_RES_ID && AsmBuffer[i]->value==T_NOTHING ) {
-            reg = TOK_NOTHING;
+
+        token = AsmBuffer[i]->string_ptr;
+        wipe_space( token );
+        if( token_cmp( &token, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
             AssumeInit();
             continue;
         }
 
-        token = AsmBuffer[i]->string_ptr;
-        wipe_space( token );
-
         i++;
 
-        if( AsmBuffer[i]->token != T_COLON ) {
+        if( AsmBuffer[i]->class != TC_COLON ) {
             AsmError( COLON_EXPECTED );
             return( ERROR );
         }
         i++;
 
-        if( AsmBuffer[i]->token == T_UNARY_OPERATOR && AsmBuffer[i]->value == T_SEG2 ) {
+        if( ( AsmBuffer[i]->class == TC_UNARY_OPERATOR )
+            && ( AsmBuffer[i]->u.token == T_SEG ) ) {
             i++;
         }
 
@@ -2204,183 +2395,183 @@ int SetAssume( int i )
             AsmError( INVALID_REGISTER );
             return( ERROR );
         }
-
-        info = &(AssumeTable[TypeInfo[reg].value]);
-
-        if( reg <= TOK_CS ) {
-            if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != ERROR ) {
-                info->error = TRUE;
-            } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != ERROR ) {
-                DefFlatGroup();
-                info->flat = TRUE;
-            } else {
-                sym = AsmGetSymbol( segloc );
-                info->symbol = sym;
-                info->error = FALSE;
-            }
-        } else {        // NOTHING
-            info->symbol = NULL;
-            info->error = FALSE;
-            info->flat = FALSE;
-        }
-
-        /* go past comma */
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
-            AsmError( EXPECTING_COMMA );
+        if( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
+            && ( ( reg == TOK_FS ) || ( reg == TOK_GS ) ) ) {
+            AsmError( INVALID_REGISTER );
             return( ERROR );
         }
 
+        info = &(AssumeTable[TypeInfo[reg].value]);
+
+        if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != ERROR ) {
+            info->error = TRUE;
+            info->flat = FALSE;
+            info->symbol = NULL;
+        } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != ERROR ) {
+            DefFlatGroup();
+            info->flat = TRUE;
+            info->error = FALSE;
+            info->symbol = NULL;
+        } else if( token_cmp( &segloc, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
+            info->flat = FALSE;
+            info->error = FALSE;
+            info->symbol = NULL;
+        } else {
+            sym = AsmLookup( segloc );
+            if( sym == NULL )
+                return( ERROR );
+            if ( ( Parse_Pass != PASS_1 ) && ( sym->state == SYM_UNDEFINED ) ) {
+                AsmErr( SYMBOL_NOT_DEFINED, segloc );
+                return( ERROR );
+            }
+            info->symbol = sym;
+            info->flat = FALSE;
+            info->error = FALSE;
+        }
+
+        /* go past comma */
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->class != TC_COMMA ) ) {
+            AsmError( EXPECTING_COMMA );
+            return( ERROR );
+        }
     }
     return( NOT_ERROR );
 }
 
-dir_node *GetSeg( struct asm_sym *sym )
-/**************************************/
-/* get ptr to sym's segment */
+extern struct asm_sym *GetGrp( struct asm_sym *sym )
+/**************************************************/
+/* get ptr to sym's group sym */
 {
     dir_node            *curr;
-    uint                idx;
 
-    idx = sym->segidx;
-    for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-        if( curr->sym.state != SYM_SEG ) continue;
-        if( idx == curr->e.seginfo->segrec->d.segdef.idx ) {
-            return( curr );
-        }
-    }
+    curr = GetSeg( sym );
+    if( curr != NULL )
+        return( curr->e.seginfo->group );
     return( NULL );
 }
 
-static dir_node *get_grp( struct asm_sym *sym )
-/*********************************************/
-/* get ptr to sym's group */
+int SymIs32( struct asm_sym *sym )
+/********************************/
+/* get sym's segment size */
 {
     dir_node            *curr;
-    uint                idx;
 
-    idx = sym->grpidx;
-    if( idx == 0 ) {
-        /* get the group index from the segment */
-        curr = GetSeg( sym );
-        if( curr != NULL ) {
-            idx = curr->e.seginfo->idx;
+    curr = GetSeg( sym );
+    if( curr == NULL ) {
+        if( sym->state == SYM_EXTERNAL ) {
+            if( ModuleInfo.mseg ) {
+                curr = (dir_node *)sym;
+                return( curr->e.extinfo->use32);
+            } else {
+                return( ModuleInfo.use32 );
+            }
         }
+    } else {
+        return( curr->e.seginfo->use_32 );
     }
-    for( curr = Tables[TAB_GRP].head; curr; curr = curr->next ) {
-        if( idx == curr->e.grpinfo->idx ) {
-            return( curr );
-        }
-    }
-    return( NULL );
-}
-
-uint GetGrpIdx( struct asm_sym *sym )
-/***********************************/
-/* get index of sym's group */
-{
-    dir_node            *curr;
-    uint                idx;
-
-    idx = sym->grpidx;
-    if( idx == 0 ) {
-        /* get the group index from the segment */
-        curr = GetSeg( sym );
-        if( curr != NULL ) {
-            idx = curr->e.seginfo->idx;
-        }
-    }
-    return( idx );
+    return( 0 );
 }
 
 int FixOverride( int index )
 /**************************/
 /* Fix segment or group override */
 {
-    struct asm_sym      *sym1;
-    struct asm_sym      *sym2;
-    dir_node            *tmp;
+    struct asm_sym      *sym;
 
-    sym1 = AsmLookup( AsmBuffer[index-2]->string_ptr );
-    /**/myassert( sym1 != NULL );
-
-    tmp = GetSeg( sym1 );
-    if( tmp != NULL ) {
-        sym2 = AsmLookup( AsmBuffer[index]->string_ptr );
-        /**/myassert( sym2 != NULL );
-        Frame = F_SEG;
-        Frame_Datum = sym1->segidx;
+    sym = AsmLookup( AsmBuffer[index]->string_ptr );
+    /**/myassert( sym != NULL );
+    if( sym->state == SYM_GRP ) {
+        SegOverride = sym;
         return( NOT_ERROR );
-    }
-
-    tmp = get_grp( sym1 );
-    if( tmp != NULL ) {
-        sym2 = AsmLookup( AsmBuffer[index]->string_ptr );
-        /**/myassert( sym2 != NULL );
-        Frame = F_GRP;
-        Frame_Datum = sym1->grpidx;
+    } else if( sym->state == SYM_SEG ) {
+        SegOverride = sym;
         return( NOT_ERROR );
     }
     AsmError( SYNTAX_ERROR );
     return( ERROR );
 }
 
-static uint search_assume( dir_node *grp_or_seg, uint def )
-/*********************************************************/
+static enum assume_reg search_assume( struct asm_sym *sym,
+                         enum assume_reg def, int override )
+/**********************************************************/
 {
-    uint        reg;
-    char        found = FALSE;
-
-    if( grp_or_seg == NULL ) {
+    if( sym == NULL )
         return( ASSUME_NOTHING );
-    }
-
     if( def != ASSUME_NOTHING ) {
-        if( AssumeTable[def].symbol == (struct asm_sym *)grp_or_seg ) {
-            reg = def;
-            found = TRUE;
-        }
-    }
-    if( !found ) {
-        for( reg = ASSUME_DS; reg <= ASSUME_CS; reg++ ) {
-            if( (struct asm_sym *)grp_or_seg == AssumeTable[reg].symbol ) {
-                found = TRUE;
-                break;
+        if( AssumeTable[def].symbol != NULL ) {
+            if( AssumeTable[def].symbol == sym )
+                return( def );
+            if( !override && ( AssumeTable[def].symbol == GetGrp( sym ) ) ) {
+                return( def );
             }
         }
     }
-
-    if( !found ) {
-        return( ASSUME_NOTHING );
-    } else {
-        return( reg );
+    for( def = ASSUME_FIRST; def < ASSUME_LAST; def++ ) {
+        if( AssumeTable[def].symbol == sym ) {
+            return( def );
+        }
     }
+    if( override )
+        return( ASSUME_NOTHING );
+
+    for( def = ASSUME_FIRST; def < ASSUME_LAST; def++ ) {
+        if( AssumeTable[def].symbol == NULL )
+            continue;
+        if( AssumeTable[def].symbol == GetGrp( sym ) ) {
+            return( def );
+        }
+    }
+
+    return( ASSUME_NOTHING );
 }
 
-uint GetPrefixAssume( struct asm_sym* sym, uint prefix )
-/******************************************************/
+int Use32Assume( enum assume_reg prefix )
+/***************************************/
 {
-    int         type;
-    dir_node    *dir;
-    struct asm_sym      *assume;
+    dir_node        *dir;
+    seg_list        *seg_l;
+    struct asm_sym  *sym_assume;
 
-    if( Parse_Pass == PASS_1 ) return( prefix );
+    if( AssumeTable[prefix].flat )
+        return( 1 );
+    sym_assume = AssumeTable[prefix].symbol;
+    if( sym_assume == NULL )
+        return( EMPTY );
+    if( sym_assume->state == SYM_SEG ) {
+        dir = (dir_node *)sym_assume;
+        return( dir->e.seginfo->use_32 );
+    } else if( sym_assume->state == SYM_GRP ) {
+        dir = (dir_node *)sym_assume;
+        seg_l = dir->e.grpinfo->seglist;
+        dir = seg_l->seg;
+        return( dir->e.seginfo->use_32 );
+    }
+    return( EMPTY );
+}
+
+enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
+/****************************************************************************/
+{
+    struct asm_sym  *sym_assume;
+
+    if( Parse_Pass == PASS_1 )
+        return( prefix );
 
     if( AssumeTable[prefix].flat ) {
-        Frame = F_GRP;
-        Frame_Datum = MAGIC_FLAT_GROUP;
+        Frame = MAGIC_FLAT_GROUP;
         return( prefix );
     }
-    assume = AssumeTable[prefix].symbol;
-    if( assume == NULL ) {
+    sym_assume = AssumeTable[prefix].symbol;
+    if( sym_assume == NULL ) {
         if( sym->state == SYM_EXTERNAL ) {
 #if 0 //NYI: Don't know what's going on here
             type = GetCurrGrp();
             if( type != 0 ) {
-                Frame = F_GRP;
+                Frame = FRAME_GRP;
             } else {
-                type = GetCurrSeg();
+                type = GetSegIdx( GetCurrSeg() );
                 /**/myassert( type != 0 );
-                Frame = F_SEG;
+                Frame = FRAME_SEG;
             }
             Frame_Datum = type;
 #endif
@@ -2390,91 +2581,64 @@ uint GetPrefixAssume( struct asm_sym* sym, uint prefix )
         }
     }
 
-    dir = (dir_node *)assume;
-    if( assume->state == SYM_SEG ) {
-        type = TAB_SEG;
-    } else if( assume->state == SYM_GRP ) {
-        type = TAB_GRP;
+    if( sym_assume->state == SYM_SEG ) {
+        Frame = sym_assume->segment;
+    } else if( sym_assume->state == SYM_GRP ) {
+        Frame = sym_assume;
     }
-
-    if( get_grp( sym ) == dir ||    // dir is the group for this symbol
-        GetSeg( sym ) == dir ||    // dir is the seg. for this symbol
-        sym->state == SYM_EXTERNAL ) {
-
-        if( type == TAB_GRP ) {
-            Frame = F_GRP;
-            if( sym->state == SYM_EXTERNAL ) {
-                Frame_Datum = dir->e.grpinfo->idx;
-            } else {
-                Frame_Datum = sym->grpidx;
-            }
-        } else {
-            Frame = F_SEG;
-            if( sym->state == SYM_EXTERNAL ) {
-                Frame_Datum = dir->e.seginfo->segrec->d.segdef.idx;
-            } else {
-                Frame_Datum = sym->segidx;
-            }
-        }
+    if( ( sym->segment == sym_assume )
+        || ( GetGrp( sym ) == sym_assume )
+        || ( sym->state == SYM_EXTERNAL ) ) {
         return( prefix );
     } else {
         return( ASSUME_NOTHING );
     }
 }
 
-uint GetAssume( struct asm_sym* sym, uint def )
-/**********************************************/
+enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
+/*******************************************************************/
 {
-    uint        reg;
+    enum assume_reg  reg;
 
-    if( AssumeTable[def].flat ) {
-        Frame = F_GRP;
-        Frame_Datum = MAGIC_FLAT_GROUP;
+    if( ( def != ASSUME_NOTHING ) && AssumeTable[def].flat ) {
+        Frame = MAGIC_FLAT_GROUP;
         return( def );
     }
-
-    reg = search_assume( get_grp( sym ), def );
-
-    if( reg != ASSUME_NOTHING ) {
-
-        Frame = F_GRP;
-        Frame_Datum = sym->grpidx;
-
-    } else if( reg == ASSUME_NOTHING ) {
-
-        reg = search_assume( GetSeg( sym ), def );
-        if( reg != ASSUME_NOTHING ) {
-            if( Frame == EMPTY ) {
-                Frame = F_SEG;
-                Frame_Datum = sym->segidx;
-            }
-        } else {
-            if( sym->state == SYM_EXTERNAL ) {
-                if( Frame == EMPTY ) {
-                    Frame = F_EXT;
-                    Frame_Datum = GetDirIdx( sym->name, TAB_EXT );
-                }
-            }
-        }
-
+    if( SegOverride != NULL ) {
+        reg = search_assume( SegOverride, def, 1 );
+    } else {
+        reg = search_assume( sym->segment, def, 0 );
     }
-
-    return( reg );
+    if( reg == ASSUME_NOTHING ) {
+        if( sym->state == SYM_EXTERNAL && sym->segment == NULL ) {
+            reg = def;
+        }
+    }
+    if( reg != ASSUME_NOTHING ) {
+        if( AssumeTable[reg].symbol == NULL ) {
+        } else if( AssumeTable[reg].symbol->state == SYM_SEG ) {
+            Frame = AssumeTable[reg].symbol;
+        } else {
+            Frame = AssumeTable[reg].symbol;
+        }
+        return( reg );
+    }
+    return( ASSUME_NOTHING );
 }
 
 int ModuleEnd( int count )
-/*************************/
+/************************/
 {
-    struct fixup        *fixup;
-
     if( lastseg.seg != SIM_NONE ) {
         close_lastseg();
         InputQueueLine( CurrString );
         return( NOT_ERROR );
     }
-    EndDirectiveFound = TRUE;
 
-    if( Parse_Pass == PASS_1 ) return( NOT_ERROR );
+    if( Parse_Pass == PASS_1 ) {
+        EndDirectiveFound = TRUE;
+        return( NOT_ERROR );
+    }
 
     if( StartupDirectiveFound ) {
         if( count == 2 ) {
@@ -2488,101 +2652,147 @@ int ModuleEnd( int count )
         return( NOT_ERROR );
     }
 
-    ModendRec = ObjNewRec( CMD_MODEND );
-    ModendRec->d.modend.main_module = FALSE;
+    EndDirectiveFound = TRUE;
 
     if( count == 1 ) {
-        ModendRec->d.modend.start_addrs = FALSE;
         return( NOT_ERROR );
     }
 
-    ModendRec->d.modend.start_addrs = TRUE;
-    ModendRec->d.modend.is_logical = TRUE;
-
-    if( AsmBuffer[1]->token != T_ID ) {
+    if( AsmBuffer[1]->class != TC_ID ) {
         AsmError( INVALID_START_ADDRESS );
         return( ERROR );
     }
-    ModendRec->d.modend.main_module = TRUE;
-
-    fixup = CreateFixupRec( 0 );
-    if( fixup == NULL ) {
-        return( ERROR );
-    }
-    ModendRec->d.modend.ref.log = fixup->lr;
+    ModendFixup = InsFixups[ OPND1 ];
     return( NOT_ERROR );
 }
 
 static int find_size( int type )
+/******************************/
 {
+    int         ptr_size;
+
     switch( type ) {
-        case TOK_EXT_BYTE:
-        case TOK_EXT_SBYTE:
-            return( 1 );
-            break;
-        case TOK_EXT_WORD:
-        case TOK_EXT_SWORD:
-            return( 2 );
-            break;
-        case TOK_EXT_DWORD:
-        case TOK_EXT_SDWORD:
-            return( 4 );
-            break;
-        case TOK_EXT_FWORD:
-        case TOK_EXT_PWORD:
-            return( 6 );
-            break;
-        case TOK_EXT_QWORD:
-            return( 8 );
-            break;
-        case TOK_EXT_TBYTE:
-            return( 10 );
-            break;
-        case TOK_PROC_VARARG:
-            return( 0 );
-            break;
-        default:
-            return( ERROR );
+    case TOK_EXT_BYTE:
+    case TOK_EXT_SBYTE:
+        return( 1 );
+    case TOK_EXT_WORD:
+    case TOK_EXT_SWORD:
+        return( 2 );
+    case TOK_EXT_DWORD:
+    case TOK_EXT_SDWORD:
+        return( 4 );
+    case TOK_EXT_FWORD:
+    case TOK_EXT_PWORD:
+        return( 6 );
+    case TOK_EXT_QWORD:
+        return( 8 );
+    case TOK_EXT_TBYTE:
+        return( 10 );
+    case TOK_EXT_OWORD:
+        return( 16 );
+    case TOK_EXT_PTR:
+        /* first determine offset size */
+        if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
+            ptr_size = 4;
+        } else {
+            ptr_size = 2;
+        }
+        if( (ModuleInfo.model == MOD_COMPACT)
+         || (ModuleInfo.model == MOD_LARGE)
+         || (ModuleInfo.model == MOD_HUGE) ) {
+            ptr_size += 2;      /* add segment for far data pointers */
+        }
+        return( ptr_size );
+    case TOK_PROC_VARARG:
+        return( 0 );
+    default:
+        return( ERROR );
     }
 }
 
 static void size_override( char *buffer, int size )
+/*************************************************/
 {
-    switch( size ) {
-    default:
-    case 0:
-        buffer[0] = '\0';
-        break;
-    case 1:
-        strcpy( buffer, " byte ptr " );
-        break;
-    case 2:
-        strcpy( buffer, " word ptr " );
-        break;
-    case 4:
-        strcpy( buffer, " dword ptr " );
-        break;
-    case 6:
-        strcpy( buffer, " fword ptr " );
-        break;
-    case 8:
-        strcpy( buffer, " qword ptr " );
-        break;
-    case 10:
-        strcpy( buffer, " tbyte ptr " );
-        break;
+    if( Options.mode & MODE_IDEAL ) {
+        switch( size ) {
+        default:
+        case 0:
+            buffer[0] = '\0';
+            break;
+        case 1:
+            strcpy( buffer, "byte " );
+            break;
+        case 2:
+            strcpy( buffer, "word " );
+            break;
+        case 4:
+            strcpy( buffer, "dword " );
+            break;
+        case 6:
+            strcpy( buffer, "fword " );
+            break;
+        case 8:
+            strcpy( buffer, "qword " );
+            break;
+        case 10:
+            strcpy( buffer, "tbyte " );
+            break;
+        case 16:
+            strcpy( buffer, "oword " );
+            break;
+        }
+    } else {
+        switch( size ) {
+        default:
+        case 0:
+            buffer[0] = '\0';
+            break;
+        case 1:
+            strcpy( buffer, "byte ptr " );
+            break;
+        case 2:
+            strcpy( buffer, "word ptr " );
+            break;
+        case 4:
+            strcpy( buffer, "dword ptr " );
+            break;
+        case 6:
+            strcpy( buffer, "fword ptr " );
+            break;
+        case 8:
+            strcpy( buffer, "qword ptr " );
+            break;
+        case 10:
+            strcpy( buffer, "tbyte ptr " );
+            break;
+        case 16:
+            strcpy( buffer, "oword ptr " );
+            break;
+        }
     }
 }
 
 int LocalDef( int i )
 /*******************/
 {
-    char        *string;
-    int         type;
-    label_list  *local;
-    label_list  *curr;
-    proc_info   *info;
-    struct asm_sym      *sym;
+    int             type;
+    label_list      *local;
+    label_list      *curr;
+    proc_info       *info;
+    struct asm_sym  *sym, *tmp;
+
+    /*
+
+     LOCAL symbol[,symbol]...[=symbol]
+
+     symbol:
+           name [[count]] [:[type]]
+     count:
+           number of array elements, default is 1
+     type:
+           one of BYTE,SBYTE,WORD,SWORD,DWORD,SDWORD,PWORD,FWORD,TBYTE, default is WORD
+
+    */
 
     if( DefineProc == FALSE ) {
         AsmError( LOCAL_VAR_MUST_FOLLOW_PROC );
@@ -2593,22 +2803,22 @@ int LocalDef( int i )
 
     info = CurrProc->e.procinfo;
 
-    for( i++; i< Token_Count; i++ ) {
-        string = AsmBuffer[i]->string_ptr;
-
-        if( AsmBuffer[i]->token != T_ID ) {
+    for( i++; i < Token_Count; i++ ) {
+        if( AsmBuffer[i]->class != TC_ID ) {
             AsmError( LABEL_IS_EXPECTED );
             return( ERROR );
         }
 
         sym = AsmLookup( AsmBuffer[i]->string_ptr );
-        if( sym == NULL ) return( ERROR );
+        if( sym == NULL )
+            return( ERROR );
 
         if( sym->state != SYM_UNDEFINED ) {
-            AsmError( SYMBOL_ALREADY_DEFINED );
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, sym->name );
             return( ERROR );
         } else {
             sym->state = SYM_INTERNAL;
+            sym->mem_type = MT_WORD;
         }
 
         local = AsmAlloc( sizeof( label_list ) );
@@ -2616,18 +2826,20 @@ int LocalDef( int i )
         strcpy( local->label, AsmBuffer[i++]->string_ptr );
         local->size = LOCAL_DEFAULT_SIZE;
         local->replace = NULL;
+        local->sym = NULL;
         local->factor = 1;
         local->next = NULL;
+        local->is_register = 0;
 
         if( i < Token_Count ) {
-            if( AsmBuffer[i]->token == T_OP_SQ_BRACKET ) {
+            if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
                 i++;
-                if( AsmBuffer[i]->token != T_NUM || i >= Token_Count ) {
+                if( ( AsmBuffer[i]->class != TC_NUM ) || ( i >= Token_Count ) ) {
                     AsmError( SYNTAX_ERROR );
                     return( ERROR );
                 }
-                local->factor = AsmBuffer[i++]->value;
-                if( AsmBuffer[i]->token != T_CL_SQ_BRACKET || i >= Token_Count ) {
+                local->factor = AsmBuffer[i++]->u.value;
+                if( ( AsmBuffer[i]->class != TC_CL_SQ_BRACKET ) || ( i >= Token_Count ) ) {
                     AsmError( EXPECTED_CL_SQ_BRACKET );
                     return( ERROR );
                 }
@@ -2636,19 +2848,33 @@ int LocalDef( int i )
         }
 
         if( i < Token_Count ) {
-            if( AsmBuffer[i]->token != T_COLON ) {
+            if( AsmBuffer[i]->class != TC_COLON ) {
                 AsmError( COLON_EXPECTED );
                 return( ERROR );
             }
             i++;
 
             type = token_cmp( &(AsmBuffer[i]->string_ptr), TOK_EXT_BYTE,
-                                TOK_EXT_TBYTE );
+                              TOK_EXT_TBYTE );
+            if( type == ERROR ) {
+                tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+                if( tmp != NULL ) {
+                    if( tmp->state == SYM_STRUCT ) {
+                        type = MT_STRUCT;
+                        local->sym = tmp;
+                    }
+                }
+            }
             if( type == ERROR ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( ERROR );
             }
-            local->size = find_size( type );
+            sym->mem_type = TypeInfo[type].value;
+            if( type == MT_STRUCT ) {
+                local->size = ( ( dir_node *)tmp)->e.structinfo->size;
+            } else {
+                local->size = find_size( type );
+            }
         }
 
         info->localsize += ( local->size * local->factor );
@@ -2657,74 +2883,415 @@ int LocalDef( int i )
             info->locallist = local;
         } else {
             for( curr = info->locallist;; curr = curr->next ) {
-                if( curr->next == NULL ) break;
+                if( curr->next == NULL ) {
+                    break;
+                }
             }
             curr->next = local;
         }
 
-        /* go past comma */
-        i++;
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
-            AsmError( EXPECTING_COMMA );
-            return( ERROR );
+        switch( AsmBuffer[++i]->class ) {
+        case TC_DIRECTIVE:
+            if( ( AsmBuffer[i]->u.token == T_EQU2 ) &&
+                ( AsmBuffer[i+1]->class == TC_ID ) &&
+                ( AsmBuffer[i+2]->class == TC_FINAL ) ) {
+                i++;
+                StoreConstantNumber( AsmBuffer[i++]->string_ptr, info->localsize, TRUE );
+            }
+            break;
+        case TC_COMMA:
+            continue;
+        case TC_FINAL:
+        default:
+            break;
         }
-
+        break;
     }
-
+    if( AsmBuffer[i]->class != TC_FINAL ) {
+        AsmError( SYNTAX_ERROR );
+        return( ERROR );
+    }
     return( NOT_ERROR );
 }
 
-static int proc_exam( int i )
+int ArgDef( int i )
+/*******************/
 {
-    char        *name;
+    char            *token;
+    char            *typetoken;
+    proc_info       *info;
+    label_list      *paranode;
+    label_list      *paracurr;
+    int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
+
+    struct asm_sym  *param, *tmp;
+
+    /*
+
+    ARG argument[,argument]...[=symbol]
+
+    argument:
+          name [[count]] [:[type]]
+    count:
+          number of array elements, default is 1
+    type:
+          one of BYTE,SBYTE,WORD,SWORD,DWORD,SDWORD,PWORD,FWORD,TBYTE, default is WORD
+
+    */
+
+    if( DefineProc == FALSE ) {
+        AsmError( ARG_MUST_FOLLOW_PROC );
+        return( ERROR );
+    }
+
+    /**/myassert( CurrProc != NULL );
+
+    info = CurrProc->e.procinfo;
+
+    if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+        ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
+        parameter_on_stack = FALSE;
+        register_count = unused_stack_space = 0;
+    }
+    for( i++; i < Token_Count; i++ ) {
+        if( AsmBuffer[i]->class != TC_ID ) {
+            AsmError( LABEL_IS_EXPECTED );
+            return( ERROR );
+        }
+
+        /* read symbol */
+        token = AsmBuffer[i++]->string_ptr;
+
+        /* read colon */
+        if( AsmBuffer[i]->class != TC_COLON ) {
+            AsmError( COLON_EXPECTED );
+            return( ERROR );
+        }
+        i++;
+
+        /* now read qualified type */
+        typetoken = AsmBuffer[i]->string_ptr;
+
+        type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
+
+        if( ( type == ERROR ) && (Options.mode & MODE_IDEAL) ) {
+            tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+            if( tmp != NULL ) {
+                if( tmp->state == SYM_STRUCT ) {
+                    type = MT_STRUCT;
+                }
+            }
+        }
+        if( type == ERROR ) {
+            type = token_cmp( &typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
+            if( type == ERROR ) {
+                AsmError( INVALID_QUALIFIED_TYPE );
+                return( ERROR );
+            } else {
+                switch( CurrProc->sym.langtype ) {
+                case LANG_NONE:
+                case LANG_BASIC:
+                case LANG_FORTRAN:
+                case LANG_PASCAL:
+                    AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
+                    return( ERROR );
+                case LANG_WATCOM_C:
+                    info->parasize += unused_stack_space;
+                    parameter_on_stack = TRUE;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        param = AsmLookup( token );
+        if( param == NULL )
+            return( ERROR );
+
+        if( param->state != SYM_UNDEFINED ) {
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, param->name );
+            return( ERROR );
+        } else {
+            param->state = SYM_INTERNAL;
+            param->mem_type = TypeInfo[type].value;
+        }
+        if( type == MT_STRUCT ) {
+            parameter_size = ( ( dir_node *)tmp)->e.structinfo->size;
+            parameter_on_stack = TRUE;
+        } else {
+            parameter_size = find_size( type );
+            tmp = NULL;
+        }
+        if( parameter_on_stack == FALSE ) {
+            parameter_on_stack = get_watcom_argument( parameter_size, &register_count );
+            if( parameter_on_stack == ERROR )
+                return( ERROR );
+        }
+        paranode = AsmAlloc( sizeof( label_list ) );
+        paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
+        paranode->size = parameter_size;
+        paranode->label = AsmAlloc( strlen( token ) + 1 );
+        paranode->replace = NULL;
+        paranode->sym = tmp;
+        strcpy( paranode->label, token );
+        if( parameter_on_stack ) {
+            paranode->is_register = FALSE;
+            if( Use32 ) {
+                info->parasize += ROUND_UP( parameter_size, 4 );
+            } else {
+                info->parasize += ROUND_UP( parameter_size, 2 );
+            }
+        } else {
+            paranode->is_register = TRUE;
+            register_count++;
+            if( Use32 ) {
+                unused_stack_space += ROUND_UP( parameter_size, 4 );
+            } else {
+                unused_stack_space += ROUND_UP( parameter_size, 2 );
+            }
+        }
+
+        info->is_vararg |= paranode->u.is_vararg;
+
+        switch( CurrProc->sym.langtype ) {
+        case LANG_BASIC:
+        case LANG_FORTRAN:
+        case LANG_PASCAL:
+            /* Parameters are stored in reverse order */
+            paranode->next = info->paralist;
+            info->paralist = paranode;
+            break;
+        default:
+            paranode->next = NULL;
+            if( info->paralist == NULL ) {
+                info->paralist = paranode;
+            } else {
+                for( paracurr = info->paralist;; paracurr = paracurr->next ) {
+                    if( paracurr->next == NULL ) {
+                        break;
+                    }
+                }
+                paracurr->next = paranode;
+            }
+            break;
+        }
+        switch( AsmBuffer[++i]->class ) {
+        case TC_DIRECTIVE:
+            if( ( AsmBuffer[i]->u.token == T_EQU2 ) &&
+                ( AsmBuffer[i+1]->class == TC_ID ) &&
+                ( AsmBuffer[i+2]->class == TC_FINAL ) ) {
+                i++;
+                StoreConstantNumber( AsmBuffer[i++]->string_ptr, info->parasize, TRUE );
+            }
+            break;
+        case TC_COMMA:
+            continue;
+        case TC_FINAL:
+        default:
+            break;
+        }
+        break;
+    }
+    if( AsmBuffer[i]->class != TC_FINAL ) {
+        AsmError( SYNTAX_ERROR );
+        return( ERROR );
+    }
+    return( NOT_ERROR );
+}
+
+int UsesDef( int i )
+/*******************/
+{
     char        *token;
-    char        *typetoken;
-    int_8       minimum;        // Minimum value of the type of token to be read
-    int_8       finish;
-    dir_node    *dir;
     proc_info   *info;
     regs_list   *regist;
     regs_list   *temp_regist;
-    label_list  *paranode;
-    label_list  *paracurr;
-    int         type;
-    int         vis;
-    struct asm_sym      *sym;
 
-    name = AsmBuffer[i++]->string_ptr;
-    dir = (dir_node *)AsmGetSymbol( name );
-    info = dir->e.procinfo;
+    if( DefineProc == FALSE ) {
+        AsmError( USES_MUST_FOLLOW_PROC );
+        return( ERROR );
+    }
+
+    /**/myassert( CurrProc != NULL );
+
+    if( CurrProc->sym.langtype == LANG_NONE ) {
+        AsmError( USES_MEANINGLESS_WITHOUT_LANGUAGE );
+        return( ERROR );
+    }
+
+    info = CurrProc->e.procinfo;
+
+    for( i++; ( i < Token_Count ) && ( AsmBuffer[i]->class != TC_FINAL ); i++ ) {
+        token = AsmBuffer[i]->string_ptr;
+        regist = AsmAlloc( sizeof( regs_list ));
+        regist->next = NULL;
+        regist->reg = AsmAlloc( strlen(token) + 1 );
+        strcpy( regist->reg, token );
+        if( info->regslist == NULL ) {
+            info->regslist = regist;
+        } else {
+            for( temp_regist = info->regslist;;
+                 temp_regist = temp_regist->next ) {
+                if( temp_regist->next == NULL ) {
+                    break;
+                }
+            }
+            temp_regist->next = regist;
+        }
+        if( AsmBuffer[++i]->class != TC_COMMA )
+            break;
+    }
+    if( AsmBuffer[i]->class != TC_FINAL ) {
+        AsmError( SYNTAX_ERROR );
+        return( ERROR );
+    }
+    return( NOT_ERROR );
+}
+
+int EnumDef( int i )
+{
+    char            *name, string[ MAX_LINE_LEN ];
+    int             n, enums, in_braces;
+    long            count;
+    struct asm_sym  *sym;
+    dir_node        *dir;
+
+    /*
+    name ENUM [var [, var...]] {
+              [var [, var]...]
+              [var [, var]...] }
+    or
+    ENUM name [var [, var...]] {
+              [var [, var]...]
+              [var [, var]...] }
+
+    var: name [= number]
+    */
+    if( Options.mode & MODE_IDEAL ) {
+        n = i + 1;
+    } else {
+        n = --i;
+    }
+    if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {    /* name present? */
+        AsmError( ENUM_NAME_MISSING );
+        return( ERROR );
+    }
+    count = enums = in_braces = 0;
+    name = AsmBuffer[n]->string_ptr;
+    if( StoreConstantNumber( name, count, TRUE ) == ERROR )
+        return( ERROR );
+    n = 2;
+    do {
+        for( i = n++; ; i++ ) {
+            switch( AsmBuffer[i]->class ) {
+            case TC_OP_BRACE:
+                in_braces++;
+                continue;
+            case TC_CL_BRACE:
+                in_braces--;
+                continue;
+            case TC_FINAL:
+                n = 0;
+                break;
+            case TC_ID:
+                name = AsmBuffer[i]->string_ptr;
+                break;
+            default:
+                AsmError( SYNTAX_ERROR );
+                return( ERROR );
+            }
+            if( n ) {
+                if( ( AsmBuffer[i+1]->class == TC_DIRECTIVE ) &&
+                    ( AsmBuffer[i+1]->u.token == T_EQU2 ) ) {
+                    i += 2;
+                    switch( AsmBuffer[i]->class ) {
+                    case TC_NUM:
+                        count = AsmBuffer[i]->u.value;
+                        break;
+                    case TC_ID:
+                        sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+                        if( ( sym != NULL ) && ( sym->state == SYM_CONST ) ) {
+                            dir = ( dir_node * ) sym;
+                            if( dir->e.constinfo->data[0].class == TC_NUM ) {
+                                count = dir->e.constinfo->data[0].u.value;
+                                break;
+                            }
+                        }
+                    default:
+                        AsmError( EXPECTING_NUMBER );
+                        return( ERROR );
+                    }
+                }
+                if( StoreConstantNumber( name, count++, TRUE ) == ERROR )
+                    return( ERROR );
+                enums++;
+                if( AsmBuffer[i+1]->class == TC_COMMA )
+                    i++;
+                continue;
+            } else {
+                if( in_braces ) {
+                    if( ScanLine( string, MAX_LINE_LEN ) == NULL ) {
+                        AsmError( UNEXPECTED_END_OF_FILE );
+                        return( ERROR );
+                    }
+                    Token_Count = AsmScan( string );
+                }
+            }
+            break;
+        }
+    } while( in_braces );
+    if( ( AsmBuffer[i]->class != TC_FINAL ) || ( enums == 0 ) ) {
+        AsmError( SYNTAX_ERROR );
+        return( ERROR );
+    }
+    return( NOT_ERROR );
+}
+
+static int proc_exam( dir_node *proc, int i )
+/*******************************************/
+{
+    char            *token;
+    char            *typetoken;
+    int_8           minimum;        // Minimum value of the type of token to be read
+    int_8           finish;
+    proc_info       *info;
+    regs_list       *regist;
+    regs_list       *temp_regist;
+    label_list      *paranode;
+    label_list      *paracurr;
+    int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
+    struct asm_sym  *param;
+
+    info = proc->e.procinfo;
 
     minimum = TOK_PROC_FAR;
     finish = FALSE;
-    info->langtype = ModuleInfo.langtype;
+    proc->sym.langtype = ModuleInfo.langtype;
 
     // fixme ... we need error checking here --- for nested procs
 
     /* Obtain all the default value */
 
-    if( ModuleInfo.model <= MOD_FLAT ) {
-        info->mem_type = T_NEAR;
-    } else {
-        info->mem_type = T_FAR;
-    }
-    info->visibility = dir->sym.public ? VIS_PUBLIC : VIS_PRIVATE;
+    info->mem_type = IS_PROC_FAR() ? MT_FAR : MT_NEAR;
     info->parasize = 0;
     info->localsize = 0;
+    info->export = FALSE;
     info->is_vararg = FALSE;
-    SetMangler( &dir->sym, NULL );
+    info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
+    SetMangler( &proc->sym, NULL, LANG_NONE );
 
     /* Parse the definition line, except the parameters */
-    for( i++; i < Token_Count && AsmBuffer[i]->token != T_COMMA; i++ ) {
+    for( i++; i < Token_Count && AsmBuffer[i]->class != TC_COMMA; i++ ) {
         token = AsmBuffer[i]->string_ptr;
-        if( AsmBuffer[i]->token == T_STRING ) {
+        if( AsmBuffer[i]->class == TC_STRING ) {
             /* name mangling */
-            SetMangler( &dir->sym, token );
+            SetMangler( &proc->sym, token, LANG_NONE );
             continue;
         }
 
         type = token_cmp( &token, TOK_PROC_FAR, TOK_PROC_USES );
-        if( type == ERROR ) break;
+        if( type == ERROR )
+            break;
         if( type < minimum ) {
             AsmError( SYNTAX_ERROR );
             return( ERROR );
@@ -2732,30 +3299,41 @@ static int proc_exam( int i )
         switch( type ) {
         case TOK_PROC_FAR:
         case TOK_PROC_NEAR:
-            info->mem_type = TypeInfo[type].value;;
-            minimum = TOK_PROC_BASIC;
+            info->mem_type = TypeInfo[type].value;
+            if( Options.mode & MODE_TASM ) {
+                minimum = TOK_LANG_NOLANG;
+            } else {
+                minimum = TOK_LANG_BASIC;
+            }
             break;
-        case TOK_PROC_BASIC:
-        case TOK_PROC_FORTRAN:
-        case TOK_PROC_PASCAL:
-        case TOK_PROC_C:
-        case TOK_PROC_WATCOM_C:
-        case TOK_PROC_STDCALL:
-        case TOK_PROC_SYSCALL:
-            info->langtype = TypeInfo[type].value;
+        case TOK_LANG_WATCOM_C:
+            if( Options.watcom_parms_passed_by_regs || !Use32 ) {
+                parameter_on_stack = FALSE;
+            }
+            // fall through
+        case TOK_LANG_BASIC:
+        case TOK_LANG_FORTRAN:
+        case TOK_LANG_PASCAL:
+        case TOK_LANG_C:
+        case TOK_LANG_STDCALL:
+        case TOK_LANG_SYSCALL:
+        case TOK_LANG_NOLANG:
+            proc->sym.langtype = TypeInfo[type].value;
             minimum = TOK_PROC_PRIVATE;
             break;
-        case TOK_PROC_PRIVATE:
-        case TOK_PROC_PUBLIC:
         case TOK_PROC_EXPORT:
-            vis = TypeInfo[type].value;
-            if( info->visibility < vis ) {
-                info->visibility = vis;
+            info->export = TRUE;
+            // fall through
+        case TOK_PROC_PUBLIC:
+            if( !proc->sym.public ) {
+                AddPublicData( proc );
             }
+            // fall through
+        case TOK_PROC_PRIVATE:
             minimum = TOK_PROC_USES;
             break;
         case TOK_PROC_USES:
-            for( i++; i < Token_Count && AsmBuffer[i]->token != T_COMMA; i++ ) {
+            for( i++; ( i < Token_Count ) && ( AsmBuffer[i]->class != TC_COMMA ); i++ ) {
                 token = AsmBuffer[i]->string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
@@ -2766,12 +3344,15 @@ static int proc_exam( int i )
                 } else {
                     for( temp_regist = info->regslist;;
                             temp_regist = temp_regist->next ) {
-                        if( temp_regist->next == NULL ) break;
+                        if( temp_regist->next == NULL ) {
+                            break;
+                        }
                     }
                     temp_regist->next = regist;
                 }
             }
-            if( AsmBuffer[i]->token == T_COMMA ) i--;
+            if( AsmBuffer[i]->class == TC_COMMA )
+                i--;
             break;
         default:
             goto parms;
@@ -2779,26 +3360,30 @@ static int proc_exam( int i )
     }
 
 parms:
-    CurrProc = dir;
+    CurrProc = proc;
     DefineProc = TRUE;
+    proc->sym.mem_type = info->mem_type;
 
     if( i >= Token_Count ) {
-        return( info->mem_type );
-    } else if( info->langtype == LANG_NONE ) {
+        return( NOT_ERROR );
+    } else if( ( proc->sym.langtype == LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
         return( ERROR );
-    } else if( AsmBuffer[i]->token == T_COMMA ) {
+    } else if( AsmBuffer[i]->class == TC_COMMA ) {
         i++;
     }
 
-    /* now parse parms */
 
+    /* reset register count and unused stack space counter */
+    register_count = unused_stack_space = 0;
+
+    /* now parse parms */
     for( ; i < Token_Count; i++ ) {
         /* read symbol */
         token = AsmBuffer[i++]->string_ptr;
 
         /* read colon */
-        if( AsmBuffer[i]->token != T_COLON ) {
+        if( AsmBuffer[i]->class != TC_COLON ) {
             AsmError( COLON_EXPECTED );
             return( ERROR );
         }
@@ -2815,71 +3400,110 @@ parms:
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( ERROR );
             } else {
-                if( info->langtype <= LANG_PASCAL ) {
+                switch( proc->sym.langtype ) {
+                case LANG_NONE:
+                case LANG_BASIC:
+                case LANG_FORTRAN:
+                case LANG_PASCAL:
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
                     return( ERROR );
+                case LANG_WATCOM_C:
+                    info->parasize += unused_stack_space;
+                    parameter_on_stack = TRUE;
+                    break;
+                default:
+                    break;
                 }
             }
         }
 
-        sym = AsmLookup( token );
-        if( sym == NULL ) return( ERROR );
+        param = AsmLookup( token );
+        if( param == NULL )
+            return( ERROR );
 
-        if( sym->state != SYM_UNDEFINED ) {
-            AsmError( SYMBOL_ALREADY_DEFINED );
+        if( param->state != SYM_UNDEFINED ) {
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, param->name );
             return( ERROR );
         } else {
-            sym->state = SYM_INTERNAL;
+            param->state = SYM_INTERNAL;
+            param->mem_type = TypeInfo[type].value;
         }
 
+        parameter_size = find_size( type );
+        if( parameter_on_stack == FALSE ) {
+            parameter_on_stack = get_watcom_argument( parameter_size, &register_count );
+            if( parameter_on_stack == ERROR )
+                return( ERROR );
+        }
         paranode = AsmAlloc( sizeof( label_list ) );
-        paranode->is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
-        paranode->size = find_size( type );
+        paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
+        paranode->size = parameter_size;
         paranode->label = AsmAlloc( strlen( token ) + 1 );
         paranode->replace = NULL;
         strcpy( paranode->label, token );
-
-        if( Use32 ) {
-            info->parasize += ROUND_UP( paranode->size, 4 );
+        if( parameter_on_stack ) {
+            paranode->is_register = FALSE;
+            if( Use32 ) {
+                info->parasize += ROUND_UP( parameter_size, 4 );
+            } else {
+                info->parasize += ROUND_UP( parameter_size, 2 );
+            }
         } else {
-            info->parasize += ROUND_UP( paranode->size, 2 );
+            paranode->is_register = TRUE;
+            register_count++;
+            if( Use32 ) {
+                unused_stack_space += ROUND_UP( parameter_size, 4 );
+            } else {
+                unused_stack_space += ROUND_UP( parameter_size, 2 );
+            }
         }
-        info->is_vararg |= paranode->is_vararg;
 
-        if( info->langtype >= LANG_BASIC && info->langtype <= LANG_PASCAL ) {
+        info->is_vararg |= paranode->u.is_vararg;
 
+        switch( proc->sym.langtype ) {
+        case LANG_BASIC:
+        case LANG_FORTRAN:
+        case LANG_PASCAL:
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
             info->paralist = paranode;
-
-        } else {
-
+            break;
+        default:
             paranode->next = NULL;
             if( info->paralist == NULL ) {
                 info->paralist = paranode;
             } else {
                 for( paracurr = info->paralist;; paracurr = paracurr->next ) {
-                    if( paracurr->next == NULL ) break;
+                    if( paracurr->next == NULL ) {
+                        break;
+                    }
                 }
                 paracurr->next = paranode;
             }
+            break;
         }
         /* go past comma */
         i++;
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->class != TC_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
     }
-    return( info->mem_type );
+    return( NOT_ERROR );
 }
 
-int ProcDef( int i )
-/******************/
+int ProcDef( int i, bool proc_def )
+/*********************************/
 {
-    struct asm_sym      *sym;
-    dir_node            *dir;
-    char                *name;
+    dir_node        *dir;
+    char            *name;
+    int             n;
+
+    if( Options.mode & MODE_IDEAL ) {
+        n = ++i;
+    } else {
+        n = i - 1;
+    }
 
     if( CurrProc != NULL ) {
         /* nested procs ... push currproc on a stack */
@@ -2887,77 +3511,54 @@ int ProcDef( int i )
     }
 
     if( Parse_Pass == PASS_1 ) {
-        if( i < 0 ) {
+        if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {
             AsmError( PROC_MUST_HAVE_A_NAME );
             return( ERROR );
         }
-        name = AsmBuffer[i]->string_ptr;
-        sym = AsmGetSymbol( name );
-
-        if( sym != NULL ) {
-            if( sym->state != SYM_UNDEFINED ) {
-                AsmError( PROC_ALREADY_DEFINED );
+        name = AsmBuffer[n]->string_ptr;
+        dir = (dir_node *)AsmGetSymbol( name );
+        if( dir == NULL ) {
+            dir = dir_insert( name, TAB_PROC );
+        } else if( dir->sym.state == SYM_UNDEFINED ) {
+            /* alloc the procinfo struct */
+            dir_change( dir, TAB_PROC );
+        } else if( dir->sym.state == SYM_EXTERNAL ) {
+            if( dir->e.extinfo->global ) {
+                dir_change( dir, TAB_PROC );
+                AddPublicData( dir );
+            } else {
+                AsmErr( SYMBOL_PREVIOUSLY_DEFINED, dir->sym.name );
                 return( ERROR );
             }
-        }
-
-        if( sym == NULL ) {
-            dir = dir_insert( name, TAB_PROC );
-            sym = &dir->sym;
         } else {
-            /* alloc the procinfo struct */
-            dir = (dir_node *)sym;
-            dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
-            dir->e.procinfo->regslist = NULL;
-            dir->e.procinfo->paralist = NULL;
-            dir->e.procinfo->locallist = NULL;
-            sym->public = TRUE;
-            dir_add( dir, TAB_PROC );
-        }
-        sym->state = SYM_PROC;
-        GetSymInfo( sym );
-        sym->mem_type = proc_exam( i );
-        if( sym->mem_type == ERROR ) {
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, dir->sym.name );
             return( ERROR );
         }
-        return( NOT_ERROR );
+        GetSymInfo( &dir->sym );
+        if( proc_exam( dir, i ) == ERROR ) {
+            return( ERROR );
+        }
     } else {
         // fixme -- nested procs can be ok /**/myassert( CurrProc == NULL );
-        /**/myassert( i >= 0 );
-        sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
-        CurrProc = (dir_node *)sym;
-        /**/myassert( CurrProc != NULL );
-        GetSymInfo( sym );
+        /**/myassert( n >= 0 );
+        dir = (dir_node *)AsmGetSymbol( AsmBuffer[n]->string_ptr );
+        /**/myassert( dir != NULL );
+        CurrProc = dir;
+        GetSymInfo( &dir->sym );
         DefineProc = TRUE;
-        return( NOT_ERROR );
     }
+    BackPatch( &dir->sym );
+    return( NOT_ERROR );
 }
 
-int ProcEnd( int i )
-/******************/
+static void ProcFini( void )
+/**************************/
 {
-    char        *name;
     proc_info   *info;
     label_list  *curr;
-    struct asm_sym      *sym;
 
-    if( CurrProc == NULL ) {
-        AsmError( NO_PROC_IS_CURRENTLY_DEFINED );
-        return( ERROR );
-    }
-    if( i < 0 ) {
-        AsmError( PROC_MUST_HAVE_A_NAME );
-        return( ERROR );
-    }
-    name = AsmBuffer[i]->string_ptr;
     info = CurrProc->e.procinfo;
-
-    sym = AsmGetSymbol( name );
-
-    if( (dir_node *)sym != CurrProc ) {
-        AsmError( PROC_NAME_DOES_NOT_MATCH );
-        return( ERROR );
-    }
+    CurrProc->sym.total_size = GetCurrAddr() - CurrProc->sym.offset;
 
     if( Parse_Pass == PASS_1 ) {
         for( curr = info->paralist; curr; curr = curr->next ) {
@@ -2967,210 +3568,437 @@ int ProcEnd( int i )
             AsmTakeOut( curr->label );
         }
     }
-
     CurrProc = pop_proc();
-    return( NOT_ERROR );
+}
+
+int ProcEnd( int i )
+/******************/
+{
+    if( CurrProc == NULL ) {
+        AsmError( BLOCK_NESTING_ERROR );
+        return( ERROR );
+    } else if( Options.mode & MODE_IDEAL ) {
+        if( AsmBuffer[++i]->class == TC_ID ) {
+            if( ( (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr ) != CurrProc ) ) {
+                AsmError( PROC_NAME_DOES_NOT_MATCH );
+            }
+        }
+        ProcFini();
+        return( NOT_ERROR );
+    } else if( i == 0 ) {
+        AsmError( PROC_MUST_HAVE_A_NAME );
+        ProcFini();
+        return( ERROR );
+    } else if( (dir_node *)AsmGetSymbol( AsmBuffer[i-1]->string_ptr ) == CurrProc ) {
+        ProcFini();
+        return( NOT_ERROR );
+    } else {
+        AsmError( PROC_NAME_DOES_NOT_MATCH );
+        ProcFini();
+        return( NOT_ERROR );
+    }
+}
+
+void ProcStackInit( void )
+/************************/
+{
+    ProcStack = NULL;
+}
+
+void ProcStackFini( void )
+/************************/
+{
+    while( CurrProc != NULL ) {
+        if( Parse_Pass == PASS_1 )
+            AsmErr( PROC_IS_NOT_CLOSED, CurrProc->sym.name );
+        ProcFini();
+    }
+}
+
+static void push_registers( regs_list *regist )
+/*********************************************/
+/* Push the registers list */
+{
+    char        buffer[20];
+
+    if( regist == NULL )
+        return;
+    strcpy( buffer, "push " );
+    strcpy( buffer + strlen( buffer ), regist->reg );
+    InputQueueLine( buffer );
+    push_registers( regist->next );
+}
+
+static void pop_registers( regs_list *regist )
+/********************************************/
+/* Pop the registers list */
+{
+    char        buffer[20];
+
+    if( regist == NULL )
+        return;
+    pop_registers( regist->next );
+    strcpy( buffer, "pop " );
+    strcpy( buffer + strlen( buffer ), regist->reg );
+    InputQueueLine( buffer );
 }
 
 int WritePrologue( void )
 /***********************/
 {
     char                buffer[80];
-    regs_list           *regist;
-    int                 len;
     proc_info           *info;
     label_list          *curr;
     long                offset;
     unsigned long       size;
-    int                 retcode;
-    uint_8              parm_count = 0;
+    int                 register_count = 0;
+    int                 parameter_on_stack = TRUE;
     int                 align = Use32 ? 4 : 2;
 
     /**/myassert( CurrProc != NULL );
     info = CurrProc->e.procinfo;
 
-    if( Parse_Pass == PASS_1 ) {
+    /* save 1st instruction following a procedure definition */
+    InputQueueLine( CurrString );
 
+    if( Parse_Pass == PASS_1 ) {
         /* Figure out the replacing string for local variables */
         offset = 0;
         for( curr = info->locallist; curr != NULL; curr = curr->next ) {
             size = curr->size * curr->factor;
             offset += ROUND_UP( size, align );
             size_override( buffer, curr->size );
-            sprintf( buffer + strlen(buffer), "%s%d] ",
-                Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
+            if( Options.mode & MODE_IDEAL ) {
+                if( curr->sym != NULL ) {
+                    sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                } else {
+                    sprintf( buffer + strlen(buffer), "%s%d",
+                             Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                }
+            } else {
+                sprintf( buffer + strlen(buffer), "%s%d]",
+                         Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
+            }
             curr->replace = AsmAlloc( strlen( buffer ) + 1 );
             strcpy( curr->replace, buffer );
-
         }
+        info->localsize = offset;
 
         /* Figure out the replacing string for the parameters */
 
-        if( info->mem_type == T_NEAR ) {
-            offset = 4;         // offset from BP : return addr + old BP
+        if( info->mem_type == MT_NEAR ) {
+            offset = 4;    // offset from BP : return addr + old BP
         } else {
             offset = 6;
         }
-
-        if( Use32 ) offset *= 2;
-
-        for( curr = info->paralist; curr; curr = curr->next, parm_count++ ) {
-            if( info->langtype == LANG_WATCOM_C ) {
-                retcode = get_watcom_argument_string( buffer, curr->size, &parm_count );
-                if( retcode == ERROR ) return( ERROR );
+        if( Use32 )
+            offset *= 2;
+        if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
+            ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
+            ( info->is_vararg == FALSE ) ) {
+            parameter_on_stack = FALSE;
+        }
+        for( curr = info->paralist; curr; curr = curr->next ) {
+            if( parameter_on_stack == FALSE ) {
+                parameter_on_stack = get_watcom_argument_string( buffer, curr->size, &register_count );
+                if( parameter_on_stack == ERROR ) {
+                    return( ERROR );
+                }
             }
-            if( info->langtype != LANG_WATCOM_C || retcode == FALSE ) {
+            if( parameter_on_stack ) {
                 size_override( buffer, curr->size );
                 if( Use32 ) {
-                    strcat( buffer, ARGUMENT_STRING_32 );
+                    if( Options.mode & MODE_IDEAL ) {
+                        if( curr->sym != NULL ) {
+                            sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                                     IDEAL_ARGUMENT_STRING_32, offset );
+                        } else {
+                            sprintf( buffer + strlen(buffer), "%s%d",
+                                     IDEAL_ARGUMENT_STRING_32, offset );
+                        }
+                    } else {
+                        sprintf( buffer + strlen(buffer), "%s%d]",
+                                 ARGUMENT_STRING_32, offset );
+                    }
                 } else {
-                    strcat( buffer, ARGUMENT_STRING );
+                    if( Options.mode & MODE_IDEAL ) {
+                        if( curr->sym != NULL ) {
+                            sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                                     IDEAL_ARGUMENT_STRING, offset );
+                        } else {
+                            sprintf( buffer + strlen(buffer), "%s%d",
+                                     IDEAL_ARGUMENT_STRING, offset );
+                        }
+                    } else {
+                        sprintf( buffer + strlen(buffer), "%s%d]",
+                                 ARGUMENT_STRING, offset );
+                    }
                 }
-                sprintf( buffer + strlen( buffer ), "%d", offset );
-                strcat( buffer, "] " );
-
                 offset += ROUND_UP( curr->size, align );
-            }
-            if( *buffer == '\0' ) {
-                len = strlen( buffer+1 ) + 2;
-                curr->replace = AsmAlloc( len );
-                memcpy( curr->replace, buffer, len );
             } else {
-                curr->replace = AsmAlloc( strlen( buffer ) + 1 );
-                strcpy( curr->replace, buffer );
+                register_count++;
+            }
+            curr->replace = AsmAlloc( strlen( buffer ) + 1 );
+            strcpy( curr->replace, buffer );
+            if( curr->replace[0] == ' ' ) {
+                curr->replace[0] = '\0';
+                if( Use32 )
+                    curr->replace[4] = '\0';
+                else
+                    curr->replace[3] = '\0';
             }
         }
     }
-
-    if( info->localsize != 0 || info->parasize != 0 || info->is_vararg ) {
-
-        /* Push BP or EBP */
-        if( Use32 ) {
-            strcpy( buffer, "push ebp" );
-        } else {
-            strcpy( buffer, "push bp" );
-        }
-        InputQueueLine( buffer );
-
-        /* Move SP/ESP to BP/EBP */
-        if( Use32 ) {
-            strcpy( buffer, "mov ebp, esp" );
-        } else {
-            strcpy( buffer, "mov bp, sp" );
-        }
-        InputQueueLine( buffer );
-
-        /* Substract SP/ESP by the number of localbytes */
-        if( info->localsize != 0 ) {
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+        return( NOT_ERROR );
+    in_prologue = TRUE;
+    PushLineQueue();
+    if( ( info->localsize != 0 ) || ( info->parasize != 0 ) ||
+        ( info->is_vararg ) || Options.trace_stack == 2 ) {
+        //
+        // prolog code timmings
+        //
+        //                                                   best result
+        //               size  86  286  386  486  P     86  286  386  486  P
+        // push bp       2     11  3    2    1    1
+        // mov bp,sp     2     2   2    2    1    1
+        // sub sp,immed  4     4   3    2    1    1
+        //              -----------------------------
+        //               8     17  8    6    3    3     x   x    x    x    x
+        //
+        // push ebp      2     -   -    2    1    1
+        // mov ebp,esp   2     -   -    2    1    1
+        // sub esp,immed 6     -   -    2    1    1
+        //              -----------------------------
+        //               10    -   -    6    3    3              x    x    x
+        //
+        // enter imm,0   4     -   11   10   14   11
+        //
+        // write prolog code
+        if( Options.trace_stack && info->mem_type == MT_FAR ) {
             if( Use32 ) {
-                strcpy( buffer, "sub esp, " );
+                strcpy( buffer, "inc ebp" );
             } else {
-                strcpy( buffer, "sub sp, " );
+                strcpy( buffer, "inc bp" );
             }
-            sprintf( buffer+strlen(buffer), "%d", info->localsize );
             InputQueueLine( buffer );
         }
-    }
-
-    /* Push the registers */
-    strcpy( buffer, "push " );
-    len = strlen( buffer );
-    for( regist = info->regslist; regist; regist = regist->next ) {
-        strcpy( buffer + len, regist->reg );
+        if( Use32 ) {
+            // write 80386 prolog code
+            // PUSH EBP
+            // MOV  EBP, ESP
+            // SUB  ESP, the number of localbytes
+            strcpy( buffer, "push ebp" );
+            InputQueueLine( buffer );
+            strcpy( buffer, "mov ebp,esp" );
+            if( info->localsize != 0 ) {
+                InputQueueLine( buffer );
+                strcpy( buffer, "sub esp," );
+                sprintf( buffer+strlen(buffer), "%d", info->localsize );
+            }
+        } else {
+            // write 8086 prolog code
+            // PUSH BP
+            // MOV  BP, SP
+            // SUB  SP, the number of localbytes
+            strcpy( buffer, "push bp" );
+            InputQueueLine( buffer );
+            strcpy( buffer, "mov bp,sp" );
+            if( info->localsize != 0 ) {
+                InputQueueLine( buffer );
+                strcpy( buffer, "sub sp," );
+                sprintf( buffer+strlen(buffer), "%d", info->localsize );
+            }
+        }
         InputQueueLine( buffer );
     }
+    /* Push the registers */
+    push_registers( info->regslist );
     return( NOT_ERROR );
 }
 
-static void pop_register( regs_list *regist )
-/* Pop the register when a procedure ends */
-{
-    char        buffer[20];
-
-    if( regist == NULL ) return;
-    pop_register( regist->next );
-    strcpy( buffer, "pop " );
-    strcpy( buffer + strlen( buffer ), regist->reg );
-    InputQueueLine( buffer );
-}
-
 static void write_epilogue( void )
+/********************************/
 {
     char        buffer[80];
     proc_info   *info;
 
     /**/myassert( CurrProc != NULL );
+
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
+        return;
+
     info = CurrProc->e.procinfo;
 
     /* Pop the registers */
-    pop_register( CurrProc->e.procinfo->regslist );
+    pop_registers( CurrProc->e.procinfo->regslist );
 
-    if( info->localsize == 0 && info->parasize == 0 && !(info->is_vararg) ) return;
-
-    if( info->localsize != 0 ) {
-        /* Move BP/EBP to SP/ESP */
-        if( Use32 ) {
-            strcpy( buffer, "mov esp, ebp" );
-        } else {
-            strcpy( buffer, "mov sp, bp" );
-        }
-        InputQueueLine( buffer );
+    if( ( info->localsize == 0 ) && ( info->parasize == 0 ) &&
+        ( !info->is_vararg ) && Options.trace_stack != 2 ) {
+        return;
     }
-
-    /* Pop BP or EBP */
-    if( Use32 ) {
+    // epilog code timmings
+    //
+    //                                                  best result
+    //              size  86  286  386  486  P      86  286  386  486  P
+    // mov sp,bp    2     2   2    2    1    1
+    // pop bp       2     8   5    4    4    1
+    //             -----------------------------
+    //              4     10  7    6    5    2      x             x    x
+    //
+    // mov esp,ebp  2     -   -    2    1    1
+    // pop ebp      2     -   -    4    4    1
+    //             -----------------------------
+    //              4     -   -    6    5    2                    x    x
+    //
+    // leave        1     -   5    4    5    3          x    x    x
+    //
+    // !!!! DECISION !!!!
+    //
+    // leave will be used for .286 and .386
+    // .286 code will be best working on 286,386 and 486 processors
+    // .386 code will be best working on 386 and 486 processors
+    // .486 code will be best working on 486 and above processors
+    //
+    //   without LEAVE
+    //
+    //         86  286  386  486  P
+    //  .8086  0   -2   -2   0    +1
+    //  .286   -   -2   -2   0    +1
+    //  .386   -   -    -2   0    +1
+    //  .486   -   -    -    0    +1
+    //
+    //   LEAVE 286 only
+    //
+    //         86  286  386  486  P
+    //  .8086  0   -2   -2   0    +1
+    //  .286   -   0    +2   0    -1
+    //  .386   -   -    -2   0    +1
+    //  .486   -   -    -    0    +1
+    //
+    //   LEAVE 286 and 386
+    //
+    //         86  286  386  486  P
+    //  .8086  0   -2   -2   0    +1
+    //  .286   -   0    +2   0    -1
+    //  .386   -   -    0    0    -1
+    //  .486   -   -    -    0    +1
+    //
+    //   LEAVE 286, 386 and 486
+    //
+    //         86  286  386  486  P
+    //  .8086  0   -2   -2   0    +1
+    //  .286   -   0    +2   0    -1
+    //  .386   -   -    0    0    -1
+    //  .486   -   -    -    0    -1
+    //
+    // write epilog code
+    if( info->pe_type ) {
+        // write 80286 and 80386 epilog code
+        // LEAVE
+        strcpy( buffer, "leave" );
+    } else if( Use32 ) {
+        // write 32-bit 80486 or P epilog code
+        // Mov ESP, EBP
+        // POP EBP
+        if( info->localsize != 0 ) {
+            strcpy( buffer, "mov esp,ebp" );
+            InputQueueLine( buffer );
+        }
         strcpy( buffer, "pop ebp" );
     } else {
+        // write 16-bit 8086 or 80486 or P epilog code
+        // Mov SP, BP
+        // POP BP
+        if( info->localsize != 0 ) {
+            strcpy( buffer, "mov sp,bp" );
+            InputQueueLine( buffer );
+        }
         strcpy( buffer, "pop bp" );
     }
     InputQueueLine( buffer );
+    if( Options.trace_stack && info->mem_type == MT_FAR ) {
+        if( Use32 ) {
+            strcpy( buffer, "dec ebp" );
+        } else {
+            strcpy( buffer, "dec bp" );
+        }
+        InputQueueLine( buffer );
+    }
 }
 
-int Ret( int i, int count )
-/*************************/
+int Ret( int i, int count, int flag_iret )
+/****************************************/
 {
     char        buffer[20];
     proc_info   *info;
+    expr_list   opndx;
 
     info = CurrProc->e.procinfo;
 
-    if( info->mem_type == T_NEAR ) {
-        strcpy( buffer, "retn " );
+    if( flag_iret ) {
+        if( AsmBuffer[i]->u.token == T_IRET ) {
+            strcpy( buffer, "iretf" );
+        } else {
+            strcpy( buffer, "iretdf" );
+        }
     } else {
-        strcpy( buffer, "retf " );
+        if( info->mem_type == MT_NEAR ) {
+            strcpy( buffer, "retn " );
+        } else {
+            strcpy( buffer, "retf " );
+        }
     }
 
     write_epilogue();
-    if( count == i + 1 ) {
-        if( ( info->langtype >= LANG_BASIC &&
-                info->langtype <= LANG_PASCAL ) ||
-            ( info->langtype == LANG_STDCALL && !(info->is_vararg) ) ) {
-            if( info->parasize != 0 ) {
-                sprintf( buffer + strlen(buffer), "%d", info->parasize );
+
+    if( !flag_iret ) {
+        if( count == i + 1 ) {
+            switch( CurrProc->sym.langtype ) {
+            case LANG_BASIC:
+            case LANG_FORTRAN:
+            case LANG_PASCAL:
+                if( info->parasize != 0 ) {
+                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                }
+                break;
+            case LANG_STDCALL:
+                if( !info->is_vararg && info->parasize != 0 ) {
+                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                }
+                break;
+            case LANG_WATCOM_C:
+                if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
+                    ( info->is_vararg == FALSE ) &&
+                    ( info->parasize != 0 ) ) {
+                    sprintf( buffer + strlen( buffer ), "%d", info->parasize );
+                }
+                break;
+            default:
+                break;
             }
+        } else {
+            ++i;
+            if( (EvalOperand( &i, count, &opndx, TRUE ) == ERROR) || (opndx.type != EXPR_CONST) ) {
+                AsmError( CONSTANT_EXPECTED );
+                return( ERROR );
+            }
+            sprintf( buffer + strlen( buffer ), "%d", opndx.value );
         }
-    } else {
-        if( AsmBuffer[i+1]->token != T_NUM ) {
-            AsmError( CONSTANT_EXPECTED );
-            return( ERROR );
-        }
-        sprintf( buffer + strlen(buffer), "%d", AsmBuffer[i+1]->value );
     }
-
     InputQueueLine( buffer );
-
     return( NOT_ERROR );
 }
 
 extern void GetSymInfo( struct asm_sym *sym )
 /*******************************************/
 {
-    sym->segidx = GetCurrSeg();
-    sym->grpidx = GetCurrGrp();
+    sym->segment = &GetCurrSeg()->sym;
     sym->offset = GetCurrAddr();
 }
 
-int Comment( int what_to_do, int i  )
+int Comment( int what_to_do, int i )
 /***********************************/
 {
     static int in_comment = FALSE;
@@ -3190,13 +4018,13 @@ int Comment( int what_to_do, int i  )
             return( ERROR );
         }
         delim_char = *(AsmBuffer[i]->string_ptr+strspn(AsmBuffer[i]->string_ptr," \t") );
-        if( delim_char == NULL ||
-            strchr( AsmBuffer[i]->string_ptr, delim_char ) == NULL ) {
+        if( ( delim_char == '\0' )
+            || ( strchr( AsmBuffer[i]->string_ptr, delim_char ) == NULL ) ) {
             AsmError( COMMENT_DELIMITER_EXPECTED );
             return( ERROR );
         }
-        if( strchr( AsmBuffer[i]->string_ptr, delim_char ) !=
-            strrchr( AsmBuffer[i]->string_ptr, delim_char ) ) {
+        if( strchr( AsmBuffer[i]->string_ptr, delim_char )
+            != strrchr( AsmBuffer[i]->string_ptr, delim_char ) ) {
             /* we have COMMENT delim. ..... delim. -- only 1 line */
         } else {
             in_comment = TRUE;
@@ -3212,16 +4040,19 @@ int Comment( int what_to_do, int i  )
 int AddAlias( int i )
 /*******************/
 {
-    /* takes directive of form: <alias_name> alias <substitute_name> */
-    struct queuenode    *qnode;
-    char *tmp;
+    char    *tmp;
 
+    if( ( AsmBuffer[i+1]->class == TC_DIRECTIVE ) &&
+        ( AsmBuffer[i+1]->u.token == T_EQU2 ) )
+        i++;  /* ALIAS <alias> = <target> (MASM, TASM) */
+    else
+        i--;  /* <alias> ALIAS <target> (WASM) */
     if( i < 0 ) {
         AsmError( SYNTAX_ERROR );
         return( ERROR );
     }
-    if( AsmBuffer[i]->token != T_ID ||
-        AsmBuffer[i+2]->token != T_ID ) {
+    if( ( AsmBuffer[i]->class != TC_ID )
+        || ( AsmBuffer[i+2]->class != TC_ID ) ) {
         AsmError( SYMBOL_EXPECTED );
         return( ERROR );
     }
@@ -3230,78 +4061,45 @@ int AddAlias( int i )
 
     /* aliases are stored as:  <len><alias_name><len><substitute_name> */
 
-    qnode = AsmAlloc( sizeof( queuenode ) );
     tmp = AsmAlloc( strlen( AsmBuffer[i]->string_ptr ) +
                     strlen( AsmBuffer[i+2]->string_ptr ) + 2 );
+    AddAliasData( tmp );
+
     strcpy( tmp, AsmBuffer[i]->string_ptr );
-    qnode->data = (void *)tmp;
     tmp += strlen( tmp ) + 1 ;
     strcpy( tmp, AsmBuffer[i+2]->string_ptr );
-    if( AliasQueue == NULL ) {
-        AliasQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( AliasQueue );
-    }
-    QEnqueue( AliasQueue, qnode );
+
     return( NOT_ERROR );
 }
 
 int NameDirective( int i )
 /************************/
 {
-    if( Options.module_name != NULL ) return( NOT_ERROR );
+    if( Options.module_name != NULL )
+        return( NOT_ERROR );
     Options.module_name = AsmAlloc( strlen( AsmBuffer[i+1]->string_ptr ) + 1 );
     strcpy( Options.module_name, AsmBuffer[i+1]->string_ptr );
-    return( NOT_ERROR );
-}
-
-int MakeComm( char *name, int type, bool already_defd, int number, int distance )
-/*******************************************************************************/
-{
-    dir_node    *dir;
-    struct asm_sym *sym;
-
-    if( already_defd ) {
-        char    *tmp;
-        // in case sym->name was passed in
-        tmp = AsmTmpAlloc( strlen( name ) + 1 );
-        strcpy( tmp, name );
-        AsmTakeOut( name );
-        name = tmp;
-    }
-    dir = dir_insert( name, TAB_COMM );
-    // what do we do with number ?
-    number = number;
-
-    if( dir == NULL ) return( ERROR );
-    sym = (struct asm_sym *)dir;
-    dir->e.comminfo->idx = ++extdefidx;
-    dir->e.comminfo->size = number;
-    dir->e.comminfo->distance = distance;
-
-    GetSymInfo( sym );
-    sym->state = SYM_EXTERNAL;
-    sym->offset = 0;
-    sym->mem_type = type;
-
     return( NOT_ERROR );
 }
 
 int CommDef( int i )
 /******************/
 {
-    char        *token;
-    char        *mangle_type = NULL;
-    char        *typetoken;
-    int         type;
-    int         distance;
-    int         count;
-    struct asm_sym *sym;
+    char            *token;
+    char            *mangle_type = NULL;
+    char            *typetoken;
+    int             type;
+    int             distance;
+    int             count;
+    dir_node        *dir;
+    int             lang_type;
+    memtype         mem_type;
 
     mangle_type = Check4Mangler( &i );
     for( ; i < Token_Count; i++ ) {
         count = 1;
-        /* get the distance ( near or far ) */
 
+        /* get the distance ( near or far ) */
         typetoken = AsmBuffer[i]->string_ptr;
         distance = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_FAR );
 
@@ -3312,11 +4110,14 @@ int CommDef( int i )
             distance = TOK_EXT_NEAR;
         }
 
+        /* get the symbol language type if present */
+        lang_type = GetLangType( &i );
+
         /* get the symbol name */
         token = AsmBuffer[i++]->string_ptr;
 
         /* go past the colon */
-        if( AsmBuffer[i]->token != T_COLON ) {
+        if( AsmBuffer[i]->class != TC_COLON ) {
             AsmError( COLON_EXPECTED );
             return( ERROR );
         }
@@ -3328,39 +4129,59 @@ int CommDef( int i )
             AsmError( INVALID_QUALIFIED_TYPE );
             return( ERROR );
         }
-        for( ; i< Token_Count && AsmBuffer[i]->token != T_COMMA; i++ ) {
-            if( AsmBuffer[i]->token == T_COLON ) {
+        for( ; i< Token_Count && AsmBuffer[i]->class != TC_COMMA; i++ ) {
+            if( AsmBuffer[i]->class == TC_COLON ) {
                 i++;
                 /* count */
-                if( AsmBuffer[i]->token != T_NUM ) {
+                if( AsmBuffer[i]->class != TC_NUM ) {
                     AsmError( EXPECTING_NUMBER );
                     return( ERROR );
                 }
-                count = AsmBuffer[i]->value;
+                count = AsmBuffer[i]->u.value;
             }
         }
-
-        sym = AsmGetSymbol( token );
-
-        if( sym != NULL ) {
-            SetMangler( sym, mangle_type );
-            if( sym->mem_type == SYM_UNDEFINED ) {
-                if( MakeComm( token, TypeInfo[type].value, TRUE, count,
-                    TypeInfo[distance].value ) == ERROR ) {
-                    return( ERROR );
-                }
-            } else if( sym->mem_type != TypeInfo[type].value ) {
-                AsmError( EXT_DEF_DIFF );
+        mem_type = TypeInfo[type].value;
+        dir = (dir_node *)AsmGetSymbol( token );
+        if( dir == NULL ) {
+            dir = dir_insert( token, TAB_COMM );
+            if( dir == NULL ) {
                 return( ERROR );
             }
-        } else {
-            if( MakeComm( token, TypeInfo[type].value, FALSE, count,
-                    TypeInfo[distance].value ) == ERROR ) {
-                return( ERROR );
-            }
-            sym = AsmGetSymbol( token );
-            SetMangler( sym, mangle_type );
+        } else if( dir->sym.state == SYM_UNDEFINED ) {
+            dir_change( dir, TAB_COMM );
+        } else if( dir->sym.mem_type != mem_type ) {
+            AsmError( EXT_DEF_DIFF );
+            return( ERROR );
         }
+        GetSymInfo( &dir->sym );
+        dir->sym.offset = 0;
+        dir->sym.mem_type = mem_type;
+        dir->e.comminfo->size = count;
+        dir->e.comminfo->distance = TypeInfo[distance].value;
+        SetMangler( &dir->sym, mangle_type, lang_type );
     }
     return( NOT_ERROR );
 }
+
+int Locals( int i )
+/*******************/
+{
+    Options.locals_len = ( AsmBuffer[i]->u.token == T_LOCALS ) ? 2 : 0;
+    if( i + 1 == Token_Count ) {
+        return( NOT_ERROR );
+    }
+    if( AsmBuffer[i]->u.token == T_LOCALS ) {
+        ++i;
+        if( i < Token_Count && AsmBuffer[i]->class == TC_ID
+            && strlen( AsmBuffer[i]->string_ptr ) >= 2 ) {
+            Options.locals_prefix[0] = AsmBuffer[i]->string_ptr[0];
+            Options.locals_prefix[1] = AsmBuffer[i]->string_ptr[1];
+            if( Token_Count - i == 1 && strlen( AsmBuffer[i]->string_ptr ) == 2 ) {
+                return( NOT_ERROR );
+            }
+        }
+    }
+    AsmError( SYNTAX_ERROR );
+    return( ERROR );
+}
+

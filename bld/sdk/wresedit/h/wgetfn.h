@@ -45,13 +45,13 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int   WGetFileFilter   ( void );
-extern void  WSetFileFilter   ( int );
-extern char *WGetInitialDir   ( void );
-extern void  WSetInitialDir   ( char * );
-extern char *WGetOpenFileName ( HWND parent, WGetFileStruct * );
-extern char *WGetSaveFileName ( HWND parent, WGetFileStruct * );
-extern Bool  WGetInternalRESName( char *filename, char *newname );
-extern void  WMassageFilter     ( char *filter );
+extern int  WGetFileFilter( void );
+extern void WSetFileFilter( int );
+extern char *WGetInitialDir( void );
+extern void WSetInitialDir( char * );
+extern char *WGetOpenFileName( HWND parent, WGetFileStruct * );
+extern char *WGetSaveFileName( HWND parent, WGetFileStruct * );
+extern Bool WGetInternalRESName( char *filename, char *newname );
+extern void WMassageFilter( char *filter );
 
 #endif

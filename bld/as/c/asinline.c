@@ -45,3 +45,33 @@ char *AsmInStr;
 
 
 extern void AsmInit( void ) {
+//***************************
+
+    SymInit();
+    InsInit();
+    DirInit();
+    ObjInit();
+}
+
+extern void AsmFini( void ) {
+//***************************
+
+    ObjFini();
+    DirFini();
+    InsFini();
+    SymFini();
+}
+
+extern int AsmLine( char *in_str ) {
+//***********************************
+    int ret;
+
+    AsmInStr = in_str;
+    if( !asyyparse() ) {
+        ret = FALSE;
+    } else {
+        ret = TRUE;
+    }
+    AsLexerFini();
+    return( ret );
+}

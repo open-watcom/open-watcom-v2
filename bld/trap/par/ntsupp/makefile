@@ -1,16 +1,22 @@
-#pmake: build remote nt 32 par
+#pmake: build remote os_nt cpu_386 par
+
+host_os  = nt
+host_cpu = 386
+
+!include cproj.mif
+!include deftarg.mif
 
 all: dbginst.exe .SYMBOLIC
 
-!ifdef on_build_machine
-
-debug_compiler=
-debug_linker=-debug:none
-
-!else
+!ifeq release 0
 
 debug_compiler=/Z7 /Odi
 debug_linker=-debug:none -debugtype:both /pdb:none
+
+!else
+
+debug_compiler=
+debug_linker=-debug:none
 
 !endif
 
@@ -49,5 +55,7 @@ debug_linker=-debug:none -debugtype:both /pdb:none
 # "drvinst -r DbgPort" to remove
 #
 #
-dbginst.exe : ..\c\dbginst.c
-        wcl386 -zq -w4 -bm-bt=nt-l=nt-D_WIN32 -i$(lang_root)\h\nt ..\c\dbginst.c $(lang_root)\lib386\nt\advapi32.lib
+inc_dirs = -I"$(lang_root)/h/nt"
+
+dbginst.exe : ../c/dbginst.c
+        $(cl) -zq -w4 -bm-bt=nt-l=nt-D_WIN32-DWIN32 $(inc_path) $<

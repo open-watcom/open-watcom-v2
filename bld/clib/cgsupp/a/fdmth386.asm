@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  REAL*8 math library.
 ;*
 ;*****************************************************************************
 
 
-;
-;   real*8 math library
-;
 ;
 ;     inputs: EDX,EAX - operand 1 (high word, low word resp. ) (op1)
 ;             ECX,EBX - operand 2                              (op2)
@@ -51,13 +47,9 @@ include struct.inc
 
         xref            __8087  ; indicate that NDP instructions are present
 
-ifndef __PENPOINT__
-
         datasegment
         extrn   __real87 : byte         ; 8087.asm
         enddata
-
-endif
 
         xref    F8DivZero       ; Fstatus
         xref    F8OverFlow      ; Fstatus
@@ -89,7 +81,6 @@ ret_op1:    ret                 ; - - return
           rcr   EDX,1           ; - put sign back
         _endif                  ; endif
 
-ifndef __PENPOINT__
         cmp     byte ptr __real87,0; if 8087 not to be used
         je      short __FDAemu  ; then emulate
 
@@ -112,7 +103,6 @@ _ret87:
           mov   EAX,EDX         ; - ...
         _endif                  ; endif
         ret                     ; return
-endif
 
 __FDAemu:
         push    EBP             ; save EBP
@@ -314,7 +304,6 @@ add_oflow:                      ; handle overflow
           rcr   ECX,1           ; - restore sign of op2
         _endguess               ; endguess
 
-ifndef __PENPOINT__
         cmp     byte ptr __real87,0; if 8087 not to be used
         je      short __FDMemu  ; then emulate
 
@@ -326,8 +315,6 @@ __FDM87:
         push    EBX             ; . . .
         fmul    qword ptr [ESP] ; multiply operand 1 by operand 2
         jmp     _ret87          ; goto common epilogue
-
-endif
 
 __FDMemu:
         push    EBP             ; save EBP

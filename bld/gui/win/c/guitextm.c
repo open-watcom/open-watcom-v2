@@ -36,7 +36,7 @@
 
 extern  WPI_TEXTMETRIC  GUItm;
 
-GUISetMetrics( gui_text_metrics *metrics, WPI_TEXTMETRIC *tm )
+void GUISetMetrics( gui_text_metrics *metrics, WPI_TEXTMETRIC *tm )
 {
     metrics->avg.x = AVGXCHAR( *tm );
     metrics->avg.y = AVGYCHAR( *tm );

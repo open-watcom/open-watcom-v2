@@ -35,19 +35,11 @@
 include mdef.inc
 include struct.inc
 
-        if __WASM__ ge 100
-            xref    "C",__set_EINVAL
-        else
-            xref    <"C",__set_EINVAL>
-        endif
+        xref    "C",__set_EINVAL
         modstart dosdisk
 
         defp    _dos_getdiskfree
-        if __WASM__ ge 100
-            xdefp   "C",_dos_getdiskfree
-        else
-            xdefp   <"C",_dos_getdiskfree>
-        endif
+        xdefp   "C",_dos_getdiskfree
 ;
 ;       unsigned _dos_getdiskfree( unsigned drive,
 ;                                  struct diskfree_t *diskspace)

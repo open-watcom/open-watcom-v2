@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Global variables for wmake.
 *
 ****************************************************************************/
 
@@ -38,10 +37,10 @@
 #   include "make.h"
 #   include "massert.h"
 #   include "mcache.h"
-#   include "memory.h"
+#   include "mmemory.h"
 #   include "mexec.h"
 #   include "mhash.h"
-#   include "misc.h"
+#   include "mmisc.h"
 #   include "mrcmsg.h"
 #   include "msg.h"
 #   include "mparse.h"
@@ -54,13 +53,14 @@
 #   include "mupdate.h"
 #   include "mvecstr.h"
 #   include "msysdep.h"
-#if defined( M_I86 ) || defined( M_I386 )
+#if defined( _M_IX86 )
 #   include "tinyio.h"
 #endif
 #else
-#   include "make.h"
 #   include "mtypes.h"
+#   include "make.h"
 #endif
+#include "banner.h"
 
 
 struct Glob Glob;
@@ -72,25 +72,13 @@ struct Glob Glob;
 const char FAR *BuiltIns = {
     "__MAKEOPTS__=%s\n"
     "__MAKEFILES__=\n"
-    "__VERSION__=11\n"
+    "__VERSION__=" BANSTR( _BANVER ) "\n"
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
-    "!loaddll wcc386 wccd386.dll\n"
-    "!loaddll wccaxp wccdaxp.dll\n"
-    "!loaddll wcc wccdi86.dll\n"
-    "!loaddll wpp386 wppd386.dll\n"
-    "!loaddll wppaxp wppdaxp.dll\n"
-    "!loaddll wpp wppdi86.dll\n"
-    "!loaddll wlink wlink.dll\n"
-    "!loaddll wlib wlibd.dll\n"
-    "!loaddll wrc wrc.dll\n"
 #endif
 
 #if defined( __DOS__ )
     "__MSDOS__=\n"
-
-#elif defined( __WINDOWS__ )
-    "__WINDOWS__=\n"
 
 #elif defined( __NT__ )
     "__NT__=\n"
@@ -98,6 +86,8 @@ const char FAR *BuiltIns = {
         "__NT386__=\n"
     #elif defined(__AXP__)
         "__NTAXP__=\n"
+    #else
+        #error Unknown CPU architecture
     #endif
 
 #elif defined( __OS2__ )
@@ -105,6 +95,28 @@ const char FAR *BuiltIns = {
 
 #elif defined( __QNX__ )
     "__QNX__=\n"
+    "__UNIX__=\n"
+
+#elif defined( __SOLARIS__ ) || defined( __SunOS ) || defined( __sun )
+    "__SOLARIS__=\n"
+    "__UNIX__=\n"
+
+#elif defined( __OSX__ ) || defined( __APPLE__ )
+    "__OSX__=\n"
+    "__UNIX__=\n"
+
+#elif defined( __LINUX__ ) || defined( __linux__ )
+    "__LINUX__=\n"
+    "__UNIX__=\n"
+    #if defined(__386__) || defined(__i386__) || defined(__i386)
+        "__LINUX386__=\n"
+    #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
+        "__LINUXPPC__=\n"
+    #elif defined(__MIPS__)  || defined(__mips__)
+        "__LINUXMIPS__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
 
 #endif
 };
@@ -123,6 +135,16 @@ const char FAR *MSSuffixList = {
         ".exe .obj .asm .c .cpp .cxx .bas .cbl .for .f .f90 .pas .res .rc"
 };
 
+
+const char FAR *UNIXSuffixList = {
+    ".SUFFIXES: "
+        ".exe .obj .c .y .l .f"
+};
+
+const char FAR *POSIXSuffixList = {
+    ".SUFFIXES: "
+        ".o .c .y .l .a .sh .f"
+};
 
 /*
  * Be careful that this doesn't exceed 2048 characters.  Note that this is just
@@ -181,10 +203,101 @@ const char FAR* MSBuiltIn = {
 
 };
 
+const char FAR* UNIXBuiltIn = {
+     "YACC=yacc\n"
+     "YFLAGS=\n"
+     "LEX=lex\n"
+     "LFLAGS=\n"
+     "LDFLAGS=\n"
+     "CC=cl\n"
+     "FC=fl\n"
+     "CFLAGS=-nologo\n"
+     ".c.exe:\n"
+     "    $(CC) $(CFLAGS) $(LDFLAGS) $<\n"
+     ".f.exe:\n"
+     "    $(FC) $(FFLAGS) $(LDFLAGS) $<\n"
+     ".c.obj:\n"
+     "    $(CC) $(CFLAGS) -c $<\n"
+     ".f.obj:\n"
+     "    $(FC) $(FFLAGS) -c $<\n"
+     ".y.obj:\n"
+     "    $(YACC) $(YFLAGS) $<\n"
+     "    $(CC) $(CFLAGS) -c y.tab.c\n"
+     "    del y.tab.c\n"
+     "    move y.tab.obj $@\n"
+     ".l.obj:\n"
+     "    $(LEX) $(LFLAGS) $<\n"
+     "    $(CC) $(CFLAGS) -c lex.yy.c\n"
+     "    del lex.yy.c\n"
+     "    move lex.yy.obj $@\n"
+     ".y.c:\n"
+     "    $(YACC) $(YFLAGS) $<\n"
+     "    move y.tab.c $@\n"
+     ".l.c:\n"
+     "    $(LEX) $(LFLAGS) $<\n"
+     "    move lex.yy.c $@\n"
+};
+
+/* The following definitions are taken from SUSv3 */
+const char FAR* POSIXBuiltIn = {
+    /* Predefined Macros */
+    "MAKE=make\n"
+    "AR=ar\n"
+    "ARFLAGS=-rv\n"
+    "YACC=yacc\n"
+    "YFLAGS=\n"
+    "LEX=lex\n"
+    "LFLAGS=\n"
+    "LDFLAGS=\n"
+    "CC=owcc\n"     /* SUSv3 says 'CC=c99' */
+    "CFLAGS=-O\n"
+    "FC=fort77\n"
+    "FFLAGS=-O 1\n"
+    /* Single suffix rules */
+#if 0
+    ".c:\n"
+    "    $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<\n"
+    ".f:\n"
+    "    $(FC) $(FFLAGS) $(LDFLAGS) -o $@ $<\n"
+    ".sh:\n"
+    "    cp $< $@\n"
+    "    chmod a+x $@\n"
+#endif
+    /* Double suffix rules */
+    ".c.o:\n"
+    "    $(CC) $(CFLAGS) -c $<\n"
+    ".f.o:\n"
+    "    $(FC) $(FFLAGS) -c $<\n"
+    ".y.o:\n"
+    "    $(YACC) $(YFLAGS) $<\n"
+    "    $(CC) $(CFLAGS) -c y.tab.c\n"
+    "    rm -f y.tab.c\n"
+    "    mv y.tab.o $@\n"
+    ".l.o:\n"
+    "    $(LEX) $(LFLAGS) $<\n"
+    "    $(CC) $(CFLAGS) -c lex.yy.c\n"
+    "    rm -f lex.yy.c\n"
+    "    mv lex.yy.o $@\n"
+    ".y.c:\n"
+    "    $(YACC) $(YFLAGS) $<\n"
+    "    mv y.tab.c $@\n"
+    ".l.c:\n"
+    "    $(LEX) $(LFLAGS) $<\n"
+    "    mv lex.yy.c $@\n"
+    ".c.a:\n"
+    "    $(CC) -c $(CFLAGS) $<\n"
+    "    $(AR) $(ARFLAGS) $@ $*.o\n"
+    "    rm -f $*.o\n"
+    ".f.a:\n"
+    "    $(FC) -c $(FFLAGS) $<\n"
+    "    $(AR) $(ARFLAGS) $@ $*.o\n"
+    "    rm -f $*.o\n"
+};
+
 /*
  * This is the table indexed by users of the is... functions.
  * The program 'cretype.exe' is used to rebuild this table.
  */
-extern const UINT8 IsArray[] = {
-#include "isarray.inc"
+const UINT8 IsArray[] = {
+#include "isarray.gh"
 };

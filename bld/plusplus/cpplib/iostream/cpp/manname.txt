@@ -1,11 +1,3 @@
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-   %     reserved.  No part of this software may be reproduced or        %
-   %     used in any form or by any means - graphic, electronic or       %
-   %     mechanical, including photocopying, recording, taping or        %
-   %     information storage and retrieval systems - except with the     %
-   %     written permission of WATCOM International Inc.                 %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ****************************** APPLICATORS ***********************************
 

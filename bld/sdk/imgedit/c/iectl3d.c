@@ -30,10 +30,14 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "wrctl3d.h"
 
-BOOL IECtl3DInit( HINSTANCE inst )
+/*
+ * IECtl3dInit
+ */
+BOOL IECtl3dInit( HINSTANCE inst )
 {
     BOOL ok;
 
@@ -43,20 +47,32 @@ BOOL IECtl3DInit( HINSTANCE inst )
     }
 
     return( ok );
-}
 
-void IECtl3DFini( HINSTANCE inst )
+} /* IECtl3dInit */
+
+/*
+ * IECtl3dFini
+ */
+void IECtl3dFini( HINSTANCE inst )
 {
     WRCtl3dUnregister( inst );
-}
 
+} /* IECtl3dFini */
+
+/*
+ * IECtl3dColorChange
+ */
 void IECtl3dColorChange( void )
 {
     WRCtl3dColorChange();
-}
 
+} /* IECtl3dColorChange */
+
+/*
+ * IECtl3dSubclassDlg
+ */
 void IECtl3dSubclassDlg( HWND win, WORD w )
 {
     WRCtl3dSubclassDlg( win, w );
-}
 
+} /* IECtl3dSubclassDlg */

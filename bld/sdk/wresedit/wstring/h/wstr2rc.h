@@ -38,4 +38,3 @@
 extern Bool WWriteStringToRC( WStringEditInfo *einfo, char *file, Bool append );
 
 #endif
-

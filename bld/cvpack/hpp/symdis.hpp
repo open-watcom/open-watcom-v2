@@ -39,9 +39,9 @@ class SymbolStruct;
 
 typedef SymbolStruct* (*PCFN)( const char* );
 
-static const BASE_ADR1 = S_ENTRYTHIS + 1;
-static const BASE_ADR2 = BASE_ADR1 + (S_REGREL16-S_BPREL16) + 1;
-static const BASE_ADR3 = BASE_ADR2 + (S_GTHREAD32-S_BPREL32) + 1;
+static const int BASE_ADR1 = S_ENTRYTHIS + 1;
+static const int BASE_ADR2 = BASE_ADR1 + (S_REGREL16-S_BPREL16) + 1;
+static const int BASE_ADR3 = BASE_ADR2 + (S_GTHREAD32-S_BPREL32) + 1;
 
 class SymbolDistributor {
 

@@ -1,0 +1,31 @@
+proj_name = fault
+
+fault_release = 0 # always build debug versions of these
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c : ../src
+
+targets = div0.exe gp.exe invins.exe stack.exe
+!ifeq host_os nt
+targets += msg.exe
+!endif
+
+all: $(targets)  .SYMBOLIC
+
+div0.exe : div0.obj
+        $(linker) $(lflags) name $^. file { $< }
+
+gp.exe : gp.obj
+        $(linker) $(lflags) name $^. file { $< }
+
+invins.exe : invins.obj
+        $(linker) $(lflags) name $^. file { $< }
+
+msg.exe : msg.obj
+        $(linker) $(lflags) name $^. file { $< }
+
+stack.exe : stack.obj
+        $(linker) $(lflags) name $^. file { $< }

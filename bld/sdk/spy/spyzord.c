@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy Z-order functions.
 *
 ****************************************************************************/
 
@@ -41,8 +40,8 @@ typedef struct winarea {
 
 static WinArea          *AreaList;
 
-static HWND SearchChildren( WinArea *cur, POINT *pt ) {
-
+static HWND SearchChildren( WinArea *cur, POINT *pt )
+{
     WinArea     *tmp;
 
     tmp = cur->child;
@@ -55,8 +54,8 @@ static HWND SearchChildren( WinArea *cur, POINT *pt ) {
     return( cur->hwnd );
 }
 
-HWND GetHwndFromPt( POINT *pt ) {
-
+HWND GetHwndFromPt( POINT *pt )
+{
     WinArea     *cur;
 
     cur = AreaList;
@@ -69,27 +68,31 @@ HWND GetHwndFromPt( POINT *pt ) {
     return( GetDesktopWindow() );
 }
 
-static void FreeNode( WinArea *cur ) {
-
-    if( cur == NULL ) return;
+static void FreeNode( WinArea *cur )
+{
+    if( cur == NULL ) {
+        return;
+    }
     FreeNode( cur->child );
     FreeNode( cur->next );
     MemFree( cur );
 }
 
-static void FreeList( WinArea *cur ) {
-
+static void FreeList( WinArea *cur )
+{
     FreeNode( cur );
 }
 
 
-static void AddChildren( WinArea *parent ) {
-
+static void AddChildren( WinArea *parent )
+{
     HWND        child;
     WinArea     *ptr;
 
     child = GetWindow( parent->hwnd, GW_CHILD );
-    if( child == NULL ) return;
+    if( child == NULL ) {
+        return;
+    }
     child = GetWindow( child, GW_HWNDLAST );
     while( child != NULL ) {
         if( IsWindowVisible( child ) ) {
@@ -105,8 +108,8 @@ static void AddChildren( WinArea *parent ) {
     }
 }
 
-static void AddWindows( HWND curwin ) {
-
+static void AddWindows( HWND curwin )
+{
     WinArea     *ptr;
 
     while( curwin != NULL ) {
@@ -129,8 +132,8 @@ static void AddWindows( HWND curwin ) {
  * RemoveWindow - remove a top level window  and all its children
  *                from the list
  */
-void RemoveWindow( HWND hwnd ) {
-
+void RemoveWindow( HWND hwnd )
+{
     WinArea     **cur;
     WinArea     *tmp;
 
@@ -141,10 +144,14 @@ void RemoveWindow( HWND hwnd ) {
      */
     for( ;; ) {
         while( *cur != NULL ) {
-            if( (*cur)->hwnd == hwnd ) break;
+            if( (*cur)->hwnd == hwnd ) {
+                break;
+            }
             cur = &(*cur)->next;
         }
-        if( *cur == NULL ) return;
+        if( *cur == NULL ) {
+            return;
+        }
         tmp = *cur;
         *cur = tmp->next;
         tmp->next = NULL;
@@ -152,8 +159,8 @@ void RemoveWindow( HWND hwnd ) {
     }
 }
 
-void IdentifyWindows( HWND toplevel, HWND topmost ) {
-
+void IdentifyWindows( HWND toplevel, HWND topmost )
+{
     HWND        curwin;
 
     FreeList( AreaList );
@@ -163,3 +170,4 @@ void IdentifyWindows( HWND toplevel, HWND topmost ) {
     curwin = GetWindow( topmost, GW_HWNDLAST );
     AddWindows( curwin );
 }
+

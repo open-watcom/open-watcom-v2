@@ -45,9 +45,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WdeDisplayHint      ( int id );
-extern void WdeHandleMenuSelect ( WPARAM, LPARAM );
-extern Bool WdeInitHints        ( void );
-extern void WdeFiniHints        ( void );
+extern void WdeDisplayHint( int id );
+extern void WdeHandleMenuSelect( WPARAM, LPARAM );
+extern Bool WdeInitHints( void );
+extern void WdeFiniHints( void );
 
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Data types and functions for directive processing.
 *
 ****************************************************************************/
 
@@ -82,12 +81,10 @@ typedef union {
     dirop_repeat        repeat;
 } dirop_data;
 
-typedef struct dir_operand dir_operand;
-
-struct dir_operand {
-    dir_operand *next;
-    dirop_type  type;
-    dirop_data  content;
+typedef struct dir_operand {
+    struct dir_operand  *next;
+    dirop_type          type;
+    dirop_data          content;
 } dir_operand;
 
 #define NUMBER_INTEGER( x )     ((x)->content.number.integer)
@@ -117,10 +114,10 @@ typedef struct directive_t {
 typedef enum {
     DT_NOPARM,
     DT_NOP_NOP,
-    #ifdef AS_ALPHA
+#ifdef AS_ALPHA
     DT_NOP_FNOP,
-    #endif
-    #ifdef _STANDALONE_
+#endif
+#ifdef _STANDALONE_
     DT_SEC_TEXT = AS_SECTION_TEXT,
     DT_SEC_DATA = AS_SECTION_DATA,
     DT_SEC_BSS = AS_SECTION_BSS,
@@ -131,12 +128,12 @@ typedef enum {
     DT_SEC_RDATA = AS_SECTION_RDATA,
     DT_SEC_XDATA = AS_SECTION_XDATA,
     DT_SEC_YDATA = AS_SECTION_YDATA,
-    #ifdef AS_PPC
+#ifdef AS_PPC
     DT_SEC_RELDATA = AS_SECTION_RELDATA,
     DT_SEC_TOCD = AS_SECTION_TOCD,
-    #endif
+#endif
     DT_USERSEC_NEW,
-    #endif
+#endif
     DT_STR_NULL,
     DT_STR_NONULL,
     DT_LNK_GLOBAL,
@@ -147,7 +144,8 @@ typedef enum {
         DT_VAL_FLOAT,
         DT_VAL_INT16,
         DT_VAL_INT32,
-    DT_VAL_LAST = DT_VAL_INT32,
+        DT_VAL_INT64,
+    DT_VAL_LAST = DT_VAL_INT64,
 } dir_table_enum;
 
 typedef bool (*dir_func)( directive_t *, dir_table_enum );

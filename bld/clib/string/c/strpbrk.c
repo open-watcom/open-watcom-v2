@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strpbrk() and wcspbrk().
 *
 ****************************************************************************/
 
@@ -34,23 +33,19 @@
 #include "widechar.h"
 #include <stddef.h>
 #include <string.h>
+#include "setbits.h"
 
 /*  The strpbrk function locates the first occurrence in the string pointed
     to by str of any character from the string pointed to by charset.
 */
 
 
-extern  void    __setbits();            /* bits.c */
-
-extern const unsigned char _HUGEDATA _Bits[8];
-
-
 _WCRTLINK CHAR_TYPE *__F_NAME(strpbrk,wcspbrk) ( const CHAR_TYPE *str, const CHAR_TYPE *charset )
 {
 #if defined(__WIDECHAR__)
 
-    const CHAR_TYPE             *p1;
-    const CHAR_TYPE             *p2;
+    const CHAR_TYPE     *p1;
+    const CHAR_TYPE     *p2;
     CHAR_TYPE           tc1;
     CHAR_TYPE           tc2;
     size_t              len;
@@ -58,20 +53,22 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strpbrk,wcspbrk) ( const CHAR_TYPE *str, const CHA
     len = 0;
     for( p1 = str; tc1 = *p1; p1++, len++ ) {
         for( p2 = charset; tc2 = *p2; p2++ ) {
-            if( tc1 == tc2 ) break;
+            if( tc1 == tc2 )
+                break;
         }
-        if( tc2 != NULLCHAR ) return( (CHAR_TYPE *)p1 );
+        if( tc2 != NULLCHAR )
+            return( (CHAR_TYPE *)p1 );
     }
     return( NULL );
 
 #else
-    unsigned char tc;
-    unsigned char vector[32];
+    char            tc;
+    unsigned char   vector[ CHARVECTOR_SIZE ];
 
     __setbits( vector, charset );
     for( ; tc = *str; ++str ) {
         /* quit when we find any char in charset */
-        if( ( vector[ tc >> 3 ] & _Bits[ tc & 0x07 ] ) != 0 )
+        if( GETCHARBIT( vector, tc ) != 0 )
              return( (char *)str );
     }
     return( NULL );

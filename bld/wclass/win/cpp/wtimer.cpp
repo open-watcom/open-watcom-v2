@@ -63,7 +63,9 @@ WEXPORT WTimer::~WTimer() {
 /*************************/
 
     stop();
+#ifndef __NT__
     FreeProcInstance( _procInst );
+#endif
 }
 
 
@@ -71,7 +73,7 @@ bool WEXPORT WTimer::start( int interval, int count ) {
 /******************************************************/
 
     _count = count;
-    _id = SetTimer( NULL, _timerId++, interval, _procInst );
+    _id = SetTimer( NULL, _timerId++, interval, (TIMERPROC)_procInst );
     _timerMap.setThis( this, (WHANDLE)_id );
     return( _id != 0 );
 }

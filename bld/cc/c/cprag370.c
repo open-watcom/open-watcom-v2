@@ -31,7 +31,6 @@
 
 
 #include "cvars.h"
-#include "ctokens.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
 
@@ -41,7 +40,6 @@ extern  void    SetCurrInfo();
 extern  char    *CMemAlloc();           /* cmemmgr */
 extern  unsigned long SizeOfArg();      /* csizeof */
 extern  void    PragObjNameInfo();
-extern  void    PragInit();
 extern  void    MustRecog();
 extern  void    PragEnding();
 extern  int     PragRecog();
@@ -63,11 +61,16 @@ hw_reg_set PragRegName( char * buffer )
     }
 
 
-void PragmaInit()
-    {
-        Offset = 0;
-        PragInit();
-    }
+void PragmaInit( void )
+{
+    Offset = 0;
+}
+
+
+void PragmaFini( void )
+/*********************/
+{
+}
 
 
 static call_class PragLinkage()
@@ -235,7 +238,7 @@ local void GetLinkInfo()
 
 local void GetParmInfo()
     {
-        if( PragSet() != T_NULL ) {
+        if( PragRegSet() != T_NULL ) {
             PragManyRegSets();
         }
     }

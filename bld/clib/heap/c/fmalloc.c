@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of far malloc() and _fmalloc().
 *
 ****************************************************************************/
 
@@ -97,7 +96,8 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
         for(;;) {
             if( seg == 0 ) {
                 seg = __AllocSeg( amt );
-                if( seg == 0 ) break;
+                if( seg == 0 )
+                    break;
                 if( __fheap == 0 ) {
                     __fheap = seg;
                 } else {
@@ -109,8 +109,10 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
             for(;;) {
                 __fheapRover = seg;
                 offset = __MemAllocator( amt, seg, 0 );
-                if( offset != 0 ) goto release_heap;
-                if( __GrowSeg( seg, amt ) == 0 ) break;
+                if( offset != 0 )
+                    goto release_heap;
+                if( __GrowSeg( seg, amt ) == 0 )
+                    break;
             }
             prev_seg = seg;
             p = MK_FP( seg, 0 );
@@ -119,14 +121,15 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
             }
             seg = p->nextseg;
         }
-        if( __fmemneed( amt ) == 0 ) break;
+        if( __fmemneed( amt ) == 0 )
+            break;
     }
     if( seg == 0 ) {
         offset = (unsigned)_nmalloc( amt );
-        if( offset != 0 )  seg = _DGroup();
+        if( offset != 0 )
+            seg = _DGroup();
     }
 release_heap:
-    __fheap_clean = 0;
     _ReleaseFHeap();
     return( MK_FP( seg, offset ) );
 }

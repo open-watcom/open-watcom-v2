@@ -30,26 +30,19 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
 #include "vi.h"
-#include "keys.h"
 #include "source.h"
 #include "win.h"
-#include "lang.h"
 #include "fts.h"
-#ifdef __WIN__
-    #include "winvi.h"
-#endif
+#include <assert.h>
 
 /*
  * NextFileDammit - done with current file, get next one
  */
-int NextFileDammit( void )
+vi_rc NextFileDammit( void )
 {
-    info        *cinfo,*tinfo;
-    ushort      lastid;
+    info        *cinfo, *tinfo;
+    vi_ushort   lastid;
     int         dont_exit_this_time = 0;
 
     RemoveFromAutoSaveList();
@@ -68,7 +61,7 @@ int NextFileDammit( void )
             cinfo = CurrentInfo->prev;
         }
         lastid = CurrentInfo->DuplicateID;
-        MemFree( DeleteLLItem( &InfoHead, &InfoTail, CurrentInfo ) );
+        MemFree( DeleteLLItem( (ss **)&InfoHead, (ss **)&InfoTail, (ss *)CurrentInfo ) );
         CurrentInfo = NULL;
 
         /*
@@ -77,8 +70,7 @@ int NextFileDammit( void )
         FreeMarkList();
         if( CurrentFile->dup_count > 0 ) {
             CurrentFile->dup_count--;
-            tinfo = InfoHead;
-            while( tinfo != NULL ) {
+            for( tinfo = InfoHead; tinfo != NULL; tinfo = tinfo->next ) {
                 if( tinfo->CurrentFile == CurrentFile ) {
                     if( tinfo->DuplicateID > lastid ) {
                         tinfo->DuplicateID--;
@@ -87,17 +79,16 @@ int NextFileDammit( void )
                         SetFileWindowTitle( tinfo->CurrentWindow, tinfo, FALSE );
                     }
                 }
-                tinfo = tinfo->next;
             }
         } else {
             FreeUndoStacks();
             FreeEntireFile( CurrentFile );
             // CurrentFile = NULL;
         }
-        #ifdef __WIN__
-            CloseAChildWindow( CurrentWindow );
-            CurrentWindow = NO_WINDOW;
-        #endif
+#ifdef __WIN__
+        CloseAChildWindow( CurrentWindow );
+        CurrentWindow = NO_WINDOW;
+#endif
         dont_exit_this_time = 1;
 
     } else {
@@ -113,22 +104,24 @@ int NextFileDammit( void )
 
     if( cinfo == NULL ) {
         if( EditFlags.QuitAtLastFileExit || !dont_exit_this_time ) {
-            CurrentWindow = NULL;
+            CurrentWindow = (window_id) 0;
             // EditFlags.Quiet = TRUE;
-            if( CommandBuffer ) MemFree( CommandBuffer );
-            QuitEditor( 0 );
+            if( CommandBuffer ) {
+                MemFree( CommandBuffer );
+            }
+            QuitEditor( ERR_NO_ERR );
         }
     }
-    #ifndef __WIN__
-     else {
-            CloseAWindow( CurrentWindow );
-            CurrentWindow = NO_WINDOW;
-     }
-    #endif
+#ifndef __WIN__
+    else {
+        CloseAWindow( CurrentWindow );
+        CurrentWindow = NO_WINDOW;
+    }
+#endif
     /*
      * now, set up with next file
      */
-    if( cinfo ){
+    if( cinfo ) {
         BringUpFile( cinfo, TRUE );
     } else {
         CurrentFile = NULL;
@@ -141,7 +134,7 @@ int NextFileDammit( void )
 /*
  * NextFile - go to next file, checking modified flag
  */
-int NextFile( void )
+vi_rc NextFile( void )
 {
     if( CurrentFile != NULL ) {
         if( CurrentFile->dup_count == 0 ) {
@@ -158,7 +151,7 @@ int NextFile( void )
 /*
  * nextFile - go to next file
  */
-static int nextFile( info *cinfo )
+static vi_rc nextFile( info *cinfo )
 {
     SaveCurrentInfo();
     BringUpFile( cinfo, FALSE );
@@ -172,7 +165,7 @@ static int nextFile( info *cinfo )
 /*
  * RotateFileForward - rotate forward through current file list
  */
-int RotateFileForward( void )
+vi_rc RotateFileForward( void )
 {
     info        *cinfo;
 
@@ -190,7 +183,7 @@ int RotateFileForward( void )
 /*
  * RotateFileBackwards - rotate forward through current file list
  */
-int RotateFileBackwards( void )
+vi_rc RotateFileBackwards( void )
 {
     info        *cinfo;
 
@@ -208,7 +201,7 @@ int RotateFileBackwards( void )
 /*
  * GotoFile - bring up file in filelist with given window id
  */
-int GotoFile( window_id id )
+vi_rc GotoFile( window_id id )
 {
     info        *cinfo;
 
@@ -216,9 +209,10 @@ int GotoFile( window_id id )
         return( ERR_NO_ERR );
     }
 
-    cinfo = InfoHead;
-    while( (cinfo->CurrentWindow != id) && (cinfo->next != NULL) ) {
-        cinfo = cinfo->next;
+    for( cinfo = InfoHead; cinfo->next != NULL; cinfo = cinfo->next ) {
+        if( cinfo->CurrentWindow == id ) {
+            break;
+        }
     }
     assert( cinfo != NULL );
 
@@ -231,6 +225,11 @@ int GotoFile( window_id id )
 void BringUpFile( info *ci, bool runCmds )
 {
     window_id   wn;
+    static bool recursive = FALSE;
+
+    if( recursive ) {
+        return;
+    }
 
     SourceHook( SRC_HOOK_BUFFOUT, ERR_NO_ERR );
     wn = CurrentWindow;
@@ -259,7 +258,9 @@ void BringUpFile( info *ci, bool runCmds )
     // be careful when runCmds true!  Some commands redraw the screen,
     // which calls BringUpFile, which (if runCmds = TRUE) will run cmds...
     if( runCmds && ci != NULL ) {
-        // FTSRunCmds( ci->CurrentFile->name );
+        recursive = TRUE;
+        FTSRunCmds( ci->CurrentFile->name );
+        recursive = FALSE;
     }
 
 #ifdef __WIN__
@@ -271,4 +272,5 @@ void BringUpFile( info *ci, bool runCmds )
         SetWindowCursorForReal();
     }
 #endif
+
 } /* BringUpFile */

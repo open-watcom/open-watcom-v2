@@ -69,8 +69,8 @@ void global win_uisetcolor( int clr )
         VIDPort = VIDCOLRINDXREG;
 }
 
-bool intern initmonitor()
-/***********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -83,8 +83,8 @@ bool intern initmonitor()
 //static void (far __pascal *HookFunc)(void far *) = NULL;
 extern void far HookRtn( unsigned , unsigned );
 
-int intern initbios()
-/*******************/
+int intern initbios( void )
+/*************************/
 {
     int                                 initialized;
 
@@ -118,8 +118,8 @@ unsigned global uiclockdelay( unsigned milli )
 }
 
 
-void intern finibios()
-/********************/
+void intern finibios( void )
+/**************************/
 {
     finikeyboard();
     uifinicursor();

@@ -38,12 +38,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdePButtonCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeTButtonCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeCButtonCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeRButtonCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeGButtonCreate   ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeButtonInit      ( Bool );
-extern void              WdeButtonFini      ( void );
+extern OBJPTR WINEXPORT  WdePButtonCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeTButtonCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeCButtonCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeRButtonCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeGButtonCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeButtonInit( Bool );
+extern void              WdeButtonFini( void );
 
 #endif

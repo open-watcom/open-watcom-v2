@@ -1,0 +1,46 @@
+*$noreference
+
+! OEM Resource Ordinal Numbers:
+! -----------------------------
+
+      integer OCR_NORMAL
+      integer OCR_IBEAM
+      integer OCR_WAIT
+      integer OCR_CROSS
+      integer OCR_UP
+      integer OCR_SIZE
+      integer OCR_ICON
+      integer OCR_SIZENWSE
+      integer OCR_SIZENESW
+      integer OCR_SIZEWE
+      integer OCR_SIZENS
+      integer OCR_SIZEALL
+      integer OCR_ICOCUR
+
+      integer OIC_SAMPLE
+      integer OIC_HAND
+      integer OIC_QUES
+      integer OIC_BANG
+      integer OIC_NOTE
+
+      parameter ( OCR_NORMAL          = 32512 )
+      parameter ( OCR_IBEAM           = 32513 )
+      parameter ( OCR_WAIT            = 32514 )
+      parameter ( OCR_CROSS           = 32515 )
+      parameter ( OCR_UP              = 32516 )
+      parameter ( OCR_SIZE            = 32640 )
+      parameter ( OCR_ICON            = 32641 )
+      parameter ( OCR_SIZENWSE        = 32642 )
+      parameter ( OCR_SIZENESW        = 32643 )
+      parameter ( OCR_SIZEWE          = 32644 )
+      parameter ( OCR_SIZENS          = 32645 )
+      parameter ( OCR_SIZEALL         = 32646 )
+      parameter ( OCR_ICOCUR          = 32647 )
+
+      parameter ( OIC_SAMPLE          = 32512 )
+      parameter ( OIC_HAND            = 32513 )
+      parameter ( OIC_QUES            = 32514 )
+      parameter ( OIC_BANG            = 32515 )
+      parameter ( OIC_NOTE            = 32516 )
+
+*$reference

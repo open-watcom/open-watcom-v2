@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX threading routines.
 *
 ****************************************************************************/
 
@@ -43,15 +42,12 @@
 #include "osthread.h"
 #include "stacklow.h"
 #include "rtdata.h"
-#include "extfunc.h"
 #include "mthread.h"
 #include "seterrno.h"
 #include "semaqnx.h"
+#include "cthread.h"
 
 extern  void            __InitMultipleThread(void);
-extern  void            _endthread( void );
-extern  thread_data     *__QNXAddThread( thread_data *tdata );
-extern  void            __QNXRemoveThread( void );
 extern  void            __qnx_exit( int __status );
 
 typedef struct thread_args {

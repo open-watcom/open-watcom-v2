@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Class prototype for project files window.
 *
 ****************************************************************************/
 
@@ -79,6 +78,7 @@ WCLASS VComponent : public WMdiChild, public WView
         void WEXPORT showCompCommand();
         void WEXPORT touchComponent( bool quiet = FALSE );
         bool WEXPORT keyDown( WKeyCode, WKeyState );
+    bool WEXPORT scrollNotify( WScrollNotification, int );
         MItem* WEXPORT selectedItem();
         MComponent* component() { return _component; }
         MItem* WEXPORT target() { return _component->target(); }

@@ -39,7 +39,7 @@
 
 const int POOLSIZE = 32;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool ClassType::_pool( sizeof( ClassType ), "ClassType", POOLSIZE );
 #pragma warning 549 3
 
@@ -107,7 +107,7 @@ static int ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
 
     if( symtype == DR_SYM_FUNCTION ) {
         if( !quit && !(filt._members & MemberFilter::MemFuncStatic) ) {
-            quit = ( DRIsFunctionStatic( handle ) != 0 );
+            quit = ( DRIsStatic( handle ) != 0 );
         }
     } else {
         if( !quit && !(filt._members & MemberFilter::MemVarStatic) ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Structures and prototypes for display of program variables.
 *
 ****************************************************************************/
 
@@ -145,11 +144,7 @@ typedef struct {
 
 #define VAR_NO_ROW -1
 
-extern long             ExprStackTimeStamp;
-extern int              CurrRow;
-extern var_node *VarFound;
 extern bool             VarError;
-extern var_info *TargVar;
 
 enum {
     VAR_PIECE_GADGET,
@@ -186,9 +181,9 @@ typedef unsigned_8 var_type; enum {
 extern type_display     *TypeDisplay;
 
 extern  bool            VarDeleteAScope(var_info *i,void*);
-extern  bool            VarUnMap(var_info *i, image_entry *);
+extern  bool            VarUnMap(var_info *i, void *);
 extern  bool            VarDeleteAllScopes(var_info *i,void*);
-extern  bool            VarReMap(var_info *i,image_entry*);
+extern  bool            VarReMap(var_info *i, void *);
 extern void             VarUnMapScopes( image_entry *image );
 extern void             VarReMapScopes( image_entry *image );
 
@@ -196,13 +191,15 @@ extern  int             VarRowTotal(var_info *i);
 extern  void            VarAllNodesInvalid(var_info *i);
 extern  void            VarKillExprSPCache(var_info *i);
 extern  bool            VarErrState(void);
-extern  var_node        *VarAdd(var_info *i,void *name,unsigned int len,bool expand,bool is_sym_handle);
+extern  var_node        *VarAdd1(var_info *i,void *name,unsigned int len,bool expand,bool is_sym_handle);
 extern  unsigned int    VarNewCurrRadix(var_node *v);
 extern  int             VarFindRootRow(var_info *i,var_node *v,int row);
 extern  bool            VarExpandable(type_kind node_class);
+extern  bool            VarParentIsArray( var_node *v );
 extern  var_node        *VarFindRow(var_info *i,int row);
 extern  void            VarAddNodeToScope(var_info *i,var_node *v,char *buff);
 extern  void            VarExpandRow(var_info *i,var_node *v,int row);
+extern  void            VarExpandRowNoCollapse(var_info *i,var_node *v,int row);
 extern  bool            VarPrintText(var_info *i,char *buff,void (*rtn)(void ),int len);
 extern  void            VarBuildName(var_info *i,var_node *v,bool just_end_bit);
 extern  bool            VarGetStackClass(type_kind *node_class);
@@ -232,7 +229,9 @@ extern void             VarSaveWndToScope( void *wnd );
 extern void             VarRestoreWndFromScope( void *wnd );
 
 extern void             VarDisplaySetHex(var_node*v);
+extern void             VarDisplaySetArrayHex(var_node*v);
 extern void             VarDisplaySetDecimal(var_node*v);
+extern void             VarDisplaySetArrayDec(var_node*v);
 extern void             VarDisplaySetString( var_node *v );
 extern void             VarDisplaySetPointer( var_node *v );
 extern void             VarDisplaySetChar( var_node *v );
@@ -243,10 +242,10 @@ extern bool             VarDisplayIsPointer( var_node *v );
 extern bool             VarDisplayIsChar( var_node *v );
 extern void             VarBreakOnWrite(var_info *i,var_node*v);
 extern void             VarAddWatch( var_info *i, var_node *v );
-extern void             VarInspectMemory();
-extern void             VarInspectPointer();
-extern void             VarInspectCode();
-extern bool             VarIsLValue();
+extern void             VarInspectMemory( void );
+extern void             VarInspectPointer( void );
+extern void             VarInspectCode( void );
+extern bool             VarIsLValue( void );
 
 extern bool             VarDisplayShowMembers( var_info *i );
 extern void             VarDisplaySetMembers( var_info *i, bool on );
@@ -268,3 +267,4 @@ extern var_node         *VarNextVisibleSibling( var_info *i, var_node *v );
 typedef void            VARDIRTRTN( void *, int );
 extern void             VarRefreshVisible( var_info *, int, int, VARDIRTRTN *, void * );
 extern void             VarBaseName( var_node *v );
+extern var_node *       VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit );

@@ -1,0 +1,20 @@
+proj_name = dmpobj
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h"
+
+.c: ../c
+
+objs =  dmpobj.obj      &
+        objread.obj     &
+        output.obj      &
+        process.obj
+
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
+
+!include exetarg.mif
+!include verrc.mif

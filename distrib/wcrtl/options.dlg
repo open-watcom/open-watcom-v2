@@ -1,0 +1,12 @@
+name=Options
+condition=SelectiveInstall MakeDisks !
+include=options1.dlg
+static_text=
+other_button=\
+        //1"Oth&er..."\
+        //2"その他(&e)..."\
+        //0,Other,\
+        //1"Toolkits and other components:"\
+        //2"その他のコンポーネント:"\
+        //0
+include=options2.dlg

@@ -24,22 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage the .debug_abbrev section.
 *
 ****************************************************************************/
 
 
-/*
-    manage the .debug_abbrev section
-*/
 #include "dwpriv.h"
 #include "dwutils.h"
 #include "dwabbrev.h"
 #include "dwdecl.h"
 
 
-#include "dwabinfo.i"
+#include "dwabinfo.gh"
 
 
 static const struct {
@@ -97,7 +93,7 @@ static uint mapFromWToX(
 
 unsigned MarkAbbrevAsUsed(
     dw_client                   cli,
-    abbrev_code *               abbrev )
+    abbrev_code                 *abbrev )
 {
     static const uint_8         sibling_attr[] = {
         DW_AT_sibling,          DW_FORM_ref4
@@ -105,9 +101,9 @@ unsigned MarkAbbrevAsUsed(
     uint                        index;
     uint                        code;
     uint_8                      bit;
-    char                        buf[ 2*MAX_LEB128 ];
-    char                        *end;
-    const struct abbrev_info *  data;
+    uint_8                      buf[ 2 * MAX_LEB128 ];
+    uint_8                      *end;
+    const struct abbrev_info    *data;
     int                         i;
 
     data = &abbrevInfo[ ( *abbrev & AB_ENUM_MASK ) - 1 ];
@@ -209,8 +205,8 @@ void FiniDebugAbbrev(
     CLIWrite( DW_DEBUG_ABBREV, zeros, 1 );
 }
 
-extern void  GenAllAbbrev( dw_client  cli ){
-
+extern void  GenAllAbbrev( dw_client  cli )
+{
     abbrev_code                 abbrev;
     uint_32                     mask;
     uint                        index;
@@ -220,21 +216,21 @@ extern void  GenAllAbbrev( dw_client  cli ){
 
     /* generate all abbrev codes */
     index = 0;
-    while( index < (AB_MAX-1) ){
-        if( (index+1) == (AB_MAX-1) ){
+    while( index < (AB_MAX - 1) ) {
+        if( (index+1) == (AB_MAX - 1) ) {
             count = AB_LAST_CODE - abbrevInfo[index].bit_index;
-        }else{
+        } else {
             count = abbrevInfo[index+1].bit_index-abbrevInfo[index].bit_index;
         }
         mask = abbrevInfo[ index ].valid_mask & ~AB_ALWAYS;
-        for( mask_count = 0;  mask_count < count; ++mask_count ){
+        for( mask_count = 0;  mask_count < count; ++mask_count ) {
             uint which_mask_bits;
 
             abbrev = 0;
             mask_bit = 0x80000000;
             which_mask_bits = mask_count;
             while( which_mask_bits ) {
-                while( (mask & mask_bit ) == 0 ){ /* tab to next bit flag */
+                while( (mask & mask_bit ) == 0 ) {  /* tab to next bit flag */
                     mask_bit >>= 1;
                 }
                 if( which_mask_bits & 1 ) {

@@ -103,7 +103,7 @@ extern name_handle NameAdd( const char *name, size_t len ) {
         cur->cur_off = 0;
     }
 /**/myassert( cur != NULL );
-    p = elm->name = cur->data + cur->cur_off;
+    p = elm->name = (char *)cur->data + cur->cur_off;
     cur->cur_off += len;
     --len;
     memcpy( p, name, len );

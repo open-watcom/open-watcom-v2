@@ -33,18 +33,18 @@
 #if !defined( __OS2__ )
 
 #ifdef __NT__
-#define ADJUST_ITEMLEN_DWORD( a ) a = (((a)+3) & ~3)    // DWORD align
-#define ADJUST_BLOCKLEN_DWORD( a ) a = (((a)+3) & ~3)   // DWORD align
+    #define ADJUST_ITEMLEN_DWORD( a )   a = (((a) + 3) & ~3)    // DWORD align
+    #define ADJUST_BLOCKLEN_DWORD( a )  a = (((a) + 3) & ~3)    // DWORD align
 #else
-#define ADJUST_ITEMLEN_DWORD( a )
-#define ADJUST_BLOCKLEN_DWORD( a )
+    #define ADJUST_ITEMLEN_DWORD( a )
+    #define ADJUST_BLOCKLEN_DWORD( a )
 #endif
 
-#if defined(__NT__)
-//#if defined(__ALPHA__)
-//    #pragma pack(1);
+#if defined( __NT__ )
+//#if defined( __ALPHA__ )
+//    #pragma pack( 1 );
 //#else
-    #pragma pack(2);
+    #pragma pack( 2 );
 //#endif
 #endif
 
@@ -65,7 +65,7 @@ typedef struct {
     short       PointSize;
     short       weight;
     short       bItalic;
-//     char     fontName[];
+//  char        fontName[];
 } FONTEXINFO;
 
 typedef struct {
@@ -79,17 +79,11 @@ typedef struct {
     DWORD       dtilID;
 } _DLGEXITEMTEMPLATE;
 
-#if defined(__NT__)
-#pragma pack(1);
+#if defined( __NT__ )
+    #pragma pack( 1 );
 #endif
 
-extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle,
-                       DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy,
-                       char *menuname, char *classname, char *captiontext,
-                       short pointsize, char *typeface, short FontWeight,
-                       short FontItalic );
-extern GLOBALHANDLE AddControlEX ( GLOBALHANDLE data, int dtilx, int dtily,
-                   int dtilcx, int dtilcy, DWORD id, DWORD style,
-                   DWORD exstyle, DWORD helpID, char *class, char *text,
-                   BYTE infolen, char *infodata );
+extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, short pointsize, char *typeface, short FontWeight, short FontItalic );
+extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, char *class, char *text, BYTE infolen, char *infodata );
+
 #endif

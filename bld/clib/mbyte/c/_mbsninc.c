@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <mbstring.h>
 #include "farfunc.h"
+#include "mbyte.h"
 
 
 

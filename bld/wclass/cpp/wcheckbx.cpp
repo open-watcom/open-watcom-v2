@@ -55,12 +55,6 @@ WEXPORT WCheckBox::WCheckBox( WStatDialog* parent, unsigned id,
 
 }
 
-
-WEXPORT WCheckBox::~WCheckBox() {
-/*******************************/
-
-}
-
 WEXPORT WThreeState::WThreeState( WWindow* parent, const WRect& r,
                                   const char *text, WStyle style )
         : WButton( parent, GUI_CHECK_BOX, r, text, style ) {
@@ -75,11 +69,6 @@ WEXPORT WThreeState::WThreeState( WStatDialog* parent, unsigned id,
 
 }
 
-WEXPORT WThreeState::~WThreeState() {
-/***********************************/
-
-}
-
 WCheckState3 WThreeState::checkState() {
 /**************************************/
 
@@ -90,4 +79,18 @@ void WThreeState::setCheckState( WCheckState3 state ) {
 /*****************************************************/
 
     GUISetChecked( parent()->handle(), controlId(), state );
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WCheckBox::~WCheckBox() {
+/*******************************/
+
+}
+
+WEXPORT WThreeState::~WThreeState() {
+/***********************************/
+
 }

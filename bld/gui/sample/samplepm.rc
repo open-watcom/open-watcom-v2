@@ -1,3 +1,5 @@
+#include <os2.h>
+
 #include "samprc.h"
 #include "gui.rc"
 

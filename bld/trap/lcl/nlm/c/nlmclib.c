@@ -33,7 +33,27 @@
 #include "clib.h"
 #include "debugme.h"
 
-#ifdef __NW40__
+#if defined ( __NW50__ )
+
+    /*
+    //  LibC definitions
+    */
+    extern void *getnlmhandle( void );
+    extern void *ImportPublicObject( void *NLMHandle, const char *name );
+
+    #define T_ProcessID void
+
+    /*
+    //  These are statically linked against rather than dynamically imported
+    */
+    extern int      DebugValidatePID( void *pPID );
+    extern void     DebugBoobyTrapPID( void *pPID );
+    extern void     DebugUnBoobyTrapPID( void *pPID );
+    extern char *   DebugGetPIDName( void *pPID );
+    extern struct   LoadDefinitionStructure * DebugGetNLMFromPID( void *pPID );
+    extern void     DebugSetupPIDForACleanExit( void *pPID );
+
+#elif defined ( __NW40__ )
     #define PCBProcessName ProcessName
     #define T_ProcessID T_PCBStruct
     #define T_ThreadControlStruct T_ThreadStruct
@@ -60,29 +80,41 @@
 
     static int SymbolsImported = FALSE;
 
-#else
+#elif defined ( __NW30__ )
     #define T_ProcessID T_ThreadControlStruct
+#else
+    #error No Netware Version defined.
 #endif
 
-#ifdef __NW40__
-void ImportCLIBSymbols()
+#if defined ( __NW40__ )
+int ImportCLIBSymbols( void )
 {
     unsigned int handle;
-    if( SymbolsImported ) return;
+    if( SymbolsImported )
+        return TRUE;
 
     handle = GetNLMHandle();
-    SymbolsImported = TRUE;
     pDebugValidatePID = (tDebugValidatePID)ImportSymbol( handle, "DebugValidatePID" );
     pDebugBoobyTrapPID = (tDebugBoobyTrapPID)ImportSymbol( handle, "DebugBoobyTrapPID" );
     pDebugUnBoobyTrapPID = (tDebugUnBoobyTrapPID)ImportSymbol( handle, "DebugUnBoobyTrapPID" );
     pDebugGetPIDName = (tDebugGetPIDName)ImportSymbol( handle, "DebugGetPIDName" );
     pDebugGetNLMFromPID = (tDebugGetNLMFromPID)ImportSymbol( handle, "DebugGetNLMFromPID" );
     pDebugSetupPIDForACleanExit = (tDebugSetupPIDForACleanExit)ImportSymbol( handle, "DebugSetupPIDForACleanExit" );
+
+    SymbolsImported = TRUE;
+
+    return SymbolsImported;
 }
 #endif
 
 int ValidatePID( T_ProcessID *pPID )
 {
+/*
+//  NW5 and later cannot use PCB ID etc
+*/
+#if defined ( __NW50__)
+    return(DebugValidatePID(pPID));
+#else
     #ifdef __NW40__
         ImportCLIBSymbols();
         if( pDebugValidatePID ) {
@@ -95,9 +127,11 @@ int ValidatePID( T_ProcessID *pPID )
     #else
         return( ((T_ThreadControlStruct*)pPID)->PCBStructID == PCBSignature );
     #endif
+#endif
 }
 
 
+#if !defined (  __NW50__ )
 static T_ThreadControlStruct *GetTCSFromPID( T_ProcessID *pPID )
 {
     if( pPID == NULL ) return( NULL );
@@ -107,7 +141,9 @@ static T_ThreadControlStruct *GetTCSFromPID( T_ProcessID *pPID )
         return( (T_ThreadControlStruct*)pPID );
     #endif
 }
+#endif
 
+#if !defined (  __NW50__ )
 static T_NLMControlStruct *GetNCSFromPID( T_ProcessID *pPID )
 {
     T_ThreadGroupControlStruct  *pTGCS;
@@ -124,9 +160,13 @@ static T_NLMControlStruct *GetNCSFromPID( T_ProcessID *pPID )
     if( pNCS->NCSStructID != NCSSignature ) return( NULL );
     return( pNCS );
 }
+#endif
 
 void BoobyTrapPID( T_ProcessID *pPID )
 {
+#if defined (  __NW50__ )
+    DebugBoobyTrapPID( pPID );
+#else
     T_ThreadGroupControlStruct  *pTGCS;
     T_ThreadControlStruct       *pTCS;
     T_NLMControlStruct          *pNCS;
@@ -145,10 +185,15 @@ void BoobyTrapPID( T_ProcessID *pPID )
             pTCS->TCSSuspendOrStop |= THREAD_DEBUG;
         }
     }
+#endif
 }
 
 void UnBoobyTrapPID( T_ProcessID *pPID )
 {
+#if defined ( __NW50__ )
+    DebugUnBoobyTrapPID( pPID );
+    return;
+#else
     T_ThreadGroupControlStruct  *pTGCS;
     T_ThreadControlStruct       *pTCS;
     T_NLMControlStruct          *pNCS;
@@ -167,10 +212,14 @@ void UnBoobyTrapPID( T_ProcessID *pPID )
             pTCS->TCSSuspendOrStop &= ~THREAD_DEBUG;
         }
     }
+#endif
 }
 
 char *GetPIDName( T_ProcessID *pPID )
 {
+#if defined ( __NW50__ )
+    return(DebugGetPIDName( pPID ));
+#else
     #ifdef __NW40__
         ImportCLIBSymbols();
         if( pDebugGetPIDName ) {
@@ -178,11 +227,15 @@ char *GetPIDName( T_ProcessID *pPID )
         }
     #endif
     if( pPID == NULL ) return( NULL );
-    return( pPID->PCBProcessName );
+    return( (char *)pPID->PCBProcessName );
+#endif
 }
 
 struct LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID )
 {
+#if defined ( __NW50__ )
+    return( DebugGetNLMFromPID( pPID ) );
+#else
     T_NLMControlStruct          *pNCS;
 
     #ifdef __NW40__
@@ -194,10 +247,15 @@ struct LoadDefinitionStructure *GetNLMFromPID( T_ProcessID *pPID )
     pNCS = GetNCSFromPID( pPID );
     if( pNCS == NULL ) return( NULL );
     return( pNCS->NCSNLMHandle );
+#endif
 }
 
 void SetupPIDForACleanExit( T_ProcessID *pPID )
 {
+#if defined ( __NW50__ )
+    DebugSetupPIDForACleanExit( pPID );
+    return;
+#else
     T_OpenScreenStruct  *screen;
     T_NLMControlStruct          *pNCS;
 
@@ -215,4 +273,5 @@ void SetupPIDForACleanExit( T_ProcessID *pPID )
     }
     pNCS->NCSUnloadFunc = NULL;
     pNCS->NCSExitCount = EXIT_LIMIT + 1;
+#endif
 }

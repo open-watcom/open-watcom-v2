@@ -33,7 +33,7 @@
 
 #include "cover.h"
 
-LONG PASCAL _Cover_SendDlgItemMessage(HWND hwnd, int dlgitem, WORD msg,
+LONG PASCAL _Cover_SendDlgItemMessage(HWND hwnd, short dlgitem, WORD msg,
                                   WORD wp, LONG lp)
 {
     BOOL        alias;

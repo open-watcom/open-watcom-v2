@@ -1,0 +1,12 @@
+# This file contains auxiliary information used by the MKDISK program. This
+# information consists of the name of the product, default installation
+# directory, program group name, and icons and INI file lines.
+[c]
+AppName=WATCOM C/C++ Run-Time Library Source
+DstDir=C:\WCRTL
+Setup=..\supp\wdsetup.exe
+Exe=..\supp\install.exe
+Exe=..\supp\ntsetup.exe
+Exe=..\supp\wpack.exe
+dialog=wcrtlwel.dlg
+dialogorder=welcome

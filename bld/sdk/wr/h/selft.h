@@ -39,4 +39,3 @@
 #define IDM_RFWAT       307
 #define IDM_RFMS        308
 #define IDM_SFTHELP     309
-

@@ -35,13 +35,10 @@
 #include <conio.h>
 #include <dos.h>
 #include "defwin.h"
+#include "qread.h"
 
-#ifdef DEFAULT_WINDOWING
-    extern int __qread( int, char *, unsigned );
-#endif
-
-extern  void    _dos_kb_input();
-extern  void    _bd_dos_kb_input();
+extern  void    _dos_kb_input( void _WCNEAR *s );
+extern  void    _bd_dos_kb_input( unsigned short seg, unsigned off );
 
 #if defined(__386__)
 #pragma aux     _dos_kb_input =     \
@@ -55,7 +52,7 @@ extern  void    _bd_dos_kb_input();
                                     0xcd 0x21   /* int 21h */\
                                     0x1f        /* pop ds */\
                         parm caller [ax] [edx];
-#elif defined(M_I86)
+#elif defined( _M_I86 )
 #pragma aux     _dos_kb_input =     \
                                     0xb4 0x0a   /* select keyboard input */\
                                     0xcd 0x21   /* int 21h */\
@@ -72,39 +69,39 @@ extern  void    _bd_dos_kb_input();
 #endif
 
 _WCRTLINK char *cgets( char *s )
-    {
-        int len;
-        char *p;
+{
+    int len;
+    char *p;
 
-        #ifdef DEFAULT_WINDOWING
-            if( _WindowsStdin != 0 ) {  // Default windowing
-                __qread( STDIN_FILENO, s + 2, *s - 1 );
-                p = s + 2;
-                len = *s;
-                for(;;) {
-                    if( len <= 1 ) break;
-                    if( *p == '\r' || *p == '\0' ) break;
-                    ++p;
-                    --len;
-                }
-                *p = '\0';
-                s[1] = p - s - 2;
-                return( s + 2 );
-            }
-        #endif
-        #if defined(__SMALL_DATA__)
-            _dos_kb_input( s );
-        #else
-            _bd_dos_kb_input( FP_SEG(s), FP_OFF(s) );
-        #endif
-        len = *s;
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsStdin != 0 ) {  // Default windowing
+        __qread( STDIN_FILENO, s + 2, *s - 1 );
         p = s + 2;
+        len = *s;
         for(;;) {
             if( len <= 1 ) break;
-            if( *p == '\r' ) break;
+            if( *p == '\r' || *p == '\0' ) break;
             ++p;
             --len;
         }
         *p = '\0';
+        s[1] = p - s - 2;
         return( s + 2 );
     }
+#endif
+#if defined(__SMALL_DATA__)
+    _dos_kb_input( s );
+#else
+    _bd_dos_kb_input( FP_SEG(s), FP_OFF(s) );
+#endif
+    len = *s;
+    p = s + 2;
+    for(;;) {
+        if( len <= 1 ) break;
+        if( *p == '\r' ) break;
+        ++p;
+        --len;
+    }
+    *p = '\0';
+    return( s + 2 );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of perror() - print error message.
 *
 ****************************************************************************/
 
@@ -39,20 +38,14 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-#if defined(__WIDECHAR__)
- #define STR_COLON      (CHAR_TYPE *)":\0 \0\0"
-#else
- #define STR_COLON      ": "
-#endif
-
 
 _WCRTLINK void __F_NAME(perror,_wperror)( const CHAR_TYPE *s )
-    {
-        __null_check( s, 0 );
-        if( s != NULL && *s != '\0' ) {
-            __F_NAME(fputs,fputws)( s, stderr );
-            __F_NAME(fputs,fputws)( STR_COLON, stderr );
-        }
-        __F_NAME(fputs,fputws)( __F_NAME(strerror,wcserror)( _RWD_errno ), stderr );
-        __F_NAME(fputc,fputwc)( '\n', stderr );
+{
+    __null_check( s, 0 );
+    if( s != NULL && *s != NULLCHAR ) {
+        __F_NAME(fputs,fputws)( s, stderr );
+        __F_NAME(fputs,fputws)( STRING( ": " ), stderr );
     }
+    __F_NAME(fputs,fputws)( __F_NAME(strerror,wcserror)( _RWD_errno ), stderr );
+    __F_NAME(fputc,fputwc)( STRING( '\n' ), stderr );
+}

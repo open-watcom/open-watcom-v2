@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource Compiler executable processing utility functions.
 *
 ****************************************************************************/
 
 
-#include <io.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
@@ -268,12 +267,13 @@ RcStatus SeekRead( int handle, unsigned_32 newpos, void *buff,
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
-ExeType FindNEPEHeader( int handle, unsigned_32 *nh_offset )
-/**********************************************************/
-/* get a pointer to the new exe header */
+ExeType FindNEPELXHeader( int handle, unsigned_32 *nh_offset )
+/************************************************************/
+/* Determine type of executable */
 {
-    unsigned_16 data;
-    RcStatus    rc;
+    os2_exe_header  ne_header;
+    unsigned_16     data;
+    RcStatus        rc;
 
     rc = SeekRead( handle, 0x00, &data, sizeof( data ) );
     if( rc != RS_OK ) return( FALSE );
@@ -294,10 +294,20 @@ ExeType FindNEPEHeader( int handle, unsigned_32 *nh_offset )
 
     switch( data ) {
     case OS2_SIGNATURE_WORD:
-        return( EXE_TYPE_NE );
+        rc = SeekRead( handle, *nh_offset, &ne_header, sizeof( ne_header ) );
+        if( rc != RS_OK )
+            return( EXE_TYPE_UNKNOWN );
+        if( ne_header.target == TARGET_OS2 )
+            return( EXE_TYPE_NE_OS2 );
+        if( ne_header.target == TARGET_WINDOWS || ne_header.target == TARGET_WIN386 )
+            return( EXE_TYPE_NE_WIN );
+        return( EXE_TYPE_UNKNOWN );
         break;
     case PE_SIGNATURE:
         return( EXE_TYPE_PE );
+        break;
+    case OSF_FLAT_LX_SIGNATURE:
+        return( EXE_TYPE_LX );
         break;
     default:
         return( EXE_TYPE_UNKNOWN );

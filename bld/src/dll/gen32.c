@@ -32,8 +32,8 @@
 #define DLL_2 2
 #define DLL_3 3
 
-int PASCAL WinMain( HANDLE hInstance,
-                    HANDLE hPrevInstance,
+int PASCAL WinMain( HINSTANCE hInstance,
+                    HINSTANCE hPrevInstance,
                     LPSTR lpCmdLine,
                     int nCmdShow )
 {

@@ -111,7 +111,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
     assert( ofh );
     assert( func );
 
-    if( !desired ) {
+    if( desired == NULL ) {
         /* global request */
         sh = ofh->first_sec;
         while( sh ) {
@@ -130,7 +130,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
         while( ds != NULL ) {
             sym = ds->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) &&
-               !( sym->flags | OMF_SYM_FLAGS_GRPDEF ) ) {
+               !( sym->flags & OMF_SYM_FLAGS_GRPDEF ) ) {
                 err = func( (orl_sec_handle) sym->section );
                 if( err != ORL_OKAY ) return( err );
             }
@@ -332,7 +332,7 @@ omf_sec_handle OMFENTRY OmfSecGetRelocTable( omf_sec_handle sh )
 }
 
 
-orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, char **buffer )
+orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 {
     orl_return  err;
 

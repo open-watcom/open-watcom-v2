@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeTrakCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeTrakInit        ( Bool );
-extern void              WdeTrakFini        ( void );
+extern OBJPTR WINEXPORT  WdeTrakCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeTrakInit( Bool );
+extern void              WdeTrakFini( void );
 
 #endif

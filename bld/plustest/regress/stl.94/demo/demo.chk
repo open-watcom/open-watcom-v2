@@ -1,0 +1,24 @@
+Testing back_inserter(deque<char>):
+ThisistestinputforthedemoSTLprogram
+Testing set<char>:
+LSTadefghimnoprstu
+Testing multiset<char>:
+LSTTadeeefghhiiimmnooopprrrsssttttu
+Testing map<char, int>:
+L*1 S*1 T*2 a*1 d*1 e*3 f*1 g*1 h*2 i*3 m*2 n*1 o*3 p*2 r*3 s*3 t*4 u*1 
+Testing multimap<char, int>:
+L*27 S*25 T*0 T*26 a*33 d*21 e*7 e*20 e*22 f*15 g*31 h*1 h*19 i*2 i*4 i*10 m*23 m*34 n*11 o*16 o*24 o*30 p*12 p*28 r*17 r*29 r*32 s*3 s*5 s*8 t*6 t*9 t*14 t*18 u*13 
+Testing stack<vector<char> >:
+margorpLTSomedehtroftupnitsetsisihT
+Testing queue<deque<char> >:
+ThisistestinputforthedemoSTLprogram
+Testing vector<bool>:
+LSTadefghimnoprstu
+Testing sort(deque<char>):
+LSTTadeeefghhiiimmnooopprrrsssttttu
+Testing stable_partition(list<char>):
+Saeeegiiimmooosssu
+LTTdfhhnpprrrtttt
+Testing stable_partition(vector<char>):
+Saeeegiiimmooosssu
+LTTdfhhnpprrrtttt

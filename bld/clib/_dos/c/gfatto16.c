@@ -45,16 +45,19 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute ) {
 /***************************************************************************/
 
     FF_BUFFER   dir_buff;
-    HDIR        handle = 1;
+    HDIR        handle = HDIR_CREATE;
     OS_UINT     searchcount = 1;
     APIRET      rc;
 
     rc = DosFindFirst( (PSZ)path, &handle, 0x37, &dir_buff,
                        sizeof( dir_buff ), &searchcount, FF_LEVEL );
-    if( rc != 0 || searchcount != 1 ) {
-        __set_errno( ENOENT );
-        return( rc );
+    if( rc == 0 ) {
+        DosFindClose( handle );
     }
-    *attribute = dir_buff.attrFile;
-    return( 0 );
+    if( rc == 0 && searchcount == 1 ) {
+        *attribute = dir_buff.attrFile;
+    } else {
+        __set_errno( ENOENT );
+    }
+    return( rc );
 }

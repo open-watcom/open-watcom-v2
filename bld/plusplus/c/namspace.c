@@ -102,7 +102,7 @@ static void openNameSpaceSym( char *name, TOKEN_LOCN *locn )
     } else {
         ns_name = name;
     }
-    inject_scope = CurrScope;
+    inject_scope = GetCurrScope();
     if( ScopeId( inject_scope ) != SCOPE_FILE ) {
         CErr1( ERR_NAMESPACE_MUST_BE_GLOBAL );
         inject_scope = ScopeNearestFile( inject_scope );
@@ -111,7 +111,7 @@ static void openNameSpaceSym( char *name, TOKEN_LOCN *locn )
     if( ns_sym != NULL ) {
         SCOPE ns_scope = ns_sym->u.ns->scope;
         ScopeOpen( ns_scope );
-        ScopeRestoreUsing( ns_scope );
+        ScopeRestoreUsing( ns_scope, FALSE );
     } else {
         ns_sym = AllocSymbol();
         scope = ScopeOpenNameSpace( name, ns_sym );
@@ -125,12 +125,12 @@ void NameSpaceUnnamed( TOKEN_LOCN *locn )
     SCOPE old_curr;
     SCOPE save_curr;
 
-    old_curr = CurrScope;
+    old_curr = GetCurrScope();
     openNameSpaceSym( NULL, locn );
-    save_curr = CurrScope;
-    CurrScope = old_curr;
+    save_curr = GetCurrScope();
+    SetCurrScope( old_curr );
     ScopeAddUsing( save_curr, old_curr );
-    CurrScope = save_curr;
+    SetCurrScope( save_curr );
 }
 
 void NameSpaceNamed( PTREE id )
@@ -156,7 +156,7 @@ static SCOPE getSearchScope( PTREE id, PTREE *find_id, find_ns *pcontrol )
     SCOPE test_scope;
     find_ns control;
 
-    find_scope = CurrScope;
+    find_scope = GetCurrScope();
     control = FNS_LEXICAL;
     *find_id = id;
     if( id->op == PT_BINARY ) {
@@ -172,7 +172,7 @@ static SCOPE getSearchScope( PTREE id, PTREE *find_id, find_ns *pcontrol )
                 find_scope = test_scope;
             }
         } else {
-            find_scope = FileScope;
+            find_scope = GetFileScope();
         }
         control = FNS_NULL;
     }
@@ -198,9 +198,9 @@ void NameSpaceAlias( PTREE to_id, PTREE from_id )
     if( ns_sym != NULL ) {
         ns = ns_sym->u.ns;
         alias_name = to_id->u.id.name;
-        prev_ns_sym = previousNSSym( alias_name, CurrScope, FNS_NULL );
+        prev_ns_sym = previousNSSym( alias_name, GetCurrScope(), FNS_NULL );
         if( prev_ns_sym == NULL ) {
-            injectNameSpaceSym( NULL, ns, CurrScope, alias_name, &(to_id->locn) );
+            injectNameSpaceSym( NULL, ns, GetCurrScope(), alias_name, &(to_id->locn) );
         } else {
             prev_ns = prev_ns_sym->u.ns;
             if( ns != prev_ns ) {
@@ -236,7 +236,7 @@ static void nameSpaceUsingDecl( SYMBOL ns_sym, TOKEN_LOCN *locn )
 {
     injectNameSpaceSym( NULL
                       , ns_sym->u.ns
-                      , CurrScope
+                      , GetCurrScope()
                       , ns_sym->name->name
                       , locn );
 }
@@ -253,7 +253,7 @@ static SEARCH_RESULT *lookupUsingId( PTREE using_id )
     if( NodeIsBinaryOp( using_id, CO_COLON_COLON ) ) {
         left = using_id->u.subtree[0];
         if( left == NULL ) {
-            scope = FileScope;
+            scope = GetFileScope();
         } else {
             DbgAssert( left->op == PT_TYPE );
             scope = left->u.type.scope;
@@ -263,7 +263,7 @@ static SEARCH_RESULT *lookupUsingId( PTREE using_id )
     } else {
         DbgAssert( using_id->op == PT_ID );
         right = using_id;
-        scope = FileScope;
+        scope = GetFileScope();
     }
     disambig = scope;
     DbgAssert( right != NULL && right->op == PT_ID );
@@ -297,15 +297,15 @@ static boolean verifyUsingDecl( SCOPE scope )
         return( TRUE );
     }
     error_occurred = FALSE;
-    if( ScopeId( CurrScope ) == SCOPE_CLASS ) {
+    if( ScopeId( GetCurrScope() ) == SCOPE_CLASS ) {
         if( ScopeId( scope ) != SCOPE_CLASS ) {
             CErr1( ERR_MEMBER_USING_DECL_REFS_NON_MEMBER );
             error_occurred = TRUE;
         } else {
             derived_status is_a_base = DERIVED_YES;
-            if( ScopeDerived( CurrScope, scope ) == DERIVED_NO ) {
+            if( ScopeDerived( GetCurrScope(), scope ) == DERIVED_NO ) {
                 is_a_base = DERIVED_NO;
-            } else if( CurrScope == scope ) {
+            } else if( GetCurrScope() == scope ) {
                 is_a_base = DERIVED_NO;
             }
             if( is_a_base == DERIVED_NO ) {
@@ -314,12 +314,12 @@ static boolean verifyUsingDecl( SCOPE scope )
             }
         }
     } else {
-        DbgAssert( ScopeId( CurrScope ) == SCOPE_FILE || ScopeId( CurrScope ) == SCOPE_BLOCK );
+        DbgAssert( ScopeId( GetCurrScope() ) == SCOPE_FILE || ScopeId( GetCurrScope() ) == SCOPE_BLOCK );
         if( ScopeId( scope ) == SCOPE_CLASS ) {
             CErr1( ERR_USING_DECL_REFS_MEMBER );
             error_occurred = TRUE;
         } else {
-            if( CurrScope == scope ) {
+            if( GetCurrScope() == scope ) {
                 CErr1( ERR_USING_DECL_NAME_SAME );
                 error_occurred = TRUE;
             }
@@ -343,7 +343,7 @@ static void functionUsingDecl( SEARCH_RESULT *result, SYMBOL name_syms, TOKEN_LO
     SYM_REGION *curr;
 
     if( ScopeId( result->scope ) == SCOPE_CLASS ) {
-        DbgAssert( ScopeId( CurrScope ) == SCOPE_CLASS );
+        DbgAssert( ScopeId( GetCurrScope() ) == SCOPE_CLASS );
         return;
     }
     ScopeCheckSymbol( result, name_syms );
@@ -360,7 +360,7 @@ static void functionUsingDecl( SEARCH_RESULT *result, SYMBOL name_syms, TOKEN_LO
 static void varUsingDecl( SEARCH_RESULT *result, SYMBOL name_syms, TOKEN_LOCN *locn )
 {
     if( ScopeId( result->scope ) == SCOPE_CLASS ) {
-        DbgAssert( ScopeId( CurrScope ) == SCOPE_CLASS );
+        DbgAssert( ScopeId( GetCurrScope() ) == SCOPE_CLASS );
         return;
     }
     if( ScopeCheckSymbol( result, name_syms ) ) {
@@ -410,7 +410,7 @@ void NameSpaceUsingDeclId( PTREE using_id )
         }
         if( name_syms != NULL ) {
             if( ScopeId( result->scope ) == SCOPE_CLASS ) {
-                DbgAssert( ScopeId( CurrScope ) == SCOPE_CLASS );
+                DbgAssert( ScopeId( GetCurrScope() ) == SCOPE_CLASS );
                 // NYI: full using-decl semantics within a class
                 ClassAccessDeclaration( using_id, &id_locn );
                 using_id = NULL;
@@ -437,4 +437,34 @@ void NameSpaceUsingDeclType( DECL_SPEC *dspec )
         TypedefUsingDecl( dspec, NULL, NULL );
     }
     PTypeRelease( dspec );
+}
+
+void NameSpaceUsingDeclTemplateName( PTREE tid )
+/**********************************************/
+{
+    SYMBOL_NAME sym_name;
+    TOKEN_LOCN id_locn;
+    SYMBOL name_type;
+    SYMBOL name_syms;
+    PTREE right;
+
+    DbgAssert( NodeIsBinaryOp( tid, CO_STORAGE ) );
+
+    right = tid->u.subtree[1];
+    DbgAssert( ( right->op == PT_ID ) );
+
+    PTreeExtractLocn( tid, &id_locn );
+    sym_name = tid->sym_name;
+    name_type = sym_name->name_type;
+    name_syms = sym_name->name_syms;
+    if( name_type != NULL ) {
+        switch( name_type->id ) {
+          case SC_CLASS_TEMPLATE:
+            TemplateUsingDecl( name_type, &id_locn );
+            break;
+          DbgDefault( "unexpected storage class" );
+        }
+    }
+
+    PTreeFreeSubtrees( tid );
 }

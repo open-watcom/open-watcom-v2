@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stack and call analysis routines
 *
 ****************************************************************************/
 
@@ -34,11 +33,10 @@
 #include <string.h>
 #include "x86.h"
 #include "madregs.h"
-#include "formopt.h"
-#include "insdef.h"
-#include "intrface.h"
 
-extern uint_32          InsAddr;
+#define OP_1 0
+#define OP_2 1
+#define OP_3 2
 
 mad_string              DIGENTRY MICallStackGrowsUp( void )
 {
@@ -211,12 +209,12 @@ This boils down to the following set of recognizable stuff
 
 */
 
-#define IsSPReg( op ) ( (op).mode == ADDR_REG && \
-                        ( (op).base == SP_REG || (op).base == ESP_REG ) )
-#define IsCSReg( op ) ( (op).mode == ADDR_REG && (op).base == CS_REG )
-#define IsBPReg( op ) ( (op).mode == ADDR_REG && \
-                        ( (op).base == BP_REG || (op).base == EBP_REG ) )
-#define ConstOp( op ) ( (op).mode == ADDR_CONST )
+#define IsSPReg( op ) ( (op).type == DO_REG && \
+                        ( (op).base == DR_X86_sp || (op).base == DR_X86_esp ) )
+#define IsCSReg( op ) ( (op).type == DO_REG && (op).base == DR_X86_cs )
+#define IsBPReg( op ) ( (op).type == DO_REG && \
+                        ( (op).base == DR_X86_bp || (op).base == DR_X86_ebp ) )
+#define ConstOp( op ) ( (op).type == DO_IMMED )
 
 typedef struct {
     const char  *name;
@@ -284,29 +282,31 @@ address GetFarAddr( address *return_location )
     return( addr );
 }
 
-static void DisAsm( instruction *ins )
+static void DisAsm( mad_disasm_data *dd )
 {
-    InsAddr = DbgAddr.mach.offset;
-    DoCode( ins, Is32BitSegment );
+    DoCode( dd, Is32BitSegment );
+    DbgAddr.mach.offset += dd->ins.size;
 }
 
 static int FindCall( address *ip_value, address *return_addr_location )
 {
-    address     prev_ins;
-    address     return_addr;
-    instruction ins;
+    address         prev_ins;
+    address         return_addr;
+    mad_disasm_data dd;
 
     return_addr = *ip_value;
     return_addr.mach.offset = GetAnOffset( return_addr_location );
     prev_ins = return_addr;
-    if( GetDisasmPrev( &prev_ins ) != MS_OK ) return( 0 );
+    if( GetDisasmPrev( &prev_ins ) != MS_OK )
+        return( 0 );
     DbgAddr = prev_ins;
-    DisAsm( &ins );
-    if( ins.opcode == I_CALL ) {
+    DisAsm( &dd );
+    if( dd.ins.type == DI_X86_call ) {
         DbgAddr = prev_ins;
-        if( GetDisasmPrev( &DbgAddr ) != MS_OK ) return( 0 );
-        DisAsm( &ins );
-        if( ins.opcode == I_PUSH && IsCSReg( ins.op[ OP_1 ] ) ) {
+        if( GetDisasmPrev( &DbgAddr ) != MS_OK )
+            return( 0 );
+        DisAsm( &dd );
+        if( dd.ins.type == DI_X86_push3 && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
             *ip_value = GetFarAddr( return_addr_location );
         } else {
             ip_value->mach.offset = GetAnOffset( return_addr_location );
@@ -316,16 +316,18 @@ static int FindCall( address *ip_value, address *return_addr_location )
     return_addr = GetFarAddr( return_addr_location );
     MCAddrOvlReturn( &return_addr );
     DbgAddr = return_addr;
-    if( GetDisasmPrev( &DbgAddr ) != MS_OK ) return( 0 );
-    DisAsm( &ins );
-    if( ins.opcode == I_CALL_FAR ) {
+    if( GetDisasmPrev( &DbgAddr ) != MS_OK )
+        return( 0 );
+    DisAsm( &dd );
+    if( dd.ins.type == DI_X86_call3 ) {
         *ip_value = GetFarAddr( return_addr_location );
         return( 1 );
-    } else if( ins.opcode == I_CALL ) {
+    } else if( dd.ins.type == DI_X86_call ) {
         DbgAddr = prev_ins;
-        if( GetDisasmPrev( &DbgAddr ) != MS_OK ) return( 0 );
-        DisAsm( &ins );
-        if( ins.opcode == I_PUSH && IsCSReg( ins.op[ OP_1 ] ) ) {
+        if( GetDisasmPrev( &DbgAddr ) != MS_OK )
+            return( 0 );
+        DisAsm( &dd );
+        if( dd.ins.type == DI_X86_push3 && IsCSReg( dd.ins.op[ OP_1 ] ) ) {
             *ip_value = GetFarAddr( return_addr_location );
             return( 0 );
         }
@@ -333,48 +335,47 @@ static int FindCall( address *ip_value, address *return_addr_location )
     return( 1 );
 }
 
-
-static int HeuristicTraceBack( address *p_prev_sp,
-                                address *start,
-                                address *execution,
-                                address *frame,
-                                address *stack )
+static int HeuristicTraceBack(
+    address *p_prev_sp,
+    address *start,
+    address *execution,
+    address *frame,
+    address *stack )
 {
-    instruction ins;
-    int         word_size;
-    long        sp_adjust;
-    long        bp_adjust;
-    long        saved_bp_loc;
-    long        bp_to_ra_offset;
-    int         found_inc_bp;
-    int         found_mov_bp_sp;
-    int         found_push_bp;
-    char        *jmplabel;
-    address     return_addr_location;
-    address     bp_value;
-    address     sp_value;
-    address     saved_return_location;
-    int         found_call;
-    int         i;
+    mad_disasm_data dd;
+    int             word_size;
+    long            sp_adjust;
+    long            bp_adjust;
+    long            saved_bp_loc = 0;
+    long            bp_to_ra_offset = 0;
+    int             found_inc_bp;
+    int             found_mov_bp_sp;
+    int             found_push_bp;
+    char            *jmplabel;
+    address         return_addr_location;
+    address         bp_value;
+    address         sp_value;
+    address         saved_return_location;
+    int             found_call;
+    int             i;
 
     InitCache( *start, 100 );
     sp_value = *stack;
     bp_value = *frame;
 
     DbgAddr = *execution;
-    DisAsm( &ins );
-
-    if( ins.opcode == I_RET_FAR || ins.opcode == I_RET_FAR_D ) {
+    DisAsm( &dd );
+    if( dd.ins.type == DI_X86_retf || dd.ins.type == DI_X86_retf2 ) {
         *execution = GetFarAddr( &sp_value );
         found_call = 1;
-    } else if( ins.opcode == I_RET ) {
+    } else if( dd.ins.type == DI_X86_ret || dd.ins.type == DI_X86_ret2 ) {
         execution->mach.offset = GetAnOffset( &sp_value );
         found_call = 1;
     } else {
         // Check for ADD SP,n right after current ip and adjust SP if its there
         // because it must be popping parms
-        if(ins.opcode==I_ADD && ConstOp(ins.op[OP_2]) && IsSPReg(ins.op[OP_1])){
-            sp_value.mach.offset += ins.op[ OP_2 ].disp;
+        if( dd.ins.type == DI_X86_add3 && ConstOp( dd.ins.op[OP_2] ) && IsSPReg( dd.ins.op[OP_1] ) ){
+            sp_value.mach.offset += dd.ins.op[ OP_2 ].value;
         }
         // Run through code from the known symbol until and collect prolog info
         word_size = Is32BitSegment ? 4 : 2;
@@ -385,60 +386,74 @@ static int HeuristicTraceBack( address *p_prev_sp,
         found_push_bp = 0;
         DbgAddr = *start;
         while( DbgAddr.mach.offset != execution->mach.offset ) {
-            DisAsm( &ins );
-            switch( ins.opcode ) {
-            case I_INVALID:
+            DisAsm( &dd );
+            switch( dd.ins.type ) {
+            case DI_INVALID:
                 return( 0 );
-            case I_CALL_FAR:
-                jmplabel = ToSegStr( ins.op[ OP_1 ].disp, ins.op[ OP_2 ].disp, 0 );
-                if( IdentifyFunc( jmplabel, &sp_adjust ) ) continue;
+            case DI_X86_call3:
+                jmplabel = ToSegStr( dd.ins.op[ OP_1 ].value, dd.ins.op[ OP_1 ].extra, 0 );
+                if( IdentifyFunc( jmplabel, &sp_adjust ) )
+                    continue;
                 break;
-            case I_CALL:
-                jmplabel = JmpLabel( ins.op[ OP_1 ].disp, 0 );
-                if( IdentifyFunc( jmplabel, &sp_adjust ) ) continue;
+            case DI_X86_call:
+                jmplabel = JmpLabel( dd.ins.op[ OP_1 ].value, 0 );
+                if( IdentifyFunc( jmplabel, &sp_adjust ) )
+                    continue;
                 break;
-            case I_ENTER:
+            case DI_X86_enter:
                 sp_adjust -= word_size; // push bp
                 found_push_bp = 1;
                 bp_to_ra_offset = sp_adjust; // mov bp,sp
                 found_mov_bp_sp = 1;
                 saved_bp_loc = 0; // 0[bp]
-                sp_adjust -= ins.op[ OP_1 ].disp; // sub sp,n
+                sp_adjust -= dd.ins.op[ OP_1 ].value; // sub sp,n
                 break;
-            case I_INC:
-                if( IsBPReg( ins.op[ OP_1 ] ) ) {
+            case DI_X86_inc2:
+                if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
                     found_inc_bp = 1;
                     continue;
                 }
                 break;
-            case I_MOV:
-                if( IsBPReg( ins.op[ OP_1 ] ) && IsSPReg( ins.op[ OP_2 ] ) ) {
+            case DI_X86_mov:
+                if( IsBPReg( dd.ins.op[ OP_1 ] ) && IsSPReg( dd.ins.op[ OP_2 ] ) ) {
                     found_mov_bp_sp = 1;
                     bp_to_ra_offset = sp_adjust;
                     saved_bp_loc -= sp_adjust;
                 }
                 continue;
-            case I_NOP:
+            case DI_X86_nop:
                 continue;
-            case I_POP:
+            case DI_X86_pop:
+            case DI_X86_pop2:
+            case DI_X86_pop3d:
+            case DI_X86_pop3e:
+            case DI_X86_pop3s:
+            case DI_X86_pop4f:
+            case DI_X86_pop4g:
                 sp_adjust += word_size;
                 continue;
-            case I_PUSH:
+            case DI_X86_push:
+            case DI_X86_push2:
+            case DI_X86_push3:
+            case DI_X86_push4f:
+            case DI_X86_push4g:
+            case DI_X86_push5:
                 sp_adjust -= word_size;
-                if( IsBPReg( ins.op[ OP_1 ] ) ) {
+                if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
                     saved_bp_loc = sp_adjust;
                     found_push_bp = 1;
                 }
                 continue;
-            case I_SUB:
-                ins.op[ OP_2 ].disp = -ins.op[ OP_2 ].disp;
-            case I_ADD:
-                if( !ConstOp( ins.op[ OP_2 ] ) ) break;
-                if( IsSPReg( ins.op[ OP_1 ] ) ) {
-                    sp_adjust += ins.op[ OP_2 ].disp;
+            case DI_X86_sub:
+                dd.ins.op[ OP_2 ].value = -dd.ins.op[ OP_2 ].value;
+            case DI_X86_add:
+                if( !ConstOp( dd.ins.op[ OP_2 ] ) )
+                    break;
+                if( IsSPReg( dd.ins.op[ OP_1 ] ) ) {
+                    sp_adjust += dd.ins.op[ OP_2 ].value;
                     continue;
-                } else if( IsBPReg( ins.op[ OP_1 ] ) ) {
-                    bp_adjust += ins.op[ OP_2 ].disp;
+                } else if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
+                    bp_adjust += dd.ins.op[ OP_2 ].value;
                     continue;
                 }
                 break;
@@ -477,7 +492,8 @@ static int HeuristicTraceBack( address *p_prev_sp,
             // limit the search to 512*word_size (W2K can cause us to search 4Gb!)
             for( i = 0; return_addr_location.mach.offset >= p_prev_sp->mach.offset && i < 512; ++i ) {
                 found_call = FindCall( execution, &return_addr_location );
-                if( found_call ) break;
+                if( found_call )
+                    break;
                 return_addr_location.mach.offset -= word_size;
             }
             if( !found_call ) {
@@ -485,7 +501,9 @@ static int HeuristicTraceBack( address *p_prev_sp,
                 for( i = 0; i < 10; ++i ) {
                     return_addr_location.mach.offset += word_size;
                     found_call = FindCall( execution, &return_addr_location );
-                    if( found_call ) break;
+                    if( found_call ) {
+                        break;
+                    }
                 }
             }
         }
@@ -496,11 +514,14 @@ static int HeuristicTraceBack( address *p_prev_sp,
 }
 
 
-static void SymbolicTraceBack( address *start, unsigned characteristics,
-                        long bp_disp,
-                        address *execution,
-                        address *frame,
-                        address *stack )
+
+static void SymbolicTraceBack(
+    address  *start,
+    unsigned characteristics,
+    long     bp_disp,
+    address  *execution,
+    address  *frame,
+    address  *stack )
 {
     address     where;
 

@@ -42,7 +42,7 @@ FILE *inputFile[_NFILES];
 
 char *OptEnvVar="paste";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: paste [-?X] [files]",
     "\tfiles       : files to paste together. '-' may be specified for",
     "\t\t      standard input",

@@ -131,6 +131,11 @@ int main( void ) {
     gfd( gfd_a );
     gfld( gfld_a );
     gdld( gdld_a );
+#ifdef _M_I86
+    // 65535 is unsigned int, not int; hence slightly different result
+    CHECK_GOOD( 775 );
+#else
     CHECK_GOOD( 774 );
+#endif
     return errors != 0;
 }

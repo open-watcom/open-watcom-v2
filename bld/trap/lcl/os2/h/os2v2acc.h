@@ -45,10 +45,8 @@ void SetTaskDirectories( void );
 bool DebugExecute( dos_debug far *buff, ULONG cmd, bool );
 int IsUnknownGDTSeg( USHORT seg );
 
-extern  void    LoadThisDLL();
-extern  void    EndLoadThisDLL();
-extern  char    NPXType();
-extern  char    CPUType();
+extern  void    LoadThisDLL( void );
+extern  void    EndLoadThisDLL( void );
 
 extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
@@ -94,7 +92,7 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern ULONG far        *ModHandles;
+extern ULONG            far *ModHandles;
 extern USHORT           NumModHandles;
 extern int              CurrModHandle;
 extern ULONG            ExceptNum;
@@ -127,7 +125,7 @@ extern USHORT           FlatCS,FlatDS;
     }
 
 bool CausePgmToLoadThisDLL( ULONG startLinear );
-long TaskExecute( long (*rtn)() );
+long TaskExecute( void (*rtn)() );
 #pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
 void DoOpen( char far *name, int mode, int flags );
 #pragma aux DoClose parm [ ax ];

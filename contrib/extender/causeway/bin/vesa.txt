@@ -1,0 +1,24 @@
+VESA INT 10h
+============
+
+CauseWay does not have built-in support for VESA functions due
+to the majority of programs not requiring VESA support. Keeping
+VESA support as an external patch avoids unnecessary increases
+in the size of CauseWay for those that do not need extra
+functions.
+
+The VESA module supplied for use with Watcom C/C++ should be
+included in your link command to enable VESA function support.
+Simply add the file "vesa.obj" to your list of object modules
+when linking.
+
+The VESA module will be initialized and removed automatically by
+the Watcom startup/cleanup code so no manual calls are required.
+
+Once installed you may issue VESA function requests with
+protected mode buffer pointers where appropriate. Note that any
+returned buffer parameters that are defined in the VESA
+documentation as seg:offset (16:16) pointers are automatically
+converted to DGROUP relative 32-bit pointers that can be
+accessed in the normal manner. No translation of these addresses
+is required to use them.

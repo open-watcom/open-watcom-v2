@@ -1,0 +1,415 @@
+!   ADS.FI  -    Definitions of the AutoCAD functions for Applications
+!                This takes the place of xlacad.h (from LISP) and contains
+!                the changes to the function definitions to make them
+!                compatible with the application interface.
+
+c$noreference
+
+        integer NULL
+        parameter (NULL = 0)
+
+! Define null pointer (a dynamically allocatable array that is never
+! allocated will always pass a null pointer)
+
+        integer NULL_PTR(:)
+
+! The ADS_INITGET control bits
+
+        integer RSG_NONULL
+        integer RSG_NOZERO
+        integer RSG_NONEG
+        integer RSG_NOLIM
+        integer RSG_GETZ
+        integer RSG_DASH
+        integer RSG_2D
+        integer RSG_OTHER
+
+        parameter (RSG_NONULL = '01'x)  ! Disallow null input
+        parameter (RSG_NOZERO = '02'x)  ! Disallow zero input
+        parameter (RSG_NONEG  = '04'x)  ! Disallow negative input
+        parameter (RSG_NOLIM  = '08'x)  ! Do not check limits
+        parameter (RSG_GETZ   = '10'x)  ! Get Z coordinate
+        parameter (RSG_DASH   = '20'x)  ! Draw dashed rubber band/box (not a
+                                        ! GEDIT control bit)
+        parameter (RSG_2D     = '40'x)  ! Restrict (getdist) to 2D (causes the
+                                        ! UD_GETZ control bit to be cleared)
+        parameter (RSG_OTHER  = '80'x)  ! Return input string if unknown
+
+! Binary data stream structure
+
+        structure /ads_binary/          ! Binary data chunk structure
+            integer*2           clen    ! length of chunk in bytes
+            integer*4           buf     ! pointer to binary data
+        end structure
+
+!  Union for storing different ADS data types.
+
+        structure /ads_u_val/
+            union
+                map
+                    double precision rreal
+                end map
+                map
+                    double precision rpoint(3)
+                end map
+                map
+                    integer*2 rint
+                end map
+                map
+                    integer*4 rstring
+                end map
+                map
+                    integer*4 rlname(2)
+                end map
+                map
+                    integer*4 rlong
+                end map
+                map
+                    record /ads_binary/ rbinary
+                end map
+            end union
+        end structure
+
+! The following is the structure definition of the general result buffer.
+! This is used for both passing back results from functions, as well
+! as exotic applications like entity lists, and command function lists.
+! It is as close as we come to the AutoLISP node structure.
+
+        structure /resbuf/
+            integer*4           rbnext  ! Allows them to be "linked"
+            integer*2           restype
+            record /ads_u_val/  resval
+        end structure
+
+! External function definitions accessible from applications
+
+! Application initialization  function
+        external ads_init
+
+! General failure (prints message) mechanism
+        external ads_fail
+
+! General abort mechanism.  Return RSABORT to Lisp.
+        external ads_abort
+
+! ADS exit() function used for transparent exit of programs
+        external ads_exit
+
+! Register an ADS function handler
+        integer*4 ads_regfunc
+
+        external ads_regfunc
+
+! Link back to host with request code
+        integer*4 ads_link
+
+        external ads_link
+
+! Get a new result buffer
+        integer*4 ads_newrb
+
+        external ads_newrb
+
+! Release a result buffer as well as those linked to it
+        integer*4 ads_relrb
+
+        external ads_relrb
+
+! Check for a console break
+        integer*4 ads_usrbrk
+
+        external ads_usrbrk
+
+
+! Define an external subroutine in AutoLISP
+        integer*4 ads_defun
+
+        external ads_defun
+
+! Undefine an external subroutine in AutoLISP
+        integer*4 ads_undef
+
+        external ads_undef
+
+! Utilities for external subroutine interface
+        integer*4 ads_getfuncode
+        integer*4 ads_getargs
+
+        external ads_getfuncode
+        external ads_getargs
+
+! Return the specified type as a result of external subroutine
+        integer*4 ads_retlist
+        integer*4 ads_retval
+        integer*4 ads_retpoint
+        integer*4 ads_retstr
+        integer*4 ads_retname
+        integer*4 ads_retint
+        integer*4 ads_retreal
+        integer*4 ads_rett
+        integer*4 ads_retnil
+        integer*4 ads_retvoid
+
+        external ads_retlist
+        external ads_retval
+        external ads_retpoint
+        external ads_retstr
+        external ads_retname
+        external ads_retint
+        external ads_retreal
+        external ads_rett
+        external ads_retnil
+        external ads_retvoid
+
+! AutoCAD Entity access routines
+        integer*4 ads_entdel
+        integer*4 ads_entgetx
+        integer*4 ads_entget
+        integer*4 ads_entlast
+        integer*4 ads_entnext
+        integer*4 ads_entupd
+        integer*4 ads_entmod
+        integer*4 ads_entmake
+        integer*4 ads_entsel
+        integer*4 ads_nentsel
+        integer*4 ads_nentselp
+        integer*4 ads_ssget
+        integer*4 ads_ssfree
+        integer*4 ads_sslength
+        integer*4 ads_ssadd
+        integer*4 ads_ssdel
+        integer*4 ads_ssmemb
+        integer*4 ads_ssname
+
+        external ads_entdel
+        external ads_entgetx
+        external ads_entget
+        external ads_entlast
+        external ads_entnext
+        external ads_entupd
+        external ads_entmod
+        external ads_entmake
+        external ads_entsel
+        external ads_nentsel
+        external ads_nentselp
+        external ads_ssget
+        external ads_ssfree
+        external ads_sslength
+        external ads_ssadd
+        external ads_ssdel
+        external ads_ssmemb
+        external ads_ssname
+
+! Extended Entity data utilities
+        integer*4 ads_xdroom
+        integer*4 ads_xdsize
+
+        external ads_xdroom
+        external ads_xdsize
+
+! AutoCAD table access routines
+        integer*4 ads_tblnext
+        integer*4 ads_tblsearch
+
+        external ads_tblnext
+        external ads_tblsearch
+
+! Drawing database utilities
+        integer*4 ads_handent
+        integer*4 ads_trans
+
+        external ads_handent
+        external ads_trans
+
+! General AutoCAD utility routines
+        integer*4 ads_angtos
+        integer*4 ads_cvunit
+        integer*4 ads_wcmatch
+        integer*4 ads_rtos
+        integer*4 ads_angtof
+        integer*4 ads_distof
+        integer*4 ads_setvar
+        integer*4 ads_initget
+        integer*4 ads_getsym
+        integer*4 ads_putsym
+        integer*4 ads_loaded
+        integer*4 ads_xload
+        integer*4 ads_xunload
+        integer*4 ads_command
+        integer*4 ads_buildlist
+        integer*4 ads_printf
+        integer*4 ads_cmd
+        integer*4 ads_invoke
+        integer*4 ads_inters
+
+        external ads_angtos
+        external ads_cvunit
+        external ads_wcmatch
+        external ads_rtos
+        external ads_angtof
+        external ads_distof
+        external ads_setvar
+        external ads_initget
+        external ads_getsym
+        external ads_putsym
+        external ads_loaded
+        external ads_xload
+        external ads_xunload
+        external ads_command
+        external ads_buildlist
+        external ads_printf
+        external ads_cmd
+        external ads_invoke
+        external ads_inters
+
+! Functions that get system variables
+        integer*4 ads_getvar
+        integer*4 ads_findfile
+
+        external ads_getvar
+        external ads_findfile
+
+! Function that gets a string
+        integer*4 ads_getstring
+
+        external ads_getstring
+
+! Functions that pass AutoCAD a single string
+        integer*4 ads_menucmd
+        integer*4 ads_prompt
+        integer*4 ads_alert
+
+        external ads_menucmd
+        external ads_prompt
+        external ads_alert
+
+! Function to register an application with AutoCAD
+        integer*4 ads_regapp
+
+        external ads_regapp
+
+! Functions used to get user input
+        integer*4 ads_getangle
+        integer*4 ads_getcorner
+        integer*4 ads_getdist
+        integer*4 ads_getorient
+        integer*4 ads_getpoint
+        integer*4 ads_getint
+        integer*4 ads_getkword
+        integer*4 ads_getreal
+        integer*4 ads_getinput
+        integer*4 ads_vports
+
+        external ads_getangle
+        external ads_getcorner
+        external ads_getdist
+        external ads_getorient
+        external ads_getpoint
+        external ads_getint
+        external ads_getkword
+        external ads_getreal
+        external ads_getinput
+        external ads_vports
+
+! Functions for screen flipping
+        integer*4 ads_textscr
+        integer*4 ads_graphscr
+        integer*4 ads_textpage
+
+        external ads_textscr
+        external ads_graphscr
+        external ads_textpage
+
+! Graphics related functions
+        integer*4 ads_grclear
+        integer*4 ads_redraw
+        integer*4 ads_osnap
+        integer*4 ads_grread
+        integer*4 ads_grtext
+        integer*4 ads_grdraw
+        integer*4 ads_grvecs
+        integer*4 ads_xformss
+        integer*4 ads_draggen
+
+        external ads_grclear
+        external ads_redraw
+        external ads_osnap
+        external ads_grread
+        external ads_grtext
+        external ads_grdraw
+        external ads_grvecs
+        external ads_xformss
+        external ads_draggen
+
+! Geometry utilities
+        double precision ads_angle
+        double precision ads_distance
+
+        external ads_angle
+        external ads_distance
+        external ads_polar
+
+! Functions that put up standard dialogs for user input
+        integer*4 ads_getfiled
+        integer*4 ads_textbox
+
+        external ads_getfiled
+        external ads_textbox
+
+!  Function to retrieve or establish AutoCAD's tablet transformation:
+        integer*4 ads_tablet
+
+        external ads_tablet
+
+! Functions to support ADS / ADI communications
+        integer*4 ads_recfgport
+
+        external ads_recfgport
+        external ads_adiinfo
+        external ads_dscfg
+        external ads_dsxqt
+        external ads_dispt
+        external ads_adistart
+        external ads_adiend
+
+c$ifdef WIN
+! Call before termination to clean up Windows, DDE, memory, etc
+        external adsi_machexit
+void           adsi_machexit(int exitval);
+c$endif
+
+! Functions for character handling
+
+        integer*4 ads_isalpha
+        integer*4 ads_isupper
+        integer*4 ads_islower
+        integer*4 ads_isdigit
+        integer*4 ads_isxdigit
+        integer*4 ads_isspace
+        integer*4 ads_ispunct
+        integer*4 ads_isalnum
+        integer*4 ads_isprint
+        integer*4 ads_isgraph
+        integer*4 ads_iscntrl
+        integer*4 ads_toupper
+        integer*4 ads_tolower
+
+        external ads_isalpha
+        external ads_isupper
+        external ads_islower
+        external ads_isdigit
+        external ads_isxdigit
+        external ads_isspace
+        external ads_ispunct
+        external ads_isalnum
+        external ads_isprint
+        external ads_isgraph
+        external ads_iscntrl
+        external ads_toupper
+        external ads_tolower
+
+! Useful pragmas
+
+        integer*4 call_handler
+
+c$reference

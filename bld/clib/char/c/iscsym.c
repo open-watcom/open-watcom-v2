@@ -24,22 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of __iscsym().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <ctype.h>
 #include "widechar.h"
+#include <ctype.h>
+#ifdef __WIDECHAR__
+ #include <wctype.h>
+#endif
 #include "istable.h"
 #undef  __iscsym
 
-_WCRTLINK int (__iscsym)( int c ) {
+_WCRTLINK int __F_NAME(__iscsym,__iswcsym)( INTCHAR_TYPE c )
+{
     if( IS_ASCII( c ) ) {
-        return( (IsWhat( c ) & (_LOWER|_UPPER|_DIGIT))
-                || c == '_' );
+        return( (IsWhat( c ) & (_LOWER|_UPPER|_DIGIT)) || (c == '_') );
     } else {
         return( 0 );
     }

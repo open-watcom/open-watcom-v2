@@ -1,0 +1,596 @@
+			Updates Log File
+			****************
+
+ (for internal use only, also supplied with beta versions of the DOS Extender)
+-------------------------------------------------------------------------------
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 7.0[SP1]
+===================================================================
+
+1)	\KERNEL\int31h.asm :
+	fixed bug in INT 31h function 0503h, when in some cases the contents of
+	the memory block being reallocated were not copied to the new location
+	(actually the whole function is rewritten)
+
+2)	\CLIENT\config.asm :
+	"cfg_env_nowarn" modified to support several warning codes for a single
+	/NOWARN parameter (eg /NOWARN:9001,9003,9004)
+
+3)	overall changes :
+
+	+ minor changes in alignment of certain routines (Align xx removed in
+	many places)
+
+	+ minor changes in comments of certain parts of the code
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 7.0
+==============================================================
+
+1)	\KERNEL\int31h.asm :
+	fixed bug in INT 31h handler function 0205h, when the DOS Extender
+	failed to update the internal IRQ redirection buffer for IRQs 8..15
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 6.00
+===============================================================
+
+1)	\dos32a.asm :
+	added check to see whether an external DPMI is in place before calling
+	"restore_pit" function
+
+2)	\KERNEL\int31h.asm :
+	DPMI function 0001h, free selector, will now fail any call which tries
+	to free the CS (kernel) or SS (current stack) selectors
+
+3)	\CLIENT\int21h.asm :
+	function 4Ch will free the ZERO selector before exiting to DOS
+
+4)	\loadlc.asm :
+	some improvements in the LC-style file format loader, the uncompressed
+	Objects are loaded slightly faster
+
+5)	\CLIENT\config.asm :
+	added code to check if the DOS Extender was spawned from STUB/32C,
+	setting "sys_misc" bit 0 to 1 (for internal use only)
+
+6)	revised alignment of certain subroutines in both CLIENT and KERNEL
+
+7)	increased the size of internal stack from 1KB to 2KB
+
+8)	increased the maximum amount of loadable Objects from 32 to 64
+
+9)	\kernel.asm :
+	\KERNEL\intr.asm :
+	\KERNEL\int31h.asm :
+	added support for Performance Counters: INT, IRQ, IRQ Callback and
+	Callback. Also added new function 09h through ADPMI Extensions (0A00h)
+	to obtain access to the Counters
+
+10)	\CLIENT\int21h.asm :
+	improved error checking in functions 0FF95h and 0FF97h: they will now
+	fail when allocating 0 bytes or >1MB
+
+11)	\dos32a.asm :
+	\CLIENT\data.asm :
+	\KERNEL\init.asm :
+	added warning (9006) "incompatible version of DOS/32A already running"
+	issued when the parent and the child applications are running under
+	different versions of DOS/32A (ie when spawning), which prevents
+	the child to share the extended memory with the parent application
+
+12)	\CLIENT\data.asm :
+	\CLIENT\strings.asm :
+	new environment option (NOWARN:xxxx) to disable particular warnings,
+	ie NOWARN:9003
+
+13)	\dos32a.asm :
+	\kernel.asm :
+	added code to remove DOS/32A DPMI Kernel when running under an external
+	DPMI host. DOS/32A will move its Client code overwriting the built-in
+	DPMI kernel when the system software is detected to be DPMI, freeing
+	up as much as 10KB of DOS memory. Can be turned off by setting bit 5
+	of "_misc_byte2" to 1 (undocumented, shouldn't be used by the user)
+
+14)	\CLIENT\misc.asm :
+	DTA and Mouse Shape Buffer are allocated on top of stack instead of in
+	DOS memory, avoids memory fragmentation
+
+15)	\dos32a.asm :
+	\CLIENT\misc.asm :
+	\CLIENT\debug.asm :
+	included support for handling of exceptions 0, 6, 13 and 14 under
+	external DPMI (full machine state is reported). DOS/32A will now also
+	report where the exception came from in the exception listing, by
+	specifying "KERNEL" for ADPMI kernel, "CLIENT" for DOS/32A Client,
+	"APP/32" for the currently running application and "APP/??" if the
+	exception's origin is unknown
+
+16)	\dos32a.asm :
+	\CLIENT\data.asm :
+	\CLIENT\debug.asm :
+	added code to support applications with no stack set up by the linker
+	(eg VxD produced by MSVC 5.0 Link)
+
+17)	\dos32a.asm :
+	\CLIENT\data.asm :
+	added new warning (9007): "no stack, using default 64K" - DOS/32A will
+	provide the default 64KB stack for castrated LE applications (eg VxDs)
+	Note: the VxD linked applications won't be officially supported, MSVC
+	includes exports (why?) which are not supported by DOS/32A
+
+18)	\CLIENT\int21h.asm :
+	extended INT 21h / AH=31h, Go TSR function: DOS/32A will calculate
+	the memory to reserve by adding the size of the DOS Extender to the
+	value passed in DX, eg: "KERNEL+CLIENT+STACK+INTBUF+DPMIBUF" + DX,
+	(normally the DX would be 0)
+	Note: the application shouldn't be loaded into DOS memory, as it
+	will be lost, ie using Object Loading Scheme #1 is a no-no
+
+19)	\kernel.asm :
+	\KERNEL\misc.asm :
+	added variable "id32_tsrmode_id". When a copy of DOS/32A is going TSR
+	it will disable acknowledgement of INT 21h / AX = 0FF88h ID-call.
+	This will not allow other copies of DOS/32A to share memory with the
+	TSR (the TSR should be configured to allocate only as much ext. memory
+	as it needs)
+
+20)	removed check for SS:ESP=0 in the loaded application, removed warning
+	9007 - there is no point in supporting VxDs
+
+21)	\CLIENT\int21h.asm :
+	fixed bug in INT 21h, AH=40h (Write to file) function when DOS/32A
+	would crash if writing to a disk /w no free space left
+
+22)	reduced the default number of pagetables for physical memory mapping
+	from 4 to 2 (= 8MB)
+
+23)	\CLIENT\data.asm :
+	\CLIENT\debug.asm :
+	\KERNEL\int31h.asm :
+	removed check for invalid limits. DOS/32A will unconditionally perform
+	auto-correction of selector's limit passed down to DPMI func. 0008h
+
+24)	\dos32a.asm :
+	reduced the default size of DOS Transfer Buffer from 16KB to 8KB
+
+25)	\CLIENT\data.asm :
+	\CLIENT\config.asm :
+	added environment option /NOC to disable the copyright banner (only)
+
+26)	dos32a.asm :
+	\CLIENT\misc.asm :
+	added full "Year 2000" (Y2K) compliance
+
+27)	\CLIENT\config.asm:
+	fixed bug in environment configuration processing routine, it would
+	go beyond DOS32A= line and would read other's config (which was bad)
+
+28)	dos32a.asm :
+	\CLIENT\misc.asm :
+	\CLIENT\int21h.asm :
+	improved CTRL-C handling, especially under windows which seemed to
+	not handle it correctly in the default real mode handler (bad DOS
+	emulation?)
+	DOS/32A Client will install its own INT 23h handler, and break to
+	INT 21h/4Ch when the handler sets an internal flag
+
+29)	\KERNEL\init.asm :
+	removed support for Bottom-Up memory allocation scheme under Clean
+	(INT 15h) system software; instead, improved INT 15h Top-Down
+	allocation scheme which will properly function when going TSR
+
+30)	\KERNEL\init.asm :
+	fixed an ancient bug in the VCPI initialization routines; in general
+	the VCPI init has been greately improved
+
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 5.00
+===============================================================
+
+1)	\CLIENT\data.asm :
+	\KERNEL\detect.asm :
+	removed fatal error (0008): "config header corrupted", it was never
+	used unless the exec was linked incorrectly
+
+2)	\KERNEL\detect.asm :
+	\KERNEL\init.asm :
+	added direct support for allocation of >64MB of memory through XMS
+	server; note: XMS spec. 3.0 is required for allocation of >64MB,
+	otherwise the DOS Extender will use the standard XMS functions
+
+3)	\loader.asm :
+	minor fix - empty objects (w/ size=0) are "loaded" at address 0, can
+	be verified by turning on the Verbose Mode
+
+4)	\CLIENT\debug.asm :
+	DOS/32A will now automatically display the *unrelocated* address of
+	the faulting instruction, no matter from which segment the exception
+	was thrown, as opposed to the earlier versions which could show the
+	unrelocated address only for the Object with entry point in it
+
+5)	\KERNEL\int31h.asm :
+	added support for DPMI functions 0602h and 0603h, they return with
+	CF clear without performing any kind of action
+
+6)	\CLIENT\config.asm :
+	added code to support configurable stubs; the new STUB/32A can now
+	be configured as if it were a DOS Extender executable!
+	INT 21h / AX=0FF87h is used to obtain configuration, custom INT 21h
+	handler is automatically deinstalled by STUB/32A after the first call
+	to this function
+
+7)	loader.asm :
+	loadlc.asm : (new)
+	at last, the LC-style Compressed Linear Executable format is supported
+
+7a)	LC Requirements: at least 8KB large DOS Transfer Buffer, some extended
+	memory (Encoded LC Objects and LC Fixups are loaded high and decoded
+	into destination memory, which can be located Low or High)
+
+	NOTE: LC-execs require twice as much memory as the original application
+	when being loaded!
+
+
+8)	\CLIENT\data.asm :
+	added fatal error (4007): "not enough DOS Transfer Buffer space";
+	when loading LC-style execs the size of DTB must be at least 8KB
+
+9)	\CLIENT\loadlc.asm :
+	decompression routine optimized for speed (works about 50% faster)
+
+10)	\CLIENT\int21h.asm :
+	added new function, 0FF8Dh, decode source data
+
+11)	\loader.asm :
+	the loader will check if 32bit code/data selector is already allocated
+	for respective 32bit Objects, and skip allocation in case they are
+
+12)	\CLIENT\misc.asm :
+	with Verbose Mode on the DOS Extender will correctly report the
+	amount of available DPMI memory when >64MB (the number will be shown
+	in KB when less than 64MB is present and in MB when above 64MB)
+
+13)	\CLIENT\debug.asm :
+	corrected "custom error" handler, also run-time (6004) will show handle
+	of the corrupted block
+
+
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 4.30
+===============================================================
+
+1)	\loader.asm :
+	the loader was not able to load Objects with size of zero. It reported
+	"not enough extended memory..."!
+
+2)	\CLIENT\debug.asm :
+	\CLIENT\data.asm :
+	changed the format of reported exceptions: instead of reporting DPL
+	the DOS Extender will report segment type as USE??/Codedata
+
+3)	\KERNEL\int31h.asm :
+	fixed a little problem with 0800h/0801h DPMI functions when the last
+	mapped page was not marked as last
+
+4)	\KERNEL\int31h.sam :
+	DPMI function 0008h - Set Segment Limit - now reports invalid limits
+	to the client, instead of application, which results in a new run-time
+	error (6006): selector limit check failure
+
+5)	some functions have been moved from: dos32a.asm to \CLIENT\misc.asm
+
+6)	\CLIENT\misc.asm
+	the Null-Pointer Protection now supports read protection as well as
+	write
+
+7)	the original environment selector allocated by external DPMI is now
+	saved at startup and restored on exit
+
+8)	\dos32a.asm :
+	INT 21h / AH=whatever - Disk Reset - has been removed
+
+9)	\loader.asm :
+	fixed problem with LX-style exec format and WATCOM linker v11.0,
+	the Loader now ignores "Internal fixups applied" bit in LX header
+
+10)	\CLIENT\int21h.asm :
+	function 4Bh has been rewritten, the DOS Buffer requirement is now
+	1KB instead of 4KB
+
+11)	\CLIENT\data.asm :
+	the fatal error (3005) now reported as "error in app exec" (error
+	at link-time bit set)
+
+12)	\CLIENT\int21h.asm :
+	the protected mode interrupts are now restored upon client's exit
+	in function 4Ch
+
+13)	\CLIENT\int21h.asm :
+	function 4Bh restores original PM ints before spawning and reinstalls
+	client's ints after
+
+14)	\CLIENT\misc.asm :
+	"verbose_showstartup" now lists PSP_Sel, Env_Sel and Env_Seg
+
+15)	\KERNEL\int31h.asm :
+	DPMI functions 0800h/0801h are now supported in the shareware version
+
+16)	\CLIENT\int21h.asm :
+	new functions for allocation of DOS memory: 0FF94h...0FF97h
+
+17)	\loader.asm :
+	no extended memory is now required to run a protected mode program,
+	the fixups are first loaded in DOS memory, only if not enough, they're
+	loaded high
+
+18)	\CLIENT\misc.asm :
+	support for Null-Pointer Protection on reads has been removed, it
+	conflicted with startup/exit code
+
+19)	\KERNEL\misc.asm :
+	fixed problem with spawning under Clean/XMS/VCPI systems when the
+	DOS Extender crashed after spawning to an application two or more
+	times, the actual bug was in the exit Kernel code
+
+20)	\CLIENT\int21h.asm :
+	fixed bug in function 40h - write to file - when truncation of files
+	(using ECX = 0) didn't work properly
+
+21)	\KERNEL\init.asm :
+	\KERNEL\exit.asm :
+	\KERNEL\misc.asm :
+	the spawning techniques have been redesigned and improved
+
+21a)	\KERNEL\int31h.asm :
+	the memory management functions 05xxh have been redesigned and now
+	offer improved performance and 99% safe protection against extended
+	memory blocks overwritng
+
+21b)	\KERNEL\int31h.asm :
+	05xxh functions now keep track on from which process the memory is
+	allocated (when spawned & sharing memory), upon process' termination
+	all memory blocks associated with the process are freed automatically
+
+22)	\CLIENT\debug.asm :
+	with VERBOSE mode ON the critical handler will now list the Module name
+	and Process_ID
+
+23)	\dos32a.asm :
+	the call to "restore_pit" after protected mode initialization has
+	been removed
+
+24)	\dos32a.asm :
+	the default size of DOS transfer buffer is now 16KB instead of 64KB
+
+25)	\KERNEL\int31h.asm :
+	corrected DPMI function 050Ah - Get base and size of memory block,
+	the base reported now points to the actual address of memory block,
+	not to the header
+
+26)	\KERNEL\int31h.asm :
+	minor changes in 05xxh functions, the alignment of memory blocks is
+	now PARA (16 bytes)
+
+27)	\CLIENT\int21h.asm :
+	new function 0FF8Fh to resize DOS transfer buffer, won't be documented
+	though
+
+28)	\CLIENT\int21h.asm :
+	support for Win95/DOS 7.xx long filenames is included, DOS functions
+	71xxh are now extended
+
+29)	\CLIENT\int21h.asm :
+	selectors allocated for loaded Objects and the "_sel_zero" selector
+	are now deallocated upon DOS Extender's exit in function AH=4Ch
+
+30)	the "restore_pit" is now called on initialization only for
+	Process_ID = 0 processes
+
+31)	\KERNEL\init.asm :
+	the "pm32_maxextmem" is now set to zero when process is spawned from
+	another DOS/32A process (ID32 check == true); less flexibility, but 
+	much more safe
+
+32)	\KERNEL\intr.asm :
+	INT 0Fh (IRQ 7) was not redirected from "int_matrix" to either
+	"irq_normal" or "irq_tester" (it was preserved, and hell I can't
+	remember why...)
+
+33)	loader.asm :
+	\CLIENT\data.asm :
+	a new warning (9005): "Object #%d contains no data or code" has been
+	added
+
+34)	\KERNEL\int31h.asm :
+	added two new ADPMI API functions: 07h and 08h to get/set critical
+	handler routine address, *MUST* be 16:16 sel:offs
+
+35)	\dos32a.asm :
+	\CLIENT\misc.asm :
+	added support for "Focusing on specified VM" under Windows, when it
+	is turned on, Win will run the DOS box VM in full screen
+
+36)	\CLIENT\int21h.asm :
+	mouse ISR handler is now automatically uninstalled on DOS Extender's
+	exit, INT 33h / AX=000Ch is called with 0:0 in function AH=4Ch
+
+37)	\CLIENT\data.asm :
+	\CLIENT\strings.asm :
+	followed prof. Seppo Mustonen advice, well, in a way ;-)
+
+38)	\loader.asm :
+	\CLIENT\data.asm :
+	\CLIENT\int21h.asm :
+	added new extended DOS function 0FF8Eh, Get Pointer to Client Vars
+	and Pointer to Loaded Application Sel/Base Tables, will not be
+	included in DOS/32A documentation
+
+39)	\KERNEL\int31h.asm :
+	function 0EEFFh now returns EAX with "D32A" ID-string instead of
+	"PMDW", this function has been pretty much standardized and should
+	be used for effective detection of currently running Extender:
+	PMODE/W:    "PMDW"
+	WDOSX:      "WDSX"
+	DOS/32A:    "D32A"
+
+40)	\CLIENT\misc.asm :
+	fixed a little problem when DOS/32A was not able to start pure LE/LX
+	applications, ie Linear Exec files not bound to any stub
+
+Very special thanks to:
+
+ - Kimmo Vehkalahti of Survo Systems Oy for all the complains :-) and for
+   working so hard along with me to get this version released
+
+and to
+
+ - David Lopez for exclusive beta testing and lots of suggestions
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 4.00
+===============================================================
+
+1)	\KERNEL\int31h.asm :
+	fixed bug in function 0500h when storing memory info in DS: selector
+	instead of ES:
+
+2)	\CLIENT\strings.asm :
+	fixed bug in "prints" (dec) function when it could not write out
+	numbers larger than 0x8000 because of CWD instruction which has
+	been replaced with XOR DX,DX
+
+
+
+
+
+Updates made to DOS/32 Advanced DOS Extender since version 3.00
+===============================================================
+
+
+1)	\KERNEL\detect.asm :
+	adjusted CPU_detect routine, check for 8086 is removed
+
+2)	\CLIENT\int21h.asm :
+	DOS function 0Ah (input string) is removed
+
+3)	\CLIENT\data.asm :
+	adjusted some strings
+
+4)	\CLIENT\data.asm :
+	changed error code (4004): not enough ext mem to load app fixups
+
+5)	\loader.asm :
+	removed support for Slow Object Loading Scheme
+
+6)	\CLIENT\int21h.asm :
+	added code to restore original protected mode INT 21h in
+	DOS function 4Ch
+
+7)	\KERNEL\int31h.asm :
+	updated DPMI API function 02h - ECX, EDX ain't used no more
+
+8)	\dos32a.asm :
+	used DOS function 0Dh to flush disk buffers
+
+9)	\CLIENT\misc.asm :
+	updated subroutine "check_inttab"
+
+10)	\CLIENT\misc.asm :
+	updated subroutine "set_descriptor"
+
+11)	\CLIENT\misc.asm :
+	updated subroutine "tone"
+
+12)	\CLIENT\misc.asm :
+	updated subroutines "search_for_mz" and "search_for_le"
+
+13)	\loader.asm :
+	rewritten loader LE and LX routines, page shift is now supported
+	for LX-style applications
+
+14)	\KERNEL\init.asm :
+	fixed bug that caused no report of errors when protected mode
+	was not entered successfully, added "jc addr" instruction to
+	"init_done" subroutine
+
+15)	\CLIENT\int10h.asm :
+	fixed bug in VESA function 4F01h causing CX register not being
+	passed down to real mode
+	VESA functions 4F00h and 4F01h are now incorporated into a single
+	function
+
+16)	\CLIENT\int10h.asm :
+	added new VESA function 4F09h
+
+17)	\CLIENT\int10h.asm :
+	added new VESA function 4F0Ah
+
+18)	\CLIENT\int10h.asm :
+	most of VESA functions have been rewritten
+
+19)	\CLIENT\config.asm :
+	bug fixed - options /QUIET and /PRINT:OFF now disable the copyright
+	message as well as warnings
+
+20)	\KERNEL\exit.asm :
+	bug fixed - on exit from RAW system with "dos32a_exists" on, the
+	real mode handler now is not deinstalled and "disableA20" is not
+	called
+
+21)	\CLIENT\int21h.asm :
+	corrected function 1Ch
+
+22)	\CLIENT\int21h.asm :
+	fixed bug in function 34h
+
+23)	\KERNEL\int31h.asm :
+	fixed a little bug in functions 030xh when the parameters pushed on
+	protected mode stack were not being copied properly to real mode
+	stack
+
+24)	\KERNEL\int31h.asm :
+	DPMI Extended API functions 04h and 05h now return default top of
+	stack in EDI register
+
+25)	\KERNEL\intr.asm :
+	adjusted functions that pass protected mode INT/EXC to vectors
+	installed by application/user
+
+26)	\CLIENT\int21h.asm :
+	function 4Ch does not restore the environment segment in the PSP
+	at offset 002Ch, in order to be compatible with external DPMIs
+
+27)	\CLIENT\int10h.asm :
+	VBE function 4F00h has been rewritten to be compatible with graphics
+	cards that return mode list in the information structure
+
+28)	\CLIENT\int21h.asm :
+	removed code in function 4Ch that restored original INT 21h vector
+	in protected mode
+
+29)	\CLIENT\int21h.asm :
+	added new extended API functions to allocate DPMI memory via INT 21h
+
+
+
+
+[END OF LOG]

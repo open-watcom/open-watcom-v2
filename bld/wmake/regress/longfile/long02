@@ -1,5 +1,10 @@
 HELLO=hello
-"hello.exe:$(HELLO).obj":"$*.c""$(HELLO).c".symbolic
+
+"hello.exe:$(HELLO).obj":"$*.c""$(HELLO).c"
    echo $** $@ $*
-    
-   
+
+"hello.exe:hello.c" :   # dummy target to avoid errors
+   @echo
+
+hello.c :               # another dummy target
+   @echo

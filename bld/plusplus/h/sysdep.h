@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  System dependent functions prototypes.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <time.h>
 #include "target.h"
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define SysSwitchChar( dummy )          '-'
 #else
 extern char SysSwitchChar( void );

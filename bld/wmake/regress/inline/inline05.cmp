@@ -1,5 +1,5 @@
-INLINE05(14): Warning(W18): Unrecognized or out of place character '<'
-INLINE05(14): Warning(W18): Unrecognized or out of place character '<'
+inline05(14): Warning(W18): Unrecognized or out of place character '<'
+inline05(14): Warning(W18): Unrecognized or out of place character '<'
 Error(E75): in opening file (temp.1 <<temp.2)
 Error(E42): Last command making (test) returned a bad status
 Error(E02): Make execution terminated

@@ -58,10 +58,24 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "test.h"
-#include "api.h"
-#define WPROJ 5
+#include "rcsapi.h"
 
-HANDLE hInst;
+/* common functions */
+extern RCSGetVersionFn  RCSGetVersion;
+extern RCSSetSystemFn   RCSSetSystem;
+extern RCSQuerySystemFn RCSQuerySystem;
+extern RCSRegBatchCbFn  RCSRegisterBatchCallback;
+extern RCSRegMsgBoxCbFn RCSRegisterMessageBoxCallback;
+/* system specific functions -- mapped to function for appropriate system */
+extern RCSInitFn        RCSInit;
+extern RCSCheckoutFn    RCSCheckout;
+extern RCSCheckinFn     RCSCheckin;
+extern RCSHasShellFn    RCSHasShell;
+extern RCSRunShellFn    RCSRunShell;
+extern RCSFiniFn        RCSFini;
+extern RCSSetPauseFn    RCSSetPause;
+
+HINSTANCE hInst;
 
 BatchCallbackFP         BatchProc;
 MessageBoxCallbackFP    MsgProc;
@@ -78,7 +92,7 @@ HWND hwnd;                    /* handle to main windows  */
 
 ****************************************************************************/
 
-int PASCAL WinMain( HANDLE hInstance,  HANDLE hPrevInstance,
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
         LPSTR lpCmdLine, int nCmdShow)
 {
     MSG msg;
@@ -108,7 +122,7 @@ int RCSAPI Batcher( rcsstring str, void *cookie )
 int RCSAPI Messager( rcsstring text, rcsstring title, rcsstring buffer, int len, void *cookie )
 {
     cookie = cookie;
-    strcpy( buffer, "this is a message" );
+    strcpy( (char*)buffer, "this is a message" );
     return( MessageBox( hwnd, (LPCSTR)text, (LPCSTR)title, MB_OK ) );
 }
 
@@ -136,9 +150,9 @@ BOOL InitApplication(HANDLE hInstance)
     wc.lpszMenuName =  "WatcomEditCntlMenu";
     wc.lpszClassName = "WEditCntlWClass";
 
-    Cookie = RCSInit( hwnd, getenv( "WATCOM" ) );
-    BatchProc = (BatchCallbackFP)MakeProcInstance( &Batcher, hInst );
-    MsgProc = (MessageBoxCallbackFP)MakeProcInstance( &Messager, hInst );
+    Cookie = RCSInit( (unsigned long)hwnd, getenv( "WATCOM" ) );
+    BatchProc = (BatchCallbackFP)MakeProcInstance( (FARPROC)&Batcher, hInst );
+    MsgProc = (MessageBoxCallbackFP)MakeProcInstance( (FARPROC)&Messager, hInst );
     RCSRegisterBatchCallback( Cookie, BatchProc, NULL );
     RCSRegisterMessageBoxCallback( Cookie, MsgProc, NULL );
 
@@ -154,7 +168,7 @@ BOOL InitApplication(HANDLE hInstance)
 
 ****************************************************************************/
 
-BOOL InitInstance(HANDLE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     hAccTable = LoadAccelerators(hInst, "WatcomEditCntlAcc");
@@ -195,7 +209,7 @@ BOOL InitInstance(HANDLE hInstance, int nCmdShow)
 
 ****************************************************************************/
 
-long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     FARPROC lpProcAbout;
 
@@ -204,15 +218,15 @@ long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         switch (wParam) {
         case IDM_ABOUT:
             lpProcAbout = MakeProcInstance((FARPROC)About, hInst);
-            DialogBox(hInst, "AboutBox", hWnd, lpProcAbout);
+            DialogBox(hInst, "AboutBox", hWnd, (DLGPROC)lpProcAbout);
             FreeProcInstance(lpProcAbout);
             break;
         /* RCS menu commands */
         case IDM_CHECKIN:
-            RCSCheckin( Cookie, "foo.c" );
+            RCSCheckin( Cookie, "foo.c", "", "" );
             break;
         case IDM_CHECKOUT:
-            RCSCheckout( Cookie, "foo.c" );
+            RCSCheckout( Cookie, "foo.c", "", "" );
             break;
         case IDM_RUNSHELL:
             RCSRunShell( Cookie );
@@ -257,6 +271,14 @@ long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 SetWindowText( hwnd, "error setting RCS system" );
             }
             break;
+        case IDM_SET_PERFORCE:
+            RCSSetSystem( Cookie, PERFORCE );
+            if( RCSQuerySystem( Cookie ) == PERFORCE ) {
+                SetWindowText( hwnd, "Perforce" );
+            } else {
+                SetWindowText( hwnd, "error setting RCS system" );
+            }
+            break;
         case IDM_QUERY_SYS:
             switch( RCSQuerySystem( Cookie ) ) {
                 case NO_RCS: SetWindowText( hwnd, "none" ); break;
@@ -265,6 +287,7 @@ long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case PVCS: SetWindowText( hwnd, "pvcs" ); break;
                 case GENERIC: SetWindowText( hwnd, "GENERIC" ); break;
                 case WPROJ: SetWindowText( hwnd, "wproj" ); break;
+                case PERFORCE: SetWindowText( hwnd, "Perforce" ); break;
             }
             break;
         case IDM_EXIT:
@@ -295,7 +318,7 @@ long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 ****************************************************************************/
 
-BOOL FAR PASCAL About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL WINAPI About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     lParam = lParam;
     switch (message) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Merge DIEs.
 *
 ****************************************************************************/
 
@@ -92,14 +91,6 @@ MergeDIE::MergeDIE( const MergeDIE& other )
     *this = other;
 }
 
-MergeDIE::~MergeDIE()
-//-------------------
-{
-    // WARNING --   this destructor probably won't be called for
-    //              all dies, since the ragnarok call is used to
-    //              free all allocated dies
-}
-
 void MergeDIE::ragnarok()
 //-----------------------
 // free all MergeDie's allocated with the
@@ -124,21 +115,21 @@ MergeDIE::operator const MergeOffset&() const
 MergeDIE::operator const char*() const
 //------------------------------------
 {
-    static char buffer[ 1024 ];
+    static char buffer[ 512 * 4 ];  //Must be larger than mrfile.h's MERGEFILESTRBUF
     char *      off = buffer;
     int         len;
 
-    len = sprintf( off, "[nm:%s,off:%s,nw:%#lx,",
+    len = sprintf( off, "[name: %s, old offset: %s, new offset: %#lx, ",
             _nameKey.getString(), _offset.getString(), _newOffset );
     off += len;
 
-    len = sprintf( off, "ch:%s,", _firstChild.getString() );
+    len = sprintf( off, "child: %s, ", _firstChild.getString() );
     off += len;
 
-    len = sprintf( off, "sib:%s,", _sibling.getString() );
+    len = sprintf( off, "sib: %s, ", _sibling.getString() );
     off += len;
 
-    len = sprintf( off, "%s,len:%d,occ:%u]",
+    len = sprintf( off, "%s, length: %d, occurs: %lu]",
             definition() ? "<definition>" : "<declaration>", _length, _occurs );
 
     return buffer;
@@ -153,7 +144,7 @@ MergeDIE * MergeDIE::collision( DIETree * tree )
     MergeDIE *      other;
     MergeDIE *      first;
     int             i;
-    uint_16         unique;
+    uint_32         unique;
 
     first = tree->find( _nameKey );
 
@@ -162,8 +153,8 @@ MergeDIE * MergeDIE::collision( DIETree * tree )
         return this;
     }
 
-    _nameKey._unique = (uint_16) (first->_occurs + 1);
-    _occurs = (uint_16) (first->_occurs + 1);
+    _nameKey._unique = (uint_32) (first->_occurs + 1);
+    _occurs = (uint_32) (first->_occurs + 1);
 
     if( _nameKey._name.getString() == NULL ) {
         // don't merge NULL names -- this wastes space!
@@ -181,7 +172,7 @@ MergeDIE * MergeDIE::collision( DIETree * tree )
 
         if( _parent != other->_parent ) {
             #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
-            Log.printf( "  not joined as parents not equal -- %p != %p\n",
+            Log.printf( "  Not joined because parents are not equal -- %p != %p\n",
                         _parent, other->_parent );
             #endif
             continue;
@@ -242,7 +233,7 @@ void MergeDIE::setNewOff( MergeInfoSection * sect, uint_32 & newOffset,
     }
 
     #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
-        Log.printf( "%s at %lx\n", offset().getString(), newOffset );
+        Log.printf( "Old offset %s now at %lx\n", offset().getString(), newOffset );
     #endif
 
     _flags._assigned = 1;
@@ -313,7 +304,7 @@ bool MergeDIE::writeSpecialAttribs( MergeInfoSection * sect,
 {
     MergeFile *     in( inFiles[ _offset.fileIdx ] );
     MergeOffset     ref;
-    uint_8          fileIdx;
+    uint32_t        fileIdx;
 
     switch( att.attrib() ) {
     case DW_AT_sibling:
@@ -322,7 +313,7 @@ bool MergeDIE::writeSpecialAttribs( MergeInfoSection * sect,
         return TRUE;
 
     case DW_AT_decl_file:
-        fileIdx = (uint_8) in->readForm( DR_DEBUG_INFO, offset, att.form(), sect->getAddrSize() );
+        fileIdx = in->readForm( DR_DEBUG_INFO, offset, att.form(), sect->getAddrSize() );
         outFile.writeForm( att.form(),
                             sect->getNewFileIdx( _offset.fileIdx, fileIdx ),
                             sect->getAddrSize() );
@@ -355,7 +346,7 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
 
     #if INSTRUMENTS
     if( _newOffset != outFile.tell( DR_DEBUG_INFO ) ) {
-        Log.printf( "die not at right new offset! actually %lx, should be %lx, %s\n", outFile.tell( DR_DEBUG_INFO ), _newOffset, (const char *)(*this) );
+        Log.printf( "DIE not at correct new offset! Is actually %lx, should be %lx, %s\n", outFile.tell( DR_DEBUG_INFO ), _newOffset, (const char *)(*this) );
     }
     #endif
     InternalAssert( _newOffset == outFile.tell( DR_DEBUG_INFO ) );
@@ -433,3 +424,15 @@ void MergeDIE::writeSelf( MergeInfoSection * sect, MergeFile & outFile,
     _flags._written = 1;
 }
 #endif
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 657 9
+
+MergeDIE::~MergeDIE()
+//-------------------
+{
+    // WARNING --   this destructor probably won't be called for
+    //              all dies, since the ragnarok call is used to
+    //              free all allocated dies
+}

@@ -1,0 +1,116 @@
+c$pragma library graph
+
+c$pragma aux wcgraph "*_"
+
+! Display functions
+
+c$pragma aux (wcgraph) _pg_initchart
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_defaultchart parm( reference, value*2, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_defaultchart parm( reference far, value*2, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_chart parm( reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_chart parm( reference far, reference far, reference far, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_chartms parm( reference, reference, reference, value*2, value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_chartms parm( reference far, reference far, reference far, value*2, value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_chartscatter parm( reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_chartscatter parm( reference far, reference far, reference far, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_chartscatterms parm( reference, reference, reference, \
+c                                               value*2, value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_chartscatterms parm( reference far, reference far, reference far, \
+c                                               value*2, value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_chartpie parm( reference, reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_chartpie parm( reference far, reference far, reference far, reference far, value*2 )
+c$endif
+
+! Analyze functions
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_analyzechart parm( reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_analyzechart parm( reference far, reference far, reference far, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_analyzechartms parm( reference, reference, reference, \
+c                                               value*2, value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_analyzechartms parm( reference far, reference far, reference far, \
+c                                               value*2, value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_analyzescatter parm( reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_analyzescatter parm( reference far, reference far, reference far, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_analyzescatterms parm( reference, reference, reference, \
+c                                                 value*2, value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_analyzescatterms parm( reference far, reference far, reference far, \
+c                                                 value*2, value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_analyzepie parm( reference, reference, reference, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _pg_analyzepie parm( reference far, reference far, reference far, reference far, value*2 )
+c$endif
+
+! Utility functions
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_hlabelchart parm( reference, value*2, value*2, value*2, value )
+c$else
+c$pragma aux (wcgraph) _pg_hlabelchart parm( reference far, value*2, value*2, value*2, value far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_vlabelchart parm( reference, value*2, value*2, value*2, value )
+c$else
+c$pragma aux (wcgraph) _pg_vlabelchart parm( reference far, value*2, value*2, value*2, value far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_getpalette parm( reference )
+c$else
+c$pragma aux (wcgraph) _pg_getpalette parm( reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_setpalette parm( reference )
+c$else
+c$pragma aux (wcgraph) _pg_setpalette parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _pg_resetpalette
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_getstyleset parm( reference )
+c$else
+c$pragma aux (wcgraph) _pg_getstyleset parm( reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_setstyleset parm( reference )
+c$else
+c$pragma aux (wcgraph) _pg_setstyleset parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _pg_resetstyleset
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_getchardef parm( value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_getchardef parm( value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _pg_setchardef parm( value*2, reference )
+c$else
+c$pragma aux (wcgraph) _pg_setchardef parm( value*2, reference far )
+c$endif

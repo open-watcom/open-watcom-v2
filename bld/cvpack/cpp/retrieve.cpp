@@ -161,7 +161,10 @@ bool Directory::IsAtSubsection( const sst subsection )
 Directory::~Directory()
 /*********************/
 {
+    if (_cvDirEntry) {
     delete [] _cvDirEntry;
+        _cvDirEntry=0;
+    }
 }
 
 //
@@ -181,6 +184,26 @@ streampos Retriever::GetBasePos()
         throw DebugInfoError();
     }
     return (_inputFile.tellg());
+}
+
+//
+// Retriever::GetPEDebugDirCVEntryPos().
+// Returns the address of the PE debug dir entry for our
+// CodeView data section.
+// This works only with a modified linker.
+// Similar to Retriever::GetBasePos()
+//
+streampos Retriever::GetPEDebugDirCVEntryPos()
+/******************************/
+{
+    unsigned_32 addr;
+
+    if (_lfaBase < LONG_WORD) return 0;
+    if ( ! SeekRead(&addr, _lfaBase - LONG_WORD, LONG_WORD) ) {
+        throw DebugInfoError();
+    }
+    if (addr >= _lfaBase) return 0;
+    return (addr);
 }
 
 //
@@ -222,6 +245,9 @@ unsigned_32 Retriever::SeekRead( void*     buffer,
         }
         throw DebugInfoError();
     }
+    /* reading past EOF also flags ios::fail() so we need to clear
+       that state */
+    _inputFile.ios::clear();
     return length;
 }
 
@@ -238,6 +264,7 @@ Retriever::Retriever( ifstream& inputStream ) :
                   _missRate(0)
 /*************************************************************/
 {
+    _PEDirEntryBase=GetPEDebugDirCVEntryPos();
     ReadPage(0);
     CheckSig();
 }
@@ -249,7 +276,9 @@ Retriever::Retriever( ifstream& inputStream ) :
 void Retriever::CheckSig()
 /************************/
 {
-    if ( strncmp(_inputBuffer,NB09,4) == 0 ) {
+    if (( strncmp(_inputBuffer,NB09,4) == 0 )||
+        ( strncmp(_inputBuffer,NB11,4) == 0 ))
+    {
         throw MiscError("file already packed.");
     }
     // NB05 is the only version that we support.
@@ -283,7 +312,7 @@ bool Retriever::IsInCurrentPage( const unsigned_32 offset ) const
 /***************************************************************/
 {
     long diff = offset-_pageStartOffset;
-    return ( diff >= 0 && diff <= DEF_BUF_SIZE );
+    return ( diff >= 0 && diff < DEF_BUF_SIZE );
 }
 
 char* Retriever::Read( const dir_info& di )
@@ -292,9 +321,14 @@ char* Retriever::Read( const dir_info& di )
     // if length larger than one page, then do a direct read and read in
     // the subsequent page onto input buffer.
     if ( di.length > DEF_BUF_SIZE ) {
+        if (_heapBuffer) {
+            delete [] _heapBuffer;
+            _heapBuffer=NULL;
+        }
         _heapBuffer = new char [di.length];
         if ( SeekRead(_heapBuffer, _lfaBase+di.offset, di.length) != di.length ) {
             delete [] _heapBuffer;
+            _heapBuffer=NULL;
             return NULL;
         }
         ReadPage(di.offset+di.length);
@@ -312,9 +346,10 @@ bool Retriever::ReadSubsection( char*&       buffer,
                                 const module mod )
 /******************************************************/
 {
-    // release last used heap buffer, if there is one.
-    // C++ guaranteeds delete NULL without error.
+    if (_heapBuffer) {
     delete [] _heapBuffer;
+        _heapBuffer=NULL;
+    }
     dir_info di;
     if ( !_aDirectory.GetDirInfo(di,subsection,mod) ) {
         return FALSE;
@@ -323,14 +358,27 @@ bool Retriever::ReadSubsection( char*&       buffer,
     if ( length == 0 ) {
         return FALSE;
     }
-    if ( _missRate > DEF_MISS_THRESHOLD ) {
+/*
+    cerr << "Will read subsection ";
+    cerr << subsection;
+    cerr << " of length ";
+    cerr << length;
+    cerr << " now\n";
+    cerr.flush();
+*/
+//  if ( 1 ) {
+    //if ( _missRate > DEF_MISS_THRESHOLD ) {
         _heapBuffer = buffer = new char [di.length];
         if ( SeekRead( buffer, _lfaBase+di.offset, di.length ) != di.length ) {
+            if (_heapBuffer) {
             delete [] _heapBuffer;
+                _heapBuffer=NULL;
+            }
             return FALSE;
         }
         return TRUE;
-    }
+//    }
+/*
     // if the request read is not in current page, readin the request
     // page.
     if ( ! IsInCurrentPage(di.offset) ) {
@@ -344,6 +392,7 @@ bool Retriever::ReadSubsection( char*&       buffer,
     }
     buffer = _inputBuffer + LocalPageOff(di.offset);
     return TRUE;
+*/
 }
 
 bool Retriever::IsAtSubsection( const sst subsection )

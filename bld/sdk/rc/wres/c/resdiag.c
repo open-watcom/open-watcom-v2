@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-
 #include <stddef.h>
 #include <string.h>
 #include <limits.h>
@@ -40,7 +39,7 @@
 #include "read.h"
 #include "resdiag.h"
 #include "reserr.h"
-#ifdef UNIX
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
 #endif
 

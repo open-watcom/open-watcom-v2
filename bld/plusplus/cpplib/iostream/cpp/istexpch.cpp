@@ -24,54 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/04    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/15    Greg Bentz      fix uninitialized state variables.
-//  93/07/29    Greg Bentz      - change istream::op>>(streambuf &) to
-//                                istream::op>>( streambuf * )
-//                              - fix istream::getline() to not set failbit
-//                                if no input stored in user buffer
-//  93/09/15    Greg Bentz      change getline() back to set ios::failbit
-//                              if not input stored in user buffer
-//  93/10/21    Greg Bentz      change get() and getline() to not set failbit
-//                              if the delim character has been seen
-//  93/10/28    Raymond Tang    Split into separate files.
-//  93/11/16    Greg Bentz      terminate on nullchar as well is whitespace
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <ctype.h>
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "lock.h"
 
-istream &istream::operator >> ( char *buf ) {
-/*******************************************/
-// Input a string of non-whitespace characters into the buffer.
-// If the width is set, read a maximum of that many characters, less one
-// for the NULLCHAR on the end.
-// Otherwise, keep reading until EOF or a whitespace character.
+namespace std {
 
+  // Input a string of non-whitespace characters into the buffer. If the
+  // width is set, read a maximum of that many characters, less one for
+  // the NULLCHAR on the end. Otherwise, keep reading until EOF or a
+  // whitespace character.
+
+  istream &istream::operator >> ( char *buf ) {
     int c;
     int offset;
     int last_offset;
@@ -110,4 +83,6 @@ istream &istream::operator >> ( char *buf ) {
     width( 0 );
     buf[offset] = '\0';
     return( *this );
+  }
+
 }

@@ -75,6 +75,6 @@ void GUIXCleanupHotSpots( void )
     int i;
 
     for( i = 0; i < GUINumHotSpots; i++ ) {
-        GUIFree( GUIHotSpots[i].text );
+        GUIMemFree( GUIHotSpots[i].text );
     }
 }

@@ -1,49 +1,35 @@
 proj_name = wdistest
+
+host_cpu = 386
+
+!ifdef __LINUX__
+host_os = linux
+!else ifdef __DOS__
+host_os = dos
+!else ifdef __NT__
+host_os = nt
+!else ifdef __OS2__
+host_os = os2
+!endif
+
 name = dis
 
-.extensions:
-.extensions: .exe .obj .c .h .mif
+all: $(name).exe .symbolic
 
-.mif: $(mif_path)
 !include cproj.mif
 !include defrule.mif
-!include bhost.mif
+!include deftarg.mif
 
-dis_test=1
+!include ../../mif/dis.mif
 
-!include $(disasm_dir)\core\dis.mif
+extra_c_flags = -DNDIS_$(target_cpu)
 
-obj             = .obj
-exe             = .exe
+.c: $(dis_srcs);$(disasm_dir)/test/c
+.h: $(dis_hdirs)
 
-.c: $(dis_srcs);$(disasm_dir)\test\c
-.h: $(dis_includes)
+inc_dirs = $(dis_includes)
 
-inc_dirs = $(dis_includes);$(watcom_dir)\h
+test_objs = main.obj $(dis_objs)
 
-.before:
-        set include=$(inc_path)
-
-test_objs       = main$(obj) $(dis_objs)
-
-$(name)$(exe) : eraseall.obj $(test_objs)
-        *$(bld_link) debug all name $@ option map file { $(test_objs) }
-
-.c.obj
-        *$(bld_cc) -d2 $[@
-
-eraseall.obj : $(disasm_dir)\core\compile.gbl
-        if exist *.obj erase *.obj
-        wtouch eraseall.obj
-
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.lib del *.lib
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.c del *.c
-        @if exist *.map del *.map
-        @if exist ..\*.exe del ..\*.exe
+$(name).exe : distbls.gh $(test_objs)
+        $(bld_link) debug all name $@ option quiet, map file { $(test_objs) }

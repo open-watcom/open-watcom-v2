@@ -31,9 +31,11 @@
 
 
 #ifndef NDEBUG
-#include <stdio.h>
 
 #include "plusplus.h"
+
+#include <stdio.h>
+
 #include "vbuf.h"
 #include "ring.h"
 #include "fmtsym.h"
@@ -125,11 +127,11 @@ static void printArgs( arg_list *args )
     VBUF prefix, suffix, flags;
 
     FormatTypeModFlags( args->qualifier, &flags );
-    printf( "    'this qualifier': '%s'\n", flags.buf );
+    printf( "    'this qualifier': '%s'\n", VbufString( &flags ) );
     VbufFree( &flags );
     for( i = 0 ; i < args->num_args ; i++ ) {
         FormatType( args->type_list[i], &prefix, &suffix );
-        printf( "    [%d]: '%s<id> %s'\n", i+1, prefix.buf, suffix.buf );
+        printf( "    [%d]: '%s<id> %s'\n", i+1, VbufString( &prefix ), VbufString( &suffix ) );
         VbufFree( &prefix );
         VbufFree( &suffix );
     }
@@ -173,7 +175,7 @@ void PrintFnovList( FNOV_LIST *root )
     i = 1;
     RingIterBeg( root, entry ) {
         FormatSym( entry->sym, &name );
-        printf( "[%d]: '%s'", i++, name.buf );
+        printf( "[%d]: '%s'", i++, VbufString( &name ) );
         VbufFree( &name );
         if( entry->member || entry->stdops ) {
             printf( " flags=( " );
@@ -221,8 +223,8 @@ void PrintFnovResolution( FNOV_RESULT result, arg_list *args,
         VbufInit( &name );
     }
     printf( " Result: %s\n", resultNames[result] );
-    if( name.buf != NULL ) {
-        printf( "Symbol: '%s'", name.buf );
+    if( VbufLen( &name ) > 0 ) {
+        printf( "Symbol: '%s'", VbufString( &name ) );
         VbufFree( &name );
         length = RingCount( match ) + RingCount( reject );
         if( length > 0 ) {

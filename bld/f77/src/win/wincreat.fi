@@ -1,0 +1,442 @@
+*$noreference
+
+! Window-Creation Funtions:
+! -------------------------
+
+      external AdjustWindowRect
+      external AdjustWindowRectEx
+      external CreateWindow
+      external CreateWindowEx
+      external DefDlgProc
+      external DefFrameProc
+      external DefMDIChildProc
+      external DefWindowProc
+      external DestroyWindow
+      external GetClassInfo
+      external GetClassLong
+      external GetClassName
+      external GetClassWord
+      external GetLastActivePopup
+      external GetWindowLong
+      external GetWindowWord
+      external RegisterClass
+      external SetClassWord
+      external SetClassLong
+      external SetWindowWord
+      external SetWindowLong
+      external UnregisterClass
+
+      integer*2 CreateWindow
+      integer*2 CreateWindowEx
+      integer*4 DefDlgProc
+      integer*4 DefFrameProc
+      integer*4 DefMDIChildProc
+      integer*4 DefWindowProc
+      integer*2 DestroyWindow
+      integer*2 GetClassInfo
+      integer*4 GetClassLong
+      integer*2 GetClassName
+      integer*2 GetClassWord
+      integer*2 GetLastActivePopup
+      integer*4 GetWindowLong
+      integer*2 GetWindowWord
+      integer*2 RegisterClass
+      integer*2 SetClassWord
+      integer*4 SetClassLong
+      integer*2 SetWindowWord
+      integer*4 SetWindowLong
+      integer*2 UnregisterClass
+
+! Class styles
+
+      integer CS_VREDRAW
+      integer CS_HREDRAW
+      integer CS_KEYCVTWINDOW
+      integer CS_DBLCLKS
+      integer CS_OWNDC
+      integer CS_CLASSDC
+      integer CS_PARENTDC
+      integer CS_NOKEYCVT
+      integer CS_NOCLOSE
+      integer CS_SAVEBITS
+      integer CS_BYTEALIGNCLIENT
+      integer CS_BYTEALIGNWINDOW
+      integer CS_GLOBALCLASS
+
+      parameter ( CS_VREDRAW          = '0001'x )
+      parameter ( CS_HREDRAW          = '0002'x )
+      parameter ( CS_KEYCVTWINDOW     = '0004'x )
+      parameter ( CS_DBLCLKS          = '0008'x )
+                                      ! '0010'x no longer used
+      parameter ( CS_OWNDC            = '0020'x )
+      parameter ( CS_CLASSDC          = '0040'x )
+      parameter ( CS_PARENTDC         = '0080'x )
+      parameter ( CS_NOKEYCVT         = '0100'x )
+      parameter ( CS_NOCLOSE          = '0200'x )
+      parameter ( CS_SAVEBITS         = '0800'x )
+      parameter ( CS_BYTEALIGNCLIENT  = '1000'x )
+      parameter ( CS_BYTEALIGNWINDOW  = '2000'x )
+      parameter ( CS_GLOBALCLASS      = '4000'x )
+
+! Window styles
+
+      integer WS_OVERLAPPED
+      integer WS_POPUP
+      integer WS_CHILD
+      integer WS_MINIMIZE
+      integer WS_VISIBLE
+      integer WS_DISABLED
+      integer WS_CLIPSIBLINGS
+      integer WS_CLIPCHILDREN
+      integer WS_MAXIMIZE
+      integer WS_CAPTION
+      integer WS_BORDER
+      integer WS_DLGFRAME
+      integer WS_VSCROLL
+      integer WS_HSCROLL
+      integer WS_SYSMENU
+      integer WS_THICKFRAME
+      integer WS_GROUP
+      integer WS_TABSTOP
+
+      integer WS_MINIMIZEBOX
+      integer WS_MAXIMIZEBOX
+
+      integer WS_TILED
+      integer WS_ICONIC
+      integer WS_SIZEBOX
+
+      parameter ( WS_OVERLAPPED        = '00000000'x )
+      parameter ( WS_POPUP             = '80000000'x )
+      parameter ( WS_CHILD             = '40000000'x )
+      parameter ( WS_MINIMIZE          = '20000000'x )
+      parameter ( WS_VISIBLE           = '10000000'x )
+      parameter ( WS_DISABLED          = '08000000'x )
+      parameter ( WS_CLIPSIBLINGS      = '04000000'x )
+      parameter ( WS_CLIPCHILDREN      = '02000000'x )
+      parameter ( WS_MAXIMIZE          = '01000000'x )
+      parameter ( WS_BORDER            = '00800000'x )
+      parameter ( WS_DLGFRAME          = '00400000'x )
+      parameter ( WS_CAPTION           = WS_BORDER .or. WS_DLGFRAME )
+      parameter ( WS_VSCROLL           = '00200000'x )
+      parameter ( WS_HSCROLL           = '00100000'x )
+      parameter ( WS_SYSMENU           = '00080000'x )
+      parameter ( WS_THICKFRAME        = '00040000'x )
+      parameter ( WS_GROUP             = '00020000'x )
+      parameter ( WS_TABSTOP           = '00010000'x )
+
+      parameter ( WS_MINIMIZEBOX       = '00020000'x )
+      parameter ( WS_MAXIMIZEBOX       = '00010000'x )
+
+      parameter ( WS_TILED             = WS_OVERLAPPED )
+      parameter ( WS_ICONIC            = WS_MINIMIZE )
+      parameter ( WS_SIZEBOX           = WS_THICKFRAME )
+
+! Common window styles
+
+      integer WS_OVERLAPPEDWINDOW
+      integer WS_POPUPWINDOW
+      integer WS_CHILDWINDOW
+
+      integer WS_TILEDWINDOW
+
+      parameter ( WS_OVERLAPPEDWINDOW  = WS_OVERLAPPED .or.
+     &                                   WS_CAPTION .or.
+     &                                   WS_SYSMENU .or.
+     &                                   WS_THICKFRAME .or.
+     &                                   WS_MINIMIZEBOX .or.
+     &                                   WS_MAXIMIZEBOX )
+      parameter ( WS_POPUPWINDOW       = WS_POPUP .or.
+     &                                   WS_BORDER .or.
+     &                                   WS_SYSMENU )
+      parameter ( WS_CHILDWINDOW       = WS_CHILD )
+
+      parameter ( WS_TILEDWINDOW       = WS_OVERLAPPEDWINDOW )
+
+      integer CW_USEDEFAULT
+
+      parameter ( CW_USEDEFAULT = '8000'x)
+
+! Dialog Styles
+
+      integer DS_ABSALIGN
+      integer DS_SYSMODAL
+      integer DS_LOCALEDIT
+      integer DS_SETFONT
+      integer DS_MODALFRAME
+      integer DS_NOIDLEMSG
+
+      parameter ( DS_ABSALIGN   = '01'x )
+      parameter ( DS_SYSMODAL   = '02'x )
+      parameter ( DS_LOCALEDIT  = '20'x )  ! Edit items get Local storage
+      parameter ( DS_SETFONT    = '40'x )  ! User specified font for Dialog
+                                           ! controls
+      parameter ( DS_MODALFRAME = '80'x )  ! Can be combined with WS_CAPTION
+      parameter ( DS_NOIDLEMSG  = '100'x ) ! WM_ENTERIDLE message will not be
+                                           ! sent
+
+! Button Control Styles
+
+      integer BS_PUSHBUTTON
+      integer BS_DEFPUSHBUTTON
+      integer BS_CHECKBOX
+      integer BS_AUTOCHECKBOX
+      integer BS_RADIOBUTTON
+      integer BS_3STATE
+      integer BS_AUTO3STATE
+      integer BS_GROUPBOX
+      integer BS_USERBUTTON
+      integer BS_AUTORADIOBUTTON
+      integer BS_PUSHBOX
+      integer BS_OWNERDRAW
+      integer BS_LEFTTEXT
+
+      parameter ( BS_PUSHBUTTON      = '00'x )
+      parameter ( BS_DEFPUSHBUTTON   = '01'x )
+      parameter ( BS_CHECKBOX        = '02'x )
+      parameter ( BS_AUTOCHECKBOX    = '03'x )
+      parameter ( BS_RADIOBUTTON     = '04'x )
+      parameter ( BS_3STATE          = '05'x )
+      parameter ( BS_AUTO3STATE      = '06'x )
+      parameter ( BS_GROUPBOX        = '07'x )
+      parameter ( BS_USERBUTTON      = '08'x )
+      parameter ( BS_AUTORADIOBUTTON = '09'x )
+      parameter ( BS_PUSHBOX         = '0A'x )
+      parameter ( BS_OWNERDRAW       = '0B'x )
+      parameter ( BS_LEFTTEXT        = '20'x )
+
+! Combo Box styles
+
+      integer CBS_SIMPLE
+      integer CBS_DROPDOWN
+      integer CBS_DROPDOWNLIST
+      integer CBS_OWNERDRAWFIXED
+      integer CBS_OWNERDRAWVARIABLE
+      integer CBS_AUTOHSCROLL
+      integer CBS_OEMCONVERT
+      integer CBS_SORT
+      integer CBS_HASSTRINGS
+      integer CBS_NOINTEGRALHEIGHT
+
+      parameter ( CBS_SIMPLE            = '0001'x )
+      parameter ( CBS_DROPDOWN          = '0002'x )
+      parameter ( CBS_DROPDOWNLIST      = '0003'x )
+      parameter ( CBS_OWNERDRAWFIXED    = '0010'x )
+      parameter ( CBS_OWNERDRAWVARIABLE = '0020'x )
+      parameter ( CBS_AUTOHSCROLL       = '0040'x )
+      parameter ( CBS_OEMCONVERT        = '0080'x )
+      parameter ( CBS_SORT              = '0100'x )
+      parameter ( CBS_HASSTRINGS        = '0200'x )
+      parameter ( CBS_NOINTEGRALHEIGHT  = '0400'x )
+
+! Edit Control Styles
+
+      integer ES_LEFT
+      integer ES_CENTER
+      integer ES_RIGHT
+      integer ES_MULTILINE
+      integer ES_UPPERCASE
+      integer ES_LOWERCASE
+      integer ES_PASSWORD
+      integer ES_AUTOVSCROLL
+      integer ES_AUTOHSCROLL
+      integer ES_NOHIDESEL
+      integer ES_OEMCONVERT
+
+      parameter ( ES_LEFT             = '0000'x )
+      parameter ( ES_CENTER           = '0001'x )
+      parameter ( ES_RIGHT            = '0002'x )
+      parameter ( ES_MULTILINE        = '0004'x )
+      parameter ( ES_UPPERCASE        = '0008'x )
+      parameter ( ES_LOWERCASE        = '0010'x )
+      parameter ( ES_PASSWORD         = '0020'x )
+      parameter ( ES_AUTOVSCROLL      = '0040'x )
+      parameter ( ES_AUTOHSCROLL      = '0080'x )
+      parameter ( ES_NOHIDESEL        = '0100'x )
+      parameter ( ES_OEMCONVERT       = '0400'x )
+
+! Listbox Styles
+
+      integer LBS_NOTIFY
+      integer LBS_SORT
+      integer LBS_NOREDRAW
+      integer LBS_MULTIPLESEL
+      integer LBS_OWNERDRAWFIXED
+      integer LBS_OWNERDRAWVARIABLE
+      integer LBS_HASSTRINGS
+      integer LBS_USETABSTOPS
+      integer LBS_NOINTEGRALHEIGHT
+      integer LBS_MULTICOLUMN
+      integer LBS_WANTKEYBOARDINPUT
+      integer LBS_EXTENDEDSEL
+      integer LBS_STANDARD
+
+      parameter ( LBS_NOTIFY            = '0001'x )
+      parameter ( LBS_SORT              = '0002'x )
+      parameter ( LBS_NOREDRAW          = '0004'x )
+      parameter ( LBS_MULTIPLESEL       = '0008'x )
+      parameter ( LBS_OWNERDRAWFIXED    = '0010'x )
+      parameter ( LBS_OWNERDRAWVARIABLE = '0020'x )
+      parameter ( LBS_HASSTRINGS        = '0040'x )
+      parameter ( LBS_USETABSTOPS       = '0080'x )
+      parameter ( LBS_NOINTEGRALHEIGHT  = '0100'x )
+      parameter ( LBS_MULTICOLUMN       = '0200'x )
+      parameter ( LBS_WANTKEYBOARDINPUT = '0400'x )
+      parameter ( LBS_EXTENDEDSEL       = '0800'x )
+      parameter ( LBS_STANDARD          = LBS_NOTIFY .or.
+     &                                    LBS_SORT .or.
+     &                                    WS_VSCROLL .or.
+     &                                    WS_BORDER )
+
+! Scroll Bar Styles
+
+      integer SBS_HORZ
+      integer SBS_VERT
+      integer SBS_TOPALIGN
+      integer SBS_LEFTALIGN
+      integer SBS_BOTTOMALIGN
+      integer SBS_RIGHTALIGN
+      integer SBS_SIZEBOXTOPLEFTALIGN
+      integer SBS_SIZEBOXBOTTOMRIGHTALIGN
+      integer SBS_SIZEBOX
+
+      parameter ( SBS_HORZ                    = '0000'x )
+      parameter ( SBS_VERT                    = '0001'x )
+      parameter ( SBS_TOPALIGN                = '0002'x )
+      parameter ( SBS_LEFTALIGN               = '0002'x )
+      parameter ( SBS_BOTTOMALIGN             = '0004'x )
+      parameter ( SBS_RIGHTALIGN              = '0004'x )
+      parameter ( SBS_SIZEBOXTOPLEFTALIGN     = '0002'x )
+      parameter ( SBS_SIZEBOXBOTTOMRIGHTALIGN = '0004'x )
+      parameter ( SBS_SIZEBOX                 = '0008'x )
+
+! Static Control Constants
+
+      integer SS_LEFT
+      integer SS_CENTER
+      integer SS_RIGHT
+      integer SS_ICON
+      integer SS_BLACKRECT
+      integer SS_GRAYRECT
+      integer SS_WHITERECT
+      integer SS_BLACKFRAME
+      integer SS_GRAYFRAME
+      integer SS_WHITEFRAME
+      integer SS_USERITEM
+      integer SS_SIMPLE
+      integer SS_LEFTNOWORDWRAP
+      integer SS_NOPREFIX
+
+      parameter ( SS_LEFT            = '00'x )
+      parameter ( SS_CENTER          = '01'x )
+      parameter ( SS_RIGHT           = '02'x )
+      parameter ( SS_ICON            = '03'x )
+      parameter ( SS_BLACKRECT       = '04'x )
+      parameter ( SS_GRAYRECT        = '05'x )
+      parameter ( SS_WHITERECT       = '06'x )
+      parameter ( SS_BLACKFRAME      = '07'x )
+      parameter ( SS_GRAYFRAME       = '08'x )
+      parameter ( SS_WHITEFRAME      = '09'x )
+      parameter ( SS_USERITEM        = '0A'x )
+      parameter ( SS_SIMPLE          = '0B'x )
+      parameter ( SS_LEFTNOWORDWRAP  = '0C'x )
+      parameter ( SS_NOPREFIX        = '80'x ) ! Don't translate "&" character
+
+! Extended window styles
+
+      integer WS_EX_DLGMODALFRAME
+      integer WS_EX_NOPARENTNOTIFY
+
+      parameter ( WS_EX_DLGMODALFRAME  = '00000001'x )
+      parameter ( WS_EX_NOPARENTNOTIFY = '00000004'x )
+
+! Window field offsets for GetWindowLong() and GetWindowWord()
+
+      integer GWL_WNDPROC
+      integer GWW_HINSTANCE
+      integer GWW_HWNDPARENT
+      integer GWW_ID
+      integer GWL_STYLE
+      integer GWL_EXSTYLE
+
+      parameter ( GWL_WNDPROC         = -4 )
+      parameter ( GWW_HINSTANCE       = -6 )
+      parameter ( GWW_HWNDPARENT      = -8 )
+      parameter ( GWW_ID              = -12 )
+      parameter ( GWL_STYLE           = -16 )
+      parameter ( GWL_EXSTYLE         = -20 )
+
+! Class field offsets for GetClassLong() and GetClassWord()
+
+      integer GCL_MENUNAME
+      integer GCW_HBRBACKGROUND
+      integer GCW_HCURSOR
+      integer GCW_HICON
+      integer GCW_HMODULE
+      integer GCW_CBWNDEXTRA
+      integer GCW_CBCLSEXTRA
+      integer GCL_WNDPROC
+      integer GCW_STYLE
+
+      parameter ( GCL_MENUNAME        = -8 )
+      parameter ( GCW_HBRBACKGROUND   = -10 )
+      parameter ( GCW_HCURSOR         = -12 )
+      parameter ( GCW_HICON           = -14 )
+      parameter ( GCW_HMODULE         = -16 )
+      parameter ( GCW_CBWNDEXTRA      = -18 )
+      parameter ( GCW_CBCLSEXTRA      = -20 )
+      parameter ( GCL_WNDPROC         = -24 )
+      parameter ( GCW_STYLE           = -26 )
+
+! Window-Creation Structure
+
+      structure /CREATESTRUCT/
+          integer*4             lpCreateParams
+          integer*2             hInstance
+          integer*2             hMenu
+          integer*2             hwndParent
+          integer*2             cy
+          integer*2             cx
+          integer*2             y
+          integer*2             x
+          integer*4             style
+          integer*4             lpszName
+          integer*4             lpszClass
+          integer*4             dwExStyle
+      end structure
+
+! MDI Client Window Creation Structure
+
+      structure /CLIENTCREATESTRUCT/
+          integer*2             hWindowMenu
+          integer*2             idFirstChild
+      end structure
+
+! MDI Child Window Creation Structure
+
+      structure /MDICREATESTRUCT/
+          integer*4             szClass
+          integer*4             szTitle
+          integer*2             hOwner
+          integer*2             x, y
+          integer*2             cx, cy
+          integer*4             style
+          integer*4             lParam        ! app-defined stuff
+      end structure
+
+! Window Class Data Structure
+
+      structure /WNDCLASS/
+          integer*2           style
+          integer*4           lpfnWndProc        ! call back function
+          integer*2           cbClsExtra
+          integer*2           cbWndExtra
+          integer*2           hInstance
+          integer*2           hIcon
+          integer*2           hCursor
+          integer*2           hbrBackground
+          integer*4           lpszMenuName
+          integer*4           lpszClassName
+      end structure
+
+*$reference

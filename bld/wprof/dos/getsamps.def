@@ -1,2 +1,0 @@
-//#line "..\c\getsamps.c" 65
-extern bint GetSampleInfo(void);

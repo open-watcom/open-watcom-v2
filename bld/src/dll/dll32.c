@@ -99,14 +99,14 @@ int FAR PASCAL Lib3( LPSTR data, WORD a, WORD b,
   return( d1 + d2 );
 }
 
-int FAR PASCAL WEP( short nParameter )
+int FAR PASCAL WEP( int nParameter )
 {
   nParameter = nParameter;
   //BreakPoint();
   return( 1 );
 }
 
-int PASCAL WinMain( HANDLE hInstance, HANDLE x1, LPSTR lpCmdLine, int x2 )
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE x1, LPSTR lpCmdLine, int x2 )
 {
   short i;
   char buf[128];

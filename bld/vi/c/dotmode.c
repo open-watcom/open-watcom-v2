@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 /*
@@ -47,17 +45,17 @@ void SaveDotCmd( void )
 /*
  * DoDotMode - process the pressing of '.'
  */
-int DoDotMode( void )
+vi_rc DoDotMode( void )
 {
-    int rc=ERR_NO_ERR;
-    int cnt;
+    vi_rc   rc = ERR_NO_ERR;
+    int     cnt;
 
     /*
      * check if memorizing; '.' causes memorizing to end
      */
     if( EditFlags.MemorizeMode ) {
         EditFlags.MemorizeMode = FALSE;
-        Message1( "%sended",MEMORIZE_MODE );
+        Message1( "%sended", MEMORIZE_MODE );
         DotDigits--;
         SaveDotCmd();
         DotDigits = 0;
@@ -92,7 +90,7 @@ int DoDotMode( void )
                 break;
             }
             rc = DoLastEvent();
-            if( rc > 0 || LastError ) {
+            if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
                 break;
             }
             DoneLastEvent( rc, TRUE );
@@ -108,14 +106,14 @@ int DoDotMode( void )
 /*
  * DoAltDotMode - do alternate dot mode ('=')
  */
-int DoAltDotMode( void )
+vi_rc DoAltDotMode( void )
 {
-    int rc=ERR_NO_ERR;
-    int cnt;
+    vi_rc   rc = ERR_NO_ERR;
+    int     cnt;
 
     if( EditFlags.AltMemorizeMode ) {
         EditFlags.AltMemorizeMode = FALSE;
-        Message1( "Alternate %sended",MEMORIZE_MODE );
+        Message1( "Alternate %sended", MEMORIZE_MODE );
         AltDotDigits--;
         return( ERR_NO_ERR );
     }
@@ -149,7 +147,7 @@ int DoAltDotMode( void )
                 break;
             }
             rc = DoLastEvent();
-            if( rc > 0 || LastError ) {
+            if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
                 break;
             }
             DoneLastEvent( rc, FALSE );

@@ -1,5 +1,5 @@
 plustest_name = dcmat
-!include ..\environ.mif
+!include ../environ.mif
 
 objs = &
     compmat.obj &
@@ -8,45 +8,59 @@ objs = &
     four1.obj &
     realft.obj &
     svdcmp.obj
-    
+
 !ifdef test1
-cflags_386 = -d2
-cflags_axp = -d2
+test_cflags = -d2
+alt_error=01
 !else
-cflags_386 = -ox-d1
-cflags_axp = -ox-d1
+test_cflags = -ox-d1
+alt_error=00
 !endif
 
-cflags_386 += -zq -e10 -w0 -i. -d__ATT_complex__
-cflags_axp += -zq -e10 -w0 -i. -d__ATT_complex__
+test_cflags += -zq -e10 -w0 -D__ATT_complex__ -I.
 
-.c.$(exe):
-    $(wpp_$(arch)) $[@ $(cflags_$(arch))
-    $(linker) @test.lnk FILE $[*
-    
+test_cflags_386 =
+test_cflags_i86 = -mm -zm
+test_cflags_axp =
+
+stack_386=opt stack=16k
+stack_i86=opt stack=8k
+stack_axp=opt stack=16k
+
+.obj.$(exe):
+    $(linker) @test.lnk name $@ FILE $[@
+    $(run) $(exec_prefix)$@ >>test.out
+
 .c.obj:
-    $(wpp_$(arch)) $[@ $(cflags_$(arch))
-    
-test : .symbolic matrix.lib test.lnk test.$(exe) tmatrix.$(exe)
-    $(run) test >test.out
-    $(run) tmatrix >>test.out
+    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
+
+exes = test.$(exe) tmatrix.$(exe)
+
+test : .symbolic start_test matrix.lib test.lnk $(exes)
     diff test.out test.chk
-    %make global
+    @%make global
     %append $(log_file) PASS $(%__CWD__)
-    
+
+start_test : .symbolic
+    %create test.out
+    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+
 matrix.lib : $(objs) matrix.lbc
-    $(librarian_$(arch)) /b/n/q $^@ @matrix.lbc
-    
+    $(librarian_$(arch)) -q-n-b $@ @matrix.lbc
+
 matrix.lbc : makefile
-    %create $^@
-    @for %i in ( $(objs) ) do @%append $^@ -+%i
-    
+    %create $@
+    @for %i in ( $(objs) ) do @%append $@ -+%i
+
 test.lnk : makefile
-    %create $^@
-    @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION quiet, map, stack=16k
-    @%append $^@ DEBUG all
-    @%append $^@ LIBRARY matrix.lib
-    
-global : .symbolic
+    %create $@
+    @%append $@ $(ldebug_$(arch))
+    @%append $@ $(lnk_$(arch))
+    @%append $@ $(stack_$(arch))
+    @%append $@ LIBRARY matrix.lib
+
+save : .symbolic
+    @if exist test.out cp test.out s$(arch)_$(alt_error).sav
+
+global : .procedure
     @%make common_clean

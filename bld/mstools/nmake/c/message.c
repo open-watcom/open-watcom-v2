@@ -39,7 +39,7 @@
 
 
 static char *           usageMsg[] = {
-    #include "usagemsg.h"
+    #include "usagemsg.gh"
     NULL
 };
 
@@ -57,14 +57,30 @@ void BannerMessage( void )
         banner1w( "C/C++ NMAKE Clone for " CPU_NAME " ", _NMAKE_CLONE_VERSION_ ) "\n"
         banner2( "1995" ) "\n"
         banner3 "\n"
+        banner3a "\n"
     };
 
     if( !alreadyPrinted && !quietMode ) {
-        fprintf( stderr, helpMsg );
+        printf( helpMsg );
         alreadyPrinted = 1;
     }
 }
 
+
+/*
+ * Read a key from the console.
+ */
+static int get_key( void )
+/************************/
+{
+    int                 ch;
+
+    ch = getch();
+    if( ch == 0 ) {                     /* handle extended keys */
+        ch = getch();
+    }
+    return( ch );
+}
 
 /*
  * Print a help message.
@@ -110,20 +126,4 @@ void QuietModeMessage( void )
 /***************************/
 {
     quietMode = 1;
-}
-
-
-/*
- * Read a key from the console.
- */
-static int get_key( void )
-/************************/
-{
-    int                 ch;
-
-    ch = getch();
-    if( ch == 0 ) {                     /* handle extended keys */
-        ch = getch();
-    }
-    return( ch );
 }

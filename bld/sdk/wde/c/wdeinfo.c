@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 #include <string.h>
 #include <mbstring.h>
 #include <stdlib.h>
@@ -39,7 +39,7 @@
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wderesin.h"
 #include "wdegeted.h"
 #include "wdeobjid.h"
@@ -66,15 +66,15 @@ extern LRESULT WINEXPORT WdeInfoWndProc ( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void WdeEnableInfoWindowInput ( Bool );
-static void WdeResetInfo             ( void );
-static void WdeChangeInfo            ( void );
-static void WdeDisplayDialogInfo     ( WdeInfoStruct * );
-static void WdeDisplayControlInfo    ( WdeInfoStruct * );
-static void WdeChangeDialogInfo      ( WdeInfoStruct * );
-static void WdeChangeControlInfo     ( WdeInfoStruct * );
-static void WdeInfoLookupComboEntry  ( HWND, WORD );
-static void WdeWriteSymInfo          ( WdeInfoStruct *, Bool, char * );
+static void WdeEnableInfoWindowInput( Bool );
+static void WdeResetInfo( void );
+static void WdeChangeInfo( void );
+static void WdeDisplayDialogInfo( WdeInfoStruct * );
+static void WdeDisplayControlInfo( WdeInfoStruct * );
+static void WdeChangeDialogInfo( WdeInfoStruct * );
+static void WdeChangeControlInfo( WdeInfoStruct * );
+static void WdeInfoLookupComboEntry( HWND, WORD );
+static void WdeWriteSymInfo( WdeInfoStruct *, Bool, char * );
 static void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str );
 
 /****************************************************************************/
@@ -82,7 +82,7 @@ static void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str );
 /****************************************************************************/
 static HWND             WdeInfoWindow           = NULL;
 static HBRUSH           WdeInfoBrush            = NULL;
-static COLORREF         WdeInfoColor            = NULL;
+static COLORREF         WdeInfoColor            = 0;
 static int              WdeInfoWindowDepth      = 0;
 static DLGPROC          WdeInfoWinProc          = NULL;
 static WdeInfoStruct    WdeCurrentInfo;
@@ -114,8 +114,8 @@ static Bool WdeInitInfoText( void )
     WdeTextText = WdeAllocRCString( WDE_INFOTEXTTEXT );
     WdeIDText = WdeAllocRCString( WDE_INFOIDTEXT );
 
-    return( ( WdeCaptionText != NULL ) && ( WdeDlgNameText != NULL ) &&
-            ( WdeTextText != NULL ) && ( WdeIDText != NULL ) );
+    return( WdeCaptionText != NULL && WdeDlgNameText != NULL &&
+            WdeTextText != NULL && WdeIDText != NULL );
 }
 
 void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str )
@@ -127,154 +127,150 @@ void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str )
     if( cbox == (HWND)NULL ) {
         return;
     }
-    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM) (LPCSTR) str );
+    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPCSTR)str );
     if( pos == CB_ERR ) {
-        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM) (LPCSTR) str );
+        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
     }
 }
 
 void WdeSetFocusToInfo( void )
 {
-    if( WdeInfoWindowDepth && ( WdeInfoWindow != (HWND)NULL ) ) {
+    if( WdeInfoWindowDepth != 0 && WdeInfoWindow != (HWND)NULL ) {
         SetFocus( WdeInfoWindow );
     }
 }
 
-BOOL WdeIsInfoMessage ( MSG *msg )
+BOOL WdeIsInfoMessage( MSG *msg )
 {
-    if ( WdeInfoWindowDepth && WdeInfoWindow ) {
-        return ( IsDialogMessage ( WdeInfoWindow, msg ) );
+    if ( WdeInfoWindowDepth != 0 && WdeInfoWindow != (HWND)NULL ) {
+        return( IsDialogMessage( WdeInfoWindow, msg ) );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 }
 
-HWND WdeGetInfoWindowHandle ( void )
+HWND WdeGetInfoWindowHandle( void )
 {
-    return ( WdeInfoWindow );
+    return( WdeInfoWindow );
 }
 
-int WdeGetInfoWindowDepth ( void )
+int WdeGetInfoWindowDepth( void )
 {
     RECT rect;
 
-    if ( WdeInfoWindow && IsWindowVisible ( WdeInfoWindow) &&
-         !WdeInfoWindowDepth ) {
+    if( WdeInfoWindow != (HWND)NULL && IsWindowVisible ( WdeInfoWindow ) &&
+        WdeInfoWindowDepth == 0 ) {
         GetWindowRect( WdeInfoWindow, &rect );
         WdeInfoWindowDepth = rect.bottom - rect.top;
     }
 
-    return ( WdeInfoWindowDepth );
+    return( WdeInfoWindowDepth );
 }
 
-Bool WdeCreateInfoWindow ( HWND main_window, HINSTANCE inst )
+Bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
 {
     if( !WdeInitInfoText() ) {
         return( FALSE );
     }
 
-    WdeInfoWinProc =
-        (DLGPROC) MakeProcInstance ( (FARPROC) WdeInfoWndProc, inst );
+    WdeInfoWinProc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeInfoWndProc, inst );
 
     WdeInfoColor = GetSysColor( COLOR_BTNFACE );
     WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
 
-    WdeInfoWindow = JCreateDialog( inst, "WdeInfo",
-                                   main_window, WdeInfoWinProc );
+    WdeInfoWindow = JCreateDialog( inst, "WdeInfo", main_window, WdeInfoWinProc );
 
     /* if the window could not be created return FALSE */
     if ( WdeInfoWindow == NULL ) {
-        WdeWriteTrail("WdeCreateInfoWindow: Could not create info window!");
-        return ( FALSE );
+        WdeWriteTrail( "WdeCreateInfoWindow: Could not create info window!" );
+        return( FALSE );
     }
 
     WdeInfoWindowDepth = 0;
 
-    WdeResizeWindows ();
+    WdeResizeWindows();
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-void WdeInfoFini ( void )
+void WdeInfoFini( void )
 {
     WdeFiniInfoText();
-    if ( WdeInfoWinProc ) {
-        FreeProcInstance ( (FARPROC) WdeInfoWinProc );
+    if( WdeInfoWinProc != NULL ) {
+        FreeProcInstance( (FARPROC)WdeInfoWinProc );
     }
-    if ( WdeInfoBrush ) {
-        DeleteObject ( WdeInfoBrush );
+    if( WdeInfoBrush != NULL ) {
+        DeleteObject( WdeInfoBrush );
     }
 }
 
-void WdeDestroyInfoWindow ( void )
+void WdeDestroyInfoWindow( void )
 {
-    if ( WdeInfoWindow != NULL ) {
-        DestroyWindow ( WdeInfoWindow );
-        WdeInfoWindow      = NULL;
+    if( WdeInfoWindow != NULL ) {
+        DestroyWindow( WdeInfoWindow );
+        WdeInfoWindow = NULL;
         WdeInfoWindowDepth = 0;
     }
-    WdeResizeWindows ();
+    WdeResizeWindows();
 }
 
-void WdeShowInfoWindow ( Bool show )
+void WdeShowInfoWindow( Bool show )
 {
-    if ( WdeInfoWindowDepth ) {
-        if ( show ) {
-            ShowWindow ( WdeInfoWindow, SW_SHOW );
-            WdeInfoWindowDepth = WdeGetInfoWindowDepth ();
+    if( WdeInfoWindowDepth != 0 ) {
+        if( show ) {
+            ShowWindow( WdeInfoWindow, SW_SHOW );
+            WdeInfoWindowDepth = WdeGetInfoWindowDepth();
         } else {
-            ShowWindow ( WdeInfoWindow, SW_HIDE );
+            ShowWindow( WdeInfoWindow, SW_HIDE );
             WdeInfoWindowDepth = 0;
         }
     } else {
-        if ( show ) {
-            ShowWindow ( WdeInfoWindow, SW_SHOW );
+        if( show ) {
+            ShowWindow( WdeInfoWindow, SW_SHOW );
         }
     }
 
-    WdeResizeWindows ();
+    WdeResizeWindows();
 }
 
-void WdeEnableInfoWindowInput ( Bool enable )
+void WdeEnableInfoWindowInput( Bool enable )
 {
     HWND        win;
     static Bool last = TRUE;
 
-    if ( WdeInfoWindowDepth && ( last != enable ) ) {
-        win = GetDlgItem ( WdeInfoWindow, IDB_INFO_CAPTION );
-        EnableWindow ( win, enable );
-        win = GetDlgItem ( WdeInfoWindow, IDB_INFO_IDSTR );
-        EnableWindow ( win, enable );
-        win = GetDlgItem ( WdeInfoWindow, IDB_INFO_IDNUM );
-        EnableWindow ( win, enable );
-        win = GetDlgItem ( WdeInfoWindow, IDB_INFO_SET );
-        EnableWindow ( win, enable );
-        win = GetDlgItem ( WdeInfoWindow, IDB_INFO_RESET );;
-        EnableWindow ( win, enable );
+    if( WdeInfoWindowDepth != 0 && last != enable ) {
+        win = GetDlgItem( WdeInfoWindow, IDB_INFO_CAPTION );
+        EnableWindow( win, enable );
+        win = GetDlgItem( WdeInfoWindow, IDB_INFO_IDSTR );
+        EnableWindow( win, enable );
+        win = GetDlgItem( WdeInfoWindow, IDB_INFO_IDNUM );
+        EnableWindow( win, enable );
+        win = GetDlgItem( WdeInfoWindow, IDB_INFO_SET );
+        EnableWindow( win, enable );
+        win = GetDlgItem( WdeInfoWindow, IDB_INFO_RESET );;
+        EnableWindow( win, enable );
         last = enable;
     }
 }
 
-void WdeResizeInfoWindow ( RECT *rect )
+void WdeResizeInfoWindow( RECT *rect )
 {
-    if ( WdeInfoWindowDepth && ( WdeInfoWindow != NULL ) ) {
-        MoveWindow ( WdeInfoWindow, 0, WdeGetRibbonHeight(),
-                     ( rect->right  - rect->left ),
-                     WdeInfoWindowDepth, TRUE );
+    if( WdeInfoWindowDepth != 0 && WdeInfoWindow != NULL ) {
+        MoveWindow( WdeInfoWindow, 0, WdeGetRibbonHeight(),
+                    rect->right  - rect->left, WdeInfoWindowDepth, TRUE );
         RedrawWindow ( WdeInfoWindow, NULL, (HRGN) NULL,
-                       RDW_INTERNALPAINT | RDW_INVALIDATE |
-                       RDW_NOERASE | RDW_UPDATENOW );
+                       RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_NOERASE | RDW_UPDATENOW );
     }
 }
 
-void WdeWriteSymInfo ( WdeInfoStruct *is, Bool same_as_last, char *s )
+void WdeWriteSymInfo( WdeInfoStruct *is, Bool same_as_last, char *s )
 {
-    Bool   dirty;
-    OBJPTR obj;
+    Bool    dirty;
+    OBJPTR  obj;
 
-    if( is->res_info->hash_table ) {
+    if( is->res_info->hash_table != NULL ) {
         dirty = WdeIsHashTableTouched( is->res_info->hash_table );
-        if( dirty && ( obj = GetMainObject() ) ) {
+        if( dirty && (obj = GetMainObject()) != NULL ) {
             Forward( obj, RESOLVE_SYMBOL, NULL, NULL );
             Forward( obj, RESOLVE_HELPSYMBOL, NULL, NULL );   /* JPK */
         }
@@ -285,48 +281,45 @@ void WdeWriteSymInfo ( WdeInfoStruct *is, Bool same_as_last, char *s )
         }
     } else {
         if( !same_as_last ) {
-            SendDlgItemMessage( WdeInfoWindow, IDB_INFO_IDSTR,
-                                CB_RESETCONTENT, 0, 0 );
+            SendDlgItemMessage( WdeInfoWindow, IDB_INFO_IDSTR, CB_RESETCONTENT, 0, 0 );
         }
     }
 
-    if( s ) {
+    if( s != NULL ) {
         WdeSetComboWithStr( s, WdeInfoWindow, IDB_INFO_IDSTR );
     }
-
 }
 
-void WdeWriteInfo ( WdeInfoStruct *is )
+void WdeWriteInfo( WdeInfoStruct *is )
 {
     static WdeHashTable *last_table = NULL;
-    static WdeResInfo   *last_res   = NULL;
-    static OBJ_ID        last_obj   = NULL;
-    char *cap_text, *id;
-    Bool  same_hash;
+    static WdeResInfo   *last_res = NULL;
+    static OBJ_ID       last_obj = 0;
+    char                *cap_text, *id;
+    Bool                same_hash;
 
-    if ( !WdeInfoWindowDepth || !WdeInfoWindow ) {
+    if( WdeInfoWindowDepth == 0 || WdeInfoWindow == NULL ) {
         return;
     }
 
-    if ( !is || !is->obj || !is->res_info ) {
-        WdeWriteTrail ("WdeWriteDialogInfo: NULL parameter!");
+    if( is == NULL || is->obj == NULL || is->res_info == NULL ) {
+        WdeWriteTrail( "WdeWriteDialogInfo: NULL parameter!" );
         return;
     }
 
     /* make sure the resource window is not robbed of focus */
-    if ( GetFocus() != is->res_info->res_win ) {
+    if( GetFocus() != is->res_info->res_win ) {
         SetFocus( is->res_info->res_win );
     }
 
     WdeCurrentInfo = *is;
 
-    same_hash = ( ( last_res   == is->res_info ) &&
-                  ( last_table == is->res_info->hash_table ) );
+    same_hash = (last_res == is->res_info && last_table == is->res_info->hash_table);
 
     WdeWriteSymInfo( is, same_hash, NULL );
 
     last_table = is->res_info->hash_table;
-    last_res   = is->res_info;
+    last_res = is->res_info;
 
     if( is->obj_id == BASE_OBJ ) {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_SIZE );
@@ -336,8 +329,7 @@ void WdeWriteInfo ( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
         WdeWriteObjectDimensions( (int_16)is->size.x, (int_16)is->size.y,
-                                  (int_16)is->size.width,
-                                  (int_16)is->size.height );
+                                  (int_16)is->size.width, (int_16)is->size.height );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
@@ -349,10 +341,10 @@ void WdeWriteInfo ( WdeInfoStruct *is )
     if( last_obj != is->obj_id ) {
         if( is->obj_id == DIALOG_OBJ ) {
             cap_text = WdeCaptionText;
-            id       = WdeDlgNameText;
+            id = WdeDlgNameText;
         } else if( is->obj_id == CONTROL_OBJ ) {
             cap_text = WdeTextText;
-            id       = WdeIDText;
+            id = WdeIDText;
         } else if( is->obj_id == BASE_OBJ ) {
             cap_text = "";
             id       = "";
@@ -363,43 +355,43 @@ void WdeWriteInfo ( WdeInfoStruct *is )
     }
 }
 
-void WdeResetInfo ( void )
+void WdeResetInfo( void )
 {
-    if ( WdeCurrentInfo.obj_id == DIALOG_OBJ ) {
-        WdeDisplayDialogInfo ( &WdeCurrentInfo );
-    } else if ( WdeCurrentInfo.obj_id == CONTROL_OBJ ) {
-        WdeDisplayControlInfo ( &WdeCurrentInfo );
+    if( WdeCurrentInfo.obj_id == DIALOG_OBJ ) {
+        WdeDisplayDialogInfo( &WdeCurrentInfo );
+    } else if( WdeCurrentInfo.obj_id == CONTROL_OBJ ) {
+        WdeDisplayControlInfo( &WdeCurrentInfo );
     }
 }
 
-void WdeDisplayDialogInfo ( WdeInfoStruct *is )
+void WdeDisplayDialogInfo( WdeInfoStruct *is )
 {
     char          *str;
     WResID        *name;
 
     str = WRConvertStringFrom( is->d.caption, "\t\n", "tn" );
     if( str == NULL ) {
-        WdeSetEditWithStr ( "", WdeInfoWindow, IDB_INFO_CAPTION );
+        WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_CAPTION );
     } else {
-        WdeSetEditWithStr ( str, WdeInfoWindow, IDB_INFO_CAPTION );
+        WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_CAPTION );
         WdeMemFree( str );
     }
 
     name = is->d.name;
     if( name->IsName ) {
-        char *str1, *str2;
-        int len;
-        Bool ok;
+        char    *str1, *str2;
+        int     len;
+        Bool    ok;
         ok = FALSE;
         str1 = WResIDToStr( name );
-        if( str1 ) {
+        if( str1 != NULL ) {
             len = strlen( str1 ) + 3;
             str2 = WdeMemAlloc( len );
-            if( str2 ) {
+            if( str2 != NULL ) {
                 str2[0] = '"';
                 strcpy( &str2[1], str1 );
-                str2[len-2] = '"';
-                str2[len-1] = '\0';
+                str2[len - 2] = '"';
+                str2[len - 1] = '\0';
                 WdeSetComboWithStr( str2, WdeInfoWindow, IDB_INFO_IDSTR );
                 WdeMemFree( str2 );
                 ok = TRUE;
@@ -411,20 +403,16 @@ void WdeDisplayDialogInfo ( WdeInfoStruct *is )
         }
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        if( is->symbol ) {
-            WdeSetComboWithStr( is->symbol, WdeInfoWindow,
-                                IDB_INFO_IDSTR );
+        if( is->symbol != NULL ) {
+            WdeSetComboWithStr( is->symbol, WdeInfoWindow, IDB_INFO_IDSTR );
         } else {
-            WdeSetEditWithSINT16( (int_16) name->ID.Num, 10,
-                                  WdeInfoWindow, IDB_INFO_IDSTR );
+            WdeSetEditWithSINT16( (int_16)name->ID.Num, 10, WdeInfoWindow, IDB_INFO_IDSTR );
         }
-        WdeSetEditWithSINT16( (int_16) name->ID.Num, 10,
-                              WdeInfoWindow, IDB_INFO_IDNUM );
+        WdeSetEditWithSINT16( (int_16)name->ID.Num, 10, WdeInfoWindow, IDB_INFO_IDNUM );
     }
-
 }
 
-void WdeDisplayControlInfo ( WdeInfoStruct *is )
+void WdeDisplayControlInfo( WdeInfoStruct *is )
 {
     char             *str;
     char             *cp;
@@ -446,24 +434,22 @@ void WdeDisplayControlInfo ( WdeInfoStruct *is )
     if( is->symbol ) {
         WdeSetComboWithStr( is->symbol, WdeInfoWindow, IDB_INFO_IDSTR );
     } else {
-        WdeSetEditWithSINT16( (int_16) is->c.id, 10,
-                              WdeInfoWindow, IDB_INFO_IDSTR );
+        WdeSetEditWithSINT16( (int_16)is->c.id, 10, WdeInfoWindow, IDB_INFO_IDSTR );
     }
 
-    WdeSetEditWithSINT16( (int_16) is->c.id, 10,
-                          WdeInfoWindow, IDB_INFO_IDNUM );
+    WdeSetEditWithSINT16( (int_16)is->c.id, 10, WdeInfoWindow, IDB_INFO_IDNUM );
 }
 
-void WdeChangeInfo ( void )
+void WdeChangeInfo( void )
 {
-    if ( WdeCurrentInfo.obj_id == DIALOG_OBJ ) {
-        WdeChangeDialogInfo ( &WdeCurrentInfo );
-    } else if ( WdeCurrentInfo.obj_id == CONTROL_OBJ ) {
-        WdeChangeControlInfo ( &WdeCurrentInfo );
+    if( WdeCurrentInfo.obj_id == DIALOG_OBJ ) {
+        WdeChangeDialogInfo( &WdeCurrentInfo );
+    } else if( WdeCurrentInfo.obj_id == CONTROL_OBJ ) {
+        WdeChangeControlInfo( &WdeCurrentInfo );
     }
 }
 
-void WdeChangeDialogInfo ( WdeInfoStruct *is )
+void WdeChangeDialogInfo( WdeInfoStruct *is )
 {
     WdeInfoStruct       c_is;
     char                *str;
@@ -478,7 +464,7 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
 
     str = NULL;
     cp = WdeGetStrFromEdit( WdeInfoWindow, IDB_INFO_CAPTION, NULL );
-    if( cp ) {
+    if( cp != NULL ) {
         str = WRConvertStringTo( cp, "\t\n", "tn" );
         WdeMemFree( cp );
     }
@@ -494,16 +480,17 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
     WRStripSymbol( str );
 
     quoted_str = FALSE;
-    if( _mbclen( str ) == 1 && str[0] == '"' ) {
-        char    *s;
+    if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
+        unsigned char   *s;
+
         str[0] = ' ';
         cp = NULL;
-        for( s=str; *s; s=_mbsinc(s) ) {
+        for( s = (unsigned char *)str; *s != '\0'; s = _mbsinc( s ) ) {
             if( _mbclen( s ) == 1 && *s == '"' ) {
-                cp = s;
+                cp = (char *)s;
             }
         }
-        if( cp ) {
+        if( cp != NULL ) {
             *cp = '\0';
         }
         WRStripSymbol( str );
@@ -517,8 +504,8 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
         return;
     }
 
-    ord = ( uint_16 )strtoul( str, &cp, 0 );
-    str_is_ordinal = ( *cp == '\0' );
+    ord = (uint_16)strtoul( str, &cp, 0 );
+    str_is_ordinal = (*cp == '\0');
 
     c_is.symbol = NULL;
 
@@ -543,11 +530,10 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
     Forward( is->obj, MODIFY_INFO, &c_is, NULL );
 
     if( c_is.symbol ) {
-        WdeAddUniqueStringToCombo( WdeInfoWindow, IDB_INFO_IDSTR,
-                                   c_is.symbol );
+        WdeAddUniqueStringToCombo( WdeInfoWindow, IDB_INFO_IDSTR, c_is.symbol );
         value = WdeLookupName( c_is.res_info->hash_table, c_is.symbol, &found );
         if( found ) {
-            WdeSetEditWithSINT32( (int_32) value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
+            WdeSetEditWithSINT32( (int_32)value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
         }
     } else if( str_is_ordinal ) {
         WdeSetEditWithSINT32( (int_32)ord, 10, WdeInfoWindow, IDB_INFO_IDNUM );
@@ -558,7 +544,7 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
     *is = c_is;
 }
 
-void WdeChangeControlInfo ( WdeInfoStruct *is )
+void WdeChangeControlInfo( WdeInfoStruct *is )
 {
     char                *str;
     char                *cp;
@@ -572,19 +558,19 @@ void WdeChangeControlInfo ( WdeInfoStruct *is )
 
     str = NULL;
     cp = WdeGetStrFromEdit( WdeInfoWindow, IDB_INFO_CAPTION, NULL );
-    if( cp ) {
+    if( cp != NULL ) {
         str = WRConvertStringTo( cp, "\t\n", "tn" );
         WdeMemFree( cp );
     }
 
-    if( str ) {
+    if( str != NULL ) {
         c_is.c.text = ResStrToNameOrOrd( str );
         WdeMemFree( str );
     } else {
         c_is.c.text = NULL;
     }
 
-    str = WdeGetStrFromCombo ( WdeInfoWindow, IDB_INFO_IDSTR );
+    str = WdeGetStrFromCombo( WdeInfoWindow, IDB_INFO_IDSTR );
     if( str == NULL ) {
         WdeMemFree( c_is.c.text );
         c_is.c.text = NULL;
@@ -600,8 +586,8 @@ void WdeChangeControlInfo ( WdeInfoStruct *is )
         return;
     }
 
-    ord = ( uint_16 )strtoul( str, &cp, 0 );
-    str_is_ordinal = ( *cp == '\0' );
+    ord = (uint_16)strtoul( str, &cp, 0 );
+    str_is_ordinal = (*cp == '\0');
 
     c_is.symbol = NULL;
 
@@ -622,11 +608,10 @@ void WdeChangeControlInfo ( WdeInfoStruct *is )
     Forward( c_is.obj, MODIFY_INFO, &c_is, NULL );
 
     if( c_is.symbol ) {
-        WdeAddUniqueStringToCombo( WdeInfoWindow, IDB_INFO_IDSTR,
-                                   c_is.symbol );
+        WdeAddUniqueStringToCombo( WdeInfoWindow, IDB_INFO_IDSTR, c_is.symbol );
         value = WdeLookupName( c_is.res_info->hash_table, c_is.symbol, &found );
         if( found ) {
-            WdeSetEditWithSINT32( (int_32) value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
+            WdeSetEditWithSINT32( (int_32)value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
         }
     } else if( str_is_ordinal ) {
         WdeSetEditWithSINT32( (int_32)ord, 10, WdeInfoWindow, IDB_INFO_IDNUM );
@@ -637,17 +622,17 @@ void WdeChangeControlInfo ( WdeInfoStruct *is )
     *is = c_is;
 }
 
-void WdeWriteObjectDimensions ( int x, int y, int width, int height )
+void WdeWriteObjectDimensions( int x, int y, int width, int height )
 {
     char str[56];
 
-    sprintf ( str, "(%d,%d) (%d,%d) %dx%d",
-              x, y, x + width, y + height, width, height );
+    sprintf( str, "(%d,%d) (%d,%d) %dx%d",
+             x, y, x + width, y + height, width, height );
 
-    WdeSetEditWithStr ( str, WdeInfoWindow, IDB_INFO_SIZE );
+    WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_SIZE );
 }
 
-void WdeInfoLookupComboEntry ( HWND hWnd, WORD hw )
+void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
 {
     char                *cp;
     char                *str;
@@ -656,23 +641,22 @@ void WdeInfoLookupComboEntry ( HWND hWnd, WORD hw )
     LRESULT             index;
     int                 count;
 
-    if ( !WdeCurrentInfo.res_info->hash_table ) {
+    if( WdeCurrentInfo.res_info->hash_table == NULL ) {
         return;
     }
 
-    count = SendDlgItemMessage ( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0 );
-    if ( !count || (count == CB_ERR) ) {
+    count = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCOUNT, 0, 0 );
+    if( count == 0 || count == CB_ERR ) {
         return;
     }
 
     str = NULL;
-    if ( hw == CBN_EDITCHANGE ) {
-        str = WdeGetStrFromCombo ( hWnd, IDB_INFO_IDSTR );
+    if( hw == CBN_EDITCHANGE ) {
+        str = WdeGetStrFromCombo( hWnd, IDB_INFO_IDSTR );
     } else {
-        index = SendDlgItemMessage ( hWnd, IDB_INFO_IDSTR,
-                                     CB_GETCURSEL, 0, 0 );
-        if ( index != CB_ERR ) {
-            str = WdeGetStrFromComboLBox ( hWnd, IDB_INFO_IDSTR, index );
+        index = SendDlgItemMessage( hWnd, IDB_INFO_IDSTR, CB_GETCURSEL, 0, 0 );
+        if( index != CB_ERR ) {
+            str = WdeGetStrFromComboLBox( hWnd, IDB_INFO_IDSTR, index );
         }
     }
 
@@ -689,88 +673,98 @@ void WdeInfoLookupComboEntry ( HWND hWnd, WORD hw )
         return;
     }
 
-    if( _mbclen( str ) == 1 && str[0] == '"' ) {
-        value = WdeLookupName ( WdeCurrentInfo.res_info->hash_table,
-                                str, &found );
+    if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
+        value = WdeLookupName( WdeCurrentInfo.res_info->hash_table, str, &found );
         if( found ) {
-            WdeSetEditWithSINT32 ( (int_32) value, 10, hWnd, IDB_INFO_IDNUM );
+            WdeSetEditWithSINT32( (int_32)value, 10, hWnd, IDB_INFO_IDNUM );
         }
     }
 
-    WdeMemFree ( str );
+    WdeMemFree( str );
 }
 
-LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WORD w;
-    RECT r;
-    HDC  dc;
+    WORD    w;
+    RECT    r;
+    HDC     dc;
 
-    _wde_touch(lParam);
+    _wde_touch( lParam );
 
-    switch ( message ) {
-
-        case WM_SYSCOLORCHANGE:
-            WdeCtl3dColorChange ();
-            break;
+    switch( message ) {
+#if defined( __NT__ )
+    case WM_INITDIALOG:
+        SetWindowLong( hWnd, GWL_STYLE, WS_CHILD );
+        break;
+#endif
+    case WM_SYSCOLORCHANGE:
+#if defined( __NT__ )
+        WdeInfoColor = GetSysColor( COLOR_BTNFACE );
+        DeleteObject( WdeInfoBrush );
+        WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
+#endif
+        WdeCtl3dColorChange ();
+        break;
 
 #ifdef __NT__
-        case WM_CTLCOLORBTN :
-        case WM_CTLCOLORSTATIC:
-            dc = (HDC)  wParam;
-            SetBkColor ( dc, WdeInfoColor );
-            return ( (LRESULT) WdeInfoBrush );
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORSTATIC:
+        dc = (HDC)wParam;
+        SetBkColor( dc, WdeInfoColor );
+        return ( (LRESULT)WdeInfoBrush );
 
-        case WM_CTLCOLORMSGBOX:
-        case WM_CTLCOLOREDIT:
-            return ( (LRESULT) NULL );
+    case WM_CTLCOLORMSGBOX:
+    case WM_CTLCOLOREDIT:
+        return( (LRESULT)NULL );
 #else
-        case WM_CTLCOLOR:
-            w = HIWORD(lParam);
-            if ( ( w != CTLCOLOR_MSGBOX ) && ( w != CTLCOLOR_EDIT ) ) {
-                dc = (HDC) wParam;
-                SetBkColor ( dc, WdeInfoColor );
-                return ( (LRESULT) WdeInfoBrush );
-            } else {
-                return ( (LRESULT) NULL );
-            }
+    case WM_CTLCOLOR:
+        w = HIWORD( lParam );
+        if( w != CTLCOLOR_MSGBOX && w != CTLCOLOR_EDIT ) {
+            dc = (HDC)wParam;
+            SetBkColor( dc, WdeInfoColor );
+            return( (LRESULT)WdeInfoBrush );
+        } else {
+            return( (LRESULT)NULL );
+        }
 #endif
 
-        case WM_ERASEBKGND:
-            GetClientRect( hWnd, &r );
-            UnrealizeObject( WdeInfoBrush );
-            FillRect( (HDC)wParam, &r, WdeInfoBrush );
-            return ( TRUE );
+    case WM_ERASEBKGND:
+#if defined( __NT__ )
+        if( WdeInfoColor != GetSysColor( COLOR_BTNFACE ) ) {
+            /* Fake it, this proc does not get it ... */
+            SendMessage( hWnd, WM_SYSCOLORCHANGE, (WPARAM)0, (LPARAM)0 );
+        }
+#endif
+        GetClientRect( hWnd, &r );
+        UnrealizeObject( WdeInfoBrush );
+        FillRect( (HDC)wParam, &r, WdeInfoBrush );
+        return( TRUE );
 
-        case WM_COMMAND:
-            w = GET_WM_COMMAND_CMD(wParam,lParam);
-            switch ( LOWORD(wParam) ) {
-                case IDB_INFO_IDSTR:
-                    if ( ( w == CBN_EDITCHANGE ) ||
-                         ( w == CBN_SELCHANGE ) ) {
-                        WdeInfoLookupComboEntry ( hWnd, w );
-                    }
-                    break;
-
-                case IDB_INFO_SET:
-                    WdeChangeInfo();
-                    SetFocus( WdeGetMainWindowHandle() );
-                    break;
-
-                case IDB_INFO_RESET:
-                    WdeResetInfo();
-                    break;
-
-                case IDCANCEL:
-                    WdeResetInfo();
-                    SetFocus( WdeGetMainWindowHandle() );
-                    break;
-
+    case WM_COMMAND:
+        w = GET_WM_COMMAND_CMD( wParam, lParam );
+        switch( LOWORD( wParam ) ) {
+        case IDB_INFO_IDSTR:
+            if( w == CBN_EDITCHANGE || w == CBN_SELCHANGE ) {
+                WdeInfoLookupComboEntry( hWnd, w );
             }
             break;
+
+        case IDB_INFO_SET:
+            WdeChangeInfo();
+            SetFocus( WdeGetMainWindowHandle() );
+            break;
+
+        case IDB_INFO_RESET:
+            WdeResetInfo();
+            break;
+
+        case IDCANCEL:
+            WdeResetInfo();
+            SetFocus( WdeGetMainWindowHandle() );
+            break;
+        }
+        break;
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
-

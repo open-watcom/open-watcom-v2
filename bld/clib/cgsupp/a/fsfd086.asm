@@ -45,28 +45,32 @@ include struct.inc
         xdefp   __FSFD
 
         defpe   __FSFD
-        _guess                  ; guess: number is infinity
-          or    ax,ax           ; - quit if low word not zero
-          _quif ne              ; - ...
-          mov   cx,dx           ; - get high word
-          and   ch,7fh          ; - get rid of sign bit
-          cmp   cx,7f80h        ; - quit if not infinity
-          _quif ne              ; - ...
-          mov   ax,dx           ; - get sign bit
+        _guess  xx1             ; guess: number is 0.0 or infinity
+          xchg  ax,dx
+          or    dx,dx           ; - ...
+          _quif ne              ; - quit if not 0.0 or infinity (low word not zero)
+          sub   bx,bx           ; -
+          mov   cx,ax           ; - get high word
+          and   cx,7fffh        ; - get rid of sign bit
+          _quif e,xx1           ; - quit if 0.0
+          cmp   cx,7f80h        ; - check if infinity
+          _quif ne              ; - quit if not infinity
           or    ax,7ff0h        ; - set infinity
-          sub   bx,bx           ; - ...
           sub   cx,cx           ; - ...
         _admit                  ; guess: number is not 0
-          xchg  ax,dx           ; - get exponent into ax
           mov   bx,dx           ; - move rest of mantissa to correct reg.
-          mov   dx,2*16*(1023-127);- put exponent bias *2 in dx
-          mov   cx,bx           ; - get low part of mantissa
-          _shl  ax,1            ; - get rid of sign bit
-          rcr   dx,1            ; - and place it in dx with exponent adjustment
-          or    cx,ax           ; - check for zero (0.0)
-          mov   cx,0            ; - set rest of mantissa to 0
-          _quif e               ; - quit if number is 0.0
-          shr   ax,1            ; - restore ax without sign
+          sub   cx,cx           ; - ...
+          mov   dx,ax
+          and   dx,7f80h
+          cmp   dx,7f80h
+          _if   e
+            mov   dx,(2047-255) * 32 ;- put NaN exponent in dx
+          _else
+            mov   dx,(1023-127) * 32 ;- put exponent bias in dx
+          _endif
+          shl   ax,1
+          rcr   dx,1
+          shr   ax,1
           shr   ax,1            ; - now shift everything three bits
           rcr   bx,1            ; - ...
           rcr   cx,1            ; - ...
@@ -76,8 +80,9 @@ include struct.inc
           shr   ax,1            ; - ...
           rcr   bx,1            ; - ...
           rcr   cx,1            ; - ...
-          test  ax,7ff0h        ; - if exponent is 0 (denormal number)
+          test  ax,0ff0h        ; - if exponent is 0 (denormal number)
           _if   e               ; - then
+            add  dx,0010h       ; - - - add 1 to exponent adjustment
             _loop               ; - - loop (normalize the fraction)
               sub  dx,0010h     ; - - - subtract 1 from exponent adjustment
               _shl cx,1         ; - - - shift fraction left

@@ -4,7 +4,7 @@
 #define __INLINE_FUNCTIONS__
 #endif
 #include <stdio.h>
-#if defined( M_I86 ) || defined( MI386 )
+#if defined( _M_I86 )
 #    include <i86.h>
 #endif
 #include <math.h>
@@ -19,7 +19,7 @@ void checki( long c, long v, unsigned line )
     }
 }
 
-#if defined( M_I86 ) || defined( MI386 )
+#if defined( _M_I86 )
 void never_execute()
 {
     inp(0);
@@ -41,7 +41,7 @@ int main()
     checki( abs(-1), 1, __LINE__ );
     checki( labs(-2L), 2, __LINE__ );
     checki( fabs(-2.0)/2.0, 1, __LINE__ );
-#if defined( M_I86 ) || defined( MI386 )
+#if defined( _M_I86 )
     memset( source, '!', BUFF_LEN );
     memset( dest, '@', BUFF_LEN );
     movedata( FP_SEG(source), FP_OFF(source), FP_SEG(dest), FP_OFF(dest), BUFF_LEN );
@@ -59,7 +59,7 @@ int main()
     checki( div_ret.quot == 2 && div_ret.rem == 1, 1, __LINE__ );
     ldiv_ret = ldiv( 7, 3 );
     checki( ldiv_ret.quot == 2 && ldiv_ret.rem == 1, 1, __LINE__ );
-#if defined( M_I86 ) || defined( MI386 )
+#if defined( _M_I86 )
     _fstrcpy( source, "!" );
     _fstrcat( source, "!" );
     checki( _fstrcmp( source, "!!" ) == 0, 1, __LINE__ );

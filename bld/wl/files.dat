@@ -1,0 +1,39 @@
+# wlink component of install manifest
+
+# Note: fcenable is only useful on platforms where we may run into 16-bit
+# object files produced by non-Watcom compilers, ie. DOS only. Likewise the
+# ms2wlink tool only makes sense if link scripts for MS LINK need to be
+# processed.
+
+[ DEFAULT ]
+type="e" dir="binw"		usr="wlink.exe"		cond="doshost winhost |"	where="c f77"		old="bin"
+type="e" dir="binw"		usr="ms2wlink.exe"	cond="doshost winhost |"	where="c f77"		old="binb"
+type="e" dir="binw"		usr="fcenable.exe"	cond="doshost winhost |"	where="c f77"		old="binb"
+type="e" dir="binw"		usr="exe2bin.exe"	cond="doshost winhost |"	where="c f77"
+type="s" dir="binw"		usr="wlink.lnk"		cond="doshost winhost |"	where="c f77"		old="bin"
+type="s" dir="binw"		usr="wlsystem.lnk"					where="c f77 ac"	old="binb"
+
+type="e" dir="binp"		usr="wlink.exe"		cond="os2host"			where="c f77"
+type="d" dir="binp/dll"		usr="wlinkd.dll"	cond="os2host"			where="c f77"
+type="e" dir="binp"		usr="exe2bin.exe"	cond="os2host"			where="c f77"
+type="e" dir="binp"		usr="ms2wlink.exe"	cond="os2host"			where="c f77"
+type="e" dir="binp"		usr="fcenable.exe"	cond="os2host"			where="c f77"
+type="s" dir="binp"		usr="wlink.lnk"		cond="os2host"			where="c f77"
+
+type="e" dir="binnt"		usr="wlink.exe"		cond="wnthost"			where="c f77 ac"
+type="d" dir="binnt"		usr="wlinkd.dll"	cond="wnthost"			where="c f77 ac"
+type="e" dir="binnt"		usr="exe2bin.exe"	cond="wnthost"			where="c f77 ac"
+type="e" dir="binnt"		usr="ms2wlink.exe"	cond="wnthost"			where="c f77 ac"
+type="s" dir="binnt"		usr="wlink.lnk"		cond="wnthost"			where="c f77 ac"
+
+type="e" dir="axpnt"		usr="wlink.exe"		cond="alphahost"		where="ac"
+type="d" dir="axpnt"		usr="wlinkd.dll"	cond="alphahost"		where="ac"
+type="e" dir="axpnt"		usr="exe2bin.exe"	cond="alphahost"		where="ac"
+type="s" dir="axpnt"		usr="wlink.lnk"		cond="alphahost"		where="ac"
+
+type="e" dir="binl"		usr="wlink"		cond="lnxhost"			where="c f77"
+type="e" dir="binl"		usr="exe2bin"		cond="lnxhost"			where="c f77"
+type="e" dir="binl"		usr="ms2wlink"		cond="lnxhost"			where="c f77"
+type="e" dir="binl"		usr="fcenable"		cond="lnxhost"			where="c f77"
+type="s" dir="binl"		usr="wlink.lnk"		cond="lnxhost"			where="c f77"
+type="s" dir="binl"		usr="wlsystem.lnk"	cond="lnxhost"			where="c f77"

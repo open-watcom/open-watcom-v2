@@ -1,0 +1,123 @@
+proj_name = gui
+name = gui
+
+!ifndef bootstrap
+gui_trmem = 1
+!endif
+
+!ifndef gui_autodepends
+gui_autodepends = .AUTODEPEND
+!endif
+
+.EXTENSIONS: .msg
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include trmem.mif
+
+wv_objs = &
+       guicreat.obj   &
+       guihint.obj    &
+       guihook.obj    &
+       guimdi.obj     &
+       guimdime.obj   &
+       guiimdi.obj    &
+       guiimmdi.obj   &
+       guihflt.obj    &
+       guihot.obj     &
+       guidraw.obj    &
+       guiutil.obj    &
+       guipixel.obj   &
+       guipick.obj    &
+       guiscale.obj   &
+       guirscal.obj   &
+       guigcolr.obj   &
+       guimkey.obj    &
+       guizlist.obj   &
+       guiextra.obj   &
+       guimin.obj     &
+       guisetup.obj   &
+       guidlg.obj     &
+       guindlg.obj    &
+       guistyle.obj   &
+       guiwnclr.obj   &
+       guistr.obj     &
+       guiisgui.obj   &
+       guideath.obj   &
+       guidead.obj    &
+       guihtool.obj   &
+       guiclrst.obj   &
+       guiev.obj      &
+       guisdef.obj    &
+       guiextnm.obj   &
+       guifcrck.obj   &
+
+mem_objs = &
+       guimem.obj     &
+       $(trmem_objs)
+
+
+objs = $(wv_objs) $(mem_objs)
+
+!ifeq sys_windowed 1
+libs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+!endif
+
+!ifndef bootstrap
+extra_c_flags += -s -fh
+!endif
+
+extra_c_flags_axp = -ai -aq
+extra_c_flags_i86 = -zu
+
+extra_c_flags_nov = -4s
+extra_c_flags_win = -zw
+!ifeq host_cpu i86
+extra_c_flags_win += -zW
+!endif
+!ifeq sys_windowed 1
+extra_c_flags_os2 = -D__OS2_PM__
+!endif
+
+!ifndef bootstrap
+# memory tracker routines
+extra_c_flags_trmem = $(trmem_cflags) -fh=$^&.pch
+
+# memory tracker cover routines
+extra_c_flags_guimem = $(trmem_cover_cflags) -fh=guimem.pch
+
+extra_c_flags_help += -fh=$^&.pch
+extra_c_flags_vvscroll += -fh=$^&.pch
+extra_c_flags_helpmenu += -fh=$^&.pch
+extra_c_flags_dlg += -fh=$^&.pch
+extra_c_flags_guiclean += -fh=$^&.pch
+extra_c_flags_fontstr += -fh=$^&.pch
+extra_c_flags_msgbox += -fh=gui01.pch
+extra_c_flags_dialcb += -fh=gui01.pch
+extra_c_flags_helpscan += -fh=gui02.pch
+extra_c_flags_search += -fh=gui02.pch
+extra_c_flags_guiextnm += -fh=gui03.pch
+extra_c_flags_helpopen += -fh=gui03.pch
+extra_c_flags_helpio += -fh=gui03.pch
+!endif
+
+!ifeq sys_windowed 1
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(wpi_dir)/h" -I"$(commonui_dir)/h"
+!else
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
+!endif
+
+.c:     ../c;../../c;$(help_dir)/c;$(trmem_dir)
+.h:     ../h;../../h;$(wpi_dir)/h
+.msg:   ../../h
+
+$(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
+        $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
+
+./mkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
+        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+
+_guimsgs.gh: ./mkstr.exe $(gui_dir)/h/gui.msg
+        $[@ $^@ $(gui_msg_id_modifier)

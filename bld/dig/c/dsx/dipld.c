@@ -24,22 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module to load DIP libraries in PharLap REX format.
 *
 ****************************************************************************/
 
 
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
 
 #include "ldimp.h"
+#include "dbgmod.h"
 
-extern  int      PathOpen(char *,unsigned, char *);
+extern  int      FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
 
 #define DIPSIG  0x00504944UL
+
+static int PathOpenDIP( char const *name, unsigned len, char *ext, char *dip_name, int dip_name_len )
+{
+    char    path[_MAX_PATH];
+
+    len = min(len,sizeof(path));
+    memcpy( path, name, len );
+    path[ len ] = '\0';
+    return( FullPathOpen( path, ext, dip_name, dip_name_len ) );
+}
+
+void DIPSysUnload( unsigned long sys_hdl )
+{
+    /* We should unload the symbols here but it's not worth the trouble */
+    DIGCliFree( (void *)sys_hdl );
+}
 
 dip_status DIPSysLoad( char *path, dip_client_routines *cli,
                                 dip_imp_routines **imp, unsigned long *sys_hdl )
@@ -48,8 +66,9 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
     imp_header          *dip;
     dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
     dip_status          status;
+    char                dip_name[_MAX_PATH];
 
-    h = PathOpen( path, strlen( path ), "dip" );
+    h = PathOpenDIP( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
     if( h < 0 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
@@ -58,17 +77,20 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
     if( dip == NULL || dip->sig != DIPSIG ) {
         return( DS_ERR|DS_INVALID_DIP );
     }
+#ifdef WATCOM_DEBUG_SYMBOLS
+    /* Look for symbols in separate .sym files, not the .dip itself */
+    strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
+    NotifyWDLoad( dip_name, (unsigned long)dip );
+#endif
     init_func = (void *)dip->init_rtn;
     *imp = init_func( &status, cli );
     if( *imp == NULL ) {
+#ifdef WATCOM_DEBUG_SYMBOLS
+        NotifyWDUnload( dip_name );
+#endif
         DIPSysUnload( (unsigned long)dip );
         return( status );
     }
     *sys_hdl = (unsigned long)dip;
     return( DS_OK );
-}
-
-void DIPSysUnload( unsigned long sys_hdl )
-{
-    DIGCliFree( (void *)sys_hdl );
 }

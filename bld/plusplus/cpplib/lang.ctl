@@ -3,127 +3,169 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
-set destdir=<relroot>\rel2
 
+#
+# Make sure we have the reference compilers
+#
 [ BLOCK <1> build rel2 ]
+#=======================
+    [ INCLUDE prereq.ctl ]
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
 [ BLOCK <1> rel2 ]
-    set destdir=<relroot>\rel2
+#=================
+    cdsay <PROJDIR>
 
-[ BLOCK <1> nlang ]
-    set destdir=<dwatcom>
-    set CPCMD=copy
+[ BLOCK <1> rel2 cprel2 acprel2 ]
+#================================
+  [ IFDEF (os_osi "") <2*> ]
+    <CPCMD> generic.086/ms/plibs.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ms/plbxs.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mc/plibc.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mc/plbxc.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mm/plibm.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mm/plbxm.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ml/plibl.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ml/plbxl.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mh/plibh.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mh/plbxh.lib             <RELROOT>/lib286/
+    <CPCMD> complex/generic.086/ms/cplxs.lib     <RELROOT>/lib286/
+    <CPCMD> complex/generic.086/mc/cplxc.lib     <RELROOT>/lib286/
+    <CPCMD> complex/generic.086/mm/cplxm.lib     <RELROOT>/lib286/
+    <CPCMD> complex/generic.086/ml/cplxl.lib     <RELROOT>/lib286/
+    <CPCMD> complex/generic.086/mh/cplxh.lib     <RELROOT>/lib286/
+    <CPCMD> complex/generic.087/ms/cplx7s.lib    <RELROOT>/lib286/
+    <CPCMD> complex/generic.087/mc/cplx7c.lib    <RELROOT>/lib286/
+    <CPCMD> complex/generic.087/mm/cplx7m.lib    <RELROOT>/lib286/
+    <CPCMD> complex/generic.087/ml/cplx7l.lib    <RELROOT>/lib286/
+    <CPCMD> complex/generic.087/mh/cplx7h.lib    <RELROOT>/lib286/
 
-[ BLOCK <1> rel2 cprel2 acprel2 cpu_i86 nlang ]
-#==============================================
-    <CPCMD> scsd\plibs.lib <destdir>\lib286\
-    <CPCMD> scbd\plibc.lib <destdir>\lib286\
-    <CPCMD> bcsd\plibm.lib <destdir>\lib286\
-    <CPCMD> bcbd\plibl.lib <destdir>\lib286\
-    <CPCMD> bchd\plibh.lib <destdir>\lib286\
-    <CPCMD> wscsd\plibs.lib <destdir>\lib286\win\
-    <CPCMD> wscbd\plibc.lib <destdir>\lib286\win\
-    <CPCMD> wbcsd\plibm.lib <destdir>\lib286\win\
-    <CPCMD> wbcbd\plibl.lib <destdir>\lib286\win\
-    <CPCMD> os2mt\plibmtl.lib <destdir>\lib286\os2\
-    <CPCMD> scsd\plibs.lib <destdir>\lib286\
-    <CPCMD> scbd\plibc.lib <destdir>\lib286\
-    <CPCMD> bcsd\plibm.lib <destdir>\lib286\
-    <CPCMD> bcbd\plibl.lib <destdir>\lib286\
-    <CPCMD> bchd\plibh.lib <destdir>\lib286\
-    <CPCMD> wscsd\plibs.lib <destdir>\lib286\win\
-    <CPCMD> wscbd\plibc.lib <destdir>\lib286\win\
-    <CPCMD> wbcsd\plibm.lib <destdir>\lib286\win\
-    <CPCMD> wbcbd\plibl.lib <destdir>\lib286\win\
-    <CPCMD> os2mt\plibmtl.lib <destdir>\lib286\os2\
-    <CPCMD> scsd\plbxs.lib <destdir>\lib286\
-    <CPCMD> scbd\plbxc.lib <destdir>\lib286\
-    <CPCMD> bcsd\plbxm.lib <destdir>\lib286\
-    <CPCMD> bcbd\plbxl.lib <destdir>\lib286\
-    <CPCMD> bchd\plbxh.lib <destdir>\lib286\
-    <CPCMD> wscsd\plbxs.lib <destdir>\lib286\win\
-    <CPCMD> wscbd\plbxc.lib <destdir>\lib286\win\
-    <CPCMD> wbcsd\plbxm.lib <destdir>\lib286\win\
-    <CPCMD> wbcbd\plbxl.lib <destdir>\lib286\win\
-    <CPCMD> os2mt\plbxmtl.lib <destdir>\lib286\os2\
-    <CPCMD> scsd\plbxs.lib <destdir>\lib286\
-    <CPCMD> scbd\plbxc.lib <destdir>\lib286\
-    <CPCMD> bcsd\plbxm.lib <destdir>\lib286\
-    <CPCMD> bcbd\plbxl.lib <destdir>\lib286\
-    <CPCMD> bchd\plbxh.lib <destdir>\lib286\
-    <CPCMD> wscsd\plbxs.lib <destdir>\lib286\win\
-    <CPCMD> wscbd\plbxc.lib <destdir>\lib286\win\
-    <CPCMD> wbcsd\plbxm.lib <destdir>\lib286\win\
-    <CPCMD> wbcbd\plbxl.lib <destdir>\lib286\win\
-    <CPCMD> os2mt\plbxmtl.lib <destdir>\lib286\os2\
-    <CPCMD> complex\scsd\cplxs.lib <destdir>\lib286\
-    <CPCMD> complex\scbd\cplxc.lib <destdir>\lib286\
-    <CPCMD> complex\bcsd\cplxm.lib <destdir>\lib286\
-    <CPCMD> complex\bcbd\cplxl.lib <destdir>\lib286\
-    <CPCMD> complex\bchd\cplxh.lib <destdir>\lib286\
-    <CPCMD> complex\wscsd\cplxs.lib <destdir>\lib286\win\
-    <CPCMD> complex\wscbd\cplxc.lib <destdir>\lib286\win\
-    <CPCMD> complex\wbcsd\cplxm.lib <destdir>\lib286\win\
-    <CPCMD> complex\wbcbd\cplxl.lib <destdir>\lib286\win\
-    <CPCMD> complex\scsd7\cplx7s.lib <destdir>\lib286\
-    <CPCMD> complex\scbd7\cplx7c.lib <destdir>\lib286\
-    <CPCMD> complex\bcsd7\cplx7m.lib <destdir>\lib286\
-    <CPCMD> complex\bcbd7\cplx7l.lib <destdir>\lib286\
-    <CPCMD> complex\bchd7\cplx7h.lib <destdir>\lib286\
-    <CPCMD> complex\wscsd7\cplx7s.lib <destdir>\lib286\win\
-    <CPCMD> complex\wscbd7\cplx7c.lib <destdir>\lib286\win\
-    <CPCMD> complex\wbcsd7\cplx7m.lib <destdir>\lib286\win\
-    <CPCMD> complex\wbcbd7\cplx7l.lib <destdir>\lib286\win\
+  [ IFDEF (os_win "") <2*> ]
+    <CPCMD> windows.086/ms/plibs.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/ms/plbxs.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/mc/plibc.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/mc/plbxc.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/mm/plibm.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/mm/plbxm.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/ml/plibl.lib             <RELROOT>/lib286/win/
+    <CPCMD> windows.086/ml/plbxl.lib             <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.086/ms/cplxs.lib     <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.086/mc/cplxc.lib     <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.086/mm/cplxm.lib     <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.086/ml/cplxl.lib     <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.087/ms/cplx7s.lib    <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.087/mc/cplx7c.lib    <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.087/mm/cplx7m.lib    <RELROOT>/lib286/win/
+    <CPCMD> complex/windows.087/ml/cplx7l.lib    <RELROOT>/lib286/win/
 
-[ BLOCK <1> rel2 cprel2 acprel2 cpu_386 ]
-#========================================
-    <CPCMD> 3r\plib3r.lib <destdir>\lib386\
-    <CPCMD> 3s\plib3s.lib <destdir>\lib386\
-    <CPCMD> 3rmt\plibmt3r.lib <destdir>\lib386\
-    <CPCMD> 3smt\plibmt3s.lib <destdir>\lib386\
-    <CPCMD> 3r\plbx3r.lib <destdir>\lib386\
-    <CPCMD> 3s\plbx3s.lib <destdir>\lib386\
-    <CPCMD> 3rmt\plbxmt3r.lib <destdir>\lib386\
-    <CPCMD> 3smt\plbxmt3s.lib <destdir>\lib386\
-    <CPCMD> nt3r\plbx3r.lib <destdir>\lib386\nt\
-    <CPCMD> nt3r\plib3r.lib <destdir>\lib386\nt\
-    <CPCMD> nt3s\plbx3s.lib <destdir>\lib386\nt\
-    <CPCMD> nt3s\plib3s.lib <destdir>\lib386\nt\
-    <CPCMD> nt3rmt\plbxmt3r.lib <destdir>\lib386\nt\
-    <CPCMD> nt3rmt\plibmt3r.lib <destdir>\lib386\nt\
-    <CPCMD> nt3smt\plbxmt3s.lib <destdir>\lib386\nt\
-    <CPCMD> nt3smt\plibmt3s.lib <destdir>\lib386\nt\
-    <CPCMD> q3rmt\plbxmt3r.lib <destdir>\lib386\qnx\
-    <CPCMD> q3rmt\plibmt3r.lib <destdir>\lib386\qnx\
-    <CPCMD> q3smt\plbxmt3s.lib <destdir>\lib386\qnx\
-    <CPCMD> q3smt\plibmt3s.lib <destdir>\lib386\qnx\
-    <CPCMD> os23r\plbx3r.lib <destdir>\lib386\os2\
-    <CPCMD> os23r\plib3r.lib <destdir>\lib386\os2\
-    <CPCMD> os23s\plbx3s.lib <destdir>\lib386\os2\
-    <CPCMD> os23s\plib3s.lib <destdir>\lib386\os2\
-    <CPCMD> os23rmt\plbxmt3r.lib <destdir>\lib386\os2\
-    <CPCMD> os23rmt\plibmt3r.lib <destdir>\lib386\os2\
-    <CPCMD> os23smt\plbxmt3s.lib <destdir>\lib386\os2\
-    <CPCMD> os23smt\plibmt3s.lib <destdir>\lib386\os2\
-    <CPCMD> complex\3r\cplx3r.lib <destdir>\lib386\
-    <CPCMD> complex\3s\cplx3s.lib <destdir>\lib386\
-    <CPCMD> complex\73r\cplx73r.lib <destdir>\lib386\
-    <CPCMD> complex\73s\cplx73s.lib <destdir>\lib386\
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> os2.286/ml_mt/plibmtl.lib            <RELROOT>/lib286/os2/
+    <CPCMD> os2.286/ml_mt/plbxmtl.lib            <RELROOT>/lib286/os2/
 
-#[ BLOCK <1> rel2 cprel2 acprel2 cpu_axp ]
-##========================================
-#    <CPCMD> ntaxp\plibnt.lib <destdir>\libaxp\nt\plib.lib
-#    <CPCMD> ntaxp\plbxnt.lib <destdir>\libaxp\nt\plbx.lib
-#    <CPCMD> ntaxpmt\plibmt.lib <destdir>\libaxp\nt\plibmt.lib
-#    <CPCMD> ntaxpmt\plbxmt.lib <destdir>\libaxp\nt\plbxmt.lib
-#    <CPCMD> complex\ntaxp\cplxnt.lib <destdir>\libaxp\cplx.lib
+  [ IFDEF (os_os2) <2*> ]
+    <CPCMD> complex/generic.087/mm/cplx7m.lib    <RELROOT>/lib286/
+    <CPCMD> generic.086/mc/plbxc.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mc/plibc.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ml/plbxl.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ml/plibl.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mm/plbxm.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/mm/plibm.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ms/plbxs.lib             <RELROOT>/lib286/
+    <CPCMD> generic.086/ms/plibs.lib             <RELROOT>/lib286/
+
+[ BLOCK <1> rel2 cprel2 acprel2 ]
+#================================
+  [ IFDEF (os_osi os_dos os_linux os_nov "") <2*> ]
+    <CPCMD> generic.386/mf_r/plib3r.lib          <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_r/plbx3r.lib          <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_s/plib3s.lib          <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_s/plbx3s.lib          <RELROOT>/lib386/
+    <CPCMD> complex/generic.386/mf_r/cplx3r.lib  <RELROOT>/lib386/
+    <CPCMD> complex/generic.386/mf_s/cplx3s.lib  <RELROOT>/lib386/
+
+  [ IFDEF (os_osi "") <2*> ]
+    <CPCMD> generic.386/mf_rmt/plibmt3r.lib      <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_rmt/plbxmt3r.lib      <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_smt/plibmt3s.lib      <RELROOT>/lib386/
+    <CPCMD> generic.386/mf_smt/plbxmt3s.lib      <RELROOT>/lib386/
+    <CPCMD> complex/generic.387/mf_r/cplx73r.lib <RELROOT>/lib386/
+    <CPCMD> complex/generic.387/mf_s/cplx73s.lib <RELROOT>/lib386/
+
+  [ IFDEF (os_nt "") <2*> ]
+    <CPCMD> winnt.386/mf_r/plbx3r.lib            <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_r/plib3r.lib            <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_s/plbx3s.lib            <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_s/plib3s.lib            <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_rmt/plbxmt3r.lib        <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_rmt/plibmt3r.lib        <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_smt/plbxmt3s.lib        <RELROOT>/lib386/nt/
+    <CPCMD> winnt.386/mf_smt/plibmt3s.lib        <RELROOT>/lib386/nt/
+
+    <CPCMD> rtdll/winnt.386/mf_r/plb*.lib       <RELROOT>/lib386/nt/
+    <CPCMD> rtdll/winnt.386/mf_r/plbrdll.lib    <RELROOT>/lib386/nt/plbrdllx.lib
+    <CPCMD> rtdll/winnt.386/mf_r/plb*.dll       <RELROOT>/binnt/
+    <CPCMD> rtdll/winnt.386/mf_r/plb*.sym       <RELROOT>/binnt/
+    <CPCMD> rtdll/winnt.386/mf_rd/plb*.lib      <RELROOT>/lib386/nt/
+    <CPCMD> rtdll/winnt.386/mf_rd/plbrdlld.lib  <RELROOT>/lib386/nt/plbrdlxd.lib
+    <CPCMD> rtdll/winnt.386/mf_rd/plb*.dll      <RELROOT>/binnt/
+    <CPCMD> rtdll/winnt.386/mf_rp/plb*.lib      <RELROOT>/lib386/nt/
+    <CPCMD> rtdll/winnt.386/mf_rp/plb*.dll      <RELROOT>/binnt/
+    <CPCMD> rtdll/winnt.386/mf_s/plb*.lib       <RELROOT>/lib386/nt/
+    <CPCMD> rtdll/winnt.386/mf_s/plbsdll.lib    <RELROOT>/lib386/nt/plbsdllx.lib
+    <CPCMD> rtdll/winnt.386/mf_s/plb*.dll       <RELROOT>/binnt/
+    <CPCMD> rtdll/winnt.386/mf_s/plb*.sym       <RELROOT>/binnt/
+
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> os2.386/mf_r/plbx3r.lib              <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_r/plib3r.lib              <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_s/plbx3s.lib              <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_s/plib3s.lib              <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_rmt/plbxmt3r.lib          <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_rmt/plibmt3r.lib          <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_smt/plbxmt3s.lib          <RELROOT>/lib386/os2/
+    <CPCMD> os2.386/mf_smt/plibmt3s.lib          <RELROOT>/lib386/os2/
+
+    <CPCMD> rtdll/os2.386/mf_r/plb*.lib         <RELROOT>/lib386/os2/
+    <CPCMD> rtdll/os2.386/mf_r/plbrdll.lib      <RELROOT>/lib386/os2/plbrdllx.lib
+    <CPCMD> rtdll/os2.386/mf_r/plb*.dll         <RELROOT>/binp/dll/
+    <CPCMD> rtdll/os2.386/mf_r/plb*.sym         <RELROOT>/binp/dll/
+    <CPCMD> rtdll/os2.386/mf_rd/plb*.lib        <RELROOT>/lib386/os2/
+    <CPCMD> rtdll/os2.386/mf_rd/plbrdlld.lib    <RELROOT>/lib386/os2/plbrdlxd.lib
+    <CPCMD> rtdll/os2.386/mf_rd/plb*.dll        <RELROOT>/binp/dll/
+    <CPCMD> rtdll/os2.386/mf_s/plb*.lib         <RELROOT>/lib386/os2/
+    <CPCMD> rtdll/os2.386/mf_s/plbsdll.lib      <RELROOT>/lib386/os2/plbsdllx.lib
+    <CPCMD> rtdll/os2.386/mf_s/plb*.dll         <RELROOT>/binp/dll/
+    <CPCMD> rtdll/os2.386/mf_s/plb*.sym         <RELROOT>/binp/dll/
+
+  [ IFDEF (os_nov "") <2*> ]
+    <CPCMD> complex/netware.386/ms_s/cplx3s.lib  <RELROOT>/lib386/netware/
+    <CPCMD> complex/netware.387/ms_s/cplx73s.lib <RELROOT>/lib386/netware/
+
+  [ IFDEF (os_qnx) <2*> ]
+    <CPCMD> q3rmt/plbxmt3r.lib                   <RELROOT>/lib386/qnx/
+    <CPCMD> q3rmt/plibmt3r.lib                   <RELROOT>/lib386/qnx/
+    <CPCMD> q3smt/plbxmt3s.lib                   <RELROOT>/lib386/qnx/
+    <CPCMD> q3smt/plibmt3s.lib                   <RELROOT>/lib386/qnx/
+
+[ BLOCK <1> rel2 cprel2 acprel2 ]
+#================================
+  [ IFDEF (cpu_axp) <2*> ]
+    <CPCMD> winnt.axp/_s/plib.lib                <RELROOT>/libaxp/nt/plib.lib
+    <CPCMD> winnt.axp/_s/plbx.lib                <RELROOT>/libaxp/nt/plbx.lib
+    <CPCMD> winnt.axp/_smt/plibmt.lib            <RELROOT>/libaxp/nt/plibmt.lib
+    <CPCMD> winnt.axp/_smt/plbxmt.lib            <RELROOT>/libaxp/nt/plbxmt.lib
+    <CPCMD> complex/winnt.axp/_s/cplx.lib        <RELROOT>/libaxp/cplx.lib
 
 [ BLOCK <1> clean ]
 #==================
+    [ INCLUDE clean.ctl ]
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

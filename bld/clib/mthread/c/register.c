@@ -24,38 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Multithreaded support function registration. Allows caller
+*               to override the default functions, used by FORTRAN and C++
+*               runtimes.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "extfunc.h"
+#include <process.h>
 #include "thread.h"
+#include "cthread.h"
 
-extern beginner __CBeginThread;
-extern ender    __CEndThread;
 static int __CInitThread( void *p ) { p=p; return 0; }
 
 static beginner     *__BeginThread      = __CBeginThread;
 static ender        *__EndThread        = __CEndThread;
 static initializer  *__InitThread       = __CInitThread;
 
+int __initthread( void *p )
+{
+    return __InitThread( p );
+}
+
+#if defined( __NT__ )
+_WCRTLINK unsigned long _beginthread( thread_fn *start_addr,
+                        unsigned stack_size, void *arglist )
+{
+    return( __BeginThread( start_addr, NULL, stack_size, arglist ) );
+}
+#elif defined( __RDOS__ )
+_WCRTLINK int _beginthread( thread_fn *start_addr,
+                        const char *thread_name,
+                        unsigned stack_size, void *arglist )
+{
+    return( __BeginThread( start_addr, thread_name, stack_size, arglist ) );
+}
+#elif defined( __RDOSDEV__ )
+_WCRTLINK int _beginthread( thread_fn *start_addr, int prio,
+                        const char *thread_name,
+                        unsigned stack_size, void *arglist )
+{
+    return( __BeginThread( start_addr, prio, thread_name, stack_size, arglist ) );
+}
+#else
 _WCRTLINK int _beginthread( thread_fn *start_addr, void *stack_bottom,
                         unsigned stack_size, void *arglist )
 {
     return( __BeginThread( start_addr, stack_bottom, stack_size, arglist ) );
 }
+#endif
 
 _WCRTLINK void _endthread( void )
 {
     __EndThread();
-}
-
-int __initthread( void *p )
-{
-    return __InitThread( p );
 }
 
 _WCRTLINK void __RegisterThreadData( beginner **begin, ender **end, initializer **init )

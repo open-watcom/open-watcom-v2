@@ -1,7 +1,6 @@
-#pmake: all os_os2 cpu_386 ppc powerpc
+#pmake: build os_os2 cpu_386 ppc powerpc target_ppc
 
+host_os  = os2
+host_cpu = 386
 
-host_OS         = os2
-host_CPU        = 386
-
-!include ..\mif\master.mif
+!include ../mif/master.mif

@@ -145,7 +145,8 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata,
                        LONG longdata )
 #pragma on (unreferenced);
 {
-    char name[80],*err;
+    char    name[80];
+    char    *err;
     int i;
     char buff[80];
 
@@ -156,9 +157,10 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata,
                 Output( TRP_ERR_null_name );
                 Output( "\r\n" );
             } else {
-                GetWindowText( EditChild, name, i+1 );
-                if( RemoteLinkObtained) RemoteUnLink();
-                err = RemoteLink( (char *) name, 1 );
+                GetWindowText( EditChild, name, sizeof( name ) );
+                if( RemoteLinkObtained)
+                    RemoteUnLink();
+            err = RemoteLink( name, 1 );
                 if( err != NULL ) {
                     StartupErr( err );
                     RemoteLinkObtained = FALSE;
@@ -170,7 +172,6 @@ void ProcAppl( HWND windhandle, unsigned message, WORD worddata,
                 } /* if */
             } /* if */
             break;
-
     } /* switch */
 
 } /* ProcAppl */

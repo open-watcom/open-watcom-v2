@@ -57,7 +57,7 @@ int _MessageLoop( BOOL doexit ) {
         rc = WinGetMsg( _AnchorBlock, &msg, NULL, 0, 0 );
         if( !rc ) {
             if( doexit ) {
-                _WindowExitRtn = NULL;
+                _WindowsExitRtn = NULL;
                 exit( 0 );
             }
             return( rc );
@@ -76,7 +76,7 @@ int _BlockingMessageLoop( BOOL doexit ) {
     rc = WinGetMsg( _AnchorBlock, &msg, NULL, 0, 0 );
     if( !rc ) {
         if( doexit ) {
-            _WindowExitRtn = NULL;
+            _WindowsExitRtn = NULL;
             exit( 0 );
         }
         return( rc );

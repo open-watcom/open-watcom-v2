@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Data types used by lexical scanner.
 *
 ****************************************************************************/
 
@@ -41,7 +40,14 @@ typedef struct ScanString {
     char        *string;
 } ScanString;
 
+typedef enum {
+    SCAN_INT_TYPE_DEFAULT,
+    SCAN_INT_TYPE_LONG,
+    SCAN_INT_TYPE_UNSIGNED
+} ScanIntType;
+
 typedef struct {
+    ScanIntType		type;   /* non-default int type - long/unsigned */
     unsigned long       val;
     char                *str;
 } ScanInt;

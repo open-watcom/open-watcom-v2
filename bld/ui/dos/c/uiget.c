@@ -40,14 +40,14 @@ extern EVENT Event;
 extern EVENT uieventsourcehook( EVENT );
 
 
-void global uiflush()
-/*******************/
+void global uiflush( void )
+/*************************/
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long uiclock()
+unsigned long uiclock( void )
 {
     return( *(unsigned long far *)firstmeg( BIOS_PAGE, SYSTEM_CLOCK ) );
 }
@@ -94,8 +94,8 @@ done:
     return( uieventsourcehook(ev) );
 }
 
-EVENT global uiget()
-/******************/
+EVENT global uiget( void )
+/************************/
 {
     return( uieventsource( 1 ) );
 }

@@ -1,0 +1,105 @@
+*$noreference
+
+! Resource-Management Functions:
+! ------------------------------
+
+      external AccessResource
+      external AllocResource
+      external CreateIcon
+      external DestroyIcon
+      external FindResource
+      external FreeResource
+      external LoadAccelerators
+      external LoadIcon
+      external LoadMenu
+      external LoadResource
+      external LoadString
+      external LockResource
+      external SetResourceHandler
+      external SizeofResource
+      external UnlockResource
+
+      integer*2 AccessResource
+      integer*2 AllocResource
+      integer*2 CreateIcon
+      integer*2 DestroyIcon
+      integer*2 FindResource
+      integer*2 FreeResource
+      integer*2 LoadAccelerators
+      integer*2 LoadIcon
+      integer*2 LoadMenu
+      integer*2 LoadResource
+      integer*2 LoadString
+      integer*4 LockResource
+      integer*4 SetResourceHandler
+      integer*2 SizeofResource
+      integer*2 UnlockResource
+
+! Predefined Resource Types
+
+      integer RT_CURSOR
+      integer RT_BITMAP
+      integer RT_ICON
+      integer RT_MENU
+      integer RT_DIALOG
+      integer RT_STRING
+      integer RT_FONTDIR
+      integer RT_FONT
+      integer RT_ACCELERATOR
+      integer RT_RCDATA
+
+c$ifdef __386__
+
+      parameter ( RT_CURSOR           = 'ffff0000'x .or. 1 )
+      parameter ( RT_BITMAP           = 'ffff0000'x .or. 2 )
+      parameter ( RT_ICON             = 'ffff0000'x .or. 3 )
+      parameter ( RT_MENU             = 'ffff0000'x .or. 4 )
+      parameter ( RT_DIALOG           = 'ffff0000'x .or. 5 )
+      parameter ( RT_STRING           = 'ffff0000'x .or. 6 )
+      parameter ( RT_FONTDIR          = 'ffff0000'x .or. 7 )
+      parameter ( RT_FONT             = 'ffff0000'x .or. 8 )
+      parameter ( RT_ACCELERATOR      = 'ffff0000'x .or. 9 )
+      parameter ( RT_RCDATA           = 'ffff0000'x .or. 10 )
+
+c$else
+
+      parameter ( RT_CURSOR           = 1 )
+      parameter ( RT_BITMAP           = 2 )
+      parameter ( RT_ICON             = 3 )
+      parameter ( RT_MENU             = 4 )
+      parameter ( RT_DIALOG           = 5 )
+      parameter ( RT_STRING           = 6 )
+      parameter ( RT_FONTDIR          = 7 )
+      parameter ( RT_FONT             = 8 )
+      parameter ( RT_ACCELERATOR      = 9 )
+      parameter ( RT_RCDATA           = 10 )
+
+c$endif
+
+! Predefined Icons
+
+      integer IDI_APPLICATION
+      integer IDI_HAND
+      integer IDI_QUESTION
+      integer IDI_EXCLAMATION
+      integer IDI_ASTERISK
+
+c$ifdef __386__
+
+      parameter ( IDI_APPLICATION     = 'ffff0000'x .or. 32512 )
+      parameter ( IDI_HAND            = 'ffff0000'x .or. 32513 )
+      parameter ( IDI_QUESTION        = 'ffff0000'x .or. 32514 )
+      parameter ( IDI_EXCLAMATION     = 'ffff0000'x .or. 32515 )
+      parameter ( IDI_ASTERISK        = 'ffff0000'x .or. 32516 )
+
+c$else
+
+      parameter ( IDI_APPLICATION     = 32512 )
+      parameter ( IDI_HAND            = 32513 )
+      parameter ( IDI_QUESTION        = 32514 )
+      parameter ( IDI_EXCLAMATION     = 32515 )
+      parameter ( IDI_ASTERISK        = 32516 )
+
+c$endif
+
+*$reference

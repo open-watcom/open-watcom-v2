@@ -8,9 +8,9 @@ tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 pre08.006     &
         pre08.007 pre08.008 pre08.009 pre08.010 pre08.011
 
 all: .symbolic $(tests)
-    del pre08.005
-    del pre08.007
-    del pre08.008
+    rm pre08.005
+    rm pre08.007
+    rm pre08.008
 
 
 pre08.001: .symbolic
@@ -30,14 +30,14 @@ pre08.002: .symbolic
 pre08.003: .symbolic
     wtouch pre08.003
     if not exist pre08.003 $(mkerr)
-    del pre08.003
+    rm pre08.003
     if exist pre08.003 $(mkerr)
 
 
 pre08.004: .symbolic
     wtouch pre08.003
     if not exist pre*.003 $(mkerr)
-    del pre08.003
+    rm pre08.003
 
 
 pre08.005:
@@ -45,10 +45,16 @@ pre08.005:
 
 
 pre08.006: .symbolic
-    $(mkerr) 0
+    true
     if not errorlevel 0 $(mkerr)
-    -$(mkerr) 1
-    if errorlevel 2 $(mkerr)
+    -false
+    # On Unix, 'false' returns 1. On Other platforms, 'false'
+    # returns EXIT_SUCCESS which is 255.
+!ifdef __UNIX__
+    if not errorlevel 1 $(mkerr)
+!else
+    if not errorlevel 255 $(mkerr)
+!endif    
 
 
 # this is an oddball case - try if a b == a echo hi under DOS
@@ -57,7 +63,7 @@ pre08.007:
 
 
 pre08.008:
-    if a	==	a	wtouch pre08.008
+    if a        ==      a       wtouch pre08.008
 
 
 pre08.009: .symbolic

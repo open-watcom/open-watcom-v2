@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS printer access.
 *
 ****************************************************************************/
 
@@ -33,36 +32,9 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "nonibm.h"
 
 
 _WCRTLINK unsigned short _bios_printer( unsigned ibmCmd, unsigned port, unsigned data )
 {
-    unsigned            necCmd;
-    unsigned short      necRc, ret;
-
-    if( !__NonIBM ) {
-        return( __ibm_bios_printer( ibmCmd, port, data ) );
-    } else {
-        /*** Translate IBM commands to NEC98 commands ***/
-        switch( ibmCmd ) {
-          case _IBM_PRINTER_WRITE:
-            necCmd = _NEC98_PRINTER_WRITE;
-            break;
-          case _IBM_PRINTER_INIT:
-            necCmd = _NEC98_PRINTER_INIT;
-            break;
-          case _IBM_PRINTER_STATUS:
-            necCmd = _NEC98_PRINTER_STATUS;
-            break;
-          default:
-            return( 0 );        // invalid command for NEC 98
-        }
-
-        ret = 0;
-        necRc = __nec98_bios_printer( necCmd, (unsigned char*)&data );
-        if( necRc & 0x0001 )  ret |= 0x0008;    // I/O error
-        if( necRc & 0x0002 )  ret |= 0x0001;    // timeout bit
-        return( ret );
-    }
+    return( __ibm_bios_printer( ibmCmd, port, data ) );
 }

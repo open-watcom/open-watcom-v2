@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 
 #include "waccel.h"
@@ -54,7 +54,7 @@
 #include "wrestr.h"
 #include "wredlg.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wreimage.h"
 #include "wreimg.h"
 #include "jdlg.h"
@@ -70,13 +70,13 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WREResDeleteProc ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WINEXPORT WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WRESetWinInfo                ( HWND, char * );
-static Bool         WREQueryDeleteName           ( char * );
+static void WRESetWinInfo( HWND, char * );
+static Bool WREQueryDeleteName( char * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -103,14 +103,14 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
     HWND                res_lbox;
     WResLangNode        *lnode;
 
-    name  = NULL;
+    name = NULL;
     lnode = NULL;
 
     if( curr->info->current_type == (uint_16)RT_STRING ) {
         return( WREDeleteStringResources( curr, FALSE ) );
     }
 
-    ok = ( curr->info && curr->res && curr->lang );
+    ok = (curr->info != NULL && curr->res != NULL && curr->lang != NULL);
 
     if( ok )  {
         if( curr->type->Info.TypeName.IsName ) {
@@ -119,7 +119,7 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
             type = curr->type->Info.TypeName.ID.Num;
         }
         name = WREGetResName( curr->res, type );
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     if( ok && !force ) {
@@ -130,26 +130,27 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
     if( ok ) {
         lnode = curr->lang;
         switch( type ) {
-            case RT_MENU:
-                WREEndLangMenuSession( lnode );
-                break;
-            case RT_STRING:
-                WREEndResStringSessions( curr->info );
-                break;
-            case RT_ACCELERATOR:
-                WREEndLangAccelSession( lnode );
-                break;
-            case RT_DIALOG:
-                WREEndLangDialogSession( lnode );
-                break;
-            case RT_GROUP_CURSOR:
-            case RT_GROUP_ICON:
-                ok = WREDeleteGroupImages( curr, (uint_16) type );
-            case RT_BITMAP:
-                if( ok ) {
-                    WREEndLangImageSession( lnode );
-                }
-                break;
+        case RT_MENU:
+            WREEndLangMenuSession( lnode );
+            break;
+        case RT_STRING:
+            WREEndResStringSessions( curr->info );
+            break;
+        case RT_ACCELERATOR:
+            WREEndLangAccelSession( lnode );
+            break;
+        case RT_DIALOG:
+            WREEndLangDialogSession( lnode );
+            break;
+        case RT_GROUP_CURSOR:
+        case RT_GROUP_ICON:
+            ok = WREDeleteGroupImages( curr, (uint_16)type );
+            /* fall through */
+        case RT_BITMAP:
+            if( ok ) {
+                WREEndLangImageSession( lnode );
+            }
+            break;
         }
     }
 
@@ -165,13 +166,12 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = (int)
-                SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM) name );
+            index = (int)SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
             if( index == LB_ERR ) {
                 index = 0;
             }
-            ok = WRESetResNamesFromType
-                ( curr->info, curr->info->current_type, TRUE, NULL, index );
+            ok = WRESetResNamesFromType( curr->info, curr->info->current_type,
+                                         TRUE, NULL, index );
         }
     }
 
@@ -179,7 +179,7 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
         WRESetTotalText( curr->info );
     }
 
-    if( name ) {
+    if( name != NULL ) {
         WREMemFree( name );
     }
 
@@ -197,7 +197,7 @@ Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool removing )
     if( !removing ) {
         text = WREAllocRCString( WRE_ALLSTRINGS );
         ok = WREQueryDeleteName( text );
-        if( text ) {
+        if( text != NULL ) {
             WREFreeRCString( text );
         }
     }
@@ -205,10 +205,9 @@ Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool removing )
     if( ok ) {
         tnode = curr->type;
         if( tnode == NULL ) {
-            tnode = WRFindTypeNode( curr->info->info->dir,
-                                    (uint_16)RT_STRING, NULL );
+            tnode = WRFindTypeNode( curr->info->info->dir, (uint_16)RT_STRING, NULL );
         }
-        if( tnode ) {
+        if( tnode != NULL ) {
             curr->info->modified = TRUE;
             ok = WRRemoveTypeNodeFromDir( curr->info->info->dir, tnode );
         }
@@ -235,7 +234,7 @@ Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     int                 index;
     HWND                res_lbox;
 
-    name  = NULL;
+    name = NULL;
     ok = TRUE;
 
     if( ok )  {
@@ -245,7 +244,7 @@ Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
             type = curr->type->Info.TypeName.ID.Num;
         }
         name = WREGetResName( curr->res, type );
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     if( ok ) {
@@ -260,87 +259,82 @@ Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = (int)
-                SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM) name );
+            index = (int)SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
             if( index == LB_ERR ) {
                 index = 0;
             }
-            ok = WRESetResNamesFromType
-                ( curr->info, curr->info->current_type, TRUE, NULL, index );
+            ok = WRESetResNamesFromType( curr->info, curr->info->current_type,
+                                         TRUE, NULL, index );
         }
     }
 
-    if( name ) {
+    if( name != NULL ) {
         WREMemFree( name );
     }
 
     return( ok );
 }
 
-Bool WREQueryDeleteName ( char *name )
+Bool WREQueryDeleteName( char *name )
 {
     HWND        dialog_owner;
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
     Bool        modified;
 
-    dialog_owner  = WREGetMainWindowHandle();
-    app_inst      = WREGetAppInstance();
+    dialog_owner = WREGetMainWindowHandle();
+    app_inst = WREGetAppInstance();
 
-    proc_inst = (DLGPROC)
-        MakeProcInstance ( (FARPROC) WREResDeleteProc, app_inst );
+    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResDeleteProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner,
-                                proc_inst, (LPARAM) name );
+                                proc_inst, (LPARAM)name );
 
-    FreeProcInstance ( (FARPROC) proc_inst );
+    FreeProcInstance( (FARPROC)proc_inst );
 
-    return  ( ( modified != -1 ) && ( modified == IDOK ) );
+    return( modified != -1 && modified == IDOK );
 }
 
-void WRESetWinInfo ( HWND hDlg, char *name )
+void WRESetWinInfo( HWND hDlg, char *name )
 {
-    WRESetEditWithStr ( GetDlgItem ( hDlg, IDM_DELNAME ), name );
+    WRESetEditWithStr( GetDlgItem( hDlg, IDM_DELNAME ), name );
 }
 
-BOOL WR_EXPORT WREResDeleteProc ( HWND hDlg, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    char  *name;
-    BOOL   ret;
+    char    *name;
+    BOOL    ret;
 
     ret = FALSE;
 
-    switch (message) {
+    switch( message ) {
+    case WM_INITDIALOG:
+        name = (char *)lParam;
+        WRESetWinInfo( hDlg, name );
+        ret = TRUE;
+        break;
 
-        case WM_INITDIALOG:
-            name = (char *) lParam;
-            WRESetWinInfo( hDlg, name );
+    case WM_SYSCOLORCHANGE:
+        WRECtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDM_HELP:
+            WREHelpRoutine();
+            break;
+
+        case IDOK:
+            EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRECtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            switch( LOWORD(wParam) ) {
-                case IDM_HELP:
-                    WREHelpRoutine();
-                    break;
-
-                case IDOK:
-                    EndDialog( hDlg, TRUE );
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog ( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-            }
+        }
     }
 
-    return ( ret );
+    return( ret );
 }
-

@@ -1,0 +1,17 @@
+( sets $draft no
+( dev ps
+( wscript
+( lay nblay
+( font	0 times-roman			   2 12
+( font	1 times-italic			   2 12
+( font	2 times-bold			   2 12
+( font	3 times-bolditalic		   2 12
+( font	4 courier			   1 12
+( font	5 courier			   1 10
+( font	6 courier-bold			   1 12
+( font	7 symbol			   2 12
+( font	8 helvetica-narrow-boldoblique	   2 16
+( font	9 helvetica-narrow-boldoblique	   2 20
+( font 10 helvetica-narrow-boldoblique	   2 24
+( font 11 helvetica-narrow-boldoblique	   2 30
+( font 12 helvetica-narrow-boldoblique	   2 40

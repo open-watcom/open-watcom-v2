@@ -1,0 +1,20 @@
+/*
+ *  sched.h
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _SCHED_H_INCLUDED
+#define _SCHED_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+_WCRTLINK extern int    sched_yield( void );
+
+:include cplusepi.sp
+
+#endif

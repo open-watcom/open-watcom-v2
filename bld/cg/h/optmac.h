@@ -31,7 +31,7 @@
 
 
 #define optbegin        ++InOptimizer;
-#define optend          --InOptimizer; }
+#define optend          --InOptimizer;
 #define optreturn( x )  { --InOptimizer; return( x ); }
 #define optreturnvoid   { --InOptimizer; return; }
 

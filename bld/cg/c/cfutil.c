@@ -35,15 +35,9 @@
 #include "cfloat.h"
 #include "hostsys.h"
 
-typedef union flt {
-        real            sngl;
-        reallong        dble;
-        reallong        ldble;  // FIXME - need long double support
-} flt;
-
 extern  reallong        CFToF(cfloat*);
 
-extern  void    CFCnvTarget( cfloat *f, flt *buffer, type_class_def class ) {
+extern  void    CFCnvTarget( cfloat *f, flt *buffer, int class ) {
 /****************************************************************************/
 
     switch( class ) {

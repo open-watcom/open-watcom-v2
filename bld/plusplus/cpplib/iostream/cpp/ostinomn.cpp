@@ -24,44 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/29    Greg Bentz      Change ostream::op<<(streambuf &) to
-//                              ostream::op<<( streambuf * )
-//  93/10/26    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 
-ostream &ostream::operator << ( ostream &(*f)( ostream & ) ) {
-/************************************************************/
-// Handles things like
-//     cout << endl
-// where "endl" is a function taking a stream reference and returning the
-// same. Essentially, this just does an indirect call to the function.
+namespace std {
+
+  // Handles things like
+  //     cout << endl
+  // where "endl" is a function taking a stream reference and returning
+  // the same. Essentially, this just does an indirect call to the
+  // function.
+
+  ostream &ostream::operator << ( ostream &(*f)( ostream & ) ) {
 
     return( f( *this ) );
+  }
+
 }
 

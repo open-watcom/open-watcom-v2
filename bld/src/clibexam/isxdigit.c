@@ -10,12 +10,12 @@ char chars[] = {
 #define SIZE sizeof( chars ) / sizeof( char )
 
 void main()
-  {
+{
     int   i;
 
     for( i = 0; i < SIZE; i++ ) {
-      printf( "Char %c is %sa hexadecimal digit"
-            " character\n", chars[i],
-            ( isxdigit( chars[i] ) ) ? "" : "not " );
+        printf( "Char %c is %sa hexadecimal digit"
+                " character\n", chars[i],
+                ( isxdigit( chars[i] ) ) ? "" : "not " );
     }
-  }
+}

@@ -41,7 +41,7 @@ struct pool_con {               // POOL_CON -- pool entry
   struct {                      // - - floating-point constant
     unsigned    len;            // - - - # bytes (includes '\0')
     char        *fp_constant;   // - - - floating value in the pool
-  };
+  } s;
     signed_64   int64_constant; // - - int-64 constant
  };
     unsigned    free : 1;       // - used for precompiled headers
@@ -51,7 +51,7 @@ struct pool_con {               // POOL_CON -- pool entry
 
 // PROTOTYPES
 
-void *ConPoolFloatAdd(          // ADD AN ITEM TO THE CONSTANTS POOL
+POOL_CON *ConPoolFloatAdd(          // ADD AN ITEM TO THE CONSTANTS POOL
     PTREE node )                // - node for floating constant
 ;
 POOL_CON *ConPoolInt64Add       // ADD AN INT-64 CONSTANT

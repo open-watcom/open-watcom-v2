@@ -1,0 +1,128 @@
+asm_objs = &
+3dnow.ls1 &
+486.ls1 &
+adc.ls1 &
+add.ls1 &
+admodes.ls1 &
+admodes1.ls1 &
+admodes2.ls1 &
+admodes3.ls1 &
+admodes4.ls1 &
+admodes5.ls1 &
+admodes6.ls1 &
+amodes.ls1 &
+amodes1.ls1 &
+amodes2.ls1 &
+amodes3.ls1 &
+amodes4.ls1 &
+amodes5.ls1 &
+amodes6.ls1 &
+and.ls1 &
+bt.ls1 &
+bug.ls1 &
+calljmp.ls1 &
+cc2.ls1 &
+cmp.ls1 &
+cmpx.ls1 &
+dec.ls1 &
+div.ls1 &
+disasm.ls1 &
+dmodes1.ls1 &
+dmodes2.ls1 &
+dmodes3.ls1 &
+dmodes4.ls1 &
+dmodes5.ls1 &
+dmodes6.ls1 &
+enter.ls1 &
+fadd.ls1 &
+fcom.ls1 &
+fdiv.ls1 &
+fld.ls1 &
+fmul.ls1 &
+fp.ls1 &
+fpmisc.ls1 &
+fpmisc2.ls1 &
+fsub.ls1 &
+fubar.ls1 &
+fucom.ls1 &
+idiv.ls1 &
+imul.ls1 &
+in.ls1 &
+inc.ls1 &
+lea.ls1 &
+lod.ls1 &
+lxs.ls1 &
+misc.ls1 &
+misc2.ls1 &
+mmx.ls1 &
+modes.ls1 &
+modes1.ls1 &
+modes2.ls1 &
+modes3.ls1 &
+modes4.ls1 &
+modes5.ls1 &
+modes6.ls1 &
+mov.ls1 &
+mov2.ls1 &
+movs.ls1 &
+movx.ls1 &
+mul.ls1 &
+neg.ls1 &
+not.ls1 &
+or.ls1 &
+out.ls1 &
+outs.ls1 &
+pop.ls1 &
+pword.ls1 &
+rcl.ls1 &
+sal.ls1 &
+sbb.ls1 &
+scas.ls1 &
+setcc.ls1 &
+shld.ls1 &
+sse.ls1 &
+sse2.ls1 &
+sse3.ls1 &
+sub.ls1 &
+test1.ls1 &
+try.ls1 &
+xadd.ls1 &
+xchg.ls1 &
+xor.ls1 &
+asmbug1.ls1 &
+asmbug2.ls1 &
+asmbug3.ls1 &
+asmbug4.ls1 &
+asmbug5.ls1 &
+asmbug6.ls1 &
+asmbug7.ls1 &
+asmbug8.ls1 &
+asmbug9.ls1 &
+asmbug10.ls1 &
+asmbug11.ls1 &
+asmbug12.ls1 &
+asmbug13.ls1
+
+c_objs = &
+bug31.lst &
+extprocf.lst &
+extprocn.lst &
+filedos.lst &
+fixup.lst &
+tokens.lst
+
+init_3dnow = K3D
+init_mmx = MMX
+init_sse = XMM
+init_sse2 = XMM2
+init_sse3 = XMM3
+
+opt_extprocf = -ms
+opt_extprocn = -ml
+opt_filedos  = -ml
+opt_fixup    = -3
+
+extra_sed_filedos = -f $(wasmtest_dir)/fixlst4.sed
+
+386_inline_objs = $(asm_objs) $(c_objs)
+i86_inline_objs = $(asm_objs) $(c_objs)

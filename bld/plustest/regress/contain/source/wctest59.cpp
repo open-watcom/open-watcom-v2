@@ -55,7 +55,8 @@ void test1() {
     temp = "Junk";
     if( list.index( &temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         list.append( &str_text[ i ] );
     };
 
@@ -88,7 +89,8 @@ void test2() {
     temp = "Junk";
     if( list.index( &temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         list.append( &str_text[ i ] );
     };
 
@@ -121,7 +123,8 @@ void test3() {
     temp = "Junk";
     if( list.index( temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         list.append( str_text[ i ] );
     };
 
@@ -154,7 +157,8 @@ void test4() {
     temp = "Junk";
     if( list.index( temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         list.append( str_text[ i ] );
     };
 
@@ -198,7 +202,8 @@ void test5() {
     if( list.index( &temp ) != -1 ) cout << "index of Junk != -1\n";
     if( list.index( &d_test_fn, &temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         array[ i ] = text[ i ];
         list.append( &array[ i ] );
     };
@@ -231,7 +236,8 @@ void test6() {
     if( list.index( &temp ) != -1 ) cout << "index of Junk != -1\n";
     if( list.index( &d_test_fn, &temp ) != -1 ) cout << "index of Junk != -1\n";
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
         array[ i ] = text[ i ];
         list.append( &array[ i ] );
     };

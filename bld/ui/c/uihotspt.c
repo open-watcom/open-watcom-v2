@@ -51,9 +51,7 @@
 
 static a_hot_spot_field     *ActiveField = NULL;
 
-static ORD hs_adjust( pos, width )
-    int                 pos;
-    ORD                 width;
+static ORD hs_adjust( int pos, ORD width )
 {
     if( pos < 0 ){
         return( width + pos - 1 );

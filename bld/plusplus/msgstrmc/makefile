@@ -27,15 +27,13 @@ msgstrmc.lnk : makefile $(OBJS)
 msgstrmc.exe : $(OBJS) makefile msgstrmc.lnk
     $(linker) @msgstrmc
 #   $(pharlap)bind386 $(pharlap)run386b msgstrmc.exp -exe msgstrmc.exe
-#   del msgstrmc.exp >nul
+#   @rm -f msgstrmc.exp
 
 .cpp.obj:
     $(comp286plus) $[* $(compiler)
 
 reference : .symbolic
-    copy msgstrmc.exe $(plusplus_dir)\bin
+    cp msgstrmc.exe $(plusplus_dir)/bin
 
 global : .symbolic
-    del *.obj >nul
-    del *.exe >nul
-    del *.exp >nul
+    @rm -f *.obj *.exe *.exp

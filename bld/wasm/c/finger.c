@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WASM ID card.
 *
 ****************************************************************************/
 
@@ -36,6 +35,7 @@ const char *FingerMsg[] = {
     banner1w( "Assembler", _WASM_VERSION_ ),
     banner2( "1992" ),
     banner3,
+    banner3a,
 #ifdef D32_NAME
     "DOS4/G Run-Time " D32_VERSION " " D32_COPYRIGHT,
 #endif

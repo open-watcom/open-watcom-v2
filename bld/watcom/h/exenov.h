@@ -24,33 +24,38 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Novell NetWare NLM executable image format.
 *
 ****************************************************************************/
 
 
 #ifndef _EXENOV_H
 
-#pragma pack(push,1);
+#include "pushpck1.h"
 
-#define MAX_DESCRIPTION_LENGTH  127
-#define MAX_SCREEN_NAME_LENGTH  71
-#define MAX_THREAD_NAME_LENGTH  17
-#define OLD_THREAD_NAME_LENGTH  5
-#define NLM_SIGNATURE "NetWare Loadable Module\x01a"
-#define NLM_VERSION 4
-#define VERSION_SIGNATURE "VeRsIoN#"
-#define VERSION_SIGNATURE_LENGTH 8
-#define COPYRIGHT_SIGNATURE "CoPyRiGhT="
-#define COPYRIGHT_SIGNATURE_LENGTH 10
-#define MAX_COPYRIGHT_LENGTH 255
-#define EXTENDED_NLM_SIGNATURE "MeSsAgEs"
-#define EXTENDED_NLM_SIGNATURE_LENGTH (sizeof(EXTENDED_NLM_SIGNATURE)-1)
-#define MSG_FILE_SIGNATURE "NetWare Message File: "
-#define MSG_FILE_SIGNATURE_LENGTH 22
-#define LANGUAGE_ID_OFFSET 106
-#define NUM_MESSAGES_OFFSET 110
+#define MAX_DESCRIPTION_LENGTH			127
+#define MAX_SCREEN_NAME_LENGTH			71
+#define MAX_THREAD_NAME_LENGTH			17
+#define OLD_THREAD_NAME_LENGTH			5
+#define NLM_SIGNATURE					"NetWare Loadable Module\x01a"
+#define NLM_VERSION						4
+#define VERSION_SIGNATURE				"VeRsIoN#"
+#define VERSION_SIGNATURE_LENGTH		8
+#define COPYRIGHT_SIGNATURE				"CoPyRiGhT="
+#define COPYRIGHT_SIGNATURE_LENGTH		10
+#define MAX_COPYRIGHT_LENGTH			255
+#define EXTENDED_NLM_SIGNATURE			"MeSsAgEs"
+#define EXTENDED_NLM_SIGNATURE_LENGTH	(sizeof(EXTENDED_NLM_SIGNATURE)-1)
+#define MSG_FILE_SIGNATURE				"NetWare Message File: "
+#define MSG_FILE_SIGNATURE_LENGTH		22
+#define LANGUAGE_ID_OFFSET				106
+#define NUM_MESSAGES_OFFSET				110
+/*
+//	Internal module name must 8.3 maximum
+*/
+#define NOV_MAX_NAME_LEN				8
+#define NOV_MAX_EXT_LEN					3
+#define NOV_MAX_MODNAME_LEN				(NOV_MAX_NAME_LEN + NOV_MAX_EXT_LEN + 1)
 
 /* the fields marked vbl are variable length. */
 
@@ -156,7 +161,8 @@ typedef struct {
 #define NOV_MULTIPLE            0x0002
 #define NOV_SYNCHRONIZE         0x0004
 #define NOV_PSEUDOPREEMPTION    0x0008
-#define NOV_OS_DOMAIN           0x0010
+#define NOV_OS_DOMAIN           0x0010		/*	16	*/
+#define NOV_AUTOUNLOAD          0x0040		/*	64	*/
 
 #define DBG_DATA 0
 #define DBG_CODE 1
@@ -167,16 +173,19 @@ typedef struct nov_dbg_info {
     unsigned_8          namelen;
 } nov_dbg_info;
 
-#define DEFAULT_PRELUDE_FN  "_Prelude"
-#define DEFAULT_EXIT_FN     "_Stop"
+#define DEFAULT_PRELUDE_FN_CLIB	"_Prelude"
+#define DEFAULT_EXIT_FN_CLIB	"_Stop"
+
+#define DEFAULT_PRELUDE_FN_LIBC	"_LibCPrelude"
+#define DEFAULT_EXIT_FN_LIBC	"_LibCPostlude"
 
 /* values for upper bits of the relocation offsets. */
-#define NOV_IMP_NONRELATIVE  0x80000000
-#define NOV_IMP_ISCODE       0x40000000
+#define NOV_IMP_NONRELATIVE		0x80000000
+#define NOV_IMP_ISCODE			0x40000000
 
-#define NOV_EXP_ISCODE      0x80000000
+#define NOV_EXP_ISCODE			0x80000000
 
-#pragma pack(pop);
+#include "poppck.h"
 
 #define _EXENOV_H
 #endif

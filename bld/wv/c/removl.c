@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Access to trap file overlay extensions.
 *
 ****************************************************************************/
 
@@ -51,13 +50,13 @@ static trap_shandle     SuppOvlId;
         in.req                  = request;
 
 
-bool InitOvlSupp()
+bool InitOvlSupp( void )
 {
     SuppOvlId = GetSuppId( OVERLAY_SUPP_NAME );
     return( SuppOvlId != 0 );
 }
 
-unsigned RemoteOvlSectSize()
+unsigned RemoteOvlSectSize( void )
 {
     ovl_state_size_req  acc;
     ovl_state_size_ret  ret;
@@ -86,7 +85,7 @@ bool RemoteOvlSectPos( unsigned sect, mem_block *where )
     return( TRUE );
 }
 
-static void CheckRemapping()
+static void CheckRemapping( void )
 {
     ovl_get_remap_entry_req     acc;
     ovl_get_remap_entry_ret     ret;

@@ -1,3 +1,4 @@
+#include <os2.h>
 #include "appcomm.rc"
 #include "rcdefs.h"
 ICON 1 "../dui2.ico"

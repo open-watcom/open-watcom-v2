@@ -29,9 +29,16 @@
 *
 ****************************************************************************/
 
-
 #include "cpplib.h"
 #include <typeinfo>
 
-type_info::~type_info() {
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+namespace std {
+
+  type_info::~type_info() {
+  }
+
 }

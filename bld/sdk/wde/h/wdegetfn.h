@@ -37,22 +37,22 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    char *file_name;
-    char *title;
-    char *filter;
-    int   fn_offset;
-    int   ext_offset;
+    char    *file_name;
+    char    *title;
+    char    *filter;
+    int     fn_offset;
+    int     ext_offset;
 } WdeGetFileStruct;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WdeFreeFileFilter  ( void );
-extern char *WdeGetFileFilter   ( void );
-extern void  WdeSetFileFilter   ( char * );
-extern char *WdeGetInitialDir   ( void );
-extern void  WdeSetInitialDir   ( char * );
-extern char *WdeGetOpenFileName ( WdeGetFileStruct * );
-extern char *WdeGetSaveFileName ( WdeGetFileStruct * );
+extern void WdeFreeFileFilter( void );
+extern char *WdeGetFileFilter( void );
+extern void WdeSetFileFilter( char * );
+extern char *WdeGetInitialDir( void );
+extern void WdeSetInitialDir( char * );
+extern char *WdeGetOpenFileName( WdeGetFileStruct * );
+extern char *WdeGetSaveFileName( WdeGetFileStruct * );
 
 #endif

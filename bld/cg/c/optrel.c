@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Relative branch optimizations.
 *
 ****************************************************************************/
 
 
 #include "optwif.h"
 
-extern    ins_entry     *FirstIns;
 extern    byte          OptForSize;
 
 extern  void            TryScrapLabel(code_lbl*);
@@ -42,15 +40,15 @@ extern  code_lbl        *AddNewLabel(ins_entry*,int);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  void            ChgLblRef(ins_entry*,code_lbl*);
 extern  ins_entry       *NextIns(ins_entry*);
-extern  offset          AskLocation();
+extern  offset          AskLocation(void);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 
 static    code_lbl      *Handle;
 
 
-static  bool    Jmp_to_lbl( ins_entry *instr ) {
-/*********************************************/
-
+static  bool    Jmp_to_lbl( ins_entry *instr )
+/********************************************/
+{
   optbegin
     if( _Class( instr ) != OC_JMP ) optreturn( FALSE );
     if( _Label( instr ) != Handle ) optreturn( FALSE );
@@ -59,12 +57,11 @@ static  bool    Jmp_to_lbl( ins_entry *instr ) {
 
 
 static  bool    CanReach( code_lbl *lbl, ins_entry **add_ptr,
-                                ins_entry **jmp_ptr ) {
+                                ins_entry **jmp_ptr )
 /************************************************************
-
     Can a short branch at instruction 'FirstIns' reach label 'lbl'?
-
 */
+{
     ins_entry   *add;
     ins_entry   *jmp;
     ins_entry   *instr;
@@ -100,11 +97,30 @@ static  bool    CanReach( code_lbl *lbl, ins_entry **add_ptr,
     return( FALSE );
 }
 
-static  bool    InRange() {
-/*************************/
 
+static  void    HndlRedirect( code_lbl *new )
+/*******************************************/
+{
+    code_lbl    *redir;
+
+  optbegin
+    redir = Handle->redirect;
+    if( redir != NULL && redir != new ) {
+        _ClrStatus( redir, REDIRECTION );
+        TryScrapLabel( redir );
+    }
+    Handle->redirect = new;
+    if( new != NULL ) {
+        _SetStatus( new, REDIRECTION );
+    }
+  optend
+}
+
+
+static  bool    InRange( void )
+/*****************************/
 /* Check if redirection is still within range*/
-
+{
     code_lbl    *jmp_lbl;
 
   optbegin
@@ -124,11 +140,76 @@ static  bool    InRange() {
 }
 
 
-extern  void    SetBranches() {
-/*****************************/
+static  void    BigBranch( ins_entry *add, ins_entry *jmp )
+/**********************************************************
+    We can't get to where we want to go, have to redirect
+*/
+{
+  optbegin
+    if( jmp != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
+        /* jump to a jump that's going where we want*/
+        HndlRedirect( AddNewLabel( PrevIns( jmp ), 0 ) );
+        ChgLblRef( FirstIns, Handle->redirect );
+    } else if( InRange() ) {
+        /* use old redirection label*/
+        ChgLblRef( FirstIns, Handle->redirect );
+    } else if( add != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
+        /* add a jump that's in range*/
+        AddNewJump( add, Handle );
+        _Savings( OPT_JUMPS, -_ObjLen( NextIns( add ) ) );
+        HndlRedirect( AddNewLabel( add, 0 ) );
+        ChgLblRef( FirstIns, Handle->redirect );
+    } else {
+        /* reverse the branch*/
+        _JmpCond( FirstIns ) = ReverseCondition( _JmpCond( FirstIns ) );
+        AddNewJump( FirstIns, Handle );
+        ChgLblRef( FirstIns, AddNewLabel( NextIns( FirstIns ), 0 ) );
+        HndlRedirect( AddNewLabel( FirstIns, 0 ) );
+    }
+  optend
+}
 
+
+static  void    SetShort( void )
+/******************************/
+{
+    ins_entry   *l_ins;
+    int         size;
+    bool        floating;
+
+  optbegin
+    floating = FALSE;
+    if( _Attr( FirstIns ) & ATTR_FLOAT ) {
+        floating = TRUE;
+    }
+    size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
+    if( _Class( FirstIns ) == OC_JMP ) {
+        _Savings( OPT_JUMPS, _ObjLen( FirstIns ) - size );
+        _ObjLen( FirstIns ) = size;
+        _SetClass( FirstIns, OC_JMP );
+        if( floating ) {
+            _SetAttr( FirstIns, ATTR_FLOAT );
+        }
+    } else {
+        _Savings( OPT_JCONDS, _ObjLen( FirstIns ) - size );
+        _ObjLen( FirstIns ) = size;
+        _SetClass( FirstIns, OC_JCOND );
+        if( floating ) {
+            _SetAttr( FirstIns, ATTR_FLOAT );
+        }
+    }
+    l_ins = _Label( FirstIns )->ins;
+    if( l_ins != NULL ) {
+        _SetAttr( l_ins, ATTR_SHORT );
+    }
+  optend
+}
+
+
+extern  void    SetBranches( void )
+/*********************************/
 /* Check whether the actual label itself can be targeted*/
-
+{
   ins_entry     *add;
   ins_entry     *jmp;
   ins_entry     *next;
@@ -171,86 +252,4 @@ extern  void    SetBranches() {
         }
     }
   optend
-
-
-static  void    BigBranch( ins_entry *add, ins_entry *jmp ) {
-/************************************************************
-
-    We can't get to where we want to go, have to redirect
-*/
-
-  optbegin
-    if( jmp != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
-        /* jump to a jump that's going where we want*/
-        HndlRedirect( AddNewLabel( PrevIns( jmp ), 0 ) );
-        ChgLblRef( FirstIns, Handle->redirect );
-    } else if( InRange() ) {
-        /* use old redirection label*/
-        ChgLblRef( FirstIns, Handle->redirect );
-    } else if( add != NULL && _IsntModel( NO_OPTIMIZATION ) ) {
-        /* add a jump that's in range*/
-        AddNewJump( add, Handle );
-        _Savings( OPT_JUMPS, -_ObjLen( NextIns( add ) ) );
-        HndlRedirect( AddNewLabel( add, 0 ) );
-        ChgLblRef( FirstIns, Handle->redirect );
-    } else {
-        /* reverse the branch*/
-        _JmpCond( FirstIns ) = ReverseCondition( _JmpCond( FirstIns ) );
-        AddNewJump( FirstIns, Handle );
-        ChgLblRef( FirstIns, AddNewLabel( NextIns( FirstIns ), 0 ) );
-        HndlRedirect( AddNewLabel( FirstIns, 0 ) );
-    }
-  optend
-
-
-static  void    SetShort() {
-/**************************/
-
-    ins_entry   *l_ins;
-    int         size;
-    bool        floating;
-
-  optbegin
-    floating = FALSE;
-    if( _Attr( FirstIns ) & ATTR_FLOAT ) {
-        floating = TRUE;
-    }
-    size = OptInsSize( _Class( FirstIns ), OC_DEST_SHORT );
-    if( _Class( FirstIns ) == OC_JMP ) {
-        _Savings( OPT_JUMPS, _ObjLen( FirstIns ) - size );
-        _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JMP );
-        if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
-        }
-    } else {
-        _Savings( OPT_JCONDS, _ObjLen( FirstIns ) - size );
-        _ObjLen( FirstIns ) = size;
-        _SetClass( FirstIns, OC_JCOND );
-        if( floating ) {
-            _SetAttr( FirstIns, ATTR_FLOAT );
-        }
-    }
-    l_ins = _Label( FirstIns )->ins;
-    if( l_ins != NULL ) {
-        _SetAttr( l_ins, ATTR_SHORT );
-    }
-  optend
-
-
-static  void    HndlRedirect( code_lbl *new ) {
-/*********************************************/
-
-    code_lbl    *redir;
-
-  optbegin
-    redir = Handle->redirect;
-    if( redir != NULL && redir != new ) {
-        _ClrStatus( redir, REDIRECTION );
-        TryScrapLabel( redir );
-    }
-    Handle->redirect = new;
-    if( new != NULL ) {
-        _SetStatus( new, REDIRECTION );
-    }
-  optend
+}

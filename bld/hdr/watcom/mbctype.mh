@@ -5,16 +5,14 @@
  */
 #ifndef _MBCTYPE_H_INCLUDED
 #define _MBCTYPE_H_INCLUDED
+
 :include readonly.sp
+
+:include owrtlink.sp
+
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
 :include sizet.sp
-
-:include wchar_t.sp
 
 :include null.sp
 
@@ -28,7 +26,6 @@
 /* MB control routines */
 _WCRTLINK extern int _setmbcp( int );
 _WCRTLINK extern int _getmbcp( void );
-
 
 /*
  * Routines applicable to all code pages.
@@ -54,7 +51,6 @@ _WCRTLINK extern int    _ismbcpunct( unsigned int __ch );
 _WCRTLINK extern int    _ismbcspace( unsigned int __ch );
 _WCRTLINK extern int    _ismbcupper( unsigned int __ch );
 _WCRTLINK extern int    _ismbcxdigit( unsigned int __ch );
-
 
 /*
  * Routines specific to code page 932 (Japanese).
@@ -85,22 +81,19 @@ _WCRTLINK extern int    _ismbdspace( unsigned int __ch );
 _WCRTLINK extern int    _ismbdupper( unsigned int __ch );
 _WCRTLINK extern int    _ismbdxdigit( unsigned int __ch );
 
-
 /* Global data */
 #if defined(__SW_BR) || defined(_RTDLL)
  #define __MBCSIsTable __MBCSIsTable_br
  #define __IsDBCS      __IsDBCS_br
 #endif
-_WCRTLINK extern unsigned char  __MBCSIsTable[257];
-_WCRTLINK extern int            __IsDBCS;
-
+_WCRTDATA extern unsigned char _WCDATA __MBCSIsTable[257];
+_WCRTDATA extern int           _WCDATA __IsDBCS;
 
 /* Flag used in __MBCSIsTable table */
 #ifndef _MB_TABLE_FLAGS_DEFINED
     #define _MB_LEAD            0x01
     #define _MB_TABLE_FLAGS_DEFINED
 #endif
-
 
 /* Implement small functions as macros for speed */
 #if !defined(__FUNCTION_DATA_ACCESS)
@@ -113,7 +106,6 @@ _WCRTLINK extern int            __IsDBCS;
 #ifndef _mbisblead
  #define _mbislead(__b) _ismbblead(__b)
 #endif
-
 
 /**
  *  define bit masks for multi-byte characters type
@@ -131,6 +123,6 @@ _WCRTLINK extern int            __IsDBCS;
 #define _MBC_TRAIL      2       /* MBSC 2nd byte(trailing byte) */
 #define _MBC_ILLEGAL    (-1)    /* illegal character byte type */
 
-
 :include cplusepi.sp
+
 #endif

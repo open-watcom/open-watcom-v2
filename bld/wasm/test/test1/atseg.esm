@@ -1,0 +1,8 @@
+.387
+BDA		SEGMENT	 at 00000400 USE16 ''
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0
+
+BDA		ENDS
+		END

@@ -24,12 +24,10 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Indirected file to facilitate source code reuse. 
 ;*
 ;*****************************************************************************
 
 
-; done this way to support source reuse
 PADI=1
 include adstart.asm

@@ -13,4 +13,4 @@ target : sample.$(ext) .SYMBOLIC
 
 samp2 : samp2.$(ext)  .SYMBOLIC
 
-!include ..\makefile
+!include ../makefile

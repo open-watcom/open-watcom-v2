@@ -6,21 +6,21 @@
 //
 #ifndef _STRING_HPP_INCLUDED
 #define _STRING_HPP_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error string.hpp is for use with C++
-#endif
+:include cpponly.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include owrtlink.sp
+
 #ifndef _CTYPE_H_INCLUDED
  #include <ctype.h>
 #endif
+
 #ifndef _STDDEF_H_INCLUDED
  #include <stddef.h>
 #endif
+
 #ifndef _IOSTREAM_H_INCLUDED
  #include <iostream.h>
 #endif
@@ -29,7 +29,7 @@ const size_t NPOS = (size_t) -1;
     
 // Define a typedef for a "C" function
 extern "C" {
- typedef int (*__zapcase_t)( int );
+ _WCRTLINK typedef int (*__zapcase_t)( int );
 };
 
 class _WPRTLINK String {

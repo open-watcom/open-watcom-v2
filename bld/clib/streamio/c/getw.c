@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of _getw().
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@ _WCRTLINK int _getw( FILE *fp )
     int                 ch;
     size_t              rc;
 
-    rc = fread( &ch, sizeof(int), 1, fp );
+    rc = fread( &ch, sizeof( int ), 1, fp );
     if( rc > 0 ) {
         return( ch );
     } else {

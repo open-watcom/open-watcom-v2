@@ -1,0 +1,24 @@
+.387
+.386p
+		PUBLIC	OneBankvgaBitBlt
+		EXTRN	OneBankvgaBitBlt_:BYTE
+_TEXT		SEGMENT	PARA PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+OneBankvgaBitBlt:
+    push      ecx
+    push      ebx
+    push      edx
+    push      dword ptr 24H[esp]
+    push      dword ptr 24H[esp]
+    mov       ecx,dword ptr 24H[esp]
+    mov       ebx,dword ptr 20H[esp]
+    mov       edx,dword ptr 1cH[esp]
+    mov       eax,dword ptr 18H[esp]
+    call      near ptr OneBankvgaBitBlt_
+    add       esp,8
+    pop       edx
+    pop       ebx
+    pop       ecx
+    ret       
+_TEXT		ENDS
+		END

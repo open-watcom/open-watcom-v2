@@ -149,15 +149,15 @@ typedef struct  {
 #define XCPT_GPAF       8
 #define XCPT_1X_PARITY  9
 
-extern unsigned int CallDosDebug( PVOID );
+extern unsigned int CallDosDebug( dos_debug far *ptr );
 ULONG MakeLocalPtrFlat( void far *ptr );
 extern ULONG MakeFlatPointer( PVOID ptr );
-int IsFlatSeg( int seg );
+int IsFlatSeg( USHORT seg );
 
 #define DBG_L_386       1
 
-#define DBG_W_Global    0x00000001
-#define DBG_W_Local     0x00000002
+#define DBG_W_Global    1
+#define DBG_W_Local     2
 #define DBG_W_Execute   0x00010000
 #define DBG_W_Write     0x00020000
 #define DBG_W_ReadWrite 0x00030000

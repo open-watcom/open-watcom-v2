@@ -9,6 +9,6 @@ imp_objs = &
 
 name = javavm
 
-extra_incs = $(javasdk)\include;$(javasdk)\include\win32;$(java_src_dir)\SRC\WIN32\JAVA\INCLUDE;$(lang_root)\h\nt
+extra_incs = $(javasdk)/include;$(javasdk)/include/win32;$(java_src_dir)/src/win32/java/include;$(lang_root)/h/nt
 
 !include ../../imp.mif

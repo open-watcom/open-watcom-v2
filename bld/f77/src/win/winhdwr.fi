@@ -1,0 +1,169 @@
+*$noreference
+
+! Hardware Functions:
+! -------------------
+
+      external EnableHardwareInput
+      external GetAsyncKeyState
+      external GetInputState
+      external GetKBCodePage
+      external GetKeyboardState
+      external GetKeyNameText
+      external GetKeyState
+      external MapVirtualKey
+      external OemKeyScan
+      external SetKeyboardState
+      external VkKeyScan
+      external GetKeyboardType
+
+      integer*2 EnableHardwareInput
+      integer*2 GetAsyncKeyState
+      integer*2 GetInputState
+      integer*2 GetKBCodePage
+      integer*2 GetKeyNameText
+      integer*2 GetKeyState
+      integer*2 MapVirtualKey
+      integer*4 OemKeyScan
+      integer*2 VkKeyScan
+      integer*2 GetKeyboardType
+
+! Virtual Keys, Standard Set
+
+      integer VK_LBUTTON
+      integer VK_RBUTTON
+      integer VK_CANCEL
+      integer VK_MBUTTON
+      integer VK_BACK
+      integer VK_TAB
+      integer VK_CLEAR
+      integer VK_RETURN
+      integer VK_SHIFT
+      integer VK_CONTROL
+      integer VK_MENU
+      integer VK_PAUSE
+      integer VK_CAPITAL
+      integer VK_ESCAPE
+      integer VK_SPACE
+      integer VK_PRIOR
+      integer VK_NEXT
+      integer VK_END
+      integer VK_HOME
+      integer VK_LEFT
+      integer VK_UP
+      integer VK_RIGHT
+      integer VK_DOWN
+      integer VK_SELECT
+      integer VK_PRINT
+      integer VK_EXECUTE
+      integer VK_SNAPSHOT
+!     integer VK_COPY ! not used by keyboards
+      integer VK_INSERT
+      integer VK_DELETE
+      integer VK_HELP
+
+      parameter ( VK_LBUTTON         = '01'x )
+      parameter ( VK_RBUTTON         = '02'x )
+      parameter ( VK_CANCEL          = '03'x )
+      parameter ( VK_MBUTTON         = '04'x ) ! NOT contiguous with L & RBUTTON
+      parameter ( VK_BACK            = '08'x )
+      parameter ( VK_TAB             = '09'x )
+      parameter ( VK_CLEAR           = '0C'x )
+      parameter ( VK_RETURN          = '0D'x )
+      parameter ( VK_SHIFT           = '10'x )
+      parameter ( VK_CONTROL         = '11'x )
+      parameter ( VK_MENU            = '12'x )
+      parameter ( VK_PAUSE           = '13'x )
+      parameter ( VK_CAPITAL         = '14'x )
+      parameter ( VK_ESCAPE          = '1B'x )
+      parameter ( VK_SPACE           = '20'x )
+      parameter ( VK_PRIOR           = '21'x )
+      parameter ( VK_NEXT            = '22'x )
+      parameter ( VK_END             = '23'x )
+      parameter ( VK_HOME            = '24'x )
+      parameter ( VK_LEFT            = '25'x )
+      parameter ( VK_UP              = '26'x )
+      parameter ( VK_RIGHT           = '27'x )
+      parameter ( VK_DOWN            = '28'x )
+      parameter ( VK_SELECT          = '29'x )
+      parameter ( VK_PRINT           = '2A'x )
+      parameter ( VK_EXECUTE         = '2B'x )
+      parameter ( VK_SNAPSHOT        = '2C'x )
+!     parameter ( VK_COPY            = '2C'x ) ! not used by keyboards
+      parameter ( VK_INSERT          = '2D'x )
+      parameter ( VK_DELETE          = '2E'x )
+      parameter ( VK_HELP            = '2F'x )
+
+! VK_A thru VK_Z are the same as their ASCII equivalents: 'A' thru 'Z'
+! VK_0 thru VK_9 are the same as their ASCII equivalents: '0' thru '0'
+
+      integer VK_NUMPAD0
+      integer VK_NUMPAD1
+      integer VK_NUMPAD2
+      integer VK_NUMPAD3
+      integer VK_NUMPAD4
+      integer VK_NUMPAD5
+      integer VK_NUMPAD6
+      integer VK_NUMPAD7
+      integer VK_NUMPAD8
+      integer VK_NUMPAD9
+      integer VK_MULTIPLY
+      integer VK_ADD
+      integer VK_SEPARATOR
+      integer VK_SUBTRACT
+      integer VK_DECIMAL
+      integer VK_DIVIDE
+      integer VK_F1
+      integer VK_F2
+      integer VK_F3
+      integer VK_F4
+      integer VK_F5
+      integer VK_F6
+      integer VK_F7
+      integer VK_F8
+      integer VK_F9
+      integer VK_F10
+      integer VK_F11
+      integer VK_F12
+      integer VK_F13
+      integer VK_F14
+      integer VK_F15
+      integer VK_F16
+
+      integer VK_NUMLOCK
+
+      parameter ( VK_NUMPAD0          = '60'x )
+      parameter ( VK_NUMPAD1          = '61'x )
+      parameter ( VK_NUMPAD2          = '62'x )
+      parameter ( VK_NUMPAD3          = '63'x )
+      parameter ( VK_NUMPAD4          = '64'x )
+      parameter ( VK_NUMPAD5          = '65'x )
+      parameter ( VK_NUMPAD6          = '66'x )
+      parameter ( VK_NUMPAD7          = '67'x )
+      parameter ( VK_NUMPAD8          = '68'x )
+      parameter ( VK_NUMPAD9          = '69'x )
+      parameter ( VK_MULTIPLY         = '6A'x )
+      parameter ( VK_ADD              = '6B'x )
+      parameter ( VK_SEPARATOR        = '6C'x )
+      parameter ( VK_SUBTRACT         = '6D'x )
+      parameter ( VK_DECIMAL          = '6E'x )
+      parameter ( VK_DIVIDE           = '6F'x )
+      parameter ( VK_F1               = '70'x )
+      parameter ( VK_F2               = '71'x )
+      parameter ( VK_F3               = '72'x )
+      parameter ( VK_F4               = '73'x )
+      parameter ( VK_F5               = '74'x )
+      parameter ( VK_F6               = '75'x )
+      parameter ( VK_F7               = '76'x )
+      parameter ( VK_F8               = '77'x )
+      parameter ( VK_F9               = '78'x )
+      parameter ( VK_F10              = '79'x )
+      parameter ( VK_F11              = '7A'x )
+      parameter ( VK_F12              = '7B'x )
+      parameter ( VK_F13              = '7C'x )
+      parameter ( VK_F14              = '7D'x )
+      parameter ( VK_F15              = '7E'x )
+      parameter ( VK_F16              = '7F'x )
+
+      parameter ( VK_NUMLOCK          = '90'x )
+
+*$reference

@@ -1,4 +1,0 @@
-!ifdef on_build_machine
-    @%make $(xname).osz
-    objsetsz $(xname).osz
-!endif

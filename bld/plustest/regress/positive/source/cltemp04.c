@@ -1,6 +1,6 @@
 #include "fail.h"
 
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
 int count;
 
 template <class T>

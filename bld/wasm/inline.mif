@@ -1,1 +1,0 @@
-inline_objs = asmins.obj asmscan.obj asmline.obj asmsym.obj tbyte.obj asmlabel.obj asmfixup.obj asmmatch.obj asmdata.obj insthash.obj asmjump.obj

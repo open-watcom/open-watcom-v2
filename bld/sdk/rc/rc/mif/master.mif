@@ -1,212 +1,267 @@
 proj_name = wrc
 name = wrc
 
+dll_name = wrcd
+
+!ifdef bootstrap
+incl_msgtext = 1
+!else ifdef prebuild
+incl_msgtext = 1
+!endif
+
+!ifdef incl_msgtext
+!ifdef wrc_dll
+!undef wrc_dll
+!endif
+!ifdef wrc_rtdll
+!undef wrc_rtdll
+!endif
+!endif
+
+!ifndef wrc_autodepends
+wrc_autodepends = .AUTODEPEND
+!endif
+
+additional_cleanup = ytab.* ytab2.* ytabw.c
+
 !include cproj.mif
-#!include deftarg.mif
 !include defrule.mif
+!include deftarg.mif
 
 #always use the most up to date wres library
-wres_lib_dir =  $(wres_dir)\lib
 !include wres.mif
 
-.EXTENSIONS :
-.EXTENSIONS : .obj .cpp .c .h .mif .y .key .gh
+.EXTENSIONS : .y .key .gh .res .rc
 
-!ifndef on_build_machine
-!ifeq host_OS nt
-!ifneq host_CPU axp
-TRACK_MEM_OPTS = -dRCMEM_DEBUG
-!else   # axp: -dRCMEM_DEBUG version is NOT working! Fix me!
+!ifeq release 0
+!ifeq host_os nt
+!ifneq host_cpu axp
+TRACK_MEM_OPTS = -DRCMEM_DEBUG
+!else   # axp: -DRCMEM_DEBUG version is NOT working! Fix me!
 !endif
 !else
-TRACK_MEM_OPTS = -dRC_USE_TRMEM -of+
+TRACK_MEM_OPTS = -DRC_USE_TRMEM -of+
 WRC_USE_TRMEM = 1
 !endif
 !endif
 
-splice_opts = -kDEBUG
+common_objs =  ytabw.obj ytab2.obj keyword.obj keyword2.obj errors.obj  &
+        exeobj.obj exeres.obj exeres2.obj exerespe.obj                  &
+        exereslx.obj exelxobj.obj exeseg.obj exeutil.obj global.obj     &
+        layer0.obj param.obj pass2.obj rc.obj rcio.obj incdirs.obj      &
+        rcmem.obj rcstr.obj ppalloc.obj scan.obj scan2.obj semaccel.obj &
+        semantic.obj semdiag.obj semmenu.obj semver.obj semtbar.obj     &
+        semantc2.obj  sem2diag.obj sem2menu.obj sem2sngl.obj            &
+        sem2str.obj sem2accl.obj sem2help.obj                           &
+        semraw.obj semsingl.obj semstr.obj dbtable.obj                  &
+        preproc.obj ppexpr.obj ppmacro.obj tmpctl.obj autodep.obj       &
+        rcldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
+        semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj
 
-objs =  ytab.obj &
-        errors.obj errprt.obj exeobj.obj exeres.obj exerespe.obj &
-        exeseg.obj exeutil.obj global.obj hash1.obj hash2.obj &
-        keyword.obj layer0.obj param.obj pass2.obj rc.obj rcio.obj &
-        rcmem.obj rcstr.obj ppalloc.obj scan.obj semaccel.obj &
-        semantic.obj semdiag.obj semmenu.obj semver.obj semtbar.obj&
-        semraw.obj semsingl.obj semstr.obj swchar.obj dbtable.obj &
-        preproc.obj ppexpr.obj ppmacro.obj tmpctl.obj autodep.obj &
-        ldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
-        leadbyte.obj
-
-!ifeq sys_dll 1
-objs += rcdll.obj libmain.obj idemsgpr.obj
+!ifdef bootstrap
+common_objs += clibext.obj
 !endif
 
-!ifndef on_build_machine
+!ifeq release 0
 !ifeq WRC_USE_TRMEM 1
-objs += trmem.obj
+common_objs += trmem.obj
 !endif
 !endif
 
-extra_c_flags     = -dYYDEBUG -dSCANDEBUG
-!ifeq host_OS nt
-extra_c_flags    += -dNT_HOSTED
+objs_drv = maindrv.obj idedrv.obj idemsgfm.obj
+objs_dll = $(common_objs)
+objs_exe = $(common_objs) $(objs_drv)
+
+!ifeq release 0
+splice_opts = -kDEBUG
 !endif
 
-!ifeq sys_dll 1
-!ifeq host_os nt
-extra_c_flags    += -bd -dDLL_COMPILE
-extra_l_flags    += option offset=0x69800000
+parser_defines = -DYYDEBUG -DSCANDEBUG
+
+# global defines
+################
+rc_defines_os2 = -DRC_OS2
+rc_defines_nt  = -DRC_NT
+rc_defines_osi = -DRC_OSI
+
+rc_defines     = -D_STANDALONE_ $(parser_defines) $(rc_defines_$(host_os))
+
+# cflags stuff
+###############
+extra_c_flags   = -D_STANDALONE_ $(parser_defines)
+!ifdef incl_msgtext
+extra_c_flags   += -DINCL_MSGTEXT
 !endif
+!ifndef wrc_dll
+extra_c_flags   += -DIDE_PGM
 !endif
 
-
+!ifdef wrc_dll
+extra_c_flags_ideentry = -bd
+!endif
 extra_c_flags_rcalloc0 = $(TRACK_MEM_OPTS)
 extra_c_flags_rcalloc1 = $(TRACK_MEM_OPTS)
-extra_c_flags_rcmem = $(TRACK_MEM_OPTS)
+extra_c_flags_rcmem    = $(TRACK_MEM_OPTS)
+extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 
-extra_c_flags_i86 = -fpc
-extra_c_flags_386 = -fpc
+# lflags stuff
+###############
+extra_l_flags = option map, symfile
 
-extra_l_flags += libpath $(watcom_dir)\lib &
-                lib $(WRES_LIB) &
-                option map, quiet
-extra_l_flags_osi += option symfile
+# DLL lflags stuff
+##################
+extra_l_flags_dll = option map, symfile
+
+extra_l_flags_dll_nt  += option modname='$(dll_name).dll', offset=0x69800000
+extra_l_flags_dll_os2 += option modname='$(dll_name)'
+
+# systems where version resources must be added to .DLL
+!ifndef prebuild
+version_res_nt_386 = version.res
+!endif
+
+# systems where version resources must be added to .EXE
+!ifndef prebuild
+exe_version_res_nt_386 = exever.res
+!endif
 
 # where to look for various files
-.c : $(wrc_dir)\c;$(cpp_dir);$(trmem_dir);$(watcom_dir)\c
-.cpp : $(wrc_dir)\c;$(trmem_dir)
-.y : $(wrc_dir)\y
-.key : $(wrc_dir)\hash
-.h : $(wrc_dir)\h;$(trmem_dir)
-.gh : $(wrc_dir)\h
-.mif : $(wrc_dir)\mif
+.c : .;$(wrc_dir)/c;$(cpp_dir);$(trmem_dir);$(watcom_dir)/c
+.y : $(wrc_dir)/y
+.key : $(wrc_dir)/hash
+.h : $(wrc_dir)/h;$(trmem_dir)
 
-inc_dirs = $(wrc_dir)\h;$(wres_dir)\h;$(watcom_dir)\h;$(cpp_dir);$(trmem_dir)
+inc_dirs = -I. -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_dir)" -I$(trmem_dir)
 
-.before:
-        @set INCLUDE=$(inc_path)
-#       @set OS2_INCLUDE=$(wrc_dir)\h;$(%os2_include)
+xlibs = $(wres_lib)
+
+!ifdef incl_msgtext
+depends_msg = rcmsg.gh incltext.gh
+!else
+depends_msg = rcmsg.gh $(name).res
+!endif
+depends_drv = $(objs_drv) $(dll_name).lib drv.lnk
+depends_dll = $(depends_msg) $(objs_dll) $(xlibs) dll.lnk
+depends_exe = $(depends_msg) $(objs_exe) $(xlibs)
+!ifndef bootstrap
+depends_exe += exe.lnk
+!endif
 
 # explicit rules
 
-!ifeq sys_dll 1
-$(NAME).dll : $(NAME).res $(objs) $(WRES_LIB)
-!else
-$(NAME).exe : $(NAME).res $(objs) $(WRES_LIB)
-!endif
-        $(linker) $(lflags) name $(name) file { $(objs) }
-        #e:\lang\binnt\wlink $(lflags) name $(name) file { $(objs) }
-        @%make bindit
-!ifeq sys_dll 1
-        wstrip -q -a -r $(NAME).dll . $(NAME).res
-        if exist wrc.lib del wrc.lib >nul
-        $(librarian) wrc.lib +wrc.dll
-!else
-        wstrip -q -a -r $(NAME).exe . $(NAME).res
+!ifdef wrc_dll
+
+$(name)e.exe : $(depends_drv) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        $(linker) name $@ @drv.lnk
+!ifdef exe_version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 
-bindit : .PROCEDURE
-!ifeq host_OS osi
-        $(bld_bin)\w32bind $(NAME).rex $(NAME).exe $(tools_root)\os2ldr.exe
-        erase $(NAME).rex
-        @%null
-!else ifeq host_OS dos
-        # Decide on which standard extender to use first...
-!error NYI
-        @%null
 !else
-        @%null
+
+$(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifdef bootstrap
+        $(cc) -o $@ $(objs_exe) $(xlibs)
+!else ifeq host_os osi
+        $(linker) name $^&.rex @exe.lnk
+        $(w32bind) $^&.rex $@ $(os2ldr)
+        @rm -f $^&e.rex
+!else
+        $(linker) name $@ @exe.lnk
+!endif
+!ifdef exe_version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+!ifndef incl_msgtext
+        wstrip -q -a -r $@ . $(name).res
 !endif
 
-ytab.obj : ytab.c param.h ytab.gh
-#!ifndef on_build_machine
-#       $(CC) -nm=rc.y $(CFLAGS) $[*
-#!else
-        $(CC) $(CFLAGS) $[*
-#!endif
-
-ytab.c ytab.gh : rc.y $(wrc_dir)\y\yydriver.c rcmem.h
-        $(yacc) -d -b $[@ $[:yydriver.c  >nul
-        @copy ytab.c $(wrc_dir)\c
-        @copy ytab.h $(wrc_dir)\h\ytab.gh
-        @del ytab.h
-        @del ytab.c
-
-weights1.gh keyword1.gh : rc1.key $(wrc_dir)\hash\findhash.exe
-        $(wrc_dir)\hash\findhash $[@ >nul
-        copy keywords.gh $(wrc_dir)\h\keyword1.gh
-        copy weights.gh $(wrc_dir)\h\weights1.gh
-        @del keywords.gh
-        @del weights.gh
-
-weights2.gh keyword2.gh : rc2.key $(wrc_dir)\hash\findhash.exe
-        $(wrc_dir)\hash\findhash $[@ >nul
-        copy keywords.gh $(wrc_dir)\h\keyword2.gh
-        copy weights.gh $(wrc_dir)\h\weights2.gh
-        @del keywords.gh
-        @del weights.gh
-
-$(NAME).res : rcmsg.h usage.rc usagej.rc $(wrc_dir)\rc.rc
-        $(rc) -bt=windows -r $(wrc_dir)\rc.rc -fo=$(NAME).res
-
-rcmsg.h : $(wrc_dir)\h\rc.msg
-        copy $(wrc_dir)\h\rc.msg rc.msg
-        vi -q -i -s $(sdk_dir)\misc\msgtoh.vi -p"tmp.h" rc.msg
-        del rc.msg
-        copy tmp.h $(wrc_dir)\h\rcmsg.h
-        del tmp.h
-
-usage.rc : $(wrc_dir)/usage.sp
-        $(bld_bin)\wsplice -kENGLISH -kIS_RC -k$(host_OS) $(splice_opts) -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\""../usage.sp usage.rc
-
-usagej.rc : $(wrc_dir)/usage.sp
-        $(bld_bin)\wsplice -kJAPANESE -kIS_RC -k$(host_OS) $(splice_opts) -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\""../usage.sp usagej.rc
-
-rcmem.obj : rcmem.c rcmem.h
-rcalloc1.obj : rcalloc1.c rcalloc1.h
-rcalloc0.obj : rcalloc0.c rcalloc0.h
-errors.obj : errors.c $(wrc_dir)\h\errors.lst errors.h rcio.h
-hash1.obj : hash1.c weights1.gh
-hash2.obj : hash2.c weights2.gh
-keyword.obj : keyword.c keyword1.gh keyword2.gh ytab.gh scan.h
-scan.obj : scan.c rcio.h rcmem.h errors.h ytab.gh keyword.h param.h ytab.gh
-rc.obj : rc.c errors.h rcio.h yydriver.h param.h rcmem.h
-param.obj : param.c errors.h swchar.h
-global.obj : global.c global.h rcio.h param.h pass2.h
-rcio.obj : rcio.c rcio.h global.h param.h
-exeutil.obj : exeutil.c exeutil.h global.h
-pass2.obj : pass2.c pass2.h param.h
-semver.obj : semver.c semver.h ytab.gh
-semaccel.obj : semaccel.c semaccel.h ytab.gh
-semdiag.obj : semdiag.c semdiag.h ytab.gh
-semantic.obj : semantic.c semantic.h ytab.gh
-semsingl.obj : semsingl.c semsingl.h ytab.gh
-semmenu.obj : semmenu.c semmenu.h ytab.gh
-
-clean: .SYMBOLIC .EXPLICIT
-!ifeq sys_dll 1
-        @if exist $(NAME).dll @del $(NAME).dll
-        @if exist $(NAME).lib @del $(NAME).lib
-!else
-        @if exist $(NAME).exe @del $(NAME).exe
 !endif
-        @if exist $(name).map @del $(name).map
-        @if exist usage*.rc @del usage*.rc
-        @if exist *.obj @del *.obj
-        @if exist $(wrc_dir)\h\*.gh @del $(wrc_dir)\h\*.gh
-        @if exist $(wrc_dir)\c\ytab.c @del $(wrc_dir)\c\ytab.c
-        @if exist $(wrc_dir)\o\ytab.obj @del $(wrc_dir)\o\ytab.obj
-        @if exist *.res @del *.res
-        @if exist *.err @del *.err
-        @if exist *.sym @del *.sym
-        @if exist all.osz @del all.osz
-        @if exist rcmsg.h @del rcmsg.h
 
-# implicit rules
-.c.obj:
-        @set include=$(inc_path)
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+$(dll_name)e.dll : $(depends_dll) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        $(linker) name $@ @dll.lnk
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+!ifndef incl_msgtext
+        wstrip -q -a -r $@ . $(name).res
+!endif
 
-.c.cpp :
-        @set include=$(inc_path)
-        $(cc) $(cflags) $(extra_c_flags_$[&) -plc $[* -fo=$[*.cpp
+$(dll_name).lib : $(dll_name)e.dll
+        $(librarian) $(libflags) +$[@
+
+drv.lnk : $(__MAKEFILES__)
+        @%write $@ $(lflags)
+!ifdef wrc_rtdll
+        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
+!endif
+        @for %i in ($(objs_drv)) do @%append $@ file %i
+        @%append $@ lib $(dll_name).lib
+
+exe.lnk : $(__MAKEFILES__)
+        @%write $@ $(lflags)
+!ifdef wrc_rtdll
+        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
+!endif
+        @for %i in ($(objs_exe)) do @%append $@ file %i
+        @for %i in ($(xlibs)) do @%append $@ lib %i
+
+dll.lnk : $(__MAKEFILES__)
+        @%write $@ $(lflags_dll)
+!ifdef wrc_rtdll
+        @for %i in ($(rtdll_libpath)) do @%append $@ libpath %i
+!endif
+        @for %i in ($(objs_dll)) do @%append $@ file %i
+        @for %i in ($(xlibs)) do @%append $@ lib %i
+
+# ytab.c is renamed to ytabw.c to avoid filename conflict
+ytabw.c ytab.gh : rc.y $(wrc_dir)/y/yydriver.c rcmem.h
+        $(byacc) -d -b $[@ $[:yydriver.c >$(nulldevice)
+        @cp ytab.c ytabw.c
+        @rm -f ytab.c
+        @cp ytab.h ytab.gh
+        @rm -f ytab.h
+
+ytab2.c ytab2.gh : rcos2.y $(wrc_dir)/y/yydrivr2.c rcmem.h
+        $(byacc) -d -b $[@ $[:yydrivr2.c >$(nulldevice)
+        @cp ytab.c ytab2.c
+        @rm -f ytab.c
+        @cp ytab.h ytab2.gh
+        @rm -f ytab.h
+
+./findhash.exe: $(fe_misc_dir)/c/findhash.c
+        $(bld_cl) $(wcl_util_opts) $<
+
+weights.gh keywords.gh : ./findhash.exe ../hash/rc.key
+        $[@ -q -m ../hash/rc.key
+
+weights2.gh keyword2.gh : ./findhash.exe ../hash/rcos2.key
+        $[@ -q -m ../hash/rcos2.key
+        @cp keywords.gh keyword2.gh
+        @rm -f keyword.gh
+        @cp weights.gh weights2.gh
+        @rm -f weights.gh
+
+incltext.gh : ../h/rc.msg
+        $(c_pp) -zk0 $(rc_defines) >$^@ <<
+$#define pick(c,e,j) e,
+"",
+$#include "$[@"
+$#undef pick
+<<
+
+msg.gh : ../h/rc.msg
+        $(c_pp) -zk0 $(rc_defines) $[@ >$@
+
+rcmsg.gh : msg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+
+$(name).res : ../rc.rc rcmsg.gh .AUTODEPEND
+        $(rc_aui) -ad $(rc_defines) -I../h $[@ -fo=$^@
+
+keyword.obj : keyword.c keywords.gh weights.gh .AUTODEPEND
+
+keyword2.obj : keyword2.c keyword2.gh weights2.gh .AUTODEPEND
+
+verrc_dll = wrcd
+!include verrc.mif

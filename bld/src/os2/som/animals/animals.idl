@@ -1,0 +1,189 @@
+#include <somobj.idl>
+#include <somcls.idl>
+
+//  The classes in this module illustrate the use of a simple
+//  metaclass to provide customized constructors and to perform
+//  basic instance tracking.
+
+module Animals {
+
+    interface M_Animal;  // Forward reference needed for the metaclass.
+
+    interface Animal : SOMObject
+    {
+      typedef sequence<Animal> AnimalInstances;
+
+      attribute string name;
+      // The name of the animal.
+
+      attribute string sound;
+      // The kind of sound that an animal makes.
+
+      readonly attribute string genus;
+      // The genus of animal.
+      // The "_get_" method for this attribute should be overridden
+      // by derived classes.  The default version here just gives
+      // "<unknown>" as the genus.
+
+      readonly attribute string species;
+      // The species of animal.
+      // The "_get" method for this attribute should be overridden
+      // by derived classes.  The default version here just gives
+      // "<unknown>" as the species.
+
+      void talk();
+      // Ask the animal to talk.  Normally this just prints out the
+      // string corresponding to the sound attribute, but it can be
+      // overridden to do something else.
+
+      void display();
+      // Displays an animal.    Derived classes should override this to
+      // display new derived information, and then call their parent
+      // version. Note: this method makes use of talk() to describe what
+      // the animal says.
+
+#ifdef __SOMIDL__
+      implementation {
+        releaseorder: _get_name, _set_name,
+                      _get_sound, _set_sound,
+                      _get_genus,
+                      _get_species,
+                      talk, display;
+
+        //# Class Modifiers
+        functionprefix = a_;
+        metaclass      = M_Animal;
+
+        //# Internal Instance Variables (other than attributes)
+        long nsound;
+
+        //# Attribute modifiers
+        name: noset;
+        sound: noset;
+        genus: nodata;
+        species: nodata;
+
+        //# Method Modifiers
+        somFree: override;
+        somInit: override;
+        somUninit: override;
+        somDumpSelfInt: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+
+    interface M_Animal : SOMClass
+    {
+      Animal newAnimal (in string name, in string sound);
+      // Create an instance of an Animal with a specific sound.
+
+      attribute sequence<Animal> instances;
+      // All of the Animal instances that currently exist
+
+      void addInstance (in Animal obj);
+      // Used to add an new instance to the instances sequence.
+
+      void deleteInstance (in Animal obj);
+      // Used to remove an instance from the instances sequence.
+
+#ifdef __SOMIDL__
+      implementation {
+        releaseorder: _get_instances, _set_instances,
+                      newAnimal, addInstance, deleteInstance;
+
+        //# Class Modifiers
+        functionprefix = ma_;
+
+        //# Method Modifiers
+        somNew: override;
+        somInit: override;
+        somUninit: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+
+    interface Kennel;    // Forward reference needed for the metaclass.
+
+    interface Dog : Animal
+    {
+      attribute string breed;
+      // The breed of this Dog.
+
+      attribute string color;
+      // The color of this Dog.
+
+#ifdef __SOMIDL__
+      implementation {
+        releaseorder: _get_breed, _set_breed,
+                      _get_color, _set_color;
+
+        //# Class Modifiers
+        metaclass = Kennel;
+        functionprefix = d_;
+
+        //# Attribute Modifiers
+        breed: noset;
+        color: noset;
+
+        //# Method Modifiers
+        _get_genus: override;
+        _get_species: override;
+        display: override;
+        somInit: override;
+        somUninit: override;
+        somDumpSelfInt: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+
+    interface Kennel : SOMClass
+    {
+      Dog newDog (in string name,
+                  in string sound,
+                  in string breed,
+                  in string color);
+      // Create an instance of a Dog with a specific name,
+      // sound, breed, & color.
+
+#ifdef __SOMIDL__
+      implementation {
+        releaseorder: newDog;
+
+        //# Class Modifiers
+        functionprefix = md_;
+
+        //# Internal Instance Variables
+        string classcolor;
+
+        //# Method Modifiers
+        somNew: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+
+    interface BigDog : Dog
+    {
+#ifdef __SOMIDL__
+      implementation {
+        //# Class Modifiers
+        functionprefix = bd_;
+
+        //# Method Modifiers
+        talk: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+
+    interface LittleDog : Dog
+    {
+#ifdef __SOMIDL__
+      implementation {
+        //# Class Modifiers
+        functionprefix = ld_;
+
+        //# Method Modifiers
+        talk: override;
+      };
+#endif /* __SOMIDL__ */
+    };
+};

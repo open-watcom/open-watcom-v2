@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "stdlib.h"
 #include "string.h"
 #include "wrdll.h"
@@ -56,12 +56,12 @@
 /****************************************************************************/
 
 #if 0
-void WMemOpen ( void )
+void WMemOpen( void )
 {
     WRMemOpen();
 }
 
-void WMemClose ( void )
+void WMemClose( void )
 {
     WRMemClose();
 }
@@ -69,27 +69,27 @@ void WMemClose ( void )
 
 void *WMemAlloc( size_t size )
 {
-    return ( WRMemAlloc ( size ) );
+    return( WRMemAlloc( size ) );
 }
 
 void WMemFree( void *ptr )
 {
-    WRMemFree ( ptr );
+    WRMemFree( ptr );
 }
 
-void *WMemRealloc ( void *old_ptr, size_t newsize )
+void *WMemRealloc( void *old_ptr, size_t newsize )
 {
-    return ( WRMemRealloc ( old_ptr, newsize ) );
+    return( WRMemRealloc( old_ptr, newsize ) );
 }
 
-int WMemValidate ( void *ptr )
+int WMemValidate( void *ptr )
 {
-    return ( WRMemValidate( ptr ) );
+    return( WRMemValidate( ptr ) );
 }
 
-int WMemChkRange ( void *start, size_t len )
+int WMemChkRange( void *start, size_t len )
 {
-    return ( WRMemChkRange ( start, len ) );
+    return( WRMemChkRange( start, len ) );
 }
 
 /* functions to replace those in mem.c in SDK/MISC */
@@ -98,36 +98,35 @@ void MemStart( void )
 {
 #ifndef __386__
 #ifndef __ALPHA__
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 #endif
 }
 
-void *MemAlloc ( unsigned size )
+void *MemAlloc( unsigned size )
 {
     void *p;
 
-    p = WMemAlloc ( size );
+    p = WMemAlloc( size );
 
-    if ( p ) {
-        memset ( p, 0, size );
+    if( p != NULL ) {
+        memset( p, 0, size );
     }
 
-    return ( p );
+    return( p );
 }
 
-void *MemReAlloc ( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, unsigned size )
 {
     void *p;
 
-    p = WMemRealloc ( ptr, size );
+    p = WMemRealloc( ptr, size );
 
-    return ( p );
+    return( p );
 }
 
-void MemFree ( void *ptr )
+void MemFree( void *ptr )
 {
-    WMemFree ( ptr );
+    WMemFree( ptr );
 }
-

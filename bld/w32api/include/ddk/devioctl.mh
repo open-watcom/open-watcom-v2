@@ -1,0 +1,27 @@
+/*
+ *  devioctl.h  Basic device I/O control definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _DEVIOCTL_
+#define _DEVIOCTL_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Device type data type */
+#define DEVICE_TYPE ULONG
+
+:include cmnioctl.sp
+
+/* Macros to manipulate I/O control codes */
+#define CTL_CODE( p1, p2, p3, p4 ) \
+    (((p1) << 16) | ((p4) << 14) | ((p2) << 2) | (p3))
+#define DEVICE_TYPE_FROM_CTL_CODE( x )  (((ULONG)(x & 0xFFFF0000L)) >> 16)
+#define METHOD_FROM_CTL_CODE( x )       ((ULONG)(x & 0x00000003L))
+
+:include cplusepi.sp
+
+#endif /* _DEVIOCTL_ */

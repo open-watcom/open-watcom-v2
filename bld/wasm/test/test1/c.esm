@@ -1,0 +1,265 @@
+.387
+.386p
+		PUBLIC	__sqrtd
+		PUBLIC	__sqrt
+		PUBLIC	__FDLD
+		PUBLIC	__LDFD
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+__sqrtd:
+    push      ebx
+    sub       esp,0cH
+    mov       ebx,esp
+    call      near ptr __FDLD
+    mov       eax,esp
+    call      near ptr __sqrt
+    mov       eax,esp
+    call      near ptr __LDFD
+    add       esp,0cH
+    pop       ebx
+    ret       
+__Exception_HNDLR:
+    ret       
+__sqrt:
+    push      edi
+    push      esi
+    push      edx
+    push      ecx
+    push      ebx
+    mov       cx,word ptr 8[eax]
+    mov       edx,dword ptr 4[eax]
+    mov       ebx,dword ptr [eax]
+    or        ebx,ebx
+    jne       L$4
+    or        edx,edx
+    jne       L$3
+    add       cx,cx
+    je        L$12
+L$1:
+    mov       word ptr 8[eax],0ffffH
+    mov       dword ptr 4[eax],0
+    mov       dword ptr [eax],0
+L$2:
+    or        byte ptr 7[eax],0c0H
+    jmp       near ptr L$12
+L$3:
+    cmp       cx,7fffH
+    je        L$12
+L$4:
+    mov       edx,ecx
+    and       dh,7fH
+    cmp       dx,7fffH
+    je        L$2
+    add       cx,cx
+    jb        L$2
+    shr       cx,1
+    je        L$5
+    mov       edx,dword ptr 4[eax]
+    add       edx,edx
+    jae       L$1
+L$5:
+    mov       edx,dword ptr 4[eax]
+    sub       edi,edi
+    push      eax
+    sub       cx,3fffH
+    sar       cx,1
+    jb        L$6
+    shr       edx,1
+    rcr       ebx,1
+    rcr       edi,1
+L$6:
+    add       cx,3fffH
+    mov       word ptr 8[eax],cx
+    mov       ecx,edx
+    mov       eax,ebx
+    mov       esi,edx
+    stc       
+    rcr       esi,1
+    inc       edx
+    je        L$9
+    dec       edx
+L$7:
+    div       esi
+    dec       esi
+    cmp       esi,eax
+    jbe       L$8
+    inc       esi
+    add       esi,eax
+    rcr       esi,1
+    mov       edx,ecx
+    mov       eax,ebx
+    jmp       L$7
+L$8:
+    inc       esi
+    mov       ecx,eax
+    mov       eax,edi
+    div       esi
+    add       esi,ecx
+    jmp       L$10
+L$9:
+    cmp       eax,esi
+    je        L$11
+    xchg      eax,edx
+    mov       eax,edi
+    div       esi
+L$10:
+    sub       edx,edx
+    stc       
+    rcr       esi,1
+    rcr       eax,1
+    adc       eax,edx
+L$11:
+    adc       edx,esi
+    pop       esi
+    mov       dword ptr [esi],eax
+    mov       dword ptr 4[esi],edx
+L$12:
+    pop       ebx
+    pop       ecx
+    pop       edx
+    pop       esi
+    pop       edi
+    ret       
+__FDLD:
+    push      ecx
+    mov       ecx,edx
+    shld      edx,eax,0bH
+    shl       eax,0bH
+    sar       ecx,14H
+    and       cx,7ffH
+    je        L$16
+    cmp       cx,7ffH
+    je        L$13
+    add       cx,3c00H
+    jmp       L$15
+L$13:
+    mov       cx,7fffH
+    test      edx,7fffffffH
+    jne       L$14
+    or        eax,eax
+L$14:
+    je        L$15
+    push      eax
+    mov       al,1
+    mov       ah,81H
+    call      near ptr __Exception_HNDLR
+    pop       eax
+    or        edx,40000000H
+L$15:
+    or        edx,80000000H
+    jmp       L$19
+L$16:
+    or        edx,edx
+    jne       L$17
+    or        eax,eax
+    jne       L$17
+    sub       ecx,ecx
+    jmp       L$19
+L$17:
+    mov       cx,3c01H
+    or        edx,edx
+    jne       L$18
+    xchg      eax,edx
+    sub       cx,20H
+L$18:
+    or        edx,edx
+    js        L$19
+    add       eax,eax
+    adc       edx,edx
+    dec       cx
+    jmp       L$18
+L$19:
+    mov       dword ptr [ebx],eax
+    mov       dword ptr 4[ebx],edx
+    add       ecx,ecx
+    rcr       cx,1
+    mov       word ptr 8[ebx],cx
+    pop       ecx
+    ret       
+__LDFD:
+    push      ecx
+    push      ebx
+    push      esi
+    mov       cx,word ptr 8[eax]
+    mov       edx,dword ptr 4[eax]
+    mov       eax,dword ptr [eax]
+    mov       esi,0fffff800H
+    mov       ebx,eax
+    shl       ebx,16H
+    jae       L$21
+    jne       L$20
+    add       esi,esi
+L$20:
+    add       eax,800H
+    adc       edx,0
+    jae       L$21
+    mov       edx,80000000H
+    inc       cx
+L$21:
+    and       eax,esi
+    mov       ebx,ecx
+    and       cx,7fffH
+    add       cx,0c400H
+    cmp       cx,7ffH
+    jae       L$24
+    or        cx,cx
+    jne       L$22
+    shrd      eax,edx,0cH
+    add       edx,edx
+    shr       edx,0cH
+    jmp       L$23
+L$22:
+    shrd      eax,edx,0bH
+    add       edx,edx
+    shrd      edx,ecx,0bH
+L$23:
+    add       bx,bx
+    rcr       edx,1
+    jmp       L$29
+L$24:
+    cmp       cx,0c400H
+    jb        L$28
+    cmp       cx,0ffccH
+    jl        L$26
+    sub       cx,0cH
+    neg       cx
+    cmp       cl,20H
+    jb        L$25
+    sub       cl,20H
+    mov       esi,eax
+    mov       eax,edx
+    sub       edx,edx
+L$25:
+    shrd      esi,eax,cl
+    shrd      eax,edx,cl
+    shr       edx,cl
+    add       esi,esi
+    adc       eax,0
+    adc       edx,0
+    jmp       L$27
+L$26:
+    sub       eax,eax
+    sub       edx,edx
+L$27:
+    jmp       L$29
+L$28:
+    shrd      eax,edx,0bH
+    add       edx,edx
+    shr       edx,0bH
+    add       bx,bx
+    rcr       edx,1
+    or        edx,7ff00000H
+    cmp       cx,43ffH
+    je        L$29
+    push      eax
+    mov       al,8
+    mov       ah,84H
+    call      near ptr __Exception_HNDLR
+    pop       eax
+L$29:
+    pop       esi
+    pop       ebx
+    pop       ecx
+    ret       
+_TEXT		ENDS
+		END

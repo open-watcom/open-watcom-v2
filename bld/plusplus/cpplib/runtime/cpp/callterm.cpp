@@ -57,6 +57,6 @@ void CPPLIB( call_terminate )(  // CALL "terminate" SET BY "set_terminate"
         exc->state = EXCSTATE_TERMINATE;
     }
     thr->flags.terminated = TRUE;
-    terminate();
+    std::terminate();
     CPPLIB(fatal_runtime_error)( RTMSG_RET_TERMIN, 1 );
 }

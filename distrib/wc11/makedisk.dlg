@@ -1,0 +1,43 @@
+name=MakeDisks
+condition=MakeDisks
+static_text=\
+        //1"You have chosen to create installation diskettes."\
+        //2"インストール・ディスケットの作成を選択しました."\
+        //0
+static_text=\
+        //1"You will need pre-formatted diskettes."\
+        //2"フォーマット済みディスケットが必要です."\
+        //0,IsWin
+static_text=\
+        //1"If you wish to use un-formatted diskettes, please"\
+        //2"未フォーマット・ディスケットを使用したい場合には, OS/2, "\
+        //0,IsWin
+static_text=\
+        //1"use the OS/2, DOS or Windows NT setup program"\
+        //2"DOS または Windows NT 用 setup プログラムをご使用ください."\
+        //0,IsWin
+static_text=\
+        //1"The diskettes do not need to be blank or pre-formatted."\
+        //2"ディスケットが空あるいはフォーマット済みである必要はありません."\
+        //0,IsWin !
+static_text=
+edit_control=MakeDiskDrive,a:\,\
+        //1"Use diskette drive:"\
+        //2"使用するディスケット・ドライブ:"\
+        //0
+static_text=
+radio_button=FullInstall,true,\
+        //1"C&reate full installation set"\
+        //2"フル・インストール・セットを作成する (&r)"\
+        //0
+radio_button=SelectiveInstall,false,\
+        //1"&Select components to put on diskettes"\
+        //2"ディスケットに入れるコンポーネントを選択します (&S)"\
+        //0
+static_text=,IsWin !
+check_box=FormatDisks,false,\
+        //1"&Format diskettes before copying files"\
+        //2"ファイル・コピーの前にディスケットをフォーマットします (&F)"\
+        //0,IsWin !
+static_text=
+include=pohc.dlg

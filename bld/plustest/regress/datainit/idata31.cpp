@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-static index = 0;
+static int index = 0;
 
 class A {
 public:

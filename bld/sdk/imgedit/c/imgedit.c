@@ -24,25 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Image Editor mainline.
 *
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
+#include <shellapi.h>
 #include <io.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "imgedit.h"
 #include "title.h"
 #include "iedde.h"
 #include "wrdll.h"
 
-#define DDE_OPT "-DDE"
-#define NEW_OPT "/n"
+#ifdef __NT__
+    #pragma library( "shell32.lib" )
+#endif
+
+#define DDE_OPT     "-DDE"
+#define NEW_OPT     "/n"
 #define NOTITLE_OPT "/notitle"
-#define FUSION_OPT "/fusion"
+#define FUSION_OPT  "/fusion"
 
 static char     className[] = "watimgedit";
 static HICON    hBitmapIcon;
@@ -51,12 +56,16 @@ static HICON    hCursorIcon;
 static HCURSOR  handCursor;
 static HANDLE   hAccel;
 
+#if defined( __NT__ )
+static HBRUSH   hBkBrush;
+#endif
+
 BOOL OpenNewFiles = FALSE;
 BOOL FusionCalled = FALSE;
 BOOL NoTitleScreen = FALSE;
 
 /* set the WRES library to use compatible functions */
-WResSetRtns(open,close,read,write,lseek,tell,MemAlloc,MemFree);
+WResSetRtns( open, close, read, write, lseek, tell, MemAlloc, MemFree );
 
 /*
  * imgEditInit - initialization
@@ -64,13 +73,13 @@ WResSetRtns(open,close,read,write,lseek,tell,MemAlloc,MemFree);
 static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 {
     WNDCLASS    wc;
-    HMENU       Menu;
+    HMENU       menu;
     HDC         hdc;
     BOOL        maximized;
     int         show_state;
 
     hdc = GetDC( NULL );
-    ColourPlanes = GetDeviceCaps( hdc, PLANES );
+    ColorPlanes = GetDeviceCaps( hdc, PLANES );
     BitsPerPixel = GetDeviceCaps( hdc, BITSPIXEL );
     ReleaseDC( NULL, hdc );
 
@@ -79,9 +88,9 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     IEInitGlobalStrings();
 
     if( ImgedIsDDE ) {
-        Menu = LoadMenu( Instance, "IMGEDDDEMENU" );
+        menu = LoadMenu( Instance, "IMGEDDDEMENU" );
     } else {
-        Menu = LoadMenu( Instance, "IMGEDMENU" );
+        menu = LoadMenu( Instance, "IMGEDMENU" );
     }
 
     hBitmapIcon = LoadIcon( Instance, "BitmapIcon" );
@@ -89,112 +98,137 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     hCursorIcon = LoadIcon( Instance, "CursorIcon" );
     hAccel = LoadAccelerators( Instance, "Accelerators" );
 
-    IECtl3DInit( Instance );
+    IECtl3dInit( Instance );
+
+#if defined( __NT__ )
+    hBkBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
+#endif
 
     /*
      * set up window class
      */
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) ImgEdFrameProc;
+        wc.lpfnWndProc = (LPVOID)ImgEdFrameProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = LoadIcon( Instance, "APPLICON" );
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) (COLOR_APPWORKSPACE+1);
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+        wc.hbrBackground = NULL;
         wc.lpszMenuName = NULL;
         wc.lpszClassName = className;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     /*
-     * This is the child of the mdi frame window (of it's client window
-     * actually).
+     * This is the child of the MDI frame window (of it's client window actually).
      */
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID) DrawAreaWinProc;
+        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = hBitmapIcon;
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+        wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassB;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID) DrawAreaWinProc;
+        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = hIconIcon;
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+        wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassI;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
         wc.style = CS_BYTEALIGNWINDOW | CS_CLASSDC | CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID) DrawAreaWinProc;
+        wc.lpfnWndProc = (LPVOID)DrawAreaWinProc;
         wc.cbClsExtra = sizeof( HCURSOR );
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = hCursorIcon;
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+        wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
         wc.lpszMenuName = NULL;
         wc.lpszClassName = DrawAreaClassC;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) ViewWindowProc;
+        wc.lpfnWndProc = (LPVOID)ViewWindowProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
-        wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+        wc.hIcon = LoadIcon( NULL, IDI_APPLICATION );
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+        wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
         wc.lpszMenuName = NULL;
         wc.lpszClassName = ViewWinClass;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) ColourPalWinProc;
+        wc.lpfnWndProc = (LPVOID)ColorPalWinProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = NULL;
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) (GetStockObject( LTGRAY_BRUSH ));
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+#if defined( __NT__ )
+        wc.hbrBackground = hBkBrush;
+#else
+        wc.hbrBackground = (HBRUSH)GetStockObject( LTGRAY_BRUSH );
+#endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = PaletteClass;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     handCursor = LoadCursor( Instance, "HandCursor" );
     if( !previnst ) {
         wc.style = CS_DBLCLKS;
-        wc.lpfnWndProc = (LPVOID) ColoursWndProc;
+        wc.lpfnWndProc = (LPVOID)ColorsWndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = NULL;
         wc.hCursor = handCursor;
-        wc.hbrBackground = (HBRUSH) (GetStockObject( LTGRAY_BRUSH ));
+#if defined( __NT__ )
+        wc.hbrBackground = hBkBrush;
+#else
+        wc.hbrBackground = (HBRUSH)GetStockObject( LTGRAY_BRUSH );
+#endif
         wc.lpszMenuName = NULL;
-        wc.lpszClassName = "ColoursClass";
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        wc.lpszClassName = "ColorsClass";
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
@@ -205,24 +239,36 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.hInstance = Instance;
         wc.hIcon = NULL;
         wc.hCursor = handCursor;
-        wc.hbrBackground = (HBRUSH) (GetStockObject( LTGRAY_BRUSH ));
+#if defined( __NT__ )
+        wc.hbrBackground = hBkBrush;
+#else
+        wc.hbrBackground = (HBRUSH)GetStockObject( LTGRAY_BRUSH );
+#endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = "ScreenClass";
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) CurrentWndProc;
+        wc.lpfnWndProc = (LPVOID)CurrentWndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         wc.hInstance = Instance;
         wc.hIcon = NULL;
-        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
-        wc.hbrBackground = (HBRUSH) (GetStockObject( LTGRAY_BRUSH ));
+        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW );
+#if defined( __NT__ )
+        wc.hbrBackground = hBkBrush;
+#else
+        wc.hbrBackground = (HBRUSH)GetStockObject( LTGRAY_BRUSH );
+#endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = "CurrentClass";
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     if( !previnst ) {
@@ -233,14 +279,20 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.hInstance = Instance;
         wc.hIcon = NULL;
         wc.hCursor = NULL;
-        wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+#if defined( __NT__ )
+        wc.hbrBackground = hBkBrush;
+#else
+        wc.hbrBackground = (HBRUSH)GetStockObject( LTGRAY_BRUSH );
+#endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = BitmapPickClass;
-        if( !RegisterClass( &wc ) ) return( FALSE );
+        if( !RegisterClass( &wc ) ) {
+            return( FALSE );
+        }
     }
 
     /*
-     * now make the main window
+     * Now make the main window.
      */
     LoadImgedConfig();
     maximized = ImgedConfigInfo.ismaximized;
@@ -255,15 +307,17 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         ImgedConfigInfo.y_pos,                  /* Initial Y position */
         ImgedConfigInfo.width,                  /* Initial X size */
         ImgedConfigInfo.height,                 /* Initial Y size */
-        (HWND) NULL,                            /* Parent window handle */
-        (HMENU) Menu,                           /* Window menu handle */
+        (HWND)NULL,                             /* Parent window handle */
+        (HMENU)menu,                            /* Window menu handle */
         Instance,                               /* Program instance handle */
-        NULL);                                  /* Create parameters */
+        NULL );                                 /* Create parameters */
 
-    if( HMainWindow == NULL ) return( FALSE );
+    if( HMainWindow == NULL ) {
+        return( FALSE );
+    }
 
-    if (maximized) {
-        if ( cmdshow == SW_SHOW || cmdshow == SW_SHOWNORMAL ) {
+    if( maximized ) {
+        if( cmdshow == SW_SHOW || cmdshow == SW_SHOWNORMAL ) {
             show_state = SW_SHOWMAXIMIZED;
         } else {
             show_state = cmdshow;
@@ -278,10 +332,13 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         DisplayTitleScreen( Instance, HMainWindow, 2000, IEAppTitle );
     }
 
-    CreateColourPal();
+    CreateColorPal();
     InitTools( HMainWindow );
     GrayEditOptions();
 
+#ifdef __NT__
+    DragAcceptFiles( HMainWindow, TRUE );
+#endif
     //SetActiveWindow( HMainWindow );
     BringWindowToTop( HMainWindow );
     return( TRUE );
@@ -289,15 +346,14 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 } /* imgEditInit */
 
 /*
- * parseCmdLine - parses the command line to see if there is an image to
- *                open right away.
+ * parseCmdLine - parse the command line to see if there is an image to open right away
  */
 static void parseCmdLine( int count, char **cmdline )
 {
-    char        fname[ _MAX_PATH ];
+    char        fname[_MAX_PATH];
     int         i;
 
-    for( i=1; i < count; ++i ) {
+    for( i = 1; i < count; i++ ) {
         if( !stricmp( cmdline[i], DDE_OPT ) ) {
             continue;
         }
@@ -313,13 +369,17 @@ static void parseCmdLine( int count, char **cmdline )
         strcpy( fname, cmdline[i] );
         OpenFileOnStart( fname );
     }
+
 } /* parseCmdLine */
 
+/*
+ * parseArgs
+ */
 static void parseArgs( int count, char **cmdline )
 {
     int         i;
 
-    for( i=1; i < count; ++i ) {
+    for( i = 1; i < count; i++ ) {
         if( !stricmp( cmdline[i], DDE_OPT ) ) {
             ImgedIsDDE = TRUE;
             continue;
@@ -338,15 +398,18 @@ static void parseArgs( int count, char **cmdline )
             continue;
         }
     }
-} /* parseCmdLine */
+
+} /* parseArgs */
 
 /*
  * imgEditFini - clean up
  */
 static void imgEditFini( void )
 {
-
-    IECtl3DFini( Instance );
+#if defined( __NT__ )
+    DeleteObject( hBkBrush );
+#endif
+    IECtl3dFini( Instance );
     DestroyIcon( hBitmapIcon );
     DestroyIcon( hIconIcon );
     DestroyIcon( hCursorIcon );
@@ -361,14 +424,15 @@ static void imgEditFini( void )
 /*
  * WinMain - main entry point
  */
-int WINMAINENTRY WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
+                          LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
     extern char **_argv;
-    extern int    _argc;
+    extern int  _argc;
 
     cmdline = cmdline;
-    WRInit ();
+    WRInit();
 
     if( _argc > 1 ) {
         parseArgs( _argc, _argv );
@@ -399,11 +463,11 @@ int WINMAINENTRY WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int c
         parseCmdLine( _argc, _argv );
     }
 
-    while( GetMessage( &msg, (HWND) NULL, 0, 0 ) ) {
-        if ( (!TranslateMDISysAccel(ClientWindow, &msg)) &&
-                (!TranslateAccelerator(HMainWindow, hAccel, &msg))) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+    while( GetMessage( &msg, (HWND)NULL, 0, 0 ) ) {
+        if( !TranslateMDISysAccel( ClientWindow, &msg ) &&
+            !TranslateAccelerator( HMainWindow, hAccel, &msg ) ) {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
         }
     }
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of exit() and associated functions.
 *
 ****************************************************************************/
 
@@ -40,6 +39,9 @@
 #if defined(__WINDOWS__) || defined(__WINDOWS_386__)
 #include <windows.h>
 #endif
+#include "defwin.h"
+#include "widechar.h"
+#include "initarg.h"
 
 /*
   __int23_exit is used by OS/2 as a general termination routine which unhooks
@@ -54,81 +56,70 @@
 extern  void            _exit( int );
 #endif
 
-#if defined(__WINDOWS_386__)
-extern  char            __Is_DLL;
-#endif
-
 #if defined(__NT__) || defined(__WARP__)
-extern  char            __Is_DLL;
-_WCRTLINK extern void (*__process_fini)(unsigned,unsigned);
+_WCRTLINK extern void (*__process_fini)( unsigned, unsigned );
 #endif
 
 
-#if !defined(__QNX__) && !defined(__WINDOWS_386__)
-void    __null_int23_exit() {}              /* SIGNAL needs it */
-void    (*__int23_exit)() = __null_int23_exit;
-static void _null_exit_rtn() {}
-void    (*__FPE_handler_exit)() = _null_exit_rtn;
+#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+void    __null_int23_exit( void ) {}              /* SIGNAL needs it */
+void    (*__int23_exit)( void ) = __null_int23_exit;
+static void _null_exit_rtn( void ) {}
+void    (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
-
-#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ ) || defined( __OS2__ ) || defined(__NT__)
-#define DEFAULT_WINDOWING
-extern  void            (*_WindowExitRtn)();
-#endif
-
 
 _WCRTLINK void exit( int status )
-    {
+{
 #ifdef DEFAULT_WINDOWING
-        if( _WindowExitRtn != NULL ) {      // JBS 27-JUL-98
-            _WindowExitRtn();
-        }
-#endif
-#if !defined(__QNX__) && !defined(__WINDOWS_386__)
-        (*__int23_exit)();
-#endif
-#if defined(__QNX__)
-        __FiniRtns( 0, 255 );
-#elif defined(__WINDOWS_386__)
-        if( !__Is_DLL ) {
-            __FiniRtns( FINI_PRIORITY_EXIT, 255 );
-        }
-#elif defined(__NT__) || defined(__WARP__)
-        if( __Is_DLL ) {
-            if( __process_fini != 0 ) {
-                (*__process_fini)( FINI_PRIORITY_EXIT, 255 );
-            }
-        } else {
-            __FiniRtns( FINI_PRIORITY_EXIT, 255 );
-        }
-#else
-        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
-#endif
-        _exit( status );
+    if( _WindowsExitRtn != NULL ) {      // JBS 27-JUL-98
+        _WindowsExitRtn();
     }
+#endif
+#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+    (*__int23_exit)();
+#endif
+#if defined(__UNIX__)
+    __FiniRtns( 0, 255 );
+#elif defined(__WINDOWS_386__)
+    if( !__Is_DLL ) {
+        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+    }
+#elif defined(__NT__) || defined(__WARP__)
+    if( __Is_DLL ) {
+        if( __process_fini != 0 ) {
+            (*__process_fini)( FINI_PRIORITY_EXIT, 255 );
+        }
+    } else {
+        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+    }
+#else
+    __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+#endif
+    _exit( status );
+}
 
 
 #if defined(__OS2_286__) && defined(__SW_BD)
 _WCRTLINK void _UnloadCLib( void )
-    {
-        (*__int23_exit)();
-        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
-        (*__int23_exit)();
-        (*__FPE_handler_exit)();
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-    }
+{
+    (*__int23_exit)();
+    __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+    (*__int23_exit)();
+    (*__FPE_handler_exit)();
+    __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+}
 #endif
 
 
 #ifndef __NETWARE__
 
 _WCRTLINK void _exit( int status )
-    {
-#if !defined(__QNX__) && !defined(__WINDOWS_386__)
-        (*__int23_exit)();
-        (*__FPE_handler_exit)();
+{
+#if !defined(__UNIX__) && !defined(__WINDOWS_386__) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+    (*__int23_exit)();
+    (*__FPE_handler_exit)();
 #endif
-        __exit( status );
-    }
+    __exit( status );
+}
 
 #endif

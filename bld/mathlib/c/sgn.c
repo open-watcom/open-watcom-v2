@@ -24,20 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sign determination routine.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <math.h>
+#include "mathlib.h"
 
 
-_WMRTLINK int __sgn( double x )
-/******************/
-    {
-        if( x == 0.0 ) return( 0 );
-        if( x < 0.0  ) return( -1 );
-        return( 1 );
-    }
+int __sgn( double x )
+/*******************/
+{
+    if( x == 0.0 )
+        return( 0 );
+    if( x < 0.0  )
+        return( -1 );
+    return( 1 );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows 3.x DIP loader.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 #include "dipimp.h"
 #include "dipcli.h"
 
-typedef void (DIPENTRY INTER_FUNC)();
+typedef void (DIPENTRY INTER_FUNC)( void );
 
 HMODULE DIPLastHandle;  /* for Dr. WATCOM */
 
@@ -50,6 +49,18 @@ void Say( char *buff )
             MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
 }
 #endif
+
+
+
+void DIPSysUnload( unsigned long sys_hdl )
+{
+    void        (DIPENTRY *fini_func)( void ) = (void *)sys_hdl;
+
+    if( fini_func != NULL ) {
+        fini_func();
+    }
+}
+
 
 dip_status DIPSysLoad( char *path, dip_client_routines *cli,
                                 dip_imp_routines **imp, unsigned long *sys_hdl )
@@ -97,11 +108,11 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
     dll = LoadModule( newpath, &parm_block );
     DIPLastHandle = dll;
     SetErrorMode( prev );
-    if( dll < 32 ) {
+    if( (UINT)dll < 32 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
     *sys_hdl = (unsigned long)transfer_block.unload;
-    init_func = transfer_block.load;
+    init_func = ( dip_imp_routines *(DIPENTRY *)( dip_status *, dip_client_routines * ))transfer_block.load;
     if( init_func == NULL ) {
         DIPSysUnload( *sys_hdl );
         return( DS_ERR|DS_INVALID_DIP );
@@ -112,13 +123,4 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli,
         return( status );
     }
     return( DS_OK );
-}
-
-void DIPSysUnload( unsigned long sys_hdl )
-{
-    void        (DIPENTRY *fini_func)() = (void *)sys_hdl;
-
-    if( fini_func != NULL ) {
-        fini_func();
-    }
 }

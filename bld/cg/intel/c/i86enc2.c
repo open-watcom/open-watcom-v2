@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel instruction encoding, part II. Processes labels,
+*               jumps and the like.
 *
 ****************************************************************************/
 
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "ocentry.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "vergen.h"
 #include "system.h"
 #include "escape.h"
@@ -44,6 +44,7 @@
 #include "cgdefs.h"
 #include "seldef.h"
 #include "typedef.h"
+#include "types.h"
 #include "pccode.h"
 #include "objrep.h"
 #include "fppatch.h"
@@ -51,9 +52,8 @@
 #include "encode.h"
 #include "feprotos.h"
 
-extern  pointer         Copy(pointer,pointer,uint);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
-extern  void            EjectInst();
+extern  void            EjectInst( void );
 extern  void            LayRegAC(hw_reg_set);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(opcode);
@@ -62,30 +62,34 @@ extern  void            TellScrapLabel(label_handle);
 extern  offset          AskAddress(label_handle);
 extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg();
+extern  seg_id          AskCodeSeg( void );
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
 extern  void            LayOpword(opcode);
 extern  void            ReFormat(oc_class);
-extern  void            Finalize();
+extern  void            Finalize( void );
 extern  pointer         FindAuxInfo(name*,aux_class);
 extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern  type_def        *TypeAddress(cg_type);
 extern  void            AddToTemp(byte);
-extern  void            DoFESymRef( sym_handle, cg_class, offset, int);
+extern  void            DoFESymRef( sym_handle, cg_class, offset, fe_fixup_types);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
-extern  seg_id          AskCodeSeg();
+extern  seg_id          AskCodeSeg( void );
 extern  sym_handle      AskForLblSym(label_handle);
 extern  bool            AskIfRTLabel(label_handle);
 extern  byte            *Copy(void*,void*,uint);
 
+extern  void            CodeBytes( byte *src, byte_seq_len len );
+extern  void            GenReturn( int pop, bool is_long, bool iret );
+
+static  void            JumpReg( instruction *ins, name *reg_name );
+static  void            Pushf(void);
 
 extern  int             ILen;
 extern  fp_patches      FPPatchType;
@@ -161,25 +165,27 @@ extern unsigned DepthAlign( unsigned depth )
         Copy( FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT ), AlignArray,
                     sizeof( AlignArray ) );
     }
-    if( OptForSize ) return( 1 );
-    if( _CPULevel( CPU_586 ) ) {
-        if( depth == PROC_ALIGN ) return( 16 );
+    if( OptForSize )
         return( 1 );
-    }
     if( _CPULevel( CPU_486 ) ) {
-        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN ) return( 16 );
+        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )
+            return( 16 );
         return( 1 );
     }
     if( _CPULevel( CPU_386 ) ) {
-        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN ) return( 4 );
+        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )
+            return( 4 );
         return( 1 );
     }
     if( depth == PROC_ALIGN ) {
         return( AlignArray[1] );
     }
-    if( depth == 0 ) depth = 1;
-    if( depth >= AlignArray[0] ) depth = AlignArray[0] - 1;
-    return( AlignArray[depth+1] );
+    if( depth == 0 )
+        depth = 1;
+    if( depth >= AlignArray[0] ) {
+        depth = AlignArray[0] - 1;
+    }
+    return( AlignArray[depth + 1] );
 }
 
 extern  byte    CondCode( instruction *cond ) {
@@ -194,10 +200,10 @@ extern  byte    CondCode( instruction *cond ) {
     } else {
         is_signed = SIGNED_86;
     }
-    if( is_signed & Signed[  cond->type_class  ] ) {
-        return( SCondTable[ cond->head.opcode-FIRST_CONDITION ] );
+    if( is_signed & Signed[cond->type_class] ) {
+        return( SCondTable[cond->head.opcode - FIRST_CONDITION] );
     } else {
-        return( UCondTable[ cond->head.opcode-FIRST_CONDITION ] );
+        return( UCondTable[cond->head.opcode - FIRST_CONDITION] );
     }
 }
 
@@ -222,7 +228,7 @@ extern  byte    ReverseCondition( byte cond ) {
     reverse the sense of a conditional jump (already encoded)
 */
 
-    return( RevCond[  cond  ] );
+    return( RevCond[cond] );
 }
 
 extern  void    DoCall( label_handle lbl, bool imported,
@@ -257,54 +263,40 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
     bool        first;
     byte        *endp;
     byte        *startp;
-    char        type;
-    sym_handle  sym;
-    offset      off;
-    fe_attr     attr;
+    byte        type;
+    sym_handle  sym = 0;
+    offset      off = 0;
+    fe_attr     attr = 0;
     name        *temp;
 
+    first = FALSE;
     endp = p + len;
-    while( p != endp ) {
+    while( p < endp ) {
         _Code;
-        if( p[0] == FLOATING_FIXUP_BYTE
-                && p[1] != FLOATING_FIXUP_BYTE
-                && p[1] != FIX_SYM_OFFSET
-                && p[1] != FIX_SYM_SEGMENT
-                && p[1] != FIX_SYM_RELOFF ) {
-            /* floating point fixup */
-            ++p;
-            if( _IsEmulation() ) {
-                FPPatchType = FPP_NORMAL;
-                Used87 = TRUE;
-            }
-        }
-        first = TRUE;
         startp = p;
-        for( ;; ) {
-            if( p == endp ) break;
-            if( ( p - startp ) >= ( INSSIZE - 5 ) ) break;
+        for( ; p < endp && ( p - startp ) < ( INSSIZE - 5 ); ) {
             if( p[0] == FLOATING_FIXUP_BYTE ) {
                 type = p[1];
-                if( type != FLOATING_FIXUP_BYTE ) {
-                    switch( type ) {
-                    case FIX_SYM_OFFSET:
-                    case FIX_SYM_SEGMENT:
-                    case FIX_SYM_RELOFF:
-                        p += 2;
-                        sym = (sym_handle)*(unsigned long *)p;
-                        p += sizeof( unsigned long );
-                        off = (offset)*(unsigned long *)p;
-                        p += sizeof( unsigned long );
-                        attr = FEAttr( sym );
-                    }
+                switch( type ) {
+                case FLOATING_FIXUP_BYTE:
+                    ++p;
+                    break;
+                case FIX_SYM_OFFSET:
+                case FIX_SYM_SEGMENT:
+                case FIX_SYM_RELOFF:
+                    p += 2;
+                    sym = (sym_handle)*(unsigned long *)p;
+                    p += sizeof( unsigned long );
+                    off = (offset)*(unsigned long *)p;
+                    p += sizeof( unsigned long );
+                    attr = FEAttr( sym );
                     switch( type ) {
                     case FIX_SYM_SEGMENT:
                         ILen += 2;
                         if( attr & (FE_STATIC | FE_GLOBAL) ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_BASE );
                         } else {
-                            FEMessage( MSG_ERROR,
-                                        "aux seg used with local symbol" );
+                            FEMessage( MSG_ERROR, "aux seg used with local symbol" );
                         }
                         break;
                     case FIX_SYM_OFFSET:
@@ -314,11 +306,9 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                         } else {
                             temp = DeAlias( AllocUserTemp( sym, U1 ) );
                             if( temp->t.location != NO_LOCATION ) {
-                                EmitOffset( NewBase( temp )
-                                                - temp->v.offset + off );
+                                EmitOffset( NewBase( temp ) - temp->v.offset + off );
                             } else {
-                                FEMessage( MSG_ERROR,
-                                    "aux offset used with register symbol" );
+                                FEMessage( MSG_ERROR, "aux offset used with register symbol" );
                             }
                         }
                         break;
@@ -327,14 +317,26 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                         if( attr & FE_PROC ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_SELF );
                         } else {
-                            FEMessage( MSG_ERROR,
-                                        "aux reloff used with data symbol" );
+                            FEMessage( MSG_ERROR, "aux reloff used with data symbol" );
                         }
                         break;
                     }
-                    break; /* back to top of while for floating fixup */
-                } else {
-                    ++p;
+                    continue;
+                default:
+                    // floating point fixups
+                    if( !first ) {
+                        // ensure previous instructions be emited and
+                        // start new FPU instruction
+                        startp = p - INSSIZE;
+                        first = TRUE;
+                        continue;
+                    }
+                    p += 2;
+                    if( _IsEmulation() ) {
+                        FPPatchType = type;
+                        Used87 = TRUE;
+                    }
+                    break;
                 }
             }
             if( first ) {
@@ -366,7 +368,7 @@ extern  void    GenCall( instruction *ins ) {
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    op = ins->operands[ CALL_OP_ADDR ];
+    op = ins->operands[CALL_OP_ADDR];
     class = *(call_class *)FindAuxInfo( op, CALL_CLASS );
     code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
@@ -399,7 +401,7 @@ extern  void    GenCall( instruction *ins ) {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
             DoCall( FEBack( sym )->lbl,
-                  (FEAttr(sym) & (FE_COMMON|FE_IMPORT)) != 0, big, pop_bit );
+                  (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
             DoCall( sym, TRUE, big, pop_bit );
         }
@@ -427,8 +429,8 @@ extern  void    GenICall( instruction *ins ) {
     } else {
         entry |= OC_CALLI;
     }
-    if( ins->operands[ CALL_OP_ADDR ]->n.name_class == PT
-     || ins->operands[ CALL_OP_ADDR ]->n.name_class == CP ) {
+    if( ins->operands[CALL_OP_ADDR]->n.name_class == PT
+     || ins->operands[CALL_OP_ADDR]->n.name_class == CP ) {
         entry |= ATTR_FAR;
         opcode = M_CJILONG;
     } else {
@@ -436,7 +438,7 @@ extern  void    GenICall( instruction *ins ) {
     }
     ReFormat( entry );
     LayOpword( opcode );
-    LayModRM( ins->operands[ CALL_OP_ADDR ] );
+    LayModRM( ins->operands[CALL_OP_ADDR] );
     _Emit;
 }
 
@@ -459,13 +461,13 @@ extern  void    GenRCall( instruction *ins ) {
     }
     ReFormat( OC_CALLI | pop_bit );
     LayOpword( M_CJINEAR );
-    op = ins->operands[ CALL_OP_ADDR ];
+    op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );
     _Emit;
 }
 
 
-static  void    Pushf() {
+static  void    Pushf( void ) {
 /***********************/
 
     LayOpbyte( 0x9c ); /* PUSHF*/
@@ -486,7 +488,7 @@ extern  void    GenSelEntry( bool starts ) {
     temp.op.reclen = sizeof( oc_select );
     temp.op.objlen = 0;
     temp.starts = starts;
-    InputOC( &temp );
+    InputOC( (any_oc *)&temp );
 }
 
 
@@ -532,7 +534,7 @@ extern  void    GenCodePtr( pointer label ) {
     Dump a near reference to a label into the code segment.
 */
 
-    CodeHandle( OC_LREF, TypeAddress( T_NEAR_CODE_PTR )->length, label );
+    CodeHandle( OC_LREF, TypeAddress( TY_NEAR_CODE_PTR )->length, label );
 }
 
 
@@ -545,7 +547,7 @@ extern  void    GenCallLabel( pointer label ) {
 }
 
 
-extern  void    GenLabelReturn() {
+extern  void    GenLabelReturn( void ) {
 /*********************************
     generate a return from CALL_LABEL instruction (near return)
 */
@@ -574,7 +576,7 @@ extern  void    GenReturn( int pop, bool is_long, bool iret ) {
     if( iret ) {
         oc.op.class |= ATTR_IRET;
     }
-    InputOC( &oc );
+    InputOC( (any_oc *)&oc );
 }
 
 extern  void    GenMJmp( instruction *ins ) {
@@ -592,10 +594,10 @@ extern  void    GenMJmp( instruction *ins ) {
         ReFormat( OC_JMPI );
         LayOpword( M_CJINEAR );
     }
-    LayModRM( ins->operands[ 0 ] );
+    LayModRM( ins->operands[0] );
     if( ins->head.opcode == OP_SELECT &&
-        ins->operands[ 0 ]->n.class == N_INDEXED ) {
-        base = ins->operands[ 0 ]->i.base;
+        ins->operands[0]->n.class == N_INDEXED ) {
+        base = ins->operands[0]->i.base;
         if( base != NULL ) {
             lbl = AskForSymLabel( base->v.symbol, CG_TBL );
             if( AskAddress( lbl ) != ADDR_UNKNOWN ) {
@@ -610,7 +612,7 @@ extern  void    GenRJmp( instruction *ins ) {
     Generate a jump to register instruction (eg: jmp eax)
 */
 
-    JumpReg( ins, ins->operands[ 0 ] );
+    JumpReg( ins, ins->operands[0] );
 }
 
 
@@ -648,23 +650,23 @@ static  void    DoCodeBytes( byte *src, byte_seq_len len, oc_class class ) {
 
     oc_entry    *temp;
 
-    _Alloc( temp, sizeof( oc_header ) + MAX_OBJ_LEN );
+    temp = CGAlloc( sizeof( oc_header ) + MAX_OBJ_LEN );
     temp->class = class;
     temp->objlen = len;
     temp->reclen = sizeof( oc_header ) + len;
     while( len > MAX_OBJ_LEN ) {
         temp->objlen = MAX_OBJ_LEN;
-        temp->reclen = sizeof( oc_header  )+ MAX_OBJ_LEN;
-        Copy( src, &temp->data[ 0 ], MAX_OBJ_LEN );
-        InputOC( temp );
+        temp->reclen = sizeof( oc_header ) + MAX_OBJ_LEN;
+        Copy( src, &temp->data[0], MAX_OBJ_LEN );
+        InputOC( (any_oc *)temp );
         src += MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
     temp->objlen = len;
     temp->reclen = sizeof( oc_header ) + len;
-    Copy( src, &temp->data[ 0 ], len );
-    InputOC( temp );
-    _Free( temp, sizeof( oc_header ) + MAX_OBJ_LEN );
+    Copy( src, &temp->data[0], len );
+    InputOC( (any_oc *)temp );
+    CGFree( temp );
 }
 
 extern  void    CodeBytes( byte *src, byte_seq_len len ) {

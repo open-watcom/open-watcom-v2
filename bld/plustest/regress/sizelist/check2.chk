@@ -1,0 +1,18 @@
+alloc:   40
+alloc:   40
+1:alpha 10
+1:beta 20
+dealloc: 40
+alloc:   40
+alloc:   40
+1:nu 13
+1:mu 23
+free():  40
+0
+dealloc: 40
+dealloc: 40
+dealloc: 40
+free(n): 40
+1
+free():  40
+2

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include <sys\timeb.h>
+#include <sys/timeb.h>
 
 void main()
   {

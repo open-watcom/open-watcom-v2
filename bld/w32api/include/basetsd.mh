@@ -1,0 +1,108 @@
+/*
+ *  basetsd.h   Base type-safe definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _BASETSD_H_
+#define _BASETSD_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Pointer types */
+#define POINTER_32
+#define POINTER_64
+#define POINTER_SIGNED
+#define POINTER_UNSIGNED
+
+/* Integers of predefined sizes */
+typedef signed char         INT8;
+typedef signed char         *PINT8;
+typedef signed short        INT16;
+typedef signed short        *PINT16;
+typedef signed int          INT32;
+typedef signed int          *PINT32;
+typedef signed __int64      INT64;
+typedef signed __int64      *PINT64;
+typedef unsigned char       UINT8;
+typedef unsigned char       *PUINT8;
+typedef unsigned short      UINT16;
+typedef unsigned short      *PUINT16;
+typedef unsigned int        UINT32;
+typedef unsigned int        *PUINT32;
+typedef unsigned __int64    UINT64;
+typedef unsigned __int64    *PUINT64;
+typedef signed int          LONG32;
+typedef signed int          *PLONG32;
+typedef unsigned int        ULONG32;
+typedef unsigned int        *PULONG32;
+typedef unsigned int        DWORD32;
+typedef unsigned int        *PDWORD32;
+typedef __int64             LONG64;
+typedef __int64             *PLONG64;
+typedef unsigned __int64    ULONG64;
+typedef unsigned __int64    *PULONG64;
+typedef unsigned __int64    DWORD64;
+typedef unsigned __int64    *PDWORD64;
+
+/* Integers of sizes that are defined differently for Win32 and Win64 */
+typedef int             INT_PTR;
+typedef int             *PINT_PTR;
+typedef unsigned int    UINT_PTR;
+typedef unsigned int    *PUINT_PTR;
+typedef long            LONG_PTR;
+typedef long            *PLONG_PTR;
+typedef unsigned long   ULONG_PTR;
+typedef unsigned long   *PULONG_PTR;
+typedef ULONG_PTR       DWORD_PTR;
+typedef ULONG_PTR       *PDWORD_PTR;
+typedef short           HALF_PTR;
+typedef short           *PHALF_PTR;
+typedef unsigned short  UHALF_PTR;
+typedef unsigned short  *PUHALF_PTR;
+typedef unsigned long   HANDLE_PTR;
+typedef long            SHANDLE_PTR;
+
+/* Size data types */
+typedef ULONG_PTR   SIZE_T;
+typedef ULONG_PTR   *PSIZE_T;
+typedef LONG_PTR    SSIZE_T;
+typedef LONG_PTR    *PSSIZE_T;
+
+/* Affinity data types */
+typedef ULONG_PTR   KAFFINITY;
+typedef KAFFINITY   *PKAFFINITY;
+
+/* Type conversion macros */
+#define HandleToULong( x )      ((ULONG)(ULONG_PTR)(x))
+#define HandleToLong( x )       ((LONG)(LONG_PTR)(x))
+#define ULongToHandle( x )      ((void *)(ULONG_PTR)(x))
+#define LongToHandle( x )       ((void *)(LONG_PTR)(x))
+#define PtrToUlong( x )         ((ULONG)(ULONG_PTR)(x))
+#define PtrToLong( x )          ((LONG)(LONG_PTR)(x))
+#define PtrToUint( x )          ((UINT)(UINT_PTR)(x))
+#define PtrToInt( x )           ((INT)(INT_PTR)(x))
+#define PtrToUshort( x )        ((unsigned short)(ULONG_PTR)(x))
+#define PtrToShort( x )         ((short)(LONG_PTR)(x))
+#define IntToPtr( x )           ((void *)(INT_PTR)(int)(x))
+#define UIntToPtr( x )          ((void *)(UINT_PTR)(unsigned int)(x))
+#define LongToPtr( x )          ((void *)(LONG_PTR)(long)(x))
+#define ULongToPtr( x )         ((void *)(ULONG_PTR)(unsigned long)(x))
+#define PtrToPtr64( x )         ((void *POINTER_64)(unsigned __int64)(ULONG_PTR)(x))
+#define Ptr64ToPtr( x )         ((void *)(ULONG_PTR)(unsigned __int64)(x))
+#define HandleToHandle64( x )   ((void *POINTER_64)(x))
+#define Handle64ToHandle( x )   ((void *)(ULONG_PTR)(unsigned __int64)(x))
+#define Ptr32ToPtr( x )         ((void *)(x))
+#define Handle32ToHandle( x )   Ptr32ToPtr( x )
+#define PtrToPtr32( x )         ((void *POINTER_32)(x))
+#define HandleToHandle32( x )   PtrToPtr32( x )
+#define HandleToUlong( x )      HandleToULong( x )
+#define UlongToHandle( x )      ULongToHandle( x )
+#define UlongToPtr( x )         ULongToPtr( x )
+#define UintToPtr( x )          UIntToPtr( x )
+
+:include cplusepi.sp
+
+#endif /* _BASETSD_H_ */

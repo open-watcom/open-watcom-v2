@@ -24,11 +24,9 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Return DS selector for DGROUP data segment
 ;*
 ;*****************************************************************************
-
 
 include mdef.inc
 include struct.inc
@@ -54,3 +52,4 @@ __GETDS endp
         endmod
 
         end
+

@@ -186,7 +186,7 @@ static BOOL imgEditInit( HAB hab )
     if (ImgedConfigInfo.grid_on) {
         CheckGridItem(hmenu);
     }
-    SetHintText("WATCOM Image Editor.");
+    SetHintText("Open Watcom Image Editor.");
     WinSetFocus( HWND_DESKTOP, _wpi_getframe(HMainWindow) );
     return( TRUE );
 } /* imgEditInit */

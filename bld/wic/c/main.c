@@ -69,7 +69,7 @@ void wicExit(int exitCode) {
     exit(exitCode);
 }
 
-void doConversion(char **name) {
+void doConversion(void **name) {
     char *newName = *name;
     initErrorFile(newName);
     initExpandToken();

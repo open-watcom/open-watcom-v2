@@ -91,8 +91,8 @@ static int WRCalcStringBlockSize( StringTableBlock *block, int is32bit )
 
     size = 0;
 
-    if( block ) {
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    if( block != NULL ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             size += getUniStringLength( block->String[i], is32bit );
         }
     }
@@ -103,11 +103,11 @@ static int WRCalcStringBlockSize( StringTableBlock *block, int is32bit )
 static char *copyNULLWResIDNameToData( char *data, int is32bit )
 {
     if( is32bit ) {
-        *((uint_16 *)data) = (uint_16)0;
-        data = ((char *)data + sizeof(uint_16) );
+        *(uint_16 *)data = (uint_16)0;
+        data = (char *)data + sizeof( uint_16 );
     } else {
-        *((uint_8 *)data) = (uint_8)0;
-        data = ((char *)data + sizeof(uint_8) );
+        *(uint_8 *)data = (uint_8)0;
+        data = (char *)data + sizeof( uint_8 );
     }
 
     return( data );
@@ -126,7 +126,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
     if( is32bit ) {
         new_str = NULL;
         str = WRWResIDNameToStr( name );
-        if( str ) {
+        if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
             WRMemFree( str );
         }
@@ -136,8 +136,8 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
         }
 
         // write the length of the string
-        *((uint_16 *)data) = (uint_16)( len / 2 - 1 );
-        data += sizeof(uint_16);
+        *(uint_16 *)data = (uint_16)(len / 2 - 1);
+        data += sizeof( uint_16 );
 
         // write the string
         data = WRCopyString( data, new_str, len - 2 );
@@ -145,26 +145,25 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
         WRMemFree( new_str );
     } else {
         // write the length of the string
-        *((uint_8 *)data) = name->NumChars;
-        data += sizeof(uint_8);
+        *(uint_8 *)data = name->NumChars;
+        data += sizeof( uint_8 );
 
         // write the string
-        data = WRCopyString( data, &name->Name[ 0 ], name->NumChars );
+        data = WRCopyString( data, &name->Name[0], name->NumChars );
     }
 
     return( data );
 }
 
-static int WRInitDataFromBlock( StringTableBlock *block, void *data,
-                                int size, int is32bit )
+static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, int is32bit )
 {
     int         i;
     int         dsize;
     void        *orig_data;
 
-    if( block ) {
+    if( block != NULL ) {
         orig_data = data;
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             data = copyWResIDNameToData( (char *)data, block->String[i], is32bit );
         }
         dsize = (char *)data - (char *)orig_data;
@@ -177,29 +176,29 @@ int WR_EXPORT WRIsBlockEmpty( StringTableBlock *block )
 {
     int         i;
 
-    if ( block ) {
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    if( block != NULL ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->String[i] != NULL ) {
                 return( FALSE );
             }
         }
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 int WR_EXPORT WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
                                          int *size, int is32bit )
 {
-    if( data && size ) {
+    if( data != NULL && size != NULL ) {
         *size = WRCalcStringBlockSize( block, is32bit );
-        if( *size ) {
+        if( *size != 0 ) {
             *data = WRMemAlloc( *size );
-            if( *data ) {
+            if( *data != NULL ) {
                 if( WRInitDataFromBlock( block, *data, *size, is32bit ) ) {
                     return( TRUE );
                 } else {
-                    WRMemFree ( *data );
+                    WRMemFree( *data );
                     *data = NULL;
                     *size = 0;
                 }
@@ -225,34 +224,34 @@ int WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data,
     int         i;
     int         tlen;
 
-    if( !data || !size || !block ) {
+    if( data == NULL || size == 0 || block == NULL ) {
         return( FALSE );
     }
 
     i = 0;
     dsize = size;
 
-    while( ( i < STRTABLE_STRS_PER_BLOCK ) && ( dsize > 0 ) ) {
+    while( i < STRTABLE_STRS_PER_BLOCK && dsize > 0 ) {
         text = (char *)data;
         if( is32bit ) {
-            tlen = (int) *((uint_16 *)text);
+            tlen = (int)*(uint_16 *)text;
             tlen *= 2;
-            text += sizeof(uint_16);
-            dsize -= ( tlen + sizeof(uint_16) );
+            text += sizeof( uint_16 );
+            dsize -= tlen + sizeof( uint_16 );
         } else {
-            tlen = (int) *((uint_8 *)text);
-            text += sizeof(uint_8);
-            dsize -= ( tlen + sizeof(uint_8) );
+            tlen = (int)*(uint_8 *)text;
+            text += sizeof( uint_8 );
+            dsize -= tlen + sizeof( uint_8 );
         }
-        if( tlen ) {
+        if( tlen != 0 ) {
             if( is32bit ) {
                 str = NULL;
                 str_len = 0;
                 uni_str = (char *)WRMemAlloc( tlen + 2 );
-                if( uni_str ) {
+                if( uni_str != NULL ) {
                     memcpy( uni_str, text, tlen );
-                    uni_str[ tlen ] = '\0';
-                    uni_str[ tlen+1 ] = '\0';
+                    uni_str[tlen] = '\0';
+                    uni_str[tlen + 1] = '\0';
                     WRunicode2mbcs( uni_str, &str, &str_len );
                     WRMemFree( uni_str );
                 }
@@ -260,7 +259,7 @@ int WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data,
                 str_len = tlen + 1;
                 str = WRMemAlloc( str_len );
                 memcpy( str, text, tlen );
-                str[ tlen ] = '\0';
+                str[tlen] = '\0';
             }
 
             if( str == NULL ) {
@@ -284,17 +283,16 @@ int WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data,
 }
 
 // copy strings in b2 into b1
-int WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2,
-                                  int replace )
+int WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace )
 {
     int         i;
     int         size;
 
-    if( !b1 || !b2 ) {
+    if( b1 == NULL || b2 == NULL ) {
         return( FALSE );
     }
 
-    for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
         if( b2->String[i] == NULL ) {
             continue;
         }
@@ -306,7 +304,7 @@ int WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2,
             b1->String[i] = NULL;
         }
         size = b2->String[i]->NumChars;
-        b1->String[i] = WRMemAlloc( size + sizeof(uint_8) );
+        b1->String[i] = WRMemAlloc( size + sizeof( uint_8 ) );
         if( b1->String[i] == NULL ) {
             return( FALSE );
         }
@@ -326,7 +324,7 @@ int WR_EXPORT WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
     int                 new_size;
     int                 ok;
 
-    ok = ( s1 && *s1 && s2 && sz1 && *sz1 && sz2 );
+    ok = (s1 != NULL && *s1 != NULL && s2 != NULL && sz1 != NULL && *sz1 != 0 && sz2 != 0);
 
     if( ok ) {
         ResInitStringTableBlock( &b1 );
@@ -350,7 +348,7 @@ int WR_EXPORT WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
 
     if( ok )  {
         WRMemFree( *s1 );
-        *s1  = new_data;
+        *s1 = new_data;
         *sz1 = new_size;
     }
 
@@ -359,4 +357,3 @@ int WR_EXPORT WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
 
     return( ok );
 }
-

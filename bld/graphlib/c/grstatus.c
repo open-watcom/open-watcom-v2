@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _grstatus( void )
+_WCRTLINK short _WCI86FAR _CGRAPH _grstatus( void )
 /*==================================
 
     This function returns the error status of the last graphics function

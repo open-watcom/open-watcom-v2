@@ -1,0 +1,6 @@
+.387
+don		SEGMENT	PARA PRIVATE USE16 'data'
+    DB	0, 0
+
+don		ENDS
+		END

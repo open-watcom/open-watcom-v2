@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS NetWare IPX link core.
 *
 ****************************************************************************/
 
@@ -183,7 +182,8 @@ typedef void    (far *ESRAddr)();
 #ifdef __WINDOWS__
 #define ESRFUNC __export __far __pascal
 DWORD           IPXTaskID;
-FARPROC         IPXFuncs[ IPX_MAX_FUNCS ];
+typedef int     (WINAPI *NOVWINAPI)();
+NOVWINAPI       IPXFuncs[ IPX_MAX_FUNCS ];
 extern          void SetLinkName( char* );
 #else
 #define ESRFUNC
@@ -193,7 +193,7 @@ ESRAddr         SAPBroadESRAddr;
 ESRAddr         SAPWaitESRAddr;
 ESRAddr         ServRespESRAddr;
 
-static void IpxWait()
+static void IpxWait( void )
 {
     //*******************************************************************
     // NOTE:  This call is absolutely necessary.  The DOS call some
@@ -240,7 +240,15 @@ static char WaitTimeout( ECB *ecb, unsigned timeout, int can )
     }
 }
 
-static unsigned DoRemoteGet( void *rec, unsigned len )
+static void PostAListen( int i )
+{
+    _INITECB( RecECB[i], RecHead[i], 2, SPX );
+    RecECB[i].fragmentDescriptor[1].address = &Buffer[i];
+    RecECB[i].fragmentDescriptor[1].size = sizeof( Buffer[i] );
+    _SPXListenForSequencedPacket( &RecECB[i] );
+}
+
+static unsigned DoRemoteGet( char *rec, unsigned len )
 {
     int         i;
     unsigned    recvd;
@@ -271,12 +279,12 @@ static unsigned DoRemoteGet( void *rec, unsigned len )
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE ) break;
-        rec = (unsigned_8 *)rec + got;
+        rec = (char *)rec + got;
     }
     return( recvd );
 }
 
-static unsigned DoRemotePut( void *snd, unsigned len )
+static unsigned DoRemotePut( char *snd, unsigned len )
 {
     _INITECB( SendECB, SendHead, 2, SPX );
     SendHead.connectControl |= 0x10;
@@ -288,18 +296,18 @@ static unsigned DoRemotePut( void *snd, unsigned len )
     return( len );
 }
 
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( void *snd, unsigned len )
+unsigned RemotePut( char *snd, unsigned len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd = (unsigned_8 *)snd + MAX_DATA_SIZE;
+        snd = (char *)snd + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
@@ -308,15 +316,7 @@ unsigned RemotePut( void *snd, unsigned len )
     return( len );
 }
 
-static void PostAListen( int i )
-{
-    _INITECB( RecECB[i], RecHead[i], 2, SPX );
-    RecECB[i].fragmentDescriptor[1].address = &Buffer[i];
-    RecECB[i].fragmentDescriptor[1].size = sizeof( Buffer[i] );
-    _SPXListenForSequencedPacket( &RecECB[i] );
-}
-
-static void PostListens()
+static void PostListens( void )
 {
     unsigned    i;
 
@@ -332,28 +332,28 @@ static void PostListens()
 char RemoteConnect( void )
 {
     PostListens();
-    #ifdef SERVER
-        if( !Listening ) {
-            _INITSPXECB( Conn, 1, 0, 0 );
-            _SPXListenForConnection( 0, 0, &ConnECB );
-            Listening = 1;
-        } else if( ConnECB.inUseFlag == 0 ) {
-            if( ConnECB.completionCode == 0 ) {
-                Connection = ConnECB.SPXConnectionID;
-                return( 1 );
-            }
+#ifdef SERVER
+    if( !Listening ) {
+        _INITSPXECB( Conn, 1, 0, 0 );
+        _SPXListenForConnection( 0, 0, &ConnECB );
+        Listening = 1;
+    } else if( ConnECB.inUseFlag == 0 ) {
+        if( ConnECB.completionCode == 0 ) {
+            Connection = ConnECB.SPXConnectionID;
+            return( 1 );
         }
-        _IPXRelinquishControl();
-    #else
-        _INITECB( SendECB, SendHead, 1, SPX );
-        if( _SPXEstablishConnection( 0, 0, &Connection, &SendECB ) == 0 ) {
-            if( WaitTimeout( &SendECB, MAX_CONNECT_WAIT, 0 ) ) {
-                return( 1 );
-            } else {
-                _SPXAbortConnection( Connection );
-            }
+    }
+    _IPXRelinquishControl();
+#else
+    _INITECB( SendECB, SendHead, 1, SPX );
+    if( _SPXEstablishConnection( 0, 0, &Connection, &SendECB ) == 0 ) {
+        if( WaitTimeout( &SendECB, MAX_CONNECT_WAIT, 0 ) ) {
+            return( 1 );
+        } else {
+            _SPXAbortConnection( Connection );
         }
-    #endif
+    }
+#endif
     return( 0 );
 }
 
@@ -367,9 +367,9 @@ void RemoteDisco( void )
     Listening = 0;
     _INITSPXECB( Conn, 1, 0, 0 );
     _SPXTerminateConnection( Connection, &ConnECB );
-    #ifdef SERVER
-        _IPXCancelEvent( &ConnECB );
-    #endif
+#ifdef SERVER
+    _IPXCancelEvent( &ConnECB );
+#endif
     for( i = NUM_REC_BUFFS-1; i >= 0; --i ) {
         if( RecECB[i].inUseFlag ) {
             _IPXCancelEvent( &RecECB[i] );
@@ -528,19 +528,19 @@ char *RemoteLink( char *name, char server )
 
     #ifdef __WINDOWS__
     {
-        HANDLE          ipxspx;
-        HANDLE          netapi;
-        HANDLE          netware;
+        HINSTANCE       ipxspx;
+        HINSTANCE       netapi;
+        HMODULE         netware;
 
-        GlobalPageLock( FP_SEG( &SAPECB ) );
+        GlobalPageLock( (HGLOBAL)FP_SEG( &SAPECB ) );
         netware = GetModuleHandle( "NETWARE.DRV" );
         ipxspx = LoadLibrary( "NWIPXSPX.DLL" );
         netapi = LoadLibrary( "NWCALLS.DLL" );
-        if( ipxspx < 32 ) return( TRP_ERR_IPX_SPX_not_present );
-        if( netapi < 32 ) return( TRP_ERR_Netware_API_not_present );
+        if( (UINT)ipxspx < 32 ) return( TRP_ERR_IPX_SPX_not_present );
+        if( (UINT)netapi < 32 ) return( TRP_ERR_Netware_API_not_present );
         if( netware == NULL ) return( TRP_ERR_NETWAREDRV_not_present );
 #define str( x ) #x
-#define GetAddr( hdl, x ) IPXFuncs[x] = GetProcAddress( hdl, str( x ) )
+#define GetAddr( hdl, x ) IPXFuncs[x] = (NOVWINAPI)GetProcAddress( hdl, str( x ) )
 #define GetIPXAddr( x ) GetAddr( ipxspx, x )
         GetAddr( netapi, NWReadPropertyValue );
         GetIPXAddr( IPXInitialize );
@@ -587,21 +587,21 @@ char *RemoteLink( char *name, char server )
     _INITIPXECB( Resp );
     RespECB.fragmentCount = 2;
     RespECB.fragmentDescriptor[1].size = sizeof( WORD ); /* for SPXSocket */
-    #ifdef SERVER
-        if( FindPartner() ) {
-            RemoteUnLink();
-            return( TRP_ERR_server_name_already_in_use );
-        }
-        if( !InitServer() ) {
-            RemoteUnLink();
-            return( TRP_ERR_can_not_initialize_server );
-        }
-    #else
-        if( FindPartner() == 0 ) {
-            RemoteUnLink();
-            return( TRP_ERR_no_such_server );
-        }
-    #endif
+#ifdef SERVER
+    if( FindPartner() ) {
+        RemoteUnLink();
+        return( TRP_ERR_server_name_already_in_use );
+    }
+    if( !InitServer() ) {
+        RemoteUnLink();
+        return( TRP_ERR_can_not_initialize_server );
+    }
+#else
+    if( FindPartner() == 0 ) {
+        RemoteUnLink();
+        return( TRP_ERR_no_such_server );
+    }
+#endif
     return( NULL );
 }
 
@@ -610,18 +610,18 @@ void RemoteUnLink( void )
 {
     _IPXCloseSocket( SPXSocket );
     _IPXCloseSocket( IPXSocket );
-    #ifdef SERVER
-        _IPXCancelEvent( &ServECB );
-        _IPXCancelEvent( &RespECB );
-        if( SAPECB.inUseFlag != 0 ) _IPXCancelEvent( &SAPECB );
-        /* shutdown notification */
-        SAPHead.intermediateNetworks = _SWAPINT( 0x10 );
-        SAPECB.ESRAddress = NULL;
-        _IPXSendPacket( &SAPECB );
-        WaitOn( SAPECB );
-    #endif
+#ifdef SERVER
+    _IPXCancelEvent( &ServECB );
+    _IPXCancelEvent( &RespECB );
+    if( SAPECB.inUseFlag != 0 ) _IPXCancelEvent( &SAPECB );
+    /* shutdown notification */
+    SAPHead.intermediateNetworks = _SWAPINT( 0x10 );
+    SAPECB.ESRAddress = NULL;
+    _IPXSendPacket( &SAPECB );
+    WaitOn( SAPECB );
+#endif
     IPXSPXDeinit();
-    #ifdef __WINDOWS__
-        GlobalPageUnlock( FP_SEG( &SAPECB ) );
-    #endif
+#ifdef __WINDOWS__
+    GlobalPageUnlock( (HGLOBAL)FP_SEG( &SAPECB ) );
+#endif
 }

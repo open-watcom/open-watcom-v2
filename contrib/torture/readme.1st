@@ -1,0 +1,29 @@
+ This is the ancient "C Torture Test". The test was developed for checking
+K&R compliance and has been slightly modified for ANSI/ISO C compilers.
+The changes were:
+
+ 1) The assumption that only the first eight characters of an identifier are
+    significant is invalid in ANSI/ISO C.
+
+ 2) The assumption that all string literals are distinct, even when written
+    identically, is invalid in ANSI/ISO C; furthermore, string literals may
+    not be modifiable.
+
+ 3) The tests exercise the additional ANSI/ISO C escape characters that
+    were not defined in K&R C (\v and \a).
+
+ Original files are stored with extension .old.
+
+ To build the tests, simply run
+
+ wcl386 -zq -w0 *.c
+
+ or
+
+ wcl -zq -w0 *.c
+
+ and then run the resulting 'crm' executable. If the -w0 switch isn't used,
+many warning messages will be emitted during compilation.
+
+ If successful, the test will print a number of messages, the last of which
+will read 'No errors detected.'

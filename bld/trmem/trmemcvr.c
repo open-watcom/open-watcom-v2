@@ -24,18 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory tracker cover routines.
 *
 ****************************************************************************/
 
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #include <unistd.h>
 #else
 #include <io.h>
 #endif
-#include <malloc.h>
+#include <string.h>
+#include <stdlib.h>
 #include "trmem.h"
 
 #ifdef TRMEM
@@ -44,9 +44,11 @@ static int          TRFileHandle;   /* stream to put output on */
 static void TRPrintLine( int *, const char * buff, size_t len );
 #endif
 
-#ifdef NLM
-/* There is no equivalent expand function in NetWare. */
+#if defined( NLM ) || !defined( __WATCOMC__ )
+/* There is no equivalent expand function in NetWare or non-Watcom libs. */
 #define _expand NULL
+#else
+#include <malloc.h>
 #endif
 
 extern void TRMemRedirect( int handle )
@@ -112,6 +114,16 @@ extern void * TRMemRealloc( void * ptr, size_t size )
 #endif
 }
 
+extern char * TRMemStrdup( const char * str )
+/*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( strdup( str ) );
+#endif
+}
+
 #ifdef TRMEM
 
 extern void TRMemPrtUsage( void )
@@ -130,6 +142,12 @@ extern int TRMemValidate( void * ptr )
 /************************************/
 {
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
+}
+
+extern int TRMemValidateAll( void )
+/*********************************/
+{
+    return( _trmem_validate_all( TRMemHandle ) );
 }
 
 extern int TRMemChkRange( void * start, size_t len )

@@ -30,25 +30,24 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wrestrdp.h"
 
 #include <string.h>
 #include "wremem.h"
 
-char *WREStrDup ( const char *src )
+char *WREStrDup( const char *src )
 {
     char *dest;
 
-    if ( src == NULL ) {
-        return ( NULL );
+    if( src == NULL ) {
+        return( NULL );
     }
 
-    dest = WREMemAlloc ( strlen ( src ) + 1 );
+    dest = WREMemAlloc( strlen( src ) + 1 );
 
-    if ( dest != NULL ) {
-        strcpy ( dest, src );
+    if( dest != NULL ) {
+        strcpy( dest, src );
     }
-    return ( dest );
+    return( dest );
 }
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strset() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -43,114 +42,117 @@
 /****************************************/
 {
     RISC_DATA_LOCALREF;
-    UINT *           dw = ROUND(s);             /* round down to dword */
-    UINT             dword, cdword, tmpdword;
-    INT              offset = OFFSET(s);
+    UINT                *dw = ROUND(s); /* round down to dword */
+    UINT                dword, cdword, tmpdword;
+    INT                 offset = OFFSET(s);
 
-    #ifdef __WIDECHAR__
-        if( offset % 2 )  return( __simple__wcsset( s, c ) );
-    #endif
+#ifdef __WIDECHAR__
+    if( offset % 2 )
+        return( __simple__wcsset( s, c ) );
+#endif
 
     /*** Initialize locals ***/
     c &= CHR1MASK;
-    #ifdef __WIDECHAR__
-        cdword = (c<<16) | c;
-    #else
-        cdword = (c<<24) | (c<<16) | (c<<8) | c;
-    #endif
+#ifdef __WIDECHAR__
+    cdword = (c<<16) | c;
+#else
+    cdword = (c<<24) | (c<<16) | (c<<8) | c;
+#endif
     dword = *dw;
 
     /*** Set any bytes up to a 4-byte alignment ***/
     tmpdword = FRONT_CHRS(dword,offset);
-    #ifdef __WIDECHAR__
-        switch( offset ) {
-          case 0:
-            if( CHR1(dword) ) {
-                tmpdword |= CHR1(cdword);
-            } else {
-                return( s );
-            }
-            /* fall through */
-          default:              /* offset must equal 2 (no odd offsets) */
-            if( CHR2(dword) ) {
-                tmpdword |= CHR2(cdword);
-                *dw = tmpdword;
-            } else {
-                *dw = tmpdword;
-                return( s );
-            }
+#ifdef __WIDECHAR__
+    switch( offset ) {
+      case 0:
+        if( CHR1(dword) ) {
+            tmpdword |= CHR1(cdword);
+        } else {
+            return( s );
         }
-    #else
-        switch( offset ) {
-          case 0:
-            if( CHR1(dword) ) {
-                tmpdword |= CHR1(cdword);
-            } else {
-                return( s );
-            }
-            /* fall through */
-          case 1:
-            if( CHR2(dword) ) {
-                tmpdword |= CHR2(cdword);
-            } else {
-                tmpdword |= SKIP_CHRS(dword,2);
-                *dw = tmpdword;
-                return( s );
-            }
-            /* fall through */
-          case 2:
-            if( CHR3(dword) ) {
-                tmpdword |= CHR3(cdword);
-            } else {
-                tmpdword |= SKIP_CHRS(dword,3);
-                *dw = tmpdword;
-                return( s );
-            }
-            /* fall through */
-          default:
-            if( CHR4(dword) ) {
-                tmpdword |= CHR4(cdword);
-                *dw = tmpdword;
-            } else {
-                *dw = tmpdword;
-                return( s );
-            }
+        /* fall through */
+      default:              /* offset must equal 2 (no odd offsets) */
+        if( CHR2(dword) ) {
+            tmpdword |= CHR2(cdword);
+            *dw = tmpdword;
+        } else {
+            *dw = tmpdword;
+            return( s );
         }
-    #endif
+    }
+#else
+    switch( offset ) {
+      case 0:
+        if( CHR1(dword) ) {
+            tmpdword |= CHR1(cdword);
+        } else {
+            return( s );
+        }
+        /* fall through */
+      case 1:
+        if( CHR2(dword) ) {
+            tmpdword |= CHR2(cdword);
+        } else {
+            tmpdword |= SKIP_CHRS(dword,2);
+            *dw = tmpdword;
+            return( s );
+        }
+        /* fall through */
+      case 2:
+        if( CHR3(dword) ) {
+            tmpdword |= CHR3(cdword);
+        } else {
+            tmpdword |= SKIP_CHRS(dword,3);
+            *dw = tmpdword;
+            return( s );
+        }
+        /* fall through */
+      default:
+        if( CHR4(dword) ) {
+            tmpdword |= CHR4(cdword);
+            *dw = tmpdword;
+        } else {
+            *dw = tmpdword;
+            return( s );
+        }
+    }
+#endif
 
     dw++;
 
     /*** Write in aligned 4-byte groups ***/
     for( ;; ) {
         dword = *dw;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
         *dw++ = cdword;
 
         dword = *dw;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
         *dw++ = cdword;
     }
 
     /*** Write in last dword ***/
-    #ifdef __WIDECHAR__
-        if( !CHR1(dword) ) {
-            return( s );
-        } else {
-            *dw = ( SKIP_CHRS(dword,1) | FRONT_CHRS(cdword,1) );
-            return( s );
-        }
-    #else
-        if( !CHR1(dword) ) {
-            return( s );
-        } else if( !CHR2(dword) ) {
-            *dw = ( SKIP_CHRS(dword,1) | FRONT_CHRS(cdword,1) );
-            return( s );
-        } else if( !CHR3(dword) ) {
-            *dw = ( SKIP_CHRS(dword,2) | FRONT_CHRS(cdword,2) );
-            return( s );
-        } else {
-            *dw = ( SKIP_CHRS(dword,3) | FRONT_CHRS(cdword,3) );
-            return( s );
-        }
-    #endif
+#ifdef __WIDECHAR__
+    if( !CHR1(dword) ) {
+        return( s );
+    } else {
+        *dw = ( SKIP_CHRS(dword,1) | FRONT_CHRS(cdword,1) );
+        return( s );
+    }
+#else
+    if( !CHR1(dword) ) {
+        return( s );
+    } else if( !CHR2(dword) ) {
+        *dw = ( SKIP_CHRS(dword,1) | FRONT_CHRS(cdword,1) );
+        return( s );
+    } else if( !CHR3(dword) ) {
+        *dw = ( SKIP_CHRS(dword,2) | FRONT_CHRS(cdword,2) );
+        return( s );
+    } else {
+        *dw = ( SKIP_CHRS(dword,3) | FRONT_CHRS(cdword,3) );
+        return( s );
+    }
+#endif
 }

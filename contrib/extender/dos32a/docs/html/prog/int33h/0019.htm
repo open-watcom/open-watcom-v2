@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">5.07 - Mouse function 0019h
+- Return User Alternate Interrupt Handler </font></b></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0019h<br>
+<b>ECX</b> = call mask</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">ECX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = call mask<br>
+<b>BX:EDX</b> = user interrupt vector</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) This function will
+  simply return the address of the routine defined by functions 000Ch, 0014h
+  and 0018h. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

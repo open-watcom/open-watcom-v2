@@ -33,13 +33,10 @@
 #include "uidef.h"
 
 
-static bool covered( area, wptr )
-/*******************************/
-
-register        SAREA                   area;
-register        UI_WINDOW*              wptr;
+static bool covered( SAREA area, UI_WINDOW *wptr )
+/************************************************/
 {
-    register    char                    i;
+    register    int                     i;
     register    bool                    flag;
     auto        SAREA                   areas[ 5 ];
 
@@ -85,11 +82,8 @@ UI_WINDOW ** intern findspot( int priority, UI_WINDOW **prev )
 }
 
 
-static void insert( wptr, priority )
-/**********************************/
-
-register        UI_WINDOW*              wptr;
-register        int                     priority;
+static void insert( UI_WINDOW *wptr, int priority )
+/*************************************************/
 {
     UI_WINDOW           **spot;
     UI_WINDOW           *prev;
@@ -107,10 +101,8 @@ register        int                     priority;
 }
 
 
-static void remove( wptr )
-/************************/
-
-register        UI_WINDOW*              wptr;
+static void remove( UI_WINDOW *wptr )
+/***********************************/
 {
     if( wptr->prev != NULL ) {
         wptr->prev->next = wptr->next;
@@ -126,10 +118,8 @@ register        UI_WINDOW*              wptr;
 }
 
 
-bool intern openwindow( wptr )
-/****************************/
-
-register        UI_WINDOW*              wptr;
+bool intern openwindow( UI_WINDOW *wptr )
+/***************************************/
 {
     wptr->dirty = wptr->area;
     insert( wptr, wptr->priority );
@@ -141,10 +131,8 @@ register        UI_WINDOW*              wptr;
 }
 
 
-void intern closewindow( wptr )
-/*****************************/
-
-register        UI_WINDOW*              wptr;
+void intern closewindow( UI_WINDOW *wptr )
+/****************************************/
 {
     remove( wptr );
 }
@@ -162,10 +150,8 @@ void intern movewindow( UI_WINDOW *wptr, ORD row, ORD col )
 }
 
 
-void intern frontwindow( wptr )
-/*****************************/
-
-register        UI_WINDOW*                 wptr;
+void intern frontwindow( UI_WINDOW *wptr )
+/****************************************/
 {
     if( wptr->prev != NULL ) {
         if( wptr->prev->priority >= wptr->priority ) {

@@ -248,7 +248,7 @@ GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data )
+int _DynamicDialogBox( LPVOID fn, HWND hwnd, GLOBALHANDLE data )
 {
     long rc;
     HWND handle;

@@ -24,19 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft CVTRES clone tool.
 *
 ****************************************************************************/
 
 
-#include <io.h>
-#include <process.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\types.h>
-#include <sys\stat.h>
 #include "context.h"
 #include "error.h"
 #include "file.h"
@@ -50,48 +46,6 @@
 #define CVTRES_SUCCESS          0
 #define CVTRES_NOACTION         (-1)
 #define CVTRES_ERROR            (-2)
-
-
-/*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    int                 itemsParsed;
-    int                 rc = CVTRES_NOACTION;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    SetDefaultFile( TYPE_RES_FILE, "res" );
-    AllowTypeFile( TYPE_RES_FILE, TYPE_INVALID_FILE );
-
-    /*** Parse the command line ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed==0 || cmdOpts.help ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-
-    /*** Do the conversion ***/
-    rc = res_convert( &cmdOpts );
-    switch( rc ) {
-      case CVTRES_ERROR:
-        exit( EXIT_FAILURE );
-        break;
-      case CVTRES_NOACTION:
-        FatalError( "Nothing to do!" );
-        break;
-      case CVTRES_SUCCESS:
-        FiniParse( &cmdOpts );
-        exit( EXIT_SUCCESS );
-        break;
-      default:
-        Zoinks();
-    }
-}
 
 
 /*
@@ -199,4 +153,46 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
     }
 
     return( CVTRES_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    int                 itemsParsed;
+    int                 rc = CVTRES_NOACTION;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    SetDefaultFile( TYPE_RES_FILE, "res" );
+    AllowTypeFile( TYPE_RES_FILE, TYPE_INVALID_FILE );
+
+    /*** Parse the command line ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed==0 || cmdOpts.help ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+
+    /*** Do the conversion ***/
+    rc = res_convert( &cmdOpts );
+    switch( rc ) {
+      case CVTRES_ERROR:
+        exit( EXIT_FAILURE );
+        break;
+      case CVTRES_NOACTION:
+        FatalError( "Nothing to do!" );
+        break;
+      case CVTRES_SUCCESS:
+        FiniParse( &cmdOpts );
+        exit( EXIT_SUCCESS );
+        break;
+      default:
+        Zoinks();
+    }
 }

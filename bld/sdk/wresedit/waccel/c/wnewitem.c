@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "win1632.h"
 #include "wglbl.h"
@@ -41,12 +41,15 @@
 #include "wvk2str.h"
 #include "wnewitem.h"
 #include "sys_rc.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
 #define DEFAULT_ACC_ID  101
+
+#define MAX_ID_CHARS    12
+#define TAB_SIZE        8
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -59,67 +62,67 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WAccelEntry *WCreateNewAccelEntry ( WAccelEditInfo * );
+static WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WInsertAccelEntry ( WAccelEditInfo *einfo )
+Bool WInsertAccelEntry( WAccelEditInfo *einfo )
 {
-    HWND         lbox;
-    Bool         ok;
-    WAccelEntry *entry;
-    WAccelEntry *new;
-    LRESULT      ret;
+    HWND            lbox;
+    Bool            ok;
+    WAccelEntry     *entry;
+    WAccelEntry     *new;
+    LRESULT         ret;
 
     new = NULL;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_ACCEDLIST );
-        ok = ( lbox != NULL );
+    if( ok ) {
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
+        ok = (lbox != NULL);
     }
 
-    if ( ok ) {
-        ret = SendMessage ( lbox, LB_GETCURSEL, 0, 0 );
-        if ( ret != LB_ERR ) {
-            entry = (WAccelEntry *)
-                SendMessage ( lbox, LB_GETITEMDATA, (WPARAM) ret, 0 );
+    if( ok ) {
+        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        if( ret != LB_ERR ) {
+            entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)ret, 0 );
         } else {
             entry = NULL;
             ret = -1;
         }
-        new = WCreateNewAccelEntry ( einfo );
-        ok = ( new != NULL );
-    }
-
-    if ( ok ) {
-        ok = WInsertAccelTableEntry  ( einfo->tbl, entry, new );
-    }
-
-    if ( ok ) {
-        einfo->info->modified = TRUE;
-        ok = WAddEditWinLBoxEntry ( einfo, new, (int) ret+1 );
+        new = WCreateNewAccelEntry( einfo );
+        ok = (new != NULL);
     }
 
     if( ok ) {
-        ok = ( SendMessage ( lbox, LB_SETCURSEL, (int)ret+1, 0 ) != LB_ERR );
-        if ( ok ) {
+        ok = WInsertAccelTableEntry( einfo->tbl, entry, new );
+    }
+
+    if( ok ) {
+        einfo->info->modified = TRUE;
+        ok = WAddEditWinLBoxEntry( einfo, new, (int)ret + 1 );
+    }
+
+    if( ok ) {
+        ok = (SendMessage( lbox, LB_SETCURSEL, (int)ret + 1, 0 ) != LB_ERR);
+        if( ok ) {
             einfo->current_entry = NULL;
-            einfo->current_pos   = -1;
-            WHandleSelChange ( einfo );
+            einfo->current_pos = -1;
+            WHandleSelChange( einfo );
         }
     }
 
     if( ok ) {
         SetFocus( GetDlgItem( einfo->edit_dlg, IDM_ACCEDKEY ) );
-        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDKEY, EM_SETSEL, GET_EM_SETSEL_MPS( 0, -1 ) );
+        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDKEY, EM_SETSEL,
+                            GET_EM_SETSEL_MPS( 0, -1 ) );
     }
 
     if( !ok ) {
-        if( new ) {
+        if( new != NULL ) {
             WMemFree( new );
         }
     }
@@ -127,12 +130,11 @@ Bool WInsertAccelEntry ( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WAddEditWinLBoxEntry ( WAccelEditInfo *einfo, WAccelEntry *entry,
-                            int pos )
+Bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
 {
     Bool    ok;
-    char   *lbtext;
-    char   *keytext;
+    char    *lbtext;
+    char    *keytext;
     char    idtext[35];
     uint_16 key, flags, id;
     int     klen, ilen;
@@ -140,38 +142,35 @@ Bool WAddEditWinLBoxEntry ( WAccelEditInfo *einfo, WAccelEntry *entry,
 
     lbtext = NULL;
 
-    ok = ( einfo && einfo->edit_dlg && entry );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_ACCEDLIST );
-        ok = ( lbox != NULL );
+    if( ok ) {
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
+        ok = (lbox != NULL);
     }
 
-    if ( ok ) {
-        if ( entry->is32bit ) {
-            key   = entry->entry32.Ascii;
+    if( ok ) {
+        if( entry->is32bit ) {
+            key = entry->entry32.Ascii;
             flags = entry->entry32.Flags;
-            id    = entry->entry32.Id;
+            id = entry->entry32.Id;
         } else {
-            key   = entry->entry.Ascii;
+            key = entry->entry.Ascii;
             flags = entry->entry.Flags;
-            id    = (uint_16) entry->entry.Id;
+            id = (uint_16)entry->entry.Id;
         }
         keytext = WGetKeyText( key, flags );
-        ok = ( keytext != NULL );
+        ok = (keytext != NULL);
         if( !ok ) {
             WSetStatusByID( einfo->wsb, -1, W_INVALIDACCEL );
-            memcpy( entry, &DefaultEntry, sizeof(WAccelEntry) );
-            key   = entry->entry.Ascii;
+            memcpy( entry, &DefaultEntry, sizeof( WAccelEntry ) );
+            key = entry->entry.Ascii;
             flags = entry->entry.Flags;
-            id    = (uint_16) entry->entry.Id;
+            id = (uint_16)entry->entry.Id;
             keytext = WGetKeyText( key, flags );
-            ok = ( keytext != NULL );
+            ok = (keytext != NULL);
         }
     }
-
-#define MAX_ID_CHARS    12
-#define TAB_SIZE        8
 
     if( ok ) {
         if( entry->symbol != NULL ) {
@@ -180,23 +179,23 @@ Bool WAddEditWinLBoxEntry ( WAccelEditInfo *einfo, WAccelEntry *entry,
         } else {
             utoa( (unsigned)id, idtext, 10 );
         }
-        ilen = strlen(idtext);
-        idtext[ ilen ] = '\t';
+        ilen = strlen( idtext );
+        idtext[ilen] = '\t';
         ++ilen;
-        idtext[ ilen ] = '\0';
-        klen = strlen(keytext);
-        lbtext = (char *)WMemAlloc( klen + ilen + 2);
-        ok = ( lbtext != NULL );
+        idtext[ilen] = '\0';
+        klen = strlen( keytext );
+        lbtext = (char *)WMemAlloc( klen + ilen + 2 );
+        ok = (lbtext != NULL);
     }
 
     if( ok ) {
         memcpy( lbtext, idtext, ilen );
         lbtext[ilen] = ' ';
-        memcpy( lbtext+ilen+1, keytext, klen + 1 );
+        memcpy( lbtext + ilen + 1, keytext, klen + 1 );
         ok = WInsertLBoxWithStr( lbox, pos, lbtext, entry );
     }
 
-    if( lbtext ) {
+    if( lbtext != NULL ) {
         WMemFree( lbtext );
     }
 
@@ -207,10 +206,10 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
 {
     WAccelEntry *new;
 
-    new = (WAccelEntry *) WMemAlloc( sizeof(WAccelEntry) );
+    new = (WAccelEntry *)WMemAlloc( sizeof( WAccelEntry ) );
 
-    if( new ) {
-        memset( new, 0, sizeof(WAccelEntry) );
+    if( new != NULL ) {
+        memset( new, 0, sizeof( WAccelEntry ) );
         new->is32bit = einfo->tbl->is32bit;
         if( !WGetEditWindowKeyEntry( einfo, new, FALSE ) ) {
             if( new->is32bit ) {
@@ -223,5 +222,5 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
         }
     }
 
-    return ( new );
+    return( new );
 }

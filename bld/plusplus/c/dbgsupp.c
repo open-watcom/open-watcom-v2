@@ -70,7 +70,7 @@ void DbgSuppInit( dsi_control control )
         code_sym->id = SC_STATIC;
         code_sym->flag |= SF_INITIALIZED;
         code_sym->segid = SEG_CODE;
-        code_sym = InsertSymbol( FileScope, code_sym, code_name );
+        code_sym = InsertSymbol( GetFileScope(), code_sym, code_name );
         DefaultCodeSymbol = code_sym;
     }
     data_sym = DefaultDataSymbol;
@@ -80,7 +80,7 @@ void DbgSuppInit( dsi_control control )
         data_sym->id = SC_STATIC;
         data_sym->flag |= SF_INITIALIZED;
         data_sym->segid = SEG_BSS;
-        data_sym = InsertSymbol( FileScope, data_sym, data_name );
+        data_sym = InsertSymbol( GetFileScope(), data_sym, data_name );
         DefaultDataSymbol = data_sym;
     }
     if(( control & DSI_ONLY_SYMS ) == 0 ) {

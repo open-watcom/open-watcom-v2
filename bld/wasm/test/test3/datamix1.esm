@@ -1,0 +1,80 @@
+.387
+.386p
+		PUBLIC	code_proc16
+		PUBLIC	code_proc32
+_DATA16		SEGMENT	PARA PRIVATE USE16 'DATA'
+    DD	offset L$2
+    DD	L$2
+    DF	L$2
+    DW	offset L$1
+    DB	0, 0
+    DD	L$1
+    DD	offset code_proc32
+    DD	code_proc32
+    DF	code_proc32
+    DW	offset code_proc16
+    DB	0, 0
+    DD	code_proc16
+L$1:
+    DB	0, 0, 0, 0
+
+_DATA16		ENDS
+_DATA32		SEGMENT	PARA PRIVATE USE32 'DATA'
+    DD	offset L$2
+    DD	offset L$2
+    DF	L$2
+    DW	offset L$1
+    DB	0, 0
+    DD	offset L$1
+    DD	offset code_proc32
+    DD	offset code_proc32
+    DF	code_proc32
+    DW	offset code_proc16
+    DB	0, 0
+    DD	offset code_proc16
+    DB	0, 0, 0, 0
+L$2:
+    DB	0, 0, 0, 0
+
+_DATA32		ENDS
+_TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+code_proc16:
+    mov         ax,word ptr L$1
+    mov         ax,offset L$1
+    mov         eax,dword ptr L$1
+    mov         eax,offset L$1
+    mov         eax,offset code_proc16
+    mov         eax,offset code_proc16
+    mov         ax,word ptr L$2
+    mov         ax,offset L$2
+    mov         eax,dword ptr L$2
+    mov         eax,offset L$2
+    mov         eax,offset code_proc32
+    mov         eax,offset code_proc32
+    retf        
+_TEXT16		ENDS
+_TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+    nop         
+code_proc32:
+    mov         ax,word ptr L$1
+    mov         ax,offset L$1
+    mov         eax,dword ptr L$1
+    mov         eax,offset L$1
+    mov         eax,offset code_proc16
+    mov         eax,offset code_proc16
+    mov         ax,word ptr L$2
+    mov         eax,dword ptr L$2
+    mov         eax,offset L$2
+    mov         eax,offset code_proc32
+    mov         eax,offset code_proc32
+    retf        
+_TEXT32		ENDS
+		END

@@ -46,9 +46,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WRSaveResourceTo_RC     ( WRInfo *info, int backup );
-extern int  WRSaveResourceToRES     ( WRInfo *, int );
-extern int  WRCopyResFromFileToFile ( WResFileID, uint_32, uint_32, WResFileID );
-extern int  WRCopyResFromDataToFile ( void *, uint_32, WResFileID );
+extern int  WRSaveResourceTo_RC( WRInfo *info, int backup );
+extern int  WRSaveResourceToRES( WRInfo *, int );
+extern int  WRCopyResFromFileToFile( WResFileID, uint_32, uint_32, WResFileID );
+extern int  WRCopyResFromDataToFile( void *, uint_32, WResFileID );
 
 #endif

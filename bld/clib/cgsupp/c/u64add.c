@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  64-bit integer addition. 
 *
 ****************************************************************************/
 
@@ -39,10 +38,5 @@
 
 _WCRTLINK void __U64Add( const UINT64_TYPE *a, const UINT64_TYPE *b, UINT64_TYPE *res )
 {
-    unsigned_32 new;
-
-    res->u._32[I64HI32] = a->u._32[I64HI32] + b->u._32[I64HI32];
-    new = a->u._32[I64LO32] + b->u._32[I64LO32];
-    if( new < a->u._32[I64LO32] ) ++res->u._32[I64HI32];
-    res->u._32[I64LO32] = new;
+    *res = *a + *b;
 }

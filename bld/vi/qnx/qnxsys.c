@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
+#include "vi.h"
 #include <i86.h>
 #include <fcntl.h>
 #include <stddef.h>
@@ -42,7 +40,6 @@
 #include <sys/name.h>
 #include <sys/vc.h>
 
-#include "vi.h"
 #include "win.h"
 #include "dosx.h"
 
@@ -129,7 +126,7 @@ void ScreenInit( void )
     int                         rows, cols;
     unsigned                    size;
     unsigned                    seg;
-    int                         rc;
+    vi_rc                       rc;
 
 
     QNXCon = console_open( QNXConHandle, O_WRONLY );
@@ -142,8 +139,8 @@ void ScreenInit( void )
         console_close( QNXCon );
         FatalError( ERR_WIND_NO_MORE_WINDOWS );
     }
-    rc = KeyboardInit();
-    if( rc ) {
+    rc = BIOSKeyboardInit();
+    if( rc != ERR_NO_ERR ) {
         console_close( QNXCon );
         FatalError( rc );
     }

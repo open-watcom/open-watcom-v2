@@ -49,11 +49,8 @@ EVENT LineEvents[] = {
 };
 
 
-static void echoline( vptr, editline )
-/************************************/
-
-register        VSCREEN*                vptr;
-register        VEDITLINE*              editline;
+static void echoline( VSCREEN *vptr, VEDITLINE *editline )
+/********************************************************/
 {
     SAREA       area;
     unsigned    start;
@@ -102,12 +99,8 @@ register        VEDITLINE*              editline;
 }
 
 
-EVENT global uiveditevent( vptr, editline, ev )
-/*********************************************/
-
-register        VSCREEN*                vptr;
-register        VEDITLINE*              editline;
-register        EVENT                   ev;
+EVENT global uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
+/***********************************************************************/
 {
     register    int                     scroll;
     register    bool                    scrollable;
@@ -170,11 +163,8 @@ register        EVENT                   ev;
 }
 
 
-EVENT global uiveditline( vptr, editline )
-/****************************************/
-
-register        VSCREEN*                vptr;
-register        VEDITLINE*              editline;
+EVENT global uiveditline( VSCREEN *vptr, VEDITLINE *editline )
+/************************************************************/
 {
     register    EVENT                   ev;
 
@@ -185,18 +175,9 @@ register        VEDITLINE*              editline;
     return( ev );
 }
 
-#pragma off(unreferenced);
-bool global uiveditinit( vptr, editline, buffer, bufflen, row, col, len )
-#pragma on (unreferenced);
+bool global uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
+                                  int bufflen, ORD row, ORD col, int len )
 /************************************************************************/
-
-    register    VSCREEN*                vptr;
-    register    VEDITLINE*              editline;
-    register    char*                   buffer;
-    register    int                     bufflen;
-    register    ORD                     row;
-    register    ORD                     col;
-    register    int                     len;
 {
     editline->index = 0;
     editline->dirty = FALSE;
@@ -213,13 +194,8 @@ bool global uiveditinit( vptr, editline, buffer, bufflen, row, col, len )
     return( TRUE );
 }
 
-#pragma off(unreferenced);
-bool global uiveditfini( vptr, editline )
-#pragma on (unreferenced);
-/***************************************/
-
-    register    VSCREEN*                vptr;
-    register    VEDITLINE*              editline;
+bool global uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
+/***********************************************************/
 {
     return( TRUE );
 }

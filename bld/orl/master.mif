@@ -1,0 +1,16 @@
+proj_name       = orl
+orl_autodepends = .autodepend
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include ../orlobjs.mif
+
+.c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c
+.h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h
+
+inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
+
+orl.lib : $(orl_objs) $(__MAKEFILES__)
+        $(librarian) $(libflags) $(orl_objs)

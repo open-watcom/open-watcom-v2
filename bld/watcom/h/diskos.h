@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for dealing with OS naming conventions.
 *
 ****************************************************************************/
 
@@ -33,24 +32,20 @@
 #ifndef __WATCOM_H_DISKOS_H__
 #define __WATCOM_H_DISKOS_H__
 
-#if defined( SLASH_CHAR )
-    #undef SLASH_CHAR
-#endif
-#if defined( PARAMETER_CHAR )
-    #undef PARAMETER_CHAR
-#endif
-#if defined( PATH_DELIMITER_CHAR )
-    #undef PATH_DELIMITER_CHAR
-#endif
-
-#if defined ( UNIX )
-    #define             SLASH_CHAR              '/'
-    #define             PARAMETER_CHAR          '-'
-    #define             PATH_DELIMITER_CHAR     ':'
+#if defined ( __UNIX__ )
+    #define     SYS_OPTION_CHAR         '-'
+    #define     SYS_OPTION_STR          "-"
+    #define     SYS_DIR_SEP_CHAR        '/'
+    #define     SYS_DIR_SEP_STR         "/"
+    #define     SYS_PATH_DELIM_CHAR     ':'
+    #define     SYS_PATH_DELIM_STR      ":"
 #else
-    #define             SLASH_CHAR              '\\'
-    #define             PARAMETER_CHAR          '/'
-    #define             PATH_DELIMITER_CHAR     ';'
+    #define     SYS_OPTION_CHAR         '/'
+    #define     SYS_OPTION_STR          "/"
+    #define     SYS_DIR_SEP_CHAR        '\\'
+    #define     SYS_DIR_SEP_STR         "\\"
+    #define     SYS_PATH_DELIM_CHAR     ';'
+    #define     SYS_PATH_DELIM_STR      ";"
 #endif
 
 #endif

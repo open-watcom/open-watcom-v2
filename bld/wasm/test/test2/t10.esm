@@ -1,0 +1,6 @@
+.387
+abcd		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:abcd, DS:DGROUP, SS:DGROUP
+    mov       ax,69H
+abcd		ENDS
+		END

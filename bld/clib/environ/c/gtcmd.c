@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Multi-platform implementation of getcmd() and _bgetcmd().
 *
 ****************************************************************************/
 
@@ -41,77 +40,86 @@
     #include <wos2.h>
 #endif
 
+#if !defined( __NETWARE__ ) || defined( _NETWARE_LIBC )
+    #include <process.h>
+#endif
+
 #ifdef __NT__
 
-    static char *OS_GET_CMD_LINE(void)
+    static char *OS_GET_CMD_LINE( void )
     {
-        char *cmd = GetCommandLine();
+        char    *cmd = GetCommandLine();
+
         if( *cmd == '"' ) {
             cmd++;
-            while (*cmd && *cmd != '"') {
+            while( *cmd && *cmd != '"' ) {
                 cmd++;
             }
             if( *cmd ) cmd++;
         } else {
-            while (*cmd && !isspace(*cmd)) {
+            while( *cmd && *cmd != ' ' && *cmd != '\t' ) {
                 ++cmd;
             }
         }
         return cmd;
     }
 
-#elif defined(__NETWARE__) || defined(__OSI__)
+#elif defined(_NETWARE_CLIB) || defined(__OSI__)
 
     extern char *_LpCmdLine;
     #define OS_GET_CMD_LINE()    _LpCmdLine
 
+#elif defined(_NETWARE_LIBC)
+
+    #define OS_GET_CMD_LINE()    getcmd(NULL)
+
 #elif defined(__WIN386__)
 
-    extern char _WCFAR *_wincmdptr;
+    extern char _WCFAR  *_wincmdptr;
     #define OS_GET_CMD_LINE()    _wincmdptr
 
 #elif defined(__OS2_286__)
 
     #include <dos.h>
-    static char _WCFAR *OS_GET_CMD_LINE(void)
+    static char _WCFAR *OS_GET_CMD_LINE( void )
     {
-        unsigned short  envseg, cmdoff;
-        char _WCFAR      *cmd;
+        unsigned short      envseg, cmdoff;
+        char _WCFAR         *cmd;
 
-        if (DosGetEnv( &envseg, &cmdoff))
-            return NULL;
+        if( DosGetEnv( &envseg, &cmdoff) )
+            return( NULL );
 
-        cmd = MK_FP(envseg, 0);
-        if (!*cmd) ++cmd;       /* adjust if null environment space */
-        while (*cmd) {  /* skip over environment space */
-            while(*cmd) ++cmd;
+        cmd = MK_FP( envseg, 0 );
+        if( !*cmd ) ++cmd;      /* adjust if null environment space */
+        while( *cmd ) {         /* skip over environment space */
+            while( *cmd ) ++cmd;
             ++cmd;
         }
         ++cmd;
-        while(*cmd) ++cmd;/* skip over first copy of program name */
+        while( *cmd ) ++cmd;    /* skip over first copy of program name */
         ++cmd;
 
         while( *cmd ) ++cmd;    /* skip over second copy of program name */
         ++cmd;
 
-        return cmd;
+        return( cmd );
     }
 
 #elif defined(__WARP__)
 
-    static char *OS_GET_CMD_LINE(void)
+    static char *OS_GET_CMD_LINE( void )
     {
-        PTIB  tib;
-        PPIB  pib;
-        char *cmd;
+        PTIB    tib;
+        PPIB    pib;
+        char    *cmd;
 
-        if (DosGetInfoBlocks(&tib, &pib))
-            return NULL;
+        if( DosGetInfoBlocks(&tib, &pib) )
+            return( NULL );
 
         cmd = pib->pib_pchcmd;
-        while (*cmd) ++cmd;     /* skip over second copy of program name */
+        while( *cmd ) ++cmd;    /* skip over second copy of program name */
         ++cmd;
-        return cmd;
+        return( cmd );
     }
 
 #else
@@ -122,49 +130,50 @@
 
 _WCRTLINK int _bgetcmd( char *buffer, int len )
 {
-    int  cmdlen;
+    int         cmdlen;
 #if defined(__WIN386__) || defined(__OS2_286__)
     char _WCFAR *cmd;
     char _WCFAR *tmp;
 #else
-    char *cmd;
-    char *tmp;
+    char        *cmd;
+    char        *tmp;
 #endif
 
-    if (buffer && (len > 0))
-        *buffer = 0x00;
+    if( buffer && (len > 0) )
+        *buffer = '\0';
 
     cmd = OS_GET_CMD_LINE();
-    if (!cmd)
-        return 0;
+    if( !cmd )
+        return( 0 );
 
-    while (isspace(*cmd))
+    while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;
 
-    for (cmdlen = 0, tmp = cmd; *tmp; ++tmp, ++cmdlen)
+    for( cmdlen = 0, tmp = cmd; *tmp; ++tmp, ++cmdlen )
         ;
 
-    if (!buffer || (len <= 0))
-        return cmdlen;
+    if( !buffer || (len <= 0) )
+        return( cmdlen );
 
     len--;
     len = (len < cmdlen) ? len : cmdlen;
 
-    while (len)
-    {
+    while( len ) {
         *buffer++ = *cmd++;
         --len;
     }
-    //strncpy(buffer, cmd, len);
-    buffer[len] = 0x00;
+    buffer[len] = '\0';
 
-    return cmdlen;
+    return( cmdlen );
 } /* _bgetcmd() */
 
+/* Netware LibC has a special startup file (libc prelude) so getcmd is pulled from the LIBC imports */
+#if !defined(_NETWARE_LIBC)
 
 _WCRTLINK char *getcmd( char *buffer )
 {
-    _bgetcmd (buffer, INT_MAX);
-    return (buffer);
+    _bgetcmd( buffer, INT_MAX );
+    return( buffer );
 } /* getcmd() */
 
+#endif

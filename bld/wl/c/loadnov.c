@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines for creating Novell NetWare load files.
 *
 ****************************************************************************/
 
-
-/*
- *  LOADNOV : routines for creating novell netware load files.
- *
-*/
 
 #include <string.h>
 #include <time.h>
@@ -51,8 +45,6 @@
 #include "loadfile.h"
 #include "loadnov.h"
 
-static unsigned_32 WriteNovData( unsigned_32, fixed_header * );
-static unsigned_32 WriteNovImage( unsigned_32, bool );
 
 #define DUMMY_THREAD_NAME " LONG"
 
@@ -61,7 +53,7 @@ static unsigned_32  DbgInfoLen;
 static virt_mem     NovDbgInfo;
 static virt_mem     CurrDbgLoc;
 
-extern void ResetLoadNov( void )
+void ResetLoadNov( void )
 /******************************/
 {
     DbgInfoCount = 0;
@@ -74,7 +66,7 @@ static unsigned_32 WriteNovRelocs( fixed_header *header )
 {
     DumpRelocList( Root->reloclist );
     header->numberOfRelocationFixups = Root->relocs;
-    return( (unsigned_32)Root->relocs * sizeof(nov_reloc_item) );
+    return( (unsigned_32)Root->relocs * sizeof( nov_reloc_item ) );
 }
 
 static unsigned_32 WriteNovImports( fixed_header *header )
@@ -91,16 +83,32 @@ static unsigned_32 WriteNovImports( fixed_header *header )
 
     wrote = count = 0;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( !(IS_SYM_IMPORTED(sym)) ) continue;
+        if( !( IS_SYM_IMPORTED( sym ) ) )
+            continue;
         /* so SymFini doesn't try to free it */
-        if( sym->p.import == DUMMY_IMPORT_PTR ) sym->p.import = NULL;
+        if( sym->p.import == DUMMY_IMPORT_PTR )
+            sym->p.import = NULL;
         import = sym->p.import;
+
         if( import != NULL ) {
             count++;
             name = sym->name;
             namelen = strlen( name );
-            WriteLoad( &namelen, sizeof( unsigned_8 ) );
-            WriteLoad( name, namelen );
+
+            /*
+            // netware prefix support
+            */
+            if( sym->prefix ) {
+                namelen += ( strlen( sym->prefix ) + 1);
+                WriteLoad( &namelen, sizeof( unsigned_8 ) );
+                WriteLoad( sym->prefix, strlen( sym->prefix ) );
+                WriteLoad( "@", 1 );
+                WriteLoad( name, strlen( sym->name ) );
+            } else {
+                WriteLoad( &namelen, sizeof( unsigned_8 ) );
+                WriteLoad( name, namelen );
+            }
+
             wrote += namelen + sizeof( unsigned_8 ) + sizeof( unsigned_32 );
             if( import->contents <= MAX_IMP_INTERNAL ) {
                 refs = import->contents;
@@ -139,21 +147,42 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     count = wrote = 0;
     export = FmtData.u.nov.exp.export;
     while( export != NULL ) {
+
         len = export->len;
         sym = SymOp( ST_FIND, export->name, len );
-        if( sym == NULL || !(sym->info & SYM_DEFINED) ) {
+        if( ( sym == NULL ) || !( sym->info & SYM_DEFINED ) ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
         } else if( !IS_SYM_IMPORTED(sym) ) {
-            AddImpLibEntry( sym->name, sym->name, NOT_IMP_BY_ORDINAL );
+
+            /*
+            //    netware prefix support
+            */
+            if( sym->prefix ) {
+
+                char        full_name[255+1];
+
+                strcpy(full_name, sym->prefix);
+                strcat(full_name, "@");
+                strcat(full_name, sym->name);
+                AddImpLibEntry( sym->name, full_name, NOT_IMP_BY_ORDINAL );
+
+                len = strlen( full_name );
+                
+                WriteLoad( &len, sizeof( unsigned_8 ) );
+                WriteLoad( full_name, len );
+            } else {
+                AddImpLibEntry( sym->name, sym->name, NOT_IMP_BY_ORDINAL );
+                WriteLoad( &len, sizeof( unsigned_8 ) );
+                WriteLoad( export->name, len );
+            }
+
             count++;
-            WriteLoad( &len, sizeof( unsigned_8 ) );
-            WriteLoad( export->name, len );
             off = sym->addr.off;
             if( sym->addr.seg == CODE_SEGMENT ) {
                 off |= NOV_EXP_ISCODE;
             }
             WriteLoad( &off, sizeof( unsigned_32 ) );
-            wrote += sizeof(unsigned_32) + sizeof(unsigned_8) + len;
+            wrote += sizeof( unsigned_32 ) + sizeof( unsigned_8 ) + len;
         }
         export = export->next;
     }
@@ -181,21 +210,23 @@ static unsigned_32 WriteNovModules( fixed_header *header )
     return( wrote );
 }
 
-extern void NovDBIAddGlobal( symbol * sym )
-/*****************************************/
+void NovDBIAddGlobal( void * _sym )
+/****************************************/
 {
+    symbol *sym = _sym;
+        
     if( !IS_SYM_A_REF(sym)
             && !IS_SYM_ALIAS(sym)
-            && sym->p.seg != NULL
-            && !(sym->info & SYM_DEAD)
-            && !(sym->p.seg->isabs)
-            && !(sym->info & SYM_STATIC)
-            && !(FmtData.u.nov.flags & DO_NOV_EXPORTS) ) {
-        DbgInfoLen += strlen(sym->name) + sizeof( nov_dbg_info );
+            && ( sym->p.seg != NULL )
+            && !( sym->info & SYM_DEAD )
+            && !sym->p.seg->isabs
+            && !( sym->info & SYM_STATIC )
+            && !( FmtData.u.nov.flags & DO_NOV_EXPORTS ) ) {
+        DbgInfoLen += strlen( sym->name ) + sizeof( nov_dbg_info );
     }
 }
 
-extern void NovDBIAddrStart( void )
+void NovDBIAddrStart( void )
 /*********************************/
 {
     if( DbgInfoLen != 0 ) {
@@ -204,13 +235,14 @@ extern void NovDBIAddrStart( void )
     }
 }
 
-extern void NovDBIGenGlobal( symbol *sym )
+void NovDBIGenGlobal( symbol *sym )
 /****************************************/
 {
     nov_dbg_info    info;
 
-    if( DbgInfoLen != 0 && (!(FmtData.u.nov.flags & DO_NOV_REF_ONLY)
-                             || sym->info & SYM_REFERENCED) ) {
+    if( ( DbgInfoLen != 0 )
+        && ( !( FmtData.u.nov.flags & DO_NOV_REF_ONLY )
+        || ( sym->info & SYM_REFERENCED ) ) ) {
         DbgInfoCount++;
         if( sym->addr.seg == DATA_SEGMENT ) {
             info.type = DBG_DATA;
@@ -246,7 +278,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
         while( export != NULL ) {
             len = export->len;
             sym = SymOp( ST_FIND, export->name, len );
-            if( sym != NULL && !IS_SYM_IMPORTED(sym) ) {
+            if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
                 count++;
                 if( sym->addr.seg == DATA_SEGMENT ) {
                     info.type = DBG_DATA;
@@ -281,12 +313,12 @@ static unsigned_32 WriteMessages( extended_nlm_header * header )
     if( name != NULL ) {
         handle = QOpenR( name );
         QRead( handle, TokBuff, MSG_FILE_SIGNATURE_LENGTH, name );
-        if(memcmp(TokBuff,MSG_FILE_SIGNATURE,MSG_FILE_SIGNATURE_LENGTH) != 0 ) {
+        if( memcmp( TokBuff, MSG_FILE_SIGNATURE, MSG_FILE_SIGNATURE_LENGTH ) != 0 ) {
             LnkMsg( WRN+MSG_INV_MESSAGE_FILE, "s", name );
             QClose( handle, name );
         } else {
             QSeek( handle, LANGUAGE_ID_OFFSET, name );
-            QRead( handle, buf, 2*sizeof(unsigned_32), name );
+            QRead( handle, buf, 2*sizeof( unsigned_32 ), name );
             header->languageID = buf[0];
             header->messageCount = buf[1];
             QSeek( handle, 0, name );
@@ -307,8 +339,8 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header * header,
     name = FmtData.u.nov.sharednlm;
     if( name != NULL ) {
         handle = QOpenR( name );
-        QRead( handle, TokBuff, sizeof(fixed_header), name );
-        if( memcmp( TokBuff, NLM_SIGNATURE, sizeof(NLM_SIGNATURE)-1) != 0 ) {
+        QRead( handle, TokBuff, sizeof( fixed_header ), name );
+        if( memcmp( TokBuff, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) != 0 ) {
             LnkMsg( WRN+MSG_INV_SHARED_NLM_FILE, "s", name );
             QClose( handle, name );
         } else {
@@ -357,10 +389,10 @@ static void GetProcOffsets( fixed_header *header )
     if( StartInfo.type == START_IS_SYM ) {
         name = StartInfo.targ.sym->name;
     } else {
-        name = DEFAULT_PRELUDE_FN;
+        name = DEFAULT_PRELUDE_FN_CLIB;
     }
     sym = FindISymbol( name );
-    if( sym == NULL || !(sym->info & SYM_DEFINED) ) {
+    if( ( sym == NULL ) || !( sym->info & SYM_DEFINED ) ) {
         LnkMsg( ERR + MSG_START_PROC_NOT_FOUND, NULL );
     } else {
         header->codeStartOffset = sym->addr.off;
@@ -368,7 +400,7 @@ static void GetProcOffsets( fixed_header *header )
     if( FmtData.u.nov.exitfn != NULL ) {
         name = FmtData.u.nov.exitfn;
     } else {
-        name = DEFAULT_EXIT_FN;
+        name = DEFAULT_EXIT_FN_CLIB;
     }
     sym = FindISymbol( name );
     if( sym == NULL ) {
@@ -376,6 +408,33 @@ static void GetProcOffsets( fixed_header *header )
     } else {
         header->exitProcedureOffset = sym->addr.off;
     }
+}
+
+static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
+/*******************************************************************/
+// Write a Novell image
+{
+    group_entry         *group;
+    outfilelist *       fnode;
+    bool                repos;
+    bool                iscode;
+
+    /* write groups.*/
+    fnode = Root->outfile;
+    for( group = Groups; group != NULL; group = group->next_group ) {
+        if( group->grp_addr.seg == CODE_SEGMENT ) {
+            iscode = TRUE;
+        } else {
+            iscode = FALSE;
+        }
+        if( iscode == docode ) {  // logical XNOR would be better, but...
+            repos = WriteDOSGroup( group );
+            if( repos ) {
+                SeekLoad( fnode->file_loc );
+            }
+        }
+    }
+    return( fnode->file_loc - file_pos );
 }
 
 static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
@@ -404,35 +463,6 @@ static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
 }
 
 
-static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
-/*******************************************************************/
-// Write a Novell image
-{
-    group_entry         *group;
-    outfilelist *       fnode;
-    bool                repos;
-    bool                iscode;
-
-    /* write groups.*/
-    fnode = Root->outfile;
-    group = Groups;
-    while( group != NULL ) {
-        if( group->grp_addr.seg == CODE_SEGMENT ) {
-            iscode = TRUE;
-        } else {
-            iscode = FALSE;
-        }
-        if( iscode == docode ) {  // logical XNOR would be better, but...
-            repos = WriteDOSGroup( group );
-            if( repos ) {
-                SeekLoad( fnode->file_loc );
-            }
-        }
-        group = group->next_group;
-    }
-    return( fnode->file_loc - file_pos );
-}
-
 static void NovNameWrite( char *name )
 /************************************/
 // write a name to the loadfile in the typical novell fashion
@@ -443,13 +473,21 @@ static void NovNameWrite( char *name )
         len = strlen( name );
     } else {
         len = 0;
-        name = &len;
+        name = (char *)&len;
     }
     WriteLoad( &len, sizeof( unsigned_8 ) );
     WriteLoad( name, len + 1 );
 }
 
-extern void FiniNovellLoadFile( void )
+static int __min__(int a, int b)
+{
+    if( a > b )
+        return( b );
+    else
+        return( a );
+}
+
+void FiniNovellLoadFile( void )
 /************************************/
 {
     unsigned_32         file_size;
@@ -465,8 +503,10 @@ extern void FiniNovellLoadFile( void )
     unsigned_8          len;
     struct tm *         currtime;
     time_t              thetime;
+    char *                pPeriod = NULL;
+    char                module_name[NOV_MAX_MODNAME_LEN+1];
 
-// find module name (output file name without the path.
+/* find module name (output file name without the path.) */
 
     lastslash = filename = Root->outfile->fname;
     while( *filename != '\0' ) {
@@ -474,13 +514,35 @@ extern void FiniNovellLoadFile( void )
         if( IS_PATH_SEP( ch ) ) {
             lastslash = filename;     // NOTE: 1 added already.
         }
+        if( '.' == ch ) {
+            pPeriod = filename-1;
+        }
     }
     strupr( lastslash );
-    len = strlen( lastslash );       // length of module name;
 
-    file_size = strlen( FmtData.u.nov.description ) + sizeof(fixed_header)
-                + sizeof(extended_nlm_header) + 2*sizeof(unsigned_32)
-                + 12*sizeof(unsigned_8);
+    /*
+    // cull the module name to 8.3 (NOV_MAX_MODNAME_LEN) if necessary
+    */
+    if( pPeriod ) {
+        len = __min__((pPeriod - lastslash), NOV_MAX_NAME_LEN);
+        strncpy(module_name, lastslash, len);
+        strncpy(&module_name[len], pPeriod, NOV_MAX_EXT_LEN + 2);    /* + period and null */
+        module_name[len + NOV_MAX_EXT_LEN + 1] = '\0';
+    } else {
+        /* still only copy 8 chars else the module name will be too long */
+        strncpy(module_name, lastslash, NOV_MAX_NAME_LEN);
+    }
+
+    module_name[NOV_MAX_MODNAME_LEN] = '\0';
+    if( 0 != strcmp( module_name, lastslash ) ) {
+        LnkMsg( WRN+MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE, "s", module_name );
+    }
+
+    len = strlen( module_name );       // length of module name;
+
+    file_size = strlen( FmtData.u.nov.description ) + sizeof( fixed_header )
+                + sizeof( extended_nlm_header ) + 2 * sizeof( unsigned_32 )
+                + 12*sizeof( unsigned_8 );
     if( FmtData.u.nov.screenname != NULL ) {
         file_size += strlen( FmtData.u.nov.screenname );
     }
@@ -489,11 +551,11 @@ extern void FiniNovellLoadFile( void )
     } else {
         file_size += len;
     }
-    if( FmtData.major != 0 || FmtData.minor != 0 ) {
+    if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
         file_size += sizeof( fixed_hdr_2 );
     }
     if( FmtData.u.nov.copyright != NULL ) {
-        file_size += sizeof(fixed_hdr_3) + strlen( FmtData.u.nov.copyright );
+        file_size += sizeof( fixed_hdr_3 ) + strlen( FmtData.u.nov.copyright );
     }
     SeekLoad( file_size );
     nov_header.codeImageOffset = file_size;
@@ -517,7 +579,7 @@ extern void FiniNovellLoadFile( void )
     temp = AppendToLoadFile( FmtData.u.nov.customdata );
     nov_header.customDataSize = temp;
     file_size += temp;
-    memset( &ext_header, 0, sizeof(ext_header) );
+    memset( &ext_header, 0, sizeof( ext_header ) );
     memcpy( ext_header.stamp, EXTENDED_NLM_SIGNATURE,
                               EXTENDED_NLM_SIGNATURE_LENGTH );
     ext_header.messageFileOffset = file_size;
@@ -533,12 +595,12 @@ extern void FiniNovellLoadFile( void )
     file_size += WriteSharedNLM( &ext_header, file_size );
     nov_header.debugInfoOffset = file_size;
     file_size += WriteNovDBI( &nov_header );
-    WriteDBI();
+    DBIWrite();
     memcpy( nov_header.signature, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) );
     nov_header.version = NLM_VERSION;
-    nov_header.moduleName[0] = len;
-    memcpy( &nov_header.moduleName[1], lastslash, len );
-    memset( &nov_header.moduleName[ len + 1 ], 0, 13-len ); // zero rest.
+    nov_header.moduleName[0] = (char)len;
+    memcpy( &nov_header.moduleName[1], module_name, len );
+    memset( &nov_header.moduleName[ len + 1 ], 0, NOV_MAX_MODNAME_LEN-len ); // zero rest.
     nov_header.uninitializedDataSize = 0; // MemorySize() - image_size;
     GetProcOffsets( &nov_header );
     nov_header.moduleType = FmtData.u.nov.moduletype;
@@ -555,11 +617,11 @@ extern void FiniNovellLoadFile( void )
     if( FmtData.u.nov.threadname != NULL ) {
         NovNameWrite( FmtData.u.nov.threadname );
     } else {
-        NovNameWrite( lastslash );      // use module name as a default
+        NovNameWrite( module_name );      // use module name as a default
     }
-    if( FmtData.major != 0 || FmtData.minor != 0 ) {
+    if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
         memcpy( second_header.versionSignature, VERSION_SIGNATURE,
-                                            VERSION_SIGNATURE_LENGTH);
+                                              VERSION_SIGNATURE_LENGTH );
         second_header.majorVersion = FmtData.major;
         second_header.minorVersion = FmtData.minor;
         second_header.revision = FmtData.revision;
@@ -577,10 +639,10 @@ extern void FiniNovellLoadFile( void )
         WriteLoad( &third_header, sizeof( third_header ) );
         NovNameWrite( FmtData.u.nov.copyright );
     }
-    WriteLoad( &ext_header, sizeof(ext_header) );
+    WriteLoad( &ext_header, sizeof( ext_header ) );
 }
 
-extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
+void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
                                                                  bool isdata )
 /****************************************************************************/
 // add a relocation to the import record.
@@ -605,8 +667,8 @@ extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
         imp->num_relocs = offset;
     } else if( imp->contents < MAX_IMP_INTERNAL ) {
         if( imp->contents == 2 ) {
-            _ChkAlloc( new, (MAX_IMP_INTERNAL - 2)*sizeof(unsigned_32)
-                                                         + sizeof(nov_import) );
+            _ChkAlloc( new, ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 )
+                                                     + sizeof( nov_import ) );
             memcpy( new, imp, sizeof( nov_import ) );
             _LnkFree( imp );
             imp = new;
@@ -617,8 +679,8 @@ extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
     } else if( imp->contents == MAX_IMP_INTERNAL ) { // set up virt.mem
         vmem_ptr = AllocStg( IMP_VIRT_ALLOC_SIZE );
         PutInfo( vmem_ptr, &imp->num_relocs,
-                                     MAX_IMP_INTERNAL * sizeof(unsigned_32) );
-        PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof(unsigned_32), &offset,
+                                 MAX_IMP_INTERNAL * sizeof( unsigned_32 ) );
+        PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof( unsigned_32 ), &offset,
                                                        sizeof( unsigned_32 ) );
         imp->contents++;
         imp->num_relocs = imp->contents;
@@ -627,11 +689,11 @@ extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
         vblock = imp->num_relocs / IMP_NUM_VIRT;
         voff = imp->num_relocs % IMP_NUM_VIRT;
         if( voff == 0 ) {
-            if( vblock >= (imp->contents - MAX_IMP_INTERNAL)*MAX_IMP_VIRT){
-                _ChkAlloc( new, sizeof(nov_import) - sizeof(unsigned_32) +
-                                            vblock * sizeof(unsigned_32) * 2 );
-                memcpy( new, imp, sizeof(nov_import) - sizeof(unsigned_32) +
-                                            vblock * sizeof(unsigned_32) );
+            if( vblock >= (imp->contents - MAX_IMP_INTERNAL) * MAX_IMP_VIRT ) {
+                _ChkAlloc( new, sizeof( nov_import ) - sizeof( unsigned_32 ) +
+                                            vblock * sizeof( unsigned_32 ) * 2 );
+                memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) +
+                                            vblock * sizeof( unsigned_32 ) );
                 _LnkFree( imp );
                 imp = new;
                 imp->contents++;
@@ -639,13 +701,13 @@ extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
             }
             imp->addr[ vblock ] = AllocStg( IMP_VIRT_ALLOC_SIZE );
         }
-        PutInfo( imp->addr[ vblock ] + voff * sizeof(unsigned_32), &offset,
-                                                        sizeof(unsigned_32) );
+        PutInfo( imp->addr[ vblock ] + voff * sizeof( unsigned_32 ), &offset,
+                                                        sizeof( unsigned_32 ) );
         imp->num_relocs++;
     }
 }
 
-extern void FindExportedSyms( void )
+void FindExportedSyms( void )
 /**********************************/
 {
     name_list *     export;
@@ -653,11 +715,11 @@ extern void FindExportedSyms( void )
     debug_info *    dinfo;
 
     dinfo = CurrSect->dbg_info;
-    if( FmtData.u.nov.flags & DO_WATCOM_EXPORTS && dinfo != NULL ) {
+    if( ( FmtData.u.nov.flags & DO_WATCOM_EXPORTS ) && ( dinfo != NULL ) ) {
         export = FmtData.u.nov.exp.export;
         while( export != NULL ) {
             sym = SymOp( ST_FIND, export->name, export->len );
-            if( sym != NULL && !IS_SYM_IMPORTED(sym) ) {
+            if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
                 dinfo->global.curr += strlen( sym->name ) + sizeof( gblinfo );
             }
             export = export->next;

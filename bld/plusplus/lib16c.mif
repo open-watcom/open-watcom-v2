@@ -1,3 +1,0 @@
-!include $(plusplus_dir)\lib16.mif
-mflag = -mc-zu $(text)
-asm_model = -0r -mc

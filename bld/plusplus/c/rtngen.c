@@ -39,6 +39,8 @@
 #include "initdefs.h"
 #include "pcheader.h"
 #include "rtngen.h"
+#include "context.h"
+#include "template.h"
 
 typedef struct routine_gen RTN_GEN;
 struct routine_gen {
@@ -115,22 +117,38 @@ void RtnGenerate( void )
 /**********************/
 {
     RTN_GEN *c;
+    boolean keep_going = TRUE;
 
-    ClassDefineRefdDefaults();
-    ScopeEmitIndexMappings();
-    while( useSYMBOL != NULL ) {
-        c = useSYMBOL;
-        useSYMBOL = c->next;
-        (*execSYMBOL[ c->index ])( c->parm );
-        CarveFree( carveRTN_GEN, c );
+    SetCurrScope( GetFileScope() );
+    while( keep_going ) {
+        keep_going = FALSE;
+
+        CtxSetContext( CTX_FUNC_GEN );
+        keep_going = ClassDefineRefdDefaults();
+
+        ScopeEmitIndexMappings();
+
+        while( useSYMBOL != NULL ) {
+            c = useSYMBOL;
+            useSYMBOL = c->next;
+            keep_going = TRUE;
+            (*execSYMBOL[ c->index ])( c->parm );
+            CarveFree( carveRTN_GEN, c );
+        }
+        while( useTYPE != NULL ) {
+            c = useTYPE;
+            useTYPE = c->next;
+            keep_going = TRUE;
+            (*execTYPE[ c->index ])( c->parm );
+            CarveFree( carveRTN_GEN, c );
+        }
+        CtxSetContext( CTX_SOURCE );
+
+        keep_going = TemplateProcessInstantiations() || keep_going;
+        SetCurrScope( GetFileScope() );
     }
-    while( useTYPE != NULL ) {
-        c = useTYPE;
-        useTYPE = c->next;
-        (*execTYPE[ c->index ])( c->parm );
-        CarveFree( carveRTN_GEN, c );
-    }
-    CurrScope = FileScope;
+
+    TemplateFreeDefns();
 }
 
 

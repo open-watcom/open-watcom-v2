@@ -1,0 +1,212 @@
+*$noreference
+
+! Memory-Management Functions:
+! ----------------------------
+
+      external GetFreeSpace
+      external GetWinFlags
+      external GlobalAlloc
+      external GlobalCompact
+      external GlobalDiscard
+      external GlobalDosAlloc
+      external GlobalDosFree
+      external GlobalFlags
+      external GlobalFree
+      external GlobalHandle
+      external GlobalLock
+      external GlobalLRUNewest
+      external GlobalLRUOldest
+      external GlobalNotify
+      external GlobalReAlloc
+      external GlobalSize
+      external GlobalUnlock
+      external GlobalUnWire
+      external GlobalWire
+      external LimitEmsPages
+      external LocalAlloc
+      external LocalCompact
+      external LocalDiscard
+      external LocalFlags
+      external LocalFree
+      external LocalHandle
+      external LocalInit
+      external LocalLock
+      external LocalReAlloc
+      external LocalShrink
+      external LocalSize
+      external LocalUnlock
+      external LockData
+      external LockSegment
+      external SetSwapAreaSize
+      external SwitchStackBack
+      external SwitchStackTo
+      external UnlockData
+      external UnlockSegment
+
+      integer*4 GetFreeSpace
+      integer*4 GetWinFlags
+      integer*2 GlobalAlloc
+      integer*4 GlobalCompact
+      integer*2 GlobalDiscard
+      integer*4 GlobalDosAlloc
+      integer*2 GlobalDosFree
+      integer*2 GlobalFlags
+      integer*2 GlobalFree
+      integer*4 GlobalHandle
+      integer*4 GlobalLock
+      integer*2 GlobalLRUNewest
+      integer*2 GlobalLRUOldest
+      integer*2 GlobalReAlloc
+      integer*4 GlobalSize
+      integer*2 GlobalUnlock
+      integer*2 GlobalUnWire
+      integer*4 GlobalWire
+      integer*2 LocalAlloc
+      integer*2 LocalCompact
+      integer*2 LocalDiscard
+      integer*2 LocalFlags
+      integer*2 LocalFree
+      integer*2 LocalHandle
+      integer*2 LocalInit
+      integer*2 LocalLock
+      integer*2 LocalReAlloc
+      integer*2 LocalShrink
+      integer*2 LocalSize
+      integer*2 LocalUnlock
+      integer*2 LockData
+      integer*2 LockSegment
+      integer*4 SetSwapAreaSize
+      integer*2 UnLockData
+      integer*2 UnlockSegment
+
+! Global Memory Flags
+
+      integer GMEM_FIXED
+      integer GMEM_MOVEABLE
+      integer GMEM_NOCOMPACT
+      integer GMEM_NODISCARD
+      integer GMEM_ZEROINIT
+      integer GMEM_MODIFY
+      integer GMEM_DISCARDABLE
+      integer GMEM_NOT_BANKED
+      integer GMEM_SHARE
+      integer GMEM_DDESHARE
+      integer GMEM_NOTIFY
+      integer GMEM_LOWER
+      integer GHND
+      integer GPTR
+
+      parameter ( GMEM_FIXED       = '0000'x )
+      parameter ( GMEM_MOVEABLE    = '0002'x )
+      parameter ( GMEM_NOCOMPACT   = '0010'x )
+      parameter ( GMEM_NODISCARD   = '0020'x )
+      parameter ( GMEM_ZEROINIT    = '0040'x )
+      parameter ( GMEM_MODIFY      = '0080'x )
+      parameter ( GMEM_DISCARDABLE = '0100'x )
+      parameter ( GMEM_NOT_BANKED  = '1000'x )
+      parameter ( GMEM_SHARE       = '2000'x )
+      parameter ( GMEM_DDESHARE    = '2000'x )
+      parameter ( GMEM_NOTIFY      = '4000'x )
+      parameter ( GMEM_LOWER       = GMEM_NOT_BANKED )
+      parameter ( GHND             = GMEM_MOVEABLE .or. GMEM_ZEROINIT )
+      parameter ( GPTR             = GMEM_FIXED .or. GMEM_ZEROINIT )
+
+! To determine whether a block of global memory can be discarded, "and" the
+! return value of GlobalFlags() with GMEM_DISCARDED.
+
+      integer GMEM_DISCARDED
+
+      parameter ( GMEM_DISCARDED      = '4000'x )
+
+! The low byte of the return value of GlobalFlags() contains the lock count
+! of the global memory block.  Use the GMEM_LOCKCOUNT mask to derive the lock
+! count from the return value.
+
+      integer GMEM_LOCKCOUNT
+
+      parameter ( GMEM_LOCKCOUNT      = '00FF'x )
+
+! Local Memory Flags
+
+      integer LMEM_FIXED
+      integer LMEM_MOVEABLE
+      integer LMEM_NOCOMPACT
+      integer LMEM_NODISCARD
+      integer LMEM_ZEROINIT
+      integer LMEM_MODIFY
+      integer LMEM_DISCARDABLE
+
+      integer LHND
+      integer LPTR
+
+      integer NONZEROLHND
+      integer NONZEROLPTR
+
+      integer LNOTIFY_OUTOFMEM
+      integer LNOTIFY_MOVE
+      integer LNOTIFY_DISCARD
+
+      parameter ( LMEM_FIXED       = '0000'x )
+      parameter ( LMEM_MOVEABLE    = '0002'x )
+      parameter ( LMEM_NOCOMPACT   = '0010'x )
+      parameter ( LMEM_NODISCARD   = '0020'x )
+      parameter ( LMEM_ZEROINIT    = '0040'x )
+      parameter ( LMEM_MODIFY      = '0080'x )
+      parameter ( LMEM_DISCARDABLE = '0F00'x )
+
+      parameter ( LHND             = LMEM_MOVEABLE .or. LMEM_ZEROINIT )
+      parameter ( LPTR             = LMEM_FIXED .or. LMEM_ZEROINIT )
+
+      parameter ( NONZEROLHND      = LMEM_MOVEABLE )
+      parameter ( NONZEROLPTR      = LMEM_FIXED )
+
+      parameter ( LNOTIFY_OUTOFMEM = 0 )
+      parameter ( LNOTIFY_MOVE     = 1 )
+      parameter ( LNOTIFY_DISCARD  = 2 )
+
+! To determine whether a block of global memory can be discarded, "and" the
+! return value of LocalFlags() with LMEM_DISCARDED.
+
+      integer LMEM_DISCARDED
+
+      parameter ( LMEM_DISCARDED   = '4000'x )
+
+! The low byte of the return value of LocalFlags() contains the lock count
+! of the local memory block.  Use the LMEM_LOCKCOUNT mask to derive the lock
+! count from the return value.
+
+      integer LMEM_LOCKCOUNT
+
+      parameter ( LMEM_LOCKCOUNT   = '00FF'x )
+
+! Flags returned by GetWinFlags()
+
+      integer WF_PMODE
+      integer WF_CPU286
+      integer WF_CPU386
+      integer WF_CPU486
+      integer WF_STANDARD
+      integer WF_WIN286
+      integer WF_ENHANCED
+      integer WF_WIN386
+      integer WF_CPU086
+      integer WF_CPU186
+      integer WF_LARGEFRAME
+      integer WF_SMALLFRAME
+      integer WF_80x87
+
+      parameter ( WF_PMODE        = '0001'x )
+      parameter ( WF_CPU286       = '0002'x )
+      parameter ( WF_CPU386       = '0004'x )
+      parameter ( WF_CPU486       = '0008'x )
+      parameter ( WF_STANDARD     = '0010'x )
+      parameter ( WF_WIN286       = '0010'x )
+      parameter ( WF_ENHANCED     = '0020'x )
+      parameter ( WF_WIN386       = '0020'x )
+      parameter ( WF_CPU086       = '0040'x )
+      parameter ( WF_CPU186       = '0080'x )
+      parameter ( WF_LARGEFRAME   = '0100'x )
+      parameter ( WF_SMALLFRAME   = '0200'x )
+      parameter ( WF_80x87        = '0400'x )
+
+*$reference

@@ -24,26 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOSish directory access functions.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "vi.h"
 #include <fcntl.h>
 #include <direct.h>
 #include <io.h>
 #include <dos.h>
-#include "vi.h"
 
 /*
  * MyGetFileSize - do just that
  */
-int MyGetFileSize( char *name, long *size )
+vi_rc MyGetFileSize( char *name, long *size )
 {
     DIR         *d;
 
@@ -60,7 +55,7 @@ int MyGetFileSize( char *name, long *size )
 /*
  * IsDirectory - check if a specified path is a directory
  */
-int IsDirectory( char *name )
+bool IsDirectory( char *name )
 {
     struct find_t       dta;
     unsigned            rc;
@@ -108,23 +103,23 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
  */
 void FormatFileEntry( direct_ent *file, char *res )
 {
-    char        buff[_MAX_PATH],tmp[_MAX_PATH];
+    char        buff[FILENAME_MAX], tmp[FILENAME_MAX];
     long        size;
 
     if( file->attr & _A_SUBDIR ) {
-        MySprintf(tmp," " FILE_SEP_STR "%S", file->name);
+        MySprintf(tmp, " " FILE_SEP_STR "%S", file->name);
     } else {
         if( !IsTextFile( file->name ) ) {
-            MySprintf(tmp," *%S",file->name);
+            MySprintf(tmp, " *%S", file->name);
         } else {
-            MySprintf(tmp,"  %S",file->name);
+            MySprintf(tmp, "  %S", file->name);
         }
     }
 
     /*
      * build attributeibutes
      */
-    strcpy(buff,"-------");
+    strcpy( buff, "-------" );
     size = file->fsize;
     if( file->attr & _A_SUBDIR ) {
         buff[0] = 'd';
@@ -140,21 +135,21 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[3] = 's';
     }
     buff[4] = 'r';
-    if( !(file->attr & _A_RDONLY ) ) {
+    if( !(file->attr & _A_RDONLY) ) {
         buff[5] = 'w';
     }
     if( !IsTextFile( file->name ) ) {
         buff[6] = 'x';
     }
 
-    MySprintf(res, "%s  %s %L  %D/%D/%d  %D:%D",
-            tmp,
-            buff,
-            size,
-            (int)file->date.month,
-            (int)file->date.day,
-            (int)file->date.year+80,
-            (int)file->time.hour,
-            (int)file->time.min);
+    MySprintf( res, "%s  %s %L  %D/%D/%d  %D:%D",
+               tmp,
+               buff,
+               size,
+               (int)file->date.month,
+               (int)file->date.day,
+               (int)file->date.year + 1980,
+               (int)file->time.hour,
+               (int)file->time.min );
 
 } /* FormatFileEntry */

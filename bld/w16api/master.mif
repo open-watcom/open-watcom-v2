@@ -1,0 +1,109 @@
+proj_name = w16api
+
+w16api_autodepends = .autodepend
+w16api_distrib_lib = 1
+
+!include cproj.mif
+!include defrule.mif
+
+splice = wsplice -i$(hdr_dir) -i../include $[@ $^@
+
+.EXTENSIONS : .lbc .def .mh
+
+headers =            &
+        _win386.h    &
+        cderr.h      &
+        cobjps.h     &
+        coguid.h     &
+        commdlg.h    &
+        compobj.h    &
+        ctl3d.h      &
+        custcntl.h   &
+        dde.h        &
+        ddeml.h      &
+        dispatch.h   &
+        dlgs.h       &
+        drivinit.h   &
+        dvobj.h      &
+        initguid.h   &
+        lzexpand.h   &
+        mmsystem.h   &
+        moniker.h    &
+        ole.h        &
+        ole2.h       &
+        ole2dbg.h    &
+        ole2ver.h    &
+        oleguid.h    &
+        olenls.h     &
+        scode.h      &
+        shellapi.h   &
+        storage.h    &
+        stress.h     &
+        toolhelp.h   &
+        variant.h    &
+        ver.h        &
+        win16.h      &
+        win386.h     &
+        windows.h    &
+        winsock.h
+
+libs =               &
+        commdlg.lib  &
+        compobj.lib  &
+        ctl3d.lib    &
+        ctl3dv2.lib  &
+        ddeml.lib    &
+        lzexpand.lib &
+        ole2.lib     &
+        ole2disp.lib &
+        ole2nls.lib  &
+        olecli.lib   &
+        olesvr.lib   &
+        shell.lib    &
+        storage.lib  &
+        stress.lib   &
+        toolhelp.lib &
+        typelib.lib  &
+	ver.lib      &
+        windows.lib  &
+        winsock.lib
+
+winlibs =            &
+        gdi.lbc      &
+        kernel.lbc   &
+        keyboard.lbc &
+        sound.lbc    &
+        user.lbc     &
+        win87em.lbc
+
+extra_lib_flags = -io -ii
+
+all : $(headers) $(libs) .SYMBOLIC
+
+.def: ../lib
+.asm: ../asm
+.mh: ../include
+
+.def.lbc:
+        $(awk) -f ../def16lbc.awk $[@ > $@
+
+.lbc.lib:
+        $(librarian) $(libflags) @$<
+
+.mh.h:
+	$(splice)
+
+$(libs):
+
+windows.lbc : $(winlibs)
+        @%create $^@
+        @for %i in ($(winlibs)) do @%append $^@ @ %i
+
+windows.lib: windows.lbc profc.obj
+        $(librarian) $(libflags) @$<
+
+clean : .SYMBOLIC
+	rm -f *.h
+	rm -f *.lbc
+	rm -f *.lib
+	rm -f *.obj

@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WdeGetStatusDepth       ( void );
-extern Bool     WdeSetStatusText        ( const char *, const char *, int );
-extern void     WdeDestroyStatusLine    ( void );
-extern Bool     WdeCreateStatusLine     ( HWND, HINSTANCE );
-extern void     WdeResizeStatusWindows  ( RECT * );
-extern Bool     WdeSetStatusReadyText   ( void );
-extern Bool     WdeSetStatusByID        ( DWORD id1, DWORD id2 );
+extern int  WdeGetStatusDepth( void );
+extern Bool WdeSetStatusText( const char *, const char *, int );
+extern void WdeDestroyStatusLine( void );
+extern Bool WdeCreateStatusLine( HWND, HINSTANCE );
+extern void WdeResizeStatusWindows( RECT * );
+extern Bool WdeSetStatusReadyText( void );
+extern Bool WdeSetStatusByID( DWORD id1, DWORD id2 );
 
 #endif

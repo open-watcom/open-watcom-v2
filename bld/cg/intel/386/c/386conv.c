@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Machine type conversion routines.
 *
 ****************************************************************************/
 
@@ -39,16 +38,15 @@
 #include "vergen.h"
 #include "model.h"
 #include "funits.h"
+#include "makeins.h"
 
-extern  name    *       AllocTemp(type_class_def);
-extern  instruction*    MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction*    MakeMove(name*,name*,type_class_def);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
+extern  name            *AllocTemp( type_class_def );
+extern  void            MoveSegOp( instruction *, instruction *, int );
+extern  void            PrefixIns( instruction *, instruction * );
+extern  void            DupSeg( instruction *, instruction * );
+extern  void            ReplIns( instruction *, instruction * );
 
-extern    int   RoutineNum;
+extern  int             RoutineNum;
 
 
 static  opcode_entry    C2to1[] = {
@@ -59,7 +57,6 @@ _Un( R,    ANY,  NONE ),  V_NO,       R_MOVOP1TEMP,     RG_,    FU_NO,
 _Un( ANY,  ANY,  NONE ),  V_NO,       R_MOVELOW,        RG_,    FU_NO,
 };
 
-
 static  opcode_entry    C4to1[] = {
 /*********************************/
 /*    from  to    eq          verify          gen        reg    fu*/
@@ -67,7 +64,6 @@ _Un( U,    ANY,  NONE ),  V_CONSTTEMP,  G_UNKNOWN,      RG_,    FU_NO,
 _Un( C,    ANY,  NONE ),  V_OP1RELOC,   R_MOVOP1TEMP,   RG_,    FU_NO,
 _Un( ANY,  ANY,  NONE ),  V_NO,         R_CONVERT_LOW,  RG_,    FU_NO
 };
-
 
 static  opcode_entry    C4to2[] = {
 /*********************************/
@@ -85,7 +81,6 @@ _Un( C,    ANY,  NONE ),  V_OP1RELOC,   R_MOVOP1TEMP,   RG_,    FU_NO,
 _Un( ANY,  ANY,  NONE ),  V_NO,         R_MOVELOW,      RG_,    FU_NO
 };
 
-
 static  opcode_entry    S1to2[] = {
 /*********************************/
 /*    from  to    eq       verify        gen             reg            fu*/
@@ -95,7 +90,6 @@ _Un( U|C,  R,    NONE ),   V_NO,         G_UNKNOWN,      RG_BYTE_WORD,  FU_NO,
 _Un( ANY,  M,    NONE ),   V_NO,         R_MOVRESREG,    RG_BYTE_WORD,  FU_NO,
 _Un( ANY,  ANY,  NONE ),   V_NO,         G_UNKNOWN,      RG_BYTE_WORD_NEED_WORD,FU_NO,
 };
-
 
 static  opcode_entry    S1to4[] = {
 /*********************************/
@@ -151,8 +145,8 @@ _Un( ANY,  ANY,  NONE ),   V_NO,         G_UNKNOWN,      RG_WORD_DBL_NEED_DBL,FU
 static  opcode_entry    S4to8[] = {
 /*********************************/
 /*    from  to    eq       verify        gen             reg        fu*/
-_Un( R,    R,    NONE ),   V_SIZE,       G_SIGNEX,       RG_CDQ,    FU_ALUX,
-_Un( ANY,  R,    NONE ),   V_SIZE,       R_MOVOP1REG,    RG_CDQ,    FU_NO,
+_Un( R,    R,    NONE ),   V_CDQ,        G_SIGNEX,       RG_CDQ,    FU_ALUX,
+_Un( ANY,  ANY,  NONE ),   V_CDQ,        R_OP1RESREG,    RG_CDQ,    FU_NO,
 _Un( ANY,  ANY,  NONE ),   V_NO,         R_CDQ,          RG_,       FU_NO,
 };
 
@@ -186,6 +180,7 @@ _Un( ANY,  R,    NONE ),   V_NO,         R_CLRHIGH_R,    RG_CWD,    FU_NO,
 _Un( R|M,  R,    NONE ),   V_GOOD_CLR,   R_CLRHIGH_R,    RG_WORD_DBL,FU_NO,
 _Un( C,    ANY,  NONE ),   V_OP1RELOC,   R_MOVOP1TEMP,   RG_,       FU_NO,
 _Un( R|M,  R,    NONE ),   V_NO,         G_MOVZX,        RG_WORD_DBL,FU_ALU1,
+_Un( R,    R,    NONE ),   V_NO,         G_RS,           RG_SEG_DBL,FU_ALUX,
 _Un( U|C,  R,    NONE ),   V_NO,         G_UNKNOWN,      RG_WORD_DBL,FU_NO,
 _Un( ANY,  M,    NONE ),   V_NO,         R_MOVRESREG,    RG_WORD_DBL,FU_NO,
 _Un( ANY,  ANY,  NONE ),   V_NO,         G_UNKNOWN,      RG_WORD_DBL_NEED_DBL,FU_NO
@@ -212,6 +207,17 @@ static  opcode_entry    ChpPT[] = {
 _Un( ANY,  ANY,  NONE ),     V_NO,           R_CHPPT,        RG_,   FU_NO,
 };
 
+static  opcode_entry    PTtoI8[] = {
+/**********************************/
+/*    from  to    eq          verify          gen             reg   fu*/
+_Un( ANY,  ANY,  NONE ),     V_NO,           R_MOVPTI8,     RG_,   FU_NO,
+};
+
+static  opcode_entry    I8toPT[] = {
+/*********************************/
+/*    from  to    eq          verify          gen             reg   fu*/
+_Un( ANY,  ANY,  NONE ),     V_NO,           R_MOVI8PT,     RG_,   FU_NO,
+};
 
 static  opcode_entry    CRtn[] = {
 /********************************/
@@ -220,25 +226,27 @@ _Un( ANY,  ANY,  NONE ),     V_NO,           R_MAKECALL,     RG_,   FU_NO,
 };
 
 static opcode_entry     *CvtAddr[] = {
-        &C2to1,
-        &C4to1,
-        &C4to2,
-        &C8to4,
-        &C8to4,
-        &S1to2,
-        &S1to4,
-        &S1to8,
-        &S2to4,
-        &S2to8,
-        &S4to8,
-        &Z1to2,
-        &Z1to4,
-        &Z1to8,
-        &Z2to4,
-        &Z2to8,
-        &Z4to8,
-        &ExtPT,
-        &ChpPT,
+        C2to1,
+        C4to1,
+        C4to2,
+        C8to4,
+        C8to4,
+        S1to2,
+        S1to4,
+        S1to8,
+        S2to4,
+        S2to8,
+        S4to8,
+        Z1to2,
+        Z1to4,
+        Z1to8,
+        Z2to4,
+        Z2to8,
+        Z4to8,
+        ExtPT,
+        ChpPT,
+        PTtoI8,
+        I8toPT,
         };
 
 static  rt_class         CvtTable[] = {
@@ -250,9 +258,9 @@ Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, CU4,   BAD,   CU4,   CU4
 Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, CU4,   BAD,   CI4,   CI4,   CI4,     /* I2*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, CHP_PT,BAD,   C_S_U, C_D_U, C_D_U,   /* U4*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, CU4,   BAD,   C_S_4, C_D_4, C_D_4,   /* I4*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    BAD,   BAD,   C_S_U8,C_D_U8,C_D_U8,  /* U8*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    BAD,   BAD,   C_S_I8,C_D_I8,C_D_I8,  /* I8*/
-CU4,   CI4,   CU4,   CI4,   EXT_PT,CU4,   EXT_PT,CU4,   OK,    BAD,   BAD,   BAD,   BAD,     /* CP*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    PTTOI8,BAD,   C_S_U8,C_D_U8,C_D_U8,  /* U8*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    PTTOI8,BAD,   C_S_I8,C_D_I8,C_D_I8,  /* I8*/
+CU4,   CI4,   CU4,   CI4,   EXT_PT,CU4,   I8TOPT,I8TOPT,OK,    BAD,   BAD,   BAD,   BAD,     /* CP*/
 BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,     /* PT*/
 CU4,   CI4,   CU4,   CI4,   C_U4_S,C_I4_S,C_U8_S,C_I8_S,BAD,   BAD,   OK,    C_D_S, C_D_S,   /* FS*/
 CU4,   CI4,   CU4,   CI4,   C_U4_D,C_I4_D,C_U8_D,C_I8_D,BAD,   BAD,   C_S_D, OK,    OK,      /* FD*/
@@ -268,20 +276,20 @@ Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, CU4,   BAD,   CU4,   CU4
 Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, CU4,   BAD,   CI4,   CI4,   CI4,     /* I2*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, CHP_PT,BAD,   FPOK,  FPOK,  FPOK,    /* U4*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, CU4,   BAD,   FPOK,  FPOK,  FPOK,    /* I4*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    BAD,   BAD,   C7S_U8,C7D_U8,C7D_U8,  /* U8*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* I8*/
-CU4,   CI4,   CU4,   CI4,   EXT_PT,CU4,   EXT_PT,CU4,   OK,    BAD,   BAD,   BAD,   BAD,     /* CP*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    PTTOI8,BAD,   C7S_U8,C7D_U8,C7D_U8,  /* U8*/
+Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    PTTOI8,BAD,   FPOK,  FPOK,  FPOK,    /* I8*/
+CU4,   CI4,   CU4,   CI4,   EXT_PT,CU4,   I8TOPT,I8TOPT,OK,    BAD,   BAD,   BAD,   BAD,     /* CP*/
 BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,   BAD,     /* PT*/
 CU4,   CI4,   CU4,   FPOK,  FPOK,  FPOK,  C7U8_S,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FS*/
 CU4,   CI4,   CU4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FD*/
 CU4,   CI4,   CU4,   FPOK,  FPOK,  FPOK,  C7U8_D,FPOK,  BAD,   BAD,   FPOK,  FPOK,  FPOK,    /* FL*/
 };
 
-extern  rt_class        AskHow( type_class_def fr, type_class_def to ) {
-/***********************************************************************
+extern  rt_class        AskHow( type_class_def fr, type_class_def to )
+/*********************************************************************
     return the conversion method required to convert from "fr" to "to"
 */
-
+{
     if( to == XX || fr == XX ) { /* special case for 64 bit operand of IDIV */
         return( BAD );
     }
@@ -292,24 +300,24 @@ extern  rt_class        AskHow( type_class_def fr, type_class_def to ) {
     }
 }
 
-extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
-/**************************************************************
+extern  bool    CvtOk( type_class_def fr, type_class_def to )
+/************************************************************
     return true if a conversion from "fr" to "to" can be done
 */
-
+{
     if( fr == XX ) return( FALSE );
     if( to == XX ) return( FALSE );
     if( AskHow( fr, to ) != BAD ) return( TRUE );
     return( FALSE );
 }
 
-extern  instruction     *rDOCVT( instruction *ins ) {
-/****************************************************
+extern  instruction     *rDOCVT( instruction *ins )
+/**************************************************
     decide how to accomplish the conversion, then
     either point the instruction at a new generate
     table, or reduce it into two simpler conversions
 */
-
+{
     name        *src;
     name        *dst;
     name        *name;
@@ -357,7 +365,7 @@ extern  instruction     *rDOCVT( instruction *ins ) {
         ins->table = CvtAddr[  how - ( OK + 1 )  ];
         new_ins = ins;
     } else {
-        ins->table = &CRtn;
+        ins->table = CRtn;
         RoutineNum = how - BEG_RTNS;
         new_ins = ins;
     }

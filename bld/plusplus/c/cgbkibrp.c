@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <float.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <float.h>
+
 #include "cgfront.h"
 #include "cgback.h"
 #include "codegen.h"
@@ -506,12 +506,12 @@ static boolean locatedVFun(     // LOCATE VIRTUAL FUNCTION FOR BASE
         CGFILE* cgfile;
         cgfile = CgioLocateAnyFile( exact_vfun );
         DbgVerify( cgfile != NULL, "locatedVfun -- no CGFILE" );
-        if( cgfile->calls_inline ) {
+        if( cgfile->s.calls_inline ) {
             retn = FALSE;
         } else if( cgfile->cond_flags != 0 ) {
             retn = FALSE;
         } else {
-            if( cgfile->state_table && FstabHasStateTable() ) {
+            if( cgfile->s.state_table && FstabHasStateTable() ) {
                 retn = FALSE;
             } else {
                 *a_vfun = exact_vfun;

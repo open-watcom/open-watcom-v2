@@ -19,12 +19,12 @@ all: first upd02xa.3 upd02xb.cc last .symbolic
     @%null
 
 first: .symbolic
-    @-if exist upd02x*.* del upd02x*.* >nul
+    @-if exist upd02x*.* @rm upd02x*.* # Handled internally, not by shell.
     @wtouch upd02xa.1
     @wtouch upd02xb.aa
 
 last: .symbolic
-    @-del upd02x*.* >nul
+    @-rm upd02x*.*
 
 upd02xa.3 :: upd02xa.1
     @wtouch upd02xa.2

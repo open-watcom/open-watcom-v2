@@ -36,11 +36,8 @@
 #define         PAD_CHAR                0x20
 
 
-void global uipadblanks( buff, len )
-/**********************************/
-
-register        char*                   buff;
-register        int                     len;
+void global uipadblanks( char *buff, int len )
+/********************************************/
 {
     register    char*                   end_buff;
     register    char                    curr_char;

@@ -34,7 +34,6 @@
 #include "standard.h"
 #include "coderep.h"
 #include "conflict.h"
-#include "sysmacro.h"
 #include "opcodes.h"
 #include "cgdefs.h"
 #include "model.h"
@@ -54,12 +53,13 @@ typedef struct stupid_struct_so_I_can_use_safe_recurse {
 extern  void    ClearBlockBits( block_class );
 extern  pointer SafeRecurse(pointer(*)(),pointer);
 
-static void doFloodForward( flood_parms *p ) {
+static pointer doFloodForward( void *fp ) {
 
     block       *next;
     block_num   i;
     block_num   n;
     flood_parms new_parms;
+    flood_parms *p = fp;
 
     new_parms = *p;
     n = p->blk->targets;
@@ -71,6 +71,7 @@ static void doFloodForward( flood_parms *p ) {
         new_parms.blk = next;
         SafeRecurse( doFloodForward, &new_parms );
     }
+    return NULL;
 }
 
 extern void FloodForward( block *blk, flood_func func, void *parm ) {
@@ -83,11 +84,12 @@ extern void FloodForward( block *blk, flood_func func, void *parm ) {
     doFloodForward( &parms );
 }
 
-static void doFloodBackward( flood_parms *p ) {
+static pointer doFloodBackward( pointer fp ) {
 
     block       *next;
     block_edge  *edge;
     flood_parms new_parms;
+    flood_parms *p = fp;
 
     new_parms = *p;
     for( edge = p->blk->input_edges; edge != NULL; edge = edge->next_source ) {
@@ -98,6 +100,7 @@ static void doFloodBackward( flood_parms *p ) {
         new_parms.blk = next;
         SafeRecurse( doFloodBackward, &new_parms );
     }
+    return NULL;
 }
 
 extern void FloodBackwards( block *start, flood_func func, void *parm ) {

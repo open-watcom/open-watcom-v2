@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Named pipes link internals.
 *
 ****************************************************************************/
 
@@ -53,8 +52,7 @@
 
 #define BUFF_LEN        (2*MAX_TRANS)
 
-enum
-{
+enum {
     OPEN_SERV           = 'o',
     OPEN_TRAP           = 'O',
     CONNECT_SERV        = 'c',
@@ -93,4 +91,4 @@ extern int myopen( char * );
 extern void myclose( int );
 extern int myread( int, char *, int );
 extern int mywrite( int, char *, int );
-extern void mysnooze();
+extern void mysnooze( void );

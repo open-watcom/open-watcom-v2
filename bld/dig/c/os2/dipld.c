@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP module loader for 16-bit OS/2.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@
 #include "dipimp.h"
 
 dip_status DIPSysLoad( char *path, dip_client_routines *cli,
-                                dip_imp_routines **imp, unsigned long *sys_hdl )
+                       dip_imp_routines **imp, unsigned long *sys_hdl )
 {
     HMODULE             dll;
     dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );

@@ -39,16 +39,9 @@
 #define _mouse( r, c )  ((*vtab->mousepos)( vtab->mouseparm, r, c )\
                         == vtab->mouseparm)
 
-typedef struct vfield {
-        SAREA           area;
-} VTABAREA;
-
-static void *fwd_tab( vtab, curr, wrap )
-    VTAB                *vtab;
-    VTABAREA           *curr;
-    unsigned            wrap;
+static void *fwd_tab( VTAB *vtab, VTABAREA *curr, unsigned wrap )
 {
-    VTABAREA           *chase;
+    VTABAREA            *chase;
 
     if( curr == NULL ){
         chase = vtab->first;
@@ -74,10 +67,7 @@ static void *fwd_tab( vtab, curr, wrap )
     return( chase );
 }
 
-static void *bwd_tab( vtab, curr, wrap )
-    VTAB                *vtab;
-    VTABAREA           *curr;
-    unsigned            wrap;
+static void *bwd_tab( VTAB *vtab, VTABAREA *curr, unsigned wrap )
 {
     VTABAREA           *chase, *hold;
 
@@ -105,11 +95,8 @@ static void *bwd_tab( vtab, curr, wrap )
 }
 
 
- EVENT uitabfilter( ev, vtab )
-/****************************/
-
-EVENT ev;
-VTAB *vtab;
+EVENT uitabfilter( EVENT ev, VTAB *vtab )
+/***************************************/
 {
     VTABAREA   *curr, *best, *chase;
     ORD         r, c;

@@ -31,7 +31,7 @@
 
 
 .386p
-.387
+
                 name            adstrap
 
 extrn   DumpRegs        : near
@@ -106,8 +106,6 @@ dataseg         dw              0
 FirstTime       db              1
 extrn           IntNum          : dword
 extrn           Regs            : byte
-extrn           Meg1            : word
-extrn           XVersion        : byte
 _data ends
 
 
@@ -285,74 +283,6 @@ oldvect         macro   name,num
                 ret                             ; return to caller
 ReleVects      endp
 
-public          GetDosLong
-GetDosLong      proc near
-                mov     eax,4[esp]
-                push    fs
-                mov     fs,Meg1
-                mov     eax,dword ptr fs:[eax]
-                pop     fs
-                ret
-GetDosLong      endp
-
-public          GetDosByte
-GetDosByte      proc near
-                mov     eax,4[esp]
-                push    fs
-                mov     fs,Meg1
-                movzx   eax,byte ptr fs:[eax]
-                pop     fs
-                ret
-GetDosByte      endp
-
-public          PutDosByte
-PutDosByte      proc near
-                push    edx
-                mov     eax,8[esp]
-                mov     edx,12[esp]
-                push    fs
-                mov     fs,Meg1
-                mov     byte ptr fs:[eax],dl
-                pop     fs
-                pop     edx
-                ret
-PutDosByte      endp
-
-public          PutDosLong
-PutDosLong      proc near
-                push    edx
-                mov     eax,8[esp]
-                mov     edx,12[esp]
-                push    fs
-                mov     fs,Meg1
-                mov     fs:[eax],edx
-                pop     fs
-                pop     edx
-                ret
-PutDosLong      endp
-
-public          CallRealMode
-CallRealMode    proc near
-                mov     eax,4[esp]
-                push    ebx
-                push    ecx
-                push    edx
-                push    esi
-                push    edi
-                push    ebp
-                mov     ebx,eax
-                xor     ecx,ecx
-                mov     ax,250eH
-                int     21H
-                pop     ebp
-                pop     edi
-                pop     esi
-                pop     edx
-                pop     ecx
-                pop     ebx
-                ret
-CallRealMode    endp
-
 public          GetDS
 GetDS           proc    near
                 xor     eax,eax
@@ -460,23 +390,6 @@ writeisok:      push    edx             ; save regs
                 ret                     ; ...
 DoWriteMem      endp
 
-public          Read387
-Read387         proc    near
-                mov     eax,4[esp]              ; get buffer address
-                fsave   [eax]                   ; save 387 there
-                frstor  [eax]                   ; restore it (fsave does finit)
-                fwait                           ; wait for fsave
-                ret                             ; ...
-Read387         endp
-
-public          Write387
-Write387        proc    near
-                mov     eax,4[esp]              ; get buffer address
-                frstor  [eax]                   ; set 8087 state
-                fwait                           ; wait for frstor to finish
-                ret                             ; ...
-Write387        endp
-
 sysregs         macro   write
                 push    ebx                     ; save regs
                 push    edx                     ; ...
@@ -498,35 +411,6 @@ public          SetSysRegs
 SetSysRegs      proc near
                 sysregs 1
 SetSysRegs      endp
-
-        public  NPXType
-NPXType proc    near
-        sub     eax,eax                 ; set initial control word to 0
-        push    eax                     ; push it on stack
-;
-        fninit                          ; initialize math coprocessor
-        fnstcw  [esp]                   ; store control word in memory
-        mov     al,0                    ; assume no coprocessor present
-        mov     ah,1[esp]               ; upper byte is 03h if
-        cmp     ah,03h                  ;   coprocessor is present
-        jne     exit                    ; exit if no coprocessor present
-        finit                           ; use default infinity mode
-        fld1                            ; generate infinity by
-        fldz                            ;   dividing 1 by 0
-        fdiv                            ; ...
-        fld     st                      ; form negative infinity
-        fchs                            ; ...
-        fcompp                          ; compare +/- infinity
-        fstsw   [esp]                   ; equal for 87/287
-        fwait                           ; wait fstsw to complete
-        mov     ax,[esp]                ; get NDP control word
-        mov     al,2                    ; assume 80287
-        sahf                            ; store condition bits in flags
-        jz      exit                    ; it's 287 if infinities equal
-        mov     al,3                    ; indicate 80387
-exit:   add     esp,4                   ; clear the stack
-        ret                             ; return
-NPXType endp
 
 _text           ends
 

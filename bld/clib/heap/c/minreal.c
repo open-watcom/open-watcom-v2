@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of __minreal.
 *
 ****************************************************************************/
 
@@ -33,4 +32,4 @@
 #include "variety.h"
 #include <stdlib.h>
 
-_WCRTLINK unsigned _WCNEAR __minreal /* = 0 */;
+_WCRTDATA unsigned _WCNEAR  __minreal /* = 0 */;

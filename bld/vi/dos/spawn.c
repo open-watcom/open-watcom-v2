@@ -30,21 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dos.h>
 #include "vi.h"
+#include <malloc.h>
+#include <dos.h>
 #include "fcbmem.h"
 
 void ResetSpawnScreen( void )
 {
 }
 
-#if !defined(__386__)
+#if !defined( __386__ )
 static long minMemoryLeft;
-static int chkSwapSize;
+static int  chkSwapSize;
 
 #include "tinyio.h"
 static char *fullName;
@@ -73,49 +70,48 @@ typedef struct {
 #define MEMORY_BLOCK 'M'
 #define END_OF_CHAIN 'Z'
 #define NEXT_BLOCK( curr )  MK_FP( (FP_SEG( curr ) + (curr)->size + 1), 0 )
-#define PUT_ITEM( item ) (TinyWrite( hdl, &(item), \
-                         sizeof( item ) ) == sizeof( item ))
+#define PUT_ITEM( item ) (TinyWrite( hdl, &(item), sizeof( item ) ) == sizeof( item ))
 
 static dos_mem_block saveMem;
 static dos_mem_block *savePtrMem;
 static dos_mem_block *savePtrChk;
 
-static unsigned long fileHandle;
-static unsigned short *xSize;
-static long *xHandle;
-static unsigned short currMem;
-static where isWhere;
+static unsigned long    fileHandle;
+static unsigned short   *xSize;
+static long             *xHandle;
+static unsigned short   currMem;
+static where            isWhere;
 
 static void memGiveBack( void (*rtn)( long ) )
 {
     int i;
 
-    for( i=0;i<chkSwapSize;i++ ) {
+    for( i = 0; i < chkSwapSize; i++ ) {
         rtn( xHandle[i] );
     }
 
 } /* memGiveBack */
 
-static void memBlockWrite( void (*rtn)(long, void*, unsigned),
+static void memBlockWrite( void (*rtn)( long, void*, unsigned ),
                            char *buff, unsigned *size )
 {
     unsigned    bytes;
 
-    if( (*size) >= 0x0200 ) {
-        (*size) = 0x0200;
+    if( *size >= 0x0200 ) {
+        *size = 0x0200;
     }
-    bytes = (*size) << 4;
-    rtn( xHandle[ currMem ], buff, bytes );
-    xSize[ currMem ] = bytes;
+    bytes = *size << 4;
+    rtn( xHandle[currMem], buff, bytes );
+    xSize[currMem] = bytes;
     currMem++;
 
 } /* memBlockWrite */
 
-static int memBlockRead( void (*rtn)(long, void*, unsigned), void **buff )
+static int memBlockRead( void (*rtn)( long, void*, unsigned ), void **buff )
 {
-    rtn( xHandle[ currMem ], *buff, xSize[ currMem ] );
-    (*buff) = MK_FP( FP_SEG( (*buff) ) + 0x200, 0 );
-    if( xSize[ currMem ] < MAX_IO_BUFFER ) {
+    rtn( xHandle[currMem], *buff, xSize[currMem] );
+    *buff = MK_FP( FP_SEG( *buff ) + 0x200, 0 );
+    if( xSize[currMem] < MAX_IO_BUFFER ) {
         return( FALSE );
     }
     currMem++;
@@ -125,7 +121,6 @@ static int memBlockRead( void (*rtn)(long, void*, unsigned), void **buff )
 
 static void cleanUp( void )
 {
-
     switch( isWhere ) {
     case ON_DISK:
         TinyClose( fileHandle );
@@ -154,10 +149,10 @@ static bool chkWrite( void *buff, unsigned *size )
 
     switch( isWhere ) {
     case ON_DISK:
-        if( (*size) >= 0x1000 ) {
-            (*size) = 0x0800;
+        if( *size >= 0x1000 ) {
+            *size = 0x0800;
         }
-        bytes = (*size) << 4;
+        bytes = *size << 4;
         if( TinyWrite( fileHandle, buff, bytes) != bytes ) {
             return( FALSE );
         }
@@ -180,13 +175,14 @@ static bool chkWrite( void *buff, unsigned *size )
 /*
  * chkRead - read checkpoint "file"
  */
-static bool chkRead( void **buff )
+static bool chkRead( void *buf )
 {
+    void    **buff = buf;
 
     switch( isWhere ) {
     case ON_DISK:
         if( TinyRead( fileHandle, *buff, 0x8000 ) == 0x8000 ) {
-            (*buff) = MK_FP( FP_SEG( (*buff) ) + 0x800, 0 );
+            *buff = MK_FP( FP_SEG( *buff ) + 0x800, 0 );
             return( TRUE );
         }
         return( FALSE );
@@ -251,8 +247,8 @@ static void chkClose( void )
  */
 static bool checkPointMem( unsigned max )
 {
-    dos_mem_block       *mem,*start,*end,*next,*chk;
-    unsigned            size,psp;
+    dos_mem_block       *mem, *start, *end, *next, *chk;
+    unsigned            size, psp;
 
     if( max == 0 ) {
         return( FALSE );
@@ -314,7 +310,6 @@ static bool checkPointMem( unsigned max )
     return( TRUE );
 }
 
-
 static void CheckPointRestore( void )
 {
     dos_mem_block       *chk;
@@ -337,21 +332,21 @@ extern int DoSpawn( void *, void * );
         "push   es" \
         "push   si" \
         "push   di" \
-        "mov    ds,dx"  /*  exe segment */ \
-        "mov    dx,ax"  /*  exe offset */ \
-        "mov    es,cx"  /*  parm block segment (offset in bx already) */ \
-        "mov    ax,4b00h"  /*  exec process */ \
+        "mov    ds, dx"  /*  exe segment */ \
+        "mov    dx, ax"  /*  exe offset */ \
+        "mov    es, cx"  /*  parm block segment (offset in bx already) */ \
+        "mov    ax, 4b00h"  /*  exec process */ \
         "int    21h" \
         "jc     rcisright" \
-        "mov    ax,4d00h" \
+        "mov    ax, 4d00h" \
         "int    21h" \
-        "mov    ah,0" \
+        "mov    ah, 0" \
         "rcisright:" \
         "pop    di" \
         "pop    si" \
         "pop    es" \
         "pop    ds" \
-        parm [dx ax] [cx bx] value[ax];
+    parm [dx ax] [cx bx] value [ax];
 
 extern int GetFcb( void *, void * );
 #pragma aux GetFcb = \
@@ -359,34 +354,34 @@ extern int GetFcb( void *, void * );
         "push   es" \
         "push   si" \
         "push   di" \
-        "mov    ds,dx" /*  exe segment */ \
-        "mov    si,ax" /*  exe offset */ \
-        "mov    es,cx" /*  parm block segment (offset in bx already) */ \
-        "mov    di,bx" \
-        "mov    ax,2901h" /*  parse filename/get fcb */ \
+        "mov    ds, dx" /*  exe segment */ \
+        "mov    si, ax" /*  exe offset */ \
+        "mov    es, cx" /*  parm block segment (offset in bx already) */ \
+        "mov    di, bx" \
+        "mov    ax, 2901h" /*  parse filename/get fcb */ \
         "int    21h" \
         "pop    di" \
         "pop    si" \
         "pop    es" \
         "pop    ds" \
-        parm [dx ax] [cx bx] value[ax];
+    parm [dx ax] [cx bx] value [ax];
 
 int MySpawn( char *cmd )
 {
     bool        cp;
     int         rc;
     exec_block  exeparm;
-    _fcb        fcb1,fcb2;
+    _fcb        fcb1, fcb2;
     cmd_struct  cmds;
-    char        path[_MAX_PATH],file[_MAX_PATH];
+    char        path[_MAX_PATH], file[_MAX_PATH];
     tiny_ret_t  ret;
     int         i;
     char        chkfname[L_tmpnam];
 
-    minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER-1);
-    chkSwapSize = 1+(unsigned short)
-        ((( minMemoryLeft + ((long)MAX_IO_BUFFER-1) ) & ~((long)MAX_IO_BUFFER-1)) /
-                (long)MAX_IO_BUFFER);
+    minMemoryLeft = MaxMemFree & ~((long)MAX_IO_BUFFER - 1);
+    chkSwapSize = 1 + (unsigned short)
+        (((minMemoryLeft + ((long)MAX_IO_BUFFER - 1)) & ~((long)MAX_IO_BUFFER - 1)) /
+         (long)MAX_IO_BUFFER);
 
     /*
      * set up checkpoint file stuff:
@@ -395,7 +390,7 @@ int MySpawn( char *cmd )
     if( !EMSBlockTest( chkSwapSize ) ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
-        for( i=0;i<chkSwapSize;i++ ) {
+        for( i = 0; i < chkSwapSize; i++ ) {
             EMSGetBlock( &xHandle[i] );
         }
         isWhere = IN_EMS;
@@ -407,7 +402,7 @@ int MySpawn( char *cmd )
     if( !XMSBlockTest( chkSwapSize ) ) {
         xHandle = alloca( chkSwapSize * sizeof( long ) );
         xSize = alloca( chkSwapSize * sizeof( short ) );
-        for( i=0;i<chkSwapSize;i++ ) {
+        for( i = 0; i < chkSwapSize; i++ ) {
             XMSGetBlock( &xHandle[i] );
         }
         isWhere = IN_XMS;
@@ -445,7 +440,7 @@ evil_goto:
     /*
      * spawn the command
      */
-    cp = checkPointMem( minMemoryLeft/16 );
+    cp = checkPointMem( minMemoryLeft / 16 );
     rc = DoSpawn( path, &exeparm );
     if( cp ) {
         CheckPointRestore();

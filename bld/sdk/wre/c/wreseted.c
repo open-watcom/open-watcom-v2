@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 
 #include "wreglbl.h"
@@ -41,118 +41,118 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-Bool WRESetEditWithWResID ( HWND edit, WResID *id )
+Bool WRESetEditWithWResID( HWND edit, WResID *id )
 {
-    char *cp;
-    Bool  ok;
+    char    *cp;
+    Bool    ok;
 
     cp = NULL;
 
-    ok = ( ( edit != (HWND)NULL ) && id );
+    ok = ((edit != (HWND)NULL) && id != NULL);
 
-    if ( ok ) {
-        ok = ( ( cp = WResIDToStr ( id ) ) != NULL );
+    if( ok ) {
+        ok = ((cp = WResIDToStr( id )) != NULL);
     }
 
-    if ( ok ) {
-        ok = WRESetEditWithStr ( edit, cp );
+    if( ok ) {
+        ok = WRESetEditWithStr( edit, cp );
     }
 
-    if ( cp ) {
-        WREMemFree ( cp );
+    if( cp != NULL ) {
+        WREMemFree( cp );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WRESetEditWithStr ( HWND edit, char *str )
+Bool WRESetEditWithStr( HWND edit, char *str )
 {
-    Bool      ok;
+    Bool    ok;
 
-    if ( ok = ( ( edit != (HWND)NULL ) && str ) ) {
-        SendMessage ( edit, WM_SETTEXT, 0, (LPARAM) (LPCSTR) str );
+    if( ok = ((edit != (HWND)NULL) && str) ) {
+        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WRESetLBoxWithStr ( HWND lbox, char *str, void *data )
+Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
 {
-    Bool      ok;
-    LRESULT   index;
+    Bool    ok;
+    LRESULT index;
 
-    ok = ( ( lbox != (HWND)NULL ) && str );
+    ok = ((lbox != (HWND)NULL) && str);
 
-    if ( ok ) {
-        index = SendMessage ( lbox, LB_ADDSTRING, 0, (LPARAM) (LPCSTR) str );
-        ok = ( ( index != LB_ERR ) && ( index != LB_ERRSPACE ) );
+    if( ok ) {
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
-    if ( ok ) {
-        SendMessage ( lbox, LB_SETITEMDATA, index, (LPARAM) data );
-        ok = ( index != LB_ERR );
+    if( ok ) {
+        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data );
+        ok = (index != LB_ERR);
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WRESetLBoxWithWResID ( HWND lbox, WResID *id, void *data )
+Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
 {
-    Bool      ok;
-    char     *name;
+    Bool    ok;
+    char    *name;
 
     name = NULL;
 
-    ok = ( ( lbox != (HWND)NULL ) && id );
+    ok = (lbox != (HWND)NULL && id != NULL);
 
-    ok = ok && ( ( name = WResIDToStr ( id ) ) != NULL );
+    ok = ok && ((name = WResIDToStr( id )) != NULL);
 
-    ok = ok && WRESetLBoxWithStr ( lbox, name, data );
+    ok = ok && WRESetLBoxWithStr( lbox, name, data );
 
-    if ( name ) {
-        WREMemFree ( name );
+    if( name != NULL ) {
+        WREMemFree( name );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-char *WREGetStrFromEdit ( HWND edit, Bool *mod )
+char *WREGetStrFromEdit( HWND edit, Bool *mod )
 {
-    char  *cp;
-    int    text_length;
-    int    text_copied;
+    char    *cp;
+    LRESULT text_length;
+    LRESULT text_copied;
 
     text_copied = 0;
 
-    if ( mod ) {
+    if( mod != NULL ) {
         /* find out if the edit field has changed */
-        if ( SendMessage ( edit, EM_GETMODIFY, 0, 0 ) ) {
+        if( SendMessage( edit, EM_GETMODIFY, 0, 0 ) ) {
             *mod = TRUE;
         } else {
             *mod = FALSE;
         }
     }
 
-    text_length = SendMessage ( edit, WM_GETTEXTLENGTH, 0, 0 );
+    text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *) WREMemAlloc ( text_length + 1 );
-    if ( cp == NULL ) {
-        return ( NULL );
+    cp = (char *)WREMemAlloc( text_length + 1 );
+    if( cp == NULL ) {
+        return( NULL );
     }
 
-    text_copied = SendMessage ( edit, WM_GETTEXT, text_length+1, (LPARAM)cp );
+    text_copied = SendMessage( edit, WM_GETTEXT, text_length + 1, (LPARAM)cp );
 
-    if ( text_copied > text_length ) {
-        WREMemFree ( cp );
-        return ( NULL );
+    if( text_copied > text_length ) {
+        WREMemFree( cp );
+        return( NULL );
     }
 
     cp[text_length] = '\0';
 
-    return ( cp );
+    return( cp );
 }
 
-WResID *WREGetWResIDFromEdit ( HWND edit, Bool *mod )
+WResID *WREGetWResIDFromEdit( HWND edit, Bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;
@@ -161,25 +161,24 @@ WResID *WREGetWResIDFromEdit ( HWND edit, Bool *mod )
 
     rp = NULL;
 
-    cp = WREGetStrFromEdit ( edit, mod );
+    cp = WREGetStrFromEdit( edit, mod );
 
     /* find out if the edit field has changed */
-    if ( !mod || *mod ) {
-        if ( !cp ) {
-            return ( NULL );
+    if( mod == NULL || *mod ) {
+        if( cp == NULL ) {
+            return( NULL );
         }
-        ordID = (uint_16) strtoul ( cp, &ep, 0 );
-        if ( !*ep ) {
-            rp = WResIDFromNum ( ordID );
+        ordID = (uint_16)strtoul( cp, &ep, 0 );
+        if( *ep == '\0' ) {
+            rp = WResIDFromNum( ordID );
         } else {
-            rp = WResIDFromStr ( cp );
+            rp = WResIDFromStr( cp );
         }
     }
 
-    if ( cp ) {
-        WREMemFree ( cp );
+    if( cp != NULL ) {
+        WREMemFree( cp );
     }
 
-    return ( rp );
+    return( rp );
 }
-

@@ -8,7 +8,7 @@ char* WEXPORT WMdiChild::_childName;
 
 extern "C" long _export _far _pascal ChildProc( HWND hwin, UINT msg, UINT wparm, LONG lparm )
 {
-		WMdiWindow* win = (WMdiWindow*)WWindow::_objMap.findThis( hwin );
+		WMdiWindow* win = (WMdiWindow*)WWindow::_objMap.findThis( (HANDLE)hwin );
 		ifptr( win ) {
 			switch( msg ) {
 			default:
@@ -36,7 +36,7 @@ bool WEXPORT WMdiChild::registerClass()
 				wc.hInstance = _appInst;
 				wc.hIcon = LoadIcon( _appInst, IDI_APPLICATION );
 				wc.hCursor = LoadCursor( NIL, IDC_ARROW );
-				wc.hbrBackground = GetStockObject( WHITE_BRUSH );
+				wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
 				wc.lpszMenuName = NIL;
 				wc.lpszClassName = _childName;
 				return RegisterClass( &wc );
@@ -59,9 +59,9 @@ WEXPORT WMdiChild::WMdiChild( WMdiWindow* parent, char* text )
 	cc.style = 0;
 	cc.lParam = 0L;
 	_objMap.currThis( this );
-	_handle = _mdiParent->sendClientMsg( WM_MDICREATE, 0, (LONG)(LPMDICREATESTRUCT)&cc );
+	_handle = (HWND)_mdiParent->sendClientMsg( WM_MDICREATE, 0, (LONG)(LPMDICREATESTRUCT)&cc );
 	ifptr( _handle ) {
-		_objMap.setThis( this, _handle );
+		_objMap.setThis( this, (HANDLE)_handle );
 	}
 }
 
@@ -71,17 +71,17 @@ WEXPORT WMdiChild::~WMdiChild()
 
 void WEXPORT WMdiChild::makeActive()
 {
-	PostMessage( _mdiParent->clientHandle(), WM_MDIACTIVATE, _handle, 0L );
+	PostMessage( _mdiParent->clientHandle(), WM_MDIACTIVATE, (WPARAM)_handle, 0L );
 }
 
 bool WMdiChild::processMsg( UINT msg, UINT wparm, LONG lparm )
 {
 	switch( msg ) {
 	case WM_MDIACTIVATE:
-		if( this == (WMdiChild*)WWindow::_objMap.findThis( HIWORD( lparm ) ) ) {
+		if( this == (WMdiChild*)WWindow::_objMap.findThis( (HANDLE)HIWORD( lparm ) ) ) {
 			activate( FALSE );
 		}
-		if( this == (WMdiChild*)WWindow::_objMap.findThis( LOWORD( lparm ) ) ) {
+		if( this == (WMdiChild*)WWindow::_objMap.findThis( (HANDLE)LOWORD( lparm ) ) ) {
 			activate( TRUE );
 		}
 		return TRUE;

@@ -106,7 +106,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         {
             HANDLE hmem;
 
-            hmem = GlobalHandle( heap_seg );
+            hmem = (HANDLE)GlobalHandle( heap_seg );
             if( hmem == NULL ) {
                 _ReleaseFHeap();
                 return( -1 );

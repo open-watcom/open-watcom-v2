@@ -1,0 +1,111 @@
+This is a list of Open Watcom projects.
+each is genrally a subdirectory under <owroot>\bld.
+
+as              - alpha/ppc assembler
+aui             - ui library used by debugger
+bdiff           - diff and patch utilities
+bench           - benchmarks
+bmp2eps         - BMP-to-EPS conversion utility used for doc build
+brinfo          -
+browser         - c++ class browser
+build           - tools used by the build process and major makefile includes
+builder         - source for builder tool
+                  also contains subprojects:
+                    cdsay           - cd && prettified pwd
+                    comstrip        - strip comments from packing manifests
+                    diff            - the classic diff utility
+                    langdat         -
+                    mksetup         - creates Watcom installer setup.inf files
+                    sweep           - run given command in directory tree
+                    wsplice         - text file processor
+causeway        - the CauseWay DOS extender
+cc              - C compiler
+cfloat          - floating-point support functions
+cg              - code generator
+clib            - C runtime library
+cmdedit         - source code for cmdedit dos shell shortcut program
+comp_cfg        - compiler config
+cpp             - C-style preprocessor
+ctest           - C compiler regression tests
+cvpack          - CodeView debug info packing utility
+dig             - used by debugger
+dip             - used by debugger
+dmpobj          - OMF file dump utility
+dwarf           - dwarf reading/writing libraries
+editdll         - DLL to integrate VI and codewright with watcom IDE
+emu             - emulator libraries
+emu86           - emulator libraries
+exedump         - multi-format dump utility
+f77             - fortran 77 compiler
+fe_misc         - misc. compiler front end stuff
+fileext         - Rationale for adding new extentions to Open Watcom
+fmedit          - part of the SDK - fmedit.dll
+graphlib        - graphics library
+gui             - GUI library
+hcdos           - help compiler for .ihp help files used by whelp
+hdr             - header files
+help            - whelp character mode help utility
+helpcomp        - whc help compiler, used for doc build
+idebatch        - batch processor for watcom IDE
+lib_misc        - shared library
+mad             - machine architecture definition ( used by debugger)
+mathlib         - math library
+misc            - real-mode compiler and tool stubs
+mstools         - microsoft clone tools ( cl, link, rc, etc. )
+ncurses         - Linux curses stub for vi and wv projects
+ndisasm         - "new" disassembler
+nwlib           - "new" WLIB librarian
+online          - online help files
+orl             - object reading library
+os2api          - os/2 api libraries.
+os_supp         - support for Watcom debugging tool NetWare - novell - ports.
+owl             - object writing library
+parsedlg        - Windows to OS/2 dialog resource convertor
+pbide           - DLL for Powerbuilder IDE (powerbuilder c++ class builder )
+pgchart         - part of graphlib (presentation graphics)
+plusplus        - C++ compiler
+plusplus\cpplib - C++ class library
+plustest        - C++ compiler$ testing
+pmake           - parallel make
+posix           - posix tools
+rcsdll          - RCS DLL for editor
+re2c            - regexp-to-c lexer generator
+redist          - miscellaneous files from other providers
+rtdll           - clib, mathlib, c++ lib. runtime DLLs
+sdk             - dialog editor,image editor,resource compiler,etc.
+setupgui        - installation utility
+src             - sample source code
+ssl             - expression parser generator for debugger
+techinfo        - utility to check watcom tool versions, etc.
+trap            - trap files - used by debugger
+trmem           - memory tracker utility
+ui              - UI library
+uiforms         -
+version         - DLL Versioning Support
+vi              - VI editor ( character mode & VIW )
+viper           - Watcom IDE
+viprdemo        - three-d demo - IDE demo program
+w16api          - windows 16 bit api
+w32api          - windows 32 bit api
+w32loadr        - 32-bit dos extender stuff
+wasm            - watcom assembler
+watcom          - shared source code
+wclass          - wclass C++ class library - used by IDE, browser
+wdisasm         - old disassembler - source code still used by debugger
+wgml            - reconstruct gendev/wgml source code 
+whpcvt          - convert WHP files (WATCOM Help) into OS dependent help files.
+wic             - watcom interface converter
+win386          - watcom 32-bit windows extender
+wl              - linker
+wmake           - watcom make
+womp            - object module processor, parts used by wasm
+wpack           - used by install / patch
+wpi             - macro library used by GUI
+wprof           - execution profiler
+wsample         - sampler
+wstrip          - executable strip utility
+wstub           - DOS/4GW stub program
+wstuba          - miniature DOS/4GW stub written in assembler
+wtouch          - touch utility
+wv              - WD (used to be WVIDEO) - watcom debugger frontend
+yacc            - yet another compiler-compiler

@@ -1,0 +1,254 @@
+c$noreference
+
+        integer  MLS_WORDWRAP
+        parameter (MLS_WORDWRAP = '00000001'x)
+        integer  MLS_BORDER
+        parameter (MLS_BORDER = '00000002'x)
+        integer  MLS_VSCROLL
+        parameter (MLS_VSCROLL = '00000004'x)
+        integer  MLS_HSCROLL
+        parameter (MLS_HSCROLL = '00000008'x)
+        integer  MLS_READONLY
+        parameter (MLS_READONLY = '00000010'x)
+        integer  MLS_IGNORETAB
+        parameter (MLS_IGNORETAB = '00000020'x)
+        integer  MLS_DISABLEUNDO
+        parameter (MLS_DISABLEUNDO = '00000040'x)
+
+        structure /MLEFORMATRECT/
+            integer*4 cxFormat
+            integer*4 cyFormat
+        end structure
+
+        structure /MLECTLDATA/
+            integer*2 cbCtlData
+            integer*2 afIEFormat
+            integer*4 cchText
+            integer*4 iptAnchor
+            integer*4 iptCursor
+            integer*4 cxFormat
+            integer*4 cyFormat
+            integer*4 afFormatFlags
+        end structure
+
+        integer  MLFFMTRECT_LIMITHORZ
+        parameter (MLFFMTRECT_LIMITHORZ = '00000001'x)
+        integer  MLFFMTRECT_LIMITVERT
+        parameter (MLFFMTRECT_LIMITVERT = '00000002'x)
+        integer  MLFFMTRECT_MATCHWINDOW
+        parameter (MLFFMTRECT_MATCHWINDOW = '00000004'x)
+        integer  MLFFMTRECT_FORMATRECT
+        parameter (MLFFMTRECT_FORMATRECT = '00000007'x)
+
+        integer  MLFIE_CFTEXT
+        parameter (MLFIE_CFTEXT = 0)
+        integer  MLFIE_NOTRANS
+        parameter (MLFIE_NOTRANS = 1)
+        integer  MLFIE_WINFMT
+        parameter (MLFIE_WINFMT = 2)
+        integer  MLFIE_RTF
+        parameter (MLFIE_RTF = 3)
+
+        structure /MLEOVERFLOW/
+            integer*4 afErrInd
+            integer*4 nBytesOver
+            integer*4 pixHorzOver
+            integer*4 pixVertOver
+        end structure
+
+        integer  MLFEFR_RESIZE
+        parameter (MLFEFR_RESIZE = '00000001'x)
+        integer  MLFEFR_TABSTOP
+        parameter (MLFEFR_TABSTOP = '00000002'x)
+        integer  MLFEFR_FONT
+        parameter (MLFEFR_FONT = '00000004'x)
+        integer  MLFEFR_TEXT
+        parameter (MLFEFR_TEXT = '00000008'x)
+        integer  MLFEFR_WORDWRAP
+        parameter (MLFEFR_WORDWRAP = '00000010'x)
+        integer  MLFETL_TEXTBYTES
+        parameter (MLFETL_TEXTBYTES = '00000020'x)
+
+        structure /MLEMARGSTRUCT/
+            integer*2 afMargins
+            integer*2 usMouMsg
+            integer*4 iptNear
+        end structure
+
+        integer  MLFMARGIN_LEFT
+        parameter (MLFMARGIN_LEFT = '00000001'x)
+        integer  MLFMARGIN_BOTTOM
+        parameter (MLFMARGIN_BOTTOM = '00000002'x)
+        integer  MLFMARGIN_RIGHT
+        parameter (MLFMARGIN_RIGHT = '00000003'x)
+        integer  MLFMARGIN_TOP
+        parameter (MLFMARGIN_TOP = '00000004'x)
+
+        integer  MLFQS_MINMAXSEL
+        parameter (MLFQS_MINMAXSEL = 0)
+        integer  MLFQS_MINSEL
+        parameter (MLFQS_MINSEL = 1)
+        integer  MLFQS_MAXSEL
+        parameter (MLFQS_MAXSEL = 2)
+        integer  MLFQS_ANCHORSEL
+        parameter (MLFQS_ANCHORSEL = 3)
+        integer  MLFQS_CURSORSEL
+        parameter (MLFQS_CURSORSEL = 4)
+
+        integer  MLFCLPBD_TOOMUCHTEXT
+        parameter (MLFCLPBD_TOOMUCHTEXT = '00000001'x)
+        integer  MLFCLPBD_ERROR
+        parameter (MLFCLPBD_ERROR = '00000002'x)
+
+        structure /MLE_SEARCHDATA/
+            integer*2 cb
+            integer*4 pchFind
+            integer*4 pchReplace
+            integer*2 cchFind
+            integer*2 cchReplace
+            integer*4 iptStart
+            integer*4 iptStop
+            integer*2 cchFound
+        end structure
+
+        integer  MLFSEARCH_CASESENSITIVE
+        parameter (MLFSEARCH_CASESENSITIVE = '00000001'x)
+        integer  MLFSEARCH_SELECTMATCH
+        parameter (MLFSEARCH_SELECTMATCH = '00000002'x)
+        integer  MLFSEARCH_CHANGEALL
+        parameter (MLFSEARCH_CHANGEALL = '00000004'x)
+
+        integer  MLM_SETTEXTLIMIT
+        parameter (MLM_SETTEXTLIMIT = '000001b0'x)
+        integer  MLM_QUERYTEXTLIMIT
+        parameter (MLM_QUERYTEXTLIMIT = '000001b1'x)
+        integer  MLM_SETFORMATRECT
+        parameter (MLM_SETFORMATRECT = '000001b2'x)
+        integer  MLM_QUERYFORMATRECT
+        parameter (MLM_QUERYFORMATRECT = '000001b3'x)
+        integer  MLM_SETWRAP
+        parameter (MLM_SETWRAP = '000001b4'x)
+        integer  MLM_QUERYWRAP
+        parameter (MLM_QUERYWRAP = '000001b5'x)
+        integer  MLM_SETTABSTOP
+        parameter (MLM_SETTABSTOP = '000001b6'x)
+        integer  MLM_QUERYTABSTOP
+        parameter (MLM_QUERYTABSTOP = '000001b7'x)
+        integer  MLM_SETREADONLY
+        parameter (MLM_SETREADONLY = '000001b8'x)
+        integer  MLM_QUERYREADONLY
+        parameter (MLM_QUERYREADONLY = '000001b9'x)
+
+        integer  MLM_QUERYCHANGED
+        parameter (MLM_QUERYCHANGED = '000001ba'x)
+        integer  MLM_SETCHANGED
+        parameter (MLM_SETCHANGED = '000001bb'x)
+        integer  MLM_QUERYLINECOUNT
+        parameter (MLM_QUERYLINECOUNT = '000001bc'x)
+        integer  MLM_CHARFROMLINE
+        parameter (MLM_CHARFROMLINE = '000001bd'x)
+        integer  MLM_LINEFROMCHAR
+        parameter (MLM_LINEFROMCHAR = '000001be'x)
+        integer  MLM_QUERYLINELENGTH
+        parameter (MLM_QUERYLINELENGTH = '000001bf'x)
+        integer  MLM_QUERYTEXTLENGTH
+        parameter (MLM_QUERYTEXTLENGTH = '000001c0'x)
+
+        integer  MLM_FORMAT
+        parameter (MLM_FORMAT = '000001c1'x)
+        integer  MLM_SETIMPORTEXPORT
+        parameter (MLM_SETIMPORTEXPORT = '000001c2'x)
+        integer  MLM_IMPORT
+        parameter (MLM_IMPORT = '000001c3'x)
+        integer  MLM_EXPORT
+        parameter (MLM_EXPORT = '000001c4'x)
+        integer  MLM_DELETE
+        parameter (MLM_DELETE = '000001c6'x)
+        integer  MLM_QUERYFORMATLINELENGTH
+        parameter (MLM_QUERYFORMATLINELENGTH = '000001c7'x)
+        integer  MLM_QUERYFORMATTEXTLENGTH
+        parameter (MLM_QUERYFORMATTEXTLENGTH = '000001c8'x)
+        integer  MLM_INSERT
+        parameter (MLM_INSERT = '000001c9'x)
+
+        integer  MLM_SETSEL
+        parameter (MLM_SETSEL = '000001ca'x)
+        integer  MLM_QUERYSEL
+        parameter (MLM_QUERYSEL = '000001cb'x)
+        integer  MLM_QUERYSELTEXT
+        parameter (MLM_QUERYSELTEXT = '000001cc'x)
+
+        integer  MLM_QUERYUNDO
+        parameter (MLM_QUERYUNDO = '000001cd'x)
+        integer  MLM_UNDO
+        parameter (MLM_UNDO = '000001ce'x)
+        integer  MLM_RESETUNDO
+        parameter (MLM_RESETUNDO = '000001cf'x)
+
+        integer  MLM_QUERYFONT
+        parameter (MLM_QUERYFONT = '000001d0'x)
+        integer  MLM_SETFONT
+        parameter (MLM_SETFONT = '000001d1'x)
+        integer  MLM_SETTEXTCOLOR
+        parameter (MLM_SETTEXTCOLOR = '000001d2'x)
+        integer  MLM_QUERYTEXTCOLOR
+        parameter (MLM_QUERYTEXTCOLOR = '000001d3'x)
+        integer  MLM_SETBACKCOLOR
+        parameter (MLM_SETBACKCOLOR = '000001d4'x)
+        integer  MLM_QUERYBACKCOLOR
+        parameter (MLM_QUERYBACKCOLOR = '000001d5'x)
+
+        integer  MLM_QUERYFIRSTCHAR
+        parameter (MLM_QUERYFIRSTCHAR = '000001d6'x)
+        integer  MLM_SETFIRSTCHAR
+        parameter (MLM_SETFIRSTCHAR = '000001d7'x)
+
+        integer  MLM_CUT
+        parameter (MLM_CUT = '000001d8'x)
+        integer  MLM_COPY
+        parameter (MLM_COPY = '000001d9'x)
+        integer  MLM_PASTE
+        parameter (MLM_PASTE = '000001da'x)
+        integer  MLM_CLEAR
+        parameter (MLM_CLEAR = '000001db'x)
+
+        integer  MLM_ENABLEREFRESH
+        parameter (MLM_ENABLEREFRESH = '000001dc'x)
+        integer  MLM_DISABLEREFRESH
+        parameter (MLM_DISABLEREFRESH = '000001dd'x)
+
+        integer  MLM_SEARCH
+        parameter (MLM_SEARCH = '000001de'x)
+        integer  MLM_QUERYIMPORTEXPORT
+        parameter (MLM_QUERYIMPORTEXPORT = '000001df'x)
+
+        integer  MLN_OVERFLOW
+        parameter (MLN_OVERFLOW = '00000001'x)
+        integer  MLN_PIXHORZOVERFLOW
+        parameter (MLN_PIXHORZOVERFLOW = '00000002'x)
+        integer  MLN_PIXVERTOVERFLOW
+        parameter (MLN_PIXVERTOVERFLOW = '00000003'x)
+        integer  MLN_TEXTOVERFLOW
+        parameter (MLN_TEXTOVERFLOW = '00000004'x)
+        integer  MLN_VSCROLL
+        parameter (MLN_VSCROLL = '00000005'x)
+        integer  MLN_HSCROLL
+        parameter (MLN_HSCROLL = '00000006'x)
+        integer  MLN_CHANGE
+        parameter (MLN_CHANGE = '00000007'x)
+        integer  MLN_SETFOCUS
+        parameter (MLN_SETFOCUS = '00000008'x)
+        integer  MLN_KILLFOCUS
+        parameter (MLN_KILLFOCUS = '00000009'x)
+        integer  MLN_MARGIN
+        parameter (MLN_MARGIN = '0000000a'x)
+        integer  MLN_SEARCHPAUSE
+        parameter (MLN_SEARCHPAUSE = '0000000b'x)
+        integer  MLN_MEMERROR
+        parameter (MLN_MEMERROR = '0000000c'x)
+        integer  MLN_UNDOOVERFLOW
+        parameter (MLN_UNDOOVERFLOW = '0000000d'x)
+        integer  MLN_CLPBDFAIL
+        parameter (MLN_CLPBDFAIL = '0000000f'x)
+
+c$reference

@@ -1,0 +1,44 @@
+/*
+ *  lmmsg.h     LAN Manager message functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMMSG_
+#define _LMMSG_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Message forward flags */
+#define MSGNAME_NOT_FORWARDED   0x00000000L
+#define MSGNAME_FORWARDED_TO    0x00000004L
+#define MSGNAME_FORWARDED_FROM  0x00000010L
+
+/* Message information (level 0) */
+typedef struct _MSG_INFO_0 {
+    LPWSTR  msgi0_name;
+} MSG_INFO_0;
+typedef MSG_INFO_0  *PMSG_INFO_0;
+typedef MSG_INFO_0  *LPMSG_INFO_0;
+
+/* Message information (level 1) */
+typedef struct _MSG_INFO_1 {
+    LPWSTR  msgi1_name;
+    DWORD   msgi1_forward_flag;
+    LPWSTR  msgi1_forward;
+} MSG_INFO_1;
+typedef MSG_INFO_1  *PMSG_INFO_1;
+typedef MSG_INFO_1  *LPMSG_INFO_1;
+
+/* Functions in NETAPI32.DLL */
+NET_API_STATUS NET_API_FUNCTION NetMessageBufferSend( LPCWSTR, LPCWSTR, LPCWSTR, LPBYTE, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetMessageNameAdd( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetMessageNameDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetMessageNameEnum( LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetMessageNameGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+
+:include cplusepi.sp
+
+#endif /* _LMMSG_ */

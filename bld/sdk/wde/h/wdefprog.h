@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeProgCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeProgInit        ( Bool );
-extern void              WdeProgFini        ( void );
+extern OBJPTR WINEXPORT  WdeProgCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeProgInit( Bool );
+extern void              WdeProgFini( void );
 
 #endif

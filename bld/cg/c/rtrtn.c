@@ -50,7 +50,7 @@ extern  void    LookupRoutine( instruction *ins ) {
     int         idx;
     opcode_defs opcode;
 
-    rtn = &RTInfo;
+    rtn = RTInfo;
     idx = 0;
     opcode = ins->head.opcode;
     if( opcode >= FIRST_CONDITION ) {

@@ -2,7 +2,7 @@
 .model small
 .data
     bar db "hi"
-    foo qword 0xdeadbeef
+    foo qword 0deadbeefh
 .code
     cmpxchg8b foo
     cpuid

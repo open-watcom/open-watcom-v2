@@ -1,0 +1,54 @@
+/*
+ *  afxadv.h    Applicaton Framework advanced classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXADV_H__
+#define __AFXADV_H__
+
+:include readonly.sp
+
+// Default maximum file name length for recent file list
+#define AFX_ABBREV_FILENAME_LEN 30
+
+class _AFXLINK CRecentFileList {
+protected:
+    int     m_nSize;
+    CString *m_arrNames;
+    CString m_strSectionName;
+    CString m_strEntryName;
+    UINT    m_nStart;
+    int     m_nMaxDisplayLength;
+    CString m_strOriginal;
+    
+public:
+    CRecentFileList( UINT nStart, LPCTSTR lpszSection, LPCTSTR lpszEntryFormat, int nSize, int nMaxDispLen = AFX_ABBREV_FILENAME_LEN );
+    virtual ~CRecentFileList();
+    
+    virtual void    Add( LPCTSTR lpszPathName );
+    virtual BOOL    GetDisplayName( CString &strName, int nIndex, LPCTSTR lpszCurDir, int nCurDir, BOOL bAtLeastName = TRUE ) const;
+    virtual void    ReadList();
+    virtual void    Remove( int nIndex );
+    virtual void    UpdateMenu( CCmdUI *pCmdUI );
+    virtual void    WriteList();
+    
+    int GetSize() const;
+    
+    CString &operator[]( int nIndex );
+};
+
+AFX_INLINE int CRecentFileList::GetSize() const
+/*********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE CString &CRecentFileList::operator[]( int nIndex )
+/***********************************************************/
+{
+    ASSERT( nIndex >= 0 && nIndex < m_nSize );
+    return( m_arrNames[nIndex] );
+}
+
+#endif /* __AFXADV_H__ */

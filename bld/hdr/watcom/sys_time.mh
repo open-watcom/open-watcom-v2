@@ -1,0 +1,121 @@
+/*
+ *  sys/time.h      POSIX Time functions
+ *
+:include crwatcnt.sp
+ */
+#ifndef _SYS_TIME_H_INCLUDED
+#define _SYS_TIME_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+#ifndef _TIME_H_INCLUDED
+ #include <time.h>
+#endif
+
+:include cpluspro.sp
+
+:segment LINUX
+:include lnxkpack.sp
+
+/* I am not sure where this should go, so I am putting it here for now.
+ * It should probably exist in a separate header file like sys/select.h
+ * but it is not clear to me exactly where yet. KB.
+ */
+
+/* The fd_set member is required to be an array of longs.  */
+typedef long fd_mask;
+
+#define FD_SETSIZE          1024
+#define __NFDBITS           (8 * sizeof (fd_mask))
+#define __FDELT(d)          ((d) / __NFDBITS)
+#define __FDMASK(d)         ((fd_mask) 1 << ((d) % __NFDBITS))
+#define __FDS_BITS(set) ((set)->fds_bits)
+
+/* fd_set for select */
+typedef struct {
+    fd_mask fds_bits[FD_SETSIZE / __NFDBITS];
+} fd_set;
+
+/* We don't use `memset' because this would require a prototype and
+ * the array isn't too big.
+ */
+#define FD_ZERO(set) \
+    do { \
+        unsigned int __i; \
+        fd_set *__arr = (set); \
+        for (__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i) \
+            __FDS_BITS (__arr)[__i] = 0; \
+    } while (0)
+#define FD_SET(d, set)      (__FDS_BITS (set)[__FDELT (d)] |= __FDMASK (d))
+#define FD_CLR(d, set)      (__FDS_BITS (set)[__FDELT (d)] &= ~__FDMASK (d))
+#define FD_ISSET(d, set)    (__FDS_BITS (set)[__FDELT (d)] & __FDMASK (d))
+
+:elsesegment
+:include pshpackl.sp
+:endsegment
+/*
+ * Structure returned by gettimeofday() system call,
+ * and used in other calls.
+ */
+struct timeval {
+    long    tv_sec;         /* seconds */
+    long    tv_usec;        /* and microseconds */
+};
+
+struct timezone {
+    int tz_minuteswest;     /* minutes west of Greenwich */
+    int tz_dsttime;         /* type of dst correction */
+};
+
+#define DST_NONE        0       /* not on dst */
+#define DST_USA         1       /* USA style dst */
+#define DST_AUST        2       /* Australian style dst */
+#define DST_WET         3       /* Western European dst */
+#define DST_MET         4       /* Middle European dst */
+#define DST_EET         5       /* Eastern European dst */
+#define DST_CAN         6       /* Canada */
+#define DST_GB          7       /* Great Britain and Eire */
+#define DST_RUM         8       /* Romania */
+#define DST_TUR         9       /* Turkey */
+#define DST_AUSTALT     10      /* Australian style with shift in 1986 */
+
+/*
+ * Structure used by getitimer() and setitimer() system calls.
+ */
+struct itimerval {
+    struct timeval it_interval; /* Value to put into `it_value' when the timer expires. */
+    struct timeval it_value;    /* Time to the next timer expiration. */
+};
+
+#define ITIMER_REAL     0       /* Timers run in real time. */
+#define ITIMER_VIRTUAL  1       /* Timers run only when the process is executing. */
+#define ITIMER_PROF     2       /* Process or kernel on its behalf is executing. */
+
+/*
+ * Operations on timevals.
+ *
+ * NB: timercmp does not work for >= or <=.
+ */
+#define timerisset(tvp)         ((tvp)->tv_sec || (tvp)->tv_usec)
+#define timercmp(tvp, uvp, cmp) \
+        (((tvp)->tv_sec == (uvp)->tv_sec && (tvp)->tv_usec cmp (uvp)->tv_usec) \
+        || (tvp)->tv_sec cmp (uvp)->tv_sec)
+#define timerclear(tvp)         ((tvp)->tv_sec = (tvp)->tv_usec = 0)
+
+_WCRTLINK extern int gettimeofday( struct timeval *__tv, struct timezone *__tz );
+_WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz );
+:segment LINUX
+_WCRTLINK extern int select( int __width, fd_set *__readfds, fd_set *__writefds, fd_set *__exceptfds, struct timeval *__timeout );
+:endsegment
+_WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
+_WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, struct itimerval *__ovalue );
+::_WCRTLINK extern int adjtime( struct timeval *__itv, struct timeval *__otv );
+::_WCRTLINK extern int utimes( char *__path, struct timeval *tvp );
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_TIME_H_INCLUDED */

@@ -1,0 +1,149 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.08 - DPMI function 0009h
+- Set Descriptor Access Rights</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Modifies the access rights
+and type fields in the descriptor table for the specified segment.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0009h<br>
+<b>BX</b> = selector<br>
+<b>CL</b> = access rights/type byte<br>
+<b>CH</b> = extended access rights/type byte</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8021h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - invalid value (access rights/type
+  bytes invalid)<br>
+  <b>8022h</b> - invalid selector<br>
+  <b>8025h</b> - invalid linear address (changing the access rights/type
+  bytes would cause the descriptor to reference a linear address range outside
+  that allowed for DPMI clients.)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The access rights/type
+  byte passed to the function in CL register has the following format:</font></p>
+  <p><table width="60%" height="281" border="1" cellspacing="0" cellpadding=
+  "4">
+<tr>
+<td bgcolor="#eeeeee" height="32">  <b><font size=-1 face="Verdana, Arial, Helvetica">Bit</font></b></td>
+<td bgcolor="#eeeeee">  <b><font size=-1 face="Verdana, Arial, Helvetica">Designation</font></b></td>
+<td bgcolor="#eeeeee">  <b><font size=-1 face="Verdana, Arial, Helvetica">Description</font></b></td></tr>
+<tr>
+<td height="32">  0</td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">A</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">0=not accessed, 1=accessed</font></td></tr>
+<tr>
+<td height="48">  <font size=-1 face="Verdana, Arial, Helvetica">1</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">W/R</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">data: 0=read, 1=read/write<br>
+  code: must be 1 (readable)</font></td></tr>
+<tr>
+<td height="48">  <font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">E/C</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">data: 0=expand-up, 1=expand-down<br>
+  code: must be 0 (non-conforming)</font></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">3</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">C/D</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">0=data, 1=code</font></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">-</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">must be 1</font></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">5..6</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">DPL</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">must equal caller's CPL</font></td></tr>
+<tr>
+<td height="22">  <font size=-1 face="Verdana, Arial, Helvetica">7</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">P</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">0=absent, 1=present</font></td></tr>
+</table>
+</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">The DPMI host interprets
+  the value passed to the function in CH register as follows:</font></p>
+  <p><table width="60%" height="193" border="1" cellspacing="0" cellpadding=
+  "4">
+<tr>
+<td bgcolor="#eeeeee" height="32">  <b><font size=-1 face="Verdana, Arial, Helvetica">Bit</font></b></td>
+<td bgcolor="#eeeeee">  <b><font size=-1 face="Verdana, Arial, Helvetica">Designation</font></b></td>
+<td bgcolor="#eeeeee">  <b><font size=-1 face="Verdana, Arial, Helvetica">Description</font></b></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">0..3</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">-</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">reserved</font></td></tr>
+<tr>
+<td height="30">  <font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">Av</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">can be 0 or 1</font></td></tr>
+<tr>
+<td height="31">  <font size=-1 face="Verdana, Arial, Helvetica">5</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">-</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">must be 0</font></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">6</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">B/D</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">0=default 16-bit, 1=default
+  32-bit</font></td></tr>
+<tr>
+<td height="32">  <font size=-1 face="Verdana, Arial, Helvetica">7</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">G</font></td>
+<td>  <font size=-1 face="Verdana, Arial, Helvetica">0=byte granular, 1=page
+  granular</font></td></tr>
+</table>
+</p>
+  <p>&nbsp;</p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) DOS/32 Advanced DPMI
+  and DPMI 1.0 hosts will reload any segment registers which contain the
+  selector specified in register BX.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) Client programs should
+  use the LAR instruction to examine the access rights of a descriptor. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

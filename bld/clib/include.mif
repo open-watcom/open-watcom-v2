@@ -1,59 +1,68 @@
-include_default =-i..\..\..\h;$(clib_dir)\h;$(lib_misc_dir)\h;$(comp_cfg_dir)\h
-include_watcom =;$(watcom_dir)\h
+include_default = -I"../../../h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+include_watcom = -I"$(watcom_dir)/h"
 
 # include_c_(system)
 !ifndef runtime_library_source
-include_c_generic  =;$(hdr_dir)\dos
-include_c_kanji    =;$(hdr_dir)\dos
-include_c_msdos    =;$(hdr_dir)\dos
-include_c_necdos   =;$(hdr_dir)\dos
-include_c_necwin   =;$(%watcom)\h\win;$(hdr_dir)\dos
-include_c_netware  =;$(%watcom)\novh;$(hdr_dir)\dos
-include_c_os2_286  =$(%watcom)\h\os21x
-include_c_os2_386  =$(%watcom)\h\os2
-include_c_os2_ppc  =$(%watcom)\h\os2ppc
-include_c_os2      =;$(include_c_os2_$(processor));$(hdr_dir)\dos
-include_c_osi      =;$(hdr_dir)\dos
-include_c_osi      =;$(hdr_dir)\dos
-include_c_penpoint =;$(watcom_dir)\pen_h;$(hdr_dir)\penpoint
-include_c_qnx      =;$(hdr_dir)\qnx
-include_c_windows  =;$(%watcom)\h\win;$(hdr_dir)\dos
-include_c_winnt    =;$(%watcom)\h\nt;$(hdr_dir)\dos
+include_c_generic  = -I"$(hdr_dir)/dos"
+include_c_kanji    = -I"$(hdr_dir)/dos"
+include_c_msdos    = -I"$(hdr_dir)/dos"
+include_c_nw_clib  = -I"$(ow_nwoss_root)/common/h" -I"$(hdr_dir)/dos"
+include_c_nw_clibl = -I"$(ow_nwoss_root)/common/h" -I"$(hdr_dir)/dos"
+# we need to include libc path below
+include_c_nw_libc  = -I"$(hdr_dir)/dos"
+include_c_nw_libcl = -I"$(hdr_dir)/dos"
+include_c_os2_286  = -I"$(dev_dir)/os2api/os2286"
+include_c_os2_386  = -I"$(dev_dir)/os2api/os2386"
+include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"
+include_c_os2      = -I"$(hdr_dir)/dos" $(include_c_os2_$(processor))
+include_c_osi      = -I"$(hdr_dir)/dos"
+include_c_osi      = -I"$(hdr_dir)/dos"
+include_c_qnx      = -I"$(hdr_dir)/qnx"
+include_c_linux    = -I"$(hdr_dir)/linux"
+include_c_windows  = -I"$(hdr_dir)/dos" -I"$(dev_dir)/w16api/wini86"
+include_c_winnt    = -I"$(hdr_dir)/dos" -I"$(dev_dir)/w32api/nt"
+include_c_rdos     = -I"$(hdr_dir)/dos"
+include_c_rdosdev  = -I"$(hdr_dir)/dos"
 !else
-include_c_generic  =;$(%watcom)\h
-include_c_kanji    =;$(%watcom)\h
-include_c_msdos    =;$(%watcom)\h
-include_c_necdos   =;$(%watcom)\h
-include_c_necwin   =;$(%watcom)\h\win;$(%watcom)\h
-include_c_netware  =;$(%watcom)\novh;$(%watcom)\h
-include_c_os2_286  =$(%watcom)\h\os21x
-include_c_os2_386  =$(%watcom)\h\os2
-include_c_os2_ppc  =$(%watcom)\h\os2ppc
-include_c_os2      =;$(include_c_os2_$(processor));$(%watcom)\h
-include_c_osi      =;$(%watcom)\h
-include_c_penpoint =;$(watcom_dir)\pen_h;$(hdr_dir)\penpoint
-include_c_qnx      =;$(hdr_dir)\qnx
-include_c_windows  =;$(%watcom)\h\win;$(%watcom)\h
-include_c_winnt_386=$(%watcom)\h\nt
-include_c_winnt_axp=$(%watcom)\h\nt
-include_c_winnt_ppc=$(%watcom)\h\nt
-include_c_winnt    =$(%watcom)\h\nt;$(%watcom)\h
+include_c_generic  = -I"$(%WATCOM)/h"
+include_c_kanji    = -I"$(%WATCOM)/h"
+include_c_msdos    = -I"$(%WATCOM)/h"
+include_c_nw_clib  = $(inc_dirs_lang_netware) -I"$(%WATCOM)/h"
+include_c_nw_clibl = $(inc_dirs_lang_netware) -I"$(%WATCOM)/h"
+# we need to include libc path below
+include_c_nw_libc  = -I"$(%WATCOM)/h"
+include_c_nw_libcl = -I"$(%WATCOM)/h"
+include_c_os2_286  = $(inc_dirs_sys_os2_i86)
+include_c_os2_386  = $(inc_dirs_sys_os2_386)
+include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"
+include_c_os2      = $(include_c_os2_$(processor)) -I"$(%WATCOM)/h"
+include_c_osi      = -I"$(%WATCOM)/h"
+include_c_qnx      = -I"$(%WATCOM)/qh"
+include_c_linux    = -I"$(%WATCOM)/lh
+include_c_windows  = $(inc_dirs_sys_win) -I"$(%WATCOM)/h"
+include_c_winnt_386= $(inc_dirs_sys_nt)
+include_c_winnt_axp= $(inc_dirs_sys_nt)
+include_c_winnt_ppc= $(inc_dirs_sys_nt)
+include_c_winnt    = $(inc_dirs_sys_nt) -I"$(%WATCOM)/h"
+include_c_rdos     = -I"$(hdr_dir)/dos"
+include_c_rdosdev  = -I"$(hdr_dir)/dos"
 !endif
 
-include_c_path =$(include_default)$(include_c_$(system))$(include_watcom)
+include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
 
 # include_a_(system)
 include_a_generic  =
 include_a_kanji    =
 include_a_msdos    =
-include_a_necdos   =
-include_a_necwin   =
-include_a_netware  =
+include_a_nw_clib  =
+include_a_nw_clibl =
+include_a_nw_libc  =
+include_a_nw_libcl =
 include_a_os2      =
 include_a_osi      =
-include_a_penpoint =
 include_a_qnx      =
 include_a_windows  =
 include_a_winnt    =
+include_a_linux    =
 
-include_a_path =$(include_default)$(include_a_$(system))$(include_watcom)
+include_a_path = $(include_default) $(include_a_$(system)) $(include_watcom)

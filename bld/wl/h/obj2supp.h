@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for obj2supp module - dealing with relocations.
 *
 ****************************************************************************/
 
 
 
 typedef enum {
-    FIX_CHANGE_SEG      = 0x00000001,   // has to be 1.  used in pointers!
+    FIX_CHANGE_SEG      = 0x00000001,
     FIX_ADDEND_ZERO     = 0x00000002,
     FIX_UNSAFE          = 0x00000004,
     FIX_ABS             = 0x00000008,
@@ -45,17 +44,20 @@ typedef enum {
     FIX_TARGET_SHIFT    = 8,            // contains frame_type
     FIX_TARGET_MASK     = 0x00000700,
 
+    FIX_NOADJ           = 0x00000800,   // flags no adjustment for FIX_REL
+
     FIX_NO_BASE         = 0x00001000,
     FIX_SIGNED          = 0x00002000,
     FIX_LOADER_RES      = 0x00004000,
     FIX_SEC_REL         = 0x00008000,
 
     FIX_NO_OFFSET       = 0,
-    FIX_OFFSET_8        = 0x00010000,
-    FIX_OFFSET_16       = 0x00020000,
-    FIX_OFFSET_21       = 0x00030000,
+    FIX_OFFSET_8        = 0x00010000,   // If a new FIX_OFFSET constant is
+    FIX_OFFSET_16       = 0x00020000,   // added, the OffsetSizes array in
+    FIX_OFFSET_21       = 0x00030000,   // obj2supp.c also has to be updated!
     FIX_OFFSET_32       = 0x00040000,
     FIX_OFFSET_24       = 0x00050000,
+    FIX_OFFSET_26       = 0x00060000,
     FIX_OFFSET_SHIFT    = 16,
     FIX_OFFSET_MASK     = 0x00070000,
 
@@ -79,6 +81,9 @@ typedef enum {
 #define FIX_GET_OFFSET(x) (((x) & FIX_OFFSET_MASK) >> FIX_OFFSET_SHIFT)
 #define FIX_GET_FRAME(x)  (((x) & FIX_FRAME_MASK) >> FIX_FRAME_SHIFT)
 #define FIX_GET_TARGET(x) (((x) & FIX_TARGET_MASK) >> FIX_TARGET_SHIFT)
+
+#define FIX_SET_FRAME(x)  ((fix_type)(x) << FIX_FRAME_SHIFT)
+#define FIX_SET_TARGET(x) ((fix_type)(x) << FIX_TARGET_SHIFT)
 
 /* This ordering is roughly the same as intel's - don't mess it up without
    a good reason (and make sure the code that depends on it is fixed!) */
@@ -111,6 +116,7 @@ typedef struct {
 
 extern unsigned IncExecRelocs( void * );
 extern unsigned IncSaveRelocs( void * );
-extern unsigned RelocMarkSyms( void *fix );
+extern unsigned RelocMarkSyms( void * );
 extern void     RelocStartMod( void );
 extern void     StoreFixup(offset, fix_type, frame_spec *, frame_spec *,offset);
+extern void     ResetObj2Supp( void );

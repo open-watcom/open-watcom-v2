@@ -40,11 +40,7 @@ include int21.inc
         modstart iow32
 
         defp    _dos_read
-        if __WASM__ ge 100
-            xdefp       "C",_dos_read
-        else
-            xdefp       <"C",_dos_read>
-        endif
+        xdefp   "C",_dos_read
 ;
 ;       unsigned _dos_read( int handle,         EAX
 ;                           void *buf,          EDX
@@ -85,12 +81,9 @@ endif
         add     ESP,4           ; remove function code
         ret                     ; return to caller
         endproc _dos_read
+
         defp    _dos_write
-        if __WASM__ ge 100
-            xdefp       "C",_dos_write
-        else
-            xdefp       <"C",_dos_write>
-        endif
+        xdefp   "C",_dos_write
 ;
 ;       unsigned _dos_write( int handle,
 ;                           void *buf,

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,6 +39,8 @@
 #include "wrestrdp.h"
 #include "wremem.h"
 #include "wreopts.h"
+#include "watini.h"
+#include "inipath.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -61,19 +63,19 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /*****************************************************************************/
-static void  WREWriteOpts          ( WREOptState * );
-static Bool  WREReadOpts           ( WREOptState * );
-static Bool  WREWriteIntOpt        ( char *, int );
-static Bool  WREGetIntOpt          ( char *, int *);
-static Bool  WREWriteRectOpt       ( char *, RECT * );
-static Bool  WREGetRectOpt         ( char *, RECT * );
-static char *WRERectToStr          ( RECT * );
-static void  WREStrToRect          ( char *, RECT * );
+static void WREWriteOpts( WREOptState * );
+static Bool WREReadOpts( WREOptState * );
+static Bool WREWriteIntOpt( char *, int );
+static Bool WREGetIntOpt( char *, int * );
+static Bool WREWriteRectOpt( char *, RECT * );
+static Bool WREGetRectOpt( char *, RECT * );
+static char *WRERectToStr( RECT * );
+static void WREStrToRect( char *, RECT * );
 
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-char WREProfileName[] = "watcom.ini";
+char WREProfileName[_MAX_PATH] = WATCOM_INI;
 char WRESectionName[] = "wre";
 
 /****************************************************************************/
@@ -81,15 +83,14 @@ char WRESectionName[] = "wre";
 /****************************************************************************/
 static WREOptState WRECurrentState;
 
-static WREOptState WREDefaultState =
-{
+static WREOptState WREDefaultState = {
     { CW_USEDEFAULT,    /* default window pos               */
       CW_USEDEFAULT,
       CW_USEDEFAULT,
-      CW_USEDEFAULT }
-,   FALSE               /* is the window maximized          */
-,   NULL                /* last open/save directory         */
-,   NULL                /* last file filter                 */
+      CW_USEDEFAULT },
+    FALSE,              /* is the window maximized          */
+    NULL,               /* last open/save directory         */
+    NULL,               /* last file filter                 */
 };
 
 static Bool WREGetStrOpt( char *entry, char **opt )
@@ -98,135 +99,133 @@ static Bool WREGetStrOpt( char *entry, char **opt )
     Bool        ret;
 
     ret = GetPrivateProfileString( WRESectionName, entry, "",
-                                   str, _MAX_PATH-1, WREProfileName );
+                                   str, _MAX_PATH - 1, WREProfileName );
 
     if( ret ) {
-        ret = ( ( *opt = WREStrDup( str ) ) != NULL );
+        ret = ((*opt = WREStrDup( str )) != NULL);
     }
 
     return( ret );
 }
 
-void WREOptsShutdown ( void )
+void WREOptsShutdown( void )
 {
-    if( WRECurrentState.last_filter ) {
+    if( WRECurrentState.last_filter != NULL ) {
         WREMemFree( WRECurrentState.last_filter );
     }
-    if( WRECurrentState.last_dir ) {
+    if( WRECurrentState.last_dir != NULL ) {
         WREMemFree( WRECurrentState.last_dir );
     }
 
-    WRECurrentState.last_dir    = WREStrDup( WREGetInitialDir() );
+    WRECurrentState.last_dir = WREStrDup( WREGetInitialDir() );
     WRECurrentState.last_filter = WREGetFileFilter();
 
-    WREWriteOpts ( &WRECurrentState );
+    WREWriteOpts( &WRECurrentState );
 
-    if( WRECurrentState.last_dir ) {
+    if( WRECurrentState.last_dir != NULL ) {
         WREMemFree( WRECurrentState.last_dir );
     }
 }
 
-void WREWriteOpts ( WREOptState *o )
+void WREWriteOpts( WREOptState *o )
 {
-    WREWriteRectOpt ( "ScreenPos",     &o->screen_pos );
-    WREWriteIntOpt  ( "ScreenMaxed",   o->screen_maxed );
+    WREWriteRectOpt( "ScreenPos", &o->screen_pos );
+    WREWriteIntOpt( "ScreenMaxed", o->screen_maxed );
     WritePrivateProfileString( WRESectionName, "LastDir",
                                o->last_dir, WREProfileName );
     WritePrivateProfileString( WRESectionName, "FileFilter",
                                o->last_filter, WREProfileName );
 }
 
-Bool WREReadOpts ( WREOptState *s )
+Bool WREReadOpts( WREOptState *s )
 {
     Bool ret;
 
-    ret  = WREGetRectOpt( "ScreenPos",     &s->screen_pos );
-    ret &= WREGetIntOpt( "ScreenMaxed",   &s->screen_maxed );
+    ret = WREGetRectOpt( "ScreenPos", &s->screen_pos );
+    ret &= WREGetIntOpt( "ScreenMaxed", &s->screen_maxed );
     ret &= WREGetStrOpt( "FileFilter", &s->last_filter );
     ret &= WREGetStrOpt( "LastDir", &s->last_dir );
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WREWriteIntOpt ( char *entry, int i )
+Bool WREWriteIntOpt( char *entry, int i )
 {
     char  str[12];
     Bool  ret;
 
-    ltoa (  i, str, 10 );
+    ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString ( WRESectionName, entry, str,
-                                      WREProfileName );
+    ret = WritePrivateProfileString( WRESectionName, entry, str, WREProfileName );
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WREGetIntOpt ( char *entry, int *i )
+Bool WREGetIntOpt( char *entry, int *i )
 {
     int opt;
 
-    opt = (int) GetPrivateProfileInt ( WRESectionName, entry,
-                                       0x7fff, WREProfileName );
+    opt = (int)GetPrivateProfileInt( WRESectionName, entry, 0x7fff, WREProfileName );
 
-    if ( opt != 0x7fff ) {
+    if( opt != 0x7fff ) {
         *i = opt;
     }
 
-    return ( opt != 0x7fff );
+    return( opt != 0x7fff );
 }
 
-Bool WREWriteRectOpt ( char *entry, RECT *r )
+Bool WREWriteRectOpt( char *entry, RECT *r )
 {
-    char *str;
-    Bool  ret;
+    char    *str;
+    Bool    ret;
 
     ret = FALSE;
-    str = WRERectToStr ( r );
-    if ( str ) {
-        ret = WritePrivateProfileString ( WRESectionName, entry, str,
-                                          WREProfileName );
-        WREMemFree ( str );
+    str = WRERectToStr( r );
+    if( str != NULL ) {
+        ret = WritePrivateProfileString( WRESectionName, entry, str, WREProfileName );
+        WREMemFree( str );
     }
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WREGetRectOpt ( char *entry, RECT *r )
+Bool WREGetRectOpt( char *entry, RECT *r )
 {
-    char  str[41];
-    Bool  ret;
+    char    str[41];
+    Bool    ret;
 
-    ret = GetPrivateProfileString ( WRESectionName, entry, "0, 0, 0, 0",
-                                    str, 40, WREProfileName );
-    if ( ret && strcmp ( "0, 0, 0, 0", str ) ) {
-        WREStrToRect ( str, r );
-        return ( TRUE );
+    ret = GetPrivateProfileString( WRESectionName, entry, "0, 0, 0, 0",
+                                   str, 40, WREProfileName );
+    if( ret && strcmp( "0, 0, 0, 0", str ) ) {
+        WREStrToRect( str, r );
+        return( TRUE );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 }
 
-char *WRERectToStr ( RECT *r )
+char *WRERectToStr( RECT *r )
 {
-    char  temp[41];
+    char temp[41];
 
-    sprintf ( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
+    sprintf( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
 
-    return ( WREStrDup ( temp ) );
+    return( WREStrDup( temp ) );
 }
 
-void WREStrToRect ( char *str, RECT *r )
+void WREStrToRect( char *str, RECT *r )
 {
-    memset ( r, 0, sizeof ( RECT ) );
-    sscanf ( str, "%d, %d, %d, %d", &r->left, &r->top,
-                                    &r->right, &r->bottom );
+    memset( r, 0, sizeof( RECT ) );
+    sscanf( str, "%d, %d, %d, %d", &r->left, &r->top, &r->right, &r->bottom );
 }
 
 void WREInitOpts( void )
 {
     WRECurrentState = WREDefaultState;
+    GetConfigFilePath( WREProfileName, sizeof( WREProfileName ) );
+    strcat( WREProfileName, "\\" WATCOM_INI );
     WREReadOpts( &WRECurrentState );
-    if( WRECurrentState.last_dir ) {
+    if( WRECurrentState.last_dir != NULL ) {
         WRESetInitialDir( WRECurrentState.last_dir );
     }
     WRESetFileFilter( WRECurrentState.last_filter );
@@ -236,42 +235,42 @@ int WREGetOption( WREOptReq req )
 {
     int ret;
 
-    switch ( req ) {
-        case WREOptScreenMax:
-            ret = WRECurrentState.screen_maxed;
-            break;
+    switch( req ) {
+    case WREOptScreenMax:
+        ret = WRECurrentState.screen_maxed;
+        break;
 
-        default:
-            ret = WRE_BAD_OPT_REQ;
+    default:
+        ret = WRE_BAD_OPT_REQ;
     }
 
-    return ( ret );
+    return( ret );
 }
 
-void WREGetScreenPosOption ( RECT *pos )
+void WREGetScreenPosOption( RECT *pos )
 {
     *pos = WRECurrentState.screen_pos;
 }
 
-void WRESetScreenPosOption ( RECT *pos )
+void WRESetScreenPosOption( RECT *pos )
 {
     WRECurrentState.screen_pos = *pos;
 }
 
-int WRESetOption ( WREOptReq req, int val )
+int WRESetOption( WREOptReq req, int val )
 {
     int old;
 
-    switch ( req ) {
-        case WREOptScreenMax:
-            old = WRECurrentState.screen_maxed;
-            WRECurrentState.screen_maxed = ( Bool ) val;
-            break;
+    switch( req ) {
+    case WREOptScreenMax:
+        old = WRECurrentState.screen_maxed;
+        WRECurrentState.screen_maxed = (Bool)val;
+        break;
 
-        default:
-            old = WRE_BAD_OPT_REQ;
+    default:
+        old = WRE_BAD_OPT_REQ;
+        break;
     }
 
-    return ( old );
+    return( old );
 }
-

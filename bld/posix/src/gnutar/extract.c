@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Extract files from a tar archive.
 *
 ****************************************************************************/
 
@@ -44,6 +43,12 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <direct.h>
+#include <process.h>
+#include <sys/utime.h>
+#include <time.h>
 
 #ifdef BSD42
 #include <sys/file.h>
@@ -53,22 +58,68 @@
 #include <fcntl.h>
 #endif
 
-// dsmk extern int      errno;                  /* From libc.a */
-extern char    *index();                /* From libc.a or port.c */
-
 #include "tar.h"
+#include "list.h"
+#include "buffer.h"
+#include "port.h"
 
-extern union record *head;              /* Points to current tape header */
-extern struct stat hstat[1];    /* Stat struct corresponding */
-extern struct stat *phstat;     /* overcome original highly arcane C syntax */
 
-extern void     print_header();
-extern void     skip_file();
-extern void     pr_mkdir();
+static time_t          now = 0;                /* Current time */
 
-int             make_dirs();    /* Makes required directories */
+/*
+ * After a file/link/symlink/dir creation has failed, see if
+ * it's because some required directory was not present, and if
+ * so, create all required dirs.
+ */
+int make_dirs( char *pathname, int uid, int gid) /* added -- JER */
+{
+    char    *p;                      /* Points into path */
+    int     madeone = 0;/* Did we do anything yet? */
+    int     save_errno = errno;     /* Remember caller's errno */
+    int     check;
 
-time_t          now = 0;                /* Current time */
+    if (errno != ENOENT)
+        return 0;                               /* Not our problem */
+
+    for (p = index(pathname, '/'); p != NULL; p = index(p + 1, '/')) {
+        /* Avoid mkdir of empty string, if leading or double '/' */
+        if (p == pathname || p[-1] == '/')
+            continue;
+        /* Avoid mkdir where last part of path is '.' */
+        if (p[-1] == '.' && (p == pathname + 1 || p[-2] == '/'))
+            continue;
+        *p = 0;                                 /* Truncate the path there */
+#ifdef MSDOS
+        check = mkdir(pathname);  /* Try to create it as a dir */
+#else
+        check = mkdir(pathname, 0777);  /* Try to create it as a dir */
+#endif
+        *p = '/';
+        if (check == 0) {
+#ifndef MSDOS
+            /* chown, chgrp it same as file being created */
+            chown(pathname, uid, gid);      /* JER */
+#endif
+            /* FIXME, show mode as modified by current umask */
+            pr_mkdir(pathname, p - pathname, 0777);
+            madeone++;                      /* Remember if we made one */
+            continue;
+        }
+        if (errno == EEXIST)    /* Directory already exists */
+            continue;
+#ifdef MSDOS
+        if (errno == EACCES)    /* DOS version of 'already exists' */
+                continue;
+#endif
+        /*
+        * Some other error in the mkdir.  We return to the caller.
+        */
+        break;
+    }
+
+    errno = save_errno;                     /* Restore caller's errno */
+    return madeone;                         /* Tell them to retry if we made one */
+}
 
 /*
  * Extract a file from the archive.
@@ -76,16 +127,14 @@ time_t          now = 0;                /* Current time */
  * to the OS.  We use this instead of the name in the header, but only
  * if we're actually creating a data file.
  */
-void
-extract_archive(xname)
-char           *xname;
+void extract_archive( char *xname )
 {
-        register char  *data;
-        int             fd, check, namelen, written;
-        long            size;
-        time_t          acc_upd_times[2];
-        int             standard;       /* Is header standard? */
-        struct stat     st;
+        char    *data;
+        int     fd, check, namelen, written;
+        long    size;
+        int     standard;       /* Is header standard? */
+        struct  utimbuf  acc_upd_times;
+        struct  stat     st;
 
         saverec(&head);                         /* Make sure it sticks around */
         userec(head);                           /* And go past it in the archive */
@@ -161,7 +210,8 @@ again_file:
                          * The following is in violation of strict typing, since the arg
                          * to userec should be a struct rec *. FIXME.
                          */
-                        userec(data + written - 1);
+                        /* BartoszP: to avoid error type casting was made */
+                        userec((union record *)(data + written - 1));
                         if (check == written)
                                 continue;
 
@@ -203,10 +253,10 @@ again_file:
                 {
                         if (!now)
                                 now = time((time_t *) 0);               /* Just do it once */
-                        acc_upd_times[0] = now;         /* Accessed now */
-                        acc_upd_times[1] = phstat->st_mtime;    /* Mod'd */
+                        acc_upd_times.actime = now;         /* Accessed now */
+                        acc_upd_times.modtime = phstat->st_mtime;    /* Mod'd */
                         chmod( xname, S_IREAD|S_IWRITE );
-                        if (utime( /* head->header.name */ xname, acc_upd_times) < 0)
+                        if (utime( /* head->header.name */ xname, &acc_upd_times) < 0)
                         {
                                 annofile(stderr, tar);
                                 perror( /* head->header.name */ xname);
@@ -259,7 +309,7 @@ again_link:
 #endif
                 break;
 
-#ifdef S_IFLNK
+#if defined S_IFLNK && defined __UNIX__
         case LF_SYMLINK:
 again_symlink:
                 check = symlink(head->header.linkname,
@@ -330,8 +380,11 @@ again_dir:
                 if (stat(head->header.name, &st) == 0 && (st.st_mode & S_IFDIR))
                         check = 0;
                 else
-#endif
+                        check = mkdir(head->header.name);
+#else
                         check = mkdir(head->header.name, (int) phstat->st_mode);
+#endif
+
 #ifndef MSDOS
                 if (check == 0)
                         chown(head->header.name, from_oct(8, head->header.uid),
@@ -364,59 +417,3 @@ again_dir:
         saverec((union record **) 0);           /* Unsave it */
 }
 
-/*
- * After a file/link/symlink/dir creation has failed, see if
- * it's because some required directory was not present, and if
- * so, create all required dirs.
- */
-int
-make_dirs(pathname, uid, gid)
-char           *pathname;
-int             uid, gid; /* added -- JER */
-{
-        char           *p;                      /* Points into path */
-        int             madeone = 0;/* Did we do anything yet? */
-        int             save_errno = errno;     /* Remember caller's errno */
-        int             check;
-
-        if (errno != ENOENT)
-                return 0;                               /* Not our problem */
-
-        for (p = index(pathname, '/'); p != NULL; p = index(p + 1, '/'))
-        {
-                /* Avoid mkdir of empty string, if leading or double '/' */
-                if (p == pathname || p[-1] == '/')
-                        continue;
-                /* Avoid mkdir where last part of path is '.' */
-                if (p[-1] == '.' && (p == pathname + 1 || p[-2] == '/'))
-                        continue;
-                *p = 0;                                 /* Truncate the path there */
-                check = mkdir(pathname, 0777);  /* Try to create it as a dir */
-                *p = '/';
-                if (check == 0)
-                {
-#ifndef MSDOS
-                        /* chown, chgrp it same as file being created */
-                        chown(pathname, uid, gid);      /* JER */
-#endif
-                        /* FIXME, show mode as modified by current umask */
-                        pr_mkdir(pathname, p - pathname, 0777);
-                        madeone++;                      /* Remember if we made one */
-                        continue;
-                }
-                if (errno == EEXIST)    /* Directory already exists */
-                        continue;
-#ifdef MSDOS
-                if (errno == EACCES)    /* DOS version of 'already exists' */
-                        continue;
-#endif
-
-                /*
-                 * Some other error in the mkdir.  We return to the caller.
-                 */
-                break;
-        }
-
-        errno = save_errno;                     /* Restore caller's errno */
-        return madeone;                         /* Tell them to retry if we made one */
-}

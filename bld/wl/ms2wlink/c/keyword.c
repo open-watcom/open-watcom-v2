@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines for parsing Microsoft keywords.
 *
 ****************************************************************************/
 
-
-/*
- *  KEYWORD : Routines for parsing Microsoft keywords.
- *
-*/
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -43,8 +37,9 @@
 #include "command.h"
 
 extern void         AddCommand( char *, int, bool );
-extern void         NotNecessary( char * );
-extern void         NotSupported( char * );
+extern void         NotNecessary( const char * );
+extern void         NotSupported( const char * );
+extern void         NotRecognized( const char * );
 extern void         AddNumOption( char *, unsigned );
 extern void         AddStringOption( char *, char *, int );
 extern void         Warning( char *, int );
@@ -54,12 +49,12 @@ extern void *       MemAlloc( unsigned );
 extern void         EatWhite( void );
 extern bool         MakeToken( sep_type, bool );
 extern void         DirectiveError( void );
-extern bool         GetNumber( unsigned long * );
 extern void         WriteHelp( void );
 extern void         ImplyFormat( format_type );
 extern void         StartNewFile( char * );
 extern void         ParseDefFile( void );
 extern char *       ToString( void );
+extern void         CommandOut( char *command );
 
 extern bool         MapOption;
 extern format_type  FmtType;
@@ -68,102 +63,28 @@ extern bool         DebugInfo;
 
 extern cmdfilelist *CmdFile;
 
-static void             (*MultiLine)() = NULL;
+static void             (*MultiLine)( void ) = NULL;
 static char *           OptionBuffer;
 static int              BufferLeft;
 static bool             SegWarning = FALSE;
 static bool             GotModName = FALSE;
 static bool             GotOvl;
 
+/* An entry for parsing .def files. */
 typedef struct parse_entry {
     char                *keyword;
-    bool                (*rtn)();
+    void                (*rtn)( void );
     char                minlen;
 } parse_entry;
 
-static void ProcAlignment( void );
-static void ProcBatch( void );
-static void ProcCodeview( void );
-static void ProcCParMaxAlloc( void );
-static void ProcDosseg( void );
-static void ProcDSAllocate( void );
-static void ProcDynamic( void );
-static void ProcExePack( void );
-static void ProcFarCallTranslation( void );
-static void ProcHelp( void );
-static void ProcHigh( void );
-static void ProcIncremental( void );
-static void ProcInformation( void );
-static void ProcLineNumbers( void );
-static void ProcMap( void );
-static void ProcNoDefaultLibrarySearch( void );
-static void ProcNoExtendedDictSearch( void );
-static void ProcNoFarCallTranslation( void );
-static void ProcNoGroupAssociation( void );
-static void ProcNoIgnoreCase( void );
-static void ProcNoLogo( void );
-static void ProcNoNullsDosseg( void );
-static void ProcNoPackCode( void );
-static void ProcNoPackFunctions( void );
-static void ProcOldOverlay( void );
-static void ProcOnError( void );
-static void ProcOverlayInterrupt( void );
-static void ProcPackCode( void );
-static void ProcPackData( void );
-static void ProcPackFunctions( void );
-static void ProcPadCode( void );
-static void ProcPadData( void );
-static void ProcPause( void );
-static void ProcPMType( void );
-static void ProcQuickLibrary( void );
-static void ProcR( void );
-static void ProcSegments( void );
-static void ProcStack( void );
-static void ProcTiny( void );
-static void ProcWarnFixup( void );
+/* An entry for parsing command line switches. */
+typedef struct switch_entry {
+    char                *keyword;
+    void                (*rtn)( const char *arg );
+    char                minlen;
+} switch_entry;
 
-static  parse_entry     OptionsTable[] = {
-    "alignment",        ProcAlignment,      1,
-    "batch",            ProcBatch,          1,
-    "codeview",         ProcCodeview,       2,
-    "cparmaxalloc",     ProcCParMaxAlloc,   2,
-    "dynamic",          ProcDynamic,        2,
-    "dosseg",           ProcDosseg,         2,
-    "dsallocate",       ProcDSAllocate,     2,
-    "exepack",          ProcExePack,        1,
-    "farcalltranslation", ProcFarCallTranslation, 1,
-    "help",             ProcHelp,           2,
-    "high",             ProcHigh,           2,
-    "incremental",      ProcIncremental,    3,
-    "information",      ProcInformation,    1,
-    "linenumbers",      ProcLineNumbers,    2,
-    "map",              ProcMap,            1,
-    "nodefaultlibrarysearch", ProcNoDefaultLibrarySearch, 3,
-    "noextendeddictsearch", ProcNoExtendedDictSearch, 3,
-    "nofarcalltranslation", ProcNoFarCallTranslation, 3,
-    "nogroupassociation", ProcNoGroupAssociation, 3,
-    "noignorecase",     ProcNoIgnoreCase,   3,
-    "nologo",           ProcNoLogo,         3,
-    "nonullsdosseg",    ProcNoNullsDosseg,  3,
-    "nopackcode",       ProcNoPackCode,     7,
-    "nopackfunctions",  ProcNoPackFunctions,7,
-    "oldoverlay",       ProcOldOverlay,     4,
-    "onerror",          ProcOnError,        3,
-    "overlayinterrupt", ProcOverlayInterrupt,1,
-    "packcode",         ProcPackCode,       5,
-    "packdata",         ProcPackData,       5,
-    "padcode",          ProcPadCode,        4,
-    "paddata",          ProcPadData,        4,
-    "pause",            ProcPause,          3,
-    "pmtype",           ProcPMType,         2,
-    "quicklibrary",     ProcQuickLibrary,   1,
-    "r",                ProcR,              1,
-    "segments",         ProcSegments,       2,
-    "stack",            ProcStack,          2,
-    "tiny",             ProcTiny,           1,
-    "warnfixup",        ProcWarnFixup,      1,
-    NULL
-};
+static  switch_entry        OptionsTable[];
 
 static void ProcAppLoader( void );
 static void ProcCode( void );
@@ -296,12 +217,16 @@ static  parse_entry     SegOptions[] = {
 };
 static void NullRoutine( void );
 static void SetWindows( void );
+static void SetWindowsVxD( void );
+static void SetWindowsVxDDyn( void );
 static void SetOS2( void );
 
 static  parse_entry     ExeTypeKeywords[] = {
     "os2",              SetOS2,             3,
     "windows",          SetWindows,         7,
     "dos4",             NullRoutine,        4,
+    "dev386",           SetWindowsVxD,      6,
+    "dynamic",          SetWindowsVxDDyn,   7,
     "unknown",          NullRoutine,        7,
     NULL
 };
@@ -319,15 +244,6 @@ static  parse_entry     ApplicationTypes[] = {
     NULL
 };
 
-static void ProcNoVIO( void );
-
-static  parse_entry     PMTypes[] = {
-    "pm",               ProcWindowApi,      2,
-    "vio",              ProcWindowCompat,   3,
-    "novio",            ProcNoVIO,          5,
-    NULL
-};
-
 static void ProcPrivateLib( void );
 
 static  parse_entry     LibraryTypes[] = {
@@ -342,19 +258,94 @@ static  parse_entry     DeviceKeyword[] = {
     NULL
 };
 
-static bool ProcessKeyList( parse_entry *entry )
-/**********************************************/
+
+static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
+/***********************************************************************/
+// kinda like strtoul(), but not quite...
 {
-    char                *key;
-    char                *ptr;
+    unsigned long   value;
+    unsigned        radix;
+    bool            isvalid;
+    bool            isdig;
+    char            ch;
+
+    value = 0ul;
+    radix = 10;
+    if( *s == '0' ) {
+        --len;
+        radix = 8;
+        if( tolower( *++s ) == 'x') {
+            radix = 16;
+            ++s;
+            --len;
+        }
+    }
+    for( ; len != 0; --len ) {
+        ch = tolower( *s++ );
+        if( ch == 'k' ) {         // constant of the form 64k
+            if( len > 1 ) {
+                return( FALSE );
+            } else {
+                value <<= 10;        // value = value * 1024;
+            }
+        } else {
+            isdig = isdigit( ch );
+            if( radix == 10 ) {
+                isvalid = isdig;
+            } else if( radix == 8 ) {
+                if( ch == '8' || ch == '9' || !isdig ) {
+                    isvalid = FALSE;
+                } else {
+                    isvalid = TRUE;
+                }
+            } else {
+                isvalid = isxdigit( ch );
+            }
+            if( !isvalid ) {
+                return( FALSE );
+            }
+            value *= radix;
+            if( isdig ) {
+                value += ch - '0';
+            } else {
+                value += ch - 'a' + 10;
+            }
+        }
+    }
+    *val = value;
+    return( TRUE );
+}
+
+extern bool GetNumber( unsigned long *val )
+/*****************************************/
+{
+    return( GetNumberStr( val, CmdFile->token, CmdFile->len ) );
+}
+
+
+static void CheckNum( const char *arg )
+/*************************************/
+{
+    unsigned long       value;
+
+    /* Check but ignore numeric argument. */
+    if( arg && !GetNumberStr( &value, arg , strlen( arg ) ) )
+        Warning( "invalid numeric value", OPTION_SLOT );
+}
+
+static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
+/****************************************************************************/
+{
+    const char          *key;
+    const char          *ptr;
     int                 len;
     int                 plen;
 
     while( entry->keyword != NULL ) {
         key = entry->keyword;
-        ptr = CmdFile->token;
+        ptr = arg;
         len = 0;
-        plen = CmdFile->len;
+        plen = arg_len;
         for(;;) {
             if( plen == 0 && len >= entry->minlen ) {
                 MultiLine = NULL;               // for processdefcommand.
@@ -383,7 +374,7 @@ static bool ProcessKeyword( parse_entry *entry )
     if( !MakeToken( SEP_NO, FALSE ) ) {
         return( FALSE );
     }
-    ret = ProcessKeyList( entry );
+    ret = ProcessKeyList( entry, CmdFile->token, CmdFile->len );
     if( !ret ) {
         CmdFile->current = CmdFile->token;     // reparse the token later.
     }
@@ -414,6 +405,20 @@ static void SetWindows( void )
     if( !GetNumber( &bogus ) ) {
         CmdFile->current = CmdFile->token;      // reparse the token later
     }
+}
+
+static void SetWindowsVxD( void )
+/****************************/
+{
+    FmtType = FMT_WINVXD;
+    FmtInfo = NO_EXTRA;
+}
+
+static void SetWindowsVxDDyn( void )
+/****************************/
+{
+    FmtType = FMT_WINVXDDYN;
+    FmtInfo = NO_EXTRA;
 }
 
 static void SetOS2( void )
@@ -482,6 +487,19 @@ static void ProcData( void )
     }
 }
 
+static void AddToBuffer( char *cmd, int len )
+/*******************************************/
+{
+    if( BufferLeft - (len+1) < 0 ) {
+        Warning( "too many code attributes", OPTION_SLOT );
+    } else {
+        BufferLeft -= len + 1;
+        *OptionBuffer++ = ' ';
+        memcpy( OptionBuffer, cmd, len );
+        OptionBuffer += len;
+    }
+}
+
 static void ProcPreload( void )
 /*****************************/
 {
@@ -516,19 +534,6 @@ static void ProcNoIopl( void )
 /****************************/
 {
     AddToBuffer( "noiopl", 6 );
-}
-
-static void AddToBuffer( char *cmd, int len )
-/*******************************************/
-{
-    if( BufferLeft - (len+1) < 0 ) {
-        Warning( "too many code attributes", OPTION_SLOT );
-    } else {
-        BufferLeft -= len + 1;
-        *OptionBuffer++ = ' ';
-        memcpy( OptionBuffer, cmd, len );
-        OptionBuffer += len;
-    }
 }
 
 static void ProcConforming( void )
@@ -567,7 +572,9 @@ static void ProcDiscardable( void )
 static void ProcNonDiscardable( void )
 /************************************/
 {
-    NotSupported( "nondiscardable" );
+    AddToBuffer( "nondiscardable", 14 );
+    ImplyFormat( FMT_WINDOWS );
+//    NotNecessary( "nondiscardable" );
 }
 
 static void ProcNone( void )
@@ -931,7 +938,7 @@ static void ProcName( void )
     if( !MakeToken( SEP_NO, TRUE ) ) {
         return;
     }
-    if( !ProcessKeyList( ApplicationTypes ) ) {
+    if( !ProcessKeyList( ApplicationTypes, CmdFile->token, CmdFile->len ) ) {
         if( GotModName ) {
             Warning( "module name multiply defined", OPTION_SLOT );
         } else {
@@ -943,7 +950,7 @@ static void ProcName( void )
         if( !MakeToken( SEP_NO, TRUE ) ) {
             return;
         }
-        if( !ProcessKeyList( ApplicationTypes ) ) {
+        if( !ProcessKeyList( ApplicationTypes, CmdFile->token, CmdFile->len ) ) {
             DirectiveError();
         }
     }
@@ -1112,235 +1119,259 @@ static void ProcVirtual( void )
 
 // the microsoft command line options.
 
-extern bool ProcessOptions( void )
-/********************************/
-{
-    return( ProcessKeyword( OptionsTable ) );
-}
-
-static void ProcAlignment( void )
-/*******************************/
+static void ProcAlignment( const char *arg )
+/******************************************/
 {
     bool              success;
     unsigned long     value;
 
-    success = MakeToken( SEP_COLON, FALSE );
-    if( !success || !GetNumber( &value ) ) {
-        Warning( "alignment argument not recognized", OPTION_SLOT );
+    success = arg && GetNumberStr( &value, arg , strlen( arg ) );
+    if( !success ) {
+        Warning( "invalid alignment specification", OPTION_SLOT );
     } else {
         AddNumOption( "alignment", value );
     }
 }
 
-static void ProcBatch( void )
-/***************************/
+static void ProcBatch( const char *arg )
+/**************************************/
 {
+    /* This option disables prompting, but only when LINK asks for additional
+     * information like missing libraries. It does not affect the standard
+     * object file, run file, etc. prompts. For ms2wlink, it is effectively
+     * always true.
+     */
     NotNecessary( "batch" );
 }
 
-static void ProcCodeview( void )
-/******************************/
+static void ProcCodeview( const char *arg )
+/*****************************************/
 {
     DebugInfo = TRUE;
 }
 
-static void ProcCParMaxAlloc( void )
-/**********************************/
+static void ProcCParMaxAlloc( const char *arg )
+/*********************************************/
 {
     NotSupported( "cparmaxalloc" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcDosseg( void )
-/****************************/
+static void ProcDosseg( const char *arg )
+/***************************************/
 {
     AddOption( "dosseg" );
 }
 
-static void ProcDSAllocate( void )
-/********************************/
+static void ProcDSAllocate( const char *arg )
+/*******************************************/
 {
     NotSupported( "dsallocate" );
 }
 
-static void ProcDynamic( void )
-/*****************************/
+static void ProcDynamic( const char *arg )
+/****************************************/
 {
     NotNecessary( "dynamic" );
-    MakeToken( SEP_COLON, FALSE );      // skip number
+    CheckNum( arg );
 }
 
-static void ProcExePack( void )
-/*****************************/
+static void ProcExePack( const char *arg )
+/****************************************/
 {
     NotSupported( "exepack" );
 }
 
-static void ProcFarCallTranslation( void )
-/****************************************/
+static void ProcFarCallTrans( const char *arg )
+/*********************************************/
 {
     Warning( "far call translation happens automatically for WATCOM .obj files", OPTION_SLOT );
     Warning( "use FCENABLE for far call translation on non-WATCOM .obj files", OPTION_SLOT );
 }
 
-static void ProcHelp( void )
-/**************************/
+static void WriteOptions( switch_entry *entry )
+/*********************************************/
+{
+    char        help_line[80];
+    int         i = 0;
+    const char  *kw;
+
+    while( entry->keyword ) {
+        help_line[i++] = ' ';
+        help_line[i++] = ' ';
+        help_line[i++] = '/';
+        kw = entry->keyword;
+        while( *kw )
+            help_line[i++] = *kw++;
+        if( i < 31 ) {  
+            while( i < 31 ) // pad to second column
+                help_line[i++] = ' ';
+        } else {
+            help_line[i] = '\0';
+            i = 0;
+            CommandOut( help_line );
+        }
+        ++entry;
+    }
+    if( i ) {
+        help_line[i] = '\0';
+        CommandOut( help_line );
+    }
+}
+
+static void ProcHelp( const char *arg )
+/*************************************/
 {
     WriteHelp();
+    WriteOptions( OptionsTable );
     Suicide();
 }
 
-static void ProcHigh( void )
-/**************************/
+static void ProcHigh( const char *arg )
+/*************************************/
 {
     NotSupported( "high" );
 }
 
-static void ProcIncremental( void )
-/*********************************/
+static void ProcIncremental( const char *arg )
+/********************************************/
 {
     NotSupported( "incremental" );
 }
 
-static void ProcInformation( void )
-/*********************************/
+static void ProcInformation( const char *arg )
+/********************************************/
 {
     NotNecessary( "information" );
 }
 
-static void ProcLineNumbers( void )
-/*********************************/
+static void ProcLineNumbers( const char *arg )
+/********************************************/
 {
     NotSupported( "linenumbers" );
 }
 
-static void ProcMap( void )
-/*************************/
+static void ProcMap( const char *arg )
+/************************************/
 {
     MapOption = TRUE;
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    /* Argument is ignored. */
 }
 
-static void ProcNoDefaultLibrarySearch( void )
-/********************************************/
+static void ProcNoDefLibSearch( const char *arg )
+/***********************************************/
 {
     AddOption( "nodefaultlibs" );
-    if( MakeToken( SEP_COLON, TRUE ) ) {
+    if( arg ) {
         Warning( "nodefaultlibrarysearch applies to all libraries in WLINK",
                                                                  OPTION_SLOT );
     }
 }
 
-static void ProcNoExtendedDictSearch( void )
-/******************************************/
+static void ProcNoExtDictSearch( const char *arg )
+/************************************************/
 {
-    NotNecessary( "noextendeddictsearch" );
+    NotNecessary( "noextdictionary" );
 }
 
-static void ProcNoFarCallTranslation( void )
-/******************************************/
+static void ProcNoFarCallTrans( const char *arg )
+/***********************************************/
 {
     NotNecessary( "nofarcalltranslation" );
 }
 
-static void ProcNoGroupAssociation( void )
-/****************************************/
+static void ProcNoGroupAssoc( const char *arg )
+/*********************************************/
 {
     NotSupported( "nogroupassociation" );
 }
 
-static void ProcNoIgnoreCase( void )
-/**********************************/
+static void ProcNoIgnoreCase( const char *arg )
+/*********************************************/
 {
     AddOption( "caseexact" );
 }
 
-static void ProcNoLogo( void )
-/****************************/
+static void ProcNoLogo( const char *arg )
+/***************************************/
 {
     AddOption( "quiet" );
 }
 
-static void ProcNoNullsDosseg( void )
-/***********************************/
+static void ProcNoNullsDosseg( const char *arg )
+/**********************************************/
 {
     NotSupported( "nonullsdosseg" );
 }
 
-static void ProcNoPackCode( void )
-/********************************/
+static void ProcNoPackCode( const char *arg )
+/*******************************************/
 {
     AddNumOption( "packcode", 0 );    // option packcode=0 doesn't pack code.
 }
 
-static void ProcNoPackFunctions( void )
-/*************************************/
+static void ProcNoPackFunctions( const char *arg )
+/************************************************/
 {
     NotNecessary( "nopackfunctions" );
 }
 
-static void ProcOldOverlay( void )
-/********************************/
+static void ProcOldOverlay( const char *arg )
+/*******************************************/
 {
     AddOption( "standard" );
 }
 
-static void ProcOnError( void )
-/*****************************/
+static void ProcOnError( const char *arg )
+/****************************************/
 {
-    Warning( "undefsok behaviour slightly different than onerror", OPTION_SLOT);
+    Warning( "undefsok behaviour slightly different than onerror", OPTION_SLOT );
     AddOption( "undefsok" );
 }
 
-static void ProcOverlayInterrupt( void )
-/**************************************/
+static void ProcOverlayInterrupt( const char *arg )
+/*************************************************/
 {
     NotNecessary( "overlayinterrupt" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcPackCode( void )
-/******************************/
+static void ProcPackCode( const char *arg )
+/*****************************************/
 {
     unsigned long   value;
 
-    if( !MakeToken( SEP_COLON, FALSE ) || !GetNumber( &value ) ) {
-        value = 65535;
-    }
+    value = 65535;
+    if( arg && !GetNumberStr( &value, arg , strlen( arg ) ) )
+        Warning( "invalid numeric value", OPTION_SLOT );
     AddNumOption( "packcode", value );
 }
 
-static void ProcPackData( void )
-/******************************/
+static void ProcPackData( const char *arg )
+/*****************************************/
 {
     NotSupported( "packdata" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcPadCode( void )
-/*****************************/
+static void ProcPadCode( const char *arg )
+/****************************************/
 {
     NotSupported( "padcode" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcPadData( void )
-/*****************************/
+static void ProcPadData( const char *arg )
+/****************************************/
 {
     NotSupported( "paddata" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcPause( void )
-/***************************/
+static void ProcPause( const char *arg )
+/**************************************/
 {
     NotSupported( "pause" );
-}
-
-static void ProcR( void )
-/**********************/
-{
-    NotSupported( "r" );
 }
 
 static void ProcNoVIO( void )
@@ -1350,8 +1381,16 @@ static void ProcNoVIO( void )
     NotNecessary( "novio" );
 }
 
-static void ProcPMType( void )
-/****************************/
+
+static  parse_entry     PMTypes[] = {
+    "pm",               ProcWindowApi,      1,
+    "vio",              ProcWindowCompat,   1,
+    "novio",            ProcNoVIO,          1,
+    NULL
+};
+
+static void ProcPMType( const char *arg )
+/***************************************/
 {
     switch( FmtType ) {
     case FMT_DEFAULT:
@@ -1360,46 +1399,142 @@ static void ProcPMType( void )
         FmtType = FMT_OS2;
         break;
     }
-    if( !MakeToken( SEP_COLON, FALSE ) || !ProcessKeyList( PMTypes ) ) {
+    if( !arg || !ProcessKeyList( PMTypes, arg, strlen( arg ) ) ) {
         Warning( "invalid argument for pmtype option", OPTION_SLOT );
     }
 }
 
-static void ProcSegments( void )
-/******************************/
+static void ProcSegments( const char *arg )
+/*****************************************/
 {
     NotNecessary( "segments" );
-    MakeToken( SEP_COLON, FALSE );       // skip number.
+    CheckNum( arg );
 }
 
-static void ProcStack( void )
-/***************************/
+static void ProcStack( const char *arg )
+/**************************************/
 {
-    bool              success;
-    unsigned long     value;
+    bool                success;
+    unsigned long       value;
 
-    success = MakeToken( SEP_COLON, FALSE );
-    if( !success || !GetNumber( &value ) ) {
+    success = arg && GetNumberStr( &value, arg , strlen( arg ) );
+    if( !success ) {
         Warning( "stack argument not recognized", OPTION_SLOT );
     } else {
         AddNumOption( "stack", value );
     }
 }
 
-static void ProcQuickLibrary( void )
-/**********************************/
+static void ProcQuickLibrary( const char *arg )
+/*********************************************/
 {
     NotSupported( "quicklibrary" );
 }
 
-static void ProcTiny( void )
-/**************************/
+static void ProcTiny( const char *arg )
+/*************************************/
 {
     FmtType = FMT_COM;
 }
 
-static void ProcWarnFixup( void )
-/*******************************/
+static void ProcWarnFixup( const char *arg )
+/******************************************/
 {
     NotSupported( "warnfixup" );
+}
+
+static  switch_entry        OptionsTable[] = {
+/*  option name               processing routine    shortest match */
+    "?",                        ProcHelp,               1,
+    "alignment",                ProcAlignment,          1,
+    "batch",                    ProcBatch,              1,
+    "codeview",                 ProcCodeview,           2,
+    "cparmaxalloc",             ProcCParMaxAlloc,       2,
+    "dosseg",                   ProcDosseg,             4,
+    "dsallocate",               ProcDSAllocate,         2,
+    "dynamic",                  ProcDynamic,            2,
+    "exepack",                  ProcExePack,            1,
+    "farcalltranslation",       ProcFarCallTrans,       1,
+    "help",                     ProcHelp,               2,
+    "high",                     ProcHigh,               2,
+    "incremental",              ProcIncremental,        3,
+    "information",              ProcInformation,        1,
+    "linenumbers",              ProcLineNumbers,        2,
+    "map",                      ProcMap,                1,
+    "nodefaultlibrarysearch",   ProcNoDefLibSearch,     3,
+    "noextdictionary",          ProcNoExtDictSearch,    3,
+    "nofarcalltranslation",     ProcNoFarCallTrans,     3,
+    "nogroupassociation",       ProcNoGroupAssoc,       3,
+    "noignorecase",             ProcNoIgnoreCase,       3,
+    "nologo",                   ProcNoLogo,             3,
+    "nonullsdosseg",            ProcNoNullsDosseg,      3,
+    "nopackcode",               ProcNoPackCode,         7,
+    "nopackfunctions",          ProcNoPackFunctions,    7,
+    "oldoverlay",               ProcOldOverlay,         2,
+    "onerror",                  ProcOnError,            2,
+    "overlayinterrupt",         ProcOverlayInterrupt,   2,
+    "packcode",                 ProcPackCode,           5,
+    "packdata",                 ProcPackData,           5,
+    "padcode",                  ProcPadCode,            4,
+    "paddata",                  ProcPadData,            4,
+    "pause",                    ProcPause,              3,
+    "pmtype",                   ProcPMType,             2,
+    "quicklibrary",             ProcQuickLibrary,       1,
+    "segments",                 ProcSegments,           2,
+    "stack",                    ProcStack,              2,
+    "tiny",                     ProcTiny,               1,
+    "warnfixup",                ProcWarnFixup,          1,
+    NULL
+};
+
+extern void ProcessOption( const char *opt )
+/******************************************/
+{
+    switch_entry        *entry;
+    const char          *key;
+    const char          *ptr;
+    const char          *arg;
+    int                 len;
+    int                 plen;
+    int                 opt_len;
+
+    entry = OptionsTable;
+
+    /* Locate an option argument, if it exists. Note: Unexpected arguments
+     * are usually ignored by option processing routines.
+     */
+    arg = strchr( opt, ':' );
+    opt_len = arg - opt;
+    if( arg ) {
+        opt_len = arg - opt;
+        ++arg;  /* Point to the next character after ':'. */
+        if( *arg == '\0' )
+            arg = NULL;     /* Empty argument is no argument. */
+    } else {
+        opt_len = strlen( opt );
+    }
+
+    /* Look for a valid command line option. */
+    while( entry->keyword != NULL ) {
+        key = entry->keyword;
+        ptr = opt;
+        len = 0;
+        plen = opt_len;
+        for( ;; ) {
+            if( plen == 0 && len >= entry->minlen ) {
+                (*entry->rtn)( arg );
+                return;
+            }
+            if( *key == '\0' || tolower( *ptr ) != *key )
+                break;
+            ptr++;
+            key++;
+            len++;
+            plen--;
+        }
+        /* Entry didn't match. */
+        entry++;
+    }
+    /* No match found; probably junk. */
+    NotRecognized( opt );
 }

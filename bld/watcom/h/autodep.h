@@ -24,16 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Autdependency structure defintion shared between resource
+*               compiler and wmake.
 *
 ****************************************************************************/
 
-
-//
-// This header contains information about autodependecy information put out
-// by the resource compiler for wmake
-//
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,19 +37,15 @@ extern "C" {
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
 
-#if defined( __WATCOMC__ )
-#pragma pack( 1 );
-#endif
+#include "pushpck1.h"
 
 typedef struct {
     uint_32     time;           /* file's time taken from stat */
     uint_16     len;            /* sizeof the name array */
     char        name[1];        /* dynamic array */
-} DepInfo;
+} _WCUNALIGNED DepInfo;
 
-#if defined( __WATCOMC__ )
-#pragma pack();
-#endif
+#include "poppck.h"
 
 DepInfo *WResGetAutoDep( char *fname );
 void WResFreeAutoDep( DepInfo *ptr );

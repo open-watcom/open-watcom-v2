@@ -1,72 +1,74 @@
 /*
- *  setjmp.h
+ *  setjmp.h/csetjmp
  *
 :include crwatqnx.sp
  */
 #ifndef _SETJMP_H_INCLUDED
 #define _SETJMP_H_INCLUDED
+
 :include readonly.sp
+
+:include owrtlink.sp
+
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
-:segment !QNX
 #if defined(__PPC__)
- typedef unsigned int jmp_buf[1];
+ typedef unsigned int   jmp_buf[1];
 #elif defined(__AXP__)
- typedef double jmp_buf[24];
+ typedef double         jmp_buf[24];
+#elif defined(__MIPS__)
+ typedef unsigned long  jmp_buf[26];
 #else
-:endsegment
- typedef unsigned int jmp_buf[13];
-:segment !QNX
+ typedef unsigned int   jmp_buf[13];
 #endif
-:endsegment
 
-_WCRTLINK extern int  _setjmp( jmp_buf __env );
-_WCRTLINK extern void longjmp( jmp_buf __env, int __val );
+_WCRTLINK extern int    _setjmp( jmp_buf __env );
+_WCRTLINK extern void   longjmp( jmp_buf __env, int __val );
 
 #if !defined(_SETJMPEX_H_INCLUDED_)
  #define setjmp(__env)  _setjmp(__env)
 #endif
 
-:segment QNX
-#if defined(__386__)
-:elsesegment
-#if defined(__PPC__)
-#elif defined(__AXP__)
-#elif defined(__386__)
-:endsegment
- #pragma aux _setjmp __parm __caller [__eax] __modify [__8087];
- #ifndef __SW_3R
-  #pragma aux longjmp __aborts;
- #endif
-#else
+#if defined(_M_I86)
  #pragma aux _setjmp __modify [__8087];
- #pragma aux longjmp __aborts;
+#elif defined(__386__)
+:segment DOS
+ #if defined(__COMPACT__) || defined(__LARGE__)
+  #pragma aux _setjmp __parm __caller [__dx __eax] __modify [__8087];
+ #else
+:endsegment
+  #pragma aux _setjmp __parm __caller [__eax] __modify [__8087];
+:segment DOS
+ #endif
+:endsegment
 #endif
 
-:segment QNX
-#if defined(_POSIX_SOURCE) || defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+#pragma aux longjmp __aborts;
+
+:segment QNX | LINUX
+:include unixext.sp
+
 :include pshpackl.sp
+
 typedef struct {
     int         __flg;
     long        __msk;
     jmp_buf     __buf;
 } sigjmp_buf[1];
+
 :include poppack.sp
 
-extern void __sigjmpsave( sigjmp_buf __env, int __msk );
-extern void siglongjmp( sigjmp_buf __env, int __val );
+_WCRTLINK extern void __sigjmpsave( sigjmp_buf __env, int __msk );
+_WCRTLINK extern void siglongjmp( sigjmp_buf __env, int __val );
 
 #define sigsetjmp( __env, __msk ) ( __sigjmpsave( __env, __msk ), \
                                     _setjmp( (__env)[0].__buf ) )
 
 #pragma aux siglongjmp __aborts;
 
-#endif
-:endsegment
+:include extepi.sp
 
+:endsegment
 :include cplusepi.sp
+
 #endif

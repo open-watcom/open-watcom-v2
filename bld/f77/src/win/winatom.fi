@@ -1,0 +1,28 @@
+*$noreference
+
+! Atom-Management Functions:
+! --------------------------
+
+      external AddAtom
+      external DeleteAtom
+      external FindAtom
+      external GetAtomHandle
+      external GetAtomName
+      external GlobalAddAtom
+      external GlobalDeleteAtom
+      external GlobalFindAtom
+      external GlobalGetAtomName
+      external InitAtomTable
+
+      integer*2 AddAtom
+      integer*2 DeleteAtom
+      integer*2 FindAtom
+      integer*2 GetAtomHandle
+      integer*2 GetAtomName
+      integer*2 GlobalAddAtom
+      integer*2 GlobalDeleteAtom
+      integer*2 GlobalFindAtom
+      integer*2 GlobalGetAtomName
+      integer*2 InitAtomTable
+
+*$reference

@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions used in parsing Microsoft command files.
 *
 ****************************************************************************/
 
-
-// definitions used in parsing microsoft command files.
 
 typedef enum {
     BUFFERED,

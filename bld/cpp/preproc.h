@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #define PPT_NULL        0
 #define PPT_SHARP_SHARP 1
 #define PPT_LAST_TOKEN  2
@@ -74,13 +78,13 @@ typedef struct  file_list {
         char             buffer[PPBUFSIZE+2];
 } FILELIST;
 
-typedef struct pp_value {
+typedef struct preproc_value {
         int             type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
         union {
             long int    ivalue;
             unsigned long uvalue;
         } val;
-} PPVALUE;
+} PREPROC_VALUE;
 
 #define PPTYPE_SIGNED   0
 #define PPTYPE_UNSIGNED 1
@@ -101,8 +105,8 @@ extern  char    *PP_ScanToken( char *__p, char *__token );
 extern  int      PP_ScanNextToken( char *__token );
 extern  char    *PP_SkipWhiteSpace( char *__p, char *__white_space );
 extern  char    *PP_ScanName( char *__p );
-extern  int     PPEvalExpr( char *__p, char **__endptr, PPVALUE *__val );
-extern  void    PP_ConstExpr( PPVALUE * );
+extern  int     PPEvalExpr( char *__p, char **__endptr, PREPROC_VALUE *__val );
+extern  void    PP_ConstExpr( PREPROC_VALUE * );
 extern  MACRO_TOKEN *PPNextToken(void);
 extern  MACRO_TOKEN *NextMToken(void);
 extern  void    DeleteNestedMacro(void);
@@ -123,17 +127,18 @@ extern  char            PPSavedChar;    // saved char at end of token
 extern  char            PreProcChar;
 extern  MACRO_ENTRY     *PPHashTable[HASH_SIZE];
 
-#define PPFLAG_PREPROCESSING    0x01
-#define PPFLAG_EMIT_LINE        0x02
-#define PPFLAG_SKIP_COMMENT     0x04
-#define PPFLAG_KEEP_COMMENTS    0x08
-#define PPFLAG_IGNORE_INCLUDE   0x10
-#define PPFLAG_DEPENDENCIES     0x20
-#define PPFLAG_ASM_COMMENT      0x40
-#define PPFLAG_IGNORE_CWD       0x80
+#define PPFLAG_PREPROCESSING    0x0001
+#define PPFLAG_EMIT_LINE        0x0002
+#define PPFLAG_SKIP_COMMENT     0x0004
+#define PPFLAG_KEEP_COMMENTS    0x0008
+#define PPFLAG_IGNORE_INCLUDE   0x0010
+#define PPFLAG_DEPENDENCIES     0x0020
+#define PPFLAG_ASM_COMMENT      0x0040
+#define PPFLAG_IGNORE_CWD       0x0080
 #define PPFLAG_DB_KANJI         0x0100
 #define PPFLAG_DB_CHINESE       0x0200
 #define PPFLAG_DB_KOREAN        0x0400
+#define PPFLAG_UTF8             0x0800
 #define PPFLAG_DONT_READ        0x4000
 #define PPFLAG_UNDEFINED_VAR    0x8000
 

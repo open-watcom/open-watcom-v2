@@ -94,7 +94,9 @@ WEXPORT WServer::~WServer() {
         DdeFreeStringHandle( _procid, _topic );
         DdeUninitialize( _procid );
         _procid = NULL;
+#if !defined(__NT__)
         FreeProcInstance( _procInst );
+#endif
         _service = NULL;
         _topic = NULL;
         _server = NULL;

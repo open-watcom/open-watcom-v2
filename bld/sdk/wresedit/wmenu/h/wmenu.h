@@ -34,7 +34,7 @@
 #define WMENU_INCLUDED
 
 #ifndef WINEXPORT
-#define WINEXPORT   __export PASCAL
+    #define WINEXPORT   __export PASCAL
 #endif
 
 #include "wresall.h"
@@ -74,18 +74,18 @@ typedef struct WMenuInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WMenuInfo          * WINEXPORT WMenuAllocMenuInfo  ( void );
-void                 WINEXPORT WMenuFreeMenuInfo   ( WMenuInfo * );
+WMenuInfo *         WINEXPORT WMenuAllocMenuInfo( void );
+void                WINEXPORT WMenuFreeMenuInfo( WMenuInfo * );
 
-extern void          WINEXPORT WMenuInit           ( void );
-extern void          WINEXPORT WMenuFini           ( void );
-extern int           WINEXPORT WMenuCloseSession   ( WMenuHandle, int );
-extern WMenuHandle   WINEXPORT WRMenuStartEdit     ( WMenuInfo * );
-extern WMenuInfo   * WINEXPORT WMenuEndEdit        ( WMenuHandle );
-extern WMenuInfo   * WINEXPORT WMenuGetEditInfo    ( WMenuHandle );
-extern int           WINEXPORT WMenuIsModified     ( WMenuHandle );
-extern int           WINEXPORT WMenuIsDlgMsg       ( MSG *msg );
-extern void          WINEXPORT WMenuShowWindow     ( WMenuHandle hndl, int show );
-extern void          WINEXPORT WMenuBringToFront   ( WMenuHandle hndl );
+extern void         WINEXPORT WMenuInit( void );
+extern void         WINEXPORT WMenuFini( void );
+extern int          WINEXPORT WMenuCloseSession( WMenuHandle, int );
+extern WMenuHandle  WINEXPORT WRMenuStartEdit( WMenuInfo * );
+extern WMenuInfo *  WINEXPORT WMenuEndEdit( WMenuHandle );
+extern WMenuInfo *  WINEXPORT WMenuGetEditInfo( WMenuHandle );
+extern int          WINEXPORT WMenuIsModified( WMenuHandle );
+extern int          WINEXPORT WMenuIsDlgMsg( MSG *msg );
+extern void         WINEXPORT WMenuShowWindow( WMenuHandle hndl, int show );
+extern void         WINEXPORT WMenuBringToFront( WMenuHandle hndl );
 
 #endif

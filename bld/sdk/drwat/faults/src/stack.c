@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Program to test stack unwinding at point of fault. 
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 int     Cnt;
 
-void Crash( void ) {
+void crash( void ) {
     char far *a= (char far *) 0L;
 
     a[0] = 'a';
@@ -64,9 +63,9 @@ void test1( void ) {
     test2();
 }
 
-int PASCAL WinMain( HANDLE inst, HANDLE prev, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {
     Cnt = 0;
-    Test1();
+    test1();
     return( 1 );
 }

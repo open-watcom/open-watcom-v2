@@ -1,0 +1,1360 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: deque (Definition of std::deque)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It defines
+//              a double ended queue template that provides random access
+//              to its elements yet amortized O(1) time push/pop operations
+//              on *both* ends.
+//              References to objects are *not* invalidated with an insert
+//              operation.
+//              Extention: extra template parameter PageSize allow
+//              number of objects per block of allocations to be adjusted
+//              must be power of 2 because of assumptions in math in operations
+///////////////////////////////////////////////////////////////////////////
+#ifndef _DEQUE_INCLUDED
+#define _DEQUE_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _ITERATOR_INCLUDED
+ #include <iterator>
+#endif
+
+#ifndef _LIMITS_INCLUDED
+ #include <limits>
+#endif
+
+#ifndef _MEMORY_INCLUDED
+ #include <memory>
+#endif
+
+#ifndef _STDEXCEPT_INCLUDED
+ #include <stdexcep>
+#endif
+
+#ifndef _TYPE_TRAITS_INCLUDED
+ #include <type_tra>
+#endif
+
+namespace std {
+
+  template< class Type, class Allocator = allocator< Type >,
+            int PageSize = 32 > //to do, assert/force power of 2
+  class deque {
+  public:
+    typedef typename Allocator::reference       reference;
+    typedef typename Allocator::const_reference const_reference;
+    typedef typename Allocator::size_type       size_type;
+    typedef typename Allocator::difference_type difference_type;
+    typedef Type                                value_type;
+    typedef Allocator                           allocator_type;
+    typedef typename Allocator::pointer         pointer;
+    typedef typename Allocator::const_pointer   const_pointer;
+
+    // Class iterator
+    // --------------
+    class iterator :
+      public std::iterator< random_access_iterator_tag, Type > {
+      friend class deque;
+    public:
+      iterator( deque *d, deque::size_type n ) :
+        dp( d ), i( n ) { }
+
+      iterator( ) { }
+
+      value_type &operator*( );
+      value_type *operator->( );
+
+      iterator &operator++( );
+      iterator  operator++( int );
+      iterator &operator--( );
+      iterator  operator--( int );
+
+:: Due to a bug in the compiler (#492) these functions can't be defined
+:: outside of the class and must be inline. As a result they must also
+:: be friends (even when not otherwise necessary).
+      friend bool operator==(iterator lhs, iterator rhs)
+        { return( lhs.dp == rhs.dp && lhs.i == rhs.i ); }
+      friend bool operator< (iterator lhs, iterator rhs)
+        { return( lhs.dp->dist_from_first(lhs.i) < rhs.dp->dist_from_first(rhs.i) ); }
+      friend bool operator!=(iterator lhs, iterator rhs)
+        { return( !( lhs == rhs ) ); }
+      friend bool operator>=(iterator lhs, iterator rhs)
+        { return( !( lhs < rhs ) ); }
+      friend bool operator> (iterator lhs, iterator rhs)
+        { return( rhs < lhs ); }
+      friend bool operator<=(iterator lhs, iterator rhs)
+        { return( !( lhs > rhs ) ); }
+
+      iterator &operator+=( difference_type n );
+      iterator &operator-=( difference_type n );
+      friend iterator operator+( iterator it, difference_type n )
+        { it += n; return( it ); }
+      friend iterator operator+( difference_type n, iterator it )
+        { it += n; return( it ); }
+      friend iterator operator-( iterator it, difference_type n )
+        { it -= n; return( it ); }
+
+    private:
+      deque *dp;
+      // index is combined cbuf and page index to save memory
+      deque::size_type i;
+    };
+
+    // Class const_iterator
+    // --------------------
+    class const_iterator :
+      public std::iterator< random_access_iterator_tag, const Type > {
+    public:
+      const_iterator( const deque *p, deque::size_type n ) :
+        dp( p ), i( n ) { }
+
+      const_iterator( ) { }
+
+      value_type &operator*( );
+      value_type *operator->( );
+
+      const_iterator &operator++( );
+      const_iterator  operator++( int );
+      const_iterator &operator--( );
+      const_iterator  operator--( int );
+
+:: Due to a bug in the compiler (#492) these functions can't be defined
+:: outside of the class and must be inline. As a result they must also
+:: be friends (even when not otherwise necessary).
+      friend bool operator==(const_iterator lhs, const_iterator rhs)
+        { return( lhs.dp == rhs.dp && lhs.i == rhs.i ); }
+      friend bool operator< (const_iterator lhs, const_iterator rhs)
+        { return( lhs.dp->dist_from_first(lhs.i) < rhs.dp->dist_from_first(rhs.i) ); }
+      friend bool operator!=(const_iterator lhs, const_iterator rhs)
+        { return( !( lhs == rhs ) ); }
+      friend bool operator>=(const_iterator lhs, const_iterator rhs)
+        { return( !( lhs < rhs ) ); }
+      friend bool operator> (const_iterator lhs, const_iterator rhs)
+        { return( rhs < lhs ); }
+      friend bool operator<=(const_iterator lhs, const_iterator rhs)
+        { return( !( lhs > rhs ) ); }
+
+      const_iterator &operator+=( difference_type n );
+      const_iterator &operator-=( difference_type n );
+      friend const_iterator operator+( const_iterator it, difference_type n )
+        { it += n; return( it ); }
+      friend const_iterator operator+( difference_type n, const_iterator it )
+        { it += n; return( it ); }
+      friend const_iterator operator-( const_iterator it, difference_type n )
+        { it -= n; return( it ); }
+
+    private:
+      const deque *dp;
+      deque::size_type i;
+    };
+    friend class iterator;
+    friend class const_iterator;
+
+    typedef std::reverse_iterator< iterator >           reverse_iterator;
+    typedef std::reverse_iterator< const_iterator >     const_reverse_iterator;
+
+    explicit deque( const Allocator & = Allocator( ) );
+    explicit deque( size_type n, const Type &value = Type( ), const Allocator & = Allocator( ) );
+    // copy ctor should probably be templated so it is possible to construct a 
+    // deque from one with a different PageSize.
+    deque( const deque &other );
+   ~deque( );
+    deque &operator=( const deque &other );
+    void assign( size_type n, const Type &value );
+    allocator_type get_allocator( ) const;
+
+    iterator               begin( );
+    const_iterator         begin( ) const;
+    iterator               end( );
+    const_iterator         end( ) const;
+    reverse_iterator       rbegin( );
+    const_reverse_iterator rbegin( ) const;
+    reverse_iterator       rend( );
+    const_reverse_iterator rend( ) const;
+
+    size_type size( ) const;
+    size_type max_size( ) const;
+    void      resize( size_type n, Type c = Type( ) );
+    size_type capacity( ) const;      // Not required by the standard.
+    bool      empty( ) const;
+    void      reserve( size_type n ); // Not required by the standard.
+
+    reference       operator[]( size_type n );
+    const_reference operator[]( size_type n ) const;
+    reference       at( size_type n );
+    const_reference at( size_type n ) const;
+    reference       front( );
+    const_reference front( ) const;
+    reference       back( );
+    const_reference back( ) const;
+
+    void     push_front( const Type &item );
+    void     push_back( const Type &item );
+    void     pop_front( );
+    void     pop_back( );
+    iterator insert( iterator position, const Type &x );
+    void     insert( iterator position, size_type n, const Type &x );
+    template< class InputIt >
+    void insert( iterator pos, InputIt first, InputIt last )
+    {
+        helper_insert( pos, first, last, tr1::is_integral<InputIt>::type() );
+    }
+    iterator erase( iterator position );
+    iterator erase( iterator first, iterator last );
+    void     swap( deque &x );
+    void     clear( );
+
+    bool     _Sane( ) const;  // Check invariants.
+
+  private:
+    // 1. cbuf = circular buffer of pointers, pointing to pages of objects
+    // 2. cbuf has size cbuf_length.
+    // 3. cbuf never shrinks
+    // 4. cbuf_length is a power of two (bitwise and with (cbuflength - 1) to wrap)
+    // 5. cbuf allocated with rebound cmem
+    // 6. get_ci(tail) indexes the tail page, grows positive
+    // 7. get_ci(head) indexes the head page, grows negative
+    // 8. when cbuf empty head == wrap(tail+1)
+    // 9. always at least one empty element empty (for end iterator to point to)
+    // 9. buffer reallocated when an insert would cause chead == ctail,
+    //      or the last element would be used up, but not 
+    //      first insert after container empty (see is_back/front_full() )
+    //
+    Allocator pmem;                     // (de)alloc pages of contained types
+    typedef Allocator::rebind<pointer>::other cbuf_allocator_t;
+    cbuf_allocator_t cmem;                // (de)alloc circular buffer of pointers
+    typedef cbuf_allocator_t::pointer cbuf_t;
+    cbuf_t    cbuf;                     // Pointer to start of circular buffer space.
+    size_type cbuf_length;              // total circular buffer slots
+    size_type deq_used;                 // Number of buffer slots in use by objects.
+    size_type head;                     // cbuf and page index of first element
+    size_type tail;                     // cbuf and page index of last element
+
+    bool is_back_full( size_type n = 1 );
+    bool is_front_full( size_type n = 1 );
+    void grow_cbuf( size_type );
+    void new_page( size_type ci );      // create/move page at ci
+    size_type dist_from_first( size_type i ) const; // i is compressed cbuf and page index
+    size_type dist_from_last( size_type i ) const;
+    // get cbuf or page indexes from combined index
+    // if pagesize is power of 2 this will generate simple bit shift/mask
+    inline static size_type get_ci( size_type i ) { return( i / PageSize ); }
+    inline static size_type get_pi( size_type i ) { return( i % PageSize ); }
+    // pagesize and cbuf_length must be power of 2 for this to work
+    size_type wrap( size_type i ) const { return( i & ( cbuf_length * PageSize - 1 ) ); }
+    
+    // used by various insert functions
+    // push [first, last) starting after tail
+    // recommend allocate sufficient space first
+    // exception saftey weak, used to build the strong functions
+    template< class it >
+    void push_back_many( it first, it last )
+    {
+        while( first != last ){
+            push_back( *f );
+            ++first;
+        }
+    }
+    
+    // member templates - to be moved outside class when compiler supports this
+  public:
+    // overloaded helpers get called by insert(many) depending on iterator type
+    // int type
+    template< class InputIt1, class InputIt2 >
+    void insert_helper( iterator pos, InputIt1 first, InputIt2 last, tr1::true_type )
+    {
+        insert( pos, static_cast<size_type>(first), static_cast<value_type>(last) );
+    }
+    // non int type
+    // to do: specialise for iterator of type input it (make temp copy of elements
+    // in order to count them)
+    template< class It1, class It2 >
+    void insert_helper( iterator pos, It1 first, It2 last, tr1::false_type )
+    {/*
+        // if at begin
+        
+        // if at end
+        
+        // if nearer end
+        // to do - test
+        
+        // count elements
+        size_type d = last-first;//= distance( first, last );
+        // resize cbuf
+        if( is_back_full(d) ){
+            size_type n = cbuf_length;
+            size_type t = cbuf_length + ( d / PageSize ) + 1;
+            while( n < t ) n *= 2;
+            grow_cbuf( n );
+        }
+        // create temp
+        // (exception will automatically clean up temp giving strong safety)
+        deque temp;
+        // calculate temp starting pos
+        size_type tmp_fst = 0;
+        if( distance_to_first( pos.i ) < PageSize ) {
+        
+        // copy from start of page to pos
+        // copy from first to last
+        // copy pos to end
+        // delete old pages
+        // move new pages
+        // update indexes
+        // temp will clean up automatically
+        
+        
+        
+        // if nearer begin
+        */
+    }
+  };
+
+  // ===================================
+  // Member functions of deque::iterator
+  // ===================================
+  
+  // operator*( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::iterator::value_type&
+    deque< Type, Allocator, PageSize >::iterator::operator*( )
+  {
+    return( dp->cbuf[get_ci(i)][get_pi(i)] );
+  }
+  
+  // operator->( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::iterator::value_type*
+    deque< Type, Allocator, PageSize >::iterator::operator->( )
+  {
+    return( &dp->cbuf[get_ci(i)][get_pi(i)] );
+  }
+  
+  // operator++( )
+  // *************
+  // ++pre
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator &
+    deque< Type, Allocator, PageSize >::iterator::operator++( )
+  {
+    i = dp->wrap( i + 1 );
+    return( *this );
+  }
+
+  // operator++( int )
+  // *****************
+  // post++
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator
+    deque< Type, Allocator, PageSize >::iterator::operator++( int )
+  {
+    iterator ret_value( *this );
+    i = dp->wrap( i + 1 );
+    return( ret_value );
+  }
+
+  // operator--( )
+  // *************
+  // --pre
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator &
+    deque< Type, Allocator, PageSize >::iterator::operator--( )
+  {
+    i = dp->wrap( i - 1 );
+    return( *this );
+  }
+  
+  // operator--( int )
+  // *****************
+  // post--
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator
+    deque< Type, Allocator, PageSize >::iterator::operator--( int )
+  {
+    iterator ret_value( *this );
+    i = dp->wrap( i - 1 );
+    return( ret_value );
+  }
+
+  // operator+=( difference_type )
+  // *****************************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator &
+    deque< Type, Allocator, PageSize >::iterator::operator+=( difference_type n )
+  {
+    i = dp->wrap( i + n );
+    return( *this );
+  }
+
+  // operator-=( difference_type )
+  // *****************************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::iterator &
+    deque< Type, Allocator, PageSize >::iterator::operator-=( difference_type n )
+  {
+    i = dp->wrap( i - n );
+    return( *this );
+  }
+  
+  // =========================================
+  // Member functions of deque::const_iterator
+  // =========================================
+
+  // operator*( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_iterator::value_type &
+    deque< Type, Allocator, PageSize >::const_iterator::operator*( )
+  {
+    return( dp->cbuf[get_ci(i)][get_pi(i)] );
+  }
+  
+  // operator->( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_iterator::value_type const*
+    deque< Type, Allocator, PageSize >::const_iterator::operator->( )
+  {
+    return( &dp->cbuf[get_ci(i)][get_pi(i)] );
+  }
+  // operator++( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_iterator &
+    deque< Type, Allocator, PageSize >::const_iterator::operator++( )
+  {
+    i = dp->wrap( i + 1 );
+    return( *this );
+  }
+
+  // operator++( int )
+  // *****************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_iterator
+    deque< Type, Allocator, PageSize >::const_iterator::operator++( int )
+  {
+    const_iterator ret_value( *this );
+    i = dp->wrap( i + 1 );
+    return( ret_value );
+  }
+
+  // operator--( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_iterator &
+    deque< Type, Allocator, PageSize >::const_iterator::operator--( )
+  {
+    i = dp->wrap( i - 1 );
+    return( *this );
+  }
+  
+  // operator--( int )
+  // *****************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_iterator
+    deque< Type, Allocator, PageSize >::const_iterator::operator--( int )
+  {
+    const_iterator ret_value( *this );
+    i = dp->wrap( i + 1 );
+    return( ret_value );
+  }
+
+  // operator+=( difference_type )
+  // *****************************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_iterator &
+    deque< Type, Allocator, PageSize >::const_iterator::operator+=( difference_type n )
+  {
+    i = dp->wrap( i + n );
+    return( *this );
+  }
+
+  // operator-=( difference_type )
+  // *****************************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_iterator &
+    deque< Type, Allocator, PageSize >::const_iterator::operator-=( difference_type n )
+  {
+    i = dp->wrap( i - n );
+    return( *this );
+  }
+
+  // =========================
+  // Member functions of deque
+  // =========================
+  
+  // dist_from_first( )
+  // *************************
+  template< class Type, class Allocator, int PageSize >
+  inline 
+  typename deque< Type, Allocator, PageSize >::size_type 
+  deque< Type, Allocator, PageSize >::dist_from_first( size_type i ) const
+  {
+    return( wrap(i - head) );
+  }
+  
+  // dist_from_last( )
+  // *************************
+  template< class Type, class Allocator, int PageSize >
+  inline 
+  typename deque< Type, Allocator, PageSize >::size_type 
+  deque< Type, Allocator, PageSize >::dist_from_last( size_type i ) const
+  {
+    return( wrap(i - tail) );
+  }
+  
+  // is_front_full( )
+  // *************************
+  // check push front wont overflow
+  template< class Type, class Allocator, int PageSize >
+  bool deque< Type, Allocator, PageSize >::is_front_full( size_type n )
+  {
+    return( deq_used +n >= cbuf_length * PageSize || // only n elements left
+            (// or must not overflow chead into same page as ctail
+            get_ci(tail) != get_ci(head) &&
+            get_ci( wrap(head - n) ) == get_ci(tail)
+            ) );
+  }
+  
+  // is_back_full( )
+  // *************************
+  // check push back wont overflow
+  template< class Type, class Allocator, int PageSize >
+  bool deque< Type, Allocator, PageSize >::is_back_full( size_type n )
+  {
+    return( deq_used + n >= cbuf_length * PageSize || //only n elements left
+            (// or must not overflow ctail into same page as chead
+            get_ci(tail) != get_ci(head) &&
+            get_ci( wrap( tail + n ) ) == get_ci(head)
+            ) );
+  }
+  
+  // grow_cbuf( )
+  // *************************
+  // allocate bigger circular buffer (must be power of 2) and move into place
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::grow_cbuf( size_type new_length )
+  {
+    //cout<<"grow_cbuf"<<"\n";
+    // new length must be power of 2 and bigger than cbuf_length
+    cbuf_t result = cmem.allocate( new_length );
+    size_type d, s;
+    
+    try{
+        // copy current contents to start of new buffer
+        for( d = 0, s = get_ci(head); d < cbuf_length; ++d ){
+            result[d] = cbuf[s];
+            s = (s+1) & (cbuf_length - 1);  // length always power of 2
+        }
+        // initialise new elements to point to null
+        for( ; d < new_length; ++d ){
+            result[d] = 0;
+        }
+    }catch( ... ){
+        cmem.deallocate( result, new_length );
+        throw;
+    }
+    
+    // remove original and update outputs only if allocation successful.
+    cmem.deallocate( cbuf, cbuf_length );
+    cbuf = result;
+    cbuf_length = new_length;
+    head = get_pi(head); // new page 0 but same index into page
+    tail = wrap( head + deq_used - 1 );
+  }
+  
+  // new_page( ci )
+  // *************************
+  // put a new/unused page at circular buffer location ci
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::new_page( size_type ci )
+  {
+    // todo: look for unused page in some likely locations and move
+    // rather than allocate to save a bit of allocating in likely scenarios
+    pointer page = pmem.allocate( PageSize );
+    cbuf[ci] = page;
+  }
+
+  
+  // deque( const Allocator & )
+  // **************************
+  template< class Type, class Allocator, int PageSize >
+  deque< Type, Allocator, PageSize >::deque( const Allocator &a ) : pmem( a )//, cmem( a ) //bug?
+  {
+    cbuf = cmem.allocate( 2 );
+    cbuf[0] = 0;
+    cbuf[1] = 0;
+    cbuf_length = 2;
+    deq_used = 0;
+    head = 1;
+    tail = 0;
+  }
+
+  // deque( size_type, const Type &, const Allocator & )
+  // ***************************************************
+  template< class Type, class Allocator, int PageSize >
+  deque< Type, Allocator, PageSize >::deque(
+    size_type n,
+    const Type &value,
+    const Allocator & ) //: cmem( a )//,pmem( a ) //bug?
+  {
+    // find suitable buffer size
+    cbuf_length = 2;
+    while( cbuf_length*PageSize <= n ) cbuf_length *= 2;
+    
+    // allocate buf and pages
+    cbuf = cmem.allocate( cbuf_length );
+    size_type i;
+    try {
+        for( i = 0; i < cbuf_length; i++ ){
+            cbuf[i] = pmem.allocate( PageSize );
+        }
+    }catch( ... ) {
+        while( i ){
+            i--;
+            pmem.deallocate( cbuf[i], PageSize );
+        }
+        cmem.deallocate( cbuf, cbuf_length );
+        throw;
+    }
+    // fill pages 
+    try{
+        for( i = 0; i < n; i++ ){
+            pmem.construct( &cbuf[get_ci(i)][get_pi(i)], value );
+        }
+    }catch(...){
+        while( i ){
+            i--;
+            pmem.destroy( &cbuf[get_ci(i)][get_pi(i)] );
+        }
+        for( i = 0; i < cbuf_length; i++ ){
+            pmem.deallocate( cbuf[i], PageSize );
+        }
+        cmem.deallocate( cbuf, cbuf_length );
+    }
+    // set ptrs
+    deq_used = n;
+    head = 0;
+    tail = n - 1;
+  }
+
+  // deque( const deque & )
+  // ************************
+  template< class Type, class Allocator, int PageSize >
+  deque< Type, Allocator, PageSize >::deque( const deque &other )
+    : cmem( other.cmem ), pmem( other.pmem )
+  {
+    cbuf = cmem.allocate( other.cbuf_length );
+    cbuf_length = other.cbuf_length;
+    size_type i;
+    head = 0;
+    tail = 0;     // force alloc on first copy
+    size_type s = other.head;
+    try{
+        i = 0;  //count page allocs
+        while( tail < other.deq_used ){
+            if( get_pi(tail) == 0 ){
+                cbuf[ get_ci(tail) ] = pmem.allocate( PageSize );
+                i++;
+            }
+            
+            pmem.construct( &cbuf[get_ci(tail)][get_pi(tail)], other.cbuf[get_ci(s)][get_pi(s)] );
+            s = wrap(s+1);
+            tail++;
+        }
+    }catch( ... ){
+        // unwind constructions 
+        while( tail ){
+            --tail;
+            pmem.destroy( &cbuf[get_ci(tail)][get_pi(tail)] );
+        }
+        // unwind page allocs
+        while( i ){
+            --i;
+            pmem.deallocate( cbuf[i], PageSize );
+        }
+        cmem.deallocate( cbuf, cbuf_length );
+    }
+    // set unused buf pages pointers to null
+    while( i < cbuf_length){
+        cbuf[i++] = 0;
+    }
+    tail = wrap(tail - 1);
+    deq_used = other.deq_used;
+  }
+
+  // ~deque( )
+  // **********
+  template< class Type, class Allocator, int PageSize >
+  deque< Type, Allocator, PageSize >::~deque( )
+  {
+    size_type i;
+    // Destroy objects actually in use
+    for( i = 0; i < deq_used; i++ ){
+        pmem.destroy( &cbuf[get_ci(head)][get_pi(head)] );
+        head = wrap( head + 1 );
+    }
+    // delete pages
+    for( i = 0; i < cbuf_length; i++ ){
+        if( cbuf[i] ) pmem.deallocate( cbuf[i], PageSize );
+    }
+    // delete buffer
+    cmem.deallocate( cbuf, cbuf_length );
+  }
+
+  // clear( )
+  // ********
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::clear( )
+  {
+    size_type i;
+    // Destroy objects actually in use
+    for( i = 0; i < deq_used; i++ ){
+        pmem.destroy( &cbuf[get_ci(head)][get_pi(head)] );
+        head = wrap( head + 1 );
+    }
+    // head now == tail+1
+    deq_used = 0;
+    
+    // but don't delete any pages or buffers ? 
+    // is this good behaviour or should we dealloc too?
+  }
+  
+  
+  // begin( )
+  // ********
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::iterator
+    deque< Type, Allocator, PageSize >::begin( )
+  {
+    return( iterator( this, head ) );
+  }
+
+  // begin( ) const
+  // **************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_iterator
+    deque< Type, Allocator, PageSize >::begin( ) const
+  {
+    return( const_iterator( this, head ) );
+  }
+
+  // end( )
+  // ******
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::iterator
+    deque< Type, Allocator, PageSize >::end( )
+  {
+    return( iterator( this, wrap( tail + 1 ) ) );
+  }
+
+  // end( ) const
+  // ************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_iterator
+    deque< Type, Allocator, PageSize >::end( ) const
+  {
+    return( const_iterator( this, wrap( tail + 1 ) ) );
+  }
+
+  // rbegin( )
+  // *********
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::reverse_iterator
+    deque< Type, Allocator, PageSize >::rbegin( )
+  {
+    return( reverse_iterator( iterator( this, tail ) ) );
+  }
+
+  // rbegin( ) const
+  // ***************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_reverse_iterator
+    deque< Type, Allocator, PageSize >::rbegin( ) const
+  {
+    return( const_reverse_iterator( const_iterator( this, tail ) ) );
+  }
+
+  // rend( )
+  // *******
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::reverse_iterator
+    deque< Type, Allocator, PageSize >::rend( )
+  {
+    return( reverse_iterator( iterator( this, wrap(head-1) ) ) );
+  }
+
+  // rend( ) const
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_reverse_iterator
+    deque< Type, Allocator, PageSize >::rend( ) const
+  {
+    return( const_reverse_iterator( const_iterator( this, wrap(head-1) ) ) );
+  }
+
+  // size( ) const
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize>::size_type
+    deque< Type, Allocator, PageSize >::size( ) const
+  {
+    return( deq_used );
+  }
+
+  // max_size( ) const
+  // *****************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::size_type
+    deque< Type, Allocator, PageSize >::max_size( ) const
+  {
+    return( std::numeric_limits< size_type >::max( ) / sizeof( Type ) );
+  }
+
+  // capacity( ) const
+  // *****************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::size_type
+    deque< Type, Allocator, PageSize >::capacity( ) const
+  {
+    return( cbuf_length * PageSize );
+  }
+
+  // empty( ) const
+  // **************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  bool deque< Type, Allocator, PageSize >::empty( ) const
+  {
+    return( deq_used == 0 );
+  }
+
+  // reserve( size_type )
+  // ********************
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::reserve( size_type new_capacity )
+  {
+    // find new cbuf size power of 2 at least size requested
+    size_type temp = (new_capacity + PageSize - 1 ) / PageSize;
+    size_type new_cbuf_len = cbuf_length;
+    while( new_cbuf_len < temp ) new_cbuf_len *= 2;
+    
+    if( new_cbuf_len <= cbuf_length ) return; // we currently don't do strinking
+    
+    if( new_cbuf_len * PageSize > max_size( ) )
+        throw length_error( "deque::reserve" );
+
+    grow_cbuf( new_cbuf_len );
+    
+    // reserve all the pages as well
+    for( size_type i = 0; i < cbuf_length; i++ ){
+        if( !cbuf[i] ) cbuf[i] = pmem.allocate( PageSize );
+    }
+  }
+
+  // operator[]( size_type )
+  // ***********************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::reference
+    deque< Type, Allocator, PageSize >::operator[]( size_type n )
+  {
+    size_type i = wrap( head + n );
+    return( cbuf[get_ci(i)][get_pi(i)] );
+  }
+
+  // operator[]( size_type ) const
+  // *****************************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator,PageSize >::const_reference
+    deque< Type, Allocator, PageSize >::operator[]( size_type n ) const
+  {
+    return( const_cast<deque*>(this)->operator[](n)  );
+  }
+
+  // at( size_type )
+  // ***************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::reference
+    deque< Type, Allocator, PageSize >::at( size_type n )
+  {
+    if( n >= deq_used )
+      throw out_of_range( "deque::at" );
+    return( ( *this )[n] );
+  }
+
+  // at( size_type ) const
+  // *********************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::const_reference
+    deque< Type, Allocator, PageSize >::at( size_type n ) const
+  {
+    return( const_cast<deque*>(this)->at(n) );
+  }
+
+  // front( )
+  // ********
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::reference
+    deque< Type, Allocator, PageSize >::front( )
+  {
+    return( cbuf[get_ci(head)][get_pi(head)] );
+  }
+
+  // front( ) const
+  // **************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_reference
+    deque< Type, Allocator, PageSize >::front( ) const
+  {
+    return( cbuf[get_ci(head)][get_pi(head)] );
+  }
+
+  // back( )
+  // *******
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::reference
+    deque< Type, Allocator, PageSize >::back( )
+  {
+    return( cbuf[get_ci(tail)][get_pi(tail)] );
+  }
+
+  // back( ) const
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  typename deque< Type, Allocator, PageSize >::const_reference
+    deque< Type, Allocator, PageSize >::back( ) const
+  {
+    return( cbuf[get_ci(tail)][get_pi(tail)] );
+  }
+
+  // push_front( )
+  // *************
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::push_front( const Type &item )
+  {
+    if( is_front_full() ) grow_cbuf( cbuf_length * 2 );
+      
+    size_type temp_ci, temp_i; // For exception safety
+    
+    temp_i = wrap( head - 1 );
+    temp_ci = get_ci(temp_i);
+      
+    if( !cbuf[temp_ci] ) new_page( temp_ci );
+    
+    // attempt copy of item
+    new ( static_cast<void *>( &cbuf[temp_ci][get_pi(temp_i)] ) ) Type( item );
+    
+    // if success fix up container members
+    head = temp_i;
+    ++deq_used;
+  }
+
+  // push_back( )
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::push_back( const Type &item )
+  {
+    if( is_back_full() ) grow_cbuf( cbuf_length * 2 );
+    
+    size_type temp_ci, temp_i; // For exception safety
+    
+    temp_i = wrap( tail + 1 );
+    temp_ci = get_ci(temp_i);
+      
+    if( !cbuf[temp_ci] ) new_page( temp_ci );
+    
+    // attempt copy of item
+    new ( static_cast<void *>( &cbuf[temp_ci][get_pi(temp_i)] ) ) Type( item );
+    
+    // if success fix up container members
+    tail = temp_i;
+    ++deq_used;
+  }
+
+  // pop_front( )
+  // ************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  void deque< Type, Allocator, PageSize >::pop_front( )
+  {
+    pmem.destroy( & cbuf[get_ci(head)][get_pi(head)] );
+    head = wrap( head + 1 );
+    --deq_used;
+  }
+
+  // pop_back( )
+  // ***********
+  template< class Type, class Allocator, int PageSize >
+  void deque< Type, Allocator, PageSize >::pop_back( )
+  {
+    pmem.destroy( & cbuf[get_ci(tail)][get_pi(tail)] );
+    tail = wrap( tail - 1 );
+    --deq_used;
+  }
+
+  // insert( iterator, type )
+  // ************************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator
+  deque< Type, Allocator, PageSize >::insert( iterator it, const Type &x )
+  {
+    // check if at first or last element
+    if( it == begin() ){
+        push_front( x );
+        return( begin() );
+    }else if( it == end() ){
+        push_back( x );
+        return( iterator( this, tail ) );
+    }
+    
+    // to do - move from end if quicker
+    size_type i, ins, dist, num_pages;
+    // copy from begining
+    dist = dist_from_first( it.i );         // dist of new element after it has been inserted
+    if( is_front_full() ) grow_cbuf( cbuf_length * 2 );
+    ins = wrap( head + dist - 1 );          // index to insert new element
+    // calc num of pages needed to copy
+    num_pages = dist / PageSize + 1;
+    if( dist % PageSize > get_pi( ins ) ) num_pages += 1;
+    // temp array of pages
+    cbuf_t temp_pages = cmem.allocate( num_pages );
+    try{
+        for( i = 0; i < num_pages; i++ ){
+            temp_pages[i] = pmem.allocate( PageSize );
+        }
+    }catch( ... ){
+        while( i ){
+            i--;
+            pmem.deallocate( temp_pages[i], PageSize );
+        }
+        cmem.deallocate( temp_pages, num_pages );
+        throw;
+    }
+    // is last page a full page or is end reached during it?
+    size_type end;
+    if( get_ci(tail) == get_ci(ins) ) end = get_pi(tail);
+    else end = PageSize - 1;
+    try{
+        // copy from end to insert point
+        for( i = end; i > get_pi(ins); i-- ){
+            pmem.construct( &temp_pages[num_pages-1][i], cbuf[get_ci(ins)][i] );
+        }
+        // copy new element
+        pmem.construct( &temp_pages[num_pages-1][i], x );
+    }catch( ... ){
+        while( i < end ){
+            i++;
+            pmem.destroy( &temp_pages[num_pages-1][i] );
+        }
+        for( i = 0; i< num_pages; i++ ) pmem.deallocate( temp_pages[i], PageSize );
+        cmem.deallocate( temp_pages, num_pages );
+        throw;
+    }
+    // copy from begining to insert point
+    size_type s,d;
+    try{
+        d = wrap(head-1) % PageSize; // new page 0 start point
+        s = head;
+        while( s != wrap(ins+1) ){
+            pmem.construct( &temp_pages[get_ci(d)][get_pi(d)], cbuf[get_ci(s)][get_pi(s)] );
+            s = wrap( s + 1 );
+            ++d;
+        }
+    }catch( ... ){
+        while( s != head ){
+            s = wrap( s -1 );
+            pmem.destroy( &temp_pages[get_ci(s)][get_pi(s)] );
+        }
+        for( i = 0; i < num_pages; i++ )pmem.deallocate( temp_pages[i], PageSize );
+        cmem.deallocate( temp_pages, num_pages );
+        throw;
+    }
+    // destroy orig objects
+    for( i = head; i != wrap( 1 + end + get_ci(ins)*PageSize ); i = wrap( i + 1 ) ){
+        pmem.destroy( &cbuf[get_ci(i)][get_pi(i)] );
+    }
+    // copy new pages, destroy old from inserted page to new head
+    s = get_ci( ins );
+    for( i = 1; i <= num_pages; i++ ){
+        if( cbuf[s] ) pmem.deallocate( cbuf[s], PageSize );
+        cbuf[s] = temp_pages[ num_pages - i ];
+        s = ( s - 1 ) & ( cbuf_length - 1 );
+    }
+    cmem.deallocate( temp_pages, num_pages );
+    //update pointers
+    head = wrap( head - 1 );
+    ++deq_used;
+    
+    return( iterator( this, ins ) );
+  }
+  
+  
+  // erase( iterator )
+  // *****************
+  template< class Type, class Allocator, int PageSize >
+  typename deque< Type, Allocator, PageSize >::iterator
+  deque< Type, Allocator, PageSize >::erase( iterator e )
+  {
+    // check if at first or last element
+    if( dist_from_first( e.i ) == 0 ){
+        pop_front();
+        return( begin() );
+    }else if( dist_from_last( e.i ) == 0 ){
+        pop_back();
+        return( end() );
+    }
+    // to do - move from end if quicker
+    //if( dist_from_first( e.i ) < dist_from_last( e.i ) ) {
+        // if nearer to begining
+        size_type s, end;
+        int i;
+        // alloc temp pages
+        size_type dist = dist_from_first( e.i ) - 1;
+        size_type num_pages = dist / PageSize + 1; 
+        if( (dist % PageSize) > get_pi( e.i ) ) num_pages += 1;
+        
+        cbuf_t temp_pages = cmem.allocate( num_pages );
+        try{
+            for( i = 0; i < num_pages; i++ ){
+                temp_pages[i] = pmem.allocate( PageSize );
+            }
+        }catch( ... ){
+            while( i ){
+                i--;
+                pmem.deallocate( temp_pages[i], PageSize );
+            }
+            throw;
+        }
+        // copy from end of erased page to erased element
+        // tail might be before PageSize-1 of this page
+        if( get_ci(e.i) == get_ci(tail) ) end = get_pi(tail);
+        else end = PageSize-1;
+        
+        try{
+            for( i = end; i > get_pi( e.i ); i-- ){
+                pmem.construct( &temp_pages[num_pages-1][i], cbuf[ get_ci( e.i ) ][ i ] );
+            }
+        }catch( ... ){
+            while( i < end ){
+                i++;
+                pmem.destroy( &temp_pages[num_pages-1][i] );
+            }
+            for( i = 0; i < num_pages; i++ ) pmem.deallocate( temp_pages[i], PageSize );
+            cmem.deallocate( temp_pages, num_pages );
+            throw;
+        }
+        // copy from beginning to erased element
+        try{
+            size_type d = (head+1) % PageSize; // start on new page 0
+            for( s = head; s != e.i; ++d ){
+                pmem.construct( &temp_pages[get_ci(d)][get_pi(d)], cbuf[get_ci(s)][get_pi(s)] );
+                s = wrap(s+1);
+            }
+        }catch( ... ){
+            while( s != head ){
+                s = wrap( s - 1 );
+                pmem.destroy( &temp_pages[get_ci(s)][get_pi(s)] );
+            }
+            for( i = 0; i < num_pages; i++ ) pmem.deallocate( temp_pages[i], PageSize );
+            cmem.deallocate( temp_pages, num_pages );
+            throw;
+        }
+        // destroy old objects
+        for( s = head; s != wrap( 1 + end + get_ci(e.i)*PageSize ); ){
+            pmem.destroy( &cbuf[get_ci(s)][get_pi(s)] );
+            s = wrap( s + 1 );
+        }
+        // copy new pages
+        size_type j = get_ci(e.i);
+        for( i = num_pages; i > 0; ){
+            pmem.deallocate( cbuf[j], PageSize );
+            --i;
+            cbuf[j] = temp_pages[i];
+            j = ( j - 1 ) & ( cbuf_length - 1 );
+        }
+        // there may be a page freed up but we won't bother deleting it
+        
+        // remove temp page array
+        cmem.deallocate( temp_pages, num_pages );
+        // update pointers
+        --deq_used;
+        head = wrap(head + 1);
+        
+        return( e + 1 );
+    //}else{
+        //nearer to end
+        // to do
+    //}
+  }
+  
+  // _Sane( ) const
+  // **************
+  template< class Type, class Allocator, int PageSize >
+  bool deque< Type, Allocator, PageSize >::_Sane( ) const
+  {
+    if( cbuf_length == 0 ){
+        //cout<<"buf len "<<cbuf_length<<"\n";
+        return( false ); 
+    }
+    if( cbuf_length*PageSize < deq_used ){
+        //cout<<"len*page"<<"\n";
+        return( false );
+    }
+
+    // Is cbuf_length a power of 2?
+    size_type temp = cbuf_length;
+    while( temp != 1 ) {
+        if( temp & 0x1 ){ 
+            //cout<<"p2"<<"\n";
+            return( false ); 
+        }
+        temp >>= 1; 
+    }
+
+    // Check the head and tail indicies.
+    if( get_ci(head) >= cbuf_length || get_ci(tail) >= cbuf_length ){
+        //cout<<"head "<<head<<" tail "<<tail<<" len "<<cbuf_length<<"\n";
+        return( false );
+    }
+    if( get_ci(head) == get_ci(tail) && get_pi(head) > get_pi(tail) && deq_used != 0 ){
+        //cout<<"chead==ctail & phead>ptail"<<deq_used<<"\n";
+        return( false );
+    }
+    if( deq_used == 0 && wrap( head - tail ) != 1 ){
+        //cout<<"bad empty h t ptrs"<<head<<", "<<tail<<"\n";
+        return( false );
+    }
+    
+    // Check distance between indecies stacks up with deq_used
+    if( wrap(1 + tail - head) != deq_used ){
+        //cout<<"dist "<<wrap(1 + tail - head)<<" used "<<deq_used<<" head "<<head<<" tail "<<tail<<"\n";
+        return( false ); 
+    }
+
+    return( true );
+  }
+
+  // ==============================
+  // Ordinary functions using deque
+  // ==============================
+
+  // NOTE: The implementation of operator== and operator< is probably
+  // the same for all three sequence containers. Should this be a helper
+  // template parameterized by container type? (Probably)
+
+  // operator==( const deque &, const deque & )
+  // ******************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  bool operator==( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    if( x.size( ) != y.size( ) ) return( false );
+
+    deque< Type, Allocator, PageSize1 >::size_type index = 0;
+    while( index < x.size( ) ) {
+      if( x[index] != y[index] ) return( false );
+      ++index;
+    }
+    return( true );
+  }
+
+  // operator<( const deque &, const deque & )
+  // *****************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  bool operator< ( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    deque< Type, Allocator, PageSize1 >::size_type index = 0;
+    while( index != x.size( ) && index != y.size( ) ) {
+      if( x[index] < y[index] ) return( true );
+      if( y[index] < x[index] ) return( false );
+      ++index;
+    }
+    return( index == x.size( ) && index != y.size( ) );
+  }
+
+  // operator!=( const deque &, const deque & )
+  // ******************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  inline
+  bool operator!=( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    return( !( x == y ) );
+  }
+
+  // operator>( const deque &, const deque & )
+  // *****************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  inline
+  bool operator> ( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    return( y < x );
+  }
+
+  // operator>=( const deque &, const deque & )
+  // ******************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  inline
+  bool operator>=( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    return( !( x < y ) );
+  }
+
+  // operator<=( const deque &, const deque & )
+  // ******************************************
+  template< class Type, class Allocator, int PageSize1, int PageSize2 >
+  inline
+  bool operator<=( const deque< Type, Allocator, PageSize1 > &x,
+                   const deque< Type, Allocator, PageSize2 > &y )
+  {
+    return( !( x > y ) );
+  }
+
+:: Deque swap ambiguous if general swap (in algorithm) visible.
+:: Need partial ordering of function templates for this to work.
+  #ifdef __NEVER
+  // swap( deque &, deque & )
+  // **************************
+  template< class Type, class Allocator, int PageSize >
+  inline
+  void swap( deque< Type, Allocator, PageSize > &x, deque< Type, Allocator, PageSize > &y )
+  {
+    x.swap( y );
+  }
+  #endif
+
+} // namespace std
+
+#endif

@@ -24,17 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Determine if floating-point value is finite (not NaN/Inf).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <math.h>
+#include <float.h>
 
 
-_WMRTLINK int _finite( double value ) {
-/*************************************/
-    return( (*(((unsigned short *)(&value))+3) & 0x7FF0 ) != 0x7FF0 );
+_WMRTLINK int _finite( double value )
+/***********************************/
+{
+    return( (*(((unsigned short *)(&value)) + 3) & 0x7FF0 ) != 0x7FF0 );
 }

@@ -1,0 +1,11 @@
+*$noreference
+        integer*2       DID_LOAD_FILE
+        parameter       (DID_LOAD_FILE = 256+1) ! 0-256 are reserved
+        character*10    STR_LOAD_FILE
+        parameter       (STR_LOAD_FILE = 'Load file'c)
+
+        integer*2       DID_SAVE_FILE
+        parameter       (DID_SAVE_FILE = 256+2) ! 0-256 are reserved
+        character*10    STR_SAVE_FILE
+        parameter       (STR_SAVE_FILE = 'Save file'c)
+*$reference

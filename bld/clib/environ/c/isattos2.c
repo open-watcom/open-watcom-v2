@@ -24,31 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of isatty() for OS/2.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <unistd.h>
 #include <wos2.h>
 #include "defwin.h"
 #include "rtcheck.h"
 
 
-_WCRTLINK int isatty( int handle ) {
-
+_WCRTLINK int isatty( int handle )
+{
     OS_UINT     handtype, flagword;
     APIRET      rc;
 
     __handle_check( handle, 0 );
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsIsWindowedHandle != 0 ) {
-            if( _WindowsIsWindowedHandle( handle ) ) {
-                return( 1 );
-            }
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsIsWindowedHandle != 0 ) {
+        if( _WindowsIsWindowedHandle( handle ) ) {
+            return( 1 );
         }
-    #endif
+    }
+#endif
     rc = DosQHandType( handle, &handtype, &flagword );
-    return( ( handtype & ~HANDTYPE_NETWORK ) == HANDTYPE_DEVICE );
+    return( (handtype & ~HANDTYPE_NETWORK) == HANDTYPE_DEVICE );
 }

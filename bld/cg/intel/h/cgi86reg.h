@@ -153,7 +153,8 @@ HW__COMPOUND_END_##x                                                          \
 
 HW_ITER( HW_DEFINE_COMPOUND );
 
-#if !defined( BY_C_FRONT_END ) && !defined( BY_FORTRAN_FRONT_END )
+#if !defined( BY_C_FRONT_END ) && !defined( BY_CPP_FRONT_END ) \
+  && !defined( BY_FORTRAN_FRONT_END )
 HW_DEFINE_GLOBAL_CONST( HW_EMPTY );
 HW_DEFINE_GLOBAL_CONST( HW_DS );
 HW_DEFINE_GLOBAL_CONST( HW_DS_ESI );

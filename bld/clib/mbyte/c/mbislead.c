@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MBCS lead byte determination.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "mbchar.h"
 #include "rtinit.h"
 
-_WCRTLINK unsigned char         __MBCSIsTable[257];
+_WCRTDATA unsigned char _WCDATA __MBCSIsTable[257];
 
 /**
  * Determine whether or not the specified byte is a lead byte.
@@ -51,7 +50,7 @@ _WCRTLINK int (_ismbblead)( const unsigned int ch )
  * which will initialize the default multibyte code page.
  */
 
-static __mbInitOnStartup( void )
+static void __mbInitOnStartup( void )
 {
     __mbinit( 0 );
 }

@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <complex>
+#include <complex.h>
 #include "cplx.h"
 
 #define LOGe10 2.302585092994045

@@ -36,22 +36,22 @@ signed_64 mul( signed_64 p1, signed_64 p2 )
     return( p1 * p2 );
 }
 
-signed_64 mydiv( signed_64 p1, signed_64 p2 )
+signed_64 my_div( signed_64 p1, signed_64 p2 )
 {
     return( p1 / p2 );
 }
 
-unsigned_64 or( unsigned_64 p1, unsigned_64 p2 )
+unsigned_64 my_or( unsigned_64 p1, unsigned_64 p2 )
 {
     return( p1 | p2 );
 }
 
-unsigned_64 and( unsigned_64 p1, unsigned_64 p2 )
+unsigned_64 my_and( unsigned_64 p1, unsigned_64 p2 )
 {
     return( p1 & p2 );
 }
 
-unsigned_64 xor( unsigned_64 p1, unsigned_64 p2 )
+unsigned_64 my_xor( unsigned_64 p1, unsigned_64 p2 )
 {
     return( p1 ^ p2 );
 }
@@ -80,7 +80,7 @@ int main()
     if( result.p.low != ULONG_MAX || result.p.high != ULONG_MAX ) fail( __LINE__ );
     result.i64 = mul( 0x10000000, 0x10 );
     if( result.p.low != 0 || result.p.high != 1 ) fail( __LINE__ );
-    result.i64 = mydiv( result.i64, 0x10 );
+    result.i64 = my_div( result.i64, 0x10 );
     if( result.p.low != 0x10000000 || result.p.high != 0 ) fail( __LINE__ );
 
     #define PATTERN_1   0x10101010
@@ -88,11 +88,11 @@ int main()
 
     p1.p.low = PATTERN_1; p1.p.high = PATTERN_1;
     p2.p.low = PATTERN_2; p2.p.high = PATTERN_2;
-    result.u64 = or( p1.u64, p2.u64 );
+    result.u64 = my_or( p1.u64, p2.u64 );
     if( result.p.low != (PATTERN_1|PATTERN_2) || result.p.high != (PATTERN_1|PATTERN_2) ) fail( __LINE__ );
-    result.u64 = and( result.u64, p2.u64 );
+    result.u64 = my_and( result.u64, p2.u64 );
     if( result.p.low != p2.p.low || result.p.high != p2.p.high ) fail( __LINE__ );
-    result.u64 = xor( p1.u64, p2.u64 );
+    result.u64 = my_xor( p1.u64, p2.u64 );
     if( result.p.low != (PATTERN_1^PATTERN_2) || result.p.high != (PATTERN_1^PATTERN_2) ) fail( __LINE__ );
 
     result.u64 = shl( p1.u64, 4 );

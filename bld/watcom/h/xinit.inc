@@ -83,13 +83,21 @@ endif
 YI      ends
         endm
 
+;
+;    ..._PRIORITY_... constant must correspond with definition in rtinit.h file
+;
 INIT_PRIORITY_THREAD   equ 1    ; priority for thread data init
-INIT_PRIORITY_RUNTIME  equ 10   ; priority for run/time initialization
+INIT_PRIORITY_FPU      equ 2    ; priority for FPU/EMU init
+INIT_PRIORITY_RUNTIME  equ 10   ; priority for run-time initialization
+INIT_PRIORITY_EXIT     equ 16   ;
 INIT_PRIORITY_IOSTREAM equ 20   ; priority for IOSTREAM
 INIT_PRIORITY_LIBRARY  equ 32   ; default library-initialization priority
 DEF_PRIORITY           equ 32   ; ...
 INIT_PRIORITY_PROGRAM  equ 64   ; default program-initialization priority
 DTOR_PRIORITY          equ 40   ; priority for module DTOR
+FINI_PRIORITY_EXIT     equ 16   ; when exit() is called, functions between
+                                ; 255 and this are called, the rest of the
+                                ; fini routines are called from __exit().
 
 DGROUP  group   XIB,XI,XIE,YIB,YI,YIE
 

@@ -16,9 +16,9 @@ OBJS = &
         tables.obj &
         token.obj &
         trandecl.obj &
-        trmem.obj &
         wicgener.obj &
         wicstr.obj &
                    &
         fmem.obj &
-        carver.obj &
+        carver.obj
+

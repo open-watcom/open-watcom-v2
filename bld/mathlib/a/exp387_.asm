@@ -34,7 +34,7 @@ include mdef.inc
 include struct.inc
 
 .287
-        modstart        exp87
+        modstart        exp387
 
         xdefp   __exp87         ; calc exp(fac1)
 

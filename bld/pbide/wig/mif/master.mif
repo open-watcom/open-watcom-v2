@@ -1,65 +1,71 @@
-.extensions:
-.extensions: .pp .obj .c .h .y
+proj_name = wig
 
+!ifeq sys_dll 1
+xname = pbide.dll
+!else
+xname = wig.exe
+!endif
 
-.h      : ..\h;$(%include)
-.c      : ..\c;.;$(trmem_dir)
-.y      : ..\c
+suppress_zc = 1
+
+.EXTENSIONS: .gh .y
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+objs += keywords.obj &
+        scanner.obj &
+        mem.obj &
+        hashtab.obj &
+        srusuprt.obj &
+        gen_cpp.obj &
+        options.obj &
+        list.obj &
+        filelist.obj &
+        wig.obj
+
+!ifeq release 0
+objs += trmemcvr.obj trmem.obj
+!endif
+
+.h      : ../h;
+.c      : ../c;.;$(trmem_dir)
+.y      : ../c
+
+inc_dirs = -I"../h" -I$(trmem_dir)
 
 lnk = wig.lnk
 
-ccopt += -w4 -oaxt -zq -fpc /bt=$(os)
-
-!ifndef ext
-ext = exe
+extra_c_flags =
+!ifeq sys_dll 1
+extra_c_flags += -D__DLL__
+!endif
+!ifeq release 0
+extra_c_flags += -DTRMEM -of+
 !endif
 
-yacc=..\yacc.exe
-
-objs += &
-    sruparse.obj &
-    keywords.obj &
-    scanner.obj &
-    mem.obj &
-    hashtab.obj &
-    srusuprt.obj &
-    gen_cpp.obj &
-    options.obj &
-    list.obj &
-    filelist.obj &
-    wig.obj
-
-!ifdef on_build_machine
-ccopt += -d1 -dNDEBUG
+!ifeq sys_dll 1
+extra_c_flags_win = -zw -zu
 !else
-ccopt += -d2 -dDEBUG
+extra_c_flags_win = -zW
 !endif
 
-$(name).$(ext) : $(objs) $(lnk)
-        $(linker) debug all sys $(op_sys) option map name $(name) @$(lnk)
-!ifdef bind
-        $(pharlap)bind386 $(pharlap)run386b.exe $(name).exp -exe $(name).exe
+extra_l_flags = option map
+!ifeq sys_dll 1
+extra_l_flags_win = op rwr export WEP RESIDENT
 !endif
 
-$(lnk) : ..\mif\master.mif makefile
-        %create $(lnk)
-!ifdef on_build_machine
-        @%append $(lnk) option symfile
-!endif
+$(xname) : sruparse.gh ytab.gh $(objs) $(__MAKEFILES__)
+        @%create $(lnk)
         @for %i in ($(libs)) do @@%append $(lnk) library %i
         @for %i in ($(objs)) do @@%append $(lnk) file %i
+        $(linker) $(lflags) name $^@ @$(lnk)
 
-.c.obj:
-        $(compiler) $(ccopt) $[* /fo=$^@
-
-.c.pp:
-        $(compiler) $(ccopt) $[* /fo=.pp /plc
-
-.y.c:
-        wtouch $^@
-        rm $^@
-        $(yacc) $[@ ..\c\yydriver.c
-        cp ytab.c $^@
-
-.before
-        set include = ..\h;$(trmem_dir);$(%include)
+sruparse.gh ytab.gh: sruparse.y ../c/yydriver.c
+        @wtouch $^@
+        @rm $^@
+        $(byacc) $[@ ../c/yydriver.c > $(nulldevice)
+        @cp ytab.c $^@
+        @cp ytab.h ytab.gh
+        @rm ytab.c ytab.h

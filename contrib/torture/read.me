@@ -1,0 +1,461 @@
+
+C REFERENCE MANUAL TESTS
+INSTALLATION AND BASIC OPERATING INSTRUCTIONS
+
+This program is a collection of tests based on the C Refer-
+ence Manual. It is intended to be used either in a UNIX env-
+ironment or on some other computer system. The following is a
+brief description of how to install and use the program. More
+detail can be obtained from the program source listing, as in-
+dicated below.
+
+1.      In order to use this program, you will almost certain-
+ly need a listing. List it (preferably offline) using pr *,
+and expect about 125 pages. The listing will fit on 8-1/2 by 11
+forms, and that size is recommended for its convenience.
+
+        The first four modules in the source listing: crm.c,
+defs, options.c and s22.c should be read in order to find out
+in detail what the program does, how it does it, and how to take 
+it apart, should that prove necessary.
+
+        crm.c is the main() module. It calls the modules that
+do the actual testing, and it contains flags that can be set
+to control the verbosity of the program.
+
+        defs is a structure that is used for inter-module
+communication.
+
+        options.c prints the time, date and system identifi-
+cation on the program's output listing. It also allows the
+status of crm.c's flags to be specified as options on the
+command line. This routine is highly implementation dependent,
+and can easily be removed if it causes trouble.
+
+        s22.c is the first of the modules that do the actual
+testing. Its structure and style are representative of all of
+the remaining modules, and an understanding of how it works 
+will suffice for the rest of the modules as well.
+
+2.      Compile the program with the command cc *.c. Depending
+on local custom, some variant may be needed, the most common 
+being cc *.c -lS. All of the modules should compile correctly,
+without error messages, although there may be warnings. If
+everything compiles, and an a.out file is produced, proceed
+directly to step 3, below. Otherwise:
+
+        2a. If options.c failed to compile, simply remove it,
+        as explained in the listing for that module.
+
+        2b. Other modules that fail to compile are indicative
+        of bugs in your compiler. Unfortunately, they also pre-
+        vent execution of the rest of the program until either
+        the compiler has been fixed, or an ersatz module is
+        inserted to take the place of the one that won't com-
+        pile. "module_name() {return 0;}" will suffice for
+        this purpose.
+
+        2c. When you have .o files corresponding to all of the
+        .c files (with the possible exception of options.c)
+        use the command cc *.o to produce an a.out.
+
+3.      Run the a.out. If no errors are detected (note that
+this does NOT mean that there are no errors!) the program will
+print out some informative messages about your implementation
+followed by "No errors detected.", and then stop. If errors are
+detected, numbered error messages will be interspersed with the
+rest of the output, and the last line will say "Failed."
+Brief explanations of the numbered messages appear later on
+in this file.
+
+        There are several good reasons why numbered error mess-
+ages are used, most of which have to do with space conservation
+and diagnostic precision. It will be necessary, for each mess-
+age, for you to look into the source code to see what is going
+on, and perhaps to construct a more simple case to test some
+things in isolation. This is fairly easy to do, and is best
+illustrated by example:
+
+        Suppose you want to find the meaning of the message
+
+                s25,er8
+
+        Go to the source code for module s25 (corresponding to
+section 2.5 in the Manual), and find the statement:
+
+                ...printf(s25er,8)
+
+Then, from the code and commentary immediately preceding this
+statement, you can determine that the construct \" in a string
+is not behaving as expected.
+
+        For further information, refer to the source listing,
+especially those sections cited above.
+
+
+NUMBERED ERROR MESSAGES
+
+s22,er1 
+
+     It is extremely unlikely that this message will be produced; 
+     if it is, it is almost certainly due to a misinterpretation 
+     of the underscore character in this implementation.  In the 
+     source listing for section s22, find the code that produced 
+     this message, reproduce it, and try running it in isolation. 
+ 
+s22,er2 
+
+     More than the first eight characters in an identifier are 
+     being treated by the compiler as significant.  In the source 
+     listing for section s22, find the code that produced this 
+     message, reproduce it, and try running it in isolation. 
+ 
+s22,er4 
+ 
+     Upper case letters in an identifier are being treated the 
+     same as the corresponding lower case letters. For example, 
+     the identifier "a" is considered to be identical to the 
+     identifier "A".  In the source listing for section s22, find 
+     the code that produced this message, reproduce it, and try 
+     running it in isolation. 
+ 
+s241,er1 
+ 
+     Constants beginning with "0", e.g., 0110, are supposed to be 
+     taken to be octal, i.e., 0110 should have the decimal value 
+     72.  Either the leading zero's function is being ignored, 
+     or, less likely, the constant is being evaluated improperly. 
+     In the source listing for section s241, find the code that 
+     produced this message, reproduce it, and try running it in 
+     isolation. 
+ 
+s241,er2 
+ 
+     Constants beginning with "0x" or "0X", e.g., 0xc5a, are sup- 
+     posed to be taken to be hexadecimal, i.e., 0xc5a would have 
+     the decimal value 3162.  Either (a) the function of the 0x 
+     is being ignored or misinterpreted, or (b) the digits a-f 
+     and A-F are not being handled properly, or (c) the constant 
+     being evaluated (0xabcdef) is too big for the implementa- 
+     tion, and is being treated inconsistently with its decimal 
+     equivalent (11259375), or (d) something is going wrong in 
+     the evaluation of hexadecimal constants.  In the source 
+     listing for section s241, find the code that produced this 
+     message, reproduce it, and try running it in isolation. 
+ 
+s241,er4 
+ 
+     Either (a) a decimal, octal, or hexadecimal constant, (in 
+     this case, 2**30) whose value exceeds the largest signed 
+     machine integer, was not compiled into a long constant, or 
+ 
+     (b) the sizeof operator doesn't work properly when applied 
+     to constants, or (c) something is peculiar about this 
+     machine.  In the source listing for section s241, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 
+ 
+s241,er8 
+ 
+     Either an octal, decimal or hexadecimal constant followed by 
+     the letter l (or L) is not being taken as a long constant, 
+     or something peculiar is happening when the sizeof operator 
+     is applied to a constant.  In the source listing for section 
+     s241, find the code that produced this message, reproduce 
+     it, and try running it in isolation. 
+ 
+s241,er16 
+ 
+     It should make no difference whether a constant is specified 
+     as octal, decimal, or hexadecimal: the sequence of events 
+     following its use should be the same in all cases.  In the 
+     source listing for section s241, find the code that produced 
+     this message, reproduce it, and try running it in isolation. 
+ 
+s243,er1 
+ 
+     A test was made to see if there is a unique mapping from the 
+     C character set to a subset of the integers {0,...,255}. 
+     The test failed.  While it is possible that this may not be 
+     indicative of a problem in some implementations, it is far 
+     more likely that there is real trouble, and the situation 
+     should be investigated further.  In the source listing for 
+     section s243, find the code that produced this message, 
+     reproduce it, and try running it in isolation. 
+ 
+s243,er2 
+ 
+     Certain characters, when preceded by a backslash, have spe- 
+     cial meaning.  If a character that is not special is pre- 
+     ceded by a backslash, the backslash should be ignored.  The 
+     program has detected at least one instance of a non-special 
+     character preceded by a backslash being interpreted as a 
+     special character.  The situation should be investigated 
+     further.  A good place to start would be to check whether 
+     upper case versions of special characters are being given a 
+     lower case interpretation, (e.g., '\N' might be generating a 
+     newline character).  In the source listing for section s243, 
+     find the code that produced this message, reproduce it, and 
+     try running it in isolation. 
+ 
+s243,er4 
+ 
+     Certain characters, when preceded by a backslash, have spe- 
+     cial meaning.  If a character that is not special is 
+     preceded by a backslash, the backslash should be ignored. 
+     The program has detected at least one instance of a non- 
+     special character preceded by a backslash being interpreted 
+     as a special character.  The situation should be investi- 
+     gated further.  A good place to start would be to check 
+     whether upper case versions of special characters are being 
+     given a lower case interpretation, (e.g., '\N' might be gen- 
+     erating a newline character).  In the source listing for 
+     section s243, find the code that produced this message, 
+     reproduce it, and try running it in isolation. 
+ 
+s243,er8 
+ 
+     The escape sequence \ddd is used to specify octal character 
+     constants.  The construct does not seem to be working prop- 
+     erly.  In the source listing for section s243, find the code 
+     that produced this message, reproduce it, and try running it 
+     in isolation. 
+ 
+s244,er1 
+ 
+     Several supposedly equivalent representations for a floating 
+     point constant were tried, and the constants, as compiled, 
+     were found not to be identical.  In the source listing for 
+     section s244, find the code that produced this message, 
+     reproduce it, and try running it in isolation. 
+ 
+s244,er2 
+ 
+     Floating point constants do not seem to be expanded to dou- 
+     ble precision before being used as operands in arithmetic 
+     expressions.  In the source listing for section s244, find 
+     the code that produced this message, reproduce it, and try 
+     running it in isolation. 
+ 
+s25,er1 
+ 
+     Either the representation of a string is not the same as 
+     that for an array of characters, or string initialization is 
+     not working properly.  In the source listing for section 
+     s25, find the code that produced this message, reproduce it, 
+     and try running it in isolation. 
+ 
+s25,er2 
+ 
+     Identically written strings are not distinct.  In the source 
+     listing for section s25, find the code that produced this 
+     message, reproduce it, and try running it in isolation. 
+ 
+s25,er4 
+ 
+     Null bytes (\0) are not being placed at the ends of strings. 
+     In the source listing for section s25, find the code that 
+     produced this message, reproduce it, and try running it in 
+     isolation. 
+ 
+s25,er8 
+ 
+     The backslash escape convention needed to include a double 
+     quote as a character in a string is not working properly. 
+     In the source listing for section s25, find the code that 
+     produced this message, reproduce it, and try running it in 
+     isolation. 
+ 
+s25,er16 
+ 
+     At least one of the backslash escapes used to generate spe- 
+     cial characters in character constants doesn't work properly 
+     in strings.  In the source listing for section s25, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 
+ 
+s25,er32 
+ 
+     The backslash - newline convention used to continue strings 
+     across line boundaries is not working properly.  In the 
+     source listing for section s25, find the code that produced 
+     this message, reproduce it, and try running it in isolation. 
+ 
+s4,er1 
+ 
+     A variable that has been declared as static does not retain 
+     its value after control leaves the block containing the 
+     variable.  In the source listing for section s4, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 
+ 
+s4,er2 
+ 
+     A variable that has been declared as external and set to a 
+     specific value by one module does not retain that value when 
+     control is passed to another, separately compiled module. 
+     In the source listing for section s4, find the code that 
+     produced this message, reproduce it, and try running it in 
+     isolation. 
+ 
+s4,er4 
+ 
+     C supports three sizes of integers: plain, short, and long. 
+     In a given implementation, fewer sizes may actually be 
+     implemented, but it should always be the case that longer 
+     integers provide no less storage than shorter integers. 
+     This rule is apparently being violated.  In the source list- 
+     ing for section s4, find the code that produced this mes- 
+     sage, reproduce it, and try running it in isolation. 
+ 
+s4,er8 
+ 
+     Either an unsigned integer is not being properly comple- 
+     mented, or its leftmost bit is being propagated during a 
+     right shift operation.  Either of these circumstances should 
+     be corrected.  In the source listing for section s4, find 
+     the code that produced this message, reproduce it, and try 
+     running it in isolation. 
+ 
+s61,er1 
+ 
+     Conversion of integers from shorter to longer should always 
+     take place with sign extension.  An instance of length 
+     conversion without sign extension has been detected.  In the 
+     source listing for section s61, find the code that produced 
+     this message, reproduce it, and try running it in isolation. 
+ 
+s61,er2 
+ 
+     Although characters that are members of the standard charac- 
+     ter set are guaranteed to be non-negative, at least one was 
+     found to be negative.  In the source listing for section 
+     s61, find the code that produced this message, reproduce it, 
+     and try running it in isolation. 
+ 
+s61,er4 
+ 
+     When assigning a character to a long, the compiler is incon- 
+     sistent about whether to propagate the character's sign, 
+     depending upon whether the character is a variable or a con- 
+     stant.  In the source listing for section s61, find the code 
+     that produced this message, reproduce it, and try running it 
+     in isolation. 
+ 
+s61,er8 
+ 
+     When a longer integer is converted to a shorter integer of 
+     insufficient precision, the excess bits on the left should 
+     simply be discarded.  This does not seem to be the case 
+     here.  In the source listing for section s61, find the code 
+     that produced this message, reproduce it, and try running it 
+     in isolation. 
+ 
+s626,er1 
+ 
+     This machine is equipped with both single and double preci- 
+     sion hardware; however, it does not appear that the double 
+     precision hardware is being used for intermediate calcula- 
+     tions involving float variables.  In the source listing for 
+     section s626, find the code that produced this message, 
+     reproduce it, and try running it in isolation. 
+ 
+s626,er2 
+ 
+     Conversion from integers to floats is not behaving properly. 
+     In the source listing for section s626, find the code that 
+     produced this message, reproduce it, and try running it in 
+     isolation. 
+ 
+s626,er4 
+ 
+     Arithmetic conversions do not work as specified in section 
+     6.6 of the C Reference Manual.  In the source listing for 
+     section s626, find the code that produced this message, 
+     reproduce it, and try running it in isolation. 
+ 
+s626,er8
+
+     An unsigned int was assigned to a long, and the two were
+     then compared and found to be unequal. In the source code
+     for section s626, find the code that produced this message,
+     reproduce it, and try running it in isolation.
+
+s71,er1 
+
+
+     String identifiers do not point to the first characters of 
+     the strings they identify.  In the source listing for sec- 
+     tion s71, find the code that produced this message, repro- 
+     duce it, and try running it in isolation. 
+ 
+s71,er2 
+ 
+     Parentheses around arithmetic expressions are not behaving 
+     properly.  In the source listing for section s71, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 
+ 
+s71,er4 
+ 
+     The expression: E1[E2] does not evaluate the same as 
+     *((E1)+(E2)).  In the source listing for section s71, find 
+     the code that produced this message, reproduce it, and try 
+     running it in isolation. 
+ 
+s71,er8 
+ 
+     A function was called recursively, and came back, but it 
+     came back with the wrong answer.  Check to see whether the 
+     program produces other complaints about the way arithmetic 
+     is being done, and if there are none, suspect the recursion 
+     mechanism.  In the source listing for section s71, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 
+ 
+s71,er16 
+ 
+     A function has either managed to clobber an argument passed 
+     to it directly, or else was unable to access and modify an 
+     argument passed to it by means of a pointer.  In the source 
+     listing for section s71, find the code that produced this 
+     message, reproduce it, and try running it in isolation. 
+ 
+s71,er32 
+ 
+     Addressing conventions for structures and unions are not 
+     working properly.  In the source listing for section s71, 
+     find the code that produced this message, reproduce it, and 
+     try running it in isolation. 
+ 
+s714,er1 
+ 
+     Out of 395 simple variations on the assignment statement, at 
+     least one was found to behave improperly.  The "local error" 
+     number will point to one of these.  Errors like this tend 
+     not to be isolated, so check carefully to see if it has any 
+     friends. 
+ 
+s715,er1 
+ 
+     The comma operator is misbehaving.  Either it does not asso- 
+     right, or it does not discard previously com- 
+     puted values.  In the source listing for section s715, find 
+     the code that produced this message, reproduce it, and try 
+     running it in isolation. 
+ 
+s715,er2 
+ 
+     When a comma operator was used in the context of a list of 
+     function arguments, something went wrong.  In the source 
+     listing for section s715, find the code that produced this 
+     message, reproduce it, and try running it in isolation. 
+ 
+s72,er1 
+ 
+     Unary *, denoting indirection, and unary &, denoting a 
+     pointer, are duals of each other in the sense that *&x==x. 
+     A test of this type was made, and the result was not as 
+     expected.  In the source listing for section s72, find the 
+     code that produced this message, reproduce it, and try run- 
+     ning it in isolation. 

@@ -1,11 +1,11 @@
 .386
 .model small
 .data
-moose struct
+moose struc
     g db 1
     h db 0
 moose ends
-foo struct
+foo struc
     a db 0
     b dw 1
     d dd 2

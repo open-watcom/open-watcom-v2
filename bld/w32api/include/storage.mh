@@ -1,0 +1,9 @@
+/*
+ *  storage.h   Win16 compatibility header
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#include <objbase.h>

@@ -76,7 +76,7 @@ static void _DrawScatter( chartenv _WCI86FAR *env,
 }
 
 
-short _WCI86FAR _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *env,
                             float _WCI86FAR *xvalues,
                             float _WCI86FAR *yvalues, short nseries, short n,
                             short arraydim, char _WCI86FAR *_WCI86FAR *serieslabels )
@@ -114,7 +114,7 @@ short _WCI86FAR _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *env,
 Entry( _PG_CHARTSCATTERMS, _pg_chartscatterms ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pg_chartscatter( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_chartscatter( chartenv _WCI86FAR *env,
                         float _WCI86FAR *xvalues, float _WCI86FAR *yvalues, short n )
 //=========================================================================
 

@@ -5,16 +5,16 @@
  */
 #ifndef _WDEFWIN_H_INCLUDED
 #define _WDEFWIN_H_INCLUDED
+
 :include readonly.sp
-:include cpluspro.sp
 
 #ifndef __SW_BW
-  #error wdefwin.h is for use the default windowing system, use the /bw switch
+ #error wdefwin.h is for use the default windowing system, use the /bw switch
 #endif
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 #if ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) ) || defined(__NT__) || \
     defined(__WINDOWS_386__) || defined(__WINDOWS__)
@@ -25,9 +25,10 @@ _WCRTLINK extern int _dwSetConTitle( int handle, const char *title );
 _WCRTLINK extern int _dwYield( void );
 _WCRTLINK extern int _dwShutDown( void );
 #else
-  #error You cannot use the default windowing system in a non GUI environment
-  #error Make sure you use the /bt= switch to select the target system
+ #error You cannot use the default windowing system in a non GUI environment
+ #error Make sure you use the /bt= switch to select the target system
 #endif
 
 :include cplusepi.sp
+
 #endif

@@ -1,8 +1,0 @@
-//#line "..\c\wpsrcfil.c" 42
-extern wp_srcfile *WPSourceOpen(sio_data *curr_sio,bint quiet);
-//#line "..\c\wpsrcfil.c" 94
-extern void WPSourceClose(wp_srcfile *wpsrc_file);
-//#line "..\c\wpsrcfil.c" 108
-extern char *WPSourceGetLine(a_window *wnd,int line);
-//#line "..\c\wpsrcfil.c" 140
-extern massgd_sample_addr *WPGetMassgdSampData(sio_data *curr_sio,clicks_t click_index);

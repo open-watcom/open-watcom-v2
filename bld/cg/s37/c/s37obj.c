@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "standard.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
@@ -314,11 +314,11 @@ extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align ) {
     segdef              *new;
     segdef              **owner;
 
-    _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->id = id;
     new->attr = attr;
     new->align = align;
-    _Alloc( new->str, strlen( str ) + 1 );
+    new->str = CGAlloc( strlen( str ) + 1 );
     strcpy( new->str,str );
     owner = &SegDefs;
     while( *owner != NULL ) { /* keep in a sorted order */
@@ -345,7 +345,7 @@ static void DoASegDef( segdef *seg ) {
     index_rec   *rec;
     bead_seg    *first;
 
-    _Alloc( rec, sizeof( *rec ) );
+    rec = CGAlloc( sizeof( *rec ) );
     if( _IsModel( CODE_SPLIT ) || _IsModel( CODE_RENT ) ) {
         if( seg->attr & ( ROM | EXEC )  ) { /* put all read only in code */
             rec->txtseg = TXT_CODE;
@@ -501,7 +501,7 @@ extern hw_sym *HWSymHandle(void ) {
 /***Make a hw sym handle *********/
     hw_sym *curr;
 
-    _Alloc( curr, sizeof( *curr ) );
+    curr = CGAlloc( sizeof( *curr ) );
     curr->name[0] = '\0';
     curr->class = HW_NONE;
     curr->defflag = TXT_NO;
@@ -532,7 +532,7 @@ static hw_sym *HWSymAdd( hw_sym **next_lnk, char *name ) {
         curr = curr->next;
     }
     if( curr == NULL ) {
-        _Alloc( curr, sizeof( *curr ) );
+        curr = CGAlloc( sizeof( *curr ) );
         strcpy( curr->name, name );
         curr->class = HW_NONE;
         curr->defflag = TXT_NO;
@@ -552,7 +552,7 @@ static void FreeHWSyms( hw_sym *sym  ){
 
     while( sym != NULL ){
         next = sym->next;
-        _Free( sym, sizeof( sym ) );
+        CGFree( sym );
         sym = next;
     }
 }
@@ -572,7 +572,7 @@ extern void HWLabelGen( hw_sym *sym, char align  ) {
     bead_label *bead;
 
     sym->class = HW_LABEL;
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_LABEL;
     bead->class = LBL_DS;
     bead->align = align;
@@ -596,7 +596,7 @@ extern void HWMKLabel( bead_def **end_lnk, hw_sym *sym ) {
     bead_label *bead;
 
     sym->class = HW_LABEL;
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_LABEL;
     bead->common.next = *end_lnk;
     bead->class = LBL_DS;
@@ -633,7 +633,7 @@ extern bead_xsym *HWExSym( xsym_class class ) {
 /*** Add a xsym to top of index_rec***********/
     bead_xsym *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_XSYM;
     AddBead( (bead_def *)bead, 0 );
     bead->class = class;
@@ -646,7 +646,7 @@ extern bead_xsym *HWMKExSym( bead_def **end_lnk, xsym_class class ) {
 /*********************************************/
     bead_xsym *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_XSYM;
     bead->common.address = 0;
     bead->common.next = *end_lnk;
@@ -661,7 +661,7 @@ extern bead_using *HWUsing( hw_sym *sym, char reg ) {
 /** set up using sym,reg if sym null *,reg **/
     bead_using *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_USING;
     AddBead( (bead_def *)bead, 0 );
     bead->sym = sym;
@@ -673,7 +673,7 @@ extern void HWMKUsing( bead_def **end_lnk, hw_sym *sym, char reg ) {
 /** set up using sym,reg if sym null *,reg **/
     bead_using *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_USING;
     bead->common.next = *end_lnk;
     *end_lnk = (bead_def*)bead;
@@ -685,7 +685,7 @@ extern bead_drop *HWDrop( char reg ) {
 /** drop base reg **/
     bead_drop *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_DROP;
     AddBead( (bead_def *)bead, 0 );
     bead->reg = reg;
@@ -696,7 +696,7 @@ extern void HWMKDrop(bead_def **end_lnk, char reg ) {
 /** drop base reg **/
     bead_drop *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_DROP;
     bead->common.next = *end_lnk;
     *end_lnk = (bead_def*)bead;
@@ -707,7 +707,7 @@ extern void HWStartProc(void ) {
 /** mark start of a routine **/
     bead_startproc *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_STARTPROC;
     AddBead( (bead_def *)bead, 0 );
 }
@@ -716,7 +716,7 @@ extern void HWEpilogue(void ) {
 /** mark start of a routine **/
     bead_startproc *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_EPILOGUE;
     AddBead( (bead_def *)bead, 0 );
 }
@@ -725,7 +725,7 @@ extern void HWEndProc(void ) {
 /** mark end  of a routine **/
     bead_endproc *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_ENDPROC;
     AddBead( (bead_def *)bead, 0 );
 }
@@ -734,7 +734,7 @@ extern void HWQueue( int num ) {
 /** mark a place in code linenum whatever **/
     bead_queue *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_QUEUE;
     bead->num = num;
     AddBead( (bead_def *)bead, 0 );
@@ -744,7 +744,7 @@ static bead_seg *MKSeg( char *str, seg_id id, char align ) {
 /** mark a place in code where segment starts **/
     bead_seg *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_SEG;
     bead->common.address = 0;
     bead->common.next = NULL;
@@ -783,7 +783,7 @@ extern void HWMKInsGen( bead_def **end_lnk, hwins_opcode opcode,
     hwins_class    hwclass;
 
     hwclass = HWOpTable[opcode].class;
-    _Alloc( bead, HwLength[hwclass] );
+    bead = CGAlloc( HwLength[hwclass] );
     bead->ins.common.class = BEAD_HWINS;
     bead->ins.common.next = *end_lnk;
     *end_lnk = (bead_def*)bead;
@@ -850,7 +850,7 @@ extern void HWMKBRGen(  bead_def **end_lnk, char cc, hwins_op_any *hwop2 ) {
     ref_any       *ref;
 
     hwclass = HWOpTable[HWOP_BC].class;
-    _Alloc( bead, HwLength[hwclass] );
+    bead = CGAlloc( HwLength[hwclass] );
     bead->common.class = BEAD_BR;
     bead->common.next = *end_lnk;
     *end_lnk = (bead_def*)bead;
@@ -870,7 +870,7 @@ extern void HWBIndexGen(  char reg, hw_sym *table ) {
 /*** Get's expanded later into some intructions**/
     bead_bindex     *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_BINDEX;
     bead->size  = 2+4+4+4+4+4;
     /* AR, A,  AH, LH,  BC, =A(table)   */
@@ -888,7 +888,7 @@ extern void HWDataGen( int length, int rep, byte *value ) {
     int bead_length;
 
     bead_length = sizeof( *bead ) +length-1;
-    _Alloc( bead, bead_length );
+    bead = CGAlloc( bead_length );
     bead->common.class = BEAD_DATA;
     AddBead( (bead_def *)bead,length*rep );
     bead->length = length;
@@ -900,7 +900,7 @@ extern void HWStoreGen( int length ) {
 /****** do a DS value *********************/
     bead_store *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_STORE;
     AddBead( (bead_def *)bead, length );
     bead->length = length;
@@ -910,7 +910,7 @@ extern void HWIntGen( offset value, int size ) {
 /****** do a DC on an int value *********/
     bead_int *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_INT;
     AddBead( (bead_def *)bead, size );
     bead->size = size;
@@ -930,7 +930,7 @@ static bead_flt *MakeAFlt( pointer value, int size ) {
 /****** do a DC on an float value *********/
     bead_flt *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_FLT;
     bead->common.next = NULL;
     bead->common.address = 0;
@@ -957,7 +957,7 @@ extern void HWLblDisp( hw_sym *sym  ) {
 /****** do a DC AL2(sym-base) for switch statement**/
     bead_disp *bead;
 
-    _Alloc( bead, sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.class = BEAD_DISP;
     AddBead( (bead_def *)bead, 2 );
     bead->val = 0;
@@ -970,7 +970,7 @@ extern ref_any  *HWSymRef( hw_sym *sym ) {
 /***************************************/
     ref_sym *ref;
 
-    _Alloc( ref, sizeof( *ref ) );
+    ref = CGAlloc( sizeof( *ref ) );
     ref->common.next = NULL;
     ref->common.class = REF_SYM;
     ref->sym = sym;
@@ -986,13 +986,13 @@ extern ref_any  *HWLitIntGen( offset value, int size ) {
     bead_int  *bead;
     ref_lit   *ref;
 
-    _Alloc( bead,  sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.next = NULL;
     bead->common.class = BEAD_INT;
     bead->common.address = 0;
     bead->size = size;
     bead->value = value;
-    _Alloc( ref, sizeof( *ref ) );
+    ref = CGAlloc( sizeof( *ref ) );
     ref->common.next = NULL;
     ref->common.class = REF_LIT;
     ref->val = (bead_def *)bead;
@@ -1006,7 +1006,7 @@ extern ref_any  *HWLitFltGen( pointer value, int size ) {
     ref_lit   *ref;
 
     bead = MakeAFlt( value, size );
-    _Alloc( ref, sizeof( *ref ) );
+    ref = CGAlloc( sizeof( *ref ) );
     ref->common.next = NULL;
     ref->common.class = REF_LIT;
     ref->val = (bead_def *)bead;
@@ -1018,7 +1018,7 @@ extern ref_any  *HWDispRef( hw_sym *sym, hw_sym *base ) {
 /***************************************/
     ref_disp  *ref;
 
-    _Alloc( ref, sizeof( *ref ) );
+    ref = CGAlloc( sizeof( *ref ) );
     ref->common.next = NULL;
     ref->common.class = REF_DISP;
     ref->sym = sym;
@@ -1034,7 +1034,7 @@ extern ref_any  *HWLitAddr( hw_sym *sym, offset val, bool reloc ){
     ref_lit   *ref;
 
     bead = MKSymAddr( sym, val, reloc );
-    _Alloc( ref, sizeof( *ref ) );
+    ref = CGAlloc( sizeof( *ref ) );
     ref->common.next = NULL;
     ref->common.class = REF_LIT;
     ref->val = (bead_def *)bead;
@@ -1056,7 +1056,7 @@ static bead_addr *MKSymAddr( hw_sym *sym, offset val, bool reloc ){
     bead_addr *bead;
     hw_sym    *rel;
 
-    _Alloc( bead,  sizeof( *bead ) );
+    bead = CGAlloc( sizeof( *bead ) );
     bead->common.next = NULL;
     bead->common.class = BEAD_ADDR;
     bead->common.address = 0;
@@ -1341,15 +1341,15 @@ static void FreeRefs( any_bead_hwins *bead ) {
     }
     if( op1 != NULL && op1->ref != NULL ){
       // if( op1->ref->entry.class == REF_LIT ){
-      //     _Free( op1->ref->lit.val, sizeof( bead_def ) );
+      //     CGFree( op1->ref->lit.val );
       // }
-        _Free( op1->ref, sizeof( ref_any ) );
+        CGFree( op1->ref );
     }
     if( op2 != NULL && op2->ref != NULL ){
      //  if( op2->ref->entry.class == REF_LIT ){
-     //      _Free( op2->ref->lit.val, sizeof( bead_def ) );
+     //      CGFree( op2->ref->lit.val );
      //  }
-        _Free( op2->ref,sizeof( ref_any ) );
+        CGFree( op2->ref );
     }
 }
 
@@ -1364,7 +1364,7 @@ static void FreeBeads( bead_def *bead  ){
             FreeRefs( (any_bead_hwins *)bead );
         }
         next = bead->next;
-        _Free( bead, sizeof(bead_def) );
+        CGFree( bead );
         bead = next;
     }
 }

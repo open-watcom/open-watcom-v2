@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default implementation of __dll_initialize()
+*               for 32-bit OS/2.
 *
 ****************************************************************************/
 
 
-unsigned        __dll_initialize() {
-/**********************************/
-
+unsigned __dll_initialize( void )
+/*******************************/
+{
     return( 1 );
 }

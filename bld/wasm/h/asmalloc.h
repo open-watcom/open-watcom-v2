@@ -24,17 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory manipulation routine prototypes.
 *
 ****************************************************************************/
 
+#ifndef _ASMALLOC_H_
+#define _ASMALLOC_H_
 
-#ifdef _WASM_
-extern  void    *AsmRealloc( void *, size_t );
-#include "malloc.h"
+#if defined( _STANDALONE_ )
+  #include "walloca.h"
+  #include "memutil.h"  // WOMP memory routines declaration
+
+  #define AsmTmpAlloc( amount )   alloca( amount )
 #endif
-extern  void    *AsmAlloc( unsigned );
+
+extern  void    *AsmAlloc( size_t );
 extern  void    AsmFree( void * );
 
-#define AsmTmpAlloc( amount )   alloca( amount )
+#endif

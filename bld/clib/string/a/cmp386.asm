@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Intel 386 implementation strcmp().
 ;*
 ;*****************************************************************************
 
@@ -40,18 +39,18 @@ endif
         modstart _strcmp,para
 
 cmp4    macro   off
-        mov     eax,off[ebx]            ; get dword from op1
+        mov     ebx,off[eax]            ; get dword from op1
         mov     ecx,off[edx]            ; get dword from op2
-        cmp     ecx,eax                 ; compare them
-        jne     short unequal           ; quit if not equal
+        cmp     ecx,ebx                 ; compare them
+        jne     unequal                 ; quit if not equal
         ife     off-12
-         add    ebx,off+4               ; point to next group of dwords
+         add    eax,off+4               ; point to next group of dwords
          add    edx,off+4               ; ...
         endif
         not     ecx                     ; ...
-        add     eax,0FEFEFEFFh          ; determine if '\0' is one of bytes
-        and     eax,ecx                 ; ...
-        and     eax,80808080h           ; eax will be non-zero if '\0' found
+        add     ebx,0FEFEFEFFh          ; determine if '\0' is one of bytes
+        and     ebx,ecx                 ; ...
+        and     ebx,80808080h           ; ebx will be non-zero if '\0' found
         endm
 
         defpe   strcmp
@@ -60,31 +59,39 @@ cmp4    macro   off
         P5Prolog
     endif
     ifdef __STACK__
-        push    edx                     ; save edx
-        mov     eax,8[esp]              ; get p1
-        mov     edx,12[esp]             ; get p2
+        mov     eax,4[esp]              ; get p1
+        mov     edx,8[esp]              ; get p2
     endif
-        push    ebx                     ; save registers
-        push    ecx                     ; ...
-        mov     ebx,eax                 ; get p1
-        cmp     eax,edx                 ; if pointers not equal
-        _if     ne                      ; then
-          _loop                         ; - loop
-            cmp4  0                     ; - - compare first dword
-            _quif ne                    ; - - quit if end of string
-            cmp4  4                     ; - - compare second dword
-            _quif ne                    ; - - quit if end of string
-            cmp4  8                     ; - - compare third dword
-            _quif ne                    ; - - quit if end of string
-            cmp4  12                    ; - - compare fourth dword
-          _until  ne                    ; - until end of string
-        _endif                          ; endif
-equal:  sub     eax,eax                 ; indicate strings equal
-        pop     ecx                     ; restore registers
-        pop     ebx                     ; ...
-    ifdef __STACK__
-        pop     edx                     ; ...
+        cmp     eax,edx                 ; pointers equal ?
+        je      equalnorst              ; yes, return 0
+    ifndef __STACK__
+        push    ecx                     ; save register
     endif
+        test    al,3                    ; p1 aligned ?
+        jne     realign                 ; no, go and realign
+        test    dl,3                    ; p2 aligned ?
+        jne     slowcpy                 ; no, do the slow copy (impossible to align both)
+
+fastcpy:
+        push    ebx                     ; save register
+
+        align   4
+        _loop                           ; - loop
+          cmp4  0                       ; - - compare first dword
+          _quif ne                      ; - - quit if end of string
+          cmp4  4                       ; - - compare second dword
+          _quif ne                      ; - - quit if end of string
+          cmp4  8                       ; - - compare third dword
+          _quif ne                      ; - - quit if end of string
+          cmp4  12                      ; - - compare fourth dword
+        _until  ne                      ; - until end of string
+equalrst:                               ; strings equal, restore registers
+        pop     ebx                     ; restore register
+    ifndef __STACK__
+        pop     ecx                     ; ...
+    endif
+equalnorst:                             ; strings equal, skip register restore
+        sub     eax,eax                 ; indicate strings equal
     ifdef _PROFILE
         P5Epilog
     endif
@@ -92,32 +99,109 @@ equal:  sub     eax,eax                 ; indicate strings equal
 
 unequal:                                ; dword was not equal
         _guess                          ; guess strings are equal
-          cmp   al,cl                   ; - check low bytes
+          cmp   bl,cl                   ; - check low bytes
           _quif ne                      ; - quit if not equal
-          cmp   al,0                    ; - stop if end of string
-          je    equal                   ; - ...
-          cmp   ah,ch                   ; - check next bytes
+          cmp   bl,0                    ; - stop if end of string
+          je    equalrst                ; - ...
+          cmp   bh,ch                   ; - check next bytes
           _quif ne                      ; - quit if not equal
-          cmp   ah,0                    ; - stop if end of string
-          je    equal                   ; - ...
-          shr   eax,16                  ; - shift top 2 bytes to bottom
+          cmp   bh,0                    ; - stop if end of string
+          je    equalrst                ; - ...
+          shr   ebx,16                  ; - shift top 2 bytes to bottom
           shr   ecx,16                  ; - ...
-          cmp   al,cl                   ; - check third byte
+          cmp   bl,cl                   ; - check third byte
           _quif ne                      ; - quit if not equal
-          cmp   al,0                    ; - stop if end of string
-          je    equal                   ; - ...
-          cmp   ah,ch                   ; - check high order byte
-;;        we know at this point that ah != ch, just have to do the compare
+          cmp   bl,0                    ; - stop if end of string
+          je    equalrst                ; - ...
+          cmp   bh,ch                   ; - check high order byte
+;;        we know at this point that bh != ch, just have to do the compare
 ;;        _quif ne                      ; - quit if not equal
-;;        cmp   ah,0                    ; - stop if end of string
-;;        je    equal                   ; - ...
+;;        cmp   bh,0                    ; - stop if end of string
+;;        je    equalrst                ; - ...
         _endguess                       ; endguess
         sbb     eax,eax                 ; eax = 0 if op1>op2, -1 if op1<op2
         or      al,1                    ; eax = 1 if op1>op2, -1 if op1<op2
+        pop     ebx                     ; restore registers
+    ifndef __STACK__
+        pop     ecx                     ; ...
+    endif
+    ifdef _PROFILE
+        P5Epilog
+    endif
+        ret                             ; return
+
+        align   4
+realign:
+        _loop                           ; - loop
+          mov   cl,[eax]                ; get byte from p1
+          inc   eax                     ; point to next byte
+          mov   ch,[edx]                ; get byte from p2
+          inc   edx                     ; point to next byte
+          cmp   cl,ch                   ; bytes equal?
+          jne   unequal2                ; unequal, quit
+          or    cl,cl                   ; end of string ?
+          je    equal2                  ; yes, quit
+          test  al,3                    ; check alignment
+        _until  e                       ; until aligned
+        test    dl,3                    ; p2 aligned ?
+        je fastcpy                      ; yes
+
+        align   4
+slowcpy:
+        _loop
+          mov   ecx,[eax]               ; get aligned 4 bytes
+          cmp   cl,[edx]                ; check 1st byte
+          jne   unequal2                ; bytes not equal
+          or    cl,cl                   ; end of string?
+          je    equal2                  ; yes, quit
+          cmp   ch,[edx+1]              ; check 2nd byte
+          jne   unequal2                ; bytes not equal
+          or    ch,ch                   ; end of string?
+          je    equal2                  ; yes, quit
+          shr   ecx,16                  ; move next pair of bytes to be tested
+          cmp   cl,[edx+2]              ; check 3rd byte
+          jne   unequal2                ; bytes not equal
+          or    cl,cl                   ; end of string?
+          je    equal2                  ; yes, quit
+          cmp   ch,[edx+3]              ; check 4th byte
+          jne   unequal2                ; bytes not equal
+          or    ch,ch                   ; end of string?
+          je    equal2                  ; yes, quit
+          mov   ecx,[eax+4]             ; get next aligned 4 bytes
+          cmp   cl,[edx+4]              ; check 5th byte
+          jne   unequal2                ; bytes not equal
+          or    cl,cl                   ; end of string?
+          je    equal2                  ; yes, quit
+          cmp   ch,[edx+5]              ; check 6th byte
+          jne   unequal2                ; bytes not equal
+          or    ch,ch                   ; end of string?
+          je    equal2                  ; yes, quit
+          shr   ecx,16                  ; move next pair of bytes to be tested
+          cmp   cl,[edx+6]              ; check 7th byte
+          jne   unequal2                ; bytes not equal
+          or    cl,cl                   ; end of string?
+          je    equal2                  ; yes, quit
+          cmp   ch,[edx+7]              ; check 8th byte
+          jne   unequal2                ; bytes not equal
+          add   eax,8                   ; next 8 bytes
+          add   edx,8                   ; next 8 bytes
+          or    ch,ch                   ; end of string?
+        _until  e                       ; until equal
+equal2:
+        xor     eax,eax                 ; return 0
+    ifndef __STACK__
         pop     ecx                     ; restore registers
-        pop     ebx                     ; ...
-    ifdef __STACK__
-        pop     edx                     ; ...
+    endif
+    ifdef _PROFILE
+        P5Epilog
+    endif
+        ret                             ; return
+
+unequal2:
+        sbb     eax,eax                 ; eax = 0 if op1>op2, -1 if op1<op2
+        or      al,1                    ; eax = 1 if op1>op2, -1 if op1<op2
+    ifndef __STACK__
+        pop     ecx                     ; restore registers
     endif
     ifdef _PROFILE
         P5Epilog

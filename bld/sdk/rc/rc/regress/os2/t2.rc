@@ -1,0 +1,32 @@
+#include <os2.h>
+
+#undef  WC_BUTTON
+#define WC_BUTTON          ((PSZ)0xffff0003)
+
+//DLGINCLUDE 1 "STY_DLG.H"
+
+DLGTEMPLATE 100 LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Buttons", 100, 32, 1, 224, 96, FS_NOBYTEALIGN | WS_VISIBLE
+    , FCF_SYSMENU | FCF_TITLEBAR
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    PRESPARAMS "MyParam", 3 //"foo", 3
+    PRESPARAMS PP_FONTNAMESIZE, "foo", "bar" 3 "baz" 4
+    BEGIN
+        ICON  1, 1, 69, 22, 20, 21 , WS_GROUP
+        CONTROL "~Three State", 255, 90, 51, 67, 10, WC_BUTTON
+      , BS_AUTO3STATE | WS_TABSTOP | WS_VISIBLE
+
+        PUSHBUTTON     "~OK1", 1, 173, 64, 32, 16
+        CTLDATA 1, 2L, 3, "BooHoo" 4 0X5L "Wah!"
+        PUSHBUTTON     "~OK2", 1, 173, 64, 32, 16
+        PRESPARAMS PP_FONTNAMESIZE, "foo", "bar" 3 "baz" 4
+        DIALOG  "Mutons", 100, 32, 1, 224, 96
+            BEGIN
+                PUSHBUTTON     "~OK3", 1, 173, 64, 32, 16
+            END
+        VALUESET   1, 173, 64, 32, 16
+        PUSHBUTTON     "~OK4", 1, 173, 64, 32, 16
+        ICON  100, 1, 173, 64, 32, 16
+    END
+END

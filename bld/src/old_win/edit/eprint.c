@@ -293,9 +293,9 @@ BOOL Print( LPEDATA ed )
     /*
      * create procs
      */
-    abort = MakeProcInstance( Abort, ed->inst );
+    abort = MakeProcInstance( (FARPROC)Abort, ed->inst );
     if( abort == NULL ) return( 0 );
-    abortdlg = MakeProcInstance( AbortDialog, ed->inst );
+    abortdlg = MakeProcInstance( (FARPROC)AbortDialog, ed->inst );
     if( abortdlg == NULL ) return( CleanUp( NULL, abort, NULL, FALSE ) );
 
     /*

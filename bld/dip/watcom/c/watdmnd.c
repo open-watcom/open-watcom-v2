@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Demand loading of Watcom style debugging information.
 *
 ****************************************************************************/
 
@@ -38,6 +37,11 @@ extern dip_status InfoRead(section_info *, unsigned long ,unsigned int ,void *);
 extern mod_info *ModPointer( imp_image_handle *, imp_mod_handle );
 extern section_info *FindInfo(imp_image_handle *, imp_mod_handle );
 
+/* WD looks for this symbol to determine module bitness */
+#if !defined( __WINDOWS__ )
+int __nullarea;
+#pragma aux __nullarea "*";
+#endif
 
 typedef struct demand_ctrl {
         struct demand_ctrl      *link;
@@ -116,6 +120,30 @@ walk_result WlkDmnd( imp_image_handle *ii, imp_mod_handle im, void *d )
     return( WR_CONTINUE );
 }
 
+static void Unload( demand_ctrl *section )
+{
+    demand_ctrl **owner;
+
+    if( section->owner == NULL ) return;
+    if( section == LastDemand ) {
+        if( section->clear != NULL ) {
+            section->clear( section->buff, section->buff + section->size );
+        }
+        *section->owner = section->save;
+        section->owner = NULL;
+        section->clear = NULL;
+        return;
+    }
+    for( owner = &DemandList; *owner != section; owner = &(*owner)->link )
+        ;
+    *owner = section->link;
+    if( section->clear != NULL ) {
+        section->clear( section->buff, section->buff + section->size );
+    }
+    *section->owner = section->save;
+    DCFree( section );
+}
+
 dip_status InitDemand( imp_image_handle *ii )
 {
     struct walk_demand  d;
@@ -144,37 +172,12 @@ dip_status InitDemand( imp_image_handle *ii )
     return( DS_OK );
 }
 
-void FiniDemand()
+void FiniDemand( void )
 {
     DCFree( LastDemand );
     LastDemand = NULL;
     LastDmndSize = 0;
     TimeStamp = 0;
-}
-
-
-static void Unload( demand_ctrl *section )
-{
-    demand_ctrl **owner;
-
-    if( section->owner == NULL ) return;
-    if( section == LastDemand ) {
-        if( section->clear != NULL ) {
-            section->clear( section->buff, section->buff + section->size );
-        }
-        *section->owner = section->save;
-        section->owner = NULL;
-        section->clear = NULL;
-        return;
-    }
-    for( owner = &DemandList; *owner != section; owner = &(*owner)->link )
-        ;
-    *owner = section->link;
-    if( section->clear != NULL ) {
-        section->clear( section->buff, section->buff + section->size );
-    }
-    *section->owner = section->save;
-    DCFree( section );
 }
 
 walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
@@ -210,7 +213,7 @@ void InfoClear( imp_image_handle *ii )
  * InfoUnlock -- arbitrarily set all demand section lock counts to zero
  */
 
-void InfoUnlock()
+void InfoUnlock( void )
 {
     demand_ctrl *section;
 
@@ -226,7 +229,7 @@ void InfoUnlock()
  */
 
 void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
-                unsigned entry, void (*clear)() )
+                unsigned entry, void (*clear)(void *, void *) )
 {
     demand_ctrl         *section;
     demand_info         *info;
@@ -319,7 +322,7 @@ void InfoSpecUnlock( void *p )
  * InfoRelease -- release the least recently used section
  */
 
-static dip_status ReleaseFromList()
+static dip_status ReleaseFromList( void )
 {
     demand_ctrl *release;
     demand_ctrl *curr;
@@ -338,7 +341,7 @@ static dip_status ReleaseFromList()
     return( DS_OK );
 }
 
-dip_status InfoRelease()
+dip_status InfoRelease( void )
 {
     if( ReleaseFromList() == DS_OK ) return( DS_OK );
     if( LastDemand != NULL && LastDemand->locks == 0 && LastDemand->clear != NULL ) {

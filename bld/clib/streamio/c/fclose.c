@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent fclose() implementation.
 *
 ****************************************************************************/
 
@@ -39,17 +38,73 @@
 #include "fileacc.h"
 #include "tmpfname.h"
 #include "rtdata.h"
+#include "lseek.h"
+#include "streamio.h"
+#include "close.h"
+#include "flush.h"
 
-extern  void    __freefp( FILE *fp );
-extern  int     __flush( FILE *fp );
-extern  int     __close( int );
-#if !defined(__QNX__)
-extern  void    __RmTmpFile( FILE *fp );
+
+#ifndef __UNIX__
+void    (*__RmTmpFileFn)( FILE *fp );
 #endif
+
+
+int __doclose( FILE *fp, int close_handle )
+{
+    int         ret;
+
+    if( fp->_flag == 0 ) {
+        return( -1 );                       /* file already closed */
+    }
+    ret = 0;
+    if( fp->_flag & _DIRTY ) {
+        ret = __flush( fp );
+    }
+    _AccessFile( fp );
+/*
+ *      02-nov-92 G.Turcotte  Syncronize buffer pointer with the file pointer
+ *                        IEEE Std 1003.1-1988 B.8.2.3.2
+ *      03-nov-03 B.Oldeman Inlined ftell; we already know the buffer isn't
+ *                dirty (because of the flush), so only a "get" applies
+ */
+    if( fp->_cnt != 0 ) {                   /* if something in buffer */
+        __lseek( fileno( fp ), -fp->_cnt, SEEK_CUR );
+    }
+
+    if( close_handle ) {
+#if defined( __UNIX__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+        // we don't get to implement the close function on these systems
+        ret |= close( fileno( fp ) );
+#else
+        ret |= __close( fileno( fp ) );
+#endif
+    }
+    if( fp->_flag & _BIGBUF ) {     /* if we allocated the buffer */
+        lib_free( _FP_BASE(fp) );
+        _FP_BASE(fp) = NULL;
+    }
+#ifndef __UNIX__
+    /* this never happens under UNIX */
+    if( fp->_flag & _TMPFIL ) {     /* if this is a temporary file */
+        __RmTmpFileFn( fp );
+    }
+#endif
+    _ReleaseFile( fp );
+    return( ret );
+}
+
+int __shutdown_stream( FILE *fp, int close_handle )
+{
+    int         ret;
+
+    ret = __doclose( fp, close_handle );
+    __freefp( fp );
+    return( ret );
+}
 
 _WCRTLINK int fclose( FILE *fp )
 {
-    __stream_link *     link;
+    __stream_link       *link;
 
     _AccessIOB();
     link = _RWD_ostream;
@@ -63,57 +118,4 @@ _WCRTLINK int fclose( FILE *fp )
     }
     _ReleaseIOB();
     return( __shutdown_stream( fp, 1 ) );
-}
-
-int __shutdown_stream( FILE *fp, int close_handle )
-{
-    int         ret;
-
-    ret = __doclose( fp, close_handle );
-    __freefp( fp );
-    return( ret );
-}
-
-int __doclose( FILE *fp, int close_handle )
-{
-    int                 ret;
-    long int            offset;
-
-    if( fp->_flag == 0 ) {
-        return( -1 );                       /* file already closed */
-    }
-    ret = 0;
-    if( fp->_flag & _DIRTY ) {
-        ret = __flush( fp );
-    }
-    _AccessFile( fp );
-/*
- *      02-nov-92 G.Turcotte  Syncronize buffer pointer with the file pointer
- *                        IEEE Std 1003.1-1988 B.8.2.3.2
- */
-    if ((offset = ftell(fp)) != -1L) {
-        /* match position with file descriptors */
-        lseek(fileno(fp), offset, SEEK_SET);
-    }
-
-    if( close_handle ) {
-        #if defined(__QNX__) || defined(__NETWARE__) || defined(__PENPOINT__)
-            // we don't get to implement the close function on these systems
-            ret |= close( fileno( fp ) );
-        #else
-            ret |= __close( fileno( fp ) );
-        #endif
-    }
-    if( fp->_flag & _BIGBUF ) {     /* if we allocated the buffer */
-        lib_free( _FP_BASE(fp) );
-        _FP_BASE(fp) = NULL;
-    }
-#ifndef __QNX__
-    /* this never happens under QNX */
-    if( fp->_flag & _TMPFIL ) {     /* if this is a temporary file */
-        __RmTmpFile( fp );
-    }
-#endif
-    _ReleaseFile( fp );
-    return( ret );
 }

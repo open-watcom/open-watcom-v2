@@ -24,15 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX df utility
+*               Displays disk free space
 *
 ****************************************************************************/
 
 
-#if defined( __OS_os2v2__ ) || defined( __OS_dosos2__ )
+#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
 #include <os2.h>
-#elif defined( __OS_nt__ ) || defined( __OS_alpha__ )
+#elif defined( __OS_nt386__ ) || defined( __OS_ntaxp__ )
 #include <windows.h>
 #endif
 #include <stdio.h>
@@ -55,7 +55,7 @@ static char     includeNetwork;
 
 char            *OptEnvVar = "df";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: df [-?n] [@env] [drive list]",
     "\tenv            : environment variable to expand",
     "\tdrive list     : specify which drives do show",
@@ -114,9 +114,9 @@ static drive_type dosDoGetDriveType( int drv )
 } /* doGetDriveType */
 #endif
 
-#if defined( __OS_os2v2__ ) || defined( __OS_dosos2__ )
+#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
 
-#ifdef __OS_os2v2__
+#ifdef __OS_os2386__
 #define STUPID_UINT     unsigned long
 #else
 #define STUPID_UINT     unsigned short
@@ -175,7 +175,7 @@ static drive_type doGetDriveType( int drv )
 
 } /* doGetDriveType */
 
-unsigned _dos_getdiskfree( int dnum, struct diskfree_t *df )
+unsigned _dos_getdiskfree( unsigned dnum, struct diskfree_t *df )
 {
     FSALLOCATE  fs;
     unsigned    rc;
@@ -191,7 +191,7 @@ unsigned _dos_getdiskfree( int dnum, struct diskfree_t *df )
     return( 0 );
 }
 
-#elif defined( __OS_nt__ ) || defined( __OS_alpha__ )
+#elif defined( __OS_nt386__ ) || defined( __OS_ntaxp__ )
 
 /*
  * doGetDriveType - get the type of drive A-Z
@@ -226,7 +226,7 @@ static drive_type doGetDriveType( int drv )
 static void doDF( int drive )
 {
     struct diskfree_t   df;
-    long                cl_bytes;
+    unsigned long long  cl_bytes;
     long                total;
     long                avail;
     long                used;
@@ -244,7 +244,7 @@ static void doDF( int drive )
         total = (long)df.total_clusters * cl_bytes / 1024L;
         avail = (long)df.avail_clusters * cl_bytes / 1024L;
         used = total-avail;
-        printf( "  %c     %6ld  %6ld  %6ld    %2d%%\n",
+        printf( " %c   %10ld  %10ld  %10ld    %2d%%\n",
             toupper( drive ), total, used, avail, (100L*used)/total );
     }
 
@@ -270,14 +270,14 @@ void main( int argc, char *argv[] )
         }
     }
 
-    printf( "Drive   kbytes    used   avail capacity\n" );
+    printf( "drive  KBytes        used       avail   capacity\n" );
     if( argc > 1 ) {
         includeNetwork = 1;
-        for( i=1;i<argc;i++ ) {
+        for( i = 1; i < argc; i++ ) {
             doDF( argv[i][0] );
         }
     } else {
-        for( i='C';i<='Z';i++ ) {
+        for( i = 'C'; i <= 'Z'; i++ ) {
             doDF( i );
         }
     }

@@ -1,0 +1,19 @@
+name=Maintain
+condition=PreviousInstall MakeDisks !
+dynamic_text=maint_1,\
+        //1"%AppName% was found in '%DstDir%'"\
+        //2"%AppName% が '%DstDir%' にあります"\
+        //0
+static_text=
+include=full.dlg
+include=fullcd.dlg
+include=sel.dlg
+include=mini.dlg
+radio_button=UnInstall,false,\
+        //1"&Un-install all components"\
+        //2"全コンポーネントをアンインストールします(&U)"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=pohc.dlg

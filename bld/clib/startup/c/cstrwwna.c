@@ -24,17 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Open Watcom C/C++ Alpha AXP NT startup code.
 *
 ****************************************************************************/
 
 
 extern void __wNTMain( void );
-void wmainCRTStartup( void ) {
+
+void wmainCRTStartup( void )
+{
     __wNTMain();
 }
+
 const char _cstartw_CopyRight[] =
-        "WATCOM C/C++ Alpha Run-Time system. "
-        "(c) Copyright by WATCOM International Corp. 1995. "
-        "All rights reserved.";
+        "Open Watcom C/C++ Alpha Run-Time system. "
+        "Portions Copyright (c) Sybase, Inc. 1995-2002.";

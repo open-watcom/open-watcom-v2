@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heart of the heap manager. Do not break
+*               unless you have a death wish.
 *
 ****************************************************************************/
 
@@ -36,9 +36,7 @@
 #include "heap.h"
 
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #define setup_segment( _x ) (void)(_x = _x);
-#elif defined(M_I86)
+#if defined( _M_I86 )
     extern unsigned setup_ds( unsigned );
     #pragma aux setup_ds = \
                 "push ax" \
@@ -47,7 +45,7 @@
                 parm [ax] value [ax];
     #define setup_segment( _x ) _x = setup_ds( _x );
 #else
-    #error platform not supported
+    #define setup_segment( _x ) (void)(_x = _x);
 #endif
 
 //
@@ -63,8 +61,8 @@
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
-unsigned __MemAllocator( unsigned size, unsigned segment, unsigned offset ) {
-
+unsigned __MemAllocator( unsigned size, unsigned segment, unsigned offset )
+{
     frlptr result;
     result = 0;                                 // assume the worst
 
@@ -158,8 +156,8 @@ unsigned __MemAllocator( unsigned size, unsigned segment, unsigned offset ) {
 // output:
 //      none
 //
-void __MemFree( unsigned pointer, unsigned segment, unsigned offset ) {
-
+void __MemFree( unsigned pointer, unsigned segment, unsigned offset )
+{
     setup_segment( segment );                   // setup DS for 16bit Intel
 
     if( pointer != 0 ) {                        // quit if pointer is zero

@@ -55,7 +55,7 @@ typedef union {
 #define         PARM_SIZE       (MAX_MSG_SIZE+0x40)
 #define         STACK_SIZE      4096
 /* has to match STATICDATA structure in DSXHDLR.ASM */
-typedef struct {
+typedef _Packed struct {
         memptr          orig_vects[NUM_VECTS];
         memptr          vecttable1[NUM_VECTS];
         memptr          vecttable2[NUM_VECTS];

@@ -34,9 +34,9 @@
 #include "cplx.h"
 #include "pdiv.h"
 
-_WMRTLINK complex _IF_C8Div( single a, single b, single c, single d ) {
-//====================================================================
-
+_WMRTLINK complex _IF_C8Div( single a, single b, single c, single d )
+//===================================================================
+{
 // Divide two complex numbers and return the real part of the result.
 // ( a, b )/( c, d ) = (( a, b )/( d + c*c/d )) * ( c/d, -1 )
 

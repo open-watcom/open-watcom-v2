@@ -1,5 +1,5 @@
 plustest_name = overload
-!include ..\environ.mif
+!include ../environ.mif
 
 exes = &
 addr01.$(exe) &
@@ -113,30 +113,49 @@ opt_cv08 = -xbov1
 
 !ifdef test1
 !   define test_flags -d2-zq
+alt_error=01
 !else ifdef test2
 !   define test_flags -ox-d1-zq-w0-j
+alt_error=02
 !else
 !   define test_flags -ox-d1-zq-w0-otexanr
+alt_error=00
 !endif
 
-.cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_flags) $(opt_$^*)
-    
-.obj.$(exe):
-    wlink @overload FILE $[@
+stack_386=opt stack=16k
+stack_i86=opt stack=8k
+stack_axp=opt stack=16k
 
-test : .symbolic overload.lnk $(exes)
-    %create overload.out
-    @for %i in ( $(exes) ) do $(run) %i >>overload.out
+.cpp.obj:
+    $(wpp_$(arch)) $[@ $(test_flags) $(opt_$^*) -fo=.obj
+
+.obj.$(exe):
+    $(linker) @overload.lnk NAME $@ FILE $[@
+    $(run) $(exec_prefix)$@ >>overload.out
+
+test : .symbolic start_test overload.lnk $(exes)
+!ifeq arch i86
+    # There are certain unavoidable differences between 16-bit and
+    # 32-bit platforms, causing slightly different (but valid) results
+    diff overload.out overload.i86
+!else
     diff overload.out overload.chk
-    %make global
+!endif
+    @%make global
     %append $(log_file) PASS $(%__CWD__)
-    
+
+start_test : .symbolic
+    %create overload.out
+    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+
 overload.lnk : $(__MAKEFILES__)
     %create $^@
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION map, caseexact, stack=16k, quiet
+    @%append $^@ $(stack_$(arch))
+
+save : .symbolic
+    @if exist overload.out cp overload.out s$(arch)_$(alt_error).sav
 
 global : .SYMBOLIC
     @%make common_clean

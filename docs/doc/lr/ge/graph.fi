@@ -1,0 +1,502 @@
+c$noreference
+
+        structure /xycoord/             ! structure for pixel position
+            integer*2   xcoord
+            integer*2   ycoord
+        end structure
+
+        structure /_wxycoord/           ! structure for window position
+            double precision    wx
+            double precision    wy
+        end structure
+
+        structure /rccoord/             ! structure for text position
+            integer*2   row
+            integer*2   col
+        end structure
+
+        structure /videoconfig/         ! structure for getvideoconfig
+            integer*2   numxpixels
+            integer*2   numypixels
+            integer*2   numtextcols
+            integer*2   numtextrows
+            integer*2   numcolors
+            integer*2   bitsperpixel
+            integer*2   numvideopages
+            integer*2   mode
+            integer*2   adapter
+            integer*2   monitor
+            integer*2   memory
+        end structure
+
+        structure /textsettings/        ! structure for gettextsettings
+            integer*2   basevectorx
+            integer*2   basevectory
+            integer*2   txpath
+            integer*2   height
+            integer*2   width
+            integer*2   spacing
+            integer*2   horizalign
+            integer*2   vertalign
+        end structure
+
+        structure /_fontinfo/           ! structure for _getfontinfo
+            integer*2       type
+            integer*2       ascent
+            integer*2       pixwidth
+            integer*2       pixheight
+            integer*2       avgwidth
+            character*81    filename
+            character*32    facename
+        end structure
+
+        integer _MAXRESMODE
+        integer _MAXCOLORMODE
+        integer _DEFAULTMODE
+        integer _TEXTBW40
+        integer _TEXTC40
+        integer _TEXTBW80
+        integer _TEXTC80
+        integer _MRES4COLOR
+        integer _MRESNOCOLOR
+        integer _HRESBW
+        integer _TEXTMONO
+        integer _HERCMONO
+        integer _MRES16COLOR
+        integer _HRES16COLOR
+        integer _ERESNOCOLOR
+        integer _ERESCOLOR
+        integer _VRES2COLOR
+        integer _VRES16COLOR
+        integer _MRES256COLOR
+        integer _URES256COLOR
+        integer _VRES256COLOR
+        integer _SVRES16COLOR
+        integer _SVRES256COLOR
+        integer _XRES16COLOR
+        integer _XRES256COLOR
+
+        integer _NODISPLAY
+        integer _UNKNOWN
+
+        integer _MDPA
+        integer _CGA
+        integer _HERCULES
+        integer _MCGA
+        integer _EGA
+        integer _VGA
+        integer _SVGA
+        integer _HGC
+
+        integer _MONO
+        integer _COLOR
+        integer _ENHANCED
+        integer _ANALOGMONO
+        integer _ANALOGCOLOR
+
+        parameter (_MAXRESMODE=-3)        ! graphics mode w/ highest resolution
+        parameter (_MAXCOLORMODE=-2)      ! graphics mode with most colours
+        parameter (_DEFAULTMODE=-1)       ! restore screen to original mode
+        parameter (_TEXTBW40=0)           ! 40 x 25 text, 16 grey
+        parameter (_TEXTC40=1)            ! 40 x 25 text, 16/8 color
+        parameter (_TEXTBW80=2)           ! 80 x 25 text, 16 grey
+        parameter (_TEXTC80=3)            ! 80 x 25 text, 16/8 color
+        parameter (_MRES4COLOR=4)         ! 320 x 200, 4 color
+        parameter (_MRESNOCOLOR=5)        ! 320 x 200, 4 grey
+        parameter (_HRESBW=6)             ! 640 x 200, BW
+        parameter (_TEXTMONO=7)           ! 80 x 25 text, BW
+        parameter (_HERCMONO=11)          ! 720 x 350, BW
+        parameter (_MRES16COLOR=13)       ! 320 x 200, 16 color
+        parameter (_HRES16COLOR=14)       ! 640 x 200, 16 color
+        parameter (_ERESNOCOLOR=15)       ! 640 x 350, BW
+        parameter (_ERESCOLOR=16)         ! 640 x 350, 4 or 16 color
+        parameter (_VRES2COLOR=17)        ! 640 x 480, BW
+        parameter (_VRES16COLOR=18)       ! 640 x 480, 16 color
+        parameter (_MRES256COLOR=19)      ! 320 x 200, 256 color
+        parameter (_URES256COLOR='100'x)  ! 640 x 400, 256 color
+        parameter (_VRES256COLOR='101'x)  ! 640 x 480, 256 color
+        parameter (_SVRES16COLOR='102'x)  ! 800 x 600, 16 color
+        parameter (_SVRES256COLOR='103'x) ! 800 x 600, 256 color
+        parameter (_XRES16COLOR='104'x)   ! 1024 x 768, 16 color
+        parameter (_XRES256COLOR='105'x)  ! 1024 x 768, 256 color
+
+        parameter (_NODISPLAY=-1)       ! no display device
+        parameter (_UNKNOWN=0)          ! unknown adapter/monitor type
+
+        parameter (_MDPA=1)             ! monochrome display/printer adapter
+        parameter (_CGA=2)              ! colour/graphics monitor adapter
+        parameter (_HERCULES=3)         ! Hercules monochrome adapter card
+        parameter (_MCGA=4)             ! PS/2 Model 30 monitor
+        parameter (_EGA=5)              ! enhanced graphics adapter
+        parameter (_VGA=6)              ! vector graphics array
+        parameter (_SVGA=7)             ! super VGA
+        parameter (_HGC=_HERCULES)
+
+        parameter (_MONO=1)             ! regular monochrome
+        parameter (_COLOR=2)            ! regular color
+        parameter (_ENHANCED=3)         ! enhanced color
+        parameter (_ANALOGMONO=5)       ! analog monochrome
+        parameter (_ANALOGCOLOR=6)      ! analog color
+
+        integer _GROK
+        integer _GRERROR
+        integer _GRMODENOTSUPPORTED
+        integer _GRNOTINPROPERMODE
+        integer _GRINVALIDPARAMETER
+        integer _GRINSUFFICIENTMEMORY
+        integer _GRNOOUTPUT
+        integer _GRCLIPPED
+
+        parameter (_GROK                   =0)  ! no error
+        parameter (_GRERROR                =-1) ! graphics error
+        parameter (_GRMODENOTSUPPORTED     =-2) ! video mode not supported
+        parameter (_GRNOTINPROPERMODE      =-3) ! function n/a in this mode
+        parameter (_GRINVALIDPARAMETER     =-4) ! invalid parameter(s)
+        parameter (_GRINSUFFICIENTMEMORY   =-5) ! out of memory
+        parameter (_GRNOOUTPUT             =1)  ! nothing was done
+        parameter (_GRCLIPPED              =2)  ! output clipped
+
+        integer _BLACK
+        integer _BLUE
+        integer _GREEN
+        integer _CYAN
+        integer _RED
+        integer _MAGENTA
+        integer _BROWN
+        integer _WHITE
+        integer _GRAY
+        integer _LIGHTBLUE
+        integer _LIGHTGREEN
+        integer _LIGHTCYAN
+        integer _LIGHTRED
+        integer _LIGHTMAGENTA
+        integer _LIGHTYELLOW
+        integer _BRIGHTWHITE
+        integer _YELLOW
+
+        parameter (_BLACK='000000'x)
+        parameter (_BLUE='2a0000'x)
+        parameter (_GREEN='002a00'x)
+        parameter (_CYAN='2a2a00'x)
+        parameter (_RED='00002a'x)
+        parameter (_MAGENTA='2a002a'x)
+        parameter (_BROWN='00152a'x)
+        parameter (_WHITE='2a2a2a'x)
+        parameter (_GRAY='151515'x)
+        parameter (_LIGHTBLUE='3F1515'x)
+        parameter (_LIGHTGREEN='153f15'x)
+        parameter (_LIGHTCYAN='3f3f15'x)
+        parameter (_LIGHTRED='15153f'x)
+        parameter (_LIGHTMAGENTA='3f153f'x)
+        parameter (_LIGHTYELLOW='153f3f'x)
+        parameter (_BRIGHTWHITE='3f3f3f'x)
+        parameter (_YELLOW = _LIGHTYELLOW)
+
+        ! plotting action
+
+        integer _GOR
+        integer _GAND
+        integer _GPRESET
+        integer _GPSET
+        integer _GXOR
+
+        parameter (_GOR=0)
+        parameter (_GAND=1)
+        parameter (_GPRESET=2)
+        parameter (_GPSET=3)
+        parameter (_GXOR=4)
+
+        integer _GCLEARSCREEN
+        integer _GVIEWPORT
+        integer _GWINDOW
+
+        parameter (_GCLEARSCREEN=0)
+        parameter (_GVIEWPORT=1)
+        parameter (_GWINDOW=2)
+
+        integer _GBORDER
+        integer _GFILLINTERIOR
+
+        parameter (_GBORDER=2)
+        parameter (_GFILLINTERIOR=3)
+
+        ! cursor display
+
+        integer _GCURSOROFF
+        integer _GCURSORON
+
+        parameter (_GCURSOROFF=0)
+        parameter (_GCURSORON=1)
+
+        ! text wrapping
+
+        integer _GWRAPOFF
+        integer _GWRAPON
+
+        parameter (_GWRAPOFF=0)
+        parameter (_GWRAPON=1)
+
+        ! horizontal alignment
+
+        integer _NORMAL
+        integer _LEFT
+        integer _CENTER
+        integer _RIGHT
+
+        parameter (_NORMAL=0)
+        parameter (_LEFT=1)
+        parameter (_CENTER=2)
+        parameter (_RIGHT=3)
+
+        ! vertical alignment
+
+        integer _TOP
+        integer _CAP
+        integer _HALF
+        integer _BASE
+        integer _BOTTOM
+
+        parameter (_TOP=1)
+        parameter (_CAP=2)
+        parameter (_HALF=3)
+        parameter (_BASE=4)
+        parameter (_BOTTOM=5)
+
+        ! text path
+
+        integer _PATH_RIGHT
+        integer _PATH_LEFT
+        integer _PATH_UP
+        integer _PATH_DOWN
+
+        parameter (_PATH_RIGHT=0)
+        parameter (_PATH_LEFT=1)
+        parameter (_PATH_UP=2)
+        parameter (_PATH_DOWN=3)
+
+        integer _GSCROLLUP
+        integer _GSCROLLDOWN
+        integer _MAXTEXTROWS
+
+        parameter (_GSCROLLUP      = 1)
+        parameter (_GSCROLLDOWN    = -1)
+        parameter (_MAXTEXTROWS    = -1)
+
+! Video Setup and Query Functions
+
+        external _setvideomode
+        external _setvideomoderows
+        external _getvideoconfig
+        external _grstatus
+        external _setactivepage
+        external _getactivepage
+        external _setvisualpage
+        external _getvisualpage
+
+        integer*2 _setvideomode
+        integer*2 _setvideomoderows
+        integer*2 _grstatus
+        integer*2 _setactivepage
+        integer*2 _getactivepage
+        integer*2 _setvisualpage
+        integer*2 _getvisualpage
+
+! Colour Setting and Query Functions
+
+        external _setcolor
+        external _getcolor
+        external _setbkcolor
+        external _getbkcolor
+        external _remappalette
+        external _remapallpalette
+        external _selectpalette
+
+        integer*2 _setcolor
+        integer*2 _getcolor
+        integer*4 _setbkcolor
+        integer*4 _getbkcolor
+        integer*4 _remappalette
+        integer*2 _remapallpalette
+        integer*2 _selectpalette
+
+! Shape and Curve Drawing Functions
+
+        external _lineto
+        external _lineto_w
+        external _rectangle
+        external _rectangle_w
+        external _rectangle_wxy
+        external _arc
+        external _arc_w
+        external _arc_wxy
+        external _ellipse
+        external _ellipse_w
+        external _ellipse_wxy
+        external _pie
+        external _pie_w
+        external _pie_wxy
+        external _polygon
+        external _polygon_w
+        external _polygon_wxy
+        external _floodfill
+        external _floodfill_w
+        external _setpixel
+        external _setpixel_w
+        external _getpixel
+        external _getpixel_w
+        external _getarcinfo
+
+        integer*2 _lineto
+        integer*2 _lineto_w
+        integer*2 _rectangle
+        integer*2 _rectangle_w
+        integer*2 _rectangle_wxy
+        integer*2 _arc
+        integer*2 _arc_w
+        integer*2 _arc_wxy
+        integer*2 _ellipse
+        integer*2 _ellipse_w
+        integer*2 _ellipse_wxy
+        integer*2 _pie
+        integer*2 _pie_w
+        integer*2 _pie_wxy
+        integer*2 _polygon
+        integer*2 _polygon_w
+        integer*2 _polygon_wxy
+        integer*2 _floodfill
+        integer*2 _floodfill_w
+        integer*2 _setpixel
+        integer*2 _setpixel_w
+        integer*2 _getpixel
+        integer*2 _getpixel_w
+        integer*2 _getarcinfo
+
+! Position Determination Functions
+
+        external _getcurrentposition
+        external _getcurrentposition_w
+        external _getviewcoord
+        external _getviewcoord_w
+        external _getviewcoord_wxy
+        external _getphyscoord
+        external _getwindowcoord
+        external _moveto
+        external _moveto_w
+        external _setvieworg
+
+        record /xycoord/ _getcurrentposition
+        record /_wxycoord/ _getcurrentposition_w
+        record /xycoord/ _getviewcoord
+        record /xycoord/ _getviewcoord_w
+        record /xycoord/ _getviewcoord_wxy
+        record /xycoord/ _getphyscoord
+        record /_wxycoord/ _getwindowcoord
+        record /xycoord/ _moveto
+        record /_wxycoord/ _moveto_w
+        record /xycoord/ _setvieworg
+
+! Output Determination Functions
+
+        external _setfillmask
+        external _getfillmask
+        external _setlinestyle
+        external _getlinestyle
+        external _setplotaction
+        external _getplotaction
+        external _setwritemode
+        external _getwritemode
+
+        integer*2 _getlinestyle
+        integer*2 _setplotaction
+        integer*2 _getplotaction
+        integer*2 _setwritemode
+        integer*2 _getwritemode
+
+! Screen Manipulation Functions
+
+        external _clearscreen
+        external _setviewport
+        external _setcliprgn
+        external _getcliprgn
+        external _displaycursor
+        external _wrapon
+        external _setwindow
+
+        integer*2 _displaycursor
+        integer*2 _wrapon
+        integer*2 _setwindow
+
+! Graphics Text Manipulation Functions
+
+        external _gettextsettings
+        external _gettextextent
+        external _setcharsize
+        external _setcharsize_w
+        external _settextalign
+        external _settextpath
+        external _settextorient
+        external _setcharspacing
+        external _setcharspacing_w
+        external _grtext
+        external _grtext_w
+
+        integer*2 _grtext
+        integer*2 _grtext_w
+
+! Text Manipulation Functions
+
+        external _settextwindow
+        external _outtext
+        external _settextcolor
+        external _gettextcolor
+        external _settextposition
+        external _gettextposition
+        external _scrolltextwindow
+        external _gettextwindow
+        external _gettextcursor
+        external _settextcursor
+        external _outmem
+        external _settextrows
+
+        integer*2 _settextcolor
+        integer*2 _gettextcolor
+        record /rccoord/ _settextposition
+        record /rccoord/ _gettextposition
+        integer*2 _gettextcursor
+        integer*2 _settextcursor
+        integer*2 _settextrows
+
+! Image Manipulation Functions
+
+        external _getimage
+        external _getimage_w
+        external _getimage_wxy
+        external _putimage
+        external _putimage_w
+        external _imagesize
+        external _imagesize_w
+        external _imagesize_wxy
+
+        integer*4 _imagesize
+        integer*4 _imagesize_w
+        integer*4 _imagesize_wxy
+
+! Font Manipulation Functions
+
+        external _registerfonts
+        external _unregisterfonts
+        external _setfont
+        external _getfontinfo
+        external _outgtext
+        external _getgtextextent
+        external _setgtextvector
+        external _getgtextvector
+
+        integer*2 _registerfonts
+        integer*2 _setfont
+        integer*2 _getfontinfo
+        integer*2 _getgtextextent
+        record /xycoord/ _setgtextvector
+        record /xycoord/ _getgtextvector
+
+c$reference

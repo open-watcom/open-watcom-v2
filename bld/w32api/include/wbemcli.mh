@@ -1,0 +1,1282 @@
+/*
+ *  wbemcli.h   Web-Based Enterprise Management (WBEM) client interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __wbemcli_h__
+#define __wbemcli_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IWbemQualifierSet IWbemQualifierSet;
+typedef interface IWbemContext      IWbemContext;
+typedef interface IWbemServices     IWbemServices;
+
+/* WBEM genus types */
+typedef enum tag_WBEM_GENUS_TYPE {
+    WBEM_GENUS_CLASS    = 1,
+    WBEM_GENUS_INSTANCE = 2
+} WBEM_GENUS_TYPE;
+
+/* WBEM change flag types */
+typedef enum tag_WBEM_CHANGE_FLAG_TYPE {
+    WBEM_FLAG_CREATE_OR_UPDATE  = 0x00000000,
+    WBEM_FLAG_UPDATE_ONLY       = 0x00000001,
+    WBEM_FLAG_CREATE_ONLY       = 0x00000002,
+    WBEM_FLAG_UPDATE_COMPATIBLE = 0x00000000,
+    WBEM_FLAG_UPDATE_SAFE_MODE  = 0x00000020,
+    WBEM_FLAG_UPDATE_FORCE_MODE = 0x00000040,
+    WBEM_MASK_UPDATE_MODE       = 0x00000060,
+    WBEM_FLAG_ADVISORY          = 0x00010000
+} WBEM_CHANGE_FLAG_TYPE;
+
+/* WBEM generic flag types */
+typedef enum tag_WBEM_GENERIC_FLAG_TYPE {
+    WBEM_FLAG_RETURN_IMMEDIATELY        = 0x00000010,
+    WBEM_FLAG_RETURN_WBEM_COMPLETE      = 0x00000000,
+    WBEM_FLAG_BIDIRECTIONAL             = 0x00000000,
+    WBEM_FLAG_FORWARD_ONLY              = 0x00000020,
+    WBEM_FLAG_NO_ERROR_OBJECT           = 0x00000040,
+    WBEM_FLAG_RETURN_ERROR_OBJECT       = 0x00000000,
+    WBEM_FLAG_SEND_STATUS               = 0x00000080,
+    WBEM_FLAG_DONT_SEND_STATUS          = 0x00000000,
+    WBEM_FLAG_ENSURE_LOCATABLE          = 0x00000100,
+    WBEM_FLAG_DIRECT_READ               = 0x00000200,
+    WBEM_FLAG_SEND_ONLY_SELECTED        = 0x00000000,
+    WBEM_RETURN_WHEN_COMPLETE           = 0x00000000,
+    WBEM_RETURN_IMMEDIATELY             = 0x00000010,
+    WBEM_FLAG_USE_AMENDED_QUALIFIERS    = 0x00020000,
+    WBEM_FLAG_STRONG_VALIDATION         = 0x00010000
+} WBEM_GENERIC_FLAG_TYPE;
+
+/* WBEM status types */
+typedef enum tag_WBEM_STATUS_TYPE {
+    WBEM_STATUS_COMPLETE        = 0,
+    WBEM_STATUS_REQUIREMENTS    = 1,
+    WBEM_STATUS_PROGRESS        = 2
+} WBEM_STATUS_TYPE;
+
+/* WBEM timeout types */
+typedef enum tag_WBEM_TIMEOUT_TYPE {
+    WBEM_NO_WAIT    = 0x00000000,
+    WBEM_INFINITE   = 0xFFFFFFFF
+} WBEM_TIMEOUT_TYPE;
+
+/* WBEM condition flag types */
+typedef enum tag_WBEM_CONDITION_FLAG_TYPE {
+    WBEM_FLAG_ALWAYS                    = 0x00000000,
+    WBEM_FLAG_ONLY_IF_TRUE              = 0x00000001,
+    WBEM_FLAG_ONLY_IF_FALSE             = 0x00000002,
+    WBEM_FLAG_ONLY_IF_IDENTICAL         = 0x00000003,
+    WBEM_MASK_PRIMARY_CONDITION         = 0x00000003,
+    WBEM_FLAG_KEYS_ONLY                 = 0x00000004,
+    WBEM_FLAG_REFS_ONLY                 = 0x00000008,
+    WBEM_FLAG_LOCAL_ONLY                = 0x00000010,
+    WBEM_FLAG_PROPAGATED_ONLY           = 0x00000020,
+    WBEM_FLAG_SYSTEM_ONLY               = 0x00000030,
+    WBEM_FLAG_NONSYSTEM_ONLY            = 0x00000040,
+    WBEM_MASK_CONDITION_ORIGIN          = 0x00000070,
+    WBEM_FLAG_CLASS_OVERRIDES_ONLY      = 0x00000100,
+    WBEM_FLAG_CLASS_LOCAL_AND_OVERRIDES = 0x00000200,
+    WBEM_MASK_CLASS_CONIDITION          = 0x00000300
+} WBEM_CONDITION_FLAG_TYPE;
+
+/* WBEM flavor types */
+typedef enum tag_WBEM_FLAVOR_TYPE {
+    WBEM_FLAVOR_DONT_PROPAGATE                  = 0x00000000,
+    WBEM_FLAVOR_FLAG_PROPAGATE_TO_INSTANCE      = 0x00000001,
+    WBEM_FLAVOR_FLAG_PROPAGATE_TO_DERIVED_CLASS = 0x00000002,
+    WBEM_FLAVOR_MASK_PROPAGATION                = 0x0000000F,
+    WBEM_FLAVOR_OVERRIDABLE                     = 0x00000000,
+    WBEM_FLAVOR_NOT_OVERRIDABLE                 = 0x00000010,
+    WBEM_FLAVOR_MASK_PERMISSIONS                = 0x00000010,
+    WBEM_FLAVOR_ORIGIN_LOCAL                    = 0x00000000,
+    WBEM_FLAVOR_ORIGIN_PROPAGATED               = 0x00000020,
+    WBEM_FLAVOR_ORIGIN_SYSTEM                   = 0x00000040,
+    WBEM_FLAVOR_MASK_ORIGIN                     = 0x00000060,
+    WBEM_FLAVOR_NOT_AMENDED                     = 0x00000000,
+    WBEM_FLAVOR_AMENDED                         = 0x00000080,
+    WBEM_FLAVOR_MASK_AMENDED                    = 0x00000080
+} WBEM_FLAVOR_TYPE;
+
+/* WBEM query flag types */
+typedef enum tag_WBEM_QUERY_FLAG_TYPE {
+    WBEM_FLAG_DEEP      = 0x00000000,
+    WBEM_FLAG_SHALLOW   = 0x00000001,
+    WBEM_FLAG_PROTOTYPE = 0x00000002
+} WBEM_QUERY_FLAG_TYPE;
+
+/* WBEM security flags */
+typedef enum tag_WBEM_SECURITY_FLAGS {
+    WBEM_ENABLE             = 0x00000001,
+    WBEM_METHOD_EXECUTE     = 0x00000002,
+    WBEM_FULL_WRITE_REP     = 0x00000004,
+    WBEM_PARTIAL_WRITE_REP  = 0x00000008,
+    WBEM_WRITE_PROVIDER     = 0x00000010,
+    WBEM_REMOTE_ACCESS      = 0x00000020,
+    WBEM_RIGHT_SUBSCRIBE    = 0x00000040,
+    WBEM_RIGHT_PUBLISH      = 0x00000080
+} WBEM_SECURITY_FLAGS;
+
+/* WBEM limitation flag types */
+typedef enum tag_WBEM_LIMITATION_FLAG_TYPE {
+    WBEM_FLAG_EXCLUDE_OBJECT_QUALIFIERS     = 0x00000010,
+    WBEM_FLAG_EXCLUDE_PROPERTY_QUALIFIERS   = 0x00000020
+} WBEM_LIMITATION_FLAG_TYPE;
+
+/* WBEM text flag types */
+typedef enum tag_WBEM_TEXT_FLAG_TYPE {
+    WBEM_FLAG_NO_FLAVORS    = 0x00000001
+} WBEM_TEXT_FLAG_TYPE;
+
+/* WBEM comparison flags */
+typedef enum tag_WBEM_COMPARISON_FLAG {
+    WBEM_COMPARISON_INCLUDE_ALL     = 0x00000000,
+    WBEM_FLAG_IGNORE_QUALIFIERS     = 0x00000001,
+    WBEM_FLAG_IGNORE_OBJECT_SOURCE  = 0x00000002,
+    WBEM_FLAG_IGNORE_DEFAULT_VALUES = 0x00000004,
+    WBEM_FLAG_IGNORE_CLASS          = 0x00000008,
+    WBEM_FLAG_IGNORE_CASE           = 0x00000010,
+    WBEM_FLAG_IGNORE_FLAVOR         = 0x00000020
+} WBEM_COMPARISON_FLAG;
+
+/* WBEM locking */
+typedef enum tag_WBEM_LOCKING {
+    WBEM_FLAG_ALLOW_READ    = 0x00000001
+} WBEM_LOCKING;
+
+/* CIM types */
+typedef enum tag_CIMTYPE_ENUMERATION {
+    CIM_ILLEGAL     = 0x0FFF,
+    CIM_EMPTY       = 0,
+    CIM_SINT16      = 2,
+    CIM_SINT32      = 3,
+    CIM_REAL32      = 4,
+    CIM_REAL64      = 5,
+    CIM_STRING      = 8,
+    CIM_BOOLEAN     = 11,
+    CIM_OBJECT      = 13,
+    CIM_SINT8       = 16,
+    CIM_UINT8       = 17,
+    CIM_UINT16      = 18,
+    CIM_UINT32      = 19,
+    CIM_SINT64      = 20,
+    CIM_UINT64      = 21,
+    CIM_DATETIME    = 101,
+    CIM_REFERENCE   = 102,
+    CIM_CHAR16      = 103,
+    CIM_FLAG_ARRAY  = 0x2000
+} CIMTYPE_ENUMERATION;
+typedef long    CIMTYPE;
+
+/* WBEM backup/restore flags */
+typedef enum tag_WBEM_BACKUP_RESTORE_FLAGS {
+    WBEM_FLAG_BACKUP_RESTORE_DEFAULT        = 0,
+    WBEM_FLAG_BACKUP_RESTORE_FORCE_SHUTDOWN = 1
+} WBEM_BACKUP_RESTORE_FLAGS;
+
+/* WBEM refresher flags */
+typedef enum tag_WBEM_REFRESHER_FLAGS {
+    WBEM_FLAG_REFRESH_AUTO_RECONNECT    = 0,
+    WBEM_FLAG_REFRESH_NO_AUTO_RECONNECT = 1
+} WBEM_REFRESH_FLAGS;
+
+/* WBEM shutdown flags */
+typedef enum tag_WBEM_SHUTDOWN_FLAGS {
+    WBEM_SHUTDOWN_UNLOAD_COMPONENT  = 1,
+    WBEM_SHUTDOWN_WMI               = 2,
+    WBEM_SHUTDOWN_OS                = 3
+} WBEM_SHUTDOWN_FLAGS;
+
+/* WBEM status formats */
+typedef enum tag_WBEMSTATUS_FORMAT {
+    WBEMSTATUS_FORMAT_NEWLINE       = 0,
+    WBEMSTATUS_FORMAT_NO_NEWLINE    = 1
+} WBEMSTATUS_FORMAT;
+
+/* WBEM limits */
+typedef enum tag_WBEM_LIMITS {
+    WBEM_MAX_IDENTIFIER         = 0x1000,
+    WBEM_MAX_QUERY              = 0x4000,
+    WBEM_MAX_PATH               = 0x2000,
+    WBEM_MAX_OBJECT_NESTING     = 64,
+    WBEM_MAX_USER_PROPERTIES    = 1024
+} WBEM_LIMITS;
+
+/* WBEM status values */
+typedef enum tag_WBEMSTATUS {
+    WBEM_NO_ERROR                           = 0x00000000,
+    WBEM_S_NO_ERROR                         = 0x00000000,
+    WBEM_S_SAME                             = 0x00000000,
+    WBEM_S_FALSE                            = 0x00000001,
+    WBEM_S_ALREADY_EXISTS                   = 0x00040001,
+    WBEM_S_RESET_TO_DEFAULT                 = 0x00040002,
+    WBEM_S_DIFFERENT                        = 0x00040003,
+    WBEM_S_TIMEDOUT                         = 0x00040004,
+    WBEM_S_NO_MORE_DATA                     = 0x00040005,
+    WBEM_S_OPERATION_CANCELLED              = 0x00040006,
+    WBEM_S_PENDING                          = 0x00040007,
+    WBEM_S_DUPLICATE_OBJECTS                = 0x00040008,
+    WBEM_S_ACCESS_DENIED                    = 0x00040009,
+    WBEM_S_PARTIAL_RESULTS                  = 0x00040010,
+    WBEM_S_SOURCE_NOT_AVAILABLE             = 0x00040017,
+    WBEM_E_FAILED                           = 0x80041001,
+    WBEM_E_NOT_FOUND                        = 0x80041002,
+    WBEM_E_ACCESS_DENIED                    = 0x80041003,
+    WBEM_E_PROVIDER_FAILURE                 = 0x80041004,
+    WBEM_E_TYPE_MISMATCH                    = 0x80041005,
+    WBEM_E_OUT_OF_MEMORY                    = 0x80041006,
+    WBEM_E_INVALID_CONTEXT                  = 0x80041007,
+    WBEM_E_INVALID_PARAMETER                = 0x80041008,
+    WBEM_E_NOT_AVAILABLE                    = 0x80041009,
+    WBEM_E_CRITICAL_ERROR                   = 0x8004100A,
+    WBEM_E_INVALID_STREAM                   = 0x8004100B,
+    WBEM_E_NOT_SUPPORTED                    = 0x8004100C,
+    WBEM_E_INVALID_SUPERCLASS               = 0x8004100D,
+    WBEM_E_INVALID_NAMESPACE                = 0x8004100E,
+    WBEM_E_INVALID_OBJECT                   = 0x8004100F,
+    WBEM_E_INVALID_CLASS                    = 0x80041010,
+    WBEM_E_PROVIDER_NOT_FOUND               = 0x80041011,
+    WBEM_E_INVALID_PROVIDER_REGISTRATION    = 0x80041012,
+    WBEM_E_PROVIDER_LOAD_FAILURE            = 0x80041013,
+    WBEM_E_INITIALIZATION_FAILURE           = 0x80041014,
+    WBEM_E_TRANSPORT_FAILURE                = 0x80041015,
+    WBEM_E_INVALID_OPERATION                = 0x80041016,
+    WBEM_E_INVALID_QUERY                    = 0x80041017,
+    WBEM_E_INVALID_QUERY_TYPE               = 0x80041018,
+    WBEM_E_ALREADY_EXISTS                   = 0x80041019,
+    WBEM_E_OVERRIDE_NOT_ALLOWED             = 0x8004101A,
+    WBEM_E_PROPAGATED_QUALIFIER             = 0x8004101B,
+    WBEM_E_PROPAGATED_PROPERTY              = 0x8004101C,
+    WBEM_E_UNEXPECTED                       = 0x8004101D,
+    WBEM_E_ILLEGAL_OPERATION                = 0x8004101E,
+    WBEM_E_CANNOT_BE_KEY                    = 0x8004101F,
+    WBEM_E_INCOMPLETE_CLASS                 = 0x80041020,
+    WBEM_E_INVALID_SYNTAX                   = 0x80041021,
+    WBEM_E_NONDECORATED_OBJECT              = 0x80041022,
+    WBEM_E_READ_ONLY                        = 0x80041023,
+    WBEM_E_PROVIDER_NOT_CAPABLE             = 0x80041024,
+    WBEM_E_CLASS_HAS_CHILDREN               = 0x80041025,
+    WBEM_E_CLASS_HAS_INSTANCES              = 0x80041026,
+    WBEM_E_QUERY_NOT_IMPLEMENTED            = 0x80041027,
+    WBEM_E_ILLEGAL_NULL                     = 0x80041028,
+    WBEM_E_INVALID_QUALIFIER_TYPE           = 0x80041029,
+    WBEM_E_INVALID_PROPERTY_TYPE            = 0x8004102A,
+    WBEM_E_VALUE_OUT_OF_RANGE               = 0x8004102B,
+    WBEM_E_CANNOT_BE_SINGLETON              = 0x8004102C,
+    WBEM_E_INVALID_CIM_TYPE                 = 0x8004102D,
+    WBEM_E_INVALID_METHOD                   = 0x8004102E,
+    WBEM_E_INVALID_METHOD_PARAMETERS        = 0x8004102F,
+    WBEM_E_SYSTEM_PROPERTY                  = 0x80041030,
+    WBEM_E_INVALID_PROPERTY                 = 0x80041031,
+    WBEM_E_CALL_CANCELLED                   = 0x80041032,
+    WBEM_E_SHUTTING_DOWN                    = 0x80041033,
+    WBEM_E_PROPAGATED_METHOD                = 0x80041034,
+    WBEM_E_UNSUPPORTED_PARAMETER            = 0x80041035,
+    WBEM_E_MISSING_PARAMETER_ID             = 0x80041036,
+    WBEM_E_INVALID_PARAMETER_ID             = 0x80041037,
+    WBEM_E_NONCONSECUTIVE_PARAMETER_ID      = 0x80041038,
+    WBEM_E_PARAMETER_ID_ON_RETVAL           = 0x80041039,
+    WBEM_E_INVALID_OBJECT_PATH              = 0x8004103A,
+    WBEM_E_OUT_OF_DISK_SPACE                = 0x8004103B,
+    WBEM_E_BUFFER_TOO_SMALL                 = 0x8004103C,
+    WBEM_E_UNSUPPORTED_PUT_EXTENSION        = 0x8004103D,
+    WBEM_E_UNKNOWN_OBJECT_TYPE              = 0x8004103E,
+    WBEM_E_UNKNOWN_PACKET_TYPE              = 0x8004103F,
+    WBEM_E_MARSHAL_VERSION_MISMATCH         = 0x80041040,
+    WBEM_E_MARSHAL_INVALID_SIGNATURE        = 0x80041041,
+    WBEM_E_INVALID_QUALIFIER                = 0x80041042,
+    WBEM_E_INVALID_DUPLICATE_PARAMETER      = 0x80041043,
+    WBEM_E_TOO_MUCH_DATA                    = 0x80041044,
+    WBEM_E_SERVER_TOO_BUSY                  = 0x80041045,
+    WBEM_E_INVALID_FLAVOR                   = 0x80041046,
+    WBEM_E_CIRCULAR_REFERENCE               = 0x80041047,
+    WBEM_E_UNSUPPORTED_CLASS_UPDATE         = 0x80041048,
+    WBEM_E_CANNOT_CHANGE_KEY_INHERITANCE    = 0x80041049,
+    WBEM_E_CANNOT_CHANGE_INDEX_INHERITANCE  = 0x80041050,
+    WBEM_E_TOO_MANY_PROPERTIES              = 0x80041051,
+    WBEM_E_UPDATE_TYPE_MISMATCH             = 0x80041052,
+    WBEM_E_UPDATE_OVERRIDE_NOT_ALLOWED      = 0x80041053,
+    WBEM_E_UPDATE_PROPAGATED_METHOD         = 0x80041054,
+    WBEM_E_METHOD_NOT_IMPLEMENTED           = 0x80041055,
+    WBEM_E_METHOD_DISABLED                  = 0x80041056,
+    WBEM_E_REFRESHER_BUSY                   = 0x80041057,
+    WBEM_E_UNPARSABLE_QUERY                 = 0x80041058,
+    WBEM_E_NOT_EVENT_CLASS                  = 0x80041059,
+    WBEM_E_MISSING_GROUP_WITHIN             = 0x8004105A,
+    WBEM_E_MISSING_AGGREGATION_LIST         = 0x8004105B,
+    WBEM_E_PROPERTY_NOT_AN_OBJECT           = 0x8004105C,
+    WBEM_E_AGGREGATING_BY_OBJECT            = 0x8004105D,
+    WBEM_E_UNINTERPRETABLE_PROVIDER_QUERY   = 0x8004105F,
+    WBEM_E_BACKUP_RESTORE_WINMGMT_RUNNING   = 0x80041060,
+    WBEM_E_QUEUE_OVERFLOW                   = 0x80041061,
+    WBEM_E_PRIVILEGE_NOT_HELD               = 0x80041062,
+    WBEM_E_INVALID_OPERATOR                 = 0x80041063,
+    WBEM_E_LOCAL_CREDENTIALS                = 0x80041064,
+    WBEM_E_CANNOT_BE_ABSTRACT               = 0x80041065,
+    WBEM_E_AMENDED_OBJECT                   = 0x80041066,
+    WBEM_E_CLIENT_TOO_SLOW                  = 0x80041067,
+    WBEM_E_NULL_SECURITY_DESCRIPTOR         = 0x80041068,
+    WBEM_E_TIMED_OUT                        = 0x80041069,
+    WBEM_E_INVALID_ASSOCIATION              = 0x8004106A,
+    WBEM_E_AMBIGUOUS_OPERATION              = 0x8004106B,
+    WBEM_E_QUOTA_VIOLATION                  = 0x8004106C,
+    WBEM_E_UNSUPPORTED_LOCALE               = 0x8004106F,
+    WBEM_E_HANDLE_OUT_OF_DATE               = 0x80041070,
+    WBEM_E_CONNECTION_FAILED                = 0x80041071,
+    WBEM_E_INVALID_HANDLE_REQUEST           = 0x80041072,
+    WBEM_E_PROPERTY_NAME_TOO_WIDE           = 0x80041073,
+    WBEM_E_CLASS_NAME_TOO_WIDE              = 0x80041074,
+    WBEM_E_METHOD_NAME_TOO_WIDE             = 0x80041075,
+    WBEM_E_QUALIFIER_NAME_TOO_WIDE          = 0x80041076,
+    WBEM_E_RERUN_COMMAND                    = 0x80041077,
+    WBEM_E_DATABASE_VER_MISMATCH            = 0x80041078,
+    WBEM_E_VETO_DELETE                      = 0x80041079,
+    WBEM_E_VETO_PUT                         = 0x8004107A,
+    WBEM_E_INVALID_LOCALE                   = 0x80041080,
+    WBEM_E_PROVIDER_SUSPENDED               = 0x80041081,
+    WBEM_E_SYNCHRONIZATION_REQUIRED         = 0x80041082,
+    WBEM_E_NO_SCHEMA                        = 0x80041083,
+    WBEM_E_PROVIDER_ALREADY_REGISTERED      = 0x80041084,
+    WBEM_E_PROVIDER_NOT_REGISTERED          = 0x80041085,
+    WBEM_E_FATAL_TRANSPORT_ERROR            = 0x80041086,
+    WBEM_E_ENCRYPTED_CONNECTION_REQUIRED    = 0x80041087,
+    WBEM_E_PROVIDER_TIMED_OUT               = 0x80041088,
+    WBEM_E_NO_KEY                           = 0x80041089,
+    WBEM_E_PROVIDER_DISABLED                = 0x8004108A,
+    WBEMESS_E_REGISTRATION_TOO_BROAD        = 0x80042001,
+    WBEMESS_E_REGISTRATION_TOO_PRECISE      = 0x80042002,
+    WBEMESS_E_AUTHZ_NOT_PRIVILEGED          = 0x80042003,
+    WBEMMOF_E_EXPECTED_QUALIFIER_NAME       = 0x80044001,
+    WBEMMOF_E_EXPECTED_SEMI                 = 0x80044002,
+    WBEMMOF_E_EXPECTED_OPEN_BRACE           = 0x80044003,
+    WBEMMOF_E_EXPECTED_CLOSE_BRACE          = 0x80044004,
+    WBEMMOF_E_EXPECTED_CLOSE_BRACKET        = 0x80044005,
+    WBEMMOF_E_EXPECTED_CLOSE_PAREN          = 0x80044006,
+    WBEMMOF_E_ILLEGAL_CONSTANT_VALUE        = 0x80044007,
+    WBEMMOF_E_EXPECTED_TYPE_IDENTIFIER      = 0x80044008,
+    WBEMMOF_E_EXPECTED_OPEN_PAREN           = 0x80044009,
+    WBEMMOF_E_UNRECOGNIZED_TOKEN            = 0x8004400A,
+    WBEMMOF_E_UNRECOGNIZED_TYPE             = 0x8004400B,
+    WBEMMOF_E_EXPECTED_PROPERTY_NAME        = 0x8004400C,
+    WBEMMOF_E_TYPEDEF_NOT_SUPPORTED         = 0x8004400D,
+    WBEMMOF_E_UNEXPECTED_ALIAS              = 0x8004400E,
+    WBEMMOF_E_UNEXPECTED_ARRAY_INIT         = 0x8004400F,
+    WBEMMOF_E_INVALID_AMENDMENT_SYNTAX      = 0x80044010,
+    WBEMMOF_E_INVALID_DUPLICATE_AMENDMENT   = 0x80044011,
+    WBEMMOF_E_INVALID_PRAGMA                = 0x80044012,
+    WBEMMOF_E_INVALID_NAMESPACE_SYNTAX      = 0x80044013,
+    WBEMMOF_E_EXPECTED_CLASS_NAME           = 0x80044014,
+    WBEMMOF_E_TYPE_MISMATCH                 = 0x80044015,
+    WBEMMOF_E_EXPECTED_ALIAS_NAME           = 0x80044016,
+    WBEMMOF_E_INVALID_CLASS_DECLARATION     = 0x80044017,
+    WBEMMOF_E_INVALID_INSTANCE_DECLARATION  = 0x80044018,
+    WBEMMOF_E_EXPECTED_DOLLAR               = 0x80044019,
+    WBEMMOF_E_CIMTYPE_QUALIFIER             = 0x8004401A,
+    WBEMMOF_E_DUPLICATE_PROPERTY            = 0x8004401B,
+    WBEMMOF_E_INVALID_NAMESPACE_SPECIFICATION   = 0x8004401C,
+    WBEMMOF_E_OUT_OF_RANGE                  = 0x8004401D,
+    WBEMMOF_E_INVALID_FILE                  = 0x8004401E,
+    WBEMMOF_E_ALIASES_IN_EMBEDDED           = 0x8004401F,
+    WBEMMOF_E_NULL_ARRAY_ELEM               = 0x80044020,
+    WBEMMOF_E_DUPLICATE_QUALIFIER           = 0x80044021,
+    WBEMMOF_E_EXPECTED_FLAVOR_TYPE          = 0x80044022,
+    WBEMMOF_E_INCOMPATIBLE_FLAVOR_TYPES     = 0x80044023,
+    WBEMMOF_E_MULTIPLE_ALIASES              = 0x80044024,
+    WBEMMOF_E_INCOMPATIBLE_FLAVOR_TYPES2    = 0x80044025,
+    WBEMMOF_E_NO_ARRAYS_RETURNED            = 0x80044026,
+    WBEMMOF_E_MUST_BE_IN_OR_OUT             = 0x80044027,
+    WBEMMOF_E_INVALID_FLAGS_SYNTAX          = 0x80044028,
+    WBEMMOF_E_EXPECTED_BRACE_OR_BAD_TYPE    = 0x80044029,
+    WBEMMOF_E_UNSUPPORTED_CIMV22_QUAL_VALUE = 0x8004402A,
+    WBEMMOF_E_UNSUPPORTED_CIMV22_DATA_TYPE  = 0x8004402B,
+    WBEMMOF_E_INVALID_DELETEINSTANCE_SYNTAX = 0x8004402C,
+    WBEMMOF_E_INVALID_QUALIFIER_SYNTAX      = 0x8004402D,
+    WBEMMOF_E_QUALIFIER_USED_OUTSIDE_SCOPE  = 0x8004402E,
+    WBEMMOF_E_ERROR_CREATING_TEMP_FILE      = 0x8004402F,
+    WBEMMOF_E_ERROR_INVALID_INCLUDE_FILE    = 0x80044030,
+    WBEMMOF_E_INVALID_DELETECLASS_SYNTAX    = 0x80044031
+} WBEMSTATUS;
+
+/* WMI object text formats */
+typedef enum tag_WMI_OBJ_TEXT {
+    WMI_OBJ_TEXT_CIM_DTD_2_0    = 1,
+    WMI_OBJ_TEXT_WMI_DTD_2_0    = 2,
+    WMI_OBJ_TEXT_WMI_EXT_1      = 3,
+    WMI_OBJ_TEXT_WMI_EXT_2      = 4,
+    WMI_OBJ_TEXT_WMI_EXT_3      = 5,
+    WMI_OBJ_TEXT_WMI_EXT_4      = 6,
+    WMI_OBJ_TEXT_WMI_EXT_5      = 7,
+    WMI_OBJ_TEXT_WMI_EXT_6      = 8,
+    WMI_OBJ_TEXT_WMI_EXT_7      = 9,
+    WMI_OBJ_TEXT_WMI_EXT_8      = 10,
+    WMI_OBJ_TEXT_WMI_EXT_9      = 11,
+    WMI_OBJ_TEXT_WMI_EXT_10     = 12,
+    WMI_OBJ_TEXT_LAST           = 13
+} WMI_OBJ_TEXT;
+
+/* Compile status information */
+typedef struct tag_CompileStatusInfo {
+    long    lPhaseError;
+    HRESULT hRes;
+    long    ObjectNum;
+    long    FirstLine;
+    long    LastLine;
+    DWORD   dwOutFlags;
+} WBEM_COMPILE_STATUS_INFO;
+
+/* WBEM compiler options */
+typedef enum tag_WBEM_COMPILER_OPTIONS {
+    WBEM_FLAG_CHECK_ONLY        = 0x00000001,
+    WBEM_FLAG_AUTORECOVER       = 0x00000002,
+    WBEM_FLAG_WMI_CHECK         = 0x00000004,
+    WBEM_FLAG_CONSOLE_PRINT     = 0x00000008,
+    WBEM_FLAG_DONT_ADD_TO_LIST  = 0x00000010,
+    WBEM_FLAG_SPLIT_FILES       = 0x00000020,
+    WBEM_FLAG_STORE_FILE        = 0x00000100
+} WBEM_COMPILER_OPTIONS;
+
+/* WBEM connect options */
+typedef enum tag_WBEM_CONNECT_OPTIONS {
+    WBEM_FLAG_CONNECT_REPOSITORY_ONLY   = 0x00000040,
+    WBEM_FLAG_CONNECT_USE_MAX_WAIT      = 0x00000080,
+    WBEM_FLAG_CONNECT_PROVIDERS         = 0x00000100
+} WBEM_CONNECT_OPTIONS;
+
+/* WBEM unsecured apartment flag types */
+typedef enum tag_WBEM_UNSECAPP_FLAG_TYPE {
+    WBEM_FLAG_UNSECAPP_DEFAULT_CHECK_ACCESS = 0,
+    WBEM_FLAG_UNSECAPP_CHECK_ACCESS         = 1,
+    WBEM_FLAG_UNSECAPP_DONT_CHECK_ACCESS    = 2
+} WBEM_UNSECAPP_FLAG_TYPE;
+
+/* WBEM information flag types */
+typedef enum tag_WBEM_INFORMATION_FLAG_TYPE {
+    WBEM_FLAG_SHORT_NAME    = 0x00000001,
+    WBEM_FLAG_LONG_NAME     = 0x00000002
+} WBEM_INFORMATION_FLAG_TYPE;
+
+/* GUIDs */
+EXTERN_C const IID      LIBID_WbemClient_v1;
+EXTERN_C const CLSID    CLSID_WbemLocator;
+EXTERN_C const CLSID    CLSID_WbemContext;
+EXTERN_C const CLSID    CLSID_UnsecuredApartment;
+EXTERN_C const CLSID    CLSID_WbemClassObject;
+EXTERN_C const CLSID    CLSID_MofCompiler;
+EXTERN_C const CLSID    CLSID_WbemStatusCodeText;
+EXTERN_C const CLSID    CLSID_WbemBackupRestore;
+EXTERN_C const CLSID    CLSID_WbemRefresher;
+EXTERN_C const CLSID    CLSID_WbemObjectTextSrc;
+EXTERN_C const IID      IID_IWbemClassObject;
+EXTERN_C const IID      IID_IWbemQualifierSet;
+EXTERN_C const IID      IID_IWbemLocator;
+EXTERN_C const IID      IID_IWbemObjectSink;
+EXTERN_C const IID      IID_IEnumWbemClassObject;
+EXTERN_C const IID      IID_IWbemContext;
+EXTERN_C const IID      IID_IWbemCallResult;
+EXTERN_C const IID      IID_IWbemServices;
+EXTERN_C const IID      IID_IWbemShutdown;
+EXTERN_C const IID      IID_IWbemObjectTextSrc;
+EXTERN_C const IID      IID_IWbemObjectAccess;
+EXTERN_C const IID      IID_IMofCompiler;
+EXTERN_C const IID      IID_IUnsecuredApartment;
+EXTERN_C const IID      IID_IWbemUnsecuredApartment;
+EXTERN_C const IID      IID_IWbemStatusCodeText;
+EXTERN_C const IID      IID_IWbemBackupRestore;
+EXTERN_C const IID      IID_IWbemBackupRestoreEx;
+EXTERN_C const IID      IID_IWbemRefresher;
+EXTERN_C const IID      IID_IWbemHiPerfEnum;
+EXTERN_C const IID      IID_IWbemConfigureRefresher;
+
+/* IWbemClassObject interface */
+#undef INTERFACE
+#define INTERFACE   IWbemClassObject
+DECLARE_INTERFACE_( IWbemClassObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemClassObject methods */
+    STDMETHOD( GetQualifierSet )( THIS_ IWbemQualifierSet ** ) PURE;
+    STDMETHOD( Get )( THIS_ LPCWSTR, long, VARIANT *, CIMTYPE *, long * ) PURE;
+    STDMETHOD( Put )( THIS_ LPCWSTR, long, VARIANT *, CIMTYPE ) PURE;
+    STDMETHOD( Delete )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetNames )( THIS_ LPCWSTR, long, VARIANT *, SAFEARRAY * ) PURE;
+    STDMETHOD( BeginEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( Next )( THIS_ long, BSTR *, VARIANT *, CIMTYPE *, long * ) PURE;
+    STDMETHOD( EndEnumeration )( THIS ) PURE;
+    STDMETHOD( GetPropertyQualifierSet )( THIS_ LPCWSTR, IWbemQualifierSet ** ) PURE;
+    STDMETHOD( Clone )( THIS_ IWbemClassObject ** ) PURE;
+    STDMETHOD( GetObjectText )( THIS_ long, BSTR * ) PURE;
+    STDMETHOD( SpawnDerivedClass )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( SpawnInstance )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( CompareTo )( THIS_ long, IWbemClassObject * ) PURE;
+    STDMETHOD( GetPropertyOrigin )( THIS_ LPCWSTR, BSTR * ) PURE;
+    STDMETHOD( InheritsFrom )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetMethod )( THIS_ LPCWSTR, long, IWbemClassObject **, IWbemClassObject ** ) PURE;
+    STDMETHOD( PutMethod )( THIS_ LPCWSTR, long, IWbemClassObject *, IWbemClassObject * ) PURE;
+    STDMETHOD( DeleteMethod )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( BeginMethodEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( NextMethod )( THIS_ long, BSTR *, IWbemClassObject **, IWbemClassObject ** ) PURE;
+    STDMETHOD( EndMethodEnumeration )( THIS ) PURE;
+    STDMETHOD( GetMethodQualifierSet )( THIS_ LPCWSTR, IWbemQualifierSet ** ) PURE;
+    STDMETHOD( GetMethodOrigin )( THIS_ LPCWSTR, BSTR * ) PURE;
+};
+
+/* IWbemQualifierSet interface */
+#undef INTERFACE
+#define INTERFACE   IWbemQualifierSet
+DECLARE_INTERFACE_( IWbemQualifierSet, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemQualifierSet methods */
+    STDMETHOD( Get )( THIS_ LPCWSTR, long, VARIANT *, long * ) PURE;
+    STDMETHOD( Put )( THIS_ LPCWSTR, VARIANT *, long ) PURE;
+    STDMETHOD( Delete )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetNames )( THIS_ long, SAFEARRAY * ) PURE;
+    STDMETHOD( BeginEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( Next )( THIS_ long, BSTR *, VARIANT *, long * ) PURE;
+    STDMETHOD( EndEnumeration )( THIS ) PURE;
+};
+
+/* IWbemLocator interface */
+#undef INTERFACE
+#define INTERFACE   IWbemLocator
+DECLARE_INTERFACE_( IWbemLocator, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemLocator methods */
+    STDMETHOD( ConnectServer )( THIS_ BSTR, BSTR, BSTR, BSTR, long, BSTR, IWbemContext *, IWbemServices ** ) PURE;
+};
+
+/* IWbemObjectSink interface */
+#undef INTERFACE
+#define INTERFACE   IWbemObjectSink
+DECLARE_INTERFACE_( IWbemObjectSink, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemObjectSink methods */
+    STDMETHOD( Indicate )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( SetStatus )( THIS_ long, HRESULT, BSTR, IWbemClassObject * ) PURE;
+};
+
+/* IEnumWbemClassObject interface */
+#undef INTERFACE
+#define INTERFACE   IEnumWbemClassObject
+DECLARE_INTERFACE_( IEnumWbemClassObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumWbemClassObject methods */
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Next )( THIS_ long, ULONG, IWbemClassObject **, ULONG * ) PURE;
+    STDMETHOD( NextAsync )( THIS_ ULONG, IWbemObjectSink * ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumWbemClassObject ** ) PURE;
+    STDMETHOD( Skip )( THIS_ long, ULONG ) PURE;
+};
+
+/* IWbemContext interface */
+#undef INTERFACE
+#define INTERFACE   IWbemContext
+DECLARE_INTERFACE_( IWbemContext, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemContext methods */
+    STDMETHOD( Clone )( THIS_ IWbemContext ** ) PURE;
+    STDMETHOD( GetNames )( THIS_ long, SAFEARRAY * ) PURE;
+    STDMETHOD( BeginEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( Next )( THIS_ long, BSTR *, VARIANT * ) PURE;
+    STDMETHOD( EndEnumeration )( THIS ) PURE;
+    STDMETHOD( SetValue )( THIS_ LPCWSTR, long, VARIANT * ) PURE;
+    STDMETHOD( GetValue )( THIS_ LPCWSTR, long, VARIANT * ) PURE;
+    STDMETHOD( DeleteValue )( THIS_ LPCWSTR, long ) PURE;
+    STDMETHOD( DeleteAll )( THIS ) PURE;
+};
+
+/* IWbemCallResult interface */
+#undef INTERFACE
+#define INTERFACE   IWbemCallResult
+DECLARE_INTERFACE_( IWbemCallResult, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemCallResult methods */
+    STDMETHOD( GetResultObject )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( GetResultString )( THIS_ long, BSTR * ) PURE;
+    STDMETHOD( GetResultServices )( THIS_ long, IWbemServices ** ) PURE;
+    STDMETHOD( GetCallStatus )( THIS_ long, long * ) PURE;
+};
+
+/* IWbemServices interface */
+#undef INTERFACE
+#define INTERFACE   IWbemServices
+DECLARE_INTERFACE_( IWbemServices, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemServices methods */
+    STDMETHOD( OpenNamespace )( THIS_ BSTR, long, IWbemContext *, IWbemServices **, IWbemCallResult ** ) PURE;
+    STDMETHOD( CancelAsyncCall )( THIS_ IWbemObjectSink * ) PURE;
+    STDMETHOD( QueryObjectSink )( THIS_ long, IWbemObjectSink ** ) PURE;
+    STDMETHOD( GetObject )( THIS_ BSTR, long, IWbemContext *, IWbemClassObject **, IWbemCallResult ** ) PURE;
+    STDMETHOD( GetObjectAsync )( THIS_ BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( PutClass )( THIS_ IWbemClassObject *, long, IWbemContext *, IWbemCallResult ** ) PURE;
+    STDMETHOD( PutClassAsync )( THIS_ IWbemClassObject *, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( DeleteClass )( THIS_ BSTR, long, IWbemContext *, IWbemCallResult ** ) PURE;
+    STDMETHOD( DeleteClassAsync )( THIS_ BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( CreateClassEnum )( THIS_ BSTR, long, IWbemContext *, IEnumWbemClassObject ** ) PURE;
+    STDMETHOD( CreateClassEnumAsync )( THIS_ BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( PutInstance )( THIS_ IWbemClassObject *, long, IWbemContext *, IWbemCallResult ** ) PURE;
+    STDMETHOD( PutInstanceAsync )( THIS_ IWbemClassObject *, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( DeleteInstance )( THIS_ BSTR, long, IWbemContext *, IWbemCallResult ** ) PURE;
+    STDMETHOD( DeleteInstanceAsync )( THIS_ BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( CreateInstanceEnum )( THIS_ BSTR, long, IWbemContext *, IEnumWbemClassObject ** ) PURE;
+    STDMETHOD( CreateInstanceEnumAsync )( THIS_ BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( ExecQuery )( THIS_ BSTR, BSTR, long, IWbemContext *, IEnumWbemClassObject ** ) PURE;
+    STDMETHOD( ExecQueryAsync )( THIS_ BSTR, BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( ExecNotificationQuery )( THIS_ BSTR, BSTR, long, IWbemContext *, IEnumWbemClassObject ** ) PURE;
+    STDMETHOD( ExecNotificationQueryAsync )( THIS_ BSTR, BSTR, long, IWbemContext *, IWbemObjectSink * ) PURE;
+    STDMETHOD( ExecMethod )( THIS_ BSTR, BSTR, long, IWbemContext *, IWbemClassObject *, IWbemClassObject **, IWbemCallResult ** ) PURE;
+    STDMETHOD( ExecMethodAsync )( THIS_ BSTR, BSTR, long, IWbemContext *, IWbemClassObject *, IWbemObjectSink * ) PURE;
+};
+
+/* IWbemShutdown interface */
+#undef INTERFACE
+#define INTERFACE   IWbemShutdown
+DECLARE_INTERFACE_( IWbemShutdown, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemShutdown methods */
+    STDMETHOD( Shutdown )( THIS_ LONG, ULONG, IWbemContext * ) PURE;
+};
+
+/* IWbemObjectTextSrc interface */
+#undef INTERFACE
+#define INTERFACE   IWbemObjectTextSrc
+DECLARE_INTERFACE_( IWbemObjectTextSrc, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemObjectTextSrc methods */
+    STDMETHOD( GetText )( THIS_ long, IWbemClassObject *, ULONG, IWbemContext *, BSTR * ) PURE;
+    STDMETHOD( CreateFromText )( THIS_ long, BSTR, ULONG, IWbemContext *, IWbemClassObject ** ) PURE;
+};
+
+/* IWbemObjectAccess interface */
+#undef INTERFACE
+#define INTERFACE   IWbemObjectAccess
+DECLARE_INTERFACE_( IWbemObjectAccess, IWbemClassObject ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemClassObject methods */
+    STDMETHOD( GetQualifierSet )( THIS_ IWbemQualifierSet ** ) PURE;
+    STDMETHOD( Get )( THIS_ LPCWSTR, long, VARIANT *, CIMTYPE *, long * ) PURE;
+    STDMETHOD( Put )( THIS_ LPCWSTR, long, VARIANT *, CIMTYPE ) PURE;
+    STDMETHOD( Delete )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetNames )( THIS_ LPCWSTR, long, VARIANT *, SAFEARRAY * ) PURE;
+    STDMETHOD( BeginEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( Next )( THIS_ long, BSTR *, VARIANT *, CIMTYPE *, long * ) PURE;
+    STDMETHOD( EndEnumeration )( THIS ) PURE;
+    STDMETHOD( GetPropertyQualifierSet )( THIS_ LPCWSTR, IWbemQualifierSet ** ) PURE;
+    STDMETHOD( Clone )( THIS_ IWbemClassObject ** ) PURE;
+    STDMETHOD( GetObjectText )( THIS_ long, BSTR * ) PURE;
+    STDMETHOD( SpawnDerivedClass )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( SpawnInstance )( THIS_ long, IWbemClassObject ** ) PURE;
+    STDMETHOD( CompareTo )( THIS_ long, IWbemClassObject * ) PURE;
+    STDMETHOD( GetPropertyOrigin )( THIS_ LPCWSTR, BSTR * ) PURE;
+    STDMETHOD( InheritsFrom )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetMethod )( THIS_ LPCWSTR, long, IWbemClassObject **, IWbemClassObject ** ) PURE;
+    STDMETHOD( PutMethod )( THIS_ LPCWSTR, long, IWbemClassObject *, IWbemClassObject * ) PURE;
+    STDMETHOD( DeleteMethod )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( BeginMethodEnumeration )( THIS_ long ) PURE;
+    STDMETHOD( NextMethod )( THIS_ long, BSTR *, IWbemClassObject **, IWbemClassObject ** ) PURE;
+    STDMETHOD( EndMethodEnumeration )( THIS ) PURE;
+    STDMETHOD( GetMethodQualifierSet )( THIS_ LPCWSTR, IWbemQualifierSet ** ) PURE;
+    STDMETHOD( GetMethodOrigin )( THIS_ LPCWSTR, BSTR * ) PURE;
+
+    /* IWbemObjectAccess methods */
+    STDMETHOD( GetPropertyHandle )( THIS_ LPCWSTR, CIMTYPE *, long * ) PURE;
+    STDMETHOD( WritePropertyValue )( THIS_ long, long, const byte * ) PURE;
+    STDMETHOD( ReadPropertyValue )( THIS_ long, long, long *, byte * ) PURE;
+    STDMETHOD( ReadDWORD )( THIS_ long, DWORD * ) PURE;
+    STDMETHOD( WriteDWORD )( THIS_ long, DWORD ) PURE;
+    STDMETHOD( ReadQWORD )( THIS_ long, unsigned __int64 * ) PURE;
+    STDMETHOD( WriteQWORD )( THIS_ long, unsigned __int64 ) PURE;
+    STDMETHOD( GetPropertyInfoByHandle )( THIS_ long, BSTR *, CIMTYPE * ) PURE;
+    STDMETHOD( Lock )( THIS_ long ) PURE;
+    STDMETHOD( Unlock )( THIS_ long ) PURE;
+};
+
+/* IMofCompiler interface */
+#undef INTERFACE
+#define INTERFACE   IMofCompiler
+DECLARE_INTERFACE_( IMofCompiler, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IMofCompiler methods */
+    STDMETHOD( CompileFile )( THIS_ LPWSTR, LPWSTR, LPWSTR, LPWSTR, LPWSTR, LONG, LONG, LONG, WBEM_COMPILE_STATUS_INFO * ) PURE;
+    STDMETHOD( CompileBuffer )( THIS_ long, BYTE *, LPWSTR, LPWSTR, LPWSTR, LPWSTR, LONG, LONG, LONG, WBEM_COMPILE_STATUS_INFO * ) PURE;
+    STDMETHOD( CreateBMOF )( THIS_ LPWSTR, LPWSTR, LPWSTR, LONG, LONG, LONG, WBEM_COMPILE_STATUS_INFO * ) PURE;
+};
+
+/* IUnsecuredApartment interface */
+#undef INTERFACE
+#define INTERFACE   IUnsecuredApartment
+DECLARE_INTERFACE_( IUnsecuredApartment, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IUnsecuredApartment methods */
+    STDMETHOD( CreateObjectStub )( THIS_ IUnknown *, IUnknown ** ) PURE;
+};
+
+/* IWbemUnsecuredApartment interface */
+#undef INTERFACE
+#define INTERFACE   IWbemUnsecuredApartment
+DECLARE_INTERFACE_( IWbemUnsecuredApartment, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IUnsecuredApartment methods */
+    STDMETHOD( CreateObjectStub )( THIS_ IUnknown *, IUnknown ** ) PURE;
+
+    /* IWbemUnsecuredApartment methods */
+    STDMETHOD( CreateSinkStub )( THIS_ IWbemObjectSink *, DWORD, LPCWSTR, IWbemObjectSink ** ) PURE;
+};
+
+/* IWbemStatusCodeText interface */
+#undef INTERFACE
+#define INTERFACE   IWbemStatusCodeText
+DECLARE_INTERFACE_( IWbemStatusCodeText, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemStatusCodeText methods */
+    STDMETHOD( GetErrorCodeText )( THIS_ HRESULT, LCID, long, BSTR * ) PURE;
+    STDMETHOD( GetFacilityCodeText )( THIS_ HRESULT, LCID, long, BSTR * ) PURE;
+};
+
+/* IWbemBackupRestore interface */
+#undef INTERFACE
+#define INTERFACE   IWbemBackupRestore
+DECLARE_INTERFACE_( IWbemBackupRestore, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemBackupRestore methods */
+    STDMETHOD( Backup )( THIS_ LPCWSTR, long ) PURE;
+    STDMETHOD( Restore )( THIS_ LPCWSTR, long ) PURE;
+};
+
+/* IWbemBackupRestoreEx interface */
+#undef INTERFACE
+#define INTERFACE   IWbemBackupRestoreEx
+DECLARE_INTERFACE_( IWbemBackupRestoreEx, IWbemBackupRestore ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemBackupRestore methods */
+    STDMETHOD( Backup )( THIS_ LPCWSTR, long ) PURE;
+    STDMETHOD( Restore )( THIS_ LPCWSTR, long ) PURE;
+
+    /* IWbemBackupRestoreEx methods */
+    STDMETHOD( Pause )( THIS ) PURE;
+    STDMETHOD( Resume )( THIS ) PURE;
+};
+
+/* IWbemRefresher interface */
+#undef INTERFACE
+#define INTERFACE   IWbemRefresher
+DECLARE_INTERFACE_( IWbemRefresher, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemRefresher methods */
+    STDMETHOD( Refresh )( THIS_ long ) PURE;
+};
+
+/* IWbemHiPerfEnum interface */
+#undef INTERFACE
+#define INTERFACE   IWbemHiPerfEnum
+DECLARE_INTERFACE_( IWbemHiPerfEnum, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemHiPerfEnum methods */
+    STDMETHOD( AddObjects )( THIS_ long, ULONG, long *, IWbemObjectAccess ** ) PURE;
+    STDMETHOD( RemoveObjects )( THIS_ long, ULONG, long * ) PURE;
+    STDMETHOD( GetObjects )( THIS_ long, ULONG, IWbemObjectAccess **, ULONG * ) PURE;
+    STDMETHOD( RemoveAll )( THIS_ long ) PURE;
+};
+
+/* IWbemConfigureRefresher interface */
+#undef INTERFACE
+#define INTERFACE   IWbemConfigureRefresher
+DECLARE_INTERFACE_( IWbemConfigureRefresher, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IWbemConfigureRefresher methods */
+    STDMETHOD( AddObjectByPath )( THIS_ IWbemServices *, LPCWSTR, long, IWbemContext *, IWbemClassObject **, long * ) PURE;
+    STDMETHOD( AddObjectByTemplate )( THIS_ IWbemServices *, IWbemClassObject *, long, IWbemContext *, IWbemClassObject **, long * ) PURE;
+    STDMETHOD( AddRefresher )( THIS_ IWbemRefresher *, long, long * ) PURE;
+    STDMETHOD( Remove )( THIS_ long, long ) PURE;
+    STDMETHOD( AddEnum )( THIS_ IWbemServices *, LPCWSTR, long, IWbemContext *, IWbemHiPerfEnum **, long * ) PURE;
+};
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IWbemClassObject_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemClassObject_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemClassObject_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemClassObject_GetQualifierSet( x, p ) \
+        (x)->lpVtbl->GetQualifierSet( x, p )
+    #define IWbemClassObject_Get( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Get( x, p1, p2, p3, p4, p5 )
+    #define IWbemClassObject_Put( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Put( x, p1, p2, p3, p4 )
+    #define IWbemClassObject_Delete( x, p ) \
+        (x)->lpVtbl->Delete( x, p )
+    #define IWbemClassObject_GetNames( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetNames( x, p1, p2, p3, p4 )
+    #define IWbemClassObject_BeginEnumeration( x, p ) \
+        (x)->lpVtbl->BeginEnumeration( x, p )
+    #define IWbemClassObject_Next( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3, p4, p5 )
+    #define IWbemClassObject_EndEnumeration( x ) \
+        (x)->lpVtbl->EndEnumeration( x )
+    #define IWbemClassObject_GetPropertyQualifierSet( x, p1, p2 ) \
+        (x)->lpVtbl->GetPropertyQualifierSet( x, p1, p2 )
+    #define IWbemClassObject_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IWbemClassObject_GetObjectText( x, p1, p2 ) \
+        (x)->lpVtbl->GetObjectText( x, p1, p2 )
+    #define IWbemClassObject_SpawnDerivedClass( x, p1, p2 ) \
+        (x)->lpVtbl->SpawnDerivedClass( x, p1, p2 )
+    #define IWbemClassObject_SpawnInstance( x, p1, p2 ) \
+        (x)->lpVtbl->SpawnInstance( x, p1, p2 )
+    #define IWbemClassObject_CompareTo( x, p1, p2 ) \
+        (x)->lpVtbl->CompareTo( x, p1, p2 )
+    #define IWbemClassObject_GetPropertyOrigin( x, p1, p2 ) \
+        (x)->lpVtbl->GetPropertyOrigin( x, p1, p2 )
+    #define IWbemClassObject_InheritsFrom( x, p ) \
+        (x)->lpVtbl->InheritsFrom( x, p )
+    #define IWbemClassObject_GetMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetMethod( x, p1, p2, p3, p4 )
+    #define IWbemClassObject_PutMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutMethod( x, p1, p2, p3, p4 )
+    #define IWbemClassObject_DeleteMethod( x, p ) \
+        (x)->lpVtbl->DeleteMethod( x, p )
+    #define IWbemClassObject_BeginMethodEnumeration( x, p ) \
+        (x)->lpVtbl->BeginMethodEnumeration( x, p )
+    #define IWbemClassObject_NextMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->NextMethod( x, p1, p2, p3, p4 )
+    #define IWbemClassObject_EndMethodEnumeration( x ) \
+        (x)->lpVtbl->EndMethodEnumeration( x )
+    #define IWbemClassObject_GetMethodQualifierSet( x, p1, p2 ) \
+        (x)->lpVtbl->GetMethodQualifierSet( x, p1, p2 )
+    #define IWbemClassObject_GetMethodOrigin( x, p1, p2 ) \
+        (x)->lpVtbl->GetMethodOrigin( x, p1, p2 )
+    #define IWbemQualifierSet_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemQualifierSet_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemQualifierSet_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemQualifierSet_Get( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Get( x, p1, p2, p3, p4 )
+    #define IWbemQualifierSet_Put( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Put( x, p1, p2, p3 )
+    #define IWbemQualifierSet_Delete( x, p ) \
+        (x)->lpVtbl->Delete( x, p )
+    #define IWbemQualifierSet_GetNames( x, p1, p2 ) \
+        (x)->lpVtbl->GetNames( x, p1, p2 )
+    #define IWbemQualifierSet_BeginEnumeration( x, p ) \
+        (x)->lpVtbl->BeginEnumeration( x, p )
+    #define IWbemQualifierSet_Next( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3, p4 )
+    #define IWbemQualifierSet_EndEnumeration( x ) \
+        (x)->lpVtbl->EndEnumeration( x )
+    #define IWbemLocator_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemLocator_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemLocator_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemLocator_ConnectServer( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->ConnectServer( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IWbemObjectSink_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemObjectSink_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemObjectSink_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemObjectSink_Indicate( x, p1, p2 ) \
+        (x)->lpVtbl->Indicate( x, p1, p2 )
+    #define IWbemObjectSink_SetStatus( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetStatus( x, p1, p2, p3, p4 )
+    #define IEnumWbemClassObject_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IEnumWbemClassObject_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IEnumWbemClassObject_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IEnumWbemClassObject_Reset( x ) \
+        (x)->lpVtbl->Reset( x )
+    #define IEnumWbemClassObject_Next( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3, p4 )
+    #define IEnumWbemClassObject_NextAsync( x, p1, p2 ) \
+        (x)->lpVtbl->NextAsync( x, p1, p2 )
+    #define IEnumWbemClassObject_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IEnumWbemClassObject_Skip( x, p1, p2 ) \
+        (x)->lpVtbl->Skip( x, p1, p2 )
+    #define IWbemContext_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemContext_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemContext_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemContext_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IWbemContext_GetNames( x, p1, p2 ) \
+        (x)->lpVtbl->GetNames( x, p1, p2 )
+    #define IWbemContext_BeginEnumeration( x, p ) \
+        (x)->lpVtbl->BeginEnumeration( x, p )
+    #define IWbemContext_Next( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3 )
+    #define IWbemContext_EndEnumeration( x ) \
+        (x)->lpVtbl->EndEnumeration( x )
+    #define IWbemContext_SetValue( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetValue( x, p1, p2, p3 )
+    #define IWbemContext_GetValue( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetValue( x, p1, p2, p3 )
+    #define IWbemContext_DeleteValue( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteValue( x, p1, p2 )
+    #define IWbemContext_DeleteAll( x ) \
+        (x)->lpVtbl->DeleteAll( x )
+    #define IWbemCallResult_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemCallResult_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemCallResult_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemCallResult_GetResultObject( x, p1, p2 ) \
+        (x)->lpVtbl->GetResultObject( x, p1, p2 )
+    #define IWbemCallResult_GetResultString( x, p1, p2 ) \
+        (x)->lpVtbl->GetResultString( x, p1, p2 )
+    #define IWbemCallResult_GetResultServices( x, p1, p2 ) \
+        (x)->lpVtbl->GetResultServices( x, p1, p2 )
+    #define IWbemCallResult_GetCallStatus( x, p1, p2 ) \
+        (x)->lpVtbl->GetCallStatus( x, p1, p2 )
+    #define IWbemServices_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemServices_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemServices_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemServices_OpenNamespace( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->OpenNamespace( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_CancelAsyncCall( x, p ) \
+        (x)->lpVtbl->CancelAsyncCall( x, p )
+    #define IWbemServices_QueryObjectSink( x, p1, p2 ) \
+        (x)->lpVtbl->QueryObjectSink( x, p1, p2 )
+    #define IWbemServices_GetObject( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetObject( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_GetObjectAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetObjectAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_PutClass( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutClass( x, p1, p2, p3, p4 )
+    #define IWbemServices_PutClassAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutClassAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_DeleteClass( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->DeleteClass( x, p1, p2, p3, p4 )
+    #define IWbemServices_DeleteClassAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->DeleteClassAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_CreateClassEnum( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateClassEnum( x, p1, p2, p3, p4 )
+    #define IWbemServices_CreateClassEnumAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateClassEnumAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_PutInstance( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutInstance( x, p1, p2, p3, p4 )
+    #define IWbemServices_PutInstanceAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutInstanceAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_DeleteInstance( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->DeleteInstance( x, p1, p2, p3, p4 )
+    #define IWbemServices_DeleteInstanceAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->DeleteInstanceAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_CreateInstanceEnum( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateInstanceEnum( x, p1, p2, p3, p4 )
+    #define IWbemServices_CreateInstanceEnumAsync( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateInstanceEnumAsync( x, p1, p2, p3, p4 )
+    #define IWbemServices_ExecQuery( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->ExecQuery( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_ExecQueryAsync( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->ExecQueryAsync( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_ExecNotificationQuery( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->ExecNotificationQuery( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_ExecNotificationQueryAsync( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->ExecNotificationQueryAsync( x, p1, p2, p3, p4, p5 )
+    #define IWbemServices_ExecMethod( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->ExecMethod( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IWbemServices_ExecMethodAsync( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->ExecMethodAsync( x, p1, p2, p3, p4, p5, p6 )
+    #define IWbemShutdown_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemShutdown_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemShutdown_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemShutdown_Shutdown( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Shutdown( x, p1, p2, p3 )
+    #define IWbemObjectTextSrc_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemObjectTextSrc_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemObjectTextSrc_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemObjectTextSrc_GetText( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetText( x, p1, p2, p3, p4, p5 )
+    #define IWbemObjectTextSrc_CreateFromText( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->CreateFromText( x, p1, p2, p3, p4, p5 )
+    #define IWbemObjectAccess_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemObjectAccess_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemObjectAccess_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemObjectAccess_GetQualifierSet( x, p ) \
+        (x)->lpVtbl->GetQualifierSet( x, p )
+    #define IWbemObjectAccess_Get( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Get( x, p1, p2, p3, p4, p5 )
+    #define IWbemObjectAccess_Put( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Put( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_Delete( x, p ) \
+        (x)->lpVtbl->Delete( x, p )
+    #define IWbemObjectAccess_GetNames( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetNames( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_BeginEnumeration( x, p ) \
+        (x)->lpVtbl->BeginEnumeration( x, p )
+    #define IWbemObjectAccess_Next( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3, p4, p5 )
+    #define IWbemObjectAccess_EndEnumeration( x ) \
+        (x)->lpVtbl->EndEnumeration( x )
+    #define IWbemObjectAccess_GetPropertyQualifierSet( x, p1, p2 ) \
+        (x)->lpVtbl->GetPropertyQualifierSet( x, p1, p2 )
+    #define IWbemObjectAccess_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IWbemObjectAccess_GetObjectText( x, p1, p2 ) \
+        (x)->lpVtbl->GetObjectText( x, p1, p2 )
+    #define IWbemObjectAccess_SpawnDerivedClass( x, p1, p2 ) \
+        (x)->lpVtbl->SpawnDerivedClass( x, p1, p2 )
+    #define IWbemObjectAccess_SpawnInstance( x, p1, p2 ) \
+        (x)->lpVtbl->SpawnInstance( x, p1, p2 )
+    #define IWbemObjectAccess_CompareTo( x, p1, p2 ) \
+        (x)->lpVtbl->CompareTo( x, p1, p2 )
+    #define IWbemObjectAccess_GetPropertyOrigin( x, p1, p2 ) \
+        (x)->lpVtbl->GetPropertyOrigin( x, p1, p2 )
+    #define IWbemObjectAccess_InheritsFrom( x, p ) \
+        (x)->lpVtbl->InheritsFrom( x, p )
+    #define IWbemObjectAccess_GetMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetMethod( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_PutMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->PutMethod( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_DeleteMethod( x, p ) \
+        (x)->lpVtbl->DeleteMethod( x, p )
+    #define IWbemObjectAccess_BeginMethodEnumeration( x, p ) \
+        (x)->lpVtbl->BeginMethodEnumeration( x, p )
+    #define IWbemObjectAccess_NextMethod( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->NextMethod( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_EndMethodEnumeration( x ) \
+        (x)->lpVtbl->EndMethodEnumeration( x )
+    #define IWbemObjectAccess_GetMethodQualifierSet( x, p1, p2 ) \
+        (x)->lpVtbl->GetMethodQualifierSet( x, p1, p2 )
+    #define IWbemObjectAccess_GetMethodOrigin( x, p1, p2 ) \
+        (x)->lpVtbl->GetMethodOrigin( x, p1, p2 )
+    #define IWbemObjectAccess_GetPropertyHandle( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetPropertyHandle( x, p1, p2, p3 )
+    #define IWbemObjectAccess_WritePropertyValue( x, p1, p2, p3 ) \
+        (x)->lpVtbl->WritePropertyValue( x, p1, p2, p3 )
+    #define IWbemObjectAccess_ReadPropertyValue( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->ReadPropertyValue( x, p1, p2, p3, p4 )
+    #define IWbemObjectAccess_ReadDWORD( x, p1, p2 ) \
+        (x)->lpVtbl->ReadDWORD( x, p1, p2 )
+    #define IWbemObjectAccess_WriteDWORD( x, p1, p2 ) \
+        (x)->lpVtbl->WriteDWORD( x, p1, p2 )
+    #define IWbemObjectAccess_ReadQWORD( x, p1, p2 ) \
+        (x)->lpVtbl->ReadQWORD( x, p1, p2 )
+    #define IWbemObjectAccess_WriteQWORD( x, p1, p2 ) \
+        (x)->lpVtbl->WriteQWORD( x, p1, p2 )
+    #define IWbemObjectAccess_GetPropertyInfoByHandle( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetPropertyInfoByHandle( x, p1, p2, p3 )
+    #define IWbemObjectAccess_Lock( x, p ) \
+        (x)->lpVtbl->Lock( x, p )
+    #define IWbemObjectAccess_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IMofCompiler_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMofCompiler_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMofCompiler_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMofCompiler_CompileFile( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 ) \
+        (x)->lpVtbl->CompileFile( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 )
+    #define IMofCompiler_CompileBuffer( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 ) \
+        (x)->lpVtbl->CompileBuffer( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 )
+    #define IMofCompiler_CreateBMOF( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->CreateBMOF( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IUnsecuredApartment_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IUnsecuredApartment_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IUnsecuredApartment_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IUnsecuredApartment_CreateObjectStub( x, p1, p2 ) \
+        (x)->lpVtbl->CreateObjectStub( x, p1, p2 )
+    #define IWbemUnsecuredApartment_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemUnsecuredApartment_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemUnsecuredApartment_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemUnsecuredApartment_CreateObjectStub( x, p1, p2 ) \
+        (x)->lpVtbl->CreateObjectStub( x, p1, p2 )
+    #define IWbemUnsecuredApartment_CreateSinkStub( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateSinkStub( x, p1, p2, p3, p4 )
+    #define IWbemStatusCodeText_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemStatusCodeText_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemStatusCodeText_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemStatusCodeText_GetErrorCodeText( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetErrorCodeText( x, p1, p2, p3, p4 )
+    #define IWbemStatusCodeText_GetFacilityCodeText( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetFacilityCodeText( x, p1, p2, p3, p4 )
+    #define IWbemBackupRestore_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemBackupRestore_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemBackupRestore_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemBackupRestore_Backup( x, p1, p2 ) \
+        (x)->lpVtbl->Backup( x, p1, p2 )
+    #define IWbemBackupRestore_Restore( x, p1, p2 ) \
+        (x)->lpVtbl->Restore( x, p1, p2 )
+    #define IWbemBackupRestoreEx_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemBackupRestoreEx_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemBackupRestoreEx_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemBackupRestoreEx_Backup( x, p1, p2 ) \
+        (x)->lpVtbl->Backup( x, p1, p2 )
+    #define IWbemBackupRestoreEx_Restore( x, p1, p2 ) \
+        (x)->lpVtbl->Restore( x, p1, p2 )
+    #define IWbemBackupRestoreEx_Pause( x ) \
+        (x)->lpVtbl->Pause( x )
+    #define IWbemBackupRestoreEx_Resume( x ) \
+        (x)->lpVtbl->Resume( x )
+    #define IWbemRefresher_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemRefresher_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemRefresher_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemRefresher_Refresh( x, p ) \
+        (x)->lpVtbl->Refresh( x, p )
+    #define IWbemHiPerfEnum_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemHiPerfEnum_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemHiPerfEnum_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemHiPerfEnum_AddObjects( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->AddObjects( x, p1, p2, p3, p4 )
+    #define IWbemHiPerfEnum_RemoveObjects( x, p1, p2, p3 ) \
+        (x)->lpVtbl->RemoveObjects( x, p1, p2, p3 )
+    #define IWbemHiPerfEnum_GetObjects( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetObjects( x, p1, p2, p3, p4 )
+    #define IWbemHiPerfEnum_RemoveAll( x, p ) \
+        (x)->lpVtbl->RemoveAll( x, p )
+    #define IWbemConfigureRefresher_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IWbemConfigureRefresher_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IWbemConfigureRefresher_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IWbemConfigureRefresher_AddObjectByPath( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->AddObjectByPath( x, p1, p2, p3, p4, p5, p6 )
+    #define IWbemConfigureRefresher_AddObjectByTemplate( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->AddObjectByTemplate( x, p1, p2, p3, p4, p5, p6 )
+    #define IWbemConfigureRefresher_AddRefresher( x, p1, p2, p3 ) \
+        (x)->lpVtbl->AddRefresher( x, p1, p2, p3 )
+    #define IWbemConfigureRefresher_Remove( x, p1, p2 ) \
+        (x)->lpVtbl->Remove( x, p1, p2 )
+    #define IWbemConfigureRefresher_AddEnum( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->AddEnum( x, p1, p2, p3, p4, p5, p6 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __wbemcli_h__ */

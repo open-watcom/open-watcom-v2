@@ -1,0 +1,33 @@
+# CC component of lang.dat
+[DEFAULT]
+
+type="e" usr="wccaxp.exe" 	dir="binnt" 	cond="wnthost" 		where="ac"
+type="d" usr="wccdaxp.dll" 	dir="binnt" 	cond="wnthost" 		where="ac"
+type="e" usr="wcc386.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc ac"
+type="d" usr="wccd386.dll" 	dir="binnt" 	cond="wnthost" 		where="c jc ac"
+type="s" usr="wcc38601.int" 	dir="binnt" 	cond="wnthost" 		where="jc"
+type="e" usr="wcc.exe" 		dir="binnt" 	cond="wnthost tools16" 	where="c jc"
+type="d" usr="wccd.dll" 		dir="binnt" 	cond="wnthost tools16" 	where="c jc"
+type="s" usr="wcci8601.int"	dir="binnt" 	cond="wnthost tools16" 	where="jc"
+
+type="e" usr="wcc386.exe" 	dir="binp" 	cond="os2host" 		where="c jc"
+type="d" usr="wccd386.dll" 	dir="binp/dll" 	cond="os2host" 		where="c jc"
+type="s" usr="wcc38601.int" 	dir="binp/dll" 	cond="os2host" 		where="jc"
+type="e" usr="wcc.exe" 		dir="binp" 	cond="os2host tools16" 	where="c jc"
+type="d" usr="wccd.dll" 		dir="binp/dll" 	cond="os2host tools16" 	where="c jc"
+type="s" usr="wcci8601.int" 	dir="binp/dll" 	cond="os2host tools16" 	where="jc"
+
+type="e" usr="wccaxp.exe" 	dir="axpnt" 	cond="alphahost" 	where="ac"
+type="e" usr="wcc386.exe" 	dir="axpnt" 	cond="alphahost" 	where="ac"
+
+#type="e" usr="wccaxp.exe" 	dir="binw" 	cond="doshost winhost |" 		where=""
+#type="d" usr="wccdaxp.dll" 	dir="binw" 	cond="doshost winhost |" 		where=""
+type="e" usr="wcc386.exe" 	dir="binw" 	cond="doshost winhost |" 		where="c jc"
+type="s" usr="wcc38601.int" 	dir="binw" 	cond="doshost winhost |" 		where="jc"
+type="e" usr="wcc.exe" 		dir="binw" 	cond="doshost winhost | tools16" 	where="c jc"
+type="s" usr="wcci8601.int" 	dir="binw" 	cond="doshost winhost | tools16"	where="jc"
+
+type="e" usr="wcc386"		dir="binl" 	cond="lnxhost" 		where="c jc"
+type="s" usr="wcc38601.int" 	dir="binl" 	cond="lnxhost" 		where="jc"
+type="e" usr="wcc" 		dir="binl" 	cond="lnxhost tools16" 	where="c jc"
+type="s" usr="wcci8601.int"	dir="binl" 	cond="lnxhost tools16" 	where="jc"

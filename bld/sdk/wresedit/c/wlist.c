@@ -30,98 +30,98 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 #include "wglbl.h"
 #include "wmem.h"
 #include "wlist.h"
 
-void WInsertObject ( LIST **list, void *obj )
+void WInsertObject( LIST **list, void *obj )
 {
     LIST *end;
 
-    if ( list ) {
+    if( list != NULL ) {
         if ( *list == NULL ) {
             ListAddElt( list, obj );
         } else {
-            WListLastElt ( *list, &end );
+            WListLastElt( *list, &end );
             ListInsertElt( end, obj );
         }
     }
 }
 
-void WListLastElt ( LIST *list, LIST **last )
+void WListLastElt( LIST *list, LIST **last )
 {
     LIST *end;
 
-    if ( last ) {
-        for ( end = list; end && ListNext(end); end = ListNext (end) ) ;
+    if( last != NULL ) {
+        for( end = list; end && ListNext( end ) != NULL; end = ListNext( end ) );
         *last = end;
     }
 }
 
-int WListConcat ( LIST **dest, LIST *src, uint_32 size )
+int WListConcat( LIST **dest, LIST *src, uint_32 size )
 {
-    LIST *end;
-    LIST *olist;
-    void *elt;
+    LIST    *end;
+    LIST    *olist;
+    void    *elt;
 
-    if ( dest == NULL ) {
-        return ( TRUE );
+    if( dest == NULL ) {
+        return( TRUE );
     }
 
-    WListLastElt ( *dest, &end );
+    WListLastElt( *dest, &end );
 
-    for ( olist = src; olist; olist = ListNext ( olist ) ) {
-        if ( size == 0 ) {
-            elt = ListElement ( olist );
+    for( olist = src; olist != NULL; olist = ListNext( olist ) ) {
+        if( size == 0 ) {
+            elt = ListElement( olist );
         } else {
-            elt = WMemAlloc ( size );
-            if ( elt == NULL ) {
-                return ( FALSE );
+            elt = WMemAlloc( size );
+            if( elt == NULL ) {
+                return( FALSE );
             }
-            memcpy ( elt, ListElement ( olist ), size );
+            memcpy( elt, ListElement( olist ), size );
         }
-        if ( end == NULL ) {
-            ListAddElt ( dest, elt );
+        if( end == NULL ) {
+            ListAddElt( dest, elt );
             end = *dest;
         } else {
-            ListInsertElt ( end, elt );
-            end = ListNext ( end );
+            ListInsertElt( end, elt );
+            end = ListNext( end );
         }
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-LIST *WListCopy ( LIST *src )
+LIST *WListCopy( LIST *src )
 {
-    LIST *new;
-    LIST *end;
-    LIST *olist;
+    LIST    *new;
+    LIST    *end;
+    LIST    *olist;
 
     end = NULL;
     new = NULL;
 
-    for ( olist = src; olist; olist = ListNext ( olist ) ) {
-        if ( end == NULL ) {
-            ListAddElt ( &new, ListElement ( olist ) );
+    for( olist = src; olist != NULL; olist = ListNext( olist ) ) {
+        if( end == NULL ) {
+            ListAddElt( &new, ListElement( olist ) );
             end = new;
         } else {
-            ListInsertElt ( end, ListElement ( olist ) );
-            end = ListNext ( end );
+            ListInsertElt( end, ListElement( olist ) );
+            end = ListNext( end );
         }
     }
 
-    return ( new );
+    return( new );
 }
 
-void ListAddElt ( LIST **head, void *obj )
+void ListAddElt( LIST **head, void *obj )
 {
     LIST *new;
 
-    new = WMemAlloc ( sizeof( LIST ) );
+    new = WMemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = *head;
     new->prev = NULL;
@@ -131,81 +131,81 @@ void ListAddElt ( LIST **head, void *obj )
     *head = new;
 }
 
-void ListFree ( LIST *lst )
+void ListFree( LIST *lst )
 {
     LIST *next;
 
-    while ( lst != NULL ) {
+    while( lst != NULL ) {
         next = lst->next;
-        WMemFree ( lst );
+        WMemFree( lst );
         lst = next;
     }
 }
 
-void *ListElement ( LIST *lst )
+void *ListElement( LIST *lst )
 {
-    return ( lst->elt );
+    return( lst->elt );
 }
 
-LIST *ListNext ( LIST *curr )
+LIST *ListNext( LIST *curr )
 {
-    return ( curr->next );
+    return( curr->next );
 }
 
-LIST *ListPrev ( LIST *curr )
+LIST *ListPrev( LIST *curr )
 {
-    return ( curr->prev );
+    return( curr->prev );
 }
 
-void ListRemoveElt ( LIST **lst, void *obj )
+void ListRemoveElt( LIST **lst, void *obj )
 {
-    LIST * node;
+    LIST *node;
 
-    for ( node = *lst; node != NULL; node = node->next ) {
-        if ( node->elt == obj ) {
-            if ( node->next != NULL ) {
+    for( node = *lst; node != NULL; node = node->next ) {
+        if( node->elt == obj ) {
+            if( node->next != NULL ) {
                 node->next->prev = node->prev;
             }
-            if ( node->prev != NULL ) {
+            if( node->prev != NULL ) {
                 node->prev->next = node->next;
             } else {
                 *lst = node->next;
             }
-            WMemFree ( node );
+            WMemFree( node );
             break;
         }
     }
 }
 
-LIST *ListConsume ( LIST *curr )
+LIST *ListConsume( LIST *curr )
 {
     LIST *next;
 
     next = curr->next;
-    WMemFree ( curr );
+    WMemFree( curr );
     return( next );
 }
 
-LIST *ListFindElt ( LIST *l, void *elt )
+LIST *ListFindElt( LIST *l, void *elt )
 {
-    while ( l != NULL ) {
-        if ( l->elt == elt ) {
+    while( l != NULL ) {
+        if( l->elt == elt ) {
             break;
         }
         l = l->next;
     }
-    return ( l );
+    return( l );
 }
 
-LIST *ListCopy ( LIST * l )
+LIST *ListCopy( LIST * l )
 {
-    LIST * head;
+    LIST *head;
 
     head = NULL;
-    for ( ; l != NULL; l = l->next ) {
-        ListAddElt ( &head, l->elt );
+    for( ; l != NULL; l = l->next ) {
+        ListAddElt( &head, l->elt );
     }
-    return ( head );
+    return( head );
 }
 
 int ListCount( LIST *l )
@@ -213,30 +213,30 @@ int ListCount( LIST *l )
     int count;
 
     count = 0;
-    for ( ; l != NULL; l = l->next ) {
-        ++count;
+    for( ; l != NULL; l = l->next ) {
+        count++;
     }
-    return ( count );
+    return( count );
 }
 
-void ListInsertElt ( LIST *prev, void *obj )
+void ListInsertElt( LIST *prev, void *obj )
 {
     LIST *new;
 
-    new = WMemAlloc ( sizeof( LIST ) );
+    new = WMemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = prev->next;
     new->prev = prev;
     prev->next = new;
-    if ( new->next != NULL ) {
+    if( new->next != NULL ) {
         new->next->prev = new;
     }
 }
 
-void ListMerge ( LIST **destlist, LIST *src )
+void ListMerge( LIST **destlist, LIST *src )
 {
-    LIST *curr;
-    LIST *last;
+    LIST    *curr;
+    LIST    *last;
 
     last = NULL;
     if( *destlist == NULL ) {
@@ -246,5 +246,4 @@ void ListMerge ( LIST **destlist, LIST *src )
     for( curr = *destlist; curr->next != NULL; curr = curr->next );
     curr->next = src;
     src->prev = curr;
-    return;
 }

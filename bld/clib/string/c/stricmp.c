@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of stricmp() and _wcsicmp().
 *
 ****************************************************************************/
 
@@ -46,7 +45,7 @@
     UCHAR_TYPE c1;
     UCHAR_TYPE c2;
 
-    for(;;) {
+    for( ;; ) {
         c1 = *s;
         c2 = *t;
         if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {

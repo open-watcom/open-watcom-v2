@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-// the following is a temporary measure to get around the fact
-// that winreg.h defines a type called ppvalue
-#define _WINREG_
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
@@ -53,7 +48,7 @@
 #include "wrestrdp.h"
 #include "wrewait.h"
 #include "wrtmpfil.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "preproc.h"
 
 /****************************************************************************/
@@ -77,14 +72,14 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-extern char     *WRESymSaveFilter;
-extern char     *WRESymLoadTitle;
-extern char     *WRESymSaveTitle;
+extern char *WRESymSaveFilter;
+extern char *WRESymLoadTitle;
+extern char *WRESymSaveTitle;
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static char  WREBusyChars[]         = "-\\|/";
+static char WREBusyChars[] = "-\\|/";
 static jmp_buf SymEnv;
 
 void PP_OutOfMemory( void )
@@ -96,7 +91,7 @@ void *PP_Malloc( unsigned size )
 {
     void        *p;
 
-    p = WREMemAlloc ( size );
+    p = WREMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -105,7 +100,7 @@ void *PP_Malloc( unsigned size )
 
 void PP_Free( void *p )
 {
-    WREMemFree ( p );
+    WREMemFree( p );
 }
 
 static char *WREFindDLGInclude( WRInfo *info )
@@ -118,23 +113,23 @@ static char *WREFindDLGInclude( WRInfo *info )
     Bool                ok;
 
     include = NULL;
-    ok = ( info != NULL );
+    ok = (info != NULL);
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, (uint_16)RT_RCDATA, NULL );
-        ok = ( tnode != NULL );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
         rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = ( rnode != NULL );
+        ok = (rnode != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -149,7 +144,7 @@ static void WREAddSymbols( WRHashTable *table )
     int                 hash;
     MACRO_ENTRY         *me;
     char                *endptr;
-    PPVALUE             val;
+    PREPROC_VALUE       val;
     WRHashValue         value;
     WRHashEntry         *entry;
     BOOL                dup;
@@ -168,19 +163,19 @@ static void WREAddSymbols( WRHashTable *table )
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         for( me = PPHashTable[hash]; me; me = me->next ) {
-            if( me->parmcount == 0  &&  me->replacement_list != NULL ) {
+            if( me->parmcount == 0 &&  me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {
                         if( val.type == PPTYPE_SIGNED ) {
-                            value = (WRHashValue) val.val.ivalue;
+                            value = (WRHashValue)val.val.ivalue;
                         } else {
-                            value = (WRHashValue) val.val.uvalue;
+                            value = (WRHashValue)val.val.uvalue;
                         }
                         entry = WRAddHashEntry( table, me->name, value, &dup, FALSE, FALSE );
                         add_count++;
                         if( add_count == MAX_SYM_ADDS ) {
                             busy_count++;
-                            busy_str[0] = WREBusyChars[busy_count%4];
+                            busy_str[0] = WREBusyChars[busy_count % 4];
                             WRESetStatusText( NULL, busy_str, TRUE );
                             add_count = 0;
                         }
@@ -206,7 +201,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
 
     name = NULL;
 
-    ok = ( table != NULL );
+    ok = (table != NULL);
 
     if( ok ) {
         WRESetStatusText( NULL, "", FALSE );
@@ -214,23 +209,22 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
     }
 
     if( ok ) {
-        if( !file_name || prompt ) {
+        if( file_name == NULL || prompt ) {
             gf.file_name = file_name;
-            gf.title     = WRESymLoadTitle;
-            gf.filter    = WRESymSaveFilter;
-            gf.save_ext  = FALSE;
+            gf.title = WRESymLoadTitle;
+            gf.filter = WRESymSaveFilter;
+            gf.save_ext = FALSE;
             name = WREGetOpenFileName( &gf );
         } else {
             name = WREStrDup( file_name );
         }
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     WRESetWaitCursor( TRUE );
 
     if( ok ) {
-        flags = 0;
-        flags |= PPFLAG_IGNORE_INCLUDE;
+        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv );
         if( ret ) {
@@ -256,7 +250,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
             c = PP_Char();
             if( pp_count == MAX_PP_CHARS ) {
                 busy_count++;
-                busy_str[0] = WREBusyChars[busy_count%4];
+                busy_str[0] = WREBusyChars[busy_count % 4];
                 WRESetStatusText( NULL, busy_str, TRUE );
                 pp_count = 0;
             }
@@ -271,7 +265,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
     }
 
     if( !ok ) {
-        if( name ) {
+        if( name != NULL ) {
             WREMemFree( name );
             name = NULL;
         }
@@ -290,7 +284,7 @@ Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt )
     WREGetFileStruct    gf;
     Bool                ok;
 
-    if( !table || !file_name ) {
+    if( table == NULL || file_name == NULL ) {
         return( FALSE );
     }
 
@@ -302,13 +296,13 @@ Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt )
     WRESetStatusText( NULL, "", FALSE );
     WRESetStatusByID( WRE_SAVEINGSYMBOLS, -1 );
 
-    if( prompt || !*file_name ) {
+    if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
         gf.title = WRESymSaveTitle;
         gf.filter = WRESymSaveFilter;
-        gf.save_ext  = FALSE;
+        gf.save_ext = FALSE;
         name = WREGetSaveFileName( &gf );
-        ok = ( name != NULL );
+        ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
                 WREMemFree( *file_name );
@@ -339,11 +333,11 @@ Bool WREEditResourceSymbols( WREResInfo *info )
     Bool                ok;
 
     cb = NULL;
-    ok = ( info && info->symbol_table );
+    ok = (info != NULL && info->symbol_table != NULL);
 
     if( ok ) {
         cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = ( cb != (FARPROC)NULL );
+        ok = (cb != (FARPROC)NULL);
     }
 
     if( ok ) {
@@ -352,8 +346,6 @@ Bool WREEditResourceSymbols( WREResInfo *info )
     }
 
     // ***** call routine to update the edit sessions *****
-    if( ok ) {
-    }
 
     if( cb != (FARPROC)NULL ) {
         FreeProcInstance( (FARPROC)cb );
@@ -370,12 +362,12 @@ Bool WRELoadResourceSymbols( WREResInfo *info )
         return( FALSE );
     }
 
-    symbol_file = WRELoadSymbols( &(info->symbol_table), NULL, TRUE );
+    symbol_file = WRELoadSymbols( &info->symbol_table, NULL, TRUE );
     if( symbol_file == NULL ) {
         return( FALSE );
     }
 
-    if( info->symbol_file ) {
+    if( info->symbol_file != NULL ) {
         WREMemFree( info->symbol_file );
     }
     info->symbol_file = symbol_file;
@@ -389,7 +381,7 @@ Bool WRELoadResourceSymbols( WREResInfo *info )
 
 Bool WREResourceSaveSymbols( WREResInfo *info )
 {
-    if( info ) {
+    if( info != NULL ) {
         return( WRESaveSymbols( info->symbol_table, &info->symbol_file, TRUE ) );
     }
     return( FALSE );
@@ -433,8 +425,8 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
     Bool        prompt;
     Bool        ret;
 
-    if( !rinfo || !rinfo->info ||
-        !( rinfo->info->file_name || rinfo->info->save_name ) ) {
+    if( rinfo == NULL || rinfo->info == NULL ||
+        (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {
         return( FALSE );
     }
 
@@ -459,8 +451,8 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
     ret = TRUE;
 
     if( WRFileExists( fn_path ) ) {
-        symbol_file = WRELoadSymbols( &(rinfo->symbol_table), fn_path, prompt );
-        ret = ( symbol_file != NULL );
+        symbol_file = WRELoadSymbols( &rinfo->symbol_table, fn_path, prompt );
+        ret = (symbol_file != NULL);
         if( ret ) {
             if( rinfo->symbol_file != NULL ) {
                 WREMemFree( rinfo->symbol_file );
@@ -471,4 +463,3 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 
     return( ret );
 }
-

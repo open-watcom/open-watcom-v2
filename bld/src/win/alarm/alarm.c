@@ -3,7 +3,7 @@
 #include <time.h>
 #include "alarm.h"
 
-HANDLE          MyInstance;
+HINSTANCE          MyInstance;
 char            AlarmClass[32]="AlarmClass";
 
 digit_index     NumberOfDigits = DIGITS_WITH_SECONDS;
@@ -35,10 +35,16 @@ BOOL            Setting;
 unsigned        Tick;
 
 static BOOL     AlarmIsRinging;
-static BOOL FirstInstance( HANDLE this_inst );
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow );
+static BOOL FirstInstance( HINSTANCE this_inst );
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow );
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+void CreateSupplies( void );
+void DeleteSupplies( void );
+static void InitializeTheClock( void );
+static void PaintClock( HDC dc );
+static void ReSize( pixels width, pixels height, WORD type );
+
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -58,7 +64,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
     }
     if( !AnyInstance( this_inst, cmdshow ) ) return( FALSE );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, (HWND)0, 0, 0 ) ) {
 
         TranslateMessage( &msg );
         DispatchMessage( &msg );
@@ -71,7 +77,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
 
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 /********************************************
 
     Register window class for the application,
@@ -86,8 +92,8 @@ static BOOL FirstInstance( HANDLE this_inst )
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = this_inst;
-    wc.hIcon = NULL;
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hIcon = (HICON)0;
+    wc.hCursor = LoadCursor( (HINSTANCE)0, IDC_ARROW );
     wc.hbrBackground = GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName = "AlarmMenu";
     wc.lpszClassName = AlarmClass;
@@ -96,7 +102,7 @@ static BOOL FirstInstance( HANDLE this_inst )
 
 }
 
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow )
 /*******************************************************
 
     Do work required for every instance of the application:
@@ -110,12 +116,12 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
      * create main window
      */
 
-    dc = GetDC(NULL);
+    dc = GetDC( (HWND)0 );
     ScreenHeight = GetDeviceCaps( dc, VERTRES );
     ScreenWidth = GetDeviceCaps( dc, HORZRES );
     ScreenHeightInMM = GetDeviceCaps( dc, VERTSIZE );
     ScreenWidthInMM = GetDeviceCaps( dc, HORZSIZE );
-    ReleaseDC( NULL, dc );
+    ReleaseDC( (HWND)0, dc );
     CreateSupplies();
 
     win_handle = CreateWindow(
@@ -126,8 +132,8 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
         CW_USEDEFAULT,          /* init. y pos */
         CW_USEDEFAULT,          /* init. x size */
         CW_USEDEFAULT,          /* init. y size */
-        NULL,                   /* parent window */
-        NULL,                   /* menu handle */
+        (HWND)0,                /* parent window */
+        (HWND)0,                /* menu handle */
         this_inst,              /* program handle */
         NULL                    /* create parms */
         );
@@ -141,7 +147,7 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
     UpdateWindow( win_handle );
 
     if( !SetTimer( win_handle, TIMER_ID, ONE_SECOND/4, 0L ) ) {
-        MessageBox( NULL, "Too many timers in use", Buffer,
+        MessageBox( (HWND)0, "Too many timers in use", Buffer,
                    MB_ICONHAND+MB_OK+MB_SYSTEMMODAL );
         return( FALSE );
     }
@@ -176,8 +182,8 @@ BOOL _EXPORT FAR PASCAL About( HWND win_handle, unsigned msg,
 }
 
 
-static void TransferClockToAlarm()
-/*********************************
+static void TransferClockToAlarm( void )
+/***************************************
 
     Transfer the digits from the Clock array to the Alarm array.
 */
@@ -189,8 +195,8 @@ static void TransferClockToAlarm()
     }
 }
 
-static void TransferAlarmToClock()
-/*********************************
+static void TransferAlarmToClock( void )
+/***************************************
 
     Transfer digits from the Alarm array to the Clock array
 */
@@ -218,8 +224,8 @@ static void RePaintTheClock( HWND win_handle )
 }
 
 
-static void CheckAlarm()
-/***********************
+static void CheckAlarm( void )
+/*****************************
 
     See if the alarm has gone off, and pop up a message box if it has.
 */
@@ -231,7 +237,7 @@ static void CheckAlarm()
         if( AlarmDigits[i] != ClockDigits[i].value ) return;
     }
     AlarmIsRinging = TRUE;
-    MessageBox( NULL, "The alarm clock is ringing!", Buffer,
+    MessageBox( (HWND)0, "The alarm clock is ringing!", Buffer,
                MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL );
     AlarmIsRinging = FALSE;
 }
@@ -262,8 +268,8 @@ static void SetNumberOfDigits( digit_index num )
 }
 
 
-static void SetAlarm()
-/*********************
+static void SetAlarm( void )
+/***************************
 
     Put the clock into alarm setting mode.
 */
@@ -281,8 +287,8 @@ static void SetAlarm()
     TransferAlarmToClock();
 }
 
-static void RunTheClock()
-/************************
+static void RunTheClock( void )
+/******************************
 
     Put the clock into running mode.
 */
@@ -345,8 +351,8 @@ static void DisplayAboutBox( HWND win_handle )
 {
     FARPROC     proc;
 
-    proc = MakeProcInstance( About, MyInstance );
-    DialogBox( MyInstance, "AboutBox", win_handle, proc );
+    proc = MakeProcInstance( (FARPROC)About, MyInstance );
+    DialogBox( MyInstance, "AboutBox", win_handle, (DLGPROC)proc );
     FreeProcInstance( proc );
 }
 
@@ -918,8 +924,8 @@ static void SetColonPos( colon_index i )
 }
 
 
-static void InitializeTheClock()
-/*******************************
+static void InitializeTheClock( void )
+/*************************************
 
     Initialize each digit of the clock. Calculate the screen position
     of each segment of each digit of the clock, as well as the
@@ -1018,8 +1024,8 @@ static void ReSize( pixels width, pixels height, WORD type )
     InitializeTheClock();
 }
 
-void CreateSupplies()
-/********************
+void CreateSupplies( void )
+/**************************
 
     Create the art supplies we need
 */
@@ -1029,8 +1035,8 @@ void CreateSupplies()
 }
 
 
-void DeleteSupplies()
-/********************
+void DeleteSupplies( void )
+/**************************
 
     Delete our art supplies
 */

@@ -1,0 +1,1083 @@
+/*
+ *  control.h   ActiveMovie control interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __control_h__
+#define __control_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* ActiveMovie primitive data types */
+typedef double      REFTIME;
+typedef LONG_PTR    OAEVENT;
+typedef LONG_PTR    OAHWND;
+typedef long        OAFilterState;
+
+/* GUIDs */
+EXTERN_C const IID      LIBID_QuartzTypeLib;
+EXTERN_C const IID      IID_IAMCollection;
+EXTERN_C const IID      IID_IMediaControl;
+EXTERN_C const IID      IID_IMediaEvent;
+EXTERN_C const IID      IID_IMediaEventEx;
+EXTERN_C const IID      IID_IMediaPosition;
+EXTERN_C const IID      IID_IBasicAudio;
+EXTERN_C const IID      IID_IVideoWindow;
+EXTERN_C const IID      IID_IBasicVideo;
+EXTERN_C const IID      IID_IBasicVideo2;
+EXTERN_C const IID      IID_IDeferredCommand;
+EXTERN_C const IID      IID_IQueueCommand;
+EXTERN_C const CLSID    CLSID_FilgraphManager;
+EXTERN_C const IID      IID_IFilterInfo;
+EXTERN_C const IID      IID_IRegFilterInfo;
+EXTERN_C const IID      IID_IMediaTypeInfo;
+EXTERN_C const IID      IID_IPinInfo;
+EXTERN_C const IID      IID_IAMStats;
+
+/* IAMCollection interface */
+#undef INTERFACE
+#define INTERFACE   IAMCollection
+DECLARE_INTERFACE_( IAMCollection, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IAMCollection methods */
+    STDMETHOD( get_Count )( THIS_ LONG * ) PURE;
+    STDMETHOD( Item )( THIS_ long, IUnknown ** ) PURE;
+    STDMETHOD( get__NewEnum )( THIS_ IUnknown ** ) PURE;
+};
+
+/* IMediaControl interface */
+#undef INTERFACE
+#define INTERFACE   IMediaControl
+DECLARE_INTERFACE_( IMediaControl, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IMediaControl methods */
+    STDMETHOD( Run )( THIS ) PURE;
+    STDMETHOD( Pause )( THIS ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+    STDMETHOD( GetState )( THIS_ LONG, OAFilterState * ) PURE;
+    STDMETHOD( RenderFile )( THIS_ BSTR ) PURE;
+    STDMETHOD( AddSourceFilter )( THIS_ BSTR, IDispatch ** ) PURE;
+    STDMETHOD( get_FilterCollection )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_RegFilterCollection )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( StopWhenReady )( THIS ) PURE;
+};
+
+/* IMediaEvent interface */
+#undef INTERFACE
+#define INTERFACE   IMediaEvent
+DECLARE_INTERFACE_( IMediaEvent, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IMediaEvent methods */
+    STDMETHOD( GetEventHandle )( THIS_  OAEVENT * ) PURE;
+    STDMETHOD( GetEvent )( THIS_ long *, LONG_PTR *, LONG_PTR *, long ) PURE;
+    STDMETHOD( WaitForCompletion )( THIS_ long, long * ) PURE;
+    STDMETHOD( CancelDefaultHandling )( THIS_ long ) PURE;
+    STDMETHOD( RestoreDefaultHandling )( THIS_ long ) PURE;
+    STDMETHOD( FreeEventParams )( THIS_ long, LONG_PTR, LONG_PTR ) PURE;
+};
+
+/* IMediaEventEx interface */
+#undef INTERFACE
+#define INTERFACE   IMediaEventEx
+DECLARE_INTERFACE_( IMediaEventEx, IMediaEvent ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IMediaEvent methods */
+    STDMETHOD( GetEventHandle )( THIS_  OAEVENT * ) PURE;
+    STDMETHOD( GetEvent )( THIS_ long *, LONG_PTR *, LONG_PTR *, long ) PURE;
+    STDMETHOD( WaitForCompletion )( THIS_ long, long * ) PURE;
+    STDMETHOD( CancelDefaultHandling )( THIS_ long ) PURE;
+    STDMETHOD( RestoreDefaultHandling )( THIS_ long ) PURE;
+    STDMETHOD( FreeEventParams )( THIS_ long, LONG_PTR, LONG_PTR ) PURE;
+
+    /* IMediaEventEx methods */
+    STDMETHOD( SetNotifyWindow )( THIS_ OAHWND, long, LONG_PTR ) PURE;
+    STDMETHOD( SetNotifyFlags )( THIS_ long ) PURE;
+    STDMETHOD( GetNotifyFlags )( THIS_ long * ) PURE;
+};
+
+/* IMediaPosition interface */
+#undef INTERFACE
+#define INTERFACE   IMediaPosition
+DECLARE_INTERFACE_( IMediaPosition, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IMediaPosition methods */
+    STDMETHOD( get_Duration )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( put_CurrentPosition )( THIS_ REFTIME ) PURE;
+    STDMETHOD( get_CurrentPosition )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( get_StopTime )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( put_StopTime )( THIS_ REFTIME ) PURE;
+    STDMETHOD( get_PrerollTime )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( put_PrerollTime )( THIS_ REFTIME ) PURE;
+    STDMETHOD( put_Rate )( THIS_ double ) PURE;
+    STDMETHOD( get_Rate )( THIS_ double * ) PURE;
+    STDMETHOD( CanSeekForward )( THIS_ LONG * ) PURE;
+    STDMETHOD( CanSeekBackward )( THIS_ LONG * ) PURE;
+};
+
+/* IBasicAudio interface */
+#undef INTERFACE
+#define INTERFACE   IBasicAudio
+DECLARE_INTERFACE_( IBasicAudio, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IBasicAudio methods */
+    STDMETHOD( put_Volume )( THIS_ long ) PURE;
+    STDMETHOD( get_Volume )( THIS_ long * ) PURE;
+    STDMETHOD( put_Balance )( THIS_ long ) PURE;
+    STDMETHOD( get_Balance )( THIS_ long * ) PURE;
+};
+
+/* IVideoWindow interface */
+#undef INTERFACE
+#define INTERFACE   IVideoWindow
+DECLARE_INTERFACE_( IVideoWindow, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IVideoWindow methods */
+    STDMETHOD( put_Caption )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_Caption )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_WindowStyle )( THIS_ long ) PURE;
+    STDMETHOD( get_WindowStyle )( THIS_ long * ) PURE;
+    STDMETHOD( put_WindowStyleEx )( THIS_ long ) PURE;
+    STDMETHOD( get_WindowStyleEx )( THIS_ long * ) PURE;
+    STDMETHOD( put_AutoShow )( THIS_ long ) PURE;
+    STDMETHOD( get_AutoShow )( THIS_ long * ) PURE;
+    STDMETHOD( put_WindowState )( THIS_ long ) PURE;
+    STDMETHOD( get_WindowState )( THIS_ long * ) PURE;
+    STDMETHOD( put_BackgroundPalette )( THIS_ long ) PURE;
+    STDMETHOD( get_BackgroundPalette )( THIS_ long * ) PURE;
+    STDMETHOD( put_Visible )( THIS_ long ) PURE;
+    STDMETHOD( get_Visible )( THIS_ long * ) PURE;
+    STDMETHOD( put_Left )( THIS_ long ) PURE;
+    STDMETHOD( get_Left )( THIS_ long * ) PURE;
+    STDMETHOD( put_Width )( THIS_ long ) PURE;
+    STDMETHOD( get_Width )( THIS_ long * ) PURE;
+    STDMETHOD( put_Top )( THIS_ long ) PURE;
+    STDMETHOD( get_Top )( THIS_ long * ) PURE;
+    STDMETHOD( put_Height )( THIS_ long ) PURE;
+    STDMETHOD( get_Height )( THIS_ long * ) PURE;
+    STDMETHOD( put_Owner )( THIS_ OAHWND ) PURE;
+    STDMETHOD( get_Owner )( THIS_ OAHWND * ) PURE;
+    STDMETHOD( put_MessageDrain )( THIS_ OAHWND ) PURE;
+    STDMETHOD( get_MessageDrain )( THIS_ OAHWND * ) PURE;
+    STDMETHOD( get_BorderColor )( THIS_ long * ) PURE;
+    STDMETHOD( put_BorderColor )( THIS_ long ) PURE;
+    STDMETHOD( get_FullScreenMode )( THIS_ long * ) PURE;
+    STDMETHOD( put_FullScreenMode )( THIS_ long ) PURE;
+    STDMETHOD( SetWindowForeground )( THIS_ long ) PURE;
+    STDMETHOD( NotifyOwnerMessage )( THIS_ OAHWND, long, LONG_PTR, LONG_PTR ) PURE;
+    STDMETHOD( SetWindowPosition )( THIS_ long, long, long, long ) PURE;
+    STDMETHOD( GetWindowPosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( GetMinIdealImageSize )( THIS_ long *, long * ) PURE;
+    STDMETHOD( GetMaxIdealImageSize )( THIS_ long *, long * ) PURE;
+    STDMETHOD( GetRestorePosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( HideCursor )( THIS_ long ) PURE;
+    STDMETHOD( IsCursorHidden )( THIS_ long * ) PURE;
+};
+
+/* IBasicVideo interface */
+#undef INTERFACE
+#define INTERFACE   IBasicVideo
+DECLARE_INTERFACE_( IBasicVideo, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IBasicVideo methods */
+    STDMETHOD( get_AvgTimePerFrame )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( get_BitRate )( THIS_ long * ) PURE;
+    STDMETHOD( get_BitErrorRate )( THIS_ long * ) PURE;
+    STDMETHOD( get_VideoWidth )( THIS_ long * ) PURE;
+    STDMETHOD( get_VideoHeight )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceLeft )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceLeft )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceWidth )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceWidth )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceTop )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceTop )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceHeight )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceHeight )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationLeft )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationLeft )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationWidth )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationWidth )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationTop )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationTop )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationHeight )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationHeight )( THIS_ long * ) PURE;
+    STDMETHOD( SetSourcePosition )( THIS_ long, long, long, long ) PURE;
+    STDMETHOD( GetSourcePosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( SetDefaultSourcePosition )( THIS ) PURE;
+    STDMETHOD( SetDestinationPosition )( THIS_ long, long, long, long ) PURE;
+    STDMETHOD( GetDestinationPosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( SetDefaultDestinationPosition )( THIS ) PURE;
+    STDMETHOD( GetVideoSize )( THIS_ long *, long * ) PURE;
+    STDMETHOD( GetVideoPaletteEntries )( THIS_ long, long, long *, long * ) PURE;
+    STDMETHOD( GetCurrentImage )( THIS_ long *, long * ) PURE;
+    STDMETHOD( IsUsingDefaultSource )( THIS ) PURE;
+    STDMETHOD( IsUsingDefaultDestination )( THIS ) PURE;
+};
+
+/* IBasicVideo2 interface */
+#undef INTERFACE
+#define INTERFACE   IBasicVideo2
+DECLARE_INTERFACE_( IBasicVideo2, IBasicVideo ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IBasicVideo methods */
+    STDMETHOD( get_AvgTimePerFrame )( THIS_ REFTIME * ) PURE;
+    STDMETHOD( get_BitRate )( THIS_ long * ) PURE;
+    STDMETHOD( get_BitErrorRate )( THIS_ long * ) PURE;
+    STDMETHOD( get_VideoWidth )( THIS_ long * ) PURE;
+    STDMETHOD( get_VideoHeight )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceLeft )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceLeft )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceWidth )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceWidth )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceTop )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceTop )( THIS_ long * ) PURE;
+    STDMETHOD( put_SourceHeight )( THIS_ long ) PURE;
+    STDMETHOD( get_SourceHeight )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationLeft )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationLeft )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationWidth )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationWidth )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationTop )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationTop )( THIS_ long * ) PURE;
+    STDMETHOD( put_DestinationHeight )( THIS_ long ) PURE;
+    STDMETHOD( get_DestinationHeight )( THIS_ long * ) PURE;
+    STDMETHOD( SetSourcePosition )( THIS_ long, long, long, long ) PURE;
+    STDMETHOD( GetSourcePosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( SetDefaultSourcePosition )( THIS ) PURE;
+    STDMETHOD( SetDestinationPosition )( THIS_ long, long, long, long ) PURE;
+    STDMETHOD( GetDestinationPosition )( THIS_ long *, long *, long *, long * ) PURE;
+    STDMETHOD( SetDefaultDestinationPosition )( THIS ) PURE;
+    STDMETHOD( GetVideoSize )( THIS_ long *, long * ) PURE;
+    STDMETHOD( GetVideoPaletteEntries )( THIS_ long, long, long *, long * ) PURE;
+    STDMETHOD( GetCurrentImage )( THIS_ long *, long * ) PURE;
+    STDMETHOD( IsUsingDefaultSource )( THIS ) PURE;
+    STDMETHOD( IsUsingDefaultDestination )( THIS ) PURE;
+
+    /* IBasicVideo2 methods */
+    STDMETHOD( GetPreferredAspectRatio )( THIS_ long *, long * ) PURE;
+};
+
+/* IDeferredCommand interface */
+#undef INTERFACE
+#define INTERFACE   IDeferredCommand
+DECLARE_INTERFACE_( IDeferredCommand, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDeferredCommand methods */
+    STDMETHOD( Cancel )( THIS ) PURE;
+    STDMETHOD( Confidence )( THIS_ LONG * ) PURE;
+    STDMETHOD( Postpone )( THIS_ REFTIME ) PURE;
+    STDMETHOD( GetHResult )( THIS_ HRESULT * ) PURE;
+};
+
+/* IQueueCommand interface */
+#undef INTERFACE
+#define INTERFACE   IQueueCommand
+DECLARE_INTERFACE_( IQueueCommand, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IQueueCommand methods */
+    STDMETHOD( InvokeAtStreamTime )( THIS_ IDeferredCommand **, REFTIME, GUID *, long, short, long, VARIANT *, VARIANT *, short * ) PURE;
+    STDMETHOD( InvokeAtPresentationTime )( THIS_ IDeferredCommand **, REFTIME, GUID *, long, short, long, VARIANT *, VARIANT *, short * ) PURE;
+};
+
+/* IFilterInfo interface */
+#undef INTERFACE
+#define INTERFACE   IFilterInfo
+DECLARE_INTERFACE_( IFilterInfo, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IFilterInfo methods */
+    STDMETHOD( FindPin )( THIS_ BSTR, IDispatch ** ) PURE;
+    STDMETHOD( get_Name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_VendorInfo )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_Filter )( THIS_ IUnknown ** ) PURE;
+    STDMETHOD( get_Pins )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_IsFileSource )( THIS_ LONG * ) PURE;
+    STDMETHOD( get_Filename )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_Filename )( THIS_ BSTR ) PURE;
+};
+
+/* IRegFilterInfo interface */
+#undef INTERFACE
+#define INTERFACE   IRegFilterInfo
+DECLARE_INTERFACE_( IRegFilterInfo, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IRegFilterInfo methods */
+    STDMETHOD( get_Name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( Filter )( THIS_ IDispatch ** ) PURE;
+};
+
+/* IMediaTypeInfo interface */
+#undef INTERFACE
+#define INTERFACE   IMediaTypeInfo
+DECLARE_INTERFACE_( IMediaTypeInfo, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IMediaTypeInfo methods */
+    STDMETHOD( get_Type )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_Subtype )( THIS_ BSTR * ) PURE;
+};
+
+/* IPinInfo interface */
+#undef INTERFACE
+#define INTERFACE   IPinInfo
+DECLARE_INTERFACE_( IPinInfo, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IPinInfo methods */
+    STDMETHOD( get_Pin )( THIS_ IUnknown ** ) PURE;
+    STDMETHOD( get_ConnectedTo )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_ConnectionMediaType )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_FilterInfo )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_Name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_Direction )( THIS_ LONG * ) PURE;
+    STDMETHOD( get_PinID )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_MediaTypes )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( Connect )( THIS_ IUnknown * ) PURE;
+    STDMETHOD( ConnectDirect )( THIS_ IUnknown * ) PURE;
+    STDMETHOD( ConnectWithType )( THIS_ IUnknown *, IDispatch * ) PURE;
+    STDMETHOD( Disconnect )( THIS ) PURE;
+    STDMETHOD( Render )( THIS ) PURE;
+};
+
+/* IAMStats interface */
+#undef INTERFACE
+#define INTERFACE   IAMStats
+DECLARE_INTERFACE_( IAMStats, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IAMStats methods */
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( get_Count )( THIS_ LONG * ) PURE;
+    STDMETHOD( GetValueByIndex )( THIS_ long, BSTR *, long *, double *, double *, double *, double *, double * ) PURE;
+    STDMETHOD( GetValueByName )( THIS_ BSTR, long *, long *, double *, double *, double *, double *, double * ) PURE;
+    STDMETHOD( GetIndex )( THIS_ BSTR, long, long * ) PURE;
+    STDMETHOD( AddValue )( THIS_ long, double ) PURE;
+};
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IAMCollection_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IAMCollection_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IAMCollection_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IAMCollection_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IAMCollection_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IAMCollection_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IAMCollection_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IAMCollection_get_Count( x, p ) \
+        (x)->lpVtbl->get_Count( x, p )
+    #define IAMCollection_Item( x, p1, p2 ) \
+        (x)->lpVtbl->Item( x, p1, p2 )
+    #define IAMCollection_get__NewEnum( x, p ) \
+        (x)->lpvtbl->get__NewEnum( x, p )
+    #define IMediaControl_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaControl_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaControl_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaControl_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IMediaControl_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IMediaControl_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IMediaControl_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IMediaControl_Run( x ) \
+        (x)->lpVtbl->Run( x )
+    #define IMediaControl_Pause( x ) \
+        (x)->lpVtbl->Pause( x )
+    #define IMediaControl_Stop( x ) \
+        (x)->lpVtbl->Stop( x )
+    #define IMediaControl_GetState( x, p1, p2 ) \
+        (x)->lpVtbl->GetState( x, p1, p2 )
+    #define IMediaControl_RenderFile( x, p ) \
+        (x)->lpVtbl->RenderFile( x, p )
+    #define IMediaControl_AddSourceFilter( x, p1, p2 ) \
+        (x)->lpVtbl->AddSourceFilter( x, p1, p2 )
+    #define IMediaControl_get_FilterCollection( x, p ) \
+        (x)->lpVtbl->get_FilterCollection( x, p )
+    #define IMediaControl_get_RegFilterCollection( x, p ) \
+        (x)->lpVtbl->get_regFilterCollection( x, p )
+    #define IMediaControl_StopWhenReady( x ) \
+        (x)->lpVtbl->StopWhenReady( x )
+    #define IMediaEvent_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaEvent_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaEvent_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaEvent_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IMediaEvent_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IMediaEvent_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IMediaEvent_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IMediaEvent_GetEventHandle( x, p ) \
+        (x)->lpVtbl->GetEventHandle( x, p )
+    #define IMediaEvent_GetEvent( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetEvent( x, p1, p2, p3, p4 )
+    #define IMediaEvent_WaitForCompletion( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForCompletion( x, p1, p2 )
+    #define IMediaEvent_CancelDefaultHandling( x, p ) \
+        (x)->lpVtbl->CancelDefaultHandling( x, p )
+    #define IMediaEvent_RestoreDefaultHandling( x, p ) \
+        (x)->lpVtbl->RestoreDefaultHandling( x, p )
+    #define IMediaEvent_FreeEventParams( x, p1, p2, p3 ) \
+        (x)->lpVtbl->FreeEventParams( x, p1, p2, p3 )
+    #define IMediaEventEx_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaEventEx_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaEventEx_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaEventEx_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IMediaEventEx_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IMediaEventEx_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IMediaEventEx_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IMediaEventEx_GetEventHandle( x, p ) \
+        (x)->lpVtbl->GetEventHandle( x, p )
+    #define IMediaEventEx_GetEvent( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetEvent( x, p1, p2, p3, p4 )
+    #define IMediaEventEx_WaitForCompletion( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForCompletion( x, p1, p2 )
+    #define IMediaEventEx_CancelDefaultHandling( x, p ) \
+        (x)->lpVtbl->CancelDefaultHandling( x, p )
+    #define IMediaEventEx_RestoreDefaultHandling( x, p ) \
+        (x)->lpVtbl->RestoreDefaultHandling( x, p )
+    #define IMediaEventEx_FreeEventParams( x, p1, p2, p3 ) \
+        (x)->lpVtbl->FreeEventParams( x, p1, p2, p3 )
+    #define IMediaEventEx_SetNotifyWindow( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetNotifyWindow( x, p1, p2, p3 )
+    #define IMediaEventEx_SetNotifyFlags( x, p ) \
+        (x)->lpVtbl->SetNotifyFlags( x, p )
+    #define IMediaEventEx_GetNotifyFlags( x, p ) \
+        (x)->lpVtbl->GetNotifyFlags( x, p )
+    #define IMediaPosition_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaPosition_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaPosition_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaPosition_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IMediaPosition_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IMediaPosition_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IMediaPosition_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IMediaPosition_get_Duration( x, p ) \
+        (x)->lpVtbl->get_Duration( x, p )
+    #define IMediaPosition_put_CurrentPosition( x, p ) \
+        (x)->lpVtbl->put_CurrentPosition( x, p )
+    #define IMediaPosition_get_CurrentPosition( x, p ) \
+        (x)->lpVtbl->get_CurrentPosition( x, p )
+    #define IMediaPosition_get_StopTime( x, p ) \
+        (x)->lpVtbl->get_StopTime( x, p )
+    #define IMediaPosition_put_StopTime( x, p ) \
+        (x)->lpVtbl->put_StopTime( x, p )
+    #define IMediaPosition_get_PrerollTime( x, p ) \
+        (x)->lpVtbl->get_PrerollTime( x, p )
+    #define IMediaPosition_put_PrerollTime( x, p ) \
+        (x)->lpVtbl->put_PrerollTime( x, p )
+    #define IMediaPosition_put_Rate( x, p ) \
+        (x)->lpVtbl->put_Rate( x, p )
+    #define IMediaPosition_get_Rate( x, p ) \
+        (x)->lpVtbl->get_Rate( x, p )
+    #define IMediaPosition_CanSeekForward( x, p ) \
+        (x)->lpVtbl->CanSeekForward( x, p )
+    #define IMediaPosition_CanSeekBackward( x, p ) \
+        (x)->lpVtbl->CanSeekBackward( x, p )
+    #define IAMCollection_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IBasicAudio_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IBasicAudio_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IBasicAudio_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IBasicAudio_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IBasicAudio_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IBasicAudio_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IBasicAudio_put_Volume( x, p ) \
+        (x)->lpVtbl->put_Volume( x, p )
+    #define IBasicAudio_get_Volume( x, p ) \
+        (x)->lpVtbl->get_Volume( x, p )
+    #define IBasicAudio_put_Balance( x, p ) \
+        (x)->lpVtbl->put_Balance( x, p )
+    #define IBasicAudio_get_Balance( x, p ) \
+        (x)->lpVtbl->get_Balance( x, p )
+    #define IVideoWindow_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IVideoWindow_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IVideoWindow_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IVideoWindow_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IVideoWindow_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IVideoWindow_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IVideoWindow_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IVideoWindow_put_Caption( x, p ) \
+        (x)->lpVtbl->put_Caption( x, p )
+    #define IVideoWindow_get_Caption( x, p ) \
+        (x)->lpVtbl->get_Caption( x, p )
+    #define IVideoWindow_put_WindowStyle( x, p ) \
+        (x)->lpVtbl->put_WindowStyle( x, p )
+    #define IVideoWindow_get_WindowStyle( x, p ) \
+        (x)->lpVtbl->get_WindowStyle( x, p )
+    #define IVideoWindow_put_WindowStyleEx( x, p ) \
+        (x)->lpVtbl->put_WindowStyleEx( x, p )
+    #define IVideoWindow_get_WindowStyleEx( x, p ) \
+        (x)->lpVtbl->get_WindowStyleEx( x, p )
+    #define IVideoWindow_put_AutoShow( x, p ) \
+        (x)->lpVtbl->put_AutoShow( x, p )
+    #define IVideoWindow_get_AutoShow( x, p ) \
+        (x)->lpVtbl->get_AutoShow( x, p )
+    #define IVideoWindow_put_WindowState( x, p ) \
+        (x)->lpVtbl->put_WindowState( x, p )
+    #define IVideoWindow_get_WindowState( x, p ) \
+        (x)->lpVtbl->get_WindowState( x, p )
+    #define IVideoWindow_put_BackgroundPalette( x, p ) \
+        (x)->lpVtbl->put_BackgroundPalette( x, p )
+    #define IVideoWindow_get_BackgroundPalette( x, p ) \
+        (x)->lpVtbl->get_BackgroundPalette( x, p )
+    #define IVideoWindow_put_Visible( x, p ) \
+        (x)->lpVtbl->put_Visible( x, p )
+    #define IVideoWindow_get_Visible( x, p ) \
+        (x)->lpVtbl->get_Visible( x, p )
+    #define IVideoWindow_put_Left( x, p ) \
+        (x)->lpVtbl->put_Left( x, p )
+    #define IVideoWindow_get_Left( x, p ) \
+        (x)->lpVtbl->get_Left( x, p )
+    #define IVideoWindow_put_Width( x, p ) \
+        (x)->lpVtbl->put_Width( x, p )
+    #define IVideoWindow_get_Width( x, p ) \
+        (x)->lpVtbl->get_Width( x, p )
+    #define IVideoWindow_put_Top( x, p ) \
+        (x)->lpVtbl->put_Top( x, p )
+    #define IVideoWindow_get_Top( x, p ) \
+        (x)->lpVtbl->get_Top( x, p )
+    #define IVideoWindow_put_Height( x, p ) \
+        (x)->lpVtbl->put_Height( x, p )
+    #define IVideoWindow_get_Height( x, p ) \
+        (x)->lpVtbl->get_Height( x, p )
+    #define IVideoWindow_put_Owner( x, p ) \
+        (x)->lpVtbl->put_Owner( x, p )
+    #define IVideoWindow_get_Owner( x, p ) \
+        (x)->lpVtbl->get_Owner( x, p )
+    #define IVideoWindow_put_MessageDrain( x, p ) \
+        (x)->lpVtbl->put_MessageDrain( x, p )
+    #define IVideoWindow_get_MessageDrain( x, p ) \
+        (x)->lpVtbl->get_MessageDrain( x, p )
+    #define IVideoWindow_get_BorderColor( x, p ) \
+        (x)->lpVtbl->get_BorderColor( x, p )
+    #define IVideoWindow_put_BorderColor( x, p ) \
+        (x)->lpVtbl->put_BorderColor( x, p )
+    #define IVideoWindow_get_FullScreenMode( x, p ) \
+        (x)->lpVtbl->get_FullScreenMode( x, p )
+    #define IVideoWindow_put_FullScreenMode( x, p ) \
+        (x)->lpVtbl->put_FullScreenMode( x, p )
+    #define IVideoWindow_SetWindowForeground( x, p ) \
+        (x)->lpVtbl->SetWindowForeground( x, p )
+    #define IVideoWindow_NotifyOwnerMessage( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->NotifyOwnerMessage( x, p1, p2, p3, p4 )
+    #define IVideoWindow_SetWindowPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetWindowPosition( x, p1, p2, p3, p4 )
+    #define IVideoWindow_GetWindowPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetWindowPosition( x, p1, p2, p3, p4 )
+    #define IVideoWindow_GetMinIdealImageSize( x, p1, p2 ) \
+        (x)->lpVtbl->GetMinIdealImageSize( x, p1, p2 )
+    #define IVideoWindow_GetMaxIdealImageSize( x, p1, p2 ) \
+        (x)->lpVtbl->GetMaxIdealImageSize( x, p1, p2 )
+    #define IVideoWindow_GetRestorePosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetRestorePosition( x, p1, p2, p3, p4 )
+    #define IVideoWindow_HideCursor( x, p ) \
+        (x)->lpVtbl->HideCursor( x, p )
+    #define IVideoWindow_IsCursorHidden( x, p ) \
+        (x)->lpVtbl->IsCursorHidden( x, p )
+    #define IBasicVideo_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IBasicVideo_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IBasicVideo_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IBasicVideo_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IBasicVideo_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IBasicVideo_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IBasicVideo_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IBasicVideo_get_AvgTimePerFrame( x, p ) \
+        (x)->lpVtbl->get_AvgTimePerFrame( x, p )
+    #define IBasicVideo_get_BitRate( x, p ) \
+        (x)->lpVtbl->get_BitRate( x, p )
+    #define IBasicVideo_get_BitErrorRate( x, p ) \
+        (x)->lpVtbl->get_BitErrorRate( x, p )
+    #define IBasicVideo_get_VideoWidth( x, p ) \
+        (x)->lpVtbl->get_VideoWidth( x, p )
+    #define IBasicVideo_get_VideoHeight( x, p ) \
+        (x)->lpVtbl->get_VideoHeight( x, p )
+    #define IBasicVideo_put_SourceLeft( x, p ) \
+        (x)->lpVtbl->put_SourceLeft( x, p )
+    #define IBasicVideo_get_SourceLeft( x, p ) \
+        (x)->lpVtbl->get_SourceLeft( x, p )
+    #define IBasicVideo_put_SourceWidth( x, p ) \
+        (x)->lpVtbl->put_SourceWidth( x, p )
+    #define IBasicVideo_get_SourceWidth( x, p ) \
+        (x)->lpVtbl->get_SourceWidth( x, p )
+    #define IBasicVideo_put_SourceTop( x, p ) \
+        (x)->lpVtbl->put_SourceTop( x, p )
+    #define IBasicVideo_get_SourceTop( x, p ) \
+        (x)->lpVtbl->get_SourceTop( x, p )
+    #define IBasicVideo_put_SourceHeight( x, p ) \
+        (x)->lpVtbl->put_SourceHeight( x, p )
+    #define IBasicVideo_get_SourceHeight( x, p ) \
+        (x)->lpVtbl->get_SourceHeight( x, p )
+    #define IBasicVideo_put_DestinationLeft( x, p ) \
+        (x)->lpVtbl->put_DestinationLeft( x, p )
+    #define IBasicVideo_get_DestinationLeft( x, p ) \
+        (x)->lpVtbl->get_DestinationLeft( x, p )
+    #define IBasicVideo_put_DestinationWidth( x, p ) \
+        (x)->lpVtbl->put_DestinationWidth( x, p )
+    #define IBasicVideo_get_DestinationWidth( x, p ) \
+        (x)->lpVtbl->get_DestinationWidth( x, p )
+    #define IBasicVideo_put_DestinationTop( x, p ) \
+        (x)->lpVtbl->put_DestinationTop( x, p )
+    #define IBasicVideo_get_DestinationTop( x, p ) \
+        (x)->lpVtbl->get_DestinationTop( x, p )
+    #define IBasicVideo_put_DestinationHeight( x, p ) \
+        (x)->lpVtbl->put_DestinationHeight( x, p )
+    #define IBasicVideo_get_DestinationHeight( x, p ) \
+        (x)->lpVtbl->get_DestinationHeight( x, p )
+    #define IBasicVideo_SetSourcePosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetSourcePosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo_GetSourcePosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetSourcePosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo_SetDefaultSourcePosition( x ) \
+        (x)->lpVtbl->SetDefaultSourcePosition( x )
+    #define IBasicVideo_SetDestinationPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetDestinationPosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo_GetDestinationPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetDestinationPosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo_SetDefaultDestinationPosition( x ) \
+        (x)->lpVtbl->SetDefaultDestinationPosition( x )
+    #define IBasicVideo_GetVideoSize( x, p1, p2 ) \
+        (x)->lpVtbl->GetVideoSize( x, p1, p2 )
+    #define IBasicVideo_GetVideoPaletteEntries( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetVideoPaletteEntries( x, p1, p2, p3, p4 )
+    #define IBasicVideo_GetCurrentImage( x, p1, p2 ) \
+        (x)->lpVtbl->GetCurrentImage( x, p1, p2 )
+    #define IBasicVideo_IsUsingDefaultSource( x ) \
+        (x)->lpVtbl->IsUsingDefaultSource( x )
+    #define IBasicVideo_IsUsingDefaultDestination( x ) \
+        (x)->lpVtbl->IsUsingDefaultDestination( x )
+    #define IBasicVideo2_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IBasicVideo2_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IBasicVideo2_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IBasicVideo2_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IBasicVideo2_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IBasicVideo2_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IBasicVideo2_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IBasicVideo2_get_AvgTimePerFrame( x, p ) \
+        (x)->lpVtbl->get_AvgTimePerFrame( x, p )
+    #define IBasicVideo2_get_BitRate( x, p ) \
+        (x)->lpVtbl->get_BitRate( x, p )
+    #define IBasicVideo2_get_BitErrorRate( x, p ) \
+        (x)->lpVtbl->get_BitErrorRate( x, p )
+    #define IBasicVideo2_get_VideoWidth( x, p ) \
+        (x)->lpVtbl->get_VideoWidth( x, p )
+    #define IBasicVideo2_get_VideoHeight( x, p ) \
+        (x)->lpVtbl->get_VideoHeight( x, p )
+    #define IBasicVideo2_put_SourceLeft( x, p ) \
+        (x)->lpVtbl->put_SourceLeft( x, p )
+    #define IBasicVideo2_get_SourceLeft( x, p ) \
+        (x)->lpVtbl->get_SourceLeft( x, p )
+    #define IBasicVideo2_put_SourceWidth( x, p ) \
+        (x)->lpVtbl->put_SourceWidth( x, p )
+    #define IBasicVideo2_get_SourceWidth( x, p ) \
+        (x)->lpVtbl->get_SourceWidth( x, p )
+    #define IBasicVideo2_put_SourceTop( x, p ) \
+        (x)->lpVtbl->put_SourceTop( x, p )
+    #define IBasicVideo2_get_SourceTop( x, p ) \
+        (x)->lpVtbl->get_SourceTop( x, p )
+    #define IBasicVideo2_put_SourceHeight( x, p ) \
+        (x)->lpVtbl->put_SourceHeight( x, p )
+    #define IBasicVideo2_get_SourceHeight( x, p ) \
+        (x)->lpVtbl->get_SourceHeight( x, p )
+    #define IBasicVideo2_put_DestinationLeft( x, p ) \
+        (x)->lpVtbl->put_DestinationLeft( x, p )
+    #define IBasicVideo2_get_DestinationLeft( x, p ) \
+        (x)->lpVtbl->get_DestinationLeft( x, p )
+    #define IBasicVideo2_put_DestinationWidth( x, p ) \
+        (x)->lpVtbl->put_DestinationWidth( x, p )
+    #define IBasicVideo2_get_DestinationWidth( x, p ) \
+        (x)->lpVtbl->get_DestinationWidth( x, p )
+    #define IBasicVideo2_put_DestinationTop( x, p ) \
+        (x)->lpVtbl->put_DestinationTop( x, p )
+    #define IBasicVideo2_get_DestinationTop( x, p ) \
+        (x)->lpVtbl->get_DestinationTop( x, p )
+    #define IBasicVideo2_put_DestinationHeight( x, p ) \
+        (x)->lpVtbl->put_DestinationHeight( x, p )
+    #define IBasicVideo2_get_DestinationHeight( x, p ) \
+        (x)->lpVtbl->get_DestinationHeight( x, p )
+    #define IBasicVideo2_SetSourcePosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetSourcePosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo2_GetSourcePosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetSourcePosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo2_SetDefaultSourcePosition( x ) \
+        (x)->lpVtbl->SetDefaultSourcePosition( x )
+    #define IBasicVideo2_SetDestinationPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetDestinationPosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo2_GetDestinationPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetDestinationPosition( x, p1, p2, p3, p4 )
+    #define IBasicVideo2_SetDefaultDestinationPosition( x ) \
+        (x)->lpVtbl->SetDefaultDestinationPosition( x )
+    #define IBasicVideo2_GetVideoSize( x, p1, p2 ) \
+        (x)->lpVtbl->GetVideoSize( x, p1, p2 )
+    #define IBasicVideo2_GetVideoPaletteEntries( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetVideoPaletteEntries( x, p1, p2, p3, p4 )
+    #define IBasicVideo2_GetCurrentImage( x, p1, p2 ) \
+        (x)->lpVtbl->GetCurrentImage( x, p1, p2 )
+    #define IBasicVideo2_IsUsingDefaultSource( x ) \
+        (x)->lpVtbl->IsUsingDefaultSource( x )
+    #define IBasicVideo2_IsUsingDefaultDestination( x ) \
+        (x)->lpVtbl->IsUsingDefaultDestination( x )
+    #define IBasicVideo2_GetPreferredAspectRatio( x, p1, p2 ) \
+        (x)->lpVtbl->GetPreferredAspectRatio( x, p1, p2 )
+    #define IDeferredCommand_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDeferredCommand_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDeferredCommand_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDeferredCommand_Cancel( x ) \
+        (x)->lpVtbl->Cancel( x )
+    #define IDeferredCommand_Confidence( x, p ) \
+        (x)->lpVtbl->Confidence( x, p )
+    #define IDeferredCommand_Postpone( x, p ) \
+        (x)->lpVtbl->Postpone( x, p )
+    #define IDeferredCommand_GetHResult( x, p ) \
+        (x)->lpVtbl->GetHResult( x, p )
+    #define IQueueCommand_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IQueueCommand_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IQueueCommand_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IQueueCommand_InvokeAtStreamTime( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 ) \
+        (x)->lpVtbl->InvokeAtStreamTime( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 )
+    #define IQueueCommand_InvokeAtPresentationTime( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 ) \
+        (x)->lpVtbl->InvokeAtPresentationTime( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 )
+    #define IFilterInfo_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IFilterInfo_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IFilterInfo_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IFilterInfo_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IFilterInfo_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IFilterInfo_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IFilterInfo_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IFilterInfo_FindPin( x, p1, p2 ) \
+        (x)->lpVtbl->FindPin( x, p1, p2 )
+    #define IFilterInfo_get_Name( x, p ) \
+        (x)->lpVtbl->get_Name( x, p )
+    #define IFilterInfo_get_VendorInfo( x, p ) \
+        (x)->lpVtbl->get_VendorInfo( x, p )
+    #define IFilterInfo_get_Filter( x, p ) \
+        (x)->lpVtbl->get_Filter( x, p )
+    #define IFilterInfo_get_Pins( x, p ) \
+        (x)->lpVtbl->get_Pins( x, p )
+    #define IFilterInfo_get_IsFileSource( x, p ) \
+        (x)->lpVtbl->get_IsFileSource( x, p )
+    #define IFilterInfo_get_Filename( x, p ) \
+        (x)->lpVtbl->get_Filename( x, p )
+    #define IFilterInfo_put_Filename( x, p ) \
+        (x)->lpVtbl->put_Filename( x, p )
+    #define IRegFilterInfo_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IRegFilterInfo_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IRegFilterInfo_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IRegFilterInfo_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IRegFilterInfo_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IRegFilterInfo_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IRegFilterInfo_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IRegFilterInfo_get_Name( x, p ) \
+        (x)->lpVtbl->get_Name( x, p )
+    #define IRegFilterInfo_Filter( x, p ) \
+        (x)->lpVtbl->Filter( x, p )
+    #define IMediaTypeInfo_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaTypeInfo_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaTypeInfo_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaTypeInfo_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IMediaTypeInfo_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IMediaTypeInfo_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IMediaTypeInfo_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IMediaTypeInfo_get_Type( x, p ) \
+        (x)->lpVtbl->get_Type( x, p )
+    #define IMediaTypeInfo_get_Subtype( x, p ) \
+        (x)->lpVtbl->get_Subtype( x, p )
+    #define IPinInfo_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IPinInfo_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IPinInfo_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IPinInfo_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IPinInfo_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IPinInfo_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IPinInfo_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IPinInfo_get_Pin( x, p ) \
+        (x)->lpVtbl->get_Pin( x, p )
+    #define IPinInfo_get_ConnectedTo( x, p ) \
+        (x)->lpVtbl->get_ConnectedTo( x, p )
+    #define IPinInfo_get_ConnectionMediaType( x, p ) \
+        (x)->lpVtbl->get_ConnectionMediaType( x, p )
+    #define IPinInfo_get_FilterInfo( x, p ) \
+        (x)->lpVtbl->get_FilterInfo( x, p )
+    #define IPinInfo_get_Name( x, p ) \
+        (x)->lpVtbl->get_Name( x, p )
+    #define IPinInfo_get_Direction( x, p ) \
+        (x)->lpVtbl->get_Direction( x, p )
+    #define IPinInfo_get_PinID( x, p ) \
+        (x)->lpVtbl->get_PinID( x, p )
+    #define IPinInfo_get_MediaTypes( x, p ) \
+        (x)->lpVtbl->get_MediaTypes( x, p )
+    #define IPinInfo_Connect( x, p ) \
+        (x)->lpVtbl->Connect( x, p )
+    #define IPinInfo_ConnectDirect( x, p ) \
+        (x)->lpVtbl->ConnectDirect( x, p )
+    #define IPinInfo_ConnectWithType( x, p1, p2 ) \
+        (x)->lpVtbl->ConnectWithType( x, p1, p2 )
+    #define IPinInfo_Disconnect( x ) \
+        (x)->lpVtbl->Disconnect( x )
+    #define IPinInfo_Render( x ) \
+        (x)->lpVtbl->Render( x )
+    #define IAMStats_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IAMStats_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IAMStats_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IAMStats_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IAMStats_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IAMStats_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IAMStats_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IAMStats_Reset( x ) \
+        (x)->lpVtbl->Reset( x )
+    #define IAMStats_get_Count( x, p ) \
+        (x)->lpVtbl->get_Count( x, p )
+    #define IAMStats_GetValueByIndex( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->GetValueByIndex( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IAMStats_GetValueByName( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->GetValueByName( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IAMStats_GetIndex( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetIndex( x, p1, p2, p3 )
+    #define IAMStats_AddValue( x, p1, p2 ) \
+        (x)->lpVtbl->AddValue( x, p1, p2 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __control_h__ */

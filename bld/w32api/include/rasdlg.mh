@@ -1,0 +1,172 @@
+/*
+ *  rasdlg.h    Remote Access Service (RAS) dialog functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _RASDLG_H_
+#define _RASDLG_H_
+
+:include readonly.sp
+
+#include <ras.h>
+
+:include cpluspro.sp
+
+/* RasPhonebookDlg() events */
+#define RASPBDEVENT_AddEntry    1L
+#define RASPBDEVENT_EditEntry   2L
+#define RASPBDEVENT_RemoveEntry 3L
+#define RASPBDEVENT_DialEntry   4L
+#define RASPBDEVENT_EditGlobals 5L
+#define RASPBDEVENT_NoUser      6L
+#define RASPBDEVENT_NoUserEdit  7L
+
+/* RasPhonebookDlg() flags */
+#define RASPBDFLAG_PositionDlg      1L
+#define RASPBDFLAG_ForceCloseOnDial 2L
+#define RASPBDFLAG_NoUser           16L
+
+/* RasEntryDlg() flags */
+#define RASEDFLAG_PositionDlg   1L
+#define RASEDFLAG_NewEntry      2L
+#define RASEDFLAG_CloseEntry    4L
+
+/* RasDialDlg() flags */
+#define RASDDFLAG_PositionDlg   1L
+
+/* RasEntryDlg() parameters */
+typedef struct tagRASENTRYDLGA {
+    DWORD       dwSize;
+    HWND        hwndOwner;
+    DWORD       dwFlags;
+    LONG        xDlg;
+    LONG        yDlg;
+    CHAR        szEntry[RAS_MaxEntryName + 1];
+    DWORD       dwError;
+    ULONG_PTR   reserved;
+    ULONG_PTR   reserved2;
+} RASENTRYDLGA;
+typedef RASENTRYDLGA    *LPRASENTRYDLGA;
+typedef struct tagRASENTRYDLGW {
+    DWORD       dwSize;
+    HWND        hwndOwner;
+    DWORD       dwFlags;
+    LONG        xDlg;
+    LONG        yDlg;
+    WCHAR       szEntry[RAS_MaxEntryName + 1];
+    DWORD       dwError;
+    ULONG_PTR   reserved;
+    ULONG_PTR   reserved2;
+} RASENTRYDLGW;
+typedef RASENTRYDLGW    *LPRASENTRYDLGW;
+#ifdef UNICODE
+typedef RASENTRYDLGW    RASENTRYDLG;
+typedef LPRASENTRYDLGW  LPRASENTRYDLG;
+#else
+typedef RASENTRYDLGA    RASENTRYDLG;
+typedef LPRASENTRYDLGA  LPRASENTRYDLG;
+#endif
+
+/* RasDialDlg() parameters */
+typedef struct tagRASDIALDLG {
+    DWORD       dwSize;
+    HWND        hwndOwner;
+    DWORD       dwFlags;
+    LONG        xDlg;
+    LONG        yDlg;
+    DWORD       dwSubEntry;
+    DWORD       dwError;
+    ULONG_PTR   reserved;
+    ULONG_PTR   reserved2;
+} RASDIALDLG;
+typedef RASDIALDLG  *LPRASDIALDLG;
+
+/* RAS phonebook dialog callback */
+typedef VOID (WINAPI *RASPBDLGFUNCA)( DWORD, DWORD, LPSTR, LPVOID );
+typedef VOID (WINAPI *RASPBDLGFUNCW)( DWORD, DWORD, LPWSTR, LPVOID );
+
+/* RasPhonebookDlg() parameters */
+typedef struct tagRASPBDLGA {
+    DWORD           dwSize;
+    HWND            hwndOwner;
+    DWORD           dwFlags;
+    LONG            xDlg;
+    LONG            yDlg;
+    ULONG_PTR       dwCallbackId;
+    RASPBDLGFUNCA   pCallback;
+    DWORD           dwError;
+    ULONG_PTR       reserved;
+    ULONG_PTR       reserved2;
+} RASPBDLGA;
+typedef RASPBDLGA   *LPRASPBDLGA;
+typedef struct tagRASPBDLGW {
+    DWORD           dwSize;
+    HWND            hwndOwner;
+    DWORD           dwFlags;
+    LONG            xDlg;
+    LONG            yDlg;
+    ULONG_PTR       dwCallbackId;
+    RASPBDLGFUNCW   pCallback;
+    DWORD           dwError;
+    ULONG_PTR       reserved;
+    ULONG_PTR       reserved2;
+} RASPBDLGW;
+typedef RASPBDLGW   *LPRASPBDLGW;
+#ifdef UNICODE
+typedef RASPBDLGW   RASPBDLG;
+typedef LPRASPBDLGW LPRASPBDLG;
+#else
+typedef RASPBDLGA   RASPBDLG;
+typedef LPRASPBDLGA LPRASPBDLG;
+#endif
+
+/* RAS no user information */
+typedef struct tagRASNOUSERA {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwTimeoutMS;
+    CHAR    szUserName[UNLEN + 1];
+    CHAR    szPassword[PWLEN + 1];
+    CHAR    szDomain[DNLEN + 1];
+} RASNOUSERA;
+typedef RASNOUSERA      *LPRASNOUSERA;
+typedef struct tagRASNOUSERW {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwTimeoutMS;
+    WCHAR   szUserName[UNLEN + 1];
+    WCHAR   szPassword[PWLEN + 1];
+    WCHAR   szDomain[DNLEN + 1];
+} RASNOUSERW;
+typedef RASNOUSERW      *LPRASNOUSERW;
+#ifdef UNICODE
+typedef RASNOUSERW      RASNOUSER;
+typedef LPRASNOUSERW    LPRASNOUSER;
+#else
+typedef RASNOUSERA      RASNOUSER;
+typedef LPRASNOUSERA    LPRASNOUSER;
+#endif
+
+/* Functions in RASDLG.DLL */
+BOOL APIENTRY   RasDialDlgA( LPSTR, LPSTR, LPSTR, LPRASDIALDLG );
+BOOL APIENTRY   RasDialDlgW( LPWSTR, LPWSTR, LPWSTR, LPRASDIALDLG );
+BOOL APIENTRY   RasEntryDlgA( LPSTR, LPSTR, LPRASENTRYDLGA );
+BOOL APIENTRY   RasEntryDlgW( LPWSTR, LPWSTR, LPRASENTRYDLGW );
+BOOL APIENTRY   RasPhonebookDlgA( LPSTR, LPSTR, LPRASPBDLGA );
+BOOL APIENTRY   RasPhonebookDlgW( LPWSTR, LPWSTR, LPRASPBDLGW );
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define RasDialDlg      RasDialDlgW
+    #define RasEntryDlg     RasEntryDlgW
+    #define RasPhonebookDlg RasPhonebookDlgW
+#else
+    #define RasDialDlg      RasDialDlgA
+    #define RasEntryDlg     RasEntryDlgA
+    #define RasPhonebookDlg RasPhonebookDlgA
+#endif
+
+:include cplusepi.sp
+
+#endif /* _RASDLG_H_ */

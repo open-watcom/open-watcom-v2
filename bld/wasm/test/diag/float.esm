@@ -1,0 +1,53 @@
+.387
+.386p
+DATA		SEGMENT	PARA PRIVATE USE16 'DATA'
+L$1:
+    DB	9aH, 99H, 59H, 0beH
+L$2:
+    DB	74H, 24H, 37H, 0bfH, 2aH, 0a9H, 93H, 0bdH
+    DB	0f6H, 28H, 3cH, 0bfH, 0, 0, 9aH, 99H
+    DB	99H, 99H, 99H, 99H, 99H, 0d9H, 0fcH, 0bfH
+    DB	6aH, 4dH, 0f3H, 8eH, 53H, 74H, 24H, 0b7H
+    DB	0feH, 0bfH, 7cH, 61H, 32H, 55H, 30H, 2aH
+    DB	0a9H, 93H, 0fbH, 0bfH
+
+DATA		ENDS
+TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:TEXT16, DS:DGROUP, SS:DGROUP
+    mov         esi,0bf3c28f6H
+    mov         ebx,0bf3c28f6H
+    mov         dword ptr [esi],0bf3c28f6H
+    mov         dword ptr [ebx],0bf3c28f6H
+    mov         dword ptr [esi],0bf3c28f6H
+    mov         dword ptr [ebx],0bf3c28f6H
+    mov         dword ptr L$1,0bf3c28f6H
+    mov         dword ptr L$2,0bf3c28f6H
+    mov         dword ptr L$2[ebx],0bf3c28f6H
+    mov         dword ptr L$2[bx],0bf3c28f6H
+    mov         dword ptr [si],0bf3c28f6H
+    mov         dword ptr [bx],0bf3c28f6H
+    mov         dword ptr [si],0bf3c28f6H
+    mov         dword ptr [bx],0bf3c28f6H
+    push        0bf3c28f6H
+    or          esi,0bf3c28f6H
+TEXT16		ENDS
+TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:TEXT32, DS:DGROUP, SS:DGROUP
+    mov         esi,0bf3c28f6H
+    mov         ebx,0bf3c28f6H
+    mov         dword ptr [esi],0bf3c28f6H
+    mov         dword ptr [ebx],0bf3c28f6H
+    mov         dword ptr [esi],0bf3c28f6H
+    mov         dword ptr [ebx],0bf3c28f6H
+    mov         dword ptr L$1,0bf3c28f6H
+    mov         dword ptr L$2,0bf3c28f6H
+    mov         dword ptr L$2[ebx],0bf3c28f6H
+    mov         dword ptr L$2[bx],0bf3c28f6H
+    mov         dword ptr [si],0bf3c28f6H
+    mov         dword ptr [bx],0bf3c28f6H
+    mov         dword ptr [si],0bf3c28f6H
+    mov         dword ptr [bx],0bf3c28f6H
+    push        0bf3c28f6H
+    or          esi,0bf3c28f6H
+TEXT32		ENDS
+		END

@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Graphics library CGA specific code.
 ;*
 ;*****************************************************************************
 
@@ -41,7 +40,7 @@ include graph.inc
         extrn   __PlotAct : word
         extrn   __Transparent : word
 
-        modstart cgautils
+        modstart cgautils,WORD
 
         xdefp   _CoRep_
         xdefp   _CoXor_
@@ -71,7 +70,7 @@ include graph.inc
 ;
 ;   Plotting primitives
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -79,30 +78,30 @@ include graph.inc
 
         db      E_CoXor-_CoXor_
 _CoXor_:                        ; xor in new pixel
-        xor     es:0[edi],al
+        xor     es:0[_edi],al
 E_CoXor:
         ret
 
         db      E_CoAnd-_CoAnd_
 _CoAnd_:                        ; and in new pixel
         or      al,ch           ; mask on other bits
-        and     es:0[edi],al    ; do and with memory
+        and     es:0[_edi],al    ; do and with memory
         xor     al,ch           ; restore al
 E_CoAnd:
         ret
 
         db      E_CoRep-_CoRep_
 _CoRep_:                        ; replace pixel
-        mov     ah,es:[edi]     ; get current byte
+        mov     ah,es:[_edi]     ; get current byte
         and     ah,ch           ; mask out current colour
         or      ah,al           ; OR in new colour
-        mov     es:[edi],ah     ; replace byte
+        mov     es:[_edi],ah     ; replace byte
 E_CoRep:
         ret
 
         db      E_CoOr-_CoOr_
 _CoOr_:                         ; or in new pixel
-        or      es:0[edi],al
+        or      es:0[_edi],al
 E_CoOr:
         ret
 
@@ -110,7 +109,7 @@ E_CoOr:
 ;
 ;   Movement primitives
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -119,10 +118,10 @@ E_CoOr:
 ;=========================================================================
 
         db      E_Move2Right-_Move2Right_
-_Move2Right_:                   ; move right in medium-res mode
+_Move2Right_:                   ; move right in m_edium-res mode
         ror     al,cl           ; shift colour pattern to the right
         ror     ch,cl           ; shift mask to the right
-        sbb     edi,-1          ; increment di if start of new byte
+        sbb     _edi,-1          ; increment di if start of new byte
 E_Move2Right:
         ret                     ; return
 
@@ -130,15 +129,15 @@ E_Move2Right:
 _Move1Right_:                   ; move right in high-res mode
         ror     al,1            ; shift colour pattern to the right
         ror     ch,1            ; shift mask to the right
-        sbb     edi,-1          ; move to next byte if it is time
+        sbb     _edi,-1          ; move to next byte if it is time
 E_Move1Right:
         ret                     ; return
 
         db      E_Move2Left-_Move2Left_
-_Move2Left_:                    ; move left in medium-res mode
+_Move2Left_:                    ; move left in m_edium-res mode
         rol     al,cl           ; shift colour pattern to the left
         rol     ch,cl           ; shift mask to the left
-        adc     edi,-1          ; decrement di if start of new byte
+        adc     _edi,-1          ; decrement di if start of new byte
 E_Move2Left:
         ret                     ; return
 
@@ -146,14 +145,14 @@ E_Move2Left:
 _Move1Left_:                    ; move left in high-res mode
         rol     al,1            ; shift colour pattern to the left
         rol     ch,1            ; shift mask to the left
-        adc     edi,-1          ; move to next byte if it is time
+        adc     _edi,-1          ; move to next byte if it is time
 E_Move1Left:
         ret                     ; return
 
         db      E_MoveUp-_MoveUp_
 _MoveUp_:                       ; move up 1 dot
-ifdef _386                      ; can't use other method since with DOS4GW
-        push    ebx             ; ... the segment is part of EDI
+ifdef __386__                      ; can't use other method since with DOS4GW
+        push    _ebx             ; ... the segment is part of _EDI
         mov     bx,di
         and     bx,8000h        ; keep high bit
         and     di,7fffh
@@ -162,17 +161,17 @@ endif
         _if     b               ; if di < 0
           add     di,2000h+2000h-80 ; add back 2000h + enough for next row
         _endif                  ; endif
-ifdef _386
+ifdef __386__
         or      di,bx
-        pop     ebx
+        pop     _ebx
 endif
 E_MoveUp:
         ret                     ; return
 
         db      E_MoveDown-_MoveDown_
 _MoveDown_:                     ; move down 1 dot
-ifdef _386                      ; can't use other method since with DOS4GW
-        push    ebx             ; ... the segment is part of EDI
+ifdef __386__                      ; can't use other method since with DOS4GW
+        push    _ebx             ; ... the segment is part of _EDI
         mov     bx,di
         and     bx,8000h        ; keep high bit
         and     di,7fffh
@@ -181,9 +180,9 @@ endif
         _if     b               ; if not
           add     di,2000h-80+2000h ; compensate for mistake & add $2000
         _endif                  ; endif
-ifdef _386
+ifdef __386__
         or      di,bx
-        pop     ebx
+        pop     _ebx
 endif
 E_MoveDown:
         ret                     ; return
@@ -192,7 +191,7 @@ E_MoveDown:
 ;
 ;   GetDot routines
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               CL          bit position
 ;
 ;   Output      AX          colour of pixel at location
@@ -200,7 +199,7 @@ E_MoveDown:
 ;=========================================================================
 
 _Get1Dot_:
-        mov     al,es:[edi]     ; get byte
+        mov     al,es:[_edi]     ; get byte
         sub     cl,7            ; shift byte by ( 7 - bit_position )
         neg     cl              ; . . .
         shr     al,cl           ; right align pixel
@@ -209,7 +208,7 @@ _Get1Dot_:
         ret
 
 _Get2Dot_:
-        mov     al,es:[edi]      ; get byte
+        mov     al,es:[_edi]      ; get byte
         sub     cl,6            ; shift byte by ( 6 - bit_position )
         neg     cl              ; . . .
         shr     al,cl           ; right align pixel
@@ -221,19 +220,19 @@ _Get2Dot_:
 ;
 ;   PixCopy routines
 ;
-;   Input       ES:EDI,DH   screen memory
-;               SI:EAX,DL   buffer to copy from
+;   Input       ES:_EDI,DH   screen memory
+;               SI:_EAX,DL   buffer to copy from
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
 
 _Pix2Copy_:
-        shl     ecx,1           ; # bits = 2 * # pixels
+        shl     _ecx,1           ; # bits = 2 * # pixels
 
 _Pix1Copy_:
         push    ds              ; save DS
         mov     ds,si           ; get SI:AX into DS:SI
-        mov     esi,eax
+        mov     _esi,_eax
         docall  SetupAction
         docall  BitCopy
         docall  BitReplace
@@ -244,43 +243,50 @@ _Pix1Copy_:
 ;
 ;   ReadRow routines
 ;
-;   Input       ES:EDI      buffer to copy into
-;               SI:EAX,DL   screen memory
+;   Input       ES:_EDI      buffer to copy into
+;               SI:_EAX,DL   screen memory
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
 
 _Pix2Read_:
-        shl     ecx,1
+        shl     _ecx,1
 
 _Pix1Read_:
         push    ds              ; save DS
         mov     ds,si           ; get SI:AX into DS:SI
-        mov     esi,eax
+        mov     _esi,_eax
         docall  BitCopy
         pop     ds
         ret
 
-
-func_table      PlotJmp,<BitReplace,BitXor,BitAnd,BitOr>
+ifdef __386__
+    PlotJmp dd BitReplace,BitXor,BitAnd,BitOr
+else
+    PlotJmp dw BitReplace,BitXor,BitAnd,BitOr
+endif
 
 SetupAction:
-ifdef _386
-        movzx   ebx,word ptr ss:__PlotAct
-        jmp     cs:PlotJmp[ebx*4]
+ifdef __386__
+        movzx   _ebx,word ptr ss:__PlotAct
+        jmp     cs:PlotJmp[_ebx*4]
 else
         mov     bx,ss:__PlotAct
         shl     bx,1
         jmp     cs:PlotJmp[bx]
 endif
 
-func_table      FillJmp,<_CoRep_,_CoXor_,_CoAnd_,_CoOr_>
+ifdef __386__
+    FillJmp dd _CoRep_,_CoXor_,_CoAnd_,_CoOr_
+else
+    FillJmp dw _CoRep_,_CoXor_,_CoAnd_,_CoOr_
+endif
 
 ;=========================================================================
 ;
 ;   Zap routines
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
@@ -289,7 +295,7 @@ func_table      FillJmp,<_CoRep_,_CoXor_,_CoAnd_,_CoOr_>
 ;
 ;   Fill routines
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
@@ -297,8 +303,8 @@ func_table      FillJmp,<_CoRep_,_CoXor_,_CoAnd_,_CoOr_>
 ;==========================================================================
 
 _Pix1Zap_:                          ; zap fill ( 1 bit per pixel )
-        push    ebp
-        push    esi
+        push    _ebp
+        push    _esi
         or      al,al               ; if given colour is zero
         _if     e
           xor     bl,bl             ; colour is zero
@@ -309,8 +315,8 @@ _Pix1Zap_:                          ; zap fill ( 1 bit per pixel )
         jmp     short fill_1_common
 
 _Pix1Fill_:                         ; fill with style ( 1 bit per pixel )
-        push    ebp
-        push    esi
+        push    _ebp
+        push    _esi
         cmp     word ptr ss:__Transparent,0
         _if     e                   ; if _Transparent == 0
           mov     bh,0ffh           ; - bit mask is ff (affect all bits)
@@ -324,15 +330,15 @@ _Pix1Fill_:                         ; fill with style ( 1 bit per pixel )
 
 fill_1_common:                      ; at this point bl = colour, bh = mask
 
-ifdef _386
-        movzx   esi,word ptr ss:__PlotAct
-        mov     esi,cs:FillJmp[esi*4]
+ifdef __386__
+        movzx   _esi,word ptr ss:__PlotAct
+        mov     _esi,cs:FillJmp[_esi*4]
 else                                ; load address of plot function
         mov     si,ss:__PlotAct
         shl     si,1
         mov     si,cs:FillJmp[si]
 endif
-        mov     ebp,ecx             ; get count in bp
+        mov     _ebp,_ecx             ; get count in bp
 
         or      dh,dh               ; if bit_pos != 0
         _if     ne                  ; (doesn't start on byte boundary)
@@ -342,7 +348,7 @@ endif
           xor     ch,ch             ; - ch will be mask for wanted bits
           _loop                     ; - loop
             or      ch,ah           ; - - put bit in
-            dec     ebp             ; - - count--
+            dec     _ebp             ; - - count--
             _quif   e               ; - - quif count == 0
             shr     ah,1            ; - - move to next bit
           _until    c               ; - until bit comes out
@@ -350,13 +356,13 @@ endif
           and     al,ch             ; - keep bits of colour we want
           and     ch,bh             ; - keep only mask bits
           not     ch                ; - bit mask is complement
-          call    esi               ; - plot the pixels
-          inc     edi               ; - move to next byte
+          call    _esi               ; - plot the pixels
+          inc     _edi               ; - move to next byte
         _endif                      ; endif
 
-        mov     edx,ebp             ; get count
+        mov     _edx,_ebp             ; get count
         mov     cl,3                ; convert to byte count
-        shr     edx,cl              ; . . .
+        shr     _edx,cl              ; . . .
         _if     ne                  ; if byte count != 0
           mov     al,bl             ; - get colour
           mov     ch,bh             ; - get mask
@@ -366,34 +372,34 @@ endif
             _quif   ne              ; - - quif if its not replace mode
             or      ch,ch           ; - -
             _quif   ne              ; - - quif if the mask is not zero
-            mov     ecx,edx         ; - - use fast fill
+            mov     _ecx,_edx         ; - - use fast fill
             cld                     ; - -
             rep     stosb           ; - - fill buffer until( --count == 0 )
           _admit                    ; - admit (use slow method)
             _loop                   ; - - loop
-              call    esi           ; - - - plot byte
-              inc     edi           ; - - - move to next byte
-              dec     edx           ; - - - count--
+              call    _esi           ; - - - plot byte
+              inc     _edi           ; - - - move to next byte
+              dec     _edx           ; - - - count--
               _quif   e             ; - - - quif count == 0
             _endloop                ; - - endloop
           _endguess                 ; - endguess
         _endif                      ; endif
 
-        and     ebp,7               ; if bit count != 0
+        and     _ebp,7               ; if bit count != 0
         _if     ne                  ; then
-          mov     ecx,8             ; - mask = ff << ( 8 - bit count )
-          sub     ecx,ebp           ; - . . .
+          mov     _ecx,8             ; - mask = ff << ( 8 - bit count )
+          sub     _ecx,_ebp           ; - . . .
           mov     ch,0ffh           ; - ch will be mask for wanted bits
           shl     ch,cl             ; - . . .
           mov     al,bl             ; - get colour
           and     al,ch             ; - keep bits of colour we want
           and     ch,bh
           not     ch                ; - bit mask is complement
-          call    esi               ; - plot the pixels
+          call    _esi               ; - plot the pixels
         _endif                      ; endif
 
-        pop     esi
-        pop     ebp
+        pop     _esi
+        pop     _ebp
         ret
 
 TwoBitTab   db  00000000b
@@ -402,46 +408,46 @@ TwoBitTab   db  00000000b
             db  11111111b
 
 _Pix2Zap_:                          ; Zap fill routine ( 2 bits per pixel )
-        push    ebp
-        push    esi
-        mov     ebp,ecx             ; move count to bp
+        push    _ebp
+        push    _esi
+        mov     _ebp,_ecx             ; move count to bp
         mov     ah,dh               ; move bit offset into ah
 
-        mov     ebx,offset TwoBitTab
+        mov     _ebx,offset TwoBitTab
         xlat    cs:TwoBitTab        ; get extended colour
         mov     dl,al               ; place colour into dx
         mov     dh,al
-        mov     ebx,0ffffh          ; bit mask is ffff (affect all bits)
+        mov     _ebx,0ffffh          ; bit mask is ffff (affect all bits)
         jmp     fill_2_common
 
 _Pix2Fill_:                         ; fill style routine ( 2 bits per pixel)
-        push    ebp
-        push    esi
-        mov     ebp,ecx             ; move count to bp
+        push    _ebp
+        push    _esi
+        mov     _ebp,_ecx             ; move count to bp
         mov     ah,dh               ; move bit offset into ah
 
-        mov     ecx,8               ; loop index
-        xor     esi,esi             ; construct the extended fill mask
+        mov     _ecx,8               ; loop index
+        xor     _esi,_esi             ; construct the extended fill mask
 do_mask:                            ;   for 2 bpp
           shr     bl,1              ; check each bit in the fill mask
           _if     c
-            or      esi,11B         ; bit is set
+            or      _esi,11B         ; bit is set
           _endif
           ror     si,1              ; rotate the mask (16 bits only)
           ror     si,1
         loop    do_mask
         mov     cl,bh               ; save mask offset
 
-        mov     ebx,offset TwoBitTab
+        mov     _ebx,offset TwoBitTab
         xlat    cs:TwoBitTab        ; get extended colour
         mov     dl,al               ; place colour into dx
         mov     dh,al
-        and     edx,esi             ; keep only bits in fill mask
+        and     _edx,_esi             ; keep only bits in fill mask
         cmp     word ptr ss:__Transparent,0
         _if     e                   ; if _Transparent == 0
-          mov     ebx,0ffffh        ; - bit mask is ffff (affect all bits)
+          mov     _ebx,0ffffh        ; - bit mask is ffff (affect all bits)
         _else                       ; else
-          mov     ebx,esi           ; - bit mask is fill mask (affect only the mask bits)
+          mov     _ebx,_esi           ; - bit mask is fill mask (affect only the mask bits)
        _endif                       ; endif
 
         cmp     cl,3                ; if mask offset > 3
@@ -459,9 +465,9 @@ fill_2_common:
         ;   cx - scratch register
         ;   si - will hold address of plot routine
 
-ifdef _386
-        movzx   esi,word ptr ss:__PlotAct
-        mov     esi,cs:FillJmp[esi*4]
+ifdef __386__
+        movzx   _esi,word ptr ss:__PlotAct
+        mov     _esi,cs:FillJmp[_esi*4]
 else                                ; load address of plot function
         mov     si,ss:__PlotAct
         shl     si,1
@@ -475,7 +481,7 @@ endif
           xor     ch,ch             ; - ch will be mask for wanted bits
           _loop                     ; - loop
             or      ch,ah           ; - - put bit in
-            dec     ebp             ; - - count--
+            dec     _ebp             ; - - count--
             _quif   e               ; - - quif count == 0
             shr     ah,1            ; - - move to next pixel
             shr     ah,1            ; - - . . .
@@ -484,15 +490,15 @@ endif
           and     al,ch             ; - keep bits of colour we want
           and     ch,bh             ; - and with fill mask
           not     ch                ; - bit mask is complement
-          call    esi               ; - plot the pixels
-          inc     edi               ; - move to next byte
+          call    _esi               ; - plot the pixels
+          inc     _edi               ; - move to next byte
           xchg    dh,dl             ; - get ready for next byte
           xchg    bh,bl             ; - . . .
         _endif                      ; endif
 
-        push    ebp                 ; save count
-        shr     ebp,1               ; convert to byte count
-        shr     ebp,1               ; . . .
+        push    _ebp                 ; save count
+        shr     _ebp,1               ; convert to byte count
+        shr     _ebp,1               ; . . .
         _if     ne                  ; if byte count != 0
           mov     al,dh             ; - get colour
           mov     ch,bh             ; - get mask
@@ -500,20 +506,20 @@ endif
           _guess                    ; - guess (can use fast method)
             cmp     word ptr ss:__PlotAct,0
             _quif   ne              ; - - quif if its not replace mode
-            cmp     ebx,0ffffh      ; - -
+            cmp     _ebx,0ffffh      ; - -
             _quif   ne              ; - - quif if the mask is not ffff
             cmp     dl,dh           ; - -
             _quif   ne              ; - - quif if two parts of colour not same
-            mov     ecx,ebp         ; - - use fast fill
+            mov     _ecx,_ebp         ; - - use fast fill
             cld                     ; - -
             rep     stosb           ; - - fill buffer until( --count == 0 )
           _admit                    ; - admit (use slow method)
             _loop                   ; - - loop
-              call    esi           ; - - - plot byte
-              inc     edi           ; - - - move to next byte
+              call    _esi           ; - - - plot byte
+              inc     _edi           ; - - - move to next byte
               xchg    dh,dl         ; - - - get ready for next byte
               xchg    bh,bl         ; - - - . . .
-              dec     ebp           ; - - - count--
+              dec     _ebp           ; - - - count--
               _quif   e             ; - - - quif count == 0
               mov     al,dh         ; - - - get colour
               mov     ch,bh         ; - - - get mask
@@ -522,30 +528,30 @@ endif
           _endguess                 ; - endguess
         _endif                      ; endif
 
-        pop     ebp                 ; restore count
-        and     ebp,3               ; if bit count != 0
+        pop     _ebp                 ; restore count
+        and     _ebp,3               ; if bit count != 0
         _if     ne                  ; then
-          mov     ecx,8             ; - mask = ff << ( 8 - 2 * bit count )
-          sub     ecx,ebp           ; - . . .
-          sub     ecx,ebp           ; - . . .
+          mov     _ecx,8             ; - mask = ff << ( 8 - 2 * bit count )
+          sub     _ecx,_ebp           ; - . . .
+          sub     _ecx,_ebp           ; - . . .
           mov     ch,0ffh           ; - ch will be mask for wanted bits
           shl     ch,cl             ; - . . .
           mov     al,dh             ; - get colour
           and     al,ch             ; - keep bits of colour we want
           and     ch,bh             ; - and with fill mask
           not     ch                ; - bit mask is complement
-          call    esi               ; - plot the pixels
+          call    _esi               ; - plot the pixels
         _endif                      ; endif
 
-        pop     esi
-        pop     ebp
+        pop     _esi
+        pop     _ebp
         ret
 
 ;=========================================================================
 ;
 ;   Scan routines
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
@@ -558,9 +564,9 @@ endif
 
 _CGAScanLeft_:
         mov     ah,dl               ; put the border flag in ah
-        inc     ebx
+        inc     _ebx
         not     ch
-        mov     dl,es:[edi]         ; get starting byte
+        mov     dl,es:[_edi]         ; get starting byte
         _loop
           mov     dh,dl             ; restore full byte info
           and     dh,ch             ; isolate pixel by anding with bit mask
@@ -572,14 +578,14 @@ _CGAScanLeft_:
             or      ah,ah           ; quit loop if paint while
             jne     short done_scanleft
           _endif
-          dec     ebx               ; move to next pixel
-          cmp     esi,ebx           ; check for viewport boundary
+          dec     _ebx               ; move to next pixel
+          cmp     _esi,_ebx           ; check for viewport boundary
           _quif   ge
           rol     al,cl             ; rotate color mask for new pixel
           rol     ch,cl             ; rotate bit mask for new pixel
           _if     c
-            dec     edi             ; look at next byte
-            mov     dl,es:[edi]
+            dec     _edi             ; look at next byte
+            mov     dl,es:[_edi]
           _endif
         _endloop
 done_scanleft:
@@ -592,7 +598,7 @@ _CGAScan1Right_:
         neg     dh                  ; example : 00000100 -> 00000111
         not     dh
         _loop                       ; line up with byte boundary
-          dec   ebx
+          dec   _ebx
           shl   ch,1
         _until  c
         or      al,al               ; build an extended colour mask
@@ -600,7 +606,7 @@ _CGAScan1Right_:
           mov     al,0ffh
         _endif
         not     al                  ; complement of colour mask
-        mov     ah,es:[edi]         ; load first byte
+        mov     ah,es:[_edi]         ; load first byte
         xor     ah,al               ; build scan byte mask
         or      dl,dl               ; if( border_flag != 0 )
         _if     ne
@@ -608,32 +614,32 @@ _CGAScan1Right_:
         _endif
         and     ah,dh               ; border condition true in first byte
         jne     short done_CGAscan1right
-        mov     ecx,esi             ; convert the pixel count inside
-        sub     ecx,ebx             ; the viewport to a byte count
-        dec     ecx                 ; in order to scan full bytes
+        mov     _ecx,_esi             ; convert the pixel count inside
+        sub     _ecx,_ebx             ; the viewport to a byte count
+        dec     _ecx                 ; in order to scan full bytes
         and     cl,0F8h
-        add     ebx,ecx
-        shr     ecx,1
-        shr     ecx,1
-        shr     ecx,1
+        add     _ebx,_ecx
+        shr     _ecx,1
+        shr     _ecx,1
+        shr     _ecx,1
         jle     short done_CGAscan1right  ; less than 8 pixels to scan
-        inc     edi
+        inc     _edi
         repe    scasb
-        shl     ecx,1
-        shl     ecx,1
-        shl     ecx,1
-        sub     ebx,ecx
-        dec     edi
-        mov     ah,es:[edi]
+        shl     _ecx,1
+        shl     _ecx,1
+        shl     _ecx,1
+        sub     _ebx,_ecx
+        dec     _edi
+        mov     ah,es:[_edi]
         xor     ah,al
 
 done_CGAscan1right:
         _loop
           shl     ah,1
           _quif   c
-          cmp     esi,ebx
+          cmp     _esi,_ebx
           _quif   le
-          inc     ebx
+          inc     _ebx
         _endloop
         ret
 
@@ -645,10 +651,10 @@ _CGAScan2Right_:
         rol     ah,cl
         rol     ah,cl
         or      al,ah
-        mov     ecx,ebx             ; adjust count for 1st byte
-        and     ecx,3
-        sub     ebx,ecx
-        dec     ebx
+        mov     _ecx,_ebx             ; adjust count for 1st byte
+        and     _ecx,3
+        sub     _ebx,_ecx
+        dec     _ebx
         shl     cl,1                ; build an extended right mask for 1st byte
         mov     dh,0ffh             ; example : 00001100 -> 00001111
         shr     dh,cl
@@ -657,7 +663,7 @@ _CGAScan2Right_:
           mov     ch,10101010B      ; note: ch=0 from above, otherwise
         _endif
         _loop
-          mov     ah,es:[edi]       ; read the next 4 pixels
+          mov     ah,es:[_edi]       ; read the next 4 pixels
           xor     ah,al             ; match with extended colour mask
           not     ah                ; merge the two bits representing each
           mov     cl,ah             ; pixel so that a one in the higher
@@ -668,23 +674,23 @@ _CGAScan2Right_:
           xor     ah,ch             ; check with border flag
           and     ah,dh             ; account for 1st byte boundary
           _quif   ne
-          cmp     ebx,esi           ; check for clip region
+          cmp     _ebx,_esi           ; check for clip region
           _if     ge
-            mov     ebx,esi         ; return edge of clip region
+            mov     _ebx,_esi         ; return edge of clip region
             ret
           _endif
-          inc     edi               ; move to next byte
-          add     ebx,4             ; 4 pixels per byte
+          inc     _edi               ; move to next byte
+          add     _ebx,4             ; 4 pixels per byte
           mov     dh,0ffh           ; reset mask to full
         _endloop
-        add     esi,4
+        add     _esi,4
         _loop                       ; process the last byte
           shl     ah,1
           _quif   c
           shl     ah,1
-          cmp     esi,ebx
+          cmp     _esi,_ebx
           _quif   le
-          inc     ebx
+          inc     _ebx
         _endloop
         ret
 

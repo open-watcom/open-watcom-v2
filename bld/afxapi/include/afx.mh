@@ -1,0 +1,1048 @@
+/*
+ * afx.h        Application Framework main header
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFX_H__
+#define __AFX_H__
+
+:include readonly.sp
+
+#include <afxver_.h>
+
+// Automatically use the appropriate static library or import library.
+#ifndef __AFX_INTERNAL__
+    #ifdef _AFXDLL
+        #ifdef _UNICODE
+            #ifdef _DEBUG
+                #pragma library( "owf$$BLD_VER$$ud.lib" )
+                #pragma library( "owfs$$BLD_VER$$ud.lib" )
+            #else
+                #pragma library( "owf$$BLD_VER$$u.lib" )
+                #pragma library( "owfs$$BLD_VER$$ud.lib" )
+            #endif
+        #else
+            #ifdef _DEBUG
+                #pragma library( "owf$$BLD_VER$$d.lib" )
+                #pragma library( "owfs$$BLD_VER$$d.lib" )
+            #else
+                #pragma library( "owf$$BLD_VER$$.lib" )
+                #pragma library( "owfs$$BLD_VER$$.lib" )
+            #endif
+        #endif
+    #else
+        #ifdef _UNICODE
+            #ifdef _DEBUG
+                #pragma library( "uafxcwd.lib" )
+            #else
+                #pragma library( "uafxcw.lib" )
+            #endif
+        #else
+            #ifdef _DEBUG
+                #pragma library( "nafxcwd.lib" )
+            #else
+                #pragma library( "nafxcw.lib" )
+            #endif
+        #endif
+    #endif
+#endif
+
+// Force the use of framework-provided WinMain for Windows applications.
+#if !defined( _USRDLL ) && !defined( _CONSOLE ) && !defined( __AFX_INTERNAL__ )
+    #pragma extref WinMain
+#endif
+
+// Forward declarations
+class CArchive;
+class CDumpContext;
+class CMapPtrToPtr;
+class CObject;
+class CPtrArray;
+struct CFileStatus;
+
+// Iterator position data type
+typedef struct __POSITION   *POSITION;
+
+// Macros to specify unused parameters
+#ifdef _DEBUG
+    #define UNUSED( x )
+#else
+    #define UNUSED( x )     x
+#endif
+#define UNUSED_ALWAYS( x )  x
+
+// Macro to specify classes or functions in the framework library
+#ifdef _AFXDLL
+    #ifdef __AFX_INTERNAL__
+        #define _AFXLINK    __declspec( dllexport )
+    #else
+        #define _AFXLINK    __declspec( dllimport )
+    #endif
+#else
+    #define _AFXLINK
+#endif
+
+class _AFXLINK CString {
+private:
+    PTSTR   m_psz;
+    int     m_nAllocLength;
+    int     m_nDataLength;
+
+    void    Grow();
+
+public:
+    CString();
+    CString( const CString &strSrc );
+    CString( const char *pszSrc );
+    CString( const wchar_t *pszSrc );
+    CString( char ch, int nLength = 1 );
+    CString( wchar_t ch, int nLength = 1 );
+    CString( const char *pch, int nLength );
+    CString( const wchar_t *pch, int nLength );
+    ~CString();
+
+    BSTR    AllocSysString() const;
+    void    Append( const CString &strSrc );
+    void    Append( PCTSTR pszSrc, int nLength );
+    void    Append( PCTSTR pszSrc );
+    void    AppendChar( TCHAR ch );
+    int     Collate( PCTSTR psz ) const;
+    int     CollateNoCase( PCTSTR psz ) const;
+    int     Compare( PCTSTR psz ) const;
+    int     CompareNoCase( PCTSTR psz ) const;
+    void    Empty();
+    int     Find( PCTSTR pszSub, int iStart = 0 ) const;
+    int     Find( TCHAR ch, int iStart = 0 ) const;
+    void    FormatMessageV( PCTSTR pszFormat, va_list *pArgList );
+    void    FormatV( PCTSTR pszFormat, va_list args );
+    void    FreeExtra();
+    int     GetAllocLength() const;
+    TCHAR   GetAt( int iChar ) const;
+    PTSTR   GetBuffer( int nMinBufferLength );
+    PTSTR   GetBuffer();
+    PTSTR   GetBufferSetLength( int nLength );
+    int     GetLength() const;
+    PCTSTR  GetString() const;
+    BOOL    IsEmpty() const;
+    CString Left( int nCount ) const;
+    BOOL    LoadString( HINSTANCE hInstance, UINT nID );
+    BOOL    LoadString( UINT nID );
+    CString &MakeLower();
+    CString &MakeReverse();
+    CString &MakeUpper();
+    CString Mid( int iFirst, int iCount ) const;
+    CString Mid( int iFirst ) const;
+    void    Preallocate( int nLength );
+    void    ReleaseBuffer( int nNewLength = -1 );
+    void    ReleaseBufferSetLength( int nNewLength );
+    int     ReverseFind( TCHAR ch ) const;
+    CString Right( int nCount ) const;
+    void    SetAt( int iChar, TCHAR ch );
+    void    SetString( PCTSTR pszSrc, int nLength );
+    void    SetString( PCTSTR pszSrc );
+    void    Truncate( int nNewLength );
+
+    void __cdecl    AppendFormat( UINT nFormatID, ... );
+    void __cdecl    AppendFormat( PCTSTR pszFormat, ... );
+    void __cdecl    Format( UINT nFormatID, ... );
+    void __cdecl    Format( PCTSTR pszFormat, ... );
+    void __cdecl    FormatMessage( UINT nFormatID, ... );
+    void __cdecl    FormatMessage( PCTSTR pszFormat, ... );
+
+    CString &operator+=( PCSTR pszSrc );
+    CString &operator+=( PCWSTR pszSrc );
+    CString &operator+=( const CString &strSrc );
+    CString &operator+=( char ch );
+    CString &operator+=( wchar_t ch );
+    CString &operator=( PCSTR pszSrc );
+    CString &operator=( PCWSTR pszSrc );
+    CString &operator=( const CString &strSrc );
+    CString &operator=( char ch );
+    CString &operator=( wchar_t ch );
+    TCHAR   operator[]( int iChar ) const;
+    
+    operator PCTSTR() const;
+    
+    friend _AFXLINK CString operator+( const CString &str1, const CString &str2 );
+    friend _AFXLINK CString operator+( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK CString operator+( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK CString operator+( char ch1, const CString& str2 );
+    friend _AFXLINK CString operator+( const CString &str1, char ch2 );
+    friend _AFXLINK CString operator+( wchar_t ch1, const CString &str2 );
+    friend _AFXLINK CString operator+( const CString &str1, wchar_t ch2 );
+    friend _AFXLINK BOOL    operator==( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator==( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator==( const CString &str1, TCHAR ch2 );
+    friend _AFXLINK BOOL    operator==( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK BOOL    operator==( TCHAR ch1, const CString &str2 );
+    friend _AFXLINK BOOL    operator!=( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator!=( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator!=( const CString &str1, TCHAR ch2 );
+    friend _AFXLINK BOOL    operator!=( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK BOOL    operator!=( TCHAR ch1, const CString &str2 );
+    friend _AFXLINK BOOL    operator<( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator<( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator<( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK BOOL    operator>( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator>( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator>( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK BOOL    operator<=( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator<=( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator<=( PCTSTR psz1, const CString &str2 );
+    friend _AFXLINK BOOL    operator>=( const CString &str1, const CString &str2 );
+    friend _AFXLINK BOOL    operator>=( const CString &str1, PCTSTR psz2 );
+    friend _AFXLINK BOOL    operator>=( PCTSTR psz1, const CString &str2 );
+};
+
+struct _AFXLINK CRuntimeClass {
+    LPCSTR          m_lpszClassName;
+    int             m_nObjectSize;
+    UINT            m_wSchema;
+    CObject         *(PASCAL *m_pfnCreateObject)();
+#ifdef _AFXDLL
+    CRuntimeClass   *(PASCAL *m_pfnGetBaseClass)();
+#else
+    CRuntimeClass   *m_pBaseClass;
+#endif
+    CRuntimeClass   *m_pNextClass;
+
+    CObject *CreateObject();
+    BOOL    IsDerivedFrom( const CRuntimeClass *pBaseClass );
+    void    Store( CArchive &ar ) const;
+    
+    static CObject * PASCAL         CreateObject( LPCSTR lpszClassName );
+    static CObject * PASCAL         CreateObject( LPCWSTR lpszClassName );
+    static CRuntimeClass * PASCAL   FromName( LPCSTR lpszClassName );
+    static CRuntimeClass * PASCAL   FromName( LPCWSTR lpszClassName );
+
+#ifdef _AFXDLL
+    static CRuntimeClass * PASCAL   _GetBaseClass();
+    static CRuntimeClass * PASCAL   GetThisClass();
+#endif
+};
+
+struct _AFXLINK AFX_CLASSINIT {
+    AFX_CLASSINIT( CRuntimeClass *pNewClass );
+};
+
+class _AFXLINK CObject {
+public:
+    CObject();
+    virtual ~CObject();
+private:
+    CObject( const CObject &objectSrc );
+
+public:
+    virtual void            AssertValid() const;
+    virtual void            Dump( CDumpContext &dc ) const;
+    virtual CRuntimeClass   *GetRuntimeClass() const;
+    virtual void            Serialize( CArchive &ar );
+    
+    BOOL    IsKindOf( const CRuntimeClass *pClass ) const;
+    BOOL    IsSerializable() const;
+    
+    static const CRuntimeClass classCObject;
+#ifdef _AFXDLL
+    static CRuntimeClass * PASCAL   _GetBaseClass();
+    static CRuntimeClass * PASCAL   GetThisClass();
+#endif
+};
+
+// Object model macros
+#ifdef _AFXDLL
+    #define RUNTIME_CLASS( class_name ) (class_name::GetThisClass())
+    #define DECLARE_DYNAMIC( class_name ) \
+        protected: \
+            static CRuntimeClass * PASCAL   _GetBaseClass(); \
+        public: \
+            static const CRuntimeClass      class##class_name; \
+            virtual CRuntimeClass           *GetRuntimeClass() const; \
+            static CRuntimeClass * PASCAL   GetThisClass();
+    #define IMPLEMENT_DYNAMIC( class_name, base_class_name ) \
+        CRuntimeClass * PASCAL class_name::_GetBaseClass() \
+        { \
+            return( base_class_name::GetThisClass() ); \
+        } \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), 0xFFFF, NULL, \
+              class_name::_GetBaseClass }; \
+        const AFX_CLASSINIT _init_##class_name( \
+            (CRuntimeClass *)&class_name::class##class_name ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CRuntimeClass * PASCAL class_name::GetThisClass() \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        }
+    #define DECLARE_DYNCREATE( class_name ) \
+        protected: \
+            static CRuntimeClass * PASCAL   _GetBaseClass(); \
+        public: \
+            static const CRuntimeClass      class##class_name; \
+            virtual CRuntimeClass           *GetRuntimeClass() const; \
+            static CRuntimeClass * PASCAL   GetThisClass(); \
+            static CObject * PASCAL         CreateObject();
+    #define IMPLEMENT_DYNCREATE( class_name, base_class_name ) \
+        CRuntimeClass * PASCAL class_name::_GetBaseClass() \
+        { \
+            return( base_class_name::GetThisClass() ); \
+        } \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), 0xFFFF, class_name::CreateObject, \
+              class_name::_GetBaseClass }; \
+        const AFX_CLASSINIT _init_##class_name( \
+            (CRuntimeClass *)&class_name::class##class_name ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CRuntimeClass * PASCAL class_name::GetThisClass() \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CObject * PASCAL class_name::CreateObject() \
+        { \
+            return( new class_name ); \
+        }
+    #define DECLARE_SERIAL( class_name ) \
+        protected: \
+            static CRuntimeClass * PASCAL   _GetBaseClass(); \
+        public: \
+            static const CRuntimeClass      class##class_name; \
+            virtual CRuntimeClass           *GetRuntimeClass() const; \
+            friend CArchive                 &operator>>( CArchive &ar, class_name *&pOb ); \
+            static CRuntimeClass * PASCAL   GetThisClass(); \
+            static CObject * PASCAL         CreateObject();
+    #define IMPLEMENT_SERIAL( class_name, base_class_name, wSchema ) \
+        CRuntimeClass * PASCAL class_name::_GetBaseClass() \
+        { \
+            return( base_class_name::GetThisClass() ); \
+        } \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), 0xFFFF, class_name::CreateObject, \
+              class_name::_GetBaseClass }; \
+        const AFX_CLASSINIT _init_##class_name( \
+            (CRuntimeClass *)&class_name::class##class_name ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CArchive &operator>>( CArchive &ar, class_name *&pOb ) \
+        { \
+            pOb = (class_name *)ar.ReadObject( RUNTIME_CLASS( class_name ) ); \
+            return( ar ); \
+        } \
+        CRuntimeClass * PASCAL class_name::GetThisClass() \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CObject * PASCAL class_name::CreateObject() \
+        { \
+            return( new class_name ); \
+        }
+#else
+    #define RUNTIME_CLASS( class_name ) ((CRuntimeClass *)&class_name::class##class_name)
+    #define DECLARE_DYNAMIC( class_name ) \
+        public: \
+            static const CRuntimeClass  class##class_name; \
+            virtual CRuntimeClass       *GetRuntimeClass() const;
+    #define IMPLEMENT_DYNAMIC( class_name, base_class_name ) \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), 0xFFFF, NULL, \
+              RUNTIME_CLASS( base_class_name ) }; \
+        const AFX_CLASSINIT _init_##class_name( RUNTIME_CLASS( class_name ) ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        }
+    #define DECLARE_DYNCREATE( class_name ) \
+        public: \
+            static const CRuntimeClass  class##class_name; \
+            virtual CRuntimeClass       *GetRuntimeClass() const; \
+            static CObject * PASCAL     CreateObject();
+    #define IMPLEMENT_DYNCREATE( class_name, base_class_name ) \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), 0xFFFF, class_name::CreateObject, \
+              RUNTIME_CLASS( base_class_name ) }; \
+        const AFX_CLASSINIT _init_##class_name( RUNTIME_CLASS( class_name ) ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CObject * PASCAL class_name::CreateObject() \
+        { \
+            return( new class_name ); \
+        }
+    #define DECLARE_SERIAL( class_name ) \
+        public: \
+            static const CRuntimeClass  class##class_name; \
+            virtual CRuntimeClass       *GetRuntimeClass() const; \
+            friend CArchive             &operator>>( CArchive &ar, class_name *&pOb ); \
+            static CObject * PASCAL     CreateObject();
+    #define IMPLEMENT_SERIAL( class_name, base_class_name, wSchema ) \
+        const CRuntimeClass class_name::class##class_name = \
+            { #class_name, sizeof( class_name ), wSchema, class_name::CreateObject, \
+              RUNTIME_CLASS( base_class_name ) }; \
+        const AFX_CLASSINIT _init_##class_name( RUNTIME_CLASS( class_name ) ); \
+        CRuntimeClass *class_name::GetRuntimeClass() const \
+        { \
+            return( (CRuntimeClass *)&class##class_name ); \
+        } \
+        CArchive &operator>>( CArchive &ar, class_name *&pOb ) \
+        { \
+            pOb = (class_name *)ar.ReadObject( RUNTIME_CLASS( class_name ) ); \
+            return( ar ); \
+        } \
+        CObject *class_name::CreateObject() \
+        { \
+            return( new class_name ); \
+        }
+#endif
+#define STATIC_DOWNCAST( class_name, pObject ) \
+    ((class_name *)pObject)
+#define DYNAMIC_DOWNCAST( class_name, pObject ) \
+    (((CObject *)pObject)->IsKindOf( RUNTIME_CLASS( class_name ) ) ? \
+    ((class_name *)pObject) : NULL)
+
+class _AFXLINK CException : public CObject {
+private:
+    BOOL m_bAutoDelete;
+
+    DECLARE_DYNAMIC( CException )
+
+public:
+    CException();
+    explicit CException( BOOL bAutoDelete );
+
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext = NULL );
+    virtual int     ReportError( UINT nType = MB_OK, UINT nMessageID = 0 );
+    
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    void    Delete();
+};
+
+class _AFXLINK CSimpleException : public CException {
+protected:
+    BOOL    m_bInitialized;
+    BOOL    m_bLoaded;
+    TCHAR   m_szMessage[128];
+    UINT    m_nResourceID;
+    
+    DECLARE_DYNAMIC( CSimpleException )
+
+public:
+    CSimpleException();
+    explicit CSimpleException( BOOL bAutoDelete );
+    
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+};
+
+class _AFXLINK CMemoryException : public CSimpleException {
+    DECLARE_DYNAMIC( CMemoryException )
+
+public:
+    CMemoryException();
+};
+
+class _AFXLINK CNotSupportedException : public CSimpleException {
+    DECLARE_DYNAMIC( CNotSupportedException )
+
+public:
+    CNotSupportedException();
+};
+
+class _AFXLINK CInvalidArgException : public CSimpleException {
+    DECLARE_DYNAMIC( CInvalidArgException )
+
+public:
+    CInvalidArgException();
+};
+
+class _AFXLINK CFileException : public CException {
+public:
+    enum {
+        none,
+        genericException,
+        fileNotFound,
+        badPath,
+        tooManyOpenFiles,
+        accessDenied,
+        invalidFile,
+        removeCurrentDir,
+        directoryFull,
+        badSeek,
+        hardIO,
+        sharingViolation,
+        lockViolation,
+        diskFull,
+        endOfFile
+    };
+    
+    int     m_cause;
+    LONG    m_lOsError;
+    CString m_strFileName;
+
+    DECLARE_DYNAMIC( CFileException )
+
+public:
+    CFileException( int cause = none, LONG lOsError = -1, LPCTSTR lpszArchiveName = NULL );
+
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    static int PASCAL   ErrnoToException( int nErrno );
+    static int PASCAL   OsErrorToException( LONG lOsError );
+    static void PASCAL  ThrowErrno( int nErrno, LPCTSTR lpszFileName = NULL );
+    static void PASCAL  ThrowOsError( LONG lOsError, LPCTSTR lpszFileName = NULL );
+};
+
+class _AFXLINK CArchiveException : public CException {
+public:
+    enum {
+        none,
+        genericException,
+        readOnly,
+        endOfFile,
+        writeOnly,
+        badIndex,
+        badClass,
+        badSchema
+    };
+
+    int     m_cause;
+    CString m_strFileName;
+    
+    DECLARE_DYNAMIC( CArchiveException )
+
+public:
+    CArchiveException( int cause = none, LPCTSTR lpszArchiveName = NULL );
+    
+    virtual BOOL    GetErrorMessage( LPTSTR lpszError, UINT nMaxError, PUINT pnHelpContext );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+};
+
+// Exception handling macros
+#define TRY \
+    try {
+#define THROW( exception_object_pointer ) \
+    throw exception_object_pointer
+#define THROW_LAST \
+    throw
+#define CATCH( exception_class, exception_object_pointer_name ) \
+    } catch( exception_class *exception_object_pointer_name ) {
+#define CATCH_ALL( exception_object_pointer_name ) \
+    } catch( CException *exception_object_pointer_name ) {
+#define AND_CATCH( exception_class, exception_object_pointer_name ) \
+    } catch( exception_class *exception_object_pointer_name ) {
+#define AND_CATCH_ALL( exception_object_pointer_name ) \
+    } catch( CException *exception_object_pointer_name ) {
+#define END_CATCH \
+    }
+#define END_CATCH_ALL \
+    }
+
+class _AFXLINK CFile : public CObject {
+public:
+    static const HANDLE hFileNull;
+    
+    enum {
+        modeRead            = 0x00000000,
+        modeWrite           = 0x00000001,
+        modeReadWrite       = 0x00000002,
+        shareExclusive      = 0x00000010,
+        shareDenyWrite      = 0x00000020,
+        shareDenyRead       = 0x00000030,
+        shareDenyNone       = 0x00000040,
+        modeNoInherit       = 0x00000080,
+        modeCreate          = 0x00001000,
+        modeNoTruncate      = 0x00002000,
+        osNoBuffer          = 0x00010000,
+        osWriteThrough      = 0x00020000,
+        osRandomAccess      = 0x00040000,
+        osSequentialScan    = 0x00080000
+    };
+    
+    enum {
+        begin   = 0x00000000,
+        current = 0x00000001,
+        end     = 0x00000002
+    };
+
+    enum Attribute {
+        normal      = 0x00,
+        readOnly    = 0x01,
+        hidden      = 0x02,
+        system      = 0x04,
+        volume      = 0x08,
+        directory   = 0x10,
+        archive     = 0x20
+    };
+
+    HANDLE  m_hFile;
+
+protected:
+    BOOL    m_bCloseOnDelete;
+    CString m_strFileName;
+
+    DECLARE_DYNAMIC( CFile )
+
+public:
+    CFile();
+    CFile( HANDLE hFile );
+    CFile( LPCTSTR lpszFileName, UINT nOpenFlags );
+    virtual ~CFile();
+
+    virtual void        Abort();
+    virtual void        Close();
+    virtual CFile       *Duplicate() const;
+    virtual void        Flush();
+    virtual CString     GetFileName() const;
+    virtual CString     GetFilePath() const;
+    virtual CString     GetFileTitle() const;
+    virtual ULONGLONG   GetLength() const;
+    virtual ULONGLONG   GetPosition() const;
+    virtual void        LockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual BOOL        Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pError = NULL );
+    virtual UINT        Read( void *lpBuf, UINT nCount );
+    virtual ULONGLONG   Seek( LONGLONG lOff, UINT nFrom );
+    virtual void        SetFilePath( LPCTSTR lpszNewName );
+    virtual void        SetLength( ULONGLONG dwNewLen );
+    virtual void        UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual void        Write( const void *lpBuf, UINT nCount );
+
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    BOOL        GetStatus( CFileStatus &rStatus ) const;
+
+    void        SeekToBegin();
+    ULONGLONG   SeekToEnd();
+
+    operator HANDLE() const;
+
+    static BOOL PASCAL  GetStatus( LPCTSTR lpszFileName, CFileStatus &rStatus );
+    static void PASCAL  Remove( LPCTSTR lpszFileName );
+    static void PASCAL  Rename( LPCTSTR lpszOldName, LPCTSTR lpszNewName );
+    static void PASCAL  SetStatus( LPCTSTR lpszFileName, const CFileStatus &rStatus );
+};
+
+class _AFXLINK CStdioFile : public CFile {
+public:
+    FILE    *m_pStream;
+
+    DECLARE_DYNAMIC( CStdioFile )
+
+public:
+    CStdioFile();
+    CStdioFile( FILE *pOpenStream );
+    CStdioFile( LPCTSTR lpszFileName, UINT nOpenFlags );
+
+    virtual LPTSTR  ReadString( LPTSTR lpsz, UINT nMax );
+    virtual BOOL    ReadString( CString &rString );
+    virtual void    WriteString( LPCTSTR lpsz );
+
+    virtual void        Abort();
+    virtual void        Close();
+    virtual CFile       *Duplicate() const;
+    virtual void        Flush();
+    virtual ULONGLONG   GetLength() const;
+    virtual ULONGLONG   GetPosition() const;
+    virtual void        LockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual BOOL        Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pError = NULL );
+    virtual UINT        Read( void *lpBuf, UINT nCount );
+    virtual ULONGLONG   Seek( LONGLONG lOff, UINT nFrom );
+    virtual void        UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual void        Write( const void *lpBuf, UINT nCount );
+#ifdef _DEBUG
+    virtual void        Dump( CDumpContext &dc ) const;
+#endif
+};
+
+class _AFXLINK CMemFile : public CFile {
+private:
+    BYTE    *m_lpBuffer;
+    SIZE_T  m_nBufferSize;
+    SIZE_T  m_nFileSize;
+    SIZE_T  m_nGrowBytes;
+    SIZE_T  m_nPosition;
+
+    DECLARE_DYNAMIC( CMemFile )
+
+public:
+    CMemFile( UINT nGrowBytes = 1024 );
+    CMemFile( BYTE *lpBuffer, UINT nBufferSize, UINT nGrowBytes = 0 );
+    
+    void    Attach( BYTE *lpBuffer, UINT nBufferSize, UINT nGrowBytes = 0 );
+    BYTE    *Detach();
+
+    virtual void        Abort();
+    virtual void        Close();
+    virtual CFile       *Duplicate() const;
+    virtual void        Flush();
+    virtual ULONGLONG   GetLength() const;
+    virtual ULONGLONG   GetPosition() const;
+    virtual void        LockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual UINT        Read( void *lpBuf, UINT nCount );
+    virtual ULONGLONG   Seek( LONGLONG lOff, UINT nFrom );
+    virtual void        SetLength( ULONGLONG dwNewLen );
+    virtual void        UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount );
+    virtual void        Write( const void *lpBuf, UINT nCount );
+#ifdef _DEBUG
+    virtual void        Dump( CDumpContext &dc ) const;
+#endif
+
+protected:
+    virtual BYTE    *Alloc( SIZE_T nBytes );
+    virtual void    Free( BYTE *lpMem );
+    virtual void    GrowFile( SIZE_T dwNewLen );
+    virtual BYTE    *Memcpy( BYTE *lpMemTarget, const BYTE *lpMemSource, SIZE_T nBytes );
+    virtual BYTE    *Realloc( BYTE *lpMem, SIZE_T nBytes );
+};
+
+class _AFXLINK CArchive {
+private:
+    CFile   *m_pFile;
+    UINT    m_nMode;
+    int     m_nBufSize;
+    BYTE    *m_lpBufCur;
+    BYTE    *m_lpBufStart;
+    BYTE    *m_lpBufMax;
+    BOOL    m_bUserBuf;
+    UINT    m_nObjectSchema;
+    UINT    m_nMapCount;
+    union {
+        CPtrArray       *m_pLoadArray;
+        CMapPtrToPtr    *m_pStoreMap;
+    };
+
+public:
+    enum {
+        load    = 1,
+        store   = 0
+    };
+
+    CArchive( CFile *pFile, UINT nMode, int nBufSize = 4096, void *lpBuf = NULL );
+    ~CArchive();
+
+    void        Abort();
+    void        Close();
+    void        Flush();
+    CFile       *GetFile() const;
+    UINT        GetObjectSchema();
+    BOOL        IsBufferEmpty() const;
+    BOOL        IsLoading() const;
+    BOOL        IsStoring() const;
+    void        MapObject( const CObject *pOb );
+    UINT        Read( void *lpBuf, UINT nMax );
+    DWORD_PTR   ReadCount();
+    CObject     *ReadObject( const CRuntimeClass *pClass );
+    BOOL        ReadString( CString &rString );
+    LPTSTR      ReadString( LPTSTR lpsz, UINT nMax );
+    void        SetObjectSchema( UINT nSchema );
+    void        Write( const void *lpBuf, UINT nMax );
+    void        WriteCount( DWORD_PTR dwCount );
+    void        WriteObject( const CObject *pOb );
+    void        WriteString( LPCTSTR lpsz );
+
+    CArchive    &operator<<( const CObject *pOb );
+    CArchive    &operator<<( const CString &str );
+    CArchive    &operator<<( BYTE by );
+    CArchive    &operator<<( WORD w );
+    CArchive    &operator<<( LONG l );
+    CArchive    &operator<<( DWORD dw );
+    CArchive    &operator<<( float f );
+    CArchive    &operator<<( double d );
+    CArchive    &operator<<( int i );
+    CArchive    &operator<<( short w );
+    CArchive    &operator<<( char ch );
+    CArchive    &operator<<( wchar_t ch );
+    CArchive    &operator<<( unsigned u );
+    CArchive    &operator<<( bool b );
+    CArchive    &operator<<( ULONGLONG dwdw );
+    CArchive    &operator<<( LONGLONG dwdw );
+    CArchive    &operator>>( CObject *&pOb );
+    CArchive    &operator>>( const CObject *&pOb );
+    CArchive    &operator>>( CString &str );
+    CArchive    &operator>>( BYTE &by );
+    CArchive    &operator>>( WORD &w );
+    CArchive    &operator>>( int &i );
+    CArchive    &operator>>( LONG &l );
+    CArchive    &operator>>( DWORD &dw );
+    CArchive    &operator>>( float &f );
+    CArchive    &operator>>( double &d );
+    CArchive    &operator>>( short &w );
+    CArchive    &operator>>( char &ch );
+    CArchive    &operator>>( wchar_t &ch );
+    CArchive    &operator>>( unsigned &u );
+    CArchive    &operator>>( bool &b );
+    CArchive    &operator>>( ULONGLONG &dwdw );
+    CArchive    &operator>>( LONGLONG &dwdw );
+};
+
+class _AFXLINK CTimeSpan {
+private:
+    time_t  m_timeSpan;
+
+public:
+    CTimeSpan();
+    CTimeSpan( const CTimeSpan &timeSpanSrc );
+    CTimeSpan( time_t time );
+    CTimeSpan( LONG lDays, int nHours, int nMins, int nSecs );
+
+    CString     Format( LPCTSTR pszFormat );
+    LONGLONG    GetDays() const;
+    LONG        GetHours() const;
+    LONG        GetMinutes() const;
+    LONG        GetSeconds() const;
+    time_t      GetTimeSpan() const;
+    LONGLONG    GetTotalHours() const;
+    LONGLONG    GetTotalMinutes() const;
+    LONGLONG    GetTotalSeconds() const;
+    
+    CTimeSpan   operator+( CTimeSpan span ) const;
+    CTimeSpan   operator-( CTimeSpan span ) const;
+    CTimeSpan   operator+=( CTimeSpan span );
+    CTimeSpan   operator-=( CTimeSpan span );
+    BOOL        operator==( CTimeSpan span ) const;
+    BOOL        operator!=( CTimeSpan span ) const;
+    BOOL        operator<( CTimeSpan span ) const;
+    BOOL        operator>( CTimeSpan span ) const;
+    BOOL        operator<=( CTimeSpan span ) const;
+    BOOL        operator>=( CTimeSpan span ) const;
+};
+
+class _AFXLINK CTime {
+private:
+    time_t  m_time;
+
+public:
+    CTime();
+    CTime( const CTime &timeSrc );
+    CTime( time_t time );
+    CTime( int nYear, int nMonth, int nDay, int nHour, int nMin, int nSec, int nDST = -1 );
+    CTime( WORD wDosDate, WORD wDosTime, int nDST = -1 );
+    CTime( const SYSTEMTIME &st, int nDST = -1 );
+    CTime( const FILETIME &st, int nDST = -1 );
+
+    CString     Format( LPCTSTR pszFormat );
+    CString     FormatGmt( LPCTSTR pszFormat );
+    BOOL        GetAsSystemTime( SYSTEMTIME &st ) const;
+    int         GetDay() const;
+    int         GetDayOfWeek() const;
+    struct tm   *GetGmtTm( struct tm *ptm ) const;
+    int         GetHour() const;
+    struct tm   *GetLocalTm( struct tm *ptm ) const;
+    int         GetMinute() const;
+    int         GetMonth() const;
+    int         GetSecond() const;
+    time_t      GetTime() const;
+    int         GetYear() const;
+    
+    CTime       &operator=( time_t time );
+    CTime       operator+( CTimeSpan timeSpan ) const;
+    CTime       operator-( CTimeSpan timeSpan ) const;
+    CTimeSpan   operator-( CTime time ) const;
+    CTime       &operator+=( CTimeSpan span );
+    CTime       &operator-=( CTimeSpan span );
+    BOOL        operator==( CTime time ) const;
+    BOOL        operator!=( CTime time ) const;
+    BOOL        operator<( CTime time ) const;
+    BOOL        operator>( CTime time ) const;
+    BOOL        operator<=( CTime time ) const;
+    BOOL        operator>=( CTime time ) const;
+
+    static CTime PASCAL GetCurrentTime();
+};
+
+struct CFileStatus {
+    CTime       m_ctime;
+    CTime       m_mtime;
+    CTime       m_atime;
+    ULONGLONG   m_size;
+    BYTE        m_attribute;
+    TCHAR       m_szFullName[MAX_PATH];
+};
+
+class _AFXLINK CFileFind : public CObject {
+protected:
+    void    *m_pFoundInfo;
+    void    *m_pNextInfo;
+    HANDLE  m_hContext;
+    CString m_strRoot;
+    TCHAR   m_chDirSeparator;
+
+    DECLARE_DYNAMIC( CFileFind )
+
+public:
+    CFileFind();
+    virtual ~CFileFind();
+    
+    virtual void    CloseContext();
+    virtual BOOL    FindFile( LPCTSTR pstrName = NULL, DWORD dwUnused = 0 );
+    virtual BOOL    FindNextFile();
+    virtual BOOL    GetCreationTime( FILETIME *pTimeStamp ) const;
+    virtual BOOL    GetCreationTime( CTime &refTime ) const;
+    virtual CString GetFileName() const;
+    virtual CString GetFilePath() const;
+    virtual CString GetFileTitle() const;
+    virtual CString GetFileURL() const;
+    virtual BOOL    GetLastAccessTime( FILETIME *pTimeStamp ) const;
+    virtual BOOL    GetLastAccessTime( CTime &refTime ) const;
+    virtual BOOL    GetLastWriteTime( FILETIME *pTimeStamp ) const;
+    virtual BOOL    GetLastWriteTime( CTime &refTime ) const;
+    virtual CString GetRoot() const;
+    virtual BOOL    IsDots() const;
+    virtual BOOL    MatchesMask( DWORD dwMask ) const;
+    
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    void        Close();
+    ULONGLONG   GetLength() const;
+    BOOL        IsArchived() const;
+    BOOL        IsCompressed() const;
+    BOOL        IsDirectory() const;
+    BOOL        IsHidden() const;
+    BOOL        IsNormal() const;
+    BOOL        IsReadOnly() const;
+    BOOL        IsSystem() const;
+    BOOL        IsTemporary() const;
+};
+
+class _AFXLINK CDumpContext {
+private:
+    CFile   *m_pFile;
+    int     m_nDepth;
+    
+    void    OutputString( LPCTSTR lpsz );
+
+public:
+    CDumpContext( CFile *pFile = NULL );
+    
+    CDumpContext    &DumpAsHex( BYTE b );
+    CDumpContext    &DumpAsHex( DWORD dw );
+    CDumpContext    &DumpAsHex( int n );
+    CDumpContext    &DumpAsHex( LONG l );
+    CDumpContext    &DumpAsHex( LONGLONG n );
+    CDumpContext    &DumpAsHex( UINT u );
+    CDumpContext    &DumpAsHex( ULONGLONG n );
+    CDumpContext    &DumpAsHex( WORD w );
+    void            Flush();
+    int             GetDepth() const;
+    void            HexDump( LPCTSTR lpszLine, BYTE *pby, int nBytes, int nWidth );
+    void            SetDepth( int nNewDepth );
+    
+    CDumpContext    &operator<<( const CObject *pOb );
+    CDumpContext    &operator<<( const CObject &ob );
+    CDumpContext    &operator<<( LPCSTR lpsz );
+    CDumpContext    &operator<<( LPCWSTR lpsz );
+    CDumpContext    &operator<<( const void *lp );
+    CDumpContext    &operator<<( BYTE by );
+    CDumpContext    &operator<<( WORD w );
+    CDumpContext    &operator<<( DWORD dw );
+    CDumpContext    &operator<<( int n );
+    CDumpContext    &operator<<( double d );
+    CDumpContext    &operator<<( float f );
+    CDumpContext    &operator<<( LONG l );
+    CDumpContext    &operator<<( UINT u );
+    CDumpContext    &operator<<( LONGLONG n );
+    CDumpContext    &operator<<( ULONGLONG n );
+    CDumpContext    &operator<<( HWND h );
+    CDumpContext    &operator<<( HDC h );
+    CDumpContext    &operator<<( HMENU h );
+    CDumpContext    &operator<<( HACCEL h );
+    CDumpContext    &operator<<( HFONT h );
+};
+
+#ifdef _DEBUG
+extern _AFXLINK CDumpContext afxDump;
+#endif
+
+_AFXLINK void AFXAPI    AfxAbort();
+_AFXLINK void AFXAPI    AfxClassInit( CRuntimeClass *pNewClass );
+_AFXLINK BOOL AFXAPI    AfxIsValidAddress( const void *lp, UINT nBytes, BOOL bReadWrite = TRUE );
+_AFXLINK BOOL AFXAPI    AfxIsValidString( LPCTSTR lpsz, int nLength = -1 );
+_AFXLINK void AFXAPI    AfxThrowArchiveException( int cause, LPCTSTR lpszArchiveName );
+_AFXLINK void AFXAPI    AfxThrowFileException( int cause, LONG lOsError = -1, LPCTSTR lpszFileName = NULL );
+_AFXLINK void AFXAPI    AfxThrowInvalidArgException();
+_AFXLINK void AFXAPI    AfxThrowMemoryException();
+_AFXLINK void AFXAPI    AfxThrowNotSupportedException();
+_AFXLINK void __cdecl   AfxTrace( LPCTSTR lpszFormat, ... );
+#ifdef _DEBUG
+_AFXLINK BOOL AFXAPI    AfxAssertFailedLine( LPCSTR lpszFileName, int nLine );
+_AFXLINK void AFXAPI    AfxAssertValidObject( CObject *pObject, LPCSTR lpszFileName, int nLine );
+_AFXLINK void AFXAPI    AfxDoForAllClasses( void (*pfn)( const CRuntimeClass *pClass, void *pContext ), void *pContext );
+_AFXLINK void AFXAPI    AfxDump( const CObject *pOb );
+#endif
+
+// Debugging macros
+#ifdef _DEBUG
+    #define ASSERT( booleanExpression ) \
+        if( !(booleanExpression) ) { \
+            if( AfxAssertFailedLine( __FILE__, __LINE__ ) ) { \
+                AfxDebugBreak(); \
+            } \
+        }
+    #define ASSERT_VALID( pObject ) \
+        AfxAssertValidObject( pObject, __FILE__, __LINE__ )
+    #define DEBUG_ONLY( expression )    expression
+    #define VERIFY( booleanExpression ) ASSERT( booleanExpression )
+    #define ENSURE( booleanExpression ) \
+        if( !(booleanExpression) ) { \
+            if( AfxAssertFailedLine( __FILE__, __LINE__ ) ) { \
+                AfxDebugBreak(); \
+            } \
+            throw new CInvalidArgException; \
+        }
+#else
+    #define ASSERT( booleanExpression )
+    #define ASSERT_VALID( pObject )
+    #define DEBUG_ONLY( expression )
+    #define VERIFY( booleanExpression ) booleanExpression
+    #define ENSURE( booleanExpression ) \
+        if( !(booleanExpression) ) { \
+            throw new CInvalidArgException; \
+        }
+#endif
+#define ASSERT_KINDOF( classname, pobject ) \
+    ASSERT( pobject->IsKindOf( RUNTIME_CLASS( classname ) ) )
+#define TRACE       AfxTrace
+#define TRACE0( exp ) \
+    TRACE( exp )
+#define TRACE1( exp, param1 ) \
+    TRACE( exp, param1 )
+#define TRACE2( exp, param1, param2 ) \
+    TRACE( exp, param1, param2 )
+#define TRACE3( exp, param1, param2, param3 ) \
+    TRACE( exp, param1, param2, param3 )
+#define ENSURE_ARG( booleanExpression ) \
+    ENSURE( booleanExpression )
+#define ENSURE_VALID( pObject ) \
+    ASSERT_VALID( pObject ); \
+    ENSURE( pObject != NULL )
+#define DEBUG_NEW   new
+#define THIS_FILE   __FILE__
+
+#include <afxcoll.h>
+#include <afxstat_.h>
+
+#ifndef _DEBUG
+    #include <afx.inl>
+#endif
+
+#endif /* __AFX_H__ */

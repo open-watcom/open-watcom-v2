@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ctype.h>
 #include <string.h>
 #include "wglbl.h"
@@ -59,29 +59,29 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WDeleteStringEntry ( WStringEditInfo *einfo )
+Bool WDeleteStringEntry( WStringEditInfo *einfo )
 {
     HWND         lbox;
     Bool         ok;
     LRESULT      ret;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_STREDLIST );
-        ok = ( lbox != NULL );
+    if( ok ) {
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_STREDLIST );
+        ok = (lbox != NULL);
     }
 
-    if ( ok ) {
-        ret = SendMessage ( lbox, LB_GETCURSEL, 0, 0 );
-        ok = ( ret != LB_ERR );
+    if( ok ) {
+        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = (ret != LB_ERR);
     }
 
-    if ( ok ) {
-        ok = WDeleteEditWinLBoxEntry ( einfo, (int) ret, TRUE );
+    if( ok ) {
+        ok = WDeleteEditWinLBoxEntry( einfo, (int)ret, TRUE );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
@@ -89,13 +89,13 @@ Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
 {
     Bool        ok;
 
-    ok = ( einfo && einfo->tbl && block && bdel );
+    ok = (einfo != NULL && einfo->tbl != NULL && block != NULL && bdel != NULL);
 
     if( ok ) {
         *bdel = FALSE;
-        if( block->block.String[ id & 0xf ] != NULL ) {
-            WMemFree( block->block.String[ id & 0xf ] );
-            block->block.String[ id & 0xf ] = NULL;
+        if( block->block.String[id & 0xf] != NULL ) {
+            WMemFree( block->block.String[id & 0xf] );
+            block->block.String[id & 0xf] = NULL;
             if( WIsBlockEmpty( block ) ) {
                 ok = WRemoveStringBlock( einfo->tbl, block );
                 *bdel = TRUE;
@@ -106,7 +106,7 @@ Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
     return( ok );
 }
 
-Bool WDeleteEditWinLBoxEntry ( WStringEditInfo *einfo, int pos, Bool free_it )
+Bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, Bool free_it )
 {
     HWND                lbox;
     Bool                ok;
@@ -115,24 +115,23 @@ Bool WDeleteEditWinLBoxEntry ( WStringEditInfo *einfo, int pos, Bool free_it )
     uint_16             string_id;
     LRESULT             ret, max;
 
-    ok = ( einfo && einfo->edit_dlg && einfo->tbl );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && einfo->tbl != NULL);
 
     if( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_STREDLIST );
-        ok = ( lbox != NULL );
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_STREDLIST );
+        ok = (lbox != NULL);
     }
 
     if( ok ) {
-        ret = SendMessage ( lbox, LB_GETCOUNT, 0, 0 );
+        ret = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
         max = ret;
-        ok = ( ret && ( ret != LB_ERR ) && ( pos < (int)ret ) );
+        ok = (ret != 0 && ret != LB_ERR && pos < (int)ret);
     }
 
     if( ok ) {
-        string_id = (uint_16 )(void *)
-            SendMessage ( lbox, LB_GETITEMDATA, (WPARAM) pos, 0 );
+        string_id = (uint_16 )(void *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         block = WFindStringBlock( einfo->tbl, string_id );
-        ok = ( block != NULL );
+        ok = (block != NULL);
     }
 
     if( ok ) {
@@ -144,24 +143,23 @@ Bool WDeleteEditWinLBoxEntry ( WStringEditInfo *einfo, int pos, Bool free_it )
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         einfo->info->modified = TRUE;
-        ret = SendMessage ( lbox, LB_DELETESTRING, (WPARAM) pos, 0 );
-        ok = ( ret != LB_ERR );
+        ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
+        ok = (ret != LB_ERR);
     }
 
-    if ( ok ) {
-        einfo->current_block  = NULL;
+    if( ok ) {
+        einfo->current_block = NULL;
         einfo->current_string = 0;
-        einfo->current_pos    = -1;
-        pos = min ( max-2, pos );
-        ret = SendMessage ( lbox, LB_SETCURSEL, (WPARAM) pos, 0 );
-        ok = ( ret != LB_ERR );
-        if ( ok ) {
-            WHandleSelChange ( einfo );
+        einfo->current_pos = -1;
+        pos = min( max - 2, pos );
+        ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
+        ok = (ret != LB_ERR);
+        if( ok ) {
+            WHandleSelChange( einfo );
         }
     }
 
-    return ( ok );
+    return( ok );
 }
-

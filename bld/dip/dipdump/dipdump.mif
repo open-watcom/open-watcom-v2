@@ -1,0 +1,34 @@
+#
+# Open Watcom DIP Dumper makefile.
+# 
+proj_name = dipdump
+
+!ifndef dipdump_autodepends
+dipdump_autodepends = .AUTODEPEND
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+dig_os_os2_386 = os2v2
+dig_os_dos_386 = dsx
+!ifndef dig_os_$(host_os)_$(host_cpu)
+dig_os = $(host_os)
+!else
+dig_os = $(dig_os_$(host_os)_$(host_cpu))
+!endif
+
+!include $(dig_dir)/mif/dipcli.mif
+
+inc_dirs = -I"../h" -I"$(dig_dir)/h"
+
+.c: ../c;$(dig_srcs);$(mad_srcs)
+
+objs =  dipdump.obj &
+        digcli.obj  &
+        dipcli.obj  &
+        $(dip_objs)
+        
+
+!include exetarg.mif

@@ -1,0 +1,94 @@
+*$noreference
+
+! Text Functions:
+! ---------------
+
+      external ExtTextOut
+      external GetTabbedTextExtent
+      external GetTextAlign
+      external GetTextCharacterExtra
+      external GetTextExtent
+      external GetTextFace
+      external GetTextMetrics
+      external SetTextAlign
+      external SetTextCharacterExtra
+      external SetTextJustification
+      external TabbedTextOut
+      external TextOut
+
+
+      integer*2 ExtTextOut
+      integer*4 GetTabbedTextExtent
+      integer*2 GetTextAlign
+      integer*2 GetTextCharacterExtra
+      integer*4 GetTextExtent
+      integer*2 GetTextFace
+      integer*2 GetTextMetrics
+      integer*2 SetTextAlign
+      integer*2 SetTextCharacterExtra
+      integer*2 SetTextJustification
+      integer*4 TabbedTextOut
+      integer*2 TextOut
+
+! Text Alignment Options
+
+      integer TA_NOUPDATECP
+      integer TA_UPDATECP
+
+      integer TA_LEFT
+      integer TA_RIGHT
+      integer TA_CENTER
+
+      integer TA_TOP
+      integer TA_BOTTOM
+      integer TA_BASELINE
+
+      integer ETO_GRAYED
+      integer ETO_OPAQUE
+      integer ETO_CLIPPED
+
+      integer ASPECT_FILTERING
+
+      parameter ( TA_NOUPDATECP                = 0 )
+      parameter ( TA_UPDATECP                  = 1 )
+
+      parameter ( TA_LEFT                      = 0 )
+      parameter ( TA_RIGHT                     = 2 )
+      parameter ( TA_CENTER                    = 6 )
+
+      parameter ( TA_TOP                       = 0 )
+      parameter ( TA_BOTTOM                    = 8 )
+      parameter ( TA_BASELINE                  = 24 )
+
+      parameter ( ETO_GRAYED                   = 1 )
+      parameter ( ETO_OPAQUE                   = 2 )
+      parameter ( ETO_CLIPPED                  = 4 )
+
+      parameter ( ASPECT_FILTERING             = '0001'x )
+
+! Basic Font Metrics Data Structure
+
+      structure /TEXTMETRIC/
+          integer*2           tmHeight
+          integer*2           tmAscent
+          integer*2           tmDescent
+          integer*2           tmInternalLeading
+          integer*2           tmExternalLeading
+          integer*2           tmAveCharWidth
+          integer*2           tmMaxCharWidth
+          integer*2           tmWeight
+          integer*1           tmItalic
+          integer*1           tmUnderlined
+          integer*1           tmStruckOut
+          integer*1           tmFirstChar
+          integer*1           tmLastChar
+          integer*1           tmDefaultChar
+          integer*1           tmBreakChar
+          integer*1           tmPitchAndFamily
+          integer*1           tmCharSet
+          integer*2           tmOverhang
+          integer*2           tmDigitizedAspectX
+          integer*2           tmDigitizedAspectY
+      end structure
+
+*$reference

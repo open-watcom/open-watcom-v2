@@ -1,2 +1,2 @@
 extern void DrawTempRect( LPRECT );
-extern BOOL DoPainting();
+extern BOOL DoPainting( void );

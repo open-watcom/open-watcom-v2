@@ -1,0 +1,149 @@
+c$ifdef INCL_ERRORS
+c$define INCL_SHLERRORS
+c$endif
+
+c$ifdef INCL_WINPROGRAMLIST
+
+c$ifndef SESMGR
+      
+c$pragma aux (__syscall) PrfQueryProgramTitles parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfAddProgram parm( value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfChangeProgram parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfQueryDefinition parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfRemoveProgram parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfQueryProgramHandle parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfCreateGroup parm( value*4, \
+c		value*4, \
+c		value*1 )
+      
+c$pragma aux (__syscall) PrfDestroyGroup parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfQueryProgramCategory parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinStartApp parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinTerminateApp parm( value*4 )
+      
+c$endif
+
+c$endif
+
+c$ifndef SESMGR
+
+c$ifdef INCL_WINSWITCHLIST
+      
+c$pragma aux (__syscall) WinAddSwitchEntry parm( reference )
+
+c$pragma aux (__syscall) WinRemoveSwitchEntry parm( value*4 )
+      
+c$pragma aux (__syscall) WinChangeSwitchEntry parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinCreateSwitchEntry parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinQuerySessionTitle parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinQuerySwitchEntry parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinQuerySwitchHandle parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQuerySwitchList parm( value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinQueryTaskSizePos parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinQueryTaskTitle parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinSwitchToProgram parm( value*4 )
+      
+c$endif
+   
+c$ifdef INCL_WINSHELLDATA
+      
+c$pragma aux (__syscall) PrfQueryProfileInt parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfQueryProfileString parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfWriteProfileString parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfQueryProfileSize parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfQueryProfileData parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfWriteProfileData parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfOpenProfile parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) PrfCloseProfile parm( value*4 )
+      
+c$pragma aux (__syscall) PrfReset parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) PrfQueryProfile parm( value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif

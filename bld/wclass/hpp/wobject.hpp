@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Basic object class prototype for GUI classes.
 *
 ****************************************************************************/
-
 
 #ifndef wobject_class
 #define wobject_class
@@ -62,10 +60,19 @@ WCLASS WObject {
     public:
         WEXPORT WObject() {}
         virtual WEXPORT ~WObject() {}
+
+        // Returns the name of the class.
         virtual const char *WEXPORT className() const { return "WObject"; };
         virtual bool WEXPORT operator==( const WObject& obj ) const { return isEqual( &obj ); }
         virtual bool WEXPORT operator!=( const WObject& obj ) const { return !isEqual( &obj ); }
+
+        // Checks to see if two objects are equivilant.
         virtual bool WEXPORT isEqual( const WObject* ) const { return FALSE; }
+
+        /* If this works like strcmp( then why return 0 if isEqual() returns
+         * false? -- Bryce (Aug 24, 2006)
+         */
+        // Compairs two objects.  Results like strcmp()
         virtual int WEXPORT compare( const WObject* ) const { return 0; }
 #ifdef __WATCOM_CPLUSPLUS__
         virtual WObject& self() { return *this; }
@@ -74,6 +81,7 @@ WCLASS WObject {
         virtual void writeSelf( WObjectFile& ) {}
 };
 
+// Callback prototypes
 typedef void (WObject::*cb)();
 typedef bool (WObject::*bcb)();
 typedef bool (WObject::*bcbi)( int i );

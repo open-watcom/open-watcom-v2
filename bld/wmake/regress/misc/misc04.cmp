@@ -1,4 +1,4 @@
-MISC04(19): Warning(W65): Redefinition of .DEFAULT Command List
+misc04(19): Warning(W65): Redefinition of .DEFAULT Command List
 echo before
 before
 echo default2

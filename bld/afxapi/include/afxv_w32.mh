@@ -1,0 +1,81 @@
+/*
+ * afxv_w32.h   Application Framework version header for Win32
+ *
+:include crwatcnt.sp
+ */
+
+#if defined( _UNICODE ) && !defined( UNICODE )
+    #define UNICODE
+#endif
+
+#if defined( UNICODE ) && !defined( _UNICODE )
+    #define _UNICODE
+#endif
+
+// Define default Windows version numbers.
+#ifndef WINVER
+    #ifdef _WIN32_WINNT
+        #define WINVER      _WIN32_WINNT
+    #else
+        #define WINVER      0x0600
+    #endif
+#endif
+#if !defined( _WIN32_WINNT ) && (WINVER >= 0x0501)
+    #define _WIN32_WINNT    WINVER
+#endif
+#ifndef _WIN32_IE
+    #if (_WIN32_WINNT >= 0x0601)
+        #define _WIN32_IE   0x0800
+    #elif (_WIN32_WINNT >= 0x0600)
+        #define _WIN32_IE   0x0700
+    #elif (_WIN32_WINNT >= 0x0501)
+        #define _WIN32_IE   0x0600
+    #elif (_WIN32_WINNT >= 0x0500)
+        #define _WIN32_IE   0x0500
+    #elif (WINVER >= 0x0500)
+        #define _WIN32_IE   0x0400
+    #endif
+#endif
+#ifndef NTDDI_VERSION
+    #if (_WIN32_WINNT >= 0x0601)
+        #define NTDDI_VERSION   0x06010000
+    #elif (_WIN32_WINNT >= 0x0600)
+        #define NTDDI_VERSION   0x06000000
+    #elif (_WIN32_WINNT >= 0x0502)
+        #define NTDDI_VERSION   0x05020000
+    #elif (_WIN32_WINNT >= 0x0501)
+        #define NTDDI_VERSION   0x05010000
+    #else
+        #define NTDDI_VERSION   0x05000000
+    #endif
+#endif
+
+#if (WINVER < 0x0400)
+    #error You must compile for Windows 95 (WINVER = 0x0400) or later to use AFX.
+#endif
+
+#ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <ole2.h>
+#include <commdlg.h>
+#include <commctrl.h>
+
+// FormatMessage() must be defined as an inline function instead of a macro in order
+// to avoid conflicting with CString::FormatMessage().  This function requires special
+// treatment because FormatMessageA() and FormatMessageW() are defined as macros in
+// winbase.h.
+#undef FormatMessage
+inline BOOL FormatMessage( DWORD dwFlags, LPCVOID lpSource, DWORD dwMessageId,
+                           DWORD dwLanguageId, LPTSTR lpBuffer, DWORD nSize,
+                           va_list *Arguments )
+{
+#ifdef UNICODE
+    return( FormatMessageW( dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer,
+                            nSize, Arguments ) );
+#else
+    return( FormatMessageA( dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer,
+                            nSize, Arguments ) );
+#endif
+}

@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Target independent pragma processing.
 *
 ****************************************************************************/
 
-
-#include <stdlib.h>
-#include <string.h>
 
 #include "plusplus.h"
 #include "preproc.h"
@@ -52,9 +48,10 @@
 #include "cginimps.h"
 #include "initdefs.h"
 #include "asmstmt.h"
+#include "ialias.h"
 
 // from \watcom\h
-#include "rtinit.h"
+#include "rtprior.h"
 
 
 typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
@@ -167,9 +164,8 @@ static void pragComment(        // #PRAGMA COMMENT
 static void collectStrings( VBUF *vinfo )
 {
     VbufInit( vinfo );
-    VStrNull( vinfo );
     while( CurToken == T_STRING ) {
-        VStrConcStr( vinfo, Buffer );
+        VbufConcStr( vinfo, Buffer );
         NextToken();
     }
 }
@@ -186,7 +182,7 @@ static void pragMessage(        // #PRAGMA MESSAGE
         NextToken();
         if( CurToken == T_STRING ) {
             collectStrings( &str );
-            CErr2p( WARN_USER_WARNING_MSG, str.buf );
+            CErr2p( WARN_USER_WARNING_MSG, VbufString( &str ) );
             VbufFree( &str );
         }
         PPState = PPS_EOL | PPS_NO_EXPAND;
@@ -204,7 +200,7 @@ static void pragError(          // #PRAGMA ERROR
     if( CurToken == T_STRING ) {
         PPState = PPS_EOL;
         collectStrings( &str );
-        CErr2p( ERR_USER_ERROR_MSG, str.buf );
+        CErr2p( ERR_USER_ERROR_MSG, VbufString( &str ) );
         VbufFree( &str );
         PPState = PPS_EOL | PPS_NO_EXPAND;
     }
@@ -218,7 +214,7 @@ static void pragError(          // #PRAGMA ERROR
 //
 // Used to indicate whether recursive inlining is permitted or not
 //
-static void pragInlineRecursion(// PROCESS #pragma inline_recusrion
+static void pragInlineRecursion( // PROCESS #pragma inline_recusrion
     void )
 {
     if( PragRecog( "on" ) ) {
@@ -256,13 +252,13 @@ static void pragCodeSeg(        // SET NEW CODE SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         PPState = PPS_EOL;
         NextToken();
-        if( CurToken == T_STRING ) {
+        if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
-                if( CurToken == T_STRING ) {
+                if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
                 } else {
@@ -300,13 +296,13 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
     if( CurToken == T_LEFT_PAREN ) {
         PPState = PPS_EOL;
         NextToken();
-        if( CurToken == T_STRING ) {
+        if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             seg_name = strsave( Buffer );
             seg_class = NULL;
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
-                if( CurToken == T_STRING ) {
+                if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
                     seg_class = strsave( Buffer );
                     NextToken();
                 } else {
@@ -372,6 +368,67 @@ static boolean pragWarning(     // PROCESS #PRAGMA WARNING
 }
 
 
+// #pragma enable_message( # )
+
+static void pragEnableMessage(  // ENABLE WARNING MESSAGE
+    void )
+{
+    unsigned msgnum;
+    boolean error_occurred;
+
+    error_occurred = FALSE;
+    MustRecog( T_LEFT_PAREN );
+    for( ;; ) {
+        if( !grabNum( &msgnum ) ) {
+            CErr1( ERR_PRAG_ENABLE_MESSAGE );
+            error_occurred = TRUE;
+        }
+
+        // Enable message by setting its level to the lowest possible value.
+        if( !error_occurred ) {
+            WarnChangeLevel( 0x01, msgnum );
+        }
+
+        if( CurToken != T_COMMA ) {
+            break;
+        }
+        NextToken();
+    }
+    MustRecog( T_RIGHT_PAREN );
+
+}
+
+
+// #pragma disable_message( # )
+
+static void pragDisableMessage( // DISABLE WARNING MESSAGE
+    void )
+{
+    unsigned msgnum;
+    boolean error_occurred;
+
+    error_occurred = FALSE;
+    MustRecog( T_LEFT_PAREN );
+    for( ;; ) {
+        if( !grabNum( &msgnum ) ) {
+            CErr1( ERR_PRAG_DISABLE_MESSAGE );
+            error_occurred = TRUE;
+        }
+
+        // Disable message by setting its level to the highest possible value.
+        if( !error_occurred ) {
+            WarnChangeLevel( 0x0F, msgnum );
+        }
+
+        if( CurToken != T_COMMA ) {
+            break;
+        }
+        NextToken();
+    }
+    MustRecog( T_RIGHT_PAREN );
+
+}
+
 static void endOfPragma(
     void )
 {
@@ -399,6 +456,62 @@ void PragmaSetToggle(           // SET TOGGLE
         }
     #include "tognam.h"
 }
+
+boolean PragIdCurToken(         // IS CURTOKEN AN ID?
+    void )
+{
+    TOKEN   t = CurToken;
+
+    return( t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD );
+}
+
+
+static boolean PragIdRecog(     // RECOGNIZE PRAGMA ID
+    char *what )                // - id
+{
+    char *p = Buffer;
+
+    if( *p == '_' ) {
+        ++p;
+        if( *p == '_' ) {
+            ++p;
+        }
+    }
+    if( stricmp( p, what ) == 0 ) {
+        NextToken();
+        return( 1 );
+    }
+    return( 0 );
+}
+
+
+boolean PragRecog(              // RECOGNIZE PRAGMA ID
+    char *what )                // - id
+{
+    if( PragIdCurToken() ) {
+        return( PragIdRecog( what ) );
+    }
+    return( 0 );
+}
+
+
+static boolean startPrag( char *id )
+{
+    unsigned save;
+
+    // use this function when you want to immediately process macros
+    // after you recognize the pragma (PragRecog performs a NextToken
+    // so the pre-processing flag has to be set before PragRecog is called)
+    save = PPState;
+    PPState = PPS_EOL;
+    // NextToken inside of PragRecog will process macros on next token
+    if( PragRecog( id ) ) {
+        return( TRUE );
+    }
+    PPState = save;
+    return( FALSE );
+}
+
 
 static void pragFlag(           // SET TOGGLES
     boolean set_flag )          // - TRUE ==> set flag
@@ -436,7 +549,7 @@ static void pragInitialize(     // #pragma initialize ...
     unsigned test;
 
     adjust = 0;
-    for(;;) {
+    for( ; ; ) {
         /* allow "before before library" */
         if( PragRecog( "after" ) ) {
             ++adjust;
@@ -470,6 +583,32 @@ static void pragInitialize(     // #pragma initialize ...
     CompInfo.init_priority = priority;
 }
 
+static void pushPrag( PRAG_STACK **h, unsigned value )
+{
+    PRAG_STACK *stack_entry;
+
+    stack_entry = StackPop( &FreePrags );
+    if( stack_entry == NULL ) {
+        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
+    }
+    stack_entry->value = value;
+    StackPush( h, stack_entry );
+}
+
+static boolean popPrag( PRAG_STACK **h, unsigned *pvalue )
+{
+    PRAG_STACK *pack_entry;
+
+    pack_entry = StackPop( h );
+    if( pack_entry != NULL ) {
+        if( pvalue != NULL ) {
+            *pvalue = pack_entry->value;
+        }
+        StackPush( &FreePrags, pack_entry );
+        return( TRUE );
+    }
+    return( FALSE );
+}
 
 // forms: (1) #pragma enum int
 //        (2) #pragma enum minimum
@@ -552,9 +691,8 @@ static int parseExtRef(     // PARSE SYMBOL NAME
     int err;                // TRUE ==> syntax error
 
     if( PragIdCurToken() ) {
-        char* name = NameCreateLen( Buffer, TokenLen );
         SEARCH_RESULT* result;
-        result = ScopeFindNaked( CurrScope
+        result = ScopeFindNaked( GetCurrScope()
                                , NameCreateLen( Buffer, TokenLen ) );
         if( result == NULL ) {
             CErr2p( ERR_PRAG_EXTREF_NONE, Buffer );
@@ -666,7 +804,7 @@ static void pragDumpObjectModel( // DUMP OBJECT MODEL
     void )
 {
     if( PragIdCurToken() ) {
-        SEARCH_RESULT* result = ScopeFindNaked( CurrScope
+        SEARCH_RESULT* result = ScopeFindNaked( GetCurrScope()
                                               , NameCreateLen( Buffer, TokenLen ) );
         if( result == NULL ) {
             CErr2p( ERR_DUMP_OBJ_MODEL, Buffer );
@@ -796,23 +934,6 @@ static void pragBreak()
 }
 #endif
 
-static boolean startPrag( char *id )
-{
-    unsigned save;
-
-    // use this function when you want to immediately process macros
-    // after you recognize the pragma (PragRecog performs a NextToken
-    // so the pre-processing flag has to be set before PragRecog is called)
-    save = PPState;
-    PPState = PPS_EOL;
-    // NextToken inside of PragRecog will process macros on next token
-    if( PragRecog( id ) ) {
-        return( TRUE );
-    }
-    PPState = save;
-    return( FALSE );
-}
-
 
 // forms: (1) #pragma read_only_file
 //        (2) #pragma read_only_file "file"*
@@ -854,6 +975,62 @@ static void pragReadOnlyDir
     }
 }
 
+// form: #pragma include_alias( "alias_name", "real_name" )
+//       #pragma include_alias( <alias_name>, <real_name> )
+//
+// (1) causes include directives referencing alias_name to refer
+//     to real_name instead
+//
+static void pragIncludeAlias( void )
+{
+    if( CurToken == T_LEFT_PAREN ) {
+        PPState = PPS_EOL;
+        NextToken();
+        if( CurToken == T_STRING ) {
+            char    *alias_name;
+
+            alias_name = CMemAlloc( strlen( Buffer ) + 1 );
+            strcpy( alias_name, Buffer );
+            NextToken();
+            MustRecog( T_COMMA );
+            if( CurToken == T_STRING ) {
+                IAliasAdd( alias_name, Buffer, FALSE );
+                NextToken();
+            }
+            CMemFree( alias_name );
+        }
+        else if( CurToken == T_LT ) {
+            char    a_buf[82];
+            char    r_buf[82];
+
+            a_buf[0] = '\0';
+            for( ;; ) {
+                NextToken();
+                if( CurToken == T_GT ) {
+                    NextToken();
+                    break;
+                }
+                strncat( a_buf, Buffer, 80 );
+            }
+            MustRecog( T_COMMA );
+            if( CurToken == T_LT ) {
+                r_buf[0] = '\0';
+                for( ;; ) {
+                    NextToken();
+                    if( CurToken == T_GT ) {
+                        NextToken();
+                        break;
+                    }
+                    strncat( r_buf, Buffer, 80 );
+                }
+                IAliasAdd( a_buf, r_buf, TRUE );
+            }
+        }
+        PPState = PPS_EOL | PPS_NO_EXPAND;
+        MustRecog( T_RIGHT_PAREN );
+    }
+}
+
 // form: #pragma once
 //
 // (1) current source file will never be #include'd again
@@ -861,129 +1038,6 @@ static void pragOnce( void )
 {
     SrcFileOnceOnly();
 }
-
-void CPragma()                  // PROCESS A PRAGMA
-{
-    boolean our_pragma;         // - TRUE ==> one of ours
-
-    SrcFileGuardStateSig();
-    if( CompFlags.cpp_output ) {
-        if( ! CppPrinting() ) return;
-        fprintf( CppFile, "#pragma" );
-        PPState = PPS_EOL;
-        CompFlags.in_pragma = 1;
-        for(;;) {
-            GetNextToken();
-            if( CurToken == T_NULL ) break;
-            PrtToken();
-        }
-        CompFlags.in_pragma = 0;
-    } else {
-        our_pragma = FALSE;
-        NextToken();
-        for(;;) {
-            if( ! PragRecog( NULL ) ) break;
-            if( PragRecog( "on" ) ) {
-                pragFlag( 1 );
-            } else if( PragRecog( "off" ) ) {
-                pragFlag( 0 );
-            } else if( startPrag( "aux" ) || startPrag( "linkage" ) ) {
-                PragAux();
-            } else if( PragRecog( "library" ) ) {
-                pragLibs();
-            } else if( PragRecog( "once" ) ) {
-                pragOnce();
-            } else if( PragRecog( "extref" ) ) {
-                pragExtRef();
-            } else if( PragRecog( "comment" ) ) {
-                pragComment();
-            } else if( PragRecog( "pack" ) ) {
-                pragPack();
-            } else if( PragRecog( "warning" ) ) {
-                if( pragWarning() ) {
-                    /* ignore #pragma warning */
-                    break;
-                }
-            } else if( PragRecog( "code_seg" ) ) {
-                pragCodeSeg();
-            } else if( PragRecog( "data_seg" ) ) {
-                pragDataSeg();
-            } else if( PragRecog( "initialize" ) ) {
-                pragInitialize();
-            } else if( PragRecog( "init_seg" ) ) {
-                pragInitSeg();
-            } else if( PragRecog( "inline_depth" ) ) {
-                pragInlineDepth();
-            } else if( PragRecog( "template_depth" ) ) {
-                pragTemplateDepth();
-            } else if( PragRecog( "inline_recursion" ) ) {
-                pragInlineRecursion();
-            } else if( PragRecog( "intrinsic" ) ) {
-                pragIntrinsic( TRUE );
-            } else if( PragRecog( "function" ) ) {
-                pragIntrinsic( FALSE );
-            } else if( PragRecog( "destruct" ) ) {
-                pragDestruct();
-            } else if( PragRecog( "enum" ) ) {
-                pragEnum();
-            } else if( PragRecog( "dump_object_model" ) ) {
-                pragDumpObjectModel();
-            } else if( startPrag( "read_only_file" ) ) {
-                pragReadOnlyFile();
-            } else if( startPrag( "read_only_directory" ) ) {
-                pragReadOnlyDir();
-            } else if( PragRecog( "message" ) ) {
-                pragMessage();
-            } else if( PragRecog( "error" ) ) {
-                pragError();
-#ifndef NDEBUG
-            } else if( PragRecog( "break" ) ) {
-                pragBreak();
-#endif
-            } else {
-                break;
-            }
-            our_pragma = TRUE;
-        }
-        if( our_pragma ) {
-            endOfPragma();
-        }
-    }
-}
-
-
-void PragInitDefaultInfo(
-    void )
-{
-    DefaultInfo._class = 0;
-    DefaultInfo.code = NULL;
-    DefaultInfo.parms = DefaultParms;
-    HW_CAsgn( DefaultInfo.returns, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.streturn, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.save, HW_FULL );
-    DefaultInfo.use = 0;
-    DefaultInfo.objname = NULL;
-}
-
-
-void PragInit(
-    void )
-{
-    DefaultInfo.use = 2;
-
-    CdeclInfo = DefaultInfo;
-    PascalInfo = DefaultInfo;
-    FortranInfo = DefaultInfo;
-    SyscallInfo = DefaultInfo;
-    OptlinkInfo = DefaultInfo;
-    StdcallInfo = DefaultInfo;
-#ifdef __OLD_STDCALL
-    OldStdcallInfo = DefaultInfo;
-#endif
-
-    CompInfo.init_priority = INIT_PRIORITY_PROGRAM;
-}
-
 
 static void pragLibs(           // #PRAGMA library ( lib ... lib )
     void )
@@ -998,33 +1052,6 @@ static void pragLibs(           // #PRAGMA library ( lib ... lib )
     } else {
         CompFlags.pragma_library = 1;
     }
-}
-
-static void pushPrag( PRAG_STACK **h, unsigned value )
-{
-    PRAG_STACK *stack_entry;
-
-    stack_entry = StackPop( &FreePrags );
-    if( stack_entry == NULL ) {
-        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
-    }
-    stack_entry->value = value;
-    StackPush( h, stack_entry );
-}
-
-static boolean popPrag( PRAG_STACK **h, unsigned *pvalue )
-{
-    PRAG_STACK *pack_entry;
-
-    pack_entry = StackPop( h );
-    if( pack_entry != NULL ) {
-        if( pvalue != NULL ) {
-            *pvalue = pack_entry->value;
-        }
-        StackPush( &FreePrags, pack_entry );
-        return( TRUE );
-    }
-    return( FALSE );
 }
 
 // #pragma pack()
@@ -1082,28 +1109,136 @@ static void pragPack(           // #PRAGMA PACK
     }
 }
 
+void CPragma( void )                  // PROCESS A PRAGMA
+{
+    boolean check_end = TRUE;
+
+    SrcFileGuardStateSig();
+    CompFlags.in_pragma = 1;
+    NextToken();
+    if( PragRecog( "include_alias" ) ) {
+        pragIncludeAlias();
+    } else if( CompFlags.cpp_output ) {
+        PPState = PPS_EOL;
+        fprintf( CppFile, "#pragma " );
+        for( ; CurToken != T_NULL; ) {
+            PrtToken();
+            GetNextToken();
+        }
+        PPState = PPS_EOL | PPS_NO_EXPAND;
+    } else if( PragIdCurToken() ) {
+        if( PragRecog( "on" ) ) {
+            pragFlag( 1 );
+        } else if( PragRecog( "off" ) ) {
+            pragFlag( 0 );
+        } else if( startPrag( "aux" ) || startPrag( "linkage" ) ) {
+            PragAux();
+        } else if( PragRecog( "library" ) ) {
+            pragLibs();
+        } else if( PragRecog( "once" ) ) {
+            pragOnce();
+        } else if( PragRecog( "extref" ) ) {
+            pragExtRef();
+        } else if( PragRecog( "comment" ) ) {
+            pragComment();
+        } else if( PragRecog( "pack" ) ) {
+            pragPack();
+        } else if( PragRecog( "warning" ) ) {
+            if( pragWarning() ) {
+                /* ignore #pragma warning */
+                check_end = FALSE;  /* skip rest of line */
+            }
+        } else if( PragRecog( "enable_message" ) ) {
+            pragEnableMessage();
+        } else if( PragRecog( "disable_message" ) ) {
+            pragDisableMessage();
+        } else if( PragRecog( "code_seg" ) ) {
+            pragCodeSeg();
+        } else if( PragRecog( "data_seg" ) ) {
+            pragDataSeg();
+        } else if( PragRecog( "initialize" ) ) {
+            pragInitialize();
+        } else if( PragRecog( "init_seg" ) ) {
+            pragInitSeg();
+        } else if( PragRecog( "inline_depth" ) ) {
+            pragInlineDepth();
+        } else if( PragRecog( "template_depth" ) ) {
+            pragTemplateDepth();
+        } else if( PragRecog( "inline_recursion" ) ) {
+            pragInlineRecursion();
+        } else if( PragRecog( "intrinsic" ) ) {
+            pragIntrinsic( TRUE );
+        } else if( PragRecog( "function" ) ) {
+            pragIntrinsic( FALSE );
+        } else if( PragRecog( "destruct" ) ) {
+            pragDestruct();
+        } else if( PragRecog( "enum" ) ) {
+            pragEnum();
+        } else if( PragRecog( "dump_object_model" ) ) {
+            pragDumpObjectModel();
+        } else if( startPrag( "read_only_file" ) ) {
+            pragReadOnlyFile();
+        } else if( startPrag( "read_only_directory" ) ) {
+            pragReadOnlyDir();
+        } else if( PragRecog( "include_alias" ) ) {
+            pragIncludeAlias();
+        } else if( PragRecog( "message" ) ) {
+            pragMessage();
+        } else if( PragRecog( "error" ) ) {
+            pragError();
+#ifndef NDEBUG
+        } else if( PragRecog( "break" ) ) {
+            pragBreak();
+#endif
+        } else {                /* unknown pragma */
+            check_end = FALSE;  /* skip rest of line */
+        }
+    } else {                    /* unknown pragma */
+        check_end = FALSE;      /* skip rest of line */
+    }
+    if( check_end ) {
+        endOfPragma();
+    }
+    CompFlags.in_pragma = 0;
+}
+
+
+void PragInit(
+    void )
+{
+    WatcallInfo.use = 2;
+
+    CdeclInfo    = WatcallInfo;
+    PascalInfo   = WatcallInfo;
+    FortranInfo  = WatcallInfo;
+    SyscallInfo  = WatcallInfo;
+    OptlinkInfo  = WatcallInfo;
+    StdcallInfo  = WatcallInfo;
+    FastcallInfo = WatcallInfo;
+
+    CompInfo.init_priority = INIT_PRIORITY_PROGRAM;
+}
+
+
 typedef struct magic_word {
-    char        *name;
-    int         index;
+    char            *name;
+    struct aux_info *info;
 } MAGIC_WORD;
 
+#ifdef pick
+#undef pick
+#endif
+#define pick( a, b, c ) { b , c },
+
 static MAGIC_WORD magicWords[] = {
-    { "cdecl",      M_CDECL   },
-    { "default",    M_DEFAULT },
-    { "fortran",    M_FORTRAN },
-    { "optlink",    M_OPTLINK },
-    { "pascal",     M_PASCAL  },
-    { "stdcall",    M_STDCALL },
-    { "syscall",    M_SYSCALL },
-    { "system",     M_SYSCALL },
-    { NULL,         M_UNKNOWN },
+#include "auxinfo.h"
 };
 
 
 static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
     char *name )                // - name to be looked up
 {
-    MAGIC_WORD *mptr;           // - current entry
+    int     i;
 
     if( *name == '_' ) {
         ++name;
@@ -1111,30 +1246,29 @@ static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
             ++name;
         }
     }
-    for( mptr = magicWords; mptr->name != NULL; ++mptr ) {
-        if( strcmp( mptr->name, name ) == 0 ) break;
+    for( i = 0; i < sizeof( magicWords ) / sizeof( magicWords[0] ) - 1; i++ ) {
+        if( strcmp( magicWords[i].name, name ) == 0 ) break;
     }
-    return( mptr->index );
+    return( i );
 }
 
-static char *retrieveName( unsigned m_type )
+static char *retrieveName( int m_type )
 {
-    MAGIC_WORD *mptr;           // - current entry
-
-    for( mptr = magicWords; mptr->name != NULL; ++mptr ) {
-        if( mptr->index == m_type ) {
-            return( mptr->name );
-        }
-    }
-    return( NULL );
+    return( magicWords[ m_type ].name );
 }
 
 
 #if _INTEL_CPU
-static int MagicKeyword(        // LOOKUP A MAGIC KEYWORD FROM BUFFER
+static int MagicKeyword(                    // LOOKUP A MAGIC KEYWORD FROM BUFFER
     void )
 {
     return lookupMagicKeyword( Buffer );
+}
+
+static struct aux_info *MagicKeywordInfo(   // LOOKUP A MAGIC KEYWORD FROM BUFFER
+    void )
+{
+    return( magicWords[ lookupMagicKeyword( Buffer ) ].info );
 }
 #endif
 
@@ -1142,7 +1276,7 @@ static int MagicKeyword(        // LOOKUP A MAGIC KEYWORD FROM BUFFER
 void CreateAux(                 // CREATE AUX ID
         char *id )              // - id
 {
-    CurrEntry = CMemAlloc( sizeof(AUX_ENTRY) + strlen( id ) );
+    CurrEntry = CMemAlloc( sizeof( AUX_ENTRY ) + strlen( id ) );
     strcpy( CurrEntry->name, id );
     CurrInfo = CMemAlloc( sizeof( AUX_INFO ) );
     // AuxCopy assumes destination is valid
@@ -1159,35 +1293,13 @@ static boolean setAuxInfo(          // SET CURRENT INFO. STRUCTURE
     boolean found;
 
     found = TRUE;
-    switch( m_type ) {
-    case M_DEFAULT:
-        CurrInfo = &DefaultInfo;
-        break;
-    case M_CDECL:
-        CurrInfo = &CdeclInfo;
-        break;
-    case M_PASCAL:
-        CurrInfo = &PascalInfo;
-        break;
-    case M_FORTRAN:
-        CurrInfo = &FortranInfo;
-        break;
-    case M_SYSCALL:
-        CurrInfo = &SyscallInfo;
-        break;
-    case M_OPTLINK:
-        CurrInfo = &OptlinkInfo;
-        break;
-    case M_STDCALL:
-        CurrInfo = &StdcallInfo;
-        break;
-    default:
+    CurrInfo = magicWords[m_type].info;
+    if( CurrInfo == NULL ) {
         if( create_new ) {
             CreateAux( Buffer );
         } else {
             found = FALSE;
         }
-        break;
     }
     return( found );
 }
@@ -1211,6 +1323,10 @@ boolean PragmaName( void *pragma, char **id )
         *id = retrieveName( M_OPTLINK );
     } else if( pragma == &StdcallInfo ) {
         *id = retrieveName( M_STDCALL );
+    } else if( pragma == &FastcallInfo ) {
+        *id = retrieveName( M_FASTCALL );
+    } else if( pragma == &WatcallInfo ) {
+        *id = retrieveName( M_WATCALL );
     }
     if( *id != NULL ) {
         return( TRUE );
@@ -1236,33 +1352,13 @@ void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
     struct aux_entry *search;
 
     search = NULL;
-    CurrAlias = &DefaultInfo;
-    switch( MagicKeyword() ) {
-    case M_DEFAULT:
-        CurrAlias = &DefaultInfo;
-        break;
-    case M_CDECL:
-        CurrAlias = &CdeclInfo;
-        break;
-    case M_PASCAL:
-        CurrAlias = &PascalInfo;
-        break;
-    case M_FORTRAN:
-        CurrAlias = &FortranInfo;
-        break;
-    case M_SYSCALL:
-        CurrAlias = &SyscallInfo;
-        break;
-    case M_OPTLINK:
-        CurrAlias = &OptlinkInfo;
-        break;
-    case M_STDCALL:
-        CurrAlias = &StdcallInfo;
-        break;
-    default:
+    CurrAlias = MagicKeywordInfo();
+    if( CurrAlias == NULL ) {
         search = AuxLookup( Buffer );
         if( search != NULL ) {
             CurrAlias = search->info;
+        } else {
+            CurrAlias = &DefaultInfo;
         }
     }
 }
@@ -1276,7 +1372,7 @@ static void copyParms(           // COPY PARMS PORTION
         /* new parms have already been allocated */
         return;
     }
-    if( CurrInfo->parms != DefaultParms ) {
+    if( !IsAuxParmsBuiltIn( CurrInfo->parms ) ) {
         CurrInfo->parms = AuxParmDup( CurrInfo->parms );
     }
 }
@@ -1319,47 +1415,6 @@ void PragEnding(                // PROCESS END OF PRAGMA
 }
 
 
-boolean PragIdCurToken(         // IS CURTOKEN AN ID?
-    void )
-{
-    unsigned t;
-
-    t = CurToken;
-    if( t == T_ID ) {
-        return( TRUE );
-    }
-    if( t >= FIRST_KEYWORD && t <= LAST_KEYWORD ) {
-        return( TRUE );
-    }
-    return( FALSE );
-}
-
-
-boolean PragRecog(              // RECOGNIZE PRAGMA ID
-    char *what )                // - id
-{
-    char *p;
-
-    if( PragIdCurToken() ) {
-        if( what == NULL ) {
-            return( 1 );
-        }
-        p = Buffer;
-        if( *p == '_' ) {
-            ++p;
-            if( *p == '_' ) {
-                ++p;
-            }
-        }
-        if( stricmp( p, what ) == 0 ) {
-            NextToken();
-            return( 1 );
-        }
-    }
-    return( 0 );
-}
-
-
 #if _INTEL_CPU
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
@@ -1373,8 +1428,8 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 #endif
 
 
-void *PragmaLookup( char *name, unsigned index )
-/**********************************************/
+AUX_INFO *PragmaLookup( char *name, unsigned index )
+/**************************************************/
 {
     struct aux_entry *ent;
 
@@ -1394,10 +1449,10 @@ void *PragmaLookup( char *name, unsigned index )
 }
 
 
-void *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
+AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
     ( void )
 {
-    void *prag;
+    AUX_INFO *prag;
 
     prag = NULL;
     switch( TargetSystem ) {
@@ -1419,13 +1474,13 @@ int PragSet(                    // GET ENDING PRAGMA DELIMITER
     int retn;                   // - delimiter
 
     switch( CurToken ) {
-      case  T_LEFT_BRACKET :
+    case  T_LEFT_BRACKET :
         retn = T_RIGHT_BRACKET;
         break;
-      case T_LEFT_BRACE :
+    case T_LEFT_BRACE :
         retn = T_RIGHT_BRACE;
         break;
-      default :
+    default :
         retn = T_NULL;
         break;
     }
@@ -1443,14 +1498,12 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     int close;                  // - ending delimiter
 
     HW_CAsgn( res, HW_EMPTY );
-    HW_CAsgn( reg, HW_EMPTY );
     close = PragSet();
     if( close != T_NULL ) {
         PPState = PPS_EOL;
         NextToken();
-        for(;;) {
+        for( ; CurToken != close; ) {
             reg = PragRegName( Buffer );
-            if( HW_CEqual( reg, HW_EMPTY ) ) break;
             HW_TurnOn( res, reg );
             NextToken();
         }
@@ -1473,7 +1526,7 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
 
     list = PragRegList();
     i = 0;
-    while( !HW_CEqual( list, HW_EMPTY ) && (i != MAXIMUM_PARMSETS) ) {
+    while( !HW_CEqual( list, HW_EMPTY ) && ( i != MAXIMUM_PARMSETS ) ) {
         buff[ i++ ] = list;
         list = PragRegList();
     }
@@ -1483,9 +1536,9 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     HW_CAsgn( buff[i], HW_EMPTY );
     i++;
     i *= sizeof( hw_reg_set );
-    sets = (hw_reg_set *)CMemAlloc( i );
+    sets = ( hw_reg_set * ) CMemAlloc( i );
     memcpy( sets, buff, i );
-    if( CurrInfo->parms != DefaultParms ) {
+    if( !IsAuxParmsBuiltIn( CurrInfo->parms ) ) {
         CMemFree( CurrInfo->parms );
     }
     CurrInfo->parms = sets;
@@ -1512,21 +1565,10 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
 #endif
 
 
-boolean ReverseParms( void *pragma )
-/**********************************/
+boolean ReverseParms( AUX_INFO *pragma )
+/**************************************/
 {
-    AUX_INFO *aux = pragma;
-
-    if( aux->_class & REVERSE_PARMS ) {
-        return( TRUE );
-    }
-    return( FALSE );
-}
-
-boolean AddParmSize( void *pragma )
-/*********************************/
-{
-    if( pragma == &StdcallInfo ) {
+    if( pragma->cclass & REVERSE_PARMS ) {
         return( TRUE );
     }
     return( FALSE );
@@ -1539,12 +1581,12 @@ static void writePacks( void )
     unsigned pack_amount;
 
     reversed_packs = NULL;
-    for(;;) {
+    for( ; ; ) {
         pack_entry = StackPop( &HeadPacks );
         if( pack_entry == NULL ) break;
         StackPush( &reversed_packs, pack_entry );
     }
-    for(;;) {
+    for( ; ; ) {
         pack_entry = StackPop( &reversed_packs );
         if( pack_entry == NULL ) break;
         pack_amount = pack_entry->value;
@@ -1568,7 +1610,7 @@ static void readPacks( void )
     while( HeadPacks != NULL ) {
         popPrag( &HeadPacks, &PackAmount );
     }
-    for(;;) {
+    for( ; ; ) {
         pack_amount = PCHReadUInt();
         if( pack_amount == -1 ) break;
         pushPrag( &HeadPacks, pack_amount );
@@ -1587,12 +1629,12 @@ static void writeEnums( void )
     unsigned enum_int;
 
     reversed_enums = NULL;
-    for(;;) {
+    for( ; ; ) {
         enum_entry = StackPop( &HeadPacks );
         if( enum_entry == NULL ) break;
         StackPush( &reversed_enums, enum_entry );
     }
-    for(;;) {
+    for( ; ; ) {
         enum_entry = StackPop( &reversed_enums );
         if( enum_entry == NULL ) break;
         enum_int = enum_entry->value;
@@ -1611,7 +1653,7 @@ static void readEnums( void )
     while( HeadEnums != NULL ) {
         popPrag( &HeadEnums, NULL );
     }
-    for(;;) {
+    for( ; ; ) {
         enum_int = PCHReadUInt();
         if( enum_int == -1 ) break;
         pushPrag( &HeadEnums, enum_int );
@@ -1638,7 +1680,7 @@ static void readExtrefs( void )
     SYMBOL s;
 
     RingFree( &pragmaExtrefs );
-    for(;;) {
+    for( ; ; ) {
         PCHRead( &s, sizeof( s ) );
         s = SymbolMapIndex( s );
         if( s == NULL ) break;

@@ -282,7 +282,7 @@ static char find_acs_map( char c, const char *acs )
     return( '\0' );
 }
 
-static tix_status do_parse()
+static tix_status do_parse( void )
 {
     char        buff[80];
     char        input[80];

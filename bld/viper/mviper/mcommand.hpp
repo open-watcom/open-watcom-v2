@@ -41,14 +41,15 @@
 #define BMACRO "$<"
 #define EMACRO '>'
 
-#define EXECUTE_NORMAL          0
-#define EXECUTE_EDITOR          1
-#define EXECUTE_BATCH           2
-#define EXECUTE_MAKE            3
-#define EXECUTE_BROWSE          4
-#define EXECUTE_HELP            5
-#define EXECUTE_WINMAKER        6
-#define EXECUTE_TOUCH_ALL       7
+enum {
+    EXECUTE_NORMAL = 0,
+    EXECUTE_EDITOR,
+    EXECUTE_BATCH,
+    EXECUTE_MAKE,
+    EXECUTE_BROWSE,
+    EXECUTE_HELP,
+    EXECUTE_TOUCH_ALL
+};
 
 WCLASS WFileName;
 WCLASS MTool;

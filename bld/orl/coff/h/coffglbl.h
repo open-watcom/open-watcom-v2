@@ -35,9 +35,10 @@
 
 #include "orlintnl.h"
 #include "cofftype.h"
+#include "coffimpl.h"
 
-#define _ClientRead( a, b )             ((a)->coff_hnd->funcs->read( a->file, b ))
-#define _ClientSeek( a, b, c )          ((a)->coff_hnd->funcs->seek( a->file, b, c ))
+#define _ClientRead( a, b )             (((a)->implib_data != NULL) ? ImportLibData.read( a, b ) : (a)->coff_hnd->funcs->read( a->file, b ))
+#define _ClientSeek( a, b, c )          (((a)->implib_data != NULL) ? ImportLibData.seek( a, b, c ) : (a)->coff_hnd->funcs->seek( a->file, b, c ))
 #define _ClientAlloc( a, b )            ((a)->coff_hnd->funcs->alloc( b ))
 #define _ClientFree( a, b )             ((a)->coff_hnd->funcs->free( b ))
 #define _ClientReAlloc( a, b, c )       ((a)->coff_hnd->funcs->realloc( b, c ))

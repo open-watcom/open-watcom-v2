@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Common types and constants used by code generator interface.
 *
 ****************************************************************************/
 
@@ -65,18 +64,20 @@ typedef enum {
         FE_NAKED        = 0x00100000,   /* naked function - ie no prolog/epilogue */
 } fe_attr;
 
+typedef enum {
+/*  request values for FEExtName() */
+        EXTN_BASENAME,   /* return symbol base name */
+        EXTN_PATTERN,    /* return symbol name pattern */
+        EXTN_PRMSIZE     /* return symbol parameters size */
+} extn_request;
+
 typedef void *          cg_name;        /* retval for CGName(),CGUnary()*/
 typedef void *          call_handle;    /* retval for CGInitCall(), etc. */
-#ifdef BY_C_FRONT_END
-  // this was only required when front-end and back-end were separate
-  // executables compiled with mismatching data memory models
-  #ifdef __LARGE__
-   typedef unsigned long        cg_sym_handle;
-  #else
-   typedef unsigned     cg_sym_handle;
-  #endif
+
+#ifdef BY_CPP_FRONT_END
+typedef unsigned        cg_sym_handle;
 #else
-typedef void    *       cg_sym_handle;
+typedef void *          cg_sym_handle;
 #endif
 
 typedef void *          label_handle;   /*  2nd parm to CGName for CG_LBL */
@@ -155,7 +156,8 @@ typedef enum {
         PRIVATE         = 0x0040,       /* private segment */
         GIVEN_NAME      = 0x0080,       /* use the segment name as given */
         COMDAT          = 0x0100,       /* COMDAT segment (ALPHA) */
-        THREAD_LOCAL    = 0x0200        /* Thread Local Storage */
+        THREAD_LOCAL    = 0x0200,       /* Thread Local Storage */
+        NOGROUP         = 0x0400        /* Not part of a group (DGROUP) */
 } seg_attr;
 
 
@@ -178,7 +180,8 @@ typedef enum {
         MSG_BAD_LINKAGE,        /*  cannot resolve linkage conventions (sym) */
         MSG_SCHEDULER_DIED,     /*  ins scheduler ran out of mem (sym) */
         MSG_NO_SEG_REGS,        /*  accessing far memory with no seg regs */
-        MSG_BAD_PEG_REG         /*  bad register pegged to a segment */
+        MSG_BAD_PEG_REG,        /*  bad register pegged to a segment */
+        MSG_SYMBOL_TOO_LONG     /*  symbol too long, truncated (sym) */
 } msg_class;                    /*  fatal cg error message */
 
 #define DBG_NIL_TYPE    0
@@ -201,7 +204,8 @@ enum {
         II_TARG_CHECK,
         II_TARG_370,
         II_TARG_AXP,
-        II_TARG_PPC
+        II_TARG_PPC,
+	II_TARG_MIPS
 };
 
 #define II_REVISION     9

@@ -8,7 +8,7 @@
 
 extern "C" long _export _far _pascal FrameProc( HWND hwin, UINT msg, UINT wparm, LONG lparm )
 {
-		WMdiWindow* win = (WMdiWindow*)WWindow::_objMap.findThis( hwin );
+		WMdiWindow* win = (WMdiWindow*)WWindow::_objMap.findThis( (HANDLE)hwin );
 		ifptr( win ) {
 			switch( msg ) {
 			case WM_CREATE:
@@ -40,7 +40,7 @@ bool WEXPORT WMdiWindow::registerClass()
 				wc.hInstance = _appInst;
 				wc.hIcon = LoadIcon( _appInst, IDI_APPLICATION );
 				wc.hCursor = LoadCursor( NIL, IDC_ARROW );
-				wc.hbrBackground = COLOR_APPWORKSPACE+1;
+				wc.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE+1;
 				wc.lpszMenuName = NIL;
 				wc.lpszClassName = _appName;
 				if( RegisterClass( &wc ) ) {
@@ -72,7 +72,7 @@ void WEXPORT WMdiWindow::createClient( HWND hwin )
 	cs.idFirstChild = 100;
 	_clientHandle = CreateWindow( "MDICLIENT", NIL, WS_CHILD|WS_CLIPCHILDREN|WS_VSCROLL|WS_HSCROLL
 			, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT
-			, hwin, 0xCAC, _appInst, (LPSTR)&cs );
+			, hwin, (HMENU)0xCAC, _appInst, (LPSTR)&cs );
 	ifptr( _clientHandle ) {
 		ShowWindow( _clientHandle, SW_SHOW );
 	}

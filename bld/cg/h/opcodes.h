@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Code generator opcodes and their classification.
 *
 ****************************************************************************/
 
@@ -91,9 +90,8 @@ FIRST_CSE_OP = FIRST_ARITH_OP,
             LAST_UNARY_IFUNC = OP_TANH,
             LAST_IFUNC = LAST_UNARY_IFUNC,
             OP_PTR_TO_NATIVE,
-            OP_PTR_TO_FORIEGN,
-            OP_PTR_TO_FOREIGN = OP_PTR_TO_FORIEGN,      // I hate spelling mistakes - BBB
-        LAST_UNARY_OP = OP_PTR_TO_FORIEGN,
+            OP_PTR_TO_FOREIGN,
+        LAST_UNARY_OP = OP_PTR_TO_FOREIGN,
     LAST_ARITH_OP = LAST_UNARY_OP,
 
     OP_SLACK_19,
@@ -102,11 +100,11 @@ FIRST_CSE_OP = FIRST_ARITH_OP,
 
     FIRST_MOVE_OP,
         OP_CONVERT = FIRST_MOVE_OP,
-#if ( _TARGET & _TARG_AXP ) == 0
+#if ( _TARGET & _TARG_RISC ) == 0
 LAST_CSE_OP = OP_CONVERT,
 #endif
         OP_LA,
-#if _TARGET & _TARG_AXP
+#if _TARGET & _TARG_RISC
 LAST_CSE_OP = OP_LA,
 #endif
         OP_CAREFUL_LA,

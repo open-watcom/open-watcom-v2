@@ -24,16 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions used throughout the DWARF file merger.
 *
 ****************************************************************************/
 
 
-/* declare data types used in the dwarf file merger */
-
-#ifndef __BRMERGE_H__
-#define __BRMERGE_H__
+#ifndef BRMERGE_H_INCLUDED
+#define BRMERGE_H_INCLUDED
 
 // disable "integral value may be truncated" warning
 #pragma warning 389 9
@@ -43,6 +40,8 @@
 
 #include "mrdeath.h"
 #include "mempool.h"
+
+typedef int_32  fileidx_t;
 
 #if INSTRUMENTS
 #include "debuglog.h"

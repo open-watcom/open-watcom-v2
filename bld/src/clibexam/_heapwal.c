@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <malloc.h>
 
-heap_dump()
-  {
+void heap_dump()
+{
     struct _heapinfo h_info;
     int heap_status;
 
@@ -31,12 +31,12 @@ heap_dump()
     case _HEAPBADNODE:
       printf( "ERROR - bad node in heap\n" );
     }
-  }
+}
 
 void main()
-  {
+{
     char *p;
     heap_dump();   p = (char *) malloc( 80 );
     heap_dump();   free( p );
     heap_dump();
-  }
+}

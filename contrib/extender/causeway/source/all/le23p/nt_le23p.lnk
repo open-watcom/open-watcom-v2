@@ -1,0 +1,7 @@
+option map=moo.map
+name nt_le23p
+system causeway
+file nt_le23p
+libfile c2asm
+library system2
+

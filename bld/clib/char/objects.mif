@@ -1,52 +1,61 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=========================================================================================
-!inject isalnum.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isalpha.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isascii.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject iscntrl.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject iscsym.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject iscsymf.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isdigit.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isgraph.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject islower.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isprint.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject ispunct.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isspace.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject istable.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject isupper.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject iswctype.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject isxdigit.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject tolower.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject toupper.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject uisalnum.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisalpha.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisascii.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uiscntrl.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisdigit.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisgraph.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uislower.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisprint.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uispunct.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisspace.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisupper.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject uisxdig.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject utolower.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject utoupper.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject wctype.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==========================================================================================================
+!inject isalnum.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isalpha.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isascii.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isblank.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject iscntrl.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject iscsym.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject iscsymf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isdigit.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isgraph.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject islower.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isprint.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject ispunct.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isspace.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject istable.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isupper.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject iswctype.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject isxdigit.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject tolower.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject toupper.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject towctrns.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject wctrans.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject uisalnum.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisalpha.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisascii.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisblank.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uiscntrl.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uiscsym.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uiscsymf.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisdigit.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisgraph.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uislower.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisprint.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uispunct.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisspace.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisupper.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject uisxdig.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject utolower.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject utoupper.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject wctrans.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject wctype.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
 
-uisalpha_opts=-os
-uisascii_opts=-os
-uiscntrl_opts=-os
-uisdigit_opts=-os
-uisgraph_opts=-os
-uislower_opts=-os
-uisprint_opts=-os
-uispunct_opts=-os
-uisspace_opts=-os
-uisupper_opts=-os
-uisxdig_opts =-os
-utolower_opts=-os
-utoupper_opts=-os
-uisalnum_opts=-os
+uisalpha_postopts=-os
+uisascii_postopts=-os
+uiscntrl_postopts=-os
+uiscsym_postopts =-os
+uiscsymf_postopts=-os
+uisdigit_postopts=-os
+uisgraph_postopts=-os
+uislower_postopts=-os
+uisprint_postopts=-os
+uispunct_postopts=-os
+uisspace_postopts=-os
+uisupper_postopts=-os
+uisxdig_postopts =-os
+utolower_postopts=-os
+utoupper_postopts=-os
+uisalnum_postopts=-os

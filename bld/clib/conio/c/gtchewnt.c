@@ -35,16 +35,15 @@
 #include <stdio.h>
 #include "rtdata.h"
 
-_WCRTLINK int getche()
-    {
-        unsigned        c;
-        unsigned        stashed;
+_WCRTLINK int getche( void )
+{
+    int         c;
+    int         stashed;
 
-        stashed = _RWD_cbyte;
-
-        c = getch();
-        if( c != EOF && stashed == 0 ) {
-            putch( c );
-        }
-        return( c );
+    stashed = _RWD_cbyte;
+    c = getch();
+    if( c != EOF && stashed == 0 ) {
+        putch( c );
     }
+    return( c );
+}

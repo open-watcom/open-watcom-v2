@@ -4,8 +4,27 @@
 #
 temp = HELLO
 temp = $(temp:LLO=2) 
-all: hello .symbolic
+all: hello
    echo $(temp)
 temp = $(temp:2=LLO) 
-hello: .symbolic
+hello:
    echo $(temp)
+
+!if "$make" == "$(make)" # This is a proxy for !if not microsoft
+!error This file requires microsoft compatibility (-ms)
+!endif
+
+# Stress macros@DeMacroName
+mac=hello
+mac=mac$mac(mac)$(mac)$(mac:l=)$$(mac)mac
+h=hello
+h=h$h(h)$(h)$(h:l=)$$hh
+
+.after
+!ifdef __UNIX__
+     @echo '$$(mac)=$(mac)'
+     @echo '$$h=$h'
+!else
+     @echo $$(mac)=$(mac)
+     @echo $$h=$h
+!endif

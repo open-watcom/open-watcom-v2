@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Search children of a given debug information entry.
 *
 ****************************************************************************/
 
@@ -33,13 +32,9 @@
 #include "drpriv.h"
 #include "drutils.h"
 
-static int baseHook( dr_sym_type, dr_handle, dr_handle, char *, void * );
-static int friendHook( dr_sym_type, dr_handle, dr_handle, char * , void * );
-static bool CheckEntry( dr_handle, dr_handle, mod_scan_info *, void * );
-
 typedef struct {
-    void *      data;       /* caller wants this back */
-    int     (* callback ) (dr_sym_type, dr_handle, char *, dr_handle, void * );
+    void        *data;  /* caller wants this back */
+    int         (* callback)(dr_sym_type, dr_handle, char *, dr_handle, void * );
     dr_handle   parent;
     dr_handle   inheritance;
 } BaseInfo;
@@ -50,9 +45,9 @@ typedef struct {
 } FriendInfo;
 
 extern void DRKidsSearch( dr_handle clhandle, dr_search search,
-                          void * data,
-         int(*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) )
-/***************************************************************************/
+                          void *data,
+         int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) )
+/****************************************************************************/
 // search the children of a given entry for particular tags ..
 // callback is called with a found entry's type, handle,
 // name, parent, and data.  If it returns FALSE, searching stops.
@@ -65,7 +60,7 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
     dr_handle   tag;
     unsigned_8  has_kids;
     int         index;
-    char *      name;
+    char        *name;
 
     abbrev = DWRVMReadULEB128( &tmp_entry );
 
@@ -73,7 +68,7 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
         return;
     }
 
-    abbrev = DWRCurrNode->abbrevs[abbrev];
+    abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
     tag = DWRVMReadULEB128( &abbrev );
     has_kids = DWRVMReadByte( abbrev );
     abbrev += sizeof( unsigned_8 );
@@ -91,7 +86,7 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
             break;
         }
 
-        abbrev = DWRCurrNode->abbrevs[abbrev];
+        abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
         tag = DWRVMReadULEB128( &abbrev );
         has_kids = DWRVMReadByte( abbrev );
         abbrev += sizeof( unsigned_8 );
@@ -119,27 +114,16 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
 }
 
 
-extern void DRBaseSearch( dr_handle clhandle, void * data,
-          int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) )
-/*******************************************************************************/
-{
-    BaseInfo binfo;
-    binfo.data = data;
-    binfo.callback = callback;
-
-    DRKidsSearch( clhandle, DR_SEARCH_BASE, &binfo, baseHook );
-}
-
 static int baseHook( dr_sym_type notused1, dr_handle handle,
-                     dr_handle notused2, char * name, void * info )
-/********************************************************************/
+                     dr_handle notused2, char *name, void *info )
+/***************************************************************/
 {
-    BaseInfo *  binfo = (BaseInfo *) info;
+    BaseInfo    *binfo = (BaseInfo *)info;
     dr_handle   abbrev;
     dr_handle   basehandle;
     dr_handle   tmp_entry;
     unsigned_16 tag;
-    char *      basename;
+    char        *basename;
     dr_sym_type symtype;
     int         index;
 
@@ -151,8 +135,8 @@ static int baseHook( dr_sym_type notused1, dr_handle handle,
 
     tmp_entry = handle;
     abbrev = DWRVMReadULEB128( &tmp_entry );
-    if( abbrev == 0 ) return TRUE;
-    abbrev = DWRCurrNode->abbrevs[abbrev];
+    if( abbrev == 0 ) return( TRUE );
+    abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
     tag = DWRVMReadULEB128( &abbrev );
     abbrev += sizeof( unsigned_8 );
 
@@ -160,8 +144,8 @@ static int baseHook( dr_sym_type notused1, dr_handle handle,
         basehandle = DWRReadReference( abbrev, tmp_entry );
         tmp_entry = basehandle;
         abbrev = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev == 0 ) return TRUE;
-        abbrev = DWRCurrNode->abbrevs[abbrev];
+        if( abbrev == 0 ) return( TRUE );
+        abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
         tag = DWRVMReadULEB128( &abbrev );
         abbrev += sizeof( unsigned_8 );
 
@@ -173,10 +157,21 @@ static int baseHook( dr_sym_type notused1, dr_handle handle,
             }
         }
         basename = DWRGetName( abbrev, tmp_entry );
-        return binfo->callback( symtype, basehandle, basename,
-                                handle, binfo->data );
+        return( binfo->callback( symtype, basehandle, basename,
+                                handle, binfo->data ) );
     }
-    return TRUE;
+    return( TRUE );
+}
+
+extern void DRBaseSearch( dr_handle clhandle, void * data,
+          int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) )
+/*******************************************************************************/
+{
+    BaseInfo binfo;
+    binfo.data = data;
+    binfo.callback = callback;
+
+    DRKidsSearch( clhandle, DR_SEARCH_BASE, &binfo, baseHook );
 }
 
 static bool CheckEntry( dr_handle abbrev, dr_handle handle,
@@ -184,7 +179,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle,
 /*********************************************************/
 {
     dr_handle   ref;
-    BaseInfo *  sinfo = (BaseInfo *) data;
+    BaseInfo    *sinfo = (BaseInfo *)data;
     dr_sym_type symtype;
     int         index;
     dr_handle   tmp_abbrev = abbrev;
@@ -199,7 +194,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle,
 
             if( tmp_abbrev == 0 ) DWREXCEPT( DREXCEP_BAD_DBG_INFO );
 
-            tmp_abbrev = DWRCurrNode->abbrevs[ tmp_abbrev ];
+            tmp_abbrev = DWRLookupAbbrev( tmp_entry, tmp_abbrev );
             tag = DWRVMReadULEB128( &tmp_abbrev );
             tmp_abbrev += sizeof( unsigned_8 );
 
@@ -216,19 +211,19 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle,
         }
     }
 
-    return TRUE;
+    return( TRUE );
 }
 
-extern void DRDerivedSearch( dr_handle handle, void * data,
+extern void DRDerivedSearch( dr_handle handle, void *data,
           int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) )
-/***************************************************************************/
+/********************************************************************************/
 // Warning!! KLUDGE! this searches the compile unit for entries that have a
 // DW_TAG_inheritance child that references handle -- not that fast.
 // also, only checks the compile unit the base class is in.
 {
     BaseInfo            info;
-    compunit_info *     compunit;
-    unsigned_16   const       inh_lst[] = { DW_TAG_inheritance, 0 };
+    compunit_info       *compunit;
+    unsigned_16 const   inh_lst[] = { DW_TAG_inheritance, 0 };
     dr_search_context   ctxt;
 
     info.callback = callback;
@@ -240,10 +235,10 @@ extern void DRDerivedSearch( dr_handle handle, void * data,
     ctxt.start = compunit->start;
     ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
     ctxt.start += COMPILE_UNIT_HDR_SIZE;
-    ctxt.classhdl = 0;
+    ctxt.classhdl    = 0;
     ctxt.functionhdl = 0;
-    ctxt.stack.size = 0;
-    ctxt.stack.free = 0;
+    ctxt.stack.size  = 0;
+    ctxt.stack.free  = 0;
     ctxt.stack.stack = NULL;
 
     DWRScanCompileUnit( &ctxt, CheckEntry, inh_lst,
@@ -261,9 +256,9 @@ static int friendHook( dr_sym_type st, dr_handle handle, dr_handle prt,
     dr_handle   abbrev;
     dr_handle   entry;
     dr_handle   friend_han;
-    FriendInfo * info;
+    FriendInfo  *info;
 
-    info = (FriendInfo *) data;
+    info = (FriendInfo *)data;
     DWRFREE( name );
 
     entry = handle;
@@ -275,10 +270,10 @@ static int friendHook( dr_sym_type st, dr_handle handle, dr_handle prt,
 
         info->callback( st, friend_han, prt, name, info->data );
     }
-    return TRUE;
+    return( TRUE );
 }
 
-extern void DRFriendsSearch( dr_handle handle, void * data,
+extern void DRFriendsSearch( dr_handle handle, void *data,
          int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) )
 /****************************************************************************/
 {
@@ -299,7 +294,7 @@ extern dr_sym_type DRGetSymType( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRCurrNode->abbrevs[ abbrev ];
+    abbrev = DWRLookupAbbrev( entry, abbrev );
     tag = DWRVMReadULEB128( &abbrev );
 
     for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
@@ -309,7 +304,5 @@ extern dr_sym_type DRGetSymType( dr_handle entry )
         }
     }
 
-    return symtype;
+    return( symtype );
 }
-
-

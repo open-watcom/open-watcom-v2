@@ -1,9 +1,10 @@
+platform = Win16
 CC = wcc386
 CFLAGS = -zW
 res1_flags = -bt=windows -30
 
-!include ..\helpex.mif
-!include ..\..\master.mif
+!include ../helpex.mif
+!include ../../master.mif
 
 linkit : .PROCEDURE
     @%append $(LNK) system win386
@@ -12,9 +13,9 @@ linkit : .PROCEDURE
     @%append $(LNK) option stack=8k
 
 bindit : .PROCEDURE
-    wbind $(name) -R $(name).res
+    wbind -q $(name) -R $(name).res
 
-..\helpex.hlp: ..\helpex.rtf
+../helpex.hlp: ../helpex.rtf
     cd ..
     hc helpex
     cd win386

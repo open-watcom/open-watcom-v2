@@ -53,6 +53,14 @@
 
 
 /*
+ * Options to force compilation to a specified file type.
+ */
+#define FORCE_NONE              0
+#define FORCE_C_COMPILE         1
+#define FORCE_CPP_COMPILE       2
+
+
+/*
  * Function prototypes.
  */
 extern void     AddFile( int type, const char *filename );
@@ -60,6 +68,8 @@ extern char *   GetNextFile( int *typeBuf, int type, ... );
 
 extern void     SetDefaultFile( int type, const char *name );
 extern void     AllowTypeFile( int type, ... );
+
+extern void     ForceLanguage( int language );
 
 
 #endif

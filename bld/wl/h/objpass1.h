@@ -38,8 +38,8 @@ typedef struct {
 } vflistrtns;
 
 typedef struct cdat_piece {
-    struct cdat_piece  *next;
-    char *              data;
+    struct cdat_piece   *next;
+    unsigned_8          *data;
     offset              length;
     unsigned            free_data : 1;
 } comdat_piece;
@@ -60,10 +60,10 @@ extern void             Set16BitMode( void );
 extern void             AllocateSegment( segnode *, char *clname );
 extern void             AddSegment( segdata *, class_entry * );
 extern class_entry *    FindClass( section *, char *, bool, bool );
-extern seg_leader *     InitLeader( char *, unsigned_16 );
-extern void             FreeLeader( seg_leader * );
+extern seg_leader *     InitLeader( char * );
+extern void             FreeLeader( void * );
 extern void             AddToGroup( group_entry *, seg_leader * );
-extern void             SetAddPubSym( symbol *, int, mod_entry *, offset,
+extern void             SetAddPubSym( symbol *, sym_info, mod_entry *, offset,
                                       unsigned_16 );
 extern void             DefineSymbol( symbol *, segnode *, offset, unsigned_16);
 extern void             AllocCommunal( symbol *, offset );
@@ -76,17 +76,18 @@ extern void             DefineVFTableRecord( symbol *, symbol *, bool,
                                              vflistrtns * );
 extern void             DefineVFReference( void *, symbol *, bool );
 extern void             DefineReference( symbol * );
-extern void             CheckComdatSym( symbol *, unsigned );
+extern void             CheckComdatSym( symbol *, sym_info );
 extern void             DefineComdat( segdata *, symbol *, offset, sym_info,
-                                      char * );
+                                      unsigned_8 * );
 extern group_entry *    GetGroup( char * );
 extern group_entry *    SearchGroups( char * );
-extern void             SeenDLLRecord( void );
+extern bool             SeenDLLRecord( void );
 extern void             HandleImport( length_name *, length_name *,
                                       length_name *, unsigned long );
 extern void             HandleExport( length_name *, length_name *, unsigned,
                                       unsigned );
 extern bool             CheckVFList( symbol * );
-extern void             SetCurrSeg( segdata *, offset, char * );
+extern void             SetCurrSeg( segdata *, offset, unsigned_8 * );
+extern void             ResetObjPass1( void );
 
 extern obj_format       ObjFormat;

@@ -56,7 +56,7 @@ _WCRTLINK int _NEARFAR(_mbsnicmp,_fmbsnicmp)( const unsigned char _FFAR *s1, con
         n--;                                    /* update counter */
     }
 
-    if( n > 0  &&  ( _NEARFAR(_mbterm,_fmbterm)(s1) || _NEARFAR(_mbterm,_fmbterm)(s2) ) )
+    if( n > 0 ) /* implies that at least one of the strings terminated */
         return( *s1 - *s2 );
     else
         return( status );

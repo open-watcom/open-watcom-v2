@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Setup for standard VGA modes.
 *
 ****************************************************************************/
 
@@ -35,47 +34,9 @@
 #include "rotate.h"
 
 
-extern void pascal      _MoveUp19();
-extern void pascal      _Move1Left();
-extern void pascal      _EGAMoveLeft();
-extern void pascal      _MoveLeft19();
-extern void pascal      _MoveDown19();
-extern void pascal      _Move1Right();
-extern void pascal      _EGAMoveRight();
-extern void pascal      _MoveRight19();
-extern void pascal      _EGAMoveUpHi();
-extern void pascal      _EGAMoveDownHi();
-extern void pascal      _CoRep();
-extern void pascal      _CoXor();
-extern void pascal      _CoAnd();
-extern void pascal      _CoOr();
-extern void pascal      _EGARep();
-extern void pascal      _Get1Dot();
-extern void pascal      _GetDot19();
-extern void             _EGASet();
-extern void             _EGAReset();
-extern void             _EGASetup80();
-extern void pascal      _EGAGetDot();
-extern void pascal      _Rep19();
-extern void pascal      _And19();
-extern void pascal      _Pix1Zap();
-extern void pascal      _EGAZap();
-extern void pascal      _Zap19();
-extern void pascal      _Pix1Fill();
-extern void pascal      _EGAFill();
-extern void pascal      _Fill19();
-extern void pascal      _Pix1Copy();
-extern void pascal      _EGAPixCopy();
-extern void pascal      _PixCopy19();
-extern void pascal      _Pix1Read();
-extern void pascal      _EGAReadRow();
-extern void pascal      _PixRead19();
-extern void pascal      _CGAScanLeft();
-extern void pascal      _EGAScanLeft();
-extern void pascal      _ScanLeft19();
-extern void pascal      _CGAScan1Right();
-extern void pascal      _EGAScanRight();
-extern void pascal      _ScanRight19();
+extern void             _EGASet( void );
+extern void             _EGAReset( void );
+extern void             _EGASetup80( short, short, short );
 
 
 static short _VGAInit( short mode )
@@ -83,13 +44,13 @@ static short _VGAInit( short mode )
 
 {
     if( _SetMode( mode ) == mode ) {
-        //             x,   y, col, bpp, pag, seg,     off,     siz,   mis
+        //             x,   y, str, col, bpp, pag, seg,     off,     siz,   mis
         if( mode == 17 ) {
-            _GrInit( 640, 480,   2,   1,   1, _EgaSeg, _EgaOff,   0,   0 );
+            _GrInit( 640, 480,  80,   2,   1,   1, _EgaSeg, _EgaOff,   0,   0 );
         } else if( mode == 18 ) {
-            _GrInit( 640, 480,  16,   4,   1, _EgaSeg, _EgaOff,   0,   PLANAR );
+            _GrInit( 640, 480,  80,  16,   4,   1, _EgaSeg, _EgaOff,   0,   PLANAR );
         } else {    // mode is 19
-            _GrInit( 320, 200, 256,   8,   1, _EgaSeg, _EgaOff,   0,   0 );
+            _GrInit( 320, 200, 320, 256,   8,   1, _EgaSeg, _EgaOff,   0,   0 );
         }
         return( TRUE );
     } else {

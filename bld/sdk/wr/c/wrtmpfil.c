@@ -36,8 +36,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <direct.h>
 #include <errno.h>
@@ -46,7 +46,6 @@
 #include "wrtmpfil.h"
 #include "wrmem.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -57,9 +56,9 @@
 /****************************************************************************/
 /* static functions                                                         */
 /****************************************************************************/
-static int     WRCopyBinFile           ( int, int );
+static int  WRCopyBinFile( int, int );
 
-static int      LastError       = 0;
+static int  LastError = 0;
 
 int WR_EXPORT WRGetLastError( void )
 {
@@ -71,29 +70,29 @@ int WR_EXPORT WRReadEntireFile( int file, BYTE **data, uint_32 *size )
     long int    s;
     int         ok;
 
-    ok = ( file != -1 && data && size );
+    ok = (file != -1 && data != NULL && size != NULL);
 
     if( ok ) {
         s = filelength( file );
-        ok = ( s != -1 && s < INT_MAX );
+        ok = (s != -1 && s < INT_MAX);
     }
 
     if( ok ) {
         *size = s;
-        *data = (BYTE *) WRMemAlloc( *size );
-        ok = ( *data != NULL );
+        *data = (BYTE *)WRMemAlloc( *size );
+        ok = (*data != NULL);
     }
 
     if( ok ) {
-        ok = ( lseek( file, 0, SEEK_SET ) != -1 );
+        ok = (lseek( file, 0, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = ( read( file, *data, *size ) == *size );
+        ok = (read( file, *data, *size ) == *size);
     }
 
     if( !ok ) {
-        if( *data ) {
+        if( *data != NULL ) {
             WRMemFree( *data );
             *data = NULL;
         }
@@ -105,7 +104,7 @@ int WR_EXPORT WRReadEntireFile( int file, BYTE **data, uint_32 *size )
 
 int WR_EXPORT WRDeleteFile( const char *name )
 {
-    if( name && WRFileExists( name ) ) {
+    if( name != NULL && WRFileExists( name ) ) {
         return( !remove( name ) );
     }
     return( FALSE );
@@ -113,7 +112,7 @@ int WR_EXPORT WRDeleteFile( const char *name )
 
 int WR_EXPORT WRFileExists( const char *name )
 {
-    return( name && ( access( name, R_OK ) == 0 ) );
+    return( name != NULL && access( name, R_OK ) == 0 );
 }
 
 int WR_EXPORT WRRenameFile( const char *new, const char *old )
@@ -121,21 +120,21 @@ int WR_EXPORT WRRenameFile( const char *new, const char *old )
     char     new_drive[_MAX_DRIVE];
     char     old_drive[_MAX_DRIVE];
 
-    if( !new || !old ) {
+    if( new == NULL || old == NULL ) {
         return( FALSE );
     }
 
-    _splitpath ( new, new_drive, NULL, NULL, NULL );
-    _splitpath ( old, new_drive, NULL, NULL, NULL );
+    _splitpath( new, new_drive, NULL, NULL, NULL );
+    _splitpath( old, new_drive, NULL, NULL, NULL );
 
-    if( stricmp ( new_drive, old_drive ) ) {
-        if( WRCopyFile ( new, old ) ) {
-            return( WRDeleteFile ( old ) );
+    if( stricmp( new_drive, old_drive ) ) {
+        if( WRCopyFile( new, old ) ) {
+            return( WRDeleteFile( old ) );
         } else {
             return( FALSE );
         }
     } else {
-        if( rename ( old, new ) == 0 ) {
+        if( rename( old, new ) == 0 ) {
             return( TRUE );
         }
         LastError = errno;
@@ -149,7 +148,7 @@ int WR_EXPORT WRBackupFile( const char *name, int use_rename )
     char     fn_drive[_MAX_DRIVE];
     char     fn_dir[_MAX_DIR];
     char     fn_name[_MAX_FNAME];
-    char     fn_ext[_MAX_EXT+1];
+    char     fn_ext[_MAX_EXT + 1];
     int      len;
     int      ret;
 
@@ -163,11 +162,11 @@ int WR_EXPORT WRBackupFile( const char *name, int use_rename )
 
     if( len == 4 ) { // this case is special because in NT _MAX_EXT != 5
         fn_ext[3] = WR_BACKUP_CHAR;
-    } else if( len == ( _MAX_EXT - 1 ) ) {
-        fn_ext[len-1] = WR_BACKUP_CHAR;
+    } else if( len == _MAX_EXT - 1 ) {
+        fn_ext[len - 1] = WR_BACKUP_CHAR;
     } else {
         fn_ext[len] = WR_BACKUP_CHAR;
-        fn_ext[len+1] = '\0';
+        fn_ext[len + 1] = '\0';
     }
 
     _makepath( fn_path, fn_drive, fn_dir, fn_name, fn_ext );
@@ -179,146 +178,143 @@ int WR_EXPORT WRBackupFile( const char *name, int use_rename )
     }
 
     if( !ret ) {
-        WRPrintErrorMsg( WR_BACKUPFAILED, name, fn_path,
-                         strerror( WRGetLastError() ) );
+        WRPrintErrorMsg( WR_BACKUPFAILED, name, fn_path, strerror( WRGetLastError() ) );
     }
 
     return( ret );
 }
 
-void WR_EXPORT WRFreeTempFileName ( char *name )
+void WR_EXPORT WRFreeTempFileName( char *name )
 {
-    WRMemFree ( name );
+    WRMemFree( name );
 }
 
-char * WR_EXPORT WRGetTempFileName ( const char *ext )
+char * WR_EXPORT WRGetTempFileName( const char *ext )
 {
-    char *buf;
-    char  tname[L_tmpnam];
-    char *dir;
-    int   len;
-    char  fn_path[_MAX_PATH+1];
-    char  fn_drive[_MAX_DRIVE];
-    char  fn_dir[_MAX_DIR];
-    char  fn_name[_MAX_FNAME];
-    char  fn_ext[_MAX_EXT];
-    int   no_tmp;
+    char    *buf;
+    char    tname[L_tmpnam];
+    char    *dir;
+    int     len;
+    char    fn_path[_MAX_PATH + 1];
+    char    fn_drive[_MAX_DRIVE];
+    char    fn_dir[_MAX_DIR];
+    char    fn_name[_MAX_FNAME];
+    char    fn_ext[_MAX_EXT];
+    int     no_tmp;
 
-    if( ( (dir = getenv("TMP"))     != NULL ) ||
-        ( (dir = getenv("TEMP"))    != NULL ) ||
-        ( (dir = getenv("TMPDIR"))  != NULL ) ||
-        ( (dir = getenv("TEMPDIR")) != NULL ) ) {
+    if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
+        (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {
         no_tmp = FALSE;
     } else {
-        dir = getcwd ( (char *)NULL, 0 );
+        dir = getcwd( (char *)NULL, 0 );
         no_tmp = TRUE;
     }
 
     len = strlen( dir );
     memcpy( fn_path, dir, len + 1 );
-    if( ( fn_path[len-1] != '\\' ) && ( fn_path[len-1] != '/' ) ) {
+    if( fn_path[len - 1] != '\\' && fn_path[len - 1] != '/' ) {
         fn_path[len] = '\\';
-        fn_path[len+1] = '\0';
+        fn_path[len + 1] = '\0';
     }
 
-    if( dir ) {
+    if( dir != NULL ) {
         _splitpath( fn_path, fn_drive, fn_dir, NULL, NULL );
-        if ( no_tmp ) {
+        if( no_tmp ) {
             fn_dir[0] = '\0';
         }
-        free ( dir );
+        free( dir );
     } else {
         fn_drive[0] = '\0';
         fn_dir[0] = '\0';
     }
 
-    tmpnam ( tname );
+    tmpnam( tname );
 
-    _splitpath ( tname, NULL, NULL, fn_name, fn_ext );
+    _splitpath( tname, NULL, NULL, fn_name, fn_ext );
 
-    if ( !ext ) {
+    if( ext == NULL ) {
         ext = fn_ext;
     }
 
-    _makepath ( fn_path, fn_drive, fn_dir, fn_name, ext );
+    _makepath( fn_path, fn_drive, fn_dir, fn_name, ext );
 
-    len = strlen ( fn_path ) + 1;
+    len = strlen( fn_path ) + 1;
 
-    buf = ( char * ) WRMemAlloc ( len );
-    if ( buf ) {
-        memcpy ( buf, fn_path, len );
+    buf = (char *)WRMemAlloc( len );
+    if( buf != NULL ) {
+        memcpy( buf, fn_path, len );
     }
 
-    return ( buf );
+    return( buf );
 }
 
-int WR_EXPORT WRCopyFile ( const char *dest, const char *src )
+int WR_EXPORT WRCopyFile( const char *dest, const char *src )
 {
     uint_8     ret;
     int        dest_handle;
     int        src_handle;
 
     /* open the resource file that contains the dialog info */
-    src_handle = open ( src, O_RDONLY | O_BINARY );
-    if (src_handle == -1) {
-        return ( FALSE );
+    src_handle = open( src, O_RDONLY | O_BINARY );
+    if( src_handle == -1 ) {
+        return( FALSE );
     }
 
-    dest_handle = open ( dest, O_CREAT | O_WRONLY | O_TRUNC |
-                               O_BINARY, S_IWRITE | S_IREAD );
-    if (dest_handle == -1) {
+    dest_handle = open( dest, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
+                        S_IWRITE | S_IREAD );
+    if( dest_handle == -1 ) {
         LastError = errno;
-        return ( FALSE );
+        return( FALSE );
     }
 
-    lseek ( src_handle,  0, SEEK_SET );
-    lseek ( dest_handle, 0, SEEK_SET );
+    lseek( src_handle, 0, SEEK_SET );
+    lseek( dest_handle, 0, SEEK_SET );
 
-    ret = WRCopyBinFile ( dest_handle, src_handle );
+    ret = WRCopyBinFile( dest_handle, src_handle );
 
-    ret = ( close ( src_handle ) != -1 ) && ret;
-    ret = ( close ( dest_handle ) != -1 ) && ret;
+    ret = (close( src_handle ) != -1 && ret);
+    ret = (close( dest_handle ) != -1 && ret);
 
-    if ( !ret ) {
+    if( !ret ) {
         LastError = errno;
-        WRDeleteFile ( dest );
+        WRDeleteFile( dest );
     }
 
-    return ( ret );
+    return( ret );
 }
 
-int WRCopyBinFile ( int dest, int src )
+int WRCopyBinFile( int dest, int src )
 {
-    char     *buf;
-    uint_32   file_size;
-    uint_32   num_to_copy;
-    long int  src_pos;
-    long int  dest_pos;
-    int      ok;
+    char        *buf;
+    uint_32     file_size;
+    uint_32     num_to_copy;
+    long int    src_pos;
+    long int    dest_pos;
+    int         ok;
 
-    buf = (char *) WRMemAlloc ( WR_COPY_BUFFER_SIZE );
-    if ( !buf ) {
-        return ( FALSE );
+    buf = (char *)WRMemAlloc( WR_COPY_BUFFER_SIZE );
+    if( buf == NULL ) {
+        return( FALSE );
     }
 
-    src_pos  = lseek ( src,  0, SEEK_SET );
-    dest_pos = lseek ( dest, 0, SEEK_SET );
+    src_pos = lseek( src,  0, SEEK_SET );
+    dest_pos = lseek( dest, 0, SEEK_SET );
 
-    ok = ( ( file_size = filelength ( src ) ) != -1L );
+    ok = ((file_size = filelength( src )) != -1L);
 
     do {
-        if ( file_size < WR_COPY_BUFFER_SIZE ) {
+        if( file_size < WR_COPY_BUFFER_SIZE ) {
             num_to_copy = file_size;
         } else {
             num_to_copy = WR_COPY_BUFFER_SIZE;
         }
 
-        if ( ok && num_to_copy ) {
-            if ( read ( src, buf, num_to_copy ) != (int)num_to_copy ) {
+        if( ok && num_to_copy != 0 ) {
+            if( read( src, buf, num_to_copy ) != (int)num_to_copy ) {
                 ok = FALSE;
             }
 
-            if ( ok && write ( dest, buf, num_to_copy ) != (int)num_to_copy ) {
+            if( ok && write( dest, buf, num_to_copy ) != (int)num_to_copy ) {
                 ok = FALSE;
             }
         }
@@ -327,15 +323,14 @@ int WRCopyBinFile ( int dest, int src )
         }
 
         file_size -= num_to_copy;
-    } while ( ok && file_size );
+    } while ( ok && file_size != 0 );
 
-    if ( ok ) {
-        lseek ( src,  src_pos,  SEEK_SET );
-        lseek ( dest, dest_pos, SEEK_SET );
+    if( ok ) {
+        lseek( src, src_pos, SEEK_SET );
+        lseek( dest, dest_pos, SEEK_SET );
     }
 
-    WRMemFree ( buf );
+    WRMemFree( buf );
 
-    return ( ok );
+    return( ok );
 }
-

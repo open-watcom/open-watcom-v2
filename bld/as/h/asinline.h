@@ -47,7 +47,7 @@ enum sym_state {
     SYM_STACK,
 };
 
-extern uint_32          *AsmCodeBuffer; // Caller provides the buffer
+extern unsigned char    *AsmCodeBuffer; // Caller provides the buffer
 extern uint_32          AsmCodeAddress; // Indicates the next address
 extern asmreloc         *AsmRelocs;     // A list of relocs to be handled
                                         // by the caller

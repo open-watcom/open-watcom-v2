@@ -131,8 +131,8 @@ gui_message_return GUIGetNewVal( char * title, char * old, char ** new_val )
         disp_length = MAX_LENGTH;
     }
 
-    GetNew[ CANCEL ].text = LIT( Cancel );
-    GetNew[ OK ].text = LIT( OK );
+    GetNew[CANCEL].text = LIT( Cancel );
+    GetNew[OK].text = LIT( OK );
 
     GetNew[EDIT].style |= GUI_FOCUS;
 

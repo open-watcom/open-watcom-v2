@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mcache.c interfaces
 *
 ****************************************************************************/
 
@@ -36,11 +35,11 @@
 
 #include "make.h"
 
-extern void CacheInit();
-extern void CacheFini();
-extern void CacheRelease();
-extern RET_T CacheTime( const char *filename, time_t *ptime );
-extern BOOLEAN CacheExists( const char *filename );
+extern void     CacheInit( void );
+extern void     CacheFini( void );
+extern void     CacheRelease( void );
+extern RET_T    CacheTime( const char *filename, time_t *ptime );
+extern BOOLEAN  CacheExists( const char *filename );
 
 #endif
 

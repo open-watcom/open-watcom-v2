@@ -24,48 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/09/08    Greg Bentz      Initial Implementation.
-//  93/08/31    Greg Bentz      Make cout object have ios::unitbuf set to
-//                              allow better mixing between C and C++ input
-//                              output.
-//  93/10/22    Raymond Tang    Split into separate files.
-//  93/11/18    J.W.Welch       Small name change for multiple compilations
-//  94/04/06    Greg Bentz      combine header files
-//  95/05/05    Greg Bentz      use _HUGEDATA
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdiobuf.h>
 #endif
 #include "ioutil.h"
 
 #pragma initialize 21;
 
-// This struct is just a place holder to control the
-// initialization and finalization of cin
+// This struct is just a place holder to control the initialization and
+// finalization of cin
 struct cin_initfini {
-    cin_initfini();
+  cin_initfini();
 };
 
 
@@ -73,16 +51,18 @@ struct cin_initfini {
 static stdiobuf  cin_strmbuf( __get_std_stream( STDIN_FILENO ) );
 
 // This is the definition of the predefined stream:
-istream _HUGEDATA cin( &cin_strmbuf );
+namespace std {
+  istream _HUGEDATA cin( &cin_strmbuf );
+}
 
 // This will force the extra initialization and finalization
 static cin_initfini __standard_io_instance_cin;
 
 cin_initfini::cin_initfini() {
-    // Tie the streams together, for automatic flushing:
-    cin.tie( &cout );
+  // Tie the streams together, for automatic flushing:
+  std::cin.tie( &std::cout );
 
-    // Ensure the correct flag settings.
-    cin.setf( ios::skipws );
+  // Ensure the correct flag settings.
+  std::cin.setf( ios::skipws );
 }
 

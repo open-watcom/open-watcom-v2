@@ -15,6 +15,8 @@
 #define IDM_FMTOP           509
 #define IDM_FMVCENTRE       510
 #define IDM_FMBOTTOM        511
+#define IDM_SPACE_HORZ      512
+#define IDM_SPACE_VERT      513
 #define MENU_NONE   0x00
 #define MENU_SETUP  0x01
 #define MENU_DELETE 0x02

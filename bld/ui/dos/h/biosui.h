@@ -48,15 +48,10 @@ extern void IdleInterrupt(void);
  #define _INT_10        "call __Int10"
  #define _INT_16        "call __Int16"
  #define _INT_21        "call __Int21"
-
-#pragma aux IdleInterrupt =
 #else
  #define _INT_10        "int 0x10"
  #define _INT_16        "int 0x16"
  #define _INT_21        "int 0x21"
-
-#pragma aux IdleInterrupt = \
- 0xCD 0x28;         /* int     028 */
 #endif
 
 #define BIOS_VIDEO      0x10
@@ -131,7 +126,7 @@ struct ega_info {
     unsigned char   adapter_bits;
 };
 
-extern struct ega_info BIOSEGAInfo();
+extern struct ega_info BIOSEGAInfo( void );
 #ifdef __386__
 /* note : first 5 lines work but the the corresponding assembler code
           doesn't work so the comments must not match the code */
@@ -160,7 +155,7 @@ _INT_10                                                         \
         parm modify [ cx bx ];
 #endif
 
-extern unsigned char BIOSSumming(char);
+extern unsigned char BIOSSumming( char );
 #pragma aux BIOSSumming =                                 \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12                         */      \

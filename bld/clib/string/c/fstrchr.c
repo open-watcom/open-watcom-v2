@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrchr() - far strchr().
 *
 ****************************************************************************/
 
@@ -33,9 +32,9 @@
 #include "variety.h"
 #include <string.h>
 
-#ifdef  M_I86
+#ifdef  _M_I86
 
-extern  char _WCFAR * _scan1( char _WCFAR *s, int c );
+extern  char _WCFAR *_scan1( char _WCFAR *s, int c );
 
 /* use scan1 to find the char we are looking for */
 
@@ -79,13 +78,13 @@ extern  char _WCFAR * _scan1( char _WCFAR *s, int c );
 #undef  _fstrchr
 
 _WCRTLINK char _WCFAR *_fstrchr( const char _WCFAR *s, int c )
-    {
-//#if defined(M_I86)
-        //return( _scan1( (char _WCFAR *)s, c ) );
+{
+//#if defined( _M_I86 )
+    //return( _scan1( (char _WCFAR *)s, c ) );
 //#else
-        do {
-            if( *s == c ) return( (char _WCFAR *)s );
-        } while( *s++ != '\0' );
-        return( NULL );
+    do {
+        if( *s == c ) return( (char _WCFAR *)s );
+    } while( *s++ != '\0' );
+    return( NULL );
 //#endif
-    }
+}

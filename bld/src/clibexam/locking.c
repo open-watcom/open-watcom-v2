@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <sys\locking.h>
+#include <sys/locking.h>
 #include <share.h>
 #include <fcntl.h>
 #include <io.h>

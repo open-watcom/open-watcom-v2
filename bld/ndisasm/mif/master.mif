@@ -1,0 +1,102 @@
+proj_name = wdis
+
+!ifndef wdis_autodepends
+wdis_autodepends = .AUTODEPEND
+!endif
+
+wdis_trmem = 1
+
+.EXTENSIONS: .rc .msg
+
+exe_name = $(proj_name).exe
+
+all: $(exe_name) .SYMBOLIC
+
+additional_cleanup = *.u
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include $(orl_dir)/client.mif
+!include wres.mif
+
+xlibs = $(orl_lib) $(wres_lib)
+
+!include ../mif/dis.mif
+
+!include trmem.mif
+
+extra_l_flags = option map
+extra_l_flags_qnx = op res=wdis.u, off=8k
+
+extra_c_flags_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_trmem    = $(trmem_cflags)
+
+inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" 
+inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" 
+inc_dirs += -I"$(comp_cfg_dir)/h"
+
+pre_deps_osi = $(os2ldr)
+pre_deps_qnx = wdis.u
+
+.c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
+.h: $(disasm_dir)/stand/h;$(dis_hdirs);$(lib_misc_dir)/h
+.rc : $(disasm_dir)/stand/h
+.msg : $(disasm_dir)/stand
+
+stand_objs      = args.obj &
+                buffer.obj &
+                dwarf.obj &
+                externs.obj &
+                formasm.obj &
+                fini.obj &
+                groups.obj &
+                identsec.obj &
+                init.obj &
+                hashtabl.obj &
+                labproc.obj &
+                main.obj &
+                memfuncs.obj &
+                msg.obj &
+                pass1.obj &
+                pass2.obj &
+                pdata.obj &
+                print.obj &
+                publics.obj &
+                srcmix.obj &
+                refproc.obj &
+		cmdlhelp.obj
+
+disasm_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
+
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(exe_name) : $(proj_name).res $(dis_prereq) $(disasm_objs) $(cl_objs) $(pre_deps_$(host_os)) $(xlibs) $(version_res_$(host_os)_$(host_cpu))
+        $(cl) $(clflags) $(disasm_objs) $(cl_objs) $(xlibs) $(cl_libs)
+!ifeq host_os osi
+        $(w32bind) $^&.rex $@ $(os2ldr)
+        rm -f $^&.rex
+!endif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+        wstrip -q -a -r $@ . $^&.res
+
+$(proj_name).res : wdis.rc msg.gh
+        $(rc_aui) $[@ -fo=$@
+
+./mkstr.exe : $(disasm_dir)/stand/mkstr.c wdis.msg
+        $(bld_cl) $(wcl_util_opts) -I"$(disasm_dir)/stand" $[@
+
+msg.gh : ./mkstr.exe wdis.msg
+        $[@ $^@
+
+./mkuse.exe : mkstr.c wdis.msg
+        $(bld_cl) $(wcl_util_opts) -DUSAGE -I"$(disasm_dir)/stand" $[@
+
+wdis.u : ./mkuse.exe wdis.msg
+        $[@ $^@
+
+!include verrc.mif

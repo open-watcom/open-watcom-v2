@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "procdef.h"
-#include "sysmacro.h"
 #include "model.h"
 #include "conflict.h"
 #include "savings.h"

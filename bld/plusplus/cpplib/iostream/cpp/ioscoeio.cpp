@@ -24,43 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/22    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/05    Greg Bentz      added exception handling
-//  93/03/15    Greg Bentz      fix ios::clear() mistake during exceptions
-//  93/10/29    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 
-ios &ios::operator = ( const ios &is ) {
-/**************************************/
-// Construct an "ios" and initialize it.
-// New "ios" gets all fields of "is" except streambuf.
+namespace std {
+
+  // Construct an "ios" and initialize it. New "ios" gets all fields of
+  // "is" except streambuf.
+
+  ios &ios::operator = ( const ios &is ) {
 
     __lock_it( __lock_first( __i_lock, is.__i_lock ) );
     __lock_it( __lock_second( __i_lock, is.__i_lock ) );
@@ -97,4 +79,7 @@ ios &ios::operator = ( const ios &is ) {
         }
     }
     return( *this );
+  }
+
 }
+

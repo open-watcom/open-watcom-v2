@@ -24,31 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Defines the dynamic template library needed for VIW.
 *
 ****************************************************************************/
 
 
 #ifndef DYNTPL_H
 #define DYNTPL_H
-/*
- *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- *%       copyright 1987, 1991 by WATCOM Systems Inc.               %
- *%                                                                 %
- *%                                                                 %
- *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Description:
- ============
-    This file defines the dynamic template library.
-
-
-  Modified:     By:             Reason:
-  ---------     ---             -------
-  Aug 13 91     djp             created.
-
-*/
 #include <wpitypes.h>
 
 /* The dynamic templates must be defined in the dialog, with the visible
@@ -63,9 +46,12 @@
 */
 
 typedef enum {
-    DYN_TPL_STATIC,
-    DYN_TPL_DIM
+    DYN_TPL_STATIC, // a static template
+    DYN_TPL_DIM     // a dim template
 } dyn_tpl_type;
+
+/////////////////////////////////////////////////////////////////////////////////
+// A static template. What does this do? (MISSING!!!)
 
 typedef struct {
     dyn_tpl_type        type;           // type of dynamic template
@@ -78,10 +64,13 @@ typedef struct {
     int                 dyn_tpls[1];    // array of above tpls: ends in '0'
 } dyn_tpl_static;
 
+/////////////////////////////////////////////////////////////////////////////////
+// A dim template
+
 typedef enum {
-    DYN_VISIBLE,
-    DYN_DIM,
-    DYN_INVISIBLE               // return on check to permamently disable tpl
+    DYN_VISIBLE,    // show the control, make it useable
+    DYN_DIM,        // show the control, make it unuseable
+    DYN_INVISIBLE   // hide the control          // return on check to permamently disable tpl
 } dyn_dim_type;
 
 typedef struct {
@@ -94,19 +83,40 @@ typedef struct {
 
 typedef struct {
     dyn_dim_def         info;
-    int                 dyn_tpl[1];     // the dyn tpl to toggle states
+    int                 dyn_tpl[1];     // the dyn tpl to toggle states (ends with -1)
 } dyn_tpl_dim;
+
+/////////////////////////////////////////////////////////////////////////////////
+// The dynamic template dialog struct
 
 typedef struct {
     int                 num_tpls;       // how many dyn tpls for this dialog
-    dyn_tpl_dim         tpls[1];        // array of 'dim' and 'static' tpls
+    dyn_tpl_dim         tpls[1];        // array of 'dim' and 'static' tpls.
+                                        // The array is stored as a continuous block in
+                                        // memory filled with dyn_tpl_dim and dyn_tpl_static
+                                        // objects (which have unknown length due to the
+                                        // dyn_tpl/dyn_tpls arrays).
 } dyn_tpl_dlg;
 
+/////////////////////////////////////////////////////////////////////////////////
+// Routines to use a dynamic template with a dialog
+
+// MISSING!!! (???)
 BOOL dyn_tpl_button_check( int ctl, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+
+// process changes
 void dyn_tpl_process( void *dyn, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 parm2 );
+
+// initialize a dialog with a dynamic template
 void dyn_tpl_init( void *dyn, HWND dlg_hld );
+
+// MISSING!!! (???)
 void dyn_tpl_change( int *tpl, dyn_dim_type type, HWND dlg_hld );
+
+// MISSING!!! (free the dynamic template?)
 void dyn_tpl_free( void *dyn );
+
+// MISSING!!! (create a copy of the dynamic template?)
 void *dyn_tpl_copy( void *dyn );
 
 #endif

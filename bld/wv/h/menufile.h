@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of pop-up menu for source file view.
 *
 ****************************************************************************/
 
@@ -33,6 +32,7 @@
 MENU_ITEM( MENU_FILE_INSPECT,           XInspect )
 MENU_ITEM( MENU_FILE_BREAK,             XBreak )
 MENU_ITEM( MENU_FILE_RUN,               Run_to_XCursor )
+MENU_ITEM( MENU_FILE_SKIP_TO_CURSOR,    SXkip_to_Cursor )
 MENU_ITEM( MENU_FILE_STEP_INTO,         XEnter_Function )
 MENU_ITEM( MENU_FILE_WATCH,             XWatch )
 MENU_ITEM( MENU_FILE_SEARCH,            XFind  )

@@ -103,6 +103,7 @@ struct coff_file_handle_struct {
     coff_sec_handle     string_table;
     orl_hash_table      sec_name_hash_table;
     unsigned long       export_table_rva;
+    char *              implib_data;
 };
 
 #define SEC_NAME_HASH_TABLE_SIZE 53

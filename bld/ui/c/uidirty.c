@@ -33,15 +33,12 @@
 #include "uidef.h"
 
 
-void intern dirtyarea( wptr, area )
-/*********************************/
-
-register        UI_WINDOW*              wptr;
-register        SAREA                   area;
+void intern dirtyarea( UI_WINDOW *wptr, SAREA area )
+/**************************************************/
 {
     int diff;
 
-    if( wptr->dirty.height <= 0 ) {
+    if( (int)wptr->dirty.height <= 0 ) {
         wptr->dirty = area;
     } else {
         diff = (int) wptr->dirty.row - (int) area.row;
@@ -68,13 +65,10 @@ register        SAREA                   area;
 }
 
 
-void intern dirtynext( area, wptr )
-/*********************************/
-
-register        UI_WINDOW               *wptr;
-register        SAREA                   area;
+void intern dirtynext( SAREA area, UI_WINDOW *wptr )
+/**************************************************/
 {
-    register    char                    i;
+    register    int                     i;
     auto        SAREA                   areas[ 5 ];
 
     dividearea( area, wptr->area, areas );
@@ -91,10 +85,8 @@ register        SAREA                   area;
 }
 
 
-void global uidirty( area )
-/*************************/
-
-register        SAREA                   area;
+void global uidirty( SAREA area )
+/*******************************/
 {
     dirtynext( area, UIData->area_head );
     uioffcursor();

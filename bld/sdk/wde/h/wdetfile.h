@@ -40,10 +40,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WdeDeleteFile            ( const char * );
-extern Bool     WdeFileExists            ( const char * );
-extern Bool     WdeBackupFile            ( const char *, Bool );
-extern char    *WdeGetTempFileName       ( const char * );
-extern Bool     WdeCopyFile              ( const char *, const char *);
+extern Bool WdeDeleteFile( const char * );
+extern Bool WdeFileExists( const char * );
+extern Bool WdeBackupFile( const char *, Bool );
+extern char *WdeGetTempFileName( const char * );
+extern Bool WdeCopyFile( const char *, const char * );
 
 #endif

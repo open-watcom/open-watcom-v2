@@ -40,7 +40,7 @@
 /* The following table is ASCII dependent. */
 
 
-char CharSet[LCHR_MAX]  = {                              /* ASCII */
+unsigned char CharSet[LCHR_MAX]  = {                        /* ASCII */
 
 /*  00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL */
      C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* NUL to BEL */
@@ -178,7 +178,10 @@ char CharSet[LCHR_MAX]  = {                              /* ASCII */
 /*  ... LCHR_MAX no bits set for chars */
   };
 
-char TokValue[]  = {                             /* ASCII */
+unsigned char TokValue[]  = {            /* ASCII */
+
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1F */
 
         0,              /* 20 SP */
         T_EXCLAMATION,  /* 21 !  */
@@ -282,10 +285,14 @@ char TokValue[]  = {                             /* ASCII */
         T_RIGHT_BRACE,  /* 7D }  */
         T_TILDE,        /* 7E ~  */
         0,              /* 7F DEL*/
-        0, 0, 0, 0, 0, 0, 0, 0, /* 80-87 */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 88-8F */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 90-97 */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 98-9F */
-        0, 0, 0, 0, 0, 0, 0, 0  /* A0-A7 */
+
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 80 - 8F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 90 - 9F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* A0 - AF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* B0 - BF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* C0 - CF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* D0 - DF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* E0 - EF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  /* F0 - FF */
     };
 

@@ -1,0 +1,64 @@
+      STRUCTURE /DATA_MAP/
+	  INTEGER TYPE
+	  UNION
+	      MAP
+		  LOGICAL	    LGL
+	      END MAP
+	      MAP
+		  INTEGER	    INT
+	      END MAP
+	      MAP
+		  REAL		    FLT
+	      END MAP
+	      MAP
+		  DOUBLE PRECISION  DBL
+	      END MAP
+	  END UNION
+      END STRUCTURE
+
+      RECORD /DATA_MAP/ ITEM
+
+      ITEM%TYPE = 1
+      ITEM%LGL = .TRUE.
+      CALL PRINT_ITEM( ITEM )
+      ITEM%TYPE = 2
+      ITEM%INT = 12345
+      CALL PRINT_ITEM( ITEM )
+      ITEM%TYPE = 3
+      ITEM%FLT = 12.34
+      CALL PRINT_ITEM( ITEM )
+      ITEM%TYPE = 4
+      ITEM%DBL = 34.56D10
+      CALL PRINT_ITEM( ITEM )
+
+      END
+
+      SUBROUTINE PRINT_ITEM( ITEM )
+	  STRUCTURE /DATA_MAP/
+	      INTEGER TYPE
+	      UNION
+		  MAP
+		      LOGICAL		LGL
+		  END MAP
+		  MAP
+		      INTEGER		INT
+		  END MAP
+		  MAP
+		      REAL		FLT
+		  END MAP
+		  MAP
+		      DOUBLE PRECISION	DBL
+		  END MAP
+	      END UNION
+	  END STRUCTURE
+	  RECORD /DATA_MAP/ ITEM
+	  IF( ITEM%TYPE .EQ. 1 ) THEN
+	      PRINT '(L2)', ITEM%LGL
+	  ELSEIF( ITEM%TYPE .EQ. 2 ) THEN
+	      PRINT '(I8)', ITEM%INT
+	  ELSEIF( ITEM%TYPE .EQ. 3 ) THEN
+	      PRINT '(E12.5)', ITEM%FLT
+	  ELSEIF( ITEM%TYPE .EQ. 4 ) THEN
+	      PRINT '(D12.5)', ITEM%DBL
+	  ENDIF
+      END

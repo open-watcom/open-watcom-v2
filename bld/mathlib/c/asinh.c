@@ -24,31 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hyperbolic arcsine routine.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <math.h>
+#include "ifprag.h"
 
 //      asinh(x) = log( x + sqrt(x*x + 1.0) );
 
-#if defined(_M_IX86)
-  #pragma aux __asinh "IF@DASINH";
-#endif
 _WMRTLINK double __asinh( double x )
-    {
-        return( asinh( x ) );
-    }
+{
+    return( asinh( x ) );
+}
 
 _WMRTLINK double asinh( double x )
-/**********************/
-    {
-        double  z;
+/********************************/
+{
+    double  z;
 
-        z = x + sqrt( x*x + 1.0 );
-        if( z == 0.0 )  return( -HUGE_VAL );
-        return( log( z ) );
+    z = x + sqrt( x * x + 1.0 );
+    if( z == 0.0 ) {
+        return( -HUGE_VAL );
     }
+    return( log( z ) );
+}

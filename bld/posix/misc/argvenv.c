@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ExpandEnv - expand environment vars. into argv array
 *
 ****************************************************************************/
 
@@ -37,16 +36,13 @@
 #include "argvenv.h"
 #include "fnutils.h"
 
-/*
- * ExpandEnv - expand environment vars. into argv array
- */
 char **ExpandEnv( int *oargc, char *oargv[] )
 {
-    int             argc, i;
-    char           *envstr;
-    char           *varptr;
-    char           *p;
-    char          **argv;
+    int         argc, i;
+    char        *envstr;
+    char        *varptr;
+    char        *p;
+    char        **argv;
 
     argc = 1;
     argv = MemAlloc( 2 * sizeof( char * ) );
@@ -62,24 +58,26 @@ char **ExpandEnv( int *oargc, char *oargv[] )
                 // environment variables can't be null
 
                 while( 1 ) {
-                    for( ;*varptr  &&  isspace( *varptr ); varptr++ );
+                    for( ; *varptr && isspace( *varptr ); varptr++ )
+                        ;
                     if( *varptr == '\0' ) {
                         break;
                     }
-                    argv = MemRealloc( argv, (argc + 2) * sizeof( char * ) );
+                    argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
                     if( *varptr == '"' ) {
                         p = strchr( varptr + 1, '"' );
                         if( p != NULL ) {
                             varptr++;
                             *p = '\0';
-                            argv[ argc ] = varptr;
+                            argv[argc] = varptr;
                             argc++;
                             varptr = p + 1;
                             continue;
                         }
                     }
-                    for( p = varptr; *p  &&  !isspace( *p ); p++ );
-                    argv[ argc ] = varptr;
+                    for( p = varptr; *p && !isspace( *p ); p++ )
+                        ;
+                    argv[argc] = varptr;
                     argc++;
                     if( *p == '\0' ) {
                         break;
@@ -91,12 +89,11 @@ char **ExpandEnv( int *oargc, char *oargv[] )
                 continue;
             }
         }
-        argv = MemRealloc( argv, (argc + 2) * sizeof( char * ) );
-        argv[ argc ] = oargv[i];
+        argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
+        argv[argc] = oargv[i];
         argc++;
     }
-    argv[ argc ] = NULL;
+    argv[argc] = NULL;
     *oargc = argc;
     return( argv );
 }
-

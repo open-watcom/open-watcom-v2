@@ -1,10 +1,25 @@
-/*
- *  limits.h    Machine and OS limits
+::
+:: This file generates three different headers: limits.h, climits, and
+:: limits. The "default" wsplice operation produces limits.h, the header
+:: used in the C library. A CNAME wsplice operation produces climits, the
+:: C++ partner to C's limits.h. Currently climits and limits.h are ident-
+:: ical. A special CPPLIMITS wsplice operation generates C++'s limits
+:: header. That header is not directly related to either limits.h or climits;
+:: it contains the definition of the numeric_limits template.
+:: (Peter Chapin)
+::
+:segment !CPPLIMITS
+/***************************************************************************
+ * FILE: limits.h/climits (Machine and OS limits)
  *
 :include crwatqnx.sp
- */
+ *
+ * Description: This header is part of the C/C++ standard library. It
+ *              describes implementation limits.
+ ***************************************************************************/
 #ifndef _LIMITS_H_INCLUDED
 #define _LIMITS_H_INCLUDED
+
 :include readonly.sp
 
 :include mbmax.sp
@@ -22,43 +37,46 @@
 #endif
 #define SCHAR_MIN   (-128)      /*  minimum value of a signed char      */
 #define SCHAR_MAX   127         /*  maximum value of a signed char      */
-#define UCHAR_MAX   255U        /*  maximum value of an unsigned char   */
+#define UCHAR_MAX   255         /*  maximum value of an unsigned char   */
 
 #define SHRT_MIN    (-32767-1)  /*  minimum value of a short int        */
 #define SHRT_MAX    32767       /*  maximum value of a short int        */
-#define USHRT_MAX   65535U      /*  maximum value of an unsigned short  */
-#define LONG_MAX    2147483647L      /* maximum value of a long int      */
-#define LONG_MIN    (-2147483647L-1) /* minimum value of a long int      */
-#define ULONG_MAX   4294967295UL     /* maximum value of an unsigned long*/
-:segment QNX
-#if defined(__386__)
-:elsesegment
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-:endsegment
- #define INT_MIN    (-2147483647-1) /*  minimum value of an int         */
- #define INT_MAX    2147483647      /*  maximum value of an int         */
- #define UINT_MAX   4294967295U     /*  maximum value of an unsigned int*/
+#if defined(_M_I86)
+ #define USHRT_MAX  65535U      /*  maximum value of an unsigned short  */
 #else
+ #define USHRT_MAX  65535       /*  maximum value of an unsigned short  */
+#endif
+#define LONG_MAX    2147483647L       /* maximum value of a long int      */
+#define LONG_MIN    (-2147483647L-1L) /* minimum value of a long int      */
+#define ULONG_MAX   4294967295UL      /* maximum value of an unsigned long*/
+#if defined(_M_I86)
  #define INT_MIN    (-32767-1)      /*  minimum value of an int         */
  #define INT_MAX    32767           /*  maximum value of an int         */
  #define UINT_MAX   65535U          /*  maximum value of an unsigned int*/
+#else
+ #define INT_MIN    (-2147483647-1) /*  minimum value of an int         */
+ #define INT_MAX    2147483647      /*  maximum value of an int         */
+ #define UINT_MAX   4294967295U     /*  maximum value of an unsigned int*/
 #endif
 #ifdef __WATCOM_INT64__
- #define LONGLONG_MIN    (-9223372036854775807I64-1)
+ #define LONGLONG_MIN   (-9223372036854775807I64-1I64)
                                     /*  minimum value of an __int64         */
- #define LONGLONG_MAX    9223372036854775807I64
+ #define LONGLONG_MAX   9223372036854775807I64
                                     /*  maximum value of an __int64         */
- #define ULONGLONG_MAX   18446744073709551615UI64
+ #define ULONGLONG_MAX  18446744073709551615UI64
                                     /*  maximum value of an unsigned __int64*/
+ #define LLONG_MIN      (-9223372036854775807LL-1LL) /* for C99 */
+ #define LLONG_MAX      9223372036854775807LL        /* for C99 */
+ #define ULLONG_MAX     18446744073709551615ULL      /* for C99 */
 #endif
 
 #define _I8_MIN     SCHAR_MIN   /*  minimum value of a signed 8 bit type   */
 #define _I8_MAX     SCHAR_MAX   /*  maximum value of a signed 8 bit type   */
-#define _UI8_MAX    UCHAR_MAX   /*  maximum value of an unsigned 8 bit type*/
+#define _UI8_MAX    255U        /*  maximum value of an unsigned 8 bit type*/
 
 #define _I16_MIN    SHRT_MIN    /*  minimum value of a signed 16 bit type   */
 #define _I16_MAX    SHRT_MAX    /*  maximum value of a signed 16 bit type   */
-#define _UI16_MAX   USHRT_MAX   /*  maximum value of an unsigned 16 bit type*/
+#define _UI16_MAX   65535U      /*  maximum value of an unsigned 16 bit type*/
 
 #define _I32_MIN    LONG_MIN    /*  minimum value of a signed 32 bit type   */
 #define _I32_MAX    LONG_MAX    /*  maximum value of a signed 32 bit type   */
@@ -70,25 +88,24 @@
  #define _UI64_MAX  ULONGLONG_MAX /* maximum value of an unsigned 64 bit type*/
 #endif
 
-:segment !QNX
-:segment PENPOINT
-#if defined(_POSIX_SOURCE) || defined(_PP_SOURCE) || !defined(NO_EXT_KEYS)
-:endsegment
+:segment DOS
 #define TZNAME_MAX  128             /*  The maximum number of bytes         */
                                     /*  supported for the name of a time    */
                                     /*  zone (not of the TZ variable).      */
-:segment PENPOINT
-#endif  /* _POSIX_SOURCE || _PP_SOURCE || !NO_EXT_KEYS */
-:endsegment
 :endsegment
 
-:segment QNX
-#if defined(_POSIX_SOURCE) || defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+:segment QNX | LINUX
+:include unixext.sp
+::
+:: Begin of extension section
+::
+
 /*
  *  POSIX required limits.
  *  These are minimums values, not absolute limits,
  *  and the real value may be greater.
  */
+
 #define _POSIX_ARG_MAX      4096    /*  Length of args for exec             */
                                     /*  functions including environment data*/
 #define _POSIX_CHILD_MAX    6       /*  Number of simultaneous              */
@@ -131,7 +148,9 @@
 #undef  CHILD_MAX           /* no child max             */
 #undef  OPEN_MAX            /* no open max              */
 #undef  STREAM_MAX          /* no stream max            */
-#define TZNAME_MAX  128     /* QNX implementation maximum   */
+#define TZNAME_MAX  128     /*  The maximum number of bytes         */
+                            /*  supported for the name of a time    */
+                            /*  zone (not of the TZ variable).      */
 
 /*
  *  Pathname variable values (may vary by pathname)
@@ -152,21 +171,25 @@
 /*
  *  Posix .2/9 limits.
  */
-#define BC_BASE_MAX 99
-#define BC_DIM_MAX  2048
+#define BC_BASE_MAX     99
+#define BC_DIM_MAX      2048
 #define BC_SCALE_MAX    99
 #define COLL_ELEM_MAX   4
 #define EXPR_NEST_MAX   32
-#define LINE_MAX    2048
+#define LINE_MAX        2048
 #define PASTE_FILES_MAX 12
-#define RE_DUP_MAX  255
+#define RE_DUP_MAX      255
 #define SED_PATTERN_MAX 20480
-#define SENDTO_MAX  90000L
+#define SENDTO_MAX      90000L
 #define SORT_LINE_MAX   20480
-#endif  /* _POSIX_SOURCE || _QNX_SOURCE || !NO_EXT_KEYS */
 
-#if defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
+::
+:: End of extension section
+::
+:include extepi.sp
 
+:segment QNX
+:include ext.sp
 #define _QNX_ROOT_PREFIX_MAX  128
 #define _QNX_PROXY_SIZE_MAX   100
 #define _QNX_MXTAB_LEN        255
@@ -174,7 +197,671 @@
 #define _QNX_ATTACHEDNAME_MAX 64
 #define _QNX_PREFIX_MAX       48
 #define _QNX_ERRNOSTR_MAX     64
-#endif
+:include extepi.sp
 :endsegment
 
+:endsegment
 #endif
+:elsesegment
+///////////////////////////////////////////////////////////////////////////
+// FILE: limits (Definition of std::numeric_limits)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines the numeric_limits template and provides
+//              specializations for all the built-in numeric types.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _LIMITS_INCLUDED
+#define _LIMITS_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:: I have mixed feelings about these inclusions. On one hand they allow
+:: fixes in the C library to be immediately felt in numeric_limits. On
+:: the other hand a C++ programmer using numeric_limits probably won't
+:: want the preprocessor name pollution caused by including these headers.
+:: (Peter Chapin)
+#include <cfloat>
+#include <climits>
+#include <cstddef>
+:: <cstddef> is needed for wchar_t. Once wchar_t is built-in this include
+:: can be removed.
+
+namespace std {
+
+  enum float_round_style {
+    round_indeterminate       = -1,
+    round_toward_zero         =  0,
+    round_to_nearest          =  1,
+    round_toward_infinity     =  2,
+    round_toward_neg_infinity =  3
+  };
+
+  enum float_denorm_style
+    { denorm_present, denorm_absent, denorm_indeterminate };
+
+  template< class Type >
+  class numeric_limits {
+  public:
+    static const bool is_specialized = false;
+    static Type min();
+    static Type max();
+    static const int digits = 0;
+    static const int digits10 = 0;
+    static const bool is_signed = false;
+    static const bool is_integer = false;
+    static const bool is_exact = false;
+    static const int radix = 0;
+    static Type epsilon();
+    static Type round_error();
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static Type infinity();
+    static Type quiet_NaN();
+    static Type signaling_NaN();
+    static Type denorm_min();
+    static const bool is_iec559 = false;
+    static const bool is_bounded = false;
+    static const bool is_modulo = false;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  // The required specializations
+
+  template< >
+  class numeric_limits< bool > {
+  public:
+    static const bool is_specialized = true;
+    static bool min() { return( 0 ); }
+    static bool max() { return( 1 ); }
+    static const int digits = 1;
+    static const int digits10 = 0;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static bool epsilon() { return( 0 ); }
+    static bool round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static bool infinity() { return( 0 ); }
+    static bool quiet_NaN() { return( 0 ); }
+    static bool signaling_NaN() { return( 0 ); }
+    static bool denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = false;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< char > {
+  public:
+    static const bool is_specialized = true;
+    static char min() { return( CHAR_MIN ); }
+    static char max() { return( CHAR_MAX ); }
+#ifdef __CHAR_SIGNED__
+    static const int digits = 7;
+    static const int digits10 = 2;
+    static const bool is_signed = true;
+#else
+    static const int digits = 8;
+    static const int digits10 = 2;
+    static const bool is_signed = false;
+#endif
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static char epsilon() { return( 0 ); }
+    static char round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static char infinity() { return( 0 ); }
+    static char quiet_NaN() { return( 0 ); }
+    static char signaling_NaN() { return( 0 ); }
+    static char denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< signed char > {
+  public:
+    static const bool is_specialized = true;
+    static signed char min() { return( SCHAR_MIN ); }
+    static signed char max() { return( SCHAR_MAX ); }
+    static const int digits = 7;
+    static const int digits10 = 2;
+    static const bool is_signed = true;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static signed char epsilon() { return( 0 ); }
+    static signed char round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static signed char infinity() { return( 0 ); }
+    static signed char quiet_NaN() { return( 0 ); }
+    static signed char signaling_NaN() { return( 0 ); }
+    static signed char denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< unsigned char > {
+  public:
+    static const bool is_specialized = true;
+    static unsigned char min() { return( 0 ); }
+    static unsigned char max() { return( UCHAR_MAX ); }
+    static const int digits = 8;
+    static const int digits10 = 2;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static unsigned char epsilon() { return( 0 ); }
+    static unsigned char round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static unsigned char infinity() { return( 0 ); }
+    static unsigned char quiet_NaN() { return( 0 ); }
+    static unsigned char signaling_NaN() { return( 0 ); }
+    static unsigned char denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< wchar_t > {
+  public:
+    static const bool is_specialized = true;
+    static wchar_t min() { return( 0 ); }
+    static wchar_t max() { return( 65535U ); }
+    static const int digits = 16;
+    static const int digits10 = 4;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 0;
+    static wchar_t epsilon() { return( 0 ); }
+    static wchar_t round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static wchar_t infinity() { return( 0 ); }
+    static wchar_t quiet_NaN() { return( 0 ); }
+    static wchar_t signaling_NaN() { return( 0 ); }
+    static wchar_t denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< short > {
+  public:
+    static const bool is_specialized = true;
+    static short min() { return( SHRT_MIN ); }
+    static short max() { return( SHRT_MAX ); }
+    static const int digits = 15;
+    static const int digits10 = 4;
+    static const bool is_signed = true;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static short epsilon() { return( 0 ); }
+    static short round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static short infinity() { return( 0 ); }
+    static short quiet_NaN() { return( 0 ); }
+    static short signaling_NaN() { return( 0 ); }
+    static short denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< int > {
+  public:
+    static const bool is_specialized = true;
+    static int min() { return( INT_MIN ); }
+    static int max() { return( INT_MAX ); }
+#if defined(_M_I86)
+    static const int digits = 15;
+    static const int digits10 = 4;
+#else
+    static const int digits = 31;
+    static const int digits10 = 9;
+#endif
+    static const bool is_signed = true;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static int epsilon() { return( 0 ); }
+    static int round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static int infinity() { return( 0 ); }
+    static int quiet_NaN() { return( 0 ); }
+    static int signaling_NaN() { return( 0 ); }
+    static int denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< long > {
+  public:
+    static const bool is_specialized = true;
+    static long min() { return( LONG_MIN ); }
+    static long max() { return( LONG_MAX ); }
+    static const int digits = 31;
+    static const int digits10 = 9;
+    static const bool is_signed = true;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static long epsilon() { return( 0 ); }
+    static long round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static long infinity() { return( 0 ); }
+    static long quiet_NaN() { return( 0 ); }
+    static long signaling_NaN() { return( 0 ); }
+    static long denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+#ifdef __WATCOM_INT64__
+  template< >
+  class numeric_limits< long long > {
+  public:
+    static const bool is_specialized = true;
+    static long long min() { return( LLONG_MIN ); }
+    static long long max() { return( LLONG_MAX ); }
+    static const int digits = 63;
+    static const int digits10 = 18;
+    static const bool is_signed = true;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static long long epsilon() { return( 0 ); }
+    static long long round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static long long infinity() { return( 0 ); }
+    static long long quiet_NaN() { return( 0 ); }
+    static long long signaling_NaN() { return( 0 ); }
+    static long long denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+#endif
+
+  template< >
+  class numeric_limits< unsigned short > {
+  public:
+    static const bool is_specialized = true;
+    static unsigned short min() { return( 0 ); }
+    static unsigned short max() { return( USHRT_MAX ); }
+    static const int digits = 16;
+    static const int digits10 = 4;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static unsigned short epsilon() { return( 0 ); }
+    static unsigned short round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static unsigned short infinity() { return( 0 ); }
+    static unsigned short quiet_NaN() { return( 0 ); }
+    static unsigned short signaling_NaN() { return( 0 ); }
+    static unsigned short denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< unsigned int > {
+  public:
+    static const bool is_specialized = true;
+    static unsigned int min() { return( 0 ); }
+    static unsigned int max() { return( UINT_MAX ); }
+#if defined(_M_I86)
+    static const int digits = 16;
+    static const int digits10 = 4;
+#else
+    static const int digits = 32;
+    static const int digits10 = 9;
+#endif
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static unsigned int epsilon() { return( 0 ); }
+    static unsigned int round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static unsigned int infinity() { return( 0 ); }
+    static unsigned int quiet_NaN() { return( 0 ); }
+    static unsigned int signaling_NaN() { return( 0 ); }
+    static unsigned int denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+  template< >
+  class numeric_limits< unsigned long > {
+  public:
+    static const bool is_specialized = true;
+    static unsigned long min() { return( 0 ); }
+    static unsigned long max() { return( ULONG_MAX ); }
+    static const int digits = 32;
+    static const int digits10 = 9;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static unsigned long epsilon() { return( 0 ); }
+    static unsigned long round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static unsigned long infinity() { return( 0 ); }
+    static unsigned long quiet_NaN() { return( 0 ); }
+    static unsigned long signaling_NaN() { return( 0 ); }
+    static unsigned long denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+
+#ifdef __WATCOM_INT64__
+  template< >
+  class numeric_limits< unsigned long long > {
+  public:
+    static const bool is_specialized = true;
+    static unsigned long long min() { return( 0 ); }
+    static unsigned long long max() { return( ULLONG_MAX ); }
+    static const int digits = 64;
+    static const int digits10 = 19;
+    static const bool is_signed = false;
+    static const bool is_integer = true;
+    static const bool is_exact = true;
+    static const int radix = 2;
+    static unsigned long long epsilon() { return( 0 ); }
+    static unsigned long long round_error() { return( 0 ); }
+    static const int min_exponent = 0;
+    static const int min_exponent10 = 0;
+    static const int max_exponent = 0;
+    static const int max_exponent10 = 0;
+    static const bool has_infinity = false;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_absent;
+    static const bool has_denorm_loss = false;
+    static unsigned long long infinity() { return( 0 ); }
+    static unsigned long long quiet_NaN() { return( 0 ); }
+    static unsigned long long signaling_NaN() { return( 0 ); }
+    static unsigned long long denorm_min() { return( 0 ); }
+    static const bool is_iec559 = false;
+    static const bool is_bounded = true;
+    static const bool is_modulo = true;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_toward_zero;
+  };
+#endif
+
+  template< >
+  class numeric_limits< float > {
+  public:
+    static const bool is_specialized = true;
+    static float min() { return( FLT_MIN ); }
+    static float max() { return( FLT_MAX ); }
+    static const int digits = FLT_MANT_DIG;
+    static const int digits10 = FLT_DIG;
+    static const bool is_signed = true;
+    static const bool is_integer = false;
+    static const bool is_exact = false;
+    static const int radix = FLT_RADIX;
+    static float epsilon() { return( FLT_EPSILON ); }
+    static float round_error() { return( 0.5F ); }
+    static const int min_exponent = FLT_MIN_EXP;
+    static const int min_exponent10 = FLT_MIN_10_EXP;
+    static const int max_exponent = FLT_MAX_EXP;
+    static const int max_exponent10 = FLT_MAX_10_EXP;
+    static const bool has_infinity = true;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_indeterminate;
+    static const bool has_denorm_loss = false;
+    static float infinity();
+    static float quiet_NaN();
+    static float signaling_NaN();
+    static float denorm_min();
+    static const bool is_iec559 = true;
+    static const bool is_bounded = true;
+    static const bool is_modulo = false;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_to_nearest;
+  };
+
+  template< >
+  class numeric_limits< double > {
+  public:
+    static const bool is_specialized = true;
+    static double min() { return( DBL_MIN ); }
+    static double max() { return( DBL_MAX ); }
+    static const int digits = DBL_MANT_DIG;
+    static const int digits10 = DBL_DIG;
+    static const bool is_signed = true;
+    static const bool is_integer = false;
+    static const bool is_exact = false;
+    static const int radix = _DBL_RADIX;
+    static double epsilon() { return( DBL_EPSILON ); }
+    static double round_error() { return( 0.5 ); }
+    static const int min_exponent = DBL_MIN_EXP;
+    static const int min_exponent10 = DBL_MIN_10_EXP;
+    static const int max_exponent = DBL_MAX_EXP;
+    static const int max_exponent10 = DBL_MAX_10_EXP;
+    static const bool has_infinity = true;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_indeterminate;
+    static const bool has_denorm_loss = false;
+    static double infinity();
+    static double quiet_NaN();
+    static double signaling_NaN();
+    static double denorm_min();
+    static const bool is_iec559 = true;
+    static const bool is_bounded = true;
+    static const bool is_modulo = false;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_to_nearest;
+  };
+
+  template< >
+  class numeric_limits< long double > {
+  public:
+    static const bool is_specialized = true;
+    static long double min() { return( LDBL_MIN ); }
+    static long double max() { return( LDBL_MAX ); }
+    static const int digits = LDBL_MANT_DIG;
+    static const int digits10 = LDBL_DIG;
+    static const bool is_signed = true;
+    static const bool is_integer = false;
+    static const bool is_exact = false;
+    static const int radix = _LDBL_RADIX;
+    static long double epsilon() { return( LDBL_EPSILON ); }
+    static long double round_error() { return( 0.5L ); }
+    static const int min_exponent = LDBL_MIN_EXP;
+    static const int min_exponent10 = LDBL_MIN_10_EXP;
+    static const int max_exponent = LDBL_MAX_EXP;
+    static const int max_exponent10 = LDBL_MAX_10_EXP;
+    static const bool has_infinity = true;
+    static const bool has_quiet_NaN = false;
+    static const bool has_signaling_NaN = false;
+    static const float_denorm_style has_denorm = denorm_indeterminate;
+    static const bool has_denorm_loss = false;
+    static long double infinity();
+    static long double quiet_NaN();
+    static long double signaling_NaN();
+    static long double denorm_min();
+    static const bool is_iec559 = true;
+    static const bool is_bounded = true;
+    static const bool is_modulo = false;
+    static const bool traps = false;
+    static const bool tinyness_before = false;
+    static const float_round_style round_style = round_to_nearest;
+  };
+
+} // namespace std
+
+#endif
+:endsegment

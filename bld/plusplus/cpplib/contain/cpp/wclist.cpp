@@ -285,7 +285,7 @@ _WPRTLINK void WCIsvListBase::base_destroy( void ) {
 //  cleared.
 //
 
-_WPRTLINK WCIsvListBase::~WCIsvListBase() {
+WCIsvListBase::~WCIsvListBase() {
     if( tail != 0 ) {
         base_throw_not_empty();
         // we can't do a destroy here (list elements may not be newed)

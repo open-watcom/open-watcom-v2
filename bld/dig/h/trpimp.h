@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal debugger trap file OS specific implementation
+*               header file.
 *
 ****************************************************************************/
 
@@ -34,14 +34,10 @@
 
 #define TRPIMP_H
 
-#if defined(__386__)
-    #define TRAPFAR
-#elif defined(__ALPHA__) || defined(__PPC__)
-    #define TRAPFAR
-#elif defined(M_I86)
+#if defined( _M_I86 )
     #define TRAPFAR __far
 #else
-    #error TRAPFAR macro not configured
+    #define TRAPFAR
 #endif
 
 #if defined(__DOS__) || defined(__DSX__)
@@ -53,6 +49,7 @@
         #undef          WANT_FILE
         #undef          WANT_OVL
         #undef          WANT_THREAD
+        #undef          WANT_RUN_THREAD
         #undef          WANT_RFX
     #elif defined(DOSXTRAP)
         /* real mode trap file talking to protected mode helper */
@@ -62,6 +59,7 @@
         #define         WANT_FILE
         #undef          WANT_OVL
         #undef          WANT_THREAD
+        #undef          WANT_RUN_THREAD
         #define         WANT_RFX
     #else
         /* straight dos */
@@ -71,27 +69,42 @@
         #define         WANT_FILE
         #define         WANT_OVL
         #undef          WANT_THREAD
+        #undef          WANT_RUN_THREAD
         #define         WANT_RFX
     #endif
     #define     TRAPENTRY TRAPFAR __saveregs
-#elif defined(__OS2__)
+#elif defined(__OS2__) && defined(__I86__)
     #undef          WANT_FILE_INFO
     #undef          WANT_ENV
     #undef          WANT_ASYNC
-    #define     WANT_FILE
+    #define         WANT_FILE
     #undef          WANT_OVL
     #define         WANT_THREAD
-    #define     WANT_RFX
-    #define     TRAPENTRY TRAPFAR __saveregs
-#elif defined(__OS2V2__)
-    #undef          WANT_FILE_INFO
-    #undef          WANT_ENV
-    #undef          WANT_ASYNC
-    #define     WANT_FILE
-    #undef          WANT_OVL
-    #define         WANT_THREAD
-    #define     WANT_RFX
-    #define     TRAPENTRY TRAPFAR
+    #undef          WANT_RUN_THREAD
+    #define         WANT_RFX
+    #define         TRAPENTRY TRAPFAR __saveregs
+#elif defined(__OS2V2__) || defined(__OS2__) && !defined(__I86__)
+    #if defined(ELFCORE)
+        #undef      WANT_FILE_INFO
+        #undef      WANT_ENV
+        #undef      WANT_ASYNC
+        #define     WANT_FILE
+        #undef      WANT_OVL
+        #undef      WANT_THREAD
+        #undef      WANT_RUN_THREAD
+        #undef      WANT_RFX
+        #define     TRAPENTRY TRAPFAR
+    #else
+        #undef      WANT_FILE_INFO
+        #undef      WANT_ENV
+        #undef      WANT_ASYNC
+        #define     WANT_FILE
+        #undef      WANT_OVL
+        #define     WANT_THREAD
+        #undef      WANT_RUN_THREAD
+        #define     WANT_RFX
+        #define     TRAPENTRY TRAPFAR
+    #endif
 #elif defined(__NT__)
     #if defined(JVMXHELP) || defined(MSJXHELP)
         #undef  WANT_FILE_INFO
@@ -100,25 +113,39 @@
         #define WANT_FILE
         #undef  WANT_OVL
         #define WANT_THREAD
+        #undef  WANT_RUN_THREAD
         #undef  WANT_RFX
         #define TRAPENTRY TRAPFAR
     #elif defined(MSJXTRAP)
         #define WANT_FILE_INFO
         #define WANT_ENV
-        #define WANT_ASYNC
+        #undef  WANT_ASYNC
         #define WANT_FILE
         #undef  WANT_OVL
         #define WANT_THREAD
+        #undef  WANT_RUN_THREAD
+        #undef  WANT_RFX
+        #define TRAPENTRY TRAPFAR
+    #elif defined(ELFCORE)
+        #undef  WANT_FILE_INFO
+        #undef  WANT_ENV
+        #undef  WANT_ASYNC
+        #define WANT_FILE
+        #undef  WANT_OVL
+        #undef  WANT_THREAD
+        #undef  WANT_RUN_THREAD
         #undef  WANT_RFX
         #define TRAPENTRY TRAPFAR
     #else
         #define WANT_FILE_INFO
         #define WANT_ENV
-        #define WANT_ASYNC
+        #undef  WANT_ASYNC
         #define WANT_FILE
         #undef  WANT_OVL
         #define WANT_THREAD
+        #undef  WANT_RUN_THREAD
         #undef  WANT_RFX
+        #define WANT_CAPABILITIES
         #define TRAPENTRY TRAPFAR
     #endif
 #elif defined(__WINDOWS__)
@@ -128,6 +155,7 @@
     #define     WANT_FILE
     #undef      WANT_OVL
     #undef      WANT_THREAD
+    #undef      WANT_RUN_THREAD
     #define     WANT_RFX
     #define     TRAPENTRY TRAPFAR __pascal
 #elif defined(__QNX__)
@@ -137,8 +165,33 @@
     #define     WANT_FILE
     #undef      WANT_OVL
     #define     WANT_THREAD
+    #undef      WANT_RUN_THREAD
     #undef      WANT_RFX
-    #define     TRAPENTRY TRAPFAR __saveregs
+    #ifdef __WATCOMC__
+        #define     TRAPENTRY TRAPFAR __saveregs
+    #else
+        #define     TRAPENTRY TRAPFAR
+    #endif
+#elif defined(__LINUX__)
+    #undef      WANT_FILE_INFO  // TODO: Want this later for Linux!
+    #undef      WANT_ENV        // TODO: Want this later for Linux!
+    #undef      WANT_ASYNC      // TODO: Want this later for Linux!
+    #define     WANT_FILE
+    #undef      WANT_OVL
+    #undef      WANT_THREAD     // TODO: Want this later for Linux!
+    #undef      WANT_RUN_THREAD
+    #undef      WANT_RFX        // TODO: Want this later for Linux!
+    #define     TRAPENTRY TRAPFAR
+#elif defined(__UNIX__)
+    #undef      WANT_FILE_INFO
+    #undef      WANT_ENV
+    #undef      WANT_ASYNC
+    #define     WANT_FILE
+    #undef      WANT_OVL
+    #undef      WANT_THREAD
+    #undef      WANT_RUN_THREAD
+    #undef      WANT_RFX
+    #define     TRAPENTRY TRAPFAR
 #elif defined(__NETWARE__)
     #undef      WANT_FILE_INFO
     #undef      WANT_ENV
@@ -146,16 +199,19 @@
     #define     WANT_FILE
     #undef      WANT_OVL
     #define     WANT_THREAD
+    #undef      WANT_RUN_THREAD
     #undef      WANT_RFX
     #define     TRAPENTRY TRAPFAR
-#elif defined(__PENPOINT__)
-    #undef      WANT_FILE_INFO
-    #undef      WANT_ENV
-    #undef      WANT_ASYNC
+#elif defined(__RDOS__)
+    #define     WANT_FILE_INFO
+    #define     WANT_ENV
+    #define     WANT_ASYNC
     #define     WANT_FILE
     #undef      WANT_OVL
-    #define     WANT_THREAD
+    #undef      WANT_THREAD
+    #define     WANT_RUN_THREAD
     #undef      WANT_RFX
+    #define     WANT_CAPABILITIES
     #define     TRAPENTRY TRAPFAR
 #else
     #error Unknown operating system
@@ -222,11 +278,10 @@ extern unsigned  ReqEnv_setvar(void);
 #ifdef WANT_ASYNC
 #include "trpasync.h"
 
-extern unsigned  ReqAsync_go(void);
-extern unsigned  ReqAsync_stop(void);
-extern unsigned  ReqAsync_interrupt(void);
-extern unsigned  ReqAsync_poll(void);
-extern unsigned  ReqAsync_check(void);
+extern unsigned ReqAsync_go(void);
+extern unsigned ReqAsync_step(void);
+extern unsigned ReqAsync_poll(void);
+extern unsigned ReqAsync_stop(void);
 
 #endif
 
@@ -270,6 +325,20 @@ extern unsigned ReqThread_get_extra(void);
 
 #endif
 
+#ifdef WANT_RUN_THREAD
+#include "trprtrd.h"
+
+extern unsigned ReqRunThread_info(void);
+extern unsigned ReqRunThread_get_next(void);
+extern unsigned ReqRunThread_get_runtime(void);
+extern unsigned ReqRunThread_poll(void);
+extern unsigned ReqRunThread_set(void);
+extern unsigned ReqRunThread_get_name(void);
+extern unsigned ReqRunThread_stop(void);
+extern unsigned ReqRunThread_signal_stop(void);
+
+#endif
+
 #ifdef WANT_RFX
 #include "trprfx.h"
 
@@ -292,10 +361,20 @@ extern unsigned ReqRfx_findclose(void);
 
 #endif
 
+#ifdef WANT_CAPABILITIES
+#include "trpcapb.h"
+
+extern unsigned ReqCapabilities_get_8b_bp(void);
+extern unsigned ReqCapabilities_set_8b_bp(void);
+extern unsigned ReqCapabilities_get_exact_bp(void);
+extern unsigned ReqCapabilities_set_exact_bp(void);
+
+#endif
+
 extern unsigned_8       In_Mx_Num;
 extern unsigned_8       Out_Mx_Num;
-extern mx_entry         *In_Mx_Ptr;
-extern mx_entry         *Out_Mx_Ptr;
+extern mx_entry TRAPFAR *In_Mx_Ptr;
+extern mx_entry TRAPFAR *Out_Mx_Ptr;
 
 extern void             *GetInPtr( unsigned );
 extern void             *GetOutPtr( unsigned );
@@ -305,7 +384,7 @@ extern unsigned         GetTotalSize( void );
 
 #define BUFF_SIZE       256
 
-extern trap_version TRAPENTRY TrapInit( char *, char *, unsigned_8 );
+extern trap_version TRAPENTRY TrapInit( char *, char *, bool );
 extern unsigned     TRAPENTRY TrapRequest( unsigned, mx_entry *,
                                           unsigned, mx_entry * );
 extern void         TRAPENTRY TrapFini( void );

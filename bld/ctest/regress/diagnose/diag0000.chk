@@ -1,0 +1,272 @@
+source\diag0001.c(4): Error! E1128: Enum constant is out of range -9223372036854775808 to 9223372036854775807
+source\diag0001.c(10): Error! E1128: Enum constant is out of range 0 to 18446744073709551615
+source\diag0002.c(9): Warning! W133: Symbol name truncated for '__CPR305___Y_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1Z'
+source\diag0002.c(12): Warning! W133: Symbol name truncated for '__CPR305___M_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_'
+source\diag0002.c(15): Warning! W133: Symbol name truncated for '__CPR305___N_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_'
+source\diag0002.c(18): Warning! W133: Symbol name truncated for '__CPR305___Q_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_'
+source\diag0002.c(21): Warning! W133: Symbol name truncated for '__CPR305___O_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_'
+source\diag0002.c(7): Warning! W133: Symbol name truncated for 'y01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123'
+source\diag0002.c(11): Warning! W133: Symbol name truncated for 'p012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+source\diag0002.c(14): Warning! W133: Symbol name truncated for 's012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+source\diag0002.c(17): Warning! W133: Symbol name truncated for 'q012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+source\diag0002.c(20): Warning! W133: Symbol name truncated for 'r012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+source\diag0003.c(15): Warning! W134: Shift amount negative
+source\diag0003.c(16): Warning! W135: Shift amount too large
+source\diag0003.c(18): Warning! W135: Shift amount too large
+source\diag0003.c(19): Warning! W135: Shift amount too large
+source\diag0003.c(20): Warning! W134: Shift amount negative
+source\diag0003.c(22): Warning! W135: Shift amount too large
+source\diag0003.c(23): Warning! W135: Shift amount too large
+source\diag0003.c(26): Warning! W135: Shift amount too large
+source\diag0003.c(31): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(32): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(33): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(34): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(35): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(36): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0003.c(37): Warning! W139: Divisor for modulo or division operation is zero
+source\diag0004.c(24): Warning! W124: Comparison result always 0
+source\diag0004.c(26): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(28): Warning! W124: Comparison result always 1
+source\diag0004.c(37): Warning! W124: Comparison result always 0
+source\diag0004.c(39): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(41): Warning! W124: Comparison result always 1
+source\diag0004.c(50): Warning! W124: Comparison result always 0
+source\diag0004.c(52): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(54): Warning! W124: Comparison result always 1
+source\diag0004.c(63): Warning! W124: Comparison result always 0
+source\diag0004.c(65): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(67): Warning! W124: Comparison result always 1
+source\diag0004.c(76): Warning! W124: Comparison result always 0
+source\diag0004.c(78): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(80): Warning! W124: Comparison result always 1
+source\diag0004.c(91): Warning! W124: Comparison result always 0
+source\diag0004.c(93): Warning! W124: Comparison result always 0
+source\diag0004.c(95): Warning! W124: Comparison result always 1
+source\diag0004.c(97): Warning! W124: Comparison result always 1
+source\diag0004.c(100): Warning! W124: Comparison result always 0
+source\diag0004.c(102): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(104): Warning! W124: Comparison result always 1
+source\diag0004.c(106): Warning! W124: Comparison result always 0
+source\diag0004.c(115): Warning! W124: Comparison result always 0
+source\diag0004.c(117): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(119): Warning! W124: Comparison result always 1
+source\diag0004.c(121): Warning! W124: Comparison result always 0
+source\diag0004.c(130): Warning! W124: Comparison result always 0
+source\diag0004.c(132): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(134): Warning! W124: Comparison result always 1
+source\diag0004.c(136): Warning! W124: Comparison result always 0
+source\diag0004.c(145): Warning! W124: Comparison result always 0
+source\diag0004.c(147): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(149): Warning! W124: Comparison result always 1
+source\diag0004.c(151): Warning! W124: Comparison result always 0
+source\diag0004.c(160): Warning! W124: Comparison result always 0
+source\diag0004.c(162): Warning! W136: Comparison equivalent to 'unsigned == 0'
+source\diag0004.c(164): Warning! W124: Comparison result always 1
+source\diag0004.c(166): Warning! W124: Comparison result always 0
+source\diag0005.c(7): Warning! W137: Extern function 'fn2' redeclared as static
+source\diag0005.c(7): Note! I2002: 'fn2' defined in: source\diag0005.c(6)
+source\diag0005.c(10): Warning! W137: Extern function 'fn3' redeclared as static
+source\diag0005.c(10): Note! I2002: 'fn3' defined in: source\diag0005.c(9)
+source\diag0005.c(17): Warning! W131: No prototype found for function 'fn4'
+source\diag0005.c(30): Error! E1072: Storage class disagrees with previous definition of 'i2'
+source\diag0005.c(30): Note! I2002: 'i2' defined in: source\diag0005.c(29)
+source\diag0005.c(33): Error! E1072: Storage class disagrees with previous definition of 'i3'
+source\diag0005.c(33): Note! I2002: 'i3' defined in: source\diag0005.c(32)
+source\diag0005.c(42): Error! E1072: Storage class disagrees with previous definition of 'i6'
+source\diag0005.c(42): Note! I2002: 'i6' defined in: source\diag0005.c(41)
+source\diag0005.c(38): Warning! W202: Symbol 'i5' has been defined, but not referenced
+source\diag0006.c(31): Error! E1010: Type mismatch
+source\diag0006.c(31): Note! I2003: source conversion type is 'int (*)(int __p1)'
+source\diag0006.c(31): Note! I2004: target conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(32): Error! E1010: Type mismatch
+source\diag0006.c(32): Note! I2003: source conversion type is 'int (__watcall *)(int __p1)'
+source\diag0006.c(32): Note! I2004: target conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(33): Error! E1010: Type mismatch
+source\diag0006.c(33): Note! I2003: source conversion type is 'int (*)(int __p1)'
+source\diag0006.c(33): Note! I2004: target conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(34): Error! E1010: Type mismatch
+source\diag0006.c(34): Note! I2003: source conversion type is 'int (__watcall *)(int __p1)'
+source\diag0006.c(34): Note! I2004: target conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(36): Error! E1010: Type mismatch
+source\diag0006.c(36): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(36): Note! I2004: target conversion type is 'int (*)(int __p1)'
+source\diag0006.c(37): Error! E1010: Type mismatch
+source\diag0006.c(37): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(37): Note! I2004: target conversion type is 'int (*)(int __p1)'
+source\diag0006.c(39): Error! E1010: Type mismatch
+source\diag0006.c(39): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(39): Note! I2004: target conversion type is 'int (__watcall *)(int __p1)'
+source\diag0006.c(40): Error! E1010: Type mismatch
+source\diag0006.c(40): Note! I2003: source conversion type is 'int (__cdecl *)(int __p1)'
+source\diag0006.c(40): Note! I2004: target conversion type is 'int (__watcall *)(int __p1)'
+source\diag0007.c(37): Error! E1186: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(38): Error! E1186: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(39): Error! E1186: Storage class of 'for' statement declaration not register or auto
+source\diag0007.c(40): Error! E1187: No type specified in declaration
+source\diag0007.c(41): Error! E1188: Symbol 'j' declared in 'for' statement must be object
+source\diag0007.c(45): Error! E1189: Unexpected declaration
+source\diag0007.c(47): Error! E1189: Unexpected declaration
+source\diag0007.c(55): Error! E1189: Unexpected declaration
+source\diag0007.c(55): Error! E1009: Expecting 'while' but found 'unsigned'
+source\diag0007.c(55): Error! E1009: Expecting '(' but found 'u'
+source\diag0007.c(55): Error! E1063: Missing operand
+source\diag0007.c(55): Error! E1009: Expecting ')' but found ';'
+source\diag0007.c(61): Error! E1189: Unexpected declaration
+source\diag0007.c(69): Error! E1189: Unexpected declaration
+source\diag0007.c(45): Warning! W202: Symbol 'j' has been defined, but not referenced
+source\diag0007.c(61): Warning! W202: Symbol 'i' has been defined, but not referenced
+source\diag0007.c(52): Warning! W202: Symbol 'g' has been defined, but not referenced
+source\diag0007.c(47): Warning! W202: Symbol 'f' has been defined, but not referenced
+source\diag0007.c(58): Warning! W202: Symbol 'uu' has been defined, but not referenced
+source\diag0007.c(71): Error! E1018: Label 'la_bel' not defined in function
+source\diag0007.c(72): Error! E1099: Statement must be inside function. Probable cause: missing {
+source\diag0008.c(2): Error! E1100: Definition of macro '__DATE__' not identical to previous definition
+source\diag0008.c(3): Error! E1100: Definition of macro '__FILE__' not identical to previous definition
+source\diag0008.c(4): Error! E1100: Definition of macro '__LINE__' not identical to previous definition
+source\diag0008.c(5): Error! E1100: Definition of macro '__STDC__' not identical to previous definition
+source\diag0008.c(6): Error! E1100: Definition of macro '__STDC_HOSTED__' not identical to previous definition
+source\diag0008.c(7): Error! E1100: Definition of macro '__STDC_LIB_EXT1__' not identical to previous definition
+source\diag0008.c(8): Error! E1100: Definition of macro '__STDC_VERSION__' not identical to previous definition
+source\diag0008.c(9): Error! E1100: Definition of macro '__TIME__' not identical to previous definition
+source\diag0008.c(11): Error! E1101: Cannot #undef '__DATE__'
+source\diag0008.c(12): Error! E1101: Cannot #undef '__FILE__'
+source\diag0008.c(13): Error! E1101: Cannot #undef '__LINE__'
+source\diag0008.c(14): Error! E1101: Cannot #undef '__STDC__'
+source\diag0008.c(15): Error! E1101: Cannot #undef '__STDC_HOSTED__'
+source\diag0008.c(16): Error! E1101: Cannot #undef '__STDC_LIB_EXT1__'
+source\diag0008.c(17): Error! E1101: Cannot #undef '__STDC_VERSION__'
+source\diag0008.c(18): Error! E1101: Cannot #undef '__TIME__'
+source\diag0009.c(11): Warning! W106: Constant out of range - truncated
+source\diag0009.c(13): Warning! W106: Constant out of range - truncated
+source\diag0009.c(19): Warning! W106: Constant out of range - truncated
+source\diag0009.c(19): Note! I2003: source conversion type is 'int '
+source\diag0009.c(19): Note! I2004: target conversion type is '<ufield> '
+source\diag0009.c(20): Warning! W106: Constant out of range - truncated
+source\diag0009.c(20): Note! I2003: source conversion type is 'int '
+source\diag0009.c(20): Note! I2004: target conversion type is '<ufield> '
+source\diag0009.c(23): Warning! W106: Constant out of range - truncated
+source\diag0009.c(23): Note! I2003: source conversion type is 'long '
+source\diag0009.c(23): Note! I2004: target conversion type is 'field '
+source\diag0009.c(30): Warning! W124: Comparison result always 1
+source\diag0009.c(32): Warning! W124: Comparison result always 1
+source\diag0009.c(34): Warning! W124: Comparison result always 1
+source\diag0009.c(36): Warning! W124: Comparison result always 1
+source\diag0010.c(6): Warning! E1069: String literal not terminated before end of line
+source\diag0010.c(9): Error! E1069: String literal not terminated before end of line
+source\diag0010.c(11): Error! E1054: Expression must be constant
+source\diag0010.c(11): Error! E1009: Expecting ';' but found 'int'
+source\diag0011.c(6): Error! E1069: String literal not terminated before end of line
+source\diag0012.c(43): Warning! W112: Pointer truncated
+source\diag0012.c(43): Note! I2003: source conversion type is 'void __far *'
+source\diag0012.c(43): Note! I2004: target conversion type is 'struct HMENU__ __near const *'
+source\diag0012.c(52): Warning! W112: Pointer truncated
+source\diag0012.c(52): Note! I2003: source conversion type is 'void __far *'
+source\diag0012.c(52): Note! I2004: target conversion type is 'struct HMENU__ __near const **'
+source\diag0012.c(52): Note! I2002: 'foo' defined in: source\diag0012.c(26)
+source\diag0012.c(54): Warning! W113: Pointer type mismatch
+source\diag0012.c(54): Note! I2003: source conversion type is 'int (*)[2]'
+source\diag0012.c(54): Note! I2004: target conversion type is 'int (*)[3]'
+source\diag0012.c(57): Warning! W113: Pointer type mismatch
+source\diag0012.c(57): Note! I2003: source conversion type is 'int (*)[2][3]'
+source\diag0012.c(57): Note! I2004: target conversion type is 'int (*)[3][3]'
+source\diag0013.c(12): Error! E1034: Symbol 'foo' already defined
+source\diag0014.c(13): Warning! W107: Missing return value for function 'fn1'
+source\diag0014.c(17): Warning! W107: Missing return value for function 'fn2'
+source\diag0014.c(27): Warning! W201: Unreachable code
+source\diag0014.c(35): Warning! W107: Missing return value for function 'fn5'
+source\diag0014.c(53): Warning! W201: Unreachable code
+source\diag0014.c(62): Warning! W107: Missing return value for function 'fn8'
+source\inc2.h(1): Warning! W138: No newline at end of file
+inc3.h(35): Warning! W300: Nested comment found in comment started on line 8
+inc3.h(60): Error! E1046: Incomplete comment started on line 8
+source\diag0015.c(66): Warning! W138: No newline at end of file
+source\diag0016.c(13): Error! E1129: Type does not agree with previous definition of 'x1'
+source\diag0016.c(13): Note! I2002: 'x1' defined in: source\diag0016.c(3)
+source\diag0016.c(14): Error! E1129: Type does not agree with previous definition of 'x2'
+source\diag0016.c(14): Note! I2002: 'x2' defined in: source\diag0016.c(4)
+source\diag0016.c(15): Error! E1129: Type does not agree with previous definition of 'x3'
+source\diag0016.c(15): Note! I2002: 'x3' defined in: source\diag0016.c(5)
+source\diag0016.c(16): Error! E1129: Type does not agree with previous definition of 'x4'
+source\diag0016.c(16): Note! I2002: 'x4' defined in: source\diag0016.c(6)
+source\diag0016.c(18): Error! E1129: Type does not agree with previous definition of 'ux1'
+source\diag0016.c(18): Note! I2002: 'ux1' defined in: source\diag0016.c(8)
+source\diag0016.c(19): Error! E1129: Type does not agree with previous definition of 'ux2'
+source\diag0016.c(19): Note! I2002: 'ux2' defined in: source\diag0016.c(9)
+source\diag0016.c(20): Error! E1129: Type does not agree with previous definition of 'ux3'
+source\diag0016.c(20): Note! I2002: 'ux3' defined in: source\diag0016.c(10)
+source\diag0016.c(21): Error! E1129: Type does not agree with previous definition of 'ux4'
+source\diag0016.c(21): Note! I2002: 'ux4' defined in: source\diag0016.c(11)
+source\diag0016.c(33): Error! E1129: Type does not agree with previous definition of 'x5'
+source\diag0016.c(33): Note! I2002: 'x5' defined in: source\diag0016.c(23)
+source\diag0016.c(34): Error! E1129: Type does not agree with previous definition of 'x6'
+source\diag0016.c(34): Note! I2002: 'x6' defined in: source\diag0016.c(24)
+source\diag0016.c(35): Error! E1129: Type does not agree with previous definition of 'x7'
+source\diag0016.c(35): Note! I2002: 'x7' defined in: source\diag0016.c(25)
+source\diag0016.c(36): Error! E1129: Type does not agree with previous definition of 'x8'
+source\diag0016.c(36): Note! I2002: 'x8' defined in: source\diag0016.c(26)
+source\diag0016.c(38): Error! E1129: Type does not agree with previous definition of 'ux5'
+source\diag0016.c(38): Note! I2002: 'ux5' defined in: source\diag0016.c(28)
+source\diag0016.c(39): Error! E1129: Type does not agree with previous definition of 'ux6'
+source\diag0016.c(39): Note! I2002: 'ux6' defined in: source\diag0016.c(29)
+source\diag0016.c(40): Error! E1129: Type does not agree with previous definition of 'ux7'
+source\diag0016.c(40): Note! I2002: 'ux7' defined in: source\diag0016.c(30)
+source\diag0016.c(41): Error! E1129: Type does not agree with previous definition of 'ux8'
+source\diag0016.c(41): Note! I2002: 'ux8' defined in: source\diag0016.c(31)
+source\diag0016.c(46): Error! E1129: Type does not agree with previous definition of 'c1'
+source\diag0016.c(46): Note! I2002: 'c1' defined in: source\diag0016.c(43)
+source\diag0016.c(46): Error! E1129: Type does not agree with previous definition of 'c1'
+source\diag0016.c(46): Note! I2002: 'c1' defined in: source\diag0016.c(43)
+source\diag0016.c(51): Error! E1129: Type does not agree with previous definition of 'a1'
+source\diag0016.c(51): Note! I2002: 'a1' defined in: source\diag0016.c(48)
+source\diag0016.c(52): Error! E1129: Type does not agree with previous definition of 'a2'
+source\diag0016.c(52): Note! I2002: 'a2' defined in: source\diag0016.c(49)
+source\diag0016.c(57): Error! E1129: Type does not agree with previous definition of 'a3'
+source\diag0016.c(57): Note! I2002: 'a3' defined in: source\diag0016.c(54)
+source\diag0016.c(58): Error! E1129: Type does not agree with previous definition of 'a4'
+source\diag0016.c(58): Note! I2002: 'a4' defined in: source\diag0016.c(55)
+source\diag0017.c(10): Error! E1034: Symbol 'TREE' already defined
+source\diag0017.c(10): Note! I2002: 'TREE' defined in: source\diag0017.c(6)
+source\diag0017.c(12): Error! E1034: Symbol 'TWO' already defined
+source\diag0017.c(12): Note! I2002: 'TWO' defined in: source\diag0017.c(5)
+source\diag0017.c(14): Error! E1034: Symbol 'FOR' already defined
+source\diag0017.c(14): Note! I2002: 'FOR' defined in: source\diag0017.c(7)
+source\diag0017.c(25): Error! E1034: Symbol 'TREE' already defined
+source\diag0017.c(25): Note! I2002: 'TREE' defined in: source\diag0017.c(21)
+source\diag0017.c(27): Error! E1034: Symbol 'TWO' already defined
+source\diag0017.c(27): Note! I2002: 'TWO' defined in: source\diag0017.c(20)
+source\diag0017.c(30): Error! E1012: Expression is not a function
+source\diag0018.c(7): Error! E1071: Type of parameter 1 does not agree with previous definition
+source\diag0018.c(7): Note! I2003: source conversion type is 'enum foo_enum '
+source\diag0018.c(7): Note! I2004: target conversion type is 'char '
+source\diag0018.c(7): Note! I2002: 'foo' defined in: source\diag0018.c(4)
+source\diag0018.c(13): Warning! W113: Pointer type mismatch
+source\diag0018.c(13): Note! I2003: source conversion type is 'enum foo_enum *'
+source\diag0018.c(13): Note! I2004: target conversion type is 'char *'
+source\diag0018.c(14): Error! E1010: Type mismatch
+source\diag0018.c(14): Note! I2003: source conversion type is 'enum foo_enum *'
+source\diag0018.c(14): Note! I2004: target conversion type is 'char *'
+source\diag0018.c(16): Warning! W113: Pointer type mismatch
+source\diag0018.c(16): Note! I2003: source conversion type is 'enum foo_enum *'
+source\diag0018.c(16): Note! I2004: target conversion type is 'char *'
+source\diag0019.c(4): Warning! W124: Comparison result always 0
+source\diag0019.c(9): Warning! W124: Comparison result always 0
+source\diag0019.c(14): Warning! W124: Comparison result always 1
+source\diag0019.c(19): Warning! W124: Comparison result always 0
+source\diag0019.c(25): Warning! W126: Constant must be zero for pointer compare
+source\diag0020.c(4): Error! E1040: Field width too large
+source\diag0020.c(9): Error! E1040: Field width too large
+source\diag0021.c(12): Error! E1089: Missing ) for expansion of 'VERIFY' macro
+source\diag0021.c(12): Error! E1077: Missing '}'
+source\diag0022.c(17): Warning! W102: Type mismatch (warning)
+source\diag0022.c(17): Note! I2003: source conversion type is '_Bool '
+source\diag0022.c(17): Note! I2004: target conversion type is 'char *'
+source\diag0022.c(19): Warning! W102: Type mismatch (warning)
+source\diag0022.c(19): Note! I2003: source conversion type is '_Bool '
+source\diag0022.c(19): Note! I2004: target conversion type is 'char *'
+source\diag0022.c(20): Warning! W102: Type mismatch (warning)
+source\diag0022.c(20): Note! I2003: source conversion type is '<ufield> '
+source\diag0022.c(20): Note! I2004: target conversion type is 'char *'
+source\diag0022.c(22): Warning! W102: Type mismatch (warning)
+source\diag0022.c(22): Note! I2003: source conversion type is 'char *'
+source\diag0022.c(22): Note! I2004: target conversion type is 'int '

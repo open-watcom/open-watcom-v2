@@ -31,33 +31,17 @@
 
 
 #ifndef _MBDEFWIN_H_INCLUDED
+#define _MBDEFWIN_H_INCLUDED
 
 #include "variety.h"
 #include <mbctype.h>
 #include <mbstring.h>
-
+#include "mbyte.h"
 
 typedef unsigned int            mb_char;
 
-
-_WCRTLINK extern size_t __mbslen( const unsigned char *__string );
-_WCRTLINK extern unsigned char *__mbsninc( const unsigned char *__string, size_t __count );
-
-_WCRTLINK extern size_t __fmbslen( const unsigned char _WCFAR *__string );
-_WCRTLINK extern unsigned char _WCFAR *__fmbsninc( const unsigned char _WCFAR *__string, size_t __count );
-
-
 /*** Avoid excessive conditional compilation ***/
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #define FAR_mbsninc         __mbsninc
-    #define FAR_mbsnbcnt        _mbsnbcnt
-    #define FAR_mbsncpy         _mbsncpy
-    #define FAR_mbsnbcpy        _mbsnbcpy
-    #define FAR_mbslen          __mbslen
-    #define FAR_mbccpy          _mbccpy
-    #define FAR_mbsnextc        _mbsnextc
-    #define FAR_mbvtop          _mbvtop
-#else
+#if defined( _M_I86 )
     #define FAR_mbsninc         __fmbsninc
     #define FAR_mbsnbcnt        _fmbsnbcnt
     #define FAR_mbsncpy         _fmbsncpy
@@ -66,8 +50,15 @@ _WCRTLINK extern unsigned char _WCFAR *__fmbsninc( const unsigned char _WCFAR *_
     #define FAR_mbccpy          _fmbccpy
     #define FAR_mbsnextc        _fmbsnextc
     #define FAR_mbvtop          _fmbvtop
+#else
+    #define FAR_mbsninc         __mbsninc
+    #define FAR_mbsnbcnt        _mbsnbcnt
+    #define FAR_mbsncpy         _mbsncpy
+    #define FAR_mbsnbcpy        _mbsnbcpy
+    #define FAR_mbslen          __mbslen
+    #define FAR_mbccpy          _mbccpy
+    #define FAR_mbsnextc        _mbsnextc
+    #define FAR_mbvtop          _mbvtop
 #endif
 
-
-#define _MBDEFWIN_H_INCLUDED
 #endif

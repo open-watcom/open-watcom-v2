@@ -1,0 +1,191 @@
+.387
+.386p
+_data16		SEGMENT	PARA PRIVATE USE16 'DATA'
+L$1:
+    DB	0, 0
+L$2:
+    DB	0, 0
+L$3:
+    DB	0, 0
+L$4:
+    DB	0, 0
+L$5:
+    DB	0, 0, 0, 0
+
+_data16		ENDS
+_data32		SEGMENT	PARA PRIVATE USE32 'DATA'
+L$6:
+    DB	0, 0
+L$7:
+    DB	0, 0
+L$8:
+    DB	0, 0
+L$9:
+    DB	0, 0
+L$10:
+    DB	0, 0, 0, 0
+
+_data32		ENDS
+_code16x		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_code16x, DS:DGROUP, SS:DGROUP
+    nop         
+L$11:
+    nop         
+    nop         
+L$12:
+    nop         
+_code16x		ENDS
+_code32x		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_code32x, DS:DGROUP, SS:DGROUP
+    nop         
+L$13:
+    nop         
+    nop         
+L$14:
+    nop         
+_code32x		ENDS
+_code16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_code16, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$15:
+    nop         
+    nop         
+L$16:
+    jmp         word ptr [bx]
+    jmp         word ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         fword ptr [bx]
+    jmp         fword ptr 2[bx]
+    jmp         word ptr [bx]
+    jmp         word ptr 2[bx]
+    jmp         word ptr [bx]
+    jmp         word ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         word ptr [ebx]
+    jmp         word ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         fword ptr [ebx]
+    jmp         fword ptr 2[ebx]
+    jmp         word ptr [ebx]
+    jmp         word ptr 2[ebx]
+    jmp         word ptr [ebx]
+    jmp         word ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         word ptr L$1
+    jmp         word ptr L$2
+    jmp         dword ptr L$2
+    jmp         dword ptr L$3
+    jmp         fword ptr L$4
+    jmp         fword ptr L$5
+    jmp         L$15
+    jmp         L$16
+    jmp         L$15
+    jmp         L$16
+    jmp         far ptr L$11
+    jmp         far ptr L$12
+    jmp         word ptr L$1
+    jmp         word ptr L$2
+    jmp         dword ptr L$1
+    jmp         dword ptr L$2
+    jmp         fword ptr L$1
+    jmp         fword ptr L$2
+    jmp         word ptr L$6
+    jmp         word ptr L$7
+    jmp         dword ptr L$7
+    jmp         dword ptr L$8
+    jmp         fword ptr L$9
+    jmp         fword ptr L$10
+    jmp         far ptr L$17
+    jmp         far ptr L$18
+    jmp         far ptr L$13
+    jmp         far ptr L$14
+    jmp         word ptr L$6
+    jmp         word ptr L$7
+    jmp         dword ptr L$6
+    jmp         dword ptr L$7
+    jmp         fword ptr L$6
+    jmp         fword ptr L$7
+_code16		ENDS
+_code32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_code32, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$17:
+    nop         
+    nop         
+L$18:
+    jmp         word ptr [bx]
+    jmp         word ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         fword ptr [bx]
+    jmp         fword ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         dword ptr [bx]
+    jmp         dword ptr 2[bx]
+    jmp         fword ptr [bx]
+    jmp         fword ptr 2[bx]
+    jmp         fword ptr [bx]
+    jmp         fword ptr 2[bx]
+    jmp         word ptr [ebx]
+    jmp         word ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         fword ptr [ebx]
+    jmp         fword ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         dword ptr [ebx]
+    jmp         dword ptr 2[ebx]
+    jmp         fword ptr [ebx]
+    jmp         fword ptr 2[ebx]
+    jmp         fword ptr [ebx]
+    jmp         fword ptr 2[ebx]
+    jmp         word ptr L$1
+    jmp         word ptr L$2
+    jmp         dword ptr L$2
+    jmp         dword ptr L$3
+    jmp         fword ptr L$4
+    jmp         fword ptr L$5
+    jmp         far ptr L$15
+    jmp         far ptr L$16
+    jmp         far ptr L$11
+    jmp         far ptr L$12
+    jmp         word ptr L$1
+    jmp         word ptr L$2
+    jmp         dword ptr L$1
+    jmp         dword ptr L$2
+    jmp         fword ptr L$1
+    jmp         fword ptr L$2
+    jmp         word ptr L$6
+    jmp         word ptr L$7
+    jmp         dword ptr L$7
+    jmp         dword ptr L$8
+    jmp         fword ptr L$9
+    jmp         fword ptr L$10
+    jmp         near ptr L$17
+    jmp         near ptr L$18
+    jmp         near ptr L$17
+    jmp         near ptr L$18
+    jmp         far ptr L$13
+    jmp         far ptr L$14
+    jmp         word ptr L$6
+    jmp         word ptr L$7
+    jmp         dword ptr L$6
+    jmp         dword ptr L$7
+    jmp         fword ptr L$6
+    jmp         fword ptr L$7
+_code32		ENDS
+		END

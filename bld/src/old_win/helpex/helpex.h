@@ -24,9 +24,9 @@
 
 #define EXE_NAME_MAX_SIZE  128
 
-int PASCAL WinMain(HANDLE, HANDLE, LPSTR, int);
-BOOL InitApplication(HANDLE);
-BOOL InitInstance(HANDLE, int);
+int PASCAL WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
+BOOL InitApplication(HINSTANCE);
+BOOL InitInstance(HINSTANCE, int);
 #ifdef __WINDOWS_386__
 #define _EXPORT
 #else

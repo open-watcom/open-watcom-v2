@@ -67,10 +67,11 @@ static          MONITOR                 ui_data         =       {
 
 struct _console_ctrl *UIConCtrl = NULL;
 
-extern  char            *GetTermType(void);
-extern  void intern     clear_shift(void);
+extern  char            *GetTermType( void );
+extern  void intern     clear_shift( void );
+extern  EVENT           ck_keyboardevent( void );
 
-bool ConsCheck()
+bool ConsCheck( void )
 {
     extern unsigned UIDisableShiftChanges;
 
@@ -79,15 +80,15 @@ bool ConsCheck()
     return( TRUE );
 }
 
-bool QnxWCheck()
+bool QnxWCheck( void )
 {
     if( !ConsCheck() ) return( FALSE );
     return( strcmp( GetTermType(), "qnxw" ) == 0 );
 }
 
 
-static bool setupscrnbuff()
-/*************************/
+static bool setupscrnbuff( void )
+/*******************************/
 {
     int                 rows, cols;
     PIXEL __FAR         *scrn;
@@ -130,15 +131,15 @@ static bool setupscrnbuff()
 static volatile int     StatePending;
 
 static void state_handler( int signo )
-/***********************************/
+/************************************/
 {
     signo = signo;
     StatePending = 1;
 }
 
 
-static EVENT intern cd_sizeevent()
-/**********************/
+static EVENT intern cd_sizeevent( void )
+/**************************************/
 {
     SAREA       area;
     unsigned    state;
@@ -169,8 +170,8 @@ static EVENT intern cd_sizeevent()
     return( EV_BACKGROUND_RESIZE );
 }
 
-static bool intern initmonitor()
-/***********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     struct _osinfo      info;
 
@@ -220,9 +221,9 @@ int row, col, type;
         struct _mxfer_entry sx[2];
         struct _mxfer_entry rx;
         union _console_msg {
-                struct _console_write                   write;
-                struct _console_write_reply     write_reply;
-                } msg;
+            struct _console_write           write;
+            struct _console_write_reply     write_reply;
+        } msg;
 
         msg.write.type = _CONSOLE_WRITE;
         msg.write.handle = cc->handle;
@@ -242,8 +243,8 @@ int row, col, type;
 }
 
 
-static int cd_init()
-/*******************/
+static int cd_init( void )
+/************************/
 {
     int                 initialized;
 
@@ -265,8 +266,8 @@ static int cd_init()
 }
 
 
-static int cd_fini()
-/********************/
+static int cd_fini( void )
+/************************/
 {
     finikeyboard();
     uifinicursor();
@@ -275,7 +276,7 @@ static int cd_fini()
 }
 
 static int cd_update( SAREA *area )
-/***********************************/
+/*********************************/
 {
     unsigned short  offset; /* pixel offset into buffer to begin update at */
     unsigned short  count;  /* number of pixels to update */
@@ -311,7 +312,7 @@ static int cd_refresh(int must)
 }
 
 static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
-/*********************************************/
+/**************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -322,7 +323,7 @@ static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
 
 
 static int cd_setcur( ORD row, ORD col, int typ, int attr )
-/********************************************/
+/*********************************************************/
 {
     extern void newcursor(void);
     attr = attr;
@@ -338,10 +339,9 @@ static int cd_setcur( ORD row, ORD col, int typ, int attr )
     return 0;
 }
 
-EVENT cd_event()
+EVENT cd_event( void )
 {
     EVENT       ev;
-    extern      EVENT ck_keyboardevent();
 
     ev = cd_sizeevent();
     if( ev > EV_NO_EVENT ) return( ev );
@@ -363,7 +363,7 @@ global Display ConsDisplay = {
         cd_event,
 };
 
-extern EVENT    td_event();
+extern EVENT    td_event( void );
 
 global Display QnxWDisplay = {
         cd_init,

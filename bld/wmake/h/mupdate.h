@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mupdate.c interfaces
 *
 ****************************************************************************/
 
@@ -37,22 +36,22 @@
 #include "mtarget.h"
 #include "mupdate.h"
 
-extern BOOLEAN DoingUpdate;
+extern BOOLEAN      DoingUpdate;
 
-extern void     UpdateInit( void );
-extern void     UpdateFini( void );
-extern RET_T    Update( TARGET *targ );
-extern RET_T    MakeList( TLIST *list );
+extern void         UpdateInit( void );
+extern void         UpdateFini( void );
+extern RET_T        Update( TARGET *targ );
+extern RET_T        MakeList( TLIST *list );
 
 /* called by macro.c */
 extern char         *GetCurDeps( BOOLEAN younger, BOOLEAN IsMacInf );
 extern const char   *GetCurTarg( void );
 extern const char   *GetFirstDep( void );
 extern const char   *GetLastDep( void );
-extern void exPop( void );
-extern void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep );
+extern void         exPop( void );
+extern void         exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep );
 
-extern const char *MonthNames[];
+extern const char   *MonthNames[];
 
 #endif
 

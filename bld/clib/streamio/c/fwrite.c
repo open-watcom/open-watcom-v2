@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent fwrite() implementation.
 *
 ****************************************************************************/
 
@@ -39,23 +38,22 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "qwrite.h"
-
-extern void __ioalloc( FILE *fp );
-extern int __flush( FILE * );
+#include "flush.h"
+#include "streamio.h"
 
 
 _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
 {
-    size_t count;
+    size_t      count;
     unsigned    oflag;
 
     _ValidFile( fp, 0 );
     _AccessFile( fp );
-    if(( fp->_flag & _WRITE) == 0 ) {
+    if( (fp->_flag & _WRITE) == 0 ) {
         __set_errno( EBADF );
         fp->_flag |= _SFERR;
         _ReleaseFile( fp );
-        return((size_t) 0 ); /* POSIX says return 0 */
+        return( 0 );        /* POSIX says return 0 */
     }
     n *= size;
     if( n == 0 ) {
@@ -65,43 +63,46 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
     if( _FP_BASE(fp) == NULL ) {
         __ioalloc( fp );                    /* allocate buffer */
     }
-    oflag = fp->_flag & (_SFERR|_EOF);      /* JBS 27-jan-92 */
-    fp->_flag &= ~(_SFERR|_EOF);                    /* JBS 27-jan-92 */
+    oflag = fp->_flag & (_SFERR | _EOF);    /* JBS 27-jan-92 */
+    fp->_flag &= ~(_SFERR | _EOF);          /* JBS 27-jan-92 */
     count = 0;
-#if !defined(__PENPOINT__)  &&  !defined(__QNX__)
+#if !defined( __UNIX__ )
     if( fp->_flag & _BINARY ) {             /* binary I/O */
 #else
     {
 #endif
-        size_t bytes_left = n, bytes;
+        size_t  bytes_left = n, bytes;
 
-        do
-        {
+        do {
             /* if our buffer is empty, and user's buffer is larger,
                then write directly from user's buffer.  28-apr-90 */
 
             if( fp->_cnt == 0  &&  bytes_left >= fp->_bufsize ) {
                 bytes = bytes_left & -512;          /* multiple of 512 */
-                if( bytes == 0 ) bytes = bytes_left;/* bufsize < 512   */
-                n = __qwrite( fileno(fp), buf, bytes );
+                if( bytes == 0 ) {
+                    bytes = bytes_left;             /* bufsize < 512   */
+                }
+                n = __qwrite( fileno( fp ), buf, bytes );
                 if( n == -1 ) {
                     fp->_flag |= _SFERR;
                 }
-                #if !defined(__QNX__)
-                    else if( n == 0 ) {
-                        _RWD_errno = ENOSPC;
-                        fp->_flag |= _SFERR;
-                    }
-                #endif
+#if !defined( __UNIX__ )
+                else if( n == 0 ) {
+                    _RWD_errno = ENOSPC;
+                    fp->_flag |= _SFERR;
+                }
+#endif
                 bytes = n;
             } else {
                 bytes = fp->_bufsize - fp->_cnt;
-                if( bytes > bytes_left )  bytes = bytes_left;
+                if( bytes > bytes_left ) {
+                    bytes = bytes_left;
+                }
                 memcpy( fp->_ptr, buf, bytes );
                 fp->_ptr += bytes;
                 fp->_cnt += bytes;
                 fp->_flag |= _DIRTY;
-                if(( fp->_cnt == fp->_bufsize ) || ( fp->_flag & _IONBF )) {
+                if( (fp->_cnt == fp->_bufsize) || (fp->_flag & _IONBF) ) {
                     __flush(fp);
                 }
             }
@@ -109,13 +110,13 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
             count += bytes;
             bytes_left -= bytes;
         } while( bytes_left && !ferror( fp ) );
-#if !defined(__PENPOINT__)  &&  !defined(__QNX__)
+#if !defined( __UNIX__ )
     } else {        /* text I/O */
-        const char *    bufptr;
+        const char      *bufptr;
         int             not_buffered;
-        #ifndef __NETWARE__
-            int         old_orientation;
-        #endif
+    #ifndef __NETWARE__
+        int             old_orientation;
+    #endif
         /* temporarily enable buffering saving the previous setting */
         not_buffered = 0;
         if( fp->_flag & _IONBF ) {
@@ -125,19 +126,19 @@ _WCRTLINK size_t fwrite( const void *buf, size_t size, size_t n, FILE *fp )
         }
 
         /*** Use fputc, and make it think the stream is byte-oriented ***/
-        #ifndef __NETWARE__
-            old_orientation = _FP_ORIENTATION(fp);
-            _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
-        #endif
+    #ifndef __NETWARE__
+        old_orientation = _FP_ORIENTATION(fp);
+        _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
+    #endif
         bufptr = (const char *)buf;
         do {
             fputc( *(bufptr++), fp );
-            if( fp->_flag & (_EOF|_SFERR) ) break;
+            if( fp->_flag & (_EOF | _SFERR) ) break;
             ++count;
         } while( count != n );
-        #ifndef __NETWARE__
-            _FP_ORIENTATION(fp) = old_orientation;
-        #endif
+    #ifndef __NETWARE__
+        _FP_ORIENTATION(fp) = old_orientation;
+    #endif
 
         if( not_buffered ) {        /* if wasn't buffered, then reset */
             fp->_flag &= ~_IOFBF;

@@ -33,8 +33,8 @@
 #ifndef _STACK_H
 #define _STACK_H
 
-extern void *StackPush( void **hdr, void * );
-extern void *StackPop( void **hdr );
+extern void *StackPush( void *hdr, void * );
+extern void *StackPop( void *hdr );
 
 #define Stack_forall( hdr, i ) \
         for( i = hdr; i != NULL; i = *((void **)i) )

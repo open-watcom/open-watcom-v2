@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger 'show' command.
 *
 ****************************************************************************/
 
@@ -42,27 +41,28 @@
 #include <string.h>
 #include <ctype.h>
 
-extern unsigned int     ScanCmd(char *);
-extern void             Scan(void);
-extern unsigned int     OptExpr(unsigned int );
-extern char             *ScanPos(void);
-extern unsigned int     ScanLen(void);
-extern bool             ScanEOC(void);
-extern void             ReqEOC(void);
-extern char             *ReScan(char *);
-extern int              AddrComp(address ,address );
-extern char             *Format(char *,char *,... );
-extern char             *StrCopy(char *,char *);
-extern void             ConfigSet(void);
-extern void             ConfigDisp(void);
-extern void             ConfigFont(void);
-extern void             ConfigPaint(void);
-extern void             ConfigFlip(void);
-extern void             ConfigHook(void);
-extern void             ConfigEvent(void);
-extern void             ConfigCalls(void);
-extern void             InvokeAFile(char*);
-extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
+
+extern unsigned int     ScanCmd( char * );
+extern void             Scan( void );
+extern unsigned int     OptExpr( unsigned int );
+extern char             *ScanPos( void );
+extern unsigned int     ScanLen( void );
+extern bool             ScanEOC( void );
+extern void             ReqEOC( void );
+extern char             *ReScan( char * );
+extern int              AddrComp( address , address );
+extern char             *Format( char *, char *, ... );
+extern char             *StrCopy( char *, char * );
+extern void             ConfigSet( void );
+extern void             ConfigDisp( void );
+extern void             ConfigFont( void );
+extern void             ConfigPaint( void );
+extern void             ConfigFlip( void );
+extern void             ConfigHook( void );
+extern void             ConfigEvent( void );
+extern void             ConfigCalls( void );
+extern void             InvokeAFile( char * );
+extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern char             *GetCmdName( int );
 
 extern tokens           CurrToken;
@@ -155,7 +155,7 @@ void ConfigLine( char *conf )
 }
 
 
-void DoConfig( char *cmd, char *name_tab, void(**jmp_tab)(), void(**not_all)() )
+void DoConfig( char *cmd, char *name_tab, void(**jmp_tab)( void ), void(**not_all)( void ) )
 {
     int num;
     char *start;
@@ -194,7 +194,7 @@ void DoConfig( char *cmd, char *name_tab, void(**jmp_tab)(), void(**not_all)() )
 }
 
 
-OVL_EXTERN void BadShow()
+OVL_EXTERN void BadShow( void )
 {
     Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SHOW ) );
 }
@@ -213,7 +213,7 @@ static char ShowNameTab[] = {
 };
 
 typedef struct {
-    void        (*rtn)();
+    void        (*rtn)( void );
     bool        config; /* should info be dumped for save config call */
 } show_rtn;
 
@@ -229,18 +229,18 @@ static  show_rtn ShowJmpTab[] = {
         &ConfigCalls,   FALSE,
 };
 
-void ProcShow()
+void ProcShow( void )
 {
     ShowJmpTab[ ScanCmd( &ShowNameTab ) ].rtn();
 }
 
 
-OVL_EXTERN void ShowAll()
+OVL_EXTERN void ShowAll( void )
 {
     unsigned    i;
 
     DUIDlgTxt( GetCmdName( CMD_CONFIGFILE ) );
-    for( i = 1; i < sizeof(ShowJmpTab)/sizeof(ShowJmpTab[0]); ++i ) {
+    for( i = 1; i < sizeof( ShowJmpTab ) / sizeof( ShowJmpTab[0] ); ++i ) {
         if( ShowJmpTab[i].config ) {
             ShowJmpTab[i].rtn();
         }

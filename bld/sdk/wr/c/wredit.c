@@ -52,8 +52,8 @@
 
 void WRSetEditWithStr( char *cp, HWND hDlg, int id )
 {
-    if( cp ) {
-        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM) (LPCSTR) cp );
+    if( cp != NULL ) {
+        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cp );
     }
 }
 
@@ -81,8 +81,8 @@ char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length+1,
-                                      (LPARAM)(LPCSTR) cp );
+    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1,
+                                      (LPARAM)(LPCSTR)cp );
 
     if( text_copied > text_length ) {
         WRMemFree( cp );
@@ -100,11 +100,11 @@ void WRSetEditWithULONG( unsigned long val, int base, HWND hDlg, int id )
 
     ultoa( val, temp, base );
     if( base == 16 ) {
-        memmove( temp+2, temp, 33 );
+        memmove( temp + 2, temp, 33 );
         temp[0] = '0';
         temp[1] = 'x';
     } else if( base == 8 ) {
-        memmove( temp+1, temp, 34 );
+        memmove( temp + 1, temp, 34 );
         temp[0] = '0';
     }
     WRSetEditWithStr( temp, hDlg, id );
@@ -125,22 +125,21 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
     int         count;
 
     count = (int)SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
-    if( !count || ( count == LB_ERR ) || ( count < index ) ) {
+    if( count == 0 || count == LB_ERR || count < index ) {
         return( NULL );
     }
 
     text_copied = 0;
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
-    cp = (char *) WRMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index,
-                                      (LPARAM)(LPCSTR) cp );
+    text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPCSTR)cp );
 
     if( text_copied > text_length ) {
-        WRMemFree ( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -162,12 +161,12 @@ BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value )
     cp = WRGetStrFromEdit( hDlg, id, mod );
 
     /* find out if the edit field has changed */
-    if( ( mod == NULL ) || *mod ) {
-        if( !cp ) {
+    if( mod == NULL || *mod ) {
+        if( cp == NULL ) {
             return( FALSE );
         }
         val = (signed long)strtol( cp, &ep, 0 );
-        if( *ep ) {
+        if( *ep != '\0' ) {
             if( mod != NULL ) {
                 *mod = FALSE;
             }
@@ -176,7 +175,7 @@ BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value )
         }
     }
 
-    if( cp ) {
+    if( cp != NULL ) {
         WRMemFree( cp );
     }
 
@@ -186,4 +185,3 @@ BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value )
 
     return( ret );
 }
-

@@ -35,4 +35,3 @@
 #define IDM_SELIMGICO   303
 #define IDM_SELIMGLBOX  304
 #define IDM_SELIMGHELP  305
-

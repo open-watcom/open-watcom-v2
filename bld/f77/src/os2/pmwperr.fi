@@ -1,0 +1,52 @@
+c$noreference
+
+        integer  WPERR_PROTECTED_CLASS
+        parameter (WPERR_PROTECTED_CLASS = '00001700'x)
+        integer  WPERR_INVALID_CLASS
+        parameter (WPERR_INVALID_CLASS = '00001701'x)
+        integer  WPERR_INVALID_SUPERCLASS
+        parameter (WPERR_INVALID_SUPERCLASS = '00001702'x)
+        integer  WPERR_NO_MEMORY
+        parameter (WPERR_NO_MEMORY = '00001703'x)
+        integer  WPERR_SEMAPHORE_ERROR
+        parameter (WPERR_SEMAPHORE_ERROR = '00001704'x)
+        integer  WPERR_BUFFER_TOO_SMALL
+        parameter (WPERR_BUFFER_TOO_SMALL = '00001705'x)
+        integer  WPERR_CLSLOADMOD_FAILED
+        parameter (WPERR_CLSLOADMOD_FAILED = '00001706'x)
+        integer  WPERR_CLSPROCADDR_FAILED
+        parameter (WPERR_CLSPROCADDR_FAILED = '00001707'x)
+        integer  WPERR_OBJWORD_LOCATION
+        parameter (WPERR_OBJWORD_LOCATION = '00001708'x)
+        integer  WPERR_INVALID_OBJECT
+        parameter (WPERR_INVALID_OBJECT = '00001709'x)
+        integer  WPERR_MEMORY_CLEANUP
+        parameter (WPERR_MEMORY_CLEANUP = '0000170A'x)
+        integer  WPERR_INVALID_MODULE
+        parameter (WPERR_INVALID_MODULE = '0000170B'x)
+        integer  WPERR_INVALID_OLDCLASS
+        parameter (WPERR_INVALID_OLDCLASS = '0000170C'x)
+        integer  WPERR_INVALID_NEWCLASS
+        parameter (WPERR_INVALID_NEWCLASS = '0000170D'x)
+        integer  WPERR_NOT_IMMEDIATE_CHILD
+        parameter (WPERR_NOT_IMMEDIATE_CHILD = '0000170E'x)
+        integer  WPERR_NOT_WORKPLACE_CLASS
+        parameter (WPERR_NOT_WORKPLACE_CLASS = '0000170F'x)
+        integer  WPERR_CANT_REPLACE_METACLS
+        parameter (WPERR_CANT_REPLACE_METACLS = '00001710'x)
+        integer  WPERR_INI_FILE_WRITE
+        parameter (WPERR_INI_FILE_WRITE = '00001711'x)
+        integer  WPERR_INVALID_FOLDER
+        parameter (WPERR_INVALID_FOLDER = '00001712'x)
+        integer  WPERR_BUFFER_OVERFLOW
+        parameter (WPERR_BUFFER_OVERFLOW = '00001713'x)
+        integer  WPERR_OBJECT_NOT_FOUND
+        parameter (WPERR_OBJECT_NOT_FOUND = '00001714'x)
+        integer  WPERR_INVALID_HFIND
+        parameter (WPERR_INVALID_HFIND = '00001715'x)
+        integer  WPERR_INVALID_COUNT
+        parameter (WPERR_INVALID_COUNT = '00001716'x)
+        integer  WPERR_INVALID_BUFFER
+        parameter (WPERR_INVALID_BUFFER = '00001717'x)
+
+c$reference

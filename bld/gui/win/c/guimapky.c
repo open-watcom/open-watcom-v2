@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library key mapping for OS/2 and Windows.
 *
 ****************************************************************************/
 
@@ -48,11 +47,11 @@ static  bool            RetTrue = FALSE; /* set to TRUE of app returned
 #endif
 
 typedef struct {
-    char        value;
-    char        regular;
-    char        shifted;
-    gui_key     alt;
-    gui_key     ctrl;
+    unsigned char   value;
+    char            regular;
+    char            shifted;
+    gui_key         alt;
+    gui_key         ctrl;
 } keytable;
 
 static keytable vk_table[] = {
@@ -221,7 +220,7 @@ static bool convert_alpha( WORD ch, gui_key *key )
     if( isalpha( ch ) ) {
         t = toupper(ch) - 'A';
         if( ALT ) {
-            *key = AltFunc[ t ];
+            *key = AltFunc[t];
         } else if( CTRL ) {
             *key = EV_CTRL( t );
         } else if ( SHIFT ) {
@@ -568,11 +567,11 @@ static bool convert_table( WORD vk, gui_key *key, ctrlkey *table, int size )
 
 bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
 {
-    WORD        flags;
-    WORD        vk;
-    char        ch;
-    char        scan;
-    char        pm_scan;
+    WORD            flags;
+    WORD            vk;
+    unsigned char   ch;
+    char            scan;
+    char            pm_scan;
 
     flags       = SHORT1FROMMP( p1 );
     vk          = SHORT2FROMMP( p2 );
@@ -617,6 +616,20 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
     hwnd = hwnd;
     key_flags = SHORT1FROMMP( wparam );
+
+    if( msg == WM_TRANSLATEACCEL ) {
+        // Don't let OS/2 process F10 as an accelerator
+        // Note: similar code exists in guixwind.c but we need to
+        // take different default action
+        PQMSG   pqmsg = wparam;
+        USHORT  flags = SHORT1FROMMP(pqmsg->mp1);
+        USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
+
+        if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
+            return( (WPI_MRESULT)FALSE );
+
+        return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
+    }
     if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
         if( msg == WM_CHAR ) {
             if( key_flags & KC_KEYUP ) {

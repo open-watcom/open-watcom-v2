@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include "string.h"
+#include "packet.h"
 
 #define READUP_NAME             MunchName( "WJVMReadUpSem" )
 #define WRITTEN_NAME            MunchName( "WJVMWrittenSem" )
@@ -68,7 +69,7 @@ char *MunchName( char *name )
     strcat( buff, pid );
     return( buff );
 }
-unsigned RemoteGet( void *buff, unsigned len )
+unsigned RemoteGet( char *buff, unsigned len )
 {
     unsigned    bytes_read;
 
@@ -82,7 +83,7 @@ unsigned RemoteGet( void *buff, unsigned len )
     return( bytes_read );
 }
 
-unsigned RemotePut( void *buff, unsigned len )
+unsigned RemotePut( char *buff, unsigned len )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
     CHECK_DONE();

@@ -1,0 +1,48 @@
+December 20, 1991
+=================
+
+- at this point, WGML.EXE produces an almost-perfect book, except for:
+    (1) the .PS file must be edited to remove the topodd "&amp.headtxt1"
+        from the first page of each chapter of the appendix,
+    (2) the .PS file must be edited to ADD the botodd and boteven "headtext2"
+        section headings where they are otherwise blank.
+- before sending the .PS file anywhere, the SHADE.PS and ULINE.PS files
+  must be added to the front. SHADE.PS adds the functions required to shade
+  rectangular areas. Without it, the .PS file cannot be processed due to
+  missing functions. ULINE.PS replaces the Courier (mono) font underline
+  character with a "skinny" version so that keywords and macros containing
+  double underscores will not appear with one long underscore. This file is
+  not required, but should be included.
+- add "based pointers" and "pointers, based" to the index
+
+March 17, 1992
+==============
+As far as I know, the following accurately describes what the .PS files
+contain:
+    ORIG_C.PS   - original output from WGML, before above fixes
+    FIXED_C.PS  - hand-edited PostScript file fixing (1) and (2) above
+    CLANGREF.PS - FIXED_C.PS with SHADE.PS and ULINE.PS added to the front
+    SHADED.PS   - the 40 pages containing shading extracted from FIXED_C.PS,
+                  with SHADE.PS and ULINE.PS added to the front
+
+November 5, 1992
+================
+Did some work to make a special version for Quantum. The following files
+changed:
+    C.GML           - added &targetQNX, include NEWSLETT conditionally
+    COVER.GML       - chg'd WATCOM Pubs to WATCOM Int'l
+    PREFACE.GML     - added Quantum's address using .if
+    THANKS.GML      - chg'd date of message
+    TRADEMRK.GML    - chg'd trademarks for UNIX and WATCOM
+
+    NB\COPYRITE.GML - chg'd WATCOM Pubs to WATCOM Int'l
+    NB\DISCLAIM.GML - chg'd WATCOM Pubs and Group to WATCOM Int'l
+
+    FMT.BAT         - reflects new locations of things on disk
+
+Also, CLANGQNX.PS was added to PSOUTPUT.ZIP. This file contains the shading
+and skinny-underline prefixes. The body of the book is identical to the
+WATCOM edition. The "Front Material" changed and was edited together with
+CLANGREF.PS to avoid having to format the entire book and deal with potential
+GML changes or having to re-edit the banners as described above.
+

@@ -114,7 +114,7 @@ extern void DlgClickHistory( gui_window *gui, int edit, int list )
 
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    WndFree( cmd );
+    GUIMemFree( cmd );
 }
 
 extern void DlgSetHistory( gui_window *gui, void *history, char *cmd,
@@ -155,7 +155,7 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
     GUISetCurrSelect( gui, list, i );
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    WndFree( cmd );
+    GUIMemFree( cmd );
     GUISelectAll( gui, edit, TRUE );
 }
 
@@ -180,7 +180,7 @@ extern bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
 
 static void     GetDlgStatus( gui_window *gui, dlg_search *dlg )
 {
-    WndFree( dlg->wnd->searchitem );
+    GUIMemFree( dlg->wnd->searchitem );
     dlg->wnd->searchitem = GUIGetText( gui, CTL_SRCH_EDIT );
     if( dlg->wnd->searchitem == NULL ) dlg->direction = 0;
     dlg->case_ignore = GUIIsChecked( gui, CTL_SRCH_CASE );

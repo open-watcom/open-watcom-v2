@@ -1,0 +1,54 @@
+.387
+.386p
+		PUBLIC	sam
+		PUBLIC	a
+		PUBLIC	b
+		PUBLIC	d
+		PUBLIC	foo
+		PUBLIC	kyb
+		PUBLIC	bar
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+L$1:
+    jmp         L$1 
+L$2:
+    jmp         L$3 
+L$3:
+    jmp         L$4 
+    jmp         L$2 
+L$4:
+    jmp         dword ptr DGROUP:kyb 
+    jmp         dword ptr DGROUP:bar 
+    nop         
+    nop         
+    nop         
+sam:
+    lea         ax,sam 
+    lea         ax,sam 
+a:
+    jmp         sam 
+b:
+    jmp         a 
+d:
+    jmp         b 
+    mov         eax,dword ptr DGROUP:foo 
+    mov         eax,dword ptr DGROUP:kyb 
+    lea         eax,DGROUP:bar 
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+foo:
+    DD	offset DGROUP:foo
+kyb:
+    DD	offset DGROUP:kyb
+bar:
+    DD	offset DGROUP:L$5
+    DD	offset DGROUP:bar
+L$5:
+    DD	offset DGROUP:foo
+    DD	offset DGROUP:kyb
+    DD	offset DGROUP:kyb
+    DB	2, 4, 6, 7, 8
+
+_DATA		ENDS
+		END

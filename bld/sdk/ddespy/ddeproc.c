@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Main window procedure for the DDE Spy.
 *
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include <string.h>
 #include <math.h>
 #include "wddespy.h"
@@ -39,98 +39,100 @@
 
 static FARPROC          DDEMsgFp;
 static const MenuItemHint menuHints[] = {
-        DDEMENU_SAVE,                   STR_HINT_SAVE,
-        DDEMENU_SAVE_AS,                STR_HINT_SAVE_AS,
-        DDEMENU_LOG_FILE,               STR_HINT_LOG_FILE,
-        DDEMENU_LOG_PAUSE,              STR_HINT_LOG_PAUSE,
-        DDEMENU_LOG_CONFIG,             STR_HINT_LOG_CONFIG,
-        DDEMENU_FONT,                   STR_HINT_FONT,
-        DDEMENU_TOOLBAR,                STR_HINT_TOOLBAR,
-        DDEMENU_HINTBAR,                STR_HINT_HINTBAR,
-        DDEMENU_EXIT,                   STR_HINT_EXIT,
-        DDEMENU_CLEAR,                  STR_HINT_CLEAR,
-        DDEMENU_MARK,                   STR_HINT_MARK,
-        DDEMENU_SCREEN_OUT,             STR_HINT_SCREEN_OUT,
-        DDEMENU_SCROLL,                 STR_HINT_SCROLL,
-        DDEMENU_MON_POST,               STR_HINT_MON_POST,
-        DDEMENU_MON_SENT,               STR_HINT_MON_SENT,
-        DDEMENU_MON_STR,                STR_HINT_MON_STR,
-        DDEMENU_MON_CB,                 STR_HINT_MON_CB,
-        DDEMENU_MON_ERR,                STR_HINT_MON_ERR,
-        DDEMENU_MON_CONV,               STR_HINT_MON_CONV,
-        DDEMENU_MON_LNK,                STR_HINT_MON_LNK,
-        DDEMENU_MSG_FILTER,             STR_HINT_MSG_FILTER,
-        DDEMENU_CB_FILTER,              STR_HINT_CB_FILTER,
-        DDEMENU_TRK_STR,                STR_HINT_TRK_STR,
-        DDEMENU_TRK_CONV,               STR_HINT_TRK_CONV,
-        DDEMENU_TRK_LINK,               STR_HINT_TRK_LINK,
-        DDEMENU_TRK_SERVER,             STR_HINT_TRK_SERVER,
-        DDEMENU_NO_ALIAS,               STR_HINT_NO_ALIAS,
-        DDEMENU_ALIAS_PURGE,            STR_HINT_ALIAS_PURGE,
-        DDEMENU_HWND_ALIAS,             STR_HINT_HWND_ALIAS,
-        DDEMENU_TASK_ALIAS,             STR_HINT_TASK_ALIAS,
-        DDEMENU_CONV_ALIAS,             STR_HINT_CONV_ALIAS,
-        DDEMENU_HELP_CONTENTS,          STR_HINT_HELP_CONTENTS,
-        DDEMENU_HELP_SRCH,              STR_HINT_HELP_SRCH,
-        DDEMENU_HELP_ON_HELP,           STR_HINT_HELP_ON_HELP,
-        DDEMENU_ABOUT,                  STR_HINT_ABOUT
+    DDEMENU_SAVE,                   STR_HINT_SAVE,
+    DDEMENU_SAVE_AS,                STR_HINT_SAVE_AS,
+    DDEMENU_LOG_FILE,               STR_HINT_LOG_FILE,
+    DDEMENU_LOG_PAUSE,              STR_HINT_LOG_PAUSE,
+    DDEMENU_LOG_CONFIG,             STR_HINT_LOG_CONFIG,
+    DDEMENU_FONT,                   STR_HINT_FONT,
+    DDEMENU_TOOLBAR,                STR_HINT_TOOLBAR,
+    DDEMENU_HINTBAR,                STR_HINT_HINTBAR,
+    DDEMENU_TOP,                    STR_HINT_TOP,
+    DDEMENU_EXIT,                   STR_HINT_EXIT,
+    DDEMENU_CLEAR,                  STR_HINT_CLEAR,
+    DDEMENU_MARK,                   STR_HINT_MARK,
+    DDEMENU_SCREEN_OUT,             STR_HINT_SCREEN_OUT,
+    DDEMENU_SCROLL,                 STR_HINT_SCROLL,
+    DDEMENU_MON_POST,               STR_HINT_MON_POST,
+    DDEMENU_MON_SENT,               STR_HINT_MON_SENT,
+    DDEMENU_MON_STR,                STR_HINT_MON_STR,
+    DDEMENU_MON_CB,                 STR_HINT_MON_CB,
+    DDEMENU_MON_ERR,                STR_HINT_MON_ERR,
+    DDEMENU_MON_CONV,               STR_HINT_MON_CONV,
+    DDEMENU_MON_LNK,                STR_HINT_MON_LNK,
+    DDEMENU_MSG_FILTER,             STR_HINT_MSG_FILTER,
+    DDEMENU_CB_FILTER,              STR_HINT_CB_FILTER,
+    DDEMENU_TRK_STR,                STR_HINT_TRK_STR,
+    DDEMENU_TRK_CONV,               STR_HINT_TRK_CONV,
+    DDEMENU_TRK_LINK,               STR_HINT_TRK_LINK,
+    DDEMENU_TRK_SERVER,             STR_HINT_TRK_SERVER,
+    DDEMENU_NO_ALIAS,               STR_HINT_NO_ALIAS,
+    DDEMENU_ALIAS_PURGE,            STR_HINT_ALIAS_PURGE,
+    DDEMENU_HWND_ALIAS,             STR_HINT_HWND_ALIAS,
+    DDEMENU_TASK_ALIAS,             STR_HINT_TASK_ALIAS,
+    DDEMENU_CONV_ALIAS,             STR_HINT_CONV_ALIAS,
+    DDEMENU_HELP_CONTENTS,          STR_HINT_HELP_CONTENTS,
+    DDEMENU_HELP_SRCH,              STR_HINT_HELP_SRCH,
+    DDEMENU_HELP_ON_HELP,           STR_HINT_HELP_ON_HELP,
+    DDEMENU_ABOUT,                  STR_HINT_ABOUT
 };
 
 /*
  * SetMainWndDefault - set the MainWndConfig structure to the default
  *                     values for size/position of the main window
  */
-void SetMainWndDefault( void ) {
-
+void SetMainWndDefault( void )
+{
     MainWndConfig.visible = TRUE;
     MainWndConfig.xpos = 0;
     MainWndConfig.ypos = 0;
     MainWndConfig.xsize = GetSystemMetrics( SM_CXSCREEN );
     MainWndConfig.ysize = 150;
     MainWndConfig.state = 0;
-}
+
+} /* SetMainWndDefault */
 
 /*
- * InitMonitoring - check the appropriate menu items to reflect the
+ * initMonitoring - check the appropriate menu items to reflect the
  *                  current monitoring state
  */
-static void InitMonitoring( HWND hwnd ) {
-
+static void initMonitoring( HWND hwnd )
+{
     HMENU       mh;
     WORD        i;
 
     mh = GetMenu( hwnd );
     for( i = DDE_MON_FIRST; i <= DDE_MON_LAST; i++ ) {
-        if( Monitoring[ i - DDE_MON_FIRST] ) {
+        if( Monitoring[i - DDE_MON_FIRST] ) {
             CheckMenuItem( mh, i, MF_BYCOMMAND | MF_CHECKED );
         }
     }
-}
+
+} /* initMonitoring */
 
 /*
- * MonitorChange - change the check state a menu item to reflect a
+ * monitorChange - change the check state a menu item to reflect a
  *                 change in the monitoring state
  */
-static void MonitorChange( HWND hwnd, WORD wparam ) {
-
+static void monitorChange( HWND hwnd, WPARAM wparam )
+{
     WORD        action;
     HMENU       mh;
 
     action = MF_BYCOMMAND;
     mh = GetMenu( hwnd );
-    Monitoring[ wparam - DDE_MON_FIRST] =
-                !Monitoring[ wparam - DDE_MON_FIRST];
+    Monitoring[wparam - DDE_MON_FIRST] = !Monitoring[wparam - DDE_MON_FIRST];
     action |= Monitoring[wparam - DDE_MON_FIRST] ? MF_CHECKED : MF_UNCHECKED;
     CheckMenuItem( mh, wparam, action );
-}
+
+} /* monitorChange */
 
 /*
- * ResetFonts - repaint things and recalculate the size of things after
+ * resetFonts - repaint things and recalculate the size of things after
  *              a font change
  */
-
-static void ResetFonts( DDEWndInfo *info ) {
-
+static void resetFonts( DDEWndInfo *info )
+{
     HFONT       font;
     HDC         dc;
     LONG        new_char_extent;
@@ -145,18 +147,19 @@ static void ResetFonts( DDEWndInfo *info ) {
     ReleaseDC( info->list.box, dc );
 
     /* estimate the new width of the text in the list box */
-    info->horz_extent = info->horz_extent *
-                        ( new_char_extent / info->char_extent + 1 );
+    info->horz_extent = info->horz_extent * (new_char_extent / info->char_extent + 1);
     info->char_extent = new_char_extent;
-    SendMessage( info->list.box, LB_SETHORIZONTALEXTENT,
-                 info->horz_extent, 0L );
-    SendMessage( info->list.box, WM_SETFONT, (WPARAM)GetMonoFont(),
-                 MAKELONG( TRUE, 0 ) );
+    SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, info->horz_extent, 0L );
+    SendMessage( info->list.box, WM_SETFONT, (WPARAM)GetMonoFont(), MAKELONG( TRUE, 0 ) );
     SetTrackFont();
-}
 
-static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide ) {
+} /* resetFonts */
 
+/*
+ * hideHintBar - hide or show the hint status bar
+ */
+static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide )
+{
     HMENU               mh;
     RECT                area;
     HWND                hinthwnd;
@@ -179,14 +182,14 @@ static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide ) {
         }
         CheckMenuItem( mh, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_CHECKED );
     }
-    ResizeListBox( area.right - area.left, height, &(info->list ) );
-}
+    ResizeListBox( area.right - area.left, height, &info->list );
+
+} /* hideHintBar */
 
 /*
  * DDEMainWndProc - process messages for the main window
  */
-BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DDEWndInfo          *info;
     char                *alias_title;
@@ -200,6 +203,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
     WORD                cmd;
     SIZE                sz;
     HWND                hinthwnd;
+    BOOL                alias_state;
 
     info = (DDEWndInfo *)GetWindowLong( hwnd, 0 );
     switch( msg ) {
@@ -207,21 +211,21 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         DDEMainWnd = hwnd;
         MainWndConfig.hwnd = hwnd;
         DDEMsgFp = MakeProcInstance( (FARPROC)DDEMsgProc, Instance );
-        InitMonitoring( hwnd );
+        initMonitoring( hwnd );
         DdeInitialize( &DDEInstId, (PFNCALLBACK)DDEMsgFp,
-                        APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
-                        MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
-                        MF_POSTMSGS | MF_SENDMSGS, 0L );
+                       APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
+                       MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
+                       MF_POSTMSGS | MF_SENDMSGS, 0L );
         info = MemAlloc( sizeof( DDEWndInfo ) );
         memset( info, 0, sizeof( DDEWndInfo ) );
         memset( &area, 0, sizeof( RECT ) );
-        info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL);
+        info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL );
         SetHintText( info->hintbar, (MenuItemHint *)menuHints,
                      sizeof( menuHints ) / sizeof( MenuItemHint ) );
         hinthwnd = GetHintHwnd( info->hintbar );
         info->list.ypos = 0;
         info->horz_extent = 0;
-        CreateListBox( hwnd, &( info->list ) );
+        CreateListBox( hwnd, &info->list );
         font = GetMonoFont();
         dc = GetDC( info->list.box );
         font = SelectObject( dc, font );
@@ -229,7 +233,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         info->char_extent = sz.cx / 10;
         SelectObject( dc, font );
         ReleaseDC( info->list.box, dc );
-        SetWindowLong( hwnd, 0, (DWORD) info );
+        SetWindowLong( hwnd, 0, (DWORD)info );
         InitAliases();
         LogInit( hwnd, Instance, LogHeader );
         MakeDDEToolBar( hwnd );
@@ -244,6 +248,10 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
         }
         hideHintBar( hwnd, info, !ConfigInfo.show_hints );
+        if( ConfigInfo.on_top ) {
+            CheckMenuItem( mh, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
+            SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        }
         break;
     case WM_MENUSELECT:
         HintMenuSelect( info->hintbar, hwnd, wparam, lparam );
@@ -258,7 +266,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         }
         break;
     case WM_SIZE:
-        ResizeListBox( LOWORD( lparam ), HIWORD( lparam ), &(info->list ) );
+        ResizeListBox( LOWORD( lparam ), HIWORD( lparam ), &info->list );
         ResizeTB( hwnd );
         GetWindowRect( hwnd, &area );
         if( wparam != SIZE_MAXIMIZED && wparam != SIZE_MINIMIZED ) {
@@ -286,7 +294,7 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         case DDEMENU_MON_ERR:
         case DDEMENU_MON_CONV:
         case DDEMENU_MON_LNK:
-            MonitorChange( hwnd, cmd );
+            monitorChange( hwnd, cmd );
             break;
         case DDEMENU_TRK_STR:
         case DDEMENU_TRK_CONV:
@@ -298,11 +306,9 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             ConfigInfo.screen_out = !ConfigInfo.screen_out;
             mh = GetMenu( hwnd );
             if( ConfigInfo.screen_out ) {
-                CheckMenuItem( mh, DDEMENU_SCREEN_OUT,
-                                    MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, DDEMENU_SCREEN_OUT,
-                                    MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( mh, DDEMENU_SCREEN_OUT, MF_BYCOMMAND | MF_UNCHECKED );
             }
             break;
         case DDEMENU_EXIT:
@@ -318,11 +324,11 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         case DDEMENU_SAVE:
             SaveListBox( SLB_SAVE_TMP, DumpHeader, ".\\wdde.txt", AppName,
-                        hwnd, info->list.box );
+                         hwnd, info->list.box );
             break;
         case DDEMENU_SAVE_AS:
             SaveListBox( SLB_SAVE_AS, DumpHeader, NULL, AppName,
-                        hwnd, info->list.box );
+                         hwnd, info->list.box );
             break;
         case DDEMENU_TOOLBAR:
             ToggleTB( hwnd );
@@ -331,6 +337,17 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         case DDEMENU_HINTBAR:
             ConfigInfo.show_hints = !ConfigInfo.show_hints;
             hideHintBar( hwnd, info, !ConfigInfo.show_hints );
+            break;
+        case DDEMENU_TOP:
+            ConfigInfo.on_top = !ConfigInfo.on_top;
+            mh = GetMenu( hwnd );
+            if( ConfigInfo.on_top ) {
+                CheckMenuItem( mh, DDEMENU_TOP, MF_CHECKED | MF_BYCOMMAND );
+                SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+            } else {
+                CheckMenuItem( mh, DDEMENU_TOP, MF_UNCHECKED | MF_BYCOMMAND );
+                SetWindowPos( hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+            }
             break;
         case DDEMENU_LOG_FILE:
             mh = GetMenu( hwnd );
@@ -360,9 +377,9 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
                     hideHintBar( hwnd, info, !ConfigInfo.show_hints );
                 }
                 GetClientRect( hwnd, &area );
-                ResizeListBox( area.right - area.left,
-                               area.bottom - area.top, &(info->list ) );
-                ResetFonts( info );
+                ResizeListBox( area.right - area.left, area.bottom - area.top,
+                               &info->list );
+                resetFonts( info );
             }
             break;
         case DDEMENU_LOG_CONFIG:
@@ -370,12 +387,12 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         case DDEMENU_MSG_FILTER:
             fp = MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, fp, 1 );
+            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, (DLGPROC)fp, 1 );
             FreeProcInstance( fp );
             break;
         case DDEMENU_CB_FILTER:
             fp = MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, fp, 0 );
+            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, (DLGPROC)fp, 0 );
             FreeProcInstance( fp );
             break;
         case DDEMENU_ABOUT:
@@ -391,10 +408,14 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             FreeRCString( ai.title );
             break;
         case DDEMENU_HELP_CONTENTS:
-            WWinHelp( hwnd, DDE_HELP_FILE, HELP_CONTENTS, 0 );
+            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_CONTENTS, 0 ) ) {
+                WWinHelp( hwnd, DDE_HELP_FILE, HELP_CONTENTS, 0 );
+            }
             break;
         case DDEMENU_HELP_SRCH:
-            WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (DWORD)"" ) ) {
+                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            }
             break;
         case DDEMENU_HELP_ON_HELP:
             WWinHelp( hwnd, HELP_HELP_FILE, HELP_HELPONHELP, 0 );
@@ -426,28 +447,22 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
             FreeRCString( alias_title );
             break;
         case DDEMENU_ALIAS_PURGE:
-            {
-                BOOL    alias_state;
-
-                alias_state = ConfigInfo.alias;
-                ConfigInfo.alias = FALSE;
-                RefreshAliases();
-                ConfigInfo.alias = alias_state;
-                FreeAlias( ConvAlias );
-                FreeAlias( TaskAlias );
-                FreeAlias( HwndAlias );
-                InitAliases();
-            }
+            alias_state = ConfigInfo.alias;
+            ConfigInfo.alias = FALSE;
+            RefreshAliases();
+            ConfigInfo.alias = alias_state;
+            FreeAlias( ConvAlias );
+            FreeAlias( TaskAlias );
+            FreeAlias( HwndAlias );
+            InitAliases();
             break;
         case DDEMENU_NO_ALIAS:
             ConfigInfo.alias = !ConfigInfo.alias;
             mh = GetMenu( hwnd );
             if( !ConfigInfo.alias ) {
-                CheckMenuItem( mh, DDEMENU_NO_ALIAS,
-                                MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( mh, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( mh, DDEMENU_NO_ALIAS,
-                                MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( mh, DDEMENU_NO_ALIAS, MF_BYCOMMAND | MF_UNCHECKED );
             }
             RefreshAliases();
             break;
@@ -479,4 +494,5 @@ BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
     return( TRUE );
-}
+
+} /* DDEMainWndProc */

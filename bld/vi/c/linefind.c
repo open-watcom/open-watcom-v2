@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
-#include "keys.h"
 #ifdef __WIN__
-#include "winrtns.h"
+    #include "winrtns.h"
 #endif
 
 static bool testIfCharNotInRange( char, char * );
@@ -46,19 +44,14 @@ static bool testIfCharNotInRange( char, char * );
 static int findFirstCharInListForward( line *l, char *clist, int scol )
 {
     int         i;
-    char        c,*lst;
+    char        c, *lst;
 
-    for( i=scol;i< l->len;i++ ) {
+    for( i = scol; i < l->len; i++ ) {
         c = l->data[i];
-        lst = clist;
-        while( TRUE ) {
-            if( *lst == 0 ) {
-                break;
-            }
+        for( lst = clist; *lst != '\0'; ++lst ) {
             if( *lst == c ) {
                 return( i );
             }
-            lst++;
         }
     }
     return( -1 );
@@ -72,22 +65,17 @@ static int findFirstCharInListForward( line *l, char *clist, int scol )
 static int findFirstCharInListBackwards( line *l, char *clist, int scol )
 {
     int         i;
-    char        c,*lst;
+    char        c, *lst;
 
     if( l->len < scol ) {
         return( -1 );
     }
-    for( i=scol;i >= 0 ;i-- ) {
+    for( i = scol; i >= 0; i-- ) {
         c = l->data[i];
-        lst = clist;
-        while( TRUE ) {
-            if( *lst == 0 ) {
-                break;
-            }
+        for( lst = clist; *lst != '\0'; ++lst ) {
             if( *lst == c ) {
                 return( i );
             }
-            lst++;
         }
     }
     return( -1 );
@@ -101,19 +89,17 @@ static int findFirstCharInListBackwards( line *l, char *clist, int scol )
 int FindFirstCharNotInListForward( line *l, char *clist, int scol )
 {
     int         i;
-    char        c,*lst;
+    char        c, *lst;
 
-    for( i=scol;i< l->len;i++ ) {
+    for( i = scol; i < l->len; i++ ) {
         c = l->data[i];
-        lst = clist;
-        while( TRUE ) {
-            if( *lst == 0 ) {
-                return( i );
-            }
+        for( lst = clist; *lst != 0; lst++ ) {
             if( *lst == c ) {
                 break;
             }
-            lst++;
+        }
+        if( *lst == 0 ) {
+            return( i );
         }
     }
     return( -1 );
@@ -127,22 +113,20 @@ int FindFirstCharNotInListForward( line *l, char *clist, int scol )
 int FindFirstCharNotInListBackwards( line *l, char *clist, int scol )
 {
     int         i;
-    char        c,*lst;
+    char        c, *lst;
 
     if( l->len < scol ) {
         return( -1 );
     }
-    for( i=scol;i >= 0 ;i-- ) {
+    for( i = scol; i >= 0; i-- ) {
         c = l->data[i];
-        lst = clist;
-        while( TRUE ) {
-            if( *lst == 0 ) {
-                return( i );
-            }
+        for( lst = clist; *lst != 0; lst++ ) {
             if( *lst == c ) {
                 break;
             }
-            lst++;
+        }
+        if( *lst == 0 ) {
+            return( i );
         }
     }
     return( -1 );
@@ -157,7 +141,7 @@ int FindFirstCharInRangeForward( line *l, char *clist, int scol )
 {
     int i;
 
-    for( i=scol;i< l->len;i++ ) {
+    for( i = scol; i < l->len; i++ ) {
         if( TestIfCharInRange( l->data[i], clist ) ) {
             return( i );
         }
@@ -174,7 +158,7 @@ int FindFirstCharNotInRangeForward( line *l, char *clist, int scol )
 {
     int i;
 
-    for( i=scol;i< l->len;i++ ) {
+    for( i = scol; i < l->len; i++ ) {
         if( testIfCharNotInRange( l->data[i], clist ) ) {
             return( i );
         }
@@ -194,7 +178,7 @@ int FindFirstCharInRangeBackwards( line *l, char *clist, int scol )
     if( l->len < scol ) {
         return( -1 );
     }
-    for( i=scol;i>=0;i-- ) {
+    for( i = scol; i >= 0; i-- ) {
         if( TestIfCharInRange( l->data[i], clist ) ) {
             return( i );
         }
@@ -214,7 +198,7 @@ int FindFirstCharNotInRangeBackward( line *l, char *clist, int scol )
     if( l->len < scol ) {
         return( -1 );
     }
-    for( i=scol;i>=0;i-- ) {
+    for( i = scol; i >= 0; i-- ) {
         if( testIfCharNotInRange( l->data[i], clist ) ) {
             return( i );
         }
@@ -230,16 +214,13 @@ bool TestIfCharInRange( char c, char *clist )
 {
     char        *lst;
 
-    lst = clist;
-    while( TRUE ) {
-        if( *lst == 0 ) {
-            return( FALSE );
-        }
-        if( c >= *lst && c <= *(lst+1)  ) {
+    
+    for( lst = clist; *lst != 0; lst += 2 ) {
+        if( c >= *lst && c <= *(lst + 1)  ) {
             return( TRUE );
         }
-        lst += 2;
     }
+    return( FALSE );
 
 } /* TestIfCharInRange */
 
@@ -250,45 +231,41 @@ static bool testIfCharNotInRange( char c, char *clist )
 {
     char        *lst;
 
-    lst = clist;
-    while( TRUE ) {
-        if( *lst == 0 ) {
-            return( TRUE );
-        }
-        if( c >= *lst && c <= *(lst+1)  ) {
+    for( lst = clist; *lst != 0; lst += 2 ) {
+        if( c >= *lst && c <= *(lst + 1) ) {
             return( FALSE );
         }
-        lst += 2;
     }
+    return( TRUE );
 
 } /* testIfCharNotInRange */
 
 /*
  * FindCharOnCurrentLine - look for c char on a line ('f','F','t','T' cmds)
  */
-int FindCharOnCurrentLine( int fwdflag, int mod, int *col, int cnt )
+vi_rc FindCharOnCurrentLine( bool fwdflag, int mod, int *col, int cnt )
 {
-    int         i,c,j;
+    int         i, c, j;
     char        lst[2];
 
-    c = CurrentColumn-1;
+    c = CurrentPos.column - 1;
     *col = -1;
     LastEvent = GetNextEvent( FALSE );
     if( LastEvent == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }
-    lst[0] = (char) LastEvent;
+    lst[0] = (char)LastEvent;
     lst[1] = 0;
 
-    for( j=0;j<cnt;j++) {
+    for( j = 0; j < cnt; j++ ) {
         i = -1;
         if( fwdflag ) {
-            if( c < CurrentLine->len-1 ) {
-                i = findFirstCharInListForward( CurrentLine, lst, c+1 );
+            if( c < CurrentLine->len - 1 ) {
+                i = findFirstCharInListForward( CurrentLine, lst, c + 1 );
             }
         } else {
             if( c > 0 ) {
-                i = findFirstCharInListBackwards( CurrentLine, lst, c-1 );
+                i = findFirstCharInListBackwards( CurrentLine, lst, c - 1 );
             }
         }
         if( i < 0 ) {
@@ -297,15 +274,15 @@ int FindCharOnCurrentLine( int fwdflag, int mod, int *col, int cnt )
         }
         c = i;
     }
-    *col = 1+i+mod;
-    return (ERR_NO_ERR );
+    *col = 1 + i + mod;
+    return( ERR_NO_ERR );
 
 } /* FindCharOnCurrentLine */
 
 /*
  * FancyGotoLine - goto line through dialog box
  */
-int FancyGotoLine( void )
+vi_rc FancyGotoLine( void )
 {
 #ifdef __WIN__
     linenum     newline;
@@ -316,4 +293,5 @@ int FancyGotoLine( void )
     }
 #endif
     return( ERR_NO_ERR );
-}
+
+} /* FancyGotoLine */

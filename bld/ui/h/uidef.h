@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic ui library macros and prototypes.
 *
 ****************************************************************************/
 
@@ -33,15 +32,18 @@
 #ifndef _UIDEF_H_
 #define _UIDEF_H_
 #include <stddef.h>
+#include "bool.h"
+
+#if defined( __WATCOMC__ )
+  #define cdecl __cdecl
+#else
+  #define cdecl
+#endif
 
 #ifndef HP
     #ifndef MAXINT
         #define         MAXINT                  0x7fff
     #endif
-#endif
-#ifndef TRUE
-    #define         TRUE                    1
-    #define         FALSE                   0
 #endif
 
 #define         P_UNBUFFERED            0
@@ -49,8 +51,6 @@
 #define         P_MENU                  2
 #define         P_VSCREEN               3
 #define         P_BACKGROUND            4
-
-#define         bool                    int
 
 #ifndef min
     #define         min( a,b )              ( a < b ? a : b )
@@ -62,21 +62,7 @@
 #ifdef _unused
    #undef _unused
 #endif
-#ifdef UNIX
-    #define _unused(var)        var=var
-#endif
-#ifdef __WATCOMC__
-    #define _unused(var)        var=var
-#endif
-#ifdef __TURBOC__
-    #define _unused(var)        var=var
-#endif
-#ifdef MICROSOFT
-    #define _unused(var)        var=var
-#endif
-#ifdef LATTICE
-    #define _unused(var)        var=var
-#endif
+#define _unused(var)        var=var
 
 #if defined( TSR )
 
@@ -112,22 +98,21 @@
     extern "C" {
 #endif
 
-int             intern          balloc(struct buffer *,int ,int );
+bool            intern          balloc( BUFFER *, ORD, ORD );
 void            intern          battrflip( BUFFER *, int, int, int, int );
 void            intern          battribute( BUFFER *, int, int, int, int, ATTR );
 void            intern          uibcopy( BUFFER *, int, int, BUFFER *, int, int, int );
 void            intern          bframe(struct buffer *);
 void            intern          bfree(struct buffer *);
-void            intern          bfake( BUFFER *, int, int );
+void            intern          bfake( BUFFER *, ORD, ORD );
 void            intern          bfill( BUFFER *, int, int, ATTR, char, int );
 void            intern          blowup( BUFFER *, SAREA, char *, ATTR );
 void            intern          bpixel( BUFFER *, ORD, ORD, ATTR, char );
 void            intern          braw( BUFFER *, int, int, PIXEL *, int );
-void            intern          bstring( BUFFER *, int, int, ATTR, char __FAR *, int );
+void            intern          bstring( BUFFER *, int, int, ATTR, const char __FAR *, int );
 void            intern          bunframe(struct buffer *);
 int             intern          checkkey( void );
-void            intern          checkmouse(unsigned short *,unsigned short *,
-                                           unsigned short *,unsigned long *);
+void            intern          checkmouse( unsigned short *, MOUSEORD *, MOUSEORD *, unsigned long * );
 unsigned char   intern          checkshift( void );
 void            intern          closebackground( void );
 void            intern          closewindow( UI_WINDOW * );
@@ -144,30 +129,30 @@ void            intern          flushkey( void );
 void            intern          frontwindow( UI_WINDOW * );
 unsigned int    intern          getkey( void );
 int             intern          initbios( void );
-int             intern          initkeyboard( void );
-int             intern          initmonitor( void );
-int             intern          installed( int );
-int             intern          isdialogue( VSCREEN * );
-int             intern          isscreen( BUFFER * );
-int             intern          issnow( BUFFER * );
-void            intern          kbdspawnstart();
-void            intern          kbdspawnend();
+bool            intern          initkeyboard( void );
+bool            intern          initmonitor( void );
+bool            intern          installed( int );
+bool            intern          isdialogue( VSCREEN * );
+bool            intern          isscreen( BUFFER * );
+bool            intern          issnow( BUFFER * );
+void            intern          kbdspawnstart( void );
+void            intern          kbdspawnend( void );
 EVENT           intern          keyboardevent( void );
 void            intern          menuevent( VSCREEN * );
 EVENT           intern          mouseevent( void );
 void            intern          mouseon( void );
 void            intern          mouseoff( void );
-void            intern          mousespawnstart();
-void            intern          mousespawnend();
+void            intern          mousespawnstart( void );
+void            intern          mousespawnend( void );
 void            intern          okarea( SAREA );
 void            intern          okline( ORD, ORD, int, SAREA );
 void            intern          okopen( VSCREEN * );
 void            intern          oksubarea( SAREA, SAREA );
 void            intern          openbackground( void );
-int             intern          openwindow( UI_WINDOW * );
+bool            intern          openwindow( UI_WINDOW * );
 void            intern          movewindow( UI_WINDOW *, ORD, ORD );
 void            intern          physupdate( SAREA * );
-#if defined( __QNX__ ) || defined( UNIX )
+#if defined( __UNIX__ )
 void            intern          forbid_refresh( void );
 void            intern          permit_refresh( void );
 #else

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump conflicts.
 *
 ****************************************************************************/
 
@@ -49,132 +48,6 @@ extern  void            DumpLBit(local_bit_set*);
 extern  conflict_node   *ConfList;
 extern  reg_list        *RegSets[];
 
-
-extern  void    DumpConflicts() {
-/*******************************/
-
-    conflict_node       *conf;
-
-    DumpLiteral( "Conflict graph" );
-    DumpNL();
-    conf = ConfList;
-    while( conf != NULL ) {
-        DumpPtr( conf );
-        DumpLiteral( " " );
-        DumpAConf( conf );
-        conf = conf->next_conflict;
-    }
-    DumpNL();
-}
-
-
-extern  void    DumpAConf( conflict_node *conf ) {
-/************************************************/
-
-    DumpOperand( conf->name );
-    DumpLiteral( " id " );
-    DumpGBit( &conf->id.out_of_block );
-    DumpLiteral( " " );
-    DumpLBit( &conf->id.within_block );
-    DumpPossible( conf->possible );
-    DumpNL();
-    DumpLiteral( "    " );
-    DumpInsRange( conf );
-    DumpLiteral( " Start block " );
-    DumpPtr( conf->start_block );
-    DumpNL();
-    DumpLiteral( "    Conflicts with " );
-    DumpGBit( &conf->with.out_of_block );
-    DumpLiteral( " " );
-    DumpLBit( &conf->with.within_block );
-    DumpLiteral( " " );
-    DumpRegName( conf->with.regs );
-    DumpNL();
-    DumpLiteral( "    Constrained " );
-    DumpInt( conf->num_constrained );
-    DumpLiteral( " vs " );
-    DumpInt( conf->available );
-    DumpNL();
-    if( _Is( conf, SAVINGS_CALCULATED ) ) {
-        DumpLiteral( "    Savings " );
-        DumpLong( conf->savings );
-        DumpNL();
-    }
-    if( _Is( conf, CONFLICT_ON_HOLD ) ) {
-        DumpLiteral( "    On hold" );
-        DumpNL();
-    }
-    if( _Is( conf, CHANGES_OTHERS ) ) {
-        DumpLiteral( "    Changes Others" );
-        DumpNL();
-    }
-    if( _Is( conf, NEEDS_SEGMENT ) ) {
-        DumpLiteral( "    Needs segment" );
-        DumpNL();
-    }
-    if( _Is( conf, NEEDS_SEGMENT_SPLIT ) ) {
-        DumpLiteral( "    Needs segment split" );
-        DumpNL();
-    }
-    if( _Is( conf, SEGMENT_SPLIT ) ) {
-        DumpLiteral( "    Is segment split" );
-        DumpNL();
-    }
-    if( _Is( conf, NEEDS_INDEX ) ) {
-        DumpLiteral( "    Needs index" );
-        DumpNL();
-    }
-    if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
-        DumpLiteral( "    Needs index split" );
-        DumpNL();
-    }
-    if( _Is( conf, INDEX_SPLIT ) ) {
-        DumpLiteral( "    Is index split" );
-        DumpNL();
-    }
-}
-
-extern  void    DumpPossible( byte idx ) {
-/****************************************/
-
-
-    if( idx == RL_NUMBER_OF_SETS ) {
-        DumpLiteral( " Choices ANY" );
-    } else {
-        DumpRgSet( RegSets[  idx  ] );
-    }
-}
-
-static  void    DumpRgSet( hw_reg_set *possible ) {
-/**************************************************/
-
-    int i;
-
-    if( possible != NULL ) {
-        i = 0;
-        DumpLiteral( " Choices " );
-        while( !HW_CEqual( *possible, HW_EMPTY ) ) {
-            DumpRegName( *possible );
-            ++ possible;
-            DumpLiteral( " " );
-        }
-    }
-}
-
-
-static  void    DumpInsRange( conflict_node *conf ) {
-/***************************************************/
-
-    if( conf->ins_range.first != NULL ) {
-        DumpLiteral( " Instruction " );
-        DumpInt( conf->ins_range.first->id );
-        if( conf->ins_range.first != conf->ins_range.last
-         && conf->ins_range.last != NULL ) {
-            DumpLiteral( " to Instruction " );
-            DumpInt( conf->ins_range.last->id );
-        }
-    }
-}
 
 static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
 /*********************************************************************/
@@ -228,7 +101,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
         if( Check(&name,HW_Y4) ) { DumpLiteral( "Y4" ); continue; }
         if( Check(&name,HW_Y6) ) { DumpLiteral( "Y6" ); continue; }
 #endif
-#if _TARGET & ( _TARG_PPC | _TARG_AXP )
+#if _TARGET & (_TARG_PPC | _TARG_AXP | _TARG_MIPS)
         if( Check(&name,HW_R0) ) { DumpLiteral( "R0" ); continue; }
         if( Check(&name,HW_R1) ) { DumpLiteral( "R1" ); continue; }
         if( Check(&name,HW_R2) ) { DumpLiteral( "R2" ); continue; }
@@ -404,11 +277,25 @@ extern  void    DumpRegName( hw_reg_set regname ) {
 #endif
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
             if( Check(&name,HW_EAX)) { DumpLiteral("EAX"); continue; }
+            if( Check(&name,HW_AX) ) { DumpLiteral( "AX"); continue; }
+            if( Check(&name,HW_AL) ) { DumpLiteral( "AL"); continue; }
+            if( Check(&name,HW_AH) ) { DumpLiteral( "AH"); continue; }
             if( Check(&name,HW_EBX)) { DumpLiteral("EBX"); continue; }
+            if( Check(&name,HW_BX) ) { DumpLiteral( "BX"); continue; }
+            if( Check(&name,HW_BL) ) { DumpLiteral( "BL"); continue; }
+            if( Check(&name,HW_BH) ) { DumpLiteral( "BH"); continue; }
             if( Check(&name,HW_ECX)) { DumpLiteral("ECX"); continue; }
+            if( Check(&name,HW_CX) ) { DumpLiteral( "CX"); continue; }
+            if( Check(&name,HW_CL) ) { DumpLiteral( "CL"); continue; }
+            if( Check(&name,HW_CH) ) { DumpLiteral( "CH"); continue; }
             if( Check(&name,HW_EDX)) { DumpLiteral("EDX"); continue; }
+            if( Check(&name,HW_DX) ) { DumpLiteral( "DX"); continue; }
+            if( Check(&name,HW_DL) ) { DumpLiteral( "DL"); continue; }
+            if( Check(&name,HW_DH) ) { DumpLiteral( "DH"); continue; }
             if( Check(&name,HW_EDI)) { DumpLiteral("EDI"); continue; }
+            if( Check(&name,HW_DI) ) { DumpLiteral( "DI"); continue; }
             if( Check(&name,HW_ESI)) { DumpLiteral("ESI"); continue; }
+            if( Check(&name,HW_SI) ) { DumpLiteral( "SI"); continue; }
             if( Check(&name,HW_BP))  { DumpLiteral("EBP"); continue; }
             if( Check(&name,HW_SP))  { DumpLiteral("ESP"); continue; }
             if( Check(&name,HW_GS) ) { DumpLiteral( "GS"); continue; }
@@ -417,22 +304,6 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_DS) ) { DumpLiteral( "DS"); continue; }
             if( Check(&name,HW_CS) ) { DumpLiteral( "CS"); continue; }
             if( Check(&name,HW_SS) ) { DumpLiteral( "SS"); continue; }
-            if( Check(&name,HW_AX) ) { DumpLiteral( "AX"); continue; }
-            if( Check(&name,HW_BX) ) { DumpLiteral( "BX"); continue; }
-            if( Check(&name,HW_CX) ) { DumpLiteral( "CX"); continue; }
-            if( Check(&name,HW_DX) ) { DumpLiteral( "DX"); continue; }
-            if( Check(&name,HW_AL) ) { DumpLiteral( "AL"); continue; }
-            if( Check(&name,HW_BL) ) { DumpLiteral( "BL"); continue; }
-            if( Check(&name,HW_CL) ) { DumpLiteral( "CL"); continue; }
-            if( Check(&name,HW_DL) ) { DumpLiteral( "DL"); continue; }
-            if( Check(&name,HW_AH) ) { DumpLiteral( "AH"); continue; }
-            if( Check(&name,HW_BH) ) { DumpLiteral( "BH"); continue; }
-            if( Check(&name,HW_CH) ) { DumpLiteral( "CH"); continue; }
-            if( Check(&name,HW_DH) ) { DumpLiteral( "DH"); continue; }
-            if( Check(&name,HW_SI) ) { DumpLiteral( "SI"); continue; }
-            if( Check(&name,HW_DI) ) { DumpLiteral( "DI"); continue; }
-            if( Check(&name,HW_BP) ) { DumpLiteral( "BP"); continue; }
-            if( Check(&name,HW_SP) ) { DumpLiteral( "SP"); continue; }
             if( Check(&name,HW_ST0) ) { DumpLiteral( "ST(0)"); continue; }
             if( Check(&name,HW_ST1) ) { DumpLiteral( "ST(1)"); continue; }
             if( Check(&name,HW_ST2) ) { DumpLiteral( "ST(2)"); continue; }
@@ -447,9 +318,139 @@ extern  void    DumpRegName( hw_reg_set regname ) {
     }
 }
 
+
+static  void    DumpRgSet( hw_reg_set *possible ) {
+/**************************************************/
+
+    int i;
+
+    if( possible != NULL ) {
+        i = 0;
+        DumpLiteral( " Choices " );
+        while( !HW_CEqual( *possible, HW_EMPTY ) ) {
+            DumpRegName( *possible );
+            ++ possible;
+            DumpLiteral( " " );
+        }
+    }
+}
+
+
+static  void    DumpInsRange( conflict_node *conf ) {
+/***************************************************/
+
+    if( conf->ins_range.first != NULL ) {
+        DumpLiteral( " Instruction " );
+        DumpInt( conf->ins_range.first->id );
+        if( conf->ins_range.first != conf->ins_range.last
+         && conf->ins_range.last != NULL ) {
+            DumpLiteral( " to Instruction " );
+            DumpInt( conf->ins_range.last->id );
+        }
+    }
+}
+
+
+extern  void    DumpPossible( byte idx ) {
+/****************************************/
+
+
+    if( idx == RL_NUMBER_OF_SETS ) {
+        DumpLiteral( " Choices ANY" );
+    } else {
+        DumpRgSet( RegSets[  idx  ] );
+    }
+}
+
+
 extern  void    DumpRegSet( hw_reg_set reg ) {
 /********************************************/
 
     DumpRegName( reg );
+    DumpNL();
+}
+
+
+extern  void    DumpAConf( conflict_node *conf ) {
+/************************************************/
+
+    DumpOperand( conf->name );
+    DumpLiteral( " id " );
+    DumpGBit( &conf->id.out_of_block );
+    DumpLiteral( " " );
+    DumpLBit( &conf->id.within_block );
+    DumpPossible( conf->possible );
+    DumpNL();
+    DumpLiteral( "    " );
+    DumpInsRange( conf );
+    DumpLiteral( " Start block " );
+    DumpPtr( conf->start_block );
+    DumpNL();
+    DumpLiteral( "    Conflicts with " );
+    DumpGBit( &conf->with.out_of_block );
+    DumpLiteral( " " );
+    DumpLBit( &conf->with.within_block );
+    DumpLiteral( " " );
+    DumpRegName( conf->with.regs );
+    DumpNL();
+    DumpLiteral( "    Constrained " );
+    DumpInt( conf->num_constrained );
+    DumpLiteral( " vs " );
+    DumpInt( conf->available );
+    DumpNL();
+    if( _Is( conf, SAVINGS_CALCULATED ) ) {
+        DumpLiteral( "    Savings " );
+        DumpLong( conf->savings );
+        DumpNL();
+    }
+    if( _Is( conf, CONFLICT_ON_HOLD ) ) {
+        DumpLiteral( "    On hold" );
+        DumpNL();
+    }
+    if( _Is( conf, CHANGES_OTHERS ) ) {
+        DumpLiteral( "    Changes Others" );
+        DumpNL();
+    }
+    if( _Is( conf, NEEDS_SEGMENT ) ) {
+        DumpLiteral( "    Needs segment" );
+        DumpNL();
+    }
+    if( _Is( conf, NEEDS_SEGMENT_SPLIT ) ) {
+        DumpLiteral( "    Needs segment split" );
+        DumpNL();
+    }
+    if( _Is( conf, SEGMENT_SPLIT ) ) {
+        DumpLiteral( "    Is segment split" );
+        DumpNL();
+    }
+    if( _Is( conf, NEEDS_INDEX ) ) {
+        DumpLiteral( "    Needs index" );
+        DumpNL();
+    }
+    if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
+        DumpLiteral( "    Needs index split" );
+        DumpNL();
+    }
+    if( _Is( conf, INDEX_SPLIT ) ) {
+        DumpLiteral( "    Is index split" );
+        DumpNL();
+    }
+}
+
+
+extern  void    DumpConflicts() {
+/*******************************/
+
+    conflict_node       *conf;
+
+    DumpLiteral( "Conflict graph" );
+    DumpNL();
+    conf = ConfList;
+    while( conf != NULL ) {
+        DumpPtr( conf );
+        DumpLiteral( " " );
+        DumpAConf( conf );
+        conf = conf->next_conflict;
+    }
     DumpNL();
 }

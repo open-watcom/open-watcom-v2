@@ -24,16 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ExpandArgv - expand argv array, using regular expressions if needed
 *
 ****************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined(__OS_qnx__) || defined(__OS_qnx16__)
+#if defined( __OS_qnx__ ) || defined( __OS_qnx16__ )
  #include <dir.h>
 #else
  #include <direct.h>
@@ -43,18 +41,15 @@
 #include "argvrx.h"
 #include "fnutils.h"
 
-/*
- * ExpandArgv - expand argv array, using regular expressions if needed
- */
 char **ExpandArgv( int *oargc, char *oargv[], int isrx )
 {
-    int                 argc,i;
+    int                 argc, i;
     char                *err;
     char                **argv;
     DIR                 *directory;
     struct dirent       *nextdirentry;
     char                wild[_MAX_PATH];
-    char                sp_buf[ _MAX_PATH2 ];
+    char                sp_buf[_MAX_PATH2];
     char                *drive;
     char                *dir;
     char                *name;
@@ -65,10 +60,10 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
     argc = 1;
     argv = MemAlloc( 2 * sizeof( char * ) );
     argv[0] = oargv[0];
-    for( i=1;i<*oargc;i++ ) {
+    for( i = 1; i < *oargc; i++ ) {
         if( !FileNameWild( oargv[i], isrx ) ) {
-            argv = MemRealloc( argv, (argc+2) * sizeof( char * ) );
-            argv[ argc ] = oargv[i];
+            argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
+            argv[argc] = oargv[i];
             argc++;
             continue;
         }
@@ -78,8 +73,8 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             directory = opendir( oargv[i] );
         }
         if( directory == NULL ) {
-            argv = MemRealloc( argv, (argc+2) * sizeof( char * ) );
-            argv[ argc ] = oargv[i];
+            argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
+            argv[argc] = oargv[i];
             argc++;
             continue;
         }
@@ -91,22 +86,21 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
         }
         _splitpath2( oargv[i], sp_buf, &drive, &dir, &name, &extin );
         while( ( nextdirentry = readdir( directory ) ) != NULL ) {
-
             FNameLower( nextdirentry->d_name );
             if( isrx ) {
                 if( !FileMatch( crx, nextdirentry->d_name ) ) {
                     continue;
                 }
             }
-#if defined(__OS_qnx__) || defined(__OS_qnx16__)
-            if( S_ISREG(nextdirentry->d_stat.st_mode) ) {
+#if defined( __OS_qnx__ ) || defined( __OS_qnx16__ )
+            if( S_ISREG( nextdirentry->d_stat.st_mode ) ) {
 #else
-            if( !(nextdirentry->d_attr & _A_SUBDIR) ) {
+            if( !( nextdirentry->d_attr & _A_SUBDIR ) ) {
 #endif
                 _makepath( path, drive, dir, nextdirentry->d_name, NULL );
-                argv = MemRealloc( argv, (argc+2) * sizeof( char * ) );
-                argv[ argc ] = MemAlloc( strlen( path ) + 1 );
-                strcpy( argv[ argc ], path );
+                argv = MemRealloc( argv, ( argc + 2 ) * sizeof( char * ) );
+                argv[argc] = MemAlloc( strlen( path ) + 1 );
+                strcpy( argv[argc], path );
                 argc++;
             }
         }
@@ -115,8 +109,7 @@ char **ExpandArgv( int *oargc, char *oargv[], int isrx )
             FileMatchFini( crx );
         }
     }
-    argv[ argc ] = NULL;
+    argv[argc] = NULL;
     *oargc = argc;
     return( argv );
-
-} /* ExpandArgv */
+}

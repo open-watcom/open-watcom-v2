@@ -1,0 +1,2 @@
+struct1.asm(65): Warning! W095: size not specified -- BYTE PTR is assumed
+struct1.asm(70): Warning! W095: size not specified -- BYTE PTR is assumed

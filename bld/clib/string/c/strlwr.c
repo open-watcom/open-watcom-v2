@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strlwr() and _wcslwr().
 *
 ****************************************************************************/
 
@@ -46,7 +45,7 @@
     UCHAR_TYPE   c;
 
     p = str;
-    while( c = *p ) {
+    while( (c = *p) ) {
         if( IS_ASCII( c ) ) {
             c -= 'A';
             if( c <= 'Z' - 'A' ) {

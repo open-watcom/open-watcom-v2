@@ -1,196 +1,202 @@
-objs = &
-        SQRTF.OBJ &
-        STD.OBJ &
-        ACTIVEPG.OBJ &
-        ARC.OBJ &
-        BKCOLOR.OBJ &
-        CLEARSCR.OBJ &
-        CLIP.OBJ &
-        CLIPRGN.OBJ &
-        COLOR.OBJ &
-        CURSOR.OBJ &
-        DEVUTILS.OBJ &
-        DISPCURS.OBJ &
-        ELLIPSE.OBJ &
-        FILLMASK.OBJ &
-        FLOODFLL.OBJ &
-        FONTSUPP.OBJ &
-        GETCONF.OBJ &
-        GETIMAGE.OBJ &
-        GETLOGC.OBJ &
-        GETPHYSC.OBJ &
-        GETPOS.OBJ &
-        GLOBAL.OBJ &
-        GRSTATUS.OBJ &
-        GRTEXT.OBJ &
-        GTXTEXT.OBJ &
-        GTXTSET.OBJ &
-        IMAGESIZ.OBJ &
-        L1BLOCK.OBJ &
-        L1CLIP.OBJ &
-        L1ELLIPS.OBJ &
-        L1FILLAR.OBJ &
-        L1GETDOT.OBJ &
-        L1GETPIC.OBJ &
-        L1HERSH.OBJ &
-        L1LINE.OBJ &
-        L1PAINT.OBJ &
-        L1PUTDOT.OBJ &
-        L1TEXT.OBJ &
-        LINETO.OBJ &
-        LNSTYLE.OBJ &
-        LOGORG.OBJ &
-        MOVETO.OBJ &
-        OUTTEXT.OBJ &
-        PIE.OBJ &
-        PIXEL.OBJ &
-        PLOTACTN.OBJ &
-        POLYGON.OBJ &
-        PUTCHAR.OBJ &
-        PUTIMAGE.OBJ &
-        RECTANGL.OBJ &
-        REMAPPAL.OBJ &
-        SCROLLW.OBJ &
-        SETCHSIZ.OBJ &
-        SETCHSPC.OBJ &
-        SETROWS.OBJ &
-        SETTXPTH.OBJ &
-        SETTXTAL.OBJ &
-        SETTXTOR.OBJ &
-        SETVIDEO.OBJ &
-        SETVIEWP.OBJ &
-        SETWIND.OBJ &
-        STYLWRAP.OBJ &
-        TEXTCOL.OBJ &
-        TEXTPOS.OBJ &
-        TEXTWIND.OBJ &
-        VISUALPG.OBJ &
-        WINDFUNC.OBJ &
-        WRAPON.OBJ &
-        ZARC.OBJ &
-        ZCHSIZE.OBJ &
-        ZELLIPSE.OBJ &
-        ZFLOODFL.OBJ &
-        ZGETIMAG.OBJ &
-        ZGRTEXT.OBJ &
-        ZIMAGESI.OBJ &
-        ZLINETO.OBJ &
-        ZMOVETO.OBJ &
-        ZPIE.OBJ &
-        ZPIXEL.OBJ &
-        ZPOLYGON.OBJ &
-        ZPUTIMAG.OBJ &
-        ZRECTANG.OBJ
+proj_name = graph
 
-eng_nec_objs = &
-        8X8FONT.OBJ &
-        BIT.OBJ &
-        GSTKLOW.OBJ &
-        L0DRWLIN.OBJ &
-        L0ELLIPS.OBJ &
-        L1FILL.OBJ &
-        L1PUTPIC.OBJ &
-        LINEUTIL.OBJ &
-        SEGINIT.OBJ &
-        TRANSPAR.OBJ &
-        VISIT.OBJ &
+graph_autodepends = .AUTODEPEND
+
+graph_distrib_lib = 1
+
+suppress_zc = 1
+
+memory_model_i86 = s
+!ifeq host_os dos
+memory_model_386 = s
+!else ifeq host_os qnx
+memory_model_386 = s
+!endif
+
+suffix_register = r
+suffix_stack = s
+
+fpu_flags_dos_i86 = -fpc
+fpu_flags_dos_386 = -fpc
+fpu_flags_qnx_i86 = -fpc
+fpu_flags_qnx_386 = -fpc
+fpu_flags_os2_i86 = -fpc
+fpu_flags_os2_386 = -fpc
+fpu_flags_win_i86 = -fpc
+
+objs = &
+        sqrtf.obj &
+        std.obj &
+        activepg.obj &
+        arc.obj &
+        bkcolor.obj &
+        clearscr.obj &
+        clip.obj &
+        cliprgn.obj &
+        color.obj &
+        cursor.obj &
+        devutils.obj &
+        dispcurs.obj &
+        ellipse.obj &
+        fillmask.obj &
+        floodfll.obj &
+        fontsupp.obj &
+        getconf.obj &
+        getimage.obj &
+        getlogc.obj &
+        getphysc.obj &
+        getpos.obj &
+        global.obj &
+        grstatus.obj &
+        grtext.obj &
+        gtxtext.obj &
+        gtxtset.obj &
+        imagesiz.obj &
+        l1block.obj &
+        l1clip.obj &
+        l1ellips.obj &
+        l1fillar.obj &
+        l1getdot.obj &
+        l1getpic.obj &
+        l1hersh.obj &
+        l1line.obj &
+        l1paint.obj &
+        l1putdot.obj &
+        l1text.obj &
+        lineto.obj &
+        lnstyle.obj &
+        logorg.obj &
+        moveto.obj &
+        outtext.obj &
+        pie.obj &
+        pixel.obj &
+        plotactn.obj &
+        polygon.obj &
+        putchar.obj &
+        putimage.obj &
+        rectangl.obj &
+        remappal.obj &
+        scrollw.obj &
+        setchsiz.obj &
+        setchspc.obj &
+        setrows.obj &
+        settxpth.obj &
+        settxtal.obj &
+        settxtor.obj &
+        setvideo.obj &
+        setviewp.obj &
+        setwind.obj &
+        stylwrap.obj &
+        textcol.obj &
+        textpos.obj &
+        textwind.obj &
+        visualpg.obj &
+        windfunc.obj &
+        wrapon.obj &
+        zarc.obj &
+        zchsize.obj &
+        zellipse.obj &
+        zfloodfl.obj &
+        zgetimag.obj &
+        zgrtext.obj &
+        zimagesi.obj &
+        zlineto.obj &
+        zmoveto.obj &
+        zpie.obj &
+        zpixel.obj &
+        zpolygon.obj &
+        zputimag.obj &
+        zrectang.obj
+
+eng_nonwin_objs = &
+        8x8font.obj &
+        bit.obj &
+        gstklow.obj &
+        l0drwlin.obj &
+        l0ellips.obj &
+        l1fill.obj &
+        l1putpic.obj &
+        lineutil.obj &
+        seginit.obj &
+        transpar.obj &
+        visit.obj &
 
 english_objs = &
-        CGAUTILS.OBJ &
-        CNVCOLOR.OBJ &
-        EGAUTILS.OBJ &
-        FAST256.OBJ &
-        HERCFONT.OBJ &
-        HGCUTILS.OBJ &
-        SVGAUTIL.OBJ &
-        VGAUTILS.OBJ &
-        GRCGA.OBJ &
-        GREGA.OBJ &
-        GRHGC.OBJ &
-        GRSVGA.OBJ &
-        GRVGA.OBJ &
-        SELPAL.OBJ &
-        SETMODE.OBJ &
-        SVGAINFO.OBJ &
-        SYSMTYPE.OBJ
-
-nec_objs = &
-        GRNEC.OBJ &
-        NECUTILS.OBJ &
-        KANJI.OBJ
+        cgautils.obj &
+        cnvcolor.obj &
+        egautils.obj &
+        fast256.obj &
+        hercfont.obj &
+        hgcutils.obj &
+        svgautil.obj &
+        vgautils.obj &
+        grcga.obj &
+        grega.obj &
+        grhgc.obj &
+        grsvga.obj &
+        grvga.obj &
+        selpal.obj &
+        setmode.obj &
+        svgainfo.obj &
+        sysmtype.obj
 
 win_objs = &
-        GPHMAIN.OBJ &
-        WINUTIL.OBJ &
+        gphmain.obj &
+        winutil.obj &
 
 special_objs = &
-        FSMATH.OBJ &
-        DUMMY.OBJ
+        fsmath.obj &
+        dummy.obj
 
-!ifndef _WIN
-objs += $(eng_nec_objs)
-!endif
-
-!ifdef _NEC_PC
-objs += $(nec_objs)
-!else
-!ifdef _WIN
+!ifeq host_os win
 objs += $(win_objs)
 !else
+objs += $(eng_nonwin_objs)
 objs += $(english_objs)
 !endif
-!endif
 
-!ifeq _386 386
-.asm: ..\386asm;..\asm
-compiler = $(libcomp386)
-text_seg_name = _TEXT
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+inc_dirs = -I"$(dev_dir)/graphlib/h" -I"$(mathlib_dir)/h"
+!ifeq host_os qnx
+inc_dirs += -I"$(hdr_dir)/qnx"
+!else ifeq host_os win
+inc_dirs += -I"$(hdr_dir)/dos" -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
 !else
-.asm: ..\asm
-compiler = $(libcomp286)
-text_seg_name = GRAPH_TEXT
+inc_dirs += -I"$(hdr_dir)/dos"
 !endif
 
-#inc_path = ..\h;$(%watcom)\$(_qnx)h;$(watcom_h)
-!ifeq _qnx q
-inc_path = ..\h;$(build_root)\hdr\qnx;$(build_root)\watcom\h;$(%watcom)\qh;$(%watcom)\h
+!ifeq host_cpu 386
+.asm: $(dev_dir)/graphlib/386asm #;$(dev_dir)/graphlib/asm
 !else
-inc_path = ..\h;$(build_root)\hdr\dos;$(build_root)\watcom\h;$(%watcom)\h
 !endif
+.asm: $(dev_dir)/graphlib/asm
 
-!ifdef _WIN
-inc_path += ;$(%watcom)\h\win;$(build_root)\clib\h;$(build_root)\clib\defwin\h;$(wpi_dir)\h;$(watcom_dir)\os220_h
-!endif
+.c: ../c
 
-.before
-        @set include=$(inc_path)
-        @set gr_extra=/osax /w3 /zq /zl /zld /fpc /d1 $(model)
+extra_c_flags = -os -s -zl -D_ENABLE_AUTODEPEND -nm=$[&$(suffix_$(convention)) -D_SUPERVGA -D_FARD= $(extra_c_flags_$(machine)) -fo=$@
 
-cflags = /nt=$(text_seg_name) /d_CGRAPH=$(cdecl) /d_FARD=$(fard) /nm=$(module) /fo=$[&.obj
+extra_c_flags_i86 = -nt=GRAPH_TEXT -D_CGRAPH=_loadds
+extra_c_flags_386_ms_dos = -r
+extra_c_flags_386_ms_qnx = -r
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s -d__STACK
+extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os)) -D_CGRAPH=
 
-.c: $(build_root)\graphlib\c
+extra_c_flags_qnx = -bt=dos # ?????
 
-$(libname).lib : $(objs) $(special_objs) graphics.lbc
-        wlib /b /n /q $(libname) @graphics.lbc
+extra_a_flags = -ms -i"../inc" $(extra_a_flags_$(machine)) -fo=$@
 
-.c.obj:
-        $(compiler) $[* @gr_extra $(cflags) $(extra_c_flags) -bt=dos
+extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
+extra_a_flags_386_register = -3r
+extra_a_flags_386_stack = -3s
+extra_a_flags_386 = $(extra_a_flags_386_$(convention))
 
-.asm.obj:
-        $(asm_cmd) $[@ $(asm_flags)
-!ifeq _386 386
-        erase $[&.err
-!endif
+extra_a_flags_qnx = -D_QNX
 
-graphics.lbc : ..\graphics.mif
-        %create graphics.lbc
-        for %i in ($(objs)) do %append graphics.lbc -+%i
-
-clean: .symbolic
-        @if exist *.obj @del *.obj
-        @if exist *.lib @del *.lib
-        @if exist *.lbc @del *.lbc
-        @if exist *.mod @del *.mod
-        @if exist *.ref @del *.ref
-        @if exist *.stb @del *.stb
-        @if exist *.2bj @del *.2bj
+$(libname).lib : $(special_objs) $(objs)
+        %create $^&.lbc
+        @for %i in ($(objs)) do @%append $^&.lbc +%i
+        $(librarian) $(libflags) @$^&.lbc

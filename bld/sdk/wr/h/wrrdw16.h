@@ -49,7 +49,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WRLoadResourceFromWin16EXE ( WRInfo * );
-extern long int WRReadWin16ExeHeader       ( WResFileID, os2_exe_header * );
+extern int      WRLoadResourceFromWin16EXE( WRInfo * );
+extern long int WRReadWin16ExeHeader( WResFileID, os2_exe_header * );
 
 #endif

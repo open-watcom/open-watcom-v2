@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WMAKE message output related defines.
 *
 ****************************************************************************/
 
@@ -38,40 +37,38 @@
  */
 #if defined(pick)
 #include "banner.h"
-#endif
 
-#if !defined(pick)
+#else
 
 #define YES_CHAR    'Y' /* must be upper case */
 
 #include "mtypes.h"
 
 enum MsgClass {
-    NUM_MSK     = 0x00ff,   /* these are valid msg numbers          */
+    NUM_MSK     = 0x03ff,   /* these are valid msg numbers          */
 
     INF         = 0x0000,   /* an inform message - always printed   */
-    WRN         = 0x0100,   /* Warning(Wnn): msg                    */
-    ERR         = 0x0200,   /* Error(Enn): msg                      */
-    FTL         = 0x0300,   /* Error(Fnn): msg - aborts execution   */
-    CLASS_MSK   = 0x0f00,
+    WRN         = 0x0400,   /* Warning(Wnn): msg                    */
+    ERR         = 0x0800,   /* Error(Enn): msg                      */
+    FTL         = 0x0C00,   /* Error(Fnn): msg - aborts execution   */
+    CLASS_MSK   = 0x0C00,
 
 
     PRNTSTR     = 0x1000,   /* print first arg as a string. used for*/
                                 /* printing ANYTHING greater than 256   */
     LOC         = 0x2000,   /* print file and line info if possible */
     NEOL        = 0x4000,   /* suppress the automatic end of line   */
-    FLAG_MSG    = 0xf000,
 
     DBG         = 0x8000,   /* only if Glob.debug                   */
 };
 
 
-extern size_t FmtStr( char *buf, const char *fmt, ... );
-extern void PrtMsg( enum MsgClass num, ... );
-extern void Usage( void );
-extern BOOLEAN GetYes( enum MsgClass querymsg );
-extern void LogInit( const char *logname );
-extern void LogFini( void );
+extern size_t   FmtStr( char *buf, const char *fmt, ... );
+extern void     PrtMsg( enum MsgClass num, ... );
+extern void     Usage( void );
+extern BOOLEAN  GetYes( enum MsgClass querymsg );
+extern void     LogInit( const char *logname );
+extern void     LogFini( void );
 
 #define pick( name, string ) name
 
@@ -90,7 +87,7 @@ enum {
 /* banner */
 
 pick( BANNER = END_OF_RESOURCE_MSG,
-    banner1("Watcom Make",_WMAKE_VERSION_) "\n" banner2("1988") "\n" banner3 ),
+    banner1("Open Watcom Make",_WMAKE_VERSION_) "\n" banner2("1988") "\n" banner3 "\n" banner3a ),
 
 /*
  * All messages beyond here appear only under certain conditions in debugging

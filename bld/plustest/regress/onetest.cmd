@@ -1,10 +1,8 @@
 title C++ Test Stream
-rem must be early in case refresh refreshes onetest.cmd!
-p4 get //depot/plustest/...
 setlocal
 set plustest_name=result
-wmake del_log
-del *.sav
+wmake -h del_log
+if exist *.sav del *.sav
 rem
 rem figure out if any extra architectures have to be tested
 if not [%OS%] == [Windows_NT] goto not_nt
@@ -72,28 +70,22 @@ cd ..
 cd gstring
 call onetest.cmd
 cd ..
+cd inline
+call onetest.cmd
+cd ..
 cd jam
-call onetest.cmd
-cd ..
-cd mat
-call onetest.cmd
-cd ..
-cd nacc
 call onetest.cmd
 cd ..
 cd nih
 call onetest.cmd
 cd ..
-cd ns_rand
-call onetest.cmd
-cd ..
-cd preproc_rand
+cd nullptr
 call onetest.cmd
 cd ..
 cd overload
 call onetest.cmd
 cd ..
-cd pcg
+cd owstl
 call onetest.cmd
 cd ..
 cd perl
@@ -111,9 +103,6 @@ cd ..
 cd re2c05
 call onetest.cmd
 cd ..
-cd rogue.60
-call onetest.cmd
-cd ..
 cd sizelist
 call onetest.cmd
 cd ..
@@ -123,31 +112,16 @@ cd ..
 cd stepanov
 call onetest.cmd
 cd ..
-cd stl.old
-call onetest.cmd
-cd ..
-cd stl.mod
-call onetest.cmd
-cd ..
 cd stl.94
 call onetest.cmd
 cd ..
 cd stl.95
 call onetest.cmd
 cd ..
-cd str
-call onetest.cmd
-cd ..
 cd torture
 call onetest.cmd
 cd ..
-cd var
-call onetest.cmd
-cd ..
 cd wclass
-call onetest.cmd
-cd ..
-cd woop
 call onetest.cmd
 cd ..
 cd yacl

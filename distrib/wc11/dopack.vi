@@ -1,0 +1,4 @@
+%s/.*(\.\\pack\\.*)\.lst/wpack -a -q \1 @\1.lst 
+%!uniq
+w! dopack2.cmd
+q!

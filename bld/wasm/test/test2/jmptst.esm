@@ -1,0 +1,60 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    jmp         dword ptr 2[bx]
+    xor         ax,ax
+L$1:
+    nop         
+L$2:
+    nop         
+    nop         
+    nop         
+L$3:
+    jmp         L$4
+    xor         ax,ax
+L$4:
+    jmp         L$2
+    xor         ax,ax
+    add         eax,dword ptr cs:L$3
+    add         eax,dword ptr cs:L$3
+    add         eax,dword ptr cs:L$3
+    jmp         L$5
+    jmp         far ptr L$5
+    jmp         L$5
+    jmp         near ptr L$5
+    jmp         L$1
+    jmp         far ptr L$1
+    jmp         L$1
+    jmp         near ptr L$1
+L$5:
+    call        dword ptr 2[bx]
+    xor         ax,ax
+L$6:
+    nop         
+L$7:
+    nop         
+    nop         
+    nop         
+L$8:
+    call        near ptr L$9
+    xor         ax,ax
+L$9:
+    call        near ptr L$7
+    xor         ax,ax
+    add         eax,dword ptr cs:L$8
+    add         eax,dword ptr cs:L$8
+    add         eax,dword ptr cs:L$8
+    call        near ptr L$10
+    call        far ptr L$10
+    call        near ptr L$10
+    call        near ptr L$6
+    call        far ptr L$6
+    call        near ptr L$6
+    call        near ptr L$6
+L$10:
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

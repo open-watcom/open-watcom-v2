@@ -39,9 +39,7 @@ static SAREA            BandArea;
 static ATTR             Attr;
 
 
-#pragma off(unreferenced);
 static void drawband( SAREA area, void *dummy )
-#pragma on(unreferenced);
 {
     drawbox( &UIData->screen, BandArea, (char *)&UiGChar[ UI_SBOX_TOP_LEFT ],
              Attr, FALSE );
@@ -75,7 +73,7 @@ void global uibandmove( SAREA new )
 }
 
 
-void global uibandfini()
+void global uibandfini( void )
 {
     uidirty( BandArea );
     closewindow( &BandWnd );

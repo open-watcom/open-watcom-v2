@@ -24,19 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows default windowing title bar texts.
 *
 ****************************************************************************/
 
 
-/* Text for window title bar */
-
 char __WinTitleBar[] =
 #ifdef __NT__
-        "WATCOM NT Application";
+        "Open Watcom NT Application";
 #elif defined(__WINDOWS_386__)
-        "WATCOM 386 Windows Application";
+        "Open Watcom 386 Windows Application";
 #else
-        "WATCOM Windows Application";
+        "Open Watcom Windows Application";
 #endif

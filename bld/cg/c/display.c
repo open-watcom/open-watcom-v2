@@ -37,29 +37,27 @@
 #include "opcodes.h"
 #include "objrep.h"
 #include "addrname.h"
-#include "sysmacro.h"
+#include "cgmem.h"
+#include "addrfold.h"
+#include "makeins.h"
+#include "display.h"
 
 typedef struct frame_patch {
         struct frame_patch      *next;
         abspatch_handle         patch;
 } frame_patch;
 
-extern  an              AddrName(name*,type_def*);
 extern  void            AbsPatch(abspatch*,offset);
 extern  name            *GenIns(an);
 extern  name            *TempOffset(name*,type_length,type_class_def);
-extern  int             SizeDisplayReg();
-extern  abspatch_handle *NextFramePatch();
-extern  hw_reg_set      AllCacheRegs();
-extern  instruction     *MakeNop();
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  hw_reg_set      StackReg();
+extern  int             SizeDisplayReg(void);
+extern  hw_reg_set      AllCacheRegs(void);
+extern  hw_reg_set      StackReg(void);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            AddIns(instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
-extern  hw_reg_set      DisplayReg();
+extern  hw_reg_set      DisplayReg(void);
 
 
 extern    proc_def              *CurrProc;
@@ -68,9 +66,9 @@ extern    type_def              *TypePtr;
 extern    type_def              *TypeProcParm;
 
 
-static  name    *DisplayField( int level ) {
-/******************************************/
-
+static  name    *DisplayField( int level )
+/****************************************/
+{
     name        *reg;
 
     reg = AllocRegName( DisplayReg() );
@@ -78,9 +76,9 @@ static  name    *DisplayField( int level ) {
 }
 
 
-extern  name    *MakeDisplay( name *op, int level ) {
-/*****************************************************/
-
+extern  name    *MakeDisplay( name *op, int level )
+/*************************************************/
+{
     name        *temp;
     name        *reg;
 
@@ -92,9 +90,9 @@ extern  name    *MakeDisplay( name *op, int level ) {
 }
 
 
-extern  void    BigGoto( int level ) {
-/************************************/
-
+extern  void    BigGoto( int level )
+/**********************************/
+{
     name        *reg;
 
     if( level != 0 ) {
@@ -104,9 +102,9 @@ extern  void    BigGoto( int level ) {
 }
 
 
-extern  void    BigLabel() {
-/**************************/
-
+extern  void    BigLabel( void )
+/******************************/
+{
     instruction *ins;
     name        *bp;
     name        *sp;
@@ -120,7 +118,7 @@ extern  void    BigLabel() {
     } else {
         ins = MakeNop();
     }
-    ins->zap = AllocRegName( AllCacheRegs() );
+    ins->zap = (register_name *) AllocRegName( AllCacheRegs() );
     ins->flags.nop_flags |= NOP_ZAP_INFO;
     AddIns( ins );
 }
@@ -135,12 +133,12 @@ extern  bool    AskIsFrameIndex( name *op ) {
 }
 
 
-extern  abspatch_handle *NextFramePatch() {
-/*****************************************/
-
+extern  abspatch_handle *NextFramePatch( void )
+/*********************************************/
+{
     frame_patch *temp;
 
-    _Alloc( temp, sizeof( frame_patch ) );
+    temp = CGAlloc( sizeof( frame_patch ) );
     temp->next = CurrProc->frame_index;
     CurrProc->frame_index = temp;
     return( &temp->patch );
@@ -158,7 +156,7 @@ extern  void    PatchBigLabels( offset lc ) {
         AbsPatch( temp->patch, lc );
         junk = temp;
         temp = temp->next;
-        _Free( junk, sizeof( frame_patch ) );
+        CGFree( junk );
     }
     CurrProc->frame_index = NULL;
 }

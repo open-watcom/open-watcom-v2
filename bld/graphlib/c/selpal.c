@@ -34,7 +34,7 @@
 #include "gbios.h"
 
 
-short _WCI86FAR _CGRAPH _selectpalette( short palnum )
+_WCRTLINK short _WCI86FAR _CGRAPH _selectpalette( short palnum )
 /*===============================================
 
    This routine selects the palette to be manipulated.  It returns the

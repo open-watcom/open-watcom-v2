@@ -1,0 +1,1305 @@
+/*
+ *  sspi.h      Security Support Provider Interface functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __SSPI_H__
+#define __SSPI_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Calling convention for security functions */
+#define SEC_ENTRY   __stdcall
+
+/* Macro to specify kernel security functions */
+#define KSECDDDECLSPEC  __declspec(dllimport)
+
+/* Security primitive data types */
+typedef WCHAR   SEC_WCHAR;
+typedef CHAR    SEC_CHAR;
+
+/* Security string data types */
+#ifdef UNICODE
+typedef SEC_WCHAR       *SECURITY_PSTR;
+typedef CONST SEC_WCHAR *SECURITY_PCSTR;
+#else
+typedef SEC_CHAR        *SECURITY_PSTR;
+typedef CONST SEC_CHAR  *SECURITY_PCSTR;
+#endif
+
+/* Opaque data types */
+typedef PVOID   PSEC_WINNT_AUTH_IDENTITY_OPAQUE;
+
+:include secstat.sp
+
+/* Security integer */
+typedef LARGE_INTEGER       SECURITY_INTEGER;
+typedef LARGE_INTEGER       *PSECURITY_INTEGER;
+typedef SECURITY_INTEGER    TimeStamp;
+typedef SECURITY_INTEGER    *PTimeStamp;
+
+/* Security macros */
+#define SEC_TEXT    TEXT
+#define SEC_FAR
+#define __SEC_FAR   SEC_FAR
+
+:include authid.sp
+
+/* Security handle special value */
+#define SEC_DELETED_HANDLE  ((ULONG_PTR)-2)
+
+/* Security package capabilities */
+#define SECPKG_FLAG_INTEGRITY               0x00000001L
+#define SECPKG_FLAG_PRIVACY                 0x00000002L
+#define SECPKG_FLAG_TOKEN_ONLY              0x00000004L
+#define SECPKG_FLAG_DATAGRAM                0x00000008L
+#define SECPKG_FLAG_CONNECTION              0x00000010L
+#define SECPKG_FLAG_MULTI_REQUIRED          0x00000020L
+#define SECPKG_FLAG_CLIENT_ONLY             0x00000040L
+#define SECPKG_FLAG_EXTENDED_ERROR          0x00000080L
+#define SECPKG_FLAG_IMPERSONATION           0x00000100L
+#define SECPKG_FLAG_ACCEPT_WIN32_NAME       0x00000200L
+#define SECPKG_FLAG_STREAM                  0x00000400L
+#define SECPKG_FLAG_NEGOTIABLE              0x00000800L
+#define SECPKG_FLAG_GSS_COMPATIBLE          0x00001000L
+#define SECPKG_FLAG_LOGON                   0x00002000L
+#define SECPKG_FLAG_ASCII_BUFFERS           0x00004000L
+#define SECPKG_FLAG_FRAGMENT                0x00008000L
+#define SECPKG_FLAG_MUTUAL_AUTH             0x00010000L
+#define SECPKG_FLAG_DELEGATION              0x00020000L
+#define SECPKG_FLAG_READONLY_WITH_CHECKSUM  0x00040000L
+#define SECPKG_FLAG_RESTRICTED_TOKENS       0x00080000L
+#define SECPKG_FLAG_NEGO_EXTENDER           0x00100000L
+#define SECPKG_FLAG_NEGOTIABLE2             0x00200000L
+
+/* Security package identifier special value */
+#define SECPKG_ID_NONE  0xFFFF
+
+/* Security buffer version number */
+#define SECBUFFER_VERSION   0L
+
+/* Security buffer types */
+#define SECBUFFER_EMPTY                     0L
+#define SECBUFFER_DATA                      1L
+#define SECBUFFER_TOKEN                     2L
+#define SECBUFFER_PKG_PARAMS                3L
+#define SECBUFFER_MISSING                   4L
+#define SECBUFFER_EXTRA                     5L
+#define SECBUFFER_STREAM_TRAILER            6L
+#define SECBUFFER_STREAM_HEADER             7L
+#define SECBUFFER_NEGOTIATION_INFO          8L
+#define SECBUFFER_PADDING                   9L
+#define SECBUFFER_STREAM                    10L
+#define SECBUFFER_MECHLIST                  11L
+#define SECBUFFER_MECHLIST_SIGNATURE        12L
+#define SECBUFFER_TARGET                    13L
+#define SECBUFFER_CHANNEL_BINDINGS          14L
+#define SECBUFFER_CHANGE_PASS_RESPONSE      15L
+#define SECBUFFER_TARGET_HOST               16L
+#define SECBUFFER_ALERT                     17L
+#define SECBUFFER_ATTRMASK                  0xF0000000L
+#define SECBUFFER_READONLY                  0x80000000L
+#define SECBUFFER_READONLY_WITH_CHECKSUM    0x10000000L
+
+/* Security data representations */
+#define SECURITY_NATIVE_DREP    0x00000010L
+#define SECURITY_NETWORK_DREP   0x00000000L
+
+/* Security package credential use flags */
+#define SECPKG_CRED_INBOUND                 0x00000001L
+#define SECPKG_CRED_OUTBOUND                0x00000002L
+#define SECPKG_CRED_BOTH                    0x00000003L
+#define SECPKG_CRED_DEFAULT                 0x00000004L
+#define SECPKG_CRED_RESERVED                0xF0000000L
+#define SECPKG_CRED_AUTOLOGON_RESTRICTED    0x00000010L
+#define SECPKG_CRED_PROCESS_POLICY_ONLY     0x00000020L
+
+/* InitializeSecurityContext() requirement flags */
+#define ISC_REQ_DELEGATE                0x00000001L
+#define ISC_REQ_MUTUAL_AUTH             0x00000002L
+#define ISC_REQ_REPLAY_DETECT           0x00000004L
+#define ISC_REQ_SEQUENCE_DETECT         0x00000008L
+#define ISC_REQ_CONFIDENTIALITY         0x00000010L
+#define ISC_REQ_USE_SESSION_KEY         0x00000020L
+#define ISC_REQ_PROMPT_FOR_CREDS        0x00000040L
+#define ISC_REQ_USE_SUPPLIED_CREDS      0x00000080L
+#define ISC_REQ_ALLOCATE_MEMORY         0x00000100L
+#define ISC_REQ_USE_DCE_STYLE           0x00000200L
+#define ISC_REQ_DATAGRAM                0x00000400L
+#define ISC_REQ_CONNECTION              0x00000800L
+#define ISC_REQ_CALL_LEVEL              0x00001000L
+#define ISC_REQ_FRAGMENT_SUPPLIED       0x00002000L
+#define ISC_REQ_EXTENDED_ERROR          0x00004000L
+#define ISC_REQ_STREAM                  0x00008000L
+#define ISC_REQ_INTEGRITY               0x00010000L
+#define ISC_REQ_IDENTIFY                0x00020000L
+#define ISC_REQ_NULL_SESSION            0x00040000L
+#define ISC_REQ_MANUAL_CRED_VALIDATION  0x00080000L
+#define ISC_REQ_FRAGMENT_TO_FIT         0x00200000L
+#define ISC_REQ_FORWARD_CREDENTIALS     0x00400000L
+#define ISC_REQ_NO_INTEGRITY            0x00800000L
+#define ISC_REQ_USE_HTTP_STYLE          0x01000000L
+
+/* InitializeSecurityContext() return flags */
+#define ISC_RET_DELEGATE                0x00000001L
+#define ISC_RET_MUTUAL_AUTH             0x00000002L
+#define ISC_RET_REPLAY_DETECT           0x00000004L
+#define ISC_RET_SEQUENCE_DETECT         0x00000008L
+#define ISC_RET_CONFIDENTIALITY         0x00000010L
+#define ISC_RET_USE_SESSION_KEY         0x00000020L
+#define ISC_RET_USED_COLLECTED_CREDS    0x00000040L
+#define ISC_RET_USED_SUPPLIED_CREDS     0x00000080L
+#define ISC_RET_ALLOCATED_MEMORY        0x00000100L
+#define ISC_RET_USED_DCE_STYLE          0x00000200L
+#define ISC_RET_DATAGRAM                0x00000400L
+#define ISC_RET_CONNECTION              0x00000800L
+#define ISC_RET_IMMEDIATE_RETURN        0x00001000L
+#define ISC_RET_CALL_LEVEL              0x00002000L
+#define ISC_RET_EXTENDED_ERROR          0x00004000L
+#define ISC_RET_STREAM                  0x00008000L
+#define ISC_RET_INTEGRITY               0x00010000L
+#define ISC_RET_IDENTIFY                0x00020000L
+#define ISC_RET_NULL_SESSION            0x00040000L
+#define ISC_RET_MANUAL_CRED_VALIDATION  0x00080000L
+#define ISC_RET_FRAGMENT_ONLY           0x00200000L
+#define ISC_RET_FORWARD_CREDENTIALS     0x00400000L
+#define ISC_RET_USED_HTTP_STYLE         0x01000000L
+#define ISC_RET_NO_ADDITIONAL_TOKEN     0x02000000L
+#define ISC_RET_REAUTHENTICATION        0x08000000L
+
+/* AcquireSecurityContext() requirement flags */
+#define ASC_REQ_DELEGATE                0x00000001L
+#define ASC_REQ_MUTUAL_AUTH             0x00000002L
+#define ASC_REQ_REPLAY_DETECT           0x00000004L
+#define ASC_REQ_SEQUENCE_DETECT         0x00000008L
+#define ASC_REQ_CONFIDENTIALITY         0x00000010L
+#define ASC_REQ_USE_SESSION_KEY         0x00000020L
+#define ASC_REQ_ALLOCATE_MEMORY         0x00000100L
+#define ASC_REQ_USE_DCE_STYLE           0x00000200L
+#define ASC_REQ_DATAGRAM                0x00000400L
+#define ASC_REQ_CONNECTION              0x00000800L
+#define ASC_REQ_CALL_LEVEL              0x00001000L
+#define ASC_REQ_FRAGMENT_SUPPLIED       0x00002000L
+#define ASC_REQ_EXTENDED_ERROR          0x00008000L
+#define ASC_REQ_STREAM                  0x00010000L
+#define ASC_REQ_INTEGRITY               0x00020000L
+#define ASC_REQ_LICENSING               0x00040000L
+#define ASC_REQ_IDENTIFY                0x00080000L
+#define ASC_REQ_ALLOW_NULL_SESSION      0x00100000L
+#define ASC_REQ_ALLOW_NON_USER_LOGONS   0x00200000L
+#define ASC_REQ_ALLOW_CONTEXT_REPLAY    0x00400000L
+#define ASC_REQ_FRAGMENT_TO_FIT         0x00800000L
+#define ASC_REQ_NO_TOKEN                0x01000000L
+#define ASC_REQ_PROXY_BINDINGS          0x04000000L
+#define ASC_REQ_ALLOW_MISSING_BINDINGS  0x10000000L
+
+/* AcquireSecurityContext() return flags */
+#define ASC_RET_DELEGATE                0x00000001L
+#define ASC_RET_MUTUAL_AUTH             0x00000002L
+#define ASC_RET_REPLAY_DETECT           0x00000004L
+#define ASC_RET_SEQUENCE_DETECT         0x00000008L
+#define ASC_RET_CONFIDENTIALITY         0x00000010L
+#define ASC_RET_USE_SESSION_KEY         0x00000020L
+#define ASC_RET_ALLOCATED_MEMORY        0x00000100L
+#define ASC_RET_USED_DCE_STYLE          0x00000200L
+#define ASC_RET_DATAGRAM                0x00000400L
+#define ASC_RET_CONNECTION              0x00000800L
+#define ASC_RET_CALL_LEVEL              0x00002000L
+#define ASC_RET_THIRD_LEG_FAILED        0x00004000L
+#define ASC_RET_EXTENDED_ERROR          0x00008000L
+#define ASC_RET_STREAM                  0x00010000L
+#define ASC_RET_INTEGRITY               0x00020000L
+#define ASC_RET_LICENSING               0x00040000L
+#define ASC_RET_IDENTIFY                0x00080000L
+#define ASC_RET_NULL_SESSION            0x00100000L
+#define ASC_RET_ALLOW_NON_USER_LOGONS   0x00200000L
+#define ASC_RET_ALLOW_CONTEXT_REPLAY    0x00400000L
+#define ASC_RET_FRAGMENT_ONLY           0x00800000L
+#define ASC_RET_NO_TOKEN                0x01000000L
+#define ASC_RET_NO_ADDITIONAL_TOKEN     0x02000000L
+#define ASC_RET_NO_PROXY_BINDINGS       0x04000000L
+#define ASC_RET_MISSING_BINDINGS        0x10000000L
+
+/* Security package credentials attributes */
+#define SECPKG_CRED_ATTR_NAMES          1L
+#define SECPKG_CRED_ATTR_SSI_PROVIDER   2L
+
+/* Security package context attributes */
+#define SECPKG_ATTR_SIZES                       0L
+#define SECPKG_ATTR_NAMES                       1L
+#define SECPKG_ATTR_LIFESPAN                    2L
+#define SECPKG_ATTR_DCE_INFO                    3L
+#define SECPKG_ATTR_STREAM_SIZES                4L
+#define SECPKG_ATTR_KEY_INFO                    5L
+#define SECPKG_ATTR_AUTHORITY                   6L
+#define SECPKG_ATTR_PROTO_INFO                  7L
+#define SECPKG_ATTR_PASSWORD_EXPIRY             8L
+#define SECPKG_ATTR_SESSION_KEY                 9L
+#define SECPKG_ATTR_PACKAGE_INFO                10L
+#define SECPKG_ATTR_USER_FLAGS                  11L
+#define SECPKG_ATTR_NEGOTIATION_INFO            12L
+#define SECPKG_ATTR_NATIVE_NAMES                13L
+#define SECPKG_ATTR_FLAGS                       14L
+#define SECPKG_ATTR_USE_VALIDATED               15L
+#define SECPKG_ATTR_CREDENTIAL_NAME             16L
+#define SECPKG_ATTR_TARGET_INFORMATION          17L
+#define SECPKG_ATTR_ACCESS_TOKEN                18L
+#define SECPKG_ATTR_TARGET                      19L
+#define SECPKG_ATTR_AUTHENTICATION_ID           20L
+#define SECPKG_ATTR_LOGOFF_TIME                 21L
+#define SECPKG_ATTR_NEGO_KEYS                   22L
+#define SECPKG_ATTR_PROMPTING_NEEDED            24L
+#define SECPKG_ATTR_UNIQUE_BINDINGS             25L
+#define SECPKG_ATTR_ENDPOINT_BINDINGS           26L
+#define SECPKG_ATTR_CLIENT_SPECIFIED_TARGET     27L
+#define SECPKG_ATTR_LAST_CLIENT_TOKEN_STATUS    30L
+#define SECPKG_ATTR_NEGO_PKG_INFO               31L
+#define SECPKG_ATTR_NEGO_STATUS                 32L
+#define SECPKG_ATTR_CONTEXT_DELETED             33L
+#define SECPKG_ATTR_SUBJECT_SECURITY_ATTRIBUTES 128L
+
+/* Security package context attribute negotiation information flags */
+#define SECPKG_ATTR_NEGO_INFO_FLAG_NO_KERBEROS  0x00000001L
+#define SECPKG_ATTR_NEGO_INFO_FLAG_NO_NTLM      0x00000002L
+
+/* Security package negotiation states */
+#define SECPKG_NEGOTIATION_COMPLETE         0L
+#define SECPKG_NEGOTIATION_OPTIMISTIC       1L
+#define SECPKG_NEGOTIATION_IN_PROGRESS      2L
+#define SECPKG_NEGOTIATION_DIRECT           3L
+#define SECPKG_NEGOTIATION_TRY_MULTICRED    4L
+
+/* ExportSecurityContext() flags */
+#define SECPKG_CONTEXT_EXPORT_RESET_NEW     0x00000001L
+#define SECPKG_CONTEXT_EXPORT_DELETE_OID    0x00000002L
+#define SECPKG_CONTEXT_EXPORT_TO_KERNEL     0x00000004L
+
+/* Security entry point names */
+#define SECURITY_ENTRYPOINT_ANSIA       "InitSecurityInterfaceA"
+#define SECURITY_ENTRYPOINT_ANSIW       "InitSecurityInterfaceW"
+#define SECURITY_ENTRYPOINTA            SEC_TEXT("InitSecurityInterfaceA")
+#define SECURITY_ENTRYPOINTW            SEC_TEXT("InitSecurityInterfaceW")
+#define SECURITY_ENTRYPOINT16           "INITSECURITYINTERFACEA"
+#ifdef UNICODE
+    #define SECURITY_ENTRYPOINT_ANSI    SECURITY_ENTRYPOINT_ANSIW
+    #define SECURITY_ENTRYPOINT         SECURITY_ENTRYPOINTW
+#else
+    #define SECURITY_ENTRYPOINT_ANSI    SECURITY_ENTRYPOINT_ANSIA
+    #define SECURITY_ENTRYPOINT         SECURITY_ENTRYPOINTA
+#endif
+
+/* Security Support Provider Interface versions */
+#define SECURITY_SUPPORT_PROVIDER_INTERFACE_VERSION     1L
+#define SECURITY_SUPPORT_PROVIDER_INTERFACE_VERSION_2   2L
+#define SECURITY_SUPPORT_PROVIDER_INTERFACE_VERSION_3   3L
+#define SECURITY_SUPPORT_PROVIDER_INTERFACE_VERSION_4   4L
+
+/* SASL options */
+#define SASL_OPTION_SEND_SIZE           1L
+#define SASL_OPTION_RECV_SIZE           2L
+#define SASL_OPTION_AUTHZ_STRING        3L
+#define SASL_OPTION_AUTHZ_PROCESSING    4L
+
+/* Authentication identity version numbers */
+#define SEC_WINNT_AUTH_IDENTITY_VERSION     0x00000200L
+#define SEC_WINNT_AUTH_IDENTITY_VERSION_2   0x00000201L
+
+/* Additional authentication identity flags */
+#define SEC_WINNT_AUTH_IDENTITY_MARSHALLED                          0x00000004L
+#define SEC_WINNT_AUTH_IDENTITY_ONLY                                0x00000008L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_PROCESS_ENCRYPTED             0x00000010L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_SYSTEM_PROTECTED              0x00000020L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_NULL_USER                     0x00020000L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_NULL_DOMAIN                   0x00040000L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_SSPIPFC_USE_MASK              0xFF000000L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_SSPIPFC_SAVE_CRED_BY_CALLER   0x80000000L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_SSPIPFC_SAVE_CRED_CHECKED     0x40000000L
+#define SEC_WINNT_AUTH_IDENTITY_FLAGS_VALID_SSPIPFC_FLAGS \
+    (SEC_WINNT_AUTH_IDENTITY_FLAGS_SSPIPFC_SAVE_CRED_BY_CALLER | \
+    SEC_WINNT_AUTH_IDENTITY_FLAGS_SPPIPFC_SAVE_CRED_CHECKED)
+
+/* SspiPromptForCredentials() flags */
+#define SSPIPFC_SAVE_CRED_BY_CALLER 0x00000001L
+#define SSPIPFC_VALID_FLAGS         SSPIPFC_SAVE_CRED_BY_CALLER
+
+/* Security package options types */
+#define SECPKG_OPTIONS_TYPE_UNKNOWN 0L
+#define SECPKG_OPTIONS_TYPE_LSA     1L
+#define SECPKG_OPTIONS_TYPE_SSPI    2L
+
+/* Security package options flags */
+#define SECPKG_OPTIONS_PERMANENT    0x00000001L
+
+:include sechandl.sp
+typedef SecHandle   CredHandle;
+typedef PSecHandle  PCredHandle;
+typedef SecHandle   CtxtHandle;
+typedef PSecHandle  PCtxtHandle;
+
+/* Security string */
+#ifdef _NTDEF_
+typedef UNICODE_STRING  SECURITY_STRING;
+#else
+typedef struct _SECURITY_STRING {
+    unsigned short  Length;
+    unsigned short  MaximumLength;
+    unsigned short  *Buffer;
+} SECURITY_STRING;
+#endif
+typedef SECURITY_STRING *PSECURITY_STRING;
+
+/* Security package information */
+typedef struct _SecPkgInfoA {
+    unsigned long   fCapabilities;
+    unsigned short  wVersion;
+    unsigned short  wRPCID;
+    unsigned long   cbMaxToken;
+    SEC_CHAR        *Name;
+    SEC_CHAR        *Comment;
+} SecPkgInfoA;
+typedef SecPkgInfoA     *PSecPkgInfoA;
+typedef struct _SecPkgInfoW {
+    unsigned long   fCapabilities;
+    unsigned short  wVersion;
+    unsigned short  wRPCID;
+    unsigned long   cbMaxToken;
+    SEC_WCHAR       *Name;
+    SEC_WCHAR       *Comment;
+} SecPkgInfoW;
+typedef SecPkgInfoW     *PSecPkgInfoW;
+#ifdef UNICODE
+typedef SecPkgInfoW     SecPkgInfo;
+typedef PSecPkgInfoW    PSecPkgInfo;
+#else
+typedef SecPkgInfoA     SecPkgInfo;
+typedef PSecPkgInfoA    PSecPkgInfo;
+#endif
+
+/* Security buffer */
+typedef struct _SecBuffer {
+    unsigned long   cbBuffer;
+    unsigned long   BufferType;
+    void            *pvBuffer;
+} SecBuffer;
+typedef SecBuffer   *PSecBuffer;
+
+/* Security buffer descriptor */
+typedef struct _SecBufferDesc {
+    unsigned long   ulVersion;
+    unsigned long   cBuffers;
+    PSecBuffer      pBuffers;
+} SecBufferDesc;
+typedef SecBufferDesc   *PSecBufferDesc;
+
+/* Security negotiation information */
+typedef struct _SEC_NEGOTIATION_INFO {
+    unsigned long   Size;
+    unsigned long   NameLength;
+    SEC_WCHAR       *Name;
+    void            *Reserved;
+} SEC_NEGOTIATION_INFO;
+typedef SEC_NEGOTIATION_INFO    *PSEC_NEGOTIATION_INFO;
+
+/* Security channel bindings */
+typedef struct _SEC_CHANNEL_BINDINGS {
+    unsigned long   dwInitiatorAddrType;
+    unsigned long   cbInitiatorLength;
+    unsigned long   dwInitiatorOffset;
+    unsigned long   dwAcceptorAddrType;
+    unsigned long   cbAcceptorLength;
+    unsigned long   dwAcceptorOffset;
+    unsigned long   cbApplicationDataLength;
+    unsigned long   dwApplicationDataOffset;
+} SEC_CHANNEL_BINDINGS;
+typedef SEC_CHANNEL_BINDINGS    *PSEC_CHANNEL_BINDINGS;
+
+/* Security package credentials names */
+typedef struct _SecPkgCredentials_NamesA {
+    SEC_CHAR    *sUserName;
+} SecPkgCredentials_NamesA;
+typedef SecPkgCredentials_NamesA    *PSecPkgCredentials_NamesA;
+typedef struct _SecPkgCredentials_NamesW {
+    SEC_WCHAR   *sUserName;
+} SecPkgCredentials_NamesW;
+typedef SecPkgCredentials_NamesW    *PSecPkgCredentials_NamesW;
+#ifdef UNICODE
+typedef SecPkgCredentials_NamesW    SecPkgCredentials_Names;
+typedef PSecPkgCredentials_NamesW   PSecPkgCredentials_Names;
+#else
+typedef SecPkgCredentials_NamesA    SecPkgCredentials_Names;
+typedef PSecPkgCredentials_NamesA   PSecPkgCredentials_Names;
+#endif
+
+/* Security package credentials SSI provider */
+typedef struct _SecPkgCredentials_SSIProviderA {
+    SEC_CHAR        *sProviderName;
+    unsigned long   ProviderInfoLength;
+    char            *ProviderInfo;
+} SecPkgCredentials_SSIProviderA;
+typedef SecPkgCredentials_SSIProviderA  *PSecPkgCredentials_SSIProviderA;
+typedef struct _SecPkgCredentials_SSIProviderW {
+    SEC_WCHAR       *sProviderName;
+    unsigned long   ProviderInfoLength;
+    char            *ProviderInfo;
+} SecPkgCredentials_SSIProviderW;
+typedef SecPkgCredentials_SSIProviderW  *PSecPkgCredentials_SSIProviderW;
+#ifdef UNICODE
+typedef SecPkgCredentials_SSIProviderW  SecPkgCredentials_SSIProvider;
+typedef PSecPkgCredentials_SSIProviderW PSecPkgCredentials_SSIProvider;
+#else
+typedef SecPkgCredentials_SSIProviderA  SecPkgCredentials_SSIProvider;
+typedef PSecPkgCredentials_SSIProviderA PSecPkgCredentials_SSIProvider;
+#endif
+
+/* Security package context subject attributes */
+typedef struct _SecPkgContext_SubjectAttributes {
+    void    *AttributeInfo;
+} SecPkgContext_SubjectAttributes;
+typedef SecPkgContext_SubjectAttributes *PSecPkgContext_SubjectAttributes;
+
+/* Security package credential classes */
+typedef enum _SECPKG_CRED_CLASS {
+    SecPkgCredClass_None                = 0,
+    SecPkgCredClass_Ephemeral           = 10,
+    SecPkgCredClass_PersistedGeneric    = 20,
+    SecPkgCredClass_PersistedSpecific   = 30,
+    SecPkgCredClass_Explicit            = 40
+} SECPKG_CRED_CLASS;
+typedef SECPKG_CRED_CLASS   *PSECPKG_CRED_CLASS;
+
+/* Security package context credential information */
+typedef struct _SecPkgContext_CredInfo {
+    SECPKG_CRED_CLASS   CredClass;
+    unsigned long       IsPromptingNeeded;
+} SecPkgContext_CredInfo;
+typedef SecPkgContext_CredInfo  *PSecPkgContext_CredInfo;
+
+/* Security package context negotiation package information */
+typedef struct _SecPkgContext_NegoPackageInfo {
+    unsigned long   PackageMask;
+} SecPkgContext_NegoPackageInfo;
+typedef SecPkgContext_NegoPackageInfo   *PSecPkgContext_NegoPackageInfo;
+
+/* Security package context negotiation status */
+typedef struct _SecPkgContext_NegoStatus {
+    unsigned long   LastStatus;
+} SecPkgContext_NegoStatus;
+typedef SecPkgContext_NegoStatus    *PSecPkgContext_NegoStatus;
+
+/* Security package context sizes */
+typedef struct _SecPkgContext_Sizes {
+    unsigned long   cbMaxToken;
+    unsigned long   cbMaxSignature;
+    unsigned long   cbBlockSize;
+    unsigned long   cbSecurityTrailer;
+} SecPkgContext_Sizes;
+typedef SecPkgContext_Sizes *PSecPkgContext_Sizes;
+
+/* Security package context stream sizes */
+typedef struct _SecPkgContext_StreamSizes {
+    unsigned long   cbHeader;
+    unsigned long   cbTrailer;
+    unsigned long   cbMaximumMessage;
+    unsigned long   cBuffers;
+    unsigned long   cbBlockSize;
+} SecPkgContext_StreamSizes;
+typedef SecPkgContext_StreamSizes   *PSecPkgContext_StreamSizes;
+
+/* Security package context names */
+typedef struct _SecPkgContext_NamesA {
+    SEC_CHAR    *sUserName;
+} SecPkgContext_NamesA;
+typedef SecPkgContext_NamesA    *PSecPkgContext_NamesA;
+typedef struct _SecPkgContext_NamesW {
+    SEC_WCHAR   *sUserName;
+} SecPkgContext_NamesW;
+typedef SecPkgContext_NamesW    *PSecPkgContext_NamesW;
+#ifdef UNICODE
+typedef SecPkgContext_NamesW    SecPkgContext_Names;
+typedef PSecPkgContext_NamesW   PSecPkgContext_Names;
+#else
+typedef SecPkgContext_NamesA    SecPkgContext_Names;
+typedef PSecPkgContext_NamesA   PSecPkgContext_Names;
+#endif
+
+/* Security package attribute last client token status values */
+typedef enum _SECPKG_ATTR_LCT_STATUS {
+    SecPkgAttrLastClientTokenYes    = 0,
+    SecPkgAttrLastClientTokenNo     = 1,
+    SecPkgAttrLastClientTokenMaybe  = 2
+} SECPKG_ATTR_LCT_STATUS;
+typedef SECPKG_ATTR_LCT_STATUS  *PSECPKG_ATTR_LCT_STATUS;
+
+/* Security package context last client token status */
+typedef struct _SecPkgContext_LastClientTokenStatus {
+    SECPKG_ATTR_LCT_STATUS  LastClientTokenStatus;
+} SecPkgContext_LastClientTokenStatus;
+typedef SecPkgContext_LastClientTokenStatus *PSecPkgContext_LastClientTokenStatus;
+
+/* Security package context lifespan */
+typedef struct _SecPkgContext_Lifespan {
+    TimeStamp   tsStart;
+    TimeStamp   tsExpiry;
+} SecPkgContext_Lifespan;
+typedef SecPkgContext_Lifespan  *PSecPkgContext_Lifespan;
+
+/* Security package context DCE information */
+typedef struct _SecPkgContext_DceInfo {
+    unsigned long   AuthzSvc;
+    void            *pPac;
+} SecPkgContext_DceInfo;
+typedef SecPkgContext_DceInfo   *PSecPkgContext_DceInfo;
+
+/* Security package context key information */
+typedef struct _SecPkgContext_KeyInfoA {
+    SEC_CHAR        *sSignatureAlgorithmName;
+    SEC_CHAR        *sEncryptAlgorithmName;
+    unsigned long   KeySize;
+    unsigned long   SignatureAlgorithm;
+    unsigned long   EncryptAlgorithm;
+} SecPkgContext_KeyInfoA;
+typedef SecPkgContext_KeyInfoA  *PSecPkgContext_KeyInfoA;
+typedef struct _SecPkgContext_KeyInfoW {
+    SEC_WCHAR       *sSignatureAlgorithmName;
+    SEC_WCHAR       *sEncryptAlgorithmName;
+    unsigned long   KeySize;
+    unsigned long   SignatureAlgorithm;
+    unsigned long   EncryptAlgorithm;
+} SecPkgContext_KeyInfoW;
+typedef SecPkgContext_KeyInfoW  *PSecPkgContext_KeyInfoW;
+#ifdef UNICODE
+typedef SecPkgContext_KeyInfoW  SecPkgContext_KeyInfo;
+typedef PSecPkgContext_KeyInfoW PSecPkgContext_KeyInfo;
+#else
+typedef SecPkgContext_KeyInfoA  SecPkgContext_KeyInfo;
+typedef PSecPkgContext_KeyInfoA PSecPkgContext_KeyInfo;
+#endif
+
+/* Security package context authority */
+typedef struct _SecPkgContext_AuthorityA {
+    SEC_CHAR    *sAuthorityName;
+} SecPkgContext_AuthorityA;
+typedef SecPkgContext_AuthorityA    *PSecPkgContext_AuthorityA;
+typedef struct _SecPkgContext_AuthorityW {
+    SEC_WCHAR   *sAuthorityName;
+} SecPkgContext_AuthorityW;
+typedef SecPkgContext_AuthorityW    *PSecPkgContext_AuthorityW;
+#ifdef UNICODE
+typedef SecPkgContext_AuthorityW    SecPkgContext_Authority;
+typedef PSecPkgContext_AuthorityW   PSecPkgContext_Authority;
+#else
+typedef SecPkgContext_AuthorityA    SecPkgContext_Authority;
+typedef PSecPkgContext_AuthorityA   PSecPkgContext_Authority;
+#endif
+
+/* Security package context protocol information */
+typedef struct _SecPkgContext_ProtoInfoA {
+    SEC_CHAR        *sProtocolName;
+    unsigned long   majorVersion;
+    unsigned long   minorVersion;
+} SecPkgContext_ProtoInfoA;
+typedef SecPkgContext_ProtoInfoA    *PSecPkgContext_ProtoInfoA;
+typedef struct _SecPkgContext_ProtoInfoW {
+    SEC_WCHAR       *sProtocolName;
+    unsigned long   majorVersion;
+    unsigned long   minorVersion;
+} SecPkgContext_ProtoInfoW;
+typedef SecPkgContext_ProtoInfoW    *PSecPkgContext_ProtoInfoW;
+#ifdef UNICODE
+typedef SecPkgContext_ProtoInfoW    SecPkgContext_ProtoInfo;
+typedef PSecPkgContext_ProtoInfoW   PSecPkgContext_ProtoInfo;
+#else
+typedef SecPkgContext_ProtoInfoA    SecPkgContext_ProtoInfo;
+typedef PSecPkgContext_ProtoInfoA   PSecPkgContext_ProtoInfo;
+#endif
+
+/* Security package context password expiry */
+typedef struct _SecPkgContext_PasswordExpiry {
+    TimeStamp   tsPasswordExpires;
+} SecPkgContext_PasswordExpiry;
+typedef SecPkgContext_PasswordExpiry    *PSecPkgContext_PasswordExpiry;
+
+/* Security package context logoff time */
+#if (NTDDI_VERSION > 0x05020000)
+typedef struct _SecPkgContext_LogoffTime {
+    TimeStamp   tsLogoffTime;
+} SecPkgContext_LogoffTime;
+typedef SecPkgContext_LogoffTime    *PSecPkgContext_LogoffTime;
+#endif
+
+/* Security package context session key */
+typedef struct _SecPkgContext_SessionKey {
+    unsigned long   SessionKeyLength;
+    unsigned char   *SessionKey;
+} SecPkgContext_SessionKey;
+typedef SecPkgContext_SessionKey    *PSecPkgContext_SessionKey;
+
+/* Security package context negotiation keys */
+typedef struct _SecPkgContext_NegoKeys {
+    unsigned long   KeyType;
+    unsigned short  KeyLength;
+    unsigned char   *KeyValue;
+    unsigned long   VerifyKeyType;
+    unsigned short  VerifyKeyLength;
+    unsigned char   *VerifyKeyValue;
+} SecPkgContext_NegoKeys;
+typedef SecPkgContext_NegoKeys  *PSecPkgContext_NegoKeys;
+
+/* Security package context package information */
+typedef struct _SecPkgContext_PackageInfoA {
+    PSecPkgInfoA    PackageInfo;
+} SecPkgContext_PackageInfoA;
+typedef SecPkgContext_PackageInfoA  *PSecPkgContext_PackageInfoA;
+typedef struct _SecPkgContext_PackageInfoW {
+    PSecPkgInfoW    PackageInfo;
+} SecPkgContext_PackageInfoW;
+typedef SecPkgContext_PackageInfoW  *PSecPkgContext_PackageInfoW;
+#ifdef UNICODE
+typedef SecPkgContext_PackageInfoW  SecPkgContext_PackageInfo;
+typedef PSecPkgContext_PackageInfoW PSecPkgContext_PackageInfo;
+#else
+typedef SecPkgContext_PackageInfoA  SecPkgContext_PackageInfo;
+typedef PSecPkgContext_PackageInfoA PSecPkgContext_PackageInfo;
+#endif
+
+/* Security package context user flags */
+typedef struct _SecPkgContext_UserFlags {
+    unsigned long   UserFlags;
+} SecPkgContext_UserFlags;
+typedef SecPkgContext_UserFlags *PSecPkgContext_UserFlags;
+
+/* Security package context flags */
+typedef struct _SecPkgContext_Flags {
+    unsigned long   Flags;
+} SecPkgContext_Flags;
+typedef SecPkgContext_Flags *PSecPkgContext_Flags;
+
+/* Security package context negotiation information */
+typedef struct _SecPkgContext_NegotiationInfoA {
+    PSecPkgInfoA    PackageInfo;
+    unsigned long   NegotiationState;
+} SecPkgContext_NegotiationInfoA;
+typedef SecPkgContext_NegotiationInfoA  *PSecPkgContext_NegotiationInfoA;
+typedef struct _SecPkgContext_NegotiationInfoW {
+    PSecPkgInfoW    PackageInfo;
+    unsigned long   NegotiationState;
+} SecPkgContext_NegotiationInfoW;
+typedef SecPkgContext_NegotiationInfoW  *PSecPkgContext_NegotiationInfoW;
+#ifdef UNICODE
+typedef SecPkgContext_NegotiationInfoW  SecPkgContext_NegotiationInfo;
+typedef PSecPkgContext_NegotiationInfoW PSecPkgContext_NegotiationInfo;
+#else
+typedef SecPkgContext_NegotiationInfoA  SecPkgContext_NegotiationInfo;
+typedef PSecPkgContext_NegotiationInfoA PSecPkgContext_NegotiationInfo;
+#endif
+
+/* Security package context native names */
+typedef struct _SecPkgContext_NativeNamesA {
+    SEC_CHAR    *sClientName;
+    SEC_CHAR    *sServerName;
+} SecPkgContext_NativeNamesA;
+typedef SecPkgContext_NativeNamesA  *PSecPkgContext_NativeNamesA;
+typedef struct _SecPkgContext_NativeNamesW {
+    SEC_WCHAR   *sClientName;
+    SEC_WCHAR   *sServerName;
+} SecPkgContext_NativeNamesW;
+typedef SecPkgContext_NativeNamesW  *PSecPkgContext_NativeNamesW;
+#ifdef UNICODE
+typedef SecPkgContext_NativeNamesW  SecPkgContext_NativeNames;
+typedef PSecPkgContext_NativeNamesW PSecPkgContext_NativeNames;
+#else
+typedef SecPkgContext_NativeNamesA  SecPkgContext_NativeNames;
+typedef PSecPkgContext_NativeNamesA PSecPkgContext_NativeNames;
+#endif
+
+/* Security package context credential name */
+typedef struct _SecPkgContext_CredentialNameA {
+    unsigned long   CredentialType;
+    SEC_CHAR        *sCredentialName;
+} SecPkgContext_CredentialNameA;
+typedef SecPkgContext_CredentialNameA   *PSecPkgContext_CredentialNameA;
+typedef struct _SecPkgContext_CredentialNameW {
+    unsigned long   CredentialType;
+    SEC_WCHAR       *sCredentialName;
+} SecPkgContext_CredentialNameW;
+typedef SecPkgContext_CredentialNameW   *PSecPkgContext_CredentialNameW;
+#ifdef UNICODE
+typedef SecPkgContext_CredentialNameW   SecPkgContext_CredentialName;
+typedef PSecPkgContext_CredentialNameW  PSecPkgContext_CredentialName;
+#else
+typedef SecPkgContext_CredentialNameA   SecPkgContext_CredentialName;
+typedef PSecPkgContext_CredentialNameA  PSecPkgContext_CredentialName;
+#endif
+
+/* Security package context access token */
+typedef struct _SecPkgContext_AccessToken {
+    void    *AccessToken;
+} SecPkgContext_AccessToken;
+typedef SecPkgContext_AccessToken   *PSecPkgContext_AccessToken;
+
+/* Security package context target information */
+typedef struct _SecPkgContext_TargetInformation {
+    unsigned long   MarshalledTargetInfoLength;
+    unsigned char   *MarshalledTargetInfo;
+} SecPkgContext_TargetInformation;
+typedef SecPkgContext_TargetInformation *PSecPkgContext_TargetInformation;
+
+/* Security package context authorization identifier */
+typedef struct _SecPkgContext_AuthzID {
+    unsigned long   AuthzIDLength;
+    char            *AuthzID;
+} SecPkgContext_AuthzID;
+typedef SecPkgContext_AuthzID   *PSecPkgContext_AuthzID;
+
+/* Security package context target */
+typedef struct _SecPkgContext_Target {
+    unsigned long   TargetLength;
+    char            *Target;
+} SecPkgContext_Target;
+typedef SecPkgContext_Target    *PSecPkgContext_Target;
+
+/* Security package context client specified target */
+typedef struct _SecPkgContext_ClientSpecifiedTarget {
+    SEC_WCHAR   *sTargetName;
+} SecPkgContext_ClientSpecifiedTarget;
+typedef SecPkgContext_ClientSpecifiedTarget *PSecPkgContext_ClientSpecifiedTarget;
+
+/* Security package context bindings */
+typedef struct _SecPkgContext_Bindings {
+    unsigned long           BindingsLength;
+    SEC_CHANNEL_BINDINGS    *Bindings;
+} SecPkgContext_Bindings;
+typedef SecPkgContext_Bindings  *PSecPkgContext_Bindings;
+
+/* Security key callback */
+typedef void (SEC_ENTRY *SEC_GET_KEY_FN)( void *, void *, unsigned long, void **, SECURITY_STATUS * );
+
+typedef enum _SecDelegationType {
+    SecFull         = 0,
+    SecService      = 1,
+    SecTree         = 2,
+    SecDirectory    = 3,
+    SecObject       = 4
+} SecDelegationType;
+typedef SecDelegationType   *PSecDelegationType;
+
+/* Security callbacks */
+typedef SECURITY_STATUS (SEC_ENTRY *ACCEPT_SECURITY_CONTEXT_FN)( PCredHandle, PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *ACQUIRE_CREDENTIALS_HANDLE_FN_A)( SEC_CHAR *, SEC_CHAR *, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *ADD_CREDENTIALS_FN_A)( PCredHandle, SEC_CHAR *, SEC_CHAR *, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *APPLY_CONTROL_TOKEN_FN)( PCtxtHandle, PSecBufferDesc );
+typedef SECURITY_STATUS (SEC_ENTRY *CHANGE_PASSWORD_FN_A)( SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, BOOLEAN, unsigned long, PSecBufferDesc );
+typedef SECURITY_STATUS (SEC_ENTRY *CHANGE_PASSWORD_FN_W)( SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, BOOLEAN, unsigned long, PSecBufferDesc );
+typedef SECURITY_STATUS (SEC_ENTRY *COMPLETE_AUTH_TOKEN_FN)( PCtxtHandle, PSecBufferDesc );
+typedef SECURITY_STATUS (SEC_ENTRY *DECRYPT_MESSAGE_FN)( PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long * );
+typedef SECURITY_STATUS (SEC_ENTRY *DELETE_SECURITY_CONTEXT_FN)( PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *ENCRYPT_MESSAGE_FN)( PCtxtHandle, unsigned long, PSecBufferDesc, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *ENUMERATE_SECURITY_PACKAGES_FN_A)( unsigned long *, PSecPkgInfoA * );
+typedef SECURITY_STATUS (SEC_ENTRY *ENUMERATE_SECURITY_PACKAGES_FN_W)( unsigned long *, PSecPkgInfoW * );
+typedef SECURITY_STATUS (SEC_ENTRY *EXPORT_SECURITY_CONTEXT_FN)( PCtxtHandle, ULONG, PSecBuffer, void ** );
+typedef SECURITY_STATUS (SEC_ENTRY *FREE_CONTEXT_BUFFER_FN)( PVOID );
+typedef SECURITY_STATUS (SEC_ENTRY *FREE_CREDENTIALS_HANDLE_FN)( PCredHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *IMPERSONATE_SECURITY_CONTEXT_FN)( PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *IMPORT_SECURITY_CONTEXT_FN_A)( SEC_CHAR *, PSecBuffer, void *, PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *INITIALIZE_SECURITY_CONTEXT_FN_A)( PCredHandle, PCtxtHandle, SEC_CHAR *, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *MAKE_SIGNATURE_FN)( PCtxtHandle, unsigned long, PSecBufferDesc, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_CONTEXT_ATTRIBUTES_FN_A)( PCtxtHandle, unsigned long, void * );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_CONTEXT_ATTRIBUTES_FN_W)( PCtxtHandle, unsigned long, void * );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_CREDENTIALS_ATTRIBUTES_FN_A)( PCredHandle, unsigned long, void * );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_CREDENTIALS_ATTRIBUTES_FN_W)( PCredHandle, unsigned long, void * );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_SECURITY_CONTEXT_TOKEN_FN)( PCtxtHandle, void ** );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_SECURITY_PACKAGE_INFO_FN_A)( SEC_CHAR *, PSecPkgInfoA * );
+typedef SECURITY_STATUS (SEC_ENTRY *REVERT_SECURITY_CONTEXT_FN)( PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *SET_CONTEXT_ATTRIBUTES_FN_A)( PCtxtHandle, unsigned long, void *, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *SET_CONTEXT_ATTRIBUTES_FN_W)( PCtxtHandle, unsigned long, void *, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *SET_CREDENTIALS_ATTRIBUTES_FN_A)( PCredHandle, unsigned long, void *, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *SET_CREDENTIALS_ATTRIBUTES_FN_W)( PCredHandle, unsigned long, void *, unsigned long );
+typedef SECURITY_STATUS (SEC_ENTRY *VERIFY_SIGNATURE_FN)( PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long * );
+#ifdef SECURITY_KERNEL
+typedef SECURITY_STATUS (SEC_ENTRY *ACQUIRE_CREDENTIALS_HANDLE_FN_W)( PSECURITY_STRING, PSECURITY_STRING, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *ADD_CREDENTIALS_FN_W)( PCredHandle, PSECURITY_STRING, PSECURITY_STRING, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *IMPORT_SECURITY_CONTEXT_FN_W)( PSECURITY_STRING, PSecBuffer, VOID *, PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *INITIALIZE_SECURITY_CONTEXT_FN_W)( PCredHandle, PCtxtHandle, PSECURITY_STRING, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_SECURITY_PACKAGE_INFO_FN_W)( PSECURITY_STRING, PSecPkgInfoW * );
+#else
+typedef SECURITY_STATUS (SEC_ENTRY *ACQUIRE_CREDENTIALS_HANDLE_FN_W)( SEC_WCHAR *, SEC_WCHAR *, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *ADD_CREDENTIALS_FN_W)( PCredHandle, SEC_WCHAR *, SEC_WCHAR *, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *IMPORT_SECURITY_CONTEXT_FN_W)( SEC_WCHAR *, PSecBuffer, VOID *, PCtxtHandle );
+typedef SECURITY_STATUS (SEC_ENTRY *INITIALIZE_SECURITY_CONTEXT_FN_W)( PCredHandle, PCtxtHandle, SEC_WCHAR *, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+typedef SECURITY_STATUS (SEC_ENTRY *QUERY_SECURITY_PACKAGE_INFO_FN_W)( SEC_WCHAR *, PSecPkgInfoW * );
+#endif
+#ifdef UNICODE
+    #define ACQUIRE_CREDENTIALS_HANDLE_FN   ACQUIRE_CREDENTIALS_HANDLE_FN_W
+    #define ADD_CREDENTIALS_FN              ADD_CREDENTIALS_FN_W
+    #define CHANGE_PASSWORD_FN              CHANGE_PASSWORD_FN_W
+    #define ENUMERATE_SECURITY_PACKAGES_FN  ENUMERATE_SECURITY_PACKAGES_FN_W
+    #define INITIALIZE_SECURITY_CONTEXT_FN  INITIALIZE_SECURITY_CONTEXT_FN_W
+    #define QUERY_CONTEXT_ATTRIBUTES_FN     QUERY_CONTEXT_ATTRIBUTES_FN_W
+    #define QUERY_CREDENTIALS_ATTRIBUTES_FN QUERY_CREDENTIALS_ATTRIBUTES_FN_W
+    #define QUERY_SECURITY_PACKAGE_INFO_FN  QUERY_SECURITY_PACKAGE_INFO_FN_W
+    #define SET_CONTEXT_ATTRIBUTES_FN       SET_CONTEXT_ATTRIBUTES_FN_W
+    #define SET_CREDENTIALS_ATTRIBUTES_FN   SET_CREDENTIALS_ATTRIBUTES_FN_W
+#else
+    #define ACQUIRE_CREDENTIALS_HANDLE_FN   ACQUIRE_CREDENTIALS_HANDLE_FN_A
+    #define ADD_CREDENTIALS_FN              ADD_CREDENTIALS_FN_A
+    #define CHANGE_PASSWORD_FN              CHANGE_PASSWORD_FN_A
+    #define ENUMERATE_SECURITY_PACKAGES_FN  ENUMERATE_SECURITY_PACKAGES_FN_A
+    #define INITIALIZE_SECURITY_CONTEXT_FN  INITIALIZE_SECURITY_CONTEXT_FN_A
+    #define QUERY_CONTEXT_ATTRIBUTES_FN     QUERY_CONTEXT_ATTRIBUTES_FN_A
+    #define QUERY_CREDENTIALS_ATTRIBUTES_FN QUERY_CREDENTIALS_ATTRIBUTES_FN_A
+    #define QUERY_SECURITY_PACKAGE_INFO_FN  QUERY_SECURITY_PACKAGE_INFO_FN_A
+    #define SET_CONTEXT_ATTRIBUTES_FN       SET_CONTEXT_ATTRIBUTES_FN_A
+    #define SET_CREDENTIALS_ATTRIBUTES_FN   SET_CREDENTIALS_ATTRIBUTES_FN_A
+#endif
+
+/* Security function table */
+typedef struct _SECURITY_FUNCTION_TABLE_A {
+    unsigned long                       dwVersion;
+    ENUMERATE_SECURITY_PACKAGES_FN_A    EnumerateSecurityPackagesA;
+    QUERY_CREDENTIALS_ATTRIBUTES_FN_A   QueryCredentialsAttributesA;
+    ACQUIRE_CREDENTIALS_HANDLE_FN_A     AcquireCredentialsHandleA;
+    FREE_CREDENTIALS_HANDLE_FN          FreeCredentialsHandle;
+    void                                *Reserved2;
+    INITIALIZE_SECURITY_CONTEXT_FN_A    InitializeSecurityContextA;
+    ACCEPT_SECURITY_CONTEXT_FN          AcceptSecurityContext;
+    COMPLETE_AUTH_TOKEN_FN              CompleteAuthToken;
+    DELETE_SECURITY_CONTEXT_FN          DeleteSecurityContext;
+    APPLY_CONTROL_TOKEN_FN              ApplyControlToken;
+    QUERY_CONTEXT_ATTRIBUTES_FN_A       QueryContextAttributesA;
+    IMPERSONATE_SECURITY_CONTEXT_FN     ImpersonateSecurityContext;
+    REVERT_SECURITY_CONTEXT_FN          RevertSecurityContext;
+    MAKE_SIGNATURE_FN                   MakeSignature;
+    VERIFY_SIGNATURE_FN                 VerifySignature;
+    FREE_CONTEXT_BUFFER_FN              FreeContextBuffer;
+    QUERY_SECURITY_PACKAGE_INFO_FN_A    QuerySecurityPackageInfoA;
+    void                                *Reserved3;
+    void                                *Reserved4;
+    EXPORT_SECURITY_CONTEXT_FN          ExportSecurityContext;
+    IMPORT_SECURITY_CONTEXT_FN_A        ImportSecurityContextA;
+    ADD_CREDENTIALS_FN_A                AddCredentialsA;
+    void                                *Reserved8;
+    QUERY_SECURITY_CONTEXT_TOKEN_FN     QuerySecurityContextToken;
+    ENCRYPT_MESSAGE_FN                  EncryptMessage;
+    DECRYPT_MESSAGE_FN                  DecryptMessage;
+    SET_CONTEXT_ATTRIBUTES_FN_A         SetContextAttributesA;
+    SET_CREDENTIALS_ATTRIBUTES_FN_A     SetCredentialsAttributesA;
+#ifdef SECURITY_KERNEL
+    void                                *Reserved9;
+#else
+    CHANGE_PASSWORD_FN_A                ChangeAccountPasswordA;
+#endif
+} SecurityFunctionTableA;
+typedef SecurityFunctionTableA  *PSecurityFunctionTableA;
+typedef struct _SECURITY_FUNCTION_TABLE_W {
+    unsigned long                       dwVersion;
+    ENUMERATE_SECURITY_PACKAGES_FN_W    EnumerateSecurityPackagesW;
+    QUERY_CREDENTIALS_ATTRIBUTES_FN_W   QueryCredentialsAttributesW;
+    ACQUIRE_CREDENTIALS_HANDLE_FN_W     AcquireCredentialsHandleW;
+    FREE_CREDENTIALS_HANDLE_FN          FreeCredentialsHandle;
+    void                                *Reserved2;
+    INITIALIZE_SECURITY_CONTEXT_FN_W    InitializeSecurityContextW;
+    ACCEPT_SECURITY_CONTEXT_FN          AcceptSecurityContext;
+    COMPLETE_AUTH_TOKEN_FN              CompleteAuthToken;
+    DELETE_SECURITY_CONTEXT_FN          DeleteSecurityContext;
+    APPLY_CONTROL_TOKEN_FN              ApplyControlToken;
+    QUERY_CONTEXT_ATTRIBUTES_FN_W       QueryContextAttributesW;
+    IMPERSONATE_SECURITY_CONTEXT_FN     ImpersonateSecurityContext;
+    REVERT_SECURITY_CONTEXT_FN          RevertSecurityContext;
+    MAKE_SIGNATURE_FN                   MakeSignature;
+    VERIFY_SIGNATURE_FN                 VerifySignature;
+    FREE_CONTEXT_BUFFER_FN              FreeContextBuffer;
+    QUERY_SECURITY_PACKAGE_INFO_FN_W    QuerySecurityPackageInfoW;
+    void                                *Reserved3;
+    void                                *Reserved4;
+    EXPORT_SECURITY_CONTEXT_FN          ExportSecurityContext;
+    IMPORT_SECURITY_CONTEXT_FN_W        ImportSecurityContextW;
+    ADD_CREDENTIALS_FN_W                AddCredentialsW;
+    void                                *Reserved8;
+    QUERY_SECURITY_CONTEXT_TOKEN_FN     QuerySecurityContextToken;
+    ENCRYPT_MESSAGE_FN                  EncryptMessage;
+    DECRYPT_MESSAGE_FN                  DecryptMessage;
+    SET_CONTEXT_ATTRIBUTES_FN_W         SetContextAttributesW;
+    SET_CREDENTIALS_ATTRIBUTES_FN_W     SetCredentialsAttributesW;
+#ifdef SECURITY_KERNEL
+    void                                *Reserved9;
+#else
+    CHANGE_PASSWORD_FN_W                ChangeAccountPasswordW;
+#endif
+} SecurityFunctionTableW;
+typedef SecurityFunctionTableW  *PSecurityFunctionTableW;
+#ifdef UNICODE
+typedef SecurityFunctionTableW  SecurityFunctionTable;
+typedef PSecurityFunctionTableW PSecurityFunctionTable;
+#else
+typedef SecurityFunctionTableA  SecurityFunctionTable;
+typedef PSecurityFunctionTableA PSecurityFunctionTable;
+#endif
+
+/* Security initialization callback */
+typedef PSecurityFunctionTableA (SEC_ENTRY *INIT_SECURITY_INTERFACE_A)( void );
+typedef PSecurityFunctionTableW (SEC_ENTRY *INIT_SECURITY_INTERFACE_W)( void );
+#ifdef UNICODE
+    #define INIT_SECURITY_INTERFACE INIT_SECURITY_INTERFACE_W
+#else
+    #define INIT_SECURITY_INTERFACE INIT_SECURITY_INTERFACE_A
+#endif
+
+/* SASL authorization identifier state */
+typedef enum _SASL_AUTHZID_STATE {
+    Sasl_AuthZIDForbidden   = 0,
+    Sasl_AuthZIDProcessed   = 1
+} SASL_AUTHZID_STATE;
+
+/* Authentication identity (extended version 2) */
+typedef struct _SEC_WINNT_AUTH_IDENTITY_EX2 {
+    unsigned long   Version;
+    unsigned short  cbHeaderLength;
+    unsigned long   cbStructureLength;
+    unsigned long   UserOffset;
+    unsigned short  UserLength;
+    unsigned long   DomainOffset;
+    unsigned short  DomainLength;
+    unsigned long   PackedCredentialsOffset;
+    unsigned short  PackedCredentialsLength;
+    unsigned long   Flags;
+    unsigned long   PackageListOffset;
+    unsigned short  PackageListLength;
+} SEC_WINNT_AUTH_IDENTITY_EX2;
+typedef SEC_WINNT_AUTH_IDENTITY_EX2 *PSEC_WINNT_AUTH_IDENTITY_EX2;
+
+/* Authentication identity (extended version) */
+typedef struct _SEC_WINNT_AUTH_IDENTITY_EXA {
+    unsigned long   Version;
+    unsigned long   Length;
+    unsigned char   *User;
+    unsigned long   UserLength;
+    unsigned char   *Domain;
+    unsigned long   DomainLength;
+    unsigned char   *Password;
+    unsigned long   PasswordLength;
+    unsigned long   Flags;
+    unsigned char   *PackageList;
+    unsigned long   PackageListLength;
+} SEC_WINNT_AUTH_IDENTITY_EXA;
+typedef SEC_WINNT_AUTH_IDENTITY_EXA     *PSEC_WINNT_AUTH_IDENTITY_EXA;
+typedef struct _SEC_WINNT_AUTH_IDENTITY_EXW {
+    unsigned long   Version;
+    unsigned long   Length;
+    unsigned short  *User;
+    unsigned long   UserLength;
+    unsigned short  *Domain;
+    unsigned long   DomainLength;
+    unsigned short  *Password;
+    unsigned long   PasswordLength;
+    unsigned long   Flags;
+    unsigned short  *PackageList;
+    unsigned long   PackageListLength;
+} SEC_WINNT_AUTH_IDENTITY_EXW;
+typedef SEC_WINNT_AUTH_IDENTITY_EXW     *PSEC_WINNT_AUTH_IDENTITY_EXW;
+#ifdef UNICODE
+typedef SEC_WINNT_AUTH_IDENTITY_EXW     SEC_WINNT_AUTH_IDENTITY_EX;
+typedef PSEC_WINNT_AUTH_IDENTITY_EXW    PSEC_WINNT_AUTH_IDENTITY_EX;
+#else
+typedef SEC_WINNT_AUTH_IDENTITY_EXA     SEC_WINNT_AUTH_IDENTITY_EX;
+typedef PSEC_WINNT_AUTH_IDENTITY_EXA    PSEC_WINNT_AUTH_IDENTITY_EX;
+#endif
+
+/* Authentication identity information */
+typedef struct _SEC_WINNT_AUTH_IDENTITY_INFO {
+    SEC_WINNT_AUTH_IDENTITY_EXW AuthIdExw;
+    SEC_WINNT_AUTH_IDENTITY_EXA AuthIdExa;
+    SEC_WINNT_AUTH_IDENTITY_A   AuthId_a;
+    SEC_WINNT_AUTH_IDENTITY_W   AuthId_w;
+    SEC_WINNT_AUTH_IDENTITY_EX2 AuthIdEx2;
+} SEC_WINNT_AUTH_IDENTITY_INFO;
+typedef SEC_WINNT_AUTH_IDENTITY_INFO    *PSEC_WINNT_AUTH_IDENTITY_INFO;
+
+/* Authentication byte vector */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_BYTE_VECTOR {
+    unsigned long   ByteArrayOffset;
+    unsigned short  ByteArrayLength;
+} SEC_WINNT_AUTH_BYTE_VECTOR;
+typedef SEC_WINNT_AUTH_BYTE_VECTOR  *PSEC_WINNT_AUTH_BYTE_VECTOR;
+#endif
+
+/* Authentication data */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_DATA {
+    GUID                        CredType;
+    SEC_WINNT_AUTH_BYTE_VECTOR  CredData;
+} SEC_WINNT_AUTH_DATA;
+typedef SEC_WINNT_AUTH_DATA *PSEC_WINNT_AUTH_DATA;
+#endif
+
+/* Authentication packed credentials */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_PACKED_CREDENTIALS {
+    unsigned short      cbHeaderLength;
+    unsigned short      cbStructureLength;
+    SEC_WINNT_AUTH_DATA AuthData;
+} SEC_WINNT_AUTH_PACKED_CREDENTIALS;
+typedef SEC_WINNT_AUTH_PACKED_CREDENTIALS   *PSEC_WINNT_AUTH_PACKED_CREDENTIALS;
+#endif
+
+/* Authentication data password */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_DATA_PASSWORD {
+    SEC_WINNT_AUTH_BYTE_VECTOR  UnicodePassword;
+} SEC_WINNT_AUTH_DATA_PASSWORD;
+typedef SEC_WINNT_AUTH_DATA_PASSWORD    *PSEC_WINNT_AUTH_DATA_PASSWORD;
+#endif
+
+/* Authentication certificate data */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_CERTIFICATE_DATA {
+    unsigned short              cbHeaderLength;
+    unsigned short              cbStructureLength;
+    SEC_WINNT_AUTH_BYTE_VECTOR  Certificate;
+} SEC_WINNT_AUTH_CERTIFICATE_DATA;
+typedef SEC_WINNT_AUTH_CERTIFICATE_DATA *PSEC_WINNT_AUTH_CERTIFICATE_DATA;
+#endif
+
+/* Credential UI context vector */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_CREDUI_CONTEXT_VECTOR {
+    ULONG   CredUIContextArrayOffset;
+    USHORT  CredUIContextCount;
+} SEC_WINNT_CREDUI_CONTEXT_VECTOR;
+typedef SEC_WINNT_CREDUI_CONTEXT_VECTOR *PSEC_WINNT_CREDUI_CONTEXT_VECTOR;
+#endif
+
+/* Authentication short vector */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_SHORT_VECTOR {
+    ULONG   ShortArrayOffset;
+    USHORT  ShortArrayCount;
+} SEC_WINNT_AUTH_SHORT_VECTOR;
+typedef SEC_WINNT_AUTH_SHORT_VECTOR *PSEC_WINNT_AUTH_SHORT_VECTOR;
+#endif
+
+/* Credential UI marshaled context */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _CREDUIWIN_MARSHALED_CONTEXT {
+    GUID    StructureType;
+    USHORT  cbHeaderLength;
+    LUID    LogonId;
+    GUID    MarshaledDataType;
+    ULONG   MarshaledDataOffset;
+    USHORT  MarshaledDataLength;
+} CREDUIWIN_MARSHALED_CONTEXT;
+typedef CREDUIWIN_MARSHALED_CONTEXT *PCREDUIWIN_MARSHALED_CONTEXT;
+#endif
+
+/* Credential UI context */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_CREDUI_CONTEXT {
+    USHORT                          cbHeaderLength;
+    HANDLE                          CredUIContextHandle;
+    PVOID                           UIInfo;
+    ULONG                           dwAuthError;
+    PSEC_WINNT_AUTH_IDENTITY_OPAQUE pInputAuthIdentity;
+    PUNICODE_STRING                 TargetName;
+} SEC_WINNT_CREDUI_CONTEXT;
+typedef SEC_WINNT_CREDUI_CONTEXT    *PSEC_WINNT_CREDUI_CONTEXT;
+#endif
+
+/* Authentication packed credentials (extended version) */
+#ifdef _SEC_WINNT_AUTH_TYPES
+typedef struct _SEC_WINNT_AUTH_PACKED_CREDENTIALS_EX {
+    unsigned short              cbHeaderLength;
+    unsigned long               Flags;
+    SEC_WINNT_AUTH_BYTE_VECTOR  PackedCredentials;
+    SEC_WINNT_AUTH_SHORT_VECTOR PackageList;
+} SEC_WINNT_AUTH_PACKED_CREDENTIALS_EX;
+typedef SEC_WINNT_AUTH_PACKED_CREDENTIALS_EX    *PSEC_WINNT_AUTH_PACKED_CREDENTIALS_EX;
+#endif
+
+/* Security package options */
+typedef struct _SECURITY_PACKAGE_OPTIONS {
+    unsigned long   Size;
+    unsigned long   Type;
+    unsigned long   Flags;
+    unsigned long   SignatureSize;
+    void            *Signature;
+} SECURITY_PACKAGE_OPTIONS;
+typedef SECURITY_PACKAGE_OPTIONS    *PSECURITY_PACKAGE_OPTIONS;
+
+/* GUIDs */
+#ifdef _SEC_WINNT_AUTH_TYPES
+static const GUID   SEC_WINNT_AUTH_DATA_TYPE_PASSWORD =
+    { 0x28BFC32F, 0x10F6, 0x4738, { 0x98, 0xD1, 0x1A, 0xC0, 0x61, 0xDF, 0x71, 0x6A } };
+static const GUID   SEC_WINNT_AUTH_DATA_TYPE_CERT =
+    { 0x235F69AD, 0x73FB, 0x4DBC, { 0x82, 0x03, 0x06, 0x29, 0xE7, 0x39, 0x33, 0x9B } };
+static const GUID   SEC_WINNT_AUTH_DATA_TYPE_CSP_DATA =
+    { 0x68FD9879, 0x079C, 0x4DFE, { 0x82, 0x81, 0x57, 0x8A, 0xAD, 0xC1, 0xC1, 0x00 } };
+static const GUID   CREDUIWIN_STRUCTURE_TYPE_SSPIPFC =
+    { 0x3C3E93D9, 0xD96B, 0x49B5, { 0x94, 0xA7, 0x45, 0x85, 0x92, 0x08, 0x83, 0x37 } };
+static const GUID   SSPIPFC_STRUCTURE_TYPE_CREDUI_CONTEXT =
+    { 0xC2FFFE6F, 0x503D, 0x4C3D, { 0xA9, 0x5E, 0xBC, 0xE8, 0x21, 0x21, 0x3D, 0x44 } };
+#endif
+
+/* Functions in KSECDD.SYS and SECUR32.DLL */
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AcceptSecurityContext( PCredHandle, PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AcquireCredentialsHandleA( LPSTR, LPSTR, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AddCredentialsA( PCredHandle, LPSTR, LPSTR, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AddSecurityPackageA( LPSTR, PSECURITY_PACKAGE_OPTIONS );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AddSecurityPackageW( LPWSTR, PSECURITY_PACKAGE_OPTIONS );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ApplyControlToken( PCtxtHandle, PSecBufferDesc );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ChangeAccountPasswordA( SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, SEC_CHAR *, BOOLEAN, unsigned long, PSecBufferDesc );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ChangeAccountPasswordW( SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, SEC_WCHAR *, BOOLEAN, unsigned long, PSecBufferDesc );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    CompleteAuthToken( PCtxtHandle, PSecBufferDesc );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    DecryptMessage( PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    DeleteSecurityContext( PCtxtHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    DeleteSecurityPackageA( LPSTR );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    DeleteSecurityPackageW( LPWSTR );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    EncryptMessage( PCtxtHandle, unsigned long, PSecBufferDesc, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    EnumerateSecurityPackagesA( unsigned long *, PSecPkgInfoA * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    EnumerateSecurityPackagesW( unsigned long *, PSecPkgInfoW * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ExportSecurityContext( PCtxtHandle, ULONG, PSecBuffer, void ** );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    FreeContextBuffer( PVOID );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    FreeCredentialsHandle( PCredHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ImpersonateSecurityContext( PCtxtHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ImportSecurityContextA( LPSTR, PSecBuffer, VOID *, PCtxtHandle );
+KSECDDDECLSPEC PSecurityFunctionTableA SEC_ENTRY    InitSecurityInterfaceA( void );
+KSECDDDECLSPEC PSecurityFunctionTableW SEC_ENTRY    InitSecurityInterfaceW( void );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    InitializeSecurityContextA( PCredHandle, PCtxtHandle, SEC_CHAR *, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    MakeSignature( PCtxtHandle, unsigned long, PSecBufferDesc, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QueryContextAttributesA( PCtxtHandle, unsigned long, void * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QueryContextAttributesW( PCtxtHandle, unsigned long, void * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QueryCredentialsAttributesA( PCredHandle, unsigned long, void * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QueryCredentialsAttributesW( PCredHandle, unsigned long, void * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QuerySecurityContextToken( PCtxtHandle, void ** );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QuerySecurityPackageInfoA( LPSTR, PSecPkgInfoA * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    RevertSecurityContext( PCtxtHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslAcceptSecurityContext( PCredHandle, PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslEnumerateProfilesA( LPSTR *, ULONG * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslEnumerateProfilesW( LPWSTR *, ULONG * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslGetContextOption( PCtxtHandle, ULONG, PVOID, ULONG, PULONG );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslGetProfilePackageA( LPSTR, PSecPkgInfoA * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslGetProfilePackageW( LPWSTR, PSecPkgInfoW * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslIdentifyPackageA( PSecBufferDesc, PSecPkgInfoA * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslIdentifyPackageW( PSecBufferDesc, PSecPkgInfoW * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslInitializeSecurityContextA( PCredHandle, PCtxtHandle, LPSTR, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslInitializeSecurityContextW( PCredHandle, PCtxtHandle, LPWSTR, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SaslSetContextOption( PCtxtHandle, ULONG, PVOID, ULONG );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SetContextAttributesA( PCtxtHandle, unsigned long, void *, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SetContextAttributesW( PCtxtHandle, unsigned long, void *, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SetCredentialsAttributesA( PCredHandle, unsigned long, void *, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    SetCredentialsAttributesW( PCredHandle, unsigned long, void *, unsigned long );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    VerifySignature( PCtxtHandle, PSecBufferDesc, unsigned long, unsigned long * );
+#ifdef SECURITY_KERNEL
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AcquireCredentialsHandleW( PSECURITY_STRING, PSECURITY_STRING, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AddCredentialsW( PCredHandle, PSECURITY_STRING, PSECURITY_STRING, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ImportSecurityContextW( PSECURITY_STRING, PSecBuffer, VOID *, PCtxtHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    InitializeSecurityContextW( PCredHandle, PCtxtHandle, PSECURITY_STRING, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QuerySecurityPackageInfoW( PSECURITY_STRING, PSecPkgInfoW * );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecLookupAccountName( PUNICODE_STRING, PULONG, PSID, PSID_NAME_USE, PULONG, PUNICODE_STRING );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecLookupAccountSid( PSID, PULONG, PUNICODE_STRING, PULONG, PUNICODE_STRING, PSID_NAME_USE );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecLookupWellKnownSid( WELL_KNOWN_SID_TYPE, PSID, ULONG, PULONG );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecMakeSPN( PUNICODE_STRING, PUNICODE_STRING, PUNICODE_STRING, USHORT, PUNICODE_STRING, PUNICODE_STRING, PULONG, BOOLEAN );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecMakeSPNEx( PUNICODE_STRING, PUNICODE_STRING, PUNICODE_STRING, USHORT, PUNICODE_STRING, PUNICODE_STRING, PUNICODE_STRING, PULONG, BOOLEAN );
+KSECDDDECLSPEC NTSTATUS SEC_ENTRY           SecMakeSPNEx2( PUNICODE_STRING, PUNICODE_STRING, PUNICODE_STRING, USHORT, PUNICODE_STRING, PUNICODE_STRING, PUNICODE_STRING, PULONG, BOOLEAN, BOOLEAN );
+#else
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AcquireCredentialsHandleW( LPWSTR, LPWSTR, unsigned long, void *, void *, SEC_GET_KEY_FN, void *, PCredHandle, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    AddCredentialsW( PCredHandle, LPWSTR, LPWSTR, unsigned long, void *, SEC_GET_KEY_FN, void *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    ImportSecurityContextW( LPWSTR, PSecBuffer, VOID *, PCtxtHandle );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    InitializeSecurityContextW( PCredHandle, PCtxtHandle, SEC_WCHAR *, unsigned long, unsigned long, unsigned long, PSecBufferDesc, unsigned long, PCtxtHandle, PSecBufferDesc, unsigned long *, PTimeStamp );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    QuerySecurityPackageInfoW( LPWSTR, PSecPkgInfoW * );
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiCompareAuthIdentities( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PBOOLEAN, PBOOLEAN );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiCopyAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PSEC_WINNT_AUTH_IDENTITY_OPAQUE * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiEncodeAuthIdentityAsStrings( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PCWSTR *, PCWSTR *, PCWSTR * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiEncodeStringsAsAuthIdentity( PCWSTR, PCWSTR, PCWSTR, PSEC_WINNT_AUTH_IDENTITY_OPAQUE * );
+KSECDDDECLSPEC VOID SEC_ENTRY              SspiFreeAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+KSECDDDECLSPEC VOID SEC_ENTRY              SspiLocalFree( PVOID );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiMarshalAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, unsigned long *, char ** );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiUnmarshalAuthIdentity( unsigned long, char *, PSEC_WINNT_AUTH_IDENTITY_OPAQUE * );
+KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY   SspiValidateAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+KSECDDDECLSPEC VOID SEC_ENTRY              SspiZeroAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+#endif
+
+/* Functions in SECUR32.DLL */
+SECURITY_STATUS SEC_ENTRY   SspiDecryptAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+SECURITY_STATUS SEC_ENTRY   SspiEncryptAuthIdentity( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+BOOLEAN SEC_ENTRY           SspiIsAuthIdentityEncrypted( PSEC_WINNT_AUTH_IDENTITY_OPAQUE );
+SECURITY_STATUS SEC_ENTRY   SspiPrepareForCredRead( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PCWSTR, PULONG, PCWSTR * );
+SECURITY_STATUS SEC_ENTRY   SspiPrepareForCredWrite( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PCWSTR, PULONG, PCWSTR *, PCWSTR *, PUCHAR *, PULONG );
+#if (NTDDI_VERSION >= 0x06010000)
+SECURITY_STATUS SEC_ENTRY   SspiExcludePackage( PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PCWSTR, PSEC_WINNT_AUTH_IDENTITY_OPAQUE * );
+SECURITY_STATUS SEC_ENTRY   SspiGetTargetHostName( PCWSTR, PWSTR * );
+#endif
+
+/* Functions in CREDUI.DLL */
+unsigned long SEC_ENTRY     SspiPromptForCredentialsA( PCSTR, PVOID, unsigned long, PCSTR, PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PSEC_WINNT_AUTH_IDENTITY_OPAQUE *, int *, unsigned long );
+unsigned long SEC_ENTRY     SspiPromptForCredentialsW( PCWSTR, PVOID, unsigned long, PCWSTR, PSEC_WINNT_AUTH_IDENTITY_OPAQUE, PSEC_WINNT_AUTH_IDENTITY_OPAQUE *, int *, unsigned long );
+#ifdef _SEC_WINNT_AUTH_TYPES
+SECURITY_STATUS SEC_ENTRY   SspiGetCredUIContext( HANDLE, GUID *, LUID *, PSEC_WINNT_CREDUI_CONTEXT_VECTOR *, HANDLE * );
+SECURITY_STATUS SEC_ENTRY   SspiUnmarshalCredUIContext( PUCHAR, ULONG, PSEC_WINNT_CREDUI_CONTEXT * );
+SECURITY_STATUS SEC_ENTRY   SspiUpdateCredentials( HANDLE, GUID *, ULONG, PUCHAR );
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+BOOLEAN SEC_ENTRY           SspiIsPromptingNeeded( unsigned long );
+#endif
+
+/* Alias */
+#define FreeCredentialHandle    FreeCredentialsHandle
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define AcquireCredentialsHandle        AcquireCredentialsHandleW
+    #define AddCredentials                  AddCredentialsW
+    #define AddSecurityPackage              AddSecurityPackageW
+    #define ChangeAccountPassword           ChangeAccountPasswordW
+    #define DeleteSecurityPackage           DeleteSecurityPackageW
+    #define EnumerateSecurityPackages       EnumerateSecurityPackagesW
+    #define ImportSecurityContext           ImportSecurityContextW
+    #define InitSecurityInterface           InitSecurityInterfaceW
+    #define InitializeSecurityContext       InitializeSecurityContextW
+    #define QueryContextAttributes          QueryContextAttributesW
+    #define QueryCredentialsAttributes      QueryCredentialsAttributesW
+    #define QuerySecurityPackageInfo        QuerySecurityPackageInfoW
+    #define SaslEnumerateProfiles           SaslEnumerateProfilesW
+    #define SaslGetProfilePackage           SaslGetProfilePackageW
+    #define SaslIdentifyPackage             SaslIdentifyPackageW
+    #define SaslInitializeSecurityContext   SaslInitializeSecurityContextW
+    #define SetContextAttributes            SetContextAttributesW
+    #define SspiPromptForCredentials        SspiPromptForCredentialsW
+#else
+    #define AcquireCredentialsHandle        AcquireCredentialsHandleA
+    #define AddCredentials                  AddCredentialsA
+    #define AddSecurityPackage              AddSecurityPackageA 
+    #define ChangeAccountPassword           ChangeAccountPasswordA
+    #define DeleteSecurityPackage           DeleteSecurityPackageA
+    #define EnumerateSecurityPackages       EnumerateSecurityPackagesA
+    #define ImportSecurityContext           ImportSecurityContextA
+    #define InitSecurityInterface           InitSecurityInterfaceA
+    #define InitializeSecurityContext       InitializeSecurityContextA
+    #define QueryContextAttributes          QueryContextAttributesA
+    #define QueryCredentialsAttributes      QueryCredentialsAttributesA
+    #define QuerySecurityPackageInfo        QuerySecurityPackageInfoA
+    #define SaslEnumerateProfiles           SaslEnumerateProfilesA
+    #define SaslGetProfilePackage           SaslGetProfilePackageA
+    #define SaslIdentifyPackage             SaslIdentifyPackageA
+    #define SaslInitializeSecurityPackage   SaslInitializeSecurityPackageA
+    #define SetContextAttributes            SetContextAttributesA
+    #define SspiPromptForCredentials        SspiPromptForCredentialsA
+#endif
+
+/* Functions defined as macros */
+#define SecInvalidateHandle( x ) \
+    { \
+        ((PSecHandle)(x))->dwLower = ((ULONG_PTR)-1); \
+        ((PSecHandle)(x))->dwUpper = ((ULONG_PTR)-1); \
+    }
+#define SecIsValidHandle( x ) \
+    ((((PSecHandle)(x))->dwLower != ((ULONG_PTR)-1)) && \
+    (((PSecHandle)(x)->dwUpper != ((ULONG_PTR)-1)))
+
+:include cplusepi.sp
+
+#endif /* __SSPI_H__ */

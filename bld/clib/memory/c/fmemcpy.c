@@ -34,11 +34,12 @@
 #include "xstring.h"
 #undef  _fmemcpy
 
-_WCRTLINK char _WCFAR *_fmemcpy( char _WCFAR *dst, const char _WCFAR *src, size_t len )
+_WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *dst, const void _WCFAR *s, size_t len )
     {
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fmemcpy( dst, src, len ) );
+        return( _inline__fmemcpy( dst, s, len ) );
 #else
+        const char _WCFAR *src = s;
         char _WCFAR *p;
         for( p = dst; len; --len ) {
             *p++ = *src++;

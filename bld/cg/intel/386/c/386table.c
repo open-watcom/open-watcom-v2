@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Table of possible instructions and reductions for each
+*               opcode.
 *
 ****************************************************************************/
 
@@ -58,7 +58,6 @@ static  opcode_entry    Add1[] = {
 
 _Bin(   ANY,  C,    ANY,  NONE ), NVI(V_OP2ZERO), R_MAKEMOVE,   RG_BYTE,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE ), NVI(V_OP2NEG),  R_MAKESUB,    RG_BYTE,FU_NO,
-_Bin(   R,    C,    R,    EQ_R1 ),NVI(V_OP2TWO_SIZE),R_DOUBLEHALF, RG_BYTE,FU_NO,
 _Bin(   R,    U,    R,    NONE ), V_CONSTTEMP,    R_TEMP2CONST, RG_BYTE,FU_NO,
 
 /* instructions that we can generate*/
@@ -146,7 +145,7 @@ _BinSC( R,    R,    R,    EQ_R1 ),V_NO,           G_RR2,        RG_DBL,FU_ALUX,
 _BinSC( R,    M,    R,    EQ_R1 ),V_NO,           G_RM2,        RG_DBL,FU_ALUX,
 _BinSC( M,    R,    M,    EQ_R1 ),V_NO,           G_MR2,        RG_DBL,FU_ALUX,
 _Bin(   R,    R,    R,    EQ_R2 ),V_NO,           R_SWAPOPS,    RG_DBL,FU_NO,
-_Bin(   R,    R,    R,    NONE ), V_NO,           G_LEA,        RG_DBL,FU_ALUX,
+_BinPP( R,    R,    R,    NONE ), V_NO,           G_LEA,        RG_DBL,FU_ALUX,
 
 /* simplifying reductions*/
 
@@ -163,7 +162,7 @@ static  opcode_entry    AddExt[] = {
 /**********************************/
 /*       op1   op2   res  eq      verify          gen           reg fu*/
 
-_BinSC( R,    C,    R,    EQ_R1 ),V_NO,           G_AC,         RG_DBL_ACC,FU_ALU1,
+_BinSC( R,    C,    R,    EQ_R1 ),V_AC_BETTER,    G_AC,         RG_DBL_ACC,FU_ALU1,
 _BinSC( R,    C,    R,    EQ_R1 ),V_NO,           G_RC,         RG_DBL,FU_ALU1,
 _BinSC( M,    C,    M,    EQ_R1 ),V_NO,           G_MC,         RG_,FU_ALU1,
 _BinSC( R,    R,    R,    EQ_R1 ),V_NO,           G_RR2,        RG_DBL,FU_ALU1,
@@ -204,7 +203,6 @@ static  opcode_entry    Sub1[] = {
 
 _Bin(   C,    ANY,  ANY,  NONE ), NVI(V_OP1ZERO), R_MAKENEG,    RG_BYTE,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE ), NVI(V_OP2ZERO), R_MAKEMOVE,   RG_BYTE,FU_NO,
-_Bin(   R,    C,    R,    EQ_R1 ),NVI(V_OP2TWO_SIZE),R_DOUBLEHALF, RG_BYTE,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE ), NVI(V_OP2NEG),  R_MAKEADD,    RG_BYTE,FU_NO,
 _Bin(   R,    U,    R,    NONE ), V_CONSTTEMP,    R_TEMP2CONST, RG_BYTE,FU_NO,
 
@@ -311,7 +309,7 @@ static  opcode_entry    SubExt[] = {
 /*       consider SBB AX,DX when AX==0,DX==FFFF,CF==1 -> leaves carry set and a JB*/
 /*       will take the jump!!!*/
 
-_BinSC( R,    C,    R,    EQ_R1 ),V_NO,           G_AC,         RG_DBL_ACC,FU_ALU1,
+_BinSC( R,    C,    R,    EQ_R1 ),V_AC_BETTER,    G_AC,         RG_DBL_ACC,FU_ALU1,
 _BinSC( R,    C,    R,    EQ_R1 ),V_NO,           G_RC,         RG_DBL,FU_ALU1,
 _BinSC( M,    C,    M,    EQ_R1 ),V_NO,           G_MC,         RG_,FU_ALU1,
 _BinSC( R,    R,    R,    EQ_R1 ),V_NO,           G_RR2,        RG_DBL,FU_ALU1,
@@ -733,6 +731,7 @@ static  opcode_entry    Shft1[] = {
 
 _Bin(   ANY,  C,    ANY,  NONE  ),V_OP2NEG,  R_CHANGESHIFT,RG_BYTE_SHIFT,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE  ),NVI(V_OP2ZERO),R_MAKEMOVE,RG_BYTE,FU_NO,
+_Bin(   ANY,  C,    ANY,  NONE  ),V_SHIFT2BIG,R_FIXSHIFT,  RG_BYTE_SHIFT,FU_NO,
 
 /* instructions we can generate*/
 
@@ -765,6 +764,7 @@ static  opcode_entry    Shft2[] = {
 
 _Bin(   ANY,  C,    ANY,  NONE  ),V_OP2NEG,  R_CHANGESHIFT,RG_WORD_SHIFT,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE  ),NVI(V_OP2ZERO),R_MAKEMOVE,RG_WORD,FU_NO,
+_Bin(   ANY,  C,    ANY,  NONE  ),V_SHIFT2BIG,R_FIXSHIFT,  RG_WORD_SHIFT,FU_NO,
 
 /* instructions we can generate*/
 
@@ -796,11 +796,12 @@ static  opcode_entry    Shft4[] = {
 
 _Bin(   ANY,  C,    ANY,  NONE  ),V_OP2NEG,  R_CHANGESHIFT,RG_DBL_SHIFT,FU_NO,
 _Bin(   ANY,  C,    ANY,  NONE  ),NVI(V_OP2ZERO),R_MAKEMOVE,RG_DBL,FU_NO,
+_Bin(   ANY,  C,    ANY,  NONE  ),V_SHIFT2BIG,R_FIXSHIFT,  RG_DBL_SHIFT,FU_NO,
 
 /* instructions we can generate*/
 
-_Bin(   R,    C,    R,    EQ_R1 ),V_LSHONE,  R_ADDRR,      RG_DBL,FU_NO,
 _BinPP( R,    C,    R,    NONE  ),V_LEA,     G_LEA,        RG_DBL,FU_ALUX,
+_Bin(   R,    C,    R,    EQ_R1 ),V_LSHONE,  R_ADDRR,      RG_DBL,FU_NO,
 _Bin(   R,    C,    R,    EQ_R1 ),V_OP2ONE,  G_R1SHIFT,    RG_DBL,FU_ALU1,
 _Bin(   M,    C,    M,    EQ_R1 ),V_OP2ONE,  G_1SHIFT,     RG_,FU_ALU1,
 _Bin(   R,    C,    R,    EQ_R1 ),V_NO,      G_RNSHIFT,    RG_DBL,FU_ALU1,
@@ -828,8 +829,8 @@ static  opcode_entry    TestOrCmp1[] = {
 
 _Side(  R,    U ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_BYTE,FU_NO,
 _Side(  U,    R ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_BYTE,FU_NO,
-_Side(  ANY,  C ),      V_CMPTRUE,      R_CMPTRUE,      RG_,FU_NO,
-_Side(  ANY,  C ),      V_CMPFALSE,     R_CMPFALSE,     RG_,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPTRUE), R_CMPTRUE,      RG_,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPFALSE),R_CMPFALSE,     RG_,FU_NO,
 
 /* instructions we can generate*/
 
@@ -932,11 +933,11 @@ static  opcode_entry    Cmp2[] = {
 
 _Side(  R,    U ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_WORD,FU_NO,
 _Side(  U,    R ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_WORD,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPTRUE), R_CMPTRUE,      RG_,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPFALSE),R_CMPFALSE,     RG_,FU_NO,
 
 /* instructions we can generate*/
 
-_Side(  ANY,  C ),      V_CMPTRUE,      R_CMPTRUE,      RG_,FU_NO,
-_Side(  ANY,  C ),      V_CMPFALSE,     R_CMPFALSE,     RG_,FU_NO,
 _SidCC( R,    C ),      V_OP2ZERO,      G_TEST,         RG_WORD,FU_ALUX,
 _SidCC( R,    R ),      V_NO,           G_RR2,          RG_WORD,FU_ALUX,
 _SidCC( R,    M ),      V_NO,           G_RM2,          RG_WORD,FU_ALUX,
@@ -966,11 +967,11 @@ static  opcode_entry    Cmp4[] = {
 
 _Side(  R,    U ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_DBL,FU_NO,
 _Side(  U,    R ),      V_CONSTTEMP,    R_TEMP2CONST,   RG_DBL,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPTRUE), R_CMPTRUE,      RG_,FU_NO,
+_Side(  ANY,  ANY ),    NVI(V_CMPFALSE),R_CMPFALSE,     RG_,FU_NO,
 
 /* instructions we can generate*/
 
-_Side(  ANY,  C ),      V_CMPTRUE,      R_CMPTRUE,      RG_,FU_NO,
-_Side(  ANY,  C ),      V_CMPFALSE,     R_CMPFALSE,     RG_,FU_NO,
 _SidCC( R,    C ),      V_OP2ZERO,      G_TEST,         RG_DBL,FU_ALUX,
 _SidCC( R,    R ),      V_NO,           G_RR2,          RG_DBL,FU_ALUX,
 _SidCC( R,    M ),      V_NO,           G_RM2,          RG_DBL,FU_ALUX,
@@ -993,8 +994,11 @@ _Side(  ANY,  ANY ),    V_NO,           G_UNKNOWN,      RG_DBL_NEED,FU_NO,
 static  opcode_entry    Cmp8[] = {
 /********************************/
 /*       op1   op2       verify          gen             reg fu*/
-_Side(  ANY,  C ),      V_CMPTRUE,      R_CMPTRUE,      RG_,FU_NO,
-_Side(  ANY,  C ),      V_CMPFALSE,     R_CMPFALSE,     RG_,FU_NO,
+// 2006-06-04 RomanT: Unsplit operands will stuck in conditions
+// _Side(  ANY,  C ),      V_CMPTRUE,      R_CMPTRUE,      RG_,FU_NO,
+// _Side(  ANY,  C ),      V_CMPFALSE,     R_CMPFALSE,     RG_,FU_NO,
+
+// [Todo:] Adapt V_U_TEST and R_U_TEST for 32-bit
 // _Side(       ANY,  C   ),    V_U_TEST,       R_U_TEST,       RG_8,FU_NO,
 _Side(  C,    R|M|U ),  V_NO,           R_SWAPCMP,      RG_8,FU_NO,
 _Side(  ANY,  ANY ),    V_NO,           R_SPLITCMP,     RG_8,FU_NO,
@@ -1029,7 +1033,7 @@ static  opcode_entry    Move1[] = {
 _UnPP(  ANY,  ANY,  EQ_R1 ),    NVI(V_NO),      G_NO,           RG_,FU_NO,
 _UnPP(  M,    M,    NONE  ),    V_SAME_LOCN,    G_NO,           RG_,FU_NO,
 
-/* insturctions we can generate*/
+/* instructions we can generate*/
 
 _Un(    C,    R,    NONE ),     V_OP1ZERO,      R_MAKEXORRR,    RG_BYTE,FU_NO,
 _UnPP(  C,    R,    NONE ),     V_NO,           G_MOVRC,        RG_BYTE,FU_ALUX,
@@ -1048,7 +1052,6 @@ _Un(    R|C,  ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_BYTE,FU_NO,
 _Un(    ANY,  ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_BYTE_NEED,FU_NO,
 };
 
-
 static  opcode_entry    Move2CC[] = {
 /***************************/
 /*       op    res   eq          verify          gen             reg fu*/
@@ -1058,10 +1061,8 @@ static  opcode_entry    Move2CC[] = {
 _Un(    C,    R,    NONE ),     V_OP1ZERO,      R_MAKEXORRR,    RG_WORD,FU_NO,
 
 /* fall through into move2 table*/
-
-};
-
-opcode_entry    Move2[] = {
+/**** NB. Move2 points here ****/
+/* opcode_entry    Move2[]; */
 /*************************/
 /*       op    res   eq          verify          gen             reg fu*/
 
@@ -1070,7 +1071,7 @@ opcode_entry    Move2[] = {
 _UnPP(  ANY,  ANY,  EQ_R1 ),    NVI(V_NO),      G_NO,           RG_,FU_NO,
 _UnPP(  M,    M,    NONE  ),    V_SAME_LOCN,    G_NO,          RG_,FU_NO,
 
-/* insturctions we can generate*/
+/* instructions we can generate*/
 
 _UnPP(  C,    R,    NONE ),     V_NO,           G_MOVRC,        RG_WORD,FU_ALUX,
 _UnPP(  C,    M,    NONE ),     V_NO,           G_MOVMC,        RG_,FU_ALUX,
@@ -1096,6 +1097,9 @@ _Un(    R,    ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_ANYWORD,FU_NO
 _Un(    ANY,  ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_ANYWORD_NEED,FU_NO,
 };
 
+/* Point at where Move2 used to start */
+/*************************/
+opcode_entry   *Move2 = &Move2CC[1]; /* used from intel/c/i86split.c */
 
 static  opcode_entry    MoveFS[] = {
 /**************************/
@@ -1106,10 +1110,8 @@ static  opcode_entry    MoveFS[] = {
 _Un(    C,    ANY,  NONE ),     V_NO,           R_MAKEU4CONS,   RG_DBL,FU_NO,
 
 /* fall through into move4 table*/
-
-};
-
-static  opcode_entry    Move4CC[] = {
+/**** NB. Move4CC points here ****/
+/* static  opcode_entry    Move4CC[] */
 /***************************/
 /*       op    res   eq          verify          gen             reg fu*/
 
@@ -1118,10 +1120,8 @@ static  opcode_entry    Move4CC[] = {
 _Un(    C,    R,    NONE ),     V_OP1ZERO,      R_MAKEXORRR,    RG_DBL,FU_NO,
 
 /* fall through into move4 table*/
-
-};
-
-opcode_entry    Move4[] = {
+/**** NB. Move4 points here ****/
+/* opcode_entry    Move4[] = { */
 /*************************/
 /*       op    res   eq          verify          gen             reg fu*/
 
@@ -1130,7 +1130,7 @@ opcode_entry    Move4[] = {
 _UnPP(  ANY,  ANY,  EQ_R1 ),    NVI(V_NO),      G_NO,           RG_,FU_NO,
 _UnPP(  M,    M,    NONE  ),    V_SAME_LOCN,    G_NO,           RG_,FU_NO,
 
-/* insturctions we can generate*/
+/* instructions we can generate*/
 
 _UnPP(  C,    R,    NONE ),     V_NO,           G_MOVRC,        RG_DBL,FU_ALUX,
 _UnPP(  C,    M,    NONE ),     V_NO,           G_MOVMC,        RG_,FU_ALUX,
@@ -1148,6 +1148,10 @@ _Un(    R,    ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_DBL,FU_NO,
 _Un(    ANY,  ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_DBL_NEED,FU_NO,
 };
 
+/* Point Move4CC and Move4 to where they used to be */
+/*************************/
+#define Move4CC &MoveFS[1]
+opcode_entry   *Move4 = &MoveFS[2]; /* used from intel/c/i86split.c */
 
 static  opcode_entry    MoveCP[] = {
 /*************************/
@@ -1511,208 +1515,208 @@ _BinPP( ANY,  ANY,  ANY,  NONE ), V_NO,           G_NO,         RG_,FU_NO,
 
 static  opcode_entry    *OpcodeList[] = {
         NULL,           /* NO*/
-        &Add1,          /* ADD1*/
-        &Add2,          /* ADD2*/
-        &Add4,          /* ADD4*/
-        &Add8,          /* ADD8*/
-        &AddExt,        /* EADD*/
-        &AddCP,         /* ADDCP*/
-        &Sub1,          /* SUB1*/
-        &Sub2,          /* SUB2*/
-        &Sub4,          /* SUB4*/
-        &Sub8,          /* SUB8*/
-        &SubExt,        /* ESUB*/
-        &SubCP,         /* SUBCP*/
-        &Add8,          /* BIN8*/
-        &Or1,           /* OR1*/
-        &Or2,           /* OR2*/
-        &Or4,           /* OR4*/
-        &And1,          /* AND1*/
-        &And2,          /* AND2*/
-        &And4,          /* AND4*/
-        &Mul1,          /* MUL1*/
-        &Mul2,          /* MUL2*/
-        &Mul4,          /* MUL4*/
-        &Div1,          /* DIV1*/
-        &Div2,          /* DIV2*/
-        &Div4,          /* DIV4*/
-        &Mod1,          /* MOD1*/
-        &Mod2,          /* MOD2*/
-        &Mod4,          /* MOD4*/
-        &Shft1,         /* SHFT1*/
-        &Shft2,         /* SHFT2*/
-        &Shft4,         /* SHFT4*/
-        &TestOrCmp1,    /* TEST1*/
-        &Test2,         /* TEST2*/
-        &Test4,         /* TEST4*/
-        &Test8,         /* TEST8*/
-        &TestOrCmp1,    /* CMP1*/
-        &Cmp2,          /* CMP2*/
-        &Cmp4,          /* CMP4*/
-        &Cmp8,          /* CMP8*/
-        &CmpCP,         /* CMPCP*/
-        &CmpFS,         /* CMPF*/
-        &CmpFD,         /* CMPD*/
-        &CmpFD,         /* CMPL*/
-        &Move1,         /* MOV1*/
-        &Move2CC,       /* MOV2*/
-        &Move4CC,       /* MOV4*/
-        &MoveCP,        /* MOVCP*/
-        &Move8,         /* MOV8*/
-        &MoveXX,        /* MOVX*/
-        &LoadACP,       /* LACP*/
-        &LoadA,         /* LA*/
-        &Not1,          /* NOT1*/
-        &Not2,          /* NOT2*/
-        &Not4,          /* NOT4*/
-        &Not8,          /* NOT8*/
-        &Neg1,          /* NEG1*/
-        &Neg2,          /* NEG2*/
-        &Neg4,          /* NEG4*/
-        &Neg8,          /* NEG8*/
-        &NegF,          /* NEGF*/
-        &Push1,         /* PUSH1*/
-        &Push2,         /* PUSH2*/
-        &Pop2,          /* POP2 */
-        &Push4,         /* PUSH4*/
-        &Pop4,          /* POP4 */
-        &PushCP,        /* PUSHCP*/
-        &Push8,         /* PUSH8*/
-        &Call,          /* CALL*/
-        &CallI,         /* CALLI*/
-        &SJump,         /* SJUMP*/
-        &Parm,          /* DPARM*/
-        &Cvt,           /* CVT*/
-        &Rtn4C,         /* RTN4C*/
-        &Rtn4,          /* RTN4*/
-        &Rtn4C,         /* RTN4FC*/
-        &Rtn4,          /* RTN4F*/
-        &Rtn8C,         /* RTN8C*/
-        &Rtn8,          /* RTN8*/
-        &Rtn8,          /* RTNI8*/
-        &Rtn8C,         /* RTN10C*/
-        &Rtn8,          /* RTN10*/
-        &DoNop,         /* DONOTHING*/
-        &PushXX,        /* PUSHX*/
-        &MoveFS,        /* MOVFS*/
-        &Move8,         /* MOVFD*/
-        &Move8,         /* MOVFL*/
-        &PushFS,        /* PSHFS*/
-        &Push8,         /* PSHFD*/
-        &Push8,         /* PSHFL*/
-        &RTCall,        /* UFUNS */
-        &RTCall,        /* UFUND */
-        &RTCall,        /* UFUNL */
-        &Rtn4,          /* BFUNS */
-        &Rtn8,          /* BFUND */
-        &Rtn8,          /* BFUNL */
+        Add1,           /* ADD1*/
+        Add2,           /* ADD2*/
+        Add4,           /* ADD4*/
+        Add8,           /* ADD8*/
+        AddExt,         /* EADD*/
+        AddCP,          /* ADDCP*/
+        Sub1,           /* SUB1*/
+        Sub2,           /* SUB2*/
+        Sub4,           /* SUB4*/
+        Sub8,           /* SUB8*/
+        SubExt,         /* ESUB*/
+        SubCP,          /* SUBCP*/
+        Add8,           /* BIN8*/
+        Or1,            /* OR1*/
+        Or2,            /* OR2*/
+        Or4,            /* OR4*/
+        And1,           /* AND1*/
+        And2,           /* AND2*/
+        And4,           /* AND4*/
+        Mul1,           /* MUL1*/
+        Mul2,           /* MUL2*/
+        Mul4,           /* MUL4*/
+        Div1,           /* DIV1*/
+        Div2,           /* DIV2*/
+        Div4,           /* DIV4*/
+        Mod1,           /* MOD1*/
+        Mod2,           /* MOD2*/
+        Mod4,           /* MOD4*/
+        Shft1,          /* SHFT1*/
+        Shft2,          /* SHFT2*/
+        Shft4,          /* SHFT4*/
+        TestOrCmp1,     /* TEST1*/
+        Test2,          /* TEST2*/
+        Test4,          /* TEST4*/
+        Test8,          /* TEST8*/
+        TestOrCmp1,     /* CMP1*/
+        Cmp2,           /* CMP2*/
+        Cmp4,           /* CMP4*/
+        Cmp8,           /* CMP8*/
+        CmpCP,          /* CMPCP*/
+        CmpFS,          /* CMPF*/
+        CmpFD,          /* CMPD*/
+        CmpFD,          /* CMPL*/
+        Move1,          /* MOV1*/
+        Move2CC,        /* MOV2*/
+        Move4CC,        /* MOV4*/
+        MoveCP,         /* MOVCP*/
+        Move8,          /* MOV8*/
+        MoveXX,         /* MOVX*/
+        LoadACP,        /* LACP*/
+        LoadA,          /* LA*/
+        Not1,           /* NOT1*/
+        Not2,           /* NOT2*/
+        Not4,           /* NOT4*/
+        Not8,           /* NOT8*/
+        Neg1,           /* NEG1*/
+        Neg2,           /* NEG2*/
+        Neg4,           /* NEG4*/
+        Neg8,           /* NEG8*/
+        NegF,           /* NEGF*/
+        Push1,          /* PUSH1*/
+        Push2,          /* PUSH2*/
+        Pop2,           /* POP2 */
+        Push4,          /* PUSH4*/
+        Pop4,           /* POP4 */
+        PushCP,         /* PUSHCP*/
+        Push8,          /* PUSH8*/
+        Call,           /* CALL*/
+        CallI,          /* CALLI*/
+        SJump,          /* SJUMP*/
+        Parm,           /* DPARM*/
+        Cvt,            /* CVT*/
+        Rtn4C,          /* RTN4C*/
+        Rtn4,           /* RTN4*/
+        Rtn4C,          /* RTN4FC*/
+        Rtn4,           /* RTN4F*/
+        Rtn8C,          /* RTN8C*/
+        Rtn8,           /* RTN8*/
+        Rtn8,           /* RTNI8*/
+        Rtn8C,          /* RTN10C*/
+        Rtn8,           /* RTN10*/
+        DoNop,          /* DONOTHING*/
+        PushXX,         /* PUSHX*/
+        MoveFS,         /* MOVFS*/
+        Move8,          /* MOVFD*/
+        Move8,          /* MOVFL*/
+        PushFS,         /* PSHFS*/
+        Push8,          /* PSHFD*/
+        Push8,          /* PSHFL*/
+        RTCall,         /* UFUNS */
+        RTCall,         /* UFUND */
+        RTCall,         /* UFUNL */
+        Rtn4,           /* BFUNS */
+        Rtn8,           /* BFUND */
+        Rtn8,           /* BFUNL */
         NULL };         /* BAD*/
 
 static  opcode_entry    *FPOpcodeList[] = {
-        NULL,           /* NO*/
-        &Add1,          /* ADD1*/
-        &Add2,          /* ADD2*/
-        &Add4,          /* ADD4*/
-        &Add8,          /* ADD8*/
-        &AddExt,        /* EADD*/
-        &AddCP,         /* ADDCP*/
-        &Sub1,          /* SUB1*/
-        &Sub2,          /* SUB2*/
-        &Sub4,          /* SUB4*/
-        &Sub8,          /* SUB8*/
-        &SubExt,        /* ESUB*/
-        &SubCP,         /* SUBCP*/
-        &Add8,          /* BIN8*/
-        &Or1,           /* OR1*/
-        &Or2,           /* OR2*/
-        &Or4,           /* OR4*/
-        &And1,          /* AND1*/
-        &And2,          /* AND2*/
-        &And4,          /* AND4*/
-        &Mul1,          /* MUL1*/
-        &Mul2,          /* MUL2*/
-        &Mul4,          /* MUL4*/
-        &Div1,          /* DIV1*/
-        &Div2,          /* DIV2*/
-        &Div4,          /* DIV4*/
-        &Mod1,          /* MOD1*/
-        &Mod2,          /* MOD2*/
-        &Mod4,          /* MOD4*/
-        &Shft1,         /* SHFT1*/
-        &Shft2,         /* SHFT2*/
-        &Shft4,         /* SHFT4*/
-        &TestOrCmp1,    /* TEST1*/
-        &Test2,         /* TEST2*/
-        &Test4,         /* TEST4*/
-        &Test8,         /* TEST8*/
-        &TestOrCmp1,    /* CMP1*/
-        &Cmp2,          /* CMP2*/
-        &Cmp4,          /* CMP4*/
-        &Cmp8,          /* CMP8*/
-        &CmpCP,         /* CMPCP*/
-        &Cmp87,         /* CMPF*/
-        &Cmp87,         /* CMPD*/
-        &Cmp87,         /* CMPL*/
-        &Move1,         /* MOV1*/
-        &Move2CC,       /* MOV2*/
-        &Move4CC,       /* MOV4*/
-        &MoveCP,        /* MOVCP*/
-        &Move8,         /* MOV8*/
-        &MoveXX,        /* MOVX*/
-        &LoadACP,       /* LACP*/
-        &LoadA,         /* LA*/
-        &Not1,          /* NOT1*/
-        &Not2,          /* NOT2*/
-        &Not4,          /* NOT4*/
-        &Not8,          /* NOT8*/
-        &Neg1,          /* NEG1*/
-        &Neg2,          /* NEG2*/
-        &Neg4,          /* NEG4*/
-        &Neg8,          /* NEG8*/
-        &Un87,          /* NEGF*/
-        &Push1,         /* PUSH1*/
-        &Push2,         /* PUSH2*/
-        &Pop2,          /* POP2 */
-        &Push4,         /* PUSH4*/
-        &Pop4,          /* POP4 */
-        &PushCP,        /* PUSHCP*/
-        &Push8,         /* PUSH8*/
-        &Call,          /* CALL*/
-        &CallI,         /* CALLI*/
-        &SJump,         /* SJUMP*/
-        &Parm,          /* DPARM*/
-        &Cvt,           /* CVT*/
-        &Rtn4C,         /* RTN4C*/
-        &Rtn4,          /* RTN4*/
-        &Bin87,         /* RTN4FC*/
-        &Bin87,         /* RTN4F*/
-        &Bin87,         /* RTN8C*/
-        &Bin87,         /* RTN8*/
-        &Rtn8,          /* RTNI8*/
-        &Bin87,         /* RTN10C*/
-        &Bin87,         /* RTN10*/
-        &DoNop,         /* DONOTHING*/
-        &PushXX,        /* PUSHX*/
-        &Move87S,       /* MOVFS*/
-        &Move87D,       /* MOVFD*/
-        &Move87D,       /* MOVFL*/
-        &Push87S,       /* PSHFS*/
-        &Push87D,       /* PSHFD*/
-        &Push87D,       /* PSHFL*/
-        &Un87Func,      /* UFUNS */
-        &Un87Func,      /* UFUND */
-        &Un87Func,      /* UFUNL */
-        &Bin87Func,     /* BFUNS */
-        &Bin87Func,     /* BFUND */
-        &Bin87Func,     /* BFUNL */
+        NULL,            /* NO*/
+        Add1,           /* ADD1*/
+        Add2,           /* ADD2*/
+        Add4,           /* ADD4*/
+        Add8,           /* ADD8*/
+        AddExt,         /* EADD*/
+        AddCP,          /* ADDCP*/
+        Sub1,           /* SUB1*/
+        Sub2,           /* SUB2*/
+        Sub4,           /* SUB4*/
+        Sub8,           /* SUB8*/
+        SubExt,         /* ESUB*/
+        SubCP,          /* SUBCP*/
+        Add8,           /* BIN8*/
+        Or1,            /* OR1*/
+        Or2,            /* OR2*/
+        Or4,            /* OR4*/
+        And1,           /* AND1*/
+        And2,           /* AND2*/
+        And4,           /* AND4*/
+        Mul1,           /* MUL1*/
+        Mul2,           /* MUL2*/
+        Mul4,           /* MUL4*/
+        Div1,           /* DIV1*/
+        Div2,           /* DIV2*/
+        Div4,           /* DIV4*/
+        Mod1,           /* MOD1*/
+        Mod2,           /* MOD2*/
+        Mod4,           /* MOD4*/
+        Shft1,          /* SHFT1*/
+        Shft2,          /* SHFT2*/
+        Shft4,          /* SHFT4*/
+        TestOrCmp1,     /* TEST1*/
+        Test2,          /* TEST2*/
+        Test4,          /* TEST4*/
+        Test8,          /* TEST8*/
+        TestOrCmp1,     /* CMP1*/
+        Cmp2,           /* CMP2*/
+        Cmp4,           /* CMP4*/
+        Cmp8,           /* CMP8*/
+        CmpCP,          /* CMPCP*/
+        Cmp87,          /* CMPF*/
+        Cmp87,          /* CMPD*/
+        Cmp87,          /* CMPL*/
+        Move1,          /* MOV1*/
+        Move2CC,        /* MOV2*/
+        Move4CC,        /* MOV4*/
+        MoveCP,         /* MOVCP*/
+        Move8,          /* MOV8*/
+        MoveXX,         /* MOVX*/
+        LoadACP,        /* LACP*/
+        LoadA,          /* LA*/
+        Not1,           /* NOT1*/
+        Not2,           /* NOT2*/
+        Not4,           /* NOT4*/
+        Not8,           /* NOT8*/
+        Neg1,           /* NEG1*/
+        Neg2,           /* NEG2*/
+        Neg4,           /* NEG4*/
+        Neg8,           /* NEG8*/
+        Un87,           /* NEGF*/
+        Push1,          /* PUSH1*/
+        Push2,          /* PUSH2*/
+        Pop2,           /* POP2 */
+        Push4,          /* PUSH4*/
+        Pop4,           /* POP4 */
+        PushCP,         /* PUSHCP*/
+        Push8,          /* PUSH8*/
+        Call,           /* CALL*/
+        CallI,          /* CALLI*/
+        SJump,          /* SJUMP*/
+        Parm,           /* DPARM*/
+        Cvt,            /* CVT*/
+        Rtn4C,          /* RTN4C*/
+        Rtn4,           /* RTN4*/
+        Bin87,          /* RTN4FC*/
+        Bin87,          /* RTN4F*/
+        Bin87,          /* RTN8C*/
+        Bin87,          /* RTN8*/
+        Rtn8,           /* RTNI8*/
+        Bin87,          /* RTN10C*/
+        Bin87,          /* RTN10*/
+        DoNop,          /* DONOTHING*/
+        PushXX,         /* PUSHX*/
+        Move87S,        /* MOVFS*/
+        Move87D,        /* MOVFD*/
+        Move87D,        /* MOVFL*/
+        Push87S,        /* PSHFS*/
+        Push87D,        /* PSHFD*/
+        Push87D,        /* PSHFL*/
+        Un87Func,       /* UFUNS */
+        Un87Func,       /* UFUND */
+        Un87Func,       /* UFUNL */
+        Bin87Func,      /* BFUNS */
+        Bin87Func,      /* BFUND */
+        Bin87Func,      /* BFUNL */
         NULL };         /* BAD*/
 
 
-extern  opcode_entry    *OpcodeTable( table_def i ) {
-/****************************************************
+extern  opcode_entry    *OpcodeTable( table_def i )
+/**************************************************
     return the address of the appropriate generate table given an index "i"
 */
-
+{
     if( _FPULevel( FPU_87 ) ) {
         return( FPOpcodeList[ i ] );
     } else {

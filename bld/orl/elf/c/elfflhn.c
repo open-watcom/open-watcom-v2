@@ -54,6 +54,8 @@ static void free_elf_file_hnd( elf_file_handle elf_file_hnd )
                         _ClientFree( elf_file_hnd, elf_sec_hnd->assoc.sym.symbols );
                     }
                     break;
+                default:
+                    break;
             }
             _ClientFree( elf_file_hnd, elf_sec_hnd );
         }

@@ -102,7 +102,9 @@ void WEXPORT MTool::writeSelf( WObjectFile& p )
 MSwitch* WEXPORT MTool::findSwitch( WString& switchtag )
 {
     int icount = _families.count();
-    for( int i=0; i<icount; i++ ) {
+    int i;
+
+    for( i=0; i<icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         MSwitch* sw = family->findSwitch( switchtag );
         if( sw ) {
@@ -123,7 +125,9 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag )
 bool MTool::hasSwitches( bool setable )
 {
     int icount = _families.count();
-    for( int i=0; i<icount; i++ ) {
+    int i;
+
+    for( i=0; i<icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         if( family->hasSwitches( setable ) ) {
             return TRUE;
@@ -142,7 +146,9 @@ bool MTool::hasSwitches( bool setable )
 void MTool::addSwitches( WVList& list, const char* mask, bool setable )
 {
     int icount = _families.count();
-    for( int i=0; i<icount; i++ ) {
+    int i;
+
+    for( i=0; i<icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         family->addSwitches( list, mask, setable );
     }
@@ -156,7 +162,9 @@ void MTool::addSwitches( WVList& list, const char* mask, bool setable )
 void MTool::addFamilies( WVList& list )
 {
     int icount = _families.count();
-    for( int i=0; i<icount; i++ ) {
+    int i;
+
+    for( i=0; i<icount; i++ ) {
         list.add( _families[i] );
     }
     icount = _incTools.count();

@@ -25,7 +25,7 @@ Let's take a walk through the usage.
 */
 
 
-#include "GetLongOpt.h"
+#include "getlongopt.h"
 #include <iostream.h>
 #include <stdlib.h>
 

@@ -1,4 +1,4 @@
-#include "_guimsgs.h"
+#include "_guimsgs.gh"
 STRINGTABLE
 BEGIN
     #ifdef JAPANESE_MESSAGES

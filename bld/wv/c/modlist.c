@@ -40,11 +40,13 @@
 #include <stdlib.h>
 
 extern char             *TxtBuff;
+extern address          NilAddr;
 
 extern char             *DupStr(char*);
 extern bool             IsInternalMod( mod_handle mod );
 extern image_entry      *ImagePrimary(void);
 extern image_entry      *ImageEntry( mod_handle );
+extern bool             FindFirstCue( mod_handle mod, cue_handle *ch );
 
 extern  bool            ModHasSourceInfo( mod_handle handle )
 {
@@ -87,18 +89,19 @@ int ModCompare( mod_handle const *a, mod_handle const *b )
 
     namea = TxtBuff;
     nameb = TxtBuff + TXT_LEN / 2;
+    namea[0] = nameb[0] = '\0';
     ModName( *a, namea, TXT_LEN/2 );
     ModName( *b, nameb, TXT_LEN/2 );
     return( stricmp( namea, nameb ) );
 }
 
-static int ModOrder( mod_handle const *ap, mod_handle const *bp )
+static int ModOrder( const void *ap, const void *bp )
 {
     image_entry *ia;
     image_entry *ib;
 
-    ia = ImageEntry( *ap );
-    ib = ImageEntry( *bp );
+    ia = ImageEntry( *(mod_handle const *)ap );
+    ib = ImageEntry( *(mod_handle const *)bp );
     if( ia == ib ) return( ModCompare( ap, bp ) );
     if( ia == ImagePrimary() ) return( -1 );
     if( ib == ImagePrimary() ) return( +1 );
@@ -167,4 +170,20 @@ void ModListName( module_list *list, int i, char *buff )
     buff[0] = '\0';
     if( list->sort == NULL || i >= list->numrows ) return;
     ModName( list->sort[i], buff, TXT_LEN );
+}
+
+address ModFirstAddr( mod_handle mod )
+{
+    address     addr;
+    DIPHDL( cue, ch );
+
+    if( FindFirstCue( mod, ch ) ) {
+        addr = CueAddr( ch );
+    } else {
+        addr = NilAddr;
+    }
+    if( IS_NIL_ADDR( addr ) ) {
+        addr = ModAddr( mod );
+    }
+    return( addr );
 }

@@ -54,12 +54,6 @@ WEXPORT WAutoDialog::WAutoDialog( WWindow *parent, const char *text,
 }
 
 
-WEXPORT WAutoDialog::~WAutoDialog() {
-/***********************************/
-
-}
-
-
 void WAutoDialog::updateExtents( const char *t, int *w, int *h ) {
 /****************************************************************/
 
@@ -78,7 +72,9 @@ void WAutoDialog::initialize() {
     WText       *t;
     WPoint      avg;
     WPoint      max;
+    int         i;
 
+    setSystemFont( FALSE );
     int x = WSystemMetrics::dialogFrameWidth();
     int y = WSystemMetrics::dialogFrameHeight();
     textMetrics( avg, max );
@@ -86,17 +82,12 @@ void WAutoDialog::initialize() {
     int t_w = 0;
     int t_h = 0;
     int icount = _prompts->count();
-    for( int i = 0; i < icount; i++ ) {
+    for( i = 0; i < icount; i++ ) {
         updateExtents( _prompts->cStringAt( i ), &t_w, &t_h );
     }
 
-    int b_w = 0;
-    int b_h = 0;
-    updateExtents( BrowseText, &b_w, &b_h );
-    updateExtents( CancelText, &b_w, &b_h );
-    updateExtents( OKText, &b_w, &b_h );
-    b_w += avg.x() * 2;
-    b_h += avg.y() / 2;
+    int b_w = 50 * avg.x() / 4;
+    int b_h = 14 * avg.y() / 8;
 
     int p_w = _editwidth * avg.x();
     int p_h = max.y();
@@ -197,3 +188,13 @@ bool WEXPORT WAutoDialog::getInput( WStringList &replys ) {
     _replys = &replys;
     return( process() == TRUE );
 }
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WAutoDialog::~WAutoDialog() {
+/***********************************/
+
+}
+

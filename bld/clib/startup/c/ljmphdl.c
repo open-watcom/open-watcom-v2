@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default longjmp handler.
 *
 ****************************************************************************/
 
@@ -33,11 +32,12 @@
 #include "variety.h"
 #include "ljmphdl.h"
 
-static default_handler( void _WCFAR *p ) {
+static void default_handler( void _WCFAR *p )
+{
     p = p;
 }
 #if defined(_M_IX86)
- #pragma aux (__arg_convention) default_handler;
+    #pragma aux (__arg_convention) default_handler;
 #endif
 
-_WCRTLINK pfun __longjmp_handler = &default_handler;
+_WCRTDATA pfun  __longjmp_handler = &default_handler;

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <sys\types.h>
+#include <sys/types.h>
 #include <direct.h>
 #include <errno.h>
 
@@ -45,7 +45,7 @@
 
 char *OptEnvVar="mkdir";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: mkdir [-?] [@env] directory [directories...]",
     "\tenv                : environment variable to expand",
     "\tdirectory          : name of directory to be created",

@@ -38,7 +38,9 @@
 class PatriciaNode {
 public:
                         PatriciaNode();         // construct the head node
-                        ~PatriciaNode();
+                        ~PatriciaNode() {
+                            // not called as ragnarok() is used
+                        };
 
     void *              operator new( size_t ) { return _nodePool.alloc(); };
     void                operator delete( void * p ) { _nodePool.free( p ); };
@@ -67,7 +69,10 @@ private:
 
 static MemoryPool PatriciaNode::_nodePool( sizeof( PatriciaNode ),
                                             "PatriciaNode", 16 );
-static StringPool PatriciaNode::_stringPool( 1024, "PatriciaNode" );
+
+//Note: The StringPool block size must be larger than MERGEFILESTRBUF defined
+//in mrfile.h
+static StringPool PatriciaNode::_stringPool( 512 * 4, "PatriciaNode" );
 
 PatriciaNode::PatriciaNode()
         : _bitPos( -1 )
@@ -88,12 +93,6 @@ PatriciaNode::PatriciaNode( int_16 bitPos, char * key,
 {
 }
 
-PatriciaNode::~PatriciaNode()
-//---------------------------
-{
-    // not called as ragnarok() is used
-}
-
 static void PatriciaNode::ragnarok()
 //----------------------------------
 {
@@ -106,7 +105,7 @@ static inline ubit PatriciaNode::getBit( const char * str, uint len,
 //------------------------------------------------------------------
 {
     #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
-        Log.printf( "\"%s\", bp=%d, %#x, %d, %#x = %#x\n", str, bitPos, *(str + (bitPos / 8)),
+        Log.printf( "\"%s\", bitPos=%d, %#x, %d, %#x = %#x\n", str, bitPos, *(str + (bitPos / 8)),
                                     bitPos % 8, (0x80 >> (bitPos % 8)),
                                     *(str + (bitPos / 8)) & (0x80 >> (bitPos % 8)) );
     #endif

@@ -1,0 +1,51 @@
+.387
+.386p
+		PUBLIC	a
+		PUBLIC	p
+		PUBLIC	q
+		PUBLIC	b
+		PUBLIC	d
+		PUBLIC	e
+		PUBLIC	f
+		PUBLIC	g
+		PUBLIC	h
+		PUBLIC	i
+		PUBLIC	j
+		PUBLIC	k
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+L$1:
+    DB	0
+L$2:
+    DB	0, 0
+L$3:
+    DB	0, 0, 0, 0, 2, 0, 0, 0
+a:
+    DD	offset DGROUP:L$1
+p:
+    DD	offset DGROUP:L$2
+q:
+    DD	offset DGROUP:L$3
+b:
+    DD	offset DGROUP:L$2
+d:
+    DD	offset DGROUP:L$2
+e:
+    DB	2, 0, 0, 0
+f:
+    DB	2, 0, 0, 0
+g:
+    DB	1, 0, 0, 0
+h:
+    DB	1, 0, 0, 0
+i:
+    DB	1, 0, 0, 0
+j:
+    DB	1, 0, 0, 0
+k:
+    DB	3, 0, 0, 0
+
+_DATA		ENDS
+		END

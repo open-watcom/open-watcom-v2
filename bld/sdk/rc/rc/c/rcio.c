@@ -24,55 +24,49 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WRC I/O routines.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <io.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #include <stdarg.h>
-#include <process.h>
+#include <errno.h>
+#include <assert.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <time.h>
+#ifndef __UNIX__
+    #include <process.h>
+#endif
 #include "watcom.h"
 #include "wresall.h"
 #include "global.h"
 #include "pass2.h"
 #include "semstr.h"
 #include "rcmem.h"
-#include "types.h"
+#include "rctypes.h"
 #include "errors.h"
 #include "exeutil.h"
 #include "rcio.h"
 #include "preproc.h"
-#include "banner.h"
 #include "reserr.h"
 #include "tmpctl.h"
 #include "autodep.h"
 #include "errprt.h"
 #include "util.h"
-#include "ldstr.h"
+#include "rcldstr.h"
 #include "iortns.h"
-#ifdef UNIX
-    #include <stdlib.h>
-#endif
 
-#include <time.h>
-
-#ifdef __OSI__
- extern char    *_Copyright;
-#endif
-
-#if !defined( DLL_COMPILE )
-extern char *RcGetEnv( const char *name )
-/****************************************/
-{
-    return( getenv( name ) );
-}
+#ifdef __UNIX__
+#define PATH_SEP '/'
+#define PATH_SPLIT ':'
+#else
+#define PATH_SEP '\\'
+#define PATH_SPLIT ';'
 #endif
 
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
@@ -80,14 +74,14 @@ static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
 {
     char    drive[ _MAX_DRIVE ];
     char    dir[ _MAX_DIR ];
-#ifdef UNIX
+#ifdef __UNIX__
     char    fname[ 32 ];
 #else
     char    *fname = "__TMP__";
 #endif
 
     _splitpath( dirfile, drive, dir, NULL, NULL );
-#ifdef UNIX
+#ifdef __UNIX__
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
@@ -121,12 +115,14 @@ static int Pass1InitRes( void )
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
         WResSetTargetOS( CurrResFile.dir, WRES_OS_WIN16 );
-    } else {
+    } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         WResSetTargetOS( CurrResFile.dir, WRES_OS_WIN32 );
+    } else {
+        WResSetTargetOS( CurrResFile.dir, WRES_OS_OS2 );
     }
 
-    /* open the tempory file */
-    if (CmdLineParms.MSResFormat) {
+    /* open the temporary file */
+    if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = FALSE;
         CurrResFile.handle = MResOpenNewFile( CurrResFile.filename );
 
@@ -171,7 +167,7 @@ extern void RcFindResource( char *name, char *fullpath ) {
     //if the filename has a drive or is an absolute path then ignore
     //the include path and just look at the specified location
     _splitpath( name, drive, dir, NULL, NULL );
-    if( drive[0] != '\0' || dir[0] =='\\' ) {
+    if( drive[0] != '\0' || dir[0] ==PATH_SEP ) {
         if( access( name, F_OK ) == 0 ) {
             strcpy( fullpath, name );
         }
@@ -186,15 +182,15 @@ extern void RcFindResource( char *name, char *fullpath ) {
         end = *NewIncludeDirs;
         while( end != '\0' ) {
             dst = fullpath;
-            while( *src != ';' && *src != '\0' ) {
+            while( *src != ';' && *src != PATH_SPLIT && *src != '\0' ) {
                 *dst = *src;
                 dst ++;
                 src ++;
             }
             end = *src;
             src ++;
-            if( *( dst - 1 ) != '\\' ) {
-                *dst = '\\';
+            if( *( dst - 1 ) != PATH_SEP ) {
+                *dst = PATH_SEP;
                 dst++;
             }
             strcpy( dst, name );
@@ -218,9 +214,9 @@ extern void RcTmpFileName( char * tmpfilename )
         strncpy( tmpfilename, tmpdir, _MAX_PATH - L_tmpnam - 1 );
         nextchar = tmpfilename + strlen( tmpfilename ) - 1;
         /* tack a '\' onto the end if it is not there already */
-        if( *nextchar != '\\' ) {
+        if( *nextchar != PATH_SEP ) {
             nextchar++;
-            *nextchar = '\\';
+            *nextchar = PATH_SEP;
         }
         nextchar++;
     } else {
@@ -240,11 +236,11 @@ static int PreprocessInputFile( void )
     int         rc;
 
     // We have already merged INCLUDE path with /i paths
-    flags = PPFLAG_IGNORE_INCLUDE;
+    flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
     if( CmdLineParms.IgnoreCWD ) {
         flags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_Init2( CmdLineParms.InFileName, flags, NewIncludeDirs, CharSet );
+    rc = PP_Init2( CmdLineParms.InFileName, flags, NewIncludeDirs, CharSetLen );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( TRUE );
@@ -256,6 +252,11 @@ static int PreprocessInputFile( void )
         PP_Define( rcdefine );
     } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         strcpy( rcdefine, "__NT__" );
+        PP_Define( rcdefine );
+        strcpy( rcdefine, "_WIN32" );
+        PP_Define( rcdefine );
+    } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
+        strcpy( rcdefine, "__OS2__" );
         PP_Define( rcdefine );
     }
     cppargs = CmdLineParms.CPPArgs;
@@ -294,6 +295,8 @@ extern int RcPass1IoInit( void )
             includepath = RcGetEnv( "WINDOWS_INCLUDE" );
         } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             includepath = RcGetEnv( "NT_INCLUDE" );
+        } else if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
+            includepath = RcGetEnv( "OS2_INCLUDE" );
         }
     }
     if( includepath != NULL ) {
@@ -384,6 +387,22 @@ static void WriteTables( void )
     }
 }
 
+static void WriteOS2Tables( void )
+/********************************/
+{
+    if( CurrResFile.StringTable != NULL ) {
+        SemOS2WriteStringTable( CurrResFile.StringTable,
+                    WResIDFromNum( OS2_RT_STRING ) );
+    }
+    if( CurrResFile.ErrorTable != NULL ) {
+        SemOS2WriteStringTable( CurrResFile.ErrorTable,
+                    WResIDFromNum( OS2_RT_MESSAGE ) );
+    }
+    if( CurrResFile.FontDir != NULL ) {
+        SemOS2WriteFontDir();
+    }
+}
+
 static void Pass1ResFileShutdown( void )
 /**************************************/
 {
@@ -391,7 +410,10 @@ static void Pass1ResFileShutdown( void )
 
     error = FALSE;
     if( CurrResFile.IsOpen ) {
-        WriteTables();
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 )
+            WriteOS2Tables();
+        else
+            WriteTables();
         if( ErrorHasOccured ) {
             ResCloseFile( CurrResFile.handle );
             CurrResFile.IsOpen = false;
@@ -438,7 +460,8 @@ static int OpenResFileInfo( ExeType type )
     ExtraRes        *curfile;
 
 
-    if( type == EXE_TYPE_NE && CmdLineParms.ExtraResFiles != NULL ) {
+    if( (type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2)
+        && CmdLineParms.ExtraResFiles != NULL ) {
         RcError( ERR_FR_NOT_VALID_FOR_WIN );
         return( FALSE );
     }
@@ -482,10 +505,11 @@ static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
         return( FALSE );
     }
     info->IsOpen = TRUE;
-    info->Type = FindNEPEHeader( info->Handle, &info->WinHeadOffset );
+    info->Type = FindNEPELXHeader( info->Handle, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
-    case EXE_TYPE_NE:
+    case EXE_TYPE_NE_WIN:
+    case EXE_TYPE_NE_OS2:
         status = SeekRead( info->Handle, info->WinHeadOffset,
                             &info->u.NEInfo.WinHead, sizeof(os2_exe_header) );
         if( status != RS_OK ) {
@@ -506,6 +530,16 @@ static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
             info->DebugOffset = info->WinHeadOffset + sizeof(pe_header);
         }
         break;
+    case EXE_TYPE_LX:
+        status = SeekRead( info->Handle, info->WinHeadOffset,
+                           &info->u.LXInfo.OS2Head, sizeof(os2_flat_header) );
+        if( status != RS_OK ) {
+            RcError( ERR_NOT_VALID_EXE, filename );
+            return( FALSE );
+        } else {
+            info->DebugOffset = info->WinHeadOffset + sizeof(os2_flat_header);
+        }
+        break;
     default:
         RcError( ERR_NOT_VALID_EXE, filename );
         return( FALSE );
@@ -519,7 +553,8 @@ static int openExeFileInfoRO( char * filename, ExeFileInfo * info )
 static int openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, S_IRWXU );
+    info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY,
+                S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
     if( info->Handle == -1 ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( FALSE );
@@ -557,6 +592,20 @@ static void FreePEFileInfoPtrs( PEExeInfo * info )
     }
 }
 
+static void FreeLXFileInfoPtrs( LXExeInfo *info )
+/***********************************************/
+{
+    if( info->Objects != NULL ) {
+        RcMemFree( info->Objects );
+    }
+    if( info->Pages != NULL ) {
+        RcMemFree( info->Pages );
+    }
+    if( info->Res.resources != NULL ) {
+        RcMemFree( info->Res.resources );
+    }
+}
+
 extern void ClosePass2FilesAndFreeMem( void )
 /*******************************************/
 {
@@ -573,11 +622,17 @@ extern void ClosePass2FilesAndFreeMem( void )
         old->IsOpen = FALSE;
     }
     switch( old->Type ) {
-    case EXE_TYPE_NE:
+    case EXE_TYPE_NE_WIN:
+    case EXE_TYPE_NE_OS2:
         FreeNEFileInfoPtrs( &old->u.NEInfo );
         break;
     case EXE_TYPE_PE:
         FreePEFileInfoPtrs( &old->u.PEInfo );
+        break;
+    case EXE_TYPE_LX:
+        FreeLXFileInfoPtrs( &old->u.LXInfo );
+        break;
+    default: //EXE_TYPE_UNKNOWN
         break;
     }
 
@@ -586,11 +641,17 @@ extern void ClosePass2FilesAndFreeMem( void )
         tmp->IsOpen = FALSE;
     }
     switch( tmp->Type ) {
-    case EXE_TYPE_NE:
+    case EXE_TYPE_NE_WIN:
+    case EXE_TYPE_NE_OS2:
         FreeNEFileInfoPtrs( &tmp->u.NEInfo );
         break;
     case EXE_TYPE_PE:
         FreePEFileInfoPtrs( &tmp->u.PEInfo );
+        break;
+    case EXE_TYPE_LX:
+        FreeLXFileInfoPtrs( &tmp->u.LXInfo );
+        break;
+    default: //EXE_TYPE_UNKNOWN
         break;
     }
     CloseResFiles( Pass2Info.ResFiles );
@@ -611,8 +672,9 @@ extern int RcPass2IoInit( void )
     if( noerror ) {
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName,
                                       &(Pass2Info.TmpFile) );
-        tmpexe_exists = noerror;
     }
+        tmpexe_exists = noerror;
+
     if( noerror ) {
         Pass2Info.TmpFile.Type = Pass2Info.OldFile.Type;
         Pass2Info.TmpFile.WinHeadOffset = Pass2Info.OldFile.WinHeadOffset;
@@ -622,7 +684,8 @@ extern int RcPass2IoInit( void )
             *Pass2Info.TmpFile.u.PEInfo.WinHead =
                                         *Pass2Info.OldFile.u.PEInfo.WinHead;
         }
-        if( Pass2Info.OldFile.Type == EXE_TYPE_NE
+        if( (Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN
+            || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2)
             && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
             noerror = FALSE;
@@ -661,51 +724,6 @@ extern void RcPass2IoShutdown( int noerror )
     }
 } /* RcPass2IoShutdown */
 
-static const char * BannerText =
-    banner1( "WATCOM Windows Resource Compiler", _WRC_VERSION_ )"\n"
-    banner2("1993") "\n"
-    banner3         "\n"
-;
-
-extern void RcIoPrintBanner( void )
-/*********************************/
-{
-    OutPutInfo          errinfo;
-
-    InitOutPutInfo( &errinfo );
-    errinfo.severity = SEV_BANNER;
-    RcFprintf( stderr, &errinfo, BannerText );
-}
-
-extern void RcIoPrintHelp( const char * progpath )
-/************************************************/
-{
-    char        progfname[ _MAX_FNAME ];
-    int         index;
-    char        buf[256];
-    OutPutInfo  errinfo;
-
-    InitOutPutInfo( &errinfo );
-    errinfo.severity = SEV_BANNER;
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {                      /* 04-may-94 */
-            RcFprintf( stdout, &errinfo, "%s\n", _Copyright );
-        }
-    #endif
-    _splitpath( progpath, NULL, NULL, progfname, NULL );
-    strlwr( progfname );
-
-    GetRcMsg( USAGE_MSG_BASE, buf, sizeof( buf ) );
-    RcFprintf( stdout, &errinfo, buf, progfname );
-    RcFprintf( stdout, &errinfo, "\n" );
-    index = USAGE_MSG_BASE + 1;
-    for( ;; index++ ) {
-        GetRcMsg( index, buf, sizeof( buf ) );
-        if( buf[0] == '.' && buf[1] == '\0' ) break;
-        RcFprintf( stdout, &errinfo, "%s\n", buf );
-    }
-}
-
 /****** Text file input routines ******/
 /* These routines maintain a stack of input files. Pushing a file onto the */
 /* stack opens the file and sets up the buffer. Poping a file closes the file */
@@ -728,19 +746,20 @@ typedef struct FileStackEntry {
 } FileStackEntry;
 
 typedef struct FileStack {
-    char *              Buffer;
+    unsigned char       *Buffer;
     uint                BufferSize;
-    char *              NextChar;
-    char *              EofChar;        /* DON'T dereference, see below */
+    unsigned char       *NextChar;
+    unsigned char       *EofChar;       /* DON'T dereference, see below */
     /* + 1 for the before first entry */
     FileStackEntry      Stack[ MAX_INCLUDE_DEPTH + 1 ];
-    FileStackEntry *    Current;
+    FileStackEntry      *Current;
 } FileStack;
 /* EofChar points to the memory location after the last character currently */
 /* in the buffer. If the physical EOF has been reached it will point to */
 /* within Buffer, otherwise it will point AFTER Buffer. If NextChar == */
 /* EofChar then either EOF has been reached or it's time to read in more */
 /* of the file */
+/* NB: Characters in the buffer must be unsigned for proper MBCS support! */
 
 #define IsEmptyFileStack( stack ) ((stack).Current == (stack).Stack)
 
@@ -906,6 +925,7 @@ static int GetLogChar( FileStack * stack )
     int     newchar;
 
     newchar = *(stack->NextChar);
+    assert( newchar > 0 );
     if( newchar == '\n' ) {
         stack->Current->Logical.LineNum++;
     }

@@ -35,3 +35,5 @@
 #define SNOOP_IGNORE_CASE           103
 #define SNOOP_EXT                   104
 #define SNOOP_STRING                105
+#define SNOOP_BROWSE                106
+

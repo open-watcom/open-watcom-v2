@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wreglbl.h"
 #include "wremem.h"
@@ -57,29 +57,27 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WResTypeNode *WREFindTypeNodeFromWResID ( WResDir dir, WResID *type )
+WResTypeNode *WREFindTypeNodeFromWResID( WResDir dir, WResID *type )
 {
     return( WRFindTypeNodeFromWResID( dir, type ) );
 }
 
-WResResNode *WREFindResNodeFromWResID ( WResTypeNode *type, WResID *res )
+WResResNode *WREFindResNodeFromWResID( WResTypeNode *type, WResID *res )
 {
     return( WRFindResNodeFromWResID( type,  res ) );
 }
 
-WResLangNode *WREFindLangNodeFromLangType ( WResResNode *rnode,
-                                            WResLangType *lang )
+WResLangNode *WREFindLangNodeFromLangType( WResResNode *rnode, WResLangType *lang )
 {
     return( WRFindLangNodeFromLangType( rnode, lang ) );
 }
 
-WResTypeNode *WREFindTypeNode ( WResDir dir, uint_16 type, char *type_name )
+WResTypeNode *WREFindTypeNode( WResDir dir, uint_16 type, char *type_name )
 {
-    return(  WRFindTypeNode( dir, type, type_name ) );
+    return( WRFindTypeNode( dir, type, type_name ) );
 }
 
-WResResNode *WREFindResNode ( WResTypeNode *type, uint_16 res, char *res_name )
+WResResNode *WREFindResNode( WResTypeNode *type, uint_16 res, char *res_name )
 {
-    return(  WRFindResNode( type, res, res_name ) );
+    return( WRFindResNode( type, res, res_name ) );
 }
-

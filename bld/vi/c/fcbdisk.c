@@ -30,41 +30,40 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
-#include "vi.h"
 #include "fcbmem.h"
 
 static char swapFileName[L_tmpnam];
 
-static int swapFileOpen( void );
-static int getNewSwapFilePosition( long * );
-static int swapFileWrite( long *, int );
+static vi_rc  swapFileOpen( void );
+static vi_rc  getNewSwapFilePosition( long * );
+static vi_rc  swapFileWrite( long *, int );
 
 /*
  * SwapToDisk - swap an fcb to disk from memory
  */
-int SwapToDisk( fcb *fb )
+vi_rc SwapToDisk( fcb *fb )
 {
-    int i,len;
+    int     len;
+    vi_rc   rc;
 
     /*
      * set up data
      */
-    i = swapFileOpen();
-    if( i ) {
-        return( i );
+    rc = swapFileOpen();
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     len = MakeWriteBlock( fb );
 
     /*
      * now write the buffer
      */
-    i = swapFileWrite( &(fb->offset), len );
-    if( i ) {
-        return( i );
+    rc = swapFileWrite( &(fb->offset), len );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
@@ -78,20 +77,21 @@ int SwapToDisk( fcb *fb )
 /*
  * SwapToMemoryFromDisk - swap an fcb to memory from disk
  */
-int SwapToMemoryFromDisk( fcb *fb )
+vi_rc SwapToMemoryFromDisk( fcb *fb )
 {
-    int len,i,expect;
+    int     len, expect;
+    vi_rc   rc;
 
     /*
      * prepare swap file
      */
-    i = swapFileOpen();
-    if( i ) {
-        return( i );
+    rc = swapFileOpen();
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    i = FileSeek( SwapFileHandle, fb->offset );
-    if( i ) {
-        return( i );
+    rc = FileSeek( SwapFileHandle, fb->offset );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
@@ -110,16 +110,16 @@ int SwapToMemoryFromDisk( fcb *fb )
 /*
  * swapFileOpen - do just that
  */
-static int swapFileOpen( void )
+static vi_rc swapFileOpen( void )
 {
-    int i;
+    vi_rc   rc;
 
     if( SwapFileHandle >= 0 ) {
         return( ERR_NO_ERR );
     }
 
-    i = TmpFileOpen( swapFileName, &SwapFileHandle );
-    if( i ) {
+    rc = TmpFileOpen( swapFileName, &SwapFileHandle );
+    if( rc != ERR_NO_ERR ) {
         return( ERR_SWAP_FILE_OPEN );
     }
 
@@ -143,39 +143,42 @@ void GiveBackSwapBlock( long offset )
 {
     GiveBackBlock( offset, SwapBlocks );
     SwapBlocksInUse--;
+
 } /* GiveBackSwapBlock */
 
 /*
  * getNewSwapFilePosition - find free space in swap file
  */
-static int getNewSwapFilePosition( long *p )
+static vi_rc getNewSwapFilePosition( long *p )
 {
     if( !GetNewBlock( p, SwapBlocks, SwapBlockArraySize ) ) {
         return( ERR_SWAP_FILE_FULL );
     }
     SwapBlocksInUse++;
     return( ERR_NO_ERR );
+
 } /* getNewSwapFilePosition */
 
 /*
  * swapFileWrite - write data to swap file
  */
-static int swapFileWrite( long *pos, int size )
+static vi_rc swapFileWrite( long *pos, int size )
 {
-    int i;
+    int     i;
+    vi_rc   rc;
 
     /*
      * get position to write data
      */
     if( *pos < 0 ) {
-        i = getNewSwapFilePosition( pos );
-        if( i ) {
-            return( i );
+        rc = getNewSwapFilePosition( pos );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
-    i = FileSeek( SwapFileHandle, *pos );
-    if( i ) {
-        return( i );
+    rc = FileSeek( SwapFileHandle, *pos );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
@@ -198,10 +201,10 @@ void SwapBlockInit( int i )
 
     if( SwapBlocks == NULL ) {
         MaxSwapBlocks = i;
-        MaxSwapBlocks /= (MAX_IO_BUFFER/1024);
+        MaxSwapBlocks /= (MAX_IO_BUFFER / 1024);
         SwapBlockArraySize = MaxSwapBlocks >> 3;
-        SwapBlocks = MemAlloc( SwapBlockArraySize+1 );
-        for( k=0;k< SwapBlockArraySize;k++ ) {
+        SwapBlocks = MemAlloc( SwapBlockArraySize + 1 );
+        for( k = 0; k < SwapBlockArraySize; k++ ) {
             SwapBlocks[k] = 0xff;
         }
     }
@@ -217,4 +220,5 @@ void SwapBlockFini( void )
     if( SwapBlocks != NULL ) {
         MemFree( SwapBlocks );
     }
+
 } /* SwapBlockFini */

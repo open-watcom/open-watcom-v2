@@ -1,0 +1,91 @@
+c$noreference
+
+        external fexit
+
+        external ftraceback
+
+        external filesize
+        integer filesize
+
+        external fnextrecl
+        integer fnextrecl
+
+        external fsystem
+        integer fsystem
+c$pragma aux fsystem parm (reference descriptor)
+
+        external beginthread
+        integer beginthread
+
+        external endthread
+
+        external fgetcmd
+        integer fgetcmd
+c$pragma aux fgetcmd parm (reference descriptor)
+
+        external fintr
+
+        external getdat
+
+        external iargc
+        integer iargc
+
+        external igetarg
+        integer igetarg
+
+        external fgetenv
+        integer fgetenv
+c$pragma aux fgetenv parm (reference descriptor)
+
+        external flushunit
+        integer flushunit
+
+        external seekunit
+        integer seekunit
+        integer SEEK_SET, SEEK_CUR
+        parameter (SEEK_SET=0, SEEK_CUR=1)
+
+        external gettim
+
+        external growhandles
+        integer growhandles
+
+        external urand
+        real urand
+
+        external syshandle
+        integer*2 syshandle
+
+        external setsyshandle
+        integer setsyshandle
+
+        external fspawn
+        integer fspawn
+c$pragma aux fspawn parm (reference descriptor)
+
+c       default windowing library calls
+
+        external dwfsetapptitle
+        integer dwfsetapptitle
+c$pragma aux dwfsetapptitle parm (reference descriptor)
+
+        external dwfsetcontitle
+        integer dwfsetcontitle
+c$pragma aux dwfsetcontitle parm (reference descriptor)
+
+        external dwfsetaboutdlg
+        integer dwfsetaboutdlg
+c$pragma aux dwfsetaboutdlg parm (reference descriptor)
+
+        external dwfdeleteonclose
+        integer dwfdeleteonclose
+
+        external dwfyield
+        integer dwfyield
+
+        external dwfshutdown
+        integer dwfshutdown
+
+        external dwfopen
+        integer dwfopen
+

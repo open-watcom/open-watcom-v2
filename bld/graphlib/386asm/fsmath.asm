@@ -46,7 +46,7 @@
 include mdef.inc
 include struct.inc
 
-        modstart        grmath
+        modstart        grmath,WORD
 
         xref    F4DivZero       ; Fstatus
         xref    F4OverFlow      ; Fstatus

@@ -1,0 +1,130 @@
+#
+# driver for dll
+#
+drv_objs = &
+    stidedrv.obj &
+    idemsgfm.obj &
+    maindrv.obj
+
+#
+# stand-alone executable
+#
+exe_objs = &
+    stidedrv.obj &
+    idemsgfm.obj &
+    maindrv.obj
+
+#
+# DLL stuff
+#
+dll_objs =
+
+#
+# common files
+#
+common_objs = &
+    autogrp.obj &
+    carve.obj &
+    wcomdef.obj &
+    cmd16m.obj &
+    cmdall.obj &
+    cmddos.obj &
+    cmdelf.obj &
+    cmdline.obj &
+    cmdnov.obj &
+    cmdos2.obj &
+    cmdphar.obj &
+    cmdzdos.obj &
+    cmdrdv.obj &
+    cmdraw.obj &
+    cmdtable.obj &
+    cmdutils.obj &
+    cmdqnx.obj &
+    dbgall.obj &
+    dbgcv.obj &
+    dbgdwarf.obj &
+    dbginfo.obj &
+    debug.obj &
+    distrib.obj &
+    global.obj &
+    hash.obj &
+    ideentry.obj &
+    idemsgpr.obj &
+    impexp.obj &
+    libr.obj &
+    libsupp.obj &
+    linkutil.obj &
+    load16m.obj &
+    loaddos.obj &
+    loadelf.obj &
+    loadelf2.obj &
+    loadfile.obj &
+    loadflat.obj &
+    loadnov.obj &
+    loados2.obj &
+    loadpe.obj &
+    loadphar.obj &
+    loadqnx.obj &
+    loadraw.obj &
+    loadzdos.obj &
+    loadrdv.obj &
+    lsymtab.obj &
+    mapio.obj &
+    mem.obj &
+    mixcache.obj &
+    msg.obj &
+    objio.obj &
+    obj2supp.obj &
+    objcalc.obj &
+    objfree.obj &
+    objnode.obj &
+    objomf.obj &
+    objorl.obj &
+    objpass1.obj &
+    objpass2.obj &
+    objstrip.obj &
+    omfreloc.obj &
+    overlays.obj &
+    ovlsupp.obj &
+    permdata.obj &
+    procfile.obj &
+    reloc.obj &
+    ring.obj &
+    ring2.obj &
+    salloc.obj &
+    spillio.obj &
+    strtab.obj &
+    symmem.obj &
+    symtrace.obj &
+    toc.obj &
+    wlink.obj &
+    wlnkmsg.obj &
+    demangle.obj &
+    exerespe.obj &
+    sharedio.obj &
+    rcstr.obj &
+    $(trmem_objs)
+
+!ifeq use_virtmem 1
+common_objs += virtmem.obj
+!else
+common_objs += virtpage.obj
+!endif
+
+!ifdef DLLS_IMPLEMENTED
+common_objs += idedrv.obj
+!endif
+
+#
+# target OS dependent files
+#
+wlink_objs_dos   = linkio.obj
+wlink_objs_qnx   = posixio.obj
+wlink_objs_linux = posixio.obj
+wlink_objs_osx   = posixio.obj
+wlink_objs_bsd   = posixio.obj
+wlink_objs_nt    = ntio.obj
+wlink_objs_os2   = ntio.obj
+wlink_objs_zdos  = zdosio.obj
+
+common_objs += $(wlink_objs_$(host_os))

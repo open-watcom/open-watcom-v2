@@ -18,9 +18,9 @@ MODEL = l       # large
 !endif
 
 # options to use
-CFLAGS = -m$(MODEL) -zq
+CFLAGS = -m$(MODEL) -zq -wx
 FFLAGS = -m$(MODEL) -noterm -quiet
-AFLAGS =
+AFLAGS = -zq
 LNKOPT = option quiet
 
 .EXTENSIONS:
@@ -56,6 +56,8 @@ exes = &
     screen.exe &
     screenpl.exp &
     simulate.exe &
+    spwnrcw.exe &
+    spwndcw.exe &
     spwnrd4g.exe &
     spwndd4g.exe &
     spwnrpls.exp &
@@ -109,7 +111,7 @@ mempls40.exp : mempls40.obj .PRECIOUS
         wlink $(LNKOPT) system pharlap file mempls40 name mempls40
 
 memwin.exe : memwin.rex .PRECIOUS
-        wbind -n memwin
+        wbind -q -n memwin
 
 memwin.rex : memwin.wbj .PRECIOUS
         wlink $(LNKOPT) system win386 file memwin.wbj name memwin
@@ -125,6 +127,12 @@ screenpl.exp : screenpl.obj .PRECIOUS
 
 simulate.exe : simulate.obj .PRECIOUS
         wlink $(LNKOPT) system dos4g file simulate name simulate
+
+spwnrcw.exe : spwndcw.exe spwnrcw.obj .PRECIOUS
+        wlink $(LNKOPT) system causeway file spwnrcw name spwnrcw
+
+spwndcw.exe : spwndcw.obj .PRECIOUS
+        wlink $(LNKOPT) system causeway file spwndcw name spwndcw
 
 spwnrd4g.exe : spwndd4g.exe spwnrd4g.obj .PRECIOUS
         wlink $(LNKOPT) system dos4g file spwnrd4g name spwnrd4g
@@ -186,11 +194,11 @@ run_mix :   .SYMBOLIC
         -mix6.exe
 
 clean : .SYMBOLIC
-        del *.obj
-        del *.wbj
-        del *.rex
-        del *.exe
-        del *.exp
+        if exist *.obj del *.obj
+        if exist *.wbj del *.wbj
+        if exist *.rex del *.rex
+        if exist *.exe del *.exe
+        if exist *.exp del *.exp
 
 # implicit rules
 

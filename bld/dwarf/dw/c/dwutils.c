@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Client independent utility functions.
 *
 ****************************************************************************/
 
@@ -33,26 +32,22 @@
 #include <watcom.h>
 #include "dwutils.h"
 
-/*
-    These are client independant utility functions.
-*/
-
-char *LEB128(
-    char *                      buf,
+uint_8 *LEB128(
+    uint_8                      *buf,
     dw_sconst                   value )
 {
     uint_8                      byte;
 
     /* we can only handle an arithmetic right shift */
     if( value >= 0 ) {
-        for(;;) {
+        for( ;; ) {
             byte = value & 0x7f;
             value >>= 7;
             if( value == 0 && ( byte & 0x40 ) == 0 ) break;
             *buf++ = byte | 0x80;
         }
     } else {
-        for(;;) {
+        for( ;; ) {
             byte = value & 0x7f;
             value >>= 7;
             if( value == -1 && ( byte & 0x40 ) ) break;
@@ -64,13 +59,13 @@ char *LEB128(
 }
 
 
-char *ULEB128(
-    char *                      buf,
+uint_8 *ULEB128(
+    uint_8                      *buf,
     dw_uconst                   value )
 {
     uint_8                      byte;
 
-    for(;;) {
+    for( ;; ) {
         byte = value & 0x7f;
         value >>= 7;
         if( value == 0 ) break;

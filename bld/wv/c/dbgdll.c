@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage list of dynamic libraries.
 *
 ****************************************************************************/
 
@@ -40,13 +39,14 @@ extern void             InsertRing( char_ring **owner, char *start, unsigned len
 extern void             DeleteRing( char_ring **owner, char *start, unsigned len );
 extern void             FreeRing( char_ring *p );
 extern char_ring        **RingEnd( char_ring **owner );
-extern char             *GetLastImageName();
+extern char             *GetLastImageName( void );
 extern void             RecordEvent( char *p );
 extern void             GetBreakOnImageCmd( char *, char *, bool );
 
 extern char             *TxtBuff;
 
-bool DLLMatch()
+
+bool DLLMatch( void )
 {
     char_ring *curr;
 
@@ -88,18 +88,18 @@ void BreakOnImageLoad( char *name, unsigned len, bool clear )
     RecordEvent( TxtBuff );
 }
 
-void InitDLLList()
+void InitDLLList( void )
 {
     DLLList = NULL;
 }
 
-void FiniDLLList()
+void FiniDLLList( void )
 {
     FreeRing( DLLList );
     DLLList = NULL;
 }
 
-void RecordClearDLLBreaks()
+void RecordClearDLLBreaks( void )
 {
     char_ring   *dll;
 
@@ -109,7 +109,7 @@ void RecordClearDLLBreaks()
     }
 }
 
-void RecordSetDLLBreaks()
+void RecordSetDLLBreaks( void )
 {
     char_ring   *dll;
 

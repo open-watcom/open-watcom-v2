@@ -1,0 +1,6 @@
+
+FIXUPP(9c) len:0011h, chksum:b7h(b7)
+    0005h Seg   BASE         Frame: TARGET    Target: SI(1)
+    000ah Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    000dh Seg   BASE         Frame: TARGET    Target: SI(2)
+    0012h Seg   OFFSET       Frame: TARGET    Target: SI(2)

@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows editor mainline.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 // #include "ole2def.h"
 #include "font.h"
 #include "color.h"
@@ -40,15 +38,11 @@
 window_id       Root;
 window_id       EditContainer;
 HINSTANCE       InstanceHandle;
-#ifdef __NT__
-char            near EditorName[] = "WATCOM Windows NT Editor";
-#else
-char            near EditorName[] = "WATCOM Windows Editor";
-#endif
-static  int     showHow;
+char            near EditorName[] = "Open Watcom Text Editor";
+static int      showHow;
 
 extern BOOL RegisterMainWindow( HANDLE );
-extern  int  (*_main_entry_)(char *, char *);
+extern int  (*_main_entry_)( char *, char * );
 
 extern HWND     hColorbar, hFontbar, hSSbar;
 
@@ -102,9 +96,11 @@ void *HeapWalker( void )
     while( status != _HEAPEND ) {
         status = _heapwalk( &info );
         sprintf( buffer, "%s black at %Fp of size %4.4X\n",
-                (info._useflag==_USEDENTRY) ? "USED" : "FREE",
+                (info._useflag == _USEDENTRY) ? "USED" : "FREE",
                 info._pentry, info._size );
-        if( status != _HEAPOK ) return( info._pentry );
+        if( status != _HEAPOK ) {
+            return( info._pentry );
+        }
     }
     return( NULL );
 }
@@ -114,32 +110,32 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 {
     extern char **_argv;
 
-    EXEName = _argv[ 0 ];
+    EXEName = _argv[0];
     InstanceHandle = inst;
     showHow = show;
     prev = prev;
     cmdline = cmdline;
 
-    #ifdef TRMEM
-        InitTRMEM();
-    #endif
+#ifdef TRMEM
+    InitTRMEM();
+#endif
 
-    #ifndef __NT__
-        if( prev != NULL && !HasShare() ) {
-            MessageBox( (HWND) NULL, "SHARE.EXE must be loaded before starting Windows in order to run multiple instances of the editor",
-                        EditorName, MB_OK );
-            MyGetInstanceData( (unsigned short) prev, (void near *) &Root, sizeof( Root ) );
-            SetFocus( Root );
-            return( 0 );
-        }
-    #endif
+#ifndef __NT__
+    if( prev != NULL && !HasShare() ) {
+        MessageBox( NULLHANDLE, "SHARE.EXE must be loaded before starting Windows in order to run multiple instances of the editor",
+                    EditorName, MB_OK );
+        MyGetInstanceData( (unsigned short) prev, (void near *) &Root, sizeof( Root ) );
+        SetFocus( Root );
+        return( 0 );
+    }
+#endif
 
     Comspec = getenv( "COMSPEC" );
-    #ifdef __NT__
-        VarAddGlobal( "OS", "winnt" );
-    #else
-        VarAddGlobal( "OS", "win" );
-    #endif
+#ifdef __NT__
+    VarAddGlobalStr( "OS", "winnt" );
+#else
+    VarAddGlobalStr( "OS", "win" );
+#endif
     SetConfigFileName( CFG_NAME );
     ReadProfile();
 
@@ -156,11 +152,12 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     }
 
     SetWindowCursorForReal();
+    ResizeRoot();
     EditMain();
 
-    #ifdef TRMEM
-        DumpTRMEM();
-    #endif
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
     return( 0 );
 
 } /* WinMain */
@@ -174,9 +171,9 @@ void MessageLoop( bool block )
     UINT        rc;
 
     if( block ) {
-        if( !PeekMessage( &msg, (HWND)NULL, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
+        if( !PeekMessage( &msg, (HWND)NULLHANDLE, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
             CloseStartupDialog();
-            rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
+            rc = GetMessage( &msg, (HWND)NULLHANDLE, 0, 0 );
             if( !rc ) {
                 exit( msg.wParam );
             }
@@ -185,16 +182,15 @@ void MessageLoop( bool block )
         }
     }
     if( !EditFlags.KeyOverride ) {
-        while( PeekMessage( &msg, (HWND)NULL, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
-            rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
+        while( PeekMessage( &msg, (HWND)NULLHANDLE, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
+            rc = GetMessage( &msg, (HWND)NULLHANDLE, 0, 0 );
             if( !rc ) {
                 exit( msg.wParam );
             }
-            if( ( hColorbar == 0 || !IsDialogMessage( hColorbar, &msg ) ) &&
-                ( hSSbar == 0 || !IsDialogMessage( hSSbar, &msg ) ) &&
-                ( hFontbar == 0 || !IsDialogMessage( hFontbar, &msg ) ) &&
-                  !TranslateMDISysAccel( EditContainer, &msg )
-              ) {
+            if( (hColorbar == 0 || !IsDialogMessage( hColorbar, &msg )) &&
+                (hSSbar == 0 || !IsDialogMessage( hSSbar, &msg )) &&
+                (hFontbar == 0 || !IsDialogMessage( hFontbar, &msg )) &&
+                !TranslateMDISysAccel( EditContainer, &msg ) ) {
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );
                 if( EditFlags.KeyOverride ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for OSI.
 *
 ****************************************************************************/
 
@@ -38,6 +37,8 @@
 _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
 {
     cputs( msg );
+    putch( '\r' );
+    putch( '\n' );
     __exit( retcode );
 }
 

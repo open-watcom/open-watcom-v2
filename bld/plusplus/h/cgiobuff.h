@@ -24,18 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Description of buffer for C++ I/O to intermediate-code file.
 *
 ****************************************************************************/
 
 
 #ifndef __CGIOBUFF_H__
 #define __CGIOBUFF_H__
-
-// CGIOBUFF.H -- description of buffer for C++ I/O to intermediate-code file
-//
-// 92/02/21 -- J.W.Welch        -- defined
 
 #include "iosupp.h"
 
@@ -54,6 +49,7 @@ struct cgiobuff {               // CGIOBUFF -- buffer in memory
     unsigned    active : 1;     // - block is active
     char        data[TMPBLOCK_BSIZE]; // - buffer in memory
 #ifndef NDEBUG
+
     unsigned    check;          // - consistency check
 #endif
 };
@@ -75,7 +71,7 @@ struct cgfile_ins               // CGFILE_INS -- location of instruction
 #define CGINTER_BLOCKING        (sizeof(unsigned))
 
 // structure is written out to a file
-#pragma pack(push,1);
+#include <pushpck1.h>
 
 // having 'value' first means it will be aligned in cases
 // were it is a singleton
@@ -85,7 +81,7 @@ struct cginter {                // CGINTER -- intermediate-code instruction
     CGINTEROP   opcode;         // - opcode for text
 };
 
-#pragma pack(pop);
+#include <poppck.h>
 
 typedef void *CGIRELOCFN( void * );
 

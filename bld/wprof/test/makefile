@@ -15,7 +15,7 @@ objs = &
 cc = wcc
 
 .BEFORE
-        set include=$(%include);c:\comp\watcom\os21x_h
+        set include=$(lang_root)\h\os21x;$(%INCLUDE)
 
 .c.obj:
         $(cc) $[@ /zq /d2 /od /ml /s /d_MARK_ON$(off)

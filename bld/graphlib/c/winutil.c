@@ -165,8 +165,8 @@ HBITMAP _Mask2Bitmap( HDC dc, char *mask )
 #endif
 
 
-int _MapLineStyle( int style )
-/****************************/
+int _MapLineStyle( unsigned short style )
+/***************************************/
 
 /* This function maps the WATCOM's line styles to Windows' line styles */
 {

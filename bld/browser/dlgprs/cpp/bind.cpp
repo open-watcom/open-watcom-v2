@@ -58,8 +58,8 @@ Binding::~Binding()
     delete _controls;
 }
 
-int Binding::addAbsRelRect( Rect & r )
-//------------------------------------
+int Binding::addAbsRelRect( const Rect & r )
+//------------------------------------------
 {
     _rectangles->append( r );
     return( _rectangles->entries() - 1 );

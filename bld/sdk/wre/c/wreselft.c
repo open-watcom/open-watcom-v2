@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"
@@ -74,4 +74,3 @@ WRFileType WRESelectFileType( char *name, Bool is32bit )
 
     return( file_type );
 }
-

@@ -15,20 +15,28 @@ rep insb
 rep insw
 rep insd
 
-ins byte ptr [eax], dx
-ins word ptr [eax], dx
-ins dword ptr [eax], dx
-
 ins foo, dx
 ins bar, dx
 ins sam, dx
+
+rep ins foo, dx
+rep ins bar, dx
+rep ins sam, dx
+
+ins byte ptr [eax], dx
+ins word ptr [eax], dx
+ins dword ptr [eax], dx
 
 rep ins byte ptr [eax], dx
 rep ins word ptr [eax], dx
 rep ins dword ptr [eax], dx
 
-rep ins foo, dx
-rep ins bar, dx
-rep ins sam, dx
+ins byte ptr [bx], dx
+ins word ptr [bx], dx
+ins dword ptr [bx], dx
+
+rep ins byte ptr [bx], dx
+rep ins word ptr [bx], dx
+rep ins dword ptr [bx], dx
 
 end

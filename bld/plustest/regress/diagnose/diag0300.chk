@@ -1,0 +1,169 @@
+File: source\diag0300.c
+(6,2): Error! E080: one error
+File: source\diag0301.c
+(4,18): Warning! W895: ignoring whitespace after line splice
+(9,10): Warning! W896: empty member declaration
+(10,11): Warning! W896: empty member declaration
+(15,36): Error! E417: only virtual functions may be declared pure
+(16,36): Error! E417: only virtual functions may be declared pure
+(17,46): Error! E376: virtual function must be a non-static member function
+(17,46): Error! E417: only virtual functions may be declared pure
+(18,46): Error! E376: virtual function must be a non-static member function
+(18,46): Error! E417: only virtual functions may be declared pure
+(19,16): Error! E417: only virtual functions may be declared pure
+(21,10): Error! E417: only virtual functions may be declared pure
+File: source\diag0302.c
+(5,22): Error! E499: object (or object pointer) required to access non-static member function
+  definition: 'void ABC::meth2( void )'
+(8,5): Warning! W014: no reference to symbol 'b'
+  definition: 'B b' in 'ABC::ABC( void )'
+(16,10): Warning! W894: unexpected character (22) in source file
+(16,10): Error! E121: syntax error
+File: source\diag0303.c
+(1,35): Error! E244: missing default arguments
+(5,37): Error! E244: missing default arguments
+(9,40): Error! E198: expression cannot be used as a class template parameter
+(13,123): Error! E121: syntax error
+(17,21): Error! E928: syntax error: identifier 'test', but expected: 'type-id'
+(28,1): Warning! W014: no reference to symbol 'c'
+  definition: '<error> c' in 'int main( void )'
+(28,1): Warning! W014: no reference to symbol 'd'
+  definition: '<error> d' in 'int main( void )'
+(28,1): Warning! W014: no reference to symbol 'e'
+  definition: '<error> e' in 'int main( void )'
+File: source\diag0304.c
+(2,18): Error! E898: in-class initialization is only allowed for const static integral members
+(3,19): Error! E898: in-class initialization is only allowed for const static integral members
+(4,21): Error! E336: declaration specifiers are required to declare 'i3'
+(7,25): Error! E498: syntax error before 'i3'; probable cause: incorrectly spelled type name
+(8,23): Error! E357: virtual function may only be declared in a class
+(8,25): Error! E330: function cannot be initialized
+(9,23): Error! E357: virtual function may only be declared in a class
+(9,25): Error! E330: function cannot be initialized
+(10,2): Error! E121: syntax error
+Code generation for: test
+  definition: 'void test( void )'
+Warning! W433: mangled name for 'xa1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901' has been truncated
+  definition: 'V123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<short> xa1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901'
+Code optimization
+Warning! W433: mangled name for 'xa1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901' has been truncated
+  definition: 'V123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<short> xa1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901'
+Warning! W433: mangled name for '__CPR305___Y_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1Z' has been truncated
+  definition: 'void __CPR305___Y_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1Z( void )'
+Warning! W433: mangled name for '__CPR305___M_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_' has been truncated
+  definition: 'void __CPR305___M_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_( void )'
+Warning! W433: mangled name for '__CPR305___N_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_' has been truncated
+  definition: 'void (__declspec(dllimport) __CPR305___N_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_)( void )'
+Warning! W433: mangled name for '__CPR305___Q_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_' has been truncated
+  definition: 'void stdcall (__declspec(dllimport) __CPR305___Q_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_)( void )'
+Warning! W433: mangled name for '__CPR305___O_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_' has been truncated
+  definition: 'void fastcall (__declspec(dllimport) __CPR305___O_read_buffered__tm__180_cQ2_3std20char_traits__tm__2_cQ2_3std75binder2nd__tm__58_Q2_3std48_Eq_traits__tm__30_Q2_3stdJ34JQ2_3std56_Scan_for_char_val__tm__J108J__3stdFPQ2_3std27basic_istream__tm__7_Z1ZZ2ZPQ2_3std29basic_streambuf__tm__J241JiPZ1ZZ3ZZ4ZbN27_i_)( void )'
+Warning! W433: mangled name for 'y01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123' has been truncated
+  definition: 'void y01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123( void )'
+Warning! W433: mangled name for 'p012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' has been truncated
+  definition: 'void p012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890( void )'
+Warning! W433: mangled name for 's012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' has been truncated
+  definition: 'void (__declspec(dllimport) s012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)( void )'
+Warning! W433: mangled name for 'q012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' has been truncated
+  definition: 'void stdcall (__declspec(dllimport) q012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)( void )'
+Warning! W433: mangled name for 'r012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' has been truncated
+  definition: 'void fastcall (__declspec(dllimport) r012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)( void )'
+Warning! W433: mangled name for 'ya1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345' has been truncated
+  definition: 'V123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<short> __declspec(dllimport) ya1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345'
+File: source\diag0306.c
+(8,36): Error! E905: static assertion failed 'message 2'
+(11,45): Error! E905: static assertion failed 'message 3'
+(15,40): Error! E905: static assertion failed 'message 4'
+(19,66): Error! E905: static assertion failed 'message 5'
+(5,56): Error! E905: static assertion failed 'message 1'
+  template class instantiation for 'A<int>' was at: (20,14)
+(23,1): Warning! W014: no reference to symbol 'a'
+  definition: '<error> a' in 'int main( void )'
+File: source\diag0307.c
+(2,13): Error! E121: syntax error
+(3,1): Error! E028: expecting ';' but found '}'
+(4,0): Error! E199: premature end-of-file encountered during compilation
+File: source\diag0308.c
+(20,2): Error! E174: class template 'B<?1 >' cannot be overloaded
+  definition: '<class template> B'
+(23,9): Error! E006: syntax error; probable cause: missing ';'
+(27,9): Error! E006: syntax error; probable cause: missing ';'
+(36,2): Error! E903: specialization arguments for 'E' match primary template
+  definition: '<class template> E'
+(40,16): Error! E904: partial template specialization for 'A' ambiguous
+  definition: '<class template> A'
+  candidate A<1, int > defined at: (6,8)
+  candidate A<int , int > defined at: (10,8)
+(40,16): Warning! W014: no reference to symbol 'a'
+  definition: 'A<1,1> a' in 'int main( void )'
+File: source\diag0309.c
+(15,2): Error! E181: class template 'X<?1 >' is already defined
+  definition: '<class template> X'
+(20,2): Error! E181: class template 'X<?1 >' is already defined
+  definition: '<class template> X'
+File: source\diag0310.c
+(11,21): Error! E229: function 'foo' has already been defined
+  definition: 'int foo( int )'
+File: source\diag0311.c
+(4,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int (* ai)[2]' in 'void f1( int (* )[2])'
+(7,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int const (* ai)[2]' in 'void f2( int const (* )[2])'
+(10,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int (* ai)[2]' in 'void f3( int (* )[2])'
+(13,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int (const * ai)[2]' in 'void f4( int (const * )[2])'
+(17,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int (* ai)[2]' in 'void g( int (* )[2])'
+(20,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int const (* ai)[2]' in 'void g( int const (* )[2])'
+(23,3): Error! E229: function 'g' has already been defined
+  definition: 'void g( int (* )[2])'
+(26,1): Error! E226: function 'g' is not distinct
+  definition: 'void g( int const (* )[2])'
+(26,3): Warning! W726: no reference to formal parameter 'ai'
+  definition: 'int (const * ai)[2]' in 'void g( int (const * )[2])'
+(36,9): Error! E246: left expression is not a pointer to a constant object
+  left operand type is 'int (* )[2] (lvalue)'
+  right operand type is 'int const (* )[2]'
+(37,7): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void f1( int (* )[2])'
+  cannot convert argument 1 defined at: (37,9)
+  source conversion type is 'int const (* )[2] (lvalue)'
+  target conversion type is 'int (* )[2]'
+(38,9): Error! E246: left expression is not a pointer to a constant object
+  left operand type is 'int (* )[2] (lvalue)'
+  right operand type is 'int (const * )[2]'
+(39,7): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void f1( int (* )[2])'
+  cannot convert argument 1 defined at: (39,9)
+  source conversion type is 'int (const * )[2] (lvalue)'
+  target conversion type is 'int (* )[2]'
+(41,9): Error! E246: left expression is not a pointer to a constant object
+  left operand type is 'int (* )[2] (lvalue)'
+  right operand type is 'int const (* )[2]'
+(42,7): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void f3( int (* )[2])'
+  cannot convert argument 1 defined at: (42,9)
+  source conversion type is 'int const (* )[2] (lvalue)'
+  target conversion type is 'int (* )[2]'
+(43,9): Error! E246: left expression is not a pointer to a constant object
+  left operand type is 'int (* )[2] (lvalue)'
+  right operand type is 'int (const * )[2]'
+(44,7): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void f3( int (* )[2])'
+  cannot convert argument 1 defined at: (44,9)
+  source conversion type is 'int (const * )[2] (lvalue)'
+  target conversion type is 'int (* )[2]'
+File: source\diag0312.c
+(14,1): Warning! W932: cv-qualifier in return type 'int const' is meaningless
+(21,55): Warning! W931: cv-qualifier in cast to 'short const' is meaningless
+(22,41): Warning! W933: use of C-style cast to 'short *' is discouraged
+File: source\diag0313.c
+(8,12): Error! E197: type cannot be defined in this context
+(11,1): Error! E934: unable to match function template definition 'A::A'
+  definition: 'A<T>::A( void )'
+(15,1): Error! E934: unable to match function template definition 'A::A'
+  definition: 'A<int>::A( void )'
+(18,0): Error! E934: unable to match function template definition 'A::A'
+  definition: 'A<short>::A( void )'

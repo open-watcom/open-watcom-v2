@@ -1,0 +1,120 @@
+.387
+		PUBLIC	x1
+		PUBLIC	x2
+		PUBLIC	x3
+		PUBLIC	x4
+		PUBLIC	x5
+		PUBLIC	x6
+		PUBLIC	x7
+		PUBLIC	x8
+		PUBLIC	x9
+		PUBLIC	x10
+		PUBLIC	x11
+		PUBLIC	x12
+		PUBLIC	x13
+		PUBLIC	x14
+		PUBLIC	x15
+		PUBLIC	x16
+		PUBLIC	x17
+		PUBLIC	x18
+		PUBLIC	x19
+		PUBLIC	x20
+		PUBLIC	x21
+		PUBLIC	x22
+		PUBLIC	x23
+		PUBLIC	x24
+		PUBLIC	x25
+		PUBLIC	x26
+		PUBLIC	x27
+		PUBLIC	x28
+DGROUP		GROUP	_DATA
+tbyte_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+tbyte_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+x1:
+    DB	0, 0, 0, 0, 0, 0, 0, 0a0H
+    DB	2, 40H
+x2:
+    DB	0, 0, 0, 0, 0, 0, 0, 0c8H
+    DB	5, 40H
+x3:
+    DB	0, 0, 0, 0, 0, 0, 40H, 9cH
+    DB	0cH, 40H
+x4:
+    DB	0, 0, 0, 0, 0, 20H, 0bcH, 0beH
+    DB	19H, 40H
+x5:
+    DB	0, 0, 0, 4, 0bfH, 0c9H, 1bH, 8eH
+    DB	34H, 40H
+x6:
+    DB	9eH, 0b5H, 70H, 2bH, 0a8H, 0adH, 0c5H, 9dH
+    DB	69H, 40H
+x7:
+    DB	0d5H, 0a6H, 0cfH, 0ffH, 49H, 1fH, 78H, 0c2H
+    DB	0d3H, 40H
+x8:
+    DB	0e0H, 8cH, 0e9H, 80H, 0c9H, 47H, 0baH, 93H
+    DB	0a8H, 41H
+x9:
+    DB	8eH, 0deH, 0f9H, 9dH, 0fbH, 0ebH, 7eH, 0aaH
+    DB	51H, 43H
+x10:
+    DB	0c7H, 91H, 0eH, 0a6H, 0aeH, 0a0H, 19H, 0e3H
+    DB	0a3H, 46H
+x11:
+    DB	17H, 0cH, 75H, 81H, 86H, 75H, 76H, 0c9H
+    DB	48H, 4dH
+x12:
+    DB	0e5H, 5dH, 3dH, 0c5H, 5dH, 3bH, 8bH, 9eH
+    DB	92H, 5aH
+x13:
+    DB	9bH, 97H, 20H, 8aH, 2, 52H, 60H, 0c4H
+    DB	25H, 75H
+x14:
+    DB	0cdH, 0ccH, 0ccH, 0ccH, 0ccH, 0ccH, 0ccH, 0ccH
+    DB	0fbH, 3fH
+x15:
+    DB	0aH, 0d7H, 0a3H, 70H, 3dH, 0aH, 0d7H, 0a3H
+    DB	0f8H, 3fH
+x16:
+    DB	2cH, 65H, 19H, 0e2H, 58H, 17H, 0b7H, 0d1H
+    DB	0f1H, 3fH
+x17:
+    DB	0fdH, 0ceH, 61H, 84H, 11H, 77H, 0ccH, 0abH
+    DB	0e4H, 3fH
+x18:
+    DB	5bH, 0e1H, 4dH, 0c4H, 0beH, 94H, 95H, 0e6H
+    DB	0c9H, 3fH
+x19:
+    DB	0baH, 94H, 39H, 45H, 0adH, 1eH, 0b1H, 0cfH
+    DB	94H, 3fH
+x20:
+    DB	0a5H, 0e9H, 39H, 0a5H, 27H, 0eaH, 7fH, 0a8H
+    DB	2aH, 3fH
+x21:
+    DB	0a1H, 0e4H, 0bcH, 64H, 7cH, 46H, 0d0H, 0ddH
+    DB	55H, 3eH
+x22:
+    DB	3aH, 19H, 7aH, 63H, 25H, 43H, 31H, 0c0H
+    DB	0acH, 3cH
+x23:
+    DB	1cH, 0d2H, 23H, 0dbH, 32H, 0eeH, 49H, 90H
+    DB	5aH, 39H
+x24:
+    DB	0beH, 0c0H, 57H, 0daH, 0a5H, 82H, 0a6H, 0a2H
+    DB	0b5H, 32H
+x25:
+    DB	0e4H, 2dH, 36H, 34H, 4fH, 53H, 0aeH, 0ceH
+    DB	6bH, 25H
+x26:
+    DB	0deH, 9fH, 0ceH, 0d2H, 0c8H, 4, 0ddH, 0a6H
+    DB	0d8H, 0aH
+x27:
+    DB	0e2H, 0f8H, 0b2H, 37H, 0baH, 0e9H, 0d6H, 0fcH
+    DB	0fbH, 3fH
+x28:
+    DB	4aH, 0c3H, 4dH, 0dfH, 0e0H, 0e9H, 0d6H, 0fcH
+    DB	0feH, 3fH
+
+_DATA		ENDS
+		END

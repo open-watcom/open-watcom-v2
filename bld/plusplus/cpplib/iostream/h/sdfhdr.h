@@ -29,26 +29,6 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/22    Greb Bentz      Make sure overflow() function sets up the
-//                              put area
-//  93/10/22    Raymond Tang    Split into seperate files.
-
 #ifndef _SDFHDR_H_INCLUDED
 #define _SDFHDR_H_INCLUDED
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of far _heapchk() and _fheapchk().
 *
 ****************************************************************************/
 
@@ -53,7 +52,8 @@ static int checkFreeList( unsigned long *free_size )
         p = MK_FP( seg, 0 );
         __fheapchk_current = curr = MK_FP( seg, p->freehead.next );
         for(;;) {
-            if( FP_OFF(curr) == offsetof(struct heapblk, freehead) ) break;
+            if( FP_OFF(curr) == offsetof(struct heapblk, freehead) )
+                break;
             total_size += curr->len;
             __fheapchk_current = curr = MK_FP( seg, curr->next );
         }
@@ -101,10 +101,6 @@ _WCRTLINK int _fheapchk( void )
     unsigned long free_size;
 
     _AccessFHeap();
-    if( __fheap_clean ) {
-        _ReleaseFHeap();
-        return( _HEAPOK );
-    }
     heap_status = checkFreeList( &free_size );
     if( heap_status != _HEAPOK ) {
         _ReleaseFHeap();
@@ -113,10 +109,12 @@ _WCRTLINK int _fheapchk( void )
     hi._pentry = NULL;
     for(;;) {
         heap_status = __HeapWalk( &hi, __fheap, 0 );
-        if( heap_status != _HEAPOK ) break;
+        if( heap_status != _HEAPOK )
+            break;
         if( hi._useflag == _FREEENTRY ) {
             heap_status = checkFree( hi._pentry );
-            if( heap_status != _HEAPOK ) break;
+            if( heap_status != _HEAPOK )
+                break;
             free_size -= hi._size;
         }
     }
@@ -127,9 +125,6 @@ _WCRTLINK int _fheapchk( void )
     } else {
         if( heap_status == _HEAPEND ) {
             heap_status = _HEAPOK;
-        }
-        if( heap_status == _HEAPOK ) {
-            __fheap_clean = 1;
         }
     }
     _ReleaseFHeap();

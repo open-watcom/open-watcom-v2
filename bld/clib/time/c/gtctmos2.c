@@ -29,25 +29,23 @@
 *
 ****************************************************************************/
 
-
 #include "variety.h"
 #include <time.h>
 #include <dos.h>
 #include <wos2.h>
 #include "timedata.h"
 
-
 int __getctime( struct tm *t )
-    {
-        DATETIME    dt;
+{
+    DATETIME    dt;
 
-        DosGetDateTime( &dt );
-        t->tm_year = dt.year - 1900;
-        t->tm_mon  = dt.month - 1;
-        t->tm_mday = dt.day;
-        t->tm_hour = dt.hours;
-        t->tm_min  = dt.minutes;
-        t->tm_sec  = dt.seconds;
-        t->tm_isdst = -1;
-        return( dt.hundredths * 10 );
-    }
+    DosGetDateTime( &dt );
+    t->tm_year  = dt.year - 1900;
+    t->tm_mon   = dt.month - 1;
+    t->tm_mday  = dt.day;
+    t->tm_hour  = dt.hours;
+    t->tm_min   = dt.minutes;
+    t->tm_sec   = dt.seconds;
+    t->tm_isdst = -1;
+    return( dt.hundredths * 10 );
+}

@@ -1,0 +1,50 @@
+Command line parsing as implemented in Microsoft's cl.exe is bizarre and
+unpredictable, as we've come to expect of Microsoft products. The following
+notes are based upon experimentation with cl.exe drivers of various Visual C++
+versions.
+
+- Command parsing is done in multiple stages. Certain options take precedence
+  regardless of where they are specified.
+
+- For example 'cl -zzz -nologo' will complain about unknown zzz option but
+  will not print the logo.
+
+- The -? or -help option prints usage help regardless of any files specified
+  for processing.
+
+- The -E/EP option also has high priority. The following command lines all
+  produce the same result:
+
+    cl -E foo.c
+    cl foo.c -E
+    cl -c foo.c -E
+    cl -E foo.c -c
+    cl foo.c -E -c
+
+  That is, the position of -E is irrelevant and -c (if specified) is ignored.
+
+- The -c option is also position independent. The following are equivalent:
+
+    cl -c foo.c
+    cl foo.c -c
+
+- No file extension is automatically assumed.
+
+- Files with .c, .cpp, and .cxx extension are considered source files. No
+  other extensions are (eg. .asm, .rc). The -Tc/Tp option forces file type
+  for the next argument.
+
+- Files with unrecognized file extensions are considered to be object files.
+  These files will be passed to the linker if the link step is invoked.
+
+- When -E/EP option is specified, files with unrecognized extensions are
+  considered to be source files and will be preprocessed. The few extensions
+  not preprocessed include .obj, .lib, .res, .def.
+
+- Consider the following command:
+
+    cl -Tc -nologo
+
+  This will complain that source file '-nologo' cannot be opened but still
+  suppress the logo. This suggests that the -nologo option is searched for
+  before parsing the rest of the command line.

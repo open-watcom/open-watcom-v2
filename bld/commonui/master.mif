@@ -1,0 +1,89 @@
+proj_name = commonui
+name = commonui
+
+!ifndef commonui_autodepends
+commonui_autodepends = .autodepend
+!endif
+
+sys_windowed = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include $(wdisasm_dir)/mif/disasm.mif
+
+msgfiles = $(commonui_dir)/h/about.msg $(commonui_dir)/h/alias.msg &
+           $(commonui_dir)/h/hint.msg $(commonui_dir)/h/log.msg &
+           $(commonui_dir)/h/memwnd.msg $(commonui_dir)/h/savelbox.msg
+
+objs =  ctl3d32.obj  &
+        loadcc.obj   &
+        mem.obj      &
+        statwnd.obj  &
+        toolbr.obj   &
+        wmdisim.obj
+
+!ifneq host_os os2
+objs += about.obj    &
+        alias.obj    &
+        bitmap.obj   &
+        ctl3dcvr.obj &
+        desknt.obj   &
+        dlgmod.obj   &
+        font.obj     &
+        fontstr.obj  &
+        getsaddr.obj &
+        hint.obj     &
+        inipath.obj  &
+        jdlg.obj     &
+        ldstr.obj    &
+        log.obj      &
+        mark.obj     &
+        memwnd.obj   &
+        memwndcd.obj &
+        palette.obj  &
+        pushwin.obj  &
+        savelbox.obj &
+        sdkasm.obj   &
+        srchmsg.obj  &
+        strsup.obj   &
+        wwinhelp.obj
+!endif
+
+!ifeq host_os win
+!ifeq host_cpu i86
+objs += dbg386.obj   &
+        getcsip.obj  &
+        intdata.obj  &
+        inth.obj     &
+        ismod32.obj  &
+        mythelp.obj  &
+        seginfo.obj  &
+        segmem.obj   &
+        segmem2.obj
+!endif
+!endif
+
+extra_c_flags = -fh
+extra_c_flags_nt = -DNOUSE3D
+extra_c_flags_os2 = -D__OS2_PM__
+extra_c_flags_win_i86 = -zu -zw -zc
+extra_c_flags_win_386 = -wcd310
+
+inc_dirs = -I"../h" -I"$(wpi_dir)/h" $(dis_includes)
+
+.c: ../c
+.asm: ../asm
+
+all : uistr.gh $(name).lib .symbolic
+    @%null
+
+uistr.gh : uistrmsg.gh
+    $(awk) -f $(misc_dir)/msgtoh.awk -v rcbase=10000 -v basename=MSG_UI_BASE $[@ > $^@
+
+uistrmsg.gh : $(commonui_dir)/commonui.msg
+    $(c_pp) -zk0 -I"$(commonui_dir)/h" $[@ >$^@
+
+$(name).lib : $(objs)
+    $(librarian) $(libflags) $<

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of internal structures used by sampler/profiler.
 *
 ****************************************************************************/
 
@@ -50,14 +49,14 @@ sample_start  ->+--------+ *
 notes:
         - there are multiple CODE_LOAD records
         - after all the ADDR_MAPS have been processed (after a CODE_LOAD),
-          use DoAddrMap to invoke WVIDEO's symbolic code
+          use DoAddrMap to invoke debugger's symbolic code
         - REMAP_SECTION records will occur after an OVL_LOAD. The data
           in them should be fed into the RemapSection routine
         - CALLGRAPH records must immediately follow the corresponding
           SAMPLES record
 */
 
-#include <stdio.h>              /* for fpos_t */
+#include <sys/types.h>          /* for off_t */
 #include "digtypes.h"           /* for system config */
 
 #define SAMP_SIGNATURE          0xDEED
@@ -65,7 +64,8 @@ notes:
 #define SAMP_MINOR_VER          2
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
-#pragma pack(push, 1);
+#pragma pack( push, 1 )
+
 typedef struct samp_address {
     uint_32             offset;
     uint_16             segment;
@@ -77,7 +77,7 @@ typedef struct samp_header {
     uint_16             signature;      /* must == SAMP_SIGNATURE */
     uint_8              major_ver;      /* must == SAMP_MAJOR_VER */
     uint_8              minor_ver;      /* must <= SAMP_MINOR_VER */
-    fpos_t              sample_start;   /* first sample block offset in file */
+    off_t               sample_start;   /* first sample block offset in file */
 } samp_header;
 #define SIZE_HEADER     (sizeof( samp_header ))
 
@@ -253,4 +253,4 @@ typedef struct samp_block {
 } samp_block;
 #define SIZE_BLOCK      (sizeof( samp_block ))
 
-#pragma pack(pop);
+#pragma pack( pop )

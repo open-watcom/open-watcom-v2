@@ -1,20 +1,8 @@
 clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj @del *.?bj
+        rm -f *.?bj *.o $(additional_cleanup)
         @%make killnonobj
 
 killnonobj: .SYMBOLIC .EXPLICIT
-        @if exist *.lnk @del *.lnk
-        @if exist *.exe @del *.exe
-        @if exist *.dll @del *.dll
-        @if exist *.lib @del *.lib
-        @if exist *.rc @del *.rc
-        @if exist *.res @del *.res
-        @if exist *.clb @del *.clb
-        @if exist *.lst @del *.lst
-        @if exist *.err @del *.err
-        @if exist *.map @del *.map
-        @if exist *.dmp @del *.dmp
-        @if exist *.sym @del *.sym
-        @if exist *.tmp @del *.tmp
-        @if exist *.ilk @del *.ilk
-        @if exist *.gh @del *.gh
+        rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll
+        rm -f *.lib *.lbc *.rc *.dlg *.res *.lst *.err
+        rm -f *.pch *.map *.sym *.tmp *.ilk *.gh *.grc

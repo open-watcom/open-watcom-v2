@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX tee utility
+*               Sends input to two outputs
 *
 ****************************************************************************/
 
@@ -43,7 +43,7 @@
 
 char *OptEnvVar = "tee";
 
-char *usageTxt[] = {
+static const char *usageTxt[] = {
     "Usage: tee [-?a] [files]",
     "\tfiles       : files to tee",
     "\t\t      Input is copied to each output `file' as well as to",

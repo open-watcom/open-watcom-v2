@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wglbl.h"
 #include "wmem.h"
@@ -61,62 +61,61 @@
 /****************************************************************************/
 static  void            WMakeDataFromStringBlock( WStringBlock *block, void **data, int *size );
 static  int             WInitDataFromStringBlock( WStringBlock *block, void *data, int size );
-static  int             WInitStringTable        ( WStringInfo *info, WStringTable *tbl );
+static  int             WInitStringTable( WStringInfo *info, WStringTable *tbl );
 static  int             WMakeStringBlockFromData( void *data, int size, WStringBlock *block );
-static  int             WCalcStringBlockSize    ( WStringBlock *block );
-static  WStringBlock    *WFindStringTableBlock  ( WStringTable *tbl, uint_16 blocknum );
-static  WStringBlock    *WAllocStringBlock      ( void );
-static  WStringTable    *WAllocStringTable      ( int is32bit );
-static  void            WFreeStringTable        ( WStringTable *tbl );
-static  void            WFreeStringTableBlock   ( WStringBlock *block );
+static  int             WCalcStringBlockSize( WStringBlock *block );
+static  WStringBlock    *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum );
+static  WStringBlock    *WAllocStringBlock( void );
+static  WStringTable    *WAllocStringTable( int is32bit );
+static  void            WFreeStringTable( WStringTable *tbl );
+static  void            WFreeStringTableBlock( WStringBlock *block );
 static  WStringNode     *WMakeStringNodeFromStringBlock( WStringBlock * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-WStringEditInfo *WAllocStringEInfo ( void )
+WStringEditInfo *WAllocStringEInfo( void )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *) WMemAlloc ( sizeof(WStringEditInfo) );
+    einfo = (WStringEditInfo *)WMemAlloc( sizeof( WStringEditInfo ) );
 
-    if ( einfo ) {
-        memset ( einfo, 0, sizeof(WStringEditInfo) );
+    if( einfo != NULL ) {
+        memset( einfo, 0, sizeof( WStringEditInfo ) );
         einfo->current_pos = -1;
     }
 
-    return ( einfo );
+    return( einfo );
 }
 
-void WFreeStringEInfo ( WStringEditInfo *einfo )
+void WFreeStringEInfo( WStringEditInfo *einfo )
 {
-    if ( einfo ) {
-        if ( einfo->tbl ) {
-            WFreeStringTable ( einfo->tbl );
+    if( einfo != NULL ) {
+        if( einfo->tbl != NULL ) {
+            WFreeStringTable( einfo->tbl );
             einfo->tbl = NULL;
         }
-        if ( einfo->wsb ) {
-            WDestroyStatusLine ( einfo->wsb );
+        if( einfo->wsb != NULL ) {
+            WDestroyStatusLine( einfo->wsb );
             einfo->wsb = NULL;
         }
-        if ( einfo->ribbon ) {
-            WDestroyRibbon ( einfo );
+        if( einfo->ribbon != NULL ) {
+            WDestroyRibbon( einfo );
         }
-        if ( ( einfo->edit_dlg != (HWND)NULL ) &&
-             IsWindow ( einfo->edit_dlg ) ) {
-            DestroyWindow ( einfo->edit_dlg );
+        if( einfo->edit_dlg != (HWND)NULL && IsWindow( einfo->edit_dlg ) ) {
+            DestroyWindow( einfo->edit_dlg );
             einfo->edit_dlg = (HWND)NULL;
         }
-        if ( ( einfo->win != (HWND)NULL ) && IsWindow ( einfo->win ) ) {
+        if( einfo->win != (HWND)NULL && IsWindow( einfo->win ) ) {
             SetWindowLong( einfo->win, 0, (LONG)0 );
-            DestroyWindow ( einfo->win );
+            DestroyWindow( einfo->win );
             einfo->win = (HWND)NULL;
         }
-        if ( einfo->file_name ) {
-            WMemFree ( einfo->file_name );
+        if( einfo->file_name != NULL ) {
+            WMemFree( einfo->file_name );
         }
-        WMemFree ( einfo );
+        WMemFree( einfo );
     }
 }
 
@@ -129,10 +128,10 @@ WStringBlock *WFindStringBlock( WStringTable *tbl, uint_16 blocknum )
 {
     WStringBlock *block;
 
-    if( tbl ) {
+    if( tbl != NULL ) {
         block = tbl->first_block;
-        while( block ) {
-            if( ( block->blocknum & 0xfff0 ) == ( blocknum & 0xfff0 ) ) {
+        while( block != NULL ) {
+            if( (block->blocknum & 0xfff0) == (blocknum & 0xfff0) ) {
                 return( block );
             }
             block = block->next;
@@ -150,12 +149,12 @@ int WFindStringPos( WStringTable *tbl, uint_16 string_id )
 
     pos = 0;
 
-    if( tbl ) {
+    if( tbl != NULL ) {
         block = tbl->first_block;
-        while( block ) {
-            for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+        while( block != NULL ) {
+            for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
                 if( block->block.String[i] != NULL ) {
-                    if( ( ( block->blocknum & 0xfff0 ) + i ) == string_id ) {
+                    if( (block->blocknum & 0xfff0) + i == string_id ) {
                         return( pos );
                     }
                     pos++;
@@ -174,9 +173,9 @@ WStringBlock *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum )
     WStringBlock *last;
 
     last = NULL;
-    if( tbl ) {
+    if( tbl != NULL ) {
         block = tbl->first_block;
-        while( block ) {
+        while( block != NULL ) {
             if( block->blocknum > blocknum ) {
                 break;
             } else if( block->blocknum == blocknum ) {
@@ -190,10 +189,10 @@ WStringBlock *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum )
     return( last );
 }
 
-void WMakeDataFromStringBlock ( WStringBlock *block, void **data, int *size )
+void WMakeDataFromStringBlock( WStringBlock *block, void **data, int *size )
 {
-    if( block ) {
-        WRMakeDataFromStringBlock(&block->block, data, size, block->is32bit);
+    if( block != NULL ) {
+        WRMakeDataFromStringBlock( &block->block, data, size, block->is32bit );
     }
 }
 
@@ -201,12 +200,11 @@ int WMakeStringBlockFromData( void *data, int size, WStringBlock *block )
 {
     int ret;
 
-    if( !data || !size || !block ) {
+    if( data == NULL || size == 0 || block == NULL ) {
         return( FALSE );
     }
 
-    ret = WRMakeStringBlockFromData( &block->block, data, size,
-                                     block->is32bit );
+    ret = WRMakeStringBlockFromData( &block->block, data, size, block->is32bit );
 
     return( ret );
 }
@@ -222,8 +220,8 @@ WStringBlock *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 blocknum )
 
     after = WFindStringTableBlock( tbl, blocknum );
 
-    if( after ) {
-        if( ( after->blocknum & 0xfff0 ) == ( blocknum & 0xfff0 ) ) {
+    if( after != NULL) {
+        if( (after->blocknum & 0xfff0) == (blocknum & 0xfff0) ) {
             return( after );
         }
     }
@@ -232,11 +230,11 @@ WStringBlock *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 blocknum )
     if( block == NULL ) {
         return( NULL );
     }
-    block->is32bit  = tbl->is32bit;
+    block->is32bit = tbl->is32bit;
     block->blocknum = blocknum & 0xfff0;
 
-    if( after ) {
-        if( after->next ) {
+    if( after != NULL ) {
+        if( after->next != NULL ) {
             after->next->prev = block;
         }
         block->next = after->next;
@@ -255,13 +253,13 @@ Bool WRemoveStringBlock( WStringTable *tbl, WStringBlock *block )
 {
     Bool ok;
 
-    ok = ( tbl && block );
+    ok = (tbl != NULL && block != NULL);
 
     if( ok ) {
-        if( block->next ) {
+        if( block->next != NULL ) {
             block->next->prev = block->prev;
         }
-        if( block->prev ) {
+        if( block->prev != NULL ) {
             block->prev->next = block->next;
         }
         if( tbl->first_block == block ) {
@@ -270,24 +268,24 @@ Bool WRemoveStringBlock( WStringTable *tbl, WStringBlock *block )
         WFreeStringTableBlock( block );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 WStringBlock *WAllocStringBlock( void )
 {
     WStringBlock *block;
 
-    block = (WStringBlock *) WMemAlloc(sizeof(WStringBlock));
-    if( block ) {
-        memset( block, 0, sizeof(WStringBlock) );
+    block = (WStringBlock *)WMemAlloc( sizeof( WStringBlock ) );
+    if( block != NULL ) {
+        memset( block, 0, sizeof( WStringBlock ) );
     }
 
     return( block );
 }
 
-void WFreeStringTable ( WStringTable *tbl )
+void WFreeStringTable( WStringTable *tbl )
 {
-    if( tbl ) {
+    if( tbl != NULL ) {
         WFreeStringTableBlocks( tbl->first_block );
         WMemFree( tbl );
     }
@@ -297,7 +295,7 @@ void WFreeStringTableBlocks( WStringBlock *block )
 {
     WStringBlock *b;
 
-    while( block ) {
+    while( block != NULL ) {
         b = block;
         block = block->next;
         WFreeStringTableBlock( b );
@@ -308,8 +306,8 @@ void WFreeStringTableBlock( WStringBlock *block )
 {
     int i;
 
-    if( block ) {
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    if( block != NULL ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->symbol[i] != NULL ) {
                 WMemFree( block->symbol[i] );
             }
@@ -319,23 +317,17 @@ void WFreeStringTableBlock( WStringBlock *block )
     }
 }
 
-void WFreeStringNodes( WStringInfo *info )
-{
-    WFreeStringNode( info->tables );
-    info->tables = NULL;
-}
-
 void WFreeStringNode( WStringNode *node )
 {
     WStringNode *n;
 
-    while( node ) {
+    while( node != NULL ) {
         n = node;
         node = node->next;
-        if( n->block_name ) {
+        if( n->block_name != NULL ) {
             WMemFree( n->block_name );
         }
-        if( n->data ) {
+        if( n->data != NULL ) {
             WMemFree( n->data );
         }
         WMemFree( n );
@@ -350,11 +342,11 @@ WStringNode *WMakeStringNodeFromStringBlock( WStringBlock *block )
         return( NULL );
     }
 
-    node = (WStringNode *)WMemAlloc( sizeof(WStringNode) );
+    node = (WStringNode *)WMemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }
-    memset( node, 0, sizeof(WStringNode) );
+    memset( node, 0, sizeof( WStringNode ) );
     node->block_name = WResIDFromNum( block->blocknum / 16 + 1 );
     node->MemFlags = block->MemFlags;
     WMakeDataFromStringBlock( block, &node->data, &node->data_size );
@@ -366,6 +358,12 @@ WStringNode *WMakeStringNodeFromStringBlock( WStringBlock *block )
     return( node );
 }
 
+void WFreeStringNodes( WStringInfo *info )
+{
+    WFreeStringNode( info->tables );
+    info->tables = NULL;
+}
+
 WStringNode *WMakeStringNodes( WStringTable *tbl )
 {
     WStringNode         *node;
@@ -374,13 +372,13 @@ WStringNode *WMakeStringNodes( WStringTable *tbl )
 
     node = NULL;
     block  = tbl->first_block;
-    while( block ) {
+    while( block != NULL ) {
         new = WMakeStringNodeFromStringBlock( block );
         if( new == NULL ) {
             WFreeStringNode( node );
             return( NULL );
         }
-        if( node ) {
+        if( node != NULL ) {
             new->next = node;
             node = new;
         } else {
@@ -396,10 +394,10 @@ WStringTable *WAllocStringTable( int is32bit )
 {
     WStringTable        *tbl;
 
-    tbl = (WStringTable *) WMemAlloc( sizeof(WStringTable) );
+    tbl = (WStringTable *)WMemAlloc( sizeof( WStringTable ) );
 
-    if( !tbl ) {
-        return ( NULL );
+    if( tbl == NULL ) {
+        return( NULL );
     }
 
     tbl->is32bit = is32bit;
@@ -408,21 +406,21 @@ WStringTable *WAllocStringTable( int is32bit )
     return( tbl );
 }
 
-int WInitStringTable ( WStringInfo *info, WStringTable *tbl )
+int WInitStringTable( WStringInfo *info, WStringTable *tbl )
 {
     WStringBlock        *block;
     WStringNode         *node;
     uint_16             blocknum;
 
-    if( !info || !tbl ) {
+    if( info == NULL || tbl == NULL ) {
         return( FALSE );
     }
 
     node = info->tables;
 
-    while( node ) {
-        blocknum = (uint_16) WResIDToNum( node->block_name );
-        blocknum = ( blocknum - 1 ) * 16;
+    while( node != NULL ) {
+        blocknum = (uint_16)WResIDToNum( node->block_name );
+        blocknum = (blocknum - 1) * 16;
         if( WFindStringBlock( tbl, blocknum ) ) {
             return( FALSE );
         }
@@ -430,7 +428,7 @@ int WInitStringTable ( WStringInfo *info, WStringTable *tbl )
         if( block == NULL ) {
             return( FALSE );
         }
-        if( !WMakeStringBlockFromData(node->data, node->data_size, block) ) {
+        if( !WMakeStringBlockFromData( node->data, node->data_size, block ) ) {
             return( FALSE );
         }
         node = node->next;
@@ -446,43 +444,43 @@ WStringTable *WMakeStringTableFromInfo( WStringInfo *info )
 
     tbl = NULL;
 
-    ok = ( info != NULL );
+    ok = (info != NULL);
 
     if( ok ) {
-        tbl = WAllocStringTable ( info->is32bit );
-        ok = ( tbl != NULL );
+        tbl = WAllocStringTable( info->is32bit );
+        ok = (tbl != NULL);
     }
 
-    if ( ok ) {
-        ok = WInitStringTable ( info, tbl );
+    if( ok ) {
+        ok = WInitStringTable( info, tbl );
     }
 
-    if ( ok ) {
+    if( ok ) {
         //WFreeStringNodes( info );
     } else {
-        if ( tbl ) {
-            WFreeStringTable ( tbl );
+        if( tbl != NULL ) {
+            WFreeStringTable( tbl );
             tbl = NULL;
         }
     }
 
-    return ( tbl );
+    return( tbl );
 }
 
-Bool WGetFirstStringInBlock ( WStringBlock *block, uint_16 *first )
+Bool WGetFirstStringInBlock( WStringBlock *block, uint_16 *first )
 {
     int         i;
 
-    if ( block && first ) {
-        for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    if( block != NULL && first != NULL ) {
+        for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->block.String[i] != NULL ) {
-                *first = ( ( block->blocknum & 0xfff0 ) + i );
-                return ( TRUE );
+                *first = (block->blocknum & 0xfff0) + i;
+                return( TRUE );
             }
         }
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
 
 static WStringBlock *WFindLargestBlock( WStringTable *tbl )
@@ -491,11 +489,10 @@ static WStringBlock *WFindLargestBlock( WStringTable *tbl )
     WStringBlock *largest;
 
     largest = NULL;
-    if( tbl ) {
+    if( tbl != NULL ) {
         block = tbl->first_block;
-        while( block ) {
-            if( ( largest == NULL ) ||
-                ( block->blocknum > largest->blocknum ) ) {
+        while( block != NULL ) {
+            if( largest == NULL || block->blocknum > largest->blocknum ) {
                 largest = block;
             }
             block = block->next;
@@ -511,10 +508,10 @@ uint_16 WFindLargestStringID( WStringTable *tbl )
     int                 i;
 
     largest = WFindLargestBlock( tbl );
-    if( largest ) {
-        for( i=STRTABLE_STRS_PER_BLOCK-1; i>=0; i-- ) {
+    if( largest != NULL ) {
+        for( i = STRTABLE_STRS_PER_BLOCK - 1; i >=0 ; i-- ) {
             if( largest->block.String[i] != NULL ) {
-                return( ( largest->blocknum & 0xfff0 ) + i );
+                return( (largest->blocknum & 0xfff0) + i );
             }
         }
         return( largest->blocknum & 0xfff0 );
@@ -527,12 +524,12 @@ Bool WResolveStringTable( WStringEditInfo *einfo )
 {
     WStringBlock *block;
 
-    if( !einfo || !einfo->tbl ) {
+    if( einfo == NULL || einfo->tbl == NULL ) {
         return( FALSE );
     }
 
     block = einfo->tbl->first_block;
-    while( block ) {
+    while( block != NULL ) {
         WResolveStringTableBlock( block, einfo->info->symbol_table );
         block = block->next;
     }
@@ -545,11 +542,11 @@ Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
     WRHashValueList     *vlist;
     int                 i;
 
-    if( !block || !symbol_table ) {
+    if( block == NULL || symbol_table == NULL ) {
         return( FALSE );
     }
 
-    for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
         if( block->block.String[i] == NULL ) {
             continue;
         }
@@ -569,8 +566,7 @@ Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
     return( TRUE );
 }
 
-static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo,
-                                            WStringBlock *block,
+static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock *block,
                                             WRHashTable *symbol_table )
 {
     WRHashValue hv;
@@ -578,25 +574,24 @@ static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo,
     Bool        replace;
     char        *text;
 
-    if( !symbol_table ) {
+    if( symbol_table == NULL ) {
         return( FALSE );
     }
 
-    for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
         if( block->block.String[i] == NULL ) {
             continue;
         }
 
-        text = WResIDNameToStr( block->block.String[ i ] );
+        text = WResIDNameToStr( block->block.String[i] );
         if( text == NULL ) {
             continue;
         }
 
         if( WRLookupName( symbol_table, block->symbol[i], &hv ) ) {
-            WInsertStringData( einfo, (uint_16)hv, text, block->symbol[i],
-                               &replace );
+            WInsertStringData( einfo, (uint_16)hv, text, block->symbol[i], &replace );
         } else {
-            WInsertStringData( einfo, (uint_16)((block->blocknum & 0xfff0)+i),
+            WInsertStringData( einfo, (uint_16)((block->blocknum & 0xfff0) + i),
                                text, block->symbol[i], &replace );
         }
 
@@ -614,7 +609,7 @@ Bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     LRESULT             pos;
     HWND                lbox;
 
-    if( !einfo || !einfo->tbl ) {
+    if( einfo == NULL || einfo->tbl == NULL ) {
         return( FALSE );
     }
 
@@ -627,7 +622,7 @@ Bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     einfo->tbl = new_tbl;
 
     block = old_tbl->first_block;
-    while( block ) {
+    while( block != NULL ) {
         WResolveStringTableBlockSymIDs( einfo, block, einfo->info->symbol_table );
         block = block->next;
     }
@@ -650,7 +645,7 @@ Bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     SendMessage( lbox, LB_RESETCONTENT, 0, 0 );
     SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
     block = einfo->tbl->first_block;
-    while( block ) {
+    while( block != NULL ) {
         WAddEditWinLBoxBlock( einfo, block, -1 );
         block = block->next;
     }
@@ -660,8 +655,7 @@ Bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     einfo->current_string = 0;
     einfo->current_pos = -1;
 
-    SendMessage( lbox, LB_SETCURSEL, (WPARAM) pos, 0 );
+    SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
 
     return( TRUE );
 }
-

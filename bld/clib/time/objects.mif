@@ -1,30 +1,52 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=================================================================================
-!inject asctime.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject clock.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject dyltptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject ftime.obj    d16 d32             nt nta ntp    o16 o32         w16 w32 osi
-!inject ftimeqnx.obj                                           q16 q32
-!inject gmtime.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject gtctm.obj    d16 d32                                           w16 w32 osi
-!inject gtctmos2.obj                                   o16 o32
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==========================================================================================================
+!inject asctime.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject clock.obj                                                   q16 q32             l32 lpc lmp
+!inject clockdos.obj d16 d32
+!inject clocko16.obj                                        o16
+!inject clocko32.obj                                            o32
+!inject clockwin.obj                     nt nta ntp                         w16 w32
+!inject clockrd.obj                                                                                 rdu rdk
+!inject dyltptr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject ftime.obj    d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
+!inject ftimeqnx.obj                                                q16 q32
+!inject ftimelnx.obj                                                                    l32 lpc lmp
+!inject gmtime.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject gtctm.obj    d16 d32                                                w16 w32 osi
+!inject gtctmos2.obj                                        o16 o32
 !inject gtctmwnt.obj                     nt nta ntp
-!inject localtim.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject mktime.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject strdate.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject strftime.obj d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject strtime.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject time.obj     d16 d32             nt nta ntp    o16 o32         w16 w32 osi
-!inject timeutil.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject tmznptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject tzset.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject tznmptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject uasctime.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject ustrdate.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject ustrftim.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject ustrtime.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject gtctmrd.obj                                                                                 rdu rdk
+!inject leapyear.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject localtim.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject locmktim.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject mktime.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject strdate.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject strftime.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject strtime.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject time.obj     d16 d32             nt nta ntp         o16 o32         w16 w32 osi             rdu rdk
+!inject timeutil.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject tmznptr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject tzfile.obj                                                                      l32 lpc lmp
+!inject tznmptr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject tzset.obj    d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject asctim_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject ctime_s.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject gmtime_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject lcltim_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+!inject uasctime.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrdate.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrftim.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrtime.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uasctm_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uctime_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
 
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
 
-uasctime_opts=-os
-ustrftim_opts=-os
+asctime_postopts=-os
+strftime_postopts=-os
+clocko16_postopts=-os
+clocko32_postopts=-os
+uasctime_postopts=-os
+ustrftim_postopts=-os
+asctim_s_postopts=-os
+uasctm_s_postopts=-os

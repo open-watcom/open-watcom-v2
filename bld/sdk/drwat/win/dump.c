@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "wdebug.h"
 #include "drwatcom.h"
 #include "dump.h"
@@ -42,7 +42,7 @@
 #include "getcsip.h"
 #include "jdlg.h"
 
-static int              currTask;
+static HTASK            currTask;
 
 #define BLOCKSIZE 32000
 
@@ -67,7 +67,7 @@ static long DumpGE( HWND hwnd, char FAR *buff, int fh, GLOBALENTRY *ge )
     bytes = ge->dwBlockSize;
     offset = 0;
 
-    sprintf( str,"%04x, size=%ld", ge->hBlock, bytes );
+    sprintf( str,"%04x, size=%ld", (WORD)ge->hBlock, bytes );
     SetDlgItemText( hwnd, DUMP_CURR_SEG, str );
 
     while( bytes != 0 ) {
@@ -370,8 +370,7 @@ BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
             DoDump( hwnd );
             if( invokeDebugger ) {
                 char str[256];
-                sprintf( str,"wvideo /tr=pmd.dll %s",
-                        dumpFile );
+                sprintf( str, "wvideo /tr=pmd.dll %s", dumpFile );
                 WinExec( str, SW_SHOWNORMAL );
             }
             EndDialog( hwnd, 0 );
@@ -393,8 +392,8 @@ void DumpTask( HWND hwnd )
 {
     FARPROC     fp;
 
-    fp = MakeProcInstance( DumpDialog, Instance );
-    JDialogBox( Instance, "DMPTASK", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)DumpDialog, Instance );
+    JDialogBox( Instance, "DMPTASK", hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
 
 } /* DumpTask */
@@ -438,7 +437,7 @@ static void FillTaskList( HWND hwnd )
         if( te.hTask != ProgramTask && !IsDip( te.hInst ) ) {
             csip = GetRealCSIP( te.hTask, NULL );
             RCsprintf( str, STR_TASK_LB_FMT_STR, te.szModule,
-                       HIWORD( csip ), LOWORD( csip ), te.hTask );
+                       HIWORD( csip ), LOWORD( csip ), (WORD)te.hTask );
             SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0,
                 (DWORD) (LPSTR) str );
         }
@@ -467,7 +466,7 @@ BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, WORD msg, WORD wparam,
         case IDOK:
             GetDlgItemText( hwnd, DBG_DEBUGGER_OPT, DebuggerOpts,
                             sizeof( DebuggerOpts )  );
-            sprintf( str,"wdw %s %d", DebuggerOpts, currTask );
+            sprintf( str,"wdw %s %d", DebuggerOpts, (WORD)currTask );
             WinExec( str, SW_SHOWNORMAL );
             EndDialog( hwnd, 0 );
             break;
@@ -530,8 +529,8 @@ BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, WORD msg, WORD wparam,
             }
             break;
         case TASKCTL_DEBUG:
-            fp = MakeProcInstance( DebuggerOptDlg, Instance );
-            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, fp );
+            fp = MakeProcInstance( (FARPROC)DebuggerOptDlg, Instance );
+            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, (DLGPROC)fp );
             FreeProcInstance( fp );
             break;
 #if( 0 )
@@ -563,8 +562,8 @@ void DumpATask( HWND hwnd )
 {
     FARPROC     fp;
 
-    fp = MakeProcInstance( DumpAnyDialog, Instance );
-    JDialogBox( Instance, "TASKCTL", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)DumpAnyDialog, Instance );
+    JDialogBox( Instance, "TASKCTL", hwnd, (DLGPROC)fp );
     DumpDialogHwnd = 0;
     FreeProcInstance( fp );
 

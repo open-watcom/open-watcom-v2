@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <dos.h>
 
-print_attribute()
-  {
+void print_attribute()
+{
     unsigned attribute;
 
     _dos_getfileattr( "file", &attribute );
@@ -12,10 +12,10 @@ print_attribute()
     } else {
         printf( "This is not a read-only file\n" );
     }
-  }
+}
 
 void main()
-  {
+{
     int      handle;
 
     if( _dos_creat( "file", _A_RDONLY, &handle ) != 0 ){
@@ -25,4 +25,4 @@ void main()
     _dos_setfileattr( "file", _A_NORMAL );
     print_attribute();
     _dos_close( handle );
-  }
+}

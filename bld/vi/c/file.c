@@ -30,18 +30,15 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "vi.h"
 #include <errno.h>
 #include "posix.h"
-#include "vi.h"
 #include "source.h"
 #include "win.h"
-#ifdef __WIN__
-#include "winvi.h"
 
+#ifdef __WIN__
 extern long VScrollBarScale;
-extern int HScrollBarScale;
+extern int  HScrollBarScale;
 #endif
 
 /*
@@ -53,11 +50,9 @@ void SaveInfo( info *ci  )
         return;
     }
     ci->CurrentFile = CurrentFile;
-    ci->CurrentLineNumber = CurrentLineNumber;
-    ci->CurrentColumn = CurrentColumn;
-    ci->ColumnDesired = ColumnDesired;
-    ci->LeftColumn = LeftColumn;
-    ci->TopOfPage = TopOfPage;
+    ci->CurrentPos = CurrentPos;
+    ci->VirtualColumnDesired = VirtualColumnDesired;
+    ci->LeftTopPos = LeftTopPos;
     ci->CurrentWindow = CurrentWindow;
     ci->UndoStack = UndoStack;
     ci->UndoUndoStack = UndoUndoStack;
@@ -92,6 +87,24 @@ void SaveCurrentInfo( void )
 } /* SaveCurrentInfo */
 
 /*
+ * cRestoreFileDisplayBits - do just that
+ */
+static void cRestoreFileDisplayBits( void )
+{
+    fcb *tfcb;
+
+    if( CurrentFile != NULL ) {
+        for( tfcb = CurrentFile->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
+            tfcb->on_display = tfcb->was_on_display;
+            if( tfcb->on_display && !tfcb->in_memory ) {
+                FetchFcb( tfcb );
+            }
+        }
+    }
+
+} /* cRestoreFileDisplayBits */
+
+/*
  * RestoreInfo - restore file info
  */
 bool RestoreInfo( info *ci  )
@@ -103,10 +116,11 @@ bool RestoreInfo( info *ci  )
         memset( ci, 0, sizeof( tmpinfo ) );
         ci->CurrentWindow = NO_WINDOW;
         ci->CurrNumWindow = NO_WINDOW;
-        ci->CurrentLineNumber = 1;
-        ci->CurrentColumn = 1;
-        ci->ColumnDesired = 1;
-        ci->TopOfPage = 1;
+        ci->CurrentPos.line = 1;
+        ci->CurrentPos.column = 1;
+        ci->VirtualColumnDesired = 1;
+        ci->LeftTopPos.line = 1;
+        ci->LeftTopPos.column = 0;
         CurrentLine = NULL;
         CurrentFcb = NULL;
 
@@ -126,11 +140,9 @@ bool RestoreInfo( info *ci  )
     VScrollBarScale = ci->VScrollBarScale;
     HScrollBarScale = ci->HScrollBarScale;
 #endif
-    CurrentLineNumber = ci->CurrentLineNumber;
-    CurrentColumn = ci->CurrentColumn;
-    ColumnDesired = ci->ColumnDesired;
-    LeftColumn = ci->LeftColumn;
-    TopOfPage = ci->TopOfPage;
+    CurrentPos = ci->CurrentPos;
+    VirtualColumnDesired = ci->VirtualColumnDesired;
+    LeftTopPos = ci->LeftTopPos;
     CurrentWindow = ci->CurrentWindow;
     CurrNumWindow = ci->CurrNumWindow;
     UndoStack = ci->UndoStack;
@@ -151,9 +163,9 @@ bool RestoreInfo( info *ci  )
 
     cRestoreFileDisplayBits();
 
-    CGimmeLinePtr( CurrentLineNumber, &CurrentFcb, &CurrentLine );
+    CGimmeLinePtr( CurrentPos.line, &CurrentFcb, &CurrentLine );
     ValidateCurrentColumn();
-    ResetLastFind();
+    ResetLastFind( ci );
 
     VarAddRandC();
     if( CurrentFile == NULL ) {
@@ -168,13 +180,14 @@ bool RestoreInfo( info *ci  )
     return( FALSE );
 
 } /* RestoreInfo */
+
 static int getFileInfoString( char *st, int is_small )
 {
     long        pc;
-    st[0]=0;
+    st[0] = 0;
     if( !is_small ) {
         if( EditFlags.NewFile ) {
-            strcat( st, " [new file]");
+            strcat( st, " [new file]" );
             EditFlags.NewFile = FALSE;
         }
         if( EditFlags.DuplicateFile ) {
@@ -183,32 +196,32 @@ static int getFileInfoString( char *st, int is_small )
             EditFlags.DuplicateFile = FALSE;
         }
         if( CurrentFile->viewonly ) {
-            strcat( st," [view only]" );
+            strcat( st, " [view only]" );
         }
         if( CFileReadOnly() ) {
-            strcat( st," [read only]" );
+            strcat( st, " [read only]" );
         }
         if( CurrentFile->modified ) {
-            strcat( st," [modified]" );
+            strcat( st, " [modified]" );
         }
-        #if defined(__QNX__)
-            if( EditFlags.WriteCRLF ) {
-                strcat( st," [crlf]" );
-            }
-        #elif 0
-            if( !EditFlags.WriteCRLF ) {
-                strcat( st," [lf]" );
-            }
-        #endif
-        pc = (CurrentLineNumber*100L)/CurrentFile->fcb_tail->end_line;
-        MySprintf(st+strlen(st)," line %l of %l  -- %l%%%% --",
-            CurrentLineNumber, CurrentFile->fcb_tail->end_line, pc );
+#if defined( __UNIX__ )
+        if( EditFlags.WriteCRLF ) {
+            strcat( st, " [crlf]" );
+        }
+#elif 0
+        if( !EditFlags.WriteCRLF ) {
+            strcat( st, " [lf]" );
+        }
+#endif
+        pc = (CurrentPos.line * 100L) / CurrentFile->fcbs.tail->end_line;
+        MySprintf( st + strlen( st ), " line %l of %l  -- %l%%%% --",
+            CurrentPos.line, CurrentFile->fcbs.tail->end_line, pc );
         if( EditFlags.ColumnInFileStatus ) {
-            MySprintf( st+strlen(st)," (col %d)", VirtualCursorPosition() );
+            MySprintf( st + strlen( st  ), " (col %d)", VirtualColumnOnCurrentLine( CurrentPos.column ) );
         }
     } else {
         if( EditFlags.NewFile ) {
-            strcat( st, "[N]");
+            strcat( st, "[N]" );
             EditFlags.NewFile = FALSE;
         }
         if( EditFlags.DuplicateFile ) {
@@ -217,45 +230,46 @@ static int getFileInfoString( char *st, int is_small )
             EditFlags.DuplicateFile = FALSE;
         }
         if( CurrentFile->viewonly ) {
-            strcat( st,"[V]" );
+            strcat( st, "[V]" );
         }
         if( CFileReadOnly() ) {
-            strcat( st,"[R]" );
+            strcat( st, "[R]" );
         }
         if( CurrentFile->modified ) {
-            strcat( st,"[M]" );
+            strcat( st, "[M]" );
         }
-        #if defined(__QNX__)
-            if( EditFlags.WriteCRLF ) {
-                strcat( st," [C]" );
-            }
-        #elif 0
-            if( !EditFlags.WriteCRLF ) {
-                strcat( st," [L]" );
-            }
-        #endif
-        MySprintf(st+strlen(st)," line %l of %l",
-            CurrentLineNumber, CurrentFile->fcb_tail->end_line, pc );
+#if defined(__UNIX__)
+        if( EditFlags.WriteCRLF ) {
+            strcat( st, " [C]" );
+        }
+#elif 0
+        if( !EditFlags.WriteCRLF ) {
+            strcat( st, " [L]" );
+        }
+#endif
+        MySprintf( st + strlen( st ), " line %l of %l",
+            CurrentPos.line, CurrentFile->fcbs.tail->end_line );
         if( EditFlags.ColumnInFileStatus ) {
-            MySprintf( st+strlen(st)," (col %d)", VirtualCursorPosition() );
+            MySprintf( st + strlen( st ), " (col %d)", VirtualColumnOnCurrentLine( CurrentPos.column ) );
         }
     }
     return( strlen( st ) );
 }
+
 static void make_short_name( char *name, int len, char *buffer )
 {
-    char *start;
-    char *end;
-    int newlen;
+    char    *start;
+    char    *end;
+    int     newlen;
 
     len -= 2; /* for 2 quotes */
     strcpy( buffer, "\"" );
     start = strchr( name, '\\' );
     if( start ) {
         for( end = name + strlen( name ) - 1; *end != '\\'; end-- );
-        newlen = strlen( end )+(start-name);
+        newlen = strlen( end ) + ( start - name );
         if( newlen <= len ) {
-            strncat( buffer, name, start-name+1 );
+            strncat( buffer, name, start - name + 1 );
             strcat( buffer, "..." );
             strcat( buffer, end );
             strcat( buffer, "\"" );
@@ -270,9 +284,9 @@ static void make_short_name( char *name, int len, char *buffer )
 /*
  * DisplayFileStatus - print file status
  */
-int DisplayFileStatus( void )
+vi_rc DisplayFileStatus( void )
 {
-    char        st[MAX_STR],data[MAX_STR];
+    char        st[MAX_STR], data[MAX_STR];
     int         free_len;
     long        pc;
 
@@ -281,33 +295,37 @@ int DisplayFileStatus( void )
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }
     free_len = messagew_info.x2 - messagew_info.x1;
-    if( free_len > MAX_STR ) free_len = MAX_STR;
+    if( free_len > MAX_STR ) {
+        free_len = MAX_STR;
+    }
 
-    free_len -= (getFileInfoString( st, FALSE ) + 3);/* for 2 quotes + NULL */
+    free_len -= (getFileInfoString( st, FALSE ) + 3); /* for 2 quotes + NULL */
 
     /* file name */
     if( strlen( CurrentFile->name ) < free_len ) {
-        MySprintf(data,"\"%s\"",CurrentFile->name );
+        MySprintf( data, "\"%s\"", CurrentFile->name );
         strcat( data, st );
     } else {
         // go to short version
         free_len = messagew_info.x2 - messagew_info.x1;
-        if( free_len > MAX_STR ) free_len = MAX_STR;
-        free_len -= (getFileInfoString( st, TRUE ) + 3);/* for 2 quotes + NULL */
+        if( free_len > MAX_STR ) {
+            free_len = MAX_STR;
+        }
+        free_len -= (getFileInfoString( st, TRUE ) + 3); /* for 2 quotes + NULL */
         if( strlen( CurrentFile->name ) < free_len ) {
-            MySprintf(data,"\"%s\"",CurrentFile->name );
+            MySprintf( data, "\"%s\"", CurrentFile->name );
             strcat( data, st );
         } else {
-            make_short_name(CurrentFile->name, free_len, data);
+            make_short_name( CurrentFile->name, free_len, data );
             strcat( data, st );
         }
     }
     Message1( data );
 
     if( CurrentFile->bytes_pending ) {
-        pc = (CurrentFile->curr_pos*100L)/CurrentFile->size;
+        pc = (CurrentFile->curr_pos * 100L) / CurrentFile->size;
         Message2( " partially read: %l bytes of %l -- %d%% --",
-                CurrentFile->curr_pos,CurrentFile->size,pc );
+            CurrentFile->curr_pos, CurrentFile->size, pc );
     }
 
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -321,38 +339,14 @@ void CTurnOffFileDisplayBits( void )
 {
     fcb *tfcb;
 
-    if( !CurrentFile ) {
-        return;
-    }
-    tfcb = CurrentFile->fcb_head;
-    while( tfcb != NULL ) {
-        tfcb->was_on_display = tfcb->on_display;
-        tfcb->on_display = FALSE;
-        tfcb=tfcb->next;
+    if( CurrentFile != NULL ) {
+        for( tfcb = CurrentFile->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
+            tfcb->was_on_display = tfcb->on_display;
+            tfcb->on_display = FALSE;
+        }
     }
 
 } /* CTurnOffFileDisplayBits */
-
-/*
- * cRestoreFileDisplayBits - do just that
- */
-static void cRestoreFileDisplayBits( void )
-{
-    fcb *tfcb;
-
-    if( CurrentFile == NULL ) {
-        return;
-    }
-    tfcb = CurrentFile->fcb_head;
-    while( tfcb != NULL ) {
-        tfcb->on_display = tfcb->was_on_display;
-        if( tfcb->on_display && !tfcb->in_memory ) {
-            FetchFcb( tfcb );
-        }
-        tfcb=tfcb->next;
-    }
-
-} /* cRestoreFileDisplayBits */
 
 /*
  * CFileReadOnly - test if a file is read only or not
@@ -391,6 +385,7 @@ void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
     if( !EditFlags.Quiet ){
         Message1( "\"%s\" %l lines, %l bytes", name, lnecnt, bytecnt );
     }
+
 } /* FileIOMessage */
 
 /*
@@ -398,14 +393,14 @@ void FileIOMessage( char *name, linenum lnecnt, long bytecnt )
  */
 bool IsTextFile( char *file )
 {
-    int         i,j;
-    char        *fign,*fend;
+    int         i, j;
+    char        *fign, *fend;
 
-    i = strlen(file);
-    fend = file+i;
+    i = strlen( file );
+    fend = file + i;
     fign = FIgnore;
-    for( j=0;j<CurrFIgnore;j++ ) {
-         if( !strcmp( fend-strlen( fign ), fign )) {
+    for( j = 0; j < CurrFIgnore; j++ ) {
+         if( !strcmp( fend - strlen( fign ), fign ) ) {
              return( FALSE );
          }
          fign += EXTENSION_LENGTH;
@@ -420,12 +415,10 @@ bool IsTextFile( char *file )
 int GimmeFileCount( void )
 {
     info        *cinfo;
-    int         cnt=0;
+    int         cnt = 0;
 
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         cnt++;
-        cinfo = cinfo->next;
     }
     return( cnt );
 

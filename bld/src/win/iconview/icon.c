@@ -167,7 +167,7 @@ static HPALETTE CreateIconPalette( BITMAPINFO *info )
 
 HBITMAP IconToXorBitmap( HDC hdc, an_icon *icon )
 {
-    HBITMAP             bitmap_handle = NULL;
+    HBITMAP             bitmap_handle = (HBITMAP)0;
     HPALETTE            new_palette, old_palette;
 
     new_palette = CreateIconPalette( icon->bm );

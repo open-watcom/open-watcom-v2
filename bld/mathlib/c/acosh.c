@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hyperbolic arccosine routine.
 *
 ****************************************************************************/
 
@@ -34,27 +33,24 @@
 #include <stddef.h>
 #include <math.h>
 #include "mathcode.h"
+#include "ifprag.h"
 
 //      acosh(x) = log( x + sqrt(x*x - 1.0) );
 
-#if defined(_M_IX86)
-  #pragma aux __acosh "IF@DACOSH";
-#endif
 _WMRTLINK double __acosh( double x )
-    {
-        return( acosh( x ) );
-    }
+{
+    return( acosh( x ) );
+}
 
 _WMRTLINK double acosh( double x )
-/**********************/
-    {
-        double  z;
+/********************************/
+{
+    double  z;
 
-        if( x < 1.0 ) {
-//            z = _matherr( DOMAIN, "acosh", &x, &x, -HUGE_VAL );
-            z = __math1err( FUNC_ACOSH | M_DOMAIN | V_NEG_HUGEVAL, &x );
-        } else {
-            z = log( x + sqrt( x*x - 1.0 ) );
-        }
-        return( z );
+    if( x < 1.0 ) {
+        z = __math1err( FUNC_ACOSH | M_DOMAIN | V_NEG_HUGEVAL, &x );
+    } else {
+        z = log( x + sqrt( x * x - 1.0 ) );
     }
+    return( z );
+}

@@ -34,9 +34,9 @@
 #include "cplx.h"
 
 
-_WMRTLINK dcomplex _IF_C16Mul( double a, double b, double c, double d ) {
-//======================================================================
-
+_WMRTLINK dcomplex _IF_C16Mul( double a, double b, double c, double d )
+//=====================================================================
+{
 // Return the real part of the result of multiplying two double precision
 // complex numbers.
 // ( a, b ) * ( c, d ) = ( ac-bd, bc+ad )

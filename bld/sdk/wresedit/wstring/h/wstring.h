@@ -34,7 +34,7 @@
 #define WSTRING_INCLUDED
 
 #ifndef WINEXPORT
-#define WINEXPORT   __export PASCAL
+    #define WINEXPORT   __export PASCAL
 #endif
 
 #include "wresall.h"
@@ -79,18 +79,18 @@ typedef struct WStringInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WStringInfo         * WINEXPORT WStrAllocStringInfo ( void );
-void                  WINEXPORT WStrFreeStringInfo  ( WStringInfo * );
+WStringInfo *           WINEXPORT WStrAllocStringInfo( void );
+void                    WINEXPORT WStrFreeStringInfo( WStringInfo * );
 
-extern void           WINEXPORT WStringInit         ( void );
-extern void           WINEXPORT WStringFini         ( void );
-extern int            WINEXPORT WStringCloseSession ( WStringHandle, int );
-extern WStringHandle  WINEXPORT WRStringStartEdit   ( WStringInfo * );
-extern WStringInfo  * WINEXPORT WStringEndEdit      ( WStringHandle );
-extern WStringInfo  * WINEXPORT WStringGetEditInfo  ( WStringHandle );
-extern int            WINEXPORT WStringIsModified   ( WStringHandle );
-extern int            WINEXPORT WStringIsDlgMsg     ( MSG *msg );
-extern void           WINEXPORT WStringShowWindow   ( WStringHandle hndl, int show );
-extern void           WINEXPORT WStringBringToFront ( WStringHandle hndl );
+extern void             WINEXPORT WStringInit( void );
+extern void             WINEXPORT WStringFini( void );
+extern int              WINEXPORT WStringCloseSession( WStringHandle, int );
+extern WStringHandle    WINEXPORT WRStringStartEdit( WStringInfo * );
+extern WStringInfo *    WINEXPORT WStringEndEdit( WStringHandle );
+extern WStringInfo *    WINEXPORT WStringGetEditInfo( WStringHandle );
+extern int              WINEXPORT WStringIsModified( WStringHandle );
+extern int              WINEXPORT WStringIsDlgMsg( MSG *msg );
+extern void             WINEXPORT WStringShowWindow( WStringHandle hndl, int show );
+extern void             WINEXPORT WStringBringToFront( WStringHandle hndl );
 
 #endif

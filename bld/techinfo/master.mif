@@ -1,0 +1,30 @@
+proj_name = techinfo
+
+techinfo_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.CONTINUE
+.ERASE
+
+os2objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj
+dosobjs = $(os2objs) monint.obj
+
+extra_c_flags_dos = -os -s
+extra_c_flags_os2 = -os -s
+
+extra_a_flags = -fpc
+
+extra_a_flags_ndptype = -fpi87
+
+extra_l_flags = op map
+
+extra_l_flags_os2 = op newfile
+
+.c: ..
+.asm: ..
+
+techinfo.exe : $($(host_OS)objs)
+    $(linker) $(lflags) name $^@ file {$($(host_OS)objs)}

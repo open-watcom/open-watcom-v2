@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI status window.
 *
 ****************************************************************************/
 
@@ -40,13 +39,13 @@ void WndCreateStatusWindow( gui_colour_set *colour )
 }
 
 
-bool WndHaveStatusWindow()
+bool WndHaveStatusWindow( void )
 {
     return( WndMain == NULL ? FALSE : GUIHasStatus( WndMain->gui ) );
 }
 
 
-void WndCloseStatusWindow()
+void WndCloseStatusWindow( void )
 {
     if( WndHaveStatusWindow() ) GUICloseStatusWindow( WndMain->gui );
     WndSetWndMax();
@@ -77,7 +76,7 @@ bool GUIClearStatusText( gui_window *gui )
     return( FALSE );
 }
 
-void WndResetStatusText()
+void WndResetStatusText( void )
 {
     WndInternalStatusText( WndStatusString );
 }

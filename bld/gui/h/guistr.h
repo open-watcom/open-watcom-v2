@@ -34,7 +34,7 @@
 
 #ifdef DEFINE_RC_STRINGS
 
-#include "_guimsgs.h"
+#include "_guimsgs.gh"
 #define LITSTR( sym, val )
 #define LIT( sym )      (__LIT##sym)
 #define LITREF( sym ) &LIT( sym )

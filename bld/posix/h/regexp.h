@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-
 #ifndef REGEXP_INCLUDED
 #define REGEXP_INCLUDED
 #ifdef __cplusplus
@@ -38,20 +37,20 @@ extern "C" {
 
 #ifdef STANDALONE_RX
 enum {
-ERR_NO_ERR,
-ERR_RE_INTERNAL_FOULUP,
-ERR_RE_CORRUPTED_POINTER,
-ERR_RE_MEMORY_CORRUPTION,
-ERR_RE_TRAILING_SLASH,
-ERR_RE_OPERAND_FOLLOWS_NOTHING,
-ERR_RE_UNMATCHED_SQUARE_BRACKET,
-ERR_RE_INVALID_SB_RANGE,
-ERR_RE_NESTED_OPERAND,
-ERR_RE_EMPTY_OPERAND,
-ERR_RE_UNMATCHED_ROUND_BRACKETS,
-ERR_RE_TOO_MANY_ROUND_BRACKETS,
-ERR_RE_NULL_ARGUMENT,
-ERR_RE_INVALID_CASETOGGLE
+    ERR_NO_ERR,
+    ERR_RE_INTERNAL_FOULUP,
+    ERR_RE_CORRUPTED_POINTER,
+    ERR_RE_MEMORY_CORRUPTION,
+    ERR_RE_TRAILING_SLASH,
+    ERR_RE_OPERAND_FOLLOWS_NOTHING,
+    ERR_RE_UNMATCHED_SQUARE_BRACKET,
+    ERR_RE_INVALID_SB_RANGE,
+    ERR_RE_NESTED_OPERAND,
+    ERR_RE_EMPTY_OPERAND,
+    ERR_RE_UNMATCHED_ROUND_BRACKETS,
+    ERR_RE_TOO_MANY_ROUND_BRACKETS,
+    ERR_RE_NULL_ARGUMENT,
+    ERR_RE_INVALID_CASETOGGLE
 };
 
 #define MAX_STR 256
@@ -80,21 +79,21 @@ extern char     *MagicString;
 
 #define NSUBEXP  21
 typedef struct {
-        char *startp[NSUBEXP];
-        char *endp[NSUBEXP];
-        char regstart;          /* Internal use only. */
-        char reganch;           /* Internal use only. */
-        char *regmust;          /* Internal use only. */
-        short regmlen;            /* Internal use only. */
-        char program[1];        /* Unwarranted chumminess with compiler. */
+    char        *startp[NSUBEXP];
+    char        *endp[NSUBEXP];
+    char        regstart;       /* Internal use only. */
+    char        reganch;        /* Internal use only. */
+    char        *regmust;       /* Internal use only. */
+    short       regmlen;        /* Internal use only. */
+    char        program[1];     /* Unwarranted chumminess with compiler. */
 } regexp;
 
 /* regexp.c */
-extern regexp *RegComp( char * );
-extern int RegExec( regexp *, char *, char );
-extern void RegAnchor( regexp * );
+extern regexp   *RegComp( char * );
+extern int      RegExec( regexp *, char *, char );
+extern void     RegAnchor( regexp * );
 
-#define MAGIC   0234
+#define         MAGIC   '\x9C'
 #ifdef __cplusplus
 };
 #endif

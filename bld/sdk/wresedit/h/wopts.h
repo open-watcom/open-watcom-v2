@@ -43,10 +43,10 @@
 /****************************************************************************/
 typedef enum
 {
-  WOptScreenRECT
-, WOptScreenMax
-, WOptLastDir
-, WOptLastFilter
+    WOptScreenRECT,
+    WOptScreenMax,
+    WOptLastDir,
+    WOptLastFilter
 } WOptReq;
 
 /****************************************************************************/
@@ -56,11 +56,11 @@ typedef enum
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int   WInitOpts           ( char *ini_file, char *section_name );
-extern void  WOptsShutdown       ( void );
-extern void  WGetScreenPosOption ( RECT * );
-extern void  WSetScreenPosOption ( RECT * );
-extern int   WGetOption          ( WOptReq );
-extern int   WSetOption          ( WOptReq, int );
+extern int  WInitOpts( char *ini_file, char *section_name );
+extern void WOptsShutdown( void );
+extern void WGetScreenPosOption( RECT * );
+extern void WSetScreenPosOption( RECT * );
+extern int  WGetOption( WOptReq );
+extern int  WSetOption( WOptReq, int );
 
 #endif

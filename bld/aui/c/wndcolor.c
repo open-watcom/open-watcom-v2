@@ -42,7 +42,7 @@ void WndSetColours( a_window *wnd, int num_colours, gui_colour_set *colours )
     if( wnd == WndMain ) {
         main_colours = GUIGetWindowColours( WndMain->gui );
         colours[ GUI_BACKGROUND ] = main_colours[ GUI_BACKGROUND ];
-        GUIFree( main_colours );
+        GUIMemFree( main_colours );
     }
     GUISetWindowColours( wnd->gui, num_colours, colours );
     colours[ GUI_BACKGROUND ] = back;
@@ -56,6 +56,6 @@ void WndBackGround( gui_colour colour )
     colours[GUI_BACKGROUND].fore = colour;
     colours[GUI_BACKGROUND].back = colour;
     GUISetWindowColours( WndMain->gui, WND_FIRST_UNUSED, colours );
-    GUIFree( colours );
+    GUIMemFree( colours );
 }
 

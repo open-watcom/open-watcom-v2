@@ -1,0 +1,12 @@
+name=HiThere
+condition=SrcIsCD
+radio_button=MakeDisks_Not,true,\
+        //1"&Install the software on the hard disk"\
+        //2"ソフトウェアをハードディスクにインストール (&I)"\
+        //0
+radio_button=MakeDisks,false,\
+        //1"Create installation &diskettes"\
+        //2"インストール用ディスケットを作成 (&d)"\
+        //0
+static_text=
+include=ohc.dlg

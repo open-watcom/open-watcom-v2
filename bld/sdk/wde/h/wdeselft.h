@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool             WdeIsFileAnRCFile       ( char *name );
-extern WRFileType       WdeSelectFileType       ( char *name, Bool is32bit );
+extern Bool         WdeIsFileAnRCFile( char *name );
+extern WRFileType   WdeSelectFileType( char *name, Bool is32bit );
 
 #endif

@@ -32,21 +32,6 @@
 
 #include "cvars.h"
 
-extern  void *FEmalloc();                       /* cmemmgr */
-extern  void FEfree();                          /* cmemmgr */
-extern  void OpenPageFile();
-
-
-void InitEMS()
-{
-}
-
-
-void FiniEMS()
-{
-}
-
-
 void CSegFree( SEGADDR_T segment )
 {
     FEfree( segment );
@@ -55,35 +40,19 @@ void CSegFree( SEGADDR_T segment )
 
 SEGADDR_T AllocSegment( struct seg_info *si )
 {
-    si->in_farmem = 0;
-    si->in_page_file = 0;
+    /* FEmalloc never returns NULL - it either allocates the memory
+     * or kills the compiler.
+     */
     si->index = (SEGADDR_T)FEmalloc( 0x04000 );
-    if( si->index != 0 ) {
-        si->in_farmem = 1;
-        si->allocated = 1;
-        return( si->index );
-    }
-    if( PageHandle == -1 ) {
-        OpenPageFile();      /* write out to page file */
-    }
-    si->index = (SEGADDR_T)NextFilePage;
-    si->in_page_file = 1;
     si->allocated = 1;
-    ++NextFilePage;
-    return( 0 );
+    return( si->index );
 }
 
 
 SEGADDR_T AccessSegment( struct seg_info *si )
 {
-    SEGADDR_T segment;
-
-    if( ! si->allocated ) {
+    if( !si->allocated ) {
         AllocSegment( si );
     }
-    segment = 0;
-    if( si->in_farmem ) {
-        segment = si->index;
-    }
-    return( segment );
+    return( si->index );
 }

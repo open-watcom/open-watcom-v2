@@ -30,78 +30,24 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
-
-/*
- * CMergeFcbs - merge two fcbs, removing the second one
- */
-int CMergeFcbs( fcb *fcb1, fcb *fcb2 )
-{
-    int i;
-
-    i = JoinFcbs( fcb1, fcb2 );
-    if( i ) {
-        return( i );
-    }
-    DeleteLLItem( &(CurrentFile->fcb_head),&(CurrentFile->fcb_tail), fcb2 );
-
-    if( fcb2->globalmatch ) {
-        fcb1->globalmatch = TRUE;
-    }
-    FcbFree( fcb2 );
-
-    return( ERR_NO_ERR );
-
-} /* CMergeFcbs */
-
-/*
- * CMergeAllFcbs - try merge process with all fcbs
- */
-int CMergeAllFcbs( void )
-{
-    fcb *cfcb;
-    int i;
-
-    cfcb = CurrentFile->fcb_head;
-    while( cfcb != NULL ) {
-        if( cfcb->next == NULL ) {
-            break;
-        }
-        if( !cfcb->in_memory || !cfcb->next->in_memory ) {
-            cfcb=cfcb->next;
-            continue;
-        }
-        i = CMergeFcbs( cfcb, cfcb->next );
-        if( i ) {
-            if( i == COULD_NOT_MERGE_FCBS ) {
-                cfcb = cfcb->next;
-            }
-            else return( i );
-        }
-    }
-
-    return( ERR_NO_ERR );
-
-} /* CMergeAllFcbs */
 
 /*
  * JoinFcbs - join two fcbs
  */
-int JoinFcbs( fcb *fcb1, fcb *fcb2 )
+static vi_rc JoinFcbs( fcb *fcb1, fcb *fcb2 )
 {
-    unsigned    j,k;
+    unsigned    j, k;
 
     /*
      * see if we can merge them
      */
-    if( fcb1->end_line != (fcb2->start_line -1) ) {
+    if( fcb1->end_line != (fcb2->start_line - 1) ) {
         return( COULD_NOT_MERGE_FCBS );
     }
     j = FcbSize( fcb1 );
     k = FcbSize( fcb2 );
-    if( j+k > (unsigned) MAX_IO_BUFFER ) {
+    if( j + k > (unsigned) MAX_IO_BUFFER ) {
         return( COULD_NOT_MERGE_FCBS );
     }
 
@@ -122,9 +68,49 @@ int JoinFcbs( fcb *fcb1, fcb *fcb2 )
     /*
      * merge the two sets of lines
      */
-    fcb1->line_tail->next = fcb2->line_head;
-    fcb2->line_head->prev = fcb1->line_tail;
-    fcb1->line_tail = fcb2->line_tail;
+    fcb1->lines.tail->next = fcb2->lines.head;
+    fcb2->lines.head->prev = fcb1->lines.tail;
+    fcb1->lines.tail = fcb2->lines.tail;
     return( ERR_NO_ERR );
 
 } /* JoinFcbs */
+
+/*
+ * MergeFcbs - merge two fcbs, removing the second one
+ */
+vi_rc MergeFcbs( fcb_list *fcblist, fcb *fcb1, fcb *fcb2 )
+{
+    vi_rc   rc;
+
+    rc = JoinFcbs( fcb1, fcb2 );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
+    }
+    DeleteLLItem( (ss **)&(fcblist->head), (ss **)&(fcblist->tail), (ss *)fcb2 );
+    if( fcb2->globalmatch ) {
+        fcb1->globalmatch = TRUE;
+    }
+    FcbFree( fcb2 );
+    return( ERR_NO_ERR );
+
+} /* MergeFcbs */
+
+/*
+ * MergeAllFcbs - try merge process with all fcbs
+ */
+vi_rc MergeAllFcbs( fcb_list *fcblist )
+{
+    fcb     *cfcb;
+    fcb     *nfcb;
+
+    for( cfcb = fcblist->head; cfcb != NULL && cfcb->next != NULL; cfcb = nfcb ) {
+        nfcb = cfcb->next;
+        if( cfcb->in_memory && nfcb->in_memory ) {
+            if( MergeFcbs( fcblist, cfcb, nfcb ) == ERR_NO_ERR ) {
+                nfcb = cfcb;
+            }
+        }
+    }
+    return( ERR_NO_ERR );
+
+} /* MergeAllFcbs */

@@ -34,7 +34,7 @@
 #include "widechar.h"
 
 #if defined(_M_IX86)
-extern  int     _DOS_Switch_Char();
+extern  int     _DOS_Switch_Char( void );
 #pragma aux     _DOS_Switch_Char = \
                         0x52            /* push dx */\
                         0xb4 0x37       /* mov ah,37h    */\

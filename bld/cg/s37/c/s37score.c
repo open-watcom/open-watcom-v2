@@ -41,8 +41,6 @@
 
 #include "s37score.def"
 
-extern  void            RegInsert(score*,int,int);
-extern  bool            RegsEqual(score*,int,int);
 extern  name            *AllocRegName(hw_reg_set);
 extern  bool            IsRegPair(hw_reg_set);
 

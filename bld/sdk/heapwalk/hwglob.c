@@ -35,7 +35,7 @@
 
 char            *HeapWalkName;
 HWND            HeapWalkMainWindow;
-HANDLE          Instance;
+HINSTANCE       Instance;
 BOOL            ListingDPMI;
 WORD            HeapType;
 int             HeapListSize;

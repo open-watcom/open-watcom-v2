@@ -14,6 +14,7 @@ B_proftarg      BITMAP  proftarg.bmp
 B_runtarg       BITMAP  runtarg.bmp
 B_edititem      BITMAP  edititem.bmp
 B_makeitem      BITMAP  makeitem.bmp
+B_rdbgtarg      BITMAP  rdbgtarg.bmp
 
 B_sourceOpen    BITMAP  srcopen.bmp
 B_sourceClosed  BITMAP  srcclos.bmp
@@ -25,5 +26,12 @@ I_Viper         ICON    viper.ico
 I_Target        ICON    target.ico
 I_MsgLog        ICON    msglog.ico
 
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
+
 #include "getfile.h"
 #include "getfile.dlg"
+#ifdef __NT__
+    #include "getfile9.dlg"
+#endif

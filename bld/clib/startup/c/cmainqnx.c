@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Runtime library startup for QNX.
 *
 ****************************************************************************/
 
@@ -87,7 +86,7 @@ static void __FAR __null_FPE_rtn()
 
 void _Not_Enough_Memory()
 {
-    __fatal_runtime_error( "Not enough memory\n", 1 );
+    __fatal_runtime_error( "Not enough memory", 1 );
 }
 
 #if !defined(__386__)
@@ -302,7 +301,7 @@ _CMain(int argc, char **argv, char **arge)
     tmp.s               = _cs();
     __setmagicvar( &tmp.s, _m_efgfmt_cs );
     __FPE_handler =     &__null_FPE_rtn;
-    __InitRtns( 1 );
+    __InitRtns( INIT_PRIORITY_THREAD );
     tdata = __alloca( __ThreadDataSize );
     memset( tdata, 0, __ThreadDataSize );
     // tdata->__allocated = 0;

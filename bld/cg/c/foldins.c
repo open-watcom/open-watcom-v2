@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Constant folding on instruction level.
 *
 ****************************************************************************/
 
@@ -41,26 +40,16 @@
 #include "tree.h"
 #include "feprotos.h"
 #include "cfloat.h"
+#include "makeins.h"
+#include "addrname.h"
+#include "treefold.h"
+#include "treeconv.h"
+#include "foldins.h"
 
 extern void             ReplIns(instruction*,instruction*);
 extern void             DupSeg(instruction*,instruction*);
-extern instruction      *MakeMove(name*,name*,type_class_def);
 extern void             DoNothing(instruction*);
 extern name             *TGetName(tn);
-extern tn               FoldCompare(opcode_defs,tn,tn,type_def*);
-extern tn               FoldCnvRnd(cg_op,tn,type_def*);
-extern tn               Fold1sComp(tn,type_def*);
-extern tn               FoldUMinus(tn,type_def*);
-extern tn               FoldLShift(tn,tn,type_def*);
-extern tn               FoldRShift(tn,tn,type_def*);
-extern tn               FoldXor(tn,tn,type_def*);
-extern tn               FoldOr(tn,tn,type_def*);
-extern tn               FoldAnd(tn,tn,type_def*);
-extern tn               FoldMod(tn,tn,type_def*);
-extern tn               FoldDiv(tn,tn,type_def*);
-extern tn               FoldTimes(tn,tn,type_def*);
-extern tn               FoldMinus(tn,tn,type_def*);
-extern tn               FoldPlus(tn,tn,type_def*);
 extern tn               TName(name*,type_def*);
 extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
@@ -71,9 +60,24 @@ extern  bool            AskSegNear(segment_id);
 extern  void            SetCSEBits(instruction *,instruction *);
 extern  name            *AllocConst( cfloat * );
 extern  cfloat          *OkToNegate( cfloat *, type_def * );
-extern  instruction     *MakeBinary( opcode_defs, name *, name *, name *, type_class_def );
 
 extern  type_length     TypeClassSize[];
+
+
+extern  bool    IsTrickyPointerConv( instruction *ins )
+/******************************************************
+    Is "ins" a near (based) to far pointer conversion that has
+    to be carefully converted with taking segments into account?
+*/
+{
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+    if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
+        if( ins->base_type_class == U2 && TypeClassSize[ ins->type_class ] > WORD_SIZE )
+            return( TRUE );
+    }
+#endif
+    return( FALSE );
+}
 
 static  bool    RelocConst( name *op ) {
 /***************************************
@@ -258,8 +262,12 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
         fold = Fold1sComp( left, tipe );
         break;
     case OP_CONVERT:
+        // look out for CNV PT U2 t1 type instructions; if sizeof( PT ) is greater
+        // than sizeof( U2 ), we don't want to fold or we'll screw up based pointers
+        if( IsTrickyPointerConv( ins ) ) return( NULL );
+        // fall through!
     case OP_ROUND:
-        fold = FoldCnvRnd( ins->head.opcode, left, tipe );
+        fold = FoldCnvRnd( (cg_op)ins->head.opcode, left, tipe );
         break;
     case OP_CMP_EQUAL:
     case OP_CMP_NOT_EQUAL:
@@ -268,7 +276,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     case OP_CMP_LESS:
     case OP_CMP_GREATER_EQUAL:
         if( ActiveCompare( ins ) ) {
-            fold = FoldCompare( ins->head.opcode, left, rite, tipe );
+            fold = FoldCompare( (cg_op)ins->head.opcode, left, rite, tipe );
             if( fold != NULL ) {
                 return( StraightLine( ins, fold, TRUE ) );
             }

@@ -130,5 +130,8 @@ enum {
     MENU_REPLAY = 2800,
     #include "menurep.h"
 
+    MENU_RUN_THREAD = 2900,
+    #include "menurtrd.h"
+
     MENU_NONE   = 10000
 };

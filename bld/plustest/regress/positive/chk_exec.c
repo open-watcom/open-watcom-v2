@@ -6,7 +6,11 @@ char buff[2048];
 
 char *prefix[2] = {
     "PASS executing ",
+#if defined( __UNIX__ )
+    "PASS source/",
+#else
     "PASS source\\",
+#endif
 };
 size_t plen[2];
 

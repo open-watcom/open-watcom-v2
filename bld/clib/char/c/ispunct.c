@@ -24,25 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ispunct().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <ctype.h>
 #include "widechar.h"
+#include <ctype.h>
+#ifdef __WIDECHAR__
+ #include <wctype.h>
+#endif
 #include "istable.h"
 #undef  ispunct
 
-
-_WCRTLINK int __F_NAME(ispunct,iswpunct)( c )
-        register int c;
-    {
-        if( IS_ASCII( c ) ) {
-            return( IsWhat( c ) & _PUNCT );
-        } else {
-            return( 0 );
-        }
+_WCRTLINK int __F_NAME(ispunct,iswpunct)( INTCHAR_TYPE c )
+{
+    if( IS_ASCII( c ) ) {
+        return( IsWhat( c ) & _PUNCT );
+    } else {
+        return( 0 );
     }
+}

@@ -1,0 +1,20 @@
+name=FoundMFC25
+dynamic_text=found25_1,\
+        //1"@ has found MFC version 2.5 in %DstDir%"\
+        //2"@ は、%DstDir% にMFC バージョン 2.5 を見つけました"\
+        //0
+dynamic_text=found25_2,\
+        //1"MFC version 2.52 is now included in %AppName%."\
+        //2"MFC バージョン 2.52 は %AppName% に含まれています."\
+        //0
+static_text=\
+        //1"@ can remove version 2.5, freeing up considerable disk space."\
+        //2"@ はバージョン 2.5を削除して, かなりのディスク容量を解放できます."\
+        //0
+static_text=
+static_text=\
+        //1"Do you want @ to remove MFC version 2.5 for you now?"\
+        //2"@ に MFC バージョン 2.5 を削除させますか?"\
+        //0
+static_text=
+include=yesno.dlg

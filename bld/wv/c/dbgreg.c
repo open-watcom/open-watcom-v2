@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  User program registers access and management.
 *
 ****************************************************************************/
 
@@ -34,7 +33,6 @@
 #include <stddef.h>
 #include "dbgdefn.h"
 #include "dbgreg.h"
-//#include "dbgwind.h"
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgerr.h"
@@ -48,20 +46,20 @@
 #include "dui.h"
 
 extern int              AddrComp( address a, address b );
-extern char             *Format( char *buff, char *fmt, ... );
+extern char             *Format( char * buff, char * fmt, ... );
 extern void             RecordEvent( char *p );
 extern char             *GetCmdName( int index );
-extern bool             DlgUpTheStack();
+extern bool             DlgUpTheStack( void );
 extern bool             DlgBackInTime( bool lost_mem_state );
-extern bool             DlgIncompleteUndo();
+extern bool             DlgIncompleteUndo( void );
 extern bool             TraceModifications( MAD_MEMREF_WALKER *wk, void *d );
 extern void             ReportMADFailure( mad_status );
 
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
 extern void             PushLocation( location_list *ll, type_info *ti );
-extern void             DoAssign();
-extern char             *StrCopy(char *,char *);
+extern void             DoAssign( void );
+extern char             *StrCopy( char *, char * );
 extern void             MadTypeToDipTypeInfo( mad_type_handle mt, type_info *ti );
 
 extern machine_state    *DbgRegs;
@@ -100,32 +98,32 @@ typedef struct save_state {
 
 static  save_state      *StateCurr;
 static  save_state      *StateLast;
-static  int             NumStateEntries;
+static  int             NumStateEntries = 0;
 
-extern long             GetDataLong(void);
-extern void             StartupErr(char *);
-extern unsigned         ReqExpr();
-extern void             ReqEOC(void);
-extern void             DbgUpdate(update_list );
-extern unsigned         SetCurrRadix(unsigned int );
-extern void             Warn(char *);
-extern void             LogLine(char *);
-extern void             FindAddrSectId(address *,int );
-extern void             SetStateOvlSect(machine_state *,unsigned int );
-extern unsigned int     RemoteOvlSectSize(void);
-extern void             ReleaseProgOvlay(bool);
-extern void             SectTblRead(machine_state *);
-extern char             *Rtrm(char *);
+extern long             GetDataLong( void );
+extern void             StartupErr( char * );
+extern unsigned         ReqExpr( void );
+extern void             ReqEOC( void );
+extern void             DbgUpdate( update_list );
+extern unsigned         SetCurrRadix( unsigned int );
+extern void             Warn( char * );
+extern void             LogLine( char * );
+extern void             FindAddrSectId( address *, int );
+extern void             SetStateOvlSect( machine_state *, unsigned int );
+extern unsigned int     RemoteOvlSectSize( void );
+extern void             ReleaseProgOvlay( bool );
+extern void             SectTblRead( machine_state * );
+extern char             *Rtrm( char * );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern thread_state     *FindThread( dtid_t );
-extern bool             InitOvlState(void);
-extern void             FiniOvlState(void);
+extern bool             InitOvlState( void );
+extern void             FiniOvlState( void );
 extern unsigned         ProgPoke( address addr, void *data, unsigned len );
 extern unsigned         ProgPeek( address addr, void *data, unsigned len );
 extern void             SetCodeLoc( address );
-extern char             *NamePos(void);
-extern unsigned int     NameLen(void);
-extern void             Scan(void);
+extern char             *NamePos( void );
+extern unsigned int     NameLen( void );
+extern void             Scan( void );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 extern void             AddrSection( address *, unsigned );
@@ -159,9 +157,17 @@ static address AddrRegIP( machine_state *regs )
 }
 
 
-address GetRegIP()
+address GetRegIP( void )
 {
     return( AddrRegIP( DbgRegs ) );
+}
+
+
+void SetRegIP( address addr )
+{
+    AddrFix( &addr );
+    MADRegSpecialSet( MSR_IP, &DbgRegs->mr, &addr.mach );
+    SetStateOvlSect( DbgRegs, addr.sect_id );
 }
 
 
@@ -170,13 +176,6 @@ void RecordSetRegIP( address addr )
     Format( TxtBuff, "%s %A", GetCmdName( CMD_SKIP ), addr );
     RecordEvent( TxtBuff );
     SetRegIP( addr );
-}
-
-void SetRegIP( address addr )
-{
-    AddrFix( &addr );
-    MADRegSpecialSet( MSR_IP, &DbgRegs->mr, &addr.mach );
-    SetStateOvlSect( DbgRegs, addr.sect_id );
 }
 
 
@@ -194,7 +193,7 @@ void SetRegBP( address addr )
 }
 
 
-address GetRegSP()
+address GetRegSP( void )
 {
     address     addr;
 
@@ -204,7 +203,7 @@ address GetRegSP()
 }
 
 
-address GetRegBP()
+address GetRegBP( void )
 {
     address     addr;
 
@@ -314,9 +313,9 @@ static void FreeState( save_state *state )
     --NumStateEntries;
 }
 
-unsigned        CurrRegSize;
+unsigned        CurrRegSize = 0;
 
-void ResizeRegData()
+void ResizeRegData( void )
 {
     unsigned            new_size;
     bool                found_dbgregs;
@@ -327,14 +326,18 @@ void ResizeRegData()
     new_size = MADRegistersSize();
     if( new_size > CurrRegSize ) {
         /* should I zero out new memory? */
+        /* Yes, it is neccessary for debug version */
         found_dbgregs = FALSE;
         state = StateCurr;
         for( ;; ) {
             old = state;
-            _Realloc( state, sizeof( save_state ) + new_size );
+            _Alloc( state, sizeof( save_state ) + new_size );
             if( state == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
+            } else {
+                memset( state, 0, sizeof( save_state ) + new_size );
+                memcpy( state, old, sizeof( save_state ) );
             }
             if( old == StateCurr ) StateCurr = state;
             if( old == StateLast ) StateLast = state;
@@ -351,11 +354,13 @@ void ResizeRegData()
         if( !found_dbgregs ) {
             /* just a machine state on it's own */
             ms = DbgRegs;
-            _Realloc( ms, sizeof( machine_state ) + new_size );
+            _Alloc( ms, sizeof( machine_state ) + new_size );
             if( ms == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
             } else {
+                memset( ms, 0, sizeof( machine_state ) + new_size );
+                memcpy( ms, DbgRegs, sizeof( machine_state ) );
                 if( DbgRegs == PrevRegs ) PrevRegs = ms;
                 DbgRegs = ms;
             }
@@ -364,7 +369,7 @@ void ResizeRegData()
     }
 }
 
-static save_state *AllocState()
+static save_state *AllocState( void )
 {
     int         size;
     save_state  *state;
@@ -385,39 +390,9 @@ static save_state *AllocState()
 }
 
 
-void InitMachState()
+void ClearMachState( void )
 {
-    save_state  *other;
-
-    StateCurr = AllocState();
-    StateCurr->action = ACTION_NONE;
-    other = AllocState();
-    other->action = ACTION_NONE;
-    if( StateCurr == NULL || other == NULL ) {
-        StartupErr( LIT( ERR_NO_MEMORY ) );
-    }
-    other->next = StateCurr;
-    other->prev = StateCurr;
-    StateCurr->next = other;
-    StateCurr->prev = other;
-
-    ClearMachState();
-}
-
-
-void FiniMachState()
-{
-    FiniOvlState();
-    ClearMachState();
-    FreeState( StateCurr->next );
-    FreeState( StateCurr );
-    StateCurr = NULL;
-    StateLast = NULL;
-}
-
-void ClearMachState()
-{
-    save_state  *state,*next;
+    save_state  *state, *next;
 
     state = StateCurr->next->next;
     while( state != StateCurr ) {
@@ -441,7 +416,38 @@ void ClearMachState()
 }
 
 
-void SetupMachState()
+void InitMachState( void )
+{
+    save_state  *other;
+
+    StateCurr = AllocState();
+    StateCurr->action = ACTION_NONE;
+    other = AllocState();
+    other->action = ACTION_NONE;
+    if( StateCurr == NULL || other == NULL ) {
+        StartupErr( LIT( ERR_NO_MEMORY ) );
+    }
+    other->next = StateCurr;
+    other->prev = StateCurr;
+    StateCurr->next = other;
+    StateCurr->prev = other;
+
+    ClearMachState();
+}
+
+
+void FiniMachState( void )
+{
+    FiniOvlState();
+    ClearMachState();
+    FreeState( StateCurr->next );
+    FreeState( StateCurr );
+    StateCurr = NULL;
+    StateLast = NULL;
+}
+
+
+void SetupMachState( void )
 {
     save_state      *state;
 
@@ -472,7 +478,7 @@ void CopyMachState( machine_state *from, machine_state *to )
     if( to->ovl != NULL ) memcpy( to->ovl, from->ovl, OvlSize );
 }
 
-machine_state *AllocMachState()
+machine_state *AllocMachState( void )
 {
     machine_state   *state;
     unsigned        state_size;
@@ -498,7 +504,7 @@ void FreeMachState( machine_state *state )
 }
 
 
-void CollapseMachState()
+void CollapseMachState( void )
 {
     machine_state       *curr, *prev;
 
@@ -522,7 +528,7 @@ void CollapseMachState()
     }
 }
 
-bool CheckStackPos()
+bool CheckStackPos( void )
 {
     if( StackPos != 0 ) {
         if( _IsOff( SW_IN_REPLAY_MODE ) ) {
@@ -635,7 +641,7 @@ static void ReverseMemList( save_state * state )
 }
 
 
-unsigned UndoLevel()
+unsigned UndoLevel( void )
 {
     int         count;
     save_state  *state;
@@ -647,7 +653,7 @@ unsigned UndoLevel()
     return( count );
 }
 
-static unsigned RedoLevel()
+static unsigned RedoLevel( void )
 {
     int         count;
     save_state  *state;
@@ -665,7 +671,7 @@ static unsigned RedoLevel()
 
 
 #ifdef DEADCODE
-bool MachStateInfoRelease()
+bool MachStateInfoRelease( void )
 {
     save_state  *state, *next;
     bool        freed;
@@ -692,6 +698,52 @@ bool MachStateInfoRelease()
 }
 #endif
 
+
+typedef struct {
+    location_context    lc;
+    int                 targ;
+    int                 curr;
+    bool                success;
+} move_info;
+
+static CALL_CHAIN_RTN CheckOneLevel;
+
+void SetStackPos( location_context *lc, int pos )
+{
+    StackPos = pos;
+    Context.execution = lc->execution;
+    Context.stack = lc->stack;
+    Context.frame = lc->frame;
+    Context.up_stack_level = lc->up_stack_level;
+    Context.maybe_have_frame = lc->maybe_have_frame;
+    Context.have_frame = lc->have_frame;
+    SetCodeLoc( GetRegIP() );
+    DbgUpdate( UP_STACKPOS_CHANGE );
+}
+
+void MoveStackPos( int by )
+{
+    move_info   info;
+
+    if( StackPos + by > 0 ) {
+        Warn( LIT( Bottom_Of_Stack ) );
+        return;
+    }
+    info.targ = StackPos + by;
+    info.curr = 0;
+    info.success = FALSE;
+    WalkCallChain( CheckOneLevel, &info );
+    if( info.success ) {
+        SetStackPos( &info.lc, info.targ );
+    } else {
+        Warn( LIT( Top_Of_Stack ) );
+    }
+}
+
+int GetStackPos( void )
+{
+    return( StackPos );
+}
 
 void PosMachState( int rel_pos )
 {
@@ -782,21 +834,15 @@ void PosMachState( int rel_pos )
     }
 }
 
-void LastMachState()
+void LastMachState( void )
 {
     PosMachState( UndoLevel() );
 }
 
-typedef struct {
-    location_context    lc;
-    int                 targ;
-    int                 curr;
-    bool                success;
-} move_info;
-
-CALL_CHAIN_RTN CheckOneLevel;
-static bool CheckOneLevel( call_chain_entry *entry, move_info *info )
+static bool CheckOneLevel( call_chain_entry *entry, void *_info )
 {
+    move_info  *info = _info;
+
     if( info->curr == info->targ ) {
         info->success = TRUE;
         info->lc = entry->lc;
@@ -808,54 +854,17 @@ static bool CheckOneLevel( call_chain_entry *entry, move_info *info )
 }
 
 
-void MoveStackPos( int by )
-{
-    move_info   info;
-
-    if( StackPos + by > 0 ) {
-        Warn( LIT( Bottom_Of_Stack ) );
-        return;
-    }
-    info.targ = StackPos + by;
-    info.curr = 0;
-    info.success = FALSE;
-    WalkCallChain( CheckOneLevel, &info );
-    if( info.success ) {
-        SetStackPos( &info.lc, info.targ );
-    } else {
-        Warn( LIT( Top_Of_Stack ) );
-    }
-}
-
-
-void LastStackPos()
+void LastStackPos( void )
 {
     if( StackPos != 0 ) {
         MoveStackPos( -StackPos );
     }
 }
 
-void SetStackPos( location_context *lc, int pos )
-{
-    StackPos = pos;
-    Context.execution = lc->execution;
-    Context.stack = lc->stack;
-    Context.frame = lc->frame;
-    Context.up_stack_level = lc->up_stack_level;
-    Context.maybe_have_frame = lc->maybe_have_frame;
-    Context.have_frame = lc->have_frame;
-    SetCodeLoc( GetRegIP() );
-    DbgUpdate( UP_STACKPOS_CHANGE );
-}
-
-int GetStackPos()
-{
-    return( StackPos );
-}
 
 /************************ command language stuff ***********************/
 
-void ProcRegister()
+void ProcRegister( void )
 {
     int         val;
     unsigned    old;
@@ -870,7 +879,7 @@ void ProcRegister()
 }
 
 
-void ProcUndo()
+void ProcUndo( void )
 {
     int         val;
     unsigned    old;
@@ -910,22 +919,22 @@ char *GetActionString( int action )
     }
 }
 
-char *GetUndoString()
-/*******************/
+char *GetUndoString( void )
+/*************************/
 {
     if( StateCurr == NULL ) return( NULL );
     return( GetActionString( StateCurr->action ) );
 }
 
-char *GetRedoString()
-/*******************/
+char *GetRedoString( void )
+/*************************/
 {
     if( StateCurr == NULL ) return( NULL );
     if( UndoLevel() == 0 ) return( GetActionString( ACTION_NONE ) );
     return( GetActionString( StateCurr->next->action ) );
 }
 
-void ProcStackPos()
+void ProcStackPos( void )
 {
     int         val;
     unsigned    old;
@@ -938,7 +947,7 @@ void ProcStackPos()
 }
 
 
-void GoHome()
+void GoHome( void )
 {
     LastStackPos();
     LastMachState();
@@ -1051,4 +1060,3 @@ void RegNewValue( const mad_reg_info *reginfo,
     CollapseMachState();
     DbgUpdate( UP_REG_CHANGE );
 }
-

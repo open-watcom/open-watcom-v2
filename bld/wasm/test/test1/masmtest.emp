@@ -1,0 +1,4 @@
+
+FIXUPP386(9d) len:0009h, chksum:b7h(b7)
+    0006h Seg   POINTER386   Frame: TARGET    Target: SI(1)
+    001bh Seg   POINTER386   Frame: TARGET    Target: SI(1)

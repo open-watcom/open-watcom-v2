@@ -24,31 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ostream::operator << for unsigned
+*               64-bit integers.
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/29    Greg Bentz      Change ostream::op<<(streambuf &) to
-//                              ostream::op<<( streambuf * )
-//  93/10/26    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  94/11/01    Greg Bentz      make sure uppercase is used for hex letters
-//  96/07/23    Greg Bentz      __int64 support
 
 #ifdef __SW_FH
 #include "iost.h"
@@ -89,7 +69,7 @@ ostream &ostream::operator << ( unsigned __int64 i ) {
 
     // Digits:
     digit_offset = size;
-    __clib_ulltoa( &i, buffer + digit_offset, base );
+    ulltoa( i, buffer + digit_offset, base );
     if( flags() & ios::uppercase ) {
         strupr( buffer );
     }

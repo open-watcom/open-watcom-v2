@@ -62,32 +62,32 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
     ra = td->ra;
     td->ra = mr->axp.pal.nt.fir.u._32[0] + sizeof( unsigned_32 );
     switch( tk ) {
-    case MTK_OUT:
+    case MTRK_OUT:
         memset( brk, 0, sizeof( *brk ) );
         brk->mach.offset = ra;
-        return( MTH_BREAK );
-    case MTK_INTO:
+        return( MTRH_BREAK );
+    case MTRK_INTO:
         switch( dc & MDC_TYPE_MASK ) {
         case MDC_JUMP:
         case MDC_CALL:
         case MDC_RET:
-            return( MTH_SIMULATE );
+            return( MTRH_SIMULATE );
         }
-        return( MTH_STEP );
-    case MTK_OVER:
+        return( MTRH_STEP );
+    case MTRK_OVER:
         switch( dc & MDC_TYPE_MASK ) {
         case MDC_JUMP:
         case MDC_RET:
-            return( MTH_SIMULATE );
+            return( MTRH_SIMULATE );
         case MDC_OPER:
-            return( MTH_STEP );
+            return( MTRH_STEP );
         }
         break;
     }
     /* break next */
     memset( brk, 0, sizeof( *brk ) );
     brk->mach.offset = td->ra;
-    return( MTH_BREAK );
+    return( MTRH_BREAK );
 }
 
 mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )

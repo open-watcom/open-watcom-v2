@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -65,9 +65,9 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    Bool     (*init)( Bool );
-    void     (*fini)();
-    OBJPTR ( WINEXPORT *create)( OBJPTR , RECT *, OBJPTR );
+    Bool    (*init)( Bool );
+    void    (*fini)( void );
+    OBJPTR  (WINEXPORT *create)( OBJPTR , RECT *, OBJPTR );
 } WdeObjectRoutinesType;
 
 /****************************************************************************/
@@ -107,9 +107,9 @@ static WdeObjectRoutinesType WdeObjectRoutines[] = {
     { NULL,           NULL,           NULL               }
 };
 
-CREATE_TABLE *WdeGetCreateTable ( void )
+CREATE_TABLE *WdeGetCreateTable( void )
 {
-    return ( WdeCreateTable );
+    return( WdeCreateTable );
 }
 
 Bool WdeInitCreateTable( void )
@@ -121,16 +121,15 @@ Bool WdeInitCreateTable( void )
     first_inst = WdeIsFirstInst();
     if( WdeCreateTable == NULL ) {
         inst = WdeGetAppInstance();
-        WdeCreateTable = (CREATE_TABLE *)
-            WdeMemAlloc(sizeof(FARPROC)*NUM_OBJECTS);
+        WdeCreateTable = (CREATE_TABLE *)WdeMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {
                     return( FALSE );
                 }
             }
-            (*WdeCreateTable)[i] = (CREATE_RTN)
-                MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst);
+            (*WdeCreateTable)[i] = (CREATE_RTN)MakeProcInstance(
+                (FARPROC)WdeObjectRoutines[i].create, inst );
         }
     }
 
@@ -141,17 +140,16 @@ void WdeFiniCreateTable( void )
 {
     int i;
 
-    if( WdeCreateTable ) {
-        for( i = 0; WdeObjectRoutines[i].create != NULL; ++i ) {
+    if( WdeCreateTable != NULL ) {
+        for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].fini != NULL ) {
                 WdeObjectRoutines[i].fini();
             }
-            #ifndef __NT__
-                FreeProcInstance( (FARPROC)(*WdeCreateTable)[i] );
-            #endif
+#ifndef __NT__
+            FreeProcInstance( (FARPROC)(*WdeCreateTable)[i] );
+#endif
         }
         WdeMemFree( WdeCreateTable );
         WdeCreateTable = NULL;
     }
 }
-

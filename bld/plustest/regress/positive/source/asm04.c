@@ -1,20 +1,20 @@
 #include "fail.h"
 
-#if __WATCOM_REVISION >= 7
+#if __WATCOM_REVISION__ >= 7
 #define INLINE inline
 #else
 #define INLINE
 #pragma inline_depth(0)
 #endif
 
-#if ! defined(__386__) || ! defined(__I86__)
+#if defined(__386__) || defined(__I86__)
 
 inline int sub( int a, int b ) {
     return a - b;
 }
 #pragma aux (__stdcall) sub parm reverse;
 
-int inline burst( int, int ){return 0;}
+int inline burst( int, int );
 #ifdef __386__
 #pragma aux burst = \
 	"xor eax,edx" \
@@ -39,9 +39,9 @@ int inline uses_burst( int a, int b ) {
     return burst( a, b );
 }
 
-int inline xor( short a, short b ) {
+int inline my_xor( short a, short b ) {
     short r;
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
     __asm {
 	mov ax,word ptr a
 	xor ax,word ptr b
@@ -54,7 +54,7 @@ int inline xor( short a, short b ) {
 }
 
 
-int INLINE and( short a, short b ) {
+int INLINE my_and( short a, short b ) {
     short r;
 #pragma aux _do_and = \
     "mov ax,word ptr a" \
@@ -85,10 +85,10 @@ int three = 3;
 
 int main() {
     if( foo( five, three ) != 1 ) _fail;
-    if( xor( two, two ) != 0 ) _fail;
-    if( xor( three, twelve ) != 15 ) _fail;
-    if( and( two, two ) != 2 ) _fail;
-    if( and( three, twelve ) != 0 ) _fail;
+    if( my_xor( two, two ) != 0 ) _fail;
+    if( my_xor( three, twelve ) != 15 ) _fail;
+    if( my_and( two, two ) != 2 ) _fail;
+    if( my_and( three, twelve ) != 0 ) _fail;
     _PASS;
 }
 #else

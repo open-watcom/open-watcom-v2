@@ -1,0 +1,701 @@
+/*
+ *  tdi.h       Transport driver interface definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _TDI_USER_
+#define _TDI_USER_
+
+:include readonly.sp
+
+#include <netevent.h>
+#include <ntddtdi.h>
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef LONG    TDI_STATUS;
+typedef PVOID   CONNECTION_CONTEXT;
+
+/* Transport driver interface device I/O control codes */
+#define IOCTL_TDI_MAGIC_BULLET  _TDI_CONTROL_CODE( 0x007F, METHOD_NEITHER )
+
+/* Transport driver interface extended attributes */
+#define TdiTransportAddress     "TransportAddress"
+#define TdiConnectionContext    "ConnectionContext"
+
+/* Transport driver interface address types */
+#define TDI_ADDRESS_TYPE_UNSPEC             0
+#define TDI_ADDRESS_TYPE_UNIX               1
+#define TDI_ADDRESS_TYPE_IP                 2
+#define TDI_ADDRESS_TYPE_IMPLINK            3
+#define TDI_ADDRESS_TYPE_PUP                4
+#define TDI_ADDRESS_TYPE_CHAOS              5
+#define TDI_ADDRESS_TYPE_NS                 6
+#define TDI_ADDRESS_TYPE_IPX                6
+#define TDI_ADDRESS_TYPE_NBS                7
+#define TDI_ADDRESS_TYPE_ECMA               8
+#define TDI_ADDRESS_TYPE_DATAKIT            9
+#define TDI_ADDRESS_TYPE_CCITT              10
+#define TDI_ADDRESS_TYPE_SNA                11
+#define TDI_ADDRESS_TYPE_DECnet             12
+#define TDI_ADDRESS_TYPE_DLI                13
+#define TDI_ADDRESS_TYPE_LAT                14
+#define TDI_ADDRESS_TYPE_HYLINK             15
+#define TDI_ADDRESS_TYPE_APPLETALK          16
+#define TDI_ADDRESS_TYPE_NETBIOS            17
+#define TDI_ADDRESS_TYPE_8022               18
+#define TDI_ADDRESS_TYPE_OSI_TSAP           19
+#define TDI_ADDRESS_TYPE_NETONE             20
+#define TDI_ADDRESS_TYPE_VNS                21
+#define TDI_ADDRESS_TYPE_NETBIOS_EX         22
+#define TDI_ADDRESS_TYPE_IP6                23
+#define TDI_ADDRESS_TYPE_NETBIOS_UNICODE_EX 24
+
+/* Transport driver interface NetBIOS address types */
+#define TDI_ADDRESS_NETBIOS_TYPE_UNIQUE         0x0000
+#define TDI_ADDRESS_NETBIOS_TYPE_GROUP          0x0001
+#define TDI_ADDRESS_NETBIOS_TYPE_QUICK_UNIQUE   0x0002
+#define TDI_ADDRESS_NETBIOS_TYPE_QUICK_GROUP    0x0003
+
+/* Transport driver interface Net/ONE address types */
+#define TDI_ADDRESS_NETONE_TYPE_UNIQUE  0x0000
+#define TDI_ADDRESS_NETONE_TYPE_ROTORED 0x0001
+
+/* ISO maximum address length */
+#define ISO_MAX_ADDR_LENGTH 64
+
+/* ISO address types */
+#define ISO_HIERARCHICAL        0
+#define ISO_NON_HIERARCHICAL    1
+
+/* Transport driver interface event types */
+#define TDI_EVENT_CONNECT           0
+#define TDI_EVENT_DISCONNECT        1
+#define TDI_EVENT_ERROR             2
+#define TDI_EVENT_RECEIVE           3
+#define TDI_EVENT_RECEIVE_DATAGRAM  4
+#define TDI_EVENT_RECEIVE_EXPEDITED 5
+#define TDI_EVENT_SEND_POSSIBLE     6
+
+/* Transport driver interface receive indicator flags */
+#define TDI_RECEIVE_BROADCAST           0x00000004L
+#define TDI_RECEIVE_MULTICAST           0x00000008L
+#define TDI_RECEIVE_PARTIAL             0x00000010L
+#define TDI_RECEIVE_NORMAL              0x00000020L
+#define TDI_RECEIVE_EXPEDITED           0x00000040L
+#define TDI_RECEIVE_PEEK                0x00000080L
+#define TDI_RECEIVE_NO_RESPONSE_EXP     0x00000100L
+#define TDI_RECEIVE_COPY_LOOKAHEAD      0x00000200L
+#define TDI_RECEIVE_ENTIRE_MESSAGE      0x00000400L
+#define TDI_RECEIVE_AT_DISPATCH_LEVEL   0x00000800L
+#define TDI_RECEIVE_CONTROL_INFO        0x00001000L
+#define TDI_RECEIVE_FORCE_INDICATION    0x00002000L
+#define TDI_RECEIVE_NO_PUSH             0x00004000L
+
+/* Transport driver interface listen flags */
+#define TDI_QUERY_ACCEPT    0x00000001L
+
+/* Transport driver interface send option flags */
+#define TDI_SEND_EXPEDITED              0x0020
+#define TDI_SEND_PARTIAL                0x0040
+#define TDI_SEND_NO_RESPONSE_EXPECTED   0x0080
+#define TDI_SEND_NON_BLOCKING           0x0100
+#define TDI_SEND_AND_DISCONNECT         0x0200
+
+/* Transport driver interface disconnect flags */
+#define TDI_DISCONNECT_WAIT     0x0001
+#define TDI_DISCONNECT_ABORT    0x0002
+#define TDI_DISCONNECT_RELEASE  0x0004
+
+/* Transport driver interface query information types */
+#define TDI_QUERY_BROADCAST_ADDRESS     0x00000001L
+#define TDI_QUERY_PROVIDER_INFORMATION  0x00000002L
+#define TDI_QUERY_PROVIDER_INFO         0x00000002L
+#define TDI_QUERY_ADDRESS_INFO          0x00000003L
+#define TDI_QUERY_CONNECTION_INFO       0x00000004L
+#define TDI_QUERY_PROVIDER_STATISTICS   0x00000005L
+#define TDI_QUERY_DATAGRAM_INFO         0x00000006L
+#define TDI_QUERY_DATA_LINK_ADDRESS     0x00000007L
+#define TDI_QUERY_NETWORK_ADDRESS       0x00000008L
+#define TDI_QUERY_MAX_DATAGRAM_INFO     0x00000009L
+#define TDI_QUERY_ROUTING_INFO          0x0000000AL
+#define TDI_QUERY_ADAPTER_STATUS        0x00000100L
+#define TDI_QUERY_SESSION_STATUS        0x00000200L
+#define TDI_QUERY_FIND_NAME             0x00000300L
+
+/* Transport driver interface service flags */
+#define TDI_SERVICE_CONNECTION_MODE     0x00000001L
+#define TDI_SERVICE_ORDERLY_RELEASE     0x00000002L
+#define TDI_SERVICE_CONNECTIONLESS_MODE 0x00000004L
+#define TDI_SERVICE_ERROR_FREE_DELIVERY 0x00000008L
+#define TDI_SERVICE_SECURITY_LEVEL      0x00000010L
+#define TDI_SERVICE_BROADCAST_SUPPORTED 0x00000020L
+#define TDI_SERVICE_MULTICAST_SUPPORTED 0x00000040L
+#define TDI_SERVICE_DELAYED_ACCEPTANCE  0x00000080L
+#define TDI_SERVICE_EXPEDITED_DATA      0x00000100L
+#define TDI_SERVICE_INTERNAL_BUFFERING  0x00000200L
+#define TDI_SERVICE_ROUTE_DIRECTED      0x00000400L
+#define TDI_SERVICE_NO_ZERO_LENGTH      0x00000800L
+#define TDI_SERVICE_POINT_TO_POINT      0x00001000L
+#define TDI_SERVICE_MESSAGE_MODE        0x00002000L
+#define TDI_SERVICE_HALF_DUPLEX         0x00004000L
+#define TDI_SERVICE_DGRAM_CONNECTION    0x00008000L
+#define TDI_SERVICE_FORCE_ACCESS_CHECK  0x00010000L
+#define TDI_SERVICE_SEND_AND_DISCONNECT 0x00020000L
+#define TDI_SERVICE_DIRECT_ACCEPT       0x00040000L
+#define TDI_SERVICE_ACCEPT_LOCAL_ADDR   0x00080000L
+#define TDI_SERVICE_ADDRESS_SECURITY    0x00100000L
+#define TDI_SERVICE_PREPOST_RECVS       0x00200000L
+#define TDI_SERVICE_NO_PUSH             0x00400000L
+
+/* NDIS packet pool tags */
+#define NDIS_PACKET_POOL_TAG_FOR_NWLNKIPX   'iPDN'
+#define NDIS_PACKET_POOL_TAG_FOR_NWLNKSPX   'sPDN'
+#define NDIS_PACKET_POOL_TAG_FOR_NWLNKNB    'nPDN'
+#define NDIS_PACKET_POOL_TAG_FOR_TCPIP      'tPDN'
+#define NDIS_PACKET_POOL_TAG_FOR_NBF        'bPDN'
+#define NDIS_PACKET_POOL_TAG_FOR_APPLETALK  'aPDN'
+
+/* Transport address */
+typedef struct _TA_ADDRESS {
+    USHORT  AddressLength;
+    USHORT  AddressType;
+    UCHAR   Address[1];
+} TA_ADDRESS;
+typedef TA_ADDRESS          *PTA_ADDRESS;
+typedef struct _TRANSPORT_ADDRESS {
+    LONG        TAAddressCount;
+    TA_ADDRESS  Address[1];
+} TRANSPORT_ADDRESS;
+typedef TRANSPORT_ADDRESS   *PTRANSPORT_ADDRESS;
+
+/* Name buffer types */
+enum eNameBufferType {
+    NBT_READONLY    = 0,
+    NBT_WRITEONLY   = 1,
+    NBT_READWRITE   = 2,
+    NBT_WRITTEN     = 3
+};
+
+/* Turn packing for address structures. */
+#include <packon.h>
+
+/* Transport driver interface NetBIOS address */
+typedef struct _TDI_ADDRESS_NETBIOS_UNICODE_EX_XP {
+    USHORT                  NetbiosNameType;
+    enum eNameBufferType    NameBufferType;
+    UNICODE_STRING          EndpointName;
+    UNICODE_STRING          RemoteName;
+    WCHAR                   EndpointBuffer[17];
+    WCHAR                   RemoteNameBuffer[1];
+} TDI_ADDRESS_NETBIOS_UNICODE_EX_XP;
+typedef TDI_ADDRESS_NETBIOS_UNICODE_EX_XP   *PTDI_ADDRESS_NETBIOS_UNICODE_EX_XP;
+typedef struct _TA_ADDRESS_NETBIOS_UNICODE_EX_XP {
+    LONG    TAAddressCount;
+    struct _AddrNetbiosWCharEx {
+        USHORT                              AddressLength;
+        USHORT                              AddressType;
+        TDI_ADDRESS_NETBIOS_UNICODE_EX_XP   Address[1];
+    } Address[1];
+} TA_NETBIOS_UNICODE_EX_ADDRESS_XP;
+typedef TA_NETBIOS_UNICODE_EX_ADDRESS_XP    *PTA_NETBIOS_UNICODE_EX_ADDRESS_XP;
+#if (NTDDI_VERSION >= 0x05010000)
+typedef TDI_ADDRESS_NETBIOS_UNICODE_EX_XP   TDI_ADDRESS_NETBIOS_UNICODE_EX;
+typedef TDI_ADDRESS_NETBIOS_UNICODE_EX      *PTDI_ADDRESS_NETBIOS_UNICODE_EX;
+typedef TA_NETBIOS_UNICODE_EX_ADDRESS_XP    TA_NETBIOS_UNICODE_EX_ADDRESS;
+typedef TA_NETBIOS_UNICODE_EX_ADDRESS       *PTA_NETBIOS_UNICODE_EX_ADDRESS;
+#endif
+typedef struct _TDI_ADDRESS_NETBIOS {
+    USHORT  NetbiosNameType;
+    UCHAR   NetbiosName[16];
+} TDI_ADDRESS_NETBIOS;
+typedef TDI_ADDRESS_NETBIOS                 *PTDI_ADDRESS_NETBIOS;
+typedef struct _TDI_ADDRESS_NETBIOS_EX {
+    UCHAR               EndpointName[16];
+    TDI_ADDRESS_NETBIOS NetbiosAddress;
+} TDI_ADDRESS_NETBIOS_EX;
+typedef TDI_ADDRESS_NETBIOS_EX              *PTDI_ADDRESS_NETBIOS_EX;
+
+/* Transport driver interface Net/One address */
+typedef struct _TDI_ADDRESS_NETONE {
+    USHORT  NetoneNameType;
+    UCHAR   NetoneName[20];
+} TDI_ADDRESS_NETONE;
+typedef TDI_ADDRESS_NETONE                  *PTDI_ADDRESS_NETONE;
+
+/* Transport driver interface AppleTalk address */
+typedef struct _TDI_ADDRESS_APPLETALK {
+    USHORT  Network;
+    UCHAR   Node;
+    UCHAR   Socket;
+} TDI_ADDRESS_APPLETALK;
+typedef TDI_ADDRESS_APPLETALK   *PTDI_ADDRESS_APPLETALK;
+
+/* Transport driver interface 802.2 address */
+typedef struct _TDI_ADDRESS_8022 {
+    UCHAR   MACAddress[6];
+} TDI_ADDRESS_8022;
+typedef TDI_ADDRESS_8022    *PTDI_ADDRESS_8022;
+
+/* Transport driver interface IP address */
+typedef struct _TDI_ADDRESS_IP {
+    USHORT  sin_port;
+    ULONG   in_addr;
+    UCHAR   sin_zero[8];
+} TDI_ADDRESS_IP;
+typedef TDI_ADDRESS_IP  *PTDI_ADDRESS_IP;
+
+/* Transport driver interface IPv6 address */
+typedef struct _TDI_ADDRESS_IP6_WIN2K {
+    USHORT  sin6_port;
+    ULONG   sin6_flowinfo;
+    UCHAR   sin6_addr[16];
+} TDI_ADDRESS_IP6_WIN2K;
+typedef TDI_ADDRESS_IP6_WIN2K   *PTDI_ADDRESS_IP6_WIN2K;
+typedef struct _TDI_ADDRESS_IP6_XP {
+    USHORT  sin6_port;
+    ULONG   sin6_flowinfo;
+    USHORT  sin6_addr[8];
+    ULONG   sin6_scope_id;
+} TDI_ADDRESS_IP6_XP;
+typedef TDI_ADDRESS_IP6_XP      *PTDI_ADDRESS_IP6_XP;
+#if (NTDDI_VERSION >= 0x05010000)
+typedef TDI_ADDRESS_IP6_XP      TDI_ADDRESS_IP6;
+#else
+typedef TDI_ADDRESS_IP6_WIN2K   TDI_ADDRESS_IP6;
+#endif
+typedef TDI_ADDRESS_IP6         *PTDI_ADDRESS_IP6;
+
+/* Transport driver interface IPX address */
+typedef struct _TDI_ADDRESS_IPX {
+    ULONG   NetworkAddress;
+    UCHAR   NodeAddress[6];
+    USHORT  Socket;
+} TDI_ADDRESS_IPX;
+typedef TDI_ADDRESS_IPX *PTDI_ADDRESS_IPX;
+
+/* Transport driver interface XNS address */
+typedef struct _TDI_ADDRESS_NS {
+    ULONG   NetworkAddress;
+    UCHAR   NodeAddress[6];
+    USHORT  Socket;
+} TDI_ADDRESS_NS;
+typedef TDI_ADDRESS_NS  *PTDI_ADDRESS_NS;
+
+/* Transport driver interface VINES address */
+typedef struct _TDI_ADDRESS_VNS {
+    UCHAR   net_address[4];
+    UCHAR   subnet_addr[2];
+    UCHAR   port[2];
+    UCHAR   hops;
+    UCHAR   filler[5];
+} TDI_ADDRESS_VNS;
+typedef TDI_ADDRESS_VNS *PTDI_ADDRESS_VNS;
+
+/* Transport driver interface OSI TSAP address */
+typedef struct _TDI_ADDRESS_OSI_TSAP {
+    USHORT  tp_addr_type;
+    USHORT  tp_taddr_len;
+    USHORT  tp_tsel_len;
+    UCHAR   tp_addr[ISO_MAX_ADDR_LENGTH];
+} TDI_ADDRESS_OSI_TSAP;
+typedef TDI_ADDRESS_OSI_TSAP    *PTDI_ADDRESS_OSI_TSAP;
+
+/* Transport NetBIOS address */
+typedef struct _TA_ADDRESS_NETBIOS {
+    LONG    TAAddressCount;
+    struct _Addr {
+        USHORT              AddressLength;
+        USHORT              AddressType;
+        TDI_ADDRESS_NETBIOS Address[1];
+    } Address[1];
+} TA_NETBIOS_ADDRESS;
+typedef TA_NETBIOS_ADDRESS  *PTA_NETBIOS_ADDRESS;
+
+/* Transport NetBIOS address (extended version) */
+typedef struct _TA_ADDRESS_NETBIOS_EX {
+    LONG    TAAddressCount;
+    struct _AddrNetbiosEx {
+        USHORT                  AddressLength;
+        USHORT                  AddressType;
+        TDI_ADDRESS_NETBIOS_EX  Address[1];
+    } Address[1];
+} TA_NETBIOS_EX_ADDRESS;
+typedef TA_NETBIOS_EX_ADDRESS   *PTA_NETBIOS_EX_ADDRESS;
+
+/* Transport AppleTalk address */
+typedef struct _TA_APPLETALK_ADDR {
+    LONG    TAAddressCount;
+    struct _AddrAtalk {
+        USHORT                  AddressLength;
+        USHORT                  AddressType;
+        TDI_ADDRESS_APPLETALK   Address[1];
+    } Address[1];
+} TA_APPLETALK_ADDRESS;
+typedef TA_APPLETALK_ADDRESS    *PTA_APPLETALK_ADDRESS;
+
+/* Transport IP address */
+typedef struct _TA_ADDRESS_IP {
+    LONG    TAAddressCount;
+    struct _AddrIp {
+        USHORT          AddressLength;
+        USHORT          AddressType;
+        TDI_ADDRESS_IP  Address[1];
+    } Address[1];
+} TA_IP_ADDRESS;
+typedef TA_IP_ADDRESS   *PTA_IP_ADDRESS;
+
+/* Transport IPv6 address */
+typedef struct _TA_ADDRESS_IP6 {
+    LONG    TAAddressCount;
+    struct _AddrIp6 {
+        USHORT          AddressLength;
+        USHORT          AddressType;
+        TDI_ADDRESS_IP6 Address[1];
+    } Address[1];
+} TA_IP6_ADDRESS;
+typedef TA_IP6_ADDRESS  *PTA_IP6_ADDRESS;
+
+/* Transport IPX address */
+typedef struct _TA_ADDRESS_IPX {
+    LONG    TAAddressCount;
+    struct _AddrIpx {
+        USHORT          AddressLength;
+        USHORT          AddressType;
+        TDI_ADDRESS_IPX Address[1];
+    } Address[1];
+} TA_IPX_ADDRESS;
+typedef TA_IPX_ADDRESS  *PTA_IPX_ADDRESS;
+
+/* Transport XNS address */
+typedef struct _TA_ADDRESS_NS {
+    LONG    TAAddressCount;
+    struct _AddrNs {
+        USHORT          AddressLength;
+        USHORT          AddressType;
+        TDI_ADDRESS_NS  Address[1];
+    } Address[1];
+} TA_NS_ADDRESS;
+typedef TA_NS_ADDRESS   *PTA_NS_ADDRESS;
+
+/* Transport VINES address */
+typedef struct _TA_ADDRESS_VNS {
+    LONG    TAAddressCount;
+    struct _AddrVns {
+        USHORT          AddressLength;
+        USHORT          AddressType;
+        TDI_ADDRESS_VNS Address[1];
+    } Address[1];
+} TA_VNS_ADDRESS;
+typedef TA_VNS_ADDRESS  *PTA_VNS_ADDRESS;
+
+/* Revert to default packing. */
+#include <packoff.h>
+
+/* Transport driver interface request */
+typedef struct _TDI_REQUEST {
+    union {
+        HANDLE              AddressHandle;
+        CONNECTION_CONTEXT  ConnectionContext;
+        HANDLE              ControlChannel;
+    } Handle;
+    PVOID       RequestNotifyObject;
+    PVOID       RequestContext;
+    TDI_STATUS  TdiStatus;
+} TDI_REQUEST;
+typedef TDI_REQUEST *PTDI_REQUEST;
+
+/* Transport driver interface request status */
+typedef struct _TDI_REQUEST_STATUS {
+    TDI_STATUS  Status;
+    PVOID       RequestContext;
+    ULONG       BytesTransferred;
+} TDI_REQUEST_STATUS;
+typedef TDI_REQUEST_STATUS  *PTDI_REQUEST_STATUS;
+
+/* Transport driver interface connection information */
+typedef struct _TDI_CONNECTION_INFORMATION {
+    LONG    UserDataLength;
+    PVOID   UserData;
+    LONG    OptionsLength;
+    PVOID   Options;
+    LONG    RemoteAddressLength;
+    PVOID   RemoteAddress;
+} TDI_CONNECTION_INFORMATION;
+typedef TDI_CONNECTION_INFORMATION  *PTDI_CONNECTION_INFORMATION;
+
+/* Transport driver interface associate request */
+typedef struct _TDI_REQUEST_ASSOCIATE {
+    TDI_REQUEST Request;
+    HANDLE      AddressHandle;
+} TDI_REQUEST_ASSOCIATE_ADDRESS;
+typedef TDI_REQUEST_ASSOCIATE_ADDRESS   *PTDI_REQUEST_ASSOCIATE_ADDRESS;
+typedef TDI_REQUEST_ASSOCIATE_ADDRESS   TDI_REQUEST_USER_ASSOCIATE;
+typedef TDI_REQUEST_ASSOCIATE_ADDRESS   *PTDI_REQUEST_USER_ASSOCIATE;
+
+/* Transport driver interface connect request */
+typedef struct _TDI_REQUEST_CONNECT {
+    TDI_REQUEST                 Request;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+    PTDI_CONNECTION_INFORMATION ReturnConnectionInformation;
+    LARGE_INTEGER               Timeout;
+} TDI_REQUEST_CONNECT;
+typedef TDI_REQUEST_CONNECT *PTDI_REQUEST_CONNECT;
+typedef TDI_REQUEST_CONNECT TDI_REQUEST_USER_CONNECT;
+typedef TDI_REQUEST_CONNECT *PTDI_REQUEST_USER_CONNECT;
+
+/* Transport driver interface accept request */
+typedef struct _TDI_REQUEST_ACCEPT {
+    TDI_REQUEST                 Request;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+    PTDI_CONNECTION_INFORMATION ReturnConnectionInformation;
+} TDI_REQUEST_ACCEPT;
+typedef TDI_REQUEST_ACCEPT  *PTDI_REQUEST_ACCEPT;
+
+/* Transport driver interface listen request */
+typedef struct _TDI_REQUEST_LISTEN {
+    TDI_REQUEST                 Request;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+    PTDI_CONNECTION_INFORMATION ReturnConnectionInformation;
+    USHORT                      ListenFlags;
+} TDI_REQUEST_LISTEN;
+typedef TDI_REQUEST_LISTEN  *PTDI_REQUEST_LISTEN;
+
+/* Transport driver interface disconnect request */
+typedef struct _TDI_DISCONNECT_REQUEST {
+    TDI_REQUEST     Request;
+    LARGE_INTEGER   Timeout;
+} TDI_REQUEST_DISCONNECT;
+typedef TDI_REQUEST_DISCONNECT  *PTDI_REQUEST_DISCONNECT;
+
+/* Transport driver interface send request */
+typedef struct _TDI_REQUEST_SEND {
+    TDI_REQUEST Request;
+    USHORT      SendFlags;
+} TDI_REQUEST_SEND;
+typedef TDI_REQUEST_SEND    *PTDI_REQUEST_SEND;
+
+/* Transport driver interface receive request */
+typedef struct _TDI_REQUEST_RECEIVE {
+    TDI_REQUEST Request;
+    USHORT      ReceiveFlags;
+} TDI_REQUEST_RECEIVE;
+typedef TDI_REQUEST_RECEIVE *PTDI_REQUEST_RECEIVE;
+
+/* Transport driver interface send datagram request */
+typedef struct _TDI_REQUEST_SEND_DATAGRAM {
+    TDI_REQUEST                 Request;
+    PTDI_CONNECTION_INFORMATION SendDatagramInformation;
+} TDI_REQUEST_SEND_DATAGRAM;
+typedef TDI_REQUEST_SEND_DATAGRAM   *PTDI_REQUEST_SEND_DATAGRAM;
+
+/* Transport driver interface receive datagram request */
+typedef struct _TDI_REQUEST_RECEIVE_DATAGRAM {
+    TDI_REQUEST                 Request;
+    PTDI_CONNECTION_INFORMATION ReceiveDatagramInformation;
+    PTDI_CONNECTION_INFORMATION ReturnInformation;
+    USHORT                      ReceiveFlags;
+} TDI_REQUEST_RECEIVE_DATAGRAM;
+typedef TDI_REQUEST_RECEIVE_DATAGRAM    *PTDI_REQUEST_RECEIVE_DATAGRAM;
+
+/* Transport driver interface set event request */
+typedef struct _TDI_REQUEST_SET_EVENT {
+    TDI_REQUEST Request;
+    LONG        EventType;
+    PVOID       EventHandler;
+    PVOID       EventContext;
+} TDI_REQUEST_SET_EVENT_HANDLER;
+typedef TDI_REQUEST_SET_EVENT_HANDLER   *PTDI_REQUEST_SET_EVENT_HANDLER;
+
+/* Transport driver interface query information request */
+typedef struct _TDI_REQUEST_QUERY_INFORMATION {
+    TDI_REQUEST                 Request;
+    ULONG                       QueryType;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+} TDI_REQUEST_QUERY_INFORMATION;
+typedef TDI_REQUEST_QUERY_INFORMATION   *PTDI_REQUEST_QUERY_INFORMATION;
+typedef TDI_REQUEST_QUERY_INFORMATION   TDI_REQUEST_USER_QUERY_INFO;
+typedef TDI_REQUEST_QUERY_INFORMATION   *PTDI_REQUEST_USER_QUERY_INFO;
+
+/* Transport driver interface set information request */
+typedef struct _TDI_REQUEST_SET_INFORMATION {
+    TDI_REQUEST                 Request;
+    ULONG                       SetType;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+} TDI_REQUEST_SET_INFORMATION;
+typedef TDI_REQUEST_SET_INFORMATION *PTDI_SET_REQUEST_SET_INFORMATION;
+typedef TDI_REQUEST_SET_INFORMATION TDI_REQ_SET_INFORMATION;
+typedef TDI_REQUEST_SET_INFORMATION *PTDI_REQ_SET_INFORMATION;
+
+/* Transport driver interface request type */
+typedef union _TDI_REQUEST_TYPE {
+    TDI_REQUEST_ACCEPT              TdiAccept;
+    TDI_REQUEST_CONNECT             TdiConnect;
+    TDI_REQUEST_DISCONNECT          TdiDisconnect;
+    TDI_REQUEST_LISTEN              TdiListen;
+    TDI_REQUEST_QUERY_INFORMATION   TdiQueryInformation;
+    TDI_REQUEST_RECEIVE             TdiReceive;
+    TDI_REQUEST_RECEIVE_DATAGRAM    TdiReceiveDatagram;
+    TDI_REQUEST_SEND                TdiSend;
+    TDI_REQUEST_SEND_DATAGRAM       TdiSendDatagram;
+    TDI_REQUEST_SET_EVENT_HANDLER   TdiSetEventHandler;
+    TDI_REQUEST_SET_INFORMATION     TdiSetInformation;
+} TDI_REQUEST_TYPE;
+typedef TDI_REQUEST_TYPE    *PTDI_REQUEST_TYPE;
+
+/* Transport driver interface endpoint information */
+typedef struct _TDI_ENDPOINT_INFO {
+    ULONG   State;
+    ULONG   Event;
+    ULONG   TransmittedTsdus;
+    ULONG   ReceivedTsdus;
+    ULONG   TransmissionErrors;
+    ULONG   ReceiveErrors;
+    ULONG   MinimumLookaheadData;
+    ULONG   MaximumLookaheadData;
+    ULONG   PriorityLevel;
+    ULONG   SecurityLevel;
+    ULONG   SecurityCompartment;
+} TDI_ENDPOINT_INFO;
+typedef TDI_ENDPOINT_INFO   *PTDI_ENDPOINT_INFO;
+
+/* Transport driver interface connection information */
+typedef struct _TDI_CONNECTION_INFO {
+    ULONG           State;
+    ULONG           Event;
+    ULONG           TransmittedTsdus;
+    ULONG           ReceivedTsdus;
+    ULONG           TransmissionErrors;
+    ULONG           ReceiveErrors;
+    LARGE_INTEGER   Throughput;
+    LARGE_INTEGER   Delay;
+    ULONG           SendBufferSize;
+    ULONG           ReceiveBufferSize;
+    BOOLEAN         Unreliable;
+} TDI_CONNECTION_INFO;
+typedef TDI_CONNECTION_INFO *PTDI_CONNECTION_INFO;
+
+/* Transport driver interface address information */
+typedef struct _TDI_ADDRESS_INFO {
+    ULONG               ActivityCount;
+    TRANSPORT_ADDRESS   Address;
+} TDI_ADDRESS_INFO;
+typedef TDI_ADDRESS_INFO    *PTDI_ADDRESS_INFO;
+
+/* Transport driver interface datagram information */
+typedef struct _TDI_DATAGRAM_INFO {
+    ULONG   MaximumDatagramBytes;
+    ULONG   MaximumDatagramCount;
+} TDI_DATAGRAM_INFO;
+typedef TDI_DATAGRAM_INFO   *PTDI_DATAGRAM_INFO;
+
+/* Transport driver interface maximum datagram information */
+typedef struct _TDI_MAX_DATAGRAM_INFO {
+    ULONG   MaxDatagramSize;
+} TDI_MAX_DATAGRAM_INFO;
+typedef TDI_MAX_DATAGRAM_INFO   *PTDI_MAX_DATAGRAM_INFO;
+
+/* Transport driver interface provider information */
+typedef struct _TDI_PROVIDER_INFO {
+    ULONG           Version;
+    ULONG           MaxSendSize;
+    ULONG           MaxConnectionUserData;
+    ULONG           MaxDatagramSize;
+    ULONG           ServiceFlags;
+    ULONG           MinimumLookaheadData;
+    ULONG           MaximumLookaheadData;
+    ULONG           NumberOfResources;
+    LARGE_INTEGER   StartTime;
+} TDI_PROVIDER_INFO;
+typedef TDI_PROVIDER_INFO   *PTDI_PROVIDER_INFO;
+
+/* Transport driver interface routing information */
+typedef struct _TDI_ROUTING_INFO_WS03 {
+    ULONG               Protocol;
+    ULONG               InterfaceId;
+    ULONG               LinkId;
+    TRANSPORT_ADDRESS   Address;
+} TDI_ROUTING_INFO_WS03;
+typedef TDI_ROUTING_INFO_WS03   *PTDI_ROUTING_INFO_WS03;
+#if (NTDDI_VERSION >= 0x05020000)
+typedef TDI_ROUTING_INFO_WS03   TDI_ROUTING_INFO;
+typedef TDI_ROUTING_INFO        *PTDI_ROUTING_INFO;
+#endif
+
+/* Transport driver interface provider resource statistics */
+typedef struct _TDI_PROVIDER_RESOURCE_STATS {
+    ULONG   ResourceId;
+    ULONG   MaximumResourceUsed;
+    ULONG   AverageResourceUsed;
+    ULONG   ResourceExhausted;
+} TDI_PROVIDER_RESOURCE_STATS;
+typedef TDI_PROVIDER_RESOURCE_STATS *PTDI_PROVIDER_RESOURCE_STATS;
+
+/* Transport driver interface provider statistics */
+typedef struct _TDI_PROVIDER_STATISTICS {
+    ULONG           Version;
+    ULONG           OpenConnections;
+    ULONG           ConnectionsAfterNoRetry;
+    ULONG           ConnectionsAfterRetry;
+    ULONG           LocalDisconnects;
+    ULONG           RemoteDisconnects;
+    ULONG           LinkFailures;
+    ULONG           AdapterFailures;
+    ULONG           SessionTimeouts;
+    ULONG           CancelledConnections;
+    ULONG           RemoteResourceFailures;
+    ULONG           LocalResourceFailures;
+    ULONG           NotFoundFailures;
+    ULONG           NoListenFailures;
+    ULONG           DatagramsSent;
+    LARGE_INTEGER   DatagramBytesSent;
+    ULONG           DatagramsReceived;
+    LARGE_INTEGER   DatagramBytesReceived;
+    ULONG           PacketsSent;
+    ULONG           PacketsReceived;
+    ULONG           DataFramesSent;
+    LARGE_INTEGER   DataFrameBytesSent;
+    ULONG           DataFramesReceived;
+    LARGE_INTEGER   DataFrameBytesReceived;
+    ULONG           DataFramesResent;
+    LARGE_INTEGER   DataFrameBytesResent;
+    ULONG           DataFramesRejected;
+    LARGE_INTEGER   DataFrameBytesRejected;
+    ULONG           ResponseTimerExpirations;
+    ULONG           AckTimerExpirations;
+    ULONG           MaximumSendWindow;
+    ULONG           AverageSendWindow;
+    ULONG           PiggybackAckQueued;
+    ULONG           PiggybackAckTimeouts;
+    LARGE_INTEGER   WastedPacketSpace;
+    ULONG           WastedSpacePackets;
+    ULONG           NumberOfResources;
+    TDI_PROVIDER_RESOURCE_STATS ResourceStats[1];
+} TDI_PROVIDER_STATISTICS;
+typedef TDI_PROVIDER_STATISTICS *PTDI_PROVIDER_STATISTICS;
+
+/* Transport driver interface action header */
+typedef struct _TDI_ACTION_HEADER {
+    ULONG   TransportId;
+    USHORT  ActionCode;
+    USHORT  Reserved;
+} TDI_ACTION_HEADER;
+typedef TDI_ACTION_HEADER   *PTDI_ACTION_HEADER;
+
+/* Streams transport driver interface action */
+typedef struct _STREAMS_TDI_ACTION {
+    TDI_ACTION_HEADER   Header;
+    BOOLEAN             DatagramOption;
+    ULONG               BufferLength;
+    CHAR                Buffer[1];
+} STREAMS_TDI_ACTION;
+typedef STREAMS_TDI_ACTION  *PSTREAMS_TDI_ACTION;
+
+/* Functions in TDI.SYS */
+NTSTATUS NTAPI  TdiOpenNetbiosAddress( PHANDLE, PUCHAR, PVOID, PVOID );
+
+:include cplusepi.sp
+
+#endif /* _TDI_USER_ */

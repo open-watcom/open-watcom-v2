@@ -1,0 +1,1361 @@
+c$noreference
+
+c$ifdef INCL_ERRORS
+
+c$define INCL_DOSERRORS
+
+c$endif
+
+c$ifdef INCL_DOSERRORS
+
+        integer  NO_ERROR
+        parameter (NO_ERROR = 0)
+        integer  ERROR_INVALID_FUNCTION
+        parameter (ERROR_INVALID_FUNCTION = 1)
+        integer  ERROR_FILE_NOT_FOUND
+        parameter (ERROR_FILE_NOT_FOUND = 2)
+        integer  ERROR_PATH_NOT_FOUND
+        parameter (ERROR_PATH_NOT_FOUND = 3)
+        integer  ERROR_TOO_MANY_OPEN_FILES
+        parameter (ERROR_TOO_MANY_OPEN_FILES = 4)
+        integer  ERROR_ACCESS_DENIED
+        parameter (ERROR_ACCESS_DENIED = 5)
+        integer  ERROR_INVALID_HANDLE
+        parameter (ERROR_INVALID_HANDLE = 6)
+        integer  ERROR_ARENA_TRASHED
+        parameter (ERROR_ARENA_TRASHED = 7)
+        integer  ERROR_NOT_ENOUGH_MEMORY
+        parameter (ERROR_NOT_ENOUGH_MEMORY = 8)
+        integer  ERROR_INVALID_BLOCK
+        parameter (ERROR_INVALID_BLOCK = 9)
+        integer  ERROR_BAD_ENVIRONMENT
+        parameter (ERROR_BAD_ENVIRONMENT = 10)
+        integer  ERROR_BAD_FORMAT
+        parameter (ERROR_BAD_FORMAT = 11)
+        integer  ERROR_INVALID_ACCESS
+        parameter (ERROR_INVALID_ACCESS = 12)
+        integer  ERROR_INVALID_DATA
+        parameter (ERROR_INVALID_DATA = 13)
+        integer  ERROR_INVALID_DRIVE
+        parameter (ERROR_INVALID_DRIVE = 15)
+        integer  ERROR_CURRENT_DIRECTORY
+        parameter (ERROR_CURRENT_DIRECTORY = 16)
+        integer  ERROR_NOT_SAME_DEVICE
+        parameter (ERROR_NOT_SAME_DEVICE = 17)
+        integer  ERROR_NO_MORE_FILES
+        parameter (ERROR_NO_MORE_FILES = 18)
+        integer  ERROR_WRITE_PROTECT
+        parameter (ERROR_WRITE_PROTECT = 19)
+        integer  ERROR_BAD_UNIT
+        parameter (ERROR_BAD_UNIT = 20)
+        integer  ERROR_NOT_READY
+        parameter (ERROR_NOT_READY = 21)
+        integer  ERROR_BAD_COMMAND
+        parameter (ERROR_BAD_COMMAND = 22)
+        integer  ERROR_CRC
+        parameter (ERROR_CRC = 23)
+        integer  ERROR_BAD_LENGTH
+        parameter (ERROR_BAD_LENGTH = 24)
+        integer  ERROR_SEEK
+        parameter (ERROR_SEEK = 25)
+        integer  ERROR_NOT_DOS_DISK
+        parameter (ERROR_NOT_DOS_DISK = 26)
+        integer  ERROR_SECTOR_NOT_FOUND
+        parameter (ERROR_SECTOR_NOT_FOUND = 27)
+        integer  ERROR_OUT_OF_PAPER
+        parameter (ERROR_OUT_OF_PAPER = 28)
+        integer  ERROR_WRITE_FAULT
+        parameter (ERROR_WRITE_FAULT = 29)
+        integer  ERROR_READ_FAULT
+        parameter (ERROR_READ_FAULT = 30)
+        integer  ERROR_GEN_FAILURE
+        parameter (ERROR_GEN_FAILURE = 31)
+        integer  ERROR_SHARING_VIOLATION
+        parameter (ERROR_SHARING_VIOLATION = 32)
+        integer  ERROR_LOCK_VIOLATION
+        parameter (ERROR_LOCK_VIOLATION = 33)
+        integer  ERROR_WRONG_DISK
+        parameter (ERROR_WRONG_DISK = 34)
+        integer  ERROR_FCB_UNAVAILABLE
+        parameter (ERROR_FCB_UNAVAILABLE = 35)
+        integer  ERROR_SHARING_BUFFER_EXCEEDED
+        parameter (ERROR_SHARING_BUFFER_EXCEEDED = 36)
+        integer  ERROR_CODE_PAGE_MISMATCHED
+        parameter (ERROR_CODE_PAGE_MISMATCHED = 37)
+        integer  ERROR_HANDLE_EOF
+        parameter (ERROR_HANDLE_EOF = 38)
+        integer  ERROR_HANDLE_DISK_FULL
+        parameter (ERROR_HANDLE_DISK_FULL = 39)
+        integer  ERROR_NOT_SUPPORTED
+        parameter (ERROR_NOT_SUPPORTED = 50)
+        integer  ERROR_REM_NOT_LIST
+        parameter (ERROR_REM_NOT_LIST = 51)
+        integer  ERROR_DUP_NAME
+        parameter (ERROR_DUP_NAME = 52)
+        integer  ERROR_BAD_NETPATH
+        parameter (ERROR_BAD_NETPATH = 53)
+        integer  ERROR_NETWORK_BUSY
+        parameter (ERROR_NETWORK_BUSY = 54)
+        integer  ERROR_DEV_NOT_EXIST
+        parameter (ERROR_DEV_NOT_EXIST = 55)
+        integer  ERROR_TOO_MANY_CMDS
+        parameter (ERROR_TOO_MANY_CMDS = 56)
+        integer  ERROR_ADAP_HDW_ERR
+        parameter (ERROR_ADAP_HDW_ERR = 57)
+        integer  ERROR_BAD_NET_RESP
+        parameter (ERROR_BAD_NET_RESP = 58)
+        integer  ERROR_UNEXP_NET_ERR
+        parameter (ERROR_UNEXP_NET_ERR = 59)
+        integer  ERROR_BAD_REM_ADAP
+        parameter (ERROR_BAD_REM_ADAP = 60)
+        integer  ERROR_PRINTQ_FULL
+        parameter (ERROR_PRINTQ_FULL = 61)
+        integer  ERROR_NO_SPOOL_SPACE
+        parameter (ERROR_NO_SPOOL_SPACE = 62)
+        integer  ERROR_PRINT_CANCELLED
+        parameter (ERROR_PRINT_CANCELLED = 63)
+        integer  ERROR_NETNAME_DELETED
+        parameter (ERROR_NETNAME_DELETED = 64)
+        integer  ERROR_NETWORK_ACCESS_DENIED
+        parameter (ERROR_NETWORK_ACCESS_DENIED = 65)
+        integer  ERROR_BAD_DEV_TYPE
+        parameter (ERROR_BAD_DEV_TYPE = 66)
+        integer  ERROR_BAD_NET_NAME
+        parameter (ERROR_BAD_NET_NAME = 67)
+        integer  ERROR_TOO_MANY_NAMES
+        parameter (ERROR_TOO_MANY_NAMES = 68)
+        integer  ERROR_TOO_MANY_SESS
+        parameter (ERROR_TOO_MANY_SESS = 69)
+        integer  ERROR_SHARING_PAUSED
+        parameter (ERROR_SHARING_PAUSED = 70)
+        integer  ERROR_REQ_NOT_ACCEP
+        parameter (ERROR_REQ_NOT_ACCEP = 71)
+        integer  ERROR_REDIR_PAUSED
+        parameter (ERROR_REDIR_PAUSED = 72)
+        integer  ERROR_SBCS_ATT_WRITE_PROT
+        parameter (ERROR_SBCS_ATT_WRITE_PROT = 73)
+        integer  ERROR_SBCS_GENERAL_FAILURE
+        parameter (ERROR_SBCS_GENERAL_FAILURE = 74)
+        integer  ERROR_XGA_OUT_MEMORY
+        parameter (ERROR_XGA_OUT_MEMORY = 75)
+        integer  ERROR_FILE_EXISTS
+        parameter (ERROR_FILE_EXISTS = 80)
+        integer  ERROR_DUP_FCB
+        parameter (ERROR_DUP_FCB = 81)
+        integer  ERROR_CANNOT_MAKE
+        parameter (ERROR_CANNOT_MAKE = 82)
+        integer  ERROR_FAIL_I24
+        parameter (ERROR_FAIL_I24 = 83)
+        integer  ERROR_OUT_OF_STRUCTURES
+        parameter (ERROR_OUT_OF_STRUCTURES = 84)
+        integer  ERROR_ALREADY_ASSIGNED
+        parameter (ERROR_ALREADY_ASSIGNED = 85)
+        integer  ERROR_INVALID_PASSWORD
+        parameter (ERROR_INVALID_PASSWORD = 86)
+        integer  ERROR_INVALID_PARAMETER
+        parameter (ERROR_INVALID_PARAMETER = 87)
+        integer  ERROR_NET_WRITE_FAULT
+        parameter (ERROR_NET_WRITE_FAULT = 88)
+        integer  ERROR_NO_PROC_SLOTS
+        parameter (ERROR_NO_PROC_SLOTS = 89)
+        integer  ERROR_NOT_FROZEN
+        parameter (ERROR_NOT_FROZEN = 90)
+        integer  ERROR_SYS_COMP_NOT_LOADED
+        parameter (ERROR_SYS_COMP_NOT_LOADED = ERROR_NOT_FROZEN)
+        integer  ERR_TSTOVFL
+        parameter (ERR_TSTOVFL = 91)
+        integer  ERR_TSTDUP
+        parameter (ERR_TSTDUP = 92)
+        integer  ERROR_NO_ITEMS
+        parameter (ERROR_NO_ITEMS = 93)
+        integer  ERROR_INTERRUPT
+        parameter (ERROR_INTERRUPT = 95)
+        integer  ERROR_DEVICE_IN_USE
+        parameter (ERROR_DEVICE_IN_USE = 99)
+        integer  ERROR_TOO_MANY_SEMAPHORES
+        parameter (ERROR_TOO_MANY_SEMAPHORES = 100)
+        integer  ERROR_EXCL_SEM_ALREADY_OWNED
+        parameter (ERROR_EXCL_SEM_ALREADY_OWNED = 101)
+        integer  ERROR_SEM_IS_SET
+        parameter (ERROR_SEM_IS_SET = 102)
+        integer  ERROR_TOO_MANY_SEM_REQUESTS
+        parameter (ERROR_TOO_MANY_SEM_REQUESTS = 103)
+        integer  ERROR_INVALID_AT_INTERRUPT_TIME
+        parameter (ERROR_INVALID_AT_INTERRUPT_TIME = 104)
+        integer  ERROR_SEM_OWNER_DIED
+        parameter (ERROR_SEM_OWNER_DIED = 105)
+        integer  ERROR_SEM_USER_LIMIT
+        parameter (ERROR_SEM_USER_LIMIT = 106)
+        integer  ERROR_DISK_CHANGE
+        parameter (ERROR_DISK_CHANGE = 107)
+        integer  ERROR_DRIVE_LOCKED
+        parameter (ERROR_DRIVE_LOCKED = 108)
+        integer  ERROR_BROKEN_PIPE
+        parameter (ERROR_BROKEN_PIPE = 109)
+        integer  ERROR_OPEN_FAILED
+        parameter (ERROR_OPEN_FAILED = 110)
+        integer  ERROR_BUFFER_OVERFLOW
+        parameter (ERROR_BUFFER_OVERFLOW = 111)
+        integer  ERROR_DISK_FULL
+        parameter (ERROR_DISK_FULL = 112)
+        integer  ERROR_NO_MORE_SEARCH_HANDLES
+        parameter (ERROR_NO_MORE_SEARCH_HANDLES = 113)
+        integer  ERROR_INVALID_TARGET_HANDLE
+        parameter (ERROR_INVALID_TARGET_HANDLE = 114)
+        integer  ERROR_PROTECTION_VIOLATION
+        parameter (ERROR_PROTECTION_VIOLATION = 115)
+        integer  ERROR_VIOKBD_REQUEST
+        parameter (ERROR_VIOKBD_REQUEST = 116)
+        integer  ERROR_INVALID_CATEGORY
+        parameter (ERROR_INVALID_CATEGORY = 117)
+        integer  ERROR_INVALID_VERIFY_SWITCH
+        parameter (ERROR_INVALID_VERIFY_SWITCH = 118)
+        integer  ERROR_BAD_DRIVER_LEVEL
+        parameter (ERROR_BAD_DRIVER_LEVEL = 119)
+        integer  ERROR_CALL_NOT_IMPLEMENTED
+        parameter (ERROR_CALL_NOT_IMPLEMENTED = 120)
+        integer  ERROR_SEM_TIMEOUT
+        parameter (ERROR_SEM_TIMEOUT = 121)
+        integer  ERROR_INSUFFICIENT_BUFFER
+        parameter (ERROR_INSUFFICIENT_BUFFER = 122)
+        integer  ERROR_INVALID_NAME
+        parameter (ERROR_INVALID_NAME = 123)
+        integer  ERROR_INVALID_LEVEL
+        parameter (ERROR_INVALID_LEVEL = 124)
+        integer  ERROR_NO_VOLUME_LABEL
+        parameter (ERROR_NO_VOLUME_LABEL = 125)
+        integer  ERROR_MOD_NOT_FOUND
+        parameter (ERROR_MOD_NOT_FOUND = 126)
+        integer  ERROR_PROC_NOT_FOUND
+        parameter (ERROR_PROC_NOT_FOUND = 127)
+        integer  ERROR_WAIT_NO_CHILDREN
+        parameter (ERROR_WAIT_NO_CHILDREN = 128)
+        integer  ERROR_CHILD_NOT_COMPLETE
+        parameter (ERROR_CHILD_NOT_COMPLETE = 129)
+        integer  ERROR_DIRECT_ACCESS_HANDLE
+        parameter (ERROR_DIRECT_ACCESS_HANDLE = 130)
+        integer  ERROR_NEGATIVE_SEEK
+        parameter (ERROR_NEGATIVE_SEEK = 131)
+        integer  ERROR_SEEK_ON_DEVICE
+        parameter (ERROR_SEEK_ON_DEVICE = 132)
+        integer  ERROR_IS_JOIN_TARGET
+        parameter (ERROR_IS_JOIN_TARGET = 133)
+        integer  ERROR_IS_JOINED
+        parameter (ERROR_IS_JOINED = 134)
+        integer  ERROR_IS_SUBSTED
+        parameter (ERROR_IS_SUBSTED = 135)
+        integer  ERROR_NOT_JOINED
+        parameter (ERROR_NOT_JOINED = 136)
+        integer  ERROR_NOT_SUBSTED
+        parameter (ERROR_NOT_SUBSTED = 137)
+        integer  ERROR_JOIN_TO_JOIN
+        parameter (ERROR_JOIN_TO_JOIN = 138)
+        integer  ERROR_SUBST_TO_SUBST
+        parameter (ERROR_SUBST_TO_SUBST = 139)
+        integer  ERROR_JOIN_TO_SUBST
+        parameter (ERROR_JOIN_TO_SUBST = 140)
+        integer  ERROR_SUBST_TO_JOIN
+        parameter (ERROR_SUBST_TO_JOIN = 141)
+        integer  ERROR_BUSY_DRIVE
+        parameter (ERROR_BUSY_DRIVE = 142)
+        integer  ERROR_SAME_DRIVE
+        parameter (ERROR_SAME_DRIVE = 143)
+        integer  ERROR_DIR_NOT_ROOT
+        parameter (ERROR_DIR_NOT_ROOT = 144)
+        integer  ERROR_DIR_NOT_EMPTY
+        parameter (ERROR_DIR_NOT_EMPTY = 145)
+        integer  ERROR_IS_SUBST_PATH
+        parameter (ERROR_IS_SUBST_PATH = 146)
+        integer  ERROR_IS_JOIN_PATH
+        parameter (ERROR_IS_JOIN_PATH = 147)
+        integer  ERROR_PATH_BUSY
+        parameter (ERROR_PATH_BUSY = 148)
+        integer  ERROR_IS_SUBST_TARGET
+        parameter (ERROR_IS_SUBST_TARGET = 149)
+        integer  ERROR_SYSTEM_TRACE
+        parameter (ERROR_SYSTEM_TRACE = 150)
+        integer  ERROR_INVALID_EVENT_COUNT
+        parameter (ERROR_INVALID_EVENT_COUNT = 151)
+        integer  ERROR_TOO_MANY_MUXWAITERS
+        parameter (ERROR_TOO_MANY_MUXWAITERS = 152)
+        integer  ERROR_INVALID_LIST_FORMAT
+        parameter (ERROR_INVALID_LIST_FORMAT = 153)
+        integer  ERROR_LABEL_TOO_LONG
+        parameter (ERROR_LABEL_TOO_LONG = 154)
+        integer  ERROR_TOO_MANY_TCBS
+        parameter (ERROR_TOO_MANY_TCBS = 155)
+        integer  ERROR_SIGNAL_REFUSED
+        parameter (ERROR_SIGNAL_REFUSED = 156)
+        integer  ERROR_DISCARDED
+        parameter (ERROR_DISCARDED = 157)
+        integer  ERROR_NOT_LOCKED
+        parameter (ERROR_NOT_LOCKED = 158)
+        integer  ERROR_BAD_THREADID_ADDR
+        parameter (ERROR_BAD_THREADID_ADDR = 159)
+        integer  ERROR_BAD_ARGUMENTS
+        parameter (ERROR_BAD_ARGUMENTS = 160)
+        integer  ERROR_BAD_PATHNAME
+        parameter (ERROR_BAD_PATHNAME = 161)
+        integer  ERROR_SIGNAL_PENDING
+        parameter (ERROR_SIGNAL_PENDING = 162)
+        integer  ERROR_UNCERTAIN_MEDIA
+        parameter (ERROR_UNCERTAIN_MEDIA = 163)
+        integer  ERROR_MAX_THRDS_REACHED
+        parameter (ERROR_MAX_THRDS_REACHED = 164)
+        integer  ERROR_MONITORS_NOT_SUPPORTED
+        parameter (ERROR_MONITORS_NOT_SUPPORTED = 165)
+        integer  ERROR_UNC_DRIVER_NOT_INSTALLED
+        parameter (ERROR_UNC_DRIVER_NOT_INSTALLED = 166)
+        integer  ERROR_LOCK_FAILED
+        parameter (ERROR_LOCK_FAILED = 167)
+        integer  ERROR_SWAPIO_FAILED
+        parameter (ERROR_SWAPIO_FAILED = 168)
+        integer  ERROR_SWAPIN_FAILED
+        parameter (ERROR_SWAPIN_FAILED = 169)
+        integer  ERROR_BUSY
+        parameter (ERROR_BUSY = 170)
+        integer  ERROR_UNLOCK_VIOLATION
+        parameter (ERROR_UNLOCK_VIOLATION = 173)
+        integer  ERROR_ATOMIC_LOCK_NOT_SUPPORTED
+        parameter (ERROR_ATOMIC_LOCK_NOT_SUPPORTED = 174)
+        integer  ERROR_READ_LOCKS_NOT_SUPPORTED
+        parameter (ERROR_READ_LOCKS_NOT_SUPPORTED = 175)
+        integer  ERROR_INVALID_SEGMENT_NUMBER
+        parameter (ERROR_INVALID_SEGMENT_NUMBER = 180)
+        integer  ERROR_INVALID_CALLGATE
+        parameter (ERROR_INVALID_CALLGATE = 181)
+        integer  ERROR_INVALID_ORDINAL
+        parameter (ERROR_INVALID_ORDINAL = 182)
+        integer  ERROR_ALREADY_EXISTS
+        parameter (ERROR_ALREADY_EXISTS = 183)
+        integer  ERROR_NO_CHILD_PROCESS
+        parameter (ERROR_NO_CHILD_PROCESS = 184)
+        integer  ERROR_CHILD_ALIVE_NOWAIT
+        parameter (ERROR_CHILD_ALIVE_NOWAIT = 185)
+        integer  ERROR_INVALID_FLAG_NUMBER
+        parameter (ERROR_INVALID_FLAG_NUMBER = 186)
+        integer  ERROR_SEM_NOT_FOUND
+        parameter (ERROR_SEM_NOT_FOUND = 187)
+        integer  ERROR_INVALID_STARTING_CODESEG
+        parameter (ERROR_INVALID_STARTING_CODESEG = 188)
+        integer  ERROR_INVALID_STACKSEG
+        parameter (ERROR_INVALID_STACKSEG = 189)
+        integer  ERROR_INVALID_MODULETYPE
+        parameter (ERROR_INVALID_MODULETYPE = 190)
+        integer  ERROR_INVALID_EXE_SIGNATURE
+        parameter (ERROR_INVALID_EXE_SIGNATURE = 191)
+        integer  ERROR_EXE_MARKED_INVALID
+        parameter (ERROR_EXE_MARKED_INVALID = 192)
+        integer  ERROR_BAD_EXE_FORMAT
+        parameter (ERROR_BAD_EXE_FORMAT = 193)
+        integer  ERROR_ITERATED_DATA_EXCEEDS_64k
+        parameter (ERROR_ITERATED_DATA_EXCEEDS_64k = 194)
+        integer  ERROR_INVALID_MINALLOCSIZE
+        parameter (ERROR_INVALID_MINALLOCSIZE = 195)
+        integer  ERROR_DYNLINK_FROM_INVALID_RING
+        parameter (ERROR_DYNLINK_FROM_INVALID_RING = 196)
+        integer  ERROR_IOPL_NOT_ENABLED
+        parameter (ERROR_IOPL_NOT_ENABLED = 197)
+        integer  ERROR_INVALID_SEGDPL
+        parameter (ERROR_INVALID_SEGDPL = 198)
+        integer  ERROR_AUTODATASEG_EXCEEDS_64k
+        parameter (ERROR_AUTODATASEG_EXCEEDS_64k = 199)
+        integer  ERROR_RING2SEG_MUST_BE_MOVABLE
+        parameter (ERROR_RING2SEG_MUST_BE_MOVABLE = 200)
+        integer  ERROR_RELOC_CHAIN_XEEDS_SEGLIM
+        parameter (ERROR_RELOC_CHAIN_XEEDS_SEGLIM = 201)
+        integer  ERROR_INFLOOP_IN_RELOC_CHAIN
+        parameter (ERROR_INFLOOP_IN_RELOC_CHAIN = 202)
+        integer  ERROR_ENVVAR_NOT_FOUND
+        parameter (ERROR_ENVVAR_NOT_FOUND = 203)
+        integer  ERROR_NOT_CURRENT_CTRY
+        parameter (ERROR_NOT_CURRENT_CTRY = 204)
+        integer  ERROR_NO_SIGNAL_SENT
+        parameter (ERROR_NO_SIGNAL_SENT = 205)
+        integer  ERROR_FILENAME_EXCED_RANGE
+        parameter (ERROR_FILENAME_EXCED_RANGE = 206)
+        integer  ERROR_RING2_STACK_IN_USE
+        parameter (ERROR_RING2_STACK_IN_USE = 207)
+        integer  ERROR_META_EXPANSION_TOO_LONG
+        parameter (ERROR_META_EXPANSION_TOO_LONG = 208)
+        integer  ERROR_INVALID_SIGNAL_NUMBER
+        parameter (ERROR_INVALID_SIGNAL_NUMBER = 209)
+        integer  ERROR_THREAD_1_INACTIVE
+        parameter (ERROR_THREAD_1_INACTIVE = 210)
+        integer  ERROR_INFO_NOT_AVAIL
+        parameter (ERROR_INFO_NOT_AVAIL = 211)
+        integer  ERROR_LOCKED
+        parameter (ERROR_LOCKED = 212)
+        integer  ERROR_BAD_DYNALINK
+        parameter (ERROR_BAD_DYNALINK = 213)
+        integer  ERROR_TOO_MANY_MODULES
+        parameter (ERROR_TOO_MANY_MODULES = 214)
+        integer  ERROR_NESTING_NOT_ALLOWED
+        parameter (ERROR_NESTING_NOT_ALLOWED = 215)
+        integer  ERROR_CANNOT_SHRINK
+        parameter (ERROR_CANNOT_SHRINK = 216)
+        integer  ERROR_ZOMBIE_PROCESS
+        parameter (ERROR_ZOMBIE_PROCESS = 217)
+        integer  ERROR_STACK_IN_HIGH_MEMORY
+        parameter (ERROR_STACK_IN_HIGH_MEMORY = 218)
+        integer  ERROR_INVALID_EXITROUTINE_RING
+        parameter (ERROR_INVALID_EXITROUTINE_RING = 219)
+        integer  ERROR_GETBUF_FAILED
+        parameter (ERROR_GETBUF_FAILED = 220)
+        integer  ERROR_FLUSHBUF_FAILED
+        parameter (ERROR_FLUSHBUF_FAILED = 221)
+        integer  ERROR_TRANSFER_TOO_LONG
+        parameter (ERROR_TRANSFER_TOO_LONG = 222)
+        integer  ERROR_FORCENOSWAP_FAILED
+        parameter (ERROR_FORCENOSWAP_FAILED = 223)
+        integer  ERROR_SMG_NO_TARGET_WINDOW
+        parameter (ERROR_SMG_NO_TARGET_WINDOW = 224)
+        integer  ERROR_NO_CHILDREN
+        parameter (ERROR_NO_CHILDREN = 228)
+        integer  ERROR_INVALID_SCREEN_GROUP
+        parameter (ERROR_INVALID_SCREEN_GROUP = 229)
+        integer  ERROR_BAD_PIPE
+        parameter (ERROR_BAD_PIPE = 230)
+        integer  ERROR_PIPE_BUSY
+        parameter (ERROR_PIPE_BUSY = 231)
+        integer  ERROR_NO_DATA
+        parameter (ERROR_NO_DATA = 232)
+        integer  ERROR_PIPE_NOT_CONNECTED
+        parameter (ERROR_PIPE_NOT_CONNECTED = 233)
+        integer  ERROR_MORE_DATA
+        parameter (ERROR_MORE_DATA = 234)
+        integer  ERROR_VC_DISCONNECTED
+        parameter (ERROR_VC_DISCONNECTED = 240)
+        integer  ERROR_CIRCULARITY_REQUESTED
+        parameter (ERROR_CIRCULARITY_REQUESTED = 250)
+        integer  ERROR_DIRECTORY_IN_CDS
+        parameter (ERROR_DIRECTORY_IN_CDS = 251)
+        integer  ERROR_INVALID_FSD_NAME
+        parameter (ERROR_INVALID_FSD_NAME = 252)
+        integer  ERROR_INVALID_PATH
+        parameter (ERROR_INVALID_PATH = 253)
+        integer  ERROR_INVALID_EA_NAME
+        parameter (ERROR_INVALID_EA_NAME = 254)
+        integer  ERROR_EA_LIST_INCONSISTENT
+        parameter (ERROR_EA_LIST_INCONSISTENT = 255)
+        integer  ERROR_EA_LIST_TOO_LONG
+        parameter (ERROR_EA_LIST_TOO_LONG = 256)
+        integer  ERROR_NO_META_MATCH
+        parameter (ERROR_NO_META_MATCH = 257)
+        integer  ERROR_FINDNOTIFY_TIMEOUT
+        parameter (ERROR_FINDNOTIFY_TIMEOUT = 258)
+        integer  ERROR_NO_MORE_ITEMS
+        parameter (ERROR_NO_MORE_ITEMS = 259)
+        integer  ERROR_SEARCH_STRUC_REUSED
+        parameter (ERROR_SEARCH_STRUC_REUSED = 260)
+        integer  ERROR_CHAR_NOT_FOUND
+        parameter (ERROR_CHAR_NOT_FOUND = 261)
+        integer  ERROR_TOO_MUCH_STACK
+        parameter (ERROR_TOO_MUCH_STACK = 262)
+        integer  ERROR_INVALID_ATTR
+        parameter (ERROR_INVALID_ATTR = 263)
+        integer  ERROR_INVALID_STARTING_RING
+        parameter (ERROR_INVALID_STARTING_RING = 264)
+        integer  ERROR_INVALID_DLL_INIT_RING
+        parameter (ERROR_INVALID_DLL_INIT_RING = 265)
+        integer  ERROR_CANNOT_COPY
+        parameter (ERROR_CANNOT_COPY = 266)
+        integer  ERROR_DIRECTORY
+        parameter (ERROR_DIRECTORY = 267)
+        integer  ERROR_OPLOCKED_FILE
+        parameter (ERROR_OPLOCKED_FILE = 268)
+        integer  ERROR_OPLOCK_THREAD_EXISTS
+        parameter (ERROR_OPLOCK_THREAD_EXISTS = 269)
+        integer  ERROR_VOLUME_CHANGED
+        parameter (ERROR_VOLUME_CHANGED = 270)
+        integer  ERROR_FINDNOTIFY_HANDLE_IN_USE
+        parameter (ERROR_FINDNOTIFY_HANDLE_IN_USE = 271)
+        integer  ERROR_FINDNOTIFY_HANDLE_CLOSED
+        parameter (ERROR_FINDNOTIFY_HANDLE_CLOSED = 272)
+        integer  ERROR_NOTIFY_OBJECT_REMOVED
+        parameter (ERROR_NOTIFY_OBJECT_REMOVED = 273)
+        integer  ERROR_ALREADY_SHUTDOWN
+        parameter (ERROR_ALREADY_SHUTDOWN = 274)
+        integer  ERROR_EAS_DIDNT_FIT
+        parameter (ERROR_EAS_DIDNT_FIT = 275)
+        integer  ERROR_EA_FILE_CORRUPT
+        parameter (ERROR_EA_FILE_CORRUPT = 276)
+        integer  ERROR_EA_TABLE_FULL
+        parameter (ERROR_EA_TABLE_FULL = 277)
+        integer  ERROR_INVALID_EA_HANDLE
+        parameter (ERROR_INVALID_EA_HANDLE = 278)
+        integer  ERROR_NO_CLUSTER
+        parameter (ERROR_NO_CLUSTER = 279)
+        integer  ERROR_CREATE_EA_FILE
+        parameter (ERROR_CREATE_EA_FILE = 280)
+        integer  ERROR_CANNOT_OPEN_EA_FILE
+        parameter (ERROR_CANNOT_OPEN_EA_FILE = 281)
+        integer  ERROR_EAS_NOT_SUPPORTED
+        parameter (ERROR_EAS_NOT_SUPPORTED = 282)
+        integer  ERROR_NEED_EAS_FOUND
+        parameter (ERROR_NEED_EAS_FOUND = 283)
+        integer  ERROR_DUPLICATE_HANDLE
+        parameter (ERROR_DUPLICATE_HANDLE = 284)
+        integer  ERROR_DUPLICATE_NAME
+        parameter (ERROR_DUPLICATE_NAME = 285)
+        integer  ERROR_EMPTY_MUXWAIT
+        parameter (ERROR_EMPTY_MUXWAIT = 286)
+        integer  ERROR_MUTEX_OWNED
+        parameter (ERROR_MUTEX_OWNED = 287)
+        integer  ERROR_NOT_OWNER
+        parameter (ERROR_NOT_OWNER = 288)
+        integer  ERROR_PARAM_TOO_SMALL
+        parameter (ERROR_PARAM_TOO_SMALL = 289)
+        integer  ERROR_TOO_MANY_HANDLES
+        parameter (ERROR_TOO_MANY_HANDLES = 290)
+        integer  ERROR_TOO_MANY_OPENS
+        parameter (ERROR_TOO_MANY_OPENS = 291)
+        integer  ERROR_WRONG_TYPE
+        parameter (ERROR_WRONG_TYPE = 292)
+        integer  ERROR_UNUSED_CODE
+        parameter (ERROR_UNUSED_CODE = 293)
+        integer  ERROR_THREAD_NOT_TERMINATED
+        parameter (ERROR_THREAD_NOT_TERMINATED = 294)
+        integer  ERROR_INIT_ROUTINE_FAILED
+        parameter (ERROR_INIT_ROUTINE_FAILED = 295)
+        integer  ERROR_MODULE_IN_USE
+        parameter (ERROR_MODULE_IN_USE = 296)
+        integer  ERROR_NOT_ENOUGH_WATCHPOINTS
+        parameter (ERROR_NOT_ENOUGH_WATCHPOINTS = 297)
+        integer  ERROR_TOO_MANY_POSTS
+        parameter (ERROR_TOO_MANY_POSTS = 298)
+        integer  ERROR_ALREADY_POSTED
+        parameter (ERROR_ALREADY_POSTED = 299)
+        integer  ERROR_ALREADY_RESET
+        parameter (ERROR_ALREADY_RESET = 300)
+        integer  ERROR_SEM_BUSY
+        parameter (ERROR_SEM_BUSY = 301)
+
+        integer  ERROR_USER_DEFINED_BASE
+        parameter (ERROR_USER_DEFINED_BASE = '0000FF00'x)
+
+        integer  ERROR_I24_WRITE_PROTECT
+        parameter (ERROR_I24_WRITE_PROTECT = 0)
+        integer  ERROR_I24_BAD_UNIT
+        parameter (ERROR_I24_BAD_UNIT = 1)
+        integer  ERROR_I24_NOT_READY
+        parameter (ERROR_I24_NOT_READY = 2)
+        integer  ERROR_I24_BAD_COMMAND
+        parameter (ERROR_I24_BAD_COMMAND = 3)
+        integer  ERROR_I24_CRC
+        parameter (ERROR_I24_CRC = 4)
+        integer  ERROR_I24_BAD_LENGTH
+        parameter (ERROR_I24_BAD_LENGTH = 5)
+        integer  ERROR_I24_SEEK
+        parameter (ERROR_I24_SEEK = 6)
+        integer  ERROR_I24_NOT_DOS_DISK
+        parameter (ERROR_I24_NOT_DOS_DISK = 7)
+        integer  ERROR_I24_SECTOR_NOT_FOUND
+        parameter (ERROR_I24_SECTOR_NOT_FOUND = 8)
+        integer  ERROR_I24_OUT_OF_PAPER
+        parameter (ERROR_I24_OUT_OF_PAPER = 9)
+        integer  ERROR_I24_WRITE_FAULT
+        parameter (ERROR_I24_WRITE_FAULT = 10)
+        integer  ERROR_I24_READ_FAULT
+        parameter (ERROR_I24_READ_FAULT = 11)
+        integer  ERROR_I24_GEN_FAILURE
+        parameter (ERROR_I24_GEN_FAILURE = 12)
+        integer  ERROR_I24_DISK_CHANGE
+        parameter (ERROR_I24_DISK_CHANGE = 13)
+        integer  ERROR_I24_WRONG_DISK
+        parameter (ERROR_I24_WRONG_DISK = 15)
+        integer  ERROR_I24_UNCERTAIN_MEDIA
+        parameter (ERROR_I24_UNCERTAIN_MEDIA = 16)
+        integer  ERROR_I24_CHAR_CALL_INTERRUPTED
+        parameter (ERROR_I24_CHAR_CALL_INTERRUPTED = 17)
+        integer  ERROR_I24_NO_MONITOR_SUPPORT
+        parameter (ERROR_I24_NO_MONITOR_SUPPORT = 18)
+        integer  ERROR_I24_INVALID_PARAMETER
+        parameter (ERROR_I24_INVALID_PARAMETER = 19)
+        integer  ERROR_I24_DEVICE_IN_USE
+        parameter (ERROR_I24_DEVICE_IN_USE = 20)
+
+        integer  ALLOWED_FAIL
+        parameter (ALLOWED_FAIL = '00000001'x)
+        integer  ALLOWED_ABORT
+        parameter (ALLOWED_ABORT = '00000002'x)
+        integer  ALLOWED_RETRY
+        parameter (ALLOWED_RETRY = '00000004'x)
+        integer  ALLOWED_IGNORE
+        parameter (ALLOWED_IGNORE = '00000008'x)
+        integer  ALLOWED_ACKNOWLEDGE
+        parameter (ALLOWED_ACKNOWLEDGE = '00000010'x)
+        integer  ALLOWED_DISPATCH
+        parameter (ALLOWED_DISPATCH = '00008000'x)
+        integer  ALLOWED_DETACHED
+        parameter (ALLOWED_DETACHED = ALLOWED_DISPATCH)
+        integer ALLOWED_RESERVED
+        parameter (ALLOWED_RESERVED = .not. (ALLOWED_FAIL .or.
+     +                ALLOWED_ABORT .or. ALLOWED_RETRY .or.
+     +                ALLOWED_IGNORE .or. ALLOWED_ACKNOWLEDGE))
+
+        integer  I24_OPERATION
+        parameter (I24_OPERATION = '00000001'x)
+        integer  I24_AREA
+        parameter (I24_AREA = '00000006'x)
+        integer  I24_CLASS
+        parameter (I24_CLASS = '00000080'x)
+
+        integer  ERRCLASS_OUTRES
+        parameter (ERRCLASS_OUTRES = 1)
+        integer  ERRCLASS_TEMPSIT
+        parameter (ERRCLASS_TEMPSIT = 2)
+        integer  ERRCLASS_AUTH
+        parameter (ERRCLASS_AUTH = 3)
+        integer  ERRCLASS_INTRN
+        parameter (ERRCLASS_INTRN = 4)
+        integer  ERRCLASS_HRDFAIL
+        parameter (ERRCLASS_HRDFAIL = 5)
+        integer  ERRCLASS_SYSFAIL
+        parameter (ERRCLASS_SYSFAIL = 6)
+        integer  ERRCLASS_APPERR
+        parameter (ERRCLASS_APPERR = 7)
+        integer  ERRCLASS_NOTFND
+        parameter (ERRCLASS_NOTFND = 8)
+        integer  ERRCLASS_BADFMT
+        parameter (ERRCLASS_BADFMT = 9)
+        integer  ERRCLASS_LOCKED
+        parameter (ERRCLASS_LOCKED = 10)
+        integer  ERRCLASS_MEDIA
+        parameter (ERRCLASS_MEDIA = 11)
+        integer  ERRCLASS_ALREADY
+        parameter (ERRCLASS_ALREADY = 12)
+        integer  ERRCLASS_UNK
+        parameter (ERRCLASS_UNK = 13)
+        integer  ERRCLASS_CANT
+        parameter (ERRCLASS_CANT = 14)
+        integer  ERRCLASS_TIME
+        parameter (ERRCLASS_TIME = 15)
+
+        integer  ERRACT_RETRY
+        parameter (ERRACT_RETRY = 1)
+        integer  ERRACT_DLYRET
+        parameter (ERRACT_DLYRET = 2)
+        integer  ERRACT_USER
+        parameter (ERRACT_USER = 3)
+        integer  ERRACT_ABORT
+        parameter (ERRACT_ABORT = 4)
+        integer  ERRACT_PANIC
+        parameter (ERRACT_PANIC = 5)
+        integer  ERRACT_IGNORE
+        parameter (ERRACT_IGNORE = 6)
+        integer  ERRACT_INTRET
+        parameter (ERRACT_INTRET = 7)
+
+        integer  ERRLOC_UNK
+        parameter (ERRLOC_UNK = 1)
+        integer  ERRLOC_DISK
+        parameter (ERRLOC_DISK = 2)
+        integer  ERRLOC_NET
+        parameter (ERRLOC_NET = 3)
+        integer  ERRLOC_SERDEV
+        parameter (ERRLOC_SERDEV = 4)
+        integer  ERRLOC_MEM
+        parameter (ERRLOC_MEM = 5)
+
+        integer  TC_NORMAL
+        parameter (TC_NORMAL = 0)
+        integer  TC_HARDERR
+        parameter (TC_HARDERR = 1)
+        integer  TC_GP_TRAP
+        parameter (TC_GP_TRAP = 2)
+        integer  TC_SIGNAL
+        parameter (TC_SIGNAL = 3)
+        integer  TC_XCPT
+        parameter (TC_XCPT = 4)
+
+c$endif
+
+c$ifdef INCL_DOSERRORS
+
+        integer  ERROR_INVALID_PROCID
+        parameter (ERROR_INVALID_PROCID = 303)
+        integer  ERROR_INVALID_PDELTA
+        parameter (ERROR_INVALID_PDELTA = 304)
+        integer  ERROR_NOT_DESCENDANT
+        parameter (ERROR_NOT_DESCENDANT = 305)
+        integer  ERROR_NOT_SESSION_MANAGER
+        parameter (ERROR_NOT_SESSION_MANAGER = 306)
+        integer  ERROR_INVALID_PCLASS
+        parameter (ERROR_INVALID_PCLASS = 307)
+        integer  ERROR_INVALID_SCOPE
+        parameter (ERROR_INVALID_SCOPE = 308)
+        integer  ERROR_INVALID_THREADID
+        parameter (ERROR_INVALID_THREADID = 309)
+        integer  ERROR_DOSSUB_SHRINK
+        parameter (ERROR_DOSSUB_SHRINK = 310)
+        integer  ERROR_DOSSUB_NOMEM
+        parameter (ERROR_DOSSUB_NOMEM = 311)
+        integer  ERROR_DOSSUB_OVERLAP
+        parameter (ERROR_DOSSUB_OVERLAP = 312)
+        integer  ERROR_DOSSUB_BADSIZE
+        parameter (ERROR_DOSSUB_BADSIZE = 313)
+        integer  ERROR_DOSSUB_BADFLAG
+        parameter (ERROR_DOSSUB_BADFLAG = 314)
+        integer  ERROR_DOSSUB_BADSELECTOR
+        parameter (ERROR_DOSSUB_BADSELECTOR = 315)
+        integer  ERROR_MR_MSG_TOO_LONG
+        parameter (ERROR_MR_MSG_TOO_LONG = 316)
+        integer  MGS_MR_MSG_TOO_LONG
+        parameter (MGS_MR_MSG_TOO_LONG = 316)
+        integer  ERROR_MR_MID_NOT_FOUND
+        parameter (ERROR_MR_MID_NOT_FOUND = 317)
+        integer  ERROR_MR_UN_ACC_MSGF
+        parameter (ERROR_MR_UN_ACC_MSGF = 318)
+        integer  ERROR_MR_INV_MSGF_FORMAT
+        parameter (ERROR_MR_INV_MSGF_FORMAT = 319)
+        integer  ERROR_MR_INV_IVCOUNT
+        parameter (ERROR_MR_INV_IVCOUNT = 320)
+        integer  ERROR_MR_UN_PERFORM
+        parameter (ERROR_MR_UN_PERFORM = 321)
+        integer  ERROR_TS_WAKEUP
+        parameter (ERROR_TS_WAKEUP = 322)
+        integer  ERROR_TS_SEMHANDLE
+        parameter (ERROR_TS_SEMHANDLE = 323)
+        integer  ERROR_TS_NOTIMER
+        parameter (ERROR_TS_NOTIMER = 324)
+        integer  ERROR_TS_HANDLE
+        parameter (ERROR_TS_HANDLE = 326)
+        integer  ERROR_TS_DATETIME
+        parameter (ERROR_TS_DATETIME = 327)
+        integer  ERROR_SYS_INTERNAL
+        parameter (ERROR_SYS_INTERNAL = 328)
+        integer  ERROR_QUE_CURRENT_NAME
+        parameter (ERROR_QUE_CURRENT_NAME = 329)
+        integer  ERROR_QUE_PROC_NOT_OWNED
+        parameter (ERROR_QUE_PROC_NOT_OWNED = 330)
+        integer  ERROR_QUE_PROC_OWNED
+        parameter (ERROR_QUE_PROC_OWNED = 331)
+        integer  ERROR_QUE_DUPLICATE
+        parameter (ERROR_QUE_DUPLICATE = 332)
+        integer  ERROR_QUE_ELEMENT_NOT_EXIST
+        parameter (ERROR_QUE_ELEMENT_NOT_EXIST = 333)
+        integer  ERROR_QUE_NO_MEMORY
+        parameter (ERROR_QUE_NO_MEMORY = 334)
+        integer  ERROR_QUE_INVALID_NAME
+        parameter (ERROR_QUE_INVALID_NAME = 335)
+        integer  ERROR_QUE_INVALID_PRIORITY
+        parameter (ERROR_QUE_INVALID_PRIORITY = 336)
+        integer  ERROR_QUE_INVALID_HANDLE
+        parameter (ERROR_QUE_INVALID_HANDLE = 337)
+        integer  ERROR_QUE_LINK_NOT_FOUND
+        parameter (ERROR_QUE_LINK_NOT_FOUND = 338)
+        integer  ERROR_QUE_MEMORY_ERROR
+        parameter (ERROR_QUE_MEMORY_ERROR = 339)
+        integer  ERROR_QUE_PREV_AT_END
+        parameter (ERROR_QUE_PREV_AT_END = 340)
+        integer  ERROR_QUE_PROC_NO_ACCESS
+        parameter (ERROR_QUE_PROC_NO_ACCESS = 341)
+        integer  ERROR_QUE_EMPTY
+        parameter (ERROR_QUE_EMPTY = 342)
+        integer  ERROR_QUE_NAME_NOT_EXIST
+        parameter (ERROR_QUE_NAME_NOT_EXIST = 343)
+        integer  ERROR_QUE_NOT_INITIALIZED
+        parameter (ERROR_QUE_NOT_INITIALIZED = 344)
+        integer  ERROR_QUE_UNABLE_TO_ACCESS
+        parameter (ERROR_QUE_UNABLE_TO_ACCESS = 345)
+        integer  ERROR_QUE_UNABLE_TO_ADD
+        parameter (ERROR_QUE_UNABLE_TO_ADD = 346)
+        integer  ERROR_QUE_UNABLE_TO_INIT
+        parameter (ERROR_QUE_UNABLE_TO_INIT = 347)
+        integer  ERROR_VIO_INVALID_MASK
+        parameter (ERROR_VIO_INVALID_MASK = 349)
+        integer  ERROR_VIO_PTR
+        parameter (ERROR_VIO_PTR = 350)
+        integer  ERROR_VIO_APTR
+        parameter (ERROR_VIO_APTR = 351)
+        integer  ERROR_VIO_RPTR
+        parameter (ERROR_VIO_RPTR = 352)
+        integer  ERROR_VIO_CPTR
+        parameter (ERROR_VIO_CPTR = 353)
+        integer  ERROR_VIO_LPTR
+        parameter (ERROR_VIO_LPTR = 354)
+        integer  ERROR_VIO_MODE
+        parameter (ERROR_VIO_MODE = 355)
+        integer  ERROR_VIO_WIDTH
+        parameter (ERROR_VIO_WIDTH = 356)
+        integer  ERROR_VIO_ATTR
+        parameter (ERROR_VIO_ATTR = 357)
+        integer  ERROR_VIO_ROW
+        parameter (ERROR_VIO_ROW = 358)
+        integer  ERROR_VIO_COL
+        parameter (ERROR_VIO_COL = 359)
+        integer  ERROR_VIO_TOPROW
+        parameter (ERROR_VIO_TOPROW = 360)
+        integer  ERROR_VIO_BOTROW
+        parameter (ERROR_VIO_BOTROW = 361)
+        integer  ERROR_VIO_RIGHTCOL
+        parameter (ERROR_VIO_RIGHTCOL = 362)
+        integer  ERROR_VIO_LEFTCOL
+        parameter (ERROR_VIO_LEFTCOL = 363)
+        integer  ERROR_SCS_CALL
+        parameter (ERROR_SCS_CALL = 364)
+        integer  ERROR_SCS_VALUE
+        parameter (ERROR_SCS_VALUE = 365)
+        integer  ERROR_VIO_WAIT_FLAG
+        parameter (ERROR_VIO_WAIT_FLAG = 366)
+        integer  ERROR_VIO_UNLOCK
+        parameter (ERROR_VIO_UNLOCK = 367)
+        integer  ERROR_SGS_NOT_SESSION_MGR
+        parameter (ERROR_SGS_NOT_SESSION_MGR = 368)
+        integer  ERROR_SMG_INVALID_SGID
+        parameter (ERROR_SMG_INVALID_SGID = 369)
+        integer  ERROR_SMG_INVALID_SESSION_ID
+        parameter (ERROR_SMG_INVALID_SESSION_ID =
+     +             ERROR_SMG_INVALID_SGID)
+        integer  ERROR_SMG_NOSG
+        parameter (ERROR_SMG_NOSG = 370)
+        integer  ERROR_SMG_NO_SESSIONS
+        parameter (ERROR_SMG_NO_SESSIONS = 370)
+        integer  ERROR_SMG_GRP_NOT_FOUND
+        parameter (ERROR_SMG_GRP_NOT_FOUND = 371)
+        integer  ERROR_SMG_SESSION_NOT_FOUND
+        parameter (ERROR_SMG_SESSION_NOT_FOUND =
+     +             ERROR_SMG_GRP_NOT_FOUND)
+        integer  ERROR_SMG_SET_TITLE
+        parameter (ERROR_SMG_SET_TITLE = 372)
+        integer  ERROR_KBD_PARAMETER
+        parameter (ERROR_KBD_PARAMETER = 373)
+        integer  ERROR_KBD_NO_DEVICE
+        parameter (ERROR_KBD_NO_DEVICE = 374)
+        integer  ERROR_KBD_INVALID_IOWAIT
+        parameter (ERROR_KBD_INVALID_IOWAIT = 375)
+        integer  ERROR_KBD_INVALID_LENGTH
+        parameter (ERROR_KBD_INVALID_LENGTH = 376)
+        integer  ERROR_KBD_INVALID_ECHO_MASK
+        parameter (ERROR_KBD_INVALID_ECHO_MASK = 377)
+        integer  ERROR_KBD_INVALID_INPUT_MASK
+        parameter (ERROR_KBD_INVALID_INPUT_MASK = 378)
+        integer  ERROR_MON_INVALID_PARMS
+        parameter (ERROR_MON_INVALID_PARMS = 379)
+        integer  ERROR_MON_INVALID_DEVNAME
+        parameter (ERROR_MON_INVALID_DEVNAME = 380)
+        integer  ERROR_MON_INVALID_HANDLE
+        parameter (ERROR_MON_INVALID_HANDLE = 381)
+        integer  ERROR_MON_BUFFER_TOO_SMALL
+        parameter (ERROR_MON_BUFFER_TOO_SMALL = 382)
+        integer  ERROR_MON_BUFFER_EMPTY
+        parameter (ERROR_MON_BUFFER_EMPTY = 383)
+        integer  ERROR_MON_DATA_TOO_LARGE
+        parameter (ERROR_MON_DATA_TOO_LARGE = 384)
+        integer  ERROR_MOUSE_NO_DEVICE
+        parameter (ERROR_MOUSE_NO_DEVICE = 385)
+        integer  ERROR_MOUSE_INV_HANDLE
+        parameter (ERROR_MOUSE_INV_HANDLE = 386)
+        integer  ERROR_MOUSE_INV_PARMS
+        parameter (ERROR_MOUSE_INV_PARMS = 387)
+        integer  ERROR_MOUSE_CANT_RESET
+        parameter (ERROR_MOUSE_CANT_RESET = 388)
+        integer  ERROR_MOUSE_DISPLAY_PARMS
+        parameter (ERROR_MOUSE_DISPLAY_PARMS = 389)
+        integer  ERROR_MOUSE_INV_MODULE
+        parameter (ERROR_MOUSE_INV_MODULE = 390)
+        integer  ERROR_MOUSE_INV_ENTRY_PT
+        parameter (ERROR_MOUSE_INV_ENTRY_PT = 391)
+        integer  ERROR_MOUSE_INV_MASK
+        parameter (ERROR_MOUSE_INV_MASK = 392)
+        integer  NO_ERROR_MOUSE_NO_DATA
+        parameter (NO_ERROR_MOUSE_NO_DATA = 393)
+        integer  NO_ERROR_MOUSE_PTR_DRAWN
+        parameter (NO_ERROR_MOUSE_PTR_DRAWN = 394)
+        integer  ERROR_INVALID_FREQUENCY
+        parameter (ERROR_INVALID_FREQUENCY = 395)
+        integer  ERROR_NLS_NO_COUNTRY_FILE
+        parameter (ERROR_NLS_NO_COUNTRY_FILE = 396)
+        integer  ERROR_NLS_OPEN_FAILED
+        parameter (ERROR_NLS_OPEN_FAILED = 397)
+        integer  ERROR_NLS_NO_CTRY_CODE
+        parameter (ERROR_NLS_NO_CTRY_CODE = 398)
+        integer  ERROR_NO_COUNTRY_OR_CODEPAGE
+        parameter (ERROR_NO_COUNTRY_OR_CODEPAGE = 398)
+        integer  ERROR_NLS_TABLE_TRUNCATED
+        parameter (ERROR_NLS_TABLE_TRUNCATED = 399)
+        integer  ERROR_NLS_BAD_TYPE
+        parameter (ERROR_NLS_BAD_TYPE = 400)
+        integer  ERROR_NLS_TYPE_NOT_FOUND
+        parameter (ERROR_NLS_TYPE_NOT_FOUND = 401)
+        integer  ERROR_VIO_SMG_ONLY
+        parameter (ERROR_VIO_SMG_ONLY = 402)
+        integer  ERROR_VIO_INVALID_ASCIIZ
+        parameter (ERROR_VIO_INVALID_ASCIIZ = 403)
+        integer  ERROR_VIO_DEREGISTER
+        parameter (ERROR_VIO_DEREGISTER = 404)
+        integer  ERROR_VIO_NO_POPUP
+        parameter (ERROR_VIO_NO_POPUP = 405)
+        integer  ERROR_VIO_EXISTING_POPUP
+        parameter (ERROR_VIO_EXISTING_POPUP = 406)
+        integer  ERROR_KBD_SMG_ONLY
+        parameter (ERROR_KBD_SMG_ONLY = 407)
+        integer  ERROR_KBD_INVALID_ASCIIZ
+        parameter (ERROR_KBD_INVALID_ASCIIZ = 408)
+        integer  ERROR_KBD_INVALID_MASK
+        parameter (ERROR_KBD_INVALID_MASK = 409)
+        integer  ERROR_KBD_REGISTER
+        parameter (ERROR_KBD_REGISTER = 410)
+        integer  ERROR_KBD_DEREGISTER
+        parameter (ERROR_KBD_DEREGISTER = 411)
+        integer  ERROR_MOUSE_SMG_ONLY
+        parameter (ERROR_MOUSE_SMG_ONLY = 412)
+        integer  ERROR_MOUSE_INVALID_ASCIIZ
+        parameter (ERROR_MOUSE_INVALID_ASCIIZ = 413)
+        integer  ERROR_MOUSE_INVALID_MASK
+        parameter (ERROR_MOUSE_INVALID_MASK = 414)
+        integer  ERROR_MOUSE_REGISTER
+        parameter (ERROR_MOUSE_REGISTER = 415)
+        integer  ERROR_MOUSE_DEREGISTER
+        parameter (ERROR_MOUSE_DEREGISTER = 416)
+        integer  ERROR_SMG_BAD_ACTION
+        parameter (ERROR_SMG_BAD_ACTION = 417)
+        integer  ERROR_SMG_INVALID_CALL
+        parameter (ERROR_SMG_INVALID_CALL = 418)
+        integer  ERROR_SCS_SG_NOTFOUND
+        parameter (ERROR_SCS_SG_NOTFOUND = 419)
+        integer  ERROR_SCS_NOT_SHELL
+        parameter (ERROR_SCS_NOT_SHELL = 420)
+        integer  ERROR_VIO_INVALID_PARMS
+        parameter (ERROR_VIO_INVALID_PARMS = 421)
+        integer  ERROR_VIO_FUNCTION_OWNED
+        parameter (ERROR_VIO_FUNCTION_OWNED = 422)
+        integer  ERROR_VIO_RETURN
+        parameter (ERROR_VIO_RETURN = 423)
+        integer  ERROR_SCS_INVALID_FUNCTION
+        parameter (ERROR_SCS_INVALID_FUNCTION = 424)
+        integer  ERROR_SCS_NOT_SESSION_MGR
+        parameter (ERROR_SCS_NOT_SESSION_MGR = 425)
+        integer  ERROR_VIO_REGISTER
+        parameter (ERROR_VIO_REGISTER = 426)
+        integer  ERROR_VIO_NO_MODE_THREAD
+        parameter (ERROR_VIO_NO_MODE_THREAD = 427)
+        integer  ERROR_VIO_NO_SAVE_RESTORE_THD
+        parameter (ERROR_VIO_NO_SAVE_RESTORE_THD = 428)
+        integer  ERROR_VIO_IN_BG
+        parameter (ERROR_VIO_IN_BG = 429)
+        integer  ERROR_VIO_ILLEGAL_DURING_POPUP
+        parameter (ERROR_VIO_ILLEGAL_DURING_POPUP = 430)
+        integer  ERROR_SMG_NOT_BASESHELL
+        parameter (ERROR_SMG_NOT_BASESHELL = 431)
+        integer  ERROR_SMG_BAD_STATUSREQ
+        parameter (ERROR_SMG_BAD_STATUSREQ = 432)
+        integer  ERROR_QUE_INVALID_WAIT
+        parameter (ERROR_QUE_INVALID_WAIT = 433)
+        integer  ERROR_VIO_LOCK
+        parameter (ERROR_VIO_LOCK = 434)
+        integer  ERROR_MOUSE_INVALID_IOWAIT
+        parameter (ERROR_MOUSE_INVALID_IOWAIT = 435)
+        integer  ERROR_VIO_INVALID_HANDLE
+        parameter (ERROR_VIO_INVALID_HANDLE = 436)
+        integer  ERROR_VIO_ILLEGAL_DURING_LOCK
+        parameter (ERROR_VIO_ILLEGAL_DURING_LOCK = 437)
+        integer  ERROR_VIO_INVALID_LENGTH
+        parameter (ERROR_VIO_INVALID_LENGTH = 438)
+        integer  ERROR_KBD_INVALID_HANDLE
+        parameter (ERROR_KBD_INVALID_HANDLE = 439)
+        integer  ERROR_KBD_NO_MORE_HANDLE
+        parameter (ERROR_KBD_NO_MORE_HANDLE = 440)
+        integer  ERROR_KBD_CANNOT_CREATE_KCB
+        parameter (ERROR_KBD_CANNOT_CREATE_KCB = 441)
+        integer  ERROR_KBD_CODEPAGE_LOAD_INCOMPL
+        parameter (ERROR_KBD_CODEPAGE_LOAD_INCOMPL = 442)
+        integer  ERROR_KBD_INVALID_CODEPAGE_ID
+        parameter (ERROR_KBD_INVALID_CODEPAGE_ID = 443)
+        integer  ERROR_KBD_NO_CODEPAGE_SUPPORT
+        parameter (ERROR_KBD_NO_CODEPAGE_SUPPORT = 444)
+        integer  ERROR_KBD_FOCUS_REQUIRED
+        parameter (ERROR_KBD_FOCUS_REQUIRED = 445)
+        integer  ERROR_KBD_FOCUS_ALREADY_ACTIVE
+        parameter (ERROR_KBD_FOCUS_ALREADY_ACTIVE = 446)
+        integer  ERROR_KBD_KEYBOARD_BUSY
+        parameter (ERROR_KBD_KEYBOARD_BUSY = 447)
+        integer  ERROR_KBD_INVALID_CODEPAGE
+        parameter (ERROR_KBD_INVALID_CODEPAGE = 448)
+        integer  ERROR_KBD_UNABLE_TO_FOCUS
+        parameter (ERROR_KBD_UNABLE_TO_FOCUS = 449)
+        integer  ERROR_SMG_SESSION_NON_SELECT
+        parameter (ERROR_SMG_SESSION_NON_SELECT = 450)
+        integer  ERROR_SMG_SESSION_NOT_FOREGRND
+        parameter (ERROR_SMG_SESSION_NOT_FOREGRND = 451)
+        integer  ERROR_SMG_SESSION_NOT_PARENT
+        parameter (ERROR_SMG_SESSION_NOT_PARENT = 452)
+        integer  ERROR_SMG_INVALID_START_MODE
+        parameter (ERROR_SMG_INVALID_START_MODE = 453)
+        integer  ERROR_SMG_INVALID_RELATED_OPT
+        parameter (ERROR_SMG_INVALID_RELATED_OPT = 454)
+        integer  ERROR_SMG_INVALID_BOND_OPTION
+        parameter (ERROR_SMG_INVALID_BOND_OPTION = 455)
+        integer  ERROR_SMG_INVALID_SELECT_OPT
+        parameter (ERROR_SMG_INVALID_SELECT_OPT = 456)
+        integer  ERROR_SMG_START_IN_BACKGROUND
+        parameter (ERROR_SMG_START_IN_BACKGROUND = 457)
+        integer  ERROR_SMG_INVALID_STOP_OPTION
+        parameter (ERROR_SMG_INVALID_STOP_OPTION = 458)
+        integer  ERROR_SMG_BAD_RESERVE
+        parameter (ERROR_SMG_BAD_RESERVE = 459)
+        integer  ERROR_SMG_PROCESS_NOT_PARENT
+        parameter (ERROR_SMG_PROCESS_NOT_PARENT = 460)
+        integer  ERROR_SMG_INVALID_DATA_LENGTH
+        parameter (ERROR_SMG_INVALID_DATA_LENGTH = 461)
+        integer  ERROR_SMG_NOT_BOUND
+        parameter (ERROR_SMG_NOT_BOUND = 462)
+        integer  ERROR_SMG_RETRY_SUB_ALLOC
+        parameter (ERROR_SMG_RETRY_SUB_ALLOC = 463)
+        integer  ERROR_KBD_DETACHED
+        parameter (ERROR_KBD_DETACHED = 464)
+        integer  ERROR_VIO_DETACHED
+        parameter (ERROR_VIO_DETACHED = 465)
+        integer  ERROR_MOU_DETACHED
+        parameter (ERROR_MOU_DETACHED = 466)
+        integer  ERROR_VIO_FONT
+        parameter (ERROR_VIO_FONT = 467)
+        integer  ERROR_VIO_USER_FONT
+        parameter (ERROR_VIO_USER_FONT = 468)
+        integer  ERROR_VIO_BAD_CP
+        parameter (ERROR_VIO_BAD_CP = 469)
+        integer  ERROR_VIO_NO_CP
+        parameter (ERROR_VIO_NO_CP = 470)
+        integer  ERROR_VIO_NA_CP
+        parameter (ERROR_VIO_NA_CP = 471)
+        integer  ERROR_INVALID_CODE_PAGE
+        parameter (ERROR_INVALID_CODE_PAGE = 472)
+        integer  ERROR_CPLIST_TOO_SMALL
+        parameter (ERROR_CPLIST_TOO_SMALL = 473)
+        integer  ERROR_CP_NOT_MOVED
+        parameter (ERROR_CP_NOT_MOVED = 474)
+        integer  ERROR_MODE_SWITCH_INIT
+        parameter (ERROR_MODE_SWITCH_INIT = 475)
+        integer  ERROR_CODE_PAGE_NOT_FOUND
+        parameter (ERROR_CODE_PAGE_NOT_FOUND = 476)
+        integer  ERROR_UNEXPECTED_SLOT_RETURNED
+        parameter (ERROR_UNEXPECTED_SLOT_RETURNED = 477)
+        integer  ERROR_SMG_INVALID_TRACE_OPTION
+        parameter (ERROR_SMG_INVALID_TRACE_OPTION = 478)
+        integer  ERROR_VIO_INTERNAL_RESOURCE
+        parameter (ERROR_VIO_INTERNAL_RESOURCE = 479)
+        integer  ERROR_VIO_SHELL_INIT
+        parameter (ERROR_VIO_SHELL_INIT = 480)
+        integer  ERROR_SMG_NO_HARD_ERRORS
+        parameter (ERROR_SMG_NO_HARD_ERRORS = 481)
+        integer  ERROR_CP_SWITCH_INCOMPLETE
+        parameter (ERROR_CP_SWITCH_INCOMPLETE = 482)
+        integer  ERROR_VIO_TRANSPARENT_POPUP
+        parameter (ERROR_VIO_TRANSPARENT_POPUP = 483)
+        integer  ERROR_CRITSEC_OVERFLOW
+        parameter (ERROR_CRITSEC_OVERFLOW = 484)
+        integer  ERROR_CRITSEC_UNDERFLOW
+        parameter (ERROR_CRITSEC_UNDERFLOW = 485)
+        integer  ERROR_VIO_BAD_RESERVE
+        parameter (ERROR_VIO_BAD_RESERVE = 486)
+        integer  ERROR_INVALID_ADDRESS
+        parameter (ERROR_INVALID_ADDRESS = 487)
+        integer  ERROR_ZERO_SELECTORS_REQUESTED
+        parameter (ERROR_ZERO_SELECTORS_REQUESTED = 488)
+        integer  ERROR_NOT_ENOUGH_SELECTORS_AVA
+        parameter (ERROR_NOT_ENOUGH_SELECTORS_AVA = 489)
+        integer  ERROR_INVALID_SELECTOR
+        parameter (ERROR_INVALID_SELECTOR = 490)
+        integer  ERROR_SMG_INVALID_PROGRAM_TYPE
+        parameter (ERROR_SMG_INVALID_PROGRAM_TYPE = 491)
+        integer  ERROR_SMG_INVALID_PGM_CONTROL
+        parameter (ERROR_SMG_INVALID_PGM_CONTROL = 492)
+        integer  ERROR_SMG_INVALID_INHERIT_OPT
+        parameter (ERROR_SMG_INVALID_INHERIT_OPT = 493)
+        integer  ERROR_VIO_EXTENDED_SG
+        parameter (ERROR_VIO_EXTENDED_SG = 494)
+        integer  ERROR_VIO_NOT_PRES_MGR_SG
+        parameter (ERROR_VIO_NOT_PRES_MGR_SG = 495)
+        integer  ERROR_VIO_SHIELD_OWNED
+        parameter (ERROR_VIO_SHIELD_OWNED = 496)
+        integer  ERROR_VIO_NO_MORE_HANDLES
+        parameter (ERROR_VIO_NO_MORE_HANDLES = 497)
+        integer  ERROR_VIO_SEE_ERROR_LOG
+        parameter (ERROR_VIO_SEE_ERROR_LOG = 498)
+        integer  ERROR_VIO_ASSOCIATED_DC
+        parameter (ERROR_VIO_ASSOCIATED_DC = 499)
+        integer  ERROR_KBD_NO_CONSOLE
+        parameter (ERROR_KBD_NO_CONSOLE = 500)
+        integer  ERROR_MOUSE_NO_CONSOLE
+        parameter (ERROR_MOUSE_NO_CONSOLE = 501)
+        integer  ERROR_MOUSE_INVALID_HANDLE
+        parameter (ERROR_MOUSE_INVALID_HANDLE = 502)
+        integer  ERROR_SMG_INVALID_DEBUG_PARMS
+        parameter (ERROR_SMG_INVALID_DEBUG_PARMS = 503)
+        integer  ERROR_KBD_EXTENDED_SG
+        parameter (ERROR_KBD_EXTENDED_SG = 504)
+        integer  ERROR_MOU_EXTENDED_SG
+        parameter (ERROR_MOU_EXTENDED_SG = 505)
+        integer  ERROR_SMG_INVALID_ICON_FILE
+        parameter (ERROR_SMG_INVALID_ICON_FILE = 506)
+        integer  ERROR_TRC_PID_NON_EXISTENT
+        parameter (ERROR_TRC_PID_NON_EXISTENT = 507)
+        integer  ERROR_TRC_COUNT_ACTIVE
+        parameter (ERROR_TRC_COUNT_ACTIVE = 508)
+        integer  ERROR_TRC_SUSPENDED_BY_COUNT
+        parameter (ERROR_TRC_SUSPENDED_BY_COUNT = 509)
+        integer  ERROR_TRC_COUNT_INACTIVE
+        parameter (ERROR_TRC_COUNT_INACTIVE = 510)
+        integer  ERROR_TRC_COUNT_REACHED
+        parameter (ERROR_TRC_COUNT_REACHED = 511)
+        integer  ERROR_NO_MC_TRACE
+        parameter (ERROR_NO_MC_TRACE = 512)
+        integer  ERROR_MC_TRACE
+        parameter (ERROR_MC_TRACE = 513)
+        integer  ERROR_TRC_COUNT_ZERO
+        parameter (ERROR_TRC_COUNT_ZERO = 514)
+        integer  ERROR_SMG_TOO_MANY_DDS
+        parameter (ERROR_SMG_TOO_MANY_DDS = 515)
+        integer  ERROR_SMG_INVALID_NOTIFICATION
+        parameter (ERROR_SMG_INVALID_NOTIFICATION = 516)
+        integer  ERROR_LF_INVALID_FUNCTION
+        parameter (ERROR_LF_INVALID_FUNCTION = 517)
+        integer  ERROR_LF_NOT_AVAIL
+        parameter (ERROR_LF_NOT_AVAIL = 518)
+        integer  ERROR_LF_SUSPENDED
+        parameter (ERROR_LF_SUSPENDED = 519)
+        integer  ERROR_LF_BUF_TOO_SMALL
+        parameter (ERROR_LF_BUF_TOO_SMALL = 520)
+        integer  ERROR_LF_BUFFER_CORRUPTED
+        parameter (ERROR_LF_BUFFER_CORRUPTED = 521)
+        integer  ERROR_LF_BUFFER_FULL
+        parameter (ERROR_LF_BUFFER_FULL = 521)
+        integer  ERROR_LF_INVALID_DAEMON
+        parameter (ERROR_LF_INVALID_DAEMON = 522)
+        integer  ERROR_LF_INVALID_RECORD
+        parameter (ERROR_LF_INVALID_RECORD = 522)
+        integer  ERROR_LF_INVALID_TEMPL
+        parameter (ERROR_LF_INVALID_TEMPL = 523)
+        integer  ERROR_LF_INVALID_SERVICE
+        parameter (ERROR_LF_INVALID_SERVICE = 523)
+        integer  ERROR_LF_GENERAL_FAILURE
+        parameter (ERROR_LF_GENERAL_FAILURE = 524)
+        integer  ERROR_LF_INVALID_ID
+        parameter (ERROR_LF_INVALID_ID = 525)
+        integer  ERROR_LF_INVALID_HANDLE
+        parameter (ERROR_LF_INVALID_HANDLE = 526)
+        integer  ERROR_LF_NO_ID_AVAIL
+        parameter (ERROR_LF_NO_ID_AVAIL = 527)
+        integer  ERROR_LF_TEMPLATE_AREA_FULL
+        parameter (ERROR_LF_TEMPLATE_AREA_FULL = 528)
+        integer  ERROR_LF_ID_IN_USE
+        parameter (ERROR_LF_ID_IN_USE = 529)
+        integer  ERROR_MOU_NOT_INITIALIZED
+        parameter (ERROR_MOU_NOT_INITIALIZED = 530)
+        integer  ERROR_MOUINITREAL_DONE
+        parameter (ERROR_MOUINITREAL_DONE = 531)
+        integer  ERROR_DOSSUB_CORRUPTED
+        parameter (ERROR_DOSSUB_CORRUPTED = 532)
+        integer  ERROR_MOUSE_CALLER_NOT_SUBSYS
+        parameter (ERROR_MOUSE_CALLER_NOT_SUBSYS = 533)
+        integer  ERROR_ARITHMETIC_OVERFLOW
+        parameter (ERROR_ARITHMETIC_OVERFLOW = 534)
+        integer  ERROR_TMR_NO_DEVICE
+        parameter (ERROR_TMR_NO_DEVICE = 535)
+        integer  ERROR_TMR_INVALID_TIME
+        parameter (ERROR_TMR_INVALID_TIME = 536)
+        integer  ERROR_PVW_INVALID_ENTITY
+        parameter (ERROR_PVW_INVALID_ENTITY = 537)
+        integer  ERROR_PVW_INVALID_ENTITY_TYPE
+        parameter (ERROR_PVW_INVALID_ENTITY_TYPE = 538)
+        integer  ERROR_PVW_INVALID_SPEC
+        parameter (ERROR_PVW_INVALID_SPEC = 539)
+        integer  ERROR_PVW_INVALID_RANGE_TYPE
+        parameter (ERROR_PVW_INVALID_RANGE_TYPE = 540)
+        integer  ERROR_PVW_INVALID_COUNTER_BLK
+        parameter (ERROR_PVW_INVALID_COUNTER_BLK = 541)
+        integer  ERROR_PVW_INVALID_TEXT_BLK
+        parameter (ERROR_PVW_INVALID_TEXT_BLK = 542)
+        integer  ERROR_PRF_NOT_INITIALIZED
+        parameter (ERROR_PRF_NOT_INITIALIZED = 543)
+        integer  ERROR_PRF_ALREADY_INITIALIZED
+        parameter (ERROR_PRF_ALREADY_INITIALIZED = 544)
+        integer  ERROR_PRF_NOT_STARTED
+        parameter (ERROR_PRF_NOT_STARTED = 545)
+        integer  ERROR_PRF_ALREADY_STARTED
+        parameter (ERROR_PRF_ALREADY_STARTED = 546)
+        integer  ERROR_PRF_TIMER_OUT_OF_RANGE
+        parameter (ERROR_PRF_TIMER_OUT_OF_RANGE = 547)
+        integer  ERROR_PRF_TIMER_RESET
+        parameter (ERROR_PRF_TIMER_RESET = 548)
+        integer  ERROR_VDD_LOCK_USEAGE_DENIED
+        parameter (ERROR_VDD_LOCK_USEAGE_DENIED = 639)
+        integer  ERROR_TIMEOUT
+        parameter (ERROR_TIMEOUT = 640)
+        integer  ERROR_VDM_DOWN
+        parameter (ERROR_VDM_DOWN = 641)
+        integer  ERROR_VDM_LIMIT
+        parameter (ERROR_VDM_LIMIT = 642)
+        integer  ERROR_VDD_NOT_FOUND
+        parameter (ERROR_VDD_NOT_FOUND = 643)
+        integer  ERROR_INVALID_CALLER
+        parameter (ERROR_INVALID_CALLER = 644)
+        integer  ERROR_PID_MISMATCH
+        parameter (ERROR_PID_MISMATCH = 645)
+        integer  ERROR_INVALID_VDD_HANDLE
+        parameter (ERROR_INVALID_VDD_HANDLE = 646)
+        integer  ERROR_VLPT_NO_SPOOLER
+        parameter (ERROR_VLPT_NO_SPOOLER = 647)
+        integer  ERROR_VCOM_DEVICE_BUSY
+        parameter (ERROR_VCOM_DEVICE_BUSY = 648)
+        integer  ERROR_VLPT_DEVICE_BUSY
+        parameter (ERROR_VLPT_DEVICE_BUSY = 649)
+        integer  ERROR_NESTING_TOO_DEEP
+        parameter (ERROR_NESTING_TOO_DEEP = 650)
+        integer  ERROR_VDD_MISSING
+        parameter (ERROR_VDD_MISSING = 651)
+        integer  ERROR_IMP_INVALID_PARM
+        parameter (ERROR_IMP_INVALID_PARM = 691)
+        integer  ERROR_IMP_INVALID_LENGTH
+        parameter (ERROR_IMP_INVALID_LENGTH = 692)
+        integer  MSG_HPFS_DISK_ERROR_WARN
+        parameter (MSG_HPFS_DISK_ERROR_WARN = 693)
+        integer  ERROR_MON_BAD_BUFFER
+        parameter (ERROR_MON_BAD_BUFFER = 730)
+        integer  ERROR_MODULE_CORRUPTED
+        parameter (ERROR_MODULE_CORRUPTED = 731)
+
+        integer  ERROR_LF_TIMEOUT
+        parameter (ERROR_LF_TIMEOUT = 2055)
+        integer  ERROR_LF_SUSPEND_SUCCESS
+        parameter (ERROR_LF_SUSPEND_SUCCESS = 2057)
+        integer  ERROR_LF_RESUME_SUCCESS
+        parameter (ERROR_LF_RESUME_SUCCESS = 2058)
+        integer  ERROR_LF_REDIRECT_SUCCESS
+        parameter (ERROR_LF_REDIRECT_SUCCESS = 2059)
+        integer  ERROR_LF_REDIRECT_FAILURE
+        parameter (ERROR_LF_REDIRECT_FAILURE = 2060)
+
+        integer  ERROR_SWAPPER_NOT_ACTIVE
+        parameter (ERROR_SWAPPER_NOT_ACTIVE = 32768)
+        integer  ERROR_INVALID_SWAPID
+        parameter (ERROR_INVALID_SWAPID = 32769)
+        integer  ERROR_IOERR_SWAP_FILE
+        parameter (ERROR_IOERR_SWAP_FILE = 32770)
+        integer  ERROR_SWAP_TABLE_FULL
+        parameter (ERROR_SWAP_TABLE_FULL = 32771)
+        integer  ERROR_SWAP_FILE_FULL
+        parameter (ERROR_SWAP_FILE_FULL = 32772)
+        integer  ERROR_CANT_INIT_SWAPPER
+        parameter (ERROR_CANT_INIT_SWAPPER = 32773)
+        integer  ERROR_SWAPPER_ALREADY_INIT
+        parameter (ERROR_SWAPPER_ALREADY_INIT = 32774)
+        integer  ERROR_PMM_INSUFFICIENT_MEMORY
+        parameter (ERROR_PMM_INSUFFICIENT_MEMORY = 32775)
+        integer  ERROR_PMM_INVALID_FLAGS
+        parameter (ERROR_PMM_INVALID_FLAGS = 32776)
+        integer  ERROR_PMM_INVALID_ADDRESS
+        parameter (ERROR_PMM_INVALID_ADDRESS = 32777)
+        integer  ERROR_PMM_LOCK_FAILED
+        parameter (ERROR_PMM_LOCK_FAILED = 32778)
+        integer  ERROR_PMM_UNLOCK_FAILED
+        parameter (ERROR_PMM_UNLOCK_FAILED = 32779)
+        integer  ERROR_PMM_MOVE_INCOMPLETE
+        parameter (ERROR_PMM_MOVE_INCOMPLETE = 32780)
+        integer  ERROR_UCOM_DRIVE_RENAMED
+        parameter (ERROR_UCOM_DRIVE_RENAMED = 32781)
+        integer  ERROR_UCOM_FILENAME_TRUNCATED
+        parameter (ERROR_UCOM_FILENAME_TRUNCATED = 32782)
+        integer  ERROR_UCOM_BUFFER_LENGTH
+        parameter (ERROR_UCOM_BUFFER_LENGTH = 32783)
+        integer  ERROR_MON_CHAIN_HANDLE
+        parameter (ERROR_MON_CHAIN_HANDLE = 32784)
+        integer  ERROR_MON_NOT_REGISTERED
+        parameter (ERROR_MON_NOT_REGISTERED = 32785)
+        integer  ERROR_SMG_ALREADY_TOP
+        parameter (ERROR_SMG_ALREADY_TOP = 32786)
+        integer  ERROR_PMM_ARENA_MODIFIED
+        parameter (ERROR_PMM_ARENA_MODIFIED = 32787)
+        integer  ERROR_SMG_PRINTER_OPEN
+        parameter (ERROR_SMG_PRINTER_OPEN = 32788)
+        integer  ERROR_PMM_SET_FLAGS_FAILED
+        parameter (ERROR_PMM_SET_FLAGS_FAILED = 32789)
+        integer  ERROR_INVALID_DOS_DD
+        parameter (ERROR_INVALID_DOS_DD = 32790)
+        integer  ERROR_BLOCKED
+        parameter (ERROR_BLOCKED = 32791)
+        integer  ERROR_NOBLOCK
+        parameter (ERROR_NOBLOCK = 32792)
+        integer  ERROR_INSTANCE_SHARED
+        parameter (ERROR_INSTANCE_SHARED = 32793)
+        integer  ERROR_NO_OBJECT
+        parameter (ERROR_NO_OBJECT = 32794)
+        integer  ERROR_PARTIAL_ATTACH
+        parameter (ERROR_PARTIAL_ATTACH = 32795)
+        integer  ERROR_INCACHE
+        parameter (ERROR_INCACHE = 32796)
+        integer  ERROR_SWAP_IO_PROBLEMS
+        parameter (ERROR_SWAP_IO_PROBLEMS = 32797)
+        integer  ERROR_CROSSES_OBJECT_BOUNDARY
+        parameter (ERROR_CROSSES_OBJECT_BOUNDARY = 32798)
+        integer  ERROR_LONGLOCK
+        parameter (ERROR_LONGLOCK = 32799)
+        integer  ERROR_SHORTLOCK
+        parameter (ERROR_SHORTLOCK = 32800)
+        integer  ERROR_UVIRTLOCK
+        parameter (ERROR_UVIRTLOCK = 32801)
+        integer  ERROR_ALIASLOCK
+        parameter (ERROR_ALIASLOCK = 32802)
+        integer  ERROR_ALIAS
+        parameter (ERROR_ALIAS = 32803)
+        integer  ERROR_NO_MORE_HANDLES
+        parameter (ERROR_NO_MORE_HANDLES = 32804)
+        integer  ERROR_SCAN_TERMINATED
+        parameter (ERROR_SCAN_TERMINATED = 32805)
+        integer  ERROR_TERMINATOR_NOT_FOUND
+        parameter (ERROR_TERMINATOR_NOT_FOUND = 32806)
+        integer  ERROR_NOT_DIRECT_CHILD
+        parameter (ERROR_NOT_DIRECT_CHILD = 32807)
+        integer  ERROR_DELAY_FREE
+        parameter (ERROR_DELAY_FREE = 32808)
+        integer  ERROR_GUARDPAGE
+        parameter (ERROR_GUARDPAGE = 32809)
+        integer  ERROR_SWAPERROR
+        parameter (ERROR_SWAPERROR = 32900)
+        integer  ERROR_LDRERROR
+        parameter (ERROR_LDRERROR = 32901)
+        integer  ERROR_NOMEMORY
+        parameter (ERROR_NOMEMORY = 32902)
+        integer  ERROR_NOACCESS
+        parameter (ERROR_NOACCESS = 32903)
+        integer  ERROR_NO_DLL_TERM
+        parameter (ERROR_NO_DLL_TERM = 32904)
+        integer  ERROR_CPSIO_CODE_PAGE_INVALID
+        parameter (ERROR_CPSIO_CODE_PAGE_INVALID = 65026)
+        integer  ERROR_CPSIO_NO_SPOOLER
+        parameter (ERROR_CPSIO_NO_SPOOLER = 65027)
+        integer  ERROR_CPSIO_FONT_ID_INVALID
+        parameter (ERROR_CPSIO_FONT_ID_INVALID = 65028)
+        integer  ERROR_CPSIO_INTERNAL_ERROR
+        parameter (ERROR_CPSIO_INTERNAL_ERROR = 65033)
+        integer  ERROR_CPSIO_INVALID_PTR_NAME
+        parameter (ERROR_CPSIO_INVALID_PTR_NAME = 65034)
+        integer  ERROR_CPSIO_NOT_ACTIVE
+        parameter (ERROR_CPSIO_NOT_ACTIVE = 65037)
+        integer  ERROR_CPSIO_PID_FULL
+        parameter (ERROR_CPSIO_PID_FULL = 65039)
+        integer  ERROR_CPSIO_PID_NOT_FOUND
+        parameter (ERROR_CPSIO_PID_NOT_FOUND = 65040)
+        integer  ERROR_CPSIO_READ_CTL_SEQ
+        parameter (ERROR_CPSIO_READ_CTL_SEQ = 65043)
+        integer  ERROR_CPSIO_READ_FNT_DEF
+        parameter (ERROR_CPSIO_READ_FNT_DEF = 65045)
+        integer  ERROR_CPSIO_WRITE_ERROR
+        parameter (ERROR_CPSIO_WRITE_ERROR = 65047)
+        integer  ERROR_CPSIO_WRITE_FULL_ERROR
+        parameter (ERROR_CPSIO_WRITE_FULL_ERROR = 65048)
+        integer  ERROR_CPSIO_WRITE_HANDLE_BAD
+        parameter (ERROR_CPSIO_WRITE_HANDLE_BAD = 65049)
+        integer  ERROR_CPSIO_SWIT_LOAD
+        parameter (ERROR_CPSIO_SWIT_LOAD = 65074)
+        integer  ERROR_CPSIO_INV_COMMAND
+        parameter (ERROR_CPSIO_INV_COMMAND = 65077)
+        integer  ERROR_CPSIO_NO_FONT_SWIT
+        parameter (ERROR_CPSIO_NO_FONT_SWIT = 65078)
+        integer  ERROR_ENTRY_IS_CALLGATE
+        parameter (ERROR_ENTRY_IS_CALLGATE = 65079)
+
+c$endif
+
+c$reference

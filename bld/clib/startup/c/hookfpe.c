@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  16-bit OS/2 FPE handler installation.
 *
 ****************************************************************************/
 
@@ -39,25 +38,26 @@
 #include <wos2.h>
 #include <stdlib.h>
 
-void __interrupt __far __FPEHandler();
+void __interrupt __FPEHandler();
 #pragma aux __FPEHandler "*";
-static void __interrupt (*old_FPE_handler)();
 
-void __Init_FPE_handler()
-/***********************/
-    {
-        char    devinfo;
+static void (__interrupt *old_FPE_handler)() = NULL;
 
-        DosDevConfig( &devinfo, 3, 0 );
-        if( getenv( "NO87" ) == NULL  &&  devinfo != 0 ) {
-            DosSetVec( 16, (PFN)&__FPEHandler, (PFN FAR*)&old_FPE_handler );
-        }
+void __Init_FPE_handler( void )
+/*****************************/
+{
+    char    devinfo;
+
+    DosDevConfig( &devinfo, 3, 0 );
+    if( getenv( "NO87" ) == NULL  &&  devinfo != 0 ) {
+        DosSetVec( 16, (PFN)&__FPEHandler, (PFN FAR*)&old_FPE_handler );
     }
+}
 
-void __Fini_FPE_handler()
-/***********************/
-    {
-        if( old_FPE_handler != NULL ) {
-            DosSetVec( 16, (PFN)old_FPE_handler, (PFN FAR*)&old_FPE_handler );
-        }
+void __Fini_FPE_handler( void )
+/*****************************/
+{
+    if( old_FPE_handler != NULL ) {
+        DosSetVec( 16, (PFN)old_FPE_handler, (PFN FAR*)&old_FPE_handler );
     }
+}

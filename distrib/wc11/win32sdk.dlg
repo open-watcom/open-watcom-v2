@@ -1,0 +1,21 @@
+name=dwin32sdk
+any_check=win32sdk
+static_text=\
+        //1"Select Win32 SDK Options:"\
+        //2"Win32 SDK オプションの選択:"\
+        //0
+static_text=
+check_box=sdk_mapi,,"&Mapi"
+check_box=sdk_rpc,,"&RPC"
+check_box=sdk_win32s,,"&Win32s"
+detail_check=dsdk_samp,\
+        //1"&Samples..."\
+        //2"サンプル(&S)..."\
+        //0,sdk_samp,,\
+        //1"Sample Program Source:"\
+        //2"サンプルプログラム・ソース:"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

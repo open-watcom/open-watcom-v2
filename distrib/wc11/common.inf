@@ -1,0 +1,447 @@
+NoDiskImages=1
+SrcIsCD=1
+dialog=templat1.inf
+supplimental=winsys
+supplimental=windir
+DstDir=C:\WATCOM
+winsys=%winsystemdir%
+CDDir=%SrcDir2%
+WDir=%MinimalInstall?CDDir:DstDir%
+HDir=%helpfiles?WDir:CDDir%
+DoCreateIcons=1
+DoCreateHelpIcons=1
+DoModifyAuto=1
+DoCopyFiles=1
+ToolHelp=%CDDir%\binw\toolhelp.dll
+spawnbefore=%CDDir%\binp\nmpbind.exe q, SrcIsCD IsOS2 
+spawnbefore=%CDDir%\binp\batserv.exe q, SrcIsCD IsOS2 
+spawnafter=cmd.exe /c detach %CDDir%\binp\nmpbind.exe, SrcIsCD IsOS2
+spawnafter=cmd.exe /c detach %CDDir%\binp\batserv.exe, SrcIsCD IsOS2
+autoset=ms=true
+autoset=mm=true
+autoset=mc=true
+autoset=ml=true
+autoset=mh=false
+autoset=doshost=IsDOS 
+autoset=os2host=IsOS2 
+autoset=dostarg=IsDOS 
+autoset=os2targ=IsOS2 
+autoset=nlmtarg=false
+autoset=nechost=IsNEC
+autoset=nectarg=IsNEC
+autoset=tools16=IsDos IsOS2 IsWin | | 
+autoset=samples=true
+autoset=toolkt2x=IsOS2 
+autoset=wkframe=false
+autoset=winhost=IsWin 
+autoset=wnthost=IsWin32
+autoset=wintarg=IsWin 
+autoset=wnttarg=IsWin32
+autoset=helpfiles=true
+autoset=win16_helpfiles=helpfiles winhost
+autoset=win32_helpfiles=helpfiles wnthost
+autoset=whelp_helpfiles=helpfiles doshost
+autoset=os2_helpfiles=helpfiles os2host
+autoset=adstarg=false
+autoset=rtsource=false
+autoset=somos2=false
+autoset=mfc252=IsWin
+autoset=mfc252lib=true
+autoset=mfc252src=false
+autoset=mfc252bin=false
+autoset=mfc252libdll=true
+autoset=mfc252libste=true
+autoset=mfc252libstd=true
+autoset=mfc252libstr=false
+autoset=mfc252libdbg=true
+autoset=mfc252samp=false
+autoset=mfc252samp_apstudio=true
+autoset=mfc252samp_autoclik=true
+autoset=mfc252samp_calcdriv=true
+autoset=mfc252samp_catalog=true
+autoset=mfc252samp_chatter=true
+autoset=mfc252samp_chatsrvr=true
+autoset=mfc252samp_chkbook=true
+autoset=mfc252samp_contain=true
+autoset=mfc252samp_ctrlbars=true
+autoset=mfc252samp_ctrltest=true
+autoset=mfc252samp_diblook=true
+autoset=mfc252samp_dllhusk=true
+autoset=mfc252samp_dlltrace=true
+autoset=mfc252samp_drawcli=true
+autoset=mfc252samp_dynabind=true
+autoset=mfc252samp_enroll=true
+autoset=mfc252samp_hello=true
+autoset=mfc252samp_helloapp=true
+autoset=mfc252samp_hiersvr=true
+autoset=mfc252samp_inproc=true
+autoset=mfc252samp_ipdrive=true
+autoset=mfc252samp_makehm=true
+autoset=mfc252samp_mdi=true
+autoset=mfc252samp_multipad=true
+autoset=mfc252samp_oclient=true
+autoset=mfc252samp_propdlg=true
+autoset=mfc252samp_scribble=true
+autoset=mfc252samp_speakn=true
+autoset=mfc252samp_superpad=true
+autoset=mfc252samp_templdef=true
+autoset=mfc252samp_tracer=true
+autoset=mfc252samp_tracker=true
+autoset=mfc252samp_viewex=true
+autoset=mfc41=IsWin32
+autoset=mfc41samp=false
+autoset=mfc41lib=true
+autoset=mfc41src=false
+autoset=mfc41bin=false
+autoset=mfc41libdbg=true
+autoset=mfc41libuni=false
+autoset=mfc41libdll=true
+autoset=mfc41libste=true
+autoset=mfc41libstd=true
+autoset=mfc41libisa=true
+autoset=mfc41samp_advanced=true
+autoset=mfc41samp_appwiz=true
+autoset=mfc41samp_controls=true
+autoset=mfc41samp_database=true
+autoset=mfc41samp_general=true
+autoset=mfc41samp_internet=true
+autoset=mfc41samp_ole=true
+autoset=mfc41samp_tutorial=true
+autoset=mfc41samp_utility=true
+autoset=win32sdk=IsWin32
+autoset=win32s=false
+autoset=sdk_samp=true
+autoset=sdk_samp_directx=true
+autoset=sdk_samp_fareast=true
+autoset=sdk_samp_frmwork=true
+autoset=sdk_samp_mapi=true
+autoset=sdk_samp_mm=true
+autoset=sdk_samp_ole=true
+autoset=sdk_samp_opengl=true
+autoset=sdk_samp_rpc=true
+autoset=sdk_samp_sdktools=true
+autoset=sdk_samp_tp4=true
+autoset=sdk_samp_win32=true
+autoset=sdk_samp_win16=true
+autoset=sdk_mapi=true
+autoset=sdk_rpc=true
+autoset=sdk_win32s=false
+autoset=3r=true
+autoset=3s=true
+autoset=cplusplus=true
+autoset=pbcb=false
+Exe=..\supp\format.rsp
+dialogorder=DstDir,GetDiskSizesHere,MakeDisks,NewInstall,Maintain,Options,OptionsMakeDisks,Win32s,VisualProgrammer,Final,MaintainFinal,UnInstallFinal,MakeDisksFullFinal,MakeDisksSelFinal
+dialog=disksize.dlg
+dialog=other.dlg
+dialog=othermd.dlg
+dialog=helpfile.dlg
+dialog=hother.dlg
+dialog=hothermd.dlg
+dialog=mkdskfin.dlg
+dialog=mkdslfin.dlg
+dialog=options.dlg
+dialog=optionmd.dlg
+dialog=hopt.dlg
+dialog=hoptmd.dlg
+dialog=dstdir.dlg
+dialog=makedisk.dlg
+dialog=host.dlg
+dialog=target.dlg
+dialog=32bit.dlg
+dialog=16bit.dlg
+dialog=mfc2x.dlg
+dialog=mfc2xsmp.dlg
+dialog=mfc2xlib.dlg
+dialog=mfc41.dlg
+dialog=mfc41smp.dlg
+dialog=mfc41lib.dlg
+dialog=win32sdk.dlg
+dialog=sdk_samp.dlg
+dialog=newinst.dlg
+dialog=maintain.dlg
+dialog=win32s.dlg
+dialog=final.dlg
+dialog=maintfin.dlg
+dialog=unfinal.dlg
+dialog=hmakedsk.dlg
+dialog=h16bit.dlg
+dialog=h32bit.dlg
+dialog=hhi.dlg
+dialog=hdstdir.dlg
+dialog=hhost.dlg
+dialog=hmaint.dlg
+dialog=hnewinst.dlg
+dialog=htarget.dlg
+dialog=hwin32s.dlg
+dialog=upgradst.dlg
+dialog=upgradno.dlg
+cfg=+PATH=%DstDir%\BINP,          		IsOS2 IsOS2DosBox |
+cfg=+PATH=%DstDir%\N98BW,          		IsOS2 IsOS2DosBox | nechost FullInstall !
+cfg=+PATH=%DstDir%\BINW,          		IsOS2 IsOS2DosBox |
+cfg=+PATH=%CDDir%\BINP,            		IsOS2 IsOS2DosBox | MinimalInstall
+cfg=+PATH=%CDDir%\N98BW,            		IsOS2 IsOS2DosBox | nechost MinimalInstall
+cfg=+PATH=%CDDir%\BINW,            		IsOS2 IsOS2DosBox | MinimalInstall
+cfg=+PATH=%DstDir%\SOM\BIN,                     IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+PATH=%CDDir%\SOM\BIN,                      IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=+LIBPATH=%DstDir%\BINP\DLL,                 IsOS2 IsOS2DosBox |
+cfg=+LIBPATH=%CDDir%\BINP\DLL,                  IsOS2 IsOS2DosBox | MinimalInstall
+cfg=+LIBPATH=%DstDir%\SOM\LIB,                  IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+LIBPATH=%CDDir%\SOM\LIB,                   IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=+INCLUDE=%DstDir%\H\OS2;%DstDir%\H,         IsOS2 IsOS2DosBox |
+cfg=+INCLUDE=%CDDir%\H\OS2;%CDDir%\H,           IsOS2 IsOS2DosBox | MinimalInstall
+cfg=+FINCLUDE=%DstDir%\SRC\FORTRAN,             IsOS2 IsOS2DosBox | ?%DstDir%\binw\wfc386.exe
+cfg=+FINCLUDE=%DstDir%\SRC\FORTRAN\OS2,         IsOS2 IsOS2DosBox | ?%DstDir%\binw\wfc386.exe
+cfg=+FINCLUDE=%CDDir%\SRC\FORTRAN,              IsOS2 IsOS2DosBox | MinimalInstall ?%CDDir%\binw\wfc386.exe
+cfg=+FINCLUDE=%CDDir%\SRC\FORTRAN\OS2,          IsOS2 IsOS2DosBox | MinimalInstall ?%CDDir%\binw\wfc386.exe
+cfg=+INCLUDE=.;%DstDir%\SOM\INCLUDE,            IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+INCLUDE=.;%CDDir%\SOM\INCLUDE,             IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=+HELP=%DstDir%\BINP\HELP,                   IsOS2 IsOS2DosBox |
+cfg=+HELP=%CDDir%\BINP\HELP,                    IsOS2 IsOS2DosBox | MinimalInstall helpfiles ! SrcIsCD & |
+cfg=+BOOKSHELF=%DstDir%\BINP\HELP,              IsOS2 IsOS2DosBox |
+cfg=+BOOKSHELF=%CDDir%\BINP\HELP,               IsOS2 IsOS2DosBox | MinimalInstall helpfiles ! SrcIsCD & |
+cfg=+IPFC=%DstDir%\TOOLKT2X\IPFC,               IsOS2 IsOS2DosBox |
+cfg=+IPFC=%CDDir%\TOOLKT2X\IPFC,                IsOS2 IsOS2DosBox | MinimalInstall
+cfg=+LIB=%DstDir%\SOM\LIB,                      IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+LIB=%CDDir%\SOM\LIB,                       IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=+DPATH=%DstDir%\SOM\MSG,                    IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+DPATH=%CDDir%\SOM\MSG,                     IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=+SMINCLUDE=.,                               IsOS2 IsOS2DosBox |
+cfg=+SMINCLUDE=%DstDir%\SOM\INCLUDE,            IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=+SMINCLUDE=.;%CDDir%\SOM\INCLUDE,           IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+cfg=PROGREF20=GUIREF20.INF,                     IsOS2 IsOS2DosBox |
+cfg=WATCOM=%WDir%,                              IsOS2 IsOS2DosBox |
+cfg=EDPATH=%WDir%\EDDAT,                        IsOS2 IsOS2DosBox |
+cfg=SOMBASE=%WDir%\SOM,                         IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+cfg=SOMIR=%WDir%\SOM\ETC\SOM.IR;SOM.IR,         IsOS2 IsOS2DosBox | ?%WDir%\som\readme
+cfg=RUN=%DstDir%\BINP\BATSERV.EXE,              IsOS2 IsOS2DosBox | ?%DstDir%\binp\batserv.exe
+cfg=RUN=%DstDir%\BINP\NMPBIND.EXE,              IsOS2 IsOS2DosBox | ?%DstDir%\binp\nmpbind.exe
+cfg=PMREF=PMFUN.INF+PMGPI.INF+PMHOK.INF+PMMSG.INF+PMREL.INF+PMWIN.INF+PMWKP.INF, IsOS2 IsOS2DosBox |
+cfg=FILES=20,                                   IsDOS IsWin |
+auto=+PATH=%DstDir%\BINNT,                      IsWin95
+auto=+PATH=%CDDir%\BINNT,                       IsWin95 MinimalInstall
+auto=+PATH=%DstDir%\N98BW,                      IsDOS IsWin | nechost IsNEC
+auto=+PATH=%DstDir%\N98BW,                      IsWin95 nechost FullInstall !
+auto=+DOS16M=1,                                 IsDOS nechost IsNEC
+auto=+PATH=%DstDir%\BINW,                       IsDOS IsWin IsWin95 | |
+auto=+PATH=%CDDir%\N98BW,                       IsDOS IsWin | nechost MinimalInstall IsNEC
+auto=+PATH=%CDDir%\N98BW,                       IsWin95 nechost FullInstall !
+auto=+PATH=%CDDir%\BINW,                        IsDOS IsWin IsWin95 | | MinimalInstall
+auto=+PATH=%DstDir%\BIN,                        false
+auto=+PATH=%DstDir%\BINB,                       false
+auto=+INCLUDE=%DstDir%\H,                       IsDOS IsWin IsWin95 | |
+auto=+INCLUDE=%CDDir%\H,                        IsDOS IsWin IsWin95 | | MinimalInstall
+auto=+INCLUDE=%DstDir%\H\WIN,                   IsWin
+auto=+INCLUDE=%CDDir%\H\WIN,                    IsWin MinimalInstall 
+auto=+INCLUDE=%DstDir%\MFC\INCLUDE,             IsWin95 MFC41
+auto=+INCLUDE=%CDDir%\MFC\INCLUDE,              IsWin95 MFC41 MinimalInstall
+auto=+INCLUDE=%DstDir%\H\NT,                    IsWin95
+auto=+INCLUDE=%CDDir%\H\NT,                     IsWin95 MinimalInstall
+auto=+FINCLUDE=%DstDir%\SRC\FORTRAN,            IsDOS IsWin IsWin95 | | ?%DstDir%\binw\wfc386.exe
+auto=+FINCLUDE=%CDDir%\SRC\FORTRAN,             IsDOS IsWin IsWin95 | | MinimalInstall ?%CDDir%\binw\wfc386.exe
+auto=+FINCLUDE=%DstDir%\SRC\FORTRAN\WIN,        IsWin IsWin95 | ?%DstDir%\binw\wfc386.exe
+auto=+FINCLUDE=%CDDir%\SRC\FORTRAN\WIN,         IsWin IsWin95 | MinimalInstall ?%CDDir%\binw\wfc386.exe
+auto=+FINCLUDE=%DstDir%\SRC\FORTRAN\DOS,        IsDOS ?%DstDir%\binw\wfc386.exe
+auto=+FINCLUDE=%CDDir%\SRC\FORTRAN\DOS,         IsDOS MinimalInstall ?%CDDir%\binw\wfc386.exe
+auto=WATCOM=%WDir%,                             IsDOS IsWin IsWin95 | |
+auto=EDPATH=%WDir%\EDDAT,                       IsDOS IsWin IsWin95 | |
+auto=WWINHELP=%HDir%\BINW,                      IsDOS IsWin IsWin95 | | MinimalInstall helpfiles ! SrcIsCD & |
+ini=386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin IsWin95 | ?%DstDir%\binw\wdebug.386
+ini=386Enh, *device, %winsys%\win32s\w32s.386, system.ini, , IsWin UnInstall ! ?%winsys%\win32s\w32s.386 
+ini=boot, +drivers, winmm16.dll, system.ini, , IsWin UnInstall ! win32s
+ini=Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
+env=+PATH=%DstDir%\BINNT,                       IsWinNT
+env=+PATH=%DstDir%\N98BW,                       IsWinNT nechost FullInstall !
+env=+PATH=%DstDir%\BINW,                        IsWinNT
+env=+PATH=%DstDir%\BINB,                        false
+env=+PATH=%CDDir%\BINNT,                        IsWinNT MinimalInstall
+env=+PATH=%CDDir%\N98BW,                        IsWinNT nechost MinimalInstall
+env=+PATH=%CDDir%\BINW,                         IsWinNT MinimalInstall
+ini=Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
+ini=Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\Win32SDK,current_user,IsWin32 UnInstall !
+env=+INCLUDE=%DstDir%\H,                        IsWinNT
+env=+INCLUDE=%DstDir%\MFC\INCLUDE,              IsWinNT MFC41
+env=+INCLUDE=%DstDir%\H\NT,                     IsWinNT
+env=+INCLUDE=%CDDir%\H,                         IsWinNT MinimalInstall
+env=+INCLUDE=%CDDir%\MFC\INCLUDE,               IsWinNT MinimalInstall MFC41
+env=+INCLUDE=%CDDir%\H\NT,                      IsWinNT MinimalInstall
+env=+FINCLUDE=%DstDir%\SRC\FORTRAN\WIN,         IsWinNT ?%DstDir%\binw\wfc386.exe
+env=+FINCLUDE=%DstDir%\SRC\FORTRAN,             IsWinNT ?%DstDir%\binw\wfc386.exe
+env=+FINCLUDE=%CDDir%\SRC\FORTRAN\WIN,          IsWinNT MinimalInstall ?%CDDir%\binw\wfc386.exe
+env=+FINCLUDE=%CDDir%\SRC\FORTRAN,              IsWinNT MinimalInstall ?%CDDir%\binw\wfc386.exe
+env=WATCOM=%WDir%,                              IsWinNT
+env=EDPATH=%WDir%\EDDAT,                        IsWinNT
+env=WWINHELP=%HDir%\BINW,                       IsWinNT MinimalInstall helpfiles ! SrcIsCD & |
+icon=view.exe, c_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall !
+icon=view.exe, f_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall
+icon=e.exe, %CDDir%\readme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese !
+icon=e.exe, %CDDir%\jreadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese
+icon=e.exe, %CDDir%\freadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall IsJapanese !
+icon=e.exe, %CDDir%\jfreadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall IsJapanese
+icon=%WDir%\binp\ide.exe,, IDE,,, IsOS2 DoCreateIcons ?%WDir%\binp\ide.exe
+icon=%WDir%\binp\wbrw.exe,, Source Browser,,, IsOS2 DoCreateIcons ?%WDir%\binp\wbrw.exe IsFortranInstall !
+icon=%WDir%\binp\wprof.exe,, Profiler,,, IsOS2 DoCreateIcons ?%WDir%\binp\wprof.exe
+icon=%WDir%\binp\wdw.exe,, Windowed Debugger,,, IsOS2 DoCreateIcons ?%WDir%\binp\wdw.exe
+icon=%WDir%\binp\wd.exe,, Debugger,,, IsOS2 DoCreateIcons ?%WDir%\binp\wd.exe
+icon=%WDir%\binp\dlgedit.exe,, Dialog Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\dlgedit.exe
+icon=%WDir%\binp\fontedit.exe,, Font Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\fontedit.exe
+icon=%WDir%\binp\iconedit.exe,, Icon Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\iconedit.exe
+icon=%CDDir%\vp\disk1\setup.exe,, Install Visual Programmer,,, SrcIsCD IsWin32 IsFortranInstall !
+icon=%HDir%\binw\c_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\c_readme.hlp IsFortranInstall !
+icon=%HDir%\binw\c_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\c_readme.hlp IsFortranInstall !
+icon=%HDir%\binw\f_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\f_readme.hlp IsFortranInstall
+icon=notepad.exe, %CDDir%\readme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall ! IsJapanese !
+icon=notepad.exe, %CDDir%\jreadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall ! IsJapanese
+icon=notepad.exe, %CDDir%\freadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall IsJapanese !
+icon=notepad.exe, %CDDir%\jfreadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall IsJapanese
+icon=%WDir%\binw\ide.exe,, IDE,,, IsWin DoCreateIcons ?%WDir%\binw\ide.exe
+icon=%WDir%\binw\wbrw.exe,, Source Browser,,, IsWin DoCreateIcons ?%WDir%\binw\wbrw.exe IsFortranInstall !
+icon=%WDir%\binw\wbrw.exe,path %WDir%\h\nt;%WDir%\src\mfc\v32 database %WDir%\src\mfc\v32\mfc41.dbr, Browse MFC 3.2,,, IsWin32 DoCreateIcons ?%WDir%\binw\wbrw.exe ?%WDir%\src\mfc\v32\mfc41.dbr IsFortranInstall !
+icon=%WDir%\binw\wprofw.exe,, Profiler,,, IsWin DoCreateIcons ?%WDir%\binw\wprofw.exe
+icon=%WDir%\binw\wdw.exe,, Windowed Debugger,,, IsWin DoCreateIcons ?%WDir%\binw\wdw.exe
+icon=%WDir%\binw\wd.exe,, Debugger,,, IsWin DoCreateIcons ?%WDir%\binw\wd.exe
+icon=%WDir%\binw\drwatcom.exe,, Doctor WATCOM,,, IsWin DoCreateIcons ?%WDir%\binw\drwatcom.exe
+icon=%WDir%\binw\wddespy.exe,, DDE Spy,,, IsWin DoCreateIcons ?%WDir%\binw\wddespy.exe
+icon=%WDir%\binw\wspy.exe,, Spy,,, IsWin DoCreateIcons ?%WDir%\binw\wspy.exe
+icon=%WDir%\binw\wheapwlk.exe,, Heap Walker,,, IsWin DoCreateIcons ?%WDir%\binw\wheapwlk.exe
+icon=%WDir%\binw\winservw.exe,, Windows Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\winservw.exe
+icon=%WDir%\binw\netservw.exe,, NetBIOS Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\netservw.exe
+icon=%WDir%\binw\parservw.exe,, Parallel Port Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\parservw.exe nechost !
+icon=%WDir%\binw\novservw.exe,, Novell Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\novservw.exe
+icon=%WDir%\binw\vdmservw.exe,, OS/2 VDM Remote Link,,, IsOS2 DoCreateIcons ?%WDir%\binw\vdmservw.exe
+icon=%WDir%\binw\nmpservw.exe,, Named Pipe Remote Link,,, IsOS2 DoCreateIcons ?%WDir%\binw\nmpservw.exe
+icon=%WDir%\binw\wre.exe,, Resource Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wre.exe
+icon=%WDir%\binw\wde.exe,, Dialog Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wde.exe
+icon=%WDir%\binw\wimgedit.exe,, Image Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wimgedit.exe
+icon=%WDir%\binw\wzoom.exe,, Zoom,,, IsWin DoCreateIcons ?%WDir%\binw\wzoom.exe
+icon=%WDir%\binw\viw.exe,, Text Editor,,, IsWin DoCreateIcons ?%WDir%\binw\viw.exe
+icon=%WDir%\binw\freecell.exe,, Win32s demo,,, IsWin DoCreateIcons win32s ?%WDir%\binw\freecell.exe
+icon=%WDir%\binnt\ide.exe,, IDE,,, IsWin32 DoCreateIcons ?%WDir%\binnt\ide.exe
+icon=%WDir%\binnt\wbrw.exe,, Source Browser,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wbrw.exe IsFortranInstall !
+icon=%WDir%\binnt\wbrw.exe,path %WDir%\h\nt;%WDir%\src\mfc\v32 database %WDir%\src\mfc\v32\mfc41.dbr, Browse MFC 3.2,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wbrw.exe ?%WDir%\src\mfc\v32\mfc41.dbr IsFortranInstall !
+icon=%WDir%\binnt\wprof.exe,, Profiler,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wprof.exe
+icon=%WDir%\binnt\wdw.exe,, Windowed Debugger,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wdw.exe
+icon=%WDir%\binnt\wd.exe,, Debugger,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wd.exe
+icon=%WDir%\binnt\drwatcom.exe,,Doctor WATCOM,,, IsWin32 DoCreateIcons ?%WDir%\binnt\drwatcom.exe
+icon=%WDir%\binnt\wddespy.exe,, DDE Spy,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wddespy.exe
+icon=%WDir%\binnt\wspy.exe,, Spy,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wspy.exe
+icon=%WDir%\binnt\wre.exe,, Resource Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wre.exe
+icon=%WDir%\binnt\wde.exe,, Dialog Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wde.exe
+icon=%WDir%\binnt\wimgedit.exe,,Image Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wimgedit.exe
+icon=%WDir%\binnt\wzoom.exe,, Zoom,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wzoom.exe
+icon=%WDir%\binnt\viw.exe,, Text Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\viw.exe
+icon=GROUP, wpp32hlp.grp, Watcom C_C++ Tools Help,,, DoCreateHelpIcons IsFortranInstall !
+icon=GROUP, wf77hlp.grp, Watcom FORTRAN Tools Help,,, DoCreateHelpIcons IsFortranInstall
+icon=%HDir%\binnt\cbooks.hlp,, C_C++ Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\cbooks.hlp IsFortranInstall !
+icon=%HDir%\binnt\cbooksj.hlp,, C_C++ Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\cbooksj.hlp IsFortranInstall !
+icon=%HDir%\binnt\fbooks.hlp,, Fortran Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\fbooks.hlp IsFortranInstall
+icon=%HDir%\binnt\fbooksj.hlp,, Fortran Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\fbooksj.hlp IsFortranInstall
+icon=%HDir%\binw\cmix.hlp,, C_C++ Master Index,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cmix.hlp IsFortranInstall !
+icon=%HDir%\binw\fmix.hlp,, Fortran Master Index,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fmix.hlp IsFortranInstall
+icon=%HDir%\binw\bkmfc.hlp,, Visual Programmer MFC Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binw\bkmfc.hlp IsFortranInstall !
+icon=%HDir%\binw\bkwvp.hlp,, Visual Programmer Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binw\bkwvp.hlp IsFortranInstall !
+icon=%HDir%\binw\ide.hlp,, IDE Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ide.hlp
+icon=%HDir%\binw\idej.hlp,, IDE Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\idej.hlp
+icon=%HDir%\binw\wbrw.hlp,, Source Browser Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wbrw.hlp IsFortranInstall !
+icon=%HDir%\binw\wbrwj.hlp,, Source Browser Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wbrwj.hlp IsFortranInstall !
+icon=%HDir%\binw\wprof.hlp,, Profiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wprof.hlp
+icon=%HDir%\binw\wprofj.hlp,, Profiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wprofj.hlp
+icon=%HDir%\binw\editor.hlp,, Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\editor.hlp
+icon=%HDir%\binw\resedt.hlp,, Resource Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resedt.hlp
+icon=%HDir%\binw\resedtj.hlp,, Resource Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resedtj.hlp
+icon=%HDir%\binw\resacc.hlp,, Accelerator Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resacc.hlp
+icon=%HDir%\binw\resaccj.hlp,, Accelerator Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resaccj.hlp
+icon=%HDir%\binw\resdlg.hlp,, Dialog Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resdlg.hlp
+icon=%HDir%\binw\resdlgj.hlp,, Dialog Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resdlgj.hlp
+icon=%HDir%\binw\resimg.hlp,, Image Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resimg.hlp
+icon=%HDir%\binw\resimgj.hlp,, Image Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resimgj.hlp
+icon=%HDir%\binw\resstr.hlp,, String Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resstr.hlp
+icon=%HDir%\binw\resstrj.hlp,, String Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resstrj.hlp
+icon=%HDir%\binw\rescomp.hlp,, Resource Compiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\rescomp.hlp
+icon=%HDir%\binw\rescompj.hlp,, Resource Compiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\rescompj.hlp
+icon=%HDir%\binw\zoom.hlp,, Zoom Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\zoom.hlp
+icon=%HDir%\binw\zoomj.hlp,, Zoom Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\zoomj.hlp
+icon=%HDir%\binw\heapwalk.hlp,, Heap Walker Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\heapwalk.hlp
+icon=%HDir%\binw\heapwalj.hlp,, Heap Walker Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\heapwalj.hlp
+icon=%HDir%\binw\spy.hlp,, Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\spy.hlp
+icon=%HDir%\binw\spyj.hlp,, Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\spyj.hlp
+icon=%HDir%\binw\ddespy.hlp,, DDE Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ddespy.hlp
+icon=%HDir%\binw\ddespyj.hlp,, DDE Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ddespyj.hlp
+icon=%HDir%\binw\drwatcom.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drwatcom.hlp
+icon=%HDir%\binw\drwatcoj.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drwatcoj.hlp
+icon=%HDir%\binw\drnt.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin32 win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drnt.hlp
+icon=%HDir%\binw\drntj.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin32 win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drntj.hlp
+icon=%HDir%\binw\resmnu.hlp,, Menu Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resmnu.hlp
+icon=%HDir%\binw\resmnuj.hlp,, Menu Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resmnuj.hlp
+icon=%HDir%\binw\wd.hlp,, Debugger Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wd.hlp
+icon=%HDir%\binw\wdj.hlp,, Debugger Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wdj.hlp
+icon=%HDir%\binw\clib.hlp,, C Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clib.hlp
+icon=%HDir%\binw\clibj.hlp,, C Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clibj.hlp
+icon=%HDir%\binw\cpplib.hlp,, C++ Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cpplib.hlp IsFortranInstall !
+icon=%HDir%\binw\cpplibj.hlp,, C++ Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cpplibj.hlp IsFortranInstall !
+icon=%HDir%\binw\clr.hlp,, C Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clr.hlp IsFortranInstall !
+icon=%HDir%\binw\clrj.hlp,, C Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clrj.hlp IsFortranInstall !
+icon=%HDir%\binw\cguide.hlp,, User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cguide.hlp IsFortranInstall !
+icon=%HDir%\binw\cguidej.hlp,, User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cguidej.hlp IsFortranInstall !
+icon=%HDir%\binw\pguide.hlp,, Programmer's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\pguide.hlp IsFortranInstall !
+icon=%HDir%\binw\pguidej.hlp,, Programmer's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\pguidej.hlp IsFortranInstall !
+icon=%HDir%\binw\wccerrs.hlp,, C Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wccerrs.hlp IsFortranInstall !
+icon=%HDir%\binw\wfcerrs.hlp,, Fortran Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wfcerrs.hlp IsFortranInstall
+icon=%HDir%\binw\wccerrsj.hlp,, C Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wccerrsj.hlp IsFortranInstall !
+icon=%HDir%\binw\wpperrs.hlp,, C++ Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wpperrs.hlp IsFortranInstall !
+icon=%HDir%\binw\wpperrsj.hlp,, C++ Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wpperrsj.hlp IsFortranInstall !
+icon=%HDir%\binw\fuguide.hlp,, F77 User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fuguide.hlp IsFortranInstall
+icon=%HDir%\binw\fpguide.hlp,, F77 Programmer's Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fpguide.hlp IsFortranInstall
+icon=%HDir%\binw\ftools.hlp,, F77 Tools Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ftools.hlp IsFortranInstall
+icon=%HDir%\binw\f77graph.hlp,, F77 Graphics Library,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\f77graph.hlp IsFortranInstall
+icon=%HDir%\binw\f77lr.hlp,, F77 Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\f77lr.hlp IsFortranInstall
+icon=%HDir%\binw\lguide.hlp,, Linker Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\lguide.hlp
+icon=%HDir%\binw\lguidej.hlp,, Linker Guide,,,  DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\lguidej.hlp
+icon=%HDir%\binw\tools.hlp,, Tools Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\tools.hlp
+icon=%HDir%\binw\toolsj.hlp,, Tools Guide,,,  DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\toolsj.hlp
+icon=view.exe, wbrw.inf, Source Browser Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wbrw.inf IsFortranInstall !
+icon=view.exe, wprof.inf, Profiler Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wprof.inf
+icon=view.exe, ide.inf, IDE Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\ide.inf
+icon=view.exe, wd.inf, Debugger Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wd.inf
+icon=view.exe, clib.inf, C Library Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\clib.inf
+icon=view.exe, cpplib.inf, C++ Library Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cpplib.inf IsFortranInstall !
+icon=view.exe, clr.inf, C Language Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\clr.inf IsFortranInstall !
+icon=view.exe, fuguide.inf, F77 User's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\fuguide.inf IsFortranInstall
+icon=view.exe, fpguide.inf, F77 Programmer's Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\fpguide.inf IsFortranInstall
+icon=view.exe, ftools.inf, F77 Tools Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\ftools.inf IsFortranInstall
+icon=view.exe, f77graph.inf, F77 Graphics Library,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77graph.inf IsFortranInstall
+icon=view.exe, f77lr.inf, F77 Language Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77lr.inf IsFortranInstall
+icon=view.exe, cguide.inf, User's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cguide.inf IsFortranInstall !
+icon=view.exe, pguide.inf, Programmer's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\pguide.inf IsFortranInstall !
+icon=view.exe, cmix.inf, C_C++ Master Index,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cmix.inf IsFortranInstall !
+icon=view.exe, wccerrs.inf, C Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wccerrs.inf IsFortranInstall !
+icon=view.exe, wpperrs.inf, C++ Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wpperrs.inf IsFortranInstall !
+icon=view.exe, wfcerrs.inf, Fortran Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wfcerrs.inf IsFortranInstall
+icon=view.exe, lguide.inf, Linker Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\lguide.inf
+icon=view.exe, tools.inf, Tools Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\tools.inf
+icon=GROUP, wpp32sdk.grp, Watcom C_C++ Additional Help,,, DoCreateHelpIcons IsFortranInstall !
+icon=GROUP, wf77sdk.grp, Watcom FORTRAN Additional Help,,, DoCreateHelpIcons IsFortranInstall
+icon=%HDir%\binw\mcistrwh.hlp,, MCI Command Strings,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mcistrwh.hlp
+icon=%HDir%\binw\penapiwh.hlp,, Pen API Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\penapiwh.hlp
+icon=%HDir%\binw\win31mwh.hlp,, Multimedia Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31mwh.hlp
+icon=%HDir%\binw\win31wh.hlp,, Windows API Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31wh.hlp
+icon=%HDir%\binw\win31whj.hlp,, Japanese Windows API Reference ,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31whj.hlp
+icon=%HDir%\binw\isvcpp.hlp,, Add-In Tools Guide,,, DoCreateHelpIcons  IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\isvcpp.hlp  IsFortranInstall !
+icon=%HDir%\binw\isvfor.hlp,, Add-In Tools Guide,,, DoCreateHelpIcons  IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\isvfor.hlp  IsFortranInstall
+icon=%HDir%\binw\shed.hlp,, Hotspot Editor Help,,, DoCreateHelpIcons IsWin ?%HDir%\binw\shed.hlp
+icon=%HDir%\binnt\shed.hlp,, Hotspot Editor Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\shed.hlp
+icon=%HDir%\binnt\mfc.hlp,, MFC 4.1 Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\mfc.hlp
+icon=%HDir%\binnt\api32wh.hlp,, Japanese Win32 API Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\api32wh.hlp
+icon=%HDir%\binnt\ime32wh.hlp,, Japanese IME API Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\ime32wh.hlp
+icon=%HDir%\binnt\win32sdk.hlp,, Win32 API Help,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\win32sdk.hlp
+icon=%HDir%\binw\mfc.hlp,, MFC 2.5 Library Help,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfc.hlp
+icon=%HDir%\binw\mfcnotes.hlp,, MFC 2.5 Technical Notes,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfcnotes.hlp
+icon=%HDir%\binw\mfcsamp.hlp,, MFC 2.5 Sample Program Help,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfcsamp.hlp
+icon=view.exe, rexxapi.inf, REXX Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\rexxapi.inf
+icon=view.exe, ipfc20.inf, IPFC Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\ipfc20.inf
+icon=view.exe, som.inf, SOM Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\som.inf
+icon=view.exe, toolinfo.inf, Tools Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\toolinfo.inf
+icon=view.exe, PMREF, PM Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\pmfun.inf
+icon=view.exe, PROGREF20, CP Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\guiref20.inf
+icon=view.exe, isvcpp.inf, Add-In Tools Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\isvcpp.inf
+icon=view.exe, isvfor.inf, Add-In Tools Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\isvfor.inf

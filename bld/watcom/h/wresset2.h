@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public interface to wres library.
 *
 ****************************************************************************/
 
@@ -35,49 +34,29 @@
 #ifdef WIN_GUI
 #include "windows.h"
 #endif
-
-/*
-   This next set of lines is a temp fix until the 11.0 headers are
-   in universal usage.
-   The net result is that for 16bit Intel platforms _WCI86FAR will be __far
-   for all other compilation targets it will be nothing.
-*/
-#ifndef _WCI86FAR
-    #include <errno.h>
-    #ifndef _WCI86FAR
-        #ifdef M_I86
-            #define _WCI86FAR __far
-        #else
-            #define _WCI86FAR
-        #endif
-    #endif
-#endif
-
-typedef struct handle_info {
-        int     handle;
-        char    *filename;
-#ifdef WIN_GUI
-    HINSTANCE   inst;
-#endif
-} HANDLE_INFO;
-typedef struct handle_info * PHANDLE_INFO;
+#include "phandle.h"
 
 #ifndef WIN_GUI
 #define LoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
+            WResLoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
 #define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
             WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
 #ifndef WINAPI
 #define WINAPI
 #endif
 typedef unsigned int UINT;
+#ifndef _WCI86FAR
+    #define _WCI86FAR   // Is there a cleaner way?
+#endif
 typedef char _WCI86FAR * LPSTR;
-typedef PHANDLE_INFO HINSTANCE;
 #endif
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
+
+/* This is a global variable exported by function FindResources */
+extern long FileShift;
 
 struct WResDirHead;
 int OpenResFile( PHANDLE_INFO hInstance );

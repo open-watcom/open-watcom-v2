@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <commdlg.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +46,7 @@
 extern void WriteIconLoadedText( char *filename, int num );
 
 /*
- * readIconFromData - Read the icon file and set up structures.
+ * readIconFromData - read the icon file and set up structures
  */
 static BOOL readIconFromData( BYTE *data, char *fname  )
 {
@@ -56,44 +56,49 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
     HDC                 hdc;
     int                 i;
     an_img              *icon;
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
     int                 pos;
 
     GetFnameFromPath( fname, filename );
     iconfile = ImageOpen( fp );
-    if (!iconfile) {
+    if( iconfile == NULL ) {
         fclose( fp );
         WImgEditError( WIE_ERR_BAD_ICON_FILE, filename );
         return( FALSE );
     }
     num_of_images = iconfile->count;
-    for (i=0; i < num_of_images; ++i) {
-        if (iconfile->resources[i].colour_count != 2 &&
-            iconfile->resources[i].colour_count != 8 &&
-            iconfile->resources[i].colour_count != 16 &&
-            iconfile->resources[i].colour_count != 0) {
+
+#if 0
+    /* See biBitCount test below... */
+    for( i = 0; i < num_of_images; i++ ) {
+        if( iconfile->resources[i].color_count != 2 &&
+            iconfile->resources[i].color_count != 8 &&
+            iconfile->resources[i].color_count != 16 &&
+            iconfile->resources[i].color_count != 0 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ImageClose( iconfile );
             fclose( fp );
-            return(FALSE);
+            return( FALSE );
         }
     }
-    node = MemAlloc( sizeof(img_node) * num_of_images );
+#endif
+        
+    node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );
-    for (i=0; i < num_of_images; ++i) {
+    for( i = 0; i < num_of_images; i++ ) {
         icon = ImgResourceToImg( fp, iconfile, i );
 
-        if (icon->bm->bmiHeader.biBitCount != 4 &&
+        if( icon->bm->bmiHeader.biBitCount != 4 &&
             icon->bm->bmiHeader.biBitCount != 1 &&
-            icon->bm->bmiHeader.biBitCount != 8) {
+            icon->bm->bmiHeader.biBitCount != 8 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ReleaseDC( NULL, hdc );
             ImageFini( icon );
             ImageClose( iconfile );
             fclose( fp );
             MemFree( node );
-            return(FALSE);
+            return( FALSE );
         }
 
         node[i].imgtype = ICON_IMG;
@@ -109,15 +114,15 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
         node[i].hxorbitmap = ImgToXorBitmap( hdc, icon );
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
-        if (i > 0) {
-            node[i-1].nexticon = &(node[i]);
+        if( i > 0 ) {
+            node[i - 1].nexticon = &node[i];
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
         strcpy( node[i].fname, strupr( fname ) );
         ImageFini( icon );
     }
-    node[i-1].nexticon = NULL;
+    node[i - 1].nexticon = NULL;
 
     ReleaseDC( NULL, hdc );
     ImageClose( iconfile );
@@ -127,7 +132,6 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
     CreateNewDrawPad( node );
 
     MemFree( node );
-    return(TRUE);
+    return( TRUE );
 
 } /* readInIconFile */
-

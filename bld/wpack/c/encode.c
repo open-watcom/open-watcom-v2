@@ -24,23 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wpack routines used to encode files.
 *
 ****************************************************************************/
 
-
-/*
- * ENCODE.C : wpack routines used to encode files.
- */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include "wpack.h"
-#ifdef UNIX
-#include <clibext.h>
+#ifndef __WATCOMC__
+#include "clibext.h"
 #endif
 
 // external function declarations
@@ -54,11 +49,9 @@ extern void             FlushRead( void );
 extern void             FlushWrite( void );
 extern int              QOpenR( char * );
 extern unsigned long    QFileLen( int );
-extern void *           MemAlloc( unsigned );
-extern void             MemFree( void * );
 extern unsigned long    QGetDate( int );
 extern unsigned_32      GetCRC( void );
-extern void             LinkList( void **, void * );
+extern void             LinkList( void *, void * );
 extern void             QClose( int );
 extern void             QSeek( int, signed long, int );
 extern int              QWrite( int, void *, int );
@@ -70,7 +63,6 @@ extern int              QOpenM( char * );
 extern void             CopyInfo( int, int, unsigned long );
 extern int              WriteSeek( unsigned long );
 extern int              QOpenW( char * );
-extern bool             AssignCodes( int, arccmd * );
 extern void             SwitchBuffer( int, bool, void * );
 extern void             RestoreBuffer( bool );
 extern int              QRead( int, void *, int );
@@ -106,7 +98,7 @@ static void *           AltBuffer;
 unsigned long    codesize;
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
-unsigned fastcmp( char *src, char *dst, int *cmp );
+unsigned fastcmp( unsigned char *src, unsigned char *dst, int *cmp );
 
 #pragma aux fastcmp parm [esi] [edi] [edx] modify exact [eax ebx] value [ecx] = \
         "       xor ecx,ecx" \
@@ -278,9 +270,12 @@ static uchar p_code[64] = {
     0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
 };
 
-static int CompLen( const int *left, const int *right )
+static int CompLen( const void *_left, const void *_right )
 /******************************************/
 {
+    const int *left  = _left;
+    const int *right = _right;
+
     return( (int)len[ *left ] - (int)len[ *right ] );
 }
 
@@ -416,7 +411,7 @@ static void FreeRunList( void )
 static void StartRunList( void )
 /******************************/
 {
-    RunList = MemAlloc( MAX_COPYLIST_SIZE + sizeof( runlist ) );
+    RunList = WPMemAlloc( MAX_COPYLIST_SIZE + sizeof( runlist ) );
     RunList->next = NULL;
     CurrRun = RunList;
     NumSpilled = 0;
@@ -711,7 +706,7 @@ static void WriteHeaders( arc_header *header, info_list *list, int numfiles,
         QWrite( file, &list->i, entrylen );
         header->info_len += entrylen;
         info = list->next;
-        MemFree( list );
+        WPMemFree( list );
         list = info;
         numfiles--;
     }
@@ -817,8 +812,8 @@ static void MultiPack( arccmd *cmd, info_list *list )
     remove( cmd->arcname );
 }
 
-extern void Encode( arccmd *cmd )
-/*******************************/
+extern int Encode( arccmd *cmd )
+/******************************/
 {
     wpackfile *     currname;       // current file name being processed.
     unsigned long   length;         // unencrypted length of the file.
@@ -861,7 +856,7 @@ extern void Encode( arccmd *cmd )
     if( TmpHandle < 0 || RunHandle < 0 ) {
         Error( -1, "problem opening temporary files" );
     }
-    AltBuffer = MemAlloc( MAX_COPYLIST_SIZE );      // must be >= WRITE_SIZE
+    AltBuffer = WPMemAlloc( MAX_COPYLIST_SIZE );      // must be >= WRITE_SIZE
     liststart = NULL;
     amtread = 0;
     numfiles = 0;
@@ -901,7 +896,7 @@ extern void Encode( arccmd *cmd )
             length = QFileLen( infile );
             amtread += length;
             namelen = strlen( name );
-            info = MemAlloc( sizeof( info_list ) + namelen - 1);
+            info = WPMemAlloc( sizeof( info_list ) + namelen - 1);
             info->i.length = length;
             info->i.disk_addr = amtwrote;
             amtwrote += codesize;
@@ -948,6 +943,7 @@ extern void Encode( arccmd *cmd )
             QClose( outfile );      // close the archive file.
         }
     }
+    return( TRUE );
 }
 
 

@@ -30,32 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "asmglob.h"
-#include "asmerr.h"
-#include "asmops1.h"
-#include "asmops2.h"
+
 #include "directiv.h"
 
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
 #include "myassert.h"
-
-extern void             AsmError( int );
-extern direct_idx       FindClassLnameIdx( char *name );
-extern uint_32          GetCurrSegAlign( void );
-extern void             AsmByte( unsigned char );
-extern void             FlushCurrSeg( void );
-extern bool             CheckHaveSeg( void );
-
-/* stupid global vars that we may as well use since they are there */
-extern int_8            Use32;          // if 32-bit code is use
-extern seg_list         *CurrSeg;       // points to stack of opened segments
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
-extern int              Token_Count;    // number of tokens on line
 
 typedef unsigned char   byte;
 
@@ -64,6 +43,7 @@ static byte NopList16[] = {
     0x89, 0xc0,         /* MOV AX,AX */
     0xfc                /* CLD */
 };
+
 static byte NopList32[] = {
     6,
     0x8d,0x80,0x00,0x00,0x00,0x00,  // lea     eax,+00000000H[eax]
@@ -74,25 +54,25 @@ static byte NopList32[] = {
     0x8b,0xc0,                      // mov     eax,eax
     0x90                            // nop
 };
-byte *NopLists[] = { NopList16, NopList32 };
 
-int ChangeCurrentLocation( bool relative, int_32 value  )
-/*******************************************************/
+static byte *NopLists[] = { NopList16, NopList32 };
+
+int ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
+/************************************************************************/
 {
-    if( CurrSeg == NULL ) return( ERROR );
+    if( CurrSeg == NULL )
+        return( ERROR );
     if( relative ) {
         value += GetCurrAddr();
     }
-    FlushCurrSeg();
-
-//    CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length = value;
-
+    FlushCurrSeg( );
+    if( select_data )
+        OutSelect( TRUE );
     CurrSeg->seg->e.seginfo->current_loc = value;
     CurrSeg->seg->e.seginfo->start_loc = value;
 
-    if( CurrSeg->seg->e.seginfo->current_loc >=
-        CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length ) {
-        CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length = CurrSeg->seg->e.seginfo->current_loc;
+    if( CurrSeg->seg->e.seginfo->current_loc >= CurrSeg->seg->e.seginfo->length ) {
+        CurrSeg->seg->e.seginfo->length = CurrSeg->seg->e.seginfo->current_loc;
     }
 
     return( NOT_ERROR );
@@ -104,30 +84,18 @@ int OrgDirective( int i )
     struct asm_sym  *sym;
     int_32          value = 0;
 
-    if( AsmBuffer[i+1]->token == T_NUM ) {
-        return( ChangeCurrentLocation( FALSE, AsmBuffer[i+1]->value ) );
-    } else if( AsmBuffer[i+1]->token == T_ID ) {
+    if( AsmBuffer[i+1]->class == TC_NUM ) {
+        return( ChangeCurrentLocation( FALSE, AsmBuffer[i+1]->u.value, FALSE ) );
+    } else if( AsmBuffer[i+1]->class == TC_ID ) {
         sym = AsmLookup( AsmBuffer[i+1]->string_ptr );
-        if( AsmBuffer[i+2]->token == T_OP_SQ_BRACKET &&
-            AsmBuffer[i+3]->token == T_NUM ) {
-            value = AsmBuffer[i+3]->value;
+        if( AsmBuffer[i+2]->class == TC_OP_SQ_BRACKET &&
+            AsmBuffer[i+3]->class == TC_NUM ) {
+            value = AsmBuffer[i+3]->u.value;
         }
-        return( ChangeCurrentLocation( FALSE, sym->offset + value ) );
+        return( ChangeCurrentLocation( FALSE, sym->offset + value, FALSE ) );
     }
     AsmError( EXPECTING_NUMBER );
     return( ERROR );
-}
-
-static bool is_code_seg( void )
-/*****************************/
-{
-    direct_idx code;
-
-    code = FindClassLnameIdx( "CODE" );
-    if( CurrSeg->seg->e.seginfo->segrec->d.segdef.class_name_idx == code ) {
-        return( TRUE );
-    }
-    return( FALSE );
 }
 
 static void fill_in_objfile_space( uint size )
@@ -137,7 +105,7 @@ static void fill_in_objfile_space( uint size )
     int nop_type;
 
     /* first decide whether to output nulls or nops - is it a code seg? */
-    if( !is_code_seg() ) {
+    if( ! SEGISCODE( CurrSeg ) ) {
         /* just output nulls */
         for( i = 0; i < size; i++ ) {
             AsmByte( 0x00 );
@@ -165,7 +133,7 @@ static void fill_in_objfile_space( uint size )
     }
 }
 
-int AlignDirective( uint_16 directive, int i )
+int AlignDirective( asm_token directive, int i )
 /********************************************/
 {
     int_32 align_val;
@@ -173,10 +141,10 @@ int AlignDirective( uint_16 directive, int i )
 
     switch( directive ) {
     case T_ALIGN:
-        if( AsmBuffer[i+1]->token == T_NUM ) {
+        if( AsmBuffer[i+1]->class == TC_NUM ) {
             int power;
 
-            align_val = AsmBuffer[i+1]->value;
+            align_val = AsmBuffer[i+1]->u.value;
             /* check that the parm is a power of 2 */
             for( power = 1; power < align_val; power <<= 1 );
             if( power != align_val ) {

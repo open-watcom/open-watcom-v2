@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WPARAM       WdeGetKeys           ( void );
-extern void         WdeSetWinStyles      ( HWND, DialogStyle, DialogStyle);
-extern void         WdeGetWinStyles      ( HWND, DialogStyle *, DialogStyle);
+extern WPARAM   WdeGetKeys( void );
+extern void     WdeSetWinStyles( HWND, DialogStyle, DialogStyle );
+extern void     WdeGetWinStyles( HWND, DialogStyle *, DialogStyle );
 
 #endif

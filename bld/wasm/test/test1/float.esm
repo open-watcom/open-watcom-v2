@@ -1,0 +1,23 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    xor       ax,ax
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	35H, 0c2H, 68H, 21H, 0a2H, 0daH, 0fH, 0c9H
+    DB	0ffH, 3fH, 0b9H, 0d7H, 19H, 0aaH, 0ceH, 62H
+    DB	14H, 9dH, 6, 40H, 11H, 61H, 0c8H, 0e9H
+    DB	62H, 0daH, 6fH, 0f5H, 0cH, 40H, 66H, 66H
+    DB	66H, 66H, 66H, 66H, 66H, 8fH, 7, 40H
+    DB	0ecH, 51H, 0b8H, 1eH, 85H, 0ebH, 51H, 0b8H
+    DB	0fdH, 3fH, 0, 0, 0, 0, 0, 0
+    DB	0, 0c1H, 7, 40H, 0ecH, 51H, 0b8H, 1eH
+    DB	85H, 0ebH, 51H, 0b8H, 0fdH, 3fH, 0, 0
+    DB	0, 0, 0, 0, 0, 0c1H, 7, 40H
+    DB	0, 0, 0, 0, 0, 0, 0, 90H
+    DB	4, 40H, 0, 0, 0, 0, 0, 0
+    DB	0c8H, 96H, 0eH, 40H
+
+_DATA		ENDS
+		END

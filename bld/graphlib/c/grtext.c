@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _grtext( short x, short y, char _WCI86FAR *string )
+_WCRTLINK short _WCI86FAR _CGRAPH _grtext( short x, short y, char _WCI86FAR *string )
 /*===============================================================
 
    This routine prints a text string using the current text settings.

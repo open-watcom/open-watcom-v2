@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _lineto_w( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _lineto_w( double x, double y )
 /*================================================
 
    This function draws a line from the current position to the specified
@@ -59,7 +59,7 @@ short _WCI86FAR _CGRAPH _lineto_w( double x, double y )
 Entry( _LINETO_W, _lineto_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _lineto_w_87( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _lineto_w_87( double x, double y )
 /*=================================================*/
 
 {

@@ -24,19 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C++ debugging definitions.
 *
 ****************************************************************************/
 
 
-// DBG.H -- C++ Debugging Definitions
-//
-// 91/06/06 -- J.W.Welch        -- defined
-
 #ifndef NDEBUG
 
 #include "dbgzap.h"
+#include "iosupp.h"
 
 // PROTOTYPES:
 
@@ -106,8 +102,8 @@ void DbgSetState(               // PRINT STATE VALUE SET, IF REQ'D
 ;
 void DumpCgFront(               // DUMP GENERATED CODE
     const char *prefix,         // - name added to print line
-    long disk_blk,              // - disk block
-    unsigned offset,            // - disk offset
+    DISK_ADDR disk_blk,         // - disk block
+    DISK_OFFSET offset,         // - disk offset
     void *instruction )         // - intermediate code
 ;
 void DumpClassInfo(             // DUMP CLASSINFO
@@ -124,7 +120,7 @@ void DumpInitInfo(              // DUMP DATA INIT INFORMATION
 ;
 void DumpMacPush(               // DUMP PUSH OF MACRO
     const void *p_mac,          // - macro being pushed
-    const void**p_args )        // - arguments
+    const void **p_args )       // - arguments
 ;
 void DumpMacToken(              // DUMP A MACRO TOKEN
     void )
@@ -136,7 +132,7 @@ void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
     MEMBER_PTR_CAST *info )     // - the information
 ;
 void DumpPTree(                 // DUMP A PARSE TREE
-    void *node )                // - node in parse tree
+    PTREE node )                // - node in parse tree
 ;
 void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
     SCOPE scope )               // - scope
@@ -153,7 +149,7 @@ void DumpHashStats(             // DUMP HASH TABLE STATISTICS
 void FtabDump()                 // DUMP FUNCTION STATE TABLE
 ;
 void DumpSymbol(                // DUMP SYMBOL ENTRY
-    SYMBOL sym )                // - symbol
+    void *_sym )                // - symbol
 ;
 void DumpSymbolName(            // DUMP SYMBOL_NAME ENTRY
     SYMBOL_NAME sn )            // - symbol name entry
@@ -178,6 +174,12 @@ void PrintType(                 // PRINT TYPE ENTRY
 ;
 void PrintFullType(             // PRINT FULL TYPE INFORMATION
     TYPE tp )                   // - type pointer
+;
+void DumpTemplateInfo(          // DUMP A TEMPLATE INFO
+    TEMPLATE_INFO *tinfo )      // - template info
+;
+void DumpTemplateSpecialization(// DUMP A TEMPLATE SPECIALIZATION
+    TEMPLATE_SPECIALIZATION *tspec )// - template specialization
 ;
 
 #else

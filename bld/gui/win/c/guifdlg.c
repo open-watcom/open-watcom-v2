@@ -31,39 +31,37 @@
 
 
 #include "guiwind.h"
-#include "guidlg.h"
-#include "guifdlg.h"
-#include "guixutil.h"
+#ifndef __OS2_PM__
+    #if !defined( __NT__ ) && !defined( __WINDOWS_386__ ) && !defined( WILLOWS )
+        #pragma library( "commdlg.lib" );
+    #endif
+    #include <ctl3d.h>
+#endif
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <malloc.h>
 #include <sys/stat.h>
 
-#if defined(UNIX) || defined(__QNX__)
+#if defined( __UNIX__ ) || defined( __QNX__ )
 #undef HAVE_DRIVES
 #else
 #define HAVE_DRIVES
 #endif
 
-#if !defined( UNIX )
+#if !defined( __UNIX__ )
 #include <direct.h>
 #include <dos.h>
 #else
 #include <dirent.h>
 #endif
 
-#ifndef __OS2_PM__
-    #include <windows.h>
-    #if !defined(__NT__)  &&  !defined(__WINDOWS_386__) && !defined(WILLOWS)
-        #include <commdlg.h>
-        #pragma library( "commdlg" );
-    #endif
-#endif
+#include "guidlg.h"
+#include "guifdlg.h"
+#include "guixutil.h"
 #include "guistr.h"
 #include "guixhook.h"
-#include "ctl3d.h"
 
 extern  WPI_INST        GUIMainHInst;
 
@@ -71,7 +69,12 @@ extern  WPI_INST        GUIMainHInst;
 static  char    *LastPath; // this is set in NT for the sake of viper
 #endif
 
+#if defined (__NT__)
+/* Changed default from hook to not */
+static  bool    hookFileDlg = FALSE;
+#else
 static  bool    hookFileDlg = TRUE;
+#endif
 
 void GUIHookFileDlg( bool hook )
 {
@@ -86,7 +89,7 @@ char *GetStrFromEdit( HWND hDlg, int id )
     int    text_copied;
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
-    cp = (char *) GUIAlloc( text_length + 1 );
+    cp = (char *) GUIMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return ( NULL );
     }
@@ -108,7 +111,7 @@ char *GetStrFromEdit( HWND hDlg, int id )
 #ifndef __OS2_PM__
 #define PATH_STATIC_CONTROL 1088
 
-#if defined( UNIX )
+#if defined( __UNIX__ )
 uint OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #else
 UINT CALLBACK OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
@@ -223,7 +226,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
-        GUIFree( LastPath );
+        GUIMemFree( LastPath );
         LastPath = NULL;
     }
     ofn->last_path = LastPath;
@@ -256,23 +259,22 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     unsigned            drives;
     char                initial_path[_MAX_PATH];
     char                old_path[_MAX_PATH];
-    char                fname[_MAX_FNAME + _MAX_EXT ];
+    char                fname[_MAX_FNAME + _MAX_EXT];
     char                *cwd;
 
     old_path[0] = '\0';
     fname[0] = '\0';
-    cwd = getcwd( NULL, 0 );
+    cwd = getcwd( initial_path, _MAX_PATH );
     if( cwd ) {
         _splitpath( cwd, NULL, old_path, NULL, NULL );
-        free( cwd );
     }
 
     drive = 0;
+    initial_path[0] = '\0';
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' ) {
         if( ofn->initial_dir[1] == ':' ) {
             drive = ofn->initial_dir[0];
         }
-        initial_path[0] = '\0';
         _splitpath( ofn->initial_dir, NULL, initial_path, NULL, NULL );
     }
 

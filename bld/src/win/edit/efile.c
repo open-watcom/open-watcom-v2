@@ -109,6 +109,7 @@ BOOL FileSave( LPEDATA ed, BOOL saveas )
     LOCALHANDLE hbuff;
     char        FAR *buffptr;
     int         len;
+    unsigned    written;
     int         rc;
 
     if( !ed->needs_saving && !saveas ) return( TRUE );
@@ -124,7 +125,7 @@ BOOL FileSave( LPEDATA ed, BOOL saveas )
     /*
      * try to open the file
      */
-    h = open( ed->filename,  O_CREAT | O_TRUNC | O_WRONLY | O_TEXT,
+    h = open( fname,  O_CREAT | O_TRUNC | O_WRONLY | O_TEXT,
                 S_IRWXU | S_IRWXG | S_IRWXO );
     if( h < 0 ) {
         sprintf(str, "Cannot save  %s", ed->filename );
@@ -158,11 +159,11 @@ BOOL FileSave( LPEDATA ed, BOOL saveas )
     /*
      * save file, and check results
      */
-    rc = write( h, tmp, len );
+    rc = _dos_write( h, tmp, len, &written );
     MemFree( tmp );
     close( h );
 
-    if( rc != len ) {
+    if( len != written ) {
         sprintf( str, "Error writing to %s", ed->filename );
         MessageBox( ed->hwnd, str, EditTitle, MB_OK );
         return( FALSE );

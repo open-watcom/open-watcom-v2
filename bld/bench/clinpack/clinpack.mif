@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\clinpack
+.h: $(bench_dir)\clinpack
+
+extra_cflags = -I$(bench_dir)\clinpack -I$(bench_dir)\support -DDP -DROLL -DMSC
+
+obj_files = clinpack.obj
+
+run: clinpack.exe .SYMBOLIC
+	clinpack
+    
+build: clinpack.exe .SYMBOLIC
+
+clinpack.exe : $(obj_files)
+	$(deflink)

@@ -34,10 +34,10 @@
 #define __MEMMGR_H__
 
 extern void CMemRegisterCleanup( void (*)( void ) );
-extern void *CMemAlloc(unsigned int );
+extern void *CMemAlloc( size_t );
 extern void CMemFree(void *);
-extern void CMemFreePtr(void **);
-extern void *CPermAlloc(unsigned int );
+extern void CMemFreePtr(void *);
+extern void *CPermAlloc( size_t );
 
 #ifndef NDEBUG
 extern void CMemDeferredFree(void *);

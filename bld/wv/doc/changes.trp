@@ -1,0 +1,168 @@
+	Changes between the 9.5 and 10.0 debugger trap file interface
+	=============================================================
+		
+Top bit of error codes do not have to be zero.
+
+Top bit of files handles do not have to be zero.
+
+Major version number now 17.
+
+Requests renumbered.
+
+The routine "TrapAccess" has been renamed to "TrapRequest" and the
+parameter/return value types modified.
+
+For REQ_CONNECT:
+	- removed the rfx field from the request message.
+
+For REQ_GET_SYS_CONFIG return message:
+	- added CPU_586 = 5 to cpu field.
+	- (doc change only) added OS_NT, renumbered entries to match reality
+	  for os field.
+	- removed the "file" field. Use REQ_FILE_GET_CONFIG instead.
+	- changed all occurances of "npx" to "fpu"
+
+For REQ_MAP_ADDR:
+	- added "unsigned_32 mod_handle" to request message.
+	- added MAP_FLAT_CODE_SELECTOR & MAP_FLAT_DATA_SELECTOR constants
+	  for magical selector values.
+	- added "unsigned_32 lo_bound" & "unsigned_32 hi_bound" fields
+	  to return message.
+	  
+For REQ_READ_MEM:
+	- remove the data_len field from the return message (use the
+	  return value from TrapAccess instead).
+	  
+For REQ_READ_IO:
+	- remove the data_len field from the return message (use the
+	  return value from TrapAccess instead).
+	
+For REQ_READ_CPU:
+	- remove the thread field from the return message (use REQ_THREAD_SET
+	  with a zero parm to get the thread if COND_THREAD is returned
+	  from program execution).
+	  
+For REQ_READ_OVLTBL:
+	- moved to "Overlays" supplementary
+	- renamed to REQ_OVL_READ_STATE
+	
+For REQ_WRITE_OVLTBL:
+	- moved to "Overlays" supplementary
+	- renamed to REQ_OVL_WRITE_STATE
+	
+For REQ_PROG_GO/REG_PROG_STEP:
+	- merged return_trap & changes field in return message.
+	- COND_* bits defined (NOTE: some of the CHANGE_* bits moved
+	  when changed into COND_*).
+	  
+Removed REQ_DOWNLOAD_START/REQ_DOWNLOAD_BLOCK/REQ_DOWNLOAD_ABORT (may be
+brought back later as a supplementary service).
+
+For REQ_PROG_LOAD:
+	- removed thread field from return message (use REQ_THREAD_SET).
+	- added "unsigned_32 mod_handle" to return message.
+	- No longer use ARG_TERMINATE to end parameter list. Use the
+	  length of the request to determine where the end is.
+	
+For REQ_PROG_KILL:
+	- added "unsigned_32 task_id" to request message.
+	
+For REQ_SPLIT_CMD:
+	- No longer use ARG_TERMINATE to end parameter list. Use the
+	  length of the request to determine where the end is.
+	
+For REQ_SET_WATCH:
+	- removed limit of only 7 watch points.
+	- added return message with "unsigned_32 error_code" & 
+	  "unsigned_32 multiplier".
+	  
+For REQ_SET_BREAK:
+	- removed limit of only 7 break points.
+	
+For REQ_OVL_STATE_SIZE/REQ_OVL_TRANS_VECT_ADDR/REQ_OVL_TRANS_RET_ADDR/
+    REQ_GET_REMAP_ENTRY:
+	- moved to "Overlays" supplementary.
+	- renamed REQ_GET_REMAP_ENTRY to REQ_OVL_GET_REMAP_ENTRY.
+    
+Added REQ_OVL_GET_DATA.
+
+Added REQ_FILE_GET_CONFIG.
+
+For REQ_IO_OPEN:
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_OPEN.
+	- implementation bug: only used unsigned_16 for file handle.
+	
+For REQ_IO_SEEK:	
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_SEEK.
+	- implementation bug: only used unsigned_16 for file handle.
+	
+For REQ_IO_READ:	
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_READ.
+	- removed data_len from return message.
+	- implementation bug: only used unsigned_16 for file handle.
+	
+For REQ_IO_WRITE:	
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_WRITE.
+	- implementation bug: only used unsigned_16 for file handle.
+	
+For REQ_IO_WRITE_CONSOLE:	
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_WRITE_CONSOLE.
+	
+For REQ_IO_CLOSE:	
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_CLOSE.
+	- implementation bug: only used unsigned_16 for file handle.
+	
+For REQ_GET_NEXT_THREAD:
+	- moved to "Threads" supplementary.
+	- renamed to REQ_THREAD_GET_NEXT.
+	
+For REQ_SET_THREAD:
+	- moved to "Threads" supplementary.
+	- renamed to REQ_THREAD_SET.
+	- zero value for thread field in request message means just get
+	  current thread id.
+	- returns the *old* thread id, not the new one.
+	- added "unsigned_32 error_code" field return message.
+	
+For REQ_FREEZE_THREAD:
+	- moved to "Threads" supplementary.
+	- renamed to REQ_THREAD_FREEZE.
+	
+For REQ_THAW_THREAD:
+	- moved to "Threads" supplementary.
+	- renamed to REQ_THREAD_THAW.
+	
+For REQ_GET_THREAD_EXTRA:
+	- moved to "Threads" supplementary.
+	- renamed to REQ_THREAD_GET_EXTRA.
+	
+For REQ_RUN_CMD:
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_RUN_CMD.
+	
+For REQ_GET_EXCEPTION_TEXT:
+	- renamed to REQ_GET_MESSAGE_TEXT:
+	- added "unsigned_8 flags" field to return message.
+	
+For REQ_STRING_TO_FULLPATH:
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_STRING_TO_FULLPATH.
+	
+For REQ_IO_ERASE:
+	- moved to "Files" supplementary.
+	- renamed to REQ_FILE_ERASE.
+	
+For REQ_RFX_RENAME/REQ_RFX_MKDIR/REQ_RFX_RMDIR/REQ_RFX_SETDRIVE/
+    REQ_RFX_GETDRIVE/REQ_RFX_SETCWD/REQ_RFX_GETCWD/REQ_RFX_SETDATETIME/
+    REQ_RFX_GETDATETIME/REQ_RFX_GETFREESPACE/REQ_RFX_SETFILEATTR/
+    REQ_RFX_GETFILEATTR/REQ_RFX_NAMETOCANONICAL/REQ_RFX_FINDFIRST/
+    REQ_RFX_FINDNEXT/REQ_RFX_FINDCLOSE:
+    	- moved to "RFX" supplementary.
+	
+Added REQ_GET_SUPPLEMENTARY_SERVICE/REQ_PERFORM_SUPPLEMENTARY_SERVICE.

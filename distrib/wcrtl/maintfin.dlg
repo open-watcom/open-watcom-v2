@@ -1,0 +1,12 @@
+name=MaintainFinal
+condition=PreviousInstall UnInstall ! MakeDisks !
+static_text=\
+        //1"@ will now copy all selected components"\
+        //2"@ はすべての選択されたコンポーネントをコピーし, "\
+        //0
+static_text=\
+        //1"and remove any un-selected components."\
+        //2"選択されていないコンポーネントを削除します."\
+        //0
+static_text=
+include=poc.dlg

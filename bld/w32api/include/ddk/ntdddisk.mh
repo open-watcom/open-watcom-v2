@@ -1,0 +1,1025 @@
+/*
+ *  ntdddisk.h  Disk device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDDDISK_H_
+#define _NTDDDISK_H_
+
+:include readonly.sp
+
+#include <ntddstor.h>
+
+:include cpluspro.sp
+
+/* Bad track number data type */
+typedef USHORT  BAD_TRACK_NUMBER;
+typedef USHORT  *PBAD_TRACK_NUMBER;
+
+/* Disk device name */
+#define DD_DISK_DEVICE_NAME "\\Device\\UNKNOWN"
+
+/* Disk device I/O control codes */
+#define IOCTL_DISK_BASE FILE_DEVICE_DISK
+#define IOCTL_DISK_GET_DRIVE_GEOMETRY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0000, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_GET_PARTITION_INFO \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0001, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_SET_PARTITION_INFO \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0002, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_GET_DRIVE_LAYOUT \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0003, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_SET_DRIVE_LAYOUT \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0004, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_VERIFY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0005, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_FORMAT_TRACKS \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0006, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_REASSIGN_BLOCKS \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0007, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_PERFORMANCE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0008, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_IS_WRITABLE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0009, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_LOGGING \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000A, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_FORMAT_TRACKS_EX \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000B, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_HISTOGRAM_STRUCTURE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000C, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_HISTOGRAM_DATA \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000D, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_HISTOGRAM_RESET \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000E, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_REQUEST_STRUCTURE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x000F, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_REQUEST_DATA \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0010, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_PERFORMANCE_OFF \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0018, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#if (_WIN32_WINNT >= 0x0400)
+    #define IOCTL_DISK_CONTROLLER_NUMBER \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0011, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define SMART_GET_VERSION \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0020, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define SMART_SEND_DRIVE_COMMAND \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0021, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define SMART_RCV_DRIVE_DATA \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0022, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+#endif
+#if (_WIN32_WINNT >= 0x0500)
+    #define IOCTL_DISK_GET_PARTITION_INFO_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0012, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_SET_PARTITION_INFO_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0013, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GET_DRIVE_LAYOUT_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0014, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_SET_DRIVE_LAYOUT_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0015, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_CREATE_DISK \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0016, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GET_LENGTH_INFO \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0017, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_DISK_GET_DRIVE_GEOMETRY_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0028, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#endif
+#if (_WIN32_WINNT >= 0x0502)
+    #define IOCTL_DISK_REASSIGN_BLOCKS_EX \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0029, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+#endif
+#if (_WIN32_WINNT >= 0x0500)
+    #define IOCTL_DISK_UPDATE_DRIVE_SIZE \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0032, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GROW_PARTITION \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0034, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GET_CACHE_INFORMATION \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0035, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_DISK_SET_CACHE_INFORMATION \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0036, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #if (NTDDI_VERSION < 0x05020000)
+        #define IOCTL_DISK_GET_WRITE_CACHE_STATE \
+            CTL_CODE( IOCTL_DISK_BASE, 0x0037, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #else
+        #define OBSOLETE_IOCTL_DISK_GET_WRITE_CACHE_STATE \
+            CTL_CODE( IOCTL_DISK_BASE, 0x0037, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #endif
+    #define IOCTL_DISK_DELETE_DRIVE_LAYOUT \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0040, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_UPDATE_PROPERTIES \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0050, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_FORMAT_DRIVE \
+        CTL_CODE( IOCTL_DISK_BASE, 0x00F3, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_SENSE_DEVICE \
+        CTL_CODE( IOCTL_DISK_BASE, 0x00F8, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#endif
+#define IOCTL_DISK_GET_CACHE_SETTING \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0038, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_SET_CACHE_SETTING \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0039, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_COPY_DATA \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0019, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DISK_INTERNAL_SET_VERIFY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0100, METHOD_NEITHER, FILE_ANY_ACCESS )
+#define IOCTL_DISK_INTERNAL_CLEAR_VERIFY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0101, METHOD_NEITHER, FILE_ANY_ACCESS )
+#define IOCTL_DISK_INTERNAL_SET_NOTIFY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0102, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_DISK_CHECK_VERIFY \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0200, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_MEDIA_REMOVAL \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0201, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_EJECT_MEDIA \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0202, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_LOAD_MEDIA \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0203, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_RESERVE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0204, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_RELEASE \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0205, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_FIND_NEW_DEVICES \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0206, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DISK_GET_MEDIA_TYPES \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0300, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#if (NTDDI_VERSION >= 0x06000000)
+    #define IOCTL_DISK_GET_PARTITION_ATTRIBUTES \
+        CTL_CODE( IOCTL_DISK_BASE, 0x003A, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_SET_PARTITION_ATTRIBUTES \
+        CTL_CODE( IOCTL_DISK_BASE, 0x003B, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GET_DISK_ATTRIBUTES \
+        CTL_CODE( IOCTL_DISK_BASE, 0x003C, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_SET_DISK_ATTRIBUTES \
+        CTL_CODE( IOCTL_DISK_BASE, 0x003D, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_IS_CLUSTERED \
+        CTL_CODE( IOCTL_DISK_BASE, 0x003E, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_DISK_GET_SAN_SETTINGS \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0080, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_DISK_SET_SAN_SETTINGS \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0081, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_GET_SNAPSHOT_INFO \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0082, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_DISK_SET_SNAPSHOT_INFO \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0083, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_DISK_RESET_SNAPSHOT_INFO \
+        CTL_CODE( IOCTL_DISK_BASE, 0x0084, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+#endif
+#define IOCTL_DISK_SIMBAD \
+    CTL_CODE( IOCTL_DISK_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+
+/* Partition types */
+#define PARTITION_ENTRY_UNUSED      0x00000000L
+#define PARTITION_FAT_12            0x00000001L
+#define PARTITION_XENIX_1           0x00000002L
+#define PARTITION_XENIX_2           0x00000003L
+#define PARTITION_FAT_16            0x00000004L
+#define PARTITION_EXTENDED          0x00000005L
+#define PARTITION_HUGE              0x00000006L
+#define PARTITION_IFS               0x00000007L
+#define PARTITION_OS2BOOTMGR        0x0000000AL
+#define PARTITION_FAT32             0x0000000BL
+#define PARTITION_FAT32_XINT13      0x0000000CL
+#define PARTITION_XINT13            0x0000000EL
+#define PARTITION_XINT13_EXTENDED   0x0000000FL
+#define PARTITION_PREP              0x00000041L
+#define PARTITION_LDM               0x00000042L
+#define PARTITION_UNIX              0x00000063L
+#define VALID_NTFT                  0x000000C0L
+#define PARTITION_NTFT              0x00000080L
+
+/* GUID partition table (GPT) partition attributes */
+#if (_WIN32_WINNT >= 0x0500)
+    #define GPT_ATTRIBUTE_PLATFORM_REQUIRED             0x0000000000000001LL
+    #define GPT_BASIC_DATA_ATTRIBUTE_NO_DRIVE_LETTER    0x8000000000000000LL
+    #define GPT_BASIC_DATA_ATTRIBUTE_HIDDEN             0x4000000000000000LL
+    #define GPT_BASIC_DATA_ATTRIBUTE_SHADOW_COPY        0x2000000000000000LL
+    #define GPT_BASIC_DATA_ATTRIBUTE_READ_ONLY          0x1000000000000000LL
+#endif
+
+/* Number of histogram buckets */
+#define HIST_NO_OF_BUCKETS  24
+
+/* Disk logging functions */
+#define DISK_LOGGING_START  0
+#define DISK_LOGGING_STOP   1
+#define DISK_LOGGING_DUMP   2
+#define DISK_BINNING        3
+
+/* Version capabilities */
+#if (_WIN32_WINNT >= 0x0400)
+    #define CAP_ATA_ID_CMD      1L
+    #define CAP_ATAPI_ID_CMD    2L
+    #define CAP_SMART_CMD       4L
+#endif
+
+/* Command register values */
+#if (_WIN32_WINNT >= 0x0400)
+    #define ATAPI_ID_CMD    0xA1
+    #define ID_CMD          0xEC
+    #define SMART_CMD       0xB0
+#endif
+
+/* Cylinder register values */
+#if (_WIN32_WINNT >= 0x0400)
+    #define SMART_CYL_LOW   0x4F
+    #define SMART_CYL_HI    0xC2
+#endif
+
+/* Driver errors */
+#if (_WIN32_WINNT >= 0x0400)
+    #define SMART_NO_ERROR          0
+    #define SMART_IDE_ERROR         1
+    #define SMART_INVALID_FLAG      2
+    #define SMART_INVALID_COMMAND   3
+    #define SMART_INVALID_BUFFER    4
+    #define SMART_INVALID_DRIVE     5
+    #define SMART_INVALID_IOCTL     6
+    #define SMART_ERROR_NO_MEM      7
+    #define SMART_INVALID_REGISTER  8
+    #define SMART_NOT_SUPPORTED     9
+    #define SMART_NO_IDE_DEVICE     10
+#endif
+
+/* Offline diagnostic subcommands */
+#if (_WIN32_WINNT >= 0x0400)
+    #define SMART_OFFLINE_ROUTINE_OFFLINE   0
+    #define SMART_SHORT_SELFTEST_OFFLINE    1
+    #define SMART_EXTENDED_SELFTEST_OFFLINE 2
+    #define SMART_ABORT_OFFLINE_SELFTEST    127
+    #define SMART_SHORT_SELFTEST_CAPTIVE    129
+    #define SMART_EXTENDED_SELFTEST_CAPTIVE 130
+#endif
+
+/* Buffer sizes */
+#if (_WIN32_WINNT >= 0x0400)
+    #define READ_ATTRIBUTE_BUFFER_SIZE  512
+    #define IDENTITY_BUFFER_SIZE        512
+    #define READ_THRESHOLD_BUFFER_SIZE  512
+    #define SMART_LOG_SECTOR_SIZE       512
+#endif
+
+/* Feature register subcommands */
+#if (_WIN32_WINNT >= 0x0400)
+    #define READ_ATTRIBUTES             0xD0
+    #define READ_THRESHOLDS             0xD1
+    #define ENABLE_DISABLE_AUTOSAVE     0xD2
+    #define SAVE_ATTRIBUTE_VALUES       0xD3
+    #define EXECUTE_OFFLINE_DIAGS       0xD4
+    #define SMART_READ_LOG              0xD5
+    #define SMART_WRITE_LOG             0xD6
+    #define ENABLE_SMART                0xD8
+    #define DISABLE_SMART               0xD9
+    #define RETURN_SMART_STATUS         0xDA
+    #define ENABLE_DISABLE_AUTO_OFFLINE 0xDB
+#endif
+
+/* Disk attributes */
+#if (NTDDI_VERSION >= 0x06000000)
+    #define DISK_ATTRIBUTE_OFFLINE      0x0000000000000001LL
+    #define DISK_ATTRIBUTE_READ_ONLY    0x0000000000000002LL
+#endif
+
+/* Disk cache states */
+typedef enum _DISK_CACHE_STATE {
+    DiskCacheNormal                     = 0,
+    DiskCacheWriteThroughNotSupported   = 1,
+    DiskCacheModifyUnsuccessful         = 2
+} DISK_CACHE_STATE;
+typedef DISK_CACHE_STATE    *PDISK_CACHE_STATE;
+
+/* Disk cache setting */
+typedef struct _DISK_CACHE_SETTING {
+    ULONG               Version;
+    DISK_CACHE_STATE    State;
+    BOOLEAN             IsPowerProtected;
+} DISK_CACHE_SETTING;
+typedef DISK_CACHE_SETTING  *PDISK_CACHE_SETTING;
+
+/* Disk copy data parameters */
+typedef struct _DISK_COPY_DATA_PARAMETERS {
+    LARGE_INTEGER   SourceOffset;
+    LARGE_INTEGER   DestinationOffset;
+    LARGE_INTEGER   CopyLength;
+    ULONGLONG       Reserved;
+} DISK_COPY_DATA_PARAMETERS;
+typedef DISK_COPY_DATA_PARAMETERS   *PDISK_COPY_DATA_PARAMETERS;
+
+/* Media types */
+typedef enum _MEDIA_TYPE {
+    Unknown         = 0,
+    F5_1Pt2_512     = 1,
+    F3_1Pt44_512    = 2,
+    F3_2Pt88_512    = 3,
+    F3_20Pt8_512    = 4,
+    F3_720_512      = 5,
+    F5_360_512      = 6,
+    F5_320_512      = 7,
+    F5_320_1024     = 8,
+    F5_180_512      = 9,
+    F5_160_512      = 10,
+    RemovableMedia  = 11,
+    FixedMedia      = 12,
+    F3_120M_512     = 13,
+    F3_640_512      = 14,
+    F5_640_512      = 15,
+    F5_720_512      = 16,
+    F3_1Pt2_512     = 17,
+    F3_1Pt23_1024   = 18,
+    F5_1Pt23_1024   = 19,
+    F3_128Mb_512    = 20,
+    F3_230Mb_512    = 21,
+    F8_256_128      = 22,
+    F3_200Mb_512    = 23,
+    F3_240M_512     = 24,
+    F3_32M_512      = 25
+} MEDIA_TYPE;
+typedef MEDIA_TYPE  *PMEDIA_TYPE;
+
+/* Format parameters */
+typedef struct _FORMAT_PARAMETERS {
+    MEDIA_TYPE  MediaType;
+    ULONG       StartCylinderNumber;
+    ULONG       EndCylinderNumber;
+    ULONG       StartHeadNumber;
+    ULONG       EndHeadNumber;
+} FORMAT_PARAMETERS;
+typedef FORMAT_PARAMETERS   *PFORMAT_PARAMETERS;
+
+/* Format parameters (extended version) */
+typedef struct _FORMAT_EX_PARAMETERS {
+    MEDIA_TYPE  MediaType;
+    ULONG       StartCylinderNumber;
+    ULONG       EndCylinderNumber;
+    ULONG       StartHeadNumber;
+    ULONG       EndHeadNumber;
+    USHORT      FormatGapLength;
+    USHORT      SectorsPerTrack;
+    USHORT      SectorNumber[1];
+} FORMAT_EX_PARAMETERS;
+typedef FORMAT_EX_PARAMETERS    *PFORMAT_EX_PARAMETERS;
+
+/* Disk geometry */
+typedef struct _DISK_GEOMETRY {
+    LARGE_INTEGER   Cylinders;
+    MEDIA_TYPE      MediaType;
+    ULONG           TracksPerCylinder;
+    ULONG           SectorsPerTrack;
+    ULONG           BytesPerSector;
+} DISK_GEOMETRY;
+typedef DISK_GEOMETRY   *PDISK_GEOMETRY;
+
+/* Partition information */
+typedef struct _PARTITION_INFORMATION {
+    LARGE_INTEGER   StartingOffset;
+    LARGE_INTEGER   PartitionLength;
+    ULONG           HiddenSectors;
+    ULONG           PartitionNumber;
+    UCHAR           PartitionType;
+    BOOLEAN         BootIndicator;
+    BOOLEAN         RecognizedPartition;
+    BOOLEAN         RewritePartition;
+} PARTITION_INFORMATION;
+typedef PARTITION_INFORMATION   *PPARTITION_INFORMATION;
+
+/* IOCTL_DISK_SET_PARTITION_INFO parameters */
+typedef struct _SET_PARTITION_INFORMATION {
+    UCHAR   PartitionType;
+} SET_PARTITION_INFORMATION;
+typedef SET_PARTITION_INFORMATION   *PSET_PARTITION_INFORMATION;
+
+/* Drive layout information */
+typedef struct _DRIVE_LAYOUT_INFORMATION {
+    ULONG                   PartitionCount;
+    ULONG                   Signature;
+    PARTITION_INFORMATION   PartitionEntry[1];
+} DRIVE_LAYOUT_INFORMATION;
+typedef DRIVE_LAYOUT_INFORMATION    *PDRIVE_LAYOUT_INFORMATION;
+
+/* Verify information */
+typedef struct _VERIFY_INFORMATION {
+    LARGE_INTEGER   StartingOffset;
+    ULONG           Length;
+} VERIFY_INFORMATION;
+typedef VERIFY_INFORMATION  *PVERIFY_INFORMATION;
+
+/* IOCTL_DISK_REASSIGN_BLOCKS parameters */
+typedef struct _REASSIGN_BLOCKS {
+    USHORT  Reserved;
+    USHORT  Count;
+    ULONG   BlockNumber[1];
+} REASSIGN_BLOCKS;
+typedef REASSIGN_BLOCKS *PREASSIGN_BLOCKS;
+
+/* IOCTL_DISK_REASSIGN_BLOCKS_EX parameters */
+#include <pshpack1.h>
+typedef struct _REASSIGN_BLOCKS_EX {
+    USHORT          Reserved;
+    USHORT          Count;
+    LARGE_INTEGER   BlockNumber[1];
+} REASSIGN_BLOCKS_EX;
+typedef REASSIGN_BLOCKS_EX  *PREASSIGN_BLOCKS_EX;
+#include <poppack.h>
+
+/* Partition styles */
+#if (_WIN32_WINNT >= 0x0500)
+typedef enum _PARTITION_STYLE {
+    PARTITION_STYLE_MBR = 0,
+    PARTITION_STYLE_GPT = 1,
+    PARTITION_STYLE_RAW = 2
+} PARTITION_STYLE;
+#endif
+
+/* GUID partition table (GPT) partition information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _PARTITION_INFORMATION_GPT {
+    GUID    PartitionType;
+    GUID    PartitionId;
+    LONG64  Attributes;
+    WCHAR   Name[36];
+} PARTITION_INFORMATION_GPT;
+typedef PARTITION_INFORMATION_GPT   *PPARTITION_INFORMATION_GPT;
+#endif
+
+/* MBR partition information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _PARTITION_INFORMATION_MBR {
+    UCHAR   PartitionType;
+    BOOLEAN BootIndicator;
+    BOOLEAN RecognizedPartition;
+    ULONG   HiddenSectors;
+} PARTITION_INFORMATION_MBR;
+typedef PARTITION_INFORMATION_MBR   *PPARTITION_INFORMATION_MBR;
+#endif
+
+/* Alternate names of structures defined above */
+#if (_WIN32_WINNT >= 0x0500)
+typedef SET_PARTITION_INFORMATION   SET_PARTITION_INFORMATION_MBR;
+typedef PARTITION_INFORMATION_GPT   SET_PARTITION_INFORMATION_GPT;
+#endif
+
+/* IOCTL_DISK_SET_PARTITION_INFO_EX parameters */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _SET_PARTITION_INFORMATION_EX {
+    PARTITION_STYLE PartitionStyle;
+    union {
+        SET_PARTITION_INFORMATION_MBR   Mbr;
+        SET_PARTITION_INFORMATION_GPT   Gpt;
+    };
+} SET_PARTITION_INFORMATION_EX;
+typedef SET_PARTITION_INFORMATION_EX    *PSET_PARTITION_INFORMATION_EX;
+#endif
+
+/* IOCTL_DISK_CREATE_DISK parameters for GPT partitions */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _CREATE_DISK_GPT {
+    GUID    DiskId;
+    ULONG   MaxPartitionCount;
+} CREATE_DISK_GPT;
+typedef CREATE_DISK_GPT *PCREATE_DISK_GPT;
+#endif
+
+/* IOCTL_DISK_CREATE_DISK parameters for MBR partitions */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _CREATE_DISK_MBR {
+    ULONG   Signature;
+} CREATE_DISK_MBR;
+typedef CREATE_DISK_MBR *PCREATE_DISK_MBR;
+#endif
+
+/* IOCTL_DISK_CREATE_DISK parameters */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _CREATE_DISK {
+    PARTITION_STYLE PartitionStyle;
+    union {
+        CREATE_DISK_MBR Mbr;
+        CREATE_DISK_GPT Gpt;
+    };
+} CREATE_DISK;
+typedef CREATE_DISK *PCREATE_DISK;
+#endif
+
+/* IOCTL_DISK_GET_LENGTH_INFO parameters */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _GET_LENGTH_INFORMATION {
+    LARGE_INTEGER   Length;
+} GET_LENGTH_INFORMATION;
+typedef GET_LENGTH_INFORMATION  *PGET_LENGTH_INFORMATION;
+#endif
+
+/* Partition information (extended version) */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _PARTITION_INFORMATION_EX {
+    PARTITION_STYLE PartitionStyle;
+    LARGE_INTEGER   StartingOffset;
+    LARGE_INTEGER   PartitionLength;
+    ULONG           PartitionNumber;
+    BOOLEAN         RewritePartition;
+    union {
+        PARTITION_INFORMATION_MBR   Mbr;
+        PARTITION_INFORMATION_GPT   Gpt;
+    };
+} PARTITION_INFORMATION_EX;
+typedef PARTITION_INFORMATION_EX    *PPARTITION_INFORMATION_EX;
+#endif
+
+/* Drive layout information for GPT partitions */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DRIVE_LAYOUT_INFORMATION_GPT {
+    GUID            DiskId;
+    LARGE_INTEGER   StartingUsableOffset;
+    LARGE_INTEGER   UsableLength;
+    ULONG           MaxPartitionCount;
+} DRIVE_LAYOUT_INFORMATION_GPT;
+typedef DRIVE_LAYOUT_INFORMATION_GPT    *PDRIVE_LAYOUT_INFORMATION_GPT;
+#endif
+
+/* Drive layout information for MBR partitions */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DRIVE_LAYOUT_INFORMATION_MBR {
+    ULONG   Signature;
+} DRIVE_LAYOUT_INFORMATION_MBR;
+typedef DRIVE_LAYOUT_INFORMATION_MBR    *PDRIVE_LAYOUT_INFORMATION_MBR;
+#endif
+
+/* Drive layout information (extended version) */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DRIVE_LAYOUT_INFORMATION_EX {
+    ULONG                       PartitionStyle;
+    ULONG                       PartitionCount;
+    union {
+        DRIVE_LAYOUT_INFORMATION_MBR    Mbr;
+        DRIVE_LAYOUT_INFORMATION_GPT    Gpt;
+    };
+    PARTITION_INFORMATION_EX    PartitionEntry[1];
+} DRIVE_LAYOUT_INFORMATION_EX;
+typedef DRIVE_LAYOUT_INFORMATION_EX *PDRIVE_LAYOUT_INFORMATION_EX;
+#endif
+
+/* Detection types */
+#if (_WIN32_WINNT >= 0x0500)
+typedef enum _DETECTION_TYPE {
+    DetectNone      = 0,
+    DetectInt13     = 1,
+    DetectExtInt13  = 2
+} DETECTION_TYPE;
+#endif
+
+/* Interrupt 13 disk information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_INT13_INFO {
+    USHORT  DriveSelect;
+    ULONG   MaxCylinders;
+    USHORT  SectorsPerTrack;
+    USHORT  MaxHeads;
+    USHORT  NumberDrives;
+} DISK_INT13_INFO;
+typedef DISK_INT13_INFO *PDISK_INT13_INFO;
+#endif
+
+/* Extended interrupt 13 disk information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_EX_INT13_INFO {
+    USHORT  ExBufferSize;
+    USHORT  ExFlags;
+    ULONG   ExCylinders;
+    ULONG   ExHeads;
+    ULONG   ExSectorsPerTrack;
+    ULONG64 ExSectorsPerDrive;
+    USHORT  ExSectorSize;
+    USHORT  ExReserved;
+} DISK_EX_INT13_INFO;
+typedef DISK_EX_INT13_INFO  *PDISK_EX_INT13_INFO;
+#endif
+
+/* Disk detection information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_DETECTION_INFO {
+    ULONG           SizeOfDetectInfo;
+    DETECTION_TYPE  DetectionType;
+    union {
+        struct {
+            DISK_INT13_INFO     Int13;
+            DISK_EX_INT13_INFO  ExInt13;
+        };
+    };
+} DISK_DETECTION_INFO;
+typedef DISK_DETECTION_INFO *PDISK_DETECTION_INFO;
+#endif
+
+/* Disk partition information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_PARTITION_INFO {
+    ULONG           SizeOfPartitionInfo;
+    PARTITION_STYLE PartitionStyle;
+    union {
+        struct {
+            ULONG   Signature;
+            ULONG   CheckSum;
+        } Mbr;
+        struct {
+            GUID    DiskId;
+        } Gpt;
+    };
+} DISK_PARTITION_INFO;
+typedef DISK_PARTITION_INFO *PDISK_PARTITION_INFO;
+#endif
+
+/* Disk geometry (extended version) */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_GEOMETRY_EX {
+    DISK_GEOMETRY   Geometry;
+    LARGE_INTEGER   DiskSize;
+    UCHAR           Data[1];
+} DISK_GEOMETRY_EX;
+typedef DISK_GEOMETRY_EX    *PDISK_GEOMETRY_EX;
+#endif
+
+/* Disk controller number */
+#if (_WIN32_WINNT >= 0x0400)
+typedef struct _DISK_CONTROLLER_NUMBER {
+    ULONG   ControllerNumber;
+    ULONG   DiskNumber;
+} DISK_CONTROLLER_NUMBER;
+typedef DISK_CONTROLLER_NUMBER  *PDISK_CONTROLLER_NUMBER;
+#endif
+
+/* Disk cache retention priority */
+#if (_WIN32_WINNT >= 0x0500)
+typedef enum {
+    EqualPriority       = 0,
+    KeepPrefetchedData  = 1,
+    KeepReadData        = 2
+} DISK_CACHE_RETENTION_PRIORITY;
+#endif
+
+/* Disk write cache state */
+#if (_WIN32_WINNT >= 0x0500) && (NTDDI_VERSION >= 0x05010000) && \
+    (NTDDI_VERSION < 0x05020000)
+typedef enum _DISK_WRITE_CACHE_STATE {
+    DiskWriteCacheNormal                = 0,
+    DiskWriteCacheForceDisable          = 1,
+    DiskWriteCacheDisableNotSupported   = 2
+} DISK_WRITE_CACHE_STATE;
+typedef DISK_WRITE_CACHE_STATE  *PDISK_WRITE_CACHE_STATE;
+#endif
+
+/* Disk cache information */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_CACHE_INFORMATION {
+    BOOLEAN                         ParametersSavable;
+    BOOLEAN                         ReadCacheEnabled;
+    BOOLEAN                         WriteCacheEnabled;
+    DISK_CACHE_RETENTION_PRIORITY   ReadRetentionPriority;
+    DISK_CACHE_RETENTION_PRIORITY   WriteRetentionPriority;
+    USHORT                          DisablePrefetchTransferLength;
+    BOOLEAN                         PrefetchScalar;
+    union {
+        struct {
+            USHORT  Minimum;
+            USHORT  Maximum;
+            USHORT  MaximumBlocks;
+        } ScalarPrefetch;
+        struct {
+            USHORT  Minimum;
+            USHORT  Maximum;
+        } BlockPrefetch;
+    };
+} DISK_CACHE_INFORMATION;
+typedef DISK_CACHE_INFORMATION  *PDISK_CACHE_INFORMATION;
+#endif
+
+/* IOCTL_DISK_GROW_PARTITION parameters */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct _DISK_GROW_PARTITION {
+    ULONG           PartitionNumber;
+    LARGE_INTEGER   BytesToGrow;
+} DISK_GROW_PARTITION;
+typedef DISK_GROW_PARTITION *PDISK_GROW_PARTITION;
+#endif
+
+/* Histogram bucket */
+typedef struct _HISTOGRAM_BUCKET {
+    ULONG   Reads;
+    ULONG   Writes;
+} HISTOGRAM_BUCKET;
+typedef HISTOGRAM_BUCKET    *PHISTOGRAM_BUCKET;
+
+/* Disk histogram */
+typedef struct _DISK_HISTOGRAM {
+    LARGE_INTEGER       DiskSize;
+    LARGE_INTEGER       Start;
+    LARGE_INTEGER       End;
+    LARGE_INTEGER       Average;
+    LARGE_INTEGER       AverageRead;
+    LARGE_INTEGER       AverageWrite;
+    ULONG               Granularity;
+    ULONG               Size;
+    ULONG               ReadCount;
+    ULONG               WriteCount;
+    PHISTOGRAM_BUCKET   Histogram;
+} DISK_HISTOGRAM;
+typedef DISK_HISTOGRAM  *PDISK_HISTOGRAM;
+
+/* Disk performance */
+typedef struct _DISK_PERFORMANCE {
+    LARGE_INTEGER   BytesRead;
+    LARGE_INTEGER   BytesWritten;
+    LARGE_INTEGER   ReadTime;
+    LARGE_INTEGER   WriteTime;
+    LARGE_INTEGER   IdleTime;
+    ULONG           ReadCount;
+    ULONG           WriteCount;
+    ULONG           QueueDepth;
+    ULONG           SplitCount;
+    LARGE_INTEGER   QueryTime;
+    ULONG           StorageDeviceNumber;
+    WCHAR           StorageManagerName[8];
+} DISK_PERFORMANCE;
+typedef DISK_PERFORMANCE    *PDISK_PERFORMANCE;
+
+/* Disk record */
+typedef struct _DISK_RECORD {
+    LARGE_INTEGER   ByteOffset;
+    LARGE_INTEGER   StartTime;
+    LARGE_INTEGER   EndTime;
+    PVOID           VirtualAddress;
+    ULONG           NumberOfBytes;
+    UCHAR           DeviceNumber;
+    BOOLEAN         ReadRequest;
+} DISK_RECORD;
+typedef DISK_RECORD *PDISK_RECORD;
+
+/* Disk logging information */
+typedef struct _DISK_LOGGING {
+    UCHAR   Function;
+    PVOID   BufferAddress;
+    ULONG   BufferSize;
+} DISK_LOGGING;
+typedef DISK_LOGGING    *PDISK_LOGGING;
+
+/* Bin types */
+typedef enum _BIN_TYPES {
+    RequestSize     = 0,
+    RequestLocation = 1
+} BIN_TYPES;
+
+/* Bin range */
+typedef struct _BIN_RANGE {
+    LARGE_INTEGER   StartValue;
+    LARGE_INTEGER   Length;
+} BIN_RANGE;
+typedef BIN_RANGE   *PBIN_RANGE;
+
+/* Performance bin */
+typedef struct _PERF_BIN {
+    ULONG       NumberOfBins;
+    ULONG       TypeOfBin;
+    BIN_RANGE   BinsRanges[1];
+} PERF_BIN;
+typedef PERF_BIN    *PPERF_BIN;
+
+/* Bin count */
+typedef struct _BIN_COUNT {
+    BIN_RANGE   BinRange;
+    ULONG       BinCount;
+} BIN_COUNT;
+typedef BIN_COUNT   *PBIN_COUNT;
+
+/* Bin results */
+typedef struct _BIN_RESULTS {
+    ULONG       NumberOfBins;
+    BIN_COUNT   BinCounts[1];
+} BIN_RESULTS;
+typedef BIN_RESULTS *PBIN_RESULTS;
+
+/* Driver version input parameters */
+#if (_WIN32_WINNT >= 0x0400)
+#include <pshpack1.h>
+typedef struct _GETVERSIONINPARAMS {
+    UCHAR   bVersion;
+    UCHAR   bRevision;
+    UCHAR   bReserved;
+    UCHAR   bIDEDeviceMap;
+    ULONG   fCapabilities;
+    ULONG   dwReserved[4];
+} GETVERSIONINPARAMS;
+typedef GETVERSIONINPARAMS  *PGETVERSIONINPARAMS;
+typedef GETVERSIONINPARAMS  *LPGETVERSIONINPARAMS;
+#include <poppack.h>
+#endif
+
+/* IDE registers */
+#if (_WIN32_WINNT >= 0x0400)
+#include <pshpack1.h>
+typedef struct _IDEREGS {
+    UCHAR   bFeaturesReg;
+    UCHAR   bSectorCountReg;
+    UCHAR   bSectorNumberReg;
+    UCHAR   bCylLowReg;
+    UCHAR   bCylHighReg;
+    UCHAR   bDriveHeadReg;
+    UCHAR   bCommandReg;
+    UCHAR   bReserved;
+} IDEREGS;
+typedef IDEREGS *PIDEREGS;
+typedef IDEREGS *LPIDEREGS;
+#include <poppack.h>
+#endif
+
+/* Send command input parameters */
+#if (_WIN32_WINNT >= 0x0400)
+#include <pshpack1.h>
+typedef struct _SENDCMDINPARAMS {
+    ULONG   cBufferSize;
+    IDEREGS irDriveRegs;
+    UCHAR   bDriveNumber;
+    UCHAR   bReserved[3];
+    ULONG   dwReserved[4];
+    UCHAR   bBuffer[1];
+} SENDCMDINPARAMS;
+typedef SENDCMDINPARAMS *PSENDCMDINPARAMS;
+typedef SENDCMDINPARAMS *LPSENDCMDINPARAMS;
+#include <poppack.h>
+#endif
+
+/* Driver status */
+#if (_WIN32_WINNT >= 0x0400)
+#include <pshpack1.h>
+typedef struct _DRIVERSTATUS {
+    UCHAR   bDriverError;
+    UCHAR   bIDEError;
+    UCHAR   bReserved[2];
+    ULONG   dwReserved[2];
+} DRIVERSTATUS;
+typedef DRIVERSTATUS    *PDRIVERSTATUS;
+typedef DRIVERSTATUS    *LPDRIVERSTATUS;
+#include <poppack.h>
+#endif
+
+/* IOCTL_DISK_GET_PARTITION_ATTRIBUTES parameters */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _GET_PARTITION_ATTRIBUTES {
+    ULONG       Version;
+    ULONG       Reserved1;
+    ULONGLONG   Attributes;
+} GET_PARTITION_ATTRIBUTES;
+typedef GET_PARTITION_ATTRIBUTES    *PGET_PARTITION_ATTRIBUTES;
+#endif
+
+/* IOCTL_DISK_SET_PARTITION_ATTRIBUTES parameters */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _SET_PARTITION_ATTRIBUTES {
+    ULONG       Version;
+    BOOLEAN     Persist;
+    BOOLEAN     Reserved1[3];
+    ULONGLONG   Attributes;
+    ULONGLONG   AttributesMask;
+} SET_PARTITION_ATTRIBUTES;
+typedef SET_PARTITION_ATTRIBUTES    *PSET_PARTITION_ATTRIBUTES;
+#endif
+
+/* IOCTL_DISK_GET_DISK_ATTRIBUTES parameters */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _GET_DISK_ATTRIBUTES {
+    ULONG       Version;
+    ULONG       Reserved1;
+    ULONGLONG   Attributes;
+} GET_DISK_ATTRIBUTES;
+typedef GET_DISK_ATTRIBUTES *PGET_DISK_ATTRIBUTES;
+#endif
+
+/* IOCTL_DISK_SET_DISK_ATTRIBUTES parameters */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _SET_DISK_ATTRIBUTES {
+    ULONG       Version;
+    BOOLEAN     Persist;
+    BOOLEAN     RelinquishOwnership;
+    BOOLEAN     Reserved1[2];
+    ULONGLONG   Attributes;
+    ULONGLONG   AttributesMask;
+    GUID        Owner;
+} SET_DISK_ATTRIBUTES;
+typedef SET_DISK_ATTRIBUTES *PSET_DISK_ATTRIBUTES;
+#endif
+
+/* Disk SAN policies */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef enum _DISK_SAN_POLICY {
+    DiskSanPolicyUnknown        = 0,
+    DiskSanPolicyOnline         = 1,
+    DiskSanPolicyOfflineShared  = 2,
+    DiskSanPolicyOffline        = 3,
+    DiskSanPolicyMax            = 4
+} DISK_SAN_POLICY;
+typedef DISK_SAN_POLICY *PDISK_SAN_POLICY;
+#endif
+
+/* Disk SAN settings */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _DISK_SAN_SETTINGS {
+    ULONG           Version;
+    DISK_SAN_POLICY SanPolicy;
+} DISK_SAN_SETTINGS;
+typedef DISK_SAN_SETTINGS   *PDISK_SAN_SETTINGS;
+#endif
+
+/* Disk snapshot states */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef enum _DISK_SNAPSHOT_STATE {
+    DiskSnapshotNormalDisk              = 0,
+    DiskSnapshotSnapshotCheckRequired   = 1,
+    DiskSnapshotPreSnapshot             = 2,
+    DiskSnapshotSnapshotDisk            = 3
+} DISK_SNAPSHOT_STATE;
+typedef DISK_SNAPSHOT_STATE *PDISK_SNAPSHOT_STATE;
+#endif
+
+/* Disk snapshot information */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _DISK_SNAPSHOT_INFO {
+    ULONG               Version;
+    DISK_SNAPSHOT_STATE State;
+    GUID                SnapshotSetId;
+    GUID                SnapshotId;
+    GUID                LunId;
+    LARGE_INTEGER       CreationTimeStamp;
+    ULONG               ImportCount;
+    ULONG               Flags;
+    ULONG               AdditionalDataSize;
+    UCHAR               AdditionalData[ANYSIZE_ARRAY];
+} DISK_SNAPSHOT_INFO;
+typedef DISK_SNAPSHOT_INFO  *PDISK_SNAPSHOT_INFO;
+#endif
+
+/* Mapped address */
+typedef struct _MAPPED_ADDRESS {
+    struct _MAPPED_ADDRESS  *NextMappedAddress;
+    PVOID                   MappedAddress;
+    ULONG                   NumberOfBytes;
+    LARGE_INTEGER           IoAddress;
+    ULONG                   BusNumber;
+} MAPPED_ADDRESS;
+typedef MAPPED_ADDRESS  *PMAPPED_ADDRESS;
+
+/* Functions implemented as macros */
+#define __NewIsRecognizedPartition( x ) \
+    (((x) == PARTITION_FAT_12) || ((x) == PARTITION_FAT_16) || \
+    ((x) == PARTITION_HUGE) || ((x) == PARTITION_IFS) || ((x) == PARTITION_FAT32) || \
+    ((x) == PARTITION_FAT32_XINT13) || ((x) == PARTITION_XINT13))
+#if (NTDDK_VERSION < 0x06000000)
+    #define IsRecognizedPartition( x ) \
+        ((((x) & PARTITION_NTFT) && ((((x) & ~0x000000C0L) == PARTITION_HUGE) || \
+        (((x) & 0x000000C0L) == PARTITION_IFS) || \
+        (((x) & 0x000000C0L) == PARTITION_FAT32) || \
+        (((x) & 0x000000C0L) == PARTITION_FAT32_XINT13))) || \
+        __NewIsRecognizedPartition( x ))
+#else
+    #define IsRecognizedPartition( x )  __NewIsRecognizedPartition( x )
+#endif
+#define IsContainerPartition( x ) \
+    (((x) == PARTITION_EXTENDED) || ((x) == PARTITION_XINT13_EXTENDED))
+#define IsFTPartition( x ) \
+    (((x) & PARTITION_NTFT) && ((((x) & ~0x000000C0L) == PARTITION_HUGE) || \
+    (((x) & ~0x000000C0L) == PARTITION_IFS) || \
+    (((x) & ~0x000000C0L) == PARTITION_FAT32) || \
+    (((x) & ~0x000000C0L) == PARTITION_FAT32_XINT13)))
+#if (_WIN32_WINNT >= 0x0500)
+    #if (NTDDI_VERSION < 0x05020000)
+        #define DiskGeometryGetPartition( x )   ((PDISK_PARTITION_INFO)((x) + 1))
+        #define DiskGeometryGetDetect( x ) \
+            ((PDISK_DETECTION_INFO)(((PBYTE)DiskGeoemtryGetPartition( x ) + \
+            DiskGeometryGetPartition( x )->SizeOfPartitionInfo)))
+    #else
+        #define DiskGeometryGetPartition( x )   ((PDISK_PARTITION_INFO)((x)->Data))
+        #define DiskGeometryGetDetect( x ) \
+            ((PDISK_DETECTION_INFO)(((DWORD_PTR)DiskGeometryGetPartition( x ) + \
+            DiskGeometryGetPartition( x )->SizeOfPartitionInfo)))
+    #endif
+#endif
+
+:include cplusepi.sp
+
+#endif /* _NTDDDISK_H_ */

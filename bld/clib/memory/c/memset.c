@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of memset() and wmemset().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
-#include <stddef.h>
+#include <wchar.h>
 #include "xstring.h"
 
-#undef  memset
 
 #if defined(__386__)
 extern  void    __STOSB( void *, int, unsigned );
@@ -55,19 +54,20 @@ extern  void    *__set386( void *, int, unsigned );
         value [eax];
 #endif
 
-_WCRTLINK void *memset( void *dst, int c, size_t len ) {
-
-    #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
-        #if defined(__386__)
-            return( __set386( dst, c, len ) );
-        #else
-            return( _inline_memset( dst, c, len ) );
-        #endif
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memset,wmemset)( VOID_WC_TYPE *dst, INT_WC_TYPE c, size_t len )
+{
+#if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
+    #if defined(__386__) && defined(__SMALL_DATA__)
+        return( __set386( dst, c, len ) );
     #else
-        char *p;
-        for( p = dst; len; --len ) {
-            *p++ = c;
-        }
-        return( dst );
+        return( _inline_memset( dst, c, len ) );
     #endif
+#else
+    CHAR_TYPE   *p;
+
+    for( p = dst; len; --len ) {
+        *p++ = c;
+    }
+    return( dst );
+#endif
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DBCS character support (character length).
 *
 ****************************************************************************/
 
@@ -42,30 +41,31 @@ char __CharLenTable[256];
 static bool Init;
 static bool IsDBCS;
 
-static void MBInit()
-/***********/
+
+static void MBInit( void )
+/************************/
 {
-#if defined( __NT__ ) && !defined( UNIX )
+#if defined( __NT__ ) && !defined( __UNIX__ )
     int                 countRange, countVal;
     CPINFO              cpInfo;
     BOOL                rc;
 #elif defined __OS2__ || defined __OS2_PM__
     int                 countRange, countVal;
     COUNTRYCODE         countryInfo;
-    unsigned char       leadBytes[12];
+    CHAR                leadBytes[12];
     #ifdef __386__
         APIRET          rc;
     #else
         USHORT          rc;
     #endif
-#elif defined( __WINDOWS__ ) || defined( UNIX ) || defined(WILLOWS)
+#elif defined( __WINDOWS__ ) || defined( __UNIX__ ) || defined( WILLOWS )
     int                 countVal;
     DWORD               version;
 #endif
 
     memset( __CharLenTable, 1, sizeof( __CharLenTable ) );              /* zero table to start */
 
-    #if defined( __NT__) && !defined( UNIX )
+    #if defined( __NT__) && !defined( __UNIX__ )
         /*** Initialize the __CharLenTable values ***/
         rc = GetCPInfo( CP_OEMCP, &cpInfo );    /* get code page info */
         if( rc == FALSE )  return;
@@ -95,7 +95,7 @@ static void MBInit()
                 IsDBCS = TRUE;
             }
         }
-    #elif defined(__WINDOWS__) || defined( UNIX ) || defined(WILLOWS)
+    #elif defined( __WINDOWS__ ) || defined( __UNIX__ ) || defined( WILLOWS )
         /*** Initialize the __CharLenTable values ***/
         version = GetVersion();
         if( LOWORD(version) < ((10<<8)+3) )  return;   /* 3.1+ needed */
@@ -118,7 +118,7 @@ int GUICharLen( int ch )
     return( __CharLenTable[ch] );
 }
 
-bool GUIIsDBCS()
+bool GUIIsDBCS( void )
 {
     if( !Init ) {
         MBInit();

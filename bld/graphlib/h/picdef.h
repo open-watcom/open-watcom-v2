@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Image descriptor and calling convention for bitmap
+*               copy functions.
 *
 ****************************************************************************/
 
@@ -47,15 +47,16 @@ struct picture {
     /*  Use PASCAL pragma to define our convention for
         calling the copy and read functions.    */
 
-    #define PIC_FUNC pascal
-
     #if defined ( __386__ )
-        #pragma aux pascal "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx] \
-                               modify [eax];
+        #pragma aux PIC_FUNC "*" parm caller [es edi] [esi eax] [ecx] [edx] [ebx] \
+                                 modify [eax];
     #else
-        #pragma aux pascal "*" parm caller [es di] [si ax] [cx] [dx] [bx] \
-                               modify [ax];
+        #pragma aux PIC_FUNC "*" parm caller [es di] [si ax] [cx] [dx] [bx] \
+                                 modify [ax];
     #endif
+
+    typedef void pic_fn( char far *, char far *, int, int, int );
+    #pragma aux (PIC_FUNC) pic_fn;
 
 #endif
 #pragma pack (pop);

@@ -33,33 +33,35 @@
 #include "optwif.h"
 #include "escape.h"
 
-extern    ins_entry     *LastIns;
-extern    bool          InsDelete;
 extern    byte          OptForSize;
 
-extern  void            JmpToRet(ins_entry*,ins_entry*);
-extern  oc_class        NextClass(ins_entry*);
-extern  ins_entry       *DelInstr(ins_entry*);
-extern  ins_entry       *Untangle(ins_entry*);
-extern  void            ChgLblRef(ins_entry*,code_lbl*);
-extern  code_lbl        *AddNewLabel(ins_entry*,int);
-extern  void            InsertQueue(ins_entry*,ins_entry*);
-extern  void            DeleteQueue(ins_entry*);
-extern  ins_entry       *NextIns(ins_entry*);
-extern  ins_entry       *PrevIns(ins_entry*);
-extern  oc_class        PrevClass(ins_entry*);
-extern  void            AddInstr(ins_entry*,ins_entry*);
-extern  ins_entry       *NewInstr(any_oc*);
+extern  void            JmpToRet( ins_entry *, ins_entry * );
+extern  oc_class        NextClass( ins_entry * );
+extern  ins_entry       *DelInstr( ins_entry * );
+extern  ins_entry       *Untangle( ins_entry * );
+extern  void            ChgLblRef( ins_entry *, code_lbl * );
+extern  code_lbl        *AddNewLabel( ins_entry *, int );
+extern  void            InsertQueue( ins_entry *, ins_entry * );
+extern  void            DeleteQueue( ins_entry * );
+extern  ins_entry       *NextIns( ins_entry * );
+extern  ins_entry       *PrevIns( ins_entry * );
+extern  oc_class        PrevClass( ins_entry * );
+extern  void            AddInstr( ins_entry *, ins_entry * );
+extern  ins_entry       *NewInstr( any_oc * );
 extern  bool            CodeHasAbsPatch( oc_entry * );
 
 
-extern  bool    FindShort( ins_entry *ins, ins_entry *end ) {
-/***********************************************************/
-    for(;;) {
-        if( ins == NULL ) break;
-        if( ins == end ) break;
+extern  bool    FindShort( ins_entry *ins, ins_entry *end )
+/*********************************************************/
+{
+    for( ;; ) {
+        if( ins == NULL )
+            break;
+        if( ins == end )
+            break;
         if( _Class( ins ) == OC_LABEL ) {
-            if( _Attr( ins ) & ATTR_SHORT ) return( TRUE );
+            if( _Attr( ins ) & ATTR_SHORT )
+                return( TRUE );
             _ClrStatus( _Label( ins ), SHORTREACH );
         }
         ins = NextIns( ins );
@@ -67,9 +69,9 @@ extern  bool    FindShort( ins_entry *ins, ins_entry *end ) {
     return( FALSE );
 }
 
-static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist ) {
-/***************************************************************/
-
+static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist )
+/*************************************************************/
+{
     ins_entry   *clone_point;
     ins_entry   *clone;
     oc_class    cl;
@@ -85,7 +87,8 @@ static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist ) {
         default:
             clone = NewInstr( &hoist->oc );
             AddInstr( clone, clone_point );
-            if( _TransferClass( cl ) ) return;
+            if( _TransferClass( cl ) )
+                return;
             clone_point = clone;
             break;
         }
@@ -95,8 +98,8 @@ static  void    DoCloneCode( ins_entry *jmp, ins_entry *hoist ) {
 
 #define MAX_CLONE_SIZE  40
 
-extern  void    CloneCode( code_lbl *lbl ) {
-/*******************************************
+extern  void    CloneCode( code_lbl *lbl )
+/*****************************************
     consider:
 
         JMP L1
@@ -108,6 +111,7 @@ extern  void    CloneCode( code_lbl *lbl ) {
     since it will be faster (and smaller since POP AX/RET is only 2 bytes
     while the JMP might be 3/5).
 */
+{
     ins_entry   *next;
     ins_entry   *lbl_ins;
     ins_entry   *hoist;
@@ -116,62 +120,77 @@ extern  void    CloneCode( code_lbl *lbl ) {
     unsigned    max_size;
 
     lbl_ins = lbl->ins;
-    if( lbl_ins == NULL ) return;
+    if( lbl_ins == NULL )
+        return;
     hoist = NextIns( lbl_ins );
     next = hoist;
     size = 0;
     for( ;; ) {
-        if( next == NULL ) return;
-        if( _Class( next ) == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) ) return;
+        if( next == NULL )
+            return;
+        if( _Class( next ) == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) )
+            return;
         if( _Class( next ) != OC_LABEL ) {
             size += _ObjLen( next );
-            if( size > MAX_CLONE_SIZE ) return;
-            if( _TransferClass( _Class( next ) ) ) break;
+            if( size > MAX_CLONE_SIZE )
+                return;
+            if( _TransferClass( _Class( next ) ) ) {
+                break;
+            }
         }
         next = NextIns( next );
     }
-    if( _Class( next ) == OC_JMP && _Label( next ) == lbl ) return;
+    if( _Class( next ) == OC_JMP && _Label( next ) == lbl )
+        return;
     for( jmp = lbl->refs; jmp != NULL; jmp = _LblRef( jmp ) ) {
-        if( next == jmp ) continue;
-        if( !_TransferClass( _Class( jmp ) ) ) continue;
+        if( next == jmp )
+            continue;
+        if( !_TransferClass( _Class( jmp ) ) )
+            continue;
         max_size = _ObjLen( jmp );
-        if( size > max_size && FindShort( jmp, NULL ) ) continue;
+        if( size > max_size && FindShort( jmp, NULL ) )
+            continue;
         if( OptForSize < 50 ) {
             max_size *= (100-OptForSize) / 25;
         }
-        if( size > max_size ) continue;
+        if( size > max_size )
+            continue;
         DoCloneCode( jmp, hoist );
         DelInstr( jmp );
     }
 }
 
 
-extern  ins_entry       *IsolatedCode( ins_entry *instr ) {
-/*********************************************************/
-
+extern  ins_entry       *IsolatedCode( ins_entry *instr )
+/*******************************************************/
+{
     ins_entry   *next;
 
   optbegin
     next = NextIns( instr );
-    for(;;) {
-        if( next == NULL ) optreturn( next );
-        if( _Class( next ) == OC_LABEL ) break;
+    for( ;; ) {
+        if( next == NULL )
+            optreturn( next );
+        if( _Class( next ) == OC_LABEL )
+            break;
         _Savings( OPT_ISOLATED, _ObjLen( next ) );
         if( _Class( next ) == OC_INFO ) {
             next = next->ins.next;
         } else {
             next = DelInstr( next );
         }
-        if( _Class( instr ) == OC_DEAD ) break;
+        if( _Class( instr ) == OC_DEAD ) {
+            break;
+        }
     }
     next = Untangle( next );
     optreturn( next );
 }
 
 
-extern  bool    StraightenCode( ins_entry *jump ) {
-/*************************************************/
-
+extern  bool    StraightenCode( ins_entry *jump )
+/***********************************************/
+{
     ins_entry   *next;
     ins_entry   *insert;
     ins_entry   *hoist;
@@ -181,21 +200,27 @@ extern  bool    StraightenCode( ins_entry *jump ) {
 
   optbegin
     hoist = _Label( jump )->ins;
-    if( hoist == NULL ) optreturn( FALSE );
-    if( hoist == LastIns ) optreturn( FALSE );
+    if( hoist == NULL )
+        optreturn( FALSE );
+    if( hoist == LastIns )
+        optreturn( FALSE );
     cl = PrevClass( hoist );
-    if( !_TransferClass( cl ) ) optreturn( FALSE );
+    if( !_TransferClass( cl ) )
+        optreturn( FALSE );
 
     end_hoist = NULL;
     next = hoist;
-    for(;;) {
+    for( ;; ) {
         if( next == jump ) { // pushing code down to jump
-            if( end_hoist == NULL ) optreturn( FALSE );
-            if( FindShort( hoist, end_hoist ) ) optreturn( FALSE );
+            if( end_hoist == NULL )
+                optreturn( FALSE );
+            if( FindShort( hoist, end_hoist ) )
+                optreturn( FALSE );
             break;
         }
         if( next == NULL ) { // hauling code up to jump
-            if( FindShort( jump, hoist ) ) optreturn( FALSE );
+            if( FindShort( jump, hoist ) )
+                optreturn( FALSE );
             break;
         }
         cl = _Class( next );
@@ -207,7 +232,7 @@ extern  bool    StraightenCode( ins_entry *jump ) {
 
     align = _ObjLen( hoist );
     insert = jump;
-    for(;;) {
+    for( ;; ) {
         if( hoist == NULL ) {
             ChgLblRef( jump, AddNewLabel( LastIns, align ) );
             next = LastIns;
@@ -216,7 +241,8 @@ extern  bool    StraightenCode( ins_entry *jump ) {
         next = NextIns( hoist );
         DeleteQueue( hoist );
         InsertQueue( hoist, insert );
-        if( hoist == jump ) optreturn( FALSE );
+        if( hoist == jump )
+            optreturn( FALSE );
         insert = hoist;
         cl = _Class( hoist );
         if( _TransferClass( cl ) ) {
@@ -234,9 +260,9 @@ extern  bool    StraightenCode( ins_entry *jump ) {
 }
 
 
-extern  void            CheckStraightenCode( ins_entry  *lbl_ins ) {
-/******************************************************************/
-
+extern  void    CheckStraightenCode( ins_entry  *lbl_ins )
+/********************************************************/
+{
     code_lbl    *lbl;
     ins_entry   *jmp;
 
@@ -244,39 +270,52 @@ extern  void            CheckStraightenCode( ins_entry  *lbl_ins ) {
     if( lbl_ins != NULL ) {
         lbl = _Label( lbl_ins );
         for( jmp = lbl->refs; jmp != NULL; jmp = _LblRef( jmp ) ) {
-            if( !_TransferClass( _Class( jmp ) ) ) continue;
-            if( StraightenCode( jmp ) ) break;
+            if( !_TransferClass( _Class( jmp ) ) )
+                continue;
+            if( StraightenCode( jmp ) ) {
+                break;
+            }
         }
     }
   optend
+}
 
 
-extern  void    CallRet( ins_entry *instr ) {
-/*******************************************/
-
+extern  void    CallRet( ins_entry *instr )
+/*****************************************/
+{
     ins_entry   *lbl;
 
   optbegin
-    if( _Attr( instr ) & ATTR_POP ) optreturnvoid;
+    if( _Attr( instr ) & ATTR_POP )
+        optreturnvoid;
     lbl = _Label( instr )->ins;
-    if( lbl == NULL ) optreturnvoid;
-    if( NextClass( lbl ) != OC_RET ) optreturnvoid;
+    if( lbl == NULL )
+        optreturnvoid;
+    if( NextClass( lbl ) != OC_RET )
+        optreturnvoid;
     _Savings( OPT_CALLTORET, _ObjLen( instr ) );
     DelInstr( instr );
   optend
+}
 
 
-extern  void    JmpRet( ins_entry *instr ) {
-/******************************************/
-
+extern  void    JmpRet( ins_entry *instr )
+/****************************************/
+{
     ins_entry   *ret;
 
   optbegin
-    if( InsDelete ) optreturnvoid;
+    if( InsDelete )
+        optreturnvoid;
     ret = _Label( instr )->ins;
-    if( ret == NULL ) optreturnvoid;
+    if( ret == NULL )
+        optreturnvoid;
     ret = NextIns( ret );
-    if( ret == NULL ) optreturnvoid;
-    if( _Class( ret ) != OC_RET ) optreturnvoid;
+    if( ret == NULL )
+        optreturnvoid;
+    if( _Class( ret ) != OC_RET )
+        optreturnvoid;
     JmpToRet( instr, ret );
   optend
+}

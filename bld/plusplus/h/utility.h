@@ -37,8 +37,8 @@
 #include "ppops.h"
 #include "specname.h"
 
-char classify_escape_char(      // CLASSIFY TYPE OF ESCAPE
-    char chr )                  // - character after "\"
+int classify_escape_char(       // CLASSIFY TYPE OF ESCAPE
+    int chr )                   // - character after "\"
 ;
 char *CppArrayDtorName(         // CREATE NAME FOR ARRAY DTOR
     TYPE ar_type )              // - array type
@@ -63,8 +63,7 @@ boolean CppLookupName(          // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     char *name,                 // - name to find
     CGOP *oper )                // - index found
 ;
-char *CppMangleName(            // MANGLE SYMBOL NAME
-    char *patbuff,              // - control of result
+char *GetMangledName(           // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
 ;
 char *CppMembPtrOffsetName(     // CREATE NAME FOR MEMBER-PTR OFFSET FUNCTION
@@ -132,11 +131,11 @@ char *CppVFTableName(           // CREATE NAME OF VIRTUAL FN ADDR TABLE
     SCOPE scope,                // - class table is used in
     target_offset_t delta )     // - offset of vfptr table is used for
 ;
-char escape_char(               // GET ESCAPE CHAR FOR A LETTER
-    char chr )                  // - character after "\"
+int escape_char(                // GET ESCAPE CHAR FOR A LETTER
+    int chr )                   // - character after "\"
 ;
-char hex_dig(                   // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
-    char chr )                  // - character
+int hex_dig(                    // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
+    int chr )                   // - character
 ;
 void Int64From32                // CREATE 64-BIT VALUE FROM 32-BIT VALUE
     ( TYPE type                 // - source integral type (signed or unsigned)
@@ -157,26 +156,24 @@ boolean IsCppSpecialName(       // TEST IF NAME IS SPECIAL NAME
 boolean IsVftName(              // TEST IF SYMBOL IS VFT NAME
     char* name )                // - name to be tested
 ;
-char octal_dig(                 // GET OCTAL DIGIT FOR CHAR (OR 8)
-    char chr )                  // - character
+int octal_dig(                  // GET OCTAL DIGIT FOR CHAR (OR 8)
+    int chr )                   // - character
 ;
 double SafeAtof(                // CONVERT STRING TO DOUBLE
     char *src )                 // - source charcaters
 ;
 char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
-    unsigned value )            // - value to be concatenated
+    unsigned long value )       // - value to be concatenated
 ;
 char *sticpy(                   // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
-    int value )                 // - value to be concatenated
+    long value )                // - value to be concatenated
 ;
-#if __WATCOMC__ >= 1100
 char *sti64cpy(                 // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
-    __int64 value )             // - value to be concatenated
+    signed_64 value )           // - value to be concatenated
 ;
-#endif
 char *stpcpy(                   // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string

@@ -29,13 +29,12 @@
 *
 ****************************************************************************/
 
-
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "wresrtns.h"
 #include "opcl.h"
 #include "reserr.h"
-#if defined( UNIX )
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
 #include "clibext.h"
 #endif
 

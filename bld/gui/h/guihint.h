@@ -44,7 +44,7 @@ typedef enum hint_type {
 
 typedef struct gui_hint_struct {
     int         id;
-    char        *hinttext;
+    const char  *hinttext;
 } gui_hint_struct;
 
 typedef struct hintinfo {

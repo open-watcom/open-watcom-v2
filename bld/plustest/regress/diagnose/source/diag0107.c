@@ -12,3 +12,5 @@ template <class T>
 void foo()
 {
 }
+
+template class XX<int>;

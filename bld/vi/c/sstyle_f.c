@@ -30,14 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <assert.h>
 #include "vi.h"
 #include "sstyle.h"
-#include "lang.h"
 
 
 /*----- LOCALS -----*/
@@ -96,16 +90,14 @@ static int islogical( char *string )
         !strnicmp( string, ".le.", 4 ) ||
         !strnicmp( string, ".lt.", 4 ) ||
         !strnicmp( string, ".gt.", 4 ) ||
-        !strnicmp( string, ".or.", 4 )
-        ){
+        !strnicmp( string, ".or.", 4 ) ){
         return( 4 );
     } else if ( !strnicmp( string, ".and.", 5 ) ||
                 !strnicmp( string, ".xor.", 5 ) ||
-                !strnicmp( string, ".not.", 5 )
-              ) {
+                !strnicmp( string, ".not.", 5 ) ) {
         return( 5 );
     } else {
-        return ( 0 );
+        return( 0 );
     }
 }
 
@@ -115,9 +107,8 @@ static bool isInitialLine( line *line )
     if( line->len < 6 ) {
         return( TRUE );
     }
-    data = ( line->inf.ld.nolinedata ) ? WorkLine->data : line->data;
-    if( isspace( data[ 5 ] ) ||
-        data[ 5 ] == '0' ) {
+    data = (line->inf.ld.nolinedata) ? WorkLine->data : line->data;
+    if( isspace( data[5] ) || data[5] == '0' ) {
         return( TRUE );
     } else {
         return( FALSE );
@@ -137,44 +128,48 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     ss_new->type = SE_FLOAT;
 
     switch( command ) {
-        case AFTER_DOT:
-            if( !isdigit( *text ) ) {
-                if( *text == 'E' || *text == 'D' ) {
-                    getFloat( ss_new, start, text - start + 1, AFTER_EXP );
-                    return;
-                }
-                if( *text && !isspace( *text ) && !issymbol( *text ) ) {
-                    if( *text ) text++;
-                    ss_new->type = SE_INVALIDTEXT;
-                }
-                break;
-            }
-            text++;
-            while( isdigit( *text ) ) {
-                text++;
-            }
-            if( *text != 'E' && *text != 'D' ) {
-                break;
-            }
-            text++;
-            // fall through
-        case AFTER_EXP:
-            if( *text == '+' || *text == '-' ) {
-                text++;
-            }
-            if( !isdigit( *text ) ) {
-                if( *text ) text++;
-                ss_new->type = SE_INVALIDTEXT;
-                break;
-            }
-            text++;
-            while( isdigit( *text ) ) {
-                text++;
+    case AFTER_DOT:
+        if( !isdigit( *text ) ) {
+            if( *text == 'E' || *text == 'D' ) {
+                getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+                return;
             }
             if( *text && !isspace( *text ) && !issymbol( *text ) ) {
+                if( *text ) {
+                    text++;
+                }
                 ss_new->type = SE_INVALIDTEXT;
+            }
+            break;
+        }
+        text++;
+        while( isdigit( *text ) ) {
+            text++;
+        }
+        if( *text != 'E' && *text != 'D' ) {
+            break;
+        }
+        text++;
+        // fall through
+    case AFTER_EXP:
+        if( *text == '+' || *text == '-' ) {
+            text++;
+        }
+        if( !isdigit( *text ) ) {
+            if( *text ) {
                 text++;
             }
+            ss_new->type = SE_INVALIDTEXT;
+            break;
+        }
+        text++;
+        while( isdigit( *text ) ) {
+            text++;
+        }
+        if( *text && !isspace( *text ) && !issymbol( *text ) ) {
+            ss_new->type = SE_INVALIDTEXT;
+            text++;
+        }
     }
     ss_new->len = text - start;
 }
@@ -192,35 +187,35 @@ static void getNumber( ss_block *ss_new, char *start )
     }
 
     switch( *text ) {
-        case 'h':
-        case 'H':
-            /* Hollerith constant (string)
-            */
-            save_loc = text;
-            save_char = *text;
-            *text = 0;
-            nchars = atoi( start );
+    case 'h':
+    case 'H':
+        /* Hollerith constant (string)
+        */
+        save_loc = text;
+        save_char = *text;
+        *text = 0;
+        nchars = atoi( start );
+        text++;
+        while( *text && nchars != 0 ) {
+            nchars--;
             text++;
-            while( *text && nchars != 0 ) {
-                nchars--;
-                text++;
-            }
-            if( *text == '\0' && nchars > 0 ) {
-                ss_new->type = SE_INVALIDTEXT;
-            } else {
-                ss_new->type = SE_STRING;
-            }
-            *save_loc = save_char;
-            break;
-        case '.':
-            getFloat( ss_new, start, text - start + 1, AFTER_DOT );
-            return;
-        case 'E':
-        case 'D':
-            getFloat( ss_new, start, text - start + 1, AFTER_EXP );
-            return;
-        default:
-            ss_new->type = SE_INTEGER;
+        }
+        if( *text == '\0' && nchars > 0 ) {
+            ss_new->type = SE_INVALIDTEXT;
+        } else {
+            ss_new->type = SE_STRING;
+        }
+        *save_loc = save_char;
+        break;
+    case '.':
+        getFloat( ss_new, start, text - start + 1, AFTER_DOT );
+        return;
+    case 'E':
+    case 'D':
+        getFloat( ss_new, start, text - start + 1, AFTER_EXP );
+        return;
+    default:
+        ss_new->type = SE_INTEGER;
     }
     ss_new->len = text - start;
 }
@@ -238,23 +233,24 @@ static void getWhiteSpace( ss_block *ss_new, char *start )
 
 static void getText( ss_block *ss_new, char *start )
 {
-    char    keyword[ MAX_INPUT_LINE + 1 ];
+    char    keyword[MAX_INPUT_LINE + 1];
     char    *text = start;
     int     index = 0;
 
     // eliminate leading spaces
-    while( isspace( *text ) ) text++;
-
-    // take copy string up to first white space
-    while( isalnum( *text ) ||
-           ( *text == '_' ) || ( *text == '$' ) ) {
-        keyword[ index++ ] = toupper( *text );
+    while( isspace( *text ) ) {
         text++;
     }
-    keyword[ index ] = '\0';
+
+    // take copy string up to first white space
+    while( isalnum( *text ) || (*text == '_') || (*text == '$') ) {
+        keyword[index++] = toupper( *text );
+        text++;
+    }
+    keyword[index] = '\0';
 
     // test if string is keyword
-    if( IsKeyword( keyword ) ) {
+    if( IsKeyword( keyword, TRUE ) ) {
         char *end = text;
 
         ss_new->type = SE_KEYWORD;
@@ -291,9 +287,9 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
     line    *line;
     fcb     *fcb;
     char    *data;
-    int     rc;
+    vi_rc   rc;
 squashed:
-    while( ( *text ) && ( *text != '\'' ) ) {
+    while( *text && *text != '\'' ) {
         empty = FALSE;
         text++;
     }
@@ -306,8 +302,8 @@ squashed:
             if( rc != ERR_NO_ERR ) {
                 break;
             }
-            data = ( line->inf.ld.nolinedata ) ? WorkLine->data : line->data;
-            if( !iscomment( data[ 0 ] ) ) {
+            data = (line->inf.ld.nolinedata) ? WorkLine->data : line->data;
+            if( !iscomment( data[0] ) ) {
                 break;
             }
             rc = CGimmeNextLinePtr( &fcb, &line );
@@ -321,31 +317,31 @@ squashed:
         text++;
         lastchar = tolower( *text );
         switch( lastchar ) {
-            case '\'':
+        case '\'':
+            text++;
+            empty = FALSE;
+            goto squashed;
+        case 'c':
+            text++;
+            ss_new->type = SE_STRING;
+            break;
+        case 'x':
+            text++;
+            ss_new->type = SE_HEX;
+            break;
+        case 'o':
+            text++;
+            ss_new->type = SE_OCTAL;
+            break;
+        default:
+            // hard to say if invalid or not - take a guess
+            if( islower( *text ) ) {
                 text++;
-                empty = FALSE;
-                goto squashed;
-            case 'c':
-                text++;
+                ss_new->type = SE_INVALIDTEXT;
+            } else {
                 ss_new->type = SE_STRING;
-                break;
-            case 'x':
-                text++;
-                ss_new->type = SE_HEX;
-                break;
-            case 'o':
-                text++;
-                ss_new->type = SE_OCTAL;
-                break;
-            default:
-                // hard to say if invalid or not - take a guess
-                if( islower( *text ) ) {
-                    text++;
-                    ss_new->type = SE_INVALIDTEXT;
-                } else {
-                    ss_new->type = SE_STRING;
-                }
-                break;
+            }
+            break;
         }
     }
     ss_new->len = text - start;
@@ -429,7 +425,7 @@ void InitFORTRANFlags( linenum line_no )
     char    *start;
     line    *line;
     fcb     *fcb;
-    int     rc;
+    vi_rc   rc;
     int     numQuotes = 0;
 
     flags.inString = 0;
@@ -449,7 +445,7 @@ void InitFORTRANFlags( linenum line_no )
         if( rc != ERR_NO_ERR ) {
             break;
         }
-        text = ( line->inf.ld.nolinedata ) ? WorkLine->data : line->data;
+        text = line->inf.ld.nolinedata ? WorkLine->data : line->data;
         start = text;
         if( iscomment( *text ) ) {
             continue;
@@ -475,8 +471,8 @@ void InitFORTRANFlags( linenum line_no )
 
 void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
 {
-    int length=0;
-    if( start[ 0 ] == '\0' ) {
+    int length = 0;
+    if( start[0] == '\0' ) {
         if( text_col == 0 ) {
             // line is empty -
             // do not flag following line as having anything to do
@@ -507,32 +503,32 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
         return;
     }
 
-    if( isspace( start[ 0 ] ) ) {
+    if( isspace( start[0] ) ) {
         getWhiteSpace( ss_new, start );
         return;
     }
 
-    switch( start[ 0 ] ) {
+    switch( start[0] ) {
 
-        case '!':
-            getComment( ss_new, start );
+    case '!':
+        getComment( ss_new, start );
+        return;
+    case '\'':
+        getLiteral( ss_new, start, 1 );
+        return;
+    case '.':
+        if( isdigit( start[1] ) ) {
+            getFloat( ss_new, start, 1, AFTER_DOT );
             return;
-        case '\'':
-            getLiteral( ss_new, start, 1 );
+        }
+        length = islogical( start );
+        if( length > 0 ){
+            getSymbol( ss_new, length );
             return;
-        case '.':
-            if( isdigit( start[ 1 ] ) ) {
-                getFloat( ss_new, start, 1, AFTER_DOT );
-                return;
-            }
-            length = islogical( start );
-            if( length > 0 ){
-                getSymbol( ss_new, length );
-                return;
-            }
+        }
     }
 
-    if( issymbol( start[ 0 ] ) ) {
+    if( issymbol( start[0] ) ) {
         getSymbol( ss_new, 1 );
         return;
     }
@@ -542,7 +538,7 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
         return;
     }
 
-    if( isalpha( *start ) || ( *start == '_' ) || ( *start == '$' ) ) {
+    if( isalpha( *start ) || (*start == '_') || (*start == '$') ) {
         getText( ss_new, start );
         return;
     }

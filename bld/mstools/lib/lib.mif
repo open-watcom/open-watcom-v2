@@ -1,92 +1,61 @@
-!include ..\..\..\master.mif
+name = lib
 
-inc_dirs            += -i$(lib_misc_dir)\h;$(orl_dir)\h
+!ifneq host_os nt
+!   error Unknown OS.
+!endif
 
+#
+# Define the name(s) of the program(s) to build.
+#
+!ifeq      host_os nt
+!   define lib_stub lib.exe
+!else
+!   define lib_stub
+!endif
+
+done: $(lib_stub) lib386.exe libaxp.exe libppc.exe
+
+!include ../../master.mif
+
+!include $(orl_dir)/client.mif
 
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
 lib386_objs         = deff386.obj lib386.obj mesg386.obj xlate386.obj $(lib_common_objs)
 libaxp_objs         = deffaxp.obj libaxp.obj mesgaxp.obj xlateaxp.obj $(lib_common_objs)
 libppc_objs         = deffppc.obj libppc.obj mesgppc.obj xlateppc.obj $(lib_common_objs)
-lib_hdrs            = optdata.h
+lib_hdrs            = optparsh.gh
+lib_common_libs     = $(orl_lib)
 
-!ifeq host_OS nt
-!   ifeq host_CPU 386
-!       define lib_common_libs $(orl_dir)\o\orl.lib
-!   else ifeq host_CPU axp
-!       define lib_common_libs $(orl_dir)\axp\orl.lib
-!   endif
-!else
-!   error Unknown OS.
-!endif
+.c :  ../c;../../c;$(lib_misc_dir)/c
+.h :  ../h;../../h;$(lib_misc_dir)/h;$(orl_dir)/h
 
-
-#
-# Define the name(s) of the program(s) to build.
-#
-!ifeq      host_OS nt
-!   define lib_stub lib.exe
-!else
-!   define lib_stub
-!endif
-
+inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 
 #
 # Instructions for building the executable.
 #
-done :  $(lib_stub) lib386.exe libaxp.exe libppc.exe
 
-lib.exe :  $(libstub_objs)
+lib.exe :  $(libstub_objs) $(version_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libstub_objs)}
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
 
-lib386.exe :  $(lib386_objs)
+lib386.exe :  $(lib_hdrs) $(lib386_objs) $(lib_common_libs) $(ver386_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(lib386_objs)} library {$(lib_common_libs)}
+!ifdef ver386_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(ver386_res_$(host_os)_$(host_cpu)) $^@
+!endif
 
-libaxp.exe :  $(libaxp_objs)
+libaxp.exe :  $(lib_hdrs) $(libaxp_objs) $(lib_common_libs) $(veraxp_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libaxp_objs)} library {$(lib_common_libs)}
+!ifdef veraxp_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(veraxp_res_$(host_os)_$(host_cpu)) $^@
+!endif
 
-libppc.exe :  $(libppc_objs)
+libppc.exe :  $(lib_hdrs) $(libppc_objs) $(lib_common_libs) $(verppc_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(libppc_objs)} library {$(lib_common_libs)}
-
-
-.c :  ..\..\..\c;..\..\c;$(lib_misc_dir)\c
-.h :  ..\..\..\h;..\..\h;$(lib_misc_dir)\h;$(orl_dir)\h
-.gml : ..\..\gml
-
-deff386.obj :  deffile.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_386__ -fo=deff386.obj $[@
-deffaxp.obj :  deffile.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_AXP__ -fo=deffaxp.obj $[@
-deffppc.obj :  deffile.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_PPC__ -fo=deffppc.obj $[@
-
-lib386.obj :  lib.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_386__ -fo=lib386.obj $[@
-libaxp.obj :  lib.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_AXP__ -fo=libaxp.obj $[@
-libppc.obj :  lib.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_PPC__ -fo=libppc.obj $[@
-
-mesg386.obj :  message.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_386__ -fo=mesg386.obj $[@
-mesgaxp.obj :  message.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_AXP__ -fo=mesgaxp.obj $[@
-mesgppc.obj :  message.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_PPC__ -fo=mesgppc.obj $[@
-
-xlate386.obj :  translat.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_386__ -fo=xlate386.obj $[@
-xlateaxp.obj :  translat.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_AXP__ -fo=xlateaxp.obj $[@
-xlateppc.obj :  translat.c $(lib_hdrs)
-        $(mstools_compile) -d__TARGET_PPC__ -fo=xlateppc.obj $[@
-
-parse.obj :  parse.c optparse.c $(lib_hdrs)
-
-demangle.obj :  demangle.c demangle.h
-
-optparse.c optdata.h :  optencod.exe ms.gml
-        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.h ..\..\c\optparse.c ..\..\h\usagemsg.h i86
-
-
-!include ..\..\..\build.mif
+!ifdef verppc_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(verppc_res_$(host_os)_$(host_cpu)) $^@
+!endif

@@ -125,8 +125,8 @@ void InitializeStringTables( void ) {
     InitSrchTable( Instance, DPMI_Sort_types );
     InitSrchTable( Instance, Display_types );
     InitListStrTables();
-    HeapWalkName = GetRCString( STR_APP_NAME);
-    HeapTitles = GetRCString( STR_GBL_HEADINGS );
-    HeapDPMITitles = GetRCString( STR_SELECTOR_HEADINGS );
-    HeapLocalTitles = GetRCString( STR_LCL_HEADINGS );
+    HeapWalkName = HWGetRCString( STR_APP_NAME);
+    HeapTitles = HWGetRCString( STR_GBL_HEADINGS );
+    HeapDPMITitles = HWGetRCString( STR_SELECTOR_HEADINGS );
+    HeapLocalTitles = HWGetRCString( STR_LCL_HEADINGS );
 }

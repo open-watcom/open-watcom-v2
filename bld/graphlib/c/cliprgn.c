@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _setcliprgn( short x1, short y1, short x2, short y2 )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcliprgn( short x1, short y1, short x2, short y2 )
 /*=====================================================================
 
    This routine sets the clip region for graphics. */
@@ -100,7 +100,7 @@ void _WCI86FAR _L2setcliprgn( short x1, short y1, short x2, short y2 )
 }
 
 
-void _WCI86FAR _CGRAPH _getcliprgn( short _WCI86FAR *xmin, short _WCI86FAR *ymin,
+_WCRTLINK void _WCI86FAR _CGRAPH _getcliprgn( short _WCI86FAR *xmin, short _WCI86FAR *ymin,
                                short _WCI86FAR *xmax, short _WCI86FAR *ymax )
 //=================================================================
 

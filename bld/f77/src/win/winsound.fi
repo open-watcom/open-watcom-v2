@@ -1,0 +1,113 @@
+*$noreference
+
+! Sound Functions:
+! ----------------
+
+      external CloseSound
+      external CountVoiceNotes
+      external GetThresholdEvent
+      external GetThresholdStatus
+      external OpenSound
+      external SetSoundNoise
+      external SetVoiceAccent
+      external SetVoiceEnvelope
+      external SetVoiceNote
+      external SetVoiceQueueSize
+      external SetVoiceSound
+      external SetVoiceThreshold
+      external StartSound
+      external StopSound
+      external SyncAllVoices
+      external WaitSoundState
+
+      integer*2 CountVoiceNotes
+      integer*4 GetThresholdEvent
+      integer*2 GetThresholdStatus
+      integer*2 OpenSound
+      integer*2 SetSoundNoise
+      integer*2 SetVoiceAccent
+      integer*2 SetVoiceEnvelope
+      integer*2 SetVoiceNote
+      integer*2 SetVoiceQueueSize
+      integer*2 SetVoiceSound
+      integer*2 SetVoiceThreshold
+      integer*2 StartSound
+      integer*2 StopSound
+      integer*2 SyncAllVoices
+      integer*2 WaitSoundState
+
+! SetSoundNoise() Sources
+
+      integer S_PERIOD512
+      integer S_PERIOD1024
+      integer S_PERIOD2048
+      integer S_PERIODVOICE
+      integer S_WHITE512
+      integer S_WHITE1024
+      integer S_WHITE2048
+      integer S_WHITEVOICE
+
+      integer S_SERDVNA
+      integer S_SEROFM
+      integer S_SERMACT
+      integer S_SERQFUL
+      integer S_SERBDNT
+      integer S_SERDLN
+      integer S_SERDCC
+      integer S_SERDTP
+      integer S_SERDVL
+      integer S_SERDMD
+      integer S_SERDSH
+      integer S_SERDPT
+      integer S_SERDFQ
+      integer S_SERDDR
+      integer S_SERDSR
+      integer S_SERDST
+
+      parameter ( S_PERIOD512   = 0 ) ! Freq=N/512 high pitch, less coarse hiss
+      parameter ( S_PERIOD1024  = 1 ) ! Freq=N/1024
+      parameter ( S_PERIOD2048  = 2 ) ! Freq=N/2048 low pitch, more coarse hiss
+      parameter ( S_PERIODVOICE = 3 ) ! Source is frequency from voice channel 3
+      parameter ( S_WHITE512    = 4 ) ! Freq=N/512 high pitch, less coarse hiss
+      parameter ( S_WHITE1024   = 5 ) ! Freq=N/1024
+      parameter ( S_WHITE2048   = 6 ) ! Freq=N/2048 low pitch, more coarse hiss
+      parameter ( S_WHITEVOICE  = 7 ) ! Source is frequency from voice channel 3
+
+      parameter ( S_SERDVNA     = -1 )  ! Device not available
+      parameter ( S_SEROFM      = -2 )  ! Out of memory
+      parameter ( S_SERMACT     = -3 )  ! Music active
+      parameter ( S_SERQFUL     = -4 )  ! Queue full
+      parameter ( S_SERBDNT     = -5 )  ! Invalid note
+      parameter ( S_SERDLN      = -6 )  ! Invalid note length
+      parameter ( S_SERDCC      = -7 )  ! Invalid note count
+      parameter ( S_SERDTP      = -8 )  ! Invalid tempo
+      parameter ( S_SERDVL      = -9 )  ! Invalid volume
+      parameter ( S_SERDMD      = -10 ) ! Invalid mode
+      parameter ( S_SERDSH      = -11 ) ! Invalid shape
+      parameter ( S_SERDPT      = -12 ) ! Invalid pitch
+      parameter ( S_SERDFQ      = -13 ) ! Invalid frequency
+      parameter ( S_SERDDR      = -14 ) ! Invalid duration
+      parameter ( S_SERDSR      = -15 ) ! Invalid source
+      parameter ( S_SERDST      = -16 ) ! Invalid state
+
+! Accent Modes
+
+      integer S_NORMAL
+      integer S_LEGATO
+      integer S_STACCATO
+
+      parameter ( S_NORMAL      = 0 )
+      parameter ( S_LEGATO      = 1 )
+      parameter ( S_STACCATO    = 2 )
+
+! WaitSoundState() Constants
+
+      integer S_QUEUEEMPTY
+      integer S_THRESHOLD
+      integer S_ALLTHRESHOLD
+
+      parameter ( S_QUEUEEMPTY        = 0 )
+      parameter ( S_THRESHOLD         = 1 )
+      parameter ( S_ALLTHRESHOLD      = 2 )
+
+*$reference

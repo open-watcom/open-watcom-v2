@@ -1,9 +1,9 @@
 //
 // For OS/2 2.x:
-//      wcl386 pmhello.c -bt=os2v2 -l=os2v2_pm
+//      wcl386 pmhello.c -bt=os2 -l=os2v2_pm
 //
 // For OS/2 1.x:
-//      wcl pmhello.c -bt=os2 /"sys os2 pm op stack=8k"
+//      wcl pmhello.c -bt=os2 -l=os2_pm -"op stack=8k"
 //
 
 #define INCL_WIN
@@ -23,7 +23,7 @@ int main( void )
     WinMessageBox( HWND_DESKTOP,
                    0,
                    "Hello World",
-                   "WATCOM Example",
+                   "Open Watcom Example",
                    0,
                    MB_NOICON | MB_OK );
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler test app, Part II.
 *
 ****************************************************************************/
 
@@ -41,7 +40,7 @@ extern int count, niter;
 extern void (*check_if)(int);
 
 
-static oops_oops( unsigned num )
+static void oops_oops( unsigned num )
 {
         while( --num )
         {
@@ -50,7 +49,7 @@ static oops_oops( unsigned num )
         }
 }
 
-static blink_blink( unsigned num )
+static void blink_blink( unsigned num )
 {
     unsigned long   dogy;
 
@@ -67,7 +66,7 @@ _MARK_( "start of blinking ..." );
 _MARK_( "... end of blinking" );
 }
 
-up_and_up_has_an_extremely_long_and_verbose_function_name( unsigned num )
+void up_and_up_has_an_extremely_long_and_verbose_function_name( unsigned num )
 {
         while( --num )
         {
@@ -78,7 +77,7 @@ up_and_up_has_an_extremely_long_and_verbose_function_name( unsigned num )
         printf( "\r MMMM \r" );
 }
 
-dont_do_it()
+void dont_do_it()
 {
     blink_blink( SIZE );
     up_and_up_has_an_extremely_long_and_verbose_function_name( SIZE );

@@ -39,14 +39,14 @@
 #define LITSTR( x, y ) char *_LIT##x;
 #include "wdengin.str"
 
-InitEngineLiterals()
+void InitEngineLiterals()
 {
     #undef LITSTR
     #define LITSTR( x, y ) _LIT##x = DUILoadString( DBG_LITERAL_##x );
     #include "wdengin.str"
 }
 
-FiniEngineLiterals()
+void FiniEngineLiterals()
 {
     #undef LITSTR
     #define LITSTR( x, y ) DbgFree( _LIT##x );

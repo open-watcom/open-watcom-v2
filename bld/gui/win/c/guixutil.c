@@ -54,7 +54,7 @@ extern  WPI_TEXTMETRIC  GUItm;
 extern  WPI_INST        GUIMainHInst;
 extern  WPI_INST        GUIResHInst;
 
-static MaxChild( gui_window *wnd, void *param )
+static void MaxChild( gui_window *wnd, void *param )
 {
     param = param;
     if( _wpi_iszoomed( wnd->hwnd_frame ) ) {
@@ -381,7 +381,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     }
     if( wnd->hdc != (WPI_PRES)NULL ) {
         _wpi_releasepres( wnd->hwnd, wnd->hdc );
-        wnd->hdc = NULL;
+        wnd->hdc = NULLHANDLE;
     }
 #ifdef __OS2_PM__
     GUIFreeWndPaintHandles( wnd, TRUE );
@@ -394,7 +394,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
         wnd->hwnd_pinfo.normal_pres = (WPI_PRES)NULL;
     }
 #endif
-    GUIFree( wnd );
+    GUIMemFree( wnd );
 }
 
 bool GUIScrollOn( gui_window *wnd, int bar )
@@ -458,7 +458,7 @@ WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     if( hwnd != NULLHANDLE ) {
         return( _wpi_sendmessage( hwnd, msg, wparam, lparam ) );
     } else {
-        return( NULL );
+        return( 0L );
     }
 }
 
@@ -471,7 +471,7 @@ WPI_MRESULT GUISendDlgItemMessage( HWND parent, int control, WPI_MSG msg,
     if( hwnd != NULLHANDLE ) {
         return( _wpi_sendmessage( hwnd, msg, wparam, lparam ) );
     } else {
-        return( NULL );
+        return( 0L );
     }
 }
 
@@ -500,7 +500,7 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *pt, gui_point *point )
 HWND GUIGetScrollHWND( gui_window *wnd )
 {
     if( wnd == NULL ) {
-        return( NULL );
+        return( NULLHANDLE );
     }
     if( wnd->root != NULLHANDLE ) {
         return( wnd->root );
@@ -604,7 +604,7 @@ void GUIRedrawScroll( gui_window *wnd, int bar, bool redraw_now )
 HWND GUIGetParentHWND( gui_window *wnd )
 {
     if( wnd == NULL ) {
-        return( NULL );
+        return( NULLHANDLE );
     }
     if( wnd->root != NULLHANDLE ) {
         return( wnd->root );
@@ -615,7 +615,7 @@ HWND GUIGetParentHWND( gui_window *wnd )
 HWND GUIGetParentFrameHWND( gui_window *wnd )
 {
     if( wnd == NULL ) {
-        return( NULL );
+        return( NULLHANDLE );
     }
     if( wnd->root_frame != NULLHANDLE ) {
         return( wnd->root_frame );
@@ -707,7 +707,7 @@ WPI_FONT GUIGetSystemFont( void )
     font = NULL;
     ret = _wpi_getsystemfont();
     if( ret ) {
-        font = (WPI_FONT) GUIAlloc( sizeof( *font ) );
+        font = (WPI_FONT) GUIMemAlloc( sizeof( *font ) );
         if( font ) {
             *font = *ret;
         }

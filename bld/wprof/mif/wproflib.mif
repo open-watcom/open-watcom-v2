@@ -1,43 +1,64 @@
-memory_model_i86 = l
 !include wres.mif
 
 aui_dir_nt_axp  = ntaxp
-aui_dir_nt_386  = nt
-aui_dir_nt      = $(aui_dir_nt_$(host_CPU))
-aui_dir_dos     = of
-!ifeq PM 1
-aui_dir_os2     = pm
+aui_dir_nt_386  = nt386
+aui_dir_nt      = $(aui_dir_nt_$(host_cpu))
+aui_dir_dos     = dos386
+!ifeq sys_windowed 1
+aui_dir_os2     = os2386.pm
 !else
-aui_dir_os2     = ol
+aui_dir_os2     = os2386
 !endif
-aui_dir_qnx     = o32s
-aui_dir_win     = win
+aui_dir_qnx     = qnx386
+aui_dir_win     = wini86
+aui_dir_linux   = linux386
+aui_dir_bsd     = bsd386
+aui_dir_osx     = osx386
 
-aui_lib = $(aui_dir)\$(aui_dir_$(host_OS))\aui.lib
-
-gui_dir_nt_axp  = win\guintaxp
-gui_dir_nt_386  = win\guintf
-gui_dir_nt      = $(gui_dir_nt_$(host_CPU))
-gui_dir_dos     = ui\guidosf
-!ifeq PM 1
-gui_dir_os2     = win\guipml
+!ifdef bootstrap
+aui_lib = $(aui_dir)/$(%OBJDIR)/aui.lib
 !else
-gui_dir_os2     = ui\guios2l
+aui_lib = $(aui_dir)/$(aui_dir_$(host_os))/aui.lib
 !endif
-gui_dir_qnx     = ui\guiqnxs
-gui_dir_win     = win\guiwinl
 
-gui_lib = $(gui_dir)\$(gui_dir_$(host_OS)).lib
-
-extra_lib_dos   = $(ui_dir)\$(machine)dos\uilibf.lib $(wres_lib)
-!ifeq PM 1
-extra_lib_os2   = $(watcom_dir)\lib\os2.lib
+gui_dir_nt_axp  = $(gui_dir)/win/ntaxp/gui.lib
+gui_dir_nt_386  = $(gui_dir)/win/nt386/gui.lib
+gui_dir_dos     = $(gui_dir)/ui/dos386/gui.lib
+!ifeq sys_windowed 1
+gui_dir_nt      = $(gui_dir_nt_$(host_cpu))
+gui_dir_os2     = $(gui_dir)/win/os2386/gui.lib
 !else
-extra_lib_os2   = $(ui_dir)\os2\uilibl.lib $(wres_lib) $(watcom_dir)\lib\doscalls.lib
+gui_dir_nt      = $(gui_dir)/ui/nt$(host_cpu)/gui.lib
+gui_dir_os2     = $(gui_dir)/ui/os2386/gui.lib
 !endif
-extra_lib_qnx   = $(ui_dir)\qnx\uilibs.lib $(wres_lib)
-extra_lib_win   = $(wres_lib)
+gui_dir_qnx     = $(gui_dir)/ui/qnx386/gui.lib
+gui_dir_win     = $(gui_dir)/win/wini86/gui.lib
+gui_dir_linux   = $(gui_dir)/ui/linux386/gui.lib
+gui_dir_bsd     = $(gui_dir)/ui/bsd386/gui.lib
+gui_dir_osx     = $(gui_dir)/ui/osx386/gui.lib
 
-extra_lib       = $(extra_lib_$(host_OS))
+!ifdef bootstrap
+gui_lib = $(gui_dir)/ui/$(%OBJDIR)/gui.lib
+!else
+gui_lib = $(gui_dir_$(host_os))
+!endif
+
+extra_lib_dos   = $(ui_dir)/dos/dos386/ui.lib
+!ifeq sys_windowed 1
+extra_lib_os2   = $(os2386)
+!else
+extra_lib_nt    = $(ui_dir)/nt/nt$(host_cpu)/ui.lib
+extra_lib_os2   = $(ui_dir)/os2/os2386/ui.lib $(os2386)
+!endif
+extra_lib_qnx   = $(ui_dir)/qnx/qnx386/ui.lib
+!ifdef bootstrap
+extra_lib_linux = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+extra_lib_bsd   = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+extra_lib_osx   = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+!else
+extra_lib_linux = $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
+!endif
+
+extra_lib       = $(extra_lib_$(host_os)) $(wres_lib)
 
 wprof_libs      = $(aui_lib) $(gui_lib) $(extra_lib)

@@ -1,0 +1,22 @@
+# Japanese text
+
+Country=81
+CodePage=932
+Note="íç&colon."
+Caution="íç&colon."
+Warning="åxçê&colon."
+Reference="Reference"
+olChars=abcdefghijklmnopqrstuvwxyz
+olClose1=.
+olClose2=)
+ulItemId1=o
+ulItemId2=-
+ulItemId3=•
+cgraphicFontFaceName=MINCHO
+cgraphicFontWidth=6
+cgraphicFontHeight=12
+Grammer
+Words=0-9+A-Z+a-z+ÇO-ÇX+Ç`-Çy+ÇÅ-Çö
+RemoveNL=Å@-¸¸
+eGrammer
+

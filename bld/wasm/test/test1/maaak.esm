@@ -1,0 +1,15 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov       ah,byte ptr [bx]
+    mov       ax,word ptr 3[bx]
+    mov       eax,dword ptr 0fH[bx]
+L$1:
+    mov       ah,byte ptr 33H[bx]
+    mov       ah,byte ptr cs:L$1
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hyperbolic cosine routine.
 *
 ****************************************************************************/
 
@@ -37,42 +36,35 @@
 #include "mathcode.h"
 #include "pdiv.h"
 
-_WMRTLINK extern double _IF_dcosh( double );
-
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_cosh "IF@COSH";
-  #pragma aux (if_rtn) _IF_dcosh "IF@DCOSH";
-#endif
 
 _WMRTLINK float _IF_cosh( float x )
-/*********************/
-    {
-        return( _IF_dcosh( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dcosh( x ) );
+}
 
 _WMRTLINK double (cosh)( double x )
-/***********************/
-    {
-        return( _IF_dcosh( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dcosh( x ) );
+}
 
 _WMRTLINK double _IF_dcosh( double x )
-/*************************/
-    {
-        double z;
+/************************************/
+{
+    double  z;
 
-        z = fabs( x );
-        if( z > 709.782712893384 ) {            /* if argument is too large */
-//            z = _matherr( OVERFLOW, "cosh", &x, &x, HUGE_VAL );
-            z = __math1err( FUNC_COSH | M_OVERFLOW | V_HUGEVAL, &x );
-        } else {
+    z = fabs( x );
+    if( z > 709.782712893384 ) {            /* if argument is too large */
+        z = __math1err( FUNC_COSH | M_OVERFLOW | V_HUGEVAL, &x );
+    } else {
 /*          if( z <= ldexp( 1.0, -26 ) ) { */
-            if( z <= 1.49011611938476580e-008 ) { /* if x is small */
-                z = 1.0;
-            } else {
-                z = exp( x );
-                z = (z + PDIV( 1.0 , z) ) / 2.0;
-            }
+        if( z <= 1.49011611938476580e-008 ) { /* if x is small */
+            z = 1.0;
+        } else {
+            z = exp( x );
+            z = (z + PDIV( 1.0, z) ) / 2.0;
         }
-        return( z );
     }
+    return( z );
+}

@@ -34,14 +34,14 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "s37sib.def"
-#include "sysmacro.h"
+#include "cgmem.h"
+#include "makeins.h"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  hw_reg_set      HighReg(hw_reg_set);
 extern  bool            IsRXInstruction(instruction*);
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
-extern  void            FreeIns(instruction*);
 extern  instruction     *SIBPossibleIndex(instruction*,name*,name**,bool*,hw_reg_set,hw_reg_set,bool*,bool*);
 extern  void            ReplaceOperand(instruction*,name*,name*);
 extern  byte            *Copy(byte*,byte*,uint);
@@ -116,7 +116,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
         } else {
             sib.flags |= X_LOW_BASE;
         }
-        _Alloc( curr_sib, sizeof( sib_info ) );
+        curr_sib = CGAlloc( sizeof( sib_info ) );
         Copy( (byte *)&sib, (byte *)curr_sib, sizeof( sib_info ) );
         curr_sib->next = sib_head;
         sib_head = curr_sib;
@@ -139,7 +139,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
     while( sib_head != NULL ) {
         curr_sib = sib_head;
         sib_head = sib_head->next;
-        _Free( curr_sib, sizeof( sib_info ) );
+        CGFree( curr_sib );
     }
     return( dies );
 }

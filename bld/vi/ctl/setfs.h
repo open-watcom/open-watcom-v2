@@ -34,6 +34,8 @@
 #define SETFS_TAGFILENAME           104
 #define SETFS_IGNORETAGCASE         106
 #define SETFS_TAGPROMPT             107
+#define SETFS_FILETYPE              108
+#define SETFS_LANGUAGESELECT        109
 #define SETFS_LANGUAGEC             109
 #define SETFS_LANGUAGECPP           110
 #define SETFS_LANGUAGEFORTRAN       111
@@ -53,7 +55,6 @@
 #define SETFS_SHOWMATCH             140
 #define SETFS_LANGUAGE              141
 #define SETFS_HARDTAB               142
-#define SETFS_FILETYPE              108
 #define SETFS_DEFAULTS              144
 #define SETFS_DELETE                147
 #define SETFS_INSERT                148

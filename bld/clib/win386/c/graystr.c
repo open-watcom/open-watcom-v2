@@ -33,7 +33,7 @@
 #include "cover.h"
 
 BOOL PASCAL _Cover_GrayString( HDC dc, HBRUSH brush, FARPROC p, DWORD data,
-                        int count, int x, int y, int width, int height )
+                        short count, short x, short y, short width, short height )
 {
     return( GrayString( dc, brush, SetProc( p, GETPROC_GRAYSTRING ),
                 data, count, x, y, width, height ) );

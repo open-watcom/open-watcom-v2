@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  The 'undo' menu (stack unwinding).
 *
 ****************************************************************************/
 
@@ -38,10 +37,12 @@
 #include "guidlg.h"
 #include "dlgstk.h"
 
-extern void LastStackPos();
-extern void LastMachState();
 
-OVL_EXTERN bool StkOrHistoryEvent( gui_window * gui, gui_event gui_ev, bool *param )
+extern void LastStackPos( void );
+extern void LastMachState( void );
+
+
+OVL_EXTERN bool StkOrHistoryEvent( gui_window * gui, gui_event gui_ev, void *param )
 {
     unsigned    id;
     int         *resp;
@@ -87,7 +88,7 @@ static bool DoStackOrHistory( int id )
     return( TRUE );
 }
 
-bool DlgUpTheStack()
+bool DlgUpTheStack( void )
 {
     LastStackPos();
     return( TRUE );
@@ -103,7 +104,7 @@ bool DlgBackInTime( bool lost_mem_state )
     }
 }
 
-bool DlgIncompleteUndo()
+bool DlgIncompleteUndo( void )
 {
     return( WndDisplayMessage( LIT( WARN_Incomplete_Undo ), LIT( Empty ),
                              GUI_YES_NO ) == GUI_RET_YES );

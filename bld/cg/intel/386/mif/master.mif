@@ -1,12 +1,8 @@
-!include $(cg_dir)\intel\386\mif\386.mif
-!include $(cg_dir)\intel\mif\intel.mif
-!include $(cg_dir)\mif\master.mif
-!include mlibs.mif
-!include binname.mif
+!include $(cg_dir)/intel/386/mif/386.mif
+!include $(cg_dir)/intel/mif/intel.mif
+!include $(cg_dir)/mif/master.mif
 
 target_objs     = $(386_objs) $(intel_objs) $(cg_objs)
 target_name     = 386
 
-.OPTIMIZE
-
-!include $(cg_dir)\mif\target.mif
+!include $(cg_dir)/mif/target.mif

@@ -1,0 +1,47 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    lodsb     
+    lodsw     
+    lodsd     
+    rep lodsb 
+    rep lodsw 
+    rep lodsd 
+    lodsb     
+    lodsw     
+    lodsd     
+    rep lodsb 
+    rep lodsw 
+    rep lodsd 
+    lodsb     
+    lodsw     
+    lodsd     
+    rep lodsb 
+    rep lodsw 
+    rep lodsd 
+    lods      byte ptr cs:[esi]
+    lods      word ptr cs:[esi]
+    lods      dword ptr cs:[esi]
+    rep lods byte ptr cs:[esi]
+    rep lods word ptr cs:[esi]
+    rep lods dword ptr cs:[esi]
+    lods      byte ptr [si]
+    lods      word ptr [si]
+    lods      dword ptr [si]
+    rep lods byte ptr [si]
+    rep lods word ptr [si]
+    rep lods dword ptr [si]
+    lods      byte ptr cs:[si]
+    lods      word ptr cs:[si]
+    lods      dword ptr cs:[si]
+    rep lods byte ptr cs:[si]
+    rep lods word ptr cs:[si]
+    rep lods dword ptr cs:[si]
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0
+
+_DATA		ENDS
+		END

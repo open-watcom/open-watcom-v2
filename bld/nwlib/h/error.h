@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Library manager error handling interface.
 *
 ****************************************************************************/
 
@@ -36,13 +35,13 @@
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 extern jmp_buf Env;
-void InitMsg();
-void FiniMsg();
+void InitMsg( void );
+void FiniMsg( void );
 extern void FatalError( int str, ... );
-extern void FatalResError();
+extern void FatalResError( void );
 extern void DisplayError( int str, ... );
 extern void Warning( int str, ... );
 extern void Message( char *msg, ... );
 extern void MsgGet( int resourceid, char *buffer );
-extern void Usage(void);
+extern void Usage( void );
 #define MAX_ERROR_SIZE 256

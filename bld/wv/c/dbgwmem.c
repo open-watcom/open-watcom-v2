@@ -98,8 +98,8 @@ static gui_menu_struct MemMenu[] = {
 
 static unsigned         MemByteType;
 
-extern  MEMHEADER       MemHeader;
-extern  MEMHEADER       BinHeader;
+static  MEMHEADER       MemHeader;
+static  MEMHEADER       BinHeader;
 
 static MEMHEADER *HeadTab[] =
 {
@@ -226,6 +226,67 @@ static gui_ord BinHeader( a_window *wnd, int piece )
     return( 0 );
 }
 
+static void MemGetContents( a_window *wnd, bool make_dirty )
+{
+    int         size;
+    mem_window  *mem = WndMem( wnd );
+    void        *old;
+    int         old_size;
+
+    old = mem->u.m.contents;
+    old_size = mem->u.m.size;
+    size = mem->items_per_line * mem->item_size * WndRows( wnd );
+    mem->u.m.contents = WndAlloc( size );
+    if( mem->u.m.contents == NULL ) {
+        mem->u.m.size = 0;
+    } else {
+        mem->u.m.size = ProgPeekWrap( mem->u.m.addr, mem->u.m.contents, size );
+    }
+    AddrToString( &mem->u.m.addr, MAF_OFFSET, TxtBuff, TXT_LEN );
+    mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
+    if( mem->stack ) {
+        mem->sp_offset = AddrDiff( Context.stack, mem->u.m.addr );
+        mem->bp_offset = AddrDiff( Context.frame, mem->u.m.addr );
+    }
+    if( make_dirty ) {
+        WndNoSelect( wnd );
+        if( mem->u.m.size != old_size ||
+            old == NULL ||
+            mem->u.m.contents == NULL ) {
+            WndRepaint( wnd );
+        } else {
+            for( size = 0; size < old_size; ++size ) {
+                if( ((char*)old)[size] != ((char*)mem->u.m.contents)[size] ) {
+                    WndRowDirty( wnd, size / ( mem->items_per_line * mem->item_size ) );
+                }
+            }
+        }
+    }
+    WndFree( old );
+}
+
+static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
+{
+    mem_window  *mem = WndMem( wnd );
+
+    if( new_home ) mem->u.m.home = addr;
+    mem->u.m.addr = addr;
+    MemGetContents( wnd, FALSE );
+}
+
+static WNDREFRESH MemRefresh;
+static  void MemRefresh( a_window *wnd )
+{
+    mem_window  *mem = WndMem( wnd );
+
+    if( !mem->file ) {
+        MemGetContents( wnd, TRUE );
+    } else {
+        CnvULong( ULONG_MAX, TxtBuff );
+        mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
+    }
+    if( !WndHasCurrent( wnd ) ) WndFirstCurrent( wnd );
+}
 
 static void MemGetNewAddr( a_window *wnd )
 {
@@ -390,56 +451,6 @@ static bool MemScrollBytes( a_window *wnd, int tomove, bool new_home )
     return( TRUE );
 }
 
-
-static void MemGetContents( a_window *wnd, bool make_dirty )
-{
-    int         size;
-    mem_window  *mem = WndMem( wnd );
-    void        *old;
-    int         old_size;
-
-    old = mem->u.m.contents;
-    old_size = mem->u.m.size;
-    size = mem->items_per_line * mem->item_size * WndRows( wnd );
-    mem->u.m.contents = WndAlloc( size );
-    if( mem->u.m.contents == NULL ) {
-        mem->u.m.size = 0;
-    } else {
-        mem->u.m.size = ProgPeekWrap( mem->u.m.addr, mem->u.m.contents, size );
-    }
-    AddrToString( &mem->u.m.addr, MAF_OFFSET, TxtBuff, TXT_LEN );
-    mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
-    if( mem->stack ) {
-        mem->sp_offset = AddrDiff( Context.stack, mem->u.m.addr );
-        mem->bp_offset = AddrDiff( Context.frame, mem->u.m.addr );
-    }
-    if( make_dirty ) {
-        WndNoSelect( wnd );
-        if( mem->u.m.size != old_size ||
-            old == NULL ||
-            mem->u.m.contents == NULL ) {
-            WndRepaint( wnd );
-        } else {
-            for( size = 0; size < old_size; ++size ) {
-                if( ((char*)old)[size] != ((char*)mem->u.m.contents)[size] ) {
-                    WndRowDirty( wnd, size / ( mem->items_per_line * mem->item_size ) );
-                }
-            }
-        }
-    }
-    WndFree( old );
-}
-
-
-static void MemSetStartAddr( a_window *wnd, address addr, bool new_home )
-{
-    mem_window  *mem = WndMem( wnd );
-
-    if( new_home ) mem->u.m.home = addr;
-    mem->u.m.addr = addr;
-    MemGetContents( wnd, FALSE );
-}
-
 static void MemFreeBackout( mem_window *mem )
 {
     mem_backout *junk;
@@ -448,6 +459,19 @@ static void MemFreeBackout( mem_window *mem )
     mem->u.m.backout = junk->next;
     WndFree( junk->follow );
     WndFree( junk );
+}
+
+static void MemSetCurrent( a_window *wnd, unsigned offset )
+{
+    wnd_row     row;
+    int         line_size;
+    int         piece;
+    mem_window  *mem = WndMem( wnd );
+
+    line_size = mem->items_per_line * mem->item_size;
+    row = offset / line_size;
+    piece = ( offset - row * line_size ) / mem->item_size;
+    WndNewCurrent( wnd, row, piece+1 );
 }
 
 static void MemBackout( a_window *wnd )
@@ -503,19 +527,6 @@ static void MemNewBackout( a_window *wnd )
             return;
         }
     }
-}
-
-static void MemSetCurrent( a_window *wnd, unsigned offset )
-{
-    wnd_row     row;
-    int         line_size;
-    int         piece;
-    mem_window  *mem = WndMem( wnd );
-
-    line_size = mem->items_per_line * mem->item_size;
-    row = offset / line_size;
-    piece = ( offset - row * line_size ) / mem->item_size;
-    WndNewCurrent( wnd, row, piece+1 );
 }
 
 static void MemFollow( a_window *wnd )
@@ -579,94 +590,6 @@ static void SetBreakWrite( a_window *wnd )
     }
 }
 
-static  WNDMENU MemMenuItem;
-static void     MemMenuItem( a_window *wnd, unsigned id, int row, int piece )
-{
-    mem_window  *mem = WndMem( wnd );
-
-    --piece;
-    if( piece >= mem->items_per_line ) piece -= mem->items_per_line;
-    switch( id ) {
-    case MENU_INITIALIZE:
-        WndMenuEnable( wnd, MENU_MEMORY_MODIFY, CanModify( wnd, row, piece ) );
-        WndMenuEnable( wnd, MENU_MEMORY_LEFT, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_RIGHT, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_ASSEMBLY, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_ADDRESS, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_BREAK_WRITE, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_NEAR, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_FAR, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_CURSOR, !mem->file && WndHasCurrent( wnd ) || mem->total_size != 0 );
-        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_SEGMENT, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_HOME, !mem->file );
-        WndMenuEnable( wnd, MENU_MEMORY_REPEAT, !mem->file &&
-                            ( mem->u.m.follow || mem->total_size != 0 ) );
-        WndMenuEnable( wnd, MENU_MEMORY_PREV, !mem->file && mem->u.m.backout );
-        break;
-    case MENU_MEMORY_ASSEMBLY:
-        WndAsmInspect( AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) ) );
-        break;
-    case MENU_MEMORY_FOLLOW_FAR:
-        DoFollow( wnd, "%%(.%o)" );
-        break;
-    case MENU_MEMORY_FOLLOW_NEAR:
-        DoFollow( wnd, "*(.%o)" );
-        break;
-    case MENU_MEMORY_FOLLOW_SEGMENT:
-        DoFollow( wnd, "(*(short*)(.%o)):0" );
-        break;
-    case MENU_MEMORY_FOLLOW_CURSOR:
-        MemNewBackout( wnd );
-        WndFree( mem->u.m.follow );
-        mem->u.m.follow = NULL;
-        if( WndHasCurrent( wnd ) ) {
-            mem->total_size = MemCurrOffset( wnd );
-        }
-        MemFollow( wnd );
-        break;
-    case MENU_MEMORY_HOME:
-        while( mem->u.m.backout != NULL ) {
-            MemBackout( wnd );
-        }
-        MemSetStartAddr( wnd, mem->u.m.home, TRUE );
-        MemSetCurrent( wnd, 0 );
-        WndRepaint( wnd );
-        break;
-    case MENU_MEMORY_REPEAT:
-        MemNewBackout( wnd );
-        MemFollow( wnd );
-        break;
-    case MENU_MEMORY_PREV:
-        MemBackout( wnd );
-        break;
-    case MENU_MEMORY_BREAK_WRITE:
-        SetBreakWrite( wnd );
-        break;
-    case MENU_MEMORY_MODIFY:
-        MemModify( wnd, row, piece+1 );
-        break;
-    case MENU_MEMORY_ADDRESS:
-        MemGetNewAddr( wnd );
-        break;
-    case MENU_MEMORY_LEFT:
-        MemScrollBytes( wnd, -mem->item_size, FALSE );
-        WndNoSelect( wnd );
-        WndRepaint( wnd );
-        break;
-    case MENU_MEMORY_RIGHT:
-        MemScrollBytes( wnd, mem->item_size, FALSE );
-        WndNoSelect( wnd );
-        WndRepaint( wnd );
-        break;
-    default:
-        MemSetType( wnd, PIECE_TYPE( id ) );
-        MemResize( wnd );
-        WndZapped( wnd );
-        break;
-    }
-}
-
-
 static bool GetBuff( mem_window *mem,
                      unsigned long offset, char *buff, int size )
 {
@@ -676,7 +599,7 @@ static bool GetBuff( mem_window *mem,
     if( mem->file ) {
         offset += mem->u.f.offset;
         new = SeekStream( mem->u.f.filehndl,
-                          offset, SEEK_ORG );
+                          offset, DIO_SEEK_ORG );
         if( new != offset ) return( FALSE );
         len = ReadStream( mem->u.f.filehndl, buff, size );
         return( len >= size );
@@ -687,7 +610,6 @@ static bool GetBuff( mem_window *mem,
         return( TRUE );
     }
 }
-
 
 static WNDGETLINE MemGetLine;
 static  bool    MemGetLine( a_window *wnd, int row, int piece,
@@ -796,64 +718,6 @@ static  bool    MemGetLine( a_window *wnd, int row, int piece,
     return( TRUE );
 }
 
-
-static WNDREFRESH MemRefresh;
-static  void MemRefresh( a_window *wnd )
-{
-    mem_window  *mem = WndMem( wnd );
-
-    if( !mem->file ) {
-        MemGetContents( wnd, TRUE );
-    } else {
-        CnvULong( ULONG_MAX, TxtBuff );
-        mem->address_end = ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
-    }
-    if( !WndHasCurrent( wnd ) ) WndFirstCurrent( wnd );
-}
-
-
-static WNDREFRESH StkRefresh;
-static  void StkRefresh( a_window *wnd )
-{
-    MemSetStartAddr( wnd, Context.stack, TRUE );
-    WndZapped( wnd );
-}
-
-
-static  WNDSCROLL       MemScroll;
-static  int     MemScroll( a_window *wnd, int lines )
-{
-    int         tomove;
-    long        offset;
-    long        new;
-    mem_window  *mem = WndMem( wnd );
-
-    if( lines >= WND_MAX_ROW ) return( 0 ); // CTRL-END request
-    if( mem->cursor_row != WND_NO_ROW &&
-        mem->piece_type == MemByteType ) {
-        WndPieceDirty( wnd, mem->cursor_row, mem->shadow_piece );
-    }
-    tomove = mem->items_per_line*mem->item_size*lines;
-    if( mem->total_size != 0 ) return( 0 );
-    if( mem->file ) {
-        offset = mem->u.f.offset+tomove;
-        if( offset < 0 ) offset = 0;
-        new = SeekStream( mem->u.f.filehndl, offset, SEEK_ORG );
-        if( new != offset ) return( 0 );
-        if( ReadStream( mem->u.f.filehndl, TxtBuff, 1 ) != 1 ) return( 0 );
-        mem->u.f.offset = offset;
-        WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
-        WndSetThumbPercent( wnd, ( offset * 100 ) / mem->u.f.size );
-    } else {
-        if( !MemScrollBytes( wnd, tomove, FALSE ) ) {
-            lines = 0;
-        }
-    }
-    WndRowDirty( wnd, -TITLE_SIZE );
-    return( lines );
-}
-
-
 static void MemResize( a_window *wnd )
 {
     mem_window          *mem = WndMem( wnd );
@@ -882,6 +746,133 @@ static void MemResize( a_window *wnd )
     MemRefresh( wnd );
 }
 
+static  WNDMENU MemMenuItem;
+static void     MemMenuItem( a_window *wnd, unsigned id, int row, int piece )
+{
+    mem_window  *mem = WndMem( wnd );
+
+    --piece;
+    if( piece >= mem->items_per_line ) piece -= mem->items_per_line;
+    switch( id ) {
+    case MENU_INITIALIZE:
+        WndMenuEnable( wnd, MENU_MEMORY_MODIFY, CanModify( wnd, row, piece ) );
+        WndMenuEnable( wnd, MENU_MEMORY_LEFT, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_RIGHT, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_ASSEMBLY, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_ADDRESS, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_BREAK_WRITE, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_NEAR, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_FAR, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_CURSOR, !mem->file && WndHasCurrent( wnd ) || mem->total_size != 0 );
+        WndMenuEnable( wnd, MENU_MEMORY_FOLLOW_SEGMENT, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_HOME, !mem->file );
+        WndMenuEnable( wnd, MENU_MEMORY_REPEAT, !mem->file &&
+                            ( mem->u.m.follow || mem->total_size != 0 ) );
+        WndMenuEnable( wnd, MENU_MEMORY_PREV, !mem->file && mem->u.m.backout );
+        break;
+    case MENU_MEMORY_ASSEMBLY:
+        WndAsmInspect( AddrAddWrap( mem->u.m.addr, MemCurrOffset( wnd ) ) );
+        break;
+    case MENU_MEMORY_FOLLOW_FAR:
+        DoFollow( wnd, "%%(.%o)" );
+        break;
+    case MENU_MEMORY_FOLLOW_NEAR:
+        DoFollow( wnd, "*(.%o)" );
+        break;
+    case MENU_MEMORY_FOLLOW_SEGMENT:
+        DoFollow( wnd, "(*(short*)(.%o)):0" );
+        break;
+    case MENU_MEMORY_FOLLOW_CURSOR:
+        MemNewBackout( wnd );
+        WndFree( mem->u.m.follow );
+        mem->u.m.follow = NULL;
+        if( WndHasCurrent( wnd ) ) {
+            mem->total_size = MemCurrOffset( wnd );
+        }
+        MemFollow( wnd );
+        break;
+    case MENU_MEMORY_HOME:
+        while( mem->u.m.backout != NULL ) {
+            MemBackout( wnd );
+        }
+        MemSetStartAddr( wnd, mem->u.m.home, TRUE );
+        MemSetCurrent( wnd, 0 );
+        WndRepaint( wnd );
+        break;
+    case MENU_MEMORY_REPEAT:
+        MemNewBackout( wnd );
+        MemFollow( wnd );
+        break;
+    case MENU_MEMORY_PREV:
+        MemBackout( wnd );
+        break;
+    case MENU_MEMORY_BREAK_WRITE:
+        SetBreakWrite( wnd );
+        break;
+    case MENU_MEMORY_MODIFY:
+        MemModify( wnd, row, piece+1 );
+        break;
+    case MENU_MEMORY_ADDRESS:
+        MemGetNewAddr( wnd );
+        break;
+    case MENU_MEMORY_LEFT:
+        MemScrollBytes( wnd, -mem->item_size, FALSE );
+        WndNoSelect( wnd );
+        WndRepaint( wnd );
+        break;
+    case MENU_MEMORY_RIGHT:
+        MemScrollBytes( wnd, mem->item_size, FALSE );
+        WndNoSelect( wnd );
+        WndRepaint( wnd );
+        break;
+    default:
+        MemSetType( wnd, PIECE_TYPE( id ) );
+        MemResize( wnd );
+        WndZapped( wnd );
+        break;
+    }
+}
+
+static WNDREFRESH StkRefresh;
+static  void StkRefresh( a_window *wnd )
+{
+    MemSetStartAddr( wnd, Context.stack, TRUE );
+    WndZapped( wnd );
+}
+
+
+static  WNDSCROLL       MemScroll;
+static  int     MemScroll( a_window *wnd, int lines )
+{
+    int         tomove;
+    long        offset;
+    long        new;
+    mem_window  *mem = WndMem( wnd );
+
+    if( lines >= WND_MAX_ROW ) return( 0 ); // CTRL-END request
+    if( mem->cursor_row != WND_NO_ROW &&
+        mem->piece_type == MemByteType ) {
+        WndPieceDirty( wnd, mem->cursor_row, mem->shadow_piece );
+    }
+    tomove = mem->items_per_line*mem->item_size*lines;
+    if( mem->total_size != 0 ) return( 0 );
+    if( mem->file ) {
+        offset = mem->u.f.offset+tomove;
+        if( offset < 0 ) offset = 0;
+        new = SeekStream( mem->u.f.filehndl, offset, DIO_SEEK_ORG );
+        if( new != offset ) return( 0 );
+        if( ReadStream( mem->u.f.filehndl, TxtBuff, 1 ) != 1 ) return( 0 );
+        mem->u.f.offset = offset;
+        WndSetVScrollRange( wnd, WndRows( wnd ) * 2 );
+        WndSetThumbPercent( wnd, ( offset * 100 ) / mem->u.f.size );
+    } else {
+        if( !MemScrollBytes( wnd, tomove, FALSE ) ) {
+            lines = 0;
+        }
+    }
+    WndRowDirty( wnd, -TITLE_SIZE );
+    return( lines );
+}
 
 void InitMemWindow()
 {
@@ -943,8 +934,8 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( mem->file ) {
             mem->u.f.offset = 0;
             if( mem->u.f.filehndl != NIL_HANDLE ) {
-                old = SeekStream( mem->u.f.filehndl, 0L, SEEK_END );
-                mem->u.f.size = SeekStream( mem->u.f.filehndl, old, SEEK_ORG );
+                old = SeekStream( mem->u.f.filehndl, 0L, DIO_SEEK_END );
+                mem->u.f.size = SeekStream( mem->u.f.filehndl, old, DIO_SEEK_ORG );
             }
         } else {
             mem->u.m.follow = NULL;

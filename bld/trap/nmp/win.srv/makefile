@@ -1,13 +1,14 @@
-#pmake: build serv remote win 16 32 nmp x86
+#pmake: build serv remote os_win cpu_i86 cpu_386 nmp x86
+host_CPU = i86
+host_OS = win
 
 gui = 1
 os = win
 srv = nmp
 cpu = x86
+which = SERVER
+type  = remote_link
 
-extra_objs = $(remote_objs) nmpdos.obj
-resource_file = serv.res
+extra_objs = nmpdos.obj
 
-!include $(trap_dir)\serv.mif
-
-serv.res : serv.rc $(trap_dir)\common\win\winserv.rc
+!include $(trap_dir)/master.mif

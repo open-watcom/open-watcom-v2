@@ -1,7 +1,7 @@
 NAME = rm
 OBJS =  rm.obj
 
-!include $(posix_dir)\mif\targos.mif
+!include $(posix_dir)/mif/targos.mif
 extra_lnk = xlnk
 !ifeq targos dos
 model=s
@@ -11,7 +11,7 @@ model=s
 model=f
 !endif
 
-!include $(posix_dir)\mif\makeone.mif
+!include $(posix_dir)/mif/makeone.mif
 
 xlnk: .PROCEDURE
-    @%append $(LNK) op stack=10k
+    @%append $(name).lnk op stack=10k

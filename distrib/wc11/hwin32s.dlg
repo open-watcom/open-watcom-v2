@@ -1,0 +1,11 @@
+name=Help_Win32s
+static_text=\
+        //1"@ will allow you to install Microsoft Win32s."\
+        //2"@ は Microsoft Win32s をインストールできます."\
+        //0
+static_text=\
+        //1"This will allow you to run Win32s application under Windows 3.1."\
+        //2"これによって Win32s アプリケーションを Windows 3.1 で実行できます."\
+        //0
+static_text=
+include=ok.dlg

@@ -24,23 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This master file includes all the source of the filebuf
+*               member functions.
 *
 ****************************************************************************/
 
-
-#include "FLFATTAC.CPP"
-#include "FLFCLOSE.CPP"
-#include "FLFCONDE.CPP"
-#include "FLFCONFD.CPP"
-#include "FLFCONSF.CPP"
-#include "FLFDESTR.CPP"
-#include "FLFOPEN.CPP"
-#include "FLFOPROT.CPP"
-#include "FLFOVERF.CPP"
-#include "FLFPBFAI.CPP"
-#include "FLFSEEKO.CPP"
-#include "FLFSETBF.CPP"
-#include "FLFSYNC.CPP"
-#include "FLFUNDRF.CPP"
+#include "flfattac.cpp"
+#include "flfclose.cpp"
+#include "flfconde.cpp"
+#include "flfconfd.cpp"
+#include "flfconsf.cpp"
+#include "flfdestr.cpp"
+#include "flfopen.cpp"
+#include "flfoprot.cpp"
+#include "flfoverf.cpp"
+#include "flfpbfai.cpp"
+#include "flfseeko.cpp"
+#include "flfsetbf.cpp"
+#include "flfsync.cpp"
+#include "flfundrf.cpp"

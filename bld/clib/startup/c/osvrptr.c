@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor routine for address of _osver global.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned int (*__get_osver_ptr()) {
-    return &_osver;
+_WCRTLINK unsigned int *__get_osver_ptr( void )
+{
+    return( &_osver );
 }

@@ -51,22 +51,22 @@ extern WAccelEntry DefaultEntry;
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WInitEditWindows        ( HINSTANCE );
-extern void  WFiniEditWindows        ( void );
-extern void  WInitEditDlg            ( HINSTANCE inst, HWND parent );
-extern Bool  WCreateAccelEditWindow  ( WAccelEditInfo *, HINSTANCE );
-extern Bool  WResizeAccelEditWindow  ( WAccelEditInfo *, RECT * );
-extern Bool  WSetEditWinResName      ( WAccelEditInfo * );
-extern Bool  WInitEditWindowListBox  ( WAccelEditInfo * );
-extern void  WHandleSelChange        ( WAccelEditInfo * );
-extern void  WHandleChange           ( WAccelEditInfo * );
-extern void  WDoHandleSelChange      ( WAccelEditInfo *, Bool, Bool );
+extern void WInitEditWindows( HINSTANCE );
+extern void WFiniEditWindows( void );
+extern void WInitEditDlg( HINSTANCE inst, HWND parent );
+extern Bool WCreateAccelEditWindow( WAccelEditInfo *, HINSTANCE );
+extern Bool WResizeAccelEditWindow( WAccelEditInfo *, RECT * );
+extern Bool WSetEditWinResName( WAccelEditInfo * );
+extern Bool WInitEditWindowListBox( WAccelEditInfo * );
+extern void WHandleSelChange( WAccelEditInfo * );
+extern void WHandleChange( WAccelEditInfo * );
+extern void WDoHandleSelChange( WAccelEditInfo *, Bool, Bool );
 
-extern void  WResetEditWindow        ( WAccelEditInfo *einfo );
-extern Bool  WSetEditWindowKeyEntry  ( WAccelEditInfo *, WAccelEntry * );
-extern Bool  WGetEditWindowKeyEntry  ( WAccelEditInfo *, WAccelEntry *, Bool );
-extern void  WSetVirtKey             ( HWND, Bool );
-extern Bool  WClipAccelItem          ( WAccelEditInfo *einfo, Bool cut );
-extern Bool  WPasteAccelItem         ( WAccelEditInfo *einfo );
+extern void WResetEditWindow( WAccelEditInfo *einfo );
+extern Bool WSetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry * );
+extern Bool WGetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry *, Bool );
+extern void WSetVirtKey( HWND, Bool );
+extern Bool WClipAccelItem( WAccelEditInfo *einfo, Bool cut );
+extern Bool WPasteAccelItem( WAccelEditInfo *einfo );
 
 #endif

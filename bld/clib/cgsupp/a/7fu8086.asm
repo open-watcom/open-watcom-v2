@@ -47,7 +47,6 @@ defpe __FSU87
         push    ax
         fld     dword ptr -12[bp]
         jmp     short convert
-endproc __FSU87
 
 defpe __FDU87
         push    bp
@@ -59,7 +58,6 @@ defpe __FDU87
         push    dx
         fld     qword ptr -12[bp]
         ; fall through
-endproc __FDU87
 
 convert:
         push    si
@@ -117,6 +115,8 @@ ret_inf:
         mov     cx,ax
         mov     dx,ax
         jmp     done
+endproc __FDU87
+endproc __FSU87
 
         endmod
         end

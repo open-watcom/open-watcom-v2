@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 DLL startup code.
 *
 ****************************************************************************/
 
@@ -36,25 +35,28 @@
 #include <stdlib.h>
 #include "initfini.h"
 #include "libwin32.h"
+#include "osthread.h"
+#include "widechar.h"
+#include "initarg.h"
+#include "sigtab.h"
 
 extern int APIENTRY LibMain( HANDLE, DWORD, LPVOID );
 extern void __CommonInit( void );
 extern BOOL __disallow_single_dgroup( HANDLE );
 
-#ifdef __SW_BR
-    extern int          __Is_DLL;       /* TRUE => DLL, else not a DLL */
-    extern char *       _LpDllName;
-    extern wchar_t *    _LpwDllName;
-#else
+#ifndef __SW_BR
     extern int  __NTInit( int, void *, HANDLE );
     extern void __NTFini( void );
     extern BOOL __NTThreadInit( void );
     extern void __InitMultipleThread( void );
     extern BOOL __NTAddThread(void *);
     extern void __NTRemoveThread( int );
-#endif
 
-_WCRTLINK extern void (*__sig_init_rtn)(void);
+    extern thread_data * __AllocInitThreadData( thread_data * );
+    extern void __FreeInitThreadData( thread_data * );
+
+    extern thread_data * __FirstThreadData;
+#endif
 
 
 int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
@@ -64,11 +66,11 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 
     switch( reason ) {
     case DLL_THREAD_ATTACH:
-        #ifndef __SW_BR
-            if( !__NTAddThread( NULL ) ) {
-                return( FALSE );
-            }
-        #endif
+#ifndef __SW_BR
+        if( !__NTAddThread( NULL ) ) {
+            return( FALSE );
+        }
+#endif
         rc = LibMain( hdll, reason, reserved );
         break;
     case DLL_PROCESS_ATTACH:
@@ -79,35 +81,39 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
                 break;
             }
         }
-        #ifdef __SW_BR
-            __Is_DLL = 1;
-            __InitRtns( 15 );
-        #else
-            // The following initializers are called: (in the CLIB run-time DLL):
-            //      nothing is called
-            __InitRtns( 1 );
-            // allocate some thread data storage and initialize run-time variables
-            if( !__NTInit( TRUE, NULL, hdll ) ) {
+#ifdef __SW_BR
+        __Is_DLL = 1;
+        __InitRtns( INIT_PRIORITY_EXIT - 1 );
+#else
+        // The following initializers are called: (in the CLIB run-time DLL):
+        //      nothing is called
+        __InitRtns( INIT_PRIORITY_THREAD );
+        // allocate some thread data storage and initialize run-time variables
+        {
+            thread_data     *tdata = __AllocInitThreadData( NULL );
+
+            if( !tdata || !__NTInit( TRUE, tdata, hdll ) ) {
                 rc = FALSE;
                 break;
             }
-            // set up TLSIndex thingee
-            if( !__NTThreadInit() ) {   // safe to call multiple times
-                rc = FALSE;
-                break;
-            }
-            // The following initializers are called: (in the CLIB run-time DLL):
-            //      __chk8087
-            //      __verify_pentium_fdiv_bug
-            //      __Init_Argv
-            //      __imthread_fn (which calls _NTThreadInit and __InitMultipleThread)
-            __InitRtns( 15 );
-            // sets up semaphores and starts linked list of thread data storage
-            __InitMultipleThread();     // now safe to call multiple times
-        #endif
+        }
+        // set up TLSIndex thingee
+        if( !__NTThreadInit() ) {   // safe to call multiple times
+            rc = FALSE;
+            break;
+        }
+        // The following initializers are called: (in the CLIB run-time DLL):
+        //      __chk8087
+        //      __verify_pentium_fdiv_bug
+        //      __Init_Argv
+        //      __imthread_fn (which calls _NTThreadInit and __InitMultipleThread)
+        __InitRtns( INIT_PRIORITY_EXIT - 1 );
+        // sets up semaphores and starts linked list of thread data storage
+        __InitMultipleThread();     // now safe to call multiple times
+#endif
         if( _pRawDllMain != NULL ) {
             if( !_pRawDllMain( hdll, reason, reserved ) ) {
-                __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+                __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
                 rc = FALSE;
                 break;
             }
@@ -119,14 +125,14 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
         //      __setenvp
         //      __mbInitOnStartup
         //      __sig_init
-        //      __is_nonIBM
         //      (??) in STK
         //      __InitFiles
         //      __clock_init
         __InitRtns( 255 );
-        #ifdef __SW_BR
+#ifdef __SW_BR
         {
             static char    fn[_MAX_PATH];
+
             GetModuleFileNameA( hdll, fn, sizeof( fn ) );
             _LpDllName = fn;
         }
@@ -135,7 +141,7 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
             __lib_GetModuleFileNameW( hdll, wfn, sizeof( wfn ) );
             _LpwDllName = wfn;
         }
-        #endif
+#endif
         __CommonInit();
         __sig_init_rtn();
         rc = LibMain( hdll, reason, reserved );
@@ -145,9 +151,9 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
         break;
     case DLL_THREAD_DETACH:
         rc = LibMain( hdll, reason, reserved );
-        #ifndef __SW_BR
-            __NTRemoveThread( TRUE );
-        #endif
+#ifndef __SW_BR
+        __NTRemoveThread( TRUE );
+#endif
         break;
     case DLL_PROCESS_DETACH:
         rc = LibMain( hdll, reason, reserved );
@@ -155,13 +161,15 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
         if( _pRawDllMain != NULL ) {
             _pRawDllMain( hdll, reason, reserved );
         }
-        #ifndef __SW_BR
-            __NTFini(); // must be done before following finalizers get called
-        #endif
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-        #ifndef __SW_BR
-            __NTRemoveThread( TRUE );
-        #endif
+#ifndef __SW_BR
+        __NTFini(); // must be done before following finalizers get called
+#endif
+        __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
+#ifndef __SW_BR
+        __NTRemoveThread( TRUE );
+        __FreeInitThreadData( __FirstThreadData );
+        __FirstThreadData = NULL;
+#endif
         --processes;
     }
     return( rc );

@@ -1,0 +1,4 @@
+        structure /RXSTRING/
+            integer*4 strlength
+            integer*4 strptr
+        end structure

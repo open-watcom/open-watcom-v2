@@ -1,0 +1,111 @@
+/*
+ *  wmidata.h   Windows Management Instrumentation (WMI) data
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _wmidata_h_
+#define _wmidata_h_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* This implementation of wmidata.h exists solely to get mcd.h and minitape.h to build.
+ * It is highly incomplete.
+ */
+
+/* GUIDs */
+#define WMI_CHANGER_PARAMETERS_GUID \
+    { 0x24EB52AC, 0x7C77, 0x438B, { 0xAB, 0x61, 0xD0, 0x24, 0xDA, 0xB0, 0xC0, 0x3A } }
+#define WMI_CHANGER_PROBLEM_WARNING_GUID \
+    { 0x45DB06A5, 0x20D5, 0x4DE3, { 0xA3, 0x6C, 0x3A, 0xB9, 0x74, 0x60, 0x0A, 0x4C } }
+#define WMI_CHANGER_PROBLEM_DEVICE_ERROR_GUID \
+    { 0x56B396A8, 0x0B95, 0x42FE, { 0xBB, 0xCE, 0xD3, 0x6F, 0xDA, 0x90, 0x4F, 0x8E } }
+
+/* WMI tape drive parameters */
+typedef struct _WMI_TAPE_DRIVE_PARAMETERS {
+    ULONG   MaximumBlockSize;
+    ULONG   MinimumBlockSize;
+    ULONG   DefaultBlockSize;
+    ULONG   MaximumPartitionCount;
+    BOOLEAN CompressionCapable;
+    BOOLEAN CompressionEnabled;
+    BOOLEAN ReportSetmarks;
+    BOOLEAN HardwareErrorCorrection;
+} WMI_TAPE_DRIVE_PARAMETERS;
+typedef WMI_TAPE_DRIVE_PARAMETERS   *PWMI_TAPE_DRIVE_PARAMETERS;
+
+/* WMI tape media parameters */
+typedef struct _WMI_TAPE_MEDIA_PARAMETERS {
+    ULONGLONG   MaximumCapacity;
+    ULONGLONG   AvailableCapacity;
+    ULONG       BlockSize;
+    ULONG       PartitionCount;
+    BOOLEAN     MediaWriteProtected;
+} WMI_TAPE_MEDIA_PARAMETERS;
+typedef WMI_TAPE_MEDIA_PARAMETERS   *PWMI_TAPE_MEDIA_PARAMETERS;
+
+/* WMI tape problem warning */
+typedef struct _WMI_TAPE_PROBLEM_WARNING {
+    ULONG   DriveProblemType;
+    UCHAR   TapeData[512];
+} WMI_TAPE_PROBLEM_WARNING;
+typedef WMI_TAPE_PROBLEM_WARNING    *PWMI_TAPE_PROBLEM_WARNING;
+
+/* WMI tape problem I/O error */
+typedef struct _WMI_TAPE_PROBLEM_IO_ERROR {
+    ULONG   ReadCorrectedWithoutDelay;
+    ULONG   ReadCorrectedWithDelay;
+    ULONG   ReadTotalErrors;
+    ULONG   ReadTotalCorrectedErrors;
+    ULONG   ReadTotalUncorrectedErrors;
+    ULONG   ReadCorrectionAlgorithmProcessed;
+    ULONG   WriteCorrectedWithoutDelay;
+    ULONG   WriteCorrectedWithDelay;
+    ULONG   WriteTotalErrors;
+    ULONG   WriteTotalCorrectedErrors;
+    ULONG   WriteTotalUncorrectedErrors;
+    ULONG   WriteCorrectionAlgorithmProcessed;
+    ULONG   NonMediumErrors;
+} WMI_TAPE_PROBLEM_IO_ERROR;
+typedef WMI_TAPE_PROBLEM_IO_ERROR   *PWMI_TAPE_PROBLEM_IO_ERROR;
+
+/* WMI tape problem device error */
+typedef struct _WMI_TAPE_PROBLEM_DEVICE_ERROR {
+    BOOLEAN ReadWarning;
+    BOOLEAN WriteWarning;
+    BOOLEAN HardError;
+    BOOLEAN ReadFailure;
+    BOOLEAN WriteFailure;
+    BOOLEAN UnsupportedFormat;
+    BOOLEAN TapeSnapped;
+    BOOLEAN DriveRequiresCleaning;
+    BOOLEAN TimetoCleanDrive;
+    BOOLEAN DriveHardwareError;
+    BOOLEAN ScsiInterfaceError;
+    BOOLEAN MediaLife;
+} WMI_TAPE_PROBLEM_DEVICE_ERROR;
+typedef WMI_TAPE_PROBLEM_DEVICE_ERROR   *PWMI_TAPE_PROBLEM_DEVICE_ERROR;
+
+/* WMI changer parameters */
+typedef struct _WMI_CHANGER_PARAMETERS {
+    ULONG   NumberOfSlots;
+    ULONG   NumberOfDrives;
+    ULONG   NumberOfIEPorts;
+    ULONG   NumberOfTransports;
+    ULONG   NumberOfDoors;
+    ULONG   NumberOfCleanerSlots;
+    ULONG   MagazineSize;
+} WMI_CHANGER_PARAMETERS;
+typedef WMI_CHANGER_PARAMETERS  *PWMI_CHANGER_PARAMETERS;
+
+/* WMI changer problem device error */
+typedef struct _WMI_CHANGER_PROBLEM_DEVICE_ERROR {
+    ULONG   ChangerProblemType;
+} WMI_CHANGER_PROBLEM_DEVICE_ERROR;
+typedef WMI_CHANGER_PROBLEM_DEVICE_ERROR    *PWMI_CHANGER_PROBLEM_DEVICE_ERROR;
+    
+:include cplusepi.sp
+
+#endif /* _wmidata_h_ */

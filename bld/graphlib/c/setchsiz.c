@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _setcharsize( short height, short width )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharsize( short height, short width )
 /*=========================================================
 
    This routine sets the height and width for graphics text output. */

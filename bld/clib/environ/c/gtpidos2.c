@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getpid() for OS/2.
 *
 ****************************************************************************/
 
@@ -38,8 +37,8 @@
 
 #if defined(__WARP__)
 
-_WCRTLINK int   getpid() {                  /* get process id */
-
+_WCRTLINK int   getpid( void )              /* get process id */
+{
     PTIB        ptib;
     PPIB        ppib;
 
@@ -49,12 +48,12 @@ _WCRTLINK int   getpid() {                  /* get process id */
 
 #else
 
-_WCRTLINK int   getpid()                    /* get process id */
-    {
-        PIDINFO pinfo;
+_WCRTLINK int   getpid( void )              /* get process id */
+{
+    PIDINFO pinfo;
 
-        DosGetPID( &pinfo );
-        return( pinfo.pid );
-    }
+    DosGetPID( &pinfo );
+    return( pinfo.pid );
+}
 
 #endif

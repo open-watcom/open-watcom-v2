@@ -31,11 +31,12 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
 #include "cgaux.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "typedef.h"
 #include "feprotos.h"
 
@@ -45,16 +46,19 @@ extern  hw_reg_set      ReturnReg(type_class_def);
 extern  hw_reg_set      *ParmRegs( void );
 extern type_class_def   ReturnClass(type_def*,call_attributes);
 extern  byte            *Copy(void*,void*,uint);
-extern  hw_reg_set      FixedRegs();
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      DisplayReg();
-extern  int             SizeDisplayReg();
-extern  hw_reg_set      ReturnAddrReg(void);
+extern  hw_reg_set      FixedRegs( void );
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      DisplayReg( void );
+extern  int             SizeDisplayReg( void );
+extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      VarargsHomePtr( void );
 extern  sym_handle      AskForLblSym( label_handle );
+extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
 
-extern hw_reg_set SavedRegs() {
-/*****************************/
+
+extern hw_reg_set SavedRegs( void )
+/*********************************/
+{
     hw_reg_set          saved;
 
     HW_CAsgn( saved, HW_EMPTY );
@@ -75,6 +79,15 @@ extern hw_reg_set SavedRegs() {
     HW_CTurnOn( saved, HW_F8 );
     HW_CTurnOn( saved, HW_F9 );
     return( saved );
+}
+
+extern  void    UpdateReturn( call_state *state, type_def *tipe,
+                              type_class_def class, aux_handle aux ) {
+/********************************************************************/
+
+    tipe = tipe;
+    aux = aux;
+    state->return_reg = ReturnReg( class );
 }
 
 extern  type_class_def  CallState( aux_handle aux,
@@ -127,7 +140,7 @@ extern  type_class_def  CallState( aux_handle aux,
         i++;
     }
     i++;
-    _Alloc( state->parm.table, i*sizeof( hw_reg_set ) );
+    state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
     Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
@@ -135,16 +148,6 @@ extern  type_class_def  CallState( aux_handle aux,
     class = ReturnClass( tipe, state->attr );
     UpdateReturn( state, tipe, class, aux );
     return( class );
-}
-
-
-extern  void    UpdateReturn( call_state *state, type_def *tipe,
-                              type_class_def class, aux_handle aux ) {
-/********************************************************************/
-
-    tipe = tipe;
-    aux = aux;
-    state->return_reg = ReturnReg( class );
 }
 
 extern  hw_reg_set      RAReg( void ) {
@@ -170,9 +173,9 @@ extern  hw_reg_set      CallZap( call_state *state ) {
     return( zap );
 }
 
-extern  hw_reg_set      MustSaveRegs() {
-/**************************************/
-
+extern  hw_reg_set      MustSaveRegs( void )
+/******************************************/
+{
     hw_reg_set  save;
     hw_reg_set  tmp;
 
@@ -199,9 +202,9 @@ extern  hw_reg_set      MustSaveRegs() {
     return( save );
 }
 
-extern  hw_reg_set      SaveRegs() {
-/**********************************/
-
+extern  hw_reg_set      SaveRegs( void )
+/**************************************/
+{
     hw_reg_set   save;
 
     save = MustSaveRegs();

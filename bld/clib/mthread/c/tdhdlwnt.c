@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of __threadhandle() for Win32.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 #include <windows.h>
 #include <process.h>
 
-_WCRTLINK unsigned long __threadhandle( void ) {
+_WCRTLINK unsigned long __threadhandle( void )
+{
     return( (unsigned long)GetCurrentThread() );
 }

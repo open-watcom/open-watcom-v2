@@ -40,7 +40,7 @@
 WCLASS WSystemHelp : public WObject {
     public:
         WEXPORT WSystemHelp( WWindow *, const char *title,
-                             const char *library );
+                             const char *library, const char *chmfile = NULL );
         WEXPORT ~WSystemHelp();
 
         bool WEXPORT sysHelpContent( void );
@@ -52,6 +52,7 @@ WCLASS WSystemHelp : public WObject {
     private:
         const char              *_title;
         const char              *_library;
+        const char              *_chmfile;
         WWindow                 *_helpWindow;
         gui_help_instance       _helpInstance;
 };

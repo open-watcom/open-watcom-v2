@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default DllMain() for 32-bit OS/2 DLLs.
 *
 ****************************************************************************/
 
@@ -36,7 +35,8 @@
 extern  unsigned        __dll_initialize(void);
 extern  unsigned        __dll_terminate(void);
 
-unsigned APIENTRY DllMain( unsigned hmod, unsigned termination ) {
+unsigned APIENTRY DllMain( unsigned hmod, unsigned termination )
+{
     if( termination != 0 ) {
         return( __dll_terminate() );
     }

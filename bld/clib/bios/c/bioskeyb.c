@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS keyboard access.
 *
 ****************************************************************************/
 
@@ -34,35 +33,9 @@
 #include <bios.h>
 #include <stddef.h>
 #include "necibm.h"
-#include "nonibm.h"
 
 
 _WCRTLINK unsigned short _bios_keybrd( unsigned cmd )
 {
-    unsigned short      necRc, ret;
-
-    if( !__NonIBM ) {
-        return( __ibm_bios_keybrd( cmd ) );
-    } else {
-        /*** Translate IBM commands to NEC98 commands ***/
-        switch( cmd ) {
-          case _KEYBRD_READ:
-            return( __nec98_bios_keybrd( cmd, NULL ) );
-            break;
-          case _KEYBRD_READY:
-            return( __nec98_bios_keybrd( cmd, NULL ) );
-            break;
-          case _KEYBRD_SHIFTSTATUS:
-            necRc = __nec98_bios_keybrd( cmd, NULL );
-            ret = 0;
-            if( necRc & 0x0001 )  ret |= 0x02;
-            if( necRc & 0x0002 )  ret |= 0x40;
-            if( necRc & 0x0008 )  ret |= 0x08;
-            if( necRc & 0x0010 )  ret |= 0x04;
-            return( ret );
-            break;
-          default:
-            return( 0 );        // invalid command for NEC 98
-        }
-    }
+    return( __ibm_bios_keybrd( cmd ) );
 }

@@ -292,7 +292,11 @@ n1=$+$%path$-
 #
 #   test z: $+/$- in cmds
 #
+!ifdef __UNIX__
+z1 = @$#
+!else
 z1 = @rem
+!endif
 pre04 : .symbolic
     $+$z1$- this is a test
     @%null

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrstr() - far strstr().
 *
 ****************************************************************************/
 
@@ -33,13 +32,9 @@
 #include "variety.h"
 #include <stddef.h>
 #include <string.h>
-#if defined(__PENPOINT__)  ||  defined(__QNX__)
-#include <i86.h>
-#else
-#include <dos.h>
-#endif
 
-#ifdef M_I86
+#ifdef _M_I86
+#include <i86.h>
 
 extern  int     i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
 
@@ -71,24 +66,27 @@ extern  int     i86_memeq( const char _WCFAR *, const char _WCFAR *, int );
 */
 
 _WCRTLINK char _WCFAR *_fstrstr( const char _WCFAR *s1, const char _WCFAR *s2 )
-    {
-        char _WCFAR *end_of_s1;
-        size_t s1len, s2len;
+{
+    char _WCFAR     *end_of_s1;
+    size_t          s1len, s2len;
 
-        if( s2[0] == '\0' ) {
-            return( (char _WCFAR *)s1 );
-        } else if( s2[1] == '\0' ) {
-            return( _fstrchr( s1, s2[0] ) );
-        }
-        end_of_s1 = _fmemchr( s1, '\0', ~0u );
-        s2len = _fstrlen( s2 );
-        for(;;) {
-            s1len = end_of_s1 - s1;
-            if( s1len < s2len ) break;
-            s1 = _fmemchr( s1, *s2, s1len ); /* find start of possible match */
-            if( s1 == NULL ) break;
-            if( memeq( s1, s2, s2len ) ) return( (char _WCFAR *)s1 );
-            ++s1;
-        }
-        return( NULL );
+    if( s2[0] == '\0' ) {
+        return( (char _WCFAR *)s1 );
+    } else if( s2[1] == '\0' ) {
+        return( _fstrchr( s1, s2[0] ) );
     }
+    end_of_s1 = _fmemchr( s1, '\0', ~0u );
+    s2len = _fstrlen( s2 );
+    for( ;; ) {
+        s1len = end_of_s1 - s1;
+        if( s1len < s2len )
+            break;
+        s1 = _fmemchr( s1, *s2, s1len ); /* find start of possible match */
+        if( s1 == NULL )
+            break;
+        if( memeq( s1, s2, s2len ) )
+            return( (char _WCFAR *)s1 );
+        ++s1;
+    }
+    return( NULL );
+}

@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include <wchar.h>
+#include <wctype.h>
 
-char *types[11] = {
+char *types[] = {
     "alnum",
     "alpha",
+    "blank",
     "cntrl",
     "digit",
     "graph",
@@ -15,12 +16,12 @@ char *types[11] = {
     "xdigit"
 };
 
-void main()
-  {
+void main( void )
+{
     int     i;
     wint_t  wc = 'A';
 
-    for( i = 0; i < 11; i++ )
-      if( iswctype( wc, wctype( types[i] ) ) )
-        printf( "%s\n", types[ i ] );
-  }
+    for( i = 0; i < 12; i++ )
+        if( iswctype( wc, wctype( types[i] ) ) )
+            printf( "%s\n", types[ i ] );
+}

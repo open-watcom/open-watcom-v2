@@ -1,0 +1,189 @@
+c*
+c* LIFE.H
+c*
+
+        include 'rules.fi'
+        include 'menu.fi'
+
+
+        integer    ONE_SECOND
+        parameter (ONE_SECOND=1000)
+        integer    BUFLEN
+        parameter (BUFLEN=30)
+        integer    TIMER_ID
+        parameter (TIMER_ID=1)
+        integer    BUFSIZE
+        parameter (BUFSIZE=256)
+
+        structure /cell_type/
+            logical *1 alive
+            logical *1 drawn
+            logical *1 next_alive
+        end structure
+
+        structure /bitinf/
+            integer     cx
+            integer     cy
+        end structure
+
+        integer         BitSize
+        integer         WindowWidth             ! window width in pixels
+        integer         WindowHeight            ! window height in pixels
+        integer         ScreenHeight            ! screen height in pixels
+        integer         ArraySizeX              ! The X dim of the cell array
+        integer         ArraySizeY              ! The Y dim of the cell array
+        integer         Mode                    ! (pause, resume, single step )
+        integer         MouseMode               ! (select, flip, single step)
+        logical         Births(0:8)             ! Birth rules
+        logical         Deaths(0:8)             ! Death rules
+        integer         Generation              ! generation counter
+        integer         Population              ! population counter
+        integer         NumberPatterns          ! The # of patterns in Pattern
+        character*256   Buffer                  ! Utility buffer
+        logical         DrawGrid                ! Do we draw a grid ?
+        logical         IsAnIcon                ! Are we an icon?
+        logical         CurvedSpace             ! Is space curved? (edges wrap)
+        integer         FrameHandle             ! Out window handle
+        integer         WinHandle               ! Out window handle
+        integer         MenuHandle              ! Out window handle
+        integer         hMessageQueue
+        integer         AnchorBlock
+        integer         ArrayMem                ! Memory for array
+        integer         MemoryDC
+        integer         MemoryPS
+        integer         CellBitMap
+        record /bitinf/ BitInfo
+
+        common  /global/
+     +  BitSize,
+     +  WindowWidth,
+     +  WindowHeight,
+     +  ScreenHeight,
+     +  ArraySizeX,
+     +  ArraySizeY,
+     +  Mode,
+     +  MouseMode,
+     +  Births,
+     +  Deaths,
+     +  Generation,
+     +  Population
+
+        common  /global/
+     +  NumberPatterns,
+     +  Buffer,
+     +  DrawGrid,
+     +  IsAnIcon,
+     +  CurvedSpace,
+     +  FrameHandle,
+     +  WinHandle,
+     +  MenuHandle,
+     +  hMessageQueue,
+     +  AnchorBlock,
+     +  ArrayMem,
+     +  MemoryDC,
+     +  MemoryPS,
+     +  CellBitMap,
+     +  BitInfo
+
+        integer         SelectStartX
+        integer         SelectStartY
+        integer         SelectEndX
+        integer         SelectEndY
+        logical         RegionIsSelected
+        logical         Button1Down
+        logical         Button2Down
+
+        common  /select/
+     +  SelectStartX,
+     +  SelectStartY,
+     +  SelectEndX,
+     +  SelectEndY,
+     +  RegionIsSelected,
+     +  Button1Down,
+     +  Button2Down
+
+        integer         TimerDelay
+        logical         NeedNewTimer
+        integer         FastEnoughCount
+
+
+        common /timer/
+     +  TimerDelay,
+     +  NeedNewTimer,
+     +  FastEnoughCount
+
+
+        integer MenuBitMap
+        integer PatternMenu
+        integer MenuDC
+        integer MenuPS
+        integer MenuPatterns(100)
+        integer Patterns(100)
+        integer PatternDimX(100)
+        integer PatternDimY(100)
+        integer Cursor
+        logical MenuAlreadyCreated
+        integer MenuMemDC
+        integer MenuMemPS
+
+        common /pattern/
+     +  MenuBitMap,
+     +  PatternMenu,
+     +  MenuDC,
+     +  MenuPS,
+     +  MenuPatterns,
+     +  Patterns,
+     +  Cursor,
+     +  MenuAlreadyCreated,
+     +  PatternDimX,
+     +  PatternDimY,
+     +  MenuMemDC,
+     +  MenuMemPS
+
+
+        logical                 SingleStep
+        logical                 ReSizeArray
+        integer                 About
+        integer                 Rules
+        integer                 FileName
+        integer                 MainDriver
+        logical                 TurnOnCell
+        logical                 TurnOffCell
+        integer                 Random
+        integer                 SumNeighbours
+        logical                 ReadPatterns
+        logical                 ReadAPatternFile
+        logical                 SelectOn
+        logical                 EndSelect
+        logical                 MoveSelect
+        logical                 StartSelect
+        character*80            ForString
+
+        integer                 fopen
+        integer                 fgetc
+        integer                 fputc
+        integer                 fclose
+        integer                 malloc
+        integer                 free
+        integer                 strlen
+        integer                 memcpy
+
+        external                FileName
+        external                Rules
+        external                About
+        external                MainDriver
+
+
+c$pragma aux ctype "*_" parm( value*4, value*4, value*4, value*4, value*4 )
+c$pragma aux (ctype) malloc
+c$pragma aux (ctype) free
+c$pragma aux (ctype) fopen
+c$pragma aux (ctype) fgetc
+c$pragma aux (ctype) fputc
+c$pragma aux (ctype) fclose
+c$pragma aux (ctype) memcpy
+c$pragma aux (ctype) strlen
+c$pragma aux (FNWP) MainDriver
+c$pragma aux (FNWP) FileName
+c$pragma aux (FNWP) About
+c$pragma aux (FNWP) Rules

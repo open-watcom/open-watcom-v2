@@ -1,0 +1,46 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov         eax,dword ptr es:L$1 
+    mov         dword ptr DGROUP:L$4,eax 
+    mov         eax,dword ptr es:L$2 
+    mov         dword ptr DGROUP:L$5,eax 
+    mov         ax,word ptr es:L$3 
+    mov         word ptr DGROUP:L$6,ax 
+    mov         eax,dword ptr es:[ebx] 
+    mov         dword ptr 2[ecx],eax 
+    mov         eax,dword ptr es:4[ebx] 
+    mov         dword ptr 6[ecx],eax 
+    mov         ax,word ptr es:8[ebx] 
+    mov         word ptr 0aH[ecx],ax 
+    mov         eax,dword ptr es:L$1 
+    mov         dword ptr DGROUP:L$7,eax 
+    mov         eax,dword ptr es:L$2 
+    mov         dword ptr DGROUP:L$8,eax 
+    mov         ax,word ptr es:L$3 
+    mov         word ptr DGROUP:L$9,ax 
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+L$1:
+    DB	0, 0, 0, 0
+L$2:
+    DB	0, 0, 0, 0
+L$3:
+    DB	0, 0
+L$4:
+    DB	0, 0, 0, 0
+L$5:
+    DB	0, 0, 0, 0
+L$6:
+    DB	0, 0
+L$7:
+    DB	0, 1, 2, 3
+L$8:
+    DB	4, 5, 6, 7
+L$9:
+    DB	8, 9
+
+_DATA		ENDS
+		END

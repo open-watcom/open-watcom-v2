@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NE module resource manipulation types and functions.
 *
 ****************************************************************************/
 
@@ -38,16 +37,16 @@
 #include "wresall.h"
 
 typedef struct FullResourceRecord {
-    struct FullResourceRecord * Next;
-    struct FullResourceRecord * Prev;
+    struct FullResourceRecord   *Next;
+    struct FullResourceRecord   *Prev;
     resource_record             Info;
 } FullResourceRecord;
 
 typedef struct FullTypeRecord {
-    struct FullTypeRecord * Next;
-    struct FullTypeRecord * Prev;
-    FullResourceRecord *    Head;
-    FullResourceRecord *    Tail;
+    struct FullTypeRecord   *Next;
+    struct FullTypeRecord   *Prev;
+    FullResourceRecord      *Head;
+    FullResourceRecord      *Tail;
     resource_type_record    Info;
 } FullTypeRecord;
 
@@ -56,8 +55,8 @@ typedef struct ExeResDir {
     uint_16             NumTypes;
     uint_16             NumResources;
     uint_16             TableSize;
-    FullTypeRecord *    Head;
-    FullTypeRecord *    Tail;
+    FullTypeRecord      *Head;
+    FullTypeRecord      *Tail;
 } ExeResDir;
 
 typedef struct ResTable {
@@ -65,10 +64,28 @@ typedef struct ResTable {
     StringBlock Str;
 } ResTable;
 
+typedef struct OS2ResEntry {
+    uint_16         res_type;   /* resource type */
+    uint_16         res_id;     /* resource id */
+    WResDirWindow   wind;       /* window into the current WResDir */
+    bool            first_part; /* true unless non-first bit of > 64K resource */
+    uint_16         seg_length; /* length of resource segment */
+    uint_16         mem_flags;  /* resource flags */
+} OS2ResEntry;
+
+typedef struct OS2ResTable {
+    OS2ResEntry     *resources;
+    uint_16         table_size;     /* size of NE resource table in bytes */
+    uint_16         num_res_segs;   /* number of resource segments/'resources' entries */
+} OS2ResTable;
 
 extern void InitResTable( void );
 extern uint_32 ComputeResourceSize( WResDir dir );
 extern int CopyResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
 extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code );
+extern RcStatus InitOS2ResTable( int *err_code );
+extern uint_32 ComputeOS2ResSegCount( WResDir dir );
+extern int CopyOS2Resources( void );
+extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code );
 
 #endif

@@ -32,8 +32,8 @@
 
 #include "cover.h"
 
-WORD PASCAL _Cover_SetTimer( HWND wnd, int event, WORD el, FARPROC p )
+WORD PASCAL _Cover_SetTimer( HWND wnd, short event, WORD el, FARPROC p )
 {
-    if( p == NULL ) return( SetTimer( wnd, event, el, p ) );
+    if( p == NULL ) return( SetTimer( wnd, event, el, (TIMERPROC)p ) );
     return( SetTimer( wnd, event, el, SetProc( p, GETPROC_SETTIMER ) ) );
 }

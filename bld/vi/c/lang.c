@@ -24,70 +24,126 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Processing of .dat files used for syntax highlighting.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <assert.h>
-#include <stdio.h>
 #include "vi.h"
 #include "sstyle.h"
-#include "lang.h"
-#include "misc.h"
+#include <assert.h>
 
-static lang_info    langInfo[ LANG_MAX ] = {
-    //table,  entries , ref_count ,read_buf
-    { NULL,          0,          0,    NULL },  // C
-    { NULL,          0,          0,    NULL },  // C++
-    { NULL,          0,          0,    NULL },  // Fortran
-    { NULL,          0,          0,    NULL },  // Java
-    { NULL,          0,          0,    NULL },  // SQL
-    { NULL,          0,          0,    NULL },  // BAT
-    { NULL,          0,          0,    NULL },  // Basic
-    { NULL,          0,          0,    NULL }   // Perl
+static lang_info    langInfo[] = {
+#define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },
+#include "langdef.h"
+#undef pick_lang
 };
+
+static hash_entry   *pragma_table           = NULL;
+static int          pragma_table_entries    = 0;
+static char         *pragma_read_buf        = NULL;
+
+static hash_entry   *declspec_table         = NULL;
+static int          declspec_table_entries  = 0;
+static char         *declspec_read_buf      = NULL;
+
+#define PRAGMA_DATFILE      "pragma.dat"
+#define DECLSPEC_DATFILE    "declspec.dat"
 
 /*
  * hashpjw - taken from red dragon book, pg 436
  */
-int hashpjw( char *s )
+static int hashpjw( char *s, int entries )
 {
-    unsigned h = 0, g;
+    unsigned long   h = 0, g;
+    
     while( *s != '\0' ) {
-        h = ( h << 4 ) + (*s);
+        h = (h << 4) + toupper( *s );
         if( g = h & 0xf0000000 ) {
-            h = h ^ ( g >> 24 );
+            h = h ^ (g >> 24);
             h = h ^ g;
         }
         s++;
     }
-    return( h % langInfo[ CurrentInfo->Language ].table_entries );
+    return( h % entries );
 }
 
-bool IsKeyword( char *keyword )
+bool IsKeyword( char *keyword, bool case_ignore )
 {
     hash_entry  *entry;
 
-    assert( langInfo[ CurrentInfo->Language ].ref_count > 0 );
+    assert( langInfo[CurrentInfo->Language].ref_count > 0 );
 
-    entry = langInfo[ CurrentInfo->Language ].keyword_table +
-            hashpjw( keyword );
-    if( entry->real == FALSE ) {
+    if( langInfo[CurrentInfo->Language].keyword_table == NULL ) {
         return( FALSE );
     }
-    while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
-        entry = entry->next;
-        if( entry ) {
-            assert( entry->real == FALSE );
+
+    entry = langInfo[CurrentInfo->Language].keyword_table +
+        hashpjw( keyword, langInfo[CurrentInfo->Language].table_entries );
+    if( !entry->real ) {
+        return( FALSE );
+    }
+    if( case_ignore ) {
+        while( entry != NULL && stricmp( entry->keyword, keyword ) != 0 ) {
+            entry = entry->next;
+            if( entry ) {
+                assert( !entry->real );
+            }
+        }
+    } else {
+        while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
+            entry = entry->next;
+            if( entry ) {
+                assert( !entry->real );
+            }
         }
     }
     return( entry != NULL );
 }
 
-hash_entry *createTable( int entries )
+bool IsPragma( char *pragma )
+{
+    hash_entry  *entry;
+
+    if( pragma_table == NULL ) {
+        return( FALSE );
+    }
+
+    entry = pragma_table + hashpjw( pragma, pragma_table_entries );
+    if( !entry->real ) {
+        return( FALSE );
+    }
+    while( entry != NULL && strcmp( entry->keyword, pragma ) != 0 ) {
+        entry = entry->next;
+        if( entry ) {
+            assert( !entry->real );
+        }
+    }
+    return( entry != NULL );
+}
+
+bool IsDeclspec( char *keyword )
+{
+    hash_entry  *entry;
+
+    if( declspec_table == NULL ) {
+        return( FALSE );
+    }
+
+    entry = declspec_table + hashpjw( keyword, declspec_table_entries );
+    if( !entry->real ) {
+        return( FALSE );
+    }
+    while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
+        entry = entry->next;
+        if( entry ) {
+            assert( !entry->real );
+        }
+    }
+    return( entry != NULL );
+}
+
+static hash_entry *createTable( int entries )
 {
     hash_entry  *table;
 
@@ -97,7 +153,7 @@ hash_entry *createTable( int entries )
     return( table );
 }
 
-char *nextKeyword( char *keyword )
+static char *nextKeyword( char *keyword )
 {
     while( *keyword ) {
         keyword++;
@@ -105,7 +161,7 @@ char *nextKeyword( char *keyword )
     return( keyword + 1 );
 }
 
-void addTable( hash_entry *table, char *Keyword, int NumKeyword )
+static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entries )
 {
     int         i;
     hash_entry  *entry, *empty;
@@ -114,14 +170,14 @@ void addTable( hash_entry *table, char *Keyword, int NumKeyword )
         int     hashValue;
         char    *keyword;
     } TmpValue;
-    TmpValue *tmpValue, *tmpIndex;
+    TmpValue    *tmpValue, *tmpIndex;
 
     tmpValue = tmpIndex = MemAlloc( NumKeyword * sizeof( TmpValue ) );
     keyword = Keyword;
     for( i = 0; i < NumKeyword; i++ ) {
-        tmpIndex->hashValue = hashpjw( keyword );
+        tmpIndex->hashValue = hashpjw( keyword, entries );
         tmpIndex->keyword = keyword;
-        table[ tmpIndex->hashValue ].real = TRUE;
+        table[tmpIndex->hashValue].real = TRUE;
         keyword = nextKeyword( keyword );
         tmpIndex++;
     }
@@ -129,7 +185,7 @@ void addTable( hash_entry *table, char *Keyword, int NumKeyword )
     empty = table;
     tmpIndex = tmpValue;
     for( i = 0; i < NumKeyword; i++ ) {
-        assert( table[ tmpIndex->hashValue ].real == TRUE );
+        assert( table[tmpIndex->hashValue].real == TRUE );
 
         entry = table + tmpIndex->hashValue;
         if( entry->keyword != NULL ) {
@@ -151,16 +207,31 @@ void addTable( hash_entry *table, char *Keyword, int NumKeyword )
     MemFree( tmpValue );
 }
 
+static int nkeywords = 0;
+
+static bool lang_alloc( int cnt )
+{
+    nkeywords = cnt;
+    return( FALSE );
+}
+
+static bool lang_save( int i, char *buff )
+{
+    return( TRUE );
+}
+
 /*
  * LangInit - build hash table based on current language
  */
-void LangInit( int newLanguage )
+void LangInit( lang_t newLanguage )
 {
-    int         *dummy;
-    int         rc, nkeywords;
+    vi_rc       rc;
     char        *buff;
-    char        *fname[] = { NULL, "c.dat", "cpp.dat", "fortran.dat", "java.dat", "sql.dat",
-                                "bat.dat", "basic.dat", "perl.dat" };
+    char        *fname[] = {
+        #define pick_lang(enum,enumrc,name,namej,fname) fname,
+        #include "langdef.h"
+        #undef pick_lang
+    };
 
     assert( CurrentInfo != NULL );
     CurrentInfo->Language = newLanguage;
@@ -169,53 +240,95 @@ void LangInit( int newLanguage )
         return;
     }
 
-    if( langInfo[ newLanguage ].ref_count == 0 ) {
-        rc = ReadDataFile( fname[ newLanguage ], &nkeywords,
-                           &buff, &dummy, FALSE );
-        if( rc ) {
-            Error( GetErrorMsg( rc ) );
+    if( langInfo[newLanguage].ref_count == 0 ) {
+        rc = ReadDataFile( fname[newLanguage], &buff, lang_alloc, lang_save );
+        if( rc != ERR_NO_ERR ) {
+            if( rc == ERR_FILE_NOT_FOUND ) {
+                ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ),
+                          fname[newLanguage] );
+            } else {
+                ErrorBox( GetErrorMsg( rc ) );
+            }
             CurrentInfo->Language = LANG_NONE;
             return;
         }
         // build new langInfo entry
-        langInfo[ newLanguage ].table_entries = nkeywords;
-        langInfo[ newLanguage ].keyword_table =
-                createTable( NextBiggestPrime( nkeywords ) );
-        addTable( langInfo[ newLanguage ].keyword_table, buff, nkeywords );
-        langInfo[ newLanguage ].read_buf = buff;
-        MemFree( dummy );
+        langInfo[newLanguage].table_entries = nkeywords;
+        langInfo[newLanguage].keyword_table =
+            createTable( NextBiggestPrime( nkeywords ) );
+        addTable( langInfo[newLanguage].keyword_table, buff, nkeywords,
+                  langInfo[newLanguage].table_entries );
+        langInfo[newLanguage].read_buf = buff;
     }
-    langInfo[ newLanguage ].ref_count++;
+    langInfo[newLanguage].ref_count++;
 
-    return;
-}
+    if( (newLanguage == LANG_C || newLanguage == LANG_CPP) && pragma_table == NULL ) {
+        rc = ReadDataFile( PRAGMA_DATFILE, &pragma_read_buf, lang_alloc, lang_save );
+        if( rc == ERR_FILE_NOT_FOUND ) {
+            ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), PRAGMA_DATFILE );
+            return;
+        } else if( rc != ERR_NO_ERR ) {
+            ErrorBox( GetErrorMsg( rc ) );
+            return;
+        }
+        pragma_table_entries = nkeywords;
+        pragma_table = createTable( NextBiggestPrime( nkeywords ) );
+        addTable( pragma_table, pragma_read_buf, nkeywords, pragma_table_entries );
+
+        rc = ReadDataFile( DECLSPEC_DATFILE, &declspec_read_buf, lang_alloc, lang_save );
+        if( rc == ERR_FILE_NOT_FOUND ) {
+            ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), DECLSPEC_DATFILE );
+            return;
+        } else if( rc != ERR_NO_ERR ) {
+            ErrorBox( GetErrorMsg( rc ) );
+            return;
+        }
+        declspec_table_entries = nkeywords;
+        declspec_table = createTable( NextBiggestPrime( nkeywords ) );
+        addTable( declspec_table, declspec_read_buf, nkeywords, declspec_table_entries );
+    }
+
+} /* LangInit */
 
 /*
  * LangFini
  */
-void LangFini( int language )
+void LangFini( lang_t language )
 {
-    if( language == LANG_NONE || langInfo[ language ].ref_count == 0 ) {
+    if( language == LANG_NONE || langInfo[language].ref_count == 0 ) {
         return;
     }
-    langInfo[ language ].ref_count--;
-    if( langInfo[ language ].ref_count == 0 ) {
-        MemFree( langInfo[ language ].keyword_table );
-        MemFree( langInfo[ language ].read_buf );
-        langInfo[ language ].keyword_table = NULL;
-        langInfo[ language ].table_entries = 0;
+    langInfo[language].ref_count--;
+    if( langInfo[language].ref_count == 0 ) {
+        MemFree( langInfo[language].keyword_table );
+        MemFree( langInfo[language].read_buf );
+        langInfo[language].keyword_table = NULL;
+        langInfo[language].table_entries = 0;
+        langInfo[language].read_buf = NULL;
     }
-}
+    if( language == LANG_C || language == LANG_CPP ) {
+        if( langInfo[LANG_C].ref_count == 0 && langInfo[LANG_CPP].ref_count == 0 ) {
+            MemFree( pragma_table );
+            MemFree( pragma_read_buf );
+            pragma_table = NULL;
+            pragma_table_entries = 0;
+            pragma_read_buf = NULL;
+        }
+    }
+
+} /* LangFini */
 
 /*
  * LangFiniAll
  */
 void LangFiniAll( void )
 {
-    int i;
+    lang_t  i;
+
     for( i = LANG_NONE; i < LANG_MAX; i++ ) {
-        while( langInfo[ i ].ref_count ) {
+        while( langInfo[i].ref_count ) {
             LangFini( i );
         }
     }
-}
+
+} /* LangFiniAll */

@@ -1,5 +1,5 @@
 hello
-PREP01(7): Error(E33): hello2
+prep01(7): Error(E33): hello2
 hello3
-PREP01(9): Error(E33): hello4
+prep01(9): Error(E33): hello4
 Error(E02): Make execution terminated

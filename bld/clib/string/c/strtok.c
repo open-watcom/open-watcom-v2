@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strtok() and wcstok().
 *
 ****************************************************************************/
 
@@ -40,12 +39,7 @@
 #else
     #include "nexttok.h"
 #endif
-
-#if !defined(__WIDECHAR__)
-extern  void    __setbits();            /* bits.c */
-
-extern const unsigned char _HUGEDATA _Bits[8];
-#endif
+#include "setbits.h"
 
 
 #ifdef __WIDECHAR__
@@ -64,13 +58,13 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
 {
 #if defined(__WIDECHAR__)
     CHAR_TYPE           *p1;
-    const CHAR_TYPE             *p2;
+    const CHAR_TYPE     *p2;
     CHAR_TYPE           tc1;
     CHAR_TYPE           tc2;
 #else
-    unsigned /*char*/ tc;
-    unsigned char vector[32];
-    unsigned char *p1;
+    char            tc;
+    unsigned char   vector[ CHARVECTOR_SIZE ];
+    char            *p1;
 #endif
 
 #if defined(__WIDECHAR__)
@@ -81,21 +75,26 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
         } else {
             str = *ptr;                 /* use previous value */
         }
-        if( str == NULL )  return( NULL );
+        if( str == NULL )
+            return( NULL );
     }
 
     /* skip characters until we reach one not in charset */
     for( ; tc1 = *str; str++ ) {
         for( p2 = charset; tc2 = *p2; p2++ ) {
-            if( tc1 == tc2 ) break;
+            if( tc1 == tc2 )
+                break;
         }
-        if( tc2 == NULLCHAR ) break;
+        if( tc2 == NULLCHAR )
+            break;
     }
-    if( tc1 == NULLCHAR ) return( NULL );
+    if( tc1 == NULLCHAR )
+        return( NULL );
     /* skip characters until we reach one in charset */
     for( p1 = str; tc1 = *p1; p1++ ) {
         for( p2 = charset; tc2 = *p2; p2++ ) {
-            if( tc1 == tc2 ) break;
+            if( tc1 == tc2 )
+                break;
         }
         if( tc2 != NULLCHAR ){
             *p1 = NULLCHAR;         /* terminate the token  */
@@ -117,20 +116,23 @@ _WCRTLINK wchar_t *_ustrtok( wchar_t *str, const wchar_t *charset )
     /* if necessary, continue from where we left off */
     _INITNEXTTOK
     if( str == NULL ) {
-        str = (CHAR_TYPE*)_RWD_nexttok; /* use previous value */
-        if( str == NULL ) return( NULL );
+        str = _RWD_nexttok; /* use previous value */
+        if( str == NULL )
+            return( NULL );
     }
 
     __setbits( vector, charset );
-    for( ; tc = (unsigned char) *str; ++str ) {
+    for( ; tc = *str; ++str ) {
         /* quit if we find any char not in charset */
-        if( ( vector[ tc >> 3 ] & _Bits[ tc & 0x07 ] ) == 0 )  break;
+        if( GETCHARBIT( vector, tc ) == 0 )
+            break;
     }
-    if( tc == '\0' ) return( NULL );
+    if( tc == '\0' )
+        return( NULL );
     p1 = str;
     for( ; tc = *p1; ++p1 ) {
         /* quit when we find any char in charset */
-        if( ( vector[ tc >> 3 ] & _Bits[ tc & 0x07 ] ) != 0 ) {
+        if( GETCHARBIT( vector, tc ) != 0 ) {
             *p1 = '\0';             /* terminate the token  */
             p1++;                   /* start of next token  */
             _RWD_nexttok = p1;

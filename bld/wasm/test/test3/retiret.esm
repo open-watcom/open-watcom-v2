@@ -1,0 +1,60 @@
+.387
+.386p
+		PUBLIC	_proc1
+DGROUP		GROUP	_DATA
+retiret_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:retiret_TEXT, DS:DGROUP, SS:DGROUP
+_proc1:
+    push        ebp
+    mov         ebp,esp
+    sub         esp,8
+    push        bx
+    mov         bx,word ptr 0cH[ebp]
+    mov         word ptr -4[ebp],bx
+    mov         bx,word ptr 10H[ebp]
+    mov         word ptr -8[ebp],bx
+    mov         bx,word ptr 0cH[ebp]
+    mov         word ptr 10H[ebp],bx
+    or          ax,ax
+    jne         L$1
+    pop         bx
+    leave       
+    iret        
+L$1:
+    or          ax,ax
+    jne         L$2
+    pop         bx
+    leave       
+    iretd       
+L$2:
+    or          ax,ax
+    jne         L$3
+    iret        
+L$3:
+    or          ax,ax
+    jne         L$4
+    iretd       
+L$4:
+    or          ax,ax
+    jne         L$5
+    pop         bx
+    leave       
+    retf        
+L$5:
+    or          ax,ax
+    jne         L$6
+    ret         
+L$6:
+    or          ax,ax
+    jne         L$7
+    retf        
+L$7:
+    pop         bx
+    leave       
+    retf        
+retiret_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	0
+
+_DATA		ENDS
+		END

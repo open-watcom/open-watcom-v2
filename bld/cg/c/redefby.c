@@ -45,7 +45,7 @@ extern  name            *DeAlias(name*);
 extern  bool            AskNameROM(pointer,cg_class);
 
 extern bool ReDefinedBy( instruction *, name * );
-extern bool ZapsIndexed( name *, name * );
+static bool ZapsIndexed( name *, name * );
 
 extern  bool    TempsOverlap( name *name1, name *name2 ) {
 /*********************************************************

@@ -420,11 +420,11 @@ void ProcessDefArgs( DECL_INFO *dinfo )
     SCOPE scope;
 
     scope = SymScope( dinfo->sym );
-    save_scope = CurrScope;
-    CurrScope = scope;
+    save_scope = GetCurrScope();
+    SetCurrScope(scope);
     DefineDefaultValues( dinfo );
     FreeDeclInfo( dinfo );
-    CurrScope = save_scope;
+    SetCurrScope(save_scope);
 }
 
 

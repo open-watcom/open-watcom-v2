@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Draw an ellipse.
 *
 ****************************************************************************/
 
@@ -33,7 +32,8 @@
 #include "gdefn.h"
 
 
-void _L0Ellipse( short x1, short y1, short x2, short y2, void (*plot)() )
+void _L0Ellipse( short x1, short y1, short x2, short y2,
+                  void (*plot)( short, short, short ) )
 //=======================================================================
 
 // This function calculates the points on the ellipse with opposite

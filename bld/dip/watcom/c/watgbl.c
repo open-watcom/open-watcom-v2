@@ -116,7 +116,7 @@ static void GblCreate( imp_sym_handle *is, gbl_info *gbl )
 {
     is->type = SH_GBL;
     is->im = GBL_MOD( gbl );
-    is->name_off = GBL_NAME( gbl ) - (byte *)gbl - 1;
+    is->name_off = GBL_NAME( gbl ) - (char *)gbl - 1;
     is->u.gbl = gbl;
 }
 
@@ -160,7 +160,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     gbl_link            *lnk_array;
     gbl_info            *gbl;
     hash_link           lnk_off;
-    int                 (*compare)();
+    int                 (*compare)(void const*,void const*,unsigned);
     char                *gblname;
     size_t              gbllen;
     char                *nam;
@@ -435,9 +435,9 @@ static dip_status DoMakeGblLst( info_block *inf, unsigned size )
     unsigned            num_syms;
     gbl_link            *lnk;
     hash_link           *tbl;
-    char                *ptr;
-    char                *start;
-    char                *end;
+    byte                *ptr;
+    byte                *start;
+    byte                *end;
     gbl_link_info       *link_data;
 
 
@@ -488,7 +488,7 @@ dip_status MakeGblLst( section_info *inf )
 
 unsigned GblSymSplit( info_block *gbl, section_info *inf )
 {
-    char            *ptr;
+    byte            *ptr;
     unsigned        size;
     unsigned        total;
     unsigned        next;
@@ -557,7 +557,7 @@ unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
     gbl = is->u.gbl;
     gbl += is->name_off;
     len = *gbl++;
-    __unmangled_name( gbl, len, &gbl, &len );
+    __unmangled_name( (const char *)gbl, len, (const char **)&gbl, &len );
     if( max > 0 ) {
         --max;
         if( max > len ) max = len;

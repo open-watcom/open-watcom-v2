@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  64-bit integer shift.
 *
 ****************************************************************************/
 
@@ -40,20 +39,11 @@
 
 _WCRTLINK void __U64Shift( const UINT64_TYPE *a, int shift, UINT64_TYPE *res )
 {
-    unsigned_32         save;
-
     if( shift < 0 ) {
         /* left shift */
-        shift = -shift;
-        save = a->u._32[I64LO32];
-        res->u._32[I64LO32] = a->u._32[I64LO32] << shift;
-        res->u._32[I64HI32] = a->u._32[I64HI32] << shift;
-        res->u._32[I64HI32] |= save >> (32-shift);
+        *res = *a << (-shift);
     } else {
         /* right shift */
-        save = a->u._32[I64HI32];
-        res->u._32[I64HI32] = a->u._32[I64HI32] >> shift;
-        res->u._32[I64LO32] = a->u._32[I64LO32] >> shift;
-        res->u._32[I64LO32] |= save << (32-shift);
+        *res = *a >> shift;
     }
 }

@@ -1,0 +1,5 @@
+(10)"WATCOM C++"
+(10)"test input"
+(3)"for"
+(5)"TSTIO"
+(7)"program"

@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String    s ("Watcom C++");
+    String    s ("Open Watcom C++");
 
     cout << "The string is \"" << s << "\"" << endl;
 }

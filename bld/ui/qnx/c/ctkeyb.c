@@ -72,9 +72,12 @@ enum {
 
 #define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
-extern struct _console_ctrl *   UIConCtrl;
-extern unsigned                 UIDisableShiftChanges;
+extern struct _console_ctrl *UIConCtrl;
+extern unsigned             UIDisableShiftChanges;
 
+extern void             tm_saveevent( void );
+extern void             restorekeyb( void );
+extern void             savekeyb( void );
 
 static struct termios   SaveTermSet;
 static int              SaveProtocol;
@@ -85,6 +88,8 @@ static unsigned short   ShftState;
 static unsigned short   sticky;
 static unsigned short   real_shift;
 
+static int              ck_fini( void );
+static int              init_trie( void );
 
 #define evmap( ev, f )  { EV_##ev, offsetof( struct _strs, f ) },
 
@@ -268,7 +273,7 @@ static const event_shift_map ShiftMap[] = {
     FUNC_MAP( 12 ),
 };
 
-void intern clear_shift()
+void intern clear_shift( void )
 {
     ShftState = 0;
     real_shift = 0;
@@ -287,8 +292,8 @@ static int ck_unevent( EVENT ev )
     return( 0 );
 }
 
-void intern ck_arm()
-/******************/
+void intern ck_arm( void )
+/************************/
 {
     /*
         Yes I know that this can be done in the dev_read call, but there
@@ -340,8 +345,8 @@ int find_entry( const void *pkey, const void *pbase )
     return( *evp - entry->normal );
 }
 
-EVENT ck_keyboardevent()
-/**********************/
+EVENT ck_keyboardevent( void )
+/****************************/
 {
     EVENT                       ev;
     EVENT                       search_ev;
@@ -467,9 +472,8 @@ EVENT ck_keyboardevent()
     return( ev );
 }
 
-EVENT tk_keyboardevent()
+EVENT tk_keyboardevent( void )
 {
-    extern      void    tm_saveevent();
     EVENT       ev;
 
     ev = ck_keyboardevent();
@@ -479,7 +483,7 @@ EVENT tk_keyboardevent()
     return( EV_NO_EVENT ); /* make UI check for mouse events */
 }
 
-static int ck_stop()
+static int ck_stop( void )
 {
     dev_read( UIConHandle, NULL, 0, 0, 0, 0, 0, 0 );
     while( Creceive( UILocalProxy, 0, 0 ) > 0 )
@@ -488,21 +492,21 @@ static int ck_stop()
 }
 
 
-static int ck_flush()
-/********************/
+static int ck_flush( void )
+/*************************/
 {
     tcflush( UIConHandle, TCIFLUSH );
     return 0;
 }
 
-static int ck_shift_state()
-/*************************/
+static int ck_shift_state( void )
+/*******************************/
 {
     return( ShftState );
 }
 
-static int ck_restore()
-/*********************/
+static int ck_restore( void )
+/***************************/
 {
     struct termios  new;
 
@@ -532,8 +536,6 @@ static void term_handler( int signo )
     _exit( 0 );
 }
 
-extern void restorekeyb();
-
 /* We want to ignore the following escapes when running on a console */
 #include "conesc.gh"
 
@@ -550,8 +552,8 @@ static const char * const ConIgnore[] = {
 };
 #endif
 
-static int ck_init()
-/******************/
+static int ck_init( void )
+/************************/
 {
     unsigned    i;
     EVENT       ev;
@@ -587,17 +589,16 @@ static int ck_init()
 }
 
 
-static int ck_fini()
+static int ck_fini( void )
 /************************/
 {
-    extern void savekeyb();
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     signal( SIGTERM, SIG_DFL );
     return 0;
 }
 
-static int ck_save()
+static int ck_save( void )
 {
     tcsetattr( UIConHandle, TCSADRAIN, &SaveTermSet );
     if( UIConCtrl != NULL ) {
@@ -609,7 +610,7 @@ static int ck_save()
     return 0;
 }
 
-static int init_trie()
+static int init_trie( void )
 {
     charoffset  *coffs;         // start of char-offset table
     char        *str;

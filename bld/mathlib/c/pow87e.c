@@ -34,41 +34,32 @@
 #include <stddef.h>
 #include <math.h>
 #include "mathcode.h"
-
-#if defined(__386__) && defined(__SW_3S)
-   #pragma aux __pow87_err parm [] modify []
-#endif
+#include "mathlib.h"
 
 
 double __pow87_err( double x, double y, unsigned char code )
 /**********************************************************/
-    {
-        unsigned int err_code;
+{
+    unsigned int err_code;
 
-        if( code <= 1 ) {
-            if( code == 0 ) {           /* x == 0.0  */
-                if( y > 0.0 )  return( 0.0 );
-                if( y < 0.0 ) {
-//                    result = HUGE_VAL;
-                    err_code = FUNC_POW | M_DOMAIN | V_HUGEVAL; /* 0.0 ** -ve */
-                } else {
-//                    result = 1.0;
-                    err_code = FUNC_POW | M_DOMAIN | V_ONE;     /* 0.0 ** 0.0 */
-                }
-            } else {                    /* negative ** fraction  */
-                err_code = FUNC_POW | M_DOMAIN | V_ZERO;        /* -ve ** frac*/
-            }
-//            result = _matherr( DOMAIN, "pow", &x, &y, result );
-            return( __math2err( err_code, &x, &y ) );
-        } else {        /* code == 2 */
-            if( y <= 0.0 )  return( 0.0 );                      /* 27-may-90 */
-//            result = (x > 0.0) ? HUGE_VAL : - HUGE_VAL;
-//            result = _matherr( OVERFLOW, "pow", &x, &y, result );
-            if( x > 0.0 ) {
-                err_code = FUNC_POW | M_OVERFLOW | V_HUGEVAL;
-            } else {
-                err_code = FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
-            }
-            return( __math2err( err_code, &x, &y ) );
+    if( code == 0 ) {           /* x == 0.0  */
+        if( y > 0.0 )
+            return( 0.0 );
+        if( y < 0.0 ) {
+            err_code = FUNC_POW | M_DOMAIN | V_HUGEVAL; /* 0.0 ** -ve */
+        } else {
+            err_code = FUNC_POW | M_DOMAIN | V_ONE;     /* 0.0 ** 0.0 */
+        }
+    } else if( code == 1 ) {    /* negative ** fraction  */
+        err_code = FUNC_POW | M_DOMAIN | V_ZERO;        /* -ve ** frac*/
+    } else {                    /* code == 2 */
+        if( y <= 0.0 )
+            return( 0.0 );
+        if( x > 0.0 ) {
+            err_code = FUNC_POW | M_OVERFLOW | V_HUGEVAL;
+        } else {
+            err_code = FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
         }
     }
+    return( __math2err( err_code, &x, &y ) );
+}

@@ -30,67 +30,65 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "vi.h"
 #include <fcntl.h>
 #include "posix.h"
-#include "vi.h"
 
 /*
- * Compare - quicksort comparison
+ * compare - quicksort comparison
  */
-int Compare( direct_ent * const *p1, direct_ent * const *p2 )
+static int compare( const void *p1, const void *p2 )
 {
-    return( strcmp( (*p1)->name,(*p2)->name ) );
+    return( strcmp( (*(direct_ent * const *)p1)->name,
+                    (*(direct_ent * const *)p2)->name ) );
 
-} /* Compare */
+} /* compare */
 
 /*
  * getDir - get current directory list (no sorting)
  */
-static int getDir( char *dname, bool want_all_dirs )
+static vi_rc getDir( char *dname, bool want_all_dirs )
 {
     DIR                 *d;
     struct dirent       *nd;
     direct_ent          *tmp;
-    int                 i,j,len;
-    char                wild[_MAX_PATH];
-    char                path[_MAX_PATH];
+    int                 i, j, len;
+    char                wild[FILENAME_MAX];
+    char                path[FILENAME_MAX];
     char                ch;
     bool                is_subdir;
+    vi_rc               rc;
 
     /*
      * initialize for file scan
      */
     len = strlen( dname );
-    for( i=len-1;i>=0;i-- ) {
+    for( i = len - 1; i >= 0; i-- ) {
         if( dname[i] == '/' || dname[i] == '\\' || dname[i] == ':' ) {
             break;
         }
     }
-    for( j=0;j<i+1;j++ ) {
+    for( j = 0; j < i + 1; j++ ) {
         path[j] = dname[j];
     }
-    path[i+1] = 0;
+    path[i + 1] = 0;
     if( i >= 0 ) {
         ch = path[i];
     } else {
         ch = 0;
     }
-    for( j=i+1;j<=len;j++ ) {
-        wild[j-i-1] = dname[j];
+    for( j = i + 1; j <= len; j++ ) {
+        wild[j - i - 1] = dname[j];
     }
-    i = FileMatchInit( wild );
-    if( i ) {
-        return( i );
+    rc = FileMatchInit( wild );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-#ifndef __QNX__
+#ifndef __UNIX__
     if( ch != '\\' && ch != '/' && ch != ':' && ch != 0 ) {
-        strcat( path,FILE_SEP_STR );
+        strcat( path, FILE_SEP_STR );
     }
-    strcat( path,ALL_FILES_WILD_CARD );
+    strcat( path, ALL_FILES_WILD_CARD );
 #else
     if( ch == 0 ) {
         path[0] = '.';
@@ -98,7 +96,7 @@ static int getDir( char *dname, bool want_all_dirs )
     }
 #endif
 
-    for( i=0;i<DirFileCount;i++ ) {
+    for( i = 0; i < DirFileCount; i++ ) {
         MemFree2( &DirFiles[i] );
     }
     DirFileCount = 0;
@@ -111,21 +109,30 @@ static int getDir( char *dname, bool want_all_dirs )
     /*
      * loop through all directory entries
      */
-    while( (nd = readdir( d ) ) != NULL ) {
+    while( (nd = readdir( d )) != NULL ) {
 
         if( DirFileCount >= MAX_FILES ) {
             break;
         }
         is_subdir = FALSE;
-        #ifdef __QNX__
-            if( nd->d_stat.st_mode & S_IFDIR ) {
+#if defined( __QNX__ )
+        if( nd->d_stat.st_mode & S_IFDIR ) {
+            is_subdir = TRUE;
+        }
+#elif defined( __UNIX__ )
+        {
+            struct stat st;
+
+            stat( nd->d_name, &st );
+            if( st.st_mode & S_IFDIR ) {
                 is_subdir = TRUE;
             }
-        #else
-            if( nd->d_attr & _A_SUBDIR ) {
-                is_subdir = TRUE;
-            }
-        #endif
+        }
+#else
+        if( nd->d_attr & _A_SUBDIR ) {
+            is_subdir = TRUE;
+        }
+#endif
         if( !(want_all_dirs && is_subdir) ) {
             if( !FileMatch( nd->d_name ) ) {
                 continue;
@@ -133,8 +140,8 @@ static int getDir( char *dname, bool want_all_dirs )
         }
 
         len = strlen( nd->d_name );
-        DirFiles[ DirFileCount ] = MemAlloc( sizeof( direct_ent ) + len );
-        tmp = DirFiles[ DirFileCount ];
+        DirFiles[DirFileCount] = MemAlloc( sizeof( direct_ent ) + len );
+        tmp = DirFiles[DirFileCount];
         GetFileInfo( tmp, nd, path );
 
         memcpy( tmp->name, nd->d_name, len + 1 );
@@ -151,16 +158,16 @@ static int getDir( char *dname, bool want_all_dirs )
 /*
  * GetSortDir - get a directory and sort it
  */
-int GetSortDir( char *name, bool want_all_dirs )
+vi_rc GetSortDir( char *name, bool want_all_dirs )
 {
-    int         i;
+    vi_rc       rc;
 
-    i = getDir( name, want_all_dirs );
-    if( i ) {
-        return( i );
+    rc = getDir( name, want_all_dirs );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     if( DirFileCount ) {
-        qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), Compare );
+        qsort( DirFiles, DirFileCount, sizeof( direct_ent * ), compare );
     }
     return( ERR_NO_ERR );
 
@@ -169,7 +176,7 @@ int GetSortDir( char *name, bool want_all_dirs )
 void DirFini(void){
     int i;
 
-    for( i=0;i<DirFileCount;i++ ) {
+    for( i = 0; i < DirFileCount; i++ ) {
         MemFree( DirFiles[i] );
     }
     DirFileCount = 0;

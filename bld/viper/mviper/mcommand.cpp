@@ -101,9 +101,6 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     } else if( strnicmp( &cmd[i], "!Browse ", 8 ) == 0 ) {
         i += 8;
         location = EXECUTE_BROWSE;
-    } else if( strnicmp( &cmd[i], "!VP ", 4 ) == 0 ) {
-        i += 4;
-        location = EXECUTE_WINMAKER;
     } else if( strnicmp( &cmd[i], "!RemakeAll", 10 ) == 0 ) {
         i += 10;
         location = EXECUTE_TOUCH_ALL;
@@ -145,6 +142,9 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                     m.concat( cmd[i+l] );
                 }
             }
+        } else if( cmd[i] == '\r' ) {
+            // skip \r
+			i++;
         } else {
             com.concat( cmd[i++ ] );
         }
@@ -184,11 +184,11 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                         if( com[i] != ' ' ) f.concat( com[i++] );
                     }
                 }
-                if( f.needQuotes() ) {
-                    f.addSQuotes();
+                if( f.needQuotes( '\'' ) ) {
+                    f.addQuotes( '\'' );
                 }
                 command.concat( f );
-                f.removeQuotes();
+                f.removeQuotes( '\'' );
             } else if( strncmp( &com[i], "$&", 2 ) == 0 ) {
                 i += 2;
                 target->noPathNoExt( f );

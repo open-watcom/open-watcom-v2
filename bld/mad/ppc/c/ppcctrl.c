@@ -70,7 +70,7 @@ void            DIGENTRY MIStateSet( imp_mad_state_data *new )
     MADState = new;
 }
 
-void            DIGENTRY MIStateCopy( imp_mad_state_data *src, imp_mad_state_data *dst )
+void            DIGENTRY MIStateCopy( imp_mad_state_data const *src, imp_mad_state_data *dst )
 {
     memcpy( dst, src, sizeof( *dst ) );
 }

@@ -1,4 +1,4 @@
 #ifndef _NLSCMPERROR
- #include <limits.h>
- #define _NLSCMPERROR INT_MAX
+ /* For MS compatibility, equal to INT_MAX */
+ #define _NLSCMPERROR ((int)((unsigned int)~0 >> 1))
 #endif

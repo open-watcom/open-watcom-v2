@@ -42,10 +42,10 @@
 #include "error.h"
 
 extern FILE *yyin;
-extern int yyparse();
+extern int wig_parse( void );
 #if defined( __DLL__ )
 #elif defined( __WINDOWS__ )
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     char        *ptr;
     char        *line;
@@ -83,15 +83,17 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     return( rc );
 }
 #else
-int main( int argc, char **argv ) {
-/**********************************/
+int main( int argc, char **argv )
+/*******************************/
+{
     printf( "%s", WIG_BANNER );
     return( Wigmain( argc, argv ) );
 }
 #endif
 
-static void finiProgram( void ) {
-/*******************************/
+static void finiProgram( void )
+/*****************************/
+{
     FreeSru();
     FiniError();
     FiniLex();
@@ -100,9 +102,9 @@ static void finiProgram( void ) {
 }
 
 
-int Wigmain( int argc, char **argv ) {
-/*********************************/
-
+int Wigmain( int argc, char **argv )
+/**********************************/
+{
     int         rc;
 
     InitMem();
@@ -118,7 +120,7 @@ int Wigmain( int argc, char **argv ) {
             InitSru();
 
             /* parse loop */
-            while( !yyparse() );
+            while( !wig_parse() );
 
             /* do any post processing */
             DoPostProcessing();

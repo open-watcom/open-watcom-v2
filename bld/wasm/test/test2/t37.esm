@@ -1,0 +1,30 @@
+.387
+_data		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_data, DS:DGROUP, SS:DGROUP
+L$1:
+    xor       ax,ax
+    jmp       far ptr L$2
+_data		ENDS
+_text		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
+    mov       ax,1
+L$2:
+    add       ax,2
+    add       ax,0fffH
+    inc       ax
+    jmp       far ptr L$1
+    jmp       L$2
+    jmp       far ptr L$2
+    jmp       far ptr L$3
+    jmp       far ptr L$4
+    xor       ax,ax
+L$3:
+    xor       ax,ax
+_text		ENDS
+_data2		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_data2, DS:DGROUP, SS:DGROUP
+L$4:
+    xor       ax,ax
+    jmp       far ptr L$2
+_data2		ENDS
+		END

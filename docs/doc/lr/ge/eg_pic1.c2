@@ -1,0 +1,31 @@
+#include <graph.h>
+#include <pgchart.h>
+#include <string.h>
+#include <conio.h>
+
+#define NUM_VALUES 4
+
+char _FAR *categories[ NUM_VALUES ] = {
+    "Jan", "Feb", "Mar", "Apr"
+};
+
+float values[ NUM_VALUES ] = {
+    20, 45, 30, 25
+};
+
+#include "eg_pal.c"
+
+main()
+{
+    chartenv env;
+
+    _setvideomode( _VRES16COLOR );
+    _pg_initchart();
+    _pg_defaultchart( &env,
+                      _PG_COLUMNCHART, _PG_PLAINBARS );
+    strcpy( env.maintitle.title, "Column Chart" );
+    new_palette();
+    _pg_chart( &env, categories, values, NUM_VALUES );
+    getch();
+    _setvideomode( _DEFAULTMODE );
+}

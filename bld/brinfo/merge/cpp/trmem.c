@@ -34,7 +34,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(__386__) || defined(M_I86)
+#if defined( _M_IX86 )
 #include <i86.h>
 #endif
 

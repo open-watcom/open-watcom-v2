@@ -1,0 +1,1313 @@
+                Waterloo SCRIPT and a PostScript Printer                       
+
+                    Department of Computing Services                           
+
+                         University of Waterloo                                
+                           Waterloo, Ontario                                   
+                            Canada  N2L 3G1                                    
+
+                            October 18, 1988                                   
+
+
+               (c) Department of Computing Services, 1988                      
+                                                                               
+
+
+ Waterloo SCRIPT and a PostScript Printer                      page iii        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                ABSTRACT                                       
+
+ This  document describes  the  current level  of  support in  Waterloo        
+ SCRIPT  for any  printer with  a  PostScript interpretive  programming        
+ language interface.   The  support has been developed  from specifica-        
+ tions  documented in  PostScript Language  Manual  from Adobe  Systems        
+ Incorporated.   It  is expected that  all information and  function of        
+ this interface will apply to every PostScript printer,  no matter what        
+ printing hardware is used in the implementation.                              
+
+    It is  assumed that  the user  is already  familiar with  SCRIPTing        
+ formatted documents to such devices as  fixed pitch terminals and line        
+ printers.   Such concepts as control words, macro calls with operands,        
+ text records and multiple SCRIPT input files are assumed.                     
+
+    The effect  of this old  knowledge on  a new device  with different        
+ capabilities is described.   New required information, the assumptions        
+ made and the generated output are covered in two areas:  the first for        
+ the end user and the second for those who care about how the device is        
+ being driven.                                                                 
+                                                                               
+
+ page iv                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page v        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                            ACKNOWLEDGEMENTS                                   
+
+ The University of Waterloo has long  had the need to produce formatted        
+ text on the  printed page with the highest possible  level of quality.        
+ The PostScript language interface was of immediate interest because it        
+ adapts  so  easily to  the  tradeoffs  of different  devices.    Laser        
+ printers  and typesetters  with  different  qualities and  speeds  are        
+ becoming available  from an increasing  variety of vendors.    All the        
+ devices can be driven from an identical data stream.                          
+
+    The idea that PostScript should be supported by SCRIPT as an output        
+ device was initiated  by Matthew Foley of Adobe Systems  in the spring        
+ of 1985.  At the time, PostScript was merely a word and the PostScript        
+ Language Manual was somewhat overwhelming.                                    
+
+    The first experiments in supporting this printer were done by Allan        
+ Hetzel of the Computing Center at  the University of Kentucky.   Allan        
+ adapted the  Xerox 2700 device  definition to PostScript  with limited        
+ success,   but  his  pioneering efforts  demonstrated  that  much  was        
+ possible.   A prototype PostScript post-processor  was written in REXX        
+ at the University of Kentucky which  contributed greatly to our devel-        
+ opment efforts.  Without it, none of the SCRIPT generated output could        
+ be printed.                                                                   
+
+    We also want  to express our thanks to QMS  (Quality Micro Systems)        
+ for providing a beta version of the QMS-PS 800 printer for evaluation.        
+ The  experience proved  to be  totally  uneventful because  everything        
+ worked as documented.                                                         
+                                                                               
+
+ page vi                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                      page vii        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                CONTENTS                                       
+
+
+ Abstract  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  iii        
+
+ Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . . .  v        
+
+
+ Part 1:  User Interface for Adobe PostScript  . . . . . . . . . . .  1        
+
+    External Differences . . . . . . . . . . . . . . . . . . . . . .  1        
+       Characters per Inch . . . . . . . . . . . . . . . . . . . . .  1        
+       PostScript Printer Option . . . . . . . . . . . . . . . . . .  2        
+    User Modifications . . . . . . . . . . . . . . . . . . . . . . .  2        
+       User Generated Comments . . . . . . . . . . . . . . . . . . .  2        
+       User Modified Characters  . . . . . . . . . . . . . . . . . .  3        
+    Unimplemented SCRIPT PostScript Functions  . . . . . . . . . . .  3        
+
+
+ Part 2:  PostScript Interface File  . . . . . . . . . . . . . . . .  5        
+
+    Supported PostScript Fonts . . . . . . . . . . . . . . . . . . .  5        
+       Supported Font Names  . . . . . . . . . . . . . . . . . . . .  5        
+       Underscored Fonts . . . . . . . . . . . . . . . . . . . . . .  7        
+    PostScript Device Interface  . . . . . . . . . . . . . . . . . .  7        
+       Logical Font Definitions  . . . . . . . . . . . . . . . . . .  7        
+       PostScript Font Definition  . . . . . . . . . . . . . . . . .  7        
+       PostScript Font Selection . . . . . . . . . . . . . . . . . .  8        
+       PostScript Print Definition . . . . . . . . . . . . . . . . .  8        
+    PostScript Physical Font Definitions . . . . . . . . . . . . . .  9        
+    PostScript Logical Font Definitions  . . . . . . . . . . . . . .  9        
+       Input Character Definitions . . . . . . . . . . . . . . . . .  9        
+    Generated Job Directory Comments . . . . . . . . . . . . . . . . 10        
+
+
+ Part 3:  PostScript Device Interface  . . . . . . . . . . . . . . . 11        
+
+    Device Definition  . . . . . . . . . . . . . . . . . . . . . . . 11        
+    Device Output Appendage  . . . . . . . . . . . . . . . . . . . . 12        
+       Appendage Job Directory Comments  . . . . . . . . . . . . . . 12        
+       Appendage Text  . . . . . . . . . . . . . . . . . . . . . . . 13        
+       Appendage End of Page . . . . . . . . . . . . . . . . . . . . 13        
+
+
+ Part 4:  PostScript Post-Processor  . . . . . . . . . . . . . . . . 15        
+
+    Purpose  . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15        
+    POSTS Physical Font Definitions  . . . . . . . . . . . . . . . . 16        
+    Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16        
+    Invocation Options . . . . . . . . . . . . . . . . . . . . . . . 18        
+    Escape Sequences Used In POSTS Files . . . . . . . . . . . . . . 19        
+       Format  . . . . . . . . . . . . . . . . . . . . . . . . . . . 19        
+                                                                               
+
+ page viii                     Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+       Functions . . . . . . . . . . . . . . . . . . . . . . . . . . 20        
+    OS Batch Invocation  . . . . . . . . . . . . . . . . . . . . . . 21        
+    CMS EXEC Invocation  . . . . . . . . . . . . . . . . . . . . . . 21        
+    Error Messages . . . . . . . . . . . . . . . . . . . . . . . . . 22        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page 1        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                 Part 1                                        
+
+                  USER INTERFACE FOR ADOBE POSTSCRIPT                          
+
+
+                                                                               
+ This part describes the support in  SCRIPT to produce formatted output        
+ that  may be  sent  to an  Adobe PostScript  printer  through a  post-        
+ processor to  generate the native  "PostScript" input language  of the        
+ printer controller.   It is assumed that  the end user knows something        
+ about  the general  concepts and  capabilities of  PostScript but  not        
+ necessarily much about the instructions that make it work.                    
+
+
+                                                                               
+                          EXTERNAL DIFFERENCES                                 
+
+ When it  was decided  to add Adobe  PostScript to  the list  of SCRIPT        
+ output devices,  the primary rule was one of compatibility.   The user        
+ should be able to create a SCRIPT input file with no concern about the        
+ device on which it will ultimately appear.  The fact that a PostScript        
+ printer is  the target output  device and the  Fonts to use,   must be        
+ specified.   Other  differences might occur  within the input  file to        
+ take advantage of features peculiar to the device.                            
+
+
+ Characters per Inch                                                           
+
+ PostScript supports  a wide  variety of  fixed pitch  and proportional        
+ fonts in different sizes.  A single output line may contain characters        
+ from different fonts.    All characters in all fonts may  be scaled to        
+ many different pointsizes.  Since the relative widths of these charac-        
+ ters are defined  in terms of 1000  units per "em space"  the internal        
+ resolution of SCRIPT is 72000 horizontal units per inch.                      
+
+    A document might contain ".IN 5",  meaning "Indent on the left five        
+ characters".   To continue to support such  a control word,  a meaning        
+ for "5" must be found.   Does it mean five 10 pitch,  five 12 pitch or        
+ five proportional blanks?   There is  an invocation parameter "CPI nn"        
+ that specifies how  wide each Indent Character is,   regardless of the        
+ pitch of the  font being used.   A  "CPI 10" (which is default)   or a        
+ "CPI 12" would normally  be the two possible values.    The meaning of        
+ control words with  numeric operands that affect  the horizontal posi-        
+ tioning of  text would  be interpreted  with CPI.    A Line  Length of        
+ ".LL 60" at "CPI 10"  would be a six  inch Line Length,  but  the same        
+ ".LL 60" at "CPI 12" would be a five inch Line Length.                        
+
+    A Line  Length specified  in absolute units  such as  ".LL 6.5i" is        
+ converted to enough "characters" to fill six and a half inches.               
+                                                                               
+
+ page 2                        Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ PostScript Printer Option                                                     
+
+ To select PostScript as the SCRIPT  output device,  the "POSTS" option        
+ must be specified in the parameter list.   The "POSTS" option causes a        
+ table  of escape  functions  to be  enabled  within  SCRIPT to  direct        
+ special device dependent processing.                                          
+
+    All output  is directed  to "SYSPRINT"  in variable  length records        
+ with no carriage control character.  The record boundaries are related        
+ to the start of a new output  line in the final printed result.   This        
+ file must  be post-processed  to convert  the SCRIPT  generated escape        
+ sequences  and text  into  native PostScript  that may  be  sent to  a        
+ printer.                                                                      
+
+    Under MVS batch,  the output file is written to the SYSPRINT ddname        
+ which would be allocated to a sequential data set.                            
+
+    In a  CMS environment,   the "POSTS" option  directs the  output to        
+ "filename POSTS" on  disk.   The  "filename" matches  the name  of the        
+ primary input file.   The POSTS  files contain variable length records        
+ with a maximum LRECL of 1024.                                                 
+
+
+                                                                               
+                           USER MODIFICATIONS                                  
+
+ Some  device-dependent customizing  of  the output  may  be done  from        
+ within the SCRIPT  input.   If more devices than PostScript  are to be        
+ supported by  the same  input file,   the value  of System  Set Symbol        
+ "SYSPDEV" should be compared with "POSTS" in an If (.IF) control word.        
+
+       .if &SYSPDEV eq POSTS .th .do                                           
+       .   enter PostScript method here                                        
+       .do end                                                                 
+       .el .do                                                                 
+       .   enter non-PostScript method here                                    
+       .do end                                                                 
+
+
+ User Generated Comments                                                       
+
+ The Output Comment  (.OC)  control word sends its operand  line to the        
+ output file as if it were a comment.                                          
+
+    SCRIPT does not examine the comments  produced to assess any effect        
+ it might  have on  the current  SCRIPT formatting  environment.   User        
+ comments are prefixed by an escape  character (X'27')  and an asterisk        
+ (*) to indicate the entire record is to be treated as a comment.              
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page 3        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ User Modified Characters                                                      
+
+ The printable character set generated in  a Logical Font is defined in        
+ tables known  as CODEPAGES.    If a document  has requirements  for an        
+ existing character not defined in the "TN print train" based set,  the        
+ Photo (.PH)  control word may be  used to alter a CODEPAGE definition.        
+ Any input character may be mapped into a character position within the        
+ physical fonts available on the printer.                                      
+
+    By default,  each  of the 256 EBCDIC characters is  defined in each        
+ Codepage.   Unknown  characters are mapped  into a  suitable printable        
+ character so they  will not cause errors when encountered  in an input        
+ file and will be recognizable in the formatted output.  The characters        
+ that cannot be made printable include:                                        
+
+ X'05':  the Tab,                                                              
+ X'16':  the Backspace and                                                     
+ X'27':  the Escape character.                                                 
+
+    For a description  of how to define new characters  or redefine old        
+ characters see "Font Definitions" in the  next two parts of this docu-        
+ ment.                                                                         
+
+
+                                                                               
+               UNIMPLEMENTED SCRIPT POSTSCRIPT FUNCTIONS                       
+
+ Complete and  transparent support for  PostScript has not  been imple-        
+ mented.   As  the experiences accumulate,   the desired goal  of total        
+ transparency or satisfactory emulation will become more complete.             
+
+ Equivalent characters:  Not  all standard EBCDIC characters  in the TN        
+   print train  currently exist.   This will  require new fonts  or new        
+   Codepages for existing fonts.                                               
+                                                                               
+
+ page 4                        Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page 5        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                 Part 2                                        
+
+                       POSTSCRIPT INTERFACE FILE                               
+
+
+                                                                               
+                       SUPPORTED POSTSCRIPT FONTS                              
+
+ As distributed there  is support for many text fonts  with and without        
+ underscoring.   All the available fonts  are supported in pointsizes 1        
+ to 144 in steps of one point.                                                 
+
+
+ Supported Font Names                                                          
+
+ Courier:  A family  of monospaced fonts available  as Roman,  Oblique,        
+   Bold and BoldOblique.                                                       
+
+ Times:  A set of serif proportional fonts that are available in Roman,        
+   Italic, Bold and BoldItalic.                                                
+
+ Helvetica:  A family of sans-serif  proportional fonts that are avail-        
+   able in Normal, Oblique, Bold and BoldOblique.                              
+
+ AvantGarde:  A set of sans-serif proportional fonts that are available        
+   as AvantGarde-Book and as -BookOblique, -Demi and -DemiOblique.             
+
+ Bookman:  A  set of  serif proportional fonts.    They are  defined as        
+   Bookman-Light, with -LightItalic, -Demi and -DemiItalic.                    
+
+ Helvetica-Narrow:  A family of sans-serif  proportional fonts that are        
+   available in Normal, Oblique, Bold and BoldOblique.                         
+
+ NewCenturySchoolbook:   A set  of serif  proportional  fonts that  are        
+   available in Roman, Italic, Bold and BoldItalic.                            
+
+ Palatino:  A  set of  serif proportional fonts  that are  available in        
+   Roman, Italic, Bold and BoldItalic.                                         
+
+ ZapfChancery:  A serif proportional font that is available in MediumI-        
+   talic.                                                                      
+
+ ITC American  Typewriter:  Two serif  and proportional fonts  that are        
+   available in Medium and Bold.                                               
+
+ Symbol:  A collection of greek letters and special symbols.                   
+
+ ZapfDingbats:  A collection of more special symbols.                          
+                                                                               
+
+ page 6                        Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿        
+ |                                                                    |        
+ |                     Table 1:  PostScript Fonts                     |        
+ |                                                                    |        
+ |  The supported font names and their corresponding short name.      |        
+ |                                                                    |        
+ |      Short     Font                                                |        
+ |      Name      Name                                                |        
+ |                                                                    |        
+ |      Cour      Courier                                             |        
+ |      CourO     Courier-Oblique                                     |        
+ |      CourB     Courier-Bold                                        |        
+ |      CourBO    Courier-BoldOblique                                 |        
+ |      Time      Times-Roman                                         |        
+ |      TimeI     Times-Italic                                        |        
+ |      TimeB     Times-Bold                                          |        
+ |      TimeBI    Times-BoldItalic                                    |        
+ |      Helv      Helvetica                                           |        
+ |      HelvO     Helvetica-Oblique                                   |        
+ |      HelvB     Helvetica-Bold                                      |        
+ |      HelvBO    Helvetica-BoldOblique                               |        
+ |      Agar      AvantGarde-Book                                     |        
+ |      AgarO     AvantGarde-BookOblique                              |        
+ |      AgarD     AvantGarde-Demi                                     |        
+ |      AgarDO    AvantGarde-DemiOblique                              |        
+ |      BookL     Bookman-Light                                       |        
+ |      BookLI    Bookman-LightItalic                                 |        
+ |      BookD     Bookman-Demi                                        |        
+ |      BookDI    Bookman-DemiItalic                                  |        
+ |      Heln      Helvetica-Narrow                                    |        
+ |      HelnO     Helvetica-Narrow-Oblique                            |        
+ |      HelnB     Helvetica-Narrow-Bold                               |        
+ |      HelnBO    Helvetica-Narrow-BoldOblique                        |        
+ |      Cent      NewCenturySchlbk-Roman                              |        
+ |      CentI     NewCenturySchlbk-Italic                             |        
+ |      CentB     NewCenturySchlbk-Bold                               |        
+ |      CentBI    NewCenturySchlbk-BoldItalic                         |        
+ |      Pala      Palatino-Roman                                      |        
+ |      PalaI     Palatino-Italic                                     |        
+ |      PalaB     Palatino-Bold                                       |        
+ |      PalaBI    Palatino-BoldItalic                                 |        
+ |      ChanMI    ZapfChancery-MediumItalic                           |        
+ |      Atype     ITCAmericanTypewriterMedium                         |        
+ |      AtypeB    ITCAmericanTypewriterBold                           |        
+ |      Symb      Symbol                                              |        
+ |      Ding      ZapfDingbats                                        |        
+ |                                                                    |        
+ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page 7        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ Underscored Fonts                                                             
+
+    Each of these  font names may be further qualified  with "-U" which        
+ causes the font name specified to be underscored (e.g. Helvetica-Bold-        
+ U or Agar-U).                                                                 
+
+
+                                                                               
+                      POSTSCRIPT DEVICE INTERFACE                              
+
+ Logical Font Definitions                                                      
+
+ SCRIPT supports four logical fonts  at a time automatically:   normal,        
+ italic,  bold and bold italic.   An  interface file,  named "POSTS" is        
+ provided to define up to four  Logical Fonts of the PostScript printer        
+ into a single Font Name.  A Logical Font is a set of characters chosen        
+ from the available Physical Fonts.                                            
+
+
+ PostScript Font Definition                                                    
+
+ The "POSTS" interface  file must be imbedded in a  document before any        
+ text may be entered in the input  file.   If the document is not being        
+ formatted for a  PostScript printer,  the interface file  may still be        
+ imbedded as  the interface  first checks that  the "POSTS"  option has        
+ been specified before defining the Font Names that may be used.               
+
+    When the "POSTS"  interface is imbedded,  up to  four Physical Font        
+ Names may be provided as operands.                                            
+
+       .im POSTS FONT fontname name1 name2 name3 name4                         
+
+ where:                                                                        
+
+ fontname  is an identifier of up to  twelve characters of your choice.        
+           It is treated as if entered in  uppercase and may be used in        
+           Begin Font (.BF) control words throughout the document.             
+
+ name1     is the Font Name to be used for Normal text in the document.        
+           The "-U"  suffix should be  avoided for "name1".    The Font        
+           Name  may be  specified  with the  desired  pointsize as  an        
+           integer following the name and separated with a blank.              
+
+ name2     is the Font  Name to use for Underscored (.US)   text or any        
+           character overstruck with  an underscore in the  input.   If        
+           this  is  omitted then  "name2"  defaults  to the  value  of        
+           "name1".                                                            
+
+ name3     is the Font Name to use for BOLD (.BD) text or any character        
+           overstruck with  itself in the  input.   If this  is omitted        
+           then Bold text will appear as "name2" text.                         
+                                                                               
+
+ page 8                        Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ name4     is the Font Name  to use for Bold Italic (.BI)   text or any        
+           character both overstruck with itself and an underscore.  If        
+           omitted then "name4" defaults to the value of "name3".              
+
+ The following  example defines the  Times-Roman font for  normal text,        
+ Times-Italic for italic, Times-Bold for boldface and the same font but        
+ underscored for bold-italic.  A "fontid" name of TEXT is assigned:            
+
+  .im POSTS FONT text Time TimeI TimeB TimeB-U                                 
+
+ This example defines a Font Name of MONO to be made up with members of        
+ the Courier family of monospaced fonts:                                       
+
+  .im POSTS FONT mono Cour Cour-U CourB CourB-U                                
+
+ This  example defines  a Font  Name of  NORM to  be made  up with  the        
+ Helvetica family in pointsize 8:                                              
+
+  .im POSTS FONT norm Helv 8 HelvO 8 HelvB 8 HelvBO 8                          
+
+
+ PostScript Font Selection                                                     
+
+ The "fontname" specified in the first invocation of the "POSTS" inter-        
+ face file will be  in effect for the start of  the job.   The Physical        
+ Font Name arguments  are available for the normal,   italic,  bold and        
+ bold-italic text that follows.                                                
+
+    All defined "fontname"s can be  manipulated throughout the document        
+ by using the Begin Font (.BF)  and Previous Font (.PF)  control words.        
+ The use of the  Font Names Definitions may be nested up  to a level of        
+ twenty,  so  each ".BF"  should be paired  with a  corresponding ".PF"        
+ control word.   The first Font Name  Definition cannot be removed with        
+ the Previous Font control word.                                               
+
+
+ PostScript Print Definition                                                   
+
+ A character string  may be passed to  the output file to  document the        
+ purpose of  the file.    By default this  will be  set to  a character        
+ string that identifies  the version of SCRIPT used,  and  the time and        
+ date when the job was formatted.   This  may be defined to any desired        
+ string with the POSTS Interface File.                                         
+
+  .im POSTS PRINT arbitrary character string                                   
+
+ Such a PRINT definition must precede any logical font definition.             
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                        page 9        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                  POSTSCRIPT PHYSICAL FONT DEFINITIONS                         
+
+ When SCRIPT  is creating output for  the PostScript printer,   a table        
+ containing all  the available  physical fonts and  the width  of every        
+ possible character in those fonts  is loaded dynamically.   This table        
+ is called "PDPOSTS".   If new fonts are acquired for the printer, then        
+ the  physical name  of these  fonts and  the width  of each  character        
+ within the font  must be added to  the table of Physical  Font Defini-        
+ tions.                                                                        
+
+
+                                                                               
+                  POSTSCRIPT LOGICAL FONT DEFINITIONS                          
+
+ The characters  that any document requires  always seem to  exceed the        
+ characters available  in a single Physical  Font.   This can  be espe-        
+ cially  true of  special symbols  for special  disciplines of  foreign        
+ languages.   A Logical Font Definition  allows the input characters to        
+ be selected from one or more Physical Fonts that may be available, but        
+ all the input characters appear to belong to a single font.                   
+
+    The Logical Fonts that SCRIPT will process are created by the POSTS        
+ Interface file.  SCRIPT treats the PostScript device as an intelligent        
+ terminal with multiple font capabilities.  Up to four PostScript fonts        
+ may be specified as operands.  Each font is first validated as being a        
+ known PostScript Font.   Note that a font and a font with underscoring        
+ count as a single font.  The mapping of font to member name is defined        
+ in file  "POSTS@" which is listed  in the Appendices.    The interface        
+ file  generates a  Job Directory  Comment that  defines the  reference        
+ number for the Physical Font Name to the post-processor.                      
+
+
+ Input Character Definitions                                                   
+
+ The input characters in a SCRIPT file  are mapped to a character posi-        
+ tion through a table known as  a "CODEPAGE".   Any number of Codepages        
+ may be  defined for  special purpose  mapping of  input characters  to        
+ character position in a Physical Font.                                        
+
+    An input character within a Codepage is defined as follows:                
+
+       .PH ichar font# ochar                                                   
+
+ where:                                                                        
+
+ ichar     is a character to be found in an input text line.  It may be        
+           entered as a single character or a hexadecimal pair.                
+
+ font#     is a relative font number to access the character.  This may        
+           be a number  in the range of  1 to 10.   A  Logical Font may        
+           thus  be composed  of  characters from  up  to ten  Physical        
+           Fonts.                                                              
+                                                                               
+
+ page 10                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ ochar     is the character  to be entered in the  formatted text file.        
+           It would  normally be the same  as the "ichar" but  might be        
+           different to emulate the standard EBCDIC character mappings.        
+           It may  be entered  as a single  character or  a hexadecimal        
+           pair.                                                               
+
+
+                                                                               
+                    GENERATED JOB DIRECTORY COMMENTS                           
+
+ The  following pattern  Job Directory  Comments are  generated in  the        
+ output  file before  any  text.   By  inserting  Output Comment  (.OC)        
+ control words after imbedding POSTS,  any  or all of the generated Job        
+ Directory Comments can be changed but this is strongly discouraged.           
+
+ <esc>*                                                                        
+    A Job Comment always begins the list of Job Directory Comments.  It        
+    may be defined with the ".im  POSTS PRINT" command and will default        
+    to a string defining the version of SCRIPT,  and the time and date.        
+    The entire record will be ignored by the post-processor.                   
+
+ <esc>Fn,member,codepage,'Physical Font Name'.                                 
+    These  Font Directory  comments  are  generated between  the  Print        
+    command and the start of print data.  One Font Directory command is        
+    generated for each unique Physical Font Name required to define the        
+    font requirements  of the job.    The value  of "n" has  been arbi-        
+    trarily assigned for each possible font.                                   
+
+       Following  the Font  Number  is the  actual  Physical Font  Name        
+    represented by the number within the print data.                           
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 11        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                 Part 3                                        
+
+                      POSTSCRIPT DEVICE INTERFACE                              
+
+
+                                                                               
+ This part  describes the support  in SCRIPT  to drive the  Adobe Post-        
+ Script as  an output device.    The characteristics of  the PostScript        
+ that are used  are described and the SCRIPT capabilities  that make it        
+ possible are reviewed.                                                        
+
+
+                                                                               
+                           DEVICE DEFINITION                                   
+
+ When a  user includes the "POSTS"  option in the  invocation parameter        
+ list,  a table of output device characteristics is selected.   Some of        
+ the characteristics do exist in reality on the device but others are a        
+ convenient, high level characteristic that is emulated just before the        
+ output record is written to the output file.                                  
+
+    The following describes the functions that are thought to exist for        
+ the PostScript:                                                               
+
+ Adjust:  Global Adjust  and Even/Odd Adjust are  fully supported.   An        
+   adjust value of zero  is set at one half inch from  the left edge of        
+   the paper.                                                                  
+
+ Font Select:  PostScript does have a Font Select capability, directly.        
+   The font numbers  are physical font numbers determined  by the POSTS        
+   user interface file (.im POSTS FONT).                                       
+
+ Horizontal  Spacing Units:   The  output  file allows  the  PostScript        
+   printer to operate at 72000 horizontal units per inch.                      
+
+ Justified Text:  An output line that is  to be justified to a left and        
+   right  margin is  controlled by  SCRIPT.   SCRIPT  defines the  left        
+   margin with Absolute Placement and inserts horizontal movement func-        
+   tions within the text to control  placement of all characters in the        
+   line.                                                                       
+
+ Justify Left,  Centre and Right:  SCRIPT  positions the start of these        
+   three line types  with Absolute Placement to  the start co-ordinates        
+   of the text.   The text is presented  and the device prints the data        
+   without modification.                                                       
+
+ Move Carriage  Right:  Inter-word blanks  on justified text  lines are        
+   implemented with a  Move Carriage Right command.    A Right Relative        
+   function is generated for horizontal movement.                              
+
+ Multiple Columns:   Multiple Column output  is fully  supported.   The        
+   start position of the current column  is added to the absolute start        
+   position of any text which follows.                                         
+                                                                               
+
+ page 12                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ Pagination:  PostScript does have an End of Page function.   The start        
+   and end of each page in the SCRIPT output file is marked.                   
+
+ Pointsize:  Each font select is qualified with a pointsize.  Each size        
+   of a particular  font is scaled by the printer  controller.   Only a        
+   single character definition exists for all different sizes.                 
+
+ Rules for Boxes:   The vertical and horizontal rules  created with the        
+   Box command are extracted from  their generated output records.   At        
+   the bottom of  each page,  the rules are sorted  and joined together        
+   where possible to  create the smallest number of  rule draw commands        
+   to create the desired result.                                               
+
+ Set Leading:  The initial Vertical Leading  value or space between the        
+   baseline of one output line and the  next is set to an initial value        
+   based on the  LPI parameter.   The initial default is  six Lines Per        
+   Inch.  It may be altered with the Set Leading (.SL) control word.           
+
+ Subscript  and  Superscript:   PostScript can  perform  subscript  and        
+   superscript operations on all printable characters in all fonts.            
+
+ Tabs:   All forms  of Tabs  are  supported,  left,   centre and  right        
+   aligning,  and  character aligning,  with  or without  fill strings.        
+   Such tabs process the text as the data before the tab,  the tab fill        
+   (if any) and the text following the tab.                                    
+
+ Underscore:  Underscoring  of text,  including  blanks if  required by        
+   Underscore  Definition (.UD),   is  supported.   The  post-processor        
+   emulates this function with horizontal rules.                               
+
+
+                                                                               
+                        DEVICE OUTPUT APPENDAGE                                
+
+ All of SCRIPT  treats the PostScript printer  as if it were  an online        
+ terminal.   It  is the  purpose of  a single  output appendage  within        
+ SCRIPT to  take each terminal output  line and translate it  into text        
+ and command codes  the post-processor will understand.    The internal        
+ SCRIPT  text contains  high level  functions  described under  "Device        
+ Definition" that may be acted upon.                                           
+
+
+ Appendage Job Directory Comments                                              
+
+ Job Directory Comments  to passed to the  post-processor are generated        
+ with the Output Comment (.OC) control word.   Such comments are marked        
+ with an internal escape function and recognized by the appendage.   No        
+ checking  for valid  Job Directory  Comments or  proper sequencing  of        
+ these Job Directory Comments is performed.   It is the function of the        
+ POSTS Device Interface  to generate all of the  Job Directory Comments        
+ that are required.   The user should  not require Output Comment (.OC)        
+ when using PostScript.                                                        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 13        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ Appendage Text                                                                
+
+ A  record of  text that  is  passed through  the PostScript  dependent        
+ appendage is processed for escape functions requiring emulation.              
+
+    The font escapes are translated into  Escape codes.   The fonts may        
+ be qualified by underscore attributes.    Any unknown escape functions        
+ are passed through as is.                                                     
+
+    If the input text to the appendage is entirely blank,  the vertical        
+ position marker is updated and the line is not processed.                     
+
+
+ Appendage End of Page                                                         
+
+ The PostScript Device Definition includes an  End of Page escape func-        
+ tion.   When this is recognized the box  lines on the current page are        
+ processed and the page is terminated.                                         
+                                                                               
+
+ page 14                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 15        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                                 Part 4                                        
+
+                       POSTSCRIPT POST-PROCESSOR                               
+
+
+                                                                               
+ This  part contains  a  description of  a  SCRIPT post-processor  that        
+ transforms the  SCRIPT output  into a PostScript  data stream  for the        
+ printer controller.                                                           
+
+    The post-processor performs  a second function in that  it places a        
+ second step between the SCRIPTing of the  file and the printing of it.        
+ Should errors  occur while SCRIPTing,  the  output file will  exist on        
+ temporary disk  rather than on SPOOL  space awaiting print.    It also        
+ allows for a file  to be SCRIPTed once and the file  to be directed to        
+ the printer as required.                                                      
+
+
+                                                                               
+                                PURPOSE                                        
+
+ The output file generated by SCRIPT  when the "POSTS" option is speci-        
+ fied contains comment information at the start of the file followed by        
+ print information.   The first record of  the file either contains the        
+ user text  from ".im  POSTS PRINT"  or an  internally generated  PRINT        
+ record that identifies the version of SCRIPT, the time and date.  This        
+ Job Directory  Comment is always  on a  separate record in  the SCRIPT        
+ output file.                                                                  
+
+    The  records which  follow immediately,   will contain  information        
+ about the  fonts being used in  the following print data.    Each such        
+ record begins with <esc>F followed by  a Physical Font Number which is        
+ followed by  the name  of the  PostScript font  definition member  and        
+ Physical Font  Name.   These  records are  generated through  the ".im        
+ POSTS FONT" device  interface,  one record for each  unique font name.        
+ The font records must occur in the SCRIPT output file before any print        
+ data refers to the font.                                                      
+
+    Note:   It is strongly suggested that the definition of fonts to be        
+ used should all be  placed at the beginning of the  SCRIPT input file.        
+ It is  simply good programming practice  to define the  fonts required        
+ once, at the start of the document.                                           
+                                                                               
+
+ page 16                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+                    POSTS PHYSICAL FONT DEFINITIONS                            
+
+ The post-processor works in conjunction with a table containing all of        
+ the supported fonts for the device and the widths of the characters in        
+ those fonts.                                                                  
+
+    This table called  "PDPOSTS" is maintained separate  from the post-        
+ processor.   If other fonts are to  be supported by the post-processor        
+ they must be first added to "PDPOSTS".                                        
+
+
+                                                                               
+                                FUNCTION                                       
+
+ The PostScript post-processor begins operation by opening three files,        
+ one for input and two for output.                                             
+
+ SYSIN     This is the output file produced  by SCRIPT with the "POSTS"        
+           option.   It must be a file  of variable length records with        
+           no carriage  control,  and a  maximum record length  of 1024        
+           characters.                                                         
+
+ SYSTERM   This is the file where any error messages will be displayed.        
+           It is  expected to  be variable length,   121 byte  with ASA        
+           carriage control.   The  file may be made  fixed or variable        
+           with a record length up to 144.                                     
+
+ SYSOUT    This is the output file that  will ultimately be sent to the        
+           PostScript printer  for processing.   The default  output is        
+           fixed length, eighty byte records.  It is possible to change        
+           the  record  length  of  the output  file  by  specifying  a        
+           different LRECL  on the FILEDEF for  SYSOUT under CMS  or on        
+           the DD card for SYSOUT under MVS.                                   
+
+              Under MVS,  this output file may be allocated either to a        
+           dataset or directly to a SYSOUT printer interface.  In a CMS        
+           environment, this output file would normally be allocated to        
+           a disk file with filetype "LISTPS"  or to a PRINTER directed        
+           to a PostScript server machine.                                     
+
+    Operation of the program then proceeds as follows:                         
+
+ 1.    Perform initialization which includes:                                  
+
+       ù   Load the Physical  Font Definitions,  PDPOSTS,  to  make the        
+           post-processor aware of  all the fonts and  characters which        
+           are supported on the PostScript device.   The post-processor        
+           requires character widths for certain functions.                    
+
+       ù   Scan the parameters changing defaults if required.                  
+
+ 2.    Begin Pass One.                                                         
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 17        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ 3.    Check each input  record of the SYSIN file  for "<esc>*",  where        
+       <esc>  is the  Escape  Character (X'27').    This  is an  Output        
+       Comment and the rest of the record is to be ignored.                    
+
+ 4.    Check  each  input record  for  "<esc>F".    For each  of  these        
+       records:                                                                
+
+       ù   Scan the Font Number which  follows,  delimited on the right        
+           by a comma.                                                         
+       ù   Scan the Font Definition Member Name, delimited on the right        
+           by a comma.                                                         
+       ù   Scan the Codepage to be used with the font, delimited on the        
+           right by a comma.                                                   
+       ù   Scan the  Physical Font  Name.   This  is the  name used  to        
+           connect this font definition with  the fonts in the Physical        
+           Font Definitions.                                                   
+       ù   Scan for the first unquoted  period,  if not already encoun-        
+           tered.                                                              
+       ù   Build an  internal table  for the  internal Font  Number and        
+           mark all characters within it as unreferenced.                      
+
+ 5.    When a record is encountered that is not a font record then scan        
+       it for explicit font requests "<esc>f" followed by a Font Number        
+       and for Text characters.   Mark each character found in the Font        
+       Number as referenced.                                                   
+
+ 6.    Scan the input for an "<esc>Q" sequence.  When one is found, all        
+       input which follows until a "<esc>Q." is encountered is buffered        
+       and indexed according to the name  as defined.   These are equa-        
+       tions which  will be  dumped in  Pass Two  when a  corresponding        
+       "<esc>q" for the equation is found.                                     
+
+ 7.    Index entries are  build from any graphic  definitions which are        
+       done with "<esc>G" escape sequences.                                    
+
+ 8.    Complete Pass  One with a Table  of all the characters  that are        
+       actually referenced in each Font.                                       
+
+ 9.    Now generate  the standard  PostScript job  definition comments,        
+       PostScript macro  definitions required to  print the text  and a        
+       macro definition for each font that is actually used.                   
+
+ 10.   Begin Pass Two.                                                         
+
+ 11.   Re-open the input file at the start.                                    
+
+ 12.   Ignore all comments ("<esc>*")  and  all Font Numbers ("<esc>F")        
+       records.                                                                
+
+ 13.   Convert  all the  SCRIPT escape  functions  into the  PostScript        
+       language and  PostScript macro calls.    The entire  output file        
+       produced is an EBCDIC character set file.                               
+                                                                               
+
+ page 18                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ 14.   When  an "<esc>q"  is  encountered,   the buffered  equation  is        
+       processed and put out.                                                  
+
+ 15.   When an "<esc>G" is encountered,   the graphic segment data will        
+       be buffered in memory until no  longer needed.   The data may be        
+       present in  the input file  following this definition  if SCRIPT        
+       was able to locate and include it.   If it is not following, the        
+       post-processor will read the segment data into memory unless the        
+       NOSEGLIB option was used.                                               
+
+ 16.   When an  "<esc>g" is encountered,   the graphic segment  data is        
+       dumped out and the memory allocated  to this data is released if        
+       it is no longer needed.                                                 
+
+ 17.   Display final summary.                                                  
+
+ 18.   Close all input and output files and terminate.                         
+
+
+                                                                               
+                           INVOCATION OPTIONS                                  
+
+ The PostScript Post-Processor  may be invoked with  options to control        
+ which page numbers are to actually be processed.                              
+
+ FRom      This option specifies the absolute  page number of the first        
+           page to  be processed.    The pages  are numbered  from '1'.        
+           Under  CMS  the number  is  specified  as a  separate  token        
+           following FROM.    Under MVS  the number  must be  specified        
+           following an equal sign or within parentheses.                      
+
+ TO        This option  specifies the last  absolute page number  to be        
+           processed.   The default is page  number '9999'.   Under CMS        
+           the number  is specified as  a separate token  following TO.        
+           Under MVS  the number must  be specified following  an equal        
+           sign or within parentheses.                                         
+
+ XORigin   This option allows  the default left margin  to be adjusted.        
+           By default the left  margin is set to be 36000  which is one        
+           half  inch.   It  is  recommended that  if  this default  is        
+           changed, it is not made smaller than 24000 since the printer        
+           is incapable  of printing any closer  that this to  the left        
+           hand side of the page.                                              
+
+ YORigin   This option  allows the default  top margin to  be adjusted.        
+           By default the top margin is set to zero.                           
+
+ ORIENT(North|South|East|West)                                                 
+           This option allows  the orientation of the text  on the page        
+           to be rotated in one of  four directions.   The direction is        
+           of the top  of the printed page relative to  the default for        
+           the printer.   With most PostScript printers, the default is        
+           North.                                                              
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 19        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ PAPERsize(LETTER|LEGAL|A4|B5|11X17|LEDGER)                                    
+           This option  will tell PostScript  what size paper  to image        
+           for.                                                                
+
+ SEGlib(ddname)/SEGlib(ftype fmode)                                            
+           This option  indicates where the post-processor  should look        
+           to find  all graphic  segments which  are not  inline.   The        
+           operand "ddname" is for MVS only and indicates the DDNAME of        
+           the PDS which includes the graphic data.  The default DDNAME        
+           is SYSGLIB.   The  operands "ftype" and "fmode"  are for CMS        
+           only and indicate  the Filetype and Filemode  of the graphic        
+           data files.   The  default Filetype is EPSF  and the default        
+           Filemode is *.                                                      
+
+ MANUALfeed                                                                    
+           This option  will enable the  manual feed capability  of the        
+           printer if it is supported.                                         
+
+ NOSEGlib  This  option tells  the post-processor  to  not include  any        
+           graphic segment data for any  segments which are not already        
+           inline.   A comment directive is put  in the output in place        
+           of the  segment indicating the  requirement of  this graphic        
+           data file for print servers.                                        
+
+ CHARset(ALT)/CHARset(NOALT)                                                   
+           Force the output data stream to be in ASCII.  The default is        
+           in EBCDIC.    Under MVS  the option must  be specified  as a        
+           CHARSET value such as  CHARSET(ALT)  or CHARSET=ALT.   Under        
+           CMS the option may be specified as  under MVS or a blank may        
+           be used such as CHARSET ALT.                                        
+
+
+                                                                               
+                  ESCAPE SEQUENCES USED IN POSTS FILES                         
+
+ Format                                                                        
+
+ 1.    The escape character is a X'27' represented by "<esc>".                 
+
+ 2.    The function codes are a 1 character mnemonic.   The case of the        
+       function code is important.                                             
+
+ 3.    The operand  sequence is variable  in length,   with suboperands        
+       delimited with a comma and always terminated with a period.             
+
+ 4.    All numeric operands appear as printable digits.                        
+                                                                               
+
+ page 20                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ Functions                                                                     
+
+ <esc>a xxx, yyy.:  Absolute Position, xxx:  horizontal position on the        
+   page, yyy: vertical position.   The "0,0" position on the page is at        
+   the upper left corner of the paper.   The post-processor adjusts the        
+   Y-coordinate by the top margin.  The X-coordinate is adjusted by the        
+   left margin, which defaults to 36000 (one-half inch).                       
+
+ <esc>b <+|->nnn.:  Set width  of a blank and execute one,   nnn is the        
+   width of a blank X'40'.  Underscore remains in effect for the blank.        
+   +nnn or -nnn makes a relative adjustment but does not affect current        
+   width of a blank.  A X'40' character found in following input gener-        
+   ates a width nnn.                                                           
+
+ <esc>e.:  End of Page.                                                        
+
+ <esc>F nn,member,codepage,'Physical Font Name'.:  Define a font.   The        
+   nn is a number which represents this font in <esc>f.   member: down-        
+   loaded font member name.   codepage:  codepage  name to be used with        
+   the font.  Do not have any periods(.) in the 'Real Font Name'.              
+
+ <esc>f fontnum,ps.:  Select Font, fontnum: font number, ps: pointsize.        
+
+ <esc>G  nnn,member,xdim,ydim,xoff,yoff,mag,rot.:   Define   a  graphic        
+   include file.    Where nnn is a  unique number given to  the graphic        
+   include.   member:  the name of the graphic segment which resides in        
+   the library (PDS)  of graphics pointed  to with SYSGLIB under MVS or        
+   in a  file with a Filetype  of EPSF and  a Filemode of *  under CMS.        
+   xdim:  the x dimension of the graph.   ydim:  the y dimension of the        
+   graph.   xoff:  the x offset adjustment to  be made to the origin of        
+   the graph.   yoff:  the y offset adjustment to be made to the origin        
+   of the graph.   mag:  the magnification  to be applied to the graph.        
+   rot:  the rotation in degrees to be applied to the graph.   (The rot        
+   operand is not currently supported.)                                        
+
+ <esc>g nnn.:  Select graphic include number  nnn where nnn was defined        
+   with a "<esc>G" sequence.                                                   
+
+ <esc>h nnn.:  Move Horizontal.  If nnn is -nnn then move to the left.         
+
+ <esc>i nnn.:  Set Intensity for a pseudo bold.   nnn:  intensity level        
+   (can be -nnn).   If nnn is zero or null then Intensity is cancelled.        
+   'nnn' may be negative.                                                      
+
+ <esc>p px,py.:  Top of Page.  px: page width, py: page height.                
+
+ <esc>Q EQnnnnnn,mhi,mlo,mrt.:   Define an out  of line  formula.   The        
+   nnnnnn is a number which represents  a unique number for the formula        
+   input which  follows.   mhi:   height of  formula above  baseline in        
+   device units.   mlo: height of formula below baseline.   mrt:  total        
+   horizontal width of formula.   The  formula input is terminated with        
+   "<esc>Q.".                                                                  
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 21        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ <esc>q EQnnnnnn.:  Select formula where EQnnnnnn is name of formula.          
+
+ <esc>u nnn,ooo.:  Turn on Underscore,   nnn:  width of underline rule.        
+   If nnn is zero or null then Underscore is cancelled.  ooo: offset of        
+   rule from baseline.                                                         
+
+ <esc>v nnn.:  Move Vertical.  If nnn is -nnn then move up.                    
+
+ <esc>x ll,rw.:  Horizontal Rule, ll: length, rw: rule width.                  
+
+ <esc>y hh,rw.:  Vertical Rule, hh: height, rw: rule width.                    
+
+ <esc>* text:  Comment to end of record.                                       
+
+
+                                                                               
+                          OS BATCH INVOCATION                                  
+
+ The following is a suggestion on  how the 'POSTS' post-processor might        
+ be run in an OS Batch environment.                                            
+
+       //POSTS  EXEC  PGM=POSTS                                                
+       //SYSIN     DD  DSN=my.SCRIPT.POSTS.output,DISP=SHR                     
+       //SYSGLIB   DD  DSN=optional.graphic.images,DISP=SHR                    
+       //SYSOUT    DD  SYSOUT=A                                                
+       //SYSTERM   DD  SYSOUT=A                                                
+
+
+                                                                               
+                          CMS EXEC INVOCATION                                  
+
+ The following  is an  example 'POSTS EXEC'  that parses  a "filename",        
+ "filetype|POSTS",   "filemode|*" operand  list  and  invokes the  post        
+ processor.   Note that this leaves the  result in a file with filetype        
+ "LISTPS".                                                                     
+
+ /*                                                             */             
+ /* EXEC to post-process a SCRIPT output file generated for a   */             
+ /*   PostScript device                                         */             
+ /*                                                             */             
+    TRACE N;                                                                   
+    ADDRESS COMMAND;                                                           
+    PARSE UPPER ARG fname ftype fmode '(' options;                             
+    IF fname = '?' THEN SIGNAL Help;                                           
+    IF fname = ''  THEN SIGNAL Help;                                           
+    IF ftype = '' THEN ftype = 'POSTS';                                        
+    IF fmode = '' THEN fmode = '*';                                            
+ /*                                                             */             
+ /*         Find the POSTS file and see if it is on a           */             
+ /*         writeable disk.  If not use the A disk.             */             
+ /*                                                             */             
+    'SET CMSTYPE HT';                                                          
+    'MAKEBUF';                                                                 
+                                                                               
+
+ page 22                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+    'LISTFILE' fname ftype fmode '(STACK FIFO NOHEADERS';                      
+    rt = rc;                                                                   
+    'SET CMSTYPE RT';                                                          
+    IF rt = 0 THEN DO;                                                         
+       PARSE PULL . . omode;                                                   
+       'DROPBUF';                                                              
+    END;                                                                       
+    ELSE DO;                                                                   
+       'DROPBUF';                                                              
+       SAY 'Input file' fname ftype fmode 'not found.';                        
+       EXIT 4;                                                                 
+    END;                                                                       
+    'STATEW' fname ftype omode;                                                
+    IF rc ^=0 THEN omode = 'A'                                                 
+ /*                                                            */              
+ /*          Let's postprocess it.                             */              
+ /*                                                            */              
+    'FILEDEF SYSIN DISK' fname ftype fmode ,                                   
+           '( RECFM VB LRECL 1024 BLKSIZE 8000';                               
+    'FILEDEF SYSTERM TERMINAL';                                                
+    'FILEDEF SYSOUT DISK' fname 'LISTPS' omode ,                               
+           '(RECFM FB LRECL 80 BLKSIZE 800';                                   
+    'FILEDEF SYSLIB DUMMY ( RECFM FB LRECL 80 BLKSIZE 4000';                   
+    'POSTS' options;                                                           
+    rt = rc;                                                                   
+    'FILEDEF * CLEAR';                                                         
+    EXIT rt;                                                                   
+ /*                                                             */             
+ /*            Come here for help.                              */             
+ /*                                                             */             
+ Help:                                                                         
+    'HELP POSTS';       /* Installation dependent Help          */             
+    EXIT 2;                                                                    
+
+
+                                                                               
+                             ERROR MESSAGES                                    
+
+ The following  is the list of  possible error messages from  the post-        
+ processor and their meanings.   Where  appropriate,  the record number        
+ and column number of the record that contained the error will be indi-        
+ cated.                                                                        
+
+ POS-001T -- INVALID PARAMETER: 'xxx':  The operand 'xxx' was passed as        
+   a parameter  option to  the PostScript  post-processor.   The  'xxx'        
+   parameter is not known.                                                     
+
+ POS-002E -- UNDEFINED TEXT CHARACTER:  An unknown character was passed        
+   as printable  text in the  POSTS file.   There  are up to  192 valid        
+   printables in  each PostScript  font plus  the one  pseudo-printable        
+   character X'40'.                                                            
+                                                                               
+
+ Waterloo SCRIPT and a PostScript Printer                       page 23        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+ POS-003E --  UNDEFINED ESCAPE  CODE 'x':   The character  'x' was  not        
+   recognized as a valid function code.                                        
+
+ POS-004E -- POINTSIZE TOO <SMALL|LARGE>, nnn SUBSTITUTED:  A pointsize        
+   was requested  in the POSTS file  that could not be  honoured.   The        
+   closest equivalent has  been substituted.   (For future  versions of        
+   SCRIPT).                                                                    
+
+ POS-005E  -- WIDTH  EXCEEDS nn  PICAS nn  POINTS:  The  width of  text        
+   output exceeds the paper width on the PostScript printer.                   
+
+ POS-006E -- RULE SIZES  TOO LARGE:  The length or thickness  of a rule        
+   is bigger than the device will support.                                     
+
+ POS-007T  -- PREMATURE  END  OF FILE  OCCURRED  ON INPUT.   PROCESSING        
+   TERMINATED:  The  POSTS file did not  terminate with an End  of Page        
+   escape function.  Probable cause is data missing in the file.               
+
+ POS-008T  --  ERROR  READING <INPUT|FONT  MEMBER  xxxxx>.   PROCESSING        
+   TERMINATED:   An error  has occurred  while reading  an input  file.        
+   'INPUT' indicates the  input file is the POSTS  file.   'FONT MEMBER        
+   xxxxx' indicates  that the  member 'xxxxx' was  being read  from the        
+   font library.                                                               
+
+ POS-009E -- FONT  NUMBER nn QUALIFIER nn NOT DEFINED:   The POSTS file        
+   has asked for a Font with "<esc>f" that does not exist.                     
+
+ POS-010T -- FONT MEMBER xxxxxxxx NOT  FOUND IN LIBRARY:  A font number        
+   to member name mapping has been defined in an "<esc>F" record in the        
+   Job Directory.  The member name specified does not exist in the font        
+   image library.                                                              
+
+ POS-011T  -- NO  CURRENT FONT  IS  DEFINED:  Printable  text has  been        
+   encountered  in the  input  file before  any  font  number has  been        
+   assigned.                                                                   
+
+ POS-012T -- INVALID FONT DEFINITION.  FONT: nnn NAME:  mmm:  The POSTS        
+   file has attempted to define a font  which is not known to the post-        
+   processor.                                                                  
+
+ POS-013T -- TOO MANY CHARACTERS IN ONE  JOB:  The sum of all the char-        
+   acters in all  fonts,  both resident and down  loaded exceeded allo-        
+   wable maximum.  Fewer fonts must be used in the job.                        
+
+ POS-014T -- TOO MANY  BYTES IN FONTS:  The sum of  the number of bytes        
+   in down loaded fonts exceed the capacity of the device.                     
+
+ POS-015T -- TOO MANY FONTS:  The total number of fonts,  both resident        
+   and down loaded exceeds the device limit.                                   
+
+ POS-016I -- FONT  font-name nn CHARS nnn BYTES  RES=<N|Y <NOT USED>>:         
+   The "font name"  indicated is either resident or has  been dumped to        
+                                                                               
+
+ page 24                       Waterloo SCRIPT and a PostScript Printer        
+ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ        
+
+
+   the PostScript printer,   contains nn characters,  and  takes up nnn        
+   bytes of memory in the printer.                                             
+
+ POS-017W -- NO PAGES WERE PROCESSED:   No pages of text were processed        
+   and printed.   Probable cause is that  the parameters of FROM and TO        
+   were  specified and  were beyond  the  scope of  the document  being        
+   processed.                                                                  
+
+ POS-018T  -- ERROR  LOADING  FONT TABLES  --  PDPOSTS --.   PROCESSING        
+   TERMINATED:   An error  has occurred  while attempting  to load  the        
+   character width tables required for processing.                             
+
+ POS-019T -- REGION MANAGER ERROR.   PROCESSSING TERMINATED:  The post-        
+   processor  had  an  error  attempting to  get  working  storage  for        
+   processing.  A larger working storage set is probably required.             
+
+ POS-020E -- EQUATION CALLED EQnnnnnn HAS  NOT BEEN DEFINED:  The POSTS        
+   file  has asked  for an  equation with  "<esc>q" that  has not  been        
+   defined with an "<esc>Q" escape sequence.                                   
+
+ POS-021E --  GRAPHIC SEGMENT  NUMBER nnn  HAS NOT  BEEN DEFINED:   The        
+   POSTS file  has asked for graphic  segment number nnn which  has not        
+   been defined with an "<esc>G" escape sequence.                              
+
+ POS-022W --  GRAPHIC SEGMENT name  NOT FOUND:  The  post-processor was        
+   unable to  find and  include the  specified graphic  segment inline.        
+   Processing will continue as if the NOSEGLIB option had been used.           
+
+ POS-023T -- ERROR  PROCESSING PARAMETER LIST:  The  post-processor had        
+   an error attempting to scan the parameters passed to it.                    
+
+ POS-024T -- OPTIONS:  opt1 opt2 opt3 ...:  These are the parameters as        
+   the post-processor interpreted them.                                        
+
+ POS-025T --    *  :  A pointer  to the position in  the parameter list        
+   where the error was detected.                                               
+
+ POS-026W -- RECORD nn OF GRAPHIC  SEGMENT name WAS WRAPPED:  Record nn        
+   of the SEGMENT 'name' was too long to fit in one output record.  The        
+   record will  be split at  a blank if  possible and continued  on the        
+   next output record.                                                         

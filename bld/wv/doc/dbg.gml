@@ -1,26 +1,14 @@
-:GDOC.
-:INCLUDE file=extra.
-:FRONTM
-:TITLEP.
-:TITLE.WATCOM Debugging Information Format
-:TITLE.VERSION 4.0
-:AUTHOR.Copyright 1994 by WATCOM International Corp.
-:DATE
-:eTITLEP
-:TOC.
-:BODY.
-:H0.Introduction
+.chap Debugging Information Format
 This document describes the object and executable file structures
-used by the WATCOM Debugger to provide symbolic information about a program.
+used by the &company Debugger to provide symbolic information about a program.
 This information is subject to change.
 :P
-Note that version 4.0 of the WATCOM debugger supports the DWARF and 
-Codeview symbolic debugging information formats in addition to the format
+Note that version 4.0 of the &company debugger supports the DWARF and 
+CodeView symbolic debugging information formats in addition to the format
 described in this document. For the purposes of discussion, this format
-will be known as the "WATCOM" format. It is anticipated that DWARF will
-become the primary format used by WATCOM compilers and support for
-generating the WATCOM format will be removed from later versions of 
-the compilers.
+will be known as the "WATCOM" format. DWARF is now the primary format used
+by &company compilers. Support for generating the WATCOM format will probably
+remain but is only useful for debugging DOS overlays.
 :P.
 Before reading this document you should understand the Intel 8086 Object
 Module Format (OMF). This format is described in the Intel document
@@ -36,18 +24,19 @@ by the Tools Interface Standards (TIS) Committee. The TIS standards
 (including the OMF spec) may be obtained by phoning the Intel literature
 center at 1-800-548-4725 and asking for order number 241597.
 :P.
-This document is for the WATCOM Debugger version 4.0 (or above.)
-:H0.Object file structures
+This document is for the &company Debugger version 4.0 (or above.)
+.chap Object file structures
 The compiler is responsible for placing extra information into
-the object file in order to provide symbolic information for the WATCOM Debugger. There
+the object file in order to provide symbolic information for the &company Debugger. There
 are three classes of information, each of which may be present or absent
 from the file individually. These classes are line number, type and
 local symbol information.
 :P.
-For the WATCOM C compiler, line number information
+For the &company C compiler, line number information
 is provided when the "/d1" switch is used and all three classes are provided
 when the "/d2" switch is used.
-:H1.Version number and source language identification
+.section Version number and source language identification
+.np
 Since there may be different versions of the type and local symbol
 information, and there may be multiple front-ends a special OMF COMENT record
 is placed in the object file. It has the following form:
@@ -73,12 +62,14 @@ If the debugging comment record is not present, the local and type segments
 (described later) are not in WATCOM format and should be omitted from the
 resulting executable file's debugging information.
 The current major version is one, and the current minor version is three.
-:H1.Line number information
+.section Line number information
+.np
 Line number information is provided by standard Intel OMF LINNUM records.
 A kludge has been added that allows for line numbers to refer to more
 than one source file. See the section on the "Special Line Number Table"
 in the executable structures portion of the document for more details.
-:H1.Location information
+.section Location information
+.np
 A type or symbol definition may contain a location field. This field is of
 variable length and identifies the memory (or register) location of the
 symbol in question. A location field may consist of a single entry, or
@@ -211,8 +202,9 @@ the return area and passing a pointer to it as a parameter in the specified
 registers.
 RALLOC means that the called routine allocated the area and returns
 a pointer to it in the given registers.
-:H1.Typing information
-The WATCOM Debugger typing information is contained in a special segment in the
+.section Typing information
+.np
+The &company Debugger typing information is contained in a special segment in the
 object file. The segment name is "$$TYPES" and the segment class is
 "DEBTYP".
 To allow greater flexibility in demand loading the typing information and
@@ -247,7 +239,9 @@ The top nibble of the byte is used to indicate the general class of the
 type definition (there are eight of these). The low order nibble is used
 to qualify the general type class and uniquely identify the definition
 type.
-:H2.TYPE_NAME (value 0x1?)
+.beglevel
+.section TYPE_NAME (value 0x1?)
+.np
 This definition is used to give names to types. There are three
 sub-classes.
 :XMP.
@@ -260,7 +254,7 @@ EOF       (value 0x14)
 :P.
 SCALAR is used to give a name to a basic scalar type. It can also be
 used to give a type index to a scalar type without a name by specifying
-the null name. The :F.scalar_type_byte:eF. informs the WATCOM Debugger what sort of
+the null name. The :F.scalar_type_byte:eF. informs the &company Debugger what sort of
 scalar item
 is being given a name. It has the following form:
 :XMP.
@@ -283,7 +277,7 @@ scalar type, but the name was chosen before complex support was added.
 :P.
 SCOPE is used to restrict the scope of other type names. A restricted
 scope type name must be preceded by its appropriate scope name in order
-for the WATCOM Debugger to recognize it as a type name. This is useful for declaring
+for the &company Debugger to recognize it as a type name. This is useful for declaring
 C structure, union, and enum tag names. You declare SCOPE names of "struct",
 "union", and "enum" and then place the appropriate value in the
 :F.scope_index:eF. field of the NAME record when declaring the tag.
@@ -306,7 +300,8 @@ the begining of the segment as possible.
 :P.
 EOF marks the end of the typing information for the module and the
 begining of the special line number table.
-:H2.ARRAY (value 0x2?)
+.section ARRAY (value 0x2?)
+.np
 This definition is used to define an array type. There are 6 sub-classes.
 :XMP.
 BYTE_INDEX     (value 0x20) high_bound_byte, base_type_index
@@ -333,7 +328,8 @@ This field gives the number of elements in the array.
 :P.
 The DESC_INDEX_386 is the same as DESC_INDEX except that a 48-bit far pointer
 is used to locate the structure in memory.
-:H2.SUBRANGE (value 0x3?)
+.section SUBRANGE (value 0x3?)
+.np
 This definition is used to define a subrange type. There are 3
 sub-classes.
 :XMP.
@@ -347,7 +343,8 @@ interpreted as containing unsigned quantities, otherwise they contain
 integers. However, the decision to use the byte, word, or long form of
 the definition is always made considering the high and low bounds as
 signed numbers.
-:H2.POINTER (value 0x4?)
+.section POINTER (value 0x4?)
+.np
 This definition is used to define a pointer type. There are 10
 sub-classes.
 :XMP.
@@ -363,7 +360,7 @@ NEAR386_DEFREF	(value 0x48) base_type_index [,base_locator]
 FAR386_DEREF	(value 0x49) base_type_index
 :eXMP.
 :P.
-When a symbol is one of the *_DEREF types, the WATCOM Debugger will automatically
+When a symbol is one of the *_DEREF types, the &company Debugger will automatically
 dereference the pointer. This "hidden" indirection may be used to define
 reference parameter types, or other indirectly located symbols. The *_DEREF
 types have now been superceeded by location expressions. They should no
@@ -383,7 +380,8 @@ self-based pointers).
 If the :F.base_locator:eF. field is not present, the debugger will use
 the default near segment and a zero offset.
 
-:H2.ENUMERATED (value 0x5?)
+.section ENUMERATED (value 0x5?)
+.np
 This definition is used to define an enumerated type. There are 4
 sub-classes.
 :XMP.
@@ -393,7 +391,7 @@ CONST_WORD (value 0x52) value_word, name
 CONST_LONG (value 0x53) value_dword, name
 :eXMP.
 :P.
-LIST is used to inform the WATCOM Debugger of the number of constants in the enumerated
+LIST is used to inform the &company Debugger of the number of constants in the enumerated
 type and the scalar type used to store them in memory. It will be
 followed immediately by all the constant definitions for the enumerated
 type. See TYPE_NAME for a description of the :F.scalar_type_byte:eF..
@@ -407,7 +405,8 @@ determining type index values.
 :P.
 The LIST record and its associated CONST_* records must all be contained
 in the same $$TYPES segment.
-:H2.STRUCTURE (value 0x6?)
+.section STRUCTURE (value 0x6?)
+.np
 This definition is used to define a structure type. There are 10
 sub-classes.
 :XMP.
@@ -475,13 +474,14 @@ The FIELD_*, BIT_*, and INHERIT_CLASS records are not counted when
 determining type index values.
 :P.
 A C union, or Pascal variant record is described by having a number of fields
-all beginning at the same offset. The WATCOM Debugger will display the fields in the
+all beginning at the same offset. The &company Debugger will display the fields in the
 reverse order that the records define them. This means that ordinarily,
 the records should be sorted by descending offsets and bit positions.
 :P.
 The LIST record and it's associated field descriptions must all be contained
 in the same $$TYPES segment.
-:H2.PROCEDURE (value 0x7?)
+.section PROCEDURE (value 0x7?)
+.np
 This definition is used to define a procedure type. There are 4
 sub-classes.
 :XMP.
@@ -500,7 +500,8 @@ In this case the remaining parameter types are continued in the record
 immediately following, which will always be of type EXT_PARMS. The EXT_PARMS
 record must be contained in the same $$TYPES segment as the preceeding
 procedure record.
-:H2.CHARACTER_BLOCK (value 0x8?)
+.section CHARACTER_BLOCK (value 0x8?)
+.np
 Items of type CHARACTER_BLOCK are length delimited strings. There are 4
 sub-classes.
 :XMP.
@@ -523,8 +524,10 @@ CHAR_IND_386 form is the same as CHAR_IND except that the location of the length
 is given by a 48-bit far pointer.
 The CHAR_IND_LOC form is the same as CHAR_IND except that the address of
 the length is given by a location expression.
-:H1.Local symbol information
-The WATCOM Debugger local symbol information is contained in a special segment in the
+.endlevel
+.section Local symbol information
+.np
+The &company Debugger local symbol information is contained in a special segment in the
 object file. The segment name is "$$SYMBOLS" and the segment class is
 "DEBSYM".
 The segment is considered to be
@@ -543,10 +546,12 @@ The top nibble of the byte is used to indicate the general class of the
 symbol definition. The low order nibble is used
 to qualify the general definition class.
 :P.
-Symbol definitions are used to provide the WATCOM Debugger with the location and
+Symbol definitions are used to provide the &company Debugger with the location and
 scoping of source language local symbols. There are two general classes
 of symbol definition, one for variables and one for code.
-:H2.VARIABLE (value 0x1?)
+.beglevel
+.section VARIABLE (value 0x1?)
+.np
 This definition is used to define the location of a data symbol.
 There are 4 sub-classes.
 :XMP.
@@ -559,14 +564,15 @@ MODULE_LOC (v    0x13) address_locator, type_index, name
 MODULE defines either an exported, domestic, or imported
 variable in the module.
 It is not necessary to generate symbol information for an imported variable
-since the WATCOM Debugger will look for local symbol information in the module which defines
+since the &company Debugger will look for local symbol information in the module which defines
 the variable if required.
 :P.
 LOCAL defines a symbol that is local to a code block or procedure. The
 defining block is the first one previous to this definition. Local symbols
-only "exist" for the purpose of the WATCOM Debugger lookups when the program is
+only "exist" for the purpose of the &company Debugger lookups when the program is
 executing in a block which defines the symbol.
-:H2.CODE (value 0x2?)
+.section CODE (value 0x2?)
+.np
 This definition is used to define an object in the code. There are 6
 sub-classes.
 :XMP.
@@ -595,7 +601,7 @@ MEMBER_SCOPE (value 0x26) parent_block_offset, class_type_index
 :eXMP.
 :P.
 BLOCK is used to indicate a block of code that contains local symbol
-definitions. The field :F.parent_block_offset:eF. is used to tell the WATCOM Debugger
+definitions. The field :F.parent_block_offset:eF. is used to tell the &company Debugger
 the next
 block to search for a symbol definition if it is not found in this block.
 The field is set to zero if there is no parent block.
@@ -661,7 +667,8 @@ location definitions are assumed to be sorted in order of increasing
 end offsets (start offset + size). This ensures that the first scope that
 the debugger encounters in a traversal of the symbolic information is the
 closest enclosing scope.
-:H2.NEW_BASE (value 0x3?)
+.section NEW_BASE (value 0x3?)
+.np
 :XMP.
 ADD_PREV_SEG (value 0x30) seg_increment_word
 SET_BASE     (value 0x31) memory_location_32_pointer
@@ -679,7 +686,8 @@ memory location that is given by the record.
 :NOTE.
 Avoid the use of the ADD_PREV_SEG record. Its operation is only valid in
 real mode. It is included for backwards compatiblity only.
-:H0.Executable file structures
+.endlevel
+.chap Executable file structures
 The linker is responsible for processing the debugging information contained
 in the object files and some of its internal structures and appending
 them to the executable file.
@@ -728,8 +736,9 @@ relative to the start of the information,
 the start of a section of information,
 or the start of a class of the information. In other words, the information
 is not sensitive to its location in the executable file.
-:H1.Master debug header
-The master debug header allows the WATCOM Debugger to verify the fact that there is
+.section Master debug header
+.np
+The master debug header allows the &company Debugger to verify the fact that there is
 debugging information, to locate the other sections and to verify that
 it is capable of handling the version of debugging information.
 The master header structure is as follows:
@@ -747,7 +756,7 @@ struct master_dbg_header {
 :eXMP.
 :PC.
 The :F.signature:eF. word contains the value 0x8386.
-This is the first indication to the WATCOM Debugger that there is debugging information
+This is the first indication to the &company Debugger that there is debugging information
 present.
 The :F.exe_major_ver:eF. field contains the major version number of the
 executable file debugging information structures.
@@ -760,7 +769,7 @@ executable file debugging information structures.
 The minor version number increments by
 one whenever there is a change to the structures which is upwardly compatible
 with the previous version. The current minor version number is zero.
-This means that in order for the WATCOM Debugger to process the debugging information
+This means that in order for the &company Debugger to process the debugging information
 the following must be true:
 :OL.
 :LI. FILE exe debug info major version == debugger exe debug info major version
@@ -811,16 +820,19 @@ to find the start of the next section, and process that as well. This
 continues until all the debug sections have been processed. the debugger knows
 there are no more debug sections to process when the indicated start
 of a section is the same as the start of the master header.
-:H1.Source language table
+.section Source language table
+.np
 The source language table is merely the collection of unique source languages
 used in the program. The strings are extracted from the special debug comment
 records in the object files and placed in this section one after another
 with zero bytes separating them.
-:H1.Segment address table
+.section Segment address table
+.np
 The segment address table is an array of all the unique segment numbers used
 by the executable. Essentially, any segment value that would appear in the
 map file will be represented in the table.
-:H1.Section debug information
+.section Section debug information
+.np
 Each :F.section debug info:eF. contains the following:
 :XMP
 +-----------------------+
@@ -848,7 +860,9 @@ The global symbol, module, and address info classes have no size restriction,
 however there is a limit of 65536 modules per section and there are some
 restrictions on how the address info class may be laid out. These restrictions
 are described in the section explaining the address info class.
-:H2.Section debug header
+.beglevel
+.section Section debug header
+.np
 The section header class allows the debugger to determine the size of the section
 information and the location of the permanently loaded classes.
 The header structure is as follows:
@@ -879,19 +893,22 @@ as valid:
 :PC.
 The :F.section_id:eF. field contains the overlay number for this section.
 This is zero for the root.
-:H2.Local symbols class
+.section Local symbols class
+.np
 The local symbols segments are processed normally by the linker, except that
 the data in the segments is placed in this section, no relocation entries are
 output for any fixups in the data and fields in the module structure are
 intialized to point to the beginning and size of each object file's contribution
 to the section.
-:H2.Types class
+.section Types class
+.np
 The type segments are processed normally by the linker, except that
 the data in the segments is placed in this section, no relocation entries are
 output for any fixups in the data and fields in the module structure are
 intialized to point to the beginning and size of each object file's contribution
 to the section.
-:H2.Line numbers class
+.section Line numbers class
+.np
 The LINNUM records for each object file are collected and placed in this
 class using an array of arrays. The top level array is the following structure:
 :XMP.
@@ -952,7 +969,9 @@ that module, if it is not already loaded.
 appropriate segment is found.
 :LI. Binary search the array of line_info's until the proper one is located.
 :eOL.
-:H3.Special Line Number Table
+.beglevel
+.section Special Line Number Table
+.np
 The OMF line number record does not allow for more than one source file
 to be referenced in an object file. This kludge gets around the restriction.
 If the top bit is on in :F.line_number:eF. than that field refers to an
@@ -1002,7 +1021,9 @@ fname =  file_name_table[ fname_index ]
 :PC.
 The code offset and segment are found in the :F.line_info:eF and 
 :F.line_segment:eF structures as usual.
-:H2.Module information class
+.endlevel
+.section Module information class
+.np
 The module information class is built from the linker's list of object
 files that it processes to build the executable file, which are either
 specified on the linker command line or extracted from libraries.
@@ -1091,7 +1112,8 @@ the next entry in the demand link table and repeats the above process. This
 continues until all the entries for that particular class of the module
 (identified by the :F.num_entries:eF. field in the mod_info structure)
 have been examined, or the information is located.
-:H2.Global symbols class
+.section Global symbols class
+.np
 All PUBDEF records processed by the linker create entries in this class.
 The fields in the structure are:
 :XMP.
@@ -1132,7 +1154,8 @@ producer is unable to determine whether the symbol is a code or data item.
 The final field, :F.name:eF. is a variable length array, with the first
 character indicating the length of the name, and the remaining characters
 being the actual name of the symbol.
-:H2.Address information class
+.section Address information class
+.np
 The address information class allows the debugger, given a memory address, to
 determine the module which defines that memory address. The linker builds
 this class from the SEGDEF and GRPDEF records in the object files that
@@ -1197,4 +1220,4 @@ offset. If there is no such entry, there is no defining module.
 is added to the beginning of the module information class, which gives
 a pointer to the module structure that defines the memory location.
 :eOL.
-:eGDOC
+.endlevel

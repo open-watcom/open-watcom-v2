@@ -1,0 +1,6 @@
+# This file produced by MS2WLINK
+system dos
+file file.obj
+name file.exe
+option map=file.map
+library file.lib

@@ -253,7 +253,7 @@ void *VMRecord( imp_image_handle *ii, virt_mem rec )
     return( p );
 }
 
-unsigned VMShrink()
+unsigned VMShrink( void )
 {
     int                 i;
     int                 j;

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _gettextwindow( short _WCI86FAR * row_top, short _WCI86FAR * col_left,
+_WCRTLINK void _WCI86FAR _CGRAPH _gettextwindow( short _WCI86FAR * row_top, short _WCI86FAR * col_left,
 /*=============================*/ short _WCI86FAR * row_bot, short _WCI86FAR * col_right )
 
 /* This functions returns the boundaries of the active text window. */
@@ -49,7 +49,7 @@ void _WCI86FAR _CGRAPH _gettextwindow( short _WCI86FAR * row_top, short _WCI86FA
 Entry( _GETTEXTWINDOW, _gettextwindow ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _settextwindow( short row1, short col1,
+_WCRTLINK void _WCI86FAR _CGRAPH _settextwindow( short row1, short col1,
 /*=============================*/ short row2, short col2 )
 
 /* This routine sets a window for text output. */

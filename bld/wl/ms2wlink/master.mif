@@ -1,0 +1,23 @@
+proj_name = wlink
+
+memory_model_i86 = c
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+objs = &
+fileio.obj &
+keyword.obj &
+mem.obj &
+ms2wlink.obj &
+parsems.obj &
+utils.obj
+
+.c: ../c
+
+extra_l_flags_os2 = op stack=8k
+
+ms2wlink.exe : $(objs)
+        $(linker) $(lflags) name $^@ op map file {$(objs)}
+

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _bios_timeofday().
 *
 ****************************************************************************/
 
@@ -35,6 +34,6 @@
 
 extern int pascal _clib_bios_timeofday(int __cmd, long *__timeval );
 
-_WCRTLINK unsigned short _bios_timeofday( int __cmd, long *__timeval ){
+_WCRTLINK unsigned short _bios_timeofday( unsigned __cmd, long *__timeval ){
         return( _clib_bios_timeofday( __cmd, __timeval ) );
 }

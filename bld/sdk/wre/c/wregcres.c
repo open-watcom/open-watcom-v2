@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdio.h>
 #include <io.h>
@@ -72,7 +72,7 @@ void *WREGetCurrentResData( WRECurrentResInfo *curr )
     void       *rdata;
 
     rdata = NULL;
-    if( curr && curr->info && curr->lang ) {
+    if( curr != NULL && curr->info != NULL && curr->lang != NULL ) {
         rdata = WRCopyResData( curr->info->info, curr->lang );
     }
 
@@ -82,54 +82,51 @@ void *WREGetCurrentResData( WRECurrentResInfo *curr )
 Bool WREGetCurrentResource( WRECurrentResInfo *current )
 {
     WRETypeName *tn;
-    Bool         ok;
-    HWND         resLbox;
-    LRESULT      index;
+    Bool        ok;
+    HWND        resLbox;
+    LRESULT     index;
 
-    ok = ( current != NULL );
+    ok = (current != NULL);
 
     if( ok ) {
         current->type = NULL;
-        current->res  = NULL;
+        current->res = NULL;
         current->lang = NULL;
         current->info = WREGetCurrentRes();
-        ok = ( current->info && current->info->info &&
-               current->info->info->dir );
+        ok = (current->info != NULL && current->info->info != NULL &&
+              current->info->info->dir != NULL);
     }
 
     if( ok ) {
         tn = WREGetTypeNameFromRT( current->info->current_type );
-        ok = ( tn != NULL );
+        ok = (tn != NULL);
     }
 
     if( ok ) {
-        current->type =
-            WREFindTypeNode( current->info->info->dir, tn->type, NULL );
-        ok = ( current->type != NULL );
+        current->type = WREFindTypeNode( current->info->info->dir, tn->type, NULL );
+        ok = (current->type != NULL);
     }
 
     if( ok ) {
         resLbox = GetDlgItem( current->info->info_win, IDM_RNRES );
-        ok = ( resLbox != (HWND) NULL );
+        ok = (resLbox != (HWND)NULL);
     }
 
     if( ok ) {
         index = SendMessage( resLbox, LB_GETCURSEL, 0, 0 );
-        ok = ( index != LB_ERR );
+        ok = (index != LB_ERR);
     }
 
     if( ok ) {
-        current->lang = (WResLangNode *)
-            SendMessage( resLbox, LB_GETITEMDATA, (WPARAM) index, 0 );
-        ok = ( current->lang != NULL );
+        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA,
+                                                     (WPARAM)index, 0 );
+        ok = (current->lang != NULL);
     }
 
     if( ok ) {
-        current->res =
-            WREFindResNodeFromLangNode( current->type, current->lang );
-        ok = ( current->res != NULL );
+        current->res = WREFindResNodeFromLangNode( current->type, current->lang );
+        ok = (current->res != NULL);
     }
 
     return( ok );
 }
-

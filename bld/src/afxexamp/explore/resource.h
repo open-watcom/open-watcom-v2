@@ -1,0 +1,9 @@
+#define IDR_MAINFRAME       1
+#define IDD_ABOUTBOX        2
+#define IDD_INSERTITEM      3
+#define IDI_TREEITEM        4
+#define IDI_LISTITEM        5
+#define IDS_NAME            6
+#define IDC_NAME            1000
+#define ID_INSERT_TREE_ITEM 32768
+#define ID_INSERT_LIST_ITEM 32769

@@ -1,0 +1,13 @@
+* Define pragma describing WATCOM C calling convention.
+*       - scalar arguments are passed by value
+*       - character arguments are passed as strings
+
+*$pragma aux wc "!_" parm (value)
+
+
+* Special pragma for C "printf" function.
+*       - same attributes as "wc"
+*       - in addition, all arguments are passed on the stack
+*         and the caller removes arguments from the stack
+
+*$pragma aux (wc) printf parm caller []

@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DDE Spy master include.
 *
 ****************************************************************************/
 
-
-#include <windows.h>
 #include "win1632.h"
 #include <stdlib.h>
 #define DDEMLDB
@@ -46,9 +43,10 @@
 #include "toolbr.h"
 #include "mark.h"
 #ifndef NOUSE3D
- #include "ctl3d.h"
+    #include "ctl3dcvr.h"
 #endif
-#include "rcstr.h"
+#include "rcstr.gh"
+#include "uistr.gh"
 #include "ldstr.h"
 #include "hint.h"
 #include "cbfilt.h"
@@ -56,6 +54,7 @@
 
 #define RCSTR_MAX_LEN   500
 #define DDE_HELP_FILE   "ddespy.hlp"
+#define DDE_CHM_FILE    "ddespy.chm"
 #define HELP_HELP_FILE  "winhelp.hlp"
 #define TRACKING_CLASS  "WDDE_TRACKING_CLASS"
 
@@ -75,6 +74,7 @@
 #define DDEMENU_TOOLBAR                 108
 #define DDEMENU_FONT                    109
 #define DDEMENU_HINTBAR                 102
+#define DDEMENU_TOP                     160
 
 #define DDEMENU_ABOUT                   130
 #define DDEMENU_HELP_CONTENTS           131
@@ -96,7 +96,7 @@
  * When future monitoring options are to be added their constants should be
  * the next avalable integer and DDE_MON_LAST must be updated.  The fact
  * that the constants are consecutive is used in accessing the Monitoring
- * data structure
+ * data structure.
  */
 
 #define DDE_MON_FIRST                   DDEMENU_MON_POST
@@ -118,7 +118,7 @@
 #define DDEMENU_TRK_LINK                122
 #define DDEMENU_TRK_SERVER              123
 #define DDE_TRK_LAST                    DDEMENU_TRK_SERVER
-#define NO_TRK_WND                      ( DDE_TRK_LAST - DDE_TRK_FIRST + 1 )
+#define NO_TRK_WND                      (DDE_TRK_LAST - DDE_TRK_FIRST + 1)
 
 
 /* tracking push window constants */
@@ -141,29 +141,29 @@
  * These macros are for coding convenience ONLY.  Not all accesses to
  * the Monitoring array use them.
  */
-#define MON_POST_IND            ( DDEMENU_MON_POST - DDE_MON_FIRST )
-#define MON_SENT_IND            ( DDEMENU_MON_SENT - DDE_MON_FIRST )
-#define MON_STR_IND             ( DDEMENU_MON_STR - DDE_MON_FIRST )
-#define MON_CB_IND              ( DDEMENU_MON_CB - DDE_MON_FIRST )
-#define MON_ERR_IND             ( DDEMENU_MON_ERR - DDE_MON_FIRST )
-#define MON_LNK_IND             ( DDEMENU_MON_LNK - DDE_MON_FIRST )
-#define MON_CONV_IND            ( DDEMENU_MON_CONV - DDE_MON_FIRST )
+#define MON_POST_IND            (DDEMENU_MON_POST - DDE_MON_FIRST)
+#define MON_SENT_IND            (DDEMENU_MON_SENT - DDE_MON_FIRST)
+#define MON_STR_IND             (DDEMENU_MON_STR - DDE_MON_FIRST)
+#define MON_CB_IND              (DDEMENU_MON_CB - DDE_MON_FIRST)
+#define MON_ERR_IND             (DDEMENU_MON_ERR - DDE_MON_FIRST)
+#define MON_LNK_IND             (DDEMENU_MON_LNK - DDE_MON_FIRST)
+#define MON_CONV_IND            (DDEMENU_MON_CONV - DDE_MON_FIRST)
 
 
 #ifdef __NT__
- #define HWND_FMT_LEN           8
- #define CONV_FMT_LEN           8
- #define TASK_FMT_LEN           8
- #define FMT_ID_LEN             8
- #define HSZ_FMT_LEN            8
- #define WPARAM_FMT_LEN         8
+    #define HWND_FMT_LEN        8
+    #define CONV_FMT_LEN        8
+    #define TASK_FMT_LEN        8
+    #define FMT_ID_LEN          8
+    #define HSZ_FMT_LEN         8
+    #define WPARAM_FMT_LEN      8
 #else
- #define HWND_FMT_LEN           4
- #define CONV_FMT_LEN           8
- #define TASK_FMT_LEN           4
- #define FMT_ID_LEN             4
- #define HSZ_FMT_LEN            4
- #define WPARAM_FMT_LEN         4
+    #define HWND_FMT_LEN        4
+    #define CONV_FMT_LEN        8
+    #define TASK_FMT_LEN        4
+    #define FMT_ID_LEN          4
+    #define HSZ_FMT_LEN         4
+    #define WPARAM_FMT_LEN      4
 #endif
 
 typedef struct lstinfo {
@@ -193,10 +193,10 @@ typedef struct stringinfo {
 } StringInfo;
 
 /*
- * the LinkInfo structure is used to keep track of information
+ * The LinkInfo structure is used to keep track of information
  * for both the link tracking window and the conversations tracking window
  * since the conversations tracking window uses a subset of the link
- * information and this allows us to keep common sorting routines
+ * information and this allows us to keep common sorting routines.
  */
 
 typedef struct linkinfo {
@@ -219,7 +219,7 @@ typedef struct wndconfiginfo {
     int                 ypos;
     int                 last_xpos;
     int                 last_ypos;
-}WndConfigInfo;
+} WndConfigInfo;
 
 typedef struct {
     DWORD       textid;
@@ -231,7 +231,7 @@ typedef struct ddetrackinfo {
     WORD                type;
     WORD                cnt;
     WORD                sorttype;
-    void                **data;
+    void                *data;
     ListBoxInfo         list;
     WndConfigInfo       *config;
     WORD                hdrcnt;
@@ -245,13 +245,14 @@ typedef struct ddeconfiginfo {
     BOOL                screen_out;
     BOOL                show_tb;
     BOOL                show_hints;
+    BOOL                on_top;
 } DDEConfigInfo;
 
 extern HANDLE           Instance;
 extern HWND             DDEMainWnd;
 extern DWORD            DDEInstId;
-extern BOOL             Monitoring[ DDE_MON_LAST - DDE_MON_FIRST + 1 ];
-extern WndConfigInfo    Tracking[ NO_TRK_WND ];
+extern BOOL             Monitoring[DDE_MON_LAST - DDE_MON_FIRST + 1];
+extern WndConfigInfo    Tracking[NO_TRK_WND];
 extern WndConfigInfo    MainWndConfig;
 extern DDEConfigInfo    ConfigInfo;
 extern AliasHdl         HwndAlias;
@@ -259,59 +260,57 @@ extern AliasHdl         ConvAlias;
 extern AliasHdl         TaskAlias;
 extern char             *AppName;
 
+/* window and dialog procedures */
+BOOL __export FAR PASCAL        DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+HDDEDATA __export FAR PASCAL    DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, DWORD data1, DWORD data2 );
+BOOL __export FAR PASCAL        DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+BOOL __export FAR PASCAL        FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 /* ddeproc.c */
-BOOL __export FAR PASCAL DDEMainWndProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-void SetMainWndDefault( void );
+void    SetMainWndDefault( void );
 
 /* ddemsg.c */
-HDDEDATA __export FAR PASCAL DDEMsgProc( UINT type, UINT fmt, HCONV hconv,
-        HSZ hsz1, HSZ hsz2, HDDEDATA hdata, DWORD data1, DWORD data2 );
-char *HSZToString( HSZ hsz );
-char *GetFmtStr( WORD fmt, char *buf );
-void RecordMsg( char *buf );
-void InitAliases( void );
-void RefreshAliases( void );
+char    *HSZToString( HSZ hsz );
+char    *GetFmtStr( WORD fmt, char *buf );
+void    RecordMsg( char *buf );
+void    InitAliases( void );
+void    RefreshAliases( void );
 
 /* ddebox.c */
-void CreateListBox( HWND parent, ListBoxInfo *info );
-void ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
+void    CreateListBox( HWND parent, ListBoxInfo *info );
+void    ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 
 /* ddetrack.c */
-void InitTrackWind( HWND hwnd );
-BOOL CreateTrackWind( void );
-BOOL __export FAR PASCAL DDETrackingWndProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-void DisplayTracking( WPARAM wparam );
-void TrackStringMsg( MONHSZSTRUCT *info );
-void TrackLinkMsg( MONLINKSTRUCT *info );
-void TrackConvMsg( MONCONVSTRUCT *info );
-void TrackServerMsg( MONCBSTRUCT *info );
-void FiniTrackWnd( void );
-void SetTrackWndDefault( void );
-void SetTrackFont( void );
+void    InitTrackWnd( HWND hwnd );
+BOOL    CreateTrackWnd( void );
+void    DisplayTracking( WPARAM wparam );
+void    TrackStringMsg( MONHSZSTRUCT *info );
+void    TrackLinkMsg( MONLINKSTRUCT *info );
+void    TrackConvMsg( MONCONVSTRUCT *info );
+void    TrackServerMsg( MONCBSTRUCT *info );
+void    FiniTrackWnd( void );
+void    SetTrackWndDefault( void );
+void    SetTrackFont( void );
 
 /* ddefltr.c */
-BOOL __export FAR PASCAL FilterDlgProc( HWND hwnd, WORD msg,
-                                          UINT wparam, LONG lparam );
-BOOL DoFilter( WORD msg, WORD filter_type );
-void SetFilter( char *msgfilter, char *cbfilter );
-void GetFilter( char *msgfilter, char *cbfilter );
+BOOL    DoFilter( WORD msg, WORD filter_type );
+void    SetFilter( char *msgfilter, char *cbfilter );
+void    GetFilter( char *msgfilter, char *cbfilter );
 
 /* ddecfg.c */
-void ReadConfig( void );
-void SaveConfigFile( void );
+void    ReadConfig( void );
+void    SaveConfigFile( void );
 
 /* ddemisc.c */
-void LogHeader( int f );
-void DumpHeader( void *fptr );
-BOOL InitGblStrings( void );
-void FiniRCStrings( void );
+void    LogHeader( int f );
+void    DumpHeader( FILE *fptr );
+BOOL    InitGblStrings( void );
+void    FiniRCStrings( void );
 
 /* ddetool.c */
-void GetFixedTBRect( HWND hwnd, RECT *rect );
-void MakeDDEToolBar( HWND hwnd );
-void DDEToolBarFini( void );
-void ResizeTB( HWND owner );
-BOOL ToggleTB( HWND parent );
-void DDESetStickyState( WORD id, BOOL isdown );
+void    GetFixedTBRect( HWND hwnd, RECT *rect );
+void    MakeDDEToolBar( HWND hwnd );
+void    DDEToolBarFini( void );
+void    ResizeTB( HWND owner );
+BOOL    ToggleTB( HWND parent );
+void    DDESetStickyState( WORD id, BOOL isdown );

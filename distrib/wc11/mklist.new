@@ -1,0 +1,56 @@
+%
+% Build a batch file to copy files from rel2 to install 
+%
+%    MKFLIST watfile_file
+%    where:
+%	source_dir: 	e:\rel2
+%	dest_dir: 	f:\wc11
+%	\2\ and on are values for WHERE
+%
+get \1\
+select type[1:1] <> "#"
+%
+%
+remove condition, desc, patch_file
+def $p1 = 12
+def $p2 = 12
+calc $p1 = "<relroot>"
+calc $p2 = "<destdir>"
+if[ ( $p1 = "" ) | ( $p2 = "" ) ]then
+    exit
+endif
+%
+% keep only the records we're interested in
+%
+perform ..\supp\selprod.pgm [\2\]
+%
+% write the output file
+%
+def makedir = 150
+calc makedir = "rmkdir ";trim($p2);"\";trim(directory)
+def sep1 = 2
+calc sep1 = "&"
+def out = 150
+mark (( rel_file = "." ) | ( rel_file = "" )) & directory = "."
+    calc out = "<docmd> ";trim($p1);"\";usr_file;" ";trim($p2);"\";usr_file
+mark (( rel_file = "." ) | ( rel_file = "" )) & directory <> "."
+    calc out = "<docmd> ";trim($p1);"\";trim(directory);"\";usr_file;" ";trim($p2);"\";trim(directory);"\";usr_file 
+mark ( rel_file <> "." ) & ( rel_file <> "" )
+    calc out = "<docmd> ";trim($p1);"\";trim(rel_file);" ";trim($p2);"\";trim(directory);"\";usr_file 
+remove mrk_
+def sep2 = 2
+calc sep2 = "&"
+def touch = 150
+mark (redist <> "x")
+    calc touch = "wtouch -f timestmp.fil ";trim($p2);"\";trim(directory);"\";usr_file 
+    remove mrk_
+keep makedir, sep1, out, sep2, touch
+save/replace full\2\.lst
+keep out
+output/replace copy_\2\.ctl
+get full\2\.lst
+keep touch
+output/replace tch_\2\.ctl
+get full\2\.lst
+keep makedir
+output/replace mdir_\2\.ctl

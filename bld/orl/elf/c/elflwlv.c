@@ -24,89 +24,207 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ELF format low level (symbols and relocations) processing.
 *
 ****************************************************************************/
 
 
 #include <assert.h>
+#include "walloca.h"
 #include "elflwlv.h"
 #include "orlhash.h"
+#ifdef _BSD_SOURCE
+#define stricmp strcasecmp
+#endif
+
+static void fix_sym_byte_order( elf_file_handle elf_file_hnd, Elf32_Sym *e_sym )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_32( e_sym->st_name );
+        CONV_BE_32( e_sym->st_value );
+        CONV_BE_32( e_sym->st_size );
+        CONV_BE_16( e_sym->st_shndx );
+    } else {
+        CONV_LE_32( e_sym->st_name );
+        CONV_LE_32( e_sym->st_value );
+        CONV_LE_32( e_sym->st_size );
+        CONV_LE_16( e_sym->st_shndx );
+    }
+}
+
+
+static void fix_sym64_byte_order( elf_file_handle elf_file_hnd, Elf64_Sym *e_sym )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_32( e_sym->st_name );
+        CONV_BE_64( e_sym->st_value );
+        CONV_BE_64( e_sym->st_size );
+        CONV_BE_16( e_sym->st_shndx );
+    } else {
+        CONV_LE_32( e_sym->st_name );
+        CONV_LE_64( e_sym->st_value );
+        CONV_LE_64( e_sym->st_size );
+        CONV_LE_16( e_sym->st_shndx );
+    }
+}
+
+
+static void fix_rel_byte_order( elf_file_handle elf_file_hnd, Elf32_Rel *e_rel )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_32( e_rel->r_offset );
+        CONV_BE_32( e_rel->r_info );
+    } else {
+        CONV_LE_32( e_rel->r_offset );
+        CONV_LE_32( e_rel->r_info );
+    }
+}
+
+
+static void fix_rela_byte_order( elf_file_handle elf_file_hnd, Elf32_Rela *e_rela )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_32( e_rela->r_offset );
+        CONV_BE_32( e_rela->r_info );
+        CONV_BE_32( e_rela->r_addend );
+    } else {
+        CONV_LE_32( e_rela->r_offset );
+        CONV_LE_32( e_rela->r_info );
+        CONV_LE_32( e_rela->r_addend );
+    }
+}
+
+
+static void fix_rel64_byte_order( elf_file_handle elf_file_hnd, Elf64_Rel *e_rel )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_64( e_rel->r_offset );
+        CONV_BE_64( e_rel->r_info );
+    } else {
+        CONV_LE_64( e_rel->r_offset );
+        CONV_LE_64( e_rel->r_info );
+    }
+}
+
+
+static void fix_rela64_byte_order( elf_file_handle elf_file_hnd, Elf64_Rela *e_rela )
+{
+    // note that one of the branches will always get compiled out,
+    // depending on host endianness
+    if( elf_file_hnd->flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        CONV_BE_64( e_rela->r_offset );
+        CONV_BE_64( e_rela->r_info );
+        CONV_BE_64( e_rela->r_addend );
+    } else {
+        CONV_LE_64( e_rela->r_offset );
+        CONV_LE_64( e_rela->r_info );
+        CONV_LE_64( e_rela->r_addend );
+    }
+}
+
 
 orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
 {
     int                 loop;
     int                 num_syms;
     elf_symbol_handle   current;
-    Elf32_Sym *         current_sym;
+    char                *current_sym;
+    Elf32_Sym           *current_sym32;
+    Elf64_Sym           *current_sym64;
+    int                 st_name;
 
-    num_syms = elf_sec_hnd->size / sizeof( Elf32_Sym );
+    num_syms = elf_sec_hnd->size / elf_sec_hnd->entsize;
     elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle) _ClientSecAlloc( elf_sec_hnd, sizeof( elf_symbol_handle_struct ) * num_syms );
-    if( !(elf_sec_hnd->assoc.sym.symbols) ) return( ORL_OUT_OF_MEMORY );
+    if( !(elf_sec_hnd->assoc.sym.symbols) )
+        return( ORL_OUT_OF_MEMORY );
     current = elf_sec_hnd->assoc.sym.symbols;
-    current_sym = (Elf32_Sym *) elf_sec_hnd->contents;
+    current_sym = elf_sec_hnd->contents;
     for( loop = 0; loop < num_syms; loop++ ) {
-        if( current_sym->st_name == 0 ) {
+        if( elf_sec_hnd->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+            current_sym64 = (Elf64_Sym *)current_sym;
+            fix_sym64_byte_order( elf_sec_hnd->elf_file_hnd, current_sym64 );
+            st_name = current_sym64->st_name;
+            current->value = current_sym64->st_value;
+            current->info = current_sym64->st_info;
+            current->shndx = current_sym64->st_shndx;
+        } else {
+            current_sym32 = (Elf32_Sym *)current_sym;
+            fix_sym_byte_order( elf_sec_hnd->elf_file_hnd, current_sym32 );
+            st_name = current_sym32->st_name;
+            current->value = current_sym32->st_value;
+            current->info = current_sym32->st_info;
+            current->shndx = current_sym32->st_shndx;
+        }
+        if( st_name == 0 ) {
             current->name = NULL;
         } else {
-            current->name = &(elf_sec_hnd->assoc.sym.string_table->contents[current_sym->st_name]);
+            current->name = &(elf_sec_hnd->assoc.sym.string_table->contents[st_name]);
         }
         current->file_format = ORL_ELF;
         current->elf_file_hnd = elf_sec_hnd->elf_file_hnd;
-        current->symbol = current_sym;
-        switch( ELF32_ST_BIND( current->symbol->st_info ) ) {
-            case STB_LOCAL:
-                current->binding = ORL_SYM_BINDING_LOCAL;
-                break;
-            case STB_GLOBAL:
-                current->binding = ORL_SYM_BINDING_GLOBAL;
-                break;
-            case STB_WEAK:
-                current->binding = ORL_SYM_BINDING_WEAK;
-                break;
-            default:
-                current->binding = ORL_SYM_BINDING_NONE; // other?
-                break;
+        switch( ELF32_ST_BIND( current->info ) ) {
+        case STB_LOCAL:
+            current->binding = ORL_SYM_BINDING_LOCAL;
+            break;
+        case STB_GLOBAL:
+            current->binding = ORL_SYM_BINDING_GLOBAL;
+            break;
+        case STB_WEAK:
+            current->binding = ORL_SYM_BINDING_WEAK;
+            break;
+        default:
+            current->binding = ORL_SYM_BINDING_NONE; // other?
+            break;
         }
-        switch( ELF32_ST_TYPE( current->symbol->st_info ) ) {
-            case STT_OBJECT:
-                current->type = ORL_SYM_TYPE_OBJECT;
-                break;
-            case STT_FUNC:
-                current->type = ORL_SYM_TYPE_FUNCTION;
-                break;
-            case STT_SECTION:
-                current->type = ORL_SYM_TYPE_SECTION;
-                break;
-            case STT_FILE:
-                current->type = ORL_SYM_TYPE_FILE;
-                break;
-            default:
-                current->type = ORL_SYM_TYPE_NONE; // ?
-                break;
+        switch( ELF32_ST_TYPE( current->info ) ) {
+        case STT_OBJECT:
+            current->type = ORL_SYM_TYPE_OBJECT;
+            break;
+        case STT_FUNC:
+            current->type = ORL_SYM_TYPE_FUNCTION;
+            break;
+        case STT_SECTION:
+            current->type = ORL_SYM_TYPE_SECTION;
+            break;
+        case STT_FILE:
+            current->type = ORL_SYM_TYPE_FILE;
+            break;
+        default:
+            current->type = ORL_SYM_TYPE_NOTYPE;
+            break;
         }
-        switch( current->symbol->st_shndx ) {
-            case SHN_ABS:
-                current->type |= ORL_SYM_TYPE_ABSOLUTE;
-                break;
-            case SHN_COMMON:
-                current->type |= ORL_SYM_TYPE_COMMON;
-                break;
-            case SHN_UNDEF:
-                current->type |= ORL_SYM_TYPE_UNDEFINED;
-                break;
+        switch( current->shndx ) {
+        case SHN_ABS:
+            current->type |= ORL_SYM_TYPE_ABSOLUTE;
+            break;
+        case SHN_COMMON:
+            current->type |= ORL_SYM_TYPE_COMMON;
+            break;
+        case SHN_UNDEF:
+            current->type |= ORL_SYM_TYPE_UNDEFINED;
+            break;
         }
         current++;
-        current_sym++;
+        current_sym += elf_sec_hnd->entsize;
     }
     return( ORL_OKAY );
 }
 
+
 orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
 {
-    int                                         loop;
-    orl_return                                  error;
+    int             loop;
+    orl_return      error;
 
     elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func) stricmp );
     if( !(elf_file_hnd->sec_name_hash_table) ) {
@@ -114,91 +232,154 @@ orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
     }
     for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
         error = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, (orl_hash_value) elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
-        if( error != ORL_OKAY ) return( error );
+        if( error != ORL_OKAY )
+            return( error );
     }
     return( ORL_OKAY );
 }
 
-static orl_reloc_type convertPPCReloc( elf_reloc_type elf_type ) {
+
+static orl_reloc_type convertPPCReloc( elf_reloc_type elf_type )
+{
     switch( elf_type ) {
-        case R_PPC_NONE:
-            return( ORL_RELOC_TYPE_ABSOLUTE );
-        case R_PPC_ADDR32:
-            return( ORL_RELOC_TYPE_WORD_32 );
-        case R_PPC_ADDR24:
-            return( ORL_RELOC_TYPE_WORD_24 );
-        case R_PPC_ADDR16:
-            return( ORL_RELOC_TYPE_WORD_16 );
-        case R_PPC_ADDR16_LO:
-            return( ORL_RELOC_TYPE_HALF_LO );
-        case R_PPC_ADDR16_HI:
-            return( ORL_RELOC_TYPE_HALF_HI );
-        case R_PPC_ADDR16_HA:
-            return( ORL_RELOC_TYPE_HALF_HA );
-        case R_PPC_ADDR14:
-            return( ORL_RELOC_TYPE_WORD_14 );
-        case R_PPC_ADDR14_BRTAKEN:
-        case R_PPC_ADDR14_BRNTAKEN:
-            // fixme
-            return( ORL_RELOC_TYPE_WORD_14 );
-        case R_PPC_REL24:
-            return( ORL_RELOC_TYPE_REL_24 );
-        case R_PPC_REL14:
-            return( ORL_RELOC_TYPE_REL_14 );
-        case R_PPC_REL14_BRTAKEN:
-        case R_PPC_REL14_BRNTAKEN:
-            // fixme
-            return( ORL_RELOC_TYPE_REL_14 );
-        case R_PPC_GOT16:
-            return( ORL_RELOC_TYPE_GOT_16 );
-        case R_PPC_GOT16_LO:
-            return( ORL_RELOC_TYPE_GOT_16_LO );
-        case R_PPC_GOT16_HI:
-            return( ORL_RELOC_TYPE_GOT_16_HI );
-        case R_PPC_GOT16_HA:
-            return( ORL_RELOC_TYPE_GOT_16_HA );
-        case R_PPC_PLTREL24:
-            return( ORL_RELOC_TYPE_PLTREL_24 );
-        case R_PPC_COPY:
-            return( ORL_RELOC_TYPE_NONE );
-        case R_PPC_GLOB_DAT:
-            return( ORL_RELOC_TYPE_WORD_32 );
-        case R_PPC_JMP_SLOT:
-            // fixme
-            return( ORL_RELOC_TYPE_NONE );
-        case R_PPC_RELATIVE:
-            return( ORL_RELOC_TYPE_SEC_REL );
-        case R_PPC_LOCAL24PC:
-            // fixme
-            return( ORL_RELOC_TYPE_REL_24 );
-        case R_PPC_UADDR32:
-            return( ORL_RELOC_TYPE_WORD_32 );
-        case R_PPC_UADDR16:
-            return( ORL_RELOC_TYPE_WORD_16 );
-        case R_PPC_REL32:
-            return( ORL_RELOC_TYPE_REL_32 );
-        case R_PPC_PLT32:
-            return( ORL_RELOC_TYPE_PLT_32 );
-        case R_PPC_PLTREL32:
-            return( ORL_RELOC_TYPE_PLTREL_32 );
-        case R_PPC_PLT16_LO:
-            return( ORL_RELOC_TYPE_PLT_16_LO );
-        case R_PPC_PLT16_HI: return( ORL_RELOC_TYPE_PLT_16_HI );
-        case R_PPC_PLT16_HA: return( ORL_RELOC_TYPE_PLT_16_HA );
+    case R_PPC_NONE:
+        return( ORL_RELOC_TYPE_ABSOLUTE );
+    case R_PPC_ADDR32:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_PPC_ADDR24:
+        return( ORL_RELOC_TYPE_WORD_24 );
+    case R_PPC_ADDR16:
+        return( ORL_RELOC_TYPE_WORD_16 );
+    case R_PPC_ADDR16_LO:
+        return( ORL_RELOC_TYPE_HALF_LO );
+    case R_PPC_ADDR16_HI:
+        return( ORL_RELOC_TYPE_HALF_HI );
+    case R_PPC_ADDR16_HA:
+        return( ORL_RELOC_TYPE_HALF_HA );
+    case R_PPC_ADDR14:
+        return( ORL_RELOC_TYPE_WORD_14 );
+    case R_PPC_ADDR14_BRTAKEN:
+    case R_PPC_ADDR14_BRNTAKEN:
+        // fixme
+        return( ORL_RELOC_TYPE_WORD_14 );
+    case R_PPC_REL24:
+        return( ORL_RELOC_TYPE_REL_24 );
+    case R_PPC_REL14:
+        return( ORL_RELOC_TYPE_REL_14 );
+    case R_PPC_REL14_BRTAKEN:
+    case R_PPC_REL14_BRNTAKEN:
+        // fixme
+        return( ORL_RELOC_TYPE_REL_14 );
+    case R_PPC_GOT16:
+        return( ORL_RELOC_TYPE_GOT_16 );
+    case R_PPC_GOT16_LO:
+        return( ORL_RELOC_TYPE_GOT_16_LO );
+    case R_PPC_GOT16_HI:
+        return( ORL_RELOC_TYPE_GOT_16_HI );
+    case R_PPC_GOT16_HA:
+        return( ORL_RELOC_TYPE_GOT_16_HA );
+    case R_PPC_PLTREL24:
+        return( ORL_RELOC_TYPE_PLTREL_24 );
+    case R_PPC_COPY:
+        return( ORL_RELOC_TYPE_NONE );
+    case R_PPC_GLOB_DAT:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_PPC_JMP_SLOT:
+        // fixme
+        return( ORL_RELOC_TYPE_NONE );
+    case R_PPC_RELATIVE:
+        return( ORL_RELOC_TYPE_SEC_REL );
+    case R_PPC_LOCAL24PC:
+        // fixme
+        return( ORL_RELOC_TYPE_REL_24 );
+    case R_PPC_UADDR32:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_PPC_UADDR16:
+        return( ORL_RELOC_TYPE_WORD_16 );
+    case R_PPC_REL32:
+        return( ORL_RELOC_TYPE_REL_32 );
+    case R_PPC_PLT32:
+        return( ORL_RELOC_TYPE_PLT_32 );
+    case R_PPC_PLTREL32:
+        return( ORL_RELOC_TYPE_PLTREL_32 );
+    case R_PPC_PLT16_LO:
+        return( ORL_RELOC_TYPE_PLT_16_LO );
+    case R_PPC_PLT16_HI: return( ORL_RELOC_TYPE_PLT_16_HI );
+    case R_PPC_PLT16_HA: return( ORL_RELOC_TYPE_PLT_16_HA );
     }
     return( ORL_RELOC_TYPE_NONE );
 }
 
-static orl_reloc_type convert386Reloc( elf_reloc_type elf_type ) {
+
+static orl_reloc_type convert386Reloc( elf_reloc_type elf_type )
+{
     switch( elf_type ) {
     case R_386_NONE:
+    case R_386_COPY:
         return( ORL_RELOC_TYPE_ABSOLUTE );
-    case R_386_32:
     case R_386_GOT32:
+        return( ORL_RELOC_TYPE_GOT_32 );
+    case R_386_PLT32:
+        return( ORL_RELOC_TYPE_PLT_32 );
+    case R_386_JMP_SLOT:
+        return( ORL_RELOC_TYPE_PLTREL_32 );
+    case R_386_32:
     case R_386_GOTOFF:
         return( ORL_RELOC_TYPE_WORD_32 );
     case R_386_PC32:
-    case R_386_PLT32:
+    case R_386_GOTPC:
+        return( ORL_RELOC_TYPE_REL_32_NOADJ );
+    default:
+        assert( 0 );
+    }
+    return( ORL_RELOC_TYPE_NONE );
+}
+
+
+static orl_reloc_type convertAMD64Reloc( elf_reloc_type elf_type )
+{
+    switch( elf_type ) {
+    case R_X86_64_NONE:
+    case R_X86_64_COPY:
+        return( ORL_RELOC_TYPE_ABSOLUTE );
+    case R_X86_64_GOT32:
+        return( ORL_RELOC_TYPE_GOT_32 );
+    case R_X86_64_PLT32:
+        return( ORL_RELOC_TYPE_PLT_32 );
+    case R_X86_64_JUMP_SLOT:
+        return( ORL_RELOC_TYPE_PLTREL_32 );
+    case R_X86_64_32:
+    case R_X86_64_32S:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_X86_64_64:
+        return( ORL_RELOC_TYPE_WORD_64 );
+    case R_X86_64_PC32:
+    case R_X86_64_GOTPC32:
+        return( ORL_RELOC_TYPE_REL_32_NOADJ );
+    default:
+        assert( 0 );
+    }
+    return( ORL_RELOC_TYPE_NONE );
+}
+
+
+static orl_reloc_type convertSPARCReloc( elf_reloc_type elf_type )
+{
+    switch( elf_type ) {
+    case R_SPARC_NONE:
+    case R_SPARC_COPY:
+        return( ORL_RELOC_TYPE_ABSOLUTE );
+    case R_SPARC_8:
+        return( ORL_RELOC_TYPE_WORD_8 );
+    case R_SPARC_16:
+        return( ORL_RELOC_TYPE_WORD_16 );
+    case R_SPARC_32:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_SPARC_DISP8:
+        return( ORL_RELOC_TYPE_REL_8 );
+    case R_SPARC_DISP16:
+        return( ORL_RELOC_TYPE_REL_16 );
+    case R_SPARC_DISP32:
         return( ORL_RELOC_TYPE_REL_32 );
     default:
         assert( 0 );
@@ -206,66 +387,272 @@ static orl_reloc_type convert386Reloc( elf_reloc_type elf_type ) {
     return( ORL_RELOC_TYPE_NONE );
 }
 
-orl_reloc_type ElfConvertRelocType( elf_file_handle elf_file_hnd, elf_reloc_type elf_type ) {
-    switch( elf_file_hnd->machine_type ) {
-    case ORL_MACHINE_TYPE_PPC601:
-        return( convertPPCReloc( elf_type ) );
-    case ORL_MACHINE_TYPE_I386:
-        return( convert386Reloc( elf_type ) );
+
+static orl_reloc_type convertMIPSReloc( elf_reloc_type elf_type )
+{
+    switch( elf_type ) {
+    case R_MIPS_NONE:
+        return( ORL_RELOC_TYPE_ABSOLUTE );
+    case R_MIPS_16:
+        return( ORL_RELOC_TYPE_WORD_16 );
+    case R_MIPS_32:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_MIPS_REL32:
+        return( ORL_RELOC_TYPE_REL_32 );
+    case R_MIPS_HI16:
+        return( ORL_RELOC_TYPE_HALF_HI );
+    case R_MIPS_LO16:
+        return( ORL_RELOC_TYPE_HALF_LO );
+    case R_MIPS_GOT16:
+        return( ORL_RELOC_TYPE_GOT_16 );
+    case R_MIPS_CALL16:
+        return( ORL_RELOC_TYPE_GOT_16 );
+    case R_MIPS_26:
+        return( ORL_RELOC_TYPE_WORD_26 );
+    case R_MIPS_PC16:
+        return( ORL_RELOC_TYPE_REL_16 );
     default:
         assert( 0 );
     }
     return( ORL_RELOC_TYPE_NONE );
 }
 
+
+static orl_reloc_type convertAlphaReloc( elf_reloc_type elf_type )
+{
+    switch( elf_type ) {
+    case R_ALPHA_NONE:
+    case R_ALPHA_COPY:
+        return( ORL_RELOC_TYPE_ABSOLUTE );
+    case R_ALPHA_REFLONG:
+    case R_ALPHA_REFQUAD:
+        return( ORL_RELOC_TYPE_WORD_32 );
+    case R_ALPHA_GPREL32:
+        return( ORL_RELOC_TYPE_GOT_32 );
+    case R_ALPHA_GPRELHIGH:
+        return( ORL_RELOC_TYPE_HALF_HI );
+    case R_ALPHA_GPRELLOW:
+        return( ORL_RELOC_TYPE_HALF_LO );
+    default:
+        assert( 0 );
+    }
+    return( ORL_RELOC_TYPE_NONE );
+}
+
+
+orl_reloc_type ElfConvertRelocType( elf_file_handle elf_file_hnd, elf_reloc_type elf_type )
+{
+    switch( elf_file_hnd->machine_type ) {
+    case ORL_MACHINE_TYPE_PPC601:
+        return( convertPPCReloc( elf_type ) );
+    case ORL_MACHINE_TYPE_I386:
+        return( convert386Reloc( elf_type ) );
+    case ORL_MACHINE_TYPE_AMD64:
+        return( convertAMD64Reloc( elf_type ) );
+    case ORL_MACHINE_TYPE_SPARC:
+    case ORL_MACHINE_TYPE_SPARCPLUS:
+        return( convertSPARCReloc( elf_type ) );
+    case ORL_MACHINE_TYPE_R3000:
+    case ORL_MACHINE_TYPE_R4000:
+        return( convertMIPSReloc( elf_type ) );
+    case ORL_MACHINE_TYPE_ALPHA:
+        return( convertAlphaReloc( elf_type ) );
+    default:
+        assert( 0 );
+    }
+    return( ORL_RELOC_TYPE_NONE );
+}
+
+
 orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
 {
     orl_return          return_val;
     int                 num_relocs;
     int                 loop;
-    Elf32_Rel *         rel;
-    Elf32_Rela *        rela;
-    orl_reloc *         o_rel;
+    char                *rel;
+    Elf32_Rel           *rel32;
+    Elf32_Rela          *rela32;
+    Elf64_Rel           *rel64;
+    Elf64_Rela          *rela64;
+    orl_reloc           *o_rel;
 
     if( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols == NULL ) {
         return_val = ElfCreateSymbolHandles( reloc_sec->assoc.reloc.symbol_table );
-        if( return_val != ORL_OKAY ) return( return_val );
+        if( return_val != ORL_OKAY )
+            return( return_val );
     }
     switch( reloc_sec->type ) {
-        case ORL_SEC_TYPE_RELOCS:
-            num_relocs = reloc_sec->size / sizeof( Elf32_Rel );
-            reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
-            if( reloc_sec->assoc.reloc.relocs == NULL ) return( ORL_OUT_OF_MEMORY );
-            rel = (Elf32_Rel *) reloc_sec->contents;
-            o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
-            for( loop = 0; loop < num_relocs; loop++ ) {
-                o_rel->section = (orl_sec_handle) orig_sec;
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rel->r_info )]);
-                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rel->r_info ) );
-                o_rel->offset = rel->r_offset;
-                o_rel->addend = 0;
-                o_rel->frame = NULL;
-                rel++;
-                o_rel++;
+    case ORL_SEC_TYPE_RELOCS:
+        num_relocs = reloc_sec->size / reloc_sec->entsize;
+        reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+        if( reloc_sec->assoc.reloc.relocs == NULL )
+            return( ORL_OUT_OF_MEMORY );
+        rel = reloc_sec->contents;
+        o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
+        for( loop = 0; loop < num_relocs; loop++ ) {
+            o_rel->section = (orl_sec_handle) orig_sec;
+            if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+                rel64 = (Elf64_Rel *) rel;
+                fix_rel64_byte_order( reloc_sec->elf_file_hnd, rel64 );
+                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF64_R_SYM( rel64->r_info )]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF64_R_TYPE( rel64->r_info ) );
+                o_rel->offset = rel64->r_offset;
+            } else {
+                rel32 = (Elf32_Rel *) rel;
+                fix_rel_byte_order( reloc_sec->elf_file_hnd, rel32 );
+                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rel32->r_info )]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rel32->r_info ) );
+                o_rel->offset = rel32->r_offset;
             }
-            break;
-        case ORL_SEC_TYPE_RELOCS_EXPADD:
-            num_relocs = reloc_sec->size / sizeof( Elf32_Rela );
-            reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
-            if( reloc_sec->assoc.reloc.relocs == NULL ) return( ORL_OUT_OF_MEMORY );
-            rela = (Elf32_Rela *) reloc_sec->contents;
-            o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
-            for( loop = 0; loop < num_relocs; loop++ ) {
-                o_rel->section = (orl_sec_handle) orig_sec;
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rela->r_info )]);
-                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rela->r_info ) );
-                o_rel->offset = rela->r_offset;
-                o_rel->addend = rela->r_addend;
-                o_rel->frame = NULL;
-                rela++;
-                o_rel++;
+            o_rel->addend = 0;
+            o_rel->frame = NULL;
+            rel += reloc_sec->entsize;
+            o_rel++;
+        }
+        break;
+    case ORL_SEC_TYPE_RELOCS_EXPADD:
+        num_relocs = reloc_sec->size / reloc_sec->entsize;
+        reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+        if( reloc_sec->assoc.reloc.relocs == NULL )
+            return( ORL_OUT_OF_MEMORY );
+        rel = reloc_sec->contents;
+        o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
+        for( loop = 0; loop < num_relocs; loop++ ) {
+            o_rel->section = (orl_sec_handle) orig_sec;
+            if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+                rela64 = (Elf64_Rela *) rel;
+                fix_rela64_byte_order( reloc_sec->elf_file_hnd, rela64 );
+                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF64_R_SYM( rela64->r_info )]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF64_R_TYPE( rela64->r_info ) );
+                o_rel->offset = rela64->r_offset;
+                o_rel->addend = rela64->r_addend;
+            } else {
+                rela32 = (Elf32_Rela *) rel;
+                fix_rela_byte_order( reloc_sec->elf_file_hnd, rela32 );
+                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols[ELF32_R_SYM( rela32->r_info )]);
+                o_rel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( rela32->r_info ) );
+                o_rel->offset = rela32->r_offset;
+                o_rel->addend = rela32->r_addend;
             }
+            o_rel->frame = NULL;
+            rel += reloc_sec->entsize;
+            o_rel++;
+        }
+        break;
+    default:
+        break;
+    }
+    return( ORL_OKAY );
+}
+
+static size_t strncspn( char *s, char *charset, int len)
+{
+    char            chartable[32];
+    int             i;
+    unsigned char   ch;
+
+    memset( chartable, 0, sizeof( chartable ) );
+    for( ; *charset != 0; charset++ ) {
+        ch = *charset;
+        chartable[ch / 8] |= 1 << ch % 8;
+    }
+    for (i = 0; i < len; i++) {
+        ch = s[i];
+        if( chartable[ch/8] & (1 << ch % 8) ) {
             break;
+        }
+    }
+    return( i );
+}
+
+static char *pstrncspn( char *s, char *charset, int *len )
+{
+    int     l = strncspn( s, charset, *len );
+
+    *len -= l;
+    return( s + l );
+}
+
+static void EatWhite( char **contents, int *len )
+/***********************************************/
+{
+    char    ch = **contents;
+
+    while( (ch == ' ' || ch == '\t' || ch == '=' || ch == ',') && *len > 0 ) {
+        (*len)--;
+        *contents += 1;
+        ch = **contents;
+    }
+}
+
+static orl_return ParseExport( char **contents, int *len,
+                               orl_note_callbacks *cb, void *cookie )
+/********************************************************************/
+{
+    char        *arg;
+    int         l;
+
+    l = strncspn( *contents, ", \t", *len );
+    arg = alloca( l + 1 );
+    memcpy(arg, *contents, l);
+    arg[l] = 0;
+    *len -= l;
+    *contents += l;
+    return( cb->export_fn( arg, cookie ) );
+}
+
+
+static orl_return ParseDefLibEntry( char **contents, int *len,
+    orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
+/*****************************************************************/
+{
+    char        *arg;
+    int         l;
+    orl_return  retval;
+
+    for( ;; ) {
+        l = strncspn( *contents, ", \t", *len );
+        arg = alloca( l + 1 );
+        memcpy(arg, *contents, l);
+        arg[l] = 0;
+        *len -= l;
+        *contents += l;
+
+        retval = deflibentry_fn( arg, cookie );
+        if( retval != ORL_OKAY || **contents != ',' )
+            break;
+        (*contents)++;
+    }
+    return( retval );
+}
+
+orl_return ElfParseDrectve( char *contents, int len, orl_note_callbacks *cb,
+                            void *cookie)
+/**************************************************************************/
+{
+    char        *cmd;
+
+    EatWhite( &contents, &len );
+    while( len > 0 ) {
+        if( *contents != '-' )
+            break;              // - should be start of token
+        contents++; len--;
+        cmd = contents;
+        contents = pstrncspn( contents, ":", &len);
+        if( contents == NULL )
+            break;
+        contents++; len--;
+        if( memicmp( cmd, "export", 6 ) == 0 ) {
+            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY )
+                break;
+        } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
+            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie )
+                != ORL_OKAY ) break;
+        } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
+            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie )
+                != ORL_OKAY ) break;
+        }
+        EatWhite( &contents, &len );
     }
     return( ORL_OKAY );
 }

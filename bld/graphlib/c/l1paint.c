@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Flood fill implementation.
 *
 ****************************************************************************/
 
@@ -41,14 +40,14 @@
 /*  Use PASCAL pragma to define our convention for
     calling the ScanLeft and ScanRight routines.    */
 
-#define SCAN_FUNC pascal
-
 #if defined ( __386__ )
-    #pragma aux pascal "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
+    #pragma aux scan_call "*" parm caller [es edi] [eax] [ebx] [ecx] [edx] [esi] value [bx];
 #else
-    #pragma aux pascal "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
+    #pragma aux scan_call "*" parm caller [es di] [ax] [bx] [cx] [dx] [si] value [bx];
 #endif
 
+typedef short (near scan_func)( char far *, int, int, int, int, int );
+#pragma aux (scan_call) scan_func;
 
 struct frame {
     short         direction;
@@ -358,7 +357,7 @@ static short PaintLeft( short x, short y, short stop_color, short border_flag )
 
 {
     short               xleft;
-    short SCAN_FUNC     (near *scan)();         /* pointer to scan function */
+    scan_func           *scan;  /* pointer to scan function */
     gr_device _FARD     *dev_ptr;
     short               len;
 
@@ -392,8 +391,8 @@ static short PaintRight( short x, short y, short stop_color, short border_flag )
     by one to the right before plotting. Return the new left pixel. */
 
 {
-    short               xright;
-    short SCAN_FUNC     (near *scan)();         /* pointer to scan function */
+    short               xright;    
+    scan_func           *scan;  /* pointer to scan function */
     gr_device _FARD     *dev_ptr;
     short               len;
 

@@ -1,0 +1,25 @@
+
+input:
+    IA  '1'
+    IB  '2'
+    IC  '3';
+
+output:
+    OA  '5'
+    OB  '6'
+    OC  '7';
+
+rules
+x:
+    [
+    | IA:
+        .OB
+    ]
+;
+
+testing::
+    [
+    | IB:
+        .OC
+    ]
+;

@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wretoolb.h"
 #include "wrestat.h"
 #include "wrehints.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wre_rc.h"
 #include "wreribbn.h"
 
@@ -54,8 +54,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WRERibbonHook       ( HWND, UINT, WPARAM, LPARAM );
-extern void WRERibbonHelpHook   ( HWND hwnd, WPARAM wParam, BOOL pressed );
+extern BOOL WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
+extern void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -63,7 +63,8 @@ extern void WRERibbonHelpHook   ( HWND hwnd, WPARAM wParam, BOOL pressed );
 typedef struct {
     char    *up;
     char    *down;
-    UINT     menu_id;
+    UINT    menu_id;
+    int     tip_id;
 } WRERibbonName;
 
 /****************************************************************************/
@@ -73,50 +74,52 @@ typedef struct {
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-WRERibbonName WRERibbonNames[] =
-{
-    { "New"     , NULL , IDM_NEW   }
-,   { "Open"    , NULL , IDM_OPEN  }
-,   { "Save"    , NULL , IDM_SAVE  }
-,   { NULL      , NULL , BLANK_PAD }
-,   { "Cut"     , NULL , IDM_CUT   }
-,   { "Copy"    , NULL , IDM_COPY  }
-,   { "Paste"   , NULL , IDM_PASTE }
-,   { NULL      , NULL , BLANK_PAD }
+WRERibbonName WRERibbonNames[] = {
+    { "New",    NULL, IDM_NEW,      WRE_TIP_NEW   },
+    { "Open",   NULL, IDM_OPEN,     WRE_TIP_OPEN  },
+    { "Save",   NULL, IDM_SAVE,     WRE_TIP_SAVE  },
+    { NULL,     NULL, BLANK_PAD,    -1            },
+    { "Cut",    NULL, IDM_CUT,      WRE_TIP_CUT   },
+    { "Copy",   NULL, IDM_COPY,     WRE_TIP_COPY  },
+    { "Paste",  NULL, IDM_PASTE,    WRE_TIP_PASTE }
 };
-#define NUM_TOOLS (sizeof(WRERibbonNames)/sizeof(WRERibbonName))
+#define NUM_TOOLS (sizeof( WRERibbonNames ) / sizeof( WRERibbonName ))
 
-static WREToolBarInfo *WRERibbonInfo   = NULL;
-static WREToolBar     *WRERibbon       = NULL;
-static int             WRERibbonHeight = 0;
+static WREToolBarInfo   *WRERibbonInfo  = NULL;
+static WREToolBar       *WRERibbon      = NULL;
+static int              WRERibbonHeight = 0;
 
-int WREGetRibbonHeight ( void )
+int WREGetRibbonHeight( void )
 {
-    return ( WRERibbonHeight );
+    return( WRERibbonHeight );
 }
 
-Bool WREInitRibbon ( HINSTANCE inst )
+Bool WREInitRibbon( HINSTANCE inst )
 {
-    int  i;
+    int i;
 
-    WRERibbonInfo = WREAllocToolBarInfo ( NUM_TOOLS );
+    WRERibbonInfo = WREAllocToolBarInfo( NUM_TOOLS );
 
-    if ( !WRERibbonInfo ) {
-        return ( FALSE );
+    if( WRERibbonInfo == NULL ) {
+        return( FALSE );
     }
 
-    for ( i=0; i<NUM_TOOLS; i++ ) {
-        if ( WRERibbonNames[i].up ) {
-            WRERibbonInfo->items[i].bmp =
-                LoadBitmap ( inst, WRERibbonNames[i].up );
-            WRERibbonInfo->items[i].id    = WRERibbonNames[i].menu_id;
+    for( i = 0; i < NUM_TOOLS; i++ ) {
+        if( WRERibbonNames[i].up ) {
+            WRERibbonInfo->items[i].bmp = LoadBitmap( inst, WRERibbonNames[i].up );
+            WRERibbonInfo->items[i].id = WRERibbonNames[i].menu_id;
             WRERibbonInfo->items[i].flags = ITEM_DOWNBMP;
-            if ( WRERibbonNames[i].down ) {
+            if( WRERibbonNames[i].down ) {
                 WRERibbonInfo->items[i].depressed =
-                    LoadBitmap ( inst, WRERibbonNames[i].down );
+                    LoadBitmap( inst, WRERibbonNames[i].down );
             } else {
-                WRERibbonInfo->items[i].depressed =
-                    WRERibbonInfo->items[i].bmp;
+                WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].bmp;
+            }
+            if( WRERibbonNames[i].tip_id >= 0 ) {
+                LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip,
+                            MAX_TIP );
+            } else {
+                WRERibbonInfo->items[i].tip[0] = '\0';
             }
         } else {
             WRERibbonInfo->items[i].flags = ITEM_BLANK;
@@ -128,82 +131,82 @@ Bool WREInitRibbon ( HINSTANCE inst )
     WRERibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
     WRERibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
     WRERibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WRERibbonInfo->dinfo.style         = TOOLBAR_FIXED_STYLE;
-    WRERibbonInfo->dinfo.hook          = WRERibbonHook;
-    WRERibbonInfo->dinfo.helphook      = WRERibbonHelpHook;
-    WRERibbonInfo->dinfo.foreground    = NULL;
-    WRERibbonInfo->dinfo.background    = NULL;
-    WRERibbonInfo->dinfo.is_fixed      = TRUE;
+    WRERibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
+    WRERibbonInfo->dinfo.hook = WRERibbonHook;
+    WRERibbonInfo->dinfo.helphook = WRERibbonHelpHook;
+    WRERibbonInfo->dinfo.foreground = NULL;
+    WRERibbonInfo->dinfo.background = NULL;
+    WRERibbonInfo->dinfo.is_fixed = TRUE;
+    WRERibbonInfo->dinfo.use_tips = TRUE;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-void WREShutdownRibbon ( void )
+void WREShutdownRibbon( void )
 {
-    int  i;
+    int i;
 
-    WREDestroyRibbon ( );
+    WREDestroyRibbon();
 
-    if ( !WRERibbonInfo ) {
+    if( WRERibbonInfo == NULL ) {
         return;
     }
 
-    for ( i=0; i<NUM_TOOLS; i++ ) {
-        if ( WRERibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if ( WRERibbonInfo->items[i].bmp ==
-                 WRERibbonInfo->items[i].depressed ) {
-                WRERibbonInfo->items[i].depressed = (HBITMAP) NULL;
+    for( i = 0; i < NUM_TOOLS; i++ ) {
+        if( WRERibbonInfo->items[i].flags != ITEM_BLANK ) {
+            if( WRERibbonInfo->items[i].bmp == WRERibbonInfo->items[i].depressed ) {
+                WRERibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if ( WRERibbonInfo->items[i].bmp ) {
-                DeleteObject ( WRERibbonInfo->items[i].bmp );
+            if( WRERibbonInfo->items[i].bmp != NULL ) {
+                DeleteObject( WRERibbonInfo->items[i].bmp );
             }
-            if ( WRERibbonInfo->items[i].depressed ) {
-                DeleteObject ( WRERibbonInfo->items[i].depressed );
+            if( WRERibbonInfo->items[i].depressed != NULL ) {
+                DeleteObject( WRERibbonInfo->items[i].depressed );
             }
         }
     }
 
-    WREFreeToolBarInfo ( WRERibbonInfo );
+    WREFreeToolBarInfo( WRERibbonInfo );
 }
 
-Bool WRECreateRibbon ( HWND parent )
+Bool WRECreateRibbon( HWND parent )
 {
-    if ( WRERibbon || !WRERibbonInfo || ( parent == (HWND)NULL ) ) {
-        return ( FALSE );
+    if( WRERibbon != NULL || WRERibbonInfo == NULL || parent == (HWND)NULL ) {
+        return( FALSE );
     }
 
-    GetClientRect ( parent, &WRERibbonInfo->dinfo.area );
+    GetClientRect( parent, &WRERibbonInfo->dinfo.area );
 
     WRERibbonHeight = 2 * WRERibbonInfo->dinfo.border_size.y +
                       WRERibbonInfo->dinfo.button_size.y +
-                      2 * GetSystemMetrics(SM_CYBORDER);
+                      2 * GetSystemMetrics( SM_CYBORDER );
     WRERibbonInfo->dinfo.area.bottom = WRERibbonHeight;
 
-    WRERibbon = WRECreateToolBar ( WRERibbonInfo, parent );
+    WRERibbon = WRECreateToolBar( WRERibbonInfo, parent );
 
-    WREResizeWindows ();
+    WREResizeWindows();
 
-    return ( WRERibbon != NULL );
+    return( WRERibbon != NULL );
 }
 
-Bool WREResizeRibbon ( RECT *prect )
+Bool WREResizeRibbon( RECT *prect )
 {
-    if ( !WRERibbon || !WRERibbonHeight ||
-         ( WRERibbon->win == (HWND)NULL ) || !prect ) {
-        return ( FALSE );
+    if( WRERibbon == NULL || WRERibbonHeight == NULL ||
+        WRERibbon->win == (HWND)NULL || prect == NULL ) {
+        return( FALSE );
     }
 
-    MoveWindow ( WRERibbon->win, 0, 0, ( prect->right - prect->left ),
-                 WRERibbonHeight, TRUE );
+    MoveWindow( WRERibbon->win, 0, 0, prect->right - prect->left,
+                WRERibbonHeight, TRUE );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 void WREShowRibbon( HMENU menu )
 {
     char        *mtext;
 
-    if( WRERibbonHeight ) {
+    if( WRERibbonHeight != 0 ) {
         ShowWindow( WRERibbon->win, SW_HIDE );
         WRERibbonHeight = 0;
         WREResizeWindows();
@@ -212,7 +215,7 @@ void WREShowRibbon( HMENU menu )
         ShowWindow( WRERibbon->win, SW_SHOW );
         WRERibbonHeight = 2 * WRERibbonInfo->dinfo.border_size.y +
                           WRERibbonInfo->dinfo.button_size.y +
-                          2 * GetSystemMetrics(SM_CYBORDER);
+                          2 * GetSystemMetrics( SM_CYBORDER );
         WREResizeWindows();
         mtext = WREAllocRCString( WRE_HIDETOOLBAR );
     }
@@ -220,25 +223,25 @@ void WREShowRibbon( HMENU menu )
     ModifyMenu( menu, IDM_SHOW_RIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_SHOW_RIBBON, mtext );
 
-    if( mtext ) {
+    if( mtext != NULL ) {
         WREFreeRCString( mtext );
     }
 }
 
-void WREDestroyRibbon ( void )
+void WREDestroyRibbon( void )
 {
-    if ( WRERibbon ) {
-        WREDestroyToolBar ( WRERibbon );
+    if( WRERibbon != NULL ) {
+        WREDestroyToolBar( WRERibbon );
     }
 
     WRERibbonHeight = 0;
 
-    WREResizeWindows ();
+    WREResizeWindows();
 }
 
 void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 {
-    _wre_touch(hwnd);
+    _wre_touch( hwnd );
 
     if( !pressed ) {
         WRESetStatusText( NULL, "", TRUE );
@@ -251,23 +254,22 @@ BOOL WRERibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     Bool         ret;
 
-    _wre_touch(hwnd);
-    _wre_touch(wParam);
-    _wre_touch(lParam);
+    _wre_touch( hwnd );
+    _wre_touch( wParam );
+    _wre_touch( lParam );
 
-    if( !WRERibbon ) {
+    if( WRERibbon == NULL ) {
         return( FALSE );
     }
 
     ret = FALSE;
 
     switch( msg ) {
-        case WM_DESTROY:
-            WRECloseToolBar ( WRERibbon );
-            WRERibbon = NULL;
-            break;
+    case WM_DESTROY:
+        WRECloseToolBar( WRERibbon );
+        WRERibbon = NULL;
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
-

@@ -1,0 +1,25 @@
+#
+# Watcom Help Converter (whpcvt) Makefile
+# =======================================
+#
+
+proj_name = whpcvt
+whpcvt_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"$(whpcvt_dir)/h"
+
+.c: ../c
+
+objs =              &
+        whpcvt.obj  &
+        rtf.obj     &
+        ipf.obj     &
+        ib.obj      &
+	wiki.obj    &
+        html.obj
+
+!include exetarg.mif

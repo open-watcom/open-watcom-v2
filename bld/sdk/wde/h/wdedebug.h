@@ -53,34 +53,34 @@
 #ifdef WDE_DEBUG
 
 #ifdef WDE_DEBUG_DISPATCH
-extern void      WdeDebugDispatch           ( char *, ACTION, void *,
+extern void WdeDebugDispatch( char *, ACTION, void *, void *, void * );
 #else
 #define WdeDebugDispatch( cp, a, obj, p1, p2 ) {}
-#endif /* ifdef WDE_DEBUG_DISPATCH */
+#endif /* WDE_DEBUG_DISPATCH */
 
 #ifdef WDE_DEBUG_CREATE
-extern void      WdeDebugCreate             ( char *, void *, RECT *, void *);
+extern void WdeDebugCreate( char *, void *, RECT *, void * );
 #else
-#define WdeDebugCreate( cp, obj, rect, handle) {}
-#endif /* ifdef WDE_DEBUG_CREATE */
+#define WdeDebugCreate( cp, obj, rect, handle ) {}
+#endif /* WDE_DEBUG_CREATE */
 
-extern Bool      WdeWriteTrail              ( const char * );
-extern Bool      WdeWriteTrailn             ( const char *, int );
+extern Bool WdeWriteTrail( const char * );
+extern Bool WdeWriteTrailn( const char *, int );
 
 #ifdef WDE_DEBUG_ON_STATUS
-extern Bool      WdeWriteStatus             ( const char * );
+extern Bool WdeWriteStatus( const char * );
 #else
-#define WdeWriteStatus( cp )                   {}
-#endif /* ifdef WDE_DEBUG_ON_STATUS */
+#define WdeWriteStatus( cp ) {}
+#endif /* WDE_DEBUG_ON_STATUS */
 
 #else
 
-#define WdeDebugDispatch( cp, a, obj, p1, p2 ) {}
-#define WdeDebugCreate( cp, obj, rect, handle) {}
-#define WdeWriteTrail( cp )                    {}
-#define WdeWriteTrailn( cp, i )                {}
-#define WdeWriteStatus( cp )                   {}
+#define WdeDebugDispatch( cp, a, obj, p1, p2 )      {}
+#define WdeDebugCreate( cp, obj, rect, handle  )    {}
+#define WdeWriteTrail( cp )                         {}
+#define WdeWriteTrailn( cp, i )                     {}
+#define WdeWriteStatus( cp )                        {}
 
-#endif /* ifdef WDE_DEBUG */
+#endif /* WDE_DEBUG */
 
-#endif /*ifndef WDEDEBUG_INCLUDED */
+#endif /* WDEDEBUG_INCLUDED */

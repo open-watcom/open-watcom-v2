@@ -24,19 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocation routines called by inline assembler.
 *
 ****************************************************************************/
 
 
-#include "cvars.h"
-extern  void *CMemAlloc();
-extern  void  CMemFree();
+#include "cmemmgr.h"
 
 void *AsmAlloc( unsigned amount )
 {
-    void *ptr;
+    void    *ptr;
+
     ptr = CMemAlloc( amount );
     return( ptr );
 }

@@ -43,15 +43,6 @@
 
 #define MAX_ELEM_SIZE           ( 8 + 1 + 8 + 1 + 8 + 1 )
 #define _INITIALIZED            _DYNAMIC
-#ifdef __WIDECHAR__
-    #define PREFIX_STR          L"C_FILE_INFO="
-    #define COLON_STR           L":"
-    #define STAR_STR            L"*"
-#else
-    #define PREFIX_STR          "C_FILE_INFO="
-    #define COLON_STR           ":"
-    #define STAR_STR            "*"
-#endif
 
 
 /*
@@ -67,7 +58,7 @@
  * "C_FILE_INFO=", and so forms a valid environment string.
  */
 _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void )
-/**************************************************************************/
+/*******************************************************************************/
 {
     extern unsigned     __NFiles;
     CHAR_TYPE *         p;
@@ -77,32 +68,32 @@ _WCRTLINK CHAR_TYPE *__F_NAME(__FormPosixHandleStr,__wFormPosixHandleStr)( void 
     size_t              len;
 
     /*** Allocate memory for the string ***/
-    len = (__NFiles*MAX_ELEM_SIZE) + __F_NAME(strlen,wcslen)(PREFIX_STR) + 1;
-    p = lib_malloc( len * sizeof(CHAR_TYPE) );
+    len = (__NFiles*MAX_ELEM_SIZE) + __F_NAME(strlen,wcslen)( STRING( "C_FILE_INFO=" ) ) + 1;
+    p = lib_malloc( len * sizeof( CHAR_TYPE ) );
     if( p == NULL )  return( NULL );
-    __F_NAME(strcpy,wcscpy)( p, PREFIX_STR );
+    __F_NAME(strcpy,wcscpy)( p, STRING( "C_FILE_INFO=" ) );
 
     /*** Process the open files ***/
     for( posixHandle=0; posixHandle<__NFiles; posixHandle++ ) {
+        __ChkTTYIOMode( posixHandle );
         mode = __GetIOMode( posixHandle );
         if( mode & _INITIALIZED ) {         /* skip it if it's not open */
             osHandle = _os_handle( posixHandle );
 
             /*** Build the element string ***/
-            curElem[0] = '\0';
+            curElem[0] = NULLCHAR;
             __F_NAME(itoa,_itow)( posixHandle, buf, 16 );  /* POSIX handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
-            __F_NAME(strcat,wcscat)( curElem, COLON_STR );  /* separator */
+            __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
             __F_NAME(itoa,_itow)( osHandle, buf, 16 );      /* OS handle */
             __F_NAME(strcat,wcscat)( curElem, buf );
-            __F_NAME(strcat,wcscat)( curElem, COLON_STR );  /* separator */
+            __F_NAME(strcat,wcscat)( curElem, STRING( ":" ) );  /* separator */
             __F_NAME(itoa,_itow)( mode, buf, 16 );          /* file mode */
             __F_NAME(strcat,wcscat)( curElem, buf );
-            __F_NAME(strcat,wcscat)( curElem, STAR_STR );   /* terminator */
+            __F_NAME(strcat,wcscat)( curElem, STRING( "*" ) );   /* terminator */
 
             __F_NAME(strcat,wcscat)( p, curElem );          /* append it */
         }
     }
-
     return( p );
 }

@@ -24,30 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of the C library handle I/O functions.
 *
 ****************************************************************************/
 
 
-/*
- *  IOTEST.C
- *  Non-exhaustive test of the C library handle I/O functions.
- *
- *  20 February 1995
- *  By Matthew Hildebrand
- */
-
 #include <errno.h>
 #include <fcntl.h>
-#include <io.h>
+#include <unistd.h>
 #include <share.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\locking.h>
-#include <sys\stat.h>
-#include <sys\types.h>
+#include <sys/locking.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #ifdef __SW_BW
   #include <wdefwin.h>
@@ -100,8 +91,10 @@ int main( int argc, char *argv[] )
     TestSize();                                 /* file size stuff */
     TestFileno();                               /* fileno() */
     TestDup();                                  /* handle duplication */
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )
     TestLocking();                              /* file locking */
     TestOsHandle();                             /* OS <--> POSIX handles */
+#endif
     TestUnlink();                               /* file deletion */
 
     /*** Print a pass/fail message and quit ***/
@@ -149,9 +142,9 @@ void TestOpenClose( void )
     handle = sopen( "test.fil", O_RDWR|O_TRUNC, SH_DENYNO );
     VERIFY( handle != -1 );
 
-    errno = EZERO;
+    errno = 0;
     setmode( handle, O_BINARY );
-    VERIFY( errno == EZERO );
+    VERIFY( errno == 0 );
 
     status = close( handle );
     VERIFY( status == 0 );
@@ -309,7 +302,9 @@ void TestDup( void )
 
     handle2 = handle1 + 1;
     status = dup2( handle1, handle2 );
-    VERIFY( status == 0 );
+    // NB: the return value of dup2() differs between POSIX and traditional
+    // DOSish implementations!
+    VERIFY( status != -1 );
 
     offset = lseek( handle1, 42, SEEK_SET );
     VERIFY( offset == 42 );
@@ -325,6 +320,7 @@ void TestDup( void )
 }
 
 
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )
 
 /****
 ***** Test lock(), locking(), and unlock().
@@ -334,8 +330,6 @@ void TestLocking( void )
 {
     int                 handle;
     int                 status;
-    int                 count;
-    char                ch;
 
     handle = open( "test.fil", O_RDWR );
     VERIFY( handle != -1 );
@@ -378,6 +372,7 @@ void TestOsHandle( void )
     VERIFY( status == 0 );
 }
 
+#endif
 
 
 /****
@@ -401,8 +396,10 @@ void TestUnlink( void )
     status = close( handle );
     VERIFY( status == 0 );
 
+#if !defined( __UNIX__ ) && !defined( __RDOS__ ) // This call would succeed
     status = unlink( "test.fil" );
     VERIFY( status != 0 );
+#endif
 
     status = chmod( "test.fil", S_IREAD|S_IWRITE );
     VERIFY( status == 0 );

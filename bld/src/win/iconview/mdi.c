@@ -81,7 +81,7 @@ HWND MdiReadIcon( FILE *fp, char *title, char *file_name, long flags )
     mdi.cx = (signed short) CW_USEDEFAULT;
     mdi.cy = (signed short) CW_USEDEFAULT;
     mdi.style = flags;
-    mdi.lParam = NULL;
+    mdi.lParam = 0;
 
     hwnd = (HWND) SendMessage( ClientWindow, WM_MDICREATE, 0,
                                 (LONG)(LPSTR)&mdi );
@@ -178,8 +178,8 @@ static void ReloadIcon( HWND hwnd, an_MDI_icon *MDI_icon )
  * This is the window proc for an individual MDI child window containing
  * a displayable icon.
  */
-LONG _EXPORT FAR PASCAL MdiIconProc( HWND hwnd, unsigned msg,
-                                    UINT wparam, LONG lparam )
+LONG _EXPORT FAR PASCAL MdiIconProc( HWND hwnd, UINT msg,
+                                    WPARAM wparam, LPARAM lparam )
 {
     an_MDI_icon     *icon;
     HDC             hdc;

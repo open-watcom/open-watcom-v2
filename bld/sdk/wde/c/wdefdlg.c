@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wderesin.h"
@@ -49,40 +49,39 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WdeResDlgItem *WdeFindDialogInResInfo ( WdeResInfo *res_info, int dlg )
+WdeResDlgItem *WdeFindDialogInResInfo( WdeResInfo *res_info, int dlg )
 {
-    LIST          *dlist;
+    LIST            *dlist;
 
     dlist = res_info->dlg_item_list;
 
-    for ( ; dlist && ( dlg != -1 ); dlist=ListNext(dlist), dlg-- ) {
-        if ( !dlg ) {
-            return ( ListElement ( dlist ) );
+    for( ; dlist != NULL && dlg != -1; dlist = ListNext( dlist ), dlg-- ) {
+        if( dlg == 0 ) {
+            return( ListElement( dlist ) );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-signed int WdeFindObjectPosInDialogList ( WdeResInfo *res_info, OBJPTR obj )
+signed int WdeFindObjectPosInDialogList( WdeResInfo *res_info, OBJPTR obj )
 {
-    LIST          *dlist;
-    WdeResDlgItem *ditem;
-    signed int     count;
+    LIST            *dlist;
+    WdeResDlgItem   *ditem;
+    signed int      count;
 
-    if ( !res_info || !obj ) {
-        return ( -1 );
+    if( res_info == NULL || obj == NULL ) {
+        return( -1 );
     }
 
     count = 0;
     dlist = res_info->dlg_item_list;
-    for ( ; dlist; dlist = ListNext ( dlist ), count++ ) {
-        ditem = (WdeResDlgItem *) ListElement ( dlist );
-        if ( ditem->object == obj ) {
-            return ( count );
+    for( ; dlist != NULL; dlist = ListNext( dlist ), count++ ) {
+        ditem = (WdeResDlgItem *)ListElement( dlist );
+        if( ditem->object == obj ) {
+            return( count );
         }
     }
 
-    return ( -1 );
+    return( -1 );
 }
-

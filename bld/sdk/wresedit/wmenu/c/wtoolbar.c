@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <limits.h>
 #include "wglbl.h"
@@ -38,10 +38,10 @@
 #include "wmain.h"
 #include "wmem.h"
 #include "wmsg.h"
-#include "wmsgfile.h"
 #include "whints.h"
 #include "wlist.h"
 #include "wtoolbar.h"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WToolBarHook ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WToolBarHook( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -62,254 +62,247 @@ extern BOOL WToolBarHook ( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WToolBar *WFindToolBar         ( HWND );
-static WToolBar *WAllocToolBar        ( void );
-static void      WAddToolBar          ( WToolBar * );
-static void      WRemoveToolBar       ( WToolBar * );
+static WToolBar *WFindToolBar( HWND );
+static WToolBar *WAllocToolBar( void );
+static void     WAddToolBar( WToolBar * );
+static void     WRemoveToolBar( WToolBar * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static LIST       *WToolBarList      = NULL;
+static LIST     *WToolBarList = NULL;
 
-WToolBar *WCreateToolBar ( WToolBarInfo *info, HWND parent )
+WToolBar *WCreateToolBar( WToolBarInfo *info, HWND parent )
 {
-    WToolBar  *tbar;
-    int        i;
-    HMENU      sys_menu;
+    WToolBar    *tbar;
+    int         i;
+    HMENU       sys_menu;
     char        *text;
 
-    if ( !info ) {
-        return ( NULL );
+    if( info == NULL ) {
+        return( NULL );
     }
 
-    tbar = WAllocToolBar ();
-    if ( tbar == NULL ) {
-        return ( NULL );
+    tbar = WAllocToolBar();
+    if( tbar == NULL ) {
+        return( NULL );
     }
 
-    tbar->info   = info;
+    tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar   = (toolbar) ToolBarInit ( parent );
+    tbar->tbar = (toolbar)ToolBarInit( parent );
 
-    ToolBarDisplay ( tbar->tbar, &info->dinfo );
+    ToolBarDisplay( tbar->tbar, &info->dinfo );
 
-    for ( i = 0; i < info->num_items; i++ ) {
-        ToolBarAddItem ( tbar->tbar, &info->items[i] );
+    for( i = 0; i < info->num_items; i++ ) {
+        ToolBarAddItem( tbar->tbar, &info->items[i] );
     }
 
-    tbar->win = ToolBarWindow ( tbar->tbar );
+    tbar->win = ToolBarWindow( tbar->tbar );
 
-    if ( (info->dinfo.style & TOOLBAR_FLOAT_STYLE) == TOOLBAR_FLOAT_STYLE ) {
-        sys_menu = GetSystemMenu ( tbar->win, FALSE );
-
-        i = GetMenuItemCount ( sys_menu );
-        for ( ; i>0; i-- ) {
-            DeleteMenu ( sys_menu, i, MF_BYPOSITION );
+    if( (info->dinfo.style & TOOLBAR_FLOAT_STYLE) == TOOLBAR_FLOAT_STYLE ) {
+        sys_menu = GetSystemMenu( tbar->win, FALSE );
+        i = GetMenuItemCount( sys_menu );
+        for( ; i > 0; i-- ) {
+            DeleteMenu( sys_menu, i, MF_BYPOSITION );
         }
         text = WAllocRCString( W_SYSMENUMOVE );
-        AppendMenu( sys_menu, MF_STRING , SC_MOVE,  (text) ? text : "Move" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
+        if( text != NULL ) {
             WFreeRCString( text );
         }
         text = WAllocRCString( W_SYSMENUSIZE );
-        AppendMenu( sys_menu, MF_STRING , SC_SIZE,  (text) ? text : "Size" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
+        if( text != NULL ) {
             WFreeRCString( text );
         }
         text = WAllocRCString( W_SYSMENUHIDE );
-        AppendMenu( sys_menu, MF_STRING , SC_CLOSE, (text) ? text : "Hide" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
+        if( text != NULL ) {
             WFreeRCString( text );
         }
     }
 
-    ShowWindow ( tbar->win, SW_SHOWNORMAL );
+    ShowWindow( tbar->win, SW_SHOWNORMAL );
 
-    UpdateWindow ( tbar->win );
+    UpdateWindow( tbar->win );
 
-    WAddToolBar ( tbar );
+    WAddToolBar( tbar );
 
-    return ( tbar );
+    return( tbar );
 }
 
-BOOL WToolBarHook ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+BOOL WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
-    WToolBar  *tbar;
-    int          bstate;
-    Bool         ret;
+    WToolBar    *tbar;
+    int         bstate;
+    Bool        ret;
 
-    if ( !( tbar = WFindToolBar ( hwnd ) ) || ( tbar->win == NULL ) ) {
+    if( (tbar = WFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         return( FALSE );
     }
 
     ret = FALSE;
 
     switch( msg ) {
+    case WM_USER:
+        if( lParam ) {
+            WSetStatusText( NULL, NULL, "" );
+        } else {
+            WDisplayHint( NULL, wParam );
+        }
+        if( lParam ) {
+            bstate = BUTTON_UP;
+        } else {
+            bstate = BUTTON_DOWN;
+        }
+        WSetToolBarItemState( tbar, wParam, bstate );
+        break;
 
-        case WM_USER:
-            if ( lParam ) {
-                WSetStatusText ( NULL, NULL, "" );
-            } else {
-                WDisplayHint ( NULL, wParam );
-            }
-            if ( lParam ) {
-                bstate = BUTTON_UP;
-            } else {
-                bstate = BUTTON_DOWN;
-            }
-            WSetToolBarItemState ( tbar, wParam, bstate );
-            break;
+    case WM_SIZE:
+        if( wParam != SIZE_MAXIMIZED && wParam != SIZE_MINIMIZED ) {
+            GetWindowRect( hwnd, &tbar->last_pos );
+        }
+        break;
 
-        case WM_SIZE:
-            if ( ( wParam != SIZE_MAXIMIZED ) &&
-                 ( wParam != SIZE_MINIMIZED ) ) {
-                GetWindowRect ( hwnd, &tbar->last_pos );
-            }
-            break;
+    case WM_MOVE:
+        if( !IsZoomed( hwnd ) ) {
+            GetWindowRect( hwnd, &tbar->last_pos );
+        }
+        break;
 
-        case WM_MOVE:
-            if ( !IsZoomed ( hwnd ) ) {
-                GetWindowRect ( hwnd, &tbar->last_pos );
-            }
-            break;
+    case WM_GETMINMAXINFO:
+        minmax = (MINMAXINFO *)lParam;
+        minmax->ptMinTrackSize.x = 2 * GetSystemMetrics( SM_CXFRAME ) +
+                                   tbar->info->dinfo.border_size.x +
+                                   tbar->info->dinfo.button_size.x - 1;
+        minmax->ptMinTrackSize.y = 2 * GetSystemMetrics( SM_CYFRAME ) +
+                                   tbar->info->dinfo.border_size.y +
+                                   GetSystemMetrics( SM_CYCAPTION ) +
+                                   tbar->info->dinfo.button_size.y - 1;
+        break;
 
-        case WM_GETMINMAXINFO:
-            minmax = (MINMAXINFO *) lParam;
-            minmax->ptMinTrackSize.x =
-                2 * GetSystemMetrics(SM_CXFRAME) +
-                tbar->info->dinfo.border_size.x +
-                tbar->info->dinfo.button_size.x - 1;
-            minmax->ptMinTrackSize.y =
-                2 * GetSystemMetrics(SM_CYFRAME) +
-                tbar->info->dinfo.border_size.y +
-                GetSystemMetrics(SM_CYCAPTION) +
-                tbar->info->dinfo.button_size.y - 1;
-            break;
-
-        case WM_DESTROY:
-            WCloseToolBar ( tbar );
-            break;
-
+    case WM_DESTROY:
+        WCloseToolBar( tbar );
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
 
-WToolBar *WFindToolBar ( HWND win )
+WToolBar *WFindToolBar( HWND win )
 {
-    WToolBar *tbar;
-    LIST       *tlist;
+    WToolBar    *tbar;
+    LIST        *tlist;
 
-    for ( tlist = WToolBarList; tlist; tlist = ListNext ( tlist ) ) {
-        tbar = ListElement ( tlist );
-        if ( tbar->win == win ) {
-            return ( tbar );
+    for( tlist = WToolBarList; tlist != NULL; tlist = ListNext( tlist ) ) {
+        tbar = ListElement( tlist );
+        if( tbar->win == win ) {
+            return( tbar );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-Bool WCloseToolBar ( WToolBar *tbar )
+Bool WCloseToolBar( WToolBar *tbar )
 {
-    if ( tbar ) {
-        tbar->win = (HWND) NULL;
-        WRemoveToolBar ( tbar );
-        WFreeToolBar ( tbar );
+    if( tbar != NULL ) {
+        tbar->win = (HWND)NULL;
+        WRemoveToolBar( tbar );
+        WFreeToolBar( tbar );
     }
 
     return( TRUE );
 }
 
-void WFreeToolBarInfo ( WToolBarInfo *info )
+void WFreeToolBarInfo( WToolBarInfo *info )
 {
-    if ( info ) {
-        if ( info->items ) {
-            WMemFree ( info->items );
+    if( info != NULL ) {
+        if( info->items != NULL ) {
+            WMemFree( info->items );
         }
-        if ( info->dinfo.background ) {
-            DeleteObject ( info->dinfo.background );
+        if( info->dinfo.background != NULL ) {
+            DeleteObject( info->dinfo.background );
         }
-        WMemFree ( info );
+        WMemFree( info );
     }
 }
 
-WToolBarInfo *WAllocToolBarInfo ( int num )
+WToolBarInfo *WAllocToolBarInfo( int num )
 {
     WToolBarInfo *info;
 
-    info = (WToolBarInfo *) WMemAlloc ( sizeof (WToolBarInfo) );
+    info = (WToolBarInfo *)WMemAlloc( sizeof( WToolBarInfo ) );
 
-    if ( info ) {
-        memset ( info, 0, sizeof ( WToolBarInfo ) );
-        info->items = (TOOLITEMINFO *) WMemAlloc ( sizeof(TOOLITEMINFO) * num );
-        if ( info->items ) {
-            memset ( info->items, 0, sizeof(TOOLITEMINFO) * num );
+    if( info != NULL ) {
+        memset( info, 0, sizeof( WToolBarInfo ) );
+        info->items = (TOOLITEMINFO *)WMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        if( info->items != NULL ) {
+            memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WMemFree ( info );
+            WMemFree( info );
             info = NULL;
         }
     }
 
-    return ( info );
+    return( info );
 }
 
-WToolBar *WAllocToolBar ( void )
+WToolBar *WAllocToolBar( void )
 {
     WToolBar *tbar;
 
-    tbar = (WToolBar *) WMemAlloc ( sizeof ( WToolBar ) );
-    if ( tbar ) {
-        memset ( tbar, 0, sizeof ( WToolBar ) );
+    tbar = (WToolBar *)WMemAlloc( sizeof( WToolBar ) );
+    if( tbar != NULL ) {
+        memset( tbar, 0, sizeof( WToolBar ) );
     }
 
-    return ( tbar );
+    return( tbar );
 }
 
-void WFreeToolBar ( WToolBar *tbar )
+void WFreeToolBar( WToolBar *tbar )
 {
-    if ( tbar ) {
-        WMemFree ( tbar );
+    if( tbar != NULL ) {
+        WMemFree( tbar );
     }
 }
 
-void WAddToolBar ( WToolBar *tbar )
+void WAddToolBar( WToolBar *tbar )
 {
-    WInsertObject ( &WToolBarList, (void *)tbar );
+    WInsertObject( &WToolBarList, (void *)tbar );
 }
 
-void WDestroyToolBar ( WToolBar *tbar )
+void WDestroyToolBar( WToolBar *tbar )
 {
-    ToolBarDestroy ( tbar->tbar );
+    ToolBarDestroy( tbar->tbar );
 }
 
-void WRemoveToolBar ( WToolBar *tbar )
+void WRemoveToolBar( WToolBar *tbar )
 {
-    ListRemoveElt ( &WToolBarList, (void *)tbar );
+    ListRemoveElt( &WToolBarList, (void *)tbar );
 }
 
-void WShutdownToolBars ( void )
+void WShutdownToolBars( void )
 {
     WToolBar  *tbar;
     LIST      *tlist;
 
-    tlist = WListCopy ( WToolBarList );
-    for ( ; tlist; tlist = ListConsume ( tlist ) ) {
-        tbar = ListElement ( tlist );
-        ToolBarDestroy ( tbar->tbar );
+    tlist = WListCopy( WToolBarList );
+    for( ; tlist != NULL; tlist = ListConsume( tlist ) ) {
+        tbar = ListElement( tlist );
+        ToolBarDestroy( tbar->tbar );
     }
-    ToolBarFini ( NULL );
+    ToolBarFini( NULL );
 
-    ListFree ( WToolBarList );
+    ListFree( WToolBarList );
 }
 
-void WSetToolBarItemState ( WToolBar *tbar, UINT id, UINT state )
+void WSetToolBarItemState( WToolBar *tbar, UINT id, UINT state )
 {
-    if ( tbar /*&& ( ToolBarGetState ( tbar->tbar, id ) != state )*/ ) {
-        ToolBarSetState ( tbar->tbar, id, state );
+    if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
+        ToolBarSetState( tbar->tbar, id, state );
     }
 }
-

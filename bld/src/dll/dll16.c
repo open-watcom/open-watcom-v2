@@ -28,7 +28,7 @@ extern short GetSS( void );
 #pragma aux GetSS = 0x8C 0xD0 value[ax];
 
 #pragma off (unreferenced);
-BOOL FAR PASCAL LibMain( HANDLE hInstance, WORD wDataSegment,
+BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment,
                          WORD wHeapSize, LPSTR lpszCmdLine )
 #pragma on (unreferenced);
 {
@@ -103,7 +103,7 @@ long __export FAR CDECL Lib2( WORD a, LONG b, WORD c, WORD d, LONG e )
 }
 
 #pragma off (unreferenced);
-int __export FAR PASCAL WEP( int nParameter )
+int FAR PASCAL WEP( int nParameter )
 #pragma on (unreferenced);
 {
   //BreakPoint();

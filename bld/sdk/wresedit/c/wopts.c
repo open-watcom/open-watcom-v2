@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,10 +48,10 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    RECT   screen_pos;
-    Bool   screen_maxed;
-    char  *last_dir;
-    int    last_filter;
+    RECT    screen_pos;
+    Bool    screen_maxed;
+    char    *last_dir;
+    int     last_filter;
 } WOptState;
 
 /****************************************************************************/
@@ -61,14 +61,14 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /*****************************************************************************/
-static void  WWriteOpts         ( WOptState * );
-static Bool  WReadOpts          ( WOptState * );
-static Bool  WWriteIntOpt       ( char *, int );
-static Bool  WGetIntOpt         ( char *, int *);
-static Bool  WWriteRectOpt      ( char *, RECT * );
-static Bool  WGetRectOpt        ( char *, RECT * );
-static char *WRectToStr         ( RECT * );
-static void  WStrToRect         ( char *, RECT * );
+static void WWriteOpts( WOptState * );
+static Bool WReadOpts( WOptState * );
+static Bool WWriteIntOpt( char *, int );
+static Bool WGetIntOpt( char *, int *);
+static Bool WWriteRectOpt( char *, RECT * );
+static Bool WGetRectOpt( char *, RECT * );
+static char *WRectToStr( RECT * );
+static void WStrToRect( char *, RECT * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -82,190 +82,185 @@ static char *WSectionName = NULL;
 
 static WOptState WCurrentState;
 
-static WOptState WDefaultState =
-{
+static WOptState WDefaultState = {
     { CW_USEDEFAULT,     /* default window pos               */
       CW_USEDEFAULT,
       CW_USEDEFAULT,
-      CW_USEDEFAULT }
-,   FALSE                /* is the window maximized          */
-,   NULL                 /* last open/save directory         */
-,   1                    /* last file filter                 */
+      CW_USEDEFAULT },
+    FALSE,               /* is the window maximized          */
+    NULL,                /* last open/save directory         */
+    1                    /* last file filter                 */
 };
 
-void WOptsShutdown ( void )
+void WOptsShutdown( void )
 {
-    if ( WCurrentState.last_dir ) {
-        WMemFree ( WCurrentState.last_dir );
+    if( WCurrentState.last_dir != NULL ) {
+        WMemFree( WCurrentState.last_dir );
     }
-    WCurrentState.last_dir    = WStrDup ( WGetInitialDir () );
-    WCurrentState.last_filter = WGetFileFilter ();
-    WWriteOpts ( &WCurrentState );
-    if ( WCurrentState.last_dir ) {
-        WMemFree ( WCurrentState.last_dir );
+    WCurrentState.last_dir = WStrDup( WGetInitialDir() );
+    WCurrentState.last_filter = WGetFileFilter();
+    WWriteOpts( &WCurrentState );
+    if( WCurrentState.last_dir != NULL ) {
+        WMemFree( WCurrentState.last_dir );
     }
 }
 
-void WWriteOpts ( WOptState *o )
+void WWriteOpts( WOptState *o )
 {
-    WWriteRectOpt ( "ScreenPos",     &o->screen_pos );
-    WWriteIntOpt  ( "ScreenMaxed",   o->screen_maxed );
-    WWriteIntOpt  ( "FileFilter",    o->last_filter );
-    WritePrivateProfileString ( WSectionName, "LastDir",
-                                o->last_dir, WProfileName );
+    WWriteRectOpt( "ScreenPos", &o->screen_pos );
+    WWriteIntOpt( "ScreenMaxed", o->screen_maxed );
+    WWriteIntOpt( "FileFilter", o->last_filter );
+    WritePrivateProfileString( WSectionName, "LastDir", o->last_dir, WProfileName );
 }
 
-Bool WReadOpts ( WOptState *s )
+Bool WReadOpts( WOptState *s )
 {
-    char str[_MAX_PATH];
-    Bool ret;
+    char    str[_MAX_PATH];
+    Bool    ret;
 
-    ret  = WGetRectOpt ( "ScreenPos",     &s->screen_pos );
-    ret &= WGetIntOpt  ( "ScreenMaxed",   &s->screen_maxed );
-    ret &= WGetIntOpt  ( "FileFilter",    &s->last_filter );
+    ret = WGetRectOpt( "ScreenPos", &s->screen_pos );
+    ret &= WGetIntOpt( "ScreenMaxed", &s->screen_maxed );
+    ret &= WGetIntOpt( "FileFilter", &s->last_filter );
 
-    if ( ret ) {
-        ret = GetPrivateProfileString ( WSectionName, "LastDir", "",
-                                        str, _MAX_PATH-1, WProfileName );
+    if( ret ) {
+        ret = GetPrivateProfileString( WSectionName, "LastDir", "",
+                                       str, _MAX_PATH - 1, WProfileName );
     }
 
-    if ( ret ) {
-        ret = ( ( s->last_dir = WStrDup ( str ) ) != NULL );
+    if( ret ) {
+        ret = ((s->last_dir = WStrDup( str )) != NULL);
     }
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WWriteIntOpt ( char *entry, int i )
+Bool WWriteIntOpt( char *entry, int i )
 {
-    char  str[12];
-    Bool  ret;
+    char    str[12];
+    Bool    ret;
 
-    ltoa (  i, str, 10 );
+    ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString ( WSectionName, entry, str,
-                                      WProfileName );
+    ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName );
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WGetIntOpt ( char *entry, int *i )
+Bool WGetIntOpt( char *entry, int *i )
 {
     int opt;
 
-    opt = (int) GetPrivateProfileInt ( WSectionName, entry,
-                                       0x7fff, WProfileName );
+    opt = (int)GetPrivateProfileInt( WSectionName, entry, 0x7fff, WProfileName );
 
-    if ( opt != 0x7fff ) {
+    if( opt != 0x7fff ) {
         *i = opt;
     }
 
-    return ( opt != 0x7fff );
+    return( opt != 0x7fff );
 }
 
-Bool WWriteRectOpt ( char *entry, RECT *r )
+Bool WWriteRectOpt( char *entry, RECT *r )
 {
-    char *str;
-    Bool  ret;
+    char    *str;
+    Bool    ret;
 
     ret = FALSE;
-    str = WRectToStr ( r );
-    if ( str ) {
-        ret = WritePrivateProfileString ( WSectionName, entry, str,
-                                          WProfileName );
-        WMemFree ( str );
+    str = WRectToStr( r );
+    if( str != NULL ) {
+        ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName );
+        WMemFree( str );
     }
 
-    return ( ret );
+    return( ret );
 }
 
-Bool WGetRectOpt ( char *entry, RECT *r )
+Bool WGetRectOpt( char *entry, RECT *r )
 {
-    char  str[41];
-    Bool  ret;
+    char    str[41];
+    Bool    ret;
 
-    ret = GetPrivateProfileString ( WSectionName, entry, "0, 0, 0, 0",
-                                    str, 40, WProfileName );
-    if ( ret && strcmp ( "0, 0, 0, 0", str ) ) {
-        WStrToRect ( str, r );
-        return ( TRUE );
+    ret = GetPrivateProfileString( WSectionName, entry, "0, 0, 0, 0",
+                                   str, 40, WProfileName );
+    if( ret && strcmp( "0, 0, 0, 0", str ) ) {
+        WStrToRect( str, r );
+        return( TRUE );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 }
 
-char *WRectToStr ( RECT *r )
+char *WRectToStr( RECT *r )
 {
-    char  temp[41];
+    char temp[41];
 
-    sprintf ( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
+    sprintf( temp, "%d, %d, %d, %d", r->left, r->top, r->right, r->bottom );
 
-    return ( WStrDup ( temp ) );
+    return( WStrDup ( temp ) );
 }
 
-void WStrToRect ( char *str, RECT *r )
+void WStrToRect( char *str, RECT *r )
 {
-    memset ( r, 0, sizeof ( RECT ) );
-    sscanf ( str, "%d, %d, %d, %d", &r->left, &r->top,
-                                    &r->right, &r->bottom );
+    memset( r, 0, sizeof( RECT ) );
+    sscanf( str, "%d, %d, %d, %d", &r->left, &r->top, &r->right, &r->bottom );
 }
 
-int WInitOpts ( char *ini_file, char *section_name )
+int WInitOpts( char *ini_file, char *section_name )
 {
-    if( !ini_file || !section_name ) {
+    if( ini_file == NULL || section_name == NULL ) {
         return( FALSE );
     }
     WProfileName = ini_file;
     WSectionName = section_name;
     WCurrentState = WDefaultState;
-    WReadOpts ( &WCurrentState );
-    if ( WCurrentState.last_dir ) {
-        WSetInitialDir ( WCurrentState.last_dir );
+    WReadOpts( &WCurrentState );
+    if( WCurrentState.last_dir ) {
+        WSetInitialDir( WCurrentState.last_dir );
     }
-    WSetFileFilter ( WCurrentState.last_filter );
+    WSetFileFilter( WCurrentState.last_filter );
     return( TRUE );
 }
 
-int WGetOption ( WOptReq req )
+int WGetOption( WOptReq req )
 {
     int ret;
 
-    switch ( req ) {
-        case WOptScreenMax:
-            ret = WCurrentState.screen_maxed;
-            break;
+    switch( req ) {
+    case WOptScreenMax:
+        ret = WCurrentState.screen_maxed;
+        break;
 
-        default:
-            ret = BAD_OPT_REQ;
+    default:
+        ret = BAD_OPT_REQ;
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
 
-void WGetScreenPosOption ( RECT *pos )
+void WGetScreenPosOption( RECT *pos )
 {
     *pos = WCurrentState.screen_pos;
 }
 
-void WSetScreenPosOption ( RECT *pos )
+void WSetScreenPosOption( RECT *pos )
 {
     WCurrentState.screen_pos = *pos;
 }
 
-int WSetOption ( WOptReq req, int val )
+int WSetOption( WOptReq req, int val )
 {
     int old;
 
-    switch ( req ) {
-        case WOptScreenMax:
-            old = WCurrentState.screen_maxed;
-            WCurrentState.screen_maxed = ( Bool ) val;
-            break;
+    switch( req ) {
+    case WOptScreenMax:
+        old = WCurrentState.screen_maxed;
+        WCurrentState.screen_maxed = (Bool)val;
+        break;
 
-        default:
-            old = BAD_OPT_REQ;
+    default:
+        old = BAD_OPT_REQ;
+        break;
     }
 
-    return ( old );
+    return( old );
 }
-

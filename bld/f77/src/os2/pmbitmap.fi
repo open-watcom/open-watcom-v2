@@ -1,0 +1,168 @@
+c$noreference
+
+        structure /BITMAPINFOHEADER/
+            integer*4 cbFix
+            integer*2 cx
+            integer*2 cy
+            integer*2 cPlanes
+            integer*2 cBitCount
+        end structure
+
+        structure /RGB/
+            integer*1 bBlue
+            integer*1 bGreen
+            integer*1 bRed
+        end structure
+
+        structure /BITMAPINFO/
+            integer*4 cbFix
+            integer*2 cx
+            integer*2 cy
+            integer*2 cPlanes
+            integer*2 cBitCount
+            record /RGB/ argbColor(1)
+        end structure
+
+        integer  CBD_COMPRESSION
+        parameter (CBD_COMPRESSION = 1)
+        integer  CBD_DECOMPRESSION
+        parameter (CBD_DECOMPRESSION = 2)
+        integer  CBD_BITS
+        parameter (CBD_BITS = 0)
+
+        integer  CBD_COLOR_CONVERSION
+        parameter (CBD_COLOR_CONVERSION = '00000001'x)
+
+        integer  BCA_UNCOMP
+        parameter (BCA_UNCOMP = 0)
+        integer  BCA_HUFFMAN1D
+        parameter (BCA_HUFFMAN1D = 3)
+        integer  BCA_RLE4
+        parameter (BCA_RLE4 = 2)
+        integer  BCA_RLE8
+        parameter (BCA_RLE8 = 1)
+        integer  BCA_RLE24
+        parameter (BCA_RLE24 = 4)
+
+        integer  BRU_METRIC
+        parameter (BRU_METRIC = 0)
+
+        integer  BRA_BOTTOMUP
+        parameter (BRA_BOTTOMUP = 0)
+
+        integer  BRH_NOTHALFTONED
+        parameter (BRH_NOTHALFTONED = 0)
+        integer  BRH_ERRORDIFFUSION
+        parameter (BRH_ERRORDIFFUSION = 1)
+        integer  BRH_PANDA
+        parameter (BRH_PANDA = 2)
+        integer  BRH_SUPERCIRCLE
+        parameter (BRH_SUPERCIRCLE = 3)
+
+        integer  BCE_PALETTE
+        parameter (BCE_PALETTE = -1)
+        integer  BCE_RGB
+        parameter (BCE_RGB = 0)
+
+        structure /BITMAPINFOHEADER2/
+            integer*4 cbFix
+            integer*4 cx
+            integer*4 cy
+            integer*2 cPlanes
+            integer*2 cBitCount
+            integer*4 ulCompression
+            integer*4 cbImage
+            integer*4 cxResolution
+            integer*4 cyResolution
+            integer*4 cclrUsed
+            integer*4 cclrImportant
+            integer*2 usUnits
+            integer*2 usReserved
+            integer*2 usRecording
+            integer*2 usRendering
+            integer*4 cSize1
+            integer*4 cSize2
+            integer*4 ulColorEncoding
+            integer*4 ulIdentifier
+        end structure
+
+        structure /RGB2/
+            integer*1 bBlue
+            integer*1 bGreen
+            integer*1 bRed
+            integer*1 fcOptions
+        end structure
+
+        structure /BITMAPINFO2/
+            integer*4 cbFix
+            integer*4 cx
+            integer*4 cy
+            integer*2 cPlanes
+            integer*2 cBitCount
+            integer*4 ulCompression
+            integer*4 cbImage
+            integer*4 cxResolution
+            integer*4 cyResolution
+            integer*4 cclrUsed
+            integer*4 cclrImportant
+            integer*2 usUnits
+            integer*2 usReserved
+            integer*2 usRecording
+            integer*2 usRendering
+            integer*4 cSize1
+            integer*4 cSize2
+            integer*4 ulColorEncoding
+            integer*4 ulIdentifier
+            record /RGB2/ argbColor(1)
+        end structure
+
+        structure /BITMAPFILEHEADER/
+            integer*2 usType
+            integer*4 cbSize
+            integer*2 xHotspot
+            integer*2 yHotspot
+            integer*4 offBits
+            record /BITMAPINFOHEADER/ bmp
+        end structure
+
+        structure /BITMAPARRAYFILEHEADER/
+            integer*2 usType
+            integer*4 cbSize
+            integer*4 offNext
+            integer*2 cxDisplay
+            integer*2 cyDisplay
+            record /BITMAPFILEHEADER/ bfh
+        end structure
+
+        structure /BITMAPFILEHEADER2/
+            integer*2 usType
+            integer*4 cbSize
+            integer*2 xHotspot
+            integer*2 yHotspot
+            integer*4 offBits
+            record /BITMAPINFOHEADER2/ bmp2
+        end structure
+
+        structure /BITMAPARRAYFILEHEADER2/
+            integer*2 usType
+            integer*4 cbSize
+            integer*4 offNext
+            integer*2 cxDisplay
+            integer*2 cyDisplay
+            record /BITMAPFILEHEADER2/ bfh2
+        end structure
+
+        integer  BFT_ICON
+        parameter (BFT_ICON = '00004349'x)
+        integer  BFT_BMAP
+        parameter (BFT_BMAP = '00004d42'x)
+        integer  BFT_POINTER
+        parameter (BFT_POINTER = '00005450'x)
+        integer  BFT_COLORICON
+        parameter (BFT_COLORICON = '00004943'x)
+        integer  BFT_COLORPOINTER
+        parameter (BFT_COLORPOINTER = '00005043'x)
+        integer  BFT_BITMAPARRAY
+        parameter (BFT_BITMAPARRAY = '00004142'x)
+
+c$reference

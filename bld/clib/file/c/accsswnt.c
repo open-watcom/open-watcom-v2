@@ -38,25 +38,16 @@
 #include "libwin32.h"
 #include "seterrno.h"
 
-
 _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
 {
-    LONG                attr;
+    DWORD       attr;
 
-    #ifdef __WIDECHAR__
-        attr = __lib_GetFileAttributesW( path );
-    #else
-        /*
-         * If we actually want the attributes for the file, we should call
-         * __lib_GetFileAttributesA, which works around a bug in NT's
-         * GetFileAttributesA.  However, we're only concerned about the
-         * existence of the file, and what NT provides is sufficient, so
-         * to minimize executable size, don't call the clib internal smarter
-         * version.
-         */
-        attr = GetFileAttributesA( path );
-    #endif
-    if( attr == -1 ) {
+#ifdef __WIDECHAR__
+    attr = __lib_GetFileAttributesW( path );
+#else
+    attr = __lib_GetFileAttributesA( path );
+#endif
+    if( attr == INVALID_FILE_ATTRIBUTES ) {
         return( __set_errno_nt() );
     }
 

@@ -24,15 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger interface types.
 *
 ****************************************************************************/
 
 
-#ifndef DIGTYPES_H
-#include "digpck.h"
+#ifndef DIGTYPES_H_INCLUDED
+#define DIGTYPES_H_INCLUDED
+
 #include <machtype.h>
+#include "digpck.h"
 
 typedef unsigned_8 search_result; enum {
                 SR_NONE,
@@ -219,6 +220,74 @@ typedef unsigned context_item; enum {
         CI_PPC_cr,
         CI_PPC_xer,
         CI_PPC_fpscr,
+        /* MIPS architecture */
+        CI_MIPS_r0,
+        CI_MIPS_r1,
+        CI_MIPS_r2,
+        CI_MIPS_r3,
+        CI_MIPS_r4,
+        CI_MIPS_r5,
+        CI_MIPS_r6,
+        CI_MIPS_r7,
+        CI_MIPS_r8,
+        CI_MIPS_r9,
+        CI_MIPS_r10,
+        CI_MIPS_r11,
+        CI_MIPS_r12,
+        CI_MIPS_r13,
+        CI_MIPS_r14,
+        CI_MIPS_r15,
+        CI_MIPS_r16,
+        CI_MIPS_r17,
+        CI_MIPS_r18,
+        CI_MIPS_r19,
+        CI_MIPS_r20,
+        CI_MIPS_r21,
+        CI_MIPS_r22,
+        CI_MIPS_r23,
+        CI_MIPS_r24,
+        CI_MIPS_r25,
+        CI_MIPS_r26,
+        CI_MIPS_r27,
+        CI_MIPS_r28,
+        CI_MIPS_r29,
+        CI_MIPS_r30,
+        CI_MIPS_r31,
+        CI_MIPS_f0,
+        CI_MIPS_f1,
+        CI_MIPS_f2,
+        CI_MIPS_f3,
+        CI_MIPS_f4,
+        CI_MIPS_f5,
+        CI_MIPS_f6,
+        CI_MIPS_f7,
+        CI_MIPS_f8,
+        CI_MIPS_f9,
+        CI_MIPS_f10,
+        CI_MIPS_f11,
+        CI_MIPS_f12,
+        CI_MIPS_f13,
+        CI_MIPS_f14,
+        CI_MIPS_f15,
+        CI_MIPS_f16,
+        CI_MIPS_f17,
+        CI_MIPS_f18,
+        CI_MIPS_f19,
+        CI_MIPS_f20,
+        CI_MIPS_f21,
+        CI_MIPS_f22,
+        CI_MIPS_f23,
+        CI_MIPS_f24,
+        CI_MIPS_f25,
+        CI_MIPS_f26,
+        CI_MIPS_f27,
+        CI_MIPS_f28,
+        CI_MIPS_f29,
+        CI_MIPS_f30,
+        CI_MIPS_f31,
+        CI_MIPS_pc,
+        CI_MIPS_lo,
+        CI_MIPS_hi,
         /* Java Virtual Machine architecture */
         CI_JVM_pc,
         CI_JVM_vars,
@@ -271,7 +340,7 @@ typedef unsigned_8 type_modifier; enum {
     TM_UNICODE,
 
     TM_MOD_MASK         = 0x0f,
-    TM_FLAG_DEREF       = 0x10,
+    TM_FLAG_DEREF       = 0x10
 };
 
 typedef struct type_info {
@@ -298,30 +367,20 @@ typedef         unsigned_8 dig_open; enum {
 
 #define DIG_NIL_HANDLE      ( (dig_fhandle) -1 )
 
-enum {
+enum archtypes {
     MAD_NIL,
-    MAD_X86,
-    MAD_AXP,
-    MAD_PPC,
-    MAD_MSJ,
+#define pick_mad(enum,file,desc) enum,
+#include "madarch.h"
+#undef pick_mad
     MAD_MAX
 };
 typedef unsigned_16             mad_handle;
 
 enum ostypes {                  //NYI: redo these for PIL
-        OS_IDUNNO,
-        OS_DOS,
-        OS_OS2,
-        OS_PHARLAP,
-        OS_ECLIPSE,
-        OS_NW386,
-        OS_QNX,
-        OS_RATIONAL,
-        OS_WINDOWS,
-        OS_PENPOINT,
-        OS_NT,
-        OS_AUTOCAD,
-        OS_NEUTRINO
+#define pick_mad(enum,desc) enum,
+#include "mados.h"
+#undef pick_mad
+    MAD_OS_MAX
 };
 
 typedef struct {                //NYI: redo this for PIL
@@ -340,7 +399,7 @@ enum {
 };
 
 #if defined(__WINDOWS__) && !defined(__NT__)
-#define DIGREGISTER     __pascal
+#define DIGREGISTER     __far __pascal
 #define DIGENTRY        __export DIGREGISTER
 #define DIGCLIENT       __loadds
 #endif
@@ -356,8 +415,6 @@ enum {
 #if !defined(DIGCLIENT)
 #define DIGCLIENT
 #endif
-
-#define DIGTYPES_H
 
 #include "digunpck.h"
 #endif

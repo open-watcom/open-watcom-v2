@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX cat utility
+*               Sends input to stdout
 *
 ****************************************************************************/
 
@@ -45,7 +45,7 @@
 
 char *OptEnvVar = "cat";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: cat [-?X] [@env] [files...]",
     "\tenv         : environment variable to expand",
     "\tfiles       : files to cat together",

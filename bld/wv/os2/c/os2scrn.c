@@ -144,7 +144,7 @@ void FiniScreen()
  *                                                                           *
 \*****************************************************************************/
 
-void __FAR *uifaralloc( unsigned size )
+void __FAR *uifaralloc( int size )
 {
     return( ExtraAlloc( size ) );
 }

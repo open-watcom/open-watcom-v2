@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -102,7 +99,7 @@ static void macroAllocSegment(   // ALLOCATE MACRO SEGMENT
     ExtraRptIncrementCtr( macro_segments );
 }
 
-static storageInitialize(       // INITIALIZE STORAGE DATA
+static void storageInitialize(  // INITIALIZE STORAGE DATA
     void )
 {
     macroAllocSegment( HASH_TABLE_SIZE );
@@ -164,24 +161,24 @@ void MacroWriteBrinf            // WRITE MACROS TO BRINF
 
 pch_status PCHWriteMacros( void )
 {
-    unsigned i;
+    unsigned hashval;
     unsigned wlen;
     MEPTR curr;
     MEPTR next;
     SRCFILE save_defn_src_file;
 
-    for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
-        RingIterBeg( macroHashTable[ i ], curr ) {
-            next = curr->next_macro;
-            curr->macro_flags &= ~MACRO_PCH_TEMPORARY_FLAGS;
+    for( hashval = 0; hashval < MACRO_HASH_SIZE; ++hashval ) {
+        RingIterBeg( macroHashTable[hashval], curr ) {
+            next = curr->u.next_macro;
+            curr->macro_flags &= ~MFLAG_PCH_TEMPORARY_FLAGS;
             wlen = curr->macro_len;
-            curr->next_macro = (MEPTR) i;
+            curr->u.pch_hash = hashval;
             save_defn_src_file = curr->defn.src_file;
             curr->defn.src_file = SrcFileGetIndex( save_defn_src_file );
             PCHWriteUInt( wlen );
             PCHWrite( curr, wlen );
             curr->defn.src_file = save_defn_src_file;
-            curr->next_macro = next;
+            curr->u.next_macro = next;
         } RingIterEnd( curr )
     }
     wlen = 0;
@@ -218,12 +215,12 @@ static void writeMacroCheck( MEPTR curr, void *data )
     unsigned wlen;
     MEPTR next;
 
-    next = curr->next_macro;
+    next = curr->u.next_macro;
     wlen = curr->macro_len;
-    curr->next_macro = (MEPTR) *phash;
+    curr->u.pch_hash = *phash;
     PCHWriteUInt( wlen );
     PCHWrite( curr, wlen );
-    curr->next_macro = next;
+    curr->u.next_macro = next;
 }
 
 static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
@@ -237,7 +234,7 @@ static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
         hash = i;
         RingIterBeg( macroHashTable[ i ], curr ) {
-            if( curr->macro_flags & MACRO_DEFINED_BEFORE_FIRST_INCLUDE ) {
+            if( curr->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
                 if( data == NULL ) {
                     (*rtn)( curr, &hash );
                 } else {
@@ -317,15 +314,15 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         rlen = PCHReadUInt();
         if( rlen == 0 ) break;
         PCHRead( pch_macro, rlen );
-        pch_hash = (unsigned) pch_macro->next_macro;
+        pch_hash = pch_macro->u.pch_hash;
         //printf( "pch mac: %s\n", pch_macro->macro_name );
         matched_macro = NULL;
         RingIterBeg( macroHashTable[pch_hash], new_macro ) {
             if( strcmp( new_macro->macro_name, pch_macro->macro_name ) == 0 ) {
                 matched_macro = new_macro;
-                new_macro->macro_flags |= MACRO_PCH_CHECKED;
+                new_macro->macro_flags |= MFLAG_PCH_CHECKED;
                 macros_different = macroCompare( new_macro, pch_macro );
-                if( pch_macro->macro_flags & MACRO_REFERENCED ) {
+                if( pch_macro->macro_flags & MFLAG_REFERENCED ) {
                     // (2) original macro was referenced during first #include
                     if( ! macros_different ) {
                         // OK; defns are identical in both compilation units
@@ -338,7 +335,7 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                 if( macros_different ) {
                     // (3) macro is different but never referenced in PCH build
                     // action: keep this macro definition
-                    new_macro->macro_flags |= MACRO_PCH_OVERRIDE;
+                    new_macro->macro_flags |= MFLAG_PCH_OVERRIDE;
                 }
                 break;
             }
@@ -351,7 +348,7 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             }
         } else {
             /* macro not found in current compile */
-            if( pch_macro->macro_flags & MACRO_REFERENCED ) {
+            if( pch_macro->macro_flags & MFLAG_REFERENCED ) {
                 // (1) original macro was referenced during first #include
                 // but no definition in current compilation
                 PCHWarn2p( WARN_PCH_CONTENTS_MACRO_NOT_PRESENT, pch_macro->macro_name );
@@ -370,9 +367,9 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     if( ret ) {
         for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
             RingIterBeg( macroHashTable[i], cmdln_macro ) {
-                if(( cmdln_macro->macro_flags & MACRO_PCH_CHECKED ) == 0 ) {
+                if(( cmdln_macro->macro_flags & MFLAG_PCH_CHECKED ) == 0 ) {
                     // (4) macro was not defined when pch was created
-                    if( cmdln_macro->macro_flags & MACRO_USER_DEFINED ) {
+                    if( cmdln_macro->macro_flags & MFLAG_USER_DEFINED ) {
                         PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, cmdln_macro->macro_name );
                         ret = FALSE;
                         break;
@@ -425,15 +422,15 @@ pch_status PCHReadMacros( void )
         mac_dest = macroAllocateInSeg( mlen );
         PCHRead( mac_dest, mlen );
         curr = (MEPTR) mac_dest;
-        hash = (unsigned) curr->next_macro;
-        curr->next_macro = NULL;
+        hash = curr->u.pch_hash;
+        curr->u.next_macro = NULL;
         curr->defn.src_file = SrcFileMapIndex( curr->defn.src_file );
         RingAppend( &macroHashTable[ hash ], curr );
     }
     // add macros from current compilation that should override the PCH macros
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
         RingIterBeg( old_hashtab[ i ], curr ) {
-            if( curr->macro_flags & MACRO_PCH_OVERRIDE ) {
+            if( curr->macro_flags & MFLAG_PCH_OVERRIDE ) {
                 // macro is different but doesn't affect PCH contents
                 // action: replace with current compilation unit's defn
                 pch_prev = NULL;
@@ -509,6 +506,7 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     MACADDR_T old_offset;
 
     amount_needed = macroSizeAlign( amount_needed );
+    DbgAssert( MacroOffset + amount_used <= macroLimit );
     if( macroLimit < MacroOffset + amount_needed ) {
         old_offset = MacroOffset;
         macroAllocSegment( amount_needed );
@@ -519,6 +517,19 @@ void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     }
 }
 
+static void unlinkMacroFromTable( MEPTR fmentry, unsigned hash )
+{
+    ++undefCount;
+    RingPrune( &macroHashTable[ hash ], fmentry );
+    if(( InitialMacroFlag & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
+        // make sure we only do this *after* the first include has started
+        // processing otherwise the PCH is created in such a way that
+        // the #undef'd macro must be defined before the #include 98/07/13
+        if( fmentry->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
+            RingAppend( &beforeIncludeChecks, fmentry );
+        }
+    }
+}
 
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
@@ -539,7 +550,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
     } else {
         old_mentry = macroFind( mac_name, name_len, &hash );
         if( old_mentry != NULL ) {
-            if( old_mentry->macro_flags & MACRO_CAN_BE_REDEFINED ) {
+            if( old_mentry->macro_flags & MFLAG_CAN_BE_REDEFINED ) {
                 unlinkMacroFromTable( old_mentry, hash );
                 old_mentry = NULL;
             } else {
@@ -580,7 +591,8 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     char *name,                 // - macro name
-    unsigned value )            // - value for special macro
+    unsigned value,             // - value for special macro
+    macro_flags flags )         // - macro flags
 {
     size_t len;
     size_t reqd;
@@ -595,7 +607,12 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     mentry->macro_len = reqd;
     mentry->parm_count = value;
     memcpy( mentry->macro_name, name, len + 1 );
-    return( MacroDefine( mentry, reqd, len ) );
+
+    mentry = MacroDefine( mentry, reqd, len );
+    if( mentry != NULL ) {
+        mentry->macro_flags |= flags;
+    }
+    return mentry;
 }
 
 
@@ -619,8 +636,8 @@ boolean MacroExists(        // TEST IF MACRO EXISTS
 
     mac = macroFind( macname, len, &hash );
     if( mac != NULL ) {
-        mac->macro_flags |= MACRO_REFERENCED;
-        exists = TRUE;
+        mac->macro_flags |= MFLAG_REFERENCED;
+        exists = ( mac->macro_flags & MFLAG_SPECIAL ) ? FALSE : TRUE;
     } else {
         exists = FALSE;
     }
@@ -638,20 +655,6 @@ boolean MacroDependsDefined // MACRO DEPENDENCY: DEFINED OR NOT
     return retn;
 }
 
-
-static void unlinkMacroFromTable( MEPTR fmentry, unsigned hash )
-{
-    ++undefCount;
-    RingPrune( &macroHashTable[ hash ], fmentry );
-    if(( InitialMacroFlag & MACRO_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
-        // make sure we only do this *after* the first include has started
-        // processing otherwise the PCH is created in such a way that
-        // the #undef'd macro must be defined before the #include 98/07/13
-        if( fmentry->macro_flags & MACRO_DEFINED_BEFORE_FIRST_INCLUDE ) {
-            RingAppend( &beforeIncludeChecks, fmentry );
-        }
-    }
-}
 
 static void doMacroUndef( char *name, unsigned len, boolean quiet )
 {
@@ -694,7 +697,7 @@ void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
     MEPTR mptr )                // - the macro entry
 {
     if( mptr != NULL ) {
-        mptr->macro_flags |= MACRO_CAN_BE_REDEFINED;
+        mptr->macro_flags |= MFLAG_CAN_BE_REDEFINED;
     }
 }
 

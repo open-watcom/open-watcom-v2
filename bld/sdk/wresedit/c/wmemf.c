@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wresall.h"
 #include "wglbl.h"
 #include "wrglbl.h"
@@ -66,23 +66,23 @@ Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     Bool        ok;
     FARPROC     cb;
 
-    _wtouch(inst);
+    _wtouch( inst );
 
     name = NULL;
     cb = NULL;
 
-    ok = ( mflags && res_name );
+    ok = (mflags != NULL && res_name != NULL);
 
     if( ok )  {
-        if( res_name ) {
+        if( res_name != NULL ) {
             name = WResIDToStr( res_name );
-            ok = ( name != NULL );
+            ok = (name != NULL);
         }
     }
 
     if( ok ) {
         cb = MakeProcInstance( (FARPROC)hcb, inst );
-        ok = ( cb != (FARPROC)NULL );
+        ok = (cb != (FARPROC)NULL);
     }
 
     if( ok ) {
@@ -93,10 +93,9 @@ Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
         FreeProcInstance( (FARPROC)cb );
     }
 
-    if( name ) {
+    if( name != NULL ) {
         WMemFree( name );
     }
 
     return( ok );
 }
-

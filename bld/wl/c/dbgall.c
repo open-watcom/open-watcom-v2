@@ -24,16 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  General routines for producing debugging information in
+*               load file.
 *
 ****************************************************************************/
 
-
-/*
- *  DBGALL -- general routines for producing debugging information in load file
- *
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -47,6 +42,8 @@
 #include "objcalc.h"
 #include "loadfile.h"
 #include "objio.h"
+#include "dbgcomm.h"
+#include "dbgall.h"
 #include "dbgcv.h"
 #include "objfree.h"
 #include "overlays.h"
@@ -54,22 +51,18 @@
 #include "dbgwat.h"
 #include "ring.h"
 #include "loadnov.h"
-#include "dbgcomm.h"
-#include "dbgall.h"
 
-char *          SymFileName;
-group_entry *   DBIGroups;
+char            *SymFileName;
+group_entry     *DBIGroups;
 
-static void     DBIGenLocal( segdata * );
-
-extern void ResetDBI( void )
+void ResetDBI( void )
 /**************************/
 {
     SymFileName = NULL;
     DBIGroups = NULL;
 }
 
-extern void DBIInit( void )
+void DBIInit( void )
 /*************************/
 // called just after command file parsing
 {
@@ -82,7 +75,7 @@ extern void DBIInit( void )
     }
 }
 
-extern void DBISectInit( section *sect )
+void DBISectInit( section *sect )
 /**************************************/
 // called when a section created in command file parsing
 {
@@ -91,7 +84,7 @@ extern void DBISectInit( section *sect )
     }
 }
 
-extern void DBIInitModule( mod_entry *obj )
+void DBIInitModule( mod_entry *obj )
 /*****************************************/
 // called before pass 1 is done on the module
 {
@@ -104,7 +97,7 @@ extern void DBIInitModule( mod_entry *obj )
     }
 }
 
-extern void DBIP1Source( byte *buff, byte *endbuff )
+void DBIP1Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
     int         len;
@@ -120,23 +113,23 @@ extern void DBIP1Source( byte *buff, byte *endbuff )
     }
     ObjFormat |= FMT_DEBUG_COMENT;
     if( LinkFlags & OLD_DBI_FLAG ) {
-        ODBIP1Source( major, minor, buff, len );
+        ODBIP1Source( major, minor, (char *)buff, len );
     }
 }
 
-extern section * DBIGetSect( char *clname )
+section *DBIGetSect( char *clname )
 /*****************************************/
 {
-    if( stricmp( clname, _MSTypeClass ) == 0
-        || stricmp( clname, _MSLocalClass ) == 0 ) {
-        return CurrSect;
-    } else if(  stricmp( clname, _DwarfClass ) == 0 ) {
-        return Root;
+    if( ( stricmp( clname, _MSTypeClass ) == 0 )
+        || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
+        return( CurrSect );
+    } else if( stricmp( clname, _DwarfClass ) == 0 ) {
+        return( Root );
     }
-    return NULL;
+    return( NULL );
 }
 
-extern void DBIColClass( class_entry *class )
+void DBIColClass( class_entry *class )
 /*******************************************/
 {
     bool        isdbi;
@@ -153,24 +146,24 @@ extern void DBIColClass( class_entry *class )
     }
 }
 
-extern unsigned_16 DBIColSeg( class_entry *class )
+unsigned_16 DBIColSeg( class_entry *class )
 /************************************************/
 {
-    switch( class->flags & CLASS_HANDS_OFF ) {
+    switch( class->flags & CLASS_DEBUG_INFO ) {
     case CLASS_DWARF:
         if( CurrMod->modinfo & DBI_TYPE ) {
             CurrMod->modinfo |= MOD_DBI_SEEN;
         }
-        return DWARF_DEBUG_OTHER;       // assume other until later.
+        return( DWARF_DEBUG_OTHER );       // assume other until later.
     case CLASS_MS_TYPE:
-        return MS_TYPE;
+        return( MS_TYPE );
     case CLASS_MS_LOCAL:
-        return MS_LOCAL;
+        return( MS_LOCAL );
     }
-    return 0;
+    return( NOT_DEBUGGING_INFO );
 }
 
-extern void DBIP1ModuleScanned( void )
+void DBIP1ModuleScanned( void )
 /************************************/
 // called in pass 1 when finished looking at a module
 // if some segdefs have been delayed due to distributing libraries, this
@@ -192,37 +185,37 @@ static bool MSSkip( void )
     bool        iscv;
     bool        seencmt;
 
-    if( !(ObjFormat & FMT_OMF) ) {
-        return (LinkFlags & DWARF_DBI_FLAG) != 0;
+    if( !( ObjFormat & FMT_OMF ) ) {
+        return( LinkFlags & DWARF_DBI_FLAG );
     } else {
-        iscv = (LinkFlags & CV_DBI_FLAG) != 0;
-        seencmt = (ObjFormat & FMT_DEBUG_COMENT) != 0;
-        return !(iscv ^ seencmt) || LinkFlags & DWARF_DBI_FLAG;
+        iscv = ( LinkFlags & CV_DBI_FLAG ) != 0;
+        seencmt = ( ObjFormat & FMT_DEBUG_COMENT ) != 0;
+        return( !( iscv ^ seencmt ) || ( LinkFlags & DWARF_DBI_FLAG ) );
     }
 }
 
-extern bool DBISkip( unsigned_16 info )
+bool DBISkip( seg_leader *seg )
 /*************************************/
 // returns TRUE we should skip processing this segment because we are
 // ignoring debugging information
 {
-    switch( info ) {
+    switch( seg->dbgtype ) {
     case MS_TYPE:
-        return !(CurrMod->modinfo & DBI_TYPE) || MSSkip();
+        return( !( CurrMod->modinfo & DBI_TYPE ) || MSSkip() );
     case MS_LOCAL:
-        return !(CurrMod->modinfo & DBI_LOCAL) || MSSkip();
+        return( !( CurrMod->modinfo & DBI_LOCAL ) || MSSkip() );
     case NOT_DEBUGGING_INFO:
-        return FALSE;
+        return( FALSE );
     default:
-        return !(CurrMod->modinfo & DBI_TYPE) || !(LinkFlags & DWARF_DBI_FLAG);
+        return( !( CurrMod->modinfo & DBI_TYPE ) || !( LinkFlags & DWARF_DBI_FLAG ) );
     }
 }
 
-extern bool DBINoReloc( unsigned_16 info )
+bool DBINoReloc( seg_leader *seg )
 /****************************************/
 // called to see if we should handle a relocation specially.
 {
-    return info != 0;
+    return( IS_DBG_INFO( seg ) );
 }
 
 static void AddNovGlobals( mod_entry *mod )
@@ -233,7 +226,7 @@ static void AddNovGlobals( mod_entry *mod )
 #endif
 }
 
-extern void DBIPreAddrCalc( void )
+void DBIPreAddrCalc( void )
 /********************************/
 {
     void (*modptr)( mod_entry * );
@@ -242,7 +235,8 @@ extern void DBIPreAddrCalc( void )
     if( LinkFlags & NOVELL_DBI_FLAG ) {
         WalkMods( AddNovGlobals );
     }
-    if( !(LinkFlags & ANY_DBI_FLAG) ) return;
+    if( !( LinkFlags & ANY_DBI_FLAG ) )
+        return;
     if( LinkFlags & OLD_DBI_FLAG ) {
         modptr = ODBIP1ModuleFinished;
         segptr = ODBIAddAddrInfo;
@@ -260,24 +254,28 @@ extern void DBIPreAddrCalc( void )
     }
 }
 
-extern void DBIAddrInfoScan( seg_leader *seg,
-                         void (*initfn)(segdata *, void *),
-                         void (*addfn)(segdata *, offset, offset, void *, bool),
-                         void * cookie )
-/******************************************************************************/
+void DBIAddrInfoScan( seg_leader *seg,
+                         void (*initfn)( segdata *, void * ),
+                         void (*addfn)( segdata *, offset, offset, void *, bool ),
+                         void *cookie )
+/********************************************************************************/
 {
-    segdata *   prev;
-    segdata *   curr;
+    segdata     *prev;
+    segdata     *curr;
     offset      size;
     bool        isnewmod;
 
-    if( seg->dbgtype != NOT_DEBUGGING_INFO ) return;
-    if( seg->class->flags & (CLASS_STACK|CLASS_IDATA)
-                && (FmtData.dll || FmtData.type & MK_PE) ) return;
+    if( IS_DBG_INFO( seg ) )
+        return;
+    if( ( seg->class->flags & ( CLASS_STACK | CLASS_IDATA ) )
+        && ( FmtData.dll || ( FmtData.type & MK_PE ) ) )
+        return;
     prev = RingStep( seg->pieces, NULL );
-    for(;;) {
-        if( prev == NULL ) return;
-        if( !prev->isdead ) break;
+    for( ; ; ) {
+        if( prev == NULL )
+            return;
+        if( !prev->isdead )
+            break;
         prev = RingStep( seg->pieces, prev );
     }
     initfn( prev, cookie );
@@ -286,7 +284,7 @@ extern void DBIAddrInfoScan( seg_leader *seg,
     while( curr != NULL ) {
         if( !curr->isdead ) {
             size += curr->a.delta - prev->a.delta;
-            isnewmod = curr->o.mod != prev->o.mod && size != 0;
+            isnewmod = ( ( curr->o.mod != prev->o.mod ) && ( size != 0 ) );
             addfn( prev, curr->a.delta, size, cookie, isnewmod );
             if( isnewmod ) {
                 size = 0;
@@ -299,13 +297,13 @@ extern void DBIAddrInfoScan( seg_leader *seg,
     addfn( prev, 0, size, cookie, size != 0 );
 }
 
-extern void DBIComment( void )
+void DBIComment( void )
 /****************************/
 {
 }
 
-extern void DBIAddModule( mod_entry *obj, section *sect )
-/***********************************************************/
+void DBIAddModule( mod_entry *obj, section *sect )
+/*******************************************************/
 // called just before publics have been assigned addresses between p1 & p2
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -317,11 +315,34 @@ extern void DBIAddModule( mod_entry *obj, section *sect )
     }
 }
 
-extern void DBIGenModule( void )
+static void DBIGenLocal( void *sdata )
+/************************************/
+// called during pass 2 segment processing
+{
+    if( LinkFlags & OLD_DBI_FLAG ) {
+        ODBIGenLocal( sdata );
+    }
+}
+
+static void DBIGenLines( mod_entry *mod )
+/***************************************/
+// called during pass 2 linnum processing
+{
+    if( LinkFlags & OLD_DBI_FLAG ) {
+        DBILineWalk( mod->lines, ODBIGenLines );
+    } else if( LinkFlags & DWARF_DBI_FLAG ) {
+        DBILineWalk( mod->lines, DwarfGenLines );
+    } else if( LinkFlags & CV_DBI_FLAG ) {
+        DBILineWalk( mod->lines, CVGenLines );
+    }
+}
+
+void DBIGenModule( void )
 /******************************/
 // called at the end of pass2 for a module
 {
-    if( MOD_NOT_DEBUGGABLE(CurrMod) ) return;
+    if( MOD_NOT_DEBUGGABLE( CurrMod ) )
+        return;
     if( LinkFlags & ANY_DBI_FLAG ) {
         Ring2Walk( CurrMod->segs, DBIGenLocal );
         DBIGenLines( CurrMod );
@@ -335,7 +356,7 @@ extern void DBIGenModule( void )
     }
 }
 
-extern void DBIDefClass( class_entry *cl, unsigned_32 size )
+void DBIDefClass( class_entry *cl, unsigned_32 size )
 /**********************************************************/
 // called during address calculation
 {
@@ -348,42 +369,33 @@ extern void DBIDefClass( class_entry *cl, unsigned_32 size )
     }
 }
 
-extern void DBIAddLocal( unsigned_16 info, offset length )
+void DBIAddLocal( seg_leader *seg, offset length )
 /********************************************************/
 // called during pass 1 final segment processing.
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
-        ODBIAddLocal( info, length );
+        ODBIAddLocal( seg, length );
     } else if( LinkFlags & CV_DBI_FLAG ) {
-        CVAddLocal( info, length );
+        CVAddLocal( seg, length );
     }
 }
 
-static void DBIGenLocal( segdata *sdata )
-/***************************************/
-// called during pass 2 segment processing
+void DBIModGlobal( void *_sym )
+/************************************/
 {
-    if( LinkFlags & OLD_DBI_FLAG ) {
-        ODBIGenLocal( sdata );
-    }
-}
+    symbol *sym = _sym;
 
-extern void DBIModGlobal( symbol *sym )
-/*************************************/
-{
-    if( !IS_SYM_ALIAS(sym) && !(sym->info & SYM_DEAD) ) {
-        if( IS_SYM_IMPORTED(sym) ||
-            ( sym->p.seg != NULL
-            && sym->p.seg->u.leader->dbgtype == NOT_DEBUGGING_INFO
-            && !sym->p.seg->isabs)
-          )
-        {
+    if( !IS_SYM_ALIAS( sym ) && !( sym->info & SYM_DEAD ) ) {
+        if( IS_SYM_IMPORTED( sym )
+            || ( sym->p.seg != NULL )
+                && !IS_DBG_INFO( sym->p.seg->u.leader )
+                && !sym->p.seg->isabs ) {
             DBIAddGlobal( sym );
         }
     }
 }
 
-extern void DBIAddGlobal( symbol *sym )
+void DBIAddGlobal( symbol *sym )
 /*************************************/
 // called during pass 1 symbol definition
 {
@@ -396,7 +408,7 @@ extern void DBIAddGlobal( symbol *sym )
     }
 }
 
-extern void DBIGenGlobal( symbol * sym, section *sect )
+void DBIGenGlobal( symbol *sym, section *sect )
 /*****************************************************/
 // called during symbol address calculation (between pass 1 & pass 2)
 // also called by loadpe between passes
@@ -409,84 +421,67 @@ extern void DBIGenGlobal( symbol * sym, section *sect )
         CVGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
-    if( (sym->info & SYM_STATIC) == 0 && LinkFlags & NOVELL_DBI_FLAG ) {
+    if( ( ( sym->info & SYM_STATIC ) == 0 )
+        && ( LinkFlags & NOVELL_DBI_FLAG ) ) {
         NovDBIGenGlobal( sym );
     }
 #endif
 }
 
-extern void DBIAddLines( segdata *seg, void *line, unsigned size, bool is32bit )
+void DBIAddLines( segdata *seg, void *line, unsigned size, bool is32bit )
 /******************************************************************************/
 // called during pass 1 linnum processing
 {
-    lineinfo *  info;
+    lineinfo    *info;
 
-    _PermAlloc( info, sizeof(lineinfo) + size - 1 );
+    _PermAlloc( info, sizeof( lineinfo ) + size - 1 );
     info->seg = seg;
     info->size = size;
-    if( is32bit ) info->size |= LINE_IS_32BIT;
+    if( is32bit )
+        info->size |= LINE_IS_32BIT;
     memcpy( info->data, line, size );
     RingAppend( &CurrMod->lines, info );
 }
 
-extern unsigned CalcLineQty( unsigned size, bool is32bit )
-/********************************************************/
+unsigned DBICalcLineQty( lineinfo *info )
+/***************************************/
 {
-    if( is32bit ) {
+    unsigned    size;
+
+    size = info->size & ~LINE_IS_32BIT;
+    if( info->size & LINE_IS_32BIT ) {
         size /= sizeof( ln_off_386 );
     } else {
         size /= sizeof( ln_off_286 );
     }
-    return size;
+    return( size );
 }
 
-static bool DoLineWalk( lineinfo *info,
-                         void (*cbfn)(segdata *,void*,unsigned,bool) )
-/********************************************************************/
+static bool DoLineWalk( lineinfo *info, void (*cbfn)( lineinfo * ) )
+/******************************************************************/
 {
-    unsigned    size;
-    bool        is32bit;
-
     if( !info->seg->isdead ) {
-        size = info->size & ~LINE_IS_32BIT;
-        is32bit = (info->size & LINE_IS_32BIT) != 0;
-        cbfn( info->seg, info->data, size, is32bit );
+        cbfn( info );
     }
-    return FALSE;
+    return( FALSE );
 }
 
-extern void DBILineWalk( void *lines,
-                         void (*cbfn)(segdata *,void*,unsigned,bool) )
-/********************************************************************/
+void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
+/*************************************************************/
 {
-    RingLookup( lines, DoLineWalk, cbfn );
+    RingLookup( lines, (int(*)(void *,void *))DoLineWalk, cbfn );
 }
 
-static void DBIGenLines( mod_entry *mod )
-/***************************************/
-// called during pass 2 linnum processing
-{
-    void (*fn)(segdata *,void *, unsigned, bool );
-
-    if( LinkFlags & OLD_DBI_FLAG ) {
-        fn = ODBIGenLines;
-    } else if( LinkFlags & DWARF_DBI_FLAG ) {
-        fn = DwarfGenLines;
-    } else if( LinkFlags & CV_DBI_FLAG ) {
-        fn = CVGenLines;
-    }
-    DBILineWalk( mod->lines, fn );
-}
-
-extern virt_mem DBIAlloc( unsigned long size )
+virt_mem DBIAlloc( unsigned long size )
 /********************************************/
 // handy virtual memory allocation routine used inside the debug info generators
 {
-    if( size == 0 ) return( 0 );
+    if( size == 0 )
+        return( 0 );
     return( AllocStg( size ) );
 }
 
-extern void DBIAddrStart( void )
+void DBIAddrStart( void )
 /******************************/
 // called after address calculation is done.
 {
@@ -498,10 +493,10 @@ extern void DBIAddrStart( void )
     if( LinkFlags & CV_DBI_FLAG ) {
         CVAddrStart();
     }
-    DBIAddrSectStart( Root );
+    WalkAllSects( DBIAddrSectStart );
 }
 
-extern void DBIAddrSectStart( section * sect )
+void DBIAddrSectStart( section *sect )
 /********************************************/
 // called for each section after address calculation is done.
 {
@@ -512,7 +507,7 @@ extern void DBIAddrSectStart( section * sect )
     }
 }
 
-extern void DBIP2Start( section *sect )
+void DBIP2Start( section *sect )
 /*************************************/
 // called for each section just before pass 2 starts
 {
@@ -525,7 +520,7 @@ extern void DBIP2Start( section *sect )
     }
 }
 
-extern void DBIFini( section *sect )
+void DBIFini( section *sect )
 /**********************************/
 // called after pass 2 is finished, but before load file generation
 {
@@ -536,7 +531,7 @@ extern void DBIFini( section *sect )
     }
 }
 
-extern void DBISectCleanup( section *sect )
+void DBISectCleanup( section *sect )
 /*****************************************/
 // called when burning down the house
 {
@@ -545,14 +540,14 @@ extern void DBISectCleanup( section *sect )
     }
 }
 
-extern void DBICleanup( void )
+void DBICleanup( void )
 /****************************/
 // called when burning down the house
 {
     FreeGroups( DBIGroups );
 }
 
-extern void WriteDBI( void )
+void DBIWrite( void )
 /**************************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
@@ -560,22 +555,31 @@ extern void WriteDBI( void )
     outfilelist symfile;
     outfilelist *save;
 
-    if( !(LinkFlags & ANY_DBI_FLAG) ) return;
+    if( !( LinkFlags & ANY_DBI_FLAG ) )
+        return;
+    if( LinkFlags & CV_DBI_FLAG ) {
+        // write DEBUG_TYPE_MISC: name of file containing the debug info
+        if( SymFileName != NULL ) {
+            CVWriteDebugTypeMisc( SymFileName );
+        } else {
+            CVWriteDebugTypeMisc( Root->outfile->fname );
+        }
+    }
     if( SymFileName != NULL ) {
-        InitBuffFile( &symfile, SymFileName );
+        InitBuffFile( &symfile, SymFileName, FALSE );
         OpenBuffFile( &symfile );
-        save = CurrSect->outfile;
-        CurrSect->outfile = &symfile;
+        save = Root->outfile;
+        Root->outfile = &symfile;
     }
     if( LinkFlags & OLD_DBI_FLAG ) {
-        OWriteDBI();
+        ODBIWrite();
     } else if( LinkFlags & DWARF_DBI_FLAG ) {
-        DwarfWriteDBI();
+        DwarfWrite();
     } else if( LinkFlags & CV_DBI_FLAG ) {
-        CVWriteDBI();
+        CVWrite();
     }
     if( SymFileName != NULL ) {
         CloseBuffFile( &symfile );
-        CurrSect->outfile = save;
+        Root->outfile = save;
     }
 }

@@ -155,8 +155,9 @@ static void ScrollAsmDisplay( HWND hwnd, WORD wparam, address *paddr )
 
 #define TXT_LEN 256
 
-static walk_result CreateAllRegLists( const mad_reg_set_data *data, CreateRegListData *crld )
+static walk_result CreateAllRegLists( const mad_reg_set_data *data, void *_crld )
 {
+    CreateRegListData *crld = _crld;
     HWND        list;
     HWND        combo;
     HDC         dc;
@@ -192,8 +193,10 @@ static walk_result CreateAllRegLists( const mad_reg_set_data *data, CreateRegLis
     return( WR_CONTINUE );
 }
 
-static walk_result UpdateRegList( const mad_reg_set_data *data, CreateRegListData *cmp)
+static walk_result UpdateRegList( const mad_reg_set_data *data, void *_cmp)
 {
+    CreateRegListData *cmp = _cmp;
+
     if( data == cmp->reg_set ) {
         SendDlgItemMessage( cmp->parent, cmp->index, UPDATE_REG_LIST, 0, 0 );
         return ( WR_STOP );
@@ -277,8 +280,8 @@ static void InitStatDialog( HWND hwnd )
 } /* InitStatDialog */
 
 #ifndef __NT__
-BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, UINT wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam )
 {
     char        buff[128];
     WORD        i;
@@ -468,10 +471,10 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
  */
 int DoStatDialog( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     fp;
     int ret;
 
-    fp = MakeProcInstance( StatDialog, Instance );
+    fp = (DLGPROC)MakeProcInstance( StatDialog, Instance );
     ret=JDialogBox( Instance, "TASKSTATUS", hwnd, fp );
     FreeProcInstance( fp );
     return( ret );

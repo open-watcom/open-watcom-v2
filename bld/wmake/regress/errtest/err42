@@ -8,5 +8,5 @@
 dowah :
     @wtouch zzz.zzz
     @del zzz.zzz
-    @errout chmod -w zzz.zzz  > tmpfile.tmp
+    @false
 

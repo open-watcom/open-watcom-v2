@@ -38,6 +38,7 @@ MENU_BAR
 MENU_ITEM( MENU_MAIN_OPEN_REGISTER,             XRegisters  )
 MENU_ITEM( MENU_MAIN_OPEN_FPU,                  XFPU_Registers  )
 MENU_ITEM( MENU_MAIN_OPEN_MMX,                  MMXXRegisters  )
+MENU_ITEM( MENU_MAIN_OPEN_XMM,                  XMMXRegisters  )
 MENU_ITEM( MENU_MAIN_OPEN_STACK,                XStack  )
 MENU_ITEM( MENU_MAIN_OPEN_IO,                   XIO_Ports  )
 MENU_ITEM( MENU_MAIN_OPEN_MEMORY_AT,            XMemory_at_  )

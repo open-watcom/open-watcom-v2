@@ -32,8 +32,8 @@
 
 #define HASH_TABLE_SIZE 211
 /* use the same hash fcn */
-static unsigned int hashpjw( char *s )
-/************************************/
+static unsigned int hashpjw( const char *s )
+/******************************************/
 {
     unsigned h;
     unsigned g;

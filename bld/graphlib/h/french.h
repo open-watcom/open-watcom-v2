@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern short            GetCodePage();
+extern short            GetCodePage( void );
 
 #pragma aux             GetCodePage = \
                             0xb8 0x01 0x66    /* mov ax,6601h */ \

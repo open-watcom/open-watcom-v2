@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RISC style memcmp().
 *
 ****************************************************************************/
 
@@ -42,7 +41,7 @@ int memcmp( const void *s1, const void *s2, size_t n )
     UINT                dword1, dword2, tmpdword1, tmpdword2;
     int                 tmpchar, shr1, shr2, shl1, shl2;
 
-    if( n <= 0 )  return( 0 );
+    if( n == 0 )  return( 0 );
 
     /*** Initialize locals ***/
     shr1 = OFFSET(s1) << 3;             /* shift right = offset * 8 */

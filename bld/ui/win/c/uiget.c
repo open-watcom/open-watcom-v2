@@ -37,16 +37,14 @@
 
 extern EVENT Event;
 
-extern char  _B000h[],_B800h[];
-
-void global uiflush()
-/*******************/
+void global uiflush( void )
+/*************************/
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
 
-unsigned long uiclock()
+unsigned long uiclock( void )
 {
     unsigned    long far*               clock;
 
@@ -92,8 +90,8 @@ EVENT global uieventsource( int update )
     return( ev );
 }
 
-EVENT global uiget()
-/******************/
+EVENT global uiget( void )
+/************************/
 {
     return( uieventsource( 1 ) );
 }

@@ -1,7 +1,7 @@
 /*================================================================\
 |                                                                 |
 |      OS/2 Physical Device Driver Example Code                   |
-|                  for Watcom C/C++ 10.x                          |
+|                  for Open Watcom C/C++                          |
 |                                                                 |
 |  STRATEGY.C (Resident portion of driver)                        |
 |                                                                 |
@@ -11,7 +11,7 @@
 |  IBM Personal Systems Developer magazine.                       |
 |                                                                 |
 |                                                                 |
-|  Adapted for Watcom C/C++ 10.x by WATCOM International Corp.    |
+|  Adapted for Open Watcom C/C++                                  |
 |  Original Author: Rick Fishman                                  |
 |                   Code Blazers, Inc.                            |
 |                   4113 Apricot                                  |
@@ -64,7 +64,7 @@ ULONG  mul32( USHORT a, USHORT b );
 
 /* ====================== start of interrupt handler ====================== */
 
-static UpdateTimeStamp( USHORT new8253 )
+static VOID UpdateTimeStamp( USHORT new8253 )
 {
     USHORT delta;
     ULONG  nanos;
@@ -196,10 +196,10 @@ VOID Strategy( REQP_ANY FAR *rp )
     if( rp->header.command < RP_END ) {
         switch( rp->header.command ) {
         case RP_INIT:
-            StratInit( rp );
+            StratInit( (REQP_INIT FAR *)rp );
             break;
         case RP_READ:
-            StratRead( rp );
+            StratRead( (REQP_RWV FAR *)rp );
             break;
         case RP_READ_NO_WAIT:
         case RP_INPUT_STATUS:
@@ -208,13 +208,13 @@ VOID Strategy( REQP_ANY FAR *rp )
         case RP_WRITE_VERIFY:
         case RP_OUTPUT_STATUS:
         case RP_OUTPUT_FLUSH:
-            StratNoOp( rp );
+            StratNoOp( (REQP_HEADER FAR *)rp );
             break;
         case RP_OPEN:
-            StratOpen( rp );
+            StratOpen( (REQP_OPENCLOSE FAR *)rp );
             break;
         case RP_CLOSE:
-            StratClose( rp );
+            StratClose( (REQP_OPENCLOSE FAR *)rp );
             break;
         default:
             rp->header.status = RPERR_COMMAND | RPDONE;

@@ -31,6 +31,8 @@
 
 
 #ifndef DBGITEM_H
+#define DBGITEM_H
+
 #include "madtypes.h"
 
 typedef struct {
@@ -81,6 +83,10 @@ typedef union {
     unsigned_8      ar[1];  /* actually variable size */
 } item_mach;
 
+/***********************************************************************
+  !!!!!! must correspond with Sizes array order in dbgmem.c !!!!!
+ ***********************************************************************/
+
 typedef unsigned_16 item_type; enum {
         IT_NIL,
         IT_UB,
@@ -89,13 +95,17 @@ typedef unsigned_16 item_type; enum {
         IT_SW,
         IT_UD,
         IT_SD,
+        IT_UQ,
+        IT_SQ,
         IT_SF,
         IT_LF,
         IT_XF,
         IT_SO,
         IT_LO,
+        IT_QO,
         IT_SA,
         IT_LA,
+        IT_XA,
         IT_SC,
         IT_LC,
         IT_XC,
@@ -118,5 +128,4 @@ extern unsigned     ItemSize( item_type );
 //extern item_type    ItemType( unsigned );
 //extern item_type    ItemTypeFromMADType( mad_type_handle );
 
-#define DBGITEM_H
 #endif

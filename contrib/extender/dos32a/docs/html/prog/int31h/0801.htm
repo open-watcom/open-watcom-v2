@@ -1,0 +1,64 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.44 - DPMI function 0801h
+- Free Physical Address Mapping </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Releases a mapping of
+physical to linear addresses that was previously obtained with the Physical
+Address Mapping DPMI function 0800h.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0801h<br>
+<b>BX:CX</b> = linear address returned by physical address mapping call</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8025h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - invalid linear address</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The client should
+  call this function when it is finished using a device previously mapped
+  to linear addresses with the Physical Address Mapping DPMI function 0800h.
+  </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

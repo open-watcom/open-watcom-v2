@@ -33,6 +33,12 @@
 #include <string.h>
 #include "trpimp.h"
 
+#if defined(DOSXTRAP) || defined(DOSXHELP)
+    #define DOSX
+#elif defined(__WINDOWS__) && !defined(__386__)
+    #define WIN16
+#endif
+
 static unsigned (* const CoreRequests[])(void) = {
         ReqConnect,
         ReqDisconnect,
@@ -76,22 +82,19 @@ static unsigned (* const CoreRequests[])(void) = {
 };
 
 
-extern unsigned         MaxPacketSize(void);
-extern void             RemoteDisco();
-extern char             RemoteConnect(void);
+extern unsigned         MaxPacketSize( void );
+extern void             RemoteDisco( void );
+extern char             RemoteConnect( void );
 
-extern char             *InitDebugging(void);
-extern void             FinishDebugging(void);
+extern char             *InitDebugging( void );
+extern void             FinishDebugging( void );
+
+#if defined( WIN16 )
 extern void             far pascal SetEventHook( void far * );
 extern void             far *HookRtn;
-
-#if defined(DOSXTRAP) || defined(DOSXHELP)
-    #define DOSX
-#elif defined(__WINDOWS__) && !defined(__386__)
-    #define WIN16
 #endif
 
-unsigned ReqConnect()
+unsigned ReqConnect( void )
 {
     connect_ret *ret;
     char        *err;
@@ -113,24 +116,24 @@ unsigned ReqConnect()
     return( sizeof( *ret ) + strlen( err ) + 1 );
 }
 
-unsigned ReqDisconnect()
+unsigned ReqDisconnect( void )
 {
 #if defined(DOSX)
     RemoteDisco();
 #elif defined(WIN16)
     FinishDebugging();
-    SetEventHook( NULL );
+    if( HookRtn != NULL ) SetEventHook( NULL );
     HookRtn = NULL;
 #endif
     return( 0 );
 }
 
-unsigned ReqSuspend()
+unsigned ReqSuspend( void )
 {
     return( 0 );
 }
 
-unsigned ReqResume()
+unsigned ReqResume( void )
 {
     return( 0 );
 }

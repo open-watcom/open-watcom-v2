@@ -29,31 +29,14 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/09/08    Greg Bentz      Initial Implementation.
-//  93/08/31    Greg Bentz      Make cout object have ios::unitbuf set to
-//                              allow better mixing between C and C++ input
-//                              output.
-//  93/10/22    Raymond Tang    Split into seperate files.
-//  94/04/06    Greg Bentz      combine header files
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 
-// This is the definition of the ios static member:
-ios::fmtflags   ios::__last_format_flag = _LAST_FORMAT_FLAG;
+// This is the definition of the ios static member.
+namespace std {
+  ios::fmtflags   ios::__last_format_flag = _LAST_FORMAT_FLAG;
+}

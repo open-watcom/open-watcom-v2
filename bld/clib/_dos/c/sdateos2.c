@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Set current date (OS/2 version).
 *
 ****************************************************************************/
 
@@ -36,13 +35,13 @@
 
 
 _WCRTLINK unsigned _dos_setdate( struct dosdate_t *date )
-    {
-        DATETIME    dt;
+{
+    DATETIME    dt;
 
-        DosGetDateTime( &dt );
-        dt.day          = date->day;
-        dt.month        = date->month;
-        dt.year         = date->year;
-        dt.weekday      = date->dayofweek;
-        return( DosSetDateTime( &dt ) );
-    }
+    DosGetDateTime( &dt );
+    dt.day          = date->day;
+    dt.month        = date->month;
+    dt.year         = date->year;
+    dt.weekday      = date->dayofweek;
+    return( DosSetDateTime( &dt ) );
+}

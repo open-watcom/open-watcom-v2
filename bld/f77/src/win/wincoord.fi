@@ -1,0 +1,14 @@
+*$noreference
+
+! Coordinate Functions:
+! ---------------------
+
+      external ClientToScreen
+      external DPtoLP
+      external LPtoDP
+      external ScreenToClient
+
+      integer*2 DPtoLP
+      integer*2 LPtoDP
+
+*$reference

@@ -1,3 +1,0 @@
-extern dip_fhandle PathOpen(char *,unsigned int ,char *);
-extern unsigned int BigRead(int ,void *,unsigned int );
-extern void Ring(void );

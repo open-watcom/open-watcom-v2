@@ -35,7 +35,7 @@
 
 struct wndprocs *WndProcList = 0;
 
-LONG PASCAL _Cover_GetWindowLong( HWND wnd, int what )
+LONG PASCAL _Cover_GetWindowLong( HWND wnd, short what )
 {
     LONG        value;
     struct wndprocs *list;
@@ -60,7 +60,7 @@ LONG PASCAL _Cover_GetWindowLong( HWND wnd, int what )
     return( value );
 }
 
-LONG PASCAL _Cover_SetWindowLong( HWND wnd, int what, LONG value )
+LONG PASCAL _Cover_SetWindowLong( HWND wnd, short what, LONG value )
 {
     struct wndprocs *list;
 

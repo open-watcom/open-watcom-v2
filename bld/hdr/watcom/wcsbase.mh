@@ -7,11 +7,12 @@
 //
 #ifndef _WCSBASE_H_INCLUDED
 #define _WCSBASE_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wcsbase.h is for use with C++
-#endif
+:include cpponly.sp
+
+:include owrtlink.sp
 
 #ifndef _STDDEF_H_INCLUDED
  #include <stddef.h>
@@ -393,7 +394,7 @@ WCbool WCSkipListBase<Type>::base_val_find( const Type &search
 
 
 template<class Type>
-void WCSkipListBase<Type>::forAll( register void(*user_fn)( Type, void * )
+void WCSkipListBase<Type>::forAll( void(*user_fn)( Type, void * )
                                  , void * data) const {
     register node_ptr curr;
 

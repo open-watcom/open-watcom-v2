@@ -38,16 +38,16 @@ extern  double  CFToF(cfloat*);
  * For now we can just cheese out - if we ever port to a non IEEE machine
  * this will have to be abstracted.
  */
-extern  void    CFCnvTarget( cfloat *f, char *buffer, int size ) {
+extern  void    CFCnvTarget( cfloat *f, flt *buffer, int size ) {
 /****************************************************************/
 
     switch( size ) {
     case 4:
-        *(float *)buffer = (float)CFToF( f );
+        buffer->sngl = (float)CFToF( f );
         break;
     case 8:
     case 10:
-        *(double *)buffer = (double)CFToF( f );
+        buffer->dble = (double)CFToF( f );
         break;
     }
 }

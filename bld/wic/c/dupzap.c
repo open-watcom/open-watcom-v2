@@ -44,17 +44,18 @@ static pTokPos _dupPos;
 
 static pCTree _dupCTree(pCTree elem);
 static pLabel _dupLabel(pLabel elem);
-static pDeclInfo _dupDeclInfo(pDeclInfo elem);
+static pDeclInfo _dupDeclInfo(void *elem);
 static pDclr _dupDclr(pDclr elem);
 static pDeclStructInfo _dupDeclStructInfo(pDeclStructInfo elem);
 static pDeclStructBody _dupDeclStructBody(pDeclStructBody elem);
 static pArrElem _dupArrElem(pArrElem elem);
 static pDclrPtr _dupDclrPtr(pDclrPtr elem);
 static pDeclEnum _dupDeclEnum(pDeclEnum elem);
-static pEnumElem _dupEnumElem(pEnumElem elem);
+static pEnumElem _dupEnumElem(void *elem);
 static pToken _dupToken(pToken elem);
 static pTokPos _dupTokPos(pTokPos elem);
 static pTokData _dupTokData(pTokData elem);
+static void _zapTokData(pTokData elem);
 #define _dupSLList dupSLList
 
 static pCTree _dupCTree(pCTree elem) {
@@ -79,7 +80,7 @@ static pLabel _dupLabel(pLabel elem) {
     newElem->type = elem->type;
     switch (elem->type) {
     case LABT_LIST:
-        newElem->repr.list = _dupSLList(elem->repr.list, _dupToken);
+        newElem->repr.list = _dupSLList(elem->repr.list, (void *(*)(void *))_dupToken);
         break;
     case LABT_TOKEN:
         newElem->repr.token = _dupToken(elem->repr.token);
@@ -105,7 +106,7 @@ static pLabel _dupLabel(pLabel elem) {
         break;
     case LABT_DECL_LIST:
         newElem->repr.declList =
-                _dupSLList(elem->repr.declList, _dupDeclInfo);
+                _dupSLList(elem->repr.declList, (void *(*)(void *))_dupDeclInfo);
         break;
     default:
         assert(0);
@@ -113,7 +114,8 @@ static pLabel _dupLabel(pLabel elem) {
     return newElem;
 }
 
-static pDeclInfo _dupDeclInfo(pDeclInfo elem) {
+static pDeclInfo _dupDeclInfo(void *_elem) {
+    pDeclInfo elem = _elem;
     pDeclInfo newElem;
     if (elem == NULL) {
         return NULL;
@@ -144,7 +146,7 @@ static pDeclInfo _dupDeclInfo(pDeclInfo elem) {
         default:
             break;
     }
-    newElem->dclrList = _dupSLList(elem->dclrList, _dupDclr);
+    newElem->dclrList = _dupSLList(elem->dclrList, (void *(*)(void *))_dupDclr);
     newElem->dclr = _dupDclr(elem->dclr);
 
     return newElem;
@@ -167,9 +169,9 @@ static pDclr _dupDclr(pDclr elem) {
 
     newElem->id = _dupToken(elem->id);
 
-    newElem->arrList = _dupSLList(elem->arrList, _dupArrElem);
+    newElem->arrList = _dupSLList(elem->arrList, (void *(*)(void *))_dupArrElem);
     newElem->argBegin = _dupToken(elem->argBegin);
-    newElem->args = _dupSLList(elem->args, _dupDeclInfo);
+    newElem->args = _dupSLList(elem->args, (void *(*)(void *))_dupDeclInfo);
     newElem->argEnd = _dupToken(elem->argEnd);
 
     newElem->equalTok = _dupToken(elem->equalTok);
@@ -202,7 +204,7 @@ static pDeclStructBody _dupDeclStructBody(pDeclStructBody elem) {
     newElem = wicMalloc(sizeof *newElem);
     memcpy(newElem, elem, sizeof *newElem);
 
-    newElem->declList = _dupSLList(elem->declList, _dupDeclInfo);
+    newElem->declList = _dupSLList(elem->declList, (void *(*)(void *))_dupDeclInfo);
     newElem->endPos = _dupTokPos(elem->endPos);
     return newElem;
 }
@@ -245,12 +247,13 @@ static pDeclEnum _dupDeclEnum(pDeclEnum elem) {
     memcpy(newElem, elem, sizeof *newElem);
 
     newElem->enumPos = _dupTokPos(elem->enumPos);
-    newElem->list = _dupSLList(elem->list, _dupEnumElem);
+    newElem->list = _dupSLList(elem->list, (void *(*)(void *))_dupEnumElem);
 
     return newElem;
 }
 
-static pEnumElem _dupEnumElem(pEnumElem elem) {
+static pEnumElem _dupEnumElem(void *_elem) {
+    pEnumElem elem = _elem;
     pEnumElem newElem;
     if (elem == NULL) {
         return NULL;
@@ -360,21 +363,23 @@ pTokPos dupTokPos(pTokPos elem, pTokPos pos)  CALL_INTERNAL_DUP(TokPos)
 
 /*====================== Zap functions ================================*/
 
-static void _zapCTree(pCTree elem);
+static void _zapCTree(void *elem);
 static void _zapLabel(pLabel elem);
-static void _zapDeclInfo(pDeclInfo elem);
-static void _zapDclr(pDclr elem);
+static void _zapDeclInfo(void *elem);
+static void _zapDclr(void *elem);
 static void _zapDeclStructInfo(pDeclStructInfo elem);
 static void _zapDeclStructBody(pDeclStructBody elem);
-static void _zapArrElem(pArrElem elem);
+static void _zapArrElem(void *elem);
 static void _zapDclrPtr(pDclrPtr elem);
 static void _zapDeclEnum(pDeclEnum elem);
-static void _zapEnumElem(pEnumElem elem);
-static void _zapToken(pToken elem);
+static void _zapEnumElem(void *elem);
+static void _zapToken(void *elem);
 static void _zapTokPos(pTokPos elem);
 #define _zapSLList zapSLList
 
-static void _zapCTree(pCTree elem) {
+static void _zapCTree(void *_elem) {
+    pCTree elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -420,7 +425,9 @@ static void _zapLabel(pLabel elem) {
     wicFree(elem);
 }
 
-static void _zapDeclInfo(pDeclInfo elem) {
+static void _zapDeclInfo(void *_elem) {
+    pDeclInfo elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -454,7 +461,9 @@ static void _zapDeclInfo(pDeclInfo elem) {
     wicFree(elem);
 }
 
-static void _zapDclr(pDclr elem) {
+static void _zapDclr(void *_elem) {
+    pDclr elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -500,7 +509,9 @@ static void _zapDeclStructBody(pDeclStructBody elem) {
     wicFree(elem);
 }
 
-static void _zapArrElem(pArrElem elem) {
+static void _zapArrElem(void *_elem) {
+    pArrElem elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -533,7 +544,9 @@ static void _zapDeclEnum(pDeclEnum elem) {
     wicFree(elem);
 }
 
-static void _zapEnumElem(pEnumElem elem) {
+static void _zapEnumElem(void *_elem) {
+    pEnumElem elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -545,7 +558,9 @@ static void _zapEnumElem(pEnumElem elem) {
     wicFree(elem);
 }
 
-static void _zapToken(pToken elem) {
+static void _zapToken(void *_elem) {
+    pToken elem = _elem;
+
     if (elem == NULL) {
         return;
     }
@@ -581,17 +596,17 @@ static void _zapTokData(pTokData elem) {
     _zap##name(elem); \
 }
 
-void zapCTree(pCTree elem)  CALL_INTERNAL_zap(CTree)
+void zapCTree(void *elem)  CALL_INTERNAL_zap(CTree)
 void zapLabel(pLabel elem)  CALL_INTERNAL_zap(Label)
-void zapDeclInfo(pDeclInfo elem)  CALL_INTERNAL_zap(DeclInfo)
-void zapDclr(pDclr elem)  CALL_INTERNAL_zap(Dclr)
+void zapDeclInfo(void *elem)  CALL_INTERNAL_zap(DeclInfo)
+void zapDclr(void *elem)  CALL_INTERNAL_zap(Dclr)
 void zapDeclStructInfo(pDeclStructInfo elem)  CALL_INTERNAL_zap(DeclStructInfo)
 void zapDeclStructBody(pDeclStructBody elem)  CALL_INTERNAL_zap(DeclStructBody)
 void zapArrElem(pArrElem elem)  CALL_INTERNAL_zap(ArrElem)
 void zapDclrPtr(pDclrPtr elem)  CALL_INTERNAL_zap(DclrPtr)
 void zapDeclEnum(pDeclEnum elem)  CALL_INTERNAL_zap(DeclEnum)
 void zapEnumElem(pEnumElem elem)  CALL_INTERNAL_zap(EnumElem)
-void zapToken(pToken elem)  CALL_INTERNAL_zap(Token)
+void zapToken(void *elem)  CALL_INTERNAL_zap(Token)
 void zapTokens2(pToken elem1, pToken elem2) {
     _zapToken(elem1);
     _zapToken(elem2);

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  80x87 related globals for OSI.
 *
 ****************************************************************************/
 
@@ -33,5 +32,5 @@
 #include "variety.h"
 #include "rtdata.h"
 
-unsigned char __8087;
+unsigned char _8087;
 unsigned char _real87;

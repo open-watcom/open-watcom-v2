@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Code generator public interface.
 *
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "standard.h"
 #include "coderep.h"
 #include "hostsys.h"
@@ -37,7 +37,7 @@
 #include "model.h"
 #include "seldef.h"
 #include "memcheck.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "tree.h"
 #include "addrname.h"
 #include "cfloat.h"
@@ -45,63 +45,52 @@
 #include "ptrint.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "types.h"
 #include "feprotos.h"
-
-#define BY_CG
 #include "cgprotos.h"
+
 #ifndef NDEBUG
 #include "echoapi.h"
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <assert.h>
 #endif
 
+#include "bldins.h"
+
 extern  void            FEPtr(sym_handle,type_def*,offset);
-extern  seg_id          AskOP();
-extern  void            InitBlip();
-extern  void            FiniBlip();
+extern  seg_id          AskOP(void);
+extern  void            InitBlip(void);
+extern  void            FiniBlip(void);
 extern  void            InitWeights(uint);
-extern  void            CGMemInit();
-extern  void            InitSegDefs();
-extern  void            InitDbgInfo();
-extern  void            TInit();
-extern  void            TypeInit();
-extern  bool            CGOpenf();
-extern  void            InitCG();
-extern  void            SillyMemLimit();
-extern  void            FiniCG();
-extern  void            AbortCG();
-extern  void            FiniDbgInfo();
-extern  void            TypeFini();
-extern  void            TFini();
-extern  void            CGMemFini();
+extern  void            CGMemInit(void);
+extern  void            InitSegDefs(void);
+extern  void            InitDbgInfo(void);
+extern  void            TInit(void);
+extern  bool            CGOpenf(void);
+extern  void            InitCG(void);
+extern  void            SillyMemLimit(void);
+extern  void            FiniCG(void);
+extern  void            AbortCG(void);
+extern  void            FiniDbgInfo(void);
+extern  void            TFini(void);
+extern  void            CGMemFini(void);
 extern  seg_id          SetOP(seg_id);
 extern  void            FlushOP(seg_id);
 extern  bool            AskSegROM(segment_id);
 extern  void            DefSegment(seg_id,seg_attr,char*,uint,bool);
-extern  label_handle    AskForNewLabel();
+extern  label_handle    AskForNewLabel(void);
 extern  void            BGFiniLabel(label_handle);
 extern  label_handle    AskForLabel(sym_handle);
-extern  seg_id          AskBackSeg();
+extern  seg_id          AskBackSeg(void);
 extern  bool            AskSegBlank(seg_id);
 extern  void            TellNoSymbol(label_handle);
-extern  type_def        *TypeDef(cg_type,type_length,type_length);
-extern  type_def        *TypeAlias(cg_type,cg_type);
-extern  type_length     TypeLength(cg_type);
 extern  void            BGProcDecl(sym_handle,type_def*);
-extern  type_def        *TypeAddress(cg_type);
 extern  void            BGParmDecl(sym_handle,type_def*);
 extern  void            BGAutoDecl(sym_handle,type_def*);
 extern  tn              TGLeaf(an);
 extern  tn              TGTmpLeaf(an);
 extern  tn              TGReLeaf(an);
-extern  an              BGInteger(signed_32,type_def*);
-extern  an              BGInt64(signed_64,type_def*);
-extern  an              BGFloat(pointer,type_def*);
-extern  an              BGName(cg_class,pointer,type_def*);
-extern  an              BGCopy(an);
-extern  an              BGTempName(name*,type_def*);
-extern  name            *BGGlobalTemp(type_def*);
 extern  tn              TGLVAssign(tn,tn,type_def*);
 extern  tn              TGAssign(tn,tn,type_def*);
 extern  tn              TGPostGets(cg_op,tn,tn,type_def*);
@@ -120,9 +109,7 @@ extern  tn              TGQuestion(tn,tn,tn,type_def*);
 extern  tn              TGWarp(tn,label_handle,tn);
 extern  void            TGControl(cg_op,tn,label_handle);
 extern  void            TG3WayControl(tn,label_handle,label_handle,label_handle);
-extern  void            BGBigLabel(back_handle);
-extern  void            BGBigGoto(label_handle,int);
-extern  select_node     *BGSelInit();
+extern  select_node     *BGSelInit(void);
 extern  void            BGSelCase(select_node*,label_handle,signed_32);
 extern  void            BGSelRange(select_node*,signed_32,signed_32,label_handle);
 extern  void            BGSelOther(select_node*,label_handle);
@@ -131,14 +118,12 @@ extern  void            BGSelect(select_node*,an,cg_switch_type);
 extern  an              TGReturn(tn,type_def*);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
-extern  void            BGTrash(an);
-extern  void            BGStartBlock();
 extern  cg_type         TGType(tn);
 extern  btn             TGBitMask(tn,byte,byte,type_def*);
 extern  tn              TGVolatile(tn);
 extern  tn              TGAttr( tn, cg_sym_attr );
 extern  tn              TGAlign( tn, uint );
-extern  void            DGBlip();
+extern  void            DGBlip(void);
 extern  void            DataLabel(label_handle);
 extern  void            BackPtr(bck_info*,seg_id,offset,type_def*);
 extern  uint            Length(char*);
@@ -147,27 +132,24 @@ extern  void            DataBytes(unsigned_32,byte*);
 extern  void            IterBytes(offset,byte);
 extern  void            SetLocation(offset);
 extern  void            IncLocation(offset);
-extern  offset          AskLocation();
-extern  seg_id          AskCodeSeg();
-extern  seg_id          AskAltCodeSeg();
+extern  offset          AskLocation(void);
+extern  seg_id          AskCodeSeg(void);
+extern  seg_id          AskAltCodeSeg(void);
 extern  offset          AskAddress(label_handle);
-extern  bool            BGInInline();
+extern  bool            BGInInline(void);
 extern  void            BGParmInline(sym_handle,type_def*);
 extern  void            BGRetInline(an,type_def*);
 extern  void            BGProcInline(sym_handle,type_def*);
 extern  void            TellObjNewProc(sym_handle);
-extern  void            BGGenCtrl(cg_op ,bn ,label_handle ,bool );
 extern  tn              TGCallback( cg_callback, callback_handle );
-extern  patch_handle    BGNewPatch();
+extern  patch_handle    BGNewPatch(void);
 extern  cg_name         BGPatchNode( patch_handle, type_def * );
 extern  void            BGPatchInteger( patch_handle, signed_32 );
 extern  void            BGFiniPatch( patch_handle );
-extern  unsigned_32     BGUnrollCount( unsigned_32 );
-extern  an              BGVarargsBasePtr( type_def * );
 extern  bool            AskSegBlank( seg_id );
 extern  an              MakeConst( cfloat *, type_def * );
 extern  void            DataAlign( unsigned_32 );
-
+extern  pointer         SafeRecurse( pointer (* rtn)( pointer ), pointer arg );
 
 #ifdef QNX_FLAKEY
 unsigned long   OrigModel;
@@ -199,9 +181,9 @@ bck_info_block  *BckInfoCarveHead;      // list of big blocks of bck_info's
 
 static  bool            memStarted = FALSE;
 
-extern  void _CGAPI     BEMemInit( void ) {
-/*****************************************/
-
+extern  void _CGAPI     BEMemInit( void )
+/***************************************/
+{
     cf_callbacks cf_rtns = { CGAlloc, CGFree };
 
     BckInfoHead = NULL;
@@ -215,9 +197,9 @@ extern  void _CGAPI     BEMemInit( void ) {
 extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
                                                 cg_target_switches platform,
                                                 uint optsize,
-                                                proc_revision proc ) {
-/********************************************************************/
-
+                                                proc_revision proc )
+/**************************************************************************/
+{
     cg_init_info        info;
 
     OptForSize = optsize;
@@ -252,6 +234,7 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     if( !CGOpenf() ) {
         info.success = 0;
     } else {
+    info.success = 1;
         info.version.is_large = TRUE;
 #if _TARGET & _TARG_80386
         info.version.target = II_TARG_80386;
@@ -267,53 +250,75 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     return( info );
 }
 
-extern  cg_init_info _CGAPI     BEInit( cg_switches switches, cg_target_switches platform,
-                                    uint optsize, proc_revision proc ) {
-/********************************************************************/
-
-
+extern  cg_init_info _CGAPI     BEInit( cg_switches switches,
+                                        cg_target_switches platform,
+                                        uint optsize, proc_revision proc )
+/************************************************************************/
+{
     BEMemInit();
     return( BEInitCg( switches, platform, optsize, proc ) );
 }
 
-extern  void _CGAPI     BEStart() {
-/*********************************/
-
+extern  void _CGAPI     BEStart( void )
+/*************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEStart()\n" );
 #endif
     InitCG();
 }
 
-extern  void _CGAPI     BEStop() {
-/********************************/
-
+extern  void _CGAPI     BEStop( void )
+/************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEStop()\n" );
 #endif
     FiniCG();
 }
 
-extern  void _CGAPI     BEAbort() {
-/*********************************/
-
+extern  void _CGAPI     BEAbort( void )
+/*************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEAbort()\n" );
 #endif
     AbortCG();
 }
 
+extern  pointer _CGAPI  BEMemAlloc( unsigned size )
+/*********************************************************/
+{
+    return( CGAlloc( size ) );
+}
 
-extern  void _CGAPI     BEMemFini() {
-/***********************************/
+extern  void _CGAPI     BEMemFree( pointer ptr )
+/******************************************************/
+{
+    CGFree( ptr );
+}
 
+extern  void _CGAPI     BEMemFini( void )
+/***************************************/
+{
     CFFini();
     CGMemFini();
 }
 
-extern  void _CGAPI     BEFiniCg() {
-/**********************************/
+static void FreeBckInfoCarveBlocks( void )
+{
+    bck_info_block      *carve_block;
 
+    for( ; carve_block = BckInfoCarveHead; ) {
+        BckInfoCarveHead = carve_block->next;
+        CGFree( carve_block );
+    }
+    BckInfoHead = NULL;
+}
+
+extern  void _CGAPI     BEFiniCg( void )
+/**************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFiniCg()\n" );
     EchoAPIFini();
@@ -325,20 +330,22 @@ extern  void _CGAPI     BEFiniCg() {
     FiniBlip();
 }
 
-extern  void _CGAPI     BEFini() {
-/********************************/
+extern  void _CGAPI     BEFini( void )
+/************************************/
+{
     BEFiniCg();
     BEMemFini();
 }
 
-extern  bool _CGAPI     BEMoreMem( ) {
-/************************************/
-
+extern  bool _CGAPI     BEMoreMem( void )
+/***************************************/
+{
     return( _MemCheck( 1 ) );
 }
 
-extern  segment_id _CGAPI       BESetSeg( segment_id seg ) {
-/**********************************************************/
+extern  segment_id _CGAPI       BESetSeg( segment_id seg )
+/********************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BESetSeg( %x )", seg );
     seg = SetOP(seg);
@@ -348,18 +355,18 @@ extern  segment_id _CGAPI       BESetSeg( segment_id seg ) {
 #endif
 }
 
-extern  void _CGAPI     BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn ) {
-/**************************************************************************************/
-
+extern  void _CGAPI     BEDefSeg( segment_id id, seg_attr attr, char *str, uint algn )
+/************************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEDefSeg( %x, %x, %c, %i )\n", id, attr, str, algn );
 #endif
     DefSegment( id, attr, str, algn, FALSE );
 }
 
-extern  void _CGAPI     BEFlushSeg( segment_id seg ) {
-/****************************************************/
-
+extern  void _CGAPI     BEFlushSeg( segment_id seg )
+/**************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFlushSeg( %x )\n", seg );
 #endif
@@ -372,9 +379,9 @@ extern  void _CGAPI     BEFlushSeg( segment_id seg ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  label_handle _CGAPI BENewLabel() {
-/****************************************/
-
+extern  label_handle _CGAPI BENewLabel( void )
+/********************************************/
+{
 #ifndef NDEBUG
     label_handle retn;
 
@@ -388,9 +395,9 @@ extern  label_handle _CGAPI BENewLabel() {
 #endif
 }
 
-extern  void _CGAPI     BEFiniLabel( label_handle lbl ) {
-/*******************************************************/
-
+extern  void _CGAPI     BEFiniLabel( label_handle lbl )
+/*****************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFiniLabel( %L )\n", lbl );
     hdlExists( LABEL_HANDLE, lbl );
@@ -408,8 +415,9 @@ extern  void _CGAPI     BEFiniLabel( label_handle lbl ) {
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 
-extern  unsigned_32 _CGAPI      BEUnrollCount( unsigned_32 unroll_count ) {
-/*************************************************************************/
+extern  unsigned_32 _CGAPI      BEUnrollCount( unsigned_32 unroll_count )
+/***********************************************************************/
+{
 #ifndef NDEBUG
     unsigned_32 retn;
     EchoAPI( "BEUnrollCount( %i )", unroll_count );
@@ -427,9 +435,9 @@ extern  unsigned_32 _CGAPI      BEUnrollCount( unsigned_32 unroll_count ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  patch_handle _CGAPI     BEPatch() {
-/*****************************************/
-
+extern  patch_handle _CGAPI     BEPatch( void )
+/*********************************************/
+{
 #ifndef NDEBUG
     patch_handle retn;
 
@@ -443,8 +451,9 @@ extern  patch_handle _CGAPI     BEPatch() {
 #endif
 }
 
-extern  cg_name _CGAPI          CGPatchNode( patch_handle hdl, cg_type tipe ) {
-/*****************************************************************************/
+extern  cg_name _CGAPI          CGPatchNode( patch_handle hdl, cg_type tipe )
+/***************************************************************************/
+{
 #ifndef NDEBUG
     cg_name retn;
     EchoAPI( "CGPatchNode( %P, %t )", hdl, tipe );
@@ -457,9 +466,9 @@ extern  cg_name _CGAPI          CGPatchNode( patch_handle hdl, cg_type tipe ) {
 #endif
 }
 
-extern  void _CGAPI     BEPatchInteger( patch_handle hdl, signed_32 value ) {
-/***************************************************************************/
-
+extern  void _CGAPI     BEPatchInteger( patch_handle hdl, signed_32 value )
+/*************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEPatchInteger( %P, %x )\n", hdl, value );
     hdlExists( PATCH_HANDLE, hdl );
@@ -467,9 +476,9 @@ extern  void _CGAPI     BEPatchInteger( patch_handle hdl, signed_32 value ) {
     BGPatchInteger( hdl, value );
 }
 
-extern  void _CGAPI     BEFiniPatch( patch_handle hdl ) {
-/*******************************************************/
-
+extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
+/*****************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFiniPatch( %P )\n", hdl );
     hdlUseOnce( PATCH_HANDLE, hdl );
@@ -493,9 +502,9 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl ) {
 static  pointer                 NewBackReturn = RETURN_NORMAL;
 
 
-extern  pointer LkAddBack( sym_handle sym, pointer curr_back ) {
-/**************************************************************/
-
+extern  pointer LkAddBack( sym_handle sym, pointer curr_back )
+/************************************************************/
+{
     bck_info    *bck;
 
     if( curr_back == NULL ) {
@@ -508,23 +517,23 @@ extern  pointer LkAddBack( sym_handle sym, pointer curr_back ) {
     return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
-extern pointer SymBack( pointer sym ) {
-/*************************************/
-
+extern pointer SymBack( pointer sym )
+/***********************************/
+{
     bck_info    *bck;
 
     bck = FEBack( sym );
     return( (pointer)( PTR_INT( bck ) & ~FAKE_BACK ) );
 }
 
-static void AllocMoreBckInfo() {
-/******************************/
-
+static void AllocMoreBckInfo( void )
+/**********************************/
+{
     uback_info          *p;
     bck_info_block      *carve_block;
     int                 i;
 
-    _Alloc( carve_block, sizeof( bck_info_block ) );
+    carve_block = CGAlloc( sizeof( bck_info_block ) );
     if( carve_block != NULL ) {
         carve_block->next = BckInfoCarveHead;   // link into big list
         BckInfoCarveHead = carve_block;
@@ -538,20 +547,9 @@ static void AllocMoreBckInfo() {
     }
 }
 
-void FreeBckInfoCarveBlocks()
+extern  back_handle _CGAPI      BENewBack( sym_handle sym )
+/*********************************************************/
 {
-    bck_info_block      *carve_block;
-
-    for( ; carve_block = BckInfoCarveHead; ) {
-        BckInfoCarveHead = carve_block->next;
-        _Free( carve_block, sizeof( bck_info_block ) );
-    }
-    BckInfoHead = NULL;
-}
-
-extern  back_handle _CGAPI      BENewBack( sym_handle sym ) {
-/***********************************************************/
-
     bck_info            *bck;
 
 #ifndef NDEBUG
@@ -569,7 +567,7 @@ extern  back_handle _CGAPI      BENewBack( sym_handle sym ) {
 #endif
         return( NewBackReturn );
     }
-//    _Alloc( bck, sizeof( bck_info ) );
+//    bck = CGAlloc( sizeof( bck_info ) );
     if( BckInfoHead == NULL ) {
         AllocMoreBckInfo();
     }
@@ -589,23 +587,23 @@ extern  back_handle _CGAPI      BENewBack( sym_handle sym ) {
     return( bck );
 }
 
-extern  void _CGAPI     BEFiniBack( bck_info *bck ) {
-/***************************************************/
-
+extern  void _CGAPI     BEFiniBack( bck_info *bck )
+/*************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFiniBack( %L )\n", bck );
 #endif
     if( REAL_BACK( bck ) ) TellNoSymbol( bck->lbl );
 }
 
-extern  void _CGAPI     BEFreeBack( bck_info *bck ) {
-/***************************************************/
-
+extern  void _CGAPI     BEFreeBack( bck_info *bck )
+/*************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEFreeBack( %L )\n", bck );
 #endif
     if( REAL_BACK( bck ) ) {
-//      _Free( bck, sizeof( bck_info ) );
+//      CGFree( bck );
         uback_info      *p;
 
         p = (uback_info *)bck;
@@ -620,9 +618,9 @@ extern  void _CGAPI     BEFreeBack( bck_info *bck ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len ) {
-/******************************************************************************/
-
+extern  void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len )
+/****************************************************************************/
+{
     align = align;
 #ifndef NDEBUG
     EchoAPI( "BEDefType( %t, %x, %i )\n", what, align, len );
@@ -630,17 +628,18 @@ extern  void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len ) {
     TypeDef( what, len, align );
 }
 
-extern  void _CGAPI     BEAliasType( cg_type what, cg_type to ) {
-/***************************************************************/
-
+extern  void _CGAPI     BEAliasType( cg_type what, cg_type to )
+/*************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "BEAliasType( %t, %t )\n", what, to );
 #endif
     TypeAlias( what, to );
 }
 
-extern  unsigned_32 _CGAPI      BETypeLength( cg_type tipe ) {
-/************************************************************/
+extern  unsigned_32 _CGAPI      BETypeLength( cg_type tipe )
+/**********************************************************/
+{
 #ifndef NDEBUG
     unsigned_32 retn;
     EchoAPI( "BETypeLength( %t )\n", tipe );
@@ -651,8 +650,9 @@ extern  unsigned_32 _CGAPI      BETypeLength( cg_type tipe ) {
 #endif
 }
 
-extern  uint _CGAPI     BETypeAlign( cg_type tipe ) {
-/***************************************************/
+extern  uint _CGAPI     BETypeAlign( cg_type tipe )
+/*************************************************/
+{
 #ifndef NDEBUG
     uint retn;
     EchoAPI( "BETypeAlign( %t )\n", tipe );
@@ -670,9 +670,9 @@ extern  uint _CGAPI     BETypeAlign( cg_type tipe ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     CGProcDecl( pointer name, cg_type tipe ) {
-/****************************************************************/
-
+extern  void _CGAPI     CGProcDecl( pointer name, cg_type tipe )
+/**************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "\n" );
     EchoAPI( "CGProcDecl( %s, %t )\n", name, tipe );
@@ -685,9 +685,9 @@ extern  void _CGAPI     CGProcDecl( pointer name, cg_type tipe ) {
     }
 }
 
-extern  void _CGAPI     CGParmDecl( pointer name, cg_type tipe ) {
-/****************************************************************/
-
+extern  void _CGAPI     CGParmDecl( pointer name, cg_type tipe )
+/**************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGParmDecl( %s, %t )\n", name, tipe );
 #endif
@@ -698,9 +698,9 @@ extern  void _CGAPI     CGParmDecl( pointer name, cg_type tipe ) {
     }
 }
 
-extern label_handle _CGAPI CGLastParm() {
-/***************************************/
-
+extern label_handle _CGAPI CGLastParm( void )
+/*******************************************/
+{
     label_handle        top;
 
 #ifndef NDEBUG
@@ -716,17 +716,18 @@ extern label_handle _CGAPI CGLastParm() {
     return( top );
 }
 
-extern  void _CGAPI     CGAutoDecl( pointer name, cg_type tipe ) {
-/****************************************************************/
+extern  void _CGAPI     CGAutoDecl( pointer name, cg_type tipe )
+/**************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGAutoDecl( %s, %t )\n", name, tipe );
 #endif
     BGAutoDecl( name, TypeAddress( tipe ) );
 }
 
-extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe ) {
-/**************************************************************/
-
+extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe )
+/************************************************************/
+{
     type_def    *new_tipe;
 
 #ifndef NDEBUG
@@ -757,11 +758,12 @@ extern  void _CGAPI     CGReturn( cg_name name, cg_type tipe ) {
 /* Leaf nodes*/
 /**/
 
-extern  cg_name _CGAPI CGVarargsBasePtr( cg_type tipe ) {
-/*******************************************************/
-
+extern  cg_name _CGAPI CGVarargsBasePtr( cg_type tipe )
+/*****************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGVarargsBasePtr( %t )", tipe );
     retn = TGLeaf( BGVarargsBasePtr( TypeAddress( tipe ) ) );
     hdlAdd( CG_NAMES, retn );
@@ -771,10 +773,12 @@ extern  cg_name _CGAPI CGVarargsBasePtr( cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGInteger( signed_32 val, cg_type tipe ) {
-/***************************************************************/
+extern  cg_name _CGAPI CGInteger( signed_32 val, cg_type tipe )
+/*************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGInteger( %i, %t )", val, tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( BGInteger( val, TypeAddress( tipe ) ) );
@@ -785,8 +789,9 @@ extern  cg_name _CGAPI CGInteger( signed_32 val, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe ) {
-/***************************************************************/
+extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
+/***********************************************************/
+{
 #ifndef NDEBUG
     tn retn;
     EchoAPI( "CGInt64( %x %x, %t )"
@@ -802,11 +807,12 @@ extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGFloat( char *num, cg_type tipe ) {
-/*********************************************************/
-
+extern  cg_name _CGAPI CGFloat( char *num, cg_type tipe )
+/*******************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGFloat( %c, %t )", num, tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( BGFloat( num, TypeAddress( tipe ) ) );
@@ -817,10 +823,12 @@ extern  cg_name _CGAPI CGFloat( char *num, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGBigInt( float_handle f, cg_type tipe ) {
-/***************************************************************/
+extern  cg_name _CGAPI CGBigInt( float_handle f, cg_type tipe )
+/*************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGBigInt( %x, %t )", f, tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( MakeConst( f, TypeAddress( tipe ) ) );
@@ -831,20 +839,20 @@ extern  cg_name _CGAPI CGBigInt( float_handle f, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGFEName( sym_handle sym, cg_type tipe ) {
-/***************************************************************/
-
+extern  cg_name _CGAPI CGFEName( sym_handle sym, cg_type tipe )
+/*************************************************************/
+{
     cg_name     leaf;
 
 
     if( (FEAttr( sym ) & FE_DLLIMPORT )
      && ( FEAuxInfo( sym, CALL_BYTES ) == NULL ) ){
-        leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( T_POINTER ) ) );
+        leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( TY_POINTER ) ) );
 #ifndef NDEBUG
         EchoAPI( "CGFEName( %s, %t ) declspec(dllimport)", sym, tipe );
         hdlAdd( CG_NAMES, leaf );
 #endif
-        leaf = CGUnary( O_POINTS, leaf, T_POINTER );
+        leaf = CGUnary( O_POINTS, leaf, TY_POINTER );
     } else {
         leaf = TGLeaf( BGName( CG_FE, sym, TypeAddress( tipe ) ) );
 #ifndef NDEBUG
@@ -859,10 +867,12 @@ extern  cg_name _CGAPI CGFEName( sym_handle sym, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGBackName( bck_info *bck, cg_type tipe ) {
-/****************************************************************/
+extern  cg_name _CGAPI CGBackName( bck_info *bck, cg_type tipe )
+/**************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGBackName( %B, %t )", bck, tipe );
 #endif
 
@@ -877,25 +887,28 @@ extern  cg_name _CGAPI CGBackName( bck_info *bck, cg_type tipe ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGTempName( temp_handle temp, cg_type tipe ) {
-/*******************************************************************/
-
+extern  cg_name _CGAPI CGTempName( temp_handle temp, cg_type tipe )
+/*****************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGTempName( %T, %t )", temp, tipe );
-    retn = TGLeaf( BGTempName( temp, TypeAddress( T_POINTER ) ) );
+    retn = TGLeaf( BGTempName( temp, TypeAddress( TY_POINTER ) ) );
     hdlAdd( CG_NAMES, retn );
     return EchoAPICgnameReturn( retn );
 #else
     tipe = tipe;
-    return( TGLeaf( BGTempName( temp, TypeAddress( T_POINTER ) ) ) );
+    return( TGLeaf( BGTempName( temp, TypeAddress( TY_POINTER ) ) ) );
 #endif
 }
 
-extern  temp_handle _CGAPI      CGTemp( cg_type tipe ) {
-/******************************************************/
+extern  temp_handle _CGAPI      CGTemp( cg_type tipe )
+/****************************************************/
+{
 #ifndef NDEBUG
-    temp_handle retn;
+    temp_handle     retn;
+
     EchoAPI( "CGTemp( %t )", tipe );
     retn = BGGlobalTemp( TypeAddress( tipe ) );
     return EchoAPITempHandleReturn( retn );
@@ -908,10 +921,11 @@ extern  temp_handle _CGAPI      CGTemp( cg_type tipe ) {
 /* Assignment operations*/
 /**/
 
-extern  cg_name _CGAPI CGAssign( cg_name dest, cg_name source, cg_type tipe ) {
-/*****************************************************************************/
+extern  cg_name _CGAPI CGAssign( cg_name dest, cg_name source, cg_type tipe )
+/***************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
 
     EchoAPI( "CGAssign( %n, %n, %t )", dest, source, tipe );
     hdlUseOnce( CG_NAMES, dest );
@@ -925,10 +939,12 @@ extern  cg_name _CGAPI CGAssign( cg_name dest, cg_name source, cg_type tipe ) {
 }
 
 
-extern  cg_name _CGAPI CGLVAssign( cg_name dest, cg_name source, cg_type tipe ) {
-/*******************************************************************************/
+extern  cg_name _CGAPI CGLVAssign( cg_name dest, cg_name source, cg_type tipe )
+/*****************************************************************************/
+{
 #ifndef NDEBUG
-    cg_name retn;
+    cg_name     retn;
+
     EchoAPI( "CGLVAssign( %n, %n, %t )", dest, source, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, source );
@@ -942,10 +958,12 @@ extern  cg_name _CGAPI CGLVAssign( cg_name dest, cg_name source, cg_type tipe ) 
 
 
 extern  cg_name _CGAPI CGPostGets( cg_op op, cg_name dest,
-                            cg_name src, cg_type tipe ) {
-/*******************************************************/
+                            cg_name src, cg_type tipe )
+/********************************************************/
+{
 #ifndef NDEBUG
-    cg_name retn;
+    cg_name     retn;
+
     EchoAPI( "CGPostGets( %o, %n, %n, %t )", op, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
@@ -957,10 +975,12 @@ extern  cg_name _CGAPI CGPostGets( cg_op op, cg_name dest,
 #endif
 }
 
-extern  cg_name _CGAPI CGPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe ) {
-/*************************************************************************************/
+extern  cg_name _CGAPI CGPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
+/***********************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGPreGets( %o, %n, %n, %t )", op, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
@@ -972,10 +992,12 @@ extern  cg_name _CGAPI CGPreGets( cg_op op, cg_name dest, cg_name src, cg_type t
 #endif
 }
 
-extern  cg_name _CGAPI CGLVPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe ) {
-/************************************************************************************/
+extern  cg_name _CGAPI CGLVPreGets( cg_op op, cg_name dest, cg_name src, cg_type tipe )
+/*************************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGLVPreGets( %o, %n, %n, %t )", op, dest, src, tipe );
     hdlUseOnce( CG_NAMES, dest );
     hdlUseOnce( CG_NAMES, src );
@@ -996,7 +1018,7 @@ extern  cg_name _CGAPI CGBinary( cg_op op, cg_name name1,
 /*******************************************************/
 {
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
 
     EchoAPI( "CGBinary( %o, %n, %n, %t )", op, name1, name2, tipe );
     hdlUseOnce( CG_NAMES, name1 );
@@ -1017,10 +1039,12 @@ extern  cg_name _CGAPI CGBinary( cg_op op, cg_name name1,
 #endif
 }
 
-extern  cg_name _CGAPI CGUnary( cg_op op, cg_name name, cg_type tipe ) {
-/***************************************************************/
+extern  cg_name _CGAPI CGUnary( cg_op op, cg_name name, cg_type tipe )
+/********************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGUnary( %o, %n, %t )", op, name, tipe );
     hdlUseOnce( CG_NAMES, name );
     if( op != O_POINTS ) verifyNotUserType( tipe );
@@ -1033,9 +1057,9 @@ extern  cg_name _CGAPI CGUnary( cg_op op, cg_name name, cg_type tipe ) {
 }
 
 extern  cg_name _CGAPI CGIndex( cg_name name, cg_name by,
-                         cg_type tipe, cg_type ptipe ) {
-/******************************************************/
-
+                         cg_type tipe, cg_type ptipe )
+/*******************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGIndex( %n, %n, %t, %t )", name, by, tipe, ptipe );
 #endif
@@ -1047,10 +1071,12 @@ extern  cg_name _CGAPI CGIndex( cg_name name, cg_name by,
 /**/
 
 extern  call_handle _CGAPI      CGInitCall( cg_name name, cg_type tipe,
-                                    sym_handle aux_info ) {
-/*********************************************************/
+                                            sym_handle aux_info )
+/*********************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGInitCall( %n, %t, %s )", name, tipe, aux_info );
     hdlUseOnce( CG_NAMES, name );
     retn = TGInitCall( name, TypeAddress( tipe ), aux_info );
@@ -1061,9 +1087,9 @@ extern  call_handle _CGAPI      CGInitCall( cg_name name, cg_type tipe,
 #endif
 }
 
-extern  void _CGAPI     CGAddParm( call_handle call, cg_name name, cg_type tipe ) {
-/*********************************************************************************/
-
+extern  void _CGAPI     CGAddParm( call_handle call, cg_name name, cg_type tipe )
+/*******************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGAddParm( %C, %n, %t )\n", call, name, tipe );
     hdlExists( CG_NAMES, call );
@@ -1072,10 +1098,11 @@ extern  void _CGAPI     CGAddParm( call_handle call, cg_name name, cg_type tipe 
     TGAddParm( call, name, TypeAddress( tipe ) );
 }
 
-extern  cg_name _CGAPI CGCall( call_handle call ) {
-/*************************************************/
+extern  cg_name _CGAPI CGCall( call_handle call )
+/***********************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
 
     EchoAPI( "CGCall( %C )\n", call );
     hdlUseOnce( CG_NAMES, call );
@@ -1092,11 +1119,12 @@ extern  cg_name _CGAPI CGCall( call_handle call ) {
 /**/
 
 extern  cg_name _CGAPI CGCompare( cg_op op, cg_name name1,
-                           cg_name name2, cg_type tipe ) {
+                           cg_name name2, cg_type tipe )
 /********************************************************/
-
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGCompare( %o, %n, %n, %t )", op, name1, name2, tipe );
     hdlUseOnce( CG_NAMES, name1 );
     hdlUseOnce( CG_NAMES, name2 );
@@ -1108,10 +1136,12 @@ extern  cg_name _CGAPI CGCompare( cg_op op, cg_name name1,
 #endif
 }
 
-extern  cg_name _CGAPI CGFlow( cg_op op, cg_name name1, cg_name name2 ) {
-/***********************************************************************/
+extern  cg_name _CGAPI CGFlow( cg_op op, cg_name name1, cg_name name2 )
+/*********************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGFlow( %o, %n, %n )", op, name1, name2 );
     hdlUseOnce( CG_NAMES, name1 );
     if( NULL != name2 ) {
@@ -1129,11 +1159,12 @@ extern  cg_name _CGAPI CGFlow( cg_op op, cg_name name1, cg_name name2 ) {
 /* Control flow operations*/
 /**/
 
-extern  cg_name _CGAPI CGChoose( cg_name sel, cg_name n1, cg_name n2, cg_type tipe ) {
-/************************************************************************************/
-
+extern  cg_name _CGAPI CGChoose( cg_name sel, cg_name n1, cg_name n2, cg_type tipe )
+/**********************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGChoose( %n, %n, %n, %t )", sel, n1, n2, tipe );
     hdlUseOnce( CG_NAMES, sel );
     hdlUseOnce( CG_NAMES, n1 );
@@ -1146,10 +1177,12 @@ extern  cg_name _CGAPI CGChoose( cg_name sel, cg_name n1, cg_name n2, cg_type ti
 #endif
 }
 
-extern  cg_name _CGAPI CGWarp( cg_name before, label_handle label, cg_name after ) {
-/**********************************************************************************/
+extern  cg_name _CGAPI CGWarp( cg_name before, label_handle label, cg_name after )
+/********************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGWarp( %n, %L, %n )", before, label, after );
     if( before != NULL ) { // Fortran calls with NULL first parm
         hdlUseOnce( CG_NAMES, before );
@@ -1161,15 +1194,14 @@ extern  cg_name _CGAPI CGWarp( cg_name before, label_handle label, cg_name after
 #else
     return( TGWarp( before, label, after ) );
 #endif
-
 }
 
 
-
-extern  cg_name _CGAPI  CGCallback( cg_callback func, callback_handle parm ) {
-/****************************************************************************/
+extern  cg_name _CGAPI  CGCallback( cg_callback func, callback_handle parm )
+/**************************************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
 
     EchoAPI( "CGCallback( %x, %x )", func, parm );
     retn = TGCallback( func, parm );
@@ -1183,17 +1215,18 @@ extern  cg_name _CGAPI  CGCallback( cg_callback func, callback_handle parm ) {
 
 
 extern  void _CGAPI     CG3WayControl( cg_name expr, label_handle lt,
-                               label_handle eq, label_handle gt ) {
-/*****************************************************************/
-
+                               label_handle eq, label_handle gt )
+/*******************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CG3WayControl( %n, %L, %L, %L )\n", expr, lt, eq, gt );
 #endif
     TG3WayControl( expr, lt, eq, gt );  /* special TGen()*/
 }
 
-extern  void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl ) {
-/*****************************************************************************/
+extern  void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl )
+/***************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGControl( %o, %n, %L )\n", op, expr, lbl );
     if( NULL != expr ) {
@@ -1207,28 +1240,30 @@ extern  void _CGAPI     CGControl( cg_op op, cg_name expr, label_handle lbl ) {
     TGControl( op, expr, lbl );  /* special TGen()*/
 }
 
-extern  void _CGAPI     CGBigLabel( back_handle value ) {
-/*******************************************************/
-
+extern  void _CGAPI     CGBigLabel( back_handle value )
+/*****************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGBigLabel( %B )\n", value );
 #endif
     BGBigLabel( value );
 }
 
-extern  void _CGAPI     CGBigGoto( label_handle value, int level ) {
-/******************************************************************/
-
+extern  void _CGAPI     CGBigGoto( label_handle value, int level )
+/****************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGBigLabel( %L, %i )\n", value, level );
 #endif
     BGBigGoto( value, level );
 }
 
-extern  sel_handle _CGAPI       CGSelInit() {
-/*******************************************/
+extern  sel_handle _CGAPI       CGSelInit( void )
+/***********************************************/
+{
 #ifndef NDEBUG
-    select_node *retn;
+    select_node     *retn;
+
     EchoAPI( "CGSelInit()" );
     retn = BGSelInit();
     hdlAdd( SEL_HANDLE, retn );
@@ -1238,8 +1273,9 @@ extern  sel_handle _CGAPI       CGSelInit() {
 #endif
 }
 
-extern  void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val ) {
-/*********************************************************************************/
+extern  void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val )
+/********************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGSelCase( %S, %L, %i )\n", s, lbl, val );
     hdlExists( SEL_HANDLE, s );
@@ -1250,8 +1286,9 @@ extern  void _CGAPI     CGSelCase( sel_handle s, label_handle lbl, signed_32 val
 }
 
 extern  void _CGAPI     CGSelRange( sel_handle s, signed_32 lo,
-                            signed_32 hi, label_handle lbl ) {
-/************************************************************/
+                            signed_32 hi, label_handle lbl )
+/*************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGSelRange( %S, %L, %i, %i )\n", s, lbl, lo, hi );
     hdlExists( SEL_HANDLE, s );
@@ -1260,8 +1297,9 @@ extern  void _CGAPI     CGSelRange( sel_handle s, signed_32 lo,
     BGSelRange( s, lo, hi, lbl );
 }
 
-extern  void _CGAPI     CGSelOther( sel_handle s, label_handle lbl ) {
-/********************************************************************/
+extern  void _CGAPI     CGSelOther( sel_handle s, label_handle lbl )
+/******************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGSelOther( %S, %L )\n", s, lbl );
     hdlExists( SEL_HANDLE, s );
@@ -1270,15 +1308,16 @@ extern  void _CGAPI     CGSelOther( sel_handle s, label_handle lbl ) {
     BGSelOther( s, lbl );
 }
 
-extern  void _CGAPI     CGSelectRestricted( sel_handle s, cg_name expr, cg_switch_type allowed ) {
-/************************************************************************************************/
-
-    expr = TGen( expr, TypeAddress( T_DEFAULT ) );
+extern  void _CGAPI     CGSelectRestricted( sel_handle s, cg_name expr, cg_switch_type allowed )
+/**********************************************************************************************/
+{
+    expr = TGen( expr, TypeAddress( TY_DEFAULT ) );
     BGSelect( s, expr, allowed );
 }
 
-extern  void _CGAPI     CGSelect( sel_handle s, cg_name expr ) {
-/**************************************************************/
+extern  void _CGAPI     CGSelect( sel_handle s, cg_name expr )
+/************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGSelect( %S, %n )\n", s, expr );
     hdlExists( SEL_HANDLE, s );
@@ -1293,46 +1332,51 @@ extern  void _CGAPI     CGSelect( sel_handle s, cg_name expr ) {
 /* Misc. operations*/
 /**/
 
-extern  cg_name _CGAPI CGEval( cg_name name ) {
-/*********************************************/
-
+extern  cg_name _CGAPI CGEval( cg_name name )
+/*******************************************/
+{
 #ifndef NDEBUG
-    cg_name retn;
+    cg_name     retn;
+
     EchoAPI( "CGEval( %n )", name );
     hdlUseOnce( CG_NAMES, name );
-    retn = TGTmpLeaf( TGen( name, TypeAddress( T_DEFAULT ) ) );
+    retn = TGTmpLeaf( TGen( name, TypeAddress( TY_DEFAULT ) ) );
     hdlAddUnary( CG_NAMES, retn, name );
     return EchoAPICgnameReturn( retn );
 #else
-    return( TGTmpLeaf( TGen( name, TypeAddress( T_DEFAULT ) ) ) );
+    return( TGTmpLeaf( TGen( name, TypeAddress( TY_DEFAULT ) ) ) );
 #endif
 }
 
-extern  void _CGAPI     CGTrash( cg_name name ) {
-/***********************************************/
+extern  void _CGAPI     CGTrash( cg_name name )
+/*********************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGTrash( %n )\n", name );
     hdlUseOnce( CG_NAMES, name );
     hdlAllUsed( CG_NAMES );
 #endif
-    BGTrash( TGen( TGTrash( name ), TypeAddress( T_DEFAULT ) ) );
+    BGTrash( TGen( TGTrash( name ), TypeAddress( TY_DEFAULT ) ) );
 }
 
-extern  void _CGAPI     CGDone( cg_name name ) {
-/**********************************************/
+extern  void _CGAPI     CGDone( cg_name name )
+/********************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "CGDone( %n )\n", name );
     hdlUseOnce( CG_NAMES, name );
     hdlAllUsed( CG_NAMES );
 #endif
-    BGTrash( TGen( TGTrash( name ), TypeAddress( T_DEFAULT ) ) );
+    BGTrash( TGen( TGTrash( name ), TypeAddress( TY_DEFAULT ) ) );
     BGStartBlock();
 }
 
-extern  cg_type _CGAPI CGType( cg_name name ) {
-/*********************************************/
+extern  cg_type _CGAPI CGType( cg_name name )
+/*******************************************/
+{
 #ifndef NDEBUG
-    cg_type retn;
+    cg_type     retn;
+
     EchoAPI( "CGType( %n )", name );
     retn = TGType( name );
     return EchoAPICgtypeReturn( retn );
@@ -1341,11 +1385,12 @@ extern  cg_type _CGAPI CGType( cg_name name ) {
 #endif
 }
 
-extern  cg_name _CGAPI CGBitMask( cg_name left, byte start, byte len, cg_type tipe ) {
-/***********************************************************************************/
-
+extern  cg_name _CGAPI CGBitMask( cg_name left, byte start, byte len, cg_type tipe )
+/**********************************************************************************/
+{
 #ifndef NDEBUG
-    tn_btn retn;
+    tn_btn      retn;
+
     EchoAPI( "CGBitMask( %n, %x, %x, %t )", left, start, len, tipe );
     hdlUseOnce( CG_NAMES, left );
     retn.b = TGBitMask( left, start, len, TypeAddress( tipe ) );
@@ -1356,10 +1401,12 @@ extern  cg_name _CGAPI CGBitMask( cg_name left, byte start, byte len, cg_type ti
 #endif
 }
 
-extern  cg_name _CGAPI CGVolatile( cg_name name ) {
-/*************************************************/
+extern  cg_name _CGAPI CGVolatile( cg_name name )
+/***********************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGVolatile( %n )", name );
     hdlUseOnce( CG_NAMES, name );
     retn = TGVolatile( name );
@@ -1374,7 +1421,8 @@ extern cg_name _CGAPI CGAttr( cg_name name, cg_sym_attr attr )
 /************************************************************/
 {
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGAttr( %n, %i )", name, attr );
     hdlUseOnce( CG_NAMES, name );
     retn = TGAttr( name, attr );
@@ -1385,11 +1433,12 @@ extern cg_name _CGAPI CGAttr( cg_name name, cg_sym_attr attr )
 #endif
 }
 
-extern cg_name _CGAPI CGAlign( cg_name name, uint alignment ) {
-/*************************************************************/
-
+extern cg_name _CGAPI CGAlign( cg_name name, uint alignment )
+/***********************************************************/
+{
 #ifndef NDEBUG
-    tn retn;
+    tn      retn;
+
     EchoAPI( "CGAlign( %n, %i )", name, alignment );
     hdlUseOnce( CG_NAMES, name );
     retn = TGAlign( name, alignment );
@@ -1401,16 +1450,19 @@ extern cg_name _CGAPI CGAlign( cg_name name, uint alignment ) {
 }
 
 static  cg_name CGDuplicateArray[ 2 ];
-extern  cg_name * _CGAPI CGDuplicate( cg_name name ) {
-/****************************************************/
+
+extern  cg_name * _CGAPI CGDuplicate( cg_name name )
+/**************************************************/
+{
     an          addr;
 #ifndef NDEBUG
-    cg_name *retn;
+    cg_name     *retn;
+
     EchoAPI( "CGDuplicate( %n )", name );
     hdlExists( CG_NAMES, name );
 #endif
 
-    addr = TGen( name, TypeAddress( T_DEFAULT ) );
+    addr = TGen( name, TypeAddress( TY_DEFAULT ) );
     CGDuplicateArray[ 0 ] = TGReLeaf( BGCopy( addr ) );
     CGDuplicateArray[ 1 ] = TGReLeaf( addr );
 
@@ -1431,9 +1483,9 @@ extern  cg_name * _CGAPI CGDuplicate( cg_name name ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     DGLabel( bck_info *bck ) {
-/************************************************/
-
+extern  void _CGAPI     DGLabel( bck_info *bck )
+/**********************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGLabel( %B )\n", bck );
 #endif
@@ -1444,9 +1496,9 @@ extern  void _CGAPI     DGLabel( bck_info *bck ) {
 }
 
 extern  void _CGAPI     DGBackPtr( bck_info *bck, segment_id seg,
-                           signed_32 offset, cg_type tipe ) {
-/*****************************************************/
-
+                                   signed_32 offset, cg_type tipe )
+/*****************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGBackPtr( %B, %S, %i, %t )\n", bck, seg, offset, tipe );
 #endif
@@ -1455,9 +1507,9 @@ extern  void _CGAPI     DGBackPtr( bck_info *bck, segment_id seg,
     BackPtr( bck, seg, offset, TypeAddress( tipe ) );
 }
 
-extern  void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset ) {
-/********************************************************************************/
-
+extern  void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )
+/******************************************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGFEPtr( %S, %t, %i )\n", sym, tipe, offset );
 #endif
@@ -1465,9 +1517,9 @@ extern  void _CGAPI DGFEPtr( cg_sym_handle sym, cg_type tipe, signed_32 offset )
     FEPtr( sym, TypeAddress( tipe ), offset );
 }
 
-extern  void _CGAPI     DGBytes( unsigned_32 len, byte *src ) {
-/*************************************************************/
-
+extern  void _CGAPI     DGBytes( unsigned_32 len, void *src )
+/***********************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGBytes( %x, %x )\n", len, src );
 #endif
@@ -1475,9 +1527,9 @@ extern  void _CGAPI     DGBytes( unsigned_32 len, byte *src ) {
     DataBytes( len, src );
 }
 
-extern  void _CGAPI     DGInteger( unsigned_32 value, cg_type tipe ) {
-/********************************************************************/
-
+extern  void _CGAPI     DGInteger( unsigned_32 value, cg_type tipe )
+/******************************************************************/
+{
     type_length len;
     int         i;
     byte        buff[6];
@@ -1507,16 +1559,16 @@ extern  void _CGAPI     DGInteger( unsigned_32 value, cg_type tipe ) {
     DGBytes( len, form );
 }
 
-extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe ) {
+extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 /********************************************************************/
-
+{
     type_length len;
     int         i;
     union{
         unsigned_32 vall;
         unsigned_64 val;
         byte        buff[8];
-    }data;
+    } data;
     byte        *form;
 
     i = 0;
@@ -1547,24 +1599,24 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe ) {
     DGBytes( len, form );
 }
 
-extern  void _CGAPI     DGFloat( char *value, cg_type tipe ) {
-/************************************************************/
-
+extern  void _CGAPI     DGFloat( char *value, cg_type tipe )
+/**********************************************************/
+{
     pointer     cf;
-    char        buff[8];
+    flt         buff;
 
 #ifndef NDEBUG
     EchoAPI( "DGFloat( %c, %t )\n", value, tipe );
 #endif
     cf = CFCnvSF( value, value + Length( value ) );
-    CFCnvTarget( cf, &buff[ 0 ], TypeLength( tipe ) );
+    CFCnvTarget( cf, &buff, TypeLength( tipe ) );
     CFFree( cf );
-    DGBytes( TypeLength( tipe ), buff );
+    DGBytes( TypeLength( tipe ), &buff );
 }
 
-extern  void _CGAPI     DGIBytes( unsigned_32 len, byte pat ) {
-/*************************************************************/
-
+extern  void _CGAPI     DGIBytes( unsigned_32 len, byte pat )
+/***********************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGIBytes( %x, %x )\n", len, pat );
 #endif
@@ -1572,33 +1624,33 @@ extern  void _CGAPI     DGIBytes( unsigned_32 len, byte pat ) {
     IterBytes( len, pat );
 }
 
-extern  void _CGAPI     DGChar( char value ) {
-/********************************************/
-
+extern  void _CGAPI     DGChar( char value )
+/******************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGChar( %x )\n", value );
 #endif
     DGIBytes( 1, value );
 }
 
-extern  void _CGAPI     DGString( char *value, uint len ) {
-/*********************************************************/
-
+extern  void _CGAPI     DGString( char *value, uint len )
+/*******************************************************/
+{
 #ifndef NDEBUG
-    auto char data[40];
-    unsigned slen = len;
-    char *d = data;
-    char *dt = &data[sizeof(data)-1];
-    char *s = value;
-    char *hex = "0123456789abcdef";
-    char c;
+    char        data[40];
+    unsigned    slen = len;
+    char        *d = data;
+    char        *dt = &data[sizeof(data)-1];
+    char        *s = value;
+    char        *hex = "0123456789abcdef";
+    char        c;
 
-    for(;;) {
+    for( ;; ) {
         assert( d <= dt );
         if( slen == 0 ) break;
         --slen;
         c = *s++;
-        if( c >= 0x20 && c <= 0x7f ) {
+        if( !iscntrl(c) && isascii(c)) {
             if(( d + (1+1)) >= dt ) break;
             *d++ = c;
         } else {
@@ -1630,9 +1682,9 @@ extern  void _CGAPI     DGString( char *value, uint len ) {
 #endif
 }
 
-extern  void _CGAPI     DGUBytes( unsigned_32 len ) {
-/***************************************************/
-
+extern  void _CGAPI     DGUBytes( unsigned_32 len )
+/*************************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGUBytes( %x )\n", len );
 #endif
@@ -1640,9 +1692,9 @@ extern  void _CGAPI     DGUBytes( unsigned_32 len ) {
     IncLocation( len );
 }
 
-extern  void _CGAPI     DGAlign( uint align ) {
-/*********************************************/
-
+extern  void _CGAPI     DGAlign( uint align )
+/*******************************************/
+{
 #ifndef NDEBUG
     EchoAPI( "DGAlign( %i )\n", align );
 #endif
@@ -1651,9 +1703,9 @@ extern  void _CGAPI     DGAlign( uint align ) {
 }
 
 
-extern  unsigned_32 _CGAPI  DGSeek( unsigned_32 where ) {
-/*******************************************************/
-
+extern  unsigned_32 _CGAPI  DGSeek( unsigned_32 where )
+/*****************************************************/
+{
     uint        old;
 
 #ifndef NDEBUG
@@ -1671,22 +1723,24 @@ extern  unsigned_32 _CGAPI  DGSeek( unsigned_32 where ) {
 #endif
 }
 
-extern  unsigned_32 _CGAPI      DGTell() {
-/****************************************/
-
+extern  unsigned_32 _CGAPI      DGTell( void )
+/********************************************/
+{
 #ifndef NDEBUG
-    unsigned_32 retn;
+    unsigned_32     retn;
+
     EchoAPI( "DGTell()" );
     retn = AskLocation();
-    return EchoAPIIntReturn( retn );
+    return( EchoAPIIntReturn( retn ) );
 #else
     return( AskLocation() );
 #endif
 }
 
 
-extern  unsigned_32 _CGAPI      DGBackTell( bck_info *bck ) {
-/***********************************************************/
+extern  unsigned_32 _CGAPI      DGBackTell( bck_info *bck )
+/*********************************************************/
+{
 #ifndef NDEBUG
     unsigned_32 retn;
     EchoAPI( "DGBackTell( %B )", bck );
@@ -1709,21 +1763,21 @@ extern  unsigned_32 _CGAPI      DGBackTell( bck_info *bck ) {
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-extern  void _CGAPI     DGCFloat( pointer cf, cg_type tipe ) {
-/************************************************************/
-
-    char        buff[8];
+extern  void _CGAPI     DGCFloat( pointer cf, cg_type tipe )
+/**********************************************************/
+{
+    flt        buff;
 
 #ifndef NDEBUG
     EchoAPI( "DGCFloat( %x, %t )\n", cf, tipe );
 #endif
-    CFCnvTarget( cf, &buff[ 0 ], TypeLength( tipe ) );
-    DGBytes( TypeLength( tipe ), buff );
+    CFCnvTarget( cf, &buff, TypeLength( tipe ) );
+    DGBytes( TypeLength( tipe ), &buff );
 }
 
-extern  char    *AskName( pointer hdl, cg_class class ) {
-/*******************************************************/
-
+extern  char    *AskName( pointer hdl, cg_class class )
+/*****************************************************/
+{
     switch( class ) {
     case CG_FE:
         return( FEName( hdl ) );
@@ -1743,9 +1797,9 @@ extern  char    *AskName( pointer hdl, cg_class class ) {
     }
 }
 
-extern  label_handle    AskForSymLabel( pointer hdl, cg_class class ) {
-/*********************************************************************/
-
+extern  label_handle    AskForSymLabel( pointer hdl, cg_class class )
+/*******************************************************************/
+{
     switch( class ) {
     case CG_FE:
         return( FEBack( hdl )->lbl );
@@ -1765,15 +1819,15 @@ extern  label_handle    AskForSymLabel( pointer hdl, cg_class class ) {
     }
 }
 
-extern  import_handle   AskImportHandle( sym_handle sym ) {
-/*********************************************************/
-
+extern  import_handle   AskImportHandle( sym_handle sym )
+/*******************************************************/
+{
     return( FEBack( sym )->imp );
 }
 
-extern  void    TellImportHandle( sym_handle sym, import_handle imp ) {
-/*********************************************************************/
-
+extern  void    TellImportHandle( sym_handle sym, import_handle imp )
+/*******************************************************************/
+{
     FEBack( sym )->imp = imp;
 }
 
@@ -1784,89 +1838,110 @@ extern  void    TellImportHandle( sym_handle sym, import_handle imp ) {
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 
-extern  char * _CGAPI             BFCnvFS( float_handle cf, char *buff, int buff_len ) {
-/**************************************************************************************/
+extern  char * _CGAPI             BFCnvFS( float_handle cf, char *buff, int buff_len )
+/************************************************************************************/
+{
     return( CFCnvFS( (cfloat *)cf, buff, buff_len ) );
 }
 
-extern  float_handle _CGAPI     BFCnvSF( char *start, char *end ) {
-/*****************************************************************/
+extern  float_handle _CGAPI     BFCnvSF( char *start, char *end )
+/***************************************************************/
+{
     return( CFCnvSF( start, end ) );
 }
 
-extern  float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 ) {
-/*************************************************************************/
+extern  float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )
+/***********************************************************************/
+{
     return( CFMul( (cfloat *)c1, (cfloat *)c2 ) );
 }
 
-extern  float_handle _CGAPI     BFAdd( float_handle c1, float_handle c2 ) {
-/*************************************************************************/
+extern  float_handle _CGAPI     BFAdd( float_handle c1, float_handle c2 )
+/***********************************************************************/
+{
     return( CFAdd( (cfloat *)c1, (cfloat *)c2 ) );
 }
 
-extern  float_handle _CGAPI     BFDiv( float_handle c1, float_handle c2 ) {
-/*************************************************************************/
+extern  float_handle _CGAPI     BFDiv( float_handle c1, float_handle c2 )
+/***********************************************************************/
+{
     return( CFDiv( (cfloat *)c1, (cfloat *)c2 ) );
 }
 
-extern  float_handle _CGAPI     BFSub( float_handle c1, float_handle c2 ) {
-/*************************************************************************/
+extern  float_handle _CGAPI     BFSub( float_handle c1, float_handle c2 )
+/***********************************************************************/
+{
     return( CFSub( (cfloat *)c1, (cfloat *)c2 ) );
 }
 
-extern  void _CGAPI             BFNegate( float_handle c1 ) {
-/***********************************************************/
+extern  void _CGAPI             BFNegate( float_handle c1 )
+/*********************************************************/
+{
      CFNegate( (cfloat *) c1 );
 }
 
-extern  float_handle _CGAPI     BFTrunc( float_handle c1 ) {
-/**********************************************************/
+extern  float_handle _CGAPI     BFTrunc( float_handle c1 )
+/********************************************************/
+{
      return( CFTrunc( (cfloat *) c1 ) );
 }
 
-extern  float_handle _CGAPI     BFCopy( float_handle c1 ) {
-/*********************************************************/
+extern  float_handle _CGAPI     BFCopy( float_handle c1 )
+/*******************************************************/
+{
      return( CFCopy( (cfloat *) c1 ) );
 }
 
-extern  int _CGAPI              BFSign( float_handle c1 ) {
-/*********************************************************/
+extern  int _CGAPI              BFSign( float_handle c1 )
+/*******************************************************/
+{
      return( CFTest((cfloat *) c1) );
 }
 
-extern  float_handle _CGAPI     BFCnvIF( int data ) {
-/***************************************************/
+extern  float_handle _CGAPI     BFCnvIF( int data )
+/*************************************************/
+{
     return( CFCnvIF( data ) );
 }
 
-extern  float_handle _CGAPI     BFCnvUF( uint data ) {
-/****************************************************/
+extern  float_handle _CGAPI     BFCnvUF( uint data )
+/**************************************************/
+{
     return( CFCnvUF( data ) );
 }
 
-extern  signed_32 _CGAPI       BFCnvF32( float_handle f ) {
-/*********************************************************/
+extern  signed_32 _CGAPI       BFCnvF32( float_handle f )
+/*******************************************************/
+{
     return( CFCnvF32( (cfloat*) f ) );
 }
 
-extern  int _CGAPI              BFCmp( float_handle l, float_handle r ) {
-/***********************************************************************/
+extern  int _CGAPI              BFCmp( float_handle l, float_handle r )
+/*********************************************************************/
+{
     return( CFCompare( (cfloat *)l, (cfloat *)r ) );
 }
 
-extern  void _CGAPI             BFFree( float_handle cf ) {
-/*********************************************************/
+extern  void _CGAPI             BFFree( float_handle cf )
+/*******************************************************/
+{
     CFFree( (cfloat *)cf );
 }
 
+extern  pointer _CGAPI CGSafeRecurse( pointer rtn, pointer arg )
+/**************************************************************/
+{
+    return( SafeRecurse( (pointer(*)(pointer))rtn, arg ) );
+}
+
 extern  void _CGAPI     DBSrcCue( uint fno, uint line, uint col );
-extern  void _CGAPI     DBBegBlock(void);
-extern  void _CGAPI     DBEndBlock(void);
+extern  void _CGAPI     DBBegBlock( void );
+extern  void _CGAPI     DBEndBlock( void );
 
 #ifndef _CGDLL
-extern  int _CGAPI              BEDLLLoad( char *name ) {
-/*******************************************************/
-
+extern  int _CGAPI              BEDLLLoad( char *name )
+/*****************************************************/
+{
     return( TRUE );
 }
 

@@ -1,0 +1,5 @@
+name DLLTEST
+debug all
+system causeway
+file dlltest
+libfile dllfunc, cwapi

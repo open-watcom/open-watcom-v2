@@ -48,7 +48,7 @@ _WCRTLINK unsigned _dos_settime( struct dostime_t *time )
         if( !OpenProcessToken( GetCurrentProcess(),
                                TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
                                &htoken ) ) {
-            return( __set_errno_nt() );
+            return( __set_errno_nt_reterr() );
         }
         LookupPrivilegeValue( NULL, SE_SYSTEMTIME_NAME,
                               &tp.Privileges[0].Luid );
@@ -64,8 +64,7 @@ _WCRTLINK unsigned _dos_settime( struct dostime_t *time )
     st.wSecond = time->second;
     st.wMilliseconds = time->hsecond/10;
     if( !SetLocalTime( &st ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
+        error = __set_errno_nt_reterr();
     }
 
     if( WIN32_IS_NT ) {

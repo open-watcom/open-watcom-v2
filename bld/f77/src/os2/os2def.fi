@@ -1,0 +1,287 @@
+c$noreference
+
+        integer  FALSE
+        parameter (FALSE = 0)
+
+        integer  TRUE
+        parameter (TRUE = 1)
+
+        integer  NULL
+        parameter (NULL = 0)
+
+        integer NULL_POINTER(:)
+
+        integer NULLHANDLE
+        parameter (NULLHANDLE = 0)
+        integer NULLSHANDLE
+        parameter (NULLSHANDLE = 0)
+
+        structure /QWORD/
+            integer*4 ulLo
+            integer*4 ulHi
+        end structure
+
+        integer*4 MAKEULONG
+        external MAKEULONG
+
+        integer*4 MAKELONG
+        external MAKELONG
+
+        integer*2 MAKEUSHORT
+        external MAKEUSHORT
+
+        integer*2 MAKESHORT
+        external MAKESHORT
+
+        integer*1 LOUCHAR
+        external LOUCHAR
+
+        integer*1 HIUCHAR
+        external HIUCHAR
+
+        integer*1 LOBYTE
+        external LOBYTE
+
+        integer*1 HIBYTE
+        external HIBYTE
+
+        integer*2 LOUSHORT
+        external LOUSHORT
+
+        integer*2 HIUSHORT
+        external HIUSHORT
+
+        integer*4 MAKEERRORID
+        external MAKEERRORID
+
+        integer*2 ERRORIDERROR
+        external ERRORIDERROR
+
+        integer*2 ERRORIDSEV
+        external ERRORIDSEV
+
+        integer  SEVERITY_NOERROR
+        parameter (SEVERITY_NOERROR = '00000000'x)
+        integer  SEVERITY_WARNING
+        parameter (SEVERITY_WARNING = '00000004'x)
+        integer  SEVERITY_ERROR
+        parameter (SEVERITY_ERROR = '00000008'x)
+        integer  SEVERITY_SEVERE
+        parameter (SEVERITY_SEVERE = '0000000C'x)
+        integer  SEVERITY_UNRECOVERABLE
+        parameter (SEVERITY_UNRECOVERABLE = '00000010'x)
+
+        integer  WINERR_BASE
+        parameter (WINERR_BASE = '00001000'x)
+        integer  GPIERR_BASE
+        parameter (GPIERR_BASE = '00002000'x)
+        integer  DEVERR_BASE
+        parameter (DEVERR_BASE = '00003000'x)
+        integer  SPLERR_BASE
+        parameter (SPLERR_BASE = '00004000'x)
+
+        structure /POINTL/
+            integer*4 x
+            integer*4 y
+        end structure
+
+        structure /POINTS/
+            integer*2 x
+            integer*2 y
+        end structure
+
+        structure /RECTL/
+            integer*4 xLeft
+            integer*4 yBottom
+            integer*4 xRight
+            integer*4 yTop
+        end structure
+
+        structure /DRIVDATA/
+            integer*4 cb
+            integer*4 lVersion
+            integer*1 szDeviceName(32)
+            integer*1 abGeneralData(1)
+        end structure
+
+        integer  ADDRESS
+        parameter (ADDRESS = 0)
+
+        integer  DRIVER_NAME
+        parameter (DRIVER_NAME = 1)
+        integer  DRIVER_DATA
+        parameter (DRIVER_DATA = 2)
+        integer  DATA_TYPE
+        parameter (DATA_TYPE = 3)
+        integer  COMMENT
+        parameter (COMMENT = 4)
+        integer  PROC_NAME
+        parameter (PROC_NAME = 5)
+        integer  PROC_PARAMS
+        parameter (PROC_PARAMS = 6)
+        integer  SPL_PARAMS
+        parameter (SPL_PARAMS = 7)
+        integer  NETWORK_PARAMS
+        parameter (NETWORK_PARAMS = 8)
+
+        structure /DEVOPENSTRUC/
+            integer*4 pszLogAddress
+            integer*4 pszDriverName
+            integer*4 pdriv
+            integer*4 pszDataType
+            integer*4 pszComment
+            integer*4 pszQueueProcName
+            integer*4 pszQueueProcParams
+            integer*4 pszSpoolerParams
+            integer*4 pszNetworkParams
+        end structure
+
+        integer  FATTR_SEL_ITALIC
+        parameter (FATTR_SEL_ITALIC = '00000001'x)
+        integer  FATTR_SEL_UNDERSCORE
+        parameter (FATTR_SEL_UNDERSCORE = '00000002'x)
+        integer  FATTR_SEL_OUTLINE
+        parameter (FATTR_SEL_OUTLINE = '00000008'x)
+        integer  FATTR_SEL_STRIKEOUT
+        parameter (FATTR_SEL_STRIKEOUT = '00000010'x)
+        integer  FATTR_SEL_BOLD
+        parameter (FATTR_SEL_BOLD = '00000020'x)
+
+        integer  FATTR_TYPE_KERNING
+        parameter (FATTR_TYPE_KERNING = '00000004'x)
+        integer  FATTR_TYPE_MBCS
+        parameter (FATTR_TYPE_MBCS = '00000008'x)
+        integer  FATTR_TYPE_DBCS
+        parameter (FATTR_TYPE_DBCS = '00000010'x)
+        integer  FATTR_TYPE_ANTIALIASED
+        parameter (FATTR_TYPE_ANTIALIASED = '00000020'x)
+
+        integer  FATTR_FONTUSE_NOMIX
+        parameter (FATTR_FONTUSE_NOMIX = '00000002'x)
+        integer  FATTR_FONTUSE_OUTLINE
+        parameter (FATTR_FONTUSE_OUTLINE = '00000004'x)
+        integer  FATTR_FONTUSE_TRANSFORMABLE
+        parameter (FATTR_FONTUSE_TRANSFORMABLE = '00000008'x)
+
+        integer  FACESIZE
+        parameter (FACESIZE = 32)
+
+        structure /FATTRS/
+            integer*2 usRecordLength
+            integer*2 fsSelection
+            integer*4 lMatch
+            integer*1 szFacename(FACESIZE)
+            integer*2 idRegistry
+            integer*2 usCodePage
+            integer*4 lMaxBaselineExt
+            integer*4 lAveCharWidth
+            integer*2 fsType
+            integer*2 fsFontUse
+        end structure
+
+        integer  FM_TYPE_FIXED
+        parameter (FM_TYPE_FIXED = '00000001'x)
+        integer  FM_TYPE_LICENSED
+        parameter (FM_TYPE_LICENSED = '00000002'x)
+        integer  FM_TYPE_KERNING
+        parameter (FM_TYPE_KERNING = '00000004'x)
+        integer  FM_TYPE_DBCS
+        parameter (FM_TYPE_DBCS = '00000010'x)
+        integer  FM_TYPE_MBCS
+        parameter (FM_TYPE_MBCS = '00000018'x)
+        integer  FM_TYPE_64K
+        parameter (FM_TYPE_64K = '00008000'x)
+
+        integer  FM_DEFN_OUTLINE
+        parameter (FM_DEFN_OUTLINE = '00000001'x)
+        integer  FM_DEFN_IFI
+        parameter (FM_DEFN_IFI = '00000002'x)
+        integer  FM_DEFN_WIN
+        parameter (FM_DEFN_WIN = '00000004'x)
+        integer  FM_DEFN_GENERIC
+        parameter (FM_DEFN_GENERIC = '00008000'x)
+
+        integer  FM_SEL_ITALIC
+        parameter (FM_SEL_ITALIC = '00000001'x)
+        integer  FM_SEL_UNDERSCORE
+        parameter (FM_SEL_UNDERSCORE = '00000002'x)
+        integer  FM_SEL_NEGATIVE
+        parameter (FM_SEL_NEGATIVE = '00000004'x)
+        integer  FM_SEL_OUTLINE
+        parameter (FM_SEL_OUTLINE = '00000008'x)
+        integer  FM_SEL_STRIKEOUT
+        parameter (FM_SEL_STRIKEOUT = '00000010'x)
+        integer  FM_SEL_BOLD
+        parameter (FM_SEL_BOLD = '00000020'x)
+
+        integer  FM_CAP_NOMIX
+        parameter (FM_CAP_NOMIX = '00000001'x)
+
+        structure /PANOSE/
+            integer*1 bFamilyType
+            integer*1 bSerifStyle
+            integer*1 bWeight
+            integer*1 bProportion
+            integer*1 bContrast
+            integer*1 bStrokeVariation
+            integer*1 bArmStyle
+            integer*1 bLetterform
+            integer*1 bMidline
+            integer*1 bXHeight
+            integer*1 abReserved(2)
+        end structure
+
+        structure /FONTMETRICS/
+            integer*1 szFamilyname(FACESIZE)
+            integer*1 szFacename(FACESIZE)
+            integer*2 idRegistry
+            integer*2 usCodePage
+            integer*4 lEmHeight
+            integer*4 lXHeight
+            integer*4 lMaxAscender
+            integer*4 lMaxDescender
+            integer*4 lLowerCaseAscent
+            integer*4 lLowerCaseDescent
+            integer*4 lInternalLeading
+            integer*4 lExternalLeading
+            integer*4 lAveCharWidth
+            integer*4 lMaxCharInc
+            integer*4 lEmInc
+            integer*4 lMaxBaselineExt
+            integer*2 sCharSlope
+            integer*2 sInlineDir
+            integer*2 sCharRot
+            integer*2 usWeightClass
+            integer*2 usWidthClass
+            integer*2 sXDeviceRes
+            integer*2 sYDeviceRes
+            integer*2 sFirstChar
+            integer*2 sLastChar
+            integer*2 sDefaultChar
+            integer*2 sBreakChar
+            integer*2 sNominalPointSize
+            integer*2 sMinimumPointSize
+            integer*2 sMaximumPointSize
+            integer*2 fsType
+            integer*2 fsDefn
+            integer*2 fsSelection
+            integer*2 fsCapabilities
+            integer*4 lSubscriptXSize
+            integer*4 lSubscriptYSize
+            integer*4 lSubscriptXOffset
+            integer*4 lSubscriptYOffset
+            integer*4 lSuperscriptXSize
+            integer*4 lSuperscriptYSize
+            integer*4 lSuperscriptXOffset
+            integer*4 lSuperscriptYOffset
+            integer*4 lUnderscoreSize
+            integer*4 lUnderscorePosition
+            integer*4 lStrikeoutSize
+            integer*4 lStrikeoutPosition
+            integer*2 sKerningPairs
+            integer*2 sFamilyClass
+            integer*4 lMatch
+            record /PANOSE/ panose
+        end structure
+
+c$reference

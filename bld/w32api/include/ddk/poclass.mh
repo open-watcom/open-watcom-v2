@@ -1,0 +1,376 @@
+/*
+ *  poclass.h   Power class functions
+ *
+:include crwatcnt.sp
+ */
+
+#include <devpropdef.h>
+
+#ifndef _POCLASS_
+#define _POCLASS_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Macro to specify battery class functions */
+#ifndef _WINDOWS_
+    #define BATTERYCLASSAPI DECLSPEC_IMPORT
+#endif
+
+/* Battery capacity special value */
+#define UNKNOWN_CAPACITY    0xFFFFFFFFL
+
+/* Battery capabilities */
+#define BATTERY_SYSTEM_BATTERY          0x80000000L
+#define BATTERY_CAPACITY_RELATIVE       0x40000000L
+#define BATTERY_IS_SHORT_TERM           0x20000000L
+#define BATTERY_SET_CHARGE_SUPPORTED    0x00000001L
+#define BATTERY_SET_DISCHARGE_SUPPORTED 0x00000002L
+#define BATTERY_SET_RESUME_SUPPORTED    0x00000004L
+
+/* Battery status special values */
+#define UNKNOWN_RATE    0xFFFFFFFFL
+#define UNKNOWN_VOLTAGE 0xFFFFFFFFL
+
+/* Battery status power state flags */
+#define BATTERY_POWER_ON_LINE   0x00000001L
+#define BATTERY_DISCHARGING     0x00000002L
+#define BATTERY_CHARGING        0x00000004L
+#define BATTERY_CRITICAL        0x00000008L
+
+/* Maximum battery string size */
+#define MAX_BATTERY_STRING_SIZE 128
+
+/* Battery device I/O control codes */
+#define IOCTL_BATTERY_QUERY_TAG \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0010, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_BATTERY_QUERY_INFORMATION \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0011, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_BATTERY_SET_INFORMATION \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0012, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+#define IOCTL_BATTERY_QUERY_STATUS \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0013, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_THERMAL_QUERY_INFORMATION \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0020, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_THERMAL_SET_COOLING_POLICY \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0021, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+#define IOCTL_RUN_ACTIVE_COOLING_METHOD \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0022, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+#define IOCTL_QUERY_LID \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0030, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_NOTIFY_SWITCH_EVENT \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0040, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_GET_SYS_BUTTON_CAPS \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0050, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_GET_SYS_BUTTON_EVENT \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0051, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_GET_PROCESSOR_OBJ_INFO \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0060, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_SET_SYS_MESSAGE_INDICATOR \
+    CTL_CODE( FILE_DEVICE_BATTERY, 0x0070, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+
+/* Battery tag special value */
+#define BATTERY_TAG_INVALID 0
+
+/* Battery class version numbers */
+#ifndef _WINDOWS_
+    #define BCLASS_CLASS_MAJOR_VERSION  0x0001
+    #define BCLASS_CLASS_MINOR_VERSION  0x0000
+#endif
+
+/* Maximum number of active cooling levels */
+#define MAX_ACTIVE_COOLING_LEVELS   10
+
+/* Cooling levels */
+#define ACTIVE_COOLING  0x00
+#define PASSIVE_COOLING 0x01
+
+/* System buttons */
+#define SYS_BUTTON_POWER            0x00000001L
+#define SYS_BUTTON_SLEEP            0x00000002L
+#define SYS_BUTTON_LID              0x00000004L
+#define SYS_BUTTON_WAKE             0x80000000L
+#define SYS_BUTTON_LID_STATE_MASK   0x00030000L
+#define SYS_BUTTON_LID_OPEN         0x00010000L
+#define SYS_BUTTON_LID_CLOSED       0x00020000L
+#define SYS_BUTTON_LID_INITIAL      0x00040000L
+#define SYS_BUTTON_LID_CHANGED      0x00080000L
+
+/* Processor PCC commands */
+#ifndef _WINDOWS_
+    #define PROCESSOR_PCC_COMMAND_GET_AVERAGE_FREQUENCY 0x00
+    #define PROCESSOR_PCC_COMMAND_SET_DESIRED_FREQUENCY 0x01
+#endif
+
+/* Processor PCC interface standard version number */
+#ifndef _WINDOWS_
+    #define PROCESSOR_PCC_INTERFACE_STANDARD_VERSION    1
+#endif
+
+/* Battery query information level */
+typedef enum {
+    BatteryInformation              = 0,
+    BatteryGranularityInformation   = 1,
+    BatteryTemperature              = 2,
+    BatteryEstimatedTime            = 3,
+    BatteryDeviceName               = 4,
+    BatteryManufactureDate          = 5,
+    BatteryManufactureName          = 6,
+    BatteryUniqueID                 = 7
+} BATTERY_QUERY_INFORMATION_LEVEL;
+
+/* Battery query information */
+typedef struct _BATTERY_QUERY_INFORMATION {
+    ULONG                           BatteryTag;
+    BATTERY_QUERY_INFORMATION_LEVEL InformationLevel;
+    ULONG                           AtRate;
+} BATTERY_QUERY_INFORMATION;
+typedef BATTERY_QUERY_INFORMATION   *PBATTERY_QUERY_INFORMATION;
+
+/* Battery information */
+typedef struct _BATTERY_INFORMATION {
+    ULONG   Capabilities;
+    UCHAR   Technology;
+    UCHAR   Reserved[3];
+    UCHAR   Chemistry[4];
+    ULONG   DesignedCapacity;
+    ULONG   FullChargedCapacity;
+    ULONG   DefaultAlert1;
+    ULONG   DefaultAlert2;
+    ULONG   CriticalBias;
+    ULONG   CycleCount;
+} BATTERY_INFORMATION;
+typedef BATTERY_INFORMATION *PBATTERY_INFORMATION;
+
+/* Battery set information levels */
+typedef enum {
+    BatteryCriticalBias = 0,
+    BatteryCharge       = 1,
+    BatteryDischarge    = 2
+} BATTERY_SET_INFORMATION_LEVEL;
+
+/* Battery set information */
+typedef struct _BATTERY_SET_INFORMATION {
+    ULONG                           BatteryTag;
+    BATTERY_SET_INFORMATION_LEVEL   InformationLevel;
+    UCHAR                           Buffer[1];
+} BATTERY_SET_INFORMATION;
+typedef BATTERY_SET_INFORMATION *PBATTERY_SET_INFORMATION;
+
+/* Battery wait status */
+typedef struct _BATTERY_WAIT_STATUS {
+    ULONG   BatteryTag;
+    ULONG   Timeout;
+    ULONG   PowerState;
+    ULONG   LowCapacity;
+    ULONG   HighCapacity;
+} BATTERY_WAIT_STATUS;
+typedef BATTERY_WAIT_STATUS *PBATTERY_WAIT_STATUS;
+
+/* Battery status */
+typedef struct _BATTERY_STATUS {
+    ULONG   PowerState;
+    ULONG   Capacity;
+    ULONG   Voltage;
+    LONG    Current;
+} BATTERY_STATUS;
+typedef BATTERY_STATUS  *PBATTERY_STATUS;
+
+/* Battery manufacture date */
+typedef struct _BATTERY_MANUFACTURE_DATE {
+    UCHAR   Day;
+    UCHAR   Month;
+    USHORT  Year;
+} BATTERY_MANUFACTURE_DATE;
+typedef BATTERY_MANUFACTURE_DATE    *PBATTERY_MANUFACTURE_DATE;
+
+/* Battery notification */
+#ifndef _WINDOWS_
+typedef struct {
+    ULONG   PowerState;
+    ULONG   LowCapacity;
+    ULONG   HighCapacity;
+} BATTERY_NOTIFY;
+typedef BATTERY_NOTIFY  *PBATTERY_NOTIFY;
+#endif
+
+/* Battery class callbacks */
+#ifndef _WINDOWS_
+typedef NTSTATUS (NTAPI BCLASS_QUERY_TAG_CALLBACK)( PVOID, PULONG );
+typedef NTSTATUS (NTAPI BCLASS_QUERY_INFORMATION_CALLBACK)( PVOID, ULONG, BATTERY_QUERY_INFORMATION_LEVEL, ULONG, PVOID, ULONG, PULONG );
+typedef NTSTATUS (NTAPI BCLASS_QUERY_STATUS_CALLBACK)( PVOID, ULONG, PBATTERY_STATUS );
+typedef NTSTATUS (NTAPI BCLASS_SET_STATUS_NOTIFY_CALLBACK)( PVOID, ULONG, PBATTERY_NOTIFY );
+typedef NTSTATUS (NTAPI BCLASS_SET_INFORMATION_CALLBACK)( PVOID, ULONG, BATTERY_SET_INFORMATION_LEVEL, PVOID );
+typedef NTSTATUS (NTAPI BCLASS_DISABLE_STATUS_NOTIFY_CALLBACK)( PVOID );
+typedef BCLASS_QUERY_TAG_CALLBACK               *PBCLASS_QUERY_TAG_CALLBACK;
+typedef BCLASS_QUERY_INFORMATION_CALLBACK       *PBCLASS_QUERY_INFORMATION_CALLBACK;
+typedef BCLASS_QUERY_STATUS_CALLBACK            *PBCLASS_QUERY_STATUS_CALLBACK;
+typedef BCLASS_SET_STATUS_NOTIFY_CALLBACK       *PBCLASS_SET_STATUS_NOTIFY_CALLBACK;
+typedef BCLASS_SET_INFORMATION_CALLBACK         *PBCLASS_SET_INFORMATION_CALLBACK;
+typedef BCLASS_DISABLE_STATUS_NOTIFY_CALLBACK   *PBCLASS_DISABLE_STATUS_NOTIFY_CALLBACK;
+typedef PBCLASS_QUERY_TAG_CALLBACK              BCLASS_QUERY_TAG;
+typedef PBCLASS_QUERY_INFORMATION_CALLBACK      BCLASS_QUERY_INFORMATION;
+typedef PBCLASS_QUERY_STATUS_CALLBACK           BCLASS_QUERY_STATUS;
+typedef PBCLASS_SET_STATUS_NOTIFY_CALLBACK      BCLASS_SET_STATUS_NOTIFY;
+typedef PBCLASS_SET_INFORMATION_CALLBACK        BCLASS_SET_INFORMATION;
+typedef PBCLASS_DISABLE_STATUS_NOTIFY_CALLBACK  BCLASS_DISABLE_STATUS_NOTIFY;
+#endif
+
+/* Battery miniport information */
+#ifndef _WINDOWS_
+typedef struct {
+    USHORT                          MajorVersion;
+    USHORT                          MinorVersion;
+    PVOID                           Context;
+    BCLASS_QUERY_TAG                QueryTag;
+    BCLASS_QUERY_INFORMATION        QueryInformation;
+    BCLASS_SET_INFORMATION          SetInformation;
+    BCLASS_QUERY_STATUS             QueryStatus;
+    BCLASS_SET_STATUS_NOTIFY        SetStatusNotify;
+    BCLASS_DISABLE_STATUS_NOTIFY    DisableStatusNotify;
+    PDEVICE_OBJECT                  Pdo;
+    PUNICODE_STRING                 DeviceName;
+} BATTERY_MINIPORT_INFO;
+typedef BATTERY_MINIPORT_INFO   *PBATTERY_MINIPORT_INFO;
+#endif
+
+/* Thermal information */
+typedef struct _THERMAL_INFORMATION {
+    ULONG       ThermalStamp;
+    ULONG       ThermalConstant1;
+    ULONG       ThermalConstant2;
+    KAFFINITY   Processors;
+    ULONG       SamplingPeriod;
+    ULONG       CurrentTemperature;
+    ULONG       PassiveTripPoint;
+    ULONG       CriticalTripPoint;
+    UCHAR       ActiveTripPointCount;
+    ULONG       ActiveTripPoint[MAX_ACTIVE_COOLING_LEVELS];
+} THERMAL_INFORMATION;
+typedef THERMAL_INFORMATION *PTHERMAL_INFORMATION;
+
+/* Processor object information */
+typedef struct {
+    ULONG   PhysicalID;
+    ULONG   PBlkAddress;
+    UCHAR   PBlkLength;
+} PROCESSOR_OBJECT_INFO;
+typedef PROCESSOR_OBJECT_INFO   *PPROCESSOR_OBJECT_INFO;
+
+/* Processor object information (extended version) */
+typedef struct {
+    ULONG   PhysicalID;
+    ULONG   PBlkAddress;
+    UCHAR   PBlkLength;
+    ULONG   InitialApicId;
+} PROCESSOR_OBJECT_INFO_EX;
+typedef PROCESSOR_OBJECT_INFO_EX    *PPROCESSOR_OBJECT_INFO_EX;
+
+/* PCC header */
+#ifndef _WINDOWS_
+typedef struct _PCC_HEADER {
+    ULONG   Signature;
+    USHORT  HeaderLength;
+    UCHAR   MajorVersion;
+    UCHAR   MinorVersion;
+    union {
+        struct {
+            ULONG   SciDoorbell : 1;
+            ULONG   Reserved    : 31;
+        };
+        ULONG   AsULong;
+    } SupportedFeatures;
+    union {
+        struct {
+            USHORT  CommandCode : 8;
+            USHORT  ReservedZ   : 7;
+            USHORT  SciDoorbell : 1;
+        };
+        USHORT  AsUShort;
+    } Command;
+    union {
+        struct {
+            USHORT  CommandComplete : 1;
+            USHORT  SciReceived     : 1;
+            USHORT  Error           : 1;
+            USHORT  Reserved        : 13;
+        };
+        USHORT  AsUShort;
+    } Status;
+    ULONG   Latency;
+    ULONG   MinimumCommandInterval;
+    ULONG   MaximumCommandInterval;
+    ULONG   NominalFrequency;
+    ULONG   MinimumFrequency;
+    ULONG   MinimumUnthrottledFrequency;
+} PCC_HEADER;
+typedef PCC_HEADER  *PPCC_HEADER;
+#endif
+
+/* PCC input buffer */
+#ifndef _WINDOWS_
+typedef struct _PCC_INPUT_BUFFER {
+    UCHAR   ControlEnabled;
+    union {
+        struct {
+            UCHAR   ReservedZ[3];
+        } GetAverageFrequency;
+        struct {
+            UCHAR   DesiredFrequency;
+            UCHAR   ReservedZ[2];
+        } SetDesiredFrequency;
+    };
+} PCC_INPUT_BUFFER;
+typedef PCC_INPUT_BUFFER    *PPCC_INPUT_BUFFER;
+#endif
+
+/* PCC output buffer */
+#ifndef _WINDOWS_
+typedef union _PCC_OUTPUT_BUFFER {
+    struct {
+        UCHAR   AverageFrequency;
+        UCHAR   FrequencyLimit;
+        UCHAR   Reserved[2];
+    } GetAverageFrequency;
+    struct {
+        UCHAR   Reserved[4];
+    } SetDesiredFrequency;
+} PCC_OUTPUT_BUFFER;
+typedef PCC_OUTPUT_BUFFER   *PPCC_OUTPUT_BUFFER;
+#endif
+
+/* PCC callbacks */
+#ifndef _WINDOWS_
+typedef VOID (NTAPI PROCESSOR_PCC_DOORBELL_CALLBACK)( ULONG, ULONG_PTR );
+typedef PROCESSOR_PCC_DOORBELL_CALLBACK *PPROCESSOR_PCC_DOORBELL_CALLBACK;
+typedef NTSTATUS (NTAPI PROCESSOR_PCC_RING_DOORBELL)( UCHAR, PPROCESSOR_PCC_DOORBELL_CALLBACK, ULONG_PTR );
+typedef PROCESSOR_PCC_RING_DOORBELL     *PPROCESSOR_PCC_RING_DOORBELL;
+#endif
+
+/* Processor PCC interface standard */
+#ifndef _WINDOWS_
+typedef struct _PROCESSOR_PCC_INTERFACE_STANDARD {
+    USHORT                          Size;
+    USHORT                          Version;
+    PVOID                           Context;
+    PINTERFACE_REFERENCE            InterfaceReference;
+    PINTERFACE_DEREFERENCE          InterfaceDereference;
+    PPROCESSOR_PCC_RING_DOORBELL    PccRingDoorbell;
+    PPCC_HEADER                     PccHeader;
+    ULONG                           PccHeaderLength;
+} PROCESSOR_PCC_INTERFACE_STANDARD;
+typedef PROCESSOR_PCC_INTERFACE_STANDARD    *PPROCESSOR_PCC_INTERFACE_STANDARD;
+#endif
+
+/* Functions in BATTC.SYS */
+#ifndef _WINDOWS_
+BATTERYCLASSAPI NTSTATUS NTAPI  BatteryClassInitializeDevice( PBATTERY_MINIPORT_INFO, PVOID * );
+BATTERYCLASSAPI NTSTATUS NTAPI  BatteryClassIoctl( PVOID, PIRP );
+BATTERYCLASSAPI NTSTATUS NTAPI  BatteryClassStatusNotify( PVOID );
+BATTERYCLASSAPI NTSTATUS NTAPI  BatteryClassUnload( PVOID );
+#endif
+
+:include cplusepi.sp
+
+#endif /* _POCLASS_ */

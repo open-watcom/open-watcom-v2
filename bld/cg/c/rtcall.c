@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate runtime support call.
 *
 ****************************************************************************/
 
@@ -36,12 +35,11 @@
 #include "opcodes.h"
 #include "rttable.h"
 #include "rtclass.h"
+#include "makeins.h"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIntConst(int);
-extern  instruction     *NewIns(int);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  rt_class        AskHow(type_class_def,type_class_def);
 extern  label_handle    RTLabel(int);
 extern  hw_reg_set      FirstReg(reg_set_index);
@@ -57,11 +55,11 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            FixCallIns(instruction*);
 #if _TARGET == _TARG_370
-extern  hw_reg_set      RAReg();
-extern  hw_reg_set      LNReg();
+extern  hw_reg_set      RAReg( void );
+extern  hw_reg_set      LNReg( void );
 #endif
 #if _TARGET == _TARG_AXP
-extern  hw_reg_set      SavedRegs();
+extern  hw_reg_set      SavedRegs( void );
 #endif
 
 extern    reg_list      *RegSets[];
@@ -72,14 +70,14 @@ extern    reg_list      *RegSets[];
     #define _ParmReg( x )       FirstReg( x )
 #endif
 
-extern  instruction     *rMAKECALL( instruction *ins ) {
-/*******************************************************
+extern  instruction     *rMAKECALL( instruction *ins )
+/*****************************************************
     Using the table RTInfo[], do all the necessary stuff to turn
     instruction "ins" into a call to a runtime support routine.  Move
     the parms into registers, and move the return register of the
     runtime routine into the result. Used for 386 and 370 versions
 */
-
+{
     rtn_info            *info;
     label_handle        lbl;
     instruction         *left_ins;
@@ -144,7 +142,7 @@ extern  instruction     *rMAKECALL( instruction *ins ) {
     HW_TurnOn( all_regs, ReturnAddrReg() );
     }
 #endif
-    new_ins->zap = AllocRegName( all_regs );/* all parm regs could be zapped*/
+    new_ins->zap = (register_name *) AllocRegName( all_regs );/* all parm regs could be zapped*/
     last_ins = new_ins;
     if( ins->result == NULL || _OpIsCondition( ins->head.opcode ) ) {
         /* comparison, still need conditional jumps*/
@@ -159,7 +157,7 @@ extern  instruction     *rMAKECALL( instruction *ins ) {
         regs = _ParmReg( info->result );
         tmp = regs;
         HW_TurnOn( tmp, new_ins->zap->reg );
-        new_ins->zap = AllocRegName( tmp );
+        new_ins->zap = (register_name *) AllocRegName( tmp );
         reg_name = AllocRegName( regs );
         new_ins->result = reg_name;
         last_ins = MakeMove( reg_name, ins->result, ins->type_class );
@@ -174,13 +172,13 @@ extern  instruction     *rMAKECALL( instruction *ins ) {
 }
 
 
-extern  hw_reg_set      FirstReg( reg_set_index index ) {
-/********************************************************
+extern  hw_reg_set      FirstReg( reg_set_index index )
+/******************************************************
     The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
     they are only one byte long.  This retrieves the first hw_reg_set
     from the reg_set table "index".
 */
-
+{
     hw_reg_set  *list;
 
     list = RegSets[  index  ];

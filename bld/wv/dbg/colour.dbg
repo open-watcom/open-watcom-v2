@@ -27,7 +27,7 @@ if _dbg@dbg$monitor == 7 {
     paint all active standout menu yellow on black;
     paint all frame menu yellow on blue;
     paint all disabled title grey on bright white;
-    paint all active frame grey on cyan;
+    paint all active frame yellow on cyan;
     paint all disabled frame grey on bright white;
     paint all icon bright white on red;
     paint all active disabled menu grey on black;

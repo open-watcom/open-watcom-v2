@@ -24,269 +24,308 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PM Helper for the character mode debuggers. It is used when
+*               the debugger runs in a FS session and the debuggee is
+*               a PM program.
 *
 ****************************************************************************/
 
 
 #define INCL_BASE
-#define INCL_DOSDEVICES
-#define INCL_DOSMEMMGR
-#define INCL_DOSSIGNALS
-#define INCL_DOSSESSIONMGR
-#define INCL_DOSPROCESS
 #define INCL_WIN
 #define INCL_GPI
-#define INCL_GPIPRIMITIVES              /* Selectively include          */
-#define INCL_WINFRAMEMGR                /* relevant parts of            */
-#define INCL_WINSYS                     /* the PM header file           */
-#define INCL_DOSPROCESS                 /* the PM header file           */
+#define INCL_GPIPRIMITIVES              /* Selectively include   */
+#define INCL_WINFRAMEMGR                /* relevant parts of     */
+#define INCL_WINSYS                     /* the PM headers        */
+#define INCL_DOSPROCESS
 #include <os2.h>
 #include <string.h>
 #include <stdio.h>
 #include "wdpmhelp.h"
 #include "trperr.h"
 
-#ifdef USE_16_BIT_API
-//extern BOOL __far16 __pascal WinThreadAssocQueue( HAB, HMQ );
-//extern __far16 __pascal WinLockInput( ULONG, USHORT );
-#else
-extern BOOL APIENTRY WinLockInput( HMQ, BOOL );
-extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
+/* "Secret" PM APIs useful to a debugger */
+extern BOOL APIENTRY WinLockInput(HMQ, BOOL);
+extern BOOL APIENTRY WinThreadAssocQueue(HAB, HMQ);
+
+#define WDPMHLP_WNDCLASS "WDPMHelper"
+
+static HAB             Hab;
+static HMQ             Hmq;
+static HFILE           InStream;
+static HFILE           OutStream;
+static HWND            hwndClient;
+static HWND            hwndFrame;
+static BOOL            Locked = FALSE;
+
+static PID             PidDebugee;  // These two seem unused?
+static TID             TidDebugee;
+
+#if 0
+    static HWND            FocusWnd;
+    static HWND            ActiveWnd;
 #endif
 
 
-
-HAB             Hab;
-HMQ             Hmq;
-HFILE           InStream;
-HFILE           OutStream;
-ULONG           DebuggerSID;
-HWND            hwndClient;
-HWND            hwndFrame;
-HWND            FocusWnd;
-HWND            ActiveWnd;
-int             Locked;
-
-PID             PidDebugee;
-TID             TidDebugee;
-
-
 #ifdef DEBUG
-    char Message[ 256 ] = { "All is well" };
-    static void Say( char *str )
-    {
-        if( str != NULL ) strcpy( Message, str );
-        WinInvalidateRegion( hwndClient, 0L, FALSE );
+    char Message[256] = { "All is well" };
+    static void Say(char *str) {
+        if (str != NULL)
+            strcpy(Message, str);
+        WinInvalidateRegion(hwndClient, 0L, FALSE);
     }
 #else
     #define Say( x )
 #endif
 
-void UnLockIt()
+
+VOID AbortLocker(HWND hwndFrame, HWND hwndClient)
 {
-    if( Locked ) {
-        WinThreadAssocQueue( Hab, Hmq );
-        WinLockInput( 0,0 );
-        WinThreadAssocQueue( Hab, NULL );
-        Locked = 0;
+    PERRINFO     pErrInfoBlk;
+    PSZ          pszOffSet;
+    PSZ          pszErrMsg;
+
+    DosBeep(100, 10);
+    if ((pErrInfoBlk = WinGetErrorInfo(Hab)) != (PERRINFO)NULL) {
+        pszOffSet = ((PSZ)pErrInfoBlk) + pErrInfoBlk->offaoffszMsg;
+        pszErrMsg = ((PSZ)pErrInfoBlk) + *((PSHORT)pszOffSet);
+        if ((INT)hwndFrame && (INT)hwndClient) {
+            WinMessageBox(HWND_DESKTOP,              /* Parent window is desktop  */
+                          hwndFrame,                 /* Owner window is our frame */
+                          (PSZ)pszErrMsg,            /* PMWIN Error message       */
+                          TRP_The_WATCOM_Debugger,   /* Title bar message         */
+                          MSGBOXID,                  /* Message identifier        */
+                          MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL); /* Flags */
+        }
+        WinFreeErrorInfo(pErrInfoBlk);
+    }
+    WinPostMsg(hwndClient, WM_QUIT, (MPARAM)NULL, (MPARAM)NULL);
+}
+
+
+#define AbortIf(x) if (x) AbortLocker(hwndFrame, hwndClient)
+
+
+/* This bit is very, very tricky. If we lock the PM and the user switches  */
+/* to PM, there's a good chance he/she will be stranded with no way back!  */
+void UnLockIt( void )
+{
+    if (Locked) {
+        WinThreadAssocQueue(Hab, Hmq);
+        WinLockInput(0, 0);
+        WinThreadAssocQueue(Hab, NULLHANDLE);
+        Locked = FALSE;
     }
 }
 
-VOID APIENTRY CleanUp()
+VOID APIENTRY CleanUp( void )
 {
     UnLockIt();
-    DosExitList( EXLST_EXIT, (PFNEXITLIST)CleanUp );
+    DosExitList(EXLST_EXIT, (PFNEXITLIST)CleanUp);
 }
 
-void LockIt()
+void LockIt( void )
 {
-    if( !Locked ) {
-        WinThreadAssocQueue( Hab, Hmq );
-        WinLockInput( 0,1 );
-        WinThreadAssocQueue( Hab, NULL );
-        Locked = 1;
+    if (!Locked) {
+        WinThreadAssocQueue(Hab, Hmq);
+        WinLockInput(0, 1);
+        WinThreadAssocQueue(Hab, NULLHANDLE);
+        Locked = TRUE;
     }
 }
 
-static void SwitchBack()
+static void SwitchBack( void )
 {
-    USHORT      written;
+    ULONG       written;
+    static      pmhelp_packet data;
 
-    static pmhelp_packet data = { PMHELP_SWITCHBACK };
-    DosWrite( OutStream, &data, sizeof( data ), &written );
+    data.command = PMHELP_SWITCHBACK;
+    DosWrite(OutStream, &data, sizeof(data), &written);
 }
 
 
-VOID APIENTRY ServiceRequests( VOID )
+VOID APIENTRY ServiceRequests(VOID)
 {
-    USHORT              len;
+    ULONG               len;
     pmhelp_packet       data;
 
-    WinCreateMsgQueue( Hab, 0 );
-    for( ;; ) {
-        if( DosRead( InStream, &data, sizeof( data ), &len ) != 0 ) break;
-        if( len != sizeof( data ) ) break;
-        switch( data.command ) {
-        case PMHELP_LOCK:
-            PidDebugee = data.pid;
-            TidDebugee = data.tid;
-            LockIt();
+#ifdef DEBUG
+    /* We don't need a message queue to post messages */
+    HAB                 habThread;
+    HMQ                 hmqThread;
+
+    habThread = WinInitialize(NULL);
+    hmqThread = WinCreateMsgQueue(habThread, 0);
+#endif
+
+    for ( ;; ) {
+        if (DosRead(InStream, &data, sizeof(data), &len) != 0)
             break;
-        case PMHELP_UNLOCK:
-            PidDebugee = data.pid;
-            TidDebugee = data.tid;
-            UnLockIt();
+
+        if (len != sizeof(data))
             break;
-        case PMHELP_EXIT:
-            WinPostMsg( hwndClient, WM_QUIT, 0, 0 );/* Cause termination*/
-            break;
+
+        switch (data.command) {
+            case PMHELP_LOCK:
+                PidDebugee = data.pid;
+                TidDebugee = data.tid;
+                WinPostMsg(hwndClient, WM_COMMAND, MPFROM2SHORT(ID_LOCK, 0), 0);
+                break;
+
+            case PMHELP_UNLOCK:
+                PidDebugee = data.pid;
+                TidDebugee = data.tid;
+                WinPostMsg(hwndClient, WM_COMMAND, MPFROM2SHORT(ID_UNLOCK, 0), 0);
+                break;
+
+            case PMHELP_EXIT:
+                WinPostMsg(hwndClient, WM_QUIT, 0, 0); /* Cause termination*/
+                break;
+
+            default:
+                Say("Received Unknown Command");
         }
-        WinInvalidateRegion( hwndClient, 0L, FALSE );
     }
-    Say( "Read Failed" );
+    Say("Pipe Read Failed");
+#ifdef DEBUG
+    WinDestroyMsgQueue(hmqThread);
+    WinTerminate(habThread);
+#endif
 }
 
-MRESULT EXPENTRY MyWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
+MRESULT EXPENTRY MyWindowProc(HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2)
 {
     HPS    hps;
     RECTL  rc;
 
-    switch( msg ) {
+    switch (msg) {
 
     case WM_CREATE:
         break;
 
     case WM_COMMAND:
-        switch( SHORT1FROMMP( mp1 ) ) {
-        case ID_UNLOCK:
-            Say( "Unlocked" );
-            UnLockIt();
-            if( FocusWnd != NULL ) {
-                WinSetFocus( HWND_DESKTOP, FocusWnd );
-            }
-            WinSetActiveWindow( HWND_DESKTOP, hwndClient );
-            if( ActiveWnd != NULL ) {
-                WinSetActiveWindow( HWND_DESKTOP, ActiveWnd );
-            }
-            break;
-        case ID_SWITCH:
-            Say( "Switched" );
-            SwitchBack();
-            break;
-        case ID_EXITPROG:
-            WinPostMsg( hwnd, WM_CLOSE, (MPARAM)0, (MPARAM)0 );
-            break;
-        default:
-            return( WinDefWindowProc( hwnd, msg, mp1, mp2 ) );
+        switch (SHORT1FROMMP(mp1)) {
+           case ID_UNLOCK:
+               UnLockIt();
+               Say("Unlocked");
+#if 0
+               if (FocusWnd != NULL) {
+                   WinSetFocus(HWND_DESKTOP, FocusWnd);
+               }
+               WinSetActiveWindow(HWND_DESKTOP, hwndClient);
+               if (ActiveWnd != NULL) {
+                   WinSetActiveWindow(HWND_DESKTOP, ActiveWnd);
+               }
+#endif
+               break;
+
+           case ID_LOCK:
+               Say("Locked");
+               LockIt();
+               break;
+
+           case ID_SWITCH:
+               Say("Switched");
+               SwitchBack();
+               break;
+
+           case ID_EXITPROG:
+               WinPostMsg(hwnd, WM_CLOSE, (MPARAM)0, (MPARAM)0);
+               break;
+
+           default:
+               return WinDefWindowProc(hwnd, msg, mp1, mp2);
         }
         break;
 
     case WM_ERASEBACKGROUND:
-        return( (MRESULT)TRUE );
+        return (MRESULT)TRUE;
 
     case WM_PAINT:
-        hps = WinBeginPaint( hwnd, 0L, &rc );
+        hps = WinBeginPaint(hwnd, 0L, &rc);
 #ifdef DEBUG
         {
             POINTL pt;
 
-
-            pt.x = 0; pt.y = 50;
-            GpiSetColor( hps, CLR_NEUTRAL );
-            GpiSetBackColor( hps, CLR_BACKGROUND );
-            GpiSetBackMix( hps, BM_OVERPAINT );
-            GpiCharStringAt( hps, &pt, (LONG)strlen( Message ), Message );
+            pt.x = 2; pt.y = 2;
+            GpiSetColor(hps, CLR_NEUTRAL);
+            GpiSetBackColor(hps, CLR_BACKGROUND);
+            GpiSetBackMix(hps, BM_OVERPAINT);
+            GpiCharStringAt(hps, &pt, (LONG)strlen(Message), Message);
         }
 #endif
-        WinEndPaint( hps );
+        WinEndPaint(hps);
         break;
 
     case WM_CLOSE:
-        WinPostMsg( hwnd, WM_QUIT, 0, 0 );
+        WinPostMsg(hwnd, WM_QUIT, 0, 0);
         break;
 
     case WM_DESTROY:
-        UnLockIt();
+        UnLockIt();  // Is it possible to arrive here at all if PM is locked?
         // fall thru
 
     default:
-        return( WinDefWindowProc( hwnd, msg, mp1, mp2 ) );
+        return WinDefWindowProc(hwnd, msg, mp1, mp2);
 
     }
-    return( FALSE );
+    return FALSE;
 }
 
 
-VOID AbortLocker( HWND hwndFrame, HWND hwndClient )
-{
-   PERRINFO     pErrInfoBlk;
-   PSZ          pszOffSet;
-   PSZ          pszErrMsg;
+#define STACK_SIZE 16384
 
-   DosBeep( 100, 10 );
-   if( ( pErrInfoBlk = WinGetErrorInfo(Hab) ) != (PERRINFO)NULL ) {
-      pszOffSet = ((PSZ)pErrInfoBlk) + pErrInfoBlk->offaoffszMsg;
-      pszErrMsg = ((PSZ)pErrInfoBlk) + *((PSHORT)pszOffSet);
-      if( (INT)hwndFrame && (INT)hwndClient ) {
-         WinMessageBox(HWND_DESKTOP,         /* Parent window is desk top */
-                       hwndFrame,            /* Owner window is our frame */
-                       (PSZ)pszErrMsg,       /* PMWIN Error message       */
-                       TRP_The_WATCOM_Debugger,      /* Title bar message         */
-                       MSGBOXID,             /* Message identifier        */
-                       MB_MOVEABLE | MB_CUACRITICAL | MB_CANCEL ); /* Flags */
-      }
-      WinFreeErrorInfo( pErrInfoBlk );
-   }
-   WinPostMsg( hwndClient, WM_QUIT, (MPARAM)NULL, (MPARAM)NULL );
-}
-
-
-#define AbortIf( x ) if( x ) AbortLocker( hwndFrame, hwndClient )
-
-#define STACK_SIZE 8192
-static char     stack[STACK_SIZE];
 INT main( int argc, char **argv )
 {
-    QMSG qmsg;                          /* Message from message queue   */
-    ULONG flCreate;                     /* Window creation control flags*/
-    TID tid;
-    ULONG height;
-    ULONG width;
+    QMSG    qmsg;                       /* Message from message queue   */
+    ULONG   flCreate;                   /* Window creation control flags*/
+    TID     tid;
+    ULONG   height;
+    ULONG   width;
 
-    DosExitList( EXLST_ADD, (PFNEXITLIST)CleanUp );
-    if( argc >= 3 ) {
-        InStream = *argv[1] - ADJUST_HFILE;
+    DosExitList(EXLST_ADD, (PFNEXITLIST)CleanUp);
+    if (argc >= 3) {
+        InStream  = *argv[1] - ADJUST_HFILE;
         OutStream = *argv[2] - ADJUST_HFILE;
     }
-    AbortIf( ( Hab = WinInitialize(NULL)) == 0L );
-    AbortIf( ( Hmq = WinCreateMsgQueue( Hab, 0 ) ) == 0L );
+    AbortIf((Hab = WinInitialize(NULLHANDLE)) == 0L);
+    AbortIf((Hmq = WinCreateMsgQueue(Hab, 0)) == 0L);
 
-    AbortIf( !WinRegisterClass( Hab, (PSZ)"MyWindow", (PFNWP)MyWindowProc,
-                                CS_SIZEREDRAW, 0 ) );
+    AbortIf(!WinRegisterClass(Hab, (PSZ)WDPMHLP_WNDCLASS, (PFNWP)MyWindowProc,
+                              CS_SIZEREDRAW, 0));
     flCreate = FCF_TITLEBAR | FCF_MENU | FCF_SIZEBORDER
              | FCF_ACCELTABLE | FCF_SHELLPOSITION | FCF_TASKLIST;
-    height = WinQuerySysValue( HWND_DESKTOP, SV_CYMENU )
-           + 2*WinQuerySysValue( HWND_DESKTOP, SV_CYBORDER )
-           + 2*WinQuerySysValue( HWND_DESKTOP, SV_CYSIZEBORDER )
-           + WinQuerySysValue( HWND_DESKTOP, SV_CYTITLEBAR );
-    AbortIf( ( hwndFrame = WinCreateStdWindow( HWND_DESKTOP, 0L,
-               &flCreate, "MyWindow", "", 0L,
-               NULL, ID_WINDOW, &hwndClient ) ) == 0L );
-    WinSetWindowText(hwndFrame, TRP_The_WATCOM_Debugger );
 
-    width = WinQuerySysValue( HWND_DESKTOP, SV_CXSCREEN );
-    AbortIf( !WinSetWindowPos( hwndFrame, HWND_TOP, 0,
-                   WinQuerySysValue( HWND_DESKTOP, SV_CYSCREEN ) - height,
+    height = WinQuerySysValue(HWND_DESKTOP, SV_CYMENU)
+           + 2*WinQuerySysValue(HWND_DESKTOP, SV_CYBORDER)
+           + 2*WinQuerySysValue(HWND_DESKTOP, SV_CYSIZEBORDER)
+#ifdef DEBUG
+           + 2*WinQuerySysValue(HWND_DESKTOP, SV_CYTITLEBAR);
+#else
+           + WinQuerySysValue(HWND_DESKTOP, SV_CYTITLEBAR);
+#endif
+
+    AbortIf((hwndFrame = WinCreateStdWindow(HWND_DESKTOP, 0L,
+             &flCreate, WDPMHLP_WNDCLASS, "", 0L,
+             NULLHANDLE, ID_WINDOW, &hwndClient)) == 0L);
+
+    WinSetWindowText(hwndFrame, TRP_The_WATCOM_Debugger);
+
+    width = WinQuerySysValue(HWND_DESKTOP, SV_CXSCREEN);
+    AbortIf(!WinSetWindowPos(hwndFrame, HWND_TOP, 0,
+                   WinQuerySysValue(HWND_DESKTOP, SV_CYSCREEN) - height,
                    width / 3,
-                   height, SWP_MOVE | SWP_SHOW | SWP_SIZE | SWP_ACTIVATE ) );
-    AbortIf( DosCreateThread( (PFNTHREAD)ServiceRequests, &tid, stack+STACK_SIZE ) );
-    while( WinGetMsg( Hab, &qmsg, 0L, 0, 0 ) ) {
-        WinDispatchMsg( Hab, &qmsg );
+                   height, SWP_MOVE | SWP_SHOW | SWP_SIZE | SWP_ACTIVATE));
+
+    /* Spawn the thread waiting for commands from the debugger */
+    AbortIf(DosCreateThread(&tid, (PFNTHREAD)ServiceRequests, 0, CREATE_READY, STACK_SIZE));
+
+    /* Message loop */
+    while (WinGetMsg(Hab, &qmsg, 0L, 0, 0)) {
+        WinDispatchMsg(Hab, &qmsg);
     }
     WinDestroyWindow(hwndFrame);
-    WinDestroyMsgQueue( Hmq );
-    WinTerminate( Hab );
-    return( 1 );
+    WinDestroyMsgQueue(Hmq);
+    WinTerminate(Hab);
+    return 1;
 }

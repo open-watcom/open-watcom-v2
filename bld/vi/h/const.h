@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of editor constants.
 *
 ****************************************************************************/
-
 
 
 #ifndef _CONST_INCLUDED
@@ -46,9 +44,6 @@
 
 #define NO_WINDOW ((window_id) -1)
 
-#define NO_ADD_TO_HISTORY_KEY   1
-#define NO_INPUT_WINDOW_KEY     19
-
 typedef enum {
     DRIVE_NONE,
     DRIVE_IS_REMOVABLE,
@@ -56,11 +51,11 @@ typedef enum {
 } drive_type;
 
 typedef enum {
-    SAVEBUF_FLAG = 0x01,
-    USE_UNDO_UNDO = 0x02
+    SAVEBUF_FLAG    = 0x01,
+    USE_UNDO_UNDO   = 0x02
 } linedel_flags;
 
-#if defined( __QNX__ )
+#if defined( __UNIX__ ) || defined( __IBMC__ )
     #define _A_NORMAL       0x00    /* Normal file - read/write permitted */
     #define _A_RDONLY       0x01    /* Read-only file */
     #define _A_HIDDEN       0x02    /* Hidden file */
@@ -68,23 +63,21 @@ typedef enum {
     #define _A_VOLID        0x08    /* Volume-ID entry */
     #define _A_SUBDIR       0x10    /* Subdirectory */
     #define _A_ARCH         0x20    /* Archive file */
-
+#endif
+    
+#if defined( __UNIX__ )
     #define FILE_SEP            '/'
     #define FILE_SEP_STR        "/"
     #define ALL_FILES_WILD_CARD "*"
+    #define TMP_NAME_LEN        18
 #else
     #define FILE_SEP            '\\'
     #define FILE_SEP_STR        "\\"
     #define ALL_FILES_WILD_CARD "*.*"
-#endif
-
-#define NAMEWIDTH 14
-#ifdef __QNX__
-    #define TMP_NAME_LEN        18
-#else
     #define TMP_NAME_LEN        14
 #endif
 
+#define NAMEWIDTH       14
 #define MAX_NUM_STR     48
 
 /*
@@ -93,52 +86,40 @@ typedef enum {
  */
 #define LINE_EXTRA      4
 
-#define Tab( col, ta ) ( ( ta == 0 ) ? 0 : ( (((col-1)/ta)+1)*ta - (col-1) ) )
+#define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
 
-#ifndef __WIN__
-    typedef enum {
-        FALSE = 0,
-        TRUE
-    } bool;
-    #ifdef __cplusplus
-        inline bool operator ! ( bool x ) { return (bool) ((int)x ^ 1); }
-    #endif
-#else
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
+#include "bool.h"
 
 #define INITIAL_MATCH_COUNT     4
-#define MIN_LINE_LEN    128
-#define MAX_LONG        0x7fffffffL
-#define MAX_REPEAT_STRING 10
-#define MAX_FILES       640
-#define MAX_BOOL_TOKENS 2
-#define MAX_SAVEBUFS    9
+#define MIN_LINE_LEN            128
+#define MAX_LONG                0x7fffffffL
+#define MAX_REPEAT_STRING       10
+#define MAX_FILES               640
+#define MAX_BOOL_TOKENS         2
+#define MAX_SAVEBUFS            9
 #define MAX_SPECIAL_SAVEBUFS    26
-#define WORK_SAVEBUF (MAX_SAVEBUFS + MAX_SPECIAL_SAVEBUFS)
+#define WORK_SAVEBUF            (MAX_SAVEBUFS + MAX_SPECIAL_SAVEBUFS)
 #define NO_SAVEBUF              -1
 #define CLIPBOARD_SAVEBUF       -2
-#define SCROLL_HLINE    10
-#define SCROLL_VLINE    2
-#define MAX_MARKS       26
-#define MAX_SEARCH_STRINGS 9
-#define MAX_SCRIPT_LENGTH 2048
-#define MAX_MOUSE_SPEED 250
+#define SCROLL_HLINE            10
+#define SCROLL_VLINE            2
+#define MAX_MARKS               26
+#define MAX_SEARCH_STRINGS      9
+#define MAX_SCRIPT_LENGTH       2048
+#define MAX_MOUSE_SPEED         250
 #define MAX_OVERRIDE_KEY_BUFF   512
-#define MAX_STR 256
-#define FGREP_BUFFSIZE  32000
-#define NUM_EDIT_OPTS   4
-#define EXTENSION_LENGTH 5
-#define CR      0x0d
-#define LF      0x0a
-#define CTLZ    26
-#define MAX_STATIC_BUFFERS 5
-#define MAX_STARTUP     10
-#define MAX_INPUT_LINE  512
-#define DATE_LEN        24
-#define MIN_STACK_K     10
+#define MAX_STR                 256
+#define FGREP_BUFFSIZE          32000
+#define NUM_EDIT_OPTS           4
+#define EXTENSION_LENGTH        5
+#define CR                      0x0d
+#define LF                      0x0a
+#define CTLZ                    26
+#define MAX_STATIC_BUFFERS      5
+#define MAX_STARTUP             10
+#define MAX_INPUT_LINE          512
+#define DATE_LEN                24
+#define MIN_STACK_K             10
 #define MAX_DUPLICATE_FILES     10
 
 #define MAX_IO_BUFFER   0x2000
@@ -202,12 +183,34 @@ typedef enum {
 } status_type;
 
 /*
- * find constants
+ * find types
  */
-#define FINDFL_FORWARD          0x01
-#define FINDFL_BACKWARDS        0x02
-#define FINDFL_NEXTLINE         0x04
-#define FINDFL_NOERROR          0x08
+typedef enum {
+    FINDFL_FORWARD   = 0x01,
+    FINDFL_BACKWARDS = 0x02,
+    FINDFL_NEXTLINE  = 0x04,
+    FINDFL_NOERROR   = 0x08,
+    FINDFL_WRAP      = 0x10,
+    FINDFL_NOCHANGE  = 0x20
+} find_type;
+
+/*
+ * Font types
+ */
+typedef enum font_type {
+    FONT_COURIER = 0,
+    FONT_COURIERBOLD,
+    FONT_HELV,
+    FONT_ARIAL,
+    FONT_ARIALBOLD,
+    FONT_FIXED,
+    FONT_SANSSERIF,
+
+    MAX_FONTS = 25
+} font_type;
+
+#define FONT_DEFAULT        FONT_COURIER
+#define FONT_DEFAULTBOLD    FONT_COURIERBOLD
 
 /*
  * word constants
@@ -243,21 +246,56 @@ typedef enum {
 /*
  * Event type constants for the event list
  */
-#define EVENT_OP                0x00
-#define EVENT_REL_MOVE          0x01
-#define EVENT_ABS_MOVE          0x02
-#define EVENT_MISC              0x03
-#define EVENT_INS               0x04
+typedef enum event_type {
+    EVENT_OP       = 0,
+    EVENT_REL_MOVE = 1,
+    EVENT_ABS_MOVE = 2,
+    EVENT_MISC     = 3,
+    EVENT_INS      = 4
+} event_type;
 
 /*
  * Name of environment variable to set the prompt.
  */
-#ifdef __QNX__
+#ifdef __UNIX__
     #define PROMPT_ENVIRONMENT_VARIABLE "PS1"
 #else
     #define PROMPT_ENVIRONMENT_VARIABLE "PROMPT"
 #endif
 
 #define MAX_COLOR_REGISTERS     16
+
+/*
+ * Color type
+ */
+#undef vi_pick
+#define vi_pick(a) a,
+typedef enum {
+#include "colors.h"
+#undef vi_pick
+#ifdef __WIN__
+    MAX_COLORS = 64
+#else
+    MAX_COLORS = MAX_COLOR_REGISTERS
+#endif
+} vi_color;
+
+/*
+ * Event type
+ */
+#define VI_KEY( a )                 __VIKEY__##a
+#define BITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
+
+#undef vi_pick
+#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,
+typedef enum vi_key {
+#include "events.h"
+    MAX_EVENTS
+#undef vi_pick
+} vi_key;
+
+#define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
+#define VI_KEY_HANDLED          VI_KEY( NULL )
+#define VI_KEY_DUMMY            MAX_EVENTS
 
 #endif

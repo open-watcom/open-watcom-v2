@@ -61,6 +61,18 @@ static struct Context   stack[MAX_INDIRECTIONS];
 static int              stackItems = 0;
 
 
+
+/*
+ * Clear the specified context to an uninitialized state.
+ */
+static void clear_context( struct Context *context )
+/**************************************************/
+{
+    memset( context, 0, sizeof(struct Context) );
+    context->markPos = -1L;
+}
+
+
 /*
  * Open a new command line context.
  */
@@ -291,15 +303,4 @@ void SetPosContext( int pos )
       default:
         Zoinks();
     }
-}
-
-
-/*
- * Clear the specified context to an uninitialized state.
- */
-static void clear_context( struct Context *context )
-/**************************************************/
-{
-    memset( context, 0, sizeof(struct Context) );
-    context->markPos = -1L;
 }

@@ -1,0 +1,829 @@
+INTRODUCTION
+------------
+
+This file contains a description of most changes I've done to WatTCP
+over the last years. Also refer the `changes' file for details.  I've
+called this port Watt-32 to put emphasis on 32-bit platforms (allthough
+16-bit small/large models are also supported).
+
+My insentive to play with WatTCP was strictly educational; I wanted to
+learn tcp/ip from the inside-out.  And WatTCP was the only option for me.
+I later discovered the more advanced BSD 4.4 networking library, but found
+it too advanced for my needs.
+
+After optimising WatTCP and adding new functionality, I hope it can be
+useful to others.
+
+The changes described here are written after `the fact'. So list of
+changes are in no particalar time-order (ref. `changes' for a more detailed
+list of changes).
+
+
+
+Supported compilers and environments
+-------------------------------------
+
+These are the combinations currently working:
+
+  GNU C/C++ 2.7 (or later)  with djgpp2 dos-extender
+  Metaware HighC 3.x        with PharLap 386|DosX
+  Borland C/C++ 4.x         small/large real-mode (v5.0 not tested)
+  Watcom C/C++ 10.x+        small/large real-mode, prot-mode DOS4GW/Pharlap
+
+These are combinations prepared but not working properly or unfinished:
+
+  GNU C/C++ 2.7+     with djgpp2 and built for DXE library.
+  GNU C/C++ 2.7+     with WDOSX extender.
+  Metaware HighC 3.x with PharLap 386|DosX and built for DLL library.
+  Borland C/C++ 4.x  with PharLap 386|DosX.
+  Borland C/C++ 4.x  with PowerPak DOS-extender.
+  Borland C/C++ 4.x  with WDOSX DOS-extender.
+  MS C/C++ 7.0+      small/large real-mode. This compiles and links okay,
+                     but crashes at run-time. Didn't investigate further.
+  MS Visual C 1.52   with PharLap 386|DosX.
+  MS Visual C 4+     with WDOSX extender (must build in Windows :-( ).
+
+Notes: tiny, medium, compact and huge real-mode models are not supported.
+       Pharlap's newer TNT|DosX is backwards compatible with 386|DosX.
+
+Combination of compilers and DOS-extenders:
+
+         | djgpp | Pharlap | DOS4G | WDOSX | PowerPak
+  -------|-------|---------|-------|-------|---------
+  GNU-C  |   X   |    -    |   -   |   *   |   -
+  HighC  |   -   |    X    |   *   |   -   |   -
+  Watcom |   -   |    X    |   X   |   X   |   -
+  MSVC   |   -   |    *    |   -   |   *   |   -
+  BCC32  |   -   |    *    |   -   |   *   |   *
+
+  X = supported
+  * = possible, but unsupported
+  - = impossible (?) combination
+
+
+The different dos-extender targets are identified in the code by OR'ing
+a DOSX variable. e.g. `#if (DOSX & PHARLAP)' becomes true for PharLap
+targets. And `#if (DOSX & (DOS4GW|WDOSX))' is non-zero for both DOS4GW
+and WDOSX target builds.  The DOSX variable is 0 for real-mode targets.
+The file `.\src\target.h' defines most portability macros.
+
+The desired functionality is determined by defines in `.\src\config.h'.
+E.g. `#if defined(USE_MULTICAST)' will include the multicasting code from
+Jim Martin <jim@noc.rutgers.edu>. See `INSTALL' file at step 6.
+
+For small-mode targets only `USE_UDP_ONLY' is defined (to test non-TCP
+program compilations; cookie, ping etc.).  This will hopefully reduce code-
+size to the original size and making TSR's possible.  "Lean and mean" code
+hasn't been my main objective.  With the free djgpp environment there is
+no need to worry about memory constrains of old segmented DOS real-modes.
+
+Other compilers / DOS-extender combinations might be supported in the future.
+I was quite impressed by LADsoft's cc386, but it lacked too many functions
+to be useful at this point. The WDOSX extender (by Michael Tippach) also
+looks promising. Borland's PowerPak is not supported at the moment, but I
+urge someone to make a port for that combination.  Search the sources for
+`POWERPAK' and `UNFINISHED()'
+
+Contributions and fixes for current (and future) targets are welcome.
+Mail to <gvanem@eunet.no> or <giva@bgnett.no>.
+
+
+
+
+1.3. BSD getXbyY functions
+---------------------------
+
+Added files:   Description:
+
+  gethost.c: * ReadHostFile() called from pcconfig.c when wattcp.cfg
+               value `hosts = file' is found. Puts host/ip pairs into
+               a linked list.
+             * gethostbyname() searches linked-list. If not found does
+               a resolve and adds result to list (a failed resolve is
+               also cached).
+             * gethostbyaddr() searches linked-list. If not found does
+               a reverse name-lookup (resolve_ip()). Thanks to Michael
+               Ringe (michael@thphys.physik.rwth-aachen.de) for the
+               resolve_ip() code.
+             * Others: gethostent(), sethostent(), endhostent().
+             ! Note: host aliases as returned from DNS is not supported.
+                     Only aliases in hosts-file is working.
+
+  getnet.c:  * ReadNetworksFile() called from pcconfig.c when wattcp.cfg
+               value `networks = file' is found. Puts network names/address
+               pairs into a linked.
+             * getnetbyname() / getnetbyaddr() searches list for name/addr.
+             * Others: getnetent(), setnetent(), endnetent().
+
+  getprot.c: * ReadProtoFile() called from pcconfig.c when wattcp.cfg
+               value `protocols = file' is found. Puts IP protocol number/
+               name pairs into a linked.
+             * getprotobyname() / getprotobynumber() searches list for
+               protocol name and number.
+             * Others: getprotoent(), setprotoent(), endprotoent().
+
+  getserv.c: * ReadServFile() called from pcconfig.c when wattcp.cfg
+               value `services = file' is found. Puts udp/tcp port number,
+               name and aliases into linked list for speedy search.
+             * getservbyname() / getservbyport() searches list for udp/tcp
+               name / number.
+             * Others: getservent(), setservent(), endservent().
+
+  getname.c: * getsockname() returns local address information on socket.
+             * getpeername() returns remote address information on socket.
+
+  See <netdb.h>, <rpc/rpc.h> and <sys/socket.h> for prototypes.
+  See the man-pages for full explanation of functions; e.g. in a Unix shell
+  use command `man getprotobyname'.
+
+There is an implicit service-order for DNS name lookups;
+  Both resolve() and gethostbyname() will use host-file information first,
+  and then after failing that, use resolve() in udp_dom.c to send a request
+  to the DNS-host.  Sun's YP (Yellow Pages) and WINS are not implemented.
+  Anybody care to implement these?
+
+To prevent recursion when resolve() calls gethostbyname(), the flag
+`called_from_resolve' is set.  Similarly, when gethostbyname() calls
+resolve(), the flag `called_from_ghba' is set.  This hack is not something
+I'm proud of, but old applications (after relinking) should be able to call
+resolve() and work with a hosts-file.
+
+
+
+1.4.  BSD Socket API
+----------------------
+
+The BSD-socket API is far from perfect. `SOCK_RAW' sockets uses a only a
+single receive buffer; you'll experience dropped packets easily.
+
+I'm not describing the API here. For that, refer a good Unix networking
+book or the "man-pages". I had very good help from the HP-UX man-pages
+found several places as Web-pages. HP-UX is by many considered the most
+stable Unix there is.
+
+These are some WATTCP.CFG keywords related to socket functions:
+
+  SK_DEBUG.DEVICE: Where to print socket-debug;
+    <file>, "stdout", "stderr" or "nul". Put on RAM-disk for best
+    performance.  No default value.
+
+    Activated by calling `dbug_init()' before calling `sock_init()'
+    from application.
+
+  SK_DEBUG.OPENMODE: C-style open mode for the SK_DEBUG.DEVICE.
+    Default is "at" for append/text.  Others you can use:
+      "w+" write (and create if not exists)
+      "a"  append to file
+      "t"  SK_DEBUG.DEVICE is a text-file.
+
+
+
+2. Watt-32 initialisation
+-------------------------
+
+sock_init() changes:
+
+* The Fortify malloc-debugger is optionally initialised. Very handy for
+  tracing memory leaks etc. in the library. Should not be included in a
+  finished product.
+
+* For PharLap & djgpp targets an hardware exception handler is installed.
+  That way the program is able to release the PKTDRVR handles when the app-
+  lication crashes.  There are handles for IP, ARP and optionally RARP.
+  Only in cases where the handles are destroyed (or other code/data in
+  pcpkt.c has been overwritten), you'll need to unload and reload the
+  packet-driver.  Stack-limit is also checked.  When fragment and debugging
+  code is compiled in and activated, this need a lot of stack-space.
+  If you for some reason don't want exception handling, create an environ-
+  ment variable `WATT32-NOEXC'. Value is not important.
+
+* The exception handlers will call `sock_exit()' and other functions
+  installed with `atexit()'. AFAIK, djgpp 2.02 will call `_exit()' (not
+  `exit()') when exception-handler raises signal `SIGABRT'.
+
+* All Borland/Watcom targets installs a handler for `SIGFPE' (math co-processor
+  errors). A hack for Watcom; integer overflow errors (from FIST intruction)
+  are ignored and a `_fpreset()' is performed.
+
+* For 32-bit DOSX targets, the CPU type is detected, `intel()' and `intel16()'
+  functions are patched to use the `BSWAP' instruction if a 80486+ CPU is
+  detected. However, djgpp/Watcom normally uses inline code defined in
+  `<sys/swap.h>'.
+
+* The size and location of transfer buffer to DOS memory is obtained.
+  The far-pointer `watt_dosFp' (48-bit sel:ofs) is initialised for accessing
+  DOS-memory. Only for compilers supporting 48-bit far-pointers.
+
+* A critical error handler (int 24h) is installed in `int24_init()'. But
+  not for djgpp since critical errors are handled by the DPMI-host and
+  which djgpp gracefully handles.
+
+* Access to the link-layer is initialised via `tcp_init()', `_eth_init()'
+  and `pkt_eth_init()'. Normally, the application is terminated if PKT-DRVR
+  is not found. Controllable by the `_watt_do_exit' variable.
+  DOS is called to query the hostname from NetBios or PC-NFS module.
+
+* All extensions (DHCP,TFTP,syslog and resolver library) have configurable
+  settings that get a chance to snoop at the WATTCP.CFG file when that is
+  parsed in `tcp_config()'
+
+* Setup a ^C/^Break handler in `tcp_cbreak()'.
+
+* Call `tcp_config()' to fetch location of `WATTCP.CFG' file, open it,
+  read it line-by-line, and parse it. Normal parameters (in `normal_cfg[]'
+  table) are mathced first. If no match found, call config-parser hook
+  (`usr_init') in a chained fashion with keyword/value given as arguments.
+
+* `tcp_post_init()' is called to check configuration (currntly checks only
+  `sin_mask'). It reads the `/etc/ethers' file and grows the ARP-cache.
+  Also checks the MTU (asking the PKTDRVR).
+
+* `sock_init()' will try several methods to obtain an IP-address if not
+  found in config file (or when config-less mode is in effect).  BOOTP,
+  DHCP and optioannly RARP will be tried in succesion until `my_ip_addr'
+  becomes set. We'll normally exit to DOS if that fails.
+
+* Join the multicast group 224.0.0.1 if multicast compiled in. I've hardly
+  tested this code.
+
+* If "ICMP_MASK_REQ = 1" is specified, sends a "ICMP Mask Request" as
+  broadcast. Any "ICMP Mask Responce" with a confliction network mask
+  will give a warning later on. "Conflicting net-mask from ICMP Addr
+  Mask Reply" will be printed (plus a beep).
+
+* Optionally try to load a specified BOOT-file through the built-in TFTP-
+  client.  The application must have specified a higher-level handler through
+  the `tftp_writer' and `tftp_terminator' pointers. See `.\src\tftp.c' and
+  `TEST_PROG' for an example.
+
+* Finally, we list all memory we have allocated so far. Only if compiled
+  with `USE_FORTIFY' (not enabled by default).
+
+! to-do:  tcp_init() and hence pkt_init() is called before the config file
+  is parsed. See PKT_INTR below.
+
+
+tcp_config() changes:
+  Some ugly `#if' statements to access the path of the program.
+
+  New (or changed) wattcp.cfg keywords:
+
+    MY_IP: The user may force a particular method by setting "my_ip=bootp",
+      "my_ip=dhcp", "my_ip=rarp" or "my_ip=<ip-address>" in config file.
+
+    EADDR: set own ether-address provided the packet-driver supports it.
+      Use "eaddr = xx:xx:xx:xx:xx:xx" to set address. If RARP is compiled in
+      (option O_RARP set), _dorarp() is called to check whether that ether-
+      address is in use.  Thanks to Dan Kegel <dank@alumni.caltech.edu> for
+      the RARP code.
+
+    MTU: Maximum Transmit Units. For Ethernet this is 1500. Token-ring has
+      much larger MTU, but I've never tested that. Don't use MTU > 1500
+      unless you know what you're doing. Default MTU is 576.
+
+      MSS (Maximum Segment Size) is deducted from MTU;
+        for TCP: MSS = MTU-40, and for UDP: MSS = MTU-28.
+      The MSS value is also stored in the socket in tcp_open() and tcp_listen().
+      Default MSS is 536.
+
+    MTU_DISC: Use MTU discovery when opening a new connection.
+      Not finished yet.
+
+    ICMP_MASK_REQ: Sends an "ICMP Mask Request" message after startup.
+      This may help isolate problems caused by setting wrong netmask.
+      The ICMP message is sent as link-layer broadcast and destination
+      IP 255.255.255.255. There must be a host on the subnet that can
+      answer this ICMP request. A warning ("Conflicting net-mask from
+      ICMP Addr Mask Reply") is printed if the 2 netmasks differ.
+      Refer RFC-950 for details.
+
+    NAGLE: Use Nagles algorithm on all tcp-connections. Default is on.
+
+    ARP_TO: Set timeout for doing IP-to-Ether address lookups (_arp_resolve()).
+      Default is 2 seconds.
+
+    ARP_ALIVE:  Sets lifetime for entries in the ARP cache.
+      Default is 300 seconds (5 min).
+
+    REDIRECTS: Determines which protocols (icmp, igmp, udp or tcp) we will
+      honour ICMP redirects for. A simple check is done before doing ARP
+      resolve on the new gateway; it must be on our sub-net and we make
+      sure we originated the packet (and hence the redirect). We don't
+      bother handling redirect for dying tcp-connections either (if that
+      would every happen..). Default action is to handle redirect for all
+      suported protocols.
+
+    LANGUAGE: Selects the language of Watt-32 messages printed. Syntax is
+      `lang = prefix,lang-file'. Prefix comes from ISO639. `en' is default.
+      Currently only `de' (German), `no' (Norwegian) and `sv' (Swedish) is
+      compiled in. The macro `_LANG(string)' returns the correct translation
+      at run-time. Add more languages in `.\src\language.l'.
+
+    PKT_INTR: This is not finished, but the idea is to choose a PKTDRVR
+      vector before calling _eth_init(). Now this is a "chicken-and-egg"
+      problem. Currently the vector is selected by environment variable
+      WATTCP.VEC. If WATTCP.VEC not found in environment, then the first
+      vector in the range 0x60 - 0x80 is used.
+
+    HOSTS: Selects the file for host-names used by gethostXX(). No default.
+
+    SERVICES: Selects the file for services used by getservXX(). No default.
+
+    PROTOCOLS: Selects the file for protocols used by getprotoXX(). No default.
+
+    NETWORKS: Selects the file for networks used by getnetXX(). No default.
+
+  Watt-32 kernel debugging is turned on by calling `dbug_init()' before
+  calling `sock_init()'.  There are several new keywords related to debugging:
+
+    DEBUG.FILE: <file>.
+      Name of debug-file. Specify a file on RAM-disk for best performance.
+      Use "con" to print to console, or "nul" if no debug is desired (you
+      may only want the SK_DEBUG.DEVICE information).
+
+    DEBUG.MODE: HEADER | ALL. Option DUMP (data only) is removed.
+
+    DEBUG.PROTO: ETH, ARP, RARP, IP, TCP, UDP, ICMP, IGMP or ALL.
+      Dump only packets of these protocols. Several protocols can be selected.
+      E.g. `debug.proto = ip + icmp + udp + tcp'.
+
+    DEBUG.FILTER: ETH, ARP, RARP and/or IP.
+      Debug only protocol packets generated by us or destined for us.
+      E.g. `debug.filter = eth+arp' skips Ether and ARP packets not to/from
+      us.  All others are let in provided that atleast `eth' and `arp' is
+      included in `debug.proto'.
+
+      Notes: (limited) broadcast IP-traffic will pass through the filter
+        provided `DEBUG.PROTO' contains `ip'.
+
+        The `+' in DEBUG.PROTO and DEBUG.FILTER is optional. Any whitespace
+        or separator will work.
+
+        Both keywords and values are case in-sensitive.
+
+  The right-side value may contain an environment variable that will be
+  expanded when read; E.g. if you have `set etc=\my\etc\dir', you may use
+  this in `wattcp.cfg' as follows: `HOSTS = $(ETC)\hosts'. (Using $(etc) is
+  also okay). This will expand to `\my\etc\dir\hosts' at run-time. Currently
+  there may only be one $(var) per line. If `var' is undefined, no warning is
+  given.
+
+
+
+2.1 DHCP client handler
+------------------------
+
+The DHCP client is in _dodhcp() in file pcdhcp.c. It performs these
+actions:
+
+1. Sends a broadcast DHCP DISCOVER message with a list of options.
+   These options may be extended by the keyword `DHCP.REQ_LIST'.
+   Refer RFC2132 for DHCP option codes.
+
+2. Waits max 4 seconds for an DHCP OFFER from a DHCP server (or relay
+   agent). It then parses the OFFER message and configures Watt-32 with
+   anything it could need: subnet mask, gateway, DNS server, hostname,
+   domain-name, default TTL and DHCP timers (lease/renewal/rebind).
+
+3. If DHCP OFFER is okay, it sends a broadcast DHCP REQUEST back to DHCP
+   server acknowledging the OFFER. IP LEASE TIME and our REQUESTED IP-address
+   is filled in.
+   NOTE: Our IP-address is picked up from the OFFER and not from the
+         awaited ACKNOWLEDGE.
+
+4. Waits for DHCP ACKNOWLEDGE (acknowledging our REQUEST).  If we'll get
+   an ACKNOWLEDGE, we do an ARP Reply with our IP/Ether address-pair. This
+   will hopefully update some host's ARP-cache (a.k.a gratuitous ARP).
+   Additionally we send an ARP Request on our new IP. If we get an reply,
+   we're in trouble and decline the IP-address we just got. Note that this
+   ARP Request adds 2 sec (ARP timeout) to the configuration-process.
+
+5. We are now configured. We add a daemon "process" which checks for any
+   DHCP timeout and does renew, rebind or reconfigure as required.
+
+6. New wattcp.cfg keywords related to DHCP:
+
+   DHCP.REQ_LIST: List of options to include in DHCP DISCOVER and INFORM
+     messages.  List is formatted as a comma-separated list of bytes.
+     Refer RFC2132 for details.  If the list contains a Pad option, option
+     processing terminates.  To disable sending DHCP options all-together,
+     use "DHCP.REQ_LIST = 0". The list MUST NOT include the End-option (255).
+     Also see item 1 above.  The default request list is:
+
+       3  -> routers on sub-net
+       6  -> DNS server
+       8  -> Cookie server
+       9  -> LPR server
+       12 -> Host name
+       15 -> Domain name
+       23 -> IP default TTL
+       26 -> Interface MTU
+       35 -> ARP cache timeout
+       36 -> Ethernet encapsulation
+       37 -> TCP default TTL
+
+     i.e. "dhcp.req_list = 3,6,8,9,12,15,23,26,35,36,37"
+
+   DHCP.TRACE: Enable printing trace messages during DHCP configuration
+     phase. Default is 0.
+
+   DHCP.BCAST: Controls the Broadcast bit in the Boot-header. Som older
+     DHCP servers (and Windows-NT) might require this. Default is 0.
+
+   DHCP.INFORM: Added RFC2131 feature. Client already has an IP-address.
+     Only configure other settings. Not finished.
+
+   DHCP.TIMEOUT: Timeout used while waiting for DHCP OFFER or ACKNOWLEDGE.
+     Default 30 sec.
+
+   DHCP.RETRIES: Number of retries or DHCP Discovery queries sent.
+     Default is 3.
+
+   DHCP.ARPCHECK: If set to `1', will send an ARP Request on our obtained
+     IP address. If no reply is received within ARP Timeout (2 sec), the
+     IP-address is considered safe to use. Default is 0.
+
+
+
+
+2.2 Use with DOS-PPP
+----------------------
+
+Antonio Lopez Molero <tonilop@redestb.es>, <tonilop@ibm.net> has created
+the excellent DOS-PPP driver for dial-up use.  Both the plain PPP and Ether
+emulating drivers works very well with Watt-32.
+
+Here is a 4DOS batch file I use to connect. This requires no extra config-
+files.  Simly edit `PPPLINK.BTM' and replace `pppd' with `epppd' if you need
+to run "old" applications that requires Ethernet emulation.  PPPLINK.BTM and
+WATTCP.CFG must be located in the same directory (which also must be on the
+path). You also need the `termin.com' program to unload the PPPD driver.
+This is found in the Crynwr packet-driver collection:
+
+  ftp://ftp.simtel.net/pub/simtelnet/msdos/pktdrvr/pktd11*.zip
+
+
+Add environment variables as needed:
+
+  isp_telno   -> telephone number to your ISP
+  isp_user    -> user name
+  isp_passwd  -> password
+  ppp_port    -> COM port to use ("com1" - "com4")
+  ppp_speed   -> PC-modem speed to use. (>= 2*CONNECT speed is recommended)
+
+DOS-PPP writes the following variables to the environment, which you should
+define in WATTCP.CFG in this way:
+  my_ip   = $(MYIP)
+  gateway = $(REMIP)
+  netmask = $(NETMASK)
+  mss     = $(PEERMRU)
+  mtu     = $(PEERMRU)     (assuming link is symmetric)
+
+The DNS-host of your ISP must be hard-coded, but will hardly ever change:
+  nameserver = xxx.xxx.xxx.xxx
+
+If you don't use 4DOS, you should still use the above trick.  But you'll
+need to rewrite the following batch file.
+
+------------------------------- cut here ---------------------------------
+@echo off
+if %isp_telno. == .  (@echo ISP_TELNO not set  ^quit)
+if %isp_user. == .   (@echo ISP_USER not set   ^quit)
+if %isp_passwd. == . (@echo ISP_PASSWD not set ^quit)
+if %ppp_port. == .   (@echo PPP_PORT not set   ^quit)
+if %ppp_speed. == .  (@echo PPP_SPEED not set  ^quit)
+
+if %1.==up.   goto CONNECT
+if %1.==down. goto DISCONNECT
+
+@echo Usage: %0 [up `|` down] [debug]
+quit
+
+:CONNECT
+pushd %@path[%@search[%0]]
+iff %@attrib[wattcp.cfg]. == . then
+  @echo WATTCP.CFG file not found
+  popd
+  quit
+endiff
+
+@echo *** LOADING DOS-PPP ****
+
+del /q ip-up.bat >&> nul
+del /q chat.cfg  >&> nul
+del /q pppd.cfg  >&> nul
+
+@echo ABORT ERROR                >  chat.cfg
+@echo ABORT BUSY                 >> chat.cfg
+@echo ABORT 'NO DIALTONE'        >> chat.cfg
+@echo ABORT 'NO CARRIER'         >> chat.cfg
+@echo ABORT RING                 >> chat.cfg
+@echo REPORT CONNECT             >> chat.cfg
+@echo TIMEOUT 10                 >> chat.cfg
+@echo '' ATZ                     >> chat.cfg
+@echo OK ATDT%isp_telno          >> chat.cfg
+@echo TIMEOUT 60                 >> chat.cfg
+@echo CONNECT                    >> chat.cfg
+
+@echo %ppp_port                  >  pppd.cfg
+@echo %ppp_speed                 >> pppd.cfg
+@echo asyncmap 0                 >> pppd.cfg
+@echo crtscts                    >> pppd.cfg
+@echo user %isp_user             >> pppd.cfg
+@echo passwd %isp_passwd         >> pppd.cfg
+@echo connect "chat -f chat.cfg" >> pppd.cfg
+
+iff %2. == debug. then
+  @echo kdebug 7                 >> pppd.cfg
+  pppdd -d
+else
+  pppd
+endiff
+
+iff %? != 0 then
+  @echo PPPD returned error (%?)
+else
+  call ip-up.bat
+  set wattcp.cfg=%_cwd
+endiff
+popd
+quit
+
+:DISCONNECT
+pushd %@path[%@search[%0]]
+@echo *** UNLOADING DOS-PPP ****
+termin.com 0x61 > nul
+popd
+------------------------------- cut here ---------------------------------
+
+
+3.0 Protocol Debugger
+---------------------
+
+The protocol debugger implemented in pcdbug.c parses these protocols:
+  IP   - Internet Protocol v4. All details of header is shown (see below).
+  UDP  - User Datagram Protocol. All details of header is shown.
+  TCP  - Transmission Control Protocol. Full header with known TCP options
+         is shown (see below).
+  ARP  - Address Resolution Protocol.
+  RARP - Reverse Address Resolution Protocol.
+  DNS  - Domain Name System. Parses nameserver request/reply from an
+         UDP packet.
+
+A typical TCP/IP packet could be (numbers are decimal unless noted):
+
+  Transmitted: pctcp.c (1229), time 53900.101
+  IP:   172.16.0.6 -> 172.16.0.1
+        IHL 20, ver 4, tos 0, len 391, ttl 254, prot TCP (6), chksum 4C4F (ok)
+        id 13FD ofs 0
+  TCP:  172.16.0.6 (80) -> 172.16.0.1 (4828)
+        flags ACK PSH, win 16384, chksum 8915 (ok), urg 0
+                   SEQ       2722,  ACK   20675450
+        ESTAB    (dSEQ        161, dACK          0)    MS 0/0, Unhappy
+        KC 0, vjSA 508, vjSD 340, CW 4, WW 1, RTO 243, RTTdiff 0.33, dTS 237
+  351:  0000: 6C 22 61 9E 82 8D DB 96-27 6E 2E 54 6A FD 74 A8 l"až‚Û–'n.Tjýt¨
+        0010: 93 1A 77 91 41 BC E8 AD-6E 17 0D 68 FD 5C 41 57 “.w‘A¼è­n..hý\AW
+        0020: 0B D1 F1 2D F9 6E 50 BC-77 4A E7 D2 E6 A3 3E 02 .Ññ-ùnP¼wJçÒæ£>.
+
+1. First line shows "Transmitted:" or "Received:" and file/line where
+   protocol debugger was called (`_dbugxmit()' or `_dbugrecv()' through
+   macros `DEBUG_TX()' or `DEBUG_RX()').
+
+2. The next 3 lines shows IP-header and any IP-options:
+     "a -> b" : source address -> destination address
+     "IHL 20" : IP header length is alway 20 unless IP-options are present
+                (the very seldom are).
+     "ver 4"  : IP protocol version 4. We don't speak IPv6 yet.
+     "tos 0"  : Type Of Service; "0"     = Unspecified,
+                                 "Rel"   = Reliable
+                                 "ThPut" = Throughput, i.e. high bandwidth
+                                 "LwDly" = Low delay
+     "len 391": Total length of IP-header, IP-options and following data.
+     "ttl 254": Time To Live. Our default is 254.
+     "prot TCP (6)": Indicates what protocol follows IP-header (and IP-options).
+     "chksum 4C4F" : The 1's-complement (hex) checksum of IP-header (and IP-
+                     options). "(ok)" is printed if protocol debugger checks
+                     it to be okay. "(ERROR)" is printed otherwise.
+     "id 13FD": The (hex) identifier of this IP-packet. In case this was
+                a fragment, all fragments would have the same identifier.
+     "ofs 0" :  Incase this was a fragment, it specifies where this chunk
+                should be inserted during reassembly (at receiving end).
+
+3. The next 5 lines shows details of TCP header and any TCP-options:
+     "a (x) -> b (y)" : source address (source port) ->
+                        destination address (destination port)
+               The IP-source/destination addresses are rewritten (from
+               IP-header) for easier reading.
+
+     "flags ACK PSH" : List of flag-bits set in the TCP-flag byte:
+               ACK, FIN, SYN, PSH, RST, URG
+
+     "win 16384" : Our advertised receive window. With the native Wattcp
+               API this is 2048, and 16384 when using the BSD-socket API.
+
+     "chksum 8915" : (hex) Contary to the IP-checksum, the TCP pseudo-checksum
+               protects both TCP-header and data. "(ok)" is printed if
+               protocol debugger checks it to be okay. "(ERROR)" is printed
+               otherwise.
+
+     "urg 0" : Urgent Pointer is not yet supported by Watt-32.
+
+     "SEQ 2722"    : Denotes the sequence number of the first data-byte in
+                     this TCP-packet.
+     "ACK 20675450": Denotes our last byte seen from our peer (our SEQ+1).
+     "dSEQ 161":     Delta Sequence shows the change in SEQ from last
+                     packet sent. This indicates 161 bytes where sent in
+                     previous packet. A negative value indicates data
+                     was retransmitted because of timeout or because our
+                     receive buffer got full.
+     "dACK 0":       Delta ACK value shows the change in ACK value from
+                     last transmission. A negative value indicates data
+                     was lost and peer need to back up.
+     "ESTAB" :       The state of the socket or TCB (Transmit Control Block)
+                     at time this packet was sent or received.
+
+     Some more esoteric variables:
+     "MS 0/0":       Internal counters for missed segments.
+     "Unhappy":      Internal flag; need to retransmit data.
+     "KC 0" :        Karn count related to Phil Karn's algorithm.
+     "vjSA 508" :    Van Jacobson's and Karel's new algorithm; Standard Average.
+     "vjSD 340" :    Van Jacobson's and Karel's algorithm; Standard Deviation.
+     "CW 4" :        Congestion Window.
+     "WW 1" :        Slow start Window.
+     "RTO 243" :     Calculated Round Trip timeout.
+     "RTTdiff 0.33": Time until RTT-timeout. "--" means RTT timed out.
+     "dTS 237":      If Timestamp options used, the difference between
+                     TSval and TSecho.
+
+4. The rest of dump shows data beyond TCP-header:
+     "351:"   The total length of TCP payload.
+     "0000:"  (hex) Data offset into the payload. Increases by 0x10 for
+              each line printed.
+
+
+3.1 Debug Summary
+------------------
+
+If library was compiled with USE_STATISTICS (default), the debug file will
+include some protocol summary at the end. Typically something like this:
+
+  MAC input stats:
+      IP:     drop 1, waiting 0
+      non-IP: drop 0, waiting 0, recv/sent 199/1
+      unknown type 0, LLC frames 0
+  MAC output stats:
+      Tx errors             0
+  ARP Requests:           195 recv
+      Requests:             1 sent
+      Replies:              4 recv
+      Replies:              0 sent
+  IP input stats:
+      total:             2325
+      delivered:         2325
+  IP output stats:
+      total:              550
+  ICMP input stats:
+      total:                1
+      echoreply:            1
+  ICMP output stats:
+      total:                2
+      echoreply:            1
+      echorequest:          1
+  UDP input stats:
+      total:               47
+      no service:           1
+  UDP output stats:
+      total:                5
+  TCP input stats:
+      total:             2278
+      con-attempt:         13
+  TCP output stats:
+      total:              545
+      data pkt:           123
+      data byte:         6917
+      SYN/FIN/RST:        107
+      ACK pkt:            438
+      ACK dly:             12
+      retrans to:           1
+
+
+1. 3 first lines shows numbers of IP and non-IP packets dropped due to
+   buffer full (no room in `_pkt_inf->ip_queue' or `_pkt_inf->arp_queue').
+   Also shown is number of packets waiting to be polled from the queues.
+   Last line shows summary of non-IP traffic (ARP or RARP) and also any
+   LLC frames received. Packets with LLC fields (or IEEE 802.3 encapsul-
+   ation) should never (?) occur here.
+
+2. MAC output stats: currently only shows number of errors reported
+   by MAC-layer and packet-driver while sending.
+
+3. ARP Request/Response summary:
+
+   ARP Requests:   195 recv  -> 195 ARP Requests was received.
+      Requests:      1 sent  -> 1 ARP Request was sent by us.
+      Replies:       4 recv  -> 4 ARP Replies was generate on network.
+                                They where either sent to us by unicast
+                                or someone was replying using broadcast (?!).
+      Replies:       0 sent  -> No ARP Replies was sent meaning none was
+                                ARP'ing for our IP-address.
+4. IP input stats:
+      total:           2325  -> # of IP datagrams received.
+      badsum:             +  -> # received with bad header checksum.
+      badver:             +  -> # received with IP version not equal 4.
+      short:              +  -> # received with too short header ( < 20).
+      frags:              +  -> # of fragments (part of larger IP datagram).
+      fragdrop:           +  -> # of fragments dropped due to bad version,
+                                bad offset or no buffers/memory.
+      fragtime:           +  -> # of IP datagrams dropped due to timeout while
+                                waiting for all fragments.
+      reassemble:         +  -> # of IP datagrams reassembled from fragments.
+      noproto:            +  -> # of IP datagrams with unknown transport
+                                protocol directed to us (not ICMP,IGMP,UDP,TCP).
+      delivered:       2325  -> # of IP datagrams delivered to higher level.
+
+   IP output stats:
+      total:            550  -> # of IP packets including fragments sent.
+      noroute             +  -> # of IP packets that failed ARP resolution.
+      frags:              +  -> # of IP fragments generated.
+      dropped:            +  -> # of IP packets failed transmit to link-layer.
+
+5. ICMP input stats:
+      total:              1  -> # of ICMP packets received.
+      badsum:             +  -> # of ICMP packets with bad checksum.
+      badcode:            +  -> # of ICMP packets with unknown/bad codes.
+      short:              +  -> # of ICMP packets too short.
+
+      echoreply:          1  -> # of ICMP Echo Replies received.
+      unreach:            +  -> # of ICMP Host/Port Unreachable received.
+      srcquench:          +  -> # of ICMP Source Quenches received.
+      redirect:           +  -> # of ICMP Redirects received.
+      echorequest:        +  -> # of ICMP Echo Requests received.
+      router adv:         +  -> # of ICMP Router Advertisments received.
+      router sol:         +  -> # of ICMP Router Solicitations received.
+      timex:              +  -> # of ICMP Time Exceeded received.
+      parm prob:          +  -> # of ICMP Parameter Problem received.
+      tstamp req:         +  -> # of ICMP Timestamp Requests received.
+      tstamp rep:         +  -> # of ICMP Timestamp Replies received.
+      info req:           +  -> # of ICMP Information Requests received.
+      info rep:           +  -> # of ICMP Information Replies received.
+      mask req:           +  -> # of ICMP Network Mask Requests received.
+      mask rep:           +  -> # of ICMP Network Mask Replies received.
+
+   ICMP output stats:
+      total:              1  -> # of ICMP packets sent.
+      echoreply:          +  -> # of ICMP Echo Replies sent.
+      unreach:            +  -> # of ICMP Host/Port Unreachable sent.
+      srcquench:          +  -> # of ICMP Source Quenches sent.       (*)
+      redirect:           +  -> # of ICMP Redirects sent.             (*)
+      echorequest:        1  -> # of ICMP Echo Requests sent.
+      router adv:         +  -> # of ICMP Router Advertisments sent.  (*)
+      router sol:         +  -> # of ICMP Router Solicitations sent.  (*)
+      timex:              +  -> # of ICMP Time Exceeded sent.
+      parm prob:          +  -> # of ICMP Parameter Problem sent.     (*)
+      tstamp req:         +  -> # of ICMP Timestamp Requests sent.    (*)
+      tstamp rep:         +  -> # of ICMP Timestamp Replies sent.     (*)
+      info req:           +  -> # of ICMP Information Requests sent.  (*)
+      info rep:           +  -> # of ICMP Information Replies sent.   (*)
+      mask req:           +  -> # of ICMP Network Mask Requests sent.
+      mask rep:           +  -> # of ICMP Network Mask Replies sent.  (*)
+
+6. If support for multicast is built into library (USE_MULTICAST defined
+   in config.h), then IGMP protocol summary is:
+
+   IGMP input stats:
+      total:              +
+      badsum:             +
+      short:              +
+      queries:            +
+      queries (bad):      +
+      reports:            +
+      reports (bad):      +
+      reports (grp):      +
+
+   IGMP output stats:
+      reports:            +
+
+
+7.
+
+  UDP input stats:
+      total:               47
+      no service:           1
+
+  UDP output stats:
+      total:                5
+
+
+8.
+  TCP input stats:
+      total:             2278
+      con-attempt:         13
+
+  TCP output stats:
+ 
+
+ (+) In order to save space, these lines will not be included if the
+     associated count is 0.
+
+ (*) Currently not possible.
+

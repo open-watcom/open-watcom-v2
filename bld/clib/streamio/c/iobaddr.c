@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Standard stream/file accessor routines.
 *
 ****************************************************************************/
 
@@ -34,16 +33,93 @@
 #include <stdio.h>
 #include "rtdata.h"
 
-_WCRTLINK FILE *__get_std_stream( unsigned handle ) {
+
+#if !defined( __NETWARE__ ) || !defined( _THIN_LIB )
+
+/*
+ *  This code should be included on non-netware platforms and in cases where thin lib is not defined
+ *  This will ensure that fat netware libraries will be calling the Watcom version of __get_std_stream
+ */
+
+_WCRTLINK FILE *__get_std_stream( unsigned handle )
+{
     if( handle > NUM_STD_STREAMS ) {
-        return NULL;
+        return( NULL );
     } else {
-        return &_RWD_iob[handle];
+        return( &_RWD_iob[handle] );
     }
 }
 
+_WCRTLINK FILE *__get_std_file( unsigned handle )
+{
+    return( __get_std_stream( handle ) );
+}
 
-#ifdef __NETWARE__
+#else
+
+#include <io.h>
+
+#if defined( _NETWARE_LIBC )
+    extern FILE   **___stdin ( void );
+    extern FILE   **___stdout( void );
+    extern FILE   **___stderr( void );
+    extern FILE   **___cin   ( void );
+    extern FILE   **___cout  ( void );
+
+    _WCRTLINK FILE *__get_std_stream( unsigned handle )
+    {
+        FILE    *pFile = NULL;
+
+        switch( handle ) {
+        case STDIN_FILENO:
+            pFile = *___stdin();
+            break;
+        case STDOUT_FILENO:
+            pFile = *___stdout();
+            break;
+        case STDERR_FILENO:
+            pFile = *___stderr();
+            break;
+        default:
+            break;
+        }
+        return( pFile );
+    }
+#elif defined( _NETWARE_CLIB )
+    extern FILE   **__get_stdin ( void );
+    extern FILE   **__get_stdout( void );
+    extern FILE   **__get_stderr( void );
+
+    _WCRTLINK FILE *__get_std_stream( unsigned handle )
+    {
+        FILE    *pFile = NULL;
+
+        switch( handle ) {
+        case STDIN_FILENO:
+            pFile = *__get_stdin();
+            break;
+        case STDOUT_FILENO:
+            pFile = *__get_stdout();
+            break;
+        case STDERR_FILENO:
+            pFile = *__get_stderr();
+            break;
+        default:
+            break;
+        }
+        return( pFile );
+    }
+#endif
+
+#endif
+
+
+#if defined( __NETWARE__ ) && !defined( _THIN_LIB )
+
+/*
+ *  This code is for fat netware libraries. We are using the Watcom FILE *'s
+ *  so this will be calling __get_std_stream from the top of this file.
+ */
 
 #include <io.h>
 
@@ -51,7 +127,7 @@ FILE **__get_stdin( void )
 {
     static FILE         *stdin_ptr;
 
-    stdin_ptr = __get_std_stream( STDIN_HANDLE );
+    stdin_ptr = __get_std_stream( STDIN_FILENO );
     return( &stdin_ptr );
 }
 
@@ -59,7 +135,7 @@ FILE **__get_stdout( void )
 {
     static FILE         *stdout_ptr;
 
-    stdout_ptr = __get_std_stream( STDOUT_HANDLE );
+    stdout_ptr = __get_std_stream( STDOUT_FILENO );
     return( &stdout_ptr );
 }
 
@@ -67,7 +143,7 @@ FILE **__get_stderr( void )
 {
     static FILE         *stderr_ptr;
 
-    stderr_ptr = __get_std_stream( STDERR_HANDLE );
+    stderr_ptr = __get_std_stream( STDERR_FILENO );
     return( &stderr_ptr );
 }
 

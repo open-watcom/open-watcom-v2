@@ -24,14 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  QNX error handler for kernel calls (sys/kernel.h).
 ;*
 ;*****************************************************************************
 
 
-; this file contains the error handler for kernel calls (sys/kernel.h).
-;
         name kererr
 
 .386p

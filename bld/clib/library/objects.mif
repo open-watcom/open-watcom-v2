@@ -1,11 +1,11 @@
-!include $(clib_dir)\master.mif
+!include $(clib_dir)/master.mif
 
 !ifeq processor axp
-timstamp.obj : ..\..\c\timstamp.c
+timstamp.obj : ../../c/timstamp.c
     *$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $($[&_opts)
 !else
-timstamp.obj : ..\..\c\timstamp.c
+timstamp.obj : ../../c/timstamp.c
     *$(cc) $[@ -nm=$[& $(include_c_path) $(build_target) $(c_flags) $($[&_opts)
 !endif
 
-!include ..\..\..\mklib.mif
+!include ../../../mklib.mif

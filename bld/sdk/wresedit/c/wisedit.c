@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
@@ -60,4 +60,3 @@ Bool WDoesEditHaveFocus( void )
     focus = GetFocus();
     return( WIsEdit( focus ) );
 }
-

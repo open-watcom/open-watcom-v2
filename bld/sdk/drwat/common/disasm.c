@@ -155,12 +155,12 @@ char *DrWatToStr( DWORD value, WORD length, DWORD off )
 /*
  * DrWatToIndex -- convert to index
  */
-char *DrWatToIndex( long value, DWORD off )
+char *DrWatToIndex( unsigned long value, DWORD off )
 {
 
     off = off;
-    if( value < 0 ) {
-        LongToHex( disasmBuf + 1, -value, 4 );
+    if( (long)value < 0 ) {
+        LongToHex( disasmBuf + 1, -(long)value, 4 );
         disasmBuf[0] = '-';
     } else {
         LongToHex( disasmBuf, value, 4 );

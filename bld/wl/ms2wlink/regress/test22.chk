@@ -1,0 +1,38 @@
+# This file produced by MS2WLINK
+debug all
+system os2 pmcompatible
+file obj.obj
+name exe.exe
+option map=map.map
+option alignment=32
+# batch option is not necessary when using WLINK
+# cparmaxalloc option is not supported by WLINK
+option dosseg
+# dsallocate option is not supported by WLINK
+# dynamic option is not necessary when using WLINK
+# exepack option is not supported by WLINK
+# far call translation happens automatically for WATCOM .obj files
+# use FCENABLE for far call translation on non-WATCOM .obj files
+# /XXX : unrecognized option name; ignored
+# high option is not supported by WLINK
+# information option is not necessary when using WLINK
+# linenumbers option is not supported by WLINK
+option nodefaultlibs
+# noextdictionary option is not necessary when using WLINK
+# nofarcalltranslation option is not necessary when using WLINK
+# nogroupassociation option is not supported by WLINK
+option caseexact
+option quiet
+# nonullsdosseg option is not supported by WLINK
+option packcode=0
+# nopackfunctions option is not necessary when using WLINK
+option standard
+# undefsok behaviour slightly different than onerror
+option undefsok
+# overlayinterrupt option is not necessary when using WLINK
+option packcode=65535
+# packdata option is not supported by WLINK
+# pause option is not supported by WLINK
+# quicklibrary option is not supported by WLINK
+# segments option is not necessary when using WLINK
+# warnfixup option is not supported by WLINK

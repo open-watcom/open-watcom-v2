@@ -40,16 +40,16 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WdeSetEditMode          ( WdeResInfo *, Bool );
-extern LRESULT  WdePassToEdit           ( UINT, WPARAM, LPARAM );
-extern Bool     WdeRegisterEditClass    ( HINSTANCE );
-extern void     WdeInitEditClass        ( void );
-extern void     WdeFiniEditClass        ( void );
-extern Bool     WdeCreateEditWindows    ( WdeResInfo * );
-extern Bool     WdeResizeEditWindows    ( WdeResInfo * );
-extern HWND     WdeGetEditWindowHandle  ( WdeResInfo * );
-extern HFONT    WdeGetEditFont          ( void );
-extern HWND     WdeGetFormsWindowHandle ( WdeResInfo * );
-extern void     WdeDestroyEditWindows   ( WdeResInfo * );
+extern Bool     WdeSetEditMode( WdeResInfo *, Bool );
+extern LRESULT  WdePassToEdit( UINT, WPARAM, LPARAM );
+extern Bool     WdeRegisterEditClass( HINSTANCE );
+extern void     WdeInitEditClass( void );
+extern void     WdeFiniEditClass( void );
+extern Bool     WdeCreateEditWindows( WdeResInfo * );
+extern Bool     WdeResizeEditWindows( WdeResInfo * );
+extern HWND     WdeGetEditWindowHandle( WdeResInfo * );
+extern HFONT    WdeGetEditFont( void );
+extern HWND     WdeGetFormsWindowHandle( WdeResInfo * );
+extern void     WdeDestroyEditWindows( WdeResInfo * );
 
 #endif

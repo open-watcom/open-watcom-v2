@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DPMI API int 31h wrappers.
 *
 ****************************************************************************/
 
@@ -160,6 +159,7 @@ typedef struct {
 #define DPMISetDescriptor                       _DPMISetDescriptor
 #define DPMICreateCodeSegmentAliasDescriptor    _DPMICreateCodeSegmentAliasDescriptor
 #define DPMIAllocateLDTDescriptors              _DPMIAllocateLDTDescriptors
+#define DPMISegmentToDescriptor                 _DPMISegmentToDescriptor
 #define DPMIFreeLDTDescriptor                   _DPMIFreeLDTDescriptor
 #define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
 #define DPMISetSegmentBaseAddress               _DPMISetSegmentBaseAddress
@@ -178,6 +178,7 @@ typedef struct {
 
 #define DPMIAllocateDOSMemoryBlock              _DPMIAllocateDOSMemoryBlock
 #define DPMIFreeDOSMemoryBlock                  _DPMIFreeDOSMemoryBlock
+#define DPMIIdle                                _DPMIIdle
 #define DPMIModeDetect                          _DPMIModeDetect
 #define DPMIRawRMtoPMAddr                       _DPMIRawRMtoPMAddr
 #define DPMIRawPMtoRMAddr                       _DPMIRawPMtoRMAddr
@@ -211,6 +212,7 @@ extern void __far *_DPMIGetPMExceptionVector( char iv );
 extern void __far *_DPMIGetPMInterruptVector( char iv );
 extern void _DPMISetRealModeInterruptVector( char iv, void __far * ptr );
 extern short _DPMIModeDetect( void );
+extern void _DPMIIdle( void );
 extern void _DPMIGetVersion( version_info __far * );
 extern void _fDPMIGetVersion( version_info __far * );
 extern void _nDPMIGetVersion( version_info * );
@@ -263,12 +265,27 @@ extern void _DPMIResetWatch( short handle );
         "int 2fh"  \
         value[ax];
 
+#pragma aux _DPMIIdle = \
+        "mov ax,1680h"  \
+        "int 2fh";
+
+#if defined(__386__)
+#pragma aux _DPMISetWatch = \
+        "mov    ax,0b00h" \
+        "mov    cx,bx"  \
+        "shr    ebx,16"  \
+        _INT_31         \
+        "sbb    eax,eax" \
+        "mov    ax,bx"  \
+        parm[ ebx ] [ dl ] [ dh ] modify [ ecx ] value [ eax ];
+#else
 #pragma aux _DPMISetWatch = \
         "mov    ax,0b00h" \
         "xchg   bx,cx"  \
         _INT_31         \
         "sbb    cx,cx" \
         parm[bx cx] [ dl ] [ dh ] value [ cx bx ];
+#endif
 
 #pragma aux _DPMIResetWatch = \
         "mov ax,0b03h" \
@@ -431,7 +448,7 @@ extern void _DPMIResetWatch( short handle );
         "mov bx,ax"     \
         "shr eax,16"    \
         "mov cx,ax"     \
-        "mov ax,0600h"  \
+        "mov ax,0601h"  \
         _INT_31 \
         "sbb ax,ax"     \
         parm [eax] [edx] value[ax] modify [bx cx si di];

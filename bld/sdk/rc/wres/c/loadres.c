@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load resources from file. 
 *
 ****************************************************************************/
 
@@ -34,31 +33,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <malloc.h>
-#ifdef UNIX
-    #include <alloca.h>
-    #ifdef _AIX
-        #define alloca __alloca
-    #endif
+#include <stdlib.h>
+#include "walloca.h"
+
+#ifndef __WATCOMC__
+    #define _WCI86FAR
 #endif
 
-
-/*
-   This next set of lines is a temp fix until the 11.0 headers are
-   in universal usage.
-   The net result is that for 16bit Intel platforms _WCI86FAR will be __far
-   for all other compilation targets it will be nothing.
-*/
-#ifndef _WCI86FAR
-    #include <errno.h>
-    #ifndef _WCI86FAR
-        #ifdef M_I86
-            #define _WCI86FAR __far
-        #else
-            #define _WCI86FAR
-        #endif
-    #endif
-#endif
 
 #ifdef WIN_GUI
 #include <windows.h>
@@ -78,15 +59,15 @@ extern WResDir    MainDir;
 
 static int GetResource( WResLangInfo    *res,
                         PHANDLE_INFO    hInstance,
-                        LPSTR           lpszBuffer )
-/**************************************************/
+                        char            *res_buffer )
+/***************************************************/
 {
     off_t               prevpos;
     unsigned            numread;
 
     prevpos = WRESSEEK( hInstance->handle, res->Offset, SEEK_SET );
     if ( prevpos == -1L ) return( -1 );
-    numread = WRESREAD( hInstance->handle, (void *)lpszBuffer, (int)res->Length );
+    numread = WRESREAD( hInstance->handle, res_buffer, (int)res->Length );
 
     return( 0 );
 }
@@ -105,6 +86,7 @@ extern int WINAPI WResLoadResource2( WResDir            dir,
     WResDirWindow       wind;
     WResLangInfo        *res;
     WResLangType        lang;
+    char                *res_buffer;
 
     if( ( lpszBuffer == NULL ) || ( bufferSize == NULL ) ) {
         return( -1 );
@@ -125,12 +107,13 @@ extern int WINAPI WResLoadResource2( WResDir            dir,
         if( res->Length >= INT_MAX ) {
             return( -1 );
         }
-        *lpszBuffer = (LPSTR)WRESALLOC( res->Length );
+	res_buffer  = WRESALLOC( res->Length );
+	*lpszBuffer = res_buffer;
         if( *lpszBuffer == NULL ) {
             return( -1 );
         }
         *bufferSize = (int)res->Length;
-        retcode = GetResource( res, hInstance, *lpszBuffer );
+        retcode = GetResource( res, hInstance, res_buffer );
     }
 
     return( retcode );
@@ -145,4 +128,3 @@ extern int WINAPI WResLoadResource( PHANDLE_INFO       hInstance,
 {
     return( WResLoadResource2( MainDir, hInstance, idType, idResource, lpszBuffer, bufferSize ) );
 }
-

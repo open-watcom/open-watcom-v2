@@ -46,13 +46,13 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WInitRibbons      ( HINSTANCE );
-extern void WShutdownRibbons  ( void );
-extern int  WGetRibbonHeight  ( void );
-extern Bool WCreateRibbon     ( WAccelEditInfo * );
-extern Bool WResizeRibbon     ( WAccelEditInfo *, RECT * );
-extern void WShowRibbon       ( WAccelEditInfo *, HMENU );
+extern Bool WInitRibbons( HINSTANCE );
+extern void WShutdownRibbons( void );
+extern int  WGetRibbonHeight( void );
+extern Bool WCreateRibbon( WAccelEditInfo * );
+extern Bool WResizeRibbon( WAccelEditInfo *, RECT * );
+extern void WShowRibbon( WAccelEditInfo *, HMENU );
 
-extern void WDestroyRibbon    ( WAccelEditInfo * );
+extern void WDestroyRibbon( WAccelEditInfo * );
 
 #endif

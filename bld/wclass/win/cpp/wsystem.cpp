@@ -166,7 +166,7 @@ void WEXPORT WSystemService::sysSleep( unsigned long interval ) {
 WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name ) {
 /*************************************************************************/
 
-    HANDLE      lib_handle;
+    WModuleHandle      lib_handle;
 
     WFileName fn( lib_name );
     if( *fn.ext() == NULLCHAR ) {
@@ -177,7 +177,7 @@ WModuleHandle WEXPORT WSystemService::loadLibrary( const char *lib_name ) {
     lib_handle = LoadLibrary( (LPSTR)(const char *)fn );
     SetErrorMode( old_err_mode );
 #if !defined( __NT__ )
-    if( lib_handle < 32 ) {
+    if( (UINT)lib_handle < 32 ) {
         return( NULL );
     }
 #endif
@@ -189,7 +189,7 @@ WProcAddr WEXPORT WSystemService::getProcAddr( WModuleHandle mod_handle,
                                                const char *proc ) {
 /*****************************************************************/
 
-    return( GetProcAddress( mod_handle, proc ) );
+    return( (WProcAddr) GetProcAddress( mod_handle, proc ) );
 }
 
 

@@ -41,6 +41,11 @@ extern  int      PathOpen(char *,unsigned, char *);
 
 #define MADSIG  0x0044414DUL
 
+void MADSysUnload( unsigned long sys_hdl )
+{
+    DIGCliFree( (void *)sys_hdl );
+}
+
 mad_status MADSysLoad( char *path, mad_client_routines *cli,
                                 mad_imp_routines **imp, unsigned long *sys_hdl )
 {
@@ -66,9 +71,4 @@ mad_status MADSysLoad( char *path, mad_client_routines *cli,
     }
     *sys_hdl = (unsigned long)mad;
     return( MS_OK );
-}
-
-void MADSysUnload( unsigned long sys_hdl )
-{
-    DIGCliFree( (void *)sys_hdl );
 }

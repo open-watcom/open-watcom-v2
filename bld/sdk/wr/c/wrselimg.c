@@ -37,7 +37,6 @@
 #include "wrglbl.h"
 #include "wrinfo.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 #include "wrctl3d.h"
 #include "wrmaini.h"
 #include "wrdmsgi.h"
@@ -64,9 +63,9 @@ extern BOOL WR_EXPORT WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  void            WRSetEntries    ( HWND, WRSelectImageInfo * );
-static  BOOL            WRSetWinInfo    ( HWND, WRSelectImageInfo * );
-static  BOOL            WRGetWinInfo    ( HWND, WRSelectImageInfo * );
+static void WRSetEntries( HWND, WRSelectImageInfo * );
+static BOOL WRSetWinInfo( HWND, WRSelectImageInfo * );
+static BOOL WRGetWinInfo( HWND, WRSelectImageInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -79,8 +78,7 @@ void WR_EXPORT WRFreeSelectImageInfo( WRSelectImageInfo *info )
     }
 }
 
-WRSelectImageInfo * WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo,
-                                             FARPROC hcb )
+WRSelectImageInfo * WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
 {
     DLGPROC             proc;
     HINSTANCE           inst;
@@ -91,25 +89,24 @@ WRSelectImageInfo * WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo,
         return( NULL );
     }
 
-    info = (WRSelectImageInfo *)WRMemAlloc( sizeof(WRSelectImageInfo) );
+    info = (WRSelectImageInfo *)WRMemAlloc( sizeof( WRSelectImageInfo ) );
     if( info == NULL ) {
         return( NULL );
     }
-    memset( info, 0, sizeof(WRSelectImageInfo) );
+    memset( info, 0, sizeof( WRSelectImageInfo ) );
 
-    info->hcb  = hcb;
+    info->hcb = hcb;
     info->info = rinfo;
 
     inst = WRGetInstance();
 
-    proc = (DLGPROC) MakeProcInstance( (FARPROC)WRSelectImageProc, inst );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent,
-                                proc, (LPARAM) info );
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, proc, (LPARAM)info );
 
-    FreeProcInstance( (FARPROC) proc );
+    FreeProcInstance( (FARPROC)proc );
 
-    if( ( modified == -1 ) || ( modified == IDCANCEL ) ) {
+    if( modified == -1 || modified == IDCANCEL ) {
         WRMemFree( info );
         info = NULL;
     }
@@ -123,7 +120,7 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
     WResTypeNode        *tnode;
     char                *empty_str;
 
-    if( !info || !info->info || ( hdlg == (HWND)NULL ) ) {
+    if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
         return;
     }
 
@@ -136,7 +133,7 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
     tnode = WRFindTypeNode( info->info->dir, info->type, NULL );
     if( tnode == NULL ) {
         empty_str = WRAllocRCString( WR_EMPTY );
-        if( empty_str ) {
+        if( empty_str != NULL ) {
             WRSetLBoxWithStr( lbox, empty_str, NULL );
             WRFreeRCString( empty_str );
         }
@@ -152,7 +149,7 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     WResTypeNode        *tnode;
     BOOL                lbox_set;
 
-    if( !info || ( hdlg == (HWND)NULL ) ) {
+    if( info == NULL || hdlg == (HWND)NULL ) {
         return( FALSE );
     }
 
@@ -160,7 +157,7 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 
     tnode = WRFindTypeNode( info->info->dir, (uint_16)RT_BITMAP, NULL );
     if( tnode != NULL ) {
-        CheckDlgButton( hdlg, IDM_SELIMGBMP, 1);
+        CheckDlgButton( hdlg, IDM_SELIMGBMP, 1 );
         info->type = (uint_16)RT_BITMAP;
         WRSetEntries( hdlg, info );
         lbox_set = TRUE;
@@ -171,7 +168,7 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     tnode = WRFindTypeNode( info->info->dir, (uint_16)RT_GROUP_CURSOR, NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
-            CheckDlgButton( hdlg, IDM_SELIMGCUR, 1);
+            CheckDlgButton( hdlg, IDM_SELIMGCUR, 1 );
             info->type = (uint_16)RT_GROUP_CURSOR;
             WRSetEntries( hdlg, info );
             lbox_set = TRUE;
@@ -183,7 +180,7 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     tnode = WRFindTypeNode( info->info->dir, (uint_16)RT_GROUP_ICON, NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
-            CheckDlgButton( hdlg, IDM_SELIMGICO, 1);
+            CheckDlgButton( hdlg, IDM_SELIMGICO, 1 );
             info->type = (uint_16)RT_GROUP_ICON;
             WRSetEntries( hdlg, info );
             lbox_set = TRUE;
@@ -204,7 +201,7 @@ BOOL WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     HWND        lbox;
     LRESULT     index;
 
-    if( !info || !info->info || ( hdlg == (HWND)NULL ) ) {
+    if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
         return( FALSE );
     }
 
@@ -218,8 +215,7 @@ BOOL WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
         return( FALSE );
     }
 
-    info->lnode = (WResLangNode *)
-        SendMessage( lbox, LB_GETITEMDATA, (WPARAM) index, 0 );
+    info->lnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
     if( info->lnode == NULL ) {
         return( FALSE );
     }
@@ -227,8 +223,7 @@ BOOL WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( TRUE );
 }
 
-BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSelectImageInfo   *info;
     BOOL                ret;
@@ -236,85 +231,83 @@ BOOL WR_EXPORT WRSelectImageProc( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
+    case WM_DESTROY:
+        WRUnregisterDialog( hDlg );
+        break;
 
-        case WM_DESTROY:
-            WRUnregisterDialog( hDlg );
+    case WM_INITDIALOG:
+        info = (WRSelectImageInfo *)lParam;
+        if( info == NULL ) {
+            EndDialog( hDlg, FALSE );
+        }
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WRRegisterDialog( hDlg );
+        if( !WRSetWinInfo( hDlg, info ) ) {
+            EndDialog( hDlg, FALSE );
+        }
+        ret = TRUE;
+        break;
+
+    case WM_SYSCOLORCHANGE:
+        WRCtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        info = (WRSelectImageInfo *)GetWindowLong( hDlg, DWL_USER );
+        switch( LOWORD( wParam ) ) {
+        case IDM_SELIMGHELP:
+            if( info != NULL && info->hcb != NULL ) {
+                (*info->hcb)();
+            }
             break;
 
-        case WM_INITDIALOG:
-            info = (WRSelectImageInfo *) lParam;
+        case IDOK:
             if( info == NULL ) {
                 EndDialog( hDlg, FALSE );
+                ret = TRUE;
+            } else if( WRGetWinInfo( hDlg, info ) ) {
+                EndDialog( hDlg, TRUE );
+                ret = TRUE;
             }
-            SetWindowLong( hDlg, DWL_USER, (LONG) info );
-            WRRegisterDialog( hDlg );
-            if( !WRSetWinInfo( hDlg, info ) ) {
-                EndDialog( hDlg, FALSE );
-            }
+            break;
+
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRCtl3dColorChange();
+        case IDM_SELIMGBMP:
+            if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
+                break;
+            }
+            if( info->type != (uint_16)RT_BITMAP ) {
+                info->type = (uint_16)RT_BITMAP;
+                WRSetEntries( hDlg, info );
+            }
             break;
 
-        case WM_COMMAND:
-            info = (WRSelectImageInfo *) GetWindowLong( hDlg, DWL_USER );
-            switch( LOWORD(wParam) ) {
-                case IDM_SELIMGHELP:
-                    if( info && info->hcb ) {
-                        (*info->hcb)();
-                    }
-                    break;
-
-                case IDOK:
-                    if( info == NULL ) {
-                        EndDialog( hDlg, FALSE );
-                        ret  = TRUE;
-                    } else if( WRGetWinInfo( hDlg, info ) ) {
-                        EndDialog( hDlg, TRUE );
-                        ret  = TRUE;
-                    }
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-
-                case IDM_SELIMGBMP:
-                    if(GET_WM_COMMAND_CMD(wParam,lParam) != BN_CLICKED) {
-                        break;
-                    }
-                    if( info->type != (uint_16)RT_BITMAP ) {
-                        info->type = (uint_16)RT_BITMAP;
-                        WRSetEntries( hDlg, info );
-                    }
-                    break;
-
-                case IDM_SELIMGCUR:
-                    if(GET_WM_COMMAND_CMD(wParam,lParam) != BN_CLICKED) {
-                        break;
-                    }
-                    if( info->type != (uint_16)RT_GROUP_CURSOR ) {
-                        info->type = (uint_16)RT_GROUP_CURSOR;
-                        WRSetEntries( hDlg, info );
-                    }
-                    break;
-
-                case IDM_SELIMGICO:
-                    if(GET_WM_COMMAND_CMD(wParam,lParam) != BN_CLICKED) {
-                        break;
-                    }
-                    if( info->type != (uint_16)RT_GROUP_ICON ) {
-                        info->type = (uint_16)RT_GROUP_ICON;
-                        WRSetEntries( hDlg, info );
-                    }
-                    break;
+        case IDM_SELIMGCUR:
+            if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
+                break;
             }
+            if( info->type != (uint_16)RT_GROUP_CURSOR ) {
+                info->type = (uint_16)RT_GROUP_CURSOR;
+                WRSetEntries( hDlg, info );
+            }
+            break;
+
+        case IDM_SELIMGICO:
+            if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
+                break;
+            }
+            if( info->type != (uint_16)RT_GROUP_ICON ) {
+                info->type = (uint_16)RT_GROUP_ICON;
+                WRSetEntries( hDlg, info );
+            }
+            break;
+        }
+        break;
     }
 
     return( ret );
 }
-
-

@@ -24,20 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Test program to trigger division by zero.
 *
 ****************************************************************************/
 
 
 #include "windows.h"
 
-foo( int *a )
+void foo( int *a )
 {
     *a = 0;
 }
 
-int PASCAL WinMain( HANDLE inst, HANDLE prev, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {
     int b,c,d;
 

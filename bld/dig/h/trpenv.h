@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote environment supplementary trap requests.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define ENV_SUPP_NAME   "Environment"
 
@@ -72,7 +71,7 @@ typedef struct {
     trap_error          err;
 } env_set_var_ret;
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 #define TRPENV_H
 

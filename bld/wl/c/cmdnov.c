@@ -24,21 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line parsing for Novell Netware file formats.
 *
 ****************************************************************************/
 
 
-/*
- *  CMDNOV : command line parsing for novell netware file formats.
- *
-*/
-
-#include <malloc.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 #include "linkstd.h"
 #include "alloc.h"
 #include "command.h"
@@ -47,39 +41,206 @@
 #include "loadnov.h"
 #include "wlnkmsg.h"
 #include "cmdnov.h"
+#include "nwpfx.h"
 
 static bool             GetNovImport( void );
 static bool             GetNovExport( void );
-extern bool             ProcNLM( void );
 
-extern bool ProcNovImport( void )
-/*******************************/
+static bool             ProcModuleTypeN( int n );
+
+static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 {
-    return( ProcArgList( GetNovImport, TOK_INCLUDE_DOT ) );
+    if( NULL == pToken )
+        return( FALSE );
+    if( ( pToken[0] == '(' ) && ( pToken[ nLen - 1 ] == ')' ) )
+        return( TRUE );
+    return( FALSE );
 }
 
-extern bool ProcNovExport( void )
+/*
+//  should move these somewhere more suitable
+*/
+#define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
+#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
+
+static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name, unsigned *namelen, char **prefix, unsigned *prefixlen )
+{
+    char        *findAt = tokenThis;
+    unsigned    nLen = tokenLen;
+
+    if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
+        return( FALSE );
+
+    *name = *prefix = NULL;
+    *namelen = *prefixlen = 0;
+
+    while( nLen ) {
+        if( '@' == *findAt )
+            break;
+        if( '\0' == *findAt ) {
+            nLen = 0;   /* force zero */
+            break;
+        }
+        findAt++;
+        nLen--;
+    }
+
+    if( 0 == nLen ) {
+        *name = tokenThis;
+        *namelen = tokenLen;
+        return( TRUE );
+    }
+
+    /*
+    //  findAt now points at an @ symbol. this maybe a stdcall designator or a prefixed symbol.
+    //  if the following character is a number then it must be stdcall as it is illegal to start
+    //  a function name with a numeric character (I believe)
+    */
+
+    if( IS_NUMBER( &findAt[ 1 ] ) ) {
+        *name = tokenThis;
+        *namelen = tokenLen;
+        return( TRUE );
+    }
+
+    *prefix = tokenThis;
+    *prefixlen = findAt - tokenThis;
+
+    *name = &findAt[ 1 ];
+    *namelen = nLen - 1;
+
+    return( TRUE );
+}
+
+/*
+//  Trouble! In files, import and export specifiers may or may not have a trailing comma
+//  so we look ahead to Token.next and see if there is a comma next (after whitespace)
+//  and if there is then we don't set this flag else we do
+//  this also affects us using
+//      IMPORT x, (PREFIX), y, (PREFIX), x
+*/
+static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
+{
+    char *parse;
+
+    if( (NULL == (parse = Token.next)) || ('\0' == *parse) )
+        return( FALSE );
+
+    while( ('\0' != *parse) && (IS_WHITESPACE(parse)) )
+        parse++;
+
+    if( '\0' == *parse )
+        return( FALSE );
+
+    if( ',' == *parse )
+        return( FALSE );
+
+    /*
+    //  skip cr-lf
+    */
+    if( ('\n' == *parse) || ('\r' == *parse) )
+        parse++;
+    if( ('\n' == *parse) || ('\r' == *parse) )
+        parse++;
+
+    /*
+    //  always skip to the next token if the next available token is not a comma
+    //  this will allow individual tokens without commas which isn't a big deal
+    */
+    if( ('\0' != *parse) && (',' != *parse) ) {
+        /*
+        //  If the next token is __not__ a comma then we need to check that it is not a directive
+        //  before allowing the skip!
+        */
+        if( CheckDirectives ) {
+            unsigned    len = 0;
+            char        *t = parse;
+
+            while( !IS_WHITESPACE(t) ) {
+                t++;
+                len++;
+            }
+
+            if( MatchOne( Directives, SEP_NO, parse, len ) ) {
+                return( FALSE );
+            }
+        }
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+bool ProcNovImport( void )
 /*******************************/
 {
-    return( ProcArgList( GetNovExport, TOK_INCLUDE_DOT ) );
+    SetCurrentPrefix( NULL, 0 );
+    return( ProcArgListEx( GetNovImport, TOK_INCLUDE_DOT, CmdFile ) );
 }
+
+bool ProcNovExport( void )
+/*******************************/
+{
+    SetCurrentPrefix( NULL, 0 );
+    return( ProcArgListEx( GetNovExport, TOK_INCLUDE_DOT, CmdFile ) );
+}
+
+#ifndef NDEBUG
+/* F*!k. This one is my fault. Debug build only. Catch it on final pass */
+extern int printf( const char *fmt, ... );
+#endif
 
 static bool GetNovImport( void )
 /******************************/
 {
-    symbol *        sym;
+    symbol      *sym;
+    char        *name = NULL;
+    char        *prefix = NULL;
+    unsigned    namelen = 0;
+    unsigned    prefixlen = 0;
 
-    sym = SymXOp( ST_DEFINE_SYM, Token.this, Token.len );
+    /*
+    //  we need to trap import/export prefixes here. Unfortunately the prefix context
+    //  is not followed by a valid seperator so the GetToken() call in ProcArgList
+    //  at the end of the do...while loop terminates the loop after we return from
+    //  this call (and WildCard from where we were called of course
+    */
+    if( IsNetWarePrefix( Token.this, Token.len ) ) {
+        bool result;
+        if( FALSE == (result = SetCurrentPrefix( Token.this, Token.len )) )
+            return( FALSE );
+
+        Token.skipToNext = DoWeNeedToSkipASeparator( FALSE );
+
+#ifndef NDEBUG
+        printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
+#endif
+
+        return( result );
+    }
+
+    if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
+        return( FALSE );
+    }
+
+    sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
     if( sym == NULL || sym->p.import != NULL ) {
         return( TRUE );
     }
+
+#ifndef NDEBUG
+    printf( "imported %s from %s\n", sym->name, sym->prefix ? sym->prefix : "(NONE)" );
+#endif
+
     SET_SYM_TYPE( sym, SYM_IMPORTED );
     sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
     SetNovImportSymbol( sym );
+
+    Token.skipToNext = DoWeNeedToSkipASeparator( TRUE );
+
     return( TRUE );
 }
 
-extern void SetNovImportSymbol( symbol * sym )
+void SetNovImportSymbol( symbol *sym )
 /********************************************/
 {
     sym->p.import = DUMMY_IMPORT_PTR;
@@ -88,15 +249,44 @@ extern void SetNovImportSymbol( symbol * sym )
 static bool GetNovExport( void )
 /******************************/
 {
-    symbol *    sym;
+    symbol      *sym;
+    char        *name = NULL;
+    char        *prefix = NULL;
+    unsigned    namelen = 0;
+    unsigned    prefixlen = 0;
 
-    sym = SymXOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
+    /*
+    //  we need to trap import/export prefixes here. Unfortunately the prefix context
+    //  is not followed by a valid seperator so the GetToken() call in ProcArgList
+    //  at the end of the do...while loop terminates the loop after we return from
+    //  this call (and WildCard from where we were called of course
+    */
+    if( IsNetWarePrefix( Token.this, Token.len ) ) {
+        bool result;
+
+        if( FALSE == (result = SetCurrentPrefix( Token.this, Token.len )) )
+            return( FALSE );
+
+        Token.skipToNext = DoWeNeedToSkipASeparator( FALSE );
+        return( result );
+    }
+
+    if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
+        return( FALSE );
+    }
+
+    sym = SymOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );
+
     sym->info |= SYM_DCE_REF | SYM_EXPORTED;
-    AddNameTable( Token.this, Token.len, TRUE, &FmtData.u.nov.exp.export );
+
+    AddNameTable( name, namelen, TRUE, &FmtData.u.nov.exp.export );
+
+    Token.skipToNext = DoWeNeedToSkipASeparator( TRUE );
+
     return( TRUE );
 }
 
-extern bool ProcScreenName( void )
+bool ProcScreenName( void )
 /********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -113,7 +303,7 @@ extern bool ProcScreenName( void )
     return( TRUE );
 }
 
-extern bool ProcCheck( void )
+bool ProcCheck( void )
 /***************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -123,45 +313,53 @@ extern bool ProcCheck( void )
     return( TRUE );
 }
 
-extern bool ProcMultiLoad( void )
+bool ProcMultiLoad( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_MULTIPLE;
     return( TRUE );
 }
 
-extern bool ProcReentrant( void )
+bool ProcAutoUnload( void )
+/*******************************/
+{
+    FmtData.u.nov.exeflags |= NOV_AUTOUNLOAD;
+    return( TRUE );
+}
+
+
+bool ProcReentrant( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_REENTRANT;
     return( TRUE );
 }
 
-extern bool ProcSynch( void )
+bool ProcSynch( void )
 /***************************/
 {
     FmtData.u.nov.exeflags |= NOV_SYNCHRONIZE;
     return( TRUE );
 }
 
-extern bool ProcPseudoPreemption( void )
+bool ProcPseudoPreemption( void )
 /**************************************/
 {
     FmtData.u.nov.exeflags |= NOV_PSEUDOPREEMPTION;
     return( TRUE );
 }
 
-extern bool ProcNLMFlags( void )
+bool ProcNLMFlags( void )
 /******************************/
 {
     unsigned_32 value;
 
     if( !GetLong( &value ) ) return FALSE;
     FmtData.u.nov.exeflags |= value;
-    return TRUE;
+    return( TRUE );
 }
 
-extern bool ProcCustom( void )
+bool ProcCustom( void )
 /****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -171,7 +369,7 @@ extern bool ProcCustom( void )
     return( TRUE );
 }
 
-extern bool ProcMessages( void )
+bool ProcMessages( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -181,7 +379,7 @@ extern bool ProcMessages( void )
     return( TRUE );
 }
 
-extern bool ProcHelp( void )
+bool ProcHelp( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -191,7 +389,7 @@ extern bool ProcHelp( void )
     return( TRUE );
 }
 
-extern bool ProcXDCData( void )
+bool ProcXDCData( void )
 /*****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -201,7 +399,7 @@ extern bool ProcXDCData( void )
     return( TRUE );
 }
 
-extern bool ProcSharelib( void )
+bool ProcSharelib( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -211,7 +409,7 @@ extern bool ProcSharelib( void )
     return( TRUE );
 }
 
-extern bool ProcExit( void )
+bool ProcExit( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -221,7 +419,7 @@ extern bool ProcExit( void )
     return( TRUE );
 }
 
-extern bool ProcThreadName( void )
+bool ProcThreadName( void )
 /*******************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -239,13 +437,13 @@ extern bool ProcThreadName( void )
 #define DEFAULT_COPYRIGHT_LENGTH (sizeof( DEFAULT_COPYRIGHT ) - 1)
 #define YEAR_OFFSET (sizeof( COPYRIGHT_START ) - 1)
 
-extern bool ProcCopyright( void )
+bool ProcCopyright( void )
 /*******************************/
 {
-    struct tm *     currtime;
+    struct tm       *currtime;
     time_t          thetime;
     unsigned        year;
-    char *          copy_year;
+    char            *copy_year;
 
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT )
                 && !GetToken( SEP_NO, TOK_INCLUDE_DOT) ) {
@@ -276,11 +474,19 @@ extern bool ProcCopyright( void )
     return( TRUE );
 }
 
-extern bool ProcNovell( void )
+bool ProcNovell( void )
 /****************************/
 {
     if( !ProcOne( NovModels, SEP_NO, FALSE ) ) {  // get file type
-        ProcNLM();
+        int     nType = 0;
+
+        if((nType = atoi(Token.this)) > 0)
+        {
+            GetToken( SEP_NO, TOK_INCLUDE_DOT);
+            ProcModuleTypeN(nType);
+        }
+        else
+            ProcNLM();
     }
     if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT )  ) {    // get description
         FmtData.u.nov.description = NULL;
@@ -294,7 +500,7 @@ extern bool ProcNovell( void )
     return( TRUE );
 }
 
-extern void SetNovFmt( void )
+void SetNovFmt( void )
 /***************************/
 {
     Extension = E_NLM;
@@ -304,7 +510,7 @@ extern void SetNovFmt( void )
     }
 }
 
-extern void FreeNovFmt( void )
+void FreeNovFmt( void )
 /****************************/
 {
     _LnkFree( FmtData.u.nov.screenname );
@@ -322,7 +528,7 @@ extern void FreeNovFmt( void )
     FreeList( FmtData.u.nov.exp.module );  Permalloc'd now */
 }
 
-extern bool ProcNLM( void )
+bool ProcNLM( void )
 /*************************/
 {
     Extension = E_NLM;
@@ -330,7 +536,7 @@ extern bool ProcNLM( void )
     return( TRUE );
 }
 
-extern bool ProcLAN( void )
+bool ProcLAN( void )
 /*************************/
 {
     Extension = E_LAN;
@@ -338,7 +544,7 @@ extern bool ProcLAN( void )
     return( TRUE );
 }
 
-extern bool ProcDSK( void )
+bool ProcDSK( void )
 /*************************/
 {
     Extension = E_DSK;
@@ -346,13 +552,98 @@ extern bool ProcDSK( void )
     return( TRUE );
 }
 
-extern bool ProcNAM( void )
+bool ProcNAM( void )
 /*************************/
 {
     Extension = E_NAM;
     FmtData.u.nov.moduletype = 3;
     return( TRUE );
 }
+
+bool     ProcModuleType4( void )
+/*************************/
+{
+    Extension = E_NLM;
+    FmtData.u.nov.moduletype = 4;
+    return( TRUE );
+}
+
+bool     ProcModuleType5( void )
+/*************************/
+{
+    Extension = E_NOV_MSL;
+    FmtData.u.nov.moduletype = 5;
+    return( TRUE );
+}
+
+bool     ProcModuleType6( void )
+/*************************/
+{
+    Extension = E_NLM;
+    FmtData.u.nov.moduletype = 6;
+    return( TRUE );
+}
+
+bool     ProcModuleType7( void )
+/*************************/
+{
+    Extension = E_NLM;
+    FmtData.u.nov.moduletype = 7;
+    return( TRUE );
+}
+
+bool     ProcModuleType8( void )
+/*************************/
+{
+    Extension = E_NOV_HAM;
+    FmtData.u.nov.moduletype = 8;
+    return( TRUE );
+}
+
+bool     ProcModuleType9( void )
+/*************************/
+{
+    Extension = E_NOV_CDM;
+    FmtData.u.nov.moduletype = 9;
+    return( TRUE );
+}
+
+#if 0
+/*
+// as I have got tired of writing, module types 10 through 12 are reserved */
+bool     ProcModuleType10( void )
+/*************************/
+{
+    Extension = ;
+    FmtData.u.nov.moduletype = 10;
+    return( TRUE );
+}
+
+bool     ProcModuleType11( void )
+/*************************/
+{
+    Extension = ;
+    FmtData.u.nov.moduletype = 11;
+    return( TRUE );
+}
+
+bool     ProcModuleType12( void )
+/*************************/
+{
+    Extension = ;
+    FmtData.u.nov.moduletype = 12;
+    return( TRUE );
+}
+#endif
+
+static bool     ProcModuleTypeN( int n )
+/*************************/
+{
+    Extension = E_NLM;
+    FmtData.u.nov.moduletype = n;
+    return( TRUE );
+}
+
 
 static bool GetNovModule( void )
 /******************************/
@@ -361,34 +652,34 @@ static bool GetNovModule( void )
     return( TRUE );
 }
 
-extern bool ProcModule( void )
+bool ProcModule( void )
 /****************************/
 {
     return( ProcArgList( GetNovModule, TOK_INCLUDE_DOT ) );
 }
 
-extern bool ProcOSDomain( void )
+bool ProcOSDomain( void )
 /******************************/
 {
     FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
-    return TRUE;
+    return( TRUE );
 }
 
-extern bool ProcNovDBIExports( void )
+bool ProcNovDBIExports( void )
 /***********************************/
 {
     FmtData.u.nov.flags |= DO_NOV_EXPORTS;
     return( TRUE );
 }
 
-extern bool ProcNovDBIReferenced( void )
+bool ProcNovDBIReferenced( void )
 /**************************************/
 {
     FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
-    return TRUE;
+    return( TRUE );
 }
 
-extern bool ProcNovDBI( void )
+bool ProcNovDBI( void )
 /****************************/
 {
     LinkFlags |= NOVELL_DBI_FLAG;
@@ -398,15 +689,15 @@ extern bool ProcNovDBI( void )
     return( TRUE );
 }
 
-extern bool ProcExportsDBI( void )
+bool ProcExportsDBI( void )
 /********************************/
 {
-    DBIFlag |= DBI_EXPORTS;
+    DBIFlag |= DBI_ONLY_EXPORTS;
     FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
     return( TRUE );
 }
 
-extern void CmdNovFini( void )
+void CmdNovFini( void )
 /****************************/
 {
     if( FmtData.u.nov.description == NULL && Name != NULL ) {

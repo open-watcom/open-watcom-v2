@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft LIB clone tool.
 *
 ****************************************************************************/
 
@@ -57,39 +56,6 @@
 
 #define LIB_SUCCESS             0
 #define LIB_ERROR               (-2)
-
-
-/*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    CmdLine *           cmdLine;
-    int                 itemsParsed;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    cmdLine = InitCmdLine( LIB_NUM_SECTIONS );
-    SetDefaultFile( TYPE_OBJ_FILE, "object or library" );
-    AllowTypeFile( TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE,
-                   TYPE_RBJ_FILE, TYPE_RS_FILE, TYPE_INVALID_FILE );
-
-    /*** Parse the command line and translate to Watcom options ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed == 0 ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-    OptionsTranslate( &cmdOpts, cmdLine );
-
-    /*** Spawn the librarian ***/
-    lib( &cmdOpts, cmdLine );
-    FiniParse( &cmdOpts );
-    exit( EXIT_SUCCESS );
-}
 
 
 /*
@@ -186,4 +152,37 @@ static int lib( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     DestroyCmdLine( spawnCmdLine );
 
     return( LIB_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    CmdLine *           cmdLine;
+    int                 itemsParsed;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    cmdLine = InitCmdLine( LIB_NUM_SECTIONS );
+    SetDefaultFile( TYPE_OBJ_FILE, "object or library" );
+    AllowTypeFile( TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE,
+                   TYPE_RBJ_FILE, TYPE_RS_FILE, TYPE_INVALID_FILE );
+
+    /*** Parse the command line and translate to Watcom options ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed == 0 ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+    OptionsTranslate( &cmdOpts, cmdLine );
+
+    /*** Spawn the librarian ***/
+    lib( &cmdOpts, cmdLine );
+    FiniParse( &cmdOpts );
+    exit( EXIT_SUCCESS );
 }

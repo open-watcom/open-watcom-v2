@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Carver memory allocator.
 *
 ****************************************************************************/
 
@@ -139,7 +138,7 @@ static void CarverMsg(CarverMsgType type, pCarver carver, pBlkElem blkElem)
 
 void InitCarver(pCarver carver,
                 void* (*mallocFunc)(size_t size),
-                void* (freeFunc)(void* ptr),
+                void  (*freeFunc)(void* ptr),
                 pCarverPrintMsgFunc printMsgFunc,
                 CarverMsgType supressMsgs,
                 short unsigned blkSize,
@@ -171,7 +170,7 @@ void InitCarver(pCarver carver,
 
 void* CreateCarver(
                 void* (*mallocFunc)(size_t size),
-                void* (freeFunc)(void* ptr),
+                void  (*freeFunc)(void* ptr),
                 pCarverPrintMsgFunc printMsgFunc,
                 CarverMsgType supressMsgs,
                 short unsigned blkSize,
@@ -324,7 +323,7 @@ void FiniCarver(pCarver carver, int checkMem) {
     }
 }
 
-void CarverDefaultPrintMsg(CarverMsgType msgType, char *str) {
+void CarverDefaultPrintMsg(size_t msgType, char *str) {
     msgType = msgType;
     printf("%s\n", str);
 }

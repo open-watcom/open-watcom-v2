@@ -1,0 +1,16 @@
+:CMT. This font definition is to be used with the related device 
+:CMT. and driver definitions to test the action of gendev and wgml.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. TFON05                          tfon05
+:CMT.
+
+:FONT
+  defined_name     = 'tfon05'
+  member_name      = 'tfon05'
+  font_out_name1   = 'tfon05_1'
+  font_out_name2   = 'tfon05_2'
+  line_height      = 1
+  char_width       = 1
+:eFONT.

@@ -39,8 +39,8 @@
 #include <sys/proc_msg.h>
 #include <i86.h>
 
-extern  void    (*__abort)();
-extern  void    __sigabort();
+extern  void    (*__abort)( void );
+extern  void    __sigabort( void );
 
 
 /*
@@ -78,7 +78,8 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))(int)
     act.sa_mask = 0;
     act.sa_flags = 0;
 
-    if( sigaction(sig, &act, &act) ) return SIG_ERR;
+    if( sigaction(sig, &act, &act) )
+        return SIG_ERR;
     return( (void (*)(int))act.sa_handler );
 }
 
@@ -94,7 +95,7 @@ register struct sigaction *oact;
     union {
         struct _proc_signal         s;
         struct _proc_signal_reply   r;
-        } msg;
+    } msg;
 
     /*
      * Tell the process manager the address of our signal table.

@@ -1,3 +1,3 @@
 bt = nt
 sys = nt
-!include ..\brmdump.mif
+!include ../brmdump.mif

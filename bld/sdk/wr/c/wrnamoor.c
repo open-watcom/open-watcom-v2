@@ -67,14 +67,14 @@ ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
     char                *str;
     int                 stringlen;
 
-    if( !data ) {
+    if( data == NULL ) {
         return( NULL );
     }
 
     data16 = (uint_16 *)data;
 
     if( *data16 == 0xffff ) {
-        new = (ResNameOrOrdinal *)WRMemAlloc( sizeof(ResNameOrOrdinal) );
+        new = (ResNameOrOrdinal *)WRMemAlloc( sizeof( ResNameOrOrdinal ) );
         if( new == NULL ) {
             return( NULL );
         }
@@ -96,7 +96,7 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
     int                 stringlen;
     int                 len;
 
-    if( !data ) {
+    if( data == NULL ) {
         return( NULL );
     }
 
@@ -104,13 +104,13 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
 
     if( *data8 == 0xff ) {
         stringlen = 0;
-        len = sizeof(ResNameOrOrdinal);
+        len = sizeof( ResNameOrOrdinal );
     } else {
         stringlen = strlen( (char *)data );
         len = stringlen + 1;
     }
 
-    new = (ResNameOrOrdinal *)WRMemAlloc( max( len, sizeof(ResNameOrOrdinal) ) );
+    new = (ResNameOrOrdinal *)WRMemAlloc( max( len, sizeof( ResNameOrOrdinal ) ) );
     if( new == NULL ) {
         return( NULL );
     }
@@ -118,7 +118,7 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
     if( *data8 != 0xff ) {
         memcpy( &new->name[0], data, len );
     } else {
-        memcpy( new, data, sizeof(ResNameOrOrdinal) );
+        memcpy( new, data, sizeof( ResNameOrOrdinal ) );
     }
 
     return( new );
@@ -129,12 +129,12 @@ int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, int *size )
     int         len;
     int         stringlen;
 
-    if( !name || !data || !size ) {
+    if( name == NULL || data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     if( name->ord.fFlag == 0xff ) {
-        len = sizeof(ResNameOrOrdinal);
+        len = sizeof( ResNameOrOrdinal );
         stringlen = 0;
     } else {
         stringlen = strlen( &name->name[0] );
@@ -162,12 +162,12 @@ int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, int *size )
     uint_16     *data16;
     char        *uni_str;
 
-    if( !name || !data || !size ) {
+    if( name == NULL || data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     if( name->ord.fFlag == 0xff ) {
-        *size = sizeof(uint_16) + sizeof( uint_16);
+        *size = sizeof( uint_16 ) + sizeof( uint_16 );
         *data = WRMemAlloc( *size );
     } else {
         uni_str = NULL;
@@ -200,8 +200,7 @@ ResNameOrOrdinal * WR_EXPORT WRMem2NameOrOrdinal( void *data, int is32bit )
     return( n );
 }
 
-int WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit,
-                               void **data, int *size )
+int WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size )
 {
     if( is32bit ) {
         return( WRNameOrOrd2Mem32( name, data, size ) );
@@ -209,4 +208,3 @@ int WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit,
         return( WRNameOrOrd2Mem16( name, data, size ) );
     }
 }
-

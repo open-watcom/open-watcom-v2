@@ -24,24 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default implementation of DLLMain for Win32.
 *
 ****************************************************************************/
 
 
 #include <windows.h>
 
-int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved ) {
+int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved )
+{
     hdll = hdll;
     reason = reason;
     reserved = reserved;
-    return 1;   // success
+    return( 1 );    // success
 }
 
 #pragma off (unreferenced)
 extern void __DLLstart_( void );
 static const void *__p = &__DLLstart_;
 #if defined(_M_IX86)
- #pragma aux __DLLstart_  "*"
+    #pragma aux __DLLstart_  "*"
 #endif

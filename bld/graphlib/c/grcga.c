@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Setup for standard CGA modes.
 *
 ****************************************************************************/
 
@@ -35,41 +34,16 @@
 #include "rotate.h"
 
 
-extern void pascal            _MoveUp();
-extern void pascal            _Move1Left();
-extern void pascal            _Move2Left();
-extern void pascal            _MoveDown();
-extern void pascal            _Move1Right();
-extern void pascal            _Move2Right();
-extern void pascal            _CoRep();
-extern void pascal            _CoXor();
-extern void pascal            _CoAnd();
-extern void pascal            _CoOr();
-extern void pascal            _Get1Dot();
-extern void pascal            _Get2Dot();
-extern void pascal            _Pix1Zap();
-extern void pascal            _Pix2Zap();
-extern void pascal            _Pix1Fill();
-extern void pascal            _Pix2Fill();
-extern void pascal            _Pix1Copy();
-extern void pascal            _Pix2Copy();
-extern void pascal            _Pix1Read();
-extern void pascal            _Pix2Read();
-extern short pascal           _CGAScanLeft();
-extern short pascal           _CGAScan1Right();
-extern short pascal           _CGAScan2Right();
-
-
 static short _CGAInit( short mode )
 //=================================
 
 {
     if( _SetMode( mode ) == mode ) {
-        //             x,   y, col, bpp, pag, seg,     off,     siz, mis
+        //             x,   y, str, col, bpp, pag, seg,     off,     siz, mis
         if( mode == 6 ) {
-            _GrInit( 640, 200,   2,   1,   1, _CgaSeg, _CgaOff,   0,   0 );
+            _GrInit( 640, 200,  40,   2,   1,   1, _CgaSeg, _CgaOff,   0,   0 );
         } else {    // modes 4 and 5
-            _GrInit( 320, 200,   4,   2,   1, _CgaSeg, _CgaOff,   0,   0 );
+            _GrInit( 320, 200,  40,   4,   2,   1, _CgaSeg, _CgaOff,   0,   0 );
         }
         return( TRUE );
     } else {

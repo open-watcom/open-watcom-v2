@@ -47,8 +47,8 @@ static          USHORT                  r;
 static          USHORT                  c;
 
 
-void global uioffcursor()
-/***********************/
+void global uioffcursor( void )
+/*****************************/
 {
     VIOCURSORINFO vioCursor;
 
@@ -67,10 +67,10 @@ void global uioffcursor()
 
 
 
-void global uioncursor()
-/**********************/
+void global uioncursor( void )
+/****************************/
 {
-    unsigned char       CharCellPair[2];
+    CHAR                CharCellPair[2];
     VIOCURSORINFO       vioCursor;
 
 
@@ -103,7 +103,7 @@ void global uioncursor()
 
         /* write out the character and the new attribute */
         CharCellPair[1] = UIData->cursor_attr;
-        VioWrtNCell(&CharCellPair[0],
+        VioWrtNCell((PBYTE)&CharCellPair[0],
                     24,
                     UIData->cursor_row,
                     UIData->cursor_col,
@@ -114,10 +114,10 @@ void global uioncursor()
 }
 
 
-static void savecursor()
-/**********************/
+static void savecursor( void )
+/****************************/
 {
-    unsigned char       CharCellPair[2];
+    CHAR                CharCellPair[2];
     USHORT              length;
     VIOCURSORINFO       vioCursor;
 
@@ -144,8 +144,8 @@ static void savecursor()
 }
 
 
-static void newcursor()
-/*********************/
+static void newcursor( void )
+/***************************/
 {
     if( UIData->cursor_type == C_OFF ) {
         uioffcursor();
@@ -155,8 +155,8 @@ static void newcursor()
 }
 
 
-static void swapcursor()
-/**********************/
+static void swapcursor( void )
+/****************************/
 {
     _swap( UIData->cursor_type, OldCursorType );
     _swap( UIData->cursor_col, OldCursorCol );
@@ -166,16 +166,12 @@ static void swapcursor()
 }
 
 
-void global uigetcursor( row, col, type, attr )
-/*********************************************/
-    ORD*             row;
-    ORD*             col;
-    int*             type;
-    int*             attr;
+void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+/*****************************************************************/
 {
 
     USHORT              length;
-    unsigned char       CharCellPair[2];
+    CHAR                CharCellPair[2];
     VIOCURSORINFO       vioCursor;
 
     /* read cursor position */
@@ -198,13 +194,8 @@ void global uigetcursor( row, col, type, attr )
 }
 
 
-void global uisetcursor( row, col, typ, attr )
-/********************************************/
-
-register        unsigned                row;
-register        unsigned                col;
-register        int                     typ;
-register        int                     attr;
+void global uisetcursor( ORD row, ORD col, int typ, int attr )
+/************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||
@@ -221,16 +212,16 @@ register        int                     attr;
 }
 
 
-void global uiswapcursor()
-/************************/
+void global uiswapcursor( void )
+/******************************/
 {
     swapcursor();
     newcursor();
 }
 
 
-void global uiinitcursor()
-/************************/
+void global uiinitcursor( void )
+/******************************/
 {
     savecursor();
     uisetcursor( OldCursorRow, OldCursorCol, OldCursorType, OldCursorAttr );
@@ -238,8 +229,8 @@ void global uiinitcursor()
 }
 
 
-void global uifinicursor()
-/************************/
+void global uifinicursor( void )
+/******************************/
 {
     uioncursor();
 }

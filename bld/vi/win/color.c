@@ -24,17 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Color support.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#define INCLUDE_COMMDLG_H
-#include "winvi.h"
-
-#define MAX_COLORS      64
+#include "vi.h"
 
 typedef struct color {
     long        rgb;
@@ -42,32 +37,32 @@ typedef struct color {
     HPEN        pen;
 } color;
 
-static color colorData[ MAX_COLORS ];
+static color colorData[MAX_COLORS];
 
-long ColorRGB( UINT color )
+long ColorRGB( vi_color color )
 {
-    return( colorData[ color ].rgb );
+    return( colorData[color].rgb );
 }
 
-HBRUSH ColorBrush( UINT color )
+HBRUSH ColorBrush( vi_color color )
 {
-    return( colorData[ color ].brush );
+    return( colorData[color].brush );
 }
 
-HPEN ColorPen( UINT color )
+HPEN ColorPen( vi_color color )
 {
-    return( colorData[ color ].pen );
+    return( colorData[color].pen );
 }
 
-void NewColor( int index, long rgb )
+static void NewColor( vi_color index, long rgb )
 {
     color       *c;
     LOGBRUSH    brush;
     long        nearest;
     HDC         hdc;
 
-    hdc = GetDC( (HWND) NULL );
-    c = &colorData[ index ];
+    hdc = GetDC( (HWND)NULLHANDLE );
+    c = &colorData[index];
     if( c->pen ) {
         DeleteObject( c->pen );
     }
@@ -76,7 +71,7 @@ void NewColor( int index, long rgb )
     }
     c->rgb = rgb;
     nearest = GetNearestColor( hdc, rgb );
-    ReleaseDC( (HWND) NULL, hdc );
+    ReleaseDC( (HWND)NULLHANDLE, hdc );
     c->pen = CreatePen( PS_SOLID, 1, nearest );
     brush.lbStyle = BS_SOLID;
     brush.lbColor = nearest;
@@ -86,15 +81,15 @@ void NewColor( int index, long rgb )
 
 void InitColors( void )
 {
-    int             i;
-    PALETTEENTRY    palette[ MAX_COLORS ], *p;
+    vi_color        i;
+    PALETTEENTRY    palette[MAX_COLORS], *p;
     HDC             hdc;
 
-    hdc = GetDC( (HWND) NULL );
-    GetSystemPaletteEntries( hdc, 0, MAX_COLORS, &palette[ 0 ] );
-    ReleaseDC( (HWND) NULL, hdc );
-    p = &palette[ 0 ];
-    memset( &colorData[ 0 ], 0, sizeof( color ) * MAX_COLORS );
+    hdc = GetDC( (HWND)NULLHANDLE );
+    GetSystemPaletteEntries( hdc, 0, MAX_COLORS, &palette[0] );
+    ReleaseDC( (HWND)NULLHANDLE, hdc );
+    p = &palette[0];
+    memset( &colorData[0], 0, sizeof( color ) * MAX_COLORS );
     for( i = 0; i < MAX_COLORS; i++, p++ ) {
         NewColor( i, RGB( p->peRed, p->peGreen, p->peBlue ) );
     }
@@ -103,15 +98,15 @@ void InitColors( void )
 
 int GetNumColors( void )
 {
-    return MAX_COLORS;
+    return( MAX_COLORS );
 }
 
-bool GetColorSetting( int index, rgb *value )
+bool GetColorSetting( vi_color index, rgb *value )
 {
     color       *c;
 
     if( index < MAX_COLORS && index >= 0 ) {
-        c = &colorData[ index ];
+        c = &colorData[index];
         value->red = GetRValue( c->rgb );
         value->blue = GetBValue( c->rgb );
         value->green = GetGValue( c->rgb );
@@ -120,12 +115,12 @@ bool GetColorSetting( int index, rgb *value )
     return( FALSE );
 }
 
-COLORREF GetRGB( int index )
+COLORREF GetRGB( vi_color index )
 {
     color       *c;
 
     if( index < MAX_COLORS && index >= 0 ) {
-        c = &colorData[ index ];
+        c = &colorData[index];
         return( RGB( GetRValue( c->rgb ),
                      GetGValue( c->rgb ),
                      GetBValue( c->rgb ) ) );
@@ -133,25 +128,25 @@ COLORREF GetRGB( int index )
     return( RGB( 0, 0, 0 ) );
 }
 
-static BOOL chooseColor( int index, COLORREF *rgb, HWND parent )
+static BOOL chooseColor( vi_color index, COLORREF *rgb, HWND parent )
 {
     CHOOSECOLOR cc;
-    COLORREF    color_table[ MAX_COLORS ];
-    int         i;
+    COLORREF    color_table[MAX_COLORS];
+    vi_color    i;
 
     for( i = 0; i < MAX_COLORS; i++ ) {
-        color_table[ i ] = colorData[ i ].rgb;
+        color_table[i] = colorData[i].rgb;
     }
     memset( &cc, 0, sizeof( CHOOSECOLOR ) );
     cc.lStructSize = sizeof( CHOOSECOLOR );
     cc.hwndOwner = parent;
-    cc.rgbResult = colorData[ index ].rgb;
+    cc.rgbResult = colorData[index].rgb;
     cc.lpCustColors = color_table;
     cc.Flags = CC_PREVENTFULLOPEN | CC_RGBINIT;
 
     if( ChooseColor( &cc ) ) {
         for( i = 0; i < MAX_COLORS; i++ ) {
-            colorData[ i ].rgb = color_table[ i ];
+            colorData[i].rgb = color_table[i];
         }
         *rgb = cc.rgbResult;
         return( TRUE );
@@ -163,7 +158,7 @@ static BOOL chooseColor( int index, COLORREF *rgb, HWND parent )
 /*
  * setUpColor - set up a selected color
  */
-static void setUpColor( int index, COLORREF *rgb )
+static void setUpColor( vi_color index, COLORREF *rgb )
 {
     NewColor( index, *rgb );
     if( EditFlags.WindowsStarted ) {
@@ -175,28 +170,28 @@ static void setUpColor( int index, COLORREF *rgb )
 /*
  * SetAColor - set a new color
  */
-int SetAColor( char *data )
+vi_rc SetAColor( char *data )
 {
     char        token[MAX_STR];
     int         index;
     int         red, blue, green;
     COLORREF    rgb;
 
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_SETCOLOR );
     }
     index = atoi( token );
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         if( !chooseColor( index, &rgb, Root ) ) {
             return( ERR_NO_ERR );
         }
     } else {
         red = atoi( token );
-        if( NextWord1( data,token ) <= 0 ) {
+        if( NextWord1( data, token ) <= 0 ) {
             return( ERR_INVALID_SETCOLOR );
         }
         green = atoi( token );
-        if( NextWord1( data,token ) <= 0 ) {
+        if( NextWord1( data, token ) <= 0 ) {
             return( ERR_INVALID_SETCOLOR );
         }
         blue = atoi( token );
@@ -218,7 +213,7 @@ void FiniColors( void )
     int         i;
     color       *c;
 
-    c = &colorData[ 0 ];
+    c = &colorData[0];
     for( i = 0; i < MAX_COLORS; i++, c++ ) {
         DeleteObject( c->brush );
         DeleteObject( c->pen );

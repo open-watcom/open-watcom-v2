@@ -1,0 +1,25 @@
+.387
+.386p
+_TEXT		SEGMENT	PAGE PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    add         byte ptr [eax],dl
+    mov         eax,eax
+    add         byte ptr 40H[ebp],cl
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    lea         eax,[eax]
+    add         byte ptr [eax],al
+    add         byte ptr -3674ffc0H[ebp],cl
+    add         byte ptr [eax],al
+    lea         eax,[eax]
+    add         byte ptr 80H[ebp],cl
+    add         byte ptr [eax],dl
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    lea         eax,[eax]
+    mov         eax,eax
+L$1:
+    mov         eax,offset L$1
+_TEXT		ENDS
+		END

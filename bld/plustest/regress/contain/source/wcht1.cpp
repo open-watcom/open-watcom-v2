@@ -64,7 +64,8 @@ void test1() {
     if( hash.find( temp, temp2 ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	hash.insert( temp );
 	if( hash.isEmpty() ) cout << i << " IS Empty!\n";
@@ -108,7 +109,8 @@ void test2() {
     if( !hash.isEmpty() ) cout << "NOT Empty!\n";
     if( hash.find( &str_text[ 0 ] ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( &str_text[ 0 ] ) ) cout << "Found in empty list!" << temp << '\n';
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	hash.insert( &str_text[ i ] );
 	if( hash.isEmpty() ) cout << i << " IS Empty!\n";
     };
@@ -153,7 +155,8 @@ void test3() {
     if( hash.find( temp, temp2 ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	if( i == 13 ) {
 	    if( hash.insert( temp ) ) cout << "Inserted non-unique value!!\n";
@@ -197,7 +200,8 @@ void test4() {
     if( hash.find( &temp ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( &temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	if( i == 13 ) {
 	    if( hash.insert( &str_text[ i ] ) ) cout << "Inserted non-unique value!!\n";
 	} else {
@@ -241,7 +245,8 @@ void test5() {
     if( hash.find( temp, inttemp ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	if( i == 13 ) {
 	    if( hash.insert( temp, i ) ) cout << "Inserted non-unique value!!\n";
@@ -286,7 +291,8 @@ void test6() {
     if( hash.find( &temp ) ) cout << "Found in empty list!" << temp << '\n';
     if( hash.contains( &temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	int_array[ i ] = i;
 	if( i == 13 ) {
 	    if( hash.insert( &str_text[ i ], &int_array[ i ] ) ) cout << "Inserted non-unique value!!\n";

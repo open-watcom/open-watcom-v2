@@ -1,0 +1,34 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+CODE		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:CODE, DS:DGROUP, SS:DGROUP
+    add       al,7
+    add       al,3cH
+    mov       ax,3031H
+    mov       eax,6b79626fH
+CODE		ENDS
+CODE1		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:CODE1, DS:DGROUP, SS:DGROUP
+    add       al,7
+    add       al,3cH
+    mov       ax,3031H
+    mov       eax,6b79626fH
+CODE1		ENDS
+CODE2		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:CODE2, DS:DGROUP, SS:DGROUP
+    add       al,7
+    add       al,3cH
+    mov       ax,3031H
+    mov       eax,6b79626fH
+CODE2		ENDS
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov       al,1
+    mov       eax,1
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	0
+
+_DATA		ENDS
+		END

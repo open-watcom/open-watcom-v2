@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level bitmap ouput routine.
 *
 ****************************************************************************/
 
@@ -63,8 +62,8 @@ void _L1PutPic( short px, short py, short line_len,
 #endif
     char                *tmp;
     gr_device _FARD     *dev_ptr;       /* pointer to _CurrState->deviceptr */
-    char _WCI86HUGE *        pic;            /* buffer to store image            */
-    void PIC_FUNC       (near *copy)(); /* pointer to copy routine          */
+    char _WCI86HUGE     *pic;           /* buffer to store image            */
+    pic_fn near         *copy;          /* pointer to copy routine          */
 
     x1 = px;                            /* new rectangle for restoring image*/
     y1 = py;
@@ -93,9 +92,7 @@ void _L1PutPic( short px, short py, short line_len,
         bit_offset = 0;                         /* start at byte boundary   */
     }
 
-#if !defined( _NEC_PC ) // We don't want the graphics charger here
     _StartDevice();
-#endif
 
     plane_len = line_len / _CurrState->vc.bitsperpixel; /* width of plane in bytes  */
     dev_ptr = _CurrState->deviceptr;
@@ -134,7 +131,5 @@ void _L1PutPic( short px, short py, short line_len,
 #endif
     }
 
-#if !defined( _NEC_PC )
     _ResetDevice();
-#endif
 }

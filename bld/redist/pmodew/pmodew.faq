@@ -1,0 +1,121 @@
+------------------------------------------------------------------------------
+------------------ Frequently Asked Questions About PMODE/W ------------------
+------------------------------------------------------------------------------
+----------------------------- Updated 11/18/96 -------------------------------
+------------------------------------------------------------------------------
+
+Q: Where can I find the latest version of PMODE/W?
+
+A: The best way to get the latest version is via the Internet. We always place
+   the newest PMODE/W on the following sites. The sites toward the top are
+   most likely to have it first:
+
+   ftp://ftp.cdrom.com/pub/demos/incoming/code
+   (later moved to /pub/demos/code/pmode)
+   ftp://x2ftp.oulu.fi/pub/msdos/programming/watcom
+
+   You can get the latest release (as well as other information) via WWW at:
+
+   http://www.di.net/pmw
+   http://www.dorsai.org/~daredevi/pmw
+
+   In addition, you may contact the authors directly by sending email to
+   daredevi@dorsai.org.
+
+
+Q: How do I get rid of the startup message? How come it was never there before?
+
+A: You can disable the startup message using PMWSETUP. The startup message
+   was just added in v1.23 at the request of many PMODE/W users. We did not
+   feel a need to display anything at startup, but since so many have asked
+   for it, we decided to add it in this version.
+
+
+Q: Is PMODE/W 100% compatible with DOS/4GW?
+
+A: PMODE/W is compatible with nearly all Watcom C/C++ functions. However,
+   PMODE/W does not support all of the extensions and API functions which
+   DOS/4GW does. DOS/4GW does a number of things that we feel are quite
+   unnecessary for most applications and most likely you will never miss them
+   (especially since they waste a lot of your precious memory and disk space).
+   Why extend something, wasting system resources, when you may not even be
+   using it in your program? So remember: before blaming a problem with your
+   program on PMODE/W, make sure that what you are doing is indeed supported
+   by our system. Read PMODEW.DOC for more information.
+
+   NOTE: PMODE/W is NOT a clone of DOS/4GW! There are many differences in the
+         way PMODE/W operates. Please keep this in mind when reporting bugs.
+
+
+Q: Why doesn't my PMODE/W program work with DOS/4GW?
+
+A: You can not run a compressed PMODE/W program with DOS/4GW. The program may
+   be using a DPMI function which PMODE/W supports but DOS/4GW does not. You
+   may also be using 16 bit code directly instead of allocating DOS memory,
+   copying the code, and using it. PMODE/W always loads 16 bit real mode code
+   into low memory, thus enabling you to use it directly. DOS/4GW loads all
+   code into extended memory, where you can not use real mode code.
+
+
+Q: Why doesn't my DOS/4GW program work with PMODE/W?
+
+A: Almost any program that works with DOS/4GW will run correctly with PMODE/W
+   as long as it does not use any DOS/4GW specific functions. If a program
+   does not work at first, you may have to tweak the PMODE/W system variables
+   using PMWSETUP. For example, you may try setting the maximum low memory to
+   reserve to 0FFFFh to force PMODE/W to load all 32 bit code and data into
+   extended memory like DOS/4GW (16 bit code will still be loaded into low
+   memory). You may also try increasing the number and/or nesting of the
+   protected and real mode stacks.
+
+
+Q: Can I still debug PMODE/W programs under the Watcom debugger?
+
+A: Yes you can. You can debug your PMODE/W programs in exactly the same manner
+   you would debug a DOS/4GW program (using the /TR=RSI switch of course). You
+   cannot, however, debug programs which have been compressed using PMWLITE.
+   You also cannot debug PMODE/W programs that do not run under DOS/4GW.
+
+
+Q: Why can't I access more than 16 megs of memory under my VCPI server when
+   there is more than that available in my system?
+
+A: You must increase the maximum number of VCPI page tables PMODE/W will
+   manage using the PMWSETUP program. Each page table you add will give you
+   another 4 megs of memory (provided that it is physically available of
+   course).
+
+
+Q: Why can't I map more than 4 megs of address space of a physical device
+   using DPMI function 0800h?
+
+A: You must increase the maximum number of physical address mapping pages in
+   PMODE/W using PMWSETUP.
+
+
+Q: How come PMODE/W takes a little while to load under EMM386?
+
+A: PMODE/W allocates all of its extended memory pool during initialization
+   whereas DOS/4GW allocates memory every time you (or the C libraries) call
+   the DPMI memory allocation functions. The delay is caused by EMM386's
+   slowness in allocating pages. PMODE/W may take a little longer than DOS/4GW
+   at startup in this case, but it will be much faster during the execution
+   of the program since it does not need to call EMM386 for memory again
+   after that. If the delay is a problem, you can adjust the amount of
+   extended memory to allocate in PMWSETUP. The less memory there is to
+   allocate, the faster loading will be under EMM386. However, keep in mind
+   your memory requirements when changing that setting.
+
+
+Q: How come DOS/4GW, Pharlap, or other 32bit DOS applications don't work using
+   spawn() under PMODE/W?
+
+A: Some other DOS extenders require extended memory to initialize. Also, the
+   program you are trying to run may require extended memory. To remedy this,
+   you can change the maximum amount of extended memory for PMODE/W to
+   allocate using PMWSETUP. Set the value to something you feel meets the
+   requirements of your program instead of the default (which allocates ALL
+   memory). This will make sure that your program does not allocate any more
+   memory than it needs, therefore leaving whatever memory is left over for
+   the program you are trying to execute.
+

@@ -3,15 +3,31 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    wmake -h
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <PROJDIR>\techinfo.exe <relroot>\rel2\binw\
+  [ IFDEF (os_dos "") <2*> ]
+    <CPCMD> <PROJDIR>/dosi86/techinfo.exe <RELROOT>/binw/
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> <PROJDIR>/os2i86/techinfo.exe <RELROOT>/binp/
+
+[ BLOCK <1> clean ]
+#==================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

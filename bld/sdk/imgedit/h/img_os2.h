@@ -42,11 +42,11 @@
 
 #include "wbitmap.h"
 
-#define RETURN_SUCCESS            0      /* successful return in DosExit */
-#define RETURN_ERROR              1           /* error return in DosExit */
-#define BEEP_WARN_FREQ           60         /* frequency of warning beep */
-#define BEEP_WARN_DUR           100          /* duration of warning beep */
-#define IDMSG_MAINWINCREATEFAILED            302
+#define RETURN_SUCCESS              0       /* successful return in DosExit */
+#define RETURN_ERROR                1       /* error return in DosExit */
+#define BEEP_WARN_FREQ              60      /* frequency of warning beep */
+#define BEEP_WARN_DUR               100     /* duration of warning beep */
+#define IDMSG_MAINWINCREATEFAILED   302
 
 #define IMGED_MAIN              1
 #define IMGED_CLR_PAL           2

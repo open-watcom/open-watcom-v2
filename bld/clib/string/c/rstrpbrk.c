@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strpbrk() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -39,11 +38,12 @@ CHAR_TYPE *__F_NAME(strpbrk,wcspbrk)( const CHAR_TYPE *str,
                                       const CHAR_TYPE *charset )
 /**************************************************************/
 {
-    CHAR_TYPE *         p;
+    CHAR_TYPE           *p;
 
     while( *str != NULLCHAR ) {
         p = __F_NAME(strchr,wcschr)( charset, *str );
-        if( p != NULL )  return( (CHAR_TYPE*)str );
+        if( p != NULL )
+            return( (CHAR_TYPE*)str );
         str++;
     }
 

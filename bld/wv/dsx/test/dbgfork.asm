@@ -32,7 +32,7 @@
 
 EXTRN           getenv_                 :NEAR
 EXTRN           __psp                   :WORD
-EXTRN           _Envseg                 :WORD
+EXTRN           _Envptr                 :FWORD
 
 
 cr_char         equ     13                      ;carriage return ASCII code
@@ -113,7 +113,7 @@ make_parmbloc:  mov     di, sp                  ;save addr of PSP cmdtail
 
                 sub     sp, SIZE PARMBLOC
                 mov     bx, sp                  ;now ebx points to parm block
-                mov     ax, [_Envseg]
+                mov     ax, word ptr _Envptr+4
                 ;mov    ax, 0
                 mov     ss:[bx].envseg, ax
                 mov     word ptr ss:[bx].cmdptr+2, ss

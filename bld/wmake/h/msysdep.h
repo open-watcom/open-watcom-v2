@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform dependent configuration for wmake.
 *
 ****************************************************************************/
 
@@ -35,22 +34,31 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
+#ifdef _MSC_VER
+  #include <io.h>        /* io.h was a really dumb idea */
+#else
+  #include <unistd.h>
+#endif
+
+#ifndef __WATCOMC__
+    #include "clibext.h"
+#endif
+
+#ifdef unix
+    #undef unix /* Clean up old junk */
+#endif
 
 #include "mtypes.h"
 
-//
-// DLL's implemented only for:
-//      Intel 386 (OS/2,NT)
-#if defined(__OS2__) && defined(__386__)
-# define DLLS_IMPLEMENTED
-#elif defined(__NT__) && defined(__386__)
-# define DLLS_IMPLEMENTED
+#ifdef DLLS_IMPLEMENTED
+    #include "idedrv.h"
+    #include <malloc.h>
 #endif
 
-#ifdef DLLS_IMPLEMENTED
-# include "idedrv.h"
-# include <malloc.h>
+// For debug versions, always use scarce memory manager - memory
+// leak checking depends on it
+#ifndef NDEBUG
+    #define USE_SCARCE  1
 #endif
 
 #if defined( __DOS__ )
@@ -67,27 +75,15 @@
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
-# define FILE_BUFFER_SIZE   512     /* amount to read() at a time           */
+#if !defined( __386__ )
 # define USE_FAR            1       /* use far memory for some things       */
-# define FAR                far
-# define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
-
-#elif defined( __WINDOWS__ )
-# define PATH_SPLIT         ';'     /* path seperator                       */
-# define PATH_SPLIT_S       ";"     /* path seperator in string form        */
-# define SHELL_METAS        "<>|"   /* characters that force use of shell   */
-# define WILD_METAS         "*?"    /* wild card characters opendir supports*/
-                                    /* dir entries to ignore (direct.h)     */
-# define IGNORE_MASK        ( _A_VOLID )
-# define EXIT_OK            0       /* normal termination of program        */
-# define EXIT_WARN          1       /* return from aborted -q (Query) make  */
-# define EXIT_ERROR         2       /* return after errors in parsing       */
-# define EXIT_FATAL         4       /* return after fatal error             */
-# define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
-# define MAX_TOK_SIZE       130     /* Maximum token size                   */
-# define LINE_BUFF          80      /* length of one-line user input buffer */
+# define USE_SCARCE         1       /* use scarce memory management         */
+# define FAR                _far
 # define FILE_BUFFER_SIZE   512     /* amount to read() at a time           */
-# define FAR                far
+#else
+# define FAR
+# define FILE_BUFFER_SIZE   4096    /* amount to read() at a time           */
+#endif
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
 #elif defined( __OS2__ ) || defined( __NT__ )
@@ -110,7 +106,7 @@
 # define FAR                        /* don't use far memory at all          */
 # define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
 
-#elif defined( __QNX__ )
+#elif defined( __UNIX__ )
 
 # define PATH_SPLIT         ':'     /* path seperator                       */
 # define PATH_SPLIT_S       ":"     /* path seperator in string form        */
@@ -137,19 +133,24 @@
 #define MAX_MAC_NAME    130     /* Maximum macro name length                */
 #define MAX_MAC_NEST    16      /* Maximum depth of macro nesting           */
 
-#define OLDEST_DATE     0L          /* time_t oldest possible               */
-#define YOUNGEST_DATE   ULONG_MAX   /* time_t youngest possible             */
+enum {
+    OLDEST_DATE   = 0L,                                         // oldest
+    YOUNGEST_DATE = (((time_t)-1) > 0) ? ULONG_MAX : LONG_MAX   // youngest
+};
 
 #define MAKEFILE_NAME   "makefile"
+#ifdef __UNIX__
+#define MAKEFILE_ALT    "Makefile"
+#endif
 #define MAKEINIT_NAME   "makeinit"
 #define MAKEFINI_NAME   "makefini"
 #define TOOLSINI_NAME   "tools.ini"
 
 #if defined( __NT__ )
 #include <stdio.h>
-#define STDIN   (stdin->_handle)
-#define STDOUT  (stdout->_handle)
-#define STDERR  (stderr->_handle)
+#define STDIN   _fileno( stdin )
+#define STDOUT  _fileno( stdout )
+#define STDERR  _fileno( stderr )
 #else
 #define STDIN   STDIN_FILENO    /* the standard Posix i/o file handles      */
 #define STDOUT  STDOUT_FILENO
@@ -187,19 +188,16 @@ struct dll_cmd {
 #endif
 };
 
-extern int SwitchChar( void );
-extern int OSCorrupted( void );
-extern RET_T TouchFile( const char *name );
-extern autodep_ret_t SysOBJAutoDep( char *, time_t, BOOLEAN (*)(time_t,time_t), time_t*);
-extern BOOLEAN IdenticalAutoDepTimes( time_t, time_t );
-extern time_t SysDOSStampToTime( unsigned short date, unsigned short time );
-extern void InitHardErr( void );
-extern DLL_CMD* OSFindDLL( char const *cmd_name );
-extern void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name );
-extern DLL_CMD* OSFindDLL( char const *cmd_name );
-extern int OSExecDLL( DLL_CMD* dll, char const* cmd_args );
-extern void CheckForBreak ( void );
-extern void InitSignals( void );
-extern void DLLFini ( void );
+extern int              SwitchChar( void );
+extern int              OSCorrupted( void );
+extern RET_T            TouchFile( const char *name );
+extern BOOLEAN          IdenticalAutoDepTimes( time_t, time_t );
+extern void             InitHardErr( void );
+extern void             OSLoadDLL( char *cmd, char *dll_name, char *ent_name );
+extern DLL_CMD          *OSFindDLL( char const *cmd_name );
+extern int              OSExecDLL( DLL_CMD *dll, char const *cmd_args );
+extern void             CheckForBreak( void );
+extern void             InitSignals( void );
+extern void             DLLFini( void );
 
 #endif

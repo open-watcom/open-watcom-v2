@@ -2,4 +2,4 @@
 
 host_CPU = axp
 host_OS  = nt
-!include ..\master.mif
+!include ../master.mif

@@ -24,43 +24,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Pentium (ie. RDTSC-based) profiling support routines.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #ifdef __NT__
-#include <windows.h>
+    #include <windows.h>
 #endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
-#ifdef __QNX__
-#include <sys\stat.h>
-#else
-#include <dos.h>
-#endif
+#include <sys/stat.h>
 #include "rtinit.h"
 #include "p5prof.h"
 #include "ljmphdl.h"
-extern char *_LpDllName;
-_WCRTLINK extern char *_LpPgmName;
+#include "widechar.h"
+#include "initarg.h"
+
+#ifdef __UNIX__
+    extern char **_argv;
+    #define PGM_NAME _argv[0]
+#else
+    #define PGM_NAME _LpPgmName
+#endif
 
 #ifndef TRUE
- #define TRUE (1==1)
+    #define TRUE (1==1)
 #endif
 #ifndef FALSE
- #define FALSE (1!=1)
+    #define FALSE (1!=1)
 #endif
 
 extern  void _Bin2String(short int _WCNEAR *, char _WCNEAR *, int);
 #if defined(__386__)
  #pragma aux _Bin2String     "_*" parm routine [eax] [edx] [ebx];
-#elif defined(M_I86)
+#elif defined( _M_I86 )
  #pragma aux _Bin2String     "_*" parm routine [ax] [dx] [bx];
 #else
  #error unsupported platform
@@ -104,8 +106,8 @@ static FILE *OpenPrfFile( int isInit )
     struct stat         exe_stat;
     struct stat         prf_stat;
 
-    if( _LpPgmName != NULL ) {
-        _splitpath2( _LpPgmName, &fname, &drive, &dir, &name, NULL );
+    if( PGM_NAME != NULL ) {
+        _splitpath2( PGM_NAME, &fname, &drive, &dir, &name, NULL );
         _makepath( pname, drive, dir, name, ".prf" );
     } else {
         return( NULL );
@@ -113,7 +115,7 @@ static FILE *OpenPrfFile( int isInit )
     already = access( pname, R_OK ) == 0;
     if( already ) {
         stat( pname, &prf_stat );
-        stat( _LpPgmName, &exe_stat );
+        stat( PGM_NAME, &exe_stat );
         if( exe_stat.st_mtime > prf_stat.st_mtime ) {
             unlink( pname );
             already = FALSE;
@@ -137,9 +139,13 @@ static void init( void )
 
     out = OpenPrfFile( TRUE );
     if( out == NULL ) return;
+#ifdef __UNIX__
+    fprintf( out, "Start Run\n" );
+#else
     if( _LpDllName == NULL ) {
         fprintf( out, "Start Run\n" );
     }
+#endif
     fclose( out );
     _RDTSC( &initial_tsc );
     __ProfEnable();
@@ -253,11 +259,15 @@ static void fini( void ) {
     last = (void *)&_End_TI;
     out = OpenPrfFile( FALSE );
     if( out == NULL ) return;
+#ifdef __UNIX__
+    fprintf( out, "Image Name %s\n", PGM_NAME );
+#else
     if( _LpDllName != NULL ) {
         fprintf( out, "Image Name %s\n", _LpDllName );
     } else {
-        fprintf( out, "Image Name %s\n", _LpPgmName );
+        fprintf( out, "Image Name %s\n", PGM_NAME );
     }
+#endif
     fprintf( out, "Code Base %8.8x\n", ((char*)&___begtext)-3 );
 
     start_tsc.i = final_tsc.i - initial_tsc.i;

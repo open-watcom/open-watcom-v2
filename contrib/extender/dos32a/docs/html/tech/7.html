@@ -1,0 +1,102 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [Memory Management]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">7.0 - DOS/32 Advanced -
+Memory Management<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Under Clean, XMS and VCPI
+systems DOS/32 Advanced will always allocate extended memory at startup
+and set up its own memory heap, from which your protected mode program will
+receive its memory. This is done so to minimize the amount of calls to the
+present system software the DOS Extender otherwise would have to do. Instead,
+the memory blocks, also called Extended Memory Blocks or EMBs, will be dynamically
+allocated, resized and deleted on your program's requests, internally by
+the DOS Extender accessing only its own memory heap. Under DPMI system,
+it will be up to the present, &quot;external&quot; DPMI host to provide
+your program with extended memory, as DOS/32 Advanced built-in DPMI server
+will never be installed and used.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Under VCPI system, the
+allocated physical memory will be represented by (mapped into) linear memory
+which in its turn is described by Page Tables. The Page Tables will be dynamically
+allocated by DOS/32 Advanced at startup in the conventional (DOS) memory,
+and the number of allocated Page Tables will directly depend on how much
+physical memory is present in the computer and is accessible to the DOS
+Extender through the installed VCPI server. Each allocated Page Table will
+map 4MB of linear memory, but will also take up 4KB of DOS memory. Thus,
+if a computer has 256MB of memory installed, the DOS Extender will allocate
+256MB / 4MB = 64 Page Tables which will take up as much as 64 * 4KB = 256KB
+of DOS memory. Consequently, if a computer has 1GB of memory installed,
+the allocated Page Tables will consume 1MB of DOS memory, which is way too
+much. To prevent such situations, DOS/32 Advanced will limit the number
+of Page Tables to a certain value, VCPI PageTables, which can be manually
+adjusted by the user using the <a href="../util/3.html">SUNSYS Setup Utility</a>
+program. The default value of VCPI PageTables is 64, which allows DOS/32 Advanced
+to allocate the maximum of 256MB of memory.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note that DOS/32
+Advanced DOS Extender of version 6.00 and higher will not allow allocation
+of more than 64 Page Tables, limiting the maximum amount of possible allocated
+memory to 256MB. Also, if the Page Tables take too much of valuable DOS
+memory (the case when you have alot of physical memory installed in the computer)
+you can manually lower the VCPI PageTables value to turn down DOS memory requirements.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender
+also has another feature, VCPI+XMS Allocation Scheme, which allows to control
+the amount of allocated extended memory under VCPI. Due to the design of
+VCPI, the system will have two different pools of memory: one reserved for
+EMS and the other for XMS. As the VCPI hosts are installed on top of XMS
+servers, they will by the rule allocate the memory from XMS and reserve
+it for EMS pages. An example would be a very popular VCPI/EMS server, &quot;EMM386&quot;
+by Microsoft, which is required to be installed on top of the XMS, &quot;HIMEM.SYS&quot;.
+Despite the two different system memory pools, DOS/32 Advanced will be able
+to allocate all accessible memory from the both VCPI and XMS when VCPI+XMS
+Allocation Scheme feature is turned on (see <a href="../util/3.html">
+SUNSYS Setup Utility</a> documentation for further explanation).</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When calling DOS/32 Advanced
+DPMI memory management functions (DPMI functions 05xxh), the DOS Extender
+will always perform an internal check of all Extended Memory Blocks to see
+whether their integrity is in good shape and none has been overwritten or
+corrupted. Although this feature can be disabled with the SUNSYS Setup Utility
+program for the &quot;retail&quot; versions of your protected mode programs,
+it is recommended that you keep it enabled when developing applications
+as this is a good way to make sure that none of the routines in your program
+is corrupting the memory. As soon as DOS/32 Advanced detects that one or
+more of the Extended Memory Blocks are overwritten or corrupted in some
+way, it will terminate your application with an error. This protection against
+Extended Memory Blocks overwriting is more than 99 per cent secure, and
+if this error is triggered by the DOS Extender, you will know for sure what
+exactly is wrong. </font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -46,14 +46,10 @@
 #include "osver.h"
 #include "rtdata.h"
 #include "seterrno.h"
+#include "_process.h"
 
-extern  void    __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *, CHAR_TYPE **, CHAR_TYPE *, int );
-
-#ifdef _M_IX86
- #pragma aux    _dospawn "_*" parm caller [];
-#endif
 int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-                                  CHAR_TYPE *envp, CHAR_TYPE *argv[] )
+                                  CHAR_TYPE *envp, const CHAR_TYPE * const argv[] )
 {
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;

@@ -75,7 +75,7 @@ typedef struct {
 } FDReadInd, *pFDReadInd;  // File/directory read indicator
 void initFDReadInd(pFDReadInd entry, char *name, int readOnly);
 pFDReadInd createFDReadInd(char *name, int readOnly);
-void zapFDReadInd(pFDReadInd entry);
+void zapFDReadInd(void *entry);
     // NOTE: Only name differentiates the two elements for hash tables
-unsigned FDReadIndHashFunc(pFDReadInd entry, unsigned size);
-int FDReadIndCmpFunc(pFDReadInd entry1, pFDReadInd entry2);
+unsigned FDReadIndHashFunc(void *entry, unsigned size);
+int FDReadIndCmpFunc(void *entry1, void *entry2);

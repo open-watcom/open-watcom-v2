@@ -24,22 +24,19 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Memory read/write routines executed in debuggee's context.
 ;*
 ;*****************************************************************************
 
 
 .386p
 
-extern   _DLL_InitTerm:near
-
     assume  cs:_TEXT, ds:DGROUP
 
 public  DoReadWord_
 public  DoWriteWord_
 
-_TEXT segment word public 'CODE' use16
+_TEXT segment word public 'CODE' use32
 
 DoReadWord_ proc        near
         mov     ax,word ptr gs:[ebx]
@@ -52,4 +49,4 @@ DoWriteWord_ proc       near
 DoWriteWord_ endp
 _TEXT ends
 
-      end      _DLL_InitTerm
+      end

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Thread stack initialization for 32-bit OS/2.
 *
 ****************************************************************************/
 
@@ -35,8 +34,9 @@
 extern unsigned __threadstksize;
 #pragma aux __threadstksize "*"
 
-void __init_threadstksize( void ) {
-    __threadstksize += 8*1024;
+void __init_threadstksize( void )
+{
+    __threadstksize += 8 * 1024;
 }
 
 AXI( __init_threadstksize, INIT_PRIORITY_RUNTIME )

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 
 #include "wdeglbl.h"
@@ -71,17 +71,17 @@ static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     dc = (HDC)NULL;
     str = NULL;
 
-    ok = ( text && size );
+    ok = (text != NULL && size != NULL);
 
     if( ok ) {
         len = strlen( text );
         str = (char *)WdeMemAlloc( len + 1 );
-        ok = ( str != NULL );
+        ok = (str != NULL);
     }
 
     if( ok ) {
         pos = 0;
-        for( i=0; i < len+1; i++ ) {
+        for( i = 0; i < len + 1; i++ ) {
             if( str[i] != '&' ) {
                 text[pos] = str[i];
                 pos++;
@@ -90,7 +90,7 @@ static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     }
 
     if( ok ) {
-        ok = ( ( dc = GetDC( win ) ) != (HDC)NULL );
+        ok = ((dc = GetDC( win )) != (HDC)NULL);
     }
 
     if( ok ) {
@@ -119,7 +119,7 @@ Bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
 
     text = NULL;
 
-    ok = ( parent && name && size );
+    ok = (parent != NULL && name != NULL && size != NULL);
 
     if( ok ) {
          ok = Forward( parent, GET_WINDOW_HANDLE, &win, NULL );
@@ -131,17 +131,16 @@ Bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
 
     if( ok ) {
         text = WdeResNameOrOrdinalToStr( name, 10 );
-        ok = ( text != NULL );
+        ok = (text != NULL);
     }
 
     if( ok ) {
         ok = WdeGetTextSize( win, font, text, size );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WdeMemFree( text );
     }
 
     return( ok );
 }
-

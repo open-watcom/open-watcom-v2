@@ -32,11 +32,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <process.h>
 #include <string.h>
 #include <unistd.h>
-#include <share.h>
 #include <fcntl.h>
+#include <limits.h>
+#ifdef __WATCOMC__
+#include <process.h>
+#include <share.h>
+#endif
+#ifndef _MAX_PATH
+#define _MAX_PATH PATH_MAX+1
+#endif
+#ifndef _MAX_PATH2
+#define _MAX_PATH2 PATH_MAX+4
+#endif
+#ifndef SH_DENYWR
+#define sopen(x,y,z) open((x),(y))
+#endif
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 #ifdef __header
 #   include __header

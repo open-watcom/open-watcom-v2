@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wdeglbl.h"
 #include "wdectl3d.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wrctl3d.h"
 
 /****************************************************************************/
@@ -58,14 +58,14 @@
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-#if defined(WDE_USE_3D)
+#if defined( WDE_USE_3D )
 static Bool     CorrectVersion = FALSE;
 #endif
 
-Bool WdeCtl3DInit ( HINSTANCE inst )
+Bool WdeCtl3DInit( HINSTANCE inst )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(inst);
+#if !defined( WDE_USE_3D )
+    _wde_touch( inst );
     return ( TRUE );
 #else
     WORD        ver;
@@ -76,36 +76,36 @@ Bool WdeCtl3DInit ( HINSTANCE inst )
         CorrectVersion = TRUE;
     }
 
-    ok = WRCtl3dRegister ( inst );
-    if ( ok ) {
-        ok = WRCtl3dAutoSubclass ( inst );
+    ok = WRCtl3dRegister( inst );
+    if( ok ) {
+        ok = WRCtl3dAutoSubclass( inst );
     }
 
-    return ( ok );
+    return( ok );
 #endif
 }
 
-void WdeCtl3DFini ( HINSTANCE inst )
+void WdeCtl3DFini( HINSTANCE inst )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(inst);
+#if !defined( WDE_USE_3D )
+    _wde_touch( inst );
 #else
-    WRCtl3dUnregister ( inst );
+    WRCtl3dUnregister( inst );
 #endif
 }
 
-void WdeCtl3dColorChange ( void )
+void WdeCtl3dColorChange( void )
 {
-#if defined(WDE_USE_3D)
-    WRCtl3dColorChange ();
+#if defined( WDE_USE_3D )
+    WRCtl3dColorChange();
 #endif
 }
 
-void WdeCtl3dSubclassDlg ( HWND win, WORD w )
+void WdeCtl3dSubclassDlg( HWND win, WORD w )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(win);
-    _wde_touch(w);
+#if !defined( WDE_USE_3D )
+    _wde_touch( win );
+    _wde_touch( w );
 #else
     if( CorrectVersion ) {
         WRCtl3dSubclassDlgEx( win, w );
@@ -117,8 +117,8 @@ void WdeCtl3dSubclassDlg ( HWND win, WORD w )
 
 void WdeCtl3dSubclassCtl( HWND win )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(win);
+#if !defined( WDE_USE_3D )
+    _wde_touch( win );
 #else
     WRCtl3dSubclassCtl( win );
 #endif
@@ -126,11 +126,11 @@ void WdeCtl3dSubclassCtl( HWND win )
 
 LONG WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(win);
-    _wde_touch(msg);
-    _wde_touch(wp);
-    _wde_touch(lp);
+#if !defined( WDE_USE_3D )
+    _wde_touch( win );
+    _wde_touch( msg );
+    _wde_touch( wp );
+    _wde_touch( lp );
     return( 0 );
 #else
     return( WRCtl3dDlgFramePaint( win, msg, wp, lp ) );
@@ -139,13 +139,12 @@ LONG WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp )
 
 HBRUSH WdeCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
-#if !defined(WDE_USE_3D)
-    _wde_touch(msg);
-    _wde_touch(wp);
-    _wde_touch(lp);
+#if !defined( WDE_USE_3D )
+    _wde_touch( msg );
+    _wde_touch( wp );
+    _wde_touch( lp );
     return( (HBRUSH)NULL );
 #else
     return( WRCtl3dCtlColorEx( msg, wp, lp ) );
 #endif
 }
-

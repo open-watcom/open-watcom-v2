@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "offset.h"
 #include "zoiks.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "s37bead.h"
 
 extern hw_sym          *HWSymHandle(void );
@@ -82,7 +82,7 @@ extern  label_handle    AskForLabel( sym_handle sym ) {
 
     label_struct        *new;
 
-    _Alloc( new, sizeof( label_struct ) );
+    new = CGAlloc( sizeof( label_struct ) );
     new->link    = Handles;
     Handles = new;
     new->sym     = sym;
@@ -224,7 +224,7 @@ extern  void    TellScrapLabel( label_struct *lbl ) {
         owner = &(*owner)->link;
     }
     *owner = lbl->link;
-    _Free( lbl, sizeof( label_struct ) );
+    CGFree( lbl );
 }
 
 

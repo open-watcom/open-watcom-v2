@@ -1,0 +1,7 @@
+[ DEFAULT usr="wstrip.exe" desc="Debugger information strip utility" type="e" ]
+dir="binw"				where="c jc f77 jf77"		old="binb"
+dir="binp"	cond="os2host"		where="c jc f77 jf77"
+dir="binnt"	cond="wnthost"		where="c jc f77 jf77 ac"
+dir="axpnt"	cond="alphahost"	where="ac"
+
+usr="wstrip"	dir="binl"	cond="lnxhost"		where="c jc f77 jf77"

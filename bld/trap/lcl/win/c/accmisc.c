@@ -41,8 +41,7 @@
 #include "wdebug.h"
 #include "trperr.h"
 #include "madx86.h"
-
-extern unsigned X86CPUType();
+#include "x86cpu.h"
 
 BOOL IsSegSize32( WORD seg )
 {
@@ -88,7 +87,7 @@ unsigned ReqMachine_data()
 
 unsigned ReqGet_sys_config( void )
 {
-    unsigned            fpu;
+    unsigned_8          fpu;
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -108,14 +107,15 @@ unsigned ReqGet_sys_config( void )
         fpu = X86_287;
     } else {
         ret->sys.cpu = X86CPUType();
-        fpu = X86_387;
+        fpu = ret->sys.cpu & X86_CPU_MASK;
     }
 
     if( WindowsFlags & WF_80x87 ) {
-        NPXType = ret->sys.fpu = fpu;
+        FPUType = fpu;
     } else {
-        NPXType = ret->sys.fpu = X86_NO;
+        FPUType = X86_NO;
     }
+    ret->sys.fpu = FPUType;
     ret->sys.mad = MAD_X86;
     ret->sys.huge_shift = 3;
     return( sizeof( *ret ) );
@@ -123,9 +123,9 @@ unsigned ReqGet_sys_config( void )
 
 unsigned ReqGet_message_text( void )
 {
-    char                *err_txt;
-    get_message_text_ret        *ret;
-    unsigned            len;
+    char                    *err_txt;
+    get_message_text_ret    *ret;
+    unsigned                len;
 
     static const char * const ExceptionMsgs[] = {
             TRP_EXC_divide_overflow,

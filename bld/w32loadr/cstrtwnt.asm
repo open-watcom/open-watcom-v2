@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Win32 console startup code adapted for OSI executables.
 ;*
 ;*****************************************************************************
 
@@ -64,9 +63,8 @@ copyright proc  near
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by WATCOM International Corp. 1988-1995."
-        db      " All rights reserved."
+        db      "Open Watcom C/C++32 Run-Time system. "
+        db      "Portions Copyright (C) Sybase, Inc. 1988-2002."
 copyright endp
 
 _TEXT   ends

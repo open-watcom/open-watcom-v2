@@ -1,0 +1,254 @@
+.387
+		PUBLIC	_AliasList
+		EXTRN	SaveSave_:BYTE
+		EXTRN	StringIn_:BYTE
+		EXTRN	_end:BYTE
+		EXTRN	_edata:BYTE
+		EXTRN	InitRetrieve_:BYTE
+dgroup		GROUP	_data,const,stack
+fard		SEGMENT	PARA PUBLIC USE16 'far_data'
+fard		ENDS
+_TEXT		SEGMENT	PARA PUBLIC USE16 'code'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+dosedit:
+    jmp         near ptr L$13
+L$1:
+    DB	50H, 72H, 6fH, 67H, 72H, 61H, 6dH, 20H
+    DB	69H, 73H, 20H, 61H, 6cH, 72H, 65H, 61H
+    DB	64H, 79H, 20H, 6cH, 6fH, 61H, 64H, 65H
+    DB	64H, 24H
+L$2:
+    DB	43H, 61H, 6eH, 6eH, 6fH, 74H, 20H, 6cH
+    DB	6fH, 63H, 61H, 74H, 65H, 20H, 70H, 72H
+    DB	65H, 76H, 69H, 6fH, 75H, 73H, 20H, 76H
+    DB	65H, 72H, 73H, 69H, 6fH, 6eH, 24H, 0
+    DB	0, 0, 0
+L$3:
+    DB	5, 0, 0d1H, 0ceH
+    DD	SaveSave_
+L$4:
+    DB	0, 0
+_AliasList:
+    DB	0, 0, 0, 0
+L$5:
+    DB	0, 0
+L$6:
+    DB	0, 0
+L$7:
+    DB	0, 0, 0d1H, 0ceH
+int21:
+    cmp         ah,0aH
+    jne         L$10
+    push        ax
+    push        dx
+    push        bx
+    push        cx
+    mov         bx,0
+    mov         ax,4400H
+    int         21H
+    test        dx,80H
+    pop         cx
+    pop         bx
+    pop         dx
+    pop         ax
+    je          L$10
+    sti         
+    push        di
+    mov         di,sp
+    push        bp
+    push        es
+    push        si
+    push        ax
+    push        bx
+    push        cx
+    push        dx
+    push        ds
+    push        ds
+    push        dx
+    mov         ah,51H
+    int         21H
+    cmp         bx,word ptr cs:L$7
+    jb          L$8
+    mov         di,0
+    jmp         L$9
+L$8:
+    mov         di,1
+L$9:
+    pop         si
+    pop         ds
+    lea         ax,2[si]
+    mov         dx,ds
+    mov         cl,byte ptr [si]
+    mov         byte ptr cs:L$22,cl
+    mov         cx,dgroup
+    mov         bx,offset dgroup:L$22
+    push        si
+    mov         bp,sp
+    mov         si,ss
+    mov         ss,cx
+    mov         sp,offset dgroup:L$21
+    push        ds
+    mov         es,word ptr cs:L$3
+    push        es
+    mov         ds,cx
+    push        di
+    call        near ptr StringIn_
+    pop         ds
+    mov         ss,si
+    mov         sp,bp
+    pop         si
+    mov         cl,byte ptr cs:L$23
+    mov         byte ptr 1[si],cl
+    pop         ds
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         ax
+    pop         si
+    pop         es
+    pop         bp
+    pop         di
+    mov         al,0
+    iret        
+L$10:
+    jmp         dword ptr cs:L$5
+main:
+    lea         dx,L$2
+    jmp         L$12
+L$11:
+    lea         dx,L$1
+L$12:
+    push        cs
+    pop         ds
+    mov         ah,9
+    int         21H
+    jmp         near ptr L$18
+L$13:
+    mov         dx,es
+    mov         ax,0
+    mov         ds,ax
+    mov         di,80H
+    mov         cl,byte ptr es:[di]
+    xor         ch,ch
+L$14:
+    inc         di
+    dec         cx
+    cmp         byte ptr es:[di],20H
+    je          L$14
+    inc         cx
+    cmp         byte ptr es:[di],2dH
+    jne         L$19
+    cmp         byte ptr es:1[di],71H
+    je          L$15
+    cmp         byte ptr es:1[di],51H
+    jne         L$19
+L$15:
+    cli         
+    mov         dx,es
+    mov         ax,di
+    les         bx,dword ptr ds:[84H]
+    push        es
+    cmp         word ptr es:-2[bx],0ced1H
+    jne         main
+    mov         di,word ptr es:-8[bx]
+    mov         word ptr ds:[84H],di
+    mov         di,word ptr es:-6[bx]
+    mov         word ptr ds:[86H],di
+    cmp         word ptr es:-14H[bx],0ced1H
+    jne         L$16
+    mov         ds,word ptr es:-0eH[bx]
+    mov         si,ss
+    mov         di,sp
+    mov         ss,word ptr es:-0eH[bx]
+    mov         sp,offset dgroup:L$21
+    call        dword ptr es:-12H[bx]
+    mov         ss,si
+    mov         sp,di
+L$16:
+    sti         
+    pop         ds
+    cmp         word ptr -0aH[bx],0
+    je          L$17
+    mov         es,word ptr -0aH[bx]
+    mov         ah,49H
+    int         21H
+L$17:
+    mov         es,word ptr -4[bx]
+    mov         ah,49H
+    int         21H
+L$18:
+    mov         al,0
+    mov         ah,4cH
+    int         21H
+L$19:
+    cli         
+    les         bx,dword ptr ds:[84H]
+    cmp         word ptr es:-2[bx],0ced1H
+    jne         L$20
+    jmp         near ptr L$11
+L$20:
+    mov         word ptr cs:L$5,bx
+    mov         word ptr cs:L$6,es
+    mov         word ptr ds:[84H],offset int21
+    mov         word ptr ds:[86H],cs
+    sti         
+    mov         word ptr cs:L$7,dx
+    mov         es,dx
+    mov         bx,di
+    add         bx,cx
+    mov         byte ptr es:[bx],0
+    mov         bx,dgroup
+    mov         word ptr cs:L$4,bx
+    mov         ss,bx
+    mov         sp,offset dgroup:L$21
+    push        di
+    push        ax
+    push        es
+    mov         ax,dgroup
+    mov         es,ax
+    mov         cx,offset dgroup:_end
+    mov         di,offset dgroup:_edata
+    sub         cx,di
+    mov         al,0
+    rep stosb  
+    pop         es
+    pop         ax
+    pop         di
+    mov         ds,bx
+    mov         bx,offset dgroup:_end
+    mov         cl,4
+    shr         bx,cl
+    add         bx,dgroup
+    mov         cx,es
+    sub         bx,cx
+    mov         cl,4
+    inc         bx
+    mov         ah,4aH
+    int         21H
+    mov         ax,di
+    call        near ptr InitRetrieve_
+    mov         al,0
+    mov         ah,31H
+    mov         dx,bx
+    int         21H
+_TEXT		ENDS
+_data		SEGMENT	PARA PUBLIC USE16 'data'
+    DB	03FH DUP(0,0,0,0,0,0,0,0)
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+L$21:
+    DB	0
+L$22:
+    DB	0, 0
+L$23:
+    DB	0, 0, 5cH, 41H, 4cH, 49H, 41H, 53H
+    DB	2eH, 44H, 4fH, 53H, 0
+
+_data		ENDS
+const		SEGMENT	PARA PUBLIC USE16 'data'
+const		ENDS
+stack		SEGMENT	PARA STACK USE16 'stack'
+    ORG 0
+    ORG 200H
+stack		ENDS
+
+		END

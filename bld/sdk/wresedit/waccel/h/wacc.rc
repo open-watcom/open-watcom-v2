@@ -1,24 +1,12 @@
-/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
-   %       reserved. No part of this software may be reproduced      %
-   %       in any form or by any means - graphic, electronic or      %
-   %       mechanical, including photocopying, recording, taping     %
-   %       or information storage and retrieval systems - except     %
-   %       with the written permission of WATCOM Systems Inc.        %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-   Date         By              Reason
-   ----         --              ------
-   19 Jul 93    Wes Nelson      initial implementation
-*/
-
 #include <windows.h>
 #include "sys_rc.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
+#include "uistr.gh"
+#include "about.h"
 #include "banner.h"
 #include "w.rc"
 
-WAccelAccelTable ACCELERATORS
+"WAccelAccelTable" ACCELERATORS
 BEGIN
     VK_DELETE,  IDM_ACC_DELETE, VIRTKEY
     VK_F1,      IDM_HELP,       VIRTKEY
@@ -28,24 +16,24 @@ BEGIN
 END
 
 /* icons */
-WMainIcon      ICON waccel.ico
+"APPLICON"  ICON "waccel.ico"
 
-/* aboutbox bitmap */
-AboutLogo    BITMAP MOVEABLE DISCARDABLE logo.bmp
+/* about box bitmap */
+"AboutLogo" BITMAP MOVEABLE DISCARDABLE "logo.bmp"
 
 /* ribbon bitmaps */
-Clear        BITMAP clear.bmp
-New          BITMAP new.bmp
-Open         BITMAP open.bmp
-Save         BITMAP save.bmp
+"Clear"      BITMAP "clear.bmp"
+"New"        BITMAP "new.bmp"
+"Open"       BITMAP "open.bmp"
+"Save"       BITMAP "save.bmp"
 
-Cut          BITMAP cut.bmp
-Copy         BITMAP copy.bmp
-Paste        BITMAP paste.bmp
+"Cut"        BITMAP "cut.bmp"
+"Copy"       BITMAP "copy.bmp"
+"Paste"      BITMAP "paste.bmp"
 
-InsertKey    BITMAP inskey.bmp
-DeleteKey    BITMAP delkey.bmp
-PressKey     BITMAP presskey.bmp
+"InsertKey"  BITMAP "inskey.bmp"
+"DeleteKey"  BITMAP "delkey.bmp"
+"PressKey"   BITMAP "presskey.bmp"
 
 #undef pick
 #undef sp
@@ -54,12 +42,12 @@ PressKey     BITMAP presskey.bmp
 
 STRINGTABLE
 BEGIN
-    #include "master.msg"
+    #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 #include "wacc.men"
 
 #include "accedit.dlg"
-#include "accabout.dlg"
 #include "acckey.dlg"
-
+#include "about.dlg"

@@ -226,7 +226,6 @@
 
 :option. release
 :target. any
-:internal.
 :usage. set the checksum in the executable header
 
 :option. section

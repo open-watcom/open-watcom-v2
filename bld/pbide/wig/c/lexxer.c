@@ -42,7 +42,7 @@
 #include "hashtab.h"
 #include "types.h"
 #include "sruinter.h"
-#include "ytab.h"
+#include "ytab.gh"
 #include "filelist.h"
 
 extern void SetComment(void);

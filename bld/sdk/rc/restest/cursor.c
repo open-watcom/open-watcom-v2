@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a cursor resource. 
 *
 ****************************************************************************/
 
@@ -55,14 +54,15 @@ BOOL CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpar
     return( TRUE );
 }
 
-void DisplayCursor( HWND hwnd ) {
+void DisplayCursor( HWND hwnd )
+{
     FARPROC     fp;
     HCURSOR     oldcur;
     HCURSOR     newcur;
     char        buf[256];
 
-    fp = MakeProcInstance( GetCursorNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetCursorNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     newcur = LoadCursor( Instance, cursorName );
     if( newcur == NULL ) {

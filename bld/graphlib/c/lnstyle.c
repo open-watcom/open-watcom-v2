@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-unsigned short _WCI86FAR _CGRAPH _getlinestyle( void )
+_WCRTLINK unsigned short _WCI86FAR _CGRAPH _getlinestyle( void )
 /*===============================================
 
    This function queries the current line drawing style. */
@@ -45,7 +45,7 @@ unsigned short _WCI86FAR _CGRAPH _getlinestyle( void )
 Entry( _GETLINESTYLE, _getlinestyle ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _setlinestyle( unsigned short style )
+_WCRTLINK void _WCI86FAR _CGRAPH _setlinestyle( unsigned short style )
 /*=====================================================
 
    This routine sets the current line style for line drawing. */

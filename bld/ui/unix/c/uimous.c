@@ -48,27 +48,27 @@ void global uisetmouseposn(             /* SET MOUSE POSITION */
     MouseCol = col;
 }
 
-void intern checkmouse( unsigned short *status, unsigned short *row,
-                        unsigned short *col, unsigned long *time )
+void intern checkmouse( unsigned short *status, MOUSEORD *row,
+                        MOUSEORD *col, unsigned long *time )
 /**********************************************/
 {
     _checkmouse(status, row, col, time);
 }
 
-void intern stopmouse()
-/*********************/
+void intern stopmouse( void )
+/***************************/
 {
     _stopmouse();
 }
 
-bool global initmouse( bool install )
-/******************************/
+bool global initmouse( int install )
+/**********************************/
 {
-    return _initmouse(install);
+    return _initmouse( install );
 }
 
-void global finimouse()
-/*********************/
+void global finimouse( void )
+/***************************/
 {
     _finimouse();
 }

@@ -42,7 +42,7 @@ extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
     ResNameOrOrdinal *  newname;
     int                 stringlen;
 
-    if (string == NULL || *string == 0xff) {
+    if( string == NULL || *(unsigned char *)string == 0xff ) {
         /* the first character of a ResNameOrOrdinal can't be 0xff */
         /* since this indicated that it is an ordinal, not a name */
         WRES_ERROR( WRS_BAD_PARAMETER );

@@ -34,16 +34,16 @@ END
 
 AboutBox DIALOG 22, 17, 144, 75
     STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
-    CAPTION "About WATCOM Edit"
+    CAPTION "About Open Watcom Edit"
     BEGIN
-        CTEXT "WATCOM Simple Editor for Windows", -1, 0,  5, 144, 8
+        CTEXT "Open Watcom Simple Editor for Windows", -1, 0,  5, 144, 8
         CTEXT "Version 1.0", -1, 0, 14, 144, 8
         DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
     END
 
 AbortDialog DIALOG 22,17, 144, 75
     STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
-    CAPTION "WATCOM Edit"
+    CAPTION "Open Watcom Edit"
     BEGIN
         DEFPUSHBUTTON "Cancel", IDCANCEL, 53, 59, 32, 14, WS_GROUP
         CTEXT "Printing", -1, -1,  5, 144, 8

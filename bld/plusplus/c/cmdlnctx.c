@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "cmdlnctx.h"
 #include "cmdscan.h"
@@ -172,21 +170,21 @@ void CmdLnCtxInfo(              // PRINT CONTEXT INFO
     for( entry = VstkTop( &cmdLnContexts )
        ; entry != NULL
        ; entry = VstkNext( &cmdLnContexts, entry ) ) {
-        VStrNull( &buf );
+        VbufRewind( &buf );
         switch( entry->base.ctx_type ) {
           case CTX_CLTYPE_ENV :
-            VStrConcChr( &buf, '@' );
-            VStrConcStr( &buf, entry->env.var );
+            VbufConcChr( &buf, '@' );
+            VbufConcStr( &buf, entry->env.var );
             break;
           case CTX_CLTYPE_FC :
-            VStrConcStr( &buf, "batch file of commands, line " );
-            VStrConcDecimal( &buf, CompInfo.fc_file_line );
+            VbufConcStr( &buf, "batch file of commands, line " );
+            VbufConcDecimal( &buf, CompInfo.fc_file_line );
             break;
           case CTX_CLTYPE_PGM :
-            VStrConcStr( &buf, "command line" );
+            VbufConcStr( &buf, "command line" );
             break;
           case CTX_CLTYPE_FILE :
-            VStrConcStr( &buf, SrcFileFullName( entry->file.source ) );
+            VbufConcStr( &buf, SrcFileFullName( entry->file.source ) );
             break;
           DbgDefault( "bad command-line context" );
         }
@@ -198,12 +196,12 @@ void CmdLnCtxInfo(              // PRINT CONTEXT INFO
             CmdScanChar();
             size = CmdScanOption( &not_used ) + 1;
             CmdScanInit( old );
-            VStrConcStr( &buf, ", switch: " );
+            VbufConcStr( &buf, ", switch: " );
             for( old = entry->base.sw_ptr; size > 0; ++old, --size ) {
-                VStrConcChr( &buf, *old );
+                VbufConcChr( &buf, *old );
             }
         }
-        InfMsgPtr( INF_SWITCH, buf.buf );
+        InfMsgPtr( INF_SWITCH, VbufString( &buf ) );
     }
     VbufFree( &buf );
 }

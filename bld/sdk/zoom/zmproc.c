@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom ZOOM window procedure.
 *
 ****************************************************************************/
 
@@ -48,6 +47,8 @@
 #define MAX_YSIZE       ( ( 2 * GetSystemMetrics( SM_CYSCREEN ) ) / 3 )
 
 static POINT    Origin = { 0, 0 };
+
+static void DrawMagnifier( HDC dc, MainWndInfo *info );
 
 /*
  * EraseMagnifier - Erase the Magnifier window
@@ -75,11 +76,57 @@ static void EndScrolling( MainWndInfo *info ) {
     }
 }
 
+static void UpdateScrollRange( MainWndInfo *info ) {
+
+    SetScrollRange( info->vscroll, SB_CTL, 0,
+                GetSystemMetrics( SM_CYSCREEN ) - info->magsize.y, TRUE );
+    SetScrollRange( info->hscroll, SB_CTL, 0,
+                GetSystemMetrics( SM_CXSCREEN ) - info->magsize.x, TRUE );
+}
+
+static void UpdateScrollPos( MainWndInfo *info ) {
+
+    SetScrollPos( info->vscroll, SB_CTL, info->magpos.y, TRUE );
+    SetScrollPos( info->hscroll, SB_CTL, info->magpos.x, TRUE );
+}
+
+/*
+ * CheckMagnifierPos - make sure the magnifier is completely on the screen
+ *                      and fix it if it is not
+ */
+static BOOL CheckMagnifierPos( MainWndInfo *info ) {
+
+    BOOL        ret;
+    int         xmax;
+    int         ymax;
+
+    ret = TRUE;
+    xmax = GetSystemMetrics( SM_CXSCREEN );
+    ymax = GetSystemMetrics( SM_CYSCREEN );
+    if( info->magpos.x < 0 ) {
+        info->magpos.x = 0;
+        ret = FALSE;
+    }
+    if( info->magpos.y < 0 ) {
+        info->magpos.y = 0;
+        ret = FALSE;
+    }
+    if( info->magpos.x + info->magsize.x + 1 >= xmax ) {
+        info->magpos.x = xmax - info->magsize.x;
+        ret = FALSE;
+    }
+    if( info->magpos.y + info->magsize.y + 1 >= ymax ) {
+        info->magpos.y = ymax - info->magsize.y;
+        ret = FALSE;
+    }
+    return( ret );
+}
+
 /*
  * DoScroll - process messages from the scrollbars
  */
 
-static void DoScroll( HWND bar, WORD wparam, MainWndInfo *info ) {
+static void DoScroll( HWND bar, WPARAM wparam, MainWndInfo *info ) {
 
     int         delta;
     HDC         dc;
@@ -124,7 +171,7 @@ static void DoScroll( HWND bar, WORD wparam, MainWndInfo *info ) {
  *                  image should be displayed
  */
 
-static GetDisplaySize( HWND hwnd, MainWndInfo *info ) {
+static void GetDisplaySize( HWND hwnd, MainWndInfo *info ) {
 
     RECT        area;
 
@@ -142,7 +189,7 @@ static GetDisplaySize( HWND hwnd, MainWndInfo *info ) {
  * PositionWidgets - position the scroll bars and zoom buttons in the
  *                      window
  */
-static PositionWidgets( HWND hwnd, MainWndInfo *info ) {
+static void PositionWidgets( HWND hwnd, MainWndInfo *info ) {
     RECT        area;
     WORD        barheight;
     WORD        barwidth;
@@ -223,20 +270,6 @@ static void DrawMagnifier( HDC dc, MainWndInfo *info ) {
     SelectObject( dc, oldpen );
 }
 
-static void UpdateScrollRange( MainWndInfo *info ) {
-
-    SetScrollRange( info->vscroll, SB_CTL, 0,
-                GetSystemMetrics( SM_CYSCREEN ) - info->magsize.y, TRUE );
-    SetScrollRange( info->hscroll, SB_CTL, 0,
-                GetSystemMetrics( SM_CXSCREEN ) - info->magsize.x, TRUE );
-}
-
-static void UpdateScrollPos( MainWndInfo *info ) {
-
-    SetScrollPos( info->vscroll, SB_CTL, info->magpos.y, TRUE );
-    SetScrollPos( info->hscroll, SB_CTL, info->magpos.x, TRUE );
-}
-
 static void GetWndSize( MainWndInfo *info, int *xsize, int *ysize ) {
 
     *xsize = ( info->magsize.x * info->magnif ) / ZOOM_FACTOR
@@ -246,38 +279,6 @@ static void GetWndSize( MainWndInfo *info, int *xsize, int *ysize ) {
             + GetSystemMetrics( SM_CYFRAME )
             + info->caption_hite
             + GetSystemMetrics( SM_CYHSCROLL );
-}
-
-/*
- * CheckMagnifierPos - make sure the magnifier is completely on the screen
- *                      and fix it if it is not
- */
-static BOOL CheckMagnifierPos( MainWndInfo *info ) {
-
-    BOOL        ret;
-    int         xmax;
-    int         ymax;
-
-    ret = TRUE;
-    xmax = GetSystemMetrics( SM_CXSCREEN );
-    ymax = GetSystemMetrics( SM_CYSCREEN );
-    if( info->magpos.x < 0 ) {
-        info->magpos.x = 0;
-        ret = FALSE;
-    }
-    if( info->magpos.y < 0 ) {
-        info->magpos.y = 0;
-        ret = FALSE;
-    }
-    if( info->magpos.x + info->magsize.x + 1 >= xmax ) {
-        info->magpos.x = xmax - info->magsize.x;
-        ret = FALSE;
-    }
-    if( info->magpos.y + info->magsize.y + 1 >= ymax ) {
-        info->magpos.y = ymax - info->magsize.y;
-        ret = FALSE;
-    }
-    return( ret );
 }
 
 static void BeginZooming( HWND hwnd, MainWndInfo *info ) {
@@ -410,7 +411,7 @@ static void DoMouseMove( MainWndInfo *info, DWORD lparam ) {
     ReleaseDC( NULL, dc );
 }
 
-static displayAbout( HWND hwnd ) {
+static void displayAbout( HWND hwnd ) {
 
     about_info          ai;
 
@@ -431,8 +432,8 @@ static displayAbout( HWND hwnd ) {
     FreeRCString( (char *)ai.title );
 }
 
-BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, UINT wparam,
-                                    LONG lparam )
+BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam )
 {
     MainWndInfo         *info;
     HDC                 dc;
@@ -584,6 +585,16 @@ BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, UINT wparam,
     case WM_MOUSEMOVE:
         if( info->looking ) {
             DoMouseMove( info, lparam );
+        }
+        break;
+    case WM_KEYDOWN:
+        if( info->looking ) {
+            switch( wparam ) {
+            case VK_RETURN:
+            case VK_ESCAPE:
+                EndZooming( info );
+                break;
+            }
         }
         break;
     case WM_COMMAND:

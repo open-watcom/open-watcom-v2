@@ -1,0 +1,19 @@
+.387
+flora		GROUP	pat
+pat		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	1, 0
+L$2:
+    DB	1
+L$3:
+    DB	0
+    mov         ax,word ptr ss:L$3[bx+di]
+    mov         ax,7
+    mov         ax,2eH
+    mov         ax,7
+    mov         ax,15H
+    mov         ax,word ptr ss:L$1[bx+di]
+    mov         ax,word ptr ss:L$2
+pat		ENDS
+		END

@@ -95,21 +95,21 @@ BOOL InitStringTable( void ) {
  * GetRCString
  */
 
-char *GetRCString( DWORD msgid ) {
+char *HWGetRCString( DWORD msgid ) {
     return( StringTbl[ msgid ] );
 }
 
-char *AllocRCString( DWORD id ) {
+char *HWAllocRCString( DWORD id ) {
     return( StringTbl[ id ] );
 }
 
-void FreeRCString( char *str ) {
+void HWFreeRCString( char *str ) {
 
     // the strings are not really allocated so don't free them
     str = str;
 }
 
-DWORD CopyRCString( DWORD id, char *buf, DWORD bufsize ) {
+DWORD HWCopyRCString( DWORD id, char *buf, DWORD bufsize ) {
 
     strncpy( buf, StringTbl[ id ], bufsize );
     return( strlen( StringTbl[ id ] ) );

@@ -1,0 +1,40 @@
+# make targets for libraries
+#
+# source-dependent targets are found in macros:
+#   objs_asm:       assembler
+#   objs_c:         C
+#   objs_cpp:       C++
+#
+
+obj_ext = obj
+objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+obj_ext = xbj
+xbjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+files = $+ $(static_objs) $-
+
+!ifdef objs_asm
+!undef objs_asm
+!endif
+!ifdef objs_c
+!undef objs_c
+!endif
+!ifdef objs_cpp
+!undef objs_cpp
+!endif
+!ifdef obj_ext
+!undef obj_ext
+!endif
+
+!ifeq processor 087
+target_lib = $(prefix)7$(suffix).lib
+target_lib_x = $(prefix_x)7$(suffix).lib
+!else ifeq processor 387
+target_lib = $(prefix)7$(suffix).lib
+target_lib_x = $(prefix_x)7$(suffix).lib
+!else
+target_lib = $(prefix)$(suffix).lib
+target_lib_x = $(prefix_x)$(suffix).lib
+!endif
+
+cpp_dirs = ../../cpp
+asm_dirs = ../../a;../../inc

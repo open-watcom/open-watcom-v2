@@ -1,0 +1,638 @@
+/*
+ *  tdikrnl.h   Transport driver interface kernel definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _TDI_KRNL_
+#define _TDI_KRNL_
+
+:include readonly.sp
+
+#include <tdi.h>
+#include <netpnp.h>
+
+:include cpluspro.sp
+
+/* Transport driver interface request codes */
+#define TDI_ASSOCIATE_ADDRESS       0x01
+#define TDI_DISASSOCIATE_ADDRESS    0x02
+#define TDI_CONNECT                 0x03
+#define TDI_LISTEN                  0x04
+#define TDI_ACCEPT                  0x05
+#define TDI_DISCONNECT              0x06
+#define TDI_SEND                    0x07
+#define TDI_RECEIVE                 0x08
+#define TDI_SEND_DATAGRAM           0x09
+#define TDI_RECEIVE_DATAGRAM        0x0A
+#define TDI_SET_EVENT_HANDLER       0x0B
+#define TDI_QUERY_INFORMATION       0x0C
+#define TDI_SET_INFORMATION         0x0D
+#define TDI_ACTION                  0x0E
+#define TDI_DIRECT_SEND             0x27
+#define TDI_DIRECT_SEND_DATAGRAM    0x29
+#define TDI_DIRECT_ACCEPT           0x2A
+
+/* Transport driver interface file types */
+#define TDI_TRANSPORT_ADDRESS_FILE  1
+#define TDI_CONNECTION_FILE         2
+#define TDI_CONTROL_CHANNEL_FILE    3
+
+/* Transport driver interface internal device I/O control codes */
+#define IOCTL_TDI_QUERY_DIRECT_SEND_HANDLER \
+    _TDI_CONTROL_CODE( 0x0080, METHOD_NEITHER )
+#define IOCTL_TDI_QUERY_DIRECT_SENDDG_HANDLER \
+    _TDI_CONTROL_CODE( 0x0081, METHOD_NEITHER )
+
+/* Transport driver interface event types */
+#define TDI_EVENT_CONNECT                   0
+#define TDI_EVENT_DISCONNECT                1
+#define TDI_EVENT_ERROR                     2
+#define TDI_EVENT_RECEIVE                   3
+#define TDI_EVENT_RECEIVE_DATAGRAM          4
+#define TDI_EVENT_RECEIVE_EXPEDITED         5
+#define TDI_EVENT_SEND_POSSIBLE             6
+#define TDI_EVENT_CHAINED_RECEIVE           7
+#define TDI_EVENT_CHAINED_RECEIVE_DATAGRAM  8
+#define TDI_EVENT_CHAINED_RECEIVE_EXPEDITED 9
+#define TDI_EVENT_ERROR_EX                  10
+
+/* Transport driver interface version numbers */
+#define TDI20
+#define TDI_CURRENT_MAJOR_VERSION   2
+#define TDI_CURRENT_MINOR_VERSION   0
+#define TDI_CURRENT_VERSION \
+    (TDI_CURRENT_MINOR_VERSION << 8 | TDI_CURRENT_MAJOR_VERSION)
+#define TDI_CURRENT_ONE             0x0001
+
+/* Transport driver interface status codes */
+#define TDI_STATUS_BAD_VERSION          0xC0010004L
+#define TDI_STATUS_BAD_CHARACTERISTICS  0xC0010005L
+
+/* Transport driver interface Plug and Play context types */
+#define TDI_PNP_CONTEXT_TYPE_IF_NAME            1
+#define TDI_PNP_CONTEXT_TYPE_IF_ADDR            2
+#define TDI_PNP_CONTEXT_TYPE_PDO                3
+#define TDI_PNP_CONTEXT_TYPE_FIRST_OR_LAST_IF   4
+
+/* Transport driver interface kernel request */
+typedef struct _TDI_REQUEST_KERNEL {
+    ULONG_PTR                   RequestFlags;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+    PTDI_CONNECTION_INFORMATION ReturnConnectionInformation;
+    PVOID                       RequestSpecific;
+} TDI_REQUEST_KERNEL;
+typedef TDI_REQUEST_KERNEL  *PTDI_REQUEST_KERNEL;
+typedef TDI_REQUEST_KERNEL  TDI_REQUEST_KERNEL_DISASSOCIATE;
+typedef TDI_REQUEST_KERNEL  *PTDI_REQUEST_KERNEL_DISASSOCIATE;
+typedef TDI_REQUEST_KERNEL  TDI_REQUEST_KERNEL_CONNECT;
+typedef TDI_REQUEST_KERNEL  *PTDI_REQUEST_KERNEL_CONNECT;
+typedef TDI_REQUEST_KERNEL  TDI_REQUEST_KERNEL_DISCONNECT;
+typedef TDI_REQUEST_KERNEL  *PTDI_REQUEST_KERNEL_DISCONNECT;
+typedef TDI_REQUEST_KERNEL  TDI_REQUEST_KERNEL_LISTEN;
+typedef TDI_REQUEST_KERNEL  *PTDI_REQUEST_KERNEL_LISTEN;
+
+/* Transport driver interface kernel associate request */
+typedef struct _TDI_REQUEST_KERNEL_ASSOCIATE {
+    HANDLE  AddressHandle;
+} TDI_REQUEST_KERNEL_ASSOCIATE;
+typedef TDI_REQUEST_KERNEL_ASSOCIATE    *PTDI_REQUEST_KERNEL_ASSOCIATE;
+
+/* Transport driver interface kernel accept request */
+typedef struct _TDI_REQUEST_KERNEL_ACCEPT {
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+    PTDI_CONNECTION_INFORMATION ReturnConnectionInformation;
+} TDI_REQUEST_KERNEL_ACCEPT;
+typedef TDI_REQUEST_KERNEL_ACCEPT   *PTDI_REQUEST_KERNEL_ACCEPT;
+
+/* Transport driver interface kernel send request */
+typedef struct _TDI_REQUEST_KERNEL_SEND {
+    ULONG   SendLength;
+    ULONG   SendFlags;
+} TDI_REQUEST_KERNEL_SEND;
+typedef TDI_REQUEST_KERNEL_SEND *PTDI_REQUEST_KERNEL_SEND;
+
+/* Transport driver interface kernel receive request */
+typedef struct _TDI_REQUEST_KERNEL_RECEIVE {
+    ULONG   ReceiveLength;
+    ULONG   ReceiveFlags;
+} TDI_REQUEST_KERNEL_RECEIVE;
+typedef TDI_REQUEST_KERNEL_RECEIVE  *PTDI_REQUEST_KERNEL_RECEIVE;
+
+/* Transport driver interface kernel send datagram request */
+typedef struct _TDI_REQUEST_KERNEL_SENDDG {
+    ULONG                       SendLength;
+    PTDI_CONNECTION_INFORMATION SendDatagramInformation;
+} TDI_REQUEST_KERNEL_SENDDG;
+typedef TDI_REQUEST_KERNEL_SENDDG   *PTDI_REQUEST_KERNEL_SENDDG;
+
+/* Transport driver interface kernel receive datagram request */
+typedef struct _TDI_REQUEST_KERNEL_RECEIVEDG {
+    ULONG                       ReceiveLength;
+    PTDI_CONNECTION_INFORMATION ReceiveDatagramInformation;
+    PTDI_CONNECTION_INFORMATION ReturnDatagramInformation;
+    ULONG                       ReceiveFlags;
+} TDI_REQUEST_KERNEL_RECEIVEDG;
+typedef TDI_REQUEST_KERNEL_RECEIVEDG    *PTDI_REQUEST_KERNEL_RECEIVEDG;
+
+/* Transport driver interface kernel set event request */
+typedef struct _TDI_REQUEST_KERNEL_SET_EVENT {
+    LONG    EventType;
+    PVOID   EventHandler;
+    PVOID   EventContext;
+} TDI_REQUEST_KERNEL_SET_EVENT;
+typedef TDI_REQUEST_KERNEL_SET_EVENT    *PTDI_REQUEST_KERNEL_SET_EVENT;
+
+/* Transport driver interface kernel query information */
+typedef struct _TDI_REQUEST_KERNEL_QUERY_INFO {
+    LONG                        QueryType;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+} TDI_REQUEST_KERNEL_QUERY_INFO;
+typedef TDI_REQUEST_KERNEL_QUERY_INFO   *PTDI_REQUEST_KERNEL_QUERY_INFO;
+
+/* Transport driver interface kernel set information */
+typedef struct _TDI_REQUEST_KERNEL_SET_INFO {
+    LONG                        SetType;
+    PTDI_CONNECTION_INFORMATION RequestConnectionInformation;
+} TDI_REQUEST_KERNEL_SET_INFO;
+typedef TDI_REQUEST_KERNEL_SET_INFO *PTDI_REQUEST_KERNEL_SET_INFO;
+
+/* Transport driver interface Plug and Play operation codes */
+typedef enum _TDI_PNP_OPCODE {
+    TDI_PNP_OP_MIN                      = 0,
+    TDI_PNP_OP_ADD                      = 1,
+    TDI_PNP_OP_DEL                      = 2,
+    TDI_PNP_OP_UPDATE                   = 3,
+    TDI_PNP_OP_PROVIDERREADY            = 4,
+    TDI_PNP_OP_NETREADY                 = 5,
+    TDI_PNP_OP_ADD_IGNORE_BINDING       = 6,
+    TDI_PNP_OP_DELETE_IGNORE_BINDING    = 7,
+    TDI_PNP_OP_MAX                      = 8
+} TDI_PNP_OPCODE;
+
+/* Transport driver interface Plug and Play context */
+typedef struct _TDI_PNP_CONTEXT_WIN2K {
+    USHORT  ContextSize;
+    USHORT  ContextType;
+    UCHAR   ContextData[1];
+} TDI_PNP_CONTEXT_WIN2K;
+typedef TDI_PNP_CONTEXT_WIN2K   *PTDI_PNP_CONTEXT_WIN2K;
+typedef struct _TDI_PNP_CONTEXT_XP {
+    USHORT  ContextSize;
+    USHORT  ContextType;
+    UCHAR   ContextData[1];
+} TDI_PNP_CONTEXT_XP;
+typedef TDI_PNP_CONTEXT_XP      *PTDI_PNP_CONTEXT_XP;
+#if (NTDDI_VERSION >= 0x05010000)
+typedef TDI_PNP_CONTEXT_XP      TDI_PNP_CONTEXT;
+#else
+typedef TDI_PNP_CONTEXT_WIN2K   TDI_PNP_CONTEXT;
+#endif
+typedef TDI_PNP_CONTEXT         *PTDI_PNP_CONTEXT;
+
+/* Transport driver interface NCPA binding information */
+typedef struct _TDI_NCPA_BINDING_INFO {
+    PUNICODE_STRING TdiClientName;
+    PUNICODE_STRING TdiProviderName;
+    PUNICODE_STRING BindList;
+    PVOID           ReconfigBuffer;
+    unsigned int    ReconfigBufferSize;
+    TDI_PNP_OPCODE  PnpOpcode;
+} TDI_NCPA_BINDING_INFO;
+typedef TDI_NCPA_BINDING_INFO   *PTDI_NCPA_BINDING_INFO;
+
+/* Transport driver interface version */
+typedef struct _TDI_VERSION_ {
+    union {
+        struct {
+            UCHAR   MajorTdiVersion;
+            UCHAR   MinorTdiVersion;
+        };
+        USHORT  TdiVersion;
+    };
+} TDI_VERSION;
+typedef TDI_VERSION *PTDI_VERSION;
+
+/* Transport driver interface callbacks */
+typedef NTSTATUS (NTAPI *PTDI_IND_CONNECT)( PVOID, LONG, PVOID, LONG, PVOID, LONG, PVOID, CONNECTION_CONTEXT *, PIRP * );
+typedef NTSTATUS (NTAPI *PTDI_IND_DISCONNECT)( PVOID, CONNECTION_CONTEXT, LONG, PVOID, LONG, PVOID, ULONG );
+typedef NTSTATUS (NTAPI *PTDI_IND_ERROR)( PVOID, NTSTATUS );
+typedef NTSTATUS (NTAPI *PTDI_IND_ERROR_EX)( PVOID, NTSTATUS, PVOID );
+typedef NTSTATUS (NTAPI *PTDI_IND_RECEIVE)( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+typedef NTSTATUS (NTAPI *PTDI_IND_RECEIVE_DATAGRAM)( PVOID, LONG, PVOID, LONG, PVOID, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+typedef NTSTATUS (NTAPI *PTDI_IND_RECEIVE_EXPEDITED)( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+typedef NTSTATUS (NTAPI *PTDI_IND_CHAINED_RECEIVE)( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, PMDL, PVOID );
+typedef NTSTATUS (NTAPI *PTDI_IND_CHAINED_RECEIVE_DATAGRAM)( PVOID, LONG, PVOID, LONG, PVOID, ULONG, ULONG, ULONG, PMDL, PVOID );
+typedef NTSTATUS (NTAPI *PTDI_IND_CHAINED_RECEIVE_EXPEDITED)( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, PMDL, PVOID );
+typedef NTSTATUS (NTAPI *PTDI_IND_SEND_POSSIBLE)( PVOID, PVOID, ULONG );
+typedef VOID (NTAPI *TDI_BIND_HANDLER)( PUNICODE_STRING );
+typedef VOID (NTAPI *TDI_UNBIND_HANDLER)( PUNICODE_STRING );
+typedef VOID (NTAPI *TDI_ADD_ADDRESS_HANDLER)( PTA_ADDRESS );
+typedef VOID (NTAPI *TDI_DEL_ADDRESS_HANDLER)( PTA_ADDRESS );
+typedef VOID (NTAPI *TDI_NET_READY_HANDLER)( NTSTATUS );
+typedef VOID (NTAPI *ProviderPnPPowerComplete)( PNET_PNP_EVENT, NTSTATUS );
+typedef VOID (NTAPI *TDI_BINDING_HANDLER)( TDI_PNP_OPCODE, PUNICODE_STRING, PWSTR );
+typedef VOID (NTAPI *TDI_ADD_ADDRESS_HANDLER_V2)( PTA_ADDRESS, PUNICODE_STRING, PTDI_PNP_CONTEXT );
+typedef VOID (NTAPI *TDI_DEL_ADDRESS_HANDLER_V2)( PTA_ADDRESS, PUNICODE_STRING, PTDI_PNP_CONTEXT );
+typedef NTSTATUS (NTAPI *TDI_PNP_POWER_HANDLER)( PUNICODE_STRING, PNET_PNP_EVENT, PTDI_PNP_CONTEXT, PTDI_PNP_CONTEXT );
+
+/* Transport driver interface 2.0 client interface information */
+typedef struct _TDI20_CLIENT_INTERFACE_INFO {
+    union {
+        struct {
+            UCHAR   MajorTdiVersion;
+            UCHAR   MinorTdiVersion;
+        };
+        USHORT  TdiVersion;
+    };
+    USHORT                  Unused;
+    PUNICODE_STRING         ClientName;
+    TDI_PNP_POWER_HANDLER   PnPPowerHandler;
+    union {
+        TDI_BINDING_HANDLER BindingHandler;
+        struct {
+            TDI_BIND_HANDLER    BindHandler;
+            TDI_UNBIND_HANDLER  UnBindHandler;
+        };
+    };
+    union {
+        struct {
+            TDI_ADD_ADDRESS_HANDLER_V2  AddAddressHandlerV2;
+            TDI_DEL_ADDRESS_HANDLER_V2  DelAddressHandlerV2;
+        };
+        struct {
+            TDI_ADD_ADDRESS_HANDLER AddAddressHandler;
+            TDI_DEL_ADDRESS_HANDLER DelAddressHandler;
+        };
+    };
+} TDI20_CLIENT_INTERFACE_INFO;
+typedef TDI20_CLIENT_INTERFACE_INFO *PTDI20_CLIENT_INTERFACE_INFO;
+typedef TDI20_CLIENT_INTERFACE_INFO TDI_CLIENT_INTERFACE_INFO;
+typedef TDI_CLIENT_INTERFACE_INFO   *PTDI_CLIENT_INTERFACE_INFO;
+
+/* Transport driver interface message header */
+typedef struct _TDI_CMSGHDR_XP {
+    SIZE_T  cmsg_len;
+    LONG    cmsg_level;
+    LONG    cmsg_type;
+} TDI_CMSGHDR_XP;
+typedef TDI_CMSGHDR_XP  *PTDI_CMSGHDR_XP;
+#if (NTDDI_VERSION >= 0x05010000)
+typedef TDI_CMSGHDR_XP  TDI_CMSGHDR;
+typedef TDI_CMSGHDR     *PTDI_CMSGHDR;
+#endif
+
+/* Functions in TDI.SYS */
+VOID NTAPI      TdiBuildNetbiosAddress( PUCHAR, BOOLEAN, PTA_NETBIOS_ADDRESS );
+NTSTATUS NTAPI  TdiBuildNetbiosAddressEa( PUCHAR, BOOLEAN, PUCHAR );
+NTSTATUS NTAPI  TdiCopyBufferToMdl( PVOID, ULONG, ULONG, PMDL, ULONG, PULONG );
+NTSTATUS NTAPI  TdiCopyMdlToBuffer( PMDL, ULONG, PVOID, ULONG, ULONG, PULONG );
+NTSTATUS NTAPI  TdiDefaultChainedRcvDatagramHandler( PVOID, LONG, PVOID, LONG, PVOID, ULONG, ULONG, ULONG, PMDL, PVOID );
+NTSTATUS NTAPI  TdiDefaultChainedRcvExpeditedHandler( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, PMDL, PVOID );
+NTSTATUS NTAPI  TdiDefaultChainedReceiveHandler( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, PMDL, PVOID );
+NTSTATUS NTAPI  TdiDefaultConnectHandler( PVOID, LONG, PVOID, LONG, PVOID, LONG, PVOID, CONNECTION_CONTEXT *, PIRP * );
+NTSTATUS NTAPI  TdiDefaultDisconnectHandler( PVOID, CONNECTION_CONTEXT, LONG, PVOID, LONG, PVOID, ULONG );
+NTSTATUS NTAPI  TdiDefaultErrorHandler( PVOID, NTSTATUS );
+NTSTATUS NTAPI  TdiDefaultRcvDatagramHandler( PVOID, LONG, PVOID, LONG, PVOID, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+NTSTATUS NTAPI  TdiDefaultRcvExpeditedHandler( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+NTSTATUS NTAPI  TdiDefaultReceiveHandler( PVOID, CONNECTION_CONTEXT, ULONG, ULONG, ULONG, ULONG *, PVOID, PIRP * );
+NTSTATUS NTAPI  TdiDefaultSendPossibleHandler( PVOID, PVOID, ULONG );
+NTSTATUS NTAPI  TdiDeregisterAddressChangeHandler( HANDLE );
+NTSTATUS NTAPI  TdiDeregisterDeviceObject( HANDLE );
+NTSTATUS NTAPI  TdiDeregisterNetAddress( HANDLE );
+NTSTATUS NTAPI  TdiDeregisterNotificationHandler( HANDLE );
+NTSTATUS NTAPI  TdiDeregisterPnPHandlers( HANDLE );
+NTSTATUS NTAPI  TdiDeregisterProvider( HANDLE );
+NTSTATUS NTAPI  TdiEnumerateAddresses( HANDLE );
+VOID NTAPI      TdiInitialize( VOID );
+NTSTATUS NTAPI  TdiMapUserRequest( PDEVICE_OBJECT, PIRP, PIO_STACK_LOCATION );
+BOOLEAN NTAPI   TdiMatchPdoWithChainedReceiveContext( PVOID, PVOID );
+VOID NTAPI      TdiPnPPowerComplete( HANDLE, PNET_PNP_EVENT, NTSTATUS );
+NTSTATUS NTAPI  TdiPnPPowerRequest( PUNICODE_STRING, PNET_PNP_EVENT, PTDI_PNP_CONTEXT, PTDI_PNP_CONTEXT, ProviderPnPPowerComplete );
+NTSTATUS NTAPI  TdiProviderReady( HANDLE );
+NTSTATUS NTAPI  TdiRegisterAddressChangeHandler( TDI_ADD_ADDRESS_HANDLER, TDI_DEL_ADDRESS_HANDLER, HANDLE * );
+NTSTATUS NTAPI  TdiRegisterDeviceObject( PUNICODE_STRING, HANDLE * );
+NTSTATUS NTAPI  TdiRegisterNetAddress( PTA_ADDRESS, PUNICODE_STRING, PTDI_PNP_CONTEXT, HANDLE * );
+NTSTATUS NTAPI  TdiRegisterNotificationHandler( TDI_BIND_HANDLER, TDI_UNBIND_HANDLER, HANDLE * );
+NTSTATUS NTAPI  TdiRegisterPnPHandlers( PTDI_CLIENT_INTERFACE_INFO, ULONG, HANDLE * );
+NTSTATUS NTAPI  TdiRegisterProvider( PUNICODE_STRING, HANDLE * );
+VOID NTAPI      TdiReturnChainedReceives( PVOID *, ULONG );
+#if (NTDDI_VERSION < 0x05010000)
+VOID NTAPI      TdiMapBuffer( PMDL );
+VOID NTAPI      TdiUnmapBuffer( PMDL );
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+NTSTATUS NTAPI  TdiCopyMdlChainToMdlChain( PMDL, ULONG, PMDL, ULONG, PULONG );
+#endif
+#if (NTDDI_VERSION >= 0x05020000)
+VOID NTAPI      TdiCopyBufferToMdlWithReservedMappingAtDpcLevel( PVOID, PMDL, ULONG, ULONG );
+#endif
+
+/* Functions implemented as macros */
+#define TdiBuildAssociateAddress( p1, p2, p3, p4, p5, p6 ) \
+    { \
+        PTDI_REQUEST_KERNEL_ASSOCIATE   v1; \
+        PIO_STACK_LOACTION              v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_ASSOCIATE_ADDRESS; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_ASSOCIATE)&v2->Parameters; \
+        p->AddressHandle = (HANDLE)(p6); \
+    }
+#define TdiBuildDisassociateAddress( p1, p2, p3, p4, p5 ) \
+    { \
+        PTDI_REQUEST_KERNEL_DISASSOCIATE    v1; \
+        PIO_STACK_LOCATION                  v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_DISASSOCIATE_ADDRESS; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_DISASSOCIATE)&v2->Parameters; \
+    }
+#define TdiBuildConnect( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL v1; \
+        PIO_STACK_LOCATION  v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_CONNECT; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL)&v2->Parameters; \
+        v1->RequestConnectionInformation = p7; \
+        v1->ReturnConnectionInformation = p8; \
+        v1->RequestSpecific = (PVOID)(p6); \
+    }
+#define TdiBuildListen( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL v1; \
+        PIO_STACK_LOCATION  v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_LISTEN; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL)&v2->Parameters; \
+        v1->RequestFlags = p6; \
+        v1->RequestConnectionInformation = p7; \
+        v1->ReturnConnectionInformation = p8; \
+    }
+#define TdiBuildAccept( p1, p2, p3, p4, p5, p6, p7 ) \
+    { \
+        PTDI_REQUEST_KERNEL_ACCEPT  v1; \
+        PIO_STACK_LOCATION          v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_ACCEPT; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_ACCEPT)&v2->Parameters; \
+        v1->RequestConnectionInformation = p6; \
+        v1->ReturnConnectionInformation = p7; \
+    }
+#if (NTDDI_VERSION < 0x05010000)
+    #define TdiBuildDirectAccept( p1, p2, p3, p4, p5, p6, p7 ) \
+        { \
+            PTDI_REQUEST_KERNEL_ACCEPT  v1; \
+            PIO_STACK_LOCATION          v2; \
+            if( p4 != NULL ) { \
+                IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+            } else {
+                IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+            }
+            v2 = IoGetNextIrpStackLocation( p1 ); \
+            v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+            v2->MinorFunction = TDI_DIRECT_ACCEPT; \
+            v2->DeviceObject = p2; \
+            v2->FileObject = p3; \
+            v1 = (PTDI_REQUEST_KERNEL_ACCEPT)&v2->Parameters; \
+            v1->RequestConnectionInformation = p6; \
+            v1->ReturnConnectionInformation = p7; \
+        }
+#endif
+#define TdiBuildDisconnect( p1, p2, p3, p4, p5, p6, p7, p8, p9 ) \
+    { \
+        PTDI_REQUEST_KERNEL v1; \
+        PIO_STACK_LOCATION  v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_DISCONNECT; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL)&v2->Parameters; \
+        v1->RequestFlags = p7; \
+        v1->RequestConnectionInformation = p8; \
+        v1->ReturnConnectionInformation = p9; \
+        v1->RequestSpecific = (PVOID)(p6); \
+    }
+#define TdiBuildReceive( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL_RECEIVE v1; \
+        PIO_STACK_LOCATION          v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_RECEIVE; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_RECEIVE)*v2->Parameters; \
+        v1->ReceiveFlags = p7; \
+        v1->ReceiveLength = p8; \
+        p1->MdlAddress = p6; \
+    }
+#define TdiBuildSend( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL_SEND    v1; \
+        PIO_STACK_LOCATION          v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_SEND; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_SEND)&v2->Parameters; \
+        v1->SendFlags = p7; \
+        v1->SendLength = p8; \
+        p1->MdlAddress = p6; \
+    }
+#define TdiBuildSendDatagram( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL_SENDDG  v1; \
+        PIO_STACK_LOCATION          v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_SEND_DATAGRAM; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_SENDDG)&v2->Parameters; \
+        v1->SendLength = p7; \
+        v1->SendDatagramInformation = p8; \
+        p1->MdlAddress = p6; \
+    }
+#define TdiBuildReceiveDatagram( p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 ) \
+    { \
+        PTDI_REQUEST_KERNEL_RECEIVEDG   v1; \
+        PIO_STACK_LOCATION              v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_RECEIVE_DATAGRAM; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_RECEIVEDG)&v2->Parameters; \
+        v1->ReceiveLength = p7; \
+        v1->ReceiveDatagramInformation = p8; \
+        v1->ReturnDatagramInformation = p9; \
+        v1->ReceiveFlags = p10; \
+        p1->MdlAddress = p6; \
+    }
+#define TdiBuildSetEventHandler( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL_SET_EVENT   v1; \
+        PIO_STACK_LOCATION              v2; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_SET_EVENT_HANDLER; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_SET_EVENT)&v2->Parameters; \
+        v1->EventType = p6; \
+        v1->EventHandler = (PVOID)(p7); \
+        v1->EventContext = (PVOID)(p8); \
+    }
+#define TdiBuildQueryInformationEx( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    { \
+        PTDI_REQUEST_KERNEL_QUERY_INFORMATION   v1; \
+        PIO_STACK_LOCATION                      v2; \
+        p1->MdlAddress = p7; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_QUERY_INFORMATION; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_QUERY_INFORMATION)&v1->Parameters; \
+        v1->QueryType = (ULONG)(p6); \
+        v1->RequestConnectionInformation = p8; \
+    }
+#define TdiBuildQueryInformation( p1, p2, p3, p4, p5, p6, p7 ) \
+    TdiBuildQueryInformationEx( p1, p2, p3, p4, p5, p6, p7, NULL )
+#define TdiBuildSetInformation( p1, p2, p3, p4, p5, p6, p7 ) \
+    { \
+        PTDI_REQUEST_KERNEL_SET_INFORMATION v1; \
+        PIO_STACK_LOCATION                  v2; \
+        p1->MdlAddress = p7; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v2 = IoGetNextIrpStackLocation( p1 ); \
+        v2->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v2->MinorFunction = TDI_SET_INFORMATION; \
+        v2->DeviceObject = p2; \
+        v2->FileObject = p3; \
+        v1 = (PTDI_REQUEST_KERNEL_SET_INFORMATION)&v2->Parameters; \
+        v1->SetType = (ULONG)(p6); \
+        v1->RequestConnectionInformation = NULL; \
+    }
+#define TdiBuildAction( p1, p2, p3, p4, p5, p6 ) \
+    { \
+        PIO_STACK_LOCATION  v; \
+        if( p4 != NULL ) { \
+            IoSetCompletionRoutine( p1, p4, p5, TRUE, TRUE, TRUE ); \
+        } else { \
+            IoSetCompletionRoutine( p1, NULL, NULL, FALSE, FALSE, FALSE ); \
+        } \
+        v = IoGetNextIrpStackLocation( p1 ); \
+        v->MajorFunction = IRP_MJ_INTERNAL_DEVICE_CONTROL; \
+        v->MinorFunction = TDI_ACTION; \
+        v->DeviceObject = p2; \
+        v->FileObject = p3; \
+        p1->MdlAddress = p6; \
+    }
+#define TdiBuildInternalDeviceControlIrp( p1, p2, p3, p4, p5 ) \
+    IoBuildDeviceIoControlRequest( 0x00000003L, p2, NULL, 0, NULL, 0, TRUE, p4, p5 )
+#define TdiCopyLookaheadData( p1, p2, p3, p4 ) \
+    RtlCopyMemory( p1, p2, p3 )
+#define TdiCompleteRequest( p1, p2 ) \
+    { \
+        (p1)->IoStatus.Status = (p2); \
+        IoCompleteRequest( p1, IO_NETWORK_INCREMENT ); \
+    }
+
+#if (NTDDI_VERSION >= 0x05020000)
+
+__inline VOID TdiCopyBufferToMdlWithReservedMapping( PVOID p1, PMDL p2, ULONG p3,
+                                                     ULONG p4 )
+{
+    KIRQL   v;
+    KeRaiseIrql( DISPATCH_LEVEL, &v );
+    TdiCopyBufferToMdlWithReservedMappingAtDpcLevel( p1, p2, p3, p4 );
+    KeLowerIrql( v );
+}
+
+#endif /* (NTDDI_VERSION >= 0x05020000) */
+
+:include cplusepi.sp
+
+#endif /* _TDI_KRNL_ */

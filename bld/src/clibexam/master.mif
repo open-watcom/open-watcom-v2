@@ -1,14 +1,14 @@
 # MASTER.MIF include file for CLIBEXAM -- macros for all files in directory.
-
+ 
 # Non-working samples
 #FN_BAD =.exec.exe
-
+ 
 # Win32, QNX, OS/2
 FN_WQO = wait.exe &
 allocmem.exe &
 freemem.exe
-
-
+ 
+ 
 # DOS, Pharlap-16
 FN_DP = setblock.exe &
 intr.exe &
@@ -18,12 +18,12 @@ allocmem.exe &
 freemem.exe &
 fp_off.exe &
 fp_seg.exe
-
+ 
 # Win16 only
 FN_WIN16 = setvect.exe &
 getvect.exe &
 chainint.exe
-
+ 
 # Default Windowing
 FN_DEFWIN = _dwdelcl.exe &
 _dwshutd.exe &
@@ -31,7 +31,7 @@ _dwstabo.exe &
 _dwstapt.exe &
 _dwstcnt.exe &
 _dwyield.exe
-
+ 
 # BIOS commands (DOS, Win, Win386)
 FN_BIOS = b_disk.exe &
 b_equip.exe &
@@ -45,9 +45,10 @@ intr.exe &
 nosound.exe &
 delay.exe &
 sound.exe
-
+ 
 # DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
 FN_DOSCALL = creatnew.exe &
+btowc.exe &
 d_close.exe &
 d_creat.exe &
 d_open.exe &
@@ -108,6 +109,7 @@ mbputcha.exe &
 mbrlen.exe &
 mbrtowc.exe &
 mbsbtype.exe &
+mbsinit.exe &
 mbsnbcat.exe &
 mbsnbcmp.exe &
 mbsnbcnt.exe &
@@ -128,24 +130,26 @@ strinc.exe &
 strspnp.exe &
 tempnam.exe &
 wcrtomb.exe &
+wcrtom_s.exe &
 wcsrtomb.exe &
+wcsrto_s.exe &
 wctob.exe &
 dgetdriv.exe &
 dgetdskf.exe &
 doscommi.exe
-
-
+ 
+ 
 # 16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
 # NOTE: intdos and intdosx don't work under QNX/16.
 FN_16BIT = halloc.exe &
 hfree.exe &
 _bfreese.exe &
 _bheapse.exe
-
+ 
 # 32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
 FN_32BIT = outpd.exe &
 inpd.exe
-
+ 
 # DOS16, Win, Win386, Pharlap-16
 FN_DOSWIN = bdos.exe &
 dosexter.exe &
@@ -153,25 +157,24 @@ int86.exe &
 int86x.exe &
 intdos.exe &
 intdosx.exe
-
+ 
 # DOS16 and DOS32
 FN_DOS = _harderr.exe &
 chainint.exe &
 bdos.exe &
 keep.exe &
-
+ 
 # Thread functions - Win32, QNX, OS/2, Netware
 FN_THREAD = _ethread.exe &
 _bthread.exe
-
+ 
 # DOS/32, QNX/32, Netware
 FN_DQN32 = int386.exe &
 int386x.exe &
 intr.exe
-
-#Win32 only
-FN_WIN32 = mktemp.exe &
-mempty.exe &
+ 
+# MMX required
+FN_MMX = mempty.exe &
 mfromint.exe &
 mpaddb.exe &
 mpaddd.exe &
@@ -226,15 +229,15 @@ mupckhwd.exe &
 mupcklbw.exe &
 mupckldq.exe &
 mupcklwd.exe
-
+ 
 #Win32, OS2-16, OS2-32
 FN_OS2WIN32 = cwait.exe &
 _pclose.exe &
 _pipe.exe &
 _popen.exe
-
+ 
 #_expand.exe & removed from FN_ALL *******
-
+ 
 #Available on ALL platforms (does not include Netware and Pharlap/16).
 FN_ALL = _bprintf.exe &
 _freect.exe &
@@ -248,12 +251,14 @@ _memavl.exe &
 _memmax.exe &
 _searche.exe &
 _splitp2.exe &
+chdrive.exe &
 ftime.exe &
 getdiskf.exe &
 getdrive.exe &
 getfattr.exe &
 getftime.exe &
 getdate.exe &
+getopt.exe &
 getpid.exe &
 gettime.exe &
 locking.exe &
@@ -272,13 +277,20 @@ strdate.exe &
 stricoll.exe &
 strspnp.exe &
 strtime.exe &
+towctrns.exe &
 vsnprint.exe &
 vsprintf.exe &
-wctype.exe
-
+wctype.exe &
+wctrans.exe
+ 
 # Macros (available everywhere!)
 FN_MACRO = alloca.exe &
 assert.exe &
+fpclassf.exe &
+isfinite.exe &
+isinf.exe &
+isnan.exe &
+isnormal.exe &
 mk_fp.exe &
 offsetof.exe &
 setjmp.exe &
@@ -287,14 +299,14 @@ va_end.exe &
 va_start.exe &
 mbsnbcnt.exe &
 mbsnbcnt.exe &
+signbit.exe &
 strdec.exe &
 strdec.exe &
 strinc.exe &
 strinc.exe
-
+ 
 # Math functions (available everywhere)
 FN_MATH = _clear87.exe &
-_control.exe &
 _disable.exe &
 _enable.exe &
 _setmath.exe &
@@ -310,6 +322,7 @@ atanh.exe &
 atof.exe &
 atoi.exe &
 atol.exe &
+atoll.exe &
 cabs.exe &
 bessel.exe &
 ceil.exe &
@@ -327,9 +340,14 @@ frexp.exe &
 gcvt.exe &
 hypot.exe &
 itoa.exe &
+imaxabs.exe &
+imaxdiv.exe &
 labs.exe &
 ldexp.exe &
 ldiv.exe &
+llabs.exe &
+lldiv.exe &
+lltoa.exe &
 log.exe &
 log10.exe &
 log2.exe &
@@ -347,8 +365,9 @@ sqrt.exe &
 srand.exe &
 tan.exe &
 tanh.exe &
+ulltoa.exe &
 ultoa.exe
-
+ 
 #File functions (all platforms & NetWare)
 FN_FILE = dup.exe &
 dup2.exe &
@@ -367,6 +386,7 @@ fileleng.exe &
 fileno.exe &
 flushall.exe &
 fopen.exe &
+fopen_s.exe &
 fprintf.exe &
 fputc.exe &
 fputchar.exe &
@@ -374,11 +394,14 @@ fputs.exe &
 fread.exe &
 free.exe &
 freopen.exe &
+freop_s.exe &
 fscanf.exe &
+fscanf_s.exe &
 fseek.exe &
 fsetpos.exe &
 fstat.exe &
 ftell.exe &
+fwide.exe &
 fwrite.exe &
 getc.exe &
 getch.exe &
@@ -389,6 +412,8 @@ gets.exe &
 open.exe &
 opendir.exe &
 mkdir.exe &
+mkstemp.exe &
+mktemp.exe &
 printf.exe &
 putc.exe &
 putch.exe &
@@ -401,13 +426,17 @@ rename.exe &
 rewind.exe &
 rmdir.exe &
 scanf.exe &
+scanf_s.exe &
 sopen.exe &
 sprintf.exe &
 sscanf.exe &
+sscanf_s.exe &
 stat.exe &
 tell.exe &
 tmpfile.exe &
+tmpfl_s.exe &
 tmpnam.exe &
+tmpnm_s.exe &
 umask.exe &
 ungetc.exe &
 ungetch.exe &
@@ -417,25 +446,39 @@ vcprintf.exe &
 vcscanf.exe &
 vfprintf.exe &
 vfscanf.exe &
+vfscnf_s.exe &
 vprintf.exe &
 vscanf.exe &
-vsscanf.exe &
+vscanf_s.exe &
+vsscnf_s.exe &
 write.exe
-
+ 
 # String Functions (all + NetWare)
-FN_STRING = strcat.exe &
+FN_STRING = &
+strcase.exe &
+strcat.exe &
+strcat_s.exe &
+stncat_s.exe &
 strchr.exe &
 strcmp.exe &
 strcmpi.exe &
 strcoll.exe &
 strcpy.exe &
+strcpy_s.exe &
+stncpy_s.exe &
 strcspn.exe &
 strdup.exe &
 strerror.exe &
+strerr_s.exe &
+streln_s.exe &
 strftime.exe &
 stricmp.exe &
+strlcat.exe &
+strlcpy.exe &
 strlen.exe &
+strnln_s.exe &
 strlwr.exe &
+strncase.exe &
 strncat.exe &
 strncmp.exe &
 strncpy.exe &
@@ -447,17 +490,21 @@ strrev.exe &
 strset.exe &
 strspn.exe &
 strstr.exe &
+strtoimx.exe &
+strtoumx.exe &
 strtod.exe &
 strtok.exe &
+strtok_s.exe &
 strtol.exe &
+strtoll.exe &
 strtoul.exe &
+strtoull.exe &
 strupr.exe &
 strxfrm.exe
-
+ 
 # Available on ALL platforms and Netware
 # NOTE: mbstowcs, getosfha, oshandle not available under QNX.
-FN_ALLN = spawn.exe &
-_fsopen.exe &
+FN_ALLN = _fsopen.exe &
 _exit.exe &
 _fullpat.exe &
 _grow_ha.exe &
@@ -470,10 +517,14 @@ _msize.exe &
 _splitpa.exe &
 _vbprint.exe &
 abort.exe &
+abrt_hnd.exe &
 access.exe &
 asctime.exe &
+asctim_s.exe &
 atexit.exe &
+basename.exe &
 bsearch.exe &
+bsrch_s.exe &
 calloc.exe &
 cgets.exe &
 chdir.exe &
@@ -481,7 +532,7 @@ chmod.exe &
 chsize.exe &
 clearenv.exe &
 clearerr.exe &
-clock_.exe &
+clock.exe &
 close.exe &
 closedir.exe &
 cprintf.exe &
@@ -489,15 +540,23 @@ cputs.exe &
 creat.exe &
 cscanf.exe &
 ctime.exe &
+ctime_s.exe &
+dirname.exe &
 exit.exe &
+ffs.exe &
+fnmatch.exe &
 getcmd.exe &
 getenv.exe &
+getenv_s.exe &
 getosfha.exe &
 gmtime.exe &
+gmtime_s.exe &
+ign_hnd.exe &
 isalnum.exe &
 isalpha.exe &
 isascii.exe &
 isatty.exe &
+isblank.exe &
 iscntrl.exe &
 isdigit.exe &
 isgraph.exe &
@@ -513,6 +572,7 @@ kbhit.exe &
 lfind.exe &
 localeco.exe &
 localtim.exe &
+lcltim_s.exe &
 lock.exe &
 longjmp.exe &
 lsearch.exe &
@@ -520,8 +580,10 @@ memccpy.exe &
 memchr.exe &
 memcmp.exe &
 memcpy.exe &
+memcpy_s.exe &
 memicmp.exe &
 memmove.exe &
+memmov_s.exe &
 memset.exe &
 main.exe &
 malloc.exe &
@@ -536,8 +598,10 @@ outp.exe &
 outpw.exe &
 perror.exe &
 qsort.exe &
+qsort_s.exe &
 realloc.exe &
 segread.exe &
+set_chnd.exe &
 setbuf.exe &
 setlocal.exe &
 setmode.exe &
@@ -554,7 +618,9 @@ tzset.exe &
 utime.exe &
 utoa.exe &
 wcstombs.exe &
+wcstom_s.exe &
 wctomb.exe &
+wctomb_s.exe &
 _atouni.exe &
 _bgetcmd.exe &
 _cmdname.exe &
@@ -573,4 +639,6 @@ snprintf.exe &
 stricoll.exe &
 strspnp.exe &
 vsnprint.exe
-
+ 
+# Available on ALL platforms except 16-bit Windows
+FN_SPAWN = spawn.exe

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -41,7 +41,7 @@
 #include "wdesdup.h"
 #include "wdelist.h"
 #include "wdestat.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wdemain.h"
 #include "wdewait.h"
 #include "wdehash.h"
@@ -92,40 +92,40 @@ void WdeMakeHashTableClean( WdeHashTable *table )
 
 Bool WdeIsHashTableTouched( WdeHashTable *table )
 {
-    return( table && ( table->user_flags & HASH_TOUCHED ) );
+    return( table != NULL && (table->user_flags & HASH_TOUCHED) );
 }
 
 void WdeUntouchHashTable( WdeHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         table->user_flags &= ~HASH_TOUCHED;
     }
 }
 
 void WdeTouchHashTable( WdeHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         table->user_flags |= HASH_TOUCHED;
     }
 }
 
 void WdeHashClearSaveRejected( WdeHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         table->user_flags &= ~HASH_SAVE_REJECT;
     }
 }
 
 void WdeHashSaveRejected( WdeHashTable *table )
 {
-    if( table ) {
+    if( table != NULL ) {
         table->user_flags |= HASH_SAVE_REJECT;
     }
 }
 
 Bool WdeIsHashSaveRejectedSet( WdeHashTable *table )
 {
-    return( table && ( table->user_flags & HASH_SAVE_REJECT ) );
+    return( table != NULL && (table->user_flags & HASH_SAVE_REJECT) );
 }
 
 WdeHashTable *WdeInitHashTable( void )
@@ -171,7 +171,7 @@ WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup )
     BOOL                d;
 
     d = FALSE;
-    if( dup ) {
+    if( dup != NULL ) {
         d = *dup;
     }
 
@@ -179,7 +179,7 @@ WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup )
 
     entry = WRAddDefHashEntry( table, name, &d );
 
-    if( dup ) {
+    if( dup != NULL ) {
         d = *dup;
     }
 
@@ -193,7 +193,7 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
     BOOL                d;
 
     d = FALSE;
-    if( dup ) {
+    if( dup != NULL ) {
         d = *dup;
     }
 
@@ -201,7 +201,7 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
 
     entry = WRAddHashEntry( table, name, value, &d, FALSE, FALSE );
 
-    if( dup ) {
+    if( dup != NULL ) {
         d = *dup;
     }
 
@@ -227,13 +227,13 @@ WdeHashValue WdeLookupName( WdeHashTable *table, char *name, Bool *found )
     return( val );
 }
 
-Bool WdeModifyName ( WdeHashTable *table, char *name, WdeHashValue value )
+Bool WdeModifyName( WdeHashTable *table, char *name, WdeHashValue value )
 {
     WdeTouchHashTable( table );
     return( (Bool)WRModifyName( table, name, value, FALSE ) );
 }
 
-char *WdeResolveValue ( WdeHashTable *table, WdeHashValue value )
+char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
 {
     return( WRResolveValue( table, value ) );
 }
@@ -242,4 +242,3 @@ Bool WdeIsValidSymbol( char *symbol )
 {
     return( WRIsValidSymbol( symbol ) );
 }
-

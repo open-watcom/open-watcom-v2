@@ -1,7 +1,5 @@
 dos_objs = dossplit.obj &
         dosenv.obj &
-        dosexc.obj &
-        dosredir.obj &
         dosrfx.obj &
         dosfile.obj &
         doschk.obj &
@@ -10,4 +8,6 @@ dos_objs = dossplit.obj &
         supp.obj &
         core.obj
 
-!include $(trap_dir)\lcl\lcl.mif
+inc_dirs += -I"$(trap_dir)/lcl/dos/h"
+extra_srcs +=;$(trap_dir)/lcl/dos/c;$(trap_dir)/lcl/dos/asm
+!include $(trap_dir)/lcl/lcl.mif

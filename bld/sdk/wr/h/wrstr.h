@@ -44,18 +44,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WR_EXPORT WRIsBlockEmpty            ( StringTableBlock *block );
-extern int  WR_EXPORT WRMakeDataFromStringBlock ( StringTableBlock *block,
-                                                  void **data, int *size,
-                                                  int is32bit );
-extern int  WR_EXPORT WRMakeStringBlockFromData ( StringTableBlock *block,
-                                                  void *data, int size,
-                                                  int is32bit );
-extern int  WR_EXPORT WRMergeStringBlock        ( StringTableBlock *b1,
-                                                  StringTableBlock *b2,
-                                                  int replace );
-extern int  WR_EXPORT WRMergeStringData         ( void **s1, int *sz1,
-                                                  void *s2, int sz2,
-                                                  int is32bit, int replace );
+extern int  WR_EXPORT WRIsBlockEmpty( StringTableBlock *block );
+extern int  WR_EXPORT WRMakeDataFromStringBlock( StringTableBlock *block, void **data, int *size, int is32bit );
+extern int  WR_EXPORT WRMakeStringBlockFromData( StringTableBlock *block, void *data, int size, int is32bit );
+extern int  WR_EXPORT WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace );
+extern int  WR_EXPORT WRMergeStringData( void **s1, int *sz1, void *s2, int sz2, int is32bit, int replace );
 
 #endif

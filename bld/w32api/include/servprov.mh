@@ -1,0 +1,52 @@
+/*
+ *  servprov.h  IServiceProvider interface
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __servprov_h__
+#define __servprov_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* GUIDs */
+EXTERN_C const IID  IID_IServiceProvider;
+
+/* IServiceProvider interface */
+#undef INTERFACE
+#define INTERFACE   IServiceProvider
+DECLARE_INTERFACE_( IServiceProvider, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IServiceProvider methods */
+    STDMETHOD( QueryService )( THIS_ REFGUID, REFIID, void ** ) PURE;
+};
+typedef IServiceProvider    *LPSERVICEPROVIDER;
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IServiceProvider_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IServiceProvider_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IServiceProvider_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IServiceProvider_QueryService( x, p1, p2, p3 ) \
+        (x)->lpVtbl->QueryService( x, p1, p2, p3 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __servprov_h__ */

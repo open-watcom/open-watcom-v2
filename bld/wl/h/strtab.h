@@ -36,15 +36,16 @@
 typedef struct stringblock STRINGBLOCK;
 
 typedef struct {
-    STRINGBLOCK *       data;
-    unsigned            currbase;
+    STRINGBLOCK *data;
+    unsigned    currbase;
 } stringtable;
 
 extern void     InitStringTable( stringtable *, bool );
 extern void     ReserveStringTable( stringtable *, unsigned );
-extern char *   AddStringTable( stringtable *, char *, unsigned );
-extern char *   StringStringTable( stringtable *, char * );
-extern void     CharStringTable( stringtable *, char );
+extern char     *AddBufferStringTable( stringtable *, void *, unsigned );
+extern char     *AddSymbolStringTable( stringtable *, char *, unsigned );
+extern char     *AddStringStringTable( stringtable *, char * );
+extern void     AddCharStringTable( stringtable *, char );
 extern void     ZeroStringTable( stringtable *, unsigned );
 extern void     WriteStringTable( stringtable *,
                                   void (*)(void *, char *,unsigned), void * );

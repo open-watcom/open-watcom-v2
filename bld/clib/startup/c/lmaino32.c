@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default implementation of LibMain() for 32-bit OS/2.
 *
 ****************************************************************************/
 
@@ -35,6 +34,7 @@
 
 extern unsigned APIENTRY DllMain( unsigned, unsigned );
 
-unsigned APIENTRY LibMain( unsigned hmod, unsigned termination ) {
+unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
+{
     return( DllMain( hmod, termination ) );
 }

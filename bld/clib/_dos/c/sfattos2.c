@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 implementation of _dos_setfileattr().
 *
 ****************************************************************************/
 
@@ -37,26 +36,22 @@
 
 
 _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attribute )
-    {
-        APIRET  rc;
+{
+    APIRET  rc;
 
 #if defined(__WARP__)
-        FILESTATUS      fs;
+    FILESTATUS3     fs;
 
-        rc = DosQueryPathInfo( (PSZ)path, FIL_STANDARD,
-                               &fs, sizeof( FILESTATUS ) );
-        if( rc != 0 ) {
-            __set_errno_dos( rc );
-            return( rc );
-        }
+    rc = DosQueryPathInfo( (PSZ)path, FIL_STANDARD, &fs, sizeof( fs ) );
+    if( rc == 0 ) {
         fs.attrFile = attribute;
-        rc = DosSetPathInfo( (PSZ)path, FIL_STANDARD,
-                               &fs, sizeof( FILESTATUS ), 0 );
-#else
-        rc = DosSetFileMode( (PSZ)path, attribute, 0ul );
-#endif
-        if( rc != 0 ) {
-            __set_errno_dos( rc );
-        }
-        return( rc );
+        rc = DosSetPathInfo( (PSZ)path, FIL_STANDARD, &fs, sizeof( fs ), 0 );
     }
+#else
+    rc = DosSetFileMode( (PSZ)path, attribute, 0ul );
+#endif
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
+    }
+    return( 0 );
+}

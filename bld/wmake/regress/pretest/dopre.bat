@@ -1,4 +1,4 @@
-@echo off
+@echo %verbose% off
 ECHO # ===================================
 ECHO # Start DOPRE
 ECHO # ===================================
@@ -6,35 +6,40 @@ ECHO # ===================================
 
 if .%2 == . goto usage
 
+cd ..\cmds
+%1 -h
+cd ..\pretest
+
 ECHO # -----------------------------
-ECHO #   Test 1 
+ECHO #   Test 1
 ECHO # -----------------------------
-%1 -h -f pre01 pre01 -f pre02 pre02
+:: 2>nul to hide debug-build, memory-tracking diagnostic
+%1 -h -f pre01 pre01 -f pre02 pre02 2>nul
 if errorlevel 1 goto err1
     echo # Test1 successful
     goto test2
 :err1
     echo ## PRETEST ## >> %2
     echo Error: Test1 unsuccessful!!! | tee -a %2
-    
+
 
 :test2
 ECHO # -----------------------------
-ECHO #   Test 2 
+ECHO #   Test 2
 ECHO # -----------------------------
-del tmp3.out
-%1 -h -f pre03 pre03 -l tmp3.out
-diff pre03.out tmp3.out
+rm tmp3.out
+%1 -h -f pre03 pre03 > tmp.out 2>&1
+diff pre03.out tmp.out
 if errorlevel 1 goto err2
     echo # Test2 successful
     goto test3
 :err2
     echo ## PRETEST ## >> %2
     echo Error: Test2 unsuccessful!!! | tee -a %2
-    
+
 :test3
 ECHO # -----------------------------
-ECHO #   Test 3 
+ECHO #   Test 3
 ECHO # -----------------------------
 %1 -h -f pre04 pre04
 if errorlevel 1 goto err3
@@ -46,7 +51,7 @@ if errorlevel 1 goto err3
 
 :test4
 ECHO # -----------------------------
-ECHO #   Test 4 
+ECHO #   Test 4
 ECHO # -----------------------------
 %1 -h -f pre05 pre05
 if errorlevel 1 goto err4
@@ -59,7 +64,7 @@ if errorlevel 1 goto err4
 
 :test5
 ECHO # -----------------------------
-ECHO #   Test 5 
+ECHO #   Test 5
 ECHO # -----------------------------
 %1 -h -f pre06 pre06
 if errorlevel 1 goto err5
@@ -72,10 +77,10 @@ if errorlevel 1 goto err5
 
 :test6
 ECHO # -----------------------------
-ECHO #   Test 6 
+ECHO #   Test 6
 ECHO # -----------------------------
-del tmp.out
-%1 -h -f pre07 -l tmp.out
+rm tmp.out
+%1 -h -f pre07 > tmp.out 2>&1
 diff pre07.out tmp.out
 if errorlevel 1 goto err6
     echo # Test 6 successful
@@ -83,14 +88,14 @@ if errorlevel 1 goto err6
 :err6
     echo ## PRETEST ## >> %2
     echo Error: Test 6 unsuccessful!!! | tee -a %2
-    
+
 :test7
 ECHO # -----------------------------
-ECHO #   Test 7 
+ECHO #   Test 7
 ECHO # -----------------------------
-del tmp.out
-%1 -h -f pre08 -l tmp.out
-if errorlevel 1 goto err
+rm tmp.out
+%1 -h -f pre08 > tmp.out 2>&1
+if errorlevel 1 goto err7
 diff pre08.out tmp.out
 if errorlevel 1 goto err7
     echo # Test 7 successful
@@ -103,4 +108,4 @@ goto done
 :usage
 echo usage: %0 prgname errorfile
 :done
-if exist tmp.out del tmp.out
+if exist tmp.out rm tmp.out

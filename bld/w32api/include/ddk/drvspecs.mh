@@ -1,0 +1,121 @@
+/*
+ *  drvspecs.h / driverspecs.h  Driver annotation macros
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef DRIVERSPECS_H
+#define DRIVERSPECS_H
+
+:include readonly.sp
+
+#include <specstrings.h>
+
+:include cpluspro.sp
+
+#define __drv_declspec( x )
+#define __internal_kernel_driver
+#define __kernel_code
+#define __kernel_driver
+#define __user_driver
+#define __user_code
+#define __drv_Mode_impl( x )
+#define __drv_WDM
+#define __drv_KMDF
+#define __drv_NDIS
+#define __prefast_operator_new_throws
+#define __prefast_operator_new_null
+#define __drv_deref( x )
+#define __drv_in( x )
+#define __drv_in_deref( x )
+#define __drv_out( x )
+#define __drv_out_deref( x )
+#define __drv_when( p1, p2 )
+#define __drv_at( p1, p2 )
+#define __drv_fun( x )
+#define __drv_ret( x )
+#define __drv_arg( p1, p2 )
+#define __drv_unit( x )
+#define __drv_defined( x )
+#define __drv_functionClass( x )
+#define __drv_innerFunctionProperty( x )
+#define __drv_acquiresResource( x )
+#define __drv_releasesResource( x )
+#define __drv_innerAcquiresGlobal( p1, p2 )
+#define __drv_acquiresResourceGlobal( p1, p2 )
+#define __drv_innerReleasesGlobal( p1, p2 )
+#define __drv_releasesResourceGlobal( p1, p2 )
+#define __drv_mustHold( x )
+#define __drv_innerMustHoldGlobal( p1, p2 )
+#define __drv_mustHoldGlobal( p1, p2 )
+#define __drv_neverHold( x )
+#define __drv_innerNeverHoldGlobal( p1, p2 )
+#define __drv_neverHoldGlobal( p1, p2 )
+#define __drv_setsIRQL( x )
+#define __drv_raisesIRQL( x )
+#define __drv_requiresIRQL( x )
+#define __drv_maxIRQL( x )
+#define __drv_minIRQL( x )
+#define __drv_savesIRQL
+#define __drv_savesIRQLGlobal( p1, p2 )
+#define __drv_restoresIRQL
+#define __drv_restoresIRQLGlobal( p1, p2 )
+#define __drv_minFunctionIRQL( x )
+#define __drv_maxFunctionIRQL( x )
+#define __drv_sameIRQL
+#define __drv_useCancelIRQL
+#define __drv_clearDoInit( x )
+#define __drv_IoGetDmaAdapter
+#define __drv_valueIs( x )
+#define __drv_constant
+#define __drv_nonConstant
+#define __drv_strictTypeMatch( x )
+#define __drv_strictType( p1, p2 )
+#define __drv_notPointer
+#define __drv_isObjectPointer
+#define __drv_aliasesMem
+#define __drv_allocatesMem( x )
+#define __drv_freesMem( x )
+#define __drv_preferredFunction( p1, p2 )
+#define __drv_reportError( x )
+#define __drv_floatSaved
+#define __drv_floatRestored
+#define __drv_floatUsed
+#define __drv_interlocked
+#define __drv_inTry
+#define __drv_notInTry
+#define __drv_formatString( x )
+#define __drv_dispatchType( x )
+#define __drv_dispatchType_other
+#define __drv_completionType( x )
+#define __drv_callbackType( x )
+#define __drv_acquiresExclusiveResource( x )
+#define __drv_releasesExclusiveResource( x )
+#define __drv_acquiresExclusiveResourceGlobal( p1, p2 )
+#define __drv_releasesExclusiveResourceGlobal( p1, p2 )
+#define __drv_acquiresCancelSpinLock
+#define __drv_releasesCancelSpinLock
+#define __drv_mustHoldCancelSpinLock
+#define __drv_holdsCancelSpinLock()
+#define __drv_neverHoldCancelSpinLock
+#define __drv_acquiresCriticalRegion
+#define __drv_releasesCriticalRegion
+#define __drv_mustHoldCriticalRegion
+#define __drv_neverHoldCriticalRegion
+#define __drv_holdsCriticalRegion()
+#define __drv_acquiresPriorityRegion
+#define __drv_releasesPriorityRegion
+#define __drv_mustHoldPriorityRegion
+#define __drv_neverHoldPriorityRegion
+#define __drv_holdsPriorityRegion()
+#define __drv_isCancelIRQL
+
+/* Strict type modes */
+#define __drv_typeConst     0
+#define __drv_typeCond      1
+#define __drv_typeBitset    2
+#define __drv_typeExpr      3
+
+:include cplusepi.sp
+
+#endif /* DRIVERSPECS_H */

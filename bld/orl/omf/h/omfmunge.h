@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF munging public routines.
 *
 ****************************************************************************/
 
@@ -51,6 +50,10 @@ extern orl_return       OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
                                       int location, orl_sec_offset offset,
                                       int fmethod, omf_idx fidx, int tmethod,
                                       omf_idx tidx, orl_sec_offset disp );
+
+extern orl_return       OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
+                                      orl_sec_offset location, omf_idx segidx,
+                                      omf_idx symidx, orl_sec_offset disp );
 
 extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_bytes buffer,
                                       unsigned int len, omf_rectyp typ );
@@ -81,8 +84,7 @@ extern orl_return       OmfModEnd( omf_file_handle ofh );
 extern orl_return       OmfAddComment( omf_file_handle ofh, uint_8 class,
                                        uint_8 flags, omf_bytes buff, long len );
 
-extern orl_return       OmfAddLineNum( omf_file_handle ofh, omf_idx seg,
-                                       omf_idx name, unsigned_16 line,
+extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line,
                                        unsigned_32 offset );
 
 extern omf_sec_handle   OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg,
@@ -93,5 +95,7 @@ extern int              OmfGetLName( omf_sec_handle lnames, omf_idx idx,
 extern char             *OmfGetPtrToLName( omf_file_handle ofh, omf_idx idx );
 
 extern orl_return       OmfExportSegmentContents( omf_sec_handle sh );
+
+extern orl_return       OmfTheadr( omf_file_handle ofh );
 
 #endif

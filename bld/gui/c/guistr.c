@@ -37,16 +37,16 @@
 
 #define BUFFER_SIZE     128
 
-static char     GUIStrTextBuffer[ BUFFER_SIZE ];
+static char     GUIStrTextBuffer[BUFFER_SIZE];
 static char *GUIGetInternalLiteralString( int id )
 {
     char        *str;
 
     str = NULL;
-    GUIStrTextBuffer[ 0 ] = '\0';
+    GUIStrTextBuffer[0] = '\0';
     if( GUIIsLoadStrInitialized() ) {
         if( !GUILoadString( id, GUIStrTextBuffer, BUFFER_SIZE ) ) {
-            GUIStrTextBuffer[ 0 ] = '\0';
+            GUIStrTextBuffer[0] = '\0';
         }
     }
 
@@ -71,7 +71,7 @@ bool GUIInitInternalStringTable( void )
 bool GUIFiniInternalStringTable( void )
 {
 #undef guipick
-#define guipick( a, b, c ) GUIFree( __LIT##a );
+#define guipick( a, b, c ) GUIMemFree( __LIT##a );
 #include "gui.msg"
 #undef guipick
     return( TRUE );

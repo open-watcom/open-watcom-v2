@@ -1,0 +1,8 @@
+name=Final
+condition=PreviousInstall ! MakeDisks !
+static_text=\
+        //1"@ will now copy any selected files"\
+        //2"@ 選択されたファイルをコピーします"\
+        //0
+static_text=
+include=poc.dlg

@@ -46,7 +46,7 @@
 #define COSTLY_WRITE_SEM_NAME   "dr_nt_costly_reg_write_mutex"
 
 #define INIT_BUF_SIZE   0x10000
-#define BUF_SIZE_INCR   1024
+#define BUF_SIZE_INCR   0x10000
 
 #define N_IMAGE                 "Image"
 #define N_THREAD                "Thread"
@@ -135,7 +135,7 @@ static DWORD genIndex( void ) {
     if( rc == ERROR_SUCCESS ) {
         datasize = sizeof( DWORD );
         rc = RegQueryValueEx( keyhdl, "Last Counter", NULL,
-                              &type, (char *)&indexSize, &datasize );
+                              &type, (LPBYTE)&indexSize, &datasize );
     }
     indexSize++;
     if( rc == ERROR_SUCCESS ) {
@@ -183,7 +183,7 @@ static DWORD getTitles( void ) {
         if( titleBuf == NULL ) {
             return( ERROR_OUTOFMEMORY );
         }
-        rc = RegQueryValueEx( keyhdl, "Counters", NULL, &type, titleBuf,
+        rc = RegQueryValueEx( keyhdl, "Counters", NULL, &type, (LPBYTE)titleBuf,
                               &datasize );
     }
     if( rc == ERROR_SUCCESS ) {
@@ -219,8 +219,12 @@ static DWORD getData( char *name, PERF_DATA_BLOCK **data ) {
     WORD        i;
     LONG        rc;
 
-    for( i=1; ; i++ ) {
-        datasize = INIT_BUF_SIZE + i * BUF_SIZE_INCR;
+    /* NB: The RegQueryEx call is VERY expensive. The loop must be constructed
+     * such that it finds the buffer size after minimal number of iterations -
+     * even if we waste a few kilobytes of memory.
+     */
+    for( i=0; ; i++ ) {
+        datasize = INIT_BUF_SIZE + (BUF_SIZE_INCR << i);
         *data = MemAlloc( datasize );
         if( *data == NULL ) {
             rc = ERROR_OUTOFMEMORY;
@@ -1002,11 +1006,7 @@ void DoCostlyRefresh( void *dum ) {
  * RefreshCostlyInfo -
  */
 void RefreshCostlyInfo( void ) {
-#if (__WATCOMC__ < 1080 )
-    _beginthread( DoCostlyRefresh, NULL, 0, NULL );
-#else
     _beginthread( DoCostlyRefresh, 0, NULL );
-#endif
     Sleep( 0 );         /* make sure the new thread gets the semaphore */
 }
 

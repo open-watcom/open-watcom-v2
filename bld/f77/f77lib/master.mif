@@ -1,0 +1,65 @@
+proj_name = flib
+
+!ifndef flib_autodepends
+flib_autodepends = .AUTODEPEND
+!endif
+
+flib_host_cpu_086 = i86
+flib_host_cpu_087 = i86
+flib_host_cpu_286 = i86
+flib_host_cpu_287 = i86
+flib_host_cpu_386 = 386
+flib_host_cpu_387 = 386
+flib_host_cpu_axp = axp
+flib_host_cpu_ppc = ppc
+host_cpu = $(flib_host_cpu_$(processor))
+
+flib_host_os_msdos   = dos
+flib_host_os_winnt   = nt
+flib_host_os_windows = win
+flib_host_os_os2     = os2
+flib_host_os_qnx     = qnx
+flib_host_os_netware = nov
+flib_host_os_linux   = linux
+host_os = $(flib_host_os_$(system))
+
+!include cproj.mif
+!include deftarg.mif
+
+!include ../../flags.mif
+!include ../../objects.mif
+
+#-------------------------------------------------------------------------------
+
+asm_src_i86 = ../../asmi86;../../../asmi86
+asm_src_386 = ../../asm386;../../../asm386
+asm_src_axp = ../../asmaxp;../../../asmaxp
+asm_src_ppc = ../../asmppc;../../../asmppc
+
+.asm: $(asm_src_$(host_cpu))
+
+.c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
+
+#-------------------------------------------------------------------------------
+#cc = wcl -c -cc++ 
+
+$(libname).lib : $(files)
+    @%create $(libname).lbc
+    @for %%f in ($(files)) do @%append $(libname).lbc +%%f
+    $(librarian) $(lib_flags) $^@ @$(libname).lbc
+
+.c.obj : .autodepend
+!ifeq verbose 1
+    $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
+!else
+    @echo flib_cc $@
+    @$(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
+!endif
+
+.asm.obj : .autodepend
+!ifeq verbose 1
+    $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
+!else
+    @echo flib_as $@
+    @$(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
+!endif

@@ -24,14 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Floating-point exception signaling
 ;*
 ;*****************************************************************************
 
 
-;                               of AX:DX
-;
 include mdef.inc
 include struct.inc
 include fstatus.inc
@@ -41,166 +38,162 @@ include fstatus.inc
         xref    "C",__set_ERANGE
 
         datasegment
-        codeptr ___FPE_handler
-        xdefp   _FPStatus_
-_FPStatus_      db      0
+        extrn   "C",__FPE_handler:dword
         enddata
+
         assume  ss:nothing
 
-
-FPS_OK                  =       0
-FPS_UNDERFLOW           =       1
-FPS_OVERFLOW            =       2
-FPS_DIVIDE_BY_0         =       3
-FPS_BAD_ARG             =       4
-
-jmps    macro   dsym
-        jmp     short dsym
-        endm
-
-
+        xdefp   FPUnderFlow
+        xdefp   FPInvalidOp
+        xdefp   FPDivZero
+        xdefp   FPOverFlow
         xdefp   F8UnderFlow
-        xdefp   F4UnderFlow
-        xdefp   F8InvalidOp
+;        xdefp   F8InvalidOp
         xdefp   F8DivZero
-        xdefp   F4DivZero
         xdefp   F8OverFlow
+        xdefp   F8RetInf
+        xdefp   F4UnderFlow
+;        xdefp   F4InvalidOp
+        xdefp   F4DivZero
         xdefp   F4OverFlow
-        xdefp   F8RetInf_
-        xdefp   _F8RetInf_
+        xdefp   F4RetInf
 
-
-        defpe   F8UnderFlow
-        sub     cx,cx           ; . . .
-        sub     bx,bx           ; . . .
-
-        defpe   F4UnderFlow
-        push    ds              ; save DS
+;
+;       FPUnderFlow( void ) : void
+;
+        defpe   FPUnderFlow
+if 0
+        push    ax                  ; save AX
+        push    ds                  ; save DS
 if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
+        mov     ax,DGROUP           ; get access to data segment
+        mov     ds,ax               ; . . .
 endif
-        mov     byte ptr _FPStatus_,FPS_UNDERFLOW
-;;      mov     ax,FPE_UNDERFLOW; indicate underflow
-;;      call    ___FPE_handler  ;
-        pop     ds              ; restore DS
-        sub     ax,ax           ; return a zero
-        sub     dx,dx           ; . . .
-        ret                     ; return
+;;      mov     ax,FPE_UNDERFLOW    ; indicate underflow
+;;      call    __FPE_handler       ;
+        pop     ds                  ; restore DS
+        pop     ax                  ; restore AX
+endif
+        ret                         ; return
+        endproc FPUnderFlow
+
+;
+;       FPInvalidOp( void ) : void
+;
+        defpe   FPInvalidOp
+        push    ax                  ; save AX
+        push    ds                  ; save DS
+if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
+        mov     ax,DGROUP           ; get access to data segment
+        mov     ds,ax               ; . . .
+endif
+        mov     ax,FPE_ZERODIVIDE   ; indicate divide by 0
+        call    __FPE_handler       ;
+        pop     ds                  ; restore DS
+        pop     ax                  ; restore AX
+        ret                         ; return
+        endproc FPInvalidOp
+
+;
+;       FPDivZero( void ) : void
+;
+        defpe   FPDivZero
+        push    ax                  ; save AX
+        push    ds                  ; save DS
+if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
+        mov     ax,DGROUP           ; get access to data segment
+        mov     ds,ax               ; . . .
+endif
+        mov     ax,FPE_ZERODIVIDE   ; indicate divide by 0
+        call    __FPE_handler       ;
+        pop     ds                  ; restore DS
+        pop     ax                  ; restore AX
+        ret                         ; return
+        endproc FPDivZero
+
+;
+;       FPOverFlow( void ) : void
+;
+        defpe   FPOverFlow
+        push    ax                  ; save AX
+        push    ds                  ; save DS
+if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
+        mov     ax,DGROUP           ; get access to data segment
+        mov     ds,ax               ; . . .
+endif
+        call    __set_ERANGE        ; errno = ERANGE
+        mov     ax,FPE_OVERFLOW     ; indicate overflow
+        call    __FPE_handler       ;
+        pop     ds                  ; restore DS
+        pop     ax                  ; restore AX
+        ret                         ; return
+        endproc FPOverFlow
+
+;
+;       F8UnderFlow( void ) : reallong
+;
+        defp    F8UnderFlow
+        xor     bx,bx               ; return zero
+        xor     cx,cx               ; . . .
+;
+;       F4UnderFlow( void ) : real
+;
+        defp    F4UnderFlow
+        lcall   FPUnderFlow         ;
+        xor     ax,ax               ; return zero
+        xor     dx,dx               ; . . .
+        ret                         ; return
         endproc F4UnderFlow
         endproc F8UnderFlow
 
+;
+;       F4DivZero( sign : int ) : real
+;
+        defp    F4DivZero
+        lcall   FPDivZero           ; handle divide by 0
+        jmp short F4RetInf          ; return Infinity
+;
+;       F4OverFlow( sign : int ) : real
+;
+        defp    F4OverFlow
+        lcall   FPOverFlow          ; handle overflow
+;
+;       F4RetInf( sign : int ) : real
+;
+        defp    F4RetInf
+        and     ax,8000h            ; get sign
+        or      ax,7f80h            ; set result to infinity
+        mov     dx,ax               ; ...
+        sub     ax,ax               ; ...
+        ret                         ; return
+        endproc F4RetInf
+        endproc F4OverFlow
+        endproc F4DivZero
 
-        defpe   F8InvalidOp
-        mov     ax,FPE_ZERODIVIDE; indicate divide by 0
-        call    ___FPE_handler   ;
-        jmps    F8RetInf9       ; return infinity
-        endproc F8InvalidOp
-
-        defpe   F8DivZero
-        push    ax              ; save AX
-        push    ds              ; save DS
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-endif
-        mov     byte ptr _FPStatus_,FPS_DIVIDE_BY_0
-        mov     ax,FPE_ZERODIVIDE; indicate divide by 0
-        call    ___FPE_handler  ;
-        pop     ds              ; restore DS
-        pop     ax              ; restore AX
-        jmps    F8RetInf9       ; return infinity
-        endproc F8DivZero
-
-        defpe   F8OverFlow
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        push    ax              ; save AX
-        push    ds              ; save DS
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-        mov     byte ptr _FPStatus_,FPS_OVERFLOW
-        pop     ds              ; restore DS
-        pop     ax              ; restore AX
-else
-        mov     byte ptr _FPStatus_,FPS_OVERFLOW
-endif
-
-
+;
+;       F8DivZero( sign : int ) : reallong
+;
+        defp    F8DivZero
+        lcall   FPDivZero           ; handle divide by 0
+        jmp short F8RetInf          ; return Infinity
+;
+;       F8OverFlow( sign : int ) : reallong
+;
+        defp    F8OverFlow
+        lcall   FPOverFlow          ; handle overflow
 ;
 ;       F8RetInf( sign : int ) : reallong
 ;
-        defpe   F8RetInf_
-        defpe   _F8RetInf_
-        push    ax              ; save AX
-        push    ds              ; save DS
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-endif
-        call    __set_ERANGE   ; errno = ERANGE
-        mov     ax,FPE_OVERFLOW ; indicate overflow
-        call    ___FPE_handler  ;
-        pop     ds              ; restore DS
-        pop     ax              ; restore AX
-F8RetInf9: and  ax,8000h        ; get sign
-        or      AX,7ff0h        ; set result to infinity
-        sub     BX,BX           ; ...
-        sub     CX,CX           ; ...
-        sub     DX,DX           ; ...
-        ret                     ; return
-        endproc _F8RetInf_
-        endproc F8RetInf_
+        defp    F8RetInf
+        and     ax,8000h            ; get sign
+        or      ax,7ff0h            ; set result to infinity
+        sub     bx,bx               ; ...
+        sub     cx,cx               ; ...
+        sub     dx,dx               ; ...
+        ret                         ; return
+        endproc F8RetInf
         endproc F8OverFlow
-
-
-        defpe   F4DivZero
-        push    ax              ; save AX
-        push    ds              ; save DS
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-endif
-        mov     byte ptr _FPStatus_,FPS_DIVIDE_BY_0
-        mov     ax,FPE_ZERODIVIDE; indicate divide by 0
-        call    ___FPE_handler  ;
-        pop     ds              ; restore DS
-        pop     ax              ; restore AX
-        jmps    F4RetInf9       ; return infinity
-        endproc F4DivZero
-
-        defpe   F4OverFlow
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        push    ax              ; save AX
-        push    ds              ; save DS
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-        mov     byte ptr _FPStatus_,FPS_OVERFLOW
-        pop     ds              ; restore DS
-        pop     ax              ; restore AX
-else
-        mov     byte ptr _FPStatus_,FPS_OVERFLOW
-endif
-
-        defp    F4RetInf        ; return infinity
-        push    ax              ; save sign of result
-        push    ds              ; save DS
-if (_MODEL and (_BIG_DATA or _HUGE_DATA)) and ((_MODEL and _DS_PEGGED) eq 0)
-        mov     ax,DGROUP       ; get access to data segment
-        mov     ds,ax           ; . . .
-endif
-        call    __set_ERANGE   ; errno = ERANGE
-        mov     ax,FPE_OVERFLOW ; indicate overflow
-        call    ___FPE_handler  ;
-        pop     ds              ; restore DS
-        pop     ax              ; restore sign of result
-F4RetInf9: and  ax,8000h        ; get sign
-        or      AX,7f80h        ; set result to infinity
-        mov     DX,AX           ; ...
-        sub     AX,AX           ; ...
-        ret                     ; return
-        endproc F4RetInf
-        endproc F4OverFlow
-
+        endproc F8DivZero
 
         endmod
         end

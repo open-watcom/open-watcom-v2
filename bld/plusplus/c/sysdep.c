@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 
-#include "plusplus.h"
 #include "sysdep.h"
 #include "watcom.h"
 
@@ -58,7 +59,14 @@ size_t SysRead( int fh, void *buff, size_t amt )
 unsigned long SysTell( int fh )
 /*****************************/
 {
-     return( TinySeek( fh, 0, SEEK_CUR ) );
+    unsigned long pos;
+    tiny_ret_t    rc;
+
+    rc = TinyLSeek( fh, 0, SEEK_CUR, (void __near *)&pos );
+    if( TINY_ERROR( rc ) ) {
+        return( -1L );
+    }
+    return( pos );
 }
 
 void SysSeek( int fh, unsigned long pos )
@@ -67,7 +75,7 @@ void SysSeek( int fh, unsigned long pos )
      TinySeek( fh, pos, SEEK_SET );
 }
 
-#elif defined(__OS2__) || defined( __NT__ ) || defined( __QNX__ )
+#elif defined(__OS2__) || defined( __NT__ ) || defined( __UNIX__ )
 
 size_t SysRead( int fh, void *buff, size_t amt )
 /**********************************************/

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 #include "win.h"
 
@@ -39,21 +38,21 @@
  */
 void ResetOverlap( wind *w )
 {
-    char        *over,*whoover;
-    int         i,j;
+    char        *over, *whoover;
+    int         i, j;
 
     AccessWindow( w->id );
     over = w->overlap;
     whoover = w->whooverlapping;
 
-    for( j=w->y1; j<=w->y2; j ++ ) {
-        for( i=w->x1; i<=w->x2; i++ ) {
+    for( j = w->y1; j <= w->y2; j++ ) {
+        for( i = w->x1; i <= w->x2; i++ ) {
             *over++ = NO_CHAR;
             *whoover++ = NO_CHAR;
         }
     }
 
-    for( i=0;i<w->height;i++) {
+    for( i = 0; i < w->height; i++ ) {
         w->overcnt[i] = 0;
     }
     ReleaseWindow( w );
@@ -65,16 +64,16 @@ void ResetOverlap( wind *w )
  */
 void MarkOverlap( window_id wn )
 {
-    wind        *w,*wo;
-    int         i,j,k;
-    char        *whoover,*img;
+    wind        *w, *wo;
+    int         i, j, k;
+    char        *whoover, *img;
 
     w = AccessWindow( wn );
     whoover = w->whooverlapping;
 
-    for( j=w->y1; j<=w->y2; j ++ ) {
-        img = &ScreenImage[ w->x1 + j* WindMaxWidth ];
-        for( i=w->x1; i<=w->x2; i++ ) {
+    for( j = w->y1; j <= w->y2; j++ ) {
+        img = &ScreenImage[w->x1 + j * WindMaxWidth];
+        for( i = w->x1; i <= w->x2; i++ ) {
             /*
              * if there is a character under us,
              * mark the window it belongs to as being overlapped,
@@ -82,9 +81,9 @@ void MarkOverlap( window_id wn )
              */
             if( *img != NO_CHAR ) {
                 wo = AccessWindow( *img );
-                k = (i - wo->x1) + (j - wo->y1)*wo->width;
+                k = (i - wo->x1) + (j - wo->y1) * wo->width;
                 wo->overlap[k] = (char) wn;
-                wo->overcnt[ j - wo->y1 ]++;
+                wo->overcnt[j - wo->y1]++;
                 ReleaseWindow( wo );
             }
             *whoover = *img;
@@ -103,9 +102,9 @@ void MarkOverlap( window_id wn )
  */
 void RestoreOverlap( window_id wn, bool scrflag )
 {
-    wind                *w,*wo,*o;
-    int                 i,j,k,l;
-    char                *whoover,*over,*img;
+    wind                *w, *wo, *o;
+    int                 i, j, k, l;
+    char                *whoover, *over, *img;
     char_info           _FAR *scr;
 #ifdef __VIO__
     unsigned            oscr;
@@ -118,16 +117,16 @@ void RestoreOverlap( window_id wn, bool scrflag )
     whoover = w->whooverlapping;
     over = w->overlap;
 
-    for( j=w->y1; j<=w->y2; j ++ ) {
-        if( scrflag) {
-            scr = (char_info _FAR *) &Scrn[ (w->x1 + j* WindMaxWidth)*
-                                                sizeof(char_info) ];
+    for( j = w->y1; j <= w->y2; j++ ) {
+        if( scrflag ) {
+            scr = (char_info _FAR *) &Scrn[(w->x1 + j * WindMaxWidth) *
+                                           sizeof( char_info )];
 #ifdef __VIO__
             oscr = (unsigned) ((char *)scr - Scrn);
 #endif
         }
-        img = &ScreenImage[ w->x1 + j* WindMaxWidth ];
-        for( i=w->x1; i<=w->x2; i++ ) {
+        img = &ScreenImage[w->x1 + j * WindMaxWidth];
+        for( i = w->x1; i <= w->x2; i++ ) {
 
             /*
              * if we are over someone, then reset the screen
@@ -137,7 +136,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
              */
             if( *whoover != NO_CHAR ) {
                 wo = AccessWindow( *whoover );
-                k = (i - wo->x1) + (j - wo->y1)*wo->width;
+                k = (i - wo->x1) + (j - wo->y1) * wo->width;
                 /*
                  * if we are being overlapped at the same
                  * spot, then point the guy overlapping us
@@ -149,13 +148,13 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  */
                 if( *over != NO_CHAR ) {
                     o = AccessWindow( *over );
-                    l = (i - o->x1) + (j - o->y1)*o->width;
+                    l = (i - o->x1) + (j - o->y1) * o->width;
                     o->whooverlapping[l] = *whoover;
                     wo->overlap[k] = *over;
                     ReleaseWindow( o );
                 } else {
                     wo->overlap[k] = NO_CHAR;
-                    wo->overcnt[ j - wo->y1 ]--;
+                    wo->overcnt[j - wo->y1]--;
                     if( scrflag ) {
                         WRITE_SCREEN( *scr, ((char_info *)wo->text)[k] );
                     }
@@ -173,7 +172,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
                  */
                 if( *over != NO_CHAR ) {
                     o = AccessWindow( *over );
-                    l = (i - o->x1) + (j - o->y1)*o->width;
+                    l = (i - o->x1) + (j - o->y1) * o->width;
                     o->whooverlapping[l] = NO_CHAR;
                     ReleaseWindow( o );
                 } else {
@@ -186,8 +185,8 @@ void RestoreOverlap( window_id wn, bool scrflag )
             img++;
             over++;
             whoover++;
-            if( scrflag) {
-                scr ++;
+            if( scrflag ) {
+                scr++;
             }
         }
 #ifdef __VIO__
@@ -204,13 +203,13 @@ void RestoreOverlap( window_id wn, bool scrflag )
 /*
  * TestOverlap - test if window is overlapped at all
  */
-bool TestOverlap( window_id wn  )
+bool TestOverlap( window_id wn )
 {
     wind        *w;
     int         i;
 
-    w = Windows[ wn ];
-    for( i=0;i<w->height;i++) {
+    w = Windows[wn];
+    for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] ) {
             return( TRUE );
         }
@@ -223,11 +222,11 @@ bool TestOverlap( window_id wn  )
 /*
  * TestVisible - test if a window is visible at all
  */
-bool TestVisible( wind *w  )
+bool TestVisible( wind *w )
 {
     int i;
 
-    for( i=0;i<w->height;i++) {
+    for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] != w->width ) {
             return( TRUE );
         }
@@ -244,7 +243,7 @@ bool WindowIsVisible( window_id id )
 {
     wind        *w;
 
-    w = Windows[ id ];
+    w = Windows[id];
     return( TestVisible( w ) );
 
 } /* WindowIsVisible */
@@ -258,11 +257,11 @@ window_id WhoIsUnder( int *x, int *y )
     wind        *w;
     int         win_x, win_y;
 
-    id = ScreenImage[ (*x) + (*y) * WindMaxWidth ];
+    id = ScreenImage[(*x) + (*y) * WindMaxWidth];
     if( id == NO_CHAR ) {
         return( id );
     }
-    w = Windows[ id ];
+    w = Windows[id];
     win_x = (*x) - w->x1;
     win_y = (*y) - w->y1;
     *x = win_x;

@@ -38,38 +38,38 @@ typedef enum CursorOps {
     COP_DROPCLR,
     COP_NODROP,
     COP_STATMOVE,
-    COP_DROPSS,
+    COP_DROPSS
 } CursorOps;
 
 enum {
     DIVIDE_BETWEEN,
-    DIVIDE_MIDDLE,
+    DIVIDE_MIDDLE
 };
 
 enum drawUpDown {
     DRAW_UP,
-    DRAW_DOWN,
+    DRAW_DOWN
 };
 
-extern int TextWidth( HWND, char *, int , int );
-extern int StringWidth( HWND, char *, int );
+extern int  TextWidth( HWND, char *, int, int );
+extern int  StringWidth( HWND, char *, int );
 extern void WriteText( HWND, int, int, type_style *, char *, int );
 extern void WriteString( HWND, int, int, type_style *, char *);
-extern HDC TextGetDC( HWND, type_style *);
+extern HDC  TextGetDC( HWND, type_style *);
 extern void TextReleaseDC( HWND, HDC );
-extern int MyTextExtent( HWND, type_style *, char *, unsigned );
-extern int MyStringExtent( HWND, type_style *, char * );
-extern void BlankRect( HWND, UINT, int, int, int, int );
-extern void BlankRectIndirect( HWND, UINT, RECT * );
+extern int  MyTextExtent( HWND, type_style *, char *, unsigned );
+extern int  MyStringExtent( HWND, type_style *, char * );
+extern void BlankRect( HWND, vi_color, int, int, int, int );
+extern void BlankRectIndirect( HWND, vi_color, RECT * );
 extern void ClientToRowCol( HWND, int, int, int *, int *, int );
 extern void ToggleHourglass( bool );
-int GetNumWindowTypes( void );
-HWND GetOwnedWindow( POINT );
-void CursorOp( CursorOps );
-void MoveWindowTopRight( HWND );
-void UpdateIntSetting( HWND, int, int, long );
-void UpdateStrSetting( HWND, int, int, char *);
-void DoStrSet( char *, int );
-void UpdateBoolSetting( HWND, int, int, bool );
-void SetEditInt( HWND, UINT, int );
-void DrawRectangleUpDown( HWND, int );
+int         GetNumWindowTypes( void );
+HWND        GetOwnedWindow( POINT );
+void        CursorOp( CursorOps );
+void        MoveWindowTopRight( HWND );
+void        UpdateIntSetting( HWND, int, int, long );
+void        UpdateStrSetting( HWND, int, int, char * );
+void        DoStrSet( char *, int );
+void        UpdateBoolSetting( HWND, int, int, bool );
+void        SetEditInt( HWND, UINT, int );
+void        DrawRectangleUpDown( HWND, int );

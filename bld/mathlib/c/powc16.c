@@ -35,9 +35,9 @@
 #include "mathcode.h"
 
 
-_WMRTLINK dcomplex _IF_C16Pow( double a, double b, double c, double d ) {
-//======================================================================
-
+_WMRTLINK dcomplex _IF_C16Pow( double a, double b, double c, double d )
+//=====================================================================
+{
 // Return the real part of the result of taking one double precision
 // complex number to the power of another.
 // ( a, b ) ** ( c, d ) = exp( ( c,d ) * log( a,b ) )

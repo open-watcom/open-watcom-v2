@@ -7,15 +7,20 @@
  */
 #ifndef _DOS_H_INCLUDED
 #define _DOS_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:segment DOS
+:include lfndos.sp
+
+:endsegment
 #if defined(_M_IX86) && !defined(_I86_H_INCLUDED)
  #include <i86.h>
 #endif
+
+:include cpluspro.sp
 
 #if defined(__DOS__) && defined(__386__)
  #define _DOSFAR _WCFAR
@@ -27,63 +32,57 @@
 
 :include wchar_t.sp
 
+:include namemax.sp
+
 /* dosexterror struct */
 
 struct _DOSERROR {
-        int exterror;
-        char errclass;
-        char action;
-        char locus;
+    int     exterror;
+    char    errclass;
+    char    action;
+    char    locus;
 };
 :: 'class' is a keyword in C++
 #ifndef __cplusplus
 struct DOSERROR {
-        int exterror;
-        char class;
-        char action;
-        char locus;
+    int     exterror;
+    char    class;
+    char    action;
+    char    locus;
 };
 #endif
 
 struct dosdate_t {
-        unsigned char day;      /* 1-31 */
-        unsigned char month;    /* 1-12 */
-        unsigned short year;    /* 1980-2099 */
-        unsigned char dayofweek;/* 0-6 (0=Sunday) */
+    unsigned char   day;        /* 1-31 */
+    unsigned char   month;      /* 1-12 */
+    unsigned short  year;       /* 1980-2099 */
+    unsigned char   dayofweek;  /* 0-6 (0=Sunday) */
 };
 #define _dosdate_t dosdate_t
 
 struct dostime_t {
-        unsigned char hour;     /* 0-23 */
-        unsigned char minute;   /* 0-59 */
-        unsigned char second;   /* 0-59 */
-        unsigned char hsecond;  /* 1/100 second; 0-99 */
+    unsigned char   hour;       /* 0-23 */
+    unsigned char   minute;     /* 0-59 */
+    unsigned char   second;     /* 0-59 */
+    unsigned char   hsecond;    /* 1/100 second; 0-99 */
 };
 #define _dostime_t dostime_t
 
 struct find_t {
-        char reserved[21];      /* reserved for use by DOS    */
-        char attrib;            /* attribute byte for file    */
-        unsigned short wr_time; /* time of last write to file */
-        unsigned short wr_date; /* date of last write to file */
-        unsigned long  size;    /* length of file in bytes    */
-#if defined(__OS2__) || defined(__NT__)
-        char name[256];         /* null-terminated filename   */
-#else
-        char name[13];          /* null-terminated filename   */
-#endif
+    char            reserved[21];       /* reserved for use by DOS    */
+    char            attrib;             /* attribute byte for file    */
+    unsigned short  wr_time;            /* time of last write to file */
+    unsigned short  wr_date;            /* date of last write to file */
+    unsigned long   size;               /* length of file in bytes    */
+    char            name[NAME_MAX+1];   /* null-terminated filename   */
 };
 struct _wfind_t {
-        char reserved[21];      /* reserved for use by DOS    */
-        char attrib;            /* attribute byte for file    */
-        unsigned short wr_time; /* time of last write to file */
-        unsigned short wr_date; /* date of last write to file */
-        unsigned long  size;    /* length of file in bytes    */
-#if defined(__OS2__) || defined(__NT__)
-        wchar_t name[256];      /* null-terminated filename   */
-#else
-        wchar_t name[13];       /* null-terminated filename   */
-#endif
+    char            reserved[21];       /* reserved for use by DOS    */
+    char            attrib;             /* attribute byte for file    */
+    unsigned short  wr_time;            /* time of last write to file */
+    unsigned short  wr_date;            /* date of last write to file */
+    unsigned long   size;               /* length of file in bytes    */
+    wchar_t         name[NAME_MAX+1];   /* null-terminated filename   */
 };
 #define _find_t find_t
 
@@ -106,17 +105,16 @@ struct _wfind_t {
 
 :include dskfreet.sp
 
+_WCRTLINK extern int      _islfn( const char *__path );
+_WCRTLINK extern char     *_lfntosfn( char *__orgname, char *__shortname );
 _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx,
                                 unsigned int __al);
-:: extra 'register' is used to prevent C++ compiler from entering a parser
-:: disambiguation stage (i.e., it has a use, so don't delete it) AFS
-_WCRTLINK extern void     _chain_intr( register void
+_WCRTLINK extern void     _chain_intr( void
                                       (_WCINTERRUPT _DOSFAR *__handler)() );
 #if defined(__NT__) || ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) )
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, void **__storage );
 #else
-_WCRTLINK extern unsigned _dos_allocmem( unsigned __size,
-                                         unsigned short *__seg );
+_WCRTLINK extern unsigned _dos_allocmem( unsigned __size, unsigned *__seg );
 #endif
 _WCRTLINK extern unsigned _dos_close( int __handle );
 _WCRTLINK extern unsigned _dos_commit( int __handle );
@@ -132,7 +130,7 @@ _WCRTLINK extern unsigned _dos_findclose( struct find_t *__buf );
 #if defined(__NT__) || ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) )
 _WCRTLINK extern unsigned _dos_freemem( void *__storage );
 #else
-_WCRTLINK extern unsigned _dos_freemem( unsigned short __seg );
+_WCRTLINK extern unsigned _dos_freemem( unsigned __seg );
 #endif
 _WCRTLINK extern void     _dos_getdate( struct dosdate_t *__date );
 _WCRTLINK extern unsigned _dos_getdiskfree( unsigned __drive,
@@ -143,34 +141,32 @@ _WCRTLINK extern void     _dos_getdrive( unsigned *__drive );
 _WCRTLINK extern unsigned _getdrive( void );
 _WCRTLINK extern unsigned _dos_getfileattr( const char *__path,
                                             unsigned *__attr );
-_WCRTLINK extern unsigned _dos_getftime( int __handle, unsigned short *__date,
-                                         unsigned short *__time );
+_WCRTLINK extern unsigned _dos_getftime( int __handle, unsigned *__date,
+                                         unsigned *__time );
 _WCRTLINK extern void     _dos_gettime( struct dostime_t *__time );
-_WCRTLINK extern void     (_WCINTERRUPT _DOSFAR *_dos_getvect( int __intnum ))();
+_WCRTLINK extern void     (_WCINTERRUPT _DOSFAR *_dos_getvect( unsigned __intnum ))();
 _WCRTLINK extern void     _dos_keep( unsigned __retcode, unsigned __memsize );
 
 _WCRTLINK extern unsigned _dos_open( const char *__path, unsigned __mode,
                                      int *__handle );
 _WCRTLINK extern unsigned _dos_read( int __handle, void _DOSFAR *__buf,
                                      unsigned __count, unsigned *__bytes );
-_WCRTLINK extern unsigned _dos_setblock( unsigned __size, unsigned short __seg,
+_WCRTLINK extern unsigned _dos_setblock( unsigned __size, unsigned __seg,
                                          unsigned  *__maxsize );
 _WCRTLINK extern unsigned _dos_setdate( struct dosdate_t *__date );
 _WCRTLINK extern void     _dos_setdrive( unsigned __drivenum,
                                          unsigned *__drives );
 _WCRTLINK extern unsigned _dos_setfileattr( const char *__path,
                                             unsigned __attr );
-_WCRTLINK extern unsigned _dos_setftime( int __handle, unsigned short __date,
-                                         unsigned short __time );
+_WCRTLINK extern unsigned _dos_setftime( int __handle, unsigned __date,
+                                         unsigned __time );
 _WCRTLINK extern unsigned _dos_settime( struct dostime_t *__time );
-_WCRTLINK extern void     _dos_setvect( int __intnum, void
+_WCRTLINK extern void     _dos_setvect( unsigned __intnum, void
                                        (_WCINTERRUPT _DOSFAR *__handler)() );
 _WCRTLINK extern unsigned _dos_write( int __handle, void const _DOSFAR *__buf,
                                       unsigned __count, unsigned *__bytes );
 _WCRTLINK extern int      dosexterr( struct _DOSERROR * );
-:: extra 'register' is used to prevent C++ compiler from entering a parser
-:: disambiguation stage (i.e., it has a use, so don't delete it) AFS
-_WCRTLINK extern void     _harderr( register int (_DOSFAR *__func)(
+_WCRTLINK extern void     _harderr( int (_DOSFAR *__func)(
                                     unsigned __deverr, unsigned __errcode,
                                     unsigned _DOSFAR *__devhdr));
 _WCRTLINK extern void     _hardresume( int __result );
@@ -179,7 +175,7 @@ _WCRTLINK extern void     _hardretn( int __error );
 _WCRTLINK extern int      intdos( union REGS *, union REGS * );
 _WCRTLINK extern int      intdosx( union REGS *, union REGS *, struct SREGS * );
 #endif
-_WCRTLINK extern void     sleep( unsigned __seconds );
+_WCRTLINK extern unsigned sleep( unsigned __seconds );
 
 _WCRTLINK extern unsigned _wdos_findfirst( const wchar_t *__path,
                                            unsigned __attr,
@@ -192,4 +188,5 @@ _WCRTLINK extern unsigned _wdos_findclose( struct _wfind_t *__buf );
 #undef _DOSFAR
 
 :include cplusepi.sp
+
 #endif

@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal header with defined to support the multi-thread
+*               runtime library.
 *
 ****************************************************************************/
-
 
 #ifndef _THREAD_H_INCLUDED
 #define _THREAD_H_INCLUDED
@@ -44,6 +43,8 @@
     #define __EXCEPTION_RECORD  int
   #elif defined(__NT__)
     #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
+  #elif defined(__RDOS__)
+    #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
   #else
     #define __EXCEPTION_RECORD unsigned
   #endif
@@ -53,6 +54,7 @@
 
 #include "variety.h"
 #include <time.h>
+#include "xfloat.h"
 
 #include "widechar.h"
 #if defined(__NETWARE__)
@@ -61,8 +63,21 @@
 #if defined(__QNX__)
   #include <semaphor.h>
   #include <sys/types.h>
+#elif defined(__LINUX__)
+// TODO: Linux thread stuff goes here!
+  #include <sys/types.h>
+#elif defined(__RDOSDEV__)
+  #include <rdosdev.h>
 #else
   #include "sigdefn.h"
+#endif
+
+// define thread registration function
+#include "thrdreg.h"
+
+/* Make sure these are in C linkage */
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*
@@ -74,6 +89,12 @@ typedef struct  semaphore_object {
         void            *semaphore;
   #elif defined(__QNX__)
         sem_t           semaphore;
+  #elif defined(__LINUX__)
+    // TODO: Linux semaphore goes here!
+  #elif defined(__RDOS__)
+        int             semaphore; // RDOS only have critical sections, which should work
+  #elif defined(__RDOSDEV__)
+        struct TKernelSection semaphore;
   #else
         unsigned long   semaphore;
   #endif
@@ -87,7 +108,7 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object * );
 _WCRTLINK void __CloseSemaphore( semaphore_object * );
 
 // the following is for the C++ library
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     _WCRTLINK extern void (*__AccessSema4)( semaphore_object *);
     _WCRTLINK extern void (*__ReleaseSema4)( semaphore_object *);
     _WCRTLINK extern void (*__CloseSema4)( semaphore_object *);
@@ -106,9 +127,6 @@ _WCRTLINK void __CloseSemaphore( semaphore_object * );
  *     - must be the same size as struct thread_ctl
  *       in plusplus\cpplib\runtime\h\cpplib.h
  */
-// Note: this has changed for 32bit code in 10.0
-//       now the C++ library will register how much thread data it wants
-//       in an initializer
 struct wcpp_thread_ctl {
     void *autos;
     void *d0;
@@ -127,7 +145,7 @@ struct wcpp_thread_ctl {
 /* stack checking routine assumes "__stklowP" is first field */
 typedef struct thread_data {
     unsigned                    __stklowP;
-    #if !defined(__QNX__)
+    #if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
         int                     __errnoP;
         int                     __doserrnoP;
     #endif
@@ -140,17 +158,19 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-    #if !defined(__QNX__)
+    #if !defined(__QNX__) && !defined(__LINUX__) && !defined(__RDOSDEV__)
         __EXCEPTION_RECORD      *xcpt_handler;
         sigtab                  signal_table[__SIGLAST+1];
     #endif
     char _WCFAR                 *__nextftokP;
-    // LDBL_DIG => 15 + 1 for decimal point + 1 for "e" + 3 for exponent => 20
-    MAX_CHAR_TYPE               __cvt_buffer[20];
-    #if defined(__NT__)
+    MAX_CHAR_TYPE               __cvt_buffer[ __FPCVT_BUFFERLEN + 1 ];
+    #if defined(__NT__) || defined(_NETWARE_LIBC)
         unsigned long           thread_id;
-    #elif defined(__QNX__)
+    #elif defined(__UNIX__)
         pid_t                   thread_id;
+    #elif defined(__RDOS__)
+        int                     thread_id;
+        char                    thread_name[256];
     #endif
     #if defined(__NT__)
         void                    *thread_handle;
@@ -167,44 +187,47 @@ typedef struct thread_data {
     unsigned                    __data_size;
 } thread_data;
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+extern thread_data *__MultipleThread( void );
 
-    // define thread registration function
-    #include "thrdreg.h"
+#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+
 
     // prototype for thread data init function
     int __initthread( void *p );
 
-    #define __THREADDATAPTR     ((thread_data *)(*__GetThreadPtr)())
-    #if defined(__OS2__) || defined(__NETWARE__)
+    #define __THREADDATAPTR     ((*__GetThreadPtr)())
+    #if defined(__OS2__) || defined(_NETWARE_CLIB)
         typedef struct thread_data_vector {
             thread_data *data;
             int         allocated_entry;
         } thread_data_vector;
         extern thread_data_vector *__ThreadData;
 
-        _WCRTLINK extern int *__threadid(void);
-        #define _threadid (__threadid())
     #endif
-    #if defined(__NT__)
+    #if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__RDOS__)
         #define NO_INDEX        0xffffffffL
     #endif
-    #if defined(__QNX__)
-        // QNX uses magic memory for thread specific data
-        extern void *__MultipleThread();
-    #endif
+
+
 #else
-    extern int _WCFAR *_threadid;
+
+
     extern thread_data **__ThreadData;
-    extern void *__MultipleThread();
-    #define __THREADDATAPTR     ((thread_data *)__MultipleThread())
+    #define __THREADDATAPTR     (__MultipleThread())
+
+
 #endif
 
+
 extern  unsigned        __GetMaxThreads(void);
-#if defined(_M_IX86)
-    #pragma aux __GetMaxThreads "^"
-#endif
+#pragma aux __GetMaxThreads "^"
+
 extern  unsigned        __MaxThreads;
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #pragma pack(__pop);
 #endif
+

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "errdefns.h"
 #include "cgio.h"
@@ -102,21 +100,21 @@ ExtraRptCtr( cgio_locates_thunk );
                       , curr->buffer
                       , curr->cursor
                       , curr->cond_flags
-                      , curr->delayed
-                      , curr->refed
-                      , curr->stgen
-                      , curr->oe_inl
-                      , curr->state_table
-                      , curr->once_inl
-                      , curr->done
-                      , curr->thunk
-                      , curr->thunk_gen
-                      , curr->not_inline
-                      , curr->calls_inline
-                      , curr->can_throw
-                      , curr->stab_gen
-                      , curr->ctor_test
-                      , curr->write_to_pch
+                      , curr->s.delayed
+                      , curr->s.refed
+                      , curr->s.stgen
+                      , curr->s.oe_inl
+                      , curr->s.state_table
+                      , curr->s.once_inl
+                      , curr->s.done
+                      , curr->s.thunk
+                      , curr->s.thunk_gen
+                      , curr->s.not_inline
+                      , curr->s.calls_inline
+                      , curr->s.can_throw
+                      , curr->s.stab_gen
+                      , curr->s.ctor_test
+                      , curr->s.write_to_pch
                       );
             } RingIterEnd( curr )
         }
@@ -242,27 +240,27 @@ static CGFILE *initCGFILE(      // INITIALIZE A CG VIRTUAL FILE
     file_element->offset = buff_element->free_offset;
     file_element->cursor = (CGINTER*) (buff_element->data + buff_element->free_offset);
     file_element->first = buff_element->disk_addr;
-    file_element->delayed = FALSE;
-    file_element->refed = FALSE;
-    file_element->stgen = FALSE;
-    file_element->oe_inl = FALSE;
-    file_element->once_inl = FALSE;
-    file_element->done = FALSE;
-    file_element->thunk = FALSE;
-    file_element->thunk_gen = FALSE;
-    file_element->not_inline = FALSE;
-    file_element->calls_inline = FALSE;
-    file_element->can_throw = FALSE;
-    file_element->stab_gen = FALSE;
-    file_element->ctor_test = FALSE;
-    file_element->write_to_pch = FALSE;
-    file_element->state_table = 0;
+    file_element->s.delayed = FALSE;
+    file_element->s.refed = FALSE;
+    file_element->s.stgen = FALSE;
+    file_element->s.oe_inl = FALSE;
+    file_element->s.once_inl = FALSE;
+    file_element->s.done = FALSE;
+    file_element->s.thunk = FALSE;
+    file_element->s.thunk_gen = FALSE;
+    file_element->s.not_inline = FALSE;
+    file_element->s.calls_inline = FALSE;
+    file_element->s.can_throw = FALSE;
+    file_element->s.stab_gen = FALSE;
+    file_element->s.ctor_test = FALSE;
+    file_element->s.write_to_pch = FALSE;
+    file_element->s.state_table = 0;
     file_element->defined.src_file = NULL;
     file_element->defined.line = 0;
     file_element->defined.column = 0;
     file_element->cond_flags = 0;
-    file_element->opt_retn_val = FALSE;
-    file_element->opt_retn_ref = FALSE;
+    file_element->s.opt_retn_val = FALSE;
+    file_element->s.opt_retn_ref = FALSE;
     file_element->opt_retn = NULL;
     gen = CarveAlloc( carveCGFILE_GEN );
     file_element->gen = gen;
@@ -327,7 +325,7 @@ void CgioCloseOutputFile(       // CLOSE VIRTUAL FILE AFTER OUTPUT PHASE
     CGFILE *ctl )               // - control for file
 {
     CgioBuffWrClose( ctl->buffer );
-    ctl->done = TRUE;
+    ctl->s.done = TRUE;
     ctl->buffer = NULL;
     if( ! saveGenData( ctl ) ) {
         freeGenData( ctl );
@@ -479,7 +477,7 @@ void CgioThunkAddrTaken(        // INDICATE ADDR TAKEN OF THUNK BY GEN'ED CODE
         thunk_file = lookupFile( thunk, cg_thunk_ring );
     }
     if( thunk_file != NULL
-     && thunk_file->thunk ) {
+     && thunk_file->s.thunk ) {
         _dump( thunk_file, "thunk addr taken" );
         CgioThunkMarkGen( thunk_file );
     }
@@ -491,7 +489,7 @@ void CgioThunkMarkGen(          // MARK THUNK TO BE GENERATED
 {
     _dump( thunk, "thunk marked to generate" );
     DbgVerify( thunk != NULL, "CgioThunkMarkGen -- no thunk" );
-    thunk->refed = TRUE;
+    thunk->s.refed = TRUE;
 }
 
 
@@ -607,7 +605,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     auto CGINTER zap_ref;
     auto CGFILE_INS zap_locn;
 
-    if( !file->write_to_pch
+    if( !file->s.write_to_pch
      || file->symbol == BRINF_SYMBOL ) {
         return;
     }
@@ -620,7 +618,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     h = CgioBuffRdOpen( file->first );
     cursor = (CGINTER *) ( h->data + file->offset );
     ics = 0;
-    if( file->done ) {
+    if( file->s.done ) {
         // CGFILE contains a finished function
         for(;;) {
             opcode = cursor->opcode;
@@ -706,7 +704,7 @@ static void markFreeCGFILE( void *p )
 {
     CGFILE *c = p;
 
-    c->write_to_pch = FALSE;
+    c->s.write_to_pch = FALSE;
 }
 
 pch_status PCHWriteCGFiles( void )
@@ -717,7 +715,7 @@ pch_status PCHWriteCGFiles( void )
 
     CarveWalkAllFree( carveCGFILE, markFreeCGFILE );
     RingIterBeg( cg_file_ring, curr ) {
-        curr->write_to_pch = TRUE;
+        curr->s.write_to_pch = TRUE;
     } RingIterEnd( curr )
     CarveWalkAll( carveCGFILE, saveCGFILE, &data );
     PCHWriteCVIndex( terminator );
@@ -793,7 +791,7 @@ pch_status PCHInitCGFiles( boolean writing )
         // shut down all pending functions so that the CGIOBUFF can stabilize
         // to a point where there are no outstanding writes in progress
         RingIterBeg( cg_file_ring, curr ) {
-            if( ! curr->done ) {
+            if( ! curr->s.done ) {
                 CgioCloseOutputFile( curr );
             }
         } RingIterEnd( curr )

@@ -25,4 +25,4 @@ _OS     = _OS_DOS
 ndebug  =
 opts_cc = -zq -oals -s -w4
 
-!include ..\mif\master.mif
+!include ../mif/master.mif

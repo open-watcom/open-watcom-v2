@@ -24,37 +24,38 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of kbhit() for DOS.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "dos.h"
+#include <dos.h>
+#include <conio.h>
 #include "rtdata.h"
 #include "defwin.h"
 
 #ifndef DEFAULT_WINDOWING
-    extern      signed char _kbhit();
+    extern      unsigned char _os_kbhit( void );
 
-    #pragma aux _kbhit = 0xb4 0x0b      /* mov ah,0bh */\
-                         0xcd 0x21      /* int 21h    */\
-                         value [al];
+    #pragma aux _os_kbhit =  "mov ah,0bh"   \
+                             "int 21h"      \
+                             value [al];
 #endif
 
-_WCRTLINK int kbhit()
-    {
-        if( _RWD_cbyte != 0 ) return( 1 );
-        #ifdef DEFAULT_WINDOWING
-            if( _WindowsKbhit != 0 ) {
-                LPWDATA res;
-                res = _WindowsIsWindowedHandle( STDIN_FILENO );
-                return( _WindowsKbhit( res ) );
-            } else {
-                return( 0 );
-            }
-        #else
-            return( _kbhit() );
-        #endif
+_WCRTLINK int kbhit( void )
+{
+    if( _RWD_cbyte != 0 )
+        return( 1 );
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsKbhit != 0 ) {
+        LPWDATA res;
+        res = _WindowsIsWindowedHandle( STDIN_FILENO );
+        return( _WindowsKbhit( res ) );
+    } else {
+        return( 0 );
     }
+#else
+    return( _os_kbhit() );
+#endif
+}

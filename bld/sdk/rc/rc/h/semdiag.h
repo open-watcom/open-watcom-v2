@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions for processing dialog resources.
 *
 ****************************************************************************/
 
@@ -37,7 +36,6 @@
 #include "wresall.h"
 #include "semraw.h"
 
-/* condition inclution to prevent recursive inclusion */
 #ifndef SEMSTRUCT_INCLUDED
     #include "semantic.h"
 #endif
@@ -104,7 +102,7 @@ typedef struct FullDialogBoxControl {
 typedef struct FullDiagCtrlList {
     FullDialogBoxControl *          head;
     FullDialogBoxControl *          tail;
-    uint_8                          numctrls;
+    uint_16                         numctrls; /* Win16 only support upto 255 controls. */
 } FullDiagCtrlList;
 
 typedef struct FullDiagCtrlOptions {
@@ -122,6 +120,44 @@ typedef struct DlgHelpId {
     char        HelpIdDefined;
 } DlgHelpId;
 
+typedef struct PresParamsOS2 {
+    struct PresParamsOS2    *next;
+    struct PresParamsOS2    *prev;
+    ResNameOrOrdinal        *Name;
+    DataElemList            *dataList;
+    uint_32                 size;
+} PresParamsOS2;
+
+typedef struct PresParamListOS2 {
+    PresParamsOS2           *head;
+    PresParamsOS2           *tail;
+    uint_32                 size;
+} PresParamListOS2;
+
+typedef struct FullDialogBoxControlOS2 {
+    struct FullDialogBoxControlOS2  *next;
+    struct FullDialogBoxControlOS2  *prev;
+    DialogBoxControl                ctrl;
+    DataElemList                    *dataListHead;
+    PresParamListOS2                *presParams;
+    struct FullDiagCtrlListOS2      *children;
+    DialogTemplateItemOS2           *tmpl;
+    uint_32                         framectl;
+} FullDialogBoxControlOS2;
+
+typedef struct FullDiagCtrlListOS2 {
+    FullDialogBoxControlOS2         *head;
+    FullDialogBoxControlOS2         *tail;
+    uint_8                          numctrls;
+} FullDiagCtrlListOS2;
+
+typedef struct FullDiagCtrlOptionsOS2 {
+    DialogSizeInfo          Size;
+    IntMask                 Style;
+    uint_16                 ID;
+    ResNameOrOrdinal        *Text;
+} FullDiagCtrlOptionsOS2;
+
 extern FullDialogBoxHeader * SemNewDiagOptions( FullDialogOptions * opt );
 extern FullDialogBoxHeader * SemDiagOptions( FullDialogBoxHeader * head,
                     FullDialogOptions * opt );
@@ -138,5 +174,24 @@ extern void SemWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
 extern FullDiagCtrlList * SemEmptyDiagCtrlList( void );
 extern FullDialogBoxControl * SemSetControlData( IntMask, unsigned long,
          DialogSizeInfo, WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
+
+extern FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
+                    DataElemList *, PresParamListOS2 * );
+extern FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
+                    FullDialogBoxControlOS2 *ctrl, DataElemList *, PresParamListOS2 * );
+extern FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( uint_8 token,
+                    FullDiagCtrlOptionsOS2 opts, PresParamListOS2 * );
+extern FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2,
+                    IntMask, PresParamListOS2 *, FullDiagCtrlListOS2 *, uint_16 );
+extern FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name, uint_32 id,
+                    DialogSizeInfo size, ResNameOrOrdinal *ctlclass,
+                    IntMask style, FullDiagCtrlListOS2 *, PresParamListOS2 * );
+extern PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam );
+extern PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
+                    PresParamsOS2 presparam );
+
+extern void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags,
+                    uint_32, FullDiagCtrlListOS2 * );
+extern void SemOS2AddDlgincResource( WResID *name, char *filename );
 
 #endif

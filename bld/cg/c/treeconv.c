@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Type conversion folding, tree demotion.
 *
 ****************************************************************************/
 
@@ -35,6 +34,8 @@
 #include "cgdefs.h"
 #include "addrname.h"
 #include "tree.h"
+#include "treeconv.h"
+#include "zoiks.h"
 #include "cfloat.h"
 
 extern  void            BurnTree(tn);
@@ -42,51 +43,6 @@ extern  tn              TGConst(pointer,type_def*);
 extern  bool            NeedPtrConvert(an,type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  cfloat *        CnvCFToType( cfloat *cf, type_def *tipe );
-
-
-extern  tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe ) {
-/***************************************************************/
-
-    tn          new;
-    cfloat      *cf;
-    cfloat      *junk;
-
-    if( name->class == TN_CONS ) {
-        if( name->tipe->refno == T_DEFAULT ) {
-            cf = CFCopy( name->u.name->c.value );
-        } else {
-            cf = CnvCFToType( name->u.name->c.value, name->tipe );
-        }
-        if( to_tipe->attr & TYPE_FLOAT ) {
-            new = TGConst( cf, to_tipe );
-        } else if( op == O_CONVERT ) {
-            junk = cf;
-            cf = CFTrunc( cf );
-            CFFree( junk );
-            if( to_tipe->refno != T_DEFAULT ) {
-                junk = cf;
-                cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
-            }
-            new = TGConst( cf, to_tipe );
-        } else if( op == O_ROUND ) {
-            junk = cf;
-            cf = CFRound( cf );
-            CFFree( junk );
-            if( to_tipe->refno != T_DEFAULT ) {
-                junk = cf;
-                cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
-            }
-            new = TGConst( cf, to_tipe );
-        }
-        BurnTree( name );
-    } else {
-        TGDemote( name, to_tipe );
-        new = NULL;
-    }
-    return( new );
-}
 
 
 static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
@@ -136,9 +92,9 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_LSHIFT:
             case O_PLUS:
             case O_MINUS:
-                if( name->tipe->refno == T_HUGE_POINTER ) break;
-                if( name->u.left->tipe->refno == T_HUGE_POINTER ) break;
-                if( name->rite->tipe->refno == T_HUGE_POINTER ) break;
+                if( name->tipe->refno == TY_HUGE_POINTER ) break;
+                if( name->u.left->tipe->refno == TY_HUGE_POINTER ) break;
+                if( name->rite->tipe->refno == TY_HUGE_POINTER ) break;
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
                 if( can_demote ) {
                     can_demote = DemoteTree( name->rite, tipe, just_test );
@@ -167,10 +123,59 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
     return( can_demote );
 }
 
+
 extern  void    TGDemote( tn name, type_def *tipe ) {
 /***************************************************/
 
     if( DemoteTree( name, tipe, TRUE ) ) {
         DemoteTree( name, tipe, FALSE );
     }
+}
+
+
+extern  tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe ) {
+/***************************************************************/
+
+    tn          new;
+    cfloat      *cf;
+    cfloat      *junk;
+
+    if( name->class == TN_CONS ) {
+        if( name->tipe->refno == TY_DEFAULT ) {
+            cf = CFCopy( name->u.name->c.value );
+        } else {
+            cf = CnvCFToType( name->u.name->c.value, name->tipe );
+        }
+        if( to_tipe->attr & TYPE_FLOAT ) {
+            new = TGConst( cf, to_tipe );
+        } else if( op == O_CONVERT ) {
+            junk = cf;
+            cf = CFTrunc( cf );
+            CFFree( junk );
+            if( to_tipe->refno != TY_DEFAULT ) {
+                junk = cf;
+                cf = CnvCFToType( cf, to_tipe );
+                CFFree( junk );
+            }
+            new = TGConst( cf, to_tipe );
+        } else if( op == O_ROUND ) {
+            junk = cf;
+            cf = CFRound( cf );
+            CFFree( junk );
+            if( to_tipe->refno != TY_DEFAULT ) {
+                junk = cf;
+                cf = CnvCFToType( cf, to_tipe );
+                CFFree( junk );
+            }
+            new = TGConst( cf, to_tipe );
+        } else {
+            new = NULL;
+            Zoiks( ZOIKS_078 ); /* Not supposed to get here, ever */
+        }
+        BurnTree( name );
+    } else {
+        TGDemote( name, to_tipe );
+        new = NULL;
+    }
+    return( new );
 }

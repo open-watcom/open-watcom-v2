@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sprintf() - formatted output to string.
 *
 ****************************************************************************/
 
@@ -52,7 +51,7 @@
 #ifdef __WIDECHAR__
 _WCRTLINK int swprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, ... )
 {
-    auto    va_list         args;
+    va_list         args;
 
     va_start( args, format );
     return( vswprintf( dest, n, format, args ) );
@@ -61,12 +60,12 @@ _WCRTLINK int swprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, ... 
 
 _WCRTLINK int __F_NAME(sprintf,_swprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, ... )
 {
-    auto    va_list         args;
+    va_list         args;
 
     va_start( args, format );
-    #ifdef __WIDECHAR__
-        return( _vswprintf( dest, format, args ) );
-    #else
-        return( vsprintf( dest, format, args ) );
-    #endif
+#ifdef __WIDECHAR__
+    return( _vswprintf( dest, format, args ) );
+#else
+    return( vsprintf( dest, format, args ) );
+#endif
 }

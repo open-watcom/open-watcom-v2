@@ -1,32 +1,42 @@
-lnk = $(%ramdisk)tmp.lnk
+#pmake: build os_os2 cpu_386
 
-c_opts = /zq /w4 /bt=OS2 /i$(watcom_dir)\os220_h
-!ifndef on_build_machine
-c_opts += /d2
-!endif
+host_os  = os2
+host_cpu = 386
 
-epmlink.dll : epmlink.obj
-    @%create $(lnk)
-    @%append $(lnk) sys os2v2 dll initinstance terminstance pm debug all
-    @%append $(lnk) option description 'WATCOM Editor DLL for EPM'
-    @%append $(lnk) option manyautodata, quiet, symfile, caseexact
-    @%append $(lnk) libpath $(watcom_lib)
-    @%append $(lnk) file epmlink.obj
-    $(linker) name $^@ @$(lnk)
-    wlib /n /q /b /c $^*.lib +$^*.dll
-    del $(lnk)
+proj_name = editdll
 
-epmlink.obj : epmlink.c
-    $(comp386) $(c_opts) /bd $^*
+editdll_autodepends = .AUTODEPEND
+editdll_distrib_lib = 1
+sys_dll = 1
 
-epmtest.exe : epmtest.obj
-    wlink d a op q, st=16k, case sys os2v2_pm file epmtest.obj lib epmlink.lib
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
-epmtest.obj : epmtest.c
-    $(comp386) $(c_opts) $^*
+inc_dirs = -I..
+
+extra_l_flags_os2 = initinstance terminstance pm
+extra_l_flags_os2 += op manyautodata
+extra_l_flags_os2 += op map
+
+all: epmlink.dll wedit.lib .SYMBOLIC
+
+epmlink.dll: epmlink.obj dll.lnk
+    $(linker) name $@ @$]@ file $[@
+
+wedit.dll: epmlink.obj dll.lnk
+    $(linker) name $@ @$]@ file $[@
+    
+wedit.lib: wedit.dll
+    $(librarian) $(libflags) +$<
+
+epmtest.exe : epmtest.obj wedit.lib
+    $(linker) d a op st=32k, case sys os2v2_pm file epmtest.obj lib wedit.lib
 
 epmspy.exe : epmspy.obj
-    wlink option quiet sys os2v2_pm file epmspy.obj
+    $(linker) sys os2v2_pm file epmspy.obj
+    
+dll.lnk : $(__MAKEFILES__)
+    @%write  $@ $(lflags)
+    @%append $@ option description 'Open Watcom Editor DLL for EPM'
 
-epmspy.obj : epmspy.c
-    $(comp386) $(c_opts) $^*

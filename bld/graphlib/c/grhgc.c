@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Setup for Hercules Graphics modes.
 *
 ****************************************************************************/
 
@@ -43,23 +42,6 @@
 #define HERC_HALF       0x0001      /* half configuration   */
 
 
-extern void pascal      _HercMoveUp();
-extern void pascal      _HercMoveDown();
-extern void pascal      _Move1Left();
-extern void pascal      _Move1Right();
-extern void pascal      _CoRep();
-extern void pascal      _CoXor();
-extern void pascal      _CoAnd();
-extern void pascal      _CoOr();
-extern void pascal      _Get1Dot();
-extern void pascal      _Pix1Zap();
-extern void pascal      _Pix1Fill();
-extern void pascal      _Pix1Copy();
-extern void pascal      _Pix1Read();
-extern void pascal      _CGAScanLeft();
-extern void pascal      _CGAScan1Right();
-
-
 /*  Table of values for CRT registers. Use 0x57 for the two 0x58 in the
     table to get 348 scan lines visible on the screen instead of 350.   */
 
@@ -70,11 +52,10 @@ static char             GTable[ 12 ] = {
 };
 
 
-static void GraphicsMode()
+static void GraphicsMode( void )
 /*========================
 
     Switch into Hercules graphics mode. */
-
 {
     short           i;
 
@@ -110,8 +91,8 @@ static short _HercInit( short mode )
     if( ( monitor >= MT_HERC && monitor <= MT_HERCINCL ) ||
         ( alternate >= MT_HERC && alternate <= MT_HERCINCL ) ) {
         GraphicsMode();
-        //         x,   y, col, bpp, pag, seg,      off,      siz, mis
-        _GrInit( 720, 350,   2,   1,   1, _MonoSeg, _MonoOff,   0, NO_BIOS );
+        //         x,   y, str, col, bpp, pag, seg,      off,      siz, mis
+        _GrInit( 720, 350,  90,   2,   1,   1, _MonoSeg, _MonoOff,   0, NO_BIOS );
         return( TRUE );
     } else {
         return( FALSE );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of stackavail() for 386 based platforms.
 *
 ****************************************************************************/
 
@@ -35,26 +34,29 @@
 #include "stacklow.h"
 
 #if defined(__OS2__)
-extern  unsigned GetThreadStack(void);
-#pragma aux GetThreadStack = "mov eax,fs:[4]" value [eax];
+extern  unsigned GetThreadStack( void );
+#pragma aux GetThreadStack = \
+    "mov eax,fs:[4]" \
+    value [eax];
 #endif
 
-_WCRTLINK unsigned stackavail()
-    {
-        #if defined(__OS2__)
-        #if 0
-            unsigned system_stacklow;
-            system_stacklow = GetThreadStack();
-            if( system_stacklow > _RWD_stacklow ) {
-                return( _SP() - system_stacklow );
-            } else {
-                _RWD_stacklow = system_stacklow;
-                return( _SP() - _RWD_stacklow );
-            }
-        #else
-            return( _SP() - GetThreadStack() );
-        #endif
-        #else
-            return( _SP() - _RWD_stacklow );
-        #endif
+_WCRTLINK unsigned stackavail( void )
+{
+#if defined(__OS2__)
+#if 0
+    unsigned    system_stacklow;
+
+    system_stacklow = GetThreadStack();
+    if( system_stacklow > _RWD_stacklow ) {
+        return( _SP() - system_stacklow );
+    } else {
+        _RWD_stacklow = system_stacklow;
+        return( _SP() - _RWD_stacklow );
     }
+#else
+    return( _SP() - GetThreadStack() );
+#endif
+#else
+    return( _SP() - _RWD_stacklow );
+#endif
+}

@@ -48,3 +48,11 @@ ERR_HAS_CLIENTS                 equ     0fff1h          ; -15
 NO_BLOCK                        equ     0
 BLOCK                           equ     1
 WGOD_VERSION                    equ     0666h
+
+Declare_Watcom_Debug_Virtual_Device macro Major_Ver, Minor_Ver, Ctrl_Proc, Device_Num, Init_Order, V86_Proc, PM_Proc, Reference_Data
+  VxD_LOCKED_DATA_SEG
+  PUBLIC WDEBUG_DDB
+  WDEBUG_DDB VxD_Desc_Block <,,Device_Num,Major_Ver,Minor_Ver,,"WDEBUG  ",Init_Order, OFFSET Ctrl_Proc, 0, 0,,, 0, 0, 0>
+  VxD_LOCKED_DATA_ENDS
+endm
+

@@ -71,6 +71,7 @@ coff_file_handle COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file )
     coff_file_hnd->file = file;
     coff_file_hnd->sec_name_hash_table = NULL;
     coff_file_hnd->symbol_handles = NULL;
+    coff_file_hnd->implib_data = NULL;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );
     if( return_val != ORL_OKAY ) {

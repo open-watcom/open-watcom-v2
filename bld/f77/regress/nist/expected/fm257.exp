@@ -1,0 +1,18 @@
+1
+           FORTRAN COMPILER VALIDATION SYSTEM
+                      VERSION 2.1
+ 
+         FOR OFFICIAL USE ONLY - COPYRIGHT 1978
+ 
+                   SUBSET LEVEL TEST
+                         FM257
+ 
+      TEST     PASS/FAIL     COMPUTED        CORRECT
+      ----------------------------------------------
+ 
+         1       PASS
+0         2       PASS
+00000         3       PASS
+19283         4       PASS
+9999         5       PASS
+P ASS

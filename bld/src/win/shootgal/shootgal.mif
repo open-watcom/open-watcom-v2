@@ -1,7 +1,7 @@
 name = shootgal
 LNK = $(name).lnk
 OBJS = shootgal.obj
-CFLAGS += -i=..\..
+CFLAGS += -I"../.."
 resources = bolt.ico timer.ico gun.cur keyboard.ico mouse.ico &
             scroll.ico shootgal.ico target.bmp
-lnk_dependencies = makefile ..\shootgal.mif ..\..\master.mif
+lnk_dependencies = makefile ../shootgal.mif ../../master.mif

@@ -5,18 +5,21 @@
  */
 #ifndef _PROCESS_H_INCLUDED
 #define _PROCESS_H_INCLUDED
+
 :include readonly.sp
+
+:include owrtlink.sp
+
+:segment DOS
+:include lfndos.sp
+
+:endsegment
+:segment QNX | LINUX
+:include systypes.sp
+
+:endsegment
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
-:segment QNX
-#ifndef __TYPES_H_INCLUDED
- #include <sys/types.h>
-#endif
-:endsegment
 :include wchar_t.sp
 
 /*
@@ -26,12 +29,16 @@ _WCRTLINK extern int execl( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int execle( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int execlp( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int execv( const char *__path, const char *const __argv[] );
-_WCRTLINK extern int execve( const char *__path, const char *const __argv[],
-                            const char *const __envp[] );
+_WCRTLINK extern int execve( const char *__path, const char *const __argv[], const char *const __envp[] );
 _WCRTLINK extern int execvp( const char *__file, const char *const __argv[] );
 
+:segment QNX | LINUX
+:include ext.sp
+::
+:: Begin of extension section
+::
+:endsegment
 :segment QNX
-#if defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
 
 /*
  *  Spawn flags passed to qnx_spawn()
@@ -63,7 +70,7 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
 :endsegment
 
 /* mode flags for spawnxxx routines */
-_WCRTLINK extern int __p_overlay;
+_WCRTDATA extern int __p_overlay;
 
 #define P_WAIT      0
 #define P_NOWAIT    1
@@ -78,47 +85,55 @@ _WCRTLINK extern int execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int execvpe( const char *__file, const char *const __argv[],
                               const char *const __envp[] );
 
-:: extra 'register' is used to prevent C++ compiler from entering a parser
-:: disambiguation stage (i.e., it has a use, so don't delete it) AFS
-:segment QNX
+:segment QNX | LINUX
 #if defined(__386__)
-_WCRTLINK extern int  _beginthread( register void (*__start_address)(void *),
-   void *__stack_bottom, unsigned __stack_size, void *__arglist );
-#pragma intrinsic(_beginthread);
-_WCRTLINK extern void _endthread();
+ _WCRTLINK extern int  _beginthread( void (*__start_address)(void *),
+     void *__stack_bottom, unsigned __stack_size, void *__arglist );
+ #pragma intrinsic(_beginthread);
+ _WCRTLINK extern void _endthread( void );
 :elsesegment
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-#if defined(__NT__)
-_WCRTLINK extern unsigned long _beginthread(
-                register void (*__start_address)(void *),
-                unsigned __stack_size, void *__arglist );
-_WCRTLINK extern unsigned long _beginthreadex( void *__security,
-                unsigned __stack_size,
-                register unsigned (__stdcall *__start_address)(void *),
-                void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
-#pragma intrinsic(_beginthread,_beginthreadex);
-_WCRTLINK extern void _endthreadex( unsigned __retval );
-_WCRTLINK extern unsigned long __threadhandle( void );
-#else
-_WCRTLINK extern int  _beginthread( register void (*__start_address)(void *),
-   void *__stack_bottom, unsigned __stack_size, void *__arglist );
-#pragma intrinsic(_beginthread);
-#endif
-_WCRTLINK extern void _endthread();
-#else
-_WCRTLINK extern int _WCFAR  _beginthread(
-    register void (_WCFAR *__start_address)(void _WCFAR *),
+#if defined(_M_I86)
+ _WCRTLINK extern int _WCFAR  _beginthread(
+    void (_WCFAR *__start_address)(void _WCFAR *),
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
-#pragma intrinsic(_beginthread);
-_WCRTLINK extern void _WCFAR _endthread();
-#ifndef __SW_ZU
+ #pragma intrinsic(_beginthread);
+ _WCRTLINK extern void _WCFAR _endthread( void );
+ #ifndef __SW_ZU
   _WCRTLINK void _WCFAR *__chkstack( void _WCFAR * );
   #define _beginthread( __sa, __sb, __ss, __al ) \
           _beginthread( __sa, __chkstack(__sb), __ss, __al )
-#endif
+ #endif
+#else
+ #if defined(__NT__)
+  _WCRTLINK extern unsigned long _beginthread(
+                void (*__start_address)(void *),
+                unsigned __stack_size, void *__arglist );
+  _WCRTLINK extern unsigned long _beginthreadex( void *__security,
+                unsigned __stack_size,
+                unsigned (__stdcall *__start_address)(void *),
+                void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
+  #pragma intrinsic(_beginthread,_beginthreadex);
+  _WCRTLINK extern void _endthreadex( unsigned __retval );
+  _WCRTLINK extern unsigned long __threadhandle( void );
+ #elif defined(__RDOS__)
+  _WCRTLINK extern int _beginthread(
+                void (*__start_address)(void *),
+                const char *thread_name,
+                unsigned __stack_size, void *__arglist );
+ #elif defined(__RDOSDEV__)
+  _WCRTLINK extern int _beginthread(
+                void (*__start_address)(void *), int prio,
+                const char *thread_name,
+                unsigned __stack_size, void *__arglist );
+ #else
+  _WCRTLINK extern int _beginthread( void (*__start_address)(void *),
+      void *__stack_bottom, unsigned __stack_size, void *__arglist );
+  #pragma intrinsic(_beginthread);
+ #endif
+ _WCRTLINK extern void _endthread( void );
 :endsegment
 #endif
-:segment !QNX
+:segment DOS | LINUX
 
 /* values for __action_code used with cwait() */
 
@@ -130,19 +145,36 @@ _WCRTLINK extern int   cwait( int *__status, int __process_id,
 _WCRTLINK extern int   _cwait( int *__status, int __process_id,
                              int __action_code );
 :endsegment
+
+:: These functions from the standard library need to be in namspace std
+:: in C++ to avoid conflicts on using declarations if standard headers
+:: are also included.
+#ifdef __cplusplus
+namespace std {
+#endif
 _WCRTLINK extern void  abort( void );
 _WCRTLINK extern void  exit( int __status );
+_WCRTLINK extern char  *getenv( const char *__name );
+_WCRTLINK extern int   system( const char *__cmd );
+#ifdef __cplusplus
+}
+using std::abort;
+using std::exit;
+using std::getenv;
+using std::system;
+#endif
+
 _WCRTLINK extern void  _exit( int __status );
-:segment QNX
+
+:segment QNX | LINUX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
-_WCRTLINK extern char *getcmd( char *__buffer );
+_WCRTLINK extern char  *getcmd( char *__buffer );
 _WCRTLINK extern int   _bgetcmd( char *__buffer, int __len );
-_WCRTLINK extern char *_cmdname( char *__name );
-:segment QNX
+_WCRTLINK extern char  *_cmdname( char *__name );
+:segment QNX | LINUX
 #endif
 :endsegment
-_WCRTLINK extern char *getenv( const char *__name );
 _WCRTLINK extern int   putenv( const char *__string );
 _WCRTLINK extern int   spawnl( int __mode, const char *__path,
                               const char *__arg0, ... );
@@ -162,13 +194,12 @@ _WCRTLINK extern int   spawnvp( int __mode, const char *__path,
 _WCRTLINK extern int   spawnvpe( int __mode, const char *__path,
                                 const char * const *__argv,
                                 const char * const *__envp );
-_WCRTLINK extern int   system( const char *__cmd );
 
-_WCRTLINK extern wchar_t *  _wgetenv( const wchar_t *__name );
-_WCRTLINK extern int        _wsetenv( const wchar_t *__name,
+_WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
+_WCRTLINK extern int    _wsetenv( const wchar_t *__name,
                                       const wchar_t *__newvalue,
                                       int __overwrite );
-_WCRTLINK extern int        _wputenv( const wchar_t *__env_string );
+_WCRTLINK extern int    _wputenv( const wchar_t *__env_string );
 
 _WCRTLINK extern int    _wexecl( const wchar_t *__path, const wchar_t *__arg0, ... );
 _WCRTLINK extern int    _wexecle( const wchar_t *__path, const wchar_t *__arg0, ... );
@@ -206,21 +237,27 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
  // this function pointer will be called after the C library startup
  // and before the C++ library startup.
  #if defined(_WINDOWS_)
-  extern BOOL (WINAPI *_pRawDllMain)( HANDLE, DWORD, LPVOID );
+  extern BOOL (WINAPI   *_pRawDllMain)( HANDLE, DWORD, LPVOID );
  #else
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
  #endif
 #endif
-_WCRTLINK extern int getpid( void );
-_WCRTLINK extern int wait( int *__status );
-:elsesegment QNX
-extern pid_t getpid( void );
-extern pid_t wait( int *__status );
+_WCRTLINK extern int    getpid( void );
+_WCRTLINK extern int    _getpid( void );
+_WCRTLINK extern int    wait( int *__status );
+:endsegment
+:segment QNX | LINUX
+_WCRTLINK extern pid_t  getpid( void );
+_WCRTLINK extern pid_t  wait( int *__status );
 :endsegment
 
-:segment QNX
-#endif
-:endsegment
+:segment QNX | LINUX
+::
+:: End of extension section
+::
+:include extepi.sp
 
+:endsegment
 :include cplusepi.sp
+
 #endif

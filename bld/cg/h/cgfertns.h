@@ -24,17 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for front end callbacks.
 *
 ****************************************************************************/
 
 
 CGCALLBACKDEF( FESegID,         segment_id,     (sym_handle) )
 CGCALLBACKDEF( FEBack,          back_handle,    (sym_handle) )
-CGCALLBACKDEF( FEAttr,          int,            (sym_handle) )
+CGCALLBACKDEF( FEAttr,          fe_attr,        (sym_handle) )
 CGCALLBACKDEF( FEAuxInfo,       pointer,        (pointer,int) )
-CGCALLBACKDEF( FEName,          char_ptr,       (pointer) )
+CGCALLBACKDEF( FEName,          char_ptr,       (sym_handle) )
 CGCALLBACKDEF( FEModuleName,    char_ptr,       (void) )
 CGCALLBACKDEF( FEMessage,       void,           (int,pointer) )
 CGCALLBACKDEF( FEMoreMem,       int,            (int) )
@@ -45,5 +44,5 @@ CGCALLBACKDEF( FEDbgType,       dbg_type,       (sym_handle) )
 CGCALLBACKDEF( FEDbgRetType,    dbg_type,       (sym_handle) )
 CGCALLBACKDEF( FEStackChk,      int,            (sym_handle) )
 CGCALLBACKDEF( FEGetEnv,        char_ptr,       (const char *) )
-CGCALLBACKDEF( FEExtName,       char_ptr,       (sym_handle,char**) )
-CGCALLBACKDEF( FEParmType,      int,            (sym_handle,sym_handle,int) )
+CGCALLBACKDEF( FEExtName,       char_ptr,       (sym_handle,int) )
+CGCALLBACKDEF( FEParmType,      cg_type,        (sym_handle,sym_handle,cg_type) )

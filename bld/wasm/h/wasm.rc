@@ -9,7 +9,8 @@ BEGIN
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
 
 #include "../h/asmshare.msg"
-#if defined( _WASM_ )
+#if defined( _STANDALONE_ )
+    #include "../h/womp.msg"
     #include "../h/wasm.msg"
 #endif
 
@@ -18,11 +19,10 @@ BEGIN
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
 
 #include "../h/asmshare.msg"
-#if defined( _WASM_ )
+#if defined( _STANDALONE_ )
+    #include "../h/womp.msg"
     #include "../h/wasm.msg"
-#endif
 
-#if defined( _WASM_ )
     #include "usage.rc"
     #include "usagej.rc"
 #endif

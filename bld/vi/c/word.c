@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 
 static char     *wordList;
@@ -44,6 +41,7 @@ static bool     noWrap;
 void InitWordSearch( char *regword )
 {
     wordList = regword;
+
 } /* InitWordSearch */
 
 /*
@@ -54,19 +52,19 @@ static char *ptrFromMark( i_mark *curr )
 {
     line        *line;
     fcb         *fcb;
-    int         rc;
+    vi_rc       rc;
     char        *ptr;
 
     ptr = NULL;
     rc = CGimmeLinePtr( curr->line, &fcb, &line );
     if( rc == ERR_NO_ERR ) {
         if( curr->column > 0 && curr->column <= line->len ) {
-            ptr = &line->data[ curr->column - 1 ];
+            ptr = &line->data[curr->column - 1];
         } else if( !EditFlags.WordWrap ) {
             if( curr->column == 0 ) {
-                ptr = &line->data[ curr->column ];
+                ptr = &line->data[curr->column];
             } else {
-                ptr = &line->data[ line->len-1 ];
+                ptr = &line->data[line->len - 1];
             }
             noWrap = TRUE;
         }
@@ -121,7 +119,6 @@ static char *decrementMark( i_mark *mark )
 
 static char *nextLine( i_mark *mark )
 {
-
     do {
         mark->line += 1;
         mark->column = 1;
@@ -182,7 +179,7 @@ static char *eatSpace( i_mark *mark, bool reverse )
  * the result mark, or ERR_NOT_THAT_MANY_WORDS if there are no more logical
  * words in the file. Note that this will span lines.
  */
-int MarkStartOfNextWordForward( i_mark *result, i_mark *curr, bool big )
+vi_rc MarkStartOfNextWordForward( i_mark *result, i_mark *curr, bool big )
 {
     char        *s;
     btype       block_type;
@@ -224,7 +221,7 @@ int MarkStartOfNextWordForward( i_mark *result, i_mark *curr, bool big )
  * MarkEndOfNextWordForward - find a pointer to the end of the next
  *                            word (in the forwards direction)
  */
-int MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
+vi_rc MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
 {
     char        *s;
     btype       block_type;
@@ -239,7 +236,7 @@ int MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
             return( ERR_NO_ERR );
         }
         block_type = charType( *s, big );
-        block_type2 = charType( *(s+1), big );
+        block_type2 = charType( *(s + 1), big );
         if( block_type == BLOCK_ENDOFLINE ||
             block_type != block_type2 ) {
             return( ERR_NO_ERR );
@@ -261,7 +258,7 @@ int MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
         return( ERR_NOT_THAT_MANY_WORDS );
     }
     block_type = charType( *s, big );
-    while( charType( *(s+1), big ) == block_type ) {
+    while( charType( *(s + 1), big ) == block_type ) {
         s = incrementMark( result );
         if( s == NULL ) {
             break;
@@ -275,7 +272,7 @@ int MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
  * MarkEndOfNextWordForward - find a pointer to the start of the next
  *                            word (in the backwards direction)
  */
-int MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
+vi_rc MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
 {
     char        *s;
     btype       block_type;
@@ -304,7 +301,7 @@ int MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
      */
     if( result->column > 1 ) {
         block_type = charType( *s, big );
-        while( charType( *(s-1), big ) == block_type ) {
+        while( charType( *(s - 1), big ) == block_type ) {
             s = decrementMark( result );
             if( s == NULL || result->column == 1 ) {
                 break;
@@ -318,26 +315,27 @@ int MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
 /*
  * GimmeCurrentWord - fetch word at cursor position
  */
-int GimmeCurrentWord( char *buffer, int buffer_size, bool big )
+vi_rc GimmeCurrentWord( char *buffer, int buffer_size, bool big )
 {
     i_mark      curr, end, start;
-    int         i, j, rc;
+    int         i, j;
     line        *line;
     fcb         *fcb;
+    vi_rc       rc;
 
-    curr.line = CurrentLineNumber;
-    curr.column = CurrentColumn;
+    curr = CurrentPos;
     start = curr;
     rc = MarkEndOfNextWordForward( &end, &curr, big );
     if( rc == ERR_NO_ERR ) {
         rc = CGimmeLinePtr( end.line, &fcb, &line );
         if( rc == ERR_NO_ERR ) {
-            i = start.column - 1; j = 0;
+            i = start.column - 1;
+            j = 0;
             buffer_size -= 1;
             while( i < end.column && j < buffer_size ) {
-                buffer[ j++ ] = line->data[ i++ ];
+                buffer[j++] = line->data[i++];
             }
-            buffer[ j ] = 0;
+            buffer[j] = 0;
         }
     }
     return( rc );
@@ -347,17 +345,17 @@ int GimmeCurrentWord( char *buffer, int buffer_size, bool big )
 /*
  * GimmeCurrentEntireWordDim - fetch forward & backward to get the entire word
  */
-int GimmeCurrentEntireWordDim( int *sc, int *ec, bool big )
+vi_rc GimmeCurrentEntireWordDim( int *sc, int *ec, bool big )
 {
     i_mark      curr, start, end;
     char        *s;
-    int         rc, last_col;
+    int         last_col;
     btype       block_type;
+    vi_rc       rc;
 
     noWrap = FALSE;
     rc = ERR_NO_WORD_TO_FIND;
-    curr.line = CurrentLineNumber;
-    curr.column = CurrentColumn;
+    curr = CurrentPos;
     s = ptrFromMark( &curr );
     if( s == NULL ) {
         return( rc );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 and Windows command processing function prototypes.
 *
 ****************************************************************************/
 
@@ -47,6 +46,7 @@ extern bool     ProcInternalRelocs( void );
 extern bool     ProcToggleRelocsFlag( void );
 extern bool     ProcNoStdCall( void );
 extern bool     ProcResource( void );
+extern bool     ProcMixed1632( void );
 
 extern bool     ProcRunNative( void );
 extern bool     ProcRunWindows( void );
@@ -62,6 +62,7 @@ extern bool     ProcOS2DLL( void );
 extern bool     ProcLE( void );
 extern bool     ProcLX( void );
 extern bool     ProcPE( void );
+extern bool     ProcVXD( void );
 extern bool     ProcOldPE( void );
 
 extern bool     ProcPM( void );
@@ -74,6 +75,10 @@ extern bool     ProcMemory( void );
 extern bool     ProcFont( void );
 
 extern bool     ProcTNT( void );
+extern bool     ProcRDOS( void );
+
+extern bool     ProcDynamicDriver( void );
+extern bool     ProcStaticDriver( void );
 
 extern bool     ProcInitGlobal( void );
 extern bool     ProcInitInstance( void );
@@ -107,6 +112,7 @@ extern bool     ProcNonConforming( void );
 extern bool     ProcMovable( void );
 extern bool     ProcFixed( void );
 extern bool     ProcDiscardable( void );
+extern bool     ProcNonDiscardable( void );
 extern bool     ProcInvalid( void );
 extern bool     ProcContiguous( void );
 extern bool     ProcResident( void );
@@ -129,3 +135,10 @@ extern bool     ProcPENoRelocs( void );
 extern void     ChkBase( offset align );
 extern void     SetOS2Fmt( void );
 extern void     FreeOS2Fmt( void );
+
+/*
+//  These are PE only
+*/
+extern bool     ProcLinkVersion( void );
+extern bool     ProcOsVersion( void );
+extern bool     ProcChecksum( void );

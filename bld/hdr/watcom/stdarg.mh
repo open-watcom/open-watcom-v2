@@ -1,27 +1,56 @@
-/*
- *  stdarg.h    Variable argument macros
- *              definitions for use with variable argument lists
+/***************************************************************************
+ * FILE: stdarg.h/cstdarg (Macros for use with variable argument lists)
  *
 :include crwat.sp
- */
+ *
+ * Description: This header is part of the C/C++ standard library. It
+ *              contains macros for use in variable length argument
+ *              lists.
+ ***************************************************************************/
+:segment CNAME
+#ifndef _CSTDARG_INCLUDED
+#define _CSTDARG_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _STDARG_H_INCLUDED
 #define _STDARG_H_INCLUDED
+
 :include readonly.sp
+
+:: The following segment only appears in stdarg.h.
+#ifdef __cplusplus
+
+#include <cstdarg>
+
+using std::va_list;
+
+#else /* __cplusplus not defined */
+:endsegment
+
+:include owrtlink.sp
+
+:segment CNAME
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
+:endsegment
 :include valist.sp
-typedef __va_list va_list;
 
-:segment !QNX
+:segment CNAME
+namespace std {
+  typedef __va_list va_list;
+}
+:elsesegment
+typedef __va_list va_list;
+:endsegment
+
 #if defined(__AXP__)
  #define _AXP_WORD_SIZE     8
  #define _AXP_FLOAT_SIZE    8
  #define _AXP_FLOAT_REGS    6
- extern void *__builtin_va_start(va_list*, ...);
+ extern void *__builtin_va_start(__va_list*, ...);
  #pragma intrinsic(__builtin_va_start);
  #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
  #define va_arg(ap,type) ((ap).__offset+=\
@@ -37,17 +66,26 @@ typedef __va_list va_list;
   #define _INTSIZEOF(n)   ( (sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
   #define       _ALIGNIT(ap,t) \
         ((((int)(ap))+(sizeof(t)<8?3:7)) & (sizeof(t)<8?~3:~7))
-  #define va_start(ap,v)  ( ap = (va_list)&v + _INTSIZEOF(v) )
+  #define va_start(ap,v)  ( ap = (__va_list)&v + _INTSIZEOF(v) )
   #define va_arg(ap,t)    ( *(t *)((ap = (char *) (_ALIGNIT(ap, t) + _INTSIZEOF(t))) - _INTSIZEOF(t)) )
-  #define va_end(ap)      ( ap = (va_list)0 )
+  #define va_end(ap)      ( ap = (__va_list)0 )
  #else
-  extern void *__builtin_va_start( va_list * );
+  extern void *__builtin_va_start( __va_list * );
   #pragma intrinsic(__builtin_va_start);
   #define va_start(ap,pn) (__builtin_va_start(&ap,pn))
   #define va_arg(ap,type) (__builtin_va_arg(&ap,type))
  #endif
+#elif defined(__MIPS__)
+ #define _MIPS_WORD_SIZE     4
+ extern void *__builtin_va_start(__va_list*, ...);
+ #pragma intrinsic(__builtin_va_start);
+ #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
+ #define va_arg(ap,type) ((ap).__offset+=\
+     ((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1)),\
+     (*(type *)((ap).__base+(ap).__offset-\
+       (((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1))))))
+ #define va_end(ap)      ((void)0)
 #else
-:endsegment
  #if defined(__HUGE__) || defined(__SW_ZU)
   #define va_start(ap,pn) ((ap)[0]=(char _WCFAR*)&pn+\
       ((sizeof(pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
@@ -63,9 +101,24 @@ typedef __va_list va_list;
       (*(type *)((ap)[0]-((sizeof(type)+sizeof(int)-1)&~(sizeof(int)-1)))))
   #define va_end(ap)        ((ap)[0]=0,(void)0)
  #endif
-:segment !QNX
 #endif
+
+:: define __va_copy even if -za is used
+#if defined(__PPC__) || defined(__AXP__)
+ #define __va_copy(dest,src) ((dest)=(src),(void)0)
+#else
+ #define __va_copy(dest,src) ((dest)[0]=(src)[0],(void)0)
+#endif
+
+:: Extensions section (C99 va_copy definition)
+:include ext.sp
+#define va_copy(dest,src) __va_copy(dest,src)
+:include extepi.sp
+
+:segment CNAME
+:include cplusepi.sp
+:elsesegment
+#endif /* __cplusplus not defined */
 :endsegment
 
-:include cplusepi.sp
 #endif

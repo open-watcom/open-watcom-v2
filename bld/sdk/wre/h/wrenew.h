@@ -38,7 +38,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define DEF_MEMFLAGS ( MEMFLAG_MOVEABLE | MEMFLAG_PURE )
+#define DEF_MEMFLAGS (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -47,8 +47,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRENewResource ( WRECurrentResInfo *, WResID *, WResID *, uint_16,
-                             uint_32, uint_32, WResLangType *, int *, uint_16,
-                             Bool );
+extern Bool WRENewResource( WRECurrentResInfo *, WResID *, WResID *, uint_16, uint_32, uint_32, WResLangType *, int *, uint_16, Bool );
 
 #endif

@@ -35,12 +35,12 @@ BEGIN
                     "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 133, 140, 91, 10
     CONTROL         "Close rotates forwards", SETGEN_QUITMOVESFORWARD,
                     "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 133, 152, 85, 10
-    GROUPBOX        "VI Emulation", 116, 4, 94, 118, 41
+    GROUPBOX        "VI Emulation", 116, 4, 94, 118, 32
     GROUPBOX        "Filenames/Paths", 120, 128, 61, 118, 43
     LTEXT           "Temp Directory:", 121, 133, 73, 53, 8
     LTEXT           "History Filename:", 122, 133, 88, 57, 8
     GROUPBOX        "Features", 128, 4, 3, 118, 89
-    GROUPBOX        "Searching", 140, 4, 128, 119, 37
+    GROUPBOX        "Searching", 140, 4, 128, 118, 37
     GROUPBOX        "", 102, 252, 0, 1, 170
     PUSHBUTTON      "OK", IDOK, 259, 15, 40, 14, WS_GROUP
     PUSHBUTTON      "Cancel", IDCANCEL, 259, 33, 40, 14

@@ -24,30 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expression tree walker.
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
+
+
 unsigned        NodeTimeStamp;
 
 
 int WalkExprTree( TREEPTR p,
-               void (*operand)(TREEPTR),
-               void (*prefix_operator)(TREEPTR),
-               void (*infix_operator)(TREEPTR),
-               void (*postfix_operator)(TREEPTR) )
+                void (*operand)( TREEPTR ),
+                void (*prefix_operator)( TREEPTR ),
+                void (*infix_operator)( TREEPTR ),
+                void (*postfix_operator)( TREEPTR ) )
 {
     TREEPTR     parent;
     TREEPTR     temp;
 
     NodeTimeStamp = 0;
     parent = NULL;
-    for(;;) {
-        for(;;) {
-            if( p->left == 0 && p->right == 0 )  break;
+    for( ;; ) {
+        for( ;; ) {
+            if( p->left == 0 && p->right == 0 ) break;
             ++NodeTimeStamp;
             (*prefix_operator)( p );
             if( p->left == 0 ) break;
@@ -65,10 +66,10 @@ int WalkExprTree( TREEPTR p,
             (*operand)( p );
             goto move_up_to_parent;
         }
-        for(;;) {
+        for( ;; ) {
             ++NodeTimeStamp;
             (*infix_operator)( p );     /* - perform infix operation */
-            if( p->right != NULL ) {       /* - if present */
+            if( p->right != NULL ) {    /* - if present */
                 temp = p;
                 p = p->right;           /* - - get right */
                 temp->right = parent;
@@ -78,7 +79,8 @@ int WalkExprTree( TREEPTR p,
 do_postfix_call:
             ++NodeTimeStamp;
             (*postfix_operator)( p );   /* perform postfix operation */
-            if( parent == NULL )  return(0);/* quit if at root node */
+            if( parent == NULL )        /* quit if at root node */
+                return( 0 );
 move_up_to_parent:
             if( parent->visit ) {
                 parent->visit = FALSE;
@@ -102,4 +104,3 @@ void NoOp( TREEPTR node )
 {
     node;
 }
-

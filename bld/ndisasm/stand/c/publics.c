@@ -46,9 +46,9 @@
 extern hash_table       HandleToSectionTable;
 extern publics_struct   Publics;
 
-static int alpha_compare( const label_entry *entry1, const label_entry *entry2 )
+static int alpha_compare( const void *entry1, const void *entry2 )
 {
-    return( stricmp( (*entry1)->label.name, (*entry2)->label.name ) );
+    return( stricmp( (*(label_entry *)entry1)->label.name, (*(label_entry *)entry2)->label.name ) );
 }
 
 void CreatePublicsArray( void )
@@ -57,24 +57,26 @@ void CreatePublicsArray( void )
     label_entry         entry;
     int                 index = 0;
 
-    Publics.public_symbols = (label_entry *) MemAlloc( sizeof( label_entry ) * Publics.number );
-    ptr = Publics.label_lists;
-    while( ptr ) {
-        entry = ptr->list->first;
-        while( entry ) {
-            while( entry && ( entry->type == LTYP_SECTION ||
-                        entry->binding == ORL_SYM_BINDING_LOCAL ) ) {
+    if( Publics.number ) {
+        Publics.public_symbols = (label_entry *) MemAlloc( sizeof( label_entry ) * Publics.number );
+        ptr = Publics.label_lists;
+        while( ptr ) {
+            entry = ptr->list->first;
+            while( entry ) {
+                while( entry && ( entry->type == LTYP_SECTION ||
+                            entry->binding == ORL_SYM_BINDING_LOCAL ) ) {
+                    entry = entry->next;
+                }
+                if( !entry ) break;
+                Publics.public_symbols[index] = entry;
+                index++;
                 entry = entry->next;
             }
-            if( !entry ) break;
-            Publics.public_symbols[index] = entry;
-            index++;
-            entry = entry->next;
+            ptr = ptr->next;
         }
-        ptr = ptr->next;
+        // now sort!
+        qsort( Publics.public_symbols, Publics.number, sizeof( label_entry * ), alpha_compare );
     }
-    // now sort!
-    qsort( Publics.public_symbols, Publics.number, sizeof( label_entry * ), alpha_compare );
 }
 
 void PrintPublics( void ) {

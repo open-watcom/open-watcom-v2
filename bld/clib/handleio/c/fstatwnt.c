@@ -24,28 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 implementation of fstat().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include "int64.h"
-#include "widechar.h"
 #include <windows.h>
-/* gross hack for building 11.0 libraries with 10.6 compiler */
-#ifndef __WATCOM_INT64__
-    #include <limits.h>         /* a gross hack to make a gross hack work */
-    #define __WATCOM_INT64__
-    #define __int64             double
-#endif
-/* most includes should go after this line */
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <direct.h>
 #include "defwin.h"
@@ -54,8 +45,8 @@
 #include "ntex.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "d2ttime.h"
 
-extern time_t _d2ttime();
 
 /*
     DWORD GetFileSize(
@@ -64,18 +55,10 @@ extern time_t _d2ttime();
     );
  */
 
-#ifdef __WIDECHAR__
- #ifdef __INT64__
-  _WCRTLINK int _wfstati64( int hid, struct _wstati64 *buf )
- #else
-  _WCRTLINK int _wfstat( int hid, struct _wstat *buf )
- #endif
+#ifdef __INT64__
+ _WCRTLINK int _fstati64( int hid, struct _stati64 *buf )
 #else
- #ifdef __INT64__
-  _WCRTLINK int _fstati64( int hid, struct _stati64 *buf )
- #else
-  _WCRTLINK int fstat( int hid, struct stat *buf )
- #endif
+ _WCRTLINK int fstat( int hid, struct stat *buf )
 #endif
 {
     DWORD                       size;
@@ -100,13 +83,14 @@ extern time_t _d2ttime();
     _AccessFileH( hid );
 
     buf->st_mode = 0;                           /* 12-apr-94 */
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsIsWindowedHandle != 0 ) {
-            if( _WindowsIsWindowedHandle( hid ) != 0 ) {
-                buf->st_mode |= S_IFCHR;        /* it's a console */
-            }
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsIsWindowedHandle != 0 ) {
+        if( _WindowsIsWindowedHandle( hid ) != 0 ) {
+            buf->st_mode |= S_IFCHR;        /* it's a console */
         }
-    #endif
+    }
+#endif
+    __ChkTTYIOMode( hid );
     iomode_flags = __GetIOMode( hid );
     if( iomode_flags & _READ ) {
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
@@ -124,17 +108,17 @@ extern time_t _d2ttime();
             don't want to call GetFileSize()
          */
         (ftype == FILE_TYPE_UNKNOWN) ) {
-        #ifdef __INT64__
-            _clib_U32ToU64( 0L, tmp );
-            buf->st_size = GET_REALINT64(tmp);
-        #else
-            buf->st_size = 0;
-        #endif
+#ifdef __INT64__
+        _clib_U32ToU64( 0L, tmp );
+        buf->st_size = GET_REALINT64(tmp);
+#else
+        buf->st_size = 0;
+#endif
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_attr = 0;
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
         if( ftype == FILE_TYPE_PIPE ) {
-            buf->st_mode |= S_IFFIFO;
+            buf->st_mode |= S_IFIFO;
         } else if( ftype == FILE_TYPE_CHAR ) {
             buf->st_mode |= S_IFCHR;
         }
@@ -155,12 +139,12 @@ extern time_t _d2ttime();
 
         /*** Get the file size ***/
         if( buf->st_mode & S_IFDIR ) {
-            #ifdef __INT64__
-                _clib_U32ToU64( 0L, tmp );
-                buf->st_size = GET_REALINT64(tmp);
-            #else
-                buf->st_size = 0;
-            #endif
+#ifdef __INT64__
+            _clib_U32ToU64( 0L, tmp );
+            buf->st_size = GET_REALINT64(tmp);
+#else
+            buf->st_size = 0;
+#endif
         } else {
             size = GetFileSize( h, __I64NAME(NULL,&highorder) );
 #ifdef __INT64__
@@ -225,6 +209,5 @@ extern time_t _d2ttime();
     buf->st_updatedID = 0;
     buf->st_inheritedRightsMask = 0;
     buf->st_originatingNameSpace = 0;
-    buf->st_name[0] = '\0';
     return( 0 );
 }

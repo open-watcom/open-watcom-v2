@@ -190,15 +190,15 @@ bool GUIClearList( gui_window *wnd, unsigned id )
  * GUISetText - Set the text of the given control to the given text
  */
 
-bool GUISetText( gui_window *wnd, unsigned control, char *text )
+bool GUISetText( gui_window *wnd, unsigned control, const char *text )
 {
-    char        *new_text;
-    gui_control_class   class;
+    char                *new_text;
+    gui_control_class   control_class;
 
-    if( !GUIGetControlClass( wnd, control, &class ) ) {
+    if( !GUIGetControlClass( wnd, control, &control_class ) ) {
         return( FALSE );
     }
-    if( class != GUI_EDIT ) {
+    if( control_class != GUI_EDIT ) {
         new_text = _wpi_menutext2pm( text );
         _wpi_setdlgitemtext( wnd->hwnd, control, new_text );
         if( new_text ) {
@@ -218,14 +218,14 @@ char *GUIGetText( gui_window *wnd, unsigned control )
 {
     LONG                length;
     char                *text;
-    gui_control_class   class;
+    gui_control_class   control_class;
     HWND                hwnd;
     int                 choice;
 
-    if( !GUIGetControlClass( wnd, control, &class ) ) {
+    if( !GUIGetControlClass( wnd, control, &control_class ) ) {
         return( NULL );
     }
-    switch( class ) {
+    switch( control_class ) {
     case GUI_LISTBOX :
         choice = GUIGetCurrSelect( wnd, control );
         if( choice == NO_SELECT ) {
@@ -239,17 +239,18 @@ char *GUIGetText( gui_window *wnd, unsigned control )
         }
         length = _wpi_getwindowtextlength( hwnd );
         if( length > 0 ) {
-            text = (char *)GUIAlloc( length + 1 );
+            text = (char *)GUIMemAlloc( length + 1 );
             if( text != NULL ) {
                 _wpi_getwindowtext( hwnd, (LPSTR)text, length + 1 );
-                switch( class ) {
-                    case GUI_PUSH_BUTTON:
-                    case GUI_DEFPUSH_BUTTON:
-                    case GUI_RADIO_BUTTON:
-                    case GUI_CHECK_BOX:
-                    case GUI_STATIC:
-                    case GUI_GROUPBOX:
-                        _wpi_menutext2win( text );
+                switch( control_class ) {
+                case GUI_PUSH_BUTTON:
+                case GUI_DEFPUSH_BUTTON:
+                case GUI_RADIO_BUTTON:
+                case GUI_CHECK_BOX:
+                case GUI_STATIC:
+                case GUI_GROUPBOX:
+                    _wpi_menutext2win( text );
+                    break;
                 }
             }
             return( text );
@@ -265,7 +266,7 @@ char *GUIGetText( gui_window *wnd, unsigned control )
 
 int GUIGetCurrSelect( gui_window *wnd, unsigned id )
 {
-    int               sel;
+    int             sel;
 
     sel = (int) GUIToComboList( wnd, id, LB_GETCURSEL, CB_GETCURSEL,
                                 (WPI_PARAM1)NULL, (WPI_PARAM2)NULL,
@@ -304,7 +305,7 @@ char *GUIGetListItem( gui_window *wnd, unsigned id, int choice )
                                    (WPI_PARAM1)choice,
                                    (WPI_PARAM2)NULL, (WPI_MRESULT)NULL );
     if( length > 0 ) {
-        text = (char *)GUIAlloc( length + 1 );
+        text = (char *)GUIMemAlloc( length + 1 );
 #ifdef __OS2_PM__
             p1 = MPFROM2SHORT(choice, length+1 );
 #else

@@ -30,71 +30,29 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h>
-
 #include "asmglob.h"
-#include "asmops1.h"//
-#include "asmops2.h"
-#include "asmopnds.h"
-#include "asmins1.h"
-#include "asmerr.h"
-#include "asmsym.h"
-#include "asmalloc.h"
-#include "asmdefs.h"
-
-#ifdef _WASM_
-
+#if defined( _STANDALONE_ )
 #include "directiv.h"
-#include "watcom.h"
-#include "womp.h"
-#include "objrec.h"
-#include "pcobj.h"
-#include "fixup.h"
-#include "namemgr.h"
+#endif
+#include <ctype.h>
+
+char                    *CurrString; // Current Input Line
+
+extern int              get_instruction_position( char *string );
+
+#if defined( _STANDALONE_ )
+
+bool                    EnumDirective;
 
 #endif
 
-extern void             AsmError( int );
+typedef union {
+        float   f;
+        long    l;
+} NUMBERFL;
 
-char                                *CurrString; // Current Input Line
-extern struct AsmCodeName           AsmOpcode[];
-extern const struct asm_ins ASMFAR  AsmOpTable[];
-extern char                         AsmChars[];
-extern struct asm_tok               *AsmBuffer[];
-
-extern int get_instruction_position( char *string );
-
-#ifdef _WASM_
-
-extern global_options   Options;
-
-void GetInsString( enum asm_token token, char *string, int len )
-/**************************************************************/
-{
-    int index;
-
-    if( len > AsmOpcode[ token ].len ) {
-        len = AsmOpcode[ token ].len;
-        index = AsmOpcode[ token ].index;
-        if( AsmChars[index]== '.' ) {
-            index++;
-            len--;
-        }
-        strncpy( string, &(AsmChars[ index ]), len );
-        string[ len ] = '\0';
-    } else {
-        *string='\0';
-    }
-    return;
-}
-#endif
-
-static int get_float( struct asm_tok *buf, char **input, char **output )
-/**********************************************************************/
+static int get_float( asm_tok *buf, char **input, char **output )
+/***************************************************************/
 {
     /* valid floats look like:  (int)[.(int)][e(int)] */
 
@@ -103,8 +61,10 @@ static int get_float( struct asm_tok *buf, char **input, char **output )
     char    *ptr = *input;
 
     for( ; *ptr != '\0'; ptr++ ) {
-        if( isdigit( *ptr ) ) continue;
-        if( isspace( *ptr ) ) break;
+        if( isdigit( *ptr ) )
+            continue;
+        if( isspace( *ptr ) )
+            break;
         switch( tolower( *ptr ) ) {
         case '.':
             got_decimal = TRUE;
@@ -117,36 +77,117 @@ static int get_float( struct asm_tok *buf, char **input, char **output )
                 got_e = TRUE;
                 /* accept e+2 / e-4 /etc. */
 
-                switch( *(ptr+1) ) {
+                switch( *(ptr + 1) ) {
                 case '+':
                 case '-':
                     ptr++;
+                    /* fall through */
                 default:
                     continue;
                 }
             }
+            /* fall through */
         default:
-            return( get_string( buf, input, output ) );
+            goto done_scanning_float;
+//            return( get_string( buf, input, output ) );
         }
     }
 
 done_scanning_float:
 
-    buf->token = T_FLOAT;
+    buf->class = TC_FLOAT;
     /* copy the string, fix input & output pointers */
     strncpy( *output, *input, ptr - *input );
     buf->string_ptr = *output;
     *output += ( ptr - *input );
-    **output = '\0';
-    (*output)++;
+    *(*output)++ = '\0';
     *input = ptr;
 
-    buf->value = 0;
+    buf->u.float_value = (float)atof( buf->string_ptr );
     return( NOT_ERROR );
 }
 
-static int get_number( struct asm_tok *buf, char **input, char **output )
-/***********************************************************************/
+static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsigned size )
+{
+    while( size-- > 0 ) {
+        num += *buf * base;
+        *(buf++) = num;
+        num >>= 8;
+    }
+}
+
+static int get_string( asm_tok *buf, char **input, char **output )
+/****************************************************************/
+{
+    char    symbol_o;
+    char    symbol_c;
+    int     count;
+    int     level;
+
+    buf->string_ptr = *output;
+
+    symbol_o = **input;
+
+    buf->class = TC_STRING;
+    switch( symbol_o ) {
+    case '"':
+    case '\'':
+        symbol_c = 0;
+        break;  // end of string marker is the same
+    case '<':
+        symbol_c = '>';
+        break;
+    case '{':
+        symbol_c = '}';
+        break;
+    default:
+        /* this is an undelimited string,
+         * so just copy it until we hit something that looks like the end
+         */
+
+        for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
+            *(*output)++ = *(*input)++; /* keep the 2nd one */
+        }
+        *(*output)++ = '\0';
+        buf->u.value = count;
+        return( NOT_ERROR );
+    }
+    (*input)++;
+    count = 0;
+    level = 0;
+    for( count = 0; count < MAX_TOK_LEN; count++ ) {
+        if( **input == symbol_o ) {
+            if( symbol_c ) {
+                level++;
+            } else if( *( *input + 1 ) == symbol_o ) {
+                /* if we see "" in a " delimited string,
+                 * treat it as a literal " */
+                (*input)++; /* skip the 1st one and keep the 2nd one */
+            } else {
+                (*input)++; /* skip the closing delimiter */
+                break;
+            }
+        } else if( symbol_c && **input == symbol_c ) {
+            if( level ) {
+                level--;
+            } else {
+                (*input)++; /* skip the closing delimiter */
+                break;
+            }
+        } else if( **input == '\0' || **input == '\n' ) {
+            *(*output)++ = '\0';
+            AsmError( SYNTAX_ERROR );
+            return( ERROR );
+        }
+        *(*output)++ = *(*input)++;
+    }
+    *(*output)++ = '\0';
+    buf->u.value = count;
+    return( NOT_ERROR );
+}
+
+static int get_number( asm_tok *buf, char **input, char **output )
+/****************************************************************/
 {
     char                *ptr = *input;
     char                *dig_start;
@@ -156,7 +197,6 @@ static int get_number( struct asm_tok *buf, char **input, char **output )
     unsigned            base = 0;
     unsigned            digits_seen;
     unsigned long       val;
-    unsigned            down_shift;
 
 #define VALID_BINARY    0x0003
 #define VALID_OCTAL     0x00ff
@@ -166,8 +206,8 @@ static int get_number( struct asm_tok *buf, char **input, char **output )
 
     extra = 0;
     if( *ptr == '0' ) {
-        if( tolower( *(ptr+1) ) == 'x' ) {
-            ptr+=2;
+        if( tolower( *(ptr + 1) ) == 'x' ) {
+            ptr += 2;
             base = 16;
         } else {
             ptr += 1;
@@ -258,24 +298,27 @@ done_scan:
         first_char_0 = FALSE;
         dig_start = *input;
     }
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     if( !Options.allow_c_octals ) {
         first_char_0 = FALSE;
     }
 #endif
-    buf->token = T_NUM;
+    buf->class = TC_NUM;
     if( base == 0 ) {
         base = first_char_0 ? 8 : 10;
     }
     switch( base ) {
     case 10:
-        if( OK_NUM( DECIMAL ) ) break;
+        if( OK_NUM( DECIMAL ) )
+            break;
         /* fall through */
     case 8:
-        if( OK_NUM( OCTAL ) ) break;
+        if( OK_NUM( OCTAL ) )
+            break;
         /* fall through */
     case 2:
-        if( OK_NUM( BINARY ) ) break;
+        if( OK_NUM( BINARY ) )
+            break;
         /* fall through */
         //AsmError( INVALID_NUMBER_DIGIT );
         /* swallow remainder of token */
@@ -283,8 +326,10 @@ done_scan:
             || *ptr == '_'
             || *ptr == '$'
             || *ptr == '@'
-            || *ptr == '?' ) ++ptr;
-        buf->token = T_BAD_NUM;
+            || *ptr == '?' ) {
+            ++ptr;
+        }
+        buf->class = TC_BAD_NUM;
         break;
     }
     /* copy the string, fix input & output pointers */
@@ -292,41 +337,27 @@ done_scan:
     strncpy( *output, *input, len );
     buf->string_ptr = *output;
     *output += len;
-    **output = '\0';
-    (*output)++;
+    *(*output)++ = '\0';
     *input = ptr + extra;
-    val = 0;
-    buf->extra_value = 0;
-    switch( base ) {
-    case 2:     down_shift = 31; break;
-    case 8:     down_shift = 29; break;
-    case 16:    down_shift = 28; break;
-    default:    down_shift = 0;  break;
-    }
+    memset( buf->u.bytes, 0, sizeof( buf->u.bytes ) );
     while( dig_start < ptr ) {
-        if( down_shift != 0 ) {
-            /* for DQ initializations */
-            buf->extra_value *= base;
-            buf->extra_value |= val >> down_shift;
-        }
-        val *= base;
         if( isdigit( *dig_start ) ) {
-            val += *dig_start - '0';
+            val = *dig_start - '0';
         } else {
-            val += tolower( *dig_start ) - 'a' + 10;
+            val = tolower( *dig_start ) - 'a' + 10;
         }
+        array_mul_add( buf->u.bytes, base, val, sizeof( buf->u.bytes ) );
         ++dig_start;
     }
-    buf->value = val;
     return( NOT_ERROR );
 } /* get_number */
 
-static int get_id_in_backquotes( struct asm_tok *buf, char **input, char **output )
-/*********************************************************************************/
+static int get_id_in_backquotes( asm_tok *buf, char **input, char **output )
+/**************************************************************************/
 {
     buf->string_ptr = *output;
-    buf->token = T_ID;
-    buf->value = 0;
+    buf->class = TC_ID;
+    buf->u.value = 0;
 
     /* copy char from input to output & inc both */
     (*input)++;             // strip off the backquotes
@@ -346,19 +377,19 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
 /***********************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
-    struct asm_tok  *buf;
-    char            cur_char;
-    int             count;
+    asm_tok     *buf;
+    char        cur_char;
+    int         count;
 
     buf = AsmBuffer[ *buf_index ];
 
     buf->string_ptr = *output;
     if( **input != '\\' ) {
-        buf->token = T_ID;
+        buf->class = TC_ID;
     } else {
-        buf->token = T_PATH;
+        buf->class = TC_PATH;
     }
-    buf->value = 0;
+    buf->u.value = 0;
 
     *(*output)++ = *(*input)++;
     for( ; ; ) {
@@ -373,7 +404,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             *(*output)++ = *(*input)++;
         } else if( cur_char == '\\' ) {
             *(*output)++ = *(*input)++;
-            buf->token = T_PATH;
+            buf->class = TC_PATH;
         } else  {
             break;
         }
@@ -382,212 +413,231 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
 
     /* now decide what to do with it */
 
-    if( buf->token == T_PATH ) return( NOT_ERROR );
+    if( buf->class == TC_PATH )
+        return( NOT_ERROR );
     count = get_instruction_position( buf->string_ptr );
     if( count == EMPTY ) {
-        buf->token = T_ID;
         if( buf->string_ptr[1] == '\0' && buf->string_ptr[0] == '?' ) {
-            buf->token = T_QUESTION_MARK;
+            buf->class = TC_QUESTION_MARK;
         }
     } else {
-        buf->value = AsmOpTable[count].token;
-        // count = AsmOpcode[count].position;
+        buf->u.token = AsmOpTable[count].token;
+#if defined( _STANDALONE_ )
+        switch( AsmOpTable[count].token ) {
+        // MASM6 keywords
+        case T_FOR:
+        case T_FORC:
+            if( Options.mode & (MODE_MASM5 | MODE_TASM) ) {
+                return( NOT_ERROR );
+            }
+            break;
+        // TASM keywords
+        case T_ARG:
+        case T_ENUM:
+        case T_IDEAL:
+        case T_LOCALS:
+        case T_MASM:
+        case T_NOLOCALS:
+            if( (Options.mode & MODE_TASM) == 0 ) {
+                return( NOT_ERROR );
+            }
+            break;
+        // TASM IDEAL keywords
+        case T_CODESEG:
+        case T_CONST:
+        case T_DATASEG:
+        case T_ERR:
+        case T_ERRIFB:
+        case T_ERRIFDEF:
+        case T_ERRIFDIF:
+        case T_ERRIFDIFI:
+        case T_ERRIFE:
+        case T_ERRIFIDN:
+        case T_ERRIFIDNI:
+        case T_ERRIFNB:
+        case T_ERRIFNDEF:
+        case T_EXITCODE:
+        case T_FARDATA:
+        case T_MODEL:
+        case T_NOWARN:
+        case T_P186:
+        case T_P286:
+        case T_P286N:
+        case T_P286P:
+        case T_P287:
+        case T_P386:
+        case T_P386P:
+        case T_P387:
+        case T_P486:
+        case T_P486P:
+        case T_P586:
+        case T_P586P:
+        case T_P686:
+        case T_P686P:
+        case T_P8086:
+        case T_P8087:
+        case T_PK3D:
+        case T_PMMX:
+        case T_PXMM:
+        case T_PXMM2:
+        case T_PXMM3:
+        case T_STACK:
+        case T_STARTUPCODE:
+        case T_UDATASEG:
+        case T_UFARDATA:
+        case T_WARN:
+            if( (Options.mode & MODE_IDEAL) == 0 ) {
+                return( NOT_ERROR );
+            }
+            break;
+        }
+#endif
 
-        if( AsmOpTable[count].opnd_type[0] == OP_SPECIAL ) {
-            if( AsmOpTable[count].rm_byte & OP_REGISTER ) {
-                buf->token = T_REG;
-                #if 0
-                // fixme
-                if( buf_index > 0 ) {   // 30-07-92
-                    if( AsmBuffer[buf_index-1]->token == '+' ||
-                        AsmBuffer[buf_index-1]->token == '-' ) {
-                        if( sq_bracket_flag == 0 ) {
-                            /* Disallow addition or subtraction of
-                               registers out of square brackets */
-                            AsmError( ILLEGAL_USE_OF_REGISTER );
-                            return( ERROR );
-                        }
-                    }
+        if( AsmOpTable[count].opnd_type[OPND1] == OP_SPECIAL ) {
+            if( AsmOpTable[count].rm_byte == OP_REGISTER ) {
+                buf->class = TC_REG;
+            } else if( AsmOpTable[count].rm_byte == OP_RES_ID ) {
+                buf->class = TC_RES_ID;
+                if( buf->u.token == T_DP ) {
+                    buf->u.token = T_DF;
                 }
-                #endif
-            } else if( AsmOpTable[count].rm_byte & OP_RES_ID ) {
-                buf->token = T_RES_ID;
-            } else if( AsmOpTable[count].rm_byte & OP_UNARY_OPERATOR ) {
-                buf->token = T_UNARY_OPERATOR;
-            } else if( AsmOpTable[count].rm_byte & OP_DIRECTIVE ) {
-                #if 0
-                if( buf_index >= 2 ) {
-                    /* it is too late in the line to be a directive,
-                     * so just treat it as a res_id
-                     */
-                    buf->token = T_RES_ID;
+            } else if( AsmOpTable[count].rm_byte == OP_RES_ID_PTR_MODIF ) {
+                buf->class = TC_RES_ID;
+                if( buf->u.token == T_PWORD ) {
+                    buf->u.token = T_FWORD;
                 }
-                #endif
-                buf->token = T_DIRECTIVE;
-
-#ifdef _WASM_
-                switch( AsmOpTable[count].token ) {
-                case T_COMMENT:
+            } else if( AsmOpTable[count].rm_byte == OP_UNARY_OPERATOR ) {
+                buf->class = TC_UNARY_OPERATOR;
+#if defined( _STANDALONE_ )
+            } else if( AsmOpTable[count].rm_byte == OP_RELATION_OPERATOR ) {
+                buf->class = TC_RELATION_OPERATOR;
+#endif
+            } else if( AsmOpTable[count].rm_byte == OP_ARITH_OPERATOR ) {
+                buf->class = TC_ARITH_OPERATOR;
+            } else if( AsmOpTable[count].rm_byte == OP_DIRECTIVE ) {
+                buf->class = TC_DIRECTIVE;
+#if defined( _STANDALONE_ )
+                if( AsmOpTable[count].token == T_ENUM ) {
+                    EnumDirective = TRUE;
+                } else if( AsmOpTable[count].token == T_COMMENT ) {
                     /* save the whole line .. we need to check
                      * if the delim. char shows up 2 times */
-                    (*output)++;
-                    *(*output) = '\0';
-                    (*output)++;
                     (*buf_index)++;
                     buf = AsmBuffer[ *buf_index ];
                     buf->string_ptr = *output;
                     strcpy( buf->string_ptr, *input );
                     (*output) += strlen( *input );
-                    *(*output) = '\0';
-                    (*output)++;
+                    *(*output)++ = '\0';
                     (*input) += strlen( *input );
-                    buf->token = T_STRING;
-                    buf->value = 0;
-                    break;
-                } /* default do nothing */
+                    buf->class = TC_STRING;
+                    buf->u.value = 0;
+                }
+            } else if( AsmOpTable[count].rm_byte == OP_DIRECT_EXPR ) {
+                buf->class = TC_DIRECT_EXPR;
 #endif
-            } else if( AsmOpTable[count].rm_byte & OP_DIRECT_EXPR ) {
-                buf->token = T_DIRECT_EXPR;
             } else {
-                buf->token = T_INS;
+                buf->class = TC_INSTR;
             }
         } else {
-            buf->token = T_INS;
+            buf->class = TC_INSTR;
         }
     }
     return( NOT_ERROR );
 }
 
-static int get_string( struct asm_tok *buf, char **input, char **output )
-/***********************************************************************/
+static int get_special_symbol( asm_tok *buf, char **input, char **output )
+/************************************************************************/
 {
-    char    symbol;
-    int     count;
-
-    buf->string_ptr = *output;
-
-    symbol = **input;
-
-    buf->token = T_STRING;
-    switch( symbol ) {
-    case '"':
-    case '\'':
-        break;  // end of string marker is the same
-    case '<':
-        symbol = '>';
-        break;
-    case '{':
-        symbol = '}';
-        break;
-    default:
-        /* this is an undelimited string,
-         * so just copy it until we hit something that looks like the end
-         */
-
-        for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
-            *(*output)++ = *(*input)++; /* keep the 2nd one */
-        }
-        *(*output)++ = '\0';
-        buf->value = count;
-        return( NOT_ERROR );
-    }
-    (*input)++;
-
-    count = 0;
-    while( count < MAX_TOK_LEN ) {
-        if( **input == symbol ) {
-            if( *( *input + 1 ) == symbol ) {
-                /* if we see "" in a " delimited string,
-                 * treat it as a literal " */
-                (*input)++; /* skip the 1st one */
-                *(*output)++ = *(*input)++; /* keep the 2nd one */
-                count++;
-            } else {
-                *(*output)++ = '\0';
-                (*input)++; /* skip the closing delimiter */
-                buf->value = count;
-                break;
-            }
-        } else if( **input == '\0' || **input == '\n' ) {
-            AsmError( SYNTAX_ERROR );
-            return( ERROR );
-        } else {
-            *(*output)++ = *(*input)++;
-            count++;
-        }
-    }
-    return( NOT_ERROR );
-}
-
-static int get_special_symbol( struct asm_tok *buf,
-                                char **input, char **output )
-/***********************************************************/
-{
-    char    symbol;
+    char        symbol;
+    tok_class   cls;
 
     buf->string_ptr = *output;
 
     symbol = **input;
     switch( symbol ) {
     case '.' :
+        cls = TC_DOT;
+        break;
     case ',' :
+        cls = TC_COMMA;
+        break;
     case '+' :
+        cls = TC_PLUS;
+        break;
     case '-' :
+        cls = TC_MINUS;
+        break;
     case '*' :
+        buf->u.token = T_OP_TIMES;
+        cls = TC_ARITH_OPERATOR;
+        break;
     case '/' :
+        buf->u.token = T_OP_DIVIDE;
+        cls = TC_ARITH_OPERATOR;
+        break;
     case '[' :
+        cls = TC_OP_SQ_BRACKET;
+        break;
     case ']' :
+        cls = TC_CL_SQ_BRACKET;
+        break;
     case '(' :
+        cls = TC_OP_BRACKET;
+        break;
     case ')' :
+        cls = TC_CL_BRACKET;
+        break;
     case ':' :
+        cls = TC_COLON;
+        break;
     case '%' :
-        /* all of these are themselves a token */
-
-        /* fixme
-         * wasm used to do a bunch of error checking dealing with use of
-         * registers and +,- inside and outside brackets
-         * I am not sure we need to do this here
-         * this looks more like the job of the parser
-         */
-
-        buf->token = symbol;
-        *(*output)++ = *(*input)++;
-        *(*output)++ = '\0';
+        cls = TC_PERCENT;
         break;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     case '=' :
-        buf->token = T_DIRECTIVE;
-        buf->value = T_EQU2;
-        *(*output)++ = *(*input)++;
-        *(*output)++ = '\0';
+        buf->u.token = T_EQU2;
+        cls = TC_DIRECTIVE;
         break;
+    case '}' :
+        cls = TC_CL_BRACE;
+        break;
+#endif
+    case '{' :
+#if defined( _STANDALONE_ )
+        if( EnumDirective ) {
+            cls = TC_OP_BRACE;
+            break;
+        }
 #endif
     case '\'' :
     case '"' :
     case '<' :
-    case '{' :
         /* string delimiters */
+        /* fall through */
     default:
         /* anything we don't recognise we will consider a string,
          * delimited by space characters, commas, newlines or nulls
          */
         return( get_string( buf, input, output ) );
-        break;
     }
+    buf->class = cls;
+    *(*output)++ = *(*input)++;
+    *(*output)++ = '\0';
     return( NOT_ERROR );
 }
 
-#ifdef _WASM_
-static int get_inc_path( unsigned int *buf_index, char **input, char **output )
-/*****************************************************************************/
+#if defined( _STANDALONE_ )
+static int get_inc_path( asm_tok *buf, char **input, char **output )
+/******************************************************************/
 {
     char symbol;
 
-    AsmBuffer[*buf_index]->token = T_PATH;
-    AsmBuffer[*buf_index]->value = 0;
-    AsmBuffer[*buf_index]->string_ptr = *output;
+    buf->class = TC_PATH;
+    buf->u.value = 0;
+    buf->string_ptr = *output;
 
-    while( isspace( **input ) ) (*input)++;
+    while( isspace( **input ) )
+        (*input)++;
 
     symbol = **input;
 
@@ -597,7 +647,7 @@ static int get_inc_path( unsigned int *buf_index, char **input, char **output )
     case '<' :
     case '{' :
         /* string delimiters -- just get the path as a string */
-        if( get_special_symbol( AsmBuffer[*buf_index],input,output )==ERROR ) {
+        if( get_string( buf, input, output ) == ERROR ) {
             return( ERROR );
         }
         return( NOT_ERROR );
@@ -606,33 +656,47 @@ static int get_inc_path( unsigned int *buf_index, char **input, char **output )
         while( **input && !isspace( **input )  ) {
             *(*output)++ = *(*input)++;
         }
+        *(*output)++ = '\0';
         return( NOT_ERROR );
     }
 }
 #endif
 
-int AsmScan( char *string, char *stringbuf )
+int AsmScan( char *string )
 /******************************************/
 /*
 - perform syntax checking on scan line;
 - pass back tokens for later use;
 - string contains the WHOLE line to scan
-- stringbuf - buffer in which to store strings
 */
 {
     char                        *ptr;
     char                        *output_ptr;
     unsigned int                buf_index = 0;
+    // stringbuf - buffer in which to store strings
+    static char                 stringbuf[MAX_LINE_LEN];
 
+    CurrString = string;
     output_ptr = stringbuf;
+#if defined( _STANDALONE_ )
+    EnumDirective = FALSE;
+#endif
 
-    for( CurrString = ptr = string; ; ) {
+    ptr = string;
+// FIXME !!
+    /* skip initial spaces and expansion codes */
+    while( isspace( *ptr ) || (*ptr == '%') ) {
+        ptr++;
+    }
+
+    for( ;; ) {
         AsmBuffer[buf_index]->string_ptr = output_ptr;
 
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == NULLC ) break;
+        if( *ptr == NULLC )
+            break;
 
         if( isalpha( *ptr )
             || *ptr == '_'
@@ -641,37 +705,28 @@ int AsmScan( char *string, char *stringbuf )
             || *ptr == '?'
             || *ptr == '\\'
             || ( *ptr == '.' && buf_index == 0 ) ) {
-            if( get_id( &buf_index,&ptr,&output_ptr ) == ERROR ) {
+            if( get_id( &buf_index, &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
-            #ifdef _WASM_
+#if defined( _STANDALONE_ )
             // this mess allows include directives with undelimited file names
-            if( AsmBuffer[buf_index]->token == T_DIRECTIVE &&
-                ( AsmBuffer[buf_index]->value == T_INCLUDE ||
-                  AsmBuffer[buf_index]->value == T_INCLUDELIB ) ) {
+            if( AsmBuffer[buf_index]->class == TC_DIRECTIVE &&
+                ( AsmBuffer[buf_index]->u.token == T_INCLUDE ||
+                AsmBuffer[buf_index]->u.token == T_INCLUDELIB ) ) {
                 buf_index++;
-                get_inc_path( &buf_index, &ptr, &output_ptr );
+                get_inc_path( AsmBuffer[buf_index], &ptr, &output_ptr );
             }
-
-            #endif
+#endif
         } else if( isdigit( *ptr ) ) {
-            if( get_number( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
+            if( get_number( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
-            /* handle negatives here - for inline assembler */
-            #ifndef _WASM_
-                if( buf_index > 0 && AsmBuffer[buf_index-1]->token == T_MINUS ) {
-                    AsmBuffer[buf_index-1]->token = T_PLUS;
-                    AsmBuffer[buf_index]->value = -AsmBuffer[buf_index]->value;
-                }
-            #endif
         } else if( *ptr == '`' ) {
-            if( get_id_in_backquotes( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
+            if( get_id_in_backquotes( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
         } else {
-             if( get_special_symbol( AsmBuffer[buf_index],&ptr,&output_ptr )
-                 == ERROR ) {
+            if( get_special_symbol( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
         }
@@ -681,7 +736,7 @@ int AsmScan( char *string, char *stringbuf )
             return( ERROR );
         }
     }
-    AsmBuffer[buf_index]->token = T_FINAL;
+    AsmBuffer[buf_index]->class = TC_FINAL;
     *output_ptr='\0';
     return( buf_index );
 }

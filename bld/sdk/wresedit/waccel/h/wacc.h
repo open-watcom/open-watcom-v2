@@ -58,8 +58,8 @@ typedef struct WAccelEntry {
 } WAccelEntry;
 
 typedef struct WAccelTable {
-    int          is32bit;
-    int          num;
+    int         is32bit;
+    int         num;
     WAccelEntry *first_entry;
 } WAccelTable;
 
@@ -79,7 +79,7 @@ typedef struct WAccelEditInfo {
     int                 current_pos;
     HWND                win;
     HWND                edit_dlg;
-    wstatbar            *wsb;
+    WStatBar            *wsb;
     WToolBar            *ribbon;
     Bool                show_ribbon;
     char                *file_name;
@@ -93,21 +93,18 @@ typedef struct WAccelEditInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WAccelEditInfo   *WAllocAccelEInfo       ( void );
-extern void             WFreeAccelEInfo         ( WAccelEditInfo * );
-extern void             WMakeDataFromAccelTable ( WAccelTable *, void **,
-                                                  int * );
+extern WAccelEditInfo   *WAllocAccelEInfo( void );
+extern void             WFreeAccelEInfo( WAccelEditInfo * );
+extern void             WMakeDataFromAccelTable( WAccelTable *, void **, int * );
 extern WAccelTable      *WMakeAccelTableFromInfo( WAccelInfo * );
-extern Bool             WInsertAccelTableEntry  ( WAccelTable *, WAccelEntry *,
-                                                  WAccelEntry * );
-extern Bool             WFreeAccelTableEntry    ( WAccelTable *, WAccelEntry * );
-extern void             WFreeAccelTableEntries  ( WAccelEntry * );
-extern Bool             WMakeEntryClipData      ( WAccelEntry *entry, void **data, uint_32 *dsize );
-extern Bool             WMakeEntryFromClipData  ( WAccelEntry *entry, void *data, uint_32 dsize );
-extern Bool             WResolveEntrySymbol     ( WAccelEntry *entry, WRHashTable *symbol_table );
-extern Bool             WResolveAllEntrySymbols ( WAccelEditInfo *einfo );
-extern Bool             WResolveAllEntrySymIDs  ( WAccelEditInfo *einfo );
-extern Bool             WResolveEntrySymIDs     ( WAccelEntry *entry, WRHashTable *symbol_table );
+extern Bool             WInsertAccelTableEntry( WAccelTable *, WAccelEntry *, WAccelEntry * );
+extern Bool             WFreeAccelTableEntry( WAccelTable *, WAccelEntry * );
+extern void             WFreeAccelTableEntries( WAccelEntry * );
+extern Bool             WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize );
+extern Bool             WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize );
+extern Bool             WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table );
+extern Bool             WResolveAllEntrySymbols( WAccelEditInfo *einfo );
+extern Bool             WResolveAllEntrySymIDs( WAccelEditInfo *einfo );
+extern Bool             WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table );
 
 #endif
-

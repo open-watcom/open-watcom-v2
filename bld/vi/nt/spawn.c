@@ -30,31 +30,26 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include "vi.h"
 #include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
 #include <process.h>
 #include <dos.h>
-#include "vi.h"
 #include "fcbmem.h"
-#define _WINSOCKAPI_
-#include <windows.h>
 
-extern HANDLE   OutputHandle,InputHandle;
+extern HANDLE   OutputHandle, InputHandle;
 
 void ResetSpawnScreen( void )
 {
-    #ifndef __WIN__
-        SetConsoleActiveScreenBuffer( OutputHandle );
-        SetConsoleMode( InputHandle, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT
-            | ENABLE_PROCESSED_INPUT | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT );
-    #endif
+#ifndef __WIN__
+    SetConsoleActiveScreenBuffer( OutputHandle );
+    SetConsoleMode( InputHandle, ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT |
+        ENABLE_PROCESSED_INPUT | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT );
+#endif
 }
 
 int MySpawn( char *cmd )
 {
-    char                path[MAX_PATH+128];
+    char                path[MAX_PATH + 128];
     cmd_struct          cmds;
     DWORD               rc;
     DWORD               mode;
@@ -62,9 +57,8 @@ int MySpawn( char *cmd )
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
 
-
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[ cmds.len ] = 0x00;
+    cmds.cmd[cmds.len] = 0x00;
     strcat( path, " " );
     strcat( path, cmds.cmd );
 

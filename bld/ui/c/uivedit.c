@@ -45,9 +45,8 @@ static int isdelim( char ch )
 }
 
 
- static void clear_buffer( buffer )
-/**********************************/
-    VBUFFER     *buffer;
+ static void clear_buffer( VBUFFER *buffer )
+/******************************************/
 {
     buffer->index = 0;
     memset( buffer->content, ' ', buffer->length );
@@ -63,11 +62,8 @@ int intern secondbyte( char *buff, char *which )
     return( buff > which );
 }
 
-EVENT global uieditevent( ev, buffer )
-/************************************/
-
-register        EVENT                   ev;
-register        VBUFFER                 *buffer;
+EVENT global uieditevent( EVENT ev, VBUFFER *buffer )
+/***************************************************/
 {
     register    char                    *bptr;
     register    EVENT                   new;

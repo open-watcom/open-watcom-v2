@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module to init multi-threading initialization.
 *
 ****************************************************************************/
 
@@ -35,28 +34,38 @@
 
 #if defined(__NT__)
   extern unsigned __NTThreadInit( void );
+#elif defined (_NETWARE_LIBC)
+  extern unsigned __LibCThreadInit( void );
 #elif defined(__QNX__)
+#elif defined(__LINUX__)
 #elif defined(__WARP__)
-  extern void *__InitThreadProcessing(void);
+  extern void *__InitThreadProcessing( void );
+#elif defined(__RDOS__)
+  extern unsigned __RdosThreadInit( void );
 #endif
 #if defined(__OS2_286__) || defined(__NETWARE__)
     #if defined(__SW_BM)
         int __imthread;
     #endif
 #else
-    extern void __InitMultipleThread();
+    extern void __InitMultipleThread( void );
 
     static void __imthread_fn( void ) {
         #if defined(__NT__)
             if( !__NTThreadInit() ) return;
+        #elif defined(_NETWARE_LIB)
+            if( !__LibCThreadInit() ) return;
         #elif defined(__QNX__)
+        #elif defined(__LINUX__)
         #elif defined(__WARP__)
             if( __InitThreadProcessing() == 0 ) return;
+        #elif defined(__RDOS__)            
+            if( !__RdosThreadInit() ) return;
         #endif
         __InitMultipleThread();
     }
 
-    _WCRTLINK XI( __imthread, __imthread_fn, INIT_PRIORITY_RUNTIME + 1 )
+    _WCRTDATA XI( __imthread, __imthread_fn, INIT_PRIORITY_RUNTIME + 1 )
 #endif
 
 #if defined(_M_IX86)

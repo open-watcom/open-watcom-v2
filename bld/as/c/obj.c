@@ -24,21 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object file output using OWL.
 *
 ****************************************************************************/
 
 
 #include "as.h"
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 
-#ifdef AS_PPC
-  #define OBJ_OWL_CPU   OWL_CPU_PPC
+#if defined( __UNIX__ )
+  #define OBJ_EXT        ".o"
 #else
-  #define OBJ_OWL_CPU   OWL_CPU_ALPHA
+  #define OBJ_EXT        ".obj"
 #endif
 
 extern int              ExitStatus;
@@ -108,7 +107,7 @@ bool ObjInit( char *fname ) {
 //***************************
 
     owl_client_funcs    funcs = {
-        (int (*)( owl_client_file, const char *, int ))write,
+        (int (*)( owl_client_file, const char *, uint ))write,
         (long (*)( owl_client_file ))tell,
         (long (*)( owl_client_file, long, int ))lseek,
         MemAlloc,
@@ -120,7 +119,19 @@ bool ObjInit( char *fname ) {
     SectionInit();
     _splitpath( fname, NULL, NULL, name, NULL );
     if( !objectDefined ) {
-        _makepath( objName, NULL, NULL, name, ".obj" );
+        _makepath( objName, NULL, NULL, name, OBJ_EXT );
+    } else {
+        char    tmpName[ _MAX_PATH2 ];
+        char    *tmpNode;
+        char    *tmpDir;
+        char    *tmpFname;
+        char    *tmpExt;
+        _splitpath2( objName, tmpName, &tmpNode, &tmpDir, &tmpFname, &tmpExt );
+        if( *tmpExt == 0 )
+            tmpExt = OBJ_EXT;
+        if( *tmpFname == 0 )
+            tmpFname = name;
+        _makepath( objName, tmpNode, tmpDir, tmpFname, tmpExt );
     }
     objectDefined = FALSE;      // so that the /fo applies only to the 1st obj
     _makepath( errorFilename, NULL, NULL, name, ".err" );
@@ -228,8 +239,8 @@ void ObjEmitLabel( sym_handle sym ) {
     doStackLabel( sym, type, linkage );
 }
 
-void ObjEmitNumericLabel( int_32 label_num ) {
-//********************************************
+void ObjEmitNumericLabel( uint_32 label_num ) {
+//*********************************************
 // Stacks up the numeric label in the list for ObjEmitData to emit
 
     owl_sym_type        type;
@@ -368,3 +379,116 @@ owl_offset ObjTellOffset( owl_section_handle section ) {
 */
 
 void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool align, bool named_sym ) {
+//**************************************************************************************************************
+// Should be called before emitting the data that has the reloc.
+// (named_sym == TRUE) iff the target is a named label
+
+    owl_offset          offset;
+
+    if( align ) { // If data is aligned, we should also align this reloc offset!
+        offset = ObjAlign( section, CurrAlignment );
+    } else {
+        offset = OWLTellOffset( section );
+    }
+    ObjFlushLabels();
+#ifdef AS_PPC
+    doEmitReloc( section, offset, target, type, named_sym );
+#else
+    {
+        sym_reloc       reloc;
+        bool            match_high;
+        owl_offset      offset_hi, offset_lo;
+        sym_handle      (*lookup_func)( void * );
+
+        if( type != OWL_RELOC_HALF_HI && type != OWL_RELOC_HALF_LO ) {
+            doEmitReloc( section, offset, target, type, named_sym );
+        } else {
+            lookup_func = named_sym ?
+                (sym_handle (*)(void *))SymLookup :
+                (sym_handle (*)(void *))AsNumLabelSymLookup;
+            match_high = ( type == OWL_RELOC_HALF_LO );    // hi match lo etc.
+            reloc = SymMatchReloc( match_high, lookup_func( target ), section );
+            if( reloc ) {       // got a match
+                if( match_high ) {
+                    offset_hi = reloc->location.offset;
+                    offset_lo = offset;
+                } else {
+                    offset_hi = offset;
+                    offset_lo = reloc->location.offset;
+                }
+                doEmitReloc( section, offset_hi, target, OWL_RELOC_HALF_HI, named_sym );
+                doEmitReloc( section, offset_lo, target, OWL_RELOC_PAIR, named_sym );
+                doEmitReloc( section, offset_lo, target, OWL_RELOC_HALF_LO, named_sym );
+                SymDestroyReloc( lookup_func( target ), reloc );
+            } else {    // no match; stack it up with the (aligned) offset!
+                SymStackReloc( !match_high, lookup_func( target ), section, offset, named_sym );
+            }
+        }
+    }
+#endif
+}
+
+void ObjRelocsFini( void ) {
+//**************************
+// If the parse was successful, we need to check whether there're any unmatched
+// relocs still hanging around. If there're unmatched h^relocs, we issue an
+// error. If there're unmatched l^relocs, we should be able to emit them.
+
+    sym_reloc   reloc;
+    sym_handle  sym;
+    int_32      numlabel_ref;
+
+    reloc = SymGetReloc( TRUE, &sym );
+    while( reloc != NULL ) {
+        if( reloc->named ) {
+            Error( UNMATCHED_HIGH_RELOC, SymName( sym ) );
+        } else {
+            // TODO: actually show the numref (eg. 2f)
+            Error( UNMATCHED_HIGH_RELOC, "<numeric reference>" );
+        }
+        SymDestroyReloc( sym, reloc );
+        reloc = SymGetReloc( TRUE, &sym );
+    }
+    reloc = SymGetReloc( FALSE, &sym );
+    while( reloc != NULL ) {
+        if( reloc->named ) {
+            doEmitReloc( reloc->location.section, reloc->location.offset,
+                SymName( sym ), OWL_RELOC_HALF_LO, TRUE );
+        } else {
+            numlabel_ref = AsNumLabelGetNum( SymName( sym ) );
+            doEmitReloc( reloc->location.section, reloc->location.offset,
+                &numlabel_ref, OWL_RELOC_HALF_LO, FALSE );
+        }
+        SymDestroyReloc( sym, reloc );
+        reloc = SymGetReloc( FALSE, &sym );
+    }
+#ifndef NDEBUG
+    (void)SymRelocIsClean( TRUE );
+#endif
+    ObjFlushLabels();       // In case there're still pending labels
+    AsNumLabelFini();       // resolve all numeric label relocs
+}
+
+void ObjFini( void ) {
+//********************
+
+    ObjFlushLabels();       // In case there're still pending labels
+    OWLFileFini( OwlFile );
+    close( objFile );
+    fclose( ErrorFile );
+    if( ErrorsExceeding( 0 ) || ( _IsOption( WARNING_ERROR ) && WarningsExceeding( 0 ) ) ) {
+        remove( objName );
+        ExitStatus = EXIT_FAILURE;
+    } else if( !WarningsExceeding( 0 ) ) {
+        remove( errorFilename );
+    }
+    OWLFini( OwlHandle );
+    SectionFini();
+}
+
+extern sym_obj_hdl ObjSymbolInit( char *name ) {
+//**********************************************
+// Called by the symbol table routines to create and destroy the label name
+// handles
+    return( OWLSymbolInit( OwlFile, name ) );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Common code detection and optimization.
 *
 ****************************************************************************/
 
@@ -40,151 +39,189 @@ typedef struct common_info {
 
 extern    byte  OptForSize;
 
-extern  bool            Equal(pointer,pointer,uint);
-extern  ins_entry       *IsolatedCode(ins_entry*);
-extern  void            AddNewJump(ins_entry*,code_lbl*);
-extern  void            InsertQueue(ins_entry*,ins_entry*);
-extern  void            DeleteQueue(ins_entry*);
-extern  oc_class        PrevClass(ins_entry*);
-extern  ins_entry       *Untangle(ins_entry*);
-extern  ins_entry       *NextIns(ins_entry*);
-extern  void            ChgLblRef(ins_entry*,code_lbl*);
-extern  code_lbl        *AddNewLabel(ins_entry*,int);
-extern  ins_entry       *DelInstr(ins_entry*);
-extern  ins_entry       *PrevIns(ins_entry*);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern  bool            FindShort(ins_entry*,ins_entry*);
+extern  bool            Equal( pointer, pointer, uint );
+extern  ins_entry       *IsolatedCode( ins_entry * );
+extern  void            AddNewJump( ins_entry *, code_lbl * );
+extern  void            InsertQueue( ins_entry *, ins_entry * );
+extern  void            DeleteQueue( ins_entry * );
+extern  oc_class        PrevClass( ins_entry * );
+extern  ins_entry       *Untangle( ins_entry * );
+extern  ins_entry       *NextIns( ins_entry * );
+extern  void            ChgLblRef( ins_entry *, code_lbl * );
+extern  code_lbl        *AddNewLabel( ins_entry *, int );
+extern  ins_entry       *DelInstr( ins_entry * );
+extern  ins_entry       *PrevIns( ins_entry * );
+extern  int             OptInsSize( oc_class, oc_dest_attr );
+extern  bool            FindShort( ins_entry *, ins_entry * );
 
 
 
-static  bool    JustMoveLabel( common_info *max, ins_entry *ins ) {
-/*************************************************************/
-
+static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
+/***************************************************************/
+{
     oc_class            cl;
     ins_entry           *lbl;
     ins_entry           *add;
     ins_entry           *next;
 
   optbegin
-    if( PrevClass( max->start_del ) != OC_LABEL ) optreturn( FALSE );
+    if( PrevClass( max->start_del ) != OC_LABEL )
+        optreturn( FALSE );
     lbl = PrevIns( max->start_del );
-    if( _Attr( lbl ) & ATTR_SHORT ) optreturn( FALSE );
+    if( _Attr( lbl ) & ATTR_SHORT )
+        optreturn( FALSE );
     cl = PrevClass( lbl );
-    if( !_TransferClass( cl ) ) optreturn( FALSE );
+    if( !_TransferClass( cl ) )
+        optreturn( FALSE );
     DeleteQueue( lbl );
     InsertQueue( lbl, PrevIns( max->start_com ) );
     add = PrevIns( max->start_del );
-    for(;;) {
+    for( ;; ) {
         next = NextIns( add );
         DelInstr( next );
-        if( next == ins ) break;
+        if( next == ins ) {
+            break;
+        }
     }
     Untangle( lbl );
     optreturn( TRUE );
 }
 
 
-static  void    TransformJumps( ins_entry *ins, ins_entry *first ) {
-/************************************************/
-
+static  void    TransformJumps( ins_entry *ins, ins_entry *first )
+/****************************************************************/
+{
     ins_entry           *add;
     ins_entry           *next;
     ins_entry           *lbl;
     oc_class            cl;
 
   optbegin
-    if( _Class( ins ) == OC_RET ) optreturnvoid;
+    if( _Class( ins ) == OC_RET )
+        optreturnvoid;
     lbl = _Label( ins )->ins;
-    if( lbl == NULL ) optreturnvoid;
+    if( lbl == NULL )
+        optreturnvoid;
     add = lbl;
-    for(;;) {
-        if( add == NULL ) optreturnvoid;
+    for( ;; ) {
+        if( add == NULL )
+            optreturnvoid;
         cl = _Class( add );
-        if( _TransferClass( cl ) ) break;
+        if( _TransferClass( cl ) )
+            break;
         if( cl == OC_LABEL ) {
-            if( _Attr( add ) & ATTR_SHORT ) optreturnvoid;
+            if( _Attr( add ) & ATTR_SHORT )
+                optreturnvoid;
             _ClrStatus( _Label( add ), SHORTREACH );
         }
         add = NextIns( add );
     }
-    if( add == first || add == ins ) optreturnvoid;
-    if( FindShort( first, lbl ) ) optreturnvoid;
-    for(;;) {
+    if( add == first || add == ins )
+        optreturnvoid;
+    if( FindShort( first, lbl ) )
+        optreturnvoid;
+    for( ;; ) {
         next = PrevIns( add );
         DeleteQueue( add );
         InsertQueue( add, first );
-        if( add == lbl ) break;
+        if( add == lbl )
+            break;
         add = next;
     }
     DeleteQueue( first );
     InsertQueue( first, next );
     Untangle( NextIns( first ) );
   optend
+}
 
 
 
-static  bool    CommonInstr( ins_entry *old, ins_entry *add ) {
-/*************************************************************/
-
+static  bool    CommonInstr( ins_entry *old, ins_entry *add )
+/***********************************************************/
+{
     oc_entry    *oc_add;
     oc_entry    *oc_old;
 
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) ) optreturn( FALSE );
-    oc_add = &add->oc;
-    oc_old = &old->oc;
-    if( oc_add->class != oc_old->class ) optreturn( FALSE );
-    if( oc_add->reclen != oc_old->reclen ) optreturn( FALSE );
+    if( _IsModel( NO_OPTIMIZATION ) )
+        optreturn( FALSE );
+    oc_add = &add->oc.oc_entry;
+    oc_old = &old->oc.oc_entry;
+    if( oc_add->class != oc_old->class )
+        optreturn( FALSE );
+    if( oc_add->reclen != oc_old->reclen )
+        optreturn( FALSE );
     switch( _Class( old ) ) {
+    case OC_BDATA:
+        /* User may be doing stupid stuff like stringing together a bunch
+         * of '__asm _emit x' or '__asm db x' statements which aren't complete
+         * instructions. If we try to optimize and split them, things are
+         * going to go boom. So let's just not touch those - it's extremely
+         * unlikely that we'd be missing any real optimization opportunities.
+         */
+        /* fall through */
     case OC_DEAD:
         optreturn( FALSE );
     case OC_JMP:
     case OC_CALL:
     case OC_LABEL:
     case OC_LREF:
-        if( _Label( old ) != _Label( add ) ) optreturn( FALSE );
+        if( _Label( old ) != _Label( add ) )
+            optreturn( FALSE );
         break;
     case OC_JCOND:
-        if( _JmpCond( old ) != _JmpCond( add ) ) optreturn( FALSE );
-        if( _Label( old ) != _Label( add ) ) optreturn( FALSE );
+        if( _JmpCond( old ) != _JmpCond( add ) )
+            optreturn( FALSE );
+        if( _Label( old ) != _Label( add ) )
+            optreturn( FALSE );
 #if _TARGET & _TARG_RISC
-        if( old->oc.oc_jcond.index != add->oc.oc_jcond.index ) return( FALSE );
+        if( old->oc.oc_jcond.index != add->oc.oc_jcond.index )
+            return( FALSE );
 #endif
         break;
     case OC_RET:
-        if( _RetPop( old ) != _RetPop( add ) ) optreturn( FALSE );
+        if( _RetPop( old ) != _RetPop( add ) )
+            optreturn( FALSE );
         break;
     default:
-        if( Equal( oc_add, oc_old, oc_add->reclen )==FALSE) optreturn( FALSE );
+        if( Equal( oc_add, oc_old, oc_add->reclen ) == FALSE )
+            optreturn( FALSE );
         break;
     }
     optreturn( TRUE );
 }
 
 
-static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 ) {
-/**************************************************************************/
-
+static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 )
+/************************************************************************/
+{
   optbegin
     c->save = 0;
-    for(;;) {
-        if( CommonInstr( p1, p2 ) == FALSE ) break;
+    for( ;; ) {
+        if( CommonInstr( p1, p2 ) == FALSE )
+            break;
         c->start_com = p1;
         c->start_del = p2;
         c->save += _ObjLen( p1 );
-        for(;;) {
+        for( ;; ) {
             p1 = PrevIns( p1 );
-            if( p1 == NULL ) optreturnvoid;
-            if( _Class( p1 ) != OC_LABEL ) break;
+            if( p1 == NULL )
+                optreturnvoid;
+            if( _Class( p1 ) != OC_LABEL ) {
+                break;
+            }
         }
         p2 = PrevIns( p2 );
-        if( p2 == NULL ) break;
+        if( p2 == NULL ) {
+            break;
+        }
     }
   optend
+}
 
-extern  bool    ComTail( ins_entry *list, ins_entry *ins ) {
-/**********************************************************/
-
+extern  bool    ComTail( ins_entry *list, ins_entry *ins )
+/********************************************************/
+{
     ins_entry           *try;
     ins_entry           *add;
     ins_entry           *next;
@@ -198,7 +235,7 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins ) {
     align = (_Class( list ) == OC_LABEL) ? _ObjLen( list ) : 0;
     try = list;
     max.save = 0;
-    for(;;) {
+    for( ;; ) {
         if( try != ins ) {
             FindCommon( &common, try, ins );
             if( common.save > max.save ) {
@@ -207,23 +244,32 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins ) {
             }
         }
         try = _LblRef( try );
-        if( try == NULL ) break;
+        if( try == NULL ) {
+            break;
+        }
     }
-    if( max.save == 0 ) optreturn( FALSE );
-    if( JustMoveLabel( &max, ins ) ) optreturn( TRUE );
-    if( OptForSize < 25 ) optreturn( FALSE );
-    if( max.save <= OptInsSize( OC_JMP, OC_DEST_NEAR ) ) optreturn( FALSE );
+    if( max.save == 0 )
+        optreturn( FALSE );
+    if( JustMoveLabel( &max, ins ) )
+        optreturn( TRUE );
+    if( OptForSize < 25 )
+        optreturn( FALSE );
+    if( max.save <= OptInsSize( OC_JMP, OC_DEST_NEAR ) )
+        optreturn( FALSE );
     TransformJumps( ins, first );
     add = PrevIns( max.start_del );
     try = PrevIns( max.start_com );
-    if( FindShort( try, NULL ) ) align = 0;
+    if( FindShort( try, NULL ) )
+        align = 0;
     AddNewJump( add, AddNewLabel( PrevIns( max.start_com ), align ) );
     lbl = PrevIns( max.start_com );
     add = NextIns( add );
-    for(;;) {
+    for( ;; ) {
         next = NextIns( add );
         DelInstr( next );
-        if( next == ins ) break;
+        if( next == ins ) {
+            break;
+        }
     }
     Untangle( lbl );
     IsolatedCode( add );
@@ -231,9 +277,9 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins ) {
 }
 
 
-extern  bool    ComCode( ins_entry *jmp ) {
-/*****************************************/
-
+extern  bool    ComCode( ins_entry *jmp )
+/***************************************/
+{
     ins_entry   *new;
     ins_entry   *com;
     int         align;
@@ -244,55 +290,74 @@ extern  bool    ComCode( ins_entry *jmp ) {
     new = _Label( jmp )->ins;
     if( new != NULL ) {
         align = _ObjLen( new );
-        for(;;) {
-            for(;;) {
+        for( ;; ) {
+            for( ;; ) {
                 new = PrevIns( new );
-                if( new == NULL ) break;
-                if( new == jmp ) break;
-                if( _Class( new ) != OC_LABEL ) break;
+                if( new == NULL )
+                    break;
+                if( new == jmp )
+                    break;
+                if( _Class( new ) != OC_LABEL ) {
+                    break;
+                }
             }
-            if( new == NULL ) break;
-            if( new == jmp ) break;
+            if( new == NULL )
+                break;
+            if( new == jmp )
+                break;
             com = PrevIns( jmp );
-            if( com == NULL ) break;
-            if( CommonInstr( new, com ) == FALSE ) break;
+            if( com == NULL )
+                break;
+            if( CommonInstr( new, com ) == FALSE )
+                break;
             com = PrevIns( DelInstr( com ) );
             common = TRUE;
-            if( _Class( jmp ) == OC_DEAD ) optreturn( common );
+            if( _Class( jmp ) == OC_DEAD ) {
+                optreturn( common );
+            }
         }
         if( common ) {
-            if( FindShort( new, NULL ) ) align = 0;
+            if( FindShort( new, NULL ) )
+                align = 0;
             ChgLblRef( jmp, AddNewLabel( new, align ) );
             Untangle( NextIns( new ) );
             Untangle( NextIns( jmp ) );
             Untangle( com );
         }
     }
-    if( _Class( jmp ) == OC_DEAD ) optreturn( common );
+    if( _Class( jmp ) == OC_DEAD )
+        optreturn( common );
     common |= ComTail( _Label( jmp )->refs, jmp );
     optreturn( common );
 }
 
 
-extern  void    TraceCommon( ins_entry *lbl_ins ) {
-/*************************************************/
-
+extern  void    TraceCommon( ins_entry *lbl_ins )
+/***********************************************/
+{
     ins_entry   *ref;
     ins_entry   *ins;
 
   optbegin
-    for(;;) {
+    for( ;; ) {
         ref = _Label( lbl_ins )->refs;
-        for(;;) {
-            for(;;) {
-                if( ref == NULL ) optreturnvoid;
+        for( ;; ) {
+            for( ;; ) {
+                if( ref == NULL )
+                    optreturnvoid;
                 ins = ref;
                 ref = _LblRef( ref );
-                if( _Class( ins ) == OC_JMP ) break;
+                if( _Class( ins ) == OC_JMP ) {
+                    break;
+                }
             }
-            if( ComCode( ins ) ) break;
+            if( ComCode( ins ) ) {
+                break;
+            }
         }
-        if( ref == NULL ) break;
+        if( ref == NULL ) {
+            break;
+        }
     }
     optreturnvoid;
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft style OMF output routines.
 *
 ****************************************************************************/
 
@@ -37,6 +36,7 @@
 #include "objio.h"
 #include "pcobj.h"
 #include "memutil.h"
+#include "genmsomf.h"
 #include "genutil.h"
 #include "myassert.h"
 #include "msdbg.h"
@@ -126,10 +126,6 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     int         is32;
     uint_8      acbp;
     uint_8      align;
-#if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
-    char        buf[ FIX_GEN_MAX ];
-    size_t      len;
-#endif
 #if ( _WOMP_OPT & _WOMP_NASM )
     obj_offset  patch;
 #endif
@@ -173,9 +169,11 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     ObjWrite8( out, acbp );
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
     if( align == SEGDEF_ALIGN_ABS ) {
-        len = FixGenPRef( &objr->d.segdef.abs, buf,
-            is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
-        ObjWrite( out, buf, len );
+        // absolut segment has frame=word and offset=byte
+        // it isn't fixupp physical reference
+        // and don't depend on segment size (16/32bit)
+        ObjWrite16( out, objr->d.segdef.abs.frame );
+        ObjWrite8( out, objr->d.segdef.abs.offset );
     }
 #endif
     if( is32 ) {
@@ -218,7 +216,7 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     OBJ_WFILE   *out;
     int         is32;
     fixup       *walk;
-    char        buf[ FIX_GEN_MAX ];
+    uint_8      buf[ FIX_GEN_MAX ];
     size_t      len;
     size_t      len_written;
 
@@ -246,10 +244,10 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
                 || walk->loc_method == FIX_POINTER386 ) ) {
                 /* zap FIXUPs for OS/2 2.0 linker 21-mar-91 AFS */
                 switch( walk->lr.frame ) {
-                case F_SEG:
-                case F_GRP:
-                case F_TARG:
-                    walk->lr.frame = F_GRP;
+                case FRAME_SEG:
+                case FRAME_GRP:
+                case FRAME_TARG:
+                    walk->lr.frame = FRAME_GRP;
                     walk->lr.frame_datum = ObjFLATIndex;
                     break;
                 }
@@ -397,10 +395,10 @@ STATIC int writeModend( obj_rec *objr, pobj_state *state ) {
     size_t  len;
     char    is32;
 #if _WOMP_OPT & _WOMP_WATFOR
-    char    buf[ 1 ];
+    uint_8  buf[ 1 ];
 #else
-    char    buf[ 1 + FIX_GEN_MAX ];
-    char    is_log;
+    uint_8  buf[ 1 + FIX_GEN_MAX ];
+    uint_8  is_log;
 #endif
 
 /**/myassert( objr != NULL );
@@ -416,10 +414,10 @@ STATIC int writeModend( obj_rec *objr, pobj_state *state ) {
 #if _WOMP_OPT & _WOMP_WOMP
         if( is_log && Can2MsOS2Flat() ) {
             switch( objr->d.modend.ref.log.frame ) {
-            case F_SEG:
-            case F_GRP:
-            case F_TARG:
-                objr->d.modend.ref.log.frame = F_GRP;
+            case FRAME_SEG:
+            case FRAME_GRP:
+            case FRAME_TARG:
+                objr->d.modend.ref.log.frame = FRAME_GRP;
                 objr->d.modend.ref.log.frame_datum = ObjFLATIndex;
                 break;
             }
@@ -535,7 +533,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
             ObjWrite8( out, name_len );
-            ObjWrite( out, name, (size_t)name_len );
+            ObjWrite( out, (uint_8 *)name, (size_t)name_len );
             if( is32 ) {
                 ObjWrite32( out, pubdata->offset );
             } else {
@@ -556,25 +554,7 @@ STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
 /**/myassert( objr != NULL );
 /**/myassert( out != NULL );
     is32 = objr->is_32 || objr->is_phar;
-#if LITTLE_ENDIAN
-    if( is32 ) {
-        ObjWrite( out, (char *)objr->d.linnum.lines,
-            6 * objr->d.linnum.num_lines );
-/**/    myassert( sizeof( linnum_data ) == 6 );
-    } else {
-        linnum_data *cur;
-        linnum_data *stop;
-
-        cur = objr->d.linnum.lines;
-        stop = cur + objr->d.linnum.num_lines;
-        while( cur < stop ) {
-            ObjWrite16( out, cur->number );
-/**/        myassert( ( cur->offset & 0xffff0000 ) == 0 );
-            ObjWrite16( out, (uint_16)cur->offset );
-            ++cur;
-        }
-    }
-#else
+#if defined( __BIG_ENDIAN__ )
     {
         linnum_data *cur;
         linnum_data *stop;
@@ -588,6 +568,24 @@ STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
             } else {
                 ObjWrite16( out, (uint_16)cur->offset );
             }
+            ++cur;
+        }
+    }
+#else
+    if( is32 ) {
+        ObjWrite( out, (uint_8 *)objr->d.linnum.lines,
+            6 * objr->d.linnum.num_lines );
+/**/    myassert( sizeof( linnum_data ) == 6 );
+    } else {
+        linnum_data *cur;
+        linnum_data *stop;
+
+        cur = objr->d.linnum.lines;
+        stop = cur + objr->d.linnum.num_lines;
+        while( cur < stop ) {
+            ObjWrite16( out, cur->number );
+/**/        myassert( ( cur->offset & 0xffff0000 ) == 0 );
+            ObjWrite16( out, (uint_16)cur->offset );
             ++cur;
         }
     }

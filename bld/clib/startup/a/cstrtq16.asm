@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  QNX 16-bit startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++16 under QNX
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm cstrtq16 -bt=QNX -ms -0r
 ;               wasm cstrtq16 -bt=QNX -mm -0r
@@ -41,6 +37,7 @@
 ;               wasm cstrtq16 -bt=QNX -mh -0r
 ;
 include mdef.inc
+include exitwmsg.inc
 
         name    cstart
 
@@ -49,11 +46,9 @@ include mdef.inc
 if _MODEL and _BIG_CODE
         extrn   __CMain                 : far
         extrn   __qnx_exit_             : far
-        extrn   __fatal_runtime_error_  : far
 else
         extrn   __CMain                 : near
         extrn   __qnx_exit_             : near
-        extrn   __fatal_runtime_error_  : near
 endif
 
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
@@ -64,7 +59,7 @@ endif
 
  DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
-ife _MODEL and _BIG_CODE
+if ( _MODEL and _BIG_CODE ) eq 0
 
 ; this guarantees that no function pointer will equal NULL
 ; (WLINK will keep segment 'BEGTEXT' in front)
@@ -153,15 +148,15 @@ STACK   ends
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++16 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1989-2000."
-        db      ' All rights reserved.'
+include msgrt16.inc
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
-NullAssign      db      0ah,'*** NULL assignment detected',0ah,0
+NullAssign      db      '*** NULL assignment detected',0
 
-ife _MODEL and _BIG_CODE
+if ( _MODEL and _BIG_CODE ) eq 0
         dw      ___begtext      ; make sure dead code elimination
 endif                           ; doesn't kill BEGTEXT segment
 
@@ -200,7 +195,7 @@ __exit  proc near
         mov     ax,offset NullAssign    ; point to msg
         mov     dx,cs                   ; . . .
         mov     sp,offset DGROUP:end_stk; set a good stack pointer
-        call    __fatal_runtime_error_
+        call    __fatal_runtime_error 
 ok:
         jmp     __qnx_exit_
 __exit  endp

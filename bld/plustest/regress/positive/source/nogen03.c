@@ -6,8 +6,8 @@
 struct Q {
     Q();
     ~Q();
-    __cdecl Q( const Q & );             // declared but not implemented
-    __cdecl operator = ( const Q & );   // to prevent copying of objects
+    __cdecl Q( const Q & );                 // declared but not implemented
+    bool __cdecl operator = ( const Q & );  // to prevent copying of objects
 };
 Q::Q() {};
 Q::~Q() {};

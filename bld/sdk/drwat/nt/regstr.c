@@ -75,7 +75,7 @@ void UpdateRegString( HWND string, HWND list, int x, int y, int width, int heigh
     LONG flags;
 
     len = GetWindowTextLength( string ) + 1;
-    cmp = alloca( len + 1 );
+    cmp = alloca( len );
     GetWindowText( string, cmp, len );
     if( strcmp( text, cmp ) != 0 ) {
         SetWindowText( string, text );
@@ -125,7 +125,7 @@ static void RegStrPaint(HWND hwnd)
 
     SelectObject( hdc, GetMonoFont() );
     GetClientRect( hwnd, &r );
-    GetWindowText( hwnd, buff, 255 );
+    GetWindowText( hwnd, buff, sizeof( buff ) );
     len = strlen( buff );
     GetTextExtentPoint32( hdc, buff, len, &size );
     if( flags & REG_SELECTED ){
@@ -370,8 +370,8 @@ BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM l
 
 static void GetNewRegValue( HWND hwnd )
 {
-    HWND owner;
-    FARPROC         fp;
+    HWND            owner;
+    DLGPROC         fp;
     int             reg_modified;
     RegModifyData   modify_data;
     char            *discript;
@@ -389,7 +389,7 @@ static void GetNewRegValue( HWND hwnd )
         &( modify_data.th ), &( modify_data.maxv ) );
     MADTypeInfo( modify_data.curr_info->type, &tinfo );
     modify_data.curr_value = alloca( tinfo.b.bits / BITS_PER_BYTE );
-    BitGet( modify_data.curr_value, (char *)regs, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size);
+    BitGet( modify_data.curr_value, (unsigned char *)regs, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size);
     MADRegSetDisplayModify( modify_data.reg_set, modify_data.curr_info,
         (const mad_modify_list **)( &( modify_data.m_list ) ),
         &(modify_data.num_possible ));
@@ -404,18 +404,18 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        fp = MakeProcInstance( ChangeRegisterDialog, Instance );
+        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
         reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, fp, (LPARAM)( &modify_data ) );
         FreeProcInstance( fp );
         break;
     default:
-        fp = MakeProcInstance( ChangeRegisterDialog, Instance );
+        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
         reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, fp, (LPARAM)( &modify_data ) );
         FreeProcInstance( fp );
     }
     if( reg_modified == 1 ) {
         MADRegUpdateStart( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );
-        BitPut( (char *)regs, modify_data.curr_info->bit_start, modify_data.curr_value, modify_data.curr_info->bit_size );
+        BitPut( (unsigned char *)regs, modify_data.curr_info->bit_start, modify_data.curr_value, modify_data.curr_info->bit_size );
         MADRegUpdateEnd( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );
     }
 }

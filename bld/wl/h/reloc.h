@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#pragma pack(1);
+#pragma pack(1)
 
 typedef struct os2_reloc_item {
     unsigned_8      addr_type;          /* see below                     */
@@ -101,6 +101,10 @@ typedef struct {
 typedef struct {
     unsigned_32 reloc_offset;
 } qnx_linear_item;
+
+typedef struct {
+    unsigned_32 reloc_offset;
+} zdos_reloc_item;
 
 typedef union {
     byte        buff[ 12 ];
@@ -181,6 +185,7 @@ typedef union {
     old_pe_reloc_item   oldpe;
     high_pe_reloc_item  hpe;
     elf_reloc_item      elf;
+    zdos_reloc_item     zdos;
 } reloc_item;
 
 typedef struct base_reloc {
@@ -224,8 +229,10 @@ extern unsigned_32      DumpMaxRelocList( RELOC_INFO **, unsigned_32 );
 extern bool             DumpRelocList( RELOC_INFO * );
 extern void             SetRelocSize( void );
 extern bool             SwapOutRelocs( void );
+extern void             ResetReloc( void );
+extern unsigned_32      WalkRelocList( RELOC_INFO **head, bool (*fn)( void *data, unsigned_32 size, void *ctx ), void *ctx );
 
 extern unsigned         FmtRelocSize;
 extern RELOC_INFO *     FloatFixups;
 
-#pragma pack();
+#pragma pack()

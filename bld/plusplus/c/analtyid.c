@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "cgfront.h"
 #include "errdefns.h"
@@ -70,7 +68,7 @@ PTREE NodeTypeid( TYPE type )
 
     sym = TypeidICAccess( type );
     lvalue = NodeSymbolNoRef( NULL, sym, NULL );
-    DbgAssert( ! SymIsReferenced( sym ) || CurrScope == ModuleInitScope() );
+    DbgAssert( ! SymIsReferenced( sym ) || GetCurrScope() == ModuleInitScope() );
     return( lvalue );
 }
 
@@ -155,7 +153,7 @@ PTREE AnalyseTypeidExpr( PTREE typeid_expr )
     }
     result_expr = NodeTypeid( expr_type );
     result_expr = NodeSetType( result_expr, type_info, PTF_LVALUE );
-    PTreeFreeSubtrees( typeid_expr );
+    NodeFreeDupedExpr( typeid_expr );
     return( result_expr );
 }
 

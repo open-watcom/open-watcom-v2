@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of __IsDBCS (Double-Byte Character Set indicator).
 *
 ****************************************************************************/
 
@@ -34,4 +33,4 @@
 #include <mbstring.h>
 #include "rtinit.h"
 
-_WCRTLINK int                   __IsDBCS;
+_WCRTDATA int _WCDATA __IsDBCS = 0;

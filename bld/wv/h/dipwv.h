@@ -61,8 +61,35 @@ typedef struct {
     }   v;
 } fixed_wv_sym_entry;
 
+/* Note: The following strcture previously was:
+
 typedef struct {
     fixed_wv_sym_entry;
+    char                name[1];
+} wv_sym_entry;
+
+This was fine with Watcom and gcc 3.2, but not gcc 3.3. If you
+change the fixed_wv_sym_entry struct, wv_sym_entry needs to
+reflect those changes and vice versa.
+
+*/
+
+typedef struct {
+    struct {
+        wv_type_entry       t;
+        enum wv_sym_class   sc;
+        union {
+            /* for SC_INTERNAL */
+            unsigned        internal;
+            /* remainder for SC_USER */
+            unsigned long   uint;
+            long            sint;
+            xreal           real;
+            xcomplex        cmplx;
+            void            *string;
+            address         addr;
+        }   v;
+    };
     char                name[1];        /* variable sized, first is length */
 } wv_sym_entry;
 

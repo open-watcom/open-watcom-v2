@@ -33,7 +33,7 @@
 #include "guiwind.h"
 #include <string.h>
 #include "guixutil.h"
-#if defined( UNIX )
+#if defined( __UNIX__ )
     // WindU stuff
     #include <windef.h>
 #endif
@@ -49,7 +49,7 @@ typedef struct {
     void                *param;
 } enum_info;
 
-#if defined( UNIX )
+#if defined( __UNIX__ )
 int EnumFunc( HWND hwnd, LONG lparam )
 #else
 BOOL CALLBACK EnumFunc( HWND hwnd, LONG lparam )
@@ -87,11 +87,11 @@ extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func,
     WPI_ENUMPROC        enum_func;
     enum_info           info;
 
-    enum_func = _wpi_makeenumprocinstance( (WPI_PROC) EnumFunc, GUIMainHInst );
+    enum_func = _wpi_makeenumprocinstance( EnumFunc, GUIMainHInst );
     info.parent = wnd;
     info.func = func;
     info.param = param;
-    _wpi_enumchildwindows( wnd->hwnd, enum_func, (LONG) &info );
+    _wpi_enumchildwindows( wnd->hwnd, enum_func, (LPARAM)&info );
     _wpi_freeprocinstance( (WPI_PROC)enum_func );
 }
 

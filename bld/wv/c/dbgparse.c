@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expression parser (using .prs grammar files).
 *
 ****************************************************************************/
 
@@ -44,21 +43,21 @@
 #include "i64.h"
 
 
-extern void             PushInt(int );
-extern void             SwapStack(int );
-extern void             MakeAddr(void);
-extern void             ConvertTo(stack_entry *,type_kind, type_modifier, unsigned );
-extern void             PopEntry(void);
-extern void             ExprValue(stack_entry *);
+extern void             PushInt( int );
+extern void             SwapStack( int );
+extern void             MakeAddr( void );
+extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
+extern void             PopEntry( void );
+extern void             ExprValue( stack_entry * );
 extern void             DefAddr( memory_expr, address * );
 extern void             ExprResolve( stack_entry * );
 extern void             AddrFix( address * );
 extern void             AddrFloat( address * );
 
-extern void             ScanExpr(void *);
-extern bool             ScanEOC(void);
-extern handle           PathOpen(char *,unsigned,char *);
-extern int              SSLWalk(char *,unsigned,void **,unsigned int );
+extern void             ScanExpr( void * );
+extern bool             ScanEOC( void );
+extern handle           LocalPathOpen( char *, unsigned, char * );
+extern int              SSLWalk( char *, unsigned, void **, unsigned int );
 extern unsigned         SetCurrRadix( unsigned );
 
 extern tokens           CurrToken;
@@ -75,7 +74,8 @@ static token_table  ParseTokens;
 
 #define PARSE_STACK_SIZE 128
 
-static void start_expr()
+
+static void start_expr( void )
 {
     void        *stack[ PARSE_STACK_SIZE ];
 
@@ -106,7 +106,7 @@ void EvalExpr( unsigned addr_depth )
     ExprValue( ExprSP );
 }
 
-void NormalExpr()
+void NormalExpr( void )
 {
     EvalExpr( 1 );
 }
@@ -117,7 +117,7 @@ void NormalExpr()
  * ChkExpr -- check out expression syntax
  */
 
-void ChkExpr()
+void ChkExpr( void )
 {
     SkipCount = 1;
     ExprAddrDepth = 1;
@@ -127,7 +127,7 @@ void ChkExpr()
  * ReqExpr -- get a required expression
  */
 
-unsigned_64 ReqU64Expr()
+unsigned_64 ReqU64Expr( void )
 {
     unsigned_64 rtn;
 
@@ -138,7 +138,7 @@ unsigned_64 ReqU64Expr()
     return( rtn );
 }
 
-long ReqLongExpr()
+long ReqLongExpr( void )
 {
     unsigned_64 tmp;
 
@@ -146,7 +146,7 @@ long ReqLongExpr()
     return( U32FetchTrunc( tmp ) );
 }
 
-unsigned ReqExpr()
+unsigned ReqExpr( void )
 {
     unsigned_64 tmp;
 
@@ -160,7 +160,7 @@ unsigned ReqExpr()
  */
 
 #ifdef DEADCODE
-xreal ReqXRealExpr()
+xreal ReqXRealExpr( void )
 {
     xreal v;
 
@@ -264,13 +264,13 @@ void SetTokens( bool parse_tokens )
 
 #define PARSE_TABLE_INIT (1024*4)
 
-void LangInit()
+void LangInit( void )
 {
     _Alloc( ParseTable, PARSE_TABLE_INIT );
     ParseTableSize = PARSE_TABLE_INIT;
 }
 
-void LangFini()
+void LangFini( void )
 {
     _Free( ParseTable );
     ParseTable = NULL;
@@ -286,6 +286,7 @@ static unsigned ReadSection( handle filehndl, unsigned off )
     if( ReadStream( filehndl, &len, sizeof( len ) ) != sizeof( len ) ) {
         return( 0 );
     }
+    CONV_LE_16( len );
     last = off + len;
     if( last > ParseTableSize ) {
         new = ParseTable;
@@ -323,7 +324,7 @@ bool LangLoad( char *lang, int langlen )
     handle      filehndl;
     bool        ret;
 
-    filehndl = PathOpen( lang, langlen, "prs" );
+    filehndl = LocalPathOpen( lang, langlen, "prs" );
     if( filehndl == NIL_HANDLE ) return( FALSE );
     ret = ReadAllSections( filehndl );
     FileClose( filehndl );

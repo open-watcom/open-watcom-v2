@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Decode compressed messages.
 *
 ****************************************************************************/
 
@@ -62,11 +61,11 @@ static char *decodePhrase(      // DECODE PHRASE
     unsigned word_stop;
 
     while( msg_start < msg_stop ) {
-        msg_leader = (uint_8) msg_text[ msg_start++ ];
+        msg_leader = msg_text[ msg_start++ ];
         if( msg_leader & ENC_BIT ) {
             if( msg_leader & LARGE_BIT ) {
                 word_index = ( msg_leader & ~(ENC_BIT|LARGE_BIT) ) << 8;
-                word_index |= (uint_8) msg_text[ msg_start++ ];
+                word_index |= msg_text[ msg_start++ ];
             } else {
                 word_index = msg_leader & ~ENC_BIT;
             }
@@ -74,7 +73,7 @@ static char *decodePhrase(      // DECODE PHRASE
             word_start = word_base[ word_index ];
             word_stop = word_base[ word_index + 1 ];
         } else {
-            word_table = msg_text;
+            word_table = (char const *)msg_text;
             word_start = msg_start;
             word_stop = msg_start + msg_leader;
             msg_start = word_stop;
@@ -88,12 +87,20 @@ static void decodeMsg(          // DECODE MESSAGE
     char *tgt,                  // - message location
     unsigned msg_num )          // - message number
 {
+    char *endp;
     unsigned msg_start;
     unsigned msg_stop;
 
     msg_start = msg_base[ msg_num ];
     msg_stop = msg_base[ msg_num + 1 ];
-    *decodePhrase( tgt, msg_start, msg_stop ) = '\0';
+    endp = decodePhrase( tgt, msg_start, msg_stop );
+
+    /* encodeRaw always adds a trailing space, remove it */
+    if( ( endp != tgt ) && ( endp[-1] == ' ' ) ) {
+        endp[-1] = '\0';
+    } else {
+        *endp = '\0';
+    }
 }
 
 

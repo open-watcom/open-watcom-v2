@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of far free() and _ffree().
 *
 ****************************************************************************/
 
@@ -58,7 +57,7 @@ _WCRTLINK void _ffree( void _WCFAR *stg )
         return;
     }
     if( seg == _DGroup() ) {
-        _nfree( (void _WCNEAR *) stg );
+        _nfree( (void _WCNEAR *)FP_OFF( stg ) );
         return;
     }
     _AccessFHeap();
@@ -74,6 +73,5 @@ _WCRTLINK void _ffree( void _WCFAR *stg )
             __LargestSizeB4Rover = p->largest_blk;
         }
     }
-    __fheap_clean = 0;
     _ReleaseFHeap();
 }

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX trunc utility
+*               Truncates files
 *
 ****************************************************************************/
 
@@ -35,11 +35,11 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #if defined(__OS_qnx__) || defined(__OS_qnx16__)
  #include <utime.h>
 #else
- #include <sys\utime.h>
+ #include <sys/utime.h>
 #endif
 #include "argvenv.h"
 #include "getopt.h"
@@ -48,7 +48,7 @@
 
 char *OptEnvVar = "trunc";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: trunc [-?qX] [@env] [files]",
     "\tenv         : environment variable to expand",
     "\tfiles       : files to truncate",

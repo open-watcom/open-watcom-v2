@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wdemain.h"
@@ -40,7 +40,7 @@
 #include "wdemain.h"
 #include "wdehints.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wde_rc.h"
 #include "wderibbn.h"
 #include "wde_rc.h"
@@ -58,8 +58,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WdeRibbonHook       ( HWND, UINT, WPARAM, LPARAM );
-extern void WdeRibbonHelpHook   ( HWND hwnd, WPARAM wParam, BOOL pressed );
+extern BOOL WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
+extern void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -67,8 +67,9 @@ extern void WdeRibbonHelpHook   ( HWND hwnd, WPARAM wParam, BOOL pressed );
 typedef struct {
     char    *up;
     char    *down;
-    UINT     menu_id;
-    WORD     flags;
+    UINT    menu_id;
+    WORD    flags;
+    int     tip_id;
 } WdeRibbonName;
 
 /****************************************************************************/
@@ -79,56 +80,56 @@ static Bool WdeDoInitRibbon( HINSTANCE, WdeRibbonName *, int );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-WdeRibbonName WdeRibbonNames[] =
-{
-    { "New"     , NULL , IDM_NEW_RES     , NULL         }
-,   { "Open"    , NULL , IDM_OPEN_RES    , NULL         }
-,   { "Save"    , NULL , IDM_SAVE_RES    , NULL         }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Cut"     , NULL , IDM_CUTOBJECT   , NULL         }
-,   { "Copy"    , NULL , IDM_COPYOBJECT  , NULL         }
-,   { "Paste"   , NULL , IDM_PASTEOBJECT , NULL         }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "SzToTxt" , NULL , IDM_SIZETOTEXT  , NULL         }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Test"    , NULL , IDM_TEST_MODE   , ITEM_STICKY  }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Order"   , NULL , IDM_SET_ORDER   , ITEM_STICKY  }
-,   { "Tabs"    , NULL , IDM_SET_TABS    , ITEM_STICKY  }
-,   { "Groups"  , NULL , IDM_SET_GROUPS  , ITEM_STICKY  }
+WdeRibbonName WdeRibbonNames[] = {
+    { "New",        NULL, IDM_NEW_RES,      0,              WDE_TIP_NEW        },
+    { "Open",       NULL, IDM_OPEN_RES,     0,              WDE_TIP_OPEN       },
+    { "Save",       NULL, IDM_SAVE_RES,     0,              WDE_TIP_SAVE       },
+    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { "Cut",        NULL, IDM_CUTOBJECT,    0,              WDE_TIP_CUT        },
+    { "Copy",       NULL, IDM_COPYOBJECT,   0,              WDE_TIP_COPY       },
+    { "Paste",      NULL, IDM_PASTEOBJECT,  0,              WDE_TIP_PASTE      },
+    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { "SzToTxt",    NULL, IDM_SIZETOTEXT,   0,              WDE_TIP_SIZETOTEXT },
+    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { "Test",       NULL, IDM_TEST_MODE,    ITEM_STICKY,    WDE_TIP_TEST_MODE  },
+    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { "Order",      NULL, IDM_SET_ORDER,    ITEM_STICKY,    WDE_TIP_SET_ORDER  },
+    { "Tabs",       NULL, IDM_SET_TABS,     ITEM_STICKY,    WDE_TIP_SET_TABS   },
+    { "Groups",     NULL, IDM_SET_GROUPS,   ITEM_STICKY,    WDE_TIP_SET_GROUPS }
 };
-#define NUM_TOOLS (sizeof(WdeRibbonNames)/sizeof(WdeRibbonName))
 
-WdeRibbonName WdeDDERibbonNames[] =
-{
-    { "Clear"   , NULL , IDM_DDE_CLEAR   , NULL         }
-,   { "Save"    , NULL , IDM_DDE_UPDATE_PRJ , NULL      }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Cut"     , NULL , IDM_CUTOBJECT   , NULL         }
-,   { "Copy"    , NULL , IDM_COPYOBJECT  , NULL         }
-,   { "Paste"   , NULL , IDM_PASTEOBJECT , NULL         }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "SzToTxt" , NULL , IDM_SIZETOTEXT  , NULL         }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Test"    , NULL , IDM_TEST_MODE   , ITEM_STICKY  }
-,   { NULL      , NULL , BLANK_PAD       , NULL         }
-,   { "Order"   , NULL , IDM_SET_ORDER   , ITEM_STICKY  }
-,   { "Tabs"    , NULL , IDM_SET_TABS    , ITEM_STICKY  }
-,   { "Groups"  , NULL , IDM_SET_GROUPS  , ITEM_STICKY  }
+#define NUM_TOOLS (sizeof( WdeRibbonNames ) / sizeof( WdeRibbonName ))
+
+WdeRibbonName WdeDDERibbonNames[] = {
+    { "Clear",      NULL, IDM_DDE_CLEAR,        0,              -1 },
+    { "Save",       NULL, IDM_DDE_UPDATE_PRJ,   0,              -1 },
+    { NULL,         NULL, BLANK_PAD,            0,              -1 },
+    { "Cut",        NULL, IDM_CUTOBJECT,        0,              -1 },
+    { "Copy",       NULL, IDM_COPYOBJECT,       0,              -1 },
+    { "Paste",      NULL, IDM_PASTEOBJECT,      0,              -1 },
+    { NULL,         NULL, BLANK_PAD,            0,              -1 },
+    { "SzToTxt",    NULL, IDM_SIZETOTEXT,       0,              -1 },
+    { NULL,         NULL, BLANK_PAD,            0,              -1 },
+    { "Test",       NULL, IDM_TEST_MODE,        ITEM_STICKY,    -1 },
+    { NULL,         NULL, BLANK_PAD,            0,              -1 },
+    { "Order",      NULL, IDM_SET_ORDER,        ITEM_STICKY,    -1 },
+    { "Tabs",       NULL, IDM_SET_TABS,         ITEM_STICKY,    -1 },
+    { "Groups",     NULL, IDM_SET_GROUPS,       ITEM_STICKY,    -1 }
 };
-#define NUM_DDE_TOOLS (sizeof(WdeDDERibbonNames)/sizeof(WdeRibbonName))
 
-static WdeToolBarInfo *WdeRibbonInfo   = NULL;
-static WdeToolBar     *WdeRibbon       = NULL;
-static int             WdeRibbonHeight = 0;
-static int             WdeNumRibbonTools = 0;
+#define NUM_DDE_TOOLS (sizeof( WdeDDERibbonNames ) / sizeof( WdeRibbonName ))
 
-int WdeGetRibbonHeight ( void )
+static WdeToolBarInfo   *WdeRibbonInfo = NULL;
+static WdeToolBar       *WdeRibbon = NULL;
+static int              WdeRibbonHeight = 0;
+static int              WdeNumRibbonTools = 0;
+
+int WdeGetRibbonHeight( void )
 {
     return ( WdeRibbonHeight );
 }
 
-Bool WdeInitRibbon ( HINSTANCE inst )
+Bool WdeInitRibbon( HINSTANCE inst )
 {
     Bool        ret;
 
@@ -146,26 +147,27 @@ Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     int i;
 
     WdeNumRibbonTools = num_tools;
-
     WdeRibbonInfo = WdeAllocToolBarInfo( num_tools );
-
-    if( !WdeRibbonInfo ) {
-        return ( FALSE );
+    if( WdeRibbonInfo == NULL ) {
+        return( FALSE );
     }
 
-    for( i=0; i<num_tools; i++ ) {
+    for( i = 0; i < num_tools; i++ ) {
         if( tools[i].up ) {
-            WdeRibbonInfo->items[i].bmp =
-                LoadBitmap ( inst, tools[i].up );
-            WdeRibbonInfo->items[i].id     = tools[i].menu_id;
-            WdeRibbonInfo->items[i].flags  = tools[i].flags;
+            WdeRibbonInfo->items[i].bmp = LoadBitmap( inst, tools[i].up );
+            WdeRibbonInfo->items[i].id = tools[i].menu_id;
+            WdeRibbonInfo->items[i].flags = tools[i].flags;
             WdeRibbonInfo->items[i].flags |= ITEM_DOWNBMP;
-            if ( tools[i].down ) {
-                WdeRibbonInfo->items[i].depressed =
-                    LoadBitmap ( inst, tools[i].down );
+            if( tools[i].down ) {
+                WdeRibbonInfo->items[i].depressed = LoadBitmap( inst, tools[i].down );
             } else {
-                WdeRibbonInfo->items[i].depressed =
-                    WdeRibbonInfo->items[i].bmp;
+                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].bmp;
+            }
+            if( tools[i].tip_id >= 0 ) {
+                LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip,
+                            MAX_TIP );
+            } else {
+                WdeRibbonInfo->items[i].tip[0] = '\0';
             }
         } else {
             WdeRibbonInfo->items[i].flags = ITEM_BLANK;
@@ -177,75 +179,74 @@ Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     WdeRibbonInfo->dinfo.button_size.y = BUTTONY + BUTTON_PAD;
     WdeRibbonInfo->dinfo.border_size.x = TOOL_BORDERX;
     WdeRibbonInfo->dinfo.border_size.y = TOOL_BORDERY;
-    WdeRibbonInfo->dinfo.style         = TOOLBAR_FIXED_STYLE;
-    WdeRibbonInfo->dinfo.hook          = WdeRibbonHook;
-    WdeRibbonInfo->dinfo.helphook      = WdeRibbonHelpHook;
-    WdeRibbonInfo->dinfo.foreground    = NULL;
-    WdeRibbonInfo->dinfo.background    = NULL;
-    WdeRibbonInfo->dinfo.is_fixed      = TRUE;
+    WdeRibbonInfo->dinfo.style = TOOLBAR_FIXED_STYLE;
+    WdeRibbonInfo->dinfo.hook = WdeRibbonHook;
+    WdeRibbonInfo->dinfo.helphook = WdeRibbonHelpHook;
+    WdeRibbonInfo->dinfo.foreground = NULL;
+    WdeRibbonInfo->dinfo.background = NULL;
+    WdeRibbonInfo->dinfo.is_fixed = TRUE;
+    WdeRibbonInfo->dinfo.use_tips = TRUE;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-void WdeShutdownRibbon ( void )
+void WdeShutdownRibbon( void )
 {
-    int  i;
+    int i;
 
-    WdeDestroyRibbon ( );
+    WdeDestroyRibbon();
 
-    if ( !WdeRibbonInfo ) {
+    if( WdeRibbonInfo == NULL ) {
         return;
     }
 
-    for ( i=0; i<WdeNumRibbonTools; i++ ) {
-        if ( WdeRibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if ( WdeRibbonInfo->items[i].bmp ==
-                 WdeRibbonInfo->items[i].depressed ) {
-                WdeRibbonInfo->items[i].depressed = (HBITMAP) NULL;
+    for( i = 0; i < WdeNumRibbonTools; i++ ) {
+        if( WdeRibbonInfo->items[i].flags != ITEM_BLANK ) {
+            if( WdeRibbonInfo->items[i].bmp == WdeRibbonInfo->items[i].depressed ) {
+                WdeRibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if ( WdeRibbonInfo->items[i].bmp ) {
-                DeleteObject ( WdeRibbonInfo->items[i].bmp );
+            if( WdeRibbonInfo->items[i].bmp != NULL ) {
+                DeleteObject( WdeRibbonInfo->items[i].bmp );
             }
-            if ( WdeRibbonInfo->items[i].depressed ) {
-                DeleteObject ( WdeRibbonInfo->items[i].depressed );
+            if( WdeRibbonInfo->items[i].depressed != NULL ) {
+                DeleteObject( WdeRibbonInfo->items[i].depressed );
             }
         }
     }
 
-    WdeFreeToolBarInfo ( WdeRibbonInfo );
+    WdeFreeToolBarInfo( WdeRibbonInfo );
 }
 
-Bool WdeCreateRibbon ( HWND parent )
+Bool WdeCreateRibbon( HWND parent )
 {
-    if ( WdeRibbon || !WdeRibbonInfo || ( parent == (HWND)NULL ) ) {
-        return ( FALSE );
+    if( WdeRibbon != NULL || WdeRibbonInfo == NULL || parent == (HWND)NULL ) {
+        return( FALSE );
     }
 
-    GetClientRect ( parent, &WdeRibbonInfo->dinfo.area );
+    GetClientRect( parent, &WdeRibbonInfo->dinfo.area );
 
     WdeRibbonHeight = 2 * WdeRibbonInfo->dinfo.border_size.y +
                       WdeRibbonInfo->dinfo.button_size.y +
-                      2 * GetSystemMetrics(SM_CYBORDER);
+                      2 * GetSystemMetrics( SM_CYBORDER );
     WdeRibbonInfo->dinfo.area.bottom = WdeRibbonHeight;
 
-    WdeRibbon = WdeCreateToolBar ( WdeRibbonInfo, parent );
+    WdeRibbon = WdeCreateToolBar( WdeRibbonInfo, parent );
 
-    WdeResizeWindows ();
+    WdeResizeWindows();
 
-    return ( WdeRibbon != NULL );
+    return( WdeRibbon != NULL );
 }
 
-Bool WdeResizeRibbon ( RECT *prect )
+Bool WdeResizeRibbon( RECT *prect )
 {
-    if ( !WdeRibbon || !WdeRibbonHeight ||
-         ( WdeRibbon->win == (HWND)NULL ) || !prect ) {
-        return ( FALSE );
+    if( WdeRibbon == NULL || WdeRibbonHeight == 0 ||
+        WdeRibbon->win == (HWND)NULL || prect == NULL ) {
+        return( FALSE );
     }
 
-    MoveWindow ( WdeRibbon->win, 0, 0, ( prect->right - prect->left ),
-                 WdeRibbonHeight, TRUE );
+    MoveWindow( WdeRibbon->win, 0, 0, prect->right - prect->left, WdeRibbonHeight, TRUE );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 void WdeShowRibbon( void )
@@ -253,14 +254,14 @@ void WdeShowRibbon( void )
     Bool        created;
     char        *mtext;
 
-    if( WdeRibbonHeight ) {
+    if( WdeRibbonHeight != 0 ) {
         ShowWindow( WdeRibbon->win, SW_HIDE );
         WdeRibbonHeight = 0;
         WdeResizeWindows();
         mtext = WdeAllocRCString( WDE_SHOWTOOLBAR );
     } else {
-        if( !WdeRibbon ) {
-            WdeCreateRibbon( WdeGetMainWindowHandle () );
+        if( WdeRibbon == NULL ) {
+            WdeCreateRibbon( WdeGetMainWindowHandle() );
             created = TRUE;
         } else {
             created = FALSE;
@@ -268,28 +269,28 @@ void WdeShowRibbon( void )
         if( !created ) {
             WdeRibbonHeight = 2 * WdeRibbonInfo->dinfo.border_size.y +
                               WdeRibbonInfo->dinfo.button_size.y +
-                              2 * GetSystemMetrics(SM_CYBORDER);
+                              2 * GetSystemMetrics( SM_CYBORDER );
             WdeResizeWindows();
         }
         mtext = WdeAllocRCString( WDE_HIDETOOLBAR );
         ShowWindow( WdeRibbon->win, SW_SHOW );
     }
 
-    WdeSetOption( WdeOptIsRibbonVisible, ( WdeRibbonHeight != 0 ) );
+    WdeSetOption( WdeOptIsRibbonVisible, WdeRibbonHeight != 0 );
 
     ModifyMenu( WdeGetInitialMenuHandle(), IDM_SHOW_RIBBON,
                 MF_BYCOMMAND | MF_STRING, IDM_SHOW_RIBBON, mtext );
     ModifyMenu( WdeGetResMenuHandle(), IDM_SHOW_RIBBON,
                 MF_BYCOMMAND | MF_STRING, IDM_SHOW_RIBBON, mtext );
 
-    if( mtext ) {
+    if( mtext != NULL ) {
         WdeFreeRCString( mtext );
     }
 }
 
 void WdeDestroyRibbon( void )
 {
-    if( WdeRibbon ) {
+    if( WdeRibbon != NULL ) {
         WdeDestroyToolBar( WdeRibbon );
     }
 
@@ -300,14 +301,14 @@ void WdeDestroyRibbon( void )
 
 void WdeSetRibbonItemState( WORD item, int state )
 {
-    if( WdeRibbon ) {
+    if( WdeRibbon != NULL ) {
         WdeSetToolBarItemState( WdeRibbon, item, state );
     }
 }
 
 void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 {
-    _wde_touch(hwnd);
+    _wde_touch( hwnd );
 
     WdeHandleToolHint( wParam, pressed );
 }
@@ -316,23 +317,22 @@ BOOL WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     Bool         ret;
 
-    _wde_touch(hwnd);
-    _wde_touch(wParam);
-    _wde_touch(lParam);
+    _wde_touch( hwnd );
+    _wde_touch( wParam );
+    _wde_touch( lParam );
 
-    if( !WdeRibbon ) {
+    if( WdeRibbon == NULL ) {
         return( FALSE );
     }
 
     ret = FALSE;
 
     switch( msg ) {
-        case WM_DESTROY:
-            WdeCloseToolBar ( WdeRibbon );
-            WdeRibbon = NULL;
-            break;
+    case WM_DESTROY:
+        WdeCloseToolBar ( WdeRibbon );
+        WdeRibbon = NULL;
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
-

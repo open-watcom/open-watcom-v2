@@ -1,84 +1,34 @@
-.extensions:
-.extensions: .lib .obj .lan .i .c .mif
-
-.mif: $(mif_path)
-!include cproj.mif
-!include defrule.mif
-
-comp_os2_i86    = $(comp286) -fpc -zc -ml -zu
-comp_win_i86    = $(comp286) -fpc -zc -ml -zu -zW
-comp_osi_386    = $(comp386) -fpc -zc
-comp_qnx_386    = $(comp386) -fpc -zc -ms
-comp_osi_axp    = *wccaxp
-
-lib_os2_i86     = $(watcom_dir)\lib\dwarfrlp.lib
-lib_win_i86     = $(watcom_dir)\lib\dwarfrlw.lib
-!ifdef inline_vmem
-lib_osi_386     = $(watcom_dir)\lib\dwarfrp.lib
+c_objs = &
+drarange.obj &
+drdecnam.obj &
+drenum.obj   &
+drfdkids.obj &
+drgetref.obj &
+drgettab.obj &
+drinfo.obj   &
+drinit.obj   &
+drline.obj   &
+drloc.obj    &
+drpubnam.obj &
+drscope.obj  &
+drsearch.obj &
+drstack.obj  &
+drtype.obj   &
+drutils.obj  &
+!ifeq inline_vmem 1
+virtstub.obj
 !else
-lib_osi_386     = $(watcom_dir)\lib\dwarfrpd.lib
-!endif
-lib_qnx_386     = $(watcom_dir)\lib\dwarfrps.lib
-lib_osi_axp     = $(watcom_dir)\lib\draxp.lib
-
-copts = -s-w4-zq        #default warning, quiet
-!ifdef dbg
-copts += -$(dbg)-hw #use a debug option
-!else
-copts += -oaxt-d1 #optimize
-!endif
-copts += -i=..\h;$(inc_dirs_lang);$(watcom_dir)\h
-!ifdef on_build_machine
-copts += -dNDEBUG
+virtmem.obj
 !endif
 
-!ifdef inline_vmem
-!  define VIRTOBJ virtstub
-!  define copts $+ $(copts) -dINLINE_VMEM $-
-!else
-!  define VIRTOBJ virtmem
+!ifeq inline_vmem 1
+extra_c_flags += -DINLINE_VMEM
 !endif
 
-template = &
-drarange.$(ext) &
-drdecnam.$(ext) &
-drenum.$(ext)   &
-drfdkids.$(ext) &
-drgetref.$(ext) &
-drgettab.$(ext) &
-drinfo.$(ext)   &
-drinit.$(ext)   &
-drline.$(ext)   &
-drloc.$(ext)    &
-drpubnam.$(ext) &
-drscope.$(ext)   &
-drsearch.$(ext) &
-drstack.$(ext)  &
-drtype.$(ext)   &
-drutils.$(ext)  &
-$(VIRTOBJ).$(ext)
+extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
+extra_c_flags_drsearch = -I"$(posix_dir)/h"
 
-ext = obj
-c_objs = $+$(template)$-
-
-$(lib_$(host_OS)_$(host_CPU)) : $(c_objs)
-        @if exist $^*.bak attrib -r $^*.bak
-        $(librarian_$(host_CPU)) /b /q /n $^@ $(c_objs)
-
-compile = $(comp_$(host_OS)_$(host_CPU)) $(copts)
-
-.c: ..\c
-.c.obj: .AUTODEPEND
-        $(compile) $[*.c
-
-.c.i:
-        $(compile) $[*.c -pc -fo=.i
-
-drutils.obj : ..\c\drutils.c .AUTODEPEND
-    $(compile) $[*.c /i=$(lib_misc_dir)\h
-
-drsearch.obj : ..\c\drsearch.c .AUTODEPEND
-    $(compile) $[*.c /i=$(posix_dir)\h
-
-clean : .symbolic
-        rm -f *.obj *.exe *.map *.lib *.lbc *.err *.i *.tbj
+dwarfr.lib : $(c_objs)
+    @%create dr.lbc
+    @for %i in ($(c_objs)) do @%append dr.lbc %i
+    $(librarian) $(libflags) @dr.lbc

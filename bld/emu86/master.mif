@@ -1,0 +1,92 @@
+#
+# EMU87 makefile
+#
+
+proj_name = emu86
+
+emu86_autodepends = .AUTODEPEND
+emu86_distrib_lib = 1
+
+memory_model_i86 = s
+memory_model_386 = s
+
+fpu_flags_dos_i86 = -fpc
+fpu_flags_os2_i86 = -fpc
+fpu_flags_win_i86 = -fpc
+fpu_flags_qnx_i86 = -fpc
+fpu_flags_qnx_386 = -fpc
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.ERASE
+
+INCS = &
+ fsld086.asm ldfs086.asm ldfd086.asm fdld086.asm &
+ i4ld086.asm ldi4086.asm flda086.asm fldc086.asm &
+ i8ld086.asm ldi8086.asm &
+ fldm086.asm fldd086.asm sqrt086.asm &
+ fpe86.inc e86fprem.inc &
+ e86poly.inc e86log.inc e86round.inc e86atan.inc &
+ sindata.inc e86sin.inc e86f2xm1.inc &
+ memops.inc stkops.inc tentab.inc tagtab.inc &
+ fpucc.inc consts.inc fpubits.inc xception.inc
+
+.c : ../c
+.asm : ../asm
+.inc : ../inc;$(emu386)/inc
+
+aflag_386 =
+!ifeq host_cpu i86
+cpu_size =16
+!else
+cpu_size =32
+!endif
+
+extra_a_flags = -ms
+extra_a_flags_os2 = -d__PROTMODE__
+extra_a_flags_qnx = -d__PROTMODE__ -DQNX$(cpu_size)
+
+extra_a_flags_dosinit  = -fpi
+extra_a_flags_initemu  = -fpi87 -i"$(comp_cfg_dir)/h"
+extra_a_flags_initemu2 = -fpc -i"$(comp_cfg_dir)/h"
+extra_a_flags_initemuw = -fpc -i"$(comp_cfg_dir)/h"
+extra_a_flags_emu8087  = -fpc -i"../inc" -i"$(emu386)/inc" -i"$(mathlib_dir)/h"
+extra_a_flags_emustub =
+
+extra_c_flags = -s
+extra_c_flags_dos = -zl -zls
+extra_c_flags_os2 = -zl -zls
+extra_c_flags_win = -zl -zls
+extra_c_flags_qnx = -oais -i"$(new_qnx_h)" -DQNX$(cpu_size)
+
+objs_dos = initemu.obj emu8087.obj dosinit.obj
+objs_os2 = initemu2.obj emu8087.obj hook8087.obj
+objs_win = initemuw.obj
+
+!ifeq host_os qnx
+!ifeq host_cpu i86
+
+all: emu86_$(cpu_size) emu86
+
+emu86 : qemu87.obj
+    $(linker) $(lflags) name $^@ file { $< } opt map,res=../emu87.u
+!endif
+
+emu86_$(cpu_size): qnxemu87.obj emu8087.obj fpeqnx.obj
+    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,res=../emu87.u
+
+!else ifeq host_OS stub
+
+noemu87.lib: emustub.obj
+    $(librarian) $(libflags) $<
+
+!else
+
+emu87.lib: $(objs_$(host_OS))
+    $(librarian) $(libflags) $<
+
+!endif
+
+emu8087.obj: emu8087.asm $(INCS)

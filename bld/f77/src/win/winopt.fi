@@ -1,0 +1,18 @@
+*$noreference
+
+! Optimization-Tool Functions:
+! ----------------------------
+
+      external ProfClear
+      external ProfFinish
+      external ProfFlush
+      external ProfInsChk
+      external ProfSampRate
+      external ProfSetup
+      external ProfStart
+      external ProfStop
+      external SwapRecording
+
+      integer*2 ProfInsChk
+
+*$reference

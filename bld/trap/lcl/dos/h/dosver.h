@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Query DOS major version.
 *
 ****************************************************************************/
 
@@ -35,6 +34,6 @@
                      value [ al ] \
                      modify [bx cx];
 
-extern char __MajorV();
+extern char __MajorV( void );
 
 #define IsDOS3 ( __MajorV() >= 3 )

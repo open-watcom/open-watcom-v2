@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  LINEPRT.C - line print routines
 *
 ****************************************************************************/
-
 
 /*
    LINEPRT.C - line print routines
@@ -48,104 +46,92 @@
 #define FALSE 0
 extern void Die( char *str );
 
-static int _dropped=TRUE;
-static int _lastlinelen=0;
-static char _spaces[] = "                                                                  ";
-char *buffer;
+static int      _dropped = TRUE;
+static int      _lastlinelen = 0;
+//                           12345678 1 2345678 2 2345678 3 2345678 4 2345678 5 2345678 6 23456
+static char     _spaces[] = "                                                                  ";
+char            *buffer;
 
-/*
- * PrintALine - printf text the current line
- */
+/* PrintALine - printf text on the current line */
 void PrintALine( char *str, ... )
 {
     va_list     al;
     char        bob[256];
-    int         len,i;
+    int         len, i;
 
     va_start( al, str );
-    vsprintf( bob,str, al );
+    vsprintf( bob, str, al );
     va_end( al );
     len = strlen( bob );
     i = _lastlinelen - len;
-    if( i< 0 ) i = 0;
+    if( i < 0 )
+        i = 0;
     _spaces[i] = 0;
-    printf("%c%s%s",(char)13,bob,_spaces );
+    printf( "%c%s%s", ( char ) 13, bob, _spaces );
     _spaces[i] = ' ';
     _lastlinelen = len;
     _dropped = FALSE;
+}
 
-} /* PrintALine */
-
-/*
- * PrintALineThenDrop - printf text on the current line, then drop
- */
+/* PrintALineThenDrop - printf text on the current line, then drop */
 void PrintALineThenDrop( char *str, ... )
 {
     va_list     al;
     char        bob[256];
-    int         len,i;
+    int         len, i;
 
     va_start( al, str );
-    vsprintf( bob,str, al );
+    vsprintf( bob, str, al );
     va_end( al );
     len = strlen( bob );
     i = _lastlinelen - len;
-    if( i< 0 ) i = 0;
+    if( i < 0 )
+        i = 0;
     _spaces[i] = 0;
-    printf("%c%s%s\n",13,bob,_spaces );
+    printf( "%c%s%s\n", 13, bob, _spaces );
     _spaces[i] = ' ';
     _lastlinelen = 0;
     _dropped = TRUE;
+}
 
-} /* PrintALineThenDrop */
-
-/*
- * DropPrintALine - printf text on the next line
- */
+/* DropPrintALine - printf text on the next line */
 void DropPrintALine( char *str, ... )
 {
     va_list     al;
     char        bob[256];
 
     va_start( al, str );
-    vsprintf( bob,str, al );
+    vsprintf( bob, str, al );
     va_end( al );
     _lastlinelen = strlen( bob );
-    if( !_dropped ) printf("\n");
-    printf("%s",bob );
+    if( !_dropped )
+        printf( "\n" );
+    printf( "%s", bob );
     _dropped = FALSE;
+}
 
-} /* DropPrintALine */
-
-/*
- * DropALineDammit - drop down one line, for sure
- */
+/* DropALineDammit - drop down one line, for sure */
 void DropALineDammit( void )
 {
     _dropped = TRUE;
     _lastlinelen = 0;
-    printf("\n");
+    printf( "\n" );
+}
 
-} /* DropALineDammit */
-
-/*
- * DropALine - drop down one line
- */
+/* DropALine - drop down one line */
 void DropALine( void )
 {
-    if( _dropped ) return;
+    if( _dropped )
+        return;
     DropALineDammit();
+}
 
-} /* DropALine */
-
-/*
- * StartPrint - allocate buffer for unbufferd io
- */
+/* StartPrint - allocate buffer for unbufferd io */
 void StartPrint( void )
 {
 
     buffer = malloc( BUFSIZ );
-    if( buffer == NULL ) Die( "Out of memory!" );
+    if( buffer == NULL )
+        Die( "Out of memory!" );
     setvbuf( stdout, buffer, _IONBF, BUFSIZ );
-
-} /* StartPrint */
+}

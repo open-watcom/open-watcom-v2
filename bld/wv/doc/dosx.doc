@@ -1,0 +1,24 @@
+==============================================================================
+	Some Theory On How Debugging DOS Extended Programs Works
+==============================================================================
+
+The remote servers are real mode programs. Most DOS-extenders provide a 
+debugging interface, but only from protected mode. To solve this problem, 
+and to allow a single debugger executable to handle multiple DOS-extenders 
+and other good stuff, the debugger implements debugging of DOS-extended 
+applications as a very wierd sort of remote link. See the LINK.DOC file in 
+this directory for an explanation of the 6 functions that need to be written 
+for a remote link. For DOS-extended trap files, these 6 functions are 
+implemented in the file "LCL\DOS\DOSX\C\DOSXLINK.C". That's the generic code.
+There are a number of extender specific functions that DOSXLINK.C needs. 
+Basically DOSXLINK.C spawns the DOS-extender and sets up a low memory buffer 
+where requests and results are passed through. Not all trap file requests are 
+passed up to the protected mode "remote server" (these are the ???HELP.EX? 
+files). For example, all the DOS file I/O requests are handled directly by the
+PLS.TRP, ADS.TRP, or RSI.TRP files. This code is in the 
+"LCL\DOS\DOSX\C\DOSXREMO.C" file. As a matter of fact, the DOSXREMO.C code 
+does not call the RemoteLink function to spawn the DOS-extender until it gets 
+a program load request from the debugger. This is to make memory management 
+in the debugger a little easier. The generic DOS-extender remote server code 
+that catches the request being passed up by DOSXREMO.C is in the file 
+"LCL\DOS\DOSX\C\DOSXSERV.C".

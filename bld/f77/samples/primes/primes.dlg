@@ -1,0 +1,15 @@
+DLGINCLUDE 1 "primes.h"
+
+DLGTEMPLATE DLG_PRIME_NUMBER LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Prime Number Generator", DLG_PRIME_NUMBER, 73, 22, 133, 73,
+            WS_VISIBLE, FCF_TITLEBAR
+    BEGIN
+        PUSHBUTTON      "Compute Number of Primes", DLG_GENERATE_PRIMES, 3,
+                        50, 125, 14
+        LTEXT           "Upper Bound", DLG_UPPER_BOUND_TEXT, 10, 30, 59, 8
+        ENTRYFIELD      "", DLG_UPPER_BOUND, 75, 30, 45, 8, ES_MARGIN
+        PUSHBUTTON      "Exit Prime Number Program", DLG_PRIME_CLOSE, 3, 4,
+                        125, 14
+    END
+END

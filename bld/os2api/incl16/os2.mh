@@ -1,0 +1,13 @@
+/*
+ *  os2.h       OS/2 top level include file for 16-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#define OS2_INCLUDED
+
+#include <os2def.h>
+#include <bse.h>
+#include <pm.h>

@@ -10,7 +10,7 @@
 WCLASS WServer : public WObject
 {
 	public:
-		WEXPORT WServer( char* service, HANDLE inst, WObject* owner, sbc notify );
+		WEXPORT WServer( char* service, HINSTANCE inst, WObject* owner, sbc notify );
 		WEXPORT ~WServer();
 		bool WEXPORT xtConnect( HSZ hsz1, HSZ hsz2 );
 		HDDEDATA WEXPORT xtRequest( UINT fmt, HSZ hsz1, HSZ hsz2 );

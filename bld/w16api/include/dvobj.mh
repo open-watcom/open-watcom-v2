@@ -1,0 +1,349 @@
+/*
+ *  dvobj.h     Data/view object interfaces and functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _DVOBJ_H_
+#define _DVOBJ_H_
+
+:include readonly.sp
+
+/* Forward declarations */
+typedef interface IStorage      IStorage;
+typedef interface IAdviseSink   IAdviseSink;
+typedef interface IMoniker      IMoniker;
+typedef IAdviseSink FAR         *LPADVISESINK;
+typedef IMoniker FAR            *LPMONIKER;
+
+/* Primitive data types */
+typedef WORD            CLIPFORMAT;
+typedef CLIPFORMAT FAR  *LPCLIPFORMAT;
+
+/* Data error codes */
+#define DATA_E_FORMATETC        DV_E_FORMATETC
+#define DATA_S_SAMEFORMATETC    (DATA_S_FIRST + 0)
+
+/* View error codes */
+#define VIEW_E_DRAW             (VIEW_E_FIRST + 0)
+#define E_DRAW                  VIEW_E_DRAW
+#define VIEW_S_ALREADY_FROZEN   (VIEW_S_FIRST + 0)
+
+/* Cache error codes */
+#define CACHE_E_NOCACHE_UPDATED         (CACHE_E_FIRST + 0)
+#define CACHE_S_FORMATETC_NOTSUPPORTED  (CACHE_S_FIRST + 0)
+#define CACHE_S_SOMECACHE               (CACHE_S_FIRST + 1)
+#define CACHE_S_SOMECACHES_NOTUPDATED   (CACHE_S_FIRST + 2)
+
+/* IOleCache2::UpdateCache() flags */
+#define UPDFCACHE_NODATACACHE           0x00000001L
+#define UPDFCACHE_ONSAVECACHE           0x00000002L
+#define UPDFCACHE_ONSTOPCACHE           0x00000004L
+#define UPDFCACHE_NORMALCACHE           0x00000008L
+#define UPDFCACHE_IFBLANK               0x00000010L
+#define UPDFCACHE_ONLYIFBLANK           0x80000000L
+#define UPDFCACHE_IFBLANKORONSAVECACHE  (UPDFCACHE_IFBLANK | UPDFCACHE_ONSAVECACHE)
+#define UPDFCACHE_ALL                   (~UPDFCACHE_ONLYIFBLANK)
+#define UPDFCACHE_ALLBUTNODATACACHE     (UPDFCACHE_ALL & ~UPDFCACHE_NODATACACHE)
+
+/* Data/view aspects */
+typedef enum tagDVASPECT {
+    DVASPECT_CONTENT    = 1,
+    DVASPECT_THUMBNAIL  = 2,
+    DVASPECT_ICON       = 4,
+    DVASPECT_DOCPRINT   = 8
+} DVASPECT;
+
+/* Data/view target device */
+typedef struct FARSTRUCT tagDVTARGETDEVICE {
+    DWORD   tdSize;
+    WORD    tdDriverNameOffset;
+    WORD    tdDeviceNameOffset;
+    WORD    tdPortNameOffset;
+    WORD    tdExtDevmodeOffset;
+    BYTE    tdData[1];
+} DVTARGETDEVICE;
+
+/* Data format information */
+typedef struct FARSTRUCT tagFORMATETC {
+    CLIPFORMAT          cfFormat;
+    DVTARGETDEVICE FAR  *ptd;
+    DWORD               dwAspect;
+    LONG                lindex;
+    DWORD               tymed;
+} FORMATETC;
+typedef FORMATETC   *LPFORMATETC;
+
+/* Type media */
+typedef enum tagTYMED {
+    TYMED_HGLOBAL   = 1,
+    TYMED_FILE      = 2,
+    TYMED_ISTREAM   = 4,
+    TYMED_ISTORAGE  = 8,
+    TYMED_GDI       = 16,
+    TYMED_MFPICT    = 32,
+    TYMED_NULL      = 0
+} TYMED;
+
+/* Data format directions */
+typedef enum tagDATADIR {
+    DATADIR_GET = 1,
+    DATADIR_SET = 2
+} DATADIR;
+
+/* Storage medium */
+typedef struct FARSTRUCT tagSTGMEDIUM {
+    DWORD           tymed;
+    union {
+        HANDLE          hGlobal;
+        LPSTR           lpszFileName;
+        IStream FAR     *pstm;
+        IStorage FAR    *pstg;
+#ifdef NONAMELESSUNION
+    } u;
+#else
+    };
+#endif
+    IUnknown FAR    *pUnkForRelease;
+} STGMEDIUM;
+typedef STGMEDIUM FAR   *LPSTGMEDIUM;
+
+/* Advise flags */
+typedef enum tagADVF {
+    ADVF_NODATA             = 1,
+    ADVF_PRIMEFIRST         = 2,
+    ADVF_ONLYONCE           = 4,
+    ADVF_DATAONSTOP         = 64,
+    ADVFCACHE_NOHANDLER     = 8,
+    ADVFCACHE_FORCEBUILTIN  = 16,
+    ADVFCACHE_ONSAVE        = 32
+} ADVF;
+
+/* Static data */
+typedef struct FARSTRUCT tagSTATDATA {
+    FORMATETC       formatetc;
+    DWORD           advf;
+    IAdviseSink FAR *pAdvSink;
+    DWORD           dwConnection;
+} STATDATA;
+typedef STATDATA FAR    *LPSTATDATA;
+
+/* IOleCache2::DiscardCache() options */
+typedef enum tagDISCARDCACHE {
+    DISCARDCACHE_SAVEIFDIRTY    = 0,
+    DISCARDCACHE_NOSAVE         = 1
+} DISCARDCACHE;
+
+/* IEnumFORMATETC interface */
+#undef INTERFACE
+#define INTERFACE   IEnumFORMATETC
+DECLARE_INTERFACE_( IEnumFORMATETC, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumFORMATETC methods */
+    STDMETHOD( Next )( THIS_ ULONG, FORMATETC FAR *, ULONG FAR * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumFORMATETC FAR * FAR * ) PURE;
+};
+typedef IEnumFORMATETC FAR  *LPENUMFORMATETC;
+
+/* IEnumSTATDATA interface */
+#undef INTERFACE
+#define INTERFACE   IEnumSTATDATA
+DECLARE_INTERFACE_( IEnumSTATDATA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumSTATDATA methods */
+    STDMETHOD( Next )( THIS_ ULONG, STATDATA FAR *, ULONG FAR * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumSTATDATA FAR * FAR * ) PURE;
+};
+typedef IEnumSTATDATA FAR   *LPENUMSTATDATA;
+
+/* IDataObject interface */
+#undef INTERFACE
+#define INTERFACE   IDataObject
+DECLARE_INTERFACE_( IDataObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDataObject methods */
+    STDMETHOD( GetData )( THIS_ LPFORMATETC, LPSTGMEDIUM ) PURE;
+    STDMETHOD( GetDataHere )( THIS_ LPFORMATETC, LPSTGMEDIUM ) PURE;
+    STDMETHOD( QueryGetData )( THIS_ LPFORMATETC ) PURE;
+    STDMETHOD( GetCanonicalFormatEtc )( THIS_ LPFORMATETC, LPFORMATETC ) PURE;
+    STDMETHOD( SetData )( THIS_ LPFORMATETC, STGMEDIUM FAR *, BOOL ) PURE;
+    STDMETHOD( EnumFormatEtc )( THIS_ DWORD, LPENUMFORMATETC FAR * ) PURE;
+    STDMETHOD( DAdvise )( THIS_ FORMATETC FAR *, DWORD, LPADVISESINK, DWORD FAR * ) PURE;
+    STDMETHOD( DUnadvise )( THIS_ DWORD ) PURE;
+    STDMETHOD( EnumDAdvise )( THIS_ LPENUMSTATDATA FAR * ) PURE;
+};
+typedef IDataObject FAR *LPDATAOBJECT;
+
+/* IViewObject interface */
+#undef INTERFACE
+#define INTERFACE   IViewObject
+DECLARE_INTERFACE_( IViewObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IViewObject methods */
+    STDMETHOD( Draw )( THIS_ DWORD, LONG, void FAR *, DVTARGETDEVICE FAR *, HDC, HDC, LPCRECTL, LPCRECTL, BOOL (CALLBACK *)( DWORD ), DWORD ) PURE;
+    STDMETHOD( GetColorSet )( THIS_ DWORD, LONG, void FAR *, DVTARGETDEVICE FAR *, HDC, LPLOGPALETTE FAR * ) PURE;
+    STDMETHOD( Freeze )( THIS_ DWORD, LONG, void FAR *, DWORD FAR * ) PURE;
+    STDMETHOD( Unfreeze )( THIS_ DWORD ) PURE;
+    STDMETHOD( SetAdvise )( THIS_ DWORD, DWORD, LPADVISESINK ) PURE;
+    STDMETHOD( GetAdvise )( THIS_ DWORD FAR *, DWORD FAR *, LPADVISESINK FAR * ) PURE;
+};
+typedef IViewObject FAR *LPVIEWOBJECT;
+
+/* IViewObject2 interface */
+#undef INTERFACE
+#define INTERFACE   IViewObject2
+DECLARE_INTERFACE_( IViewObject2, IViewObject ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IViewObject methods */
+    STDMETHOD( Draw )( THIS_ DWORD, LONG, void FAR *, DVTARGETDEVICE FAR *, HDC, HDC, LPCRECTL, LPCRECTL, BOOL (CALLBACK *)( DWORD ), DWORD ) PURE;
+    STDMETHOD( GetColorSet )( THIS_ DWORD, LONG, void FAR *, DVTARGETDEVICE FAR *, HDC, LPLOGPALETTE FAR * ) PURE;
+    STDMETHOD( Freeze )( THIS_ DWORD, LONG, void FAR *, DWORD FAR * ) PURE;
+    STDMETHOD( Unfreeze )( THIS_ DWORD ) PURE;
+    STDMETHOD( SetAdvise )( THIS_ DWORD, DWORD, LPADVISESINK ) PURE;
+    STDMETHOD( GetAdvise )( THIS_ DWORD FAR *, DWORD FAR *, LPADVISESINK FAR * ) PURE;
+
+    /* IViewObject2 methods */
+    STDMETHOD( GetExtent )( THIS_ DWORD, LONG, DVTARGETDEVICE FAR *, LPSIZEL ) PURE;
+};
+typedef IViewObject2 FAR    *LPVIEWOBJECT2;
+
+/* IAdviseSink interface */
+#undef INTERFACE
+#define INTERFACE   IAdviseSink
+DECLARE_INTERFACE_( IAdviseSink, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAdviseSink methods */
+    STDMETHOD_( void, OnDataChange )( THIS_ FORMATETC FAR *, STGMEDIUM FAR * ) PURE;
+    STDMETHOD_( void, OnViewChange )( THIS_ DWORD, LONG ) PURE;
+    STDMETHOD_( void, OnRename )( THIS_ LPMONIKER ) PURE;
+    STDMETHOD_( void, OnSave )( THIS ) PURE;
+    STDMETHOD_( void, OnClose )( THIS ) PURE;
+};
+typedef IAdviseSink FAR *LPADVISESINK;
+
+/* IAdviseSink2 interface */
+#undef INTERFACE
+#define INTERFACE   IAdviseSink2
+DECLARE_INTERFACE_( IAdviseSink2, IAdviseSink ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAdviseSink methods */
+    STDMETHOD_( void, OnDataChange )( THIS_ FORMATETC FAR *, STGMEDIUM FAR * ) PURE;
+    STDMETHOD_( void, OnViewChange )( THIS_ DWORD, LONG ) PURE;
+    STDMETHOD_( void, OnRename )( THIS_ LPMONIKER ) PURE;
+    STDMETHOD_( void, OnSave )( THIS ) PURE;
+    STDMETHOD_( void, OnClose )( THIS ) PURE;
+
+    /* IAdviseSink2 methods */
+    STDMETHOD_( void, OnLinkSrcChange )( THIS_ LPMONIKER ) PURE;
+};
+typedef IAdviseSink2 FAR    *LPADVISESINK2;
+
+/* IDataAdviseHolder interface */
+#undef INTERFACE
+#define INTERFACE   IDataAdviseHolder
+DECLARE_INTERFACE_( IDataAdviseHolder, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDataAdviseHolder methods */
+    STDMETHOD( Advise )( THIS_ LPDATAOBJECT, FORMATETC FAR *, DWORD, LPADVISESINK, DWORD FAR * ) PURE;
+    STDMETHOD( Unadvise )( THIS_ DWORD ) PURE;
+    STDMETHOD( EnumAdvise )( THIS_ LPENUMSTATDATA FAR * ) PURE;
+    STDMETHOD( SendOnDataChange )( THIS_ LPDATAOBJECT, DWORD, DWORD ) PURE;
+};
+typedef IDataAdviseHolder FAR   *LPDATAADVISEHOLDER;
+
+/* IOleCache interface */
+#undef INTERFACE
+#define INTERFACE   IOleCache
+DECLARE_INTERFACE_( IOleCache, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleCache methods */
+    STDMETHOD( Cache )( THIS_ LPFORMATETC, DWORD, LPDWORD ) PURE;
+    STDMETHOD( Uncache )( THIS_ DWORD ) PURE;
+    STDMETHOD( EnumCache )( THIS_ LPENUMSTATDATA FAR * ) PURE;
+    STDMETHOD( InitCache )( THIS_ LPDATAOBJECT ) PURE;
+    STDMETHOD( SetData )( THIS_ LPFORMATETC, STGMEDIUM FAR *, BOOL ) PURE;
+};
+typedef IOleCache FAR   *LPOLECACHE;
+
+/* IOleCache2 interface */
+#undef INTERFACE
+#define INTERFACE   IOleCache2
+DECLARE_INTERFACE_( IOleCache2, IOleCache ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleCache methods */
+    STDMETHOD( Cache )( THIS_ LPFORMATETC, DWORD, LPDWORD ) PURE;
+    STDMETHOD( Uncache )( THIS_ DWORD ) PURE;
+    STDMETHOD( EnumCache )( THIS_ LPENUMSTATDATA FAR * ) PURE;
+    STDMETHOD( InitCache )( THIS_ LPDATAOBJECT ) PURE;
+    STDMETHOD( SetData )( THIS_ LPFORMATETC, STGMEDIUM FAR *, BOOL ) PURE;
+
+    /* IOleCache2 methods */
+    STDMETHOD( UpdateCache )( THIS_ LPDATAOBJECT, DWORD, LPVOID ) PURE;
+    STDMETHOD( DiscardCache )( THIS_ DWORD ) PURE;
+};
+typedef IOleCache2 FAR  *LPOLECACHE2;
+
+/* IOleCacheControl interface */
+#undef INTERFACE
+#define INTERFACE   IOleCacheControl
+DECLARE_INTERFACE_( IOleCacheControl, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, LPVOID FAR * ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleCacheControl methods */
+    STDMETHOD( OnRun )( THIS_ LPDATAOBJECT ) PURE;
+    STDMETHOD( OnStop )( THIS ) PURE;
+};
+typedef IOleCacheControl FAR    *LPOLECACHECONTROL;
+
+/* Functions in OLE2.DLL */
+STDAPI  CreateDataAdviseHolder( LPDATAADVISEHOLDER FAR * );
+STDAPI  CreateDataCache( LPUNKNOWN, REFCLSID, REFIID, LPVOID FAR * );
+
+#endif /* _DVOBJ_H_ */

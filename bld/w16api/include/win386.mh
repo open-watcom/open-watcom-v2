@@ -1,0 +1,9 @@
+/*
+ *  win386.h    Compatibility header
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#include <_win386.h>

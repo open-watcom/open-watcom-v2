@@ -1,0 +1,167 @@
+:CMT. This driver definition is used for printers supporting
+:CMT. the American Standards Association (ASA) carriage control
+:CMT. characters.
+:CMT. The printers must support the triple spacing control character (-).
+:CMT. These carriage control characters are often associated with
+:CMT. FORTRAN.
+
+:CMT. Definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. TASADRV                         tasadrv
+
+:CMT. Corresponding device
+:CMT. definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. TASA                            tasa
+:CMT.eoc
+
+:DRIVER
+   defined_name = 'helpdrv'
+   member_name  = 'HELPDRV'
+   rec_spec     = '(t:133)'
+   fill_char    = ' '
+
+:CMT.WATCOM GML assumes that the start of a page is on the first
+:CMT.line of the page.  It also assumes that the first page is loaded
+:CMT.in the printer.  To ensure that the first line is interpreted as
+:CMT.a single space line, the single space control code is put out.
+:cmt. :INIT
+:cmt.    place=start
+:cmt.    :value
+:cmt.    :evalue
+:cmt. :eINIT
+
+:CMT.The last line is forced to the output device.
+:FINISH
+   place=end
+   :value
+      %recordbreak()
+   :evalue
+:eFINISH
+
+:CMT.For overprinting, the last line is forced to the output
+:CMT.device, and the overprint control code is put out for the next line.
+:cmt. :BOLDSTART
+:cmt.    :value
+:cmt.       %binary($1B)%text('b')
+:cmt.    :evalue
+:cmt. :eBOLDSTART
+:cmt.
+:cmt. :BOLDEND
+:cmt.    :value
+:cmt.       %binary($1B)%text('p')
+:cmt.    :evalue
+:cmt. :eBOLDEND
+:cmt.
+:cmt. :UNDERSTART
+:cmt.    :value
+:cmt.       %binary($1B)%text('u')
+:cmt.    :evalue
+:cmt. :eUNDERSTART
+:cmt.
+:cmt. :UNDEREND
+:cmt.    :value
+:cmt.       %binary($1B)%text('w')
+:cmt.    :evalue
+:cmt. :eUNDEREND
+
+:CMT.To start a new single spaced line, the last line is forced
+:CMT.to the output device, and the single space control code is put out
+:CMT.for the next line.
+:NEWLINE
+   advance = 1
+   :value
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+:CMT.To start a new page, the last line is forced to the output
+:CMT.device, and the new page control code is put out.
+:NEWPAGE
+   :value
+      %recordbreak()
+   :evalue
+:eNEWPAGE
+
+:CMT.For overprinting, the last line is forced to the output
+:CMT.device, and the overprint control code is put out for the next line.
+:FONTSTYLE
+    type='bold'
+    :startvalue
+        %binary($1B)%text('b')
+    :estartvalue
+    :lineproc
+       pass=1
+       :startvalue.
+          %textpass()
+       :estartvalue.
+    :elineproc.
+    :endvalue
+          %binary($1B)%text('p')
+    :eendvalue
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='ulbold'
+    :startvalue
+        %binary($1B)%text('b')
+    :estartvalue
+    :lineproc
+       pass=1
+       :startvalue.
+          %textpass()
+       :estartvalue.
+    :elineproc.
+    :endvalue
+          %binary($1B)%text('p')
+    :eendvalue
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='usbold'
+    :startvalue
+        %binary($1B)%text('b')
+    :estartvalue
+    :lineproc
+       pass=1
+       :startvalue.
+          %textpass()
+       :estartvalue.
+    :elineproc.
+    :endvalue
+          %binary($1B)%text('p')
+    :eendvalue
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='uline'
+    :startvalue.
+        %binary($1B)%text('u')
+    :estartvalue.
+    :lineproc
+        pass=1
+        :startvalue.
+            %textpass()
+        :estartvalue.
+    :elineproc.
+    :endvalue
+        %binary($1B)%text('w')
+    :eendvalue
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='uscore'
+    :startvalue.
+        %binary($1B)%text('u')
+    :estartvalue.
+    :lineproc
+       pass=1
+       :startvalue.
+          %textpass()
+       :estartvalue.
+    :elineproc.
+    :endvalue
+        %binary($1B)%text('w')
+    :eendvalue
+:eFONTSTYLE.
+:eDRIVER.

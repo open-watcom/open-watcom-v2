@@ -95,7 +95,7 @@ void __field_alloc_collect_garbage(void){
 field acos(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = acos(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = acos(f.root->data[i]);
   return rtn;
 }
 // @(#)f_asin.C	1.1   Release Date: 2/19/93
@@ -108,7 +108,7 @@ field acos(const field& f){
 field asin(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = asin(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = asin(f.root->data[i]);
   return rtn;
 }
 // @(#)f_assem_1.C	1.1   Release Date: 2/19/93
@@ -119,7 +119,7 @@ field& field::Assemble(const field& b, const ifield& ia, const ifield& ib){
   assert(l == ib.Length());
   Private();
   field& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b[ib[i]];
+  for (register int i=0; i<l; i++)  This[ia[i]] += b[ib[i]];
   return This;
 }
 
@@ -131,7 +131,7 @@ field& field::Assemble(const field& b, const ifield& ia){
   assert(l == b.Length());
   Private();
   field& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b[i];
+  for (register int i=0; i<l; i++)  This[ia[i]] += b[i];
   return This;
 }
 
@@ -142,7 +142,7 @@ field& field::Assemble(double b, const ifield& ia){
   const size_t l = ia.Length();
   Private();
   field& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b;
+  for (register int i=0; i<l; i++)  This[ia[i]] += b;
   return This;
 }
 
@@ -156,7 +156,7 @@ field& field::Assemble(double b, const ifield& ia){
 field atan(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = atan(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = atan(f.root->data[i]);
   return rtn;
 }
 // @(#)f_atan2_df.C	1.2   Release Date: 2/19/93
@@ -168,7 +168,7 @@ field atan2(double a, const field& b){
   field rtn(l);
   double *rp = rtn;
   const double *bp = b;
-  for (register i=0; i<l; i++) rp[i] = atan2(a, bp[i]);
+  for (register int i=0; i<l; i++) rp[i] = atan2(a, bp[i]);
   return rtn;
 }
 // @(#)f_atan2_fd.C	1.2   Release Date: 2/19/93
@@ -180,7 +180,7 @@ field atan2(const field& a, double b){
   field rtn(l);
   double *rp = rtn;
   const double *ap = a;
-  for (register i=0; i<l; i++) rp[i] = atan2(ap[i], b);
+  for (register int i=0; i<l; i++) rp[i] = atan2(ap[i], b);
   return rtn;
 }
 // @(#)f_atan2_ff.C	1.1   Release Date: 2/19/93
@@ -191,7 +191,7 @@ field atan2(const field& a, const field& b){
   size_t l = a.root->length;
   assert(b.root->length == l);
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = atan2(a.root->data[i], b.root->data[i]);
   return rtn;
 }
@@ -205,7 +205,7 @@ field atan2(const field& a, const field& b){
 field ceil(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = ceil(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = ceil(f.root->data[i]);
   return rtn;
 }
 // @(#)f_cos.C	1.1   Release Date: 2/19/93
@@ -218,7 +218,7 @@ field ceil(const field& f){
 field cos(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = cos(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = cos(f.root->data[i]);
   return rtn;
 }
 // @(#)f_cosh.C	1.1   Release Date: 2/19/93
@@ -231,7 +231,7 @@ field cos(const field& f){
 field cosh(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = cosh(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = cosh(f.root->data[i]);
   return rtn;
 }
 // @(#)f_ct_a.C	1.1   Release Date: 2/19/93
@@ -275,7 +275,7 @@ field& field::operator/=(double d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] /= d;
+  for (register int i=0; i<l; i++) root->data[i] /= d;
   return *this;
 }
 // @(#)f_di_df.C	1.1   Release Date: 2/19/93
@@ -287,7 +287,7 @@ field& field::operator/=(double d){
 field operator/(double d, const field& a){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d / a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d / a.root->data[i];
   return rtn;
 }
 // @(#)f_di_f.C	1.1   Release Date: 2/19/93
@@ -300,7 +300,7 @@ field& field::operator/=(const field& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] /= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] /= f.root->data[i];
   return *this;
 }
 // @(#)f_di_fd.C	1.1   Release Date: 2/19/93
@@ -312,7 +312,7 @@ field& field::operator/=(const field& f){
 field operator/(const field& a, double d){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] / d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] / d;
   return rtn;
 }
 // @(#)f_di_ff.C	1.1   Release Date: 2/19/93
@@ -325,7 +325,7 @@ field operator/(const field& a, const field& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] / b.root->data[i];
   return rtn;
 }
@@ -338,7 +338,7 @@ field dim(double a, const field& b){
   field rtn(l);
   double *rp = rtn;
   const double *bp = b;
-  for (register i=0; i<l; i++) rp[i] = (a > bp[i]? a - bp[i] : 0.0);
+  for (register int i=0; i<l; i++) rp[i] = (a > bp[i]? a - bp[i] : 0.0);
   return rtn;
 }
 // @(#)f_dim_fd.C	1.1   Release Date: 2/19/93
@@ -348,7 +348,7 @@ field dim(double a, const field& b){
 field dim(const field& a, double b){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b? a.root->data[i] - b : 0.0);
   return rtn;
 }
@@ -362,7 +362,7 @@ field dim(const field& a, const field& b){
   field rtn(l);
   double *rp = rtn;
   const double *ap=a, *bp=b;
-  for (register i=0; i<l; i++) rp[i] = (ap[i] > bp[i]? ap[i] - bp[i] : 0.0);
+  for (register int i=0; i<l; i++) rp[i] = (ap[i] > bp[i]? ap[i] - bp[i] : 0.0);
   return rtn;
 }
 // @(#)f_eq.C	1.1   Release Date: 2/19/93
@@ -399,7 +399,7 @@ field& field::operator=(double fill){
     if (root->ref_count > 1) Private();
     ref_flag = 0;
     const size_t l = root->length;
-    for (register i=0; i<l; i++) root->data[i] = fill;
+    for (register int i=0; i<l; i++) root->data[i] = fill;
   }
   return *this;
 }
@@ -416,7 +416,7 @@ field& field::operator=(const ifield& f){
   }else{
     Free();
     root = new(f.root->length) __field_node(f.root->length);
-    for (register i=0; i<root->length; i++) 
+    for (register int i=0; i<root->length; i++) 
       root->data[i] = (double)f.root->data[i];
   }
   ref_flag = 0;
@@ -432,7 +432,7 @@ field& field::operator=(const ifield& f){
 field exp(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = exp(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = exp(f.root->data[i]);
   return rtn;
 }
 // @(#)f_fabs.C	1.1   Release Date: 2/19/93
@@ -445,7 +445,7 @@ field exp(const field& f){
 field fabs(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = fabs(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = fabs(f.root->data[i]);
   return rtn;
 }
 // @(#)f_floor.C	1.1   Release Date: 2/19/93
@@ -458,7 +458,7 @@ field fabs(const field& f){
 field floor(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = floor(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = floor(f.root->data[i]);
   return rtn;
 }
 // @(#)f_fmod_df.C	1.2   Release Date: 2/19/93
@@ -470,7 +470,7 @@ field fmod(double a, const field& b){
   field rtn(l);
   double *rp = rtn;
   const double *bp = b;
-  for (register i=0; i<l; i++) rp[i] = fmod(a, bp[i]);
+  for (register int i=0; i<l; i++) rp[i] = fmod(a, bp[i]);
   return rtn;
 }
 // @(#)f_fmod_fd.C	1.2   Release Date: 2/19/93
@@ -482,7 +482,7 @@ field fmod(const field& a, double b){
   field rtn(l);
   double *rp = rtn;
   const double *ap = a;
-  for (register i=0; i<l; i++) rp[i] = fmod(ap[i], b);
+  for (register int i=0; i<l; i++) rp[i] = fmod(ap[i], b);
   return rtn;
 }
 // @(#)f_fmod_ff.C	1.1   Release Date: 2/19/93
@@ -493,7 +493,7 @@ field fmod(const field& a, const field& b){
   size_t l = a.root->length;
   assert(b.root->length == l);
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = fmod(a.root->data[i], b.root->data[i]);
   return rtn;
 }
@@ -508,7 +508,7 @@ field frexp(const field& a, ifield& b){
   double *rp = rtn;
   const double *ap = a;
   int *bp = b;
-  for (register i=0; i<l; i++) rp[i] = frexp(ap[i], bp+i);
+  for (register int i=0; i<l; i++) rp[i] = frexp(ap[i], bp+i);
   return rtn;
 }
 // @(#)f_ftoi.C	1.1   Release Date: 2/19/93
@@ -524,7 +524,7 @@ field::field(const ifield& f) :
     root = NULL;
   }else{
     root = new(f.root->length) __field_node(f.root->length);
-    for (register i=0; i<root->length; i++)
+    for (register int i=0; i<root->length; i++)
       root->data[i] = (int)f.root->data[i];
   }
 }
@@ -534,7 +534,7 @@ field::field(const ifield& f) :
 field field::Gather(const ifield& ia) const {
   size_t l = ia.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = root->data[ia[i]];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = root->data[ia[i]];
   return rtn;
 }
 // @(#)f_gather_2.C	1.2   Release Date: 2/19/93
@@ -545,7 +545,7 @@ field field::Gather(size_t start, size_t end, size_t stride) const {
   field rtn((end-start)/stride + 1);
   double *rp = rtn;
   const double* This = *this;
-  for (register i=start, j=0; i<end; i+=stride,j++) rp[j] = This[i];
+  for (register int i=start, j=0; i<end; i+=stride,j++) rp[j] = This[i];
   return rtn;
 }
 // @(#)f_ge_df.C	1.1   Release Date: 2/19/93
@@ -557,7 +557,7 @@ field field::Gather(size_t start, size_t end, size_t stride) const {
 ifield operator>=(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b >= a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b >= a.root->data[i]);
   return rtn;
 }
 // @(#)f_ge_fd.C	1.1   Release Date: 2/19/93
@@ -569,7 +569,7 @@ ifield operator>=(double b, const field& a){
 ifield operator>=(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] >= b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] >= b);
   return rtn;
 }
 // @(#)f_ge_ff.C	1.1   Release Date: 2/19/93
@@ -582,7 +582,7 @@ ifield operator>=(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] >= b.root->data[i]);
   return rtn;
 }
@@ -595,7 +595,7 @@ ifield operator>=(const field& a, const field& b){
 ifield operator>(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b > a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b > a.root->data[i]);
   return rtn;
 }
 // @(#)f_gt_fd.C	1.1   Release Date: 2/19/93
@@ -607,7 +607,7 @@ ifield operator>(double b, const field& a){
 ifield operator>(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] > b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] > b);
   return rtn;
 }
 // @(#)f_gt_ff.C	1.1   Release Date: 2/19/93
@@ -620,7 +620,7 @@ ifield operator>(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] > b.root->data[i]);
   return rtn;
 }
@@ -666,7 +666,7 @@ field ldexp(const field& a, const ifield& b){
   double *rp = rtn;
   const double *ap = a;
   const int *bp = b;
-  for (register i=0; i<l; i++) rp[i] = ldexp(ap[i], bp[i]);
+  for (register int i=0; i<l; i++) rp[i] = ldexp(ap[i], bp[i]);
   return rtn;
 }
 // @(#)f_le_df.C	1.1   Release Date: 2/19/93
@@ -678,7 +678,7 @@ field ldexp(const field& a, const ifield& b){
 ifield operator<=(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b <= a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b <= a.root->data[i]);
   return rtn;
 }
 // @(#)f_le_fd.C	1.1   Release Date: 2/19/93
@@ -690,7 +690,7 @@ ifield operator<=(double b, const field& a){
 ifield operator<=(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] <= b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] <= b);
   return rtn;
 }
 // @(#)f_le_ff.C	1.1   Release Date: 2/19/93
@@ -703,7 +703,7 @@ ifield operator<=(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] <= b.root->data[i]);
   return rtn;
 }
@@ -716,7 +716,7 @@ ifield operator<=(const field& a, const field& b){
 ifield operator==(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b == a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b == a.root->data[i]);
   return rtn;
 }
 // @(#)f_leq_fd.C	1.1   Release Date: 2/19/93
@@ -728,7 +728,7 @@ ifield operator==(double b, const field& a){
 ifield operator==(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] == b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] == b);
   return rtn;
 }
 // @(#)f_leq_ff.C	1.1   Release Date: 2/19/93
@@ -741,7 +741,7 @@ ifield operator==(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] == b.root->data[i]);
   return rtn;
 }
@@ -754,7 +754,7 @@ ifield operator==(const field& a, const field& b){
 ifield operator!=(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b != a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b != a.root->data[i]);
   return rtn;
 }
 // @(#)f_lne_fd.C	1.1   Release Date: 2/19/93
@@ -766,7 +766,7 @@ ifield operator!=(double b, const field& a){
 ifield operator!=(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] != b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] != b);
   return rtn;
 }
 // @(#)f_lne_ff.C	1.1   Release Date: 2/19/93
@@ -779,7 +779,7 @@ ifield operator!=(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] != b.root->data[i]);
   return rtn;
 }
@@ -793,7 +793,7 @@ ifield operator!=(const field& a, const field& b){
 field log(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = log(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = log(f.root->data[i]);
   return rtn;
 }
 // @(#)f_log10.C	1.1   Release Date: 2/19/93
@@ -806,7 +806,7 @@ field log(const field& f){
 field log10(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = log10(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = log10(f.root->data[i]);
   return rtn;
 }
 // @(#)f_lt_df.C	1.1   Release Date: 2/19/93
@@ -818,7 +818,7 @@ field log10(const field& f){
 ifield operator<(double b, const field& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b < a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b < a.root->data[i]);
   return rtn;
 }
 // @(#)f_lt_fd.C	1.1   Release Date: 2/19/93
@@ -830,7 +830,7 @@ ifield operator<(double b, const field& a){
 ifield operator<(const field& a, double b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] < b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] < b);
   return rtn;
 }
 // @(#)f_lt_ff.C	1.1   Release Date: 2/19/93
@@ -843,7 +843,7 @@ ifield operator<(const field& a, const field& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] < b.root->data[i]);
   return rtn;
 }
@@ -854,7 +854,7 @@ ifield operator<(const field& a, const field& b){
 field max(double b, const field& a){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b? a.root->data[i] : b);
   return rtn;
 }
@@ -867,7 +867,7 @@ field max(double b, const field& a){
 double max(const field& f){
   size_t l = f.root->length;
   double retval = f.root->data[l-1];
-  for (register i=0; i<l-1; i++) 
+  for (register int i=0; i<l-1; i++) 
     retval = (retval > f.root->data[i]? retval : f.root->data[i]);
   return retval;
 } 
@@ -878,7 +878,7 @@ double max(const field& f){
 field max(const field& a, double b){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b? a.root->data[i] : b);
   return rtn;
 }
@@ -890,7 +890,7 @@ field max(const field& a, const field& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b.root->data[i] ?
 				a.root->data[i] : b.root->data[i]);
   return rtn;
@@ -905,7 +905,7 @@ field& field::operator-=(double d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] -= d;
+  for (register int i=0; i<l; i++) root->data[i] -= d;
   return *this;
 }
 // @(#)f_mi_df.C	1.1   Release Date: 2/19/93
@@ -917,7 +917,7 @@ field& field::operator-=(double d){
 field operator-(double d, const field& a){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d - a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d - a.root->data[i];
   return rtn;
 }
 // @(#)f_mi_f.C	1.1   Release Date: 2/19/93
@@ -930,7 +930,7 @@ field& field::operator-=(const field& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] -= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] -= f.root->data[i];
   return *this;
 }
 // @(#)f_mi_fd.C	1.1   Release Date: 2/19/93
@@ -942,7 +942,7 @@ field& field::operator-=(const field& f){
 field operator-(const field& a, double d){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] - d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] - d;
   return rtn;
 }
 // @(#)f_mi_ff.C	1.1   Release Date: 2/19/93
@@ -955,7 +955,7 @@ field operator-(const field& a, const field& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] - b.root->data[i];
   return rtn;
 }
@@ -966,7 +966,7 @@ field operator-(const field& a, const field& b){
 field min(double b, const field& a){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b? a.root->data[i] : b);
   return rtn;
 }
@@ -979,7 +979,7 @@ field min(double b, const field& a){
 double min(const field& f){
   size_t l = f.root->length;
   double retval = f.root->data[l-1];
-  for (register i=0; i<l-1; i++) 
+  for (register int i=0; i<l-1; i++) 
     retval = (retval < f.root->data[i]? retval : f.root->data[i]);
   return retval;
 } 
@@ -990,7 +990,7 @@ double min(const field& f){
 field min(const field& a, double b){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b? a.root->data[i] : b);
   return rtn;
 }
@@ -1002,7 +1002,7 @@ field min(const field& a, const field& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b.root->data[i] ?
 				a.root->data[i] : b.root->data[i]);
   return rtn;
@@ -1017,7 +1017,7 @@ field modf(const field& a, field& b){
   b = field(l);
   double *rp = rtn, *bp = b;
   const double *ap = a;
-  for (register i=0; i<l; i++) rp[i] = modf(ap[i], bp + i);
+  for (register int i=0; i<l; i++) rp[i] = modf(ap[i], bp + i);
   return rtn;
 }
 // @(#)f_mu_d.C	1.1   Release Date: 2/19/93
@@ -1030,7 +1030,7 @@ field& field::operator*=(double d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] *= d;
+  for (register int i=0; i<l; i++) root->data[i] *= d;
   return *this;
 }
 // @(#)f_mu_df.C	1.1   Release Date: 2/19/93
@@ -1042,7 +1042,7 @@ field& field::operator*=(double d){
 field operator*(double d, const field& a){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d * a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d * a.root->data[i];
   return rtn;
 }
 // @(#)f_mu_f.C	1.1   Release Date: 2/19/93
@@ -1055,7 +1055,7 @@ field& field::operator*=(const field& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] *= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] *= f.root->data[i];
   return *this;
 }
 // @(#)f_mu_fd.C	1.1   Release Date: 2/19/93
@@ -1067,7 +1067,7 @@ field& field::operator*=(const field& f){
 field operator*(const field& a, double d){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] * d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] * d;
   return rtn;
 }
 // @(#)f_mu_ff.C	1.2   Release Date: 3/1/93
@@ -1080,7 +1080,7 @@ field operator*(const field& a, const field& b){
   assert(a.root->length == b.root->length);
   const size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] * b.root->data[i];
   return rtn;
 }
@@ -1114,7 +1114,7 @@ field& field::operator+=(double d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] += d;
+  for (register int i=0; i<l; i++) root->data[i] += d;
   return *this;
 }
 // @(#)f_pl_df.C	1.1   Release Date: 2/19/93
@@ -1126,7 +1126,7 @@ field& field::operator+=(double d){
 field operator+(double d, const field& a){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d + a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d + a.root->data[i];
   return rtn;
 }
 // @(#)f_pl_f.C	1.1   Release Date: 2/19/93
@@ -1139,7 +1139,7 @@ field& field::operator+=(const field& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] += f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] += f.root->data[i];
   return *this;
 }
 // @(#)f_pl_fd.C	1.1   Release Date: 2/19/93
@@ -1151,7 +1151,7 @@ field& field::operator+=(const field& f){
 field operator+(const field& a, double d){
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] + d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] + d;
   return rtn;
 }
 // @(#)f_pl_ff.C	1.1   Release Date: 2/19/93
@@ -1164,7 +1164,7 @@ field operator+(const field& a, const field& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] + b.root->data[i];
   return rtn;
 }
@@ -1177,7 +1177,7 @@ field pow(double a, const field& b){
   field rtn(l);
   double *rp = rtn;
   const double *bp = b;
-  for (register i=0; i<l; i++) rp[i] = pow(a, bp[i]);
+  for (register int i=0; i<l; i++) rp[i] = pow(a, bp[i]);
   return rtn;
 }
 // @(#)f_pow_fd.C	1.1   Release Date: 2/19/93
@@ -1189,7 +1189,7 @@ field pow(const field& a, double b){
   field rtn(l);
   double *rp = rtn;
   const double *ap = a;
-  for (register i=0; i<l; i++) rp[i] = pow(ap[i], b);
+  for (register int i=0; i<l; i++) rp[i] = pow(ap[i], b);
   return rtn;
 }
 // @(#)f_pow_ff.C	1.1   Release Date: 2/19/93
@@ -1200,7 +1200,7 @@ field pow(const field& a, const field& b){
   size_t l = a.root->length;
   assert(b.root->length == l);
   field rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = pow(a.root->data[i], b.root->data[i]);
   return rtn;
 }
@@ -1213,7 +1213,7 @@ field& field::Scatter(const field& b, const ifield& ia, const ifield& ib){
   double *This = *this;
   const double *bp = b;
   const int *iap = ia, *ibp = ib;
-  for (register i=0; i<l; i++)  This[iap[i]] = bp[ibp[i]];
+  for (register int i=0; i<l; i++)  This[iap[i]] = bp[ibp[i]];
   return *this;
 }
 // @(#)f_scatter_2.C	1.1   Release Date: 2/19/93
@@ -1224,7 +1224,7 @@ field& field::Scatter(const field& b, const ifield& ia){
   const size_t l = ia.Length();
   assert(l == b.Length());
   field& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] = b[i];
+  for (register int i=0; i<l; i++)  This[ia[i]] = b[i];
   return This;
 }
 
@@ -1235,7 +1235,7 @@ field& field::Scatter(const field& b, const ifield& ia){
 field& field::Scatter(double b, const ifield& ia){
   const size_t l = ia.Length();
   field& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] = b;
+  for (register int i=0; i<l; i++)  This[ia[i]] = b;
   return This;
 }
 
@@ -1247,7 +1247,7 @@ field& field::Scatter(const field& a, size_t start, size_t end, size_t stride){
   assert((end-start)/stride < a.root->length);
   double *This = *this;
   const double *ap = a;
-  for (register i=start, j=0; i<end; i+=stride,j++)  This[i] = ap[j];
+  for (register int i=start, j=0; i<end; i+=stride,j++)  This[i] = ap[j];
   return *this;
 }
 // @(#)f_shift.C	1.2   Release Date: 2/26/93
@@ -1271,7 +1271,7 @@ field field::Shift(int i) const{
 field sign(double b, const field& a){
   size_t l = a.Length();
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < 0.0? -b : b);
   return rtn;
 }
@@ -1284,7 +1284,7 @@ field sign(const field& a, double b){
   field rtn(l);
   double *rp = rtn;
   const double *ap = a;
-  for (register i=0; i<l; i++) rp[i] = (b<0.0? -ap[i] : ap[i]);
+  for (register int i=0; i<l; i++) rp[i] = (b<0.0? -ap[i] : ap[i]);
   return rtn;
 }
 // @(#)f_sign_ff.C	1.1   Release Date: 2/19/93
@@ -1295,7 +1295,7 @@ field sign(const field& a, const field& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   field rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (b.root->data[i] < 0.0? -a.root->data[i] :
 						 a.root->data[i]);
   return rtn;
@@ -1310,7 +1310,7 @@ field sign(const field& a, const field& b){
 field sin(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = sin(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = sin(f.root->data[i]);
   return rtn;
 }
 // @(#)f_sinh.C	1.1   Release Date: 2/19/93
@@ -1323,7 +1323,7 @@ field sin(const field& f){
 field sinh(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = sinh(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = sinh(f.root->data[i]);
   return rtn;
 }
 // @(#)f_sqrt.C	1.1   Release Date: 2/19/93
@@ -1336,7 +1336,7 @@ field sinh(const field& f){
 field sqrt(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = sqrt(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = sqrt(f.root->data[i]);
   return rtn;
 }
 // @(#)f_sum.C	1.1   Release Date: 2/19/93
@@ -1348,7 +1348,7 @@ field sqrt(const field& f){
 double field::Sum(void) const{
   double retval = 0.0;
   size_t l = root->length;
-  for (register i=0; i<l; i++) retval += root->data[i];
+  for (register int i=0; i<l; i++) retval += root->data[i];
   return retval;
 }
 // @(#)f_tan.C	1.1   Release Date: 2/19/93
@@ -1361,7 +1361,7 @@ double field::Sum(void) const{
 field tan(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = tan(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = tan(f.root->data[i]);
   return rtn;
 }
 // @(#)f_tanh.C	1.1   Release Date: 2/19/93
@@ -1374,7 +1374,7 @@ field tan(const field& f){
 field tanh(const field& f){
   size_t l = f.root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = tanh(f.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = tanh(f.root->data[i]);
   return rtn;
 }
 // @(#)f_umi.C	1.1   Release Date: 2/19/93
@@ -1386,7 +1386,7 @@ field tanh(const field& f){
 field field::operator-(void) const{
   size_t l = root->length;
   field rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = -root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = -root->data[i];
   return rtn;
 }
 // @(#)fn_ct_f.C	1.1   Release Date: 2/19/93
@@ -1412,7 +1412,7 @@ __field_node::__field_node(size_t size, double fill) :
   length(size),
   ref_count(1)
 {
-  for (register i=0; i<size; i++) data[i] = fill;
+  for (register int i=0; i<size; i++) data[i] = fill;
 }
 // @(#)fn_eq.C	1.1   Release Date: 2/19/93
 //	 Author:  Kent G. Budge, 
@@ -1463,7 +1463,7 @@ void __field_node::operator delete(void* ptr){
 ifield abs(const ifield& f){
   size_t l = f.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (f.root->data[i] < 0?  -f.root->data[i] :
 						f.root->data[i]);
   return rtn;
@@ -1476,7 +1476,7 @@ ifield& ifield::Assemble(const ifield& b, const ifield& ia, const ifield& ib){
   assert(l == ib.Length());
   Private();
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b[ib[i]];
+  for (register int i=0; i<l; i++)  This[ia[i]] += b[ib[i]];
   return This;
 }
 
@@ -1488,7 +1488,7 @@ ifield& ifield::Assemble(const ifield& b, const ifield& ia){
   assert(l == b.Length());
   Private();
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b[i];
+  for (register int i=0; i<l; i++)  This[ia[i]] += b[i];
   return This;
 }
 
@@ -1499,7 +1499,7 @@ ifield& ifield::Assemble(int b, const ifield& ia){
   const size_t l = ia.Length();
   Private();
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] += b;
+  for (register int i=0; i<l; i++)  This[ia[i]] += b;
   return This;
 }
 
@@ -1513,7 +1513,7 @@ ifield& ifield::operator&=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] &= d;
+  for (register int i=0; i<l; i++) root->data[i] &= d;
   return *this;
 }
 // @(#)i_band_df.C	1.1   Release Date: 2/19/93
@@ -1525,7 +1525,7 @@ ifield& ifield::operator&=(int d){
 ifield operator&(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (d & a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (d & a.root->data[i]);
   return rtn;
 }
 // @(#)i_band_f.C	1.1   Release Date: 2/19/93
@@ -1538,7 +1538,7 @@ ifield& ifield::operator&=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] &= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] &= f.root->data[i];
   return *this;
 }
 // @(#)i_band_fd.C	1.1   Release Date: 2/19/93
@@ -1550,7 +1550,7 @@ ifield& ifield::operator&=(const ifield& f){
 ifield operator&(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] & d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] & d);
   return rtn;
 }
 // @(#)i_band_ff.C	1.1   Release Date: 2/19/93
@@ -1563,7 +1563,7 @@ ifield operator&(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] & b.root->data[i]);
   return rtn;
 }
@@ -1577,7 +1577,7 @@ ifield& ifield::operator|=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] |= d;
+  for (register int i=0; i<l; i++) root->data[i] |= d;
   return *this;
 }
 // @(#)i_bor_df.C	1.1   Release Date: 2/19/93
@@ -1589,7 +1589,7 @@ ifield& ifield::operator|=(int d){
 ifield operator|(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (d | a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (d | a.root->data[i]);
   return rtn;
 }
 // @(#)i_bor_f.C	1.1   Release Date: 2/19/93
@@ -1602,7 +1602,7 @@ ifield& ifield::operator|=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] |= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] |= f.root->data[i];
   return *this;
 }
 // @(#)i_bor_fd.C	1.1   Release Date: 2/19/93
@@ -1614,7 +1614,7 @@ ifield& ifield::operator|=(const ifield& f){
 ifield operator|(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] | d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] | d);
   return rtn;
 }
 // @(#)i_bor_ff.C	1.1   Release Date: 2/19/93
@@ -1627,7 +1627,7 @@ ifield operator|(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] | b.root->data[i]);
   return rtn;
 }
@@ -1640,7 +1640,7 @@ ifield operator|(const ifield& a, const ifield& b){
 ifield ifield::operator~(void) const{
   size_t l = root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = ~root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = ~root->data[i];
   return rtn;
 }
 // @(#)i_ct_a.C	1.1   Release Date: 2/19/93
@@ -1684,7 +1684,7 @@ ifield& ifield::operator/=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] /= d;
+  for (register int i=0; i<l; i++) root->data[i] /= d;
   return *this;
 }
 // @(#)i_di_df.C	1.1   Release Date: 2/19/93
@@ -1696,7 +1696,7 @@ ifield& ifield::operator/=(int d){
 ifield operator/(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d / a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d / a.root->data[i];
   return rtn;
 }
 // @(#)i_di_f.C	1.1   Release Date: 2/19/93
@@ -1709,7 +1709,7 @@ ifield& ifield::operator/=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] /= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] /= f.root->data[i];
   return *this;
 }
 // @(#)i_di_fd.C	1.1   Release Date: 2/19/93
@@ -1721,7 +1721,7 @@ ifield& ifield::operator/=(const ifield& f){
 ifield operator/(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] / d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] / d;
   return rtn;
 }
 // @(#)i_di_ff.C	1.1   Release Date: 2/19/93
@@ -1734,7 +1734,7 @@ ifield operator/(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] / b.root->data[i];
   return rtn;
 }
@@ -1744,7 +1744,7 @@ ifield operator/(const ifield& a, const ifield& b){
 ifield dim(int a, const ifield& b){
   const size_t l = b.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)  rtn[i] = (a > b[i]? a - b[i] : 0);
+  for (register int i=0; i<l; i++)  rtn[i] = (a > b[i]? a - b[i] : 0);
   return rtn;
 }
 
@@ -1754,7 +1754,7 @@ ifield dim(int a, const ifield& b){
 ifield dim(const ifield& a, int b){
   const size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)  rtn[i] = (a[i] > b? a[i] - b : 0);
+  for (register int i=0; i<l; i++)  rtn[i] = (a[i] > b? a[i] - b : 0);
   return rtn;
 }
 
@@ -1765,7 +1765,7 @@ ifield dim(const ifield& a, const ifield& b){
   const size_t l = a.Length();
   assert(l == b.Length());
   ifield rtn(l);
-  for (register i=0; i<l; i++)  rtn[i] = (a[i] > b[i]? a[i] - b[i] : 0);
+  for (register int i=0; i<l; i++)  rtn[i] = (a[i] > b[i]? a[i] - b[i] : 0);
   return rtn;
 }
 
@@ -1777,7 +1777,7 @@ void div(int a, const ifield& b, ifield& c, ifield& d){
   const size_t l = b.Length();
   c = ifield(l);
   d = ifield(l);
-  for (register i=0; i<l; i++){
+  for (register int i=0; i<l; i++){
     c[i] = a/b[i];
     d[i] = a%b[i];
   }
@@ -1791,7 +1791,7 @@ void div(const ifield& a, int b, ifield& c, ifield& d){
   const size_t l = a.Length();
   c = ifield(l);
   d = ifield(l);
-  for (register i=0; i<l; i++){
+  for (register int i=0; i<l; i++){
     c[i] = a[i]/b;
     d[i] = a[i]%b;
   }
@@ -1806,7 +1806,7 @@ void div(const ifield& a, const ifield& b, ifield& c, ifield& d){
   assert(l == b.Length());
   c = ifield(l);
   d = ifield(l);
-  for (register i=0; i<l; i++){
+  for (register int i=0; i<l; i++){
     c[i] = a[i]/b[i];
     d[i] = a[i]%b[i];
   }
@@ -1846,7 +1846,7 @@ ifield& ifield::operator=(int fill){
     if (root->ref_count > 1) Private();
     ref_flag = 0;
     const size_t l = root->length;
-    for (register i=0; i<l; i++) root->data[i] = fill;
+    for (register int i=0; i<l; i++) root->data[i] = fill;
   }
   return *this;
 }
@@ -1863,7 +1863,7 @@ ifield& ifield::operator=(const field& f){
   }else{
     Free();
     root = new(f.root->length) __field_inode(f.root->length);
-    for (register i=0; i<root->length; i++) 
+    for (register int i=0; i<root->length; i++) 
       root->data[i] = (int)f.root->data[i];
   }
   ref_flag = 0;
@@ -1875,7 +1875,7 @@ ifield& ifield::operator=(const field& f){
 ifield ifield::Gather(const ifield& ia) const {
   size_t l = ia.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = root->data[ia[i]];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = root->data[ia[i]];
   return rtn;
 }
 // @(#)i_gather_2.C	1.1   Release Date: 2/19/93
@@ -1886,7 +1886,7 @@ ifield ifield::Gather(size_t start, size_t end, size_t stride) const {
   ifield rtn((end-start)/stride + 1);
   int *rp = rtn;
   const int* This = *this;
-  for (register i=start, j=0; i<end; i+=stride,j++) rp[j] = This[i];
+  for (register int i=start, j=0; i<end; i+=stride,j++) rp[j] = This[i];
   return rtn;
 }
 // @(#)i_ge_df.C	1.1   Release Date: 2/19/93
@@ -1898,7 +1898,7 @@ ifield ifield::Gather(size_t start, size_t end, size_t stride) const {
 ifield operator>=(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b >= a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b >= a.root->data[i]);
   return rtn;
 }
 // @(#)i_ge_fd.C	1.1   Release Date: 2/19/93
@@ -1910,7 +1910,7 @@ ifield operator>=(int b, const ifield& a){
 ifield operator>=(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] >= b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] >= b);
   return rtn;
 }
 // @(#)i_ge_ff.C	1.1   Release Date: 2/19/93
@@ -1923,7 +1923,7 @@ ifield operator>=(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] >= b.root->data[i]);
   return rtn;
 }
@@ -1936,7 +1936,7 @@ ifield operator>=(const ifield& a, const ifield& b){
 ifield operator>(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b > a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b > a.root->data[i]);
   return rtn;
 }
 // @(#)i_gt_fd.C	1.1   Release Date: 2/19/93
@@ -1948,7 +1948,7 @@ ifield operator>(int b, const ifield& a){
 ifield operator>(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] > b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] > b);
   return rtn;
 }
 // @(#)i_gt_ff.C	1.1   Release Date: 2/19/93
@@ -1961,7 +1961,7 @@ ifield operator>(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] > b.root->data[i]);
   return rtn;
 }
@@ -2006,7 +2006,7 @@ ifield::ifield(const field& a) :
   if (a.root){
     const size_t l = a.root->length;
     root = new(l) __field_inode(l);
-    for (register i=0; i<l; i++) root->data[i] = (int)a.root->data[i];
+    for (register int i=0; i<l; i++) root->data[i] = (int)a.root->data[i];
   }else{
     root = NULL;
   }
@@ -2021,7 +2021,7 @@ ifield::ifield(const field& a) :
 ifield operator&&(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] && d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] && d);
   return rtn;
 }
 // @(#)i_land_fd.C	1.1   Release Date: 2/19/93
@@ -2033,7 +2033,7 @@ ifield operator&&(int d, const ifield& a){
 ifield operator&&(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] && d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] && d);
   return rtn;
 }
 // @(#)i_land_ff.C	1.2   Release Date: 2/19/93
@@ -2046,7 +2046,7 @@ ifield operator&&(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] && b.root->data[i]);
   return rtn;
 }
@@ -2059,7 +2059,7 @@ ifield operator&&(const ifield& a, const ifield& b){
 ifield operator<=(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b <= a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b <= a.root->data[i]);
   return rtn;
 }
 // @(#)i_le_fd.C	1.1   Release Date: 2/19/93
@@ -2071,7 +2071,7 @@ ifield operator<=(int b, const ifield& a){
 ifield operator<=(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] <= b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] <= b);
   return rtn;
 }
 // @(#)i_le_ff.C	1.1   Release Date: 2/19/93
@@ -2084,7 +2084,7 @@ ifield operator<=(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] <= b.root->data[i]);
   return rtn;
 }
@@ -2097,7 +2097,7 @@ ifield operator<=(const ifield& a, const ifield& b){
 ifield operator==(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b == a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b == a.root->data[i]);
   return rtn;
 }
 // @(#)i_leq_fd.C	1.1   Release Date: 2/19/93
@@ -2109,7 +2109,7 @@ ifield operator==(int b, const ifield& a){
 ifield operator==(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] == b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] == b);
   return rtn;
 }
 // @(#)i_leq_ff.C	1.1   Release Date: 2/19/93
@@ -2122,7 +2122,7 @@ ifield operator==(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] == b.root->data[i]);
   return rtn;
 }
@@ -2135,7 +2135,7 @@ ifield operator==(const ifield& a, const ifield& b){
 ifield operator!=(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b != a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b != a.root->data[i]);
   return rtn;
 }
 // @(#)i_lne_fd.C	1.1   Release Date: 2/19/93
@@ -2147,7 +2147,7 @@ ifield operator!=(int b, const ifield& a){
 ifield operator!=(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] != b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] != b);
   return rtn;
 }
 // @(#)i_lne_ff.C	1.1   Release Date: 2/19/93
@@ -2160,7 +2160,7 @@ ifield operator!=(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] != b.root->data[i]);
   return rtn;
 }
@@ -2173,7 +2173,7 @@ ifield operator!=(const ifield& a, const ifield& b){
 ifield operator||(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] || d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] || d);
   return rtn;
 }
 // @(#)i_lor_fd.C	1.1   Release Date: 2/19/93
@@ -2185,7 +2185,7 @@ ifield operator||(int d, const ifield& a){
 ifield operator||(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] || d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] || d);
   return rtn;
 }
 // @(#)i_lor_ff.C	1.2   Release Date: 2/19/93
@@ -2198,7 +2198,7 @@ ifield operator||(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] || b.root->data[i]);
   return rtn;
 }
@@ -2212,7 +2212,7 @@ ifield& ifield::operator<<=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] <<= d;
+  for (register int i=0; i<l; i++) root->data[i] <<= d;
   return *this;
 }
 // @(#)i_ls_df.C	1.1   Release Date: 2/19/93
@@ -2224,7 +2224,7 @@ ifield& ifield::operator<<=(int d){
 ifield operator<<(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (d << a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (d << a.root->data[i]);
   return rtn;
 }
 // @(#)i_ls_f.C	1.1   Release Date: 2/19/93
@@ -2237,7 +2237,7 @@ ifield& ifield::operator<<=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] <<= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] <<= f.root->data[i];
   return *this;
 }
 // @(#)i_ls_fd.C	1.1   Release Date: 2/19/93
@@ -2249,7 +2249,7 @@ ifield& ifield::operator<<=(const ifield& f){
 ifield operator<<(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] << d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] << d;
   return rtn;
 }
 // @(#)i_ls_ff.C	1.1   Release Date: 2/19/93
@@ -2262,7 +2262,7 @@ ifield operator<<(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] << b.root->data[i];
   return rtn;
 }
@@ -2275,7 +2275,7 @@ ifield operator<<(const ifield& a, const ifield& b){
 ifield operator<(int b, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (b < a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (b < a.root->data[i]);
   return rtn;
 }
 // @(#)i_lt_fd.C	1.1   Release Date: 2/19/93
@@ -2287,7 +2287,7 @@ ifield operator<(int b, const ifield& a){
 ifield operator<(const ifield& a, int b){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] < b);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] < b);
   return rtn;
 }
 // @(#)i_lt_ff.C	1.1   Release Date: 2/19/93
@@ -2300,7 +2300,7 @@ ifield operator<(const ifield& a, const ifield& b){
   size_t l = a.root->length;
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] < b.root->data[i]);
   return rtn;
 }
@@ -2311,7 +2311,7 @@ ifield operator<(const ifield& a, const ifield& b){
 ifield max(int b, const ifield& a){
   size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b? a.root->data[i] : b);
   return rtn;
 }
@@ -2324,7 +2324,7 @@ ifield max(int b, const ifield& a){
 int max(const ifield& f){
   size_t l = f.root->length;
   int retval = f.root->data[l-1];
-  for (register i=0; i<l-1; i++) 
+  for (register int i=0; i<l-1; i++) 
     retval = (retval > f.root->data[i]? retval : f.root->data[i]);
   return retval;
 } 
@@ -2335,7 +2335,7 @@ int max(const ifield& f){
 ifield max(const ifield& a, int b){
   size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b? a.root->data[i] : b);
   return rtn;
 }
@@ -2347,7 +2347,7 @@ ifield max(const ifield& a, const ifield& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] > b.root->data[i] ?
 				a.root->data[i] : b.root->data[i]);
   return rtn;
@@ -2362,7 +2362,7 @@ ifield& ifield::operator%=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] %= d;
+  for (register int i=0; i<l; i++) root->data[i] %= d;
   return *this;
 }
 // @(#)i_md_df.C	1.1   Release Date: 2/19/93
@@ -2374,7 +2374,7 @@ ifield& ifield::operator%=(int d){
 ifield operator%(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d % a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d % a.root->data[i];
   return rtn;
 }
 // @(#)i_md_f.C	1.1   Release Date: 2/19/93
@@ -2387,7 +2387,7 @@ ifield& ifield::operator%=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] %= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] %= f.root->data[i];
   return *this;
 }
 // @(#)i_md_fd.C	1.1   Release Date: 2/19/93
@@ -2399,7 +2399,7 @@ ifield& ifield::operator%=(const ifield& f){
 ifield operator%(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] % d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] % d;
   return rtn;
 }
 // @(#)i_md_ff.C	1.1   Release Date: 2/19/93
@@ -2412,7 +2412,7 @@ ifield operator%(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] % b.root->data[i];
   return rtn;
 }
@@ -2426,7 +2426,7 @@ ifield& ifield::operator-=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] -= d;
+  for (register int i=0; i<l; i++) root->data[i] -= d;
   return *this;
 }
 // @(#)i_mi_df.C	1.1   Release Date: 2/19/93
@@ -2438,7 +2438,7 @@ ifield& ifield::operator-=(int d){
 ifield operator-(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d - a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d - a.root->data[i];
   return rtn;
 }
 // @(#)i_mi_f.C	1.1   Release Date: 2/19/93
@@ -2451,7 +2451,7 @@ ifield& ifield::operator-=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] -= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] -= f.root->data[i];
   return *this;
 }
 // @(#)i_mi_fd.C	1.1   Release Date: 2/19/93
@@ -2463,7 +2463,7 @@ ifield& ifield::operator-=(const ifield& f){
 ifield operator-(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] - d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] - d;
   return rtn;
 }
 // @(#)i_mi_ff.C	1.1   Release Date: 2/19/93
@@ -2476,7 +2476,7 @@ ifield operator-(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] - b.root->data[i];
   return rtn;
 }
@@ -2487,7 +2487,7 @@ ifield operator-(const ifield& a, const ifield& b){
 ifield min(int b, const ifield& a){
   size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b? a.root->data[i] : b);
   return rtn;
 }
@@ -2500,7 +2500,7 @@ ifield min(int b, const ifield& a){
 int min(const ifield& f){
   size_t l = f.root->length;
   int retval = f.root->data[l-1];
-  for (register i=0; i<l-1; i++) 
+  for (register int i=0; i<l-1; i++) 
     retval = (retval < f.root->data[i]? retval : f.root->data[i]);
   return retval;
 } 
@@ -2511,7 +2511,7 @@ int min(const ifield& f){
 ifield min(const ifield& a, int b){
   size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b? a.root->data[i] : b);
   return rtn;
 }
@@ -2523,7 +2523,7 @@ ifield min(const ifield& a, const ifield& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < b.root->data[i] ?
 				a.root->data[i] : b.root->data[i]);
   return rtn;
@@ -2538,7 +2538,7 @@ ifield& ifield::operator*=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] *= d;
+  for (register int i=0; i<l; i++) root->data[i] *= d;
   return *this;
 }
 // @(#)i_mu_df.C	1.1   Release Date: 2/19/93
@@ -2550,7 +2550,7 @@ ifield& ifield::operator*=(int d){
 ifield operator*(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d * a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d * a.root->data[i];
   return rtn;
 }
 // @(#)i_mu_f.C	1.1   Release Date: 2/19/93
@@ -2563,7 +2563,7 @@ ifield& ifield::operator*=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] *= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] *= f.root->data[i];
   return *this;
 }
 // @(#)i_mu_fd.C	1.1   Release Date: 2/19/93
@@ -2575,7 +2575,7 @@ ifield& ifield::operator*=(const ifield& f){
 ifield operator*(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] * d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] * d;
   return rtn;
 }
 // @(#)i_mu_ff.C	1.1   Release Date: 2/19/93
@@ -2588,7 +2588,7 @@ ifield operator*(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] * b.root->data[i];
   return rtn;
 }
@@ -2601,7 +2601,7 @@ ifield operator*(const ifield& a, const ifield& b){
 ifield ifield::operator!(void) const{
   size_t l = root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = !root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = !root->data[i];
   return rtn;
 }
 // @(#)i_pf.C	1.1   Release Date: 2/19/93
@@ -2634,7 +2634,7 @@ ifield& ifield::operator+=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] += d;
+  for (register int i=0; i<l; i++) root->data[i] += d;
   return *this;
 }
 // @(#)i_pl_df.C	1.1   Release Date: 2/19/93
@@ -2646,7 +2646,7 @@ ifield& ifield::operator+=(int d){
 ifield operator+(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = d + a.root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = d + a.root->data[i];
   return rtn;
 }
 // @(#)i_pl_f.C	1.1   Release Date: 2/19/93
@@ -2659,7 +2659,7 @@ ifield& ifield::operator+=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] += f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] += f.root->data[i];
   return *this;
 }
 // @(#)i_pl_fd.C	1.1   Release Date: 2/19/93
@@ -2671,7 +2671,7 @@ ifield& ifield::operator+=(const ifield& f){
 ifield operator+(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] + d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] + d;
   return rtn;
 }
 // @(#)i_pl_ff.C	1.1   Release Date: 2/19/93
@@ -2684,7 +2684,7 @@ ifield operator+(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] + b.root->data[i];
   return rtn;
 }
@@ -2694,7 +2694,7 @@ ifield operator+(const ifield& a, const ifield& b){
 
 void ifield::rand(void){
   Private();
-  for (register i=0; i<root->length; i++)  root->data[i] = ::rand();
+  for (register int i=0; i<root->length; i++)  root->data[i] = ::rand();
 }
 // @(#)i_rs_d.C	1.1   Release Date: 2/19/93
 //	 Author:  Kent G. Budge, 
@@ -2706,7 +2706,7 @@ ifield& ifield::operator>>=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] >>= d;
+  for (register int i=0; i<l; i++) root->data[i] >>= d;
   return *this;
 }
 // @(#)i_rs_df.C	1.1   Release Date: 2/19/93
@@ -2718,7 +2718,7 @@ ifield& ifield::operator>>=(int d){
 ifield operator>>(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (d >> a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (d >> a.root->data[i]);
   return rtn;
 }
 // @(#)i_rs_f.C	1.1   Release Date: 2/19/93
@@ -2731,7 +2731,7 @@ ifield& ifield::operator>>=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] >>= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] >>= f.root->data[i];
   return *this;
 }
 // @(#)i_rs_fd.C	1.1   Release Date: 2/19/93
@@ -2743,7 +2743,7 @@ ifield& ifield::operator>>=(const ifield& f){
 ifield operator>>(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] >> d;
+  for (register int i=0; i<l; i++) rtn.root->data[i] = a.root->data[i] >> d;
   return rtn;
 }
 // @(#)i_rs_ff.C	1.1   Release Date: 2/19/93
@@ -2756,7 +2756,7 @@ ifield operator>>(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = a.root->data[i] >> b.root->data[i];
   return rtn;
 }
@@ -2768,7 +2768,7 @@ ifield& ifield::Scatter(const ifield& b, const ifield& ia, const ifield& ib){
   const size_t l = ia.Length();
   assert(l == ib.Length());
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] = b[ib[i]];
+  for (register int i=0; i<l; i++)  This[ia[i]] = b[ib[i]];
   return This;
 }
 
@@ -2780,7 +2780,7 @@ ifield& ifield::Scatter(const ifield& b, const ifield& ia){
   const size_t l = ia.Length();
   assert(l == b.Length());
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] = b[i];
+  for (register int i=0; i<l; i++)  This[ia[i]] = b[i];
   return This;
 }
 
@@ -2791,7 +2791,7 @@ ifield& ifield::Scatter(const ifield& b, const ifield& ia){
 ifield& ifield::Scatter(int b, const ifield& ia){
   const size_t l = ia.Length();
   ifield& This = *this;
-  for (register i=0; i<l; i++)  This[ia[i]] = b;
+  for (register int i=0; i<l; i++)  This[ia[i]] = b;
   return This;
 }
 
@@ -2803,7 +2803,7 @@ ifield& ifield::Scatter(const ifield& a, size_t start, size_t end,
   assert(end < root->length);
   assert((end-start)/stride < a.root->length);
   ifield& This = *this;
-  for (register i=start, j=0; i<end; i+=stride,j++)
+  for (register int i=start, j=0; i<end; i+=stride,j++)
     This[i] = a[j];
   return This;
 }
@@ -2828,7 +2828,7 @@ ifield ifield::Shift(int i) const{
 ifield sign(int b, const ifield& a){
   size_t l = a.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (a.root->data[i] < 0.0? -b : b);
   return rtn;
 }
@@ -2839,7 +2839,7 @@ ifield sign(int b, const ifield& a){
 ifield sign(const ifield& ia, int ib){
   const size_t l = ia.Length();
   ifield rtn(l);
-  for (register i=0; i<l; i++)  rtn[i] = (ib<0? -ia[i] : ia[i]);
+  for (register int i=0; i<l; i++)  rtn[i] = (ib<0? -ia[i] : ia[i]);
   return rtn;
 }
 
@@ -2851,7 +2851,7 @@ ifield sign(const ifield& a, const ifield& b){
   size_t l = a.Length();
   assert(l == b.root->length);
   ifield rtn(l);
-  for (register i=0; i<l; i++)
+  for (register int i=0; i<l; i++)
     rtn.root->data[i] = (b.root->data[i] < 0.0? -a.root->data[i] :
 						 a.root->data[i]);
   return rtn;
@@ -2865,7 +2865,7 @@ ifield sign(const ifield& a, const ifield& b){
 int ifield::Sum(void) const{
   int retval = 0;
   size_t l = root->length;
-  for (register i=0; i<l; i++) retval += root->data[i];
+  for (register int i=0; i<l; i++) retval += root->data[i];
   return retval;
 }
 // @(#)i_umi.C	1.1   Release Date: 2/19/93
@@ -2877,7 +2877,7 @@ int ifield::Sum(void) const{
 ifield ifield::operator-(void) const{
   size_t l = root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = -root->data[i];
+  for (register int i=0; i<l; i++) rtn.root->data[i] = -root->data[i];
   return rtn;
 }
 // @(#)i_xr_d.C	1.1   Release Date: 2/19/93
@@ -2890,7 +2890,7 @@ ifield& ifield::operator^=(int d){
   assert(root!=NULL);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] ^= d;
+  for (register int i=0; i<l; i++) root->data[i] ^= d;
   return *this;
 }
 // @(#)i_xr_df.C	1.1   Release Date: 2/19/93
@@ -2902,7 +2902,7 @@ ifield& ifield::operator^=(int d){
 ifield operator^(int d, const ifield& a){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (d ^ a.root->data[i]);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (d ^ a.root->data[i]);
   return rtn;
 }
 // @(#)i_xr_f.C	1.1   Release Date: 2/19/93
@@ -2915,7 +2915,7 @@ ifield& ifield::operator^=(const ifield& f){
   assert(root && f.root && root->length == f.root->length);
   Private();
   size_t l = root->length;
-  for (register i=0; i<l; i++) root->data[i] ^= f.root->data[i];
+  for (register int i=0; i<l; i++) root->data[i] ^= f.root->data[i];
   return *this;
 }
 // @(#)i_xr_fd.C	1.1   Release Date: 2/19/93
@@ -2927,7 +2927,7 @@ ifield& ifield::operator^=(const ifield& f){
 ifield operator^(const ifield& a, int d){
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] ^ d);
+  for (register int i=0; i<l; i++) rtn.root->data[i] = (a.root->data[i] ^ d);
   return rtn;
 }
 // @(#)i_xr_ff.C	1.1   Release Date: 2/19/93
@@ -2940,7 +2940,7 @@ ifield operator^(const ifield& a, const ifield& b){
   assert(a.root->length == b.root->length);
   size_t l = a.root->length;
   ifield rtn(l);
-  for (register i=0; i<l; i++) 
+  for (register int i=0; i<l; i++) 
     rtn.root->data[i] = (a.root->data[i] ^ b.root->data[i]);
   return rtn;
 }
@@ -2967,7 +2967,7 @@ __field_inode::__field_inode(size_t size, int fill) :
   length(size),
   ref_count(1)
 {
-  for (register i=0; i<size; i++)
+  for (register int i=0; i<size; i++)
     data[i] = fill;
 }
 // @(#)in_eq.C	1.1   Release Date: 2/19/93

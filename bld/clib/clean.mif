@@ -1,18 +1,5 @@
 clean killall: .SYMBOLIC .EXPLICIT
-    @if exist *.?bj @erase *.?bj
-    @if exist *.bak @erase *.bak
-    @if exist *.def @erase *.def
-    @if exist *.dll @erase *.dll
-    @if exist *.dmp @erase *.dmp
-    @if exist *.err @erase *.err
-    @if exist *.exe @erase *.exe
-    @if exist *.lbc @erase *.lbc
-    @if exist *.lib @erase *.lib
-    @if exist *.lnk @erase *.lnk
-    @if exist *.lst @erase *.lst
-    @if exist *.map @erase *.map
-    @if exist *.out @erase *.out
-    @if exist *.sym @erase *.sym
-    @if exist *.tim @erase *.tim
-    @if exist *.tmp @erase *.tmp
-    @if exist *.zip @erase *.zip
+    rm -f *.?bj *.bak *.def *.dll *.dmp *.err *.exe *.lbc
+    rm -f *.lib *.lnk *.lst *.map *.out *.sym *.tim *.tmp
+    rm -f *.zip *.imp *.rc  *.res
+

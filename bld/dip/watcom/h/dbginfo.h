@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom debugging information. 
 *
 ****************************************************************************/
 
@@ -91,7 +90,7 @@
 #define OBJ_MAJOR_VERSION   1
 #define OBJ_MINOR_VERSION   3
 
-#pragma pack(push,1);
+#include "pushpck1.h"
 
 typedef struct {
     word            signature;      /* == 0x8386                    */
@@ -126,7 +125,7 @@ enum { DMND_FIRST = 0, DMND_LOCALS = 0, DMND_TYPES, DMND_LINES, DMND_NUM };
 typedef struct {
     word            language;       /* offset from source language table */
     demand_info     di[DMND_NUM];
-    byte            name[1];
+    char            name[1];
 } _WCUNALIGNED mod_info;
 
 typedef struct {
@@ -150,7 +149,7 @@ typedef struct {
     addr48_ptr      addr;
     word            mod;            /* offset from mod info class for V2 */
                                     /* module index number for V3 */
-    byte            name[1];
+    char            name[1];
 } _WCUNALIGNED gbl_info;
 
 #define GBL_KIND_STATIC         0x01
@@ -161,7 +160,7 @@ typedef struct {
     addr48_ptr          addr;
     word                mod;
     byte                kind;
-    byte                name[1];
+    char                name[1];
 } _WCUNALIGNED v3_gbl_info;
 
 
@@ -179,4 +178,4 @@ typedef struct {
 
 #define SEG_NUM_MASK    0x7fff
 
-#pragma pack(pop);
+#include "poppck.h"

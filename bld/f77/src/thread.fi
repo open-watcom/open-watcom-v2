@@ -1,0 +1,11 @@
+c$noreference
+
+        external beginthread
+        integer beginthread
+
+        external endthread
+
+        external threadid
+        integer threadid
+
+c$reference

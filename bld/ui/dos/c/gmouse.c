@@ -328,7 +328,7 @@ bool global uiinitgmouse( register int install )
     return( MouseInstalled );
 }
 
-static char intern CheckEgaVga()
+static char intern CheckEgaVga( void )
 {
     if( ( UIData->colour == M_EGA || UIData->colour == M_VGA )
         && !UIData->desqview

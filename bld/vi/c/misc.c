@@ -24,37 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  A hodgepodge of miscellaneous functions.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include <stdarg.h>
-#include <ctype.h>
 
 #ifdef _M_I86
-#include <i86.h>
+  #include <i86.h>
 #endif
 #include <errno.h>
-#include <env.h>
-#include <process.h>
-#include <unistd.h>
+#ifdef __WATCOMC__
+  #include <env.h>
+  #include <process.h>
+#endif
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <assert.h>
-#include "vi.h"
-#ifdef __WIN__
-#include "winvi.h"
-#endif
 #include "source.h"
+#include "posix.h"
 #include "win.h"
+
 #ifdef __NT__
-    #include <windows.h>
-    extern HANDLE       OutputHandle;
+  extern HANDLE       OutputHandle;
 #endif
 
 static char *oldPrompt;
@@ -63,7 +56,7 @@ static void setPrompt( void )
 {
     char        *tmp;
 
-    if( SpawnPrompt[ 0 ] != 0 ) {
+    if( SpawnPrompt[0] != 0 ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
             oldPrompt = MemAlloc( strlen( tmp ) + 1 );
@@ -77,7 +70,7 @@ static void setPrompt( void )
 
 static void restorePrompt( void )
 {
-    if( SpawnPrompt[ 0 ] != 0 ) {
+    if( SpawnPrompt[0] != 0 ) {
         setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, TRUE );
         if( oldPrompt != NULL ) {
             MemFree( oldPrompt );
@@ -88,7 +81,8 @@ static void restorePrompt( void )
 
 static bool clockActive;
 
-static void preSpawn( void ) {
+static void preSpawn( void )
+{
     info        *cinfo;
 
     clockActive = EditFlags.ClockActive;
@@ -104,16 +98,14 @@ static void preSpawn( void ) {
      * after a system command, all files could potentially have their
      * read/write attributes changed
      */
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         cinfo->CurrentFile->check_readonly = TRUE;
-        cinfo = cinfo->next;
     }
     setPrompt();
 }
 
-static void postSpawn( int rc ) {
-
+static void postSpawn( int rc )
+{
     restorePrompt();
     VarAddGlobalLong( "Sysrc", (long) rc );
     UpdateCurrentDirectory();
@@ -123,7 +115,7 @@ static void postSpawn( int rc ) {
     // if( (EditFlags.PauseOnSpawnErr && rc != 0 ) ||
     //          !EditFlags.SourceScriptActive ) {
     if( EditFlags.PauseOnSpawnErr && rc != 0 ) {
-        MyPrintf("[%s]\n",MSG_PRESSANYKEY);
+        MyPrintf( "[%s]\n", MSG_PRESSANYKEY );
         GetNextEvent( FALSE );
     }
     ResetSpawnScreen();
@@ -139,10 +131,10 @@ static void postSpawn( int rc ) {
 #include <conio.h>
 int ExecCmd( char *file_in, char *file_out, char *cmd )
 {
-    int len;
+    int                 len;
     unsigned long       stat;
-    char *err;
-    char buff[256];
+    char                *err;
+    char                buff[256];
     int                 linked;
     err = BatchLink( NULL );
     if( err != NULL ) {
@@ -162,7 +154,7 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
                 BatchCancel();
             }
         } else if( len != 0 ) {
-            buff[ len ] = '\0';
+            buff[len] = '\0';
             printf( "%s", buff );
             fflush( stdout );
         }
@@ -205,8 +197,8 @@ int doExec( char *std_in, char *std_out, char *cmd )
     int         save_in, new_in;
     int         save_out, new_out;
 #if 0
-    char        buffer[ MAX_INPUT_LINE ];
-    char        *argv[ MAX_ARGS ];
+    char        buffer[MAX_INPUT_LINE];
+    char        *argv[MAX_ARGS];
     char        *s;
     int         i;
 #endif
@@ -214,8 +206,7 @@ int doExec( char *std_in, char *std_out, char *cmd )
     preSpawn();
     if( std_in != NULL ) {
         save_in = dup( STDIN_FILENO );
-        new_in = doRedirect( STDIN_FILENO, std_in,
-                           O_RDONLY | O_BINARY );
+        new_in = doRedirect( STDIN_FILENO, std_in, O_RDONLY | O_BINARY );
         if( new_in == -1 ) {
             close( save_in );
             return( -1 );
@@ -224,7 +215,7 @@ int doExec( char *std_in, char *std_out, char *cmd )
     if( std_out != NULL ) {
         save_out = dup( STDOUT_FILENO );
         new_out = doRedirect( STDOUT_FILENO, std_out,
-                            O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
+                              O_WRONLY | O_BINARY | O_CREAT | O_TRUNC );
         if( new_out == -1 ) {
             close( save_out );
             if( std_in != NULL ) {
@@ -242,34 +233,36 @@ int doExec( char *std_in, char *std_out, char *cmd )
     for( i = 0; i < MAX_ARGS; i++ ) {
         while( isspace( *s ) ) s++;
         if( *s == 0 ) {
-            argv[ i ] = NULL;
+            argv[i] = NULL;
             break;
         }
-        argv[ i ] = s;
-        while( *s && !isspace( *s ) ) s++;
+        argv[i] = s;
+        while( *s && !isspace( *s ) ) {
+            s++;
+        }
         if( *s ) {
             *s++ = 0;
         } else {
-            argv[ i + 1 ] = NULL;
+            argv[i + 1] = NULL;
             break;
         }
     }
 
-    st = spawnvp( P_WAIT, argv[ 0 ], argv );
+    st = spawnvp( P_WAIT, argv[0], argv );
 
 #else
-    #if defined(__NT__)
-        if( cmd == NULL ) {
-            st = MySpawn( Comspec );
-        } else {
-            SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
-            st = system( cmd );
-        }
-    #elif defined(__QNX__)
-        st = MySpawn( cmd );
-    #else
+#if defined( __NT__ )
+    if( cmd == NULL ) {
+        st = MySpawn( Comspec );
+    } else {
+        SetConsoleActiveScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ) );
         st = system( cmd );
-    #endif
+    }
+#elif defined( __UNIX__ )
+    st = MySpawn( cmd );
+#else
+    st = system( cmd );
+#endif
 #endif
 
     if( std_in != NULL ) {
@@ -308,9 +301,9 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
 /*
  * GetResponse - get a response from the user
  */
-int GetResponse( char *str, char *res )
+vi_rc GetResponse( char *str, char *res )
 {
-    int rc;
+    vi_rc   rc;
 
     rc = PromptForString( str, res, MAX_STR, NULL );
     if( rc == ERR_NO_ERR ) {
@@ -324,20 +317,24 @@ int GetResponse( char *str, char *res )
  * PromptFilesForSave - prompt to save for each file which has
  * been modified.
  */
-bool PromptFilesForSave()
+bool PromptFilesForSave( void )
 {
-    #ifdef __WIN__
+#ifdef __WIN__
     info        *cinfo;
     int         i;
-    int num = 0;
-    HWND hwnd_old = NULL;
+    int         num = 0;
+    HWND        hwnd_old = 0;
 
-    if( !EditFlags.SaveOnBuild ) return( TRUE );
+    if( !EditFlags.SaveOnBuild ) {
+        return( TRUE );
+    }
 
-    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next )num ++;
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
+        num++;
+    }
 
     BringUpFile( InfoHead, TRUE );
-    for( i = 0; i<num; i++ ) {
+    for( i = 0; i < num; i++ ) {
         if( CurrentFile != NULL && CurrentFile->dup_count == 0 &&
             CurrentFile->modified ) {
 
@@ -351,10 +348,10 @@ bool PromptFilesForSave()
         RotateFileForward();
     }
     if( hwnd_old != NULL ) {
-        SetWindowPos( Root, HWND_BOTTOM,0,0,0,0, SWP_NOMOVE|SWP_NOSIZE );
+        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
-    #endif
+#endif
     return( TRUE );
 
 } /* PromptFilesForSave */
@@ -364,15 +361,17 @@ bool PromptFilesForSave()
  */
 bool PromptThisFileForSave( const char *filename )
 {
-    #ifndef __WIN__
+#ifndef __WIN__
     filename = filename;
-    #else
+#else
     info        *cinfo;
-    HWND hwnd_old = NULL;
+    HWND        hwnd_old = 0;
 
-    while( isspace( *filename ) ) filename++;
+    while( isspace( *filename ) ) {
+        filename++;
+    }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char*)filename ) ) {
+        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
                 cinfo->CurrentFile->modified ) {
 
@@ -388,10 +387,10 @@ bool PromptThisFileForSave( const char *filename )
         }
     }
     if( hwnd_old != NULL ) {
-        SetWindowPos( Root, HWND_BOTTOM,0,0,0,0, SWP_NOMOVE|SWP_NOSIZE );
+        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetFocus( hwnd_old );
     }
-    #endif
+#endif
     return( TRUE );
 
 } /* PromptThisFileForSave */
@@ -403,11 +402,16 @@ bool QueryFile( const char *filename )
 {
     info        *cinfo;
 
-    while( isspace( *filename ) ) filename++;
+    while( isspace( *filename ) ) {
+        filename++;
+    }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        if( SameFile( cinfo->CurrentFile->name, (char*)filename ) ) return( TRUE );
+        if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
+            return( TRUE );
+        }
     }
     return( FALSE );
+
 } /* QueryFile */
 
 /*
@@ -417,13 +421,16 @@ bool QueryFile( const char *filename )
 bool ExitWithPrompt( bool do_quit )
 {
     info        *cinfo;
-    int         rc, i;
-    int num = 0;
-    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next )num ++;
+    int         i;
+    int         num = 0;
+    bool        rc;
 
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
+        num++;
+    }
     BringUpFile( InfoHead, TRUE );
-    for( i = 0; i<num; i++ ){
-        if( NextFile() > 0 ) {
+    for( i = 0; i < num; i++ ){
+        if( NextFile() > ERR_NO_ERR ) {
             // file modified ask
             rc = FileExitOptionSaveChanges( CurrentFile );
             if( rc == TRUE ) {
@@ -433,7 +440,7 @@ bool ExitWithPrompt( bool do_quit )
         }
     }
     if( do_quit ) {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     return( TRUE );
 
@@ -444,50 +451,47 @@ bool ExitWithPrompt( bool do_quit )
  */
 void ExitWithVerify( void )
 {
-    int         i,num=0;
-    static bool entered=FALSE;
+    int         num = 0;
+    static bool entered = FALSE;
     info        *cinfo;
     bool        modified;
-    #ifndef __WIN__
-        char    st[MAX_STR];
-    #endif
+#ifndef __WIN__
+    char        st[MAX_STR];
+#endif
 
     if( entered ) {
         return;
     }
     entered = TRUE;
-    cinfo = InfoHead;
     modified = FALSE;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         modified |= cinfo->CurrentFile->modified;
-        cinfo = cinfo->next;
         num++;
     }
     if( modified ) {
-        #ifdef __WIN__
-            i = MessageBox( Root, "Files are modified, really exit?",
-                                EditorName, MB_YESNO | MB_TASKMODAL );
-            if( i == IDYES ) {
-                BringUpFile( InfoHead, TRUE );
-                EditFlags.QuitAtLastFileExit = TRUE;
-                for( ;; ){
-                    NextFileDammit();
-                }
+#ifdef __WIN__
+        if( MessageBox( Root, "Files are modified, really exit?",
+                         EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
+            BringUpFile( InfoHead, TRUE );
+            EditFlags.QuitAtLastFileExit = TRUE;
+            for( ;; ) {
+                NextFileDammit();
             }
-        #else
-            i = GetResponse( "Files are modified, really exit?", st );
-            if( i == GOT_RESPONSE && st[0] == 'y' ) {
-                BringUpFile( InfoHead, TRUE );
-                EditFlags.QuitAtLastFileExit = TRUE;
-                for( ;; ){
-                    NextFileDammit();
-                }
+        }
+#else
+        if( GetResponse( "Files are modified, really exit?", st )
+                                    == GOT_RESPONSE && st[0] == 'y' ) {
+            BringUpFile( InfoHead, TRUE );
+            EditFlags.QuitAtLastFileExit = TRUE;
+            for( ;; ) {
+                NextFileDammit();
             }
-        #endif
+        }
+#endif
     } else {
         BringUpFile( InfoHead, TRUE );
         EditFlags.QuitAtLastFileExit = TRUE;
-        for( ;; ){
+        for( ;; ) {
             NextFileDammit();
         }
     }
@@ -517,7 +521,7 @@ bool ExitWithPrompt( bool do_quit )
         }
     }
     if( do_quit ) {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     return( TRUE );
 
@@ -529,12 +533,12 @@ bool ExitWithPrompt( bool do_quit )
 void ExitWithVerify( void )
 {
     int         i;
-    static bool entered=FALSE;
+    static bool entered = FALSE;
     info        *cinfo;
     bool        modified;
-    #ifndef __WIN__
-        char    st[MAX_STR];
-    #endif
+#ifndef __WIN__
+    char        st[MAX_STR];
+#endif
 
     if( entered ) {
         return;
@@ -547,20 +551,20 @@ void ExitWithVerify( void )
         cinfo = cinfo->next;
     }
     if( modified ) {
-        #ifdef __WIN__
-            i = MessageBox( Root, "Files are modified, really exit?",
-                                EditorName, MB_YESNO | MB_TASKMODAL );
-            if( i == IDYES ) {
-                QuitEditor( 0 );
-            }
-        #else
-            i = GetResponse( "Files are modified, really exit?", st );
-            if( i == GOT_RESPONSE && st[0] == 'y' ) {
-                QuitEditor( 0 );
-            }
-        #endif
+#ifdef __WIN__
+        i = MessageBox( Root, "Files are modified, really exit?",
+                        EditorName, MB_YESNO | MB_TASKMODAL );
+        if( i == IDYES ) {
+            QuitEditor( ERR_NO_ERR );
+        }
+#else
+        i = GetResponse( "Files are modified, really exit?", st );
+        if( i == GOT_RESPONSE && st[0] == 'y' ) {
+            QuitEditor( ERR_NO_ERR );
+        }
+#endif
     } else {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     entered = FALSE;
 
@@ -570,17 +574,17 @@ void ExitWithVerify( void )
 /*
  * PrintHexValue - print hex value of char under cursor
  */
-int PrintHexValue( void )
+vi_rc PrintHexValue( void )
 {
     int i;
 
     if( CurrentFile != NULL ) {
-        i = CurrentLine->data[ CurrentColumn-1 ];
+        i = CurrentLine->data[CurrentPos.column - 1];
         if( i == '\0' ) {
             // of not on data, pretend are 'on' newline
             i = '\n';
         }
-        Message1( "Char '%c': 0x%Z (%d)",(char) i,i,i );
+        Message1( "Char '%c': 0x%Z (%d)", (char) i, i, i );
     }
 
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -590,10 +594,11 @@ int PrintHexValue( void )
 /*
  * EnterHexKey - enter a hexidecimal key stroke and insert it into the text
  */
-int EnterHexKey( void )
+vi_rc EnterHexKey( void )
 {
-    int         rc,i;
-    char        st[MAX_STR],val;
+    int         i;
+    char        st[MAX_STR], val;
+    vi_rc       rc;
 
     if( rc = ModificationTest() ) {
         return( rc );
@@ -603,8 +608,8 @@ int EnterHexKey( void )
     }
 
     rc = PromptForString( "Enter the number of char to insert:", st,
-                                sizeof( st )-1, NULL );
-    if( rc ) {
+                          sizeof( st ) - 1, NULL );
+    if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );
         }
@@ -632,14 +637,14 @@ int EnterHexKey( void )
      * add the char
      */
     GetCurrentLine();
-    for( i=WorkLine->len;i>=CurrentColumn-1;i-- ) {
-        WorkLine->data[i+1] = WorkLine->data[i];
+    for( i = WorkLine->len; i >= CurrentPos.column - 1; i-- ) {
+        WorkLine->data[i + 1] = WorkLine->data[i];
     }
-    WorkLine->data[CurrentColumn-1] = val;
+    WorkLine->data[CurrentPos.column - 1] = val;
     WorkLine->len++;
     DisplayWorkLine( TRUE );
-    if( CurrentColumn < WorkLine->len ) {
-        GoToColumn( CurrentColumn +1, WorkLine->len+1 );
+    if( CurrentPos.column < WorkLine->len ) {
+        GoToColumn( CurrentPos.column + 1, WorkLine->len + 1 );
     }
     ReplaceCurrentLine();
     EditFlags.Dotable = TRUE;
@@ -650,9 +655,9 @@ int EnterHexKey( void )
 /*
  * DoVersion - display version info
  */
-int DoVersion( void )
+vi_rc DoVersion( void )
 {
-    Message1( "\"%s\" v%s  %s %s", TITLE,VERSION, DATESTAMP_T, DATESTAMP_D );
+    Message1( "\"%s\" v%s  %s %s", TITLE,VERSIONT, DATESTAMP_T, DATESTAMP_D );
     Message2( "%s", AUTHOR );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
@@ -682,9 +687,9 @@ char *StrMerge( int cnt, char *str, ... )
 /*
  * ModificationTest - test a file as it is about to be modified
  */
-int ModificationTest( void )
+vi_rc ModificationTest( void )
 {
-    int         rc;
+    vi_rc       rc;
     bool        olddm;
     int         olddotdigits;
 
@@ -713,9 +718,9 @@ int ModificationTest( void )
 /*
  * CurFileExitOptionSaveChanges - exit current file, opt save if modified
  */
-int CurFileExitOptionSaveChanges( void )
+vi_rc CurFileExitOptionSaveChanges( void )
 {
-    if( NextFile() > 0 ) {
+    if( NextFile() > ERR_NO_ERR ) {
         FileExitOptionSaveChanges( CurrentFile );
     }
     return( ERR_NO_ERR );
@@ -736,7 +741,7 @@ void UpdateCurrentDirectory( void )
 /*
  * DoAboutBox - do an about box
  */
-int DoAboutBox( void )
+vi_rc DoAboutBox( void )
 {
     return( ERR_NO_ERR );
 
@@ -752,20 +757,20 @@ int NextBiggestPrime( int start )
     int i;
 
     while( 1 ) {
-        for( i = 2; i < ( int )( n / 2 ); i++ ) {
-            if( i * ( n / i ) == n ) {
+        for( i = 2; i < (int)(n / 2); i++ ) {
+            if( i * (n / i) == n ) {
                 break;
             }
         }
-        if( i == ( int )( n / 2 ) ) {
+        if( i == (int)(n / 2) ) {
             break;
         }
         n++;
     }
-    return n;
+    return( n );
 }
 
-int FancySetFS( void )
+vi_rc FancySetFS( void )
 {
 #ifdef __WIN__
     GetSetFSDialog();
@@ -773,7 +778,7 @@ int FancySetFS( void )
     return( ERR_NO_ERR );
 }
 
-int FancySetScr( void )
+vi_rc FancySetScr( void )
 {
 #ifdef __WIN__
     GetSetScrDialog();
@@ -781,7 +786,7 @@ int FancySetScr( void )
     return( ERR_NO_ERR );
 }
 
-int FancySetGen( void )
+vi_rc FancySetGen( void )
 {
 #ifdef __WIN__
     GetSetGenDialog();
@@ -789,49 +794,49 @@ int FancySetGen( void )
     return( ERR_NO_ERR );
 }
 
-int ToggleToolbar( void )
+vi_rc ToggleToolbar( void )
 {
-    char    cmd[ 14 ];
+    char    cmd[14];
     sprintf( cmd, "set%stoolbar", EditFlags.Toolbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleStatusbar( void )
+vi_rc ToggleStatusbar( void )
 {
-    char    cmd[ 17 ];
-    sprintf( cmd, "set%sstatusinfo", EditFlags.StatusInfo? " no" : " " );
+    char    cmd[17];
+    sprintf( cmd, "set%sstatusinfo", EditFlags.StatusInfo ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleColorbar( void )
+vi_rc ToggleColorbar( void )
 {
-    char    cmd[ 15 ];
+    char    cmd[15];
     sprintf( cmd, "set%scolorbar", EditFlags.Colorbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleSSbar( void )
+vi_rc ToggleSSbar( void )
 {
-    char    cmd[ 15 ];
+    char    cmd[15];
     sprintf( cmd, "set%sssbar", EditFlags.SSbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleFontbar( void )
+vi_rc ToggleFontbar( void )
 {
-    char    cmd[ 14 ];
+    char    cmd[14];
     sprintf( cmd, "set%sfontbar", EditFlags.Fontbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int GenericQueryBool( char *str )
+bool GenericQueryBool( char *str )
 {
-    #ifdef __WIN__
-        return( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK );
-    #else
-        #define BUFLEN 10
-        char buffer[BUFLEN];
-        PromptForString( str, buffer, BUFLEN, NULL );
-        return( tolower( buffer[0] ) == 'y' );
-    #endif
+#ifdef __WIN__
+    return( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK );
+#else
+    #define BUFLEN 10
+    char buffer[BUFLEN];
+    PromptForString( str, buffer, BUFLEN, NULL );
+    return( tolower( buffer[0] ) == 'y' );
+#endif
 }

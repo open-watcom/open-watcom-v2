@@ -24,22 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File open dialog.
 *
 ****************************************************************************/
 
 
-#if defined( __NETWARE__ )
-// Some weird makefile stuff means that NLM isn't defined for NetWare builds.
-// Since __NETWARE__ is, we can use that instead.
-// gperrow June 12, 2000
-#define NLM
-#endif
-
 #include "guiwind.h"
-#include "guifdlg.h"
-#include "guidlg.h"
+
 #if defined(__OS2__) || defined(__OS2_PM__)
     #ifndef OS2_INCLUDED
         #undef NULL
@@ -47,23 +38,28 @@
         #include <os2.h>
     #endif
 #elif defined(__NT__)
+    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+#elif defined(__RDOS__)
+    #include "rdos.h"
 #endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <malloc.h>
 #include <sys/stat.h>
 #if defined( __QNX__ )
     #include <dirent.h>
     #include <unistd.h>
     #include <sys/disk.h>
     #include <fnmatch.h>
-#elif defined( UNIX )
+#elif defined( __LINUX__ )
     #include <dirent.h>
     #include <unistd.h>
-    #include <alloca.h>
+    #include <fnmatch.h>
+#elif defined( __UNIX__ )
+    #include <dirent.h>
+    #include <unistd.h>
     #ifdef SGI
         #include "fnmatch.h"    // We get fnmatch from wclib
     #else
@@ -74,9 +70,12 @@
     #include <direct.h>
     #include <dos.h>
 #endif
+#include "walloca.h"
+#include "guifdlg.h"
+#include "guidlg.h"
 #include "guistr.h"
 
-#if defined( __QNX__ ) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
     #define FILE_SEP    "/"
     #define FILE_SEP_CHAR       '/'
     #define FILES_ALL   "*"
@@ -86,10 +85,10 @@
     #define FILES_ALL   "*.*"
 #endif
 
-#define INDENT_STR      "ÿ"
-#define INDENT_CHAR     'ÿ'
-#define OPENED_DIR_CHAR '-'
-#define UNOPENED_DIR_CHAR '+'
+#define INDENT_STR          " "
+#define INDENT_CHAR         ' '
+#define OPENED_DIR_CHAR     '-'
+#define UNOPENED_DIR_CHAR   '+'
 
 typedef struct {
     open_file_name      *currOFN;
@@ -145,7 +144,7 @@ static gui_control_info dlgControls[] =
 /*  7 */ DLG_BUTTON(    NULL, CTL_CANCEL,       (DIR_START+BOX_WIDTH2+4), 6, (DIR_START+BOX_WIDTH2+14) ),
 /*  8 */ DLG_STRING(    NULL, 2, 11, 20 ),
 /*  9 */ DLG_COMBO_BOX( NULL, CTL_FILE_TYPES, 2,12,2+BOX_WIDTH+3,15 ),
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 /* 10 */ DLG_STRING(    NULL, DIR_START+2, 11, DIR_START+8 ),
 /* 11 */ DLG_COMBO_BOX( NULL, CTL_DRIVES, DIR_START+2,12,DIR_START+BOX_WIDTH,15 )
 #endif
@@ -160,9 +159,7 @@ static bool     ControlsInitialized = FALSE;
 
 #define NUM_CONTROLS ( sizeof( dlgControls ) / sizeof( gui_control_info ) )
 
-#if defined(__PENPOINT__)
-  #define PC '\\'
-#elif defined(__QNX__) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
   #define PC '/'
 #else   /* DOS, OS/2, Windows */
   #define PC '\\'
@@ -171,15 +168,15 @@ static bool     ControlsInitialized = FALSE;
 
 static void InitDlgControls( void )
 {
-/*  0 */ dlgControls[ 0 ].text = LIT( File_Name_Colon );
-/*  1 */ dlgControls[ 1 ].text = LIT( Directories_Colon );
-/*  2 */ dlgControls[ 2 ].text = LIT( Empty );
-/*  3 */ dlgControls[ 3 ].text = LIT( Empty );
-/*  6 */ dlgControls[ 6 ].text = LIT( OK );
-/*  7 */ dlgControls[ 7 ].text = LIT( Cancel );
-/*  8 */ dlgControls[ 8 ].text = LIT( List_Files_of_Type_Colon );
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
-/* 10 */ dlgControls[ 10 ].text = LIT( Drives_Colon );
+/*  0 */ dlgControls[0].text = LIT( File_Name_Colon );
+/*  1 */ dlgControls[1].text = LIT( Directories_Colon );
+/*  2 */ dlgControls[2].text = LIT( Empty );
+/*  3 */ dlgControls[3].text = LIT( Empty );
+/*  6 */ dlgControls[6].text = LIT( OK );
+/*  7 */ dlgControls[7].text = LIT( Cancel );
+/*  8 */ dlgControls[8].text = LIT( List_Files_of_Type_Colon );
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
+/* 10 */ dlgControls[10].text = LIT( Drives_Colon );
 #endif
 }
 
@@ -190,7 +187,7 @@ static void copyPart( char *buff, char *p, int len, int maxlen )
             len = maxlen;
         }
         memcpy( buff, p, len );
-        buff[ len ] = 0;
+        buff[len] = 0;
     }
 }
 
@@ -205,7 +202,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
     char        *startp;
     char        ch;
 
-#if defined(__QNX__) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
     /* process node/drive specification */
     startp = path;
     if( path[0] == FILE_SEP_CHAR && path[1] == FILE_SEP_CHAR ) {
@@ -248,7 +245,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
             continue;
         }
         path++;
-#if defined(__QNX__) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
         if( ch == FILE_SEP_CHAR ) {
 #else
         if( ch == FILE_SEP_CHAR  ||  ch == '/' ) {
@@ -261,7 +258,7 @@ static void splitPath( char *path, char *drive, char *dir, char *fname,
     if( dotp == NULL ) {
         dotp = path;
     }
-#if defined(__QNX__) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
     if( ext == NULL )  {
         dotp = path;
     }
@@ -296,8 +293,8 @@ static drive_type getDriveType( int drv )
     }
     return( DRIVE_NONE );
 }
-#elif defined(__QNX__) || defined( NLM ) || defined( UNIX )
-#elif defined(__NT__)
+#elif defined( __UNIX__ ) || defined( __NETWARE__ )
+#elif defined( __NT__ )
 static drive_type getDriveType( int drv )
 {
     drive_type type;
@@ -329,6 +326,21 @@ static drive_type getDriveType( int drv )
     }
 
     return ( type );
+}
+#elif defined( __RDOS__ )
+static drive_type getDriveType( int drv )
+{
+    drive_type type;
+    int        CurDrive = RdosGetCurDrive();
+
+    if( RdosSetCurDrive( drv - 'A' ) )
+        type = DRIVE_IS_FIXED;
+    else
+        type = DRIVE_NONE;
+
+    RdosSetCurDrive( CurDrive );
+
+    return( type );
 }
 #else
 extern short CheckRemovable( char );
@@ -374,11 +386,11 @@ static bool hasWild( char *txt )
  */
 static bool addToList( char ***list, int num, char *data, int len )
 {
-    *list = GUIRealloc( *list, (num+2) * sizeof( char * ) );
+    *list = GUIMemRealloc( *list, (num+2) * sizeof( char * ) );
     if( *list == NULL ) {
         return( FALSE );
     }
-    (*list)[num] = GUIAlloc( len+1 );
+    (*list)[num] = GUIMemAlloc( len+1 );
     if( (*list)[num] == NULL ) {
         return( FALSE );
     }
@@ -402,15 +414,15 @@ static void freeStringList( void *ptr )
     }
     cnt = 0;
     while( (*list)[cnt] != NULL ) {
-        GUIFree( (*list)[cnt] );
+        GUIMemFree( (*list)[cnt] );
         cnt++;
     }
-    GUIFree( *list );
+    GUIMemFree( *list );
     *list = NULL;
 
 } /* freeStringList */
 
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 /*
  * buildDriveList - get a list of all drives
  */
@@ -529,7 +541,7 @@ static bool goToDir( gui_window *gui, char *dir )
 
     splitPath( dir, drive, NULL, NULL, NULL );
     if( drive[0] != 0 ) {
-#if defined( __QNX__ ) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
         total = 1;
 #else
         _dos_setdrive( tolower( drive[0] ) - 'a'+1, &total );
@@ -540,12 +552,27 @@ static bool goToDir( gui_window *gui, char *dir )
 } /* goToDir */
 
 /*
- * Compare - quicksort comparison
+ * Compare - quicksort comparison with special treatment of indent chars
  */
 /* int Compare( const char  **p1, const char  **p2 ) */
 int Compare( const void  *p1, const void *p2 )
 {
-    return( stricmp( *((char **)p1), *((char **)p2) ));
+    const char  *s1 = *(const char **)p1;
+    const char  *s2 = *(const char **)p2;
+
+    /* skip matching indents */
+    while( *s1 == INDENT_CHAR && *s2 == INDENT_CHAR ) {
+        ++s1;
+        ++s2;
+    }
+    /* indents compare as chars with infinitely high value */
+    if( *s1 == INDENT_CHAR )
+        return( 1 );
+    else if( *s2 == INDENT_CHAR )
+        return( -1 );
+
+    /* use regular string comparison for the rest */
+    return( strcasecmp( s1, s2 ) );
 
 } /* Compare */
 
@@ -586,12 +613,14 @@ static bool isrdonly( struct dirent *dent, char *path )
     }
     return( !(dent->d_stat.st_mode & bit) );
 }
-#elif defined(UNIX)
+#elif defined( __UNIX__ )
 static bool isdir( struct dirent *dent, char *path )
 {
     struct stat stats;
 
-    _stat2( path, dent->d_name, &stats );
+    // FIXME: implement a "_stat2()" equivalent.
+    //_stat2( path, dent->d_name, &stats );
+    stat( dent->d_name, &stats );
     return( S_ISDIR( stats.st_mode ) );
 }
 
@@ -606,7 +635,9 @@ static bool isrdonly( struct dirent *dent, char *path )
         /* we're root - we can alway write the file */
         return( FALSE );
     }
-    _stat2( path, dent->d_name, &stats );
+    // FIXME: implement a "_stat2()" equivalent.
+    //_stat2( path, dent->d_name, &stats );
+    stat( dent->d_name, &stats );
     if( stats.st_uid == user ) {
         bit = S_IWUSR;
     } else if( stats.st_gid == getegid() ) {
@@ -655,7 +686,7 @@ static bool setFileList( gui_window *gui, char *ext )
             break;
         }
 
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         if( path[strlen(path)-1] != FILE_SEP_CHAR ) {
             strcat( path, FILE_SEP );
         }
@@ -670,7 +701,7 @@ static bool setFileList( gui_window *gui, char *ext )
                         isrdonly( dent, path ) ) {
                         continue;
                     }
-#if defined(__QNX__) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
                     if( fnmatch( ptr, dent->d_name, FNM_PATHNAME ) != 0 ) {
                         continue;
                     }
@@ -727,11 +758,11 @@ static bool setDirList( gui_window *gui )
     }
 
     if( path[strlen(path)-1] == FILE_SEP_CHAR ) {
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         strcat( path, FILES_ALL );
 #endif
     } else {
-#if defined (__QNX__) || defined ( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
         strcat( path, FILE_SEP );
 #else
         strcat( path, FILE_SEP FILES_ALL );
@@ -746,7 +777,7 @@ static bool setDirList( gui_window *gui )
 
     drive[0] = OPENED_DIR_CHAR;
     drvlist = NULL;
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = (char **) dlgControls[DRIVE_LIST_INDEX].text;
 #endif
     i = 0;
@@ -760,7 +791,7 @@ static bool setDirList( gui_window *gui )
         }
         i++;
     }
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         drive[3] = '\\';
         drive[4] = 0;
 #endif
@@ -834,8 +865,8 @@ static bool initDialog( gui_window *gui, char *ext, char *name )
 
     if( ext != NULL ) {
         if( hasWild( ext ) ) {
-            GUIFree( dlg->currExt );
-            dlg->currExt = GUIAlloc( strlen( ext ) +1 );
+            GUIMemFree( dlg->currExt );
+            dlg->currExt = GUIMemAlloc( strlen( ext ) +1 );
             if( dlg->currExt == NULL ) {
                 return( FALSE );
             }
@@ -884,10 +915,11 @@ static process_rc processFileName( gui_window *gui )
     }
     txt = alloca( strlen( tmp ) + 1 );
     if( txt == NULL ) {
+        GUIMemFree( tmp );
         return( PROCESS_FALSE );
     }
     strcpy( txt, tmp );
-    GUIFree( tmp );
+    GUIMemFree( tmp );
     splitPath( txt, drive, dir, fname, ext );
 
     has_wild = hasWild( txt );
@@ -901,7 +933,7 @@ static process_rc processFileName( gui_window *gui )
         if( !rc ) {
             if( S_ISDIR( buf.st_mode ) ) {
                 goToDir( gui, txt );
-                if( !initDialog( gui, dlg->fileExtensions[ dlg->currExtIndex ], NULL ) ) {
+                if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], NULL ) ) {
                     return( PROCESS_FAIL );
                 }
                 return( PROCESS_FALSE );
@@ -923,11 +955,12 @@ static process_rc processFileName( gui_window *gui )
         _makepath( path, NULL, NULL, fname, ext );
 
         if( dlg->currOFN->base_file_name != NULL ) {
+            len = strlen( txt );
             if( len >= dlg->currOFN->max_base_file_name ) {
                 len = dlg->currOFN->max_base_file_name-1;
             }
             memcpy( dlg->currOFN->base_file_name, txt, len );
-            dlg->currOFN->base_file_name[ len ] = 0;
+            dlg->currOFN->base_file_name[len] = 0;
         }
         if( dlg->currOFN->file_name != NULL ) {
             getcwd( path, sizeof( path ) );
@@ -943,7 +976,7 @@ static process_rc processFileName( gui_window *gui )
                 len = dlg->currOFN->max_file_name-1;
             }
             memcpy( dlg->currOFN->file_name, path, len );
-            dlg->currOFN->file_name[ len ] = 0;
+            dlg->currOFN->file_name[len] = 0;
         }
         return( PROCESS_TRUE );
     }
@@ -983,7 +1016,7 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
         case CTL_FILE_LIST :
             ptr = GUIGetText( gui, CTL_FILE_LIST );
             GUISetText( gui, CTL_EDIT, ptr );
-            GUIFree( ptr );
+            GUIMemFree( ptr );
             break;
         }
     }
@@ -1001,7 +1034,7 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
         break;
     case CTL_DIR_LIST :
         sel = GUIGetCurrSelect( gui, id );
-#if defined ( __QNX__ ) || defined( NLM ) || defined( UNIX )
+#if defined( __UNIX__ ) || defined( __NETWARE__ )
         path[0] = FILE_SEP_CHAR;
         path[1] = 0;
 #else
@@ -1024,10 +1057,10 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
                     strcat( path, FILE_SEP );
                 }
             } else {
-                GUIFree( optr );
+                GUIMemFree( optr );
                 break;
             }
-            GUIFree( optr );
+            GUIMemFree( optr );
         }
         ptr = GUIGetListItem( gui, id, sel );
         if( ptr == NULL ) {
@@ -1038,7 +1071,7 @@ void ProcessOKorDClick( gui_window *gui, unsigned id  )
             ptr++;
         }
         strcat( path, ptr+1 );
-        GUIFree( optr );
+        GUIMemFree( optr );
         goToDir( gui, path );
         if( !initDialog( gui, NULL, NULL ) ) {
             dlg->dialogRC = OFN_RC_RUNTIME_ERROR;
@@ -1078,10 +1111,10 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_INIT_DIALOG:
         dlg->initted = FALSE;
         InitList( gui, CTL_FILE_TYPES, FILE_TYPES_INDEX );
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         InitList( gui, CTL_DRIVES, DRIVE_LIST_INDEX );
 #endif
-        if( !initDialog( gui, dlg->fileExtensions[ dlg->currExtIndex ], dlg->currOFN->file_name ) ) {
+        if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
             dlg->dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
             return( FALSE );
         }
@@ -1111,7 +1144,7 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
         case CTL_FILE_LIST:
             ptr = GUIGetText( gui, id );
             GUISetText( gui, CTL_EDIT, ptr );
-            GUIFree( ptr );
+            GUIMemFree( ptr );
             break;
         case CTL_DRIVES :
             sel = GUIGetCurrSelect( gui, id );
@@ -1157,7 +1190,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
     dlg.currExtIndex = ofn->filter_index;
     dlg.dialogRC = OFN_RC_NO_FILE_SELECTED;
 
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     dlgControls[DRIVE_LIST_INDEX].text = buildDriveList();
     if( dlgControls[DRIVE_LIST_INDEX].text == NULL ) {
         return( OFN_RC_FAILED_TO_INITIALIZE );
@@ -1179,12 +1212,12 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         goToDir( gui, olddir );
     }
 
-#if !defined(__QNX__) && !defined( NLM ) && !defined( UNIX )
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     freeStringList( &dlgControls[DRIVE_LIST_INDEX].text );
 #endif
     freeStringList( &dlgControls[FILE_TYPES_INDEX].text );
     freeStringList( &dlg.fileExtensions );
-    GUIFree( dlg.currExt );
+    GUIMemFree( dlg.currExt );
     return( dlg.dialogRC );
 
 } /* GUIGetFileName */

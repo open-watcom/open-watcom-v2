@@ -1,122 +1,106 @@
 #
-# Master makefile for creating DIP's
+# Master makefile for creating DIPs
 #
 
-.CONTINUE
-.ERASE
-.EXTENSIONS
-.EXTENSIONS : .lan .exe .obj .i .h .c .asm .mif
+proj_name = dip
 
-.mif: $(mif_path)
+dip_autodepends = .autodepend
+
+additional_cleanup = *.d32 *.dip
+
+fpu_flags_dos_i86   = -fpc
+fpu_flags_dos_386   = -fpc
+fpu_flags_os2_i86   = -fpc
+fpu_flags_os2_386   = -fpc
+fpu_flags_qnx_i86   = -fpc
+fpu_flags_qnx_386   = -fpc
+fpu_flags_nt_386    = -fpc
+fpu_flags_linux_386 = -fpc
+fpu_flags_win_i86   = -fpc
+fpu_flags_rdos_386  = -fpc
+
+ext_os2_i86     = .dll
+ext_os2_386     = .d32
+ext_qnx_i86     = .dip
+ext_qnx_386     = .dip
+ext_linux_386   = .dip
+ext_win_i86     = .dll
+ext_dos_386     = .dip
+ext_nt_386      = .dll
+ext_nt_axp      = .dll
+ext_rdos_386    = .dll
+
+!ifdef bootstrap
+lib_name = $(name).so
+!else
+lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
+!endif
+
+objs = dipimp.obj $(imp_objs)
+
 !include cproj.mif
+!include deftarg.mif
 !include defrule.mif
 
-!ifndef bin_root
-!ifdef bin_root_wv
-bin_root = $(bin_root_wv)
-!endif
-!endif
+.c: ../c;../../c;$(extra_srcs)
 
-comp_os2_i86    = $(comp286)
-comp_os2_386    = $(comp386)
-comp_qnx_i86    = $(comp286)
-comp_qnx_386    = $(comp386) -ms
-comp_win_i86    = $(comp286)
-comp_dos_386    = $(comp386)
-comp_nt_386     = $(comp386)
-comp_nt_axp     = *wccaxp
-
-sys_nt_386_javavm       = op offset=0x6e800000
-sys_nt_386_export       = op offset=0x6ec00000
-sys_nt_386_codeview     = op offset=0x6ed00000
-sys_nt_386_watcom       = op offset=0x6ee00000
-sys_nt_386_dwarf        = op offset=0x6ef00000
-
-sys_os2_i86     = os2 dll export DIPLOAD op modname=$(name)
-sys_os2_386     = os2v2 dll export DIPLOAD op modname=$(name)
-sys_qnx_i86     = qnx disable 1023
-sys_qnx_386     = pharlap rex disable 1023,1014
-sys_win_i86     = windows op modname=$(name),rwr
-sys_dos_386     = pharlap rex disable 1023,1014
-sys_nt_386      = nt_dll export DIPLOAD op modname=$(name) $(sys_nt_386_$(name))
-sys_nt_axp      = ntaxp_dll export DIPLOAD op modname=$(name)
-
-dip_os2_i86     = $(bin_root)\binp\dll\$(name).dll
-dip_os2_386     = $(bin_root)\binp\dll\$(name).d32
-dip_qnx_i86     = $(bin_root)\qnx\$(name).dip
-dip_qnx_386     = $(bin_root)\qnx\$(name).dip
-dip_win_i86     = $(bin_root)\bin\$(name).dll
-dip_dos_386     = $(bin_root)\bin\$(name).dip
-dip_nt_386      = $(bin_root)\binnt\$(name).dll
-dip_nt_axp      = $(bin_root)\axpnt\$(name).dll
-
-clib_os2_i86    = clibl
-clib_os2_386    = clib3r
-clib_qnx_i86    = clibl
-clib_qnx_386    = clib3r
-clib_win_i86    = clibl
-clib_dos_386    = clib3r
-clib_nt_386     = clib3r
-clib_nt_axp     = clib
-
-!ifeq host_OS win
-targ = windows
+extra_c_flags   = -s -D__DIP__ $(extra_cflags)
+!ifdef bootstrap
+extra_c_flags += -fPIC
 !else
-targ = $(host_OS)
+extra_c_flags += -s
+extra_c_flags_i86 = -zc -zu
+
+extra_c_flags_dipimp = -zlf
 !endif
 
+inc_dirs = -I"../h" $(extra_incs) -I"$(dig_dir)/h"
 
-comp_opts_i86 = -ml -fpc -zc -zu
-comp_opts_386 = -fpc -zc
-comp_opts_axp =
+lflags_dll_dos_386     = sys pharlap rex disable 1023,1014
+lflags_dll_linux_386   = sys pharlap rex disable 1023,1014
+lflags_dll_qnx_i86     = sys qnx disable 1023
+lflags_dll_qnx_386     = sys pharlap rex disable 1023,1014
+lflags_dll_win_i86     = sys windows op rwr
 
-comp_opts = -d__DIP__ -zq -w3 -bt=$(targ) -i..\h;..\..\h;$(dig_dir)\h;$(inc_dirs_lang);$(watcom_dir)\h
-
-!ifdef extra_incs
-comp_opts += -i$(extra_incs)
+!ifdef %BUILDMODE
+lflags_dll_linux_386   += libpath $(clib_dir)/library/linux.386/mf_r
+lflags_dll_linux_386   += libpath $(mathlib_dir)/library/linux.386/ms_r
 !endif
 
-!ifdef on_build_machine
-comp_opts       += -d1 -oaxt
-dbg_opts        = d a op symfile
+extra_l_flags_dll = op map
+
+extra_l_flags_dll_nt_386_javavm   = op offset=0x6e800000
+extra_l_flags_dll_nt_386_export   = op offset=0x6ec00000
+extra_l_flags_dll_nt_386_codeview = op offset=0x6ed00000
+extra_l_flags_dll_nt_386_watcom   = op offset=0x6ee00000
+extra_l_flags_dll_nt_386_dwarf    = op offset=0x6ef00000
+
+extra_l_flags_dll_rdos_386_watcom = op offset=0xda000000
+extra_l_flags_dll_rdos_386_dwarf  = op offset=0xda100000
+extra_l_flags_dll_rdos_386_mapsym = op offset=0xda200000
+
+extra_l_flags_dll_nt      = export DIPLOAD op modname=$(name) $(lflags_nt_$(host_cpu)_$(name))
+extra_l_flags_dll_os2     = export DIPLOAD op modname=$(name)
+extra_l_flags_dll_win     = op modname=$(name)
+extra_l_flags_dll_rdos    = export DIPLOAD op modname=$(name) $(lflags_rdos_386_$(name))
+
+# systems where version resources must be added to .DLL
+version_res_nt_386 = version.res
+
+!ifdef bootstrap
+$(lib_name) : $(objs) $(imp_libs) $(cl_libs) $(__MAKEFILES__)
+        $(cl) -shared $(clflags) $(objs) $(imp_libs) $(cl_libs)
 !else
-!ifdef dbg
-comp_opts_i86   += -hw
-comp_opts_386   += -hw
-comp_opts       += -d2 -s
-dbg_opts        = d watcom all
-comp_opts       += -dDEBUG
+$(lib_name) : $(objs) $(imp_libs) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifdef imp_libs
+        $(linker) name $^@ $(lflags_dll) file {$(objs)} library {$(imp_libs)}
 !else
-comp_opts       += -d1 -s
-dbg_opts        = d a op symfile
-comp_opts       += -dDEBUG
+        $(linker) name $^@ $(lflags_dll) file {$(objs)}
+!endif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
 !endif
 
-compile = $(comp_$(host_OS)_$(host_CPU)) $(comp_opts_$(host_CPU)) $(comp_opts) $(extra_cflags) $[@
-
-.c: ..\c;..\..\c;$(extra_srcs)
-
-.c.obj: .autodepend
-        $(compile)
-
-.c.i:
-        $(compile) -p -fo=.i
-
-objs = &
-        dipimp.obj &
-        $(imp_objs)
-
-$(dip_$(host_OS)_$(host_CPU)) : eraseall.obj $(objs) $(imp_libs) $(__MAKEFILES__)
-        *wlink op quiet,map $(dbg_opts) &
-                sys $(sys_$(host_OS)_$(host_CPU)) &
-                name $^@ &
-                file {$(objs)} &
-                library {$(clib_$(host_OS)_$(host_CPU)) $(imp_libs)}
-
-lexusbld : .symbolic $(dip_$(host_OS)_$(host_CPU))
-        @newer $[@ $(lexlib_dir)\tools\system\$[. "^copy &f $#f > nul"
-
-eraseall.obj : ../$(name).gbl ../../compile.gbl
-        if exist *.obj erase *.obj
-        wtouch eraseall.obj
+verrc_dll = $(name)
+!include verrc.mif

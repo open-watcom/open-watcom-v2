@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <dos.h>
 #include "vi.h"
+#include <dos.h>
 #include "mouse.h"
 #include "dosmouse.h"
 
@@ -56,6 +55,7 @@ void SetMousePosition( int row, int col )
 void PollMouse( int *status, int *row, int *col )
 {
     *status = 0;
+
 } /* PollMouse */
 
 

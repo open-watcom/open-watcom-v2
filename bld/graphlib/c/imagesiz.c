@@ -34,7 +34,7 @@
 #include "picdef.h"
 
 
-long _WCI86FAR _CGRAPH _imagesize( short x1, short y1, short x2, short y2 )
+_WCRTLINK long _WCI86FAR _CGRAPH _imagesize( short x1, short y1, short x2, short y2 )
 /*====================================================================
 
    This routine returns the size of buffer needed to store the picture

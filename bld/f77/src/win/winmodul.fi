@@ -1,0 +1,30 @@
+*$noreference
+
+! Module-Management Functions:
+! ----------------------------
+
+      external FreeLibrary
+      external FreeModule
+      external FreeProcInstance
+      external GetCodeHandle
+      external GetInstanceData
+      external GetModuleFileName
+      external GetModuleHandle
+      external GetModuleUsage
+      external GetProcAddress
+      external GetVersion
+      external LoadLibrary
+      external MakeProcInstance
+
+      integer*2 FreeModule
+      integer*2 GetCodeHandle
+      integer*2 GetInstanceData
+      integer*2 GetModuleFileName
+      integer*2 GetModuleHandle
+      integer*2 GetModuleUsage
+      integer*4 GetProcAddress
+      integer*2 GetVersion
+      integer*2 LoadLibrary
+      integer*4 MakeProcInstance
+
+*$reference

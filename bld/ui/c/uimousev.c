@@ -24,13 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UI library mouse event processing.
 *
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include "uidef.h"
 #include "uimouse.h"
 
@@ -57,18 +55,16 @@ static          int                     MouseLast       = MOUSE_OFF;
 static          unsigned short          MouseLastButton = (unsigned short)~0;
 
 
-int global uimouseinstalled()
-/***************************/
+int global uimouseinstalled( void )
+/*********************************/
 /* call this ONLY after UI has been initialized */
 
 {
     return( MouseInstalled );
 }
 
-static void mouse( func )
-/***********************/
-
-register        int                     func;
+static void mouse( int func )
+/***************************/
 {
     if( MouseInstalled ) {
         if( MouseForcedOff == 0 ) {
@@ -80,8 +76,8 @@ register        int                     func;
     }
 }
 
-void global uimouseforceoff()
-/****************************/
+void global uimouseforceoff( void )
+/*********************************/
 /* this function will turn off the mouse and will prevent UI from turning
    it on until uimouseforceon is called (i.e. moving the mouse will NOT
    turn it on). */
@@ -90,16 +86,16 @@ void global uimouseforceoff()
     ++MouseForcedOff;
 }
 
-void global uimouseforceon()
-/**************************/
+void global uimouseforceon( void )
+/********************************/
 /* call this function after sometime after uimouseforceoff, if the default
    UI mouse behaviour is desired */
 {
     --MouseForcedOff;
 }
 
-void global uionmouse()
-/*********************/
+void global uionmouse( void )
+/***************************/
 {
     if( MouseOn ) {
         mouse( MOUSE_ON );
@@ -109,16 +105,16 @@ void global uionmouse()
 }
 
 
-void global uioffmouse()
-/**********************/
+void global uioffmouse( void )
+/****************************/
 // turn mouse cursor off temporarily ( until next getprimeevent )
 {
     mouse( MOUSE_OFF );
 }
 
 
-void global uihidemouse()
-/***********************/
+void global uihidemouse( void )
+/*****************************/
 // turn mouse cursor off ( until user clicks or moves )
 {
     MouseOn = FALSE;
@@ -138,8 +134,8 @@ static unsigned short button( unsigned short status )
     }
 }
 
-EVENT intern mouseevent()
-/***********************/
+EVENT intern mouseevent( void )
+/*****************************/
 {
     register    EVENT                   ev;
     auto        MOUSEORD                     row;
@@ -148,7 +144,7 @@ EVENT intern mouseevent()
     auto        unsigned short          status;
     auto        bool                    moved;
     auto        unsigned short          diff;
-    auto        signed short            butt;
+    auto        signed short            butt = 0;
 
     ev = EV_NO_EVENT;
     if( MouseInstalled ) {
@@ -216,12 +212,8 @@ EVENT intern mouseevent()
     return( ev );
 }
 
-VSCREEN* global uimousepos( vptr, rowptr, colptr )
-/************************************************/
-
-register        VSCREEN*                vptr;
-register        int*                    rowptr;
-register        int*                    colptr;
+VSCREEN* global uimousepos( VSCREEN *vptr, int *rowptr, int *colptr )
+/*******************************************************************/
 {
     register    VSCREEN*                owner;
 
@@ -246,12 +238,8 @@ register        int*                    colptr;
     return( owner );
 }
 
-VSCREEN* global uivmousepos( vptr, rowptr, colptr )
-/*************************************************/
-
-register        VSCREEN*                vptr;
-register        ORD*                    rowptr;
-register        ORD*                    colptr;
+VSCREEN* global uivmousepos( VSCREEN *vptr, ORD *rowptr, ORD *colptr )
+/********************************************************************/
 {
     VSCREEN*                            owner;
     int                      row;
@@ -269,8 +257,8 @@ register        ORD*                    colptr;
     return( owner );
 }
 
-void global uiswapmouse()
-/***********************/
+void global uiswapmouse( void )
+/*****************************/
 {
 
     if( UIData->mouse_swapped ) {
@@ -283,33 +271,29 @@ void global uiswapmouse()
 }
 
 
-MOUSEORD global uigetmrow()
-/********************/
+MOUSEORD global uigetmrow( void )
+/*******************************/
 {
     return( MouseRow );
 }
 
 
-MOUSEORD global uigetmcol()
-/********************/
+MOUSEORD global uigetmcol( void )
+/*******************************/
 {
     return( MouseCol );
 }
 
 
-void global uigetmouse( row, col, status )
-/****************************************/
-
-register        ORD*            row;
-register        ORD*            col;
-register        int*            status;
+void global uigetmouse( ORD *row, ORD *col, int *status )
+/*******************************************************/
 {
     *row = MouseRow/UIData->mouse_yscale;
     *col = MouseCol/UIData->mouse_xscale;
     *status = MouseOn;
 }
 
-int global uivmouseinstalled()
+int global uivmouseinstalled( void )
 {
     return( MouseInstalled );
 }

@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory management routines for resource manipulation.
 *
 ****************************************************************************/
 
 
-extern void *   LnkReAlloc( void *, unsigned );
-extern void *   ChkLAlloc( unsigned );
+extern void     *LnkReAlloc( void *, size_t );
+extern void     *ChkLAlloc( size_t );
 extern void     LFree( void * );
 
 #define RcMemMalloc(x)    ChkLAlloc(x)

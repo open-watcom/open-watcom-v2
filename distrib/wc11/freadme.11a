@@ -1,0 +1,290 @@
+WATCOM FORTRAN 77 Version 11.0 - README
+---------------------------------------
+
+Welcome to WATCOM FORTRAN 77 version 11.0.  This README provides helpful
+hints found during testing as well as updated information that was not
+available at the time the documentation was produced.
+
+For a list of new features in version 11.0 see the GETTING STARTED helpfile.
+
+See below for a list of fixes in 11.0 A-level
+
+
+Installation suggestions:
+-----------------------------------------------------------------
+Installing Watcom FORTRAN 77 Version 11.0
+
+If you have installed a previous version of Watcom FORTRAN then you should 
+install Watcom FORTRAN 11.0 into the same path. It will examine a previous 
+installation to determine what features were previously installed.  
+It will use this information to establish default settings for the 
+installation that you are about to attempt.  Of course, you can add or
+remove features as you progress through the installation steps.
+
+If you are installing both Watcom C/C++ and Watcom FORTRAN 77 products, we
+recommend that you install Watcom C/C++ and Watcom FORTRAN 77 in the same
+directory.  
+
+If you are installing only one of the Watcom C/C++ or Watcom FORTRAN 77
+products and you have an older version of the other product, we do NOT
+recommend that you install the new product into the same directory as the
+old product. 
+
+See the Getting Started Helpfile (READF10.HLP) for more information.
+
+When you install Watcom C/C++ and Watcom FORTRAN 77 in the same directory,
+you should not deselect any options when running the second installation;
+otherwise the second product's install may remove files that were installed
+(and are required) by the first product's install.  
+
+If you wish to create a backup of your previous version, please do so before
+installing Watcom FORTRAN 11.0.
+
+You may wish to run Watcom FORTRAN under more than one operating system on the
+same personal computer.  For every operating system that you use, simply
+start up the operating system and run the corresponding install procedure.
+
+To install from CD-Rom, run "SETUP" under all operating systems except OS/2;
+under OS/2 run "INSTALL".
+   
+
+Note: %DstDir% represents the directory in which WATCOM FORTRAN 77 was
+      installed.  %WinSysDir% represents your Windows 3.x system directory.
+      
+1.  When debugging a 32-bit Phar Lap, TNT or DOS/4GW application, make sure
+    that "run386.exe", "tnt.exe", or "dos4gw.exe" respectively, are in your
+    path.  Failure to do so, may cause your computer to hang.
+   
+2. When using the GUI debugger to debug Windows 3.x applications, certain
+   Windows applications may cause the debugger to behave in an unpredictable
+   way.  Typically, this occurs when debugging certain messages in window
+   callback functions.  For example, hitting a breakpoint in a window
+   function that is processing a WM_INITDIALOG message will crash the system.
+   If this happens, the character-mode version of the debugger should be
+   used.
+   
+3. In order to use CodeWright with our IDE, you will need to change the
+   "cwright.ini" file.  This file contains the following line.
+
+	;LibPreload=cwdde.dll
+
+   Uncomment this line by removing the ';' character.  This is required to
+   enable communication between the IDE and CodeWright when "weditcw.dll"
+   is selected as the editor interface DLL from the IDE.
+    
+4. Parallel remote debug servers now work in an OS/2 session. 
+   
+5. Under OS/2, if you are debugging a DOS application from the IDE, you
+   must ensure that %DstDir%\binw is in your DOS path so that when the IDE
+   starts a DOS session to debug your application, the remote server can find
+   its support files.
+   
+6. Under OS/2, you must ensure that the "Comet cursor" desktop setting is
+   disabled if you want to debug PM applications.  By default, this setting
+   is disabled.
+   
+7. The BINW version of WFC.EXE and WFC386.EXE require DOS4GW.EXE to run.
+   This is installed if you select DOS TARGET.
+   
+8. The OS/2 Resource Comiler ( RC.EXE ) does not work correctly if the 
+   directory which contains RC.EXE occurs too late in your PATH environment 
+   variable ( > 250 characters ). If you experience problems with RC.EXE, 
+   you should change the PATH environment variable in your CONFIG.SYS file, 
+   by moving %WATCOM%\BINP and %WATCOM%\BINW earlier in the path.
+   
+  
+ 
+===========================================================
+Fixes in version 11.0 A-level
+===========================================================
+
+
+          ********************
+          ** Code Generator **
+          ********************
+
+    If optimizing for time, align procedures on 16-byte
+    boundaries for anything above a 486.
+===========================================================
+
+    Fixed a problem with short-circuit operators in which
+    a side effect would be discarded (ie ( (a=b) || 1 )
+    would get reduced to (1) and the (a=b) discarded. Ditto
+    for ( (a=b) && 0 ).
+===========================================================
+
+    Fixed a problem with long filenames in object file
+    generation.
+===========================================================
+
+    Fixed a problem with loopopts and far pointers - if
+    inductions optimizations introduced an add of an integer
+    to a far pointer, it was possible that the add would be
+    generated incorrectly, resulting in some highly suspicious
+    references to odd locations such as -1[bp] or 7[bp].
+===========================================================
+
+    Fixed a problem in which conversions between floats and 
+    ints (or floats and doubles) within a union might not 
+    be generated correctly.
+===========================================================
+
+          ***************
+          ** C Library **
+          ***************
+
+    _findfirst() has been changed to take a const char * instead of just a char *.
+===========================================================
+===========================================================
+
+    __FSU87 was trashing ecx - this routine is called to convert an unsigned __int64
+    to a float.
+===========================================================
+
+    Fixed memory leak, due to us not deallocating the _iomode array during fini rtns.
+    Also added _UnloadCLib call to library to allow user to properly unload 16 bit OS/2
+    user loadable DLLs.
+===========================================================
+
+    fixed a bug where fortran default windowing apps would sometimes appear 
+    to print lines  twice, when printing at the bottom of the screen.
+    Since they were being printed at the bottom of the window and
+    then not erased when the window scrolled up, leaving a 2nd copy at the bottom
+===========================================================
+
+    Input value range checking for strtod() has been improved for very
+    small values.
+===========================================================
+
+    The runtime dll support has been fixed to no longer leave a potentially
+    dangerous reference from the C runtime DLL into whichever DLL has
+    been most recently loaded into the process image.  The reference from 
+    the C runtime DLL now points directly into the Math runtime DLL.
+===========================================================
+
+    The _dos_getdiskfree() function for 32bit platforms now has an
+    expanded data structure.
+===========================================================
+
+    The assert() function for WIN32 and OS/2 platforms will attempt
+    to use stderr for output if it is available.
+===========================================================
+
+    The __declspec(thread) support for WIN32 platforms has been
+    improved.  In some, pathological cases, it could lead to a GPF
+    on program startup.
+===========================================================
+
+    The system() function for WIN32 platform no longer passes
+    posix file handles for inheritance by child processes by default.
+===========================================================
+
+    The delay() function for NEC98 machines used to hang on initialization.
+===========================================================
+
+    The race condition in the _beginthread() function related
+    to the saving of the child thread handle has been fixed.
+===========================================================
+
+    The multibyte init code for the C runtime library would
+    always crash on startup when running under the Pharlap
+    Run386 or TNT DOS extenders.
+===========================================================
+
+    The heapchk() function for 32bit platforms could, in some
+    cases, enter an infinite loop.
+===========================================================
+
+    The posix level open() function for WIN32 platforms did not
+    properly truncate existing files on NT server machines when
+    run from an NT workstation.
+===========================================================
+
+    The WIN32 stat() function now ensures that directories
+    cannot be marked as character mode devices.
+===========================================================
+
+    The WIN32 and OS/2 runtime shutdown code now does a better
+    job of releasing all resources on image shutdown.
+===========================================================
+
+          ******************
+          ** Disassembler **
+          ******************
+
+    fixed problem with disassembly of 3-operand imul instructions
+    (only 2 operands were displayed)
+===========================================================
+
+          *************************
+          ** FORTRAN 77 Compiler **
+          *************************
+
+    fixed a bug where the compiler would produce an access violation error if
+    you passed an external as an argument to a subroutine 
+    the error would only occur if debug info was on ( -d2 )
+    
+===========================================================
+
+          ********************
+          ** C Header Files **
+          ********************
+
+    const qualifiers have been added to the char* parameters
+    to the findfirst and variant functions in io.h
+===========================================================
+
+    The register mode calling convention prototype for longjmp()
+    is no longer marked as "#pragma aborts" to facilitate
+    profiling support.
+===========================================================
+
+          **********************************************
+          ** Integrated Development Environment (IDE) **
+          **********************************************
+
+    Added pentium pro (p6) switches to the options pages
+    ( compiler, linker, assembler, etc. )
+===========================================================
+
+    added a switch for Watcom debugging info to the linker
+    options page - watcom was previously the default if you
+    selected debug all, now Dwarf is the default
+===========================================================
+
+    fixed a resource problem that was causing some of the
+    buttons and menu items to appear with no text
+===========================================================
+
+    Don't use incremental linking for DOS or Netware 
+    applications - it is not supported
+===========================================================
+
+    Changed the compiler options for Netware targets to use
+    -5s, -ms -- stack based, small model
+===========================================================
+
+    changed the linker options for 32-bit OS/2 DLL's
+    now uses op manyautodata, initinstance, terminstance
+===========================================================
+
+          **********
+          ** Make **
+          **********
+
+    In non-Microsoft mode, WMAKE will find and process
+    a file named "MAKEFINI" after all makefiles have been
+    processed.
+    
+===========================================================
+
+          ************
+          ** WVIDEO **
+          ************
+
+    Rolled back DOS4G extender to 1.96 to fix pharlap application debugging crashes.
+    
+===========================================================
+
+    fixed a bug where you couldn't debug "Large" DOS/4GW apps
+===========================================================

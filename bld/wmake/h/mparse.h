@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mparse.c interfaces
 *
 ****************************************************************************/
 
@@ -41,11 +40,11 @@
 
 // This variable saves the inline file level
 // for MS Compatability
-extern UINT16 inlineLevel;
+extern UINT16   inlineLevel;
 
-extern void ParseInit( void );
-extern void ParseFini( void );
-extern TLIST *Parse( void );
+extern void     ParseInit( void );
+extern void     ParseFini( void );
+extern TLIST    *Parse( void );
 
 #endif
 

@@ -6,7 +6,7 @@
 #endif
 #include "wlmsgs.h"
 #include "wreslang.h"
-#include "rcmsg.h"
+#include "rcmsg.gh"
 
 STRINGTABLE
 BEGIN
@@ -15,16 +15,16 @@ BEGIN
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
 
-#include "..\h\lnkerror.msg"
-#include "..\h\wlink.msg"
-#include "..\h\rc.msg"
+#include "lnkerror.msg"
+#include "wlink.msg"
+#include "wrcmsg.gh"
 
 #undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
 
-#include "..\h\lnkerror.msg"
-#include "..\h\wlink.msg"
-#include "..\h\rc.msg"
+#include "lnkerror.msg"
+#include "wlink.msg"
+#include "wrcmsg.gh"
 
 END

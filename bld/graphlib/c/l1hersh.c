@@ -45,7 +45,7 @@ static void             DrawChar( char, short, short, short, short, short, short
 /* The three CodePage arrays contain indices into the
    MultiLingIndex array to avoid repetition of font data. */
 
-static char CodePage437[ 99 ] = {
+static unsigned char CodePage437[ 99 ] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -62,7 +62,7 @@ static char CodePage437[ 99 ] = {
           0xff, b_BETA
 };
 
-static char CodePage863[ 99 ] = {
+static unsigned char CodePage863[ 99 ] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, A_CIRC, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC,   0xff, A_GRAV,   0xff,
@@ -79,7 +79,7 @@ static char CodePage863[ 99 ] = {
           0xff, b_BETA
 };
 
-static char CodePage850[ 111 ] = {
+static unsigned char CodePage850[ 111 ] = {
            110,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -101,7 +101,7 @@ static char CodePage850[ 111 ] = {
 // Multi-lingual characters are made up by drawing two characters,
 // the regular character, followed by the accent.
 
-static char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
+static unsigned char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
         { 'a',             LC_AIGU },       // a_AIGU
         { 'A',             UC_AIGU },       // A_AIGU
         { 'e',             LC_AIGU },       // e_AIGU
@@ -155,16 +155,18 @@ static char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
 #endif
 
 
-void _HershDraw( char ch, short cx, short cy, short bx, short by,
+void _HershDraw( char pc, short cx, short cy, short bx, short by,
 /*=========================================*/ short px, short py )
 
 {
+    unsigned char   ch = pc;
+
     if( ch >= '!' && ch <= 0x7e ) {
         DrawChar( ch, cx, cy, bx, by, px, py );
 #if defined( _FRENCH )
     } else if( ch >= 0x80 ) {
         short           codepage;
-        char            *cp_array;
+        unsigned char   *cp_array;
 
         codepage = GetCodePage();
         if( codepage == 850 ) {

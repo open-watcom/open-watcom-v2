@@ -1,34 +1,49 @@
+libname_pfx = math
 # libname_(model)
-libname_ms =maths
-libname_mm =mathm
-libname_mc =mathc
-libname_ml =mathl
-libname_mh =mathh
-libname_mf =mathf
-libname_   =math
-libname =$(libname_$(model))
+libname_ms = s
+libname_mm = m
+libname_mc = c
+libname_ml = l
+libname_mh = h
+libname_mf = f
+!ifeq processor 286
+processor_ =
+!else ifeq processor 287
+processor_ = 87
+!else ifeq processor 386
+processor_ = 3
+!else
+processor_ =$(processor)
+!endif
+libname_stack    = s
+libname_register = r
+libname_ =
+!ifdef convention
+libname = $(libname_pfx)$(processor_)$(libname_$(convention))
+!else
+libname = $(libname_pfx)$(processor_)$(libname_$(model))
+!endif
 
-lib_flags =/b /c /p=16 /q
-!ifdef on_build_machine
-!ifeq processor axp
-!else
-lib_flags    +=/s /t
-!endif
+lib_flags = -b-c-n-pa
+!ifeq release 1
+lib_flags += -s-t-zld
 !endif
 
 !ifeq processor axp
-lib_linkage_flags_static=
-lib_linkage_flags_dynamic=
-lib_linkage_flags_alias=
+lib_linkage_flags_static  =
+lib_linkage_flags_dynamic =
+lib_linkage_flags_alias   =
+!else ifeq processor ppc
+lib_linkage_flags_static  =
+lib_linkage_flags_dynamic =
+lib_linkage_flags_alias   =
+!else ifeq processor mps
+lib_linkage_flags_static  =
+lib_linkage_flags_dynamic =
+lib_linkage_flags_alias   =
 !else
-!ifeq processor ppc
-lib_linkage_flags_static=
-lib_linkage_flags_dynamic=
-lib_linkage_flags_alias=
-!else
-lib_linkage_flags_static=/z
-lib_linkage_flags_dynamic=/z=tmp.def
-lib_linkage_flags_alias=
+lib_linkage_flags_static  = -z
+lib_linkage_flags_dynamic = -z=tmp.def
+lib_linkage_flags_alias   =
 !endif
-!endif
-lib_flags_linkage=$(lib_linkage_flags_$(linkage))
+lib_flags_linkage = $(lib_linkage_flags_$(linkage))

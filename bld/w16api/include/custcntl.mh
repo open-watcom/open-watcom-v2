@@ -1,0 +1,75 @@
+/*
+ *  custcntl.h  Custom control definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_CUSTCNTL
+#define _INC_CUSTCNTL
+
+:include readonly.sp
+
+#ifndef _INC_WINDOWS
+    #include <windows.h>
+#endif
+
+#pragma pack( push, 1 )
+
+:include cpluspro.sp
+
+#define CCINFOORD       2
+#define CCSTYLEORD      3
+#define CCFLAGSORD      4
+#define CTLTYPES        12
+#define CTLDESCR        22
+#define CTLCLASS        20
+#define CTLTITLE        94
+
+/* Custom control style */
+typedef struct tagCTLSTYLE {
+    UINT    wX;
+    UINT    wY;
+    UINT    wCx;
+    UINT    wCy;
+    UINT    wId;
+    DWORD   dwStyle;
+    char    szClass[CTLCLASS];
+    char    szTitle[CTLTITLE];
+} CTLSTYLE;
+typedef CTLSTYLE        *PCTLSTYLE;
+typedef CTLSTYLE FAR    *LPCTLSTYLE;
+
+/* Custom control type */
+typedef struct tagCTLTYPE {
+    UINT    wType;
+    UINT    wWidth;
+    UINT    wHeight;
+    DWORD   dwStyle;
+    char    szDescr[CTLDESCR];
+} CTLTYPE;
+
+/* Custom control information */
+typedef struct tagCTLINFO {
+    UINT    wVersion;
+    UINT    wCtlTypes;
+    char    szClass[CTLCLASS];
+    char    szTitle[CTLTITLE];
+    char    szReserved[10];
+    CTLTYPE Type[CTLTYPES];
+} CTLINFO;
+typedef CTLINFO     *PCTLINFO;
+typedef CTLINFO FAR *LPCTLINFO;
+
+/* Custom control callbacks */
+#ifdef STRICT
+typedef DWORD   (CALLBACK *LPFNSTRTOID)( LPCSTR );
+#else
+typedef DWORD   (CALLBACK *LPFNSTRTOID)( LPSTR );
+#endif
+typedef UINT    (CALLBACK *LPFNIDTOSTR)( UINT, LPSTR, UINT );
+
+:include cplusepi.sp
+
+#pragma pack( pop )
+
+#endif /* _INC_CUSTCNTL */

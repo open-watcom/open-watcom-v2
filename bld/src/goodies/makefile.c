@@ -7,7 +7,7 @@
 
 # EXAMPLE
 # -------
-# This makefile assumes you are trying to compile a program for OS/2 2.x
+# This makefile assumes you are trying to compile a program for 32-bit OS/2
 # called "example.c" and subroutines contained in two separate files
 # called "sub1.c" and "sub2.c".
 
@@ -19,7 +19,7 @@
 #       Compiler_options- what ever options you wish for your compiles.
 #       Linker_options  - what ever options you wish for your links.
 #       System          - The name of a system from the
-#                         "\WATCOM\BINB\WLSYSTEM.LNK" file. This identifies
+#                         "\WATCOM\BINW\WLSYSTEM.LNK" file. This identifies
 #                         the target operating system the program is to
 #                         run on.
 #       Exe_file        - the name of the resulting executable file.
@@ -28,25 +28,25 @@
 # If this makefile is called "makefile" then just run WMAKE.
 # If it has another name such as "example.mak" then you have to
 # give the file name at the command line:
-#   WMAKE /f example.mak
+#   WMAKE -f example.mak
 
 # REMARKS
 # -------
-# Default Watcom compiler options are set using an environment variable
+# Default Open Watcom compiler options are set using an environment variable
 # which can be placed in "config.sys". For instance, one may have:
 #
-# SET WCC386=/3 /FPI87 /Ox /D1
+# SET WCC386=-3 -fpi87 -ox -d1
 #
 # Then, the Compiler_Options variable below will modify the default.
 #
-# WVIDEO DEBUGGER SETUP
-# ---------------------
-# The following environment variable makes WVIDEO a bit nicer in OS/2
-# (you can set this environment variable in config.sys)
+# DEBUGGER SETUP
+# --------------
+# The following environment variable makes Open Watcom Debugger a bit nicer
+# in OS/2 (you can set this environment variable in config.sys)
 #
-#  SET WVIDEO=/Lines#33
+#  SET WD=-Lines#33
 #
-# The /Lines#33 parameter makes WVIDEO use a 33 line display which
+# The -Lines#33 parameter makes WD use a 33 line display which
 # in an OS/2 Window on VGA makes more use of the screen area.
 
 # BEGINNING OF MAKE FILE....
@@ -59,8 +59,8 @@ Compiler = wcc386
 #Compiler = wcc
 
 # Compiler_Options =
-# Following is best setup for WVIDEO debugger.
-Compiler_Options = /D2 /W3
+# Following is best setup for Open Watcom debugger.
+Compiler_Options = -d2 -w3
 
 # Linker_options   =
 Linker_options   = debug all
@@ -78,8 +78,8 @@ Object_files = example.obj &
 ####################
 
 $(Exe_file): $(Object_files)
-             *wlink system $(System) $(Linker_Options) name $(Exe_file) &
-                        file {$(Object_files)}
+        *wlink system $(System) $(Linker_Options) name $(Exe_file) &
+            file {$(Object_files)}
 
 .c.obj:
         *$(Compiler) $(Compiler_Options) $<

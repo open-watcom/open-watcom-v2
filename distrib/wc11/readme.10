@@ -1,0 +1,93 @@
+WATCOM C/C++ Version 10.0a - README
+-----------------------------------
+
+Welcome to WATCOM C/C++ version 10.0a.  This README provides helpful hints
+found during testing as well as updated information that was not available
+at the time the documentation was produced.
+
+Note: %DstDir% represents the directory in which WATCOM C/C++ was installed.
+      %WinSysDir% represents your Windows 3.x system directory
+      
+1.  All C++ source code compiled with version 9.5 must be re-compiled using
+    version 10.0 in order to link with the 10.0 version of the libraries.
+   
+2.  During installation, the line
+    
+	device=%DstDir%\binw\wdebug.386
+    
+    in the [386Enh] section of your "system.ini" file, will be duplicated if
+    you already have an installed version of WATCOM C/C++ on your system.
+    Edit your "system.ini" file and remove the duplicate line.
+   
+3.  During the installation, the line
+
+	device=%WinSysDir%\win32s\w32s.386
+	
+    in the [386Enh] section of your "system.ini" file, will be duplicated if
+    you already have Win32s installed on your system or you already have an
+    installed version of WATCOM C/C++ on your system.  Edit your "system.ini"
+    file and remove the duplicate line.
+    
+4.  During the installation, the line
+    
+	drivers=...
+	
+    in the [boot] section, will have duplicate "winmm16.dll" entries on it
+    if you already have Win32s installed on your system or already have an
+    installed version of WATCOM C/C++ on your system.  Edit your "system.ini"
+    file and remove the duplicate entry.
+   
+5.  When debugging a 32-bit Phar Lap, TNT or DOS/4GW application, make sure
+    that "run386.exe", "tnt.exe", or "dos4gw.exe" respectively, are in your
+    path.  Failure to do so, may cause your computer to hang.
+   
+6. When using the GUI debugger to debug Windows 3.x applications, certain
+   Windows applications may cause the debugger to behave in an unpredictable
+   way.  Typically, this occurs when debugging certain messages in window
+   callback functions.  For example, hitting a breakpoint in a window
+   function that is processing a WM_INITDIALOG message will crash the system.
+   If this happens, the character-mode version of the debugger should be
+   used.
+   
+7. When debugging the Windows 3.x MFC 2.5 samples contained in
+   "%DstDir%\src\mfc\v25" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v25\*.cpp
+	
+   Similarly, when debugging the Windows NT MFC 2.1 samples contained in
+   "%DstDir%\src\mfc\v21" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v21\*.cpp
+   
+   The source path is contained in the "File" menu.
+
+8. In order to use CodeWright with our IDE, you will need to change the
+   "cwright.ini" file.  This file contains the following line.
+
+	;LibPreload=cwdde.dll
+
+   Uncomment this line by removing the ';' character.  This is required to
+   enable communication between the IDE and CodeWright when "weditcw.dll"
+   is selected as the editor interface DLL from the IDE.
+    
+9. If you choose to not install help files onto your hard disk, you will not
+   be able to get help on the C library or MFC library from the editor.
+    
+10. Parallel remote debug servers do not work in an OS/2 session.  They can
+    be used in an OS/2 DOS session.
+    
+11. Creating ADS, ADI and FlashTek applications using the IDE will cause
+    warning messages to be issued by the linker when debugging information
+    is selected.  These can be ignored.
+    
+12. When configuring the browser to use the CodeWright editor interface, you
+    must specify "weditcw.dll" as the editor DLL, save the new options, exit
+    the browser, and restart the browser.  Failure to do this will cause an
+    exception to occur in the CodeWright interface DLL.
+   
+13. The "A_LEVEL" directory on the CD ROM contains the A-Level patch files.
+    The file "README.A" in this directory will list all the problems that
+    have been addressed by this update.  The file "APPLYA.BAT" can be run to
+    apply the A-level patches instead of performing another installation.

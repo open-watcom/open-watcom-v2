@@ -32,14 +32,6 @@
 
 #include "wvcllctn.hpp"
 
-WEXPORT WVCollection::WVCollection()
-{
-}
-
-WEXPORT WVCollection::~WVCollection()
-{
-}
-
 WObject* WEXPORT WVCollection::remove( WObject* obj )
 {
         WObject* o = find( obj );
@@ -48,3 +40,16 @@ WObject* WEXPORT WVCollection::remove( WObject* obj )
         }
         return NULL;
 }
+
+// Complain about defining trivial constructor/destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WVCollection::WVCollection()
+{
+}
+
+WEXPORT WVCollection::~WVCollection()
+{
+}
+

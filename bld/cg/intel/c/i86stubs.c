@@ -37,11 +37,11 @@
 
 extern proc_def *CurrProc;
 
-extern void MemtoBaseTemp()
+extern void MemtoBaseTemp( void )
 {
 }
 
-extern void CharsAndShortsToInts()
+extern void CharsAndShortsToInts( void )
 {
 }
 
@@ -49,11 +49,11 @@ extern void FixCallIns( instruction * ins )
 {
     ins = ins;
 }
-extern void FixMemBases()
+extern void FixMemBases( void )
 {
 }
 
-extern hw_reg_set ScratchReg() {
+extern hw_reg_set ScratchReg( void ) {
     _Zoiks( ZOIKS_091 );
     return( HW_SI );
 }
@@ -68,7 +68,7 @@ extern type_length TempLocation( name *temp ) {
     return( temp->t.location + CurrProc->locals.size );
 }
 
-extern  hw_reg_set      VarargsHomePtr() {
+extern  hw_reg_set      VarargsHomePtr( void ) {
 
     _Zoiks( ZOIKS_078 );
     return( HW_EAX );

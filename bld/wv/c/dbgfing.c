@@ -137,7 +137,7 @@ static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             colours[WND_PLAIN].fore = GUI_BLACK;
             colours[WND_PLAIN].back = GUI_BRIGHT_CYAN;
             GUISetWindowColours( WndGui( wnd ), WndNumColours, colours );
-            GUIFree( colours );
+            GUIMemFree( colours );
         }
         return( TRUE );
     }

@@ -1,0 +1,40 @@
+/*
+ *  schedule.h  Schedule definition
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _SCHEDULE_H_
+#define _SCHEDULE_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Schedule types */
+#define SCHEDULE_INTERVAL   0L
+#define SCHEDULE_BANDWIDTH  1L
+#define SCHEDULE_PRIORITY   2L
+
+/* Number of schedule data entries */
+#define SCHEDULE_DATA_ENTRIES   168
+
+/* Schedule header */
+typedef struct _SCHEDULE_HEADER {
+    ULONG   Type;
+    ULONG   Offset;
+} SCHEDULE_HEADER;
+typedef SCHEDULE_HEADER *PSCHEDULE_HEADER;
+
+/* Schedule */
+typedef struct _SCHEDULE {
+    ULONG           Size;
+    ULONG           Bandwidth;
+    ULONG           NumberOfSchedules;
+    SCHEDULE_HEADER Schedules[1];
+} SCHEDULE;
+typedef SCHEDULE    *PSCHEDULE;
+
+:include cplusepi.sp
+
+#endif /* _SCHEDULE_H_ */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point exponentiation routine.
 *
 ****************************************************************************/
 
@@ -36,17 +35,8 @@
 #include "ifprag.h"
 #include "mathcode.h"
 #include "rtdata.h"
+#include "mathlib.h"
 
-#if defined(_M_IX86)
-  extern        double  _exp87(double);
-  #if defined(__386__)
-    #pragma aux _exp87  "_*" parm [edx eax] value [edx eax];
-  #else
-    #pragma aux _exp87  "_*" parm [ax bx cx dx] value [ax bx cx dx];
-  #endif
-#endif
-
-extern  int     __sgn(double);
 
 #define log2e           1.4426950408889633
 #define const0          20.813771196523035
@@ -55,41 +45,34 @@ extern  int     __sgn(double);
 
 
 static  const double    ExpConsts[] = {
-        1.0442737824274138403,  /*   sqrt(sqrt(sqrt(sqrt(2))))  */
-        1.0905077326652576592,  /*   sqrt(sqrt(sqrt(2)))        */
-        1.1892071150027210667,  /*   sqrt(sqrt(2))              */
-        1.4142135623730950488   /*   sqrt(2)                    */
+    1.0442737824274138403,  /*   sqrt(sqrt(sqrt(sqrt(2))))  */
+    1.0905077326652576592,  /*   sqrt(sqrt(sqrt(2)))        */
+    1.1892071150027210667,  /*   sqrt(sqrt(2))              */
+    1.4142135623730950488   /*   sqrt(2)                    */
 };
 
 
 
 
-_WMRTLINK extern double _IF_dexp( double );
-
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_exp "IF@EXP";
-  #pragma aux (if_rtn) _IF_dexp "IF@DEXP";
-#endif
-
 _WMRTLINK float _IF_exp( float x )
-/*********************/
+/********************************/
 {
     return( _IF_dexp( x ) );
 }
 
 _WMRTLINK double (exp)( double x )
-/**********************/
+/********************************/
 {
     return( _IF_dexp( x ) );
 }
 
 _WMRTLINK double _IF_dexp( double x )
-/************************/
+/***********************************/
 {
-    register int        sgnx;
-    register int        exp;
-    register int        exp2;
-    register const double *poly;
+    int                 sgnx;
+    int                 exp;
+    int                 exp2;
+    const double        *poly;
     double              ipart;
     double              a;
     double              b;
@@ -98,13 +81,12 @@ _WMRTLINK double _IF_dexp( double x )
     if( fabs( x ) < 4.445e-16 ) {       /* if argument is too small */
         x = 1.0;
     } else if( fabs( x ) > 709.782712893384 ) {/* if argument is too large */
-        if( x < 0.0 ) {                 /* - if argument < 0 */
+        if( x < 0.0 ) {
             /* FPStatus = FPS_UNDERFLOW;   - - underflow */
             x = 0.0;                    /* - - set result to 0 */
-        } else {                        /* - else */
-//            x = _matherr( OVERFLOW, "exp", &x, &x, HUGE_VAL );
+        } else {
             x = __math1err( FUNC_EXP | M_OVERFLOW | V_HUGEVAL, &x );
-        }                               /* - endif */
+        }
 #if defined(_M_IX86)
     } else if( _RWD_real87 ) {
         x = _exp87( x );

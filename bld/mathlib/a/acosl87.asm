@@ -31,18 +31,17 @@
 
 
 ifdef __386__
- include mdef.inc
  .387
 else
- include mdef.inc
  .8087
 endif
+include mdef.inc
 include struct.inc
-include math387.inc
-
-        xref            IF@DACOS
+include math87.inc
 
         modstart        acosl87
+
+        xref            IF@DACOS
 
         xdefp   acosl_          ; long double acosl( long double x )
 

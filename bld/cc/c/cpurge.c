@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Purge non-permanent memory. Mostly obsolete.
 *
 ****************************************************************************/
 
@@ -33,68 +32,19 @@
 #include "cvars.h"
 
 
-extern  void    CMemFree();
-extern  void    CClose();
-extern  void    FreeFNames(void);
+extern  void    FreeFNames( void );
 extern  void    FreeRDir( void );
-extern  void    PragmaFini();
-extern  void    SymsPurge();
-extern  void    QuadFini();
-extern  void    FreeDataQuads();
+extern  void    SymsPurge( void );
 
 
-void InitPurge()
-/**************/
+void InitPurge( void )
+/********************/
 {
 }
 
 
-static void Purge( void **ptr )
-{
-    if( *ptr != NULL ) {
-        CMemFree( *ptr );
-        *ptr = NULL;
-    }
-}
-
-
-void SwitchPurge()
-/****************/
-{
-    SWITCHPTR                   sw;
-    CASEPTR                     c_entry, c_tmp;
-
-    while( sw = SwitchStack ) {
-        SwitchStack = sw->prev_switch;
-        c_entry = sw->case_list;
-        while( c_entry != NULL ) {
-            c_tmp = c_entry->next_case;
-            CMemFree( c_entry );
-            c_entry = c_tmp;
-        }
-        CMemFree( sw );
-    }
-}
-
-
-void LitsPurge()
-/**************/
-{
-#if 0
-    STRING_LITERAL *lit;
-
-    lit = CStringList;
-    while( lit != NULL ) {
-        CStringList = lit->next_string;
-        CMemFree( lit );
-        lit = CStringList;
-    }
-#endif
-}
-
-
-void SrcPurge()
-/*************/
+void SrcPurge( void )
+/*******************/
 {
     FCB *src_file;
 
@@ -108,22 +58,26 @@ void SrcPurge()
     }
 }
 
+static void Purge( char **ptr )
+{
+    if( *ptr != NULL ) {
+        CMemFree( *ptr );
+        *ptr = NULL;
+    }
+}
 
-void PurgeMemory()
-/****************/
+void PurgeMemory( void )
+/**********************/
 {
 //  MacroPurge();
     SymsPurge();        /* calls TypesPurge */
-    PragmaFini();
     FreeDataQuads();
-    LitsPurge();
     FreeFNames();
     FreeRDir();
     SrcPurge();
     SwitchPurge();
-//  PurgeBlockStack();
-    Purge( &HFileList );
-//  Purge( &ErrSym );           /* ErrSym is in CPermArea */
+    Purge( &IncPathList );
+//  Purge( &ErrSym );               /* ErrSym is in CPermArea */
     Purge( &SavedId );
     FreePreCompiledHeader();
 }

@@ -96,8 +96,8 @@ extern int GUIDlgPickWithRtn( char *text,
     if( len < DLG_PICK_COLS ) len = DLG_PICK_COLS;
     if( len > DLG_MAX_COLS ) len = DLG_MAX_COLS;
 
-    Controls[ 1 ].text = LIT( OK );
-    Controls[ 2 ].text = LIT( Cancel );
+    Controls[1].text = LIT( OK );
+    Controls[2].text = LIT( Cancel );
     dlg.func = PickInit;
     dlg.chosen = -1;
     OpenRtn( text, DLG_PICK_ROWS, len,

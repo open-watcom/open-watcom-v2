@@ -58,7 +58,7 @@ _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
     void *p )                   // -- storage to release
 #endif
 {
-    ::delete( p );
+    ::delete( (char *) p );
 }
 
 #if defined(__MAKE_DLL_CPPLIB)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Abnormal termination processing.
 *
 ****************************************************************************/
 
@@ -33,53 +32,44 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "standard.h"
+#include "cgdefs.h"
 #include "cg.h"
+#include "cgmisc.h"
 #include "coderep.h"
 #include "feprotos.h"
 
-extern void             GrabTimer();
-extern void             ReleTimer();
-extern void             ScratchObj(void);
+extern void             GrabTimer( void );
+extern void             ReleTimer( void );
+extern void             ScratchObj( void );
 
 static  bool volatile   BrkFlag;
 static  bool            OnExitFlag = TRUE;
 
-bool TBreak() {
-/*************/
 
-    int         brk;
-
-    InitOnExit();
-    brk = BrkFlag;
-    BrkFlag = 0;
-    return( brk );
-}
-
-void CauseTBreak() {
-/******************/
-    BrkFlag = TRUE;
-}
-
-void SigIntFunc( int sig_num ) {
-/******************************/
-
+void SigIntFunc( int sig_num )
+/****************************/
+{
     sig_num = sig_num;
     BrkFlag = TRUE;
 }
 
-void BrkInit() {
-/**************/
 
+void BrkInit( void )
+/******************/
+{
     signal( SIGINT, SigIntFunc );
 }
 
-void BrkFini() {
-/**************/
+
+void BrkFini( void )
+/******************/
+{
 }
 
-void InitOnExit() {
-/*****************/
 
+void InitOnExit( void )
+/*********************/
+{
     if( OnExitFlag ) {
         BrkInit();
         GrabTimer();
@@ -89,9 +79,29 @@ void InitOnExit() {
     }
 }
 
-void FatalError( char * str ) {
-/*****************************/
 
+bool TBreak( void )
+/*****************/
+{
+    int         brk;
+
+    InitOnExit();
+    brk = BrkFlag;
+    BrkFlag = 0;
+    return( brk );
+}
+
+
+void CauseTBreak( void )
+/**********************/
+{
+    BrkFlag = TRUE;
+}
+
+
+void FatalError( char * str )
+/***************************/
+{
      ReleTimer();
      BrkFini();
      ScratchObj();

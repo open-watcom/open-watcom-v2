@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 Debugger PM helper - stuff shared with the trap file.
 *
 ****************************************************************************/
 
 
 #define ADJUST_HFILE 'A'
 
-typedef struct {
-    char                command;
+typedef _Packed struct {
     unsigned long       pid;
     unsigned long       tid;
+    char                command;
 } pmhelp_packet;
 
 enum {

@@ -1,0 +1,6 @@
+c$pragma aux wc "!"
+
+c$pragma aux (wc) strlen parm( value, value )
+
+        integer strlen
+        external strlen

@@ -8,23 +8,21 @@ template <int i, int j, int k>
 
 template <int m, int n>
     struct Acker {
-	enum {
-	    val = m == 0 ? n+1
-	    		 : n == 0 ? Acker<m?m-1:0,m?1:0>::val
-			          : Acker<m?m-1:0,m?Acker<n?m:0,n?n-1:0>::val : 0>::val
-	};
-	Acker_is< m, n, (int) val > x;
-	void f() {
-	    int y = x;
+	static const int val = m == 0 ? n+1
+            : n == 0 ? Acker<m?m-1:0,m?1:0>::val
+            : Acker<m?m-1:0,m?Acker<n?m:0,n?n-1:0>::val : 0>::val;
+	static void f() {
+	    int y = Acker_is< m, n, val >();
 	}
     };
 
+template <>
 struct Acker<0,0> {
-    enum {
-	val = 1
-    };
+    static const int val = 1;
+    static void f() {
+    }
 };
 
 void foo() {
-    Acker<1,2> x;
+    Acker<1,2>::f();
 };

@@ -64,27 +64,27 @@ mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_reg
 /*
         Return how to trace the current instruction.
 
-            MTH_STOP            - Stop single stepping
-            MTH_SIMULATE        - Use MITraceSimulate
-            MTH_STEP            - Tell the trap file to single step
-            MTH_STEPBREAK       - We want to single step, but for magical
+            MTRH_STOP           - Stop single stepping
+            MTRH_SIMULATE       - Use MITraceSimulate
+            MTRH_STEP           - Tell the trap file to single step
+            MTRH_STEPBREAK      - We want to single step, but for magical
                                   reasons we have to break at '*brk'
-            MTH_BREAK           - Set a break point at '*brk'
+            MTRH_BREAK          - Set a break point at '*brk'
 
         The 'tk' parameter indicates the type of tracing required:
 
-            MTK_INTO            - Trace into function calls
-            MTK_OVER            - Trace over function calls
-            MTK_OUT             - We just traced into a function call, but
+            MTRK_INTO           - Trace into function calls
+            MTRK_OVER           - Trace over function calls
+            MTRK_OUT            - We just traced into a function call, but
                                   have decided we don't want to be here:
                                   stop when the function returns
-            MTK_NEXT            - Stop at the next sequential instruction
+            MTRK_NEXT           - Stop at the next sequential instruction
 
 */
 mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
 {
     //NYI:
-    return( MTH_STOP );
+    return( MTRH_STOP );
 }
 
 /*

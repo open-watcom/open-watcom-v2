@@ -39,13 +39,9 @@ struct update_area {
 };
 
 
-static void dorefresh( total, area, wptr, cover )
-/***********************************************/
-
-register        UI_WINDOW*              wptr;
-register        UI_WINDOW*              cover;
-register        SAREA                   area;
-register        struct update_area*     total;
+static void dorefresh( struct update_area *total, SAREA area,
+                           UI_WINDOW *wptr, UI_WINDOW *cover )
+/************************************************************/
 {
     register    int                     i;
     auto        SAREA                   areas[ 5 ];
@@ -71,8 +67,8 @@ register        struct update_area*     total;
     return;
 }
 
-void global uidorefresh()
-/*********************/
+void global uidorefresh( void )
+/*****************************/
 {
     register    UI_WINDOW*              wptr;
     struct update_area                  total;

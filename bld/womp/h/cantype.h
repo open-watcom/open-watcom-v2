@@ -269,7 +269,7 @@ void        CanTGraph( cantype *type );
     The following functions are used to traverse the graph.
 */
 cantype *   CanTFind( type_handle hdl );
-int         CanTWalk( void *parm, int (*func)( cantype *type, void *parm ) );
+int         CanTWalk( void *parm, int (*func)( void *type, void *parm ) );
 cantype *   CanTElimTypeDef( type_handle start_hdl );
 
 /*

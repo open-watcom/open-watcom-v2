@@ -1,161 +1,172 @@
-WMainMenu MENU
+"WMainMenu" MENU
 BEGIN
     POPUP      sp( "&File",
-		   "&File" )
+                   "&File" )
     BEGIN
         MENUITEM sp( "&Clear...",
-		     "&Clear..." )		IDM_MENU_CLEAR
+                     "&Clear..." )              IDM_MENU_CLEAR
         MENUITEM SEPARATOR
         MENUITEM sp( "&Update",
-		     "&Update" )		IDM_MENU_UPDATE
+                     "&Update" )                IDM_MENU_UPDATE
         MENUITEM sp( "Save &As...",
-		     "Save &As..." )		IDM_MENU_SAVEAS
+                     "Save &As..." )            IDM_MENU_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-		     "E&xit" )			IDM_MENU_EXIT
+                     "E&xit" )                  IDM_MENU_EXIT
     END
     POPUP      sp( "&Edit",
-    		   "&Edit" )
+                   "&Edit" )
     BEGIN
         MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" )		IDM_MENU_CUT
+                     "Cu&t\tCtrl+X" )           IDM_MENU_CUT
         MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" )		IDM_MENU_COPY
+                     "&Copy\tCtrl+C" )          IDM_MENU_COPY
         MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" )		IDM_MENU_PASTE
+                     "&Paste\tCtrl+V" )         IDM_MENU_PASTE
         MENUITEM sp( "&Delete\tDel",
-		     "&Delete\tDel" )		IDM_MENU_DELETE
+                     "&Delete\tDel" )           IDM_MENU_DELETE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Load Symbols...",
-		     "&Load Symbols..." )	IDM_MENU_LOAD_SYMBOLS
+                     "&Load Symbols..." )       IDM_MENU_LOAD_SYMBOLS
         MENUITEM sp( "&Edit Symbols...",
-		     "&Edit Symbols..." )	IDM_MENU_SYMBOLS
+                     "&Edit Symbols..." )       IDM_MENU_SYMBOLS
         MENUITEM SEPARATOR
         MENUITEM sp( "Hide Tool&bar",
-		     "Hide Tool&bar" )		IDM_MENU_SHOWRIBBON
+                     "Hide Tool&bar" )          IDM_MENU_SHOWRIBBON
     END
     POPUP      sp( "&Resource",
-		   "&Resource" )
+                   "&Resource" )
     BEGIN
         MENUITEM sp( "&Rename...",
-		     "&Rename..." )		IDM_MENU_RENAME
+                     "&Rename..." )             IDM_MENU_RENAME
         MENUITEM sp( "&Memory Flags...",
-		     "&Memory Flags..." )	IDM_MENU_MEM_FLAGS
+                     "&Memory Flags..." )       IDM_MENU_MEM_FLAGS
         MENUITEM SEPARATOR
         MENUITEM sp( "&Copy To...",
-		     "&Copy To..." )		IDM_MENU_SAVEINTO
+                     "&Copy To..." )            IDM_MENU_SAVEINTO
     END
     POPUP      sp( "&Menu",
-		   "&Menu" )
+                   "&Menu" )
     BEGIN
         MENUITEM sp( "Insert &Before",
-		     "Insert &Before" )		IDM_MENU_INSERTBEFORE
+                     "Insert &Before" )         IDM_MENU_INSERTBEFORE
         MENUITEM sp( "Insert &After",
-		     "Insert &After" )		IDM_MENU_INSERTAFTER
+                     "Insert &After" )          IDM_MENU_INSERTAFTER
         MENUITEM SEPARATOR
-	#if 0
+#if 0
         MENUITEM sp( "Insert New as Sub&Items",
-		     "Insert New as Sub&Items" )	IDM_MENU_INSERTSUBITEMS
+                     "Insert New as Sub&Items" )        IDM_MENU_INSERTSUBITEMS
         MENUITEM SEPARATOR
         MENUITEM sp( "Insert New &Popup",
-		     "Insert New &Popup" )	IDM_MENU_NEWPOPUP
+                     "Insert New &Popup" )      IDM_MENU_NEWPOPUP
         MENUITEM sp( "Insert New &Item",
-		     "Insert New &Item" )	IDM_MENU_NEWITEM
+                     "Insert New &Item" )       IDM_MENU_NEWITEM
         MENUITEM sp( "Insert New &Separator",
-		     "Insert New &Separator" )	IDM_MENU_NEWSEPARATOR
-	#else
+                     "Insert New &Separator" )  IDM_MENU_NEWSEPARATOR
+#else
         MENUITEM sp( "Insert New &Item",
-		     "Insert New &Item" )	IDM_MENU_NEWITEM
-	#endif
+                     "Insert New &Item" )       IDM_MENU_NEWITEM
+#endif
     END
     POPUP      sp( "&Help",
-		   "&Help" )
+                   "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-		     "&Help" )			IDM_HELP
-        MENUITEM sp( "&About the Editor...",
-		     "&About the Editor..." )	IDM_MENU_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" )              IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ) IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" )       IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." )              IDM_MENU_ABOUT
     END
 END
 
-WSOMenu MENU
+"WSOMenu" MENU
 BEGIN
     POPUP      sp( "&File",
-		   "&File" )
+                   "&File" )
     BEGIN
         MENUITEM sp( "&New",
-		     "&New" )			IDM_MENU_CLEAR
+                     "&New" )                   IDM_MENU_CLEAR
         MENUITEM sp( "&Open...",
-		     "&Open..." )		IDM_MENU_OPEN
+                     "&Open..." )               IDM_MENU_OPEN
         MENUITEM sp( "&Save",
-		     "&Save" )			IDM_MENU_SAVE
+                     "&Save" )                  IDM_MENU_SAVE
         MENUITEM sp( "Save &As...",
-		     "Save &As..." )		IDM_MENU_SAVEAS
+                     "Save &As..." )            IDM_MENU_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-		     "E&xit" )			IDM_MENU_EXIT
+                     "E&xit" )                  IDM_MENU_EXIT
     END
     POPUP      sp( "&Edit",
-    		   "&Edit" )
+                   "&Edit" )
     BEGIN
         MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" )		IDM_MENU_CUT
+                     "Cu&t\tCtrl+X" )           IDM_MENU_CUT
         MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" )		IDM_MENU_COPY
+                     "&Copy\tCtrl+C" )          IDM_MENU_COPY
         MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" )		IDM_MENU_PASTE
+                     "&Paste\tCtrl+V" )         IDM_MENU_PASTE
         MENUITEM sp( "&Delete\tDel",
-		     "&Delete\tDel" )		IDM_MENU_DELETE
+                     "&Delete\tDel" )           IDM_MENU_DELETE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Load Symbols...",
-		     "&Load Symbols..." )	IDM_MENU_LOAD_SYMBOLS
+                     "&Load Symbols..." )       IDM_MENU_LOAD_SYMBOLS
         MENUITEM sp( "&Edit Symbols...",
-		     "&Edit Symbols..." )	IDM_MENU_SYMBOLS
+                     "&Edit Symbols..." )       IDM_MENU_SYMBOLS
         MENUITEM SEPARATOR
         MENUITEM sp( "Hide Tool&bar",
-		     "Hide Tool&bar" )		IDM_MENU_SHOWRIBBON
+                     "Hide Tool&bar" )          IDM_MENU_SHOWRIBBON
     END
     POPUP      sp( "&Resource",
-		   "&Resource" )
+                   "&Resource" )
     BEGIN
         MENUITEM sp( "&Rename...",
-		     "&Rename..." )		IDM_MENU_RENAME
+                     "&Rename..." )             IDM_MENU_RENAME
         MENUITEM sp( "&Memory Flags...",
-		     "&Memory Flags..." )	IDM_MENU_MEM_FLAGS
+                     "&Memory Flags..." )       IDM_MENU_MEM_FLAGS
         MENUITEM SEPARATOR
         MENUITEM sp( "&Copy To...",
-		     "&Copy To..." )		IDM_MENU_SAVEINTO
+                     "&Copy To..." )            IDM_MENU_SAVEINTO
     END
     POPUP      sp( "&Menu",
-		   "&Menu" )
+                   "&Menu" )
     BEGIN
         MENUITEM sp( "Insert &Before",
-		     "Insert &Before" )		IDM_MENU_INSERTBEFORE
+                     "Insert &Before" )         IDM_MENU_INSERTBEFORE
         MENUITEM sp( "Insert &After",
-		     "Insert &After" )		IDM_MENU_INSERTAFTER
+                     "Insert &After" )          IDM_MENU_INSERTAFTER
         MENUITEM SEPARATOR
-	#if 0
+#if 0
         MENUITEM sp( "Insert New as Sub&Items",
-		     "Insert New as Sub&Items" )	IDM_MENU_INSERTSUBITEMS
+                     "Insert New as Sub&Items" )        IDM_MENU_INSERTSUBITEMS
         MENUITEM SEPARATOR
         MENUITEM sp( "Insert New &Popup",
-		     "Insert New &Popup" )	IDM_MENU_NEWPOPUP
+                     "Insert New &Popup" )      IDM_MENU_NEWPOPUP
         MENUITEM sp( "Insert New &Item",
-		     "Insert New &Item" )	IDM_MENU_NEWITEM
+                     "Insert New &Item" )       IDM_MENU_NEWITEM
         MENUITEM sp( "Insert New &Separator",
-		     "Insert New &Separator" )	IDM_MENU_NEWSEPARATOR
-	#else
+                     "Insert New &Separator" )  IDM_MENU_NEWSEPARATOR
+#else
         MENUITEM sp( "Insert New &Item",
-		     "Insert New &Item" )	IDM_MENU_NEWITEM
-	#endif
+                     "Insert New &Item" )       IDM_MENU_NEWITEM
+#endif
     END
     POPUP      sp( "&Help",
-		   "&Help" )
+                   "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-		     "&Help" )			IDM_HELP
-        MENUITEM sp( "&About the Editor...",
-		     "&About the Editor..." )	IDM_MENU_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" )              IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ) IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" )       IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." )              IDM_MENU_ABOUT
     END
 END
-

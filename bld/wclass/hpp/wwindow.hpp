@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Window class prototype
 *
 ****************************************************************************/
-
 
 #ifndef wwindow_class
 #define wwindow_class
@@ -86,6 +84,13 @@ typedef unsigned long   WStyle;
 #define WStyleVScrollAll        (WStyleVScroll | WStyleVDrag | \
                                  WStyleVTrack | WStyleVRows )
 
+// Window extended styles:
+
+typedef unsigned long   WExStyle;
+
+#define WExStyleDefault     0
+#define WExStyle3DBorder    GUI_3D_BORDER
+
 // Scroll bar identifiers:
 
 typedef unsigned WScrollBar;
@@ -131,222 +136,228 @@ WCLASS AccelKey;
 WCLASS WControl;
 
 typedef void (WObject::*cbw)( WWindow *w );
+typedef bool (WObject::*bcbk)( gui_key k );
 
 WCLASS WWindow : public WObject {
-    public:
-        WEXPORT WWindow( WWindow *parent=NULL );
-        WEXPORT WWindow( const char *text, WStyle style=WStyleDefault );
-        WEXPORT WWindow( WWindow *parent, const char *text,
-                         WStyle style=WStyleDefault );
-        WEXPORT WWindow( WWindow *parent, const WRect& r, const char *text,
-                         WStyle style=WStyleDefault );
-        WEXPORT ~WWindow();
+private:
+    virtual bool reallyClose( void ) { return( TRUE ); }
+    bool updateAutosize( void );
+    void destroyWindow( void );
+    AccelKey *findAccelKey( WKeyCode key );
 
-        void WEXPORT addChild( WObject *child );
-        void WEXPORT removeChild( WObject *child );
-        void WEXPORT addAccelKey( WKeyCode key, WObject *client, bcbi cb );
-        void addAccelKey( int key, WObject *client, bcbi cb );
-        void WEXPORT removeAccelKey( WKeyCode key );
-        virtual bool gettingFocus( WWindow * ) { return( FALSE ); }
-        virtual bool losingFocus( WWindow * ) { return( FALSE ); }
-        virtual bool WEXPORT keyDown( WKeyCode, WKeyState );
-        virtual WControl * WEXPORT getControl( unsigned control_id );
-        virtual bool appActivate( bool ) { return( FALSE ); }
-        virtual bool contextHelp( bool ) { return( FALSE ); }
-        void hookF1Key( bool );
+private:
+    gui_window              *_handle;
+    WWindow                 *_parent;
+    WMenu                   *_menu;
+    WPopupMenu              *_popup;
+    WToolBar                *_toolBar;
+    WVList                  _children;
+    WRect                   _autosize;
+    gui_mouse_cursor        _prevCursor;
+    gui_mouse_cursor        _currCursor;
+    WOrdinal                _firstDirtyRow;
+    int                     _numDirtyRows;
+    bool                    _keyHandled;
 
-        /* mouse handling */
-        virtual bool WEXPORT mouseMove( int, int, WMouseKeyFlags );
-        virtual bool WEXPORT leftBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT leftBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT leftBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT middleBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT middleBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT middleBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT rightBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
-        virtual bool WEXPORT rightBttnUp( int, int, WMouseKeyFlags );
-        virtual bool WEXPORT rightBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
+protected:
+    void makeWindow( const char *title, WStyle wstyle = 0, WExStyle wexstyle = 0 );
+    void autoPosition( WRect& r );
+    void setParent( WWindow *parent ) { _parent = parent; }
+    void setAutosize( const WRect& r ) { _autosize = r; }
+    WPopupMenu *popup() { return _popup; }
+    WVList & children() { return _children; }
+    WWindow *nextChild( WWindow *w );
+    WRect getDefSize();
+    void enumChildren( void );
 
-        // scrolling gear
-        void WEXPORT setScrollRange( WScrollBar sb, int maxr );
-        int WEXPORT getScrollRange( WScrollBar sb );
-        void WEXPORT setScrollPos( WScrollBar sb, int pos );
-        int  WEXPORT getScrollPos( WScrollBar sb );
-        void WEXPORT setScrollTextRange( WScrollBar sb, int maxr );
-        int WEXPORT getScrollTextRange( WScrollBar sb );
-        void WEXPORT setScrollTextPos( WScrollBar sb, int pos );
-        int  WEXPORT getScrollTextPos( WScrollBar sb );
-        void WEXPORT scrollWindow( WScrollBar, int );
-        virtual bool WEXPORT scrollPosChanged( WScrollBar sb );
-        virtual bool WEXPORT scrollNotify( WScrollNotification, int );
-        virtual bool WEXPORT statusWindowCleared( void ) { return( FALSE ); }
+protected:
+    bool                    _painting;
+    WVList                  _accelKeys;
 
-        void WEXPORT close( void );
-        virtual bool WEXPORT paint() { return FALSE; }
-        bool WEXPORT isPainting() { return _painting; }
-        virtual void WEXPORT moved( WOrdinal width, WOrdinal height );
-        virtual void WEXPORT resized( WOrdinal width, WOrdinal height );
-        bool WEXPORT isMaximized() { return( GUIIsMaximized( _handle ) ); }
-        bool WEXPORT isMinimized() { return( GUIIsMinimized( _handle ) ); }
-        bool WEXPORT isIconic() { return( GUIIsMinimized( _handle ) ); }
-        virtual void WEXPORT maximized() {}
-        virtual void WEXPORT minimized() {}
-        void WEXPORT startWait( void );
-        void WEXPORT stopWait( void );
-        virtual void WEXPORT autosize();
-        virtual int WEXPORT getTextLength() {
-            return GUIGetWindowTextLength( _handle );
-        }
-        virtual void WEXPORT getText( char *textbuf, unsigned length );
-        virtual void WEXPORT getText( WString& str );
-        virtual void WEXPORT setText( const char *text );
-        virtual WMenu * WEXPORT setMenu( WMenu* menu );
-        virtual WMenu * WEXPORT clearMenu();
-        WMenu * WEXPORT menu() { return _menu; }
-        virtual WToolBar * WEXPORT setToolBar( WToolBar *toolbar );
-        virtual WToolBar * WEXPORT clearToolBar();
-        WToolBar * WEXPORT toolBar() { return _toolBar; }
-        virtual void WEXPORT setPopup( WPopupMenu *menu );
-        virtual void WEXPORT clearPopup();
-        virtual void WEXPORT insertPopup( WPopupMenu *pop, int index );
-        virtual void WEXPORT removePopup( WPopupMenu *pop );
-        void WEXPORT move( const WRect& r );
-        void WEXPORT move( WOrdinal x, WOrdinal y );
-        virtual void WEXPORT getRectangle( WRect& r, bool absolute=FALSE );
-        virtual void WEXPORT getNormalRectangle( WRect& r );
-        virtual void WEXPORT show( WWindowState state=WWinStateShow );
-        virtual bool WEXPORT isVisible() { return GUIIsWindowVisible( _handle ); }
-        void WEXPORT getClientRect( WRect & r, bool absolute=FALSE );
-        void WEXPORT size( WOrdinal w, WOrdinal h );
-        void WEXPORT minimumSize( WOrdinal w, WOrdinal h );
-        void WEXPORT shrink( WOrdinal wBorder, WOrdinal hBorder );
-        void WEXPORT shrink( void );
-        void WEXPORT update( bool force=FALSE );
-        virtual void WEXPORT setUpdates( bool b=TRUE );
-        void WEXPORT erase() {}  // NYI
-        int WEXPORT getRows( void ) {
-            return( GUIGetNumRows( _handle ) );
-        }
-        int WEXPORT getRow( const WPoint & );
-        void WEXPORT getRowPoint( int row, WPoint & );
-        virtual void WEXPORT textMetrics( WPoint &, WPoint & );
+public:
+    WEXPORT WWindow( WWindow *parent = NULL );
+    WEXPORT WWindow( const char *text, WStyle style = WStyleDefault,
+                     WExStyle exstyle = WExStyleDefault );
+    WEXPORT WWindow( WWindow *parent, const char *text, WStyle style = WStyleDefault,
+                     WExStyle exstyle = WExStyleDefault );
+    WEXPORT WWindow( WWindow *parent, const WRect& r, const char *text,
+                     WStyle style = WStyleDefault, WExStyle exstyle = WExStyleDefault );
+    WEXPORT ~WWindow();
 
-        static WWindow * WEXPORT hasFocus();
-        static WObjectMap WEXPORT _idMap;
-        static WObjectMap WEXPORT _toolBarIdMap;
-        static WObjectMap WEXPORT _popupIdMap;
-        static unsigned WEXPORT _idMaster;
+    void WEXPORT addChild( WObject *child );
+    void WEXPORT removeChild( WObject *child );
+    void WEXPORT addAccelKey( WKeyCode key, WObject *client, bcbk cb );
+    void addAccelKey( int key, WObject *client, bcbk cb );
+    void WEXPORT removeAccelKey( WKeyCode key );
+    virtual bool gettingFocus( WWindow * ) { return( FALSE ); }
+    virtual bool losingFocus( WWindow * ) { return( FALSE ); }
+    virtual bool WEXPORT keyDown( WKeyCode, WKeyState );
+    virtual WControl * WEXPORT getControl( unsigned control_id );
+    virtual bool appActivate( bool ) { return( FALSE ); }
+    virtual bool contextHelp( bool ) { return( FALSE ); }
+    void hookF1Key( bool );
 
-        void WEXPORT setIcon( WResource, char *ch_mode=NULL );
-        virtual bool WEXPORT setFocus( void );
-        gui_window * WEXPORT handle() { return _handle; }
-        void setHandle( gui_window *handle ) { _handle = handle; }
-        WWindow * WEXPORT parent() { return _parent; }
-        WRect getAutosize( void ) { return _autosize; }
-        virtual WWindow * switchChild( WWindow *currChild, bool forward );
-        virtual bool WEXPORT processMsg( gui_event msg, void *parm );
-        virtual int WEXPORT getTextExtentX( const char *text, int len ) {
-            return( GUIGetExtentX( _handle, (char *)text, len ) );
-        }
-        virtual int WEXPORT getTextExtentX( const char *text ) {
-            return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
-        }
-        virtual int WEXPORT getTextExtentY( const char *text ) {
-            return( GUIGetExtentY( _handle, (char *)text ) );
-        }
-        virtual void displayFloatingPopup( WPopupMenu * );
-        virtual WOrdinal WEXPORT frameWidth( void ) {
-            return( WSystemMetrics::frameWidth() );
-        }
-        virtual WOrdinal WEXPORT frameHeight( void ) {
-            return( WSystemMetrics::frameHeight() );
-        }
-        void centre( unsigned int xpct=50, unsigned int ypct=40 );
+    // mouse handling
+    virtual bool WEXPORT mouseMove( int, int, WMouseKeyFlags );
+    virtual bool WEXPORT leftBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT leftBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT leftBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT middleBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT middleBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT middleBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT rightBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT rightBttnUp( int, int, WMouseKeyFlags );
+    virtual bool WEXPORT rightBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
 
-        virtual bool queryEndSession( void ) { return( TRUE ); }
-        virtual void endSession( bool ) {}
+    // scrolling gear
+    void WEXPORT setScrollRange( WScrollBar sb, int maxr );
+    int WEXPORT getScrollRange( WScrollBar sb );
+    void WEXPORT setScrollPos( WScrollBar sb, int pos );
+    int  WEXPORT getScrollPos( WScrollBar sb );
+    void WEXPORT setScrollTextRange( WScrollBar sb, int maxr );
+    int WEXPORT getScrollTextRange( WScrollBar sb );
+    void WEXPORT setScrollTextPos( WScrollBar sb, int pos );
+    int  WEXPORT getScrollTextPos( WScrollBar sb );
+    void WEXPORT scrollWindow( WScrollBar, int );
+    virtual bool WEXPORT scrollPosChanged( WScrollBar sb );
+    virtual bool WEXPORT scrollNotify( WScrollNotification, int );
+    virtual bool WEXPORT statusWindowCleared( void ) { return( FALSE ); }
 
-        // painting functions
+    void WEXPORT close( void );
+    virtual bool WEXPORT paint() { return FALSE; }
+    bool WEXPORT isPainting() { return _painting; }
+    virtual void WEXPORT moved( WOrdinal width, WOrdinal height );
+    virtual void WEXPORT resized( WOrdinal width, WOrdinal height );
+    bool WEXPORT isMaximized() { return( GUIIsMaximized( _handle ) ); }
+    bool WEXPORT isMinimized() { return( GUIIsMinimized( _handle ) ); }
+    bool WEXPORT isIconic() { return( GUIIsMinimized( _handle ) ); }
+    virtual void WEXPORT maximized() {}
+    virtual void WEXPORT minimized() {}
+    void WEXPORT startWait( void );
+    void WEXPORT stopWait( void );
+    virtual void WEXPORT autosize();
+    virtual int WEXPORT getTextLength() {
+        return GUIGetWindowTextLength( _handle );
+    }
+    virtual void WEXPORT getText( char *textbuf, unsigned length );
+    virtual void WEXPORT getText( WString& str );
+    virtual void WEXPORT setText( const char *text );
+    virtual WMenu * WEXPORT setMenu( WMenu* menu );
+    virtual WMenu * WEXPORT clearMenu();
+    WMenu * WEXPORT menu() { return _menu; }
+    virtual WToolBar * WEXPORT setToolBar( WToolBar *toolbar );
+    virtual WToolBar * WEXPORT clearToolBar();
+    WToolBar * WEXPORT toolBar() { return _toolBar; }
+    virtual void WEXPORT setPopup( WPopupMenu *menu );
+    virtual void WEXPORT clearPopup();
+    virtual void WEXPORT insertPopup( WPopupMenu *pop, int index );
+    virtual void WEXPORT removePopup( WPopupMenu *pop );
+    void WEXPORT move( const WRect& r );
+    void WEXPORT move( WOrdinal x, WOrdinal y );
+    virtual void WEXPORT getRectangle( WRect& r, bool absolute=FALSE );
+    virtual void WEXPORT getNormalRectangle( WRect& r );
+    virtual void WEXPORT show( WWindowState state=WWinStateShow );
+    virtual bool WEXPORT isVisible() { return GUIIsWindowVisible( _handle ); }
+    void WEXPORT getClientRect( WRect & r, bool absolute=FALSE );
+    void WEXPORT size( WOrdinal w, WOrdinal h );
+    void WEXPORT minimumSize( WOrdinal w, WOrdinal h );
+    void WEXPORT shrink( WOrdinal wBorder, WOrdinal hBorder );
+    void WEXPORT shrink( void );
+    void WEXPORT update( bool force=FALSE );
+    virtual void WEXPORT setUpdates( bool b=TRUE );
+    void WEXPORT erase() {}  // NYI
+    int WEXPORT getRows( void ) {
+        return( GUIGetNumRows( _handle ) );
+    }
+    int WEXPORT getRow( const WPoint & );
+    void WEXPORT getRowPoint( int row, WPoint & );
+    virtual void WEXPORT textMetrics( WPoint &, WPoint & );
 
-        void WEXPORT invalidate( void ) {
-            GUIWndDirty( _handle );
-        }
-        void WEXPORT invalidateRow( int row ) {
-            GUIWndDirtyRow( _handle, row );
-        }
-        void WEXPORT invalidateRect( const WRect & );
-        void WEXPORT getPaintRect( WRect & );
-        Color WEXPORT backgroundColour( void );
-        void WEXPORT fillRect( const WRect &, Color );
-        void WEXPORT fillRect( const WRect &, WPaintAttr );
-        void WEXPORT drawRect( const WRect &, Color );
-        void WEXPORT drawRect( const WRect &, WPaintAttr );
-        void WEXPORT drawLine( const WPoint &, const WPoint &, WLineStyle, unsigned int, Color );
-        void WEXPORT drawLine( const WPoint &, const WPoint &, WLineStyle, unsigned int, WPaintAttr );
-        void WEXPORT drawLine( const WPoint &, const WPoint &, Color );
-        void WEXPORT drawLine( const WPoint &, const WPoint &, WPaintAttr );
-        void WEXPORT drawText( const WPoint &, const char * );
-        void WEXPORT drawText( const WPoint &, const char *, Color, Color );
-        void WEXPORT drawText( const WPoint &, const char *, WPaintAttr );
-        void WEXPORT drawText( int, int, const char * );
-        void WEXPORT drawText( int, int, const char *, Color, Color );
-        void WEXPORT drawText( int, int, const char *, WPaintAttr );
-        void WEXPORT drawText( const WPoint &, const char *, int );
-        void WEXPORT drawText( const WPoint &, const char *, int, Color, Color );
-        void WEXPORT drawText( const WPoint &, const char *, int, WPaintAttr );
-        void WEXPORT drawText( int, int, const char *, int );
-        void WEXPORT drawText( int, int, const char *, int, Color, Color );
-        void WEXPORT drawText( int, int, const char *, int, WPaintAttr );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, Color, Color, int );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, WPaintAttr, int );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, int );
-        void WEXPORT drawTextExtent( int, int, const char *, Color, Color, int );
-        void WEXPORT drawTextExtent( int, int, const char *, WPaintAttr, int );
-        void WEXPORT drawTextExtent( int, int, const char *, int );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, int, Color, Color, int );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, int, WPaintAttr, int );
-        void WEXPORT drawTextExtent( const WPoint &, const char *, int, int );
-        void WEXPORT drawTextExtent( int, int, const char *, int, Color, Color, int );
-        void WEXPORT drawTextExtent( int, int, const char *, int, WPaintAttr, int );
-        void WEXPORT drawTextExtent( int, int, const char *, int, int );
-        void WEXPORT drawHotSpot( int, int, int );
-        WOrdinal WEXPORT firstDirtyRow( void ) { return( _firstDirtyRow ); }
-        int WEXPORT numDirtyRows( void ) { return( _numDirtyRows ); }
+    static WWindow * WEXPORT hasFocus();
+    static WObjectMap WEXPORT _idMap;
+    static WObjectMap WEXPORT _toolBarIdMap;
+    static WObjectMap WEXPORT _popupIdMap;
+    static unsigned WEXPORT _idMaster;
 
-    protected:
-        void makeWindow( const char *title, WStyle wstyle=0 );
-        void autoPosition( WRect& r );
-        void setParent( WWindow *parent ) { _parent = parent; }
-        void setAutosize( const WRect& r ) { _autosize = r; }
-        WPopupMenu *popup() { return _popup; }
-        WVList & children() { return _children; }
-        WWindow *nextChild( WWindow *w );
-        WRect getDefSize();
-        void enumChildren( void );
+    void WEXPORT setIcon( WResource, char *ch_mode=NULL );
+    virtual bool WEXPORT setFocus( void );
+    gui_window * WEXPORT handle() { return _handle; }
+    void setHandle( gui_window *handle ) { _handle = handle; }
+    WWindow * WEXPORT parent() { return _parent; }
+    WRect getAutosize( void ) { return _autosize; }
+    virtual WWindow * switchChild( WWindow *currChild, bool forward );
+    virtual bool WEXPORT processMsg( gui_event msg, void *parm );
+    virtual int WEXPORT getTextExtentX( const char *text, int len ) {
+        return( GUIGetExtentX( _handle, (char *)text, len ) );
+    }
+    virtual int WEXPORT getTextExtentX( const char *text ) {
+        return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
+    }
+    virtual int WEXPORT getTextExtentY( const char *text ) {
+        return( GUIGetExtentY( _handle, (char *)text ) );
+    }
+    virtual void displayFloatingPopup( WPopupMenu * );
+    virtual WOrdinal WEXPORT frameWidth( void ) {
+        return( WSystemMetrics::frameWidth() );
+    }
+    virtual WOrdinal WEXPORT frameHeight( void ) {
+        return( WSystemMetrics::frameHeight() );
+    }
+    void centre( unsigned int xpct=50, unsigned int ypct=40 );
 
-    private:
-        virtual bool reallyClose( void ) { return( TRUE ); }
-        bool updateAutosize( void );
-        void destroyWindow( void );
-        AccelKey *findAccelKey( WKeyCode key );
+    virtual bool queryEndSession( void ) { return( TRUE ); }
+    virtual void endSession( bool ) {}
 
-    protected:
-        bool                    _painting;
-        WVList                  _accelKeys;
+    // painting functions
 
-    private:
-        gui_window              *_handle;
-        WWindow                 *_parent;
-        WMenu                   *_menu;
-        WPopupMenu              *_popup;
-        WToolBar                *_toolBar;
-        WVList                  _children;
-        WRect                   _autosize;
-        gui_mouse_cursor        _prevCursor;
-        gui_mouse_cursor        _currCursor;
-        WOrdinal                _firstDirtyRow;
-        int                     _numDirtyRows;
-        bool                    _keyHandled;
+    void WEXPORT invalidate( void ) {
+        GUIWndDirty( _handle );
+    }
+    void WEXPORT invalidateRow( int row ) {
+        GUIWndDirtyRow( _handle, row );
+    }
+    void WEXPORT setSystemFont( bool fixed ) {
+        GUISetSystemFont( _handle, fixed );
+    }
+    void WEXPORT invalidateRect( const WRect & );
+    void WEXPORT getPaintRect( WRect & );
+    Color WEXPORT backgroundColour( void );
+    void WEXPORT changeBackground( WPaintAttr );
+    void WEXPORT fillRect( const WRect &, Color );
+    void WEXPORT fillRect( const WRect &, WPaintAttr );
+    void WEXPORT drawRect( const WRect &, Color );
+    void WEXPORT drawRect( const WRect &, WPaintAttr );
+    void WEXPORT drawLine( const WPoint &, const WPoint &, WLineStyle, unsigned int, Color );
+    void WEXPORT drawLine( const WPoint &, const WPoint &, WLineStyle, unsigned int, WPaintAttr );
+    void WEXPORT drawLine( const WPoint &, const WPoint &, Color );
+    void WEXPORT drawLine( const WPoint &, const WPoint &, WPaintAttr );
+    void WEXPORT drawText( const WPoint &, const char * );
+    void WEXPORT drawText( const WPoint &, const char *, Color, Color );
+    void WEXPORT drawText( const WPoint &, const char *, WPaintAttr );
+    void WEXPORT drawText( int, int, const char * );
+    void WEXPORT drawText( int, int, const char *, Color, Color );
+    void WEXPORT drawText( int, int, const char *, WPaintAttr );
+    void WEXPORT drawText( const WPoint &, const char *, int );
+    void WEXPORT drawText( const WPoint &, const char *, int, Color, Color );
+    void WEXPORT drawText( const WPoint &, const char *, int, WPaintAttr );
+    void WEXPORT drawText( int, int, const char *, int );
+    void WEXPORT drawText( int, int, const char *, int, Color, Color );
+    void WEXPORT drawText( int, int, const char *, int, WPaintAttr );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, Color, Color, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, WPaintAttr, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, int );
+    void WEXPORT drawTextExtent( int, int, const char *, Color, Color, int );
+    void WEXPORT drawTextExtent( int, int, const char *, WPaintAttr, int );
+    void WEXPORT drawTextExtent( int, int, const char *, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, int, Color, Color, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, int, WPaintAttr, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, int, int );
+    void WEXPORT drawTextExtent( int, int, const char *, int, Color, Color, int );
+    void WEXPORT drawTextExtent( int, int, const char *, int, WPaintAttr, int );
+    void WEXPORT drawTextExtent( int, int, const char *, int, int );
+    void WEXPORT drawHotSpot( int, int, int );
+    WOrdinal WEXPORT firstDirtyRow( void ) { return( _firstDirtyRow ); }
+    int WEXPORT numDirtyRows( void ) { return( _numDirtyRows ); }
 };
 
 #endif

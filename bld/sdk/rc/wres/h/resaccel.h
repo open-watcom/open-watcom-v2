@@ -36,10 +36,7 @@
 #include "watcom.h"
 #include "layer0.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct AccelTableEntry32 {
     uint_16     Flags;
     uint_16     Ascii;
@@ -52,10 +49,7 @@ typedef struct AccelTableEntry {
     uint_16     Ascii;
     uint_16     Id;
 } _WCUNALIGNED AccelTableEntry;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 typedef uint_8  AccelFlags;
 #define ACCEL_ASCII     0x00        /* last bit is 0 */

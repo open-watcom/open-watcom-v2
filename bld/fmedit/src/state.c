@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module to contain various pieces of state information.
 *
 ****************************************************************************/
 
-
-/*  STATE.C - file to contain various pieces of state information */
 
 #include <string.h>
 #include <dos.h>
@@ -44,28 +41,24 @@
 
 #include "state.h"
 
-static HANDLE FMEditInst = NULL;
-static STATE * State = NULL;
-static STATE * StateList = NULL;
-static STATE_HDL StateID = 1;
+static HANDLE       FMEditInst = NULL;
+static STATE        *State = NULL;
+static STATE        *StateList = NULL;
+static STATE_HDL    StateID = 1;
+
+/* forward declaration */
+extern BOOL ShowError( void );
 
 extern void SetInst( HANDLE inst )
-/********************************/
-
-/* save the DLL instance */
-
-  {
+{
+    /* save the DLL instance */
     FMEditInst = inst;
-  }
+}
 
-
-extern void NewState()
-/********************/
-
-/* initialize state info */
-
-  {
-    State =  EdAlloc( sizeof( STATE ) );
+extern void NewState( void )
+{
+    /* initialize state info */
+    State = EdAlloc( sizeof( STATE ) );
     State->currstate = DORMANT;
     State->basestate = DORMANT;
     State->currobj = NULL;
@@ -91,13 +84,10 @@ extern void NewState()
     ++StateID;
     State->next = StateList;
     StateList = State;
-  }
-
+}
 
 extern void SetStateWnd( HWND wnd )
-/*********************************/
-
-  {
+{
     RECT   rect;
 
     State->appwnd = wnd;
@@ -107,15 +97,13 @@ extern void SetStateWnd( HWND wnd )
         memset( &rect, 0, sizeof( RECT ) );
     }
     State->scrollrect = rect;
-  }
+}
 
 
-extern void FreeState()
-/*********************/
-
-  {
-    STATE * s;
-    STATE * last;
+extern void FreeState( void )
+{
+    STATE *s;
+    STATE *last;
 
     last = NULL;
     for( s = StateList; s != NULL; s = s->next ) {
@@ -131,28 +119,22 @@ extern void FreeState()
     }
     EdFree( s );
     State = NULL;
-  }
+}
 
 extern HWND InheritState( HWND newwnd )
-/*************************************/
-
-/* replace the window of the current state with the passed window */
-
-  {
+{
+    /* replace the window of the current state with the passed window */
     HWND old;
 
     old = State->appwnd;
     State->appwnd = newwnd;
     return( old );
-  }
+}
 
 BOOL WINEXP InitState( HWND wnd )
-/*******************************/
-
-/* initialize the state from the window */
-
-  {
-    STATE * s;
+{
+    /* initialize the state from the window */
+    STATE *s;
 
     for( s = StateList; s != NULL; s = s->next ) {
         if( s->appwnd == wnd ) {
@@ -161,289 +143,184 @@ BOOL WINEXP InitState( HWND wnd )
     }
     State = s;
     return( State != NULL );
-  }
-
+}
 
 extern void SetState( STATE_ID state )
-/************************************/
-
-/* set to the specified state */
-
-  {
+{
+    /* set to the specified state */
     State->currstate = state;
     SetStateCursor( state );
-  }
+}
 
-
-extern STATE_ID GetState()
-/************************/
-
-/* return the current state */
-
-  {
+extern STATE_ID GetState( void )
+{
+    /* return the current state */
     return( State->currstate );
-  }
-
+}
 
 extern void SetBaseState( STATE_ID st )
-/*************************************/
-
-/* set the state that the system goes to when nothing is actively happening */
-
-  {
+{
+    /* set the state that the system goes to when nothing is actively happening */
     State->basestate = st;
-  }
+}
 
-
-extern void SetDefState()
-/***********************/
-
-/* reset to base state */
-
-  {
+extern void SetDefState( void )
+{
+    /* reset to base state */
     State->currstate = State->basestate;
     SetStateCursor( State->basestate );
-  }
+}
 
-
-extern void SetSize( RESIZE_ID  id )
-/**********************************/
-
-/* set the sizing state based on the passed sizing operation */
-
-  {
+extern void SetSize( RESIZE_ID id )
+{
+    /* set the sizing state based on the passed sizing operation */
     State->sizeinfo |= id;
-  }
+}
 
-
-extern void ResetSize()
-/*********************/
-
-/* reset the sizing state info */
-
-  {
+extern void ResetSize( void )
+{
+    /* reset the sizing state info */
     State->sizeinfo = R_NONE;
-  }
+}
 
-
-extern char GetSizing()
-/**********************/
-
-/* return the sizing info */
-
-  {
+extern unsigned char GetSizing( void )
+{
+    /* return the sizing info */
     return( State->sizeinfo );
-  }
-
+}
 
 extern BOOL Sizing( char op )
-/***************************/
-
-/* check to see if a sizing operation is valid */
-
-  {
+{
+    /* check to see if a sizing operation is valid */
     return( (State->sizeinfo & op) != R_NONE );
-  }
-
+}
 
 extern void SetPrevMouse( POINT pt )
-/**********************************/
-
-/* save the mouse position */
-
-  {
+{
+    /* save the mouse position */
     State->prevmouse = pt;
-  }
+}
 
-
-extern POINT GetPrevMouse()
-/*************************/
-
-/* Return the last significant the mouse position. */
-
-  {
+extern POINT GetPrevMouse( void )
+{
+    /* Return the last significant the mouse position. */
     return( State->prevmouse );
-  }
+}
 
-
-extern HANDLE GetAppWnd()
-/***********************/
-
-/* save the application window handle */
-
-  {
+extern HANDLE GetAppWnd( void )
+{
+    /* save the application window handle */
     return( State->appwnd );
-  }
+}
 
-
-extern HANDLE GetInst()
-/*********************/
-
-/* save the instance handle */
-
-  {
+extern HANDLE GetInst( void )
+{
+    /* save the instance handle */
     return( FMEditInst );
-  }
+}
 
-
-extern void CreateMainObject()
-/****************************/
-
-/* create the main object */
-
-  {
+extern void CreateMainObject( void )
+{
+    /* create the main object */
     State->mainobject = Create( USER_OBJ, NULL, NULL, NULL );
-  }
+}
 
-extern void DestroyMainObject()
-/*****************************/
-
-/* destroy the main object */
-
-  {
+extern void DestroyMainObject( void )
+{
+    /* destroy the main object */
     OBJPTR temp;
 
     temp = State->mainobject;
     Destroy( temp, FALSE );
     State->mainobject = NULL;
-  }
+}
 
-extern void CreateCurrObject()
-/****************************/
-
-/* Create the current object */
-
-  {
+extern void CreateCurrObject( void )
+{
+    /* Create the current object */
     State->currobj = Create( O_CURROBJ, NULL, NULL, NULL );
-  }
+}
 
-extern void DestroyCurrObject()
-/*****************************/
-
-/* Destroy the current object */
-
-  {
+extern void DestroyCurrObject( void )
+{
+    /* Destroy the current object */
     Destroy( State->currobj, FALSE );
-  }
+}
 
-OBJPTR WINEXP GetMainObject()
-/***************************/
-
-/* create the main object */
-
-  {
+OBJPTR WINEXP GetMainObject( void )
+{
+    /* create the main object */
     return( State->mainobject );
-  }
-
+}
 
 void WINEXP SetBaseObjType( OBJ_ID id )
-/*************************************/
-
-/* save the type of object to create */
-
-  {
+{
+    /* save the type of object to create */
     State->objtype = id;
-  }
+}
 
-
-OBJ_ID WINEXP GetBaseObjType()
-/****************************/
-
-/* return the type of object to build */
-
-  {
+OBJ_ID WINEXP GetBaseObjType( void )
+{
+    /* return the type of object to build */
     return( State->objtype );
-  }
+}
 
-
-unsigned WINEXP GetVerticalInc()
-/******************************/
-
-/* return the vertical grid increment value */
-
-  {
+unsigned WINEXP GetVerticalInc( void )
+{
+    /* return the vertical grid increment value */
     return( State->gridvinc );
-  }
-
+}
 
 void WINEXP SetVerticalInc( unsigned inc )
-/****************************************/
-
-/* set the vertical grid increment value */
-
-  {
+{
+    /* set the vertical grid increment value */
     State->gridvinc = inc;
-  }
+}
 
-
-unsigned WINEXP GetHorizontalInc()
-/********************************/
-
-/* return the vertical grid increment value */
-
-  {
+unsigned WINEXP GetHorizontalInc( void )
+{
+    /* return the vertical grid increment value */
     return( State->gridhinc );
-  }
-
+}
 
 void WINEXP SetHorizontalInc( unsigned inc )
-/******************************************/
-
-/* set the vertical grid increment value */
-
-  {
+{
+    /* set the vertical grid increment value */
     State->gridhinc = inc;
-  }
-
+}
 
 extern void SetObjects( void * objs )
-/***********************************/
-
-/* save a pointer to the object table */
-
-  {
+{
+    /* save a pointer to the object table */
     State->objects = objs;
-  }
+}
 
-
-extern void * GetObjects()
-/************************/
-
-/* get the object table pointer */
-
-  {
+extern void *GetObjects( void )
+{
+    /* get the object table pointer */
     return( State->objects );
-  }
+}
 
-extern void SaveObject()
-/**********************/
-
-/* remember the previous object */
-
-  {
+extern void SaveObject( void )
+{
+    /* remember the previous object */
     CURROBJPTR currobj;
 
     currobj = GetECurrObject();
     if( currobj != NULL ) {
         State->prevobject = GetObjptr( currobj );
     }
-  }
+}
 
-
-extern void RestorePrevObject()
-/*****************************/
-
-/* reset the currobject from the previous object */
-
-  {
-    AddCurrObject( State->prevobject );
-  }
-
-
-extern OBJPTR GetCurrObj()
-/************************/
-/* get the current object */
+extern void RestorePrevObject( void )
 {
+    /* reset the currobject from the previous object */
+    AddCurrObject( State->prevobject );
+}
+
+extern OBJPTR GetCurrObj( void )
+{
+    /* get the current object */
     if( State == NULL ) {
         return( NULL );
     } else {
@@ -451,96 +328,67 @@ extern OBJPTR GetCurrObj()
     }
 }
 
-extern void WINEXP GetOffset( POINT * point )
-/*******************************************/
-
-/* return the offset point */
-
-  {
+extern void WINEXP GetOffset( POINT *point )
+{
+    /* return the offset point */
     *point = State->offset;
-  }
+}
 
 extern void SetOffset( POINT point )
-/**********************************/
-
-/* set the offset point */
-
-  {
+{
+    /* set the offset point */
     State->offset = point;
-  }
+}
 
-extern RECT GetScrollRect()
-/*************************/
-
-/* return the scroll rect */
-
-  {
+extern RECT GetScrollRect( void )
+{
+    /* return the scroll rect */
     return( State->scrollrect );
-  }
+}
 
 extern void SetScrollRect( RECT rect )
-/************************************/
-
-/* set the scroll rect */
-
-  {
+{
+    /* set the scroll rect */
     State->scrollrect = rect;
-  }
+}
 
 extern void SetScrollConfig( SCR_CONFIG flag )
-/********************************************/
-
-/* Set the scroll configuration */
-
-  {
+{
+    /* Set the scroll configuration */
     State->scrollconfig = flag;
-  }
+}
 
-extern SCR_CONFIG GetScrollConfig()
-/*********************************/
-
-/* Get the scroll configuration */
-
-  {
+extern SCR_CONFIG GetScrollConfig( void )
+{
+    /* Get the scroll configuration */
     return( State->scrollconfig );
-  }
+}
 
-extern OBJPTR GetSelectEatom()
-/****************************/
-
-/* return the banded select eatom */
-
-  {
+extern OBJPTR GetSelectEatom( void )
+{
+    /* return the banded select eatom */
     return( State->selecteatom );
-  }
-
+}
 
 extern void SetSelectEatom( OBJPTR eatom )
-/****************************************/
-
-/* set the banded select eatom */
-
-  {
+{
+    /* set the banded select eatom */
     State->selecteatom = eatom;
-  }
+}
 
 extern void SetShowEatoms( BOOL show )
-/************************************/
 {
     State->show_eatoms = show;
-} /* SetShowEatoms */
+}
 
 extern BOOL GetShowEatoms( void )
-/*******************************/
 {
     return( State->show_eatoms );
-} /* GetShowEatoms */
+}
 
 
 int WINEXP FMTranslateAccelerator( HWND wnd, LPMSG message )
-/**********************************************************/
-
-  {
+{
     int ret;
     int i;
 
@@ -553,18 +401,16 @@ int WINEXP FMTranslateAccelerator( HWND wnd, LPMSG message )
     if( State->currstate == EDITING ) {
         return( ret );
     }
-    for( i=0; ( ( i < ACCELS ) && ( ret == FALSE ) ); i++ ) {
+    for( i = 0; i < ACCELS && ret == FALSE; i++ ) {
         if( State->hAccel[i] != NULL ) {
             ret |= TranslateAccelerator( wnd, State->hAccel[i], message );
         }
     }
     return( ret );
-  }
+}
 
 extern void LoadAccel( int bitmap )
-/****************************************/
-
-  {
+{
     if( bitmap & MENU_DELETE ) {
         State->hAccel[1] = LoadAccelerators( GetInst(), "DeleteAccelTable" );
     }
@@ -577,36 +423,26 @@ extern void LoadAccel( int bitmap )
     if( bitmap & MENU_CUT ) {
         State->hAccel[4] = LoadAccelerators( GetInst(), "CutAccelTable" );
     }
-  }
+}
 
-extern BOOL GetShift()
-/********************/
-
-  {
+extern BOOL GetShift( void )
+{
     return( State->keystate & MK_SHIFT );
-  }
+}
 
-
-extern BOOL GetControl()
-/**********************/
-
-  {
+extern BOOL GetControl( void )
+{
     return( State->keystate & MK_CONTROL );
-  }
+}
 
 extern void SetKeyState( WORD keystate )
-/**************************************/
-
-  {
+{
     State->keystate = keystate;
-  }
+}
 
 void WINEXP DisplayError( char * msg )
-/************************************/
-
-/* report an error message */
-
-  {
+{
+    /* report an error message */
     if( msg != NULL ) {
         if( ShowError() ) {
             MessageBox( GetAppWnd(), (LPSTR) msg, NULL,
@@ -616,108 +452,81 @@ void WINEXP DisplayError( char * msg )
             strcpy( State->error, msg );
         }
     }
-  }
+}
 
-extern void ReportPending()
-/**************************/
+extern void ReportPending( void )
+{
+    if( ShowError() && State->error != NULL ) {
+        MessageBox( GetAppWnd(), (LPSTR) State->error, NULL,
+                    MB_ICONEXCLAMATION | MB_OK );
+        EdFree( State->error );
+        State->error = NULL;
+    }
+}
 
-  {
-      if( ShowError() && ( State->error != NULL ) ) {
-            MessageBox( GetAppWnd(), (LPSTR) State->error, NULL,
-                        MB_ICONEXCLAMATION | MB_OK );
-            EdFree( State->error );
-            State->error = NULL;
-      }
-  }
-
-void WINEXP ClearError()
-/**********************/
-
-  {
+void WINEXP ClearError( void )
+{
     if( State->error != NULL ) {
         EdFree( State->error );
         State->error = NULL;
     }
-  }
+}
 
 
-extern BOOL ShowError()
-/*********************/
-
-  {
+extern BOOL ShowError( void )
+{
     return( State->showerror );
-  }
+}
 
 void WINEXP SetShowError( BOOL show )
-/***********************************/
-
-  {
+{
     State->showerror = show;
-  }
-
-
+}
 
 BOOL WINEXP IsEditting( HWND wnd )
-/********************************/
-
-  {
+{
     InitState( wnd );
     return( State->currstate == EDITING );
-  }
+}
 
-void WINEXP SetMouseRtn( HWND wnd, FARPROC rtn )
-/**********************************************/
-
-  {
+void WINEXP SetMouseRtn( HWND wnd, void (FM_EXPORT *rtn)( HWND, RECT * ) )
+{
     InitState( wnd );
     State->mouseaction = rtn;
-  }
+}
 
 
-extern void MouseAction( RECT * r )
-/*********************************/
-
-  {
+extern void MouseAction( RECT *r )
+{
     RECT safe;
 
     if( State->mouseaction != NULL ) {
         safe = *r;
         State->mouseaction( State->appwnd, &safe );
     }
-  }
+}
 
 
 extern void SetResizeGrid( unsigned horz, unsigned vert )
-/*******************************************************/
-
-  {
+{
     State->hresizegrid = horz;
     State->vresizegrid = vert;
-  }
+}
 
-
-extern unsigned GetResizeHInc()
-/*****************************/
-
-  {
+extern unsigned GetResizeHInc( void )
+{
     return( State->hresizegrid );
-  }
+}
 
 
-extern unsigned GetResizeVInc()
-/*****************************/
-
-  {
+extern unsigned GetResizeVInc( void )
+{
     return( State->vresizegrid );
-  }
-
-
+}
 
 BOOL WINEXP InitStateFormID( STATE_HDL st )
-/*****************************************/
-
-  {
-    STATE * s;
+{
+    STATE *s;
 
     for( s = StateList; s != NULL; s = s->next ) {
         if( s->id == st ) {
@@ -726,37 +535,32 @@ BOOL WINEXP InitStateFormID( STATE_HDL st )
     }
     State = s;
     return( State != NULL );
-  }
+}
 
 STATE_HDL WINEXP GetCurrFormID( void )
-/************************************/
-
-  {
+{
     if( State != NULL ) {
         return( State->id );
     }
     return( 0 );
-  }
+}
 
 void WINEXP HideSelectBoxes( void )
-/*********************************/
 {
-    OBJECT *    currobj;
+    OBJECT      *currobj;
     BOOL        show;
 
     currobj = GetCurrObj();
     show = FALSE;
     (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
-} /* HideSelectBoxes */
+}
 
 void WINEXP ShowSelectBoxes( void )
-/*********************************/
 {
-    OBJECT *    currobj;
+    OBJECT      *currobj;
     BOOL        show;
 
     currobj = GetCurrObj();
     show = TRUE;
     (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
-} /* ShowSelectBoxes */
-
+}

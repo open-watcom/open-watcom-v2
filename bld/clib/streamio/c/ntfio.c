@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal helpers dealing with Win32 file attributes.
 *
 ****************************************************************************/
 
@@ -39,6 +38,7 @@
 #include "fileacc.h"
 #include "openmode.h"
 #include <windows.h>
+
 
 void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr )
 {
@@ -77,8 +77,8 @@ void __GetNTShareAttr( int mode, LPDWORD share_mode )
     int share;
     int rwmode;
 
-    share = mode&OPENMODE_SHARE_MASK;
-    rwmode = mode&OPENMODE_ACCESS_MASK;
+    share  = mode & OPENMODE_SHARE_MASK;
+    rwmode = mode & OPENMODE_ACCESS_MASK;
 
     switch( share ) {
     case OPENMODE_DENY_COMPAT:

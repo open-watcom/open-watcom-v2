@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line processing for WOMP.
 *
 ****************************************************************************/
 
@@ -150,6 +149,7 @@ STATIC void header( void ) {
 banner1w( "Object Module Processor", _WOMP_VERSION_ ) "\n"
 banner2( "1990" ) "\n"
 banner3 "\n"
+banner3a "\n"
 );
 }
 
@@ -832,7 +832,7 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
         } else {
             char pbuf[ sizeof( size_t ) * 3 ];
             StrDec( pbuf, page_size );
-#ifdef M_I86
+#ifdef _M_I86
             _fheapshrink();
 #endif
             _nheapshrink();

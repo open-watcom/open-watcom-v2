@@ -1,0 +1,13 @@
+.387
+pat		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:pat, DS:DGROUP, SS:DGROUP
+    mov         ax,ax
+L$1:
+    DB	0, 0
+pat		ENDS
+text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:text, DS:DGROUP, SS:DGROUP
+    mov         ax,word ptr es:L$1
+    jmp         word ptr es:L$1
+text		ENDS
+		END

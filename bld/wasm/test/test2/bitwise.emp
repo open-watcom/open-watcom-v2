@@ -1,0 +1,5 @@
+
+FIXUPP(9c) len:0010h, chksum:b1h(b1)
+    0002h Seg   OFFSET       Frame: GI(1)     Target: SI(2)
+    0006h Seg   OFFSET       Frame: GI(1)     Target: SI(2)
+    000ah Seg   OFFSET       Frame: GI(1)     Target: SI(2)

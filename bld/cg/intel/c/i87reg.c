@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FPU stack (x87) register allocation.
 *
 ****************************************************************************/
 
@@ -39,6 +38,9 @@
 #include "typedef.h"
 #include "gen8087.h"
 #include "zoiks.h"
+#include "addrname.h"
+#include "x87.h"
+#include "makeins.h"
 
 extern  block           *HeadBlock;
 extern  proc_def        *CurrProc;
@@ -50,27 +52,33 @@ extern  conflict_node   *ConfList;
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *AllocIntConst(int);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  name            *AllocTemp(type_class_def);
 extern  bool            AssignARegister(conflict_node*,hw_reg_set);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
 extern  bool            ReDefinedBy(instruction*,name*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  bool            DoesSomething(instruction*);
 
+/* forward declarations */
+static  void            CnvOperand( instruction *ins );
+static  void            FPAlloc( void );
+static  void            NoStackAcrossCalls( void );
+static  void            StackShortLivedTemps( void );
+static  void            FSinCos( void );
+static  void            CnvResult( instruction *ins );
+static  void            FindSinCos( instruction *ins, opcode_defs next_op );
+extern  int             Count87Regs( hw_reg_set regs );
+static  void            FPConvert( void );
 
-
-extern  void    FPRegAlloc() {
+extern  void    FPRegAlloc( void ) {
 /*****************************
     Allocate registers comprising the "stack" portion of the 8087.
 */
@@ -141,7 +149,7 @@ static byte StackReq387[LAST_IFUNC-FIRST_IFUNC+1] = {
         2         /* OP_TANH */
 };
 
-extern  void    InitFPStkReq() {
+extern  void    InitFPStkReq( void ) {
 /******************************/
 
     if( _IsTargetModel( I_MATH_INLINE ) ) {
@@ -267,7 +275,7 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 }
 
 
-static  void    FPAlloc() {
+static  void    FPAlloc( void ) {
 /**************************
    Pre allocate 8087 registers to temporarys that lend themselves
    to a stack architecture.  ST(0) is reserved as the floating top
@@ -347,7 +355,7 @@ static  void    FPAlloc() {
 }
 
 
-static  void    FPConvert() {
+static  void    FPConvert( void ) {
 /****************************
     Make sure all operands of _IsFloating() instructions are a type that
     may be used in an FLD or FST instruction.
@@ -452,6 +460,8 @@ static  void    CnvOperand( instruction *ins ) {
         PrefixIns( ins, new_ins );
         InMemory( NameConflict( ins, t ) );
         break;
+    default:
+        break;
     }
 }
 
@@ -499,6 +509,8 @@ static  void    CnvResult( instruction *ins ) {
         ins->result = t;
         MoveSegRes( ins, new_ins );
         SuffixIns( ins, new_ins );
+        break;
+    default:
         break;
     }
 }
@@ -604,7 +616,7 @@ static  bool    CanStack( name *name ) {
 }
 
 
-static  void    StackShortLivedTemps() {
+static  void    StackShortLivedTemps( void ) {
 /***************************************
     Most temporaries are marked as CAN_STACK when they are back end
     generated temps which are used to hold an intermediate result from
@@ -649,7 +661,7 @@ static  void    CheckForStack( name *temp )
 }
 
 
-static  void    NoStackAcrossCalls() {
+static  void    NoStackAcrossCalls( void ) {
 /*************************************
     Since a call requires the stack of the 8087 to be empty, we can't
     hold a value in a stack register across a call instrution.  This
@@ -755,7 +767,7 @@ extern  bool    FPIsConvert( instruction *ins ) {
     return( FALSE );
 }
 
-static  void    FSinCos() {
+static  void    FSinCos( void ) {
 /*************************/
 
     block       *blk;

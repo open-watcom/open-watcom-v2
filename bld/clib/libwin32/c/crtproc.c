@@ -37,7 +37,6 @@
 #include "libwin32.h"
 #include "osver.h"
 
-
 /*
  * The Win32 CreateProcessW actually has a few other parameters, but the
  * C library doesn't really use them.  Instead of bloating the executables

@@ -1,0 +1,33 @@
+#include <windows.h>
+
+#define VMP_VERSION     1,00,00,002
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    VMP_VERSION
+PRODUCTVERSION VMP_VERSION
+FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+FILEFLAGS      0
+FILEOS         VOS_NT_WINDOWS32
+FILETYPE       VFT_DRV
+FILESUBTYPE    VFT2_DRV_DISPLAY
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"   /* US English, Unicode codepage */
+        BEGIN
+            VALUE "CompanyName",     "Open Watcom"
+            VALUE "FileDescription", "Boxvideo Video Miniport Driver"
+            VALUE "FileVersion",     "1.2"
+            VALUE "InternalName",    "boxvideo.sys"
+            VALUE "LegalCopyright",  "Copyright \251 2012 The Open Watcom Contributors"
+            VALUE "OriginalFilename","boxvideo.sys"
+            VALUE "ProductName",     "Sample Video Miniport"
+            VALUE "ProductVersion",  "1.2"
+        END
+
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04B0
+    END
+END

@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Utilities for creation of OS/2 flat (LX) executable files.
 *
 ****************************************************************************/
 
-
-/*
-   LOADFLAT : utilities for creation of OS2 FLAT (V2.X) executable files.
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -48,6 +43,9 @@
 #include "impexp.h"
 #include "ring.h"
 #include "dbgall.h"
+#include "vxd_ddb.h"
+
+#define STUB_ALIGN 16
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
 #define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof(map_entry) * (unsigned long)OSF_DEF_PAGE_SIZE)
@@ -58,14 +56,12 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
 /**************************************************************/
 /* fill a buffer with consecutive numbers */
 {
-#define BUMP_ENTRY( x, typ )  (x) = (typ *)((char *)(x)+sizeof(typ))
-
     unsigned    size;
     unsigned_32 num;
     unsigned    shift;
 
     num = PAGE_COUNT(limit);
-    if( FmtData.type & MK_OS2_LE ) {
+    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
         size = num * sizeof( le_map_entry );
         while( num > 0 ) {
             *start += 1;
@@ -73,7 +69,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             buf->le.page_num[1] = *start >> 8;
             buf->le.page_num[0] = *start >> 16;
             buf->le.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            BUMP_ENTRY( buf, le_map_entry );
+            buf = (map_entry *)((char *)buf + sizeof(le_map_entry));
             num--;
         }
     } else {
@@ -90,7 +86,7 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit,
             }
             *start += buf->lx.data_size;
             buf->lx.flags = PAGE_VALID; //NYI: have to figure out how to fill in
-            BUMP_ENTRY( buf, lx_map_entry );
+            buf = (map_entry *)((char *)buf + sizeof(lx_map_entry));
         }
     }
     return( size );
@@ -380,7 +376,7 @@ static unsigned WriteDataPages( unsigned long loc )
     for( group = Groups; group != NULL; group = group->next_group) {
         if( group->size != 0 ) {
             if( last_page != 0 ) {
-                if( FmtData.type & MK_OS2_LE ) {
+                if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
                     size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift)
@@ -396,14 +392,30 @@ static unsigned WriteDataPages( unsigned long loc )
     }
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
-    } else if( !(FmtData.type & MK_OS2_LE) ) {
+    } else if( !(FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) ) {
         PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift )
                              - last_page );
     }
     return( last_page );
 }
 
-extern void FiniOS2FlatLoadFile( void )
+void SetHeaderVxDInfo(os2_flat_header *exe_head)
+/**********************************************/
+/* setup VxD specific info in the header */
+{
+    entry_export *exp;
+    vxd_ddb      *ddb;
+
+    exp = FmtData.u.os2.exports;
+    if(( exp != NULL ) && ( exp->sym != NULL )) {
+        ddb = (vxd_ddb*)((exp->sym->p.seg)->data);
+        exe_head->r.vxd.device_ID = ddb->req_device_number;
+        exe_head->r.vxd.DDK_version = ddb->SDK_version;
+    }
+
+}
+
+void FiniOS2FlatLoadFile( void )
 /*************************************/
 /* make an OS/2 flat model executable file */
 {
@@ -415,7 +427,7 @@ extern void FiniOS2FlatLoadFile( void )
     unsigned            last_page;
 
     memset( &exe_head, 0, sizeof( exe_head ) ); /* zero all header fields */
-    stub_len = Write_Stub_File();
+    stub_len = Write_Stub_File( STUB_ALIGN );
     curr_loc  = sizeof(os2_flat_header);
     SeekLoad( stub_len + sizeof(os2_flat_header) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );
@@ -439,28 +451,31 @@ extern void FiniOS2FlatLoadFile( void )
     exe_head.impproc_off = curr_loc - 1;
     curr_loc += ImportProcTable( &count );
     exe_head.fixup_size = curr_loc - exe_head.fixpage_off;
-    curr_loc = NullAlign( 512 );    /* align to sector boundry */
+    curr_loc = NullAlign( 4 );    /* align to dword boundary */
     exe_head.page_off = curr_loc;
+    if( FmtData.type & MK_WIN_VXD ) {
+        SetHeaderVxDInfo(&exe_head);
+    }
     last_page = WriteDataPages( curr_loc );
-    if( FmtData.type & MK_OS2_LE ) {
+    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
         exe_head.l.last_page = last_page;
     } else {
         exe_head.l.page_shift = FmtData.u.os2.segment_shift;
     }
-    exe_head.nonres_off = NullAlign( 1 ); /* cheap way of finding file pos */
+    exe_head.nonres_off = PosLoad();
     exe_head.nonres_size = ResNonResNameTable( FALSE );  // FALSE = do non-res.
     if( exe_head.nonres_size == 0 ) exe_head.nonres_off = 0;
-    curr_loc = NullAlign( 1 );
-    WriteDBI();
+    curr_loc = PosLoad();
+    DBIWrite();
 /* If debug info was written, we want to mark it in the header so that
  * RC doesn't throw it away! */
     SeekEndLoad(0);
-    debug_size =  NullAlign( 1 )- curr_loc;
+    debug_size =  PosLoad() - curr_loc;
     if (debug_size) {
         exe_head.debug_off = curr_loc;
         exe_head.debug_len = debug_size;
     }
-    if( FmtData.type & MK_OS2_LE ) {
+    if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
         exe_head.signature = OSF_FLAT_SIGNATURE;
     } else {
         exe_head.signature = OSF_FLAT_LX_SIGNATURE;
@@ -473,44 +488,60 @@ extern void FiniOS2FlatLoadFile( void )
     } else {
         exe_head.cpu_type = OSF_CPU_486;
     }
-    exe_head.os_type = OSF_OS_LEVEL;
+    if( FmtData.type & MK_WIN_VXD ) {
+        exe_head.os_type = OSF_WIN386_LEVEL;
+    } else {
+        exe_head.os_type = OSF_OS_LEVEL;
+    }
     if( FmtData.minor < 10 ) FmtData.minor *= 10;
     exe_head.version = FmtData.major * 100 + FmtData.minor;
-    if( FmtData.dll ) {
-        exe_head.flags |= OSF_IS_DLL;
-        // The OS/2 loader REALLY doesn't like to have these flags set if there
-        // is no entrypoint!
-        if (exe_head.start_obj != 0) {
-            if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
-                exe_head.flags |= OSF_INIT_INSTANCE;
+    if( FmtData.type & MK_WIN_VXD ) { // VxD flags settings
+        if( FmtData.u.os2.flags & VIRT_DEVICE ) {
+            exe_head.flags |= VXD_DEVICE_DRIVER_DYNAMIC;
+        } else if( FmtData.u.os2.flags & PHYS_DEVICE ) {
+            exe_head.flags |= VXD_DEVICE_DRIVER_STATIC;
+        } else {
+            exe_head.flags |= VXD_DEVICE_DRIVER_3x;
+        }
+//        exe_head.heapsize  = FmtData.u.os2.heapsize;
+    } else { // OS/2 flags settings
+        if( FmtData.u.os2.flags & PHYS_DEVICE ) {
+            exe_head.flags |= OSF_PHYS_DEVICE;
+        } else if( FmtData.u.os2.flags & VIRT_DEVICE ) {
+            exe_head.flags |= OSF_VIRT_DEVICE;
+        } else if( FmtData.dll ) {
+            exe_head.flags |= OSF_IS_DLL;
+            // The OS/2 loader REALLY doesn't like to have these flags set if there
+            // is no entrypoint!
+            if (exe_head.start_obj != 0) {
+                if( FmtData.u.os2.flags & INIT_INSTANCE_FLAG ) {
+                    exe_head.flags |= OSF_INIT_INSTANCE;
+                }
+                if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
+                    exe_head.flags |= OSF_TERM_INSTANCE;
+                }
             }
-            if( FmtData.u.os2.flags & TERM_INSTANCE_FLAG ) {
-                exe_head.flags |= OSF_TERM_INSTANCE;
+        } else {
+            // These are only relevant for EXEs
+            exe_head.stacksize = StackSize;
+            if( FmtData.u.os2.flags & PM_NOT_COMPATIBLE ) {
+                exe_head.flags |= OSF_NOT_PM_COMPATIBLE;
+            } else if( FmtData.u.os2.flags & PM_APPLICATION ) {
+                exe_head.flags |= OSF_PM_APP;
+            } else {
+                exe_head.flags |= OSF_PM_COMPATIBLE;
             }
         }
-    } else if( FmtData.u.os2.flags & PHYS_DEVICE ) {
-        exe_head.flags |= OSF_PHYS_DEVICE;
-    } else if( FmtData.u.os2.flags & VIRT_DEVICE ) {
-        exe_head.flags |= OSF_VIRT_DEVICE;
-    } else {
-        exe_head.stacksize = StackSize;
-    }
-    if( FmtData.u.os2.flags & PM_NOT_COMPATIBLE ) {
-        exe_head.flags |= OSF_NOT_PM_COMPATIBLE;
-    } else if( FmtData.u.os2.flags & PM_APPLICATION ) {
-        exe_head.flags |= OSF_PM_APP;
-    } else {
-        exe_head.flags |= OSF_PM_COMPATIBLE;
-    }
-    if( LinkState & LINK_ERROR ) {
-        exe_head.flags |= OSF_LINK_ERROR;
-    }
-    if( FmtData.type & MK_OS2_LX
-        && (FmtData.u.os2.toggle_relocs ^ FmtData.u.os2.gen_int_relocs) ) {
-        exe_head.flags |= OSF_INTERNAL_FIXUPS_DONE;
+        if( LinkState & LINK_ERROR ) {
+            exe_head.flags |= OSF_LINK_ERROR;
+        }
+        if( FmtData.type & MK_OS2_LX
+            && (FmtData.u.os2.toggle_relocs ^ FmtData.u.os2.gen_int_relocs) ) {
+            exe_head.flags |= OSF_INTERNAL_FIXUPS_DONE;
+        }
+        exe_head.heapsize  = FmtData.u.os2.heapsize;
     }
     exe_head.page_size = OSF_DEF_PAGE_SIZE;
-    exe_head.heapsize  = FmtData.u.os2.heapsize;
     exe_head.num_preload = 0;   /* NYI: we should fill in this one correctly */
     exe_head.num_inst_preload = 0;  /*NYI: should fill in correctly */
     exe_head.num_inst_demand = 0;   /*NYI: should fill in correctly */
@@ -518,7 +549,7 @@ extern void FiniOS2FlatLoadFile( void )
     WriteLoad( &exe_head, sizeof(os2_flat_header) );
 }
 
-extern bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
+bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
 /********************************************************************/
 {
     dll_sym_info *      dll;

@@ -37,13 +37,12 @@
 
 
 _WCRTLINK unsigned _dos_write( int handle, void const _WCI86FAR *buffer, unsigned count, unsigned *bytes )
-    {
-        APIRET  rc;
+{
+    APIRET  rc;
 
-        rc = DosWrite( handle, (PVOID)buffer, count, (OS_PUINT)bytes );
-        if( rc ) {
-            __set_errno_dos( rc );
-            return( rc );
-        }
-        return( 0 );
+    rc = DosWrite( handle, (PVOID)buffer, count, (OS_PUINT)bytes );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
+    return( 0 );
+}

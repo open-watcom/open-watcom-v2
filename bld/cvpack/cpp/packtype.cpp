@@ -38,7 +38,7 @@
 #include "makeexe.hpp"
 #include "packtype.hpp"
 #include "typemap.hpp"
-#include "typearray.hpp"
+#include "typearay.hpp"
 
 extern uint NumLeafLength( const char* );
 

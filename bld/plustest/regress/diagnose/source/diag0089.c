@@ -18,3 +18,6 @@ void foo()
 class S<char>;
 class S<unsigned char> friend;
 class S<signed char> *w;
+
+template class S<unsigned char>;
+template class S<signed char>;

@@ -30,24 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 #ifdef __WIN__
-#include "winvi.h"
-#include "statwnd.h"
+    #include "statwnd.h"
 #endif
 
 /*
  * NewStatusWindow - create a new status window
  */
-int NewStatusWindow( void )
+vi_rc NewStatusWindow( void )
 {
-    int rc=ERR_NO_ERR;
+    vi_rc   rc = ERR_NO_ERR;
 
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
@@ -86,7 +80,7 @@ void StatusLine( int line, char *str, int format )
     case FMT_CENTRE:
         blanks = 0;
         if( width > len ) {
-            blanks = ( width - len ) / 2;
+            blanks = (width - len) / 2;
         }
         break;
     default:
@@ -100,7 +94,7 @@ void StatusLine( int line, char *str, int format )
     }
     j = 0;
     while( j < len && i <= width ) {
-        SetCharInWindowWithColor( StatusWindow, line, i, str[ j ], style );
+        SetCharInWindowWithColor( StatusWindow, line, i, str[j], style );
         j += 1;
         i += 1;
     }
@@ -108,6 +102,7 @@ void StatusLine( int line, char *str, int format )
         SetCharInWindowWithColor( StatusWindow, line, i, ' ', style );
         i++;
     }
+
 } /* StatusLine */
 #endif
 
@@ -116,8 +111,8 @@ void StatusLine( int line, char *str, int format )
  */
 void UpdateStatusWindow( void )
 {
-    char        *str,*ptr;
-    char        result[ 5 * MAX_STR];
+    char        *str, *ptr;
+    char        result[5 * MAX_STR];
     char        *res;
     int         digits;
     long        num;
@@ -166,19 +161,19 @@ void UpdateStatusWindow( void )
                 line++;
                 break;
             case 'L':
-                num = CurrentLineNumber;
+                num = CurrentPos.line;
                 use_num = TRUE;
                 break;
             case 'C':
-                num = VirtualCursorPosition();
+                num = VirtualColumnOnCurrentLine( CurrentPos.column );
                 use_num = TRUE;
                 break;
             case 'D':
-                #ifdef __WIN__
-                    GetDateString( res );
-                #else
-                    GetDateTimeString( res );
-                #endif
+#ifdef __WIN__
+                GetDateString( res );
+#else
+                GetDateTimeString( res );
+#endif
                 res += strlen( res );
                 break;
             case 'T':
@@ -191,38 +186,38 @@ void UpdateStatusWindow( void )
                 GetModeString( res );
                 res += strlen( res );
                 break;
-            #ifdef __WIN__
-                case 'H':
-                    GetMenuHelpString( res );
-                    res += strlen( res );
-                    break;
-                case '[':
-                    *res++ = STATUS_ESC_CHAR;
-                    *res++ = STATUS_NEXT_BLOCK;
-                    break;
-                case '|':
-                    *res++ = STATUS_ESC_CHAR;
-                    *res++ = STATUS_FORMAT_CENTER;
-                    break;
-                case '>':
-                    *res++ = STATUS_ESC_CHAR;
-                    *res++ = STATUS_FORMAT_RIGHT;
-                    break;
-                case '<':
-                    *res++ = STATUS_ESC_CHAR;
-                    *res++ = STATUS_FORMAT_LEFT;
-                    break;
-            #else
-                case '|':
-                    format = FMT_CENTRE;
-                    break;
-                case '>':
-                    format = FMT_RIGHT;
-                    break;
-                case '<':
-                    format = FMT_LEFT;
-                    break;
-            #endif
+#ifdef __WIN__
+            case 'H':
+                GetMenuHelpString( res );
+                res += strlen( res );
+                break;
+            case '[':
+                *res++ = STATUS_ESC_CHAR;
+                *res++ = STATUS_NEXT_BLOCK;
+                break;
+            case '|':
+                *res++ = STATUS_ESC_CHAR;
+                *res++ = STATUS_FORMAT_CENTER;
+                break;
+            case '>':
+                *res++ = STATUS_ESC_CHAR;
+                *res++ = STATUS_FORMAT_RIGHT;
+                break;
+            case '<':
+                *res++ = STATUS_ESC_CHAR;
+                *res++ = STATUS_FORMAT_LEFT;
+                break;
+#else
+            case '|':
+                format = FMT_CENTRE;
+                break;
+            case '>':
+                format = FMT_RIGHT;
+                break;
+            case '<':
+                format = FMT_LEFT;
+                break;
+#endif
             }
             if( use_num ) {
                 ltoa( num, numstr, 10 );

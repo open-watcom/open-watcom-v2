@@ -1,0 +1,9 @@
+IsFortranInstall=1
+AppName=Watcom FORTRAN
+Setup=f77setup\setup.exe
+Exe=f77setup\dossetup.exe
+Exe=f77setup\98setup.exe
+Exe=f77setup\setup32.exe
+Exe=f77setup\install.exe
+DefPMGroup=wf7732.grp, Watcom FORTRAN, %DstDir%\watcom.ico
+include=common.inf

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of far _heapmin() and _fheapmin().
 *
 ****************************************************************************/
 
@@ -35,14 +34,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
-#if defined(__QNX__)
-    #include <sys/seginfo.h>
-#elif defined(__OS2__)
-    #include <dos.h>
-    #define INCL_DOSMEMMGR
-    #include <wos2.h>
-    #include "tinyos2.h"
-    #if defined(M_I86)
+#include "heap.h"
+#include "heapacc.h"
+
+#if defined(__OS2__)
+    #if defined( _M_I86 )
         #if defined(__BIG_DATA__)
             #define MODIFIES ds es
         #else
@@ -50,16 +46,8 @@
         #endif
     #endif
 #elif defined(__WINDOWS__)
-    #include <dos.h>
-    #include "windows.h"
     #define MODIFIES es
-#else
-    #include <dos.h>
-    #include "tinyio.h"
 #endif
-#include "heap.h"
-#include "heapacc.h"
-
 
 #if defined(__BIG_DATA__)
 
@@ -69,13 +57,14 @@
 #endif
 
 _WCRTLINK int _heapshrink( void )
-    {
-        return( _fheapshrink() );
-    }
+{
+    return( _fheapshrink() );
+}
+
 _WCRTLINK int _heapmin( void )
-    {
-        return( _fheapshrink() );
-    }
+{
+    return( _fheapshrink() );
+}
 
 #endif
 
@@ -85,9 +74,9 @@ _WCRTLINK int _heapmin( void )
 #endif
 
 _WCRTLINK int _fheapmin( void )
-    {
-        return( _fheapshrink() );
-    }
+{
+    return( _fheapshrink() );
+}
 
 _WCRTLINK int _fheapshrink( void )
 {
@@ -120,7 +109,6 @@ _WCRTLINK int _fheapshrink( void )
                 prev_heap->nextseg = seg;
             }
             __fheapRover = __fheap;                     /* 03-dec-92 */
-            __fheap_clean = 0;
             heap_status = __FreeSeg( heap_seg );
         }
     }

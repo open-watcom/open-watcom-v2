@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of setbuf().
 *
 ****************************************************************************/
 
@@ -33,13 +32,16 @@
 #include "variety.h"
 #include <stdio.h>
 
-_WCRTLINK void setbuf( FILE *fp, char *buf )
-    {
-        int mode;
 
-        __stream_check( fp, 1 );
-        __null_check( buf, 2 );
-        mode = _IOFBF;
-        if( buf == NULL ) mode = _IONBF;
-        setvbuf( fp, buf, mode, BUFSIZ );
+_WCRTLINK void setbuf( FILE *fp, char *buf )
+{
+    int mode;
+
+    __stream_check( fp, 1 );
+    __null_check( buf, 2 );
+    mode = _IOFBF;
+    if( buf == NULL ) {
+        mode = _IONBF;
     }
+    setvbuf( fp, buf, mode, BUFSIZ );
+}

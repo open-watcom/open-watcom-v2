@@ -1,0 +1,132 @@
+/*
+ *  afxwin3.inl Inline implementation of functions declared in afxwin.h
+ *
+:include crwatcnt.sp
+ */
+
+// This file contains only those functions that require Windows 98 or later.
+// Do not add any functions that run on earlier versions or any functions that
+// require a later version to this file.  Doing so will break compatibility.
+
+AFX_INLINE BOOL CDC::AlphaBlend( int xDest, int yDest, int nDestWidth, int nDestHeight,
+                                 CDC *pSrcDC, int xSrc, int ySrc, int nSrcWidth,
+                                 int nSrcHeight, BLENDFUNCTION blend )
+/********************************************************************/
+{
+    return( ::AlphaBlend( m_hDC, xDest, yDest, nDestWidth, nDestHeight,
+                          pSrcDC->GetSafeHdc(), xSrc, ySrc, nSrcWidth, nSrcHeight,
+                          blend ) );
+}
+
+AFX_INLINE DWORD CDC::GetLayout() const
+/*************************************/
+{
+    return( ::GetLayout( m_hAttribDC ) );
+}
+
+AFX_INLINE BOOL CDC::GradientFill( TRIVERTEX *pVertices, ULONG nVertices, void *pMesh,
+                                   ULONG nMeshElements, DWORD dwMode )
+/********************************************************************/
+{
+    return( ::GradientFill( m_hDC, pVertices, nVertices, pMesh, nMeshElements,
+                            dwMode ) );
+}
+
+AFX_INLINE BOOL CDC::TransparentBlt( int xDest, int yDest, int nDestWidth,
+                                     int nDestHeight, CDC *pSrcDC, int xSrc, int ySrc,
+                                     int nSrcWidth, int nSrcHeight, UINT clrTransparent )
+/***************************************************************************************/
+{
+    return( ::TransparentBlt( m_hDC, xDest, yDest, nDestWidth, nDestHeight,
+                              pSrcDC->GetSafeHdc(), xSrc, ySrc, nSrcWidth, nSrcHeight,
+                              clrTransparent ) );
+}
+
+AFX_INLINE BOOL CMenu::GetMenuInfo( LPMENUINFO lpcmi ) const
+/**********************************************************/
+{
+    return( ::GetMenuInfo( m_hMenu, lpcmi ) );
+}
+
+AFX_INLINE BOOL CMenu::SetMenuInfo( LPCMENUINFO lpcmi )
+/*****************************************************/
+{
+    return( ::SetMenuInfo( m_hMenu, lpcmi ) );
+}
+
+AFX_INLINE BOOL CWnd::AnimateWindow( DWORD dwTime, DWORD dwFlags )
+/****************************************************************/
+{
+    return( ::AnimateWindow( m_hWnd, dwTime, dwFlags ) );
+}
+
+AFX_INLINE BOOL CWnd::FlashWindowEx( DWORD dwFlags, UINT uCount, DWORD dwTimeout )
+/********************************************************************************/
+{
+    FLASHWINFO fwi;
+    fwi.cbSize = sizeof( FLASHWINFO );
+    fwi.hwnd = m_hWnd;
+    fwi.dwFlags = dwFlags;
+    fwi.uCount = uCount;
+    fwi.dwTimeout = dwTimeout;
+    return( ::FlashWindowEx( &fwi ) );
+}
+
+AFX_INLINE CWnd *CWnd::GetAncestor( UINT gaFlags ) const
+/******************************************************/
+{
+    return( CWnd::FromHandle( ::GetAncestor( m_hWnd, gaFlags ) ) );
+}
+
+AFX_INLINE BOOL CWnd::GetMenuBarInfo( LONG idObject, LONG idItem,
+                                      PMENUBARINFO pmbi ) const
+/*************************************************************/
+{
+    return( ::GetMenuBarInfo( m_hWnd, idObject, idItem, pmbi ) );
+}
+
+AFX_INLINE BOOL CWnd::GetScrollBarInfo( LONG idObject, PSCROLLBARINFO psbi ) const
+/********************************************************************************/
+{
+    return( ::GetScrollBarInfo( m_hWnd, idObject, psbi ) );
+}
+
+AFX_INLINE BOOL CWnd::GetTitleBarInfo( PTITLEBARINFO pti ) const
+/**************************************************************/
+{
+    return( ::GetTitleBarInfo( m_hWnd, pti ) );
+}
+
+AFX_INLINE BOOL CWnd::GetWindowInfo( PWINDOWINFO pwi ) const
+/**********************************************************/
+{
+    return( ::GetWindowInfo( m_hWnd, pwi ) );
+}
+
+AFX_INLINE void CWnd::NotifyWinEvent( DWORD event, LONG idObjectType, LONG idObject )
+/***********************************************************************************/
+{
+    ::NotifyWinEvent( event, m_hWnd, idObjectType, idObject );
+}
+
+AFX_INLINE DWORD CListBox::GetListBoxInfo() const
+/***********************************************/
+{
+    return( ::GetListBoxInfo( m_hWnd ) );
+}
+
+AFX_INLINE BOOL CComboBox::GetComboBoxInfo( PCOMBOBOXINFO pcbi ) const
+/********************************************************************/
+{
+    ASSERT( pcbi != NULL );
+    pcbi->cbSize = sizeof( COMBOBOXINFO );
+    return( ::GetComboBoxInfo( m_hWnd, pcbi ) );
+}
+
+AFX_INLINE BOOL CScrollBar::GetScrollBarInfo( PSCROLLBARINFO pScrollInfo ) const
+/******************************************************************************/
+{
+    ASSERT( pScrollInfo != NULL );
+    pScrollInfo->cbSize = sizeof( SCROLLBARINFO );
+    return( (BOOL)::GetScrollBarInfo( m_hWnd, OBJID_CLIENT, pScrollInfo ) );
+}

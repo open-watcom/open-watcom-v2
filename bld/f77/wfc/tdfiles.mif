@@ -1,0 +1,47 @@
+
+# system independent compile-time files
+
+tdovl1 = &
+    boot77.obj &
+    declare.obj &
+    fmacros.obj &
+    fmtemit.obj &
+    implicit.obj &
+    inout.obj &
+    option.obj &
+    proclist.obj &
+    rstmgr.obj
+
+# system dependent compile-time files
+
+tdroot = &
+    auxlook.obj &
+    forcstat.obj &
+    gsegs.obj &
+    objutil.obj
+
+tdovl1 += &
+    fieldops.obj &
+    gflow.obj &
+    gsubstr.obj &
+    initopt.obj &
+    mainline.obj &
+    regs.obj &
+    wf77aux.obj &
+    asmalloc.obj &
+    asmmsg.obj &
+    $(asminline_objs)
+
+tdovl2 = &
+    fccall.obj &
+    fcdata.obj &
+    fcfield.obj &
+    fcgmain.obj &
+    fcrtns.obj &
+    inline.obj &
+    fcifns.obj &
+    fcstack.obj &
+    wf77info.obj &
+    fctypes.obj
+
+tdfiles = $(tdroot) $(tdovl1) $(tdovl2)

@@ -1,0 +1,12 @@
+target_cpu = mips
+
+imp_objs = &
+        mpsaddr.obj &
+        mpsctrl.obj &
+        mpstypes.obj &
+        mpsreg.obj &
+        mpscall.obj &
+        mpsdisas.obj &
+        mpstrace.obj
+
+!include ../../master.mif

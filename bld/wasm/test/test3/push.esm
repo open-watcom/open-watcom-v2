@@ -1,0 +1,245 @@
+.387
+.386p
+_d16		SEGMENT	PARA PRIVATE USE16 'DATA'
+L$1:
+    DB	0, 0
+L$2:
+    DB	0, 0
+L$3:
+    DB	0, 0
+
+_d16		ENDS
+_d32		SEGMENT	PARA PRIVATE USE32 'DATA'
+L$4:
+    DB	0, 0
+L$5:
+    DB	0, 0
+L$6:
+    DB	0, 0
+
+_d32		ENDS
+_c16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_c16, DS:DGROUP, SS:DGROUP
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        0ffffH
+    push        0ffffH
+    pushd       7fH
+    pushd       0ffH
+    pushd       7fffH
+    pushd       0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        0ffffH
+    push        0ffffH
+    pushd       7fH
+    pushd       0ffH
+    pushd       7fffH
+    pushd       0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    push        _c16
+    push        _c16
+    push        _c16
+    push        _c32
+    push        _c32
+    push        _c32
+    push        _c16
+    push        _c16
+    push        _c16
+    push        _c32
+    push        _c32
+    push        _c32
+    pushd       _c16
+    pushd       _c16
+    pushd       _c16
+    pushd       _c32
+    pushd       _c32
+    pushd       _c32
+    push        offset L$9
+    push        offset L$9
+    pushd       offset L$12
+    pushd       offset L$12
+L$7:
+    push        offset L$7
+    push        offset L$8
+L$8:
+    push        word ptr ss:[1]
+    push        word ptr ss:[1]
+    push        word ptr L$1
+    push        dword ptr L$2
+    push        word ptr L$1
+    push        word ptr L$2
+    push        dword ptr L$1
+    push        dword ptr L$2
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$2[bx]
+    push        dword ptr L$3[bx]
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$2[bx]
+    push        word ptr L$3[bx]
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        dword ptr L$2[bx]
+    push        dword ptr L$3[bx]
+    push        offset L$1
+    push        offset L$2
+    push        offset L$1
+    push        offset L$2
+    pushd       offset L$1
+    pushd       offset L$2
+    push        word ptr L$4
+    push        dword ptr L$5
+    push        word ptr L$4
+    push        word ptr L$5
+    push        dword ptr L$4
+    push        dword ptr L$5
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$5[ebx]
+    push        dword ptr L$6[ebx]
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$5[ebx]
+    push        word ptr L$6[ebx]
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        dword ptr L$5[ebx]
+    push        dword ptr L$6[ebx]
+    pushd       offset L$4
+    pushd       offset L$5
+    pushd       offset L$4
+    pushd       offset L$5
+L$9:
+    push        2043H
+    pushd       2043H
+    push        2043H
+    pushd       2043H
+_c16		ENDS
+_c32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_c32, DS:DGROUP, SS:DGROUP
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    pushw       7fH
+    pushw       0ffH
+    pushw       7fffH
+    pushw       0ffffH
+    pushw       0ffffH
+    pushw       0ffffH
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    pushw       7fH
+    pushw       0ffH
+    pushw       7fffH
+    pushw       0ffffH
+    pushw       0ffffH
+    pushw       0ffffH
+    push        7fH
+    push        0ffH
+    push        7fffH
+    push        0ffffH
+    push        7fffffffH
+    push        0ffffffffH
+    pushw       _c16
+    pushw       _c16
+    pushw       _c16
+    pushw       _c32
+    pushw       _c32
+    pushw       _c32
+    pushw       _c16
+    pushw       _c16
+    pushw       _c16
+    pushw       _c32
+    pushw       _c32
+    pushw       _c32
+    push        _c16
+    push        _c16
+    push        _c16
+    push        _c32
+    push        _c32
+    push        _c32
+    pushw       offset L$9
+    pushw       offset L$9
+    push        offset L$12
+    push        offset L$12
+L$10:
+    push        offset L$10
+    push        offset L$11
+L$11:
+    push        dword ptr ss:[1]
+    push        dword ptr ss:[1]
+    push        word ptr L$1
+    push        dword ptr L$2
+    push        word ptr L$1
+    push        word ptr L$2
+    push        dword ptr L$1
+    push        dword ptr L$2
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        word ptr L$2[bx]
+    push        dword ptr L$3[bx]
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$2[bx]
+    push        word ptr L$3[bx]
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        dword ptr L$2[bx]
+    push        dword ptr L$3[bx]
+    pushw       offset L$1
+    pushw       offset L$2
+    pushw       offset L$1
+    pushw       offset L$2
+    push        offset L$1
+    push        offset L$2
+    push        word ptr L$4
+    push        dword ptr L$5
+    push        word ptr L$4
+    push        word ptr L$5
+    push        dword ptr L$4
+    push        dword ptr L$5
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        word ptr L$5[ebx]
+    push        dword ptr L$6[ebx]
+    push        word ptr [bx]
+    push        word ptr [ebx]
+    push        word ptr L$5[ebx]
+    push        word ptr L$6[ebx]
+    push        dword ptr [bx]
+    push        dword ptr [ebx]
+    push        dword ptr L$5[ebx]
+    push        dword ptr L$6[ebx]
+    push        offset L$4
+    push        offset L$5
+    push        offset L$4
+    push        offset L$5
+L$12:
+    pushw       2043H
+    push        2043H
+    pushw       2043H
+    push        2043H
+_c32		ENDS
+		END

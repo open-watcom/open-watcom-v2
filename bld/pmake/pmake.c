@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  pmake action functions
 *
 ****************************************************************************/
-
 
 #include <ctype.h>
 #include <unistd.h>
@@ -37,14 +35,26 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef __UNIX__
+#define IS_PATH_SEP(x) ( (x) == '/')
+#include <dirent.h>
+#include <sys/stat.h>
+#else
+#define IS_PATH_SEP(x) ( ( (x) == '\\') || (x) == '/')
 #include <direct.h>
-#include <assert.h>
 #include <dos.h>
+#endif
+#include <assert.h>
 #include <setjmp.h>
 #include <stdarg.h>
+#include "watcom.h"
 #include "pmake.h"
 
+#ifdef __UNIX__
+#define DEFAULT_MAKE_CMD        "wmake"
+#else
 #define DEFAULT_MAKE_CMD        "wmake.exe"
+#endif
 #define DEFAULT_MAKE_FILE       "makefile"
 #define DEFAULT_PRIORITY        100
 #define ALL_TARGET              "all"
@@ -58,7 +68,7 @@ typedef struct dirqueue {
     struct dirqueue     *next;
     int                 depth;
     char                name[_MAX_PATH];
-} dirqueue;
+}                       dirqueue;
 
 int                     NumDirectories;
 
@@ -71,62 +81,64 @@ pmake_data              Options;
 char                    Buff[512];
 char                    *CmdLine;
 char                    saveDirBuff[_MAX_PATH];
-char                    *SaveDir = & saveDirBuff;
-
+char                    *SaveDir = saveDirBuff;
 
 static char *StringCopy( char *dst, char *src )
 {
-    while( *dst = *src ) {
+    while( ( *dst = *src ) ) {
         ++dst;
         ++src;
     }
     return( dst );
 }
 
-
 static void error( char *fmt, ... )
 {
     va_list     arg;
 
-    #define PREFIX      "PMAKE: "
+#define PREFIX      "PMAKE: "
 
     StringCopy( Buff, PREFIX );
     va_start( arg, fmt );
-    vsprintf( &Buff[ sizeof( PREFIX ) ], fmt, arg );
+    vsprintf( &Buff[sizeof( PREFIX )], fmt, arg );
     va_end( arg );
     longjmp( exit_buff, 1 );
 }
 
 static void *safe_malloc( size_t n )
 {
-    void *p = malloc( n );
+    void        *p = malloc( n );
+
     if( p == NULL ) {
         error( "out of memory when allocating %d bytes", n );
     }
     return( p );
 }
 
-
 static int _comparison( const void *pp1, const void *pp2 )
 {
     pmake_list  *p1;
     pmake_list  *p2;
 
-    p1 = *(pmake_list**)pp1;
-    p2 = *(pmake_list**)pp2;
-    if( p1->priority > p2->priority ) return( +1 );
-    if( p1->priority < p2->priority ) return( -1 );
+    p1 = *( pmake_list**) pp1;
+    p2 = *( pmake_list**) pp2;
+    if( p1->priority > p2->priority )
+        return( +1 );
+    if( p1->priority < p2->priority )
+        return( -1 );
 
     if( Options.reverse ) {
-        pmake_list *t = p1;
+        pmake_list      *t = p1;
+
         p1 = p2;
         p2 = t;
     }
-    if( p1->depth > p2->depth ) return( -1 );
-    if( p1->depth < p2->depth ) return( +1 );
+    if( p1->depth > p2->depth )
+        return( -1 );
+    if( p1->depth < p2->depth )
+        return( +1 );
     return( stricmp( p1->dir_name, p2->dir_name ) );
 }
-
 
 static void ResetMatches( void )
 {
@@ -137,29 +149,37 @@ static void ResetMatches( void )
     }
 }
 
-
 static unsigned CompareTargets( char *line )
 {
     unsigned    priority;
     target_list *curr;
 
     priority = DEFAULT_PRIORITY;
-    while( isspace( *line ) ) line++;
-    if( *line != '#' ) return( 0 );
+    while( isspace( *line ) )
+        line++;
+    if( *line != '#' )
+        return( 0 );
     line++;
-    while( isspace( *line ) ) line++;
-    if( strnicmp( line, COOKIE, sizeof( COOKIE )-1 ) != 0 ) return( 0 );
-    line += (sizeof( COOKIE )-1);
-    while( isspace( *line ) ) line++;
+    while( isspace( *line ) )
+        line++;
+    if( strnicmp( line, COOKIE, sizeof( COOKIE ) - 1 ) != 0 )
+        return( 0 );
+    line += ( sizeof( COOKIE ) - 1 );
+    while( isspace( *line ) )
+        line++;
     if( *line == '/' ) {
         ++line;
         priority = strtoul( line, &line, 0 );
-        if( priority == 0 ) return( 0 );
-        while( isspace( *line ) ) line++;
+        if( priority == 0 )
+            return( 0 );
+        while( isspace( *line ) )
+            line++;
     }
-    if( *line != ':' ) return( 0 );
+    if( *line != ':' )
+        return( 0 );
     line++;
-    while( isspace( *line ) ) line++;
+    while( isspace( *line ) )
+        line++;
     while( *line != '\0' ) {
         for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
             if( curr->used == TARGET_NOT_USED ) {
@@ -173,12 +193,13 @@ static unsigned CompareTargets( char *line )
                 }
             }
         }
-        while( !isspace( *line ) ) line++;
-        while( isspace( *line ) ) line++;
+        while( !isspace( *line ) )
+            line++;
+        while( isspace( *line ) )
+            line++;
     }
     return( priority );
 }
-
 
 static unsigned CheckTargets( char *filename )
 {
@@ -187,24 +208,26 @@ static unsigned CheckTargets( char *filename )
     unsigned    prio;
 
     mf = fopen( filename, "r" );
-    if( mf == NULL ) return( 0 );
+    if( mf == NULL )
+        return( 0 );
     ResetMatches();
     prio = 0;
     for( ;; ) {
-        if( fgets( Buff, sizeof( Buff ), mf ) == NULL ) break;
+        if( fgets( Buff, sizeof( Buff ), mf ) == NULL )
+            break;
         curr_prio = CompareTargets( Buff );
-        if( prio != 0 && curr_prio == 0 ) break;
+        if( prio != 0 && curr_prio == 0 )
+            break;
         prio = curr_prio;
     }
     fclose( mf );
     return( prio );
 }
 
-
 static void InitQueue( char *cwd )
 {
-    dirqueue *qp;
-    char *p;
+    dirqueue    *qp;
+    char        *p;
 
     qp = safe_malloc( sizeof( *qp ) );
     qp->next = NULL;
@@ -214,28 +237,31 @@ static void InitQueue( char *cwd )
     QueueTail = qp;
 }
 
-
 static void EnQueue( char *path )
 {
-    dirqueue *qp;
-    char *p;
+    dirqueue    *qp;
+    char        *p;
 
     if( QueueHead->depth < Options.levels ) {
         qp = safe_malloc( sizeof( *qp ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
         p = StringCopy( qp->name, QueueHead->name );
+#ifdef __UNIX__
+        p = StringCopy( p, "/" );
+#else
         p = StringCopy( p, "\\" );
+#endif
         StringCopy( p, path );
         QueueTail->next = qp;
         QueueTail = qp;
     }
 }
 
-
 static void DeQueue( void )
 {
-    dirqueue *qp;
+    dirqueue    *qp;
+
     qp = QueueHead;
     if( qp != NULL ) {
         QueueHead = qp->next;
@@ -243,12 +269,10 @@ static void DeQueue( void )
     }
 }
 
-
-
 static int CountDepth( char *path, int slashcount )
 {
     while( *path != '\0' ) {
-        if( *path == '\\' ) {
+        if( IS_PATH_SEP( *path ) ) {
             slashcount++;
         }
         path++;
@@ -256,15 +280,17 @@ static int CountDepth( char *path, int slashcount )
     return( slashcount );
 }
 
-
 static char *PrependDotDotSlash( char *str, int count )
 {
     while( count-- ) {
+#ifdef __UNIX__
+        str = StringCopy( str, "../" );
+#else
         str = StringCopy( str, "..\\" );
+#endif
     }
     return( str );
 }
-
 
 static char *RelativePath( char *oldpath, char *newpath )
 {
@@ -273,28 +299,32 @@ static char *RelativePath( char *oldpath, char *newpath )
     int         newdepth;
     int         olddepth;
 
-    if( oldpath == NULL  ) return( newpath );
+    if( oldpath == NULL )
+        return( newpath );
     while( newpath[ofs] == oldpath[ofs] ) {
         // newpath and oldpath are identical
-        if( newpath[ofs] == '\0' ) return( "" );
+        if( newpath[ofs] == '\0' )
+            return( "" );
         ofs++;
     }
     // oldpath is a prefix of newpath
-    if( oldpath[ofs] == '\0' && newpath[ofs] == '\\' ) {
-        return( &newpath[ofs+1] );
+    if( oldpath[ofs] == '\0' && IS_PATH_SEP( newpath[ofs] ) ) {
+        return( &newpath[ofs + 1] );
     }
     // newpath is a prefix of oldpath
-    if( newpath[0] == '\0' && oldpath[ofs] == '\\' ) {
+    if( newpath[0] == '\0' && IS_PATH_SEP( oldpath[ofs] ) ) {
         newdepth = CountDepth( newpath, 0 );
         olddepth = CountDepth( oldpath, 0 );
         tp = PrependDotDotSlash( Buff, olddepth - newdepth );
-        *(--tp) = '\0'; // remove trailing slash
+        *( --tp ) = '\0'; // remove trailing slash
         return( Buff );
     }
     /* back up to start of directory */
     for( ;; ) {
-        if( ofs == 0 ) break;
-        if( newpath[ofs-1] == '\\' ) break;
+        if( ofs == 0 )
+            break;
+        if( IS_PATH_SEP( newpath[ofs - 1] ) )
+            break;
         --ofs;
     }
     newpath += ofs;
@@ -307,7 +337,7 @@ static char *RelativePath( char *oldpath, char *newpath )
 
 #define MAX_EVAL_DEPTH  64
 
-static int TrueTarget()
+static int TrueTarget( void )
 {
     target_list *curr;
     char        eval_stk[MAX_EVAL_DEPTH];
@@ -317,15 +347,18 @@ static int TrueTarget()
     sp = -1;
     for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
         if( stricmp( curr->string, ".and" ) == 0 ) {
-            if( sp < 1 ) error( "too few elements on expr stack" );
+            if( sp < 1 )
+                error( "too few elements on expr stack" );
             --sp;
-            eval_stk[sp] &= eval_stk[sp+1];
+            eval_stk[sp] &= eval_stk[sp + 1];
         } else if( stricmp( curr->string, ".or" ) == 0 ) {
-            if( sp < 1 ) error( "too few elements on expr stack" );
+            if( sp < 1 )
+                error( "too few elements on expr stack" );
             --sp;
-            eval_stk[sp] |= eval_stk[sp+1];
+            eval_stk[sp] |= eval_stk[sp + 1];
         } else if( stricmp( curr->string, ".not" ) == 0 ) {
-            if( sp < 0 ) error( "too few elements on expr stack" );
+            if( sp < 0 )
+                error( "too few elements on expr stack" );
             eval_stk[sp] = !eval_stk[sp];
         } else {
             if( stricmp( curr->string, ALL_TARGET ) == 0 ) {
@@ -338,7 +371,7 @@ static int TrueTarget()
         }
     }
     while( sp > 0 ) {
-        eval_stk[sp-1] &= eval_stk[sp];
+        eval_stk[sp - 1] &= eval_stk[sp];
         --sp;
     }
     return( eval_stk[0] );
@@ -351,7 +384,7 @@ static void TestDirectory( dirqueue *head, char *makefile )
     unsigned    len;
 
     if( Options.verbose ) {
-        sprintf( Buff, ">>> PMAKE >>> %s\\%s", head->name, makefile );
+        sprintf( Buff, ">>> PMAKE >>> %s/%s", head->name, makefile );
         PMakeOutput( "" );
         PMakeOutput( Buff );
     }
@@ -368,19 +401,21 @@ static void TestDirectory( dirqueue *head, char *makefile )
     }
 }
 
-
-static void SetDoneFlag()
+static void SetDoneFlag( int sig_no )
 {
     DoneFlag = 1;
 }
-
 
 static void ProcessDirectoryQueue( void )
 {
     DIR                 *dirh;
     struct dirent       *dp;
     dirqueue            *head;
+    dirqueue            *last_ok;
     char                *makefile;
+#ifdef __UNIX__
+    struct stat          buf;
+#endif
 
     makefile = Options.makefile;
     if( makefile == NULL ) {
@@ -391,12 +426,19 @@ static void ProcessDirectoryQueue( void )
         dirh = opendir( "." );
         if( dirh != NULL ) {
             for( ;; ) {
-                if( DoneFlag ) return;
+                if( DoneFlag )
+                    return;
                 dp = readdir( dirh );
-                if( dp == NULL ) break;
+                if( dp == NULL )
+                    break;
+#ifdef __UNIX__
+                if( !stat( dp->d_name, &buf ) && S_ISDIR( buf.st_mode ) ) {
+#else
                 if( dp->d_attr & _A_SUBDIR ) {
+#endif
                     if( dp->d_name[0] == '.' ) {
-                        if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' ) continue;
+                        if( dp->d_name[1] == '.' || dp->d_name[1] == '\0' )
+                            continue;
                     }
                     EnQueue( dp->d_name );
                 } else if( stricmp( dp->d_name, makefile ) == 0 ) {
@@ -405,23 +447,38 @@ static void ProcessDirectoryQueue( void )
             }
             closedir( dirh );
         }
-        if( head->next != NULL ) {
-            chdir( RelativePath( head->name, head->next->name ) );
+        last_ok = NULL;
+        while( head->next != NULL ) {
+            if( last_ok == NULL ) {
+                if( chdir( RelativePath( head->name, head->next->name ) ) == 0 )
+                    break;
+                last_ok = head;
+                QueueHead = head->next;
+            } else if( chdir( RelativePath( last_ok->name, head->next->name ) ) == 0 ) {
+                free( last_ok );
+                break;
+            } else {
+                DeQueue();
+            }
+            sprintf( Buff, "PMAKE warning: can not change directory to %s", head->next->name );
+            PMakeOutput( Buff );
+            head = QueueHead;
         }
         DeQueue();
         head = QueueHead;
     }
 }
 
-
 static int GetNumber( int default_num )
 {
     int         number;
 
-    if( !isdigit( CmdLine[0] ) ) return( default_num );
+    if( !isdigit( CmdLine[0] ) )
+        return( default_num );
     number = 0;
     for( ;; ) {
-        if( !isdigit( CmdLine[0] ) ) return( number );
+        if( !isdigit( CmdLine[0] ) )
+            return( number );
         number *= 10;
         number += CmdLine[0] - '0';
         ++CmdLine;
@@ -434,12 +491,16 @@ static char *GetString( void )
     unsigned    len;
     char        *new;
 
-    while( isspace( CmdLine[0] ) ) ++CmdLine;
-    if( CmdLine[0] == '\0' ) return( NULL );
+    while( isspace( CmdLine[0] ) )
+        ++CmdLine;
+    if( CmdLine[0] == '\0' )
+        return( NULL );
     p = CmdLine;
     for( ;; ) {
-        if( isspace( CmdLine[0] ) ) break;
-        if( CmdLine[0] == '\0' ) break;
+        if( isspace( CmdLine[0] ) )
+            break;
+        if( CmdLine[0] == '\0' )
+            break;
         ++CmdLine;
     }
     len = CmdLine - p;
@@ -449,7 +510,7 @@ static char *GetString( void )
     return( new );
 }
 
-static void SortDirectories()
+static void SortDirectories( void )
 {
     pmake_list  **dir_array;
     pmake_list  *curr;
@@ -458,7 +519,7 @@ static void SortDirectories()
     char        buff[_MAX_PATH];
     int         i;
 
-    dir_array = safe_malloc( sizeof( *dir_array ) * NumDirectories );
+    dir_array = safe_malloc( sizeof( *dir_array )* NumDirectories );
     i = 0;
     for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
@@ -466,7 +527,7 @@ static void SortDirectories()
     qsort( dir_array, NumDirectories, sizeof( *dir_array ), &_comparison );
     /* rebuild list in sorted order */
     Options.dir_list = NULL;
-    for( i = NumDirectories-1; i >= 0; --i ) {
+    for( i = NumDirectories - 1; i >= 0; --i ) {
         curr = dir_array[i];
         curr->next = Options.dir_list;
         Options.dir_list = curr;
@@ -483,7 +544,7 @@ static void SortDirectories()
     }
 }
 
-static void DoIt()
+static void DoIt( void )
 {
     target_list **owner;
     target_list *curr;
@@ -492,15 +553,18 @@ static void DoIt()
     Options.command = safe_malloc( sizeof( DEFAULT_MAKE_CMD ) );
     StringCopy( Options.command, DEFAULT_MAKE_CMD );
     Options.levels = INT_MAX;
-    while( *CmdLine == ' ' ) ++CmdLine;
+    while( *CmdLine == ' ' )
+        ++CmdLine;
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
         Options.want_help = 1;
         return;
     }
     /* gather options */
     for( ;; ) {
-        while( isspace( *CmdLine ) ) ++CmdLine;
-        if( *CmdLine != '-' && *CmdLine != '/' ) break;
+        while( isspace( *CmdLine ) )
+            ++CmdLine;
+        if( *CmdLine != '-' && *CmdLine != '/' )
+            break;
         ++CmdLine;
         if( *CmdLine == '-' || *CmdLine == '/' ) {
             ++CmdLine;
@@ -521,6 +585,9 @@ static void DoIt()
                 Options.want_help = 1;
                 return;
             }
+            break;
+        case 'i':
+            Options.ignore_err = 1;
             break;
         case 'l':
             Options.levels = GetNumber( 1 );
@@ -553,8 +620,10 @@ static void DoIt()
     if( !Options.notargets ) {
         owner = &Options.targ_list;
         for( ;; ) {
-            while( isspace( *CmdLine ) ) ++CmdLine;
-            if( *CmdLine == '\0' ) break;
+            while( isspace( *CmdLine ) )
+                ++CmdLine;
+            if( *CmdLine == '\0' )
+                break;
             if( *CmdLine == '-' || *CmdLine == '/' ) {
                 if( CmdLine[1] == '-' || CmdLine[1] == '/' ) {
                     CmdLine += 2;
@@ -574,7 +643,8 @@ static void DoIt()
         Options.targ_list->string = safe_malloc( sizeof( ALL_TARGET ) );
         StringCopy( Options.targ_list->string, ALL_TARGET );
     }
-    while( isspace( *CmdLine ) ) CmdLine++;
+    while( isspace( *CmdLine ) )
+        CmdLine++;
     NumDirectories = 0;
     InitQueue( SaveDir );
     ProcessDirectoryQueue();
@@ -585,15 +655,16 @@ static void DoIt()
 
 pmake_data *PMakeBuild( const char *cmd )
 {
-    void                (*old_sig)( int );
+    void                ( *old_sig ) ( int );
     volatile int        ret;
 
     getcwd( SaveDir, _MAX_PATH );
     DoneFlag = 0;
     old_sig = signal( SIGINT, SetDoneFlag );
-    CmdLine = (char *)cmd;
+    CmdLine = ( char *) cmd;
     ret = setjmp( exit_buff );
-    if( ret == 0 ) DoIt();
+    if( ret == 0 )
+        DoIt();
     signal( SIGINT, old_sig );
     chdir( SaveDir );
     while( QueueHead != NULL ) {
@@ -603,7 +674,8 @@ pmake_data *PMakeBuild( const char *cmd )
         PMakeCleanup( &Options );
         return( NULL );
     }
-    if( DoneFlag ) Options.signaled = 1;
+    if( DoneFlag )
+        Options.signaled = 1;
     Options.cmd_args = CmdLine;
     return( &Options );
 }

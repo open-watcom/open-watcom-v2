@@ -1,0 +1,25 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: _hash.h (Definition of std::_ow::hashtable)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is an internal part of OWSTL. It provides the
+//              definition of std::_ow::hashtable. Hash tables are used to
+//              implement the unordered associative containers.
+///////////////////////////////////////////////////////////////////////////
+#ifndef __HASH_H_INCLUDED
+#define __HASH_H_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+  namespace tr1 {
+    
+
+  } // namespace tr1
+} // namespace std
+
+#endif

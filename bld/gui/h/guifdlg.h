@@ -87,14 +87,40 @@
  *
  */
 
+/* these are often part of comdlg.h - no need to
+   define twice */
+
+#ifndef OFN_OVERWRITEPROMPT
 #define OFN_OVERWRITEPROMPT             0x00000002
+#endif
+
+#ifndef OFN_HIDEREADONLY
 #define OFN_HIDEREADONLY                0x00000004
+#endif
+
+#ifndef OFN_CHANGEDIR
 #define OFN_CHANGEDIR                   0x00000008
+#endif
+
+#ifndef OFN_ALLOWMULTISELECT
 #define OFN_ALLOWMULTISELECT            0x00000200
+#endif
+
+#ifndef OFN_PATHMUSTEXIST
 #define OFN_PATHMUSTEXIST               0x00000800
+#endif
+
+#ifndef OFN_FILEMUSTEXIST
 #define OFN_FILEMUSTEXIST               0x00001000
+#endif
+
+#ifndef OFN_WANT_LAST_PATH
 #define OFN_WANT_LAST_PATH              0x40000000
+#endif
+
+#ifndef OFN_ISSAVE
 #define OFN_ISSAVE                      0x80000000
+#endif
 
 enum {
     OFN_RC_FAILED_TO_INITIALIZE,

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF specific assertion macros.
 *
 ****************************************************************************/
 
@@ -36,18 +35,19 @@
 #include <assert.h>
 
 /*
-    _Assert is used assertions that can help to comment the code.
+    _Assert is used for assertions that can help to comment the code.
 
     _Validate is used for assertions that verify arguments to
         exported functions have proper values.
 */
 #define _Validate(__e)  _Assert(__e)
-// #define NDEBUG 1  // leave asserts around for now
 #ifdef NDEBUG
 #define _Assert(__ignore)       ((void)0)
 #else
-extern  void            __assert( int, char *, char *, int );
-#define _Assert(__e)    ((__e)?(void)(0):__assert(0,#__e,__FILE__,__LINE__ ))
+/* Note: Old code used to call __assert() directly - not such a good idea
+         since that is an undocumented function.
+*/
+#define _Assert assert
 #endif
 
 #endif

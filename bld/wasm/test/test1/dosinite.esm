@@ -1,0 +1,245 @@
+.387
+.386p
+		PUBLIC	__sys_init_387_emulator
+		PUBLIC	__sys_fini_387_emulator
+		EXTRN	__8087cw:BYTE
+		EXTRN	__8087:BYTE
+		EXTRN	__X32VM:BYTE
+		EXTRN	__x386_zero_base_selector:BYTE
+		EXTRN	__Extender:BYTE
+		EXTRN	__int7:BYTE
+		EXTRN	__GDAptr:BYTE
+		EXTRN	__D16Infoseg:BYTE
+		EXTRN	__hook387:BYTE
+		EXTRN	__int7_pl3:BYTE
+		EXTRN	__unhook387:BYTE
+DGROUP		GROUP	_DATA
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+L$1:
+    DB	07H DUP(0,0,0,0,0,0,0,0)
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+L$2:
+    DB	0, 0, 0, 0
+L$3:
+    DB	0, 0
+L$4:
+    DB	0, 0
+L$5:
+    DB	0
+
+_DATA		ENDS
+_TEXT		SEGMENT	WORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+__sys_init_387_emulator:
+    push        es
+    push        ecx
+    push        ebx
+    push        edx
+    fninit      
+    push        eax
+    fnstcw      word ptr [esp]
+    pop         eax
+    cmp         ah,3
+    je          L$6
+    inc         ebp
+L$6:
+    or          ebp,ebp
+    je          L$7
+    call        near ptr hook_in_emulator
+L$7:
+    finit       
+    fldcw       word ptr DGROUP:__8087cw
+    fldz        
+    fldz        
+    fldz        
+    fldz        
+    pop         edx
+    pop         ebx
+    pop         ecx
+    pop         es
+    ret         
+hook_in_emulator:
+    mov         byte ptr DGROUP:__8087,3
+    mov         byte ptr DGROUP:L$5,1
+    smsw        word ptr DGROUP:L$4
+    and         word ptr DGROUP:L$4,6
+    sub         esp,8
+    sidt        fword ptr [esp]
+    mov         ebx,dword ptr 2[esp]
+    add         ebx,38H
+    add         esp,8
+    cmp         byte ptr DGROUP:__X32VM,0
+    je          L$8
+    call        near ptr create_IDT_entry
+    mov         es,word ptr DGROUP:__x386_zero_base_selector
+    mov         dword ptr es:[ebx],edx
+    mov         dword ptr es:4[ebx],ecx
+    call        near ptr _set_EM_MP_bits
+    cmp         byte ptr DGROUP:__Extender,0
+    jne         L$8
+    mov         ax,2507H
+    push        ds
+    mov         cx,cs
+    mov         ds,cx
+    lea         edx,__int7
+    int         21H
+    pop         ds
+    mov         al,4
+    mov         ah,0f3H
+    int         21H
+    jmp         L$11
+L$8:
+    cmp         byte ptr DGROUP:__Extender,9
+    jne         L$9
+    call        near ptr create_IDT_entry
+    mov         dword ptr [ebx],edx
+    mov         dword ptr 4[ebx],ecx
+    mov         eax,0e02H
+    mov         ebx,4
+    mov         ecx,dword ptr DGROUP:__GDAptr
+    call        dword ptr 30H[ecx]
+    jmp         L$11
+L$9:
+    cmp         byte ptr DGROUP:__Extender,1
+    jne         L$10
+    mov         dx,word ptr DGROUP:__D16Infoseg
+    sub         eax,eax
+    call        near ptr __hook387
+    jmp         L$11
+L$10:
+    sub         dx,dx
+    sub         eax,eax
+    call        near ptr __hook387
+    cmp         al,1
+    je          L$11
+    call        near ptr hook_pharlap
+L$11:
+    ret         
+create_IDT_entry:
+    lea         ecx,__int7
+    mov         dx,cs
+    shl         edx,10H
+    mov         dx,cx
+    mov         cx,cs
+    and         cl,3
+    shl         cx,0dH
+    or          ch,8eH
+    ret         
+hook_pharlap:
+    mov         cl,7
+    mov         ax,2502H
+    int         21H
+    mov         dword ptr DGROUP:L$2,ebx
+    mov         word ptr DGROUP:L$3,es
+    cmp         byte ptr DGROUP:__Extender,3
+    mov         cl,7
+    mov         ax,2504H
+    push        ds
+    push        cs
+    pop         ds
+    jl          L$12
+    lea         edx,__int7_pl3
+    int         21H
+    pop         ds
+    call        near ptr _set_EM_MP_bits
+    jmp         L$13
+L$12:
+    lea         edx,__int7
+    int         21H
+    pop         ds
+    mov         ecx,cr0
+    or          ecx,4
+    and         ecx,0fffffffdH
+    mov         cr0,ecx
+L$13:
+    ret         
+_set_EM_MP_bits:
+    xor         ebx,ebx
+    lea         edx,DGROUP:L$1
+    mov         ax,2535H
+    int         21H
+    or          dword ptr DGROUP:L$1,4
+    and         dword ptr DGROUP:L$1,0fffffffdH
+    inc         ebx
+    int         21H
+    ret         
+__sys_fini_387_emulator:
+    cmp         byte ptr DGROUP:L$5,1
+    je          L$14
+    ret         
+L$14:
+    push        ecx
+    push        ebx
+    push        edx
+    mov         al,byte ptr DGROUP:__Extender
+    cmp         byte ptr DGROUP:__X32VM,0
+    je          L$15
+    call        near ptr _reset_EM_MP_bits
+    jmp         L$19
+L$15:
+    cmp         al,9
+    jne         L$16
+    mov         eax,0e02H
+    mov         ebx,0
+    mov         ecx,dword ptr DGROUP:__GDAptr
+    call        dword ptr 30H[ecx]
+    jmp         L$19
+L$16:
+    cmp         al,0
+    jne         L$17
+    mov         ax,word ptr DGROUP:L$4
+    mov         ah,0f3H
+    int         21H
+    jmp         L$19
+L$17:
+    cmp         al,1
+    jne         L$18
+    mov         dx,word ptr DGROUP:__D16Infoseg
+    sub         eax,eax
+    call        near ptr __unhook387
+    jmp         L$19
+L$18:
+    sub         edx,edx
+    call        near ptr __unhook387
+    cmp         al,1
+    je          L$19
+    call        near ptr unhook_pharlap
+L$19:
+    mov         byte ptr DGROUP:L$5,0
+    pop         edx
+    pop         ebx
+    pop         ecx
+    ret         
+unhook_pharlap:
+    mov         cl,7
+    mov         ax,2504H
+    mov         edx,dword ptr DGROUP:L$2
+    push        ds
+    mov         ds,word ptr DGROUP:L$3
+    int         21H
+    pop         ds
+    cmp         byte ptr DGROUP:__Extender,3
+    jl          L$20
+    call        near ptr _reset_EM_MP_bits
+    jmp         L$21
+L$20:
+    mov         ecx,cr0
+    and         ecx,0fffffff9H
+    mov         dx,word ptr DGROUP:L$4
+    or          cx,dx
+    mov         cr0,ecx
+L$21:
+    ret         
+_reset_EM_MP_bits:
+    xor         ebx,ebx
+    lea         edx,DGROUP:L$1
+    mov         ax,2535H
+    int         21H
+    xor         ecx,ecx
+    mov         cx,word ptr DGROUP:L$4
+    mov         dword ptr DGROUP:L$1,ecx
+    inc         ebx
+    int         21H
+    ret         
+_TEXT		ENDS
+		END

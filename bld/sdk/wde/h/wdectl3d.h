@@ -46,12 +46,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WdeCtl3DInit            ( HINSTANCE );
-extern void     WdeCtl3DFini            ( HINSTANCE );
-extern void     WdeCtl3dColorChange     ( void );
-extern void     WdeCtl3dSubclassDlg     ( HWND, WORD );
-extern void     WdeCtl3dSubclassCtl     ( HWND );
-extern LONG     WdeCtl3dDlgFramePaint   ( HWND win, UINT msg, WPARAM wp, LPARAM lp );
-extern HBRUSH   WdeCtl3dCtlColorEx      ( UINT msg, WPARAM wp, LPARAM lp );
+extern Bool     WdeCtl3DInit( HINSTANCE );
+extern void     WdeCtl3DFini( HINSTANCE );
+extern void     WdeCtl3dColorChange( void );
+extern void     WdeCtl3dSubclassDlg( HWND, WORD );
+extern void     WdeCtl3dSubclassCtl( HWND );
+extern LONG     WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp );
+extern HBRUSH   WdeCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp );
 
 #endif

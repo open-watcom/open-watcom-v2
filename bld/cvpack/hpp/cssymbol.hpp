@@ -45,15 +45,15 @@ class SymbolStruct;
 
 typedef unsigned_16 symbol_index;
 
-static const NO_SEGMENT = 0xffff;
-static const NO_OFFSET = 0xffff;
+static const int NO_SEGMENT = 0xffff;
+static const int NO_OFFSET = 0xffff;
 
 //
 // basic size of a symbol record.
 //
-static const BASICSIZE = WORD;
-static const REF_RECORD_LENGTH = 12;
-static const NO_CHKSUM = 0;
+static const int BASICSIZE = WORD;
+static const int REF_RECORD_LENGTH = 12;
+static const int NO_CHKSUM = 0;
 
 class SymbolStruct {
 
@@ -1032,6 +1032,47 @@ class CSPub32 : public SymbolStruct {
     private :
 
         cs_pub32      _pub32;
+};
+
+class CSPub32_new : public SymbolStruct {
+
+    public :
+
+        CSPub32_new ( const s_common    common,
+                  const cs_pub32_new    pub32_new,
+                  const char*       var,
+                  const uint        varLen )
+                : SymbolStruct( common, var, varLen ),
+                  _pub32_new( pub32_new ) { }
+
+        ~CSPub32_new() { }
+
+        // don't know if it's data or code seg for public sym.
+        uint DataSegment() const {
+            return _pub32_new.segment;
+        }
+
+        uint CodeSegment() const {
+            return _pub32_new.segment;
+        }
+
+        uint MemOffset() const {
+            return _pub32_new.offset;
+        }
+
+        void FixType() {
+            _pub32_new.type = TypeMap.Lookup(_pub32_new.type);
+        }
+
+        static SymbolStruct* Construct( const char* );
+
+    protected:
+
+        virtual void DerivedPut( ExeMaker& ) const;
+
+    private :
+
+        cs_pub32_new      _pub32_new;
 };
 
 class CSLProc32 : public SymbolStruct {

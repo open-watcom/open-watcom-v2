@@ -24,19 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple program to ouput message on debug terminal.
 *
 ****************************************************************************/
 
 
 #include <windows.h>
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     if( !cmdline == '\0' ) {
         OutputDebugString( "Hi From the message guy" );
     } else {
         OutputDebugString( cmdline );
     }
+    return( 0 );
 }

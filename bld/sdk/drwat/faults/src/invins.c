@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Test program to trigger invalid instruction exception. 
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #pragma aux InvalidIns = 0x0f 0xff;
 extern void InvalidIns( void );
 
-int PASCAL WinMain( HANDLE inst, HANDLE prev, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {
     InvalidIns();
     MessageBox( NULL, "OK", "COMPLETE", MB_OK );

@@ -149,7 +149,7 @@ BOOL doExecute( char *szCommand )
 {
     HDDEDATA    hddeData;
 
-    hddeData = DdeClientTransaction( szCommand, strlen( szCommand ) + 1,
+    hddeData = DdeClientTransaction( (LPBYTE)szCommand, strlen( szCommand ) + 1,
                                      hConv, NULL, CF_TEXT, XTYP_EXECUTE,
                                      5000, NULL );
     return( hddeData != 0 );
@@ -183,7 +183,7 @@ int extern __export FAR PASCAL EDITLocateError( long lRow, int iCol,
                                     int iLen, int idResource, LPSTR szErrmsg )
 {
     char        szCommand[ 100 ];
-    int         len;
+//    int         len;
     BOOL        rc;
 
     if( !bConnected ) {
@@ -253,7 +253,7 @@ int extern __export FAR PASCAL EDITShowWindow( show_method iCmdShow )
         return( FALSE );
     }
 
-    szData = DdeAccessData( hData, &cbDataLen );
+    szData = (char *)DdeAccessData( hData, &cbDataLen );
     dwFlags = atol( szData );
     DdeUnaccessData( hData );
 
@@ -289,7 +289,7 @@ BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam )
 
 int extern __export FAR PASCAL EDITDisconnect( void )
 {
-    DWORD       idTransaction;
+//    DWORD       idTransaction;
     WNDENUMPROC lpEnumWnd;
     HWND        hwndCodewright = NULL;
 
@@ -304,7 +304,7 @@ int extern __export FAR PASCAL EDITDisconnect( void )
 
     if( bAppSpawned ) {
         // look for a window with class name szClassName
-        lpEnumWnd = (FONTENUMPROC) MakeProcInstance( (FARPROC) EnumWnd,
+        lpEnumWnd = (WNDENUMPROC) MakeProcInstance( (FARPROC) EnumWnd,
                                                      hInstance );
         EnumWindows( lpEnumWnd, (LPARAM)&hwndCodewright );
         FreeProcInstance( (FARPROC) lpEnumWnd );
@@ -321,16 +321,28 @@ int extern __export FAR PASCAL EDITDisconnect( void )
 
     return( TRUE );
 }
-
-int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
+#ifdef __NT__
+int WINAPI LibMain( HINSTANCE hInst, DWORD reason, LPVOID res )
+{
+    res = res;
+    reason = reason;
+    hInstance = hInst;
+    return( 1 );
+}
+#else
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
                         LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
     wHeapSize = wHeapSize;
     lpszCmdLine = lpszCmdLine;
-
     hInstance = hInst;
-
     return( 1 );
 }
 
+int WINAPI WEP( int q )
+{
+    q = q;
+    return( 1);
+}
+#endif

@@ -1,0 +1,23 @@
+name=Help_Helpfile
+static_text=\
+        //1"Select online help file options:"
+static_text=
+static_text=\
+        //1"Choose help file formats you wish to install."
+static_text=\
+        //1"Online books contain all compiler documentation."
+static_text=
+static_text=\
+        //1"Copy on-line help files to hard disk"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします"\
+        //0,SrcIsCD
+static_text=\
+        //1"	- copies help files to the hard disk."\
+        //2"	- ヘルプファイルをハードディスクにコピーします."\
+        //0,SrcIsCD
+static_text=\
+        //1"	- if you do not choose this option, help will be loaded from the CD-ROM"\
+        //2"	- このｵﾌﾟｼｮﾝを選択しないと、ヘルプファイルはCD-ROMからロードされます"\
+        //0,SrcIsCD
+static_text=
+include=ok.dlg

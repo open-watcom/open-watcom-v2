@@ -24,40 +24,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of rand() and srand().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stdio.h>
+#include <stdlib.h>
 #include "randnext.h"
 #include "rtdata.h"
 
-static unsigned long *initrandnext()
-    {
-        _INITRANDNEXT( RETURN_ARG( unsigned long *, NULL ) );
-        return( (unsigned long *)&_RWD_randnext );
-    }
 
-_WCRTLINK int rand(void)
-    {
-        unsigned long     *randptr;
+static unsigned long *initrandnext( void )
+{
+    _INITRANDNEXT( RETURN_ARG( unsigned long *, NULL ) );
+    return( (unsigned long *)&_RWD_randnext );
+}
 
-        randptr = initrandnext();
-        if( randptr == NULL ) return( 0 );
-        *randptr = *randptr * 1103515245 + 12345;
-        return( (int)( (*randptr >> 16) & 0x7FFF ) );
+
+_WCRTLINK int rand( void )
+/************************/
+{
+    unsigned long   *randptr;
+
+    randptr = initrandnext();
+    if( randptr == NULL ) {
+        return( 0 );
     }
+    *randptr = *randptr * 1103515245 + 12345;
+    return( (int)( (*randptr >> 16) & 0x7FFF ) );
+}
 
 
 _WCRTLINK void srand( unsigned int seed )
-    {
-        unsigned long *randptr;
+/***************************************/
+{
+    unsigned long   *randptr;
 
-        randptr = initrandnext();
-        if( randptr != NULL ) {
-            *randptr = seed;
-        }
+    randptr = initrandnext();
+    if( randptr != NULL ) {
+        *randptr = seed;
     }
+}

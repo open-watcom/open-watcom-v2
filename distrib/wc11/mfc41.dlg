@@ -1,0 +1,26 @@
+name=dMFC41
+any_check=mfc41
+static_text=\
+        //1"Select MFC 4.1 Options:"\
+        //2"MFC 4.1 オプションを選択してください:"\
+        //0
+static_text=
+detail_check=dMFC41LIB,\
+        //1"&Libraries..."\
+        //2"ライブラリ(&L)..."\
+        //0,mfc41lib,,\
+        //1"Libraries:"\
+        //2"ライブラリ:"\
+        //0
+static_text=
+detail_check=dMFC41SMP,\
+        //1"&Samples..."\
+        //2"サンプル(&S)..."\
+        //0,mfc41samp,,\
+        //1"Sample Program Source:"\
+        //2"サンプル・ソース:"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

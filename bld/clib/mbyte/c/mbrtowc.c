@@ -44,7 +44,7 @@ _WCRTLINK int _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR 
 
     /*** Check the simple cases ***/
     if( s == NULL )  return( 0 );           /* always in initial state */
-    if( n <= 0 )  return( -2 );             /* can't process nothing */
+    if( n == 0 )  return( -2 );             /* can't process nothing */
 
     /*** Check for a valid multibyte character ***/
     rc = _NEARFAR(mbtowc,_fmbtowc)( pwc, s, n );

@@ -1,0 +1,20 @@
+This sample application demonstrates how to create a dialog using the
+dialog editor and accessing the dialog from a FORTRAN 77 application.
+
+1. First, create the dialog using the dialog editor and save it in a file.
+   This example uses the name "primes" to save the dialog which causes the
+   files "primes.h", "primes.dlg" and "primes.res" to be created by the
+   dialog editor.
+
+2. In order to access the dialogs, you must convert the file "primes.h"
+   to an equivalent FORTRAN 77 include file (in this example "primes.fi").
+   The file "primes.fi" will contain the dialog id's that you must use
+   in order to reference the dialogs.
+
+3. The file "primes.for" is a sample program that uses the dialogs we
+   created.
+
+4. In order to create the executable, type "wmake /f primes.mif". The file
+   "primes.mif" is processed to create "primes.exe". Note that in order to
+   debug "primes.exe", we must place the debugging information after the
+   resource information in the executable file.

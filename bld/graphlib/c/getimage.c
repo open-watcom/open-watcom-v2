@@ -34,7 +34,7 @@
 #include "picdef.h"
 
 
-void _WCI86FAR _CGRAPH _getimage( short x1, short y1, short x2, short y2,
+_WCRTLINK void _WCI86FAR _CGRAPH _getimage( short x1, short y1, short x2, short y2,
 /*========================*/ char _WCI86HUGE * image )
 
 /* This routine places the rectangle defined by ( x1, y1 ) and ( x2, y2 ),
@@ -58,13 +58,13 @@ void _WCI86FAR _L2getimage( short x1, short y1, short x2, short y2,
    in physical coordinates, into a buffer pointed to by image.  */
 
 {
-    _L1GetPic( x1, y1, x2, y2, image );
+    _L1GetPic( x1, y1, x2, y2, (struct picture _WCI86HUGE *)image );
 }
 
 
 #if defined( _DEFAULT_WINDOWS )
 
-void _WCI86FAR _CGRAPH _freeimage( char _WCI86HUGE *image )
+_WCRTLINK void _WCI86FAR _CGRAPH _freeimage( char _WCI86HUGE *image )
 //===============================================
 
 /* This function frees the dc used by _getimage and _putimage */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dialog test for GUI lib sample program.
 *
 ****************************************************************************/
 
@@ -76,13 +75,13 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         case LISTBOX_CONTROL :
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
-            GUIFree( text );
+            GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
             num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );
-            GUIFree( new );
+            GUIMemFree( new );
             break;
         }
         break;
@@ -90,7 +89,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         text = GUIGetText( gui, id );
         GUIDisplayMessage( gui, text, text, GUI_ABORT_RETRY_IGNORE );
-        GUIFree( text );
+        GUIMemFree( text );
         break;
     case GUI_CONTROL_DCLICKED :
         GUI_GETID( param, id );
@@ -98,7 +97,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         case LISTBOX_CONTROL :
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
-            GUIFree( text );
+            GUIMemFree( text );
             break;
         }
         break;
@@ -108,10 +107,10 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case LISTBOX_CONTROL :
             text = GUIGetText( gui, LISTBOX_CONTROL );
-            GUIFree( text );
+            GUIMemFree( text );
             num  = GUIGetCurrSelect( gui, LISTBOX_CONTROL );
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
-            GUIFree( text );
+            GUIMemFree( text );
             break;
         case OKBUTTON_CONTROL :
             num = CHECKBOX_CONTROL2;
@@ -122,7 +121,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                                    GUI_ABORT_RETRY_IGNORE );
                 GUIGetNewVal( "Enter New Value", "wesley", &text );
                 if( text != NULL ) {
-                    GUIFree( text );
+                    GUIMemFree( text );
                 }
             }
             break;
@@ -197,7 +196,7 @@ void TestDialogCreate( gui_window *parent )
             if( *ep ) {
                 i = -1;
             }
-            GUIFree( text );
+            GUIMemFree( text );
         }
         if( i == -1 ) break;
     }
@@ -246,7 +245,7 @@ void ResDialogCreate( gui_window *parent )
             if( *ep ) {
                 i = -1;
             }
-            GUIFree( text );
+            GUIMemFree( text );
         }
     }
 

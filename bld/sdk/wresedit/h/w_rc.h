@@ -35,6 +35,7 @@
 /****************************************************************************/
 /* Misc. Menu & control id's                                                */
 /****************************************************************************/
-#define IDM_HELP           199
-#define IDM_NOINPUT        -1
-
+#define IDM_HELP            197
+#define IDM_HELP_SEARCH     198
+#define IDM_HELP_ON_HELP    199
+#define IDM_NOINPUT         -1

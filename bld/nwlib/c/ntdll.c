@@ -31,10 +31,13 @@
 
 
 #include <windows.h>
-char *ImageName;
-extern char *_LpDllname;
+#include "clibint.h"
+#include "main.h"
+
+const char  *ImageName;
+
 BOOL __export __stdcall LibMain( HINSTANCE hinst, DWORD dw, LPVOID *ptr )
 {
-    ImageName = _LpDllname;
+    ImageName = _LpDllName;
     return( TRUE );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage compile units and global debug information.
 *
 ****************************************************************************/
 
@@ -197,7 +196,7 @@ void DWENTRY DWFini(
     dw_client                   cli )
 {
     FiniDebugLoc( cli );
-    if( !cli->compiler_options & DW_CM_ABBREV_PRE ){
+    if( !(cli->compiler_options & DW_CM_ABBREV_PRE) ) {
         FiniDebugAbbrev( cli );
     }
     CLIFree( cli->producer_name );

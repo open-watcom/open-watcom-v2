@@ -35,9 +35,9 @@
 #include "mathcode.h"
 
 
-_WMRTLINK dcomplex _IF_C16PowI( double a, double b, intstar4 i ) {
-//===============================================================
-
+_WMRTLINK dcomplex _IF_C16PowI( double a, double b, intstar4 i )
+//==============================================================
+{
 // Complex power to an integer exponent.
 
     double      t;
@@ -78,6 +78,6 @@ _WMRTLINK dcomplex _IF_C16PowI( double a, double b, intstar4 i ) {
                 --i;
             }
         }
-        return res;
+        return( res );
     }
 }

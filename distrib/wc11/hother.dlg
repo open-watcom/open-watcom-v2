@@ -1,0 +1,16 @@
+name=Help_Other
+include=hother1.dlg
+static_text=\
+        //1"Copy on-line help files to hard disk"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします"\
+        //0,SrcIsCD
+static_text=\
+        //1"	- copies help files to the hard disk."\
+        //2"	- ヘルプファイルをハードディスクにコピーします."\
+        //0,SrcIsCD
+static_text=\
+        //1"	- if you do not choose this option, help will be loaded from the CD-ROM"\
+        //2"	- このｵﾌﾟｼｮﾝを選択しないと、ヘルプファイルはCD-ROMからロードされます"\
+        //0,SrcIsCD
+static_text=
+include=ok.dlg

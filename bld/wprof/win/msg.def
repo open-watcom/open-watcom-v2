@@ -1,4 +1,0 @@
-//#line "..\c\msg.c" 101
-extern void ErrorMsg(char *msg,... );
-//#line "..\c\msg.c" 113
-extern void fatal(char *msg,... );

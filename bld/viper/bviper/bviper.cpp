@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ide2make utility to convert ide project to makefiles
 *
 ****************************************************************************/
 
@@ -67,11 +66,11 @@ WCLASS VpeMain : public WObject
 };
 
 static char* usage[] = {
-    "Usage: ideb [*options] [tgtfile]*",
+    "Usage: ide2make [*options] [tgtfile]*",
     "",
-    "  IDEB loads an IDE project file (-p switch) and, using the associated",
+    "  ide2make loads an IDE project file (-p switch) and, using the associated",
     "  .tgt files, generates make files that can be invoked with WMAKE.",
-    "  If the .wpj file does not exists, a default project is used.  If any",
+    "  If the .wpj file does not exist, a default project is used.  If any",
     "  tgtfile(s) are specified, they are used as the targets in creating the",
     "  make files.",
     "",
@@ -80,14 +79,26 @@ static char* usage[] = {
     "  -c cfgfile       - loads cfgfile instead of ide.cfg.",
     "  -d               - generate makefiles using development switch set.",
     "  -r               - generate makefiles using release switch set.",
+    "  -h host type     - generate makefiles for selected host.",
+    "                     (default is current host)",
+    NULL
+};
+
+static char* usage_hosts[] = {
+    #undef pick
+    #define pick(enum,type,batchserv,editor,DLL,parms,descr) descr,
+    #include "hosttype.h"
     NULL
 };
 
 int main( int argc, char** argv )
 {
     if( argc <= 1 ) {
-        for( int i=0; usage[i]; i++ ) {
+        for( int i = 0; usage[i] != NULL; i++ ) {
             puts( usage[i] );
+        }
+        for( int i = 0; usage_hosts[i] != NULL; i++ ) {
+            printf( "                     %d - %s\n", i, usage_hosts[i] );
         }
     } else {
         VpeMain app( argc, argv );
@@ -105,7 +116,10 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
     WStringList parms;
     char sMode = 0;
     bool debug = FALSE;
-    for( int i=1; i<argc; i++ ) {
+    HostType host = HOST_UNDEFINED;
+    int  i;
+
+    for( i=1; i<argc; i++ ) {
         if( streq( argv[i], "-c" ) ) {
             if( i+1 < argc ) {
                 i++;
@@ -122,6 +136,11 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
             sMode = 'r';
         } else if( streq( argv[i], "-x" ) ) {
             debug = TRUE;
+        } else if( streq( argv[i], "-h" ) ) {
+            if( i+1 < argc ) {
+                i++;
+                host = (HostType)atoi( argv[i] );
+            }
         } else {
             parms.add( new WString( argv[i] ) );
         }
@@ -130,10 +149,10 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
         pfile.setExt( ".wpj" );
     }
 
-    new MConfig( cfg, debug );
+    new MConfig( cfg, debug, host );
     WString err;
     if( !_config->ok() ) {
-        printf( "IDE-B: %s\n", (const char*)_config->errMsg() );
+        printf( "ide2make: %s\n", (const char*)_config->errMsg() );
     } else {
         if( pfile.attribs() ) {
             if( !loadProject( pfile ) ) {
@@ -217,3 +236,4 @@ bool VpeMain::loadProject( const WFileName& fn )
     printf( "Unable to open project '%s'", (const char*)fn );
     return FALSE;
 }
+

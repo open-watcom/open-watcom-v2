@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ltoa() - convert long to string.
 *
 ****************************************************************************/
 
@@ -34,8 +33,12 @@
 #include "widechar.h"
 #include <stdlib.h>
 
-unsigned long __uldiv( unsigned long, unsigned _WCNEAR * );
-#if defined(__386__)
+extern const char __based(__segname("_CONST")) __Alphabet[];
+
+typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
+
+unsigned long __uldiv( unsigned long, uint_stk_ptr );
+#if defined(__386__) && defined(__SMALL_DATA__)
     #pragma aux __uldiv = \
         "xor edx,edx" \
         "div dword ptr [ebx]" \
@@ -43,7 +46,15 @@ unsigned long __uldiv( unsigned long, unsigned _WCNEAR * );
         parm caller [eax] [ebx] \
         modify exact [eax edx] \
         value [eax];
-#elif defined(M_I86) && defined(__BIG_DATA__)
+#elif defined( __386__ ) && defined(__BIG_DATA__)
+    #pragma aux __uldiv = \
+        "xor edx,edx" \
+        "div dword ptr ss:[ebx]" \
+        "mov ss:[ebx],edx" \
+        parm caller [eax] [ebx] \
+        modify exact [eax edx] \
+        value [eax];
+#elif defined( _M_I86 ) && defined(__BIG_DATA__)
     #pragma aux __uldiv = \
         "xor cx,cx" \
         "cmp dx,ss:[bx]" \
@@ -59,7 +70,7 @@ unsigned long __uldiv( unsigned long, unsigned _WCNEAR * );
         parm caller [ax dx] [bx] \
         modify exact [ax cx dx] \
         value [ax dx];
-#elif defined(M_I86) && defined(__SMALL_DATA__)
+#elif defined( _M_I86 ) && defined(__SMALL_DATA__)
     #pragma aux __uldiv = \
         "xor cx,cx" \
         "cmp dx,[bx]" \
@@ -75,58 +86,45 @@ unsigned long __uldiv( unsigned long, unsigned _WCNEAR * );
         parm caller [ax dx] [bx] \
         modify exact [ax cx dx] \
         value [ax dx];
-#elif defined(__AXP__)
-    // no pragma
-#elif defined(__PPC__)
-    // no pragma
-#else
-    #error missing __uldiv #pragma
 #endif
 
-static const char _WCI86FAR Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+_WCRTLINK CHAR_TYPE *__F_NAME(ultoa,_ultow)( unsigned long value, CHAR_TYPE *buffer, int radix )
+{
+    CHAR_TYPE   *p = buffer;
+    char        *q;
+    unsigned    rem;
+    char        buf[34];        // only holds ASCII so 'char' is OK
+
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+#if defined(_M_IX86) && defined(__WATCOMC__)
+        rem = radix;
+        value = __uldiv( value, &rem );
+#else
+        rem = value % radix;
+        value = value / radix;
+#endif
+        *q = __Alphabet[rem];
+        ++q;
+    } while( value != 0 );
+    while( (*p++ = (CHAR_TYPE)*--q) )
+        ;
+    return( buffer );
+}
 
 
-_WCRTLINK CHAR_TYPE *__F_NAME(ultoa,_ultow)( value, buffer, radix )
-        unsigned long value;
-        CHAR_TYPE *buffer;
-        unsigned radix;
-    {
-        CHAR_TYPE *p = buffer;
-        char *q;
-        unsigned rem;
-        auto char buf[34];      // only holds ASCII so 'char' is OK
+_WCRTLINK CHAR_TYPE *__F_NAME(ltoa,_ltow)( long value, CHAR_TYPE *buffer, int radix )
+{
+    CHAR_TYPE   *p = buffer;
 
-        buf[0] = '\0';
-        q = &buf[1];
-        do {
-            #if defined(__AXP__) || defined(__PPC__)
-                rem = value % radix;
-                value = value / radix;
-            #else
-                rem = radix;
-                value = __uldiv( value, (unsigned _WCNEAR *) &rem );
-            #endif
-            *q = Alphabet[ rem ];
-            ++q;
-        } while( value != 0 );
-        while( *p++ = (CHAR_TYPE)*--q );
-        return( buffer );
-    }
-
-
-_WCRTLINK CHAR_TYPE *__F_NAME(ltoa,_ltow)( value, buffer, radix )
-        long value;
-        CHAR_TYPE *buffer;
-        int radix;
-    {
-        register CHAR_TYPE *p = buffer;
-
-        if( radix == 10 ) {
-            if( value < 0 ) {
-                *p++ = '-';
-                value = - value;
-            }
+    if( radix == 10 ) {
+        if( value < 0 ) {
+            *p++ = '-';
+            value = - value;
         }
-        __F_NAME(ultoa,_ultow)( value, p, radix );
-        return( buffer );
     }
+    __F_NAME(ultoa,_ultow)( value, p, radix );
+    return( buffer );
+}

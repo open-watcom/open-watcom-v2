@@ -33,7 +33,7 @@
 #include <gdefn.h>
 
 
-short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double top,
+_WCRTLINK short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double top,
 /*==========================*/ double right, double bottom )
 
 /* This function maps the current viewport to the window given by
@@ -79,7 +79,7 @@ short _WCI86FAR _CGRAPH _setwindow( short invert, double left, double top,
 Entry( _SETWINDOW, _setwindow ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _setwindow_87( short invert, double left, double top,
+_WCRTLINK short _WCI86FAR _CGRAPH _setwindow_87( short invert, double left, double top,
 /*===========================================*/ double right, double bottom )
 
 {

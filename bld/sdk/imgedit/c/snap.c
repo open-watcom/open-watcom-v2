@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "imgedit.h"
 #ifdef __NT__
-#include "desknt.h"
+    #include "desknt.h"
 #endif
 
 static short    snapWidth;
@@ -54,23 +55,33 @@ static HWND     deskTopWindow;
 // the following static variables are use to fix the snap bug
 static HWND     snapWindow;
 
-BOOL deskTopWindowHook( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+void AbortSnap( HWND hwnd );
+
+#ifdef __NT__
+
+/*
+ * deskTopWindowHook
+ */
+static BOOL deskTopWindowHook( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    hwnd=hwnd;
-    lparam=lparam;
+    hwnd = hwnd;
+    lparam = lparam;
 
     if( msg == WM_ACTIVATE ) {
-        if( !LOWORD(wparam) ) {
+        if( !LOWORD( wparam ) ) {
             AbortSnap( snapWindow );
         }
     }
     return( FALSE );
-}
+
+} /* deskTopWindowHook */
+
+#endif
 
 /*
- * redrawPrevRegion - redraws the previously selected region
+ * redrawPrevRegion - redraw the previously selected region
  */
-void redrawPrevRegion( void )
+static void redrawPrevRegion( void )
 {
     int         prevROP2;
     HDC         hdc;
@@ -80,11 +91,11 @@ void redrawPrevRegion( void )
     hdc = GetDC( NULL );
     prevROP2 = SetROP2( hdc, R2_XORPEN );
 
-    holdbrush = SelectObject( hdc, GetStockObject(WHITE_BRUSH) );
-    holdpen = SelectObject( hdc, GetStockObject(WHITE_PEN) );
+    holdbrush = SelectObject( hdc, GetStockObject( WHITE_BRUSH ) );
+    holdpen = SelectObject( hdc, GetStockObject( WHITE_PEN ) );
     Rectangle( hdc, prevTopLeft.x, prevTopLeft.y,
                     prevTopLeft.x + snapWidth,
-                    prevTopLeft.y + snapHeight);
+                    prevTopLeft.y + snapHeight );
     SelectObject( hdc, holdpen );
     SelectObject( hdc, holdbrush );
 
@@ -94,7 +105,7 @@ void redrawPrevRegion( void )
 } /* redrawPrevRegion */
 
 /*
- * OutlineSnap - Outline the area to snap.
+ * OutlineSnap - outline the area to snap
  */
 void OutlineSnap( void )
 {
@@ -123,8 +134,7 @@ void OutlineSnap( void )
     holdbrush = SelectObject( hdc, hbrush );
     hwhitepen = GetStockObject( WHITE_PEN );
     holdpen = SelectObject( hdc, hwhitepen );
-    Rectangle(hdc, topleft.x, topleft.y, topleft.x + snapWidth,
-                                                topleft.y + snapHeight);
+    Rectangle( hdc, topleft.x, topleft.y, topleft.x + snapWidth, topleft.y + snapHeight );
     SelectObject( hdc, holdpen );
     SelectObject( hdc, holdbrush );
 
@@ -140,7 +150,7 @@ void OutlineSnap( void )
 } /* OutlineSnap */
 
 /*
- * SnapPicture - Minimizes the image editor and prepares to snap the picture
+ * SnapPicture - minimize the image editor and prepare to snap the picture
  */
 void SnapPicture( void )
 {
@@ -150,13 +160,15 @@ void SnapPicture( void )
     RECT        cliprect;
 
     node = GetCurrentNode();
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     firstTime = 2;
 
     GetCursorPos( &pt );
 
-    if ( DoesRectExist(&cliprect) ) {
+    if( DoesRectExist( &cliprect ) ) {
         snapWidth = cliprect.right - cliprect.left;
         snapHeight = cliprect.bottom - cliprect.top;
         topLeft.x = cliprect.left;
@@ -170,7 +182,7 @@ void SnapPicture( void )
         rectExists = FALSE;
     }
 
-    if (IsZoomed(HMainWindow)) {
+    if( IsZoomed( HMainWindow ) ) {
         previousState = SW_SHOWMAXIMIZED;
     } else {
         previousState = SW_SHOWNORMAL;
@@ -180,9 +192,9 @@ void SnapPicture( void )
 #ifdef __NT__
     hwnd = hwnd;
 
-    RegisterSnapClass(Instance);
-    ShowWindow(HMainWindow, SW_SHOWMINIMIZED);
-    ShowWindow(HMainWindow, SW_HIDE);
+    RegisterSnapClass( Instance );
+    ShowWindow( HMainWindow, SW_SHOWMINIMIZED );
+    ShowWindow( HMainWindow, SW_HIDE );
     InvalidateRect( HWND_DESKTOP, NULL, TRUE );
     // force the desktop window to be redrawn
     RedrawWindow( HWND_DESKTOP, NULL, NULL,
@@ -191,31 +203,30 @@ void SnapPicture( void )
     SetDeskTopHook( deskTopWindowHook );
     deskTopWindow = DisplayDesktop( HMainWindow );
 #else
-    SetCapture(node->hwnd);
-    ShowWindow(HMainWindow, SW_SHOWMINIMIZED);
-    ShowWindow(HMainWindow, SW_HIDE);
+    SetCapture( node->hwnd );
+    ShowWindow( HMainWindow, SW_SHOWMINIMIZED );
+    ShowWindow( HMainWindow, SW_HIDE );
 
     hwnd = WindowFromPoint( pt );
 #if 0
-    if (hwnd == GetDesktopWindow()) {
+    if( hwnd == GetDesktopWindow() ) {
         return;
     }
 #endif
     // this code makes sure that the window under the cursor is redrawn
     // Why? gets rid of the XOR turd
     RedrawWindow( hwnd, NULL, NULL,
-                  RDW_ERASE | RDW_UPDATENOW |
-                  RDW_ALLCHILDREN | RDW_INVALIDATE );
+                  RDW_ERASE | RDW_UPDATENOW | RDW_ALLCHILDREN | RDW_INVALIDATE );
 #endif
 
     prevToolType = SetToolType( IMGED_SNAP );
     prevCursor = SetCursor( NULL );
 
 #ifdef __NT__
-    SetCapture(node->hwnd);
+    SetCapture( node->hwnd );
 #endif
 
-    PostMessage( node->hwnd, WM_MOUSEMOVE, (WPARAM)0, MAKELPARAM(pt.x,pt.y) );
+    PostMessage( node->hwnd, WM_MOUSEMOVE, (WPARAM)0, MAKELPARAM( pt.x, pt.y ) );
     Yield();
 
 } /* SnapPicture */
@@ -237,7 +248,7 @@ void TransferImage( HWND hwnd )
     redrawPrevRegion();
 
     GetCursorPos( &topleft_desk );
-    node = SelectImage(hwnd);
+    node = SelectImage( hwnd );
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
@@ -245,26 +256,26 @@ void TransferImage( HWND hwnd )
     PatBlt( memdc, topLeft.x, topLeft.y, snapWidth, snapHeight, BLACKNESS );
 
     SelectObject( memdc, node->hxorbitmap );
-    BitBlt(memdc, topLeft.x, topLeft.y, snapWidth, snapHeight, hdc,
-                                topleft_desk.x, topleft_desk.y, SRCCOPY);
-    ReleaseDC(NULL, hdc);
+    BitBlt( memdc, topLeft.x, topLeft.y, snapWidth, snapHeight, hdc,
+            topleft_desk.x, topleft_desk.y, SRCCOPY );
+    ReleaseDC( NULL, hdc );
     SelectObject( memdc, oldbitmap );
     DeleteDC( memdc );
     ReleaseCapture();
-    ShowWindow(HMainWindow, previousState);
+    ShowWindow( HMainWindow, previousState );
 
 #ifdef __NT__
     DestroyWindow( deskTopWindow );
 #else
     InvalidateRect( node->viewhwnd, NULL, FALSE );
 #endif
-    RecordImage(hwnd);
+    RecordImage( hwnd );
 
     SetToolType( prevToolType );
-    if ( !DoKeepRect() ) {
-        SetRectExists(FALSE);
+    if( !DoKeepRect() ) {
+        SetRectExists( FALSE );
     } else {
-        SetRectExists(rectExists);
+        SetRectExists( rectExists );
     }
 #ifndef __NT__
     BlowupImage( node->hwnd, NULL );
@@ -285,9 +296,9 @@ void AbortSnap( HWND hwnd )
     SetDeskTopHook( NULL );
 #endif
 
-    node = SelectImage(hwnd);
+    node = SelectImage( hwnd );
     ReleaseCapture();
-    ShowWindow(HMainWindow, previousState);
+    ShowWindow( HMainWindow, previousState );
 
 #ifdef __NT__
     DestroyWindow( deskTopWindow );
@@ -300,4 +311,3 @@ void AbortSnap( HWND hwnd )
     PrintHintTextByID( WIE_BMPSNAPABORTED, NULL );
 
 } /* AbortSnap */
-

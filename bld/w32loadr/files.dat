@@ -1,0 +1,7 @@
+[ DEFAULT type="e" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" desc="O/S independant executable runtime" old="bin" ]
+
+#usr="w32run.exe"
+#usr="x32run.exe"
+#usr="d4grun.exe"
+#usr="tntrun.exe"
+usr="w32run.exe" dir="binnt" cond="wnthost"

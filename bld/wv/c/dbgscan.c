@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger lexical scanner.
 *
 ****************************************************************************/
 
@@ -45,6 +44,7 @@
 #include "dui.h"
 #include "i64.h"
 
+
 typedef struct rad_str {
     struct   rad_str *next;
     unsigned char    radval;
@@ -52,13 +52,12 @@ typedef struct rad_str {
 } rad_str;
 
 extern unsigned         Lookup( char *, char *, unsigned );
-extern unsigned int     ReqExpr(void);
-extern void             ConfigLine(char *);
-extern char             *Format(char *,char *,... );
-extern char             *CnvULongDec(unsigned long,char *);
+extern unsigned int     ReqExpr( void );
+extern void             ConfigLine( char * );
+extern char             *Format( char *, char *, ... );
+extern char             *CnvULongDec( unsigned long, char * );
 extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, unsigned max, char *p );
 extern void             DbgUpdate( update_list );
-
 extern char             *ReScan( char *point );
 
 extern tokens         CurrToken;
@@ -66,6 +65,7 @@ extern unsigned char  DefRadix;
 extern unsigned char  CurrRadix;
 extern char           *TxtBuff;
 
+extern void Scan( void );
 
 static char CmdLnDelimTab[] = { "<>*/(),{}!?;[]~#\0" };
 
@@ -85,11 +85,43 @@ static  token_table *ExprTokens;
         unsigned     StringLength = 0;
         unsigned     ScanCCharNum = TRUE;
 
+
+static void SetRadixSpec( char *str, unsigned len, unsigned radix, bool clear )
+{
+
+    rad_str   *pref;
+    rad_str  **owner;
+
+    owner = &RadStrs;
+    pref = RadStrs;
+    while( pref != NULL ) {
+        if( pref->radstr[0] == len
+         && memicmp( &pref->radstr[1], str, pref->radstr[0] ) == 0 ) break;
+        if( pref->radstr[0] < len ) break;
+        owner = &pref->next;
+        pref = pref->next;
+    }
+    if( pref == NULL || pref->radstr[0] != len ) {
+        if( clear ) return;
+        pref = DbgMustAlloc( sizeof( rad_str ) + len );
+        memcpy( &pref->radstr[1], str, len );
+        pref->radstr[0] = len;
+        pref->next = *owner;
+        *owner = pref;
+    } else if( clear ) {
+        *owner = pref->next;
+        _Free( pref );
+        return;
+    }
+    pref->radval = radix;
+}
+
+
 /*
  * InitScan -- initialize scanner
  */
 
-void InitScan()
+void InitScan( void )
 {
     ScanPtr = LIT( Empty );
     TokenStart = ScanPtr;
@@ -100,7 +132,7 @@ void InitScan()
 }
 
 
-void FiniScan()
+void FiniScan( void )
 {
     rad_str     *old;
 
@@ -116,7 +148,7 @@ void FiniScan()
  * ScanPos -- return the current scan position
  */
 
-char *ScanPos()
+char *ScanPos( void )
 {
     return( TokenStart );
 }
@@ -127,7 +159,7 @@ char *ScanPos()
  * ScanLen -- return the length of current token
  */
 
-unsigned ScanLen()
+unsigned ScanLen( void )
 {
     return( ScanPtr - TokenStart );
 }
@@ -233,7 +265,7 @@ mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
     return( th );
 }
 
-mad_string ScanCall()
+mad_string ScanCall( void )
 {
     char                *p;
     char                *q;
@@ -264,11 +296,74 @@ mad_string ScanCall()
  * ScanEOC -- check if at end of command
  */
 
-bool ScanEOC()
+bool ScanEOC( void )
 {
     return( CurrToken == T_CMD_SEPARATOR || CurrToken == T_LINE_SEPARATOR );
 }
 
+
+static bool FindToken( char *table, unsigned token,
+                       char **start, unsigned *len )
+{
+    unsigned chk;
+
+    while( *table != NULLCHAR ) {
+        *start = table;
+        for( ; *table != NULLCHAR; ++table )
+            ;
+        chk = table[1];
+        chk |= table[2] << 8;
+        if( chk == token ) {
+            *len = table - *start;
+            return( TRUE );
+        }
+        table += 3;
+    }
+    return( FALSE );
+}
+
+
+bool TokenName( unsigned token, char **start, unsigned *len )
+{
+    switch( token ) {
+    case T_LINE_SEPARATOR:
+        *start = LIT( End_Of_Line );
+        *len = strlen( LIT( End_Of_Line ) ) + 1;
+        return( TRUE );
+    case T_INT_NUM:
+    case T_REAL_NUM:
+        *start = LIT( Num_Name );
+        *len = strlen( LIT( Num_Name ) ) + 1;
+        return( TRUE );
+    case T_NAME:
+        *start = LIT( Sym_Name_Name );
+        *len = strlen( LIT( Sym_Name_Name ) ) + 1;
+        return( TRUE );
+    }
+    if( token < LAST_CMDLN_DELIM ) {
+        *start = &CmdLnDelimTab[ token - FIRST_CMDLN_DELIM ];
+        *len = sizeof( char );
+        return( TRUE );
+    }
+    if( ExprTokens != NULL ) {
+        if( FindToken( ExprTokens->delims, token, start, len ) ) return(TRUE);
+        if( FindToken( ExprTokens->keywords, token, start, len ) ) return(TRUE);
+    }
+    return( FALSE );
+}
+
+
+void Recog( unsigned token )
+{
+    char        *start;
+    unsigned    len;
+
+    if( token != CurrToken ) {
+        TokenName( token, &start, &len );
+        Error( ERR_LOC, LIT( ERR_WANT_TOKEN ), start, len );
+    }
+    Scan();
+}
 
 
 /*
@@ -331,7 +426,7 @@ bool ScanItem( bool blank_delim, char **start, unsigned *len )
  * ReqEOC -- require end of command
  */
 
-void ReqEOC()
+void ReqEOC( void )
 {
     if( !ScanEOC() ) Error( ERR_LOC, LIT( ERR_WANT_EOC ) );
 }
@@ -341,7 +436,7 @@ void ReqEOC()
  * ReqEOC -- require end of command
  */
 
-void FlushEOC()
+void FlushEOC( void )
 {
     while( !ScanEOC() ) Scan();
 }
@@ -367,9 +462,9 @@ static bool ScanExprDelim( char *table )
 }
 
 
-static bool ScanCmdLnDelim()
+static bool ScanCmdLnDelim( void )
 {
-    char *ptr;
+    char    *ptr;
 
     for( ptr = CmdLnDelimTab; ; ptr++ ) {
         if( *ScanPtr == *ptr ) break;
@@ -387,9 +482,9 @@ static bool ScanCmdLnDelim()
  * ScanRealNum -- try to scan a real number
  */
 
-static bool ScanRealNum()
+static bool ScanRealNum( void )
 {
-    char *curr;
+    char    *curr;
 
     curr = ScanPtr;
     while( isdigit( *curr ) ) ++curr;
@@ -457,7 +552,7 @@ static bool GetNum( unsigned base )
  * ScanNumber -- scan for a number
  */
 
-static char ScanNumber()
+static char ScanNumber( void )
 {
     rad_str *pref;
     bool    ret;
@@ -499,13 +594,13 @@ static char ScanNumber()
 
 #define NAME_ESC        '`'
 
-char *NamePos()
+char *NamePos( void )
 {
     if( *TokenStart == NAME_ESC ) return( TokenStart + 1 );
     return( TokenStart );
 }
 
-unsigned NameLen()
+unsigned NameLen( void )
 {
     char        *end;
     char        *start;
@@ -518,14 +613,17 @@ unsigned NameLen()
             --end;
         }
     }
-    return( end - start );
+    if( start >= end)
+        return( 0 );
+    else
+        return( end - start );
 }
 
 /*
  * ScanId -- scan for an identifier
  */
 
-static bool ScanId()
+static bool ScanId( void )
 {
     char        c;
 
@@ -608,13 +706,13 @@ void AddActualChar( char data )
 }
 
 
-void AddChar()
+void AddChar( void )
 {
     AddActualChar( *ScanPtr );
 }
 
 
-void AddCEscapeChar()
+void AddCEscapeChar( void )
 {
     static char escape_seq[] = "\n\t\v\b\r\f\a\\\?\'\"\0";
                                 /* the order above must match with SSL file */
@@ -623,7 +721,7 @@ void AddCEscapeChar()
 }
 
 
-static void RawScan()
+static void RawScan( void )
 {
     if( ScanPtr[-1] == NULLCHAR ) {
         /* missing end quote; scanned past eol -- error */
@@ -651,7 +749,7 @@ static void RawScan()
  * Scan -- scan a token
  */
 
-void Scan()
+void Scan( void )
 {
     if( !scan_string ) {
         while( isspace( *ScanPtr ) ) {
@@ -678,23 +776,23 @@ void Scan()
 }
 
 
-void RawScanInit()
+void RawScanInit( void )
 {
     ScanPtr = TokenStart;
     CurrToken = T_UNKNOWN;
 }
 
-char RawScanChar()
+char RawScanChar( void )
 {
     return( *ScanPtr );
 }
 
-void RawScanAdvance()
+void RawScanAdvance( void )
 {
     if( *ScanPtr != NULLCHAR ) ++ScanPtr;
 }
 
-void RawScanFini()
+void RawScanFini( void )
 {
     TokenStart = ScanPtr;
     Scan();
@@ -704,7 +802,7 @@ void RawScanFini()
  * IntNumVal -- return a integer number's value
  */
 
-unsigned_64 IntNumVal()
+unsigned_64 IntNumVal( void )
 {
     return( TokenVal.int_val );
 }
@@ -714,7 +812,7 @@ unsigned_64 IntNumVal()
  * RealNumVal -- return a real number's value
  */
 
-xreal RealNumVal()
+xreal RealNumVal( void )
 {
     return( TokenVal.real_val );
 }
@@ -748,7 +846,7 @@ unsigned SetCurrRadix( unsigned rad )
 }
 
 
-void RestoreRadix()
+void RestoreRadix( void )
 {
     SetCurrRadix( DefRadix );
 }
@@ -765,7 +863,7 @@ void DefaultRadixSet( unsigned radix )
  * RadixSet - set the default numeric radix
  */
 
-void RadixSet()
+void RadixSet( void )
 {
     unsigned   radix;
     unsigned   old;
@@ -781,37 +879,8 @@ void RadixSet()
     DefaultRadixSet( radix );
 }
 
-static void SetRadixSpec( char *str, unsigned len, unsigned radix, bool clear )
-{
 
-    rad_str   *pref;
-    rad_str  **owner;
-
-    owner = &RadStrs;
-    pref = RadStrs;
-    while( pref != NULL ) {
-        if( pref->radstr[0] == len
-         && memicmp( &pref->radstr[1], str, pref->radstr[0] ) == 0 ) break;
-        if( pref->radstr[0] < len ) break;
-        owner = &pref->next;
-        pref = pref->next;
-    }
-    if( pref == NULL || pref->radstr[0] != len ) {
-        if( clear ) return;
-        pref = DbgMustAlloc( sizeof( rad_str ) + len );
-        memcpy( &pref->radstr[1], str, len );
-        pref->radstr[0] = len;
-        pref->next = *owner;
-        *owner = pref;
-    } else if( clear ) {
-        *owner = pref->next;
-        _Free( pref );
-        return;
-    }
-    pref->radval = radix;
-}
-
-void RadixConf()
+void RadixConf( void )
 {
     *CnvULongDec( DefRadix, TxtBuff ) = NULLCHAR;
     ConfigLine( TxtBuff );
@@ -869,67 +938,4 @@ bool ForceSym2Num( char *start, unsigned len, unsigned_64 *val_ptr )
     TokenStart = old_tokenstart;
     TokenVal = old_token_val;
     return( rtn );
-}
-
-
-static bool FindToken( char *table, unsigned token,
-                       char **start, unsigned *len )
-{
-    unsigned chk;
-
-    while( *table != NULLCHAR ) {
-        *start = table;
-        for( ; *table != NULLCHAR; ++table )
-            ;
-        chk = table[1];
-        chk |= table[2] << 8;
-        if( chk == token ) {
-            *len = table - *start;
-            return( TRUE );
-        }
-        table += 3;
-    }
-    return( FALSE );
-}
-
-
-bool TokenName( unsigned token, char **start, unsigned *len )
-{
-    switch( token ) {
-    case T_LINE_SEPARATOR:
-        *start = LIT( End_Of_Line );
-        *len = strlen( LIT( End_Of_Line ) ) + 1;
-        return( TRUE );
-    case T_INT_NUM:
-    case T_REAL_NUM:
-        *start = LIT( Num_Name );
-        *len = strlen( LIT( Num_Name ) ) + 1;
-        return( TRUE );
-    case T_NAME:
-        *start = LIT( Sym_Name_Name );
-        *len = strlen( LIT( Sym_Name_Name ) ) + 1;
-        return( TRUE );
-    }
-    if( token < LAST_CMDLN_DELIM ) {
-        *start = &CmdLnDelimTab[ token - FIRST_CMDLN_DELIM ];
-        *len = sizeof( char );
-        return( TRUE );
-    }
-    if( ExprTokens != NULL ) {
-        if( FindToken( ExprTokens->delims, token, start, len ) ) return(TRUE);
-        if( FindToken( ExprTokens->keywords, token, start, len ) ) return(TRUE);
-    }
-    return( FALSE );
-}
-
-void Recog( unsigned token )
-{
-    char        *start;
-    unsigned    len;
-
-    if( token != CurrToken ) {
-        TokenName( token, &start, &len );
-        Error( ERR_LOC, LIT( ERR_WANT_TOKEN ), start, len );
-    }
-    Scan();
 }

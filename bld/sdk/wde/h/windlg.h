@@ -33,84 +33,85 @@
 #if !defined( __OS2__ )
 
 #ifdef __NT__
-#define ADJUST_ITEMLEN( a ) a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a ) a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a ) (((a)+1) & ~1)
-#define _ISFAR
-#define _FARmemcpy      memcpy
-#define MK_FP32( a )    a
-#define SLEN( a ) ((a)?strlen((a))*2+2:2)
-typedef WORD INFOTYPE;
+    #define ADJUST_ITEMLEN( a )     a = (((a) + 7) & ~7)
+    #define ADJUST_BLOCKLEN( a )    a = (((a) + 3) & ~3)
+    #define ROUND_CLASSLEN( a )     (((a) + 1) & ~1)
+    #define _ISFAR
+    #define _FARmemcpy              memcpy
+    #define MK_FP32( a )            a
+    #define SLEN( a )               ((a) ? strlen( a ) * 2 + 2 : 2)
+    typedef WORD                    INFOTYPE;
 #else
-#define SLEN( a ) ((a)?strlen((a))+1:1)
-#define ADJUST_ITEMLEN( a )
-#define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a ) a
-#define _ISFAR  __far
-#define _FARmemcpy      _fmemcpy
-/* #define MK_FP32( a ) a */
-typedef BYTE INFOTYPE;
+    #define SLEN( a )               ((a) ? strlen( a ) + 1 : 1)
+    #define ADJUST_ITEMLEN( a )
+    #define ADJUST_BLOCKLEN( a )
+    #define ROUND_CLASSLEN( a )     a
+    #define _ISFAR                  __far
+    #define _FARmemcpy              _fmemcpy
+    //#define MK_FP32( a )          a
+    typedef BYTE                    INFOTYPE;
 #endif
 
-#if defined(__NT__)
-//#if defined(__ALPHA__)
-//    #pragma pack(1);
+#if defined( __NT__ )
+//#if defined( __ALPHA__ )
+//    #pragma pack( 1 );
 //#else
-    #pragma pack(2);
+    #pragma pack( 2 );
 //#endif
-#endif
-typedef struct {
-long    dtStyle;
-#ifdef __NT__
-DWORD   dtExtendedStyle;
-WORD    dtItemCount;
 #else
-BYTE    dtItemCount;
+    #pragma pack( 1 );
 #endif
-short   dtX;
-short   dtY;
-short   dtCX;
-short   dtCY;
-//char  dtMenuName[];
-//char  dtClassName[];
-//char  dtCaptionText[];
+
+typedef struct {
+    long    dtStyle;
+#ifdef __NT__
+    DWORD   dtExtendedStyle;
+    WORD    dtItemCount;
+#else
+    BYTE    dtItemCount;
+#endif
+    short   dtX;
+    short   dtY;
+    short   dtCX;
+    short   dtCY;
+    //char  dtMenuName[];
+    //char  dtClassName[];
+    //char  dtCaptionText[];
 } _DLGTEMPLATE;
 
 typedef struct {
-short   PointSize;
-//char  szTypeFace[];
+    short   PointSize;
+    //char  szTypeFace[];
 } FONTINFO;
 
 typedef struct {
 #ifdef __NT__
-long    dtilStyle;
-DWORD   dtExtendedStyle;
+    long    dtilStyle;
+    DWORD   dtExtendedStyle;
 #endif
-short   dtilX;
-short   dtilY;
-short   dtilCX;
-short   dtilCY;
-short   dtilID;
+    short   dtilX;
+    short   dtilY;
+    short   dtilCX;
+    short   dtilCY;
+    short   dtilID;
 #ifndef __NT__
-long    dtilStyle;
+    long    dtilStyle;
 #endif
 
-//char  dtilClass[];
-//char  dtilText[];
-//BYTE  dtilInfo;
-//BYTE  dtilData;
+    //char  dtilClass[];
+    //char  dtilText[];
+    //BYTE  dtilInfo;
+    //BYTE  dtilData;
 } _DLGITEMTEMPLATE;
-#if defined(__NT__)
-#pragma pack(1);
+#if defined( __NT__ )
+    #pragma pack( 1 );
+#else
+    #pragma pack();
 #endif
 
-extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
-                       int dtcx, int dtcy, char *menuname, char *classname,
-                       char *captiontext, int pointsize, char *typeface );
-extern void DoneAddingControls( GLOBALHANDLE data );
-extern GLOBALHANDLE AddControl ( GLOBALHANDLE data, int dtilx, int dtily,
-                   int dtilcx, int dtilcy, int id, long style, char *class,
-                   char *text, BYTE infolen, char *infodata );
-int DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
+extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, int pointsize, char *typeface );
+extern void         DoneAddingControls( GLOBALHANDLE data );
+extern GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, int id, long style, char *class, char *text, BYTE infolen, char *infodata );
+extern int          DynamicDialogBox( LPVOID fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif

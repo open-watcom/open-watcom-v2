@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE main module classes and data.
 *
 ****************************************************************************/
 
@@ -46,8 +45,8 @@
 #include "vtoolitm.hpp"
 #include "whotspot.hpp"
 #include "veditdll.hpp"
-#include "vwmclien.hpp"
 #include "vrcscli.hpp"
+#include "inifile.hpp"  //added lwh
 
 WCLASS WServer;
 WCLASS WClient;
@@ -60,6 +59,8 @@ WCLASS WSystemHelp;
 
 typedef struct mPop MenuPop;
 typedef struct mData MenuData;
+
+#define MAXOLDPROJECTS 8
 
 WCLASS VpeMain : public WMdiWindow, public WView
 {
@@ -84,22 +85,21 @@ WCLASS VpeMain : public WMdiWindow, public WView
         WPopupMenu* logPopup() { return _logPopup; }
         MProject* project() { return _project; }
         SayReturn say( SayStyle style, SayCode code, const char* text );
-        void            quickRefresh();
+        void quickRefresh();
         void setStatus( const char* msg );
         bool confirm( const char* prompt, const char* msg );
         WHotSpots& hotSpotList();
         bool createDirectory( const WFileName& f );
         void deleteMsglog();
         bool attachTgtFile( WFileName& fn );
-        WString* DdeCallback( const char* c );
         bool appActivate( bool activated );
         virtual bool contextHelp( bool );
     private:
         void cForPBProject( WFileName &pj, bool nt );
-        void remoteFileOp( const char *cmd );
         void readIdeInit();
         void buildMenuBar();
         bool addComponent( WMenuItem* =NULL );
+        void vAddComponent( WMenuItem* =NULL );
         void removeComponent( WMenuItem* =NULL );
         void renameComponent( WMenuItem* =NULL );
         void setupComponent( WMenuItem* =NULL );
@@ -110,42 +110,43 @@ WCLASS VpeMain : public WMdiWindow, public WView
         void deleteStatusBar();
         void statusBar( WMenuItem* =NULL );
         void setEditor( WMenuItem* =NULL );
-        void    mCheckin( WMenuItem *);
-        void    mCheckout( WMenuItem *);
-        void    mRcsShell( WMenuItem *);
-        void    setRcsScheme( int );
-        void    setMksRcs( WMenuItem *);
-        void    setMksSi( WMenuItem *);
-        void    setObjectCycle( WMenuItem *);
-        void    setPvcs( WMenuItem *);
-        void    setOtherRcs( WMenuItem *);
-        void    setNoRcs( WMenuItem *);
-        void    mDummy( WMenuItem* ) {}
-        void    mHint( WMenuItem * item, const char* hint );
-        void    mAddItem( WMenuItem * item );
-        bool    kAddItem( WKeyCode );
-        void    mRemoveItem( WMenuItem* item );
-        bool    kRemoveItem( WKeyCode );
-        void    mRenameItem( WMenuItem* item );
-        void    mSetupItem( WMenuItem* item );
-        void    mSetupItem2( WMenuItem* item );
+        void mCheckin( WMenuItem *);
+        void mCheckout( WMenuItem *);
+        void mRcsShell( WMenuItem *);
+        void setRcsScheme( int );
+        void setMksRcs( WMenuItem *);
+        void setMksSi( WMenuItem *);
+        void setObjectCycle( WMenuItem *);
+        void setPerforce( WMenuItem *);
+        void setPvcs( WMenuItem *);
+        void setOtherRcs( WMenuItem *);
+        void setNoRcs( WMenuItem *);
+        void mDummy( WMenuItem* ) {}
+        void mHint( WMenuItem * item, const char* hint );
+        void mAddItem( WMenuItem * item );
+        bool kAddItem( WKeyCode );
+        void mRemoveItem( WMenuItem* item );
+        bool kRemoveItem( WKeyCode );
+        void mRenameItem( WMenuItem* item );
+        void mSetupItem( WMenuItem* item );
+        void mSetupItem2( WMenuItem* item );
         void showItemCommand( WMenuItem* );
-        void    mTouchItem( WMenuItem* item );
-        void    mIncludedItems( WMenuItem* item );
-        void    mActionItem( WMenuItem* item );
-        void    mActionItemSetup( WMenuItem* item );
-        void    mActionComponent( WMenuItem* item );
-        void    mActionComponentSetup( WMenuItem* item );
-        void    mAutodepend( WMenuItem* );
-        void    mAutotrack( WMenuItem* );
-        void    mDebugMode( WMenuItem* );
-        void    mRefresh( WMenuItem* item );
-        void kNewProject( WKeyCode );
+        void mTouchItem( WMenuItem* item );
+        void mIncludedItems( WMenuItem* item );
+        void mActionItem( WMenuItem* item );
+        void mActionItemSetup( WMenuItem* item );
+        void mActionComponent( WMenuItem* item );
+        void mActionComponentSetup( WMenuItem* item );
+        void mAutodepend( WMenuItem* );
+        void mAutotrack( WMenuItem* );
+        void mDebugMode( WMenuItem* );
+        void mRefresh( WMenuItem* item );
+        bool kNewProject( WKeyCode );
         void newProject( WMenuItem* );
         bool loadProject( const WFileName& f );
         WStyle vCompStyle();
         bool unloadProject( const WFileName& f, bool try_checkout =1 );
-        void kOpenProject( WKeyCode );
+        bool kOpenProject( WKeyCode );
         void openProject( WMenuItem* );
         void openOldProject( WMenuItem* );
         void closeProject( WMenuItem* );
@@ -213,28 +214,19 @@ WCLASS VpeMain : public WMdiWindow, public WView
         // editor stuff
         VEditDLL        _editorDll;
         WFileName       _editor;                // editor for the
-        bool            _editorIsDll;           // current plateform
+        bool            _editorIsDll;           // current platform
         WString         _editorParms;           // parms to non-dll editor
-        #if 0
-        WFileName       _winEditor;
-        bool            _winEditorIsDll;
-        WFileName       _ntEditor;
-        bool            _ntEditorIsDll;
-        WFileName       _os2Editor;
-        bool            _os2EditorIsDll;
-        #endif
 
         const char* toolName( char tag );
 //      WServer*        _server;
-        WString*        serverNotify( const char* msg );
-        VWinMakerClient _winMakerClient;
+        WString* serverNotify( const char* msg );
         bool            _refuseFileLists;
         VRcsClient      _rcsClient;
         WClient*        _editorClient;
-        void            editorNotify( const char* msg );
+        void editorNotify( const char* msg );
         WClient*        _browseClient;
-        bool    running();
-        void            browseNotify( const char* msg );
+        bool running();
+        void browseNotify( const char* msg );
         bool executeOne( const WString& cmd );
         bool execute( const WString& cmd );
         void executeEditor( const WString& cmd );
@@ -267,9 +259,8 @@ WCLASS VpeMain : public WMdiWindow, public WView
         WPopupMenu* makeMenu( MenuPop* popup, VToolBar* tools );
         bool checkProject();
 
-        WFileName       _initFile;
+        IniFile         _ini;
         WVList          _oldProjects;
-        WServer         _ddeServer;
         bool            _autoRefresh;
         void addOldProject( const WFileName& );
         bool okToReplace( WFileName& fn );

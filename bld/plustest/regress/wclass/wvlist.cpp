@@ -37,7 +37,7 @@ WObject* WEXPORT WVList::find( WObject* obj )
 WObject* WEXPORT WVList::add( WObject* obj )
 {
 	ifnil( _set ) {
-		static _countInit = 10;
+		static int _countInit = 10;
 		ifptr( _set = new WObject*[ _countInit ] ) {
 			_count = _countInit;
 			_free = 0;
@@ -49,7 +49,7 @@ WObject* WEXPORT WVList::add( WObject* obj )
 			_free += 1;
 			return obj;
 		} else {
-			static _countIncr = 5;
+			static int _countIncr = 5;
 			WObject** nset = new WObject*[ _count + _countIncr ];
 			ifptr( nset ) {
 				for( int i=0; i<_count; i++ ) {

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wmsg.h"
 #include "ldstr.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 
 /* routine to create a message box */
 void WDisplayMsg( const char *msg )
@@ -45,10 +45,10 @@ void WDisplayMsg( const char *msg )
 
     if( !MessageBox( (HWND) NULL, msg, title,
                      MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WFreeRCString( title );
     }
 }
@@ -81,11 +81,10 @@ void WDisplayErrorMsg( DWORD msg )
 
     if( !RCMessageBox( (HWND)NULL , msg, title,
                        MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WFreeRCString( title );
     }
 }
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Configuration of variables display.
 *
 ****************************************************************************/
 
@@ -42,14 +41,15 @@ extern char             *TxtBuff;
 
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
-extern int              TabIntervalGet();
-extern void             TabIntervalSet(int);
+extern int              TabIntervalGet( void );
+extern void             TabIntervalSet( int );
 extern void             AsmChangeOptions( void );
 extern void             VarChangeOptions( void );
 extern void             GlobChangeOptions( void );
 extern void             ModChangeOptions( void );
 extern void             FuncChangeOptions( void );
 extern unsigned         NewCurrRadix( unsigned rad );
+
 
 static void GetDlgStatus( gui_window *gui )
 {
@@ -138,7 +138,7 @@ OVL_EXTERN bool WndSetEvent( gui_window * gui, gui_event gui_ev, void * param )
 }
 
 
-extern  bool    DlgWndSet()
+extern  bool    DlgWndSet( void )
 {
     dlg_window_set      wndset;
 

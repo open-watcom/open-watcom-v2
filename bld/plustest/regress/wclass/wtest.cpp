@@ -23,13 +23,11 @@
 
 #include "wwinmain.hpp"
 
-extern "C" {
-	#include "stdio.h"
-	#include "stdlib.h"
-	#include "time.h"
-}
+#include "stdio.h"
+#include "stdlib.h"
+#include "time.h"
 
-UINT _A_wmain( LPSTR cmd, HANDLE inst )
+UINT _A_wmain( LPSTR cmd, HINSTANCE inst )
 {
 	if( WMdiWindow::registerClass() ) {
 		AppMain app( cmd, inst );
@@ -38,7 +36,7 @@ UINT _A_wmain( LPSTR cmd, HANDLE inst )
 	return 0;
 }
 
-WEXPORT AppMain::AppMain( LPSTR /*cmd*/, HANDLE inst )
+WEXPORT AppMain::AppMain( LPSTR /*cmd*/, HINSTANCE inst )
 	: WMdiWindow( "WClass Demo" )
 {
 	WMenu* menu = new WMenu();
@@ -205,7 +203,7 @@ bool WEXPORT AppChild::paint()
 	return TRUE;
 }
 
-WEXPORT AppClient::AppClient( AppMain* parent, char* title, HANDLE inst )
+WEXPORT AppClient::AppClient( AppMain* parent, char* title, HINSTANCE inst )
 	: WMdiChild( parent, title )
 	, _inst( inst )
 	, _pop( NIL )
@@ -314,7 +312,7 @@ void AppClient::clientNotify( char* msg )
 	e1->setText( msg );
 }
 
-WEXPORT AppServer::AppServer( AppMain* parent, char* title, HANDLE inst )
+WEXPORT AppServer::AppServer( AppMain* parent, char* title, HINSTANCE inst )
 	: WMdiChild( parent, title )
 	, _inst( inst )
 	, _pop( NIL )

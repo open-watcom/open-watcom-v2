@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Modify program memory or I/O port.
 *
 ****************************************************************************/
 
@@ -44,24 +43,24 @@
 
 
 extern void             OptMemAddr( memory_expr, address *);
-extern bool             ScanEOC(void);
-extern char             *ReScan(char *);
-extern void             ReqEOC(void);
-extern void             Scan(void);
-extern unsigned int     ScanCmd(char *);
+extern bool             ScanEOC( void );
+extern char             *ReScan( char * );
+extern void             ReqEOC( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
 extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
-extern void             PopEntry(void);
-extern void             DbgUpdate(update_list );
-extern void             NormalExpr(void);
-extern void             ConvertTo(stack_entry *,type_kind,type_modifier,unsigned);
-extern unsigned         ReqExpr();
+extern void             PopEntry( void );
+extern void             DbgUpdate( update_list );
+extern void             NormalExpr( void );
+extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
+extern unsigned         ReqExpr( void );
 extern void             SetDataDot( address addr );
-extern address          GetDataDot();
-extern char             *GetCmdName(int);
-extern void             FlushEOC();
+extern address          GetDataDot( void );
+extern char             *GetCmdName( int );
+extern void             FlushEOC( void );
 extern void             RecordCommand( char *startpos, int cmd );
 extern bool             AdvMachState( int );
-extern char             *ScanPos();
+extern char             *ScanPos( void );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 extern void             ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info * );
 
@@ -114,7 +113,7 @@ static void MemMod( mad_type_handle th, mad_type_kind mas )
  * ProcModify -- process modify command
  */
 
-void ProcModify()
+void ProcModify( void )
 {
     char                *startpos;
     mad_type_handle     th;

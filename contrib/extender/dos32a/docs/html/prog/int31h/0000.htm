@@ -1,0 +1,70 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.01 - DPMI function 0000h
+- Allocate Descriptors</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Allocates one or more
+descriptors in the client's descriptor table. The descriptor(s) allocated
+must be initialized by the application with other function calls.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0000h<br>
+<b>CX</b> = number of descriptors to allocate</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>AX</b> = base selector</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8011h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - descriptor unavailable</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) If more than one descriptor
+  was requested, the function returns a base selector referencing the first
+  of a contiguous array of descriptors. The selector values for subsequent
+  descriptors in the array can be calculated by adding the value returned
+  by DPMI function 0003h.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) The allocated descriptor(s)
+  will be set to &quot;data&quot; with the present bit set and a base and
+  limit of zero. The privilege level of the descriptor(s) will match the
+  application's code segment privilege level. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line processing for Alpha AXP targets.
 *
 ****************************************************************************/
 
-
-#include <stdlib.h>
-#include <string.h>
 
 #include "plusplus.h"
 #include "errdefns.h"
@@ -45,7 +41,7 @@
  #include "ostype.h"
 #endif
 
-#include "cmdlnprs.gh"
+#include "cmdlnpr1.gh"
 #include "cmdlnsys.h"
 
 #define DEF_SWITCHES_ALL        ( MEMORY_LOW_FAILS )
@@ -329,6 +325,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zm ) {
         CompFlags.zm_switch_used = 1;
     }
+
     // frees 'target_name' memory
     setFinalTargetSystem( data, target_name );
     miscAnalysis( data );

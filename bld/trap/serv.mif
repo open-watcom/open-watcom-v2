@@ -2,88 +2,144 @@
 # Master makefile for creating remote servers
 #
 
-sys_x86_os2     = sys os2 op st=4k,modname=$^&, desc $^&
+description = 'Open Watcom Debug Server'
+
+sys_x86_os2     = sys os2 op st=4k,modname=$^&, desc $(description)
+sys_x86_os2v2   = sys os2v2 op modname=$^&, desc $(description)
 sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(srv).use
-sys_x86_win     = sys windows op st=20k, modname=$^&, desc $^&
+sys_x86_linux   = sys linux
+sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
 sys_x86_dos     = sys dos op st=4k
-sys_x86_rsi     = stub
-sys_x86_ads     = sys ads op st=8k lib $(adsdir)\wcads.lib
+sys_x86_rsi     = sys dos16m
+sys_x86_cw      = sys causeway op stub=$(cw_dir)/cw32/dosi86/cwdstub.exe
+sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
+sys_x86_rdos    = sys rdos libpath $(clib_dir)/library/rdos.386/mf_r
 !ifndef sys_x86_pls
 sys_x86_pls     = sys pharlap op st=8k
 !endif
 !ifeq srv jvm
-sys_x86_nt      = sys nt dll op modname=$^&, desc $^&
+sys_x86_nt      = sys nt dll op modname=$^&, desc $(description)
 !else
 !ifeq srv msj
-sys_x86_nt      = sys nt dll op modname=$^&, desc $^&
+sys_x86_nt      = sys nt dll op modname=$^&, desc $(description)
 !else
 !ifdef test
-sys_x86_nt      = sys nt op st=20k, modname=$^&, desc $^&
+sys_x86_nt      = sys nt op st=20k, modname=$^&, desc $(description)
 !else
-sys_x86_nt      = sys nt_win op st=20k, modname=$^&, desc $^&
+!ifeq gui 1
+sys_x86_nt      = sys nt_win op st=20k, modname=$^&, desc $(description)
+!else
+sys_x86_nt      = sys nt op modname=$^&, desc $(description)
 !endif
 !endif
 !endif
-sys_x86_nlm     = form novell nlm 'WATCOM Debug Server' &
-                        libpath $(lang_root)\lib386 &
+!endif
+
+#
+#   NW 4 and 3 are CLIB, 5 and later is LIBC
+#   it looks for math3s.lib but doesn't need it. should I remove deflib info?
+#
+!ifeq nwlib libc
+sys_x86_nlm     = form novell nlm $(description) &
+                        libpath $(lang_root)/lib386 &
                         op st=8k &
-                        import @$(trap_dir)\common\nlm\trap.imp op nodef
-sys_x86_penpoint= sys penpoint op st=8k, modname=$^&, desc $^&
-
-sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $^&
-
-sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $^&
-
-!ifeq machine IBM
-machsuff=
+                        import @$(trap_dir)/common/nlm/traplibc.imp &
+                        op nodef &
+                        op pseudopreemption &
+                        op start = _PreludeHook &
+                        op exit = _LibCPostlude &
+                        op screenname 'none' &
+                        @nversion.tmp &
+                        file $(%NOVELLNDK)/../libc/imports/libcpre.obj
 !else
-machsuff=$+$(machine)$-
+sys_x86_nlm     = form novell nlm $(description) &
+                        libpath $(lang_root)/lib386 &
+                        op st=8k &
+                        @nversion.tmp &
+                        import @$(trap_dir)/common/nlm/trap.imp &
+                        op nodef
 !endif
+sys_x86_penpoint= sys penpoint op st=8k, modname=$^&, desc $(description)
 
-targ_x86_os2    = binp\$(name).exe
-targ_x86_qnx    = qnx\$(name).qnx
-targ_x86_win    = bin\$(name).exe
-targ_x86_dos    = bin.$(machsuff)\$(name).exe
-targ_x86_rsi    = bin.$(machsuff)\$(name).exp
-targ_x86_ads    = bin.$(machsuff)\$(name).exp
+sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $(description)
+
+sys_ppc_nt      = sys ntppc op st=16k, modname=$^&, desc $(description)
+
+targ_x86_os2    = $(xname)1.exe
+targ_x86_os2v2  = $(xname).exe
+targ_x86_qnx    = $(xname).qnx
+targ_x86_linux  = $(xname).elf
+targ_x86_win    = $(xname).exe
+targ_x86_dos    = $(xname).exe
+targ_x86_rsi    = $(xname).exp
+targ_x86_cw     = $(xname).exe
+targ_x86_ads    = $(xname).exp
+targ_x86_rdos   = $(xname).exe
 !ifndef targ_pls
-targ_x86_pls    = bin.$(machsuff)\$(name).exp
+targ_x86_pls    = $(xname).exp
 !endif
 !ifeq srv jvm
-targ_x86_nt     = binnt\jvmhlp_g.dll
+targ_x86_nt     = jvmhlp_g.dll
 !endif
 !ifeq srv msj
-targ_x86_nt     = binnt\msjhlp.dll
+targ_x86_nt     = msjhlp.dll
 !else
-targ_x86_nt     = binnt\$(name).exe
+targ_x86_nt     = $(xname).exe
 !endif
-targ_x86_nlm    = nlm\$(name).nlm
-targ_x86_penpoint= pen\$(name).dll
+targ_x86_nlm    = $(xname).nlm
+targ_x86_nto    = $(xname).elf
 
-targ_axp_nt     = axpnt\$(name).exe
+targ_axp_nt     = $(xname).exe
 
-targ_ppc_nt     = ppcnt\$(name).exe
+targ_ppc_nt     = $(xname).exe
 
-objs_nlm        = nlmstrt.obj
+targ_ppc_linux  = $(xname).elf
+targ_mips_linux = $(xname).elf
 
 dig_os = $(os)
-!include $(dig_dir)\mif\trpcli.mif
+!include $(dig_dir)/mif/trpcli.mif
 
-SERVER_objs = $(objs_$(os))
+!ifdef builtin_trap
+!ifeq nwlib libc
+objs_nlm        = libcstrt.obj
+!else
+objs_nlm        = nlmstrt.obj
+!endif
+!ifndef test
+objs_linux      = lnxstrt.obj
+objs_nto        = ntostrt.obj
+!endif
+!endif
+
+SERVER_common_objs = $(objs_$(os))
 
 !ifdef test
+
 SERVER_remote_objs = testserv.obj servname.obj
+
 !else
+
 !ifdef gui
 SERVER_remote_objs = wserver.obj options.obj
 resource_file = wserver.res
 !else
-SERVER_remote_objs += serv.obj $(os)trio.obj
+!ifeq os linux
+SERVER_remote_objs = serv.obj lnxtrio.obj
+!else ifeq os os2v2
+SERVER_remote_objs = serv.obj os2trio2.obj
+!else
+SERVER_remote_objs = serv.obj $(os)trio.obj
+!endif
 !endif
 SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
 extra_srcs +=;$(dig_srcs)
+
 !endif
 
-which = SERVER
-
-!include $(trap_dir)\imp.mif
+!ifeq os linux
+SERVER_remote_objs += lnxnoth.obj
+!else ifeq os os2v2
+SERVER_remote_objs += os2noth2.obj
+!else
+SERVER_remote_objs += $(os)noth.obj
+!endif

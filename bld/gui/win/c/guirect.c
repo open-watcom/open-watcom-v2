@@ -34,7 +34,7 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
-DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
+void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
 {
     WPI_RECT    parent_rect;
     HWND        parent;
@@ -75,7 +75,7 @@ DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool is_popup )
     rect->height = size.y;
 }
 
-GUIGetRelRect( HWND hwnd, gui_rect *rect, bool is_popup )
+void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool is_popup )
 {
     WPI_RECT    win;
 

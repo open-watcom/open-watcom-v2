@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel 80x87 floating point instruction expansion.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "model.h"
@@ -45,6 +45,9 @@
 #include "cgaux.h"
 #include "funits.h"
 #include "feprotos.h"
+#include "x87.h"
+#include "makeins.h"
+
 
 extern  block           *HeadBlock;
 extern  bool            BlockByBlock;
@@ -53,19 +56,18 @@ extern  name            *FPStatWord;
 extern  int             Max87Stk;
 extern  bool            Used87;
 extern  byte            OptForSize;
+extern  opcode_entry    DoNop[];
+extern  type_length     TypeClassSize[];
 
-extern  void            Opt8087();
+extern  void            Opt8087( void );
 extern  bool            DoesSomething(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  int             Count87Regs(hw_reg_set);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            DoNothing(instruction*);
 extern  name            *AllocTemp(type_class_def);
@@ -73,12 +75,19 @@ extern  void            AllocALocal(name*);
 extern  void            RevCond(instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  hw_reg_set      *IdxRegs();
-extern  void            FPCalcMax();
-extern  void            InitFPStkReq();
+extern  hw_reg_set      *IdxRegs( void );
+extern  void            InitFPStkReq( void );
 
-extern  opcode_entry    DoNop[];
-extern  type_length     TypeClassSize[];
+/* forward declarations */
+static  void            ExpCompare( instruction *ins,
+                                    operand_type op1, operand_type op2 );
+static  void            ExpBinary( instruction *ins,
+                                   operand_type op1, operand_type op2 );
+static  void            ExpBinFunc( instruction *ins,
+                                    operand_type op1, operand_type op2 );
+extern  int             FPRegNum( name *reg_name );
+static  void            RevOtherCond( block *blk, instruction *ins );
+
 
 //NYI: probably need more opcode entries for more resolution with func. units
 static  opcode_entry    FNOP    = { SETS_CC,  0, G_NO, 0, FU_FOP };
@@ -128,6 +137,9 @@ static opcode_entry    MNFBIN[]  = {
 static  opcode_entry    MFLD    = { PRESERVE, 0, G_MFLD, 0, FU_FOP };
 static  opcode_entry    RFLD    = { PRESERVE, 0, G_RFLD, 0, FU_FOP };
 static  opcode_entry    MFST    = { PRESERVE, 0, G_MFST, 0, FU_FOP };
+#if _TARGET & _TARG_80386
+static  opcode_entry    MFSTRND = { PRESERVE, 0, G_MFSTRND, 0, FU_FOP };
+#endif
 static  opcode_entry    MFST2   = { PRESERVE, 0, G_MFST, 0, FU_FOP };
 static  opcode_entry    RFST    = { PRESERVE, 0, G_RFST, 0, FU_FOP };
 static  opcode_entry    FCHS    = { PRESERVE, 0, G_FCHS, 0, FU_FOP };
@@ -210,10 +222,10 @@ extern  name    *ST( int num ) {
 }
 
 extern  instruction     *PrefFLDOp( instruction *ins,
-                                    operand_types op, name *opnd ) {
+                                    operand_type op, name *opnd ) {
 /*****************************************************************/
 
-    instruction *new_ins;
+    instruction *new_ins = NULL;
 
     switch( op ) {
     case OP_STK0:
@@ -240,7 +252,7 @@ extern  instruction     *PrefFLDOp( instruction *ins,
 }
 
 
-static  void    PrefixFLDOp( instruction *ins, operand_types op, int i ) {
+static  void    PrefixFLDOp( instruction *ins, operand_type op, int i ) {
 /*************************************************************************
     Prefix the floating point instruction "ins" with an FLD instruction
     for one of its operands (ins->operands[i]).  That operand has
@@ -348,6 +360,20 @@ static  void    PrefixChop( instruction *ins ) {
     new_ins->stk_exit = ins->stk_entry;
 }
 
+#if _TARGET & _TARG_80386
+static    int     WantsChop( instruction *ins ) {
+/************************************************
+    Check whether instruction "ins" needs an instruction that will truncate
+    ST(0) to the nearest integer.
+*/
+    if( ins->head.opcode == OP_ROUND )
+        return( FALSE );
+    if( _IsFloating( ins->result->n.name_class ) )
+        return( FALSE );
+    return( TRUE );
+}
+#endif
+
 static  instruction     *ExpUnary( instruction *ins,
                                     operand_type src, result_type res,
                                     opcode_entry *table ) {
@@ -408,16 +434,62 @@ static  instruction     *ExpMove( instruction *ins,
         break;
     case _Move( OP_MEM , RES_MEM ):
         PrefixFLDOp( ins, src, 0 );
+        /*
         PrefixChop( ins );
         DoNothing( ins );
         ins = SuffixFSTPRes( ins );
+        */
+#if _TARGET & _TARG_80386
+        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+            DoNothing( ins );
+            ins = SuffixFSTPRes( ins );
+            if( WantsChop( ins ) )
+                ins->u.gen_table = &MFSTRND;
+        }
+        else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+            DoNothing( ins );
+            ins = SuffixFSTPRes( ins );
+        } else {
+            PrefixChop( ins );
+            DoNothing( ins );
+            ins = SuffixFSTPRes( ins );
+        }
+#else
+        if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+            DoNothing( ins );
+            ins = SuffixFSTPRes( ins );
+        } else {
+            PrefixChop( ins );
+            DoNothing( ins );
+            ins = SuffixFSTPRes( ins );
+        }
+#endif
         break;
     case _Move( OP_STK0, RES_STK0 ):
         DoNothing( ins );
         break;
     case _Move( OP_STK0, RES_MEM  ):
-        PrefixChop( ins );
-        ins->u.gen_table = &MFST;
+#if _TARGET & _TARG_80386
+        if( _IsModel( FPU_ROUNDING_INLINE ) ) {
+            if( WantsChop( ins ) )
+                ins->u.gen_table = &MFSTRND;
+            else
+                ins->u.gen_table = &MFST;
+        }
+        else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+            ins->u.gen_table = &MFST;
+        } else {
+            PrefixChop( ins );
+            ins->u.gen_table = &MFST;
+        }
+#else
+        if( _IsModel( FPU_ROUNDING_OMIT ) ) {
+            ins->u.gen_table = &MFST;
+        } else {
+            PrefixChop( ins );
+            ins->u.gen_table = &MFST;
+        }
+#endif
         break;
     case _Move( OP_MEM , RES_STK0 ):
         ins->u.gen_table = &MFLD;
@@ -425,7 +497,7 @@ static  instruction     *ExpMove( instruction *ins,
     case _Move( OP_CONS, RES_STK0 ):
         if( CFTest( ins->operands[ 0 ]->c.value ) != 0 ) {
             ins->u.gen_table = &FLD1;
-       } else {
+        } else {
             ins->u.gen_table = &FLDZ;
         }
         ins->result = ST0;
@@ -444,7 +516,7 @@ static  instruction     *ExpMove( instruction *ins,
 
 
 
-static  instruction     *ExpPush( instruction *ins, operand_types op ) {
+static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 /***********************************************************************
     expand a PUSH instruction.  On the 386 we generate FSTP 0[esp].  On
     the 8086..286 try MOV BP,SP  FSTP 0[bp].  If thats not possible,
@@ -495,6 +567,7 @@ static  instruction     *ExpPush( instruction *ins, operand_types op ) {
             new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
             ReplIns( ins, new_ins );
             ins = ExpMove( new_ins, op, RES_MEM );
+
        } else {
             new_ins = MakeUnary( OP_PUSH, index, NULL, WD );
             new_ins->u.gen_table = &WORDR1;
@@ -528,7 +601,7 @@ static  instruction     *ExpPush( instruction *ins, operand_types op ) {
 
 static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
                                       operand_type op2, result_type res ) {
-/********************************************************
+/**************************************************************************
     Using the operand/result classifications "op1", "op2", "res", turn
     "ins" into a real live 8087 instruction by deciding what to generate
     for it (setting gen_table).  Note that it may turn into multiple
@@ -558,6 +631,8 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
                 break;
             case RES_NONE:
                 ExpCompare( ins, op1, op2 );
+                break;
+            default:
                 break;
             }
             break;
@@ -613,6 +688,8 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
                 ins = ExpMove( ins, op1, res );
             }
             break;
+        default:
+            break;
         }
     }
     return( ins );
@@ -620,7 +697,7 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
 
 
 static  instruction     *DoExpand( instruction *ins ) {
-/*************************************************
+/******************************************************
     Expand one instruction "ins" The bulk of this routine is
     spent classifying the operands and result of the instruction, and if
     they are an 8087 register, adjusting them to the real register
@@ -631,7 +708,7 @@ static  instruction     *DoExpand( instruction *ins ) {
     int                 i;
     int                 reg_num;
     operand_type        op1_type;
-    operand_type        op2_type;
+    operand_type        op2_type = OP_NONE;
     result_type         res_type;
 
     i = NumOperands( ins );
@@ -667,8 +744,8 @@ static  instruction     *DoExpand( instruction *ins ) {
     return( ExpandFPIns( ins, op1_type, op2_type, res_type ) );
 }
 
-static  void    Expand() {
-/************************
+static  void    Expand( void ) {
+/*******************************
     Run through the instruction stream expanding each
     instruction.  All 8087 instructions will have
         gen_table->generate == G_UNKNOWN.
@@ -877,7 +954,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
         }
         if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE ) break;
         if( _OpIsCondition( ins->head.opcode )
-          && ins->table == &DoNop ) { /* used cond codes of original ins */
+          && ins->table == DoNop ) { /* used cond codes of original ins */
             RevCond( ins );
             ins->table = &FNOP;
             ins->u.gen_table = &FNOP;
@@ -886,7 +963,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
 }
 
 
-extern  void    ExpCompare ( instruction *ins,
+static  void    ExpCompare ( instruction *ins,
                              operand_type op1, operand_type op2 ) {
 /******************************************************************
     Expand a floating point comparison using classifications "op1" and
@@ -1086,7 +1163,7 @@ extern  void    NoMemBin( instruction *ins ) {
 }
 
 
-extern  instruction     *MakeWait() {
+extern  instruction     *MakeWait( void ) {
 /************************************
     Create an "instruction" that will generate an FWAIT.
 */
@@ -1098,7 +1175,7 @@ extern  instruction     *MakeWait() {
     return( new_ins );
 }
 
-extern  void    InitFP() {
+extern  void    InitFP( void ) {
 /*************************
     Initialize.
 */
@@ -1110,7 +1187,7 @@ extern  void    InitFP() {
     InitFPStkReq();
 }
 
-extern  void    FPExpand() {
+extern  void    FPExpand( void ) {
 /**************************
     Expand the 8087 instructions.  The instructions so far
     have been assigned registers, with ST(1) ..  ST(Max87Stk) being the
@@ -1124,7 +1201,5 @@ extern  void    FPExpand() {
         ST0 = ST( 0 );
         ST1 = ST( 1 );
         Expand();
-//      FPCalcMax();
     }
 }
-

@@ -24,11 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Ring support.
 *
 ****************************************************************************/
 
+/*
+    Notes:  (1) These functions are not type-safe; they act on structures
+                that are assumed to contain the ring pointer in the first
+                position of the structure.
+
+            (2) A ring is located by its header pointer, which is NULL to
+                when the ring is empty.  Otherwise, it points at the last
+                element in the ring.  Each element points to the next
+                element (the last points to the first).
+
+            (3) The traversal routines (RingWalk...) are written so that
+                the next element is located before the associated routine
+                is called; this means that the routine can free the current
+                element without side effects.
+*/
 
 #include "plusplus.h"
 #include "ring.h"
@@ -39,3 +53,18 @@ struct ring                     // model of a ring
 };
 
 
+//************************************************************************
+// NOTE:: the following uses stack technology (see stack.h)
+//***********************************************************************
+
+
+void * StackCarveAlloc(         // CARVER ALLOC AND PUSH STACK
+    carve_t carver,             // - carving control
+    void *hdr )                 // - addr[ stack hdr ]
+{
+    void    **stack_hdr = hdr;
+    void** element = CarveAlloc( carver );
+    *element = *stack_hdr;
+    *stack_hdr = (void*)element;
+    return (void*)element;
+}

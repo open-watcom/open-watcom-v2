@@ -1,0 +1,117 @@
+
+   Exploring the Wilderness
+   ========================
+
+ The OS/2 version of the Open Watcom debugger needs to jump through some
+rather obscure hoops in order to be able to effectively debug Presentation
+Manager (PM) programs.
+
+ The problem lies in the Synchronous Input Queue (SIQ) mechanism. PM processes
+messages strictly in the order they were generated. This removes some
+ambiguity from message processing but causes other (quite possibly much worse)
+problems. One of them is that if an application is blocked (for instance
+because it hit a breakpoint), it can't respond to messages and the entire
+PM will be affected.
+
+ To overcome this issue, IBM (or more likely Microsoft way back in the Dark
+Ages) implemented several highly specialized APIs. Sadly, some of the APIs
+are not only obscure by their very own nature but also completely undocumented.
+
+ Which makes working with these APIs a lot like exploring the wilderness.
+You don't know where exactly you're going (though hopefully you have some idea
+where you want to end up) and the only thing you can tell about the next
+wildlife encounter is that the results will be messy and gory. For those who
+don't appreciate metaphors, that means you'll have to reboot a lot.
+
+ Here is a list of the APIs:
+
+                        parm wds   PMWIN    PMMERGE
+ WinLockInput              6        308       3306
+ WinThreadAssocQueue       8        304       3296
+ WinQueueFromID            8        305       3220
+ WinReplyMsg              16        307       3233
+ WinQuerySendMsg          16        306       3201
+
+ All of these APIs have 16 and 32-bit entry points. Curiously enough, the
+16-bit ones were all present in the old OS/2 1.x import library (OS2.LIB) but
+were removed from the OS/2 2.x Toolkit versions (OS2286.LIB and OS2386.LIB).
+They are still present in the "private" DDK import libraries (OS2286P.LIB
+and OS2386P.LIB) however.
+
+ And here's the scoop on these APIs. Big thanks to Dave Blaschke for providing
+the bulk of this information. Note: The HAB argument is unused in the actual
+PM implementation for all of the following functions.
+
+
+BOOL APIENTRY WinLockInput(HMQ hmqQueue, BOOL fLock);
+
+  If the fLock flag is TRUE, WinLockInput will lock input to the message
+  queue specified in hmqQueue until it is unlocked by a call with fLock
+  set to FALSE. When input is locked for a given queue, mouse and keyboard
+  input will not be given to the queue until input is unlocked. If hmqQueue
+  is NULL, input to all message queues _except_ the currently running one
+  is locked/unlocked.
+  Returns TRUE if successful, FALSE otherwise.
+
+  Only locking of all but the current queue is implemented, ie. the hmqQueue
+  argument has to be NULL.
+
+  Prescription use only! If you manage to lock input to all other queues
+  except yours and then do something stupid, you're hosed.
+
+
+BOOL APIENTRY WinThreadAssocQueue(HAB habAnchor, HMQ hmqQueue);
+
+  Associates the message queue specified in hmqQueue with the currently
+  running thread. The habAnchor parameter is the anchor block of the
+  caller.
+  Returns TRUE if successful, FALSE otherwise.
+
+  This API allows the caller to essentially "hijack" a message queue.
+
+  NB: If the associated queue has a local (non-system) hook installed,
+  a call to WinGetMsg will likely cause a crash!
+
+
+HMQ APIENTRY WinQueueFromID(HAB hab, PID pid, TID tid);
+
+  This API takes the process ID (pid) and thread ID (tid) of any
+  process/thread in the system as input and returns the associated message
+  queue handle.
+  Returns handle of message queue associated with pid/tid or NULL if
+  there is none.
+
+  This API allows the debugger to determine what the handle to debuggee's
+  message queue(s) is.
+
+
+BOOL APIENTRY WinReplyMsg(HAB habAnchor, HMQ hmqSender,
+                          HMQ hmqReceiver, MRESULT mresult);
+
+  This API will reply to a message sent from sender to receiver (which
+  are on different threads) and return 'result' instead.
+  Either hmqSender or hmqReceiver (but not both) can be NULL. If hmqSender
+  is NULL, this function will reply to the first message in hmqReceiver.
+  If hmqReceiver is NULL, this function will reply to the first message
+  sent by hmqSender.
+  Returns TRUE if successful, FALSE otherwise.
+
+  This is how a debugger can reply to messages on behalf of the (presumably
+  blocked) debuggee.
+
+
+BOOL APIENTRY WinQuerySendMsg(HAB habAnchor, HMQ hmqSender,
+                              HMQ hmqReceiver, PQMSG pqmsg);
+
+  This is a counterpart to WinReplyMsg. The parameters are the caller's
+  anchor block (habAnchor), handle to sender's message queue (hmqSender),
+  receiver's message queue (hmqReceiver) and a pointer to the message
+  structure (pqmsg). If successful, this API should fill in the message
+  structure with a message being sent from sender to receiver. If hmqSender
+  is NULL, messages from all senders are apparently received.
+  Returns TRUE if successful, FALSE otherwise.
+
+  As with WinReplyMsg, either hmqReceiver or hmqSender may be NULL, and
+  the same logic applies.
+  
+  Similar to the above, this lets a debugger act on behalf of the debuggee.

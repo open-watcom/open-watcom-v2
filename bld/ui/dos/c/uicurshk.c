@@ -37,12 +37,12 @@
 #include "uiattrs.h"
 #include "biosui.h"
 
-extern void _uifinicursor();
-extern void _uiinitcursor();
-extern void _uiswapcursor();
+extern void _uifinicursor( void );
+extern void _uiinitcursor( void );
+extern void _uiswapcursor( void );
 extern void _uisetcursor( ORD row, ORD col, int typ, int attr );
-extern void _uioffcursor();
-extern void _uioncursor();
+extern void _uioffcursor( void );
+extern void _uioncursor( void );
 extern void _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
 
 // these function get overridden by the debugger if it's doing its own
@@ -51,12 +51,12 @@ extern void _uigetcursor( ORD *row, ORD *col, int *typ, int *attr );
 // the original versions into _uixxx().  In a normal UI app, these stubs kick
 // in so the world is back to normal
 
-void global uioffcursor()
+void global uioffcursor( void )
 {
     _uioffcursor();
 }
 
-void global uioncursor()
+void global uioncursor( void )
 {
     _uioncursor();
 }
@@ -70,14 +70,14 @@ void global uisetcursor( ORD row, ORD col, int typ, int attr ) {
     _uisetcursor( row, col, typ, attr );
 }
 
-void global uiswapcursor() {
+void global uiswapcursor( void ) {
     _uiswapcursor();
 }
 
-void global uiinitcursor() {
+void global uiinitcursor( void ) {
     _uiinitcursor();
 }
 
-void uifinicursor() {
+void uifinicursor( void ) {
     _uifinicursor();
 }

@@ -8,14 +8,14 @@
 static char     *AppName = "Watzee";
 static char     ClassName[32]="Watzee";
 
-static void                 DoScore( HWND, WORD );
-static void                 DoScoreTotals( HWND );
+static void                 DoScore( HDC, WORD );
+static void                 DoScoreTotals( HDC );
 static WORD                 GetDieCheck( HWND, POINT );
 static WORD                 GetScoreCheck( POINT );
 static void                 InitializeGameData( void );
 static void                 NextPlayer( HWND, HDC );
 
-long _EXPORT FAR PASCAL    WndProc( HWND, WORD, UINT, LONG );
+long _EXPORT FAR PASCAL    WndProc( HWND, UINT, WPARAM, LPARAM );
 
 
 /*
@@ -24,8 +24,8 @@ long _EXPORT FAR PASCAL    WndProc( HWND, WORD, UINT, LONG );
  *            game
  */
 
-int PASCAL WinMain( HANDLE instance, HANDLE previnstance,
-                    LPSTR cmdline, short cmdshow )
+int PASCAL WinMain( HINSTANCE instance, HINSTANCE previnstance,
+                    LPSTR cmdline, int cmdshow )
 /*******************************************************/
 {
     HWND        hwnd;
@@ -77,8 +77,8 @@ int PASCAL WinMain( HANDLE instance, HANDLE previnstance,
  * WndProc -- process messages from Windows
  */
 
-long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, UINT wparam,
-                                  LONG lparam )
+long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, WPARAM wparam,
+                                  LPARAM lparam )
 /*********************************************************************/
 {
     static HANDLE   hdlginstance;
@@ -118,11 +118,11 @@ long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, UINT wparam,
                       hdlginstance, NULL );
         return( 0 );
     case WMW_START_NEW_GAME :
-        dlg_proc = MakeProcInstance( GetNumPlayersDialogProc, hdlginstance );
-        DialogBox( hdlginstance, "GetNumPlayers", hwnd, dlg_proc );
+        dlg_proc = MakeProcInstance( (FARPROC)GetNumPlayersDialogProc, hdlginstance );
+        DialogBox( hdlginstance, "GetNumPlayers", hwnd, (DLGPROC)dlg_proc );
         FreeProcInstance( dlg_proc );
-        dlg_proc = MakeProcInstance( GetInitialsDialogProc, hdlginstance );
-        DialogBox( hdlginstance, "GetPlayersInitials", hwnd, dlg_proc );
+        dlg_proc = MakeProcInstance( (FARPROC)GetInitialsDialogProc, hdlginstance );
+        DialogBox( hdlginstance, "GetPlayersInitials", hwnd, (DLGPROC)dlg_proc );
         FreeProcInstance( dlg_proc );
         EnableWindow( GetDlgItem( hwnd, IDW_OK ), FALSE );
         EnableWindow( GetDlgItem( hwnd, IDW_ROLL ), TRUE );
@@ -170,8 +170,8 @@ long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, UINT wparam,
             if( GotTimer ) {
                 KillTimer( hwnd, ID_TIMER );
             }
-            dlg_proc = MakeProcInstance( OptionsDialogProc, hdlginstance );
-            DialogBox( hdlginstance, "Options", hwnd, dlg_proc );
+            dlg_proc = MakeProcInstance( (FARPROC)OptionsDialogProc, hdlginstance );
+            DialogBox( hdlginstance, "Options", hwnd, (DLGPROC)dlg_proc );
             FreeProcInstance( dlg_proc );
             if( GotTimer ) {
                 SetTimer( hwnd, ID_TIMER, TIMER_INTERVAL, NULL );
@@ -184,8 +184,8 @@ long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, UINT wparam,
             if( GotTimer ) {
                 KillTimer( hwnd, ID_TIMER );
             }
-            dlg_proc = MakeProcInstance( HelpDialogProc, hdlginstance );
-            DialogBox( hdlginstance, "WatzeeHelp", hwnd, dlg_proc );
+            dlg_proc = MakeProcInstance( (FARPROC)HelpDialogProc, hdlginstance );
+            DialogBox( hdlginstance, "WatzeeHelp", hwnd, (DLGPROC)dlg_proc );
             FreeProcInstance( dlg_proc );
             if( GotTimer ) {
                 SetTimer( hwnd, ID_TIMER, TIMER_INTERVAL, NULL );
@@ -195,8 +195,8 @@ long _EXPORT FAR PASCAL WndProc( HWND hwnd, UINT message, UINT wparam,
             if( GotTimer ) {
                 KillTimer( hwnd, ID_TIMER );
             }
-            dlg_proc = MakeProcInstance( AboutDialogProc, hdlginstance );
-            DialogBox( hdlginstance, "AboutWatzee", hwnd, dlg_proc );
+            dlg_proc = MakeProcInstance( (FARPROC)AboutDialogProc, hdlginstance );
+            DialogBox( hdlginstance, "AboutWatzee", hwnd, (DLGPROC)dlg_proc );
             FreeProcInstance( dlg_proc );
             if( GotTimer ) {
                 SetTimer( hwnd, ID_TIMER, TIMER_INTERVAL, NULL );

@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler toggles controllable through pragmas.
 *
 ****************************************************************************/
 
 
 #define TOGGLE_CHECK_STACK      0x0001
 #define TOGGLE_UNREFERENCED     0x0002
-#define TOGGLE_PCODE            0x0004
+#define TOGGLE_THIS_ONES_UNUSED 0x0004
 #define TOGGLE_INLINE           0x0008
 #define TOGGLE_DUMP_CG          0x0010
 #define TOGGLE_REUSE_DUPLICATE_STRINGS  0x0020

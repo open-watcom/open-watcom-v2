@@ -1,9 +1,10 @@
+platform = Win32
 CC = wcc386
 CFLAGS = -bt=nt
 res1_flags = -bt=nt
 
-!include ..\helpex.mif
-!include ..\..\master.mif
+!include ../helpex.mif
+!include ../../master.mif
 
 linkit : .PROCEDURE
     @%append $(LNK) system nt_win
@@ -12,7 +13,7 @@ linkit : .PROCEDURE
 bindit : .PROCEDURE
     wrc $(name).res
 
-..\helpex.hlp: ..\helpex.rtf
+../helpex.hlp: ../helpex.rtf
     cd ..
     hc helpex
     cd win32

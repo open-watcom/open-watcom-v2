@@ -115,9 +115,9 @@ extern void GetSourceFile( section_ptr sec )
     orl_linnum *templines;
 
     numlines = ORLSecGetNumLines( sec->shnd );
-    if( numlines <= 0 ) {
+    if( numlines == 0 ) {
         numlines = GetDwarfLines( sec );
-        if( numlines <= 0 ) {
+        if( numlines == 0 ) {
             if( DFormat & DFF_ASM ) {
                 BufferConcat( CommentString );
             }
@@ -165,6 +165,11 @@ extern void GetSourceFile( section_ptr sec )
         if( SourceFile != NULL ) {
             return;
         }
+        _makepath( SourceFileName, drive, dir, file_name, ".asm" );
+        SourceFile = fopen( SourceFileName, "r" );
+        if( SourceFile != NULL ) {
+            return;
+        }
         _makepath( SourceFileName, drive, dir, file_name, ".*" );
         NoSource( SourceFileName );
         MemFree( SourceFileName );
@@ -204,13 +209,18 @@ extern void GetSourceFile( section_ptr sec )
     if( SourceFile != NULL ) {
         return;
     }
+    _makepath( SourceFileName, drive, dir, file_name, ".asm" );
+    SourceFile = fopen( SourceFileName, "r" );
+    if( SourceFile != NULL ) {
+        return;
+    }
     _makepath( SourceFileName, drive, dir, file_name, ".*" );
     NoSource( SourceFileName );
     MemFree( SourceFileName );
     SourceFileName = NULL;
 }
 
-static char *getNextLine()
+static char *getNextLine( void )
 {
     long int len, pos;
     char *buff;
@@ -234,7 +244,7 @@ static char *getNextLine()
     return buff;
 }
 
-static void printLine()
+static void printLine( void )
 {
     char *buff;
 

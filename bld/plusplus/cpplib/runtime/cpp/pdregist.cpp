@@ -214,13 +214,15 @@ unsigned CPPLIB( pd_handler_rtn )  // HANDLER FOR FS REGISTRATIONS
                 retn = EXC_HAND_CATCH;
             }
 #else
-            DISPATCHABLE type;      // - type of dispatchability
-            DISPATCH_EXC* dispatch; // - dispatch control
+            DISPATCHABLE  type;      // - type of dispatchability
+            DISPATCH_EXC  *dispatch; // - dispatch control
+            _EXC_PR       *srch_ctl;
+
             dispatch = rec_exc->dispatch;
             if( dispatch->fnexc_skip == info.rw ) {
                 dispatch->fnexc_skip = NULL;
             }
-            for( _EXC_PR* srch_ctl = dispatch->srch_ctl
+            for( srch_ctl = dispatch->srch_ctl
                ; NULL != srch_ctl && srch_ctl->_rw == info.rw
                ; srch_ctl = srch_ctl->_prev ) {
                 if( NULL == dispatch->fnexc_skip ) {

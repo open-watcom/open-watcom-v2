@@ -352,19 +352,20 @@ static signed char xlat[] = {
 #define E_MAXERR        19      /* unknown error, DOS 2.0 */
 #endif
 
-int _dosret0( int ax, int carry )
-{
-    if( carry == 0 ) return( 0 );
-    return( _dosretax( ax, carry ) );
-}
-
-
 int _dosretax( int ax, int carry )
 {
-    if( carry != 0 ) {
-        return( __set_errno_dos( ax ) );
+    if( carry == 0 ) {
+        return( ax );
     }
-    return( ax );
+    return( __set_errno_dos( ax ) );
+}
+
+int _dosret0( int ax, int carry )
+{
+    if( carry == 0 ) {
+        return( 0 );
+    }
+    return( __set_errno_dos( ax ) );
 }
 
 _WCRTLINK int __set_errno_dos( unsigned int err )
@@ -372,7 +373,8 @@ _WCRTLINK int __set_errno_dos( unsigned int err )
 #if defined(__NT__) || defined(__OS2__)
     __set_doserrno( err );
     // if we  can't map the Error code, use default EIO entry
-    if( err > E_MAXERR ) err = E_MAXERR;
+    if( err > E_MAXERR )
+        err = E_MAXERR;
     __set_errno( xlat[ err ] );
 #else
     register unsigned char index;
@@ -389,7 +391,8 @@ _WCRTLINK int __set_errno_dos( unsigned int err )
                 index = E_ACCESS;
             }
         }
-        if( index > E_MAXERR ) index = E_MAXERR;
+        if( index > E_MAXERR )
+            index = E_MAXERR;
         __set_errno( xlat[ index ] );
     } else {
         __set_errno( (err >> 8) & 0xff );
@@ -398,14 +401,21 @@ _WCRTLINK int __set_errno_dos( unsigned int err )
     return( -1 );
 }
 
+_WCRTLINK int __set_errno_dos_reterr( unsigned int err )
+{
+    __set_errno_dos( err );
+    return( err );
+}
+
 
 #ifdef __NT__
-int __set_errno_nt( void )
+_WCRTLINK int __set_errno_nt( void )
 {
-    DWORD       err;
+    return( __set_errno_dos( GetLastError() ) );
+}
 
-    err = GetLastError();
-    return( __set_errno_dos( err ) );
-
+_WCRTLINK int __set_errno_nt_reterr( void )
+{
+    return( __set_errno_dos_reterr( GetLastError() ) );
 }
 #endif

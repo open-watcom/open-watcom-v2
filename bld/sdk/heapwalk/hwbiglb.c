@@ -45,7 +45,7 @@ typedef struct {
     HWND        parent;
     HFONT       font;
     unsigned    itemcnt;
-    char        *(*fmt)();
+    char        *(*fmt)(unsigned);
     HMENU       id;
     WORD        extent;
     RECT        old_area;
@@ -57,9 +57,9 @@ typedef struct {
  */
 static void CreateTheListBox( HWND parent, TBinfo *info, DWORD style ) {
 
-    HANDLE                      instance;
+    HINSTANCE                      instance;
 
-    instance = GetWindowWord( parent, GWW_HINSTANCE );
+    instance = (HINSTANCE)GetWindowWord( parent, GWW_HINSTANCE );
     info->boxhwnd =
         CreateWindow(
             "LISTBOX",                  /* Window class name */
@@ -73,7 +73,7 @@ static void CreateTheListBox( HWND parent, TBinfo *info, DWORD style ) {
             info->id,                   /* Window menu handle */
             instance,                   /* Program instance handle */
             NULL );                     /* Create parameters */
-    SendMessage( info->boxhwnd, WM_SETFONT, info->font, 0L );
+    SendMessage( info->boxhwnd, WM_SETFONT, (WPARAM)info->font, 0L );
 }
 
 void SizeTheListBox( HWND hwnd, TBinfo *info ) {
@@ -201,7 +201,7 @@ BOOL __export FAR PASCAL TextBoxProc( HWND hwnd, unsigned msg, WORD wparam,
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
-    return( NULL );
+    return( FALSE );
 }
 
 /*
@@ -227,8 +227,8 @@ BOOL RegTextBox( HANDLE instance ) {
 /*
  * CreateTextBox - create a text box
  */
-TextBoxHdl CreateTextBox( HANDLE instance, HWND parent, HFONT font,
-                        HMENU boxid, char *(*fmt)(), WORD flags ) {
+TextBoxHdl CreateTextBox( HINSTANCE instance, HWND parent, HFONT font,
+                        HMENU boxid, char *(*fmt)(unsigned), WORD flags ) {
 
     HWND                hwnd;
     TBinfo              *info;
@@ -270,7 +270,7 @@ void RedrawBox( TextBoxHdl hdl, int index ) {
 
     TBinfo      *info;
     RECT        area;
-    WORD        ret;
+    LRESULT     ret;
 
     info = (TBinfo *)GetWindowLong( (HWND)hdl, 0 );
     if( index == -1 ) {
@@ -322,7 +322,7 @@ void SetBoxFont( TextBoxHdl hwnd, HFONT font ) {
     TBinfo              *info;
     unsigned            itemcnt;
     DWORD               style;
-    WORD                top;
+    LRESULT             top;
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );
@@ -342,7 +342,7 @@ void SetListBoxForAdd( TextBoxHdl hwnd, BOOL add ) {
     TBinfo              *info;
     DWORD               style;
     unsigned            itemcnt;
-    WORD                top;
+    LRESULT             top;
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );

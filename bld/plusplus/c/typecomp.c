@@ -226,6 +226,8 @@ static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
             return( FALSE );
         }
         break;
+    case TYP_TYPENAME:
+        return( !strcmp( type1->u.n.name, type2->u.n.name ) );
     default:
 #ifndef NDEBUG
         CFatal( "unknown type being compared" );
@@ -257,6 +259,7 @@ boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
         // tweak type1 and type2 to ignore minor distinctions
         type1 = TypeModExtract( type1, &flag1, &base1, mask|TC1_NOT_MEM_MODEL );
         type2 = TypeModExtract( type2, &flag2, &base2, mask|TC1_NOT_MEM_MODEL );
+        if( type1 == NULL || type2 == NULL ) break;
 
         if( mask & TC1_PTR_FUN ) {
             type_flag   extra;
@@ -273,6 +276,17 @@ boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
             }
         }
 
+        if( ( type1->id == TYP_CLASS )
+         && ( type1->flag & TF1_UNBOUND )
+         && ( type1->of != NULL ) ) {
+            type1 = type1->of;
+        }
+        if( ( type2->id == TYP_CLASS )
+         && ( type2->flag & TF1_UNBOUND )
+         && ( type2->of != NULL ) ) {
+            type2 = type2->of;
+        }
+
         // compare type1 and type2
         flag1 &= ~TF1_MOD_IGNORE;
         flag2 &= ~TF1_MOD_IGNORE;
@@ -283,8 +297,10 @@ boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )
             break;
         } else if( type1 == type2 ) {
             state = FOLLOW_STACK;
-        } else if( !typeCompareCurrent( &stack, type1, type2, mask ) ) {
-            break;
+        } else {
+            if( !typeCompareCurrent( &stack, type1, type2, mask ) ) {
+                break;
+            }
         }
 
         // advance the type pointers

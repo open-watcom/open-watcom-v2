@@ -1,0 +1,629 @@
+proj_name = docs
+
+!ifdef __UNIX__
+RENCMD=mv
+LOWERC=$#
+!else
+RENCMD=ren
+LOWERC=ren
+!endif
+
+!include cproj.mif
+
+!include ../mif/depends.mif
+!include ../mif/books.mif
+
+# If 'verbose' is set to 1, wgml displays warnings and statistics.
+# The default is a quiet build.
+doc_verbose = $(verbose)
+# 'DOC_QUIET' is used by build server to disable documentation verbose output.
+!ifeq %DOC_QUIET 1
+doc_verbose = 0
+!endif
+
+#############################################################
+#
+# There are declaration for every Open Watcom book.
+#
+# There are all dependencies and standard option
+#
+# setting for documentation building utility.
+#
+#############################################################
+
+company=Open Watcom
+
+optfile_wgml=wgmlopts.tmp
+optfile_whpcvt=whpcopts.tmp
+gml_lib=../gml/syslib
+dosemu_wgml_batch=wgml.bat
+wine_hc_batch=winehc.bat
+
+#
+# define target and platform help compilers
+#
+!ifdef __UNIX__
+hc_nt = $(%WIN95HC:\=/)
+hc_hh = $(%HHC:\=/)
+!else
+hc_nt = $(%WIN95HC:/=\)
+hc_hh = $(%HHC:/=\)
+!endif
+hc_pdf = ps2pdf12
+
+
+#
+# define what should be build
+# header file / documentation / nothing
+#
+
+!ifeq header 1
+dep_nt = $(hbook).h
+!else ifneq hc_nt
+dep_nt = $(hbook).hlp $(hbook).cnt
+!endif
+!ifeq header 1
+dep_win = $(hbook).h
+!else
+dep_win = $(hbook).hlp
+!endif
+!ifeq header 1
+dep_os2 = $(hbook).h
+!else
+dep_os2 = $(hbook).inf $(hbook).hlp
+!endif
+!ifeq header 1
+dep_dos = $(hbook).h
+!else
+dep_dos = $(hbook).ihp
+!endif
+dep_html = $(hbook).htm
+!ifneq hc_hh
+dep_htmlhelp = $(hbook).chm
+!endif
+dep_ps = $(hbook).ps
+!ifdef %GHOSTSCRIPTPATH
+dep_pdf = $(hbook).pdf
+!endif
+
+#
+# There should be settings for supported building platforms
+#
+!ifeq %build_platform dos386
+wgml = ..\gml\dos\wgml
+!else ifeq %build_platform os2386
+wgml = ..\gml\os2\wgml
+!else ifeq %build_platform nt386
+wgml = ..\gml\dos\wgml
+!else ifeq %build_platform linux386
+wgml = dosemu -dumb $(dosemu_wgml_batch)
+!else
+!error Unsupported building platform !!!!!!
+!endif
+
+#
+# wgml targets
+#
+wgml_target_htmlhelp = html
+wgml_target_pdf      = ps
+!ifdef wgml_target_$(dotarget)
+wgml_target=$(wgml_target_$(dotarget))
+!else
+wgml_target=$(dotarget)
+!endif
+
+#############################################################
+
+!ifdef dep_$(dotarget)
+.BEFORE
+    @set GMLLIB=$(gml_lib:/=\)
+!ifeq verbose 1
+    @echo GMLLIB=$(%GMLLIB)
+!endif
+!ifneq header 1
+!ifdef __UNIX__
+    @echo ===== $(dotarget) $+$(%cwd)$--$(hbook)/$(book_src) =====
+!else
+    @echo ===== $(dotarget) $+$(%cdrive):$(%cwd)$--$(hbook)/$(book_src) =====
+!endif
+!endif
+!endif
+
+#
+# project configuration files
+#
+proj_objs= &
+    ../mif/depends.mif
+#    ../mif/books.mif &
+#    ../mif/master.mif &
+#    ../lang.ctl &
+#    makefile
+
+all : $(dep_$(dotarget)) .SYMBOLIC
+    @%null
+
+####################################################
+#
+# make WIN32 help files
+#
+####################################################
+!ifeq dotarget nt
+
+.EXTENSIONS: .hlp .hpj .cnt .rtf .cn1
+
+$(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
+!ifeq %build_platform linux386
+    @%create $(wine_hc_batch)
+    @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
+    # this lowercase help file name in wine
+    @%append $(wine_hc_batch) ren $(hbook).hlp xxxxxxxx.tmp
+    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $(hbook).hlp
+    wine cmd /c $(wine_hc_batch)
+!else
+    $(hc_nt) -xn $*.hpj
+    $(LOWERC) $@ $@        # change file name to lower case
+!endif
+
+$(hbook).hpj : $(proj_objs)
+    @%make compile_hpj_nt
+
+!ifeq hbook cbooks
+$(hbook).cnt : ../doc/gs/$(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+!else ifeq hbook ebooks
+$(hbook).cnt : ../doc/gs/$(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+!else ifeq hbook fbooks
+$(hbook).cnt : ../doc/gs/$(hbook).cnt
+    awk -f ../makecnt1.awk $[@ > $(hbook).cnt
+!else
+$(hbook).cnt : $(hbook).cn1
+    awk -f ../makecnt2.awk -v file=$(hbook).hlp -v title="$(book_title)" -v multi=$(book_multi_chapter) $[@ > $(hbook).cnt
+!endif
+
+$(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
+    @%make compile_gml_to_xxx
+
+####################################################
+#
+# make WIN help files
+#
+####################################################
+!else ifeq dotarget win
+
+.EXTENSIONS: .hlp .hpj .rtf
+
+$(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
+    whc $(hbook).hpj
+
+$(hbook).hpj : $(proj_objs)
+    @%make compile_hpj_win
+
+$(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
+    @%make compile_gml_to_xxx
+
+####################################################
+#
+# make DOS help files
+#
+####################################################
+!else ifeq dotarget dos
+
+.EXTENSIONS: .ihp .ib
+
+$(hbook).ihp : $(hbook).ib
+    hcdos -h 25 -w 80 $(hbook).ib $(hbook).ihp
+
+$(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
+    @%make compile_gml_to_xxx
+
+
+####################################################
+#
+# make HTML files
+#
+####################################################
+!else ifeq dotarget html
+
+####################################################
+#
+# make HTML Help files
+#
+####################################################
+!else ifeq dotarget htmlhelp
+
+.EXTENSIONS: .chm .chi
+
+$(hbook).chm $(hbook).chi : $(hbook).htm
+    @if not exist $(hbook) mkdir $(hbook)
+!ifdef book_bmroot
+    cp -f $(book_bmroot)/*.bmp $(hbook) > $(nulldevice)
+!endif
+    awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
+    awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
+    awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
+    awk -f ../makehhp.awk -v hhcfile=$(hbook).hhc -v hhkfile=$(hbook).hhk $(hbook).htm >$(hbook)/$(hbook).hhp
+!ifeq %build_platform linux386
+    @%create $(wine_hc_batch)
+    @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
+    @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
+    @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chi $(hbook).chi
+    -wine cmd /c $(wine_hc_batch)
+!else
+    -$(hc_hh) $(hbook)/$(hbook).hhp
+    cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
+    cp -f $(hbook)/$(hbook).chi $(hbook).chi > $(nulldevice)
+!endif
+
+####################################################
+#
+# make Post Script documentation
+#
+####################################################
+!else ifeq dotarget ps
+
+####################################################
+#
+# make Portable Document Format documentation
+#
+####################################################
+!else ifeq dotarget pdf
+
+.EXTENSIONS: .pdf
+
+# Note that this relies on the fact that you are building from the pdf directory
+# and the ps directory belongs to the same parent directory. not good but I don't
+# have a better solution for now.
+
+$(hbook).pdf : $(hbook).ps
+    @set OWDOCS_OLD_PATH=$(%PATH)
+!ifdef __UNIX__
+    @set PATH=$(%GHOSTSCRIPTPATH):$(%PATH)
+!else
+    @set PATH=$(%GHOSTSCRIPTPATH);$(%PATH)
+!endif
+    !$(hc_pdf) -r600 $[@ $(hbook).pdf
+    @set PATH=$(%OWDOCS_OLD_PATH)
+
+####################################################
+#
+# make OS2 help files
+#
+####################################################
+!else ifeq dotarget os2
+
+.EXTENSIONS: .hlp .inf .ipf
+
+$(hbook).inf : $(hbook).ipf
+    @set IPFCARTWORK=$(book_incs)
+    @set WIPFC=$(dev_dir)/wipfc/helper
+    wipfc -q -inf $(hbook).ipf
+    $(LOWERC) $@ $@        # change file name to lower case
+
+!ifdef book_os2_help
+$(hbook).hlp : $(hbook).ipf
+    @set IPFCARTWORK=$(book_incs)
+    @set WIPFC=$(dev_dir)/wipfc/helper
+    wipfc -q $(hbook).ipf
+    $(LOWERC) $@ $@        # change file name to lower case
+!else
+$(hbook).hlp : .symbolic
+!endif
+
+$(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs)
+    @%make compile_gml_to_xxx
+
+!endif
+
+####################################################
+#
+# make Post Script
+#
+####################################################
+!ifeq wgml_target ps
+
+.EXTENSIONS: .ps .bmp
+
+$(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
+    @set GMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
+    @set GMLINC=$(%GMLINC:/=\)
+!ifeq verbose 1
+    @echo GMLINC=$(%GMLINC)
+!endif
+    %make prepare_wgml_opts
+    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+
+.bmp: $(book_bmroot)
+.ps: tmp
+
+.bmp.ps:
+    @if not exist tmp mkdir tmp
+    bmp2eps -c $< tmp/$^@
+
+####################################################
+#
+# make HTML
+#
+####################################################
+!else ifeq wgml_target html
+
+.EXTENSIONS: .htm
+
+$(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
+!ifneq dotarget htmlhelp
+!ifdef book_bmroot
+    cp -f $(book_bmroot)/*.bmp . > $(nulldevice)
+!endif
+!endif
+    @%make compile_gml_to_xxx
+
+!endif
+
+####################################################
+#
+# set up options for whpcvt utility
+#
+####################################################
+prepare_whpcvt_opts : .PROCEDURE
+    @%create $(optfile_whpcvt)
+!ifeq wgml_target os2
+    @%append $(optfile_whpcvt) -ipf
+    @%append $(optfile_whpcvt) -tl
+    @%append $(optfile_whpcvt) $(book_title)
+!else ifeq wgml_target dos
+    @%append $(optfile_whpcvt) -ib
+    @%append $(optfile_whpcvt) -dt
+    @%append $(optfile_whpcvt) Table of Contents
+    @%append $(optfile_whpcvt) -ds
+    @%append $(optfile_whpcvt) $(book_title)
+    @%append $(optfile_whpcvt) -t
+    @%append $(optfile_whpcvt) -e
+    @%append $(optfile_whpcvt) -lk
+    @%append $(optfile_whpcvt) -kw
+    @%append $(optfile_whpcvt) -ix
+    @%append $(optfile_whpcvt) -tc
+    @%append $(optfile_whpcvt) -br
+    @%append $(optfile_whpcvt) -kb
+    @%append $(optfile_whpcvt) -up
+!else ifeq wgml_target html
+    @%append $(optfile_whpcvt) -html
+    @%append $(optfile_whpcvt) -tl
+    @%append $(optfile_whpcvt) $(book_title)
+!else
+    @%append $(optfile_whpcvt) -rtf
+    @%append $(optfile_whpcvt) -t
+    @%append $(optfile_whpcvt) -e
+    @%append $(optfile_whpcvt) -lk
+    @%append $(optfile_whpcvt) -b
+    @%append $(optfile_whpcvt) -hh
+    @%append $(optfile_whpcvt) -k
+    @%append $(optfile_whpcvt) -up
+!endif
+    @%append $(optfile_whpcvt) -hn
+    @%append $(optfile_whpcvt) -i
+
+
+####################################################
+#
+# Set up options for the wgml utility
+#
+####################################################
+prepare_wgml_opts : .PROCEDURE
+!ifeq %build_platform linux386
+    %make $(dosemu_wgml_batch)
+!endif
+    @%create $(optfile_wgml)
+!ifeq hbook cpplib
+    @%append $(optfile_wgml) ( setsymbol target DOS
+!else ifeq hbook guitool
+    @%append $(optfile_wgml) ( setsymbol allinone 1
+!endif
+#---------------------------------------
+# settings for Post Script documentation
+#---------------------------------------
+!ifeq wgml_target ps
+#
+# layout setting
+#
+!ifeq hbook f77lr
+    @%append $(optfile_wgml) ( file nbpsshad
+!else ifeq hbook clr
+    @%append $(optfile_wgml) ( file nbpsshad
+!else ifeq hbook wgmlref
+    @%append $(optfile_wgml) ( file wbrfman
+!else
+    @%append $(optfile_wgml) ( file nb7x9ps
+!endif
+#
+# change output format to 8.5x11i
+# remove it if you want old 7x9i format
+#
+    @%append $(optfile_wgml) ( lay to85x11
+#
+# number of passes
+#
+!ifeq hbook c_readme
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook cguideq
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook guitool
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook wd
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook trap
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook lguide
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook vi
+    @%append $(optfile_wgml) ( passes 3
+!else ifeq hbook wgmlref
+    @%append $(optfile_wgml) ( passes 3
+!else
+    @%append $(optfile_wgml) ( passes 2
+!endif
+#
+# output format
+#
+    @%append $(optfile_wgml) ( output (t:100)$(hbook)
+#
+# common setting
+#
+    @%append $(optfile_wgml) ( cpinch 10
+    @%append $(optfile_wgml) ( index
+    @%append $(optfile_wgml) ( setsymbol dotarget $(wgml_target)
+    @%append $(optfile_wgml) ( setsymbol book_ver $(%BLD_VER_STR)
+# add default windowing for NT
+#    @%append $(optfile_wgml) ( setsymbol defwinnt 1
+# add default windowing for OS/2
+#    @%append $(optfile_wgml) ( setsymbol defwinos2 1
+#
+#--------------------------------------
+# settings for on-line help processing
+#--------------------------------------
+!else
+#
+# common setting
+#
+    @%append $(optfile_wgml) ( file whelp
+    @%append $(optfile_wgml) ( passes 2
+    @%append $(optfile_wgml) ( setsymbol dohelp 1
+    @%append $(optfile_wgml) ( output (t:2200)$(hbook)
+    @%append $(optfile_wgml) ( setsymbol dotarget $(wgml_target)
+# add default windowing for NT
+#    @%append $(optfile_wgml) ( setsymbol defwinnt 1
+# add default windowing for OS/2
+#    @%append $(optfile_wgml) ( setsymbol defwinos2 1
+    @%append $(optfile_wgml) ( setsymbol book $(hbook)
+!endif
+#
+# details about wgml processing
+#
+!ifeq doc_verbose 1
+    @%append $(optfile_wgml) ( verbose
+    @%append $(optfile_wgml) ( statistics
+!else
+    @%append $(optfile_wgml) ( nowarning
+!endif
+
+####################################################
+#
+#   compile_gml_to_xxx : .PROCEDURE
+#
+# !!!!!!!!!!!!!!!  IMPORTANT   !!!!!!!!!!!!!!!!!!!!
+#
+# wgml must run twice to get correct data for help
+#
+#  1st pass generates image of .idx, .tbl and .kw
+#
+#  2nd pass creates final data with correct table of
+#      contents and index of topics
+#
+#  whpcvt must be called after 2nd pass with -h and -hn
+#  options; it creates correct index in .h file
+#
+#  following whpcvt call must be done only with -hn option
+#   do not use -h option
+#
+# !!!!!!!!!!!!!!!  IMPORTANT   !!!!!!!!!!!!!!!!!!!!
+#
+####################################################
+
+compile_gml_to_xxx : .PROCEDURE
+    @if not exist $*.idx @%create $*.idx
+    @if not exist $*.tbl @%create $*.tbl
+    @if not exist $*.kw @%create $*.kw
+    @set GMLINC=.;$(whelp_incs);$(gml_lib);$(hlp_incs);$(book_incs);$(gml_incs);
+    @set GMLINC=$(%GMLINC:/=\)
+!ifeq verbose 1
+    @echo GMLINC=$(%GMLINC)
+!endif
+    @%make prepare_wgml_opts
+    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+    @%make prepare_whpcvt_opts
+    whpcvt -@ $(optfile_whpcvt) $*.ptf
+    @%create sysusr02.gml
+    -$(wgml) "$(book_src) ( file $(optfile_wgml)"
+    @if exist $*.cn1 @%erase $*.cn1
+    @$(RENCMD) sysusr03.gml $*.cn1
+    @if exist $*.h @%erase $*.h
+    @$(RENCMD) sysusr02.gml $*.h
+    @if exist $*.mix @%erase $*.mix
+    @$(RENCMD) sysusr01.gml $*.mix
+    whpcvt -h -@ $(optfile_whpcvt) $*.ptf
+
+####################################################
+compile_hpj_win : .PROCEDURE
+    @%create $^@
+    @%append $^@ ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $^@
+    @%append $^@ [Options]
+    @%append $^@ COMPRESS=TRUE
+    @%append $^@ WARNING=3
+    @%append $^@ CONTENTS=table_of_contents
+    @%append $^@ Title=$(book_title) Help
+!ifdef book_bmroot
+    @%append $^@ BMROOT=$(book_bmroot)
+!else
+    @%append $^@ BMROOT=$(book_incs)
+!endif
+    @%append $^@ OLDKEYPHRASE=NO
+    @%append $^@ ROOT=.
+    @%append $^@ [Config]
+    @%append $^@ BrowseButtons()
+    @%append $^@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $^@ CreateButton( "btn_up", "&Up", "Contents()" )
+    @%append $^@ [Files]
+    @%append $^@ $(hbook).rtf
+    @%append $^@ [MAP]
+    @%append $^@ $#include <$(hbook).hh>
+    @%append $^@ ; end of HPJ file
+
+####################################################
+compile_hpj_nt : .PROCEDURE
+    @%create $^@
+    @%append $^@ ; This file is maintained by WMAKE. Do not modify this file directly.
+    @%append $^@
+    @%append $^@ [OPTIONS]
+    @%append $^@ HCW=0
+    @%append $^@ COMPRESS=60 Hall Zeck
+    @%append $^@ LCID=0x409 0x0 0x0 ;English (United States)
+    @%append $^@ REPORT=Yes
+    @%append $^@ CONTENTS=table_of_contents
+    @%append $^@ TITLE=$(book_title) Help
+    @%append $^@ COPYRIGHT=Copyright 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
+!ifdef book_bmroot
+    @%append $^@ BMROOT=$(book_bmroot:/=\)
+!else
+    @%append $^@ BMROOT=$(book_incs:/=\)
+!endif
+    @%append $^@ ROOT=.
+    @%append $^@ HLP=.\$(hbook).hlp
+    @%append $^@ ERRORLOG=.\$(hbook).err
+    @%append $^@
+    @%append $^@ [FILES]
+    @%append $^@ $(hbook).rtf
+    @%append $^@
+    @%append $^@ [MAP]
+    @%append $^@ $#include <$(hbook).hh>
+    @%append $^@
+    @%append $^@ [WINDOWS]
+    @%append $^@ main="$(book_title) Help",,28932
+    @%append $^@
+    @%append $^@ [CONFIG]
+    @%append $^@ BrowseButtons()
+    @%append $^@ CreateButton( "btn_index", "&Index", "JumpId( `$(hbook).hlp', `index_of_topics' )" )
+    @%append $^@ CreateButton( "btn_up", "&Up", "Contents()" )
+
+#-------------------------------------------------------
+# create DOSEMU batch file to run wgml utility
+#-------------------------------------------------------
+$(dosemu_wgml_batch): $(__MAKEFILES__)
+    @%create $@
+    @%append $@ unix -s GMLLIB
+    @%append $@ unix -s GMLINC
+    @%append $@ ..\gml\dos\wgml.exe "%1 %2 %3 %4 %5 %6 %7 %8"
+    @%append $@ exitemu
+
+####################################################
+
+!include ../mif/clean.mif

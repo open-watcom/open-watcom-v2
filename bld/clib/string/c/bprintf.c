@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _bprintf() and _snprintf().
 *
 ****************************************************************************/
 
@@ -37,8 +36,9 @@
 #include "printf.h"
 
 struct  buf_limit {
-        CHAR_TYPE       *bufptr;
-        size_t          bufsize;
+    CHAR_TYPE   *bufptr;
+    size_t      bufsize;
+    int         bufover;
 };
 
 /*
@@ -46,43 +46,84 @@ struct  buf_limit {
  */
 static slib_callback_t buf_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, int op_char )
-    {
-        struct buf_limit *bufinfo;
-
-        bufinfo = (struct buf_limit *)specs->_o._dest;
-        if( specs->_o._output_count < bufinfo->bufsize ) {
-            *( bufinfo->bufptr++ ) = op_char;
-            specs->_o._output_count++;
-        }
+{
+    struct buf_limit    *bufinfo;
+    
+    bufinfo = (struct buf_limit *)specs->_dest;
+    if( specs->_output_count < bufinfo->bufsize ) {
+        *( bufinfo->bufptr++ ) = op_char;
+        specs->_output_count++;
+    } else {
+        bufinfo->bufover = -1;
     }
-
+}
 
 _WCRTLINK int __F_NAME(_vbprintf,_vbwprintf) ( CHAR_TYPE *s, size_t bufsize,
-                const CHAR_TYPE *format, va_list arg)
-    {
-        register int len;
-        auto    struct buf_limit bufinfo;
-        slib_callback_t *tmp;
+        const CHAR_TYPE *format, va_list arg)
+{
+    int                     len;
+    struct buf_limit        bufinfo;
+    slib_callback_t         *tmp;
 
-        bufinfo.bufptr  = s;
-        bufinfo.bufsize = bufsize - 1;
-#if defined(__386__) && defined(__QNX__)
-        /* avoid some segment relocations for 32-bit QNX */
-        tmp = (void (*)())buf_putc;
+    bufinfo.bufptr  = s;
+    bufinfo.bufsize = bufsize - 1;
+    bufinfo.bufover = 0;
+#if defined( __386__ ) && defined( __QNX__ )
+    /* avoid some segment relocations for 32-bit QNX */
+    tmp = (void (*)())buf_putc;
 #else
-        tmp = buf_putc;
+    tmp = buf_putc;
 #endif
-        len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, tmp );
-        s[len] = '\0';
-        return( len );
-    }
-
+    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, tmp );
+    s[len] = '\0';
+    return( len );
+}
 
 _WCRTLINK int __F_NAME(_bprintf,_bwprintf) ( CHAR_TYPE *dest, size_t bufsize,
-                const CHAR_TYPE *format, ... )
-    {
-        auto    va_list         args;
+            const CHAR_TYPE *format, ... )
+{
+    va_list     args;
 
-        va_start( args, format );
-        return( __F_NAME(_vbprintf,_vbwprintf)( dest, bufsize, format, args ) );
+    va_start( args, format );
+    return( __F_NAME(_vbprintf,_vbwprintf)( dest, bufsize, format, args ) );
+}
+
+// Notes:
+//  _vsnprintf, _vsnwprintf must return an error (-1) when buffer too small
+//  If a NULL character can fit, append it. If not, no error.
+
+_WCRTLINK int __F_NAME(_vsnprintf,_vsnwprintf) ( CHAR_TYPE *s, size_t bufsize,
+        const CHAR_TYPE *format, va_list arg)
+{
+    int                     len;
+    struct buf_limit        bufinfo;
+    slib_callback_t         *tmp;
+
+    bufinfo.bufptr  = s;
+    bufinfo.bufsize = bufsize;
+    bufinfo.bufover = 0;
+#if defined( __386__ ) && defined( __QNX__ )
+    /* avoid some segment relocations for 32-bit QNX */
+    tmp = (void (*)())buf_putc;
+#else
+    tmp = buf_putc;
+#endif
+    len = __F_NAME(__prtf,__wprtf)( &bufinfo, format, arg, tmp );
+    if( len < bufsize ) {
+        s[len] = '\0';
     }
+    if( bufinfo.bufover == 0 ) {
+        return( len );
+    } else {
+        return( -1 );
+    }
+}
+
+_WCRTLINK int __F_NAME(_snprintf,_snwprintf) ( CHAR_TYPE *dest, size_t bufsize,
+            const CHAR_TYPE *format, ... )
+{
+    va_list     args;
+
+    va_start( args, format );
+    return( __F_NAME(_vsnprintf,_vsnwprintf)( dest, bufsize, format, args ) );
+}

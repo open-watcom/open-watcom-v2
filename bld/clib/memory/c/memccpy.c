@@ -33,8 +33,10 @@
 #include "variety.h"
 #include <string.h>
 
-_WCRTLINK char *memccpy( char *dst, const char *src, int c, size_t cnt )
+_WCRTLINK void *memccpy( void *d, const void *s, int c, size_t cnt )
     {
+        char *dst = d;
+        const char *src = s;
         for(;;) {
             if( cnt == 0 ) break;
             *dst = *src;

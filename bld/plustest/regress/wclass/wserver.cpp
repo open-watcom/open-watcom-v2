@@ -26,7 +26,7 @@ HDDEDATA _export _far _pascal serverCallback( UINT type, UINT fmt, HCONV /*hconv
 				| CBF_SKIP_REGISTRATIONS\
 				| CBF_SKIP_UNREGISTRATIONS
 
-WEXPORT WServer::WServer( char* service, HANDLE inst, WObject* owner, sbc notify )
+WEXPORT WServer::WServer( char* service, HINSTANCE inst, WObject* owner, sbc notify )
 	: _procid( 0 )
 	, _service( 0 )
 	, _ok( FALSE )
@@ -73,7 +73,7 @@ HDDEDATA WEXPORT WServer::xtRequest( UINT fmt, HSZ /*htopic*/, HSZ hitem )
 		WString* reply = (_owner->*_notify)( (char*)*request );
 		HDDEDATA hdata = NIL;
 		ifptr( reply ) {
-			hdata = DdeCreateDataHandle( _procid, (char*)*reply, reply->size()+1, 0, hitem, fmt, FALSE );
+			hdata = DdeCreateDataHandle( _procid, (unsigned char*)((char*)*reply), reply->size()+1, 0, hitem, fmt, FALSE );
 			delete reply;
 		}
 		delete request;

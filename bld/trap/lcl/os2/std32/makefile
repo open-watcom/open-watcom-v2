@@ -1,14 +1,17 @@
-#pmake: build lcl os2 32 trap x86
+#pmake: lcl os_os2 cpu_386 trap
 #
-# Create the OS/2 STD32.DLL
+# Create the OS/2 STD32.DLL (16-bit version)
 #
+host_CPU = i86
+host_OS = os2
 
 os      = os2
 srv     = lcl
 cpu     = x86
 name    = std32
+which = TRAP
 
-extra_cflags =-i$(watcom_dir)\os220_h
+extra_c_flags =-i"$(lang_root)/h/os21x" -i"$(lang_root)/h/os2"
 
 extra_objs = &
         accmisc.obj &
@@ -30,4 +33,5 @@ extra_linker = &
         exp TellHandles_.4,TellHardMode_.5 &
         lib os2
 
-!include $(trap_dir)\trap.mif
+!include $(trap_dir)/lcl/lcl.mif
+!include $(trap_dir)/master.mif

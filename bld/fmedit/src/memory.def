@@ -1,2 +1,2 @@
-extern void * EdAlloc( int );
-extern void   EdFree( void * );
+extern void *EdAlloc( int );
+extern void  EdFree( void * );

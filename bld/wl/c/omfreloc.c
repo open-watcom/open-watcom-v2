@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines specific processing relocations in OMF.
 *
 ****************************************************************************/
 
-
-/*
- *  OMFRELOC:  routines specific processing relocations in OMF
- *
-*/
 
 #include "linkstd.h"
 #include "msg.h"
@@ -55,15 +49,15 @@
 #include "omfreloc.h"
 
 typedef struct bakpatlist {
-    struct bakpatlist * next;
-    virt_mem            addr;
+    struct bakpatlist   *next;
     unsigned_16         len;
+    segdata             *sdata;
     byte                loctype;
     bool                is32bit;
     char                data[1];
 } bakpat_list;
 
-static bakpat_list *    BakPats;
+static bakpat_list      *BakPats;
 
 #define MAX_THREADS 4
 
@@ -81,13 +75,16 @@ static fix_type RelocTypeMap[] = {
     FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
 };
 
-extern void ResetOMFReloc( void )
+static void GetTarget( unsigned loc, frame_spec *targ );
+static void GetFrame( unsigned frame, frame_spec *refframe );
+
+void ResetOMFReloc( void )
 /*******************************/
 {
     BakPats = NULL;
 }
 
-extern void DoRelocs( void )
+void DoRelocs( void )
 /**************************/
 /* Process FIXUP records. */
 {
@@ -96,11 +93,12 @@ extern void DoRelocs( void )
     unsigned    omftype;
     offset      place_to_fix;
     unsigned    loc;
-    signed_32   addend;
+    offset      addend;
     frame_spec  fthread;
     frame_spec  tthread;
 
-    if( ObjFormat & FMT_IGNORE_FIXUPP ) return;
+    if( ObjFormat & FMT_IGNORE_FIXUPP )
+        return;
     if( ObjFormat & FMT_IS_LIDATA ) {
         LnkMsg( LOC_REC+WRN+MSG_REL_IN_LIDATA, NULL );
         return;
@@ -109,14 +107,14 @@ extern void DoRelocs( void )
         typ = GET_U8_UN( ObjBuff );
         ++ObjBuff;
         omftype = (typ >> 2) & 7;
-        if( (typ & 0x80) == 0 ) {/*  thread */
-            if( typ & 0x40 ) {/*  frame */
+        if( (typ & 0x80) == 0 ) {   /*  thread */
+            if( typ & 0x40 ) {      /*  frame */
                 GetFrame( omftype, &FrameThreads[typ & 3] );
-            } else {/*  target */
+            } else {                /*  target */
                 GetTarget( omftype, &TargThreads[typ & 3] );
             }
-        } else { /* fixup */
-            if( typ & 0x20 ) {   // used in 32-bit microsoft fixups.
+        } else {                    /* fixup */
+            if( typ & 0x20 ) {      // used in 32-bit microsoft fixups.
                 switch( omftype ) {
                 case LOC_OFFSET:
                 case LOC_MS_LINK_OFFSET:
@@ -136,7 +134,7 @@ extern void DoRelocs( void )
             }
             place_to_fix = ((typ & 3) << 8) + GET_U8_UN( ObjBuff );
             ++ObjBuff;
-            typ = *ObjBuff;
+            typ = GET_U8_UN( ObjBuff );
             ++ObjBuff;
             loc = typ >> 4 & 7;
             if( typ & 0x80 ) {
@@ -151,12 +149,12 @@ extern void DoRelocs( void )
                 GetTarget( loc, &tthread );
             }
             addend = 0;
-            if( loc <= T_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
+            if( loc <= TARGET_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
                 if( ObjFormat & FMT_32BIT_REC ) {
-                    addend = *((signed_32 UNALIGN *)ObjBuff);
-                    ObjBuff += sizeof( signed_32 );
+                    addend = GET_U32_UN( ObjBuff );
+                    ObjBuff += sizeof( unsigned_32 );
                 } else {
-                    addend = GET_U16_UN(ObjBuff);
+                    addend = GET_U16_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
@@ -169,21 +167,22 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
 /**********************************************************/
 /* Get frame for fixup. */
 {
-    extnode *   ext;
-    grpnode *   group;
-    segnode *   seg;
+    extnode     *ext;
+    grpnode     *group;
+    segnode     *seg;
     unsigned    index;
 
-    if( frame < F_LOC ) {
+    index = 0;
+    if( frame < FRAME_LOC ) {
         index = GetIdx();
     }
     refframe->type = frame;
     switch( frame ) {
-    case F_SEG:
+    case FRAME_SEG:
         seg = (segnode *) FindNode( SegNodes, index );
         refframe->u.sdata = seg->entry;
         break;
-    case F_GRP:
+    case FRAME_GRP:
         group = (grpnode *) FindNode( GrpNodes, index );
         if( group->entry == NULL ) {
             refframe->type = FIX_FRAME_FLAT;
@@ -191,7 +190,7 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
             refframe->u.group = group->entry;
         }
         break;
-    case F_EXT:
+    case FRAME_EXT:
         ext = (extnode *) FindNode( ExtNodes, index );
         if( IS_SYM_IMPORTED( ext->entry ) ) {
             refframe->type = FIX_FRAME_TARG;
@@ -199,8 +198,8 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
             refframe->u.sym = ext->entry;
         }
         break;
-    case F_TARG:
-    case F_LOC:
+    case FRAME_TARG:
+    case FRAME_LOC:
         break;
     default:
         BadObject();
@@ -210,72 +209,74 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
 static void GetTarget( unsigned loc, frame_spec *targ )
 /*****************************************************/
 {
-    extnode *           ext;
-    grpnode *           group;
-    segnode *           seg;
+    extnode             *ext;
+    grpnode             *group;
+    segnode             *seg;
 
     targ->type = loc & 3;
     switch( loc ) {
-    case T_SEGWD:
-    case T_SEG:
+    case TARGET_SEGWD:
+    case TARGET_SEG:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         targ->u.sdata = seg->entry;
         break;
-    case T_GRPWD:
-    case T_GRP:
+    case TARGET_GRPWD:
+    case TARGET_GRP:
         group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         targ->u.group = group->entry;
         break;
-    case T_EXTWD:
-    case T_EXT:
+    case TARGET_EXTWD:
+    case TARGET_EXT:
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         targ->u.sym = ext->entry;
         break;
-    case T_ABSWD:
-    case T_ABS:
+    case TARGET_ABSWD:
+    case TARGET_ABS:
         _TargU16toHost( _GetU16UN( ObjBuff ), targ->u.abs );
         ObjBuff += sizeof( unsigned_16 );
         break;
     }
 }
 
-static void StoreBakPat( segnode * seg, byte loctype )
-/****************************************************/
+static void StoreBakPat( segdata *sdata, byte loctype )
+/*****************************************************/
 /* store a bakpat record away for future processing. */
 {
     unsigned            len;
-    bakpat_list *       bkptr;
+    bakpat_list         *bkptr;
 
     len = EOObjRec - ObjBuff;
     _ChkAlloc( bkptr, sizeof(bakpat_list) + len - 1 );
     bkptr->len = len;
-    bkptr->addr = seg->entry->data;
     bkptr->loctype = loctype;
+    bkptr->sdata = sdata;   /* We don't know the data offset yet. */
     bkptr->is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
     memcpy( bkptr->data, ObjBuff, len );
     LinkList( &BakPats, bkptr );
 }
 
-extern void ProcBakpat( void )
+void ProcBakpat( void )
 /****************************/
 /* store the bakpat record away for future processing */
 {
-    segnode *           seg;
+    segnode             *seg;
     byte                loctype;
 
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEG_DEAD ) return;
-    loctype = *ObjBuff++;
-    StoreBakPat( seg, loctype );
+    if( seg->info & SEG_DEAD )
+        return;
+    loctype = GET_U8_UN( ObjBuff );
+    ++ObjBuff;
+    StoreBakPat( seg->entry, loctype );
 }
 
-extern void DoBakPats( void )
+void DoBakPats( void )
 /***************************/
 /* go through the list of stored bakpats and apply them all */
 {
-    char *              data;
-    bakpat_list *       bkptr;
-    bakpat_list *       next;
+    char                *data;
+    bakpat_list         *bkptr;
+    bakpat_list         *next;
     offset              off;
     offset              value;
     unsigned_8          value8;
@@ -303,7 +304,8 @@ extern void DoBakPats( void )
                 data += sizeof(unsigned_16);
                 bkptr->len -= 2 * sizeof(unsigned_16);
             }
-            vmemloc = bkptr->addr + off;
+            /* Now the sdata->data pointer should be valid. */
+            vmemloc = bkptr->sdata->data + off;
             switch( bkptr->loctype ) {
             case 0:
                 ReadInfo( vmemloc, &value8, sizeof(unsigned_8) );
@@ -328,20 +330,21 @@ extern void DoBakPats( void )
     BakPats = NULL;
 }
 
-extern void ProcNbkpat( void )
+void ProcNbkpat( void )
 /****************************/
 /* process a named bakpat record */
 {
-    list_of_names *     symname;
-    symbol *            sym;
-    segnode             seg;
+    list_of_names       *symname;
+    symbol              *sym;
     byte                loctype;
 
-    loctype = *ObjBuff++;
+    loctype = GET_U8_UN( ObjBuff );
+    ++ObjBuff;
     symname = FindName( GetIdx() );
     sym = RefISymbol( symname->name );
-    if( !IS_SYM_COMDAT(sym) ) return;   /* can't handle these otherwise */
-    if( sym->info & SYM_DEAD ) return;
-    seg.entry = sym->p.seg;
-    StoreBakPat( &seg, loctype );
+    if( !IS_SYM_COMDAT(sym) )           /* can't handle these otherwise */
+        return;
+    if( sym->info & SYM_DEAD )
+        return;
+    StoreBakPat( sym->p.seg, loctype );
 }

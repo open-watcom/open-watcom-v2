@@ -44,7 +44,7 @@ static void             PutPalette( short, long );
 #endif
 
 
-long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
+_WCRTLINK long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
 /*==========================================================
 
    This routine sets the colour indexed by pixval to the new colour.  It
@@ -57,17 +57,10 @@ long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
         _ErrorStatus = _GRINVALIDPARAMETER;
         return( -1 );
     }
-#if defined( _NEC_PC )
-    if( _CurrState->vc.mode == _98TEXT80 ) {
-        _ErrorStatus = _GRERROR;
-        return( -1 );
-    }
-#else
     if( _CurrState->vc.adapter < _MCGA ) {
         _ErrorStatus = _GRERROR;
         return( -1 );
     }
-#endif
     prev = GetPalette( pixval );
     PutPalette( pixval, colour );
 
@@ -83,20 +76,20 @@ void _RemapNum( long _WCI86FAR *colours, short num )
 {
     short               i;
 
-#if !( defined( _NEC_PC ) || defined( _DEFAULT_WINDOWS ) )
+#if !defined( _DEFAULT_WINDOWS )
     if( _CurrState->vc.adapter != _EGA ) {
         if( _FastMap( colours, num ) ) {
             return;
         }
     }
-#endif
+#endif    
     for( i = 0; i < num; ++i ) {
         PutPalette( i, colours[ i ] );
     }
 }
 
 
-short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
+_WCRTLINK short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
 /*=======================================================
 
    This routine remaps the entire palette to the colours specified by
@@ -105,13 +98,6 @@ short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
 {
     short               num;
 
-#if defined( _NEC_PC )
-    if( _CurrState->vc.mode == _98TEXT80 ) {
-        _ErrorStatus = _GRERROR;
-        return( 0 );
-    }
-    num = _CurrState->vc.numcolors;
-#else
     if( _CurrState->vc.adapter < _MCGA ||
         ( _CurrState->vc.mode == 7 || _CurrState->vc.mode == 15 ) ) {
         _ErrorStatus = _GRERROR;
@@ -122,7 +108,6 @@ short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
     } else {
         num = 16;       // vc.numcolors is 32
     }
-#endif
     _RemapNum( colours, num );
     return( -1 );
 }
@@ -130,107 +115,7 @@ short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
 Entry( _REMAPALLPALETTE, _remapallpalette ) // alternate entry-point
 
 
-#if defined( _NEC_PC )
-
-static short            NECPalTable[ 8 ] = {
-    0, 2, 1, 3, 0, 2, 1, 3
-};
-
-static short ConvertColour( long colour )
-//=======================================
-
-// Convert a long colour value to an index in the range 0 to 7.
-
-{
-    short                 i;
-
-    for( i = 0; i < 16; i++ ) {
-        if( colour == _NECDefPalette[ i ] ) {
-            return( i & 7 );
-        }
-    }
-    return( colour & 7 );         /* otherwise, just use colour mod 8 */
-}
-
-
-static void PutPalette( short pixval, long colour )
-//=================================================
-
-{
-    unsigned short      blue;
-    unsigned short      green;
-    unsigned short      red;
-    short               col;
-    char                index;
-    char                palette;
-
-    switch( _CurrState->vc.mode ) {
-    case _98RESS8COLOR :
-    case _98RESS16COLOR :
-    case _98RES8COLOR :
-    case _98RES16COLOR :
-    case _98HIRES16COLOR :
-    case _98HIRESS16COLOR :
-        green = ( colour >> 8 ) & 0x0000000F;
-        red = colour & 0x0000000F;
-        blue = ( colour >> 16 ) & 0x0000000F;
-
-        outp( 0xA8, pixval );           // colour index value to change
-        outp( 0xAA, green );            // amount of green
-        outp( 0xAC, red );              //    "   "  red
-        outp( 0xAE, blue );             //    "   "  blue
-        break;
-
-    case _98RESSCOLOR :
-    case _98RESCOLOR :
-        col = ConvertColour( colour );
-        col = _SwapBits( col );
-        index = NECPalTable[ pixval ];
-        palette = _NECPalette[ index ];
-
-        if( pixval >= 4 ) {
-            palette = ( palette & 0xF0 ) | col;
-        } else {
-            palette = ( palette & 0x0F ) | ( col << 4 );
-        }
-        _NECPalette[ index ] = palette;
-
-        outp( 0xAE - 2 * index, palette ); // remap specified colour
-        break;
-    }
-}
-
-
-static long GetPalette( short pixval )
-//====================================
-
-{
-    long                prev;
-    char                index;
-    char                palette;
-
-    switch( _CurrState->vc.mode ) {
-    case _98RESS8COLOR :
-    case _98RESS16COLOR :
-    case _98RES8COLOR :
-    case _98RES16COLOR :
-        prev = 0;
-        break;
-    case _98RESSCOLOR :
-    case _98RESCOLOR :
-        index = NECPalTable[ pixval ];
-        palette = _NECPalette[ index ];
-        if( pixval >= 4 ) {
-            prev = palette & 0x0F;
-        } else {
-            prev = palette >> 4;
-        }
-    }
-    return( prev );
-}
-
-
-#elif defined( _DEFAULT_WINDOWS )
+#if defined( _DEFAULT_WINDOWS )
 
 static void PutPalette( short pixval, WPI_COLOUR colour )
 //=================================================

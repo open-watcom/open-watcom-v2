@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default raw DLL entrypoint for Win32.
 *
 ****************************************************************************/
 
@@ -33,4 +32,4 @@
 #include "variety.h"
 #include <process.h>
 
-int (__stdcall *_pRawDllMain)(void *, unsigned, void *) = 0;
+int (__stdcall *_pRawDllMain)( void *, unsigned, void * ) = 0;

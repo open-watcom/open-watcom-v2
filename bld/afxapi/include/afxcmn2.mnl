@@ -1,0 +1,2143 @@
+/*
+ *  afxcmn2.inl Inline implementation of functions declared in afxcmn.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE CImageList *CTreeCtrl::CreateDragImage( HTREEITEM hItem )
+/******************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        TVM_CREATEDRAGIMAGE, 0, (LPARAM)hItem ) ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::DeleteAllItems()
+/*****************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_DELETEITEM, 0, (LPARAM)TVI_ROOT ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::DeleteItem( HTREEITEM hItem )
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_DELETEITEM, 0, (LPARAM)hItem ) );
+}
+
+AFX_INLINE CEdit *CTreeCtrl::EditLabel( HTREEITEM hItem )
+/*******************************************************/
+{
+    return( (CEdit *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, TVM_EDITLABEL, 0,
+                                                            (LPARAM)hItem ) ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::EndEditLabelNow( BOOL fCancelWithoutSave )
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_ENDEDITLABELNOW, fCancelWithoutSave, 0L ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::EnsureVisible( HTREEITEM hItem )
+/*********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_ENSUREVISIBLE, 0, (LPARAM)hItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::Expand( HTREEITEM hItem, UINT nCode )
+/**************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_EXPAND, nCode, (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetChildItem( HTREEITEM hItem ) const
+/*******************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_CHILD,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::GetCount() const
+/*****************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_GETCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetDropHilightItem() const
+/********************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_DROPHILITE, 0L ) );
+}
+
+AFX_INLINE CEdit *CTreeCtrl::GetEditControl() const
+/*************************************************/
+{
+    return( (CEdit *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, TVM_GETEDITCONTROL,
+                                                            0, 0L ) ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetFirstVisibleItem() const
+/*********************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_FIRSTVISIBLE, 0L ) );
+}
+
+AFX_INLINE CImageList *CTreeCtrl::GetImageList( UINT nImageList ) const
+/*********************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, TVM_GETIMAGELIST,
+                                                               nImageList, 0L ) ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::GetIndent() const
+/******************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_GETINDENT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::GetItem( TVITEM *pItem ) const
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_GETITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::GetItemRect( HTREEITEM hItem, LPRECT lpRect,
+                                        BOOL bTextOnly ) const
+/************************************************************/
+{
+    ASSERT( lpRect != NULL );
+    *((HTREEITEM *)lpRect) = hItem;
+    return( (BOOL)::SendMessage( m_hWnd, TVM_GETITEMRECT, bTextOnly, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetNextItem( HTREEITEM hItem, UINT nCode ) const
+/******************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, nCode, (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetNextSiblingItem( HTREEITEM hItem ) const
+/*************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_NEXT,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetNextVisibleItem( HTREEITEM hItem ) const
+/*************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_NEXTVISIBLE,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetParentItem( HTREEITEM hItem ) const
+/********************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_PARENT,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetPrevSiblingItem( HTREEITEM hItem ) const
+/*************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_PREVIOUS,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetPrevVisibleItem( HTREEITEM hItem ) const
+/*************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_PREVIOUSVISIBLE,
+                                      (LPARAM)hItem ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetRootItem() const
+/*************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_ROOT, 0L ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetSelectedItem() const
+/*****************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0L ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::GetVisibleCount() const
+/************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_GETVISIBLECOUNT, 0, 0L ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::HitTest( TVHITTESTINFO *pHitTestInfo ) const
+/**************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_HITTEST, 0, (LPARAM)pHitTestInfo ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::InsertItem( LPTVINSERTSTRUCT lpInsertStruct )
+/***************************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_INSERTITEM, 0,
+                                      (LPARAM)lpInsertStruct ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::Select( HTREEITEM hItem, UINT nCode )
+/**************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SELECTITEM, nCode, (LPARAM)hItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SelectDropTarget( HTREEITEM hItem )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SELECTITEM, TVGN_DROPHILITE,
+                                 (LPARAM)hItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SelectItem( HTREEITEM hItem )
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SELECTITEM, TVGN_CARET, (LPARAM)hItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SelectSetFirstVisible( HTREEITEM hItem )
+/*****************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SELECTITEM, TVGN_FIRSTVISIBLE,
+                                 (LPARAM)hItem ) );
+}
+
+AFX_INLINE CImageList *CTreeCtrl::SetImageList( CImageList *pImageList,
+                                                int nImageListType )
+/******************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, TVM_SETIMAGELIST,
+        nImageListType, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE void CTreeCtrl::SetIndent( UINT nIndent )
+/**************************************************/
+{
+    ::SendMessage( m_hWnd, TVM_SETINDENT, nIndent, 0L );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SetItem( TVITEM *pItem )
+/*************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SETITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SortChildren( HTREEITEM hItem )
+/********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SORTCHILDREN, 0, (LPARAM)hItem ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SortChildrenCB( LPTVSORTCB pSort )
+/***********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SORTCHILDRENCB, 0, (LPARAM)pSort ) );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CToolTipCtrl *CTreeCtrl::GetToolTips() const
+/*****************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        TVM_GETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE CToolTipCtrl *CTreeCtrl::SetToolTips( CToolTipCtrl *pWndTip )
+/**********************************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        TVM_SETTOOLTIPS, (WPARAM)pWndTip->GetSafeHwnd(), 0L ) ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE COLORREF CTreeCtrl::GetBkColor() const
+/***********************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_GETBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::GetInsertMarkColor() const
+/*******************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_GETINSERTMARKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE SHORT CTreeCtrl::GetItemHeight() const
+/***********************************************/
+{
+    return( (SHORT)::SendMessage( m_hWnd, TVM_GETITEMHEIGHT, 0, 0L ) );
+}
+
+AFX_INLINE HTREEITEM CTreeCtrl::GetLastVisibleItem() const
+/********************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_GETNEXTITEM, TVGN_LASTVISIBLE, 0L ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::GetScrollTime() const
+/**********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_GETSCROLLTIME, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::GetTextColor() const
+/*************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_GETTEXTCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::SetBkColor( COLORREF clr )
+/*******************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_SETBKCOLOR, 0, (LPARAM)clr ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SetInsertMark( HTREEITEM hItem, BOOL fAfter )
+/**********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SETINSERTMARK, fAfter, (LPARAM)hItem ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::SetInsertMarkColor( COLORREF clrNew )
+/******************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_SETINSERTMARKCOLOR, 0,
+                                     (LPARAM)clrNew ) );
+}
+
+AFX_INLINE SHORT CTreeCtrl::SetItemHeight( SHORT cyHeight )
+/*********************************************************/
+{
+    return( (SHORT)::SendMessage( m_hWnd, TVM_SETITEMHEIGHT, cyHeight, 0L ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::SetScrollTime( UINT uScrollTime )
+/**********************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_SETSCROLLTIME, uScrollTime, 0L ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::SetTextColor( COLORREF clr )
+/*********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_SETTEXTCOLOR, 0, (LPARAM)clr ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE COLORREF CTreeCtrl::GetLineColor() const
+/*************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_GETLINECOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CTreeCtrl::SetLineColor( COLORREF clrNew )
+/************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, TVM_SETLINECOLOR, 0, (LPARAM)clrNew ) );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE HTREEITEM CTreeCtrl::MapAccIdToItem( UINT uAccId ) const
+/*****************************************************************/
+{
+    return( (HTREEITEM)::SendMessage( m_hWnd, TVM_MAPACCIDTOHTREEITEM, uAccId, 0L ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::MapItemToAccId( HTREEITEM hItem ) const
+/****************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_MAPHTREEITEMTOACCID, (WPARAM)hItem, 0L ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE DWORD CTreeCtrl::GetExtendedStyle() const
+/**************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TVM_GETEXTENDEDSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE UINT CTreeCtrl::GetSelectedCount()
+/*******************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, TVM_GETSELECTEDCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CTreeCtrl::SetAutoscrollInfo( UINT uPixelsPerSec, UINT uUpdateTime )
+/**********************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, TVM_SETAUTOSCROLLINFO, uPixelsPerSec,
+                                 uUpdateTime ) );
+}
+
+AFX_INLINE DWORD CTreeCtrl::SetExtendedStyle( DWORD dwExMask, DWORD dwExStyles )
+/******************************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, TVM_SETEXTENDEDSTYLE, dwExMask, dwExStyles ) );
+}
+
+AFX_INLINE void CTreeCtrl::ShowInfoTip( HTREEITEM hItem )
+/*******************************************************/
+{
+    ::SendMessage( m_hWnd, TVM_SHOWINFOTIP, 0, (LPARAM)hItem );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE BOOL CListCtrl::Arrange( UINT nCode )
+/**********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_ARRANGE, nCode, 0L ) );
+}
+
+AFX_INLINE CImageList *CListCtrl::CreateDragImage( int nItem, LPPOINT lpPoint )
+/*****************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd,
+        LVM_CREATEDRAGIMAGE, nItem, (LPARAM)lpPoint ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::DeleteAllItems()
+/*****************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_DELETEALLITEMS, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::DeleteColumn( int nCol )
+/*************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_DELETECOLUMN, nCol, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::DeleteItem( int nItem )
+/************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_DELETEITEM, nItem, 0L ) );
+}
+
+AFX_INLINE CEdit *CListCtrl::EditLabel( int nItem )
+/*************************************************/
+{
+    return( (CEdit *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, LVM_EDITLABEL,
+                                                            nItem, 0L ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::EnsureVisible( int nItem, BOOL bPartialOK )
+/********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_ENSUREVISIBLE, nItem, bPartialOK ) );
+}
+
+AFX_INLINE int CListCtrl::FindItem( LVFINDINFO *pFindInfo, int nStart ) const
+/***************************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_FINDITEM, nStart, (LPARAM)pFindInfo ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::GetBkColor() const
+/***********************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_GETBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE UINT CListCtrl::GetCallbackMask() const
+/************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_GETCALLBACKMASK, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetCheck( int nItem ) const
+/****************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_GETITEMSTATE, nItem, LVIS_STATEIMAGEMASK ) ==
+            INDEXTOSTATEIMAGEMASK( 2 ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetColumn( int nCol, LVCOLUMN *pColumn ) const
+/***********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETCOLUMN, nCol, (LPARAM)pColumn ) );
+}
+
+AFX_INLINE int CListCtrl::GetColumnWidth( int nCol ) const
+/********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETCOLUMNWIDTH, nCol, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetCountPerPage() const
+/***********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETCOUNTPERPAGE, 0, 0L ) );
+}
+
+AFX_INLINE CEdit *CListCtrl::GetEditControl() const
+/*************************************************/
+{
+    return( (CEdit *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, LVM_GETEDITCONTROL,
+                                                            0, 0L ) ) );
+}
+
+AFX_INLINE POSITION CListCtrl::GetFirstSelectedItemPosition() const
+/*****************************************************************/
+{
+    return( (POSITION)(::SendMessage( m_hWnd, LVM_GETNEXTITEM, -1,
+                                      LVNI_SELECTED ) + 1) );
+}
+
+AFX_INLINE CImageList *CListCtrl::GetImageList( int nImageList ) const
+/********************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, LVM_GETIMAGELIST,
+                                                               nImageList, 0L ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetItem( LVITEM *pItem ) const
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE int CListCtrl::GetItemCount() const
+/********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETITEMCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetItemPosition( int nItem, LPPOINT lpPoint ) const
+/****************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETITEMPOSITION, nItem, (LPARAM)lpPoint ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetItemRect( int nItem, LPRECT lpRect, UINT nCode ) const
+/**********************************************************************************/
+{
+    ASSERT( lpRect != NULL );
+    lpRect->left = nCode;
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETITEMRECT, nItem, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetItemSpacing( BOOL fSmall, int *pnHorzSpacing,
+                                           int *pnVertSpacing ) const
+/*******************************************************************/
+{
+    DWORD dwResult = (DWORD)::SendMessage( m_hWnd, LVM_GETITEMSPACING, fSmall, 0L );
+    if( pnHorzSpacing != NULL ) {
+        *pnHorzSpacing = LOWORD( dwResult );
+    }
+    if( pnVertSpacing != NULL ) {
+        *pnVertSpacing = HIWORD( dwResult );
+    }
+    return( TRUE );
+}
+
+AFX_INLINE UINT CListCtrl::GetItemState( int nItem, UINT nMask ) const
+/********************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_GETITEMSTATE, nItem, nMask ) );
+}
+
+AFX_INLINE int CListCtrl::GetNextItem( int nItem, int nFlags ) const
+/******************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETNEXTITEM, nItem, nFlags ) );
+}
+
+AFX_INLINE int CListCtrl::GetNextSelectedItem( POSITION &pos ) const
+/******************************************************************/
+{
+    int nItem = (int)pos - 1;
+    pos = (POSITION)(::SendMessage( m_hWnd, LVM_GETNEXTITEM, nItem, LVNI_SELECTED ) + 1);
+    return( nItem );
+}
+
+AFX_INLINE BOOL CListCtrl::GetOrigin( LPPOINT lpPoint ) const
+/***********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETORIGIN, 0, (LPARAM)lpPoint ) );
+}
+
+AFX_INLINE UINT CListCtrl::GetSelectedCount() const
+/*************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_GETSELECTEDCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetStringWidth( LPCTSTR lpsz ) const
+/************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETSTRINGWIDTH, 0, (LPARAM)lpsz ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::GetTextBkColor() const
+/***************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_GETTEXTBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::GetTextColor() const
+/*************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_GETTEXTCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetTopIndex() const
+/*******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETTOPINDEX, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetViewRect( LPRECT lpRect ) const
+/***********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETVIEWRECT, 0, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE int CListCtrl::HitTest( LVHITTESTINFO *pHitTestInfo ) const
+/********************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_HITTEST, 0, (LPARAM)pHitTestInfo ) );
+}
+
+AFX_INLINE int CListCtrl::InsertColumn( int nCol, const LVCOLUMN *pColumn )
+/*************************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_INSERTCOLUMN, nCol, (LPARAM)pColumn ) );
+}
+
+AFX_INLINE int CListCtrl::InsertItem( const LVITEM *pItem )
+/*********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_INSERTITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE BOOL CListCtrl::RedrawItems( int nFirst, int nLast )
+/*************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_REDRAWITEMS, nFirst, nLast ) );
+}
+
+AFX_INLINE BOOL CListCtrl::Scroll( CSize size )
+/*********************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SCROLL, size.cx, size.cy ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetBkColor( COLORREF cr )
+/**************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETBKCOLOR, 0, cr ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetCallbackMask( UINT nMask )
+/******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETCALLBACKMASK, nMask, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetColumn( int nCol, const LVCOLUMN *pColumn )
+/***********************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETCOLUMN, nCol, (LPARAM)pColumn ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetColumnWidth( int nCol, int cx )
+/***********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETCOLUMNWIDTH, nCol,
+                                 MAKELPARAM( cx, 0 ) ) );
+}
+
+AFX_INLINE CImageList *CListCtrl::SetImageList( CImageList *pImageList,
+                                                int nImageListType )
+/******************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, LVM_SETIMAGELIST,
+        nImageListType, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetItem( const LVITEM *pItem )
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE void CListCtrl::SetItemCount( int nItems )
+/***************************************************/
+{
+    ::SendMessage( m_hWnd, LVM_SETITEMCOUNT, nItems, 0L );
+}
+
+AFX_INLINE BOOL CListCtrl::SetItemPosition( int nItem, POINT pt )
+/***************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETITEMPOSITION32, nItem, (LPARAM)&pt ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetItemState( int nItem, LVITEM *pItem )
+/*****************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETITEMSTATE, nItem, (LPARAM)pItem ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetTextBkColor( COLORREF cr )
+/******************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETTEXTBKCOLOR, 0, cr ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetTextColor( COLORREF cr )
+/****************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETTEXTCOLOR, 0, cr ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SortItems( PFNLVCOMPARE pfnCompare, DWORD_PTR dwData )
+/*******************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SORTITEMS, (WPARAM)dwData, (LPARAM)pfnCompare ) );
+}
+
+AFX_INLINE BOOL CListCtrl::Update( int nItem )
+/********************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_UPDATE, nItem, 0L ) );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CSize CListCtrl::ApproximateViewRect( CSize sz, int iCount ) const
+/***************************************************************************/
+{
+    return( CSize( (DWORD)::SendMessage( m_hWnd, LVM_APPROXIMATEVIEWRECT, iCount,
+                                         MAKELPARAM( sz.cx, sz.cy ) ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetColumnOrderArray( LPINT piArray, int nCount ) const
+/*******************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETCOLUMNORDERARRAY, nCount,
+                                 (LPARAM)piArray ) );
+}
+
+AFX_INLINE DWORD CListCtrl::GetExtendedStyle() const
+/**************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE CHeaderCtrl* CListCtrl::GetHeaderCtrl() const
+/******************************************************/
+{
+    return( (CHeaderCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, LVM_GETHEADER,
+                                                                  0, 0L ) ) );
+}
+
+AFX_INLINE HCURSOR CListCtrl::GetHotCursor() const
+/************************************************/
+{
+    return( (HCURSOR)::SendMessage( m_hWnd, LVM_GETHOTCURSOR, 0, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetHotItem() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETHOTITEM, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetSubItemRect( int iItem, int iSubItem, int nArea,
+                                           CRect &ref ) const
+/***********************************************************/
+{
+    ref.left = nArea;
+    ref.top = iSubItem;
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETSUBITEMRECT, iItem, (LPARAM)&ref ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetColumnOrderArray( int iCount, LPINT piArray )
+/*************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETCOLUMNORDERARRAY, iCount,
+                                 (LPARAM)piArray ) );
+}
+
+AFX_INLINE DWORD CListCtrl::SetExtendedStyle( DWORD dwNewStyle )
+/**************************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
+                                  dwNewStyle ) );
+}
+
+AFX_INLINE HCURSOR CListCtrl::SetHotCursor( HCURSOR hc )
+/******************************************************/
+{
+    return( (HCURSOR)::SendMessage( m_hWnd, LVM_SETHOTCURSOR, 0, (LPARAM)hc ) );
+}
+
+AFX_INLINE int CListCtrl::SetHotItem( int iIndex )
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_SETHOTITEM, iIndex, 0L ) );
+}
+
+AFX_INLINE CSize CListCtrl::SetIconSpacing( int cx, int cy )
+/**********************************************************/
+{
+    return( CSize( (DWORD)::SendMessage( m_hWnd, LVM_SETICONSPACING, 0,
+                                         MAKELPARAM( cx, cy ) ) ) );
+}
+
+AFX_INLINE CSize CListCtrl::SetIconSpacing( CSize size )
+/******************************************************/
+{
+    return( CSize( (DWORD)::SendMessage( m_hWnd, LVM_SETICONSPACING, 0,
+                                         MAKELPARAM( size.cx, size.cy ) ) ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetItemCountEx( int nItems, DWORD dwFlags )
+/********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETITEMCOUNT, nItems, dwFlags ) );
+}
+
+AFX_INLINE int CListCtrl::SubItemHitTest( LPLVHITTESTINFO pInfo )
+/***************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM)pInfo ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE BOOL CListCtrl::GetBkImage( LVBKIMAGE *plvbkImage ) const
+/******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETBKIMAGE, 0, (LPARAM)plvbkImage ) );
+}
+
+AFX_INLINE DWORD CListCtrl::GetHoverTime() const
+/**********************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, LVM_GETHOVERTIME, 0, 0L ) );
+}
+
+AFX_INLINE UINT CListCtrl::GetNumberOfWorkAreas() const
+/*****************************************************/
+{
+    UINT uResult = 0;
+    ::SendMessage( m_hWnd, LVM_GETNUMBEROFWORKAREAS, 0, (LPARAM)&uResult );
+    return( uResult );
+}
+
+AFX_INLINE int CListCtrl::GetSelectionMark() const
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETSELECTIONMARK, 0, 0L ) );
+}
+
+AFX_INLINE CToolTipCtrl *CListCtrl::GetToolTips() const
+/*****************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        LVM_GETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE void CListCtrl::GetWorkAreas( int nWorkAreas, LPRECT prc ) const
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, LVM_GETWORKAREAS, nWorkAreas, (LPARAM)prc );
+}
+
+AFX_INLINE BOOL CListCtrl::SetBkImage( LVBKIMAGE *plvbkImage )
+/************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETBKIMAGE, 0, (LPARAM)plvbkImage ) );
+}
+
+AFX_INLINE DWORD CListCtrl::SetHoverTime( DWORD dwHoverTime )
+/***********************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, LVM_SETHOVERTIME, 0, dwHoverTime ) );
+}
+
+AFX_INLINE int CListCtrl::SetSelectionMark( int iIndex )
+/******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_SETSELECTIONMARK, 0, iIndex ) );
+}
+
+AFX_INLINE CToolTipCtrl *CListCtrl::SetToolTips( CToolTipCtrl *pWndTip )
+/**********************************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        LVM_SETTOOLTIPS, 0, (LPARAM)pWndTip->GetSafeHwnd() ) ) );
+}
+
+AFX_INLINE void CListCtrl::SetWorkAreas( int nWorkAreas, LPRECT lpRect )
+/**********************************************************************/
+{
+    ::SendMessage( m_hWnd, LVM_SETWORKAREAS, nWorkAreas, (LPARAM)lpRect );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0500)
+
+AFX_INLINE BOOL CListCtrl::SortItemsEx( PFNLVCOMPARE pfnCompare, DWORD_PTR dwData )
+/*********************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SORTITEMSEX, (WPARAM)dwData,
+                           (LPARAM)pfnCompare ) );
+}
+
+#endif // (_WIN32_IE >= 0x0500)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE void CListCtrl::CancelEditLabel()
+/******************************************/
+{
+    ::SendMessage( m_hWnd, LVM_CANCELEDITLABEL, 0, 0L );
+}
+
+AFX_INLINE LRESULT CListCtrl::EnableGroupView( BOOL fEnable )
+/***********************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_ENABLEGROUPVIEW, fEnable, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetGroupInfo( int iGroupId, PLVGROUP pgrp ) const
+/*************************************************************************/
+{
+    ASSERT( pgrp != NULL );
+    pgrp->cbSize = sizeof( LVGROUP );
+    return( (int)::SendMessage( m_hWnd, LVM_GETGROUPINFO, iGroupId, (LPARAM)pgrp ) );
+}
+
+AFX_INLINE void CListCtrl::GetGroupMetrics( PLVGROUPMETRICS pGroupMetrics ) const
+/*******************************************************************************/
+{
+    ASSERT( pGroupMetrics != NULL );
+    pGroupMetrics->cbSize = sizeof( LVGROUPMETRICS );
+    ::SendMessage( m_hWnd, LVM_GETGROUPMETRICS, 0, (LPARAM)pGroupMetrics );
+}
+
+AFX_INLINE BOOL CListCtrl::GetInsertMark( LPLVINSERTMARK lvim ) const
+/*******************************************************************/
+{
+    ASSERT( lvim != NULL );
+    lvim->cbSize = sizeof( LVINSERTMARK );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETINSERTMARK, 0, (LPARAM)lvim ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::GetInsertMarkColor() const
+/*******************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_GETINSERTMARKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetInsertMarkRect( LPRECT pRect ) const
+/***************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETINSERTMARKRECT, 0, (LPARAM)pRect ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::GetOutlineColor() const
+/****************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_GETOUTLINECOLOR, 0, 0L ) );
+}
+
+AFX_INLINE UINT CListCtrl::GetSelectedColumn() const
+/**************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_GETSELECTEDCOLUMN, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetTileInfo( PLVTILEINFO pti ) const
+/*************************************************************/
+{
+    ASSERT( pti != NULL );
+    pti->cbSize = sizeof( LVTILEINFO );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETTILEINFO, 0, (LPARAM)pti ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetTileViewInfo( PLVTILEVIEWINFO ptvi ) const
+/**********************************************************************/
+{
+    ASSERT( ptvi != NULL );
+    ptvi->cbSize = sizeof( LVTILEVIEWINFO );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETTILEVIEWINFO, 0, (LPARAM)ptvi ) );
+}
+
+AFX_INLINE DWORD CListCtrl::GetView() const
+/*****************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, LVM_GETVIEW, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::HasGroup( int iGroupId ) const
+/*******************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_HASGROUP, iGroupId, 0L ) );
+}
+
+AFX_INLINE LRESULT CListCtrl::InsertGroup( int index, PLVGROUP pgrp )
+/*******************************************************************/
+{
+    ASSERT( pgrp != NULL );
+    pgrp->cbSize = sizeof( LVGROUP );
+    return( ::SendMessage( m_hWnd, LVM_INSERTGROUP, index, (LPARAM)pgrp ) );
+}
+
+AFX_INLINE LRESULT CListCtrl::InsertGroupSorted( PLVINSERTGROUPSORTED pStructInsert )
+/***********************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_INSERTGROUPSORTED, (WPARAM)pStructInsert, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::InsertMarkHitTest( LPPOINT lpPoint, LPLVINSERTMARK lvim ) const
+/***************************************************************************************/
+{
+    ASSERT( lvim != NULL );
+    lvim->cbSize = sizeof( LVINSERTMARK );
+    return( (int)::SendMessage( m_hWnd, LVM_INSERTMARKHITTEST, (WPARAM)lpPoint,
+                                (LPARAM)lvim ) );
+}
+
+AFX_INLINE BOOL CListCtrl::IsGroupViewEnabled() const
+/***************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_ISGROUPVIEWENABLED, 0, 0L ) );
+}
+
+AFX_INLINE UINT CListCtrl::MapIDToIndex( UINT id ) const
+/******************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_MAPIDTOINDEX, id, 0L ) );
+}
+
+AFX_INLINE UINT CListCtrl::MapIndexToID( UINT index ) const
+/*********************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_MAPINDEXTOID, index, 0L ) );
+}
+
+AFX_INLINE LRESULT CListCtrl::MoveGroup( int iGroupId, int toIndex )
+/******************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_MOVEGROUP, iGroupId, toIndex ) );
+}
+
+AFX_INLINE void CListCtrl::MoveItemToGroup( int idItemFrom, int idGroupTo )
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, LVM_MOVEITEMTOGROUP, idItemFrom, idGroupTo );
+}
+
+AFX_INLINE void CListCtrl::RemoveAllGroups()
+/******************************************/
+{
+    ::SendMessage( m_hWnd, LVM_REMOVEALLGROUPS, 0, 0L );
+}
+
+AFX_INLINE LRESULT CListCtrl::RemoveGroup( int iGroupId )
+/*******************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_REMOVEGROUP, iGroupId, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::SetGroupInfo( int iGroupId, PLVGROUP pgrp )
+/*******************************************************************/
+{
+    ASSERT( pgrp != NULL );
+    pgrp->cbSize = sizeof( LVGROUP );
+    return( (int)::SendMessage( m_hWnd, LVM_SETGROUPINFO, iGroupId, (LPARAM)pgrp ) );
+}
+
+AFX_INLINE void CListCtrl::SetGroupMetrics( PLVGROUPMETRICS pGroupMetrics )
+/*************************************************************************/
+{
+    ASSERT( pGroupMetrics != NULL );
+    pGroupMetrics->cbSize = sizeof( LVGROUPMETRICS );
+    ::SendMessage( m_hWnd, LVM_SETGROUPMETRICS, 0, (LPARAM)pGroupMetrics );
+}
+
+AFX_INLINE BOOL CListCtrl::SetInfoTip( PLVSETINFOTIP plvInfoTip )
+/***************************************************************/
+{
+    ASSERT( plvInfoTip != NULL );
+    plvInfoTip->cbSize = sizeof( LVSETINFOTIP );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETINFOTIP, 0, (LPARAM)plvInfoTip ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetInsertMark( LPLVINSERTMARK lvim )
+/*************************************************************/
+{
+    ASSERT( lvim != NULL );
+    lvim->cbSize = sizeof( LVINSERTMARK );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_SETINSERTMARK, 0, (LPARAM)lvim ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::SetInsertMarkColor( COLORREF color )
+/*****************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_SETINSERTMARKCOLOR, 0,
+                                     (LPARAM)color ) );
+}
+
+AFX_INLINE COLORREF CListCtrl::SetOutlineColor( COLORREF color )
+/**************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, LVM_SETOUTLINECOLOR, 0, color ) );
+}
+
+AFX_INLINE LRESULT CListCtrl::SetSelectedColumn( int iCol )
+/*********************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETSELECTEDCOLUMN, iCol, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetTileInfo( PLVTILEINFO pti )
+/*******************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETTILEINFO, 0, (LPARAM)pti ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SetTileViewInfo( PLVTILEVIEWINFO ptvi )
+/****************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETTILEVIEWINFO, 0, (LPARAM)ptvi ) );
+}
+
+AFX_INLINE DWORD CListCtrl::SetView( int iView )
+/**********************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SETVIEW, iView, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::SortGroups( PFNLVGROUPCOMPARE _pfnGroupCompare, LPVOID _plv )
+/**************************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LVM_SORTGROUPS, (WPARAM)_pfnGroupCompare,
+                           (LPARAM)_plv ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE int CListCtrl::GetFocusedGroup() const
+/***********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETFOCUSEDGROUP, 0, 0L ) );
+}
+
+AFX_INLINE int CListCtrl::GetGroupCount() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LVM_GETGROUPCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetGroupInfoByIndex( int iIndex, PLVGROUP pgrp ) const
+/*******************************************************************************/
+{
+    ASSERT( pgrp != NULL );
+    pgrp->cbSize = sizeof( LVGROUP );
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETGROUPINFOBYINDEX, iIndex,
+                                 (LPARAM)pgrp ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetGroupRect( int iGroupId, LPRECT lpRect, int iCoords ) const
+/***************************************************************************************/
+{
+    ASSERT( lpRect != NULL );
+    lpRect->top = iCoords;
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETGROUPRECT, iGroupId, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE UINT CListCtrl::GetGroupState( int iGroupId, DWORD dwMask ) const
+/**************************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, LVM_GETGROUPSTATE, iGroupId, dwMask ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetItemIndexRect( PLVITEMINDEX pItemIndex, int iColumn,
+                                             int rectType, LPRECT pRect ) const
+/*****************************************************************************/
+{
+    ASSERT( pRect != NULL );
+    pRect->left = rectType;
+    pRect->top = iColumn;
+    return( ::SendMessage( m_hWnd, LVM_GETITEMINDEXRECT, (WPARAM)pItemIndex,
+                           (LPARAM)pRect ) );
+}
+
+AFX_INLINE BOOL CListCtrl::GetNextItemIndex( PLVITEMINDEX pItemIndex, int nFlags ) const
+/**************************************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_GETNEXTITEMINDEX, (WPARAM)pItemIndex,
+                                 nFlags ) );
+}
+
+AFX_INLINE BOOL CListCtrl::IsItemVisible( int index ) const
+/*********************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, LVM_ISITEMVISIBLE, index, 0L ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE void CTabCtrl::AdjustRect( BOOL bLarger, LPRECT lpRect )
+/*****************************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_ADJUSTRECT, bLarger, (LPARAM)lpRect );
+}
+
+AFX_INLINE BOOL CTabCtrl::DeleteAllItems()
+/****************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_DELETEALLITEMS, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::DeleteItem( int nItem )
+/***********************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_DELETEITEM, nItem, 0L ) );
+}
+
+AFX_INLINE int CTabCtrl::GetCurFocus() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_GETCURFOCUS, 0, 0L ) );
+}
+
+AFX_INLINE int CTabCtrl::GetCurSel() const
+/****************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_GETCURSEL, 0, 0L ) );
+}
+
+AFX_INLINE CImageList *CTabCtrl::GetImageList() const
+/***************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, TCM_GETIMAGELIST,
+                                                               0, 0L ) ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::GetItem( int nItem, TCITEM *pTabCtrlItem ) const
+/************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_GETITEM, nItem, (LPARAM)pTabCtrlItem ) );
+}
+
+AFX_INLINE int CTabCtrl::GetItemCount() const
+/*******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_GETITEMCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::GetItemRect( int nItem, LPRECT lpRect ) const
+/*********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_GETITEMRECT, nItem, (LPARAM)lpRect ) );
+}
+
+AFX_INLINE int CTabCtrl::GetRowCount() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_GETROWCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE CToolTipCtrl *CTabCtrl::GetToolTips() const
+/****************************************************/
+{
+    return( (CToolTipCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        TCM_GETTOOLTIPS, 0, 0L ) ) );
+}
+
+AFX_INLINE int CTabCtrl::HitTest( TCHITTESTINFO *pHitTestInfo ) const
+/*******************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_HITTEST, 0, (LPARAM)pHitTestInfo ) );
+}
+
+AFX_INLINE LONG CTabCtrl::InsertItem( int nItem, TCITEM *pTabCtrlItem )
+/*********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_INSERTITEM, nItem, (LPARAM)pTabCtrlItem ) );
+}
+
+AFX_INLINE void CTabCtrl::RemoveImage( int nImage )
+/*************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_REMOVEIMAGE, nImage, 0L );
+}
+
+AFX_INLINE void CTabCtrl::SetCurFocus( int nItem )
+/************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_SETCURFOCUS, nItem, 0L );
+}
+
+AFX_INLINE int CTabCtrl::SetCurSel( int nItem )
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_SETCURSEL, nItem, 0L ) );
+}
+
+AFX_INLINE CImageList *CTabCtrl::SetImageList( CImageList *pImageList )
+/*********************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, TCM_SETIMAGELIST,
+        0, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::SetItem( int nItem, TCITEM *pTabCtrlItem )
+/******************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_SETITEM, nItem, (LPARAM)pTabCtrlItem ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::SetItemExtra( int nBytes )
+/**************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_SETITEMEXTRA, nBytes, 0L ) );
+}
+
+AFX_INLINE CSize CTabCtrl::SetItemSize( CSize size )
+/**************************************************/
+{
+    return( CSize( ::SendMessage( m_hWnd, TCM_SETITEMSIZE, 0,
+                                  MAKELPARAM( size.cx, size.cy ) ) ) );
+}
+
+AFX_INLINE void CTabCtrl::SetPadding( CSize size )
+/************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_SETPADDING, 0, MAKELPARAM( size.cx, size.cy ) );
+}
+
+AFX_INLINE void CTabCtrl::SetToolTips( CToolTipCtrl *pWndTip )
+/************************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_SETTOOLTIPS, (WPARAM)pWndTip->GetSafeHwnd(), 0L );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE void CTabCtrl::DeselectAll( BOOL fExcludeFocus )
+/*********************************************************/
+{
+    ::SendMessage( m_hWnd, TCM_DESELECTALL, fExcludeFocus, 0L );
+}
+
+AFX_INLINE int CTabCtrl::SetMinTabWidth( int cx )
+/***********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TCM_SETMINTABWIDTH, 0, cx ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE DWORD CTabCtrl::GetExtendedStyle()
+/*******************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_GETEXTENDEDSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CTabCtrl::HighlightItem( int idItem, BOOL fHighlight )
+/********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_HIGHLIGHTITEM, idItem,
+                           MAKELPARAM( fHighlight, 0 ) ) );
+}
+
+AFX_INLINE DWORD CTabCtrl::SetExtendedStyle( DWORD dwNewStyle, DWORD dwExMask )
+/*****************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, TCM_SETEXTENDEDSTYLE, dwExMask, dwNewStyle ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE void CPagerCtrl::ForwardMouse( BOOL bForward )
+/*******************************************************/
+{
+    ::SendMessage( m_hWnd, PGM_FORWARDMOUSE, bForward, 0L );
+}
+
+AFX_INLINE COLORREF CPagerCtrl::GetBkColor() const
+/************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PGM_GETBKCOLOR, 0, 0L ) );
+}
+
+AFX_INLINE int CPagerCtrl::GetBorder() const
+/******************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PGM_GETBORDER, 0, 0L ) );
+}
+
+AFX_INLINE int CPagerCtrl::GetButtonSize() const
+/**********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PGM_GETBUTTONSIZE, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CPagerCtrl::GetButtonState( int iButton ) const
+/**************************************************************/
+{
+    return( ::SendMessage( m_hWnd, PGM_GETBUTTONSTATE, 0, iButton ) );
+}
+
+AFX_INLINE IDropTarget *CPagerCtrl::GetDropTarget() const
+/*******************************************************/
+{
+    IDropTarget *pDropTarget = NULL;
+    ::SendMessage( m_hWnd, PGM_GETDROPTARGET, 0, (LPARAM)&pDropTarget );
+    return( pDropTarget );
+}
+
+AFX_INLINE int CPagerCtrl::GetScrollPos() const
+/*********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PGM_GETPOS, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CPagerCtrl::IsButtonDepressed( int iButton ) const
+/****************************************************************/
+{
+    return( GetButtonState( iButton ) & PGF_DEPRESSED );
+}
+
+AFX_INLINE BOOL CPagerCtrl::IsButtonGrayed( int iButton ) const
+/*************************************************************/
+{
+    return( GetButtonState( iButton ) & PGF_GRAYED );
+}
+
+AFX_INLINE BOOL CPagerCtrl::IsButtonHot( int iButton ) const
+/**********************************************************/
+{
+    return( GetButtonState( iButton ) & PGF_HOT );
+}
+
+AFX_INLINE BOOL CPagerCtrl::IsButtonInvisible( int iButton ) const
+/****************************************************************/
+{
+    return( GetButtonState( iButton ) & PGF_INVISIBLE );
+}
+
+AFX_INLINE BOOL CPagerCtrl::IsButtonNormal( int iButton ) const
+/*************************************************************/
+{
+    return( GetButtonState( iButton ) & PGF_NORMAL );
+}
+
+AFX_INLINE void CPagerCtrl::RecalcSize()
+/**************************************/
+{
+    ::SendMessage( m_hWnd, PGM_RECALCSIZE, 0, 0L );
+}
+
+AFX_INLINE COLORREF CPagerCtrl::SetBkColor( COLORREF clrBk )
+/**********************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, PGM_SETBKCOLOR, 0, clrBk ) );
+}
+
+AFX_INLINE int CPagerCtrl::SetBorder( int iBorder )
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PGM_SETBORDER, 0, iBorder ) );
+}
+
+AFX_INLINE int CPagerCtrl::SetButtonSize( int iButtonSize )
+/*********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, PGM_SETBUTTONSIZE, 0, iButtonSize ) );
+}
+
+AFX_INLINE void CPagerCtrl::SetChild( HWND hwndChild )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, PGM_SETCHILD, 0, (LPARAM)hwndChild );
+}
+
+AFX_INLINE void CPagerCtrl::SetScrollPos( int iPos )
+/**************************************************/
+{
+    ::SendMessage( m_hWnd, PGM_SETPOS, 0, iPos );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE int CLinkCtrl::GetIdealHeight() const
+/**********************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LM_GETIDEALHEIGHT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CLinkCtrl::GetItem( PLITEM pItem ) const
+/******************************************************/
+{
+    return( ::SendMessage( m_hWnd, LM_GETITEM, 0, (LPARAM)pItem ) );
+}
+
+AFX_INLINE BOOL CLinkCtrl::HitTest( PLHITTESTINFO phti ) const
+/************************************************************/
+{
+    return( ::SendMessage( m_hWnd, LM_HITTEST, 0, (LPARAM)phti ) );
+}
+
+AFX_INLINE BOOL CLinkCtrl::SetItem( PLITEM pItem )
+/************************************************/
+{
+    return( ::SendMessage( m_hWnd, LM_SETITEM, 0, (LPARAM)pItem ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE int CLinkCtrl::GetIdealSize( int cxMaxWidth, SIZE *pSize ) const
+/*************************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, LM_GETIDEALSIZE, cxMaxWidth, (LPARAM)pSize ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE int CComboBoxEx::DeleteItem( int iIndex )
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, CBEM_DELETEITEM, iIndex, 0L ) );
+}
+
+AFX_INLINE CComboBox *CComboBoxEx::GetComboBoxCtrl()
+/**************************************************/
+{
+    return( (CComboBox *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        CBEM_GETCOMBOCONTROL, 0, 0L ) ) );
+}
+
+AFX_INLINE CEdit *CComboBoxEx::GetEditCtrl()
+/******************************************/
+{
+    return( (CEdit *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, CBEM_GETEDITCONTROL,
+                                                            0, 0L ) ) );
+}
+
+AFX_INLINE CImageList *CComboBoxEx::GetImageList() const
+/******************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, CBEM_GETIMAGELIST,
+                                                               0, 0L ) ) );
+}
+
+AFX_INLINE BOOL CComboBoxEx::GetItem( COMBOBOXEXITEM *pCBItem )
+/*************************************************************/
+{
+    return( ::SendMessage( m_hWnd, CBEM_GETITEM, 0, (LPARAM)pCBItem ) );
+}
+
+AFX_INLINE BOOL CComboBoxEx::HasEditChanged()
+/*******************************************/
+{
+    return( ::SendMessage( m_hWnd, CBEM_HASEDITCHANGED, 0, 0L ) );
+}
+
+AFX_INLINE int CComboBoxEx::InsertItem( const COMBOBOXEXITEM *pCBItem )
+/*********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, CBEM_INSERTITEM, 0, (LPARAM)pCBItem ) );
+}
+
+AFX_INLINE CImageList *CComboBoxEx::SetImageList( CImageList *pImageList )
+/************************************************************************/
+{
+    return( CImageList::FromHandle( (HIMAGELIST)::SendMessage( m_hWnd, CBEM_SETIMAGELIST,
+        0, (LPARAM)pImageList->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CComboBoxEx::SetItem( const COMBOBOXEXITEM *pCBItem )
+/*******************************************************************/
+{
+    return( (BOOL)::SendMessage( m_hWnd, CBEM_SETITEM, 0, (LPARAM)pCBItem ) );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE DWORD CComboBoxEx::GetExtendedStyle() const
+/****************************************************/
+{
+    return( (DWORD)::SendMessage( m_hWnd, CBEM_GETEXTENDEDSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CComboBoxEx::SetExtendedStyle( DWORD dwExMask, DWORD dwExStyles )
+/********************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, CBEM_SETEXTENDEDSTYLE, dwExMask, dwExStyles ) );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE HRESULT CComboBoxEx::SetWindowTheme( LPCWSTR pszSubAppName )
+/*********************************************************************/
+{
+    return( (HRESULT)::SendMessage( m_hWnd, CBEM_SETWINDOWTHEME, 0,
+                                    (LPARAM)pszSubAppName ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+AFX_INLINE int CDragListBox::ItemFromPt( CPoint pt, BOOL bAutoScroll ) const
+/**************************************************************************/
+{
+    return( ::LBItemFromPt( m_hWnd, pt, bAutoScroll ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::CanPaste( UINT nFormat ) const
+/***********************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_CANPASTE, nFormat, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::CanUndo() const
+/********************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_CANUNDO, 0, 0L ) );
+}
+
+AFX_INLINE int CRichEditCtrl::CharFromPos( CPoint pt ) const
+/**********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_CHARFROMPOS, 0, (LPARAM)&pt ) );
+}
+
+AFX_INLINE void CRichEditCtrl::Clear()
+/************************************/
+{
+    ::SendMessage( m_hWnd, WM_CLEAR, 0, 0L );
+}
+
+AFX_INLINE void CRichEditCtrl::Copy()
+/***********************************/
+{
+    ::SendMessage( m_hWnd, WM_COPY, 0, 0L );
+}
+
+AFX_INLINE void CRichEditCtrl::Cut()
+/**********************************/
+{
+    ::SendMessage( m_hWnd, WM_CUT, 0, 0L );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::DisplayBand( LPRECT pDisplayRect )
+/***************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_DISPLAYBAND, 0, (LPARAM)pDisplayRect ) );
+}
+
+AFX_INLINE void CRichEditCtrl::EmptyUndoBuffer()
+/**********************************************/
+{
+    ::SendMessage( m_hWnd, EM_EMPTYUNDOBUFFER, 0, 0L );
+}
+
+AFX_INLINE long CRichEditCtrl::FindText( DWORD dwFlags, FINDTEXTEX *pFindText ) const
+/***********************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_FINDTEXTEX, dwFlags, (LPARAM)pFindText ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::FindWordBreak( UINT nCode, DWORD nStart ) const
+/*****************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_FINDWORDBREAK, nCode, nStart ) );
+}
+
+AFX_INLINE long CRichEditCtrl::FormatRange( FORMATRANGE *pfr, BOOL bDisplay )
+/***************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_FORMATRANGE, bDisplay, (LPARAM)pfr ) );
+}
+
+AFX_INLINE CPoint CRichEditCtrl::GetCharPos( long lChar ) const
+/*************************************************************/
+{
+    CPoint point;
+    ::SendMessage( m_hWnd, EM_POSFROMCHAR, (WPARAM)&point, lChar );
+    return( point );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetDefaultCharFormat( CHARFORMAT &cf ) const
+/**************************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT );
+    return( ::SendMessage( m_hWnd, EM_GETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf ) );
+}
+
+AFX_INLINE long CRichEditCtrl::GetEventMask() const
+/*************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_GETEVENTMASK, 0, 0L ) );
+}
+
+AFX_INLINE int CRichEditCtrl::GetFirstVisibleLine() const
+/*******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_GETFIRSTVISIBLELINE, 0, 0L ) );
+}
+
+AFX_INLINE IRichEditOle *CRichEditCtrl::GetIRichEditOle() const
+/*************************************************************/
+{
+    IRichEditOle *pInterface = NULL;
+    ::SendMessage( m_hWnd, EM_GETOLEINTERFACE, 0, (LPARAM)&pInterface );
+    return( pInterface );
+}
+
+AFX_INLINE long CRichEditCtrl::GetLimitText() const
+/*************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_GETLIMITTEXT, 0, 0L ) );
+}
+
+AFX_INLINE int CRichEditCtrl::GetLine( int nIndex, LPTSTR lpszBuffer ) const
+/**************************************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer ) );
+}
+
+AFX_INLINE int CRichEditCtrl::GetLine( int nIndex, LPTSTR lpszBuffer,
+                                       int nMaxLength ) const
+/***********************************************************/
+{
+    ASSERT( lpszBuffer != NULL );
+    *((int *)lpszBuffer) = nMaxLength;
+    return( (int)::SendMessage( m_hWnd, EM_GETLINE, nIndex, (LPARAM)lpszBuffer ) );
+}
+
+AFX_INLINE int CRichEditCtrl::GetLineCount() const
+/************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_GETLINECOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::GetModify() const
+/**********************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_GETMODIFY, 0, 0L ) );
+}
+
+AFX_INLINE UINT CRichEditCtrl::GetOptions() const
+/***********************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, EM_GETOPTIONS, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetParaFormat( PARAFORMAT &pf ) const
+/*******************************************************************/
+{
+    pf.cbSize = sizeof( PARAFORMAT );
+    return( ::SendMessage( m_hWnd, EM_SETPARAFORMAT, 0, (LPARAM)&pf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::GetPunctuation( UINT fType, PUNCTUATION *lpPunc ) const
+/************************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_GETPUNCTUATION, fType, (LPARAM)lpPunc ) );
+}
+
+AFX_INLINE void CRichEditCtrl::GetRect( LPRECT lpRect ) const
+/***********************************************************/
+{
+    ::SendMessage( m_hWnd, EM_GETRECT, 0, (LPARAM)lpRect );
+}
+
+AFX_INLINE void CRichEditCtrl::GetSel( CHARRANGE &cr ) const
+/**********************************************************/
+{
+    ::SendMessage( m_hWnd, EM_EXGETSEL, 0, (LPARAM)&cr );
+}
+
+AFX_INLINE void CRichEditCtrl::GetSel( long &nStartChar, long &nEndChar ) const
+/*****************************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_GETSEL, (WPARAM)&nStartChar, (LPARAM)&nEndChar );
+}
+
+AFX_INLINE long CRichEditCtrl::GetSelText( LPSTR lpBuf ) const
+/************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_GETSELTEXT, 0, (LPARAM)lpBuf ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetSelectionCharFormat( CHARFORMAT &cf ) const
+/****************************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT );
+    return( ::SendMessage( m_hWnd, EM_GETCHARFORMAT, SCF_SELECTION, (LPARAM)&cf ) );
+}
+
+AFX_INLINE WORD CRichEditCtrl::GetSelectionType() const
+/*****************************************************/
+{
+    return( (WORD)::SendMessage( m_hWnd, EM_SELECTIONTYPE, 0, 0L ) );
+}
+
+AFX_INLINE long CRichEditCtrl::GetTextLength() const
+/**************************************************/
+{
+    return( ::SendMessage( m_hWnd, WM_GETTEXTLENGTH, 0, 0L ) );
+}
+
+AFX_INLINE UINT CRichEditCtrl::GetWordWrapMode() const
+/****************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, EM_GETWORDWRAPMODE, 0, 0L ) );
+}
+
+AFX_INLINE void CRichEditCtrl::HideSelection( BOOL bHide, BOOL bPerm )
+/********************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_HIDESELECTION, bHide, bPerm );
+}
+
+AFX_INLINE void CRichEditCtrl::LimitText( long nChars )
+/*****************************************************/
+{
+    ::SendMessage( m_hWnd, EM_LIMITTEXT, (WPARAM)nChars, 0L );
+}
+
+AFX_INLINE long CRichEditCtrl::LineFromChar( long nIndex ) const
+/**************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_LINEFROMCHAR, (WPARAM)nIndex, 0L ) );
+}
+
+AFX_INLINE int CRichEditCtrl::LineIndex( int nLine ) const
+/********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_LINEINDEX, nLine, 0L ) );
+}
+
+AFX_INLINE int CRichEditCtrl::LineLength( int nLine ) const
+/*********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, EM_LINELENGTH, nLine, 0L ) );
+}
+
+AFX_INLINE void CRichEditCtrl::LineScroll( int nLines, int nChars )
+/*****************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_LINESCROLL, nChars, nLines );
+}
+
+AFX_INLINE void CRichEditCtrl::Paste()
+/************************************/
+{
+    ::SendMessage( m_hWnd, WM_PASTE, 0, 0L );
+}
+
+AFX_INLINE void CRichEditCtrl::PasteSpecial( UINT nClipFormat, DWORD dvAspect,
+                                             HMETAFILE hMF )
+/**********************************************************/
+{
+    REPASTESPECIAL reps;
+    reps.dwAspect = dvAspect;
+    reps.dwParam = (DWORD_PTR)hMF;
+    ::SendMessage( m_hWnd, EM_PASTESPECIAL, nClipFormat, (LPARAM)&reps );
+}
+
+AFX_INLINE CPoint CRichEditCtrl::PosFromChar( UINT nChar ) const
+/**************************************************************/
+{
+    CPoint point;
+    ::SendMessage( m_hWnd, EM_POSFROMCHAR, (WPARAM)&point, nChar );
+    return( point );
+}
+
+AFX_INLINE void CRichEditCtrl::ReplaceSel( LPCTSTR lpszNewText, BOOL bCanUndo )
+/*****************************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_REPLACESEL, bCanUndo, (LPARAM)lpszNewText );
+}
+
+AFX_INLINE void CRichEditCtrl::RequestResize()
+/********************************************/
+{
+    ::SendMessage( m_hWnd, EM_REQUESTRESIZE, 0, 0L );
+}
+
+AFX_INLINE COLORREF CRichEditCtrl::SetBackgroundColor( BOOL bSysColor, COLORREF cr )
+/**********************************************************************************/
+{
+    return( (COLORREF)::SendMessage( m_hWnd, EM_SETBKGNDCOLOR, bSysColor, cr ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetDefaultCharFormat( CHARFORMAT &cf )
+/*******************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::SetEventMask( DWORD dwEventMask )
+/***************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETEVENTMASK, 0, dwEventMask ) );
+}
+
+AFX_INLINE void CRichEditCtrl::SetModify( BOOL bModified )
+/********************************************************/
+{
+    ::SendMessage( m_hWnd, EM_SETMODIFY, bModified, 0L );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetOLECallback( IRichEditOleCallback *pCallback )
+/******************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETOLECALLBACK, 0, (LPARAM)pCallback ) );
+}
+
+AFX_INLINE void CRichEditCtrl::SetOptions( WORD wOp, DWORD dwFlags )
+/******************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_SETOPTIONS, wOp, dwFlags );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetParaFormat( PARAFORMAT &pf )
+/************************************************************/
+{
+    pf.cbSize = sizeof( PARAFORMAT );
+    return( ::SendMessage( m_hWnd, EM_SETPARAFORMAT, 0, (LPARAM)&pf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetPunctuation( UINT fType, PUNCTUATION *lpPunc )
+/******************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETPUNCTUATION, fType, (LPARAM)lpPunc ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetReadOnly( BOOL bReadOnly )
+/**********************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETREADONLY, bReadOnly, 0L ) );
+}
+
+AFX_INLINE void CRichEditCtrl::SetRect( LPCRECT lpRect )
+/******************************************************/
+{
+    ::SendMessage( m_hWnd, EM_SETRECT, 0, (LPARAM)lpRect );
+}
+
+AFX_INLINE void CRichEditCtrl::SetSel( long nStartChar, long nEndChar )
+/*********************************************************************/
+{
+    ::SendMessage( m_hWnd, EM_SETSEL, (WPARAM)nStartChar, nEndChar );
+}
+
+AFX_INLINE void CRichEditCtrl::SetSel( CHARRANGE &cr )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, EM_SETSEL, cr.cpMin, cr.cpMax );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetSelectionCharFormat( CHARFORMAT &cf )
+/*********************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&cf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetTargetDevice( HDC hDC, long lLineWidth )
+/************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETTARGETDEVICE, (WPARAM)hDC, lLineWidth ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetTargetDevice( CDC &dc, long lLineWidth )
+/************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETTARGETDEVICE, (WPARAM)dc.m_hDC, lLineWidth ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetWordCharFormat( CHARFORMAT &cf )
+/****************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_WORD, (LPARAM)&cf ) );
+}
+
+AFX_INLINE UINT CRichEditCtrl::SetWordWrapMode( UINT uFlags ) const
+/*****************************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, EM_SETWORDWRAPMODE, uFlags, 0L ) );
+}
+
+AFX_INLINE long CRichEditCtrl::StreamIn( int nFormat, EDITSTREAM &es )
+/********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_STREAMIN, nFormat, (LPARAM)&es ) );
+}
+
+AFX_INLINE long CRichEditCtrl::StreamOut( int nFormat, EDITSTREAM &es )
+/*********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_STREAMOUT, nFormat, (LPARAM)&es ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::Undo()
+/***********************************/
+{
+    return( ::SendMessage( m_hWnd, EM_UNDO, 0, 0L ) );
+}
+
+#if (_RICHEDIT_VER >= 0x0200)
+
+AFX_INLINE BOOL CRichEditCtrl::CanRedo() const
+/********************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_CANREDO, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetDefaultCharFormat( CHARFORMAT2 &cf ) const
+/***************************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_GETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetParaFormat( PARAFORMAT2 &pf ) const
+/********************************************************************/
+{
+    pf.cbSize = sizeof( PARAFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_SETPARAFORMAT, 0, (LPARAM)&pf ) );
+}
+
+AFX_INLINE UNDONAMEID CRichEditCtrl::GetRedoName() const
+/******************************************************/
+{
+    return( (UNDONAMEID)::SendMessage( m_hWnd, EM_GETREDONAME, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CRichEditCtrl::GetSelectionCharFormat( CHARFORMAT2 &cf ) const
+/*****************************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_GETCHARFORMAT, SCF_SELECTION, (LPARAM)&cf ) );
+}
+
+AFX_INLINE long CRichEditCtrl::GetTextLengthEx( DWORD dwFlags, UINT uCodePage ) const
+/***********************************************************************************/
+{
+    GETTEXTLENGTHEX gtlx;
+    gtlx.flags = dwFlags;
+    gtlx.codepage = uCodePage;
+    return( ::SendMessage( m_hWnd, EM_GETTEXTLENGTHEX, 0, (LPARAM)&gtlx ) );
+}
+
+AFX_INLINE UINT CRichEditCtrl::GetTextMode() const
+/************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, EM_GETTEXTMODE, 0, 0L ) );
+}
+
+AFX_INLINE UNDONAMEID CRichEditCtrl::GetUndoName() const
+/******************************************************/
+{
+    return( (UNDONAMEID)::SendMessage( m_hWnd, EM_GETUNDONAME, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::Redo()
+/***********************************/
+{
+    return( ::SendMessage( m_hWnd, EM_REDO, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetAutoURLDetect( BOOL bEnable )
+/*************************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_AUTOURLDETECT, bEnable, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetDefaultCharFormat( CHARFORMAT2 &cf )
+/********************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetParaFormat( PARAFORMAT2 &pf )
+/*************************************************************/
+{
+    pf.cbSize = sizeof( PARAFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_SETPARAFORMAT, 0, (LPARAM)&pf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetSelectionCharFormat( CHARFORMAT2 &cf )
+/**********************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&cf ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetTextMode( UINT fMode )
+/******************************************************/
+{
+    return( ::SendMessage( m_hWnd, EM_SETTEXTMODE, fMode, 0L ) );
+}
+
+AFX_INLINE UINT CRichEditCtrl::SetUndoLimit( UINT nLimit )
+/********************************************************/
+{
+    return( (UINT)::SendMessage( m_hWnd, EM_SETUNDOLIMIT, nLimit, 0L ) );
+}
+
+AFX_INLINE BOOL CRichEditCtrl::SetWordCharFormat( CHARFORMAT2 &cf )
+/*****************************************************************/
+{
+    cf.cbSize = sizeof( CHARFORMAT2 );
+    return( ::SendMessage( m_hWnd, EM_SETCHARFORMAT, SCF_WORD, (LPARAM)&cf ) );
+}
+
+AFX_INLINE void CRichEditCtrl::StopGroupTyping()
+/**********************************************/
+{
+    ::SendMessage( m_hWnd, EM_STOPGROUPTYPING, 0, 0L );
+}
+
+#endif // (_RICHEDIT_VER >= 0x0200)

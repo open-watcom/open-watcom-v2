@@ -1,0 +1,1160 @@
+! Define FWinMain
+
+c$pragma aux FWinMain parm( value*2, value*2, value*4, value*2 )
+
+! Define BreakPoint (to be called for setting breakpoints in DLLs)
+
+c$pragma aux BreakPoint = zcc
+
+c$ifdef __386__
+
+c$include win3api.fi
+
+c$else
+
+! Force default run-time and windows libraries
+
+c$pragma library
+c$pragma library windows
+
+! Force startup code to be included
+
+c$pragma aux wstart "_cstart_"
+
+! Define alias names for pragmas
+
+c$pragma aux (__pascal) callback far export
+
+c$pragma aux (__pascal) winapi far
+
+c$pragma aux (__cdecl) windecl far
+
+! Define "dll_function" alias (to be used for DLL functions)
+
+c$pragma aux (__pascal) dll_function parm( value )
+
+!-------------------------------------------------------------------------------
+!  Define pragma which invokes 32-bit DLLs from 16-bit Windows applications
+!-------------------------------------------------------------------------------
+
+c$pragma aux (__pascal) dll32_call = \
+c                                z58            \ pop   AX
+c                                z5a            \ pop   DX
+c                                z0e            \ push  CS
+c                                ze80000        \ call  0
+c                                z59            \ pop   CX
+c                                z83c108        \ add   CX,8h
+c                                z51            \ push  CX
+c                                z52            \ push  DX
+c                                z50            \ push  AX
+c                                zcb            \ retf
+c                                parm( reference far, value*2, value*4 ) \
+c                                modify exact [dx ax cx]
+
+!-------------------------------------------------------------------------------
+!  General Purpose Defines
+!-------------------------------------------------------------------------------
+
+c$pragma aux MAKELONG = \
+c                   parm ( value*2, value*2 ) [ax] [dx] \
+c                   value [dx ax] \
+c                   modify exact []
+c$pragma aux HIWORD = \
+c                   parm( value*4 ) [ax dx] \
+c                   value [dx] \
+c                   modify exact []
+c$pragma aux LOBYTE = \
+c                   parm( value*1 ) [al] \
+c                   value [al] \
+c                   modify exact []
+c$pragma aux HIBYTE = \
+c                   parm( value*2 ) [ax] \
+c                   value [ah] \
+c                   modify exact []
+c$pragma aux LOWORD = \
+c                   parm( value*2 ) [ax] \
+c                   value [ax] \
+c                   modify exact []
+
+!-------------------------------------------------------------------------------
+!  KERNEL Section
+!-------------------------------------------------------------------------------
+
+!---- begin KERNEL -------------------------------------------------------------
+
+! Loader Routines
+
+c$pragma aux (winapi) GetVersion parm
+c$pragma aux (winapi) GetNumTasks parm
+c$pragma aux (winapi) GetCodeHandle parm( value*4 )
+c$pragma aux (winapi) GetCodeInfo parm( reference far, reference far )
+c$pragma aux (winapi) GetModuleHandle parm( value far )
+c$pragma aux (winapi) GetModuleUsage parm( value*2 )
+c$pragma aux (winapi) GetModuleFileName parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetInstanceData parm( value*2, reference near, value*2 )
+c$pragma aux (winapi) GetProcAddress parm( value*2, value far )
+c$pragma aux (winapi) MakeProcInstance parm( value far, value*2 )
+c$pragma aux (winapi) FreeProcInstance parm( value far )
+c$pragma aux (winapi) LoadLibrary parm( value far )
+c$pragma aux (winapi) LoadModule parm( value far, reference far )
+c$pragma aux (winapi) FreeModule parm( value*2 )
+c$pragma aux (winapi) FreeLibrary parm( value*2 )
+c$pragma aux (winapi) GetFreeSpace parm( value*2 )
+c$pragma aux (winapi) WinExec parm( value far, value*2 )
+c$pragma aux (winapi) DebugBreak parm
+c$pragma aux (winapi) OutputDebugString parm( value far )
+c$pragma aux (winapi) SwitchStackBack parm
+c$pragma aux (winapi) SwitchStackTo parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetCurrentPDB parm
+
+!---- begin OPENFILE -----------------------------------------------------------
+
+c$pragma aux (winapi) OpenFile parm( value far, reference far, value*2 )
+
+c$pragma aux (winapi) GetTempDrive parm( value*1 )
+c$pragma aux (winapi) GetTempFileName parm( value*1, value far, value*2, \
+c                                           value far )
+c$pragma aux (winapi) SetHandleCount parm( value*2 )
+
+c$pragma aux (winapi) GetDriveType parm( value*2 )
+
+!---- end OPENFILE -------------------------------------------------------------
+
+!---- begin MEMMGR -------------------------------------------------------------
+
+c$pragma aux (winapi) GlobalAlloc parm( value*2, value*4 )
+c$pragma aux (winapi) GlobalDosAlloc parm( value*4 )
+c$pragma aux (winapi) GlobalDosFree parm( value*2 )
+c$pragma aux (winapi) GlobalCompact parm( value*4 )
+c$pragma aux (winapi) GlobalFree parm( value*2 )
+c$pragma aux (winapi) GlobalHandle parm( value*2 )
+c$pragma aux (winapi) GlobalLock parm( value*2 )
+c$pragma aux (winapi) GlobalReAlloc parm( value*2, value*4, value*2 )
+c$pragma aux (winapi) GlobalSize parm( value*2 )
+c$pragma aux (winapi) GlobalUnlock parm( value*2 )
+c$pragma aux (winapi) GlobalFlags parm( value*2 )
+c$pragma aux (winapi) GlobalWire parm( value*2 )
+c$pragma aux (winapi) GlobalUnWire parm( value*2 )
+c$pragma aux (winapi) GlobalUnlock parm( value*2 )
+c$pragma aux (winapi) GlobalLRUNewest parm( value*2 )
+c$pragma aux (winapi) GlobalLRUOldest parm( value*2 )
+c$pragma aux (winapi) GlobalNotify parm( reference far )
+c$pragma aux (winapi) GlobalPageLock parm( value*2 )
+c$pragma aux (winapi) GlobalPageUnlock parm( value*2 )
+c$pragma aux (winapi) GlobalFix parm( value*2 )
+c$pragma aux (winapi) GlobalUnfix parm( value*2 )
+
+c$pragma aux (winapi) GlobalDiscard parm( value*2 )
+
+c$pragma aux (winapi) LockSegment parm( value*2 )
+c$pragma aux (winapi) UnlockSegment parm( value*2 )
+
+c$pragma aux (winapi) LockData parm( value*2 )
+
+c$pragma aux (winapi) UnLockData parm( value*2 )
+
+c$pragma aux (winapi) LocalAlloc parm( value*2, value*2 )
+c$pragma aux (winapi) LocalCompact parm( value*2 )
+c$pragma aux (winapi) LocalFree parm( value*2 )
+c$pragma aux (winapi) LocalHandle parm( value*2 )
+c$pragma aux (winapi) LocalInit parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) LocalLock parm( value*2 )
+c$pragma aux (winapi) LocalNotify parm( reference far )
+c$pragma aux (winapi) LocalReAlloc parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) LocalSize parm( value*2 )
+c$pragma aux (winapi) LocalUnlock parm( value*2 )
+c$pragma aux (winapi) LocalFlags parm( value*2 )
+c$pragma aux (winapi) LocalShrink parm( value*2, value*2 )
+
+c$pragma aux (winapi) LocalDiscard parm( value*2 )
+
+!---- end MEMMGR ---------------------------------------------------------------
+
+c$pragma aux (winapi) SetSwapAreaSize parm( value*2 )
+c$pragma aux (winapi) ValidateFreeSpaces parm
+c$pragma aux (winapi) LimitEmsPages parm( value*4 )
+c$pragma aux (winapi) SetErrorMode parm( value*2 )
+c$pragma aux (winapi) ValidateCodeSegments parm
+
+c$pragma aux (winapi) GetDOSEnvironment parm
+
+c$pragma aux (winapi) AllocDStoCSAlias parm( value*2 )
+c$pragma aux (winapi) AllocSelector parm( value*2 )
+c$pragma aux (winapi) ChangeSelector parm( value*2, value*2 )
+c$pragma aux (winapi) FreeSelector parm( value*2 )
+
+c$pragma aux (winapi) UnlockResource "GlobalUnlock" parm ( value*2 )
+
+c$pragma aux (winapi) FindResource parm( value*2, value far, value far )
+c$pragma aux (winapi) LoadResource parm( value*2, value*2 )
+c$pragma aux (winapi) FreeResource parm( value*2 )
+c$pragma aux (winapi) LockResource parm( value*2 )
+c$pragma aux (winapi) SetResourceHandler parm( value*2, reference far, \
+c                                              reference far )
+c$pragma aux (winapi) AllocResource parm( value*2, value*2, value*4 )
+c$pragma aux (winapi) SizeofResource parm( value*2, value*2 )
+c$pragma aux (winapi) AccessResource parm( value*2, value*2 )
+
+c$pragma aux MAKEINTRESOURCE = z31d2 \ xor dx,dx
+c                   parm( value*2 ) [ax] \
+c                   value [dx ax] \
+c                   modify exact [dx]
+
+c$pragma aux (winapi) Yield parm
+c$pragma aux (winapi) GetCurrentTask parm
+
+!---- begin ATOM ---------------------------------------------------------------
+
+c$pragma aux (winapi) InitAtomTable parm( value*2 )
+c$pragma aux (winapi) AddAtom parm( value far )
+c$pragma aux (winapi) DeleteAtom parm( value*2 )
+c$pragma aux (winapi) FindAtom parm( value far )
+c$pragma aux (winapi) GetAtomName parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GlobalAddAtom parm( value far )
+c$pragma aux (winapi) GlobalDeleteAtom parm( value*2 )
+c$pragma aux (winapi) GlobalFindAtom parm( value far )
+c$pragma aux (winapi) GlobalGetAtomName parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetAtomHandle parm( value*2 )
+
+!---- end ATOM -----------------------------------------------------------------
+
+! User Profile Routines
+
+c$pragma aux (winapi) GetProfileInt parm( value far, value far, value*2 )
+c$pragma aux (winapi) GetProfileString parm( value far, value far, value far, \
+c                                            value far, value*2 )
+c$pragma aux (winapi) WriteProfileString parm( value far, value far, value far )
+c$pragma aux (winapi) GetPrivateProfileInt parm( value far, value far, \
+c                                                value*2, value far )
+c$pragma aux (winapi) GetPrivateProfileString parm( value far, value far, \
+c                                                   value far, value far, \
+c                                                   value*2, value far )
+c$pragma aux (winapi) WritePrivateProfileString parm( value far, value far, \
+c                                                     value far, value far )
+
+c$pragma aux (winapi) GetWindowsDirectory parm( value far, value*2 )
+c$pragma aux (winapi) GetSystemDirectory parm( value far, value*2 )
+
+! Catch() and Throw()
+
+c$pragma aux (winapi) Catch parm( reference far )
+c$pragma aux (winapi) Throw parm( reference far, value*2 )
+
+c$pragma aux (winapi) FatalAppExit parm( value*2, value far )
+c$pragma aux (winapi) FatalExit parm( value*2 )
+
+c$pragma aux (winapi) SwapRecording parm( value*2 )
+
+! Character Translation Routines
+
+c$pragma aux (winapi) AnsiToOem parm( value far, value far )
+c$pragma aux (winapi) OemToAnsi parm( value far, value far )
+c$pragma aux (winapi) AnsiToOemBuff parm( value far, value far, value*2 )
+c$pragma aux (winapi) OemToAnsiBuff parm( value far, value far, value*2 )
+c$pragma aux (winapi) AnsiUpper parm( value far )
+c$pragma aux (winapi) AnsiUpperBuff parm( value far, value*2 )
+c$pragma aux (winapi) AnsiLower parm( value far )
+c$pragma aux (winapi) AnsiLowerBuff parm( value far, value*2 )
+c$pragma aux (winapi) AnsiNext parm( value far )
+c$pragma aux (winapi) AnsiPrev parm( value far, value far )
+
+!---- begin KEYBOARDINFO -------------------------------------------------------
+
+! Keyboard Information Routines
+
+c$pragma aux (winapi) OemKeyScan parm( value*2 )
+c$pragma aux (winapi) VkKeyScan parm( value*2 )
+c$pragma aux (winapi) GetKeyboardType parm( value*2 )
+c$pragma aux (winapi) MapVirtualKey parm( value*2, value*2 )
+c$pragma aux (winapi) GetKBCodePage parm
+c$pragma aux (winapi) GetKeyNameText parm( value*4, value far, value*2 )
+c$pragma aux (winapi) ToAscii parm( value*2, value*2, reference far, \
+c                                   reference far, value*2 )
+
+!---- end KEYBOARDINFO ---------------------------------------------------------
+
+!---- begin LANGUAGE -----------------------------------------------------------
+
+! Language dependent Routines
+
+c$pragma aux (winapi) IsCharAlpha parm( value*1 )
+c$pragma aux (winapi) IsCharAlphaNumeric parm( value*1 )
+c$pragma aux (winapi) IsCharUpper parm( value*1 )
+c$pragma aux (winapi) IsCharLower parm( value*1 )
+
+!---- end LANGUAGE -------------------------------------------------------------
+
+c$pragma aux (winapi) GetWinFlags parm
+
+!---- end KERNEL ---------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+!  GDI Section
+!-------------------------------------------------------------------------------
+
+!---- begin GDI ----------------------------------------------------------------
+
+c$pragma aux RGB = z30f6 \ xor dh,dh
+c                  parm ( value*1, value*1, value*1 ) [al] [ah] [dl] \
+c                  value [ax dx] \
+c                  modify exact [dh]
+c$pragma aux PALETTERGB = zb602 \ mov dh,02h
+c                  parm ( value*1, value*1, value*1 ) [al] [ah] [dl] \
+c                  value [ax dx] \
+c                  modify exact [dh]
+c$pragma aux PALETTEINDEX = zba0001 \ mov dx,0100h
+c                  parm ( value*2 ) [ax] \
+c                  value [ax dx] \
+c                  modify exact [dx]
+c$pragma aux GetRValue = \
+c                  parm ( value*4 ) [dx ax] \
+c                  value [al] \
+c                  modify exact []
+c$pragma aux GetGValue = \
+c                  parm ( value*4 ) [dx ax] \
+c                  value [ah] \
+c                  modify exact []
+c$pragma aux GetBValue = \
+c                  parm ( value*4 ) [dx ax] \
+c                  value [dl] \
+c                  modify exact []
+
+!---- begin DRAWTEXT -----------------------------------------------------------
+
+c$pragma aux (winapi) DrawText parm( value*2, value far, value*2, \
+c                                    reference far, value*2 )
+c$pragma aux (winapi) DrawIcon parm( value*2, value*2, value*2, value*2 )
+
+!---- end DRAWTEXT -------------------------------------------------------------
+
+c$pragma aux (winapi) GetWindowDC parm( value*2 )
+c$pragma aux (winapi) GetDC parm( value*2 )
+c$pragma aux (winapi) ReleaseDC parm( value*2, value*2 )
+c$pragma aux (winapi) CreateDC parm( value far, value far, value far, \
+c                                    value far )
+c$pragma aux (winapi) CreateIC parm( value far, value far, value far, \
+c                                    value far )
+c$pragma aux (winapi) CreateCompatibleDC parm( value*2 )
+c$pragma aux (winapi) DeleteDC parm( value*2 )
+c$pragma aux (winapi) SaveDC parm( value*2 )
+c$pragma aux (winapi) RestoreDC parm( value*2, value*2 )
+c$pragma aux (winapi) MoveTo parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetCurrentPosition parm( value*2 )
+c$pragma aux (winapi) LineTo parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetDCOrg parm( value*2 )
+
+c$pragma aux (winapi) MulDiv parm( value*2, value*2, value*2 )
+
+c$pragma aux (winapi) ExtTextOut parm( value*2, value*2, value*2, value*2, \
+c                                      reference far, value far, value*2, \
+c                                      reference far )
+
+c$pragma aux (winapi) Polyline parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) Polygon parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) PolyPolygon parm( value*2, reference far, \
+c                                       reference far, value*2 )
+
+c$pragma aux (winapi) Rectangle parm( value*2, value*2, value*2, value*2, \
+c                                     value*2 )
+c$pragma aux (winapi) RoundRect parm( value*2, value*2, value*2, value*2, \
+c                                     value*2, value*2, value*2 )
+c$pragma aux (winapi) Ellipse parm( value*2, value*2, value*2, value*2, \
+c                                   value*2 )
+c$pragma aux (winapi) Arc parm( value*2, value*2, value*2, value*2, \
+c                                   value*2, value*2, value*2, value*2, \
+c                                   value*2 )
+c$pragma aux (winapi) Chord parm( value*2, value*2, value*2, value*2, \
+c                                 value*2, value*2, value*2, value*2, \
+c                                 value*2 )
+c$pragma aux (winapi) Pie parm( value*2, value*2, value*2, value*2, value*2, \
+c                               value*2, value*2, value*2, value*2 )
+c$pragma aux (winapi) PatBlt parm( value*2, value*2, value*2, value*2, \
+c                                  value*2, value*4 )
+c$pragma aux (winapi) BitBlt parm( value*2, value*2, value*2, value*2, \
+c                                  value*2, value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) StretchBlt parm( value*2, value*2, value*2, value*2, \
+c                                      value*2, value*2, value*2, value*2, \
+c                                      value*2, value*2, value*4 )
+c$pragma aux (winapi) TextOut parm( value*2, value*2, value*2, value far, \
+c                                   value*2 )
+c$pragma aux (winapi) TabbedTextOut parm( value*2, value*2, value*2, \
+c                                         value far, value*2, value*2, \
+c                                         reference far, value*2 )
+c$pragma aux (winapi) GetCharWidth parm( value*2, value*2, value*2, \
+c                                        reference far )
+c$pragma aux (winapi) SetPixel parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) GetPixel parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) FloodFill parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) ExtFloodFill parm( value*2, value*2, value*2, \
+c                                        value*4, value*2 )
+c$pragma aux (winapi) LineDDA parm( value*2, value*2, value*2, value*2, \
+c                                   reference far, reference far )
+
+c$pragma aux (winapi) GetStockObject parm( value*2 )
+
+c$pragma aux (winapi) CreatePen parm( value*2, value*2, value*4 )
+c$pragma aux (winapi) CreatePenIndirect parm( reference far )
+
+c$pragma aux (winapi) CreateSolidBrush parm( value*4 )
+c$pragma aux (winapi) CreateHatchBrush parm( value*2, value*4 )
+c$pragma aux (winapi) SetBrushOrg parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetBrushOrg parm( value*2 )
+c$pragma aux (winapi) CreatePatternBrush parm( value*2 )
+c$pragma aux (winapi) CreateBrushIndirect parm( reference far )
+
+c$pragma aux (winapi) CreateBitmap parm( value*2, value*2, value*1, \
+c                                        value*1, reference far )
+c$pragma aux (winapi) CreateBitmapIndirect parm( reference far )
+c$pragma aux (winapi) CreateCompatibleBitmap parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) CreateDiscardableBitmap parm( value*2, value*2, value*2 )
+
+c$pragma aux (winapi) SetBitmapBits parm( value*2, value*4, reference far )
+c$pragma aux (winapi) GetBitmapBits parm( value*2, value*4, reference far )
+c$pragma aux (winapi) SetBitmapDimension parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetBitmapDimension parm( value*2 )
+
+c$pragma aux (winapi) CreateFont parm( value*2, value*2, value*2, value*2, \
+c                                      value*2, value*1, value*1, value*1, \
+c                                      value*1, value*1, value*1, value*1, \
+c                                      value*1, value far )
+c$pragma aux (winapi) CreateFontIndirect parm( reference far )
+
+c$pragma aux (winapi) SelectClipRgn parm( value*2, value*2 )
+c$pragma aux (winapi) CreateRectRgn parm( value*2, value*2, value*2, \
+c                                         value*2 )
+c$pragma aux (winapi) SetRectRgn parm( value*2, value*2, value*2, value*2, \
+c                                      value*2 )
+c$pragma aux (winapi) CreateRectRgnIndirect parm( reference far )
+c$pragma aux (winapi) CreateEllipticRgnIndirect parm( reference far )
+c$pragma aux (winapi) CreateEllipticRgn parm( value*2, value*2, value*2, \
+c                                             value*2 )
+c$pragma aux (winapi) CreatePolygonRgn parm( reference far, value*2, value*2 )
+c$pragma aux (winapi) CreatePolyPolygonRgn parm( reference far, \
+c                                                reference far, value*2, \
+c                                                value*2 )
+c$pragma aux (winapi) CreateRoundRectRgn parm( value*2, value*2, value*2, \
+c                                              value*2, value*2, value*2 )
+
+c$pragma aux (winapi) GetObject parm( value*2, value*2, reference far )
+c$pragma aux (winapi) DeleteObject parm( value*2 )
+c$pragma aux (winapi) SelectObject parm( value*2, value*2 )
+c$pragma aux (winapi) UnrealizeObject parm( value*2 )
+
+c$pragma aux (winapi) SetBkColor parm( value*2, value*4 )
+c$pragma aux (winapi) GetBkColor parm( value*2 )
+c$pragma aux (winapi) SetBkMode parm( value*2, value*2 )
+c$pragma aux (winapi) GetBkMode parm( value*2 )
+c$pragma aux (winapi) SetTextColor parm( value*2, value*4 )
+c$pragma aux (winapi) GetTextColor parm( value*2 )
+c$pragma aux (winapi) SetTextAlign parm( value*2, value*2 )
+c$pragma aux (winapi) GetTextAlign parm( value*2 )
+c$pragma aux (winapi) SetMapperFlags parm( value*2, value*4 )
+c$pragma aux (winapi) GetAspectRatioFilter parm( value*2 )
+c$pragma aux (winapi) GetNearestColor parm( value*2, value*4 )
+c$pragma aux (winapi) SetROP2 parm( value*2, value*2 )
+c$pragma aux (winapi) GetROP2 parm( value*2 )
+c$pragma aux (winapi) SetStretchBltMode parm( value*2, value*2 )
+c$pragma aux (winapi) GetStretchBltMode parm( value*2 )
+c$pragma aux (winapi) SetPolyFillMode parm( value*2, value*2 )
+c$pragma aux (winapi) GetPolyFillMode parm( value*2 )
+c$pragma aux (winapi) SetMapMode parm( value*2, value*2 )
+c$pragma aux (winapi) GetMapMode parm( value*2 )
+c$pragma aux (winapi) SetWindowOrg parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetWindowOrg parm( value*2 )
+c$pragma aux (winapi) SetWindowExt parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetWindowExt parm( value*2 )
+c$pragma aux (winapi) SetViewportOrg parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetViewportOrg parm( value*2 )
+c$pragma aux (winapi) SetViewportExt parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetViewportExt parm( value*2 )
+c$pragma aux (winapi) OffsetViewportOrg parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) ScaleViewportExt parm( value*2, value*2, value*2, \
+c                                            value*2, value*2 )
+c$pragma aux (winapi) OffsetWindowOrg parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) ScaleWindowExt parm( value*2, value*2, value*2, \
+c                                          value*2, value*2 )
+
+c$pragma aux (winapi) GetClipBox parm( value*2, reference far )
+c$pragma aux (winapi) IntersectClipRect parm( value*2, value*2, value*2, \
+c                                             value*2, value*2 )
+c$pragma aux (winapi) OffsetClipRgn parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) ExcludeClipRect parm( value*2, value*2, value*2, \
+c                                           value*2, value*2 )
+c$pragma aux (winapi) PtVisible parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) CombineRgn parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (winapi) EqualRgn parm( value*2, value*2 )
+c$pragma aux (winapi) OffsetRgn parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetRgnBox parm( value*2, reference far )
+
+c$pragma aux (winapi) SetTextJustification parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetTextExtent parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetTabbedTextExtent parm( value*2, value far, \
+c                                               value*2, value*2, \
+c                                               reference far )
+c$pragma aux (winapi) SetTextCharacterExtra parm( value*2, value*2 )
+c$pragma aux (winapi) GetTextCharacterExtra parm( value*2 )
+
+c$pragma aux (winapi) GetMetaFile parm( value far )
+c$pragma aux (winapi) DeleteMetaFile parm( value*2 )
+c$pragma aux (winapi) CopyMetaFile parm( value*2, value far )
+
+!---- begin METAFILE -----------------------------------------------------------
+
+c$pragma aux (winapi) PlayMetaFileRecord parm( value*2, reference far, \
+c                                              reference far, value*2 )
+c$pragma aux (winapi) EnumMetaFile parm( value*2, value*2, value far, \
+c                                        value*4 )
+
+!---- end METAFILE -------------------------------------------------------------
+
+c$pragma aux (winapi) PlayMetaFile parm( value*2, value*2 )
+c$pragma aux (winapi) Escape parm( value*2, value*2, value*2, \
+c                                  value far, value far )
+c$pragma aux (winapi) EnumFonts parm( value*2, value far, value far, \
+c                                     value far )
+c$pragma aux (winapi) EnumObjects parm( value*2, value*2, value far, \
+c                                       value far )
+c$pragma aux (winapi) GetTextFace parm( value*2, value*2, value far )
+
+!---- begin TEXTMETRIC ---------------------------------------------------------
+
+c$pragma aux (winapi) GetTextMetrics parm( value*2, reference far )
+
+!---- end TEXTMETRIC -----------------------------------------------------------
+
+c$pragma aux (winapi) GetDeviceCaps parm( value*2, value*2 )
+
+c$pragma aux (winapi) SetEnvironment parm( value far, value far, value*2 )
+c$pragma aux (winapi) GetEnvironment parm( value far, value far, value*2 )
+
+c$pragma aux (winapi) DPtoLP parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) LPtoDP parm( value*2, reference far, value*2 )
+
+c$pragma aux (winapi) CreateMetaFile parm( value far )
+c$pragma aux (winapi) CloseMetaFile parm( value*2 )
+c$pragma aux (winapi) GetMetaFileBits parm( value*2 )
+c$pragma aux (winapi) SetMetaFileBits parm( value*2 )
+
+c$pragma aux (winapi) SetDIBits parm( value*2, value*2, value*2, value*2, \
+c                                     reference far, reference far, value*2 )
+c$pragma aux (winapi) GetDIBits parm( value*2, value*2, value*2, value*2, \
+c                                     reference far, reference far, value*2 )
+c$pragma aux (winapi) SetDIBitsToDevice parm( value*2, value*2, value*2, \
+c                                             value*2, value*2, value*2, \
+c                                             value*2, value*2, value*2, \
+c                                             reference far, \
+c                                             reference far, value*2 )
+c$pragma aux (winapi) CreateDIBitmap parm( value*2, reference far, \
+c                                          value*4, reference far, \
+c                                          reference far, value*2 )
+c$pragma aux (winapi) CreateDIBPatternBrush parm( value*2, value*2 )
+c$pragma aux (winapi) StretchDIBits parm( value*2, value*2, value*2, \
+c                                         value*2, value*2, value*2, \
+c                                         value*2, value*2, value*2, \
+c                                         reference far, reference far, \
+c                                         value*2, value*4 )
+
+c$pragma aux (winapi) CreatePalette parm( reference far )
+c$pragma aux (winapi) SelectPalette parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) RealizePalette parm( value*2 )
+c$pragma aux (winapi) UpdateColors parm( value*2 )
+c$pragma aux (winapi) AnimatePalette parm( value*2, value*2, value*2, \
+c                                          reference far )
+c$pragma aux (winapi) SetPaletteEntries parm( value*2, value*2, value*2, \
+c                                             reference far )
+c$pragma aux (winapi) GetPaletteEntries parm( value*2, value*2, value*2, \
+c                                             reference far )
+c$pragma aux (winapi) GetNearestPaletteIndex parm( value*2, value*4 )
+c$pragma aux (winapi) ResizePalette parm( value*2, value*2 )
+
+c$pragma aux (winapi) GetSystemPaletteEntries parm( value*2, value*2, \
+c                                                   value*2, \
+c                                                   reference far )
+c$pragma aux (winapi) GetSystemPaletteUse parm( value*2, value*2 )
+c$pragma aux (winapi) SetSystemPaletteUse parm( value*2, value*2 )
+
+!---- end GDI ------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+!      USER Section
+!-------------------------------------------------------------------------------
+
+!---- begin USER ---------------------------------------------------------------
+
+c$pragma aux (winapi) wvsprintf parm( value far, value far, reference far )
+c$pragma aux (windecl) wsprintf parm( value far, value far )
+
+!---- begin WINMESSAGES --------------------------------------------------------
+
+c$pragma aux (winapi) RegisterWindowMessage parm( value far )
+
+!---- end WINMESSAGES ----------------------------------------------------------
+
+!---- begin MSG ----------------------------------------------------------------
+
+! Message Function Templates
+
+c$pragma aux (winapi) GetMessage parm( reference far, value*2, value*2, \
+c                                      value*2 )
+c$pragma aux (winapi) TranslateMessage parm( reference far )
+c$pragma aux (winapi) DispatchMessage parm( reference far )
+c$pragma aux (winapi) PeekMessage parm( reference far, value*2, value*2, \
+c                                       value*2, value*2 )
+
+!---- end MSG ------------------------------------------------------------------
+
+c$pragma aux (winapi) ExitWindows parm( value*4, value*2 )
+
+c$pragma aux (winapi) SwapMouseButton parm( value*2 )
+c$pragma aux (winapi) GetMessagePos parm
+c$pragma aux (winapi) GetMessageTime parm
+
+c$pragma aux (winapi) GetSysModalWindow parm
+c$pragma aux (winapi) SetSysModalWindow parm( value*2 )
+
+c$pragma aux (winapi) SendMessage parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) PostMessage parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) PostAppMessage parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) ReplyMessage parm( value*4 )
+c$pragma aux (winapi) WaitMessage parm
+c$pragma aux (winapi) DefWindowProc parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) PostQuitMessage parm( value*2 )
+c$pragma aux (winapi) CallWindowProc parm( value far, value*2, \
+c                                          value*2, value*2, value*4 )
+c$pragma aux (winapi) InSendMessage parm
+
+c$pragma aux (winapi) GetDoubleClickTime parm
+c$pragma aux (winapi) SetDoubleClickTime parm( value*2 )
+
+c$pragma aux (winapi) RegisterClass parm( reference far )
+c$pragma aux (winapi) UnregisterClass parm( value far, value*2 )
+c$pragma aux (winapi) GetClassInfo parm( value*2, value far, reference far )
+
+c$pragma aux (winapi) SetMessageQueue parm( value*2 )
+
+c$pragma aux (winapi) CreateWindow parm( value far, value far, value*4, \
+c                                        value*2, value*2, value*2, \
+c                                        value*2, value*2, value*2, \
+c                                        value*2, value*4 )
+c$pragma aux (winapi) CreateWindowEx parm( value*4, value far, \
+c                                          value far, value*4, value*2, \
+c                                          value*2, value*2, value*2, \
+c                                          value*2, value*2, value*2, \
+c                                          value*4 )
+
+c$pragma aux (winapi) IsWindow parm( value*2 )
+c$pragma aux (winapi) IsChild parm( value*2, value*2 )
+c$pragma aux (winapi) DestroyWindow parm( value*2 )
+
+c$pragma aux (winapi) ShowWindow parm( value*2, value*2 )
+c$pragma aux (winapi) FlashWindow parm( value*2, value*2 )
+c$pragma aux (winapi) ShowOwnedPopups parm( value*2, value*2 )
+
+c$pragma aux (winapi) OpenIcon parm( value*2 )
+c$pragma aux (winapi) CloseWindow parm( value*2 )
+c$pragma aux (winapi) MoveWindow parm( value*2, value*2, value*2, value*2, \
+c                                      value*2, value*2 )
+c$pragma aux (winapi) SetWindowPos parm( value*2, value*2, value*2, \
+c                                        value*2, value*2, value*2, \
+c                                        value*2 )
+
+!---- begin DEFERWINDOWPOS -----------------------------------------------------
+
+c$pragma aux (winapi) BeginDeferWindowPos parm( value*2 )
+c$pragma aux (winapi) DeferWindowPos parm( value*2, value*2, value*2, \
+c                                          value*2, value*2, value*2, \
+c                                          value*2, value*2 )
+c$pragma aux (winapi) EndDeferWindowPos parm( value*2 )
+
+!---- end DEFERWINDOWPOS -------------------------------------------------------
+
+c$pragma aux (winapi) IsWindowVisible parm( value*2 )
+c$pragma aux (winapi) IsIconic parm( value*2 )
+c$pragma aux (winapi) AnyPopup parm
+c$pragma aux (winapi) BringWindowToTop parm( value*2 )
+c$pragma aux (winapi) IsZoomed parm( value*2 )
+
+!---- begin CTLMGR -------------------------------------------------------------
+
+c$pragma aux (winapi) CreateDialog parm( value*2, value far, value*2, value*4 )
+c$pragma aux (winapi) CreateDialogIndirect parm( value*2, reference far, \
+c                                                value*2, value*4 )
+c$pragma aux (winapi) CreateDialogParam parm( value*2, value far, value*2, \
+c                                             value*4, value*4 )
+c$pragma aux (winapi) CreateDialogIndirectParam parm( value*2, reference far, \
+c                                                     value*2, value*4, \
+c                                                     value*4 )
+c$pragma aux (winapi) DialogBox parm( value*2, value far, value*2, value*4 )
+c$pragma aux (winapi) DialogBoxIndirect parm( value*2, value*2, value*2, \
+c                                             value*4 )
+c$pragma aux (winapi) DialogBoxParam parm( value*2, value far, value*2, \
+c                                          value*4, value*4 )
+c$pragma aux (winapi) DialogBoxIndirectParam parm( value*2, value*2, value*2, \
+c                                                  value*4, value*4 )
+c$pragma aux (winapi) EndDialog parm( value*2, value*2 )
+c$pragma aux (winapi) GetDlgItem parm( value*2, value*2 )
+c$pragma aux (winapi) SetDlgItemInt parm( value*2, value*2, value*2, \
+c                                         value*2 )
+c$pragma aux (winapi) GetDlgItemInt parm( value*2, value*2, reference far, \
+c                                         value*2 )
+c$pragma aux (winapi) SetDlgItemText parm( value*2, value*2, value far )
+c$pragma aux (winapi) GetDlgItemText parm( value*2, value*2, value far, \
+c                                          value*2 )
+c$pragma aux (winapi) CheckDlgButton parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) CheckRadioButton parm( value*2, value*2, value*2, \
+c                                            value*2 )
+c$pragma aux (winapi) IsDlgButtonChecked parm( value*2, value*2 )
+c$pragma aux (winapi) SendDlgItemMessage parm( value*2, value*2, value*2, \
+c                                              value*2, value*4 )
+c$pragma aux (winapi) GetNextDlgGroupItem parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetNextDlgTabItem parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetDlgCtrlID parm( value*2 )
+c$pragma aux (winapi) GetDialogBaseUnits parm
+c$pragma aux (winapi) DefDlgProc parm( value*2, value*2, value*2, value*4 )
+
+!---- end CTLMGR ---------------------------------------------------------------
+
+!---- begin MSG ----------------------------------------------------------------
+
+c$pragma aux (winapi) CallMsgFilter parm( reference far, value*2 )
+
+!---- end MSG ------------------------------------------------------------------
+
+!---- begin CLIPBOARD ----------------------------------------------------------
+
+! Clipboard Manager Functions
+
+c$pragma aux (winapi) OpenClipboard parm( value*2 )
+c$pragma aux (winapi) CloseClipboard parm
+c$pragma aux (winapi) GetClipboardOwner parm
+c$pragma aux (winapi) SetClipboardViewer parm( value*2 )
+c$pragma aux (winapi) GetClipboardViewer parm
+c$pragma aux (winapi) ChangeClipboardChain parm( value*2, value*2 )
+c$pragma aux (winapi) SetClipboardData parm( value*2, value*2 )
+c$pragma aux (winapi) GetClipboardData parm( value*2 )
+c$pragma aux (winapi) RegisterClipboardFormat parm( value far )
+c$pragma aux (winapi) CountClipboardFormats parm
+c$pragma aux (winapi) EnumClipboardFormats parm( value*2 )
+c$pragma aux (winapi) GetClipboardFormatName parm( value*2, value far, value*2 )
+c$pragma aux (winapi) EmptyClipboard parm
+c$pragma aux (winapi) IsClipboardFormatAvailable parm( value*2 )
+c$pragma aux (winapi) GetPriorityClipboardFormat parm( reference far, value*2 )
+
+!---- end CLIPBOARD ------------------------------------------------------------
+
+c$pragma aux (winapi) SetFocus parm( value*2 )
+c$pragma aux (winapi) GetFocus parm
+c$pragma aux (winapi) GetActiveWindow parm
+c$pragma aux (winapi) GetKeyState parm( value*2 )
+c$pragma aux (winapi) GetAsyncKeyState parm( value*2 )
+c$pragma aux (winapi) GetKeyboardState parm( reference far )
+c$pragma aux (winapi) SetKeyboardState parm( reference far )
+c$pragma aux (winapi) EnableHardwareInput parm( value*2 )
+c$pragma aux (winapi) GetInputState parm
+c$pragma aux (winapi) GetCapture parm
+c$pragma aux (winapi) SetCapture parm( value*2 )
+c$pragma aux (winapi) ReleaseCapture parm
+
+! Windows Functions
+
+c$pragma aux (winapi) SetTimer parm( value*2, value*2, value*2, value*4 )
+c$pragma aux (winapi) KillTimer parm( value*2, value*2 )
+
+c$pragma aux (winapi) EnableWindow parm( value*2, value*2 )
+c$pragma aux (winapi) IsWindowEnabled parm( value*2 )
+
+c$pragma aux (winapi) LoadAccelerators parm( value*2, value far )
+
+!---- begin MSG ----------------------------------------------------------------
+
+c$pragma aux (winapi) TranslateAccelerator parm( value*2, value*2, \
+c                                                reference far )
+
+!---- end MSG ------------------------------------------------------------------
+
+!---- begin SYSMETRICS ---------------------------------------------------------
+
+c$pragma aux (winapi) GetSystemMetrics parm( value*2 )
+
+!---- end SYSMETRICS -----------------------------------------------------------
+
+!---- begin MENUS --------------------------------------------------------------
+
+c$pragma aux (winapi) LoadMenu parm( value*2, value far )
+c$pragma aux (winapi) LoadMenuIndirect parm( reference far )
+c$pragma aux (winapi) GetMenu parm( value*2 )
+c$pragma aux (winapi) SetMenu parm( value*2, value*2 )
+c$pragma aux (winapi) ChangeMenu parm( value*2, value*2, value far, \
+c                                      value*2, value*2 )
+c$pragma aux (winapi) HiliteMenuItem parm( value*2, value*2, value*2, \
+c                                          value*2 )
+c$pragma aux (winapi) GetMenuString parm( value*2, value*2, value far, \
+c                                         value*2, value*2 )
+c$pragma aux (winapi) GetMenuState parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) DrawMenuBar parm( value*2 )
+c$pragma aux (winapi) GetSystemMenu parm( value*2, value*2 )
+c$pragma aux (winapi) CreateMenu parm
+c$pragma aux (winapi) CreatePopupMenu parm
+c$pragma aux (winapi) DestroyMenu parm( value*2 )
+c$pragma aux (winapi) CheckMenuItem parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) EnableMenuItem parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetSubMenu parm( value*2, value*2 )
+c$pragma aux (winapi) GetMenuItemID parm( value*2, value*2 )
+c$pragma aux (winapi) GetMenuItemCount parm( value*2 )
+
+c$pragma aux (winapi) InsertMenu parm( value*2, value*2, value*2, value*2, \
+c                                      value far )
+c$pragma aux (winapi) AppendMenu parm( value*2, value*2, value*2, value far )
+c$pragma aux (winapi) ModifyMenu parm( value*2, value*2, value*2, value*2, \
+c                                      value far )
+c$pragma aux (winapi) RemoveMenu parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) DeleteMenu parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) SetMenuItemBitmaps parm( value*2, value*2, value*2, \
+c                                              value*2, value*2 )
+c$pragma aux (winapi) GetMenuCheckMarkDimensions parm
+c$pragma aux (winapi) TrackPopupMenu parm( value*2, value*2, value*2, \
+c                                          value*2, value*2, value*2, \
+c                                          reference far )
+
+!---- end MENUS ----------------------------------------------------------------
+
+c$pragma aux (winapi) GrayString parm( value*2, value*2, reference far, \
+c                                      value*4, value*2, value*2, value*2, \
+c                                      value*2, value*2 )
+c$pragma aux (winapi) UpdateWindow parm( value*2 )
+c$pragma aux (winapi) SetActiveWindow parm( value*2 )
+
+c$pragma aux (winapi) BeginPaint parm( value*2, reference far )
+c$pragma aux (winapi) EndPaint parm( value*2, reference far )
+c$pragma aux (winapi) GetUpdateRect parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) GetUpdateRgn parm( value*2, value*2, value*2 )
+
+c$pragma aux (winapi) ExcludeUpdateRgn parm( value*2, value*2 )
+
+c$pragma aux (winapi) InvalidateRect parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) ValidateRect parm( value*2, reference far )
+
+c$pragma aux (winapi) InvalidateRgn parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) ValidateRgn parm( value*2, value*2 )
+
+c$pragma aux (winapi) ScrollWindow parm( value*2, value*2, value*2, \
+c                                        reference far, reference far )
+c$pragma aux (winapi) ScrollDC parm( value*2, value*2, value*2, \
+c                                    reference far, reference far, \
+c                                    value*2, reference far )
+
+!---- begin SCROLL -------------------------------------------------------------
+
+c$pragma aux (winapi) SetScrollPos parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (winapi) GetScrollPos parm( value*2, value*2 )
+c$pragma aux (winapi) SetScrollRange parm( value*2, value*2, value*2, \
+c                                          value*2, value*2 )
+c$pragma aux (winapi) GetScrollRange parm( value*2, value*2, \
+c                                          reference far, reference far )
+c$pragma aux (winapi) ShowScrollBar parm( value*2, value*2, value*2 )
+
+!---- end SCROLL ---------------------------------------------------------------
+
+c$pragma aux (winapi) SetProp parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetProp parm( value*2, value far )
+c$pragma aux (winapi) RemoveProp parm( value*2, value far )
+c$pragma aux (winapi) EnumProps parm( value*2, value far )
+c$pragma aux (winapi) SetWindowText parm( value*2, value far )
+c$pragma aux (winapi) GetWindowText parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetWindowTextLength parm( value*2 )
+
+c$pragma aux (winapi) GetClientRect parm( value*2, reference far )
+c$pragma aux (winapi) GetWindowRect parm( value*2, reference far )
+c$pragma aux (winapi) AdjustWindowRect parm( reference far, value*4, \
+c                                            value*2 )
+c$pragma aux (winapi) AdjustWindowRectEx parm( reference far, value*4, \
+c                                              value*2, value*4 )
+
+!---- begin MB -----------------------------------------------------------------
+
+c$pragma aux (winapi) MessageBox parm( value*2, value far, value far, value*2 )
+c$pragma aux (winapi) MessageBeep parm( value*2 )
+
+!---- end MB -------------------------------------------------------------------
+
+c$pragma aux (winapi) ShowCursor parm( value*2 )
+c$pragma aux (winapi) SetCursorPos parm( value*2, value*2 )
+c$pragma aux (winapi) SetCursor parm( value*2 )
+c$pragma aux (winapi) GetCursorPos parm( reference far )
+c$pragma aux (winapi) ClipCursor parm( reference far )
+
+c$pragma aux (winapi) CreateCaret parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (winapi) GetCaretBlinkTime parm
+c$pragma aux (winapi) SetCaretBlinkTime parm( value*2 )
+c$pragma aux (winapi) DestroyCaret parm
+c$pragma aux (winapi) HideCaret parm( value*2 )
+c$pragma aux (winapi) ShowCaret parm( value*2 )
+c$pragma aux (winapi) SetCaretPos parm( value*2, value*2 )
+c$pragma aux (winapi) GetCaretPos parm( reference far )
+
+c$pragma aux (winapi) ClientToScreen parm( value*2, reference far )
+c$pragma aux (winapi) ScreenToClient parm( value*2, reference far )
+c$pragma aux (winapi) WindowFromPoint parm( value )
+c$pragma aux (winapi) ChildWindowFromPoint parm( value*2, value )
+
+!---- begin COLOR --------------------------------------------------------------
+
+c$pragma aux (winapi) GetSysColor parm( value*2 )
+c$pragma aux (winapi) SetSysColors parm( value*2, reference far, reference far )
+
+!---- end COLOR ----------------------------------------------------------------
+
+c$pragma aux (winapi) FillRgn parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) FrameRgn parm( value*2, value*2, value*2, value*2, \
+c                                    value*2 )
+c$pragma aux (winapi) InvertRgn parm( value*2, value*2 )
+c$pragma aux (winapi) PaintRgn parm( value*2, value*2 )
+c$pragma aux (winapi) PtInRegion parm( value*2, value*2, value*2 )
+
+c$pragma aux (winapi) DrawFocusRect parm( value*2, reference far )
+c$pragma aux (winapi) FillRect parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) FrameRect parm( value*2, reference far, value*2 )
+c$pragma aux (winapi) InvertRect parm( value*2, reference far )
+c$pragma aux (winapi) SetRect parm( reference far, value*2, value*2, \
+c                                   value*2, value*2 )
+c$pragma aux (winapi) SetRectEmpty parm( reference far )
+c$pragma aux (winapi) CopyRect parm( reference far, reference far )
+c$pragma aux (winapi) InflateRect parm( reference far, value*2, value*2 )
+c$pragma aux (winapi) IntersectRect parm( reference far, reference far, \
+c                                         reference far )
+c$pragma aux (winapi) UnionRect parm( reference far, reference far, \
+c                                     reference far )
+c$pragma aux (winapi) OffsetRect parm( reference far, value*2, value*2 )
+c$pragma aux (winapi) IsRectEmpty parm( reference far )
+c$pragma aux (winapi) EqualRect parm( reference far, reference far )
+c$pragma aux (winapi) PtInRect parm( reference far, value )
+c$pragma aux (winapi) RectVisible parm( value*2, reference far )
+c$pragma aux (winapi) RectInRegion parm( value*2, reference far )
+
+c$pragma aux (winapi) GetCurrentTime parm
+c$pragma aux (winapi) GetTickCount parm
+
+!---- begin WINOFFSETS ---------------------------------------------------------
+
+c$pragma aux (winapi) GetWindowWord parm( value*2, value*2 )
+c$pragma aux (winapi) SetWindowWord parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetWindowLong parm( value*2, value*2 )
+c$pragma aux (winapi) SetWindowLong parm( value*2, value*2, value*4 )
+c$pragma aux (winapi) GetClassWord parm( value*2, value*2 )
+c$pragma aux (winapi) SetClassWord parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) GetClassLong parm( value*2, value*2 )
+c$pragma aux (winapi) SetClassLong parm( value*2, value*2, value*4 )
+c$pragma aux (winapi) GetDesktopHwnd parm
+c$pragma aux (winapi) GetDesktopWindow parm
+
+!---- end WINOFFSETS -----------------------------------------------------------
+
+c$pragma aux (winapi) GetParent parm( value*2 )
+c$pragma aux (winapi) SetParent parm( value*2, value*2 )
+c$pragma aux (winapi) EnumChildWindows parm( value*2, value far, value*4 )
+c$pragma aux (winapi) FindWindow parm( value far, value far )
+c$pragma aux (winapi) EnumWindows parm( value far, value*4 )
+c$pragma aux (winapi) EnumTaskWindows parm( value*2, value far, value*4 )
+c$pragma aux (winapi) GetClassName parm( value*2, value far, value*2 )
+c$pragma aux (winapi) GetTopWindow parm( value*2 )
+c$pragma aux (winapi) GetNextWindow parm( value*2, value*2 )
+c$pragma aux (winapi) GetWindowTask parm( value*2 )
+c$pragma aux (winapi) GetLastActivePopup parm( value*2 )
+
+c$pragma aux (winapi) GetWindow parm( value*2, value*2 )
+
+!---- begin NOWH ---------------------------------------------------------------
+
+c$pragma aux (winapi) SetWindowsHook parm( value*2, reference far )
+c$pragma aux (winapi) UnhookWindowsHook parm( value*2, reference far )
+c$pragma aux (winapi) DefHookProc parm( value*2, value*2, value*4, \
+c                                       reference far )
+
+!---- end NOWH -----------------------------------------------------------------
+
+! Resource Loading Routines
+
+c$pragma aux (winapi) LoadBitmap parm( value*2, value far )
+c$pragma aux (winapi) LoadCursor parm( value*2, value*4 )
+c$pragma aux (winapi) CreateCursor parm( value*2, value*2, value*2, \
+c                                        value*2, value*2, reference far, \
+c                                        reference far )
+c$pragma aux (winapi) DestroyCursor parm( value*2 )
+
+c$pragma aux (winapi) LoadIcon parm( value*2, value far )
+c$pragma aux (winapi) CreateIcon parm( value*2, value*2, value*2, value*1, \
+c                                      value*1, reference far, \
+c                                      reference far )
+c$pragma aux (winapi) DestroyIcon parm( value*2 )
+
+c$pragma aux (winapi) LoadString parm( value*2, value*2, value far, \
+c                                      value*2 )
+
+c$pragma aux (winapi) AddFontResource parm( value far )
+c$pragma aux (winapi) RemoveFontResource parm( value far )
+
+!---- begin KANJI --------------------------------------------------------------
+
+c$pragma aux (winapi) ConvertRequest parm( value*2, reference far )
+c$pragma aux (winapi) SetConvertParams parm( value*2, value*2 )
+c$pragma aux (winapi) SetConvertHook parm( value*2 )
+
+!---- end KANJI ----------------------------------------------------------------
+
+! Key Conversion Window
+
+c$pragma aux (winapi) IsTwoByteCharPrefix parm( value*1 )
+
+!---- begin CTLMGR -------------------------------------------------------------
+
+! Dialog Manager Routines
+
+!---- begin MSG ----------------------------------------------------------------
+
+c$pragma aux (winapi) IsDialogMessage parm( value*2, reference far )
+
+!---- end MSG ------------------------------------------------------------------
+
+c$pragma aux (winapi) MapDialogRect parm( value*2, reference far )
+
+c$pragma aux (winapi) DlgDirList parm( value*2, value far, value*2, \
+c                                      value*2, value*2 )
+c$pragma aux (winapi) DlgDirSelect parm( value*2, value far, value*2 )
+c$pragma aux (winapi) DlgDirListComboBox parm( value*2, value far, \
+c                                              value*2, value*2, value*2 )
+c$pragma aux (winapi) DlgDirSelectComboBox parm( value*2, value far, \
+c                                                value*2 )
+
+!---- end CTLMGR ---------------------------------------------------------------
+
+!---- begin SOUND --------------------------------------------------------------
+
+c$pragma aux (winapi) OpenSound parm
+c$pragma aux (winapi) CloseSound parm
+c$pragma aux (winapi) SetVoiceQueueSize parm( value*2, value*2 )
+c$pragma aux (winapi) SetVoiceNote parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (winapi) SetVoiceAccent parm( value*2, value*2, value*2, \
+c                                          value*2, value*2 )
+c$pragma aux (winapi) SetVoiceEnvelope parm( value*2, value*2, value*2 )
+c$pragma aux (winapi) SetSoundNoise parm( value*2, value*2 )
+c$pragma aux (winapi) SetVoiceSound parm( value*2, value*4, value*2 )
+c$pragma aux (winapi) StartSound parm
+c$pragma aux (winapi) StopSound parm
+c$pragma aux (winapi) WaitSoundState parm( value*2 )
+c$pragma aux (winapi) SyncAllVoices parm
+c$pragma aux (winapi) CountVoiceNotes parm( value*2 )
+c$pragma aux (winapi) GetThresholdEvent parm
+c$pragma aux (winapi) GetThresholdStatus parm
+c$pragma aux (winapi) SetVoiceThreshold parm( value*2, value*2 )
+
+!---- end SOUND ----------------------------------------------------------------
+
+!---- begin COMM ---------------------------------------------------------------
+
+c$pragma aux (winapi) OpenComm parm( value far, value*2, value*2 )
+c$pragma aux (winapi) SetCommState parm( reference far )
+c$pragma aux (winapi) GetCommState parm( value*2, reference far )
+c$pragma aux (winapi) ReadComm parm( value*2, value far, value*2 )
+c$pragma aux (winapi) UngetCommChar parm( value*2, value*1 )
+c$pragma aux (winapi) WriteComm parm( value*2, value far, value*2 )
+c$pragma aux (winapi) CloseComm parm( value*2 )
+c$pragma aux (winapi) GetCommError parm( value*2, reference far )
+c$pragma aux (winapi) BuildCommDCB parm( value far, reference far )
+c$pragma aux (winapi) TransmitCommChar parm( value*2, value*1 )
+c$pragma aux (winapi) SetCommEventMask parm( value*2, value*2 )
+c$pragma aux (winapi) GetCommEventMask parm( value*2, value*2 )
+c$pragma aux (winapi) SetCommBreak parm( value*2 )
+c$pragma aux (winapi) ClearCommBreak parm( value*2 )
+c$pragma aux (winapi) FlushComm parm( value*2, value*2 )
+c$pragma aux (winapi) EscapeCommFunction parm( value*2, value*2 )
+
+!---- end COMM -----------------------------------------------------------------
+
+!---- begin MDI ----------------------------------------------------------------
+
+c$pragma aux (winapi) DefFrameProc parm( value*2, value*2, value*2, \
+c                                        value*2, value*4 )
+c$pragma aux (winapi) DefMDIChildProc parm( value*2, value*2, value*2, \
+c                                           value*4 )
+
+!---- begin MSG ----------------------------------------------------------------
+
+c$pragma aux (winapi) TranslateMDISysAccel parm( value*2, reference far )
+
+!---- end MSG ------------------------------------------------------------------
+
+c$pragma aux (winapi) ArrangeIconicWindows parm( value*2 )
+
+!---- end MDI ------------------------------------------------------------------
+
+!---- end USER -----------------------------------------------------------------
+
+!---- begin HELP ---------------------------------------------------------------
+
+c$pragma aux (winapi) WinHelp parm( value*2, value far, value*2, value*4 )
+
+!---- end HELP -----------------------------------------------------------------
+
+!---- begin PROFILER -----------------------------------------------------------
+
+! function declarations for profiler routines contained in Windows libraries
+
+c$pragma aux (winapi) ProfInsChk parm
+c$pragma aux (winapi) ProfSetup parm( value*2, value*2 )
+c$pragma aux (winapi) ProfSampRate parm( value*2, value*2 )
+c$pragma aux (winapi) ProfStart parm
+c$pragma aux (winapi) ProfStop parm
+c$pragma aux (winapi) ProfClear parm
+c$pragma aux (winapi) ProfFlush parm
+c$pragma aux (winapi) ProfFinish parm
+
+!---- end PROFILER -------------------------------------------------------------
+
+c$pragma aux (winapi) DeviceCapabilities parm( value far, value far, \
+c                                              value*2, reference far, \
+c                                              reference far )
+c$pragma aux (winapi) DeviceMode parm( value*2, value*2, value far, value far )
+c$pragma aux (winapi) ExtDeviceMode parm( value*2, value*2, reference far, \
+c                                         value far, value far, reference far, \
+c                                         value far, value*2 )
+
+!---- Stubs for 32-bit functions called by 16-bit applications -----------------
+
+c$pragma aux GetProc16 = parm ( value*4, value*4 ) [dx ax] [cx bx] \
+c                        value [dx ax] \
+c                        modify exact []
+c$pragma aux ReleaseProc16 = parm ( value*4 ) [dx ax] modify exact []
+c$pragma aux AllocAlias16 = parm ( value*4 ) [dx ax] \
+c                           value [dx ax] \
+c                           modify exact []
+c$pragma aux AllocHugeAlias16 = parm ( value*4, value*4 ) [dx ax] [cx bx] \
+c                               value [dx ax] \
+c                               modify exact []
+c$pragma aux FreeAlias16 = parm ( value*4 ) [dx ax] modify exact []
+c$pragma aux FreeHugeAlias16 = parm ( value*4, value*4 ) [dx ax] [cx bx] \
+c                              modify exact []
+c$pragma aux MapAliasToFlat = parm ( value*4 ) [dx ax] \
+c                           value [dx ax] \
+c                           modify exact []
+c$pragma aux PASS_WORD_AS_POINTER = z31d2 \ xor dx,dx
+c                                 parm( value*2 ) [ax] \
+c                                 value [dx ax] \
+c                                 modify exact [dx]
+
+!---- begin COMMDLG -----------------------------------------------------------
+
+! function declarations common dialogs
+
+c$pragma aux    (winapi) GetOpenFileName parm( reference far )
+c$pragma aux    (winapi) GetSaveFileName parm( reference far )
+c$pragma aux    (winapi) GetFileTitle parm( value*4, value*4, value*2 )
+c$pragma aux    (winapi) ChooseColor parm( reference far )
+c$pragma aux    (winapi) FindText parm( reference far )
+c$pragma aux    (winapi) ReplaceText parm( reference far )
+c$pragma aux    (winapi) ChooseFont parm( reference far )
+c$pragma aux    (winapi) PrintDlg parm( reference far )
+c$pragma aux    (winapi) CommDlgExtendedError parm
+
+!---- end COMMDLG -----------------------------------------------------------
+
+c$endif

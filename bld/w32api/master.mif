@@ -1,0 +1,699 @@
+.EXTENSIONS : .rh .mh .lbc .def
+
+proj_name = w32api
+
+w32api_autodepends  = .autodepend
+w32api_distrib_lib  = 1
+
+!include cproj.mif
+!include defrule.mif
+
+!ifndef root_dir
+!error root_dir is not set!
+!endif
+
+# This should be including the newly built headers when bootstrapping.
+!ifdef bootstrapmode
+inc_dirs = -I"$(dev_dir)/w32api/nt/ddk" -I"$(dev_dir)/w32api/nt/directx"
+!else
+inc_dirs = -I"$(lang_root)/h/nt/ddk" -I"$(lang_root)/h/nt/directx"
+!endif
+
+splice = wsplice -i$(hdr_dir) -i$(root_dir)/include $[@ $^@
+rsplice = wsplice -i$(hdr_dir) -i$(root_dir)/include -kRESOURCE $[@ $^@
+ws2splice = wsplice -i$(hdr_dir) -i$(root_dir)/include -kWINSOCK2 $[@ $^@
+
+headers = &
+        _w32ials.h           &
+        accctrl.h            &
+        aclapi.h             &
+        aclui.h              &
+        adsprop.h            &
+        afxres.h             &
+        amaudio.h            &
+        amstream.h           &
+        amvideo.h            &
+        audevcod.h           &
+        austream.h           &
+        aviriff.h            &
+        basetsd.h            &
+        basetyps.h           &
+        batclass.h           &
+        bcrypt.h             &
+        bdatypes.h           &
+        cderr.h              &
+        cguid.h              &
+        cmnquery.h           &
+        comcat.h             &
+        commctrl.h           &
+        commctrl.rh          &
+        commdlg.h            &
+        compobj.h            &
+        control.h            &
+        cpl.h                &
+        cplext.h             &
+        ctl3d.h              &
+        custcntl.h           &
+        dbt.h                &
+        dde.h                &
+        dde.rh               &
+        ddeml.h              &
+        ddraw.h              &
+        ddstream.h           &
+        devguid.h            &
+        devprdef.h           &
+        dhcpcsdk.h           &
+        dimm.h               &
+        dispatch.h           &
+        dispex.h             &
+        dlgs.h               &
+        docobj.h             &
+        dsadmin.h            &
+        dsclient.h           &
+        dsgetdc.h            &
+        dshow.h              &
+        dsquery.h            &
+        dsrole.h             &
+        dvdevcod.h           &
+        dvdmedia.h           &
+        edevdefs.h           &
+        errorrep.h           &
+        errors.h             &
+        evcode.h             &
+        evntprov.h           &
+        evntrace.h           &
+        exdisp.h             &
+        exdispid.h           &
+        fltdefs.h            &
+        guiddef.h            &
+        htmlhelp.h           &
+        httpext.h            &
+        iads.h               &
+        icm.h                &
+        idispids.h           &
+        ifdef.h              &
+        ifmib.h              &
+        il21dec.h            &
+        imagehlp.h           &
+        imm.h                &
+        in6addr.h            &
+        inaddr.h             &
+        initguid.h           &
+        intshcut.h           &
+        ipexport.h           &
+        iphlpapi.h           &
+        ipifcons.h           &
+        ipinfoid.h           &
+        ipmib.h              &
+        iprtrmib.h           &
+        iptypes.h            &
+        ipxconst.h           &
+        ipxrip.h             &
+        ipxrtdef.h           &
+        ipxsap.h             &
+        ipxtfflt.h           &
+        isguids.h            &
+        knownfld.h           &
+        ks.h                 &
+        ksmedia.h            &
+        ktmtypes.h           &
+        largeint.h           &
+        lm.h                 &
+        lmaccess.h           &
+        lmalert.h            &
+        lmapibuf.h           &
+        lmat.h               &
+        lmaudit.h            &
+        lmconfig.h           &
+        lmcons.h             &
+        lmerr.h              &
+        lmerrlog.h           &
+        lmjoin.h             &
+        lmmsg.h              &
+        lmremutl.h           &
+        lmrepl.h             &
+        lmserver.h           &
+        lmshare.h            &
+        lmsname.h            &
+        lmstats.h            &
+        lmsvc.h              &
+        lmuse.h              &
+        lmuseflg.h           &
+        lmwksta.h            &
+        lzexpand.h           &
+        mapi.h               &
+        mciavi.h             &
+        mcx.h                &
+        mgm.h                &
+        mgmtapi.h            &
+        mlang.h              &
+        mmreg.h              &
+        mmstream.h           &
+        mmsystem.h           &
+        moniker.h            &
+        mpegtype.h           &
+        mprapi.h             &
+        mq.h                 &
+        msacm.h              &
+        mshtml.h             &
+        mswsock.h            &
+        msxml.h              &
+        naptypes.h           &
+        nb30.h               &
+        ncrypt.h             &
+        nddeapi.h            &
+        newdev.h             &
+        nldef.h              &
+        nspapi.h             &
+        ntddndis.h           &
+        ntdsapi.h            &
+        ntdsbcli.h           &
+        ntdsbmsg.h           &
+        ntldap.h             &
+        ntsecapi.h           &
+        ntsecpkg.h           &
+        oaidl.h              &
+        objarray.h           &
+        objbase.h            &
+        objidl.h             &
+        objsafe.h            &
+        objsel.h             &
+        ocidl.h              &
+        odbcinst.h           &
+        ole.h                &
+        ole2.h               &
+        ole2ver.h            &
+        oleacc.h             &
+        oleauto.h            &
+        olectl.h             &
+        olectlid.h           &
+        oledlg.h             &
+        oleidl.h             &
+        packon.h             &
+        packoff.h            &
+        pbt.h                &
+        poppack.h            &
+        powrprof.h           &
+        profinfo.h           &
+        propidl.h            &
+        propkdef.h           &
+        propsys.h            &
+        prsht.h              &
+        psapi.h              &
+        pshpack1.h           &
+        pshpack2.h           &
+        pshpack4.h           &
+        pshpack8.h           &
+        qedit.h              &
+        qos.h                &
+        ras.h                &
+        rasdlg.h             &
+        raserror.h           &
+        rassapi.h            &
+        reason.h             &
+        regstr.h             &
+        richedit.h           &
+        richole.h            &
+        routprot.h           &
+        rpc.h                &
+        rpcasync.h           &
+        rpcdce.h             &
+        rpcdcep.h            &
+        rpcndr.h             &
+        rpcnsip.h            &
+        rpcnsi.h             &
+        rpcnterr.h           &
+        rpcproxy.h           &
+        rtutils.h            &
+        sal.h                &
+        schannel.h           &
+        schedule.h           &
+        schemdef.h           &
+        schnlsp.h            &
+        scode.h              &
+        sddl.h               &
+        sdkddver.h           &
+        secext.h             &
+        security.h           &
+        servprov.h           &
+        setupapi.h           &
+        shellapi.h           &
+        sherrors.h           &
+        shldisp.h            &
+        shlguid.h            &
+        shlobj.h             &
+        shlwapi.h            &
+        shobjidl.h           &
+        shtypes.h            &
+        snmp.h               &
+        spapidef.h           &
+        specstr.h            &
+        sql.h                &
+        sqlext.h             &
+        sqltypes.h           &
+        sqlucode.h           &
+        sspi.h               &
+        stm.h                &
+        storage.h            &
+        stralign.h           &
+        strmif.h             &
+        strqcond.h           &
+        strquery.h           &
+        strsafe.h            &
+        subauth.h            &
+        svcguid.h            &
+        tcpestat.h           &
+        tcpmib.h             &
+        tlhelp32.h           &
+        tmschema.h           &
+        tvout.h              &
+        udpmib.h             &
+        unknwn.h             &
+        urlmon.h             &
+        userenv.h            &
+        usp10.h              &
+        uuids.h              &
+        uxtheme.h            &
+        verrsrc.h            &
+        vfw.h                &
+        vfwmsgs.h            &
+        vidcap.h             &
+        vmr9.h               &
+        vptype.h             &
+        vsstyle.h            &
+        vssym32.h            &
+        w32api.h             &
+        wbemcli.h            &
+        winable.h            &
+        winbase.h            &
+        winber.h             &
+        wincon.h             &
+        wincrypt.h           &
+        windef.h             &
+        windns.h             &
+        windot11.h           &
+        windows.h            &
+        windowsx.h           &
+        winefs.h             &
+        winerror.h           &
+        wingdi.h             &
+        wininet.h            &
+        winioctl.h           &
+        winldap.h            &
+        winnetwk.h           &
+        winnls.h             &
+        winnt.h              &
+        winnt.rh             &
+        winperf.h            &
+        winreg.h             &
+        winres.h             &
+        winresrc.h           &
+        winscard.h           &
+        winsmcrd.h           &
+        winsnmp.h            &
+        winsock.h            &
+        winsock2.h           &
+        winspool.h           &
+        winsvc.h             &
+        wintrust.h           &
+        winuser.h            &
+        winuser.rh           &
+        winver.h             &
+        wlantype.h           &
+        wmistr.h             &
+        wnnc.h               &
+        ws2def.h             &
+        ws2ipdef.h           &
+        ws2spi.h             &
+        ws2tcpip.h           &
+        wsdkver.h            &
+        wsipx.h              &
+        wsnetbs.h            &
+        wtsapi32.h           &
+        wtypes.h             &
+        xprtdefs.h           &
+        zmouse.h             &
+        ddk/atm.h            &
+        ddk/bugcodes.h       &
+        ddk/cfg.h            &
+        ddk/cfgmgr32.h       &
+        ddk/classpnp.h       &
+        ddk/d4drvif.h        &
+        ddk/d4iface.h        &
+        ddk/dderror.h        &
+        ddk/ddkmapi.h        &
+        ddk/ddrawint.h       &
+        ddk/devioctl.h       &
+        ddk/drvspecs.h       &
+        ddk/hidclass.h       &
+        ddk/hidpi.h          &
+        ddk/hidsdi.h         &
+        ddk/hidusage.h       &
+        ddk/kbdmou.h         &
+        ddk/mcd.h            &
+        ddk/mce.h            &
+        ddk/miniport.h       &
+        ddk/minitape.h       &
+        ddk/mountdev.h       &
+        ddk/mountmgr.h       &
+        ddk/ndis.h           &
+        ddk/ndisguid.h       &
+        ddk/ndistapi.h       &
+        ddk/ndiswan.h        &
+        ddk/netevent.h       &
+        ddk/netpnp.h         &
+        ddk/ntdd8042.h       &
+        ddk/ntddbeep.h       &
+        ddk/ntddcdrm.h       &
+        ddk/ntddcdvd.h       &
+        ddk/ntddchgr.h       &
+        ddk/ntdddisk.h       &
+        ddk/ntddk.h          &
+        ddk/ntddkbd.h        &
+        ddk/ntddmou.h        &
+        ddk/ntddpar.h        &
+        ddk/ntddpcm.h        &
+        ddk/ntddscsi.h       &
+        ddk/ntddser.h        &
+        ddk/ntddstor.h       &
+        ddk/ntddtape.h       &
+        ddk/ntddtdi.h        &
+        ddk/ntddvdeo.h       &
+        ddk/ntddvol.h        &
+        ddk/ntdef.h          &
+        ddk/ntifs.h          &
+        ddk/ntiologc.h       &
+        ddk/ntnls.h          &
+        ddk/ntpoapi.h        &
+        ddk/ntstatus.h       &
+        ddk/parallel.h       &
+        ddk/pfhook.h         &
+        ddk/poclass.h        &
+        ddk/srb.h            &
+        ddk/scsi.h           &
+        ddk/scsiscan.h       &
+        ddk/scsiwmi.h        &
+        ddk/smbus.h          &
+        ddk/storport.h       &
+        ddk/tdi.h            &
+        ddk/tdiinfo.h        &
+        ddk/tdikrnl.h        &
+        ddk/tdistat.h        &
+        ddk/upssvc.h         &
+        ddk/usb.h            &
+        ddk/usb100.h         &
+        ddk/usb200.h         &
+        ddk/usbcamdi.h       &
+        ddk/usbdi.h          &
+        ddk/usbioctl.h       &
+        ddk/usbiodef.h       &
+        ddk/usbscan.h        &
+        ddk/usbuser.h        &
+        ddk/video.h          &
+        ddk/videoagp.h       &
+        ddk/wdm.h            &
+        ddk/wdmguid.h        &
+        ddk/winddi.h         &
+        ddk/wmidata.h        &
+        ddk/wmilib.h         &
+        ddk/ws2san.h         &
+        ddk/xfilter.h        &
+        directx/d3d.h        &
+        directx/d3d9.h       &
+        directx/d3d9caps.h   &
+        directx/d3d9type.h   &
+        directx/d3dcaps.h    &
+        directx/d3drm.h      &
+        directx/d3drmdef.h   &
+        directx/d3drmobj.h   &
+        directx/d3dtypes.h   &
+        directx/dinput.h     &
+        directx/dsound.h     &
+        directx/dvp.h        &
+        directx/dxtrans.h    &
+        gl/gl.h              &
+        gl/glu.h
+
+libs =                       &
+        aclui.lib            &
+        adsiid.lib           &
+        advapi32.lib         &
+        bcrypt.lib           &
+        comctl32.lib         &
+        comdlg32.lib         &
+        credui.lib           &
+        crypt32.lib          &
+        cryptnet.lib         &
+        ctl3d32.lib          &
+        dbghelp.lib          &
+        ddraw.lib            &
+        dflayout.lib         &
+        dhcpcsvc.lib         &
+        dnsapi.lib           &
+        dsprop.lib           &
+        dsuiext.lib          &
+        faultrep.lib         &
+        gdi32.lib            &
+        glu32.lib            &
+        htmlhelp.lib         &
+        icm32.lib            &
+        icmui.lib            &
+        imagehlp.lib         &
+        imm32.lib            &
+        iphlpapi.lib         &
+        kernel32.lib         &
+        ksuser.lib           &
+        largeint.lib         &
+        lz32.lib             &
+        mapi32.lib           &
+        mfuuid.lib           &
+        mgmtapi.lib          &
+        mpr.lib              &
+        mprapi.lib           &
+        mqrt.lib             &
+        msacm32.lib          &
+        mscms.lib            &
+        msimg32.lib          &
+        mswsock.lib          &
+        ncrypt.lib           &
+        nddeapi.lib          &
+        netapi32.lib         &
+        newdev.lib           &
+        normaliz.lib         &
+        ntdsapi.lib          &
+        ntdsbcli.lib         &
+        odbc32.lib           &
+        odbccp32.lib         &
+        ole32.lib            &
+        oleacc.lib           &
+        oleaut32.lib         &
+        olecli32.lib         &
+        oledlg.lib           &
+        olepro32.lib         &
+        olesvr32.lib         &
+        opengl32.lib         &
+        powrprof.lib         &
+        propsys.lib          &
+        psapi.lib            &
+        qosname.lib          &
+        quartz.lib           &
+        rasapi32.lib         &
+        rasdlg.lib           &
+        rassapi.lib          &
+        rpcns4.lib           &
+        rpcrt4.lib           &
+        rtm.lib              &
+        rtutils.lib          &
+        scarddlg.lib         &
+        secur32.lib          &
+        setupapi.lib         &
+        shdocvw.lib          &
+        shell32.lib          &
+        shfolder.lib         &
+        shlwapi.lib          &
+        snmpapi.lib          &
+        strmiids.lib         &
+        strquery.lib         &
+        th32.lib             &
+        url.lib              &
+        urlmon.lib           &
+        user32.lib           &
+        userenv.lib          &
+        usp10.lib            &
+        uuid.lib             &
+        uxtheme.lib          &
+        version.lib          &
+        vfw32.lib            &
+        wbemuuid.lib         &
+        wininet.lib          &
+        winmm.lib            &
+        winscard.lib         &
+        winspool.lib         &
+        wintrust.lib         &
+        wldap32.lib          &
+        ws2_32.lib           &
+        wsnmp32.lib          &
+        wsock32.lib          &
+        wtsapi32.lib         &
+        ddk/battc.lib        &
+        ddk/cfgmgr32.lib     &
+        ddk/classpnp.lib     &
+        ddk/clfs.lib         &
+        ddk/dxapi.lib        &
+        ddk/hal.lib          &
+        ddk/hid.lib          &
+        ddk/hidparse.lib     &
+        ddk/ks.lib           &
+        ddk/ksecdd.lib       &
+        ddk/mcd.lib          &
+        ddk/ndis.lib         &
+        ddk/ntdll.lib        &
+        ddk/ntoskrnl.lib     &
+        ddk/pshed.lib        &
+        ddk/rtlver.lib       &
+        ddk/scsiport.lib     &
+        ddk/storport.lib     &
+        ddk/tape.lib         &
+        ddk/tdi.lib          &
+        ddk/usbcamd.lib      &
+        ddk/videoprt.lib     &
+        ddk/wdmguid.lib      &
+        ddk/win32k.lib       &
+        ddk/wmilib.lib       &
+        directx/d3d9.lib     &
+        directx/d3drm.lib    &
+        directx/dinput.lib   &
+        directx/dinput8.lib  &
+        directx/dsound.lib   &
+        directx/dxguid.lib
+
+vfw32_lbcs =         &
+        avicap32.lbc &
+        avifil32.lbc &
+        msvfw32.lbc
+
+extra_lib_flags_386 = -io -ii
+extra_lib_flags_axp = -ic -ia
+extra_lib_flags_ppc = -ic -ip
+
+all : $($(what_to_build)) .SYMBOLIC
+    @%null
+
+.mh: $(include_dir)
+
+.def: $(lib_dir)
+
+.c: $(lib_dir)
+
+.mh.h:
+    $(splice)
+
+{ddk}.mh{ddk}.h:
+    $(splice)
+
+{directx}.mh{directx}.h:
+    $(splice)
+
+{gl}.mh{gl}.h:
+    $(splice)
+
+.mh.rh:
+    $(rsplice)
+
+.def.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+
+.lbc.lib:
+    $(librarian) $(libflags) @$<
+
+.obj.lib:
+    $(librarian) $(libflags) $<
+
+{ddk}.def{ddk}.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+
+{ddk}.lbc{ddk}.lib:
+    $(librarian) $(libflags) @$<
+
+{ddk}.obj{ddk}.lib:
+    $(librarian) $(libflags) $<
+
+{directx}.c{directx}.lib: $(w32api_autodepends)
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+{directx}.def{directx}.lbc:
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+
+{directx}.lbc{directx}.lib:
+    $(librarian) $(libflags) @$<
+
+{directx}.obj{directx}.lib:
+    $(librarian) $(libflags) $<
+
+winsock2.h: winsock.mh
+    $(ws2splice)
+
+vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
+    @%create $@
+    @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
+    @%append $@ +vfwuuid.obj
+
+directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +directx/dinpstat.obj
+
+directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +directx/dinpstat.obj
+
+ddk/rtlver.obj: ddk/rtlver.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+ddk/wdmguid.obj: ddk/wdmguid.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+directx/dinpstat.obj: directx/dinpstat.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+directx/dxguid.obj: directx/dxguid.c
+!ifeq verbose 1
+    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!else
+    @echo cc $@
+    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+!endif
+
+all_subdirs = ./ddk ./directx ./gl $(%cwd)
+
+clean: $(all_subdirs) .SYMBOLIC
+
+$(all_subdirs): .PROCEDURE
+    @set cd_path = cd $@
+    @if exist $@ @%make clean_dir
+
+clean_dir: .PROCEDURE
+    @set pop_path = @cd $(%cwd)
+    $(%cd_path)
+    rm -f *.h *.rh *.obj *.lbc *.lib *.lnk *.tmp *.exe *.rc *.res
+    rm -f *.lst *.err *.pch *.map *.sym *.tmp *.gh
+    $(%pop_path)

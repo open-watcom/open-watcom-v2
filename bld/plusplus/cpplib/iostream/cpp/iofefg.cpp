@@ -29,43 +29,33 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  95/06/19    Greg Bentz      indirect calls to math library
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <errno.h>
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "stdlib.h"
 #include "rtinit.h"
 #include "iofhdr.h"
+#include "xfloat.h"
 
-static void __setiofEFGfmt() {
-    #ifndef IN_SLIB
-        __EFG_cnvs2d = __cnvs2d;
-        __EFG_cnvd2f = __cnvd2f;
-        __EFG_LDcvt  = __LDcvt;
-        __EFG_fcvt   = _fcvt;
-    #endif
+static void __setiofEFGfmt( void ) {
+#ifndef IN_SLIB
+    __EFG_cnvs2d = __cnvs2d;
+    __EFG_cnvd2f = __cnvd2f;
+    __EFG_LDcvt  = __LDcvt;
+    __EFG_fcvt   = _fcvt;
+  #ifdef _LONG_DOUBLE_
+    __EFG__FDLD  = __cnvd2ld;
+  #endif
+#endif
 }
 
 extern "C" {
     XI( __ppfltused_, __setiofEFGfmt, INIT_PRIORITY_LIBRARY )
-    #if !defined(__AXP__)
-        #pragma aux __ppfltused_ "*";
-    #endif
+#if !defined(__AXP__)
+    #pragma aux __ppfltused_ "*";
+#endif
 }

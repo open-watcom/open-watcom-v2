@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(M_I86)
+#if defined( _M_I86 )
 #define alloc( x, y ) sbrk( x ); y = sbrk( 0 );
 #else
 #define alloc( x, y ) y = sbrk( x );
@@ -11,7 +11,7 @@ void main()
  {
     void *brk;
 
-#if defined(M_I86)
+#if defined( _M_I86 )
     alloc( 0x0000, brk );
     /* calling printf will cause an allocation */
     printf( "Original break value %p\n", brk );
@@ -25,7 +25,7 @@ void main()
     alloc( 0x0200, brk );
     printf( "New break value after sbrk( 0x0200 ) \t%p\n",
             brk );
-#if defined(M_I86)
+#if defined( _M_I86 )
     alloc( -0x0100, brk );
     printf( "New break value after sbrk( -0x0100 ) \t%p\n",
             brk );

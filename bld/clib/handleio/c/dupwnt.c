@@ -41,7 +41,7 @@
 
 _WCRTLINK int dup( int old_hid )
 {
-    HANDLE      new_handle=(HANDLE)-1;
+    HANDLE      new_handle;
     int         hid;
     HANDLE      cprocess;
 
@@ -56,17 +56,14 @@ _WCRTLINK int dup( int old_hid )
 
     cprocess = GetCurrentProcess();
 
-    if( DuplicateHandle( cprocess,  __getOSHandle( old_hid ), cprocess,
+    if( !DuplicateHandle( cprocess,  __getOSHandle( old_hid ), cprocess,
                         &new_handle, 0, TRUE, DUPLICATE_SAME_ACCESS ) ) {
-        // Now use the slot we got
-        __setOSHandle( hid, new_handle );   // JBS 99/11/01
-        __SetIOMode( hid, __GetIOMode( old_hid ) );
-    } else {
-        __set_errno_nt();
         // Give back the slot we got
         __freePOSIXHandle( hid );
-        hid = -1;
+        return( __set_errno_nt() );
     }
-
+    // Now use the slot we got
+    __setOSHandle( hid, new_handle );   // JBS 99/11/01
+    __SetIOMode( hid, __GetIOMode( old_hid ) );
     return( hid );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Wrapper routines for graph library.
 *
 ****************************************************************************/
 
@@ -34,10 +33,11 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "grfuncs.h"
 
 #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
     #define FARstrcpy strcpy
-#elif defined(M_I86)
+#elif defined( _M_I86 )
     #define FARstrcpy _fstrcpy
 #endif
 
@@ -70,4 +70,3 @@ _WMRTLINK void _WCI86FAR _GR_fcvt( float _WCI86FAR *value,
     *far_dec  = dec;
     *far_sign = sign;
 }
-

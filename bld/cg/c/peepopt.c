@@ -24,13 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Perform peephole optimizations.
 *
 ****************************************************************************/
 
 
-/* Perform peephole optimizations */
 /* - collapse adjacent BIT operations (AND,OR) */
 /* - collapse adjacent integral ADD,SUB operations */
 /* - collapse adjacent integral MUL operations */
@@ -44,9 +42,9 @@
 #include "pattern.h"
 #include "score.h"
 #include "zoiks.h"
+#include "makeins.h"
 
 extern  name                    *AllocS32Const(signed_32);
-extern  void                    FreeIns(instruction*);
 extern  bool                    IsVolatile(name*);
 extern  bool                    InsOrderDependant(instruction*,instruction*);
 extern  bool                    ReDefinedBy( instruction *, name * );
@@ -250,17 +248,20 @@ static bool OrAndOr( instruction *a, instruction *b )
     if( a->result != b->result ) return( FALSE );
     a->head.opcode = OP_AND;
     b->head.opcode = OP_OR;
-    a->table = b->table = NULL;
     and_val = OP2VAL( a ) & OP2VAL( b );
     mask = AllocS32Const( and_val );
     if( InsChangeable( a, b->operands[ 1 ], &a->operands[ 1 ] ) &&
         InsChangeable( b, mask, &b->operands[ 1 ] ) ) {
         a->operands[ 1 ] = b->operands[ 1 ];
         b->operands[ 1 ] = mask;
+        a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
         return( TRUE );
     }
+    /* Put things back the way they were */
+    a->head.opcode = OP_OR;
+    b->head.opcode = OP_AND;
     return( FALSE );
 }
 
@@ -275,17 +276,20 @@ static bool AndOrAnd( instruction *a, instruction *b )
     if( a->result != b->result ) return( FALSE );
     a->head.opcode = OP_OR;
     b->head.opcode = OP_AND;
-    a->table = b->table = NULL;
     or_val = OP2VAL( a ) | OP2VAL( b );
     mask = AllocS32Const( or_val );
     if( InsChangeable( a, b->operands[ 1 ], &a->operands[ 1 ] ) &&
         InsChangeable( b, mask, &b->operands[ 1 ] ) ) {
         a->operands[ 1 ] = b->operands[ 1 ];
-b->operands[ 1 ] = mask;
+        b->operands[ 1 ] = mask;
+        a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
         return( TRUE );
     }
+    /* Put things back the way they were */
+    a->head.opcode = OP_AND;
+    b->head.opcode = OP_OR;
     return( FALSE );
 }
 
@@ -625,7 +629,7 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
 }
 
 bool PeepOptBlock( block *blk, bool after_reg_alloc )
-/**************************************************1*/
+/***************************************************/
 {
     instruction *ins;
     instruction *next;

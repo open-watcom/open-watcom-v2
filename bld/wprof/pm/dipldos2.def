@@ -1,4 +1,0 @@
-//#line "g:\bld\dip\c\dipldos2.c" 25
-extern dip_status DIPSysLoad(char *path,dip_client_routines *cli,dip_imp_routines **imp,unsigned long *sys_hdl);
-//#line "g:\bld\dip\c\dipldos2.c" 48
-extern void DIPSysUnload(unsigned long sys_hdl);

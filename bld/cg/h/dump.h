@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Data dumping prototypes.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
                                 }
 
 
-extern  void    DumpString(char const *);
-extern  void    DumpXString(char const *);
-extern  void    DumpChar(char);
-extern  void    DumpNL();
+extern  void    DumpString( char const * );
+extern  void    DumpXString( char const * );
+extern  void    DumpChar( char );
+extern  void    DumpNL( void );

@@ -13,5 +13,5 @@ target : sample.nlm .SYMBOLIC
 samp2 : samp2.nlm  .SYMBOLIC
     @%null
 
-!include ..\makefile
+!include ../makefile
 

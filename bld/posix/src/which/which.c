@@ -24,19 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX which utility
+*               Finds a file along PATH or other environment variable
 *
 ****************************************************************************/
 
-
-/*
-    Replacement for MKS "WHICH".  Does a better job.
-
-    91????      D.J.Gaudet      initial implementation
-    920508      D.J.Gaudet      removed DOS dependancies
-    920623      D.J.Gaudet      added -a
-*/
 
 #include <direct.h>
 #include <io.h>
@@ -56,7 +48,7 @@ static char ext[ _MAX_EXT ];
 static char path[ _MAX_PATH ];
 static char open_path[ _MAX_PATH ];
 
-static char * usageTxt[] = {
+static const char * usageTxt[] = {
 "Usage: which [-?a] [-e env_name] filename",
 "-?\t\tdisplay this help",
 "-a\t\tdisplay all matches, not just the first",
@@ -68,7 +60,7 @@ NULL
 char *OptEnvVar = "which";
 
 
-static writeNL( const char *buf )
+static void writeNL( const char *buf )
 {
     write( 1, buf, strlen( buf ) );
     write( 1, "\n", 1 );

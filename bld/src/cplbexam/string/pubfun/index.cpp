@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String    s_A ("Watcom C++ compiler");
+    String    s_A ("Open Watcom C++ compiler");
     String    s_B ("C++");
     char     *pch = "com";
 

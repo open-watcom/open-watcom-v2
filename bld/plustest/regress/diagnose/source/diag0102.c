@@ -22,3 +22,7 @@ template <class T>
     {
 	p->bad = 1;	// only one should be reported (S<char> instantiation)
     }
+
+template class S<int>;
+template class S<double>;
+template class S<char>;

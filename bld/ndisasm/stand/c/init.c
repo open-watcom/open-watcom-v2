@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Standalone disassembler initialization routines.
 *
 ****************************************************************************/
 
@@ -38,7 +37,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <process.h>
+#if defined( __WATCOMC__ )
+    #include <process.h>
+#endif
 
 #include "dis.h"
 #include "init.h"
@@ -57,8 +58,8 @@
 #include "formasm.h"
 
 
-typedef struct recognized_struct {
-    char *              name;
+struct recognized_struct {
+    char                *name;
     section_type        type;
 };
 
@@ -127,6 +128,7 @@ static char *intelSkipRefList[] = { "FIWRQQ", // boundary relocs
 #define NUM_ELTS( a )   (sizeof(a) / sizeof((a)[0]))
 
 static orl_sec_handle           symbolTable;
+static orl_sec_handle           dynSymTable;
 static orl_sec_handle           drectveSection;
 static orl_funcs                oFuncs;
 static section_list_struct      relocSections;
@@ -135,7 +137,7 @@ static unsigned long            objFilePos;
 static unsigned long            objFileLen;
 
 
-int IsIntelx86()
+int IsIntelx86( void )
 {
     switch( GetMachineType() ) {
     case( ORL_MACHINE_TYPE_I386 ):
@@ -146,7 +148,7 @@ int IsIntelx86()
     }
 }
 
-orl_file_format GetFormat()
+orl_file_format GetFormat( void )
 {
     return( ORLFileGetFormat( ObjFileHnd ) );
 }
@@ -392,6 +394,19 @@ static orl_return sectionInit( orl_sec_handle shnd )
     switch( type ) {
         case SECTION_TYPE_SYM_TABLE:
             symbolTable = shnd;
+            // Might have a label or relocation in symbol section
+            error = registerSec( shnd, type );
+            if( error == OKAY ) {
+                error = createLabelList( shnd );
+            }
+            break;
+        case SECTION_TYPE_DYN_SYM_TABLE:
+            dynSymTable = shnd;
+            // Might have a label or relocation in dynsym section
+            error = registerSec( shnd, type );
+            if( error == OKAY ) {
+                error = createLabelList( shnd );
+            }
             break;
         case SECTION_TYPE_DRECTVE:
             if( GetFormat() == ORL_OMF ) {
@@ -432,7 +447,12 @@ static orl_return sectionInit( orl_sec_handle shnd )
 
 
 static void openError( char * file_name ) {
+// TODO: merge again when Linux clib supports perror()
+#ifdef __LINUX__
+    printf( "File Open Error: %s\n", file_name );
+#else
     perror( file_name );
+#endif
     exit( 1 );
 }
 
@@ -464,7 +484,7 @@ static void openFiles( void )
     }
 }
 
-static void * objRead( void *hdl, int len )
+static void * objRead( void *hdl, size_t len )
 /*****************************************/
 {
     void *      retval;
@@ -560,9 +580,49 @@ static return_val initHashTables( void )
     return( error );
 }
 
-orl_machine_type GetMachineType()
+orl_machine_type GetMachineType( void )
 {
     return( ORLFileGetMachineType( ObjFileHnd ) );
+}
+
+/*
+ *  Functions to convert data from the file format to the host format where the data may be byte swapped.
+ *  If the ORL file is not marked as the opposite endianness as that of the host, then the data will
+ *  not be byte swapped. This may not always be the correct behaviour, but if the data is not marked as
+ *  a particular endianness, what are we to do about it?
+ */
+
+#ifdef __BIG_ENDIAN__
+#define ENDIANNESS_TEST     ORL_FILE_FLAG_LITTLE_ENDIAN
+#else
+#define ENDIANNESS_TEST     ORL_FILE_FLAG_BIG_ENDIAN
+#endif 
+ 
+unsigned_16 FileU16toHostU16(unsigned_16 value)
+{
+    orl_file_flags  flags = ORLFileGetFlags( ObjFileHnd );
+    if( flags & ENDIANNESS_TEST )
+        return ( SWAPNC_16( value ) );
+    return value;
+}
+
+unsigned_32 FileU32toHostU32(unsigned_32 value)
+{
+    orl_file_flags  flags = ORLFileGetFlags( ObjFileHnd );
+    if( flags & ENDIANNESS_TEST )
+        return ( SWAPNC_32( value ) );
+    return value;
+}
+
+unsigned_64 FileU64toHostU64(unsigned_64 value)
+{
+    orl_file_flags  flags = ORLFileGetFlags( ObjFileHnd );
+    if( flags & ENDIANNESS_TEST ){
+        unsigned_64 new_value;        
+        new_value.u._64[0] = SWAPNC_64( value.u._64[0] );
+        return new_value;
+    }
+    return value;
 }
 
 static return_val initORL( void )
@@ -571,6 +631,7 @@ static return_val initORL( void )
     orl_machine_type    machine_type;
     orl_return          error = OKAY;
     orl_file_format     type;
+    bool                byte_swap;
 
     oFuncs.alloc = &MemAlloc;
     oFuncs.free = &MemFree;
@@ -585,18 +646,34 @@ static return_val initORL( void )
         }
         ObjFileHnd = ORLFileInit( ORLHnd, NULL, type );
         if( ObjFileHnd ) {
+            // check byte order
+            flags = ORLFileGetFlags( ObjFileHnd );
+            byte_swap = FALSE;
+#ifdef __BIG_ENDIAN__
+            if( flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
+                byte_swap = TRUE;
+            }
+#else
+            if( flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+                byte_swap = TRUE;
+            }
+#endif
+
             // check intended machine type
             machine_type = GetMachineType();
             switch( machine_type ) {
+            // If there's no machine specific code, the CPU we choose shouldn't
+            // matter; there are some object files like this.
+            case ORL_MACHINE_TYPE_NONE:
             case ORL_MACHINE_TYPE_ALPHA:
-                if( DisInit( DISCPU_axp, &DHnd ) != DR_OK ) {
+                if( DisInit( DISCPU_axp, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
                     return( ERROR );
                 }
                 break;
             case ORL_MACHINE_TYPE_PPC601:
-                if( DisInit( DISCPU_ppc, &DHnd ) != DR_OK ) {
+                if( DisInit( DISCPU_ppc, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
                     return( ERROR );
@@ -606,9 +683,32 @@ static return_val initORL( void )
                     QuoteChar = '\"';
                 }
                 break;
+            case ORL_MACHINE_TYPE_R3000:
+            case ORL_MACHINE_TYPE_R4000:
+                if( DisInit( DISCPU_mips, &DHnd, byte_swap ) != DR_OK ) {
+                    ORLFini( ORLHnd );
+                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( ERROR );
+                }
+                break;
             case ORL_MACHINE_TYPE_I386:
             case ORL_MACHINE_TYPE_I8086:
-                if( DisInit( DISCPU_x86, &DHnd ) != DR_OK ) {
+                if( DisInit( DISCPU_x86, &DHnd, byte_swap ) != DR_OK ) {
+                    ORLFini( ORLHnd );
+                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( ERROR );
+                }
+                break;
+            case ORL_MACHINE_TYPE_AMD64:
+                if( DisInit( DISCPU_x64, &DHnd, byte_swap ) != DR_OK ) {
+                    ORLFini( ORLHnd );
+                    PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
+                    return( ERROR );
+                }
+                break;
+            case ORL_MACHINE_TYPE_SPARC:
+            case ORL_MACHINE_TYPE_SPARCPLUS:
+                if( DisInit( DISCPU_sparc, &DHnd, byte_swap ) != DR_OK ) {
                     ORLFini( ORLHnd );
                     PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
                     return( ERROR );
@@ -619,14 +719,6 @@ static return_val initORL( void )
                     PrintErrorMsg( OKAY, WHERE_UNSUPPORTED_PROC );
                     return( ERROR );
             }
-            // check byte order
-            flags = ORLFileGetFlags( ObjFileHnd );
-#if 0   /* MS doesn't set the flags consistently :-( */
-            if( !(flags & ORL_FILE_FLAG_LITTLE_ENDIAN) ) {
-                PrintErrorMsg( OKAY, WHERE_BIT_ENDIAN );
-                error = ERROR;
-            }
-#endif
         } else {
             error = ORLGetError( ORLHnd );
             // An "out of memory" error is not necessarily what it seems.
@@ -647,7 +739,7 @@ static return_val initORL( void )
     return( error );
 }
 
-static return_val initServicesUsed()
+static return_val initServicesUsed( void )
 {
     return( initORL() );
 }
@@ -664,6 +756,9 @@ static return_val initSectionTables( void )
         o_error = ORLFileScan( ObjFileHnd, NULL, &sectionInit );
         if( o_error == ORL_OKAY && symbolTable ) {
             o_error = DealWithSymbolSection( symbolTable );
+            if( o_error == ORL_OKAY && dynSymTable ) {
+                o_error = DealWithSymbolSection( dynSymTable );
+            }
             if( o_error == ORL_OKAY ) {
                 sec = relocSections.first;
                 while( sec ) {

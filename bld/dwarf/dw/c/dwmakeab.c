@@ -24,18 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This file contains the definitions of DWARF abbreviations
+*               in a user editable form. Compile and run this file to
+*               create abbreviation tables used inside dwabbrev.c.
 *
 ****************************************************************************/
 
-
-/*
-    This file contains the definitions of the abbreviations in a form
-    that the user can modify.  This file should be compiled and run
-    to create the abbreviation tables that are actually used
-    inside dwabbrev.c.
-*/
 
 #include <errno.h>
 #include <stdio.h>
@@ -47,6 +41,7 @@
 #include "dwutils.h"
 #include "dwabbrev.h"
 
+#include "dwutils.c"
 
 #define MAX_CODES       29
 
@@ -409,6 +404,7 @@ abbrev_data const abbrevInfo[] = {
             DW_AT_low_pc,               DW_FORM_addr,
             DW_AT_high_pc,              DW_FORM_addr,
             DW_AT_address_class,        DW_FORM_data1,
+            DW_AT_frame_base,           DW_FORM_block1,
             0
         }
     },
@@ -427,6 +423,7 @@ abbrev_data const abbrevInfo[] = {
             DW_AT_artificial,           DW_FORM_flag,
             DW_AT_declaration,          DW_FORM_flag,
             DW_AT_address_class,        DW_FORM_data1,
+            DW_AT_frame_base,           DW_FORM_block1,
             0
         }
     },
@@ -628,7 +625,6 @@ void emitEnum(
         fprintf( fp, "    %s,\n", abbrevInfo[ u ].name );
     }
     fprintf( fp, "    AB_MAX\n};" );
-    fclose( fp );
 }
 
 size_t topOfEncoding;
@@ -694,10 +690,10 @@ void emitEncodings(
     form.  The first obvious thing is to do the ULEB128 encodings now
     since they are compile-time constant, and much smaller.
 */
-    uint                        u;
-    char *                      end;
-    char *                      p;
-    uint_32 const*              data;
+    uint                u;
+    uint_8              *end;
+    uint_8              *p;
+    uint_32 const       *data;
 
     topOfEncoding = 0;
     for( u = 0; u < AB_MAX; ++u ) {
@@ -857,35 +853,36 @@ uint_32 emitInfo(
 }
 
 
-void main( void )
+int main( void )
 {
 
     FILE *                      fp;
     uint_32                     total;
 
-    fp = fopen( "dwabinfo.i", "w" );
+    fp = fopen( "dwabinfo.gh", "w" );
     if( fp == NULL ) {
         fprintf( stderr, "unable to open dwabinfo.i for writing: %s",
             strerror( errno ) );
-        exit( 1 );
+        return( 1 );
     }
     fprintf( fp, "/* this file created by dwmakeab.c */\n" );
     emitEncodings( fp );
     total = emitInfo( fp );
     fclose( fp );
 
-    fp = fopen( "dwabenum.i", "w" );
+    fp = fopen( "dwabenum.gh", "w" );
     if( fp == NULL ) {
         fprintf( stderr, "unable to open dwabenum.i for writing: %s",
             strerror( errno ) );
-        exit( 1 );
+        return( 1 );
     }
     fprintf( fp, "/* this file created by dwmakeab.c */\n" );
     /* we need this value for determining the size of the dw_client struct */
     fprintf( fp, "\n#define AB_LAST_CODE    0x%08lx\n\n",  total );
     fprintf( fp, "\n#define AB_BITVECT_SIZE 0x%08lx\n\n", ( total + 7 ) / 8 );
     emitEnum( fp );
+    fprintf( fp, "\n" );
     fclose( fp );
 
-    exit( 0 );
+    return( 0 );
 }

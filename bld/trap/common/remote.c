@@ -24,23 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote trap file request.
 *
 ****************************************************************************/
 
 
 //#define DEBUG_TRAP
-#include "trapdbg2.h"
+#include "trapdbg.h"
 
 #include <string.h>
-//#include <i86.h>
 #include "trpimp.h"
 #include "trperr.h"
 #include "packet.h"
 
 
-static unsigned DoRequest()
+static unsigned DoRequest( void )
 {
     unsigned    left;
     unsigned    len;
@@ -83,12 +81,12 @@ static unsigned DoRequest()
 }
 
 
-static unsigned ReqRemoteConnect()
+static unsigned ReqRemoteConnect( void )
 {
-    connect_ret *connect;
-    char                *data;
-    unsigned    len;
-    unsigned            max;
+    connect_ret     *connect;
+    char            *data;
+    unsigned        len;
+    unsigned        max;
 
     _DBG_EnterFunc( "ReqRemoteConnect" );
     connect = GetOutPtr( 0 );
@@ -111,7 +109,7 @@ static unsigned ReqRemoteConnect()
     return( len );
 }
 
-static void ReqRemoteDisco()
+static void ReqRemoteDisco( void )
 {
     _DBG_EnterFunc( "ReqDisco" );
     DoRequest();
@@ -119,7 +117,7 @@ static void ReqRemoteDisco()
     _DBG_ExitFunc( "ReqDisco" );
 }
 
-static void ReqRemoteResume()
+static void ReqRemoteResume( void )
 {
     _DBG_EnterFunc( "ReqResume" );
     while( !RemoteConnect() )
@@ -134,7 +132,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *error, bool remote )
 {
     trap_version    ver;
     char           *err;
-    int             fix_minor
+    int             fix_minor;
 
     _DBG_EnterFunc( "TrapInit" );
     ver.remote = TRUE;
@@ -188,7 +186,7 @@ unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,  mx_entry *mx_in,
     return( ret );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
     _DBG_EnterFunc( "TrapFini" );
     RemoteUnLink();

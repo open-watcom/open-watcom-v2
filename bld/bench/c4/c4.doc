@@ -1,0 +1,145 @@
+-------
+	FILE: c4.doc
+
+	FHOURSTONES benchmark 
+
+	It will be best to first create a directory (e.g., 'c4') to 
+	hold all the files.
+
+
+1.      UNPACKING c4.shar
+
+	Do the following to unpack c4.shar:
+
+
+	sh c4.shar
+
+
+2.      CHANGING COMPILER OPTIONS
+
+	To change compiler options edit 'Makefile'.
+	
+	The compiler default options are:     '-O -DUNIX -DSMALL'.
+	You can change this, for example, to: '-O4 -DMOD64 -DCTimer'
+	or whatever options are appropriate to your system and compiler.
+	
+	'-DUNIX -DSMALL' is in the 'DEFINES =' row of 'Makefile'.
+	'-O'is in the 'FLAGS =' row of 'Makefile'. 
+	
+	Below is a summary of the various options available:
+
+	
+	(a) The SMALL option
+	    Makes program use chars and shorts in moderately sized
+	    arrays of small integers.  In general this option
+	    produces best results, but not always ... See the 
+	    README file for more information.
+
+
+	(b) The MOD64 option
+	    Computes the modulo hash function directly with 64-bit
+	    integers.  This is only advised on machines with hardware
+	    integer divide (64 / 64 --> 64 bits) and multiply
+	    (64 * 64 --> 128 bits) ... See the README file for more
+	    information.
+
+	
+	(c) The timer options
+
+	The default '-DUNIX' option is one of several timer options
+	avaliable.
+	
+	The timer option MUST be specified for the program to compile.
+	
+	The various timer options available are covered in 'mach.c'
+	which you may need to examine to find the right match for your 
+	machine. Here are the current timer choices:
+
+	'-DAmiga'       for Amiga systems.
+	'-DUNIX'        for UNIX systems (preferred)
+	'-DUNIX_Old'    for UNIX systems (avoid if possible)
+	'-DVMS'         for VMS systems 
+	'-DBORLAND_C'   for PC's with Borland C
+	'-DMSC'         for PC's with Microsoft C
+	'-DMAC'         for Macintosh systems with Think C
+	'-DIPSC'        for i860 IPSC systems
+	'-DFORTRAN_SEC' for Cray systems (preferred)
+	'-DGTODay'      for UNIX systems
+	'-DCTimer'      for Cray systems (avoid if possible)
+	'-DUXPM'        for Fijitsu UXP/M systems.
+
+
+3.      COMPILING WITH MAKE
+
+	Do the following to compile with make:
+
+	make c4
+
+	or you can try:
+
+	make together
+
+	Compiling with 'make together' may be the best choice, but 
+	then there are always exceptions to any rule.
+
+
+4.      COMPILING OTHERWISE
+
+	Do the following to compile without 'make' if necessary:
+	[using the default compiler options which you can change
+	of course to suite your machine/system]
+
+	cc -O -DUNIX -DSMALL -c c4.c
+	cc -O -DUNIX -DSMALL -c trans.c
+	cc -O -DUNIX -DSMALL -c best.c
+	cc -O -DUNIX -DSMALL -c play.c
+	cc -O -DUNIX -DSMALL -c mach.c
+	cc -O -DUNIX -DSMALL -o c4 c4.o trans.o best.o play.o mach.o 
+	
+	This creates the executable program 'c4'.
+
+	There is also the 'make together' way:
+
+	cc -O -DUNIX -DSMALL -o c4 c4.c trans.c best.c play.c mach.c
+
+	This latter method is of course more logical for global
+	optimization.
+
+
+5.      RUNNING THE PROGRAM
+
+	Do the following to run the program:
+
+	c4 < input >> c4run.doc
+
+
+6.      REPORTING RESULTS
+
+	Edit the ascii file 'c4run.doc' and please add in the 
+	following:
+
+    MACHINE/SYSTEM/MODEL: [ e.g., HP 9000/735 ]
+		     CPU: [ e.g., PA-RISC 7100 ]
+   CPU CLOCK SPEED (MHz): [ e.g., 99.0 MHz ]
+	   OS/OS-VERSION: [ e.g., HP-UX 9.00 ]
+	COMPILER/VERSION: [ e.g., gcc 1.95.02 ]
+	COMPILER OPTIONS: [ e.g., -DUNIX -DSMALL -O2 -finline-functions ]
+		
+		COMMENTS: [ e.g., '-O12' would not compile ]    
+		    
+		    NAME: [ e.g., Flora Walker ]
+		    DATE: [ e.g., 22 Aug 1993 ]
+	   EMAIL ADDRESS: [ e.g., walker@garden.state.edu ]
+
+	Email c4run.doc to aburto@marlin.nosc.mil and I will include
+	in, and maintain, table of results. Results and other programs 
+	are available via anonymous ftp to 'ftp.nosc.mil' in
+	directory 'pub/aburto'. The IP address is: 128.49.192.51
+
+	Thank you very much ...
+
+	Al Aburto
+	aburto@marlin.nosc.mil
+-------
+
+

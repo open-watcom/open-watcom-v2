@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Top layer of expression evaluator.
 *
 ****************************************************************************/
 
@@ -46,30 +45,30 @@
 #include "i64.h"
 
 
-extern void             *DupType(void *);
-extern void             FreeType(void *);
-extern void             BinOp(stack_entry *,stack_entry *);
-extern int              AddrComp(address ,address );
-extern void             RValue(stack_entry *);
-extern void             LValue(stack_entry *);
+extern void             *DupType( void * );
+extern void             FreeType( void * );
+extern void             BinOp( stack_entry *, stack_entry * );
+extern int              AddrComp( address , address );
+extern void             RValue( stack_entry * );
+extern void             LValue( stack_entry * );
 extern sym_list         *ExprGetSymList( stack_entry *, bool );
-extern void             PurgeSymHandles(void);
-extern void             ConvertTo(stack_entry *,type_kind, type_modifier, unsigned );
-extern void             ClassNum(stack_entry *);
-extern void             DoXor(void);
-extern void             DoPlus(void);
-extern void             DoMinus(void);
-extern void             DoMul(void);
-extern void             DoPoints(type_kind );
-extern void             DoConvert(void);
+extern void             PurgeSymHandles( void );
+extern void             ConvertTo( stack_entry *,type_kind, type_modifier, unsigned );
+extern void             ClassNum( stack_entry * );
+extern void             DoXor( void );
+extern void             DoPlus( void );
+extern void             DoMinus( void );
+extern void             DoMul( void );
+extern void             DoPoints( type_kind );
+extern void             DoConvert( void );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             ClassifyEntry( stack_entry *, type_info * );
 extern void             ExprSymbol( stack_entry *, sym_handle * );
-extern address          GetRegIP();
-extern address          GetRegSP();
-extern address          GetRegBP();
+extern address          GetRegIP( void );
+extern address          GetRegSP( void );
+extern address          GetRegBP( void );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
 extern address          NilAddr;
@@ -152,7 +151,7 @@ void DupLC( stack_entry *entry )
  * CreateEntry - create a new stack entry
  */
 
-void CreateEntry()
+void CreateEntry( void )
 {
     stack_entry *new;
     unsigned    size;
@@ -254,7 +253,7 @@ void SwapStack( int entry )
 }
 
 
-void FreezeStack()
+void FreezeStack( void )
 {
     stack_entry *save_sp;
 
@@ -310,7 +309,7 @@ char *DupStringVal( stack_entry *stk )
  * DupStack - duplicate a stack entry
  */
 
-void DupStack()
+void DupStack( void )
 {
     stack_entry *old, *down, *link;
 
@@ -505,7 +504,7 @@ static void PushBool( int val )
  * PushString - push the created string onto the stack
  */
 
-void PushString()
+void PushString( void )
 {
     //NYI: This interface sucks. Hidden static variables. :-(
     CreateEntry();
@@ -522,7 +521,7 @@ void PushString()
  * PopEntry - pop a stack entry
  */
 
-void PopEntry()
+void PopEntry( void )
 {
     if( ExprSP == &ExprBOS ) Error( ERR_LOC+ERR_INTERNAL, LIT( ERR_STK_UNDERFL ) );
     DeleteEntry( ExprSP );
@@ -683,7 +682,7 @@ unsigned TstExist( unsigned true_value )
  * MakeAddr - convert two stack entries into a segment/offset address
  */
 
-void MakeAddr()
+void MakeAddr( void )
 {
     stack_entry *left;
     addr48_off  offset;
@@ -730,7 +729,7 @@ void FreePgmStack( bool freeall )
  * ExprPurge - clean up expression stack
  */
 
-void ExprPurge()
+void ExprPurge( void )
 {
     stack_entry *stk_ptr, *next_ptr;
 
@@ -758,12 +757,12 @@ void MarkArrayOrder( bool column_major )
     }
 }
 
-void StartSubscript()
+void StartSubscript( void )
 {
     LValue( ExprSP );
 }
 
-void AddSubscript()
+void AddSubscript( void )
 {
     stack_entry *array;
     array_info  ai;
@@ -801,6 +800,6 @@ void AddSubscript()
     ExprSP->flags |= save_imp;
 }
 
-void EndSubscript()
+void EndSubscript( void )
 {
 }

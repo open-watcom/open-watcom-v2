@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 runtime main entrypoint.
 *
 ****************************************************************************/
 
@@ -41,26 +40,20 @@
 #include "ntex.h"
 #include "initfini.h"
 #include "thread.h"
+#include "initarg.h"
+#include "rtdata.h"
+
+extern void __InitThreadData( thread_data * );
 
 #ifdef __SW_BR
     _WCRTLINK extern    void    (*__process_fini)(unsigned,unsigned);
 #else
     extern void __NTMainInit( void *, void * );
-    extern      unsigned        __ASTACKSIZ;    /* alternate stack size */
-    extern      char            *__ASTACKPTR;   /* alternate stack pointer */
     extern      unsigned        __ThreadDataSize;
-
-    #ifdef _M_IX86
-        #pragma aux     __ASTACKPTR "*"
-        #pragma aux     __ASTACKSIZ "*"
-    #endif
 #endif
 
-_WCRTLINK extern char   *_LpCmdLine;    /* pointer to command line */
-_WCRTLINK extern wchar_t*_LpwCmdLine;   /* pointer to command line */
-
 extern void __CommonInit( void );
-extern int APIENTRY __F_NAME(WinMain,wWinMain)( HANDLE, HANDLE, CHAR_TYPE*, int );
+extern int APIENTRY __F_NAME(WinMain,wWinMain)( HINSTANCE, HINSTANCE, CHAR_TYPE*, int );
 
 void __F_NAME(__WinMain,__wWinMain)( void )
 {
@@ -68,7 +61,7 @@ void __F_NAME(__WinMain,__wWinMain)( void )
     {
         #ifdef _M_IX86
             REGISTRATION_RECORD rr;
-            __NewExceptionHandler( &rr, 1 );
+            __NewExceptionFilter( &rr );
         #endif
         __process_fini = &__FiniRtns;
         __InitRtns( 255 );
@@ -77,11 +70,12 @@ void __F_NAME(__WinMain,__wWinMain)( void )
     {
         REGISTRATION_RECORD     rr;
         thread_data             *tdata;
-        __InitRtns( 1 );
+        __InitRtns( INIT_PRIORITY_THREAD );
         tdata = __alloca( __ThreadDataSize );
         memset( tdata, 0, __ThreadDataSize );
         // tdata->__allocated = 0;
         tdata->__data_size = __ThreadDataSize;
+        __InitThreadData( tdata );
         __NTMainInit( &rr, tdata );
         /* allocate alternate stack for F77 */
         __ASTACKPTR = (char *)alloca( __ASTACKSIZ ) + __ASTACKSIZ;

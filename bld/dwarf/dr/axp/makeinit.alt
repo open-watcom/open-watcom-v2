@@ -1,8 +1,0 @@
-# Renamed to avoid it being in the build process - SJHowe
-#
-# Temp makeinit until Alpha stuff is fully integrated
-#
-
-.mif: $(%PATH)
-
-!include make110.mif

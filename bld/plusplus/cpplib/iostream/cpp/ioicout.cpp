@@ -24,50 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/09/08    Greg Bentz      Initial Implementation.
-//  93/08/31    Greg Bentz      Make cout object have ios::unitbuf set to
-//                              allow better mixing between C and C++ input
-//                              output.
-//  93/10/22    Raymond Tang    Split into seperate files.
-//  93/11/18    J.W.Welch       Small name change for multiple compilations
-//  94/04/06    Greg Bentz      combine header files
-//  95/05/05    Greg Bentz      use _HUGEDATA
-//
-// 0002
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdiobuf.h>
 #endif
 #include "ioutil.h"
 
 #pragma initialize 20;
 
-// This struct is just a place holder to control the
-// initialization and finalization of cout
+// This struct is just a place holder to control the initialization and
+// finalization of cout
 struct cout_initfini {
-    cout_initfini();
-    ~cout_initfini();
+  cout_initfini();
+ ~cout_initfini();
 };
 
 #if defined(__PENPOINT__)
@@ -80,17 +57,19 @@ struct cout_initfini {
 static stdiobuf cout_strmbuf( __get_std_stream( STDOUT_FILENO ) );
 
 // This is the definition of the predefined stream:
-ostream _HUGEDATA cout( &cout_strmbuf );
+namespace std {
+  ostream _HUGEDATA cout( &cout_strmbuf );
+}
 
 // This will force the extra initialization and finalization
 static cout_initfini __standard_io_instance_cout;
 
 cout_initfini::cout_initfini() {
-    // Ensure the correct flag settings.
-    cout.setf( ios::unitbuf );
+  // Ensure the correct flag settings.
+  std::cout.setf( ios::unitbuf );
 }
 
 cout_initfini::~cout_initfini() {
-    // Flush standard io buffers:
-    cout.flush();
+  // Flush standard io buffers:
+  std::cout.flush();
 }

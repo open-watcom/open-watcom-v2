@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -45,7 +45,7 @@
 #include "wmain.h"
 #include "weditsym.h"
 #include "wsvobj.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 #include "wmen2rc.h"
 
 /****************************************************************************/
@@ -63,8 +63,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WSaveObjectAs   ( Bool, WMenuEditInfo * );
-static Bool WSaveObjectInto ( WMenuEditInfo * );
+static Bool WSaveObjectAs( Bool, WMenuEditInfo * );
+static Bool WSaveObjectInto( WMenuEditInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -77,9 +77,9 @@ static Bool WSaveObjectToRC( WMenuEditInfo *einfo, char *filename,
     char        fn_drive[_MAX_DRIVE];
     char        fn_dir[_MAX_DIR];
     char        fn_name[_MAX_FNAME];
-    char        fn_ext[_MAX_EXT+1];
+    char        fn_ext[_MAX_EXT + 1];
 
-    if( !einfo || !filename ) {
+    if( einfo == NULL || filename == NULL ) {
         return( FALSE );
     }
 
@@ -102,20 +102,20 @@ static Bool WSaveObjectToRC( WMenuEditInfo *einfo, char *filename,
     return( TRUE );
 }
 
-Bool WSaveObject ( WMenuEditInfo *einfo, Bool get_name, Bool save_into )
+Bool WSaveObject( WMenuEditInfo *einfo, Bool get_name, Bool save_into )
 {
-    Bool  ok, data_saved;
-    void *old_data;
-    int   old_size;
+    Bool    ok, data_saved;
+    void    *old_data;
+    int     old_size;
 
     data_saved = FALSE;
 
     WSetWaitCursor( einfo->win, TRUE );
 
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
     if( ok ) {
-        if( !einfo->info->res_name ) {
+        if( einfo->info->res_name == NULL ) {
             WDisplayErrorMsg( W_RESHASNONAME );
             ok = FALSE;
         }
@@ -123,10 +123,10 @@ Bool WSaveObject ( WMenuEditInfo *einfo, Bool get_name, Bool save_into )
 
     if( ok ) {
         if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
-            ( get_name || WRIsHashTableDirty( einfo->info->symbol_table ) ) ) {
+            (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
             if( einfo->info->symbol_file == NULL ) {
                 char    *fname;
-                if( !einfo->file_name ) {
+                if( einfo->file_name == NULL ) {
                     fname = einfo->info->file_name;
                 } else {
                     fname = einfo->file_name;
@@ -144,18 +144,18 @@ Bool WSaveObject ( WMenuEditInfo *einfo, Bool get_name, Bool save_into )
         data_saved = TRUE;
         WMakeDataFromMenu( einfo->menu, &einfo->info->data,
                            &einfo->info->data_size );
-        ok = ( einfo->info->data && einfo->info->data_size );
+        ok = (einfo->info->data != NULL && einfo->info->data_size != 0);
     }
 
-    if ( ok ) {
-        if ( save_into ) {
-            ok = WSaveObjectInto ( einfo );
+    if( ok ) {
+        if( save_into ) {
+            ok = WSaveObjectInto( einfo );
         } else {
-            ok = WSaveObjectAs ( get_name, einfo );
+            ok = WSaveObjectAs( get_name, einfo );
         }
-        if ( einfo->info->data ) {
-            WMemFree ( einfo->info->data );
-            einfo->info->data      = NULL;
+        if( einfo->info->data ) {
+            WMemFree( einfo->info->data );
+            einfo->info->data = NULL;
             einfo->info->data_size = 0;
         }
     }
@@ -164,19 +164,19 @@ Bool WSaveObject ( WMenuEditInfo *einfo, Bool get_name, Bool save_into )
         einfo->info->modified = FALSE;
     }
 
-    if ( data_saved ) {
-        einfo->info->data      = old_data;
+    if( data_saved ) {
+        einfo->info->data = old_data;
         einfo->info->data_size = old_size;
     }
 
-    WSetWaitCursor ( einfo->win, FALSE );
+    WSetWaitCursor( einfo->win, FALSE );
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WSaveObjectAs ( Bool get_name, WMenuEditInfo *einfo )
+Bool WSaveObjectAs( Bool get_name, WMenuEditInfo *einfo )
 {
-    char                resfile[ _MAX_PATH ];
+    char                resfile[_MAX_PATH];
     char                *fname;
     WRFileType          ftype;
     WRFileType          rtype;
@@ -186,16 +186,16 @@ Bool WSaveObjectAs ( Bool get_name, WMenuEditInfo *einfo )
     Bool                got_name;
     Bool                ok;
 
-    fname    = NULL;
+    fname = NULL;
     got_name = FALSE;
 
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
     if( ok ) {
         memset( &idata2, 0, sizeof( idata2 ) );
-        if( einfo->info->symbol_file ) {
+        if( einfo->info->symbol_file != NULL ) {
             idata2.next = NULL;
-            idata2.type = WResIDFromNum( (long) RT_RCDATA );
+            idata2.type = WResIDFromNum( (long)RT_RCDATA );
             idata2.name = WResIDFromStr( "DLGINCLUDE" );
             idata2.data = einfo->info->symbol_file;
             idata2.lang = einfo->info->lang;
@@ -206,44 +206,43 @@ Bool WSaveObjectAs ( Bool get_name, WMenuEditInfo *einfo )
 
     if( ok ) {
         idata.next = NULL;
-        if( einfo->info->symbol_file ) {
+        if( einfo->info->symbol_file != NULL ) {
             idata.next = &idata2;
         }
-        idata.type = WResIDFromNum( (long) RT_MENU );
-        ok = ( idata.type != NULL );
+        idata.type = WResIDFromNum( (long)RT_MENU );
+        ok = (idata.type != NULL);
     }
 
-    if ( ok ) {
-        if ( !einfo->file_name || get_name ) {
+    if( ok ) {
+        if( einfo->file_name == NULL || get_name ) {
             gf.file_name = NULL;
-            gf.title     = WAllocRCString( W_SAVERESAS );
-            gf.filter    = WAllocRCString( W_SAVERESFILTER );
+            gf.title = WAllocRCString( W_SAVERESAS );
+            gf.filter = WAllocRCString( W_SAVERESFILTER );
             WMassageFilter( gf.filter );
-            fname        = WGetSaveFileName( einfo->win, &gf );
-            if( gf.title ) {
+            fname = WGetSaveFileName( einfo->win, &gf );
+            if( gf.title != NULL ) {
                 WFreeRCString( gf.title );
             }
-            if( gf.filter ) {
+            if( gf.filter != NULL ) {
                 WFreeRCString( gf.filter );
             }
-            if ( fname ) {
+            if( fname != NULL ) {
                 got_name = TRUE;
             }
         } else {
             fname = einfo->file_name;
         }
-        ok = ( fname != NULL );
+        ok = (fname != NULL);
     }
 
     if( ok ) {
         if( got_name ) {
-            ftype = WSelectFileType( einfo->win, fname,
-                                     einfo->info->is32bit, TRUE,
+            ftype = WSelectFileType( einfo->win, fname, einfo->info->is32bit, TRUE,
                                      WGetEditInstance(), WMenuHelpRoutine );
         } else {
             ftype = einfo->file_type;
         }
-        ok = ( ftype != WR_DONT_KNOW );
+        ok = (ftype != WR_DONT_KNOW);
     }
 
     if( ok ) {
@@ -273,32 +272,32 @@ Bool WSaveObjectAs ( Bool get_name, WMenuEditInfo *einfo )
     }
 
     if( ok ) {
-        if ( got_name ) {
-            if ( einfo->file_name ) {
-                WMemFree ( einfo->file_name );
+        if( got_name ) {
+            if( einfo->file_name != NULL ) {
+                WMemFree( einfo->file_name );
             }
             einfo->file_name = fname;
             einfo->file_type = ftype;
-            WSetEditTitle ( einfo );
+            WSetEditTitle( einfo );
         }
     } else {
-        if ( fname && got_name ) {
-            WMemFree ( fname );
+        if( fname != NULL && got_name ) {
+            WMemFree( fname );
         }
     }
 
-    if ( idata.type ) {
-        WMemFree ( idata.type );
+    if( idata.type != NULL ) {
+        WMemFree( idata.type );
     }
 
-    if( idata2.type ) {
+    if( idata2.type != NULL ) {
         WMemFree( idata2.type );
     }
-    if( idata2.name ) {
+    if( idata2.name != NULL ) {
         WMemFree( idata2.name );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WSaveObjectInto( WMenuEditInfo *einfo )
@@ -311,29 +310,29 @@ Bool WSaveObjectInto( WMenuEditInfo *einfo )
     Bool                ok;
 
     fname = NULL;
-    dup   = FALSE;
+    dup = FALSE;
 
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
     if( ok ) {
         idata.next = NULL;
-        idata.type = WResIDFromNum( (long) RT_MENU );
-        ok = ( idata.type != NULL );
+        idata.type = WResIDFromNum( (long)RT_MENU );
+        ok = (idata.type != NULL);
     }
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WAllocRCString( W_SAVERESINTO );
-        gf.filter    = WAllocRCString( W_SAVERESFILTER );
+        gf.title = WAllocRCString( W_SAVERESINTO );
+        gf.filter = WAllocRCString( W_SAVERESFILTER );
         WMassageFilter( gf.filter );
-        fname        = WGetOpenFileName( einfo->win, &gf );
-        if( gf.title ) {
+        fname = WGetOpenFileName( einfo->win, &gf );
+        if( gf.title != NULL ) {
             WFreeRCString( gf.title );
         }
-        if( gf.filter ) {
+        if( gf.filter != NULL ) {
             WFreeRCString( gf.filter );
         }
-        ok = ( fname != NULL );
+        ok = (fname != NULL);
     }
 
     if( ok ) {
@@ -347,7 +346,7 @@ Bool WSaveObjectInto( WMenuEditInfo *einfo )
             idata.lang = einfo->info->lang;
             idata.size = einfo->info->data_size;
             idata.MemFlags = einfo->info->MemFlags;
-            ok = WRSaveObjectInto ( fname, &idata, &dup ) && !dup;
+            ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
         }
     }
 
@@ -355,25 +354,24 @@ Bool WSaveObjectInto( WMenuEditInfo *einfo )
         WDisplayErrorMsg( W_RESDUPNAMEINFILE );
     }
 
-    if( fname ) {
-        WMemFree ( fname );
+    if( fname != NULL ) {
+        WMemFree( fname );
     }
 
-    if( idata.type ) {
+    if( idata.type != NULL ) {
         WMemFree( idata.type );
     }
 
     return( ok );
 }
 
-Bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name,
-                   Bool prompt )
+Bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, Bool prompt )
 {
     char                *name;
     WGetFileStruct      gf;
     Bool                ok;
 
-    if( !einfo || !table || !file_name ) {
+    if( einfo == NULL || table == NULL || file_name == NULL ) {
         return( FALSE );
     }
 
@@ -385,19 +383,19 @@ Bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name,
 
     WSetWaitCursor( einfo->win, TRUE );
 
-    if( prompt || !*file_name ) {
+    if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
-        gf.title     = WAllocRCString( W_SAVESYMTITLE );
-        gf.filter    = WAllocRCString( W_SYMFILTER );
+        gf.title = WAllocRCString( W_SAVESYMTITLE );
+        gf.filter = WAllocRCString( W_SYMFILTER );
         WMassageFilter( gf.filter );
         name = WGetSaveFileName( einfo->win, &gf );
-        if( gf.title ) {
+        if( gf.title != NULL ) {
             WFreeRCString( gf.title );
         }
-        if( gf.filter ) {
+        if( gf.filter != NULL ) {
             WFreeRCString( gf.filter );
         }
-        ok = ( name != NULL );
+        ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
                 WMemFree( *file_name );
@@ -420,4 +418,3 @@ Bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name,
 
     return( ok );
 }
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wpack constants, structures and prototypes.
 *
 ****************************************************************************/
 
@@ -35,6 +34,19 @@
 
 #include "bool.h"
 #include "align.h"
+
+#ifdef PATCH
+
+#define WPMemAlloc malloc
+#define WPMemFree  free
+
+#else
+
+extern void *WPMemAlloc( size_t );
+extern void WPMemFree( void * );
+
+#endif
+
 #ifdef __WATCOMC__
 #pragma pack( 1 );
 #endif
@@ -139,6 +151,7 @@ typedef struct {
 extern void             SetupTextTable();
 extern int              InitIO();
 extern int              Decode( arccmd * );
+extern int              Encode( arccmd * );
 
 #ifdef __WATCOMC__
 #pragma pack();

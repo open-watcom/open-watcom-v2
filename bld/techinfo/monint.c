@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interrupt probing utilities (for DOS).
 *
 ****************************************************************************/
 
@@ -64,6 +63,7 @@ volatile struct NDP_Environment {
 
 extern void _TEST_NDP( void );
 #pragma aux _TEST_NDP = \
+        ".8087"         \
         "FINIT",                        /* initialize ND processor */ \
         "FLDCW   word ptr Control",     /* initialize control */ \
         "FENI",                         /* enable interrupts */ \
@@ -73,10 +73,10 @@ extern void _TEST_NDP( void );
         "FNOP"                          /* no-operation */
 
 extern void _INIT_NDP( void );
-#pragma aux _INIT_NDP = "FNINIT"        /* reinitialize NDP */;
+#pragma aux _INIT_NDP = ".8087" "FNINIT"        /* reinitialize NDP */;
 
 extern  void    __fstenv( void );
-#pragma aux     __fstenv = "FSTENV NDP_Env";
+#pragma aux     __fstenv = ".8087" "FSTENV NDP_Env";
 
 #define NUM_INTS 0x80
 
@@ -97,20 +97,20 @@ void (__interrupt FAR *prev_int[NUM_INTS])();
 
 #define intx( N )                                   \
     void __interrupt FAR int_rtn_##N()              \
-      {                                             \
+    {                                               \
         if( Sample_On ) ++int_tick[N];              \
         if( prev_int[N] != NULL )                   \
             _chain_intr( prev_int[N] );             \
-      }
+    }
 
 #define intx2( N )                                  \
     void __interrupt FAR int_rtn_##N()              \
-      {                                             \
+    {                                               \
         if( Sample_On ) ++int_tick[N];              \
         __fstenv();                                 \
         if( prev_int[N] != NULL )                   \
             _chain_intr( prev_int[N] );             \
-      }
+    }
 
 intx( 0x00 )
 intx( 0x01 )
@@ -276,65 +276,7 @@ void (__interrupt FAR *new_int[NUM_INTS])() = {
     int_rtn_0x7C, int_rtn_0x7D, int_rtn_0x7E, int_rtn_0x7F
 };
 
-int monint( int print )
-  {
-    int i;
-
-    for( i = 0; i < NUM_INTS; i++ ) {
-        prev_int[i] = _dos_getvect( i );
-    }
-
-    if( print ) techoutput( "\nInstalling interrupt handlers\n" );
-    for( i = NUM_INTS - 1 ; i >= 0; i-- ) {
-        _dos_setvect( i, new_int[i] );
-    }
-
-    if( print ) {
-        Sample_On = 1;
-        while( int_tick[ 8 ] < 24 );
-        Sample_On = 0;
-
-        techoutput( "Normal system operation:\n" );
-        int_summary();
-        memset( int_tick, 0, sizeof( int_tick ) );
-
-        techoutput( "Starting exception test...\n" );
-    }
-    Sample_On = 1;
-    _TEST_NDP();
-    while( int_tick[ 8 ] < 24 );
-    Sample_On = 0;
-
-    _INIT_NDP();
-
-    NDP_Status = NDP_Env.status_word;
-
-    if( print ) {
-        techoutput( "System operation with NDP divide by zero exception:\n" );
-        int_summary();
-        techoutput( "Restoring interrupt handlers\n" );
-    }
-    for( i = NUM_INTS - 1 ; i >= 0; i-- ) {
-        _dos_setvect( i, prev_int[i] );
-    }
-
-#define TEST_FPU(x,y) techoutput( "\t%s " y "\n", \
-                ((NDP_Status & x) ? "  " : "No") )
-
-    if( print ) {
-        techoutput( "80x87 status:\n" );
-        TEST_FPU( SW_INVALID, "invalid operation" );
-        TEST_FPU( SW_DENORMAL, "denormalized operand" );
-        TEST_FPU( SW_ZERODIVIDE, "divide by zero" );
-        TEST_FPU( SW_OVERFLOW, "overflow" );
-        TEST_FPU( SW_UNDERFLOW, "underflow" );
-        TEST_FPU( SW_INEXACT, "inexact result" );
-    }
-
-    return( (int_tick[ 2 ] != 0) && ((NDP_Status & SW_ZERODIVIDE) != 0) );
-  }
-
-static void int_summary()
+static void int_summary( void )
 {
     int i;
 
@@ -388,4 +330,62 @@ static void int_summary()
             techoutput( "\n" );
         }
     }
+}
+
+int monint( int print )
+{
+    int i;
+
+    for( i = 0; i < NUM_INTS; i++ ) {
+        prev_int[i] = _dos_getvect( i );
+    }
+
+    if( print ) techoutput( "\nInstalling interrupt handlers\n" );
+    for( i = NUM_INTS - 1 ; i >= 0; i-- ) {
+        _dos_setvect( i, new_int[i] );
+    }
+
+    if( print ) {
+        Sample_On = 1;
+        while( int_tick[ 8 ] < 24 );
+        Sample_On = 0;
+
+        techoutput( "Normal system operation:\n" );
+        int_summary();
+        memset( (void *)int_tick, 0, sizeof( int_tick ) );
+
+        techoutput( "Starting exception test...\n" );
+    }
+    Sample_On = 1;
+    _TEST_NDP();
+    while( int_tick[ 8 ] < 24 );
+    Sample_On = 0;
+
+    _INIT_NDP();
+
+    NDP_Status = NDP_Env.status_word;
+
+    if( print ) {
+        techoutput( "System operation with NDP divide by zero exception:\n" );
+        int_summary();
+        techoutput( "Restoring interrupt handlers\n" );
+    }
+    for( i = NUM_INTS - 1 ; i >= 0; i-- ) {
+        _dos_setvect( i, prev_int[i] );
+    }
+
+#define TEST_FPU(x,y) techoutput( "\t%s " y "\n", \
+                ((NDP_Status & x) ? "  " : "No") )
+
+    if( print ) {
+        techoutput( "80x87 status:\n" );
+        TEST_FPU( SW_INVALID, "invalid operation" );
+        TEST_FPU( SW_DENORMAL, "denormalized operand" );
+        TEST_FPU( SW_ZERODIVIDE, "divide by zero" );
+        TEST_FPU( SW_OVERFLOW, "overflow" );
+        TEST_FPU( SW_UNDERFLOW, "underflow" );
+        TEST_FPU( SW_INEXACT, "inexact result" );
+    }
+
+    return( (int_tick[ 2 ] != 0) && ((NDP_Status & SW_ZERODIVIDE) != 0) );
 }

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-struct xycoord _WCI86FAR _CGRAPH _getcurrentposition( void )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getcurrentposition( void )
 /*=====================================================
 
     This function returns the current output position. */

@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 
@@ -42,7 +39,7 @@
 void DrawVerticalThumb( wind *w, char ch )
 {
     char_info   what;
-    int         pos,xpos;
+    int         pos, xpos;
     char_info   *txt;
     char        *over;
     char_info   _FAR *scr;
@@ -58,8 +55,8 @@ void DrawVerticalThumb( wind *w, char ch )
     what.ch = ch;
     what.attr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
 
-    pos = (w->x2) + (w->y1+w->vert_scroll_pos)*WindMaxWidth;
-    xpos = w->width-1 + (w->vert_scroll_pos)*w->width;
+    pos = (w->x2) + (w->y1 + w->vert_scroll_pos) * WindMaxWidth;
+    xpos = w->width - 1 + w->vert_scroll_pos * w->width;
 
     WRITE_SCREEN_DATA( txt[xpos], what );
     if( over[xpos] == NO_CHAR ) {
@@ -85,19 +82,19 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
         ReleaseWindow( w );
         return;
     }
-    height = w->y2 - w->y1-THUMB_START*2;
+    height = w->y2 - w->y1 - THUMB_START * 2;
     if( height <= 0 ) {
         newpos = 0;
     } else if( curr == 1 ) {
         newpos = THUMB_START;
     } else {
-        newpos = (int)(((long) (height-1) * curr) / last) + THUMB_START+1;
+        newpos = (int)(((long) (height - 1) * curr) / last) + THUMB_START + 1;
     }
     if( w->vert_scroll_pos != newpos ) {
-        DrawVerticalThumb( w, GadgetString[ WB_RIGHTSIDE ] );
+        DrawVerticalThumb( w, GadgetString[WB_RIGHTSIDE] );
     }
     w->vert_scroll_pos = newpos;
-    DrawVerticalThumb( w, GadgetString[ WB_THUMB ] );
+    DrawVerticalThumb( w, GadgetString[WB_THUMB] );
 
     ReleaseWindow( w );
 
@@ -107,11 +104,11 @@ void PositionVerticalScrollThumb( window_id wn, linenum curr, linenum last )
 /*
  * PositionToNewThumbPosition - set new position in file based on thumb
  */
-int PositionToNewThumbPosition( wind *w, int win_y )
+vi_rc PositionToNewThumbPosition( wind *w, int win_y )
 {
     int         height;
-    int         rc;
-    linenum     lne,clne;
+    vi_rc       rc;
+    linenum     lne, clne;
 
     if( win_y == w->vert_scroll_pos ) {
         return( ERR_NO_ERR );
@@ -120,15 +117,15 @@ int PositionToNewThumbPosition( wind *w, int win_y )
     if( win_y < 0 ) {
         return( ERR_NO_ERR );
     }
-    height = w->y2 - w->y1-THUMB_START*2;
+    height = w->y2 - w->y1 - THUMB_START * 2;
     if( win_y > height ) {
         return( ERR_NO_ERR );
     }
-    if( height <=0 ) {
+    if( height <= 0 ) {
         return( ERR_NO_ERR );
     }
-    lne = CurrentFile->fcb_tail->end_line;
-    clne = (win_y*lne)/height;
+    lne = CurrentFile->fcbs.tail->end_line;
+    clne = (win_y * lne) / height;
     if( clne == 0L ) {
         clne = 1L;
     }

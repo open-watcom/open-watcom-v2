@@ -36,7 +36,6 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -44,9 +43,9 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include "wvdbg.h"
-#define BY_CG
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -54,7 +53,7 @@ extern  seg_id          AskOP(void);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation();
+extern  offset          AskLocation(void);
 extern  void            DataInt(short_offset);
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -63,7 +62,6 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 extern  void            DataBytes(unsigned_32,byte*);
 extern  void            DoBigBckPtr(back_handle,offset);
-extern  type_def        *TypeAddress(cg_type);
 extern  type_length     NewBase(name*);
 extern  int             ParmsAtPrologue( void ) ;
 extern  void            DBLocFini( dbg_loc loc );
@@ -97,7 +95,7 @@ extern  void    BuffEnd( seg_id seg ) {
     uint                last;
     uint                size;
 
-    ptr_type = TypeAddress( T_LONG_POINTER );
+    ptr_type = TypeAddress( TY_LONG_POINTER );
     old = SetOP( seg );
     CurrBuff->buff[ 0 ] = CurrBuff->index;
     buff = CurrBuff->buff;
@@ -130,7 +128,7 @@ extern  void    BuffEnd( seg_id seg ) {
 }
 
 
-extern  uint    BuffLoc() {
+extern  uint    BuffLoc( void ) {
 /*************************/
 
 
@@ -386,7 +384,7 @@ static  void    DoLocDump( dbg_loc loc ) {
         if( reg > 15 ) {
             patch = BuffLoc();
             BuffByte( 0 );
-            BuffPatch( LOC_MULTI_REG | MultiReg( loc->u.be_sym )-1, patch );
+            BuffPatch( LOC_MULTI_REG | (MultiReg( &loc->u.be_sym->r )-1), patch );
         } else {
             BuffByte( LOC_REG | reg );
         }
@@ -400,7 +398,7 @@ static  void    DoLocDump( dbg_loc loc ) {
             reg = RegNibble( loc->u.be_sym->r.reg );
             if( reg > REG_LAST ) {
                 BuffByte( loc->class + 1 ); /* assumes ..._FAR is one greater*/
-                MultiReg( loc->u.be_sym );
+                MultiReg( &loc->u.be_sym->r );
             } else {
                 BuffByte( loc->class );
                 BuffByte( reg );

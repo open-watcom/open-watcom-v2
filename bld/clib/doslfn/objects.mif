@@ -1,0 +1,67 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
+#==========================================================================================
+!inject accss.obj    d16 d32 dpm
+!inject creatdos.obj d16 d32 dpm
+!inject dir.obj      d16 d32 dpm
+!inject findclos.obj d16 d32 dpm
+!inject finddos.obj  d16 d32 dpm
+!inject findfirs.obj d16 d32 dpm
+!inject findnext.obj d16 d32 dpm
+!inject fstat.obj    d16 d32 dpm
+!inject fullpath.obj d16 d32 dpm
+!inject gfattdos.obj d16 d32 dpm
+!inject gtcwd.obj    d16 d32 dpm
+!inject chdir.obj    d16 d32 dpm
+!inject chmod.obj    d16 d32 dpm
+!inject inirmlfn.obj     d32
+!inject lfntosfn.obj d16 d32 dpm
+!inject mkdir.obj    d16 d32 dpm
+!inject open.obj     d16 d32 dpm
+!inject opendos.obj  d16 d32 dpm
+!inject renam.obj    d16 d32 dpm
+!inject rmdir.obj    d16 d32 dpm
+!inject searchen.obj d16 d32 dpm
+!inject sfattdos.obj d16 d32 dpm
+!inject split2.obj   d16 d32 dpm
+!inject splitpat.obj d16 d32 dpm
+!inject stat.obj     d16 d32 dpm
+!inject tempnam.obj  d16 d32 dpm
+!inject uaccs.obj    d16 d32 dpm
+!inject udir.obj     d16 d32 dpm
+!inject ufind.obj    d16 d32 dpm
+!inject ufindfir.obj d16 d32 dpm
+!inject ufindnex.obj d16 d32 dpm
+!inject ufulpath.obj d16 d32 dpm
+!inject ugtcd.obj    d16 d32 dpm
+!inject uchdr.obj    d16 d32 dpm
+!inject uchmd.obj    d16 d32 dpm
+!inject umkdr.obj    d16 d32 dpm
+!inject unlnk.obj    d16 d32 dpm
+!inject uopen.obj    d16 d32 dpm
+!inject urenm.obj    d16 d32 dpm
+!inject urmdr.obj    d16 d32 dpm
+!inject uselfn.obj   d16 d32 dpm
+!inject usplit2.obj  d16 d32 dpm
+!inject uspltpat.obj d16 d32 dpm
+!inject usrchen.obj  d16 d32 dpm
+!inject ustat.obj    d16 d32 dpm
+!inject utempnam.obj d16 d32 dpm
+!inject utime.obj    d16 d32 dpm
+!inject uunln.obj    d16 d32 dpm
+!inject uutim.obj    d16 d32 dpm
+
+!include ../../../../objlist.mif
+
+dir_opts      = -I"$(clib_dir)/handleio/h" -I"$(clib_dir)/direct/h"
+findfirs_opts = -I"$(clib_dir)/file/h"
+findnext_opts = -I"$(clib_dir)/file/h"
+stat_opts     = -I"$(clib_dir)/file/h" -I"$(clib_dir)/handleio/h"
+udir_opts     = -I"$(clib_dir)/handleio/h" -I"$(clib_dir)/direct/h"
+ufindfir_opts = -I"$(clib_dir)/file/h"
+ufindnex_opts = -I"$(clib_dir)/file/h"
+ustat_opts    = -I"$(clib_dir)/file/h" -I"$(clib_dir)/handleio/h"
+
+base_libname   = doslfn
+
+extra_libflags = -zll
+

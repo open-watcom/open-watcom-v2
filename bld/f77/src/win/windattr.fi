@@ -1,0 +1,102 @@
+*$noreference
+
+! Drawing-Attribute Functions:
+! ----------------------------
+
+      external GetBkColor
+      external GetBkMode
+      external GetPolyFillMode
+      external GetROP2
+      external GetStretchBltMode
+      external GetTextColor
+      external SetBkColor
+      external SetBkMode
+      external SetPolyFillMode
+      external SetROP2
+      external SetStretchBltMode
+      external SetTextColor
+
+      integer*4 GetBkColor
+      integer*2 GetBkMode
+      integer*2 GetPolyFillMode
+      integer*2 GetROP2
+      integer*2 GetStretchBltMode
+      integer*4 GetTextColor
+      integer*4 SetBkColor
+      integer*2 SetBkMode
+      integer*2 SetPolyFillMode
+      integer*2 SetROP2
+      integer*2 SetStretchBltMode
+      integer*4 SetTextColor
+
+! Binary raster ops
+
+      integer R2_BLACK
+      integer R2_NOTMERGEPEN
+      integer R2_MASKNOTPEN
+      integer R2_NOTCOPYPEN
+      integer R2_MASKPENNOT
+      integer R2_NOT
+      integer R2_XORPEN
+      integer R2_NOTMASKPEN
+      integer R2_MASKPEN
+      integer R2_NOTXORPEN
+      integer R2_NOP
+      integer R2_MERGENOTPEN
+      integer R2_COPYPEN
+      integer R2_MERGEPENNOT
+      integer R2_MERGEPEN
+      integer R2_WHITE
+
+      parameter ( R2_BLACK            = 1 )   !  0
+      parameter ( R2_NOTMERGEPEN      = 2 )   ! DPon
+      parameter ( R2_MASKNOTPEN       = 3 )   ! DPna
+      parameter ( R2_NOTCOPYPEN       = 4 )   ! PN
+      parameter ( R2_MASKPENNOT       = 5 )   ! PDna
+      parameter ( R2_NOT              = 6 )   ! Dn
+      parameter ( R2_XORPEN           = 7 )   ! DPx
+      parameter ( R2_NOTMASKPEN       = 8 )   ! DPan
+      parameter ( R2_MASKPEN          = 9 )   ! DPa
+      parameter ( R2_NOTXORPEN        = 10 )  ! DPxn
+      parameter ( R2_NOP              = 11 )  ! D
+      parameter ( R2_MERGENOTPEN      = 12 )  ! DPno
+      parameter ( R2_COPYPEN          = 13 )  ! P
+      parameter ( R2_MERGEPENNOT      = 14 )  ! PDno
+      parameter ( R2_MERGEPEN         = 15 )  ! DPo
+      parameter ( R2_WHITE            = 16 )  !  1
+
+! StretchBlt() Modes
+
+      integer BLACKONWHITE
+      integer WHITEONBLACK
+      integer COLORONCOLOR
+
+      parameter ( BLACKONWHITE                 = 1 )
+      parameter ( WHITEONBLACK                 = 2 )
+      parameter ( COLORONCOLOR                 = 3 )
+
+! Polyfill Modes
+
+      integer ALTERNATE
+      integer WINDING
+
+      parameter ( ALTERNATE                    = 1 )
+      parameter ( WINDING                      = 2 )
+
+! Background Modes
+
+      integer TRANSPARENT
+      integer OPAQUE
+
+      parameter ( TRANSPARENT         = 1 )
+      parameter ( OPAQUE              = 2 )
+
+! Coordinate Modes
+
+      integer ABSOLUTE
+      integer RELATIVE
+
+      parameter ( ABSOLUTE            = 1 )
+      parameter ( RELATIVE            = 2 )
+
+*$reference

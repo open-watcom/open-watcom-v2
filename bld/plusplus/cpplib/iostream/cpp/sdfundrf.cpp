@@ -29,48 +29,23 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/22    Greg Bentz      Make sure underflow() function sets up the
-//                              get area
-//  93/10/22    Raymond Tang    Split into separate files.
-//  93/11/09    Greg Bentz      Make sure underflow() trashes the put area
-//                              in the right order
-//  93/11/12    Greg Bentz      Make input one character at a time
-//  94/04/06    Greg Bentz      combine header files
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdiobuf.h>
 #endif
 #include "ioutil.h"
 #include "sdfhdr.h"
 
+// Handle allocating a buffer, if required. Handle filling the get area
+// of the streambuf. Read more stuff from the input device. Return the
+// first character read.
+
 int stdiobuf::underflow() {
-/*************************/
-// Handle allocating a buffer, if required.
-// Handle filling the get area of the streambuf.
-// Read more stuff from the input device.
-// Return the first character read.
 
     char *ptr;
     int   len;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object Reader Library public definitions.
 *
 ****************************************************************************/
 
@@ -68,15 +67,15 @@ typedef enum {
     ORL_UNRECOGNIZED_FORMAT
 } orl_file_format;
 
-#pragma pack(1);
+#include <pushpck1.h>
 typedef struct {
     unsigned_16 linnum;
     unsigned_32 off;
 } orl_linnum;
-#pragma pack();
+#include <poppck.h>
 
 typedef struct {
-    void *      (*read)( void *, int );
+    void *      (*read)( void *, size_t );
     long int    (*seek)( void *, long int, int );
     void *      (*alloc)( size_t );
     void        (*free)( void * );
@@ -95,6 +94,8 @@ typedef enum {
     ORL_MACHINE_TYPE_R4000,
     ORL_MACHINE_TYPE_PPC601,
     ORL_MACHINE_TYPE_I8086,
+    ORL_MACHINE_TYPE_AMD64,
+    ORL_MACHINE_TYPE_SPARCPLUS,
     ORL_MACHINE_TYPE_UNKNOWN
 } orl_machine_type;
 
@@ -104,7 +105,8 @@ typedef enum {
     ORL_FILE_TYPE_EXECUTABLE,
     ORL_FILE_TYPE_SHARED_OBJECT,
     ORL_FILE_TYPE_DLL,
-    ORL_FILE_TYPE_IMPORT
+    ORL_FILE_TYPE_IMPORT,
+    ORL_FILE_TYPE_CORE
 } orl_file_type;
 
 typedef enum {
@@ -197,6 +199,7 @@ typedef enum {
     ORL_SYM_TYPE_FILE                   = 0x0008, // symbol gives info on a source file
     ORL_SYM_TYPE_FUNC_INFO              = 0x0010, // symbol gives additional info on a function
     ORL_SYM_TYPE_GROUP                  = 0x0020, // symbol refers to an OMF group
+    ORL_SYM_TYPE_NOTYPE                 = 0x0040, // symbol without a type
     // and at most one of these:
     ORL_SYM_TYPE_ABSOLUTE               = 0x0100, // symbol has an absolute value
     ORL_SYM_TYPE_COMMON                 = 0x0200, // symbol labels a common unallocated block (Elf)
@@ -213,6 +216,7 @@ typedef enum {
     ORL_SYM_CDAT_SHIFT                  = 13
 } orl_symbol_type;
 
+// relocation types - add new types at end if possible, also update objdump!
 typedef enum {
     ORL_RELOC_TYPE_NONE,        // error type
     ORL_RELOC_TYPE_ABSOLUTE,    // ref to a 32-bit absolute address
@@ -232,13 +236,17 @@ typedef enum {
     ORL_RELOC_TYPE_SEGMENT,     // 16-bit segment relocation
     ORL_RELOC_TYPE_WORD_14,     // a direct ref to a 14-bit address shifted 2
     ORL_RELOC_TYPE_WORD_24,     // a direct ref to a 24-bit address shifted 2
+    ORL_RELOC_TYPE_WORD_26,     // a direct ref to a 28-bit address shifted 2
     ORL_RELOC_TYPE_REL_14,      // relative ref to a 14-bit address shifted 2
     ORL_RELOC_TYPE_REL_24,      // relative ref to a 24-bit address shifted 2
     ORL_RELOC_TYPE_REL_32,      // relative ref to a 32-bit address
+    ORL_RELOC_TYPE_REL_32_NOADJ,// as above, but doesn't need -4 adjustment
+
     ORL_RELOC_TYPE_TOCREL_16,   // relative ref to 16-bit offset from TOC base.
     ORL_RELOC_TYPE_TOCREL_14,   // rel. ref to 14-bit offset from TOC base shifted 2.
     ORL_RELOC_TYPE_TOCVREL_16,  // ditto, data explicitely defined in .tocd
     ORL_RELOC_TYPE_TOCVREL_14,  // ditto
+    ORL_RELOC_TYPE_GOT_32,      // direct ref to 32-bit offset from GOT base.
     ORL_RELOC_TYPE_GOT_16,      // direct ref to 16-bit offset from GOT base.
     ORL_RELOC_TYPE_GOT_16_HI,   // direct ref to hi 16-bits of offset from GOT base.
     ORL_RELOC_TYPE_GOT_16_HA,   // ditto adjusted for signed low 16-bits
@@ -261,6 +269,14 @@ typedef enum {
     ORL_RELOC_TYPE_REL_HI_8,    // relative reference high byte of 16 bit offset
     ORL_RELOC_TYPE_WORD_32_SEG, // 32-bit offset and segment
     ORL_RELOC_TYPE_REL_32_SEG,  // relative reference 32 bit offset and segment
+
+    // special relications for x64 coff files, there are only used in ndisasm yet!
+    // for more information see watcom/h/coff.h in amd64 section
+    ORL_RELOC_TYPE_REL_32_ADJ1, // relative ref to a 32-bit address, need special adjustment
+    ORL_RELOC_TYPE_REL_32_ADJ2, // relative ref to a 32-bit address, need special adjustment
+    ORL_RELOC_TYPE_REL_32_ADJ3, // relative ref to a 32-bit address, need special adjustment
+    ORL_RELOC_TYPE_REL_32_ADJ4, // relative ref to a 32-bit address, need special adjustment
+    ORL_RELOC_TYPE_REL_32_ADJ5, // relative ref to a 32-bit address, need special adjustment
 
     ORL_RELOC_TYPE_MAX          // Must be last value in this enum
 } orl_reloc_type;

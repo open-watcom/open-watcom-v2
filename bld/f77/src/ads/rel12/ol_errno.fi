@@ -1,0 +1,188 @@
+*$noreference
+
+! OL_ERRNO.FI
+
+! AutoCAD Release 11 On-Line application Error codes (set in the "_ERRNO"
+! system variable).
+
+! NOTE:  The "_ERRNO" values are subject to change with major
+! releases of AutoCAD.  To ensure proper error diagnostics, be
+! sure to include the proper version of this file with your program.
+
+        integer OL_ESNVALID
+        integer OL_ENAMEVALID
+        integer OL_ESSMAX
+        integer OL_ESSVALID
+        integer OL_EBDEVALID
+        integer OL_EXDEVALID
+        integer OL_ENTSELPICK
+        integer OL_EEOEF
+        integer OL_EEOBD
+        integer OL_EEMPDB
+        integer OL_EDELVPORT
+        integer OL_EACQPLINE
+        integer OL_EHANDLE
+        integer OL_ENOHAND
+        integer OL_ETRANS
+        integer OL_EXSPACE
+        integer OL_EDELENT
+        integer OL_ETBLNAME
+        integer OL_ETBLARG
+        integer OL_ERDONLY
+        integer OL_ENONZERO
+        integer OL_ERANGE
+        integer OL_ERGBUSY
+        integer OL_EMMTYPE
+        integer OL_EMMLAY
+        integer OL_EMMLT
+        integer OL_EMMCOLOR
+        integer OL_EMMSTYLE
+        integer OL_EMMSHAPE
+        integer OL_EMMFTYPE
+        integer OL_EMODDEL
+        integer OL_EMODSEQ
+        integer OL_EMODHAND
+        integer OL_EMODVPVIS
+        integer OL_EMMLL
+        integer OL_EMKTYPE
+        integer OL_EMKPLINE
+        integer OL_EMKCMPLX
+        integer OL_EMKBNAME
+        integer OL_EMKBFLAG
+        integer OL_EMKDBNAME
+        integer OL_EMKNORM
+        integer OL_EMKNOBNM
+        integer OL_EMKNOBFLG
+        integer OL_EMKANON
+        integer OL_EMKBLOCK
+        integer OL_EMKMANDF
+        integer OL_EMMXDTYPE
+        integer OL_EMMXDNEST
+        integer OL_EMMXDAPPID
+        integer OL_EMMXDSIZE
+        integer OL_ENTSELNULL
+        integer OL_EMXDAPPID
+        integer OL_EMMVPORT
+        integer OL_INVEXT
+        integer OL_EFLTR1
+        integer OL_EFLTR2
+        integer OL_EFLTR3
+        integer OL_EFLTR4
+        integer OL_EFLTR5
+        integer OL_EFLTR6
+        integer OL_EFLTR7
+        integer OL_EFLTR8
+        integer OL_EFLTR9
+        integer OL_EFLTR10
+        integer OL_EFLTR11
+        integer OL_EFLTR12
+        integer OL_TABNOT
+        integer OL_TABNOCAL
+        integer OL_TABERR
+        integer OL_ENEWRB
+        integer OL_ENULLPTR
+        integer OL_EOPEN
+        integer OL_ELOADED
+        integer OL_EMAXAPP
+        integer OL_EEXEC
+        integer OL_EVERSION
+        integer OL_EDENIED
+        integer OL_EREFUSE
+        integer OL_ENOTLOADED
+        integer OL_ENOMEM
+        integer OL_EXFMVALID
+        integer OL_ESYMNAM
+        integer OL_ESYMVAL
+        integer OL_NONDIALOG
+        integer MAX_OL_ERRNO
+
+        parameter ( OL_ESNVALID   =  1 ) ! Invalid symbol table name
+        parameter ( OL_ENAMEVALID =  2 ) ! Invalid name (entity or ss) value
+        parameter ( OL_ESSMAX     =  3 ) ! Exceeded max number of sel. sets
+        parameter ( OL_ESSVALID   =  4 ) ! Invalid selection set
+        parameter ( OL_EBDEVALID  =  5 ) ! Improper use of block def. entity
+        parameter ( OL_EXDEVALID  =  6 ) ! Improper use of xref entity
+        parameter ( OL_ENTSELPICK =  7 ) ! Entity selection (failed pick)
+        parameter ( OL_EEOEF      =  8 ) ! End of entity file
+        parameter ( OL_EEOBD      =  9 ) ! End of Block def. file
+        parameter ( OL_EEMPDB     = 10 ) ! Failure of entlast
+        parameter ( OL_EDELVPORT  = 11 ) ! Illegal entdel of VPORT
+        parameter ( OL_EACQPLINE  = 12 ) ! Operation not allowed during PLINE
+        parameter ( OL_EHANDLE    = 13 ) ! Invalid handle
+        parameter ( OL_ENOHAND    = 14 ) ! Handles not enabled
+        parameter ( OL_ETRANS     = 15 ) ! Invalid trans request
+        parameter ( OL_EXSPACE    = 16 ) ! Invalid space trans request
+        parameter ( OL_EDELENT    = 17 ) ! Invalid use of deleted entity
+        parameter ( OL_ETBLNAME   = 18 ) ! Invalid table name
+        parameter ( OL_ETBLARG    = 19 ) ! Invalid table function argument
+        parameter ( OL_ERDONLY    = 20 ) ! Attempt to set read only variable
+        parameter ( OL_ENONZERO   = 21 ) ! Zero value invalid
+        parameter ( OL_ERANGE     = 22 ) ! Value out of range
+        parameter ( OL_ERGBUSY    = 23 ) ! Complex regen in progress
+        parameter ( OL_EMMTYPE    = 24 ) ! Attempt to change entity type
+        parameter ( OL_EMMLAY     = 25 ) ! Bad layer name
+        parameter ( OL_EMMLT      = 26 ) ! Bad linetype name
+        parameter ( OL_EMMCOLOR   = 27 ) ! Bad color name
+        parameter ( OL_EMMSTYLE   = 28 ) ! Bad text style name
+        parameter ( OL_EMMSHAPE   = 29 ) ! Bad shape name
+        parameter ( OL_EMMFTYPE   = 30 ) ! Bad field for entity type
+        parameter ( OL_EMODDEL    = 31 ) ! Attempted entmod of deleted entity
+        parameter ( OL_EMODSEQ    = 32 ) ! Attempted entmod of SEQEND
+        parameter ( OL_EMODHAND   = 33 ) ! Attempt to change handle
+        parameter ( OL_EMODVPVIS  = 34 ) ! Illegal modification of vport vis.
+        parameter ( OL_EMMLL      = 35 ) ! Entity on locked layer
+        parameter ( OL_EMKTYPE    = 36 ) ! Bad entity type
+        parameter ( OL_EMKPLINE   = 37 ) ! Bad PLINE entity
+        parameter ( OL_EMKCMPLX   = 38 ) ! Incomplete complex ent in block
+        parameter ( OL_EMKBNAME   = 39 ) ! Invalid block name field
+        parameter ( OL_EMKBFLAG   = 40 ) ! Duplicate block flag fields
+        parameter ( OL_EMKDBNAME  = 41 ) ! Duplicate block name fields
+        parameter ( OL_EMKNORM    = 42 ) ! Bad normal vector
+        parameter ( OL_EMKNOBNM   = 43 ) ! Missing block name
+        parameter ( OL_EMKNOBFLG  = 44 ) ! Missing block flags
+        parameter ( OL_EMKANON    = 45 ) ! Invalid anonymous block
+        parameter ( OL_EMKBLOCK   = 46 ) ! Invalid block definition entity
+        parameter ( OL_EMKMANDF   = 47 ) ! Manditory field missing
+        parameter ( OL_EMMXDTYPE  = 48 ) ! Unrecognized extended data type
+        parameter ( OL_EMMXDNEST  = 49 ) ! Improper nesting of list in xdata
+        parameter ( OL_EMMXDAPPID = 50 ) ! Improper location of APPID field
+        parameter ( OL_EMMXDSIZE  = 51 ) ! Exceeded maximum xdata size
+        parameter ( OL_ENTSELNULL = 52 ) ! Entity selection (null response)
+        parameter ( OL_EMXDAPPID  = 53 ) ! Entmod/entmake with duplicate appid
+        parameter ( OL_EMMVPORT   = 54 ) ! Entmod/entmake of VPORT failed
+        parameter ( OL_INVEXT     = 55 ) ! Entmake of XDEF/XREF/XDEP
+        parameter ( OL_EFLTR1     = 56 ) ! Bad SSGET filter: premature end
+        parameter ( OL_EFLTR2     = 57 ) !      "     missing test operand
+        parameter ( OL_EFLTR3     = 58 ) !      "     invalid opcode string
+        parameter ( OL_EFLTR4     = 59 ) !      "     void clause/bad nesting
+        parameter ( OL_EFLTR5     = 60 ) !      "     beg/end clause mismatch
+        parameter ( OL_EFLTR6     = 61 ) !      "     wrong # of XOR/NOT args
+        parameter ( OL_EFLTR7     = 62 ) !      "     max nesting exceeded
+        parameter ( OL_EFLTR8     = 63 ) !      "     invalid group code
+        parameter ( OL_EFLTR9     = 64 ) !      "     invalid string test
+        parameter ( OL_EFLTR10    = 65 ) !      "     invalid vector test
+        parameter ( OL_EFLTR11    = 66 ) !      "     invliad real test
+        parameter ( OL_EFLTR12    = 67 ) !      "     invalid integer test
+        parameter ( OL_TABNOT     = 68 ) ! Digitizer isn't a tablet
+        parameter ( OL_TABNOCAL   = 69 ) ! Tablet isn't calibrated.
+        parameter ( OL_TABERR     = 70 ) ! Invalid (tablet) arguments
+        parameter ( OL_ENEWRB     = 71 ) ! Unable to allocate resbuf
+        parameter ( OL_ENULLPTR   = 72 ) ! NULL Pointer detected
+        parameter ( OL_EOPEN      = 73 ) ! Can't open file
+        parameter ( OL_ELOADED    = 74 ) ! Application is already loaded
+        parameter ( OL_EMAXAPP    = 75 ) ! Number of apps exceeds limit
+        parameter ( OL_EEXEC      = 76 ) ! Unable to execute the application
+        parameter ( OL_EVERSION   = 77 ) ! Incompatible version number
+        parameter ( OL_EDENIED    = 78 ) ! Unable to unload nested ADS app
+        parameter ( OL_EREFUSE    = 79 ) ! The application refused to XUNLOAD
+        parameter ( OL_ENOTLOADED = 80 ) ! The application isn't loaded
+        parameter ( OL_ENOMEM     = 81 ) ! Out of memory
+        parameter ( OL_EXFMVALID  = 82 ) ! Invalid transformation matrix
+        parameter ( OL_ESYMNAM    = 83 ) ! Invalid symbol name
+        parameter ( OL_ESYMVAL    = 84 ) ! Invalid symbol value
+        parameter ( OL_NONDIALOG  = 85 ) ! Not allowed while dialogue up
+
+! If you add a new error code, be sure to increment this number
+        parameter ( MAX_OL_ERRNO  = 85 )
+
+*$reference

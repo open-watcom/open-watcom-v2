@@ -30,19 +30,21 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "precomp.h"
 #include "imgedit.h"
+#include <string.h>
 #include "iemem.h"
 #include "drawproc.h"
 
 static short            toolType = 0;
 static short            cursorIndex = 0;
-static HCURSOR          hCursor[ NUMBER_OF_CURSORS ];
+static HCURSOR          hCursor[NUMBER_OF_CURSORS];
 
 /*
- * lastChanceSave - is called when the user quits and the current image
- *                  is not yet saved.  Returns FALSE if CANCEL
- *                  is selected, otherwise, it returns TRUE.
+ * lastChanceSave - called when the user quits and the current image
+ *                  is not yet saved
+ *                - return FALSE if CANCEL is selected
+ *                - otherwise, it return TRUE
  */
 static BOOL lastChanceSave( HWND hwnd )
 {
@@ -54,17 +56,21 @@ static BOOL lastChanceSave( HWND hwnd )
     char        *title;
     char        *text;
     char        *msg_text;
-    char        filename[ _MAX_PATH ];
+    char        filename[_MAX_PATH];
 
-    if (!DoImagesExist()) return(TRUE);
+    if( !DoImagesExist() ) {
+        return( TRUE );
+    }
 
-    node = SelectImage(hwnd);
-    if (!node) return(TRUE);
+    node = SelectImage( hwnd );
+    if( node == NULL ) {
+        return( TRUE );
+    }
 
     icon = GetImageNode( hwnd );
-    while (icon) {
-        if (icon->issaved) {
-            return(TRUE);
+    while( icon != NULL ) {
+        if( icon->issaved ) {
+            return( TRUE );
         }
         icon = icon->nexticon;
     }
@@ -80,9 +86,9 @@ static BOOL lastChanceSave( HWND hwnd )
     retcode = WPI_IDCANCEL;
     title = IEAllocRCString( WIE_CLOSETITLE );
     text = IEAllocRCString( WIE_QUERYIMAGESAVE );
-    if( text ) {
+    if( text != NULL ) {
         msg_text = (char *)MemAlloc( strlen( text ) + strlen( filename ) + 1 );
-        if( msg_text ) {
+        if( msg_text != NULL ) {
             sprintf( msg_text, text, filename );
             retcode = _wpi_messagebox( HMainWindow, msg_text, title,
                                        MB_YESNOCANCEL | MB_ICONQUESTION );
@@ -90,43 +96,46 @@ static BOOL lastChanceSave( HWND hwnd )
         }
         IEFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         IEFreeRCString( title );
     }
 
-    if (retcode == WPI_IDYES) {
-        if (!SaveFile( how )) {
+    if( retcode == WPI_IDYES ) {
+        if( !SaveFile( how ) ) {
             PrintHintTextByID( WIE_FILENOTSAVED, NULL );
-            return (FALSE);
+            return( FALSE );
         } else {
-            hmenu = _wpi_getmenu( _wpi_getframe(HMainWindow) );
+            hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
             _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
             SetIsSaved( hwnd, TRUE );
         }
-    } else if (retcode == WPI_IDCANCEL) {
-        return (FALSE);
+    } else if( retcode == WPI_IDCANCEL ) {
+        return( FALSE );
     }
-    return (TRUE);
+    return( TRUE );
+
 } /* lastChanceSave */
 
 /*
- * setTheCursor - sets the cursor to be appropriate for the given window.
+ * setTheCursor - set the cursor to be appropriate for the given window
  */
 static void setTheCursor( int cursor_index, HWND hwnd )
 {
 #ifndef __OS2_PM__
     img_node    *node;
 
-    if (hwnd) {
+    if( hwnd != NULL ) {
         SET_CLASSCURSOR( hwnd, hCursor[cursorIndex] );
         return;
     }
 
     cursorIndex = cursor_index;
     node = GetHeadNode();
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    while (node) {
+    while( node != NULL ) {
         SET_CLASSCURSOR( node->hwnd, hCursor[cursorIndex] );
         node = node->next;
     }
@@ -138,17 +147,16 @@ static void setTheCursor( int cursor_index, HWND hwnd )
 } /* setTheCursor */
 
 /*
- * DrawAreaWinProc - Windows procedure for the drawing area window.  This
- *              window is an mdi window.
+ * DrawAreaWinProc - window procedure for the drawing area window
+ *                 - this window is an MDI window
  */
 MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
-                                         WPI_PARAM1 wparam,
-                                         WPI_PARAM2 lparam )
+                                  WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    static WPI_POINT    start_pt = {-1, -1};
-    static WPI_POINT    end_pt = {-1, -1};
-    static WPI_POINT    prev_pt = {-1, -1};
-    static WPI_POINT    new_pt = {-1, -1};
+    static WPI_POINT    start_pt = { -1, -1 };
+    static WPI_POINT    end_pt = { -1, -1 };
+    static WPI_POINT    prev_pt = { -1, -1 };
+    static WPI_POINT    new_pt = { -1, -1 };
     static WPI_POINT    pt1;
     static BOOL         flbuttondown = FALSE;
     static BOOL         frbuttondown = FALSE;
@@ -173,7 +181,7 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         mdi_cs = (MDICREATESTRUCT __FAR *)cs->lpCreateParams;
         node = (img_node *)mdi_cs->lParam;
 
-        for (i=0; i < node->num_of_images; ++i) {
+        for( i = 0; i < node->num_of_images; i++ ) {
             node[i].hwnd = hwnd;
         }
         AddImageNode( node );
@@ -183,12 +191,11 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 #endif
         firsttime = TRUE;
         i = i;
-        return 0 ;
-
+        return( 0 );
 
     case WM_MDIACTIVATE:
-        if ( IMGED_GET_MDI_FACTIVATE(hwnd, wparam, lparam) ) {
-            if (_wpi_isiconic(hwnd)) {
+        if( IMGED_GET_MDI_FACTIVATE( hwnd, wparam, lparam ) ) {
+            if( _wpi_isiconic( hwnd ) ) {
                 wasicon = TRUE;
                 break;
             } else {
@@ -196,7 +203,7 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                 FocusOnImage( hwnd );
             }
         }
-        return 0;
+        return( 0 );
 
 #ifndef __OS2_PM__
     case WM_GETMINMAXINFO:
@@ -204,10 +211,10 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         if( node != NULL ) {
             minmax = (MINMAXINFO *)lparam;
             minmax->ptMinTrackSize.x = node->width +
-                    2 * _wpi_getsystemmetrics(SM_CXFRAME);
+                2 * _wpi_getsystemmetrics( SM_CXFRAME );
             minmax->ptMinTrackSize.y = node->height +
-                    2 * _wpi_getsystemmetrics(SM_CYFRAME) +
-                   _wpi_getsystemmetrics( SM_CYCAPTION ) - 1;
+                2 * _wpi_getsystemmetrics( SM_CYFRAME ) +
+                _wpi_getsystemmetrics( SM_CYCAPTION ) - 1;
         }
         break;
 #endif
@@ -217,32 +224,31 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         return 0;
 
     case WM_SIZE:
-        if ( _imgwpi_issizerestored(wparam) ) {
+        if ( _imgwpi_issizerestored( wparam ) ) {
             ResizeChild( lparam, hwnd, firsttime );
             firsttime = FALSE;
-            if (wasicon) {
+            if( wasicon ) {
                 FocusOnImage( hwnd );
                 wasicon = FALSE;
             }
 #ifndef __OS2_PM__
-    // ifdef'ed out until i find out how to minimize and restore windows
         } else if ( _imgwpi_issizeminimized( wparam ) ) {
             node = SelectImage( hwnd );
             HideViewWindow( hwnd );
             DeleteActiveImage();
             ClearImageText();
-            SendMessage(ClientWindow, WM_MDINEXT, (WPARAM)(LPVOID)hwnd, 0L);
+            SendMessage( ClientWindow, WM_MDINEXT, (WPARAM)(LPVOID)hwnd, 0L );
             wasicon = TRUE;
 #endif
         }
-        return 0;
+        return( 0 );
 
 #ifndef __OS2_PM__
     case WM_CHAR:
         pointsize = GetPointSize( hwnd );
-        if (LOWORD(wparam) == ESC_CHAR) {
-            if ( !(lparam & 0x40000000) ) {
-                switch(toolType) {
+        if( LOWORD( wparam ) == ESC_CHAR ) {
+            if( !(lparam & 0x40000000) ) {
+                switch( toolType ) {
                 case IMGED_PASTE:
                     fdraw_shape = FALSE;
                     flbuttondown = FALSE;
@@ -256,19 +262,19 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                 case IMGED_CIRCLEO:
                 case IMGED_CIRCLEF:
                 case IMGED_CLIP:
-                    if (!flbuttondown && !frbuttondown) {
+                    if( !flbuttondown && !frbuttondown ) {
                         break;
                     }
                     fdraw_shape = FALSE;
                     flbuttondown = FALSE;
                     frbuttondown = FALSE;
-                    if ( toolType == IMGED_LINE ) {
-                        OutlineLine(hwnd, &start_pt, &prev_pt, &new_pt, TRUE);
-                    } else if ( toolType == IMGED_CLIP ) {
-                        OutlineClip(hwnd, &start_pt, &prev_pt, &new_pt, TRUE);
+                    if( toolType == IMGED_LINE ) {
+                        OutlineLine( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
+                    } else if( toolType == IMGED_CLIP ) {
+                        OutlineClip( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
                         SetRectExists( FALSE );
                     } else {
-                        OutlineRegion(hwnd, &start_pt, &prev_pt, &new_pt, TRUE);
+                        OutlineRegion( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
                     }
                     break;
                 default:
@@ -276,7 +282,7 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                 }
             }
         }
-        return 0;
+        return( 0 );
 #endif
 
     case WM_MOUSEMOVE:
@@ -286,7 +292,7 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 #endif
         IMGED_MAKEPOINT( wparam, lparam, new_pt );
 
-        switch(toolType) {
+        switch( toolType ) {
         case IMGED_SNAP:
 #ifndef __OS2_PM__
             OutlineSnap();
@@ -298,20 +304,20 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             pt1.y = new_pt.y / pointsize.y;
             pt2.x = prev_pt.x / pointsize.x;
             pt2.y = prev_pt.y / pointsize.y;
-            if (( pt1.x != pt2.x) || (pt1.y != pt2.y)) {
+            if( pt1.x != pt2.x || pt1.y != pt2.y ) {
                 DragClipBitmap( hwnd, &pt1, pointsize );
             }
-            SetPosInStatus(&new_pt, &pointsize, hwnd);
+            SetPosInStatus( &new_pt, &pointsize, hwnd );
             break;
 
         case IMGED_FREEHAND:
         case IMGED_BRUSH:
-            if (flbuttondown) {
-                Paint(hwnd, &prev_pt, &new_pt, LMOUSEBUTTON);
-            } else if (frbuttondown) {
-                Paint(hwnd, &prev_pt, &new_pt, RMOUSEBUTTON);
+            if( flbuttondown ) {
+                Paint( hwnd, &prev_pt, &new_pt, LMOUSEBUTTON );
+            } else if( frbuttondown ) {
+                Paint( hwnd, &prev_pt, &new_pt, RMOUSEBUTTON );
             }
-            SetPosInStatus(&new_pt, &pointsize, hwnd);
+            SetPosInStatus( &new_pt, &pointsize, hwnd );
             break;
 
         case IMGED_LINE:
@@ -320,39 +326,39 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         case IMGED_CIRCLEO:
         case IMGED_CIRCLEF:
         case IMGED_CLIP:
-            if ((flbuttondown) || (frbuttondown)) {
-                if (((new_pt.x/pointsize.x) != (end_pt.x/pointsize.x)) ||
-                        ((new_pt.y/pointsize.y) != (end_pt.y/pointsize.y))) {
-                    if (toolType == IMGED_LINE) {
-                        OutlineLine(hwnd, &start_pt, &new_pt, &prev_pt, FALSE);
-                    } else if (toolType == IMGED_CLIP) {
-                        OutlineClip(hwnd, &start_pt, &new_pt, &prev_pt, FALSE);
+            if( flbuttondown || frbuttondown ) {
+                if( new_pt.x / pointsize.x != end_pt.x / pointsize.x ||
+                    new_pt.y / pointsize.y != end_pt.y / pointsize.y ) {
+                    if( toolType == IMGED_LINE ) {
+                        OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
+                    } else if( toolType == IMGED_CLIP ) {
+                        OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
                     } else {
-                        OutlineRegion(hwnd, &start_pt, &new_pt, &prev_pt, FALSE);
+                        OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
                     }
                     end_pt = new_pt;
                     SetSizeInStatus( hwnd, &start_pt, &new_pt, &pointsize );
                 }
             } else {
-                SetPosInStatus(&new_pt, &pointsize, hwnd);
+                SetPosInStatus( &new_pt, &pointsize, hwnd );
             }
             break;
 
         case IMGED_FILL:
-            SetPosInStatus(&new_pt, &pointsize, hwnd);
+            SetPosInStatus( &new_pt, &pointsize, hwnd );
             break;
 
         default:
-            SetPosInStatus(&new_pt, &pointsize, hwnd);
+            SetPosInStatus( &new_pt, &pointsize, hwnd );
             break;
         }
         prev_pt = new_pt;
-        return 0;
+        return( 0 );
 
     case WM_LBUTTONDOWN:
     case WM_RBUTTONDOWN:
         pointsize = GetPointSize( hwnd );
-        SetCapture(hwnd);
+        SetCapture( hwnd );
         if( msg == WM_LBUTTONDOWN ) {
             if( frbuttondown ) {
                 break;
@@ -380,10 +386,10 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         IMGED_MAKEPOINT( wparam, lparam, start_pt );
         IMGED_MAKEPOINT( wparam, lparam, new_pt );
 
-        switch(toolType) {
+        switch( toolType ) {
         case IMGED_SNAP:
 #ifndef __OS2_PM__
-            TransferImage(hwnd);
+            TransferImage( hwnd );
 #endif
             fdraw_shape = FALSE;
             flbuttondown = FALSE;
@@ -392,13 +398,13 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 
         case IMGED_FREEHAND:
         case IMGED_BRUSH:
-            BeginFreeHand(hwnd);
+            BeginFreeHand( hwnd );
             DrawSinglePoint( hwnd, &start_pt, mousebutton );
             break;
 
         case IMGED_LINE:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
-            OutlineLine(hwnd, &start_pt, &new_pt, &prev_pt, TRUE);
+            OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
             break;
 
         case IMGED_RECTO:
@@ -406,18 +412,18 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         case IMGED_CIRCLEO:
         case IMGED_CIRCLEF:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
-            OutlineRegion(hwnd, &start_pt, &new_pt, &prev_pt, TRUE);
+            OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
             break;
 
         case IMGED_CLIP:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
-            RedrawPrevClip(hwnd);
-            OutlineClip(hwnd, &start_pt, &new_pt, &prev_pt, TRUE);
+            RedrawPrevClip( hwnd );
+            OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
             break;
 
         case IMGED_FILL:
-            FillArea(&start_pt, mousebutton);
-            RecordImage(hwnd);
+            FillArea( &start_pt, mousebutton );
+            RecordImage( hwnd );
             break;
 
         case IMGED_HOTSPOT:
@@ -438,14 +444,14 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         pointsize = GetPointSize( hwnd );
         IMGED_MAKEPOINT( wparam, lparam, end_pt );
         IMGED_MAKEPOINT( wparam, lparam, new_pt );
-        if (msg == WM_LBUTTONUP) {
+        if( msg == WM_LBUTTONUP ) {
             mousebutton = LMOUSEBUTTON;
         } else {
             mousebutton = RMOUSEBUTTON;
         }
 
-        if (fdraw_shape) {
-            switch(toolType) {
+        if( fdraw_shape ) {
+            switch( toolType ) {
             case IMGED_PASTE:
                 PasteImage( &start_pt, pointsize, hwnd );
                 flbuttondown = FALSE;
@@ -454,27 +460,27 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 
             case IMGED_FREEHAND:
             case IMGED_BRUSH:
-                if ((flbuttondown) || (frbuttondown)) {
-                    EndFreeHand(hwnd);
-                    RecordImage(hwnd);
+                if( flbuttondown || frbuttondown ) {
+                    EndFreeHand( hwnd );
+                    RecordImage( hwnd );
                 }
                 break;
 
             case IMGED_LINE:
-                DrawLine(hwnd, &start_pt, &end_pt, mousebutton);
-                RecordImage(hwnd);
+                DrawLine( hwnd, &start_pt, &end_pt, mousebutton );
+                RecordImage( hwnd );
                 break;
 
             case IMGED_RECTO:
             case IMGED_RECTF:
             case IMGED_CIRCLEO:
             case IMGED_CIRCLEF:
-                DisplayRegion(hwnd, &start_pt, &end_pt, mousebutton);
-                RecordImage(hwnd);
+                DisplayRegion( hwnd, &start_pt, &end_pt, mousebutton );
+                RecordImage( hwnd );
                 break;
 
             case IMGED_CLIP:
-                SetClipRect(hwnd, &start_pt, &end_pt, pointsize);
+                SetClipRect( hwnd, &start_pt, &end_pt, pointsize );
                 break;
 
             default:
@@ -486,25 +492,25 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         flbuttondown = FALSE;
         frbuttondown = FALSE;
         prev_pt = new_pt;
-        return 0;
+        return( 0 );
 
     case WM_PAINT:
-        RepaintDrawArea(hwnd);
-        return 0;
+        RepaintDrawArea( hwnd );
+        return( 0 );
 
     case WM_QUERYENDSESSION:
     case WM_CLOSE:
-        if (lastChanceSave(hwnd)) {
-            CloseCurrentImage(hwnd);
-            return (MRESULT)1;
+        if( lastChanceSave( hwnd ) ) {
+            CloseCurrentImage( hwnd );
+            return( (MRESULT)1 );
         } else {
-            return (MRESULT)0;
+            return( (MRESULT)0 );
         }
 
 #ifndef __OS2_PM__
     case WM_DESTROY:
-        SetCursor( LoadCursor( NULL, IDC_ARROW ));
-        return 0;
+        SetCursor( LoadCursor( NULL, IDC_ARROW ) );
+        return( 0 );
 #endif
 
     default:
@@ -515,7 +521,7 @@ MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 } /* DrawAreaWinProc */
 
 /*
- * SetToolType - sets the tool type.
+ * SetToolType - set the tool type
  */
 int SetToolType( int toolid )
 {
@@ -524,10 +530,10 @@ int SetToolType( int toolid )
     int         prev_tool;
     img_node    *node;
 
-    if (toolType == IMGED_CLIP) {
+    if( toolType == IMGED_CLIP ) {
         node = GetCurrentNode();
-        if (node) {
-            RedrawPrevClip(node->hwnd);
+        if( node != NULL ) {
+            RedrawPrevClip( node->hwnd );
             SetRectExists( FALSE );
         }
     }
@@ -535,12 +541,14 @@ int SetToolType( int toolid )
     prev_tool = toolType;
     toolType = toolid;
 
-    if ( (toolid==IMGED_PASTE) || (toolid==IMGED_SNAP) ) {
+    if( toolid == IMGED_PASTE || toolid == IMGED_SNAP ) {
         return( prev_tool );
     }
 
-    if (!HMainWindow) return(0);
-    hmenu = _wpi_getmenu( _wpi_getframe(HMainWindow) );
+    if( HMainWindow == NULL ) {
+        return( 0 );
+    }
+    hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
 
     switch( toolid ) {
     case IMGED_FREEHAND:
@@ -569,7 +577,7 @@ int SetToolType( int toolid )
         break;
     case IMGED_BRUSH:
         setTheCursor( BRUSH_CUR, NULL );
-        if( (prev_tool != IMGED_PASTE) && (prev_tool !=IMGED_SNAP) ) {
+        if( prev_tool != IMGED_PASTE && prev_tool !=IMGED_SNAP ) {
             WriteSetSizeText( WIE_BRUSHSIZEIS, ImgedConfigInfo.brush_size,
                               ImgedConfigInfo.brush_size );
         }
@@ -584,13 +592,13 @@ int SetToolType( int toolid )
         break;
     }
 
-    for( i = IMGED_CLIP; i <= IMGED_HOTSPOT; ++i) {
+    for( i = IMGED_CLIP; i <= IMGED_HOTSPOT; i++ ) {
 #if 0
-        if ( _wpi_isitemenabled( hmenu, i ) ) {
+        if( _wpi_isitemenabled( hmenu, i ) ) {
             _wpi_checkmenuitem( hmenu, i, FALSE, FALSE );
         }
 #else
-        if ( _wpi_isitemchecked( hmenu, i ) ) {
+        if( _wpi_isitemchecked( hmenu, i ) ) {
             _wpi_checkmenuitem( hmenu, i, FALSE, FALSE );
         }
 #endif
@@ -599,24 +607,25 @@ int SetToolType( int toolid )
 
     SetDrawTool( toolType );
     return( prev_tool );
+
 } /* SetToolType */
 
 /*
- * InitializeCursors - initializes the cursors ... should be cleaned up with
- *                     CleanupCursors.
+ * InitializeCursors - initialize the cursors
+ *                   - should be cleaned up with CleanupCursors
  */
 void InitializeCursors( void )
 {
-    hCursor[PENCIL_CUR] = _wpi_loadcursor(Instance, PENCILCURSOR);
-    hCursor[CROSS_CUR] = _wpi_loadcursor(Instance, CROSSHAIRSCUR);
-    hCursor[FILL_CUR] = _wpi_loadcursor(Instance, FILLCURSOR);
-    hCursor[BRUSH_CUR] = _wpi_loadcursor(Instance, PAINTBRUSHCUR);
-    hCursor[HOTSPOT_CUR] = _wpi_loadcursor(Instance, HOTSPOTCUR);
+    hCursor[PENCIL_CUR] = _wpi_loadcursor( Instance, PENCILCURSOR );
+    hCursor[CROSS_CUR] = _wpi_loadcursor( Instance, CROSSHAIRSCUR );
+    hCursor[FILL_CUR] = _wpi_loadcursor( Instance, FILLCURSOR );
+    hCursor[BRUSH_CUR] = _wpi_loadcursor( Instance, PAINTBRUSHCUR );
+    hCursor[HOTSPOT_CUR] = _wpi_loadcursor( Instance, HOTSPOTCUR );
 
 } /* InitializeCursors */
 
 /*
- * CleanupCursors - cleans up the initialized cursors.
+ * CleanupCursors - clean up the initialized cursors
  */
 void CleanupCursors( void )
 {
@@ -625,5 +634,5 @@ void CleanupCursors( void )
     _wpi_destroycursor( hCursor[FILL_CUR] );
     _wpi_destroycursor( hCursor[BRUSH_CUR] );
     _wpi_destroycursor( hCursor[HOTSPOT_CUR] );
-} /* CleanupCursors */
 
+} /* CleanupCursors */

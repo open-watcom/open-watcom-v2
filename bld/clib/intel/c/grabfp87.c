@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <signal.h>
+//#include <signal.h>
 #include "rtdata.h"
 
 #ifndef __WINDOWS__
@@ -39,33 +39,26 @@
     #include "dpmi.h"
 #endif
 
-extern  void    __Init_FPE_handler();
-extern  void    __Fini_FPE_handler();
-extern  void    __Enable_FPE();
-extern  void    _WCI86FAR __sigfpe_handler();
+extern  void    __Init_FPE_handler( void );
+extern  void    __Fini_FPE_handler( void );
 #ifdef __DOS_386__
-extern     __FPEHandlerStart_;
-extern     __FPEHandlerEnd_;
-extern int __DPMI_hosted(void);
+extern int __FPEHandlerStart_;
+extern int __FPEHandlerEnd_;
+extern int __DPMI_hosted( void );
 #endif
 
-void __GrabFP87()
-    {
+void __GrabFP87( void )
+{
 #ifndef __WINDOWS__
-        if( _RWD_FPE_hl_exit != __Fini_FPE_handler ) {
+    if( _RWD_FPE_handler_exit != __Fini_FPE_handler ) {
 #ifdef __DOS_386__
-            if (!_IsPharLap() && (__DPMI_hosted() == 1))
-            {
-                DPMILockLinearRegion((long)&__FPEHandlerStart_,
-                    ((long)&__FPEHandlerEnd_ - (long)&__FPEHandlerStart_));
-            }
-#endif
-            _RWD_FPE_handler = __sigfpe_handler;
-            __Init_FPE_handler();
-            _RWD_FPE_hl_exit = __Fini_FPE_handler;
+        if( !_IsPharLap() && ( __DPMI_hosted() == 1 )) {
+            DPMILockLinearRegion((long)&__FPEHandlerStart_,
+                ((long)&__FPEHandlerEnd_ - (long)&__FPEHandlerStart_));
         }
-#if !defined(__WARP__)
-        __Enable_FPE();
 #endif
-#endif
+        __Init_FPE_handler();
+        _RWD_FPE_handler_exit = __Fini_FPE_handler;
     }
+#endif
+}

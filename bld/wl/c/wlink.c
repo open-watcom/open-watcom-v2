@@ -24,22 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for Open Watcom linker.
 *
 ****************************************************************************/
 
-
-/*
-   WLINK  : mainline for WATCOM linker
-
-*/
 
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"
@@ -60,6 +53,8 @@
 #include "loadqnx.h"
 #include "loadnov.h"
 #include "loadelf.h"
+#include "loadzdos.h"
+#include "loadrdv.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
@@ -69,78 +64,48 @@
 #include "carve.h"
 #include "permdata.h"
 #include "toc.h"
-
-extern void     ResetAddr( void );
-extern void     ResetMsg( void );
-extern void     ResetSym( void );
-extern void     ResetDBI( void );
-extern void     ResetMapIO( void );
-extern void     ResetCmdAll( void );
-extern void     ResetOvlSupp( void );
-extern void     ResetComdef( void );
-extern void     ResetDistrib( void );
-extern void     ResetLoadNov( void );
-extern void     ResetLoadPE( void );
-extern void     ResetMisc( void );
-extern void     ResetObj2Supp( void );
-extern void     ResetObjIO( void );
-extern void     ResetObjOMF( void );
-extern void     ResetObjPass1( void );
-extern void     ResetDistrib( void );
-extern void     ResetObjStrip( void );
-extern void     ResetOMFReloc( void );
-extern void     ResetReloc( void );
-extern void     ResetSymTrace( void );
-extern void     ResetLoadFile( void );
-extern void     ResetToc( void );
-
-static  void    LnkInit();
-
-extern int              __nheapblk;
-extern commandflag      CmdFlags;
-
-#if _LINKER == _WATFOR77
-
-extern void InitLinker( void )
-/****************************/
-{
-    InitSubSystems();
-}
-
-extern void FiniLinker( void )
-/****************************/
-{
-    FiniSubSystems();
-}
-
-extern int RunLinker( char *cmd )
-/*******************************/
-{
-    LinkMainLine( cmd );
-    return( (LinkState & LINK_ERROR) ? 1 : 0 );
-}
-
-#elif _LINKER == _WLINK                 // it's the standalone linker
-
-extern int main( int argc, char ** argv )
-/***************************************/
-{
-    argc = argc;        /* to avoid a warning */
-    argv = argv;
-    InitSubSystems();
-    LinkMainLine( NULL );
-    FiniSubSystems();
-    return (LinkState & LINK_ERROR) ? 1 : 0;
-}
-
+#if defined( __WATCOMC__ )
+    #include <malloc.h>
 #endif
+#include "dbgall.h"
+#include "objpass1.h"
+#include "obj2supp.h"
+#include "cmdall.h"
+#include "reloc.h"
+#include "salloc.h"
+#include "objstrip.h"
+#include "symtab.h"
+#include "omfreloc.h"
+#include "overlays.h"
+#include "wcomdef.h"
+#include "objomf.h"
+#include "wlink.h"
+#ifndef __WATCOMC__
+    #include "clibext.h"
+#endif
+
+static void     PreAddrCalcFormatSpec( void );
+static void     PostAddrCalcFormatSpec( void );
+static void     DoDefaultSystem( void );
+static void     FindLibPaths( void );
+static void     ResetMisc( void );
+static void     ResetSubSystems( void );
+static void     DoLink( char * );
+static void     CleanSubSystems( void );
 
 #ifdef _INT_DEBUG
-extern char *   _edata;
-extern char *   _end;
+/*
+ *  I have temporarily left these as extern as they are internal data. On the final pass, either find
+ *  a library header that defines these or create one!
+ */
+extern char     *_edata;
+extern char     *_end;
 #endif
 
-static char *   ArgSave;
+static char     *ArgSave;
+
+// Not sure what this is for - doesn't seem to be referenced
+//extern int              __nheapblk;
 
 static void LinkMeBaby( void )
 /****************************/
@@ -149,7 +114,7 @@ static void LinkMeBaby( void )
     DoLink( ArgSave );
 }
 
-extern void LinkMainLine( char *cmds )
+void LinkMainLine( char *cmds )
 /************************************/
 {
     for(;;) {
@@ -159,12 +124,12 @@ extern void LinkMainLine( char *cmds )
         cmds = GetNextLink();
         if( cmds == NULL ) break;
     }
-#if _LINKER == _DLLHOST
+#if defined( __WATCOMC__ )
     _heapshrink();
 #endif
 }
 
-extern void InitSubSystems( void )
+void InitSubSystems( void )
 /********************************/
 {
 #ifdef _INT_DEBUG
@@ -181,14 +146,13 @@ extern void InitSubSystems( void )
     InitCmdFile();
 }
 
-extern void ResetSubSystems( void )
+static void ResetSubSystems( void )
 /*********************************/
 {
     ResetPermData();
     ResetMsg();
     VirtMemInit();
     ResetMisc();
-    ResetSym();
     Root = NewSection();
     ResetDBI();
     ResetMapIO();
@@ -202,7 +166,7 @@ extern void ResetSubSystems( void )
     ResetObjIO();
     ResetObjOMF();
     ResetObjPass1();
-    ResetDistrib();
+//    ResetDistrib(); // duplicate call
     ResetObjStrip();
     ResetOMFReloc();
     ResetReloc();
@@ -212,7 +176,7 @@ extern void ResetSubSystems( void )
     ResetToc();
 }
 
-extern void CleanSubSystems( void )
+static void CleanSubSystems( void )
 /*********************************/
 {
     if( MapFile != NIL_HANDLE ) {
@@ -227,6 +191,7 @@ extern void CleanSubSystems( void )
     CleanTraces();
     FreePaths();
     FreeUndefs();
+    FreeLocalImports();
     CleanLoadFile();
     CleanLinkStruct();
     FreeFormatStuff();
@@ -237,7 +202,7 @@ extern void CleanSubSystems( void )
     CleanPermData();
 }
 
-extern void FiniSubSystems( void )
+void FiniSubSystems( void )
 /********************************/
 {
     FiniLinkStruct();
@@ -246,12 +211,16 @@ extern void FiniSubSystems( void )
     LnkMemFini();
 }
 
-extern void DoLink( char * cmdline )
+static void DoLink( char *cmdline )
 /**********************************/
 // cmdline is only used when we are running under watfor.
 {
 #ifndef __OSI__
-    signal( SIGINT, &TrapBreak ); /* so we can clean up */
+  #ifdef __ZDOS__
+    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
+  #else
+    signal( SIGINT, &TrapBreak );   /* so we can clean up */
+  #endif
 #endif
     StartTime();
     DoCmdFile( cmdline );
@@ -268,6 +237,7 @@ extern void DoLink( char * cmdline )
         LinkState &= ~SEARCHING_LIBRARIES;
         LinkState |= GENERATE_LIB_LIST;
     }
+    ProcLocalImports();
     DecideFormat();
     SetFormat();
     ConvertLazyRefs();
@@ -286,16 +256,25 @@ extern void DoLink( char * cmdline )
     GetStkAddr();
     GetStartAddr();
     PostAddrCalcFormatSpec();
+#ifdef _RDOS
+    if( FmtData.type & MK_RDOS )
+        GetRdosSegs();
+#endif    
     CheckErr();
     InitLoadFile();
     ObjPass2();
+    FiniMap();
     CheckErr();
     FiniLoadFile();
     WritePermData();
     BuildImpLib();
     EndTime();
 #ifndef __OSI__
-    signal( SIGINT, SIG_IGN ); /* we're going to clean up anyway */
+  #ifdef __ZDOS__
+    signal( SIGBREAK, SIG_IGN );    /* we're going to clean up anyway */
+  #else
+    signal( SIGINT, SIG_IGN );      /* we're going to clean up anyway */
+  #endif
 #endif
 }
 
@@ -306,7 +285,7 @@ static void PreAddrCalcFormatSpec( void )
 #ifdef _OS2
     if( FmtData.type & MK_PE ) {
         ChkPEData();
-    } else if( FmtData.type & MK_OS2 ) {
+    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
         if( IS_PPC_OS2) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
@@ -337,7 +316,7 @@ static void PostAddrCalcFormatSpec( void )
         AllocPETransferTable();
     } else if( FmtData.type & MK_ELF ) {
         ChkElfData();
-    } else if( FmtData.type & MK_OS2 ) {
+    } else if( FmtData.type & (MK_OS2|MK_WIN_VXD) ) {
         if( IS_PPC_OS2) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
@@ -347,7 +326,7 @@ static void PostAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _QNXLOAD
-     else if( FmtData.type & MK_QNX ) {
+    else if( FmtData.type & MK_QNX ) {
         SetQNXSegFlags();
     }
 #endif
@@ -357,7 +336,7 @@ static void ResetMisc( void )
 /***************************/
 /* Linker support initialization. */
 {
-    LinkFlags = REDEFS_OK;
+    LinkFlags = REDEFS_OK | CASE_FLAG | FAR_CALLS_FLAG;
     LinkState = MAKE_RELOCS;
     AbsGroups = NULL;
     DataGroup = NULL;
@@ -376,7 +355,10 @@ static void ResetMisc( void )
     OvlNum = 0;
     OvlFName = NULL;
     CurrMod = NULL;
-    StackSize = 0x200;
+    StackSize = 0x1000;
+    // set case sensitivity for symbols
+    ResetSym();
+    SetSymCase();
 }
 
 static void DoDefaultSystem( void )

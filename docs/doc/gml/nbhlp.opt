@@ -1,0 +1,21 @@
+( sets $draft no
+( dev "tasa"
+( nopause
+( script
+( lay nbhlplay
+( font	0 mono01 2 10
+( font	1 mono01 2 10
+( font	2 mono01 2 10
+( font	3 mono01 2 10
+( font	4 mono01 1 10
+( font	5 mono01 1 8
+( font	6 mono01 1 10
+( font	7 mono01 2 10
+( font	8 mono01 2 14
+( font	9 mono01 2 16
+( font 10 mono01 2 20
+( font 11 mono01 2 24
+( font 12 mono01 2 32
+( font 13 mono01 2 10
+( font 14 mono01 2 10
+( font 15 mono01 2 10

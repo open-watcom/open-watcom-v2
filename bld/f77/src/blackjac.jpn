@@ -1,0 +1,304 @@
+**********************************************************************
+*    ﾌﾞﾗｯｸ･ｼﾞｬｯｸ･ｶｰﾄﾞ･ｹﾞｰﾑ	    WATCOM ｼｽﾃﾑ(株)		     *
+*    - FORTRAN 77とWATFOR-77で使われる拡張機能 　　　　　　　　　　　*
+*      の特徴を数多く説明します。　　　　　			     *
+*    - 対話型ｱﾌﾟﾘｹｰｼｮﾝの例 　　　　　　　　　　　　　　　　　　　　　*
+*    - ﾌﾟﾛｸﾞﾗﾑは"保険"またはﾍﾟｱｽﾋﾟﾘｯﾄを扱わない 		     *
+**********************************************************************
+
+*$NOEXTENSIONS
+      INTEGER DECKSZ
+      PARAMETER (DECKSZ=4*52)
+      INTEGER SEED
+      COMMON SEED
+      COMMON /CARDS/DECK
+      CHARACTER*3 DECK( DECKSZ )
+      CHARACTER*3 HAND(8), DEALER(8)
+      INTEGER THAND, TDEAL, CCARD, NCHOICE
+      REAL CASH
+      LOGICAL DONE
+      INTEGER*2 IHRS, IMINS, ISECS, IHDTHS
+*     使用機能
+      CHARACTER*3 DEAL
+      INTEGER TOTAL
+      REAL GETBET
+*
+      CASH = 100.00
+      CALL GETTIM( IHRS, IMINS, ISECS, IHDTHS )
+      SEED = 477 + IMINS - ISECS + IHDTHS
+      CCARD = DECKSZ
+      WHILE( CASH .GT. 0.0 )DO
+	  BET = GETBET( CASH )
+	  IF( BET .EQ. 0 ) QUIT
+	  CASH = CASH - BET
+	  HAND(1) = DEAL( CCARD )
+	  DEALER(1) = DEAL( CCARD )
+	  HAND(2) = DEAL( CCARD )
+	  DEALER(2) = DEAL( CCARD )
+	  NHAND = NDEAL = 2
+	  DONE = .FALSE.
+	  NCHOICE = 0
+	  LOOP
+	      THAND = TOTAL(HAND,NHAND)
+100	      CALL STATUS(HAND, NHAND, DEALER, NDEAL, DONE)
+	      IF( DONE )QUIT
+	      IF( THAND .EQ. 21 ) QUIT
+	      IF( NCHOICE .EQ. 3 ) QUIT
+	      IF( NHAND .EQ. 8 ) QUIT
+	      MAXC = 2
+	      IF( CASH .GE. BET )THEN
+		  MAXC = 3
+	      ENDIF
+	      LOOP
+		  WRITE( *, FMT=101 ) (I,I=1,MAXC)
+101		  FORMAT(/,'ｷｰ ',I2,':そのまま   ',
+     1				 I2,':もう一枚   ',
+     2				 I2,':2倍        ')
+		  READ( *, *, END=100, ERR=100 ) NCHOICE
+	      UNTIL( NCHOICE .GE. 1  .AND.  NCHOICE .LE. MAXC )
+	      IF( NCHOICE .EQ. 1 ) QUIT
+	      IF( NCHOICE .EQ. 3 )THEN
+		      CASH = CASH - BET
+		      BET = BET * 2
+	      ENDIF
+	      NHAND = NHAND + 1
+	      HAND(NHAND) = DEAL( CCARD )
+	  ENDLOOP
+	  IF( NHAND .EQ. 2  .AND.  THAND .EQ. 21 )THEN
+	      PRINT *, 'おめでとう! 1.5倍にしてお支払い致します'
+	      CASH = CASH + BET + BET * 1.5
+	      DONE = .TRUE.
+	  ENDIF
+	  IF( .NOT. DONE )THEN
+	      LOOP
+		  IF( TOTAL(DEALER,NDEAL) .GE. 17 ) QUIT
+		  NDEAL = NDEAL + 1
+		  DEALER(NDEAL) = DEAL( CCARD )
+		  IF( NDEAL .EQ. 8 ) QUIT
+	      ENDLOOP
+	      TDEAL = TOTAL(DEALER,NDEAL)
+	      PRINT 300, THAND, TDEAL,
+     1			 (HAND(I),I=1,NHAND),  ('   ',I=NHAND+1,8),
+     2			 (DEALER(I),I=1,NDEAL),('   ',I=NDEAL+1,8)
+	      IF( TDEAL .GT. 21 )THEN
+		  PRINT *, 'ﾃﾞｲﾗ-の負けです!'
+		  CASH = CASH + BET + BET
+	      ELSEIF( TDEAL .GT. THAND )THEN
+		  PRINT *, 'ﾃﾞｲﾗ-の勝ちです.'
+	      ELSEIF( TDEAL .EQ. THAND )THEN
+		  PRINT *, '引き分け... 勝者なしです'
+		  CASH = CASH + BET
+	      ELSE
+		  PRINT *, 'あなたの勝ちです..'
+		  CASH = CASH + BET + BET
+	      ENDIF
+	  ENDIF
+	  CASH = INT( CASH * 100 ) / 100.0
+      ENDWHILE
+      CALL RESULTS( CASH, 100.0 )
+      STOP
+300   FORMAT(
+     1	/,  ' あなたのｶ-ﾄﾞ          合計: ',I2,
+     2 4X,  '   ﾃﾞｲﾗ-のｶ-ﾄﾞ         合計: ',I2,
+     3	/,2(' '),
+     4	/,2('' ,8(A3,1X),		     ' '),
+     5	/,2(' '))
+      END
+
+      FUNCTION GETBET( CASH )
+      REAL CASH
+      REAL BET
+      CHARACTER*20 RESPNS
+      LOOP
+	  BET = 0.0
+100	  WRITE( *, FMT=101 ) CASH
+101	  FORMAT( /,'貴方の持ち金は $',F8.2,
+     1		  /,'賭けて下さい。辞める時はQUITです: ',$)
+	  READ( 5, FMT='(A)', END=100, ERR=100, IOSTAT=IOS )RESPNS
+	  IF( RESPNS(1:1) .EQ. 'Q'  .OR.  RESPNS(1:1) .EQ. 'q' ) QUIT
+	  READ( RESPNS, *, END=100, ERR=100 ) BET
+	  IF( BET .GT. 0  .AND.  BET .LE. CASH ) QUIT
+	  IF( BET .GT. CASH )THEN
+	      PRINT *, 'そんなに持合わせがないでしょう!'
+	  ELSE
+	      PRINT *, '冗談は止めてください ...'
+	      IF( BET. EQ. 0 )THEN
+		  PRINT *, '賭けるか,先に進んで下さい!'
+	      ELSE
+		  PRINT *, 'ﾏｲﾅｽを賭ける事は出来ません!'
+	      ENDIF
+	  ENDIF
+      ENDLOOP
+      GETBET = BET
+      END
+
+      SUBROUTINE RESULTS( CASH, START )
+      REAL CASH, START
+      IF( CASH .LE. 0.0 )THEN
+	  PRINT *, 'あなたは破産しました!'
+	  PRINT *, '残念ですが銀行へ行ってください.'
+	  PRINT *, '次に幸運がありますように。'
+      ELSE
+	  PRINT 200, CASH
+200	  FORMAT('あなたは$',F8.2,'持って帰ります.')
+	  PROFIT = CASH - START
+	  IF( PROFIT .GT. 0 )THEN
+	      PRINT 201, PROFIT
+201	      FORMAT('あなたは $',F8.2,'儲けました!')
+	      PRINT *, '今度はそううまくはいきませんよ.'
+	  ELSE
+	      PRINT 205, -PROFIT
+205	      FORMAT('あなたは$',F6.2,'負けました.')
+	      PRINT *, 'もう少し勝ったり負けたりして下さい.'
+	      PRINT *, 'それがｹﾞ-ﾑというものです!'
+	  ENDIF
+      ENDIF
+      END
+
+      INTEGER FUNCTION TOTAL( CARDS, NUMCARDS )
+      CHARACTER*3 CARDS(8)
+      INTEGER NUMCARDS
+      TOTAL = 0
+      ZERO = ICHAR('0')
+      DO I = 1, NUMCARDS
+	  IF( CARDS(I)(2:2) .EQ. 'J'
+     1	 .OR. CARDS(I)(2:2) .EQ. 'Q'
+     2	 .OR. CARDS(I)(2:2) .EQ. 'K' )THEN
+	      TOTAL = TOTAL + 10
+	  ELSEIF( CARDS(I)(2:2) .EQ. 'A' )THEN
+	      IF( TOTAL .LT. 11 )THEN
+		  TOTAL = TOTAL + 11
+	      ELSE
+		  TOTAL = TOTAL + 1
+	      ENDIF
+	  ELSEIF( CARDS(I)(1:2) .EQ. '10' )THEN
+	      TOTAL = TOTAL + 10
+	  ELSE
+	      TOTAL = TOTAL + ICHAR( CARDS(I)(2:2) ) - ZERO
+	  ENDIF
+      ENDDO
+      DO I = 1, 2
+	  IF( (CARDS(I)(2:2) .EQ. 'A') .AND. (TOTAL .GT. 21) )THEN
+	      TOTAL = TOTAL - 10
+	  ENDIF
+      ENDDO
+      END
+
+      SUBROUTINE STATUS( HAND, NHAND, DEALER, NDEAL, DONE )
+      CHARACTER*3 HAND(8), DEALER(8)
+      INTEGER NHAND, NDEAL
+      LOGICAL DONE
+      INTEGER TOTAL, THAND
+      THAND = TOTAL(HAND, NHAND)
+      PRINT 300, THAND, (HAND(I),I=1,NHAND),
+     1			('   ',I=NHAND+1,8),
+     2			(DEALER(I),I=2,NDEAL)
+300   FORMAT(
+     1	/, ' あなたのｶ-ﾄﾞ          合計: ',I2,'       ﾃﾞｲﾗ-のｶ-ﾄﾞ'
+     2 ,/, ' '
+     3 ,/, '' ,8(A3,1X),		    '  ?? ',A3,'      '
+     4 ,/, ' ')
+      IF( THAND .GT. 21 )THEN
+	  PRINT *, 'あなたの***負け***です!'
+	  DONE = .TRUE.
+      ENDIF
+      END
+
+      CHARACTER FUNCTION DEAL*3( CARDNO )
+**
+** ﾄﾗﾝﾌﾟのｶｰﾄﾞを配る--ﾄﾗﾝﾌﾟの中からｶｰﾄﾞを1枚取る
+**		      必要ならその前にﾄﾗﾝﾌﾟをよく切る
+**
+      INTEGER DECKSZ
+      PARAMETER (DECKSZ=4*52)
+      CHARACTER*3 DECK( DECKSZ )
+      COMMON /CARDS/DECK
+      INTEGER CARDNO
+      IF( CARDNO .GE. (DECKSZ*.90) )THEN
+	  CALL SHUFFLE
+	  CALL CUT
+	  CARDNO = 2
+      ENDIF
+      DEAL = DECK( CARDNO )
+      CARDNO = CARDNO + 1
+      END
+
+      SUBROUTINE SHUFFLE
+**
+** ｶｰﾄﾞを混ぜ合わせる--52枚1組のﾄﾗﾝﾌﾟをまぜ合わせる
+**
+      INTEGER DECKSZ
+      PARAMETER (DECKSZ=4*52)
+      CHARACTER*3 DECK( DECKSZ )
+      INTEGER SEED
+      COMMON SEED
+      COMMON /CARDS/DECK
+      CHARACTER*3 TEMP
+      PRINT *, 'ｶ-ﾄﾞを混ぜ合わせています...'
+      DO I = 1, DECKSZ
+	  J = URAND( SEED ) * DECKSZ + 1
+	  K = URAND( SEED ) * DECKSZ + 1
+	  IF( J .NE. K )THEN
+	      TEMP = DECK( J )
+	      DECK( J ) = DECK( K )
+	      DECK( K ) = TEMP
+	  ENDIF
+      ENDDO
+      END
+
+      SUBROUTINE CUT
+**
+** ｶｰﾄﾞを切る--ｶｰﾄﾞの山を切る
+**
+      INTEGER DECKSZ
+      PARAMETER (DECKSZ=4*52)
+      CHARACTER*3 DECK( DECKSZ )
+      INTEGER SEED
+      COMMON SEED
+      COMMON /CARDS/DECK
+      CHARACTER*3 TEMP
+100   WRITE( *, FMT=101 ) DECKSZ - 10
+101   FORMAT( 'ｶ-ﾄﾞを切っています...',/,
+     1'10 から',I3,'の間で、でたらめな数字を入れてください: ')
+      READ( *, FMT=102, END=100, ERR=100 ) ICUT
+102   FORMAT( I5 )
+      WHILE( ICUT .LT. 10    .OR.    ICUT .GT. DECKSZ - 10 )DO
+	  ICUT = URAND( SEED ) * DECKSZ - 10
+      ENDWHILE
+      DO I = ICUT, DECKSZ
+	  TEMP = DECK( I - ICUT + 1 )
+	  DECK( I - ICUT + 1 ) = DECK( I )
+	  DECK( I ) = TEMP
+      ENDDO
+      END
+
+      BLOCK DATA
+      INTEGER DECKSZ
+      PARAMETER (DECKSZ=4*52)
+      COMMON /CARDS/DECK
+      CHARACTER*3 DECK( DECKSZ )
+      DATA (DECK(I),I=52*0+1,52*1)/
+     1' AC',' 2C',' 3C',' 4C',' 5C',' 6C',' 7C',' 8C',' 9C','10C',' JC',
+     2' QC',' KC',' AD',' 2D',' 3D',' 4D',' 5D',' 6D',' 7D',' 8D',' 9D',
+     3'10D',' JD',' QD',' KD',' AH',' 2H',' 3H',' 4H',' 5H',' 6H',' 7H',
+     4' 8H',' 9H','10H',' JH',' QH',' KH',' AS',' 2S',' 3S',' 4S',' 5S',
+     5' 6S',' 7S',' 8S',' 9S','10S',' JS',' QS',' KS'/
+      DATA (DECK(I),I=52*1+1,52*2)/
+     1' AC',' 2C',' 3C',' 4C',' 5C',' 6C',' 7C',' 8C',' 9C','10C',' JC',
+     2' QC',' KC',' AD',' 2D',' 3D',' 4D',' 5D',' 6D',' 7D',' 8D',' 9D',
+     3'10D',' JD',' QD',' KD',' AH',' 2H',' 3H',' 4H',' 5H',' 6H',' 7H',
+     4' 8H',' 9H','10H',' JH',' QH',' KH',' AS',' 2S',' 3S',' 4S',' 5S',
+     5' 6S',' 7S',' 8S',' 9S','10S',' JS',' QS',' KS'/
+      DATA (DECK(I),I=52*2+1,52*3)/
+     1' AC',' 2C',' 3C',' 4C',' 5C',' 6C',' 7C',' 8C',' 9C','10C',' JC',
+     2' QC',' KC',' AD',' 2D',' 3D',' 4D',' 5D',' 6D',' 7D',' 8D',' 9D',
+     3'10D',' JD',' QD',' KD',' AH',' 2H',' 3H',' 4H',' 5H',' 6H',' 7H',
+     4' 8H',' 9H','10H',' JH',' QH',' KH',' AS',' 2S',' 3S',' 4S',' 5S',
+     5' 6S',' 7S',' 8S',' 9S','10S',' JS',' QS',' KS'/
+      DATA (DECK(I),I=52*3+1,52*4)/
+     1' AC',' 2C',' 3C',' 4C',' 5C',' 6C',' 7C',' 8C',' 9C','10C',' JC',
+     2' QC',' KC',' AD',' 2D',' 3D',' 4D',' 5D',' 6D',' 7D',' 8D',' 9D',
+     3'10D',' JD',' QD',' KD',' AH',' 2H',' 3H',' 4H',' 5H',' 6H',' 7H',
+     4' 8H',' 9H','10H',' JH',' QH',' KH',' AS',' 2S',' 3S',' 4S',' 5S',
+     5' 6S',' 7S',' 8S',' 9S','10S',' JS',' QS',' KS'/
+      END

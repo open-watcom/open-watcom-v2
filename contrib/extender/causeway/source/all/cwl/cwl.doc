@@ -1,0 +1,146 @@
+You should be able to simply change "WL32" in your link command with "CWL"
+unless you're useing some of WL32's fancier features. Here's the standard
+usage stuff:
+
+CWL [options] objfiles, exefile, mapfile, libfiles, deffile
+
+Options:
+
+ ALP             - Force segment para align.
+ FLAT            - Enable FLAT EXE generation.
+ M[AP]           - Write MAP file.
+ NOD             - No default library search.
+ NOI             - No ignore case of symbols.
+ NOSTACK         - Don't force a stack.
+ NOSTUB          - Don't add stub loader.
+ ST[ACK]:<size>  - Set stack size.
+ SY[M]           - Write SYM file.
+
+CWL will make use of the LIB environment variable when trying to load LIB files,
+looking first in the current directory and then the directories listed in the
+LIB variable.
+
+CWL does support responce files although as I don't use them much this area
+hasn't been tested as well as others. The responce file should be in standard
+responce file format.
+
+It is not possible to specify a LIB file in the OBJ file list.
+
+CWL doesn't support "script" files whatever they are.
+
+CWL will probably link noticably slower than WL32 because I don't do anything
+inteligent with symbol searching etc, just a brute force comparison. I really
+should get something more sofisticated in there but I'll just wait for WL32
+to support FLAT and DLL's :-)
+
+CWL uses the entry CS to decide if a program should be 16 or 32-bit. This is
+not the same as WL32 which makes the program 32-bit if any 32-bit segments
+exist.
+
+
+DEF file
+========
+
+DEF file currently supports INCLUDE, NAME, IMPORT & EXPORT commands.
+
+    INCLUDE file_name
+
+file_name    name of the DEF file to include.
+
+
+    EXPORT function_name
+
+function_name symbol to make available to other modules.
+
+function_name must be declared as a public symbol for the linker to be able to
+export it.
+
+
+    IMPORT [local_name] module_name.function_name|ordinal
+
+local_name    is optional and is the symbol the importing program referances the
+              function by. eg, the one that is declared as extrn. If no local
+              name is specified then "function_name" is used.
+
+module_name   is the name of the module that contains the function. This is NOT
+              the file name. IMPORT module names are resolved by searching DLL &
+              EXE extension files for the correct module name (see NAME).
+
+function_name symbol the function is known by in the EXPORT'ing module. eg, the
+              one that is declared as public.
+
+ordinal       functions can also be imported by number. This is the entry number
+              (decimal, starting at 1) in the EXPORT'ing modules export table to
+              link to. local_name must be specified when useing ordinals
+              otherwise there is no symbolic referance internaly to resolve.
+
+
+In your code, local_name|function_name will need to be declared as external,
+just the same as if the linker was going to pull things together via another
+OBJ or LIB file.
+
+
+    NAME module_name
+
+module_name   symbol by which the module should be identified when resolving
+              IMPORT records in a calling program.
+
+
+ALL names (local_name,function_name & module_name) are case sensitive. At some
+point I'll force them to upper case unless NOI is specified.
+
+If a module has EXPORT's but no NAME command the modules name will be the output
+file name without an extension.
+
+The loader in CauseWay searches the execution path for any DLL or EXE file (in
+that order) that has the right internal module_name. The module_name and file
+name are no relation, a search on *.DLL and *.EXE is performed. The actual file
+might be called "thingy.dll" but it's module name might be "spelling_checker".
+In this case the module should be refered to as "spelling_checker" (without
+the quotes!).
+
+IMPORT'd modules may contain referances to other modules, includeing the program
+that pulled the module in.
+
+IMPORT'd module names can contain a partial path. eg, "DLL\spelling_checker"
+would make the loader look in "execution_path\DLL" for a module with a name of
+"spelling_checker".
+
+When a module is import'd it's entry conditions are different to a strieght
+exec. The entry address is far call'd with [E]AX=0 for initialisation and
+[E]AX=1 for exiting, the code should terminate with a RETF. Usually any modules
+load'd to satisfy an IMPORT will be initialised before anything that is
+dependant on them recieves control but there are circumstances in which this
+isn't the case. If two modules are both dependant on one another, ie. both
+require functions in the other module, whichever one is called first it's
+impossible for the other one to have already been initialised. I'll allow this
+arangement for maximum flexibility but it should be avioded. Be careful what
+IMPORT'd functions your DLL routines (especialy init function) use.
+
+If you want to save some memory in DLL modules, use the /NOSTUB and /NOSTACK
+options.
+
+CWD won't show source/symbols for calls into an IMPORT'd module. This will be
+resolved sometime soon.
+
+It is the callers responsibility to make sure the IMPORT'd function/module
+calling conventions match the callers. ie, the loader will quite happily load
+a 16-bit module to resolve an IMPORT in a 32-bit program. If the IMPORT'ing
+program does a 16-bit far call then things will work just fine but a 32-bit
+call would fail unless the 16-bit module has a 32-bit RET! Mix bit'ness at
+your own expense.
+
+If both the IMPORT'ing module and the IMPORT'd module use the FLAT memory model
+then near 32-bit calls and data referances work great between the two. Treat
+them as if they are just different OBJ files with public's & extrn's.
+
+Importing by function_name might be quite slow if the symbols are referanced a
+lot. You should use ordinal to speed things up, local_name will still help you
+figure out what's going on when you look back at the DEF file :-)
+
+module_name referances are automaticaly converted to ordinals in an internal
+list which will only be processed once at load time.
+
+
+
+

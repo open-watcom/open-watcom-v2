@@ -31,18 +31,17 @@
 
 
 ifdef __386__
- include mdef.inc
  .387
 else
- include mdef.inc
  .8087
 endif
+include mdef.inc
 include struct.inc
-include math387.inc
-
-        xref            IF@DASIN
+include math87.inc
 
         modstart        asinl87
+
+        xref            IF@DASIN
 
         xdefp   asinl_          ; long double asinl( long double x )
 

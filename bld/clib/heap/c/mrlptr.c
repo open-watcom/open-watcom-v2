@@ -34,6 +34,6 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned (*__get_minreal_ptr()) {
-    return &__minreal;
+_WCRTLINK unsigned (*__get_minreal_ptr( void )) {
+    return( &__minreal );
 }

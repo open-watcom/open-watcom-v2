@@ -30,14 +30,22 @@
 ;*****************************************************************************
 
 
-ifdef _386
+include mdef.inc
+include struct.inc
+
+ifdef __386__
 
     .386                ; allow generation of 386 code
+    _eax equ eax        ; map 32-bit registers to 32-bit
+    _ebx equ ebx
+    _ecx equ ecx
+    _edx equ edx
+    _esi equ esi
+    _edi equ edi
+    _ebp equ ebp
+    _movzx equ movzx
     extptr      macro var
                 extrn var : dword
-                endm
-    func_table  macro table,list
-                table dd list
                 endm
     ifdef _QNX
         doicall     macro func
@@ -57,28 +65,22 @@ ifdef _386
 
 else
 
-    eax equ <ax>        ; map 32-bit registers to 16-bit
-    ebx equ <bx>
-    ecx equ <cx>
-    edx equ <dx>
-    esi equ <si>
-    edi equ <di>
-    ebp equ <bp>
-    movzx equ <mov>
+    _eax equ ax        ; map 32-bit registers to 16-bit
+    _ebx equ bx
+    _ecx equ cx
+    _edx equ dx
+    _esi equ si
+    _edi equ di
+    _ebp equ bp
+    _movzx equ mov
     extptr      macro var
                 extrn var : word
                 endm
     doicall     macro func
                 call dword ptr func
                 endm
-    func_table  macro table,list
-                table dw list
-                endm
     _retf       macro
                 retf
                 endm
 
 endif
-
-include mdef.inc
-include struct.inc

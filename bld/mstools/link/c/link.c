@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft LINK clone tool.
 *
 ****************************************************************************/
 
@@ -62,42 +61,6 @@
 #define LINK_SUCCESS            0
 #define LINK_NOACTION           (-1)
 #define LINK_ERROR              (-2)
-
-
-/*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    CmdLine *           cmdLine;
-    int                 itemsParsed;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    cmdLine = InitCmdLine( LINK_NUM_SECTIONS );
-    SetDefaultFile( TYPE_OBJ_FILE, "object" );
-    AllowTypeFile( TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE,
-                   TYPE_RBJ_FILE, TYPE_RS_FILE, TYPE_EXP_FILE,
-                   TYPE_INVALID_FILE );
-
-    /*** Parse the command line and translate to Watcom options ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed == 0 ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-    OptionsTranslate( &cmdOpts, cmdLine );
-
-    /*** Spawn the linker ***/
-    if( link( &cmdOpts, cmdLine )  ==  LINK_NOACTION ) {
-        FatalError( "Nothing to do!" );
-    }
-    FiniParse( &cmdOpts );
-    exit( EXIT_SUCCESS );
-}
 
 
 /*
@@ -198,4 +161,40 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     DestroyCmdLine( spawnCmdLine );
 
     return( LINK_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    CmdLine *           cmdLine;
+    int                 itemsParsed;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    cmdLine = InitCmdLine( LINK_NUM_SECTIONS );
+    SetDefaultFile( TYPE_OBJ_FILE, "object" );
+    AllowTypeFile( TYPE_OBJ_FILE, TYPE_LIB_FILE, TYPE_RES_FILE,
+                   TYPE_RBJ_FILE, TYPE_RS_FILE, TYPE_EXP_FILE,
+                   TYPE_INVALID_FILE );
+
+    /*** Parse the command line and translate to Watcom options ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed == 0 ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+    OptionsTranslate( &cmdOpts, cmdLine );
+
+    /*** Spawn the linker ***/
+    if( link( &cmdOpts, cmdLine )  ==  LINK_NOACTION ) {
+        FatalError( "Nothing to do!" );
+    }
+    FiniParse( &cmdOpts );
+    exit( EXIT_SUCCESS );
 }

@@ -1,0 +1,9 @@
+/*
+ *  pshpack1.h  Push 1-byte packing
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#pragma pack( push, 1 )

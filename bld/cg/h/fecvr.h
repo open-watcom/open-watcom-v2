@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-#define CGCALLBACKDEF( a, b, c )        #define a (FEFuncTable->##a)
+#define CGCALLBACKDEF( a, b, c ) DEFINE_PLACEHOLDER a ( FEFuncTable -> a )
 #include "cgfertns.h"

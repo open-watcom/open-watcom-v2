@@ -30,23 +30,22 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 
 /*
  * YankLineRange - yank a specified line range in current file
  */
-int YankLineRange( linenum s, linenum e )
+vi_rc YankLineRange( linenum s, linenum e )
 {
-    int i;
-    fcb *s1fcb,*e1fcb;
+    vi_rc       rc;
+    fcb_list    fcblist;
 
-    i = GetCopyOfLineRange( s,e, &s1fcb, &e1fcb );
-    if( i ) {
-        return( i );
+    rc = GetCopyOfLineRange( s, e, &fcblist );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    AddFcbsToSavebuf( s1fcb,e1fcb, FALSE );
-    LineYankMessage( s,e );
+    AddFcbsToSavebuf( &fcblist, FALSE );
+    LineYankMessage( s, e );
     return( ERR_NO_ERR );
 
 } /* YankLineRange */
@@ -54,13 +53,14 @@ int YankLineRange( linenum s, linenum e )
 /*
  * GetCopyOfLineRange - yank a specified line range in current file
  */
-int GetCopyOfLineRange( linenum s, linenum e, fcb **s1fcb, fcb **e1fcb )
+vi_rc GetCopyOfLineRange( linenum s, linenum e, fcb_list *fcblist )
 {
-    int         i,j,k;
     file        *cfile;
     linenum     ll;
-    fcb         *sfcb,*efcb;
-    fcb         *head=NULL,*tail=NULL;
+    fcb         *sfcb, *efcb;
+    vi_rc       rc;
+    vi_rc       rc1;
+    vi_rc       rc2;
 
     /*
      * check line range
@@ -68,7 +68,7 @@ int GetCopyOfLineRange( linenum s, linenum e, fcb **s1fcb, fcb **e1fcb )
     if( EditFlags.Modeless == FALSE ) {
         UnselectRegion();
     }
-    if( s<1 ) {
+    if( s < 1 ) {
         return( ERR_NO_SUCH_LINE );
     }
     if( s > e ) {
@@ -80,82 +80,82 @@ int GetCopyOfLineRange( linenum s, linenum e, fcb **s1fcb, fcb **e1fcb )
     /*
      * find start and ending fcbs
      */
-    i = FindFcbWithLine( s, CurrentFile, &sfcb );
-    if( i ) {
-        return( i );
+    rc = FindFcbWithLine( s, CurrentFile, &sfcb );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    i = FindFcbWithLine( e+1, CurrentFile, &efcb );
-    if( i ) {
-        if( i != ERR_NO_SUCH_LINE ) {
-            return( i );
+    rc = FindFcbWithLine( e + 1, CurrentFile, &efcb );
+    if( rc != ERR_NO_ERR ) {
+        if( rc != ERR_NO_SUCH_LINE ) {
+            return( rc );
         }
         if( IsPastLastLine( e ) ) {
             return( ERR_NO_SUCH_LINE );
         }
-        i = FindFcbWithLine( e, CurrentFile, &efcb );
-        if( i ) {
-            return( i );
+        rc = FindFcbWithLine( e, CurrentFile, &efcb );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
 
     /*
      * duplicate this list
      */
-    *e1fcb = efcb->next;
+    fcblist->tail = efcb->next;
     efcb->next = NULL;
-    CreateDuplicateFcbList( sfcb, &head, &tail );
-    efcb->next = *e1fcb;
     cfile = FileAlloc( NULL );
-    cfile->fcb_head = head;
-    cfile->fcb_tail = tail;
+    cfile->fcbs.head = NULL;
+    cfile->fcbs.tail = NULL;
+    CreateDuplicateFcbList( sfcb, &cfile->fcbs );
+    efcb->next = fcblist->tail;
 
     /*
      * split head and tail fcbs
      */
-    k = SplitFcbAtLine( s, cfile, head );
-    if( k > 0 ) {
-        return( k );
+    rc1 = SplitFcbAtLine( s, cfile, cfile->fcbs.head );
+    if( rc1 > 0 ) {
+        return( rc1 );
     }
-    i = FindFcbWithLine( e+1, cfile, &efcb );
-    if( i ) {
-        if( i != ERR_NO_SUCH_LINE )  {
-            return( i );
+    rc = FindFcbWithLine( e + 1, cfile, &efcb );
+    if( rc != ERR_NO_ERR ) {
+        if( rc != ERR_NO_SUCH_LINE )  {
+            return( rc );
         }
-        i = FindFcbWithLine( e, cfile, &efcb );
-        if( i ) {
-            return( i );
+        rc = FindFcbWithLine( e, cfile, &efcb );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
-    j = SplitFcbAtLine( e+1, cfile, efcb );
-    if( j > 0 ) {
-        return( j );
+    rc2 = SplitFcbAtLine( e + 1, cfile, efcb );
+    if( rc2 > 0 ) {
+        return( rc2 );
     }
 
     /*
      * select appropriate part of split fcbs
      */
-    if( k== NO_SPLIT_CREATED_AT_START_LINE ) {
-        *s1fcb = head;
+    if( rc1 == NO_SPLIT_CREATED_AT_START_LINE ) {
+        fcblist->head = cfile->fcbs.head;
     } else {
-        *s1fcb = head->next;
-        FreeEntireFcb( head );
+        fcblist->head = cfile->fcbs.head->next;
+        FreeEntireFcb( cfile->fcbs.head );
     }
-    if( j != NO_SPLIT_CREATED_AT_START_LINE ) {
-        *e1fcb = efcb;
+    if( rc2 != NO_SPLIT_CREATED_AT_START_LINE ) {
+        fcblist->tail = efcb;
     } else {
-        *e1fcb = efcb->prev;
+        fcblist->tail = efcb->prev;
         FreeEntireFcb( efcb );
-        (*e1fcb)->next = NULL;
+        fcblist->tail->next = NULL;
     }
 
     /*
      * tidy up and return
      */
-    if( (*e1fcb)->next != NULL ) {
-        FreeEntireFcb( (*e1fcb)->next );
+    if( fcblist->tail->next != NULL ) {
+        FreeEntireFcb( fcblist->tail->next );
     }
-    (*s1fcb)->prev = (*e1fcb)->next = NULL;
-    sfcb = *s1fcb;
+    fcblist->head->prev = fcblist->tail->next = NULL;
+    sfcb = fcblist->head;
     while( sfcb != NULL ) {
         sfcb->f = NULL;
         sfcb = sfcb->next;
@@ -170,11 +170,14 @@ int GetCopyOfLineRange( linenum s, linenum e, fcb **s1fcb, fcb **e1fcb )
  */
 void LineYankMessage( linenum s, linenum e )
 {
-    #ifdef __WIN__
-        if( LastSavebuf == 0 ) {
-            Message1( "%l lines copied into the clipboard",e-s+1 );
-        } else
-    #endif
-    Message1( "%l lines yanked into buffer %c",e-s+1, LastSavebuf );
+#ifdef __WIN__
+    if( LastSavebuf == 0 ) {
+        Message1( "%l lines copied into the clipboard", e - s + 1 );
+    } else {
+#endif
+        Message1( "%l lines yanked into buffer %c", e - s + 1, LastSavebuf );
+#ifdef __WIN__
+    }
+#endif
 
 } /* LineYankMessage */

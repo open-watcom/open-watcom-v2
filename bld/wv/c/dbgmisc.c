@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous odds and ends that don't have a home.
 *
 ****************************************************************************/
 
@@ -44,58 +43,64 @@
 #include "dbglit.h"
 #include "i64.h"
 
-extern char             *StrCopy(char *,char *);
-extern unsigned int     ReqExpr(void);
-extern unsigned_64      ReqU64Expr(void);
+
+extern char             *StrCopy( char *, char * );
+extern unsigned int     ReqExpr( void );
+extern unsigned_64      ReqU64Expr( void );
 extern void             ReqMemAddr( memory_expr ,address *);
 extern unsigned         OptExpr( unsigned );
-extern unsigned int     ScanCmd(char *);
-extern void             DebugExit(void);
-extern void             ReqEOC(void);
-extern bool             ScanQuote(char **,unsigned int *);
-extern bool             ScanItem( bool, char **,unsigned int *);
-extern void             Scan(void);
-extern bool             ScanEOC(void);
+extern unsigned int     ScanCmd( char * );
+extern void             DebugExit( void );
+extern void             ReqEOC( void );
+extern bool             ScanQuote( char **, unsigned int * );
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern void             Scan( void );
+extern bool             ScanEOC( void );
 extern unsigned         Go( bool );
-extern void             PopEntry(void);
-extern void             NormalExpr(void);
-extern cmd_list         *AllocCmdList(char *,unsigned int );
-extern void             FreeCmdList(cmd_list *);
-extern char             *GetCmdEntry(char *,int ,char *);
+extern void             PopEntry( void );
+extern void             NormalExpr( void );
+extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern void             FreeCmdList( cmd_list * );
+extern char             *GetCmdEntry( char *, int , char * );
 extern char             *GetCmdName( int );
-extern void             FlipScreen(void);
+extern void             FlipScreen( void );
 extern void             DbgUpdate( update_list );
-extern void             PushCmdList(cmd_list *);
-extern address          GetRegIP(void);
-extern void             RecordSetRegIP(address );
-extern char             *ScanPos(void);
-extern char             *ReScan(char *);
-extern void             DUIWndUser(void);
+extern void             PushCmdList( cmd_list * );
+extern address          GetRegIP( void );
+extern void             RecordSetRegIP( address );
+extern char             *ScanPos( void );
+extern char             *ReScan( char * );
+extern void             DUIWndUser( void );
 extern unsigned         RemoteReadUserKey( unsigned );
-extern void             ReadDbgRegs();
-extern void             WriteDbgRegs();
+extern void             ReadDbgRegs( void );
+extern void             WriteDbgRegs( void );
 extern dtid_t           RemoteGetNextThread( dtid_t, unsigned * );
-extern dtid_t           RemoteSetThreadWithErr(dtid_t, unsigned *);
+extern bool             HaveRemoteRunThread( void );
+extern dtid_t           RemoteGetNextRunThread( dtid_t tid );
+extern void             RemoteUpdateRunThread( thread_state *thd );
+extern dtid_t           RemoteSetThreadWithErr( dtid_t, unsigned * );
+extern dtid_t           RemoteSetRunThreadWithErr( dtid_t, unsigned * );
 extern void             RemoteThdName( dtid_t, char * );
+extern void             RemoteRunThdName( dtid_t, char * );
 extern void             TraceKill( void );
 extern unsigned         SetCurrRadix( unsigned );
-extern address          ReturnAddress();
+extern address          ReturnAddress( void );
 extern void             SetCodeDot( address );
-extern void             ChkExpr(void);
+extern void             ChkExpr( void );
 extern bool             AdvMachState( int );
-extern void             CopyInpFlags();
-extern void             FlushEOC();
+extern void             CopyInpFlags( void );
+extern void             FlushEOC( void );
 extern void             RecordCommand( char *startpos, int cmd );
-extern void             RawScanInit();
-extern char             RawScanChar();
-extern void             RawScanAdvance();
-extern void             RawScanFini();
+extern void             RawScanInit( void );
+extern char             RawScanChar( void );
+extern void             RawScanAdvance( void );
+extern void             RawScanFini( void );
 extern char             *CnvULongHex( unsigned long value, char *p );
 extern int              AddrComp( address a, address b );
 
 extern char             *CmdStart;
-extern brk              UserTmpBrk;
-extern brk              DbgTmpBrk;
+extern brkp             UserTmpBrk;
+extern brkp             DbgTmpBrk;
 extern char             *TxtBuff;
 extern tokens           CurrToken;
 extern char             OnOffNameTab[];
@@ -132,7 +137,7 @@ void Flip( unsigned wait )
     }
 }
 
-void ProcFlip()
+void ProcFlip( void )
 {
     char        *old;
     unsigned    wait;
@@ -162,7 +167,7 @@ void ProcFlip()
 }
 
 
-void ConfigFlip()
+void ConfigFlip( void )
 {
     char *p;
 
@@ -177,7 +182,7 @@ void ConfigFlip()
  * ProcRemark - process a remark command
  */
 
-void ProcRemark()
+void ProcRemark( void )
 {
     char        c;
 
@@ -199,7 +204,7 @@ void ProcRemark()
  * ProcDo - process do command
  */
 
-void ProcDo()
+void ProcDo( void )
 {
     NormalExpr();
     PopEntry();
@@ -207,7 +212,7 @@ void ProcDo()
 }
 
 
-void ProcAssign()
+void ProcAssign( void )
 {
     char        *startpos;
 
@@ -232,6 +237,15 @@ static void SetTempBreak( address addr )
 }
 
 
+void GoToAddr( address addr )
+{
+    if( IS_NIL_ADDR( addr ) ) return;
+    SetTempBreak( addr );
+    Go( TRUE );
+    NullStatus( &UserTmpBrk );
+}
+
+
 void StepIntoFunction( char *func )
 {
     char        *old;
@@ -253,16 +267,7 @@ void SkipToAddr( address addr )
 }
 
 
-void GoToAddr( address addr )
-{
-    if( IS_NIL_ADDR( addr ) ) return;
-    SetTempBreak( addr );
-    Go( TRUE );
-    NullStatus( &UserTmpBrk );
-}
-
-
-void GoToReturn()
+void GoToReturn( void )
 {
     address     ra;
 
@@ -279,7 +284,7 @@ void GoToReturn()
  * ProcGo -- process go command
  */
 
-void ProcGo()
+void ProcGo( void )
 {
     address     start;
     address     stop;
@@ -374,7 +379,7 @@ void ProcGo()
  * ProcSkip -- process skip command
  */
 
-void ProcSkip()
+void ProcSkip( void )
 {
     address    start;
 
@@ -387,7 +392,7 @@ void ProcSkip()
  * ProcIf -- process if command
  */
 
-void ProcIf()
+void ProcIf( void )
 {
     char                *start;
     unsigned            len;
@@ -436,7 +441,7 @@ void ProcIf()
  * ProcWhile -- process While command
  */
 
-void ProcWhile()
+void ProcWhile( void )
 {
     char                *start;
     unsigned            len;
@@ -462,7 +467,7 @@ void ProcWhile()
  * ProcError -- proccess error command
  */
 
-void ProcError()
+void ProcError( void )
 {
     char        *start;
     unsigned    len;
@@ -479,7 +484,7 @@ void ProcError()
  * ProcQuit -- process quit command
  */
 
-void ProcQuit()
+void ProcQuit( void )
 {
     ReqEOC();
     DebugExit();
@@ -507,6 +512,50 @@ static void FormThdState( thread_state *thd, char *buff )
     StrCopy( thd->name, p );
 }
 
+
+void MakeThdCurr( thread_state *thd )
+{
+    unsigned    err;
+
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
+    // NYI - PUI - record the thread change?
+    WriteDbgRegs();
+    if( RemoteSetThreadWithErr( thd->tid, &err ) == 0 ) {
+        Error( ERR_NONE, LIT( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    }
+    DbgRegs->tid = thd->tid;
+    ReadDbgRegs();
+    SetCodeDot( GetRegIP() );
+    DbgUpdate( UP_REG_CHANGE | UP_CSIP_CHANGE | UP_THREAD_STATE );
+}
+
+
+void MakeRunThdCurr( thread_state *thd )
+{
+    unsigned    err;
+
+    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
+    if( RemoteSetRunThreadWithErr( thd->tid, &err ) == 0 ) {
+        Error( ERR_NONE, LIT( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
+    }
+    DbgRegs->tid = thd->tid;
+    ReadDbgRegs();
+    SetCodeDot( GetRegIP() );
+    DbgUpdate( UP_REG_CHANGE | UP_CSIP_CHANGE | UP_THREAD_STATE );
+}
+
+
+dtid_t RemoteSetThread( dtid_t tid )
+{
+    unsigned            err;
+
+    if( HaveRemoteRunThread() )
+        return( RemoteSetRunThreadWithErr( tid, &err ) );
+    else
+        return( RemoteSetThreadWithErr( tid, &err ) );
+}
+
+
 static void ThdCmd( thread_state *thd, enum thread_cmds cmd )
 {
     unsigned    up;
@@ -531,27 +580,11 @@ static void ThdCmd( thread_state *thd, enum thread_cmds cmd )
     DbgUpdate( up );
 }
 
+
 bool IsThdCurr( thread_state *thd )
 {
     return( DbgRegs->tid == thd->tid );
 }
-
-void MakeThdCurr( thread_state *thd )
-{
-    unsigned    err;
-
-    if( !AdvMachState( ACTION_THREAD_CHANGE ) ) return;
-    // NYI - PUI - record the thread change?
-    WriteDbgRegs();
-    if( RemoteSetThreadWithErr( thd->tid, &err ) == 0 ) {
-        Error( ERR_NONE, LIT( ERR_NO_MAKE_CURR_THREAD ), thd->tid, err );
-    }
-    DbgRegs->tid = thd->tid;
-    ReadDbgRegs();
-    SetCodeDot( GetRegIP() );
-    DbgUpdate( UP_REG_CHANGE | UP_CSIP_CHANGE | UP_THREAD_STATE );
-}
-
 
 
 static thread_state     *AddThread( dtid_t tid, unsigned state )
@@ -577,7 +610,10 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
         }
         owner = &thd->link;
     }
-    RemoteThdName( tid, name );
+    if( HaveRemoteRunThread() )
+        RemoteRunThdName( tid, name );
+    else
+        RemoteThdName( tid, name );
     _Alloc( thd, sizeof( thread_state ) + strlen( name ) );
     if( thd == NULL ) return( NULL );
     thd->link = *owner;
@@ -585,7 +621,27 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
     strcpy( thd->name, name );
     thd->tid = tid;
     thd->state = state;
+    thd->cs = 0;
+    thd->eip = 0;
+    thd->extra[0] = 0;
     return( thd );
+}
+
+
+dtid_t GetNextTID( void )
+/***********************/
+{
+    thread_state    *thd;
+
+    for( thd = HeadThd; thd != NULL; thd = thd->link ) {
+    if( IsThdCurr( thd ) ) {
+        thd = thd -> link;
+        break;
+    }
+    }
+    if( thd == NULL ) thd = HeadThd;
+    if( thd == NULL ) return( 0 );
+    return( thd->tid );
 }
 
 
@@ -608,7 +664,7 @@ void NameThread( dtid_t tid, char *name )
     }
 }
 
-static void MarkThreadsDead()
+static void MarkThreadsDead( void )
 {
     thread_state    *thd;
 
@@ -617,7 +673,7 @@ static void MarkThreadsDead()
     }
 }
 
-static void KillDeadThreads()
+static void KillDeadThreads( void )
 {
     thread_state    **owner;
     thread_state    *thd;
@@ -635,21 +691,44 @@ static void KillDeadThreads()
     }
 }
 
-void CheckForNewThreads( bool set_exec )
+static void RefreshThreads( bool set_exec )
 {
     dtid_t              tid;
     thread_state        *thd;
     unsigned            state;
 
-    if( set_exec ) ExecThd = NULL;
     tid = 0;
-    MarkThreadsDead();
     for( ;; ) {
         tid = RemoteGetNextThread( tid, &state );
         if( tid == 0 ) break;
         thd = AddThread( tid, state );
         if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
     }
+}
+
+static void RefreshRunThreads( bool set_exec )
+{
+    dtid_t              tid;
+    thread_state        *thd;
+
+    tid = 0;
+    for( ;; ) {
+        tid = RemoteGetNextRunThread( tid );        
+        if( tid == 0 ) break;
+        thd = AddThread( tid, 0 );
+        RemoteUpdateRunThread( thd );
+        if( set_exec && thd != NULL && thd->tid == DbgRegs->tid ) ExecThd = thd;
+    }
+}
+
+void CheckForNewThreads( bool set_exec )
+{
+    if( set_exec ) ExecThd = NULL;
+    MarkThreadsDead();
+    if( HaveRemoteRunThread() ) 
+        RefreshRunThreads( set_exec );
+    else
+        RefreshThreads( set_exec );
     KillDeadThreads();
     _SwitchOff( SW_THREAD_EXTRA_CHANGED );
 }
@@ -665,7 +744,7 @@ thread_state   *FindThread( dtid_t tid )
 }
 
 
-void ProcThread()
+void ProcThread( void )
 {
     enum thread_cmds cmd;
     dtid_t          tid;
@@ -712,7 +791,7 @@ void ProcThread()
     }
 }
 
-void FreeThreads()
+void FreeThreads( void )
 {
     thread_state    *thd;
 

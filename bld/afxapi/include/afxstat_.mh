@@ -1,0 +1,89 @@
+/*
+ * afxstat_.h   Application Framework state structures
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXSTATE_H__
+#define __AFXSTATE_H__
+
+:include readonly.sp
+
+#include <afxtls_.h>
+
+// Forward declarations
+class CControlBar;
+class CToolTipCtrl;
+class CWinApp;
+class CWinThread;
+class CWnd;
+#ifdef _AFXDLL
+class CDynLinkLibrary;
+#endif
+
+// CHandleMap is an internal class not accessible to users.
+class CHandleMap;
+
+class _AFXLINK AFX_MODULE_THREAD_STATE : public CNoTrackObject {
+public:
+    AFX_MODULE_THREAD_STATE();
+    virtual ~AFX_MODULE_THREAD_STATE();
+    
+    CWinThread      *m_pCurrentWinThread;
+    CHandleMap      *m_pmapHWND;
+    CHandleMap      *m_pmapHMENU;
+    CHandleMap      *m_pmapHDC;
+    CHandleMap      *m_pmapHGDIOBJ;
+    CHandleMap      *m_pmapHIMAGELIST;
+    CToolTipCtrl    *m_pToolTip;
+    CWnd            *m_pLastHit;
+    INT_PTR         m_nLastHit;
+    TOOLINFO        *m_pLastInfo;
+    INT_PTR         m_nLastStatus;
+    CControlBar     *m_pLastStatus;
+};
+
+class _AFXLINK AFX_MODULE_STATE : public CNoTrackObject {
+public:
+    AFX_MODULE_STATE( BOOL bDLL );
+    virtual ~AFX_MODULE_STATE();
+    
+    CWinApp                                 *m_pCurrentWinApp;
+    HINSTANCE                               m_hCurrentInstanceHandle;
+    HINSTANCE                               m_hCurrentResourceHandle;
+    LPCTSTR                                 m_lpszCurrentAppName;
+    BYTE                                    m_bDLL;
+    CTypedSimpleList< CRuntimeClass * >     m_classList;
+    CString                                 m_strUnregisterList;
+    void                                    (PASCAL *m_pfnFilterToolTipMessage)( MSG *, CWnd * );
+#ifdef _AFXDLL
+    CTypedSimpleList< CDynLinkLibrary * >   m_libraryList;
+#endif
+    CThreadLocal< AFX_MODULE_THREAD_STATE > m_thread;
+};
+
+// Temporary class name maximum size
+#define _AFX_TEMP_CLASS_NAME_SIZE   96
+
+class _AFXLINK _AFX_THREAD_STATE : public CNoTrackObject {
+public:
+    _AFX_THREAD_STATE();
+    
+    AFX_MODULE_STATE    *m_pModuleState;
+    CWnd                *m_pWndInit;
+    CWnd                *m_pAlternateWndInit;
+    DWORD               m_dwPropStyle;
+    DWORD               m_dwPropExStyle;
+    HHOOK               m_hHookOldCbtFilter;
+    HHOOK               m_hHookOldMsgFilter;
+    MSG                 m_msgCur;
+    HWND                m_hTrackingWindow;
+    HMENU               m_hTrackingMenu;
+    TCHAR               m_szTempClassName[_AFX_TEMP_CLASS_NAME_SIZE];
+};
+
+_AFXLINK AFX_MODULE_STATE * AFXAPI          AfxGetModuleState();
+_AFXLINK AFX_MODULE_THREAD_STATE * AFXAPI   AfxGetModuleThreadState();
+_AFXLINK _AFX_THREAD_STATE * AFXAPI         AfxGetThreadState();
+
+#endif /* __AFXSTATE_H__ */

@@ -36,3 +36,22 @@
 #define LOG_BUFF        256
 
 void OWLENTRY OWLLog( owl_file_handle file, char *fmt, ... ) {
+//************************************************************
+
+    va_list     arglist;
+    char        buffer[ LOG_BUFF ];
+
+
+    if( file->log != NULL ) {
+        va_start( arglist, fmt );
+        vsprintf( buffer, fmt, arglist );
+        _ClientWriteFile( file, file->log, buffer, strlen( buffer ) );
+        va_end( arglist );
+    }
+}
+
+void OWLENTRY OWLLogEnable( owl_file_handle file, owl_client_file client_handle ) {
+//*********************************************************************************
+
+    file->log = client_handle;
+}

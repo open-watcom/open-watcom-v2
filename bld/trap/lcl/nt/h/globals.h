@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Global definitions for Win32 trap file.
 *
 ****************************************************************************/
 
@@ -60,6 +59,8 @@ TRPGLOBAL DWORD                 LastDebugEventTid;
 TRPGLOBAL BOOL                  BreakOnKernelMessage;
 TRPGLOBAL BOOL                  PendingProgramInterrupt;
 TRPGLOBAL char                  *MsgPrefix TRPGLOBINIT( NULL );
+TRPGLOBAL BOOL                  Supporting8ByteBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
+TRPGLOBAL BOOL                  SupportingExactBreakpoints TRPGLOBINIT( 0 );    /* Start disabled */
 
 #ifdef WOW
 TRPGLOBAL wow_info              WOWAppInfo;
@@ -73,6 +74,44 @@ TRPGLOBAL
 HANDLE
 (WINAPI*pOpenThread)(
     DWORD
+);
+
+TRPGLOBAL
+DWORD
+(WINAPI *pQueryDosDevice)(
+    LPCTSTR         lpDeviceName,
+    LPTSTR          lpTargetPath,
+    DWORD           ucchMax
+);
+
+TRPGLOBAL
+DWORD 
+(WINAPI *pGetMappedFileName)(
+    HANDLE          hProcess,
+    LPVOID          lpv,
+    LPTSTR          lpFilename,
+    DWORD           nSize
+);
+
+TRPGLOBAL
+HANDLE 
+(WINAPI *pCreateToolhelp32Snapshot)(
+    DWORD           dwFlags,
+    DWORD           th32ProcessID
+);
+
+TRPGLOBAL
+BOOL 
+(WINAPI *pModule32First)(
+    HANDLE          hSnapshot,
+    LPMODULEENTRY32 lpme
+);
+
+TRPGLOBAL
+BOOL 
+(WINAPI *pModule32Next)(
+    HANDLE          hSnapshot,
+    LPMODULEENTRY32 lpme
 );
 
 TRPGLOBAL
@@ -132,6 +171,15 @@ BOOL
 (WINAPI*pVDMSetThreadContext)(
     LPDEBUG_EVENT   lpDebugEvent,
     LPVDMCONTEXT    lpVDMContext
+);
+
+TRPGLOBAL
+BOOL
+(WINAPI*pVDMGetThreadSelectorEntry)(
+    HANDLE          hProcess,
+    HANDLE          hThread,
+    WORD            wSelector,
+    LPVDMLDT_ENTRY  lpSelectorEntry
 );
 #undef TRPGLOBAL
 #undef TRPGLOBINIT

@@ -1,0 +1,248 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+3.5 - SUNSYS Setup - DPMI Kernel Configuration Window
+<br></font></b></p>
+
+
+<img src="../../img/w5.png" alt="DPMI Kernel Configuration Window - example">
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>DPMI Kernel Configuration Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	The  DPMI Kernel Configuration Window allows you to change DOS/32 Advanced built-in
+	DPMI  Kernel configuration. Please note that  DOS/32 Advanced built-in DPMI server
+	will  be installed when running under "Clean", XMS and VCPI system softwares
+	only.  This  means  that the options specified  in  this  window will not be
+	applicable when running under Windows, OS/2 or any other DPMI hosted system.
+	</font></td>
+</tr>
+</table>
+
+
+<p><br></p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>VCPI/DPMI Detection Mode</b> <i>Default: VCPI/DPMI</i><br>
+Controls the order of VCPI/DPMI detection. When set to VCPI/DPMI, the DOS
+Extender will look for a VCPI server first, and if found, initialize
+and  use  it,  even  though  a DPMI host  may  be  present  in the system. The
+advantage  of doing so is that the VCPI servers are usually faster than DPMI
+hosts.  On the other hand, a DPMI host may always deny the presence of VCPI,
+and in that case the DPMI will be detected and initialized instead.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Internal Exception Control</b> <i>Default: ON</i><br>
+When turned on, DOS/32 Advanced will trap down the exceptions thrown in a
+protected  mode  program and report them to  the  user. When turned off, the
+user's  application  will be responsible for  exception handling. Note that when
+the  internal  exception control is turned  off, the interrupts installed by
+DPMI  functions  0203h and 0205h will be  installed as is, that is they will
+not  be buffered by the DOS Extender  but set directly in the IDT (Interrupt
+Descriptor  Table).  Furthermore,  the real mode  IRQ  callbacks will not be
+installed automatically by the DOS Extender if this option is turned off.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>VCPI SmartPage Allocation Mode</b> <i>Default: ON</i><br>
+When  this option is turned on, the  DOS Extender will try to be a little
+smart  when  allocating  Page Tables  under VCPI.  It  will  first  retrieve  the
+information  about  how much memory is  available in the first VCPI Page Table,
+which  always  maps  the  first  four  megabytes  of  memory,  including the
+conventional memory under 1MB, and then map the extended memory it allocated
+into the free pages in this same Page Table. This way, if you have 16MB of
+memory   in  your  computer,  and  3MB  of  that memory  are  used  by,  say
+<i>smartdrv.exe</i>  and  other TSRs, the DOS  Extender  will allocate only three
+additional  Page Tables to map the rest of the memory, ie 13MB, into them and
+into  VCPI  first  Page Table.  This  will  in  most  cases  save  you  4KB of
+conventional (DOS) memory when  running under VCPI.  Turn this option off if
+you  are  having  problems with a VCPI  server  or if you want your extended
+memory  to start at 4MB under VCPI  (when turned off, the DOS Extender will
+not  modify  the first Page Table and  will  start mapping the physical memory
+into linear memory at 4MB, as does DOS/4GW).
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>VCPI+XMS Allocation Scheme</b> <i>Default: ON</i><br>
+When turned on, the DOS Extender  will allocate the extended memory from the both
+VCPI and XMS memory pools, when running under the VCPI system software.
+That  is, when you have <i>emm386.exe</i>  installed with <i>ram nnn</i> option, where
+"<i>nnn</i>"  is  the number of KB to reserve  for EMS's use, the DOS Extender will
+allocate  <i>nnn</i> KB of extended memory from  VCPI and the rest of the memory,
+if  any,  from  XMS. Otherwise, when turned  off,  only  VCPI memory will be
+allocated by the DOS Extender.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Trap and Report Emulated IRQs</b> <i>Default: ON</i><br>
+When  turned on, the DOS Extender will  trap and report to the user (exit
+with  an  error  message) any software  interrupts  that have been issued to
+emulate  the  hardware interrupts, IRQs. For  example, if a program issues a
+software  interrupt INT 08h to emulate hardware interrupt IRQ 0 (timer), the
+DOS  Extender  will  report run-time  error  6001, unexpected interrupt 08h.
+Otherwise,  when  this option is turned off,  the DOS Extender will send the
+software interrupts to the interrupt handlers installed for the hardware IRQs.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Extended Memory Blocks Checking</b> <i>Default: ON</i><br>
+When  this option is turned on,  the  DOS Extender will check whether the
+Extended  Memory Blocks (EMBs), allocated through DPMI functions 05xxh, have
+been  overwritten  or  corrupted in some  way.  For  example, imagine that a
+program  which allocates 4MB of memory,  and fills the allocated memory area
+with  zeroes, has an error. It fills 4MB + 16 bytes area instead of only 4MB
+area.  This way, the extended memory  block header, which is placed directly
+after the allocated 4MB block will be overwritten, and the DOS Extender will
+not be able to allocate the next extended memory block. This situation often
+arises when a program is not correctly written and often causes applications
+to  crash.  However,  DOS/32 Advanced will,  when  this option is turned on,
+always  check and report a run-time  error message when a program overwrites
+the memory it had not allocated.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Ignore DOS/4G API Extension Calls</b> <i>Default: OFF</i><br>
+When this option is turned on,  DOS/32 Advanced built-in DPMI server will
+fail  any  calls to the DPMI function  0A00h  with DS:ESI pointing to DOS/4G
+ID-string  "<i>RATIONAL  DOS/4G</i>".  This way  you  can fool certain applications
+which  otherwise  use DOS/4G extensions, and  allow them to run under DOS/32
+Advanced  by  telling  them they run  under  DOS/4G incompatible DPMI server
+which  will  force  them to not to  use  DOS/4G extensions. Please note that
+DOS/32  Advanced  DPMI extensions (called  with  ID-string "<i>SUNSYS DOS/32A</i>")
+will work fine no matter whether this option is on or off.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Selectors</b> <i>Default: 256</i><br>
+This is the number of selectors that will be allocated by the DOS Extender
+in  the GDT (Global Descriptor Table). You should set this value to at least
+16  selectors,  as DOS/32 Advanced will use  some  of them when loading your
+protected  mode  application. Note that some  of the protected mode programs
+ may require this value to be  set to a large number, for example 4096.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Callbacks</b> <i>Default: 16</i><br>
+This is the number of callbacks that will be allocated by the DOS Extender
+and  that  will  be available through  DPMI  functions  0303h and 0304h. You
+should  set  this  value  to at least  8  callbacks  to  ensure that the DOS
+Extender  itself will operate properly, even  if you know that the protected
+mode program you are running does not use any callbacks at all.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Real Mode Stacks</b> <i>Default: 8</i><br>
+This is the number of the real mode  virtual stacks that will be allocated by
+the  DOS  Extender. Whenever a protected mode  code needs to access the real
+mode program (for example an interrupt occurs, that has to be passed down to
+the  real mode) a virtual stack will be used. When the DOS Extender runs out
+of  stacks  (when too many nested calls  are  made) the application will be
+terminated with a run-time error message.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Prot. Mode Stacks</b> <i>Default: 8</i><br>
+This is the number of the protected mode virtual stacks that will be allocated
+by  the  DOS  Extender.  Whenever a real  mode  program  needs to access the
+protected  mode  code  (for  example a  hardware  interrupt  occurs, and the
+handler  callbacks  it to the protected mode)  a virtual stack will be used.
+When  the  DOS Extender runs out of  stacks  (when too many nested calls are
+made) the application will be terminated with a run-time error message.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>VCPI PageTables</b> <i>Default: 64</i><br>
+This  is  the  number of Page Tables  that  will  be  allocated by the DOS
+Extender  under VCPI. This value directly  controls how much extended memory
+will be allocated by the DOS Extender (under VCPI only) from the system and
+made available to your programs. Each Page Table will
+map  (translate  physical  addresses  to  linear  addresses)  4MB of memory.
+Setting  this  value  to  four will allow  the  DOS  Extender to map 16MB of
+memory,  but the four allocated Page Tables will take up 16KB of conventional
+(DOS)  memory. The default value is 64, which allows the DOS Extender to map
+as  much  as 256MB of the extended  memory.  Note that the DOS Extender will
+automatically  check  how much memory can  be allocated at startup, and will
+not  create unnecessary Page Tables, ie if this  value is set to 16, but only
+8MB  is  physically present in the  machine,  the DOS Extender will allocate
+only two Page Tables.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>VCPI PhysTables</b> <i>Default: 2</i><br>
+This is the number of Page Tables  that  will be allocated and used by the DOS
+Extender for physical memory mapping  under  VCPI  (DPMI functions 0800h  and
+0801h). One Page Table will allow mapping of up to 4MB of memory.
+If you are sure that an application does not use physical memory mapping
+feature you may set this value to zero, reserving no Page Tables for physical
+memory mapping, but freeing up some of DOS conventional memory.
+(The   physical  memory  mapping   is  commonly  used  by  SVGA
+programmers,  when the video memory can be mapped into linear memory to make
+an  illusion  of all the memory on  the video card appearing as a contiguous
+block  placed somewhere in the physical memory.) Note that some applications
+(games  which  use decent 3D graphics cards)  will require more than 8MB (ie
+2-3 PhysTables) to work properly.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Real Mode Stack Length</b> <i>Default: 32</i><br>
+The size of real mode virtual stack in paragraphs (bytes*16).
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Prot. Mode Stack Length</b> <i>Default: 32</i><br>
+The size of protected mode virtual stack in paragraphs (bytes*16).
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Extended Memory</b> <i>Default: All</i><br>
+This option specifies the amount of  extended memory (in bytes) that will
+be  allocated by the DOS Extender.  This much memory (if physically present)
+will  be  made  available for you protected  mode  program's use. If the DOS
+Extender  can  not allocate the specified amount  of  memory, it will try to
+allocate as much memory as it can.
+</font></p>
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

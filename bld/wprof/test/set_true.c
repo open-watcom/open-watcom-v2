@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler test app, Part VII.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@ extern char flags[SIZE+1];
 extern int count, niter, iter;
 
 
-set_true()
+void set_true()
 {
     int i, k;
 
@@ -51,7 +50,7 @@ set_true()
     delay_me();
 }
 
-delay_me()
+void delay_me()
 {
     static char control[] = "Profiler Test Program Output\r\n" "\x1a";
     FILE   *fp;

@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate Microsoft LINK (16-bit) commands to wlink commands.
 *
 ****************************************************************************/
 
-
-/*
- *  MS2WLINK : translator between microsoft linker commmands and WATCOM
- *             linker commands.
-*/
 
 #include <string.h>
 #include "ms2wlink.h"
@@ -56,6 +50,8 @@ char *      FormatNames[] = {
     "com",
     "os2 ",
     "windows ",
+    "windows vxd ",
+    "windows vxd dynamic",
     "os2v2 ",
     "nt "
 };
@@ -80,7 +76,7 @@ extern void         MemFini( void );
 extern void         MemFree( void * );
 extern void         Error( char * );
 extern void         CommandOut( char * );
-extern int          Spawn( void (*fn)() );
+extern int          Spawn( void (*fn)( void ) );
 extern void         ParseMicrosoft( void );
 extern bool         InitParsing( void );
 extern void         FreeParserMem( void );
@@ -90,6 +86,25 @@ extern char *       Msg3Splice( char *, char *, char * );
 extern void         ImplyFormat( format_type );
 
 static void         DoConvert( void );
+
+static void FreeMemory( void )
+/****************************/
+{
+    int         index;
+    cmdentry *  cmd;
+    cmdentry *  nextone;
+
+    FreeParserMem();
+    for( index = 0; index < 7; index++ ) {
+        cmd = Commands[ index ];
+        while( cmd != NULL ) {
+            MemFree( cmd->command );
+            nextone = cmd->next;
+            MemFree( cmd );
+            cmd = nextone;
+        }
+    }
+}
 
 extern void main( void )
 /**********************/
@@ -101,14 +116,32 @@ extern void main( void )
     MemFini();
 }
 
-static void DoConvert( void )
-/***************************/
+static void PrefixWrite( cmdentry *cmdlist, char *prefix, int len )
+/*****************************************************************/
 {
-    if( !InitParsing() ) {
-        WriteHelp();
-    } else {
-        ParseMicrosoft();      // most of the work is done here.
-        BuildWATCOM();
+    char        buffer[ FNMAX + 14 ];
+    char *      after;
+
+    if( cmdlist != NULL ) {
+        memcpy( buffer, prefix, len );
+        after = buffer + len;       // the spot after the prefix.
+        for(; cmdlist != NULL; cmdlist = cmdlist->next ) {
+            if( cmdlist->asis ) {
+                CommandOut( cmdlist->command );
+            } else {
+                memcpy( after, cmdlist->command, strlen(cmdlist->command) + 1);
+                CommandOut( buffer );
+            }
+        }
+    }
+}
+
+static void ListWrite( cmdentry *cmdlist )
+/****************************************/
+// write out a list of commands without a prefix.
+{
+    for(;cmdlist != NULL ; cmdlist = cmdlist->next ) {
+        CommandOut( cmdlist->command );
     }
 }
 
@@ -149,67 +182,38 @@ static void BuildWATCOM( void )
     ListWrite( Commands[ OPTION_SLOT ] );
 }
 
-static void PrefixWrite( cmdentry *cmdlist, char *prefix, int len )
-/*****************************************************************/
-{
-    char        buffer[ FNMAX + 14 ];
-    char *      after;
-
-    if( cmdlist != NULL ) {
-        memcpy( buffer, prefix, len );
-        after = buffer + len;       // the spot after the prefix.
-        for(; cmdlist != NULL; cmdlist = cmdlist->next ) {
-            if( cmdlist->asis ) {
-                CommandOut( cmdlist->command );
-            } else {
-                memcpy( after, cmdlist->command, strlen(cmdlist->command) + 1);
-                CommandOut( buffer );
-            }
-        }
-    }
-}
-
-static void ListWrite( cmdentry *cmdlist )
-/****************************************/
-// write out a list of commands without a prefix.
-{
-    for(;cmdlist != NULL ; cmdlist = cmdlist->next ) {
-        CommandOut( cmdlist->command );
-    }
-}
-
-static void FreeMemory( void )
-/****************************/
-{
-    int         index;
-    cmdentry *  cmd;
-    cmdentry *  nextone;
-
-    FreeParserMem();
-    for( index = 0; index < 7; index++ ) {
-        cmd = Commands[ index ];
-        while( cmd != NULL ) {
-            MemFree( cmd->command );
-            nextone = cmd->next;
-            MemFree( cmd );
-            cmd = nextone;
-        }
-    }
-}
-
 #define NL "\r\n"
 static char TheHelp[] = {
-    banner1( "Microsoft to watcom linker command translation utility ",
+    banner1( "Microsoft to Watcom linker command translation utility ",
                 _MS2WLINK_VERSION_ ) NL
     banner2( "1990" ) NL
     banner3 NL
     "usage: pass this program the same arguments that would be passed to the" NL
-    "       Microsoft linker, and an equivalent set of WATCOM linker commands" NL
+    "       Microsoft linker, and an equivalent set of wlink commands" NL
     "       will be written to standard output." NL
+    NL
+    "Usage:" NL
+    NL
+    "ms2wlink" NL
+    "ms2wlink @<response file>" NL
+    "ms2wlink <objs>,<exefile>,<mapfile>,<libs>,<deffile>" NL
+    NL
+    "Recognized options are:" NL
 };
 
 extern void WriteHelp( void )
 /***************************/
 {
     CommandOut( TheHelp );
+}
+
+static void DoConvert( void )
+/***************************/
+{
+    if( !InitParsing() ) {
+        WriteHelp();
+    } else {
+        ParseMicrosoft();      // most of the work is done here.
+        BuildWATCOM();
+    }
 }

@@ -24,24 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous support routines for Watcom debugging format.
 *
 ****************************************************************************/
 
 
 #include "dipwat.h"
 #include "demangle.h"
-#include <malloc.h>
 #include <string.h>
-#if defined(M_I86)
+#include "walloca.h"
+#if defined( _M_I86 )
 #include <i86.h>
 #endif
 
 
-extern void             InfoUnlock();
-extern dip_status       InfoRelease();
-extern void             FiniDemand();
+extern void             InfoUnlock( void );
+extern dip_status       InfoRelease( void );
+extern void             FiniDemand( void );
 extern search_result    LookupLclAddr( imp_image_handle *, address, imp_sym_handle * );
 extern search_result    LookupGblAddr( imp_image_handle *, address, imp_sym_handle * );
 extern unsigned         SymHdl2CstName( imp_image_handle *, imp_sym_handle *, char *, unsigned );
@@ -93,17 +92,17 @@ unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[ hk ] );
 }
 
-dip_status DIPENTRY DIPImpStartup()
+dip_status DIPENTRY DIPImpStartup( void )
 {
     return( DS_OK );
 }
 
-void DIPENTRY DIPImpShutdown()
+void DIPENTRY DIPImpShutdown( void )
 {
     FiniDemand();
 }
 
-void DIPENTRY DIPImpCancel()
+void DIPENTRY DIPImpCancel( void )
 {
     KillLclLoadStack();
     KillTypeLoadStack();
@@ -157,7 +156,7 @@ unsigned DIPENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
         ++is;
         len = 0;
         #define STUFF_IT( c )   if( (len+1) < max ) *ep++ = (c); ++len
-        ep = name;
+        ep = (byte *)name;
         STUFF_IT( SH_ESCAPE );
         while( sp < (byte *)is ) {
             curr = *sp++;
@@ -270,7 +269,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     imp_sym_handle      *scope_is;
 
     if( *li->name.start == SH_ESCAPE ) {
-        CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
+        CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }
     if( li->type == ST_NAMESPACE ) return( SR_NONE );

@@ -24,107 +24,124 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory management for wmake.
 *
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __WATCOMC__
+    #include <malloc.h>
+#endif
 
 #include "make.h"
 #include "massert.h"
 #include "mtypes.h"
-#include "memory.h"
+#include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
 
 
+#ifdef USE_FAR
 STATIC BOOLEAN largeNearSeg;    /* have we done a _nheapgrow() ? */
+#endif
+
+#ifdef USE_SCARCE
 
 /*
- * We maintain a list of functions to call if memory gets too tight to do
- * a malloc.  A function returns RET_SUCCESS if it could dealloc some memory.
+ * A word on "scarce memory". We maintain a list of functions to call if
+ * memory gets too tight to do a malloc. A function returns RET_SUCCESS if
+ * it could dealloc some memory. Several wmake modules register "scarce"
+ * function that will attempt to free up memory that's not immediately
+ * needed.
+ * Scarce memory management is naturally next to useless on virtual memory
+ * systems where malloc() isn't likely to fail, hence we only use it on
+ * memory constrained platforms (ie. 16-bit DOS).
  */
+
 STATIC struct scarce {
     struct scarce   *next;
     RET_T           (*func)( void );
 } *scarceHead;
 
-
-#if defined(TRACK)
-    STATIC int trmemCode;
 #endif
 
-#ifdef  TRACK
-#   include <malloc.h>
-#   include <io.h>
-#   include <sys/types.h>
-#   include <sys/stat.h>
-#   include <fcntl.h>
-#   include "trmem.h"
+#ifdef TRACK
 
-    STATIC _trmem_hdl Handle;
+#include <malloc.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "trmem.h"
 
-    STATIC int trkfile;     /* file handle we'll write() to */
+STATIC _trmem_hdl   Handle;
+STATIC int          trmemCode;
+STATIC int          trkfile = -1;     /* file handle we'll write() to */
 
-    STATIC void printLine( void *h, const char *buf, unsigned size )
-    {
-        h = h;
+STATIC void printLine( int *h, const char *buf, unsigned size )
+/*************************************************************/
+{
+    h = h;
+    if( trkfile == -1 ) {
+        trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC,
+               S_IREAD | S_IWRITE );
+    }
+    if( trkfile != -1 ) {
         write( trkfile, buf, size );
         write( trkfile, "\n", 1 );
-        if (!(trmemCode & TRMEM_DO_NOT_PRINT)) {
-             write( STDOUT_FILENO, buf, size );
-             write( STDOUT_FILENO, "\n", 1 );
-        }
     }
+    if( !(trmemCode & TRMEM_DO_NOT_PRINT) ) {
+         write( STDOUT_FILENO, buf, size );
+         write( STDOUT_FILENO, "\n", 1 );
+    }
+}
 
-    STATIC void MemCheck( void )
-    /**************************/
-    {
-        static busy = FALSE;    /* protect against recursion thru PrtMsg */
+STATIC void MemCheck( void )
+/**************************/
+{
+    static int  busy = FALSE;   /* protect against recursion thru PrtMsg */
 
-        if( !busy ) {
-            busy = TRUE;
+    if( !busy ) {
+        busy = TRUE;
 #ifdef USE_FAR
-            switch( _nheapchk() ) {
-            case _HEAPOK:
-            case _HEAPEMPTY:
-                break;
-            case _HEAPBADBEGIN:
-                PrtMsg( FTL| HEAP_IS_DAMAGED, "NEAR" );
-            case _HEAPBADNODE:
-                PrtMsg( FTL| BAD_NODE_IN_HEAP, "NEAR" );
-            }
-            switch( _fheapchk() ) {
-            case _HEAPOK:
-            case _HEAPEMPTY:
-                break;
-            case _HEAPBADBEGIN:
-                PrtMsg( FTL| HEAP_IS_DAMAGED, "FAR" );
-            case _HEAPBADNODE:
-                PrtMsg( FTL| BAD_NODE_IN_HEAP, "FAR" );
-            }
-#else
-            switch( _heapchk() ) {
-            case _HEAPOK:
-            case _HEAPEMPTY:
-                break;
-            case _HEAPBADBEGIN:
-                PrtMsg( FTL| HEAP_IS_DAMAGED, "" );
-            case _HEAPBADNODE:
-                PrtMsg( FTL| BAD_NODE_IN_HEAP, "" );
-            }
-#endif
-            busy = FALSE;
+        switch( _nheapchk() ) {
+        case _HEAPOK:
+        case _HEAPEMPTY:
+            break;
+        case _HEAPBADBEGIN:
+            PrtMsg( FTL | HEAP_IS_DAMAGED, "NEAR" );
+        case _HEAPBADNODE:
+            PrtMsg( FTL | BAD_NODE_IN_HEAP, "NEAR" );
         }
+        switch( _fheapchk() ) {
+        case _HEAPOK:
+        case _HEAPEMPTY:
+            break;
+        case _HEAPBADBEGIN:
+            PrtMsg( FTL | HEAP_IS_DAMAGED, "FAR" );
+        case _HEAPBADNODE:
+            PrtMsg( FTL | BAD_NODE_IN_HEAP, "FAR" );
+        }
+#else
+        switch( _heapchk() ) {
+        case _HEAPOK:
+        case _HEAPEMPTY:
+            break;
+        case _HEAPBADBEGIN:
+            PrtMsg( FTL | HEAP_IS_DAMAGED, "" );
+        case _HEAPBADNODE:
+            PrtMsg( FTL | BAD_NODE_IN_HEAP, "" );
+        }
+#endif
+        busy = FALSE;
     }
+}
 #endif  /* TRACK */
 
-
-extern void IfMemScarce( RET_T (*func)( void ) )
+#ifdef USE_SCARCE
+void IfMemScarce( RET_T (*func)( void ) )
 /***********************************************
  * post:    function registered in scarce list
  * remarks: The function *func must return SUCCESS if it manages to deallocate
@@ -150,8 +167,8 @@ STATIC RET_T tryScarce( void )
  * returns: TRUE if a scarce routine managed to deallocate memory.
  */
 {
-    BOOLEAN did;
-    struct scarce *cur;
+    BOOLEAN         did;
+    struct scarce   *cur;
 
     did = FALSE;
     cur = scarceHead;
@@ -162,17 +179,19 @@ STATIC RET_T tryScarce( void )
 
     return( did ? RET_SUCCESS : RET_ERROR );
 }
+#endif
 
-
-extern void MemFini( void )
+void MemFini( void )
 /**************************
  * post:    As much memory as possible is freed.
  */
 {
-#if defined(TRACK)
-    char* trmemCodeStr;
+#ifdef TRACK
+    char    *trmemCodeStr;
 #endif
-#if defined(DEVELOPMENT) || defined(TRACK)
+#if defined( DEVELOPMENT ) || defined( TRACK )
+
+#ifdef USE_SCARCE
     struct scarce *cur;
 
     while( tryScarce() == RET_SUCCESS ) /* call all scarce routines */
@@ -183,30 +202,34 @@ extern void MemFini( void )
         scarceHead = scarceHead->next;
         FreeSafe( cur );
     }
+#endif
 
 #ifdef DEVELOPMENT
     PutEnvFini();
 #endif
 #ifdef TRACK
-    if( ! Glob.erroryet ) {
-        trmemCodeStr = getenv(TRMEM_ENV_VAR);
-        if (trmemCodeStr == NULL) {
+    if( !Glob.erroryet ) { /* No error diagnostics yet? */
+        trmemCodeStr = getenv( TRMEM_ENV_VAR );
+        if( trmemCodeStr == NULL ) {
             trmemCode = 0;
         } else {
-            trmemCode = atoi(trmemCodeStr);
+            trmemCode = atoi( trmemCodeStr );
         }
-        if (TRMEM_IGNORE_ERROR & trmemCode) {
+        if( TRMEM_IGNORE_ERROR & trmemCode ) {
             _trmem_prt_list( Handle );
         } else {
-            if (_trmem_prt_list ( Handle ) != 0) {
-                PrtMsg( ERR| ERROR_TRMEM );
+            if( _trmem_prt_list ( Handle ) != 0 ) {
+                PrtMsg( ERR | ERROR_TRMEM );
             }
         }
-    }
 
-    _trmem_close( Handle );
+        _trmem_close( Handle ); /* Report any memory errors. */
+    }
     MemCheck();
-    close( trkfile );
+    if( trkfile != -1 ) {
+        close( trkfile );
+        trkfile = -1;
+    }
 #endif
 #endif
 }
@@ -218,30 +241,25 @@ STATIC void memGrow( void )
 #ifdef USE_FAR
     _nheapgrow();
     _fheapgrow();
+    largeNearSeg = TRUE;
 #else
-#ifndef __NT__
+#if !defined( __NT__ ) && !defined( __UNIX__ )
     _heapgrow();
 #endif
 #endif
-    largeNearSeg = TRUE;
 }
 
 
-extern void MemInit( void )
+void MemInit( void )
 /*************************/
 {
-    largeNearSeg = FALSE;
     memGrow();
 #ifdef TRACK
-    Handle = _trmem_open( malloc
-                        , free
-                        , _TRMEM_NO_REALLOC
-                        , _expand
-                        , NULL
-                        , printLine
-                        , _TRMEM_CLOSE_CHECK_FREE );
-    if( Handle == NULL ) PrtMsg( FTL| UNABLE_TO_TRACK );
-    trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, 0 );
+    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _expand,
+                          NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
+    if( Handle == NULL ) {
+        PrtMsg( FTL | UNABLE_TO_TRACK );
+    }
 #endif
 }
 
@@ -259,20 +277,36 @@ STATIC void *doAlloc( size_t size )
 {
     void   *ptr;
 
-    for(;;) {
+#ifdef USE_SCARCE
+
+    for( ;; ) {
 #ifdef TRACK
         ptr = _trmem_alloc( size, ra, Handle );
 #else
         ptr = malloc( size );
 #endif
-        if( ptr != NULL ) break;
-        if( tryScarce() != RET_SUCCESS ) break;
+        if( ptr != NULL ) {
+            break;
+        }
+        if( tryScarce() != RET_SUCCESS ) {
+            break;
+        }
     }
+
+#else
+
+#ifdef TRACK
+    ptr = _trmem_alloc( size, ra, Handle );
+#else
+    ptr = malloc( size );
+#endif
+
+#endif
     return( ptr );
 }
 
 
-extern void *MallocUnSafe( size_t size )
+void *MallocUnSafe( size_t size )
 /**************************************/
 {
     void *ptr;
@@ -285,43 +319,41 @@ extern void *MallocUnSafe( size_t size )
 }
 
 
-extern void *MallocSafe( size_t size )
+void *MallocSafe( size_t size )
 /*************************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size.
  * aborts:  If not enough memory to satisfy request.
  */
 {
-    void *ptr;
+    void    *ptr;
 
 #ifdef TRACK
     ptr = doAlloc( size, _trmem_guess_who() );
 #else
     ptr = doAlloc( size );
 #endif
-    if( ptr != NULL ) {
-        return( ptr );
+    if( ptr == NULL ) {
+        PrtMsg( FTL | OUT_OF_MEMORY );
     }
-
-    PrtMsg( FTL| OUT_OF_MEMORY );
-    return( NULL );
+    return( ptr );
 }
 
 
-extern void *CallocSafe( size_t size )
+void *CallocSafe( size_t size )
 /*************************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size
  * aborts:  If not enough memory to satisfy request
  */
 {
-    void *ptr;
+    void    *ptr;
 
 #ifdef TRACK        /* so we can track ret address */
     ptr = doAlloc( size, _trmem_guess_who() );
 
     if( ptr == NULL ) {
-        PrtMsg( FTL| OUT_OF_MEMORY );
+        PrtMsg( FTL | OUT_OF_MEMORY );
     }
 #else
     ptr = MallocSafe( size );
@@ -333,7 +365,7 @@ extern void *CallocSafe( size_t size )
 }
 
 
-extern void FreeSafe( void *ptr )
+void FreeSafe( void *ptr )
 /********************************
  * post:    The block pointed to by ptr is freed if it was allocated by
  *          MallocSafe.
@@ -348,7 +380,7 @@ extern void FreeSafe( void *ptr )
 }
 
 
-extern char *StrDupSafe( const char *str )
+char *StrDupSafe( const char *str )
 /*****************************************
  * returns: Pointer to a duplicate of str in a new block of memory.
  * aborts:  If not enough memory to make a duplicate.
@@ -362,7 +394,7 @@ extern char *StrDupSafe( const char *str )
 #ifdef TRACK
     p = doAlloc( len, _trmem_guess_who() );
     if( p == NULL ) {
-        PrtMsg( FTL| OUT_OF_MEMORY );
+        PrtMsg( FTL | OUT_OF_MEMORY );
     }
 #else
     p = MallocSafe( len );
@@ -373,20 +405,20 @@ extern char *StrDupSafe( const char *str )
 }
 
 
-extern void MemShrink( void )
+void MemShrink( void )
 /***************************/
 {
 #ifdef USE_FAR
     _nheapshrink();
     _fheapshrink();
-#else
+    largeNearSeg = FALSE;
+#elif !defined( __UNIX__ )
     _heapshrink();
 #endif
-    largeNearSeg = FALSE;
 }
 
 
-extern void MemDecreaseSize( void *ptr, size_t new_size )
+void MemDecreaseSize( void *ptr, size_t new_size )
 /*******************************************************/
 {
 #ifdef TRACK
@@ -399,7 +431,7 @@ extern void MemDecreaseSize( void *ptr, size_t new_size )
 
 #ifdef USE_FAR
 
-extern void FAR *FarMaybeMalloc( size_t size )
+void FAR *FarMaybeMalloc( size_t size )
 /********************************************/
 {
     if( !largeNearSeg ) {
@@ -409,21 +441,21 @@ extern void FAR *FarMaybeMalloc( size_t size )
 }
 
 
-extern void FAR *FarMalloc( size_t size )
+void FAR *FarMalloc( size_t size )
 /***************************************/
 {
     void FAR *p;
 
     p = FarMaybeMalloc( size );
     if( p == NULL ) {
-        PrtMsg( FTL| OUT_OF_MEMORY );
+        PrtMsg( FTL | OUT_OF_MEMORY );
     }
 
     return( p );
 }
 
 
-extern void FarFree( void FAR *p )
+void FarFree( void FAR *p )
 /********************************/
 {
     _ffree( p );

@@ -30,46 +30,47 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <string.h>
 #include <math.h>
-#include "imgedit.h"
 #include "iedraw.h"
 #include "iemem.h"
 
 #define MIN_DRAW_WIN_WIDTH      150
 
-static WPI_POINT        pointSize = {0, 0};
+static WPI_POINT        pointSize = { 0, 0 };
 static short            toolType;
 static HWND             hDrawArea = NULL;
 static short            currentMouseButton;
+
+static void showGrid( HWND hwnd, WPI_PRES mempres );
 
 /*
  * GridEnumProc - used to grid all the children
  */
 BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam )
 {
-    HWND        frame;
-
     lparam = lparam;
-    if ( _wpi_getowner(hwnd) ) {
-        return 1;
+    if( _wpi_getowner( hwnd ) ) {
+        return( 1 );
     }
 
-    if ( _wpi_isiconic(hwnd) ) {
-        return 1;
+    if( _wpi_isiconic( hwnd ) ) {
+        return( 1 );
     } else {
-        InvalidateRect( _wpi_getclient(hwnd), NULL, FALSE );
+        InvalidateRect( _wpi_getclient( hwnd ), NULL, FALSE );
     }
-    frame = frame;              // suppress compiler warnings
-    return 1;
+    return( 1 );
+
 } /* GridEnumProc */
 
 /*
- * CalculateDims - calculates the size of the "pixel" in the drawing
- *                      area and establishes the device draw area size.
+ * CalculateDims - calculate the size of the "pixel" in the drawing
+ *                 area and establish the device draw area size
  */
 void CalculateDims( short img_width, short img_height, short *area_width,
-                                short *area_height )
+                    short *area_height )
 {
     int         point_size1;
     int         point_size2;
@@ -80,20 +81,20 @@ void CalculateDims( short img_width, short img_height, short *area_width,
     int         y_adj;
 
     GetClientRect( ClientWindow, &rcclient );
-    x_adj = (short)(2*_wpi_getsystemmetrics(SM_CXFRAME));
-    y_adj = (short)(2*_wpi_getsystemmetrics(SM_CYFRAME) +
-                        _wpi_getsystemmetrics(SM_CYCAPTION));
+    x_adj = (short)(2 * _wpi_getsystemmetrics( SM_CXFRAME ));
+    y_adj = (short)(2 * _wpi_getsystemmetrics( SM_CYFRAME ) +
+                        _wpi_getsystemmetrics( SM_CYCAPTION ));
 
 #if 0
-    max_width = _wpi_getwidthrect(rcclient) - x_adj - origin->x;
-    max_height = _wpi_getheightrect(rcclient) - y_adj - origin->y;
+    max_width = _wpi_getwidthrect( rcclient ) - x_adj - origin->x;
+    max_height = _wpi_getheightrect( rcclient ) - y_adj - origin->y;
 #else
-    max_width = _wpi_getwidthrect(rcclient) - x_adj;
-    max_height = _wpi_getheightrect(rcclient) - y_adj;
+    max_width = _wpi_getwidthrect( rcclient ) - x_adj;
+    max_height = _wpi_getheightrect( rcclient ) - y_adj;
 #endif
 
-    point_size1 = max (1, max_width / img_width);
-    point_size2 = max (1, max_height / img_height);
+    point_size1 = max( 1, max_width / img_width );
+    point_size2 = max( 1, max_height / img_height );
 
     if( point_size1 < 1 ) {
         point_size1 = 1;
@@ -103,7 +104,7 @@ void CalculateDims( short img_width, short img_height, short *area_width,
     }
 
     pointSize.x = min( point_size1, point_size2 );
-    while( (pointSize.x * img_width) < MIN_DRAW_WIN_WIDTH ) {
+    while( pointSize.x * img_width < MIN_DRAW_WIN_WIDTH ) {
         pointSize.x++;
     }
 
@@ -111,10 +112,11 @@ void CalculateDims( short img_width, short img_height, short *area_width,
 
     *area_width = (short)(pointSize.x * img_width);
     *area_height = (short)(pointSize.y * img_height);
+
 } /* CalculateDims */
 
 /*
- * BlowupImage - Stretches the view window into the window given by hwnd.
+ * BlowupImage - stretch the view window into the window given by hwnd
  */
 void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
 {
@@ -127,18 +129,20 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     img_node    *node;
     BOOL        new_pres;
 
-    if( hmdiwnd ) {
+    if( hmdiwnd != NULL ) {
         hwnd = hmdiwnd;
     } else {
         node = GetCurrentNode();
-        if( !node ) {
+        if( node == NULL ) {
             return;
         }
         hwnd = node->hwnd;
     }
 
     newbitmap = EnlargeImage( hwnd );
-    if (!newbitmap) return;
+    if( newbitmap == NULL ) {
+        return;
+    }
 
     new_pres = FALSE;
     if( pres == (WPI_PRES)NULL ) {
@@ -148,13 +152,13 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     oldbitmap = _wpi_selectobject( mempres, newbitmap );
 
-    if (ImgedConfigInfo.grid_on) {
+    if( ImgedConfigInfo.grid_on ) {
         showGrid( hwnd, mempres );
     } else {
-        GetClientRect(hwnd, &client);
-        _wpi_bitblt( pres, 0, 0, _wpi_getwidthrect(client),
-                        _wpi_getheightrect(client), mempres, 0, 0, SRCCOPY );
-        RedrawPrevClip(hwnd);   // Redraws if there was a clip region specified.
+        GetClientRect( hwnd, &client );
+        _wpi_bitblt( pres, 0, 0, _wpi_getwidthrect( client ),
+                     _wpi_getheightrect( client ), mempres, 0, 0, SRCCOPY );
+        RedrawPrevClip( hwnd );   // Redraw if there was a clip region specified.
     }
 
     _wpi_selectobject( mempres, oldbitmap );
@@ -164,8 +168,12 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     if( new_pres ) {
         _wpi_releasepres( hwnd, pres );
     }
+
 } /* BlowupImage */
 
+/*
+ * IEInvalidateNode
+ */
 void IEInvalidateNode( img_node *node )
 {
     HWND        hwnd;
@@ -180,10 +188,11 @@ void IEInvalidateNode( img_node *node )
     hwnd = node->hwnd;
 
     InvalidateRect( hwnd, NULL, FALSE );
-}
+
+} /* IEInvalidateNode */
 
 /*
- * CheckBounds - checks the bounds vs the client rectangle.
+ * CheckBounds - check the bounds vs. the client rectangle
  */
 void CheckBounds( HWND hwnd, WPI_POINT *pt )
 {
@@ -193,23 +202,24 @@ void CheckBounds( HWND hwnd, WPI_POINT *pt )
     IMGED_DIM   top;
     IMGED_DIM   bottom;
 
-    GetClientRect(hwnd, &client);
+    GetClientRect( hwnd, &client );
     _wpi_getrectvalues( client, &left, &top, &right, &bottom );
 
-    if (pt->x >= right) {
-        pt->x = right-1;
-    } else if (pt->x < left) {
+    if( pt->x >= right ) {
+        pt->x = right - 1;
+    } else if( pt->x < left ) {
         pt->x = left;
     }
-    if (pt->y >= bottom) {
-        pt->y = bottom-1;
-    } else if (pt->y < top) {
+    if( pt->y >= bottom ) {
+        pt->y = bottom - 1;
+    } else if( pt->y < top ) {
         pt->y = top;
     }
+
 } /* CheckBounds */
 
 /*
- * showGrid - Display the grid on the draw area.
+ * showGrid - display the grid on the draw area
  */
 static void showGrid( HWND hwnd, WPI_PRES mempres )
 {
@@ -234,11 +244,10 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
 
     _wpi_torgbmode( mempres );
     GetClientRect( hwnd, &rcclient );
-    width = (short)( _wpi_getwidthrect(rcclient) );
-    height = (short)( _wpi_getheightrect(rcclient) );
+    width = (short)_wpi_getwidthrect( rcclient );
+    height = (short)_wpi_getheightrect( rcclient );
 
-    if (((width / node->width) < POINTSIZE_MIN) ||
-                                ((height / node->height) < POINTSIZE_MIN)) {
+    if( width / node->width < POINTSIZE_MIN || height / node->height < POINTSIZE_MIN ) {
         psx = 0;
         psy = 0;
     } else {
@@ -250,13 +259,13 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
 
         _wpi_getrectvalues( rcclient, &left, &top, &right, &bottom );
 
-        for (i=0; i < width; i = i + psx) {
+        for( i = 0; i < width; i += psx ) {
             _wpi_setpoint( &startpt, i, top );
             _wpi_setpoint( &endpt, i, bottom );
             _wpi_movetoex( mempres, &startpt, NULL );
             _wpi_lineto( mempres, &endpt );
         }
-        for (i=0; i <= height; i = i + psy) {
+        for( i = 0; i <= height; i += psy ) {
             _wpi_setpoint( &startpt, left, i );
             _wpi_setpoint( &endpt, right, i );
             _wpi_movetoex( mempres, &startpt, NULL );
@@ -270,19 +279,20 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
     pres = _wpi_getpres( hwnd );
     _wpi_bitblt( pres, 0, 0, width, height, mempres, 0, 0, SRCCOPY );
     _wpi_releasepres( hwnd, pres );
-    RedrawPrevClip(hwnd);  // Redraws if there was a clip region specified.
+    RedrawPrevClip( hwnd );  // Redraws if there was a clip region specified.
+
 } /* showGrid */
 
 /*
- * DrawSinglePoint - needed for when the mouse button is initially pressed.
+ * DrawSinglePoint - needed for when the mouse button is initially pressed
  */
 void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
 {
-    HBRUSH      colourbrush;
+    HBRUSH      colorbrush;
     HBRUSH      oldbrush;
-    HPEN        colourpen;
+    HPEN        colorpen;
     HPEN        oldpen;
-    COLORREF    selected_colour;
+    COLORREF    selected_color;
     COLORREF    dithered;
     short       truncated_x;
     short       truncated_y;
@@ -306,39 +316,39 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
 
     CheckBounds( hwnd, pt );
 
-    gridvisible = ImgedConfigInfo.grid_on && (pointSize.x >= POINTSIZE_MIN &&
-                                                pointSize.y >= POINTSIZE_MIN);
-    if (gridvisible) {
-        if (toolType == IMGED_BRUSH) {
-            truncated_x = max(0, (pt->x/pointSize.x - brushsize/2)) * pointSize.x+1;
-            truncated_y = max(0, (pt->y/pointSize.y - brushsize/2)) * pointSize.y+1;
+    gridvisible = (ImgedConfigInfo.grid_on &&
+                   pointSize.x >= POINTSIZE_MIN && pointSize.y >= POINTSIZE_MIN);
+    if( gridvisible ) {
+        if( toolType == IMGED_BRUSH ) {
+            truncated_x = max( 0, pt->x / pointSize.x - brushsize / 2 ) * pointSize.x + 1;
+            truncated_y = max( 0, pt->y / pointSize.y - brushsize / 2 ) * pointSize.y + 1;
             width = (short)(pointSize.x - 1);
             height = (short)(pointSize.y - 1);
             /*
              * We just have to check that we don't spill over the image dimensions
              */
-            truncated_x = min(truncated_x, wndwidth-pointSize.x*brushsize+1);
-            truncated_y = min(truncated_y, wndheight-pointSize.y*brushsize+1);
+            truncated_x = min( truncated_x, wndwidth - pointSize.x * brushsize + 1 );
+            truncated_y = min( truncated_y, wndheight - pointSize.y * brushsize + 1 );
         } else {
-            truncated_x = ( pt->x / pointSize.x) * pointSize.x + 1;
-            truncated_y = ( pt->y / pointSize.y) * pointSize.y + 1;
+            truncated_x = (pt->x / pointSize.x) * pointSize.x + 1;
+            truncated_y = (pt->y / pointSize.y) * pointSize.y + 1;
             width = (short)(pointSize.x - 1);
             height = (short)(pointSize.y - 1);
         }
     } else {
-        if (toolType == IMGED_BRUSH) {
-            truncated_x = max(0, (pt->x / pointSize.x - brushsize/2)) * pointSize.x;
-            truncated_y = max(0, (pt->y / pointSize.y - brushsize/2)) * pointSize.y;
+        if( toolType == IMGED_BRUSH ) {
+            truncated_x = max( 0, pt->x / pointSize.x - brushsize / 2 ) * pointSize.x;
+            truncated_y = max( 0, pt->y / pointSize.y - brushsize / 2 ) * pointSize.y;
             width = (short)(pointSize.x * brushsize);
             height = (short)(pointSize.y * brushsize);
             /*
              * We just have to check that we don't spill over the image dimensions
              */
-            truncated_x = min( truncated_x, wndwidth-width );
-            truncated_y = min( truncated_y, wndheight-width );
+            truncated_x = min( truncated_x, wndwidth - width );
+            truncated_y = min( truncated_y, wndheight - width );
         } else {
-            truncated_x = ( pt->x / pointSize.x) * pointSize.x;
-            truncated_y = ( pt->y / pointSize.y) * pointSize.y;
+            truncated_x = (pt->x / pointSize.x) * pointSize.x;
+            truncated_y = (pt->y / pointSize.y) * pointSize.y;
             width = (short)pointSize.x;
             height = (short)pointSize.y;
         }
@@ -348,66 +358,63 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
 
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
-    dithered = GetSelectedColour(mousebutton, &selected_colour, &type);
-    colourbrush = _wpi_createsolidbrush( selected_colour );
-    oldbrush = _wpi_selectobject( pres, colourbrush );
-    colourpen = _wpi_createpen( PS_SOLID, 0, selected_colour );
-    oldpen = _wpi_selectobject( pres, colourpen );
+    dithered = GetSelectedColor( mousebutton, &selected_color, &type );
+    colorbrush = _wpi_createsolidbrush( selected_color );
+    oldbrush = _wpi_selectobject( pres, colorbrush );
+    colorpen = _wpi_createpen( PS_SOLID, 0, selected_color );
+    oldpen = _wpi_selectobject( pres, colorpen );
 
-    if (gridvisible && (toolType == IMGED_BRUSH)) {
-        for (i=0; i < brushsize; ++i) {
-            for (j=0; j < brushsize; ++j) {
-                _wpi_patblt(pres, truncated_x+i*pointSize.x,
-                                  truncated_y+j*pointSize.y,
-                                  width, height, PATCOPY);
+    if( gridvisible && toolType == IMGED_BRUSH ) {
+        for( i = 0; i < brushsize; i++ ) {
+            for( j = 0; j < brushsize; j++ ) {
+                _wpi_patblt( pres, truncated_x + i * pointSize.x,
+                             truncated_y + j * pointSize.y, width, height, PATCOPY );
             }
         }
     } else {
-        _wpi_patblt(pres, truncated_x, truncated_y, width, height, PATCOPY);
+        _wpi_patblt( pres, truncated_x, truncated_y, width, height, PATCOPY );
     }
 
     _wpi_selectobject( pres, oldbrush );
     _wpi_selectobject( pres, oldpen );
     _wpi_releasepres( hwnd, pres );
 
-    _wpi_deleteobject( colourbrush );
-    _wpi_deleteobject( colourpen );
+    _wpi_deleteobject( colorbrush );
+    _wpi_deleteobject( colorpen );
 
     /*
-     * draws the points in the view window
+     * Draw the points in the view window.
      */
-    if (toolType == IMGED_BRUSH) {
-        if (type == SCREEN_CLR) {
-            BrushThePoints(selected_colour, BLACK, WHITE, &logical_pt,
-                                                                brushsize);
-        } else if (type == INVERSE_CLR) {
-            BrushThePoints(selected_colour, WHITE, WHITE, &logical_pt,
-                                                                brushsize);
+    if( toolType == IMGED_BRUSH ) {
+        if( type == SCREEN_CLR ) {
+            BrushThePoints( selected_color, BLACK, WHITE, &logical_pt, brushsize );
+        } else if( type == INVERSE_CLR ) {
+            BrushThePoints( selected_color, WHITE, WHITE, &logical_pt, brushsize );
         } else {
-            BrushThePoints(selected_colour, selected_colour, BLACK,
-                                                    &logical_pt, brushsize);
+            BrushThePoints( selected_color, selected_color, BLACK, &logical_pt, brushsize );
         }
     } else {
-        if (type == SCREEN_CLR) {
-            DrawThePoints(selected_colour, BLACK, WHITE, &logical_pt);
-        } else if (type == INVERSE_CLR) {
-            DrawThePoints(selected_colour, WHITE, WHITE, &logical_pt);
+        if( type == SCREEN_CLR ) {
+            DrawThePoints( selected_color, BLACK, WHITE, &logical_pt );
+        } else if( type == INVERSE_CLR ) {
+            DrawThePoints( selected_color, WHITE, WHITE, &logical_pt );
         } else {
-            DrawThePoints(selected_colour, selected_colour, BLACK, &logical_pt);
+            DrawThePoints( selected_color, selected_color, BLACK, &logical_pt );
         }
     }
+
 } /* DrawSinglePoint */
 
 /*
- * drawPt - Actually draws the point on the drawing region. (uses LineDDA)
+ * DrawPt - actually draw the point on the drawing region (uses LineDDA)
  */
-void CALLBACK drawPt( int xpos, int ypos, WPI_PARAM2 lparam )
+void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
 {
-    HBRUSH      colourbrush;
+    HBRUSH      colorbrush;
     HBRUSH      oldbrush;
-    HPEN        colourpen;
+    HPEN        colorpen;
     HPEN        oldpen;
-    COLORREF    selected_colour;
+    COLORREF    selected_color;
     COLORREF    dithered;
     short       mousebutton;
     WPI_PRES    pres;
@@ -429,94 +436,91 @@ void CALLBACK drawPt( int xpos, int ypos, WPI_PARAM2 lparam )
     _wpi_getclientrect( hwnd, &rcclient );
     brushsize = ImgedConfigInfo.brush_size;
 
-    gridvisible = ImgedConfigInfo.grid_on && (pointSize.x >= POINTSIZE_MIN &&
-                                                pointSize.y >= POINTSIZE_MIN);
-    if ((!gridvisible) && (toolType == IMGED_FREEHAND)) {
+    gridvisible = (ImgedConfigInfo.grid_on &&
+                   pointSize.x >= POINTSIZE_MIN && pointSize.y >= POINTSIZE_MIN);
+    if( !gridvisible && toolType == IMGED_FREEHAND ) {
         area_x = xpos * pointSize.x;
         area_y = ypos * pointSize.y;
         width = (short)pointSize.x;
         height = (short)pointSize.y;
-    } else if ((!gridvisible) && (toolType == IMGED_BRUSH)) {
-        area_x = max(0, xpos-brushsize/2) * pointSize.x;
-        area_y = max(0, ypos-brushsize/2) * pointSize.y;
+    } else if( !gridvisible && toolType == IMGED_BRUSH ) {
+        area_x = max( 0, xpos - brushsize / 2 ) * pointSize.x;
+        area_y = max( 0, ypos - brushsize / 2 ) * pointSize.y;
         width = (short)(brushsize * pointSize.x);
         height = (short)(brushsize * pointSize.y);
         /*
-         * We just have to check that we don't spill over the image dimensions
+         * We just have to check that we don't spill over the image dimensions.
          */
-        area_x = min( area_x, _wpi_getwidthrect(rcclient)-width );
-        area_y = min( area_y, _wpi_getheightrect(rcclient)-width );
-    } else if ((gridvisible) && (toolType == IMGED_FREEHAND)) {
-        area_x = xpos * pointSize.x+1;
-        area_y = ypos * pointSize.y+1;
-        width = (short)(pointSize.x-1);
-        height = (short)(pointSize.y-1);
+        area_x = min( area_x, _wpi_getwidthrect( rcclient ) - width );
+        area_y = min( area_y, _wpi_getheightrect( rcclient ) - width );
+    } else if( gridvisible && toolType == IMGED_FREEHAND ) {
+        area_x = xpos * pointSize.x + 1;
+        area_y = ypos * pointSize.y + 1;
+        width = (short)(pointSize.x - 1);
+        height = (short)(pointSize.y - 1);
     } else {
-        area_x = max(0, xpos-brushsize/2) * pointSize.x+1;
-        area_y = max(0, ypos-brushsize/2) * pointSize.y+1;
+        area_x = max( 0, xpos - brushsize / 2 ) * pointSize.x + 1;
+        area_y = max( 0, ypos - brushsize / 2 ) * pointSize.y + 1;
         width = (short)(pointSize.x - 1);
         height = (short)(pointSize.y - 1);
         /*
-         * We just have to check that we don't spill over the image dimensions
+         * We just have to check that we don't spill over the image dimensions.
          */
-        area_x = min( area_x, _wpi_getwidthrect(rcclient) - pointSize.x *
-                                                                brushsize+1 );
-        area_y = min( area_y, _wpi_getheightrect(rcclient) - pointSize.y *
-                                                                brushsize+1 );
+        area_x = min( area_x, _wpi_getwidthrect( rcclient ) - pointSize.x * brushsize + 1 );
+        area_y = min( area_y, _wpi_getheightrect( rcclient ) - pointSize.y * brushsize + 1 );
     }
 
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
-    dithered = GetSelectedColour( mousebutton, &selected_colour, &type );
+    dithered = GetSelectedColor( mousebutton, &selected_color, &type );
 
-    colourbrush = _wpi_createsolidbrush( selected_colour );
-    oldbrush = _wpi_selectobject(pres, colourbrush);
-    colourpen = _wpi_createpen(PS_SOLID, 0, selected_colour);
-    oldpen = _wpi_selectobject(pres, colourpen);
+    colorbrush = _wpi_createsolidbrush( selected_color );
+    oldbrush = _wpi_selectobject( pres, colorbrush );
+    colorpen = _wpi_createpen( PS_SOLID, 0, selected_color );
+    oldpen = _wpi_selectobject( pres, colorpen );
 
-    if (gridvisible && (toolType == IMGED_BRUSH)) {
-        for (i=0; i < brushsize; ++i) {
-            for (j=0; j < brushsize; ++j) {
-                _wpi_patblt(pres, area_x+i*pointSize.x, area_y+j*pointSize.y,
-                                                width, height, PATCOPY);
+    if( gridvisible && toolType == IMGED_BRUSH ) {
+        for( i = 0; i < brushsize; i++ ) {
+            for( j = 0; j < brushsize; j++ ) {
+                _wpi_patblt( pres, area_x + i * pointSize.x, area_y + j * pointSize.y,
+                             width, height, PATCOPY );
             }
         }
     } else {
-        _wpi_patblt(pres, area_x, area_y, width, height, PATCOPY);
+        _wpi_patblt( pres, area_x, area_y, width, height, PATCOPY );
     }
 
-    _wpi_selectobject(pres, oldbrush);
-    _wpi_selectobject(pres, oldpen);
+    _wpi_selectobject( pres, oldbrush );
+    _wpi_selectobject( pres, oldpen );
     _wpi_releasepres( hwnd, pres );
 
-    _wpi_deleteobject( colourbrush );
-    _wpi_deleteobject( colourpen );
+    _wpi_deleteobject( colorbrush );
+    _wpi_deleteobject( colorpen );
 
     pt.x = area_x / pointSize.x;
     pt.y = area_y / pointSize.y;
-    if (toolType == IMGED_BRUSH) {
-        if (type == SCREEN_CLR) {
-            BrushThePoints(selected_colour, BLACK, WHITE, &pt, brushsize);
-        } else if (type == INVERSE_CLR) {
-            BrushThePoints(selected_colour, WHITE, WHITE, &pt, brushsize);
+    if( toolType == IMGED_BRUSH ) {
+        if( type == SCREEN_CLR ) {
+            BrushThePoints( selected_color, BLACK, WHITE, &pt, brushsize );
+        } else if( type == INVERSE_CLR ) {
+            BrushThePoints( selected_color, WHITE, WHITE, &pt, brushsize );
         } else {
-            BrushThePoints(selected_colour, selected_colour, BLACK, &pt,
-                                                                brushsize);
+            BrushThePoints( selected_color, selected_color, BLACK, &pt, brushsize );
         }
     } else {
-        if (type == SCREEN_CLR) {
-            DrawThePoints(selected_colour, BLACK, WHITE, &pt);
-        } else if (type == INVERSE_CLR) {
-            DrawThePoints(selected_colour, WHITE, WHITE, &pt);
+        if( type == SCREEN_CLR ) {
+            DrawThePoints( selected_color, BLACK, WHITE, &pt );
+        } else if( type == INVERSE_CLR ) {
+            DrawThePoints( selected_color, WHITE, WHITE, &pt );
         } else {
-            DrawThePoints(selected_colour, selected_colour, BLACK, &pt);
+            DrawThePoints( selected_color, selected_color, BLACK, &pt );
         }
     }
-} /* drawPt */
+
+} /* DrawPt */
 
 /*
- * Paint - When the mouse button is down, we want to paint on the
- *                   drawing area.
+ * Paint - when the mouse button is down, we want to paint on the drawing area
  */
 void Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
 {
@@ -525,10 +529,10 @@ void Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
     WPI_PARAM2          lparam;
     WPI_LINEDDAPROC     fp;
 
-    s_pt.x = MAKELOGPTX(start_pt->x);
-    s_pt.y = MAKELOGPTY(start_pt->y);
-    e_pt.x =  MAKELOGPTX(end_pt->x);
-    e_pt.y = MAKELOGPTY(end_pt->y);
+    s_pt.x = MAKELOGPTX( start_pt->x );
+    s_pt.y = MAKELOGPTY( start_pt->y );
+    e_pt.x = MAKELOGPTX( end_pt->x );
+    e_pt.y = MAKELOGPTY( end_pt->y );
 
     CheckBounds( hwnd, &s_pt );
     CheckBounds( hwnd, &e_pt );
@@ -540,20 +544,21 @@ void Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
 
     currentMouseButton = mousebutton;
     SET_HWND_PARAM2( lparam, hwnd );
-    fp = _wpi_makelineddaprocinstance( (WPI_LINEDDAPROC)drawPt, Instance );
-    _wpi_linedda( s_pt.x, s_pt.y, e_pt.x, e_pt.y, (WPI_LINEDDAPROC)fp, lparam);
+    fp = _wpi_makelineddaprocinstance( DrawPt, Instance );
+    _wpi_linedda( s_pt.x, s_pt.y, e_pt.x, e_pt.y, (WPI_LINEDDAPROC)fp, lparam );
     _wpi_freeprocinstance( fp );
 
     DrawSinglePoint( hwnd, end_pt, mousebutton );
-    memcpy(start_pt, end_pt, sizeof(WPI_POINT));
+    memcpy( start_pt, end_pt, sizeof( WPI_POINT ) );
+
 } /* Paint */
 
 /*
- * DrawLine - Draws a line on the drawing area.
+ * DrawLine - draw a line on the drawing area
  */
 void DrawLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
 {
-    COLORREF    colour;
+    COLORREF    color;
     COLORREF    dithered;
     WPI_POINT   imgstart_pt;
     WPI_POINT   imgend_pt;
@@ -567,25 +572,26 @@ void DrawLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutto
     imgend_pt.x = end_pt->x / pointSize.x;
     imgend_pt.y = end_pt->y / pointSize.y;
 
-    dithered = GetSelectedColour(mousebutton, &colour, &type);
+    dithered = GetSelectedColor( mousebutton, &color, &type );
 
-    if (type == SCREEN_CLR) {
-        LineXorAnd(BLACK, WHITE, &imgstart_pt, &imgend_pt);
-    } else if (type == INVERSE_CLR) {
-        LineXorAnd(WHITE, WHITE, &imgstart_pt, &imgend_pt);
+    if( type == SCREEN_CLR ) {
+        LineXorAnd( BLACK, WHITE, &imgstart_pt, &imgend_pt );
+    } else if( type == INVERSE_CLR ) {
+        LineXorAnd( WHITE, WHITE, &imgstart_pt, &imgend_pt );
     } else {
-        LineXorAnd(colour, BLACK, &imgstart_pt, &imgend_pt);
+        LineXorAnd( color, BLACK, &imgstart_pt, &imgend_pt );
     }
     node = SelectImage( hwnd );
-    InvalidateRect(node->viewhwnd, NULL, FALSE);
+    InvalidateRect( node->viewhwnd, NULL, FALSE );
     BlowupImage( hwnd, NULL );
+
 } /* DrawLine */
 
 /*
- * OutlineLine - outlines the line before it is drawn.
+ * OutlineLine - outline the line before it is drawn
  */
 void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                                        WPI_POINT *prev_pt, BOOL firsttime )
+                  WPI_POINT *prev_pt, BOOL firsttime )
 {
     WPI_POINT   startpt;
     WPI_POINT   endpt;
@@ -597,10 +603,10 @@ void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
 
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
-    startpt.x = MAKELOGPTX( start_pt->x ) + pointSize.x/2;
-    startpt.y = MAKELOGPTY( start_pt->y ) + pointSize.y/2;
-    endpt.x = MAKELOGPTX( end_pt->x ) + pointSize.x/2;
-    endpt.y = MAKELOGPTY( end_pt->y ) + pointSize.y/2;
+    startpt.x = MAKELOGPTX( start_pt->x ) + pointSize.x / 2;
+    startpt.y = MAKELOGPTY( start_pt->y ) + pointSize.y / 2;
+    endpt.x = MAKELOGPTX( end_pt->x ) + pointSize.x / 2;
+    endpt.y = MAKELOGPTY( end_pt->y ) + pointSize.y / 2;
 
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
@@ -609,10 +615,10 @@ void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
 
     prevROP2 = _wpi_setrop2( pres, R2_XORPEN );
 
-    if (!firsttime) {
+    if( !firsttime ) {
         CheckBounds( hwnd, prev_pt );
-        prevpt.x = MAKELOGPTX( prev_pt->x ) + pointSize.x/2;
-        prevpt.y = MAKELOGPTY( prev_pt->y ) + pointSize.y/2;
+        prevpt.x = MAKELOGPTX( prev_pt->x ) + pointSize.x / 2;
+        prevpt.y = MAKELOGPTY( prev_pt->y ) + pointSize.y / 2;
         _wpi_movetoex( pres, &startpt, NULL );
         _wpi_lineto( pres, &prevpt );
     }
@@ -625,15 +631,16 @@ void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     _wpi_deleteobject( hwhitepen );
 
     _wpi_releasepres( hwnd, pres );
+
 }  /* OutlineLine */
 
 /*
- * DisplayRegion - Draws the region (rectangle or ellipse) first in the view
- *              window, then in the draw area.
+ * DisplayRegion - draw the region (rectangle or ellipse) first in the view
+ *                 window, then in the draw area
  */
 void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton )
 {
-    COLORREF    colour;
+    COLORREF    color;
     COLORREF    dithered;
     COLORREF    solid;
     WPI_POINT   imgstart_pt;
@@ -646,68 +653,68 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
 
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
-    imgstart_pt.x = min(start_pt->x / pointSize.x, end_pt->x / pointSize.x);
-    imgend_pt.x = max(start_pt->x / pointSize.x, end_pt->x / pointSize.x);
+    imgstart_pt.x = min( start_pt->x / pointSize.x, end_pt->x / pointSize.x );
+    imgend_pt.x = max( start_pt->x / pointSize.x, end_pt->x / pointSize.x );
 #ifdef __OS2_PM__
-    imgstart_pt.y = max(start_pt->y / pointSize.y, end_pt->y / pointSize.y);
-    imgend_pt.y = min(start_pt->y / pointSize.y, end_pt->y / pointSize.y) - 1;
+    imgstart_pt.y = max( start_pt->y / pointSize.y, end_pt->y / pointSize.y );
+    imgend_pt.y = min( start_pt->y / pointSize.y, end_pt->y / pointSize.y ) - 1;
 #else
-    imgstart_pt.y = min(start_pt->y / pointSize.y, end_pt->y / pointSize.y);
-    imgend_pt.y = max(start_pt->y / pointSize.y, end_pt->y / pointSize.y) + 1;
+    imgstart_pt.y = min( start_pt->y / pointSize.y, end_pt->y / pointSize.y );
+    imgend_pt.y = max( start_pt->y / pointSize.y, end_pt->y / pointSize.y ) + 1;
 #endif
 
-    imgend_pt.x += 1;
+    imgend_pt.x++;
 
-    dithered = GetSelectedColour(mousebutton, &solid, &type);
-    switch (toolType) {
+    dithered = GetSelectedColor( mousebutton, &solid, &type );
+    switch( toolType ) {
     case IMGED_RECTO:
         dofillrgn = FALSE;
         is_rect = TRUE;
-        colour = solid;
+        color = solid;
         break;
 
     case IMGED_RECTF:
         dofillrgn = TRUE;
         is_rect = TRUE;
-        colour = dithered;
+        color = dithered;
         break;
 
     case IMGED_CIRCLEO:
         dofillrgn = FALSE;
         is_rect = FALSE;
-        colour = solid;
+        color = solid;
         break;
 
     case IMGED_CIRCLEF:
         dofillrgn = TRUE;
         is_rect = FALSE;
-        colour = dithered;
+        color = dithered;
         break;
 
     default:
         return;
     }
 
-    _wpi_setrectvalues(&rect, imgstart_pt.x, imgstart_pt.y, imgend_pt.x,
-                                                        imgend_pt.y);
-    if (type == SCREEN_CLR) {
-        RegionXorAnd(BLACK, WHITE, dofillrgn, &rect, is_rect);
-    } else if (type == INVERSE_CLR) {
-        RegionXorAnd(WHITE, WHITE, dofillrgn, &rect, is_rect);
+    _wpi_setrectvalues( &rect, imgstart_pt.x, imgstart_pt.y, imgend_pt.x, imgend_pt.y );
+    if( type == SCREEN_CLR ) {
+        RegionXorAnd( BLACK, WHITE, dofillrgn, &rect, is_rect );
+    } else if( type == INVERSE_CLR ) {
+        RegionXorAnd( WHITE, WHITE, dofillrgn, &rect, is_rect );
     } else {
-        RegionXorAnd(colour, BLACK, dofillrgn, &rect, is_rect);
+        RegionXorAnd( color, BLACK, dofillrgn, &rect, is_rect );
     }
 
     node = GetCurrentNode();
     InvalidateRect( node->viewhwnd, NULL, FALSE );
     BlowupImage( hwnd, NULL );
+
 } /* DisplayRegion */
 
 /*
- * OutlineClip - displays the potential region to be clipped to the clip board
+ * OutlineClip - display the potential region to be clipped to the clipboard
  */
 void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                                        WPI_POINT *prev_pt, BOOL firsttime )
+                  WPI_POINT *prev_pt, BOOL firsttime )
 {
     WPI_RECT    newpos;
     WPI_RECT    oldpos;
@@ -721,19 +728,19 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
     CheckBounds( hwnd, prev_pt );
-    left = (IMGED_DIM)MAKELOGPTX(start_pt->x);
-    top = (IMGED_DIM)MAKELOGPTY(start_pt->y);
-    right = (IMGED_DIM)MAKELOGPTX(end_pt->x);
-    bottom = (IMGED_DIM)MAKELOGPTY(end_pt->y);
+    left = (IMGED_DIM)MAKELOGPTX( start_pt->x );
+    top = (IMGED_DIM)MAKELOGPTY( start_pt->y );
+    right = (IMGED_DIM)MAKELOGPTX( end_pt->x );
+    bottom = (IMGED_DIM)MAKELOGPTY( end_pt->y );
 
-    if (left > right) {
+    if( left > right ) {
         temp = right;
         right = left + pointSize.x;
         left = temp;
     } else {
         right += pointSize.x;
     }
-    if (top > bottom) {
+    if( top > bottom ) {
         temp = bottom;
         bottom = top + pointSize.y;
         top = temp;
@@ -747,14 +754,14 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     right = (IMGED_DIM)MAKELOGPTX( prev_pt->x );
     bottom = (IMGED_DIM)MAKELOGPTY( prev_pt->y );
 
-    if (left > right) {
+    if( left > right ) {
         temp = right;
         right = left + pointSize.x;
         left = temp;
     } else {
         right += pointSize.x;
     }
-    if (top > bottom) {
+    if( top > bottom ) {
         temp = bottom;
         bottom = top + pointSize.y;
         top = temp;
@@ -766,14 +773,14 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     pres = _wpi_getpres( hwnd );
     OutlineRectangle( firsttime, pres, &oldpos, &newpos );
     _wpi_releasepres( hwnd, pres );
+
 } /* OutlineClip */
 
 /*
- * OutlineRegion - displays the potential region (rectangle or ellipse)
- *                 on the draw area.
+ * OutlineRegion - display the potential region (rectangle or ellipse) on the draw area
  */
 void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                                        WPI_POINT *prev_pt, BOOL firsttime )
+                    WPI_POINT *prev_pt, BOOL firsttime )
 {
     WPI_POINT   topleft;
     WPI_POINT   bottomright;
@@ -790,17 +797,17 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
     CheckBounds( hwnd, prev_pt );
-    _wpi_setpoint(&topleft, MAKELOGPTX(start_pt->x), MAKELOGPTY(start_pt->y));
-    _wpi_setpoint(&bottomright, MAKELOGPTX(end_pt->x), MAKELOGPTY(end_pt->y));
+    _wpi_setpoint( &topleft, MAKELOGPTX( start_pt->x ), MAKELOGPTY( start_pt->y ) );
+    _wpi_setpoint( &bottomright, MAKELOGPTX( end_pt->x ), MAKELOGPTY( end_pt->y ) );
 
-    if (topleft.x > bottomright.x) {
+    if( topleft.x > bottomright.x ) {
         temp = (short)bottomright.x;
         bottomright.x = topleft.x + pointSize.x;
         topleft.x = temp;
     } else {
         bottomright.x += pointSize.x;
     }
-    if (topleft.y > bottomright.y) {
+    if( topleft.y > bottomright.y ) {
         temp = (int)bottomright.y;
         bottomright.y = topleft.y + pointSize.y;
         topleft.y = temp;
@@ -813,7 +820,7 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     prevbr.x = MAKELOGPTX( prev_pt->x );
     prevbr.y = MAKELOGPTY( prev_pt->y );
 
-    if (prevtl.x > prevbr.x) {
+    if( prevtl.x > prevbr.x ) {
         temp = (int)prevbr.x;
         prevbr.x = prevtl.x + pointSize.x;
         prevtl.x = temp;
@@ -821,7 +828,7 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
         prevbr.x += pointSize.x;
     }
 
-    if (prevtl.y > prevbr.y) {
+    if( prevtl.y > prevbr.y ) {
         temp = (int)prevbr.y;
         prevbr.y = prevtl.y + pointSize.y;
         prevtl.y = temp;
@@ -829,10 +836,10 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
         prevbr.y += pointSize.y;
     }
 
-    ++prevtl.x;
-    ++prevtl.y;
-    ++topleft.x;
-    ++topleft.y;
+    prevtl.x++;
+    prevtl.y++;
+    topleft.x++;
+    topleft.y++;
 
     pres = _wpi_getpres( hwnd );
     _wpi_torgbmode( pres );
@@ -843,15 +850,15 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     holdbrush = _wpi_selectobject( pres, hbrush );
     holdpen = _wpi_selectobject( pres, hwhitepen );
 
-    if (!firsttime) {
-        if ((toolType == IMGED_CIRCLEO) || (toolType == IMGED_CIRCLEF)) {
+    if( !firsttime ) {
+        if( toolType == IMGED_CIRCLEO || toolType == IMGED_CIRCLEF ) {
             _wpi_ellipse( pres, prevtl.x, prevtl.y, prevbr.x, prevbr.y );
         } else {
             _wpi_rectangle( pres, prevtl.x, prevtl.y, prevbr.x, prevbr.y );
         }
     }
 
-    if ((toolType == IMGED_CIRCLEO) || (toolType == IMGED_CIRCLEF)) {
+    if( toolType == IMGED_CIRCLEO || toolType == IMGED_CIRCLEF ) {
         _wpi_ellipse( pres, topleft.x, topleft.y, bottomright.x, bottomright.y );
     } else {
         _wpi_rectangle( pres, topleft.x, topleft.y, bottomright.x, bottomright.y );
@@ -863,48 +870,51 @@ void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     _wpi_deleteobject( hbrush );
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );
+
 } /* OutlineRegion */
 
 /*
- * FillArea - Fills the area.
+ * FillArea - fill the area
  */
 void FillArea( WPI_POINT *pt, int mousebutton )
 {
     WPI_POINT   devicept;
-    COLORREF    colour;
+    COLORREF    color;
     wie_clrtype type;
     img_node    *node;
 
     devicept.x = pt->x / pointSize.x;
     devicept.y = pt->y / pointSize.y;
-    colour = GetSelectedColour( mousebutton, NULL, &type );
+    color = GetSelectedColor( mousebutton, NULL, &type );
 
-    FillXorAnd(colour, &devicept, type);
+    FillXorAnd( color, &devicept, type );
     node = GetCurrentNode();
     InvalidateRect( node->viewhwnd, NULL, FALSE );
     BlowupImage( node->hwnd, NULL );
 #ifdef __OS2_PM__
     currentMouseButton = currentMouseButton;    // just to suppres complaints
 #endif
+
 } /* FillArea */
 
 /*
- * CreateNewDrawPad - creates a new draw pad which is a child of the client
- *                    window.  These are the mdi children.
+ * CreateNewDrawPad - create a new draw pad which is a child of the client window
+ *                  - these are the MDI children
  */
 void CreateNewDrawPad( img_node *node )
 {
 #ifdef __OS2_PM__
     hDrawArea = PMNewDrawPad( node );
-    WinSendMsg( hDrawArea, WM_ACTIVATE, MPFROMSHORT(TRUE), MPFROMHWND(hDrawArea) );
+    WinSendMsg( hDrawArea, WM_ACTIVATE, MPFROMSHORT( TRUE ), MPFROMHWND( hDrawArea ) );
 #else
     hDrawArea = WinNewDrawPad( node );
 #endif
+
 } /* CreateNewDrawPad */
 
 /*
- * CreateDrawnImage - Creates the enlarged image in the drawing area.  (used
- *                    when activating a new image or selecting a new image).
+ * CreateDrawnImage - create the enlarged image in the drawing area
+ *                  - used when activating a new image or selecting a new image
  */
 void CreateDrawnImage( img_node *node )
 {
@@ -915,30 +925,30 @@ void CreateDrawnImage( img_node *node )
     GetClientRect( node->hwnd, &rcclient );
     hDrawArea = node->hwnd;
 
-    cx = _wpi_getwidthrect(rcclient);
-    cy = _wpi_getheightrect(rcclient);
+    cx = _wpi_getwidthrect( rcclient );
+    cy = _wpi_getheightrect( rcclient );
 
     cx = cx / node->width;
     cy = cy / node->height;
 
-    pointSize.x = max (1, cx);
-    pointSize.y = max (1, cy);
+    pointSize.x = max( 1, cx );
+    pointSize.y = max( 1, cy );
 
 } /* CreateDrawnImage */
 
 /*
- * CheckGridItem - Check the grid item and display the grid if necessary.
- *                 First we check if an item has been created or not, if not
- *                 we just check some flags so that when it is created, a
- *                 grid will (not) be displayed.
+ * CheckGridItem - check the grid item and display the grid if necessary
+ *               - first check if an item has been created or not
+ *               - if not, just check some flags so that when it is created, a
+ *                 grid will (not) be displayed
  */
 void CheckGridItem( HMENU hmenu )
 {
     WPI_ENUMPROC        fp_enum;
     HCURSOR             prevcursor;
 
-    prevcursor = _wpi_setcursor( _wpi_getsyscursor(IDC_WAIT) );
-    if ( _wpi_isitemchecked(hmenu, IMGED_GRID) ) {
+    prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
+    if( _wpi_isitemchecked( hmenu, IMGED_GRID ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_GRID, MF_UNCHECKED, FALSE );
         ImgedConfigInfo.grid_on = FALSE;
         BlowupImage( NULL, NULL );
@@ -957,11 +967,12 @@ void CheckGridItem( HMENU hmenu )
         _wpi_freeprocinstance( fp_enum );
     }
     _wpi_setcursor( prevcursor );
+
 } /* CheckGridItem */
 
 /*
- * ResetDrawArea - Resets the drawing area when a new image is selected from
- *                 the select icon menu option. (only for icon files).
+ * ResetDrawArea - reset the drawing area when a new image is selected from
+ *                 the select icon menu option (only for icon files)
  */
 void ResetDrawArea( img_node *node )
 {
@@ -973,12 +984,12 @@ void ResetDrawArea( img_node *node )
 
     GetClientRect( node->hwnd, &rcclient );
 
-    pointSize.x = max (1, _wpi_getwidthrect(rcclient) / node->width);
-    pointSize.y = max (1, _wpi_getheightrect(rcclient) / node->height);
+    pointSize.x = max( 1, _wpi_getwidthrect( rcclient ) / node->width );
+    pointSize.y = max( 1, _wpi_getheightrect( rcclient ) / node->height );
 
-    if (ImgedConfigInfo.square_grid) {
+    if( ImgedConfigInfo.square_grid ) {
         GetClientRect( ClientWindow, &rc );
-        if (pointSize.y * node->height > _wpi_getheightrect(rc) ) {
+        if( pointSize.y * node->height > _wpi_getheightrect( rc ) ) {
             pointSize.y = pointSize.x;
         } else {
             pointSize.x = pointSize.y;
@@ -986,68 +997,78 @@ void ResetDrawArea( img_node *node )
         /*
          * I add 1 to cause ResizeChild to resize the window.
          */
-        new_width = (short)(pointSize.x*node->width+1);
-        new_height = (short)(pointSize.y*node->height+1);
-        lparam = WPI_MAKEP2(new_width, new_height);
-        ResizeChild(lparam, node->hwnd, TRUE );
+        new_width = (short)(pointSize.x * node->width + 1);
+        new_height = (short)(pointSize.y * node->height + 1);
+        lparam = WPI_MAKEP2( new_width, new_height );
+        ResizeChild( lparam, node->hwnd, TRUE );
     }
     BlowupImage( node->hwnd, NULL );
+
 } /* ResetDrawArea */
 
 /*
- * SetDrawTool - Sets the appropriate tool type.
+ * SetDrawTool - set the appropriate tool type
  */
 void SetDrawTool( int tool_type )
 {
     toolType = tool_type;
+
 } /* SetDrawTool */
 
 /*
- * SetBrushSize - sets the size of the brush for the brush tool option.
+ * SetBrushSize - set the size of the brush for the brush tool option
  */
 void SetBrushSize( short new_size )
 {
     ImgedConfigInfo.brush_size = new_size;
     WriteSetSizeText( WIE_NEWBRUSHSIZE, new_size, new_size );
+
 } /* SetBrushSize */
 
-static void SetGridSize( int x, int y )
+/*
+ * setGridSize
+ */
+static void setGridSize( int x, int y )
 {
     WriteSetSizeText( WIE_NEWGRIDSIZE, x, y );
-} /* SetGridSize */
+
+} /* setGridSize */
 
 /*
- * RepaintDrawArea - handles the WM_PAINT message.
+ * RepaintDrawArea - handle the WM_PAINT message
  */
 void RepaintDrawArea( HWND hwnd )
 {
     WPI_PRES            pres;
     PAINTSTRUCT         ps;
 
-    if (hwnd) {
+    if( hwnd != NULL ) {
         pres = _wpi_beginpaint( hwnd, NULL, &ps );
         BlowupImage( hwnd, pres );
         _wpi_endpaint( hwnd, pres, &ps );
     }
+
 } /* RepaintDrawArea */
 
 /*
- * GetPointSize - returns the point size.
+ * GetPointSize - return the point size
  */
 WPI_POINT GetPointSize( HWND hwnd )
 {
-    WPI_POINT   pt = {0, 0};
+    WPI_POINT   pt = { 0, 0 };
     img_node    *node;
     WPI_RECT    rc;
     int         width;
     int         height;
 
     node = SelectImage( hwnd );
-    if (!node) return( pt );
+    if( node == NULL ) {
+        return( pt );
+    }
 
     GetClientRect( hwnd, &rc );
-    width = _wpi_getwidthrect(rc);
-    height = _wpi_getheightrect(rc);
+    width = _wpi_getwidthrect( rc );
+    height = _wpi_getheightrect( rc );
     pt.x = width / node->width;
     pt.y = height / node->height;
 
@@ -1058,10 +1079,11 @@ WPI_POINT GetPointSize( HWND hwnd )
         pt.y = 1;
     }
     return( pt );
+
 } /* GetPointSize */
 
 /*
- * ResizeChild - resizes the draw area of the child window.
+ * ResizeChild - resize the draw area of the child window
  */
 void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
 {
@@ -1090,7 +1112,7 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
 
     GetClientRect( hwnd, &rc );
     GetWindowRect( hwnd, &rect );
-    if( frame ) {
+    if( frame != NULL ) {
         GetClientRect( frame, &rc );
         GetWindowRect( frame, &rect );
     }
@@ -1101,20 +1123,21 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
     x_adjustment = _wpi_getwidthrect( rect ) - _wpi_getwidthrect( rc );
     y_adjustment = _wpi_getheightrect( rect ) - _wpi_getheightrect( rc );
 
-    #if 1
-        min_width = MIN_DRAW_WIN_WIDTH;
-    #else
-        min_width = (short)(2*_wpi_getsystemmetrics(SM_CXSIZE)) +
-                    x_adjustment +
-                    8; // fudge factor to allow some of title bar to show
-    #endif
+#if 1
+    min_width = MIN_DRAW_WIN_WIDTH;
+#else
+    // fudge factor to allow some of title bar to show
+    min_width = (short)(2 * _wpi_getsystemmetrics( SM_CXSIZE )) + x_adjustment + 8;
+#endif
 
 #ifdef __OS2_PM__
-    ++y_adjustment;
+    y_adjustment++;
 #endif
 
     node = SelectImage( hwnd );
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     // the following assumes that max.x >> min_width
     point_size.x = min( max.x / node->width, width / node->width );
@@ -1125,11 +1148,11 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
 
     if( ImgedConfigInfo.square_grid ) {
         point_size.x = min( point_size.x, point_size.y );
-        if( point_size.x < ( min_width / node->width + 1 ) ) {
+        if( point_size.x < min_width / node->width + 1 ) {
             point_size.x = min_width / node->width + 1;
         }
-        if( point_size.x > ( max.y / node->height ) ) {
-            hmenu = GetMenu( _wpi_getframe(HMainWindow) );
+        if( point_size.x > max.y / node->height ) {
+            hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
             CheckSquareGrid( hmenu );
         } else {
             point_size.y = point_size.x;
@@ -1141,24 +1164,24 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
 
     pointSize = point_size;
 
-    if( (pointSize.x*node->width != width) ||
-        (pointSize.y*node->height != height) ) {
+    if( pointSize.x * node->width != width || pointSize.y * node->height != height ) {
         SetWindowPos( frame, HWND_TOP, 0, 0, new_width, new_height,
-                        SWP_SIZE | SWP_ZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
-        SetGridSize( pointSize.x, pointSize.y );
+                      SWP_SIZE | SWP_ZORDER | SWP_NOMOVE | SWP_SHOWWINDOW );
+        setGridSize( pointSize.x, pointSize.y );
     }
     if( !firsttime ) {
         BlowupImage( node->hwnd, NULL );
     }
+
 } /* ResizeChild */
 
 /*
- * CheckSquareGrid - checks the square grid item
+ * CheckSquareGrid - check the square grid item
  */
 void CheckSquareGrid( HMENU hmenu )
 {
-    if ( _wpi_isitemchecked(hmenu, IMGED_SQUARE) ) {
-        _wpi_checkmenuitem(hmenu, IMGED_SQUARE, MF_UNCHECKED, FALSE);
+    if( _wpi_isitemchecked( hmenu, IMGED_SQUARE ) ) {
+        _wpi_checkmenuitem( hmenu, IMGED_SQUARE, MF_UNCHECKED, FALSE );
         ImgedConfigInfo.square_grid = FALSE;
         PrintHintTextByID( WIE_SQUAREGRIDOFF, NULL );
     } else {
@@ -1166,11 +1189,11 @@ void CheckSquareGrid( HMENU hmenu )
         ImgedConfigInfo.square_grid = TRUE;
         PrintHintTextByID( WIE_SQUAREGRIDON, NULL );
     }
+
 } /* CheckSquareGrid */
 
 /*
- * MaximizeCurrentChild - makes the current edit window as large as it can
- *                        possibly be.
+ * MaximizeCurrentChild - make the current edit window as large as it can possibly be
  */
 void MaximizeCurrentChild( void )
 {
@@ -1185,7 +1208,9 @@ void MaximizeCurrentChild( void )
     short       y_adjustment;
 
     node = GetCurrentNode();
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     GetClientRect( node->hwnd, &rc );
     GetWindowRect( node->hwnd, &rect );
@@ -1194,8 +1219,8 @@ void MaximizeCurrentChild( void )
     y_adjustment = _wpi_getheightrect( rect ) - _wpi_getheightrect( rc );
 
     GetClientRect( ClientWindow, &client );
-    max_width = (short)( _wpi_getwidthrect(client) );
-    max_height = (short)( _wpi_getheightrect(client) );
+    max_width = (short)_wpi_getwidthrect( client );
+    max_height = (short)_wpi_getheightrect( client );
 
     max_pt_size.x = max_width / node->width;
     max_pt_size.y = max_height / node->height;
@@ -1213,6 +1238,6 @@ void MaximizeCurrentChild( void )
     max_height = max_pt_size.y * node->height + y_adjustment;
 
     SetWindowPos( node->hwnd, HWND_TOP, 0, 0, max_width, max_height,
-                        SWP_SIZE | SWP_MOVE | SWP_ZORDER | SWP_SHOWWINDOW );
-} /* MaximizeCurrentChild */
+                  SWP_SIZE | SWP_MOVE | SWP_ZORDER | SWP_SHOWWINDOW );
 
+} /* MaximizeCurrentChild */

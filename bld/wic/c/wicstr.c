@@ -42,12 +42,17 @@ typedef struct {
 
 static pHTable strTable = NULL;
 
-static unsigned _strEntryHashFunc(pStrEntry entry, unsigned size) {
+static unsigned _strEntryHashFunc(void *_entry, unsigned size) {
+    pStrEntry entry = _entry;
+
     assert(entry != NULL);
     return stringHashFunc(entry->string, size);
 }
 
-static int _strEntryHashComp(pStrEntry entry1, pStrEntry entry2) {
+static int _strEntryHashComp(void *_entry1, void *_entry2) {
+    pStrEntry entry1 = _entry1;
+    pStrEntry entry2 = _entry2;
+
     if (entry1 == entry2) {
         return 0;
     } else {
@@ -110,7 +115,9 @@ void zapString(char *str) {
     }
 }
 
-static void _zapStrEntry(pStrEntry entry) {
+static void _zapStrEntry(void *_entry) {
+    pStrEntry entry = _entry;
+
     if (entry->count != 0) {
 //      printf(" STR_NON_FREED: %s ", entry->string);
     }

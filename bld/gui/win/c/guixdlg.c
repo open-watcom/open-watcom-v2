@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
- #include "guiwind.h"
+#include "guiwind.h"
 #include <stdlib.h>
 #include <string.h>
 #include "guiutil.h"
@@ -64,9 +64,9 @@ static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog       
 
 extern  WPI_INST        GUIMainHInst;
 extern  controls_struct GUIControls[];
-extern  bool            GUIIsDBCS();
+extern  bool            GUIIsDBCS( void );
 
-void GUISetJapanese()
+void GUISetJapanese( void )
 {
     #ifndef __OS2_PM__
         char *  newfont;
@@ -80,7 +80,7 @@ void GUISetJapanese()
                 PointSize = 10;
             #endif
             if( Font != NULL ) {
-                GUIFree( Font );
+                GUIMemFree( Font );
             }
             GUIStrDup( newfont, &Font );
         }
@@ -103,9 +103,9 @@ void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id )
         *focus_id = item->id;
     }
     /* will subclass if required */
-    item->call_back = GUIDoSubClass( ctrl, item->class );
+    item->call_back = GUIDoSubClass( ctrl, item->control_class );
     GUICtl3dSubclassCtl( ctrl );
-    switch( item->class ) {
+    switch( item->control_class ) {
     case GUI_CHECK_BOX :
     case GUI_RADIO_BUTTON :
         if( item->checked ) {
@@ -130,7 +130,7 @@ static bool InitDialog( gui_window *wnd )
     control_item        *item;
     unsigned            focus_id;
 
-    focus_id = NULL;
+    focus_id = 0;
     for( item = wnd->controls; item != NULL; item = item->next ) {
         GUIInitControl( item, wnd, &focus_id );
     }
@@ -159,7 +159,7 @@ bool GUIProcessControlNotification( WORD id, WORD wNotify, gui_window *wnd )
     item = GUIGetControlByID( wnd, id );
 
     if( item != NULL ) {
-        switch( item->class ) {
+        switch( item->control_class ) {
         case GUI_EDIT :
         case GUI_EDIT_MLE :
             switch( wNotify ) {
@@ -178,7 +178,7 @@ bool GUIProcessControlNotification( WORD id, WORD wNotify, gui_window *wnd )
             // assume that the creator of said resource set up the
             // tab and cursor groups with a dialog editor
             if( ( wnd->flags & IS_RES_DIALOG ) == 0 ) {
-                if( item->class == GUI_RADIO_BUTTON ) {
+                if( item->control_class == GUI_RADIO_BUTTON ) {
                     GUICheckRadioButton( wnd, id );
                 } else {
                     cntl = _wpi_getdlgitem( wnd->hwnd, id );
@@ -285,7 +285,7 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
  *                 boxes
  */
 
-#if defined( UNIX )
+#if defined( __UNIX__ )
 long GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #else
 WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
@@ -346,9 +346,13 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     //case WM_CTLCOLORLISTBOX :
     case WM_CTLCOLORSTATIC :
     //case WM_CTLCOLOREDIT :
-        SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
-                     GUIGetBack( wnd, GUI_BACKGROUND ) ) );
-        return( (long)wnd->bk_brush );
+        // May come along before WM_INITDIALOG
+        if( wnd != NULL ) {
+            SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
+                        GUIGetBack( wnd, GUI_BACKGROUND ) ) );
+            return( (long)wnd->bk_brush );
+        }
+        break;
 #endif
     case WM_SYSCOLORCHANGE:
         GUICtl3dColorChange();
@@ -695,7 +699,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
             GlobalFree( data );
             return( FALSE );
         }
-        if( GUIControlInsert( wnd, control->control_class, NULL, control,
+        if( GUIControlInsert( wnd, control->control_class, NULLHANDLE, control,
                               NULL ) == NULL ) {
             GlobalFree( data );
             return( FALSE );
@@ -728,7 +732,7 @@ static WPI_FONT         DlgFont;
  *
  */
 
-#if defined( UNIX )
+#if defined( __UNIX__ )
 long GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #else
 WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
@@ -776,7 +780,7 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1
 void GUIFiniDialog( void )
 {
     if( Font != NULL ) {
-        GUIFree( Font );
+        GUIMemFree( Font );
         Font = NULL;
     }
 }
@@ -806,7 +810,7 @@ void GUIInitDialog( void )
     if( !font_set ) {
         PointSize = 0;
         if( Font != NULL ) {
-            GUIFree( Font );
+            GUIMemFree( Font );
         }
         GUIStrDup( "", &Font );
     }
@@ -819,7 +823,7 @@ void GUIInitDialog( void )
                            LIT( Empty ), LIT( Empty ), PointSize, Font );
     if( data != NULL ) {
         data = DoneAddingControls( data );
-        DynamicDialogBox( (LPVOID) GUIInitDialogFunc, GUIMainHInst, NULL, data, 0 );
+        DynamicDialogBox( (LPVOID) GUIInitDialogFunc, GUIMainHInst, NULLHANDLE, data, 0 );
     }
 }
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI support routines for heap walker.
 *
 ****************************************************************************/
 
@@ -60,7 +59,7 @@ static HWND MkDisplayWin( DWORD captionid, HWND parent )
     HWND        hdl;
     char        *caption;
 
-    caption = GetRCString( captionid );
+    caption = HWGetRCString( captionid );
     hdl = CreateWindow(
         ITEM_DISPLAY_CLASS,     /* Window class name */
         caption,                /* Window caption */
@@ -196,7 +195,7 @@ BOOL __export FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam,
         DialCount ++;
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
@@ -228,10 +227,10 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
     info->type = GD_DIALOG;
     ptr = LockResource( hl->info.ge.hBlock );
     if( ptr == NULL ) {
-        rcstr = AllocRCString( STR_SHOW );
+        rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_LOCK_MEM,
                     rcstr, MB_OK | MB_ICONINFORMATION );
-        FreeRCString( rcstr );
+        HWFreeRCString( rcstr );
         return( NULL );
     }
     info->hdl = hl->info.ge.hBlock;
@@ -242,7 +241,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
     SetWindowLong( hdl, 0, (DWORD)info );
     ShowWindow( hdl, SW_HIDE );
     if( DialCount == 0 ) {
-        DialProc = MakeProcInstance( DialogDispProc, Instance );
+        DialProc = MakeProcInstance( (FARPROC)DialogDispProc, Instance );
     }
 
     /*
@@ -253,12 +252,12 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
 
     GetDGroupItem( hl->szModule, &tmp );
     dial = CreateDialogIndirect( (HANDLE) tmp.info.ge.hBlock,
-                                 ptr, hdl, DialProc );
+                                 ptr, hdl, (DLGPROC)DialProc );
     if( dial == NULL ) {
-        rcstr = AllocRCString( STR_SHOW );
+        rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG,
                         rcstr, MB_OK | MB_ICONINFORMATION );
-        FreeRCString( rcstr );
+        HWFreeRCString( rcstr );
         return( NULL );
     }
     ShowWindow( dial, SW_SHOW );
@@ -504,9 +503,9 @@ BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam,
                 DestroyWindow( info->menu_const );
             }
             if( DialCount == 0 ) {
-                DialProc = MakeProcInstance( DialogDispProc, Instance );
+                DialProc = MakeProcInstance( (FARPROC)DialogDispProc, Instance );
             }
-            info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, DialProc );
+            info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, (DLGPROC)DialProc );
             menu = GetMenu( hwnd );
             GetMenuString( menu, wparam, buf, 40, MF_BYCOMMAND );
             SetStaticText( info->menu_const, MENU_ITEM, buf );
@@ -525,13 +524,13 @@ BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam,
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
-    return( NULL );
+    return( FALSE );
 }
 
-void ShowHeapObject( WORD lbhandle )
+void ShowHeapObject( HWND lbhandle )
 {
     heap_list   *hl;
-    int         index;
+    LRESULT     index;
     HWND        dispwnd;
     HWND        memhdl;
     BOOL        is_res;
@@ -540,17 +539,17 @@ void ShowHeapObject( WORD lbhandle )
     dispwnd = NULL;
     index = SendMessage( lbhandle, LB_GETCURSEL, 0 , 0L );
     if( index == LB_ERR ) {
-        rcstr = AllocRCString( STR_SHOW );
+        rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                         rcstr, MB_OK | MB_ICONEXCLAMATION );
-        FreeRCString( rcstr );
+        HWFreeRCString( rcstr );
         return;
     }
     hl = HeapList[ index ];
     if( hl->is_dpmi ) {
         memhdl = DispMem( Instance, HeapWalkMainWindow, hl->info.mem.sel, TRUE );
     } else if( hl->info.ge.hBlock != NULL ) {
-        memhdl = DispMem( Instance, HeapWalkMainWindow, hl->info.ge.hBlock, FALSE );
+        memhdl = DispMem( Instance, HeapWalkMainWindow, (WORD)hl->info.ge.hBlock, FALSE );
     }
     if( memhdl == NULL ) return;
     is_res = TRUE;

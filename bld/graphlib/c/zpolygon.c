@@ -35,7 +35,7 @@
 #include "stkavail.h"
 
 
-short _WCI86FAR _CGRAPH _polygon_wxy( short fill, short numpts,
+_WCRTLINK short _WCI86FAR _CGRAPH _polygon_wxy( short fill, short numpts,
 /*============================*/ struct _wxycoord _WCI86FAR *points )
 
 /* This routine draws or fills a polygon specified by the array
@@ -100,7 +100,7 @@ short _WCI86FAR _CGRAPH _polygon_wxy( short fill, short numpts,
 Entry( _POLYGON_WXY, _polygon_wxy ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _polygon_w( short fill, short numpts,
+_WCRTLINK short _WCI86FAR _CGRAPH _polygon_w( short fill, short numpts,
 /*==========================*/ double _WCI86FAR *points )
 
 {

@@ -5,30 +5,38 @@ foo db ?
 bar dw ?
 sam dd ?
 .CODE
-;    rep        scas dx,WORD PTR es:[si]
+;    repe        scas dx,WORD PTR es:[si]
 
 scasb
 scasw
 scasd
 
-rep scasb
-rep scasw
-rep scasd
-
-scas byte ptr [eax]
-scas word ptr [eax]
-scas dword ptr [eax]
+repe scasb
+repe scasw
+repe scasd
 
 scas foo
 scas bar
 scas sam
 
-rep scas byte ptr [eax]
-rep scas word ptr [eax]
-rep scas dword ptr [eax]
+repe scas foo
+repe scas bar
+repe scas sam
 
-rep scas foo
-rep scas bar
-rep scas sam
+scas byte ptr [eax]
+scas word ptr [eax]
+scas dword ptr [eax]
+
+repe scas byte ptr [eax]
+repe scas word ptr [eax]
+repe scas dword ptr [eax]
+
+scas byte ptr [bx]
+scas word ptr [bx]
+scas dword ptr [bx]
+
+repe scas byte ptr [bx]
+repe scas word ptr [bx]
+repe scas dword ptr [bx]
 
 end

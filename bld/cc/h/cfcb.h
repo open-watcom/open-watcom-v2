@@ -24,36 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File control block definition.
 *
 ****************************************************************************/
 
 
-#define SRC_BUF_SIZE    2048
-#define PRODUCTION_BUFFER_SIZE  (1024*4)
+#define SRC_BUF_SIZE            4096
 
 #define EOF_CHAR                256
-#define CONTINUE_CHAR_STRING    257
-#define MACRO_CHAR              258
+#define MACRO_CHAR              257
 
 typedef struct fcb_struct {     /* file control block structure */
-        char *  src_name;       /* pointer to file name */
-        int     src_fno;        /* file name id */
-        FNAMEPTR src_flist;     /* pointer to flist_name struct */
-        int     src_line;       /* current line number in source file */
-        FILE *  src_fp;         /* pointer to FILE struct */
-        struct fcb_struct * prev_file; /* pointer to previous fcb */
-        int     prev_currchar;  /* value of CurrChar */
-        int     src_cnt;        /* number of bytes left in buffer */
-        char __FAR *src_ptr;    /* pointer to next character in buffer */
-        int     src_bufsize;    /* size of buffer */
-        char __FAR *src_buf;    /* source buffer */
-        int     peeking;        /* non-zero => peeking with WCSQLPP */
-  #if   _CPU ==  370  // just use for 370
-        unsigned  colum;          /* start reading at colum  */
-        unsigned  trunc;          /* stop  reading at trunc  */
-        unsigned  prevcount;      /* leftovers from prev read */
-  #endif
-        long      rseekpos;      /* if closed because of too many files reopen */
+    char            *src_name;      /* pointer to file name (alias) */
+    source_loc      src_loc;        /* source file current location (alias) */
+    FNAMEPTR        src_flist;      /* pointer to flist_name struct */
+    unsigned        src_line_cnt;   /* source file line counter */
+    FILE            *src_fp;        /* pointer to FILE struct */
+    struct fcb_struct *prev_file; /* pointer to previous fcb */
+    int             prev_currchar;  /* value of CurrChar */
+    int             src_cnt;        /* number of bytes left in buffer */
+    unsigned char   *src_ptr;       /* pointer to next character in buffer */
+    int             src_bufsize;    /* size of buffer */
+    unsigned char   *src_buf;       /* source buffer */
+#if   _CPU ==  370  // just use for 370
+    unsigned        colum;          /* start reading at colum  */
+    unsigned        trunc;          /* stop  reading at trunc  */
+    unsigned        prevcount;      /* leftovers from prev read */
+#endif
+    long            rseekpos;       /* if closed because of too many files reopen */
+    int             no_eol;         /* set if no EOL before EOF */
 } FCB;

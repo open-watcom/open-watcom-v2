@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
+#include "plusplus.h"
+
 #include <stdio.h>
 #include <errno.h>
 
-#include "plusplus.h"
 #include "memmgr.h"
 #include "errdefns.h"
 #include "scan.h"
@@ -155,16 +154,13 @@ double SafeAtof( char *p )
 }
 
 
-char hex_dig(                   // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
-    char c )                    // - character
+int hex_dig(                    // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
+    int c )                     // - character
 {
-    char char_class;            // - character class
-
-    char_class = CharSet[ c ];
-    if(( char_class & (C_HX|C_DI) ) == 0 ) {
+    if(( CharSet[ c ] & (C_HX|C_DI) ) == 0 ) {
         return( 16 );
     }
-    if( char_class & C_HX ) {
+    if( CharSet[ c ] & C_HX ) {
         /* a-f or A-F */
         c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
     }
@@ -172,10 +168,10 @@ char hex_dig(                   // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
 }
 
 
-char octal_dig(                 // GET OCTAL DIGIT FOR CHAR (OR 8)
-    char chr )                  // - character
+int octal_dig(                 // GET OCTAL DIGIT FOR CHAR (OR 8)
+    int chr )                  // - character
 {
-    char retn;                  // - digit returned
+    int     retn;              // - digit returned
 
     if( ( chr >= '0' ) && ( chr <= '7' ) ) {
         retn = chr - '0';
@@ -186,8 +182,8 @@ char octal_dig(                 // GET OCTAL DIGIT FOR CHAR (OR 8)
 }
 
 
-char escape_char(               // GET ESCAPE CHAR FOR A LETTER
-    char chr )                  // - character after "\"
+int escape_char(               // GET ESCAPE CHAR FOR A LETTER
+    int chr )                  // - character after "\"
 {
     switch( chr ) {
       case 'a' :
@@ -224,10 +220,10 @@ char escape_char(               // GET ESCAPE CHAR FOR A LETTER
 }
 
 
-char classify_escape_char(      // CLASSIFY TYPE OF ESCAPE
-    char chr )                  // - character after "\"
+int classify_escape_char(       // CLASSIFY TYPE OF ESCAPE
+    int chr )                   // - character after "\"
 {
-    char retn;                  // - classification returned
+    int     retn;               // - classification returned
 
     if( octal_dig( chr ) != 8 ) {
         retn = ESCAPE_OCTAL;
@@ -242,33 +238,31 @@ char classify_escape_char(      // CLASSIFY TYPE OF ESCAPE
 
 char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
-    unsigned value )            // - value to be concatenated
+    unsigned long value )       // - value to be concatenated
 {
     char buffer[16];
 
-    return stpcpy( tgt, utoa( value, buffer, 10 ) );
+    return stpcpy( tgt, ultoa( value, buffer, 10 ) );
 }
 
 
 char *sticpy(                   // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
-    int value )                 // - value to be concatenated
+    long value )                // - value to be concatenated
 {
     char buffer[16];
 
-    return stpcpy( tgt, itoa( value, buffer, 10 ) );
+    return stpcpy( tgt, ltoa( value, buffer, 10 ) );
 }
 
 
-#if __WATCOMC__ >= 1100
 char *sti64cpy(                 // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
-    __int64 value )             // - value to be concatenated
+    signed_64 value )           // - value to be concatenated
 {
-    sprintf( tgt, "%I64d", value );
+    sprintf( tgt, "%lld", value );
     return strend( tgt );
 }
-#endif
 
 int strpref(                    // IS STRING A PREFIX OF A STRING
     char const *prefix,         // - possible prefix

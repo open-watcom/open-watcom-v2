@@ -1,68 +1,56 @@
 proj_name = wzoom
 name = wzoom
+
+!ifndef wzoom_autodepends
+wzoom_autodepends = .AUTODEPEND
+!endif
+
 sys_windowed = 1
 
 !include cproj.mif
-#!include deftarg.mif
+!include deftarg.mif
 !include defrule.mif
 
-msgh            = rcstr.h
-mastermsg       = rcstr.msg
-msgfiles        = $(wzoom_dir)\wzoom.msg $(sdk_dir)\misc\about.msg
+objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj
 
-objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj &
-        mem.obj about.obj ldstr.obj
-
-resinc          = -i=$(wzoom_dir)\res
-resincj         = -i=$(wzoom_dir)\res\kanji
-resources       = $(sdk_dir)\misc\about.dlg rcstr.msg config.dlg
-rcopts1         = -r -zk0
-rcopts2         = -k -ad
-
-extra_c_flags     = -dNOUSE3D
 extra_c_flags_mem = -DNO_WPI
-extra_l_flags_win = option stack=7k option heapsize=2k lib toolhelp.lib lib ctl3d.lib
-extra_l_flags_nt  = option stack=64k
+
 extra_l_flags     = option map
+extra_l_flags_nt  = op stack=64k
+extra_l_flags_win = op stack=7k, heapsize=2k
 
-inc_dirs        = $(wzoom_dir);$(sdk_dir)\misc;$(watcom_dir)\h
+xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
 
-.before:
-        @set INCLUDE=$(inc_path)
+inc_dirs = -I.. -I"$(commonui_dir)/h" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
 
-.c: $(wzoom_dir);$(sdk_dir)\misc
-.h: $(wzoom_dir);$(sdk_dir)\misc
+.c: ..
+.h: ..
 
-$(name).exe : $(msgh) $(objs) $(name).res
-        $(linker) $(lflags) name $(name).exe file { $(objs) }
-        $(RC) $(rc_flags) $(rcopts2) $(name).res
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_$(host_os)_$(host_cpu))
+        $(linker) $(lflags) name $(name).exe file { $(objs) } lib { $(xlibs) }
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(name).res $^@
+!endif
 
 $(name)j.exe : $(name).exe $(name)j.res
-        copy $(name).exe $(name)j.exe
-        $(RC) $(rc_flags) $(rcopts2) $(name)j.res
+        cp $(name).exe $(name)j.exe
+        $(rc) -k $(name)j.res $^@
 
-$(msgh) : $(mastermsg)
-        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+rcstr.gh : rcstrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
 
-$(mastermsg) : $(msgfiles)
-        $(cc) -zk0 -p $(wzoom_dir)\wzoom.msg -fo=$(mastermsg)
+rcstrmsg.gh : ../wzoom.msg
+        $(c_pp) -zk0 $(inc_path) $[@ >$^@
 
-$(name).res : .AUTODEPEND
-        $(rc) $(rc_flags) -i$(wzoom_dir);$(sdk_dir)\misc $(wzoom_dir)\$(name).rc -fo=$(name).res $(rcopts1) $(resinc)
+$(name).res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
 
-$(name)j.res : .AUTODEPEND
-        $(rc) $(rc_flags) -i$(wzoom_dir);$(sdk_dir)\misc $(wzoom_dir)\$(name).rc -fo=$(name)j.res -d_JAPANESE_ $(resincj) $(rcopts1)
+$(name)j.res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 -I"../res/kanji" $(inc_path) -D_JAPANESE_ $[@ -fo=$^@
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj @del *.?bj
-        @if exist *.lnk @del *.lnk
-        @if exist *.exe @del *.exe
-        @if exist *.dll @del *.dll
-        @if exist *.lib @del *.lib
-        @if exist *.res @del *.res
-        @if exist *.clb @del *.clb
-        @if exist *.err @del *.err
-        @if exist *.map @del *.map
-        @if exist *.sym @del *.sym
-        @if exist $(msgh) @del $(msgh)
-        @if exist $(mastermsg) @del $(mastermsg)
+!include verrc.mif

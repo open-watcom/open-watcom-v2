@@ -1,5 +1,0 @@
-os	= dos
-bin	= fmrbin
-form	= dos
-
-!include ..\makefile

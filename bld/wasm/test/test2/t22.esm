@@ -1,0 +1,13 @@
+.387
+		EXTRN	cat:BYTE
+foo		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:foo, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	0, 0
+foo		ENDS
+poo		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:poo, DS:DGROUP, SS:DGROUP
+    mov         ax,word ptr L$1
+    mov         ax,word ptr foo:cat
+poo		ENDS
+		END

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level classes for 3D objects.
 *
 ****************************************************************************/
 
@@ -43,9 +42,9 @@
 //
 // So other words used for clarity are 'across', 'height' and 'depth'
 
-extern "C" draw_box( float x1, float x2, float y1, float y2,
-                     float z1, float z2,
-                     unsigned red, unsigned green, unsigned blue );
+extern "C" void draw_box( float x1, float x2, float y1, float y2,
+                          float z1, float z2,
+                          unsigned red, unsigned green, unsigned blue );
 
 class point {
 private:

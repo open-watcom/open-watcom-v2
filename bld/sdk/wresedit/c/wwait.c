@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wglbl.h"
 #include "wwait.h"
 
@@ -54,30 +54,29 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WSetWaitCursor ( HWND hwnd, Bool on )
+void WSetWaitCursor( HWND hwnd, Bool on )
 {
     static int      ref_count   = 0;
     static HCURSOR  wait_cursor = NULL;
     static HCURSOR  save_cursor = NULL;
 
-    if ( wait_cursor == (HCURSOR) NULL ) {
-        wait_cursor = LoadCursor ( (HWND)NULL, IDC_WAIT );
+    if( wait_cursor == (HCURSOR)NULL ) {
+        wait_cursor = LoadCursor( (HWND)NULL, IDC_WAIT );
     }
 
-    if ( on && !ref_count ) {
-        SetCapture ( hwnd );
-        save_cursor = SetCursor ( wait_cursor );
-    } else if ( !on && ( ref_count == 1 ) ) {
-        SetCursor ( save_cursor );
-        ReleaseCapture ();
+    if( on && ref_count == 0 ) {
+        SetCapture( hwnd );
+        save_cursor = SetCursor( wait_cursor );
+    } else if( !on && ref_count == 1 ) {
+        SetCursor( save_cursor );
+        ReleaseCapture();
     }
 
-    if ( on ) {
+    if( on ) {
         ref_count++;
     } else {
-        if ( ref_count ) {
+        if( ref_count != 0 ) {
             ref_count--;
         }
     }
 }
-

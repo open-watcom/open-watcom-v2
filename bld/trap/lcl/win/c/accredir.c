@@ -49,7 +49,7 @@ static char                     *fileName;
  */
 void ExecuteRedirect( void )
 {
-    tiny_ret_t          bigint;
+    tiny_ret_t          rc;
     tiny_handle_t       std_hndl;
     tiny_handle_t       *var;
 
@@ -63,8 +63,8 @@ void ExecuteRedirect( void )
     }
     if( *fileName == '\0' ) {
         if( *var != NIL_HANDLE ) {
-            bigint = TinyDup2( *var, std_hndl );
-            if( bigint < 0 ) {
+            rc = TinyDup2( *var, std_hndl );
+            if( TINY_ERROR( rc ) ) {
                 rdRet->err = 1;
             } else {
                 TinyClose( *var );
@@ -74,15 +74,15 @@ void ExecuteRedirect( void )
     } else {
         if( *var == NIL_HANDLE ) *var = TinyDup( std_hndl );
         if( isInput ) {
-            bigint = TinyOpen( fileName, TIO_READ );
+            rc = TinyOpen( fileName, TIO_READ );
         } else {
-            bigint = TinyCreate( fileName, TIO_NORMAL );
+            rc = TinyCreate( fileName, TIO_NORMAL );
         }
-        if( bigint < 0 ) {
+        if( TINY_ERROR( rc ) ) {
             rdRet->err = 1;
         } else {
-            TinyDup2( (tiny_handle_t) bigint, std_hndl );
-            TinyClose( (tiny_handle_t) bigint );
+            TinyDup2( TINY_INFO( rc ), std_hndl );
+            TinyClose( TINY_INFO( rc ) );
         }
     }
 } /* ExecuteRedirect */

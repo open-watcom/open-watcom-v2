@@ -59,36 +59,6 @@
 
 
 /*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    CmdLine *           cmdLine;
-    int                 itemsParsed;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    cmdLine = InitCmdLine( ASAXP_NUM_SECTIONS );
-
-    /*** Parse the command line and translate to Watcom options ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed == 0 ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-    OptionsTranslate( &cmdOpts, cmdLine );
-
-    /*** Spawn the assembler ***/
-    asaxp( &cmdOpts, cmdLine );
-    FiniParse( &cmdOpts );
-    exit( EXIT_SUCCESS );
-}
-
-
-/*
  * Top-level parsing routine.  Returns the number of items parsed.
  */
 static int do_parsing( OPT_STORAGE *cmdOpts )
@@ -155,4 +125,34 @@ static int asaxp( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     DestroyCmdLine( cmdLine );
 
     return( ASAXP_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    CmdLine *           cmdLine;
+    int                 itemsParsed;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    cmdLine = InitCmdLine( ASAXP_NUM_SECTIONS );
+
+    /*** Parse the command line and translate to Watcom options ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed == 0 ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+    OptionsTranslate( &cmdOpts, cmdLine );
+
+    /*** Spawn the assembler ***/
+    asaxp( &cmdOpts, cmdLine );
+    FiniParse( &cmdOpts );
+    exit( EXIT_SUCCESS );
 }

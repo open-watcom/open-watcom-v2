@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions used in all ms2wlink files.
 *
 ****************************************************************************/
 
-
-// definitions used in all ms2wlink files.
 
 typedef enum {
     FALSE = 0,
@@ -43,8 +40,6 @@ typedef int         f_handle;
 #define STDIN_HANDLE    ((f_handle)0)
 #define STDOUT_HANDLE   ((f_handle)1)
 #define STDERR_HANDLE   ((f_handle)2)
-#define STDAUX_HANDLE   ((f_handle)3)
-#define STDPRN_HANDLE   ((f_handle)4)
 
 #define MAX_LINE (256)
 #define FNMAX  80             // maximum file name length.
@@ -60,7 +55,7 @@ enum {
     E_COMMAND
 };
 
-enum {
+typedef enum {
     OBJECT_SLOT = 0,
     RUN_SLOT,
     MAP_SLOT,
@@ -68,14 +63,16 @@ enum {
     DEF_SLOT,
     OPTION_SLOT,
     OVERLAY_SLOT
-};
+} prompt_slot;
 
 typedef enum {
     FMT_DEFAULT         = 0,
     FMT_DOS             = 1,
     FMT_COM             = 2,
     FMT_OS2             = 3,
-    FMT_WINDOWS         = 4
+    FMT_WINDOWS         = 4,
+    FMT_WINVXD          = 5,
+    FMT_WINVXDDYN       = 6
 } format_type;
 
 typedef enum {

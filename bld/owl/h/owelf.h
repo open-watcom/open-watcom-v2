@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal OWL structures pertaining to ELF.
 *
 ****************************************************************************/
 
@@ -45,6 +44,7 @@ typedef struct elf_file_info {
 typedef struct elf_section_info {
     owl_offset          relocs_index;           // index of section for relocs
     owl_string_handle   relocs_name;            // name of relocs section for this section
+    owl_offset          pad_amount;             // number of bytes of padding (if any)
 } elf_section_info;
 
 extern  void    ELFFileEmit( owl_file_handle );

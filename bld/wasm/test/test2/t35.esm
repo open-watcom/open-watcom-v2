@@ -1,0 +1,27 @@
+.387
+.386p
+_data		SEGMENT	BYTE PUBLIC USE32 'data'
+    DB	74H, 68H, 69H, 73H, 20H, 69H, 73H, 20H
+    DB	61H, 20H, 73H, 74H, 72H, 69H, 6eH, 67H
+
+_data		ENDS
+_text		SEGMENT	BYTE PUBLIC USE32 'code'
+		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
+    mov       ebx,dword ptr 2[eax]
+    mov       ebx,dword ptr -2[eax]
+    mov       ebx,dword ptr [eax*2]
+    mov       ebx,dword ptr [eax*2]
+    mov       ebx,dword ptr [eax*4]
+    mov       ebx,dword ptr [eax*4]
+    mov       ebx,dword ptr [eax*8]
+    mov       ebx,dword ptr [eax*8]
+    xor       ax,ax
+    mov       ebx,dword ptr 2[eax*2]
+    mov       ebx,dword ptr [eax*4]
+    mov       ebx,dword ptr [eax*2]
+    mov       ebx,dword ptr [edx+eax*2]
+    mov       ebx,dword ptr [edx+eax*2]
+    mov       ebx,dword ptr [eax+edx*2]
+    mov       ebx,dword ptr [eax+edx*2]
+_text		ENDS
+		END

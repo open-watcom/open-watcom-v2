@@ -1,14 +1,14 @@
-# CPPEXAMP.MIF
+# cppexamp.mif
 #
-# This file is always included by MAKEFILE's in sample sub-directories.
+# This file is always included by makefiles's in sample sub-directories.
 #
-# Note: the file includes LOCAL.MIF from this directory. LOCAL.MIF is empty
+# Note: the file includes local.mif from this directory; local.mif is empty
 #       as shipped.  It can be used for any customization required in a
 #       particular installation.
 #
 
 
-!include ..\local.mif
+!include ../local.mif
 
 .extensions:
 .extensions: .exe .lnk .obj .cpp .c
@@ -45,7 +45,7 @@
 test.exe: $(objects) $(link_cmds)
     $(linker) @$(link_cmds)
 
-linkpgm.lnk: $(__MAKEFILES__) ..\local.mif
+linkpgm.lnk: $(__MAKEFILES__) ../local.mif
     @%create $^@
     @%append $^@ NAME    test
     @%append $^@ OPTION  quiet, eliminate, map, show
@@ -57,3 +57,4 @@ clean: .SYMBOLIC
     @if exist *.lnk del *.lnk
     @if exist *.obj del *.obj
     @if exist *.map del *.map
+    @if exist *.err del *.err

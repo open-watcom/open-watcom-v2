@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include <malloc.h>
 #include <setjmp.h>
-#include "winvi.h"
 #include "source.h"
 #include "expr.h"
 #include "srcwin.h"
@@ -98,16 +95,16 @@ bool GetDWORD( char *str, LPVOID res )
 /*
  * RunWindowsCommand - try to run a Windows specific command
  */
-bool RunWindowsCommand( char *cmd, long *result, vlist *vl )
+bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
 {
-    char        *str;
-    char        *tmp;
+    char        str[MAX_INPUT_LINE];
+    char        tmp[MAX_INPUT_LINE];
+    char        tmp2[MAX_INPUT_LINE];
+    char        *ext;
     int         token;
     bool        rc;
-    DWORD       left,top,width,height;
+    DWORD       left, top, width, height;
 
-    tmp = alloca( MAX_INPUT_LINE );
-    str = alloca( MAX_INPUT_LINE );
     if( tmp == NULL || str == NULL ) {
         return( FALSE );
     }
@@ -144,11 +141,11 @@ bool RunWindowsCommand( char *cmd, long *result, vlist *vl )
         return( TRUE );
 
     case T_TAKEFOCUS:
-        #ifdef __NT__
+#ifdef __NT__
         SetForegroundWindow( Root );
-        #else
+#else
         SetActiveWindow( Root );
-        #endif
+#endif
         SetFocus( Root );
         *result = ERR_NO_ERR;
         return( TRUE );
@@ -201,15 +198,15 @@ bool RunWindowsCommand( char *cmd, long *result, vlist *vl )
         if( vl != NULL ) {
             Expand( str, vl );
         }
-        SetWindowPos( Root, HWND_TOPMOST, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE );
+        SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         if( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK ) {
             *result = ERR_NO_ERR;
-            SetWindowPos( Root, HWND_NOTOPMOST, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE );
-            SetWindowPos( Root, HWND_BOTTOM, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE );
+            SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+            SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             return( TRUE );
         }
-        SetWindowPos( Root, HWND_NOTOPMOST, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE );
-        SetWindowPos( Root, HWND_BOTTOM, 0,0,0,0,SWP_NOMOVE|SWP_NOSIZE );
+        SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         *result = ERR_FILE_MODIFIED;
         return( TRUE );
     case T_QUERY_FILE:
@@ -226,21 +223,21 @@ bool RunWindowsCommand( char *cmd, long *result, vlist *vl )
     case T_EDITFILE:
         *result = 1;
         rc = EditFile( str, FALSE ) == ERR_NO_ERR;
-        #ifdef __NT__
+#ifdef __NT__
         SetForegroundWindow( Root );
-        #else
+#else
         SetActiveWindow( Root );
-        #endif
+#endif
         SetFocus( Root );
         return( rc );
     case T_LOCATE:
         *result = 1;
         rc = LocateCmd( str ) == ERR_NO_ERR;
-        #ifdef __NT__
+#ifdef __NT__
         SetForegroundWindow( Root );
-        #else
+#else
         SetActiveWindow( Root );
-        #endif
+#endif
         SetFocus( Root );
         return( rc );
     case T_WINHELP:
@@ -259,18 +256,27 @@ bool RunWindowsCommand( char *cmd, long *result, vlist *vl )
             return( TRUE );
         }
         RemoveLeadingSpaces( str );
+        strcpy( tmp2, tmp );
+        ext = strstr( tmp2, ".hlp" );
+        if( ext != NULL ) {
+            strcpy( ext, ".chm" );
+        }
         switch( token ) {
         case WINHELP_KEY:
             if( str[0] == 0 ) {
                 return( TRUE );
             }
-            WWinHelp( Root, tmp, HELP_KEY, (DWORD) str );
+            if( !WHtmlHelp( Root, tmp2, HELP_KEY, (DWORD) str ) ) {
+                WWinHelp( Root, tmp, HELP_KEY, (DWORD) str );
+            }
             break;
         case WINHELP_PARTIALKEY:
             if( str[0] == 0 ) {
                 return( TRUE );
             }
-            WWinHelp( Root, tmp, HELP_PARTIALKEY, (DWORD) str );
+            if( !WHtmlHelp( Root, tmp2, HELP_PARTIALKEY, (DWORD) str ) ) {
+                WWinHelp( Root, tmp, HELP_PARTIALKEY, (DWORD) str );
+            }
             break;
         }
         *result = ERR_NO_ERR;

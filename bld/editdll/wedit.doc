@@ -12,13 +12,13 @@ Functions
 
 All functions return FALSE for success and TRUE for failure.  
 
-BOOL FAR PASCAL EDITConnect()
+int FAR PASCAL EDITConnect()
     
     Create a DDE connection to the editor.  If a DDE-enabled copy is
     not already running, WinExec one.  The app using the DLL is free
     to call this whenever it feels like it. 
 
-BOOL FAR PASCAL EDITFile( LPSTR szFilename, LPSTR szHelpFile )
+int FAR PASCAL EDITFile( LPSTR szFilename, LPSTR szHelpFile )
 
     Load a file into the editor.  Many editors (including VIW and CW)
     will simply move to the file's window if it is already loaded.
@@ -29,12 +29,12 @@ BOOL FAR PASCAL EDITFile( LPSTR szFilename, LPSTR szHelpFile )
     a C++ error message, this string will specify the C++ help file
     name.
     
-BOOL FAR PASCAL EDITLocate( long lRow, int nCol, int nLen )
+int FAR PASCAL EDITLocate( long lRow, int nCol, int nLen )
 
     Locate the caret at the given row and column in the current file.
     if nLen is > 0, also highlight nLen characters after this position. 
 
-BOOL FAR PASCAL EDITLocateError( long lRow, int nCol, int nLen, int idResource, LPSTR szErrMsg )
+int FAR PASCAL EDITLocateError( long lRow, int nCol, int nLen, int idResource, LPSTR szErrMsg )
 
     Locate the caret at the given row and column in the current file.
     if nLen is > 0, also highlight nLen characters after this position. 
@@ -45,12 +45,12 @@ BOOL FAR PASCAL EDITLocateError( long lRow, int nCol, int nLen, int idResource, 
     action.
     
 
-BOOL FAR PASCAL EDITShowWindow( int nCmdShow )
+int FAR PASCAL EDITShowWindow( int nCmdShow )
 
     Something akin to Windows' ShowWindow.  This restricted version 
     takes only SW_RESTORE (or SW_SHOWNORMAL) and SW_MINIMIZE.
     
-BOOL FAR PASCAL EDITDisconnect( void )
+int FAR PASCAL EDITDisconnect( void )
 
     Kill our DDE connection to the editor.  If we were forced to 
     WinExec one in the first place, also try to shut it down.  
@@ -58,18 +58,25 @@ BOOL FAR PASCAL EDITDisconnect( void )
     to stay alive, the user may choose this and the editor will
     not die (we can't know this - this function is always successful)
     
-BOOL FAR PASCAL EDITSaveFiles( void ) ( only for viw so far )
+int FAR PASCAL EDITSaveFiles( void ) ( only for viw so far )
 
     Prompt the user whether or not to save for all modified files in the editor.
+
+int FAR PASCAL EDITSaveThisFile( const char * ) ( only for viw so far )
+
+    Save for file in the editor.
+
+int FAR PASCAL EDITQueryThisFile( const char * ) ( only for viw so far )
+
+    Query for file in the editor.
+
     
 Using EditDLL
 -------------
 
 -   #include "wedit.h" in your code.  
     
--   link with the import library wedit.lib
+-   link with the appropriate import library wedit.lib
 
--   have the DLL wedit.dll available to Windows.  The .lnk file for 
-    EDITCW and EDITVIW create weditcw.dll and weditviw.dll, but internally
-    the DLL thinks it is called wedit.dll.  You must therefore copy
-    one of these files to wedit.dll to use it.
+-   have the appropriate DLL wedit.dll available to Windows/OS2.
+

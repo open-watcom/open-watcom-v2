@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WRESetWaitCursor ( Bool );
+extern void WRESetWaitCursor( Bool );
 
 #endif

@@ -1,0 +1,352 @@
+c$ifndef __BSESUB_FAP__
+c$define __BSESUB_FAP__
+
+c$ifdef INCL_SUB
+c$define INCL_KBD
+c$define INCL_VIO
+c$define INCL_MOU
+c$endif
+
+c$ifdef INCL_KBD
+
+c$pragma aux (__pascal) KbdRegister "KBD16REGISTER" far16 parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__pascal) KbdDeRegister "KBD16DEREGISTER" far16
+
+c$pragma aux (__pascal) KbdCharIn "KBD16CHARIN" far16 parm( reference, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdPeek "KBD16PEEK" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdStringIn "KBD16STRINGIN" far16 parm( value*4, \
+c		reference, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdFlushBuffer "KBD16FLUSHBUFFER" far16 parm( value*2 )
+
+c$pragma aux (__pascal) KbdSetStatus "KBD16SETSTATUS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdGetStatus "KBD16GETSTATUS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdSetCp "KBD16SETCP" far16 parm( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdGetCp "KBD16GETCP" far16 parm( value*4, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdOpen "KBD16OPEN" far16 parm( reference )
+
+c$pragma aux (__pascal) KbdClose "KBD16CLOSE" far16 parm( value*2 )
+
+c$pragma aux (__pascal) KbdGetFocus "KBD16GETFOCUS" far16 parm( value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdFreeFocus "KBD16FREEFOCUS" far16 parm( value*2 )
+
+c$pragma aux (__pascal) KbdSynch "KBD16SYNCH" far16 parm( value*2 )
+
+c$pragma aux (__pascal) KbdSetFgnd "KBD16SETFGND" far16
+
+c$pragma aux (__pascal) KbdGetHWID "KBD16GETHWID" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdSetHWID "KBD16SETHWID" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdXlate "KBD16XLATE" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) KbdSetCustXt "KBD16SETCUSTXT" far16 parm( reference, \
+c		value*2 )
+
+c$endif
+
+c$ifdef INCL_VIO
+
+c$pragma aux (__pascal) VioRegister "VIO16REGISTER" far16 parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__pascal) VioGlobalReg "VIO16GLOBALREG" far16 parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioDeRegister "VIO16DEREGISTER" far16
+
+c$pragma aux (__pascal) VioGetBuf "VIO16GETBUF" far16 parm( reference, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetCurPos "VIO16GETCURPOS" far16 parm( reference, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetCurPos "VIO16SETCURPOS" far16 parm ( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetCurType "VIO16GETCURTYPE" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetCurType "VIO16SETCURTYPE" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetMode "VIO16GETMODE" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetMode "VIO16SETMODE" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetPhysBuf "VIO16GETPHYSBUF" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioReadCellStr "VIO16READCELLSTR" far16 parm( value*4, \
+c		reference, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioReadCharStr "VIO16READCHARSTR" far16 parm( value*4, \
+c		reference, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtCellStr "VIO16WRTCELLSTR" far16 parm( value*4, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtCharStr "VIO16WRTCHARSTR" far16 parm( value*4, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrollDn "VIO16SCROLLDN" far16 parm( value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrollUp "VIO16SCROLLUP" far16 parm( value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrollLf "VIO16SCROLLLF" far16 parm( value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrollRt "VIO16SCROLLRT" far16 parm( value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtNAttr "VIO16WRTNATTR" far16 parm( reference, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtNCell "VIO16WRTNCELL" far16 parm( reference, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtNChar "VIO16WRTNCHAR" far16 parm( value*4, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtTTY "VIO16WRTTTY" far16 parm( value*4, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioWrtCharStrAtt "VIO16WRTCHARSTRATT" far16 parm( value*4, \
+c		value*2, \
+c		value*2, \
+c		value*2, \
+c		data_reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioCheckCharType "VIO16CHECKCHARTYPE" far16 parm( reference, \
+c		value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioShowBuf "VIO16SHOWBUF" far16 parm( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetAnsi "VIO16SETANSI" far16 parm( value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetAnsi "VIO16GETANSI" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioPrtSc "VIO16PRTSC" far16 parm( value*2 )
+
+c$pragma aux (__pascal) VioPrtScToggle "VIO16PRTSCTOGGLE" far16 parm( value*2 )
+
+c$pragma aux (__pascal) VioRedrawSize "VIO16REDRAWSIZE" far16 parm( reference )
+
+c$pragma aux (__pascal) VioSavRedrawWait "VIO16SAVREDRAWWAIT" far16 parm( value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSavRedrawUndo "VIOSAVREDRAWUNDO" far16 parm( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioModeWait "VIO16MODEWAIT" far16 parm( value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioModeUndo "VIO16MODEUNDO" far16 parm( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrLock "VIO16SCRLOCK" far16 parm( value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioScrUnLock "VIO16SCRUNLOCK" far16 parm( value*2 )
+
+c$pragma aux (__pascal) VioPopUp "VIO16POPUP" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioEndPopUp "VIO16ENDPOPUP" far16 parm( value*2 )
+
+c$pragma aux (__pascal) VioGetConfig "VIO16GETCONFIG" far16 parm( value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetFont "VIO16GETFONT" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetFont "VIO16SETFONT" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetCp "VIO16GETCP" far16 parm( value*2, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetCp "VIO16SETCP" far16 parm( value*2, \
+c		value*2, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioGetState "VIO16GETSTATE" far16 parm( value*4, \
+c		value*2 )
+
+c$pragma aux (__pascal) VioSetState "VIO16SETSTATE" far16 parm( value*4, \
+c		value*2 )
+
+c$endif
+
+
+c$ifdef INCL_MOU
+
+c$pragma aux (__pascal) MouRegister "MOU16REGISTER" far16 parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__pascal) MouDeRegister "MOU16DEREGISTER" far16
+
+c$pragma aux (__pascal) MouFlushQue "MOU16FLUSHQUE" far16 parm( value*2 )
+
+c$pragma aux (__pascal) MouGetPtrPos "MOU16GETPTRPOS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouSetPtrPos "MOU16SETPTRPOS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouSetPtrShape "MOUSETPTRSHAPE" far16 parm( reference, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetPtrShape "MOU16GETPTRSHAPE" far16 parm( reference, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetDevStatus "MOU16GETDEVSTATUS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetNumButtons "MOU16GETNUMBUTTONS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetNumMickeys "MOU16GETNUMMICKEYS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouReadEventQue "MOU16READEVENTQUE" far16 parm( reference, \
+c		reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetNumQueEl "MOU16GETNUMQUEEL" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetEventMask "MOU16GETEVENTMASK" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouSetEventMask "MOU16SETEVENTMASK" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouGetScaleFact "MOU16GETSCALEFACT" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouSetScaleFact "MOU16SETSCALEFACT" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouOpen "MOU16OPEN" far16 parm( value*4, \
+c		reference )
+
+c$pragma aux (__pascal) MouClose "MOU16CLOSE" far16 parm( value*2 )
+
+c$pragma aux (__pascal) MouRemovePtr "MOU16REMOVEPTR" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouDrawPtr "MOU16DRAWPTR" far16 parm( value*2 )
+
+c$pragma aux (__pascal) MouSetDevStatus "MOU16SETDEVSTATUS" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouInitReal "MOU16INITREAL" far16 parm( value*4 )
+
+c$pragma aux (__pascal) MouSynch "MOU16SYNCH" far16 parm( value*2 )
+
+c$pragma aux (__pascal) MouGetThreshold "MOU16GETTHRESHOLD" far16 parm( reference, \
+c		value*2 )
+
+c$pragma aux (__pascal) MouSetThreshold "MOU16SETTHRESHOLD" far16 parm( reference, \
+c		value*2 )
+
+c$endif
+
+c$endif

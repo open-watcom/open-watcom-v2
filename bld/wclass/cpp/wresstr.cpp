@@ -40,6 +40,7 @@
 WEXPORT WResStr::WResStr( unsigned id ) {
 /***************************************/
 
+	id = id;
     assert( GUILoadString( id, _buffer, BUFFERSIZE ) );
 }
 
@@ -71,6 +72,7 @@ static char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, .
     unsigned        dest = 0;
     bool            done = FALSE;
 
+	len = len;
     while( !done ) {
         assert( dest < len );
 

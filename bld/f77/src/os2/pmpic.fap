@@ -1,0 +1,9 @@
+c$pragma aux (__syscall) PicPrint parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) PicIchg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )

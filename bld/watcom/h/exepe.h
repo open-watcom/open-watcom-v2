@@ -24,37 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Portable Executable (PE) format structures and constants.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEPE_H
 
-#if defined( __WATCOMC__ )
-#pragma pack(push,1);
-#endif
-
-/* PE executable format structures */
-
 /* type of a [relative] virtual address */
 typedef unsigned_32     pe_va;
 
 /* PE header table types */
 enum {
-        PE_TBL_EXPORT,
-        PE_TBL_IMPORT,
-        PE_TBL_RESOURCE,
-        PE_TBL_EXCEPTION,
-        PE_TBL_SECURITY,
-        PE_TBL_FIXUP,
-        PE_TBL_DEBUG,
-        PE_TBL_DESCRIPTION,
-        PE_TBL_MACHINE,
-        PE_TBL_THREAD,
-        PE_TBL_CALLBACKS,
-        PE_TBL_NUMBER = 16
+    PE_TBL_EXPORT,
+    PE_TBL_IMPORT,
+    PE_TBL_RESOURCE,
+    PE_TBL_EXCEPTION,
+    PE_TBL_SECURITY,
+    PE_TBL_FIXUP,
+    PE_TBL_DEBUG,
+    PE_TBL_ARCHITECTURE,
+    PE_TBL_GLOB_PTR,
+    PE_TBL_THREAD,
+    PE_TBL_LOAD_CONF,
+    PE_TBL_BOUND_IMPORT,
+    PE_TBL_IAT,
+    PE_TBL_DELAY_IMP,
+    PE_TBL_COMPLUS_RTHDR,
+    PE_TBL_NUMBER = 16
 };
 
 #define OLD_PE_TBL_NUMBER 9
@@ -111,35 +108,36 @@ typedef struct {
 
 #define PE_SIGNATURE 0x4550
 #define PL_SIGNATURE 0x4c50
+#define PX_SIGNATURE 0x5850
 
 /* CPU type field values */
 enum {
-        PE_CPU_UNKNOWN          = 0,
-        PE_CPU_386              = 0x014c,
-        PE_CPU_I860             = 0x014d,
-        PE_CPU_MIPS_R3000       = 0x0162,
-        PE_CPU_MIPS_R4000       = 0x0166,
-        PE_CPU_ALPHA            = 0x184,
-        PE_CPU_POWERPC          = 0x1F0
+    PE_CPU_UNKNOWN          = 0,
+    PE_CPU_386              = 0x014c,
+    PE_CPU_I860             = 0x014d,
+    PE_CPU_MIPS_R3000       = 0x0162,
+    PE_CPU_MIPS_R4000       = 0x0166,
+    PE_CPU_ALPHA            = 0x184,
+    PE_CPU_POWERPC          = 0x1F0
 };
 
 /* FLAG field bit values */
 enum {
-        PE_FLG_PROGRAM          = 0x0000,
-        PE_FLG_RELOCS_STRIPPED  = 0x0001,
-        PE_FLG_IS_EXECUTABLE    = 0x0002,
-        PE_FLG_LINNUM_STRIPPED  = 0x0004,
-        PE_FLG_LOCALS_STRIPPED  = 0x0008,
-        PE_FLG_MINIMAL_OBJ      = 0x0010,
-        PE_FLG_UPDATE_OBJ       = 0x0020,
-        PE_FLG_16BIT_MACHINE    = 0x0040,
-        PE_FLG_REVERSE_BYTE_LO  = 0x0080,       // bytes are reversed.
-        PE_FLG_32BIT_MACHINE    = 0x0100,
-        PE_FLG_FIXED            = 0x0200,
-        PE_FLG_FILE_PATCH       = 0x0400,
-        PE_FLG_FILE_SYSTEM      = 0x1000,
-        PE_FLG_LIBRARY          = 0x2000,
-        PE_FLG_REVERSE_BYTE_HI  = 0x8000
+    PE_FLG_PROGRAM          = 0x0000,
+    PE_FLG_RELOCS_STRIPPED  = 0x0001,
+    PE_FLG_IS_EXECUTABLE    = 0x0002,
+    PE_FLG_LINNUM_STRIPPED  = 0x0004,
+    PE_FLG_LOCALS_STRIPPED  = 0x0008,
+    PE_FLG_MINIMAL_OBJ      = 0x0010,
+    PE_FLG_UPDATE_OBJ       = 0x0020,
+    PE_FLG_16BIT_MACHINE    = 0x0040,
+    PE_FLG_REVERSE_BYTE_LO  = 0x0080,       // bytes are reversed.
+    PE_FLG_32BIT_MACHINE    = 0x0100,
+    PE_FLG_FIXED            = 0x0200,
+    PE_FLG_FILE_PATCH       = 0x0400,
+    PE_FLG_FILE_SYSTEM      = 0x1000,
+    PE_FLG_LIBRARY          = 0x2000,
+    PE_FLG_REVERSE_BYTE_HI  = 0x8000
 };
 
 
@@ -160,27 +158,28 @@ enum {
 
 /* SUBSYSTEM field values */
 enum {
-        PE_SS_UNKNOWN           = 0x0000,
-        PE_SS_NATIVE            = 0x0001,
-        PE_SS_WINDOWS_GUI       = 0x0002,
-        PE_SS_WINDOWS_CHAR      = 0x0003,
-        PE_SS_OS2_CHAR          = 0x0005,
-        PE_SS_POSIX_CHAR        = 0x0007,
-        PE_SS_PL_DOSSTYLE       = 0x0042
+    PE_SS_UNKNOWN           = 0x0000,
+    PE_SS_NATIVE            = 0x0001,
+    PE_SS_WINDOWS_GUI       = 0x0002,
+    PE_SS_WINDOWS_CHAR      = 0x0003,
+    PE_SS_OS2_CHAR          = 0x0005,
+    PE_SS_POSIX_CHAR        = 0x0007,
+    PE_SS_PL_DOSSTYLE       = 0x0042,
+    PE_SS_RDOS              = 0xAD05
 };
 
 /* DLL FLAGS field bit values */
 enum {
-        PE_DLL_PERPROC_INIT     = 0x0001,
-        PE_DLL_PERPROC_TERM     = 0x0002,
-        PE_DLL_PERTHRD_INIT     = 0x0004,
-        PE_DLL_PERTHRD_TERM     = 0x0008
+    PE_DLL_PERPROC_INIT     = 0x0001,
+    PE_DLL_PERPROC_TERM     = 0x0002,
+    PE_DLL_PERTHRD_INIT     = 0x0004,
+    PE_DLL_PERTHRD_TERM     = 0x0008
 };
 
 /* PE object table structure */
 #define PE_OBJ_NAME_LEN 8
 typedef struct {
-    unsigned_8          name[PE_OBJ_NAME_LEN];
+    char                name[PE_OBJ_NAME_LEN];
     unsigned_32         virtual_size;
     pe_va               rva;
     unsigned_32         physical_size;
@@ -303,16 +302,26 @@ typedef struct {
 #define DEBUG_TYPE_UNKNOWN    0
 #define DEBUG_TYPE_COFF       1
 #define DEBUG_TYPE_CODEVIEW   2
+#define DEBUG_TYPE_MISC       4
 typedef struct {
-   unsigned_32          flags;
-   unsigned_32          time_stamp;
-   unsigned_16          major;
-   unsigned_16          minor;
-   unsigned_32          debug_type;
-   unsigned_32          debug_size;
-   pe_va                data_rva;
-   unsigned_32          data_seek;
+    unsigned_32         flags;
+    unsigned_32         time_stamp;
+    unsigned_16         major;
+    unsigned_16         minor;
+    unsigned_32         debug_type;
+    unsigned_32         debug_size;
+    pe_va               data_rva;
+    unsigned_32         data_seek;
 } debug_directory;
+
+/* PE DEBUG_TYPE_MISC data */
+typedef struct {
+    unsigned_32 data_type;          /* 1 == filename of debug info file */
+    unsigned_32 length;             /* size of this data block */
+    unsigned_32 unicode;            /* LSB is unicode flag, rest is reserved */
+    char        data[256-16];       /* name + path of debug info file, null terminated */
+    unsigned_32 special_purpose;    /* used to pass file offset to cvpack utility */
+} debug_misc_dbgdata;
 
 /* procedure descriptor format for alpha and powerpc */
 
@@ -364,10 +373,6 @@ typedef struct {
     unsigned_32     code_page;
     unsigned_32     rsvd;           /* must be 0 */
 } resource_entry;
-
-#if defined( __WATCOMC__ )
-#pragma pack(pop);
-#endif
 
 #define _EXEPE_H
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Base 2 exponentiation routine.
 *
 ****************************************************************************/
 
@@ -36,29 +35,33 @@
 
 
 _WMRTLINK double ldexp( double value, int n )
-/*********************************/
-    {
-        register int exp;
-        auto    union {
-                        double x;
-                        short int a[4];
-                } u;
+/*******************************************/
+{
+    int     exp;
+    union {
+        double      x;
+        short int   a[4];
+    } u;
 
-        u.x = value;
-        if( value != 0.0 ) {
-            exp = (u.a[3] & 0x7ff0) >> 4;
-            if( n > 16000 ) n = 16000;  /* so exp +=n does not overflow */
-            if( n < -16000 ) n = -16000;/* so exp +=n does not underflow */
-            exp += n;
-            if( exp <= 0 )              return( 0.0 );
-            if( exp >= 0x07ff ) {
-                __set_ERANGE();
-                if( u.a[3] > 0 )        return( HUGE_VAL );
-                return( - HUGE_VAL );
-            }
-            exp = exp << 4;
-            u.a[3] &= 0x800f;
-            u.a[3] |= exp;
+    u.x = value;
+    if( value != 0.0 ) {
+        exp = (u.a[3] & 0x7ff0) >> 4;
+        if( n > 16000 ) n = 16000;  /* so exp +=n does not overflow */
+        if( n < -16000 ) n = -16000;/* so exp +=n does not underflow */
+        exp += n;
+        if( exp <= 0 ) {
+            return( 0.0 );
         }
-        return( u.x );
+        if( exp >= 0x07ff ) {
+            __set_ERANGE();
+            if( u.a[3] > 0 ) {
+                return( HUGE_VAL );
+            }
+            return( -HUGE_VAL );
+        }
+        exp = exp << 4;
+        u.a[3] &= 0x800f;
+        u.a[3] |= exp;
     }
+    return( u.x );
+}

@@ -33,19 +33,17 @@
 #include "variety.h"
 #include <windows.h>
 #include <stdlib.h>
+#include <dos.h>
 #include "rtdata.h"
 #include "seterrno.h"
 
 _WCRTLINK unsigned _dos_allocmem( unsigned size, LPVOID *p_mem )
 {
     LPVOID      ptr;
-    int         error;
 
     ptr = GlobalAlloc( GMEM_FIXED, size << 4 );
     if( ptr == NULL ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     *p_mem = ptr;
     return( 0 );
@@ -53,12 +51,8 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, LPVOID *p_mem )
 
 _WCRTLINK unsigned _dos_freemem( LPVOID mem )
 {
-    int         error;
-
     if( GlobalFree( mem ) != NULL ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     return( 0 );
 }

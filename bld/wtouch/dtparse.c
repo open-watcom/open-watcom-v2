@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Date parsing routines for wtouch and wpack.
 *
 ****************************************************************************/
 
@@ -52,7 +51,7 @@
 #include <direct.h>
 #include <sys/utime.h>
 #include "windows.h"
-#elif defined( __QNX__ )
+#elif defined( __UNIX__ )
 #include <dirent.h>
 #include <utime.h>
 #else
@@ -339,11 +338,19 @@ extern void WhereAmI( void )
     if( !TouchFlags.usa_date_time ) {
         COUNTRYINFO country;
         COUNTRYCODE code;
+#if defined(__386__)
+        ULONG  amount;
+
+        if( DosQueryCtryInfo( sizeof(country), &code, &country, &amount ) ) {
+            return;
+        }
+#else
         USHORT amount;
 
         if( DosGetCtryInfo( sizeof(country), &code, &country, &amount ) ) {
             return;
         }
+#endif
         switch( country.fsDateFmt ) {
         case 0x0000:
             firstParse = parseMonth;

@@ -1,2 +1,2 @@
-bswap eax
-bswap esi
+ bswap eax
+ bswap esi

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal clib heap management interface.
 *
 ****************************************************************************/
 
@@ -89,11 +88,9 @@ struct heapend {
 };
 
 extern unsigned _curbrk;
-extern unsigned char __nheap_clean;
 extern frlptr near __nheap;
 extern frlptr near __nheapbeg;
 extern struct heapblkp near __nheapblk;
-extern unsigned char __fheap_clean;
 extern unsigned short __fheap;
 
 extern unsigned __AllocSeg( unsigned int __amt );

@@ -1,0 +1,8 @@
+option map
+system causeway
+#debug all
+file le23p
+#file cwmalloc,cwfileio
+libfile c2asm
+library system2
+

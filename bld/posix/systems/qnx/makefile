@@ -1,3 +1,5 @@
-targos          = qnx
+#pmake: os_qnx cpu_386
 
-!include $(posix_dir)\mif\makeall.mif
+targos = qnx
+
+!include $(posix_dir)/mif/makeall.mif

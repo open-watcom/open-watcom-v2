@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX tr utility
+*               Translates input according to specification
 *
 ****************************************************************************/
 
@@ -41,11 +41,11 @@
 
 char *OptEnvVar = "tr";
 
-char *usageTxt[] = {
+static const char *usageTxt[] = {
     "Usage: tr [-?bcds] string1 [string2]",
     "\tstring1     : characters to translate",
-    "\tstring2     : chars from string1 are translated into the corresponding"
-    "\t\t\t      char from string2",
+    "\tstring2     : chars from string1 are translated into the corresponding",
+    "\t\t      char from string2",
     "\tOptions: -? : print this list",
     "\t\t -b : treat input stream as binary",
     "\t\t -c : complement string1 w.r.t the universe of ascii chars",
@@ -132,7 +132,7 @@ size_t expandString( char *str, char *output ) {
     int         numb;
 
     outp = output;
-    for(;;) {
+    for( ;; ) {
         ch = *str;
         if( ch == 0 ) break;
         if( ch == '[' ) {
@@ -201,11 +201,11 @@ void doTranslate( size_t len1, char *str1, size_t len2, char *str2 ) {
     } else {
         j = 0;
         for( i = 0; i < len1 && i < len2; ++i ) {
-            translationMatrix[ str1[ i ] ] = str2[ i ];
+            translationMatrix[ ((unsigned char *)str1)[ i ] ] = str2[ i ];
         }
     }
     last_ch = -1;
-    for(;;) {
+    for( ;; ) {
         ch = getchar();
         if( ch == EOF ) break;
         if( flagDelete && deleteSet[ ch ] ) continue;
@@ -217,9 +217,10 @@ void doTranslate( size_t len1, char *str1, size_t len2, char *str2 ) {
 }
 
 
-void makeSet( size_t len, char *str, char set[], int no_dups ) {
+void makeSet( size_t len, void *s, char set[], int no_dups ) {
 
-    int         i;
+    unsigned char   *str = s;
+    int             i;
 
     memset( set, 0, MAX_STR );
     for( i = 0; i < len; ++i ) {
@@ -239,7 +240,7 @@ void main( int argc, char **argv ) {
     char        string2[ MAX_STR ];
     size_t      string2_len;
 
-    for(;;) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "bcds", usageTxt );
         if( ch == -1 ) break;
         switch( ch ) {

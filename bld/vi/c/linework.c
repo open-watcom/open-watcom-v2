@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
 
@@ -40,7 +38,7 @@
  */
 void GetCurrentLine( void )
 {
-    memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len+1 );
+    memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len + 1 );
     WorkLine->len = CurrentLine->len;
     CurrentLine->inf.ld.nolinedata = TRUE;
 
@@ -49,7 +47,7 @@ void GetCurrentLine( void )
 /*
  * ReplaceCurrentLine - replace current line with work line
  */
-int ReplaceCurrentLine( void )
+vi_rc ReplaceCurrentLine( void )
 {
     int         extra;
     line        *tmp;
@@ -67,8 +65,8 @@ int ReplaceCurrentLine( void )
      */
     tmp = LineAlloc( WorkLine->data, WorkLine->len );
     tmp->inf.ld.mark = CurrentLine->inf.ld.mark;
-    ReplaceLLItem( &CurrentFcb->line_head, &CurrentFcb->line_tail,
-            CurrentLine, tmp );
+    ReplaceLLItem( (ss **)&CurrentFcb->lines.head, (ss **)&CurrentFcb->lines.tail,
+                   (ss *)CurrentLine, (ss *)tmp );
     MemFree( CurrentLine );
     CurrentLine = tmp;
 
@@ -89,7 +87,8 @@ void DisplayWorkLine( bool killsFlags )
         DCDisplayAllLines();
     } else {
         // could speed up a little by calling directly
-        i = (int)( CurrentLineNumber - TopOfPage );
+        i = (int)( CurrentPos.line - LeftTopPos.line );
         DCDisplaySomeLines( i, i );
     }
+
 } /* DisplayWorkLine */

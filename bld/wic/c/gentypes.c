@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic data structures (linked list, stack).
 *
 ****************************************************************************/
 
@@ -80,7 +79,7 @@ void addSLListElem(pSLList pList, void *elem) {
 }
 
 /* Add elem to the beginning of pList */
-void addBegSLListelem(pSLList pList, void *elem) {
+void addBegSLListElem(pSLList pList, void *elem) {
 
     _SLList *newList;
     newList = wicMalloc(sizeof(_SLList));
@@ -141,7 +140,9 @@ void setCurrSLListPosElem(pSLList pList, void *elem) {
 }
 
 /* Get current position element inside a list */
-int getCurrSLListPosElem(pSLList pList, void **pElem) {
+int getCurrSLListPosElem(pSLList pList, void *_pElem) {
+    void    **pElem = _pElem;
+
     if (pList->currPos == pList->tail) {
         *pElem = NULL;
         return 0;
@@ -178,7 +179,7 @@ void forAllInSLList(pSLList pList, void (func)(void**)) {
 }
 
 /* Delete a list, deallocating all of the space */
-void zapSLList(pSLList pList, void* (zapElem)(void*)) {
+void zapSLList(pSLList pList, void (zapElem)(void*)) {
     _SLList *temp;
     if (pList == NULL) {
         return;
@@ -197,12 +198,13 @@ void zapSLList(pSLList pList, void* (zapElem)(void*)) {
 }
 
 /* Unqueue element from the beginning of list.  Return 0 iff list is empty. */
-int unqueSLListElem(pSLList pList, void **element) {
+int unqueSLListElem(pSLList pList, void *_pElem) {
 
+    void    **pElem = _pElem;
     _SLList *temp;
 
     if (isEmptySLList(pList)) {
-        *element = NULL;
+        *pElem = NULL;
         return 0;
     } else {
         if (pList->currPos == pList->head) {
@@ -210,7 +212,7 @@ int unqueSLListElem(pSLList pList, void **element) {
         }
         temp = pList->head;
         pList->head = pList->head->next;
-        *element = temp->userData;
+        *pElem = temp->userData;
         wicFree(temp); temp = NULL;
         return 1;
     }

@@ -125,7 +125,7 @@ Each section of the script is explained.
 :SELINE.#
 :SELINE.# parameters
 :SELINE.#
-:SELINE.if %(OS) == qnx
+:SELINE.if %(OS) == unix 
 :SELINE.    set historyfile = /tmp/vi.his
 :SELINE.    set tmpdir = /tmp
 :SELINE.    set nowritecrlf

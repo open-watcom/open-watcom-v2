@@ -1,0 +1,13 @@
+_dos_close_:
+    push        bx 
+    mov         bx,ax 
+    call        far ptr __doserror_ 
+    pop         bx 
+    retf        
+_dos_commit_:
+    push        bx 
+    mov         bx,ax 
+    clc         
+    call        far ptr __doserror_ 
+    pop         bx 
+    retf        

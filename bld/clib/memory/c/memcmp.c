@@ -24,29 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of memcmp() and wmemcmp().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
+#include <wchar.h>
 #include "xstring.h"
-#undef  memcmp
 
-_WCRTLINK int memcmp( const void *in_s1, const void *in_s2, size_t len )
-    {
+
+_WCRTLINK int __F_NAME(memcmp,wmemcmp)( const VOID_WC_TYPE *in_s1, const VOID_WC_TYPE *in_s2, size_t len )
+{
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( _inline_memcmp( in_s1, in_s2, len ) );
+    return( _inline_memcmp( in_s1, in_s2, len ) );
 #else
-        const char *s1 = (const char *)in_s1;
-        const char *s2 = (const char *)in_s2;
-        for( ; len; --len )  {
-            if( *s1 != *s2 ) return( *s1 - *s2 );
-            ++s1;
-            ++s2;
+    const CHAR_TYPE *s1 = in_s1;
+    const CHAR_TYPE *s2 = in_s2;
+
+    for( ; len; --len )  {
+        if( *s1 != *s2 ) {
+            return( *s1 - *s2 );
         }
-        return( 0 );    /* both operands are equal */
-#endif
+        ++s1;
+        ++s2;
     }
+    return( 0 );    /* both operands are equal */
+#endif
+}

@@ -32,12 +32,14 @@
 
 #include "standard.h"
 #include "cg.h"
+#include "bckdef.h"
 #include "feprotos.h"
+#include "cgmem.h"
 
 extern  pointer         MemAlloc(int);
 extern  void            MemFree(pointer);
 
-extern  pointer CGAlloc( int size ) {
+extern  pointer CGAlloc( unsigned size ) {
 /***********************************/
 
     pointer     chunk;
@@ -49,21 +51,8 @@ extern  pointer CGAlloc( int size ) {
     return( chunk );
 }
 
-extern  pointer DoCGAlloc( int size, pointer ra ) {
-/*************************************************/
-    ra=ra;
-    return( CGAlloc( size ) );
-}
-
 extern  void    CGFree( pointer chunk ) {
 /***************************************/
-
-    MemFree( chunk );
-}
-
-extern  void    CGFreeSize( pointer chunk, int size ) {
-/*****************************************************/
-    size=size;
 
     MemFree( chunk );
 }

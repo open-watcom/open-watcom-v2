@@ -59,6 +59,10 @@ void FormatFunctionType( TYPE, VBUF *, VBUF *, int, FMT_CONTROL );
 void FormatType( TYPE, VBUF *, VBUF * );
 void FormatTypeModFlags( type_flag, VBUF * );
 extern char *FormatErrorType( TYPE );
+void FormatPTreeList( PTREE p, VBUF *pvbuf );
+void FormatPTreeId( PTREE p, VBUF *pvbuf );
+void FormatTemplateInfo( TEMPLATE_INFO *tinfo, VBUF *pvbuf );
+void FormatTemplateSpecialization( TEMPLATE_SPECIALIZATION *tspec, VBUF *pvbuf);
 
 #define _FMTTYPE_H
 #endif

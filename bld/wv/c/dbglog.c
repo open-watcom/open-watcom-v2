@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Log file support.
 *
 ****************************************************************************/
 
@@ -34,26 +33,24 @@
 #include "dbglit.h"
 #include "dbgio.h"
 #include "dbgtoken.h"
-
 #include "dbgerr.h"
 #include <string.h>
 
 
-
-extern void ReqEOC(void);
-extern void Scan(void);
-extern unsigned int ScanCmd(char *);
-extern bool ScanItem(bool ,char **,unsigned int *);
-extern bool ScanEOC(void);
-extern char *GetCmdName( int );
-
-
-extern tokens   CurrToken;
-extern char     *TxtBuff;
+extern void         ReqEOC( void );
+extern void         Scan( void );
+extern unsigned int ScanCmd( char * );
+extern bool         ScanItem( bool, char **, unsigned int * );
+extern bool         ScanEOC( void );
+extern char         *GetCmdName( int );
 
 
+extern tokens       CurrToken;
+extern char         *TxtBuff;
 
-static handle LogHndl;
+
+
+static handle       LogHndl;
 
 
 /*
@@ -61,11 +58,34 @@ static handle LogHndl;
  */
 
 #ifdef DEADCODE
-bool IsLogging()
+bool IsLogging( void )
 {
     return( LogHndl != NIL_HANDLE );
 }
 #endif
+
+
+/*
+ * LogInit -- initialize logging
+ */
+
+void LogInit( void )
+{
+    LogHndl = NIL_HANDLE;
+}
+
+
+/*
+ * LogFini -- finish logging
+ */
+
+void LogFini( void )
+{
+    if( LogHndl != NIL_HANDLE ) {
+        FileClose( LogHndl );
+        LogHndl = NIL_HANDLE;
+    }
+}
 
 
 /*
@@ -127,7 +147,7 @@ static void OpenLog( open_access mode )
  * LogAppend -- start logging to file
  */
 
-OVL_EXTERN void LogAppend()
+OVL_EXTERN void LogAppend( void )
 {
     OpenLog( OP_WRITE | OP_CREATE | OP_APPEND );
 }
@@ -137,7 +157,7 @@ OVL_EXTERN void LogAppend()
  * LogStart -- start logging to file
  */
 
-void LogStart()
+void LogStart( void )
 {
     OpenLog( OP_WRITE | OP_CREATE | OP_TRUNC );
 }
@@ -147,7 +167,7 @@ void LogStart()
  * LogEnd -- end logging to file
  */
 
-void LogEnd()
+void LogEnd( void )
 {
     if( LogHndl != NIL_HANDLE ) {
         FileClose( LogHndl );
@@ -162,7 +182,7 @@ void LogEnd()
  * BadLog -- handle bad log command
  */
 
-OVL_EXTERN void BadLog()
+OVL_EXTERN void BadLog( void )
 {
     Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_LOG ) );
 }
@@ -174,7 +194,7 @@ static char LogNameTab[] = {
 };
 
 
-static void (* const LogJmpTab[])() = {
+static void (* const LogJmpTab[])( void ) = {
     &BadLog,
     &LogAppend,
     &LogStart
@@ -185,7 +205,7 @@ static void (* const LogJmpTab[])() = {
  * ProcLog -- process log command
  */
 
-void ProcLog()
+void ProcLog( void )
 {
     if( ScanEOC() ) {
         LogEnd();
@@ -197,28 +217,5 @@ void ProcLog()
         (*LogJmpTab[ ScanCmd( &LogNameTab ) ])();
     } else {
         LogStart();
-    }
-}
-
-
-/*
- * LogInit -- initialize logging
- */
-
-void LogInit()
-{
-    LogHndl = NIL_HANDLE;
-}
-
-
-/*
- * LogFini -- finish logging
- */
-
-void LogFini()
-{
-    if( LogHndl != NIL_HANDLE ) {
-        FileClose( LogHndl );
-        LogHndl = NIL_HANDLE;
     }
 }

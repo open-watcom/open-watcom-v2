@@ -34,6 +34,7 @@
 #include <mbstring.h>
 #include "string.h"
 #include "farfunc.h"
+#include "mbyte.h"
 
 
 

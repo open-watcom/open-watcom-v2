@@ -55,6 +55,7 @@ extern ResTypeInfo WResFindResType( WResFileID handle )
         WRES_ERROR( WRS_SEEK_FAILED );
     }
 
+    type = RT_WIN16; /* what to return if (error) ? */
     if( !error ) {
         if( magic[0] == WRESMAGIC0 && magic[1] == WRESMAGIC1 ) {
             type = RT_WATCOM;

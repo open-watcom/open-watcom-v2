@@ -56,11 +56,11 @@ typedef struct buffer_hdr {
 
 BUFFER_HDR *TokenBufAddChar(          // TokenBuf: ADD A CHARACTER
     BUFFER_HDR *,                     // - handle to token buffer
-    int character )                   // - character to be added
+    char character )                   // - character to be added
 ;
 BUFFER_HDR *TokenBufAddWhiteSpace(    // TokenBuf: ADD A CHARACTER
     BUFFER_HDR *,                     // - handle to token buffer
-    int character )                   // - character to be added
+    char character )                   // - character to be added
 ;
 BUFFER_HDR *TokenBufAddStr(           // TokenBuf: ADD A STRING
     BUFFER_HDR *,                     // - handle to token buffer

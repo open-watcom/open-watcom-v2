@@ -1,7 +1,13 @@
 #include "windows.h"
 #include "wserver.h"
 
+// Use low-color icons for Windows 3.x.
+#ifdef __WINDOWS__
+ServerIcon ICON winsrv30.ico
+#else
 ServerIcon ICON winserv.ico
+#endif
+
 ServerMenu MENU
 BEGIN
     POPUP "&File"

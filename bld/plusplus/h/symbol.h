@@ -57,7 +57,7 @@
 #define SymIsTypedef(s)     ( (s)->id == SC_TYPEDEF )
 #define SymIsDefArg(s)      ( (s)->id == SC_DEFAULT )
 #define SymIsEnumeration(s) ( (s)->id == SC_ENUM )
-#define SymIsFunctionTemplateModel(s) ( (s)->id == SC_FUNCTION_TEMPLATE )
+#define SymIsFunctionTemplateModel(s) ( ( (s)->id == SC_FUNCTION_TEMPLATE ) || ( (s)->id == SC_EXTERN_FUNCTION_TEMPLATE ) || ( (s)->id == SC_STATIC_FUNCTION_TEMPLATE ) )
 #define SymIsClassTemplateModel(s) ( (s)->id == SC_CLASS_TEMPLATE )
 #define SymIsNameSpace(s)   ( (s)->id == SC_NAMESPACE )
 
@@ -364,4 +364,7 @@ symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
 SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
     SYMBOL aliasee,             // - sym to be aliased
     TOKEN_LOCN *locn )          // - location for symbol
+;
+SYMBOL SymDefArgBase(           // GET DEFARG BASE SYMBOL
+    SYMBOL sym )                // - the symbol
 ;

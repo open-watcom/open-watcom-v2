@@ -42,7 +42,7 @@
 
 char *OptEnvVar="head";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: head [-?X] [-<number>] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : files to display head lines of",

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 version of the spawn() worker routine.
 *
 ****************************************************************************/
 
@@ -43,13 +42,14 @@
 #define INCL_DOSSESMGR
 #define INCL_DOSQUEUES
 #define INCL_DOSMEMMGR
-#if defined( M_I86 )
+#if defined( _M_I86 )
  #define INCL_DOSINFOSEG
  #include "liballoc.h"
 #endif
 #include <wos2.h>
 #include "rtdata.h"
 #include "seterrno.h"
+#include "_process.h"
 
 #define FS_SESSION      0
 #define PMC_SESSION     2
@@ -57,9 +57,6 @@
 #define DETACH_SESSION  4
 #define TERM_QUEUE      "\\queues\\session"
 
-extern  void    __ccmdline( char *, char **, char *, int );
-
-#pragma aux     _dospawn "_*" parm caller [];
 #pragma on(stack_check);
 
 #define MakeHexDigit( c )  ((c > 9) ? (c - 0x0A + 'A') : (c + '0'))
@@ -88,8 +85,7 @@ static void makeqname( char *qname, ULONG pid, ULONG tid )
     }
     *px = 0;
 }
-
-int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
+int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const argv[] )
 {
     APIRET      rc;
     RESULTCODES returncodes;
@@ -123,8 +119,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
         use_exec_pgm = 0;
         rc = DosQueryAppType( pgm, &app_type );
         if( rc != 0 ) {
-            __set_errno_dos( rc );
-            return( -1 );
+            return( __set_errno_dos( rc ) );
         }
         if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC && !( app_type & FAPPTYP_DOS ) ) {
             /* type of program not specified in executable file */
@@ -132,8 +127,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
         } else {
             rc = DosGetInfoBlocks( &ptib, &ppib );
             if( rc != 0 ) {
-                __set_errno_dos( rc );
-                return( -1 );
+                return( __set_errno_dos( rc ) );
             }
             if( !( app_type & FAPPTYP_DOS ) ) {
                 app_type &= FAPPTYP_EXETYPE;
@@ -151,14 +145,13 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
             rc = DosExecPgm( NULL, 0, exec_flag,
                              cmdline, envp, &returncodes, pgm );
         } else {
-            termq = NULL;
+            termq = NULLHANDLE;
             related = SSF_RELATED_INDEPENDENT;
             makeqname( queuename, ppib->pib_ulpid, ptib->tib_ordinal );
             if( mode == P_WAIT ) {
                 rc = DosCreateQueue( &termq, QUE_FIFO, queuename );
                 if( rc != 0 ) {
-                    __set_errno_dos( rc );
-                    return( -1 );
+                    return( __set_errno_dos( rc ) );
                 }
                 related = SSF_RELATED_CHILD;
             }
@@ -188,7 +181,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
                 rc = 0;
                 if( mode == P_WAIT ) {
                     DosReadQueue( termq, &request_data, &data_len,
-                                  &data_address, 0, DCWW_WAIT,
+                                  (PPVOID)&data_address, 0, DCWW_WAIT,
                                   &element_priority, 0 );
                     returncodes.codeResult = data_address[1];
                     DosFreeMem( data_address );
@@ -199,7 +192,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
             }
         }
     }
-#elif defined( M_I86 )
+#elif defined( _M_I86 )
     {
         USHORT          app_type;
         SEL             sglobal;
@@ -222,8 +215,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
         } else {
             rc = DosGetInfoSeg( &sglobal, &slocal );
             if( rc != 0 ) {
-                __set_errno_dos( rc );
-                return( -1 );
+                return( __set_errno_dos( rc ) );
             }
             local = (LINFOSEG _WCFAR *) (slocal:>0);
             if( !( app_type & 0x20 ) ) {
@@ -253,8 +245,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
                 if( np == NULL ) {
                     np = (char *)alloca( len );
                     if( np == NULL ) {
-                        __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
-                        return( -1 );
+                        return( __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY ) );
                     }
                 }
                 strcpy( np, "cmd /c " );
@@ -273,14 +264,13 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
                 #endif
             }
         } else {
-            termq = NULL;
+            termq = 0;
             related = 0; //SSF_RELATED_INDEPENDENT;
             makeqname( queuename, local->pidCurrent, local->tidCurrent );
             if( mode == P_WAIT ) {
                 rc = DosCreateQueue( &termq, 0, queuename );
                 if( rc != 0 ) {
-                    __set_errno_dos( rc );
-                    return( -1 );
+                    return( __set_errno_dos( rc ) );
                 }
                 related = 1; //SSF_RELATED_CHILD;
             }
@@ -318,8 +308,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
     #error platform not supported
 #endif
     if( rc != 0 ) {
-        __set_errno_dos( rc );
-        return( -1 );
+        return( __set_errno_dos( rc ) );
     }
     if( mode == P_WAIT ) {
         return( returncodes.codeResult );

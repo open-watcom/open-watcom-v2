@@ -1,0 +1,65 @@
+/*
+ *  hidsdi.h    Human Interface Device (HID) functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _HIDSDI_H
+#define _HIDSDI_H
+
+:include readonly.sp
+
+#include <hidusage.h>
+#include <hidpi.h>
+
+:include cpluspro.sp
+
+/* All structures in this file get four-byte packing. */
+#include <pshpack4.h>
+
+/* HID configuration */
+typedef struct _HIDD_CONFIGURATION {
+    PVOID   cookie;
+    ULONG   size;
+    ULONG   RingBufferSize;
+} HIDD_CONFIGURATION;
+typedef HIDD_CONFIGURATION  *PHIDD_CONFIGURATION;
+
+/* HID attributes */
+typedef struct _HIDD_ATTRIBUTES {
+    ULONG   Size;
+    USHORT  VendorID;
+    USHORT  ProductID;
+    USHORT  VersionNumber;
+} HIDD_ATTRIBUTES;
+typedef HIDD_ATTRIBUTES *PHIDD_ATTRIBUTES;
+
+/* Revert to default packing. */
+#include <poppack.h>
+
+/* Functions in HID.DLL */
+BOOLEAN __stdcall   HidD_FlushQueue( HANDLE );
+BOOLEAN __stdcall   HidD_FreePreparsedData( PHIDP_PREPARSED_DATA );
+BOOLEAN __stdcall   HidD_GetAttributes( HANDLE, PHIDD_ATTRIBUTES );
+BOOLEAN __stdcall   HidD_GetConfiguration( HANDLE, PHIDD_CONFIGURATION, ULONG );
+BOOLEAN __stdcall   HidD_GetFeature( HANDLE, PVOID, ULONG );
+void __stdcall      HidD_GetHidGuid( LPGUID );
+BOOLEAN __stdcall   HidD_GetIndexedString( HANDLE, ULONG, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_GetManufacturerString( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_GetNumInputBuffers( HANDLE, PULONG );
+BOOLEAN __stdcall   HidD_GetPhysicalDescriptor( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_GetPreparsedData( HANDLE, PHIDP_PREPARSED_DATA * );
+BOOLEAN __stdcall   HidD_GetProductString( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_GetSerialNumberString( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_SetConfiguration( HANDLE, PHIDD_CONFIGURATION, ULONG );
+BOOLEAN __stdcall   HidD_SetFeature( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_SetNumInputBuffers( HANDLE, ULONG );
+#if (NTDDI_VERSION >= 0x05010000)
+BOOLEAN __stdcall   HidD_GetInputReport( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_GetMsGenreDescriptor( HANDLE, PVOID, ULONG );
+BOOLEAN __stdcall   HidD_SetOutputReport( HANDLE, PVOID, ULONG );
+#endif
+
+:include cplusepi.sp
+
+#endif /* _HIDSDI_H */

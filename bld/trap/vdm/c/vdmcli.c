@@ -105,7 +105,7 @@ char RemoteConnect( void )
 }
 
 
-unsigned RemoteGet( void *data, unsigned length )
+unsigned RemoteGet( char *data, unsigned length )
 {
     unsigned_16 incoming;
     USHORT      bytes_read;
@@ -116,14 +116,14 @@ unsigned RemoteGet( void *data, unsigned length )
     ret = incoming;
     while( incoming != 0 ) {
         DosRead( pipeHdl, data, incoming, &bytes_read );
-        data = (unsigned_8 *)data + bytes_read;
+        data += bytes_read;
         incoming -= bytes_read;
     }
     return( ret );
 }
 
 
-unsigned RemotePut( void *data, unsigned length )
+unsigned RemotePut( char *data, unsigned length )
 {
     unsigned_16 outgoing;
     USHORT      bytes_written;

@@ -1,0 +1,1270 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs [Debugger]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+4.0 - DOS/32 Advanced - SUNSYS Protected Mode Debugger
+<br></font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    SUNSYS  Protected Mode Debugger is a  stand alone debugger program which
+allows programmers to debug 16-bit and 32-bit protected mode applications. The
+Debugger  supports the "LE"  and "LX" Linear  Executable  formats which are used by
+WATCOM Linker when creating DOS/4GW protected mode applications.<br>
+<br>
+The usage of SUNSYS Protected Mode Debugger is:
+<blockquote>
+<i>SD &lt;execname.xxx&gt;</i>
+</blockquote>
+where the <i>execname.xxx</i> is the file name of the protected mode application that is
+to be debugged.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+Additionally, a library version of the Debugger, supplied with DOS/32 Advanced
+DOS Extender can be statically linked into your applications. To be able to
+use the Debugger library you need to include the line <i>#include &lt;debug.h&gt;</i>
+into your source files. Before the Debugger library can be used by your program,
+it needs to be activated, which is done by calling the <i>Debug_Init()</i> function
+(usually done at the startup of the program). Every
+time a breakpoint (placed by a call to <i>DBG()</i> function) in your program is encountered,
+the application will break to the debugger, allowing you to debug the code.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The SUNSYS Debugger's user interface consists of a number of windows in which the
+debugger displays the information, including disassembled CPU instructions, CPU
+registers, memory and stack contents etc. Below is included a short reference of
+all the windows, their purpose and the actions that can be performed in them.
+</font></p>
+
+
+
+
+<!-- ***************************** CPU Window **********************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>CPU 80x86/80x87 Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	This window displays the disassembled instructions of the code you are
+	currently debugging.
+	</font></td>
+</tr>
+</table>
+
+<p><br></p>
+
+<table width="100%">
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Key</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Action</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ESC
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Repaint Screen
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	clear and repaint the screen
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Next Window
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the next window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	SHIFT-TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Prev Win
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the previous window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ALT-X
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Exit Debugger
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	exit to DOS
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	PRINT SCREEN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	DumpScr
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	write the contents of the screen to a file on disk
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ENTER
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	New Address
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	view the disassembled code at a new address;
+	addresses preceded by a '.' (point) are treated as
+	unrelocated addresses, you can also specify a
+	general register that contains the new address
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	1
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch between the TD- and WD-style text screen
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	2
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch between the 16-bit and 32-bit instructions
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	3 or ','
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	turn on/off FPU registers shown in Stings Window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	4 or '.'
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	turn on/off unrelocated addresses
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS UP and DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor up and down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS LEFT and RIGHT
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	shift the code by one byte up or down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	PAGE UP and PAGE DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor one page up or down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	HOME
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to the address held by EIP
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	'+' and '-'
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	cycle through the selectors in the Memory Window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F1
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Show Info
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	show system information (see below)
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F2
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	BreakPoint
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	place a hardware breakpoint at the address under the cursor;
+	the maximum of 3 (three) breakpoints can be active
+	at the same time
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F3
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Return
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	return from subroutine; run until RET, IRET, RETF
+	or an unconditional JMP instructions, then break to
+	the debugger
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F4
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Run Here
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	run to the address under the cursor
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F5
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	User Screen
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the user screen
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F6
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	New Address
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	skip to cursor; place the address value under the
+	cursor into the EIP register
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F7
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Trace Into
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	single step through the program, stepping into
+	CALL, LOOP and REP-prefixed instructions
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F8
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Step Over
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	single step through the program, stepping over
+	CALL, LOOP and REP-prefixed instructions
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F9
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Run
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	continue execution of the program
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F10
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Step Over Jumps
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	single step through the program, stepping over
+	CALL, LOOP, REP-prefixed and JUMP instructions;
+	a breakpoint will be placed directly after the
+	JUMP instruction, allowing you to step over the
+	Jcc ímplemented loops
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F11
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Search New
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	search for an expression; symbol "<i>*</i>" can be used to
+	indicate the wild-cards, for example: <i>mov ax,[ebx+***]</i>
+	will match any move to ax from the address pointed
+	to by <i>ebx</i> plus any other 32-bit general register
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F12
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Search Next
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	continue searching for the previously entered string
+	</font></td>
+</tr>
+</table>
+
+<br>
+
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>System Information</b> (activated by F1 key)<br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Shows information about the system, descriptors, interrupts and memory blocks. Use the
+	ESC key to return to the CPU Window.
+	</font></td>
+</tr>
+</table>
+<table>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F1
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	DPMI information
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F2
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	GDT information
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	use keys PGUP and PGDOWN to scroll the data in the window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F3
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	IDT information
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	use keys PGUP and PGDOWN to scroll the data in the window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F4
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	EMBs Information
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	use keys UP, DOWN, PGUP and PGDOWN to scroll the data in the window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F5
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	System Interrupt History
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	use keys UP, DOWN, PGUP and PGDOWN to scroll the data in the window;
+	keys 1, 2, 3 and 4 select a particular interrupt (INT 10h, 21h, 31h and 33h respective),
+	0 shows all; use the key BACKSPACE to clear the history buffer
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F6
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Buffered Interrupts Information
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	use keys: '1' to show INT 10h, '2' to show INT 21h, '3' to show INT 31h, '4' to show INT 33h and '0' to show All
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	F10
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	DOS Extender and Debugger version
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+</table>
+
+
+
+
+
+
+<!-- ***************************** Registers Window ****************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>CPU Registers Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	In  this  window will be shown  all the CPU general registers, segment registers
+	and the extended flags.
+	</font></td>
+</tr>
+</table>
+
+
+<p><br></p>
+
+
+<table width="100%">
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Key</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Action</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ESC
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Return to CPU
+	</font></td>
+	<td bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch back to the CPU Window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Next Window
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the next window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	SHIFT-TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Prev Win
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the previous window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ALT-X
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Exit Debugger
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	exit to DOS
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ENTER
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	New Value
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	change the value of the selected register; instead of
+	typing in a number, you can also specify a general
+	register that contains the new value
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS UP and DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor up and down, select a register
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS LEFT and RIGHT
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor left and right, select a register
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	PAGE UP and PAGE DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to the next group of registers
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	HOME
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to the EAX register
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	END
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to the Carry Flag
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	'+' and '-' on keypad
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	increment or decrement the selected register's value
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	'/' on keypad
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	clear the contents of the selected register (reset to 0)
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	'*' on keypad
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	binary NOT the contents of the selected register (NOT reg)
+	</font></td>
+</tr>
+</table>
+
+
+
+
+
+
+<!-- ***************************** Memory Window *******************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Memory Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	In this window will be displayed the contents of the memory at the specified
+	address.
+	</font></td>
+</tr>
+</table>
+
+
+<p><br></p>
+
+
+<table width="100%">
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Key</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Action</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ESC
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Return to CPU
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch back to the CPU Window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	TAB - Next Window
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Next Window
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the next window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	SHIFT-TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Prev Win
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the previous window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ALT-X
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Exit Debugger
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	exit to DOS
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ENTER
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	New Address
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	view the memory contents at specified address;
+	the addresses preceeded by a '.' are treated as
+	unrelocated addresses; you can also specify a
+	general register that contains the new address
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	'+' and '-' on keypad
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	cycle through the selectors: CS, DS, ES, SS, FS and GS
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS UP and DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor up and down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS LEFT and RIGHT
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor left and right
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	PAGE UP and PAGE DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor one page up or down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	HOME
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to the address 0
+	</font></td>
+</tr>
+</table>
+
+
+
+
+
+<!-- ***************************** Stack Window ********************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Stack Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	In  this  window will be displayed the  contents  of the stack memory at the
+	addresses  specified  by the SS:ESP registers.
+	</font></td>
+</tr>
+</table>
+
+
+<p><br></p>
+
+
+<table width="100%">
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Key</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Action</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="30%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+
+	<td width="70%" bgcolor="#ffffff">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>&nbsp;</b>
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ESC
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Return to CPU
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	return to the CPU Window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Next Window
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the next window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	SHIFT-TAB
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Prev Win
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	switch to the previous window
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ALT-X
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	Exit Debugger
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	exit to DOS
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	ARROWS UP and DOWN
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	scroll the contents of the window up and down
+	</font></td>
+</tr>
+<tr>
+	<td width="20%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	HOME
+	</font></td>
+	<td width="30%" bgcolor="#e4e4e4">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td width="70%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	move the cursor to SS:[ESP+00] position
+	</font></td>
+</tr>
+</table>
+
+
+<!-- ***************************** Strings Window ******************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>Strings Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	In  this  window will be displayed the  contents of the memory pointed to by
+	the registers DS:ESI and ES:EDI. This window cannot be selected and its contents
+	cannot be modified.
+	</font></td>
+</tr>
+</table>
+
+
+
+
+<!-- ******************************** FPU Window *******************************************-->
+<p>&nbsp;</p>
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>FPU Registers Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	This  window will show the contents of the Floating Point co-processor. This
+	window cannot be selected and its contents cannot be modified.
+	</font></td>
+</tr>
+</table>
+
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

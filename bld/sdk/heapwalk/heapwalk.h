@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap walker internal prototypes.
 *
 ****************************************************************************/
 
@@ -36,21 +35,22 @@
 #include <stdio.h>
 #include "heapwlk.h"
 #include "hwbiglb.h"
-#include "..\misc\segmem.h"
-#include "..\misc\mythelp.h"
-#include "..\misc\descript.h"
-#include "..\misc\mem.h"
-#include "..\misc\font.h"
-#include "..\misc\seginfo.h"
-#include "..\misc\savelbox.h"
-#include "..\misc\memwnd.h"
-#include "..\misc\srchmsg.h"
-#include "..\misc\pushwin.h"
-#include "..\misc\ctl3d.h"
+#include "segmem.h"
+#include "mythelp.h"
+#include "descript.h"
+#include "mem.h"
+#include "font.h"
+#include "seginfo.h"
+#include "savelbox.h"
+#include "memwnd.h"
+#include "srchmsg.h"
+#include "pushwin.h"
+#include "ctl3dcvr.h"
 #include "memman.h"
 #include "heapinfo.h"
 #include "lclinfo.h"
-#include "rcstr.h"
+#include "rcstr.gh"
+#include "uistr.gh"
 #include "ldstr.h"
 #include "config.h"
 #include "menu.h"
@@ -257,7 +257,7 @@ typedef struct heapconfiginfo {
  */
 extern char             *HeapWalkName;
 extern HWND             HeapWalkMainWindow;
-extern HANDLE           Instance;
+extern HINSTANCE        Instance;
 extern BOOL             ListingDPMI;
 extern WORD             HeapType;
 extern HWND             ListBox,TitleLine;
@@ -281,9 +281,9 @@ extern HeapConfigInfo   Config;
 void CreateListBox( HWND parent, ListBoxInfo *info, WORD type  );
 void ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 void MoveListBox( WORD xpos, WORD ypos, ListBoxInfo *info );
-void PaintAllWindows();
-void InitPaintProc();
-void FiniPaintProc();
+void PaintAllWindows( void );
+void InitPaintProc( void );
+void FiniPaintProc( void );
 void PositionListBox( ListBoxInfo *info, HWND parent );
 
 /* hwlist.c */
@@ -299,7 +299,7 @@ char *GetGlobalTextItem( unsigned i );
 char *GetLocalTextItem( unsigned i );
 
 /* hwproc.c */
-BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void EndAdd( void );
 
 /* hwsort.c */
@@ -307,7 +307,7 @@ void SortHeapList( void );
 
 /* hwdisp.c */
 BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
-void ShowHeapObject( WORD lbhdl );
+void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
 void PutOutGlobalHeader( FILE *fptr );
@@ -323,7 +323,7 @@ BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
                                     DWORD lparam );
 BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
                                     DWORD lparam );
-SetMenusForAdd( HWND hwnd, BOOL start );
+void SetMenusForAdd( HWND hwnd, BOOL start );
 HWND StartAdd( HWND parent, ListBoxInfo *info );
 
 /* hwalloc.c */
@@ -372,3 +372,6 @@ void InitializeStringTables( void );
 
 /* hwldstr */
 BOOL InitStringTable( void );
+char *HWAllocRCString( DWORD id );
+void HWFreeRCString( char *str );
+char *HWGetRCString( DWORD msgid );

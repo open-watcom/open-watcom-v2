@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Determine the cost of switch/case -style statement code, and
+*               generate the scan and jump tables.
 *
 ****************************************************************************/
 
@@ -34,24 +34,38 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "addrname.h"
 #include "tree.h"
 #include "seldef.h"
+#include "types.h"
 #include "cgswitch.h"
+#include "makeins.h"
 #include "cgprotos.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
 #define MIN_LVALUES     5            /* to make it worth while for long sca*/
 #define MIN_SVALUES     7            /* to make it worth while for short sca*/
+#define MIN_JUMPS_SETUP 12           /* minimal size of jum code */
+/* for instance:
+0010    83 F8 03                  cmp       eax,0x00000003
+0013    77 0D                     ja        L$3
+0015    FF 24 85 00 00 00 00      jmp       dword ptr L$1[eax*4]
+*/
+#define MIN_SCAN_SETUP  12           /* minimal size of sca code */
+/* for instance:
+0022    B9 08 00                  mov       cx,0x0008
+0025    BF 00 00                  mov       di,offset L$1
+0028    F2 AF                     repne scasw 
+002A    26 FF 65 0C               jmp       word ptr es:0xc[di]
+*/
 
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 extern  cg_type         SelType(unsigned_32);
-extern  type_def        *TypeAddress(cg_type);
 extern  seg_id          SetOP(seg_id);
-extern  label_handle    AskForNewLabel();
+extern  label_handle    AskForNewLabel(void);
 extern  an              BGDuplicate(an);
 extern  void            Gen4ByteValue(unsigned_32);
 extern  an              TreeGen(tn);
@@ -65,13 +79,20 @@ extern  name            *GenIns(an);
 extern  void            Gen2ByteValue(unsigned_16);
 extern  void            BGDone(an);
 extern  void            Gen1ByteValue(byte);
-extern  seg_id          AskCodeSeg();
+extern  seg_id          AskCodeSeg(void);
 extern  signed_32       NumValues(select_list*,signed_32);
 extern  int             SelCompare(signed_32,signed_32);
-extern  instruction     *NewIns(int);
 extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
 extern  tn              TGBinary( cg_op, tn, tn, type_def * );
+
+/* forward declarations */
+static  void    GenValuesBackward( select_list *list, signed_32 hi,
+                                   signed_32 lo, signed_32 to_sub,
+                                   cg_type tipe );
+static  void    GenValuesForward( select_list *list, signed_32 hi,
+                                  signed_32 lo, signed_32 to_sub,
+                                  cg_type tipe );
 
 extern    byte  OptForSize;
 
@@ -118,12 +139,13 @@ extern  signed_32       ScanCost( select_node *s_node ) {
         list = list->next;
     }
     tipe = SelType( hi - lo );
-    if( ( tipe == U4 && values < MIN_LVALUES ) ||
-         ( tipe != U4 && values < MIN_SVALUES ) ) {
+    if( ( tipe == TY_UINT_4 && values < MIN_LVALUES ) ||
+         ( tipe != TY_UINT_4 && values < MIN_SVALUES ) ) {
         cost = MAX_COST;
     } else {
         type_length = TypeAddress( tipe )->length;
-        cost = Balance( values * ( WORD_SIZE + type_length ), values / 2 );
+        cost = Balance( MIN_SCAN_SETUP + values * ( WORD_SIZE + type_length ),
+                        values / 2 );
     }
     return( cost );
 }
@@ -144,7 +166,12 @@ extern  signed_32       JumpCost( select_node *s_node ) {
     } else if( in_range < MIN_JUMPS ) {
         cost = MAX_COST;
     } else {
-        cost = Balance( WORD_SIZE * in_range, 1 );
+        cost = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
+        /* an extra two bytes are needed to zero the high part before
+           the jump */
+        if ( SelType( 0xffffffff ) == TY_UINT_1 )
+            cost += 2;
+        cost = Balance( cost, 1 );
     }
     return( cost );
 }
@@ -153,11 +180,11 @@ extern  signed_32       JumpCost( select_node *s_node ) {
 #if _TARGET == _TARG_80386
     #define LONG_JUMP 6
     #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 3, 5, 0, 6 };
+    static byte CmpSize[] = { 0, 2, 4, 0, 5 };
 #elif _TARGET == _TARG_IAPX86
     #define LONG_JUMP 5
     #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 3, 4, 0, 12 };
+    static byte CmpSize[] = { 0, 2, 3, 0, 9 };
 #endif
 
 extern  signed_32       IfCost( select_node *s_node, int entries ) {
@@ -166,6 +193,7 @@ extern  signed_32       IfCost( select_node *s_node, int entries ) {
     signed_32   hi;
     signed_32   lo;
     signed_32   cost;
+    signed_32   jumpsize;
     int         log_entries;
     int         tipe_length;
 
@@ -173,17 +201,24 @@ extern  signed_32       IfCost( select_node *s_node, int entries ) {
     lo = s_node->lower;
     tipe_length = TypeAddress( SelType( hi - lo ) )->length;
     if( entries > 20 ) {
-        cost = LONG_JUMP;
+        jumpsize = LONG_JUMP;
     } else {
-        cost = SHORT_JUMP;
+        jumpsize = SHORT_JUMP;
     }
-    cost += CmpSize[ tipe_length ];
+    cost = jumpsize + CmpSize[ tipe_length ];
+    /* for char-sized switches, often the two-byte "cmp al,xx" is used.
+       otherwise we need three bytes */
+    if ( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
+        cost++;
     cost *= entries;
     log_entries = 0;
     while( entries != 0 ) {
         log_entries++;
         entries = (unsigned_32)entries >> 2;
     }
+    /* add cost for extra jumps generated for grandparents and 
+       every other child except the last one */
+    cost += (entries / 4) * 2 * jumpsize;
     cost = Balance( cost, log_entries );
     if( cost >= MAX_COST ) {
         cost = MAX_COST - 1;
@@ -208,11 +243,11 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
     cases = NumValues( list, hi );
     lo = list->low;
-    _Alloc( table, sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     table->size = cases;
     old = SetOP( AskCodeSeg() );
     table->value_lbl = AskForNewLabel();
-    CodeLabel( table->value_lbl, TypeAddress( T_NEAR_CODE_PTR )->length );
+    CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
     GenSelEntry( TRUE );
     table->lbl = AskForNewLabel();
     if( tipe != real_tipe ) {
@@ -223,7 +258,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     if( other == NULL ) {
         other = table->cases[ 0 ];  /* no otherwise? he bakes!*/
     }
-    if( tipe == T_WORD ) {
+    if( tipe == TY_WORD ) {
         GenValuesForward( list, hi, lo, to_sub, tipe );
     } else {
         GenValuesBackward( list, hi, lo, to_sub, tipe );
@@ -233,7 +268,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     tab_ptr = &table->cases[ 0 ];
     curr = lo;
     scan = list;
-    if( tipe != T_WORD ) {
+    if( tipe != TY_WORD ) {
         GenCodePtr( other );
     }
     for(;;) {
@@ -248,7 +283,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
             ++curr;
         }
     }
-    if( tipe == T_WORD ) {
+    if( tipe == TY_WORD ) {
         GenCodePtr( other );
     }
     SetOP( old );
@@ -266,13 +301,13 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
     curr = lo;
     for(;;) {
         switch( tipe ) {
-        case T_UINT_1:
+        case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
-        case T_UINT_2:
+        case TY_UINT_2:
             Gen2ByteValue( curr - to_sub );
             break;
-        case T_UINT_4:
+        case TY_UINT_4:
             Gen4ByteValue( curr - to_sub );
             break;
         }
@@ -302,13 +337,13 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
     }
     for(;;) {
         switch( tipe ) {
-        case T_UINT_1:
+        case TY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
-        case T_UINT_2:
+        case TY_UINT_2:
             Gen2ByteValue( curr - to_sub );
             break;
-        case T_UINT_4:
+        case TY_UINT_4:
             Gen4ByteValue( curr - to_sub );
             break;
         }
@@ -336,11 +371,11 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     seg_id              old;
 
     cases = hi - lo + 1;
-    _Alloc( table, sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     old = SetOP( AskCodeSeg() );
     table->lbl = AskForNewLabel();
     table->value_lbl = NULL;
-    CodeLabel( table->lbl, TypeAddress( T_NEAR_CODE_PTR )->length );
+    CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
     table->size = cases;
     tab_ptr = &table->cases[ 0 ];
     for(;;) {
@@ -366,14 +401,14 @@ extern  name_def        *SelIdx( tbl_control *table, an node ) {
 /**************************************************************/
 
     an          idxan;
-    name_def    *idx;
+    name        *idx;
 
     /* use CG routines here to get folding*/
     idxan = TreeGen( TGBinary( O_TIMES, TGLeaf( BGDuplicate( node ) ),
-                                TGLeaf( BGInteger( WORD_SIZE, TypeAddress( T_WORD ) ) ), TypeAddress( T_WORD ) ) );
+                                TGLeaf( BGInteger( WORD_SIZE, TypeAddress( TY_WORD ) ) ), TypeAddress( TY_WORD ) ) );
     idx = GenIns( idxan );
     BGDone( idxan );
-    return( AllocIndex( idx, AllocMemory( table, 0, CG_TBL, WD ), 0, WD ) );
+    return( &AllocIndex( idx, AllocMemory( table, 0, CG_TBL, WD ), 0, WD )->n );
 }
 
 
@@ -385,20 +420,20 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
 
     switch( node->tipe->length ) {
     case 1:
-        unsigned_t = T_UINT_1;
-        signed_t = T_INT_1;
+        unsigned_t = TY_UINT_1;
+        signed_t = TY_INT_1;
         break;
     case 4:
-        unsigned_t = T_UINT_4;
-        signed_t = T_INT_4;
+        unsigned_t = TY_UINT_4;
+        signed_t = TY_INT_4;
         break;
     case 8:
-        unsigned_t = T_UINT_8;
-        signed_t = T_INT_8;
+        unsigned_t = TY_UINT_8;
+        signed_t = TY_INT_8;
         break;
     default:
-        unsigned_t = T_UINT_2;
-        signed_t = T_INT_2;
+        unsigned_t = TY_UINT_2;
+        signed_t = TY_INT_2;
         break;
     }
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );

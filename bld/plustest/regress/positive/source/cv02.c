@@ -12,7 +12,7 @@ S x(34);
 int main() {
     const int &ci = x;
     if( ci != 34 ) fail(__LINE__);
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
     volatile const int &cvi1 = x;
     if( cvi1 != 34 ) fail(__LINE__);
 #endif

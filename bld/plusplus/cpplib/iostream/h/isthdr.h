@@ -29,45 +29,24 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/04    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/15    Greg Bentz      fix uninitialized state variables.
-//  93/07/29    Greg Bentz      - change istream::op>>(streambuf &) to
-//                                istream::op>>( streambuf * )
-//                              - fix istream::getline() to not set failbit
-//                                if no input stored in user buffer
-//  93/09/15    Greg Bentz      change getline() back to set ios::failbit
-//                              if not input stored in user buffer
-//  93/10/21    Greg Bentz      change get() and getline() to not set failbit
-//                              if the delim character has been seen
-//  93/10/28    Raymond Tang    Split into separate files.
-//  93/11/16    Greg Bentz      remove base parm from __getsign()
-//  96/07/23    Greg Bentz      __int64 support
-
 #ifndef _ISTHDR_H_INCLUDED
 #define _ISTHDR_H_INCLUDED
 
 #define ERR_CHAR    '\0'
-extern ios::iostate __getaline( istream &, char *, int, char, int, int & );
-extern ios::iostate __getsign( streambuf *, char & );
-extern ios::iostate __getbase( streambuf *, int &, int & );
-extern ios::iostate __getnumber( streambuf *, unsigned long &, int, int & );
-extern ios::iostate __getunsignedlong( streambuf *, unsigned long &,
-        unsigned long, signed long, ios::fmtflags );
-extern ios::iostate __getnumberint64( streambuf *, unsigned __int64 &, int, int &);
-extern ios::iostate __getunsignedint64( streambuf *, unsigned __int64 &,
-        unsigned __int64, signed __int64, ios::fmtflags );
+extern std::ios::iostate __getaline( std::istream &, char *, int, char, int, int & );
+extern std::ios::iostate __getsign( std::streambuf *, char & );
+extern std::ios::iostate __getbase( std::streambuf *, int &, int & );
+extern std::ios::iostate __getnumber( std::streambuf *, unsigned long &, int, int & );
+extern std::ios::iostate __getunsignedlong( std::streambuf *,
+                                            unsigned long &,
+                                            unsigned long,
+                                            signed long,
+                                            std::ios::fmtflags );
+extern std::ios::iostate __getnumberint64( std::streambuf *, unsigned __int64 &, int, int &);
+extern std::ios::iostate __getunsignedint64( std::streambuf *,
+                                             unsigned __int64 &,
+                                             unsigned __int64,
+                                             signed __int64,
+                                             std::ios::fmtflags );
 
 #endif

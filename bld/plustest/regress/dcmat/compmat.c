@@ -1,4 +1,4 @@
-#include "compMat.h"
+#include "compmat.h"
 
 complexMatrix complexArray::operator - () const {
   complex* newX = new complex [M*N];

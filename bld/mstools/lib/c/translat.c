@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate Microsoft LIB to Watcom options.
 *
 ****************************************************************************/
 
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <process.h>
 #include <stdio.h>
 #include <string.h>
 #include "cmdline.h"
@@ -63,26 +61,18 @@ static OPT_STRING *     version = NULL;
 
 
 /*
- * Translate scanned MS options to Watcom options.
+ * Add one more unsupported option to optStr.
  */
-void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
-/*************************************************************/
+static void append_unsupported( char *optStr, char *opt )
+/*******************************************************/
 {
-    /*** Parse the /nologo switch now so we can print the banner ***/
-    if( cmdOpts->nologo ) {
-        QuietModeMessage();
+    if( optStr[0] != '\0' ) {
+        strcat( optStr, " /" );
     } else {
-        BannerMessage();
+        strcat( optStr, "/" );
     }
-
-    /*** Parse everything ***/
-    default_opts( cmdOpts, cmdLine );
-    def_file_opts( cmdOpts );
-    unsupported_opts( cmdOpts );
-    lib_opts( cmdOpts, cmdLine );
-    watcom_opts( cmdOpts, cmdLine );
+    strcat( optStr, opt );
 }
-
 
 
 /*
@@ -120,17 +110,27 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add one more unsupported option to optStr.
+ * Add another string to an OPT_STRING.
  */
-static void append_unsupported( char *optStr, char *opt )
-/*******************************************************/
+static void add_string( OPT_STRING **p, char *str )
+/*************************************************/
 {
-    if( optStr[0] != '\0' ) {
-        strcat( optStr, " /" );
+    OPT_STRING *        buf;
+    OPT_STRING *        curElem;
+
+    /*** Make a new list item ***/
+    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
+    strcpy( buf->data, str );
+    buf->next = NULL;
+
+    /*** Put it at the end of the list ***/
+    if( *p == NULL ) {
+        *p = buf;
     } else {
-        strcat( optStr, "/" );
+        curElem = *p;
+        while( curElem->next != NULL )  curElem = curElem->next;
+        curElem->next = buf;
     }
-    strcat( optStr, opt );
 }
 
 
@@ -326,7 +326,6 @@ static char *VerifyDot( char *filename )
 }
 
 
-
 /*
  * Called by InitFuzzy when an error occurs.
  */
@@ -375,6 +374,22 @@ static void init_fuzzy( void )
     /*** Ok, now tell the fuzzy module to initialize itself ***/
     InitFuzzy( (const char**)objsvector, NULL, NULL, fuzzy_init_callback );
     FreeMem( objsvector );
+}
+
+
+/*
+ * Destroy an OPT_STRING.
+ */
+static void del_string( OPT_STRING **p )
+/**************************************/
+{
+    OPT_STRING *        s;
+
+    while( *p != NULL ) {
+        s = *p;
+        *p = s->next;
+        FreeMem( s );
+    }
 }
 
 
@@ -712,47 +727,6 @@ static void watcom_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 
 
 /*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-static void del_string( OPT_STRING **p )
-/**************************************/
-{
-    OPT_STRING *        s;
-
-    while( *p != NULL ) {
-        s = *p;
-        *p = s->next;
-        FreeMem( s );
-    }
-}
-
-
-/*
  * Case-insensitive version of strstr.
  */
 static char *stristr( const char *str, const char *substr )
@@ -779,4 +753,26 @@ static char *stristr( const char *str, const char *substr )
     }
 
     return( NULL );
+}
+
+
+/*
+ * Translate scanned MS options to Watcom options.
+ */
+void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
+/*************************************************************/
+{
+    /*** Parse the /nologo switch now so we can print the banner ***/
+    if( cmdOpts->nologo ) {
+        QuietModeMessage();
+    } else {
+        BannerMessage();
+    }
+
+    /*** Parse everything ***/
+    default_opts( cmdOpts, cmdLine );
+    def_file_opts( cmdOpts );
+    unsupported_opts( cmdOpts );
+    lib_opts( cmdOpts, cmdLine );
+    watcom_opts( cmdOpts, cmdLine );
 }

@@ -1,0 +1,34 @@
+:Base fbooks.hlp>main
+:Title FORTRAN 77 Bookshelf
+
+1 About Watcom FORTRAN 77 On-line Documentation=About_Watcom_FORTRAN_77_OnMline_Documentation
+:include f_readme.cnt
+:include fuguide.cnt
+:include wfcerrs.cnt
+:include f77lr.cnt
+:include fpguide.cnt
+:include f77graph.cnt
+:include ftools.cnt
+
+1 Watcom Graphical Tools Guide
+:include ide.cnt
+:include wbrw.cnt
+:include wprof.cnt
+:include editor.cnt
+:include vi.cnt
+:include resedt.cnt
+:include resacc.cnt
+:include resdlg.cnt
+:include resimg.cnt
+:include resmnu.cnt
+:include resstr.cnt
+:include rescomp.cnt
+:include zoom.cnt
+:include heapwalk.cnt
+:include spy.cnt
+:include ddespy.cnt
+:include drwatcom.cnt
+:include drnt.cnt
+
+:include lguide.cnt
+:include wd.cnt

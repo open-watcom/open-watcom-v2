@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Token constant definitions
 *
 ****************************************************************************/
 
@@ -33,28 +32,11 @@
 #include "weights.gh"
 
 #ifndef pick
-extern  char    *Tokens[];
-extern  char    TokenClass[];
 
 /* the following table is in order of priority of operators */
 
-enum    token_class {
-        TC_NEAR = 1,            /* __near, __far, __huge, __interrupt */
-        TC_FAR,                 /* __cdecl, __pascal, __fortran */
-        TC_HUGE,
-        TC_FAR16,
-        TC_INTERRUPT,
-        TC_CDECL,
-        TC_PASCAL,
-        TC_FORTRAN,
-        TC_SYSCALL,             /* __syscall for OS/2 2.0; 04-jul-91 */
-        TC_STDCALL,             /* __stdcall for NT */
-        TC_FASTCALL,             /* __stdcall for NT */
-        TC_OPTLINK,             /* _Optlink  for os2 */
-        TC_EXPORT,              /* __export, __loadds, __saveregs */
-        TC_LOADDS,
-        TC_SAVEREGS,
-        TC_MODIFIER,
+typedef enum token_class {
+        TC_MODIFIER = 1,
         TC_BASED,
         TC_SEGMENT,
         TC_SEGNAME,
@@ -111,7 +93,10 @@ enum    token_class {
         TC_FUNC_CALL,           /* ( */
         TC_DOT,                 /* . */
         TC_ARROW                /* -> */
-};
+} token_class;
+
+extern  char        *Tokens[];
+extern  token_class TokenClass[];
 
 #define pick(token,string,class) token
 enum TOKEN {
@@ -173,16 +158,14 @@ pick( T_CONSTANT,      "constant",  TC_XX ),
 pick( T_STRING,        "string",    TC_XX ),
 
 #define FIRST_KEYWORD   (T_STRING+1)
-/* start of keywords */
+
 #include "keywords.gh"
 
-#define T_TRY           T__TRY
-#define T_EXCEPT        T__EXCEPT
-#define T_FINALLY       T__FINALLY
-#define T___SYSCALL     T__SYSCALL
 #define LAST_KEYWORD    (T_MACRO_PARM-1)
 
 pick( T_MACRO_PARM,    "macro parm",TC_XX ),
+pick( T_MACRO_VAR_PARM, "macro var parm",TC_XX ),
+pick( T_MACRO_EMPTY_VAR_PARM, "empty macro var parm",TC_XX ),
 pick( T_MACRO,         "macro",     TC_XX ),
 pick( T_FUNC_DEFN,     "function",  TC_XX ),
 pick( T_FUNC_END,      "fnend",     TC_XX ),
@@ -220,4 +203,9 @@ pick( T_ALLOCA,        "alloca",    TC_XX ),
 pick( T_LAST_TOKEN,    " ",         TC_XX )
 
 };
+
+#ifndef _TOKEN_DEFINED
+#define _TOKEN_DEFINED
 typedef enum TOKEN TOKEN;
+#endif
+

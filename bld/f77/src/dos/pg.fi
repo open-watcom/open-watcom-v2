@@ -1,0 +1,218 @@
+c$noextensions
+c$noreference
+
+        integer _PG_MAXCHARTTYPE
+        integer _PG_BARCHART
+        integer _PG_COLUMNCHART
+        integer _PG_LINECHART
+        integer _PG_SCATTERCHART
+        integer _PG_PIECHART
+        integer _PG_MAXCHARTSTYLE
+        integer _PG_PLAINBARS
+        integer _PG_STACKEDBARS
+        integer _PG_POINTANDLINE
+        integer _PG_POINTONLY
+        integer _PG_PERCENT
+        integer _PG_NOPERCENT
+        integer _PG_LEFT
+        integer _PG_CENTER
+        integer _PG_RIGHT
+        integer _PG_BOTTOM
+        integer _PG_OVERLAY
+        integer _PG_LINEARAXIS
+        integer _PG_LOGAXIS
+        integer _PG_DECFORMAT
+        real _PG_EXPFORMAT
+
+        parameter (_PG_MAXCHARTTYPE=5)  ! maximum chart type
+
+        parameter (_PG_BARCHART=1)      ! chart types
+        parameter (_PG_COLUMNCHART=2)
+        parameter (_PG_LINECHART=3)
+        parameter (_PG_SCATTERCHART=4)
+        parameter (_PG_PIECHART=5)
+
+        parameter (_PG_MAXCHARTSTYLE=2) ! maximum chart style
+
+        parameter (_PG_PLAINBARS=1)     ! styles for bar and column charts
+        parameter (_PG_STACKEDBARS=2)
+
+        parameter (_PG_POINTANDLINE=1)  ! styles for line and scatter charts
+        parameter (_PG_POINTONLY=2)
+
+        parameter (_PG_PERCENT=1)       ! styles for pie charts
+        parameter (_PG_NOPERCENT=2)
+
+        parameter (_PG_LEFT=1)          ! title and legend positions
+        parameter (_PG_CENTER=2)
+        parameter (_PG_RIGHT=3)
+        parameter (_PG_BOTTOM=4)
+        parameter (_PG_OVERLAY=5)
+
+        parameter (_PG_LINEARAXIS=1)    ! axis types
+        parameter (_PG_LOGAXIS=2)
+
+        parameter (_PG_DECFORMAT=1)     ! tic mark label format
+        parameter (_PG_EXPFORMAT=2)
+
+        parameter (_PG_MISSINGVALUE=-3.402823466e+38)   ! value for missing data elements
+
+
+! Error codes - greater than 100, terminate chart routine
+!             - less than 100, default values will be used
+
+        integer _PG_NOTINITIALIZED
+        integer _PG_BADSCREENMODE
+        integer _PG_BADCHARTTYPE
+        integer _PG_BADLEGENDWINDOW
+        integer _PG_BADDATAWINDOW
+        integer _PG_TOOSMALLN
+        integer _PG_TOOFEWSERIES
+        integer _PG_BADCHARTSTYLE
+        integer _PG_BADLOGBASE
+        integer _PG_BADSCALEFACTOR
+        integer _PG_BADCHARTWINDOW
+
+        parameter (_PG_NOTINITIALIZED=101)  ! library not initialized
+        parameter (_PG_BADSCREENMODE=102)   ! not in graphics mode
+        parameter (_PG_BADCHARTTYPE=103)    ! invalid chart type
+        parameter (_PG_BADLEGENDWINDOW=104) ! invalid legend window
+        parameter (_PG_BADDATAWINDOW=105)   ! invalid data window
+        parameter (_PG_TOOSMALLN=106)       ! number of data values <= 0
+        parameter (_PG_TOOFEWSERIES=107)    ! number of series <= 0
+
+        parameter (_PG_BADCHARTSTYLE=1)     ! invalid chart style
+        parameter (_PG_BADLOGBASE=2)        ! log base <= 0
+        parameter (_PG_BADSCALEFACTOR=3)    ! scale factor= 0
+        parameter (_PG_BADCHARTWINDOW=4)    ! invalid chart window
+
+
+! Chart definition
+
+        integer _PGTITLELEN
+        parameter (_PG_TITLELEN=70)         ! maximum title length
+
+        structure /titletype/               ! chart title definition
+            character*70    title               ! title text
+            integer*2       titlecolor          ! palette color for title
+            integer*2       justify             ! _PG_LEFT, _PG_CENTER or _PG_RIGHT
+        end structure
+
+        structure /axistype/                ! chart axes definition
+            integer*2       grid                ! if TRUE draw grid lines
+            integer*2       gridstyle           ! style number for grid lines
+            record /titletype/ axistitle        ! axis title
+            integer*2       axiscolor           ! palette color for axis
+            integer*2       labeled             ! if TRUE draw tic marks and titles
+            integer*2       rangetype           ! _PG_LINEARAXIS or _PG_LOGAXIS
+            real            logbase             ! base used for log axis
+            integer*2       autoscale           ! if TRUE calculate remaining values
+            real            scalemin            ! minimum value for scale
+            real            scalemax            ! maximum value for scale
+            real            scalefactor         ! scale factor for axis
+            record /titletype/ scaletitle       ! title for scale factor
+            real            ticinterval         ! interval between tic marks
+            integer*2       ticformat           ! _PG_EXPFORMAT or _PG_DECFORMAT
+            integer*2       ticdecimals         ! number of decimals places in tic labels
+        end structure
+
+        structure /windowtype/              ! chart and data window definition
+            integer*2       x1                  ! left side of window
+            integer*2       y1                  ! top side of window
+            integer*2       x2                  ! right side of window
+            integer*2       y2                  ! bottom side of window
+            integer*2       border              ! if TRUE draw border
+            integer*2       background          ! palette color for background
+            integer*2       borderstyle         ! style number for border
+            integer*2       bordercolor         ! palette color for border
+        end structure
+
+        structure /legendtype/              ! legend definition
+            integer*2       legend              ! if TRUE draw legend
+            integer*2       place               ! _PG_RIGHT, _PG_BOTTOM or _PG_OVERLAY
+            integer*2       textcolor           ! palette color for text
+            integer*2       autosize            ! if TRUE size is calculated
+            record /windowtype/ legendwindow    ! window for legend
+        end structure
+
+        structure /chartenv/                ! chart definition
+            integer*2       charttype           ! _PG_BAR, _PG_COLUMN, _PG_LINE, _PG_SCATTER or _PG_PIE
+            integer*2       chartstyle          ! chart style for above type
+            record /windowtype/  chartwindow    ! window containing whole chart
+            record /windowtype/  datawindow     ! window containing data part of chart
+            record /titletype/   maintitle      ! chart main title
+            record /titletype/   subtitle       ! chart sub-title
+            record /axistype/    xaxis          ! x-axis description
+            record /axistype/    yaxis          ! y-axis description
+            record /legendtype/  legend         ! legend description
+        end structure
+
+
+! Palette and Style-set definition
+
+        integer _PG_PALETTELEN
+        parameter (_PG_PALETTELEN=16)       ! size of palette and style-set
+
+        structure /paletteentry/            ! palette entry definition
+            integer*2       color
+            integer*2       style
+            integer*1       fill( 8 )
+            integer*1       plotchar
+        end structure
+
+
+! Display functions
+
+        external _pg_initchart
+        external _pg_defaultchart
+        external _pg_chart
+        external _pg_chartms
+        external _pg_chartscatter
+        external _pg_chartscatterms
+        external _pg_chartpie
+
+        integer*2 _pg_initchart
+        integer*2 _pg_defaultchart
+        integer*2 _pg_chart
+        integer*2 _pg_chartms
+        integer*2 _pg_chartscatter
+        integer*2 _pg_chartscatterms
+        integer*2 _pg_chartpie
+
+! Analyze functions
+
+        external _pg_analyzechart
+        external _pg_analyzechartms
+        external _pg_analyzescatter
+        external _pg_analyzescatterms
+        external _pg_analyzepie
+
+        integer*2 _pg_analyzechart
+        integer*2 _pg_analyzechartms
+        integer*2 _pg_analyzescatter
+        integer*2 _pg_analyzescatterms
+        integer*2 _pg_analyzepie
+
+! Utility functions
+
+        external _pg_hlabelchart
+        external _pg_vlabelchart
+        external _pg_getpalette
+        external _pg_setpalette
+        external _pg_resetpalette
+        external _pg_getstyleset
+        external _pg_setstyleset
+        external _pg_resetstyleset
+        external _pg_getchardef
+        external _pg_setchardef
+
+        integer*2 _pg_hlabelchart
+        integer*2 _pg_vlabelchart
+        integer*2 _pg_getpalette
+        integer*2 _pg_setpalette
+        integer*2 _pg_resetpalette
+        integer*2 _pg_getstyleset
+        integer*2 _pg_setstyleset
+        integer*2 _pg_resetstyleset
+        integer*2 _pg_getchardef
+        integer*2 _pg_setchardef

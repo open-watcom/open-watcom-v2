@@ -36,14 +36,14 @@
 static bool GUISelect( gui_window *wnd, unsigned id, bool set,
                        WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
-    gui_control_class   class;
+    gui_control_class   control_class;
     UINT                msg;
     WPI_PARAM2          wparam;
 
-    if( !GUIGetControlClass( wnd, id, &class ) ) {
+    if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( FALSE );
     }
-    switch( class ) {
+    switch( control_class ) {
     case GUI_EDIT_MLE:
         if( set ) {
             msg = MLM_SETSEL;

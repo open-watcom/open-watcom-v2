@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sizeof operator.
 *
 ****************************************************************************/
 
@@ -36,12 +35,12 @@ unsigned long SizeOfArg( TYPEPTR typ )
 {
     unsigned long       size;
 
-    while( typ->decl_type == TYPE_TYPEDEF ) typ = typ->object;
-    size = TypeSize(typ);
+    SKIP_TYPEDEFS( typ );
+    size = TypeSize( typ );
     while( typ->decl_type == TYPE_ARRAY ) {
         typ = typ->object;
-        while( typ->decl_type == TYPE_TYPEDEF ) typ = typ->object;
-        size *= TypeSize(typ);
+        SKIP_TYPEDEFS( typ );
+        size *= TypeSize( typ );
     }
     return( size );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Echo CG API calls and track handle usage (for debugging).
 *
 ****************************************************************************/
 
@@ -39,18 +38,17 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "typedef.h"
-#include "spawn.h"
+#include "types.h"
 #include "tree.h"
 #include "seldef.h"
 #include "echoapi.h"
 #include "model.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "useinfo.h"
 #include "dump.h"
 #include "feprotos.h"
 
 extern  void            FatalError(char *);
-extern  type_def        *TypeAddress(cg_type);
 extern  bool            GetEnvVar(char*,char*,int);
 extern  int             BGInlineDepth( void );
 
@@ -64,9 +62,10 @@ extern  int             BGInlineDepth( void );
 static  FILE    *EchoAPIFile = NULL;
 static  int     EchoAPIFlush = 0;
 
-static void     EchoAPIRedirect() {
-/******************************/
-    char tmpfile[PATH_MAX];
+static void     EchoAPIRedirect( void )
+/*************************************/
+{
+    char    tmpfile[PATH_MAX];
 
     if( GetEnvVar("echoapiflush", tmpfile, 11 ) ) {
         EchoAPIFlush = 1;
@@ -76,17 +75,17 @@ static void     EchoAPIRedirect() {
     }
 }
 
-static  void    EchoAPIUnredirect() {
-/********************************/
-
+static  void    EchoAPIUnredirect( void )
+/***************************************/
+{
     if( EchoAPIFile == NULL ) return;
     fclose( EchoAPIFile );
     EchoAPIFile = NULL;
 }
 
-static  void    EchoAPIChar( char c ) {
-/**********************************/
-
+static  void    EchoAPIChar( char c )
+/***********************************/
+{
     /* if the codegen is crashing we want flushing to occur
      */
     if( EchoAPIFile != NULL ) {
@@ -102,9 +101,9 @@ static  void    EchoAPIChar( char c ) {
     }
 }
 
-static  void    EchoAPIString( char const *s ) {
-/*************************************/
-
+static  void    EchoAPIString( char const *s )
+/********************************************/
+{
     while( *s ) {
         EchoAPIChar( *s );
         s++;
@@ -119,7 +118,7 @@ static void errMsg              // PRINT ERROR MESSAGE
     DumpChar( '\n' );
 }
 
-static void handleFailure()
+static void handleFailure( void )
 {
     DumpString( "Aborted after CgDbg Failure" );
     EchoAPIUnredirect();
@@ -186,7 +185,7 @@ void verifyNotUserType   // VERIFY NOT A USER-DEFINED TYPE
     if( alias ) {
         type = alias->refno;
     }
-    if( type >= T_FIRST_FREE ) {
+    if( type >= TY_FIRST_FREE ) {
         errMsg( "cannot use user-defined type" );
         handleFailure();
     }
@@ -261,108 +260,6 @@ void EchoAPI              // EchoAPI ROUTINE
                   case 'o' : {
                     cg_op op = va_arg( args, cg_op );
                     switch( op ) {
-#if 0
-                      // new code gen defn's 95/02/06
-                      case_str( O_NOP )
-                      case_prt( O_PLUS, + )
-                      case_str( O_INTERNAL_01 )
-                      case_prt( O_MINUS, - )
-                      case_str( O_INTERNAL_02 )
-                      case_prt( O_TIMES, * )
-                      case_str( O_INTERNAL_03 )
-                      case_prt( O_DIV, / )
-                      case_str( O_MOD )
-                      case_prt( O_AND, & )
-                      case_prt( O_OR, | )
-                      case_prt( O_XOR, ^ )
-                      case_prt( O_RSHIFT, >> )
-                      case_prt( O_LSHIFT, << )
-                      case_str( O_POW )
-                      case_str( O_ATAN2 )
-                      case_str( O_FMOD )
-                      case_str( O_UMINUS )
-                      case_str( O_COMPLEMENT )
-                      case_str( O_LOG )
-                      case_str( O_COS )
-                      case_str( O_SIN )
-                      case_str( O_TAN )
-                      case_str( O_SQRT )
-                      case_str( O_FABS )
-                      case_str( O_ACOS )
-                      case_str( O_ASIN )
-                      case_str( O_ATAN )
-                      case_str( O_COSH )
-                      case_str( O_EXP )
-                      case_str( O_LOG10 )
-                      case_str( O_SINH )
-                      case_str( O_TANH )
-                      case_str( O_PTR_TO_NATIVE )
-                      case_str( O_PTR_TO_FORIEGN )
-                      case_str( O_PARENTHESIS )
-                      case_prt( O_CONVERT, <c= )
-                      case_str( O_ROUND )
-                      case_str( O_GETS )
-                      case_str( O_INTERNAL_05 )
-                      case_str( O_INTERNAL_06 )
-                      case_str( O_INTERNAL_07 )
-                      case_str( O_INTERNAL_08 )
-                      case_str( O_INTERNAL_09 )
-                      case_str( O_INTERNAL_10 )
-                      case_str( O_INTERNAL_11 )
-                      case_str( O_INTERNAL_14 )
-                      case_str( O_INTERNAL_15 )
-                      case_prt( O_EQ, == )
-                      case_prt( O_NE, != )
-                      case_prt( O_GT, > )
-                      case_prt( O_LE, <= )
-                      case_prt( O_LT, < )
-                      case_prt( O_GE, >= )
-                      case_str( O_INTERNAL_12 )
-                      case_str( O_SLACK_20 )
-                      case_str( O_SLACK_21 )
-                      case_str( O_SLACK_22 )
-                      case_str( O_SLACK_23 )
-                      case_str( O_SLACK_24 )
-                      case_str( O_SLACK_25 )
-                      case_str( O_SLACK_26 )
-                      case_str( O_SLACK_27 )
-                      case_str( O_SLACK_28 )
-                      case_str( O_SLACK_29 )
-                      case_str( O_SLACK_30 )
-                      case_str( O_SLACK_31 )
-                      case_str( O_SLACK_32 )
-                      case_str( O_SLACK_33 )
-                      case_str( O_SLACK_34 )
-                      case_str( O_SLACK_35 )
-                      case_str( O_SLACK_36 )
-                      case_str( O_SLACK_37 )
-                      case_str( O_SLACK_38 )
-                      case_str( O_SLACK_39 )
-                      case_str( O_INTERNAL_13 )
-                      case_prt( O_FLOW_AND, && )
-                      case_prt( O_FLOW_OR, || )
-                      case_str( O_FLOW_OUT )
-                      case_prt( O_FLOW_NOT, ! )
-                      case_prt( O_POINTS, @ )
-                      case_str( O_GOTO )
-                      case_str( O_BIG_GOTO )
-                      case_str( O_IF_TRUE )
-                      case_str( O_IF_FALSE )
-                      case_str( O_INVOKE_LABEL )
-                      case_str( O_LABEL )
-                      case_str( O_BIG_LABEL )
-                      case_str( O_LABEL_RETURN )
-                      case_str( O_PROC )
-                      case_str( O_PARM_DEF )
-                      case_str( O_AUTO_DEF )
-                      case_str( O_COMMA )
-                      case_str( O_PASS_PROC_PARM )
-                      case_str( O_DEFN_PROC_PARM )
-                      case_str( O_CALL_PROC_PARM )
-                      case_str( O_PRE_GETS )
-                      case_str( O_POST_GETS )
-                      case_str( O_SIDE_EFFECT )
-#else
                       case_str( O_NOP )
                       case_prt( O_PLUS, + )
                       case_str( O_INTERNAL_01 )
@@ -398,7 +295,7 @@ void EchoAPI              // EchoAPI ROUTINE
                       case_str( O_SINH )
                       case_str( O_TANH )
                       case_str( O_PTR_TO_NATIVE )
-                      case_str( O_PTR_TO_FORIEGN )
+                      case_str( O_PTR_TO_FOREIGN )
                       case_str( O_PARENTHESIS )
                       case_prt( O_CONVERT, <c= )
                       case_str( O_ROUND )
@@ -472,7 +369,6 @@ void EchoAPI              // EchoAPI ROUTINE
                       case_str( O_PRE_GETS )
                       case_str( O_POST_GETS )
                       case_str( O_SIDE_EFFECT )
-#endif
                       default :
                         EchoAPIString( "O_0" );
                         itoa( op, buffer, 10 );
@@ -507,46 +403,34 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 't' : {
-                    cg_type type = va_arg( args, cg_type );
+                    cg_type type = (cg_type)va_arg( args, int );
                     switch( type ) {
-                      case_str( T_UINT_1 )
-                      case_str( T_INT_1 )
-                      case_str( T_UINT_2 )
-                      case_str( T_INT_2 )
-                      case_str( T_UINT_4 )
-                      case_str( T_INT_4 )
-                      case_str( T_UINT_8 )
-                      case_str( T_INT_8 )
-                      case_str( T_LONG_POINTER )
-                      case_str( T_HUGE_POINTER )
-                      case_str( T_NEAR_POINTER )
-                      case_str( T_LONG_CODE_PTR )
-                      case_str( T_NEAR_CODE_PTR )
-                      case_str( T_SINGLE )
-                #ifdef BY_C_FRONT_END
+                      case_str( TY_UINT_1 )
+                      case_str( TY_INT_1 )
+                      case_str( TY_UINT_2 )
+                      case_str( TY_INT_2 )
+                      case_str( TY_UINT_4 )
+                      case_str( TY_INT_4 )
+                      case_str( TY_UINT_8 )
+                      case_str( TY_INT_8 )
+                      case_str( TY_LONG_POINTER )
+                      case_str( TY_HUGE_POINTER )
+                      case_str( TY_NEAR_POINTER )
+                      case_str( TY_LONG_CODE_PTR )
+                      case_str( TY_NEAR_CODE_PTR )
+                      case_str( TY_SINGLE )
                       case_str( TY_DOUBLE )
-                #else
-                      case_str( T_DOUBLE )
-                #endif
-                      case_str( T_LONG_DOUBLE )
-                      case_str( T_UNKNOWN )
-                #ifdef BY_C_FRONT_END
+                      case_str( TY_LONG_DOUBLE )
+                      case_str( TY_UNKNOWN )
                       case_str( TY_DEFAULT )
-                #else
-                      case_str( T_DEFAULT )
-                #endif
-                      case_str( T_INTEGER )
-                #ifdef BY_C_FRONT_END
+                      case_str( TY_INTEGER )
                       case_str( TY_UNSIGNED )
-                #else
-                      case_str( T_UNSIGNED )
-                #endif
-                      case_str( T_POINTER )
-                      case_str( T_CODE_PTR )
-                      case_str( T_BOOLEAN )
-                      case_str( T_PROC_PARM )
+                      case_str( TY_POINTER )
+                      case_str( TY_CODE_PTR )
+                      case_str( TY_BOOLEAN )
+                      case_str( TY_PROC_PARM )
                       default :
-                        EchoAPIString( "T_0" );
+                        EchoAPIString( "TY_0" );
                         itoa( type, buffer, 10 );
                         EchoAPIString( buffer );
                         break;
@@ -628,6 +512,18 @@ call_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
 }
 
 
+void handleExists           // VERIFY EXISTING HANDLE
+    ( handle_type hdltype
+    , use_info *useinfo )              // - the handle
+{
+    if( useinfo == NULL ) {
+        handleMsg( hdltype, "handle does not exist" );
+    }
+    if( useinfo->hdltype != hdltype ) {
+        ErrExpectFound( hdltype, useinfo->hdltype );
+    }
+}
+
 // USE HANDLE EXACTLY ONCE
 
 void handleUseOnce( handle_type hdltype, use_info *useinfo )
@@ -701,18 +597,6 @@ void hdlAddTernary       // ADD A HANDLE AFTER A TERNARY OPERATION
     hdlAddReuse( hdltype, handle );
 }
 
-void handleExists           // VERIFY EXISTING HANDLE
-    ( handle_type hdltype
-    , use_info *useinfo )              // - the handle
-{
-    if( useinfo == NULL ) {
-        handleMsg( hdltype, "handle does not exist" );
-    }
-    if( useinfo->hdltype != hdltype ) {
-        ErrExpectFound( hdltype, useinfo->hdltype );
-    }
-}
-
 void hdlAllUsed          // VERIFY ALL HANDLES IN RING HAVE BEEN USED
     ( handle_type hdltype )
 {
@@ -740,7 +624,7 @@ void CgEchoAPICbName                // REGISTER A CALL-BACK NAME
 {
     CB_NAME* cbn;
 
-    _Alloc( cbn, sizeof( CB_NAME ) ); // Free'd in DbgFini
+    cbn = CGAlloc( sizeof( CB_NAME ) ); // Free'd in DbgFini
     cbn->rtn = rtn;
     cbn->name = name;
     // insert
@@ -748,7 +632,7 @@ void CgEchoAPICbName                // REGISTER A CALL-BACK NAME
     callback_names = cbn;
 }
 
-void EchoAPIInit()
+void EchoAPIInit( void )
 {
     callback_names = NULL;
     EchoAPIRedirect();
@@ -756,13 +640,13 @@ void EchoAPIInit()
 
 // remove callback name from list
 
-void EchoAPIFini()
+void EchoAPIFini( void )
 {
     CB_NAME *cbn, *next;               // - call back name
 
     for( cbn = callback_names; cbn; cbn = next ) {
         next = cbn->next;
-        _Free( cbn, sizeof( CB_NAME ) );
+        CGFree( cbn );
     }
     callback_names = NULL;
     EchoAPIUnredirect();
@@ -782,9 +666,9 @@ static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
         }
     }
     if( name == NULL ) {
-        sprintf( buffer, "%x", rtn );
+        sprintf( buffer, "%p", rtn );
     } else {
-        sprintf( buffer, "%x:%s", rtn, name );
+        sprintf( buffer, "%p:%s", rtn, name );
     }
     return buffer;
 }

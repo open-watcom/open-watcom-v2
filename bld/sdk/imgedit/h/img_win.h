@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include "win1632.h"
 
 #define SELECTIMAGE             "SELECTIMAGE"
@@ -38,7 +37,7 @@
 #define BITMAPTYPE              "BITMAPTYPE"
 #define CURSORTYPE              "CURSORTYPE"
 #define IMAGESIZE               "IMAGESIZE"
-#define SELBKCOLOUR             "SELBKCOLOUR"
+#define SELBKCOLOR              "SELBKCOLOR"
 #define CURRENT_SETTINGS        "CURRENT_SETTINGS"
 
 #define POINT_CUR               "PointCursor"
@@ -96,11 +95,16 @@
 #define CCROTBMP                "CCROTBMP"
 #define CCROTDBMP               "CCROTDBMP"
 
-#define BLACK           RGB(0x00, 0x00, 0x00)
-#define DKGRAY          RGB(0x80, 0x80, 0x80)
-#define LTGRAY          RGB(0xC0, 0xC0, 0xC0)
-#define WHITE           RGB(0xFF, 0xFF, 0xFF)
-#define BK_WHITE        RGB(0xFF, 0xFF, 0xFF)
+#if defined ( __NT__ )
+    #define DKGRAY          GetSysColor( COLOR_BTNSHADOW )
+    #define LTGRAY          GetSysColor( COLOR_BTNFACE )
+#else
+    #define DKGRAY          RGB( 0x80, 0x80, 0x80 )
+    #define LTGRAY          RGB( 0xC0, 0xC0, 0xC0 )
+#endif
+#define BLACK           RGB( 0x00, 0x00, 0x00 )
+#define BK_WHITE        RGB( 0xFF, 0xFF, 0xFF )
+#define WHITE           RGB( 0xFF, 0xFF, 0xFF )
 #define CLR_BLACK       BLACK
 #define CLR_PALEGRAY    LTGRAY
 #define CLR_DARKGRAY    DKGRAY

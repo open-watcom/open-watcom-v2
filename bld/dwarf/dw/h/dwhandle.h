@@ -40,7 +40,7 @@ typedef struct reloc_chain {
     uint_8              section;        /* section to seek in */
 } reloc_chain;
 
-#ifdef M_I86
+#ifdef _M_I86
 #define    HANDLE_MODIFIED     0x80000000    // handle is a type modifier
 #define    HANDLE_MASK         0x0fffffff    // only 2^28 handles ;)
 #else

@@ -1,0 +1,1992 @@
+File: source\diag0001.c
+(13,17): Error! E048: bit-field width must be positive
+(16,18): Error! E046: bit-field width is too large
+(20,18): Error! E046: bit-field width is too large
+(22,17): Error! E048: bit-field width must be positive
+(25,19): Error! E046: bit-field width is too large
+(29,19): Error! E046: bit-field width is too large
+(31,17): Error! E048: bit-field width must be positive
+(34,19): Error! E046: bit-field width is too large
+(38,19): Error! E046: bit-field width is too large
+(42,12): Error! E141: bit-field declaration must have a base type specified
+(44,18): Error! E142: illegal qualification of a bit-field declaration
+(45,19): Error! E142: illegal qualification of a bit-field declaration
+(46,18): Error! E142: illegal qualification of a bit-field declaration
+(52,15): Error! E140: bit-field declaration cannot have a storage class specifier
+(54,14): Error! E049: bit-field base type must be an integral type
+(55,15): Error! E047: width of a named bit-field must not be zero
+File: source\diag0002.c
+(4,29): Error! E143: duplicate base qualifier
+(4,29): Warning! W188: base class is inherited with private access
+(7,28): Error! E144: only one access specifier is allowed
+File: source\diag0003.c
+(7,14): Error! E110: union cannot be used as a base class
+(13,13): Error! E111: union cannot have a base class
+(16,14): Error! E641: cannot inherit a partially defined base class 'E'
+File: source\diag0004.c
+(12,18): Error! E113: repeated direct base class will cause ambiguities
+(16,26): Error! E113: repeated direct base class will cause ambiguities
+(18,11): Error! E126: class 'X3' has already been defined
+(20,14): Error! E641: cannot inherit a partially defined base class 'Z'
+File: source\diag0005.c
+(15,17): Error! E168: static data members are not allowed in an union
+(16,29): Error! E109: virtual member functions are not allowed in a union
+(17,29): Error! E109: virtual member functions are not allowed in a union
+(18,17): Error! E169: invalid storage class for a member
+(19,20): Error! E318: unions cannot have members with user-defined assignment operators
+(20,18): Error! E183: unions cannot have members with constructors
+(21,18): Error! E317: unions cannot have members with destructors
+File: source\diag0006.c
+(5,22): Error! E170: declaration is too complicated
+(21,49): Error! E124: expression is too complicated
+(28,9): Error! E121: syntax error
+(37,1): Warning! W205: declaration statement cannot follow a while statement
+(37,1): Warning! W014: no reference to symbol 'a'
+  definition: 'int a' in 'void bi_expr( void )'
+(48,22): Error! E171: exception declaration is too complicated
+(51,1): Error! E624: catch block does not immediately follow try block
+(60,22): Error! E184: statement is too complicated
+File: source\diag0007.c
+(2,1): Warning! W914: 'main' must return 'int'
+(5,9): Error! E172: floating-point constant too large to represent
+(6,10): Error! E172: floating-point constant too large to represent
+(7,9): Error! E173: floating-point constant too small to represent
+File: source\diag0008.c
+(7,28): Error! E175: range of enum constants cannot be represented
+(9,1): Error! E175: range of enum constants cannot be represented
+(13,29): Error! E175: range of enum constants cannot be represented
+File: source\diag0009.c
+(22,12): Error! E584: constructor for variable 'a' cannot be bypassed
+  definition: 'S a' in 'void test2( void )'
+(76,10): Error! E584: constructor for variable 'a' cannot be bypassed
+  definition: 'S a' in 'void test5( void )'
+(96,12): Error! E584: constructor for variable 'a' cannot be bypassed
+  definition: 'S a' in 'void test7( void )'
+File: source\diag0010.c
+(12,18): Error! E085: maximum class size has been exceeded
+File: source\diag0011.c
+(5,1): Warning! W014: no reference to symbol 'fp'
+  definition: 'void (* fp)( int, int )' in 'void foo( void )'
+(5,1): Warning! W014: no reference to symbol 'a'
+  definition: 'int a' in 'void foo( void )'
+(11,9): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a'
+(15,9): Warning! W628: expression is not meaningful
+(15,24): Warning! W387: expression is useful only for its side effects
+(20,12): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a' in 'void decl( void )'
+(20,12): Warning! W750: function prototype in block scope missing 'extern'
+  function prototype is 'int ( int )'
+(20,27): Error! E195: 'sizeof' is not allowed for a function
+(20,24): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a' in 'void decl( void )'
+(21,1): Warning! W014: no reference to symbol 'a'
+  definition: 'int a' in 'void decl( void )'
+(21,1): Warning! W014: no reference to symbol 'c'
+  definition: 'int c[1]' in 'void decl( void )'
+(25,17): Warning! W597: encountered another ambiguous construct during disambiguation
+(25,12): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a' in 'void expr_decl( void )'
+(25,12): Warning! W750: function prototype in block scope missing 'extern'
+  function prototype is 'int ( int )'
+(25,24): Error! E195: 'sizeof' is not allowed for a function
+(25,22): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a' in 'void expr_decl( void )'
+(26,1): Warning! W014: no reference to symbol 'a'
+  definition: 'int a' in 'void expr_decl( void )'
+(26,1): Warning! W014: no reference to symbol 'c'
+  definition: 'int c[1]' in 'void expr_decl( void )'
+File: source\diag0012.c
+(1,21): Error! E083: function cannot return a function
+(3,22): Error! E082: function cannot return an array
+(5,19): Error! E081: cannot define an array of functions
+(7,11): Error! E218: cannot define an array of void
+(9,9): Error! E220: cannot define a reference to void
+(9,9): Error! E394: reference object must be initialized
+(11,10): Error! E221: cannot define a reference to another reference
+(13,12): Error! E219: cannot define an array of references
+(13,12): Error! E394: reference object must be initialized
+(15,9): Error! E222: cannot define a pointer to a reference
+(17,7): Error! E224: 'i' is a variable of type void
+(22,7): Error! E224: 'l' is a variable of type void
+(23,4): Error! E224: 'm' is a variable of type void
+File: source\diag0013.c
+(21,7): Error! E227: overloaded function is ambiguous for arguments used in call
+  ambiguous function: void ff( float ) defined at: (16,6)
+  ambiguous function: void ff( double ) defined at: (17,6)
+(22,7): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function: void ff( float ) defined at: (16,6)
+  rejected function: void ff( double ) defined at: (17,6)
+(37,5): Error! E229: function 'foo' has already been defined
+  definition: 'int foo( int )'
+(43,24): Error! E907: redeclaration of member function 'A::operator int ' not allowed
+  definition: 'A::operator int ()'
+(44,30): Error! E226: function 'A::operator int ' is not distinct
+  definition: 'A::operator int ()'
+(52,25): Error! E385: attempt to overload function 'bar' with a different return type
+  definition: 'float bar( char *, float )'
+(55,16): Error! E226: function 'f1a' is not distinct
+  definition: 'void f1a( int const & )'
+(57,24): Error! E226: function 'f1b' is not distinct
+  definition: 'void f1b( int )'
+(76,14): Error! E226: function 'foo' is not distinct
+  definition: 'void foo( S const & )'
+(79,8): Error! E227: overloaded function is ambiguous for arguments used in call
+  ambiguous function: void foo( S const & ) defined at: (75,6)
+  ambiguous function: void foo( S ) defined at: (76,6)
+File: source\diag0014.c
+(2,25): Error! E232: user-defined conversion must be a function
+(6,28): Error! E233: user-defined conversion has an argument list
+(10,26): Error! E231: user-defined conversion has a return type
+(11,26): Error! E231: user-defined conversion has a return type
+(15,12): Error! E235: destructor must be a function
+(19,15): Error! E234: destructor cannot have a return type
+(23,11): Error! E234: destructor cannot have a return type
+(27,11): Error! E235: destructor must be a function
+(31,22): Error! E236: destructor has an argument list
+(32,14): Error! E236: destructor has an argument list
+(36,27): Error! E237: 'operator +' must be a function
+File: source\diag0015.c
+(2,25): Error! E243: default arguments are not part of a function's type
+(5,39): Error! E243: default arguments are not part of a function's type
+(6,33): Error! E250: missing default argument for 'sam'
+  definition: 'int sam( int, int [, int ])'
+(10,27): Error! E245: overloaded operator cannot have default arguments
+(10,27): Error! E913: 'operator +' does not have a return type specified
+(15,38): Warning! W248: using default arguments would be overload ambiguous with 'fn2'
+  definition: 'int fn2( int, int )'
+(18,38): Warning! W249: using default arguments would be overload ambiguous with 'fn3' using default arguments
+  definition: 'int fn3( int, int [, int ])'
+(18,38): Warning! W248: using default arguments would be overload ambiguous with 'fn3'
+  definition: 'int fn3( int, int, int )'
+(32,46): Error! E247: cannot redefine default argument for 'foo'
+  definition: 'int foo( int, int [, int, int ])'
+(32,46): Error! E247: cannot redefine default argument for 'foo'
+  definition: 'int foo( int, int, int [, int ])'
+(36,41): Warning! W249: using default arguments would be overload ambiguous with 'fubar' using default arguments
+  definition: 'void fubar( int [, int, ... ])'
+File: source\diag0016.c
+(5,13): Error! E253: '::' qualifier cannot be used in this context
+(27,1): Error! E254: 'S::foo' has not been declared as a member
+  definition: 'void S::foo( double )'
+(33,10): Error! E252: class declaration has not been seen for '~T'
+(33,8): Error! E539: class of destructor must be class of object being destructed
+File: source\diag0017.c
+(10,13): Warning! W188: base class is inherited with private access
+(11,9): Error! E257: access declarations may only be 'public' or 'protected'
+(13,9): Error! E427: 'z' has not been declared as a member
+(14,9): Error! E427: 'd' has not been declared as a member
+(15,9): Error! E259: class in access declaration ('Q') must be a direct base class
+(25,9): Error! E328: storage class of 'D::a' conflicts with previous declaration
+  definition: 'int D::a'
+(25,9): Error! E042: symbol 'D::a' already defined
+  definition: 'int D::a'
+(26,9): Error! E261: cannot grant access to 'b'
+(29,9): Error! E262: cannot reduce access to 'a'
+(30,10): Error! E042: symbol 'D::c' already defined
+  definition: 'B D::c'
+(34,11): Error! E913: 'f' does not have a return type specified
+(40,9): Error! E260: overloaded functions ('f') do not have the same access
+File: source\diag0018.c
+(1,3): Error! E252: class declaration has not been seen for '~Q'
+(2,1): Error! E265: destructor must be a non-static member function
+(2,1): Error! E913: 'destructor' does not have a return type specified
+(6,1): Error! E264: user-defined conversion must be a non-static member function
+(11,1): Error! E269: 'operator --' must have either one argument or two arguments
+  argument count is 0 for a non-member function
+(11,1): Error! E278: 'operator --' must take at least one argument of a class/enum or a reference to a class/enum
+(11,1): Error! E913: 'operator --' does not have a return type specified
+(15,25): Error! E913: 'operator --' does not have a return type specified
+(19,32): Error! E269: 'operator ++' must have either one argument or two arguments
+  argument count is 3 since there is an implicit 'this' argument
+(23,1): Error! E266: 'operator []' must be a non-static member function
+(23,1): Error! E913: 'operator []' does not have a return type specified
+(27,28): Error! E268: 'operator []' must have two arguments
+  argument count is 3 since there is an implicit 'this' argument
+(27,28): Error! E913: 'operator []' does not have a return type specified
+(32,1): Error! E266: 'operator ()' must be a non-static member function
+(32,1): Error! E913: 'operator ()' does not have a return type specified
+(36,1): Error! E266: 'operator =' must be a non-static member function
+(36,1): Error! E913: 'operator =' does not have a return type specified
+(40,28): Error! E268: 'operator =' must have two arguments
+  argument count is 3 since there is an implicit 'this' argument
+(40,28): Error! E913: 'operator =' does not have a return type specified
+(45,1): Error! E269: 'operator +' must have either one argument or two arguments
+  argument count is 3 for a non-member function
+(45,1): Error! E278: 'operator +' must take at least one argument of a class/enum or a reference to a class/enum
+(45,1): Error! E913: 'operator +' does not have a return type specified
+(49,28): Error! E269: 'operator +' must have either one argument or two arguments
+  argument count is 3 since there is an implicit 'this' argument
+(49,28): Error! E913: 'operator +' does not have a return type specified
+(54,1): Error! E267: 'operator ~' must have one argument
+  argument count is 3 for a non-member function
+(54,1): Error! E278: 'operator ~' must take at least one argument of a class/enum or a reference to a class/enum
+(54,1): Error! E913: 'operator ~' does not have a return type specified
+(58,1): Error! E268: 'operator +=' must have two arguments
+  argument count is 3 for a non-member function
+(58,1): Error! E278: 'operator +=' must take at least one argument of a class/enum or a reference to a class/enum
+(58,1): Error! E913: 'operator +=' does not have a return type specified
+File: source\diag0019.c
+(27,1): Error! E266: 'operator ->' must be a non-static member function
+(27,1): Error! E913: 'operator ->' does not have a return type specified
+(32,30): Error! E267: 'operator ->' must have one argument
+  argument count is 2 since there is an implicit 'this' argument
+(34,25): Error! E267: 'operator ->' must have one argument
+  argument count is 2 since there is an implicit 'this' argument
+(35,29): Error! E267: 'operator ->' must have one argument
+  argument count is 2 since there is an implicit 'this' argument
+File: source\diag0020.c
+(3,25): Error! E272: 'operator new' must have a return type of pointer to void
+(3,25): Error! E273: the first argument of 'operator new' must be of type size_t
+(8,30): Error! E271: 'operator delete' must have a return type of void
+(8,30): Error! E274: the first argument of 'operator delete' must be of type pointer to void
+(8,30): Error! E488: 'operator delete' cannot be overloaded
+(10,40): Error! E267: 'operator delete' must have one argument
+  argument count is 2 for a non-member function
+(10,40): Error! E488: 'operator delete' cannot be overloaded
+(13,34): Error! E271: 'operator delete' must have a return type of void
+(13,34): Error! E274: the first argument of 'operator delete' must be of type pointer to void
+(17,40): Error! E274: the first argument of 'operator delete' must be of type pointer to void
+(17,40): Error! E275: the second argument of 'operator delete' must be of type size_t
+(26,44): Error! E488: 'operator delete' cannot be overloaded
+File: source\diag0021.c
+(3,22): Error! E286: static member 'S1' cannot be declared in this class
+(6,23): Error! E284: nested type 'S2' cannot be declared in this class
+(9,19): Error! E285: enumerator 'S3' cannot be declared in this class
+(13,6): Error! E316: anonymous struct/union member 'T' is not distinct in enclosing scope
+File: source\diag0022.c
+(5,6): Error! E928: syntax error: identifier 'S1', but expected: 'type-name'
+(6,2): Error! E121: syntax error
+(19,13): Error! E287: constructor cannot have a return type
+(20,17): Error! E287: constructor cannot have a return type
+(22,1): Error! E930: member 'S3::S3' cannot be declared in this class
+  definition: 'int * S3::S3'
+(25,13): Error! E289: invalid copy constructor argument list (causes infinite recursion)
+(33,15): Error! E290: constructor cannot be declared const or volatile
+(35,23): Error! E290: constructor cannot be declared const or volatile
+(36,25): Error! E291: constructor cannot be virtual
+(37,1): Error! E930: member 'S5::S5' cannot be declared in this class
+  definition: 'int S5::S5'
+File: source\diag0023.c
+(14,9): Error! E929: syntax error: token 'int', but expected: 'id-expression'
+(15,9): Error! E929: syntax error: token 'char', but expected: 'id-expression'
+(16,9): Error! E929: syntax error: token 'unsigned', but expected: 'id-expression'
+(17,9): Error! E929: syntax error: token '__segment', but expected: 'id-expression'
+(18,9): Error! E929: syntax error: token 'long', but expected: 'id-expression'
+(19,9): Error! E929: syntax error: token 'float', but expected: 'id-expression'
+(20,9): Error! E929: syntax error: token 'double', but expected: 'id-expression'
+(22,14): Error! E292: types do not match in simple type destructor
+File: source\diag0024.c
+(6,10): Error! E042: symbol 'S::a' already defined
+  definition: 'int S::a'
+(9,17): Error! E327: typedef cannot be initialized
+(13,18): Error! E330: function cannot be initialized
+(16,25): Error! E279: too many initializers
+(19,19): Error! E280: too many initializers for character string
+(26,16): Warning! W438: string literal concatenated during array initialization
+(29,13): Error! E281: expecting '{' but found expression
+(32,37): Error! E028: expecting '}' but found '{'
+(35,12): Error! E121: syntax error
+(39,24): Error! E006: syntax error; probable cause: missing ';'
+(43,24): Error! E006: syntax error; probable cause: missing ';'
+(47,25): Error! E390: cannot generate default constructor to initialize 'S2' since constructors were declared
+(50,12): Error! E178: const object must be initialized
+(51,16): Error! E178: const object must be initialized
+(54,7): Error! E394: reference object must be initialized
+End of file
+Warning! W014: no reference to symbol 'h'
+  definition: 'int const h'
+Warning! W014: no reference to symbol 'ha'
+  definition: 'int const ha[3]'
+Warning! W014: no reference to symbol 'bad1'
+  definition: 'int const bad1[3]'
+File: source\diag0025.c
+(1,4): Error! E118: nameless declaration is not allowed
+(3,5): Error! E121: syntax error
+(5,7): Error! E240: enum 'A' has not been declared
+(18,13): Error! E125: invalid redefinition of the typedef name 'C'
+  definition: 'C'
+(23,9): Error! E358: 'S' referenced as a union
+(31,10): Error! E359: union 'U' referenced as a class
+(32,9): Error! E359: union 'U' referenced as a class
+(37,9): Error! E240: enum 'EA' has not been declared
+File: source\diag0026.c
+(2,27): Error! E295: invalid friend declaration
+(2,27): Warning! W146: unexpected storage class specifier found
+(3,15): Error! E295: invalid friend declaration
+(3,15): Error! E485: friend declaration does not specify a class or function
+(3,15): Error! E118: nameless declaration is not allowed
+(4,28): Error! E295: invalid friend declaration
+(4,28): Warning! W145: unexpected type qualifier found
+(5,31): Error! E298: class friend declarations cannot contain a class definition
+File: source\diag0027.c
+(27,8): Error! E148: access to private member 'C::a' is not allowed
+  definition: 'int C::a'
+(33,21): Error! E125: invalid redefinition of the typedef name 'BAD'
+  definition: 'BAD'
+(39,11): Error! E125: invalid redefinition of the typedef name 'BAD'
+  definition: 'BAD'
+(45,11): Error! E241: class or namespace 'BAD' has not been declared
+(47,8): Error! E148: access to private member 'W::a' is not allowed
+  definition: 'int W::a'
+File: source\diag0028.c
+(8,33): Error! E301: 'friend', 'virtual' or 'inline' modifiers are not part of a function's type
+(9,21): Error! E135: 'friend', 'virtual' or 'inline' modifiers may only be used on functions
+(24,1): Error! E357: virtual function may only be declared in a class
+(28,25): Error! E301: 'friend', 'virtual' or 'inline' modifiers are not part of a function's type
+(29,24): Error! E301: 'friend', 'virtual' or 'inline' modifiers are not part of a function's type
+File: source\diag0029.c
+(11,37): Error! E254: 'C::not_found' has not been declared as a member
+  definition: 'void C::not_found( void )'
+(23,8): Error! E148: access to private member 'Z::a' is not allowed
+  definition: 'int Z::a'
+File: source\diag0030.c
+(7,12): Warning! W188: base class is inherited with private access
+(7,16): Warning! W188: base class is inherited with private access
+(13,39): Error! E295: invalid friend declaration
+(14,34): Error! E147: access to 'A::ambig' is not allowed because it is ambiguous
+  definition: 'void A::ambig( void )'
+(18,37): Warning! W300: function 'double_OK' has already been declared as a friend
+  definition: 'void double_OK( C::Z * )'
+(38,8): Error! E148: access to private member 'Z::a' is not allowed
+  definition: 'int C::Z::a'
+(43,8): Error! E148: access to private member 'Z::a' is not allowed
+  definition: 'int C::Z::a'
+File: source\diag0031.c
+(47,1): Error! E254: 'NEST::foo' has not been declared as a member
+  definition: 'void NEST::foo( NEST::NESTED * )'
+(48,8): Error! E148: access to private member 'NESTED::q' is not allowed
+  definition: 'int NEST::NESTED::q'
+File: source\diag0032.c
+(18,8): Error! E148: access to private member 'C::a' is not allowed
+  definition: 'int C::a'
+File: source\diag0033.c
+(18,8): Error! E148: access to private member 'C::a' is not allowed
+  definition: 'int C::a'
+(24,1): Error! E003: missing return value
+File: source\diag0034.c
+(25,8): Error! E148: access to private member 'C::a' is not allowed
+  definition: 'int C::a'
+(31,1): Error! E003: missing return value
+File: source\diag0035.c
+(5,15): Error! E304: class 'C' has not been defined
+(5,27): Error! E264: user-defined conversion must be a non-static member function
+(15,30): Error! E264: user-defined conversion must be a non-static member function
+File: source\diag0036.c
+(15,32): Error! E254: 'S::operator double ' has not been declared as a member
+  definition: 'S::operator double ()'
+(23,1): Error! E003: missing return value
+(27,8): Error! E148: access to private member 'C::a' is not allowed
+  definition: 'int C::a'
+(28,1): Error! E003: missing return value
+File: source\diag0037.c
+(3,12): Error! E305: all bit-fields in a union must be named
+(6,12): Error! E305: all bit-fields in a union must be named
+File: source\diag0038.c
+(4,2): Error! E308: an anonymous class without a declarator is useless
+(6,27): Error! E309: global anonymous union must be declared static
+(6,27): Error! E316: anonymous struct/union member 'd' is not distinct in enclosing scope
+(10,41): Error! E310: anonymous struct/union cannot have storage class in this context
+(11,40): Error! E310: anonymous struct/union cannot have storage class in this context
+(15,19): Warning! W311: union contains a protected member
+(23,2): Error! E319: anonymous struct/union cannot have any friends
+(23,2): Error! E312: anonymous struct/union contains a private member 'private1'
+  definition: 'int private1'
+(23,2): Error! E313: anonymous struct/union contains a function member 'foo'
+  definition: 'void foo( int )'
+(23,2): Error! E315: anonymous struct/union contains an enumeration member 'A'
+  definition: '<enum> A'
+(23,2): Error! E315: anonymous struct/union contains an enumeration member 'B'
+  definition: '<enum> B'
+(23,2): Error! E315: anonymous struct/union contains an enumeration member 'C'
+  definition: '<enum> C'
+(23,2): Error! E314: anonymous struct/union contains a typedef member 'T'
+  definition: 'T'
+(29,6): Error! E316: anonymous struct/union member 'a' is not distinct in enclosing scope
+(33,37): Error! E321: anonymous union in a function may only be static or auto
+(39,1): Warning! W018: no reference to anonymous union member 'c'
+  definition: 'char c'
+(39,1): Warning! W018: no reference to anonymous union member 'i1'
+  definition: 'int i1'
+(39,1): Warning! W018: no reference to anonymous union member 'd1'
+  definition: 'double d1'
+(40,47): Error! E414: type cannot be defined in an argument
+End of file
+Warning! W018: no reference to anonymous union member 'a'
+  definition: 'int a'
+Warning! W018: no reference to anonymous union member 'i1'
+  definition: 'int i1'
+Warning! W018: no reference to anonymous union member 'd1'
+  definition: 'double d1'
+Warning! W018: no reference to anonymous union member 'i2'
+  definition: 'int i2'
+Warning! W018: no reference to anonymous union member 'd2'
+  definition: 'double d2'
+File: source\diag0039.c
+(32,8): Error! E148: access to private member 'C::u0' is not allowed
+  definition: 'int C::u0'
+(33,8): Error! E148: access to private member 'C::u1' is not allowed
+  definition: 'int C::u1'
+(34,8): Error! E148: access to private member 'C::u2' is not allowed
+  definition: 'int C::u2'
+File: source\diag0040.c
+(2,19): Error! E127: 'sizeof' is not allowed for an undefined type
+(8,21): Error! E322: static data members are not allowed in a local class
+(10,1): Warning! W014: no reference to symbol 'C::a'
+  definition: 'int C::a' in 'void foo( void )'
+(15,9): Warning! W750: function prototype in block scope missing 'extern'
+  function prototype is 'int ( int * )'
+(21,4): Error! E326: defining 'x' is not possible because its type has unknown size
+  definition: 'int x[]'
+(26,8): Error! E326: defining 'Z::q' is not possible because its type has unknown size
+  definition: 'W Z::q'
+(28,14): Error! E681: zero size array must be the last data member
+(29,14): Error! E042: symbol 'Z::again' already defined
+  definition: 'int Z::again'
+(33,21): Error! E042: symbol 'Z::zs3' already defined
+  definition: 'int Z::zs3[]'
+(34,21): Error! E681: zero size array must be the last data member
+(35,21): Error! E681: zero size array must be the last data member
+(38,20): Error! E042: symbol 'Z::non_static_1' already defined
+  definition: 'int Z::non_static_1'
+(40,21): Error! E042: symbol 'Z::non_static_2' already defined
+  definition: 'int Z::non_static_2'
+(42,13): Error! E326: defining 'Z::zs1' is not possible because its type has unknown size
+  definition: 'int Z::zs1[]'
+(46,12): Error! E498: syntax error before 'i_think_this_is_an_id'; probable cause: incorrectly spelled type name
+File: source\diag0041.c
+(9,20): Error! E337: static function declared in block scope
+  function prototype is 'int ( int )'
+(12,9): Error! E151: operand is neither a pointer nor an arithmetic type
+  operand type is 'S::T (lvalue)'
+(21,13): Error! E042: symbol 'a' already defined
+  definition: 'int a'
+End of file
+Error! E043: static function 'never_defined' has not been defined
+  definition: 'int never_defined( int )'
+Warning! W014: no reference to symbol 'a'
+  definition: 'int a'
+File: source\diag0042.c
+(18,19): Error! E148: access to private member 'R::P' is not allowed
+  definition: 'R::P'
+File: source\diag0043.c
+(102,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(103,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(105,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(106,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(107,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(108,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(109,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(110,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(111,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(112,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(118,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(119,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(121,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(122,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(123,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(124,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(125,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(126,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(127,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(128,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(135,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(137,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(138,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(140,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(141,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(142,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(143,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(144,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(150,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(151,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(153,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(154,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(155,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(156,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(157,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(158,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(160,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(166,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(167,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(170,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(171,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(172,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(173,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(174,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(175,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(176,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(182,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(183,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(185,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(186,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(187,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(188,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(189,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(190,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(191,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(192,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(199,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(201,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(202,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(205,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(206,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(207,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(208,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(215,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(217,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(218,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(220,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(222,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(223,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(224,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+(230,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'A2 *'
+  target conversion type is 'R *'
+(231,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'A3 *'
+  target conversion type is 'R *'
+(233,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B12 *'
+  target conversion type is 'R *'
+(234,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B13 *'
+  target conversion type is 'R *'
+(235,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B21 *'
+  target conversion type is 'R *'
+(236,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B22 *'
+  target conversion type is 'R *'
+(237,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B23 *'
+  target conversion type is 'R *'
+(238,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B31 *'
+  target conversion type is 'R *'
+(239,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'B32 *'
+  target conversion type is 'R *'
+(240,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'B33 *'
+  target conversion type is 'R *'
+File: source\diag0044.c
+(47,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'RV *'
+  target conversion type is 'V *'
+(48,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OV *'
+  target conversion type is 'V *'
+(50,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'RM *'
+  target conversion type is 'V *'
+(51,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OM *'
+  target conversion type is 'V *'
+(58,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OV *'
+  target conversion type is 'V *'
+(61,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OM *'
+  target conversion type is 'V *'
+(67,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'RV *'
+  target conversion type is 'V *'
+(68,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OV *'
+  target conversion type is 'V *'
+(70,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'RM *'
+  target conversion type is 'V *'
+(71,8): Error! E460: protected base class accessed to convert assignment expression
+  source conversion type is 'OM *'
+  target conversion type is 'V *'
+I did not generate errors for diag0045
+File: source\diag0046.c
+(10,34): Error! E256: default argument expression cannot use local variable 'a'
+  definition: 'int a' in 'void sam( void )'
+(8,15): Error! E352: cannot access enclosing function's auto variable 's'
+  definition: 'int s' in 'void sam( void )'
+(32,36): Error! E362: local class can only have its containing function as a friend
+(36,28): Error! E363: local class cannot have 'A' as a friend
+  definition: 'A' in 'void foo( void )'
+(37,28): Error! E363: local class cannot have 'B' as a friend
+  definition: 'B' in 'void foo( void )'
+(38,28): Error! E363: local class cannot have 'Q' as a friend
+  definition: 'Q'
+(47,39): Error! E362: local class can only have its containing function as a friend
+(56,14): Warning! W361: member function was not defined in its class
+File: source\diag0047.c
+(22,5): Error! E861: qualified symbol cannot be defined in this scope
+(22,5): Error! E372: inline member friend function 'X::f' is not allowed
+  definition: 'void X::f( void )'
+(33,18): Error! E373: invalid modifier for auto variable
+File: source\diag0048.c
+(4,1): Error! E396: 'main' cannot be overloaded
+File: source\diag0049.c
+(2,6): Error! E042: symbol 'i' already defined
+  definition: 'int i'
+(6,19): Error! E397: 'new' expression cannot allocate a void
+(7,16): Error! E398: 'new' expression cannot allocate a function
+(8,25): Error! E397: 'new' expression cannot allocate a void
+(8,25): Warning! W399: 'new' expression allocates a const or volatile object
+(9,24): Warning! W399: 'new' expression allocates a const or volatile object
+(9,9): Error! E468: cannot convert pointer to constant or volatile objects to pointer to void
+  source conversion type is 'int const *'
+  target conversion type is 'void *'
+(10,25): Error! E398: 'new' expression cannot allocate a function
+(10,25): Warning! W399: 'new' expression allocates a const or volatile object
+(11,27): Warning! W399: 'new' expression allocates a const or volatile object
+(11,9): Error! E468: cannot convert pointer to constant or volatile objects to pointer to void
+  source conversion type is 'int volatile *'
+  target conversion type is 'void *'
+(16,9): Error! E418: destructor is not declared in its proper class
+(17,9): Error! E418: destructor is not declared in its proper class
+(17,9): Error! E907: redeclaration of member function 'X::~X' not allowed
+  definition: 'X::~X( void )'
+(21,10): Error! E359: union 'U' referenced as a class
+(24,19): Error! E125: invalid redefinition of the typedef name 'colour'
+  definition: 'colour'
+(26,16): Error! E238: 'id2' is not a function
+(29,36): Error! E411: static member function cannot be declared const or volatile
+(30,24): Error! E410: destructor cannot be declared const or volatile
+(33,25): Error! E412: only member functions can be declared const or volatile
+(34,28): Error! E413: 'const' or 'volatile' modifiers are not part of a function's type
+(36,39): Error! E414: type cannot be defined in an argument
+(36,45): Error! E415: type cannot be defined in return type
+  semicolon (';') may be missing after class/enum definition
+(42,11): Error! E898: in-class initialization is only allowed for const static integral members
+(43,18): Error! E417: only virtual functions may be declared pure
+(48,15): Error! E121: syntax error
+(51,19): Error! E336: declaration specifiers are required to declare 'not_a_function'
+File: source\diag0050.c
+(15,35): Error! E420: memory initializer list may only appear in a constructor definition
+(19,16): Error! E336: declaration specifiers are required to declare 'c_bad'
+(20,15): Error! E336: declaration specifiers are required to declare 'c_OK'
+(13,12): Error! E426: 'd' cannot be initialized because it is a static member
+(13,12): Error! E423: 'S' is not a direct base class
+(13,12): Error! E425: 'f' cannot be initialized because it is a member function
+(13,12): Error! E424: 'z' cannot be initialized because it is not a member
+(13,12): Error! E422: cannot initialize base class 'S' twice
+(13,12): Error! E423: 'S' is not a direct base class
+(13,12): Error! E421: cannot initialize member 'a' twice
+(13,12): Error! E428: const/reference member 'T::c_bad' must have an initializer
+  definition: 'int const T::c_bad'
+(13,12): Error! E428: const/reference member 'T::r_bad' must have an initializer
+  definition: 'int & T::r_bad'
+(13,12): Error! E428: const/reference member 'T::z2' must have an initializer
+  definition: 'void (& T::z2)( void )'
+(32,7): Error! E424: 'd' cannot be initialized because it is not a member
+(32,7): Error! E424: 'c' cannot be initialized because it is not a member
+(35,32): Error! E420: memory initializer list may only appear in a constructor definition
+File: source\diag0051.c
+(15,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::foo'
+  definition: 'int B2::foo( char )'
+  cannot be called with a 'B12 *'
+(19,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B12::foo'
+  definition: 'int B12::foo( void )'
+  cannot be called with a 'B3 *'
+(24,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B3::foo'
+  definition: 'int B3::foo( char )'
+  cannot be called with a 'D *'
+(25,7): Error! E431: defining 'ac1' is not possible because 'B1' is an abstract class
+  definition: 'B1 ac1'
+  'B1' contains the following pure virtual functions
+  pure virtual function 'int B1::foo( void )' defined at: (2,17)
+  pure virtual function 'int B1::foo( double )' defined at: (3,17)
+(26,7): Error! E431: defining 'ac2' is not possible because 'B2' is an abstract class
+  definition: 'B2 ac2'
+  'B2' contains the following pure virtual functions
+  pure virtual function 'int B2::foo( void )' defined at: (7,17)
+  pure virtual function 'int B2::foo( char )' defined at: (8,17)
+  pure virtual function 'int B2::bar( void )' defined at: (9,17)
+(27,8): Error! E431: defining 'ac3' is not possible because 'B12' is an abstract class
+  definition: 'B12 ac3'
+  'B12' has no implementation for the following pure virtual functions
+  pure virtual function 'int B2::foo( char )' defined at: (8,17)
+  pure virtual function 'int B2::bar( void )' defined at: (9,17)
+  pure virtual function 'int B1::foo( double )' defined at: (3,17)
+(28,7): Error! E431: defining 'ac4' is not possible because 'B3' is an abstract class
+  definition: 'B3 ac4'
+  'B3' has no implementation for the following pure virtual functions
+  pure virtual function 'int B2::bar( void )' defined at: (9,17)
+  pure virtual function 'int B1::foo( double )' defined at: (3,17)
+(35,4): Error! E326: defining 'z' is not possible because its type has unknown size
+  definition: 'S z'
+(37,10): Error! E304: class 'S' has not been defined
+(39,8): Error! E326: defining 'y' is not possible because its type has unknown size
+  definition: 'S y' in 'S bar( S, int )'
+(40,10): Error! E434: cannot convert to a type of unknown size
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'S'
+  class 'S' has not been defined
+(41,11): Error! E434: cannot convert to a type of unknown size
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'S'
+  class 'S' has not been defined
+(42,7): Error! E302: cannot assign right expression to element on left
+  source conversion type is 'S (lvalue)'
+  class 'S' has not been defined
+  target conversion type is 'int'
+(43,16): Error! E434: cannot convert to a type of unknown size
+  'S' defined at: (31,8)
+  source conversion type is 'S (lvalue)'
+  class 'S' has not been defined
+  target conversion type is 'S'
+  class 'S' has not been defined
+(47,8): Error! E326: defining 'T::q' is not possible because its type has unknown size
+  definition: 'S T::q'
+(51,4): Error! E326: defining 'x' is not possible because its type has unknown size
+  definition: 'S x'
+(53,7): Error! E326: defining 'a' is not possible because its type has unknown size
+  definition: 'S a[1]'
+(60,18): Error! E429: abstract class 'S' cannot be used as an argument type
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(60,18): Error! E430: abstract class 'S' cannot be used as a function return type
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(62,4): Error! E431: defining 'y' is not possible because 'S' is an abstract class
+  definition: 'S y'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(64,7): Error! E431: defining 'b' is not possible because 'S' is an abstract class
+  definition: 'S b[1]'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(67,1): Error! E429: abstract class 'S' cannot be used as an argument type
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(67,1): Error! E430: abstract class 'S' cannot be used as a function return type
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(68,8): Error! E431: defining 'y' is not possible because 'S' is an abstract class
+  definition: 'S y' in 'S sam( S, int )'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+(69,10): Error! E432: cannot convert to an abstract class 'S'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'S'
+(70,11): Error! E432: cannot convert to an abstract class 'S'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'S'
+(71,7): Error! E302: cannot assign right expression to element on left
+  source conversion type is 'S (lvalue)'
+  target conversion type is 'int'
+(72,16): Error! E432: cannot convert to an abstract class 'S'
+  'S' contains the following pure virtual functions
+  pure virtual function 'void S::foo( void )' defined at: (56,18)
+  source conversion type is 'S (lvalue)'
+  target conversion type is 'S'
+File: source\diag0052.c
+(1,33): Error! E136: more than one calling convention has been specified
+(2,42): Warning! W442: modifier has been repeated
+  repeated modifier is '__export'
+(3,36): Error! E138: based modifier has been repeated
+(4,14): Warning! W442: modifier has been repeated
+  repeated modifier is '__far'
+(5,15): Error! E443: illegal combination of memory model modifiers
+(6,25): Error! E443: illegal combination of memory model modifiers
+(6,25): Error! E581: variable 'f' can only be based on a string in this context
+(7,14): Error! E029: symbol 'r' has not been declared
+(7,31): Error! E138: based modifier has been repeated
+(7,31): Error! E581: variable 'g' can only be based on a string in this context
+(8,20): Error! E443: illegal combination of memory model modifiers
+(9,36): Error! E443: illegal combination of memory model modifiers
+(13,23): Error! E444: argument name 'a' has already been used
+(13,38): Error! E444: argument name 'b' has already been used
+(14,20): Error! E444: argument name 'a' has already been used
+(14,35): Error! E444: argument name 'b' has already been used
+(15,20): Error! E444: argument name 'a' has already been used
+(15,35): Error! E444: argument name 'b' has already been used
+(18,1): Warning! W726: no reference to formal parameter 'a'
+  definition: 'int a' in 'int n( int, int, int, int )'
+(18,1): Warning! W726: no reference to formal parameter 'b'
+  definition: 'int b' in 'int n( int, int, int, int )'
+(32,1): Error! E329: modifiers of 'p' conflict with previous declaration
+  definition: 'int (__far p)( int, int )'
+  current declaration has type 'int ( int, int )'
+(39,23): Error! E451: symbol 'B1::s' cannot be accessed in all contexts
+  definition: '__segment B1::s'
+(45,27): Error! E449: symbol 'E1' does not have a segment associated with it
+  definition: '<enum> E1'
+(49,11): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'bpi'
+  definition: 'int bpi'
+(50,26): Error! E450: symbol 'not_integral' must have integral or pointer type
+  definition: 'B3 not_integral'
+File: source\diag0053.c
+(17,11): Error! E147: access to 'AMBIG::foo' is not allowed because it is ambiguous
+  definition: 'void AMBIG::foo( char, int )'
+(22,30): Error! E036: dimensions of multi-dimension array must be specified
+(24,18): Warning! W446: user-defined conversion cannot convert to its own class or base class
+(28,20): Warning! W446: user-defined conversion cannot convert to its own class or base class
+File: source\diag0054.c
+(2,27): Error! E913: 'foo' does not have a return type specified
+(4,40): Warning! W146: unexpected storage class specifier found
+(8,33): Warning! W146: unexpected storage class specifier found
+(9,41): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
+(14,1): Error! E465: 'main' cannot be an inline function
+(14,1): Error! E464: 'main' cannot be a static function
+(22,13): Error! E466: 'main' cannot be referenced
+(29,12): Error! E466: 'main' cannot be referenced
+File: source\diag0055.c
+(2,16): Error! E265: destructor must be a non-static member function
+(13,12): Error! E056: not expecting a return value
+(18,12): Error! E056: not expecting a return value
+(26,1): Error! E913: 'foo' does not have a return type specified
+(30,15): Error! E003: missing return value
+(32,1): Error! E003: missing return value
+(41,16): Error! E384: attempt to override virtual function 'B::foo' with a different return type
+  definition: 'D * B::foo( int )'
+(55,21): Error! E385: attempt to overload function 'foo' with a different return type
+  definition: 'int foo( int, int )'
+(58,29): Error! E109: virtual member functions are not allowed in a union
+(62,36): Error! E376: virtual function must be a non-static member function
+(63,16): Error! E291: constructor cannot be virtual
+(64,41): Error! E376: virtual function must be a non-static member function
+(73,22): Error! E384: attempt to override virtual function 'B1::foo' with a different return type
+  definition: 'int B1::foo( void )'
+(87,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::bar'
+  definition: 'void B2::bar( int )'
+  cannot be called with a 'D2 *'
+(87,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::bar'
+  definition: 'void B2::bar( char )'
+  cannot be called with a 'D2 *'
+(87,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::foo'
+  definition: 'void B2::foo( int )'
+  cannot be called with a 'D2 *'
+(87,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::foo'
+  definition: 'void B2::foo( char )'
+  cannot be called with a 'D2 *'
+File: source\diag0056.c
+(2,10): Error! E042: symbol 'bad1' already defined
+  definition: 'int bad1'
+(2,12): Error! E489: symbol 'bad1' has already been initialized
+  definition: 'int bad1'
+(5,9): Error! E042: symbol 'bad2' already defined
+  definition: 'int bad2'
+(8,19): Error! E489: symbol 'bad3' has already been initialized
+  definition: 'int bad3'
+(11,15): Error! E042: symbol 'bad4' already defined
+  definition: 'int const bad4'
+(15,16): Error! E042: symbol 'bad5' already defined
+  definition: 'int const bad5'
+(15,18): Error! E489: symbol 'bad5' has already been initialized
+  definition: 'int const bad5'
+(20,29): Error! E279: too many initializers
+(23,11): Error! E042: symbol 'bad7' already defined
+  definition: 'int bad7[23]'
+(26,12): Error! E042: symbol 'bad8' already defined
+  definition: 'int bad8[10]'
+(26,14): Error! E489: symbol 'bad8' has already been initialized
+  definition: 'int bad8[10]'
+(28,11): Error! E326: defining 'bad9' is not possible because its type has unknown size
+  definition: 'int bad9[]'
+(29,13): Error! E042: symbol 'bad9' already defined
+  definition: 'int bad9[]'
+File: source\diag0057.c
+(4,21): Error! E385: attempt to overload function 'foo' with a different return type
+  definition: 'int foo( int, int )'
+(7,29): Error! E109: virtual member functions are not allowed in a union
+(11,36): Error! E376: virtual function must be a non-static member function
+(12,16): Error! E291: constructor cannot be virtual
+(13,41): Error! E376: virtual function must be a non-static member function
+(22,22): Error! E384: attempt to override virtual function 'B1::foo' with a different return type
+  definition: 'int B1::foo( void )'
+(36,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::bar'
+  definition: 'void B2::bar( int )'
+  cannot be called with a 'D2 *'
+(36,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::bar'
+  definition: 'void B2::bar( char )'
+  cannot be called with a 'D2 *'
+(36,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::foo'
+  definition: 'void B2::foo( int )'
+  cannot be called with a 'D2 *'
+(36,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'B2::foo'
+  definition: 'void B2::foo( char )'
+  cannot be called with a 'D2 *'
+(57,15): Error! E529: expression for number of array elements must be integral
+(58,19): Error! E223: cannot initialize array with 'operator new'
+(60,26): Error! E242: only one initializer argument allowed
+(61,22): Error! E223: cannot initialize array with 'operator new'
+(69,27): Error! E384: attempt to override virtual function 'Q::foo' with a different return type
+  definition: 'Q * Q::foo( void )'
+File: source\diag0058.c
+(19,17): Error! E537: operand is not a valid pointer to class member
+  source conversion type is 'int *'
+  target conversion type is 'int T::*'
+(20,33): Error! E511: item is neither a non-static member function nor data member
+  source conversion type is 'void (* )( void )'
+  target conversion type is 'void (T::* )( void )'
+(27,18): Error! E152: left operand is neither a pointer nor an arithmetic type
+  left operand type is 'void'
+  right operand type is 'int'
+(42,13): Error! E545: cannot create an undefined type with 'operator new'
+(43,12): Warning! W546: delete of a pointer to an undefined type
+(44,13): Error! E545: cannot create an undefined type with 'operator new'
+(45,15): Warning! W546: delete of a pointer to an undefined type
+(64,20): Warning! W549: 'sizeof' operand contains compiler generated information
+(65,20): Warning! W549: 'sizeof' operand contains compiler generated information
+(75,17): Warning! W004: base class 'B' does not have a virtual destructor
+(80,12): Warning! W379: delete expression will invoke a non-virtual destructor
+(84,2): Error! E080: blank delimited error message
+(85,2): Error! E080: *!
+(86,2): Error! E080: 
+(87,2): Error! E080: 
+File: source\diag0059.c
+(49,9): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(50,9): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(52,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+  definition: 'int DPUB::DPUB_pri'
+(53,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+  definition: 'int DPUB::DPUB_pro'
+(55,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+  definition: 'int DPRI::DPRI_pri'
+(56,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+  definition: 'int DPRI::DPRI_pro'
+(58,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+  definition: 'int DPRO::DPRO_pri'
+(59,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+  definition: 'int DPRO::DPRO_pro'
+(61,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(62,12): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(63,12): Error! E547: cannot access 'B::B_pub' through a private base class
+  definition: 'int B::B_pub'
+(64,12): Error! E547: cannot access 'B::B_pri' through a private base class
+  definition: 'int B::B_pri'
+(65,12): Error! E547: cannot access 'B::B_pro' through a private base class
+  definition: 'int B::B_pro'
+(66,12): Error! E548: cannot access 'B::B_pub' through a protected base class
+  definition: 'int B::B_pub'
+(67,12): Error! E548: cannot access 'B::B_pri' through a protected base class
+  definition: 'int B::B_pri'
+(68,12): Error! E548: cannot access 'B::B_pro' through a protected base class
+  definition: 'int B::B_pro'
+(74,9): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(75,9): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(77,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+  definition: 'int DPUB::DPUB_pri'
+(78,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+  definition: 'int DPUB::DPUB_pro'
+(83,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+  definition: 'int DPRO::DPRO_pri'
+(84,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+  definition: 'int DPRO::DPRO_pro'
+(86,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(87,12): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(89,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(91,12): Error! E548: cannot access 'B::B_pub' through a protected base class
+  definition: 'int B::B_pub'
+(92,12): Error! E548: cannot access 'B::B_pri' through a protected base class
+  definition: 'int B::B_pri'
+(93,12): Error! E548: cannot access 'B::B_pro' through a protected base class
+  definition: 'int B::B_pro'
+(99,9): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(100,9): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(102,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+  definition: 'int DPUB::DPUB_pri'
+(103,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+  definition: 'int DPUB::DPUB_pro'
+(105,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+  definition: 'int DPRI::DPRI_pri'
+(106,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+  definition: 'int DPRI::DPRI_pro'
+(111,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(112,12): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(113,12): Error! E547: cannot access 'B::B_pub' through a private base class
+  definition: 'int B::B_pub'
+(114,12): Error! E547: cannot access 'B::B_pri' through a private base class
+  definition: 'int B::B_pri'
+(115,12): Error! E547: cannot access 'B::B_pro' through a private base class
+  definition: 'int B::B_pro'
+(117,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(124,9): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(125,9): Error! E149: access to protected member 'B::B_pro' is not allowed
+  definition: 'int B::B_pro'
+(130,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+  definition: 'int DPRI::DPRI_pri'
+(131,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+  definition: 'int DPRI::DPRI_pro'
+(133,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+  definition: 'int DPRO::DPRO_pri'
+(134,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+  definition: 'int DPRO::DPRO_pro'
+(136,12): Error! E148: access to private member 'B::B_pri' is not allowed
+  definition: 'int B::B_pri'
+(138,12): Error! E547: cannot access 'B::B_pub' through a private base class
+  definition: 'int B::B_pub'
+(139,12): Error! E547: cannot access 'B::B_pri' through a private base class
+  definition: 'int B::B_pri'
+(140,12): Error! E547: cannot access 'B::B_pro' through a private base class
+  definition: 'int B::B_pro'
+(141,12): Error! E548: cannot access 'B::B_pub' through a protected base class
+  definition: 'int B::B_pub'
+(142,12): Error! E548: cannot access 'B::B_pri' through a protected base class
+  definition: 'int B::B_pri'
+(143,12): Error! E548: cannot access 'B::B_pro' through a protected base class
+  definition: 'int B::B_pro'
+File: source\diag0060.c
+(22,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(24,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(34,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(42,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+File: source\diag0061.c
+(21,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(23,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(24,9): Error! E548: cannot access 'D::y' through a protected base class
+  definition: 'int D::y'
+(33,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+(34,9): Error! E548: cannot access 'D::y' through a protected base class
+  definition: 'int D::y'
+(41,9): Error! E548: cannot access 'B::x' through a protected base class
+  definition: 'int B::x'
+Compiling generated function: ERR_EQ::ERR_EQ
+  definition: 'ERR_EQ::ERR_EQ( void )'
+Error! E148: access to private member 'PRI::PRI' is not allowed
+  definition: 'PRI::PRI( void )'
+  source conversion type is 'ERR_EQ'
+  target conversion type is 'PRI'
+Error! E610: 'ERR_EQ::ERR_EQ' could not be generated by the compiler
+  definition: 'ERR_EQ::ERR_EQ( void )'
+Compiling generated function: ERR_EQ::~ERR_EQ
+  definition: 'ERR_EQ::~ERR_EQ( void )'
+Error! E148: access to private member 'PRI::~PRI' is not allowed
+  definition: 'PRI::~PRI( void )'
+Error! E610: 'ERR_EQ::~ERR_EQ' could not be generated by the compiler
+  definition: 'ERR_EQ::~ERR_EQ( void )'
+Compiling generated function: ERR_EQ::operator =
+  definition: 'ERR_EQ & ERR_EQ::operator =( ERR_EQ & )'
+Error! E148: access to private member 'PRI::operator =' is not allowed
+  definition: 'PRI & PRI::operator =( PRI & )'
+Error! E610: 'ERR_EQ::operator =' could not be generated by the compiler
+  definition: 'ERR_EQ & ERR_EQ::operator =( ERR_EQ & )'
+Compiling generated function: OK_EQ::OK_EQ
+  definition: 'OK_EQ::OK_EQ( void )'
+Error! E148: access to private member 'PRI::PRI' is not allowed
+  definition: 'PRI::PRI( void )'
+  source conversion type is 'OK_EQ'
+  target conversion type is 'PRI'
+Error! E610: 'OK_EQ::OK_EQ' could not be generated by the compiler
+  definition: 'OK_EQ::OK_EQ( void )'
+Compiling generated function: OK_EQ::~OK_EQ
+  definition: 'OK_EQ::~OK_EQ( void )'
+Error! E148: access to private member 'PRI::~PRI' is not allowed
+  definition: 'PRI::~PRI( void )'
+Error! E610: 'OK_EQ::~OK_EQ' could not be generated by the compiler
+  definition: 'OK_EQ::~OK_EQ( void )'
+Compiling generated function: OK_EQ::operator =
+  definition: 'OK_EQ & OK_EQ::operator =( OK_EQ & )'
+Error! E148: access to private member 'PRI::operator =' is not allowed
+  definition: 'PRI & PRI::operator =( PRI & )'
+Error! E610: 'OK_EQ::operator =' could not be generated by the compiler
+  definition: 'OK_EQ & OK_EQ::operator =( OK_EQ & )'
+File: source\diag0063.c
+(30,5): Error! E148: access to private member 'S::S' is not allowed
+  definition: 'S::S( void )'
+(30,12): Error! E148: access to private member 'S::operator delete' is not allowed
+  definition: 'void S::operator delete( void * )'
+(32,5): Error! E148: access to private member 'S::S' is not allowed
+  definition: 'S::S( void )'
+(32,15): Error! E148: access to private member 'S::operator delete[]' is not allowed
+  definition: 'void S::operator delete[]( void * )'
+(34,5): Error! E148: access to private member 'T::T' is not allowed
+  definition: 'S::T::T( void )'
+(34,12): Error! E148: access to private member 'T::operator delete' is not allowed
+  definition: 'void S::T::operator delete( void * )'
+(36,5): Error! E148: access to private member 'T::T' is not allowed
+  definition: 'S::T::T( void )'
+(36,15): Error! E148: access to private member 'T::operator delete[]' is not allowed
+  definition: 'void S::T::operator delete[]( void * )'
+(38,5): Error! E148: access to private member 'N::N' is not allowed
+  definition: 'S::N::N( void )'
+(38,12): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(40,5): Error! E148: access to private member 'N::N' is not allowed
+  definition: 'S::N::N( void )'
+(40,15): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+File: source\diag0064.c
+(31,13): Error! E148: access to private member 'S::operator new' is not allowed
+  definition: 'void * S::operator new( unsigned )'
+(32,12): Error! E148: access to private member 'S::operator delete' is not allowed
+  definition: 'void S::operator delete( void * )'
+(33,13): Error! E148: access to private member 'S::~S' is not allowed
+  definition: 'S::~S( void )'
+(34,15): Error! E148: access to private member 'S::operator delete[]' is not allowed
+  definition: 'void S::operator delete[]( void * )'
+(35,16): Error! E148: access to private member 'T::operator new' is not allowed
+  definition: 'void * S::T::operator new( unsigned )'
+(36,12): Error! E148: access to private member 'T::operator delete' is not allowed
+  definition: 'void S::T::operator delete( void * )'
+(37,16): Error! E148: access to private member 'T::~T' is not allowed
+  definition: 'S::T::~T( void )'
+(38,15): Error! E148: access to private member 'T::operator delete[]' is not allowed
+  definition: 'void S::T::operator delete[]( void * )'
+(39,16): Error! E148: access to private member 'N::operator new' is not allowed
+  definition: 'void * S::N::operator new( unsigned )'
+(40,12): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(41,16): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(42,15): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+File: source\diag0065.c
+(29,12): Error! E148: access to private member 'S::operator delete' is not allowed
+  definition: 'void S::operator delete( void * )'
+(30,13): Error! E148: access to private member 'S::operator delete[]' is not allowed
+  definition: 'void S::operator delete[]( void * )'
+(31,15): Error! E148: access to private member 'S::operator delete[]' is not allowed
+  definition: 'void S::operator delete[]( void * )'
+(33,12): Error! E148: access to private member 'T::operator delete' is not allowed
+  definition: 'void S::T::operator delete( void * )'
+(34,16): Error! E148: access to private member 'T::operator delete[]' is not allowed
+  definition: 'void S::T::operator delete[]( void * )'
+(35,15): Error! E148: access to private member 'T::operator delete[]' is not allowed
+  definition: 'void S::T::operator delete[]( void * )'
+File: source\diag0066.c
+(32,12): Error! E148: access to private member 'S::operator delete' is not allowed
+  definition: 'void S::operator delete( void * )'
+(33,13): Error! E148: access to private member 'S::~S' is not allowed
+  definition: 'S::~S( void )'
+(34,15): Error! E148: access to private member 'S::operator delete[]' is not allowed
+  definition: 'void S::operator delete[]( void * )'
+(36,12): Error! E148: access to private member 'T::operator delete' is not allowed
+  definition: 'void S::T::operator delete( void * )'
+(37,16): Error! E148: access to private member 'T::~T' is not allowed
+  definition: 'S::T::~T( void )'
+(38,15): Error! E148: access to private member 'T::operator delete[]' is not allowed
+  definition: 'void S::T::operator delete[]( void * )'
+(40,12): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(41,16): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(42,15): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+File: source\diag0067.c
+(30,12): Error! E148: access to private member 'S::~S' is not allowed
+  definition: 'S::~S( void )'
+(31,13): Error! E148: access to private member 'S::~S' is not allowed
+  definition: 'S::~S( void )'
+(32,15): Error! E148: access to private member 'S::~S' is not allowed
+  definition: 'S::~S( void )'
+(34,12): Error! E148: access to private member 'T::~T' is not allowed
+  definition: 'S::T::~T( void )'
+(35,16): Error! E148: access to private member 'T::~T' is not allowed
+  definition: 'S::T::~T( void )'
+(36,15): Error! E148: access to private member 'T::~T' is not allowed
+  definition: 'S::T::~T( void )'
+(38,12): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(39,16): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(40,15): Error! E148: access to private member 'N::~N' is not allowed
+  definition: 'S::N::~N( void )'
+(48,15): Warning! W188: base class is inherited with private access
+(57,1): Warning! W656: define this function inside its class definition (may improve code quality)
+File: source\diag0068.c
+(33,5): Warning! W628: expression is not meaningful
+(35,5): Error! E149: access to protected member 'PRO::PRO' is not allowed
+  definition: 'PRO::PRO( void )'
+(36,1): Error! E148: access to private member 'PRI::PRI' is not allowed
+  definition: 'PRI::PRI( void )'
+(41,14): Error! E149: access to protected member 'PRO::~PRO' is not allowed
+  definition: 'PRO::~PRO( void )'
+(42,14): Error! E148: access to private member 'PRI::~PRI' is not allowed
+  definition: 'PRI::~PRI( void )'
+(47,10): Error! E149: access to protected member 'PRO::operator =' is not allowed
+  definition: 'PRO & PRO::operator =( PRO & )'
+(48,10): Error! E475: cannot assign right expression to class object
+  definition: 'PRI & PRI::operator =( PRI & )'
+  cannot convert argument 1 defined at: (48,12)
+  source conversion type is 'OK (lvalue)'
+  target conversion type is 'PRI (lvalue)'
+(62,5): Error! E148: access to private member 'PRI::PRI' is not allowed
+  definition: 'PRI::PRI( void )'
+  source conversion type is 'ERR'
+  target conversion type is 'PRI'
+(62,5): Warning! W628: expression is not meaningful
+(64,5): Error! E149: access to protected member 'PRO::PRO' is not allowed
+  definition: 'PRO::PRO( void )'
+(65,1): Error! E148: access to private member 'PRI::PRI' is not allowed
+  definition: 'PRI::PRI( void )'
+(70,8): Error! E148: access to private member 'PRI::~PRI' is not allowed
+  definition: 'PRI::~PRI( void )'
+(71,14): Error! E149: access to protected member 'PRO::~PRO' is not allowed
+  definition: 'PRO::~PRO( void )'
+(72,14): Error! E148: access to private member 'PRI::~PRI' is not allowed
+  definition: 'PRI::~PRI( void )'
+(77,10): Error! E149: access to protected member 'PRO::operator =' is not allowed
+  definition: 'PRO & PRO::operator =( PRO & )'
+(78,10): Error! E148: access to private member 'PRI::operator =' is not allowed
+  definition: 'PRI & PRI::operator =( PRI & )'
+Compiling generated function: ERR_EQ::operator =
+  definition: 'ERR_EQ & ERR_EQ::operator =( ERR_EQ & )'
+Error! E148: access to private member 'PRI::operator =' is not allowed
+  definition: 'PRI & PRI::operator =( PRI & )'
+Error! E610: 'ERR_EQ::operator =' could not be generated by the compiler
+  definition: 'ERR_EQ & ERR_EQ::operator =( ERR_EQ & )'
+Compiling generated function: OK_EQ::operator =
+  definition: 'OK_EQ & OK_EQ::operator =( OK_EQ & )'
+Error! E148: access to private member 'PRI::operator =' is not allowed
+  definition: 'PRI & PRI::operator =( PRI & )'
+Error! E610: 'OK_EQ::operator =' could not be generated by the compiler
+  definition: 'OK_EQ & OK_EQ::operator =( OK_EQ & )'
+File: source\diag0069.c
+(21,37): Error! E243: default arguments are not part of a function's type
+(28,6): Error! E341: number of arguments for function 'x' is incorrect
+  definition: 'int x( int, int )'
+(29,6): Error! E341: number of arguments for function 'y' is incorrect
+  definition: 'int y( int, int )'
+File: source\diag0070.c
+(11,7): Error! E559: function 'R::R' cannot be defined because it is generated by the compiler
+  definition: 'R::R( void )'
+(24,7): Error! E559: function 'T::T' cannot be defined because it is generated by the compiler
+  definition: 'T::T( void )'
+Compiling generated function: R::operator =
+  definition: 'R & R::operator =( R & )'
+Error! E563: cannot generate default 'R::operator =' because class contains either a constant or a reference member
+  definition: 'R & R::operator =( R & )'
+File: source\diag0072.c
+(2,8): Error! E253: '::' qualifier cannot be used in this context
+(2,8): Error! E336: declaration specifiers are required to declare 'q'
+(3,8): Error! E241: class or namespace 'D' has not been declared
+(5,22): Error! E413: 'const' or 'volatile' modifiers are not part of a function's type
+(6,21): Error! E413: 'const' or 'volatile' modifiers are not part of a function's type
+(6,21): Error! E083: function cannot return a function
+(7,26): Error! E413: 'const' or 'volatile' modifiers are not part of a function's type
+(8,32): Error! E413: 'const' or 'volatile' modifiers are not part of a function's type
+(15,33): Error! E411: static member function cannot be declared const or volatile
+(16,38): Error! E376: virtual function must be a non-static member function
+(17,42): Error! E411: static member function cannot be declared const or volatile
+(17,42): Error! E376: virtual function must be a non-static member function
+(21,48): Error! E376: virtual function must be a non-static member function
+(22,49): Error! E411: static member function cannot be declared const or volatile
+(23,55): Error! E411: static member function cannot be declared const or volatile
+(23,55): Error! E376: virtual function must be a non-static member function
+File: source\diag0073.c
+(20,12): Error! E547: cannot access 'VV::v' through a private base class
+  definition: 'int VV::v'
+(79,30): Error! E547: cannot access 'UDC_B::operator double ' through a private base class
+  definition: 'UDC_B::operator double ()'
+(89,12): Error! E547: cannot access 'UDC_B::operator double ' through a private base class
+  definition: 'UDC_B::operator double ()'
+File: source\diag0074.c
+(75,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(75,1): Error! E570: virtual function override for 'V1::set_v1' is ambiguous
+  definition: 'void V1::set_v1( int )'
+  possible override is 'B::set_v1'
+  definition: 'void B::set_v1( int )'
+  possible override is 'A::set_v1'
+  definition: 'void A::set_v1( int )'
+(75,1): Error! E570: virtual function override for 'V2::set_v2' is ambiguous
+  definition: 'void V2::set_v2( int )'
+  possible override is 'B::set_v2'
+  definition: 'void B::set_v2( int )'
+  possible override is 'A::set_v2'
+  definition: 'void A::set_v2( int )'
+(84,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(95,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(104,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(112,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(124,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(127,1): Warning! W914: 'main' must return 'int'
+(141,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(155,1): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'OK_TO_NEST2::OK_TO_NEST_INSIDE::OK_TO_NEST_INSIDE( int )'
+(168,1): Error! E930: member 'OK2::OK2' cannot be declared in this class
+  definition: 'int OK2::OK2'
+(177,13): Error! E498: syntax error before 'T'; probable cause: incorrectly spelled type name
+(184,1): Error! E930: member 'BAD2::BAD2' cannot be declared in this class
+  definition: 'int BAD2::BAD2'
+(185,13): Error! E498: syntax error before 'T'; probable cause: incorrectly spelled type name
+File: source\diag0075.c
+(12,15): Error! E580: cannot find a constructor for given initializer argument list
+  rejected function: C::C( int ) defined at: (2,5)
+  rejected function: C::C( C const & ) defined at: (4,1)
+  source conversion type is 'char [5] (lvalue)'
+  target conversion type is 'C'
+(15,15): Error! E580: cannot find a constructor for given initializer argument list
+  definition: 'N::N( N const & )'
+  cannot convert argument 1 defined at: (15,15)
+  source conversion type is 'int'
+  target conversion type is 'N const (lvalue)'
+(16,15): Error! E580: cannot find a constructor for given initializer argument list
+  definition: 'N::N( N const & )'
+  cannot convert argument 1 defined at: (16,15)
+  source conversion type is 'char [5] (lvalue)'
+  target conversion type is 'N const (lvalue)'
+(19,33): Error! E581: variable 'x' can only be based on a string in this context
+(20,36): Error! E581: variable 'z' can only be based on a string in this context
+(24,35): Error! E373: invalid modifier for auto variable
+(25,1): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'void foo( void )'
+(27,36): Error! E582: memory model modifiers are not allowed for class members
+(30,11): Error! E360: typedef 'I1' defined without an explicit type
+(31,15): Warning! W583: redefinition of the typedef name 'I1' ignored
+  definition: 'I1'
+(33,15): Warning! W583: redefinition of the typedef name 'I1' ignored
+  definition: 'I1'
+(36,16): Error! E125: invalid redefinition of the typedef name 'I2'
+  definition: 'I2'
+(39,17): Error! E125: invalid redefinition of the typedef name 'I3'
+  definition: 'I3'
+(42,23): Error! E125: invalid redefinition of the typedef name 'I4'
+  definition: 'I4'
+(45,18): Error! E125: invalid redefinition of the typedef name 'I5'
+  definition: 'I5'
+(48,21): Error! E125: invalid redefinition of the typedef name 'P1'
+  definition: 'P1'
+(51,21): Error! E125: invalid redefinition of the typedef name 'P2'
+  definition: 'P2'
+(73,10): Error! E126: class 'S' has already been defined
+(76,1): Error! E585: syntax error; missing start of function body after constructor initializer
+  constructor initializer started at: (75,17)
+(76,1): Error! E121: syntax error
+File: source\diag0076.c
+(9,33): Warning! W146: unexpected storage class specifier found
+(10,22): Warning! W146: unexpected storage class specifier found
+(22,20): Error! E374: object (or object pointer) required to access non-static data member
+(31,12): Error! E374: object (or object pointer) required to access non-static data member
+File: source\diag0077.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0078.c
+(2,27): Warning! W248: using default arguments would be overload ambiguous with 'a'
+  definition: 'void a( int )'
+(5,27): Warning! W249: using default arguments would be overload ambiguous with 'b' using default arguments
+  definition: 'void b( [int ])'
+(5,27): Warning! W248: using default arguments would be overload ambiguous with 'b'
+  definition: 'void b( int )'
+(8,18): Warning! W618: function will be overload ambiguous with 'c' using default arguments
+  definition: 'void c( int [, int ])'
+(8,18): Warning! W249: using default arguments would be overload ambiguous with 'c' using default arguments
+  definition: 'void c( [int, int ])'
+(11,14): Warning! W618: function will be overload ambiguous with 'd' using default arguments
+  definition: 'void d( int [, int ])'
+(21,20): Error! E913: 'f' does not have a return type specified
+(22,25): Error! E617: cannot overload extern "C" functions (the other function is 'f')
+  definition: 'int f( int )'
+(28,10): Error! E619: linkage specification is different than previous declaration 'g'
+  definition: 'int g'
+(28,10): Error! E042: symbol 'g' already defined
+  definition: 'int g'
+(32,1): Error! E619: linkage specification is different than previous declaration 'h'
+  definition: 'int h( void )'
+(40,19): Error! E619: linkage specification is different than previous declaration 'va2'
+  definition: 'int va2'
+(40,19): Error! E042: symbol 'va2' already defined
+  definition: 'int va2'
+(49,19): Error! E619: linkage specification is different than previous declaration 'va4'
+  definition: 'int va4'
+(49,19): Error! E042: symbol 'va4' already defined
+  definition: 'int va4'
+(53,21): Error! E619: linkage specification is different than previous declaration 'va5'
+  definition: 'int va5'
+(53,21): Error! E042: symbol 'va5' already defined
+  definition: 'int va5'
+(56,19): Error! E619: linkage specification is different than previous declaration 'va6'
+  definition: 'int va6'
+(56,19): Error! E042: symbol 'va6' already defined
+  definition: 'int va6'
+(61,21): Error! E619: linkage specification is different than previous declaration 'va7'
+  definition: 'int va7'
+(61,21): Error! E042: symbol 'va7' already defined
+  definition: 'int va7'
+(65,19): Error! E619: linkage specification is different than previous declaration 'va8'
+  definition: 'int va8'
+(65,19): Error! E042: symbol 'va8' already defined
+  definition: 'int va8'
+(69,21): Error! E619: linkage specification is different than previous declaration 'va9'
+  definition: 'int va9'
+(69,21): Error! E042: symbol 'va9' already defined
+  definition: 'int va9'
+(72,20): Error! E619: linkage specification is different than previous declaration 'va10'
+  definition: 'int va10'
+(72,20): Error! E042: symbol 'va10' already defined
+  definition: 'int va10'
+(78,20): Error! E619: linkage specification is different than previous declaration 'va11'
+  definition: 'int va11'
+(78,20): Error! E042: symbol 'va11' already defined
+  definition: 'int va11'
+(85,20): Error! E619: linkage specification is different than previous declaration 'va12'
+  definition: 'int va12'
+(85,20): Error! E042: symbol 'va12' already defined
+  definition: 'int va12'
+(92,21): Error! E619: linkage specification is different than previous declaration 'dva2'
+  definition: 'int dva2'
+(92,21): Error! E042: symbol 'dva2' already defined
+  definition: 'int dva2'
+(101,21): Error! E619: linkage specification is different than previous declaration 'dva4'
+  definition: 'int dva4'
+(101,21): Error! E042: symbol 'dva4' already defined
+  definition: 'int dva4'
+(105,23): Error! E619: linkage specification is different than previous declaration 'dva5'
+  definition: 'int dva5'
+(105,23): Error! E042: symbol 'dva5' already defined
+  definition: 'int dva5'
+(108,21): Error! E619: linkage specification is different than previous declaration 'dva6'
+  definition: 'int dva6'
+(108,21): Error! E042: symbol 'dva6' already defined
+  definition: 'int dva6'
+(113,23): Error! E619: linkage specification is different than previous declaration 'dva7'
+  definition: 'int dva7'
+(113,23): Error! E042: symbol 'dva7' already defined
+  definition: 'int dva7'
+(117,21): Error! E619: linkage specification is different than previous declaration 'dva8'
+  definition: 'int dva8'
+(117,21): Error! E042: symbol 'dva8' already defined
+  definition: 'int dva8'
+(121,23): Error! E619: linkage specification is different than previous declaration 'dva9'
+  definition: 'int dva9'
+(121,23): Error! E042: symbol 'dva9' already defined
+  definition: 'int dva9'
+(124,22): Error! E619: linkage specification is different than previous declaration 'dva10'
+  definition: 'int dva10'
+(124,22): Error! E042: symbol 'dva10' already defined
+  definition: 'int dva10'
+(130,22): Error! E619: linkage specification is different than previous declaration 'dva11'
+  definition: 'int dva11'
+(130,22): Error! E042: symbol 'dva11' already defined
+  definition: 'int dva11'
+(137,22): Error! E619: linkage specification is different than previous declaration 'dva12'
+  definition: 'int dva12'
+(137,22): Error! E042: symbol 'dva12' already defined
+  definition: 'int dva12'
+(144,20): Error! E619: linkage specification is different than previous declaration 'a2'
+  definition: 'int a2( void )'
+(153,20): Error! E619: linkage specification is different than previous declaration 'a4'
+  definition: 'int a4( void )'
+(157,22): Error! E619: linkage specification is different than previous declaration 'a5'
+  definition: 'int a5( void )'
+(160,20): Error! E619: linkage specification is different than previous declaration 'a6'
+  definition: 'int a6( void )'
+(165,22): Error! E619: linkage specification is different than previous declaration 'a7'
+  definition: 'int a7( void )'
+(169,20): Error! E619: linkage specification is different than previous declaration 'a8'
+  definition: 'int a8( void )'
+(173,22): Error! E619: linkage specification is different than previous declaration 'a9'
+  definition: 'int a9( void )'
+(176,21): Error! E619: linkage specification is different than previous declaration 'a10'
+  definition: 'int a10( void )'
+(182,21): Error! E619: linkage specification is different than previous declaration 'a11'
+  definition: 'int a11( void )'
+(189,21): Error! E619: linkage specification is different than previous declaration 'a12'
+  definition: 'int a12( void )'
+(196,21): Error! E619: linkage specification is different than previous declaration 'da2'
+  definition: 'int da2( void )'
+(205,21): Error! E619: linkage specification is different than previous declaration 'da4'
+  definition: 'int da4( void )'
+(209,23): Error! E619: linkage specification is different than previous declaration 'da5'
+  definition: 'int da5( void )'
+(212,21): Error! E619: linkage specification is different than previous declaration 'da6'
+  definition: 'int da6( void )'
+(217,23): Error! E619: linkage specification is different than previous declaration 'da7'
+  definition: 'int da7( void )'
+(221,21): Error! E619: linkage specification is different than previous declaration 'da8'
+  definition: 'int da8( void )'
+(225,23): Error! E619: linkage specification is different than previous declaration 'da9'
+  definition: 'int da9( void )'
+(228,22): Error! E619: linkage specification is different than previous declaration 'da10'
+  definition: 'int da10( void )'
+(234,22): Error! E619: linkage specification is different than previous declaration 'da11'
+  definition: 'int da11( void )'
+(241,22): Error! E619: linkage specification is different than previous declaration 'da12'
+  definition: 'int da12( void )'
+File: source\diag0079.c
+(14,1): Warning! W018: no reference to anonymous union member 'y'
+  definition: 'int y'
+(16,11): Error! E118: nameless declaration is not allowed
+(20,9): Error! E127: 'sizeof' is not allowed for an undefined type
+(23,18): Error! E898: in-class initialization is only allowed for const static integral members
+(24,26): Error! E137: pure member function constant must be '0'
+(33,23): Error! E093: must use 'va_start' macro inside function with variable arguments
+(54,9): Error! E580: cannot find a constructor for given initializer argument list
+(65,19): Warning! W004: base class 'VB' does not have a virtual destructor
+(65,19): Warning! W004: base class 'VQ' does not have a virtual destructor
+(65,19): Warning! W621: pure virtual destructors must have a definition
+End of file
+Warning! W018: no reference to anonymous union member 'b'
+  definition: 'int b'
+File: source\diag0080.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0081.c
+(20,11): Warning! W005: pointer or reference truncated
+  'Y' defined at: (10,8)
+  source conversion type is 'Y __far (lvalue)'
+  target conversion type is 'Y (lvalue)'
+(21,15): Error! E723: attempt to construct a far object when data model is near
+(29,11): Warning! W005: pointer or reference truncated
+  'Y' defined at: (10,8)
+  source conversion type is 'Y __far (lvalue)'
+  target conversion type is 'Y (lvalue)'
+(32,10): Warning! W005: pointer or reference truncated
+  'Y' defined at: (10,8)
+  source conversion type is 'Y __far (lvalue)'
+  target conversion type is 'Y const (lvalue)'
+(34,5): Error! E161: attempt to call member function for far object when the data model is near
+  'Y' defined at: (10,8)
+  definition: 'Y & Y::operator =( Y const & )'
+(36,12): Error! E163: attempt to delete a far object when the data model is near
+(39,5): Error! E161: attempt to call member function for far object when the data model is near
+  'Y' defined at: (10,8)
+  definition: 'int Y::foo( void )'
+File: source\diag0082.c
+(43,5): Error! E624: catch block does not immediately follow try block
+(45,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (44,7)
+(50,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (49,7)
+(55,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (54,7)
+(60,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (59,7)
+(62,7): Error! E612: preceding catch specified '...'
+  previous catch block defined at: (61,7)
+(69,10): Error! E622: jump into try block
+  previous try block defined at: (68,5)
+(72,12): Error! E623: jump into catch handler
+  previous catch block defined at: (71,20)
+(76,16): Error! E622: jump into try block
+  previous try block defined at: (68,5)
+(77,16): Error! E623: jump into catch handler
+  previous catch block defined at: (71,20)
+(82,5): Error! E437: cannot construct an undefined class
+  'undefed' defined at: (79,12)
+(84,5): Warning! W013: unreachable code
+(84,20): Error! E148: access to private member 'priv_copy::priv_copy' is not allowed
+  definition: 'priv_copy::priv_copy( priv_copy const & )'
+(85,20): Error! E148: access to private member 'priv_dtor::~priv_dtor' is not allowed
+  definition: 'priv_dtor::~priv_dtor( void )'
+File: source\diag0083.c
+(6,17): Warning! W066: 'delete' expression size is not allowed
+(10,24): Error! E016: template argument list cannot be empty
+(16,9): Error! E012: template argument cannot be type 'double'
+(24,27): Error! E176: 'S' cannot be in the same scope as a class template
+  definition: 'S'
+(33,1): Warning! W011: all members are private
+File: source\diag0084.c
+(3,16): Error! E179: declaration cannot be in the same scope as class template 'TC1'
+  definition: '<class template> TC1'
+(5,8): Error! E179: declaration cannot be in the same scope as class template 'TC2'
+  definition: '<class template> TC2'
+(7,22): Error! E179: declaration cannot be in the same scope as class template 'TC3'
+  definition: '<class template> TC3'
+(9,29): Error! E176: 'TC4' cannot be in the same scope as a class template
+  definition: 'TC4'
+(11,29): Error! E176: 'TC5' cannot be in the same scope as a class template
+  definition: 'int TC5'
+(13,29): Error! E176: 'TC6' cannot be in the same scope as a class template
+  definition: 'int TC6( int )'
+(19,35): Error! E174: class template 'TC8<?1 >' cannot be overloaded
+  definition: '<class template> TC8'
+(21,35): Error! E174: class template 'TC9<?1 , unsigned >' cannot be overloaded
+  definition: '<class template> TC9'
+(31,2): Error! E181: class template 'TC11<?1 >' is already defined
+  definition: '<class template> TC11'
+(37,2): Error! E181: class template 'TC12<?1 >' is already defined
+  definition: '<class template> TC12'
+File: source\diag0085.c
+(43,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hit( void * )'
+  cannot convert argument 1 defined at: (43,17)
+  source conversion type is 'A const * const'
+  target conversion type is 'void *'
+(46,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hitv( void volatile * )'
+  cannot convert argument 1 defined at: (46,18)
+  source conversion type is 'A const * const'
+  target conversion type is 'void volatile *'
+(50,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hit( void * )'
+  cannot convert argument 1 defined at: (50,17)
+  source conversion type is 'A volatile * const'
+  target conversion type is 'void *'
+(51,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hitc( void const * )'
+  cannot convert argument 1 defined at: (51,18)
+  source conversion type is 'A volatile * const'
+  target conversion type is 'void const *'
+(57,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hit( void * )'
+  cannot convert argument 1 defined at: (57,17)
+  source conversion type is 'A const volatile * const'
+  target conversion type is 'void *'
+(58,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hitc( void const * )'
+  cannot convert argument 1 defined at: (58,18)
+  source conversion type is 'A const volatile * const'
+  target conversion type is 'void const *'
+(59,10): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void hitv( void volatile * )'
+  cannot convert argument 1 defined at: (59,18)
+  source conversion type is 'A const volatile * const'
+  target conversion type is 'void volatile *'
+File: source\diag0086.c
+(63,2): Error! E080: at least one error for DIAGNOSE test stream
+(80,14): Error! E819: conversion of const reference to non-const reference
+  source conversion type is 'int const (lvalue)'
+  target conversion type is 'int (lvalue)'
+(85,14): Error! E820: conversion of volatile reference to non-volatile reference
+  source conversion type is 'int volatile (lvalue)'
+  target conversion type is 'int (lvalue)'
+(90,14): Error! E821: conversion of const volatile reference to plain reference
+  source conversion type is 'int const volatile (lvalue)'
+  target conversion type is 'int (lvalue)'
+(95,14): Error! E819: conversion of const reference to non-const reference
+  source conversion type is 'int const (lvalue)'
+  target conversion type is 'int (lvalue)'
+(100,14): Error! E820: conversion of volatile reference to non-volatile reference
+  source conversion type is 'int volatile (lvalue)'
+  target conversion type is 'int (lvalue)'
+(105,14): Error! E821: conversion of const volatile reference to plain reference
+  source conversion type is 'int const volatile (lvalue)'
+  target conversion type is 'int (lvalue)'
+File: source\diag0087.c
+(6,6): Error! E213: class template 'X<?1 , int , int * , int (* )( void )>' requires more parameters for instantiation
+  definition: '<class template> X'
+(7,14): Error! E214: class template 'X<?1 , int , int * , int (* )( void )>' requires fewer parameters for instantiation
+  definition: '<class template> X'
+(8,3): Error! E350: non-type parameter supplied for a type argument
+(9,9): Error! E494: template argument is not an external linkage symbol
+(10,11): Error! E494: template argument is not an external linkage symbol
+(11,16): Error! E351: type parameter supplied for a non-type argument
+(12,16): Error! E351: type parameter supplied for a non-type argument
+(13,14): Error! E351: type parameter supplied for a non-type argument
+(14,13): Error! E198: expression cannot be used as a class template parameter
+(15,13): Error! E198: expression cannot be used as a class template parameter
+(15,13): Error! E494: template argument is not an external linkage symbol
+(16,23): Error! E042: symbol 'ok1' already defined
+  definition: '<error> * ok1'
+(27,1): Warning! W017: label 'unrefd' has not been referenced by a goto
+  label defined at: (25,11)
+(27,1): Warning! W726: no reference to formal parameter 'b'
+  definition: 'int b' in 'void foo( int, int, int, int )'
+File: source\diag0088.c
+(5,14): Error! E040: expression for '.' must be a class, struct or union
+  template class member instantiation was at: (15,15)
+  operand type is 'double (lvalue)'
+File: source\diag0089.c
+(6,19): Error! E320: specific versions of template classes can only be defined in file scope
+(13,22): Error! E320: specific versions of template classes can only be defined in file scope
+(16,1): Warning! W014: no reference to symbol 'S::x'
+  definition: 'double S::x' in 'void foo( void )'
+(19,30): Error! E296: friend declarations may only be declared in a class
+(19,30): Error! E118: nameless declaration is not allowed
+(3,1): Warning! W011: all members are private
+  template class instantiation for 'S<unsigned char>' was at: (22,16)
+(3,1): Warning! W011: all members are private
+  template class instantiation for 'S<signed char>' was at: (23,16)
+File: source\diag0090.c
+(8,11): Error! E408: function templates can only name functions
+(10,11): Error! E407: class templates must be named
+(11,6): Error! E308: an anonymous class without a declarator is useless
+(60,1): Error! E454: function template 'f9' already has a definition
+  template function 'void f9( ?1 *, ?2 *, ?3 *, ?3 * )' defined at: (56,10)
+File: source\diag0091.c
+(5,7): Error! E028: expecting ';' but found 'fn'
+(5,7): Error! E165: syntax error: class template cannot be processed
+  class template definition started at: (3,13)
+File: source\diag0092.c
+(22,1): Error! E454: function template 'f2' already has a definition
+  template function 'void f2( ?1 *, ?2 *, ?3 *, ?3 * )' defined at: (17,10)
+File: source\diag0093.c
+(11,5): Warning! W249: using default arguments would be overload ambiguous with 'f2' using default arguments
+  definition: 'void f2( [?1 * ])'
+(11,5): Error! E250: missing default argument for 'f2'
+  definition: 'void f2( void (* )( ?1, ?1 )[, ?1 ])'
+(16,7): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function template: void f2( ?1 * ) defined at: (3,10)
+  rejected function template: void f2( void (* )( ?1, ?1 ), ?1 ) defined at: (10,10)
+(8,5): Warning! W726: no reference to formal parameter 'p'
+  definition: 'int * p' in 'void f2( int * )'
+  template function instantiation for 'f2' was at: (19,1)
+  definition: 'void f2( int * )'
+File: source\diag0094.c
+(4,12): Error! E186: attempt to modify a constant value
+  template function instantiation for 'zap' was at: (12,1)
+  definition: 'void zap( char const __based( __segment s ) volatile *, char const __based( __segment s ) volatile * )'
+File: source\diag0095.c
+(2,11): Error! E224: 'Stack' is a variable of type void
+(2,11): Error! E408: function templates can only name functions
+(2,11): Error! E006: syntax error; probable cause: missing ';'
+(33,6): Error! E121: syntax error
+(36,1): Warning! W914: 'main' must return 'int'
+(37,6): Error! E029: symbol 's' has not been declared
+File: source\diag0096.c
+(1,18): Error! E415: type cannot be defined in return type
+  semicolon (';') may be missing after class/enum definition
+(5,15): Error! E335: cannot be based on based pointer 'p'
+  definition: 'void __based( __segment s ) * p'
+(8,46): Error! E325: function cannot return a pointer based on __self
+(10,30): Error! E338: cannot define a __based reference
+(12,26): Error! E444: argument name 'T' has already been used
+(12,40): Error! E444: argument name 'p' has already been used
+(12,52): Error! E444: argument name 's' has already been used
+(20,52): Error! E329: modifiers of 'ack19' conflict with previous declaration
+  definition: 'void (__based( __segname( "AAA" )) ack19)( void )'
+  current declaration has type 'void (__based( __segname( "BBB" )) )( void )'
+(23,43): Error! E329: modifiers of 'ack22' conflict with previous declaration
+  definition: 'int __based( __segname( "AAA" )) ack22'
+  current declaration has type 'int __based( __segname( "BBB" ))'
+(23,43): Error! E042: symbol 'ack22' already defined
+  definition: 'int __based( __segname( "AAA" )) ack22'
+File: source\diag0097.c
+(5,11): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned' is 0 to 4294967295
+  constant expression in comparison has value 0
+(8,12): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned long' is 0 to 4294967295
+  constant expression in comparison has value 0
+(11,11): Warning! W354: pointer expression is always >= 0
+(14,14): Warning! W354: pointer expression is always >= 0
+(15,16): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned' is 0 to 4294967295
+  constant expression in comparison has value 0
+(16,17): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned long' is 0 to 4294967295
+  constant expression in comparison has value 0
+(17,16): Warning! W354: pointer expression is always >= 0
+(18,16): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned' is 0 to 4294967295
+  constant expression in comparison has value 0
+(19,16): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned long' is 0 to 4294967295
+  constant expression in comparison has value 0
+(20,16): Warning! W354: pointer expression is always >= 0
+(21,16): Warning! W690: conditional expression is always false (zero)
+  range of possible values for type 'unsigned' is 0 to 4294967295
+  constant expression in comparison has value 0
+(22,17): Warning! W690: conditional expression is always false (zero)
+  range of possible values for type 'unsigned long' is 0 to 4294967295
+  constant expression in comparison has value 0
+(23,16): Warning! W355: pointer expression is never < 0
+(24,16): Warning! W690: conditional expression is always false (zero)
+  range of possible values for type 'unsigned' is 0 to 4294967295
+  constant expression in comparison has value 0
+(25,16): Warning! W690: conditional expression is always false (zero)
+  range of possible values for type 'unsigned long' is 0 to 4294967295
+  constant expression in comparison has value 0
+(26,16): Warning! W355: pointer expression is never < 0
+(32,5): Warning! W011: all members are private
+  template class instantiation for 'S<int,4294967295,int aa>' was at: (35,15)
+(36,16): Error! E042: symbol 'x' already defined
+  definition: 'S<int,4294967295,int aa> x'
+(40,7): Error! E148: access to private member 'S::a' is not allowed
+  definition: 'int S<int,4294967295,int aa>::a[1]'
+File: source\diag0098.c
+(16,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_X( X & )'
+  cannot convert argument 1 defined at: (16,14)
+  source conversion type is 'X const (lvalue)'
+  class 'X' has not been defined
+  target conversion type is 'X (lvalue)'
+  class 'X' has not been defined
+(18,13): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_vX( X volatile & )'
+  cannot convert argument 1 defined at: (18,15)
+  source conversion type is 'X const (lvalue)'
+  class 'X' has not been defined
+  target conversion type is 'X volatile (lvalue)'
+  class 'X' has not been defined
+(23,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_X( X & )'
+  cannot convert argument 1 defined at: (23,14)
+  source conversion type is 'X volatile (lvalue)'
+  class 'X' has not been defined
+  target conversion type is 'X (lvalue)'
+  class 'X' has not been defined
+(24,13): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_cX( X const & )'
+  cannot convert argument 1 defined at: (24,15)
+  source conversion type is 'X volatile (lvalue)'
+  class 'X' has not been defined
+  target conversion type is 'X const (lvalue)'
+  class 'X' has not been defined
+File: source\diag0099.c
+(28,14): Error! E331: access permission of nested class 'X23::N' conflicts with previous declaration
+(25,26): Warning! W726: no reference to formal parameter 'n'
+  definition: 'int n' in 'X23::X23( int )'
+(38,19): Error! E348: cannot define a member pointer with a memory model modifier
+(39,28): Error! E348: cannot define a member pointer with a memory model modifier

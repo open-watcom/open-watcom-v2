@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler routines called by C.
 *
 ****************************************************************************/
 
@@ -35,53 +34,6 @@
    placed in the combined library. For this to work properly, all
    references to symbol names must be done the same way. */
 
-/* Assembler routines called by C. */
-
-#if defined( _NEC_PC )
-#pragma aux _NECSet "*_";
-#pragma aux _NECReset "*_";
-#pragma aux _NECByteRep "*_";
-#pragma aux _NECByteXor "*_";
-#pragma aux _NECByteAnd "*_";
-#pragma aux _NECByteOr "*_";
-#pragma aux _NECRep "*_";
-#pragma aux _NECXor "*_";
-#pragma aux _NECAnd "*_";
-#pragma aux _NECOr "*_";
-#pragma aux _NECGetDot "*_";
-#pragma aux _NECPixZap "*_";
-#pragma aux _NECPixFill "*_";
-#pragma aux _NECPixCopy "*_";
-#pragma aux _NECPixRead "*_";
-#pragma aux _NEC16Xor "*_";
-#pragma aux _NEC16And "*_";
-#pragma aux _NEC16Or "*_";
-#pragma aux _NEC16GetDot "*_";
-#pragma aux _NEC16PixZap "*_";
-#pragma aux _NEC16PixFill "*_";
-#pragma aux _NEC16PixCopy "*_";
-#pragma aux _NEC16PixRead "*_";
-#pragma aux _NEC16ScanLeft "*_";
-#pragma aux _NEC16ScanRight "*_";
-#pragma aux _NECMoveUp "*_";
-#pragma aux _NECMoveDown "*_";
-#pragma aux _NECMoveLeft "*_";
-#pragma aux _NECMoveRight "*_";
-#pragma aux _NECScanLeft "*_";
-#pragma aux _NECScanRight "*_";
-#pragma aux _NEC1120MoveUp "*_";
-#pragma aux _NEC1120MoveDown "*_";
-#pragma aux _NEC1120MoveLeft "*_";
-#pragma aux _NEC1120MoveRight "*_";
-#pragma aux _NEC1120Xor "*_";
-#pragma aux _NEC1120Or "*_";
-#pragma aux _NEC1120And "*_";
-#pragma aux _NEC1120Zap "*_";
-#pragma aux _NEC1120Fill "*_";
-#pragma aux _NEC1120GetDot "*_";
-#pragma aux _NEC1120Copy "*_";
-#pragma aux _NEC1120Read "*_";
-#else
 #pragma aux _CoRep "*_";
 #pragma aux _CoXor "*_";
 #pragma aux _CoAnd "*_";
@@ -197,7 +149,6 @@
 #pragma aux _PageS3 "*_";
 #pragma aux _PageCirrus "*_";
 #pragma aux _PageViper "*_";
-#endif
 
 /* Variables */
 
@@ -251,18 +202,6 @@
 #pragma aux _BiosSeg "_*";
 #pragma aux _BiosOff "_*";
 
-#if defined( _NEC_PC )
-#pragma aux _NecSeg "_*";
-#pragma aux _TextSeg "_*";
-#pragma aux _AttrSeg "_*";
-#pragma aux _NecOff "_*";
-#pragma aux _TextOff "_*";
-#pragma aux _AttrOff "_*";
-#pragma aux _KanjiBuf "_*";
-#pragma aux _NECPalette "_*";
-#pragma aux _NECDefPalette "_*";
-#pragma aux _GRCGPort "_*";
-#else
 #pragma aux _MonoSeg "_*";
 #pragma aux _CgaSeg "_*";
 #pragma aux _EgaSeg "_*";
@@ -271,7 +210,6 @@
 #pragma aux _CgaOff "_*";
 #pragma aux _EgaOff "_*";
 #pragma aux _RomOff "_*";
-#endif
 
 #if defined( __QNX__ )
 #pragma aux _CompileSeg "_*";
@@ -283,4 +221,127 @@
 #pragma aux _VGAGran "_*";
 #pragma aux _SVGAType "_*";
 #pragma aux _SetVGAPage "_*";
+#pragma aux _VGAStride "_*";
 #endif
+
+// generic, CGA or Hecules
+extern void pascal      near _MoveUp( void );
+extern void pascal      near _Move1Left( void );
+extern void pascal      near _Move2Left( void );
+extern void pascal      near _MoveDown( void );
+extern void pascal      near _Move1Right( void );
+extern void pascal      near _Move2Right( void );
+extern void pascal      near _HercMoveUp( void );
+extern void pascal      near _HercMoveDown( void );
+
+extern void             near _CoRep( char far *, int, int );
+extern void             near _CoXor( char far *, int, int );
+extern void             near _CoAnd( char far *, int, int );
+extern void             near _CoOr( char far *, int, int );
+extern short            near _Get1Dot( char far *, int, int );
+extern short            near _Get2Dot( char far *, int, int );
+extern void             near _Pix1Zap( char far *, int, int, int, int );
+extern void             near _Pix2Zap( char far *, int, int, int, int );
+extern void             near _Pix1Fill( char far *, int, int, int, int );
+extern void             near _Pix2Fill( char far *, int, int, int, int );
+extern void             near _Pix1Copy( char far *, char far *, int, int, int );
+extern void             near _Pix2Copy( char far *, char far *, int, int, int );
+extern void             near _Pix1Read( char far *, char far *, int, int, int );
+extern void             near _Pix2Read( char far *, char far *, int, int, int );
+extern short            near _CGAScanLeft( char far *, int, int, int, int, int );
+extern short            near _CGAScan1Right( char far *, int, int, int, int, int );
+extern short            near _CGAScan2Right( char far *, int, int, int, int, int );
+
+// EGA
+extern void pascal      near _EGAMoveLeft( void );
+extern void pascal      near _EGAMoveRight( void );
+extern void pascal      near _EGAMoveUpLo( void );
+extern void pascal      near _EGAMoveUpHi( void );
+extern void pascal      near _EGAMoveDownLo( void );
+extern void pascal      near _EGAMoveDownHi( void );
+extern void             near _EGARep( char far *, int, int );
+extern short            near _EGAGetDot( char far *, int, int );
+extern short            near _EGAGetDotEO( char far *, int, int );
+extern short            near _EGAGetDotMono( char far *, int, int );
+extern void             near _EGAZap( char far *, int, int, int, int );
+extern void             near _EGAZapEO( char far *, int, int, int, int );
+extern void             near _EGAZapMono( char far *, int, int, int, int );
+extern void             near _EGAFill( char far *, int, int, int, int );
+extern void             near _EGAFillEO( char far *, int, int, int, int );
+extern void             near _EGAFillMono( char far *, int, int, int, int );
+extern void             near _EGAPixCopy( char far *, char far *, int, int, int );
+extern void             near _EGAPixCopyEO( char far *, char far *, int, int, int );
+extern void             near _EGAPixCopyMono( char far *, char far *, int, int, int );
+extern void             near _EGAReadRow( char far *, char far *, int, int, int );
+extern void             near _EGAReadRowEO( char far *, char far *, int, int, int );
+extern void             near _EGAReadRowMono( char far *, char far *, int, int, int );
+extern short            near _EGAScanLeft( char far *, int, int, int, int, int );
+extern short            near _EGAScanLeftEO( char far *, int, int, int, int, int );
+extern short            near _EGAScanLeftMono( char far *, int, int, int, int, int );
+extern short            near _EGAScanRight( char far *, int, int, int, int, int );
+extern short            near _EGAScanRightEO( char far *, int, int, int, int, int );
+extern short            near _EGAScanRightMono( char far *, int, int, int, int, int );
+
+// SVGA
+extern void pascal      near _MoveUp19( void );
+extern void pascal      near _MoveUp100( void );
+extern void pascal      near _MoveUp128( void );
+extern void pascal      near _MoveUp640( void );
+extern void pascal      near _MoveUp800( void );
+extern void pascal      near _MoveUp1024( void );
+extern void pascal      near _MoveLeft19( void );
+extern void pascal      near _MoveLeft256( void );
+extern void pascal      near _MoveDown19( void );
+extern void pascal      near _MoveDown100( void );
+extern void pascal      near _MoveDown128( void );
+extern void pascal      near _MoveDown640( void );
+extern void pascal      near _MoveDown800( void );
+extern void pascal      near _MoveDown1024( void );
+extern void pascal      near _MoveRight19( void );
+extern void pascal      near _MoveRight256( void );
+extern void             near _Rep19( char far *, int, int );
+extern void             near _And19( char far *, int, int );
+extern short            near _GetDot19( char far *, int, int );
+extern void             near _Zap19( char far *, int, int, int, int );
+extern void             near _Zap256( char far *, int, int, int, int );
+extern void             near _Fill19( char far *, int, int, int, int );
+extern void             near _Fill256( char far *, int, int, int, int );
+extern void             near _PixCopy19( char far *, char far *, int, int, int );
+extern void             near _PixCopy256( char far *, char far *, int, int, int );
+extern void             near _PixRead19( char far *, char far *, int, int, int );
+extern void             near _PixRead256( char far *, char far *, int, int, int );
+extern short            near _ScanLeft256( char far *, int, int, int, int, int );
+extern short            near _ScanLeft19( char far *, int, int, int, int, int );
+extern short            near _ScanRight19( char far *, int, int, int, int, int );
+extern short            near _ScanRight256( char far *, int, int, int, int, int );
+#if 0 // This mode is untested
+extern void             near _MoveUp1280( void );
+extern void             near _MoveDown1280( void );
+extern void             near _MoveLeftWord( void );
+extern void             near _MoveRightWord( void );
+extern void             near _RepWord( char far *, int, int );
+extern void             near _XorWord( char far *, int, int );
+extern void             near _AndWord( char far *, int, int );
+extern void             near _OrWord( char far *, int, int );
+extern void             near _GetDotWord( char far *, int, int );
+extern void             near _ZapWord( char far *, int, int, int, int );
+extern void             near _FillWord( char far *, int, int, int, int );
+extern void             near _PixCopyWord( char far *, char far *, int, int, int );
+extern void             near _PixReadWord( char far *, char far *, int, int, int );
+extern void             near _ScanLeftWord( char far *, int, int, int, int, int );
+extern void             near _ScanRightWord( char far *, int, int, int, int, int );
+#endif
+
+extern void             _FARC _PageVESA( short );
+extern void             _FARC _PageVideo7( short );
+extern void             _FARC _PageParadise( short );
+extern void             _FARC _PageATI( short );
+extern void             _FARC _PageTseng3( short );
+extern void             _FARC _PageTseng4( short );
+extern void             _FARC _PageOak( short );
+extern void             _FARC _PageTrident( short );
+extern void             _FARC _PageChips( short );
+extern void             _FARC _PageGenoa( short );
+extern void             _FARC _PageS3( short );
+extern void             _FARC _PageCirrus( short );
+extern void             _FARC _PageViper( short );

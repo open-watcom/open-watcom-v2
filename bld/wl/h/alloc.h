@@ -24,20 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory management routines for linker.
 *
 ****************************************************************************/
 
 
-extern void *   ChkLAlloc( unsigned );
-extern void *   LAlloc( unsigned );
-extern void *   TryAlloc( unsigned );
-extern void *   LnkReAlloc( void *, unsigned );
+extern void *   ChkLAlloc( size_t );
+extern void *   LAlloc( size_t );
+extern void *   TryAlloc( size_t );
+extern void *   LnkReAlloc( void *, size_t );
 extern void     LFree( void * );
-extern void *   PermAlloc( unsigned );
-extern void *   Pass1Alloc( unsigned );
-extern void *   LnkExpand( void *, unsigned );
+extern void *   PermAlloc( size_t );
+extern void *   Pass1Alloc( size_t );
+extern void *   LnkExpand( void *, size_t );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
@@ -64,8 +63,8 @@ extern void     RelSymBlock( void );
 extern int      ValidateMem( void );    // just for debugging
 
 #ifndef NDEBUG
-    void DbgZapAlloc( void* tgt, unsigned size );
-    void DbgZapFreed( void* tgt, unsigned size );
+    void DbgZapAlloc( void* tgt, size_t size );
+    void DbgZapFreed( void* tgt, size_t size );
 #else
     #define DbgZapAlloc( tgt, size )
     #define DbgZapFreed( tgt, size )

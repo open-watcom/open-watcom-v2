@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  16-bit instruction encodings.
 *
 ****************************************************************************/
 
@@ -47,34 +46,37 @@
 #include "fppatch.h"
 #include "cfloat.h"
 
-extern  void            DoSymRef(name*,offset,bool);
-extern  void            LayRegAC(hw_reg_set);
-extern  void            LayOpword(opcode);
-extern  hw_reg_set      High32Reg(hw_reg_set);
-extern  hw_reg_set      Low32Reg(hw_reg_set);
-extern  hw_reg_set      CalcSegment(sym_handle,cg_class);
-extern  name            *DeAlias(name*);
-extern  void            AddByte(byte);
-extern  void            LayRMRegOp(name*);
-extern  void            EjectInst();
-extern  void            LayOpbyte(opcode);
-extern  void            LayRegRM(hw_reg_set);
-extern  void            DoSegRef(seg_id);
-extern  void            GenSeg(hw_reg_set);
-extern  void            LayW(type_class_def);
-extern  void            AddWCons(name*,type_class_def);
-extern  void            AddSData(signed_32,type_class_def);
-extern  void            AddWData(signed_32,type_class_def);
-extern  void            AddToTemp(byte);
-extern  void            LayOpword(opcode);
-extern  void            DoAbsPatch(abspatch_handle*,int);
-extern  type_class_def  OpndSize(hw_reg_set );
-extern  void            LayReg(hw_reg_set );
-extern  void            GCondFwait();
-extern  void            Finalize();
-extern  type_length     NewBase(name*);
-extern  int             GetLog2(unsigned_32);
-extern  unsigned        UseRepForm(unsigned);
+
+extern  void            DoSymRef( name *, offset, bool );
+extern  void            LayRegAC( hw_reg_set );
+extern  void            LayOpword( opcode );
+extern  hw_reg_set      High32Reg( hw_reg_set );
+extern  hw_reg_set      Low32Reg( hw_reg_set );
+extern  hw_reg_set      CalcSegment( sym_handle, cg_class );
+extern  name            *DeAlias( name * );
+extern  void            AddByte( byte );
+extern  void            LayRMRegOp( name * );
+extern  void            LayOpbyte( opcode );
+extern  void            LayRegRM( hw_reg_set );
+extern  void            DoSegRef( seg_id );
+extern  void            GenSeg( hw_reg_set );
+extern  void            LayW( type_class_def );
+extern  void            AddWCons( name *, type_class_def );
+extern  void            AddSData( signed_32, type_class_def );
+extern  void            AddWData( signed_32, type_class_def );
+extern  void            AddToTemp( byte );
+extern  void            LayOpword( opcode );
+extern  void            DoAbsPatch( abspatch_handle *, int );
+extern  type_class_def  OpndSize( hw_reg_set );
+extern  void            LayReg( hw_reg_set );
+extern  void            GCondFwait( void );
+extern  type_length     NewBase( name * );
+extern  int             GetLog2( unsigned_32 );
+extern  unsigned        UseRepForm( unsigned );
+
+/* forward declarations */
+extern  void            DoRelocConst( name *op, type_class_def kind );
+static  void            SetOff( name *op, int val );
 
 extern  byte                    OptForSize;
 extern  template                Temp;   /* template for oc_entries*/
@@ -89,9 +91,9 @@ extern  int                     ILen;
 #define D8      (1 << S_RMR_MOD)
 #define D16     (2 << S_RMR_MOD)
 
-static void OpndSizeIf() {
-/*************************/
-
+static void OpndSizeIf( void )
+/****************************/
+{
     if( _IsTargetModel( USE_32 ) ) {
         AddToTemp( M_OPND_SIZE );
     }
@@ -109,14 +111,15 @@ static  hw_reg_set IndexTab[] = {
         HW_D_1( HW_BP ),
         HW_D_1( HW_BX ) };
 
-static  byte    DoIndex( hw_reg_set regs ) {
-/******************************************/
-
+static  byte    DoIndex( hw_reg_set regs )
+/****************************************/
+{
     int i;
 
     i = 0;
     while( i < INDICES ) {
-        if( HW_Equal( regs, IndexTab[i] ) ) break;
+        if( HW_Equal( regs, IndexTab[i] ) )
+            break;
         i++;
     }
     if( i >= INDICES ) {
@@ -127,11 +130,12 @@ static  byte    DoIndex( hw_reg_set regs ) {
 }
 
 
-static  byte    Displacement( signed_32 val, hw_reg_set regs ) {
-/********************************************************/
-
+static  byte    Displacement( signed_32 val, hw_reg_set regs )
+/************************************************************/
+{
     HW_CTurnOff( regs, HW_SEGS );
-    if( val == 0 && !HW_CEqual( regs, HW_BP ) ) return( D0 );
+    if( val == 0 && !HW_CEqual( regs, HW_BP ) )
+        return( D0 );
     if( val <= 127 && val >= -128 ) {
         AddByte( val & 0xff );
         return( D8 );
@@ -144,9 +148,9 @@ static  byte    Displacement( signed_32 val, hw_reg_set regs ) {
 }
 
 
-static  byte    DoDisp( name *op, hw_reg_set regs ) {
-/*****************************************************/
-
+static  byte    DoDisp( name *op, hw_reg_set regs )
+/*************************************************/
+{
     name        *base;
     int         val;
     byte        dmod;
@@ -172,9 +176,9 @@ static  byte    DoDisp( name *op, hw_reg_set regs ) {
 }
 
 
-extern  void    DoRepOp( instruction *ins ) {
-/*******************************************/
-
+extern  void    DoRepOp( instruction *ins )
+/*****************************************/
+{
     int size;
 
     size = ins->result->n.size;
@@ -200,7 +204,7 @@ extern  void    DoRepOp( instruction *ins ) {
                 AddByte( M_MOVSB );
             }
         } else {
-            if( ins->operands[ 1 ]->n.size & 1 ) {
+            if( ins->operands[1]->n.size & 1 ) {
                 AddByte( M_CMPSB );
             } else {
                 AddByte( M_CMPSW );
@@ -210,16 +214,16 @@ extern  void    DoRepOp( instruction *ins ) {
 }
 
 
-extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) ) {
-/**************************************************************************/
-
+extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
+/************************************************************************/
+{
     hw_reg_set  hreg;
     hw_reg_set  lreg;
     unsigned    shift;
 
-    if( ins->operands[ 1 ]->n.class == N_CONSTANT ) {
-        shift = ins->operands[ 1 ]->c.int_value;
-        if( shift<16 && OptForSize<50 && ins->result->n.class==N_REGISTER ) {
+    if( ins->operands[1]->n.class == N_CONSTANT ) {
+        shift = ins->operands[1]->c.int_value;
+        if( shift < 16 && OptForSize < 50 && ins->result->n.class == N_REGISTER ) {
             hreg = ins->result->r.reg;
             lreg = Low32Reg( hreg );
             hreg = High32Reg( hreg );
@@ -273,12 +277,12 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) ) {
         }
         LayOpbyte( 0xb8 );   /* Move register immediate (word)*/
         LayRegAC( HW_CX );
-        AddWCons( ins->operands[ 1 ], U2 );
+        AddWCons( ins->operands[1], U2 );
         _Next;
         rtn( ins );
         _Next;
         LayOpword( M_LOOP );
-        Inst[ DATALO ] = - ( -3 + 2 + Temp.oc.objlen );
+        Inst[DATALO] = - ( -3 + 2 + Temp.oc.objlen );
     } else {
         LayOpbyte( 0xe3 );    /* JCXZ*/
         AddByte( 0 );        /* to be patched*/
@@ -286,49 +290,49 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) ) {
         rtn( ins );
         _Next;
         LayOpword( M_LOOP );
-        Inst[ DATALO ] = - (-2 + 2 + Temp.oc.objlen );
-        Temp.data[ 1 ] = -Inst[ DATALO ];
+        Inst[DATALO] = - ( -2 + 2 + Temp.oc.objlen );
+        Temp.data[1] = -Inst[DATALO];
     }
 }
 
 
-extern  void    LayLeaRegOp( instruction *ins ) {
-/***********************************************/
-
+extern  void    LayLeaRegOp( instruction *ins )
+/*********************************************/
+{
     name        *left;
     name        *right;
 
-    left = ins->operands[ 0 ];
-    right = ins->operands[ 1 ];
-    Inst[ RMR ] |= DoIndex( left->r.reg );
+    left = ins->operands[0];
+    right = ins->operands[1];
+    Inst[RMR] |= DoIndex( left->r.reg );
     if( ins->head.opcode == OP_ADD ) {
         if( right->c.const_type == CONS_ABSOLUTE ) {
-            Inst[ RMR ] |=
+            Inst[RMR] |=
                       Displacement( right->c.int_value,
                                     left->r.reg );
         } else {
-            Inst[ RMR ] |= D16;
+            Inst[RMR] |= D16;
             DoRelocConst( right, U2 );
         }
     } else {
-        Inst[ RMR ] |= Displacement( -right->c.int_value,
+        Inst[RMR] |= Displacement( -right->c.int_value,
                                     left->r.reg );
     }
 }
 
 
-static  void    CheckSize() {
-/***************************/
-
+static  void    CheckSize( void )
+/*******************************/
+{
     if( _IsTargetModel( USE_32 ) ) {
         AddToTemp( M_ADDR_SIZE );
     }
 }
 
 
-extern  void    DoMAddr( name *op ) {
-/*************************************/
-
+extern  void    DoMAddr( name *op )
+/*********************************/
+{
     ILen += 2;
     if( op->n.class == N_CONSTANT ) {
         _Zoiks( ZOIKS_035 );
@@ -338,9 +342,9 @@ extern  void    DoMAddr( name *op ) {
 }
 
 
-extern  byte    DoMDisp( name *op, bool alt_encoding ) {
-/********************************************************/
-
+extern  byte    DoMDisp( name *op, bool alt_encoding )
+/****************************************************/
+{
     hw_reg_set          regs;
     zero_page_scheme    zptype;
 
@@ -376,9 +380,9 @@ extern  byte    DoMDisp( name *op, bool alt_encoding ) {
 }
 
 
-extern  void    LayModRM( name *op ) {
-/**************************************/
-
+extern  void    LayModRM( name *op )
+/**********************************/
+{
     hw_reg_set  regs;
     name        *base;
     hw_reg_set  tmp;
@@ -386,7 +390,7 @@ extern  void    LayModRM( name *op ) {
     switch( op->n.class ) {
     case N_MEMORY:
         CheckSize();
-        Inst[ RMR ] |= DoMDisp( op, TRUE );
+        Inst[RMR] |= DoMDisp( op, TRUE );
         break;
     case N_TEMP:
         CheckSize();
@@ -394,7 +398,7 @@ extern  void    LayModRM( name *op ) {
         if( base->t.location == NO_LOCATION ) {
             _Zoiks( ZOIKS_030 );
         }
-        Inst[ RMR ] |= Displacement( NewBase( base ) + op->v.offset
+        Inst[RMR] |= Displacement( NewBase( base ) + op->v.offset
                                         - base->v.offset, HW_BP )
                          + ( BP_INDEX << S_RMR_RM );
         break;
@@ -437,18 +441,20 @@ extern  void    LayModRM( name *op ) {
                 HW_CTurnOff( regs, HW_SEGS );
             }
         }
-        Inst[ RMR ] |= DoDisp( op, regs ) + DoIndex( regs );
+        Inst[RMR] |= DoDisp( op, regs ) + DoIndex( regs );
         break;
     case N_REGISTER:
         LayRMRegOp( op );
+        break;
+    default:
         break;
     }
 }
 
 
-extern  void    DoRelocConst( name *op, type_class_def kind ) {
-/*********************************************************/
-
+extern  void    DoRelocConst( name *op, type_class_def kind )
+/***********************************************************/
+{
     kind = kind;
     ILen += 2;
     if( op->c.const_type == CONS_OFFSET ) {
@@ -465,9 +471,9 @@ extern  void    DoRelocConst( name *op, type_class_def kind ) {
 }
 
 
-extern  void    Do4Shift( instruction *ins ) {
-/********************************************/
-
+extern  void    Do4Shift( instruction *ins )
+/******************************************/
+{
     name        *op;
 
     op = ins->result;
@@ -483,7 +489,7 @@ extern  void    Do4Shift( instruction *ins ) {
         SetOff( op,  2 );
         LayOpword( M_SHR1 | B_KEY_W );
         if( ins->type_class == I4 ) {
-            Inst[ RMR ] |= B_RMR_SHR_SAR;
+            Inst[RMR] |= B_RMR_SHR_SAR;
         }
         LayModRM( op );
         _Next;
@@ -494,9 +500,9 @@ extern  void    Do4Shift( instruction *ins ) {
 }
 
 
-extern  void    Do4RShift( instruction *ins ) {
-/*********************************************/
-
+extern  void    Do4RShift( instruction *ins )
+/*******************************************/
+{
     hw_reg_set  regs;
 
     regs = ins->result->r.reg;
@@ -509,7 +515,7 @@ extern  void    Do4RShift( instruction *ins ) {
     } else {
         LayOpword( M_SHR1 | B_KEY_W );
         if( ins->type_class == I4 ) {
-            Inst[ RMR ] |= B_RMR_SHR_SAR;
+            Inst[RMR] |= B_RMR_SHR_SAR;
         }
         LayRegRM( High32Reg( regs ) );
         _Next;
@@ -519,9 +525,9 @@ extern  void    Do4RShift( instruction *ins ) {
 }
 
 
-extern  void    Gen4RNeg( instruction *ins ) {
-/********************************************/
-
+extern  void    Gen4RNeg( instruction *ins )
+/******************************************/
+{
     hw_reg_set  regs;
 
     regs = ins->result->r.reg;
@@ -540,9 +546,9 @@ extern  void    Gen4RNeg( instruction *ins ) {
 }
 
 
-extern  void    Gen4Neg( instruction *ins ) {
-/*******************************************/
-
+extern  void    Gen4Neg( instruction *ins )
+/*****************************************/
+{
     name        *res;
 
     res = ins->result;
@@ -565,9 +571,9 @@ extern  void    Gen4Neg( instruction *ins ) {
 }
 
 
-extern  void    By2Div( instruction *ins ) {
-/*******************************************/
-
+extern  void    By2Div( instruction *ins )
+/****************************************/
+{
     switch( ins->type_class ) {
     case I1:
     case U1:
@@ -582,13 +588,15 @@ extern  void    By2Div( instruction *ins ) {
         _Next;
         LayOpword( 0xf8d1 );    /* sar  ax,1 */
         OpndSizeIf();
+    default:
+        break;
     }
 }
 
 
-extern void Pow2Div286( instruction *ins ) {
-/******************************************/
-
+extern void Pow2Div286( instruction *ins )
+/****************************************/
+{
     int         log2;
 
     log2 = GetLog2( ins->operands[1]->c.int_value );
@@ -616,13 +624,15 @@ extern void Pow2Div286( instruction *ins ) {
         OpndSizeIf();
         AddByte( log2 );
         break;
+    default:
+        break;
     }
 }
 
 
-extern  void    Pow2Div( instruction *ins ) {
-/*******************************************/
-
+extern  void    Pow2Div( instruction *ins )
+/*****************************************/
+{
     int         log2;
 
     log2 = GetLog2( ins->operands[1]->c.int_value );
@@ -651,12 +661,14 @@ extern  void    Pow2Div( instruction *ins ) {
         LayOpword( 0xf8d3 );    /* sar  ax,cl */
         OpndSizeIf();
         break;
+    default:
+        break;
     }
 }
 
-static  void    SetOff( name *op, int val ) {
-/**********************************************/
-
+static  void    SetOff( name *op, int val )
+/*****************************************/
+{
     if( op->n.class == N_INDEXED ) {
         op->i.constant += val;
     } else if( op->n.class == N_TEMP ) {
@@ -667,65 +679,65 @@ static  void    SetOff( name *op, int val ) {
     }
 }
 
-extern  void    GenUnkLea( pointer value ) {
-/******************************************/
-
-
+extern  void    GenUnkLea( pointer value )
+/****************************************/
+{
     LayOpword( M_LEA );
     OpndSize( HW_SP );
     LayReg( HW_SP );
-    Inst[ RMR ] |= D16;
+    Inst[RMR] |= D16;
     ILen += 2;
     DoAbsPatch( value, 2 );
-    Inst[ RMR ] |= DoIndex( HW_BP );
+    Inst[RMR] |= DoIndex( HW_BP );
 }
 
-extern  void    GenLeaSP( long offset ) {
-/***************************************
+extern  void    GenLeaSP( long offset )
+/**************************************
     LEA         sp,offset[bp]
 */
-
+{
     _Code;
     LayOpword( M_LEA );
     OpndSize( HW_SP );
     LayReg( HW_SP );
-    Inst[ RMR ] |= Displacement( offset, HW_BP );
-    Inst[ RMR ] |= DoIndex( HW_BP );
+    Inst[RMR] |= Displacement( offset, HW_BP );
+    Inst[RMR] |= DoIndex( HW_BP );
     _Emit;
 }
 
-extern  void    GFstp10( type_length where ) {
-/************************************/
-
+extern  void    GFstp10( type_length where )
+/******************************************/
+{
     GCondFwait();
     LayOpword( 0x3edb );
-    Inst[ RMR ] |= Displacement( -where, HW_BP );
+    Inst[RMR] |= Displacement( -where, HW_BP );
     _Emit;
 }
 
 
-extern  void    GFld10( type_length where ) {
-/***********************************/
-
+extern  void    GFld10( type_length where )
+/*****************************************/
+{
     GCondFwait();
     LayOpword( 0x2edb );
-    Inst[ RMR ] |= Displacement( -where, HW_BP );
+    Inst[RMR] |= Displacement( -where, HW_BP );
     _Emit;
 }
 
-void StartBlockProfiling( block *blk ) {
-/**************************************/
-
+void StartBlockProfiling( block *blk )
+/************************************/
+{
     blk = blk;
 }
 
-void EndBlockProfiling() {
-/************************/
-
+void EndBlockProfiling( void )
+/****************************/
+{
 }
 
-segment_id GenP5ProfileData( char *fe_name, label_handle *data ) {
-/****************************************************************/
+segment_id GenP5ProfileData( char *fe_name, label_handle *data )
+/**************************************************************/
+{
     fe_name = fe_name;
     data = data;
     return( 0 );

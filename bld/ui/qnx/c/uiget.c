@@ -38,18 +38,20 @@
 #include "uivirt.h"
 #include "qnxuiext.h"
 
-extern EVENT Event;
+extern EVENT        Event;
+extern bool         UserForcedTermRefresh;
 
-extern EVENT uieventsourcehook( EVENT );
+extern EVENT        uieventsourcehook( EVENT );
+extern void intern  stopmouse( void );
+extern void intern  stopkeyboard( void );
 
-void global uiflush()
-/*******************/
+
+void global uiflush( void )
+/*************************/
 {
     Event = EV_NO_EVENT;
     flushkey();
 }
-
-extern bool     UserForcedTermRefresh;
 
 static EVENT doget( int update )
 /******************************/
@@ -102,8 +104,6 @@ static EVENT doget( int update )
 EVENT global uieventsource( int update )
 /**************************************/
 {
-    extern void intern  stopmouse(void);
-    extern void intern  stopkeyboard(void);
     EVENT   ev;
 
     ev = doget( update );
@@ -113,8 +113,8 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget()
-/******************/
+EVENT global uiget( void )
+/************************/
 {
     return( uieventsource( 1 ) );
 }

@@ -1,11 +1,15 @@
-#pmake: build serv remote qnx 16 32 tcp x86
+#pmake: serv remote os_qnx cpu_i86 cpu_386 tcp x86
 
-os = qnx
-srv = tcp
-cpu = x86
+host_os  = qnx
+host_cpu = 386
 
-extra_objs = $(remote_objs)
-extra_libs = $(watcom_dir)\lib\qnx\socket3r.lib
-extra_incs = $(watcom_dir)\qnx_h
+os    = qnx
+srv   = tcp
+cpu   = x86
+which = SERVER
+type  = remote_link
 
-!include $(trap_dir)\serv.mif
+extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib
+inc_dirs   = -I"$(watcom_dir)/qnx_h"
+
+!include $(trap_dir)/master.mif

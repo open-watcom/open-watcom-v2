@@ -24,21 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler mainline.
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
 #include <banner.h>
+
+#ifdef _BANEXTRA
 #undef  _BANEXTRA
-#define _BANEXTRA " "
+#define _BANEXTRA _BANEXSHORT
+#endif
 
 
 char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 
-#define _COMPILER " Optimizing Compiler "
+#define _COMPILER " Optimizing Compiler"
 
 #if _CPU == 386
  #define _386 "32"
@@ -47,46 +49,24 @@ char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 #endif
 
 
-void CBanner()
+void CBanner( void )
 {
     if( CompFlags.banner_printed ) return;              /* 13-mar-90 */
     if( CompFlags.quiet_mode )     return;
-#if _MACHINE == _ALPHA
-    BannerMsg( banner1w( "C Alpha AXP Optimizing Compiler ",
+#if _CPU == _AXP
+    BannerMsg( banner1w( "C Alpha AXP Optimizing Compiler",
                                                 _WCC_VERSION_ ) );
-#elif _MACHINE == _PPC
-    BannerMsg( banner1w( "C Power PC Optimizing Compiler ",
+#elif _CPU == _PPC
+    BannerMsg( banner1w( "C PowerPC Optimizing Compiler",
+                                                _WCC_VERSION_ ) );
+#elif _CPU == _MIPS
+    BannerMsg( banner1w( "C MIPS Optimizing Compiler",
                                                 _WCC_VERSION_ ) );
 #else
     BannerMsg( banner1w( "C" _386 _COMPILER, _WCC_VERSION_ ) );
 #endif
     BannerMsg( banner2( "1984" ) );
     BannerMsg( banner3 );
-#if 0
-    ChkExpiryDate();
-#endif
+    BannerMsg( banner3a );
     CompFlags.banner_printed = 1;                       /* 13-mar-90 */
 }
-
-#if 0
-void ChkExpiryDate()
-{
-    if( expired() ) {
-        BannerMsg( "Beta Test period has expired" );
-        exit( 1 );
-    }
-}
-
-int expired()
-{
-    struct tm *t;
-    auto time_t tod;
-
-    /* get current date */
-    tod = time( &tod );
-    t = localtime( &tod );
-    if( t->tm_year != 88 ) return( 1 );
-    if( t->tm_mon >= 4 )   return( 1 );     /* if past April, too bad */
-    return( 0 );
-}
-#endif

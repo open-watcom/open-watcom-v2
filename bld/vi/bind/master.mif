@@ -1,29 +1,20 @@
 proj_name = edbind
-name = edbind
 
-.mif : $(mif_path)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-!ifdef tools_9_0
-linker = wlink9xx
-!endif
-
 .c : ..
 
 extra_c_flags = -s
-extra_c_flags_386 = -fpc
 
-inc_dirs = ..\..\h;$(watcom_dir)\h
+inc_dirs = -I"../../h"
 
-extra_l_flags_dos =
-extra_l_flags_os2 = op stack=12k,heap=8k,newfile
-extra_l_flags_nt = op stack=20k,caseexact
-extra_l_flags = name $(name)
+extra_l_flags_os2 = op stack=12k,heap=8k
+extra_l_flags_nt = op stack=20k
 
 edbind.exe: main.obj
-        $(linker) $(lflags) file main.obj
-#!ifeq host_OS os2
+        $(linker) $(lflags) file $[@ name $^@
+#!ifeq host_os os2
 #       $(binder)\bind edbind.exe $(apilib) $(doscalls)
 #!endif

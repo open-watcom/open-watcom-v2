@@ -1,0 +1,250 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator: CSG Graphics Screen Capture
+%%EndComments
+
+150 dict begin
+
+/imageStr 128 string def                        % define char imageStr[ 128 ]
+/imageChar 1 string def                         % define char imageChar[ 1 ]
+/imageLen 0 def                                 % define int  imageLen
+/imageRepChar 0 def                             % define int  imageRepChar
+
+/NextData {
+  currentfile imageChar readhexstring
+  {
+    /imageLen exch 0 get def
+    imageLen 128 lt
+      { imageStr 0 imageLen 1 add getinterval   % get substring of imageLen + 1
+        currentfile exch readhexstring pop      % read imageLen+1 bytes in imageStr
+      }
+      { /imageLen 256 imageLen sub 1 add def    % imageLen := 256 - imageLen + 1
+        currentfile imageChar readhexstring pop % read repeat char
+        /imageRepChar exch 0 get def            % ...
+        0 1 imageLen 1 sub {                    % fill imageStr with repeat char
+          imageStr exch imageRepChar put        % ...
+        } for                                   % ...
+        imageStr 0 imageLen getinterval         % get substring of imageLen
+      }
+      ifelse
+  } if
+} def
+
+/gPaint % Plot a graphics screen on a 300-dpi PostScript Device.
+{
+  pop                                           % pop off video mode
+  /numYpixels exch def
+  /numXpixels exch def
+  /Ypixels exch def
+  /Xpixels exch def
+  /bitsPerPixel exch def
+  /borderOn exch def
+
+  /dotWidth 72 300 div def  % points per dot = PointsPI / DotsPI
+  % decide on pixel size according to numXpixels & numYpixels
+  numXpixels 720 eq
+  { 2 3 }
+  { numXpixels 640 eq
+    { numYpixels 200 eq
+      { 2 5 }
+      { numYpixels 350 eq
+        { 2 3 }
+        { numYpixels 400 eq { 2 2 } { 2 2 } ifelse }
+        ifelse
+      }
+      ifelse
+    }
+    { numXpixels 360 eq
+      { 4 3 }
+      { numXpixels 320 eq
+        { numYpixels 200 eq
+          { 4 5 }
+          { numYpixels 350 eq { 4 3 } { 4 2 } ifelse }
+          ifelse
+        }
+        { 2 2 }
+        ifelse
+      }
+      ifelse
+    }
+    ifelse
+  }
+  ifelse
+  /dotsPerYpixel exch def
+  /dotsPerXpixel exch def
+
+  % currentpoint is upper left of screen image.
+  matrix currentmatrix    % Save the CTM
+
+  % Set the CTM to translate to the lower left corner of the screen
+  currentpoint
+  transform  % Transform currentpoint to device coords
+% initmatrix % Restore the default (initial) CTM
+  itransform % get the current point under the new CTM
+
+  % If enabled, draw the border
+  borderOn 0 ne
+  { /borderSize 9 def
+    currentlinewidth 2 div borderSize neg rmoveto
+    Xpixels dotsPerXpixel dotWidth mul mul
+    Ypixels dotsPerYpixel dotWidth mul mul
+    currentlinewidth sub
+    exch currentlinewidth sub exch
+    borderOn 1 eq
+    { gsave
+      borderSize 2 mul add exch borderSize 2 mul add exch
+      dup neg 0 exch rlineto
+      exch 0 rlineto
+      0 exch rlineto
+      closepath stroke
+      grestore
+    }
+    { gsave
+      /doASide { borderSize arcto pop pop pop pop } bind def
+      borderSize add exch borderSize add exch
+      0 borderSize neg rmoveto
+      currentpoint 2 index sub 1 index 100 add 1 index doASide
+      currentpoint exch 3 index add exch 1 index 1 index 100 add doASide
+      currentpoint 2 index add 1 index 100 sub 1 index doASide
+      currentpoint exch 3 index sub exch 1 index 1 index 100 sub doASide
+      closepath stroke
+      grestore
+      pop pop
+    }
+    ifelse
+    borderSize sub
+    exch borderSize add exch
+  }
+  if
+  9 sub
+
+  Ypixels dotsPerYpixel dotWidth mul mul sub
+  translate
+
+  Xpixels dotsPerXpixel dotWidth mul mul
+  Ypixels dotsPerYpixel dotWidth mul mul
+  scale
+
+  Xpixels
+  Ypixels
+  bitsPerPixel
+  [Xpixels 0 0 Ypixels neg 0 Ypixels]
+  { NextData }
+  image
+  setmatrix
+} def
+
+{ currentpoint }                            % check if currentpoint set
+stopped                                     % if error is signalled..
+{ 30 750 moveto }                           % ..then set to top left of page
+{ pop pop } ifelse                          % ..else pop off coordinates
+
+2 4 640 480 640 480 018 gPaint
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ffeaff00f0
+f00081ff81ffd9ff00f0fc00000ff0fffb0081ff81ffe3ff00f0fe00000fe4fffd0081ff81ff
+eaff00f0ff00000fdcfffe0081ff81fff0ff00f0ff00000fd6fffe0081ff81fff5ffff00000f
+d0ffff00000f81ff81fffbff00f0ff00cbff00f0ff0081ff81ffffff02f0000fc6ffff0081ff
+83ff02f0000fc2ffff0081ff86ff01000fbeff01000f81ff8affff00bbff02f0000f81ff8eff
+01f000b7ff01f00081ff90ff01000fb4ff01000f81ff94ff01f000b1ff01f00081ff96ff0100
+0faeff01000f81ff9aff01f000abff01f00081ff9cff01000fa8ff01000f81ff9fff0000a5ff
+01f00f81ffa2ff01f000a3ff01f00081ffa4ff01f00fa0ff000081ffa6ff01f00f9eff0000
+81ffa8ff01f00f9cff000081ffaaff01000f9aff01000f81ffadff000097ff01f00f81ffafff
+000095ff01f00f81ffb1ff000093ff01f00f81ffb3ff000091ff01f00f81ffb5ff00008fff
+01f00f81ffb7ff00008dff01f00f81ffb9ff00f08bff00f081ffbaff01f00f8aff000081ff
+bcff01f00f88ff000081ffbeff01f00f86ff000081ffbfff000f84ff000f81ffc1ff000083ff
+01f00f81ffc3ff00f081ff00f081ffc4ff01f00f81ff01ff0081ffc6ff01f00f81fffeff0000
+81ffc7ff000f81fffcff000f81ffc9ff00f081fffbff00f081ffcaff01f00f81fffaff0000
+81ffcbff000f81fff8ff000f81ffcdff000081fff7ff01f00f81ffcfff00f081fff5ff00f0
+81ffcfff000f81fff5ff000f81ffd0ff000081fff5ff000081ffd0ff00f081fff5ff00f081ff
+cfff000f81fff5ff000f81ffd0ff00f081fff5ff000081ffd0ff01f00f81fff6ff00f081ff
+cfff000f81fff5ff000f81ffd0ff00f081fff5ff000081ffcfff000f81fff6ff00f081ffcfff
+00f081fff5ff000f81ffcfff000f81fff6ff000081ffcfff00f081fff6ff00f081ffcfff01f0
+0f81fff6ff000f81ffcfff000f81fff6ff000081ffcfff00f081fff6ff00f081ffceff000f
+81fff6ff000f81ffcfff00f081fff6ff000081ffceff000f81fff7ff00f081ffceff00f081ff
+f6ff000f81ffceff000f81fff7ff000081ffcdff000f81fff8ff00f081ffcdff00f081fff7ff
+000f81ffcdff000f81fff8ff000081ffcdff00f081fff8ff00f081ffccff000f81fff8ff000f
+81ffcdff00f081fff8ff000081ffccff000f81fff9ff00f081ffccff00f081fff8ff000f81ff
+ccff00f081fff9ff000081ffcbff000f81fffaff00f081ffcbff00f081fff9ff000f81ffcbff
+000f81fffaff000081ffcaff000f81fffbff00f081ffcaff00f081fffaff000f81ffcaff000f
+81fffbff000081ffcaff00f081fffbff00f081ffc9ff00f081fffbff000f81ffc9ff000f81ff
+fcff000081ffc9ff00f081fffcff00f081ffc8ff00f081fffcff000f81ffc8ff000f81fffdff
+000081ffc8ff00f081fffdff00f081ffc7ff00f081fffdff000f81ffc7ff000f81fffeff0000
+81ffc7ff00f081fffeff00f081ffc6ff00f081fffeff000f81ffc6ff000f81ffffff000081ff
+c5ff000f81ff01fff081ffc5ff00f081ffffff000f81ffc5ff00f081ff01ff0081ffc4ff000f
+81ff00f081ffc3ff000f81ff000f81ffc4ff00f081ff000081ffc3ff00f082ff00f081ffc2ff
+000f82ff000f81ffc2ff000f83ff000081ffc2ff00f083ff00f081ffc1ff00f083ff000f81ff
+c1ff000f84ff000081ffc0ff000f85ff00f081ffc0ff00f084ff000f81ffc0ff00f085ff0000
+81ffbfff000f86ff00f081ffbeff000f86ff000f81ffbeff000f87ff000081ffbeff00f087ff
+00f081ffbdff00f087ff000f81ffbdff00f088ff000081ffbcff000f89ff00f081ffbbff000f
+89ff000f81ffbbff000f8aff00f081ffbbff00f08aff01f00f81ffbbff00f08aff000f81ff
+baff00f08bff00f081ffb9ff000f8cff01f00f81ffb9ff000f8cff000f81ffb8ff000f8dff
+00f081ffb7ff000f8eff01f00f81ffb8ff00f08dff000f81ffb7ff00f08eff00f081ffb6ff
+00f08fff01f00f81ffb6ff00f08fff000f81ffb5ff000f90ff00f081ffb4ff000f91ff01f0
+0f81ffb4ff000f91ff000f81ffb3ff000f92ff00f081ffb2ff000f93ff01f00f81ffb3ff00f0
+92ff000f81ffb2ff00f093ff00f081ffb1ff00f094ff01f00f81ffb1ff00f094ff000f81ff
+b0ff00f095ff00f081ffafff00f096ff01f00f81ffafff00f096ff000f81ffaeff00f097ff
+00f081ffadff000f98ff01f00f81ffadff000f98ff000f81ffacff000f99ff00f081ffabff
+000f9aff01f00f81ffabff000f9aff000f81ffaaff000f9bff00f081ffa9ff000f9cff01f0
+0f81ffa9ff000f9cff000f81ffa8ff000f9dff00f081ffa7ff000f9eff01f00f81ffa7ff000f
+9eff000f81ffa6ff000f9fff00f081ffa5ff000fa0ff01f00f81ffa5ff000fa0ff000f81ff
+a4ff000fa1ff00f081ffa3ff000fa2ff01f00f81ffa3ff000fa2ff000f81ffa2ff000fa3ff
+00f081ffa1ff000fa4ff01f00f81ffa1ff000fa4ff000f81ffa0ff000fa5ff00f081ff9fff
+000fa6ff01f00f81ff9fff000fa6ff000f81ff9eff00f0a7ff00f081ff9dff00f0a8ff01f0
+0f81ff9dff00f0a8ff000f81ff9cff00f0a9ff00f081ff9bff00f0aaff01f00f81ff9bff00f0
+aaff000f81ff9aff00f0abff00f081ff99ff00f0acff01f00f81ff98ff000fadff000f81ff
+97ff000faeff00f081ff96ff000fafff01f00f81ff96ff000fafff000f81ff95ff000fb0ff
+00f081ff94ff00f0b1ff01f00f81ff94ff00f0b1ff000f81ff93ff00f0b2ff00f081ff92ff
+00f0b3ff01f00f81ff91ff000fb4ff000f81ff90ff000fb5ff00f081ff8fff000fb6ff01f0
+0f81ff8fff000fb6ff000f81ff8eff00f0b7ff00f081ff8dff00f0b8ff01f00f81ff8dff00f0
+b8ff000f81ff8bff000fbaff00f081ff8aff000fbaff000f81ff8aff000fbbff000081ff89ff
+00f0bcff00f081ff88ff00f0bcff000f81ff88ff00f0bdff000081ff86ff000fbfff00f081ff
+85ff000fbfff000f81ff85ff000fc0ff000081ff84ff00f0c1ff00f081ff83ff00f0c1ff000f
+81ff82ff000fc3ff000081ff81ff000fc4ff00f081ff81ff01fff0c4ff000f81ff81ff01ff
+f0c5ff000081ff81fffeff000fc7ff00f081ff81fffdff000fc7ff000f81ff81fffdff00f0
+c8ff000081ff81fffcff00f0c9ff00f081ff81fffaff000fcaff000f81ff81fffaff000fcbff
+000081ff81fff9ff00f0ccff00f081ff81fff8ff00f0ccff000f81ff81fff7ff000fceff0000
+81ff81fff6ff000fcfff00f081ff81fff5ff00f0cfff000f81ff81fff5ff00f0d0ff000081ff
+81fff3ff000fd2ff00f081ff81fff2ff00f0d2ff000f81ff81fff2ff00f0d3ff000081ff81ff
+f0ff000fd5ff00f081ff81ffefff00f0d5ff000f81ff81ffefff00f0d6ff000081ff81ffedff
+000fd8ff00f081ff81ffecff00f0d8ff000f81ff81ffecff00f0d9ff000081ff81ffeaff000f
+dbff00f081ff81ffe9ff00f0dbff000f81ff81ffe8ff000fddff000081ff81ffe7ff000fdeff
+00f081ff81ffe6ff00f0deff000f81ff81ffe5ff000fe0ff000081ff81ffe4ff00f0e1ff00f0
+81ff81ffe3ff00f0e1ff000f81ff81ffe2ff000fe3ff000081ff81ffe1ff00f0e4ff00f081ff
+81ffdfff000fe5ff000f81ff81ffdfff00f0e6ff000081ff81ffddff000fe8ff00f081ff81ff
+dcff00f0e8ff000f81ff81ffdbff000feaff000081ff81ffdaff000febff00f081ff81ffd9ff
+00f0ebff000f81ff81ffd8ff000fedff000081ff81ffd7ff00f0eeff00f081ff81ffd5ff000f
+efff000f81ff81ffd5ff00f0f0ff000081ff81ffd3ff000ff2ff00f081ff81ffd2ff01f00f
+f3ff000f81ff81ffd1ff00f0f4ff000081ff81ffcfff000ff6ff00f081ff81ffceff00f0f6ff
+000f81ff81ffcdff000ff8ff000081ff81ffccff00f0f9ff00f081ff81ffcaff000ffaff000f
+81ff81ffcaff01f00ffcff000081ff81ffc8ff00f0fdff00f081ff81ffc6ff000ffeff000f
+81ff81ffc6ff00f0ffff000081ff81ffc4ff0100f081ff81ffc2ff000f81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff81ff
+81ff81ff81ff81ff81ff81ff81ffdbff
+showpage
+end

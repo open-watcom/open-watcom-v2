@@ -1,380 +1,353 @@
-C Library Work:
-===============
+C Library Implementation Notes:
+===============================
 
-Mandate: organize, cleanup, validate
-====================================
+C99 Conformance:
+================
+For full conformance with the ISO/IEC C99 language standard, clib needs
+to be expanded with a number of additional functions and several entirely new
+header files. Following are the header files specified by C99, with brief
+notes on the estimated effort required to bring them to C99 conformance:
+
+    assert.h    - C99 conforming
+    complex.h   - Completely new; requires compiler changes (new types)
+    ctype.h     - C99 conforming
+    errno.h     - C99 conforming
+    fenv.h      - Completely new; requires compiler changes (new #pragma)
+    float.h     - Needs review, no significant changes expected
+    inttypes.h  - C99 conforming
+    iso646.h    - C99 conforming
+    limits.h    - Needs review, no significant changes expected
+    locale.h    - Needs review, no significant changes expected
+    math.h      - Requires compiler changes (new #pragma), many new functions
+    setjmp.h    - Needs review, no changes expected
+    signal.h    - Needs review, no changes expected
+    stdarg.h    - Needs review, C99 va_copy added, likely conforming.
+    stdbool.h   - C99 conforming
+    stddef.h    - Needs review, no changes expected
+    stdint.h    - C99 conforming
+    stdio.h     - Needs thorough review, but significant changes not expected
+    stdlib.h    - Most new C99 functions already added, more may be needed
+    string.h    - Needs review, no significant changes expected
+    tgmath.h    - Completely new; defines no functions but needs complex.h
+    time.h      - Needs review, no changes expected
+    wchar.h     - Needs review, no significant changes expected
+    wctype.h    - Needs review, no significant changes expected
+
+Each function newly implemented also requires the addition of a corresponding
+regression test. The tests need not necessarily be exhaustive, their main
+purpose is to verify that a function works across all supported platforms and
+in the long term, verify that a function still works correctly after changes
+to clib/compiler.
+
+
+Old Implementation Notes:
+=========================
+Following are old Sybase/Watcom implementation notes, updated where appropriate
+to reflect current clib status.
 
 Distilled Wisdom:
 =================
- -  multiple extensions (c,2c,nc,...) are troublesome for make and clarity
- -  multiple source directories (c,c386,a,a386) are confusing
  -  try to put all source for a given function in one place
- -  excessive conditional compilation obscures things
- -  current directory structure is inconsistent
- -  current directory structure is too coarsely grained
- -  current make system is overly complicated
- -  want to be able to invoke one make command to build a top level library
+ -  excessive conditional compilation obscures things (witness heap component)
+ -  want to be able to invoke one command to build a top level library
 
 Major To Do Items:
 ==================
- -  restructure directories
- -  simplify and clean up makefile system
- -  reduce storage used by library hieararchy, (time stamp files)
- -  move to using wasm in place of masm/optasm/386asm etc (phase out asm code)
  -  map out the sequence of events that occur in the runtime support system
     during program execution startup and shut down
 
-Specific Proposed Changes:
-==========================
-1.  Move the math library out of the clib hierarchy.
-    Make a new project for the math library.
+Previously Implemented Changes:
+===============================
+1.  Moved the math library out of the clib hierarchy.
     The math library has different requirements than the clib and should
-    be separate.  This will help to simplify the structure of the clib.
+    be separate.  This helps simplify the structure of the clib.
 
-2.  The new clib hierarchy will consist of two tiers.  The upper tier
-    will contain no source code.  It will consist of a target hierarchy
-    containing merged libraries and second tier directories containing
-    component libraries.
-    The target hierarchy will be rooted in clib\library and will contain
+2.  The clib hierarchy now consists of two tiers. The upper tier contains
+    no source code. It consists of a target hierarchy containing merged libraries
+    and second tier directories containing component libraries.
+    The target hierarchy is rooted in clib/library and contains
     a target directory structure.
 
-3.  The new clib hierarchy will live within the following rules:
+3.  The clib hierarchy observes the following rules:
     a. all C source files go into a 'c' directory, .c extension
     b. all ASM source files go into a 'a' directory, .asm extension
     c. all header files go into a 'h' directory, .h extension
     d. all object files go into a target directory, .obj extension
 
-4.  In place of the former extension/directory differentiation, file names
-    will have suffixes as follows:
-	generic		- name
-	Intel 16 bit	- name086
-	Intel 32 bit	- name386
-	os2		- nameos2
-	os2 1.x		- nameo16
-	os2 2.x		- nameo32
-	NT		- namewnt
-	Win386		- namew32
-	QNX		- nameqnx
-	QNX 16		- nameq16
-	QNX 32		- nameq32
-	NetWare		- namenov
-    This may lead to some slightly cramped names.
-    The goal is to support having all source for a given function in one
-    directory.  The intention is that the finely grained directory structure
-    should allow easy selection of the right directory, and then wgrep can be
+4.  Source file names have suffixes as follows:
+        generic         - name
+        Intel 16 bit    - name086
+        Intel 32 bit    - name386
+        OS/2            - nameos2
+        OS/2 1.x        - nameo16
+        OS/2 2.x        - nameo32
+        Win32 (NT)      - namewnt
+        Win386          - namew32
+        QNX             - nameqnx
+        QNX 16          - nameq16
+        QNX 32          - nameq32
+        NetWare         - namenov
+        Linux           - namelnx
+        RDOS app        - namerdu
+        RDOS device     - namerdk
+    This leads to some slightly cramped names, but the intention is to have all
+    source for a given function in one directory. A grep utility can be easily
     used to locate all the files that contain the function.
 
-5.  Existing groupings of files into library components (ANSI,DOS,_DOS,HEAP)
-    will be subdivided as follows:
-	char		- character manipulation functions
-	memory		- memory manipulation functions
-	string		- string manipulation functions
-	mbyte		- multibyte manipulation functions
-	convert		- conversion manipulation functions
-	heap		- heap manipulation functions
-	search		- searching and sorting functions
-	time		- time functions
-	streamio	- stream i/o functions
-	process		- process primitive functions
-	environ		- process environment functions
-	direct		- directory management functions
-	handleio	- handle level i/o functions
-	file		- file manipulation functions
-	conio		- console i/o functions
-	bios		- BIOS functions
-	_dos		- MS-DOS functions
-	intel		- 80x86 functions
-	misc		- miscellaneous functions
-	startup		- run time startup functions
-	cgsupp		- compiler support routines
-	kanji		- kanji support routines
-	mthread		- multi-threading support functions
-	defwin		- default windowing system
-	qnx		- qnx specific functions
-	...		- there are, no doubt, more
+5.  The source tree is structured as follows:
+        alias           - autogenerated function aliases (ultoa -> _ultoa etc.)
+        alpha           - Alpha AXP specific functions
+        bios            - BIOS wrapper functions
+        cgsupp          - compiler support routines
+        char            - character manipulation functions
+        conio           - console I/O functions
+        convert         - conversion manipulation functions
+        defwin          - default windowing system
+        direct          - directory management functions
+        environ         - process environment functions
+        file            - file manipulation functions
+        fpu             - FPU management functions
+        heap            - heap manipulation functions
+        handleio        - handle level I/O functions
+        intel           - Intel 80x86 specific functions
+        kanji           - kanji support routines
+        libwin32        - Win32 helper routines
+        math            - integer math functions, FPE handler
+        mbyte           - multibyte manipulation functions
+        memory          - memory manipulation functions
+        misc            - miscellaneous functions
+        mthread         - multi-threading support functions
+        posix           - POSIX functions (for Linux)
+        ppc             - PowerPC specific functions
+        process         - process primitive functions
+        search          - searching and sorting functions
+        startup         - run time startup functions
+        streamio        - stream I/O functions
+        string          - string manipulation functions
+        time            - time functions
+        win386          - Win386 support routines
+        _dos            - MS-DOS functions
+        rdos            - RDOS application related functions
+        rdosdev         - RDOS device driver related functions
     This is based on the Overview section of the C Library Reference.
     Files that are specific to one platform, and have no analog on any
     other platform will be located the platform specific area.
-    (i.e. qnx,...)
+    (i.e. intel,alpha,...)
 
 6.  The following first tier target libraries will be built:
-	Dos16		- tiny,ms,mm,mc,ml,mh,overlay mm,overlay ml
-	Dos32		- register ms,stack ms
-	OS/2 1.x	- ms,mm,mc,ml,mh,multi-thread ml,DLL ml
-	OS/2 2.x	- multi-thread DLL register ms,
-			  multi-thread DLL stack ms
-	QNX 16		- ms,mm,mc,ml,mh,share
-	QNX 32		- register ms
-	Win 3.1		- ms,mm,mc,ml
-	Win386		- multi-thread DLL register mf,
-			  multi-thread DLL stack mf
-	Win NT		- multi-thread DLL register ms,
-			  multi-thread DLL stack ms
-	NetWare		- mulit-thread stack ms
-	Penpoint	- stack mf, multi-thread stack mf,
-			  debugging stack mf
-	Penpoint hobbit - register (tentative)
-	Kanji 16	- ms,mm,mc,ml,mh
-	Kanji 32	- register ms, stack ms
-	nec 32		- register ms, stack ms
-    Some of these target systems are really /mf but we are building /ms.
-    This is to avoid problems with calling into the /ms math library.
+        DOS 16          - tiny,ms,mm,mc,ml,mh,overlay mm,overlay ml
+        DOS 32          - register ms,stack ms
+        OS/2 1.x        - ms,mm,mc,ml,mh,multi-thread ml,DLL ml
+        OS/2 2.x        - multi-thread DLL register ms,
+                          multi-thread DLL stack ms
+        QNX 16          - ms,mm,mc,ml,mh,share
+        QNX 32          - register ms
+        Win 3.1         - ms,mm,mc,ml
+        Win386          - multi-thread DLL register mf,
+                          multi-thread DLL stack mf
+        Win NT          - multi-thread DLL register ms,
+                          multi-thread DLL stack ms
+        NetWare         - mulit-thread stack ms
+        Kanji 16        - ms,mm,mc,ml,mh
+        Kanji 32        - register ms, stack ms
+        Linux           - register ms, stack ms
+        RDOS            - register mf, stack mf
+        RDOS dev        - register mc, 32-bit
+    Some of these target systems are really -mf but we are building -ms.
+    This is to avoid problems with calling into the -ms math library.
     It means that all calls out to user code (including startup) must
     be bracketed with a setup of the segment registers for FLAT and an
     assumption that the user code trashes the segment registers on return.
-    This is required for the /r switch that is used to build the library.
-    The remaining /mf libraries (Win386??,Penpoint) either don't have
+    This is required for the -r switch that is used to build the library.
+    The remaining -mf libraries (Win386??) either don't have
     the math issue or have other issues.
 
 7.  The following naming convention will be used for the first and
     second tier target hierarchies:
 
        <system>.<processor>\<model>_
-			    [<convention>]		- optional
-			    [<overlays>]		- optional
-			    [<threading>]		- optional
-			    [<dll>]			- optional
-			    [<share>]			- optional
-			    [<debug>]			- optional
+                            [<convention>]              - optional
+                            [<overlays>]                - optional
+                            [<threading>]               - optional
+                            [<dll>]                     - optional
+                            [<share>]                   - optional
+                            [<debug>]                   - optional
 
    where:
     <system> is one of:
-	msdos|qnx|os2|windows|winnt|netware|penpoint|kanji|necdos
+        msdos|qnx|os2|windows|winnt|netware|kanji|linux
     <processor> is one of
-	086|286|386|hob|alf|mip|rs6|...
+        086|286|386|axp|ppc|mps|...
     <model> is one of:
-	tiny		- mt
-	small		- ms
-	medium		- mm
-	compact		- mc
-	large		- ml
-	huge		- mh
-	flat		- mf
+        tiny            - mt
+        small           - ms
+        medium          - mm
+        compact         - mc
+        large           - ml
+        huge            - mh
+        flat            - mf
     <convention> is only used on 32 bit targets and is one of:
-	register	- r
-	stack		- s
+        register        - r
+        stack           - s
     <overlays> is only used to designate 16 bit overlaid libs and
-	is indicated by - ov
+        is indicated by - ov
     <threading> is only used to designate 16 bit multi-thread libs and
-	is indicated by - mt
+        is indicated by - mt
     <dll> is only used to designate 16 bit DLL libs and is indicated
-	by		- dll
+        by              - dll
     <share> is only used to designate shareable libs and is indicated
-	by		- sh
+        by              - sh
     <debug> is only used to designate debugging libs and is indicated
-	by		- db
+        by              - d
 
     This scheme, coupled with the intended targets, produces the following
     first tier target hierarchy:
-	msdos.086\
-	    mt ms mm mc ml mh mm_ov ml_ov
-	msdos.286\
-	    ms mm mc ml mh ml_mt ml_dll
-	msdos.386\
-	    ms_r ms_s
-	os2.286\
-	    ms mm mc ml mh ml_mt ml_dll
-	os2.386\
-	    ms_r ms_s
-	qnx.286\
-	    ms mm mc ml mh ml_sh
-	qnx.386\
-	    ms_r
-	windows.086\
-	    ms mm mc ml
-	windows.386\
-	    mf_r mf_s
-	winnt.386\
-	    ms_r ms_s
-	netware.386\
-	    ms_s
-	penpoint.386\
-	    mf_s mf_smt mf_sdb
-	penpoint.hob\
-	    ???
-	kanji.086\
-	    ms mm mc ml mh
-	kanji.386\
-	    ms_r ms_s
-	necdos.386\
-	    ms_r ms_s
+        msdos.086\
+            mt ms mm mc ml mh mm_ov ml_ov
+        msdos.286\
+            ms mm mc ml mh ml_mt ml_dll
+        msdos.386\
+            ms_r ms_s
+        os2.286\
+            ms mm mc ml mh ml_mt ml_dll
+        os2.386\
+            ms_r ms_s ms_rd
+        qnx.286\
+            ms mm mc ml mh ml_sh
+        qnx.386\
+            ms_r
+        windows.086\
+            ms mm mc ml
+        windows.386\
+            mf_r mf_s
+        winnt.386\
+            ms_r ms_s ms_rd
+        netware.386\
+            ms_s
+        kanji.086\
+            ms mm mc ml mh
+        kanji.386\
+            ms_r ms_s
+        linux.386\
+            ms_r ms_s
+        rdos.386\
+            mf_r mf_s
+        rdosdev.386\
+            ms_r
 
-8.  The making of the libraries is still under study.  It has been
-    suggested that VIPER (vmake.exe) could be used to maintain the structure
-    of the clib and to build its components.  Alternatively, a modification
-    of the existing makefile system could be used.
-    The following two points describe how the clib could be maintained
-    under each system.
+8.  The makefile systems is organized around a tree structure.
 
-9.  The makefile systems will be organized around a tree structure.
+    a.  There are three basic make operations:
+          i) transform source into object (assemble,compile)
+         ii) combine object into component library
+        iii) combine component libraries into complete libraries
+        The first 2 operations occur at the second tier of the directory
+        structure, the last operation occurs at the top tier of the directory
+        structure.
 
-    a.	There are three basic make operations:
-	  i) transform source into object (assemble,compile)
-	     (no pre-process, as wasm.exe obviates this step)
-	 ii) combine object into component library
-	iii) combine component libraries into complete libraries
-	The first 2 operations occur at the second tier of the directory
-	structure, the last operation occurs at the top tier of the directory
-	structure.
-
-    b.	Each component library will have a two .mif files in the second
-	tier.
-	One will be optional and list any important dependancies.
-	The other will list all the objects required for each of the
-	required targets. It will be implemented with make macros
-	(potentially nested) to ensure the following:
+    b.  Each component library will have a two .mif files in the second
+        tier.
+        One will be optional and list any important dependancies.
+        The other will list all the objects required for each of the
+        required targets. It will be implemented with make macros
+        (potentially nested) to ensure the following:
           i) no object file will be listed more than once
-	 ii) the addition of an object file will require exactly one change
+         ii) the addition of an object file will require exactly one change
 
-    c.	Each component target directory will have a makefile that sets several
-	options and then includes the .mif file which lists the source/object
-	files and then includes one or more .mif files out of the root to
-	drive the build.  No model.inc file will be required, thanks to
-	the capabilities of wasm.exe.
-	Finally, if there are dependancies, the dependancy file will be
-	included.
+    c.  Each component target directory will have a makefile that sets several
+        options and then includes the .mif file which lists the source/object
+        files and then includes one or more .mif files out of the root to
+        drive the build.  No model.inc file will be required, thanks to
+        the capabilities of wasm.exe.
+        Finally, if there are dependancies, the dependancy file will be
+        included.
 
-    d.	Each complete target directory will have a makefile that lists the
-	required component libraries and then includes a .mif file out of the
-	root to drive the merging of the component libraries.
+    d.  Each complete target directory will have a makefile that lists the
+        required component libraries and then includes a .mif file out of the
+        root to drive the merging of the component libraries.
 
-    e.	All other .mif files will reside in the root of the library.
-	These .mif files will be organized around the concepts of building
-	libraries and merging libraries.
-	The building .mif files will attempt to factor out as much
-	redundancy as possible, without obscuring the intent of the build.
-	The intention is to allow modifications to the library build to be
-	effected with a change to one .mif file.
-	The merging .mif files will be driven by the list of component
-	libraries required for the complete library.
+    e.  All other .mif files will reside in the root of the library.
+        These .mif files will be organized around the concepts of building
+        libraries and merging libraries.
+        The building .mif files will attempt to factor out as much
+        redundancy as possible, without obscuring the intent of the build.
+        The intention is to allow modifications to the library build to be
+        effected with a change to one .mif file.
+        The merging .mif files will be driven by the list of component
+        libraries required for the complete library.
 
-    f.	The top level .mif files will also support the specification of
-	extra_cflags, extra_aflags, extra_cppflags, extra_lflags, in the
-	target makefiles to allow for special cases.
+    f.  The top level .mif files will also support the specification of
+        extra_cflags, extra_aflags, extra_cppflags, extra_lflags, in the
+        target makefiles to allow for special cases.
 
     g.  Support for controlled makes will be driven by keywords in the
-	makefiles. Each makefile will contain several comments at the
-	begining that can be used to list the targets that will require
-	this library. The categories are as follows:
-	    all						- all targets
-	    tiny,small,compact,medium,large,huge,flat,
-	    nomodel					- memory model
-	    16bit,32bit					- code target
-	    stack,register				- calling convention
-	    inline,calls				- floating point
-	    heap,_dos,nec,string,streamio,handleio,
-	    filesys,startup,process,cgsupp, kanji,mbyte,
-	    mthread,defwin,qnx				- component of library
-	    overlay					- overlay libraries
-	    threading					- multi-thread library
-	    dll						- dll support
-	    share				        - sharable library
-	    debug					- debugging library
-	    dos,os2,qnx,windows,win386,nt,netware,
-	    penpoint,kanji,nec				- target system
+        makefiles. Each makefile will contain several comments at the
+        begining that can be used to list the targets that will require
+        this library. The categories are as follows:
+            all                                         - all targets
+            tiny,small,compact,medium,large,huge,flat,
+            nomodel                                     - memory model
+            16bit,32bit                                 - code target
+            stack,register                              - calling convention
+            inline,calls                                - floating point
+            heap,_dos,string,streamio,handleio,
+            filesys,startup,process,cgsupp, kanji,mbyte,
+            mthread,defwin,qnx                          - component of library
+            overlay                                     - overlay libraries
+            threading                                   - multi-thread library
+            dll                                         - dll support
+            share                                       - sharable library
+            debug                                       - debugging library
+            dos,os2,qnx,windows,win386,nt,netware,
+            kanji,linux                                 - target system
 
-	As an example, the o1lmt target directory will contain the following
-	    #pmake:all
-	    #pmake:large
-	    #pmake:threading
-	    #pmake:16bit
-	    #pmake:os2
-	A pmake.exe (modified from sweep.exe for depth-first traversal and
-	text pattern matching) will visit each target directory and run
-	wmake.exe if the makefile contains all the specified targets.
-    
-	i.e.
-	    pmake.exe large threading os2 16bit
-		Would sweep the clib and execute the makefile for os2 1.x
-		large multi-thread libraries.
-	    pmake.exe all 
-		Would sweep the clib and execute the makefile for all targets
-		since all makefiles will contain #target=all
-	    pmake.exe small dos 16bit
-		Would sweep the clib and execute the makefile for all small
-		dos 16 bit libraries.  This would effectively build the
-		``\lang\lib286\dos\clibs.lib'' file.
-    
+        As an example, the o1lmt target directory will contain the following
+            #pmake:all
+            #pmake:large
+            #pmake:threading
+            #pmake:16bit
+            #pmake:os2
+        A pmake.exe will visit each target directory and run wmake.exe if
+        the makefile contains all the specified targets.
 
-10. Viper (vmake.exe) is driven by configuration (viper.cfg), project (.prj)
-    target (.tgt), and zombie target (.tgt) files.
+        i.e.
+            pmake.exe large threading os2 16bit
+                Would sweep the clib and execute the makefile for OS/2 1.x
+                large multi-thread libraries.
+            pmake.exe all
+                Would sweep the clib and execute the makefile for all targets
+                since all makefiles will implicitly contain #target=all
+            pmake.exe small dos 16bit
+                Would sweep the clib and execute the makefile for all small
+                dos 16 bit libraries.  This would effectively build the
+                ``\lang\lib286\dos\clibs.lib'' file.
 
-    a.  A target (.tgt) file will be created for each .lib file to be
-        built.
-	  - viper allows nesting of zombie target (.tgt) files
-	  - base zombie files will be defined that simply list object files
-	  - nested zombie files will be build up that contain other zombie
-	      files to generate a complete list of objects needed for a
-	      specific component library
-	  - a target (.tgt) file will be defined for each .lib file to be
-	      created, it will contain a zombie that lists all the object
-	      files required
 
-    b.	A project (.vpr) file for each clib subcomponent (heap,cgsupp...)
-	will be defined.
-	  - when viper is invoked, it takes a project (.vpr) file
-	  - the project (.vpr) file will point to the target (.tgt) files
-	      which define each .lib that is created as part of this
-	      subcomponent
-	  - thus the clib will consist of approx 20 projects, each containing
-	      approx 50 target libraries
+9. The following targets should be validated:
+        DOS16
+        DOS16 Pharlap286
+        DOS16 16M
+        DOS32 Pharlap386
+        DOS32 DOS/4GW
+        OS/2 1.x
+        OS/2 2.x
+        QNX 16
+        QNX 32
+        Windows 3.1
+        Windows 3.1 default windowing
+        Win386
+        Win386 default windowing
+        Windows NT
+        NetWare 3.11
+        NetWare 4.0
 
-    c.	The configuration file (viper.cfg) defines all rules used to convert
-	input files to output files.
-	  - when a .tgt file is created it specifies what form of target
-	      will be created
-	  - this form can be used to select options out of the conversion
-	      rules
-	  - by defining a large number of target forms, one for each target
-	      library (approx 50), the selection of switches can be driven
-	      automatically
-
-    d.	Bviper.exe is a batch mode viper that supports generation of a
-	makefile to do the work defined by a set of targets. Build machine
-	construction of the library would consist of invocations of
-	bviper.exe followed by wmake.exe in each project (.vpr) directory.
-
-11. The following targets will be validated:
-	Dos16
-	Dos16 Pharlap286
-	Dos16 16M
-	Dos32 Pharlap386
-	Dos32 Dos4g
-	Dos32 Ergo
-	Dos32 CodeBuilder
-	Dos32 FlashTek
-	OS/2 1.x
-	OS/2 2.x
-	OS/2 2.x default windowing
-	QNX 16
-	QNX 32
-	Windows 3.1
-	Windows 3.1 default windowing
-	Win386
-	Win386 default windowing
-	Windows NT
-	Windows NT default windowing
-	Penpoint
-	NetWare 3.11
-	NetWare 4.0
-	nec - what needs to be tested here?
-
-    Validation will consist of the set of examples found in the C Lib Reference.
-    Expansion of the validation test suite should also be performed.
-
-12. The validation process will be automated as much as possible.
-    The test environment can be encapsulated into one machine.  The major
-    requirement is 2 physical hard disks to allow 8 partition table entries.
-    The system needs to be able to boot:
-	DOS,NT,QNX,OS/2 2.x,NetWare 3.11,NetWare 4.0
-    The systems needs to have installed:
-	Windows,WIN-OS2,Penpoint environment,various DOS extenders
-
+    Validation consists of the set of examples found in the C Library
+    Reference plus the 'QA' tests which are part of clib.
 
 Items Not Yet Addressed:
 ========================
-1.  Implementation of file time stamp method.
-2.  Mapping of startup/shutdown events.
+-  Mapping of startup/shutdown events.
+
 
 Appendix A:
 ===========
@@ -387,8 +360,6 @@ Notes:
   "defined(__QNX__) && defined(__SHARE__)"
 - make files that are affected by \clib\dos\2h\dll.h conditionally include it
   when "defined(__OS2__) && defined(__DLL__)"
-- assume wasm gets a -bt=<id> switch
-- wasm.exe needs /fpi87 or equivalent to /e in masm
 - define wasm.inc as interim to convert cmd switches to macros
   a. change -3r,-3s to STACK=0, STACK=1
   b. change -ms,-mm,-mc,-ml,-mh to _MODEL=...
@@ -396,228 +367,167 @@ Notes:
   d. change 32 bit -bt=OS2 to _OS220
   e. change 32 bit -bt=NT to _NT
   f. change 32 bit -bt=NETWARE to __NET386__
-  g. change 32 bit -bt=PENPOINT to _PENPOINT
 - modify net386 C source so that
   a. -bt=NETWARE works for __NET386__
 
 Common All:
 ===========
-wlib: 			/q /n /b (/s /t)-> build machine
-C flags: 		/r /fpr /w3 /zq /zc /zl /zld /fpc
-wasm include: 		\clib
-wasm flags:		/q
+wlib:                   -q -n -b (-s -t)-> build machine
+C flags:                -r -fpr -w3 -zq -zc -zl -zld -fpc
+wasm include:           clib
+wasm flags:             -q
 
 ==============================================================================
 MS-DOS Settings:
 ================
-wasm flags:		/ms
-			/mm
-			/mc
-			/ml
-		 (huge) /ml
-			/3r
-			/3s
-			/fpi87 (on some floating point files)
-			/dERGO_DPMI (for cstart.asm)
-		       	/dADS (adsstart.obj[adsstart.obj])
-		       	/dPADI (adsstart.asm[adifstrt.obj])
-		       	/dPADI /dEADI (adsstart.asm[adiestrt.obj])
-C include:		..\h \clib\h \hdr\dos
-C flags:   		/ms     /nt=_TEXT
-		    	/mm
-		    	/mc /zu /nt=_TEXT
-	      (overlay) /mm     /of
-		    	/ml /zu
-	      (overlay) /ml /zu /of
-		    	/mh /zu
-			/ms /5r
-			/ms /5s
-special case C flags: 	/oasl /s (for certain files)
-			/oax (for all other files)
-			/of (for certain 16 bit files)
-
-Current Directories: 	cgsupp\(scsd,scbd,bcsd,bcbd,bchd)
-			ansi\(scsd,scbd,bcsd,bcbd,bchd)
-			dos\(scsd,scbd,bcsd,bcsdf,bcbd,bcbdf,bchd)
-			_dos(scsd,scbd,bcsd,bcbd,bchd)
-			heap\(scsd,scbd,bcsd,bcbd,bchd)
-			(tiny,scsd,scbd,bcsd,bcbd,bchd)
-			cgsupp\(ms386r,ms386s)
-			ansi\(ms386r,ms386s)
-			dos\(ms386r,ms386s)
-			_dos\(ms386r,ms386s)
-			(ms386r,ms386s)
+wasm flags:             -ms
+                        -mm
+                        -mc
+                        -ml
+                 (huge) -ml
+                        -3r
+                        -3s
+                        -fpi87 (on some floating point files)
+C include:              ..\h \clib\h \hdr\dos
+C flags:                -ms     -nt=_TEXT
+                        -mm
+                        -mc -zu -nt=_TEXT
+              (overlay) -mm     -of
+                        -ml -zu
+              (overlay) -ml -zu -of
+                        -mh -zu
+                        -ms -5r
+                        -ms -5s
+special case C flags:   -oasl -s (for certain files)
+                        -oax (for all other files)
+                        -of (for certain 16 bit files)
 
 ==============================================================================
 QNX Settings:
 =============
-wasm flags:		/bt=QNX
-			/ms
-			/mm
-			/mc
-			/ml
-		 	/mh
-			/ms /3r
-C include:		..\h \clib\h \clib\ansi\h \hdr\qnx
-C flags:		/bt=QNX
-			/ms     /nt=_TEXT
-			/mm
-			/mc /zu /nt=_TEXT
-			/ml /zu
-			/mh /zu
-	        (share) /ml /zu /d__SHARE__
-			/ms /5r
-special case C flags: 	/oasl /s (for certain files)
-			/oax (for all other files)
-			/of (for certain 16 bit files)
-
-Current Directories: 	qnx\stub\(scsd,scbd,bcsd,bcbd,bchd)
-                   	qnx\(qscsd,qscbd,qbcsd,qbcbd,qbchd,qshare)
- 			ansi\(qscsd,qscbd,qbcsd,qbcbd,qbchd,qshare)
- 			dos\(qscsd,qscbd,qbcsd,qbcbd,qbchd,qshare)
- 			heap\(qscsd,qscbd,qbcsd,qbcbd,qbchd,qshare)
- 			(qscsd,qscbd,qbcsd,qbcbd,qbchd,qshare)
- 			qnx\(q3r)
- 			ansi\(q3r)
- 			dos\(q3r)
- 			heap\(q3r)
- 			(q3r)
+wasm flags:             -bt=QNX
+                        -ms
+                        -mm
+                        -mc
+                        -ml
+                        -mh
+                        -ms -3r
+C include:              ..\h \clib\h \clib\ansi\h \hdr\qnx
+C flags:                -bt=QNX
+                        -ms     -nt=_TEXT
+                        -mm
+                        -mc -zu -nt=_TEXT
+                        -ml -zu
+                        -mh -zu
+                (share) -ml -zu -d__SHARE__
+                        -ms -5r
+special case C flags:   -oasl -s (for certain files)
+                        -oax (for all other files)
+                        -of (for certain 16 bit files)
 
 ==============================================================================
 OS/2 Settings:
 ==============
-wasm flags:		/bt=OS2
-			/ms
-			/mm
-			/mc
-			/ml
-		 	/mh
-		   (mt) /ml /d__MT__
-		  (dll) /ml /d__MT__
-			/ms /3r /d__MT__? (some 32bit asm files)
-			/ms /3s /d__MT__? (some 32bit asm files)
-16bit C include:	..\h \clib\dos\h \clib\h \hdr\dos \watcom\h
-32bit C include:	..\h \clib\dos\h \clib\h \hdr\dos \watcom\os220_h
-			\watcom\h
-C flags:		/bt=OS2
-			/ms     /nt=_TEXT
-			/mm
-			/mc /zu /nt=_TEXT
-			/ml /zu
-			/mh /zu
-		   (mt) /ml /zu /d__MT__
-		  (dll) /ml /zu /d__MT__ /d__DLL__
-		  	/ms /5r /d__MT__ /d__OS220__
-		  	/ms /5s /d__MT__ /d__OS220__
-special case C flags:	/osl /s (for certain files)
-			/ox (for all other files)
-			/of (for certain 16 bit files)
-
-Current Directories: 	ansi\(os2mt,os2dll)
-			dos\(2scsd,2scbd,2bcsd,2bcbd,2bchd,os2mt,os2dll)
-			heap\(2scsd,2scbd,2bcsd,2bcbd,2bchd,os2mt,os2dll)
-			(2scsd,2scbd,2bcsd,2bcbd,2bchd,os2mt,os2dll)
-			ansi\(23r,23s)
-			dos\(23r,23s)
-			heap\(23r,23s)
-			(23r,23s)
+wasm flags:             -bt=OS2
+                        -ms
+                        -mm
+                        -mc
+                        -ml
+                        -mh
+                   (mt) -ml -d__MT__
+                  (dll) -ml -d__MT__
+                        -ms -3r -d__MT__? (some 32bit asm files)
+                        -ms -3s -d__MT__? (some 32bit asm files)
+16bit C include:        ..\h \clib\dos\h \clib\h \hdr\dos \watcom\h
+32bit C include:        ..\h \clib\dos\h \clib\h \hdr\dos \watcom\os220_h
+                        \watcom\h
+C flags:                -bt=OS2
+                        -ms     -nt=_TEXT
+                        -mm
+                        -mc -zu -nt=_TEXT
+                        -ml -zu
+                        -mh -zu
+                   (mt) -ml -zu -d__MT__
+                  (dll) -ml -zu -d__MT__ -d__DLL__
+                        -ms -5r -d__MT__ -d__OS220__
+                        -ms -5s -d__MT__ -d__OS220__
+special case C flags:   -osl -s (for certain files)
+                        -ox (for all other files)
+                        -of (for certain 16 bit files)
 
 ==============================================================================
 Windows Settings:
 =================
-wasm flags: 		/bt=WINDOWS
-			/ms
-			/mm
-			/mc
-			/ml
-			/mf? /3r
-			/mf? /3s
-C include: 		..\h \clib\h \hdr\dos
-C flags:		/bt=WINDOWS
-			/ms     /nt=_TEXT
-		  	/mm
-		  	/mc /zu /nt=_TEXT
-		  	/ml /zu
-			/mf? /5r
-			/mf? /5s
-special case C flags: 	/oasl /s (for certain files)
-		    	/oax (for other files)
-			/of (for certain files)
-
-Current Directories: 	ansi\(wscsd,wscbd,wbcsd,wbcbd)
-			dos\(wscsd,wscbd,wbcsd,wbcbd)
-			_dos(wscsd,wscbd,wbcsd,wbcbd)
-			heap\(wscsd,wscbd,wbcsd,wbcbd)
-			(wscsd,wscbd,wbcsd,wbcbd)
-			ansi\(w3r,w3s)
-			dos\(w3r,w3s)
-			_dos\(w3r,w3s)
-			heap\(w3r,w3s)
-			(w3r,w3s)
+wasm flags:             -bt=WINDOWS
+                        -ms
+                        -mm
+                        -mc
+                        -ml
+                        -mf? -3r
+                        -mf? -3s
+C include:              ..\h \clib\h \hdr\dos
+C flags:                -bt=WINDOWS
+                        -ms     -nt=_TEXT
+                        -mm
+                        -mc -zu -nt=_TEXT
+                        -ml -zu
+                        -mf? -5r
+                        -mf? -5s
+special case C flags:   -oasl -s (for certain files)
+                        -oax (for other files)
+                        -of (for certain files)
 
 ==============================================================================
 NT Settings:
 ============
-wasm flags:	        /bt=NT /ms /d__MT__
-			/3r
-			/3s
-C include:	        ..\h \clib\h \clib\dos\nth \hdr\dos \watcom\nt_h
-			\watcom\h
-C flags:		/bt=NT /ms /d__MT__
-			/5r
-			/5s
-special case flags:     /oasl /s (for certain files)
-		        /oax (for rest of files)
-
-Current Directories: 	ansi\(ntr,nts)
-			dos\(ntr,nts)
-			heap\(ntr,nts)
-			(ntr,nts)
+wasm flags:             -bt=NT -ms -d__MT__
+                        -3r
+                        -3s
+C include:              ..\h \clib\h \clib\dos\nth \hdr\dos \watcom\nt_h
+                        \watcom\h
+C flags:                -bt=NT -ms -d__MT__
+                        -5r
+                        -5s
+special case flags:     -oasl -s (for certain files)
+                        -oax (for rest of files)
 
 ==============================================================================
 NetWare Settings:
 =================
-wasm flags:		/bt=NETWARE /ms /3s
-C include:		\clib\h ..\h \hdr\dos
-common C flags:		/bt=NETWARE /ms /5s /ox /d__far= /d__MT__
-
-Current Directories:	ansi\(net386)
-			dos\(net386)
-			(net386)
-
-==============================================================================
-Penpoint Settings:
-==================
-wasm flags:		/bt=PENPOINT /mf /3s
-C include:		\clib\h ..\h \hdr\penpoint \clib\ph \watcom\pen_h
-C flags:		/bt=PENPOINT /mf /of+ /5s
-		  (dbg) /en
-special case flags:	/osl /s /d__UNICODE__ (for certain files)
-			/ox (for rest of files)
-
-Current Directories: 	cgsupp\(go3s)
-			ansi\(go3s,go3sd)
-			dos\(go3s,go3sd)
-			(go3s,go3sd,gomtlib??)
-
-==============================================================================
-NEC PC Settings:
-================
-C include:	  	..\h \clib\h \hdr\dos
-C flags:	  	/ms /ox
-			5r
-		  	5s
-
-Current Directories:	_nec(ms386r,ms386s)
+wasm flags:             -bt=NETWARE -ms -3s
+C include:              \clib\h ..\h \hdr\dos
+common C flags:         -bt=NETWARE -ms -5s -ox -d__far= -d__MT__
 
 ==============================================================================
 Windows Supervisor 32 bit: wind386\(w3r,w3s)
 ==========================
-wasm flags:		/bt=WINDOWS /ms
-			/3r
-			/3s
-C include:	  	..\h \clib\h \hdr\dos
-common C flags:   	/bt=WINDOWS /ms /ox
-			5r
-		  	5s
+wasm flags:             -bt=WINDOWS -ms
+                        -3r
+                        -3s
+C include:              ..\h \clib\h \hdr\dos
+common C flags:         -bt=WINDOWS -ms -ox
+                        5r
+                        5s
 
+
+==============================================================================
+RDOS Settings:
+============
+wasm flags:             -bt=rdos
+                        -3r
+                        -3s
+C include:              ..\h \clib\h \hdr\dos
+                        \watcom\h
+C flags:                -bt=rdos -bm
+                        -3r
+                        -3s
+
+==============================================================================
+RDOS dev Settings:
+============
+wasm flags:             -bt=rdosdev
+                        -3r
+C include:              ..\h \clib\h \hdr\dos
+                        \watcom\h
+C flags:                -bt=rdosdev -bm -zu
+                        -3r

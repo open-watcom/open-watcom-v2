@@ -1,0 +1,3 @@
+target_cpu = mps
+
+!include ../master.mif

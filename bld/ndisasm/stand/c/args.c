@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Standalone disassembler command line processing.
 *
 ****************************************************************************/
 
@@ -43,6 +42,7 @@
 #include "buffer.h"
 #include "memfuncs.h"
 #include "print.h"
+#include "cmdlhelp.h"
 
 extern wd_options               Options;
 extern char                     LabelChar;
@@ -58,6 +58,7 @@ static void printUsage( int msg ) {
         banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),
         banner2( "1995" ),
         banner3,
+        banner3a,
         NULL
     };
     const char * const *text;
@@ -86,6 +87,15 @@ static void printUsage( int msg ) {
     exit( 1 );
 }
 
+static int iswsOrOpt( char ch )
+{
+    if( isspace( ch ) ) return( 1 );
+
+    if( IS_OPT_DELIM( ch ) ) return( 1 );
+
+    return( 0 );
+}
+
 static char *skipBlanks( char *cmd ) {
     while( isspace( *cmd ) ) {
         cmd++;
@@ -93,32 +103,54 @@ static char *skipBlanks( char *cmd ) {
     return( cmd );
 }
 
-static char *skipFileName( char * cmd ) {
-    do {
-        cmd++;
-    } while( !isspace( *cmd ) && *cmd );
-    return( cmd );
-}
-
 static char *skipToNextArg( char * cmd ) {
-    while( !isspace( *cmd ) && *cmd != '/' && *cmd != '-' && *cmd ) {
-        cmd++;
+    char    string_open = 0;
+
+    while( *cmd != '\0' ) {
+        if( *cmd == '\\' ) {
+            cmd++;
+            if( *cmd != '\0' ) {
+                if( !string_open && iswsOrOpt( *cmd ) ) {
+                    break;
+                }
+                cmd++;
+            }
+        } else {
+            if( *cmd == '\"' ) {
+                string_open = !string_open;
+                cmd++;
+            } else {
+                if( !string_open && iswsOrOpt( *cmd ) ) {
+                    break;
+                }
+                cmd++;
+            }
+        }
     }
-    while( isspace( *cmd ) && *cmd ) {
-        cmd++;
-    }
+
+    cmd = skipBlanks( cmd );
+
     return( cmd );
 }
 
 static char *getFileName( char *start, char *following )
 {
-    int                                 length;
-    char *                              name;
+    int         length;
+    char *      name;
+    char *      tmp;
 
     length = following - start;
+    tmp = (char *) MemAlloc( length + 1 );
+    memcpy( tmp, start, length );
+    tmp[length] = 0;
+
+    if( strchr( tmp, '\"' ) == NULL )
+        return tmp;
+
     name = (char *) MemAlloc( length + 1 );
-    memcpy( name, start, length );
-    name[length] = 0;
+    UnquoteFName( name, length + 1, tmp );
+    MemFree( tmp );
+
     return( name );
 }
 
@@ -133,12 +165,16 @@ static void composeFileNames( bool list_file )
 
     // object file name
     _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );
+#ifndef __UNIX__
+    // tacking on an extension is self-defeating on UNIX, and the extra
+    // dot at end trick doesn't work either
     if( strlen( extension ) == 0 ) {
         length = strlen( ObjFileName );
         MemFree( ObjFileName );
         ObjFileName = (char *) MemAlloc( length + strlen( OBJ_FILE_EXTENSION ) + 1 );
         _makepath( ObjFileName, drive, dir, file_name, OBJ_FILE_EXTENSION );
     } // else file name has an extension - leave as is
+#endif
     if( list_file ) {
         if( ListFileName == NULL ) {
             length = strlen( drive ) + strlen( dir ) + strlen( dir ) +
@@ -163,10 +199,10 @@ void HandleArgs( char *cmd )
     char *                      ptr;
     bool                        list_file = FALSE;
 
-    DFormat |= DFF_PSEUDO | DFF_AXP_SYMBOLIC_REG;
+    DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
     cmd = skipBlanks( cmd );
     if( *cmd == '\0' || *cmd == '?' ) {
-        printUsage( NULL );
+        printUsage( 0 );
     } else {
         while( *cmd ) {
             if( IS_OPT_DELIM( *cmd ) ) {
@@ -204,7 +240,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             ptr = cmd;
-                            cmd = skipFileName( cmd );
+                            cmd = FindNextWS( cmd );
                             ListFileName = getFileName( ptr, cmd );
                         }
                         break;
@@ -215,8 +251,11 @@ void HandleArgs( char *cmd )
                             ++cmd;
                             break;
                         case 'r':
-                            DFormat ^= DFF_AXP_SYMBOLIC_REG;
+                            DFormat ^= DFF_SYMBOLIC_REG;
                             ++cmd;
+                            break;
+                        case 'f':
+                            Options |= PRINT_FPU_EMU_FIXUP;
                             break;
                         case 'i':
                             DFormat ^= DFF_X86_ALT_INDEXING;
@@ -259,7 +298,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             ptr = cmd;
-                            cmd = skipFileName( cmd );
+                            cmd = FindNextWS( cmd );
                             SourceFileName = getFileName( ptr, cmd );
                         }
                         break;
@@ -267,7 +306,7 @@ void HandleArgs( char *cmd )
                         BufferMsg( INVALID_OPTION );
                         BufferStore( "  -%c\n\n", *cmd );
                         BufferPrint();
-                        printUsage( NULL );
+                        printUsage( 0 );
                         break;
                 }
             } else {
@@ -275,7 +314,7 @@ void HandleArgs( char *cmd )
                     printUsage( ONLY_ONE_OBJECT );
                 }
                 ptr = cmd;
-                cmd = skipFileName( cmd );
+                cmd = FindNextWS( cmd );
                 ObjFileName = getFileName( ptr, cmd );
             }
             cmd = skipToNextArg( cmd );

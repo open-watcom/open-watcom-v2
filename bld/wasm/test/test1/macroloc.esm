@@ -1,0 +1,36 @@
+.387
+.386p
+		PUBLIC	??0000
+		PUBLIC	??0001
+		PUBLIC	??0002
+		PUBLIC	??0003
+		PUBLIC	??0004
+		PUBLIC	??0005
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+??0000:
+    xor       ax,ax
+??0001:
+    xor       ax,bx
+    jmp       ??0001
+    jmp       ??0000
+    xor       ax,2
+??0002:
+    xor       ax,dx
+??0003:
+    xor       dx,bx
+    jmp       ??0003
+    jmp       ??0002
+    xor       ax,4
+??0004:
+    xor       ax,cx
+??0005:
+    xor       cx,bx
+    jmp       ??0005
+    jmp       ??0004
+    xor       ax,6
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

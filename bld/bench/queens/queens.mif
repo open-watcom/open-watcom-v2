@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\queens
+.h: $(bench_dir)\queens
+
+extra_cflags = -I$(bench_dir)\queens -I$(bench_dir)\support
+
+obj_files = queens.obj
+
+run: queens.exe .SYMBOLIC
+	queens -c 14
+    
+build: queens.exe .SYMBOLIC
+
+queens.exe : $(obj_files)
+	$(deflink)

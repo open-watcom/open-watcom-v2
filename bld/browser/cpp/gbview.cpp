@@ -40,16 +40,6 @@
 #include "gbvolcll.h"
 
 
-GlobalView::GlobalView()
-//----------------------
-{
-}
-
-GlobalView::~GlobalView()
-//-----------------------
-{
-}
-
 static GlobalView * GlobalView::createView( GlobalViewType vt )
 //-------------------------------------------------------------
 {
@@ -79,3 +69,18 @@ static GlobalView * GlobalView::createView( GlobalViewType vt )
 
     return( view );
 }
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+GlobalView::GlobalView()
+//----------------------
+{
+}
+
+GlobalView::~GlobalView()
+//-----------------------
+{
+}
+

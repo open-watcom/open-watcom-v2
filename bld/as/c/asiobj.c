@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Inline assembler support for various front ends.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 
 #define ASMCODESTART    "0ASM"          // must be a non-usable string
 
-uint_32                 *AsmCodeBuffer;
+unsigned char           *AsmCodeBuffer;
 uint_32                 AsmCodeAddress;
 uint_32                 AsmLastAddress;
 asmreloc                *AsmRelocs;
@@ -66,7 +65,7 @@ static owl_offset tellOffset( void ) {
 static void doEmitData( char *buffer, int size ) {
 //************************************************
 
-    memcpy( &((char *)AsmCodeBuffer)[AsmCodeAddress], buffer, size );
+    memcpy( &AsmCodeBuffer[AsmCodeAddress], buffer, size );
     AsmCodeAddress += size;
     if( AsmCodeAddress > AsmLastAddress ) {
         AsmLastAddress = AsmCodeAddress;
@@ -103,26 +102,30 @@ static owl_offset relocTargetDisp( owl_offset from, owl_offset to ) {
 
     owl_offset  ret;
 
-    #ifdef AS_ALPHA
+#ifdef AS_ALPHA
     from += 4;  // Alpha uses updated PC
-    #endif // PPC & MIPS uses current PC
+#endif // PPC & MIPS uses current PC
     assert( ( to % 4 ) == 0 );
     assert( ( from % 4 ) == 0 );
     ret = to - from;
-    #if defined(AS_PPC)
+#if defined( AS_PPC )
     return( ret );
-    #elif defined(AS_ALPHA)
+#elif defined( AS_ALPHA )
     return( ret >> 2 );
-    #else
+#elif defined( AS_MIPS )
+    // TODO
+    return( ret >> 2 );
+#else
     #error Unknown CPU type for assembler!
-    #endif
+#endif
 }
 
 static unsigned relocMasks[] = {
-#ifdef AS_PPC
+#if defined( AS_PPC )
     0xffffffff,         /* OWL_RELOC_ABSOLUTE */
     0xffffffff,         /* OWL_RELOC_WORD */
     0x0000ffff,         /* OWL_RELOC_HALF_HI */
+    0x0000ffff,         /* OWL_RELOC_HALF_HA */
     0x00000000,         /* OWL_RELOC_PAIR */
     0x0000ffff,         /* OWL_RELOC_HALF_LO */
     0x0000fffc,         /* OWL_RELOC_BRANCH_REL */
@@ -131,10 +134,25 @@ static unsigned relocMasks[] = {
     0x03fffffc,         /* OWL_RELOC_JUMP_ABS */
     0x0000ffff,         /* OWL_RELOC_SECTION_INDEX */
     0xffffffff,         /* OWL_RELOC_SECTION_OFFSET */
-#else
+#elif defined( AS_ALPHA )
     0xffffffff,         /* OWL_RELOC_ABSOLUTE */
     0xffffffff,         /* OWL_RELOC_WORD */
     0x0000ffff,         /* OWL_RELOC_HALF_HI */
+    0x0000ffff,         /* OWL_RELOC_HALF_HA, unused */
+    0x00000000,         /* OWL_RELOC_PAIR */
+    0x0000ffff,         /* OWL_RELOC_HALF_LO */
+    0x001fffff,         /* OWL_RELOC_BRANCH_REL */
+    0x001fffff,         /* OWL_RELOC_BRANCH_ABS, unused */
+    0x00003fff,         /* OWL_RELOC_JUMP_REL */
+    0x00003fff,         /* OWL_RELOC_JUMP_ABS, unused */
+    0x0000ffff,         /* OWL_RELOC_SECTION_INDEX */
+    0xffffffff,         /* OWL_RELOC_SECTION_OFFSET */
+#elif defined( AS_MIPS )
+    // TODO
+    0xffffffff,         /* OWL_RELOC_ABSOLUTE */
+    0xffffffff,         /* OWL_RELOC_WORD */
+    0x0000ffff,         /* OWL_RELOC_HALF_HI */
+    0x0000ffff,         /* OWL_RELOC_HALF_HA, unused? */
     0x00000000,         /* OWL_RELOC_PAIR */
     0x0000ffff,         /* OWL_RELOC_HALF_LO */
     0x001fffff,         /* OWL_RELOC_BRANCH_REL */
@@ -164,7 +182,7 @@ static void doReloc( asmreloc *reloc ) {
     sym = SymLookup( reloc->name );
     displacement = relocTargetDisp( reloc->offset, getSymOffset( sym ) );
     bit_mask = relocBitMask( reloc );
-    data = (uint_32 *)&(((char *)AsmCodeBuffer)[ reloc->offset ]);
+    data = (uint_32 *)&AsmCodeBuffer[ reloc->offset ];
     *data = (*data&~bit_mask)|(((displacement&bit_mask)+(*data&bit_mask))&bit_mask);
 }
 
@@ -250,6 +268,19 @@ static void doEmitReloc( owl_offset offset, void *target, owl_reloc_type type, b
     }
 }
 
+static void doStackLabel( sym_handle sym ) {
+//******************************************
+
+    label_list          new_label;
+
+    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label->sym = sym;
+    new_label->next = labelList;
+    new_label->is_numeric = 0;
+    new_label->label_num = 0;
+    labelList = new_label;
+}
+
 extern void ObjInit( void ) {
 //***************************
 
@@ -283,7 +314,7 @@ extern void ObjEmitRelocAddend( owl_reloc_type type, uint_32 addend ) {
     uint_32     *pdata;
 
     bit_mask = relocMasks[ type ];
-    pdata = (uint_32 *)&(((char *)AsmCodeBuffer)[ AsmCodeAddress ]);
+    pdata = (uint_32 *)&AsmCodeBuffer[ AsmCodeAddress ];
     *pdata = (*pdata&~bit_mask)|(((addend&bit_mask)+(*pdata&bit_mask))&bit_mask);
 }
 
@@ -319,19 +350,6 @@ extern bool ObjLabelDefined( sym_handle sym ) {
     // Still need to check the labelList
     if( findLabel( labelList, sym_name ) ) return( TRUE );
     return( FALSE );
-}
-
-static void doStackLabel( sym_handle sym ) {
-//******************************************
-
-    label_list          new_label;
-
-    new_label = MemAlloc( sizeof( struct asm_label ) );
-    new_label->sym = sym;
-    new_label->next = labelList;
-    new_label->is_numeric = 0;
-    new_label->label_num = 0;
-    labelList = new_label;
 }
 
 static void doStackNumericLabel( uint_32 label_num ) {
@@ -445,3 +463,106 @@ extern owl_offset ObjTellOffset( void ) {
 */
 
 extern void ObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym ) {
+//******************************************************************************************************
+
+    doEmitReloc( offset, target, type, named_sym );
+}
+
+extern void ObjEmitReloc( void *target, owl_reloc_type type, bool align, bool named_sym ) {
+//*****************************************************************************************
+// Should be called before emitting the data that has the reloc.
+// (named_sym == TRUE) iff the target is a named label
+
+    owl_offset          offset;
+
+    if( align ) { // If data is aligned, we should also align this reloc offset!
+        offset = ObjAlign( CurrAlignment );
+    } else {
+        offset = tellOffset();
+    }
+    ObjFlushLabels();
+#ifdef AS_PPC   // ?
+    doEmitReloc( offset, target, type, named_sym );
+#else
+    {
+        sym_reloc       reloc;
+        bool            match_high;
+        owl_offset      offset_hi, offset_lo;
+        sym_handle      (*lookup_func)( void * );
+
+        if( type != OWL_RELOC_HALF_HI && type != OWL_RELOC_HALF_LO ) {
+            doEmitReloc( offset, target, type, named_sym );
+        } else {
+            lookup_func = named_sym ?
+                (sym_handle (*)( void * ))SymLookup :
+                (sym_handle (*)( void * ))AsNumLabelSymLookup;
+            match_high = ( type == OWL_RELOC_HALF_LO );    // hi match lo etc.
+            reloc = SymMatchReloc( match_high, lookup_func( target ), NULL );
+            if( reloc ) {       // got a match
+                if( match_high ) {
+                    offset_hi = reloc->location.offset;
+                    offset_lo = offset;
+                } else {
+                    offset_hi = offset;
+                    offset_lo = reloc->location.offset;
+                }
+                doEmitReloc( offset_hi, target, OWL_RELOC_HALF_HI, named_sym );
+                doEmitReloc( offset_lo, target, OWL_RELOC_PAIR, named_sym );
+                doEmitReloc( offset_lo, target, OWL_RELOC_HALF_LO, named_sym );
+                SymDestroyReloc( lookup_func( target ), reloc );
+            } else {    // no match; stack it up with the (aligned) offset!
+                SymStackReloc( !match_high, lookup_func( target ), NULL, offset, named_sym );
+            }
+        }
+    }
+#endif
+}
+
+extern void ObjRelocsFini( void ) {
+//*********************************
+// After all lines have been parsed, we need to check whether there're any
+// unmatched relocs still hanging around. If there're unmatched h^relocs,
+// we issue an error. If there're unmatched l^relocs, we should be able
+// to emit them.
+
+    sym_reloc   reloc;
+    sym_handle  sym;
+    int_32      numlabel_ref;
+
+    reloc = SymGetReloc( TRUE, &sym );
+    while( reloc != NULL ) {
+        if( reloc->named ) {
+            Error( UNMATCHED_HIGH_RELOC, SymName( sym ) );
+        } else {
+            Error( UNMATCHED_HIGH_RELOC, "<numeric reference>" );
+        }
+        SymDestroyReloc( sym, reloc );
+        reloc = SymGetReloc( TRUE, &sym );
+    }
+    reloc = SymGetReloc( FALSE, &sym );
+    while( reloc != NULL ) {
+        if( reloc->named ) {
+            doEmitReloc( reloc->location.offset,
+                SymName( sym ), OWL_RELOC_HALF_LO, TRUE );
+        } else {
+            numlabel_ref = AsNumLabelGetNum( SymName( sym ) );
+            doEmitReloc( reloc->location.offset,
+                &numlabel_ref, OWL_RELOC_HALF_LO, FALSE );
+        }
+        SymDestroyReloc( sym, reloc );
+        reloc = SymGetReloc( FALSE, &sym );
+    }
+#ifndef NDEBUG
+    (void)SymRelocIsClean( TRUE );
+#endif
+    AsNumLabelFini();       // resolve all numeric label relocs
+    resolveRelativeRelocs();
+}
+
+extern void ObjFini( void ) {
+//********************
+
+    ObjFlushLabels();       // In case there're still pending labels
+    ObjRelocsFini();
+    AsmCodeAddress = AsmLastAddress;    // points to end of code
+}

@@ -1,0 +1,480 @@
+/*
+ *  propidl.h   Property storage interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __propidl_h__
+#define __propidl_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IEnumSTATPROPSTG      IEnumSTATPROPSTG;
+typedef interface IEnumSTATPROPSETSTG   IEnumSTATPROPSETSTG;
+#ifdef __cplusplus
+class PMemoryAllocator;
+#endif
+
+/* Macro to declare counted array (vector) data types */
+#define TYPEDEF_CA( p1, p2 ) \
+    typedef struct tag##p2 { \
+        ULONG   cElems; \
+        p1      *pElems; \
+    } p2
+
+/* Counted array data types */
+TYPEDEF_CA( CHAR, CAC );
+TYPEDEF_CA( UCHAR, CAUB );
+TYPEDEF_CA( SHORT, CAI );
+TYPEDEF_CA( USHORT, CAUI );
+TYPEDEF_CA( LONG, CAL );
+TYPEDEF_CA( ULONG, CAUL );
+TYPEDEF_CA( FLOAT, CAFLT );
+TYPEDEF_CA( DOUBLE, CADBL );
+TYPEDEF_CA( CY, CACY );
+TYPEDEF_CA( DATE, CADATE );
+TYPEDEF_CA( BSTR, CABSTR );
+TYPEDEF_CA( BSTRBLOB, CABSTRBLOB );
+TYPEDEF_CA( VARIANT_BOOL, CABOOL );
+TYPEDEF_CA( SCODE, CASCODE );
+TYPEDEF_CA( struct tagPROPVARIANT, CAPROPVARIANT );
+TYPEDEF_CA( LARGE_INTEGER, CAH );
+TYPEDEF_CA( ULARGE_INTEGER, CAUH );
+TYPEDEF_CA( LPSTR, CALPSTR );
+TYPEDEF_CA( LPWSTR, CALPWSTR );
+TYPEDEF_CA( FILETIME, CAFILETIME );
+TYPEDEF_CA( CLIPDATA, CACLIPDATA );
+TYPEDEF_CA( CLSID, CACLSID );
+
+/* Property set flags */
+#define PROPSETFLAG_DEFAULT         0L
+#define PROPSETFLAG_NONSIMPLE       1L
+#define PROPSETFLAG_ANSI            2L
+#define PROPSETFLAG_UNBUFFERED      4L
+#define PROPSETFLAG_CASE_SENSITIVE  8L
+
+/* Property set behavior flags */
+#define PROPSET_BEHAVIOR_CASE_SENSITIVE 1L
+
+/* Property identifiers */
+#define PID_DICTIONARY          0x00000000L
+#define PID_CODEPAGE            0x00000001L
+#define PID_FIRST_USABLE        0x00000002L
+#define PID_FIRST_NAME_DEFAULT  0x0000FFFFL
+#define PID_LOCALE              0x80000000L
+#define PID_MODIFY_TIME         0x80000001L
+#define PID_SECURITY            0x80000002L
+#define PID_BEHAVIOR            0x80000003L
+#define PID_ILLEGAL             0xFFFFFFFFL
+#define PID_MIN_READONLY        0x80000000L
+#define PID_MAX_READONLY        0xBFFFFFFFL
+
+/* Discardable information property identifiers */
+#define PIDDI_THUMBNAIL 0x00000002L
+
+/* Summary information property identifiers */
+#define PIDSI_TITLE         0x00000002L
+#define PIDSI_SUBJECT       0x00000003L
+#define PIDSI_AUTHOR        0x00000004L
+#define PIDSI_KEYWORDS      0x00000005L
+#define PIDSI_COMMENTS      0x00000006L
+#define PIDSI_TEMPLATE      0x00000007L
+#define PIDSI_LASTAUTHOR    0x00000008L
+#define PIDSI_REVNUMBER     0x00000009L
+#define PIDSI_EDITTIME      0x0000000AL
+#define PIDSI_LASTPRINTED   0x0000000BL
+#define PIDSI_CREATE_DTM    0x0000000CL
+#define PIDSI_LASTSAVE_DTM  0x0000000DL
+#define PIDSI_PAGECOUNT     0x0000000EL
+#define PIDSI_WORDCOUNT     0x0000000FL
+#define PIDSI_CHARCOUNT     0x00000010L
+#define PIDSI_THUMBNAIL     0x00000011L
+#define PIDSI_APPNAME       0x00000012L
+#define PIDSI_DOC_SECURITY  0x00000013L
+
+/* Document summary information property identifiers */
+#define PIDDSI_CATEGORY     0x00000002L
+#define PIDDSI_PRESFORMAT   0x00000003L
+#define PIDDSI_BYTECOUNT    0x00000004L
+#define PIDDSI_LINECOUNT    0x00000005L
+#define PIDDSI_PARCOUNT     0x00000006L
+#define PIDDSI_SLIDECOUNT   0x00000007L
+#define PIDDSI_NOTECOUNT    0x00000008L
+#define PIDDSI_HIDDENCOUNT  0x00000009L
+#define PIDDSI_MMCLIPCOUNT  0x0000000AL
+#define PIDDSI_SCALE        0x0000000BL
+#define PIDDSI_HEADINGPAIR  0x0000000CL
+#define PIDDSI_DOCPARTS     0x0000000DL
+#define PIDDSI_MANAGER      0x0000000EL
+#define PIDDSI_COMPANY      0x0000000FL
+#define PIDDSI_LINKSDIRTY   0x00000010L
+
+/* Media file summary information property identifiers */
+#define PIDMSI_EDITOR       0x00000002L
+#define PIDMSI_SUPPLIER     0x00000003L
+#define PIDMSI_SOURCE       0x00000004L
+#define PIDMSI_SEQUENCE_NO  0x00000005L
+#define PIDMSI_PROJECT      0x00000006L
+#define PIDMSI_STATUS       0x00000007L
+#define PIDMSI_OWNER        0x00000008L
+#define PIDMSI_RATING       0x00000009L
+#define PIDMSI_PRODUCTION   0x0000000AL
+#define PIDMSI_COPYRIGHT    0x0000000BL
+
+/* Property specifier kinds */
+#define PRSPEC_INVALID  0xFFFFFFFFL
+#define PRSPEC_LPWSTR   0x00000000L
+#define PRSPEC_PROPID   0x00000001L
+
+/* Macros to manipulate operating system version numbers */
+#define PROPSETHDR_OSVER_KIND( x )  HIWORD( x )
+#define PROPSETHDR_OSVER_MAJOR( x ) LOBYTE( LOWORD( x ) )
+#define PROPSETHDR_OSVER_MINOR( x ) HIBYTE( LOWORD( x ) )
+
+/* Operating system version special value */
+#define PROPSETHDR_OSVERSION_UNKNOWN    0xFFFFFFFFL
+
+/* Maximum property storage name length */
+#define CCH_MAX_PROPSTG_NAME    31
+
+/* Versioned stream */
+typedef struct tagVersionedStream {
+    GUID    guidVersion;
+    IStream *pStream;
+} VERSIONEDSTREAM;
+typedef VERSIONEDSTREAM *LPVERSIONEDSTREAM;
+
+/* Property variant */
+typedef WORD    PROPVAR_PAD1;
+typedef WORD    PROPVAR_PAD2;
+typedef WORD    PROPVAR_PAD3;
+#define tag_inner_PROPVARIANT
+typedef struct tagPROPVARIANT {
+    union {
+        struct tag_inner_PROPVARIANT {
+            VARTYPE         vt;
+            PROPVAR_PAD1    wReserved1;
+            PROPVAR_PAD2    wReserved2;
+            PROPVAR_PAD3    wReserved3;
+            union {
+                CHAR                    cVal;
+                UCHAR                   bVal;
+                SHORT                   iVal;
+                USHORT                  uiVal;
+                LONG                    lVal;
+                ULONG                   ulVal;
+                INT                     intVal;
+                UINT                    uintVal;
+                LARGE_INTEGER           hVal;
+                ULARGE_INTEGER          uhVal;
+                FLOAT                   fltVal;
+                DOUBLE                  dblVal;
+                VARIANT_BOOL            boolVal;
+                SCODE                   scode;
+                CY                      cyVal;
+                DATE                    date;
+                FILETIME                filetime;
+                CLSID                   *puuid;
+                CLIPDATA                *pclipdata;
+                BSTR                    bstrVal;
+                BSTRBLOB                bstrblobVal;
+                BLOB                    blob;
+                LPSTR                   pszVal;
+                LPWSTR                  pwszVal;
+                IUnknown                *punkVal;
+                IDispatch               *pdispVal;
+                IStream                 *pStream;
+                IStorage                *pStorage;
+                LPVERSIONEDSTREAM       pVersionedStream;
+                LPSAFEARRAY             parray;
+                CAC                     cac;
+                CAUB                    caub;
+                CAI                     cai;
+                CAUI                    caui;
+                CAL                     cal;
+                CAUL                    caul;
+                CAH                     cah;
+                CAUH                    cauh;
+                CAFLT                   caflt;
+                CADBL                   cadbl;
+                CABOOL                  cabool;
+                CASCODE                 cascode;
+                CACY                    cacy;
+                CADATE                  cadate;
+                CAFILETIME              cafiletime;
+                CACLSID                 cauuid;
+                CACLIPDATA              caclipdata;
+                CABSTR                  cabstr;
+                CABSTRBLOB              cabstrblob;
+                CALPSTR                 calpstr;
+                CALPWSTR                calpwstr;
+                CAPROPVARIANT           capropvar;
+                CHAR                    *pcVal;
+                UCHAR                   *pbVal;
+                SHORT                   *piVal;
+                USHORT                  *puiVal;
+                LONG                    *plVal;
+                ULONG                   *pulVal;
+                INT                     *pintVal;
+                UINT                    *puintVal;
+                FLOAT                   *pfltVal;
+                DOUBLE                  *pdblVal;
+                VARIANT_BOOL            *pboolVal;
+                DECIMAL                 *pdecVal;
+                SCODE                   *pscode;
+                CY                      *pcyval;
+                DATE                    *pdate;
+                BSTR                    *pbstrVal;
+                IUnknown                **ppunkVal;
+                IDispatch               **ppdispVal;
+                LPSAFEARRAY             *pparray;
+                struct tagPROPVARIANT   *pvarVal;
+            };
+        };
+        DECIMAL decVal;
+    };
+} PROPVARIANT;
+typedef PROPVARIANT         *LPPROPVARIANT;
+#ifdef __cplusplus
+    #define REFPROPVARIANT  const PROPVARIANT &
+#else
+    #define REFPROPVARIANT  const PROPVARIANT *const
+#endif
+
+/* Media file status values */
+enum PIDMSI_STATUS_VALUE {
+    PIDMSI_STATUS_NORMAL        = 0,
+    PIDMSI_STATUS_NEW           = 1,
+    PIDMSI_STATUS_PRELIM        = 2,
+    PIDMSI_STATUS_DRAFT         = 3,
+    PIDMSI_STATUS_INPROGRESS    = 4,
+    PIDMSI_STATUS_EDIT          = 5,
+    PIDMSI_STATUS_REVIEW        = 6,
+    PIDMSI_STATUS_PROOF         = 7,
+    PIDMSI_STATUS_FINAL         = 8,
+    PIDMSI_STATUS_OTHER         = 0x00007FFF
+};
+
+/* Property specifier */
+typedef struct tagPROPSPEC {
+    ULONG   ulKind;
+    union {
+        PROPID      propid;
+        LPOLESTR    lpwstr;
+    };
+} PROPSPEC;
+
+/* Static property storage */
+typedef struct tagSTATPROPSTG {
+    LPOLESTR    lpwstrName;
+    PROPID      propid;
+    VARTYPE     vt;
+} STATPROPSTG;
+
+/* Static property set storage */
+typedef struct tagSTATPROPSETSTG {
+    FMTID       fmtid;
+    CLSID       clsid;
+    DWORD       grfFlags;
+    FILETIME    mtime;
+    FILETIME    ctime;
+    FILETIME    atime;
+    DWORD       dwOSVersion;
+} STATPROPSETSTG;
+
+/* Serialized property value */
+typedef struct tagSERIALIZEDPROPERTYVALUE {
+    DWORD   dwType;
+    BYTE    rgb[1];
+} SERIALIZEDPROPERTYVALUE;
+
+/* GUIDs */
+EXTERN_C const IID  IID_IPropertyStorage;
+EXTERN_C const IID  IID_IPropertySetStorage;
+EXTERN_C const IID  IID_IEnumSTATPROPSTG;
+EXTERN_C const IID  IID_IEnumSTATPROPSETSTG;
+
+/* IPropertyStorage interface */
+#undef INTERFACE
+#define INTERFACE   IPropertyStorage
+DECLARE_INTERFACE_( IPropertyStorage, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IPropertyStorage methods */
+    STDMETHOD( ReadMultiple )( THIS_ ULONG, const PROPSPEC [], PROPVARIANT [] ) PURE;
+    STDMETHOD( WriteMultiple )( THIS_ ULONG, const PROPSPEC [], const PROPVARIANT [], PROPID ) PURE;
+    STDMETHOD( DeleteMultiple )( THIS_ ULONG, const PROPSPEC [] ) PURE;
+    STDMETHOD( ReadPropertyNames )( THIS_ ULONG, const PROPID [], LPOLESTR [] ) PURE;
+    STDMETHOD( WritePropertyNames )( THIS_ ULONG, const PROPID [], const LPOLESTR [] ) PURE;
+    STDMETHOD( DeletePropertyNames )( THIS_ ULONG, const PROPID [] ) PURE;
+    STDMETHOD( Commit )( THIS_ DWORD ) PURE;
+    STDMETHOD( Revert )( THIS ) PURE;
+    STDMETHOD( Enum )( THIS_ IEnumSTATPROPSTG ** ) PURE;
+    STDMETHOD( SetTimes )( THIS_ FILETIME const *, FILETIME const *, FILETIME const * ) PURE;
+    STDMETHOD( SetClass )( THIS_ REFCLSID ) PURE;
+    STDMETHOD( Stat )( THIS_ STATPROPSETSTG * ) PURE;
+};
+typedef IPropertyStorage    *LPPROPERTYSTORAGE;
+
+/* IPropertySetStorage interface */
+#undef INTERFACE
+#define INTERFACE   IPropertySetStorage
+DECLARE_INTERFACE_( IPropertySetStorage, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IPropertySetStorage methods */
+    STDMETHOD( Create )( THIS_ REFFMTID, const CLSID *, DWORD, DWORD, IPropertyStorage ** ) PURE;
+    STDMETHOD( Open )( THIS_ REFFMTID, DWORD, IPropertyStorage ** ) PURE;
+    STDMETHOD( Delete )( THIS_ REFFMTID ) PURE;
+    STDMETHOD( Enum )( THIS_ IEnumSTATPROPSETSTG ** ) PURE;
+};
+typedef IPropertySetStorage *LPPROPERTYSETSTORAGE;
+
+/* IEnumSTATPROPSTG interface */
+#undef INTERFACE
+#define INTERFACE   IEnumSTATPROPSTG
+DECLARE_INTERFACE_( IEnumSTATPROPSTG, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumSTATPROPSTG methods */
+    STDMETHOD( Next )( THIS_ ULONG, STATPROPSTG *, ULONG * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumSTATPROPSTG ** ) PURE;
+};
+typedef IEnumSTATPROPSTG    *LPENUMSTATPROPSTG;
+
+/* IEnumSTATPROPSETSTG interface */
+#undef INTERFACE
+#define INTERFACE   IEnumSTATPROPSETSTG
+DECLARE_INTERFACE_( IEnumSTATPROPSETSTG, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumSTATPROPSTG methods */
+    STDMETHOD( Next )( THIS_ ULONG, STATPROPSETSTG *, ULONG * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumSTATPROPSETSTG ** ) PURE;
+};
+typedef IEnumSTATPROPSETSTG *LPENUMSTATPROPSETSTG;
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IPropertyStorage_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IPropertyStorage_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IPropertyStorage_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IPropertyStorage_ReadMultiple( x, p1, p2, p3 ) \
+        (x)->lpVtbl->ReadMultiple( x, p1, p2, p3 )
+    #define IPropertyStorage_WriteMultiple( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->WriteMultiple( x, p1, p2, p3, p4 )
+    #define IPropertyStorage_DeleteMultiple( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteMultiple( x, p1, p2 )
+    #define IPropertyStorage_ReadPropertyNames( x, p1, p2, p3 ) \
+        (x)->lpVtbl->ReadPropertyNames( x, p1, p2, p3 )
+    #define IPropertyStorage_WritePropertyNames( x, p1, p2, p3 ) \
+        (x)->lpVtbl->WritePropertyNames( x, p1, p2, p3 )
+    #define IPropertyStorage_DeletePropertyNames( x, p1, p2 ) \
+        (x)->lpVtbl->DeletePropertyNames( x, p1, p2 )
+    #define IPropertyStorage_Commit( x, p ) \
+        (x)->lpVtbl->Commit( x, p )
+    #define IPropertyStorage_Revert( x ) \
+        (x)->lpVtbl->Revert( x )
+    #define IPropertyStorage_Enum( x, p ) \
+        (x)->lpVtbl->Enum( x, p )
+    #define IPropertyStorage_SetTimes( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetTimes( x, p1, p2, p3 )
+    #define IPropertyStorage_SetClass( x, p ) \
+        (x)->lpVtbl->SetClass( x, p )
+    #define IPropertyStorage_Stat( x, p ) \
+        (x)->lpVtbl->Stat( x, p )
+    #define IPropertySetStorage_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IPropertySetStorage_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IPropertySetStorage_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IPropertySetStorage_Create( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Create( x, p1, p2, p3, p4, p5 )
+    #define IPropertySetStorage_Open( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Open( x, p1, p2, p3 )
+    #define IPropertySetStorage_Delete( x, p ) \
+        (x)->lpVtbl->Delete( x, p )
+    #define IPropertySetStorage_Enum( x, p ) \
+        (x)->lpVtbl->Enum( x, p )
+    #define IEnumSTATPROPSTG_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IEnumSTATPROPSTG_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IEnumSTATPROPSTG_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IEnumSTATPROPSTG_Next( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3 )
+    #define IEnumSTATPROPSTG_Skip( x, p ) \
+        (x)->lpVtbl->Skip( x, p )
+    #define IEnumSTATPROPSTG_Reset( x ) \
+        (x)->lpVtbl->Reset( x )
+    #define IEnumSTATPROPSTG_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IEnumSTATPROPSETSTG_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IEnumSTATPROPSETSTG_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IEnumSTATPROPSETSTG_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IEnumSTATPROPSETSTG_Next( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3 )
+    #define IEnumSTATPROPSETSTG_Skip( x, p ) \
+        (x)->lpVtbl->Skip( x, p )
+    #define IEnumSTATPROPSETSTG_Reset( x ) \
+        (x)->lpVtbl->Reset( x )
+    #define IEnumSTATPROPSETSTG_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+#endif
+
+/* Functions in OLE32.DLL */
+WINOLEAPI   FmtIdToPropStgName( const FMTID *, LPOLESTR );
+WINOLEAPI   FreePropVariantArray( ULONG, PROPVARIANT * );
+WINOLEAPI   PropStgNameToFmtId( const LPOLESTR, FMTID * );
+WINOLEAPI   PropVariantClear( PROPVARIANT * );
+WINOLEAPI   PropVariantCopy( PROPVARIANT *, const PROPVARIANT * );
+WINOLEAPI   StgCreatePropSetStg( IStorage *, DWORD, IPropertySetStorage ** );
+WINOLEAPI   StgCreatePropStg( IUnknown *, REFFMTID, const CLSID *, DWORD, DWORD, IPropertyStorage ** );
+WINOLEAPI   StgOpenPropStg( IUnknown *, REFFMTID, DWORD, DWORD, IPropertyStorage ** );
+
+/* Functions in OLE32.DLL for property/variant conversion */
+EXTERN_C SERIALIZEDPROPERTYVALUE * __stdcall    StgConvertVariantToProperty( const PROPVARIANT *, USHORT, SERIALIZEDPROPERTYVALUE *, ULONG *, PROPID, BOOLEAN, ULONG * );
+#ifdef __cplusplus
+EXTERN_C BOOLEAN __stdcall                      StgConvertPropertyToVariant( const SERIALIZEDPROPERTYVALUE *, USHORT, PROPVARIANT *, PMemoryAllocator * );
+#endif
+
+/* Functions implemented as macros */
+#define PropVariantInit( x )    memset( x, 0, sizeof( PROPVARIANT ) )
+
+:include cplusepi.sp
+
+#endif /* __propidl_h__ */

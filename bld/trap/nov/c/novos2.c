@@ -230,7 +230,7 @@ ULONG           SendSem = 0;
 #define IPXRelinquishControl()  DosSleep( 1 )
 
 
-static unsigned DoRemoteGet( void *rec, unsigned len )
+static unsigned DoRemoteGet( char *rec, unsigned len )
 {
     int         i;
     int         p;
@@ -272,7 +272,7 @@ putstring( "Done RemoteGet\r\n" );
     return( recvd );
 }
 
-static unsigned DoRemotePut( void *snd, unsigned len )
+static unsigned DoRemotePut( char *snd, unsigned len )
 {
     WORD        rc;
 
@@ -307,12 +307,12 @@ putconnstatus( Connection );
 putstring( "Done RemotePut\r\n" );
 }
 
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( void *snd, unsigned len )
+unsigned RemotePut( char *snd, unsigned len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {

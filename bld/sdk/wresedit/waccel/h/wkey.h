@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  Bool WHandleGetKeyValue ( WAccelEditInfo *, Bool );
-extern  Bool WGetKeyPressProc   ( WAccelEditInfo *, UINT, WPARAM, LPARAM );
+extern Bool WHandleGetKeyValue( WAccelEditInfo *, Bool );
+extern Bool WGetKeyPressProc( WAccelEditInfo *, UINT, WPARAM, LPARAM );
 
 #endif

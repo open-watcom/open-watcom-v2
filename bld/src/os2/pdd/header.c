@@ -1,7 +1,7 @@
 /*================================================================\
 |                                                                 |
 |      OS/2 Physical Device Driver Example Code                   |
-|                  for Watcom C/C++ 10.x                          |
+|                  for Open Watcom C/C++                          |
 |                                                                 |
 |  HEADER.C (Header portion of driver, must be first in DATA SEG) |
 |                                                                 |
@@ -11,7 +11,7 @@
 |  IBM Personal Systems Developer magazine.                       |
 |                                                                 |
 |                                                                 |
-|  Adapted for Watcom C/C++ 10.x by WATCOM International Corp.    |
+|  Adapted for Open Watcom C/C++                                  |
 |  Original Author: Rick Fishman                                  |
 |                   Code Blazers, Inc.                            |
 |                   4113 Apricot                                  |

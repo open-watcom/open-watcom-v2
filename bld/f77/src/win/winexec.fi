@@ -1,0 +1,41 @@
+*$noreference
+
+! Application-Execution Functions:
+! --------------------------------
+
+      external LoadModule
+      external WinExec
+      external WinHelp
+
+      integer*2 LoadModule
+      integer*2 WinExec
+      integer*2 WinHelp
+
+! Commands to pass WinHelp()
+
+      integer HELP_CONTEXT
+      integer HELP_QUIT
+      integer HELP_INDEX
+      integer HELP_HELPONHELP
+      integer HELP_SETINDEX
+      integer HELP_KEY
+      integer HELP_MULTIKEY
+
+      parameter ( HELP_CONTEXT    = '0001'x ) ! Display topic in ulTopic
+      parameter ( HELP_QUIT       = '0002'x ) ! Terminate help
+      parameter ( HELP_INDEX      = '0003'x ) ! Display index
+      parameter ( HELP_HELPONHELP = '0004'x ) ! Display help on using help
+      parameter ( HELP_SETINDEX   = '0005'x ) ! Set the current Index for multi
+                                              ! index help
+      parameter ( HELP_KEY        = '0101'x ) ! Display topic for keyword in
+                                              ! offabData
+      parameter ( HELP_MULTIKEY   = '0201'x )
+
+
+      structure /MULTIKEYHELP/
+          integer*2             mkSize
+          integer*1             mkKeylist
+          integer*1             szKeyphrase(1)
+      end structure
+
+*$reference

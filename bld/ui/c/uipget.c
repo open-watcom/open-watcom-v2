@@ -33,11 +33,16 @@
 #include "uidef.h"
 #include "uidebug.h"
 
+#if defined( __GNUC__ ) && defined( __APPLE__ )
+// Workaround for buggy GCC on OS X - if initializer isn't present, variable won't be defined!
+global          EVENT                   Event = 0;
+#else
 global          EVENT                   Event;
+#endif
 
 
-EVENT intern saveevent()
-/**********************/
+EVENT intern saveevent( void )
+/****************************/
 {
     register    EVENT                   ev;
 
@@ -52,10 +57,8 @@ EVENT intern saveevent()
 }
 
 
-EVENT intern getprime( vptr )
-/***************************/
-
-register        VSCREEN*                vptr;
+EVENT intern getprime( VSCREEN *vptr )
+/************************************/
 {
     _uicheckuidata();
     if( Event <= EV_NO_EVENT ) {
@@ -71,20 +74,16 @@ register        VSCREEN*                vptr;
 }
 
 
-EVENT global uivgetprime( vptr )
-/******************************/
-
-register        VSCREEN*                vptr;
+EVENT global uivgetprime( VSCREEN *vptr )
+/***************************************/
 {
     getprime( vptr );
     return( saveevent() );
 }
 
 
-EVENT global uivgetprimevent( vptr )
-/**********************************/
-
-register        VSCREEN*                vptr;
+EVENT global uivgetprimevent( VSCREEN *vptr )
+/*******************************************/
 {
     register    EVENT                   ev;
 

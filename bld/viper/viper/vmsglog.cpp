@@ -30,6 +30,20 @@
 ****************************************************************************/
 
 
+extern "C" {
+    #include <stdio.h>
+    #include "rcdefs.h"
+
+#ifdef __WINDOWS__
+    #include "common.h"
+    #include "link.h"
+#endif
+#define CONNECTION_TRIES        10
+#define CONNECTION_INTERVAL     300
+    static int _connectionTries = 0;
+    #include "batcher.h"
+};
+
 #include "vpemain.hpp"
 #include "vmsglog.hpp"
 #include "mproject.hpp"
@@ -51,20 +65,6 @@
 #include "wpshbttn.hpp"
 
 #include "mconfig.hpp"
-
-extern "C" {
-    #include <stdio.h>
-    #include "rcdefs.h"
-
-#ifdef __WINDOWS__
-    #include "common.h"
-    #include "link.h"
-#endif
-#define CONNECTION_TRIES        10
-#define CONNECTION_INTERVAL     300
-    static int _connectionTries = 0;
-    #include "batcher.h"
-};
 
 #define LOG_HELP_KEY    GUI_KEY_F1
 #define LOG_ESCAPE_KEY  GUI_KEY_ESCAPE
@@ -162,8 +162,8 @@ WEXPORT VMsgLog::VMsgLog( VpeMain* parent )
 
     _batcher->setPopup( _parent->logPopup() );
 
-    addAccelKey( LOG_ESCAPE_KEY, this, (bcbi)&VMsgLog::kAccelKey );
-    addAccelKey( LOG_HELP_KEY, this, (bcbi)&VMsgLog::kAccelKey );
+    addAccelKey( LOG_ESCAPE_KEY, this, (bcbk)&VMsgLog::kAccelKey );
+    addAccelKey( LOG_HELP_KEY, this, (bcbk)&VMsgLog::kAccelKey );
 }
 
 void VMsgLog::startConnect()
@@ -289,7 +289,7 @@ bool VMsgLog::saveLogAs()
     WFileDialog fd( this, sFilter );
     fn = fd.getOpenFileName( fn, "Save Log as", WFSaveDefault );
     if( fn.legal() ) {
-        fn.toLower();
+//        fn.toLower();
         WFile f;
         if( !f.open( fn, OStyleWrite ) ) {
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to save log file '%s'", (const char*)fn );
@@ -306,8 +306,10 @@ bool VMsgLog::saveLogAs()
     return ok;
 }
 
-bool VMsgLog::kAccelKey( int key )
+bool VMsgLog::kAccelKey( gui_key _key )
 {
+    int key = _key;
+
     switch( key ) {
         case LOG_ESCAPE_KEY: {
             stopRequest( NULL );
@@ -355,7 +357,7 @@ void VMsgLog::connectTimer( WTimer* timer, DWORD )
     const char* err = "Unable to connect to batch server.";
     if( !_batserv ) {
 #ifdef __WINDOWS__
-        _serverConnected = VxDConnect();
+        _serverConnected = (BOOL)VxDConnect();
 #endif
     } else {
         err = BatchLink( NULL );
@@ -793,3 +795,10 @@ bool VMsgLog::keyDown( WKeyCode kc, WKeyState ks )
         return( TRUE );
     }
 }
+
+// forward notification to the child control
+bool VMsgLog::scrollNotify( WScrollNotification sn, int diff )
+{
+    return( _batcher->scrollNotify( sn, diff ) );
+}
+

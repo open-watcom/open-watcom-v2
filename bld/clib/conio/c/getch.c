@@ -38,26 +38,25 @@
 #ifndef DEFAULT_WINDOWING
     #include "tinyio.h"
     extern      unsigned char _dos(char);
-
     #pragma aux _dos = _INT_21 parm caller [ah] value [al];
 #endif
 
-_WCRTLINK int getch()
-    {
-        register unsigned int c;
+_WCRTLINK int getch( void )
+{
+    int         c;
 
-        c = _RWD_cbyte;
-        _RWD_cbyte = 0;
-        if( c == 0 )  {
-            #ifdef DEFAULT_WINDOWING
-                if( _WindowsGetch != 0 ) {
-                    LPWDATA     res;
-                    res = _WindowsIsWindowedHandle( STDIN_FILENO );
-                    c = _WindowsGetch( res );
-                }
-            #else
-                c = _dos( 8 );
-            #endif
+    c = _RWD_cbyte;
+    _RWD_cbyte = 0;
+    if( c == 0 )  {
+#ifdef DEFAULT_WINDOWING
+        if( _WindowsGetch != 0 ) {
+            LPWDATA     res;
+            res = _WindowsIsWindowedHandle( STDIN_FILENO );
+            c = _WindowsGetch( res );
         }
-        return( c );
+#else
+        c = _dos( 8 );
+#endif
     }
+    return( c );
+}

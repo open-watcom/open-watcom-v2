@@ -48,5 +48,6 @@ typedef gui_attr        WPaintAttr;
 #define WPaintAttrIcon                  GUI_ICON
 #define WPaintAttrMenuGrayedActive      GUI_MENU_GRAYED_ACTIVE
 #define WPaintAttrFrameResize           GUI_FRAME_RESIZE
+#define WPaintAttrControlBackground     GUI_CONTROL_BACKGROUND
 
 #endif

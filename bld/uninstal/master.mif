@@ -1,0 +1,46 @@
+proj_name = uninstal
+name = uninstal
+
+!ifndef uninstal_autodepends
+uninstal_autodepends = .AUTODEPEND
+!endif
+
+sys_windowed = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+objs = uninstal.obj
+
+.c: $(uninstal_dir)
+
+inc_dirs = -I".." -I"$(commonui_dir)/h"
+
+xlibs = $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+
+# systems where version resources must be added to .EXE
+version_res_nt_386  = exever.res
+
+$(name).exe : rcstr.gh $(objs) $(name).res $(xlibs) $(version_res_$(host_os)_$(host_cpu))
+        %create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk file { $(objs) }
+        @%append $^&.lnk lib { $(xlibs) }
+        $(linker) name $^@ @$^&.lnk
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(name).res $^@
+!endif
+
+rcstr.gh : rcstrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+
+rcstrmsg.gh : $(uninstal_dir)/uninstal.msg
+        $(c_pp) -zk0 $(inc_path) $[@ >$^@
+
+$(name).res: ../$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+
+!include verrc.mif

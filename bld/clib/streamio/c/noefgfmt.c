@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dummy floating-point formatting routines.
 *
 ****************************************************************************/
 
@@ -37,10 +36,11 @@
 #include "ftos.h"
 #include "farsupp.h"
 
-static void _no_support_loaded()
-    {
-        __fatal_runtime_error( "Floating-point support not loaded\r\n", 1 );
-    }
 
-_WCRTLINK FAR_STRING (*__EFG_printf)() = _no_support_loaded;
-_WCRTLINK int       (*__EFG_scanf)()  = _no_support_loaded;
+static void _no_support_loaded( void )
+{
+    __fatal_runtime_error( "Floating-point support not loaded", 1 );
+}
+
+_WCRTLINK FAR_STRING (*__EFG_printf)() = (FAR_STRING (*)())_no_support_loaded;
+_WCRTLINK void       (*__EFG_scanf)()  = _no_support_loaded;

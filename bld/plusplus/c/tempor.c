@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 #include "plusplus.h"
 #include "cgfront.h"
 #include "name.h"
@@ -84,7 +82,7 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
     }
     sym->id = id;
     if( id == SC_STATIC ) {
-        ScopeInsert( FileScope, sym, name );
+        ScopeInsert( GetFileScope(), sym, name );
         if( storage ) {
             CgSegIdData( sym, SI_ALL_ZERO );
             DgSymbol( sym );
@@ -116,7 +114,7 @@ static SCOPE tempScope;         // NULL or scope for temporaries
 SCOPE ScopeForTemps(            // FIND SCOPE FOR TEMPORARIES
     void )
 {
-    return tempScope == NULL ? CurrScope : tempScope;
+    return tempScope == NULL ? GetCurrScope() : tempScope;
 }
 
 
@@ -124,14 +122,14 @@ void ScopeGenAccessSet(         // SET ACCESS SCOPE FOR GENERATION
     TYPE cltype )               // - type for inlining
 {
     DbgVerify( tempScope == NULL, "ScopeAccessSet -- tempScope != NULL" );
-    tempScope = CurrScope;
-    CurrScope = TypeScope( cltype );
+    tempScope = GetCurrScope();
+    SetCurrScope (TypeScope( cltype ));
 }
 
 
 void ScopeGenAccessReset(       // RESET ACCESS SCOPE FOR GENERATION
     void )
 {
-    CurrScope = tempScope;
+    SetCurrScope (tempScope);
     tempScope = NULL;
 }

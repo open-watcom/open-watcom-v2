@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Set up DGROUP access without needing relocs (for emulator).
 ;*
 ;*****************************************************************************
 
@@ -35,9 +34,7 @@ include mdef.inc
 
         datasegment
         enddata
-;
-;       set up addressability without segment relocations for emulator
-;
+
 public  __GETDS
 __GETDS proc    near
         push    ax                      ; save ax

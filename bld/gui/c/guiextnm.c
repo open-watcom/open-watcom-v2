@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Get/set resource file name.
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef UNIX
+#ifndef __WATCOMC__
     #include "clibext.h"
 #endif
 #include "bool.h"
@@ -42,7 +41,7 @@ static char   GUIExtName[_MAX_PATH] = "";
 extern char * GUIGetExtName( void )
 {
     if( GUIExtName[0] == '\0' ) {
-#if !defined( WINDU ) && defined(UNIX)
+#if defined( __UNIX__ ) && defined( GUI_EXT_RES )
         _cmdname( GUIExtName );
         strcat( GUIExtName, ".res" );
         return( GUIExtName );

@@ -53,7 +53,7 @@ static orl_hash_value orlStringEncode( const char *string )
     h = 0;
     for( p = (const char *) string; *p; p++ ) {
         h = ( h << 4 ) + *p;
-        if( g = h & 0xf0000000 ) {
+        if( (g = h & 0xf0000000) ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
@@ -68,7 +68,7 @@ static orl_hash_value orlHash( orl_hash_table hash_table, orl_hash_value key )
 
 orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_value key, orl_hash_data data )
 {
-    orl_hash_value              hash_value;
+    orl_hash_value              hash_value = 0;
     orl_hash_struct *           hash_ptr;
     orl_hash_struct *           new_element;
     orl_hash_data_struct *      last;
@@ -109,7 +109,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_value key, or
 
 orl_hash_data_struct *ORLHashTableQuery( orl_hash_table hash_table, orl_hash_value key )
 {
-    orl_hash_value      hash_value;
+    orl_hash_value      hash_value = 0;
     orl_hash_struct *   hash_ptr;
 
     switch( hash_table->type ) {

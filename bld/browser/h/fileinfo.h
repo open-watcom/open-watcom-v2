@@ -34,7 +34,7 @@
 #define __FILEINFO_H__
 
 #include <io.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 
 #include "wtime.h"
 

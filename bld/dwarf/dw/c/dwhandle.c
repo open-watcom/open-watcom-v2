@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage handles.
 *
 ****************************************************************************/
 
@@ -45,18 +44,17 @@
 /* number of elts in a block; should be a power of 2 */
 #define BLOCK_SIZE      1024
 
-typedef uint_16 index_t;
+typedef uint_16 dw_index_t;
 typedef struct handle_blk handle_blk;
 struct handle_blk {
     handle_common       data[ BLOCK_SIZE ];
-    index_t             index;  /* data[0] is the (index*BLOCK_SIZE)th elt */
+    dw_index_t          index;  /* data[0] is the (index*BLOCK_SIZE)th elt */
     uint_16             height; /* height of this node */
     handle_blk *        next[ 1 ];
 };
 
 #ifndef NDEBUG
 #include <stdio.h>
-#include <process.h>
 
 static struct {
     unsigned    dump_handle : 1;
@@ -162,7 +160,7 @@ dw_handle NewHandle(
 
     elm_num = cli->handles.num_handles;
     if( elm_num % BLOCK_SIZE == 0 ) { /* time to allocate a new block */
-        if( elm_num >= BLOCK_SIZE * ( 1ul << 8*sizeof( index_t ) ) ) {
+        if( elm_num >= BLOCK_SIZE * ( 1ul << 8*sizeof( dw_index_t ) ) ) {
             _Abort( ABORT_TOO_MANY_HANDLES );
         }
         newBlock( cli );
@@ -177,7 +175,7 @@ dw_handle NewHandle(
 
 static handle_blk *getIndex(
     dw_client                   cli,
-    index_t                     index )
+    dw_index_t                  index )
 {
     int                         i;
     handle_blk *                blk;

@@ -39,6 +39,7 @@
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
@@ -46,6 +47,7 @@
 #include "hostsys.h"
 #include "cgstub.h"
 #include "feprotos.h"
+#include "cgmem.h"
 
 #include "stubdata.h"
 
@@ -58,7 +60,6 @@ extern  char            *Label(l *);
 extern  void            Action(char *,... );
 extern  void            Code(char *,... );
 extern  segment_id      SetFile(segment_id );
-extern  pointer         CGAlloc(int );
 extern  void            CGError(char *,... );
 extern  void            VerBack(b *);
 extern  int             FCreate(char *);
@@ -66,16 +67,9 @@ extern  void            FShut(int);
 extern  int             FStdOut();
 extern  char            *EnvVar(char*);
 
-extern  type_def        *TypeAddress(cg_type);
 extern  void            DumpTree(pointer);
-extern  type_def        *TypeDef(cg_type,type_length);
-extern  uint            Length(char*);
-extern  void            TypeFini();
 extern  char            *CopyStr(char*,char*);
-extern  void            TypeInit();
-extern  type_def        *TypeAlias(cg_type,cg_type);
 extern  byte            *Copy(void*,void*,uint);
-extern  void            CGFree(pointer);
 extern  void            exit(int);
 extern  void            VDefLabel(l *);
 extern  void            InitDbgInfo();
@@ -116,7 +110,7 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     TypeIdx = 0;
     InitDbgInfo();
     TypeInit();
-    TypeDef( T_DEFAULT, 0 );
+    TypeDef( TY_DEFAULT, 0 );
     Inlines = NULL;
     NodeList = NULL;
     AutoList = NULL;

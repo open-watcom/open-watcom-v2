@@ -1,0 +1,163 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [Startup]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">2.0 - DOS/32 Advanced -
+Startup<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+In general, the DOS Extender will take the following actions when started:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">
+  <li> detect if enough conventional
+  (DOS) memory is present to run<br>
+  <li> detect system software type: Clean (INT 15h), XMS, VCPI or DPMI<br>
+  <li> initialize the present system, allocate extended memory and enter the
+  protected mode</font></p>
+</blockquote>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">After having successfully entered
+the protected mode, the loader will be executed and will attempt to load
+your 16/32-bit protected mode application. When the program is loaded into memory,
+it will be executed.</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">At the very startup of
+the DOS Extender, DOS/32 Advanced will detect the type of the CPU and FPU
+installed into the machine on which the DOS Extender is currently running. DOS/32
+Advanced will correctly detect and identify different CPU types manufactured
+by different CPU vendors. The FPU will be detected and initialized as well
+and will be reset to hold zeroes only. After that, DOS/32 Advanced will
+try to detect and initialize the underlying system software.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When the system software
+is detected to be Clean, XMS or VCPI, the built-in DPMI host of DOS/32 Advanced
+will attempt to allocate the extended memory from the system.
+Note that the extended memory that is to be allocated by
+the DOS Extender, will be allocated once at startup, not in blocks when
+you call DPMI functions 05xxh. This may explain why under VCPI there will
+be a delay when the DOS Extender is started, since some VCPI servers (for
+example <i>emm386.exe</i>) will require additional time to test and
+map pages into pagetables.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Under Clean and XMS systems,
+DOS/32 Advanced will also enable the A20 line, which will allow the DOS
+Extender to get an access to the extended memory. On exit, the state of
+the A20 line will be restored, ie if it was enabled, it will not be disabled
+by the DOS Extender. Note that under Clean system, the DOS Extender will
+always leave the A20 line enabled when exiting to DOS.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The built-in DPMI host
+will, when installed, preserve the following interrupts in real mode:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">INT 1Bh (CTRL-BREAK)<br>
+  INT 1Ch (Timer ticks)<br>
+  INT 21h (DOS API)<br>
+  INT 23h (CTRL-C)<br>
+  INT 24h (Critical handler)<br>
+  INT 2Fh (Multiplex)</font></p>
+</blockquote>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">These real mode interrupts
+will be restored on exit to DOS no matter how the DOS Extender was configured,
+since they are the keys to important system resources. That means that your
+protected mode program can not install these interrupts for later use by
+programs in real mode when the protected mode program is terminated and
+the DOS is running. Please also note that the real mode DOS itself will
+restore interrupts 23h and 24h when performing its cleanup after the program
+issued INT 21h AH=4Ch.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Four callbacks will be
+allocated by the built-in DPMI to send the following real mode interrupts
+from real mode to protected mode:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">INT 1Bh (CTRL-BREAK)<br>
+  INT 1Ch (Timer ticks)<br>
+  INT 23h (CTRL-C)<br>
+  INT 24h (Critical handler)</font></p>
+</blockquote>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note that these
+real mode callbacks will not be installed unless you install the corresponding
+interrupts in protected mode.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Three software interrupts
+will be installed in protected mode by the DOS Extender:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">INT 10h (Video BIOS API)<br>
+  INT 21h (DOS API)<br>
+  INT 33h (Mouse API)</font></p>
+</blockquote>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">These interrupts in protected
+mode will extend the corresponding real mode interrupts, ie convert protected
+mode pointers to real mode values, perform buffered reads/writes and so
+on.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The interrupt INT 21h
+will be trapped by the built-in DPMI in the both real and protected modes.
+In the real mode, DOS function AH=4Ch (Terminate Program) will be sent to
+a protected mode termination routine. This will ensure that if a real mode
+program tries to terminate your protected mode program (for example when
+you have not installed protected mode INT 1Bh, CTRL-BREAK, but you use that
+key combination anyway), the extended memory will be deallocated by the
+built-in DPMI and the protected mode program will be terminated in the proper
+way.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The DOS Extender will
+also try to initialize a mouse driver, first using a software reset function
+AX=0021h, and if it fails/not supported by the mouse driver use a hardware
+reset function AX=0000h. If both calls return an error, the DOS Extender
+will assume that no mouse/mouse driver is present and will redirect the
+protected mode INT 33h to an IRETD instruction causing any calls to INT
+33h in protected mode to return without performing any action.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">If a mouse/mouse driver
+was successfully detected, the DOS Extender will allocate a callback for
+the extended mouse function 000Ch which will be used to inform the protected
+mode handler of mouse events.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">After the DOS Extender
+and DPMI have been initialized, DOS/32 Advanced will load and execute your
+protected mode program.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

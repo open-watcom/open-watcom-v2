@@ -160,8 +160,8 @@ typedef struct {
 
 /* buffer lengths */
 #define CMD_LEN         156
-#define UTIL_LEN        512
-#define TXT_LEN         512
+#define UTIL_LEN        1024
+#define TXT_LEN         1024
 #define TRP_LEN         80
 #define NAM_LEN         40
 

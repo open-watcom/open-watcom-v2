@@ -1,0 +1,409 @@
+/*
+ *  afxdlgs.inl Inline implementation of functions declared in afxdlgs.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE CString CFileDialog::GetFileExt() const
+/************************************************/
+{
+    return( m_szFileName + m_ofn.nFileExtension );
+}
+
+AFX_INLINE CString CFileDialog::GetFileName() const
+/*************************************************/
+{
+    return( m_szFileName + m_ofn.nFileOffset );
+}
+
+AFX_INLINE CString CFileDialog::GetFileTitle() const
+/**************************************************/
+{
+    return( m_szFileTitle );
+}
+
+AFX_INLINE const OPENFILENAME &CFileDialog::GetOFN() const
+/********************************************************/
+{
+    return( m_ofn );
+}
+
+AFX_INLINE OPENFILENAME &CFileDialog::GetOFN()
+/********************************************/
+{
+    return( m_ofn );
+}
+
+AFX_INLINE CString CFileDialog::GetPathName() const
+/*************************************************/
+{
+    return( m_szFileName );
+}
+
+AFX_INLINE BOOL CFileDialog::GetReadOnlyPref() const
+/**************************************************/
+{
+    return( m_ofn.Flags & OFN_READONLY );
+}
+
+AFX_INLINE void CFileDialog::HideControl( int nID )
+/*************************************************/
+{
+    ::SendMessage( m_hWnd, CDM_HIDECONTROL, nID, 0L );
+}
+
+AFX_INLINE void CFileDialog::SetControlText( int nID, LPCTSTR lpsz )
+/******************************************************************/
+{
+    ::SendMessage( m_hWnd, CDM_SETCONTROLTEXT, nID, (LPARAM)lpsz );
+}
+
+AFX_INLINE void CFileDialog::SetDefExt( LPCTSTR lpsz )
+/****************************************************/
+{
+    ::SendMessage( m_hWnd, CDM_SETDEFEXT, 0, (LPARAM)lpsz );
+}
+
+AFX_INLINE void CFileDialog::SetTemplate( UINT nWin3ID, UINT nWin4ID )
+/********************************************************************/
+{
+    SetTemplate( MAKEINTRESOURCE( nWin3ID ), MAKEINTRESOURCE( nWin4ID ) );
+}
+
+AFX_INLINE COLORREF CColorDialog::GetColor() const
+/************************************************/
+{
+    return( m_cc.rgbResult );
+}
+
+AFX_INLINE COLORREF CFontDialog::GetColor() const
+/***********************************************/
+{
+    return( m_cf.rgbColors );
+}
+
+AFX_INLINE void CFontDialog::GetCurrentFont( LPLOGFONT lplf )
+/***********************************************************/
+{
+    ASSERT( lplf != NULL );
+    memcpy( lplf, m_cf.lpLogFont, sizeof( LOGFONT ) );
+}
+
+AFX_INLINE CString CFontDialog::GetFaceName() const
+/*************************************************/
+{
+    return( m_cf.lpLogFont->lfFaceName );
+}
+
+AFX_INLINE int CFontDialog::GetSize() const
+/*****************************************/
+{
+    return( m_cf.iPointSize );
+}
+
+AFX_INLINE CString CFontDialog::GetStyleName() const
+/**************************************************/
+{
+    return( m_cf.lpszStyle );
+}
+
+AFX_INLINE int CFontDialog::GetWeight() const
+/*******************************************/
+{
+    return( m_cf.lpLogFont->lfWeight );
+}
+
+AFX_INLINE BOOL CFontDialog::IsBold() const
+/*****************************************/
+{
+    return( m_cf.lpLogFont->lfWeight == FW_BOLD );
+}
+
+AFX_INLINE BOOL CFontDialog::IsItalic() const
+/*******************************************/
+{
+    return( m_cf.lpLogFont->lfItalic );
+}
+
+AFX_INLINE BOOL CFontDialog::IsStrikeOut() const
+/**********************************************/
+{
+    return( m_cf.lpLogFont->lfStrikeOut );
+}
+
+AFX_INLINE BOOL CFontDialog::IsUnderline() const
+/**********************************************/
+{
+    return( m_cf.lpLogFont->lfUnderline );
+}
+
+AFX_INLINE int CPrintDialog::GetCopies() const
+/********************************************/
+{
+    return( m_pd.nCopies );
+}
+
+AFX_INLINE int CPrintDialog::GetFromPage() const
+/**********************************************/
+{
+    return( m_pd.nFromPage );
+}
+
+AFX_INLINE HDC CPrintDialog::GetPrinterDC() const
+/***********************************************/
+{
+    return( m_pd.hDC );
+}
+
+AFX_INLINE int CPrintDialog::GetToPage() const
+/********************************************/
+{
+    return( m_pd.nToPage );
+}
+
+AFX_INLINE BOOL CPrintDialog::PrintAll() const
+/********************************************/
+{
+    return( !(m_pd.Flags & (PD_SELECTION | PD_PAGENUMS)) );
+}
+
+AFX_INLINE BOOL CPrintDialog::PrintCollate() const
+/************************************************/
+{
+    return( m_pd.Flags & PD_COLLATE );
+}
+
+AFX_INLINE BOOL CPrintDialog::PrintRange() const
+/**********************************************/
+{
+    return( m_pd.Flags & PD_PAGENUMS );
+}
+
+AFX_INLINE BOOL CPrintDialog::PrintSelection() const
+/**************************************************/
+{
+    return( m_pd.Flags & PD_SELECTION );
+}
+
+#if (_WIN32_WINNT >= 0x0500)
+
+AFX_INLINE int CPrintDialogEx::GetCopies() const
+/**********************************************/
+{
+    return( m_pdex.nCopies );
+}
+
+AFX_INLINE HDC CPrintDialogEx::GetPrinterDC() const
+/*************************************************/
+{
+    return( m_pdex.hDC );
+}
+
+AFX_INLINE BOOL CPrintDialogEx::PrintAll() const
+/**********************************************/
+{
+    return( !(m_pdex.Flags & (PD_SELECTION | PD_PAGENUMS | PD_CURRENTPAGE)) );
+}
+
+AFX_INLINE BOOL CPrintDialogEx::PrintCollate() const
+/**************************************************/
+{
+    return( m_pdex.Flags & PD_COLLATE );
+}
+
+AFX_INLINE BOOL CPrintDialogEx::PrintCurrentPage() const
+/******************************************************/
+{
+    return( m_pdex.Flags & PD_CURRENTPAGE );
+}
+
+AFX_INLINE BOOL CPrintDialogEx::PrintRange() const
+/************************************************/
+{
+    return( m_pdex.Flags & PD_PAGENUMS );
+}
+
+AFX_INLINE BOOL CPrintDialogEx::PrintSelection() const
+/****************************************************/
+{
+    return( m_pdex.Flags & PD_SELECTION );
+}
+
+#endif // (_WIN32_WINNT >= 0x0500)
+
+AFX_INLINE CSize CPageSetupDialog::GetPaperSize() const
+/*****************************************************/
+{
+    return( m_psd.ptPaperSize );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::FindNext() const
+/**************************************************/
+{
+    return( m_fr.Flags & FR_FINDNEXT );
+}
+
+AFX_INLINE CString CFindReplaceDialog::GetFindString() const
+/**********************************************************/
+{
+    return( m_fr.lpstrFindWhat );
+}
+
+AFX_INLINE CString CFindReplaceDialog::GetReplaceString() const
+/*************************************************************/
+{
+    return( m_fr.lpstrReplaceWith );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::IsTerminating() const
+/*******************************************************/
+{
+    return( m_fr.Flags & FR_DIALOGTERM );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::MatchCase() const
+/***************************************************/
+{
+    return( m_fr.Flags & FR_MATCHCASE );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::MatchWholeWord() const
+/********************************************************/
+{
+    return( m_fr.Flags & FR_WHOLEWORD );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::ReplaceAll() const
+/****************************************************/
+{
+    return( m_fr.Flags & FR_REPLACEALL );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::ReplaceCurrent() const
+/********************************************************/
+{
+    return( m_fr.Flags & FR_REPLACE );
+}
+
+AFX_INLINE BOOL CFindReplaceDialog::SearchDown() const
+/****************************************************/
+{
+    return( m_fr.Flags & FR_DOWN );
+}
+
+AFX_INLINE void CPropertyPage::Construct( UINT nIDTemplate, UINT nIDCaption )
+/***************************************************************************/
+{
+    Construct( MAKEINTRESOURCE( nIDTemplate ), nIDCaption, 0, 0 );
+}
+
+AFX_INLINE void CPropertyPage::Construct( LPCTSTR lpszTemplateName, UINT nIDCaption )
+/***********************************************************************************/
+{
+    Construct( lpszTemplateName, nIDCaption, 0, 0 );
+}
+
+AFX_INLINE void CPropertyPage::Construct( UINT nIDTemplate, UINT nIDCaption,
+                                          UINT nIDHeaderTitle, UINT nIDHeaderSubTitle )
+/*************************************************************************************/
+{
+    Construct( MAKEINTRESOURCE( nIDTemplate ), nIDCaption, nIDHeaderTitle,
+               nIDHeaderSubTitle );
+}
+
+AFX_INLINE const PROPSHEETPAGE &CPropertyPage::GetPSP() const
+/***********************************************************/
+{
+    return( m_psp );
+}
+
+AFX_INLINE PROPSHEETPAGE &CPropertyPage::GetPSP()
+/***********************************************/
+{
+    return( m_psp );
+}
+
+AFX_INLINE void CPropertySheet::Construct( UINT nIDCaption, CWnd *pParentWnd,
+                                           UINT iSelectPage )
+/***********************************************************/
+{
+    Construct( nIDCaption, pParentWnd, iSelectPage, NULL, NULL, NULL );
+}
+
+AFX_INLINE void CPropertySheet::Construct( LPCTSTR pszCaption, CWnd *pParentWnd,
+                                           UINT iSelectPage )
+/***********************************************************/
+{
+    Construct( pszCaption, pParentWnd, iSelectPage, NULL, NULL, NULL );
+}
+
+AFX_INLINE void CPropertySheet::EnableStackedTabs( BOOL bStacked )
+/****************************************************************/
+{
+    m_bStacked = bStacked;
+}
+
+AFX_INLINE void CPropertySheet::EndDialog( int nEndID )
+/*****************************************************/
+{
+    ::EndDialog( m_hWnd, nEndID );
+}
+
+AFX_INLINE CPropertyPage *CPropertySheet::GetPage( int nPage ) const
+/******************************************************************/
+{
+    ASSERT( nPage >= 0 && nPage < m_psh.nPages );
+    CPropertyPage *pPage = (CPropertyPage *)m_pages.GetAt( nPage );
+    ASSERT( pPage != NULL );
+    ASSERT( pPage->IsKindOf( RUNTIME_CLASS( CPropertyPage ) ) );
+    return( pPage );
+}
+
+AFX_INLINE int CPropertySheet::GetPageCount() const
+/*************************************************/
+{
+    return( m_pages.GetSize() );
+}
+
+AFX_INLINE CTabCtrl *CPropertySheet::GetTabControl() const
+/********************************************************/
+{
+    return( (CTabCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd, PSM_GETTABCONTROL,
+                                                               0, 0L ) ) );
+}
+
+AFX_INLINE void CPropertySheet::MapDialogRect( LPRECT lpRect ) const
+/******************************************************************/
+{
+    ::MapDialogRect( m_hWnd, lpRect );
+}
+
+AFX_INLINE void CPropertySheet::PressButton( int iButton )
+/********************************************************/
+{
+    ::SendMessage( m_hWnd, PSM_PRESSBUTTON, iButton, 0L );
+}
+
+AFX_INLINE void CPropertySheet::SetFinishText( LPCTSTR lpszText )
+/***************************************************************/
+{
+    ::SendMessage( m_hWnd, PSM_SETFINISHTEXT, 0, (LPARAM)lpszText );
+}
+
+AFX_INLINE void CPropertySheet::SetTitle( LPCTSTR lpszText, UINT nStyle )
+/***********************************************************************/
+{
+    ::SendMessage( m_hWnd, PSM_SETTITLE, nStyle, (LPARAM)lpszText );
+}
+
+AFX_INLINE void CPropertySheet::SetWizardButtons( DWORD dwFlags )
+/***************************************************************/
+{
+    ::SendMessage( m_hWnd, PSM_SETWIZBUTTONS, 0, dwFlags );
+}
+
+AFX_INLINE void CPropertySheet::SetWizardMode()
+/*********************************************/
+{
+    m_psh.dwFlags |= PSH_WIZARD;
+}

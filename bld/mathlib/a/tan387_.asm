@@ -32,12 +32,12 @@
 
 include mdef.inc
 include struct.inc
-include math387.inc
+include math87.inc
 
         extern_chipbug
 
 .287
-        modstart        tan87
+        modstart        tan387
 
         xdefp   __tan87         ; calc tan(fac1)
 

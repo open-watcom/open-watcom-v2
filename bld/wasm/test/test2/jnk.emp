@@ -1,0 +1,4 @@
+
+FIXUPP386(9d) len:000bh, chksum:48h(48)
+    0004h Seg   OFFSET386    Frame: GI(1)     Target: EI(6)
+    000ah Seg   OFFSET386    Frame: GI(1)     Target: EI(6)

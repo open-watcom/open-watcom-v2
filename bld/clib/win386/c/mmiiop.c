@@ -37,7 +37,7 @@ LPMMIOPROC PASCAL _Cover_mmioInstallIOProc(FOURCC fccIOProc,
 {
     if( dwFlags & MMIO_INSTALLPROC ) {
         return( mmioInstallIOProc( fccIOProc,
-                SetProc( pIOProc, GETPROC_MMSYSTEM_MMIOPROC ), dwFlags ) );
+                SetProc( (FARPROC)pIOProc, GETPROC_MMSYSTEM_MMIOPROC ), dwFlags ) );
     } else {
         return( mmioInstallIOProc( fccIOProc, pIOProc, dwFlags ) );
     }

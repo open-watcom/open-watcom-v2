@@ -1,0 +1,6 @@
+# This file produced by MS2WLINK
+system dos
+file object.obj
+file file.obj
+file name.obj
+name e_xe.exe

@@ -60,12 +60,22 @@ _WCRTLINK int unlock( int handle, unsigned long offset, unsigned long nbytes )
         return( 0 );
 #elif defined(__OS2_286__)
         APIRET  rc;
+/* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
+#ifdef INCL_16	
+        FILELOCK        flock;
+
+        __handle_check( handle, -1 );
+        flock.lOffset = offset;
+        flock.lRange  = nbytes;
+        rc = DosFileLocks( handle, &flock, NULL );
+#else
         LONG unlock_block[2];
 
         __handle_check( handle, -1 );
         unlock_block[0] = offset;
         unlock_block[1] = nbytes;
         rc = DosFileLocks( handle, unlock_block, NULL );
+#endif	
         if( rc != 0 ) {
             return( __set_errno_dos( rc ) );
         }

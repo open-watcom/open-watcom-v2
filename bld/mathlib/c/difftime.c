@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of difftime().
 *
 ****************************************************************************/
 
@@ -36,6 +35,6 @@
 
 
 _WMRTLINK double difftime( time_t t1, time_t t0 )
-    {
-        return( (double)t1 - (double)t0 );
-    }
+{
+    return( (double)t1 - (double)t0 );
+}

@@ -1,0 +1,113 @@
+.387
+.386p
+		PUBLIC	_p1
+		PUBLIC	p2
+		PUBLIC	`_p3@20`
+		PUBLIC	P4
+		PUBLIC	_p5
+		PUBLIC	`_p6@0`
+		PUBLIC	p7
+		PUBLIC	_d1
+		PUBLIC	d2
+		PUBLIC	_d3
+		PUBLIC	D4
+		PUBLIC	d5
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_p1:
+    push        ebp 
+    mov         ebp,esp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 8[ebp] 
+    les         di,dword ptr 18H[ebp] 
+    mov         ax,word ptr 0cH[ebp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    leave       
+    ret         
+p2:
+    push        ebp 
+    mov         ebp,esp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 8[ebp] 
+    les         di,dword ptr 18H[ebp] 
+    mov         ax,word ptr 0cH[ebp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    leave       
+    ret         
+`_p3@20`:
+    push        ebp 
+    mov         ebp,esp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 8[ebp] 
+    les         di,dword ptr 18H[ebp] 
+    mov         ax,word ptr 0cH[ebp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    leave       
+    ret         14H 
+P4:
+    push        ebp 
+    mov         ebp,esp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 18H[ebp] 
+    les         di,dword ptr 8[ebp] 
+    mov         ax,word ptr 14H[ebp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    leave       
+    ret         14H 
+_p5:
+    ret         
+`_p6@0`:
+    ret         
+p7:
+    push        ebp 
+    mov         ebp,esp 
+    push        es 
+    push        di 
+    push        bx 
+    mov         bl,byte ptr 8[ebp] 
+    les         di,dword ptr 18H[ebp] 
+    mov         ax,word ptr 0cH[ebp] 
+    mov         ax,word ptr DGROUP:L$1 
+    pop         bx 
+    pop         di 
+    pop         es 
+    leave       
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_d1:
+    DB	0
+d2:
+    DB	0
+_d3:
+    DB	0
+D4:
+    DB	0
+d5:
+    DB	0
+L$1:
+    DB	0, 0
+
+_DATA		ENDS
+		END

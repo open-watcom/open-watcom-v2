@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level DOS file I/O.
 *
 ****************************************************************************/
 
@@ -40,45 +39,16 @@
 #include "dbgreg.h"
 #include "trpfile.h"
 
-extern char *Format(char *,char *,... );
-extern char *StrCopy(char *,char *);
+#include "doserr.h"
 
-extern char             _osmajor;
+extern char     _osmajor;
 
 file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
-
-static char *DosErrMsgs[] = {
-        "",
-        "invalid function number",
-        "file not found",
-        "path not found",
-        "too many open files",
-        "access denied",
-        "invalid handle",
-        "memory control blocks destroyed",
-        "insufficient memory",
-        "invalid memory block address",
-        "invalid environment",
-        "invalid format",
-        "invalid access code",
-        "invalid data",
-        "", /* reserved */
-        "invalid drive was specified",
-        "attempt to remove current directory",
-        "not same device",
-        "no more files"
-};
-#define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
-
 void LocalErrMsg( sys_error code, char *buff )
 {
-    if( code > MAX_CODE ) {
-        Format( buff, "error #%u", code );
-    } else {
-        StrCopy( DosErrMsgs[ code ], buff );
-    }
+    GetDOSErrMsg( code, buff);
 }
 
 
@@ -133,14 +103,15 @@ unsigned LocalWrite( sys_handle filehndl, void *ptr, unsigned len )
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
 {
-    tiny_ret_t  ret;
+    tiny_ret_t      ret;
+    unsigned long   pos;
 
-    ret = TinySeek( hdl, len, method );
+    ret = TinyLSeek( hdl, len, method, &pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( -1UL );
     }
-    return( ret );
+    return( pos );
 }
 
 unsigned LocalClose( sys_handle filehndl )

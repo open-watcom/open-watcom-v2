@@ -1,0 +1,13 @@
+.387
+.386p
+.model flat
+		EXTRN	var1:BYTE
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_main:
+    mov         eax,dword ptr FLAT:var1 
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

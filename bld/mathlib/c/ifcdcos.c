@@ -33,9 +33,9 @@
 #include "variety.h"
 #include "cplx.h"
 
-_WMRTLINK dcomplex _IF_CDCOS( double rp, double ip ) {
-//===================================================
-
+_WMRTLINK dcomplex _IF_CDCOS( double rp, double ip )
+//==================================================
+{
 // Return the cosine of arg.
 // cos( x + iy ) = ( exp( ix ) exp( -y ) + exp( -ix ) exp( y ) ) / 2
 //               = ( cis( x ) exp( -y ) + cis( -x ) exp( y ) ) / 2

@@ -77,6 +77,11 @@ WAbout::WAbout( WWindow* parent, WHotSpots* hs, int idx, const char* title, cons
 void WAbout::initialize() {
 /*************************/
 
+    WPoint average;
+    WPoint max;
+
+    setSystemFont( FALSE );
+    textMetrics( average, max );
     if( _textArray ) {
         for( int i=0; _textArray[i]; i++ ) {
             int w = getTextExtentX( _textArray[i] );
@@ -92,15 +97,15 @@ void WAbout::initialize() {
     _height += hotSize.y();
 
     static const char ok[] = { "OK" };
-    int w = getTextExtentX( ok ) * 3;
-    int h = getTextExtentY( ok ) * 3/2;
+    int w = 50 * average.x() / 4;
+    int h = 14 * average.y() / 8;
     int xoff = (_width - w) / 2;
     int yoff = _height + h / 2;
-    WDefPushButton* bOk = new WDefPushButton( this, WRect( xoff, yoff, w, h), ok );
+    WDefPushButton* bOk = new WDefPushButton( this, WRect( xoff, yoff, w, h ), ok );
     bOk->onClick( this, (cbw)&WAbout::okButton );
     bOk->setFocus();
     bOk->show();
-    _height += 2*h;
+    _height += 2 * h;
 
     WOrdinal wheight = _height;
     if( _title ) {

@@ -61,7 +61,7 @@ static void SetText( gui_window * wnd, WPI_COLOUR fore, WPI_COLOUR back )
     _wpi_setbackcolour( wnd->hdc, _wpi_getnearestcolor( wnd->hdc , back ) );
 }
 
-void GUIDrawTextBitmapRGB ( gui_window *wnd, char *text,
+void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
                             int length, int height, gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
                             bool draw_extent, int bitmap )
@@ -86,7 +86,8 @@ void GUIDrawTextBitmapRGB ( gui_window *wnd, char *text,
     //draw_cache        dcache;
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ||
-        ( ( text == NULL ) && ( bitmap == 0 ) ) ) {
+        ( ( text == NULL ) && ( bitmap == 0 ) ) ||
+        ( ( bitmap != 0 ) && ( height == 0 ) ) ) {
         return;
     }
     old_rop = 0;
@@ -99,7 +100,7 @@ void GUIDrawTextBitmapRGB ( gui_window *wnd, char *text,
         height = AVGYCHAR(GUItm);
     }
     rect = wnd->hwnd_client;
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
+    _wpi_getrectvalues( rect, &left, &top, &right, &bottom);
     _wpi_getpaintrect( wnd->ps, &paint_rect );
     _wpi_getwrectvalues( paint_rect, &paint_left, &paint_top, &paint_right,
                          &paint_bottom );
@@ -160,13 +161,13 @@ void GUIDrawTextBitmapRGB ( gui_window *wnd, char *text,
 #ifdef __OS2_PM__
         _wpi_rectangle( wnd->hdc, nDrawX, nDrawY+1, right, nDrawY + height - 1 );
 #else
-        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height );
+        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height);
 #endif
 
         /* if visible even with scrolling */
         if( nDrawX < ( paint_right + hscroll_pos ) ) {
             if( bitmap > 0 ) {
-                GUIDrawBitmap( bitmap, wnd->hdc, nDrawX, nDrawY );
+                GUIDrawBitmap( bitmap, wnd->hdc, nDrawX, nDrawY, colour);
             } else {
 #ifdef __OS2_PM__
                 nDrawY += _wpi_metricdescent( GUItm );
@@ -195,7 +196,7 @@ void GUIDrawTextBitmapRGB ( gui_window *wnd, char *text,
     }
 }
 
-void GUIDrawTextBitmapAttr( gui_window *wnd, char *text, int length,
+void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, int length,
                             int height, gui_coord *pos,
                             gui_attr attr, gui_ord extentx,
                             bool draw_extent, int bitmap )
@@ -205,11 +206,11 @@ void GUIDrawTextBitmapAttr( gui_window *wnd, char *text, int length,
     fore = GUIGetFore( wnd, attr );
     back = GUIGetBack( wnd, attr );
 
-    GUIDrawTextBitmapRGB ( wnd, text, length, height, pos, fore, back, extentx,
+    GUIDrawTextBitmapRGB( wnd, text, length, height, pos, fore, back, extentx,
                            draw_extent, bitmap );
 }
 
-void GUIXDrawText( gui_window *wnd, char *text, int length, gui_coord *pos,
+void GUIXDrawText( gui_window *wnd, const char *text, int length, gui_coord *pos,
                    gui_attr attr, gui_ord extentx, bool draw_extent )
 {
     GUIDrawTextBitmapAttr( wnd, text, length, 0, pos, attr, extentx, draw_extent, 0 );

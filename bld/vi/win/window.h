@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern void InitWindows();
-extern void FiniWindows();
-extern void RedrawWindows();
+extern void InitWindows( void );
+extern void FiniWindows( void );
+extern void RedrawWindows( void );

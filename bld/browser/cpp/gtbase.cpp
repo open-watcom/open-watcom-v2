@@ -45,10 +45,10 @@
 #include "gtedges.h"
 #include "screendv.h"
 
-const NodeBuffer = 2;
-const sibSep = 10;
-const edgeStub = 5;
-const childSep = 50;
+const int NodeBuffer = 2;
+const int sibSep = 10;
+const int edgeStub = 5;
+const int childSep = 50;
 
 //////////////////////////// TreePtr ///////////////////////////////
 
@@ -452,6 +452,7 @@ void TreeNode::arrangeTree( TreeCoord& sibOff )
     TreeCoord  maxDescend = 0;
     TreeCoord  mySib = sibOff;
     bool       vert  = (_parent->getDirection() == TreeVertical);
+    int        i;
 
     if( !_flags.enabled ) {
         _flags.placed = Placed;
@@ -473,7 +474,7 @@ void TreeNode::arrangeTree( TreeCoord& sibOff )
     _descend.h( width );
 
     // scram through and check for simple children (one parent, no kids)
-    for( int i = 0; i < getCount( ChildList ); i += 1 ) {
+    for( i = 0; i < getCount( ChildList ); i += 1 ) {
         TreeNode * node = getNode( ChildList, i );
 
         if( node->_flags.placed < Arranging && node->isSimple( ChildList ) ) {
@@ -483,8 +484,8 @@ void TreeNode::arrangeTree( TreeCoord& sibOff )
             node->arrangeTree( tmpOff );
             tmpOff += sibSep;
 
-            if( getLevel() < 0 || node->getLevel() < 0 ||
-                 node->getLevel() == getLevel() + 1 ) {
+            if( getLevel() < 0 || node->getLevel() < 0
+                || node->getLevel() == getLevel() + 1 ) {
 
                 sibOff = tmpOff;
             }
@@ -850,8 +851,9 @@ bool TreeNode::resolveChildWard( TreeRect & r )
     bool       minSet = FALSE;
     int        maxLevel;
     int        minLevel;
+    int        i;
 
-    for( int i = 0; i < getCount( FlatList ); i += 1 ) {
+    for( i = 0; i < getCount( FlatList ); i += 1 ) {
         TreeNode * node = getNode( FlatList, i );
 
         int tLevel = node->getLevel();
@@ -1011,6 +1013,8 @@ void TreeNode::getMaxCoord( TreeCoord & x, TreeCoord & y )
 void TreeNode::paintTree( OutputDevice *dev, TreeRect * r )
 //---------------------------------------------------------
 {
+    int     i;
+
     TreeCoord xOff = _parent->getXOff();
     TreeCoord yOff = _parent->getYOff();
 
@@ -1019,7 +1023,7 @@ void TreeNode::paintTree( OutputDevice *dev, TreeRect * r )
      * we won't have any edges overlapped by nodes.
      */
 
-    for( int i = getCount( FlatList ); i > 0; i -= 1 ) {
+    for( i = getCount( FlatList ); i > 0; i -= 1 ) {
         TreeNode * node = getNode( FlatList, i - 1 );
         node->paint( dev, r );
     }
@@ -1396,10 +1400,11 @@ void TreeRoot::paint( TreeRootList& roots, OutputDevice *dev, TreeRect *r )
     TreeRoot ** tst = roots.search( r, (TComp) rootRectComp );
 
     if( tst != NULL ) {
-        TreeRoot * R;
+        TreeRoot    *R;
+        int         i;
 
         index = roots.indexOfSame( *tst );
-        for( int i = index; i < roots.count(); i += 1 ) {
+        for( i = index; i < roots.count(); i += 1 ) {
             R = roots[ i ];
 
             if( R->_enabled && rootRectComp( r, (TreeRoot const **) &R ) )

@@ -1,0 +1,267 @@
+
+ MIPS Back End Implementation Notes
+ ==================================
+
+ Terminology
+ -----------
+ In MIPS literature, word is a 32-bit quantity, doubleword is a 64-bit
+quantity and halfword is a 16-bit quantity. In the cg we use the terminology
+common on Intel and Alpha, ie. word is a 16-bit quantity, doubleword is
+32-bit and quadword is 64-bit. This may seem confusing but the opposite
+choice would not be any less confusing. In most cases, code refers to types
+such as I8 or U4 (meaning signed 8-byte integer and unsigned 4-byte integer,
+respectively) so there is no ambiguity.
+
+ Register Definitions
+ --------------------
+ Description of machine registers lies a the core of the cg. The MIPS
+register set is quite orthogonal and straightforward, and can be modeled by
+the cg well. Since MIPS64 support is a possible future option, an attempt was
+made to share the register definition between MIPS32 and MIPS64. This was
+rejected as unworkable, even though i86 and 386 codegens share a single
+register description. The problem is that the register description is tightly
+tied to register sizes, and there appears to be no practical way to model the
+fact that on MIPS32, GPRs are 32-bit, while on MIPS64 the "same" GPRs are
+not. This is subject to change.
+
+ The floating point registers are somewhat unusual in the MIPS I ISA. The
+CPU (or rather Coprocessor 1) has 32 registers which are 32-bit and can hold
+a single precision floating-point value. The FPU can however work with double
+precision values as pairs of adjacent 32-bit registers. The cg can model
+model this fairly easily - the double precision registers can be used as
+operands, even if loads and stores only work on the 32-bit register halves. 
+Later revisions of the MIPS32 ISA define 32 64-bit floating point registers;
+it might take a bit of effort to represent this in a codegen that can target
+all 32-bit MIPS variants in a single executable.
+
+ Register $0, also known as $zero, is hardwired to zero. This does not need
+to be reflected in the register description. The register is merely marked as
+unavailable so that the register allocator will not choose it (just like it
+won't choose the stack pointer, return address register etc.). The cg will
+often use $0 as a hardcoded instruction operand.
+
+ Calling Conventions
+ -------------------
+ At this point the calling convention is effectively hardcoded into the cg.
+The information is based on "MIPS RISC Architecture" (2nd Ed.) by Kane and
+Heinrich, as well as the System V MIPS ABI supplement, which appears to be
+derived from the same source. It would be desirable to also support the n32
+ABI; it ought to be possible to intermix those freely, just like various
+calling conventions can be mixed on x86. However this is probably an overkill
+and a command line switch to select the ABI should be enough.
+
+ A more detailed description of the MIPS linkage convention follows. The
+convention may seem idiosyncratic, but makes in fact good sense in light of
+its apparent design objective: to support non-portable variadic functions
+which assume that all arguments are passed on stack, as well as support
+calling of unprototyped variadic functions.
+
+ It's easiest to imagine that all arguments are passed on stack, laid out as
+if they were members of a structure with possible gaps due to alignment.
+Up to four first words (16 bytes) of this imaginary structure are passed in
+registers. These registers are $4-$7 ($a0-$a3), or possibly $f12 and $f14
+(note that those are actually doubleword sized floating-point register pairs).
+At most two first consecutive arguments are passed in floating-point
+registers, and if so, the corresponding integer registers will be marked as
+unavailable. In addition, at least four words (16 bytes) will always be
+allocated on the stack (to account for all arguments passed in registers).
+
+ This scheme allows a variadic function to save arguments passed in registers
+on the stack just in front of any "overflow" arguments that did not fit into
+registers, and obtain a consecutive argument area on the stack.
+
+ Only passing at most two first floating-point arguments in registers ensures
+that if an unprototyped function is variadic, the variable arguments will
+be passed in integer registers and can be easily saved on the stack.
+
+ Somewhat related is the issue of position independent code (PIC). The cg
+must be able to generate both PIC and non-PIC objects. The PIC generation is
+based on the System V MIPS ABI supplement. This should hopefully cover all
+target environments, as they'll either follow the SysV ABI or won't use PIC
+at all.
+
+
+ Code overview
+ -------------
+ The following paragraphs contain a brief description of the MIPS specific
+part of the cg. The code can be very roughly divided into three parts:
+register description and associated parameter passing, high level cg assembler
+instruction reductions, and lastly instruction encoding.
+
+ Register set and parameter passing
+ ----------------------------------
+The register set is defined in mipsreg.h. Due to the way the cg works, each
+32-bit register is defined as consisting of two 16-bit as well as four 8-bit
+"subregisters". A set of 64-bit pseudo-registers is also defined to
+facilitate working with long long integers and other 64-bit objects.
+
+Note: Currently there seems to be a problem in that the cg doesn't 'know'
+that a load from memory will always load a zero- or sign-extended 32-bit
+quantity into a register, even if the source operand is 8-bit or 16-bit. This
+leads to generation of unnecesary bit masking instructions.
+
+ The floating point register set description is likely to be revised. See
+above notes about how the original MIPS ISA implements floating point.
+
+ HW_DEFINE_GLOBAL_CONST macro is used to define constants that may be used
+throughout the cg as well as the language front end (ie. if you change the
+register description header, you'll have to recompile the world afterwards).
+
+ The mipsreg.c module defines which registers need to be saved, which
+registers a callee may destroy, which is the return address register etc.
+The CallState() function is part of what defines the calling convention.
+It calls SavedRegs() and ParmRegs() to determine which registers will be
+saved and which are used for parameter passing. This function may also
+query the #pragma aux interface to let the user override the register
+assignments.
+
+ The mipsrgtbl.c module is related and contains further description of the
+register set. Among other things it defines how parameters are passed and
+how values are returned from functions. The FixedRegs() function determines
+which registers are considered "fixed"; the register allocator is not allowed
+to use these. This includes $gp, $sp, $at, and for obvious reasons, $zero.
+All of these register assignments are hardcoded, although they could be made
+variable if there was a need for it. The RegTrans() function is used by
+higher level code to convert from hw_reg_set type to architecture specific
+register index (eg. for HW_D14 this will return 14). This is used when
+converting high level cg instructions into machine code.
+
+ Instruction reductions
+ ----------------------
+ The cg uses a "high level assembler" to represent code. The assembler works
+with a small set of types (designated as U1, I4, FS etc. for unsigned 1-byte,
+integer 4-byte and floating point single precision, respectively, just to name
+a few) and operators (AND, MUL, XOR, NEG, CALL, JMP etc.). These instructions
+are initially passed in by a language front end - see the cg interface
+document (cgdoc). The cg performs a number of high level optimizations on
+these instructions to simplify/improve the code.
+
+ Note that although the CPU specific reductions may be "optimizing", most of
+this is done in a CPU independent way in higher level code (primarily
+cg/treefold.c module). That way code can be written once and all supported
+architectures automatically take advantage of it.
+
+ Once the code generation phase starts, the register allocator part of the
+cg (that's the black magic part) will attempt to "reduce" the high level
+instructions into instructions that have direct machine code equivalents.
+Module mipsoptab.c defines an array called OpTable. This array is a matrix of
+operand type/operator entries and for each operand, determines how each
+possible operand type will be handled. _NYI_ designates combinations that
+could be handled but aren't "yet". __X__ means an invalid combination (it
+is an error to encounter it) and _____ means an operation that is a no-op
+on a given platform.
+
+ The OpTable points to a set of tables in mipstable.c. As an example, let's
+take a look at the table of binary operators (BINARY_TABLE macro, expanded
+for each operand size). The 'op1' and 'op2' columns are the operands, 'res'
+is the result. The operand types are R for register, C for constant and
+M for memory. The 'verify' column may specify a constraint that must be true
+for the reduction to be valid. In the 'R = R op C' line, the constraint is
+V_HALFWORDCONST2. This means that operand 2 (the constant) must fit into a
+16-bit halfword (yes, the terminology is inconsistent). Similarly the
+'R = C op ANY' constraint, V_SYMMETRIC, means that the operands may be
+swapped as long as the operator is symmetric (aka commutative, for instance
+addition or multiplication, but not subtraction or division).
+
+ The 'eq' column further restricts when a reduction may be used. If it
+contains EQ_R1, the reduction is only applicable when the result is the same
+as operand op1. Similarly EQ_R2 restricts the reduction to a case where the
+second operand (op2) is the same as the result. The typical case where 'eq'
+is set to NONE does not place any such restrictions on the operands.
+
+ The 'gen' column determines the action to be taken for the specific
+combination of operands and result types which also satisfies all conditions.
+There are two basic classes, G_ for 'generate' and R_ for 'routine'. The
+G_ actions, for instance G_BINARY_IMM, will be described later. The R_
+actions are associated with specific routines via r.h header. For instance
+R_SWAPOPS will call a routine rSWAPOPS(), which is generic enough to be
+defined in bld/cg/split.c. It can be seen that the generic reduction routines
+are in the high level cg directory, CPU class specific routines are in the
+appropriate subdirectory (risc, intel) and CPU specific routines are in
+the CPU directory - in this case, mipssplit.c. Note that the reduction
+routines do not generate code, they merely create new high level instructions
+through MakeBinary(), MakeUnary() etc.
+
+ The 'reg' column specifies which register type a given reduction works with.
+Finally the 'fu' column determines which (if any) functional unit of the CPU
+an instruction uses. This gives the optimizer some hint as to how to schedule
+instructions so that the functional units could work in parallel.
+ 
+ Instruction encoding
+ --------------------
+ Once the instruction stream is broken down into bite-sized chunks, it's time
+to generate machine code. The important module is mipsenc.c, and in particular
+the Encode() routine. This is essentially a big switch statement dealing with
+all possible G_ instructions. Note that the set of 'generate' actions is
+defined in g.h. This set is partially generic and partially CPU specific.
+Creating this set is probably more art than science and strongly depends on
+the idiosyncrasies of a particular hardware architecture. The encode module
+is the lowest level of code generation and produces actual machine code. 
+
+ In the case of MIPS ISA the instruction set is pleasantly simple. Routines
+GenIType(), GenJType(), GenRType() etc. define "by the book" MIPS instruction
+encoding types. Most of the G_ instructions generate one or two machine
+instructions in a very straightforward manner.
+
+ Instructions that require relocations (G_CALL) and/or reference labels
+(G_CONDBR for conditional branch) aren't generated immediately. Rather these
+are inserted into the optimizer queue for later processing. This is because
+at the time Encode() is called, the final layout of the code is not yet
+known. Near the end of the code generation phase, the cg will go over the
+queue and call into mipsenc2.c to generate the machine code for calls and
+jumps. The OWL (Object Writer Library) is responsible for emitting the final
+object file and also processes relocations.
+
+
+ Miscellaneous notes
+ -------------------
+
+ - We use code cloned from Intel cg to optimize conditional set instructions.
+  It seems like it might be a lot easier to just have the cg generate OP_SET
+  opcodes directly. While that is true and the cg perhaps ought to do that,
+  there are two reasons why additional logic is desirable: One, MIPS only has
+  'set if less' operation available, so extra code is required anyway to
+  reject or massage conditional sets. Two, the optimization code helps in
+  cases where a conditional set can't be generated directly. If we end up
+  for instance with this code:
+  
+  if( a < b )
+      c = 56;
+  else
+      c = 57;
+      
+  it will be generated as
+  
+  slt   c,b,a
+  addiu c,c,56
+  
+  See mipssetc.c, reference 386setcc.c.
+ 
+
+ Development tips
+ ----------------
+ When working on the codegen, here are a few tips to make your life easier:
+
+ - Use the debug build of cg, front end and support libs (especially OWL).
+   This should be obvious. Besides facilitating debugging, the debug builds
+   contain lots of helpful asserts that will alert you to problems before
+   a crash does.
+   
+ - Use the -la switch (RISC codegens only). This will print the high level
+   assembler instructions together with their operands, as well as labels and
+   jumps. That will help you understand what the cg is trying to do or
+   what might be going wrong, because these instructions closely correspond
+   to generated code and show the allocated registers.
+   
+ - Use the 'vc DumpBlk' command from inside wd - this will produce information
+   very similar to -la switch. There are many other useful dump commands
+   built into debug versions of cg, but most of them aren't terribly
+   relevant to the low level CPU specific code generation.
+   
+ - Use the -lc switch (all compilers). This will trace the calls to the
+   high level cg interface and will show you what the language front end is
+   trying to do. This is especially useful if you are investigating a problem
+   and are unsure whether the issue is with the front end or cg. Note that
+   using -lc is equivalent to inserting '#pragma on( dump_cg )' in C source
+   code. Again please refer to the cg interface document for additional
+   information.

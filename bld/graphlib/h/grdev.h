@@ -24,30 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Graphics device function vectors.
 *
 ****************************************************************************/
 
 
 #pragma pack(push, 1);
 typedef struct graphics_device {
-    short           ( *init ) ();               // initialization
-    void            ( *finish ) ();             // finish up device
-    void            ( *set ) ();                // set device
-    void            ( *reset ) ();              // reset device
-    void            ( *setup ) ();              // setup routine
-    void pascal     ( near *up ) ();            // move up routine (ASM)
-    void pascal     ( near *left ) ();          // move left routine
-    void pascal     ( near *down ) ();          // move down routine
-    void pascal     ( near *right ) ();         // move right routine
-    void pascal     ( near *plot[4] ) ();       // plot-replace
-    short pascal    ( near *getdot ) ();        // get pixel color
-    void pascal     ( near *zap ) ();           // zap routine
-    void pascal     ( near *fill ) ();          // fill style routine
-    void pascal     ( near *pixcopy ) ();       // copy pixels
-    void pascal     ( near *readrow ) ();       // read a row of pixels
-    short pascal    ( near *scanleft ) ();      // left scan in paint
-    short pascal    ( near *scanright ) ();     // right scan in paint
+    short           (*init)( short );                           // initialization
+    void            (*finish)( void );                          // finish up device
+    void            (*set)( void );                             // set device
+    void            (*reset)( void );                           // reset device
+    void            (*setup)( short, short, short );            // setup routine
+    void pascal     (near *up)( void );                         // move up routine (ASM)
+    void pascal     (near *left)( void );                       // move left routine
+    void pascal     (near *down)( void );                       // move down routine
+    void pascal     (near *right)( void );                      // move right routine
+    void            (near *plot[4])( char far *, int, int );    // plot-replace
+    short           (near *getdot)( char far *, int, int );     // get pixel color
+    void            (near *zap)( char far *, int,
+                                 int, int, int );               // zap routine
+    void            (near *fill)( char far *, int,
+                                  int, int, int );              // fill style routine
+    void            (near *pixcopy)( char far *, char far *,
+                                     int, int, int );           // copy pixels
+    void            (near *readrow)( char far *, char far *,
+                                     int, int, int );           // read a row of pixels
+    short           (near *scanleft)( char far *, int, int,
+                                      int, int, int );          // left scan in paint
+    short           (near *scanright)( char far *, int, int,
+                                       int, int, int );         // right scan in paint
 } gr_device;
 #pragma pack (pop);

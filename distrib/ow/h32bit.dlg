@@ -1,0 +1,16 @@
+name=Help_32Bit
+static_text=\
+        //1"You can select which calling conventions you want to use. They are:"\
+        //2"使用したいメモリモデルの選択もできます. 以下のいずれかです:"\
+        //0
+static_text=
+static_text=\
+        //1"Register - some parameters are passed in registers"\
+        //2"レジスタ - 引数の一部はレジスタに入れて渡される"\
+        //0
+static_text=\
+        //1"Stack    - all parameters are passed on the stack"\
+        //2"スタック - 引数はすべてスタックに入れて渡される"\
+        //0
+static_text=
+include=ok.dlg

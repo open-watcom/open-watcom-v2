@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  BIOS disk access, 32-bit version.
 ;*
 ;*****************************************************************************
 
@@ -38,11 +37,7 @@ include struct.inc
         modstart b_disk
 
         defp    __ibm_bios_disk
-        if __WASM__ ge 100
-         xdefp  "C",__ibm_bios_disk
-        else
-         xdefp  <"C",__ibm_bios_disk>
-        endif
+        xdefp  "C",__ibm_bios_disk
 ;
 ;       unsigned __ibm_bios_disk( unsigned service, struct diskinfo_t *diskinfo );
 ;struct  diskinfo_t {            /* disk parameters */

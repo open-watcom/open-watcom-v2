@@ -24,62 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to emit type debugging information.
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
+#include "standard.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#include "cg.h"
-#include "standard.h"
 #include "cgprotos.h"
+#include "feprotos.h"
+#include "cgen.h"
 
-dbug_type DBTypeStruct();
-dbug_type DBTypeEnum();
-dbug_type DBType();
-void InitDBType();
+
+static dbug_type DBTypeStruct( TYPEPTR typ );
+static dbug_type DBTypeEnum( TYPEPTR typ );
+static void InitDBType( void );
+
 //void RevTypeList();
-extern  int     CGenType( TYPEPTR );
-extern  int     PtrType( TYPEPTR typ, int flags );
-extern  void    SymGet(SYMPTR,SYM_HANDLE);
-extern  SYMPTR  SymGetPtr(SYM_HANDLE);
 
-
-static void InitDBType()
+static void InitDBType( void )
 {
-    TYPEPTR  typ;
+    TYPEPTR     typ;
+
     ScopeStruct = DBScope( "struct" );
     ScopeUnion = DBScope( "union" );
     ScopeEnum = DBScope( "enum" );
     typ = GetType( TYPE_PLAIN_CHAR );
     if( typ->decl_type == TYPE_UCHAR ){
-        typ->debug_type = DBScalar( "char", T_UINT_1 );
+        typ->debug_type = DBScalar( "char", TY_UINT_1 );
     }else{
-        typ->debug_type = DBScalar( "char", T_INT_1 );
+        typ->debug_type = DBScalar( "char", TY_INT_1 );
     }
-    B_Int_1  = DBScalar( "signed char", T_INT_1 );
-    B_UInt_1 = DBScalar( "unsigned char", T_UINT_1 );
-    B_Short  = DBScalar( "short", T_INT_2 );
-    B_UShort = DBScalar( "unsigned short", T_UINT_2 );
+    B_Int_1  = DBScalar( "signed char", TY_INT_1 );
+    B_UInt_1 = DBScalar( "unsigned char", TY_UINT_1 );
+    B_Short  = DBScalar( "short", TY_INT_2 );
+    B_UShort = DBScalar( "unsigned short", TY_UINT_2 );
 #if TARGET_INT == 4
-    B_Int    = DBScalar( "int", T_INT_4 );
-    B_UInt   = DBScalar( "unsigned int", T_UINT_4 );
+    B_Int    = DBScalar( "int", TY_INT_4 );
+    B_UInt   = DBScalar( "unsigned int", TY_UINT_4 );
 #else
-    B_Int    = DBScalar( "int", T_INT_2 );
-    B_UInt   = DBScalar( "unsigned int", T_UINT_2 );
+    B_Int    = DBScalar( "int", TY_INT_2 );
+    B_UInt   = DBScalar( "unsigned int", TY_UINT_2 );
 #endif
-    B_Int32  = DBScalar( "long", T_INT_4 );
-    B_UInt32  = DBScalar( "unsigned long", T_UINT_4 );
-    B_Int64  = DBScalar( "__int64", T_INT_8 );
-    B_UInt64 = DBScalar( "unsigned __int64", T_UINT_8 );
+    B_Int32  = DBScalar( "long", TY_INT_4 );
+    B_UInt32  = DBScalar( "unsigned long", TY_UINT_4 );
+    B_Int64  = DBScalar( "__int64", TY_INT_8 );
+    B_UInt64 = DBScalar( "unsigned __int64", TY_UINT_8 );
+    B_Bool   = DBScalar( "_Bool", TY_UINT_1 );
     DebugNameList = NULL;
 }
 
 #if 0
-static void RevTypeList()
+static void RevTypeList( void )
 {
     TYPEPTR     previous, current, following;
 
@@ -97,37 +95,7 @@ static void RevTypeList()
 }
 #endif
 
-static int SimpleTypedef( TYPEPTR typ )
-{
-    TYPEPTR     *typp;
-
-    while( typ != NULL ) {
-        switch( typ->decl_type ) {
-        case TYPE_TYPEDEF:
-        case TYPE_ARRAY:
-        case TYPE_POINTER:
-            typ = typ->object;
-            break;
-        case TYPE_FUNCTION:
-            if( typ->u.parms != NULL ) {
-                for( typp = typ->u.parms; *typp != NULL; ++typp ) {
-                    if( !SimpleTypedef( *typp ) ) return( FALSE );
-                }
-            }
-            typ = typ->object;
-            break;
-        case TYPE_STRUCT:
-        case TYPE_UNION:
-        case TYPE_ENUM:
-            return( FALSE );
-        default:
-            return( TRUE );
-        }
-    }
-    return( TRUE );
-}
-
-void EmitADBType( TYPEPTR typ )
+static void EmitADBType( TYPEPTR typ )
 {
     switch( typ->decl_type ) {
     case TYPE_STRUCT:
@@ -137,8 +105,7 @@ void EmitADBType( TYPEPTR typ )
         if( typ->u.tag->name[0] == '\0' ) break;
         goto dump_type;
     case TYPE_TYPEDEF:
-        if( !(CompFlags.dump_types_with_names
-                || SimpleTypedef( typ )) ) break;
+        if( !CompFlags.dump_types_with_names ) break;
         if( CompFlags.no_debug_type_names ) break;
     dump_type:
 #if 0
@@ -149,10 +116,12 @@ void EmitADBType( TYPEPTR typ )
 #endif
         DBType( typ );
         break;
+    default:
+        break;
     }
 }
 
-void EmitDBType()
+void EmitDBType( void )
 {
 //    RevTypeList();
     InitDBType();
@@ -195,16 +164,20 @@ static dbug_type DBIntegralType( int decl_type )
     case TYPE_ULONG64:
         ret_val = B_UInt64;
         break;
+    case TYPE_BOOL:
+        ret_val = B_Bool;
+        break;
     }
     return( ret_val );
 }
 
-static dbug_type DoBasedPtr( TYPEPTR typ, predefined_cg_types cg_pnt_mod )
+static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
 {
-    dbug_type       ret_val;
+    dbug_type       ret_val = 0;
     dbg_loc         dl;
     SYM_HANDLE      sym_handle;
     auto SYM_ENTRY  sym;
+    int             have_retval = 0;
 
     dl = DBLocInit();
     sym_handle = typ->u.p.based_sym;
@@ -213,35 +186,40 @@ static dbug_type DoBasedPtr( TYPEPTR typ, predefined_cg_types cg_pnt_mod )
         dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
     } else {
         if( sym_handle == Sym_CS ) { /* 23-jan-92 */
-            ret_val = DBPtr( cg_pnt_mod, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
+            have_retval = 1;
         } else if( sym_handle == Sym_SS ) { /* 13-dec-92 */
-            ret_val = DBPtr( cg_pnt_mod, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
+            have_retval = 1;
         } else {
             SymGet( &sym, sym_handle );
             if( sym.name[0] == '.' ) {  /* if segment label 15-mar-92 */
-                ret_val = DBPtr( cg_pnt_mod, DBType( typ->object ) );
+                ret_val = DBPtr( cgtype, DBType( typ->object ) );
+                have_retval = 1;
             } else {
                 dl = DBLocSym( dl, sym_handle );
-                dl = DBLocOp( dl, DB_OP_POINTS, T_UINT_2 );
+                dl = DBLocOp( dl, DB_OP_POINTS, TY_UINT_2 );
                 dl = DBLocConst( dl, 0 );
                 dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
             }
         }
     }
-    ret_val = DBBasedPtr( cg_pnt_mod, DBType( typ->object ), dl );
+    if (!have_retval) {
+        ret_val = DBBasedPtr( cgtype, DBType( typ->object ), dl );
+    }
     DBLocFini( dl );
     return( ret_val );
 }
 
 dbug_type DBType( TYPEPTR typ )
 {
-    dbug_type     ret_val;
-    dbg_proc      pr;
-    TYPEPTR      *pparms;
-    unsigned long size;
-    auto SYM_ENTRY      sym;
+    dbug_type       ret_val;
+    dbg_proc        pr;
+    TYPEPTR         *pparms;
+    unsigned long   size;
+    auto SYM_ENTRY  sym;
     auto struct debug_fwd_types fwd_info, *fip;
-    predefined_cg_types cg_pnt_mod;
+    cg_type         cgtype;
 
     if( typ->debug_type == DBG_FWD_TYPE ) {
         fip = DebugNameList;
@@ -264,10 +242,13 @@ dbug_type DBType( TYPEPTR typ )
         ret_val = DBScalar( "void", TY_DEFAULT );
         break;
     case TYPE_FLOAT:
-        ret_val = DBScalar( "float", T_SINGLE );
+        ret_val = DBScalar( "float", TY_SINGLE );
         break;
     case TYPE_DOUBLE:
         ret_val = DBScalar( "double", TY_DOUBLE );
+        break;
+    case TYPE_LONG_DOUBLE:
+        ret_val = DBScalar( "long double", TY_DOUBLE );
         break;
     case TYPE_ARRAY:
         size = TypeSize( typ );
@@ -277,11 +258,11 @@ dbug_type DBType( TYPEPTR typ )
         ret_val = DBIntArrayCG( CGenType(typ), size, DBType( typ->object ) );
         break;
     case TYPE_POINTER:
-        cg_pnt_mod = PtrType( typ->object, typ->u.p.decl_flags );
+        cgtype = PtrType( typ->object, typ->u.p.decl_flags );
         if( typ->u.p.decl_flags & FLAG_BASED ) {
-            ret_val = DoBasedPtr( typ, cg_pnt_mod );
+            ret_val = DoBasedPtr( typ, cgtype );
         } else {
-            ret_val = DBPtr( cg_pnt_mod, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
         }
         break;
     case TYPE_STRUCT:
@@ -301,9 +282,9 @@ dbug_type DBType( TYPEPTR typ )
         DebugNameList = fwd_info.next;
         break;
     case TYPE_FUNCTION:
-        cg_pnt_mod = T_CODE_PTR;
-        pr = DBBegProc( cg_pnt_mod, DBType( typ->object ) );
-        for( pparms = typ->u.parms; pparms; pparms++ ) {
+        cgtype = TY_CODE_PTR;
+        pr = DBBegProc( cgtype, DBType( typ->object ) );
+        for( pparms = typ->u.fn.parms; pparms; pparms++ ) {
             if( (*pparms == NULL) ) break;
             if( (*pparms)->decl_type == TYPE_DOT_DOT_DOT ) break;
             DBAddParm( pr, DBType( *pparms ));
@@ -416,10 +397,9 @@ static dbug_type DBTypeEnum( TYPEPTR typ )
     return( ret_val );
 }
 
-
 dbug_type FEDbgType( CGSYM_HANDLE cgsym_handle )
 {
-    SYM_HANDLE          sym_handle = cgsym_handle;
+    SYM_HANDLE     sym_handle = cgsym_handle;
 
     return( DBType( SymGetPtr( sym_handle )->sym_type ) );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI sample program local constants and declarations.
 *
 ****************************************************************************/
 
@@ -185,7 +184,6 @@ extern  gui_create_info         Child2;
 extern  gui_create_info         Child3;
 extern  gui_create_info         Child4;
 extern  gui_create_info         DialogWndControl;
-extern  gui_create_info         DialogControl;
 extern  gui_toolbar_struct      ToolBar[];
 extern  gui_menu_struct         PopupMenu[];
 extern  gui_resource            HotSpots[];
@@ -209,3 +207,6 @@ extern void SetWidthHeight( gui_rect *rect, bool has_parent );
 
 extern  char            *OldValue;
 extern  gui_window      *DialogWindow;
+
+extern void * GUIAlloc( unsigned size );
+extern void GUIFree( void *chunk );

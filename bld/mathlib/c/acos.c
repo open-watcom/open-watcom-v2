@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Arccosine routine.
 *
 ****************************************************************************/
 
@@ -39,41 +38,34 @@
 #include "pdiv.h"
 
 
-_WMRTLINK extern double _IF_dacos( double );
-#if defined(_M_IX86)
- #pragma aux (if_rtn) _IF_acos "IF@ACOS";
- #pragma aux (if_rtn) _IF_dacos "IF@DACOS";
-#endif
-
 _WMRTLINK float _IF_acos( float x )
-/*********************/
-    {
-        return( _IF_dacos( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dacos( x ) );
+}
 
 _WMRTLINK double (acos)( double x )
-/***********************/
-    {
-        return( _IF_dacos( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dacos( x ) );
+}
 
 _WMRTLINK double _IF_dacos( double x )
-/*************************/
-    {
-        auto double     z;
+/************************************/
+{
+    double  z;
 
-        z =  1.0 - x * x;
-        if( z < 0.0 ) {
-//            z = _matherr( DOMAIN, "acos", &x, &x, 0.0 );
-            z = __math1err( FUNC_ACOS | M_DOMAIN | V_ZERO, &x );
-        } else if( z == 0.0 ) {
-            if( x < 0.0 ) {
-                z = Pi;
-            } else {
-                z = 0.0;
-            }
+    z =  1.0 - x * x;
+    if( z < 0.0 ) {
+        z = __math1err( FUNC_ACOS | M_DOMAIN | V_ZERO, &x );
+    } else if( z == 0.0 ) {
+        if( x < 0.0 ) {
+            z = Pi;
         } else {
-            z = Piby2 - atan( PDIV( x , sqrt( z ) ) );
+            z = 0.0;
         }
-        return( z );
+    } else {
+        z = Piby2 - atan( PDIV( x, sqrt( z ) ) );
     }
+    return( z );
+}

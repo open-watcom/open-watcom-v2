@@ -1,0 +1,240 @@
+WATCOM FORTRAN 77 Extensions to Standard FORTRAN 77
+===================================================
+
+* indicates a VAX FORTRAN 77 extension
+
+* 1. Length specifiers are allowed with type specification statements.
+
+        LOGICAL*1, LOGICAL*4
+        INTEGER*1, INTEGER*2, INTEGER*4
+        REAL*4, REAL*8
+        COMPLEX*8, COMPLEX*16
+
+     Length specifiers are also allowed with the type specified in FUNCTION
+     statements.
+
+        COMPLEX*16 FUNCTION ZADD( X, Y )
+
+* 2. Length specifiers are allowed with symbol names.
+
+        INTEGER I*2, A*2(10), B(20)*2
+
+        COMPLEX FUNCTION ZADD*16( X, Y )
+
+* 3. Length specifiers are allowed with types specified in IMPLICIT statements.
+
+        IMPLICIT INTEGER*2 (I-N)
+
+* 4. An asterisk enclosed in parentheses is allowed with the type CHARACTER
+     when specified in an IMPLICIT statement.
+
+        IMPLICIT CHARACTER*(*) (Z)
+
+* 5. Double precision complex constants are allowed.
+
+        Z = (1D0, 2D0)
+
+* 6. Mixing operands of type DOUBLE PRECISION and COMPLEX to yield a COMPLEX*16
+     result is allowed.
+
+        DOUBLE PRECISION X
+        COMPLEX Y, Z*16
+        Z = X + Y
+
+  7. Both character and non-character data is allowed in the same COMMON block.
+
+        INTEGER X
+        CHARACTER C
+        COMMON /BLK/ X, C
+
+  8. Equivalencing character to non-character data is permitted.
+
+        INTEGER X
+        CHARACTER C
+        EQUIVALENCE (X, C)
+
+* 9. Data initialization in a type specification statement is allowed.
+
+        DOUBLE PRECISION X/4.3D1/
+
+  10. Data initialization with hexadecimal constants is allowed.
+
+        INTEGER I/Z00000007/
+
+  11. Hollerith constants can be used interchangeably with character constants.
+
+        CHARACTER*10 A, B
+        A = '1234567890'
+        B = 10H123456790
+
+  12. It is possible to substring the return values of functions and
+      statement functions.
+
+        CHARACTER*7 F, G
+        F() = '1234567'
+        PRINT *, F()(1:3), G()(4:7)
+
+  13. Multiple assignment is allowed.
+
+        X = Y = Z = 0.0
+
+  14. Integer constants with more than 5 digits are allowed in the STOP and
+      PAUSE statements.
+
+        PAUSE 123456
+
+        STOP 123456
+
+  15. Structure control statements supported:
+
+        LOOP-ENDLOOP
+        UNTIL (can be used with WHILE and LOOP)
+        WHILE-ENDWILE
+        GUESS-ADMIT-ENDGUESS
+        ATENDDO-ENDATEND
+        ATEND
+        SELECT-ENDSELECT
+      * DOWHILE-ENDDO
+      * DO-ENDDO (no statement number)
+        REMOTEBLOCK-ENDBLOCK
+        EXECUTE
+        QUIT
+        EXIT
+        CYCLE
+
+  16. Block labels can be used to identify blocks of code.
+
+        LOOP : OUTER_LOOP
+            <statements>
+            LOOP : INNER_LOOP
+                <statements>
+                IF( X .GT.100 ) QUIT : OUTER_LOOP
+                <statements>
+            ENDLOOP
+            <statements>
+        ENDLOOP
+
+  17. Intrinsic functions supported:
+        ALGAMA        * BTEST         * CDABS         * CDCOS
+      * CDSIN         * CDEXP         * CDSQRT        * CDLOG
+        COTAN         * DCMPLX        * DCONJG          DCOTAN
+        DERF            DERFC         * DFLOAT          DGAMMA
+      * DIMAG           DLGAMA        * DREAL           ERF
+        ERFC            GAMMA           HFIX          * IAND
+        IBCHNG        * IBCLR         * IBSET         * IEOR
+      * IOR             ISHA            ISHC          * ISHFT
+        ISHL            LENTRIM         LGAMMA          LOC
+      * NOT
+
+  18. The following additional i/o specifiers for the OPEN statement are
+      supported.
+
+        ACTION=
+      * CARRIAGECONTROL=
+      * RECORDTYPE=
+      * RECL= is also allowed for files opened for sequential access
+      * ACCESS='APPEND'
+      * BLOCKSIZE=
+
+  19. The following additional i/o specifiers for the INQUIRE statement are
+      supported.
+
+        ACTION=
+      * CARRIAGECONTROL=
+      * RECORDTYPE=
+      * BLOCKSIZE=
+
+  20. In the INQUIRE statement, character data may also be returned in
+      variables or array elements with a substring operation.
+
+        CHARACTER FN*20
+        INQUIRE( UNIT=1, FILE=FN(10:20) )
+
+  21. List-directed i/o is allowed with internal files.
+
+  22. No asterisk required for list-directed i/o
+
+        PRINT, X, Y
+
+* 23. The IMPLICIT NONE statement is supported.
+
+* 24. The INCLUDE statement for embedding source from another file is supported.
+
+        INCLUDE 'SRC'
+
+* 25. Symbolic names are unique up to 32 characters.  Also, '$', '_', and
+      lower case letters are allowed in symbolic names.
+
+* 26. Lower case and upper case letters are treated in the same way except in:
+
+        1. character and hollerith constants
+        2. apostrophe and H edit descriptors
+
+  27. The following format edit descriptors are allowed:
+
+      * Z               for displaying data in hexadecimal format
+        Ew.dDe          same as Ew.dEe except D is used as exponentiation
+                        character
+      * $ or \          leave cursor at end of line
+
+  28. Commas are optional between format edit descriptors.
+
+        100   FORMAT( 1X I5 )
+
+* 29. End-of-line comments are permitted.
+
+        PRINT *, 'HELLO WORLD'  ! print 'hello world'
+        
+* 30. DOUBLE COMPLEX statement (equivalent to COMPLEX*16).
+
+* 31. .XOR. operator (equivalent to .NEQV.).
+
+* 32. .AND., .OR., .NEQV., .EQV. and .XOR. take integer arguemts.
+      These can be used to perform bit operations on integers.
+      
+* 33. User-defined structures.
+          STRUCTURE/END STRUCTURE
+          UNION/END UNION
+          MAP/END MAP
+          RECORD
+          
+* 34. Data initialization of variables in common without a block data
+      subprogram is allowed.
+      
+* 35. NAMELIST statement.
+
+  36. Repeat count not required for X edit descriptor (repeat count of
+      one is assumed).
+ 
+  37. ALLOCATE/DEALLOCATE statements for dynamically allocatable arrays.
+
+  38. ALLOCATED intrinsic function to determine if an allocatable array
+      is allocated.
+      
+* 39. Initializing character items with numeric data is permitted.
+  
+* 40. Single subscripts for multi-dimensional arrays is permitted in
+      EQUIVALENCE statements.
+      
+* 41. Hexadecimal and octal constants of the form 'abc'x and '567'o.
+
+  42. Functions may be invoked via a CALL statement. This allows the
+      return value of functions to be ignored.
+
+  43. RETURN statement allowed in PROGRAM.
+  
+  44. Non-character arrays allowed as format specifiers.
+  
+* 45. LOC intrinsic function returns the address of an expression.
+  
+  46. ISIZEOF intrinsic function returns the size of a structure name,
+      the size of an array with a constant array declarator, or the size
+      of a variable.
+
+  47. CHAR intrinsic function is allowed in constant expressions.
+  
+  48. A character constant of the form 'xxx'c includes a null character
+      at the end.
+      
+  49. An integer expression in an IF, WHILE or UNTIL is allowed. An implicit
+      comparison to zero is generated.

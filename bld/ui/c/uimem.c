@@ -32,10 +32,8 @@
 
 #include "uidef.h"
 
-LPPIXEL intern faralloc( size )
-/********************************/
-
-register        unsigned                size;
+LPPIXEL intern faralloc( unsigned size )
+/**************************************/
 {
     LPPIXEL     ptr;
 
@@ -44,10 +42,8 @@ register        unsigned                size;
 }
 
 
-void intern farfree( ptr )
-/************************/
-
-    LPPIXEL     ptr;
+void intern farfree( LPPIXEL ptr )
+/********************************/
 {
     uifarfree( ptr );
 }

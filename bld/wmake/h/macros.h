@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interfaces provided by macros.c
 *
 ****************************************************************************/
 
@@ -38,23 +37,23 @@
 #include "mlex.h"
 
 
-extern BOOLEAN ImplicitDeMacro;
-extern BOOLEAN IsPartDeMacro;
-extern BOOLEAN DoingBuiltIn;
+extern BOOLEAN      ImplicitDeMacro;
+extern BOOLEAN      IsPartDeMacro;
+extern BOOLEAN      DoingBuiltIn;
 
-extern void    MacroInit( void );
-extern void    MacroFini( void );
-extern char    *GetMacroValue( const char *name );
-extern char    *WrnGetMacroValue( const char *name );
-extern void    DefMacro( const char *name );
-extern char    *DeMacro( TOKEN_T end );
-extern BOOLEAN ForceDeMacro( void );
-extern char    *PartDeMacro( BOOLEAN ForceDeMacro );
-extern void    UnDefMacro( const char *name );
-extern BOOLEAN IsMacroName( const char *name );
-extern void    PrintMacros( void );
-extern char    *ignoreWSDeMacro (BOOLEAN partDeMacro, BOOLEAN ForceDeMacro);
-extern const char *procPath( const char *fullpath );
-extern char    *DeMacroSpecial ( char* InString) ;
+extern void         MacroInit( void );
+extern void         MacroFini( void );
+extern char         *GetMacroValue( const char *name );
+extern char         *WrnGetMacroValue( const char *name );
+extern void         DefMacro( const char *name );
+extern char         *DeMacro( TOKEN_T end );
+extern BOOLEAN      ForceDeMacro( void );
+extern char         *PartDeMacro( BOOLEAN ForceDeMacro );
+extern void         UnDefMacro( const char *name );
+extern BOOLEAN      IsMacroName( const char *name );
+extern void         PrintMacros( void );
+extern char         *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForceDeMacro );
+extern const char   *procPath( const char *fullpath );
+extern char         *DeMacroSpecial( char *InString );
 
 #endif  /* !_MACROS_H */

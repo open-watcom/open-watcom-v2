@@ -40,10 +40,10 @@ typedef struct proc_entry {
     WNDPROC             oldProc;
 } proc_entry;
 
-void SubclassGenericInit( void );
-void SubclassGenericFini( void );
-void SubclassGenericAdd( HWND, LPVOID );
-void SubclassGenericRemove( HWND );
+void    SubclassGenericInit( void );
+void    SubclassGenericFini( void );
+void    SubclassGenericAdd( HWND, WNDPROC );
+void    SubclassGenericRemove( HWND );
 WNDPROC SubclassGenericFindOldProc( HWND );
 
 #endif

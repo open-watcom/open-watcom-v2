@@ -38,12 +38,14 @@
 #include "command.h"
 #include <string.h>
 #include <stdarg.h>
+#include "impexp.h"     // For entry_export, etc.
+#include "fileio.h"     // For NIL_HANDLE, etc.
 
-extern bool             ProcArgList( bool (*rtn)( void ), bool );
+extern bool             ProcArgList( bool( * ) ( void ), tokcontrol );
 extern char *           GetFileName( char **membname, bool setname );
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
-extern bool             GetToken( sep_type, bool );
+extern bool             GetToken( sep_type, tokcontrol );
 extern void             InitCmdFile( void );
 extern void             SetCommandFile( f_handle, char * );
 extern void             NewCommandSource( char *, char *, method );
@@ -54,7 +56,7 @@ extern void             BurnSystemList( void );
 extern void             Burn( void );
 extern void             RestoreParser( void );
 extern void             FreeFormatStuff( void );
-extern section *        NewSection( bool );
+extern section          *NewSection( void );
 extern int              Msg_Fini();
 extern int              Msg_Init( char * );
 
@@ -150,15 +152,10 @@ static bool AddSymTrace( void )
 extern bool ProcSymTrace( void )
 /******************************/
 {
-   bool ret;
+    bool ret;
 
-   ret = TRUE;
-   if( LinkFlags & VERBOSE_FLAG ) {
-        LnkMsg( WRN+MSG_TRACE_AND_VERBOSE, NULL );
-    } else {
-        LinkFlags |= TRACE_FLAG;
-        ret = ProcArgList( &AddSymTrace, TRUE );
-    }
+    LinkFlags |= TRACE_FLAG;
+    ret = ProcArgList( &AddSymTrace, TRUE );
     return( ret );
 }
 
@@ -176,13 +173,8 @@ extern bool ProcModTrace( void )
 {
     bool            ret;
 
-    ret = TRUE;
-    if( LinkFlags & VERBOSE_FLAG ) {
-        LnkMsg( WRN+MSG_TRACE_AND_VERBOSE, NULL );
-    } else {
-        LinkFlags |= TRACE_FLAG;
-        ret = ProcArgList( &AddModTrace, TRUE );
-    }
+    LinkFlags |= TRACE_FLAG;
+    ret = ProcArgList( &AddModTrace, TRUE );
     return( ret );
 }
 
@@ -237,7 +229,7 @@ bool DiscardDicts( void ) {
 static void FreeFiles( file_list *list )
 /**************************************/
 {
-    pointer             temp;
+    FILE_LIST           *temp;
 
     while( list != NULL ) {
         temp = list->next_file;
@@ -310,7 +302,7 @@ static void ProcessInfo( void )
     f_handle    file;
     sysblock *  sys;
 
-    Root = NewSection( FALSE );
+    Root = NewSection();
     SetUpCommands();
     file = SearchPath( INIT_FILE_NAME );
     if( file == NIL_HANDLE ) return;   /* NO WLINK.LNK */

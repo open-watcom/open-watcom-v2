@@ -1,0 +1,55 @@
+THE WINHELP |FONT INTERNAL FILE
+===============================
+
+The |FONT file stores all information about various fonts used in the
+the help file.  A |FONT file consists of three parts:  the header, the
+font names, and the font descriptors.  A font name refers to a particular
+font such as Helvetica or Times Roman.  A font descriptor describes not
+only the font, but also the size, font family, colour, and style.
+
+The |FONT Header
+----------------
+
+The |FONT header is an 8-byte structure arranged as follows:
+
+	Bytes		Meaning
+	-----------------------
+	0-1		The number of font names
+	2-3		The number of font descriptors
+	4-5		The default font descriptor
+	6-7		The offset of the descriptor list in this file
+	
+Font Names
+----------
+
+Font names are stored by the same names as they are listed in an *.RTF file,
+e.g., "helv" for Helvetica or "tms rmn" for Times Roman.  Each font name is
+stored as a zero-terminated ASCII string; however, font names are each given
+a 20-byte record in the |FONT file.  Thus, each font name will be followed
+by some amount of garbage to pad the string to 20 bytes.  Font names are
+stored consecutively in this manner right after the font header.
+
+Font Descriptors
+----------------
+
+Font descriptors are stored in a list of 11-byte records in the following
+format:
+
+	Bytes		Meaning
+	-----------------------
+	0		Attribute flags (see below)
+	1		Size of the font in HALF points (i.e., pointsize*2)
+	2		Font family (see below)
+	3		Index of font name in the previous list
+	4		Unknown (possibly high byte of previous value)
+	5-7		RGB foreground values
+	8-10		RGB background values?  Not sure.  Best to keep them
+			the same as the foreground values.
+			
+Possible attribute flags are:
+ 0x01 -- Bold		0x02 -- Italics		0x04 -- Underline
+ 0x08 -- Strikeout	0x10 -- Dbl Underline	0x20 -- Small Caps
+ 
+Possible font families are:
+ 0x01 -- Modern		0x02 -- Roman		0x03 -- Swiss/Tech/Nil
+ 0x04 -- Script		0x05 -- Decorative

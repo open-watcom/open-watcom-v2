@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX conforming versions of the linker i/o functions.
 *
 ****************************************************************************/
 
-
-/*
-  NTIO -- POSIX conforming versions of the linker i/o functions
-
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -52,7 +46,8 @@
 #include "fileio.h"
 
 #ifdef __OSI__
-extern  char    *_BreakFlagPtr;
+//If or when OSI builds are re-enabled, we need to find the header for this
+//extern  char    *_BreakFlagPtr;
 #endif
 
 static int      OpenFiles;      // the number of open files
@@ -61,22 +56,47 @@ static bool     CaughtBreak;    // set to TRUE if break hit.
 
 #define TOOMANY EMFILE
 
-extern void LnkFilesInit( void )
-/******************************/
-// the linker doesn't use stdaux or stdprn, so close these.
+void TrapBreak( int sig_num )
+/**********************************/
 {
-    OpenFiles = 0;
-    CaughtBreak = FALSE;
-#if _LINKER != _DLLHOST
-    setmode( STDIN_HANDLE, O_BINARY );
-    setmode( STDOUT_HANDLE, O_BINARY );
-#endif
-#if _OS == _OS2V2
-    QWrite( STDOUT_HANDLE, " \b",  2, NULL );   // to avoid op quiet problem
+    sig_num = sig_num;          // to avoid a warning, will be optimized out.
+    CaughtBreak = TRUE;
+}
+
+void CheckBreak( void )
+/****************************/
+{
+#ifdef __OSI__
+    if( *_BreakFlagPtr ) {
+        *_BreakFlagPtr = 0;
+        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
+    }
+#else
+    if( CaughtBreak ) {
+        CaughtBreak = FALSE;        /* prevent recursion */
+        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
+    }
 #endif
 }
 
-extern void PrintIOError( unsigned msg, char *types, char *name )
+void SetBreak( void )
+/**************************/
+{
+}
+
+void RestoreBreak( void )
+/******************************/
+{
+}
+
+void LnkFilesInit( void )
+/******************************/
+{
+    OpenFiles = 0;
+    CaughtBreak = FALSE;
+}
+
+void PrintIOError( unsigned msg, char *types, char *name )
 /***************************************************************/
 {
     LnkMsg( msg, types, name, strerror( errno ) );
@@ -91,41 +111,47 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     CheckBreak();
     mode |= O_BINARY;
     for( ;; ) {
-        if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if( OpenFiles >= MAX_OPEN_FILES )
+            CleanCachedHandles();
         h = open( name, mode, S_IRUSR | S_IWUSR );
         if( h != -1 ) {
             OpenFiles++;
             break;
         }
-        if( errno != TOOMANY ) break;
-        if( !CleanCachedHandles() ) break;
+        if( errno != TOOMANY )
+            break;
+        if( !CleanCachedHandles() ) {
+            break;
+        }
     }
     return( h );
 }
 
-extern f_handle QOpenR( char *name )
+f_handle QOpenR( char *name )
 /**********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDONLY, FALSE );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
     return( NIL_HANDLE );
 }
 
-extern f_handle QOpenRW( char *name )
+f_handle QOpenRW( char *name )
 /***********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, FALSE );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_HANDLE );
 }
 
-extern int ResOpen( const char *path, int access, ... )
+int ResOpen( const char *path, int access, ... )
 /*****************************************************/
 /* a simple open cover routine for wres stuff */
 {
@@ -135,24 +161,26 @@ extern int ResOpen( const char *path, int access, ... )
     return( open( path, access, perm ) );
 }
 
-extern f_handle ExeCreate( char *name )
+f_handle ExeCreate( char *name )
 /**************************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, TRUE );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_HANDLE );
 }
 
-extern f_handle ExeOpen( char *name )
+f_handle ExeOpen( char *name )
 /***********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR, TRUE );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_HANDLE );
 }
@@ -160,7 +188,7 @@ extern f_handle ExeOpen( char *name )
     #define doread( f, b, l )  read( f, b, l )
     #define dowrite( f, b, l ) write( f, b, l )
 
-extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
 /****************************************************************************/
 /* read into far memory */
 {
@@ -174,12 +202,15 @@ extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
     return( h );
 }
 
-extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
+unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 /*****************************************************************************/
 /* write from far memory */
 {
     int     h;
     char    rc_buff[RESOURCE_MAX_SIZE];
+
+    if( len == 0 )
+        return( 0 );
 
     #ifdef _INT_DEBUG
     {
@@ -193,7 +224,6 @@ extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
     }
     #endif
 
-    if( len == 0 ) return( 0 );
     CheckBreak();
     h = dowrite( file, buffer, len );
     if( name != NULL ) {
@@ -209,13 +239,13 @@ extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 
 char NLSeq[] = { "\r\n" };
 
-extern void QWriteNL( f_handle file, char *name )
+void QWriteNL( f_handle file, char *name )
 /***********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-extern void QClose( f_handle file, char *name )
+void QClose( f_handle file, char *name )
 /*********************************************/
 /* file close */
 {
@@ -224,11 +254,12 @@ extern void QClose( f_handle file, char *name )
     CheckBreak();
     h = close( file );
     OpenFiles--;
-    if( h != -1 ) return;
+    if( h != -1 )
+        return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
 }
 
-extern long QLSeek( f_handle file, long position, int start, char *name )
+long QLSeek( f_handle file, long position, int start, char *name )
 /***********************************************************************/
 {
     long int    h;
@@ -241,20 +272,20 @@ extern long QLSeek( f_handle file, long position, int start, char *name )
     return( h );
 }
 
-extern void QSeek( f_handle file, long position, char *name )
+void QSeek( f_handle file, long position, char *name )
 /***********************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
 
-extern unsigned long QPos( f_handle file )
+unsigned long QPos( f_handle file )
 /****************************************/
 {
     CheckBreak();
     return( lseek( file, 0L, SEEK_CUR ) );
 }
 
-extern unsigned long QFileSize( f_handle file )
+unsigned long QFileSize( f_handle file )
 /*********************************************/
 {
     long        result;
@@ -266,19 +297,20 @@ extern unsigned long QFileSize( f_handle file )
     return result;
 }
 
-extern void QDelete( char *name )
+void QDelete( char *name )
 /*******************************/
 {
     int   h;
 
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     h = remove( name );
     if( h == -1 && errno != ENOENT ) { /* file not found is OK */
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
 }
 
-extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
+bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 /**************************************************************************/
 /* quick read string (for reading directive file) */
 {
@@ -293,13 +325,15 @@ extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );
 }
 
-extern bool QIsDevice( f_handle file )
+bool QIsDevice( f_handle file )
 /************************************/
 {
     return( isatty( file ) );
@@ -312,23 +346,24 @@ static f_handle NSOpen( char *name, unsigned mode )
 
     h = DoOpen( name, mode, FALSE );
     LastResult = h;
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     return( NIL_HANDLE );
 }
 
-extern f_handle QObjOpen( char *name )
+f_handle QObjOpen( char *name )
 /************************************/
 {
     return( NSOpen( name, O_RDONLY ) );
 }
 
-extern f_handle TempFileOpen( char *name )
+f_handle TempFileOpen( char *name )
 /****************************************/
 {
     return( NSOpen( name, O_RDWR ) );
 }
 
-extern int QMakeFileName( char **pos, char *name, char *fname )
+int QMakeFileName( char **pos, char *name, char *fname )
 /*************************************************************/
 {
     char                *pathptr;
@@ -336,12 +371,16 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     char                *file_ptr;
 
     pathptr = *pos;
-    if( pathptr == NULL ) return( 0 );
+    if( pathptr == NULL )
+        return( 0 );
     while( *pathptr != '\0' ) {
-        if( *pathptr == PATH_LIST_SEP ) *pos = ++pathptr;
-        for(;;) {
-            if( *pathptr == '\0' ) break;
-            if( *pathptr == PATH_LIST_SEP ) break;
+        if( IS_PATH_LIST_SEP( *pathptr ) )
+            *pos = ++pathptr;
+        for( ;; ) {
+            if( *pathptr == '\0' )
+                break;
+            if( IS_PATH_LIST_SEP( *pathptr ) )
+                break;
             pathptr++;
         }
         path_len = pathptr - *pos;
@@ -364,19 +403,19 @@ extern int QMakeFileName( char **pos, char *name, char *fname )
     return( 0 );
 }
 
-extern bool QHavePath( char *name )
+bool QHavePath( char *name )
 /*********************************/
 {
     return( *name == '\\' || *name == '/' || *(name + 1) == ':' );
 }
 
-extern bool QSysHelp( char **cmd_ptr )
+bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
     return( FALSE );
 }
 
-extern bool QModTime( char *name, time_t *time )
+bool QModTime( char *name, time_t *time )
 /**********************************************/
 {
     int         result;
@@ -387,7 +426,7 @@ extern bool QModTime( char *name, time_t *time )
     return result != 0;
 }
 
-extern time_t QFModTime( int handle )
+time_t QFModTime( int handle )
 /***********************************/
 {
     struct stat buf;
@@ -396,47 +435,14 @@ extern time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
-extern char WaitForKey( void )
+char WaitForKey( void )
 /****************************/
 {
     return getch();
 }
 
-extern void GetCmdLine( char *buff )
+void GetCmdLine( char *buff )
 /**********************************/
 {
     getcmd( buff );
-}
-
-extern void TrapBreak( int sig_num )
-/**********************************/
-{
-    sig_num = sig_num;          // to avoid a warning, will be optimized out.
-    CaughtBreak = TRUE;
-}
-
-extern void CheckBreak( void )
-/****************************/
-{
-#ifdef __OSI__
-    if( *_BreakFlagPtr ) {
-        *_BreakFlagPtr = 0;
-        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
-    }
-#else
-    if( CaughtBreak ) {
-        CaughtBreak = FALSE;        /* prevent recursion */
-        LnkMsg( FTL+MSG_BREAK_HIT, NULL );    /* suicides */
-    }
-#endif
-}
-
-extern void SetBreak( void )
-/**************************/
-{
-}
-
-extern void RestoreBreak( void )
-/******************************/
-{
 }

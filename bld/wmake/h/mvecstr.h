@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mvecstr.c interfaces
 *
 ****************************************************************************/
 
@@ -33,17 +32,17 @@
 #ifndef _MVECSTR_H
 #define _MVECSTR_H  1
 
-typedef union vecHead *VECSTR;
+typedef union vecHead   *VECSTR;
 
-extern void VecInit( void );
-extern void VecFini( void );
-extern VECSTR StartVec( void );
-extern void FreeVec( VECSTR vec );
-extern char *FinishVec( VECSTR vec );
-extern void CatVec( VECSTR dest, VECSTR src ); /* pfms FreeVec( src ) */
-extern void WriteVec( VECSTR vec, const char *str );
-extern void WriteNVec( VECSTR vec, const char *str, size_t len);
-extern void CatStrToVec ( VECSTR dest, const char *str);
-extern void CatNStrToVec ( VECSTR dest, const char *str, size_t len);
+extern void     VecInit( void );
+extern void     VecFini( void );
+extern VECSTR   StartVec( void );
+extern void     FreeVec( VECSTR vec );
+extern char     *FinishVec( VECSTR vec );
+extern void     CatVec( VECSTR dest, VECSTR src ); /* pfms FreeVec( src ) */
+extern void     WriteVec( VECSTR vec, const char *str );
+extern void     WriteNVec( VECSTR vec, const char *str, size_t len );
+extern void     CatStrToVec ( VECSTR dest, const char *str );
+extern void     CatNStrToVec ( VECSTR dest, const char *str, size_t len );
 
 #endif /* !_MVECSTR_H */

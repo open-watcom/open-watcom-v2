@@ -24,7 +24,7 @@ all : .SYMBOLIC $(objs)
         $(compile286)
 
 .c.qbj:
-        set INCLUDE=$(lang_root)\qh
+        set include=$(lang_root)/qh
         $(compile286) -d__QNX__ -fo=.qbj
 
 .c.wbj:

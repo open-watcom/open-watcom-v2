@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS memory size query.
 *
 ****************************************************************************/
 
@@ -33,14 +32,9 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "nonibm.h"
 
 
 _WCRTLINK unsigned short _bios_memsize( void )
 {
-    if( !__NonIBM ) {
-        return( __ibm_bios_memsize() );
-    } else {
-        return( __nec98_bios_memsize() );
-    }
+    return( __ibm_bios_memsize() );
 }

@@ -1,0 +1,38 @@
+/*
+ *  mciapi.h    Multimedia Control Interface High-level constants and prototypes.
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __MCIAPI_H__
+#define __MCIAPI_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#define MMIO_FE_FINDFIRST   1
+#define MMIO_FE_FINDNEXT    2
+#define MMIO_FE_FINDEND     3
+#define MMIO_FE_FINDELEMENT 4
+
+#define MMIO_RE_COMPACT     1
+
+#define MCI_OWNERISPARENT   0x0001
+#define MCI_STOPACTIVE      0x0002
+#define MCI_ASYNCRENDEZVOUS 0x0004
+#define MCI_RENDEZVOUS      0x0008
+#define MCI_ASYNC           0x0010
+#define MCI_REPEAT          0x0020
+#define MCI_STOPONSUSPEND   0x0040
+
+ULONG EXPENTRY mciPlayFile(HWND,PSZ,ULONG,PSZ,HWND);
+ULONG EXPENTRY mciPlayResource(HWND,HMODULE,ULONG,ULONG,ULONG,PSZ,HWND);
+ULONG EXPENTRY mciRecordAudioFile(HWND,PSZ,PSZ,ULONG);
+
+ULONG EXPENTRY mmioFindElement(ULONG,PSZ,ULONG,PSZ,ULONG);
+ULONG EXPENTRY mmioRemoveElement(PSZ,ULONG);
+
+:include cplusepi.sp
+
+#endif

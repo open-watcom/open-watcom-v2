@@ -51,7 +51,7 @@ static BOOL hardModeDebugState( void )
 /*
  * ToDebugger - switch to debugger
  */
-BOOL ToDebugger( WORD pmsg )
+BOOL ToDebugger( private_msg pmsg )
 {
 
     SystemDebugState = GetSystemDebugState();

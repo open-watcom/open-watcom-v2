@@ -78,7 +78,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
             GUIEVENTWND( wnd, GUI_RESIZE, &size );
 #endif
         } else {
-            _wpi_setwindowpos( frame, NULL, pos.x, pos.y, size.x, size.y,
+            _wpi_setwindowpos( frame, NULLHANDLE, pos.x, pos.y, size.x, size.y,
                                SWP_NOACTIVATE | SWP_NOZORDER | SWP_SIZE | SWP_MOVE );
                                //SWP_NOREDRAW | SWP_NOACTIVATE | SWP_NOZORDER | SWP_SIZE | SWP_MOVE );
         }

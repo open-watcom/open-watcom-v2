@@ -29,8 +29,27 @@
 *
 ****************************************************************************/
 
+#if defined ( __NW50__ )
+    #include "mmu.h"
+    #include "process.h"
 
-#ifdef __NW40__
+    #define RunningProcess                  GetRunningProcess()
+    #define FileServerMajorVersionNumber    GetFileServerMajorVersionNumber()
+    #define FileServerMinorVersionNumber    GetFileServerMinorVersionNumber()
+    #define LoadedListHandle                LONG
+    #define ddRTag                          DDSResourceTag
+
+    extern LONG CValidateMappedAddress( void *, void *, LONG );
+    #define CValidatePointer(x) \
+        CValidateMappedAddress(x,SystemDomain,MMU_PAGE_READ_WRITE_ENABLE)
+
+    extern LONG GetNextLoadedListEntry( LONG );
+    extern struct LoadDefinitionStructure * ValidateModuleHandle( LONG );
+    #define systemConsoleScreen GetSystemConsoleScreen()
+    extern void CYieldWithDelay(void);
+    #define CRescheduleLast CYieldWithDelay
+
+#elif defined ( __NW40__ )
 
     #include "mmu.h"
     #include "process.h"
@@ -50,7 +69,7 @@
     #define FileServerMajorVersionNumber GetFileServerMajorVersionNumber()
     #define FileServerMinorVersionNumber GetFileServerMinorVersionNumber()
 
-#else
+#elif defined ( __NW30__ )
 
     extern void                         *CValidatePointer(void *);
     #define GetNextLoadedListEntry( x ) \
@@ -61,7 +80,7 @@
 #endif
 
 
-#ifdef __NW40__
+#if defined ( __NW50__ )
     #define StackFrame T_TSS_StackFrame
     #define FieldGS( x )                        ( (x)->ExceptionGS[0] )
     #define FieldFS( x )                        ( (x)->ExceptionFS[0] )
@@ -82,7 +101,28 @@
     #define FieldEIP( x )                       ( (x)->ExceptionEIP )
     #define FieldCS( x )                        ( (x)->ExceptionCS[0] )
     #define FieldEFLAGS( x )                    ( (x)->ExceptionSystemFlags )
-#else
+#elif defined ( __NW40__ )
+    #define StackFrame T_TSS_StackFrame
+    #define FieldGS( x )                        ( (x)->ExceptionGS[0] )
+    #define FieldFS( x )                        ( (x)->ExceptionFS[0] )
+    #define FieldES( x )                        ( (x)->ExceptionES[0] )
+    #define FieldDS( x )                        ( (x)->ExceptionDS[0] )
+    #define FieldEDI( x )                       ( (x)->ExceptionEDI )
+    #define FieldESI( x )                       ( (x)->ExceptionESI )
+    #define FieldEBP( x )                       ( (x)->ExceptionEBP )
+    #define FieldESP( x )                       ( (x)->ExceptionESP )
+    #define FieldEBX( x )                       ( (x)->ExceptionEBX )
+    #define FieldEDX( x )                       ( (x)->ExceptionEDX )
+    #define FieldECX( x )                       ( (x)->ExceptionECX )
+    #define FieldEAX( x )                       ( (x)->ExceptionEAX )
+    #define FieldExceptionNumber( x )           ( (x)->ExceptionNumber )
+    #define FieldExceptionDescription(x)        ( (x)->ExceptionDescription )
+    #define FieldInfoFlags( x )                 ( (x)->ExceptionFlags )
+    #define FieldErrorCode( x )                 ( (x)->ExceptionErrorCode )
+    #define FieldEIP( x )                       ( (x)->ExceptionEIP )
+    #define FieldCS( x )                        ( (x)->ExceptionCS[0] )
+    #define FieldEFLAGS( x )                    ( (x)->ExceptionSystemFlags )
+#elif defined ( __NW30__ )
     #define StackFrame T_StackFrame
     #define FieldGS( x )                        ( (x)->GS[0] )
     #define FieldFS( x )                        ( (x)->FS[0] )
@@ -103,12 +143,17 @@
     #define FieldEIP( x )                       ( (x)->EIP )
     #define FieldCS( x )                        ( (x)->CS[0] )
     #define FieldEFLAGS( x )                    ( (x)->EFLAGS )
+#else
+#error Stack Frame has not been defined for this version of netware
 #endif
 
 extern struct ResourceTagStructure      *BreakTag;
 extern struct ResourceTagStructure      *DebugTag;
-#ifdef __NW40__
+
+#if defined ( __NW50__ )
     #define DoReserveBreakpoint() ReserveABreakpointRTag( (LONG)(BreakTag) );
-#else
+#elif defined ( __NW40__ )
+    #define DoReserveBreakpoint() ReserveABreakpointRTag( (LONG)(BreakTag) );
+#elif defined ( __NW30__ )
     #define DoReserveBreakpoint() ReserveABreakpointRTag( BreakTag );
 #endif

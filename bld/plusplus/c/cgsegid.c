@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include "compcfg.h"
+
 #include "cgfront.h"
 #include "ring.h"
 #include "codegen.h"

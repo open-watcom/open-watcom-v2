@@ -30,16 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "mouse.h"
 #include "win.h"
 
+#define MOUSE_LEFT_BUTTON          0
+#define MOUSE_RIGHT_BUTTON         1
+#define MOUSE_MIDDLE_BUTTON        2
+
 static long mouseTime;
-static int lastButton;
-static int oldRow=-1;
-static int oldCol=-1;
+static int  lastButton;
+static int  oldRow = -1;
+static int  oldCol = -1;
 static char oldAttr;
 static bool mouseOn;
 static bool mouseRepeat;
@@ -51,32 +53,59 @@ static int getButton( int status )
 {
     status &= MOUSE_ANY_BUTTON_DOWN;
     if( status == MOUSE_LEFT_BUTTON_DOWN ) {
-        return( 0 );
+        return( MOUSE_LEFT_BUTTON );
     } else if( status == MOUSE_RIGHT_BUTTON_DOWN ) {
-        return( 1 );
+        return( MOUSE_RIGHT_BUTTON );
     } else {
-        return( 2 );
+        return( MOUSE_MIDDLE_BUTTON );
     }
 
 } /* getButton */
 
+static vi_mouse_event mapButtonEvents( vi_mouse_event me, int button )
+{
+    if( EditFlags.LeftHandMouse ) {
+        if( button == MOUSE_LEFT_BUTTON ) {
+            button = MOUSE_RIGHT_BUTTON;
+        } else if( button == MOUSE_RIGHT_BUTTON ) {
+            button = MOUSE_LEFT_BUTTON;
+        }
+    }
+    if( button != MOUSE_LEFT_BUTTON ) {
+        if( me == MOUSE_PRESS ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_PRESS_R : MOUSE_PRESS_M;
+        } else if( me == MOUSE_RELEASE ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_RELEASE_R : MOUSE_RELEASE_M;
+        } else if( me == MOUSE_DCLICK ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_DCLICK_R : MOUSE_DCLICK_M;
+        } else if( me == MOUSE_HOLD ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_HOLD_R : MOUSE_HOLD_M;
+        } else if( me == MOUSE_DRAG ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_DRAG_R : MOUSE_DRAG_M;
+        } else if( me == MOUSE_REPEAT ) {
+            me = (button == MOUSE_RIGHT_BUTTON) ? MOUSE_REPEAT_R : MOUSE_REPEAT_M;
+        }
+    }
+    return( me );
+}
+
 /*
  * GetMouseEvent - get a mouse event
  */
-int GetMouseEvent( void )
+vi_mouse_event GetMouseEvent( void )
 {
 #ifdef __CURSES__
-    return( -1 );
+    return( MOUSE_NONE );
 #else
-    int         status;
-    int         row,col;
-    bool        moved;
-    int         me;
-    int         button;
-    int         diff;
+    int             status;
+    int             row, col;
+    bool            moved;
+    vi_mouse_event  me;
+    int             button;
+    int             diff;
 
     if( !EditFlags.UseMouse ) {
-        return( -1 );
+        return( MOUSE_NONE );
     }
 
     PollMouse( &status, &row, &col );
@@ -85,16 +114,16 @@ int GetMouseEvent( void )
     // this confuses us so disallow it.
     row = max( row, 0 );
     col = max( col, 0 );
-    row = min( row, WindMaxHeight-1 );
-    col = min( col, WindMaxWidth-1 );
+    row = min( row, WindMaxHeight - 1 );
+    col = min( col, WindMaxWidth - 1 );
 
-    moved = ( row != MouseRow || col != MouseCol );
+    moved = (row != MouseRow || col != MouseCol);
     diff = (status ^ MouseStatus) & MOUSE_ANY_BUTTON_DOWN;
 
-    me = -1;
+    me = MOUSE_NONE;
     if( moved ) {
         lastButton = -1;
-        if( MouseStatus & MOUSE_ANY_BUTTON_DOWN ){
+        if( MouseStatus & MOUSE_ANY_BUTTON_DOWN ) {
             button = getButton( status );
             me = MOUSE_DRAG;
         } else {
@@ -116,37 +145,27 @@ int GetMouseEvent( void )
         button = getButton( diff );
         MouseStatus = status;
         mouseRepeat = FALSE;
-        mouseTime  = ClockTicks;
+        mouseTime = ClockTicks;
         mouseOn = TRUE;
     } else if( status & MOUSE_ANY_BUTTON_DOWN ) {
         button = getButton( status );
         if( !mouseRepeat ){
-            if( ClockTicks - mouseTime > MouseRepeatStartDelay ){
+            if( ClockTicks - mouseTime > MouseRepeatStartDelay ) {
                 me = MOUSE_REPEAT;
                 mouseRepeat = TRUE;
                 mouseTime = ClockTicks;
             }
-        } else if( ClockTicks - mouseTime > MouseRepeatDelay ){
+        } else if( ClockTicks - mouseTime > MouseRepeatDelay ) {
             me = MOUSE_REPEAT;
             mouseTime = ClockTicks;
         }
     }
-    if( EditFlags.LeftHandMouse ) {
-        if( button == 0 ) {
-            button = 1;
-        } else if( button == 1 ) {
-            button = 0;
-        }
-    }
-
-    if( me >= 0 && me != MOUSE_MOVE ) {
-        me += button*6;
-    }
     MouseRow = row;
     MouseCol = col;
-    return( me );
-#endif
 
+    return( mapButtonEvents( me, button ) );
+#endif
+    
 } /* GetMouseEvent */
 
 /*
@@ -157,7 +176,7 @@ static void drawMouseCursor( int row, int col )
     char_info   _FAR *ptr;
 
     if( mouseOn ) {
-        ptr = (char_info _FAR *) &Scrn[ sizeof( char_info ) *((row)*WindMaxWidth + col) ];
+        ptr = (char_info _FAR *) &Scrn[sizeof( char_info ) * (row * WindMaxWidth + col)];
         oldAttr = ptr->attr;
         if( EditFlags.Monocolor ) {
             ptr->attr = (oldAttr & 0x79) ^ 0x71;
@@ -181,7 +200,8 @@ static void eraseMouseCursor( void )
     char_info   _FAR *ptr;
 
     if( mouseOn && oldRow >= 0 ) {
-        ptr = (char_info _FAR *) &Scrn[ sizeof( char_info ) *((oldRow)*WindMaxWidth + oldCol) ];
+        ptr = (char_info _FAR *) &Scrn[sizeof( char_info ) *
+                                       (oldRow * WindMaxWidth + oldCol)];
         ptr->attr = oldAttr;
 #ifdef __VIO__
         MyVioShowBuf( (char _FAR *) ptr - Scrn, 1 );
@@ -195,7 +215,6 @@ static void eraseMouseCursor( void )
  */
 void RedrawMouse( int row, int col )
 {
-
     if( oldRow == row && oldCol == col || EditFlags.HasSystemMouse ) {
         return;
     }
@@ -207,9 +226,9 @@ void RedrawMouse( int row, int col )
 /*
  * DisplayMouse - control whether mouse is visible or not
  */
-int DisplayMouse( int flag )
+bool DisplayMouse( bool flag )
 {
-    int lastmouse;
+    bool    lastmouse;
 
     lastmouse = mouseOn;
     if( EditFlags.HasSystemMouse ) {

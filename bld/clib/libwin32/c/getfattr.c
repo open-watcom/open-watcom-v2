@@ -53,14 +53,14 @@ DWORD __lib_GetFileAttributesW( LPCWSTR lpFileName )
         len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
         mbFileName = lib_malloc( len );
         if( mbFileName == NULL ) {
-            return( 0xFFFFFFFF );
+            return( INVALID_FILE_ATTRIBUTES );
         }
 
         /*** Prepare to call the OS ***/
         cvt = wcstombs( mbFileName, lpFileName, len );
         if( cvt == (size_t)-1 ) {
             lib_free( mbFileName );
-            return( 0xFFFFFFFF );
+            return( INVALID_FILE_ATTRIBUTES );
         }
 
         /*** Call the OS ***/

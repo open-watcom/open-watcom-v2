@@ -1,0 +1,144 @@
+*$noreference
+
+! Menu Functions:
+! ---------------
+
+      external AppendMenu
+      external CheckMenuItem
+      external CreateMenu
+      external CreatePopupMenu
+      external DeleteMenu
+      external DestroyMenu
+      external DrawMenuBar
+      external EnableMenuItem
+      external GetMenu
+      external GetMenuCheckMarkDimensions
+      external GetMenuItemCount
+      external GetMenuItemID
+      external GetMenuState
+      external GetMenuString
+      external GetSubMenu
+      external GetSystemMenu
+      external HiliteMenuItem
+      external InsertMenu
+      external LoadMenuIndirect
+      external ModifyMenu
+      external RemoveMenu
+      external SetMenu
+      external SetMenuItemBitmaps
+      external TrackPopupMenu
+      external ChangeMenu
+
+      integer*2 AppendMenu
+      integer*2 CheckMenuItem
+      integer*2 CreateMenu
+      integer*2 CreatePopupMenu
+      integer*2 DeleteMenu
+      integer*2 DestroyMenu
+      integer*2 EnableMenuItem
+      integer*2 GetMenu
+      integer*4 GetMenuCheckMarkDimensions
+      integer*2 GetMenuItemCount
+      integer*2 GetMenuItemID
+      integer*2 GetMenuState
+      integer*2 GetMenuString
+      integer*2 GetSubMenu
+      integer*2 GetSystemMenu
+      integer*2 HiliteMenuItem
+      integer*2 InsertMenu
+      integer*2 LoadMenuIndirect
+      integer*2 ModifyMenu
+      integer*2 RemoveMenu
+      integer*2 SetMenu
+      integer*2 SetMenuItemBitmaps
+      integer*2 TrackPopupMenu
+      integer*2 ChangeMenu
+
+! Menu flags for Add/Check/EnableMenuItem()
+
+      integer MF_INSERT
+      integer MF_CHANGE
+      integer MF_APPEND
+      integer MF_DELETE
+      integer MF_REMOVE
+
+      integer MF_BYCOMMAND
+      integer MF_BYPOSITION
+
+      integer MF_SEPARATOR
+
+      integer MF_ENABLED
+      integer MF_GRAYED
+      integer MF_DISABLED
+
+      integer MF_UNCHECKED
+      integer MF_CHECKED
+      integer MF_USECHECKBITMAPS
+
+      integer MF_STRING
+      integer MF_BITMAP
+      integer MF_OWNERDRAW
+
+      integer MF_POPUP
+      integer MF_MENUBARBREAK
+      integer MF_MENUBREAK
+
+      integer MF_UNHILITE
+      integer MF_HILITE
+
+      integer MF_SYSMENU
+      integer MF_HELP
+      integer MF_MOUSESELECT
+
+      integer MF_END
+
+      parameter ( MF_INSERT          = '0000'x )
+      parameter ( MF_CHANGE          = '0080'x )
+      parameter ( MF_APPEND          = '0100'x )
+      parameter ( MF_DELETE          = '0200'x )
+      parameter ( MF_REMOVE          = '1000'x )
+
+      parameter ( MF_BYCOMMAND       = '0000'x )
+      parameter ( MF_BYPOSITION      = '0400'x )
+
+      parameter ( MF_SEPARATOR       = '0800'x )
+
+      parameter ( MF_ENABLED         = '0000'x )
+      parameter ( MF_GRAYED          = '0001'x )
+      parameter ( MF_DISABLED        = '0002'x )
+
+      parameter ( MF_UNCHECKED       = '0000'x )
+      parameter ( MF_CHECKED         = '0008'x )
+      parameter ( MF_USECHECKBITMAPS = '0200'x )
+
+      parameter ( MF_STRING          = '0000'x )
+      parameter ( MF_BITMAP          = '0004'x )
+      parameter ( MF_OWNERDRAW       = '0100'x )
+
+      parameter ( MF_POPUP           = '0010'x )
+      parameter ( MF_MENUBARBREAK    = '0020'x )
+      parameter ( MF_MENUBREAK       = '0040'x )
+
+      parameter ( MF_UNHILITE        = '0000'x )
+      parameter ( MF_HILITE          = '0080'x )
+
+      parameter ( MF_SYSMENU         = '2000'x )
+      parameter ( MF_HELP            = '4000'x )
+      parameter ( MF_MOUSESELECT     = '8000'x )
+
+      parameter ( MF_END             = '0080'x )
+
+! Menu item resource format
+
+      structure /MENUITEMTEMPLATEHEADER/
+          integer*2             versionNumber
+          integer*2             offset
+      end structure
+
+      structure /MENUITEMTEMPLATE/
+          integer*2             mtOption
+          integer*2             mtID
+          integer*2             mtString(1)
+      end structure
+
+*$reference

@@ -1,8 +1,7 @@
-#pmake: all cpu_386 os_osi
+#pmake: cpu_386 os_osi target_ppc
 
-host_CPU = 386
-host_OS  = osi
+host_os  = osi
+host_cpu = 386
+target_cpu = ppc
 
-cpu = ppc
-
-!include $(as_dir)\mif\master.mif
+!include ../ppc.mif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Graph library internal structures and function prototypes.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
-#include "graph.h"
+#include "_graph.h"
 
 #pragma pack(push, 1);
 
@@ -100,27 +99,14 @@ struct videoinfo {
     unsigned int            screen_off_base;
     unsigned short          page_size;
     unsigned short          misc_info;
+    unsigned short          stride;
 };
 
 #define PLANAR          0x0001      // videoinfo.misc_info bits
 #define NO_BIOS         0x0002
 
-#if defined( _NEC_PC )
-  #define               SUPERIMPOSED    16      // mode is superimposed text and graphics
-  #define               _DEFAULT_ATTR   0xE1
-  #define               IsTextMode      ( _CurrState->vc.mode == _98TEXT80 || \
-                                          _CurrState->vc.mode & SUPERIMPOSED )
-  #if defined( __386__ )
-    struct kanji_buf {
-        char far        *buf;           // pointer to buffer in real-mode
-        unsigned short  seg;            // real-mode segment
-    };
-  #endif
-
-#else
-  #define               _DEFAULT_ATTR   0x07    // default text attribute
-  #define               IsTextMode      ( !_GrMode )
-#endif
+#define               _DEFAULT_ATTR   0x07    // default text attribute
+#define               IsTextMode      ( !_GrMode )
 
 struct window_def {
     short           invert;
@@ -193,7 +179,7 @@ extern unsigned             _GetStackLow( void );
 extern short                _GraphMode( void );
 extern void                 _GrClear( short, short, short, short );
 extern void                 _TxtClear( short, short, short, short );
-extern void                 _GrInit( short, short, short, short,
+extern void                 _GrInit( short, short, short, short, short,
                                      short, short, int, short, short );
 extern short                _GrProlog( void );
 extern void                 _GrEpilog( void );
@@ -214,13 +200,13 @@ extern short                _SetMode( short );
 extern short                _SetRows( short );
 extern short                _SwapBits( short );
 extern short                _SysMonType( void );
-extern short                _SuperVGAType();
+extern short                _SuperVGAType( void );
 
 extern short                _L0BlockClip( short *, short *, short *, short * );
-extern void                 _L0DrawLine( char far *, short, short, short,
+extern void                 _L0DrawLine( char far *, short, unsigned short, short,
                                          short, short, void (near *)(),
                                          void (near *)(), void (near *)() );
-extern void                 _L0Ellipse( short, short, short, short, void (*)() );
+extern void                 _L0Ellipse( short, short, short, short, void (*)( short, short, short ) );
 extern short                _L0LineClip( short *, short *, short *, short * );
 
 extern void                 _L1Arc( short, short, short, short, short,
@@ -231,12 +217,12 @@ extern void                 _L1Fill( short, short, short );
 extern void                 _L1ClipFill( short, short, short );
 extern short                _L1FillArea( short, struct xycoord _WCI86FAR * );
 extern short                _L1GetDot( short, short );
-extern void                 _L1GetPic( short, short, short, short, void _WCI86HUGE * );
+extern void                 _L1GetPic( short, short, short, short, struct picture _WCI86HUGE * );
 extern short                _L1Line( short, short, short, short );
 extern char                 _L1OutCode( short, short );
 extern short                _L1Paint( short, short, short );
 extern short                _L1PutDot( short, short );
-extern void                 _L1PutPic( short, short, short, void _WCI86HUGE * );
+extern void                 _L1PutPic( short, short, short, struct picture _WCI86HUGE * );
 extern void                 _L1SLine( short, short, short, short );
 extern void                 _L1Text( short, short, char _WCI86FAR * );
 extern void                 _L1TXX( short, short, char _WCI86FAR *,

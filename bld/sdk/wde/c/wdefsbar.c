@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 
 #include "wdeglbl.h"
 #include "wdemem.h"
@@ -63,29 +63,24 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeSBarDispatcher  ( ACTION, WdeSBarObject *, void *,
-                                              void *);
-extern LRESULT WINEXPORT WdeSBarSuperClassProc ( HWND, UINT, WPARAM, LPARAM);
+extern BOOL    WINEXPORT WdeSBarDispatcher( ACTION, WdeSBarObject *, void *, void * );
+extern LRESULT WINEXPORT WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeSBar             ( OBJPTR, RECT *, OBJPTR, DialogStyle,
-                                          char *, OBJ_ID );
-static OBJPTR   WdeSBCreate             ( OBJPTR, RECT *, OBJPTR,
-                                          OBJ_ID, WdeDialogBoxControl *);
-static BOOL     WdeSBarDestroy          ( WdeSBarObject *, BOOL *, void *);
-static BOOL     WdeSBarValidateAction   ( WdeSBarObject *, ACTION *, void *);
-static BOOL     WdeSBarCopyObject       ( WdeSBarObject *, WdeSBarObject **,
-                                          WdeSBarObject *);
-static BOOL     WdeSBarIdentify         ( WdeSBarObject *, OBJ_ID *, void *);
-static BOOL     WdeSBarGetWndProc       ( WdeSBarObject *, WNDPROC *, void *);
-static BOOL     WdeSBarGetWindowClass   ( WdeSBarObject *, char **, void *);
-static BOOL     WdeSBarDefine           ( WdeSBarObject *, POINT *, void *);
-static void     WdeSBarSetDefineInfo    ( WdeDefineObjectInfo *, HWND );
-static void     WdeSBarGetDefineInfo    ( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeSBarDefineHook       ( HWND, WORD, WPARAM, LPARAM,
-                                          DialogStyle );
+static OBJPTR   WdeMakeSBar( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeSBCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static BOOL     WdeSBarDestroy( WdeSBarObject *, BOOL *, void * );
+static BOOL     WdeSBarValidateAction( WdeSBarObject *, ACTION *, void * );
+static BOOL     WdeSBarCopyObject( WdeSBarObject *, WdeSBarObject **, WdeSBarObject * );
+static BOOL     WdeSBarIdentify( WdeSBarObject *, OBJ_ID *, void * );
+static BOOL     WdeSBarGetWndProc( WdeSBarObject *, WNDPROC *, void * );
+static BOOL     WdeSBarGetWindowClass( WdeSBarObject *, char **, void * );
+static BOOL     WdeSBarDefine( WdeSBarObject *, POINT *, void * );
+static void     WdeSBarSetDefineInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeSBarGetDefineInfo( WdeDefineObjectInfo *, HWND );
+static BOOL     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -95,21 +90,21 @@ static FARPROC                  WdeSBarDispatch;
 static WdeDialogBoxControl      *WdeDefaultSBar = NULL;
 static int                      WdeSBarWndExtra;
 static WNDPROC                  WdeOriginalSBarProc;
-//static WNDPROC                        WdeSBarProc;
+//static WNDPROC                WdeSBarProc;
 
-#define WSTATUSCLASSNAME         STATUSCLASSNAME
+#define WSTATUSCLASSNAME        STATUSCLASSNAME
 
 static DISPATCH_ITEM WdeSBarActions[] = {
-    { DESTROY           ,  WdeSBarDestroy               }
-,   { COPY              ,  WdeSBarCopyObject            }
-,   { VALIDATE_ACTION   ,  WdeSBarValidateAction        }
-,   { IDENTIFY          ,  WdeSBarIdentify              }
-,   { GET_WINDOW_CLASS  ,  WdeSBarGetWindowClass        }
-,   { DEFINE            ,  WdeSBarDefine                }
-,   { GET_WND_PROC      ,  WdeSBarGetWndProc            }
+    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeSBarDestroy          },
+    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeSBarCopyObject       },
+    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeSBarValidateAction   },
+    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeSBarIdentify         },
+    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeSBarGetWindowClass   },
+    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeSBarDefine           },
+    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeSBarGetWndProc       }
 };
 
-#define MAX_ACTIONS      (sizeof(WdeSBarActions)/sizeof (DISPATCH_ITEM))
+#define MAX_ACTIONS     (sizeof( WdeSBarActions ) / sizeof( DISPATCH_ITEM ))
 
 Bool WdeSBNoodleSize( OBJPTR obj, Bool recreate )
 {
@@ -144,14 +139,13 @@ Bool WdeSBNoodleSize( OBJPTR obj, Bool recreate )
     return( TRUE );
 }
 
-OBJPTR WINEXPORT WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle)
+OBJPTR WINEXPORT WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeSBar( parent, obj_rect, handle,
-                              0, "", SBAR_OBJ ) );
+        return( WdeMakeSBar( parent, obj_rect, handle, 0, "", SBAR_OBJ ) );
     } else {
         return( WdeSBCreate( parent, obj_rect, NULL, SBAR_OBJ,
-                             (WdeDialogBoxControl *) handle) );
+                             (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -166,65 +160,64 @@ OBJPTR WdeMakeSBar( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     SETCTL_TEXT( WdeDefaultSBar, ResStrToNameOrOrd( text ) );
     SETCTL_ID( WdeDefaultSBar, WdeGetNextControlID() );
 
-    WdeChangeSizeToDefIfSmallRect ( parent, id, obj_rect );
+    WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
 
-    new = WdeSBCreate ( parent, obj_rect, handle, id, WdeDefaultSBar );
+    new = WdeSBCreate( parent, obj_rect, handle, id, WdeDefaultSBar );
 
-    WdeMemFree( GETCTL_TEXT(WdeDefaultSBar) );
+    WdeMemFree( GETCTL_TEXT( WdeDefaultSBar ) );
     SETCTL_TEXT( WdeDefaultSBar, NULL );
 
-    return ( new );
+    return( new );
 }
 
 OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info)
+                    OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeSBarObject       *new;
 
-    WdeDebugCreate("SBar", parent, obj_rect, handle);
+    WdeDebugCreate( "SBar", parent, obj_rect, handle );
 
-    if ( parent == NULL ) {
-        WdeWriteTrail("WdeSBarCreate: SBar has no parent!");
-        return ( NULL );
+    if( parent == NULL ) {
+        WdeWriteTrail( "WdeSBarCreate: SBar has no parent!" );
+        return( NULL );
     }
 
-    new = (WdeSBarObject *) WdeMemAlloc ( sizeof(WdeSBarObject) );
-    if ( new == NULL ) {
-        WdeWriteTrail("WdeSBarCreate: Object malloc failed");
-        return ( NULL );
+    new = (WdeSBarObject *)WdeMemAlloc( sizeof( WdeSBarObject ) );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeSBarCreate: Object malloc failed" );
+        return( NULL );
     }
 
     new->dispatcher = WdeSBarDispatch;
 
     new->object_id = id;
 
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         new->object_handle = new;
     } else {
         new->object_handle = handle;
     }
 
-    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle);
+    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle );
 
-    if (new->control == NULL) {
-        WdeWriteTrail("WdeSBarCreate: CONTROL_OBJ not created!");
-        WdeMemFree ( new );
-        return ( NULL );
+    if( new->control == NULL ) {
+        WdeWriteTrail( "WdeSBarCreate: CONTROL_OBJ not created!" );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL) ) {
-        WdeWriteTrail("WdeSBarCreate: SET_OBJECT_INFO failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+        WdeWriteTrail( "WdeSBarCreate: SET_OBJECT_INFO failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, CREATE_WINDOW,
-                   NULL, NULL) ) {
-        WdeWriteTrail("WdeSBarCreate: CREATE_WINDOW failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+        WdeWriteTrail( "WdeSBarCreate: CREATE_WINDOW failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
     WdeSBNoodleSize( new, FALSE );
@@ -232,20 +225,19 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-BOOL WINEXPORT WdeSBarDispatcher ( ACTION act, WdeSBarObject *obj,
-                                     void *p1, void *p2)
+BOOL WINEXPORT WdeSBarDispatcher ( ACTION act, WdeSBarObject *obj, void *p1, void *p2 )
 {
     int     i;
 
-    WdeDebugDispatch("SBar", act, obj, p1, p2);
+    WdeDebugDispatch( "SBar", act, obj, p1, p2 );
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeSBarActions[i].id == act ) {
-            return( (WdeSBarActions[i].rtn)( obj, p1, p2 ) );
+            return( WdeSBarActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return (Forward ((OBJPTR)obj->control, act, p1, p2));
+    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
 Bool WdeSBarInit( Bool first )
@@ -259,26 +251,26 @@ Bool WdeSBarInit( Bool first )
 
     if( first ) {
 #if 0
-        if ( wc.style & CS_GLOBALCLASS ) {
+        if( wc.style & CS_GLOBALCLASS ) {
             wc.style ^= CS_GLOBALCLASS;
         }
-        if ( wc.style & CS_PARENTDC ) {
+        if( wc.style & CS_PARENTDC ) {
             wc.style ^= CS_PARENTDC;
         }
-        wc.style |= ( CS_HREDRAW | CS_VREDRAW );
-        wc.hInstance     = WdeApplicationInstance;
+        wc.style |= CS_HREDRAW | CS_VREDRAW;
+        wc.hInstance = WdeApplicationInstance;
         wc.lpszClassName = "wdeedit";
-        wc.cbWndExtra  += sizeof( OBJPTR );
-        //wc.lpfnWndProc      = WdeSBarSuperClassProc;
+        wc.cbWndExtra += sizeof( OBJPTR );
+        //wc.lpfnWndProc = WdeSBarSuperClassProc;
         if( !RegisterClass( &wc ) ) {
-            WdeWriteTrail("WdeSBarInit: RegisterClass failed.");
+            WdeWriteTrail( "WdeSBarInit: RegisterClass failed." );
         }
 #endif
     }
 
-    WdeDefaultSBar = WdeAllocDialogBoxControl ();
-    if( !WdeDefaultSBar ) {
-        WdeWriteTrail ("WdeSBarInit: Alloc of control failed!");
+    WdeDefaultSBar = WdeAllocDialogBoxControl();
+    if( WdeDefaultSBar == NULL ) {
+        WdeWriteTrail( "WdeSBarInit: Alloc of control failed!" );
         return( FALSE );
     }
 
@@ -291,208 +283,206 @@ Bool WdeSBarInit( Bool first )
     SETCTL_SIZEW( WdeDefaultSBar, 0 );
     SETCTL_SIZEH( WdeDefaultSBar, 0 );
     SETCTL_TEXT( WdeDefaultSBar, NULL );
-    SETCTL_CLASSID( WdeDefaultSBar, WdeStrDup( WSTATUSCLASSNAME ) );
+    SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
 
-    WdeSBarDispatch = MakeProcInstance((FARPROC)WdeSBarDispatcher,
-                                           WdeGetAppInstance());
+    WdeSBarDispatch = MakeProcInstance( (FARPROC)WdeSBarDispatcher,
+                                        WdeGetAppInstance() );
     return( TRUE );
 }
 
-void WdeSBarFini ( void )
+void WdeSBarFini( void )
 {
-    WdeFreeDialogBoxControl ( &WdeDefaultSBar );
-    FreeProcInstance        ( WdeSBarDispatch );
+    WdeFreeDialogBoxControl( &WdeDefaultSBar );
+    FreeProcInstance( WdeSBarDispatch );
 }
 
-BOOL WdeSBarDestroy ( WdeSBarObject *obj, BOOL *flag, void *p2 )
+BOOL WdeSBarDestroy( WdeSBarObject *obj, BOOL *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    if ( !Forward ( obj->control, DESTROY, flag, NULL ) ) {
-        WdeWriteTrail("WdeSBarDestroy: Control DESTROY failed");
-        return ( FALSE );
+    if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
+        WdeWriteTrail( "WdeSBarDestroy: Control DESTROY failed" );
+        return( FALSE );
     }
 
     WdeMemFree( obj );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeSBarValidateAction ( WdeSBarObject *obj, ACTION *act, void *p2 )
+BOOL WdeSBarValidateAction( WdeSBarObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    if( ( *act == MOVE ) || ( *act == RESIZE ) ) {
+    if( *act == MOVE || *act == RESIZE ) {
         OBJPTR  parent;
         OBJ_ID  id;
-        GetObjectParent( obj, &parent );
-        Forward( obj, IDENTIFY, &id, NULL );
+        GetObjectParent( (OBJPTR)obj, &parent );
+        Forward( (OBJPTR)obj, IDENTIFY, &id, NULL );
         if( id == DIALOG_OBJ ) {
             return( FALSE );
         }
     }
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeSBarActions[i].id == *act ) {
-            return ( TRUE );
+            return( TRUE );
         }
     }
 
-    return ( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
 }
 
-BOOL WdeSBarCopyObject ( WdeSBarObject *obj, WdeSBarObject **new,
-                           WdeSBarObject *handle )
+BOOL WdeSBarCopyObject( WdeSBarObject *obj, WdeSBarObject **new, WdeSBarObject *handle )
 {
-    if (new == NULL) {
-        WdeWriteTrail("WdeSBarCopyObject: Invalid new object!");
-        return ( FALSE );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeSBarCopyObject: Invalid new object!" );
+        return( FALSE );
     }
 
-    *new = (WdeSBarObject *) WdeMemAlloc ( sizeof(WdeSBarObject) );
+    *new = (WdeSBarObject *)WdeMemAlloc( sizeof( WdeSBarObject ) );
 
-    if ( *new == NULL ) {
-        WdeWriteTrail("WdeSBarCopyObject: Object malloc failed");
-        return ( FALSE );
+    if( *new == NULL ) {
+        WdeWriteTrail( "WdeSBarCopyObject: Object malloc failed" );
+        return( FALSE );
     }
 
-    (*new)->dispatcher    = obj->dispatcher;
-    (*new)->object_id     = obj->object_id;
+    (*new)->dispatcher = obj->dispatcher;
+    (*new)->object_id = obj->object_id;
 
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         (*new)->object_handle = *new;
     } else {
         (*new)->object_handle = handle;
     }
 
-    if (!CopyObject(obj->control, &((*new)->control), (*new)->object_handle)) {
-        WdeWriteTrail("WdeSBarCopyObject: Control not created!");
-        WdeMemFree ( (*new) );
-        return ( FALSE );
+    if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
+        WdeWriteTrail( "WdeSBarCopyObject: Control not created!" );
+        WdeMemFree( *new );
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeSBarIdentify ( WdeSBarObject *obj, OBJ_ID *id, void *p2 )
+BOOL WdeSBarIdentify( WdeSBarObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 BOOL WdeSBarGetWndProc( WdeSBarObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *proc = WdeSBarSuperClassProc;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeSBarGetWindowClass ( WdeSBarObject *obj, char **class, void *p2 )
+BOOL WdeSBarGetWindowClass( WdeSBarObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *class = WSTATUSCLASSNAME;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeSBarDefine ( WdeSBarObject *obj, POINT *pnt, void *p2 )
+BOOL WdeSBarDefine( WdeSBarObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(pnt);
-    _wde_touch(p2);
+    _wde_touch( pnt );
+    _wde_touch( p2 );
 
-    o_info.obj       = obj->object_handle;
-    o_info.obj_id    = obj->object_id;
-    o_info.mask      = WS_VISIBLE | WS_DISABLED |
-                        WS_TABSTOP | WS_GROUP | WS_BORDER;
-    o_info.set_func  = WdeSBarSetDefineInfo;
-    o_info.get_func  = WdeSBarGetDefineInfo;
+    o_info.obj = obj->object_handle;
+    o_info.obj_id = obj->object_id;
+    o_info.mask = WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP | WS_BORDER;
+    o_info.set_func = (WdeSetProc)WdeSBarSetDefineInfo;
+    o_info.get_func = (WdeGetProc)WdeSBarGetDefineInfo;
     o_info.hook_func = WdeSBarDefineHook;
-    o_info.win       = NULL;
+    o_info.win = NULL;
 
-    return ( WdeControlDefine ( &o_info ) );
+    return( WdeControlDefine( &o_info ) );
 }
 
-void WdeSBarSetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeSBarSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask;
 
     // set the status bar options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ff00;
-    if ( mask & SBT_OWNERDRAW ) {
-        CheckDlgButton ( hDlg, IDB_SBT_OWNERDRAW, 1);
+    if( mask & SBT_OWNERDRAW ) {
+        CheckDlgButton( hDlg, IDB_SBT_OWNERDRAW, 1 );
     }
-    if ( mask & SBT_NOBORDERS ) {
-        CheckDlgButton ( hDlg, IDB_SBT_NOBORDERS, 1);
+    if( mask & SBT_NOBORDERS ) {
+        CheckDlgButton( hDlg, IDB_SBT_NOBORDERS, 1 );
     }
-    if ( mask & SBT_POPOUT ) {
-        CheckDlgButton ( hDlg, IDB_SBT_POPOUT, 1);
+    if( mask & SBT_POPOUT ) {
+        CheckDlgButton( hDlg, IDB_SBT_POPOUT, 1 );
     }
 
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-void WdeSBarGetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeSBarGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask = 0;
 
     // get the status bar settings
-    if ( IsDlgButtonChecked ( hDlg, IDB_SBT_OWNERDRAW ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_SBT_OWNERDRAW ) ) {
         mask |= SBT_OWNERDRAW;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_SBT_NOBORDERS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_SBT_NOBORDERS ) ) {
         mask |= SBT_NOBORDERS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_SBT_POPOUT ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_SBT_POPOUT ) ) {
         mask |= SBT_POPOUT;
     }
 
     SETCTL_STYLE( o_info->info.c.info,
-                  ( GETCTL_STYLE(o_info->info.c.info) & 0xffff0000 ) | mask );
+                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
-    WdeEXGetDefineInfo ( o_info, hDlg );
+    WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-BOOL WdeSBarDefineHook( HWND hDlg, WORD message,
+BOOL WdeSBarDefineHook( HWND hDlg, UINT message,
                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(hDlg);
-    _wde_touch(message);
-    _wde_touch(wParam);
-    _wde_touch(lParam);
-    _wde_touch(mask);
+    _wde_touch( hDlg );
+    _wde_touch( message );
+    _wde_touch( wParam );
+    _wde_touch( lParam );
+    _wde_touch( mask );
 
     processed = FALSE;
 
@@ -500,14 +490,10 @@ BOOL WdeSBarDefineHook( HWND hDlg, WORD message,
 }
 
 LRESULT WINEXPORT WdeSBarSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam,
-                                         LPARAM lParam )
+                                         WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return( CallWindowProc( WdeOriginalSBarProc,
-                                 hWnd, message, wParam, lParam ) );
+        return( CallWindowProc( WdeOriginalSBarProc, hWnd, message, wParam, lParam ) );
     }
     return( FALSE );
 }
-
-

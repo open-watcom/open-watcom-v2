@@ -1,0 +1,347 @@
+/*
+ *  ddkmapi.h   DirectDraw kernel mode functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __DDKMAPI_INCLUDED__
+#define __DDKMAPI_INCLUDED__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* DirectX API version numbers */
+#define DXAPI_MAJORVERSION  1
+#define DXAPI_MINORVERSION  0
+
+/* DirectX API function indices */
+#define DD_FIRST_DXAPI                              0x0500
+#define DD_DXAPI_GETVERSIONNUMBER                   (DD_FIRST_DXAPI + 0)
+#define DD_DXAPI_CLOSEHANDLE                        (DD_FIRST_DXAPI + 1)
+#define DD_DXAPI_OPENDIRECTDRAW                     (DD_FIRST_DXAPI + 2)
+#define DD_DXAPI_OPENSURFACE                        (DD_FIRST_DXAPI + 3)
+#define DD_DXAPI_OPENVIDEOPORT                      (DD_FIRST_DXAPI + 4)
+#define DD_DXAPI_GETKERNELCAPS                      (DD_FIRST_DXAPI + 5)
+#define DD_DXAPI_GET_VP_FIELD_NUMBER                (DD_FIRST_DXAPI + 6)
+#define DD_DXAPI_SET_VP_FIELD_NUMBER                (DD_FIRST_DXAPI + 7)
+#define DD_DXAPI_SET_VP_SKIP_FIELD                  (DD_FIRST_DXAPI + 8)
+#define DD_DXAPI_GET_SURFACE_STATE                  (DD_FIRST_DXAPI + 9)
+#define DD_DXAPI_SET_SURFACE_STATE                  (DD_FIRST_DXAPI + 10)
+#define DD_DXAPI_LOCK                               (DD_FIRST_DXAPI + 11)
+#define DD_DXAPI_FLIP_OVERLAY                       (DD_FIRST_DXAPI + 12)
+#define DD_DXAPI_FLIP_VP                            (DD_FIRST_DXAPI + 13)
+#define DD_DXAPI_GET_CURRENT_VP_AUTOFLIP_SURFACE    (DD_FIRST_DXAPI + 14)
+#define DD_DXAPI_GET_LAST_VP_AUTOFLIP_SURFACE       (DD_FIRST_DXAPI + 15)
+#define DD_DXAPI_REGISTER_CALLBACK                  (DD_FIRST_DXAPI + 16)
+#define DD_DXAPI_UNREGISTER_CALLBACK                (DD_FIRST_DXAPI + 17)
+#define DD_DXAPI_GET_POLARITY                       (DD_FIRST_DXAPI + 18)
+#define DD_DXAPI_OPENVPCAPTUREDEVICE                (DD_FIRST_DXAPI + 19)
+#define DD_DXAPI_ADDVPCAPTUREBUFFER                 (DD_FIRST_DXAPI + 20)
+#define DD_DXAPI_FLUSHVPCAPTUREBUFFERS              (DD_FIRST_DXAPI + 21)
+
+/* DD_DXAPI_OPENVPCAPTUREDEVICE flags */
+#define DDOPENCAPTURE_VIDEO 0x00000001L
+#define DDOPENCAPTURE_VBI   0x00000002L
+
+/* DD_DXAPI_ADDVPCAPTUREBUFFER flags */
+#define DDADDBUFF_SYSTEMMEMORY      0x00000001L
+#define DDADDBUFF_NONLOCALVIDMEM    0x00000002L
+#define DDADDBUFF_INVERT            0x00000004L
+
+/* DirectDraw state flags */
+#define DDSTATE_BOB                 0x00000001L
+#define DDSTATE_WEAVE               0x00000002L
+#define DDSTATE_EXPLICITLY_SET      0x00000004L
+#define DDSTATE_SOFTWARE_AUTOFLIP   0x00000008L
+#define DDSTATE_SKIPEVENFIELDS      0x00000010L
+
+/* DirectDraw event flags */
+#define DDEVENT_DISPLAY_VSYNC   0x00000001L
+#define DDEVENT_VP_VSYNC        0x00000002L
+#define DDEVENT_VP_LINE         0x00000004L
+#define DDEVENT_PRERESCHANGE    0x00000008L
+#define DDEVENT_POSTRESCHANGE   0x00000010L
+#define DDEVENT_PREDOSBOX       0x00000020L
+#define DDEVENT_POSTDOSBOX      0x00000040L
+
+/* DirectDraw notification flags */
+#define DDNOTIFY_DISPLAY_VSYNC      0x00000001L
+#define DDNOTIFY_VP_VSYNC           0x00000002L
+#define DDNOTIFY_VP_LINE            0x00000004L
+#define DDNOTIFY_PRERESCHANGE       0x00000008L
+#define DDNOTIFY_POSTRESCHANGE      0x00000010L
+#define DDNOTIFY_PREDOSBOX          0x00000020L
+#define DDNOTIFY_POSTDOSBOX         0x00000040L
+#define DDNOTIFY_CLOSEDIRECTDRAW    0x00000080L
+#define DDNOTIFY_CLOSESURFACE       0x00000100L
+#define DDNOTIFY_CLOSEVIDEOPORT     0x00000200L
+#define DDNOTIFY_CLOSECAPTURE       0x00000400L
+
+/* DxApi() function pointer */
+typedef DWORD (PASCAL *LPDXAPI)( DWORD, LPVOID, DWORD, LPVOID, DWORD );
+
+/* DirectDraw notification callback */
+typedef ULONG (PASCAL *LPDD_NOTIFYCALLBACK)( DWORD, PVOID, DWORD, DWORD );
+
+/* DD_DXAPI_GETVERSIONNUMBER parameters */
+typedef struct _DDGETVERSIONNUMBER {
+    DWORD   ddRVal;
+    DWORD   dwMajorVersion;
+    DWORD   dwMinorVersion;
+} DDGETVERSIONNUMBER;
+typedef DDGETVERSIONNUMBER  *LPDDGETVERSIONNUMBER;
+
+/* DD_DXAPI_CLOSEHANDLE parameters */
+typedef struct _DDCLOSEHANDLE {
+    HANDLE  hHandle;
+} DDCLOSEHANDLE;
+typedef DDCLOSEHANDLE   *LPDDCLOSEHANDLE;
+
+/* DD_DXAPI_OPENDIRECTDRAW input parameters */
+typedef struct _DDOPENDIRECTDRAWIN {
+    ULONG_PTR           dwDirectDrawHandle;
+    LPDD_NOTIFYCALLBACK pfnDirectDrawClose;
+    PVOID               pContext;
+} DDOPENDIRECTDRAWIN;
+typedef DDOPENDIRECTDRAWIN  *LPDDOPENDIRECTDRAWIN;
+
+/* DD_DXAPI_OPENDIRECTDRAW output parameters */
+typedef struct _DDOPENDIRECTDRAWOUT {
+    DWORD   ddRVal;
+    HANDLE  hDirectDraw;
+} DDOPENDIRECTDRAWOUT;
+typedef DDOPENDIRECTDRAWOUT *LPDDOPENDIRECTDRAW;
+
+/* DD_DXAPI_OPENSURFACE input parameters */
+typedef struct _DDOPENSURFACEIN {
+    HANDLE              hDirectDraw;
+    ULONG_PTR           dwSurfaceHandle;
+    LPDD_NOTIFYCALLBACK pfnSurfaceClose;
+    PVOID               pContext;
+} DDOPENSURFACEIN;
+typedef DDOPENSURFACEIN *LPDDOPENSURFACEIN;
+
+/* DD_DXAPI_OPENSURFACE output parameters */
+typedef struct _DDOPENSURFACEOUT {
+    DWORD   ddRVal;
+    HANDLE  hSurface;
+} DDOPENSURFACEOUT;
+typedef DDOPENSURFACEOUT    *LPDDOPENSURFACEOUT;
+
+/* DD_DXAPI_OPENVIDEOPORT input parameters */
+typedef struct _DDOPENVIDEOPORTIN {
+    HANDLE              hDirectDraw;
+    ULONG               dwVideoPortHandle;
+    LPDD_NOTIFYCALLBACK pfnVideoPortClose;
+    PVOID               pContext;
+} DDOPENVIDEOPORTIN;
+typedef DDOPENVIDEOPORTIN   *LPDDOPENVIDEOPORTIN;
+
+/* DD_DXAPI_OPENVIDEOPORT output parameters */
+typedef struct _DDOPENVIDEOPORTOUT {
+    DWORD   ddRVal;
+    HANDLE  hVideoPort;
+} DDOPENVIDEOPORTOUT;
+typedef DDOPENVIDEOPORTOUT  *LPDDOPENVIDEOPORTOUT;
+
+/* DD_DXAPI_GETKERNELCAPS output parameters */
+typedef struct _DDGETKERNELCAPSOUT {
+    DWORD   ddRVal;
+    DWORD   dwCaps;
+    DWORD   dwIRQCaps;
+} DDGETKERNELCAPSOUT;
+typedef DDGETKERNELCAPSOUT  *LPDDGETKERNELCAPSOUT;
+
+/* DD_DXAPI_GET_VP_FIELD_NUMBER input parameters */
+typedef struct _DDGETFIELDNUMIN {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+} DDGETFIELDNUMIN;
+typedef DDGETFIELDNUMIN *LPDDGETFIELDNUMIN;
+
+/* DD_DXAPI_GET_VP_FIELD_NUMBER output parameters */
+typedef struct _DDGETFIELDNUMOUT {
+    DWORD   ddRVal;
+    DWORD   dwFieldNum;
+} DDGETFIELDNUMOUT;
+typedef DDGETFIELDNUMOUT    *LPDDGETFIELDNUMOUT;
+
+/* DD_DXAPI_SET_VP_FIELD_NUMBER parameters */
+typedef struct _DDSETFIELDNUM {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+    DWORD   dwFieldNum;
+} DDSETFIELDNUM;
+typedef DDSETFIELDNUM   *LPDDSETFIELDNUM;
+
+/* DD_DXAPI_SET_VP_SKIP_FIELD parameters */
+typedef struct _DDSETSKIPFIELD {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+    DWORD   dwStartField;
+} DDSETSKIPFIELD;
+typedef DDSETSKIPFIELD  *LPDDSETSKIPFIELD;
+
+/* DD_DXAPI_GET_SURFACE_STATE input parameters */
+typedef struct _DDGETSURFACESTATEIN {
+    HANDLE  hDirectDraw;
+    HANDLE  hSurface;
+} DDGETSURFACESTATEIN;
+typedef DDGETSURFACESTATEIN *LPDDGETSURFACESTATEIN;
+
+/* DD_DXAPI_GET_SURFACE_STATE output parameters */
+typedef struct _DDGETSURFACESTATEOUT {
+    DWORD   ddRVal;
+    DWORD   dwStateCaps;
+    DWORD   dwStateStatus;
+} DDGETSURFACESTATEOUT;
+typedef DDGETSURFACESTATEOUT    *LPDDGETSURFACESTATEOUT;
+
+/* DD_DXAPI_SET_SURFACE_STATE parameters */
+typedef struct _DDSETSURFACESTATE {
+    HANDLE  hDirectDraw;
+    HANDLE  hSurface;
+    DWORD   dwState;
+    DWORD   dwStartField;
+} DDSETSURFACESTATE;
+typedef DDSETSURFACESTATE   *LPDDSETSURFACESTATE;
+
+/* DD_DXAPI_LOCK input parameters */
+typedef struct _DDLOCKIN {
+    HANDLE  hDirectDraw;
+    HANDLE  hSurface;
+} DDLOCKIN;
+typedef DDLOCKIN    *LPDDLOCKIN;
+
+/* DD_DXAPI_LOCK output parameters */
+typedef struct _DDLOCKOUT {
+    DWORD   ddRVal;
+    DWORD   dwSurfHeight;
+    DWORD   dwSurfWidth;
+    LONG    lSurfPitch;
+    PVOID   lpSurface;
+    DWORD   SurfaceCaps;
+    DWORD   dwFormatFlags;
+    DWORD   dwFormatFourCC;
+    DWORD   dwFormatBitCount;
+    union {
+        DWORD   dwRBitMask;
+        DWORD   dwYBitMask;
+    };
+    union {
+        DWORD   dwGBitMask;
+        DWORD   dwUBitMask;
+    };
+    union {
+        DWORD   dwBBitMask;
+        DWORD   dwVBitMask;
+    };
+} DDLOCKOUT;
+typedef DDLOCKOUT   *LPDDLOCKOUT;
+
+/* DD_DXAPI_FLIP_OVERLAY parameters */
+typedef struct _DDFLIPOVERLAY {
+    HANDLE  hDirectDraw;
+    HANDLE  hCurrentSurface;
+    HANDLE  hTargetSurface;
+    DWORD   dwFlags;
+} DDFLIPOVERLAY;
+typedef DDFLIPOVERLAY   *LPDDFLIPOVERLAY;
+
+/* DD_DXAPI_FLIP_VP parameters */
+typedef struct _DDFLIPVIDEOPORT {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+    HANDLE  hCurrentSurface;
+    HANDLE  hTargetSurface;
+    DWORD   dwFlags;
+} DDFLIPVIDEOPORT;
+typedef DDFLIPVIDEOPORT *LPDDFLIPVIDEOPORT;
+
+/* DD_DXAPI_GET_CURRENT_VP_AUTOFLIP_SURFACE input parameters */
+typedef struct _DDGETAUTOFLIPIN {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+} DDGETAUTOFLIPIN;
+typedef DDGETAUTOFLIPIN *LPDDGETAUTOFLIPIN;
+
+/* DD_DXAPI_GET_CURRENT_VP_AUTOFLIP_SURFACE output parameters */
+typedef struct _DDGETAUTOFLIPOUT {
+    DWORD   ddRVal;
+    HANDLE  hVideoSurface;
+    HANDLE  hVBISurface;
+    BOOL    bPolarity;
+} DDGETAUTOFLIPOUT;
+typedef DDGETAUTOFLIPOUT    *LPDDGETAUTOFLIPOUT;
+
+/* DD_DXAPI_REGISTER_CALLBACK parameters */
+typedef struct _DDREGISTERCALLBACK {
+    HANDLE              hDirectDraw;
+    ULONG               dwEvents;
+    LPDD_NOTIFYCALLBACK pfnCallback;
+    ULONG_PTR           dwParam1;
+    ULONG_PTR           dwParam2;
+    PVOID               pContext;
+} DDREGISTERCALLBACK;
+typedef DDREGISTERCALLBACK  *LPDDREGISTERCALLBACK;
+
+/* DD_DXAPI_GET_POLARITY input parameters */
+typedef struct _DDGETPOLARITYIN {
+    HANDLE  hDirectDraw;
+    HANDLE  hVideoPort;
+} DDGETPOLARITYIN;
+typedef DDGETPOLARITYIN *LPDDGETPOLARITYIN;
+
+/* DD_DXAPI_GET_POLARITY output parameters */
+typedef struct _DDGETPOLARITYOUT {
+    DWORD   ddRVal;
+    BOOL    bPolarity;
+} DDGETPOLARITYOUT;
+typedef DDGETPOLARITYOUT    *LPDDGETPOLARITYOUT;
+
+/* DD_DXAPI_OPENVPCAPTUREDEVICE input parameters */
+typedef struct _DDOPENVPCAPTUREDEVICEIN {
+    HANDLE              hDirectDraw;
+    HANDLE              hVideoPort;
+    DWORD               dwStartLine;
+    DWORD               dwEndLine;
+    DWORD               dwCaptureEveryNFields;
+    LPDD_NOTIFYCALLBACK pfnCaptureClose;
+    PVOID               pContext;
+    DWORD               dwFlags;
+} DDOPENVPCAPTUREDEVICEIN;
+typedef DDOPENVPCAPTUREDEVICEIN *LPDDOPENVPCAPTUREDEVICEIN;
+
+/* DD_DXAPI_OPENVPCAPTUREDEVICE output parameters */
+typedef struct _DDOPENVPCAPTUREDEVICEOUT {
+    DWORD   ddRVal;
+    HANDLE  hCapture;
+} DDOPENVPCAPTUREDEVICEOUT;
+typedef DDOPENVPCAPTUREDEVICEOUT    *LPDDOPENVPCAPTUREDEVICEOUT;
+
+/* DirectDraw capture buffer information */
+typedef struct _DDCAPBUFFINFO {
+    DWORD           dwFieldNumber;
+    DWORD           bPolarity;
+    LARGE_INTEGER   liTimeStamp;
+    DWORD           ddRVal;
+} DDCAPBUFFINFO;
+typedef DDCAPBUFFINFO   *LPDDCAPBUFFINFO;
+
+/* DD_DXAPI_ADDVPCAPTUREBUFFER parameters */
+typedef struct _DDADDVPCAPTUREBUFF {
+    HANDLE          hCapture;
+    DWORD           dwFlags;
+    PMDL            pMDL;
+    PKEVENT         pKEvent;
+    LPDDCAPBUFFINFO lpBuffInfo;
+} DDADDVPCAPTUREBUFF;
+typedef DDADDVPCAPTUREBUFF  *LPDDADDVPCAPTUREBUFF;
+
+/* Functions in DXAPI.SYS */
+DWORD PASCAL    DxApi( DWORD, LPVOID, DWORD, LPVOID, DWORD );
+
+:include cplusepi.sp
+
+#endif /* __DDKMAPI_INCLUDED__ */

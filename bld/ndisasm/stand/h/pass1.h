@@ -33,9 +33,9 @@
 #ifndef WDIS_PASS_1_INCLUDED
 #define WDIS_PASS_1_INCLUDED
 
-extern return_val       DoPass1( orl_sec_handle, char *, orl_sec_size, ref_list,
+extern return_val       DoPass1( orl_sec_handle, unsigned_8 *, orl_sec_size, ref_list,
                                  scantab_ptr );
-extern ref_entry        DoPass1Relocs( char *, ref_entry, orl_sec_offset,
+extern ref_entry        DoPass1Relocs( unsigned_8 *, ref_entry, orl_sec_offset,
                                        orl_sec_offset );
 
 #endif

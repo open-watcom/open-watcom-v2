@@ -1,0 +1,327 @@
+.387
+		PUBLIC	_FlagReset
+		PUBLIC	_ShowCursor
+		PUBLIC	_HideCursor
+		PUBLIC	_GetPosBut
+		PUBLIC	_SetCursorPos
+		PUBLIC	_GetButPres
+		PUBLIC	_GetButRel
+		PUBLIC	_SetHorizontalLimits
+		PUBLIC	_SetVerticalLimits
+		PUBLIC	_SetGraphicCursor
+		PUBLIC	_SetTextCursor
+		PUBLIC	_ReadMotionCounters
+		PUBLIC	_SetEventHandler
+		PUBLIC	_LightPenOn
+		PUBLIC	_LightPenOff
+		PUBLIC	_SetMickeysPerPixel
+		PUBLIC	_ConditionalOff
+		PUBLIC	_SetSpeedThreshold
+DGROUP		GROUP	CONST,_BSS,_DATA
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+L$1:
+    DW	DGROUP
+_FlagReset:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,0
+    int         33H
+    les         di,dword ptr 6[bp]
+    mov         word ptr es:[di],ax
+    les         di,dword ptr 0aH[bp]
+    mov         word ptr es:[di],bx
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_ShowCursor:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,1
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_HideCursor:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,2
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_GetPosBut:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,3
+    int         33H
+    les         di,dword ptr 6[bp]
+    mov         word ptr es:[di],bx
+    les         di,dword ptr 0aH[bp]
+    mov         word ptr es:[di],cx
+    les         di,dword ptr 0eH[bp]
+    mov         word ptr es:[di],dx
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetCursorPos:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         cx,word ptr 6[bp]
+    mov         dx,word ptr 8[bp]
+    mov         ax,4
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_GetButPres:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         bx,word ptr 6[bp]
+    mov         ax,5
+    int         33H
+    les         di,dword ptr 8[bp]
+    mov         word ptr es:[di],ax
+    les         di,dword ptr 0cH[bp]
+    mov         word ptr es:[di],bx
+    les         di,dword ptr 10H[bp]
+    mov         word ptr es:[di],cx
+    les         di,dword ptr 14H[bp]
+    mov         word ptr es:[di],dx
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_GetButRel:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         bx,word ptr 6[bp]
+    mov         ax,6
+    int         33H
+    les         di,dword ptr 8[bp]
+    mov         word ptr es:[di],ax
+    les         di,dword ptr 0cH[bp]
+    mov         word ptr es:[di],bx
+    les         di,dword ptr 10H[bp]
+    mov         word ptr es:[di],cx
+    les         di,dword ptr 14H[bp]
+    mov         word ptr es:[di],dx
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetHorizontalLimits:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         cx,word ptr 6[bp]
+    mov         dx,word ptr 8[bp]
+    mov         ax,7
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetVerticalLimits:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         cx,word ptr 6[bp]
+    mov         dx,word ptr 8[bp]
+    mov         ax,8
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetGraphicCursor:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    les         di,dword ptr 6[bp]
+    mov         dx,di
+    mov         bx,word ptr es:40H[di]
+    mov         cx,word ptr es:42H[di]
+    mov         ax,9
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetTextCursor:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         bx,word ptr 6[bp]
+    mov         cx,word ptr 8[bp]
+    mov         dx,word ptr 0aH[bp]
+    mov         ax,0aH
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_ReadMotionCounters:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,0bH
+    int         33H
+    les         di,dword ptr 6[bp]
+    mov         word ptr es:[di],cx
+    les         di,dword ptr 0aH[bp]
+    mov         word ptr es:[di],dx
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+L$2:
+    DB	0, 0
+L$3:
+    DB	0, 0, 0, 0
+PrivateHandler:
+    cli         
+    push        ds
+    mov         ds,word ptr cs:L$1
+    push        dx
+    push        cx
+    push        bx
+    push        ax
+    sti         
+    call        dword ptr cs:L$2
+    add         sp,8
+    pop         ds
+    retf        
+_SetEventHandler:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    push        es
+    mov         cx,word ptr 6[bp]
+    les         dx,dword ptr 8[bp]
+    mov         word ptr cs:L$3,es
+    mov         word ptr cs:L$2,dx
+    push        cs
+    pop         es
+    lea         dx,PrivateHandler
+    mov         ax,0cH
+    int         33H
+    pop         es
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_LightPenOn:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,0dH
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_LightPenOff:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         ax,0eH
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetMickeysPerPixel:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         cx,word ptr 6[bp]
+    mov         dx,word ptr 8[bp]
+    mov         ax,0fH
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_ConditionalOff:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         cx,word ptr 6[bp]
+    mov         dx,word ptr 8[bp]
+    mov         si,word ptr 0aH[bp]
+    mov         di,word ptr 0cH[bp]
+    mov         ax,10H
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_SetSpeedThreshold:
+    push        bp
+    mov         bp,sp
+    push        di
+    push        si
+    mov         dx,word ptr 6[bp]
+    mov         ax,13H
+    int         33H
+    pop         si
+    pop         di
+    mov         sp,bp
+    pop         bp
+    retf        
+_TEXT		ENDS
+CONST		SEGMENT	WORD PUBLIC USE16 'CONST'
+CONST		ENDS
+_BSS		SEGMENT	WORD PUBLIC USE16 'BSS'
+_BSS		ENDS
+
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

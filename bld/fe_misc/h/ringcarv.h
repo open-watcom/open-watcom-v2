@@ -43,11 +43,11 @@
 
 void* RingCarveAlloc(           // CARVER ALLOC AND APPEND AN ENTRY
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 ;
 void RingCarveFree(             // CARVER FREE ALL ELEMENTS IN A RING
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 ;
 
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI mouse input processing.
 *
 ****************************************************************************/
 
@@ -41,7 +40,7 @@ static wnd_line_piece           MouseLine;
 static wnd_row                  MouseRow;
 
 
-wnd_row WndGetMouseRow()
+wnd_row WndGetMouseRow( void )
 {
     return( MouseRow );
 }
@@ -188,7 +187,7 @@ void WndRButtonUp( a_window *wnd, void *parm )
     WndInvokePopUp( wnd, &point, NULL );
 }
 
-bool WndMouseButtonIsDown()
+bool WndMouseButtonIsDown( void )
 {
     return( LButtonIsDown || RButtonIsDown );
 }

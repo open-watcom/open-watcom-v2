@@ -1,0 +1,1148 @@
+:H1.Using the WATCOM Graphical Kernel System
+.*
+:H2.Supported Operating Systems
+.*
+:I1.WATCOM GKS:I2.using DOS
+WATCOM GKS runs under the DOS operating system in 16-bit real mode.
+.*
+:H2.Supported Devices
+.*
+:I1.WATCOM GKS:I2.see also GKS
+WATCOM GKS supports the following devices:
+:I1.GKS:I2.devices supported
+:UL compact.
+:I1.CGA
+:LI.IBM Colour/Graphics Display Adapter (CGA)
+:I1.PCjr
+:LI.IBM PCjr Colour Graphics Adapter (PCjr)
+:I1.EGA
+:LI.IBM Enhanced Graphics Adapter (EGA)
+:I1.VGA
+:LI.IBM Video Graphics Array (VGA)
+:I1.MCGA
+:LI.IBM Multi-Colour Graphics Adapter (MCGA)
+:I1.IBM Graphics Printer
+:LI.IBM Graphics Printer
+:I1.Hercules adapter
+:LI.Hercules Monochrome Graphics Adapter
+:I1.character graphics
+:LI.Character graphics on non-graphic displays
+:I1.metafiles
+:I1.pixel arrays
+:LI.Pixel Arrays (a bit map file or virtual display)
+:I1.GKS metafiles
+:LI.GKS Metafiles
+:eUL.
+.np
+WATCOM GKS is described in the
+:CIT.
+WATCOM GKS Graphics Tutorial and Reference
+:eCIT.
+manual.
+.*
+:H2.Components of the WATCOM GKS Support
+.*
+:I1.GKS:I2.running applications
+The following files are necessary to use the WATCOM GKS subroutine
+library.
+.begnote $break
+:I1.GKS:I2.libraries required
+.note WGKS.EXE
+:I1.GKS:I2.WGKS.EXE
+:I1.WGKS.EXE
+This program file, located in "&pathnamup\BIN", contains the WATCOM
+Graphical Kernel System support code.
+Normally, this program should be run before the application that
+requires it is run.
+WGKS is a terminate-and-stay-resident program that can be loaded and
+unloaded (by specifying the "quit" argument).
+.note HERCBIOS.COM
+:I1.GKS:I2.HERCBIOS.COM
+:I1.HERCBIOS.COM
+This program, located in "&pathnamup\BIN", must be run before using
+the WATCOM GKS software with a Hercules Graphics adapter.
+This program supports the output of non-graphical text to the screen
+when in a graphics mode using the Hercules Graphics Adapter.
+It is also a terminate-and-stay-resident program that can be loaded
+and unloaded (by specifying the "quit" argument).
+.note WGKS.LIB
+:I1.GKS:I2.WGKS.LIB
+:I1.WGKS.LIB
+:I1.library files:I2.WGKS.LIB
+This file contains a number of object files which define the interface
+to the WATCOM GKS library routines contained in "WGKS.EXE".
+It is located in "&pathnamup\LIB286\DOS".
+This library is required when linking any FORTRAN application that
+uses WATCOM GKS graphics routines.
+.note WGKSCVR.LIB
+:I1.GKS:I2.WGKSCVR.LIB
+:I1.WGKSCVR.LIB
+:I1.library files:I2.WGKSCVR.LIB
+This file includes cover routines which simplify the use of GKS.
+It is located in "&pathnamup\LIB286\DOS".
+These cover routines are described in this chapter.
+.note GKSDEMOS <DIR>
+The files in the "&pathnamup\SRC\FORTRAN\GKSDEMOS" directory are
+demonstration programs.
+They are described below.
+.begnote $break
+.note GERHND.FOR, GERLOG.FOR
+:I1.GKS:I2.error handling and logging
+:I1.error handling and logging:I2.GKS
+:I1.GERHND.FOR
+:I1.GERLOG.FOR
+The FORTRAN source files "GERHND.FOR" and "GERLOG.FOR" contain error
+handling and logging routines which can be used with WATCOM GKS.
+These files are provided as a model for writing your own error handling
+routines and are not required to run graphics applications.
+Default error handling and logging subroutines are used if you do not
+provide your own.
+.note GKS1.FOR - GKS21.FOR
+:I1.GKS:I2.GKSx.FOR
+:I1.GKSx.FOR
+These are example programs that are described in the "WATCOM GKS Graphics
+Tutorial and Reference" manual.
+.note GKSDEMO.FOR
+:I1.GKS:I2.GKSDEMO.FOR
+:I1.GKSDEMO.FOR
+This is a GKS sample program that demonstrates some of the
+capabilities of WATCOM GKS.
+.note GKSHAT.FOR
+:I1.GKS:I2.GKSHAT.FOR
+:I1.GKSHAT.FOR
+This is another GKS sample program that demonstrates some of the
+capabilities of WATCOM GKS.
+.note CUBEDEMO.FOR
+:I1.GKS:I2.CUBEDEMO.FOR
+:I1.CUBEDEMO.FOR
+This file contains a rotating cube demonstration.
+In addition to animation techniques, this program illustrates the
+implementation of three-dimensional graphics on top of the
+two-dimensional Graphical Kernel System.
+.note PLOTDEMO.FOR
+:I1.GKS:I2.PLOTDEMO.FOR
+:I1.PLOTDEMO.FOR
+This file contains a demonstration of the graph subroutines found in
+"GRAPH.FOR".
+It produces a number of interesting X-Y graphs.
+.note GRAPH.FOR
+This file contains the following subroutines:
+.millust
+GRINIT
+GRAPH
+GRPLOT
+GRCLEAR
+GRFINI
+.emillust
+.np
+They can be used to plot simple graphs on an X-Y axis.
+Using the GRAPH subroutine, minimum and maximum X-Y values, a plot
+title and X-axis and Y-axis labels are specified.
+The GRPLOT subroutine is used to plot a graph.
+The program contained in "PLOTDEMO.FOR" demonstrates the graph
+subroutines.
+.note BLOCK.FOR, BOX.FOR, CIRCARC.FOR, CIRCLE.FOR COLOURMA.FOR, DOG.FOR, ELLARC.FOR, ELLIPSE.FOR LINE.FOR, PAINT.FOR, PICTURE.FOR, SLICE.FOR, TEXT.FOR
+These files illustrate the use of the cover graphics subprograms.
+They are described later in the section entitled "Example Programs".
+.endnote
+.note GKSCOVER <DIR>
+The files in the "&pathnamup\SRC\FORTRAN\GKSCOVER" directory are the
+source code to the WATCOM GKS graphics "cover" subprograms.
+Their names are listed below.
+.millust
+BLOCK.FOR     BOX.FOR       CIRCLE.FOR
+CIRC_ARC.FOR  CLEARSCR.FOR  COLOURMA.FOR
+ELLIPSE.FOR   ELL_ARC.FOR   FINISH.FOR
+GERHND.FOR    GETDOT.FOR    GETPIC.FOR
+GKSDEFN.FOR   INIT.FOR      LINE.FOR
+PAINT.FOR     PAINT_BO.FOR  PUTDOT.FOR
+PUTPIC.FOR    PUTPIC_A.FOR  SLICE.FOR
+TEXT.FOR
+.emillust
+.pc
+These files have been compiled and placed in the "WGKSCVR" library.
+.begnote $break
+.note GKSDEFN.FOR
+This file defines various GKS attributes and is included by the
+subprograms in "&pathnamup\SRC\FORTRAN\GKSCOVER".
+It should also be included by any program which uses these attributes.
+.endnote
+.endnote
+.*
+:H2.Creating Applications that Use the WATCOM GKS Library
+.*
+Let us use the demonstration program contained in "GKSDEMO.FOR" as an
+example of how to compile, link and execute a graphics application.
+This file is located in the "&pathnamup\SRC\FORTRAN\GKSDEMOS"
+directory.
+In our discussion, we are assuming that the &product software is
+installed on the default drive.
+If it is not then you must include the drive specification when
+attempting to repeat this example.
+We also assume that you have included "&pathnamup\BIN" and
+"&pathnamup\BINB" in the
+.ev PATH
+environment string so that you need not specify a path when using the
+&product software.
+.np
+:I1.GKS:I2.WGKS.LIB
+:I1.WGKS.LIB
+:I1.library files:I2.WGKS.LIB
+The GKS library file "WGKS.LIB" consists of small subprograms that
+issue requests to a memory-resident GKS to perform various tasks.
+We will require this library whenever building an application that
+is going to use GKS.
+We can compile and link the application by entering commands similar
+to the following:
+:I1.GKS:I2.GKSDEMO.FOR
+:I1.GKS:I2.example
+.exam
+C>set lib=&pathnam&libdir\dos
+C>&wclcmd &pathnam\src\fortran\gksdemos\gksdemo wgks.lib
+.eexam
+.np
+Before running the application, we must first start WATCOM GKS.
+The executable code of WATCOM GKS has been placed into an
+executable program (WGKS.EXE) which must be run before GKS can be
+used.
+To start GKS, we can enter the following command.
+:I1.GKS:I2.starting
+.millust
+C>wgks
+.emillust
+.pc
+The above command causes WATCOM GKS to load and remain resident in
+memory.
+.np
+If you have a Hercules Graphics Adapter, you should also run the
+"HERCBIOS.COM" program as follows:
+.millust
+C>hercbios
+.emillust
+.pc
+This program supports the output of non-graphical text to the screen
+when in a graphics mode using the Hercules Graphics Adapter.
+.np
+To run the application, we can enter the program's name.
+.exam
+C>gksdemo
+.eexam
+.np
+When no more GKS applications will be run, the "HERCBIOS" program can
+be removed from memory (if previously installed) by entering the
+following command.
+.millust
+C>hercbios quit
+.emillust
+.pc
+The "quit" option directs "HERCBIOS" to remove itself from memory.
+.np
+The WATCOM GKS memory-resident task may be removed from memory by
+entering the following command.
+:I1.GKS:I2.stopping
+.millust
+C>wgks quit
+.emillust
+.pc
+The "quit" option directs WATCOM GKS to remove itself from memory.
+.remark
+If you load WGKS first and HERCBIOS second, you must unload them in the
+opposite order (i.e., HERCBIOS then WGKS).
+.eremark
+.*
+:H2.WATCOM GKS Graphics Cover Subprograms
+.*
+:I1.graphics GKS
+:I1.GKS graphics
+:I1.GKS cover subprograms
+The library file "WGKSCVR.LIB" provides a collection of routines to
+support drawing of graphic images with colour.
+The subprograms in these libraries provide a simple, easy-to-use
+interface to GKS.
+The "LINE" subroutine, for example, takes 5 arguments- the
+starting X and Y coordinates, the ending X and Y coordinates, and
+the colour in which the line is to be drawn.
+Among other things, the "LINE" subroutine calls the GKS "GSPLCI" and
+"GPL" subroutines to draw the line in the requested colour.
+The "LINE" subroutine is a somewhat more "friendly" interface to the
+GKS routines.
+.np
+The following sections describe the cover subprograms and their use.
+A number of example programs are also described.
+They illustrate how the cover routines are used.
+.*
+:H2.Graphics Modes and Initialization
+.*
+:I1.GKS modes
+:I1.GKS initialization
+On the IBM PC, graphics can be drawn in a variety of modes,
+depending on the hardware available.
+Each of these devices can operate in one or more modes.
+Each mode has a "resolution" (i.e., the number of dots it can display
+both horizontally and vertically) and a number of colours which can be
+displayed simultaneously on the screen (or page).
+.np
+:I1.INFO program
+If you are not sure what kind of graphics adapter is present in your
+computer system then you should run the "INFO" program that is
+supplied with &product..
+It will inform you of the type of graphics adapter present in your
+system.
+.np
+To initialize the graphics system, a program must first call the
+.id INIT
+subroutine.
+This routine takes an argument which describes the type of graphics
+device and the desired mode.
+The following table describes the available graphics modes.
+The first column is the argument to the
+.id INIT
+subroutine and the remaining columns describe the hardware mode, the
+resolution in terms of the number of horizontal and vertical dots, the
+range of colour indices which can be specified in this mode, and the
+corresponding actual colours.
+The colour numbers are defined in a subsequent table
+(see :FIGREF refid='gref5' page=yes.).
+In the table below, "mono" means that the graphics adapter is
+connected to a monochrome display.
+In the "actual colours" column, "BG" means the current background
+colour and "definable" means that the mapping of actual colours onto
+indices is programmable.
+:cbox ref='gref1'.
+ Choice      Graphics         Resolution  Colour   Actual colours
+      Hardware / Mode         indices   (see below)
+ ====== ====================  ==========  =======  ==============
+   1    CGA/PCjr/EGA mode 4    320x200     0..3    BG, 7, 6, 8
+   2    CGA/PCjr/EGA mode 6    640x200     0..1    BG, 8
+   3    IBM PCjr mode 8        160x200     0..15   definable
+   4    IBM PCjr mode 9        320x200     0..15   definable
+   5    IBM PCjr mode 10       640x200     0..3    definable
+   6    EGA mode 13        320x200     0..15   definable
+   7    EGA mode 14        640x200     0..15   definable
+   8    EGA mode 15 (mono)     640x350     0..3    1, normal,
+                           blink, bright
+   9    EGA mode 16        640x350     0..3    definable
+     (with extra memory)           0..15   definable
+  10    Hercules (mono)        720x350     0..1    BG, 8
+  11    IBM Graphics Printer   480x720     0..1    BG, 1
+  12    VGA, MCGA mode 17      640x480     0..1    definable
+  13    VGA mode 18        640x480     0..15   definable
+  14    VGA, MCGA mode 19      320x200     0..255  definable
+  15    GKS pixel array        720x720     0..1
+  16    GKS metafile
+:ecbox text='Graphics Selections'.
+.begnote
+.note Colours
+BG - background,
+1 - black,
+6 - magenta,
+7 - cyan,
+8 - white.
+.note EGA
+All CGA modes are supported by the EGA.
+.note VGA
+Up to 256 colour indices are available.
+The colour of each of the 256 colour registers of the VGA may be
+defined from a selection of 262,144 different colours (64 shades
+each of red, green, and blue).
+The GKS routine
+.id GSCR
+.us (Set Colour Representation)
+may be used to define the precise amount of red, green and blue
+that is to be assigned to a particular colour index.
+.np
+All CGA, EGA and VGA modes are available on the PS/2 models 50,
+60, 70 and 80.
+.note MCGA
+All CGA modes and only VGA modes 17 and 19 are available on the
+PS/2 models 25 and 30 (i.e., the hardware does not support EGA
+modes and VGA mode 18).
+.note Pixel Array
+The GKS pixel array (or virtual display) resolution of 720 by 720 dots
+was arbitrarily chosen and may be altered by making the appropriate
+modifications to the
+.id INIT
+subroutine.
+The dimensions of a pixel array are bounded by the amount of available
+memory on your PC.
+When the pixel array device is closed, the resulting image is written
+to a disk file called "GKS720.PXA" (this is the name chosen by the
+.id INIT
+subroutine.
+.note Metafile
+The name of the GKS metafile that is created is "GKSTEXT.MET" (this is
+the name chosen by the
+.id INIT
+subroutine).
+.endnote
+.*
+:H2.Graphics Modes and Colour
+.*
+:I1.GKS modes
+:I1.GKS colour
+Most of the routines which are described in this chapter permit
+you to specify the "colour" in which an object is to be drawn.
+The colours are actually just numbers or indices ranging from 0 and
+upwards.
+For example, a line can be drawn using colour "1" and a circle using
+colour "2".
+However, what colour is colour 1 or colour 2?
+Some devices, like the EGA, actually permit you to define what they
+are.
+For example, you might decide that colour 1 should be RED and then any
+time an object is drawn in colour 1, it will appear RED.
+Later on, you can change your mind and decide that all objects that
+were drawn in colour 1 should appear BLUE.
+.np
+Unfortunately some devices, such as the CGA, do not permit you to
+define this "mapping" between colour indices and actual colours.
+With the exception of colour index 0 (the background colour), CGA
+colour 1 is CYAN, colour 2 is MAGENTA, and colour 3 is WHITE and
+you cannot alter this selection.
+When using the IBM Graphics Printer, the choices are limited to two -
+the colour of the ink in the ribbon and the colour of the paper itself
+(the "background" colour).
+.np
+The following figures list the default mapping between colour
+indices and actual colours.
+The numbers in parentheses are the colour numbers shown in the colour
+table
+(:FIGREF refid='gref5' page=yes.).
+If your machine is an IBM PCjr or is equipped with an EGA, VGA,
+or MCGA each of the available colour indices can be redefined to
+any one of the 16 colours shown in :FIGREF refid='gref5'. using the
+COLOURMAP routine described below.
+:mbox ref='gref2'.
+colour
+index
+  0 definable
+  1 CYAN(7)
+  2 MAGENTA(6)
+  3 WHITE(8)
+:embox text='CGA Colour Indices'.
+:mbox ref='gref3'.
+colour
+index
+  0 background
+  1 WHITE(8)
+:embox text='Hercules Colour Indices'.
+:mbox ref='gref4'.
+colour             colour
+index              index
+  0   BLACK (1)      8    GRAY (9)
+  1   BLUE (5)       9    Light BLUE (13)
+  2   GREEN (3)     10    Light GREEN (11)
+  3   CYAN (7)      11    Light CYAN (15)
+  4   RED (2)       12    Light RED (10)
+  5   MAGENTA (6)   13    Light MAGENTA (14)
+  6   YELLOW (4)    14    Light YELLOW (12)
+  7   WHITE (8)     15    Light WHITE (16)
+:embox text='PCjr / EGA / VGA / MCGA Default Colour Mapping'.
+.np
+The following is a selection of colours defined by the cover
+subprograms.
+The numbers are not colour indices; they represent actual colours.
+For example, colour number 5 is always blue and can be mapped to any
+colour index provided that
+.autopoint
+.apoint
+the hardware supports this particular colour, and
+.apoint
+the hardware supports colour mapping.
+.eautopoint
+:mbox ref='gref5'.
+1 - black       9 - gray
+2 - red         10 - light red
+3 - green       11 - light green
+4 - yellow      12 - light yellow
+5 - blue        13 - light blue
+6 - magenta     14 - light magenta
+7 - cyan        15 - light cyan
+8 - white       16 - bright white
+:embox text='Colour Table'.
+.np
+Each of these 16 colours is defined in terms of a red, green, and blue
+colour component.
+In GKS, the amount or lightness of a particular colour component is
+specified in terms of a value between 0.0 (none) to 1.0 (maximum
+brightness).
+For example, we have defined colour number 6 or magenta to be composed
+of 0.667 red, 0.0 green, and 0.667 blue.
+Not surprisingly, equal amounts of red and blue should give us a
+somewhat purplish hue.
+.np
+Many of the graphics devices available for the PC have predefined the
+colour compositions of the various colours available and they cannot
+be changed.
+However, the IBM Video Graphics Array permits the specification of the
+colour compositions of each of the 256 colour registers.
+At the hardware level, each of the red, green and blue components or
+primaries is specified by one of 64 discrete values (in GKS, this
+means that values between 0.0 and 1.0 are mapped uniformly to integer
+values in the range 0 to 63).
+Since any colour has 3 components, there are 64 x 64 x 64 or 262,144
+colours that can be selected.
+In GKS, the VGA colour registers are modified using the
+.us Set Colour Representation
+subroutine.
+.code
+GSCR( WK_ID, COLOUR_INDEX, RED_AMOUNT, GREEN_AMOUNT, BLUE_AMOUNT )
+.ecode
+.pc
+Although you can only display a maximum of 256 different colours
+at any one time, you can vary the selection from one scene to the
+next.
+.np
+In mode 19, the colour registers happen to correspond one to
+one with GKS colour indices.
+In other modes, this does not necessarily always happen to be the case.
+For example, in mode 18 the mapping of colour indices to
+colour registers is as follows:
+:mbox ref='gref6'.
+Index       Register        Index   Register
+  0        0          8       56
+  1        1          9       57
+  2        2         10       58
+  3        3         11       59
+  4        4         12       60
+  5        5         13       61
+  6       20         14       62
+  7        7         15       63
+:embox text='Mode 18 Colour Register Map'.
+.pc
+Fortunately, GKS hides these hardware anomalies from us.
+We deal only in terms of colour indices.
+.np
+Any time a particular graphics mode is selected, the VGA colour
+registers are initialized to some default set of values.
+For mode 19, IBM has initialized the 256 colour registers to 16
+default colours, 16 gray levels and 216 colours selected from a
+Hue-Lightness-Saturation (HLS) model.
+The remaining 8 registers are zero and hence black.
+The 216 colours cover 24 hues in 3 lightness values (bright, medium
+and dark), and 3 saturation values (pure, impure and gray).
+.np
+In the IBM HLS model, hues are evenly spaced around a colour wheel at
+15 degree intervals with Blue at 0.
+These hues are assigned numeric values from 0 to 23.
+:mbox ref='gref7'.
+      8 RED     .   MAGENTA 4
+           \     /
+        \   /
+       .     \     /     .
+          \   /
+           \ /
+12 YELLOW - - - - - - - - - - - BLUE 0
+           / \
+          /   \
+       .     /     \     .
+        /   \
+           /     \
+    16 GREEN    .   CYAN 20
+:embox text='HLS Colour Wheel'.
+.pc
+A colour made up of only 1 or 2 primaries (red, green or blue) is a
+pure colour and a colour made up of 3 primaries is an impure colour.
+As more of the third colour is introduced, the colour purity decreases
+becoming more and more gray.
+When all three primary components are equal, the colour is an
+achromatic gray level.
+Bright white, for example, is composed of an equal and maximum amount
+of red, green and blue.
+.np
+We can map lightness (LGT) and saturation (SAT) onto numeric values as
+follows:
+:mbox ref='gref8'.
+Lightness   Saturation
+Bright  0   Pure    0
+Medium  1   Impure  1
+Dark    2   Gray    2
+:embox text='Lightness and Saturation Values'.
+.pc
+A colour in this HLS colour space can be converted into a colour index
+for use in mode 19.
+The index is calculated from the HUE, LGT, and SAT numerical values
+using the following equation:
+.millust
+Index = (LGT * 72) + (SAT * 24) + HUE + 32
+.emillust
+.np
+.keep
+.us Examples:
+.code
+medium, gray yellow = (1 * 72) + (2 * 24) + 12 + 32 = 164
+dark, pure green    = (2 * 72) + (0 * 24) + 16 + 32 = 192
+bright, impure blue = (0 * 72) + (1 * 24) +  0 + 32 =  56
+.ecode
+.np
+For mode 19, all 256 colour registers are initialized according to the
+following table.
+:mbox ref='gref9'.
+  0 - 15       16 default colours
+ 16 - 31       16 gray levels
+ 32 - 55       24 bright, pure hues
+ 56 - 79       24 bright, impure hues
+ 80 - 103      24 bright, grayish hues
+104 - 127      24 medium, pure hues
+128 - 151      24 medium, impure hues
+152 - 175      24 medium, grayish hues
+176 - 199      24 dark, pure hues
+200 - 223      24 dark, impure hues
+224 - 247      24 dark, grayish hues
+248 - 255   8 uninitialized
+:embox text='Mode 19 Colour Register Initialization'.
+.*
+:H2.Screen Coordinate System in Cover Library
+.*
+:I1.coordinates screen
+:I1.screen coordinates
+Any position on the screen can be referenced by two coordinates.
+The first coordinate is called the x-coordinate, while the second is
+called the y-coordinate.
+Although WATCOM GKS supports any number of user-defined coordinate
+systems, the cover library has chosen the following coordinare system
+for simplicity.
+The left side of the screen has an x-coordinate of 0, and the right
+side has an x-coordinate of 1.
+Similarly, the bottom of the screen has a y-coordinate of 0 and the
+top has a y-coordinate of 1.
+Thus any point on the screen can be referenced as (x,y) where each of
+the x and y values are between 0 and 1.
+The point (0,0) is the bottom left corner of the screen, and the point
+(1,1) is the top right corner.
+:mbox ref='gref10'.
+    (0,1)               (1,1)
+    +---------------------------+
+    |               |
+    |               |
+    |      Screen       |
+y-axis  |               |
+    |     (0.5,0.5)     |
+    |               |
+    |               |
+    |               |
+    |               |
+    +---------------------------+
+    (0,0)       x-axis      (1,0)
+:embox text='Screen Coordinate System'.
+.np
+In this coordinate system, the centre of the screen is the real number
+pair (0.5,0.5).
+.*
+:H2.Graphics Routines
+.*
+:I1.GKS cover subprograms
+The cover graphics library consists of routines for generating colour
+graphics including lines, boxes, circles and text.
+Source code for the cover routines can be found in the
+"&pathnamup\SRC\FORTRAN\GKSCOVER" directory.
+The file "GKSDEFN.FOR" which may be required by your application
+and is required by some of the demonstration programs is found in
+this directory.
+The following sections describe the available routines.
+.np
+Many of the routines require an INTEGER argument called
+.id COLOUR_INDEX.
+If the graphics adapter being used can display 4 colours, then the
+values for
+.id COLOUR_INDEX
+will be 0, 1, 2 and 3.
+If only 2 colours can be displayed, the valid choices are 0 and 1.
+If 16 colours can be displayed, the valid colours are any number from
+0 to 15.
+If 256 colours can be displayed, the valid colours are any number from
+0 to 255.
+.np
+The routines
+.id GETPIC,
+.id PUTPIC
+and
+.id PUTPIC_ACTION
+require a CHARACTER argument.
+This must be a CHARACTER*80 array with
+.id PIC_SIZE
+elements.
+.id PIC_SIZE
+is defined in "GKSDEFN.FOR".
+The following program fragment illustrates how to call the
+subroutine
+.id GETPIC.
+.exam
+CHARACTER*80 PIC( PIC_SIZE )
+CALL GETPIC( 0.5, 0.5, 0.6, 0.4, PIC )
+.eexam
+.*
+:H2.GKS Cover Subroutines
+.*
+:I1.GKS cover subroutines
+.*
+:H3.BLOCK Subroutine
+.*
+:I1.BLOCK subroutine
+.cbox
+    SUBROUTINE BLOCK( X1, Y1, X2, Y2, COLOUR_INDEX )
+    REAL X1, Y1, X2, Y2
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine draws a rectangular box with coordinates of opposite
+corners specified by the first two pairs of arguments.
+The box and area inside it are painted solid using the specified
+colour index.
+.*
+:H3.BOX Subroutine
+.*
+:I1.BOX subroutine
+.cbox
+    SUBROUTINE BOX( X1, Y1, X2, Y2, COLOUR_INDEX )
+    REAL X1, Y1, X2, Y2
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine draws a rectangular box with coordinates of opposite
+corners specified by the first two pairs of arguments.
+The box is drawn using the specified colour index.
+.*
+:H3.CIRCLE Subroutine
+.*
+:I1.CIRCLE subroutine
+.cbox
+    SUBROUTINE CIRCLE( X, Y, RADIUS, COLOUR_INDEX )
+    REAL X, Y, RADIUS
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine draws a circle with centre at coordinates (X,Y)
+using the specified colour index.
+The radius specifies the distance from the edge of the circle to the
+centre along the horizontal axis.
+.*
+:H3.CIRC_ARC Subroutine
+.*
+:I1.CIRC_ARC subroutine
+.cbox
+    SUBROUTINE CIRC_ARC( X, Y, RADIUS, COLOUR_INDEX, START, FINISH )
+    REAL X, Y, RADIUS
+    INTEGER COLOUR_INDEX, START, FINISH
+.ecbox
+.np
+This subroutine draws a circular arc with centre at coordinates
+(X,Y) using the specified colour index.
+The radius specifies the distance from the edge of the circle to the
+centre along the horizontal axis.
+The start and finish angles of the arc are expressed in degrees
+between 0 and 360.
+A start angle of 0 represents the point (X+RADIUS,Y).
+The arc is drawn in the counter-clockwise direction.
+.*
+:H3.CLEARSCREEN Subroutine
+.*
+:I1.CLEARSCREEN subroutine
+.cbox
+    SUBROUTINE CLEARSCREEN
+.ecbox
+.np
+This subroutine clears the screen.
+.*
+:H3.COLOURMAP Subroutine
+.*
+:I1.COLOURMAP subroutine
+.cbox
+    SUBROUTINE COLOURMAP( COLOUR_INDEX, COLOUR )
+    INTEGER COLOUR_INDEX, COLOUR
+.ecbox
+.np
+This subroutine associates one of the sixteen available colours to
+COLOUR_INDEX.
+COLOUR_INDEX can be one of the 2, 4, 16 or 256 colour indices
+supported by the graphics adapter being used.
+COLOUR is one of the sixteen colours described in "Colour Table"
+above.
+This subroutine only works on adapters that support colour mapping
+such as the IBM PCjr, the EGA, the VGA and the MCGA.
+.np
+Devices such as the VGA and MCGA support more colours than the 16
+provided by the COLOURMAP routine.
+You may wish to use the GKS
+.us Set Colour Representation
+subroutine to define the precise amount of red, green and blue
+primaries for a specific colour index.
+.code
+GSCR( WK_ID, COLOUR_INDEX, RED_AMOUNT, GREEN_AMOUNT, BLUE_AMOUNT )
+.ecode
+.pc
+WK_ID is defined by the "GKSDEFN.FOR" include file.
+RED_AMOUNT, GREEN_AMOUNT and BLUE_AMOUNT are REAL values in the
+range 0.0 to 1.0.
+.*
+:H3.ELLIPSE Subroutine
+.*
+:I1.ELLIPSE subroutine
+.cbox
+    SUBROUTINE ELLIPSE( X, Y, X_AXIS, Y_AXIS, COLOUR_INDEX )
+    REAL X, Y, X_AXIS, Y_AXIS
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine draws an ellipse with centre at coordinates (X,Y)
+using the specified colour index.
+X_AXIS is the distance from the edge of the ellipse to the centre
+along the horizontal axis and Y_AXIS is the distance along the
+vertical axis.
+.*
+:H3.ELL_ARC Subroutine
+.*
+:I1.ELL_ARC subroutine
+.cbox
+    SUBROUTINE ELL_ARC( X, Y, X_AXIS, Y_AXIS, COLOUR_INDEX,
+   1                 START, FINISH )
+    REAL X, Y, X_AXIS, Y_AXIS
+    INTEGER COLOUR_INDEX, START, FINISH
+.ecbox
+.np
+This subroutine draws an elliptical arc with centre at coordinates
+(X,Y) using the specified colour index.
+X_AXIS is the distance from the edge of the ellipse to the centre
+along the horizontal axis and Y_AXIS is the distance along the
+vertical axis.
+The start and finish angles of the arc are expressed in degrees
+between 0 and 360.
+A start angle of 0 represents the point (X+X_AXIS,Y).
+The arc is drawn in the counter-clockwise direction.
+.*
+:H3.FINISH Subroutine
+.*
+:I1.FINISH subroutine
+.cbox
+    SUBROUTINE FINISH
+.ecbox
+.np
+This subroutine closes the graphics system.
+This routine should be called when a program is finished generating
+graphics.
+The routine waits for the user to press the "Enter" key before
+resetting the screen.
+.*
+:H3.GETPIC Subroutine
+.*
+:I1.GETPIC subroutine
+.cbox
+    SUBROUTINE GETPIC( X1, Y1, X2, Y2, PIC )
+    REAL X1, Y1, X2, Y2
+    CHARACTER*80 PIC(1:PIC_SIZE)
+.ecbox
+.np
+An image on the screen is stored in the CHARACTER array PIC.
+The coordinates (X1,Y1) and (X2,Y2) define the opposite corners of a
+rectangle which surrounds the object.
+The colour indices corresponding to each point within this rectangle
+are stored in the CHARACTER array PIC.
+The size of the array required is determined by the size of the
+rectangle and the number of bits per dot required by the current mode
+setting.
+The graphics library declares that the arrays have a maximum size
+specified by the constant PIC_SIZE.
+If an error is diagnosed that the array is not sufficiently large, the
+constant PIC_SIZE can be adjusted.
+.*
+:H3.INIT Subroutine
+.*
+:I1.INIT subroutine
+.cbox
+    SUBROUTINE INIT( CHOICE )
+    INTEGER CHOICE
+.ecbox
+.np
+This subroutine initializes the graphics system to the requested mode.
+CHOICE is one of the 16 available selections described in
+:FIGREF refid='gref1' page=yes.
+or it may be 0, in which case an attempt is made to determine which
+type of adapter is present in the computer.
+This routine must be called before any graphics images can be drawn.
+.*
+:H3.LINE Subroutine
+.*
+:I1.LINE subroutine
+.cbox
+    SUBROUTINE LINE( X1, Y1, X2, Y2, COLOUR_INDEX )
+    REAL X1, Y1, X2, Y2
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine draws a line from the point with coordinates (X1,Y1)
+to the point with coordinates (X2,Y2) using the specified colour
+index.
+.*
+:H3.PAINT Subroutine
+.*
+:I1.PAINT subroutine
+.cbox
+    SUBROUTINE PAINT( X, Y, COLOUR_INDEX )
+    REAL X, Y
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine solidly fills an area of the screen using the
+specified colour index.
+Starting at the point (X,Y), surrounding points are coloured within an
+area bounded by the edges of the screen or a figure of colour
+different than the original colour of point (X,Y).
+.*
+:H3.PAINT_BOUNDARY Subroutine
+.*
+:I1.PAINT_BOUNDARY subroutine
+.cbox
+    SUBROUTINE PAINT_BOUNDARY( X, Y, COLOUR_INDEX, BOUNDARY )
+    REAL X, Y
+    INTEGER COLOUR_INDEX, BOUNDARY
+.ecbox
+.np
+This subroutine solidly fills an area of the screen using the
+specified colour index.
+Starting at the point (X,Y), surrounding points are coloured within an
+area bounded by the edges of the screen or a figure of the colour
+index specified by BOUNDARY.
+.*
+:H3.PUTDOT Subroutine
+.*
+:I1.PUTDOT subroutine
+.cbox
+    SUBROUTINE PUTDOT( X, Y, COLOUR_INDEX )
+    REAL X, Y
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine places a dot using the specified colour index at the
+point with coordinates (X,Y).
+.*
+:H3.PUTPIC Subroutine
+.*
+:I1.PUTPIC subroutine
+.cbox
+    SUBROUTINE PUTPIC( X, Y, PIC )
+    REAL X, Y
+    CHARACTER*80 PIC(1:PIC_SIZE)
+.ecbox
+.np
+This subroutine displays the graphic image previously stored in the
+CHARACTER array PIC with routine GETPIC.
+The picture is positioned with coordinates (X,Y) designating the top
+left corner of the rectangle.
+.*
+:H3.PUTPIC_ACTION Subroutine
+.*
+:I1.PUTPIC_ACTION subroutine
+.cbox
+    SUBROUTINE PUTPIC_ACTION( X, Y, PIC, ACTION )
+    REAL X, Y
+    CHARACTER*80 PIC(1:PIC_SIZE)
+    INTEGER ACTION
+.ecbox
+.np
+This subroutine displays the graphic image previously stored in the
+CHARACTER array PIC with routine GETPIC.
+The picture is positioned with coordinates (X,Y) designating the top
+left corner of the rectangle.
+The INTEGER argument ACTION is a numeric value representing how the
+new picture blends with what is currently in the rectangular area of
+the screen.
+.begpoint
+:DTHD.Actions::DDHD.~b
+.point 0
+Replace the current picture.
+This is equivalent to PUTPIC.
+.point 1
+The resulting picture corresponds to the exclusive-or (XOR) of the
+current and stored picture.
+The effect of "exclusive-oring" two images involves the bit-wise XOR
+of the binary representation of the colour indices for corresponding
+pixels.
+For example, if the colour index for a pixel on the screen is 2 and
+the corresponding colour index in PIC is 0 then the resulting colour
+index will be 1 (in binary, 10 XOR 00 = 01).
+.np
+If PIC is again XOR'ed with the new image on the screen, the resulting
+colour index will be 2 (in binary, 01 XOR 00 = 10).
+This is the original colour index.
+Thus, an image can be superimposed on an existing picture with one XOR
+invocation of PUTPIC_ACTION, and the existing picture restored with a
+second identical invocation of PUTPIC_ACTION.
+This is useful for animation.
+.point 2
+The resulting picture corresponds to the logical AND of the current
+and stored picture.
+The effect of "anding" two images involves the bit-wise AND of the
+binary representation of the colour indices for corresponding pixels.
+For example, if the colour index for a pixel on the screen is 1 and
+the corresponding colour index in PIC is 2 then the resulting colour
+index will be 0 (in binary, 01 & 10 = 00).
+.point 3
+The resulting picture corresponds to the logical OR of the current and
+stored picture.
+This operation involves the bit-wise OR of the binary representation
+of the colour indices for corresponding pixels.
+For example, if the colour index for a pixel on the screen is 1 and
+the corresponding colour index in PIC is 2 then the resulting colour
+index will be 3 (in binary, 01 | 10 = 11).
+.endpoint
+.*
+:H3.SLICE Subroutine
+.*
+:I1.SLICE subroutine
+.cbox
+    SUBROUTINE SLICE( X, Y, RADIUS, COLOUR_INDEX, START, FINISH )
+    REAL X, Y, RADIUS, ANGLE
+    INTEGER COLOUR_INDEX, START, FINISH
+.ecbox
+.np
+This subroutine draws a wedge of a pie chart with centre at the
+coordinates (X,Y) using the specified colour index.
+This routine is similar to CIRC_ARC, except that the ends of the arc
+are joined to the centre point and the interior is filled with the
+specified colour.
+.*
+:H3.TEXT Subroutine
+.*
+:I1.TEXT subroutine
+.cbox
+    SUBROUTINE TEXT( X, Y, STR, COLOUR_INDEX )
+    REAL X, Y
+    CHARACTER*(*) STR
+    INTEGER COLOUR_INDEX
+.ecbox
+.np
+This subroutine displays the CHARACTER variable STR at the point with
+coordinates (X,Y) using the specified colour index.
+.*
+:H2.GKS Cover Functions
+.*
+:I1.GKS cover functions
+.*
+:H3.GETDOT Function
+.*
+:I1.GETDOT function
+.cbox
+    INTEGER FUNCTION GETDOT( X, Y )
+    REAL X, Y
+.ecbox
+.np
+This INTEGER function returns a numeric value representing the colour
+index of the point specified by coordinates (X,Y).
+.*
+:H2.Example Programs
+.*
+The GKS cover subprograms are accompanied by a number of example
+programs illustrating how to use the routines in the library.
+The example programs are:
+.begnote
+.note BLOCK.FOR
+:I1.BLOCK.FOR
+illustrates the BLOCK subroutine by drawing several solidly coloured
+blocks on the screen.
+.note BOX.FOR
+:I1.BOX.FOR
+illustrates the BOX subroutine by drawing several boxes in different
+colours.
+.note CIRCARC.FOR
+:I1.CIRCARC.FOR
+is similar to the circle example program, except that only partial
+circles are drawn.
+.note CIRCLE.FOR
+:I1.CIRCLE.FOR
+illustrates the CIRCLE subroutine by drawing circles with different
+radii.
+.note COLOURMA.FOR
+:I1.COLOURMA.FOR
+illustrates the COLOURMAP subroutine by redefining the colours
+associated with colour indices 0, 1, 2 and 3.
+This program only works on adapters that support colour mapping such
+as the IBM PCjr, the EGA, the VGA and the MCGA.
+.note DOG.FOR
+:I1.DOG.FOR
+is a larger program using many of the graphics routines to create an
+animated cartoon.
+.note ELLARC.FOR
+:I1.ELLARC.FOR
+is similar to the ellipse example program, except that only partial
+ellipses are drawn.
+.note ELLIPSE.FOR
+:I1.ELLIPSE.FOR
+is similar to the circle example program except that ellipses are
+drawn instead of circles.
+.note LINE.FOR
+:I1.LINE.FOR
+illustrates the LINE subroutine by drawing several lines in different
+colours.
+.note PAINT.FOR
+:I1.PAINT.FOR
+illustrates and describes the differences between the PAINT and
+PAINT_BOUNDARY subroutines by filling the interior of two boxes.
+.note PICTURE.FOR
+:I1.PICTURE.FOR
+illustrates the GETPIC and PUTPIC subroutines.
+.note SLICE.FOR
+:I1.SLICE.FOR
+illustrates the SLICE subroutine by drawing a pie chart.
+.note TEXT.FOR
+:I1.TEXT.FOR
+illustrates the TEXT subroutine by drawing several text strings
+positioned around the screen.
+.endnote
+.*
+:H2.Running the Example Programs
+.*
+In the following examples, we assume that "&pathnamup" is the
+directory in which the &product and WATCOM GKS software was installed.
+To run the example programs, you must first compile and link them.
+We will compile and link the "BLOCK" demonstration program as an example.
+.code
+C>set lib=&pathnam&libdir\dos
+C>set finclude=&pathnam\src\fortran\gkscover
+C>&wclcmd &pathnam\src\fortran\gksdemos\block wgkscvr.lib wgks.lib
+.ecode
+.np
+Then you must load WATCOM GKS into memory by issuing a command similar
+to the following:
+.millust
+C>wgks
+.emillust
+.np
+If you have a Hercules Graphics Adapter, you should also run the
+"HERCBIOS.COM" program as follows:
+.millust
+C>hercbios
+.emillust
+.np
+To run the "BLOCK" demonstration program, enter its name:
+.millust
+C>block
+.emillust
+.pc
+After the program has completed, press the "Enter" key to return to
+the DOS prompt.
+At this point, changes can be made to the demonstration program and
+the program can be compiled, linked, and run again.
+Continue in the same manner to compile, link, and run all of the
+example programs.
+.np
+When no more GKS applications will be run, the "HERCBIOS" program can
+be removed from memory (if previously installed) by entering the
+following command.
+.millust
+C>hercbios quit
+.emillust
+.pc
+The "quit" option directs "HERCBIOS" to remove itself from memory.
+.np
+The WATCOM GKS memory-resident task may be removed from memory by
+entering the following command.
+:I1.GKS:I2.stopping
+.millust
+C>wgks quit
+.emillust
+.pc
+The "quit" option directs WATCOM GKS to remove itself from memory.
+.remark
+If you load WGKS first and HERCBIOS second, you must unload them in the
+opposite order (i.e., HERCBIOS then WGKS).
+.eremark

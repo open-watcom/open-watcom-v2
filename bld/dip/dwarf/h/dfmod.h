@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF DIP module management function prototypes.
 *
 ****************************************************************************/
-
 
 
 extern  dip_status InitModMap( imp_image_handle *ii );

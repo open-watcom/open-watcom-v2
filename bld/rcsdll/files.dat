@@ -1,0 +1,27 @@
+# RCSDLL component of install manifest
+
+[ DEFAULT type="d" desc="RCSDLL" ]
+usr="rcsdll.dll" dir="binw" 	cond="doshost winhost |"	where="c jc f77 jf77"
+usr="rcsdll.dll" dir="binp/dll" cond="os2host" 			where="c jc f77 jf77"
+usr="rcsdll.dll" dir="binnt" 	cond="wnthost" 			where="c jc ac f77 jf77"
+usr="rcsdll.dll" dir="axpnt" 	cond="alphahost"		where="ac"
+
+[ DEFAULT type="s" dir="binw" cond="doshost winhost wnthost alphahost | | |" where="c jc f77 jf77 ac" desc="RCS HOOKS BATCH FILES" ]
+usr="gen_co.bat"
+usr="gen_ci.bat"
+usr="mks_co.bat"
+usr="mks_ci.bat"
+usr="p4_co.bat"
+usr="p4_ci.bat"
+usr="pvcs_co.bat"
+usr="pvcs_ci.bat"
+
+[ DEFAULT type="s" dir="binp" cond="os2host"	where="c jc f77 jf77" desc="RCS HOOKS CMD FILES" ]
+usr="gen_co.cmd"
+usr="gen_ci.cmd"
+usr="mks_co.cmd"
+usr="mks_ci.cmd"
+usr="p4_co.cmd"
+usr="p4_ci.cmd"
+usr="pvcs_co.cmd"
+usr="pvcs_ci.cmd"

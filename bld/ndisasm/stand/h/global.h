@@ -39,4 +39,6 @@
 #define MAX_OBJ_NAME            1024
 #define MAX_INS_NAME            80
 
+#define PREFIX_SIZE_TABS        4
+
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wdeglbl.h"
 #include "wdemain.h"
 #include "wdewait.h"
@@ -55,36 +55,35 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WdeSetWaitCursor ( Bool on )
+void WdeSetWaitCursor( Bool on )
 {
     static int      ref_count   = 0;
     static HCURSOR  wait_cursor = NULL;
     static HCURSOR  save_cursor = NULL;
     HWND            main;
 
-    if ( wait_cursor == (HCURSOR) NULL ) {
-        wait_cursor = LoadCursor ( (HWND)NULL, IDC_WAIT );
+    if( wait_cursor == (HCURSOR)NULL ) {
+        wait_cursor = LoadCursor( (HWND)NULL, IDC_WAIT );
     }
 
     main = WdeGetMainWindowHandle();
 
-    if ( on && !ref_count ) {
-        SetCapture ( main );
-        save_cursor = SetCursor ( wait_cursor );
-    } else if ( on ) {
-        SetCapture ( main );
-        SetCursor ( wait_cursor );
-    } else if ( !on && ( ref_count == 1 ) ) {
-        SetCursor ( save_cursor );
-        ReleaseCapture ();
+    if( on && ref_count == 0 ) {
+        SetCapture( main );
+        save_cursor = SetCursor( wait_cursor );
+    } else if( on ) {
+        SetCapture( main );
+        SetCursor( wait_cursor );
+    } else if( !on && ref_count == 1 ) {
+        SetCursor( save_cursor );
+        ReleaseCapture();
     }
 
-    if ( on ) {
+    if( on ) {
         ref_count++;
     } else {
-        if ( ref_count ) {
+        if( ref_count != 0 ) {
             ref_count--;
         }
     }
 }
-

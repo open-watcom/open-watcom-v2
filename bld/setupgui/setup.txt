@@ -1,0 +1,164 @@
+Open Watcom Setup Program Reference
+===================================
+
+ NB: See also the 'Unattended Installation' wiki page at openwatcom.org.
+
+ This document describes how to use the setup utility. It does not describe
+the syntax or semantics of the setup.inf file; for that, please refer to
+setupinf.txt.
+
+ The installation is controlled by a setup script. This script is usually
+called setup.inf. See below for description of how the setup script is
+located.
+
+
+ Setup Options
+ -------------
+
+ The installer is typically started without any arguments, allowing the
+user to set installation options interactively. However, it can be run with
+arguments to facilitate unattended installation. The syntax is as follows:
+
+ setup -f=<var_file> -d<name=val) -i -s -np -ns
+ 
+  The options are case insensitive. Their description follows:
+
+
+ -f=<var_file>  <var_file> is an override file which contains presets
+                overriding the default variable settings determined by
+                the setup script. The override file can be used to change
+                the initial selection for interactive installs, but typically
+                it is used for unattended installation
+
+ -d<name=val>   sets variable <name> to <val>; the set of variables which can
+                be controlled by -d is different from the variables controlled
+                by the -f option
+
+ -s             skips initial dialogs but shows installation progress; if -s
+                is used, the setup utility will perform an unattended install
+
+ -i             invisible; same as -s, but additionally hides output
+
+ -np            no GUI shell icons or shortcuts are created
+
+ -ns            no startup files or Registry entries are modified; the user
+                may need to set up environment variables manually
+
+
+ In addition to the above options, the installer supports up to three
+arguments. These arguments are not documented and are subject to change. They
+are typically used only during development and testing and end users should
+not need them. The general syntax is:
+
+ setup [options] [<arc_name> [inf_name [src_path]]]
+
+ where:
+
+ <arc_name>  is the name of a ZIP archive which contains all source files.
+             If not specified, this is the installer executable, that is,
+	     a self-extracting installer is assumed. If a self-extracting
+	     installer does not exist, source files are searched for directly
+	     on the host filesystem.
+
+ <inf_name>  is the name of the setup script. By default, this is 'setup.inf'.
+             For a self-extracting installer, this file is expected to be in
+             stored in the root directory of the archive. Otherwise, it is
+             assumed to be located in the same directory where the setup
+             utility was started from.
+
+ <src_path>  is the path containing source files. By default, this is the
+             same location where setup.inf is found.
+
+
+ Automatic Variables
+ -------------------
+
+ The override file passed to the installer via the -f option can be used to
+affect the default component selection. If the -f option is not specified,
+the installer makes default choices based on the host operating system and
+other factors. These are so-called automatic variables. Note that if an
+override file is used, any automatic variable which is not explicitly set in
+the override file will be cleared (i.e., false).
+
+ Automatic variables for the Open Watcom C/C++ product:
+
+ ms              - small model 16-bit libraries
+ mm              - medium model 16-bit libraries
+ mc              - compact model 16-bit libraries
+ ml              - large model 16-bit libraries
+ mh              - huge model 16-bit libraries
+ 3r              - register calling convention 32-bit libraries
+ 3s              - stack calling convention 32-bit libraries
+ tools16         - install 16-bit tools and libraries
+ cplusplus       - install C++ components
+ doshost         - DOS host tools
+ winhost         - Win16 host tools
+ wnthost         - Windows NT and 9x host tools
+ os2host         - OS/2 host tools
+ lnxhost         - Linux host tools
+ dostarg         - DOS target files
+ wintarg         - Win16 target files
+ wnttarg         - Win32 target files
+ os2targ         - OS/2 target files
+ lnxtarg         - Linux target files
+ nlmtarg         - Novell NLM target files
+ helpfiles       - install online help (affects xxx_helpfiles variables)
+ win16_helpfiles - help files in Win16 .hlp format
+ win32_helpfiles - help files in Win32 .hlp format
+ whelp_helpfiles - help files in whelp .ihp format
+ os2_helpfiles   - help files in OS/2 .hlp/.inf format
+ pdf_helpfiles   - documentation in PDF format
+ rtsource        - run-time library startup source
+ samples         - sample source code
+
+
+ A sample override file follows:
+
+---------------override.inf---------------
+# Install small and large model libs
+ms=true
+ml=true
+tools16=true
+# Install only register call 32-bit libs
+3r=true
+# Install C++ development support
+cplusplus=true
+# Install only Win32 host and target
+wnthost=true
+wnttarg=true
+# Install Win32 help files, too
+helpfiles=true
+win32_helpfiles=true
+------------------------------------------
+
+ Note that the choice to install a component typically depends on two or more
+variables. Thus given the above override file, no 16-bit libraries will be
+installed because even if the installation of small and medium model libraries
+was enabled, the Windows NT target does not include any 16-bit libraries.
+However, 16-bit compiler executables for the Windows NT host will be installed
+because the 'tools16' variable was set.
+
+ Running the setup with '-f=override.inf' and no other options (assuming that
+override.inf is in the current directory) will allow the user to easily check
+the effect of the override file by examining the default component selection
+in the installer.
+
+
+ Other Variables
+ ---------------
+
+ The -d option allows the user to set variables which affect fundamental
+aspects of the installer operation. When using the -d option, boolean
+variables (i.e. variables which may be either true or false) should be set
+to 0 or 1.
+
+ A non-exhaustive list follows:
+
+ FullInstall    - install all source files
+ FullCDInstall  - install all source files except online help
+ DstDir         - destination directory for installation
+ UnInstall      - uninstall previously installed product
+
+ The destination directory for Open Watcom C/C++ is controlled by the WATCOM
+environment variable. If the environment variable does not exist, the default
+directory is 'c:\watcom'. Setting DstDir overrides the defaults. 

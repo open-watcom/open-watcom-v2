@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 
 #include "imgedit.h"
@@ -66,10 +66,10 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    DDEBitmap
-,   DDECursor
-,   DDEIcon
-,   DDENone
+    DDEBitmap,
+    DDECursor,
+    DDEIcon,
+    DDENone
 }IEEditFormat;
 
 typedef struct IEService {
@@ -99,16 +99,16 @@ extern HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-extern BOOL     IEHData2Mem             ( HDDEDATA, void **, uint_32 * );
-extern BOOL     IEStartDDEEditSession   ( void );
-extern HDDEDATA IECreateResData         ( img_node *node );
+extern BOOL     IEHData2Mem( HDDEDATA, void *, uint_32 * );
+extern BOOL     IEStartDDEEditSession( void );
+extern HDDEDATA IECreateResData( img_node *node );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
 // These are the clipboard formats registered by the Image Editor
-static  IEClipFormat    IEClipFormats[NUM_FORMATS] =
+static IEClipFormat IEClipFormats[NUM_FORMATS] =
 {
     { WR_CLIPBD_BITMAP, 0 },
     { WR_CLIPBD_CURSOR, 0 },
@@ -116,7 +116,7 @@ static  IEClipFormat    IEClipFormats[NUM_FORMATS] =
 };
 
 // These are the services offered by the Image Editor
-static  IEService       IEServices[NUM_FORMATS] =
+static IEService IEServices[NUM_FORMATS] =
 {
     { BMP_SERVICE_NAME, BMP_SERVICE_TOPIC, NULL, NULL },
     { CUR_SERVICE_NAME, CUR_SERVICE_TOPIC, NULL, NULL },
@@ -126,7 +126,7 @@ static  IEService       IEServices[NUM_FORMATS] =
 #if 0
 // These are the services offered by the Resource Editor
 // that will be used by the Image Editor
-static  IETopic IETopics[NUM_FORMATS] =
+static IETopic IETopics[NUM_FORMATS] =
 {
     { WRE_BITMAP_TOPIC, NULL },
     { WRE_CURSOR_TOPIC, NULL },
@@ -134,31 +134,34 @@ static  IETopic IETopics[NUM_FORMATS] =
 };
 #endif
 
-static  IEEditFormat EditFormat = DDENone;
-static  DWORD   IdInst = 0;
-static  FARPROC DdeProc;
-static  HSZ     hFileItem = NULL;
-static  HSZ     hNameItem = NULL;
-static  HSZ     hDataItem = NULL;
-static  HSZ     hService = NULL;
-static  HCONV   IEClientConv = NULL;
-static  HCONV   IEServerConv = NULL;
+static IEEditFormat EditFormat = DDENone;
+static DWORD        IdInst = 0;
+static FARPROC      DdeProc;
+static HSZ          hFileItem = NULL;
+static HSZ          hNameItem = NULL;
+static HSZ          hDataItem = NULL;
+static HSZ          hService = NULL;
+static HCONV        IEClientConv = NULL;
+static HCONV        IEServerConv = NULL;
+static BOOL         GotEndSession = FALSE;
 
+/*
+ * IEDDEStart
+ */
 BOOL IEDDEStart( HINSTANCE inst )
 {
     WORD        ret;
     DWORD       flags;
     int         i;
 
-    _imged_touch(inst); /* MakeProcInstance vanishes in NT */
+    _imged_touch( inst ); /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
         return( FALSE );
     }
 
-    for( i=0; i<NUM_FORMATS; i++ ) {
-        IEClipFormats[i].format =
-            RegisterClipboardFormat( IEClipFormats[i].str );
+    for( i = 0; i < NUM_FORMATS; i++ ) {
+        IEClipFormats[i].format = RegisterClipboardFormat( IEClipFormats[i].str );
         if( IEClipFormats[i].format == 0 ) {
             return( FALSE );
         }
@@ -170,17 +173,19 @@ BOOL IEDDEStart( HINSTANCE inst )
     }
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
-                CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
-                CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
+            CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
+            CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
     ret = DdeInitialize( &IdInst, (PFNCALLBACK)DdeProc, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
 
-    for( i=0; i<NUM_FORMATS; i++ ) {
-        IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service, CP_WINANSI );
-        IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic, CP_WINANSI );
+    for( i = 0; i < NUM_FORMATS; i++ ) {
+        IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service,
+                                                        CP_WINANSI );
+        IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic,
+                                                      CP_WINANSI );
     }
 
     hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
@@ -198,15 +203,19 @@ BOOL IEDDEStart( HINSTANCE inst )
         return( FALSE );
     }
 
-    for( i=0; i<NUM_FORMATS; i++ ) {
+    for( i = 0; i < NUM_FORMATS; i++ ) {
         if( IEServices[i].hservice != (HSZ)NULL ) {
             DdeNameService( IdInst, IEServices[i].hservice, (HSZ)NULL, DNS_REGISTER );
         }
     }
 
     return( TRUE );
-}
 
+} /* IEDDEStart */
+
+/*
+ * IEDDEEnd
+ */
 void IEDDEEnd( void )
 {
     int i;
@@ -222,7 +231,7 @@ void IEDDEEnd( void )
         if( hFileItem != (HSZ)NULL ) {
             DdeFreeStringHandle( IdInst, hFileItem );
         }
-        for( i=0; i<NUM_FORMATS; i++ ) {
+        for( i = 0; i < NUM_FORMATS; i++ ) {
             if( IEServices[i].hservice != (HSZ)NULL ) {
                 DdeFreeStringHandle( IdInst, IEServices[i].hservice );
             }
@@ -236,8 +245,12 @@ void IEDDEEnd( void )
     if( DdeProc != (FARPROC)NULL ) {
         FreeProcInstance( DdeProc );
     }
-}
 
+} /* IEDDEEnd */
+
+/*
+ * IEDDEDumpConversation
+ */
 BOOL IEDDEDumpConversation( HINSTANCE inst )
 {
     HCONV       hconv;
@@ -249,17 +262,17 @@ BOOL IEDDEDumpConversation( HINSTANCE inst )
 
     if( ok ) {
         hservice = DdeCreateStringHandle( IdInst, WRE_SERVICE_NAME, CP_WINANSI );
-        ok = ( hservice != (HSZ)NULL );
+        ok = (hservice != (HSZ)NULL);
     }
 
     if( ok ) {
         htopic = DdeCreateStringHandle( IdInst, WRE_IMAGE_DUMP, CP_WINANSI );
-        ok = ( htopic != (HSZ)NULL );
+        ok = (htopic != (HSZ)NULL);
     }
 
     if( ok ) {
-        // We expect the server to reject this connect attempt
-        // if it doesn't then we terminate the conversation
+        // We expect the server to reject this connect attempt.
+        // If it doesn't, then we terminate the conversation.
         hconv = DdeConnect( IdInst, hservice, htopic, (LPVOID)NULL );
         if( hconv != (HCONV)NULL ) {
             DdeDisconnect( hconv );
@@ -282,8 +295,12 @@ BOOL IEDDEDumpConversation( HINSTANCE inst )
     }
 
     return( ok );
-}
 
+} /* IEDDEDumpConversation */
+
+/*
+ * IEDDEStartConversation
+ */
 BOOL IEDDEStartConversation( void )
 {
     if( IdInst == 0 ) {
@@ -305,8 +322,12 @@ BOOL IEDDEStartConversation( void )
     }
 
     return( TRUE );
-}
 
+} /* IEDDEStartConversation */
+
+/*
+ * IEDDEEndConversation
+ */
 void IEDDEEndConversation( void )
 {
     if( IEClientConv != (HCONV)NULL ) {
@@ -321,17 +342,23 @@ void IEDDEEndConversation( void )
         DdeFreeStringHandle( IdInst, hService );
         hService = (HSZ)NULL;
     }
-}
 
-BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
+} /* IEDDEEndConversation */
+
+/*
+ * IEHData2Mem
+ */
+BOOL IEHData2Mem( HDDEDATA hData, void *_mem, uint_32 *size )
 {
-    if( ( hData == (HDDEDATA)NULL ) && mem && size ) {
+    void    **mem = _mem;
+
+    if( hData == (HDDEDATA)NULL && mem != NULL && size != NULL ) {
         return( FALSE );
     }
 
     *size = (uint_32)DdeGetData( hData, NULL, 0, 0 );
     if( *size == 0 ) {
-        return( NULL );
+        return( FALSE );
     }
 
     *mem = MemAlloc( *size );
@@ -346,8 +373,12 @@ BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
     }
 
     return( TRUE );
-}
 
+} /* IEHData2Mem */
+
+/*
+ * IECreateResData
+ */
 HDDEDATA IECreateResData( img_node *node )
 {
     HDDEDATA    hdata;
@@ -357,19 +388,20 @@ HDDEDATA IECreateResData( img_node *node )
 
     data = NULL;
     hdata = (HDDEDATA)NULL;
-    ok = ( ( node != NULL ) && ( EditFormat != DDENone ) );
+    ok = (node != NULL && EditFormat != DDENone);
 
     if( ok ) {
         switch( node->imgtype ) {
-            case BITMAP_IMG:
-                ok = saveBitmapToData( node, &data, &size );
-                break;
-            case ICON_IMG:
-            case CURSOR_IMG:
-                ok = saveImgToData( node, &data, &size );
-                break;
-            default:
-                ok = FALSE;
+        case BITMAP_IMG:
+            ok = SaveBitmapToData( node, &data, &size );
+            break;
+        case ICON_IMG:
+        case CURSOR_IMG:
+            ok = SaveImgToData( node, &data, &size );
+            break;
+        default:
+            ok = FALSE;
+            break;
         }
     }
 
@@ -378,13 +410,17 @@ HDDEDATA IECreateResData( img_node *node )
                                      IEClipFormats[EditFormat].format, 0 );
     }
 
-    if( data ) {
+    if( data != NULL ) {
         MemFree( data );
     }
 
     return( hdata );
-}
 
+} /* IECreateResData */
+
+/*
+ * IEGetCurrentImageNode
+ */
 img_node *IEGetCurrentImageNode( void )
 {
     img_node    *node;
@@ -401,8 +437,12 @@ img_node *IEGetCurrentImageNode( void )
     }
 
     return( root );
-}
 
+} /* IEGetCurrentImageNode */
+
+/*
+ * IEUpdateDDEEditSession
+ */
 BOOL IEUpdateDDEEditSession( void )
 {
     img_node            *node;
@@ -411,19 +451,17 @@ BOOL IEUpdateDDEEditSession( void )
 
     hdata = (HDDEDATA)NULL;
     node = IEGetCurrentImageNode();
-    ok = ( ( IEClientConv != (HCONV)NULL ) && ( node != NULL ) &&
-           ( EditFormat != DDENone ) );
+    ok = (IEClientConv != (HCONV)NULL && node != NULL && EditFormat != DDENone);
 
     if( ok ) {
         hdata = IECreateResData( node );
-        ok = ( hdata != (HDDEDATA)NULL );
+        ok = (hdata != (HDDEDATA)NULL);
     }
 
     if( ok ) {
-        ok = (BOOL) DdeClientTransaction( (LPBYTE)hdata, -1, IEClientConv,
-                                           hDataItem,
-                                           IEClipFormats[EditFormat].format,
-                                           XTYP_POKE, TIME_OUT, NULL );
+        ok = (BOOL)DdeClientTransaction( (LPBYTE)hdata, -1, IEClientConv, hDataItem,
+                                         IEClipFormats[EditFormat].format,
+                                         XTYP_POKE, TIME_OUT, NULL );
     }
 
     if( hdata != (HDDEDATA)NULL ) {
@@ -435,8 +473,12 @@ BOOL IEUpdateDDEEditSession( void )
     }
 
     return( ok );
-}
 
+} /* IEUpdateDDEEditSession */
+
+/*
+ * IEStartDDEEditSession
+ */
 BOOL IEStartDDEEditSession( void )
 {
     char                *filename;
@@ -446,13 +488,13 @@ BOOL IEStartDDEEditSession( void )
     uint_32             size;
     BOOL                ok;
 
-    ok = ( EditFormat != DDENone );
+    ok = (EditFormat != DDENone);
 
     if( ok ) {
-        hData = DdeClientTransaction( NULL, (HSZ)NULL, IEClientConv, hFileItem,
+        hData = DdeClientTransaction( NULL, 0, IEClientConv, hFileItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = ( hData != (HDDEDATA)NULL );
+        ok = (hData != (HDDEDATA)NULL);
     }
 
     if( ok ) {
@@ -461,7 +503,7 @@ BOOL IEStartDDEEditSession( void )
     }
 
     if( ok ) {
-        hData = DdeClientTransaction( NULL, (HSZ)NULL, IEClientConv, hDataItem,
+        hData = DdeClientTransaction( NULL, 0, IEClientConv, hDataItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
     }
@@ -477,44 +519,48 @@ BOOL IEStartDDEEditSession( void )
 
     if( ok ) {
         switch( EditFormat ) {
-            case DDEBitmap:
-                if( data ) {
-                    ok = readBitmapFromData( data, filename, NULL, NULL );
-                } else {
-                    ok = NewImage( BITMAP_IMG, NULL );
-                }
-                break;
-            case DDECursor:
-                if( data ) {
-                    ok = readCursorFromData( data, filename, NULL, NULL );
-                } else {
-                    ok = NewImage( CURSOR_IMG, NULL );
-                }
-                break;
-            case DDEIcon:
-                if( data ) {
-                    ok = readIconFromData( data, filename, NULL, NULL );
-                } else {
-                    ok = NewImage( ICON_IMG, NULL );
-                }
-                break;
-            default:
-                ok = FALSE;
+        case DDEBitmap:
+            if( data != NULL ) {
+                ok = ReadBitmapFromData( data, filename, NULL, NULL );
+            } else {
+                ok = NewImage( BITMAP_IMG, NULL );
+            }
+            break;
+        case DDECursor:
+            if( data != NULL ) {
+                ok = ReadCursorFromData( data, filename, NULL, NULL );
+            } else {
+                ok = NewImage( CURSOR_IMG, NULL );
+            }
+            break;
+        case DDEIcon:
+            if( data != NULL ) {
+                ok = ReadIconFromData( data, filename, NULL, NULL );
+            } else {
+                ok = NewImage( ICON_IMG, NULL );
+            }
+            break;
+        default:
+            ok = FALSE;
+            break;
         }
     }
 
-    if( filename ) {
+    if( filename != NULL ) {
         MemFree( filename );
     }
 
-    if( data ) {
+    if( data != NULL ) {
         MemFree( data );
     }
 
     return( ok );
-}
 
-static BOOL GotEndSession = FALSE;
+} /* IEStartDDEEditSession */
+
+/*
+ * IEHandlePokedData
+ */
 void IEHandlePokedData( HDDEDATA hdata )
 {
     void        *cmd;
@@ -524,7 +570,7 @@ void IEHandlePokedData( HDDEDATA hdata )
         return;
     }
 
-    if( !IEHData2Mem( hdata, &cmd, &size ) || !cmd ) {
+    if( !IEHData2Mem( hdata, &cmd, &size ) || cmd == NULL ) {
         return;
     }
 
@@ -544,96 +590,97 @@ void IEHandlePokedData( HDDEDATA hdata )
             ShowWindow( HMainWindow, SW_RESTORE );
         }
 #ifdef __NT__
-        SetWindowPos( HMainWindow, HWND_TOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
-        SetWindowPos( HMainWindow, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
-        SetWindowPos( HMainWindow, HWND_NOTOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetForegroundWindow( HMainWindow );
 #else
         SetActiveWindow( HMainWindow );
-        SetWindowPos( HMainWindow, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 #endif
     }
 
     MemFree( cmd );
-}
 
-HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
-                               HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                               DWORD lData1, DWORD lData2 )
+} /* IEHandlePokedData */
+
+/*
+ * DdeCallBack
+ */
+HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2,
+                               HDDEDATA hdata, DWORD lData1, DWORD lData2 )
 {
     img_node            *node;
     HSZPAIR             hszpair[2];
     HDDEDATA            ret;
     int                 i;
 
-    _imged_touch(wFmt);
-    _imged_touch(hdata);
-    _imged_touch(lData1);
-    _imged_touch(lData2);
+    _imged_touch( wFmt );
+    _imged_touch( hdata );
+    _imged_touch( lData1 );
+    _imged_touch( lData2 );
 
     ret = (HDDEDATA)NULL;
 
     switch( wType ) {
-        case XTYP_CONNECT_CONFIRM:
-            IEServerConv = hConv;
-            break;
+    case XTYP_CONNECT_CONFIRM:
+        IEServerConv = hConv;
+        break;
 
-        case XTYP_DISCONNECT:
-            IEServerConv = (HCONV)NULL;
-            IEClientConv = (HCONV)NULL;
-            SendMessage( HMainWindow, WM_CLOSE, (WPARAM)1, 0 );
-            break;
+    case XTYP_DISCONNECT:
+        IEServerConv = (HCONV)NULL;
+        IEClientConv = (HCONV)NULL;
+        SendMessage( HMainWindow, WM_CLOSE, (WPARAM)1, 0 );
+        break;
 
-        case XTYP_CONNECT:
-            for( i=0; i<NUM_FORMATS; i++ ) {
-                if( IEServices[i].htopic == hsz1 ) {
-                    EditFormat = (IEEditFormat)i;
-                    ret = (HDDEDATA)TRUE;
-                }
+    case XTYP_CONNECT:
+        for( i = 0; i < NUM_FORMATS; i++ ) {
+            if( IEServices[i].htopic == hsz1 ) {
+                EditFormat = (IEEditFormat)i;
+                ret = (HDDEDATA)TRUE;
             }
-            break;
+        }
+        break;
 
-        case XTYP_WILDCONNECT:
-            for( i=0; i<NUM_FORMATS; i++ ) {
-                if( IEServices[i].hservice == hsz2 ) {
-                    break;
-                }
-            }
-            if( i == NUM_FORMATS ) {
+    case XTYP_WILDCONNECT:
+        for( i = 0; i < NUM_FORMATS; i++ ) {
+            if( IEServices[i].hservice == hsz2 ) {
                 break;
             }
-            hszpair[0].hszSvc   = IEServices[i].hservice;
-            hszpair[0].hszTopic = IEServices[i].htopic;
-            hszpair[1].hszSvc   = (HSZ)NULL;
-            hszpair[1].hszTopic = (HSZ)NULL;
-            ret = (HDDEDATA)
-                DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
-                                     sizeof(hszpair), 0L, 0, CF_TEXT, 0 );
+        }
+        if( i == NUM_FORMATS ) {
             break;
+        }
+        hszpair[0].hszSvc = IEServices[i].hservice;
+        hszpair[0].hszTopic = IEServices[i].htopic;
+        hszpair[1].hszSvc = (HSZ)NULL;
+        hszpair[1].hszTopic = (HSZ)NULL;
+        ret = (HDDEDATA)DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
+                                             sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
+        break;
 
-        case XTYP_REQUEST:
-            if( wFmt == IEClipFormats[EditFormat].format ) {
-                if( hsz1 == IEServices[EditFormat].htopic ) {
-                    node = IEGetCurrentImageNode();
-                    if( hsz2 == hDataItem ) {
-                        ret = IECreateResData( node );
-                    }
-                }
-            }
-            break;
-
-        case XTYP_POKE:
-            ret = (HDDEDATA)DDE_FNOTPROCESSED;
+    case XTYP_REQUEST:
+        if( wFmt == IEClipFormats[EditFormat].format ) {
             if( hsz1 == IEServices[EditFormat].htopic ) {
+                node = IEGetCurrentImageNode();
                 if( hsz2 == hDataItem ) {
-                    IEHandlePokedData( hdata );
-                    ret = (HDDEDATA)DDE_FACK;
+                    ret = IECreateResData( node );
                 }
             }
-            break;
+        }
+        break;
 
+    case XTYP_POKE:
+        ret = (HDDEDATA)DDE_FNOTPROCESSED;
+        if( hsz1 == IEServices[EditFormat].htopic ) {
+            if( hsz2 == hDataItem ) {
+                IEHandlePokedData( hdata );
+                ret = (HDDEDATA)DDE_FACK;
+            }
+        }
+        break;
     }
 
     return( ret );
-}
 
+} /* DdeCallback */

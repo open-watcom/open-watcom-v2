@@ -40,7 +40,7 @@ int foo( INT y )	// redefinition of the same function
 class A {
     public:
     	operator int ();
-	operator int ();	// redeclaration, ok
+	operator int ();	// redeclaration of member function, no good
 	operator const int ();	// indistinct declaration, no good
 	operator float ();
 };

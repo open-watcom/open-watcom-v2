@@ -1,0 +1,26 @@
+name=dMFC32
+any_check=mfc32
+static_text=\
+        //1"Select MFC 3.2 Options:"\
+        //2"MFC 3.2 オプションを選択してください:"\
+        //0
+static_text=
+detail_check=dMFC32LIB,\
+        //1"&Libraries..."\
+        //2"ライブラリ(&L)..."\
+        //0,mfc32lib,,\
+        //1"Libraries:"\
+        //2"ライブラリ:"\
+        //0
+static_text=
+detail_check=dMFC32SMP,\
+        //1"&Samples..."\
+        //2"サンプル(&S)..."\
+        //0,mfc32samp,,\
+        //1"Sample Program Source:"\
+        //2"サンプル・ソース:"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

@@ -24,8 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Loop unrolling optimizations. Contains lots of obsolete
+*               and/or nonfunctional code. Currently doesn't work at all
+*               because other optimizations munge loops into a form this
+*               module doesn't expect.
 *
 ****************************************************************************/
 
@@ -35,16 +37,17 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "cfloat.h"
 #include "model.h"
 #include "stackok.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "makeins.h"
 
 extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
-extern  label_handle    AskForNewLabel();
+extern  label_handle    AskForNewLabel( void );
 extern  void            MoveEdge(block_edge*,block*);
 extern  void            PointEdge(block_edge*,block*);
 extern  bool            AnalyseLoop(induction*,bool*,instruction**,block**);
@@ -52,8 +55,6 @@ extern  name            *DeAlias(name*);
 extern  name            *TempOffset(name *,type_length ,type_class_def );
 extern  name            *AllocTemp(type_class_def );
 extern  name            *SAllocIndex(name *,name *,type_length ,type_class_def ,type_length );
-extern  instruction     *MakeBinary(opcode_defs ,name *,name *,name *,type_class_def );
-extern  instruction     *MakeCondition(opcode_defs ,name *,name *,int,int,type_class_def );
 extern  name            *AllocS32Const(signed_32 );
 extern  void            SuffixIns(instruction *,instruction *);
 extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
@@ -63,11 +64,10 @@ extern  induction       *FindIndVar( name *);
 extern  void            RemoveInputEdge( block_edge * );
 extern  void            SuffixPreHeader( instruction * );
 extern  block           *NewBlock( label_handle, bool );
-extern  void            MarkLoop();
-extern  void            UnMarkLoop();
-extern  void            MarkInvariants();
-extern  void            UnMarkInvariants();
-extern  instruction     *MakeMove( name *, name *, type_class_def );
+extern  void            MarkLoop( void );
+extern  void            UnMarkLoop( void );
+extern  void            MarkInvariants( void );
+extern  void            UnMarkInvariants( void );
 extern  instruction     *DupIns( instruction *, instruction *, name *, signed_32 );
 extern  void            RemoveBlock( block * );
 extern  void            FlipCond( instruction * );
@@ -76,8 +76,7 @@ extern  int             CountIns( block *);
 extern  void            MoveDownLoop( block * );
 extern  block           *ReGenBlock( block *, label_handle );
 extern  void            MakeJumpBlock( block *, block_edge * );
-extern  void            FreeIns( instruction * );
-extern  void            URBlip();
+extern  void            URBlip( void );
 
 extern type_class_def   Signed[];
 extern block            *HeadBlock;
@@ -104,8 +103,8 @@ typedef struct loop_condition {
 } loop_condition;
 
 
-extern  void    FixBlockIds()
-/****************************
+extern  void    FixBlockIds( void )
+/**********************************
     Fix up the block_id field of temps.
 */
 {
@@ -151,6 +150,7 @@ extern  block   *DupBlock( block *blk )
     copy = MakeBlock( AskForNewLabel(), blk->targets );
     copy->class = ( blk->class & ~( LOOP_HEADER | ITERATIONS_KNOWN ) );
     copy->id = NO_BLOCK_ID;
+    copy->depth = blk->depth;
     copy->gen_id = blk->gen_id;
     copy->ins.hd.line_num = 0;
     copy->next_block = NULL;
@@ -198,7 +198,7 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
 
     URBlip();
 
-    prev = NULL;
+    prev = copy = NULL;
     ClearCopyPtrs( tail );
 
     // make a copy of each of the blocks in the original loop
@@ -217,8 +217,9 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
         prev = copy;
     }
     loop->head = copy;
-    copy->u.loop = NULL; // terminate the list held in blk->u.loop
-
+    if( copy != NULL ) {
+        copy->u.loop = NULL; // terminate the list held in blk->u.loop
+    }
 
     // now link the blocks together - for each edge, we point the
     // edge in the corresponding block to the same block if it is in the
@@ -509,7 +510,7 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     size = sizeof( loop_abstract ) * reps;
 
     // allocate an array of these abstract loop thingies
-    _Alloc( new_loops, size );
+    new_loops = CGAlloc( size );
     first = &new_loops[ 0 ];
     last = &new_loops[ reps - 1 ];
 
@@ -545,7 +546,7 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     first->head->u.loop = tail;
 
     next_block = last->tail;
-    _Free( new_loops, size );
+    CGFree( new_loops );
 
     // and return the tail of the new super-loop
     return( next_block );
@@ -763,7 +764,7 @@ extern  void    HoistCondition( block *head )
 {
     block_edge  *edge;
     block       *blk;
-    instruction *ins;
+    instruction *ins, *next;
 
     for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
         if( edge->source->targets > 1 ) {
@@ -772,7 +773,8 @@ extern  void    HoistCondition( block *head )
     }
 
     for( blk = head; blk != NULL; blk = blk->edge[ 0 ].destination ) {
-        for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+        ins = blk->ins.hd.next;
+        while( ins->head.opcode != OP_BLOCK ) {
             if( _OpIsCondition( ins->head.opcode ) ) {
                 RemoveIns( ins );
                 SuffixIns( head->ins.hd.prev, ins );
@@ -781,7 +783,9 @@ extern  void    HoistCondition( block *head )
             for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
                 DupIns( edge->source->ins.hd.prev, ins, NULL, 0 );
             }
+            next = ins->head.next;
             FreeIns( ins );
+            ins = next;
         }
     }
     // should never reach here because we must have a conditional statement

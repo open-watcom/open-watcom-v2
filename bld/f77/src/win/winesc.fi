@@ -1,0 +1,162 @@
+*$noreference
+
+! Escape Function:
+! ----------------
+
+      external Escape
+
+      integer*2 Escape
+
+! GDI Escapes
+
+      integer NEWFRAME
+      integer ABORTDOC
+      integer NEXTBAND
+      integer SETCOLORTABLE
+      integer GETCOLORTABLE
+      integer FLUSHOUTPUT
+      integer DRAFTMODE
+      integer QUERYESCSUPPORT
+      integer SETABORTPROC
+      integer STARTDOC
+      integer ENDDOC
+      integer GETPHYSPAGESIZE
+      integer GETPRINTINGOFFSET
+      integer GETSCALINGFACTOR
+      integer MFCOMMENT
+      integer GETPENWIDTH
+      integer SETCOPYCOUNT
+      integer SELECTPAPERSOURCE
+      integer DEVICEDATA
+      integer PASSTHROUGH
+      integer GETTECHNOLGY
+      integer GETTECHNOLOGY
+      integer SETENDCAP
+      integer SETLINEJOIN
+      integer SETMITERLIMIT
+      integer BANDINFO
+      integer DRAWPATTERNRECT
+      integer GETVECTORPENSIZE
+      integer GETVECTORBRUSHSIZE
+      integer ENABLEDUPLEX
+      integer GETSETPAPERBINS
+      integer GETSETPRINTORIENT
+      integer ENUMPAPERBINS
+      integer SETDIBSCALING
+      integer EPSPRINTING
+      integer ENUMPAPERMETRICS
+      integer GETSETPAPERMETRICS
+      integer POSTSCRIPT_DATA
+      integer POSTSCRIPT_IGNORE
+      integer GETEXTENDEDTEXTMETRICS
+      integer GETEXTENTTABLE
+      integer GETPAIRKERNTABLE
+      integer GETTRACKKERNTABLE
+      integer _EXTTEXTOUT
+      integer ENABLERELATIVEWIDTHS
+      integer ENABLEPAIRKERNING
+      integer SETKERNTRACK
+      integer SETALLJUSTVALUES
+      integer SETCHARSET
+
+      integer _STRETCHBLT
+      integer BEGIN_PATH
+      integer CLIP_TO_PATH
+      integer END_PATH
+      integer EXT_DEVICE_CAPS
+      integer RESTORE_CTM
+      integer SAVE_CTM
+      integer SET_ARC_DIRECTION
+      integer SET_BACKGROUND_COLOR
+      integer SET_POLY_MODE
+      integer SET_SCREEN_ANGLE
+      integer SET_SPREAD
+      integer TRANSFORM_CTM
+      integer SET_CLIP_BOX
+      integer SET_BOUNDS
+      integer SET_MIRROR_MODE
+
+      parameter ( NEWFRAME                     = 1 )
+      parameter ( ABORTDOC                     = 2 )
+      parameter ( NEXTBAND                     = 3 )
+      parameter ( SETCOLORTABLE                = 4 )
+      parameter ( GETCOLORTABLE                = 5 )
+      parameter ( FLUSHOUTPUT                  = 6 )
+      parameter ( DRAFTMODE                    = 7 )
+      parameter ( QUERYESCSUPPORT              = 8 )
+      parameter ( SETABORTPROC                 = 9 )
+      parameter ( STARTDOC                     = 10 )
+      parameter ( ENDDOC                       = 11 )
+      parameter ( GETPHYSPAGESIZE              = 12 )
+      parameter ( GETPRINTINGOFFSET            = 13 )
+      parameter ( GETSCALINGFACTOR             = 14 )
+      parameter ( MFCOMMENT                    = 15 )
+      parameter ( GETPENWIDTH                  = 16 )
+      parameter ( SETCOPYCOUNT                 = 17 )
+      parameter ( SELECTPAPERSOURCE            = 18 )
+      parameter ( DEVICEDATA                   = 19 )
+      parameter ( PASSTHROUGH                  = 19 )
+      parameter ( GETTECHNOLGY                 = 20 )
+      parameter ( GETTECHNOLOGY                = 20 )
+      parameter ( SETENDCAP                    = 21 )
+      parameter ( SETLINEJOIN                  = 22 )
+      parameter ( SETMITERLIMIT                = 23 )
+      parameter ( BANDINFO                     = 24 )
+      parameter ( DRAWPATTERNRECT              = 25 )
+      parameter ( GETVECTORPENSIZE             = 26 )
+      parameter ( GETVECTORBRUSHSIZE           = 27 )
+      parameter ( ENABLEDUPLEX                 = 28 )
+      parameter ( GETSETPAPERBINS              = 29 )
+      parameter ( GETSETPRINTORIENT            = 30 )
+      parameter ( ENUMPAPERBINS                = 31 )
+      parameter ( SETDIBSCALING                = 32 )
+      parameter ( EPSPRINTING                  = 33 )
+      parameter ( ENUMPAPERMETRICS             = 34 )
+      parameter ( GETSETPAPERMETRICS           = 35 )
+      parameter ( POSTSCRIPT_DATA              = 37 )
+      parameter ( POSTSCRIPT_IGNORE            = 38 )
+      parameter ( GETEXTENDEDTEXTMETRICS       = 256 )
+      parameter ( GETEXTENTTABLE               = 257 )
+      parameter ( GETPAIRKERNTABLE             = 258 )
+      parameter ( GETTRACKKERNTABLE            = 259 )
+      parameter ( _EXTTEXTOUT                  = 512 )
+      parameter ( ENABLERELATIVEWIDTHS         = 768 )
+      parameter ( ENABLEPAIRKERNING            = 769 )
+      parameter ( SETKERNTRACK                 = 770 )
+      parameter ( SETALLJUSTVALUES             = 771 )
+      parameter ( SETCHARSET                   = 772 )
+
+      parameter ( _STRETCHBLT                  = 2048 )
+      parameter ( BEGIN_PATH                   = 4096 )
+      parameter ( CLIP_TO_PATH                 = 4097 )
+      parameter ( END_PATH                     = 4098 )
+      parameter ( EXT_DEVICE_CAPS              = 4099 )
+      parameter ( RESTORE_CTM                  = 4100 )
+      parameter ( SAVE_CTM                     = 4101 )
+      parameter ( SET_ARC_DIRECTION            = 4102 )
+      parameter ( SET_BACKGROUND_COLOR         = 4103 )
+      parameter ( SET_POLY_MODE                = 4104 )
+      parameter ( SET_SCREEN_ANGLE             = 4105 )
+      parameter ( SET_SPREAD                   = 4106 )
+      parameter ( TRANSFORM_CTM                = 4107 )
+      parameter ( SET_CLIP_BOX                 = 4108 )
+      parameter ( SET_BOUNDS                   = 4109 )
+      parameter ( SET_MIRROR_MODE              = 4110 )
+
+! Escape() Return Codes
+
+      integer SP_NOTREPORTED
+      integer SP_ERROR
+      integer SP_APPABORT
+      integer SP_USERABORT
+      integer SP_OUTOFDISK
+      integer SP_OUTOFMEMORY
+
+      parameter ( SP_NOTREPORTED               = '4000'x )
+      parameter ( SP_ERROR                     = -1 )
+      parameter ( SP_APPABORT                  = -2 )
+      parameter ( SP_USERABORT                 = -3 )
+      parameter ( SP_OUTOFDISK                 = -4 )
+      parameter ( SP_OUTOFMEMORY               = -5 )
+
+*$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message resources access functions.
 *
 ****************************************************************************/
 
@@ -34,40 +33,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <process.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#endif
 
-#include "watcom.h"
 #include "mtypes.h"
-#include "mcache.h"
 #include "msysdep.h"
+#include "mcache.h"
 #include "mrcmsg.h"
-#include "autodep.h"
 #include "wressetr.h"
 #include "wreslang.h"
 
+#ifdef BOOTSTRAP
+
+    #define pick( id, en, jp )  {id, en},
+
+    static struct idstr { int id; char *s; } StringTable[] = {
+        #include "wmake.msg"
+        #include "usage.gh"
+    };
+
+    static int compar( const void *s1, const void *s2 ) {
+        return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
+    }
+
+    #ifndef _arraysize
+        #define _arraysize( a ) (sizeof(a)/sizeof(a[0]))
+    #endif
+
+#endif
 
 #define NIL_HANDLE      ((int)-1)
-#define STDOUT_HANDLE   ((int)1)
 
 #define FORMTABLE
-static  TABLE_TYPE      PARA_TABLE[] = {
+static  TABLE_TYPE  PARA_TABLE[] = {
 #include "mrcmsg.h"
 #undef  FORMTABLE
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-extern  long            FileShift;
+#ifndef BOOTSTRAP
+
+static  HANDLE_INFO hInstance = { 0 };
+static  unsigned    MsgShift;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 
-static long resSeek( int handle, long position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
+static long resSeek( int handle, off_t position, int where )
+/***********************************************************
+ * fool the resource compiler into thinking that the resource information
+ * starts at offset 0
+ */
 {
     if( where == SEEK_SET ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );
@@ -76,12 +93,17 @@ static long resSeek( int handle, long position, int where )
     }
 }
 
+
 WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 
-extern int MsgInit()
+#endif
+
+int MsgInit( void )
+/************************/
 {
+#ifndef BOOTSTRAP
     int         initerror;
-    char        name[_MAX_PATH];
+    static char name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
@@ -107,59 +129,83 @@ extern int MsgInit()
         MsgFini();
         return( 0 );
     }
+#endif
     return( 1 );
 }
 
-extern int MsgGet( int resourceid, char *buffer )
+
+int MsgGet( int resourceid, char *buffer )
+/***********************************************/
 {
-    if( LoadString( &hInstance, resourceid + MsgShift,
-        (LPSTR) buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+#ifdef BOOTSTRAP
+    {
+        struct idstr *s;
+        s = bsearch( &resourceid, StringTable, _arraysize( StringTable ),
+                     sizeof( *s ), compar );
+        if( !s ) {
+            buffer[0] = '\0';
+            return( 0 );
+        }
+        strcpy( buffer, s->s );
+    }
+#else
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer,
+            MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
         return( 0 );
     }
+#endif
     return( 1 );
 }
 
-extern void MsgGetTail( int resourceid, char *buffer )
+void MsgGetTail( int resourceid, char *buffer )
+/****************************************************/
 {
     char        msg[MAX_RESOURCE_SIZE];
-    char        *p;
+    char const  *p;
 
     MsgGet( resourceid, msg );
-    p = strchr( msg, '%' );
-    while( p != NULL ) {
-        if( *(++p) == 'L' ) break;
-        p = strchr( ++p, '%' );
+    for( p = msg; (p = strchr( p, '%' )) != NULL && *(++p) != 'L'; ++p ) {
     }
     if( p != NULL ) {
         strcpy( buffer, (++p) );
     }
 }
 
-extern void MsgFini()
+
+void MsgFini( void )
+/*************************/
 {
+#ifndef BOOTSTRAP
     if( hInstance.handle != NIL_HANDLE ) {
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
+#endif
 }
 
+
 static char *msgInTable( int resourceid )
+/***************************************/
 {
-    int         i;
+    int i;
 
     for( i = 0; PARA_TABLE[i].msgid < END_OF_RESOURCE_MSG; i++ ) {
         if( resourceid == PARA_TABLE[i].msgid ) {
             return( PARA_TABLE[i].msgtype );
         }
-        if( resourceid < PARA_TABLE[i].msgid ) break;
+        if( resourceid < PARA_TABLE[i].msgid ) {
+            break;
+        }
     }
     return( NULL );
 }
 
-extern int MsgReOrder( int resourceid, char *buff, char **paratype )
+
+int MsgReOrder( int resourceid, char *buff, char **paratype )
+/******************************************************************/
 {
-    int         rvalue = 0;
+    int rvalue = 0;
 
     MsgGet( resourceid, buff );
     *paratype = msgInTable( resourceid );
@@ -179,48 +225,3 @@ extern int MsgReOrder( int resourceid, char *buff, char **paratype )
     }
     return( rvalue );
 }
-
-#if 0
-BOOLEAN ResAutoDep( char *name, time_t stamp, BOOLEAN (*chk)(time_t,time_t), time_t *pmax_time )
-/**********************************************************************************************/
-{
-    time_t max_time;
-    time_t dep_time;
-    BOOLEAN out_of_date;
-    DepInfo *depends;
-    DepInfo *p;
-    fpos_t saveFileShift;
-
-    max_time = *pmax_time;
-    out_of_date = FALSE;
-    // usually resource lib is reading the WMAKE resources
-    // but here we want it to read a stand-alone resource file
-    saveFileShift = FileShift;
-    FileShift = 0;
-    depends = WResGetAutoDep( name );
-    FileShift = saveFileShift;
-    if( depends != NULL ) {
-        for( p = depends; p->len != 0; ) {
-            if( CacheTime( p->name, &dep_time ) != RET_SUCCESS ) {
-                /* doesn't exist anymore so rebuild the file */
-                out_of_date = TRUE;
-            } else {
-                if( ! IdenticalAutoDepTimes( p->time, dep_time ) ) {
-                    /* time-stamp isn't identical so rebuild */
-                    out_of_date = TRUE;
-                } else if( (*chk)( stamp, dep_time ) ) {
-                    out_of_date = TRUE;
-                }
-                /* we don't want Glob.all affecting the comparison */
-                if( dep_time > max_time ) {
-                    max_time = dep_time;
-                }
-            }
-            p = (DepInfo *) ( (char *)p + sizeof( DepInfo ) + p->len - 1 );
-        }
-        free( depends );
-    }
-    *pmax_time = max_time;
-    return( out_of_date );
-}
-#endif

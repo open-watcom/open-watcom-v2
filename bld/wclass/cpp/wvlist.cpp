@@ -124,7 +124,7 @@ WObject* WEXPORT WVList::find( WObject* obj )
 void WVList::growBlock()
 {
     if( _set == NULL ) {
-        static _countInit = 10;
+        static int _countInit = 10;
         _set = new WObject*[ _countInit ];
         if( _set != NULL ) {
             _count = _countInit;
@@ -133,7 +133,7 @@ void WVList::growBlock()
     }
     if( _set != NULL ) {
         if( _free >= _count ) {
-            static _countIncr = 5;
+            static int _countIncr = 5;
             WObject** nset = new WObject*[ _count + _countIncr ];
             if( nset != NULL ) {
                 for( int i=0; i<_count; i++ ) {

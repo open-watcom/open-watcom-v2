@@ -1,0 +1,26 @@
+/*
+ *  os2.h        OS/2 top level include file for 32-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __OS2_H__
+#define __OS2_H__
+
+#define OS2_INCLUDED
+
+#ifdef _M_I86
+#error This os2.h is for 32-bit development only!
+#endif
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#include <os2def.h>
+#include <bse.h>
+#include <pm.h>
+
+:include cplusepi.sp
+
+#endif

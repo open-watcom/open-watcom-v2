@@ -31,11 +31,12 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
 #include "cgaux.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "typedef.h"
 #include "feprotos.h"
 
@@ -47,17 +48,20 @@ extern  hw_reg_set      FullReg(hw_reg_set);
 extern  sym_handle      AskForLblSym(label_handle);
 extern  bool            IsRegClass(hw_reg_set,type_class_def);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
-extern  hw_reg_set      StructReg();
+extern  hw_reg_set      StructReg( void );
 extern  byte            *Copy(void*,void*,uint);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  pointer         BEAuxInfo(pointer,aux_class);
 extern  bool            AskIfRTLabel(label_handle);
-extern  hw_reg_set      FixedRegs();
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      DisplayReg();
-extern  int             SizeDisplayReg();
-extern  hw_reg_set      AllCacheRegs();
+extern  hw_reg_set      FixedRegs( void );
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      DisplayReg( void );
+extern  int             SizeDisplayReg( void );
+extern  hw_reg_set      AllCacheRegs( void );
 
+/* forward declaration */
+extern  void            UpdateReturn( call_state *state, type_def *tipe,
+                                      type_class_def class, aux_handle aux );
 
 #define _NPX( x ) ( !( (x) & ROUTINE_NO_8087_RETURNS ) )
 
@@ -134,6 +138,9 @@ extern  type_class_def  CallState( aux_handle aux,
     if( cclass & PARMS_STACK_RESERVE ) {
         state->attr |= ROUTINE_STACK_RESERVE;
     }
+    if( cclass & PARMS_PREFER_REGS ) {
+        state->attr |= ROUTINE_PREFER_REGS;
+    }
     if( state == &CurrProc->state ) {
         if( cclass & ( GENERATE_STACK_FRAME | PROLOG_HOOKS | EPILOG_HOOKS ) ) {
             CurrProc->prolog_state |= GENERATE_FAT_PROLOG;
@@ -160,6 +167,9 @@ extern  type_class_def  CallState( aux_handle aux,
         if( cclass & TOUCH_STACK ) {
             CurrProc->prolog_state |= GENERATE_TOUCH_STACK;
         }
+        if( cclass & LOAD_RDOSDEV_ON_ENTRY ) {
+            CurrProc->prolog_state |= GENERATE_RDOSDEV_PROLOG;
+        }
     }
     class = ReturnClass( tipe, state->attr );
     i = 0;
@@ -177,7 +187,7 @@ extern  type_class_def  CallState( aux_handle aux,
         i++;
     }
     i++;
-    _Alloc( state->parm.table, i*sizeof( hw_reg_set ) );
+    state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
     Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
@@ -216,8 +226,8 @@ extern  void    UpdateReturn( call_state *state, type_def *tipe,
 
     hw_reg_set  normal;
 
-    if( _FPULevel( FPU_87 ) && ( tipe->attr & TYPE_FLOAT ) != EMPTY
-      && !( state->attr & ROUTINE_NO_8087_RETURNS ) ) {
+    if( _FPULevel( FPU_87 ) && _NPX( state->attr )
+      && ( ( tipe->attr & TYPE_FLOAT ) != EMPTY ) ) {
         HW_COnlyOn( state->return_reg, HW_ST0 );
     } else {
         HW_CTurnOff( state->return_reg, HW_FLTS );
@@ -269,7 +279,7 @@ extern  hw_reg_set      CallZap( call_state *state ) {
 
 
 
-extern  hw_reg_set      MustSaveRegs() {
+extern  hw_reg_set      MustSaveRegs( void ) {
 /**************************************/
 
     hw_reg_set  save;
@@ -299,7 +309,7 @@ extern  hw_reg_set      MustSaveRegs() {
     return( save );
 }
 
-extern  hw_reg_set      SaveRegs() {
+extern  hw_reg_set      SaveRegs( void ) {
 /**********************************/
 
    hw_reg_set   save;

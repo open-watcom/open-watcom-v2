@@ -29,24 +29,16 @@
 *
 ****************************************************************************/
 
-
-// UNEXPECT.CPP -- default definition for unexpected()
-//              -- set_unexpected(), this routine is used to set the
-//                 handler to deal with unexpected exceptions
-//              -- the default handler is terminate()
-//
-// 92/07/20     -- Greg Bentz        -- defined
-// 92/11/13     -- J.W.Welch        -- use thread-specific data
-
 #include <cpplib.h>
 #include <stddef.h>
-#include <except>
+#include <except.h>
 
+namespace std {
 
-_WPRTLINK
-PFV set_unexpected(                 // SET HANDLER FOR UNEXPECTED EXCEPTION
-    PFV handler )                   // - handler to be used
-{
+  _WPRTLINK
+  PFV set_unexpected(                 // SET HANDLER FOR UNEXPECTED EXCEPTION
+      PFV handler )                   // - handler to be used
+  {
     THREAD_CTL *thr;            // - thread control
     PFV previous_handler;       // - previous handler
 
@@ -54,4 +46,6 @@ PFV set_unexpected(                 // SET HANDLER FOR UNEXPECTED EXCEPTION
     previous_handler = thr->unexpected;
     thr->unexpected = handler;
     return( previous_handler );
+  }
+
 }

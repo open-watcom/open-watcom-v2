@@ -36,10 +36,10 @@
 #include <signal.h>
 #include <sys/proc_msg.h>
 #include <sys/magic.h>
+#include "sigfunc.h"
 
 
-_WCRTLINK int (raise)( sig )
-int sig;
+_WCRTLINK int (raise)( int sig )
 {
     pid_t       me;
 
@@ -48,13 +48,13 @@ int sig;
 }
 
 
-void __sigabort()
+void __sigabort( void )
 {
     raise( SIGABRT );
 }
 
 
-_WCRTLINK void __sigfpe_handler()
+_WCRTLINK void __sigfpe_handler( int sig )
 {
     raise( SIGFPE );
 }

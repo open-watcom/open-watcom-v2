@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interface to low memory checking functions.
 *
 ****************************************************************************/
 
 
-extern bool     MemCritical();
-extern bool     MemCheck(int);
-extern bool     MemLow();
+extern bool     MemCritical( void );
+extern bool     MemCheck( int );
+extern bool     MemLow( void );
 
 #define _MemLow                 MemLow()
 #define _MemCritical            MemCritical()

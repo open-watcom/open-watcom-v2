@@ -1,0 +1,11 @@
+file wdebug.obj
+form windows vxd
+option modname=WDEBUG
+export WDEBUG_DDB.1
+option map
+segment '_LTEXT'  preload nondiscardable
+segment '_LDATA'  preload nondiscardable
+segment '_ITEXT'  discardable
+segment '_IDATA'  discardable
+segment '_TEXT'   nondiscardable
+segment '_DATA'   nondiscardable

@@ -48,7 +48,7 @@
 #include "cmdos2.h"     // for ChkBase
 
 
-extern bool ProcQNX( void )
+bool ProcQNX( void )
 /*************************/
 {
     if( !ProcOne( QNXFormats, SEP_NO, FALSE ) ) {
@@ -57,13 +57,13 @@ extern bool ProcQNX( void )
     return( TRUE );
 }
 
-extern bool ProcQNXFlat( void )
+bool ProcQNXFlat( void )
 /*****************************/
 {
     return( TRUE );
 }
 
-extern void SetQNXFmt( void )
+void SetQNXFmt( void )
 /***************************/
 {
     Extension = E_QNX;
@@ -76,13 +76,13 @@ extern void SetQNXFmt( void )
     ChkBase(4*1024);
 }
 
-extern void FreeQNXFmt( void )
+void FreeQNXFmt( void )
 /****************************/
 {
     FreeSegFlags( (seg_flags *)FmtData.u.qnx.seg_flags );
 }
 
-extern void CmdQNXFini( void )
+void CmdQNXFini( void )
 /****************************/
 {
     if( !FmtData.u.qnx.gen_linear_relocs && !FmtData.u.qnx.gen_seg_relocs ) {
@@ -110,69 +110,69 @@ static bool GetQNXSegFlags( void )
     return( ProcOne( QNXSegModel, SEP_NO, FALSE ) );
 }
 
-extern bool ProcQNXSegment( void )
+bool ProcQNXSegment( void )
 /********************************/
 {
     return( ProcArgList( GetQNXSegFlags, TOK_INCLUDE_DOT ) );
 }
 
-extern bool ProcQNXClass( void )
+bool ProcQNXClass( void )
 /******************************/
 // All processing done for this already.
 {
     return( TRUE );
 }
 
-extern bool ProcQNXExecuteonly( void )
+bool ProcQNXExecuteonly( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_ONLY;
     return( TRUE );
 }
 
-extern bool ProcQNXExecuteread( void )
+bool ProcQNXExecuteread( void )
 /************************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_EXEC_READ;
     return( TRUE );
 }
 
-extern bool ProcQNXReadOnly( void )
+bool ProcQNXReadOnly( void )
 /*********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_ONLY;
     return( TRUE );
 }
 
-extern bool ProcQNXReadWrite( void )
+bool ProcQNXReadWrite( void )
 /**********************************/
 {
     FmtData.u.qnx.seg_flags->flags = QNX_READ_WRITE;
     return( TRUE );
 }
 
-extern bool ProcLongLived( void )
+bool ProcLongLived( void )
 /********************************/
 {
     FmtData.u.qnx.flags |= _TCF_LONG_LIVED;
     return( TRUE );
 }
 
-extern bool ProcQNXNoRelocs( void )
+bool ProcQNXNoRelocs( void )
 /*********************************/
 {
     FmtData.u.qnx.gen_seg_relocs = FALSE;
     return( TRUE );
 }
 
-extern bool ProcLinearRelocs( void )
+bool ProcLinearRelocs( void )
 /*********************************/
 {
     FmtData.u.qnx.gen_linear_relocs = TRUE;
     return( TRUE );
 }
 
-extern bool ProcQNXHeapSize( void )
+bool ProcQNXHeapSize( void )
 /*********************************/
 {
     ord_state           ret;
@@ -188,7 +188,7 @@ extern bool ProcQNXHeapSize( void )
     return( TRUE );
 }
 
-extern bool ProcQNXPrivilege( void )
+bool ProcQNXPrivilege( void )
 /**********************************/
 {
     ord_state           ret;

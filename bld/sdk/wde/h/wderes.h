@@ -47,25 +47,23 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  Bool    WdeInitResStrings       ( void );
-extern  void    WdeFiniResStrings       ( void );
-extern  char    *WdeSelectSaveFilter    ( WRFileType ftype );
+extern Bool         WdeInitResStrings( void );
+extern void         WdeFiniResStrings( void );
+extern char         *WdeSelectSaveFilter( WRFileType ftype );
 
-extern Bool        WdeDestroyResourceWindow ( WdeResInfo * );
-extern void        WdeShowResourceWindows   ( int );
-extern Bool        WdeRegisterResClass      ( HINSTANCE );
-extern Bool        WdeQueryKillApp          ( Bool );
-extern void        WdeFreeResList           ( void );
-extern WdeResInfo *WdeCreateNewResource     ( char * );
-extern Bool        WdeSaveResource          ( WdeResInfo *, Bool );
-extern Bool        WdeOpenResource          ( char * );
-extern int         WdeGetNumRes             ( void );
-extern WdeResInfo *WdeGetCurrentRes         ( void );
-extern OBJPTR      WdeGetCurrentDialog      ( void );
-extern void        WdeAddResDlgItemToResInfo( WdeResInfo *, WdeResDlgItem *);
-extern Bool        WdeSetObjectInfo         ( OBJPTR, WdeResInfo **,
-                                              WdeResDlgItem **, WResID *);
-extern Bool        WdeRemoveDialogFromResInfo ( WdeResInfo *, WdeResDlgItem *,
-                                                Bool );
+extern Bool         WdeDestroyResourceWindow( WdeResInfo * );
+extern void         WdeShowResourceWindows( int );
+extern Bool         WdeRegisterResClass( HINSTANCE );
+extern Bool         WdeQueryKillApp( Bool );
+extern void         WdeFreeResList( void );
+extern WdeResInfo   *WdeCreateNewResource( char * );
+extern Bool         WdeSaveResource( WdeResInfo *, Bool );
+extern Bool         WdeOpenResource( char * );
+extern int          WdeGetNumRes( void );
+extern WdeResInfo   *WdeGetCurrentRes( void );
+extern OBJPTR       WdeGetCurrentDialog( void );
+extern void         WdeAddResDlgItemToResInfo( WdeResInfo *, WdeResDlgItem * );
+extern Bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **, WdeResDlgItem **, WResID * );
+extern Bool         WdeRemoveDialogFromResInfo( WdeResInfo *, WdeResDlgItem *, Bool );
 
 #endif

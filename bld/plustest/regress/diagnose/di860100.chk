@@ -1,0 +1,4307 @@
+File: source\diag0100.c
+(27,12): Error! E148: access to private member 'Z2::a' is not allowed
+  definition: 'int Z2<float>::a'
+(43,9): Error! E038: expression must have pointer type
+  template class member instantiation was at: (48,17)
+  operand type is 'int (lvalue)'
+(59,16): Error! E121: syntax error
+  template class member instantiation was at: (68,8)
+(61,13): Error! E006: syntax error; probable cause: missing ';'
+  template class member instantiation was at: (68,8)
+(65,9): Warning! W014: no reference to symbol 'q'
+  definition: 'S<int> * q' in 'void S<int>::foo( int )'
+  template class member instantiation was at: (68,8)
+File: source\diag0101.c
+(7,20): Warning! W402: class template 'X2' has already been declared as a friend
+  definition: '<class template> X2'
+(13,24): Error! E363: local class cannot have 'X2' as a friend
+  definition: '<class template> X2'
+(16,1): Warning! W014: no reference to symbol 'LOCAL::f'
+  definition: 'int LOCAL::f' in 'void foo( void )'
+(35,1): Warning! W011: all members are private
+(29,16): Error! E148: access to private member 'PP::bad' is not allowed
+  definition: 'int PP::bad'
+  template class member instantiation was at: (42,9)
+File: source\diag0102.c
+(11,16): Warning! W297: class friend declaration needs 'class' or 'struct' keyword
+(23,12): Error! E148: access to private member 'XX::bad' is not allowed
+  definition: 'int XX::bad'
+  template class member instantiation was at: (18,9)
+File: source\diag0103.c
+(2,6): Error! E457: 'A' was previously declared as a typedef
+  definition: 'A'
+(5,13): Error! E457: 'B' was previously declared as a typedef
+  definition: 'B'
+(20,14): Error! E458: 'G' was previously declared as a variable/function
+  definition: 'int G'
+(23,14): Error! E458: 'H' was previously declared as a variable/function
+  definition: 'int H( int )'
+(39,8): Error! E457: 'ST1' was previously declared as a typedef
+  definition: 'ST1'
+(40,15): Error! E457: 'ST2' was previously declared as a typedef
+  definition: 'ST2'
+(41,8): Warning! W480: variable/function has the same name as the class/enum 'CT1'
+  definition: 'CT1'
+(42,15): Warning! W480: variable/function has the same name as the class/enum 'CT2'
+  definition: 'CT2'
+(43,8): Warning! W480: variable/function has the same name as the class/enum 'UT1'
+  definition: 'UT1'
+(44,15): Warning! W480: variable/function has the same name as the class/enum 'UT2'
+  definition: 'UT2'
+(45,11): Warning! W481: class/enum has the same name as the function/variable 'VN1'
+  definition: 'int VN1'
+(46,12): Warning! W481: class/enum has the same name as the function/variable 'VN2'
+  definition: 'int VN2'
+(47,11): Warning! W481: class/enum has the same name as the function/variable 'FN1'
+  definition: 'int FN1( int )'
+(48,12): Warning! W481: class/enum has the same name as the function/variable 'FN2'
+  definition: 'int FN2( int )'
+File: source\diag0104.c
+(3,5): Error! E456: 'main' cannot be a function template
+(3,5): Warning! W914: 'main' must return 'int'
+File: source\diag0105.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0106.c
+(3,17): Error! E168: static data members are not allowed in an union
+(7,17): Error! E168: static data members are not allowed in an union
+(9,2): Error! E313: anonymous struct/union contains a function member 'foo'
+  definition: 'void foo( void )'
+(17,21): Error! E322: static data members are not allowed in a local class
+(19,9): Error! E362: local class can only have its containing function as a friend
+(20,15): Error! E352: cannot access enclosing function's auto variable 'a'
+  definition: 'int a' in 'void f11( void )'
+(22,13): Error! E374: object (or object pointer) required to access non-static data member
+(30,20): Error! E632: redeclaration of 'X28::~X28' has different attributes
+  definition: 'X28::~X28( void )'
+(30,20): Error! E907: redeclaration of member function 'X28::~X28' not allowed
+  definition: 'X28::~X28( void )'
+(33,20): Warning! W621: pure virtual destructors must have a definition
+(34,20): Error! E907: redeclaration of member function 'X32::~X32' not allowed
+  definition: 'X32::~X32( void )'
+(38,8): Error! E431: defining 'x38' is not possible because 'X32' is an abstract class
+  definition: 'X32 x38'
+  'X32' contains the following pure virtual functions
+  pure virtual function 'X32::~X32( void )' defined at: (34,13)
+(45,1): Error! E916: virtual may only be used within class definition
+(45,1): Error! E632: redeclaration of 'X40::foo' has different attributes
+  definition: 'void X40::foo( void )'
+(54,11): Error! E400: cannot convert right expression for initialization
+  'U48' defined at: (48,7)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'U48'
+File: source\diag0107.c
+(9,14): Error! E042: symbol 'XX::a' already defined
+  definition: 'int XX<int>::a'
+  template class instantiation for 'XX<int>' was at: (16,16)
+(10,5): Warning! W011: all members are private
+  template class instantiation for 'XX<int>' was at: (16,16)
+File: source\diag0108.c
+(6,14): Error! E042: symbol 'XX::a' already defined
+  definition: 'int XX<int>::a'
+  template class instantiation for 'XX<int>' was at: (16,16)
+(7,5): Warning! W011: all members are private
+  template class instantiation for 'XX<int>' was at: (16,16)
+File: source\diag0109.c
+(4,14): Error! E042: symbol 'XX::a' already defined
+  definition: 'int XX<int * (*)( int * )>::a'
+  template class instantiation for 'XX<int * (*)( int * )>' was at: (8,11)
+(5,5): Warning! W011: all members are private
+  template class instantiation for 'XX<int * (*)( int * )>' was at: (8,11)
+File: source\diag0110.c
+(4,10): Error! E040: expression for '.' must be a class, struct or union
+  template function instantiation for 'foo' was at: (12,1)
+  definition: 'void foo( int )'
+  operand type is 'int (lvalue)'
+File: source\diag0111.c
+(14,5): Error! E003: missing return value
+  template function instantiation for 'foo' was at: (19,1)
+  definition: 'S<int> foo( int, int * )'
+(7,20): Error! E324: conversion of return value is impossible
+  template class member instantiation was at: (12,10)
+  source conversion type is 'S<int>'
+  target conversion type is 'void *'
+(8,9): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'void * S<int>::foo( int )'
+  template class member instantiation was at: (12,10)
+File: source\diag0112.c
+(6,5): Error! E385: attempt to overload function 'S::foo' with a different return type
+  definition: 'int S<int>::foo( int )'
+  template class member instantiation was at: (17,16)
+(6,5): Error! E254: 'S::foo' has not been declared as a member
+  definition: 'void S<int>::foo( int )'
+  template class member instantiation was at: (17,16)
+(7,10): Error! E040: expression for '.' must be a class, struct or union
+  template class member instantiation was at: (17,16)
+  operand type is 'int (lvalue)'
+File: source\diag0113.c
+(9,12): Warning! W732: class should have a name since it inherits a class
+(16,15): Warning! W188: base class is inherited with private access
+(23,8): Error! E459: private base class accessed to convert assignment expression
+  source conversion type is 'BAD *'
+  target conversion type is 'S *'
+(26,8): Error! E547: cannot access 'S::a' through a private base class
+  definition: 'int S::a'
+(33,6): Error! E386: attempt to use pointer to undefined class
+  'U1' defined at: (29,8)
+(40,6): Error! E516: class for object is not defined
+  'U2' defined at: (36,8)
+  'U2' defined at: (36,8)
+I did not generate errors for diag0114
+File: source\diag0115.c
+(16,14): Error! E436: cannot construct an abstract class
+  'A' defined at: (12,8)
+  'A' contains the following pure virtual functions
+  pure virtual function 'void A::pure( void )' defined at: (13,18)
+(18,22): Error! E436: cannot construct an abstract class
+  'A' defined at: (12,8)
+  'A' contains the following pure virtual functions
+  pure virtual function 'void A::pure( void )' defined at: (13,18)
+File: source\diag0116.c
+(1,27): Error! E197: type cannot be defined in this context
+(4,1): Warning! W014: no reference to symbol 'S::mbr'
+  definition: 'int S::mbr' in 'void x1( void )'
+(5,47): Error! E197: type cannot be defined in this context
+(6,52): Error! E197: type cannot be defined in this context
+(8,24): Error! E639: form is '#pragma template_depth level' where 'level' is a non-zero number
+(11,10): Error! E640: possible non-terminating template instantiation (use "#pragma template_depth 26" to increase depth)
+  template function instantiation for 'foo' was at: (19,5)
+  definition: 'void foo( D & )'
+I did not generate errors for diag0117
+File: source\diag0118.c
+(6,13): Error! E112: cannot inherit an undefined base class 'U'
+(6,16): Error! E641: cannot inherit a partially defined base class 'S'
+(11,18): Error! E641: cannot inherit a partially defined base class 'Q'
+File: source\diag0119.c
+(3,8): Error! E647: cannot #undef '__LINE__'
+(4,8): Error! E647: cannot #undef '__FILE__'
+(5,8): Error! E647: cannot #undef '__DATE__'
+(6,8): Error! E647: cannot #undef '__TIME__'
+(8,8): Error! E647: cannot #undef '__cplusplus'
+(9,8): Error! E647: cannot #undef 'defined'
+(11,25): Error! E648: cannot #define '__LINE__'
+(12,25): Error! E648: cannot #define '__FILE__'
+(13,25): Error! E648: cannot #define '__DATE__'
+(14,25): Error! E648: cannot #define '__TIME__'
+(16,25): Error! E648: cannot #define '__cplusplus'
+(17,25): Error! E648: cannot #define 'defined'
+File: source\diag0120.c
+(19,32): Error! E058: expression must be a constant
+(19,16): Error! E400: cannot convert right expression for initialization
+  source conversion type is 'int (* * )[1]'
+  target conversion type is 'int (* * )[10]'
+(21,33): Error! E058: expression must be a constant
+(21,50): Error! E058: expression must be a constant
+(22,15): Error! E545: cannot create an undefined type with 'operator new'
+(38,5): Warning! W201: declaration statement follows an if statement
+(39,9): Warning! W128: initializer for variable 'dummy' cannot be bypassed
+  definition: 'int dummy' in 'void f33( int )'
+(39,19): Error! E042: symbol 'dummy' already defined
+  definition: 'int dummy' in 'void f33( int )'
+(40,5): Warning! W202: declaration statement follows an else statement
+(42,5): Warning! W203: declaration statement follows a switch statement
+(40,11): Warning! W893: switch statement has no case labels
+(44,5): Warning! W205: declaration statement cannot follow a while statement
+(46,5): Warning! W206: declaration statement cannot follow a do statement
+(49,1): Warning! W207: declaration statement cannot follow a for statement
+File: source\diag0121.c
+(2,42): Warning! W248: using default arguments would be overload ambiguous with 'operator new'
+(5,55): Error! E488: 'operator delete' cannot be overloaded
+File: source\diag0122.c
+(12,8): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function template: void foo( xyz<?1,-1>, int (* )( ?1 const &, ?1 const & )) defined at: (9,10)
+File: source\diag0123.c
+(19,24): Warning! W367: conditional expression in if statement is always true
+(20,30): Warning! W367: conditional expression in if statement is always true
+(21,29): Warning! W367: conditional expression in if statement is always true
+(23,21): Warning! W367: conditional expression in if statement is always true
+(24,25): Warning! W367: conditional expression in if statement is always true
+(25,29): Warning! W367: conditional expression in if statement is always true
+(41,21): Warning! W004: base class 'S1' does not have a virtual destructor
+(47,21): Warning! W004: base class 'S1' does not have a virtual destructor
+(58,21): Warning! W004: base class 'S2' does not have a virtual destructor
+(64,21): Warning! W004: base class 'S2' does not have a virtual destructor
+(70,21): Warning! W004: base class 'S2' does not have a virtual destructor
+(78,12): Warning! W666: assuming unary 'operator &' not overloaded for type 'X73'
+(98,5): Error! E074: statement required after 'do'
+(98,5): Error! E028: expecting 'while' but found '}'
+(98,7): Error! E028: expecting '(' but found 'while'
+(98,19): Error! E028: expecting ')' but found ';'
+(99,1): Error! E028: expecting ';' but found '}'
+(100,0): Error! E199: premature end-of-file encountered during compilation
+File: source\diag0124.c
+(9,22): Error! E390: cannot generate default constructor to initialize 'Range<int,1,10>' since constructors were declared
+(23,6): Error! E121: syntax error
+File: source\diag0125.c
+(10,10): Error! E121: syntax error
+(11,67): Error! E121: syntax error
+(12,27): Error! E059: unable to open 'vers2.h'
+(13,14): Error! E121: syntax error
+(14,15): Error! E121: syntax error
+(24,23): Warning! W086: definition of macro 'OBJ_LIKE2' not identical to previous definition
+  macro 'OBJ_LIKE2' defined at: (23,9)
+(26,24): Warning! W086: definition of macro 'FTN_LIKE2' not identical to previous definition
+  macro 'FTN_LIKE2' defined at: (25,9)
+File: source\diag0126.c
+(10,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void bad_map( double const (* )( double ))'
+  cannot convert argument 1 defined at: (10,14)
+  source conversion type is 'char ( char ) (lvalue)'
+  target conversion type is 'double const (* )( double )'
+(46,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(49,1): Warning! W656: define this function inside its class definition (may improve code quality)
+(71,1): Warning! W657: define this function inside its class definition (could have improved code quality)
+(73,1): Warning! W657: define this function inside its class definition (could have improved code quality)
+(88,19): Error! E811: cannot cast to a function type
+  target conversion type is 'X56 ( void )'
+File: source\diag0127.c
+(4,2): Error! E080: one error for DIAGNOSE test stream
+File: source\diag0128.c
+(4,2): Error! E080: one error for DIAGNOSE test stream
+I did not generate errors for diag0129
+End of file
+Warning! W014: no reference to symbol 'foo'
+  definition: 'void foo( void )'
+I did not generate errors for diag0131
+File: source\diag0132.c
+(7,2): Error! E080: one error for DIAGNOSE test stream
+File: source\diag0133.c
+(2,2): Error! E080: one error for DIAGNOSE test stream
+File: source\diag0134.c
+(2,2): Error! E080: one error for DIAGNOSE test stream
+End of file
+Warning! W014: no reference to symbol 'x'
+  definition: 'int x'
+Warning! W014: no reference to symbol 'y'
+  definition: 'int y'
+File: source\diag0136.c
+(5,2): Error! E080: one error for DIAGNOSE test stream
+File: source\diag0137.c
+(5,2): Error! E080: one error for DIAGNOSE test stream
+I did not generate errors for diag0138
+File: source\diag0139.h
+  included from source\diag0139.c(1)
+(2,2): Error! E080: should print twice
+File: source\diag0139.h
+  included from source\diag0139.c(2)
+(2,2): Error! E080: should print twice
+File: source\diag0140.c
+(30,8): Error! E227: overloaded function is ambiguous for arguments used in call
+  ambiguous function template: void foo( SS<int> ) defined at: (15,10)
+  ambiguous function template: char foo( SS<int> ) defined at: (18,10)
+(31,8): Error! E227: overloaded function is ambiguous for arguments used in call
+  ambiguous function template: char bar( SS<int> ) defined at: (21,10)
+  ambiguous function template: void bar( SS<int> ) defined at: (24,10)
+(36,20): Warning! W480: variable/function has the same name as the class/enum 'same_as_struct'
+  definition: 'same_as_struct'
+(37,18): Warning! W480: variable/function has the same name as the class/enum 'same_as_enum'
+  definition: 'same_as_enum'
+(39,18): Warning! W481: class/enum has the same name as the function/variable 'same_as_fn'
+  definition: 'void same_as_fn( void )'
+(41,19): Warning! W481: class/enum has the same name as the function/variable 'same_as_var'
+  definition: 'int same_as_var'
+File: source\diag0141.c
+(3,20): Error! E087: initialization of 'i' must be in file scope
+  definition: 'int i'
+(13,10): Error! E428: const/reference member 'S::a' must have an initializer
+  definition: 'int const S::a'
+(13,10): Error! E428: const/reference member 'S::r' must have an initializer
+  definition: 'int & S::r'
+(18,15): Error! E178: const object must be initialized
+(19,10): Error! E394: reference object must be initialized
+(23,19): Error! E327: typedef cannot be initialized
+(24,23): Error! E330: function cannot be initialized
+(26,12): Error! E178: const object must be initialized
+(27,7): Error! E394: reference object must be initialized
+(31,14): Error! E178: const object must be initialized
+(42,14): Error! E178: const object must be initialized
+(45,17): Error! E178: const object must be initialized
+(52,8): Error! E431: defining 'x52' is not possible because 'A47' is an abstract class
+  definition: 'A47 x52'
+  'A47' contains the following pure virtual functions
+  pure virtual function 'void A47::foo( void )' defined at: (48,18)
+(53,11): Error! E431: defining 'x53' is not possible because 'A47' is an abstract class
+  definition: 'A47 x53'
+  'A47' contains the following pure virtual functions
+  pure virtual function 'void A47::foo( void )' defined at: (48,18)
+(55,10): Error! E431: defining 'X54::q' is not possible because 'A47' is an abstract class
+  definition: 'A47 X54::q'
+  'A47' contains the following pure virtual functions
+  pure virtual function 'void A47::foo( void )' defined at: (48,18)
+(56,17): Error! E431: defining 'X54::z' is not possible because 'A47' is an abstract class
+  definition: 'A47 X54::z'
+  'A47' contains the following pure virtual functions
+  pure virtual function 'void A47::foo( void )' defined at: (48,18)
+End of file
+Warning! W014: no reference to symbol 'a'
+  definition: 'int const a'
+Warning! W014: no reference to symbol 'x41'
+  definition: 'X38 const x41'
+Warning! W014: no reference to symbol 'x51'
+  definition: 'X49 const x51'
+Warning! W014: no reference to symbol 'x17'
+  definition: 'int const volatile x17'
+File: source\diag0142.c
+(2,11): Error! E289: invalid copy constructor argument list (causes infinite recursion)
+(5,23): Error! E289: invalid copy constructor argument list (causes infinite recursion)
+(10,29): Error! E289: invalid copy constructor argument list (causes infinite recursion)
+(15,39): Error! E289: invalid copy constructor argument list (causes infinite recursion)
+(32,26): Error! E541: pointers to class members reference different object types
+  source conversion type is 'void (Z1::* )( void ) const'
+  target conversion type is 'void (Z1::* )( void )'
+(39,11): Warning! W665: temporary object used to initialize a non-constant reference
+  'X1' defined at: (34,8)
+  source conversion type is 'int'
+  target conversion type is 'X1 (lvalue)'
+(49,10): Warning! W665: temporary object used to initialize a non-constant reference
+  'X1' defined at: (34,8)
+  source conversion type is 'int'
+  target conversion type is 'X1 (lvalue)'
+(53,11): Warning! W665: temporary object used to initialize a non-constant reference
+  'X1' defined at: (34,8)
+  source conversion type is 'X1'
+  target conversion type is 'X1 (lvalue)'
+File: source\diag0143.c
+(30,19): Error! E149: access to protected member 'Z7::s' is not allowed
+  definition: 'int Z7::s'
+(31,25): Error! E149: access to protected member 'Z7::i' is not allowed
+  definition: 'int Z7::i'
+  source conversion type is 'int Z7::*'
+  target conversion type is 'int Z7::*'
+(32,30): Error! E149: access to protected member 'Z7::foo' is not allowed
+  definition: 'void Z7::foo( void )'
+  source conversion type is 'void (Z7::* )( void )'
+  target conversion type is 'void (Z7::* )( void )'
+(34,20): Error! E148: access to private member 'Z7::ps' is not allowed
+  definition: 'int Z7::ps'
+(35,26): Error! E148: access to private member 'Z7::pi' is not allowed
+  definition: 'int Z7::pi'
+  source conversion type is 'int Z7::*'
+  target conversion type is 'int Z7::*'
+(36,31): Error! E148: access to private member 'Z7::pfoo' is not allowed
+  definition: 'void Z7::pfoo( void )'
+  source conversion type is 'void (Z7::* )( void )'
+  target conversion type is 'void (Z7::* )( void )'
+(38,21): Error! E149: access to protected member 'Z7::s' is not allowed
+  definition: 'int Z7::s'
+(39,28): Error! E149: access to protected member 'Z7::i' is not allowed
+  definition: 'int Z7::i'
+  source conversion type is 'int Z7::*'
+  target conversion type is 'int Z11::*'
+(40,33): Error! E149: access to protected member 'Z7::foo' is not allowed
+  definition: 'void Z7::foo( void )'
+  source conversion type is 'void (Z7::* )( void )'
+  target conversion type is 'void (Z11::* )( void )'
+Compiling generated function: AM3::AM3
+  definition: 'AM3::AM3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault [2]' since constructors were declared
+Error! E610: 'AM3::AM3' could not be generated by the compiler
+  definition: 'AM3::AM3( void )'
+Compiling generated function: M3::M3
+  definition: 'M3::M3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault' since constructors were declared
+Error! E610: 'M3::M3' could not be generated by the compiler
+  definition: 'M3::M3( void )'
+Compiling generated function: IVB3::IVB3
+  definition: 'IVB3::IVB3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault' since constructors were declared
+Error! E610: 'IVB3::IVB3' could not be generated by the compiler
+  definition: 'IVB3::IVB3( void )'
+Compiling generated function: INVB3::INVB3
+  definition: 'INVB3::INVB3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault' since constructors were declared
+Error! E610: 'INVB3::INVB3' could not be generated by the compiler
+  definition: 'INVB3::INVB3( void )'
+Compiling generated function: DVB3::DVB3
+  definition: 'DVB3::DVB3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault' since constructors were declared
+Error! E610: 'DVB3::DVB3' could not be generated by the compiler
+  definition: 'DVB3::DVB3( void )'
+Compiling generated function: DNVB3::DNVB3
+  definition: 'DNVB3::DNVB3( void )'
+Error! E390: cannot generate default constructor to initialize 'HasNonDefault' since constructors were declared
+Error! E610: 'DNVB3::DNVB3' could not be generated by the compiler
+  definition: 'DNVB3::DNVB3( void )'
+File: source\diag0145.c
+(5,17): Error! E042: symbol 'i' already defined
+  definition: 'int i'
+(6,22): Error! E619: linkage specification is different than previous declaration 'foo'
+  definition: 'void foo( void )'
+(10,1): Warning! W914: 'main' must return 'int'
+(16,11): Error! E121: syntax error
+(17,14): Error! E121: syntax error
+(18,15): Error! E121: syntax error
+(19,16): Error! E121: syntax error
+(21,0): Error! E006: syntax error; probable cause: missing ';'
+File: source\diag0146.c
+(14,1): Warning! W248: using default arguments would be overload ambiguous with 'X8::X8'
+  definition: 'X8::X8( X8 const & )'
+(17,25): Warning! W088: default argument for 'X8::foo' declared outside of class definition
+  definition: 'void X8::foo( int )'
+(23,10): Error! E814: user-defined conversion is ambiguous
+  'X8' defined at: (8,8)
+  ambiguous function: X8::X8( X8 const & [, int ]) defined at: (13,25)
+  ambiguous function: X8::X8( X8 const & ) defined at: (11,1)
+  source conversion type is 'X8 (lvalue)'
+  target conversion type is 'X8'
+(47,10): Warning! W665: temporary object used to initialize a non-constant reference
+  'C' defined at: (26,8)
+  source conversion type is 'T (lvalue)'
+  target conversion type is 'C (lvalue)'
+(48,8): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function: void bar( X8 ) defined at: (20,6)
+  rejected function: void bar( C & ) defined at: (32,6)
+(49,12): Warning! W665: temporary object used to initialize a non-constant reference
+  'C' defined at: (26,8)
+  source conversion type is 'T (lvalue)'
+  target conversion type is 'C (lvalue)'
+(58,1): Error! E916: virtual may only be used within class definition
+(58,1): Error! E632: redeclaration of 'X59::foo' has different attributes
+  definition: 'void X59::foo( void )'
+(68,1): Error! E028: expecting ';' but found 'X27'
+(68,1): Error! E165: syntax error: class template cannot be processed
+  class template definition started at: (64,16)
+File: source\diag0147.c
+(18,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'int'
+  target conversion type is 'S (lvalue)'
+(21,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S const (lvalue)'
+  target conversion type is 'S (lvalue)'
+(22,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(23,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S const'
+  target conversion type is 'S (lvalue)'
+(25,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S const (lvalue)'
+  target conversion type is 'S (lvalue)'
+(26,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(27,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(28,8): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(44,14): Warning! W665: temporary object used to initialize a non-constant reference
+  'S' defined at: (1,8)
+  source conversion type is 'int'
+  target conversion type is 'S (lvalue)'
+(47,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (47,14)
+  source conversion type is 'S const (lvalue)'
+  target conversion type is 'S (lvalue)'
+(48,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (48,15)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(49,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (49,16)
+  source conversion type is 'S const'
+  target conversion type is 'S (lvalue)'
+(51,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (51,17)
+  source conversion type is 'S const (lvalue)'
+  target conversion type is 'S (lvalue)'
+(52,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (52,15)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(53,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (53,21)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+(54,12): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void takes_S( S & )'
+  cannot convert argument 1 defined at: (54,18)
+  source conversion type is 'S'
+  target conversion type is 'S (lvalue)'
+File: source\diag0148.c
+(28,10): Error! E340: cannot construct object from argument(s)
+(29,8): Error! E340: cannot construct object from argument(s)
+(47,32): Error! E216: wide character string concatenated with a simple character string
+(48,33): Error! E216: wide character string concatenated with a simple character string
+(54,12): Warning! W666: assuming unary 'operator &' not overloaded for type 'X50'
+File: source\diag0149.c
+(5,6): Warning! W667: 'va_start' macro will not work without an argument before '...'
+(17,6): Warning! W668: 'va_start' macro will not work with a reference argument before '...'
+(27,10): Error! E340: cannot construct object from argument(s)
+  'X15' defined at: (21,8)
+  definition: 'X15::X15( int, int *, int, char * )'
+  cannot convert argument 2 defined at: (27,13)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'int *'
+(28,14): Error! E580: cannot find a constructor for given initializer argument list
+  definition: 'X15::X15( int, int *, int, char * )'
+  cannot convert argument 2 defined at: (28,17)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'int *'
+(81,16): Error! E042: symbol 'x71' already defined
+  definition: 'int x71'
+(86,16): Error! E042: symbol 'x77' already defined
+  definition: 'int x77'
+End of file
+Warning! W014: no reference to symbol 'x27'
+  definition: 'int x27( int )'
+Warning! W014: no reference to symbol 'x50'
+  definition: 'int x50( int )'
+Warning! W014: no reference to symbol 'x63'
+  definition: 'int x63( int )'
+File: source\diag0150.c
+(26,1): Warning! W014: no reference to symbol 'y'
+  definition: 'int y' in 'void foo( void )'
+(9,9): Error! E038: expression must have pointer type
+  template class member instantiation was at: (14,8)
+  operand type is 'int (lvalue)'
+(9,9): Error! E038: expression must have pointer type
+  template class member instantiation was at: (18,10)
+  operand type is 'char (lvalue)'
+File: source\diag0151.c
+(8,3): Error! E445: function definition for 'x8' must be declared with an explicit argument list
+  definition: 'int x8( int )'
+(20,3): Error! E445: function definition for 'x19' must be declared with an explicit argument list
+  definition: 'int x19( int )'
+(29,7): Error! E029: symbol 'c' has not been declared
+(30,7): Error! E029: symbol 'd' has not been declared
+(36,7): Error! E029: symbol 'a' has not been declared
+(37,7): Error! E029: symbol 'b' has not been declared
+(38,7): Error! E029: symbol 'c' has not been declared
+(39,7): Error! E029: symbol 'd' has not been declared
+(45,7): Error! E029: symbol 'a' has not been declared
+(46,7): Error! E029: symbol 'b' has not been declared
+(47,7): Error! E029: symbol 'c' has not been declared
+(48,7): Error! E029: symbol 'd' has not been declared
+File: source\diag0152.c
+(11,11): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void X4::foo( int, int, int [, int, int ])'
+  cannot convert argument 3 defined at: (11,19)
+  source conversion type is 'X4 * (lvalue)'
+  target conversion type is 'int'
+(12,11): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void (* X4::bar( int (* )( int, int, int, int ), int, int, int [, int, ... ]) )( int, int, int, int, int )'
+  cannot convert argument 4 defined at: (12,22)
+  source conversion type is 'X4 * (lvalue)'
+  target conversion type is 'int'
+File: source\diag0153.c
+(1,27): Warning! W890: undefined macro 'ARCH' evaluates to 0
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0154.c
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f6'
+  definition: 'void A::f6( void )'
+  cannot be called with a 'BAD12 *'
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f5'
+  definition: 'void A::f5( int, int )'
+  cannot be called with a 'BAD12 *'
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f4'
+  definition: 'void A::f4( int )'
+  cannot be called with a 'BAD12 *'
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f3'
+  definition: 'void A::f3( int, int )'
+  cannot be called with a 'BAD12 *'
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f2'
+  definition: 'void A::f2( int )'
+  cannot be called with a 'BAD12 *'
+(155,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'A::f1'
+  definition: 'void A::f1( void )'
+  cannot be called with a 'BAD12 *'
+(163,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'BAD13::foo'
+  definition: 'int BAD13::foo( void )'
+  cannot be called with a 'BAD14 *'
+(171,1): Warning! W849: base class virtual function has not been overridden
+  virtual function is 'BAD15::foo'
+  definition: 'int BAD15::foo( int const & )'
+  cannot be called with a 'BAD16 *'
+(175,9): Error! E431: defining 'x41' is not possible because 'BAD1' is an abstract class
+  definition: 'BAD1 x41'
+  'BAD1' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(178,10): Error! E431: defining 'x44a' is not possible because 'BAD2' is an abstract class
+  definition: 'BAD2 x44a'
+  'BAD2' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(179,9): Error! E431: defining 'x44' is not possible because 'BAD3' is an abstract class
+  definition: 'BAD3 x44'
+  'BAD3' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f2( int )' defined at: (11,18)
+(180,9): Error! E431: defining 'x45' is not possible because 'BAD4' is an abstract class
+  definition: 'BAD4 x45'
+  'BAD4' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f3( int, int )' defined at: (12,18)
+(182,9): Error! E431: defining 'x47' is not possible because 'BAD5' is an abstract class
+  definition: 'BAD5 x47'
+  'BAD5' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f5( int, int )' defined at: (14,18)
+(184,9): Error! E431: defining 'x49' is not possible because 'BAD6' is an abstract class
+  definition: 'BAD6 x49'
+  'BAD6' contains the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+(185,9): Error! E431: defining 'x50' is not possible because 'BAD7' is an abstract class
+  definition: 'BAD7 x50'
+  'BAD7' contains the following pure virtual functions
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(186,9): Error! E431: defining 'x51' is not possible because 'BAD8' is an abstract class
+  definition: 'BAD8 x51'
+  'BAD8' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(187,9): Error! E431: defining 'x52' is not possible because 'BAD9' is an abstract class
+  definition: 'BAD9 x52'
+  'BAD9' contains the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+(188,10): Error! E431: defining 'x53' is not possible because 'BAD10' is an abstract class
+  definition: 'BAD10 x53'
+  'BAD10' contains the following pure virtual functions
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(189,10): Error! E431: defining 'x54' is not possible because 'BAD11' is an abstract class
+  definition: 'BAD11 x54'
+  'BAD11' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(190,10): Error! E042: symbol 'x54' already defined
+  definition: 'BAD11 x54'
+(191,10): Error! E431: defining 'x55' is not possible because 'BAD13' is an abstract class
+  definition: 'BAD13 x55'
+  'BAD13' contains the following pure virtual functions
+  pure virtual function 'int BAD13::foo( void )' defined at: (158,17)
+(192,10): Error! E431: defining 'x56' is not possible because 'BAD14' is an abstract class
+  definition: 'BAD14 x56'
+  'BAD14' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD13::foo( void )' defined at: (158,17)
+(193,10): Error! E431: defining 'x57' is not possible because 'BAD15' is an abstract class
+  definition: 'BAD15 x57'
+  'BAD15' contains the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+(194,10): Error! E431: defining 'x58' is not possible because 'BAD16' is an abstract class
+  definition: 'BAD16 x58'
+  'BAD16' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+(198,9): Error! E431: defining 'y41' is not possible because 'BAD1' is an abstract class
+  definition: 'BAD1 y41'
+  'BAD1' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(201,10): Error! E431: defining 'y44a' is not possible because 'BAD2' is an abstract class
+  definition: 'BAD2 y44a'
+  'BAD2' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(202,9): Error! E431: defining 'y44' is not possible because 'BAD3' is an abstract class
+  definition: 'BAD3 y44'
+  'BAD3' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f2( int )' defined at: (11,18)
+(203,9): Error! E431: defining 'y45' is not possible because 'BAD4' is an abstract class
+  definition: 'BAD4 y45'
+  'BAD4' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f3( int, int )' defined at: (12,18)
+(205,9): Error! E431: defining 'y47' is not possible because 'BAD5' is an abstract class
+  definition: 'BAD5 y47'
+  'BAD5' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f5( int, int )' defined at: (14,18)
+(207,9): Error! E431: defining 'y49' is not possible because 'BAD6' is an abstract class
+  definition: 'BAD6 y49'
+  'BAD6' contains the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+(208,9): Error! E431: defining 'y50' is not possible because 'BAD7' is an abstract class
+  definition: 'BAD7 y50'
+  'BAD7' contains the following pure virtual functions
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(209,9): Error! E431: defining 'y51' is not possible because 'BAD8' is an abstract class
+  definition: 'BAD8 y51'
+  'BAD8' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(210,9): Error! E431: defining 'y52' is not possible because 'BAD9' is an abstract class
+  definition: 'BAD9 y52'
+  'BAD9' contains the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+(211,10): Error! E431: defining 'y53' is not possible because 'BAD10' is an abstract class
+  definition: 'BAD10 y53'
+  'BAD10' contains the following pure virtual functions
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(212,10): Error! E431: defining 'y54' is not possible because 'BAD11' is an abstract class
+  definition: 'BAD11 y54'
+  'BAD11' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(213,10): Error! E431: defining 'y55' is not possible because 'BAD12' is an abstract class
+  definition: 'BAD12 y55'
+  'BAD12' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f2( int )' defined at: (11,18)
+  pure virtual function 'void A::f3( int, int )' defined at: (12,18)
+  pure virtual function 'void A::f5( int, int )' defined at: (14,18)
+(214,10): Error! E042: symbol 'y55' already defined
+  definition: 'BAD12 y55'
+(215,10): Error! E431: defining 'y56' is not possible because 'BAD14' is an abstract class
+  definition: 'BAD14 y56'
+  'BAD14' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD13::foo( void )' defined at: (158,17)
+(216,10): Error! E431: defining 'y57' is not possible because 'BAD15' is an abstract class
+  definition: 'BAD15 y57'
+  'BAD15' contains the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+(217,10): Error! E431: defining 'y58' is not possible because 'BAD16' is an abstract class
+  definition: 'BAD16 y58'
+  'BAD16' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+(221,12): Error! E431: defining 'w41' is not possible because 'BAD1' is an abstract class
+  definition: 'BAD1 w41[2]'
+  'BAD1' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(224,13): Error! E431: defining 'w44a' is not possible because 'BAD2' is an abstract class
+  definition: 'BAD2 w44a[2]'
+  'BAD2' has no implementation for the following pure virtual functions
+  pure virtual function 'void B1::f2( int )' defined at: (31,18)
+  pure virtual function 'void B1::f5( int, int )' defined at: (33,18)
+  pure virtual function 'void B2::f3( int, int )' defined at: (38,18)
+(225,12): Error! E431: defining 'w44' is not possible because 'BAD3' is an abstract class
+  definition: 'BAD3 w44[2]'
+  'BAD3' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f2( int )' defined at: (11,18)
+(226,12): Error! E431: defining 'w45' is not possible because 'BAD4' is an abstract class
+  definition: 'BAD4 w45[2]'
+  'BAD4' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f3( int, int )' defined at: (12,18)
+(228,12): Error! E431: defining 'w47' is not possible because 'BAD5' is an abstract class
+  definition: 'BAD5 w47[2]'
+  'BAD5' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f5( int, int )' defined at: (14,18)
+(230,12): Error! E431: defining 'w49' is not possible because 'BAD6' is an abstract class
+  definition: 'BAD6 w49[2]'
+  'BAD6' contains the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+(231,12): Error! E431: defining 'w50' is not possible because 'BAD7' is an abstract class
+  definition: 'BAD7 w50[2]'
+  'BAD7' contains the following pure virtual functions
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(232,12): Error! E431: defining 'w51' is not possible because 'BAD8' is an abstract class
+  definition: 'BAD8 w51[2]'
+  'BAD8' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD6::f2( int )' defined at: (107,18)
+  pure virtual function 'void BAD6::f3( int, int )' defined at: (108,18)
+  pure virtual function 'void BAD6::f5( int, int )' defined at: (110,18)
+  pure virtual function 'void BAD7::f2( int )' defined at: (116,18)
+  pure virtual function 'void BAD7::f3( int, int )' defined at: (117,18)
+  pure virtual function 'void BAD7::f5( int, int )' defined at: (119,18)
+(233,12): Error! E431: defining 'w52' is not possible because 'BAD9' is an abstract class
+  definition: 'BAD9 w52[2]'
+  'BAD9' contains the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+(234,13): Error! E431: defining 'w53' is not possible because 'BAD10' is an abstract class
+  definition: 'BAD10 w53[2]'
+  'BAD10' contains the following pure virtual functions
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(235,13): Error! E431: defining 'w54' is not possible because 'BAD11' is an abstract class
+  definition: 'BAD11 w54[2]'
+  'BAD11' has no implementation for the following pure virtual functions
+  pure virtual function 'void BAD9::f2( int )' defined at: (128,18)
+  pure virtual function 'void BAD9::f3( int, int )' defined at: (129,18)
+  pure virtual function 'void BAD9::f5( int, int )' defined at: (131,18)
+  pure virtual function 'void BAD10::f2( int )' defined at: (137,18)
+  pure virtual function 'void BAD10::f3( int, int )' defined at: (138,18)
+  pure virtual function 'void BAD10::f5( int, int )' defined at: (140,18)
+(236,13): Error! E431: defining 'w55' is not possible because 'BAD12' is an abstract class
+  definition: 'BAD12 w55[2]'
+  'BAD12' has no implementation for the following pure virtual functions
+  pure virtual function 'void A::f2( int )' defined at: (11,18)
+  pure virtual function 'void A::f3( int, int )' defined at: (12,18)
+  pure virtual function 'void A::f5( int, int )' defined at: (14,18)
+(237,13): Error! E042: symbol 'w55' already defined
+  definition: 'BAD12 w55[2]'
+(238,13): Error! E431: defining 'w56' is not possible because 'BAD14' is an abstract class
+  definition: 'BAD14 w56[2]'
+  'BAD14' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD13::foo( void )' defined at: (158,17)
+(239,13): Error! E431: defining 'w57' is not possible because 'BAD15' is an abstract class
+  definition: 'BAD15 w57[2]'
+  'BAD15' contains the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+(240,13): Error! E431: defining 'w58' is not possible because 'BAD16' is an abstract class
+  definition: 'BAD16 w58[2]'
+  'BAD16' has no implementation for the following pure virtual functions
+  pure virtual function 'int BAD15::foo( int const & )' defined at: (166,17)
+File: source\diag0155.c
+(17,1): Error! E430: abstract class 'A' cannot be used as a function return type
+  'A' contains the following pure virtual functions
+  pure virtual function 'void A::foo( void )' defined at: (8,18)
+(18,8): Error! E431: defining 'y' is not possible because 'A' is an abstract class
+  definition: 'A y' in 'A S::foo( int )'
+  'A' contains the following pure virtual functions
+  pure virtual function 'void A::foo( void )' defined at: (8,18)
+(19,12): Error! E432: cannot convert to an abstract class 'A'
+  'A' contains the following pure virtual functions
+  pure virtual function 'void A::foo( void )' defined at: (8,18)
+(20,1): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'A S::foo( int )'
+(27,13): Warning! W013: unreachable code
+(34,5): Warning! W472: expression with side effect in sizeof discarded
+(34,5): Warning! W628: expression is not meaningful
+(35,5): Warning! W472: expression with side effect in sizeof discarded
+(35,5): Warning! W628: expression is not meaningful
+(36,5): Warning! W472: expression with side effect in sizeof discarded
+(36,5): Warning! W628: expression is not meaningful
+(43,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, ... )'
+(44,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, ... )'
+(49,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, int )'
+(50,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, int )'
+(51,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, int )'
+(53,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, int )'
+(54,8): Error! E676: number of arguments in function call is incorrect
+  function has type 'int ( int, int, int )'
+(57,62): Error! E678: invalid octal constant
+(65,9): Warning! W368: conditional expression in if statement is always false
+(66,9): Warning! W367: conditional expression in if statement is always true
+(67,9): Warning! W367: conditional expression in if statement is always true
+(68,9): Warning! W367: conditional expression in if statement is always true
+(69,9): Warning! W368: conditional expression in if statement is always false
+(70,9): Warning! W367: conditional expression in if statement is always true
+(71,9): Warning! W367: conditional expression in if statement is always true
+(72,10): Warning! W367: conditional expression in if statement is always true
+(73,10): Warning! W368: conditional expression in if statement is always false
+(74,10): Warning! W367: conditional expression in if statement is always true
+(75,10): Warning! W367: conditional expression in if statement is always true
+(76,10): Warning! W367: conditional expression in if statement is always true
+(77,10): Warning! W367: conditional expression in if statement is always true
+(78,10): Warning! W368: conditional expression in if statement is always false
+(79,14): Warning! W367: conditional expression in if statement is always true
+(80,14): Warning! W368: conditional expression in if statement is always false
+(81,14): Warning! W368: conditional expression in if statement is always false
+(82,9): Warning! W628: expression is not meaningful
+(82,11): Warning! W367: conditional expression in if statement is always true
+(83,11): Warning! W367: conditional expression in if statement is always true
+(84,11): Warning! W367: conditional expression in if statement is always true
+File: source\diag0156.c
+(10,1): Warning! W726: no reference to formal parameter 'bar'
+  definition: 'B<A> * bar' in 'void X::foo( B<A> * )'
+(18,1): Warning! W726: no reference to formal parameter 'f'
+  definition: 'void (* f)( void )' in 'void S::foo( void (* )( void ), int )'
+(18,1): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'void S::foo( void (* )( void ), int )'
+(24,1): Warning! W011: all members are private
+(35,30): Error! E148: access to private member 'X20::operator X20::E ' is not allowed
+  definition: 'X20::operator X20::E ()'
+File: source\diag0157.c
+(3,12): Warning! W690: conditional expression is always false (zero)
+(34,9): Warning! W690: conditional expression is always false (zero)
+(50,6): Error! E279: too many initializers
+(68,6): Error! E279: too many initializers
+(87,6): Error! E279: too many initializers
+(111,6): Error! E279: too many initializers
+File: source\diag0158.c
+(11,20): Error! E498: syntax error before 'DD'; probable cause: incorrectly spelled type name
+File: source\diag0159.c
+(5,7): Error! E341: number of arguments for function 'x1' is incorrect
+  definition: 'void x1( unsigned )'
+(12,7): Error! E341: number of arguments for function 'x8' is incorrect
+  definition: 'void x8( unsigned, void * )'
+(20,8): Error! E227: overloaded function is ambiguous for arguments used in call
+  ambiguous function: void x15( unsigned, signed char ) defined at: (15,6)
+  ambiguous function: void x15( unsigned, unsigned char ) defined at: (16,6)
+(30,10): Error! E378: private base class accessed to convert argument expression
+  source conversion type is 'X24 *'
+  target conversion type is 'X23 *'
+(44,14): Error! E378: private base class accessed to convert argument expression
+  source conversion type is 'X24 *'
+  target conversion type is 'X23 *'
+(62,12): Error! E228: declared 'operator new' is ambiguous for arguments used
+  ambiguous function: void * X48::operator new( unsigned, signed char ) defined at: (51,11)
+  ambiguous function: void * X48::operator new( unsigned, unsigned char ) defined at: (54,11)
+(73,13): Error! E341: number of arguments for function 'X66::operator new' is incorrect
+  definition: 'void * X66::operator new( unsigned, char, char )'
+(74,1): Warning! W014: no reference to symbol 'a'
+  definition: 'X66 * a' in 'void x70( void )'
+(79,13): Error! E341: number of arguments for function 'X66::operator new' is incorrect
+  definition: 'void * X66::operator new( unsigned, char, char )'
+(80,1): Warning! W014: no reference to symbol 'a'
+  definition: 'X66 * a' in 'void x70( int )'
+(80,1): Warning! W726: no reference to formal parameter 'i'
+  definition: 'int i' in 'void x70( int )'
+File: source\diag0160.c
+(6,17): Error! E351: type parameter supplied for a non-type argument
+(13,25): Error! E221: cannot define a reference to another reference
+  template class instantiation for 'StrangeCollection<int &>' was at: (17,25)
+(14,19): Error! E222: cannot define a pointer to a reference
+  template class instantiation for 'StrangeCollection<int &>' was at: (17,25)
+(24,9): Warning! W013: unreachable code
+(21,11): Warning! W893: switch statement has no case labels
+(37,5): Warning! W726: no reference to formal parameter 'deltaT'
+  definition: 'float deltaT' in 'void x34( float )'
+(51,14): Error! E306: cannot convert expression to type of cast
+  source conversion type is 'X43 (lvalue)'
+  target conversion type is 'X40'
+End of file
+Warning! W014: no reference to symbol 'x34'
+  definition: 'void x34( float )'
+File: source\diag0161.c
+(31,2): Error! E080: at least one error
+File: source\diag0162.c
+(25,16): Error! E029: symbol 'T' has not been declared
+(9,9): Error! E151: operand is neither a pointer nor an arithmetic type
+  template function instantiation for 'foo' was at: (15,1)
+  definition: 'void foo( S<int> )'
+  operand type is 'S<int> (lvalue)'
+End of file
+Warning! W014: no reference to symbol 'g'
+  definition: 'int g'
+File: source\diag0163.c
+(18,15): Error! E580: cannot find a constructor for given initializer argument list
+  definition: '__1jlcfibar::__1jlcfibar( __1jlcfibar const & )'
+  cannot convert argument 1 defined at: (18,15)
+  source conversion type is 'int (lvalue)'
+  target conversion type is '__1jlcfibar const (lvalue)'
+(28,1): Error! E585: syntax error; missing start of function body after constructor initializer
+  constructor initializer started at: (25,20)
+(28,1): Error! E121: syntax error
+(36,1): Error! E028: expecting ';' but found ')'
+(36,1): Error! E165: syntax error: class template cannot be processed
+  class template definition started at: (31,15)
+File: source\diag0163.c
+(5,2): Error! E080: should be 5
+File: foo.c
+(30,2): Error! E080: should be "foo.c" line 30
+File: source\diag0164.c
+(29,8): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void vio( unsigned char * )'
+  cannot convert argument 1 defined at: (29,10)
+  source conversion type is 'char [5] (lvalue)'
+  target conversion type is 'unsigned char *'
+(30,9): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'E2 *'
+  target conversion type is 'E1 *'
+(31,9): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'E1 *'
+  target conversion type is 'E2 *'
+(32,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'unsigned char *'
+  target conversion type is 'char *'
+(33,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'char *'
+  target conversion type is 'unsigned char *'
+(34,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'signed char *'
+  target conversion type is 'char *'
+(35,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'signed char *'
+  target conversion type is 'unsigned char *'
+(36,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'char *'
+  target conversion type is 'signed char *'
+(37,7): Error! E737: implicit conversion of pointers to integral types of same size
+  source conversion type is 'unsigned char *'
+  target conversion type is 'signed char *'
+(38,9): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'E1 (* )( E2 )'
+  target conversion type is 'E2 (* )( E1 )'
+(39,8): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void fio( E1 (& )( E2 ))'
+  cannot convert argument 1 defined at: (39,10)
+  source conversion type is 'E2 ( E1 ) (lvalue)'
+  target conversion type is 'E1 ( E2 ) (lvalue)'
+(40,8): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void fio( E1 (& )( E2 ))'
+  cannot convert argument 1 defined at: (40,10)
+  source conversion type is 'E2 ( E1 ) (lvalue)'
+  target conversion type is 'E1 ( E2 ) (lvalue)'
+(41,11): Error! E541: pointers to class members reference different object types
+  source conversion type is 'E2 X11::*'
+  target conversion type is 'E1 X11::*'
+(42,11): Error! E541: pointers to class members reference different object types
+  source conversion type is 'E1 X11::*'
+  target conversion type is 'E2 X11::*'
+(52,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(53,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(54,11): Error! E157: left expression must be integral
+  left operand type is 'int ( void ) (lvalue)'
+  right operand type is 'int'
+(55,11): Error! E155: left expression must be arithmetic
+  left operand type is 'int ( void ) (lvalue)'
+  right operand type is 'int'
+(56,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(57,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(58,11): Error! E157: left expression must be integral
+  left operand type is 'int ( void ) (lvalue)'
+  right operand type is 'int'
+(59,11): Error! E155: left expression must be arithmetic
+  left operand type is 'int ( void ) (lvalue)'
+  right operand type is 'int'
+(60,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(61,9): Error! E562: cannot take address of non-static member function
+  definition: 'int A::z( void )'
+(77,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'unsigned char *'
+  target conversion type is 'char *'
+(78,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'char *'
+  target conversion type is 'unsigned char *'
+(79,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'signed char *'
+  target conversion type is 'char *'
+(80,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'signed char *'
+  target conversion type is 'unsigned char *'
+(81,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'char *'
+  target conversion type is 'signed char *'
+(82,9): Error! E797: static_cast cannot be used with the pointer type specified
+  source conversion type is 'unsigned char *'
+  target conversion type is 'signed char *'
+File: source\diag0165.c
+(41,19): Error! E340: cannot construct object from argument(s)
+  source conversion type is 'T'
+  target conversion type is 'S'
+(43,1): Warning! W726: no reference to formal parameter 's'
+  definition: 'S & s' in 'T::T( S & )'
+(45,13): Error! E340: cannot construct object from argument(s)
+  source conversion type is 'T'
+  target conversion type is 'S'
+File: source\diag0166.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0167.c
+(15,1): Warning! W914: 'main' must return 'int'
+(26,12): Error! E324: conversion of return value is impossible
+  'T' defined at: (21,8)
+  source conversion type is 'S (lvalue)'
+  target conversion type is 'T const (lvalue)'
+(32,1): Warning! W726: no reference to formal parameter 'c'
+  definition: 'S & c' in 'T const & foo( S &, S & )'
+(38,8): Error! E192: left expression pointer type cannot be incremented or decremented
+  left operand type is 'void * (lvalue)'
+  right operand type is 'int'
+(45,17): Error! E373: invalid modifier for auto variable
+  template function instantiation for 'swap' was at: (53,1)
+  definition: 'void swap( int &, int & )'
+(46,5): Warning! W014: no reference to symbol 'c'
+  definition: 'int c' in 'void swap( int &, int & )'
+  template function instantiation for 'swap' was at: (53,1)
+  definition: 'void swap( int &, int & )'
+File: source\diag0168.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0169.c
+(22,12): Error! E913: 'S3' does not have a return type specified
+(27,12): Error! E913: 'S3' does not have a return type specified
+(51,2): Error! E080: this is the only error
+File: source\diag0170.c
+(18,8): Error! E303: constructor is ambiguous for operands used
+  ambiguous function: T::T( X ) defined at: (8,5)
+  ambiguous function: T::T( int ) defined at: (7,5)
+  source conversion type is 'S (lvalue)'
+  target conversion type is 'T'
+(34,11): Error! E293: overloaded operator is ambiguous for operands used
+  ambiguous function: Boolean Boolean::operator +( Boolean ) defined at: (25,13)
+  'int' operator can be used
+(66,8): Error! E814: user-defined conversion is ambiguous
+  'A' defined at: (42,7)
+  ambiguous function: B::operator A () defined at: (49,5)
+  ambiguous function: A::A( B & ) defined at: (44,5)
+  source conversion type is 'B (lvalue)'
+  target conversion type is 'A'
+File: source\diag0171.c
+(1,1): Warning! W888: trigraph expansion produced '#'
+(1,19): Warning! W888: trigraph expansion produced '#'
+(1,19): Error! E080: trigraph # test
+(3,1): Error! E272: 'operator new[]' must have a return type of pointer to void
+(3,1): Error! E273: the first argument of 'operator new[]' must be of type size_t
+(8,5): Error! E270: 'operator new[]' must have at least one argument
+  argument count is 0 since there is no implicit 'this' argument
+(12,5): Error! E275: the second argument of 'operator delete[]' must be of type size_t
+(16,1): Error! E328: storage class of 'operator delete[]' conflicts with previous declaration
+(19,30): Error! E271: 'operator delete' must have a return type of void
+(19,30): Error! E385: attempt to overload function 'operator delete' with a different return type
+(19,30): Error! E488: 'operator delete' cannot be overloaded
+(20,33): Error! E271: 'operator delete[]' must have a return type of void
+(20,33): Error! E385: attempt to overload function 'operator delete[]' with a different return type
+(20,33): Error! E488: 'operator delete[]' cannot be overloaded
+(21,28): Error! E274: the first argument of 'operator delete' must be of type pointer to void
+(21,28): Error! E488: 'operator delete' cannot be overloaded
+(22,31): Error! E274: the first argument of 'operator delete[]' must be of type pointer to void
+(22,31): Error! E488: 'operator delete[]' cannot be overloaded
+End of file
+Error! E077: missing matching #endif directive
+File: source\diag0172.c
+(89,27): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'T86::S::N::~N( void )'
+(92,23): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'T86::S::~S( void )'
+(96,23): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'T86::Q::~Q( void )'
+(99,21): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'T86::~T86( void )'
+File: source\diag0173.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0174.c
+(14,9): Error! E427: 'a' has not been declared as a member
+(15,9): Error! E427: 'b' has not been declared as a member
+(16,9): Error! E427: 'c' has not been declared as a member
+(19,9): Error! E427: 'a' has not been declared as a member
+(20,9): Error! E427: 'b' has not been declared as a member
+(21,9): Error! E427: 'c' has not been declared as a member
+File: source\diag0175.c
+(1,1): Warning! W888: trigraph expansion produced '#'
+(1,19): Warning! W888: trigraph expansion produced '#'
+(1,28): Warning! W888: trigraph expansion produced '\'
+(1,28): Error! E080: trigraph # test error message
+(12,7): Warning! W888: trigraph expansion produced '\'
+(12,9): Warning! W894: unexpected character (92) in source file
+(12,9): Error! E006: syntax error; probable cause: missing ';'
+(12,12): Warning! W888: trigraph expansion produced '['
+(12,17): Warning! W888: trigraph expansion produced ']'
+File: source\diag0176.c
+(4,22): Error! E913: 'foo' does not have a return type specified
+(9,13): Error! E913: 'foo' does not have a return type specified
+(20,7): Error! E684: cannot catch abstract class object
+  'C' defined at: (2,7)
+  'C' contains the following pure virtual functions
+  pure virtual function 'int C::foo( void )' defined at: (4,16)
+(21,10): Error! E029: symbol 'c' has not been declared
+File: source\diag0177.c
+(15,10): Error! E039: cannot take address of an rvalue
+(16,18): Error! E534: left operand is not a valid pointer to class member
+  source conversion type is 'void (S::* )( char * )'
+  target conversion type is 'void (* )( char * )'
+(17,14): Error! E535: right operand is not a valid pointer to class member
+  source conversion type is 'void (* )( char * )'
+  target conversion type is 'void (S::* )( char * )'
+(19,20): Error! E030: left expression must be a function or a function pointer
+(24,3): Warning! W914: 'main' must return 'int'
+File: source\diag0178.c
+(11,16): Error! E210: returning reference to function argument or to auto or register variable
+  'S' defined at: (3,8)
+(21,15): Error! E210: returning reference to function argument or to auto or register variable
+  'S' defined at: (3,8)
+(28,14): Error! E210: returning reference to function argument or to auto or register variable
+  'S' defined at: (3,8)
+(33,17): Error! E210: returning reference to function argument or to auto or register variable
+  'S' defined at: (3,8)
+File: source\diag0179.c
+(29,12): Error! E324: conversion of return value is impossible
+  source conversion type is 'C *'
+  target conversion type is 'A *'
+(34,12): Error! E686: attempt to convert pointer or reference from a base to a derived class
+  source conversion type is 'A *'
+  target conversion type is 'B *'
+(39,12): Error! E324: conversion of return value is impossible
+  source conversion type is 'C *'
+  target conversion type is 'B *'
+(44,12): Error! E324: conversion of return value is impossible
+  source conversion type is 'A *'
+  target conversion type is 'C *'
+(49,12): Error! E324: conversion of return value is impossible
+  source conversion type is 'B *'
+  target conversion type is 'C *'
+(55,8): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'C *'
+  target conversion type is 'A *'
+(56,8): Error! E686: attempt to convert pointer or reference from a base to a derived class
+  source conversion type is 'A *'
+  target conversion type is 'B *'
+(57,8): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'C *'
+  target conversion type is 'B *'
+(58,8): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'A *'
+  target conversion type is 'C *'
+(59,8): Error! E166: cannot convert right pointer to type of left operand
+  source conversion type is 'B *'
+  target conversion type is 'C *'
+(71,12): Error! E324: conversion of return value is impossible
+  'A' defined at: (1,8)
+  source conversion type is 'C (lvalue)'
+  target conversion type is 'A (lvalue)'
+(76,12): Error! E686: attempt to convert pointer or reference from a base to a derived class
+  'B' defined at: (3,8)
+  source conversion type is 'A (lvalue)'
+  target conversion type is 'B (lvalue)'
+(81,12): Error! E324: conversion of return value is impossible
+  'B' defined at: (3,8)
+  source conversion type is 'C (lvalue)'
+  target conversion type is 'B (lvalue)'
+(86,12): Error! E324: conversion of return value is impossible
+  'C' defined at: (5,8)
+  source conversion type is 'A (lvalue)'
+  target conversion type is 'C (lvalue)'
+(91,12): Error! E324: conversion of return value is impossible
+  'C' defined at: (5,8)
+  source conversion type is 'B (lvalue)'
+  target conversion type is 'C (lvalue)'
+File: source\diag0180.c
+(21,1): Warning! W017: label 'dsfsdfsd' has not been referenced by a goto
+  label defined at: (18,13)
+(26,14): Error! E042: symbol 'x' already defined
+  definition: 'int x' in 'S::S( int )'
+(27,5): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'S::S( int )'
+(27,5): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'S::S( int )'
+(32,10): Error! E042: symbol 'x' already defined
+  definition: 'int x' in 'void foo( int )'
+(33,1): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'void foo( int )'
+(33,1): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'void foo( int )'
+(451,12): Warning! W888: trigraph expansion produced '~'
+(451,15): Warning! W888: trigraph expansion produced '~'
+(451,18): Warning! W888: trigraph expansion produced '~'
+(451,21): Warning! W888: trigraph expansion produced '~'
+(451,24): Warning! W888: trigraph expansion produced '~'
+(451,27): Warning! W888: trigraph expansion produced '~'
+(451,30): Warning! W888: trigraph expansion produced '~'
+(451,33): Warning! W888: trigraph expansion produced '~'
+(451,36): Warning! W888: trigraph expansion produced '~'
+(451,39): Warning! W888: trigraph expansion produced '~'
+(451,42): Warning! W888: trigraph expansion produced '~'
+(451,45): Warning! W888: trigraph expansion produced '~'
+(451,48): Warning! W888: trigraph expansion produced '~'
+(451,51): Warning! W888: trigraph expansion produced '~'
+(451,54): Warning! W888: trigraph expansion produced '~'
+(451,57): Warning! W888: trigraph expansion produced '~'
+(451,60): Warning! W888: trigraph expansion produced '~'
+(451,63): Warning! W888: trigraph expansion produced '~'
+(451,66): Warning! W888: trigraph expansion produced '~'
+(451,69): Warning! W888: trigraph expansion produced '~'
+(451,72): Warning! W888: trigraph expansion produced '~'
+(451,75): Warning! W888: trigraph expansion produced '~'
+(451,78): Warning! W888: trigraph expansion produced '~'
+(451,81): Warning! W888: trigraph expansion produced '~'
+(451,84): Warning! W888: trigraph expansion produced '~'
+(451,87): Warning! W888: trigraph expansion produced '~'
+(451,90): Warning! W888: trigraph expansion produced '~'
+(451,93): Warning! W888: trigraph expansion produced '~'
+(451,96): Warning! W888: trigraph expansion produced '~'
+(451,99): Warning! W888: trigraph expansion produced '~'
+(451,102): Warning! W888: trigraph expansion produced '~'
+(451,105): Warning! W888: trigraph expansion produced '~'
+(451,108): Warning! W888: trigraph expansion produced '~'
+(451,111): Warning! W888: trigraph expansion produced '~'
+(451,114): Warning! W888: trigraph expansion produced '~'
+(451,117): Warning! W888: trigraph expansion produced '~'
+(451,120): Warning! W888: trigraph expansion produced '~'
+(451,123): Warning! W888: trigraph expansion produced '~'
+(451,126): Warning! W888: trigraph expansion produced '~'
+(451,129): Warning! W888: trigraph expansion produced '~'
+(451,132): Warning! W888: trigraph expansion produced '~'
+(451,135): Warning! W888: trigraph expansion produced '~'
+(451,138): Warning! W888: trigraph expansion produced '~'
+(451,141): Warning! W888: trigraph expansion produced '~'
+(451,144): Warning! W888: trigraph expansion produced '~'
+(451,147): Warning! W888: trigraph expansion produced '~'
+(451,150): Warning! W888: trigraph expansion produced '~'
+(451,153): Warning! W888: trigraph expansion produced '~'
+(451,156): Warning! W888: trigraph expansion produced '~'
+(451,159): Warning! W888: trigraph expansion produced '~'
+(451,162): Warning! W888: trigraph expansion produced '~'
+(451,165): Warning! W888: trigraph expansion produced '~'
+(451,168): Warning! W888: trigraph expansion produced '~'
+(451,171): Warning! W888: trigraph expansion produced '~'
+(451,174): Warning! W888: trigraph expansion produced '~'
+(451,177): Warning! W888: trigraph expansion produced '~'
+(451,180): Warning! W888: trigraph expansion produced '~'
+(451,183): Warning! W888: trigraph expansion produced '~'
+End of file
+Warning! W014: no reference to symbol 'bar'
+  definition: 'int bar( void )'
+Warning! W014: no reference to symbol 'xx'
+  definition: 'int xx'
+File: source\diag0181.c
+(17,12): Warning! W687: expression for 'while' is always true
+(19,10): Warning! W687: expression for 'while' is always true
+(23,11): Warning! W688: testing expression for 'for' is always true
+(26,8): Warning! W013: unreachable code
+(26,8): Error! E654: left operand cannot be a function
+  left operand type is 'int ( void ) (lvalue)'
+  right operand type is 'int'
+File: source\diag0182.c
+(18,12): Error! E507: class for target operand is not derived from class for source operand
+  source conversion type is 'void (D::* )( void )'
+  target conversion type is 'void (Q::* )( void )'
+File: source\diag0183.c
+(35,2): Error! E080: this should be the only error
+File: source\diag0184.c
+(15,7): Error! E517: left expression is not a class object
+(16,7): Error! E517: left expression is not a class object
+(17,7): Error! E517: left expression is not a class object
+(18,7): Error! E517: left expression is not a class object
+(19,5): Error! E542: operand must be pointer to class or struct
+  expression type is 'int'
+(20,5): Error! E542: operand must be pointer to class or struct
+  expression type is 'int'
+(21,5): Error! E542: operand must be pointer to class or struct
+  expression type is 'char *'
+(22,5): Error! E542: operand must be pointer to class or struct
+  expression type is 'char *'
+File: source\diag0185.c
+(21,1): Warning! W017: label 'dsfsdfsd' has not been referenced by a goto
+  label defined at: (18,13)
+(26,14): Error! E042: symbol 'x' already defined
+  definition: 'int x' in 'S::S( int )'
+(27,5): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'S::S( int )'
+(27,5): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'S::S( int )'
+(32,10): Error! E042: symbol 'x' already defined
+  definition: 'int x' in 'void foo( int )'
+(33,1): Warning! W014: no reference to symbol 'x'
+  definition: 'int x' in 'void foo( int )'
+(33,1): Warning! W726: no reference to formal parameter 'x'
+  definition: 'int x' in 'void foo( int )'
+(451,12): Warning! W888: trigraph expansion produced '~'
+(451,15): Warning! W888: trigraph expansion produced '~'
+(451,18): Warning! W888: trigraph expansion produced '~'
+(451,21): Warning! W888: trigraph expansion produced '~'
+(451,24): Warning! W888: trigraph expansion produced '~'
+(451,27): Warning! W888: trigraph expansion produced '~'
+(451,30): Warning! W888: trigraph expansion produced '~'
+(451,33): Warning! W888: trigraph expansion produced '~'
+(451,36): Warning! W888: trigraph expansion produced '~'
+(451,39): Warning! W888: trigraph expansion produced '~'
+(451,42): Warning! W888: trigraph expansion produced '~'
+(451,45): Warning! W888: trigraph expansion produced '~'
+(451,48): Warning! W888: trigraph expansion produced '~'
+(451,51): Warning! W888: trigraph expansion produced '~'
+(451,54): Warning! W888: trigraph expansion produced '~'
+(451,57): Warning! W888: trigraph expansion produced '~'
+(451,60): Warning! W888: trigraph expansion produced '~'
+(451,63): Warning! W888: trigraph expansion produced '~'
+(451,66): Warning! W888: trigraph expansion produced '~'
+(451,69): Warning! W888: trigraph expansion produced '~'
+(451,72): Warning! W888: trigraph expansion produced '~'
+(451,75): Warning! W888: trigraph expansion produced '~'
+(451,78): Warning! W888: trigraph expansion produced '~'
+(451,81): Warning! W888: trigraph expansion produced '~'
+(451,84): Warning! W888: trigraph expansion produced '~'
+(451,87): Warning! W888: trigraph expansion produced '~'
+(451,90): Warning! W888: trigraph expansion produced '~'
+(451,93): Warning! W888: trigraph expansion produced '~'
+(451,96): Warning! W888: trigraph expansion produced '~'
+(451,99): Warning! W888: trigraph expansion produced '~'
+(451,102): Warning! W888: trigraph expansion produced '~'
+(451,105): Warning! W888: trigraph expansion produced '~'
+(451,108): Warning! W888: trigraph expansion produced '~'
+(451,111): Warning! W888: trigraph expansion produced '~'
+(451,114): Warning! W888: trigraph expansion produced '~'
+(451,117): Warning! W888: trigraph expansion produced '~'
+(451,120): Warning! W888: trigraph expansion produced '~'
+(451,123): Warning! W888: trigraph expansion produced '~'
+(451,126): Warning! W888: trigraph expansion produced '~'
+(451,129): Warning! W888: trigraph expansion produced '~'
+(451,132): Warning! W888: trigraph expansion produced '~'
+(451,135): Warning! W888: trigraph expansion produced '~'
+(451,138): Warning! W888: trigraph expansion produced '~'
+(451,141): Warning! W888: trigraph expansion produced '~'
+(451,144): Warning! W888: trigraph expansion produced '~'
+(451,147): Warning! W888: trigraph expansion produced '~'
+(451,150): Warning! W888: trigraph expansion produced '~'
+(451,153): Warning! W888: trigraph expansion produced '~'
+(451,156): Warning! W888: trigraph expansion produced '~'
+(451,159): Warning! W888: trigraph expansion produced '~'
+(451,162): Warning! W888: trigraph expansion produced '~'
+(451,165): Warning! W888: trigraph expansion produced '~'
+(451,168): Warning! W888: trigraph expansion produced '~'
+(451,171): Warning! W888: trigraph expansion produced '~'
+(451,174): Warning! W888: trigraph expansion produced '~'
+(451,177): Warning! W888: trigraph expansion produced '~'
+(451,180): Warning! W888: trigraph expansion produced '~'
+(451,183): Warning! W888: trigraph expansion produced '~'
+(470,12): Error! E507: class for target operand is not derived from class for source operand
+  source conversion type is 'void (D::* )( void )'
+  target conversion type is 'void (Q::* )( void )'
+(478,7): Error! E518: right expression is not a pointer to class member
+  left operand type is '_X487 *'
+  right operand type is 'int (lvalue)'
+End of file
+Warning! W014: no reference to symbol 'bar'
+  definition: 'int bar( void )'
+Warning! W014: no reference to symbol 'xx'
+  definition: 'int xx'
+File: source\diag0186.c
+(40,2): Error! E080: at least one error
+File: source\diag0187.c
+(5,16): Error! E562: cannot take address of non-static member function
+  definition: 'int S::memberfn( void )'
+(17,13): Error! E186: attempt to modify a constant value
+(18,16): Error! E186: attempt to modify a constant value
+(44,1): Error! E678: invalid octal constant
+(44,1): Error! E121: syntax error
+File: source\diag0188.c
+(15,13): Error! E691: expecting a member of 'S<int>' to be defined in this context
+  template class member instantiation was at: (17,8)
+File: source\diag0189.c
+(18,1): Error! E692: cannot throw an abstract class
+  'X1B' defined at: (3,8)
+  'X1B' contains the following pure virtual functions
+  pure virtual function 'void X1B::pure( void )' defined at: (4,16)
+File: source\diag0190.c
+(35,2): Error! E080: This is the only message
+File: source\diag0191.c
+(4,22): Error! E064: invalid character constant
+File: source\diag0192.h
+  included from source\diag0192.h(275)
+  included from source\diag0192.h(271)
+  included from source\diag0192.h(267)
+  included from source\diag0192.h(263)
+  included from source\diag0192.h(259)
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(271)
+  included from source\diag0192.h(267)
+  included from source\diag0192.h(263)
+  included from source\diag0192.h(259)
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(267)
+  included from source\diag0192.h(263)
+  included from source\diag0192.h(259)
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(263)
+  included from source\diag0192.h(259)
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(259)
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(255)
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(251)
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(247)
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(243)
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(239)
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(235)
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(231)
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(227)
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(223)
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(219)
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(215)
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(211)
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(207)
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(203)
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(199)
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(195)
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(191)
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(187)
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(183)
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(179)
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(175)
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(171)
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(167)
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(163)
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(159)
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(155)
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(151)
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(147)
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(143)
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(139)
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(135)
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(131)
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(127)
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(123)
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(119)
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(115)
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(111)
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(107)
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(103)
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(99)
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(95)
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(91)
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(87)
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(83)
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(79)
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(75)
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(71)
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(67)
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(63)
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(59)
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(55)
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(51)
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(47)
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(43)
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(39)
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(35)
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(31)
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(27)
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(23)
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(19)
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(15)
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(11)
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(7)
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.h(3)
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0192.h
+  included from source\diag0192.c(1)
+(277,2): Error! E080: should print 70 times
+File: source\diag0193.c
+(8,15): Warning! W442: modifier has been repeated
+  repeated modifier is '__far'
+(9,21): Warning! W442: modifier has been repeated
+  repeated modifier is '__far'
+(10,16): Warning! W442: modifier has been repeated
+  repeated modifier is '__near'
+(11,23): Warning! W442: modifier has been repeated
+  repeated modifier is '__far'
+(14,1): Warning! W442: modifier has been repeated
+  repeated modifier is '__export'
+(14,1): Warning! W441: function attribute has been repeated
+  repeated modifier is '__interrupt'
+(14,1): Warning! W441: function attribute has been repeated
+  repeated modifier is '__loadds'
+(14,1): Warning! W441: function attribute has been repeated
+  repeated modifier is '__saveregs'
+(20,5): Warning! W438: string literal concatenated during array initialization
+(24,5): Warning! W438: string literal concatenated during array initialization
+(26,5): Warning! W438: string literal concatenated during array initialization
+(44,1): Error! E692: cannot throw an abstract class
+  'X1B' defined at: (29,8)
+  'X1B' contains the following pure virtual functions
+  pure virtual function 'void X1B::pure( void )' defined at: (30,16)
+(49,19): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
+(50,24): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
+(51,35): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
+(81,6): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function: void g( int volatile & ) defined at: (73,10)
+(85,17): Error! E258: cannot declare both a function and variable of the same name ('x')
+(85,19): Warning! W002: constant out of range; truncated
+File: source\diag0194.c
+(3,24): Error! E280: too many initializers for character string
+(5,20): Error! E280: too many initializers for character string
+(17,12): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'a'
+  definition: 'int a'
+(27,12): Warning! W836: symbol has different type than previous symbol in same declaration
+  companion definition is 'e'
+  definition: 'int e'
+(34,23): Warning! W597: encountered another ambiguous construct during disambiguation
+(34,12): Error! E498: syntax error before 'T2'; probable cause: incorrectly spelled type name
+(38,12): Error! E498: syntax error before 'X2'; probable cause: incorrectly spelled type name
+(45,16): Warning! W015: nested comment found in comment started on line 44
+(46,8): Warning! W015: nested comment found in comment started on line 44
+(47,9): Warning! W015: nested comment found in comment started on line 44
+(48,0): Error! E051: incomplete comment
+End of file
+Error! E077: missing matching #endif directive
+File: source\diag0196.c
+(6,12): Error! E708: cannot return a type of unknown size
+  'S' defined at: (2,8)
+File: source\diag0197.c
+(43,5): Error! E624: catch block does not immediately follow try block
+(45,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (44,7)
+(50,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (49,7)
+(55,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (54,7)
+(60,7): Warning! W616: catch handler can never be invoked
+  previous catch block defined at: (59,7)
+(62,7): Error! E612: preceding catch specified '...'
+  previous catch block defined at: (61,7)
+(69,10): Error! E622: jump into try block
+  previous try block defined at: (68,5)
+(72,12): Error! E623: jump into catch handler
+  previous catch block defined at: (71,20)
+(76,16): Error! E622: jump into try block
+  previous try block defined at: (68,5)
+(77,16): Error! E623: jump into catch handler
+  previous catch block defined at: (71,20)
+(82,5): Error! E437: cannot construct an undefined class
+  'undefed' defined at: (79,12)
+(84,5): Warning! W013: unreachable code
+(84,20): Error! E148: access to private member 'priv_copy::priv_copy' is not allowed
+  definition: 'priv_copy::priv_copy( priv_copy const & )'
+(85,20): Error! E148: access to private member 'priv_dtor::~priv_dtor' is not allowed
+  definition: 'priv_dtor::~priv_dtor( void )'
+File: source\diag0198.c
+(6,16): Error! E125: invalid redefinition of the typedef name 'QQ1'
+  definition: 'QQ1'
+(34,18): Error! E329: modifiers of 'SS5::x12' conflict with previous declaration
+  definition: 'int __far SS5::x12'
+  current declaration has type 'int'
+(34,18): Error! E042: symbol 'SS5::x12' already defined
+  definition: 'int __far SS5::x12'
+(36,18): Error! E329: modifiers of 'SS5::x21' conflict with previous declaration
+  definition: 'int SS5::x21'
+  current declaration has type 'int __far'
+(36,18): Error! E042: symbol 'SS5::x21' already defined
+  definition: 'int SS5::x21'
+(38,18): Error! E329: modifiers of 'SS5::x23' conflict with previous declaration
+  definition: 'int SS5::x23'
+  current declaration has type 'int __based( __segname( "_DATA" ))'
+(38,18): Error! E042: symbol 'SS5::x23' already defined
+  definition: 'int SS5::x23'
+(40,18): Error! E329: modifiers of 'SS5::x32' conflict with previous declaration
+  definition: 'int __based( __segname( "_DATA" )) SS5::x32'
+  current declaration has type 'int'
+(40,18): Error! E042: symbol 'SS5::x32' already defined
+  definition: 'int __based( __segname( "_DATA" )) SS5::x32'
+(48,6): Error! E708: cannot return a type of unknown size
+  'X1' defined at: (43,8)
+(56,14): Error! E708: cannot return a type of unknown size
+  'XX2' defined at: (52,8)
+(69,6): Error! E042: symbol 'a' already defined
+  definition: 'int a'
+(75,13): Error! E328: storage class of 'c' conflicts with previous declaration
+  definition: 'int c'
+(75,13): Error! E042: symbol 'c' already defined
+  definition: 'int c'
+(77,9): Error! E336: declaration specifiers are required to declare 'd'
+(78,13): Error! E328: storage class of 'd' conflicts with previous declaration
+  definition: 'int d'
+(78,13): Error! E042: symbol 'd' already defined
+  definition: 'int d'
+(91,17): Error! E340: cannot construct object from argument(s)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'C'
+(111,10): Warning! W388: integral constant will be truncated during assignment or initialization
+(113,13): Warning! W689: conditional expression is always true (non-zero)
+  range of possible values for type 'unsigned' is 0 to 65535
+  constant expression in comparison has value 0
+(114,13): Warning! W690: conditional expression is always false (zero)
+  range of possible values for type 'unsigned' is 0 to 65535
+  constant expression in comparison has value 0
+(120,9): Error! E190: base operator operands must be " __segment :> pointer "
+  source conversion type is 'char __based( void ) *'
+  target conversion type is 'char *'
+(150,16): Error! E400: cannot convert right expression for initialization
+  'D73' defined at: (129,8)
+  source conversion type is 'D73'
+  target conversion type is 'D73'
+End of file
+Warning! W014: no reference to symbol 'f'
+  definition: 'char * f( void )'
+Warning! W014: no reference to symbol 'g'
+  definition: 'char * g( void )'
+Warning! W014: no reference to symbol 'a'
+  definition: 'int a'
+Warning! W014: no reference to symbol 'b'
+  definition: 'int b'
+File: source\diag0199.c
+(14,9): Error! E708: cannot return a type of unknown size
+  'UNDEF' defined at: (3,8)
+(16,9): Error! E708: cannot return a type of unknown size
+  'UNDEF' defined at: (3,8)

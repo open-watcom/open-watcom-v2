@@ -24,17 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Busy wait serial port stuff.
 *
 ****************************************************************************/
 
 
 #include "serial.h"
 
-extern  int             GetByte();
-extern  unsigned        WaitCount();
-extern  void            NothingToDo(void);
+extern  int             GetByte( void );
+extern  unsigned        WaitCount( void );
+extern  void            NothingToDo( void );
 
 int WaitByte( unsigned timer_ticks )
 {

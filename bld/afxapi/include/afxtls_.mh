@@ -1,0 +1,142 @@
+/*
+ * afxtls_.h    Application Framework thread local storage classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXTLS_H__
+#define __AFXTLS_H__
+
+:include readonly.sp
+
+class _AFXLINK CSimpleList {
+private:
+    void    *m_pHead;
+    size_t  m_nNextOffset;
+
+public:
+    CSimpleList( int nNextOffset = 0 );
+    
+    void    AddHead( void *p );
+    void    Construct( int nNextOffset );
+    void    *GetHead() const;
+    void    *GetNext( void *p ) const;
+    BOOL    IsEmpty() const;
+    BOOL    Remove( void *p );
+    void    RemoveAll();
+};
+
+template< class TYPE >
+class CTypedSimpleList : public CSimpleList {
+public:
+    CTypedSimpleList( int nNextOffset = 0 ) : CSimpleList( nNextOffset )
+        {}
+    void AddHead( TYPE p )
+        { CSimpleList::AddHead( p ); }
+    TYPE GetHead()
+        { return( (TYPE)CSimpleList::GetHead() ); }
+    TYPE GetNext( TYPE p )
+        { return( (TYPE)CSimpleList::GetNext( p ) ); }
+    BOOL Remove( TYPE p )
+        { return( CSimpleList::Remove( p ) ); }
+    operator TYPE()
+        { return( (TYPE)CSimpleList::GetHead() ); }
+};
+
+class _AFXLINK CNoTrackObject {
+public:
+    virtual ~CNoTrackObject();
+};
+
+class _AFXLINK CProcessLocalObject {
+private:
+    CNoTrackObject * volatile   m_pObject;
+
+public:
+    CProcessLocalObject();
+    ~CProcessLocalObject();
+    
+    CNoTrackObject  *GetData( CNoTrackObject *(*pfnCreateObject)() );
+};
+
+class _AFXLINK CThreadLocalObject {
+private:
+    int m_nSlot;
+
+public:
+    CThreadLocalObject();
+    ~CThreadLocalObject();
+    
+    CNoTrackObject  *GetData( CNoTrackObject *(*pfnCreateObject)() );
+};
+
+template< class TYPE >
+class CProcessLocal : public CProcessLocalObject {
+public:
+    AFX_INLINE TYPE *GetData()
+        { return( (TYPE *)CProcessLocalObject::GetData( CreateObject ) ); }
+    AFX_INLINE operator TYPE *()
+        { return( GetData() ); }
+    AFX_INLINE TYPE *operator->()
+        { return( GetData() ); }
+
+private:
+    static CNoTrackObject *CreateObject()
+        { return( new TYPE ); }
+};
+
+template< class TYPE >
+class CThreadLocal : public CThreadLocalObject {
+public:
+    AFX_INLINE TYPE *GetData()
+        { return( (TYPE *)CThreadLocalObject::GetData( CreateObject ) ); }
+    AFX_INLINE operator TYPE *()
+        { return( GetData() ); }
+    AFX_INLINE TYPE *operator->()
+        { return( GetData() ); }
+
+private:
+    static CNoTrackObject *CreateObject()
+        { return( new TYPE ); }
+};
+
+AFX_INLINE CSimpleList::CSimpleList( int nNextOffset )
+/****************************************************/
+{
+    m_pHead = NULL;
+    m_nNextOffset = nNextOffset;
+}
+
+AFX_INLINE void CSimpleList::Construct( int nNextOffset )
+/*******************************************************/
+{
+    m_pHead = NULL;
+    m_nNextOffset = nNextOffset;
+}
+
+AFX_INLINE void *CSimpleList::GetHead() const
+/*******************************************/
+{
+    return( m_pHead );
+}
+
+AFX_INLINE void *CSimpleList::GetNext( void *p ) const
+/****************************************************/
+{
+    ASSERT( p != NULL );
+    return( *(void **)((BYTE *)p + m_nNextOffset) );
+}
+
+AFX_INLINE BOOL CSimpleList::IsEmpty() const
+/******************************************/
+{
+    return( m_pHead == NULL );
+}
+
+AFX_INLINE void CSimpleList::RemoveAll()
+/**************************************/
+{
+    m_pHead = NULL;
+}
+
+#endif /* __AFXTLS_H__ */

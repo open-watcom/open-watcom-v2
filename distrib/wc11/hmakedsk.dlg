@@ -1,0 +1,37 @@
+name=Help_MakeDisks
+static_text=\
+        //1"Enter the drive letter of the drive that you"\
+        //2"インストール・ディスケットを作成するのに使用"\
+        //0
+static_text=\
+        //1"wish to use to make your diskette set."\
+        //2"するドライブのドライブ名を入れてください."\
+        //0
+static_text=
+static_text=\
+        //1"Choose whether you want to make a full set of installation"\
+        //2"作成するインストール・ディスケットはフルセットにするか, サブ"\
+        //0
+static_text=\
+        //1"diskettes or a partial set.  If you make a partial set, you"\
+        //2"セットにするかを選択してください. もしサブセットにすると, その"\
+        //0
+static_text=\
+        //1"will not be able to choose un-selected options when installing"\
+        //2"ディスケット・セットからインストールしたとき, アンインストール"\
+        //0
+static_text=\
+        //1"from the diskette set."\
+        //2"オプションを選択できません."\
+        //0
+static_text=,IsWin !
+static_text=\
+        //1"Choose 'Format diskettes before copying files' if you want"\
+        //2"未フォーマット・ディスケットを使用する場合, 'ファイル・コピーの"\
+        //0,IsWin !
+static_text=\
+        //1"to use unformatted diskettes for your diskette set."\
+        //2"前にディスケットをフォーマットします'を選択してください."\
+        //0,IsWin !
+static_text=
+include=ok.dlg

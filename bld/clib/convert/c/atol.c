@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of atol() - convert string to long.
 *
 ****************************************************************************/
 
@@ -33,25 +32,32 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdio.h>
-#include <ctype.h>
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#else
+    #include <ctype.h>    
+#endif
 #include <stdlib.h>
 
 
-_WCRTLINK long int __F_NAME(atol,_wtol)( const CHAR_TYPE *p )  /* convert ASCII string to long integer */
-    {
-        register long int value;
-        CHAR_TYPE    sign;
+_WCRTLINK long int __F_NAME(atol,_wtol)( const CHAR_TYPE *p )
+{
+    long int        value;
+    CHAR_TYPE       sign;
 
-        __ptr_check( p, 0 );
+    __ptr_check( p, 0 );
 
-        while( __F_NAME(isspace,iswspace)( *p ) ) ++p;
-        sign = *p;
-        if( sign == '+' || sign == '-' ) ++p;
-        value = 0;
-        while( __F_NAME(isdigit,iswdigit)(*p) ) {
-            value = value * 10 + *p - '0';
-            ++p;
-        }
-        if( sign == '-' ) value = - value;
-        return( value );
+    while( __F_NAME(isspace,iswspace)( *p ) )
+        ++p;
+    sign = *p;
+    if( sign == '+' || sign == '-' )
+        ++p;
+    value = 0;
+    while( __F_NAME(isdigit,iswdigit)(*p) ) {
+        value = value * 10 + *p - '0';
+        ++p;
     }
+    if( sign == '-' )
+        value = - value;
+    return( value );
+}

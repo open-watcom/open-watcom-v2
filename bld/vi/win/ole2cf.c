@@ -31,7 +31,7 @@
 
 
 #ifndef __386__
-#include "winvi.h"
+#include "vi.h"
 #include "ole2def.h"
 
 typedef struct {
@@ -40,7 +40,7 @@ typedef struct {
 } class_factory;
 typedef class_factory   *LPMYCLASSFACTORY;
 
-#pragma disable_message(202)
+#pragma disable_message( 202 )
 
 static DWORD    cfID;
 
@@ -59,7 +59,7 @@ static HRESULT doCFAddRef( LPMYCLASSFACTORY this )
  */
 STDMETHODIMP CFQueryInterface( LPMYCLASSFACTORY this, LPIID riid, LPLPVOID ppv )
 {
-    if( CMPIID( riid, IID_IUnknown) || CMPIID( riid, IID_IClassFactory) ) {
+    if( CMPIID( riid, IID_IUnknown ) || CMPIID( riid, IID_IClassFactory ) ) {
         doCFAddRef( this );
         *ppv = this;
         return( NOERROR );
@@ -103,7 +103,7 @@ STDMETHODIMP CFRelease( LPMYCLASSFACTORY this )
  * CFCreateInstance - create an instance of our class factory
  */
 STDMETHODIMP CFCreateInstance( LPCLASSFACTORY this, LPVOID pUnkOuter,
-                                LPIID riid, LPLPVOID ppv )
+                               LPIID riid, LPLPVOID ppv )
 {
     HRESULT     hresult;
     object      *pobj;
@@ -139,11 +139,14 @@ static LPCLASSFACTORY createClassFactory( HANDLE inst )
     pcf = MemAlloc( sizeof( class_factory ) );
     pcf->usage_count = 1;
     pcf->cf.lpVtbl = MemAlloc( sizeof( struct IClassFactoryVtbl ) );
-    pcf->cf.lpVtbl->QueryInterface = (LPVOID) MakeProcInstance( (LPVOID) CFQueryInterface, inst );
+    pcf->cf.lpVtbl->QueryInterface = (LPVOID) MakeProcInstance(
+        (LPVOID) CFQueryInterface, inst );
     pcf->cf.lpVtbl->AddRef = (LPVOID) MakeProcInstance( (LPVOID) CFAddRef, inst );
     pcf->cf.lpVtbl->Release = (LPVOID) MakeProcInstance( (LPVOID) CFRelease, inst );
-    pcf->cf.lpVtbl->CreateInstance = (LPVOID) MakeProcInstance( (LPVOID) CFCreateInstance, inst );
-    pcf->cf.lpVtbl->LockServer = (LPVOID) MakeProcInstance( (LPVOID) CFLockServer, inst );
+    pcf->cf.lpVtbl->CreateInstance = (LPVOID) MakeProcInstance(
+        (LPVOID) CFCreateInstance, inst );
+    pcf->cf.lpVtbl->LockServer = (LPVOID) MakeProcInstance(
+        (LPVOID) CFLockServer, inst );
     return( (LPCLASSFACTORY) pcf );
 
 } /* createClassFactory */
@@ -157,12 +160,8 @@ bool OLE2ClassFactoryInit( void )
     LPCLASSFACTORY      pcf;
 
     pcf = createClassFactory( InstanceHandle );
-    hresult = CoRegisterClassObject(
-        (LPVOID) &CLSID_WATCOMEditor,
-        (LPVOID) pcf,
-        CLSCTX_LOCAL_SERVER,
-        REGCLS_MULTIPLEUSE,
-        &cfID );
+    hresult = CoRegisterClassObject( (LPVOID) &CLSID_WATCOMEditor, (LPVOID) pcf,
+                                     CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE, &cfID );
     pcf->lpVtbl->Release( pcf );
     if( hresult != NOERROR ) {
         return( FALSE );

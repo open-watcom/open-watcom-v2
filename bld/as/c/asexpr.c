@@ -452,6 +452,7 @@ static void outIndent( int level ) {
 static char *relocString[] = {
     "ASM_RELOC_WORD",
     "ASM_RELOC_HALF_HI",
+    "ASM_RELOC_HALF_HA",
     "ASM_RELOC_HALF_LO",
     "ASM_RELOC_JUMP"
 };

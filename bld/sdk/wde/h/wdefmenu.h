@@ -46,15 +46,14 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WdeEnableCustCntlTools          ( HMENU menu );
-extern void     WdeEnableSelectCustCntl         ( HMENU menu );
-extern void     WdeSetTestModeMenu              ( Bool );
-extern void     WdeSetControlObjectMenu         ( Bool, Bool, Bool,
-                                                  WdeOrderMode );
-extern void     WdeSetDialogObjectMenu          ( Bool, Bool, WdeOrderMode );
-extern void     WdeSetBaseObjectMenu            ( Bool );
-extern Bool     WdeIsCurrentMDIWindowZoomed     ( void );
-extern void     WdeEnablePasteItem              ( HMENU );
-extern void     WdeEnableCommonControlsMenu     ( HMENU menu );
+extern void WdeEnableCustCntlTools( HMENU menu );
+extern void WdeEnableSelectCustCntl( HMENU menu );
+extern void WdeSetTestModeMenu( Bool );
+extern void WdeSetControlObjectMenu( Bool, Bool, Bool, WdeOrderMode );
+extern void WdeSetDialogObjectMenu( Bool, Bool, WdeOrderMode );
+extern void WdeSetBaseObjectMenu( Bool );
+extern Bool WdeIsCurrentMDIWindowZoomed( void );
+extern void WdeEnablePasteItem( HMENU );
+extern void WdeEnableCommonControlsMenu( HMENU menu );
 
 #endif

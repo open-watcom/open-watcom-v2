@@ -1,0 +1,15 @@
+error1.asm(10): Error! E582: forced error:
+error1.asm(11): Error! E584: forced error: Value equal to 0: 0 
+error1.asm(14): Error! E583: forced error: Value not equal to 0 : 1 
+error1.asm(15): Error! E585: forced error: symbol defined: zero
+error1.asm(18): Error! E586: forced error: symbol not defined: two
+error1.asm(20): Error! E587: forced error: string blank : <>
+error1.asm(22): Error! E588: forced error: string not blank : <zero>
+error1.asm(24): Error! E588: forced error: string not blank : <blank>
+error1.asm(25): Error! E589: forced error: strings not equal : <foo> : <bar>
+error1.asm(28): Error! E590: forced error: strings equal : <hello> : <hello> 
+error1.asm(29): Error! E589: forced error: strings not equal : <foo> : <sam>
+error1.asm(30): Error! E589: forced error: strings not equal : <hello> : <HeLlo>
+error1.asm(33): Error! E589: forced error: strings not equal : <foo> : <sam>
+error1.asm(36): Error! E590: forced error: strings equal : <hello> : <HeLlo> 
+error1.asm(38): Error! E520: Cannot open include file a.inc

@@ -54,7 +54,7 @@ void addSymbol(pSymTabEntry pEntry);
 pSymTabEntry findSymbol(char *name);
 void zapSymbolTable(void);
 pSymTabEntry createTabEntry(char *name, SymType type, void *data);
-int printSymTabElement(pSymTabEntry entry, void *dummy);
+int printSymTabElement(void *entry, void *dummy);
 void printSymTab(void);
 
 
@@ -114,7 +114,7 @@ void walkHTable(pHTable table, void* (action)(void *));
     then remove the table from memory.  zapElemAction may be NULL, in
     which case it is not called.
 */
-void zapHTable(pHTable table, void* (zapElemAction)(void *));
+void zapHTable(pHTable table, void (zapElemAction)(void *));
 
 /*  getHTableStats -- Get statistics about the hash table.  Useful for
     evaluating performance of a hash table to determine if a larger

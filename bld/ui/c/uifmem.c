@@ -24,25 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Allocate and free far memory.
 *
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include "uidef.h"
+#if defined( HAVE_FAR ) && defined( __386__ )
+  #include <i86.h>
+#endif
 
-void __FAR * global uifaralloc( size )
-/**********************************/
-
-register        int                     size;
+void __FAR * global uifaralloc( int size )
+/****************************************/
 {
-    register    void*                   ptr;
+    void        *ptr;
 
     ptr = uimalloc( size );
     if( ptr != NULL ) {
-        /* convert ptr to far: use SS for segment value */
+        /* convert ptr to far if necessary: use DS for segment value */
         return( ptr );
     }
     /* use 0 for segment value */
@@ -50,10 +49,16 @@ register        int                     size;
 }
 
 
-void global uifarfree( ptr )
-/**************************/
-
-    void __FAR *        ptr;
+void global uifarfree( void __FAR *ptr )
+/**************************************/
 {
-   uifree( (void*) ptr );
+#if defined( HAVE_FAR ) && defined( __386__ )
+    /* On extended DOS, we are throwing away the segment part. However,
+     * since the memory should have been allocated by uifaralloc() above,
+     * this is safe because we synthesized the segment part to begin with.
+     */
+    uifree( (void *)FP_OFF( ptr ) );
+#else
+    uifree( (void *)ptr );
+#endif
 }

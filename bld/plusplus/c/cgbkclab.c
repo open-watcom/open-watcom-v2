@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <float.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <float.h>
+
 #include "cgback.h"
 #include "cgbackut.h"
 #include "typesig.h"

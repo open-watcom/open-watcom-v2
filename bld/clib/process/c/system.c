@@ -65,9 +65,9 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
         #endif
 
         #if defined( __NT__ )
-            name = __F_NAME(getenv,_wgetenv)( __F_NAME("ComSpec",L"ComSpec") );
+            name = __F_NAME(getenv,_wgetenv)( STRING( "ComSpec" ) );
         #else
-            name = __F_NAME(getenv,_wgetenv)( __F_NAME("COMSPEC",L"COMSPEC") );
+            name = __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) );
         #endif
         if( cmd == NULL ) {
             #if 1
@@ -92,30 +92,18 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
             prot_mode286 = 0;
         #endif
         if( name == NULL ) {
-            #ifdef __WIDECHAR__
-                name = prot_mode286 ? L"CMD.EXE" : L"COMMAND.COM";
-            #else
-                name = prot_mode286 ? "CMD.EXE" : "COMMAND.COM";
-            #endif
+            name = prot_mode286 ? STRING( "CMD.EXE" ) : STRING( "COMMAND.COM" );
         }
 
-        /* 08-jul-97 */
         #if defined( __NT__ )
             /* disable file handle inheritance for a system call */
             tmp_fileinfo = _fileinfo;
             _fileinfo = 0;
         #endif
 
-        /* 20-jan-89 */
-        #ifdef __WIDECHAR__
-            ret_code = _wspawnlp( 0, name, prot_mode286 ? L"CMD" : L"COMMAND",
-                              __wSlash_C(switch_c, prot_mode286), cmd, NULL );
-        #else
-            ret_code = spawnlp( 0, name, prot_mode286 ? "CMD" : "COMMAND",
-                            __Slash_C(switch_c, prot_mode286), cmd, NULL );
-        #endif
+        ret_code = __F_NAME(spawnlp,_wspawnlp)( 0, name, prot_mode286 ? STRING( "CMD" ) : STRING( "COMMAND" ),
+                            __F_NAME(__Slash_C,__wSlash_C)(switch_c, prot_mode286), cmd, NULL );
 
-        /* 08-jul-97 */
         #if defined( __NT__ )
             /* set file handle inheritance to what it was */
             _fileinfo = tmp_fileinfo;

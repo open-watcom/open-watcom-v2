@@ -24,128 +24,185 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WR memory manipulation routines
 *
 ****************************************************************************/
 
 
 #include <windows.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
-#include "trmemcvr.h"
+#include <malloc.h>
 #include "wrglbl.h"
 #include "wrmemi.h"
 #include "wrmem.h"
 
-void WRMemOpen ( void )
+#ifdef TRMEM
+
+#include "trmem.h"
+
+static _trmem_hdl   TRMemHandle;
+static int          TRFileHandle;   /* stream to put output on */
+
+static void TRPrintLine( int *handle, const char *buff, size_t len );
+
+/* extern to avoid problems with taking address and overlays */
+extern void TRPrintLine( int *handle, const char *buff, size_t len )
+/******************************************************************/
 {
-    TRMemOpen();
+    write( *handle, buff, len );
 }
 
-void WRMemClose ( void )
+#endif
+
+void WRMemOpen( void )
 {
-    TRMemClose();
+#ifdef TRMEM
+    TRFileHandle = STDERR_FILENO;
+    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+                               &TRFileHandle, TRPrintLine,
+                               _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+                               _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
+}
+
+void WRMemClose( void )
+{
+#ifdef TRMEM
+    _trmem_close( TRMemHandle );
+#endif
 }
 
 void *WRWResMemAlloc( size_t size )
 {
-    return ( WRMemAlloc ( size ) );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
 }
 
 void WRWResMemFree( void *ptr )
 {
-    WRMemFree ( ptr );
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( ptr );
+#endif
 }
 
 void * WR_EXPORT WRMemAlloc( size_t size )
 {
-    return ( TRMemAlloc ( size ) );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
 }
 
 void WR_EXPORT WRMemFree( void *ptr )
 {
-    TRMemFree ( ptr );
-}
-
-void * WR_EXPORT WRMemRealloc ( void *old_ptr, size_t newsize )
-{
-    return ( TRMemRealloc ( old_ptr, newsize ) );
-}
-
-int WR_EXPORT WRMemValidate ( void *ptr )
-{
 #ifdef TRMEM
-    return ( TRMemValidate( ptr ) );
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
 #else
-    _wtouch(ptr);
-    return ( TRUE );
+    free( ptr );
 #endif
 }
 
-int WR_EXPORT WRMemChkRange ( void *start, size_t len )
+void * WR_EXPORT WRMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return ( TRMemChkRange ( start, len ) );
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
 #else
-    _wtouch(start);
-    _wtouch(len);
-    return ( TRUE );
+    return( realloc( ptr, size ) );
 #endif
 }
 
-void WR_EXPORT WRMemPrtUsage ( void )
+int WR_EXPORT WRMemValidate( void *ptr )
 {
 #ifdef TRMEM
-    TRMemPrtUsage ();
-#endif
-}
-
-unsigned WR_EXPORT WRMemPrtList ( void )
-{
-#ifdef TRMEM
-    return ( TRMemPrtList () );
+    return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
 #else
-    return ( 0 );
+    _wtouch( ptr );
+    return( TRUE );
 #endif
 }
 
-/* functions to replace those in mem.c in SDK/MISC */
+int WR_EXPORT WRMemChkRange( void *start, size_t len )
+{
+#ifdef TRMEM
+    return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
+#else
+    _wtouch( start );
+    _wtouch( len );
+    return( TRUE );
+#endif
+}
+
+void WR_EXPORT WRMemPrtUsage( void )
+{
+#ifdef TRMEM
+    _trmem_prt_usage( TRMemHandle );
+#endif
+}
+
+unsigned WR_EXPORT WRMemPrtList( void )
+{
+#ifdef TRMEM
+    return( _trmem_prt_list( TRMemHandle ) );
+#else
+    return( 0 );
+#endif
+}
+
+/* functions to replace those in mem.c in commonui */
 
 void MemStart( void )
 {
 #ifndef __386__
 #ifndef __ALPHA__
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 #endif
 }
 
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *p;
 
-    p = WRMemAlloc( size );
+#ifdef TRMEM
+    p = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
+    p = malloc( size );
+#endif
 
-    if( p ) {
+    if( p != NULL ) {
         memset( p, 0, size );
     }
 
     return( p );
 }
 
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, size_t size )
 {
     void *p;
 
-    p = WRMemRealloc( ptr, size );
+#ifdef TRMEM
+    p = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
+#else
+    p = realloc( ptr, size );
+#endif
 
     return( p );
 }
 
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr );
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( ptr );
+#endif
 }
-

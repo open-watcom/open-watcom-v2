@@ -1,0 +1,24 @@
+*$noreference
+
+! Task Functions:
+! ---------------
+
+      external Catch
+      external ExitWindows
+      external GetCurrentPDB
+      external GetCurrentTask
+      external GetDOSEnvironment
+      external GetNumTasks
+      external SetErrorMode
+      external Throw
+      external Yield
+
+      integer*2 Catch
+      integer*2 ExitWindows
+      integer*2 GetCurrentPDB
+      integer*2 GetCurrentTask
+      integer*4 GetDOSEnvironment
+      integer*2 GetNumTasks
+      integer*2 SetErrorMode
+
+*$reference

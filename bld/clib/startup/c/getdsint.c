@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DS register manipulation routines for x86.
 *
 ****************************************************************************/
 
@@ -39,12 +38,14 @@ static unsigned short __saved_ds;
 extern void __load_ds( void );
 #pragma aux __load_ds = "mov ds, cs:__saved_ds";
 
-void __GETDS( void ) {
+void __GETDS( void )
+{
     __load_ds();
 }
 #pragma aux __GETDS "*";
 
-static void __save_ds( void ) {
+static void __save_ds( void )
+{
     __saved_ds = FP_SEG( &__saved_ds );
 }
 

@@ -24,29 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource compiler memory management routines.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include <assert.h>
-#include <malloc.h>
-#include "types.h"
+#include <stdlib.h>
+#include "rctypes.h"
 #include "errors.h"
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
 
 #ifdef RC_USE_TRMEM
-    #include <io.h>
+    #include <unistd.h>
     #include "trmem.h"
     _trmem_hdl RcMemHandle = NULL;
 
-    static void RcPutLine( void * dummy, const char * buf, size_t len )
+    static void RcPutLine( int * dummy, const char * buf, size_t len )
     /*****************************************************************/
     {
         dummy = dummy;
@@ -162,4 +160,3 @@ int RcMemChkRange( void * start, size_t len )
     }
 }
 #endif
-

@@ -12,17 +12,17 @@ struct T {
 
 void foo( T & )
 {
+    fail(__LINE__);
 }
 void foo( T const & )
 {
-    fail(__LINE__);
 }
 void foo( S & )
 {
+    fail(__LINE__);
 }
 void foo( S const & )
 {
-    fail(__LINE__);
 }
 
 S ack(int)

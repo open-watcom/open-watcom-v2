@@ -1,0 +1,29 @@
+c$ifdef INCL_PM
+c$define INCL_AVIO
+c$define INCL_BITMAPFILEFORMAT
+c$define INCL_DEV
+c$define INCL_ERRORS
+c$define INCL_FONTFILEFORMAT
+c$define INCL_GPI
+c$define INCL_ORDERS
+c$define INCL_PIC
+c$define INCL_SPL
+c$define INCL_WIN
+c$define INCL_WINSTDDLGS
+c$define INCL_WINWORKPLACE
+c$endif
+
+c$include pmwin.fap
+c$include pmgpi.fap
+c$include pmdev.fap
+c$include pmwp.fap
+
+c$ifdef INCL_SPL
+c$include pmspl.fap
+c$endif
+
+c$ifdef INCL_PIC
+c$include pmpic.fap
+c$endif
+
+c$include pmstddlg.fap

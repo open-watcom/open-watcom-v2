@@ -47,29 +47,26 @@ extern void             Vectorize( symbol * );
 extern void             TryRefVector( symbol * );
 extern void             OvlUseVector( symbol *, extnode * );
 extern void             IndirectCall( symbol * );
-//extern void           OvlForceVect( thread *, bool ); NYI
-//extern void           GetVecAddr2( int, thread * );  NYI
+extern void             GetVecAddr( int, targ_addr * );
 extern bool             CheckOvlClass( char *, bool * );
-extern section *        CheckOvlSect( char * );
+extern section          *CheckOvlSect( char * );
 extern void             EmitOvlVectors( void );
 extern void             SetOvlStartAddr( void );
 extern void             OvlPass1( void );
 extern void             EmitOvlTable( void );
 extern void             PadOvlFiles( void );
+extern void             ResetOvlSupp( void );
+extern void             SetOvlTableLoc( group_entry *, unsigned long );
 
 /* in overlays.c */
 
-extern void             ProcAllOvl( void (*)( section * ) );
-extern void             ParmWalkOvl( void (*)( section *, void * ), void * );
+extern void             WalkAllOvl( void (*)( section * ) );
+extern void             ParmWalkAllOvl( void (*)( section *, void * ), void * );
+extern void             WalkAllSects( void (*)( section * ) );
+extern void             ParmWalkAllSects( void (*)( section *, void * ), void * );
 extern void             NumberSections( void );
 extern void             FillOutFilePtrs( void );
-extern void             DBIOvlPass2( void );
-extern void             DBIOvlFini( void );
-extern void             WriteOvlSecs( void );
-extern void             DBIAddrOvlStart( void );
 extern void             TryDefVector( symbol * );
 extern void             TryUseVector( symbol *, extnode * );
-extern section *        GetOvlSect( char * );
 extern void             OvlPass2( void );
-//extern void           TryGetVector( extnode *, thread * ); NYI
 extern virt_mem         GetLoadObjTarget( segdata * );

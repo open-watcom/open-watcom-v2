@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  386 implementation of __CMain().
 *
 ****************************************************************************/
 
@@ -33,45 +32,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include "widechar.h"
+#include "initarg.h"
+#include "rtdata.h"
 
 extern  void    __CommonInit( void );
-#if !defined(__OSI__)
-extern  unsigned        __ASTACKSIZ;    /* alternate stack size */
-extern  char            *__ASTACKPTR;   /* alternate stack pointer */
-#if defined(_M_IX86)
- #pragma        aux     __ASTACKPTR "*"
- #pragma        aux     __ASTACKSIZ "*"
-#endif
-#endif
 
 #ifdef __WIDECHAR__
-    _WCRTLINK extern    int          ___wArgc;  /* argument count */
-    _WCRTLINK extern    wchar_t    **___wArgv;  /* argument vector */
     extern      int     wmain( int, wchar_t ** );
     #if defined(_M_IX86)
         #pragma aux     __wCMain  "*";
     #endif
-    void __wCMain()
+    void __wCMain( void )
     {
         #if !defined(__OSI__)
             /* allocate alternate stack for F77 */
-            __ASTACKPTR = (char *)alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+            __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
         #endif
         __CommonInit();
         exit( wmain( ___wArgc, ___wArgv ) );
     }
 #else
-    _WCRTLINK extern    int       ___Argc;      /* argument count */
-    _WCRTLINK extern    char    **___Argv;      /* argument vector */
     extern      int     main( int, char ** );
     #if defined(_M_IX86)
         #pragma aux     __CMain  "*";
     #endif
-    void __CMain()
+    void __CMain( void )
     {
         #if !defined(__OSI__)
             /* allocate alternate stack for F77 */
-            __ASTACKPTR = (char *)alloca( __ASTACKSIZ ) + __ASTACKSIZ;
+            __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
         #endif
         __CommonInit();
         exit( main( ___Argc, ___Argv ) );

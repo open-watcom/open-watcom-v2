@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeAniCCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeAniCInit        ( Bool );
-extern void              WdeAniCFini        ( void );
+extern OBJPTR WINEXPORT  WdeAniCCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeAniCInit( Bool );
+extern void              WdeAniCFini( void );
 
 #endif

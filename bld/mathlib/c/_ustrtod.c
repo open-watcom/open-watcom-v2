@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Wide character version of strtod().
 *
 ****************************************************************************/
 
@@ -34,4 +33,4 @@
 // it is done this way to support the reuse of the source file
 #define __WIDECHAR__
 #define UNICODE
-#include "STRTOD.C"
+#include "strtod.c"

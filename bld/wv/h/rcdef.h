@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-
 #define BITMAP_SPLASH           1001
 #define BITMAP_CLOSEBMP         1002
 #define BITMAP_READ1            1003

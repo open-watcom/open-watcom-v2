@@ -1,0 +1,8 @@
+- make a compatibility mode for PACE ('x' tokens allowed)
+- make '++' and 'auto' generate T_PLUS_PLUS and T_AUTO automatically
+- generate better and smaller tables
+- eliminate unit production reductions
+    D. Pager, Eliminiating unit productions from LR parsers,
+    Acta Informatica 9 (1977), 31--59.
+- make the parser tables label states that are single reduce states so
+  that the engine can reduce without asking for another token

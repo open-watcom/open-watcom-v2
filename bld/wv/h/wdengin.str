@@ -18,20 +18,20 @@ wdpick( WARN_Unable_To_Remap_Tmp,
 wdpick( WARN_No_Nxt_Src_Ln,
        "No next source line can be found",
        "jNo next source line can be found" )//dbgtrace
- 
-wdpick( WARN_ONLY_1000_ARRAY_ELEMENTS,
-       "Only 1000 array elements can be displayed at a time",
-       "jOnly 1000 array elements can be displayed at a time" )
+
+wdpick( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS,
+       "Only %U array elements can be displayed at a time",
+       "jOnly %U array elements can be displayed at a time" )
 
 // Startup Errors
 
 wdpick( STARTUP_Invalid_Option,
-	"Invalid option '%t'",
-	"jInvalid option '%t'" )
+    "Invalid option '%t'",
+    "jInvalid option '%t'" )
 
 wdpick( STARTUP_Loading_PRS,
-	"Cannot load expression syntax file (CPP.PRS)",
-	"jCannot load expression syntax file (CPP.PRS)" )//dbgmain
+    "Cannot load expression syntax file 'cpp.prs'",
+    "jCannot load expression syntax file 'cpp.prs'" )//dbgmain
 
 wdpick( STARTUP_DIP_Not_Init,
        "Cannot initalize symbolic debugging interface",
@@ -66,8 +66,8 @@ wdpick( STARTUP_Num_Too_Big,
        "jNumber too large near '%s'" )//dbgcmd
 
 wdpick( STARTUP_MAD_Not_Init,
-	"Machine architecture initialization failed",
-	"jMachine architecture initialization failed" )
+    "Machine architecture initialization failed",
+    "jMachine architecture initialization failed" )
 
 wdpick( MSG_Unexpected_Break,
        "Hard-coded breakpoint instruction encountered",
@@ -116,13 +116,17 @@ wdpick( Map_Selector,
        "Enter address of selector %d in %s",
        "jEnter address of selector %d in %s" )//dbgprog
 
+wdpick( Map_Named_Selector,
+       "Enter address of %s selector in %s",
+       "jEnter address of %s selector in %s" )//dbgprog
+
 wdpick( New_Expression,
        "Enter New Expression",
        "jEnter New Expression" ) //dbgwvar dbgprint
 
 wdpick( Internal_Error,
-	"*** INTERNAL *** error:",
-	"j*** INTERNAL *** error:" )//dbgerr
+    "*** INTERNAL *** error:",
+    "j*** INTERNAL *** error:" )//dbgerr
 
 wdpick( Debugger_Startup_Error,
        "Debugger Startup Error",
@@ -191,6 +195,7 @@ wdpick( Thread_Not_Exist,
 wdpick( Current,
        "current",
        "jcurrent" )//dbgwthrd
+
 wdpick( Dead,
        "dead",
        "jdead" ) //dbgwthrd dbgmisc
@@ -202,6 +207,30 @@ wdpick( Frozen,
 wdpick( Runnable,
        "runnable",
        "jrunnable" ) //dbgwthrd dbgmisc
+
+wdpick( Wait,
+       "wait",
+       "jwait" ) //dbgwthrd dbgmisc
+
+wdpick( Signal,
+       "signal",
+       "jsignal" ) //dbgwthrd dbgmisc
+
+wdpick( Keyboard,
+       "keyboard",
+       "jkeyboard" ) //dbgwthrd dbgmisc
+
+wdpick( Blocked,
+       "blocked",
+       "jblocked" ) //dbgwthrd dbgmisc
+
+wdpick( Executing,
+       "executing",
+       "jexecuting" ) //dbgwthrd dbgmisc
+
+wdpick( Debug,
+       "debug",
+       "jdebug" ) //dbgwthrd dbgmisc
 
 
 // strings used by the variable display window
@@ -231,36 +260,36 @@ wdpick( Unknown_type,
        "jUnknown type" ) // dbgvar
 
 wdpick( Image_Not_Loaded,
-	"Image Not Loaded",
-	"jImage Not Loaded" ) // dbgwbrk
+    "Image Not Loaded",
+    "jImage Not Loaded" ) // dbgwbrk
 
 wdpick( Str_ACTION_EXECUTE,
-	"Program execution",
-	"jProgram execution" ) // dbgreg
+    "Program execution",
+    "jProgram execution" ) // dbgreg
 
 wdpick( Str_ACTION_ASSIGNMENT,
-	"Variable assignment",
-	"jVariable assignment" ) // dbgreg
+    "Variable assignment",
+    "jVariable assignment" ) // dbgreg
 
 wdpick( Str_ACTION_THREAD_CHANGE,
-	"Thread switch",
-	"jThread switch" ) // dbgreg
+    "Thread switch",
+    "jThread switch" ) // dbgreg
 
 wdpick( Str_ACTION_MODIFY_IP,
-	"Change instruction pointer",
-	"jChange instruction pointer" ) // dbgreg
+    "Change instruction pointer",
+    "jChange instruction pointer" ) // dbgreg
 
 wdpick( Str_ACTION_MODIFY_MEMORY,
-	"Memory modification",
-	"jMemory modification" ) // dbgreg
+    "Memory modification",
+    "jMemory modification" ) // dbgreg
 
 wdpick( Str_ACTION_MODIFY_REGISTER,
-	"Register modification",
-	"jRegister modification" ) // dbgreg
+    "Register modification",
+    "jRegister modification" ) // dbgreg
 
 wdpick( Str_ACTION_MODIFY_VARIABLE,
-	"Variable modification",
-	"jVariable modification" ) // dbgreg
+    "Variable modification",
+    "jVariable modification" ) // dbgreg
 
 
 wdpick( LDS_TOO_MANY_DIPS,
@@ -316,26 +345,26 @@ wdpick( Sym_Info_Load_Failed,
        "jSymbolic information load for '%s' failed." ) // dbgprog
 
 wdpick( IO,
-	"io",
-	"jio" ) //dbgscan
+    "io",
+    "jio" ) //dbgscan
 
 // MAD errors
 
-wdpick( LMS_RECURSIVE_MAD_FAILURE, 
-	"Rescursive MAD failure - exiting",
-	"jRecursive MAD failure - exiting" )
+wdpick( LMS_RECURSIVE_MAD_FAILURE,
+    "Recursive MAD failure - exiting",
+    "jRecursive MAD failure - exiting" )
 
 wdpick( LMS_UNREGISTERED_MAD,
-	"Unknown machine architecture %d",
-	"jUnknown machine architecture %d" )
+    "Unknown machine architecture %d",
+    "jUnknown machine architecture %d" )
 
 wdpick( LMS_INVALID_MAD,
-	"Invalid machine architecture description file '%s'",
-	"jInvalid machine architecture description file '%s'" )
+    "Invalid machine architecture description file '%s'",
+    "jInvalid machine architecture description file '%s'" )
 
 wdpick( LMS_INVALID_MAD_VERSION,
-	"Incorrect version of machine architecture description file '%s'",
-	"jIncorrect version of machine architecture description file '%s'" )
+    "Incorrect version of machine architecture description file '%s'",
+    "jIncorrect version of machine architecture description file '%s'" )
 
 wdpick( LMS_FREAD_FAILED,
        "Unable to read file '%s'",
@@ -345,20 +374,20 @@ wdpick( LMS_FREAD_FAILED,
 // errors loading trap file
 
 wdpick( BAD_TRAP_FILE,
-	"Bad trap file",
-	"jBad trap file" )
+    "Bad trap file",
+    "jBad trap file" )
 
 wdpick( OUT_OF_DOS_MEMORY,
-	"Out of DOS Memory",
-	"jOut of DOS Memory" )
+    "Out of DOS Memory",
+    "jOut of DOS Memory" )
 
 wdpick( CANT_LOAD_TRAP_FILE,
-	"Can't load trap file",
-	"jCan't load trap file" )
+    "Cannot load trap file (%s)",
+    "jCannot load trap file (%s)" )
 
 wdpick( INCORRECT_TRAP_FILE_VERSION,
-	"Incorrect trap file version",
-	"jIncorrect trap file version" )
+    "Incorrect trap file version",
+    "jIncorrect trap file version" )
 
 // error messages
 
@@ -511,8 +540,8 @@ wdpick( ERR_CANNOT_RESTORE_STDIN,
        "jUnable to restore program's standard input" )
 
 wdpick( ERR_CANNOT_RESTORE_STDOUT,
-	"Unable to restore program's standard output",
-	"jUnable to restore program's standard output" )
+    "Unable to restore program's standard output",
+    "jUnable to restore program's standard output" )
 
 wdpick( ERR_POINT_EXISTS,
        "Break point with that address already exists",
@@ -619,8 +648,8 @@ wdpick( ERR_NOT_PRINTABLE,
        "jNo printable string found at location %a" )
 
 wdpick( ERR_NOT_WATCH_SIZE,
-       "Break points may only be set on items which are 1,2 or 4 bytes long",
-       "jBreak points may only be set on items which are 1,2 or 4 bytes long" )
+       "Break points may only be set on items which are 1,2 or 4 bytes long (and 8 bytes for trap files that support it)",
+       "jBreak points may only be set on items which are 1,2 or 4 bytes long (and 8 bytes for trap files that support it)" )
 
 wdpick( ERR_BAD_HOOK,
        "Missing or invalid hook name",
@@ -671,8 +700,8 @@ wdpick( ERR_CALLED_FROM,
        "jCalled from line %u in file '%s'." )
 
 wdpick( ERR_NEAR_END_OF_COMMAND,
-	"Error occurred near end of command.",
-	"jError occurred near end of command." )
+    "Error occurred near end of command.",
+    "jError occurred near end of command." )
 
 wdpick( ERR_NEAR_END_OF_LINE,
        "Error occurred near end of line.",
@@ -705,5 +734,5 @@ wdpick( ERR_WANT_MODULE,
 wdpick( ERR_BAD_PARSE_VERSION,
        "Incorrect version of parse file",
        "jIncorrect version of parse file" )
-	
+
 #include "mad.str"

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fflush() - flush streams.
 *
 ****************************************************************************/
 
@@ -36,8 +35,7 @@
 #include <fcntl.h>
 #include "rtdata.h"
 #include "fileacc.h"
-
-extern int      __flush( FILE * );
+#include "flush.h"
 
 _WCRTLINK int fflush( FILE *fp )
 {

@@ -44,7 +44,11 @@
 #define STATUS_SEGMENT_NOTIFICATION 0x40000005
 #endif
 #define _X86_
+#if 0 /* we don't have this file without Microsoft's help */
 #include "vdmdbg.h"
+#else
+#define STATUS_VDM_EVENT    STATUS_SEGMENT_NOTIFICATION
+#endif
 
 #define EVENT_LEN       15
 

@@ -1,0 +1,577 @@
+;-----------------------------------------------------------------------
+; OPTION TYPE
+; -----------
+; This identifies the Option type we are dealing with.  The different
+; possible types are:
+;
+; COMPUTER, DISPLAY, MOUSE, KEYBOARD, LAYOUT, SCSI, PRINTER, ...
+;-----------------------------------------------------------------------
+
+[Identification]
+    OptionType = VIDEO
+
+;-----------------------------------------------------------------------
+; LANGUAGES SUPPORTED
+; -------------------
+;
+; The languages supported by the OEM INF, For every language supported
+; we need to have a separate text section for every displayable text
+; section.
+;
+;-----------------------------------------------------------------------
+
+[LanguagesSupported]
+    ENG
+
+;-----------------------------------------------------------------------
+; OPTION LIST
+; -----------
+; This section lists the OEM Option key names.  These keys are locale
+; independent and used to represent the option in a locale independent
+; manner.
+;
+;-----------------------------------------------------------------------
+
+;
+; Option list order:
+; Option = Miniport driver, BitsPerPel, XResolution, YResolution, VRefresh, Interlaced
+;
+; If you don't want to create a VRefresh or Interlaced value under the service
+; parameters then use the value ""
+
+[Options]
+    "VirtualBox 640x480x8"             = boxv,      8,  640, 480, 60, 0
+    "VirtualBox 800x600x8"             = boxv,      8,  800, 600, 60, 0
+    "VirtualBox 1024x768x8"            = boxv,      8, 1024, 768, 60, 0
+    "VirtualBox 1152x864x8"            = boxv,      8, 1152, 864, 60, 0
+    "VirtualBox 640x480x16"            = boxv,     16,  640, 480, 60, 0
+    "VirtualBox 800x600x16"            = boxv,     16,  800, 600, 60, 0
+    "VirtualBox 1024x768x16"           = boxv,     16, 1024, 768, 60, 0
+    "VirtualBox 1152x864x16"           = boxv,     16, 1152, 864, 60, 0
+    "VirtualBox 640x480x32"            = boxv,     32,  640, 480, 60, 0
+    "VirtualBox 800x600x32"            = boxv,     32,  800, 600, 60, 0
+    "VirtualBox 1024x768x32"           = boxv,     32, 1024, 768, 60, 0
+    "VirtualBox 1152x864x32"           = boxv,     32, 1152, 864, 60, 0
+
+;
+; This maps detected options into the options we support
+;
+; Format: DetectedOption = MappedOption
+;
+
+[MapOfOptions]
+    "VirtualBox 640x480x8"             = "VirtualBox 640x480x8"
+    "VirtualBox 800x600x8"             = "VirtualBox 800x600x8"
+    "VirtualBox 1024x768x8"            = "VirtualBox 1024x768x8"
+    "VirtualBox 640x480x16"            = "VirtualBox 640x480x16"
+    "VirtualBox 800x600x16"            = "VirtualBox 800x600x16"
+    "VirtualBox 1024x768x16"           = "VirtualBox 1024x768x16"
+    "VirtualBox 640x480x32"            = "VirtualBox 640x480x32"
+    "VirtualBox 800x600x32"            = "VirtualBox 800x600x32"
+    "VirtualBox 1024x768x32"           = "VirtualBox 1024x768x32"
+
+;
+; Order of the information:
+;
+; Port driver = Type, Group, ErrorControl, Tag, InstalledDisplay, VgaCompatible, EventMessageFile, TypesSupported
+;
+
+[MiniportDrivers]
+    boxv      = !SERVICE_KERNEL_DRIVER, Video, !SERVICE_ERROR_IGNORE, 12,  {framebuf}, 0 , %SystemRoot%\System32\IoLogMsg.dll , 7
+
+;-----------------------------------------------------------------------
+; OPTION TEXT SECTION
+; -------------------
+; These are text strings used to identify the option to the user.  There
+; are separate sections for each language supported.  The format of the
+; section name is "OptionsText" concatenated with the Language represented
+; by the section.
+;
+;-----------------------------------------------------------------------
+
+[OptionsTextENG]
+    "VirtualBox 640x480x8"     =  "VirtualBox 640x480, 256 colors"
+    "VirtualBox 800x600x8"     =  "VirtualBox 800x600, 256 colors"
+    "VirtualBox 1024x768x8"    =  "VirtualBox 1024x768, 256 colors"
+    "VirtualBox 1152x864x8"    =  "VirtualBox 1152x864, 256 colors"
+    "VirtualBox 640x480x16"    =  "VirtualBox 640x480, 64K colors"
+    "VirtualBox 800x600x16"    =  "VirtualBox 800x600, 64K colors"
+    "VirtualBox 1024x768x16"   =  "VirtualBox 1024x768, 64K colors"
+    "VirtualBox 1152x864x16"   =  "VirtualBox 1152x864, 64K colors"
+    "VirtualBox 640x480x32"    =  "VirtualBox 640x480, True Color"
+    "VirtualBox 800x600x32"    =  "VirtualBox 800x600, True Color"
+    "VirtualBox 1024x768x32"   =  "VirtualBox 1024x768, True Color"
+    "VirtualBox 1152x864x32"   =  "VirtualBox 1152x864, True Color"
+
+;---------------------------------------------------------------------------
+; 1. Identify
+;
+; DESCRIPTION:   To verify that this INF deals with the same type of options
+;                as we are choosing currently.
+;
+; INPUT:         None
+;
+; OUTPUT:        $($R0): STATUS: STATUS_SUCCESSFUL
+;                $($R1): Option Type (COMPUTER ...)
+;                $($R2): Diskette description
+;---------------------------------------------------------------------------
+
+[Identify]
+    ;
+    ;
+    read-syms Identification
+
+    set Status     = STATUS_SUCCESSFUL
+    set Identifier = $(OptionType)
+    set Media      = #("Source Media Descriptions", 1, 1)
+
+    Return $(Status) $(Identifier) $(Media)
+
+
+
+;------------------------------------------------------------------------
+; 2. ReturnOptions:
+;
+; DESCRIPTION:   To return the option list supported by this INF and the
+;                localised text list representing the options.
+;
+;
+; INPUT:         $($0):  Language used. ( ENG | FRN | ... )
+;
+; OUTPUT:        $($R0): STATUS: STATUS_SUCCESSFUL |
+;                                STATUS_NOLANGUAGE
+;                                STATUS_FAILED
+;
+;                $($R1): Option List
+;                $($R2): Option Text List
+;------------------------------------------------------------------------
+
+[ReturnOptions]
+    ;
+    ;
+    set Status        = STATUS_FAILED
+    set OptionList     = {}
+    set OptionTextList = {}
+
+    ;
+    ; Check if the language requested is supported
+    ;
+    set LanguageList = ^(LanguagesSupported, 1)
+    Ifcontains(i) $($0) in $(LanguageList)
+        goto returnoptions
+    else
+        set Status = STATUS_NOLANGUAGE
+        goto finish_ReturnOptions
+    endif
+
+    ;
+    ; form a list of all the options and another of the text representing
+    ;
+
+returnoptions = +
+    set OptionList     = ^(Options, 0)
+    set OptionTextList = ^(OptionsText$($0), 1)
+    set Status         = STATUS_SUCCESSFUL
+
+finish_ReturnOptions = +
+    Return $(Status) $(OptionList) $(OptionTextList)
+
+
+;---------------------------------------------------------------------------
+; MapToSupportedOption
+;
+; DESCRIPTION:   To map a hardware detected option to the NT Supported
+;                option which represents it.
+;
+; INPUT:         $($0): Option
+;
+; OUTPUT:        $($R0): STATUS: STATUS_SUCCESSFUL
+;                $($R1): Mapped Option
+;
+;---------------------------------------------------------------------------
+
+[MapToSupportedOption]
+    ;
+    set Status = STATUS_FAILED
+    set MappedOption = $($0)
+
+    ;
+    ; If the option is one we can support using one of our standard options
+    ; then map it to the standard option else pass it back as such to be
+    ; an OEM installed option
+    ;
+
+    set OptionList = ^(MapOfOptions, 0)
+    ifcontains $($0) in $(OptionList)
+        set MappedOption = #(MapOfOptions, $($0), 1)
+    endif
+
+    set Status = STATUS_SUCCESSFUL
+    Return $(Status) $(MappedOption)
+
+
+
+[ServicesEntry]
+    CurrentEntry = "" ? $(!LIBHANDLE) GetDevicemapValue Video \Device\Video0
+
+;
+; InstallOption:
+;
+; FUNCTION:  To copy files representing Options
+;            To configure the installed option
+;            To update the registry for the installed option
+;
+; INPUT:     $($0):  Language to use
+;            $($1):  OptionID to install
+;            $($2):  SourceDirectory
+;            $($3):  AddCopy  (YES | NO)
+;            $($4):  DoCopy   (YES | NO)
+;            $($5):  DoConfig (YES | NO)
+;
+; OUTPUT:    $($R0): STATUS: STATUS_SUCCESSFUL |
+;                            STATUS_NOLANGUAGE |
+;                            STATUS_USERCANCEL |
+;                            STATUS_FAILED
+;
+
+[InstallOption]
+
+    ;
+    ; Set default values for
+    ;
+    set Status   = STATUS_FAILED
+    set DrivesToFree = {}
+
+    ;
+    ; extract parameters
+    ;
+    set Option   = $($1)
+    set SrcDir   = $($2)
+    set AddCopy  = $($3)
+    set DoCopy   = $($4)
+    set DoConfig = $($5)
+
+    ;
+    ; Check if the language requested is supported
+    ;
+    set LanguageList = ^(LanguagesSupported, 1)
+    Ifcontains(i) $($0) in $(LanguageList)
+    else
+        set Status = STATUS_NOLANGUAGE
+        goto finish_InstallOption
+    endif
+    read-syms Strings$($0)
+
+    ;
+    ; check to see if Option is supported.
+    ;
+
+    set OptionList = ^(Options, 0)
+    ifcontains $(Option) in $(OptionList)
+    else
+        goto finish_InstallOption
+    endif
+    set OptionList = ""
+
+    ;
+    ; Option has been defined already
+    ;
+
+    set MiniportDriver    = #(Options, $(Option), 1)
+    set BitsPerPel        = #(Options, $(Option), 2)
+    set XResolution       = #(Options, $(Option), 3)
+    set YResolution       = #(Options, $(Option), 4)
+    set VRefresh          = #(Options, $(Option), 5)
+    set Interlaced        = #(Options, $(Option), 6)
+
+    set Type              = $(#(MiniportDrivers, $(MiniportDriver), 1))
+    set Group             =   #(MiniportDrivers, $(MiniportDriver), 2)
+    set ErrorControl      = $(#(MiniportDrivers, $(MiniportDriver), 3))
+    set Tag               =   #(MiniportDrivers, $(MiniportDriver), 4)
+    set InstalledDisplays =   #(MiniportDrivers, $(MiniportDriver), 5)
+    set VgaCompatible     =   #(MiniportDrivers, $(MiniportDriver), 6)
+    set EventMessageFile  =   #(MiniportDrivers, $(MiniportDriver), 7)
+    set TypesSupported    =   #(MiniportDrivers, $(MiniportDriver), 8)
+
+
+    read-syms ServicesEntry
+    detect    ServicesEntry
+
+installtheoption = +
+
+    ;
+    ; Code to add files to copy list
+    ;
+
+    ifstr(i) $(AddCopy) == "YES"
+        set DoActualCopy = NO
+        set FileToCheck = #(Files-DisplayMiniportDrivers, $(MiniportDriver), 2)
+        LibraryProcedure STATUS,$(!LIBHANDLE),CheckFileExistance $(!STF_WINDOWSSYSPATH)"\drivers\"$(FileToCheck)
+        ifstr(i) $(STATUS) == NO
+            set DoActualCopy = YES
+            goto addfiles
+        endif
+        ForListDo $(InstalledDisplays)
+            set FileToCheck = #(Files-DisplayDLLs, $($), 2)
+            LibraryProcedure STATUS,$(!LIBHANDLE),CheckFileExistance $(!STF_WINDOWSSYSPATH)"\"$(FileToCheck)
+            ifstr(i) $(STATUS) == NO
+                set DoActualCopy = YES
+            endif
+        EndForListDo
+
+addfiles = +
+        ifstr(i) $(DoActualCopy) == NO
+            shell "subroutn.inf" DriversExist $($0) $(String1)
+            ifint $($ShellCode) != $(!SHELL_CODE_OK)
+                Debug-Output "VIDEO.INF: shelling DriversExist failed"
+                goto finish_InstallOption
+            endif
+
+            ifstr(i) $($R0) == STATUS_CURRENT
+            else-ifstr(i) $($R0) == STATUS_NEW
+                set DoActualCopy = YES
+            else-ifstr(i) $($R0) == STATUS_USERCANCEL
+                Debug-Output "VIDEO.INF: User cancelled video installation"
+                goto finish_InstallOption
+            else
+                Debug-Output "VIDEO.INF: Error reported in DriversExist routine in SUBROUTN.INF"
+                goto finish_InstallOption
+            endif
+        endif
+
+        ifstr(i) $(DoActualCopy) == YES
+
+            shell "subroutn.inf" DoAskSourceEx $(SrcDir) $(String2)
+            ifint $($ShellCode) != $(!SHELL_CODE_OK)
+                Debug-Output "Video.INF: shelling DoAskSourceEx failed"
+                goto finish_InstallOption
+            endif
+
+            ifstr(i) $($R0) == STATUS_SUCCESSFUL
+                set SrcDir = $($R1)
+                ifstr(i) $($R2) != ""
+                    set DrivesToFree = >($(DrivesToFree), $($R2))
+                endif
+            else
+                Debug-Output "Video.inf: User cancelled asking source."
+                goto finish_InstallOption
+            endif
+
+            install Install-AddCopyOption
+            ifstr(i) $(STF_INSTALL_OUTCOME) != "STF_SUCCESS"
+                Debug-Output "Adding video files to copy list failed"
+                goto finish_InstallOption
+            endif
+        else
+            set DoCopy = NO
+        endif
+    endif
+
+    ifstr(i) $(DoCopy) == "YES"
+        read-syms ProgressCopy$($0)
+        install Install-DoCopyOption
+        ifstr(i) $(STF_INSTALL_OUTCOME) == "STF_FAILURE"
+            Debug-Output "Copying files failed"
+            goto finish_InstallOption
+        else-ifstr(i) $(STF_INSTALL_OUTCOME) == "STF_USERQUIT"
+            set Status = STATUS_USERCANCEL
+            goto finish_InstallOption
+        endif
+    endif
+
+    ifstr(i) $(DoConfig) == "YES"
+
+        ;
+        ; first run a privilege check on modifying the setup node
+        ;
+
+        shell "registry.inf" CheckSetupModify
+        ifint $($ShellCode) != $(!SHELL_CODE_OK)
+            goto finish_InstallOption
+        endif
+
+        ifstr(i) $($R0) != STATUS_SUCCESSFUL
+            goto finish_InstallOption
+        endif
+
+        ;
+        ; first make a new video entry, the entry is created automatically
+        ; enabled
+        ;
+
+        set ServiceNode   = $(MiniportDriver)
+        set ServiceBinary = %SystemRoot%\System32\drivers\#(Files-DisplayMiniportDrivers, $(MiniportDriver), 2)
+
+        set ServicesValues   = { +
+                {Type,           0, $(!REG_VT_DWORD),     $(Type)                  }, +
+                {Start,          0, $(!REG_VT_DWORD),     $(!SERVICE_SYSTEM_START) }, +
+                {Group,          0, $(!REG_VT_SZ),        $(Group)                 }, +
+                {ErrorControl,   0, $(!REG_VT_DWORD),     $(ErrorControl)          }, +
+                {Tag,            0, $(!REG_VT_DWORD),     $(Tag)                   }, +
+                {BinaryPathName, 0, $(!REG_VT_EXPAND_SZ), $(ServiceBinary)         }  +
+                }
+        set ParametersValues = { +
+                {InstalledDisplayDrivers,     0, $(!REG_VT_MULTI_SZ), $(InstalledDisplays) }, +
+                {VgaCompatible,               0, $(!REG_VT_DWORD),    $(VgaCompatible)     }, +
+                {DefaultSettings.BitsPerPel,  0, $(!REG_VT_DWORD),    $(BitsPerPel)        }, +
+                {DefaultSettings.XResolution, 0, $(!REG_VT_DWORD),    $(XResolution)       }, +
+                {DefaultSettings.YResolution, 0, $(!REG_VT_DWORD),    $(YResolution)       }  +
+                }
+
+        ifstr(i) $(VRefresh) != ""
+            set VRefreshValue = {DefaultSettings.VRefresh, 0, $(!REG_VT_DWORD), $(VRefresh)}
+            set ParametersValue = >($(ParametersValue), $(VRefreshValue))
+        endif
+
+        ifstr(i) $(Interlaced) != ""
+            set InterlacedValue = {DefaultSettings.Interlaced, 0, $(!REG_VT_DWORD), $(Interlaced)}
+            set ParametersValue = >($(ParametersValue), $(InterlacedValue))
+        endif
+
+        set DeviceValues     = {}
+        set EventLogValues   = { +
+                {EventMessageFile, 0, $(!REG_VT_EXPAND_SZ), $(EventMessageFile) }, +
+                {TypesSupported,   0, $(!REG_VT_DWORD),     $(TypesSupported)   }  +
+                }
+
+
+        shell "registry.inf"  MakeServicesEntry $(ServiceNode)      +
+                                                $(ServicesValues)   +
+                                                $(ParametersValues) +
+                                                $(DeviceValues)     +
+                                                $(EventLogValues)   +
+                                                Device0
+
+
+        ifint $($ShellCode) != $(!SHELL_CODE_OK)
+            Debug-Output "Couldn't execute MakeServicesEntry in registry.inf"
+            goto finish_InstallOption
+        endif
+
+        ifstr(i) $($R0) != STATUS_SUCCESSFUL
+            Debug-Output "MakeServicesEntry failed for video"
+            goto finish_InstallOption
+        endif
+
+        ;
+        ;
+        ; then disable the previous video entry
+        ;
+
+        ifstr(i) $(CurrentEntry) != $(MiniportDriver)
+            ifstr(i) $(CurrentEntry) != VGA
+                ifstr(i) $(CurrentEntry) != ""
+                    shell "registry.inf" ModifyServicesEntry $(CurrentEntry) $(!SERVICE_DISABLED)
+
+                    ifint $($ShellCode) != $(!SHELL_CODE_OK)
+                        Debug-Output "Couldn't find DisableServicesEntry in registry.inf"
+                        goto errorconfig
+                    endif
+
+                    ifstr(i) $($R0) != STATUS_SUCCESSFUL
+                        Debug-Output "DisableServices entry failed"
+                    endif
+                endif
+            endif
+        endif
+
+        goto configdone
+
+errorconfig = +
+        ifstr(i) $(CurrentEntry) != $(MiniportDriver)
+            shell "registry.inf" ModifyServicesEntry $(MiniportDriver) $(!SERVICE_DISABLED)
+            ifstr(i) $(CurrentEntry) != ""
+                shell "registry.inf" ModifyServicesEntry $(CurrentEntry) $(!SERVICE_SYSTEM_START)
+            endif
+        endif
+        goto finish_InstallOption
+
+configdone = +
+
+    endif
+
+    set Status = STATUS_SUCCESSFUL
+
+finish_InstallOption = +
+    ForListDo $(DrivesToFree)
+        LibraryProcedure STATUS,$(!LIBHANDLE), DeleteNetConnection $($) "TRUE"
+    EndForListDo
+
+    Return $(Status)
+
+
+[Install-AddCopyOption]
+
+    set STF_VITAL = ""
+    ;
+    ; Add the files to the copy list
+    ;
+    AddSectionKeyFileToCopyList   Files-DisplayMiniportDrivers +
+                                  $(MiniportDriver)            +
+                                  $(SrcDir)                    +
+                                  $(!STF_WINDOWSSYSPATH)\drivers
+
+    ForListDo $(InstalledDisplays)
+        AddSectionKeyFileToCopyList   Files-DisplayDLLs          +
+                                      $($)                       +
+                                      $(SrcDir)                  +
+                                      $(!STF_WINDOWSSYSPATH)
+
+    EndForListDo
+
+    exit
+
+
+[Install-DoCopyOption]
+
+    ;
+    ; Copy files in the copy list
+    ;
+    CopyFilesInCopyList
+    exit
+
+;**************************************************************************
+; PROGRESS GUAGE VARIABLES
+;**************************************************************************
+
+[ProgressCopyENG]
+    ProCaption   = "Windows NT Setup"
+    ProCancel    = "Cancel"
+    ProCancelMsg = "Windows NT is not correcly installed.  Are you sure you want "+
+                   "to cancel copying files?"
+    ProCancelCap = "Setup Message"
+    ProText1     = "Copying:"
+    ProText2     = "To:"
+
+[StringsENG]
+    String1 = "Display"
+    String2 = "Please enter the full path to the Windows NT Display "+
+              "driver files.  Then choose Continue."
+
+
+
+;-----------------------------------------------------------------------
+; SOURCE MEDIA DESCRIPTIONS
+; -------------------------
+; The OEM should list all the diskette labels here.  The source media
+; description is used during copy to prompt the user for a diskette
+; if the source is diskettes.
+;
+; Use 1 = "Diskette 1 Label" , TAGFILE = disk1
+;     2 = "Diskette 2 Label" , TAGFILE = disk2
+;     ...
+;-----------------------------------------------------------------------
+
+[Source Media Descriptions]
+    1  = "OEM DISK (VIDEO)"  , TAGFILE = disk1
+    2  = "Windows NT CD-ROM" , TAGFILE = cdrom.w
+
+
+[Files-DisplayDLLs]
+; Because this .INF script appears to be unable to copy from two different
+; drives, we can't ask the user to insert the NT CD-ROM with framebuf.dll;
+; the user must manually copy it alongside the video miniport.
+framebuf = 1,framebuf.dll , SIZE=999
+
+[Files-DisplayMiniportDrivers]
+boxv = 1,boxvideo.sys , SIZE=999

@@ -1,0 +1,30 @@
+Packages:
+---------
+
+c16	- 16-bit C/C++ compiler
+c32	- 32-bit C/C++ compiler
+c	- 16 and 32-bit C/C++ compiler
+ac	- alpha C/C++ compiler
+f16	- 16-bit FORTRAN 77 compiler
+f32	- 32-bit FORTRAN 77 compiler
+f77	- 16 and 32-bit FORTRAN 77 compiler
+
+Conditions
+----------
+
+winhost	- Windows 3.x host
+wintarg	- Windows 3.x target
+wnthost	- Windows NT host
+wnttarg	- Windows NT target
+os2host	- OS/2 2.x host
+os2targ	- OS/2 2.x target
+doshost	- DOS host
+dostarg	- DOS target
+adstarg	- ADS target
+nlmtarg	- Netware target
+tools16	- 16-bit development tools
+ms	- 16-bit small memory model
+mc	- 16-bit compact memory model
+mm	- 16-bit medium memory model
+ml	- 16-bit large memory model
+mh	- 16-bit huge memory model

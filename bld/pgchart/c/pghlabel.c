@@ -33,7 +33,7 @@
 #include "pgvars.h"
 
 
-short _WCI86FAR _CGRAPH _pg_hlabelchart( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_hlabelchart( chartenv _WCI86FAR *env,
                             short x, short y, short color, char _WCI86FAR *label )
 //===========================================================================
 

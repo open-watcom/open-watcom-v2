@@ -36,15 +36,16 @@
 #include "wwindow.hpp"
 #include "whotspot.hpp"
 
-const WStyle HotSpotListStyleDefault = WStyleVScrollAll
-                                | WStyleVRows
-                                | WStyleVScrollEvents
-                                | WStyleHScrollAll;
+const WStyle    HotSpotListStyleDefault     = WStyleVScrollAll | WStyleVRows |
+                                              WStyleVScrollEvents | WStyleHScrollAll;
+const WExStyle  HotSpotListExStyleDefault   = WExStyle3DBorder;
+
 class WHotSpotList : public WWindow
 {
     public:
         WHotSpotList( WWindow * prt, const WRect & r, const char * text, WHotSpots* hs,
-                     WStyle wstyle = HotSpotListStyleDefault );
+                      WStyle wstyle = HotSpotListStyleDefault,
+                      WExStyle wexstyle = HotSpotListExStyleDefault );
         virtual ~WHotSpotList();
 
                 /* members from WWindow */

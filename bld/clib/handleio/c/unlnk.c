@@ -32,30 +32,87 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include "mbwcconv.h"
-#include <stdlib.h>
-#include "tinyio.h"
+#include <string.h>
+#include <unistd.h>
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
+#include "_doslfn.h"
+
+#ifdef _M_I86
+  #ifdef __BIG_DATA__
+    #define AUX_INFO    \
+        parm caller     [dx ax] \
+        modify exact    [ax dx];
+  #else
+    #define AUX_INFO    \
+        parm caller     [dx] \
+        modify exact    [ax];
+  #endif
+#else
+    #define AUX_INFO    \
+        parm caller     [edx] \
+        modify exact    [eax];
 #endif
 
+extern unsigned __unlink_sfn( const char *filename );
+#pragma aux __unlink_sfn = \
+        _SET_DSDX       \
+        _MOV_AH DOS_UNLINK \
+        _INT_21         \
+        _RST_DS         \
+        "call __doserror_" \
+        AUX_INFO
 
-_WCRTLINK int __F_NAME(unlink,_wunlink)( CHAR_TYPE *filename ) {
-    tiny_ret_t  rc;
-#ifdef __WIDECHAR__
-    char        mbFilename[MB_CUR_MAX*_MAX_PATH];   /* single-byte char */
-#endif
+#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
+static unsigned _unlink_lfn( const char *filename )
+/*************************************************/
+{
+#ifdef _M_I86
+    return( __unlink_lfn( filename ) );
+#else
+    call_struct     dpmi_rm;
 
-    #ifdef __WIDECHAR__
-        __filename_from_wide( mbFilename, filename );
-        rc = TinyDelete( mbFilename );
-    #else
-        rc = TinyDelete( filename );
-    #endif
-
-    if( TINY_ERROR(rc) ) {
-        return( __set_errno_dos( TINY_INFO(rc) ) );
+    strcpy( RM_TB_PARM1_LINEAR, filename );
+    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
+    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
+    dpmi_rm.edx = RM_TB_PARM1_OFFS;
+    dpmi_rm.esi = 0;
+    dpmi_rm.eax = 0x7141;
+    dpmi_rm.flags = 1;
+    if( __dpmi_dos_call( &dpmi_rm ) ) {
+        return( -1 );
     }
-    return( 0 );            /* indicate no error */
+    if( dpmi_rm.flags & 1 ) {
+        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
+    }
+    return( 0 );
+#endif
+}
+#endif
+
+_WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
+/******************************************************************/
+{
+#ifdef __WIDECHAR__
+    char    mbFilename[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
+
+    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == -1 ) {
+        mbFilename[0] = '\0';
+    }
+    return( unlink( mbFilename ) );
+#else
+  #ifdef __WATCOM_LFN__
+    unsigned    rc = 0;
+
+    if( _RWD_uselfn && (rc = _unlink_lfn( filename )) == 0 ) {
+        return( 0 );
+    }
+    if( IS_LFN_ERROR( rc ) ) {
+        return( -1 );
+    }
+  #endif
+    if( __unlink_sfn( filename ) ) {
+        return( -1 );
+    }
+    return( 0 );
+#endif
 }

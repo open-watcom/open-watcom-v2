@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: This master file includes the source of the predefined
+*              streams.
 *
 ****************************************************************************/
-
 
 #include    "ioicerr.cpp"
 #include    "ioicin.cpp"

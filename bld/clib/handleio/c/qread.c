@@ -44,15 +44,17 @@
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "defwin.h"
+#include "qread.h"
 
 #ifdef __WINDOWS_386__
 
 #define MAXBUFF 0x8000
 
-tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
+static tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 {
-    unsigned    total=0,readamt;
-    int         rc;
+    unsigned    total = 0;
+    unsigned    readamt;
+    tiny_ret_t  rc;
 
     while( len > 0 ) {
 
@@ -62,9 +64,11 @@ tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
             readamt = len;
         }
         rc = TinyRead( handle, buffer, readamt );
-        if( rc < 0 ) return( rc );
-        total += (unsigned) rc;
-        if( (unsigned) rc != readamt ) return( total );
+        if( TINY_ERROR( rc ) )
+            return( rc );
+        total += TINY_LINFO( rc );
+        if( TINY_LINFO( rc ) != readamt )
+            return( total );
 
         len -= readamt;
         buffer += readamt;
@@ -76,34 +80,34 @@ tiny_ret_t __TinyRead( int handle, char *buffer, unsigned len )
 
 
 
-int __qread( int handle, char *buffer, unsigned len )
+int __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;
-#else
-    tiny_ret_t      rc;
-#if defined(__WARP__)
+#elif defined(__WARP__)
     ULONG           amount_read;
 #elif defined(__OS2_286__)
     USHORT          amount_read;
 #else
     unsigned        amount_read;
 #endif
+#if !defined( __NT__ )
+    tiny_ret_t      rc;
 #endif
 
     __handle_check( handle, -1 );
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsStdin != 0 ) {
-            LPWDATA res;
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsStdin != 0 ) {
+        LPWDATA res;
 
-            res = _WindowsIsWindowedHandle( handle );
-            if( res ) {
-                int rt;
-                rt = _WindowsStdin( res, buffer, len );
-                return( rt );
-            }
+        res = _WindowsIsWindowedHandle( handle );
+        if( res ) {
+            int rt;
+            rt = _WindowsStdin( res, buffer, len );
+            return( rt );
         }
-    #endif
+    }
+#endif
 #if defined(__NT__)
     if( !ReadFile( __getOSHandle( handle ), buffer, len, &amount_read, NULL ) ) {
         DWORD       err;
@@ -113,19 +117,18 @@ int __qread( int handle, char *buffer, unsigned len )
             return( -1 );
         }
     }
+#elif defined(__OS2__)
+    rc = DosRead( handle, buffer, len, &amount_read );
+#elif defined( __WINDOWS_386__ )
+    rc = __TinyRead( handle, buffer, len );
+    amount_read = TINY_LINFO( rc );
 #else
-    #if defined(__OS2__)
-        rc = DosRead( handle, buffer, len, &amount_read );
-    #else
-        #ifdef __WINDOWS_386__
-            rc = __TinyRead( handle, buffer, len );
-        #else
-            rc = TinyRead( handle, buffer, len );
-        #endif
-        amount_read = TINY_LINFO(rc);
-    #endif
-    if( TINY_ERROR(rc) ) {
-        return( __set_errno_dos( TINY_INFO(rc) ) );
+    rc = TinyRead( handle, buffer, len );
+    amount_read = TINY_LINFO( rc );
+#endif
+#if !defined(__NT__)
+    if( TINY_ERROR( rc ) ) {
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
 #endif
     return( amount_read );

@@ -1,0 +1,2351 @@
+/*
+ *  dsound.h    DirectSound interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#define COM_NO_WINDOWS_H
+#include <objbase.h>
+#include <float.h>
+
+/* DirectSound version number */
+#ifndef DIRECTSOUND_VERSION
+    #define DIRECTSOUND_VERSION     0x0900
+#endif
+
+#ifndef __DSOUND_INCLUDED__
+#define __DSOUND_INCLUDED__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+:include dxshared.sp
+
+/* Macro to make DirectSound error codes */
+#define _FACDS  0x0878
+#define MAKE_DSHRESULT( x ) MAKE_HRESULT( 1, _FACDS, x )
+
+/* DirectSound effect flags */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFX_LOCHARDWARE    0x00000001L
+    #define DSFX_LOCSOFTWARE    0x00000002L
+#endif
+
+/* DirectSound capture effect flags */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSCFX_LOCHARDWARE   0x00000001L
+    #define DSCFX_LOCSOFTWARE   0x00000002L
+#endif
+
+/* DirectSound capture effect results */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSCFXR_LOCHARDWARE  0x00000010L
+    #define DSCFXR_LOCSOFTWARE  0x00000020L
+#endif
+
+/* DirectSound gargle effect wave shapes */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXGARGLE_WAVE_TRIANGLE    0L
+    #define DSFXGARGLE_WAVE_SQUARE      1L
+#endif
+
+/* DirectSound gargle effect rates */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXGARGLE_RATEHZ_MIN   1L
+    #define DSFXGARGLE_RATEHZ_MAX   1000L
+#endif
+
+/* DirectSound chorus waveforms */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXCHORUS_WAVE_TRIANGLE    0L
+    #define DSFXCHORUS_WAVE_SIN         1L
+#endif
+
+/* DirectSound chorus minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXCHORUS_WETDRYMIX_MIN    0.0f
+    #define DSFXCHORUS_WETDRYMIX_MAX    100.0f
+    #define DSFXCHORUS_DEPTH_MIN        0.0f
+    #define DSFXCHORUS_DEPTH_MAX        100.0f
+    #define DSFXCHORUS_FEEDBACK_MIN     -99.0f
+    #define DSFXCHORUS_FEEDBACK_MAX     99.0f
+    #define DSFXCHORUS_FREQUENCY_MIN    0.0f
+    #define DSFXCHORUS_FREQUENCY_MAX    10.0f
+    #define DSFXCHORUS_DELAY_MIN        0.0f
+    #define DSFXCHORUS_DELAY_MAX        20.0f
+    #define DSFXCHORUS_PHASE_MIN        0L
+    #define DSFXCHORUS_PHASE_MAX        4L
+#endif
+
+/* DirectSound chorus phases */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXCHORUS_PHASE_NEG_180    0L
+    #define DSFXCHORUS_PHASE_NEG_90     1L
+    #define DSFXCHORUS_PHASE_ZERO       2L
+    #define DSFXCHORUS_PHASE_90         3L
+    #define DSFXCHORUS_PHASE_180        4L
+#endif
+
+/* DirectSound flanger waveforms */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXFLANGER_WAVE_TRIANGLE   0L
+    #define DSFXFLANGER_WAVE_SIN        1L
+#endif
+
+/* DirectSound flanger minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXFLANGER_WETDRYMIX_MIN   0.0f
+    #define DSFXFLANGER_WETDRYMIN_MAX   100.0f
+    #define DSFXFLANGER_FREQUENCY_MIN   0.0f
+    #define DSFXFLANGER_FREQUENCY_MAX   10.0f
+    #define DSFXFLANGER_DEPTH_MIN       0.0f
+    #define DSFXFLANGER_DEPTH_MAX       100.0f
+    #define DSFXFLANGER_PHASE_MIN       0L
+    #define DSFXFLANGER_PHASE_MAX       4L
+    #define DSFXFLANGER_FEEDBACK_MIN    -99.0f
+    #define DSFXFLANGER_FEEDBACK_MAX    99.0f
+    #define DSFXFLANGER_DELAY_MIN       0.0f
+    #define DSFXFLANGER_DELAY_MAX       4.0f
+#endif
+
+/* DirectSound flanger phases */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXFLANGER_PHASE_NEG_180   0L
+    #define DSFXFLANGER_PHASE_NEG_90    1L
+    #define DSFXFLANGER_PHASE_ZERO      2L
+    #define DSFXFLANGER_PHASE_90        3L
+    #define DSFXFLANGER_PHASE_180       4L
+#endif
+
+/* DirectSound echo minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXECHO_WETDRYMIX_MIN  0.0f
+    #define DSFXECHO_WETDRYMIX_MAX  100.0f
+    #define DSFXECHO_FEEDBACK_MIN   0.0f
+    #define DSFXECHO_FEEDBACK_MAX   100.0f
+    #define DSFXECHO_LEFTDELAY_MIN  1.0f
+    #define DSFXECHO_LEFTDELAY_MAX  2000.0f
+    #define DSFXECHO_RIGHTDELAY_MIN 1.0f
+    #define DSFXECHO_RIGHTDELAY_MAX 2000.0f
+    #define DSFXECHO_PANDELAY_MIN   0L
+    #define DSFXECHO_PANDELAY_MAX   1L
+#endif
+
+/* DirectSound distortion minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXDISTORTION_GAIN_MIN                     -60.0f
+    #define DSFXDISTORTION_GAIN_MAX                     0.0f
+    #define DSFXDISTORTION_EDGE_MIN                     0.0f
+    #define DSFXDISTORTION_EDGE_MAX                     100.0f
+    #define DSFXDISTORTION_POSTEQCENTERFREQUENCY_MIN    100.0f
+    #define DSFXDISTORTION_POSTEQCENTERFREQUENCY_MAX    8000.0f
+    #define DSFXDISTORTION_POSTEQBANDWIDTH_MIN          100.0f
+    #define DSFXDISTORTION_POSTEQBANDWIDTH_MAX          8000.0f
+    #define DSFXDISTORTION_PRELOWPASSCUTOFF_MIN         100.0f
+    #define DSFXDISTORTION_PRELOWPASSCUTOFF_MAX         8000.0f
+#endif
+
+/* DirectSound compressor minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXCOMPRESSOR_GAIN_MIN         -60.0f
+    #define DSFXCOMPRESSOR_GAIN_MAX         60.0f
+    #define DSFXCOMPRESSOR_ATTACK_MIN       0.01f
+    #define DSFXCOMPRESSOR_ATTACK_MAX       500.0f
+    #define DSFXCOMPRESSOR_RELEASE_MIN      50.0f
+    #define DSFXCOMPRESSOR_RELEASE_MAX      3000.0f
+    #define DSFXCOMPRESSOR_THRESHOLD_MIN    -60.0f
+    #define DSFXCOMPRESSOR_THRESHOLD_MAX    0.0f
+    #define DSFXCOMPRESSOR_RATIO_MIN        1.0f
+    #define DSFXCOMPRESSOR_RATIO_MAX        100.0f
+    #define DSFXCOMPRESSOR_PREDELAY_MIN     0.0f
+    #define DSFXCOMPRESSOR_PREDELAY_MAX     4.0f
+#endif
+
+/* DirectSound parametric equalizer minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFXPARAMEQ_CENTER_MIN      80.0f
+    #define DSFXPARAMEQ_CENTER_MAX      1600.0f
+    #define DSFXPARAMEQ_BANDWIDTH_MIN   1.0f
+    #define DSFXPARAMEQ_BANDWIDTH_MAX   36.0f
+    #define DSFXPARAMEQ_GAIN_MIN        -15.0f
+    #define DSFXPARAMEQ_GAIN_MAX        15.0f
+#endif
+
+/* DirectSound I3DL2 reverberation minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFX_I3DL2REVERB_ROOM_MIN                   (-10000L)
+    #define DSFX_I3DL2REVERB_ROOM_MAX                   0L
+    #define DSFX_I3DL2REVERB_ROOM_DEFAULT               (-1000L)
+    #define DSFX_I3DL2REVERB_ROOMHF_MIN                 (-10000L)
+    #define DSFX_I3DL2REVERB_ROOMHF_MAX                 0L
+    #define DSFX_I3DL2REVERB_ROOMHF_DEFAULT             (-100L)
+    #define DSFX_I3DL2REVERB_ROOMROLLOFFFACTOR_MIN      0.0f
+    #define DSFX_I3DL2REVERB_ROOMROLLOFFFACTOR_MAX      10.0f
+    #define DSFX_I3DL2REVERB_ROOMROLLOFFFACTOR_DEFAULT  0.0f
+    #define DSFX_I3DL2REVERB_DECAYTIME_MIN              0.1f
+    #define DSFX_I3DL2REVERB_DECAYTIME_MAX              20.0f
+    #define DSFX_I3DL2REVERB_DECAYTIME_DEFAULT          1.49f
+    #define DSFX_I3DL2REVERB_DECAYHFRATIO_MIN           0.1f
+    #define DSFX_I3DL2REVERB_DECAYHFRATIO_MAX           2.0f
+    #define DSFX_I3DL2REVERB_DECAYHFRATIO_DEFAULT       0.83f
+    #define DSFX_I3DL2REVERB_REFLECTIONS_MIN            (-10000L)
+    #define DSFX_I3DL2REVERB_REFLECTIONS_MAX            1000L
+    #define DSFX_I3DL2REVERB_REFLECTIONS_DEFAULT        (-2602L)
+    #define DSFX_I3DL2REVERB_REFLECTIONSDELAY_MIN       0.0f
+    #define DSFX_I3DL2REVERB_REFLECTIONSDELAY_MAX       0.3f
+    #define DSFX_I3DL2REVERB_REFLECTIONSDELAY_DEFAULT   0.007f
+    #define DSFX_I3DL2REVERB_REVERB_MIN                 (-10000L)
+    #define DSFX_I3DL2REVERB_REVERB_MAX                 2000L
+    #define DSFX_I3DL2REVERB_REVERB_DEFAULT             200L
+    #define DSFX_I3DL2REVERB_REVERBDEFAULT_MIN          0.0f
+    #define DSFX_I3DL2REVERB_REVERBDEFAULT_MAX          0.1f
+    #define DSFX_I3DL2REVERB_REVERBDEFAULT_DEFAULT      0.011f
+    #define DSFX_I3DL2REVERB_DIFFUSION_MIN              0.0f
+    #define DSFX_I3DL2REVERB_DIFFUSION_MAX              100.0f
+    #define DSFX_I3DL2REVERB_DIFFUSION_DEFAULT          100.0f
+    #define DSFX_I3DL2REVERB_DENSITY_MIN                0.0f
+    #define DSFX_I3DL2REVERB_DENSITY_MAX                100.0f
+    #define DSFX_I3DL2REVERB_DENSITY_DEFAULT            100.0f
+    #define DSFX_I3DL2REVERB_HFREFERENCE_MIN            20.0f
+    #define DSFX_I3DL2REVERB_HFREFERENCE_MAX            20000.0f
+    #define DSFX_I3DL2REVERB_HFREFERENCE_DEFAULT        5000.0f
+    #define DSFX_I3DL2REVERB_QUALITY_MIN                0L
+    #define DSFX_I3DL2REVERB_QUALITY_MAX                3L
+    #define DSFX_I3DL2REVERB_QUALITY_DEFAULT            2L
+#endif
+
+/* DirectSound waves reverberation minimum and maximum values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSFX_WAVESREVERB_INGAIN_MIN                 -96.0f
+    #define DSFX_WAVESREVERB_INGAIN_MAX                 0.0f
+    #define DSFX_WAVESREVERB_INGAIN_DEFAULT             0.0f
+    #define DSFX_WAVESREVERB_REVERBMIX_MIN              -96.0f
+    #define DSFX_WAVESREVERB_REVERBMIX_MAX              0.0f
+    #define DSFX_WAVESREVERB_REVERBMIX_DEFAULT          0.0f
+    #define DSFX_WAVESREVERB_REVERBTIME_MIN             0.001f
+    #define DSFX_WAVESREVERB_REVERBTIME_MAX             3000.0f
+    #define DSFX_WAVESREVERB_REVERBTIME_DEFAULT         1000.0f
+    #define DSFX_WAVESREVERB_HIGHFREQRTRATIO_MIN        0.001f
+    #define DSFX_WAVESREVERB_HIGHFREQRTRATIO_MAX        0.999f
+    #define DSFX_WAVESREVERB_HIGHFREQRTRATIO_DEFAULT    0.001f
+#endif
+
+/* DirectSound capture AEC modes */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSCFX_AEC_MODE_PASS_THROUGH 0x00000000L
+    #define DSCFX_AEC_MODE_HALF_DUPLEX  0x00000001L
+    #define DSCFX_AEC_MODE_FULL_DUPLEX  0x00000002L
+#endif
+
+/* DirectSound capture AEC status values */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSCFX_AEC_STATUS_HISTORY_UNINITIALIZED          0x00000000L
+    #define DSCFX_AEC_STATUS_HISTORY_CONTINUOUSLY_CONVERGED 0x00000001L
+    #define DSCFX_AEC_STATUS_HISTORY_PREVIOUSLY_DIVERGED    0x00000002L
+    #define DSCFX_AEC_STATUS_CURRENTLY_CONVERGED            0x00000008L
+#endif
+
+/* DirectSound error codes */
+#define DS_OK                       S_OK
+#define DS_NO_VIRTUALIZATION        MAKE_HRESULT( 0, _FACDS, 10 )
+#define DSERR_ALLOCATED             MAKE_DSHRESULT( 10 )
+#define DSERR_CONTROLUNAVAIL        MAKE_DSHRESULT( 30 )
+#define DSERR_INVALIDPARAM          E_INVALIDARG
+#define DSERR_INVALIDCALL           MAKE_DSHRESULT( 50 )
+#define DSERR_GENERIC               E_FAIL
+#define DSERR_PRIOLEVELNEEDED       MAKE_DSHRESULT( 70 )
+#define DSERR_OUTOFMEMORY           E_OUTOFMEMORY
+#define DSERR_BADFORMAT             MAKE_DSHRESULT( 100 )
+#define DSERR_UNSUPPORTED           E_NOTIMPL
+#define DSERR_NODRIVER              MAKE_DSHRESULT( 120 )
+#define DSERR_ALREADYINITIALIZED    MAKE_DSHRESULT( 130 )
+#define DSERR_NOAGGREGATION         CLASS_E_NOAGGREGATION
+#define DSERR_BUFFERLOST            MAKE_DSHRESULT( 150 )
+#define DSERR_OTHERAPPHASPRIO       MAKE_DSHRESULT( 160 )
+#define DSERR_UNINITIALIZED         MAKE_DSHRESULT( 170 )
+#define DSERR_NOINTERFACE           E_NOINTERFACE
+#define DSERR_ACCESSDENIED          E_ACCESSDENIED
+#define DSERR_BUFFERTOOSMALL        MAKE_DSHRESULT( 180 )
+#define DSERR_DS8_REQUIRED          MAKE_DSHRESULT( 190 )
+#define DSERR_SENDLOOP              MAKE_DSHRESULT( 200 )
+#define DSERR_BADSENDBUFFERGUID     MAKE_DSHRESULT( 210 )
+#define DSERR_OBJECTNOTFOUND        MAKE_DSHRESULT( 4449 )
+#define DSERR_FXUNAVAILABLE         MAKE_DSHRESULT( 220 )
+
+/* DirectSound capability flags */
+#define DSCAPS_PRIMARYMONO      0x00000001L
+#define DSCAPS_PRIMARYSTEREO    0x00000002L
+#define DSCAPS_PRIMARY8BIT      0x00000004L
+#define DSCAPS_PRIMARY16BIT     0x00000008L
+#define DSCAPS_CONTINUOUSRATE   0x00000010L
+#define DSCAPS_EMULDRIVER       0x00000020L
+#define DSCAPS_CERTIFIED        0x00000040L
+#define DSCAPS_SECONDARYMONO    0x00000100L
+#define DSCAPS_SECONDARYSTEREO  0x00000200L
+#define DSCAPS_SECONDARY8BIT    0x00000400L
+#define DSCAPS_SECONDARY16BIT   0x00000800L
+
+/* DirectSound cooperative levels */
+#define DSSCL_NORMAL        0x00000001L
+#define DSSCL_PRIORITY      0x00000002L
+#define DSSCL_EXCLUSIVE     0x00000003L
+#define DSSCL_WRITEPRIMARY  0x00000004L
+
+/* DirectSound speakers */
+#define DSSPEAKER_DIRECTOUT 0x00000000L
+#define DSSPEAKER_HEADPHONE 0x00000001L
+#define DSSPEAKER_MONO      0x00000002L
+#define DSSPEAKER_QUAD      0x00000003L
+#define DSSPEAKER_STEREO    0x00000004L
+#define DSSPEAKER_SURROUND  0x00000005L
+#define DSSPEAKER_5POINT1   0x00000006L
+#define DSSPEAKER_7POINT1   0x00000007L
+
+/* DirectSound speaker geometry values */
+#define DSSPEAKER_GEOMETRY_MIN      0x00000005L
+#define DSSPEAKER_GEOMETRY_NARROW   0x0000000AL
+#define DSSPEAKER_GEOMETRY_WIDE     0x00000014L
+#define DSSPEAKER_GEOMETRY_MAX      0x000000B4L
+
+/* Macros to manipulate DirectSound speaker constants */
+#define DSSPEAKER_COMBINED( p1, p2 )    ((DWORD)((BYTE)(p1) | (DWORD)(BYTE)(p2) << 16))
+#define DSSPEAKER_CONFIG( x )           ((BYTE)(x))
+#define DSSPEAKER_GEOMETRY( x )         ((BYTE)(((DWORD)(x) >> 16) & 0x00FF))
+
+/* DirectSound buffer capability flags */
+#define DSBCAPS_PRIMARYBUFFER       0x00000001L
+#define DSBCAPS_STATIC              0x00000002L
+#define DSBCAPS_LOCHARDWARE         0x00000004L
+#define DSBCAPS_LOCSOFTWARE         0x00000008L
+#define DSBCAPS_CTRL3D              0x00000010L
+#define DSBCAPS_CTRLFREQUENCY       0x00000020L
+#define DSBCAPS_CTRLPAN             0x00000040L
+#define DSBCAPS_CTRLVOLUME          0x00000080L
+#define DSBCAPS_CTRLPOSITIONNOTIFY  0x00000100L
+#define DSBCAPS_CTRLFX              0x00000200L
+#define DSBCAPS_STICKYFOCUS         0x00004000L
+#define DSBCAPS_GLOBALFOCUS         0x00008000L
+#define DSBCAPS_GETCURRENTPOSITION2 0x00010000L
+#define DSBCAPS_MUTE3DATMAXDISTANCE 0x00020000L
+#define DSBCAPS_LOCDEFER            0x00040000L
+
+/* IDirectSoundBuffer::Play() flags */
+#define DSBPLAY_LOOPING                 0x00000001L
+#define DSBPLAY_LOCHARDWARE             0x00000002L
+#define DSBPLAY_LOCSOFTWARE             0x00000004L
+#define DSBPLAY_TERMINATEBY_TIME        0x00000008L
+#define DSBPLAY_TERMINATEBY_DISTANCE    0x00000010L
+#define DSBPLAY_TERMINATEBY_PRIORITY    0x00000020L
+
+/* DirectSound buffer status values */
+#define DSBSTATUS_PLAYING       0x00000001L
+#define DSBSTATUS_BUFFERLOST    0x00000002L
+#define DSBSTATUS_LOOPING       0x00000004L
+#define DSBSTATUS_LOCHARDWARE   0x00000008L
+#define DSBSTATUS_LOCSOFTWARE   0x00000010L
+#define DSBSTATUS_TERMINATED    0x00000020L
+
+/* IDirectSoundBuffer::Lock() flags */
+#define DSBLOCK_FROMWRITECURSOR 0x00000001L
+#define DSBLOCK_ENTIREBUFFER    0x00000002L
+
+/* DirectSound buffer frequencies */
+#define DSBFREQUENCY_ORIGINAL   0
+#define DSBFREQUENCY_MIN        100
+#if (DIRECTSOUND_VERSION >= 0x0900)
+    #define DSBFREQUENCY_MAX    200000
+#else
+    #define DSBFREQUENCY_MIN    100000
+#endif
+
+/* DirectSound buffer pan values */
+#define DSBPAN_LEFT     (-10000)
+#define DSBPAN_CENTER   0
+#define DSBPAN_RIGHT    10000
+
+/* DirectSound buffer volume values */
+#define DSBVOLUME_MIN   (-10000)
+#define DSBVOLUME_MAX   0
+
+/* DirectSound buffer size values */
+#define DSBSIZE_MIN     4
+#define DSBSIZE_MAX     0x0FFFFFFF
+#define DSBSIZE_FX_MIN  150
+
+/* DirectSound 3D modes */
+#define DS3DMODE_NORMAL     0x00000000L
+#define DS3DMODE_RELATIVE   0x00000001L
+#define DS3DMODE_DISABLE    0x00000002L
+
+/* DirectSound 3D apply modes */
+#define DS3D_IMMEDIATE  0x00000000L
+#define DS3D_DEFERRED   0x00000001L
+
+/* DirectSound 3D minimum and maximum values */
+#define DS3D_MINDISTANCEFACTOR          FLT_MIN
+#define DS3D_MAXDISTANCEFACTOR          FLT_MAX
+#define DS3D_DEFAULTDISTANCEFACTOR      1.0f
+#define DS3D_MINROLLOFFFACTOR           0.0f
+#define DS3D_MAXROLLOFFFACTOR           10.0f
+#define DS3D_DEFAULTROLLOFFFACTOR       1.0f
+#define DS3D_MINDOPPLERFACTOR           0.0f
+#define DS3D_MAXDOPPLERFACTOR           10.0f
+#define DS3D_DEFAULTDOPPLERFACTOR       1.0f
+#define DS3D_DEFAULTMINDISTANCE         1.0f
+#define DS3D_DEFAULTMAXDISTANCE         1000000000.0f
+#define DS3D_MINCONEANGLE               0L
+#define DS3D_MAXCONEANGLE               360L
+#define DS3D_DEFAULTCONEANGLE           360L
+#define DS3D_DEFAULTCONEOUTSIDEVOLUME   DSBVOLUME_MAX
+
+/* DirectSound capture capability flags */
+#define DSCCAPS_EMULDRIVER      DSCAPS_EMULDRIVER
+#define DSCCAPS_CERTIFIED       DSCAPS_CERTIFIED
+#define DSCCAPS_MULTIPLECAPTURE 0x00000001L
+
+/* DirectSound capture buffer capability flags */
+#define DSCBCAPS_WAVEMAPPED 0x80000000L
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DSCBCAPS_CTRLFX 0x00000200L
+#endif
+
+/* IDirectSoundCaptureBuffer::Lock() flags */
+#define DSCBLOCK_ENTIREBUFFER   0x00000001L
+
+/* DirectSound capture buffer status values */
+#define DSCBSTATUS_CAPTURING    0x00000001L
+#define DSCBSTATUS_LOOPING      0x00000002L
+
+/* IDirectSoundCaptureBuffer::Start() flags */
+#define DSCBSTART_LOOPING   0x00000001L
+
+/* DirectSound buffer position notify offset special value */
+#define DSBPN_OFFSETSTOP    0xFFFFFFFFL
+
+/* IDirectSound8::VerifyCertification() flags */
+#define DS_CERTIFIED    0x00000000L
+#define DS_UNCERTIFIED  0x00000001L
+
+/* I3DL2 material presets */
+#define I3DL2_MATERIAL_PRESET_SINGLEWINDOW  -2800, 0.71f
+#define I3DL2_MATERIAL_PRESET_DOUBLEWINDOW  -5000, 0.40f
+#define I3DL2_MATERIAL_PRESET_THINDOOR      -1800, 0.66f
+#define I3DL2_MATERIAL_PRESET_THICKDOOR     -4400, 0.64f
+#define I3DL2_MATERIAL_PRESET_WOODWALL      -4000, 0.50f
+#define I3DL2_MATERIAL_PRESET_BRICKWALL     -5000, 0.60f
+#define I3DL2_MATERIAL_PRESET_STONEWALL     -6000, 0.68f
+#define I3DL2_MATERIAL_PRESET_CURTAIN       -1200, 0.15f
+
+/* I3DL2 environment presets */
+#define I3DL2_ENVIRONMENT_PRESET_DEFAULT \
+    -1000, -100, 0.0f, 1.49f, 0.83f, -2602, 0.007f, 200, 0.011f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_GENERIC \
+    -1000, -100, 0.0f, 1.49f, 0.83f, -2602, 0.007f, 200, 0.011f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_PADDEDCELL \
+    -1000, -6000, 0.0f, 0.17f, 0.10f, -1204, 0.001f, 207, 0.002f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_ROOM \
+    -1000, -454, 0.0f, 0.40f, 0.83f, -1646, 0.002f, 53, 0.003f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_BATHROOM \
+    -1000, -1200, 0.0f, 1.49f, 0.54f, -370, 0.007f, 1030, 0.011f, 100.0f, 60.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_LIVINGROOM \
+    -1000, -6000, 0.0f, 0.50f, 0.10f, -1376, 0.003f, -1104, 0.004f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_STONEROOM \
+    -1000, -300, 0.0f, 2.31f, 0.64f, -711, 0.012f, 83, 0.017f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_AUDITORIUM \
+    -1000, -476, 0.0f, 4.32f, 0.59f, -789, 0.020f, -289, 0.030f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_CONCERTHALL \
+    -1000, -500, 0.0f, 3.92f, 0.70f, -1230, 0.020f, -2, 0.029f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_CAVE \
+    -1000, 0, 0.0f, 2.91f, 1.30f, -602, 0.015f, -302, 0.022f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_ARENA \
+    -1000, -698, 0.0f, 7.24f, 0.33f, -1166, 0.020f, 16, 0.030f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_HANGAR \
+    -1000, -1000, 0.0f, 10.05f, 0.23f, -602, 0.020f, 198, 0.030f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_CARPETEDHALLWAY \
+    -1000, -4000, 0.0f, 0.30f, 0.10f, -1831, 0.002f, -1630, 0.030f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_HALLWAY \
+    -1000, -300, 0.0f, 1.49f, 0.59f, -1219, 0.007f, 441, 0.011f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_STONECORRIDOR \
+    -1000, -237, 0.0f, 2.70f, 0.79f, -1214, 0.013f, 395, 0.020f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_ALLEY \
+    -1000, -270, 0.0f, 1.49f, 0.86f, -1204, 0.007f, -4, 0.011f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_FOREST \
+    -1000, -3300, 0.0f, 1.49f, 0.54f, -2560, 0.162f, -613, 0.088f, 79.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_CITY \
+    -1000, -800, 0.0f, 1.49f, 0.67f, -2273, 0.007f, -2217, 0.011f, 50.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_MOUNTAINS \
+    -1000, -2500, 0.0f, 1.49f, 0.21f, -2780, 0.300f, -2014, 0.100f, 27.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_QUARRY \
+    -1000, -1000, 0.0f, 1.49f, 0.83f, -10000, 0.061f, 500, 0.025f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_PLAIN \
+    -1000, -2000, 0.0f, 1.49f, 0.50f, -2466, 0.179f, -2514, 0.100f, 21.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_PARKINGLOT \
+    -1000, 0, 0.0f, 1.65f, 1.50f, -1363, 0.008f, -1153, 0.012f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_SEWERPIPE \
+    -1000, -1000, 0.0f, 2.81f, 0.14f, 429, 0.014f, 648, 0.021f, 80.0f, 60.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_UNDERWATER \
+    -1000, -4000, 0.0f, 1.49f, 0.10f, -449, 0.007f, 1700, 0.011f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_SMALLROOM \
+    -1000, -600, 0.0f, 1.10f, 0.83f, -400, 0.005f, 500, 0.010f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_MEDIUMROOM \
+    -1000, -600, 0.0f, 1.30f, 0.83f, -1000, 0.010f, -200, 0.020f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_LARGEROOM \
+    -1000, -600, 0.0f, 1.50f, 0.83f, -1600, 0.020f, -1000, 0.040f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_MEDIUMHALL \
+    -1000, -600, 0.0f, 1.80f, 0.70f, -1300, 0.015f, -800, 0.030f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_LARGEHALL \
+    -1000, -600, 0.0f, 1.80f, 0.70f, -2000, 0.030f, -1400, 0.060f, 100.0f, 100.0f, 5000.0f
+#define I3DL2_ENVIRONMENT_PRESET_PLATE \
+    -1000, -200, 0.0f, 1.30f, 0.90f, 0, 0.002f, 0, 0.010f, 100.0f, 75.0f, 5000.0f
+
+/* DirectSound capabilities */
+typedef struct _DSCAPS {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwMinSecondarySampleRate;
+    DWORD   dwMaxSecondarySampleRate;
+    DWORD   dwPrimaryBuffers;
+    DWORD   dwMaxHwMixingAllBuffers;
+    DWORD   dwMaxHwMixingStaticBuffers;
+    DWORD   dwMaxHwMixingStreamingBuffers;
+    DWORD   dwFreeHwMixingAllBuffers;
+    DWORD   dwFreeHwMixingStaticBuffers;
+    DWORD   dwFreeHwMixingStreamingBuffers;
+    DWORD   dwMaxHw3DAllBuffers;
+    DWORD   dwMaxHw3DStaticBuffers;
+    DWORD   dwMaxHw3DStreamingBuffers;
+    DWORD   dwFreeHw3DAllBuffers;
+    DWORD   dwFreeHw3DStaticBuffers;
+    DWORD   dwFreeHw3DStreamingBuffers;
+    DWORD   dwTotalHwMemBytes;
+    DWORD   dwFreeHwMemBytes;
+    DWORD   dwMaxContigFreeHwMemBytes;
+    DWORD   dwUnlockTransferRateHwBuffers;
+    DWORD   dwPlayCpuOverheadSwBuffers;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+} DSCAPS;
+typedef DSCAPS          *LPDSCAPS;
+typedef const DSCAPS    *LPCDSCAPS;
+
+/* DirectSound buffer capabilities */
+typedef struct _DSBCAPS {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwBufferBytes;
+    DWORD   dwUnlockTransferRate;
+    DWORD   dwPlayCpuOverhead;
+} DSBCAPS;
+typedef DSBCAPS         *LPDSBCAPS;
+typedef const DSBCAPS   *LPCDSBCAPS;
+
+/* DirectSound effect descriptor */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSEFFECTDESC {
+    DWORD       dwSize;
+    DWORD       dwFlags;
+    GUID        guidDSFXClass;
+    DWORD_PTR   dwReserved1;
+    DWORD_PTR   dwReserved2;
+} DSEFFECTDESC;
+typedef DSEFFECTDESC        *LPDSEFFECTDESC;
+typedef const DSEFFECTDESC  *LPCDSEFFECTDESC;
+#endif
+
+/* DirectSound effect results */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+enum {
+    DSFXR_PRESENT       = 0,
+    DSFXR_LOCHARDWARE   = 1,
+    DSFXR_LOCSOFTWARE   = 2,
+    DSFXR_UNALLOCATED   = 3,
+    DSFXR_FAILED        = 4,
+    DSFXR_UNKNOWN       = 5,
+    DSFXR_SENDLOOP      = 6
+};
+#endif
+
+/* DirectSound capture effect descriptor */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSCEFFECTDESC {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    GUID    guidDSCFXClass;
+    GUID    guidDSCFXInstance;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+} DSCEFFECTDESC;
+typedef DSCEFFECTDESC       *LPDSCEFFECTDESC;
+typedef const DSCEFFECTDESC *LPCDSCEFFECTDESC;
+#endif
+
+/* DirectSound buffer descriptor */
+typedef struct _DSBUFFERDESC {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwBufferBytes;
+    DWORD           dwReserved;
+    LPWAVEFORMATEX  lpwfxFormat;
+#if (DIRECTSOUND_VERSION >= 0x0700)
+    GUID            guid3DAlgorithm;
+#endif
+} DSBUFFERDESC;
+typedef DSBUFFERDESC        *LPDSBUFFERDESC;
+typedef const DSBUFFERDESC  *LPCDSBUFFERDESC;
+
+/* DirectSound buffer descriptor (version 1) */
+typedef struct _DSBUFFERDESC1 {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwBufferBytes;
+    DWORD           dwReserved;
+    LPWAVEFORMATEX  lpwfxFormat;
+} DSBUFFERDESC1;
+typedef DSBUFFERDESC1       *LPDSBUFFERDESC1;
+typedef const DSBUFFERDESC1 *LPCDSBUFFERDESC1;
+
+/* DirectSound 3D buffer */
+typedef struct _DS3DBUFFER {
+    DWORD       dwSize;
+    D3DVECTOR   vPosition;
+    D3DVECTOR   vVelocity;
+    DWORD       dwInsideConeAngle;
+    DWORD       dwOutsideConeAngle;
+    D3DVECTOR   vConeOrientation;
+    LONG        lConeOutsideVolume;
+    D3DVALUE    flMinDistance;
+    D3DVALUE    flMaxDistance;
+    DWORD       dwMode;
+} DS3DBUFFER;
+typedef DS3DBUFFER          *LPDS3DBUFFER;
+typedef const DS3DBUFFER    *LPCDS3DBUFFER;
+
+/* DirectSound 3D listener */
+typedef struct _DS3DLISTENER {
+    DWORD       dwSize;
+    D3DVECTOR   vPosition;
+    D3DVECTOR   vVelocity;
+    D3DVECTOR   vOrientFront;
+    D3DVECTOR   vOrientTop;
+    D3DVALUE    flDistanceFactor;
+    D3DVALUE    flRolloffFactor;
+    D3DVALUE    flDopplerFactor;
+} DS3DLISTENER;
+typedef DS3DLISTENER        *LPDS3DLISTENER;
+typedef const DS3DLISTENER  *LPCDS3DLISTENER;
+
+/* DirectSound capture capabilities */
+typedef struct _DSCCAPS {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwFormats;
+    DWORD   dwChannels;
+} DSCCAPS;
+typedef DSCCAPS         *LPDSCCAPS;
+typedef const DSCCAPS   *LPCDSCCAPS;
+
+/* DirectSound capture buffer descriptor (version 1) */
+typedef struct _DSCBUFFERDESC1 {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwBufferBytes;
+    DWORD           dwReserved;
+    LPWAVEFORMATEX  lpwfxFormat;
+} DSCBUFFERDESC1;
+typedef DSCBUFFERDESC1  *LPDSCBUFFERDESC1;
+
+/* DirectSound capture buffer descriptor */
+typedef struct _DSCBUFFERDESC {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwBufferBytes;
+    DWORD           dwReserved;
+    LPWAVEFORMATEX  lpwfxFormat;
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    DWORD           dwFXCount;
+    LPDSCEFFECTDESC lpDSCFXDesc;
+#endif
+} DSCBUFFERDESC;
+typedef DSCBUFFERDESC       *LPDSCBUFFERDESC;
+typedef const DSCBUFFERDESC *LPCDSCBUFFERDESC;
+
+/* DirectSound capture buffer capabilities */
+typedef struct _DSCBCAPS {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwBufferBytes;
+    DWORD   dwReserved;
+} DSCBCAPS;
+typedef DSCBCAPS        *LPDSCBCAPS;
+typedef const DSCBCAPS  *LPCDSCBCAPS;
+
+/* DirectSound buffer position notify */
+typedef struct _DSBPOSITIONNOTIFY {
+    DWORD   dwOffset;
+    HANDLE  hEventNotify;
+} DSBPOSITIONNOTIFY;
+typedef DSBPOSITIONNOTIFY       *LPDSBPOSITIONNOTIFY;
+typedef const DSBPOSITIONNOTIFY *LPCDSBPOSITIONNOTIFY;
+
+/* DirectSound enumeration callback */
+typedef BOOL (CALLBACK *LPDSENUMCALLBACKA)( LPGUID, LPCSTR, LPCSTR, LPVOID );
+typedef BOOL (CALLBACK *LPDSENUMCALLBACKW)( LPGUID, LPCWSTR, LPCWSTR, LPVOID );
+#ifdef UNICODE
+    #define LPDSENUMCALLBACK    LPDSENUMCALLBACKW
+#else
+    #define LPDSENUMCALLBACK    LPDSENUMCALLBACKA
+#endif
+
+/* DirectSound gargle effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXGargle {
+    DWORD   dwRateHz;
+    DWORD   dwWaveShape;
+} DSFXGargle;
+typedef DSFXGargle          *LPDSFXGargle;
+typedef const DSFXGargle    *LPCDSFXGargle;
+#endif
+
+/* DirectSound chorus effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXChorus {
+    FLOAT   fWetDryMix;
+    FLOAT   fDepth;
+    FLOAT   fFeedback;
+    FLOAT   fFrequency;
+    LONG    lWaveform;
+    FLOAT   fDelay;
+    LONG    lPhase;
+} DSFXChorus;
+typedef DSFXChorus          *LPDSFXChorus;
+typedef const DSFXChorus    *LPCDSFXChorus;
+#endif
+
+/* DirectSound flanger effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXFlanger {
+    FLOAT   fWetDryMix;
+    FLOAT   fDepth;
+    FLOAT   fFeedback;
+    FLOAT   fFrequency;
+    LONG    lWaveform;
+    FLOAT   fDelay;
+    LONG    lPhase;
+} DSFXFlanger;
+typedef DSFXFlanger         *LPDSFXFlanger;
+typedef const DSFXFlanger   *LPCDSFXFlanger;
+#endif
+
+/* DirectSound echo effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXEcho {
+    FLOAT   fWetDryMix;
+    FLOAT   fFeedback;
+    FLOAT   fLeftDelay;
+    FLOAT   fRightDelay;
+    LONG    lPanDelay;
+} DSFXEcho;
+typedef DSFXEcho        *LPDSFXEcho;
+typedef const DSFXEcho  *LPCDSFXEcho;
+#endif
+
+/* DirectSound distortion effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXDistortion {
+    FLOAT   fGain;
+    FLOAT   fEdge;
+    FLOAT   fPostEQCenterFrequency;
+    FLOAT   fPostEQBandwidth;
+    FLOAT   fPreLowpassCutoff;
+} DSFXDistortion;
+typedef DSFXDistortion          *LPDSFXDistortion;
+typedef const DSFXDistortion    *LPCDSFXDistortion;
+#endif
+
+/* DirectSound compressor effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXCompressor {
+    FLOAT   fGain;
+    FLOAT   fAttack;
+    FLOAT   fRelease;
+    FLOAT   fThreshold;
+    FLOAT   fRatio;
+    FLOAT   fPredelay;
+} DSFXCompressor;
+typedef DSFXCompressor          *LPDSFXCompressor;
+typedef const DSFXCompressor    *LPCDSFXCompressor;
+#endif
+
+/* DirectSound parametric equalizer effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXParamEq {
+    FLOAT   fCenter;
+    FLOAT   fBandwidth;
+    FLOAT   fGain;
+} DSFXParamEq;
+typedef DSFXParamEq         *LPDSFXParamEq;
+typedef const DSFXParamEq   *LPCDSFXParamEq;
+#endif
+
+/* DirectSound I3DL2 reverberation effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXI3DL2Reverb {
+    LONG    lRoom;
+    LONG    lRoomHF;
+    FLOAT   flRoomRolloffFactor;
+    FLOAT   flDecayTime;
+    FLOAT   flDecayHFRatio;
+    LONG    lReflections;
+    FLOAT   flReflectionsDelay;
+    LONG    lReverb;
+    FLOAT   flReverbDelay;
+    FLOAT   flDiffusion;
+    FLOAT   flDensity;
+    FLOAT   flHFReference;
+} DSFXI3DL2Reverb;
+typedef DSFXI3DL2Reverb         *LPDSFXI3DL2Reverb;
+typedef const DSFXI3DL2Reverb   *LPCDSFXI3DL2Reverb;
+#endif
+
+/* DirectSound waves reverberation effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSFXWavesReverb {
+    FLOAT   fInGain;
+    FLOAT   fReverbMix;
+    FLOAT   fReverbTime;
+    FLOAT   fHighFreqRTRatio;
+} DSFXWavesReverb;
+typedef DSFXWavesReverb         *LPDSFXWavesReverb;
+typedef const DSFXWavesReverb   *LPCDSFXWavesReverb;
+#endif
+
+/* DirectSound capture AEC effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSCFXAec {
+    BOOL    fEnable;
+    BOOL    fNoiseFill;
+    DWORD   dwMode;
+} DSCFXAec;
+typedef DSCFXAec        *LPDSCFXAec;
+typedef const DSCFXAec  *LPCDSCFXAec;
+#endif
+
+/* DirectSound capture noise suppress effect */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef struct _DSCFXNoiseSuppress {
+    BOOL    fEnable;
+} DSCFXNoiseSuppress;
+typedef DSCFXNoiseSuppress          *LPDSCFXNoiseSuppress;
+typedef const DSCFXNoiseSuppress    *LPCDSCFXNoiseSuppress;
+#endif
+
+/* DirectSound I3DL2 materials */
+enum {
+    DSFX_I3DL2_MATERIAL_PRESET_SINGLEWINDOW = 0,
+    DSFX_I3DL2_MATERIAL_PRESET_DOUBLEWINDOW = 1,
+    DSFX_I3DL2_MATERIAL_PRESET_THINDOOR     = 2,
+    DSFX_I3DL2_MATERIAL_PRESET_THICKDOOR    = 3,
+    DSFX_I3DL2_MATERIAL_PRESET_WOODWALL     = 4,
+    DSFX_I3DL2_MATERIAL_PRESET_BRICKWALL    = 5,
+    DSFX_I3DL2_MATERIAL_PRESET_STONEWALL    = 6,
+    DSFX_I3DL2_MATERIAL_PRESET_CURTAIN      = 7
+};
+
+/* DirectSound I3DL2 environments */
+enum {
+    DSFX_I3DL2_ENVIRONMENT_PRESET_DEFAULT           = 0,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_GENERIC           = 1,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_PADDEDCELL        = 2,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_ROOM              = 3,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_BATHROOM          = 4,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_LIVINGROOM        = 5,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_STONEROOM         = 6,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_AUDITORIUM        = 7,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_CONCERTHALL       = 8,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_CAVE              = 9,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_ARENA             = 10,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_HANGAR            = 11,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_CARPETEDHALLWAY   = 12,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_HALLWAY           = 13,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_STONECORRIDOR     = 14,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_ALLEY             = 15,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_FOREST            = 16,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_CITY              = 17,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_MOUNTAINS         = 18,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_QUARRY            = 19,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_PLAIN             = 20,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_PARKINGLOT        = 21,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_SEWERPIPE         = 22,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_UNDERWATER        = 23,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_SMALLROOM         = 24,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_MEDIUMROOM        = 25,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_LARGEROOM         = 26,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_MEDIUMHALL        = 27,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_LARGEHALL         = 28,
+    DSFX_I3DL2_ENVIRONMENT_PRESET_PLATE             = 29
+};
+
+/* DirectSound interface aliases */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define IDirectSoundCapture8                IDirectSoundCapture
+    #define IDirectSound3DListener8             IDirectSound3DListener
+    #define IDirectSound3DBuffer8               IDirectSound3DBuffer
+    #define IDirectSoundNotify8                 IDirectSoundNotify
+    #define IDirectSoundFXGargle8               IDirectSoundFXGargle
+    #define IDirectSoundFXChorus8               IDirectSoundFXChorus
+    #define IDirectSoundFXFlanger8              IDirectSoundFXFlanger
+    #define IDirectSoundFXEcho8                 IDirectSoundFXEcho
+    #define IDirectSoundFXDistortion8           IDirectSoundFXDistortion
+    #define IDirectSoundFXCompressor8           IDirectSoundFXCompressor
+    #define IDirectSoundFXParamEq8              IDirectSoundFXParamEq
+    #define IDirectSoundFXWavesReverb8          IDirectSoundFXWavesReverb
+    #define IDirectSoundFXI3DL2Reverb8          IDirectSoundFXI3DL2Reverb
+    #define IDirectSoundCaptureFXAec8           IDirectSoundCaptureFXAec
+    #define IDirectSoundCaptureFXNoiseSuppress8 IDirectSoundCaptureFXNoiseSuppress
+    #define IDirectSoundFullDuplex8             IDirectSoundFullDuplex
+#endif
+
+/* DirectSound interface pointers */
+typedef interface IDirectSound                  *LPDIRECTSOUND;
+typedef interface IDirectSoundBuffer            *LPDIRECTSOUNDBUFFER;
+typedef interface IDirectSound3DListener        *LPDIRECTSOUND3DLISTENER;
+typedef interface IDirectSound3DBuffer          *LPDIRECTSOUND3DBUFFER;
+typedef interface IDirectSoundCapture           *LPDIRECTSOUNDCAPTURE;
+typedef interface IDirectSoundCaptureBuffer     *LPDIRECTSOUNDCAPTUREBUFFER;
+typedef interface IDirectSoundNotify            *LPDIRECTSOUNDNOTIFY;
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef interface IDirectSoundFXGargle          *LPDIRECTSOUNDFXGARGLE;
+typedef interface IDirectSoundFXChorus          *LPDIRECTSOUNDFXCHORUS;
+typedef interface IDirectSoundFXFlanger         *LPDIRECTSOUNDFXFLANGER;
+typedef interface IDirectSoundFXEcho            *LPDIRECTSOUNDFXECHO;
+typedef interface IDirectSoundFXDistortion      *LPDIRECTSOUNDFXDISTORTION;
+typedef interface IDirectSoundFXCompressor      *LPDIRECTSOUNDFXCOMPRESSOR;
+typedef interface IDirectSoundFXParamEq         *LPDIRECTSOUNDFXPARAMEQ;
+typedef interface IDirectSoundFXWavesReverb     *LPDIRECTSOUNDFXWAVESREVERB;
+typedef interface IDirectSoundFXI3DL2Reverb     *LPDIRECTSOUNDFXI3DL2REVERB;
+typedef interface IDirectSoundCaptureFXAec      *LPDIRECTSOUNDCAPTUREFXAEC;
+typedef interface IDirectSoundCaptureFXNoiseSuppress    *LPDIRECTSOUNDCAPTUREFXNOISESUPPRESS;
+typedef interface IDirectSoundFullDuplex        *LPDIRECTSOUNDFULLDUPLEX;
+typedef interface IDirectSound8                 *LPDIRECTSOUND8;
+typedef interface IDirectSoundBuffer8           *LPDIRECTSOUNDBUFFER8;
+typedef interface IDirectSound3DListener8       *LPDIRECTSOUND3DLISTENER8;
+typedef interface IDirectSound3DBuffer8         *LPDIRECTSOUND3DBUFFER8;
+typedef interface IDirectSoundCapture8          *LPDIRECTSOUNDCAPTURE8;
+typedef interface IDirectSoundCaptureBuffer8    *LPDIRECTSOUNDCAPTUREBUFFER8;
+typedef interface IDirectSoundNotify8           *LPDIRECTSOUNDNOTIFY8;
+typedef interface IDirectSoundFXGargle8         *LPDIRECTSOUNDFXGARGLE8;
+typedef interface IDirectSoundFXChorus8         *LPDIRECTSOUNDFXCHORUS8;
+typedef interface IDirectSoundFXFlanger8        *LPDIRECTSOUNDFXFLANGER8;
+typedef interface IDirectSoundFXEcho8           *LPDIRECTSOUNDFXECHO8;
+typedef interface IDirectSoundFXDistortion8     *LPDIRECTSOUNDFXDISTORTION8;
+typedef interface IDirectSoundFXCompressor8     *LPDIRECTSOUNDFXCOMPRESSOR8;
+typedef interface IDirectSoundFXParamEq8        *LPDIRECTSOUNDFXPARAMEQ8;
+typedef interface IDirectSoundFXWavesReverb8    *LPDIRECTSOUNDFXWAVESREVERB8;
+typedef interface IDirectSoundFXI3DL2Reverb8    *LPDIRECTSOUNDFXI3DL2REVERB8;
+typedef interface IDirectSoundCaptureFXAec8     *LPDIRECTSOUNDCAPTUREFXAEC8;
+typedef interface IDirectSoundCaptureFXNoiseSuppress8   *LPDIRECTSOUNDCAPTUREFXNOISESUPPRESS8;
+typedef interface IDirectSoundFullDuplex8       *LPDIRECTSOUNDFULLDUPLEX8;
+#endif
+typedef LPDIRECTSOUND                           *LPLPDIRECTSOUND;
+typedef LPDIRECTSOUNDBUFFER                     *LPLPDIRECTSOUNDBUFFER;
+typedef LPDIRECTSOUND3DLISTENER                 *LPLPDIRECTSOUND3DLISTENER;
+typedef LPDIRECTSOUND3DBUFFER                   *LPLPDIRECTSOUND3DBUFFER;
+typedef LPDIRECTSOUNDCAPTURE                    *LPLPDIRECTSOUNDCAPTURE;
+typedef LPDIRECTSOUNDCAPTUREBUFFER              *LPLPDIRECTSOUNDCAPTUREBUFFER;
+typedef LPDIRECTSOUNDNOTIFY                     *LPLPDIRECTSOUNDNOTIFY;
+#if (DIRECTSOUND_VERSION >= 0x0800)
+typedef LPDIRECTSOUND8                          *LPLPDIRECTSOUND8;
+typedef LPDIRECTSOUNDBUFFER8                    *LPLPDIRECTSOUNDBUFFER8;
+typedef LPDIRECTSOUNDCAPTURE8                   *LPLPDIRECTSOUNDCAPTURE8;
+typedef LPDIRECTSOUNDCAPTUREBUFFER8             *LPLPDIRECTSOUNDCAPTUREBUFFER8;
+#endif
+
+/* GUIDs */
+EXTERN_C const CLSID    CLSID_DirectSound;
+EXTERN_C const CLSID    CLSID_DirectSound8;
+EXTERN_C const CLSID    CLSID_DirectSoundCapture;
+EXTERN_C const CLSID    CLSID_DirectSoundCapture8;
+EXTERN_C const CLSID    CLSID_DirectSoundFullDuplex;
+EXTERN_C const GUID     DSDEVID_DefaultPlayback;
+EXTERN_C const GUID     DSDEVID_DefaultCapture;
+EXTERN_C const GUID     DSDEVID_DefaultVoicePlayback;
+EXTERN_C const GUID     DSDEVID_DefaultVoiceCapture;
+EXTERN_C const IID      IID_IDirectSound;
+EXTERN_C const IID      IID_IDirectSoundBuffer;
+EXTERN_C const IID      IID_IDirectSound3DListener;
+EXTERN_C const IID      IID_IDirectSound3DBuffer;
+EXTERN_C const IID      IID_IDirectSoundCapture;
+EXTERN_C const IID      IID_IDirectSoundCaptureBuffer;
+EXTERN_C const IID      IID_IDirectSoundNotify;
+EXTERN_C const GUID     DS3DALG_NO_VIRTUALIZATION;
+EXTERN_C const GUID     DS3DALG_HRTF_FULL;
+EXTERN_C const GUID     DS3DALG_HRTF_LIGHT;
+#if (DIRECTSOUND_VERSION >= 0x0800)
+EXTERN_C const IID      IID_IDirectSound8;
+EXTERN_C const IID      IID_IDirectSoundBuffer8;
+EXTERN_C const GUID     GUID_All_Objects;
+EXTERN_C const IID      IID_IDirectSoundCaptureBuffer8;
+EXTERN_C const IID      IID_IDirectSoundFXGargle;
+EXTERN_C const IID      IID_IDirectSoundFXChorus;
+EXTERN_C const IID      IID_IDirectSoundFXFlanger;
+EXTERN_C const IID      IID_IDirectSoundFXEcho;
+EXTERN_C const IID      IID_IDirectSoundFXDistortion;
+EXTERN_C const IID      IID_IDirectSoundFXCompressor;
+EXTERN_C const IID      IID_IDirectSoundFXParamEq;
+EXTERN_C const IID      IID_IDirectSoundFXI3DL2Reverb;
+EXTERN_C const IID      IID_IDirectSoundFXWavesReverb;
+EXTERN_C const IID      IID_IDirectSoundCaptureFXAec;
+EXTERN_C const IID      IID_IDirectSoundCaptureFXNoiseSuppress;
+EXTERN_C const IID      IID_IDirectSoundFullDuplex;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_GARGLE;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_CHORUS;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_FLANGER;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_ECHO;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_DISTORTION;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_COMPRESSOR;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_PARAMEQ;
+EXTERN_C const GUID     GUID_DSFX_STANDARD_I3DL2REVERB;
+EXTERN_C const GUID     GUID_DSFX_WAVES_REVERB;
+EXTERN_C const GUID     GUID_DSCFX_CLASS_AEC;
+EXTERN_C const GUID     GUID_DSCFX_MS_AEC;
+EXTERN_C const GUID     GUID_DSCFX_SYSTEM_AEC;
+EXTERN_C const GUID     GUID_DSCFX_CLASS_NS;
+EXTERN_C const GUID     GUID_DSCFX_MS_NS;
+EXTERN_C const GUID     GUID_DSCFX_SYSTEM_NS;
+#define IID_IDirectSoundCapture8        IID_IDirectSoundCapture
+#define IID_IDirectSound3DListener8     IID_IDirectSound3DListener
+#define IID_IDirectSound3DBuffer8       IID_IDirectSound3DBuffer
+#define IID_IDirectSoundNotify8         IID_IDirectSoundNotify
+#define IID_IDirectSoundFXGargle8       IID_IDirectSoundFXGargle
+#define IID_IDirectSoundFXChorus8       IID_IDirectSoundFXChorus
+#define IID_IDirectSoundFXFlanger8      IID_IDirectSoundFXFlanger
+#define IID_IDirectSoundFXEcho8         IID_IDirectSoundFXEcho
+#define IID_IDirectSoundFXDistortion8   IID_IDirectSoundFXDistortion
+#define IID_IDirectSoundFXCompressor8   IID_IDirectSoundFXCompressor
+#define IID_IDirectSoundFXParamEq8      IID_IDirectSoundFXParamEq
+#define IID_IDirectSoundFXWavesReverb8  IID_IDirectSoundFXWavesReverb
+#define IID_IDirectSoundFXI3DL2Reverb8  IID_IDirectSoundFXI3DL2Reverb
+#define IID_IDirectSoundCaptureFXAec8   IID_IDirectSoundCaptureFXAec
+#define IID_IDirectSoundCaptureFXNoiseSuppress8 IID_IDirectSoundCaptureFXNoiseSuppress
+#define IID_IDirectSoundFullDuplex8     IID_IDirectSoundFullDuplex
+#endif
+#define DS3DALG_DEFAULT                 GUID_NULL
+
+/* IDirectSound interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSound
+DECLARE_INTERFACE_( IDirectSound, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSound methods */
+    STDMETHOD( CreateSoundBuffer )( THIS_ LPCDSBUFFERDESC, LPDIRECTSOUNDBUFFER *, LPUNKNOWN ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDSCAPS ) PURE;
+    STDMETHOD( DuplicateSoundBuffer )( THIS_ LPDIRECTSOUNDBUFFER, LPDIRECTSOUNDBUFFER * ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( GetSpeakerConfig )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( SetSpeakerConfig )( THIS_ DWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPCGUID ) PURE;
+};
+
+/* IDirectSound8 interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSound8
+DECLARE_INTERFACE_( IDirectSound8, IDirectSound ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSound methods */
+    STDMETHOD( CreateSoundBuffer )( THIS_ LPCDSBUFFERDESC, LPDIRECTSOUNDBUFFER *, LPUNKNOWN ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDSCAPS ) PURE;
+    STDMETHOD( DuplicateSoundBuffer )( THIS_ LPDIRECTSOUNDBUFFER, LPDIRECTSOUNDBUFFER * ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( GetSpeakerConfig )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( SetSpeakerConfig )( THIS_ DWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPCGUID ) PURE;
+
+    /* IDirectSound8 methods */
+    STDMETHOD( VerifyCertification )( THIS_ LPDWORD ) PURE;
+};
+#endif
+
+/* IDirectSoundBuffer interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSoundBuffer
+DECLARE_INTERFACE_( IDirectSoundBuffer, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundBuffer methods */
+    STDMETHOD( GetCaps )( THIS_ LPDSBCAPS ) PURE;
+    STDMETHOD( GetCurrentPosition )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetFormat )( THIS_ LPWAVEFORMATEX, DWORD, LPDWORD ) PURE;
+    STDMETHOD( GetVolume )( THIS_ LPLONG ) PURE;
+    STDMETHOD( GetPan )( THIS_ LPLONG ) PURE;
+    STDMETHOD( GetFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetStatus )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTSOUND, LPCDSBUFFERDESC ) PURE;
+    STDMETHOD( Lock )( THIS_ DWORD, DWORD, LPVOID *, LPDWORD, LPVOID *, LPDWORD, DWORD ) PURE;
+    STDMETHOD( Play )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( SetCurrentPosition )( THIS_ DWORD ) PURE;
+    STDMETHOD( SetFormat )( THIS_ LPCWAVEFORMATEX ) PURE;
+    STDMETHOD( SetVolume )( THIS_ LONG ) PURE;
+    STDMETHOD( SetPan )( THIS_ LONG ) PURE;
+    STDMETHOD( SetFrequency )( THIS_ DWORD ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID, DWORD, LPVOID, DWORD ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+};
+
+/* IDirectSoundBuffer8 interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundBuffer8
+DECLARE_INTERFACE_( IDirectSoundBuffer8, IDirectSoundBuffer ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundBuffer methods */
+    STDMETHOD( GetCaps )( THIS_ LPDSBCAPS ) PURE;
+    STDMETHOD( GetCurrentPosition )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetFormat )( THIS_ LPWAVEFORMATEX, DWORD, LPDWORD ) PURE;
+    STDMETHOD( GetVolume )( THIS_ LPLONG ) PURE;
+    STDMETHOD( GetPan )( THIS_ LPLONG ) PURE;
+    STDMETHOD( GetFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetStatus )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTSOUND, LPCDSBUFFERDESC ) PURE;
+    STDMETHOD( Lock )( THIS_ DWORD, DWORD, LPVOID *, LPDWORD, LPVOID *, LPDWORD, DWORD ) PURE;
+    STDMETHOD( Play )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( SetCurrentPosition )( THIS_ DWORD ) PURE;
+    STDMETHOD( SetFormat )( THIS_ LPCWAVEFORMATEX ) PURE;
+    STDMETHOD( SetVolume )( THIS_ LONG ) PURE;
+    STDMETHOD( SetPan )( THIS_ LONG ) PURE;
+    STDMETHOD( SetFrequency )( THIS_ DWORD ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID, DWORD, LPVOID, DWORD ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+
+    /* IDirectSoundBuffer8 methods */
+    STDMETHOD( SetFX )( THIS_ DWORD, LPDSEFFECTDESC, LPDWORD ) PURE;
+    STDMETHOD( AcquireResources )( THIS_ DWORD, DWORD, LPDWORD ) PURE;
+    STDMETHOD( GetObjectInPath )( THIS_ REFGUID, DWORD, REFGUID, LPVOID * ) PURE;
+};
+#endif
+
+/* IDirectSound3DListener interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSound3DListener
+DECLARE_INTERFACE_( IDirectSound3DListener, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSound3DListener methods */
+    STDMETHOD( GetAllParameters )( THIS_ LPDS3DLISTENER ) PURE;
+    STDMETHOD( GetDistanceFactor )( THIS_ D3DVALUE * ) PURE;
+    STDMETHOD( GetDopplerFactor )( THIS_ D3DVALUE * ) PURE;
+    STDMETHOD( GetOrientation )( THIS_ D3DVECTOR *, D3DVECTOR * ) PURE;
+    STDMETHOD( GetPosition )( THIS_ D3DVECTOR * ) PURE;
+    STDMETHOD( GetRolloffFactor )( THIS_ D3DVALUE * ) PURE;
+    STDMETHOD( GetVelocity )( THIS_ D3DVECTOR * ) PURE;
+    STDMETHOD( SetAllParameters )( THIS_ LPCDS3DLISTENER, DWORD ) PURE;
+    STDMETHOD( SetDistanceFactor )( THIS_ D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetDopplerFactor )( THIS_ D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetOrientation )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetPosition )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetRolloffFactor )( THIS_ D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetVelocity )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+    STDMETHOD( CommitDeferredSettings )( THIS ) PURE;
+};
+
+/* IDirectSound3DBuffer interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSound3DBuffer
+DECLARE_INTERFACE_( IDirectSound3DBuffer, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSound3DBuffer methods */
+    STDMETHOD( GetAllParameters )( THIS_ LPDS3DBUFFER ) PURE;
+    STDMETHOD( GetConeAngles )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetConeOrientation )( THIS_ D3DVECTOR * ) PURE;
+    STDMETHOD( GetConeOutsideVolume )( THIS_ LPLONG ) PURE;
+    STDMETHOD( GetMaxDistance )( THIS_ D3DVALUE * ) PURE;
+    STDMETHOD( GetMinDistance )( THIS_ D3DVALUE * ) PURE;
+    STDMETHOD( GetMode )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetPosition )( THIS_ D3DVECTOR * ) PURE;
+    STDMETHOD( GetVelocity )( THIS_ D3DVECTOR * ) PURE;
+    STDMETHOD( SetAllParameters )( THIS_ LPCDS3DBUFFER, DWORD ) PURE;
+    STDMETHOD( SetConeAngles )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( SetConeOrientation )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetConeOutsideVolume )( THIS_ LONG, DWORD ) PURE;
+    STDMETHOD( SetMaxDistance )( THIS_ D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetMinDistance )( THIS_ D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetMode )( THIS_ DWORD, DWORD ) PURE;
+    STDMETHOD( SetPosition )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+    STDMETHOD( SetVelocity )( THIS_ D3DVALUE, D3DVALUE, D3DVALUE, DWORD ) PURE;
+};
+
+/* IDirectSoundCapture interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSoundCapture
+DECLARE_INTERFACE_( IDirectSoundCapture, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundCapture methods */
+    STDMETHOD( CreateCaptureBuffer )( THIS_ LPCDSCBUFFERDESC, LPDIRECTSOUNDCAPTUREBUFFER *, LPUNKNOWN ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDSCCAPS ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPCGUID ) PURE;
+};
+
+/* IDirectSoundCaptureBuffer interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSoundCaptureBuffer
+DECLARE_INTERFACE_( IDirectSoundCaptureBuffer, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundCaptureBuffer methods */
+    STDMETHOD( GetCaps )( THIS_ LPDSCBCAPS ) PURE;
+    STDMETHOD( GetCurrentPosition )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetFormat )( THIS_ LPWAVEFORMATEX, DWORD, LPDWORD ) PURE;
+    STDMETHOD( GetStatus )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTSOUNDCAPTURE, LPCDSCBUFFERDESC ) PURE;
+    STDMETHOD( Lock )( THIS_ DWORD, DWORD, LPVOID *, LPDWORD, LPVOID *, LPDWORD, DWORD ) PURE;
+    STDMETHOD( Start )( THIS_ DWORD ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID, DWORD, LPVOID, DWORD ) PURE;
+};
+
+/* IDirectSoundCaptureBuffer8 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSoundCaptureBuffer8
+DECLARE_INTERFACE_( IDirectSoundCaptureBuffer8, IDirectSoundCaptureBuffer ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundCaptureBuffer methods */
+    STDMETHOD( GetCaps )( THIS_ LPDSCBCAPS ) PURE;
+    STDMETHOD( GetCurrentPosition )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetFormat )( THIS_ LPWAVEFORMATEX, DWORD, LPDWORD ) PURE;
+    STDMETHOD( GetStatus )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTSOUNDCAPTURE, LPCDSCBUFFERDESC ) PURE;
+    STDMETHOD( Lock )( THIS_ DWORD, DWORD, LPVOID *, LPDWORD, LPVOID *, LPDWORD, DWORD ) PURE;
+    STDMETHOD( Start )( THIS_ DWORD ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID, DWORD, LPVOID, DWORD ) PURE;
+
+    /* IDirectSoundCaptureBuffer8 methods */
+    STDMETHOD( GetObjectInPath )( THIS_ REFGUID, DWORD, REFGUID, LPVOID * ) PURE;
+    STDMETHOD( GetFXStatus )( THIS_ DWORD, LPDWORD ) PURE;
+};
+
+/* IDirectSoundNotify interface */
+#undef INTERFACE
+#define INTERFACE   IDirectSoundNotify
+DECLARE_INTERFACE_( IDirectSoundNotify, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundNotify methods */
+    STDMETHOD( SetNotificationPositions )( THIS_ DWORD, LPCDSBPOSITIONNOTIFY ) PURE;
+};
+
+/* IDirectSoundFXGargle interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXGargle
+DECLARE_INTERFACE_( IDirectSoundFXGargle, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXGargle methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXGargle ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXGargle ) PURE;
+};
+#endif
+
+/* IDirectSoundFXChorus interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXChorus
+DECLARE_INTERFACE_( IDirectSoundFXChorus, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXChorus methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXChorus ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXChorus ) PURE;
+};
+#endif
+
+/* IDirectSoundFXFlanger interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXFlanger
+DECLARE_INTERFACE_( IDirectSoundFXFlanger, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXFlanger methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXFlanger ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXFlanger ) PURE;
+};
+#endif
+
+/* IDirectSoundFXEcho interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXEcho
+DECLARE_INTERFACE_( IDirectSoundFXEcho, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXEcho methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXEcho ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXEcho ) PURE;
+};
+#endif
+
+/* IDirectSoundFXDistortion interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXDistortion
+DECLARE_INTERFACE_( IDirectSoundFXDistortion, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXDistortion methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXDistortion ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXDistortion ) PURE;
+};
+#endif
+
+/* IDirectSoundFXCompressor interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXCompressor
+DECLARE_INTERFACE_( IDirectSoundFXCompressor, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXCompressor methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXCompressor ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXCompressor ) PURE;
+};
+#endif
+
+/* IDirectSoundFXParamEq interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXParamEq
+DECLARE_INTERFACE_( IDirectSoundFXParamEq, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXParamEq methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXParamEq ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXParamEq ) PURE;
+};
+#endif
+
+/* IDirectSoundFXI3DL2Reverb interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXI3DL2Reverb
+DECLARE_INTERFACE_( IDirectSoundFXI3DL2Reverb, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXI3DL2Reverb methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXI3DL2Reverb ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXI3DL2Reverb ) PURE;
+    STDMETHOD( SetPreset )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetPreset )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( SetQuality )( THIS_ LONG ) PURE;
+    STDMETHOD( GetQuality )( THIS_ LONG * ) PURE;
+};
+#endif
+
+/* IDirectSoundFXWavesReverb interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFXWavesReverb
+DECLARE_INTERFACE_( IDirectSoundFXWavesReverb, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFXWavesReverb methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSFXWavesReverb ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSFXWavesReverb ) PURE;
+};
+#endif
+
+/* IDirectSoundCaptureFXAec interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundCaptureFXAec
+DECLARE_INTERFACE_( IDirectSoundCaptureFXAec, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundCaptureFXAec methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSCFXAec ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSCFXAec ) PURE;
+    STDMETHOD( GetStatus )( THIS_ PDWORD ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+};
+#endif
+
+/* IDirectSoundCaptureFXNoiseSuppress interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundCaptureFXNoiseSuppress
+DECLARE_INTERFACE_( IDirectSoundCaptureFXNoiseSuppress, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundCaptureFXNoiseSuppress methods */
+    STDMETHOD( SetAllParameters )( THIS_ LPCDSCFXNoiseSuppress ) PURE;
+    STDMETHOD( GetAllParameters )( THIS_ LPDSCFXNoiseSuppress ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+};
+#endif
+
+/* IDirectSoundFullDuplex interface */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+#undef INTERFACE
+#define INTERFACE   IDirectSoundFullDuplex
+DECLARE_INTERFACE_( IDirectSoundFullDuplex, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectSoundFullDuplex methods */
+    STDMETHOD( Initialize )( THIS_ LPCGUID, LPCGUID, LPCDSCBUFFERDESC, LPCDSBUFFERDESC, HWND, DWORD, LPLPDIRECTSOUNDCAPTUREBUFFER8, LPLPDIRECTSOUNDBUFFER8 ) PURE;
+};
+#endif
+
+/* C/C++ object macros */
+#if !defined( __cplusplus ) || defined( CINTERFACE )
+    #define IDirectSound_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSound_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSound_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSoundBuffer( x, p1, p2, p3 )
+    #define IDirectSound_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
+        (x)->lpVtbl->DuplicateSoundBuffer( x, p1, p2 )
+    #define IDirectSound_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+    #define IDirectSound_Compact( x ) \
+        (x)->lpVtbl->Compact( x )
+    #define IDirectSound_GetSpeakerConfig( x, p ) \
+        (x)->lpVtbl->GetSpeakerConfig( x, p )
+    #define IDirectSound_SetSpeakerConfig( x, p ) \
+        (x)->lpVtbl->SetSpeakerConfig( x, p )
+    #define IDirectSound_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectSoundBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSoundBuffer_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSoundBuffer_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSoundBuffer_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectSoundBuffer_GetCurrentPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetCurrentPosition( x, p1, p2 )
+    #define IDirectSoundBuffer_GetFormat( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetFormat( x, p1, p2, p3 )
+    #define IDirectSoundBuffer_GetVolume( x, p ) \
+        (x)->lpVtbl->GetVolume( x, p )
+    #define IDirectSoundBuffer_GetPan( x, p ) \
+        (x)->lpVtbl->GetPan( x, p )
+    #define IDirectSoundBuffer_GetFrequency( x, p ) \
+        (x)->lpVtbl->GetFrequency( x, p )
+    #define IDirectSoundBuffer_GetStatus( x, p ) \
+        (x)->lpVtbl->GetStatus( x, p )
+    #define IDirectSoundBuffer_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectSoundBuffer_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSoundBuffer_Play( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Play( x, p1, p2, p3 )
+    #define IDirectSoundBuffer_SetCurrentPosition( x, p ) \
+        (x)->lpVtbl->SetCurrentPosition( x, p )
+    #define IDirectSoundBuffer_SetFormat( x, p ) \
+        (x)->lpVtbl->SetFormat( x, p )
+    #define IDirectSoundBuffer_SetVolume( x, p ) \
+        (x)->lpVtbl->SetVolume( x, p )
+    #define IDirectSoundBuffer_SetPan( x, p ) \
+        (x)->lpVtbl->SetPan( x, p )
+    #define IDirectSoundBuffer_SetFrequency( x, p ) \
+        (x)->lpVtbl->SetFrequency( x, p )
+    #define IDirectSoundBuffer_Stop( x ) \
+        (x)->lpVtbl->Stop( x )
+    #define IDirectSoundBuffer_Unlock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Unlock( x, p1, p2, p3, p4 )
+    #define IDirectSoundBuffer_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectSound3DListener_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSound3DListener_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSound3DListener_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSound3DListener_GetAllParameters( x, p ) \
+        (x)->lpVtbl->GetAllParameters( x, p )
+    #define IDirectSound3DListener_GetDistanceFactor( x, p ) \
+        (x)->lpVtbl->GetDistanceFactor( x, p )
+    #define IDirectSound3DListener_GetDopplerFactor( x, p ) \
+        (x)->lpVtbl->GetDopplerFactor( x, p )
+    #define IDirectSound3DListener_GetOrientation( x, p1, p2 ) \
+        (x)->lpVtbl->GetOrientation( x, p1, p2 )
+    #define IDirectSound3DListener_GetPosition( x, p ) \
+        (x)->lpVtbl->GetPosition( x, p )
+    #define IDirectSound3DListener_GetRolloffFactor( x, p ) \
+        (x)->lpVtbl->GetRolloffFactor( x, p )
+    #define IDirectSound3DListener_GetVelocity( x, p ) \
+        (x)->lpVtbl->GetVelocity( x, p )
+    #define IDirectSound3DListener_SetAllParameters( x, p1, p2 ) \
+        (x)->lpVtbl->SetAllParameters( x, p1, p2 )
+    #define IDirectSound3DListener_SetDistanceFactor( x, p1, p2 ) \
+        (x)->lpVtbl->SetDistanceFactor( x, p1, p2 )
+    #define IDirectSound3DListener_SetDopplerFactor( x, p1, p2 ) \
+        (x)->lpVtbl->SetDopplerFactor( x, p1, p2 )
+    #define IDirectSound3DListener_SetOrientation( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->SetOrientation( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSound3DListener_SetPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetPosition( x, p1, p2, p3, p4 )
+    #define IDirectSound3DListener_SetRolloffFactor( x, p1, p2 ) \
+        (x)->lpVtbl->SetRolloffFactor( x, p1, p2 )
+    #define IDirectSound3DListener_SetVelocity( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetVelocity( x, p1, p2, p3, p4 )
+    #define IDirectSound3DListener_CommitDeferredSettings( x ) \
+        (x)->lpVtbl->CommitDeferredSettings( x )
+    #define IDirectSound3DBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSound3DBuffer_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSound3DBuffer_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSound3DBuffer_GetAllParameters( x, p ) \
+        (x)->lpVtbl->GetAllParameters( x, p )
+    #define IDirectSound3DBuffer_GetConeAngles( x, p1, p2 ) \
+        (x)->lpVtbl->GetConeAngles( x, p1, p2 )
+    #define IDirectSound3DBuffer_GetConeOrientation( x, p ) \
+        (x)->lpVtbl->GetConeOrientation( x, p )
+    #define IDirectSound3DBuffer_GetConeOutsideVolume( x, p ) \
+        (x)->lpVtbl->GetConeOutsideVolume( x, p )
+    #define IDirectSound3DBuffer_GetMaxDistance( x, p ) \
+        (x)->lpVtbl->GetMaxDistance( x, p )
+    #define IDirectSound3DBuffer_GetMinDistance( x, p ) \
+        (x)->lpVtbl->GetMinDistance( x, p )
+    #define IDirectSound3DBuffer_GetMode( x, p ) \
+        (x)->lpVtbl->GetMode( x, p )
+    #define IDirectSound3DBuffer_GetPosition( x, p ) \
+        (x)->lpVtbl->GetPosition( x, p )
+    #define IDirectSound3DBuffer_GetVelocity( x, p ) \
+        (x)->lpVtbl->GetVelocity( x, p )
+    #define IDirectSound3DBuffer_SetAllParameters( x, p1, p2 ) \
+        (x)->lpVtbl->SetAllParameters( x, p1, p2 )
+    #define IDirectSound3DBuffer_SetConeAngles( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetConeAngles( x, p1, p2, p3 )
+    #define IDirectSound3DBuffer_SetConeOrientation( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetConeOrientation( x, p1, p2, p3, p4 )
+    #define IDirectSound3DBuffer_SetConeOutsideVolume( x, p1, p2 ) \
+        (x)->lpVtbl->SetConeOutsideVolume( x, p1, p2 )
+    #define IDirectSound3DBuffer_SetMaxDistance( x, p1, p2 ) \
+        (x)->lpVtbl->SetMaxDistance( x, p1, p2 )
+    #define IDirectSound3DBuffer_SetMinDistance( x, p1, p2 ) \
+        (x)->lpVtbl->SetMinDistance( x, p1, p2 )
+    #define IDirectSound3DBuffer_SetMode( x, p1, p2 ) \
+        (x)->lpVtbl->SetMode( x, p1, p2 )
+    #define IDirectSound3DBuffer_SetPosition( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetPosition( x, p1, p2, p3, p4 )
+    #define IDirectSound3DBuffer_SetVelocity( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetVelocity( x, p1, p2, p3, p4 )
+    #define IDirectSoundCapture_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSoundCapture_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSoundCapture_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSoundCapture_CreateCaptureBuffer( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateCaptureBuffer( x, p1, p2, p3 )
+    #define IDirectSoundCapture_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectSoundCapture_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectSoundCaptureBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSoundCaptureBuffer_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSoundCaptureBuffer_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSoundCaptureBuffer_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectSoundCaptureBuffer_GetCurrentPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetCurrentPosition( x, p1, p2 )
+    #define IDirectSoundCaptureBuffer_GetFormat( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetFormat( x, p1, p2, p3 )
+    #define IDirectSoundCaptureBuffer_GetStatus( x, p ) \
+        (x)->lpVtbl->GetStatus( x, p )
+    #define IDirectSoundCaptureBuffer_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectSoundCaptureBuffer_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSoundCaptureBuffer_Start( x, p ) \
+        (x)->lpVtbl->Start( x, p )
+    #define IDirectSoundCaptureBuffer_Stop( x ) \
+        (x)->lpVtbl->Stop( x )
+    #define IDirectSoundCaptureBuffer_Unlock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Unlock( x, p1, p2, p3, p4 )
+    #define IDirectSoundNotify_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectSoundNotify_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectSoundNotify_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectSoundNotify_SetNotificationPositions( x, p1, p2 ) \
+        (x)->lpVtbl->SetNotificationPositions( x, p1, p2 )
+    #if (DIRECTSOUND_VERSION >= 0x0800)
+        #define IDirectSound8_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSound8_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSound8_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSound8_CreateSoundBuffer( x, p1, p2, p3 ) \
+            (x)->lpVtbl->CreateSoundBuffer( x, p1, p2, p3 )
+        #define IDirectSound8_GetCaps( x, p ) \
+            (x)->lpVtbl->GetCaps( x, p )
+        #define IDirectSound8_DuplicateSoundBuffer( x, p1, p2 ) \
+            (x)->lpVtbl->DuplicateSoundBuffer( x, p1, p2 )
+        #define IDirectSound8_SetCooperativeLevel( x, p1, p2 ) \
+            (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+        #define IDirectSound8_Compact( x ) \
+            (x)->lpVtbl->Compact( x )
+        #define IDirectSound8_GetSpeakerConfig( x, p ) \
+            (x)->lpVtbl->GetSpeakerConfig( x, p )
+        #define IDirectSound8_SetSpeakerConfig( x, p ) \
+            (x)->lpVtbl->SetSpeakerConfig( x, p )
+        #define IDirectSound8_Initialize( x, p ) \
+            (x)->lpVtbl->Initialize( x, p )
+        #define IDirectSound8_VerifyCertification( x, p ) \
+            (x)->lpVtbl->VerifyCertification( x, p )
+        #define IDirectSoundBuffer8_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundBuffer8_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundBuffer8_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundBuffer8_GetCaps( x, p ) \
+            (x)->lpVtbl->GetCaps( x, p )
+        #define IDirectSoundBuffer8_GetCurrentPosition( x, p1, p2 ) \
+            (x)->lpVtbl->GetCurrentPosition( x, p1, p2 )
+        #define IDirectSoundBuffer8_GetFormat( x, p1, p2, p3 ) \
+            (x)->lpVtbl->GetFormat( x, p1, p2, p3 )
+        #define IDirectSoundBuffer8_GetVolume( x, p ) \
+            (x)->lpVtbl->GetVolume( x, p )
+        #define IDirectSoundBuffer8_GetPan( x, p ) \
+            (x)->lpVtbl->GetPan( x, p )
+        #define IDirectSoundBuffer8_GetFrequency( x, p ) \
+            (x)->lpVtbl->GetFrequency( x, p )
+        #define IDirectSoundBuffer8_GetStatus( x, p ) \
+            (x)->lpVtbl->GetStatus( x, p )
+        #define IDirectSoundBuffer8_Initialize( x, p1, p2 ) \
+            (x)->lpVtbl->Initialize( x, p1, p2 )
+        #define IDirectSoundBuffer8_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+            (x)->lpVtbl->Lock( x, p1, p2, p3, p4, p5, p6, p7 )
+        #define IDirectSoundBuffer8_Play( x, p1, p2, p3 ) \
+            (x)->lpVtbl->Play( x, p1, p2, p3 )
+        #define IDirectSoundBuffer8_SetCurrentPosition( x, p ) \
+            (x)->lpVtbl->SetCurrentPosition( x, p )
+        #define IDirectSoundBuffer8_SetFormat( x, p ) \
+            (x)->lpVtbl->SetFormat( x, p )
+        #define IDirectSoundBuffer8_SetVolume( x, p ) \
+            (x)->lpVtbl->SetVolume( x, p )
+        #define IDirectSoundBuffer8_SetPan( x, p ) \
+            (x)->lpVtbl->SetPan( x, p )
+        #define IDirectSoundBuffer8_SetFrequency( x, p ) \
+            (x)->lpVtbl->SetFrequency( x, p )
+        #define IDirectSoundBuffer8_Stop( x ) \
+            (x)->lpVtbl->Stop( x )
+        #define IDirectSoundBuffer8_Unlock( x, p1, p2, p3, p4 ) \
+            (x)->lpVtbl->Unlock( x, p1, p2, p3, p4 )
+        #define IDirectSoundBuffer8_Restore( x ) \
+            (x)->lpVtbl->Restore( x )
+        #define IDirectSoundBuffer8_SetFX( x, p1, p2, p3 ) \
+            (x)->lpVtbl->SetFX( x, p1, p2, p3 )
+        #define IDirectSoundBuffer8_AcquireResources( x, p1, p2, p3 ) \
+            (x)->lpVtbl->AcquireResources( x, p1, p2, p3 )
+        #define IDirectSoundBuffer8_GetObjectInPath( x, p1, p2, p3, p4 ) \
+            (x)->lpVtbl->GetObjectInPath( x, p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundCaptureBuffer8_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundCaptureBuffer8_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundCaptureBuffer8_GetCaps( x, p ) \
+            (x)->lpVtbl->GetCaps( x, p )
+        #define IDirectSoundCaptureBuffer8_GetCurrentPosition( x, p1, p2 ) \
+            (x)->lpVtbl->GetCurrentPosition( x, p1, p2 )
+        #define IDirectSoundCaptureBuffer8_GetFormat( x, p1, p2, p3 ) \
+            (x)->lpVtbl->GetFormat( x, p1, p2, p3 )
+        #define IDirectSoundCaptureBuffer8_GetStatus( x, p ) \
+            (x)->lpVtbl->GetStatus( x, p )
+        #define IDirectSoundCaptureBuffer8_Initialize( x, p1, p2 ) \
+            (x)->lpVtbl->Initialize( x, p1, p2 )
+        #define IDirectSoundCaptureBuffer8_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+            (x)->lpVtbl->Lock( x, p1, p2, p3, p4, p5, p6, p7 )
+        #define IDirectSoundCaptureBuffer8_Start( x, p ) \
+            (x)->lpVtbl->Start( x, p )
+        #define IDirectSoundCaptureBuffer8_Stop( x ) \
+            (x)->lpVtbl->Stop( x )
+        #define IDirectSoundCaptureBuffer8_Unlock( x, p1, p2, p3, p4 ) \
+            (x)->lpVtbl->Unlock( x, p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_GetObjectInPath( x, p1, p2, p3, p4 ) \
+            (x)->lpVtbl->GetObjectInPath( x, p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_GetFXStatus( x, p1, p2 ) \
+            (x)->lpVtbl->GetFXStatus( x, p1, p2 )
+        #define IDirectSoundFXGargle_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXGargle_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXGargle_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXGargle_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXGargle_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXChorus_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXChorus_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXChorus_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXChorus_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXChorus_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXFlanger_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXFlanger_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXFlanger_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXFlanger_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXFlanger_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXEcho_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXEcho_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXEcho_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXEcho_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXEcho_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXDistortion_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXDistortion_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXDistortion_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXDistortion_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXDistortion_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXCompressor_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXCompressor_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXCompressor_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXCompressor_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXCompressor_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXParamEq_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXParamEq_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXParamEq_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXParamEq_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXParamEq_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXI3DL2Reverb_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXI3DL2Reverb_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXI3DL2Reverb_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXI3DL2Reverb_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXI3DL2Reverb_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundFXI3DL2Reverb_SetPreset( x, p ) \
+            (x)->lpVtbl->SetPreset( x, p )
+        #define IDirectSoundFXI3DL2Reverb_GetPreset( x, p ) \
+            (x)->lpVtbl->GetPreset( x, p )
+        #define IDirectSoundFXI3DL2Reverb_SetQuality( x, p ) \
+            (x)->lpVtbl->SetQuality( x, p )
+        #define IDirectSoundFXI3DL2Reverb_GetQuality( x, p ) \
+            (x)->lpVtbl->GetQuality( x, p )
+        #define IDirectSoundFXWavesReverb_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFXWavesReverb_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFXWavesReverb_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFXWavesReverb_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundFXWavesReverb_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundCaptureFXAec_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundCaptureFXAec_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundCaptureFXAec_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundCaptureFXAec_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundCaptureFXAec_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundCaptureFXAec_GetStatus( x, p ) \
+            (x)->lpVtbl->GetStatus( x, p )
+        #define IDirectSoundCaptureFXAec_Reset( x ) \
+            (x)->lpVtbl->Reset( x )
+        #define IDirectSoundCaptureFXNoiseSuppress_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundCaptureFXNoiseSuppress_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundCaptureFXNoiseSuppress_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundCaptureFXNoiseSuppress_SetAllParameters( x, p ) \
+            (x)->lpVtbl->SetAllParameters( x, p )
+        #define IDirectSoundCaptureFXNoiseSuppress_GetAllParameters( x, p ) \
+            (x)->lpVtbl->GetAllParameters( x, p )
+        #define IDirectSoundCaptureFXNoiseSuppress_Reset( x ) \
+            (x)->lpVtbl->Reset( x )
+        #define IDirectSoundFullDuplex_QueryInterface( x, p1, p2 ) \
+            (x)->lpVtbl->QueryInterface( x, p1, p2 )
+        #define IDirectSoundFullDuplex_AddRef( x ) \
+            (x)->lpVtbl->AddRef( x )
+        #define IDirectSoundFullDuplex_Release( x ) \
+            (x)->lpVtbl->Release( x )
+        #define IDirectSoundFullDuplex_Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+            (x)->lpVtbl->Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #endif
+#else
+    #define IDirectSound_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSound_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSound_Release( x ) \
+        (x)->Release()
+    #define IDirectSound_CreateSoundBuffer( x, p1, p2, p3 ) \
+        (x)->CreateSoundBuffer( p1, p2, p3 )
+    #define IDirectSound_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectSound_DuplicateSoundBuffer( x, p1, p2 ) \
+        (x)->DuplicateSoundBuffer( p1, p2 )
+    #define IDirectSound_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->SetCooperativeLevel( p1, p2 )
+    #define IDirectSound_Compact( x ) \
+        (x)->Compact()
+    #define IDirectSound_GetSpeakerConfig( x, p ) \
+        (x)->GetSpeakerConfig( p )
+    #define IDirectSound_SetSpeakerConfig( x, p ) \
+        (x)->SetSpeakerConfig( p )
+    #define IDirectSound_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectSoundBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSoundBuffer_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSoundBuffer_Release( x ) \
+        (x)->Release()
+    #define IDirectSoundBuffer_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectSoundBuffer_GetCurrentPosition( x, p1, p2 ) \
+        (x)->GetCurrentPosition( p1, p2 )
+    #define IDirectSoundBuffer_GetFormat( x, p1, p2, p3 ) \
+        (x)->GetFormat( p1, p2, p3 )
+    #define IDirectSoundBuffer_GetVolume( x, p ) \
+        (x)->GetVolume( p )
+    #define IDirectSoundBuffer_GetPan( x, p ) \
+        (x)->GetPan( p )
+    #define IDirectSoundBuffer_GetFrequency( x, p ) \
+        (x)->GetFrequency( p )
+    #define IDirectSoundBuffer_GetStatus( x, p ) \
+        (x)->GetStatus( p )
+    #define IDirectSoundBuffer_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectSoundBuffer_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->Lock( p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSoundBuffer_Play( x, p1, p2, p3 ) \
+        (x)->Play( p1, p2, p3 )
+    #define IDirectSoundBuffer_SetCurrentPosition( x, p ) \
+        (x)->SetCurrentPosition( p )
+    #define IDirectSoundBuffer_SetFormat( x, p ) \
+        (x)->SetFormat( p )
+    #define IDirectSoundBuffer_SetVolume( x, p ) \
+        (x)->SetVolume( p )
+    #define IDirectSoundBuffer_SetPan( x, p ) \
+        (x)->SetPan( p )
+    #define IDirectSoundBuffer_SetFrequency( x, p ) \
+        (x)->SetFrequency( p )
+    #define IDirectSoundBuffer_Stop( x ) \
+        (x)->Stop()
+    #define IDirectSoundBuffer_Unlock( x, p1, p2, p3, p4 ) \
+        (x)->Unlock( p1, p2, p3, p4 )
+    #define IDirectSoundBuffer_Restore( x ) \
+        (x)->Restore()
+    #define IDirectSound3DListener_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSound3DListener_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSound3DListener_Release( x ) \
+        (x)->Release()
+    #define IDirectSound3DListener_GetAllParameters( x, p ) \
+        (x)->GetAllParameters( p )
+    #define IDirectSound3DListener_GetDistanceFactor( x, p ) \
+        (x)->GetDistanceFactor( p )
+    #define IDirectSound3DListener_GetDopplerFactor( x, p ) \
+        (x)->GetDopplerFactor( p )
+    #define IDirectSound3DListener_GetOrientation( x, p1, p2 ) \
+        (x)->GetOrientation( p1, p2 )
+    #define IDirectSound3DListener_GetPosition( x, p ) \
+        (x)->GetPosition( p )
+    #define IDirectSound3DListener_GetRolloffFactor( x, p ) \
+        (x)->GetRolloffFactor( p )
+    #define IDirectSound3DListener_GetVelocity( x, p ) \
+        (x)->GetVelocity( p )
+    #define IDirectSound3DListener_SetAllParameters( x, p1, p2 ) \
+        (x)->SetAllParameters( p1, p2 )
+    #define IDirectSound3DListener_SetDistanceFactor( x, p1, p2 ) \
+        (x)->SetDistanceFactor( p1, p2 )
+    #define IDirectSound3DListener_SetDopplerFactor( x, p1, p2 ) \
+        (x)->SetDopplerFactor( p1, p2 )
+    #define IDirectSound3DListener_SetOrientation( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->SetOrientation( p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSound3DListener_SetPosition( x, p1, p2, p3, p4 ) \
+        (x)->SetPosition( p1, p2, p3, p4 )
+    #define IDirectSound3DListener_SetRolloffFactor( x, p1, p2 ) \
+        (x)->SetRolloffFactor( p1, p2 )
+    #define IDirectSound3DListener_SetVelocity( x, p1, p2, p3, p4 ) \
+        (x)->SetVelocity( p1, p2, p3, p4 )
+    #define IDirectSound3DListener_CommitDeferredSettings( x ) \
+        (x)->CommitDeferredSettings()
+    #define IDirectSound3DBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSound3DBuffer_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSound3DBuffer_Release( x ) \
+        (x)->Release()
+    #define IDirectSound3DBuffer_GetAllParameters( x, p ) \
+        (x)->GetAllParameters( p )
+    #define IDirectSound3DBuffer_GetConeAngles( x, p1, p2 ) \
+        (x)->GetConeAngles( p1, p2 )
+    #define IDirectSound3DBuffer_GetConeOrientation( x, p ) \
+        (x)->GetConeOrientation( p )
+    #define IDirectSound3DBuffer_GetConeOutsideVolume( x, p ) \
+        (x)->GetConeOutsideVolume( p )
+    #define IDirectSound3DBuffer_GetMaxDistance( x, p ) \
+        (x)->GetMaxDistance( p )
+    #define IDirectSound3DBuffer_GetMinDistance( x, p ) \
+        (x)->GetMinDistance( p )
+    #define IDirectSound3DBuffer_GetMode( x, p ) \
+        (x)->GetMode( p )
+    #define IDirectSound3DBuffer_GetPosition( x, p ) \
+        (x)->GetPosition( p )
+    #define IDirectSound3DBuffer_GetVelocity( x, p ) \
+        (x)->GetVelocity( p )
+    #define IDirectSound3DBuffer_SetAllParameters( x, p1, p2 ) \
+        (x)->SetAllParameters( p1, p2 )
+    #define IDirectSound3DBuffer_SetConeAngles( x, p1, p2, p3 ) \
+        (x)->SetConeAngles( p1, p2, p3 )
+    #define IDirectSound3DBuffer_SetConeOrientation( x, p1, p2, p3, p4 ) \
+        (x)->SetConeOrientation( p1, p2, p3, p4 )
+    #define IDirectSound3DBuffer_SetConeOutsideVolume( x, p1, p2 ) \
+        (x)->SetConeOutsideVolume( p1, p2 )
+    #define IDirectSound3DBuffer_SetMaxDistance( x, p1, p2 ) \
+        (x)->SetMaxDistance( p1, p2 )
+    #define IDirectSound3DBuffer_SetMinDistance( x, p1, p2 ) \
+        (x)->SetMinDistance( p1, p2 )
+    #define IDirectSound3DBuffer_SetMode( x, p1, p2 ) \
+        (x)->SetMode( p1, p2 )
+    #define IDirectSound3DBuffer_SetPosition( x, p1, p2, p3, p4 ) \
+        (x)->SetPosition( p1, p2, p3, p4 )
+    #define IDirectSound3DBuffer_SetVelocity( x, p1, p2, p3, p4 ) \
+        (x)->SetVelocity( p1, p2, p3, p4 )
+    #define IDirectSoundCapture_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSoundCapture_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSoundCapture_Release( x ) \
+        (x)->Release()
+    #define IDirectSoundCapture_CreateCaptureBuffer( x, p1, p2, p3 ) \
+        (x)->CreateCaptureBuffer( p1, p2, p3 )
+    #define IDirectSoundCapture_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectSoundCapture_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectSoundCaptureBuffer_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSoundCaptureBuffer_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSoundCaptureBuffer_Release( x ) \
+        (x)->Release()
+    #define IDirectSoundCaptureBuffer_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectSoundCaptureBuffer_GetCurrentPosition( x, p1, p2 ) \
+        (x)->GetCurrentPosition( p1, p2 )
+    #define IDirectSoundCaptureBuffer_GetFormat( x, p1, p2, p3 ) \
+        (x)->GetFormat( p1, p2, p3 )
+    #define IDirectSoundCaptureBuffer_GetStatus( x, p ) \
+        (x)->GetStatus( p )
+    #define IDirectSoundCaptureBuffer_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectSoundCaptureBuffer_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->Lock( p1, p2, p3, p4, p5, p6, p7 )
+    #define IDirectSoundCaptureBuffer_Start( x, p ) \
+        (x)->Start( p )
+    #define IDirectSoundCaptureBuffer_Stop( x ) \
+        (x)->Stop()
+    #define IDirectSoundCaptureBuffer_Unlock( x, p1, p2, p3, p4 ) \
+        (x)->Unlock( p1, p2, p3, p4 )
+    #define IDirectSoundNotify_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectSoundNotify_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectSoundNotify_Release( x ) \
+        (x)->Release()
+    #define IDirectSoundNotify_SetNotificationPositions( x, p1, p2 ) \
+        (x)->SetNotificationPositions( p1, p2 )
+    #if (DIRECTSOUND_VERSION >= 0x0800)
+        #define IDirectSound8_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSound8_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSound8_Release( x ) \
+            (x)->Release()
+        #define IDirectSound8_CreateSoundBuffer( x, p1, p2, p3 ) \
+            (x)->CreateSoundBuffer( p1, p2, p3 )
+        #define IDirectSound8_GetCaps( x, p ) \
+            (x)->GetCaps( p )
+        #define IDirectSound8_DuplicateSoundBuffer( x, p1, p2 ) \
+            (x)->DuplicateSoundBuffer( p1, p2 )
+        #define IDirectSound8_SetCooperativeLevel( x, p1, p2 ) \
+            (x)->SetCooperativeLevel( p1, p2 )
+        #define IDirectSound8_Compact( x ) \
+            (x)->Compact()
+        #define IDirectSound8_GetSpeakerConfig( x, p ) \
+            (x)->GetSpeakerConfig( p )
+        #define IDirectSound8_SetSpeakerConfig( x, p ) \
+            (x)->SetSpeakerConfig( p )
+        #define IDirectSound8_Initialize( x, p ) \
+            (x)->Initialize( p )
+        #define IDirectSound8_VerifyCertification( x, p ) \
+            (x)->VerifyCertification( p )
+        #define IDirectSoundBuffer8_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundBuffer8_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundBuffer8_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundBuffer8_GetCaps( x, p ) \
+            (x)->GetCaps( p )
+        #define IDirectSoundBuffer8_GetCurrentPosition( x, p1, p2 ) \
+            (x)->GetCurrentPosition( p1, p2 )
+        #define IDirectSoundBuffer8_GetFormat( x, p1, p2, p3 ) \
+            (x)->GetFormat( p1, p2, p3 )
+        #define IDirectSoundBuffer8_GetVolume( x, p ) \
+            (x)->GetVolume( p )
+        #define IDirectSoundBuffer8_GetPan( x, p ) \
+            (x)->GetPan( p )
+        #define IDirectSoundBuffer8_GetFrequency( x, p ) \
+            (x)->GetFrequency( p )
+        #define IDirectSoundBuffer8_GetStatus( x, p ) \
+            (x)->GetStatus( p )
+        #define IDirectSoundBuffer8_Initialize( x, p1, p2 ) \
+            (x)->Initialize( p1, p2 )
+        #define IDirectSoundBuffer8_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+            (x)->Lock( p1, p2, p3, p4, p5, p6, p7 )
+        #define IDirectSoundBuffer8_Play( x, p1, p2, p3 ) \
+            (x)->Play( p1, p2, p3 )
+        #define IDirectSoundBuffer8_SetCurrentPosition( x, p ) \
+            (x)->SetCurrentPosition( p )
+        #define IDirectSoundBuffer8_SetFormat( x, p ) \
+            (x)->SetFormat( p )
+        #define IDirectSoundBuffer8_SetVolume( x, p ) \
+            (x)->SetVolume( p )
+        #define IDirectSoundBuffer8_SetPan( x, p ) \
+            (x)->SetPan( p )
+        #define IDirectSoundBuffer8_SetFrequency( x, p ) \
+            (x)->SetFrequency( p )
+        #define IDirectSoundBuffer8_Stop( x ) \
+            (x)->Stop()
+        #define IDirectSoundBuffer8_Unlock( x, p1, p2, p3, p4 ) \
+            (x)->Unlock( p1, p2, p3, p4 )
+        #define IDirectSoundBuffer8_Restore( x ) \
+            (x)->Restore()
+        #define IDirectSoundBuffer8_SetFX( x, p1, p2, p3 ) \
+            (x)->SetFX( p1, p2, p3 )
+        #define IDirectSoundBuffer8_AcquireResources( x, p1, p2, p3 ) \
+            (x)->AcquireResources( p1, p2, p3 )
+        #define IDirectSoundBuffer8_GetObjectInPath( x, p1, p2, p3, p4 ) \
+            (x)->GetObjectInPath( p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundCaptureBuffer8_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundCaptureBuffer8_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundCaptureBuffer8_GetCaps( x, p ) \
+            (x)->GetCaps( p )
+        #define IDirectSoundCaptureBuffer8_GetCurrentPosition( x, p1, p2 ) \
+            (x)->GetCurrentPosition( p1, p2 )
+        #define IDirectSoundCaptureBuffer8_GetFormat( x, p1, p2, p3 ) \
+            (x)->GetFormat( p1, p2, p3 )
+        #define IDirectSoundCaptureBuffer8_GetStatus( x, p ) \
+            (x)->GetStatus( p )
+        #define IDirectSoundCaptureBuffer8_Initialize( x, p1, p2 ) \
+            (x)->Initialize( p1, p2 )
+        #define IDirectSoundCaptureBuffer8_Lock( x, p1, p2, p3, p4, p5, p6, p7 ) \
+            (x)->Lock( p1, p2, p3, p4, p5, p6, p7 )
+        #define IDirectSoundCaptureBuffer8_Start( x, p ) \
+            (x)->Start( p )
+        #define IDirectSoundCaptureBuffer8_Stop( x ) \
+            (x)->Stop()
+        #define IDirectSoundCaptureBuffer8_Unlock( x, p1, p2, p3, p4 ) \
+            (x)->Unlock( p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_GetObjectInPath( x, p1, p2, p3, p4 ) \
+            (x)->GetObjectInPath( p1, p2, p3, p4 )
+        #define IDirectSoundCaptureBuffer8_GetFXStatus( x, p1, p2 ) \
+            (x)->GetFXStatus( p1, p2 )
+        #define IDirectSoundFXGargle_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXGargle_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXGargle_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXGargle_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXGargle_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXChorus_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXChorus_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXChorus_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXChorus_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXChorus_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXFlanger_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXFlanger_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXFlanger_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXFlanger_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXFlanger_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXEcho_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXEcho_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXEcho_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXEcho_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXEcho_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXDistortion_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXDistortion_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXDistortion_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXDistortion_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXDistortion_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXCompressor_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXCompressor_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXCompressor_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXCompressor_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXCompressor_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXParamEq_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXParamEq_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXParamEq_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXParamEq_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXParamEq_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXI3DL2Reverb_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXI3DL2Reverb_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXI3DL2Reverb_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXI3DL2Reverb_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXI3DL2Reverb_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundFXI3DL2Reverb_SetPreset( x, p ) \
+            (x)->SetPreset( p )
+        #define IDirectSoundFXI3DL2Reverb_GetPreset( x, p ) \
+            (x)->GetPreset( p )
+        #define IDirectSoundFXI3DL2Reverb_SetQuality( x, p ) \
+            (x)->SetQuality( p )
+        #define IDirectSoundFXI3DL2Reverb_GetQuality( x, p ) \
+            (x)->GetQuality( p )
+        #define IDirectSoundFXWavesReverb_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFXWavesReverb_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFXWavesReverb_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFXWavesReverb_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundFXWavesReverb_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundCaptureFXAec_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundCaptureFXAec_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundCaptureFXAec_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundCaptureFXAec_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundCaptureFXAec_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundCaptureFXAec_GetStatus( x, p ) \
+            (x)->GetStatus( p )
+        #define IDirectSoundCaptureFXAec_Reset( x ) \
+            (x)->Reset()
+        #define IDirectSoundCaptureFXNoiseSuppress_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundCaptureFXNoiseSuppress_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundCaptureFXNoiseSuppress_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundCaptureFXNoiseSuppress_SetAllParameters( x, p ) \
+            (x)->SetAllParameters( p )
+        #define IDirectSoundCaptureFXNoiseSuppress_GetAllParameters( x, p ) \
+            (x)->GetAllParameters( p )
+        #define IDirectSoundCaptureFXNoiseSuppress_Reset( x ) \
+            (x)->Reset()
+        #define IDirectSoundFullDuplex_QueryInterface( x, p1, p2 ) \
+            (x)->QueryInterface( p1, p2 )
+        #define IDirectSoundFullDuplex_AddRef( x ) \
+            (x)->AddRef()
+        #define IDirectSoundFullDuplex_Release( x ) \
+            (x)->Release()
+        #define IDirectSoundFullDuplex_Initialize( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+            (x)->Initialize( p1, p2, p3, p4, p5, p6, p7, p8 )
+    #endif
+#endif
+
+/* Functions in DSOUND.DLL */
+HRESULT WINAPI  DirectSoundCaptureCreate( LPCGUID, LPDIRECTSOUNDCAPTURE *, LPUNKNOWN );
+HRESULT WINAPI  DirectSoundCaptureEnumerateA( LPDSENUMCALLBACKA, LPVOID );
+HRESULT WINAPI  DirectSoundCaptureEnumerateW( LPDSENUMCALLBACKW, LPVOID );
+HRESULT WINAPI  DirectSoundCreate( LPCGUID, LPDIRECTSOUND *, LPUNKNOWN );
+HRESULT WINAPI  DirectSoundEnumerateA( LPDSENUMCALLBACKA, LPVOID );
+HRESULT WINAPI  DirectSoundEnumerateW( LPDSENUMCALLBACKW, LPVOID );
+#if (DIRECTSOUND_VERSION >= 0x0800)
+HRESULT WINAPI  DirectSoundCaptureCreate8( LPCGUID, LPDIRECTSOUNDCAPTURE8 *, LPUNKNOWN );
+HRESULT WINAPI  DirectSoundCreate8( LPCGUID, LPDIRECTSOUND8 *, LPUNKNOWN );
+HRESULT WINAPI  DirectSoundFullDuplexCreate( LPCGUID, LPCGUID, LPCDSCBUFFERDESC, LPCDSBUFFERDESC, HWND, DWORD, LPDIRECTSOUNDFULLDUPLEX *, LPDIRECTSOUNDCAPTUREBUFFER8 *, LPDIRECTSOUNDBUFFER8 *, LPUNKNOWN );
+HRESULT WINAPI  GetDeviceID( LPCGUID, LPCGUID );
+#endif
+
+/* Alias */
+#if (DIRECTSOUND_VERSION >= 0x0800)
+    #define DirectSoundFullDuplexCreate8    DirectSoundFullDuplexCreate
+#endif
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define DirectSoundCaptureEnumerate DirectSoundCaptureEnumerateW
+    #define DirectSoundEnumerate        DirectSoundEnumerateW
+#else
+    #define DirectSoundCaptureEnumerate DirectSoundCaptureEnumerateA
+    #define DirectSoundEnumerate        DirectSoundEnumerateA
+#endif
+
+:include cplusepi.sp
+
+#endif /* __DSOUND_INCLUDED__ */

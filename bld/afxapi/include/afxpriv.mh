@@ -1,0 +1,299 @@
+/*
+ * afxpriv.h    Application Framework private classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXPRIV_H__
+#define __AFXPRIV_H__
+
+:include readonly.sp
+
+#include <afxadv.h>
+
+// AFX private window messages
+#define WM_QUERYAFXWNDPROC  0x0360
+#define WM_SIZEPARENT       0x0361
+#define WM_SETMESSAGESTRING 0x0362
+#define WM_IDLEUPDATECMDUI  0x0363
+#define WM_INITIALUPDATE    0x0364
+#define WM_COMMANDHELP      0x0365
+#define WM_HELPHITTEST      0x0366
+#define WM_EXITHELPMODE     0x0367
+#define WM_RECALCPARENT     0x0368
+#define WM_SIZECHILD        0x0369
+#define WM_KICKIDLE         0x036A
+#define WM_QUERYCENTERWND   0x036B
+#define WM_DISABLEMODAL     0x036C
+#define WM_FLOATSTATUS      0x036D
+#define WM_ACTIVATETOPLEVEL 0x036E
+#define WM_SOCKET_NOTIFY    0x0373
+#define WM_SOCKET_DEAD      0x0374
+#define WM_POPMESSAGESTRING 0x0375
+#define WM_HELPPROMPTADDR   0x0376
+
+// WM_FLOATSTATUS flags
+#define FS_SHOW         0x0001
+#define FS_HIDE         0x0002
+#define FS_ACTIVATE     0x0004
+#define FS_DEACTIVATE   0x0008
+#define FS_ENABLE       0x0010
+#define FS_DISABLE      0x0020
+#define FS_SYNCACTIVE   0x0040
+
+// Help identifier offsets
+#define HID_BASE_COMMAND    0x00010000L
+#define HID_BASE_RESOURCE   0x00020000L
+#define HID_BASE_PROMPT     0x00030000L
+#define HID_BASE_NCAREAS    0x00040000L
+#define HID_BASE_CONTROLS   0x00050000L
+#define HID_BASE_DISPATCH   0x00060000L
+
+// Special message handling macro
+#define ON_MESSAGE_VOID( message, memberFxn ) \
+    { message, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)memberFxn },
+
+// Macro to convert a system command to the corresponding string resource identifier
+#define ID_COMMAND_FROM_SC( sc )    (((sc - 0xF000) >> 4) + AFX_IDS_SCFIRST)
+
+// Notification parameters
+struct AFX_NOTIFY {
+    LRESULT *pResult;
+    NMHDR   *pNMHDR;
+};
+
+// Command handler information
+struct AFX_CMDHANDLERINFO {
+    CCmdTarget  *pTarget;
+    AFX_PMSG    pmf;
+};
+
+// WM_SIZEPARENT parameters
+struct AFX_SIZEPARENTPARAMS {
+    HDWP    hDWP;
+    RECT    rect;
+    SIZE    sizeTotal;
+    BOOL    bStretch;
+};
+
+class _AFXLINK CPreviewDC : public CDC {
+protected:
+    int     m_nScaleNum;
+    int     m_nScaleDen;
+    int     m_nSaveDCIndex;
+    CSize   m_sizeTopLeft;
+    HFONT   m_hFont;
+    HFONT   m_hPrinterFont;
+    CSize   m_sizeWinExt;
+    CSize   m_sizeVpExt;
+    
+    DECLARE_DYNAMIC( CPreviewDC )
+    
+public:
+    CPreviewDC();
+    virtual ~CPreviewDC();
+    
+    virtual CPoint      OffsetViewportOrg( int nWidth, int nHeight );
+    virtual void        ReleaseOutputDC();
+    virtual CSize       ScaleViewportExt( int xNum, int xDenom, int yNum, int yDenom );
+    virtual CSize       ScaleWindowExt( int xNum, int xDenom, int yNum, int yDenom );
+    virtual CFont       *SelectObject( CFont *pFont );
+    virtual CGdiObject  *SelectStockObject( int nIndex );
+    virtual void        SetAttribDC( HDC hDC );
+    virtual COLORREF    SetBkColor( COLORREF crColor );
+    virtual int         SetMapMode( int nMapMode );
+    virtual void        SetOutputDC( HDC hDC );
+    virtual COLORREF    SetTextColor( COLORREF crColor );
+    virtual CSize       SetViewportExt( int cx, int cy );
+    virtual CPoint      SetViewportOrg( int x, int y );
+    virtual CSize       SetWindowExt( int cx, int cy );
+    
+    void    ClipToPage();
+    void    MirrorAttributes();
+    void    MirrorFont();
+    void    MirrorMappingMode( BOOL bCompute );
+    void    MirrorViewportOrg();
+    void    PrinterDPtoScreenDP( LPPOINT lpPoint ) const;
+    void    SetScaleRatio( int nNumerator, int nDenominator );
+    void    SetTopLeftOffset( CSize sizeTopLeft );
+};
+
+// CPreviewView zoom states
+#define ZOOM_OUT    0
+#define ZOOM_MIDDLE 1
+#define ZOOM_IN     2
+
+class _AFXLINK CPreviewView : public CScrollView {
+protected:
+    struct PAGE_INFO {
+        CRect   rectScreen;
+        CSize   sizeUnscaled;
+        CSize   sizeScaleRatio;
+        CSize   sizeZoomOutRatio;
+    };
+            
+    CView               *m_pOrigView;
+    CView               *m_pPrintView;
+    CPreviewDC          *m_pPreviewDC;
+    CDC                 m_dcPrint;
+    CPrintPreviewState  *m_pPreviewState;
+    CDialogBar          *m_pToolBar;
+    PAGE_INFO           *m_pPageInfo;
+    PAGE_INFO           m_pageInfoArray[2];
+    UINT                m_nZoomOutPages;
+    UINT                m_nZoomState;
+    UINT                m_nCurrentPage;
+    UINT                m_nPages;
+    int                 m_nSecondPageOffset;
+    HCURSOR             m_hMagnifyCursor;
+    CSize               m_sizePrinterPPI;
+    CPrintInfo          *m_pPreviewInfo;
+    
+    DECLARE_DYNCREATE( CPreviewView )
+    
+public:
+    CPreviewView();
+    
+    virtual CSize   CalcScaleRatio( CSize windowSize, CSize actualSize );
+    virtual void    OnDisplayPageNumber( UINT nPage, UINT nPageDisplayed );
+    virtual void    PositionPage( UINT nPage );
+
+    virtual void    OnDraw( CDC *pDC );
+    
+    CSize   CalcPageDisplaySize();
+    void    DoZoom( UINT nPage, CPoint point );
+    BOOL    FindPageRect( CPoint &point, UINT &nPage );
+    BOOL    SetPrintView( CView *pPrintView );
+    void    SetScaledSize( UINT nPage );
+    void    SetZoomState( UINT nNewState, UINT nPage, CPoint point );
+    
+protected:
+    afx_msg int     OnCreate( LPCREATESTRUCT lpCreateStruct );
+    afx_msg BOOL    OnEraseBkgnd( CDC *pDC );
+    afx_msg void    OnLButtonDown( UINT nFlags, CPoint point );
+    afx_msg BOOL    OnSetCursor( CWnd *pWnd, UINT nHitTest, UINT message );
+    afx_msg void    OnSize( UINT nType, int cx, int cy );
+    afx_msg void    OnNextPage();
+    afx_msg void    OnNumPageChange();
+    afx_msg void    OnPrevPage();
+    afx_msg void    OnPreviewClose();
+    afx_msg void    OnPreviewPrint();
+    afx_msg void    OnZoomIn();
+    afx_msg void    OnZoomOut();
+    afx_msg void    OnUpdateNextPage( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateNumPageChange( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdatePrevPage( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateZoomIn( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateZoomOut( CCmdUI *pCmdUI );
+    DECLARE_MESSAGE_MAP()
+    
+    friend BOOL CALLBACK _PreviewCloseProc( CFrameWnd *pFrameWnd );
+    friend class CView;
+};
+
+class _AFXLINK CDockBar : public CControlBar {
+public:
+    BOOL        m_bFloating;
+    CPtrArray   m_arrBars;
+    
+    DECLARE_DYNAMIC( CDockBar )
+    
+public:
+    CDockBar( BOOL bFloating = FALSE );
+    
+    virtual BOOL    Create( CWnd *pParentWnd, DWORD dwStyle, UINT nID );
+    virtual int     GetDockedVisibleCount() const;
+    
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual BOOL    IsDockBar() const;
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler );
+    
+    void    DockControlBar( CControlBar *pBar, LPCRECT lpRect = NULL );
+    int     GetDockedCount() const;
+    BOOL    RemoveControlBar( CControlBar *pBar, int nPosExclude = -1, int nAddPlaceHolder = 0 );
+    void    ShowAll( BOOL bShow );
+};
+
+class _AFXLINK CMiniDockFrameWnd : public CMiniFrameWnd {
+public:
+    CDockBar    m_wndDockBar;
+    
+    DECLARE_DYNCREATE( CMiniDockFrameWnd )
+    
+public:
+    CMiniDockFrameWnd();
+    
+    virtual BOOL    Create( CWnd *pParent, DWORD dwBarStyle );
+    
+protected:
+    afx_msg void    OnClose();
+    afx_msg void    OnNcLButtonDblClk( UINT nHitTest, CPoint point );
+    afx_msg void    OnNcLButtonDown( UINT nHitTest, CPoint point );
+    DECLARE_MESSAGE_MAP()
+};
+
+class _AFXLINK CDockContext {
+public:
+    CPoint      m_ptLast;
+    CRect       m_rectLast;
+    CRect       m_rectDragHorz;
+    CRect       m_rectDragVert;
+    CRect       m_rectFrameDragHorz;
+    CRect       m_rectFrameDragVert;
+    CControlBar *m_pBar;
+    CFrameWnd   *m_pDockSite;
+    DWORD       m_dwDockStyle;
+    DWORD       m_dwOverDockStyle;
+    DWORD       m_dwStyle;
+    BOOL        m_bFlip;
+    BOOL        m_bForceFrame;
+    CDC         *m_pDC;
+    BOOL        m_bDragging;
+    UINT        m_uMRUDockID;
+    CRect       m_rectMRUDockPos;
+    CPoint      m_ptMRUFloatPos;
+    
+    explicit CDockContext( CControlBar *pBar );
+    
+    virtual void    StartDrag( CPoint pt );
+    virtual void    ToggleDocking();
+    
+    DWORD       CanDock();
+    void        DrawFocusRect( BOOL bRemoveRect = FALSE );
+    void        EndDrag();
+    CDockBar    *GetDockBar( DWORD dwOverDockStyle );
+    void        Move( CPoint pt );
+    void        OnKey( int nChar, BOOL bDown );
+    BOOL        Track();
+};
+
+class _AFXLINK CArchiveStream : public IStream {
+public:
+    CArchive    *m_pArchive;
+    
+    CArchiveStream( CArchive *pArchive );
+    
+    STDMETHOD( QueryInterface )( REFIID riid, void **ppvObject );
+    STDMETHOD_( ULONG, AddRef )();
+    STDMETHOD_( ULONG, Release )();
+    
+    STDMETHOD( Read )( void *pv, ULONG cb, ULONG *pcbRead );
+    STDMETHOD( Write )( void const *pv, ULONG cb, ULONG *pcbWritten );
+    
+    STDMETHOD( Seek )( LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition );
+    STDMETHOD( SetSize )( ULARGE_INTEGER libNewSize );
+    STDMETHOD( CopyTo )( IStream *pstm, ULARGE_INTEGER cb, ULARGE_INTEGER *pcbRead, ULARGE_INTEGER *pcbWritten );
+    STDMETHOD( Commit )( DWORD grfCommitFlags );
+    STDMETHOD( Revert )();
+    STDMETHOD( LockRegion )( ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType );
+    STDMETHOD( UnlockRegion )( ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType );
+    STDMETHOD( Stat )( STATSTG *pstatstg, DWORD grfStatFlag );
+    STDMETHOD( Clone )( IStream **ppstm );
+};
+
+_AFXLINK HDC AFXAPI     AfxCreateDC( HGLOBAL hDevNames, HGLOBAL hDevMode );
+_AFXLINK void AFXAPI    AfxHookWindowCreate( CWnd *pWnd );
+_AFXLINK void AFXAPI    AfxRepositionWindow( AFX_SIZEPARENTPARAMS *lpLayout, HWND hWnd, LPCRECT lpRect );
+_AFXLINK BOOL AFXAPI    AfxUnhookWindowCreate();
+
+#endif /* __AFXPRIV_H__ */

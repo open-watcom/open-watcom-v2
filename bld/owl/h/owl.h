@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object Writer Library public interface.
 *
 ****************************************************************************/
 
@@ -66,12 +65,14 @@ typedef enum {
     OWL_CPU_PPC,
     OWL_CPU_ALPHA,
     OWL_CPU_MIPS,
+    OWL_CPU_INTEL
 } owl_cpu;
 
 typedef enum {
     OWL_RELOC_ABSOLUTE,                 // ref to a 32-bit absolute address
     OWL_RELOC_WORD,                     // a direct ref to a 32-bit address
     OWL_RELOC_HALF_HI,                  // ref to high half of 32-bit address
+    OWL_RELOC_HALF_HA,                  // ditto adjusted for signed low 16 bits
     OWL_RELOC_PAIR,                     // pair - used to indicate prev hi and next lo linked
     OWL_RELOC_HALF_LO,                  // ref to low half of 32-bit address
     OWL_RELOC_BRANCH_REL,               // relative branch (Alpha: 21-bit; PPC: 14-bit)
@@ -127,6 +128,12 @@ typedef enum {
     OWL_FILE_LIB,
 } owl_file_type;
 
+typedef enum {
+    OWL_WKSYM_NORMAL            = 0x0000,   // regular weak symbol
+    OWL_WKSYM_LAZY              = 0x0001,   // lazy weak symbol
+    OWL_WKSYM_ALIAS             = 0x0002,   // alias symbol
+} owl_wksym_flags;
+
 typedef uint_32         owl_line_num;
 typedef int_32          owl_offset;
 typedef owl_offset      owl_alignment;
@@ -141,7 +148,7 @@ typedef void *owl_client_file;
 
 // if you add a field, update owl@copyClientFuncs
 typedef struct {
-    int                 (*write)( owl_client_file, const char *, int );
+    int                 (*write)( owl_client_file, const char *, uint );
     long                (*tell)( owl_client_file );
     long                (*lseek)( owl_client_file, long int, int );
     void *              (*alloc)( size_t );
@@ -172,7 +179,7 @@ extern void OWLENTRY OWLEmitExport( owl_file_handle file, owl_symbol_handle sym 
 
 #define OWLTellOffset OWLTellLocation
 
-extern void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk, owl_symbol_handle alt, int is_lazy  );
+extern void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk, owl_symbol_handle alt, owl_wksym_flags flags );
 extern void OWLENTRY OWLSetLocation( owl_section_handle section, owl_offset location );
 extern owl_offset OWLENTRY OWLTellLocation( owl_section_handle section );
 extern owl_offset OWLENTRY OWLTellSize( owl_section_handle section );

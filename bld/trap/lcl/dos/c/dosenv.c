@@ -32,24 +32,29 @@
 
 #include <string.h>
 #include <i86.h>
-#include <tinyio.h>
+#include "tinyio.h"
 
 extern unsigned       DbgPSP(void);
 
-char *DOSEnvFind( char *src )
+const char far *DOSEnvFind( char *src )
 {
+    const char  far *env;
     char        *p;
-    char        *env;
+    char        c1;
+    char        c2;
 
-
-    env = MK_FP( *((unsigned *)MK_FP( DbgPSP(), 0x2c )), 0 );
+    env = MK_FP( *(unsigned far *)MK_FP( DbgPSP(), 0x2c ), 0 );
     do {
         p = src;
         do {
-            if( *p == '\0' && *env == '=' ) return( env + 1 );
-        } while( *env++ == *p++ );
-        while( *env++ != '\0' )
-            ;
+            c1 = *p++;
+            c2 = *env++;
+        } while( c1 == c2 && c1 != '\0' && c2 != '=' );
+        if( c1 == '\0' && c2 == '=' )
+            return( env );
+        while( c2 != '\0' ) {
+            c2 = *env++;
+        }
     } while( *env != '\0' );
     return( NULL );
 }

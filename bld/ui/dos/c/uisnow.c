@@ -43,11 +43,11 @@
                     0xa8 0x08           /* test al,8    */      \
                     0x74 0xfb           /* jz -5        */      \
                 modify [ax dx];
-extern void vertsync();
+extern void vertsync( void );
 #endif
 
-void intern vertretrace()
-/***********************/
+void intern vertretrace( void )
+/*****************************/
 {
 #ifndef __386__
     if( ( UIData->colour == M_CGA ) && ( UIData->no_snow == FALSE ) ) {
@@ -57,10 +57,8 @@ void intern vertretrace()
 #endif
 }
 
-bool intern issnow( bptr )
-/************************/
-
-register        BUFFER*                 bptr;
+bool intern issnow( BUFFER *bptr )
+/********************************/
 {
     register    bool                    snow;
 

@@ -84,7 +84,7 @@ HashTable InitHash( unsigned numbuckets, HashFunction hashfunc,
     Hash *              table;
     unsigned            count;
 
-    if( numbuckets <= 0 )  Zoinks();
+    if( numbuckets == 0 )  Zoinks();
     table = AllocMem( sizeof( Hash ) );
     table->numbuckets = numbuckets;
     table->hashfunc = hashfunc;
@@ -126,7 +126,7 @@ void FiniHash( HashTable _table, int freeitems )
 /*
  * Insert an item into a hash table.  Duplicates are ignored.
  */
-void InsertHash( HashTable _table, const void *item )
+void InsertHash( HashTable *_table, const void *item )
 /***************************************************/
 {
     Hash *              table = (Hash*)_table;

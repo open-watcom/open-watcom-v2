@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of putc().
 *
 ****************************************************************************/
 
@@ -35,16 +34,12 @@
 #include <stdio.h>
 
 
-#ifndef __WIDECHAR__
-    _WCRTLINK int    (putc)( int c, FILE *fp )
+_WCRTLINK INTCHAR_TYPE __F_NAME((putc),putwc)( INTCHAR_TYPE c, FILE *fp )
+{
+    __stream_check( fp, 2 );
+#if !defined( __WIDECHAR__ ) && defined( putc )
+    return( putc( c, fp ) );
 #else
-    _WCRTLINK wint_t  (putwc)( wint_t c, FILE *fp )
+    return( __F_NAME(fputc,fputwc)( c, fp ) );
 #endif
-    {
-        __stream_check( fp, 2 );
-        #if !defined(__WIDECHAR__) && defined(putc)
-            return( putc( c, fp ) );
-        #else
-            return( __F_NAME(fputc,fputwc)( c, fp ) );
-        #endif
-    }
+}

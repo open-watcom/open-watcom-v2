@@ -1,91 +1,217 @@
-/*
- *  string.h    String functions
+::
+:: This file generates three different headers.
+::
+::   string.h: Default wsplice operation.
+::   cstring : CNAME wsplice operation.
+::   string  : CPPSTRING wsplice operation.
+::
+:: Note that string is not directly related to string.h or cstring.
+::
+:segment !CPPSTRING
+/***************************************************************************
+ * FILE: string.h/cstring (String functions)
  *
 :include crwat.sp
- */
+ *
+ * Description: This header is part of the C/C++ standard library. It
+ *              declares functions for manipulating null terminated arrays
+ *              of characters.
+ ***************************************************************************/
+:segment CNAME
+#ifndef _CSTRING_INCLUDED
+#define _CSTRING_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _STRING_H_INCLUDED
 #define _STRING_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+:include readonly.sp
+
+:: The following segment only appears in string.h.
+#ifdef __cplusplus
+
+#include <cstring>
+
+// C99 types in string.h.
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED_
+using std::size_t;
+#endif
+#ifndef _WCTYPE_T_DEFINED
+#define _WCTYPE_T_DEFINED
+#define _WCTYPE_T_DEFINED_
+using std::wint_t;
+using std::wctype_t;
 #endif
 
+// C99 functions in string.h
+using std::memchr;
+using std::memcmp;
+using std::memcpy;
+using std::memmove;
+using std::memset;
+using std::strcat;
+using std::strchr;
+using std::strcmp;
+using std::strcoll;
+using std::strcpy;
+using std::strcspn;
+using std::strerror;
+using std::strlen;
+using std::strncat;
+using std::strncmp;
+using std::strncpy;
+using std::strpbrk;
+using std::strrchr;
+using std::strspn;
+using std::strstr;
+using std::strtok;
+using std::strxfrm;
+
+:include ext.sp
+// C99 functions not officially in string.h
+:segment !NO_WIDECHAR
+using std::wcscat;
+using std::wcschr;
+using std::wcscmp;
+using std::wcscoll;
+using std::wcscpy;
+using std::wcscspn;
+using std::wcslen;
+using std::wcsncat;
+using std::wcsncmp;
+using std::wcsncpy;
+using std::wcspbrk;
+using std::wcsrchr;
+using std::wcsspn;
+using std::wcsstr;
+using std::wcstok;
+using std::wcsxfrm;
+:endsegment
+:include extepi.sp
+
+#else /* __cplusplus not defined */
+:: End of segment that is only in string.h
+:endsegment
+
+:include owrtlink.sp
+
+:: Only need extern "C" in cstring
+:segment CNAME
+:include cpluspro.sp
+
+:endsegment
+:segment !CNAME
 :include wchar_t.sp
 
+:endsegment
 :include wctypet.sp
 
 :include sizet.sp
 
+:segment !CNAME
+:include saferpro.sp
+
+:include errnot.sp
+
+:include rsizet.sp
+
+:include saferepi.sp
+
+:endsegment
 :include null.sp
 
 :include nlserror.sp
 
-_WCIRTLINK extern void *memchr( const void *__s, int __c, size_t __n );
-_WCIRTLINK extern int memcmp( const void *__s1, const void *__s2, size_t __n );
-_WCIRTLINK extern void *memcpy( void *__s1, const void *__s2, size_t __n );
-_WCRTLINK extern void *memmove( void *__s1, const void *__s2, size_t __n );
-#if defined(M_I86)
-_WCIRTLINK
-#else
-_WCRTLINK
-#endif
-extern void *memset( void *__s, int __c, size_t __n );
-_WCIRTLINK extern char *strcat( char *__s1, const char *__s2 );
-_WCIRTLINK extern char *strchr( const char *__s, int __c );
-#if defined(M_I86)
-_WCIRTLINK
-#else
-_WCRTLINK
-#endif
-extern int strcmp( const char *__s1, const char *__s2 );
-:segment !PENPOINT
-_WCRTLINK extern int strcoll( const char *__s1, const char *__s2 );
-_WCRTLINK extern int _stricoll( const char *__s1, const char *__s2 );
-_WCRTLINK extern int _strncoll( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern int _strnicoll( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern size_t strxfrm( char *__s1, const char *__s2, size_t __n );
+:segment CNAME
+namespace std {
+
 :endsegment
-_WCIRTLINK extern char *strcpy( char *__s1, const char *__s2 );
-_WCRTLINK extern size_t strcspn( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strerror( int __errnum );
-_WCIRTLINK extern size_t strlen( const char *__s );
-_WCRTLINK extern char *strncat( char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern int strncmp( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern char *strncpy( char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern char *strpbrk( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strrchr( const char *__s, int __c );
-_WCRTLINK extern size_t strspn( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strspnp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strstr( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strtok( char *__s1, const char *__s2 );
+_WCIRTLINK extern void    *memchr( const void *__s, int __c, size_t __n );
+_WCIRTLINK extern int     memcmp( const void *__s1, const void *__s2, size_t __n );
+_WCIRTLINK extern void    *memcpy( void *__s1, const void *__s2, size_t __n );
+_WCRTLINK  extern void    *memmove( void *__s1, const void *__s2, size_t __n );
+#if defined(_M_I86)
+_WCIRTLINK
+#else
+_WCRTLINK
+#endif
+           extern void    *memset( void *__s, int __c, size_t __n );
+_WCIRTLINK extern char    *strcat( char *__s1, const char *__s2 );
+_WCIRTLINK extern char    *strchr( const char *__s, int __c );
+#if defined(_M_I86)
+_WCIRTLINK
+#else
+_WCRTLINK
+#endif
+           extern int     strcmp( const char *__s1, const char *__s2 );
+_WCRTLINK  extern int     strcoll( const char *__s1, const char *__s2 );
+_WCIRTLINK extern char    *strcpy( char *__s1, const char *__s2 );
+_WCRTLINK  extern size_t  strcspn( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char    *strerror( int __errnum );
+_WCIRTLINK extern size_t  strlen( const char *__s );
+_WCRTLINK  extern char    *strncat( char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern int     strncmp( const char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern char    *strncpy( char *__s1, const char *__s2, size_t __n );
+_WCRTLINK  extern char    *strpbrk( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char    *strrchr( const char *__s, int __c );
+_WCRTLINK  extern size_t  strspn( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char    *strstr( const char *__s1, const char *__s2 );
+_WCRTLINK  extern char    *strtok( char *__s1, const char *__s2 );
+_WCRTLINK  extern size_t  strxfrm( char *__s1, const char *__s2, size_t __n );
+
+:segment CNAME
+} // namespace std
+
+:endsegment
+_WCRTLINK  extern int _stricoll( const char *__s1, const char *__s2 );
+_WCRTLINK  extern int _strncoll( const char *__s1, const char *__s2, _w_size_t __n );
+_WCRTLINK  extern int _strnicoll( const char *__s1, const char *__s2, _w_size_t __n );
+
+#if defined(__NT__)
+_WCRTLINK extern char  *_doserror( int __oserrnum );
+#endif
+_WCRTLINK extern int   _memicmp( const void *__s1, const void *__s2, _w_size_t __n );
+_WCRTLINK extern char  *_strdup( const char *__string );
+_WCRTLINK extern char  *_strerror( const char *__s );
+_WCRTLINK extern int   _stricmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern char  *_strlwr( char *__string );
+_WCRTLINK extern int   _strnicmp( const char *__s1, const char *__s2, _w_size_t __n );
+_WCRTLINK extern char  *_strnset( char *__string, int __c, _w_size_t __len );
+_WCRTLINK extern char  *_strrev( char *__string );
+_WCRTLINK extern char  *_strset( char *__string, int __c );
+_WCRTLINK extern char  *_strupr( char *__string );
 
 :include ext.sp
 
-/* WATCOM's Additional Functions (non-ANSI, non-POSIX) */
+/* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
-:segment !PENPOINT
+_WCRTLINK  extern char   *strspnp( const char *__s1, const char *__s2 );
+
 #if !defined(_fmemccpy) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, size_t __n );
+_WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, _w_size_t __n );
 #endif
 #if !defined(_fmemchr) || !defined(_INC_WINDOWSX)
-_WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, _w_size_t __n );
 #endif
 #if !defined(_fmemcpy) || !defined(_INC_WINDOWSX)
-_WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fmemmove) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+_WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fmemset) || !defined(_INC_WINDOWSX)
-_WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, _w_size_t __n );
 #endif
 #if !defined(_fmemcmp) || !defined(_INC_WINDOWSX)
-_WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+_WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fmemicmp) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+_WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fstrcat) || !defined(_INC_WINDOWSX)
 _WCIRTLINK extern char _WCFAR *_fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
@@ -100,7 +226,7 @@ _WCIRTLINK extern int _fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2
 _WCIRTLINK extern char _WCFAR *_fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
 #endif
 #if !defined(_fstrcspn) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+_WCRTLINK extern _w_size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 #endif
 #if !defined(_fstrdup) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern char _WCFAR *_fstrdup( const char _WCFAR *__string );
@@ -109,25 +235,25 @@ _WCRTLINK extern char _WCFAR *_fstrdup( const char _WCFAR *__string );
 _WCRTLINK extern int _fstricmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 #endif
 #if !defined(_fstrncat) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, size_t __n );
+_WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fstrlen) || !defined(_INC_WINDOWSX)
-_WCIRTLINK extern size_t _fstrlen( const char _WCFAR *__s );
+_WCIRTLINK extern _w_size_t _fstrlen( const char _WCFAR *__s );
 #endif
 #if !defined(_fstrlwr) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern char _WCFAR *_fstrlwr( char _WCFAR *__string );
 #endif
 #if !defined(_fstrncmp) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, size_t __n );
+_WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fstrncpy) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, size_t __n );
+_WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fstrnicmp) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, size_t __n );
+_WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
 #endif
 #if !defined(_fstrnset) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, size_t __len );
+_WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, _w_size_t __len );
 #endif
 #if !defined(_fstrpbrk) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern char _WCFAR *_fstrpbrk( const char _WCFAR *__s1, const char _WCFAR *__s2 );
@@ -142,7 +268,7 @@ _WCRTLINK extern char _WCFAR *_fstrrev( char _WCFAR *__string );
 _WCRTLINK extern char _WCFAR *_fstrset( char _WCFAR *__string, int __c );
 #endif
 #if !defined(_fstrspn) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+_WCRTLINK extern _w_size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 #endif
 #if !defined(_fstrspnp) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern char _WCFAR *_fstrspnp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
@@ -157,97 +283,1601 @@ _WCRTLINK extern char _WCFAR *_fstrtok( char _WCFAR *__s1, const char _WCFAR *__
 _WCRTLINK extern char _WCFAR *_fstrupr( char _WCFAR *__string );
 #endif
 _WCIRTLINK extern void movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
-_WCRTLINK extern int bcmp( const void *__s1, const void *__s2, size_t __n );
-_WCRTLINK extern void bcopy( const void *__s1, void *__s2, size_t __n );
-_WCRTLINK extern void bzero( void *__s, size_t __n );
+
+_WCRTLINK extern int   bcmp( const void *__s1, const void *__s2, _w_size_t __n );
+_WCRTLINK extern void  bcopy( const void *__s1, void *__s2, _w_size_t __n );
+_WCRTLINK extern void  bzero( void *__s, _w_size_t __n );
+_WCRTLINK extern void  *memccpy( void *__s1, const void *__s2, int __c, _w_size_t __n );
+_WCRTLINK extern int   memicmp( const void *__s1, const void *__s2, _w_size_t __n );
+_WCRTLINK extern int   strcmpi( const char *__s1, const char *__s2 );
+_WCRTLINK extern char  *strdup( const char *__string );
+_WCRTLINK extern int   stricmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern char  *strlwr( char *__string );
+_WCRTLINK extern int   strnicmp( const char *__s1, const char *__s2, _w_size_t __n );
+_WCRTLINK extern char  *strnset( char *__string, int __c, _w_size_t __len );
+_WCRTLINK extern char  *strrev( char *__string );
+_WCRTLINK extern char  *strset( char *__string, int __c );
+_WCRTLINK extern char  *strupr( char *__string );
+
+/* BSD 'safe' string copy functions */
+_WCRTLINK extern _w_size_t strlcat( char *__s1, const char *__s2, _w_size_t __n );
+_WCRTLINK extern _w_size_t strlcpy( char *__s1, const char *__s2, _w_size_t __n );
+
+:segment !NO_WIDECHAR
+:segment CNAME
+namespace std {
+
 :endsegment
-_WCRTLINK extern void *memccpy( void *__s1, const void *__s2, int __c, size_t __n );
-_WCRTLINK extern int memicmp( const void *__s1, const void *__s2, size_t __n );
-_WCRTLINK extern int _memicmp( const void *__s1, const void *__s2, size_t __n );
-_WCRTLINK extern int strcmpi( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strdup( const char *__string );
-_WCRTLINK extern char *_strdup( const char *__string );
-_WCRTLINK extern char *_strerror( const char *__s );
-_WCRTLINK extern int stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern int _stricmp( const char *__s1, const char *__s2 );
-_WCRTLINK extern char *strlwr( char *__string );
-_WCRTLINK extern char *_strlwr( char *__string );
-_WCRTLINK extern int strnicmp( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern int _strnicmp( const char *__s1, const char *__s2, size_t __n );
-_WCRTLINK extern char *strnset( char *__string, int __c, size_t __len );
-_WCRTLINK extern char *_strnset( char *__string, int __c, size_t __len );
-_WCRTLINK extern char *strrev( char *__string );
-_WCRTLINK extern char *_strrev( char *__string );
-_WCRTLINK extern char *strset( char *__string, int __c );
-_WCRTLINK extern char *_strset( char *__string, int __c );
-_WCRTLINK extern char *strupr( char *__string );
-_WCRTLINK extern char *_strupr( char *__string );
+_WCRTLINK extern wchar_t  *wcscat( wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t  *wcschr( const wchar_t *, wint_t );
+_WCRTLINK extern int      wcscmp( const wchar_t *, const wchar_t * );
+_WCRTLINK extern int      wcscoll( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern wchar_t  *wcscpy( wchar_t *, const wchar_t * );
+_WCRTLINK extern size_t   wcscspn( const wchar_t *, const wchar_t * );
+_WCRTLINK extern size_t   wcslen( const wchar_t * );
+_WCRTLINK extern wchar_t  *wcsncat( wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern int      wcsncmp( const wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern wchar_t  *wcsncpy( wchar_t *, const wchar_t *, size_t );
+_WCRTLINK extern wchar_t  *wcspbrk( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t  *wcsrchr( const wchar_t *, wint_t );
+_WCRTLINK extern size_t   wcsspn( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t  *wcsstr( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t  *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
+_WCRTLINK extern size_t   wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+
+:segment CNAME
+} // namespace std
+
+:endsegment
+_WCRTLINK extern int      wcscmpi( const wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t  *wcserror( int );
 #if defined(__NT__)
-_WCRTLINK extern char *_doserror( int __oserrnum );
+_WCRTLINK extern wchar_t  *_wdoserror( int __errnum );
 #endif
 
-_WCRTLINK extern size_t wcslen( const wchar_t * );
-_WCRTLINK extern wchar_t *_wcsnset( wchar_t *, int, size_t );
-::_WCRTLINK extern wchar_t *wcsnset( wchar_t *, int, size_t );
-_WCRTLINK extern size_t wcsspn( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *_wcsspnp( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern size_t wcscspn( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *wcsncat( wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern int wcsncmp( const wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t *wcsncpy( wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern int _wcsnicmp( const wchar_t *, const wchar_t *, size_t );
-::_WCRTLINK extern int wcsnicmp( const wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t *wcschr( const wchar_t *, wint_t );
-_WCRTLINK extern wchar_t *_wcsdup( const wchar_t * );
-::_WCRTLINK extern wchar_t *wcsdup( const wchar_t * );
-_WCRTLINK extern wchar_t *wcscat( wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *_wcslwr( wchar_t * );
-::_WCRTLINK extern wchar_t *wcslwr( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsupr( wchar_t * );
-::_WCRTLINK extern wchar_t *wcsupr( wchar_t * );
-_WCRTLINK extern wchar_t *wcscpy( wchar_t *, const wchar_t * );
-_WCRTLINK extern int wcscmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int _wcsicmp( const wchar_t *, const wchar_t * );
-::_WCRTLINK extern int wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int wcscoll( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int _wcsicoll( const wchar_t *__s1, const wchar_t *__s2 );
-_WCRTLINK extern int _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, size_t __n );
-_WCRTLINK extern int _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, size_t __n );
-_WCRTLINK extern size_t wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
-_WCRTLINK extern wchar_t *wcsstr( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *wcspbrk( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
-_WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
-::_WCRTLINK extern wchar_t *wcsrev( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsset( wchar_t *, wchar_t );
-::_WCRTLINK extern wchar_t *wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t *wcsrchr( const wchar_t *, wint_t );
-_WCRTLINK extern int wcscmpi( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t *wcserror( int );
-_WCRTLINK extern wchar_t *_wcserror( const wchar_t * );
-#if defined(__NT__)
-_WCRTLINK extern wchar_t *_wdoserror( int __errnum );
-#endif
+::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, _w_size_t );
+::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
+::_WCRTLINK extern wchar_t  *wcsdup( const wchar_t * );
+::_WCRTLINK extern wchar_t  *wcslwr( wchar_t * );
+::_WCRTLINK extern wchar_t  *wcsupr( wchar_t * );
+::_WCRTLINK extern int      wcsicmp( const wchar_t *, const wchar_t * );
+::_WCRTLINK extern wchar_t  *wcsrev( wchar_t * );
+::_WCRTLINK extern wchar_t  *wcsset( wchar_t *, wchar_t );
+::
+_WCRTLINK extern wchar_t    *_ustrtok( wchar_t *, const wchar_t * );
+_WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, _w_size_t );
+_WCRTLINK extern wchar_t    *_wcsspnp( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
+_WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
+_WCRTLINK extern wchar_t    *_wcslwr( wchar_t * );
+_WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
+_WCRTLINK extern int        _wcsicmp( const wchar_t *, const wchar_t * );
+_WCRTLINK extern int        _wcsicoll( const wchar_t *__s1, const wchar_t *__s2 );
+_WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
+_WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
+_WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
+_WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
+_WCRTLINK extern wchar_t    *_wcserror( const wchar_t * );
 
-_WCRTLINK extern wchar_t *_ustrtok( wchar_t *, const wchar_t * );
+/* BSD 'safe' wide string copy functions */
+_WCRTLINK extern _w_size_t  wcslcat( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
+_WCRTLINK extern _w_size_t  wcslcpy( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
+:endsegment
+
+/* Additional Functions (POSIX but non-standard in string.h) */
+
+_WCRTLINK extern int strcasecmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern int strncasecmp( const char *__s1, const char *__s2, _w_size_t __n );
 
 :segment QNX
 /* QNX's Additional Functions (non-ANSI, non-POSIX) */
 
 extern void __strerror( int __max, int __errnum, char *__buf );
 :endsegment
-#endif  /* EXTENSIONS */
+:include extepi.sp
 
 #ifdef  __INLINE_FUNCTIONS__
 :include ext.sp
  #pragma intrinsic(movedata,_fmemchr,_fmemcmp,_fmemcpy,_fmemset)
  #pragma intrinsic(_fstrcat,_fstrcmp,_fstrcpy,_fstrlen)
-#endif
+:include extepi.sp
+:segment CNAME
+namespace std {
+  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
+  #if defined(_M_I86)
+    #pragma intrinsic(memset,strcmp)
+  #endif
+}
+:elsesegment
  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
- #if defined(M_I86)
+ #if defined(_M_I86)
   #pragma intrinsic(memset,strcmp)
  #endif
+:endsegment
 #endif  /* __INLINE_FUNCTIONS__ */
 
+:segment !CNAME
+:include saferpro.sp
+
+_WCRTLINK extern errno_t memcpy_s( void * __restrict __s1, rsize_t __s1max, const void * __restrict __s2, rsize_t __n );
+_WCRTLINK extern errno_t memmove_s( void *__s1, rsize_t __s1max, const void *__s2, rsize_t __n );
+_WCRTLINK extern errno_t strcpy_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
+_WCRTLINK extern errno_t strncpy_s( char * __restrict s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+
+_WCRTLINK extern errno_t strcat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2 );
+_WCRTLINK extern errno_t strncat_s( char * __restrict __s1, rsize_t __s1max, const char * __restrict __s2, rsize_t __n );
+
+_WCRTLINK extern char    *strtok_s( char * __restrict __s1, rsize_t * __restrict __s1max, const char * __restrict __s2, char ** __restrict __ptr );
+
+_WCRTLINK extern errno_t strerror_s( char *__s, rsize_t __maxsize, errno_t __errnum );
+_WCRTLINK extern size_t  strerrorlen_s( errno_t __errnum );
+_WCRTLINK extern size_t  strnlen_s( const char *__s, size_t __maxsize );
+
+:include saferepi.sp
+
+:endsegment
+:segment CNAME
 :include cplusepi.sp
+:elsesegment
+#endif /* __cplusplus not defined */
+:endsegment
+
 #endif
+:elsesegment
+///////////////////////////////////////////////////////////////////////////
+// FILE: string (Definition of character traits and std::string)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines the character traits template and the std::
+//              basic_string template.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _STRING_INCLUDED
+#define _STRING_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _CCTYPE_INCLUDED
+ #include <cctype>
+#endif
+
+:: The header <_strdef.h> is indirectly included below.
+#ifndef _STDEXCEPT_INCLUDED
+ #include <stdexcep>
+#endif
+
+namespace _watcom {
+
+  // ============================================================
+  // Character traits specialization for case insensitive strings
+  // ============================================================
+
+  struct ichar_traits : std::char_traits< char > {
+
+    // Use tolower for compatibility with _memicmp.
+    static bool eq( const char_type &c1, const char_type &c2 )
+      { return( std::tolower( c1 ) == std::tolower( c2 ) ); }
+
+    static bool lt( const char_type &c1, const char_type &c2 )
+      { return( std::tolower( c1 ) < std::tolower( c2 ) ); }
+
+    static int compare( const char_type *s1, const char_type *s2, size_t n )
+      { return( _memicmp( s1, s2, n ) ); }
+
+    // Too bad there's no _memichr.
+    static const char_type *find( const char_type *s, size_t n, const char_type &a )
+    {
+      const char_type *result = 0;
+      for( size_t i = 0; i < n; ++i ) {
+        if( std::tolower( *s ) == std::tolower( a ) ) {
+          result = s;
+          break;
+        }
+        ++s;
+      }
+      return( result );
+    }
+
+    static bool eq_int_type( const int_type &c1, const int_type &c2 )
+      { return( std::tolower( c1 ) == std::tolower( c2 ) ); }
+
+  };
+  typedef std::basic_string< char, ichar_traits > istring;
+
+} // namespace _watcom
+
+:include namwat.sp
+
+namespace std {
+
+  // ================================
+  // Member functions of basic_string
+  // ================================
+
+  // basic_string( const basic_string &, size_type, size_type, ... )
+  // ***************************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >::basic_string(
+    const basic_string &other,
+    size_type  pos,
+    size_type  n,
+    const Allocator &a ) : mem( a )
+  {
+    if( pos > other.str_length )
+      throw out_of_range( "basic_string::basic_string" );
+
+    size_type tail_length = other.str_length - pos;
+    size_type result_length = ( tail_length <= n ) ? tail_length : n;
+
+    buffer = alloc( result_length + 1, buf_length );
+    Traits::copy( buffer, other.buffer + pos, result_length );
+    str_length = result_length;
+  }
+
+  // basic_string( const CharT *, size_type, const Allocator & )
+  // ***********************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >::basic_string(
+    const CharT     *s,
+    size_type        n,
+    const Allocator &a ) : mem( a )
+  {
+    if( n > max_size( ) )
+      throw length_error( "basic_string::basic_string" );
+
+    buffer = alloc( n + 1, buf_length );
+    Traits::copy( buffer, s, n );
+    str_length = n;
+  }
+
+  // basic_string( size_type, CharT, const Allocator & )
+  // ***************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >::basic_string(
+          size_type  n,
+          CharT      c,
+    const Allocator &a ) : mem( a )
+  {
+    if( n > max_size( ) )
+      throw length_error( "basic_string::basic_string" );
+
+    buffer = alloc( n + 1, buf_length );
+    Traits::assign( buffer, n, c );
+    str_length = n;
+  }
+
+  // operator=( const CharT * )
+  // **************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::operator=(
+      const CharT *s )
+  {
+    size_type other_length = Traits::length( s );
+
+    if( buf_length > other_length ) {
+      Traits::copy( buffer, s, other_length );
+      str_length = other_length;
+    }
+    else {
+      replace_buffer( s, other_length );
+    }
+    return( *this );
+  }
+
+  // operator=( CharT )
+  // ******************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::operator=(
+      CharT c )
+  {
+    Traits::assign( *buffer, c );
+    str_length = 1;
+    return( *this );
+  }
+
+  // assign( const basic_string &, size_type, size_type )
+  // ****************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::assign(
+      const basic_string &str,
+      size_type pos,
+      size_type n )
+  {
+    basic_string temp( str, pos, n, mem );
+    swap( temp );
+    return( *this );
+  }
+
+  // assign( const CharT *, size_type )
+  // **********************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::assign(
+      const CharT *s,
+      size_type n )
+  {
+    basic_string temp( s, n, mem );
+    swap( temp );
+    return( *this );
+  }
+
+  // assign( const CharT * )
+  // ***********************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::assign(
+      const CharT *s )
+  {
+    basic_string temp( s, mem );
+    swap( temp );
+    return( *this );
+  }
+
+  // assign( size_type, CharT )
+  // **************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::assign(
+      size_type n,
+      CharT c )
+  {
+    basic_string temp( n, c, mem );
+    swap( temp );
+    return( *this );
+  }
+
+  // resize( size_type, CharT )
+  // **************************
+  template< class CharT, class Traits, class Allocator >
+  void basic_string< CharT, Traits, Allocator >::resize(
+    size_type n,
+    CharT c )
+  {
+    if( n <= str_length ) {
+      str_length = n;
+      return;
+    }
+
+    if( n < buf_length ) {
+      Traits::assign( buffer + str_length, n - str_length, c );
+      str_length = n;
+      return;
+    }
+
+    size_type new_length;
+    pointer new_buffer = alloc( n + 1, new_length );
+    Traits::copy( new_buffer, buffer, str_length );
+    Traits::assign( new_buffer + str_length, n - str_length, c );
+    mem.deallocate( buffer, buf_length );
+    buffer = new_buffer;
+    buf_length = new_length;
+    str_length = n;
+  }
+
+  // reserve( size_type )
+  // ********************
+  template< class CharT, class Traits, class Allocator >
+  void basic_string< CharT, Traits, Allocator >::reserve(
+    size_type new_capacity )
+  {
+    if( new_capacity < buf_length ) return;
+
+    size_type new_length;
+    pointer new_buffer = alloc( new_capacity + 1, new_length );
+    Traits::copy( new_buffer, buffer, str_length );
+    mem.deallocate( buffer, buf_length );
+    buffer = new_buffer;
+    buf_length  = new_length;
+  }
+
+  // at( size_type ) const
+  // *********************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::const_reference
+    basic_string< CharT, Traits, Allocator >::at( size_type pos ) const
+  {
+    if( pos >= str_length )
+      throw out_of_range( "basic_string::at" );
+
+    return( buffer[pos] );
+  }
+
+  // at( size_type )
+  // ***************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::reference
+    basic_string< CharT, Traits, Allocator >::at( size_type pos )
+  {
+    if( pos >= str_length )
+      throw out_of_range( "basic_string::at" );
+
+    return( buffer[pos] );
+  }
+
+  // operator+=( const basic_string & )
+  // **********************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::operator+=(
+      const basic_string &str )
+  {
+    return( append( str ) );
+  }
+
+  // operator+=( const CharT * )
+  // ***************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::operator+=( const CharT *s )
+  {
+    return( append( s ) );
+  }
+
+  // operator+=( CharT )
+  // *******************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::operator+=( CharT c )
+  {
+    return( append( 1, c ) );
+  }
+
+  // append( const basic_string &, size_type, size_type )
+  // ****************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::append(
+      const basic_string &str,
+      size_type pos,
+      size_type n )
+  {
+    if( pos > str.str_length )
+      throw out_of_range( "basic_string::append" );
+
+    size_type tail_length = str.str_length - pos;
+    size_type append_length = ( tail_length <= n ) ? tail_length : n;
+
+    return( append( str.buffer + pos, append_length ) );
+  }
+
+  // append( const CharT *, size_type )
+  // **********************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::append(
+      const CharT *s,
+      size_type n )
+  {
+    if( str_length > max_size( ) - n )
+      throw length_error( "basic_string::append" );
+
+    if( n < buf_length - str_length ) {
+      Traits::copy( buffer + str_length, s, n );
+      str_length += n;
+    }
+    else {
+      // Prepare new buffer.
+      size_type result_length = str_length + n;
+      size_type new_length;
+      pointer new_buffer = alloc( result_length + 1, new_length );
+      Traits::copy( new_buffer, buffer, str_length );
+      Traits::copy( new_buffer + str_length, s, n );
+
+      // Commit.
+      mem.deallocate( buffer, buf_length );
+      buffer = new_buffer;
+      buf_length = new_length;
+      str_length = result_length;
+    }
+
+    return( *this );
+  }
+
+  // append( const CharT * )
+  // ***********************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::append( const CharT *s )
+  {
+    return( append( s, Traits::length( s ) ) );
+  }
+
+  // append( size_type, CharT )
+  // **************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::append( size_type n, CharT c )
+  {
+    return( append( basic_string( n, c ) ) );
+  }
+
+  // push_back( CharT )
+  // ******************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  void basic_string< CharT, Traits, Allocator >::push_back( CharT c )
+  {
+    append( &c, 1 );
+  }
+
+  // insert( size_type, const basic_string &, size_type, size_type )
+  // ***************************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::insert(
+      size_type pos1,
+      const basic_string &str,
+      size_type pos2,
+      size_type n )
+  {
+    if( pos2 > str.str_length )
+      throw out_of_range( "basic_string::insert" );
+
+    size_type tail_length = str.str_length - pos2;
+    size_type insert_length = ( tail_length <= n ) ? tail_length : n;
+
+    return( insert( pos1, str.buffer + pos2, insert_length ) );
+  }
+
+  // insert( size_type, const CharT *, size_type )
+  // *********************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::insert(
+      size_type pos,
+      const CharT *s,
+      size_type n )
+  {
+    if( pos > str_length )
+      throw out_of_range( "basic_string::insert" );
+
+    if( str_length > max_size( ) - n )
+      throw length_error( "basic_string::insert" );
+
+    if( n < buf_length - str_length ) {
+      Traits::move( buffer + pos + n, buffer + pos, str_length - pos );
+      Traits::copy( buffer + pos, s, n );
+      str_length += n;
+    }
+    else {
+      // Prepare new buffer.
+      size_type result_length = str_length + n;
+      size_type new_length;
+      pointer new_buffer = alloc( result_length + 1, new_length );
+      Traits::copy( new_buffer, buffer, pos );
+      Traits::copy( new_buffer + pos, s, n );
+      Traits::copy( new_buffer + pos + n, buffer + pos, str_length - pos );
+
+      // Commit.
+      mem.deallocate( buffer, buf_length );
+      buffer = new_buffer;
+      buf_length = new_length;
+      str_length = result_length;
+    }
+    return( *this );
+  }
+
+  // insert( size_type const CharT * )
+  // *********************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::insert(
+      size_type pos,
+      const CharT *s )
+  {
+    return( insert( pos, basic_string( s ) ) );
+  }
+
+
+  // insert( size_type size_type CharT )
+  // ***********************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::insert(
+      size_type pos,
+      size_type n,
+      CharT c )
+  {
+    return( insert( pos, basic_string( n, c ) ) );
+  }
+
+  // insert_helper( iterator, size_type, CharT )
+  // *******************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::iterator
+    basic_string< CharT, Traits, Allocator >::insert_helper(
+      iterator p,
+      size_type n,
+      CharT c )
+  {
+    size_type insert_length = n;
+    size_type pos = p - buffer;
+
+    if( str_length > max_size( ) - insert_length )
+      throw length_error( "basic_string::insert" );
+
+    if( insert_length < buf_length - str_length ) {
+      Traits::move(
+        buffer + pos + insert_length, buffer + pos, str_length - pos );
+      Traits::assign( buffer + pos, insert_length, c );
+      str_length += insert_length;
+    }
+    else {
+      // Prepare new buffer.
+      size_type result_length = str_length + insert_length;
+      size_type new_length;
+      pointer new_buffer = alloc( result_length + 1, new_length );
+      Traits::copy( new_buffer, buffer, pos );
+      Traits::assign( new_buffer + pos, insert_length, c );
+      Traits::copy(
+        new_buffer + pos + insert_length, buffer + pos, str_length - pos );
+
+      // Commit.
+      mem.deallocate( buffer, buf_length );
+      buffer = new_buffer;
+      buf_length = new_length;
+      str_length = result_length;
+      p = buffer + pos;
+    }
+    return( p );
+  }
+
+  // insert( iterator, CharT )
+  // *************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::iterator
+    basic_string< CharT, Traits, Allocator >::insert( iterator p, CharT c )
+  {
+    return( insert_helper( p, 1, c ) );
+  }
+
+  // insert( iterator, size_type, CharT )
+  // ************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  void basic_string< CharT, Traits, Allocator >::insert(
+    iterator p,
+    size_type n,
+    CharT c )
+  {
+    insert_helper( p, n, c );
+  }
+
+  // erase( size_type, size_type )
+  // *****************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::erase(
+      size_type pos,
+      size_type n )
+  {
+    if( pos > str_length )
+      throw out_of_range( "basic_string::erase" );
+
+    size_type tail_length = str_length - pos;
+    size_type erase_length = ( n <= tail_length ) ? n : tail_length;
+    Traits::move( buffer + pos, buffer + pos + n, tail_length - erase_length );
+    str_length -= erase_length;
+    return( *this );
+  }
+
+  // erase( iterator )
+  // *****************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::iterator
+    basic_string< CharT, Traits, Allocator >::erase( iterator p )
+  {
+    erase( p - begin(), 1 );
+    return( p );
+  }
+
+  // erase( iterator, iterator )
+  // ***************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::iterator
+    basic_string< CharT, Traits, Allocator >::erase(
+      iterator first,
+      iterator last )
+  {
+    erase( first - begin(), last - first);
+    return( first );
+  }
+
+  // replace( size_type, size_type, const basic_string & )
+  // *****************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      size_type pos1,
+      size_type n,
+      const basic_string &str )
+  {
+    return( replace( pos1, n, str, 0, npos ) );
+  }
+
+  // replace( size_type, size_type, const basic_string &, size_type, size_type)
+  // **************************************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      size_type pos1,
+      size_type n1,
+      const basic_string &str,
+      size_type pos2,
+      size_type n2 )
+  {
+    if( pos2 > str.str_length )
+      throw out_of_range( "basic_string::replace" );
+
+    size_type tail_length = str.str_length - pos2;
+    size_type insert_length = (n2 <= tail_length) ? n2 : tail_length;
+
+    return( replace( pos1, n1, str.buffer + pos2, insert_length ) );
+  }
+
+  // replace( size_type, size_type, const CharT *, size_type )
+  // *********************************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      size_type pos,
+      size_type n1,
+      const CharT *s,
+      size_type n2 )
+  {
+    if( pos > str_length )
+      throw out_of_range( "basic_string::replace" );
+
+    size_type tail_length = str_length - pos;
+    size_type remove_length = (n1 <= tail_length) ? n1 : tail_length;
+
+    if( str_length - remove_length > max_size( ) - n2 )
+      throw length_error( "basic_string::replace" );
+
+    size_type result_length = str_length - remove_length + n2;
+    if( buf_length > result_length ) {
+      Traits::move( buffer + pos + n2,
+                    buffer + pos + remove_length,
+                    str_length - pos - remove_length );
+      Traits::copy( buffer + pos, s, n2 );
+      str_length = result_length;
+    }
+    else {
+      // Prepare new buffer.
+      size_type new_length;
+      pointer new_buffer = alloc( result_length + 1, new_length );
+      Traits::copy( new_buffer, buffer, pos );
+      Traits::copy( new_buffer + pos, s, n2 );
+      Traits::copy( new_buffer + pos + n2,
+                    buffer + pos + remove_length,
+                    str_length - pos - remove_length );
+
+      // Commit.
+      mem.deallocate( buffer, buf_length );
+      buffer = new_buffer;
+      buf_length = new_length;
+      str_length = result_length;
+    }
+
+    return( *this );
+  }
+
+  // replace( size_type, size_type, const CharT * )
+  // **********************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      size_type pos,
+      size_type n1,
+      const CharT *s )
+  {
+    return( replace( pos, n1, s, Traits::length( s ) ) );
+  }
+
+  // replace( size_type, size_type, size_type, CharT )
+  // *************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      size_type pos,
+      size_type n1,
+      size_type n2,
+      CharT c )
+  {
+    return( replace( pos, n1, basic_string( n2, c ) ) );
+  }
+
+  // replace( iterator, iterator, const basic_string & )
+  // ***************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      iterator i1,
+      iterator i2,
+      const basic_string &str )
+  {
+    return( replace( i1, i2, str.buffer, str.str_length ) );
+  }
+
+  // replace( iterator, iterator, const CharT *s, size_type n )
+  // **********************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      iterator i1,
+      iterator i2,
+      const CharT *s,
+      size_type n )
+  {
+    size_type pos           = &*i1 - buffer;
+    size_type remove_length = &*i2 - &*i1;
+
+    return( replace( pos, remove_length, s, n ) );
+  }
+
+  // replace( iterator i1, iterator i2, const CharT * )
+  // **************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      iterator i1,
+      iterator i2,
+      const CharT *s )
+  {
+    return( replace( i1, i2, s, Traits::length( s ) ) );
+  }
+
+  // replace( iterator i1, iterator i2, size_type n, CharT c )
+  // *********************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  basic_string< CharT, Traits, Allocator > &
+    basic_string< CharT, Traits, Allocator >::replace(
+      iterator i1,
+      iterator i2,
+      size_type n,
+      CharT c )
+  {
+    return( replace( i1, i2, basic_string( n, c ) ) );
+  }
+
+  // copy( CharT *, size_type, size_type )
+  // *************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::copy(
+      CharT    *s,
+      size_type n,
+      size_type pos ) const
+  {
+    if( pos > str_length )
+      throw out_of_range( "basic_string::copy" );
+
+    size_type tail_length = str_length - pos;
+    size_type copy_length = (n <= tail_length) ? n : tail_length;
+    Traits::copy( s, buffer + pos, copy_length );
+    return( copy_length );
+  }
+
+  // swap( basic_string & )
+  // **********************
+  template< class CharT, class Traits, class Allocator >
+  void basic_string< CharT, Traits, Allocator >::swap(
+    basic_string &str )
+  {
+    typename Allocator::pointer ptemp;
+    typename Allocator::size_type stemp;
+    Allocator atemp;
+
+    ptemp      = buffer;
+    buffer     = str.buffer;
+    str.buffer = ptemp;
+
+    stemp      = buf_length;
+    buf_length      = str.buf_length;
+    str.buf_length  = stemp;
+
+    stemp      = str_length;
+    str_length     = str.str_length;
+    str.str_length = stemp;
+
+    atemp      = mem;
+    mem        = str.mem;
+    str.mem    = atemp;
+  }
+
+  // find( const basic_string &, size_type ) const
+  // *********************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( find( str.buffer, pos, str.str_length ) );
+  }
+
+  // find( const CharT *, size_type, size_type ) const
+  // *************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    if( str_length < pos      ) return( npos );
+    if( str_length - pos < n  ) return( npos );
+    if( str_length - pos == 0 ) return( pos  );  // ?
+
+    while( pos + n <= str_length ) {
+      bool found = true;
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[pos + i], s[i] ) == false ) {
+          found = false;
+          break;
+        }
+      }
+      if( found ) return( pos );
+      ++pos;
+    }
+    return( npos );
+  }
+
+  // find( const CharT *, size_type ) const
+  // **************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( find( s, pos, Traits::length( s ) ) );
+  }
+
+  // find( CharT, size_type ) const
+  // ******************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find(
+      CharT c,
+      size_type pos ) const
+  {
+    return( find( basic_string( 1, c ), pos ) );
+  }
+
+  // rfind( const basic_string &, size_type ) const
+  // **********************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::rfind(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( rfind( str.buffer, pos, str.str_length ) );
+  }
+
+  // rfind( const CharT *, size_type, size_type ) const
+  // **************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::rfind(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    if( str_length < n ) return( npos );
+    size_type index = str_length - n;
+    index = ( pos < index ) ? pos : index;
+    ++index;
+    do {
+      bool found = true;
+      --index;
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[index + i], s[i] ) == false ) {
+          found = false;
+          break;
+        }
+      }
+      if( found ) return( index );
+    } while( index > 0 );
+
+    return( npos );
+  }
+
+  // rfind( const CharT *, size_type ) const
+  // ***************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::rfind(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( rfind( s, pos, Traits::length( s ) ) );
+  }
+
+  // rfind( CharT, size_type ) const
+  // *******************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::rfind(
+      CharT c,
+      size_type pos ) const
+  {
+    return( rfind( basic_string( 1, c ), pos ) );
+  }
+
+  // find_first_of( const basic_string &, size_type ) const
+  // ******************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_of(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( find_first_of( str.buffer, pos, str.str_length ) );
+  }
+
+  // find_first_of( const CharT *, size_type, size_type ) const
+  // **********************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_of(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    size_type index = pos;
+
+    if( str_length < index ) return( npos );
+
+    while( index < str_length ) {
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[index], s[i] ) == true ) {
+          return( index );
+        }
+      }
+      ++index;
+    }
+
+    return( npos );
+  }
+
+  // find_first_of( const CharT *, size_type ) const
+  // ***********************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_of(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( find_first_of(  s, pos, Traits::length( s ) ) );
+  }
+
+  // find_first_of( CharT, size_type ) const
+  // ***************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_of(
+      CharT c,
+      size_type pos ) const
+  {
+    return( find_first_of( basic_string( 1, c ), pos ) );
+  }
+
+  // find_last_of( const basic_string &, size_type ) const
+  // *****************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_of(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( find_last_of( str.buffer, pos, str.str_length ) );
+  }
+
+  // find_last_of( const CharT *, size_type, size_type ) const
+  // *********************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_of(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    size_type index = pos;
+
+    if( str_length < index ) index = str_length - 1;
+
+    while( index != npos ) {
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[index], s[i] ) == true ) {
+          return( index );
+        }
+      }
+      --index;
+    }
+
+    return( npos );
+  }
+
+  // find_last_of( const CharT *, size_type ) const
+  // **********************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_of(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( find_last_of( s, pos, Traits::length( s ) ) );
+  }
+
+  // find_last_of( CharT, size_type ) const
+  // **************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_of(
+      CharT c,
+      size_type pos ) const
+  {
+    return( find_last_of( basic_string( 1, c ), pos ) );
+  }
+
+  // find_first_not_of( const basic_string &, size_type ) const
+  // **********************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_not_of(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( find_first_not_of( str.buffer, pos, str.str_length ) );
+  }
+
+  // find_first_not_of( const CharT *, size_type, size_type ) const
+  // **************************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_not_of(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    size_type index = pos;
+
+    if( str_length <= index ) return( npos );
+
+    while( index < str_length ) {
+      bool found = false;
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[index], s[i] ) == true ) {
+          found = true;
+          break;
+        }
+      }
+      if ( !found ) return( index );
+      ++index;
+    }
+
+    return( npos );
+  }
+
+  // find_first_not_of( const CharT *, size_type ) const
+  // ***************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_not_of(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( find_first_not_of( s, pos, Traits::length( s ) ) );
+  }
+
+  // find_first_not_of( CharT, size_type ) const
+  // *******************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_first_not_of(
+      CharT c,
+      size_type pos ) const
+  {
+    return( find_first_not_of( basic_string( 1, c ), pos ) );
+  }
+
+  // find_last_not_of( const basic_string &, size_type ) const
+  // *********************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_not_of(
+      const basic_string &str,
+      size_type pos ) const
+  {
+    return( find_last_not_of( str.buffer, pos, str.str_length ) );
+  }
+
+  // find_last_not_of( const CharT *, size_type, size_type ) const
+  // *************************************************************
+  template< class CharT, class Traits, class Allocator >
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_not_of(
+      const CharT *s,
+      size_type pos,
+      size_type n ) const
+  {
+    size_type index = pos;
+
+    if( str_length <= index ) index = str_length - 1;
+
+    while( index != npos ) {
+      bool found = false;
+      for( size_type i = 0; i < n; ++i ) {
+        if( Traits::eq( buffer[index], s[i] ) == true ) {
+          found = true;
+          break;
+        }
+      }
+      if( !found ) return( index );
+      --index;
+    }
+
+    return( npos );
+  }
+
+  // find_last_not_of( const CharT *, size_type ) const
+  // **************************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_not_of(
+      const CharT *s,
+      size_type pos ) const
+  {
+    return( find_last_not_of( s, pos, Traits::length( s ) ) );
+  }
+
+  // find_last_not_of( CharT, size_type ) const
+  // ******************************************
+  template< class CharT, class Traits, class Allocator >
+  inline
+  typename basic_string< CharT, Traits, Allocator >::size_type
+    basic_string< CharT, Traits, Allocator >::find_last_not_of(
+      CharT c,
+      size_type pos ) const
+  {
+    return( find_last_not_of( basic_string( 1, c ), pos ) );
+  }
+
+  // substr( size_type, size_type ) const
+  // ************************************
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    basic_string< CharT, Traits, Allocator >::substr(
+      size_type pos,
+      size_type n ) const
+  {
+    if( pos > str_length )
+      throw out_of_range( "basic_string::substr" );
+
+    size_type sublength = (n < str_length - pos) ? n : str_length - pos;
+    return( basic_string( buffer + pos, sublength ) );
+  }
+
+  // ======================================
+  // Ordinary functions using basic_string.
+  // ======================================
+
+  // operator+( const basic_string &, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    operator+( const basic_string< CharT, Traits, Allocator > &left,
+               const basic_string< CharT, Traits, Allocator > &right )
+  {
+    basic_string< CharT, Traits, Allocator > temp(left);
+    temp += right;
+    return( temp );
+  }
+
+  // operator+( const CharT *, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    operator+( const CharT *left,
+               const basic_string< CharT, Traits, Allocator > &right )
+  {
+    basic_string< CharT, Traits, Allocator > temp(left);
+    temp += right;
+    return( temp );
+  }
+
+  // operator+( const basic_string &, const CharT * )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    operator+( const basic_string< CharT, Traits, Allocator > &left,
+               const CharT *right )
+  {
+    basic_string< CharT, Traits, Allocator > temp(left);
+    temp += right;
+    return( temp );
+  }
+
+  // operator+( CharT, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    operator+( CharT left,
+               const basic_string< CharT, Traits, Allocator > &right )
+  {
+    basic_string< CharT, Traits, Allocator > temp(1, left);
+    temp += right;
+    return( temp );
+  }
+
+  // operator+( const basic_string &, CharT )
+  // ++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  basic_string< CharT, Traits, Allocator >
+    operator+( const basic_string< CharT, Traits, Allocator > &left,
+               CharT right )
+  {
+    basic_string< CharT, Traits, Allocator > temp(left);
+    temp += right;
+    return( temp );
+  }
+
+  // operator==( const basic_string &, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator==( const basic_string< CharT, Traits, Allocator > &left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    if( left.str_length != right.str_length ) return false;
+    return( Traits::compare( left.buffer, right.buffer, left.str_length ) == 0 );
+  }
+
+  // operator==( const CharT *, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator==( const CharT *left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    if( Traits::length( left ) != right.str_length ) return false;
+    return( Traits::compare( left, right.buffer, right.str_length ) == 0 );
+  }
+
+  // operator==( const basic_string &, const CharT * )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator==( const basic_string< CharT, Traits, Allocator > &left,
+                   const CharT *right )
+  {
+    if( left.str_length != Traits::length( right ) ) return false;
+    return( Traits::compare( left.buffer, right, left.str_length ) == 0 );
+  }
+
+  // operator!=( const basic_string &, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator!=( const basic_string< CharT, Traits, Allocator > &left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left == right ) );
+  }
+
+  // operator!=( const CharT *, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator!=( const CharT *left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left == right ) );
+  }
+
+  // operator!=( const basic_string &, const CharT * )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator!=( const basic_string< CharT, Traits, Allocator > &left,
+                   const CharT *right )
+  {
+    return( !( left == right ) );
+  }
+
+  // operator<( const basic_string &, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator<( const basic_string< CharT, Traits, Allocator > &left,
+                  const basic_string< CharT, Traits, Allocator > &right )
+  {
+    Allocator::size_type common_length = left.str_length;
+    if( right.str_length < common_length ) common_length = right.str_length;
+    int result = Traits::compare( left.buffer, right.buffer, common_length );
+    if( result < 0 ) return true;
+    if( result == 0 && left.str_length < right.str_length ) return true;
+    return( false );
+  }
+
+  // operator<( const CharT *, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator<( const CharT *left,
+                  const basic_string< CharT, Traits, Allocator > &right )
+  {
+    Allocator::size_type raw_length = Traits::length( left );
+    Allocator::size_type common_length = raw_length;
+    if( right.str_length < common_length ) common_length = right.str_length;
+    int result = Traits::compare( left, right.buffer, common_length );
+    if( result < 0 ) return true;
+    if( result == 0 && raw_length < right.str_length ) return true;
+    return( false );
+  }
+
+  // operator<( const basic_string &, const CharT * )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  bool operator<( const basic_string< CharT, Traits, Allocator > &left,
+                  const CharT *right )
+  {
+    Allocator::size_type raw_length = Traits::length( right );
+    Allocator::size_type common_length = left.str_length;
+    if( raw_length < common_length ) common_length = raw_length;
+    int result = Traits::compare( left.buffer, right, common_length );
+    if( result < 0 ) return true;
+    if( result == 0 && left.str_length < raw_length ) return true;
+    return( false );
+  }
+
+  // operator>( const basic_string &, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>( const basic_string< CharT, Traits, Allocator > &left,
+                  const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( right < left );
+  }
+
+  // operator>( const CharT *, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>( const CharT *left,
+                  const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( right < left );
+  }
+
+  // operator>( const basic_string &, const CharT * )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>( const basic_string< CharT, Traits, Allocator > &left,
+                  const CharT *right )
+  {
+    return( right < left );
+  }
+
+  // operator<=( const basic_string &, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator<=( const basic_string< CharT, Traits, Allocator > &left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left > right ) );
+  }
+
+  // operator<=( const CharT *, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator<=( const CharT *left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left > right ) );
+  }
+
+  // operator<=( const basic_string &, const CharT * )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator<=( const basic_string< CharT, Traits, Allocator > &left,
+                   const CharT *right )
+  {
+    return( !( left > right ) );
+  }
+
+  // operator>=( const basic_string &, const basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>=( const basic_string< CharT, Traits, Allocator > &left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left < right ) );
+  }
+
+  // operator>=( const CharT *, const basic_string & )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>=( const CharT *left,
+                   const basic_string< CharT, Traits, Allocator > &right )
+  {
+    return( !( left < right ) );
+  }
+
+  // operator>=( const basic_string &, const CharT * )
+  // +++++++++++++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  bool operator>=( const basic_string< CharT, Traits, Allocator > &left,
+                   const CharT *right )
+  {
+    return( !( left < right ) );
+  }
+
+  // String swap ambiguous if general swap (in algorithm) visible.
+  // Need partial ordering of function templates for this to work.
+  //
+  #ifdef __NEVER
+  // swap( basic_string &, basic_string & )
+  // ++++++++++++++++++++++++++++++++++++++
+  template< class CharT, class Traits, class Allocator >
+  inline
+  void swap(
+      basic_string< CharT, Traits, Allocator > &left,
+      basic_string< CharT, Traits, Allocator > &right )
+  {
+    left.swap( right );
+  }
+  #endif
+
+} // namespace std
+
+#endif
+:endsegment

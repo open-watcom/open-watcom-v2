@@ -1,0 +1,25 @@
+name=Help_32Bit
+static_text=\
+        //1"Check 32-bit MFC 3.0 support if you want to install MFC support."\
+        //2"32-bit MFC 3.0 ｻﾎﾟｰﾄのインストールを行なう場合はそれをチェックしてください."\
+        //0
+static_text=\
+        //1"Press 'MFC Support...' if you want to choose in more detail."\
+        //2"詳細設定する場合、'MFC サポート...'を押してください."\
+        //0
+static_text=
+static_text=\
+        //1"You can also select which memory models you want to use. They are:"\
+        //2"使用したいメモリモデルの選択もできます. 以下のいずれかです:"\
+        //0
+static_text=
+static_text=\
+        //1"Register - some parameters are passed in registers"\
+        //2"レジスタ - 引数の一部はレジスタに入れて渡される"\
+        //0
+static_text=\
+        //1"Stack    - all parameters are passed on the stack"\
+        //2"スタック - 引数はすべてスタックに入れて渡される"\
+        //0
+static_text=
+include=ok.dlg

@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: This master file includes the sources for the fstream
+*              member functions.
 *
 ****************************************************************************/
-
 
 #include    "fstconde.cpp"
 #include    "fstconfd.cpp"

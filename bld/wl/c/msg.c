@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker message output.
 *
 ****************************************************************************/
 
-
-/*
- * MSG : linker message output
- *
- */
 
 #include <string.h>
 #include <stdlib.h>
@@ -42,11 +36,10 @@
 #include "command.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
+#include "ideentry.h"
 #include "mapio.h"
 #include "loadfile.h"
-#if _LINKER != _WATFOR77
 #include "demangle.h"
-#endif
 #include "msg.h"
 
 #undef pick
@@ -62,6 +55,9 @@ static  MSG_ARG_LIST    MsgArgInfo;
 static  char *          CurrSymName;
 
 static unsigned         MakeExeName( char *, unsigned );
+static void             IncremIndex( void );
+static void             FileOrder( char rc_buff[], int which_file );
+static int              UseArgInfo( void );
 
 #define MSG_ARRAY_SIZE ((MSG_MAX_ERR_MSG_NUM / 8) + 1)
 
@@ -71,7 +67,7 @@ bool            BannerPrinted;
 byte MsgFlags[ MSG_ARRAY_SIZE ];
 
 
-extern void ResetMsg( void )
+void ResetMsg( void )
 /**************************/
 {
     LocFile = NULL;
@@ -81,7 +77,7 @@ extern void ResetMsg( void )
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
 }
 
-extern unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
+unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
 /****************************************************************/
 {
     va_list args;
@@ -90,7 +86,7 @@ extern unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
     return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
-extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
+unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
 /****************************************************************************/
 /* quick vsprintf routine                                           */
 /* assumptions - format string does not end in '%'                  */
@@ -103,6 +99,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
 /*                  %d  : decimal                                   */
 /*                  %l  : long decimal                              */
 /*                  %a  : address   ( %x:%x or 32 bit, depends on format) */
+/*                  %A  : address   ( %x:%h or 32 bit, depends on format) */
 /*                  %S  : symbol name                               */
 /*                  %f  : an executable format name                 */
 /********************************************************************/
@@ -135,7 +132,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     str = va_arg( *args, symbol * )->name;
                 }
-#if _LINKER != _WATFOR77
+#if defined(__WATCOMC__)
                 if( !(LinkFlags & DONT_UNMANGLE) ) {
                     size = __demangle_l( str, 0, dest, len );
                     if( size > (len-1) ) size = len - 1;
@@ -180,7 +177,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 len -= num;
                 break;
             case 'c' :
-                *dest++ = va_arg( *args, char );
+                *dest++ = va_arg( *args, int );
                 len--;
                 break;
             case 'x' :
@@ -188,7 +185,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
                 } else {
-                    num = va_arg( *args, unsigned_16 );
+                    num = va_arg( *args, unsigned int );
                 }
                 if( len < 4 ) return( dest - buff );    //NOTE: premature return
                 dest += 4;
@@ -216,7 +213,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
                 } else {
-                    num = va_arg( *args, unsigned_16 );
+                    num = va_arg( *args, unsigned int );
                 }
                 utoa( num, dest, 10 );
                 size = strlen( dest );
@@ -237,6 +234,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 len -= size;
                 break;
             case 'a':
+            case 'A':
                 if( UseArgInfo() ) {
                     addr = MsgArgInfo.arg[MsgArgInfo.index].address;
                     IncremIndex();
@@ -257,7 +255,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     } else {
                         size = FmtStr( dest, len, "DATA:%h", addr->off );
                     }
-                } else if( FmtData.type & MK_386 ) {
+                } else if( (FmtData.type & MK_386) || ch == 'A' ) {
                     size = FmtStr( dest, len, "%x:%h", addr->seg, addr->off );
                 } else {
                     size = FmtStr( dest, len, "%x:%x", addr->seg,
@@ -300,9 +298,10 @@ static unsigned MakeExeName( char * buff, unsigned max )
     } else {
         format = FmtData.type;
         for( ;; ) {
-            num = binary_log( format );
+            num = blog_32( format );
             format &= ~(1 << num);
-            if( format == 0 ) break;
+            if( format == 0 )
+                break;
         }
         Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
         str = rc_buff;
@@ -332,19 +331,19 @@ static unsigned MakeExeName( char * buff, unsigned max )
     return( len );
 }
 
-static int UseArgInfo()
-/*********************/
+static int UseArgInfo( void )
+/***************************/
 {
     return( MsgArgInfo.index >= 0 );
 }
 
-static void IncremIndex()
-/***********************/
+static void IncremIndex( void )
+/*****************************/
 {
     MsgArgInfo.index++;
 }
 
-extern void Locator( char *filename, char *mem, unsigned rec )
+void Locator( char *filename, char *mem, unsigned rec )
 /************************************************************/
 {
     LocFile = filename;
@@ -375,8 +374,8 @@ static void LocateFile( unsigned num )
     }
 }
 
-extern unsigned CalcMsgNum( unsigned num )
-/****************************************/
+unsigned CalcMsgNum( unsigned num )
+/*********************************/
 // map the internal enum onto the value that the user sees.
 {
     unsigned    class;
@@ -386,66 +385,88 @@ extern unsigned CalcMsgNum( unsigned num )
     return class * 1000 + (num & NUM_MSK);
 }
 
-static void MessageFini( unsigned num, char *buff, unsigned len, bool waserror )
-/******************************************************************************/
+unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
+/*****************************************************************/
 {
-    if( num & OUT_TERM ) {
-        if( !(LinkFlags & QUIET_FLAG) ) {
-            WLPrtBanner();
-            WriteInfoStdOut( buff, num, CurrSymName );
-        } else if( (num & CLASS_MSK) != (CLASS_MSK & INF)) {
-            WriteInfoStdOut( buff, num, CurrSymName );
-        }
-    }
-    if( (num & OUT_MAP) && (MapFile != NIL_HANDLE) ) {
-        BufWrite( buff, len );
-        WriteMapNL( 1 );
-    }
-    if( (num & CLASS_MSK) == (FTL&~OUT_MSK) ) Suicide();
-    if( waserror && LinkFlags & MAX_ERRORS_FLAG ) {
-        MaxErrors--;
-        if( MaxErrors == 0 ) {
-            LnkMsg( FTL+MSG_TOO_MANY_ERRORS, NULL );
-        }
-    }
-}
-
-extern void LnkMsg( unsigned num, char *types, ... )
-/**************************************************/
-/* report a linker message */
-{
-    va_list     args;
-    int         which_file = 0;
-    unsigned    len;
+    unsigned    prefixlen;
     unsigned    class;
-    bool        waserror;
     char        rc_buff[RESOURCE_MAX_SIZE];
-    char        buff[ MAX_MSG_SIZE ];
 
-    if( !TestBit( MsgFlags, num & NUM_MSK ) ) return;
-    CurrSymName = NULL;
-    LocateFile( num );
-    len = 0;
-    waserror = FALSE;
+    prefixlen = 0;
+    *buff = '\0';
     class = num & CLASS_MSK;
-    if( class == (YELL & CLASS_MSK) ) {
-        waserror = TRUE;        /* yells are counted as errors for limits */
-    } else if( class >= (MILD_ERR & CLASS_MSK) ) {
-        waserror = TRUE;
-        if( class >= (ERR & CLASS_MSK) ) {
-            LinkState |= LINK_ERROR;
-        }
-    }
-#if _LINKER != _DLLHOST
     if( class >= (WRN & CLASS_MSK) ) {
         if( class == (WRN & CLASS_MSK) ) {
             Msg_Get( MSG_WARNING, rc_buff );
         } else {
             Msg_Get( MSG_ERROR, rc_buff );
         }
-        len = FmtStr( &buff[0], MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
+        prefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
     }
-#endif
+    return( prefixlen );
+}
+
+static void MessageFini( unsigned num, char *buff, unsigned len )
+/***************************************************************/
+{
+    unsigned    prefixlen;
+    unsigned    class;
+    char        prefix[ MAX_MSG_SIZE ];
+
+    prefixlen = 0;
+    class = num & CLASS_MSK;
+    if( class >= (ERR & CLASS_MSK) ) {
+        LinkState |= LINK_ERROR;
+    }
+    if( num & OUT_TERM ) {
+        if( !(LinkFlags & QUIET_FLAG) ) {
+            WLPrtBanner();
+            WriteInfoStdOut( buff, num, CurrSymName );
+        } else if( class != (INF & CLASS_MSK)) {
+            WriteInfoStdOut( buff, num, CurrSymName );
+        }
+    }
+    if( (num & OUT_MAP) && (MapFile != NIL_HANDLE) ) {
+        prefixlen = GetMsgPrefix( prefix, MAX_MSG_SIZE, num );
+        BufWrite( prefix, prefixlen );
+        BufWrite( buff, len );
+        WriteMapNL( 1 );
+    }
+    if( class == (FTL & CLASS_MSK) )
+        Suicide();
+    /* yells are counted as errors for limits */
+    if(( class == (YELL & CLASS_MSK) ) || ( class >= (MILD_ERR & CLASS_MSK) )) {
+        if( LinkFlags & MAX_ERRORS_FLAG ) {
+            MaxErrors--;
+            if( MaxErrors == 0 ) {
+                LnkMsg( FTL+MSG_TOO_MANY_ERRORS, NULL );
+            }
+        }
+    }
+}
+
+void LnkMsg(
+    unsigned    num,    // A message number + control flags
+    char        *types, // Conversion qualifiers
+    ... )               // Arguments to interpolate into message
+/**************************************************
+ * report a linker message
+ *
+ * num   selects a message containing substitutions; both printf and %digit
+ * types is either NULL or the order of interpolated arguments.
+ */
+{
+    va_list     args;
+    int         which_file = 0;
+    unsigned    len;
+    char        rc_buff[ RESOURCE_MAX_SIZE ];
+    char        buff[ MAX_MSG_SIZE ];
+
+    if( !TestBit( MsgFlags, num & NUM_MSK ) )
+        return;
+    CurrSymName = NULL;
+    LocateFile( num );
+    len = 0;
     if( LocFile != NULL ) {
         which_file += 1;
     }
@@ -482,8 +503,9 @@ extern void LnkMsg( unsigned num, char *types, ... )
     va_start( args, types );
     Msg_Get( num & NUM_MSK, rc_buff );
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
+    va_end( args );
     len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
-    MessageFini( num, buff, len, waserror );
+    MessageFini( num, buff, len );
 }
 
 static void HandleRcMsg( unsigned num, va_list *args )
@@ -496,18 +518,13 @@ static void HandleRcMsg( unsigned num, va_list *args )
 
     num |= ERR;
     len = 0;
-    LinkState |= LINK_ERROR;
     CurrSymName = NULL;
-#if _LINKER != _DLLHOST
-    Msg_Get( MSG_ERROR, rc_buff );
-    len = FmtStr( &buff[0], MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
-#endif
     Msg_Get( num & NUM_MSK, rc_buff );
     len += DoFmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff, args );
-    MessageFini( num, buff, len, TRUE );
+    MessageFini( num, buff, len );
 }
 
-extern void RcWarning( unsigned num, ... )
+void RcWarning( unsigned num, ... )
 /****************************************/
 {
     va_list args;
@@ -516,7 +533,7 @@ extern void RcWarning( unsigned num, ... )
     HandleRcMsg( num, &args );
 }
 
-extern void RcError( unsigned num, ... )
+void RcError( unsigned num, ... )
 /**************************************/
 {
     va_list args;
@@ -554,7 +571,7 @@ static void FileOrder( char rc_buff[], int which_file )
     }
 }
 
-extern void WLPrtBanner( void )
+void WLPrtBanner( void )
 /*****************************/
 // print the banner, if it hasn't already been printed.
 {
@@ -567,15 +584,17 @@ extern void WLPrtBanner( void )
         WriteInfoStdOut( msg, BANNER, NULL );
         msg = MsgStrings[ TRADEMARK ];
         WriteInfoStdOut( msg, BANNER, NULL );
+        msg = MsgStrings[ TRADEMARK2 ];
+        WriteInfoStdOut( msg, BANNER, NULL );
         BannerPrinted = TRUE;
     }
 }
 
-extern bool SkipSymbol( symbol * sym )
+bool SkipSymbol( symbol * sym )
 /************************************/
 {
     if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return TRUE;
-#if _LINKER != _WATFOR77
+#if defined(__WATCOMC__)
     { int art;
 
     art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
@@ -586,7 +605,7 @@ extern bool SkipSymbol( symbol * sym )
 #endif
 }
 
-extern int SymAlphaCompare( const void *a, const void *b )
+int SymAlphaCompare( const void *a, const void *b )
 /********************************************************/
 {
     symbol *    left;
@@ -599,7 +618,7 @@ extern int SymAlphaCompare( const void *a, const void *b )
 
     left = *((symbol **) a);
     right = *((symbol **) b);
-#if _LINKER != _WATFOR77
+#if defined(__WATCOMC__)
     if( !(LinkFlags & DONT_UNMANGLE) ) {
         __unmangled_name( left->name, 0, &leftname, &leftsize );
         __unmangled_name( right->name, 0, &rightname, &rightsize );

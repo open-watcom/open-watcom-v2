@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate table of tokens for yacc.
 *
 ****************************************************************************/
 
@@ -42,24 +41,24 @@ char *Tokens[] = {
 #include "ctokens.h"
 
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     FILE *ofp;
     int i;
 
     if( argc != 2 ) {
         puts( "usage: umktable <output-file>" );
-        exit(1);
+        return( 1 );
     }
     ofp = fopen( argv[1], "w" );
     if( !ofp ) {
         puts( "cannot open output file" );
-        exit(1);
+        return( 1 );
     }
     i = T_LAST_TOKEN;
     if( i > 255 ) {
         puts( "too many tokens!" );
-        exit(1);
+        return( 1 );
     }
     if( i > 200 ) {
         puts( "/* over 200 tokens! */" );
@@ -68,6 +67,26 @@ void main( int argc, char **argv )
         toYACC[i] = 0;
     }
     createTable();
+
+    /* alternative tokens */
+    toYACC[ T_ALT_LEFT_BRACKET ] = toYACC[ T_LEFT_BRACKET ];
+    toYACC[ T_ALT_RIGHT_BRACKET ] = toYACC[ T_RIGHT_BRACKET ];
+    toYACC[ T_ALT_LEFT_BRACE ] = toYACC[ T_LEFT_BRACE ];
+    toYACC[ T_ALT_RIGHT_BRACE ] = toYACC[ T_RIGHT_BRACE ];
+    toYACC[ T_ALT_SHARP ] = toYACC[ T_SHARP ];
+    toYACC[ T_ALT_SHARP_SHARP ] = toYACC[ T_SHARP_SHARP ];
+    toYACC[ T_ALT_AND ] = toYACC[ T_AND ];
+    toYACC[ T_ALT_AND_EQUAL ] = toYACC[ T_AND_EQUAL ];
+    toYACC[ T_ALT_AND_AND ] = toYACC[ T_AND_AND ];
+    toYACC[ T_ALT_OR ] = toYACC[ T_OR ];
+    toYACC[ T_ALT_OR_EQUAL ] = toYACC[ T_OR_EQUAL ];
+    toYACC[ T_ALT_OR_OR ] = toYACC[ T_OR_OR ];
+    toYACC[ T_ALT_XOR ] = toYACC[ T_XOR ];
+    toYACC[ T_ALT_XOR_EQUAL ] = toYACC[ T_XOR_EQUAL ];
+    toYACC[ T_ALT_EXCLAMATION ] = toYACC[ T_EXCLAMATION ];
+    toYACC[ T_ALT_NE ] = toYACC[ T_NE ];
+    toYACC[ T_ALT_TILDE ] = toYACC[ T_TILDE ];
+
     fprintf( ofp, "static const unsigned char YYFAR yytranslate[257] = {\n" );
     for( i = 0; i < 256; ++i ) {
         fprintf( ofp, "%3u,", toYACC[i] );
@@ -78,5 +97,5 @@ void main( int argc, char **argv )
     }
     fprintf( ofp, "  0 };\n" );
     fclose( ofp );
-    exit(0);
+    return( 0 );
 }

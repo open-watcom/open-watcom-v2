@@ -17,3 +17,5 @@ void foo( int x )
 {
     foo( x, &x );
 }
+
+template class S<int>;

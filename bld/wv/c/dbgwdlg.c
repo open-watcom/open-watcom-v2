@@ -38,7 +38,7 @@
 
 #define MAX_DLG_LINES 30000U
 
-extern void             LogLine(char *);
+extern void             LogLine( char * );
 extern int              PageSize( int );
 extern void             SetLogMenuItems( bool active );
 extern void             DbgUpdate( update_list );
@@ -46,11 +46,11 @@ extern void             DbgUpdate( update_list );
 extern screen_state     ScrnState;
 
 typedef struct dlg_entry {
-        struct dlg_entry        *prev;
-        struct dlg_entry        *next;
-        unsigned                line;
-        wnd_attr                attr;
-        char                    data[1];
+    struct dlg_entry        *prev;
+    struct dlg_entry        *next;
+    unsigned                line;
+    wnd_attr                attr;
+    char                    data[1];
 } dlg_entry;
 
 static a_window         *WndDlg;
@@ -58,6 +58,7 @@ static dlg_entry        *DlgListTop = NULL;
 static dlg_entry        *DlgListBot = NULL;
 static unsigned         DlgListLineNum = 0;
 static unsigned         DlgLines = 0;
+
 
 static void DlgListPush( char *buff, unsigned len, unsigned attr )
 {
@@ -81,7 +82,7 @@ static void DlgListPush( char *buff, unsigned len, unsigned attr )
 }
 
 
-static void DlgListPopLine()
+static void DlgListPopLine( void )
 {
     dlg_entry  *temp;
 
@@ -94,7 +95,7 @@ static void DlgListPopLine()
 }
 
 
-bool DlgInfoRelease()
+bool DlgInfoRelease( void )
 {
     if( DlgListBot == NULL || DlgListTop == NULL) return( FALSE );
     if( (DlgListBot->line - DlgListTop->line) <= 1 ) return( FALSE );
@@ -185,7 +186,7 @@ static  bool    DlgGetLine( a_window *wnd, int row, int piece,
 }
 
 
-extern void WndDlgFini()
+extern void WndDlgFini( void )
 {
     dlg_entry   *old;
 
@@ -237,7 +238,7 @@ wnd_info LogInfo = {
 
 
 extern WNDOPEN WndDlgOpen;
-extern a_window *WndDlgOpen()
+extern a_window *WndDlgOpen( void )
 {
     if( WndDlg != NULL ) WndClose( WndDlg );
     WndDlg = DbgWndCreate( LIT( WindowLog ), &LogInfo, WND_DIALOGUE, NULL, &LogIcon );

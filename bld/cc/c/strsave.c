@@ -24,26 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  A cmemmgr-based strdup() equivalent.
 *
 ****************************************************************************/
 
 
-#ifdef  __STDC__
 #include <string.h>
-#endif
-extern  char    *CMemAlloc();
+#include "strsave.h"
+#include "cmemmgr.h"
 
+char *CStrSave( char *buf )
+{
+    char    *new;
 
-char * CStrSave( buf )
-        register char * buf;
-    {
-        register char * new;
-
-        new = CMemAlloc( strlen(buf) + 1 );
-        if( new ) {
-            strcpy( new, buf );
-        }
-        return( new );
+    new = CMemAlloc( strlen( buf ) + 1 );
+    if( new ) {
+        strcpy( new, buf );
     }
+    return( new );
+}

@@ -35,9 +35,9 @@
 #include "mathcode.h"
 
 
-_WMRTLINK complex _IF_C8Pow( single a, single b, single c, single d ) {
-//====================================================================
-
+_WMRTLINK complex _IF_C8Pow( single a, single b, single c, single d )
+//===================================================================
+{
 // Return the real part of the result of taking one
 // complex number to the power of another.
 // ( a, b ) ** ( c, d ) = exp( ( c,d ) * log( a,b ) )

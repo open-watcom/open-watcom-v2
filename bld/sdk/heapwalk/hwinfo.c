@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap information dialogs.
 *
 ****************************************************************************/
 
@@ -45,7 +44,7 @@ static  unsigned        dialCount = 0;
 /*
  * fillMemManDialog
  */
-static fillMemManDialog( HWND hwnd ) {
+static void fillMemManDialog( HWND hwnd ) {
 
     MEMMANINFO          info;
     char                buf[15];
@@ -54,10 +53,10 @@ static fillMemManDialog( HWND hwnd ) {
     memset( &info, 0, sizeof( MEMMANINFO ) );
     info.dwSize = sizeof( MEMMANINFO );
     if( MemManInfo( &info ) == 0 ) {
-        msgtitle = AllocRCString( STR_MEM_MAN_INFO_TITLE );
+        msgtitle = HWAllocRCString( STR_MEM_MAN_INFO_TITLE );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_GET_MEM_MAN_INFO,
                       msgtitle, MB_OK | MB_ICONINFORMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return;
     }
     ultoa( info.dwLargestFreeBlock, buf, 10 );
@@ -85,7 +84,7 @@ static fillMemManDialog( HWND hwnd ) {
 /*
  * fillGblInfoDialog
  */
-static fillGblInfoDialog( HWND hwnd ) {
+static void fillGblInfoDialog( HWND hwnd ) {
 
     GLOBALINFO  meminfo;
     char        buf[15];
@@ -94,10 +93,10 @@ static fillGblInfoDialog( HWND hwnd ) {
     memset( &meminfo, 0, sizeof( GLOBALINFO ) );
     meminfo.dwSize = sizeof( GLOBALINFO );
     if( GlobalInfo( &meminfo ) == 0 ) {
-        msgtitle = AllocRCString( STR_GLOB_HEAP_INFO );
+        msgtitle = HWAllocRCString( STR_GLOB_HEAP_INFO );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_GET_GBL_HEAP_INFO,
                       msgtitle, MB_OK | MB_ICONINFORMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return;
     }
     utoa( meminfo.wcItems, buf, 10 );
@@ -111,7 +110,7 @@ static fillGblInfoDialog( HWND hwnd ) {
 /*
  * fillLclInfoDialog
  */
-static fillLclInfoDialog( HWND hwnd ) {
+static void fillLclInfoDialog( HWND hwnd ) {
 
     char                buf[15];
     LclInfo             info;
@@ -159,7 +158,7 @@ BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam,
         }
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
@@ -205,7 +204,7 @@ BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam,
 static void initProcInst( void ) {
 
     if( dialCount == 0 ) {
-        dialProc = MakeProcInstance( SummaryInfoProc, Instance );
+        dialProc = MakeProcInstance( (FARPROC)SummaryInfoProc, Instance );
     }
     dialCount ++;
 } /* initProcInst */
@@ -218,7 +217,7 @@ void DisplayGlobHeapInfo( HWND parent ) {
 
     initProcInst();
     JCreateDialogParam( Instance, "GBL_HEAP_INFO", parent ,
-                                dialProc, GBL_INFO_DIALOG );
+                          (DLGPROC)dialProc, GBL_INFO_DIALOG );
 } /* DisplayGlobMemInfo */
 
 /*
@@ -228,7 +227,7 @@ void DisplayGlobHeapInfo( HWND parent ) {
 void DisplayMemManInfo( HWND parent ) {
 
     initProcInst();
-    JCreateDialogParam( Instance, "MEMMAN_INFO", parent, dialProc,
+    JCreateDialogParam( Instance, "MEMMAN_INFO", parent, (DLGPROC)dialProc,
                        MEM_INFO_DIALOG );
 } /* DisplayMemManInfo */
 
@@ -242,6 +241,6 @@ HWND DisplayLocalHeapInfo( HWND parent ) {
 
     initProcInst();
     dialog = JCreateDialogParam( Instance, "LCL_HEAP_INFO", parent,
-                                dialProc, LCL_INFO_DIALOG);
+                             (DLGPROC)dialProc, LCL_INFO_DIALOG);
     return( dialog );
 } /* DisplayLocalHeapInfo */

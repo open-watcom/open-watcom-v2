@@ -75,16 +75,14 @@
 *
 **/
 
-_WCRTLINK JMOJI hantozen( c )
-JMOJI c;
+_WCRTLINK JMOJI hantozen( JMOJI c )
 {
     return( ( c >= 0x20 && c <= 0x7e ) ? __HanZen1[c - 0x20] : c );
 }
 
 
 
-_WCRTLINK JMOJI zentohan( c )
-JMOJI c;
+_WCRTLINK JMOJI zentohan( JMOJI c )
 {
     JMOJI i;
 

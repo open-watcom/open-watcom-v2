@@ -1,0 +1,95 @@
+:CMT. This device definition is used for printers supporting
+:CMT. the American Standards Association (ASA) carriage control
+:CMT. characters.
+:CMT. The printers must support the triple spacing control character (-).
+:CMT. These carriage control characters are often associated with
+:CMT. FORTRAN.
+
+:CMT. Definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. WHELP                           WHELP
+
+:CMT. Corresponding driver
+:CMT. definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. WHELPDRV                        WHELPDRV
+
+:CMT. Font definition files used      Font name
+:CMT. ------------------------------------------------------
+:CMT. MONO01                          mono01
+:CMT.eoc
+
+:DEVICE
+   defined_name          = 'whelp'
+   member_name           = 'whelp'
+   driver_name           = 'whelpdrv'
+   output_suffix         = 'ptf'
+   output_name           = ''
+   page_width            = 2000
+   page_depth            = 200
+   horizontal_base_units = 10
+   vertical_base_units   = 6
+
+:DEVICEFONT
+   fontname     = 'mono01'
+   fontswitch   = ""
+   fontpause    = ""
+   resident     = no
+:eDEVICEFONT.
+
+:DEFAULTFONT
+   font         = 0
+   fontname     = 'mono01'
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 1
+   fontname     = 'mono01'
+   fontstyle    = uline
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 2
+   fontname     = 'mono01'
+   fontstyle    = bold
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 3
+   fontname     = 'mono01'
+   fontstyle    = ulbold
+:eDEFAULTFONT.
+
+:cmt.:RULE
+:cmt.   font         = "mono01"
+:cmt.   rule_value   = '-'
+:cmt.:eRULE.
+
+:BOX
+   font            = "mono01"
+   horizontal_line = $20
+   vertical_line   = $20
+   top_left        = $20
+   top_right       = $20
+   bottom_left     = $20
+   bottom_right    = $20
+   top_join        = $20
+   bottom_join     = $20
+   left_join       = $20
+   right_join      = $20
+   inside_join     = $20
+:eBOX.
+
+:PAGESTART
+   x_start = 0
+   y_start = 1
+:ePAGESTART.
+
+:INTRANS.
+  b $20
+  ( $5B
+  ) $5D
+:eINTRANS.
+
+:eDEVICE.

@@ -1,5 +1,0 @@
-os      = os2
-bin     = necbinp
-form    = os2 pmc
-
-!include ..\makefile

@@ -1,0 +1,8 @@
+name=UnInstallFinal
+condition=PreviousInstall UnInstall
+static_text=\
+        //1"@ will now remove all components"\
+        //2"@ はすべてのコンポーネントを削除します"\
+        //0
+static_text=
+include=poc.dlg

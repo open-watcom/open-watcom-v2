@@ -1,113 +1,184 @@
 !include preclude.mif
 
 !ifndef lang_root
-lang_root       = $(lang_root_$(host_CPU))
+lang_root       = $(lang_root_$(host_cpu))
+!endif
+
+!ifeq %BUILDMODE bootstrap
+use_new_headers = 1
+!else ifdef %OWLINUXBUILD
+use_new_headers = 1
+!endif
+
+# define OW build windows version for Win32 platform
+# Now it is setup to 0x400
+# to be OK for Windows 95 and Windows NT
+#
+!ifdef $(proj_name)_win32ver
+win32ver = $($(proj_name)_win32ver)
+!else
+win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 
 cc_386          = *wcc386
 cc_i86          = *wcc
 cc_axp          = *wccaxp
 cc_ppc          = *wccppc
+cc_mps          = *wccmps
+
+cl_386          = *wcl386
+cl_i86          = *wcl
+cl_axp          = *wclaxp
+cl_ppc          = *wclppc
+cl_mps          = *wclmps
 
 cpp_386         = *wpp386
 cpp_i86         = *wpp
 cpp_axp         = *wppaxp
 cpp_ppc         = *wppppc
+cpp_mps         = *wppmps
 
 linker_386      = *wlink
 linker_i86      = *wlink
 linker_axp      = *wlink
 linker_ppc      = *wlink
+linker_mps      = *wlink
 
 librarian_386   = *wlib
 librarian_i86   = *wlib
 librarian_axp   = *wlib
 librarian_ppc   = *wlib
+librarian_mps   = *wlib
 
-as_386          = *wasm -3
+as_386          = *wasm
 as_i86          = *wasm
 as_axp          = *wasaxp
 as_ppc          = *wasppc
+as_mps          = *wasmps
 
-#rc_os2          = *rc
-rc_os2          = d:\lang\binp\rc
-!ifeq host_OS os2
-#%PATH = $+$(%PATH);$(%watcom)\binp$-
-%PATH = $+$(%PATH);d:\lang\binp$-
-# this extra line appears to be needed
-!endif
 rc              = *wrc
+rcaui           = *wrc
 
 
-!ifndef release_$(proj_name)
-!ifeq on_build_machine 1
-release = 1
-!else
+!ifdef $(proj_name)_release
+release = $($(proj_name)_release)
+!else ifeq %DEBUG_BUILD 1
 release = 0
-!endif
 !else
-release = $(release_$(proj_name))
+release = 1
 !endif
 
-ldebug_i86      = debug all
-ldebug_386      = debug all
-ldebug_axp      = debug dwarf
-ldebug_ppc      = debug dwarf
+!ifdef $(proj_name)_debugfmt
+debugfmt = $($(proj_name)_debugfmt)
+!else ifeq %CODEVIEW 1
+debugfmt = codeview
+!else
+debugfmt = dwarf
+!endif
 
-mode_cflags_r   = -oaxt -d1
-mode_lflags_r   = $(ldebug_$(host_CPU))
-mode_cflags_d   = -od -d2
-mode_lflags_d   = $(ldebug_$(host_CPU))
+!ifeq debugfmt codeview
+cdebug_fmt  = -hc
+ldebug_fmt  = debug codeview
+cldebug_fmt = -hc
+!else ifeq debugfmt watcom # supported only on intel
+cdebug_fmt  = -hw          # cg for axp and ppc don't use it
+ldebug_fmt  = debug watcom
+cldebug_fmt = -hw
+!else
+#cdebug_fmt  = -hd              # default format
+ldebug_fmt  = debug dwarf
+cldebug_fmt = -hd
+!endif
+
+mode_libflags =
 !ifeq release 1
-mode_cflags     = $(mode_cflags_r)
-mode_lflags     = $(mode_lflags_r)
+mode_cflags   = -oaxt -d1-DNDEBUG $(cdebug_fmt)
+mode_aflags   = -d1 -DNDEBUG
+mode_lflags   = $(ldebug_fmt)
+mode_clflags  = $(cldebug_fmt)
+!ifdef $(proj_name)_distrib_lib
+mode_libflags = -s-t-zld
+!endif
 !else
-mode_cflags     = $(mode_cflags_d)
-mode_lflags     = $(mode_lflags_d)
+mode_cflags   = -od -d2 $(cdebug_fmt)
+mode_aflags   = -d2
+mode_lflags   = $(ldebug_fmt) all
+mode_clflags  = $(cldebug_fmt) -d2
+!endif
+mode_lflags  += op nored
+!ifdef __UNIX__
+mode_clflags   += -\"op nored\"
+!else
+mode_clflags   += -"op nored"
 !endif
 
 !ifndef $(proj_name)_nosymfile
-mode_lflags    += option symfile
+mode_lflags    += op symfile
+!ifdef __UNIX__
+mode_clflags   += -\"op symf\"
+!else
+mode_clflags   += -"op symf"
+!endif
 !endif
 
 !ifndef memory_model_i86
 memory_model_i86 = l
 !endif
+model_switch_i86 = -m$(memory_model_i86)
 
-!ifdef mem_model_i86
-model_switch_i86        = $(mem_model_i86)
-!else
-model_switch_i86        = -m$(memory_model_i86)
-!endif
-
-!ifdef mem_model_386
-model_switch_386        = $(mem_model_386)
-!else ifdef memory_model_386
-model_switch_386        = -m$(memory_model_386)
-!endif
+default_memory_model_386_dos     = s
+default_memory_model_386_zdos    = s
+default_memory_model_386_qnx     = s
+default_memory_model_386_nov     = s
+default_memory_model_386_osi     = s
+default_memory_model_386_rdosdev = c
+default_memory_model_386_win     = f
+default_memory_model_386_os2     = f
+default_memory_model_386_nt      = f
+default_memory_model_386_linux   = f
+default_memory_model_386_nto     = f
+default_memory_model_386_rdos    = f
+default_memory_model_386_        = f
 
 !ifndef memory_model_386
-memory_model_386 = f
+memory_model_386 = $(default_memory_model_386_$(host_os))
+!endif
+model_switch_386 = -m$(memory_model_386)
+
+cl_model_switch  = $(model_switch_$(host_cpu))
+
+!ifdef __UNIX__
+cflags_all      =-w8 -we $(mode_cflags) -fo=.obj
+!else
+cflags_all      =-w8 -we $(mode_cflags)
+!endif
+!ifdef sys_dll
+!ifndef suppress_bd
+cflags_all     += -bd
+!endif
 !endif
 
-
-cflags_all      = -zq -w4 -we
-!ifeq release 1
-cflags_all      += -dNDEBUG
-!endif
-
-cflags_386      = $(model_switch_$(host_CPU)) -zc
-cflags_i86      = $(model_switch_$(host_CPU))
+cflags_386      = $(model_switch_$(host_cpu))
+cflags_i86      = $(model_switch_$(host_cpu))
 cflags_axp      =
 cflags_ppc      =
+cflags_mps      =
 
-cflags_nt       = -bt=nt
-cflags_win      = -bt=windows
+!ifndef suppress_zc
+cflags_386      += -zc
+!endif
+
+cflags_nt       = -bt=nt $(win32ver)
+cflags_win      = -bt=windows -DSTRICT
 cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_osi      = -bt=osi
 cflags_dos      = -bt=dos
+cflags_zdos     = -bt=zdos
+cflags_rdos     = -bt=rdos -bm
+cflags_rdosdev  = -bt=rdosdev -bm -zu
 cflags_nov      = -bt=netware
+cflags_linux    = -bt=linux
 
 !ifdef $(proj_name)_rtdll
 !ifeq $(proj_name)_rtdll 1
@@ -122,82 +193,239 @@ sys_rtdll       = 0
 !endif
 
 !ifeq sys_rtdll 1
+use_new_headers = 1
+
 cflags_nt      += -br
 cflags_win     += -br
 cflags_os2     += -br
 !endif
 
-proj_c_flags    = $(extra_c_flags) $(extra_c_flags_$(host_CPU)) $(extra_c_flags_$(host_OS))
-cflags          = $(cflags_all) $(cflags_$(host_CPU)) $(cflags_$(host_OS)) $(mode_cflags) $(proj_c_flags)
+######################
+# DEFAULT FPU SETINGS
+######
+  # DOS doesn't have emulator support, but OW has it
+  # must be -fpc or -fpi
+def_fpu_flags_dos_i86   = -fpi
+  ######
+  # OS/2 ????
+def_fpu_flags_os2_i86   = -fpi
+  ######
+  # Windows 3.x has emulator support (WIN87EM.DLL)
+  # must be -fpc or -fpi, don't use -fpi87
+def_fpu_flags_win_i86   = -fpi
+  ######
+  # QNX doesn't have emulator support, but OW has it
+  # must be -fpc or -fpi
+def_fpu_flags_qnx_i86   = -fpi
+  ######
+  # Extenders don't have emulator support
+  # must be -fpc or -fpi
+def_fpu_flags_dos_386   = -fpi
+  ######
+  # OS/2 ????
+def_fpu_flags_os2_386   = -fpi
+  ######
+  # OW 386 Windows extender has 387 emulator support
+def_fpu_flags_win_386   = -fpi
+  ######
+  # QNX doesn't have emulator support, but OW has it
+def_fpu_flags_qnx_386   = -fpi
+  ######
+  # WIN32 systems have emulator support in kernel
+def_fpu_flags_nt_386    = -fpi
+  ######
+  # LINUX has emulator support in kernel
+def_fpu_flags_linux_386 = -fpi
+  ######
+  # NOVELL ?????
+def_fpu_flags_nov_386   = -fpc
+  ######
+  # should be compatible with all 386 platforms
+  # I ignore Novell seting
+  # I think Novell doesn't use any OSI objects
+def_fpu_flags_osi_386   = -fpi
+  ######
+  # ZDOS doesn't have emulator support
+def_fpu_flags_zdos_386  = -fpc
+  ######
+def_fpu_flags_nto_386   = -fpi
 
-lflags_dos_i86  = sys dos
-lflags_nt_axp   = sys ntaxp
-lflags_nt_386   = sys nt
-lflags_os2_386  = sys os2v2
-lflags_os2_i86  = sys os2 pmc
-lflags_dos_386  = sys dos4g
-lflags_qnx_386  = sys qnx386 flat
-lflags_qnx_i86  = sys qnx
-lflags_win_386  = sys win386
-lflags_win_i86  = sys windows
-lflags_nov_386  = sys novell
-lflags_osi_386  = sys osi
+def_fpu_flags_rdos_386    = -fpi
+def_fpu_flags_rdosdev_386 = -fpi
+
+!ifdef fpu_flags_$(host_os)_$(host_cpu)
+fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
+!else
+fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
+!endif
+
+cl_fpu_flags = $(fpu_flags)
+
+clflags_nt_386     = -l=nt $(win32ver)
+clflags_nt_axp     = -l=ntaxp $(win32ver)
+clflags_win_i86    = -l=windows -DSTRICT
+clflags_win_386    = -l=windows -DSTRICT
+clflags_os2_i86    = -l=os2
+clflags_os2_386    = -l=os2v2
+clflags_qnx_i86    = -l=qnx
+clflags_qnx_386    = -l=qnx
+clflags_osi_386    = -l=osi
+clflags_dos_i86    = -l=dos
+clflags_dos_386    = -l=dos4g
+clflags_zdos_386   = -l=zdos
+clflags_rdos_386   = -l=rdos
+clflags_rdosdev_386= -l=rdosdev
+clflags_nov_386    = -l=netware
+clflags_linux_386  = -l=linux
+clflags_linux_ppc  = -l=linuxppc
+clflags_linux_mps  = -l=linuxmips
+
+clflags_exe_osi_386 = -fe=$^&.rex
+!ifdef clflags_exe_$(host_os)_$(host_cpu)
+clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
+!else
+clflags_exe = -fe=$@
+!endif
+
+clflags_all      = $(mode_clflags) $(cl_model_switch) $(cl_fpu_flags)
+
+proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os)) $(extra_c_flags_$(host_os)_$(host_cpu))
+cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(proj_c_flags)
+proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os))
+cppflags         = $(cppflags_all) $(proj_cpp_flags)
+clflags          = $(clflags_all) $(clflags_$(host_os)_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm
+
+!ifdef __UNIX__
+aflags_all      = -we $(mode_aflags) -fo=.obj
+!else
+aflags_all      = -we $(mode_aflags)
+!endif
+
+aflags_386      = -3-w8
+aflags_i86      = -w8
+aflags_axp      =
+aflags_ppc      =
+aflags_mps      =
+
+aflags_nt       = -bt=nt
+aflags_win      = -bt=windows
+aflags_os2      = -bt=os2
+aflags_qnx      = -bt=qnx
+aflags_osi      = -bt=osi
+aflags_dos      = -bt=dos
+aflags_zdos     = -bt=zdos
+aflags_rdos     = -bt=rdos
+aflags_rdosdev  = -bt=rdosdev
+aflags_nov      = -bt=netware
+aflags_linux    = -bt=linux
+
+proj_a_flags     = $(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os))
+aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(proj_a_flags)
+
+lflags_dos_i86     = sys dos
+lflags_nt_axp      = sys ntaxp
+lflags_nt_386      = sys nt
+lflags_os2_386     = sys os2v2
+lflags_os2_i86     = sys os2 pmc
+lflags_dos_386     = sys dos4g
+lflags_zdos_386    = sys zdos
+lflags_rdos_386    = sys rdos
+lflags_rdosdev_386 = sys rdos dev32
+lflags_qnx_386     = sys qnx386 flat
+lflags_qnx_i86     = sys qnx
+lflags_win_386     = sys win386
+lflags_win_i86     = sys windows
+lflags_nov_386     = sys novell
+lflags_osi_386     = sys osi
+lflags_linux_386   = sys linux
+lflags_linux_ppc   = sys linuxppc
+lflags_linux_mps   = sys linuxmips
+
+lflags_dll_dos_386   = sys cwdllr
+lflags_dll_rdos_386  = sys rdos dll
+lflags_dll_nt_axp    = sys ntaxp dll
+lflags_dll_nt_386    = sys nt dll
+lflags_dll_os2_386   = sys os2v2 dll
+lflags_dll_os2_i86   = sys os2 dll
+lflags_dll_win_i86   = sys windows dll
 
 !ifdef sys_windowed
 # this is really stupid
 lflags_nt_386   = sys nt_win
 lflags_nt_axp   = sys ntaxp_win
 lflags_os2_386  = sys os2v2_pm
+lflags_os2_i86  = sys os2_pm
 !endif
 !ifdef sys_dll
 #this is equally bad
+lflags_dos_386  = sys cwdllr
 lflags_nt_386   = sys nt_dll
 lflags_nt_axp   = sys ntaxp_dll
 lflags_win_i86  = sys windows_dll
 lflags_os2_386  = sys os2v2 dll
 lflags_os2_i86  = sys os2 dll
-!ifndef suppress_bd
-cflags_all     += -bd
-!endif
 !endif
 
-lflags          = $(mode_lflags) $(lflags_$(host_OS)_$(host_CPU)) $(extra_l_flags_$(host_OS)) $(extra_l_flags)
+lflags          = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(extra_l_flags_$(host_os)) $(extra_l_flags)
+lflags_dll      = $(mode_lflags) $(lflags_dll_$(host_os)_$(host_cpu)) $(extra_l_flags_dll_$(host_os)) $(extra_l_flags_dll)
 
-rc_flags_nt     = -bt=nt
+libflags_all    = -b-n-pa $(mode_libflags)
+libflags        =  $(libflags_all) $(libflags_$(host_os)_$(host_cpu)) $(extra_lib_flags) $(extra_lib_flags_$(host_cpu)) $^@
+
+rc_flags_all    = -r
+
+rc_flags_nt     = -bt=nt $(win32ver)
 rc_flags_win    = -bt=windows
+rc_flags_os2    = -bt=os2
+rc_flags_axp    = -D__AXP__
 
-rc_flags_axp    = -d__AXP__
+rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
-rc_flags        = $(rc_flags_$(host_OS)) $(rc_flags_$(host_CPU))
+!include incdirs.mif
 
-inc_dirs_sys_os2_386 = $(lang_root)\h\os2
-inc_dirs_sys_os2_i86 = $(lang_root)\h\os21x
-inc_dirs_sys_nt = $(lang_root)\h\nt
-inc_dirs_sys_win= $(lang_root)\h\win
-inc_dirs_sys_os2= $(inc_dirs_sys_os2_$(host_CPU))
-inc_dirs_sys_dos=
-inc_dirs_sys_nov=
-inc_dirs_sys_qnx=
-
-inc_dirs_lang_qnx = $(lang_root)\qh
-inc_dirs_lang_netware = $(lang_root)\novh
-
-!ifdef inc_dirs_lang_$(host_OS)
-inc_dirs_lang   = $(inc_dirs_lang_$(host_OS))
+inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
+!ifdef __UNIX__
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)/h
 !else
-inc_dirs_lang   = $(lang_root)\h
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)\h
 !endif
 
-inc_dirs_sys    = $(inc_dirs_lang);$(inc_dirs_sys_$(host_OS))
-inc_path        = $(inc_dirs);$(inc_dirs_$(host_OS));$(inc_dirs_sys);$(watcom_dir)\h
 
-cc              = $(cc_$(host_CPU))
-cpp             = $(cpp_$(host_CPU))
-linker          = $(linker_$(host_CPU))
-librarian       = $(librarian_$(host_CPU))
-as              = $(as_$(host_CPU))
-yacc            = $(bld_bin)\yacc
-re2c            = $(bld_bin)\re2c
+rtdll_clib_os2_386     = $(clib_dir)/rtdll/os2.386/mf_r
+rtdll_clib_nt_386      = $(clib_dir)/rtdll/winnt.386/mf_r
+
+rtdll_mathlib_os2_386  = $(mathlib_dir)/rtdll/os2.386/mf_r
+rtdll_mathlib_nt_386   = $(mathlib_dir)/rtdll/winnt.386/mf_r
+
+rtdll_mathlib7_os2_386 = $(mathlib_dir)/rtdll/os2.387/mf_r
+rtdll_mathlib7_nt_386  = $(mathlib_dir)/rtdll/winnt.387/mf_r
+
+rtdll_cpplib_os2_386   = $(cpplib_dir)/rtdll/os2.386/mf_r
+rtdll_cpplib_nt_386    = $(cpplib_dir)/rtdll/winnt.386/mf_r
+
+rtdll_libpath = &
+    $(rtdll_clib_$(host_os)_$(host_cpu)) &
+    $(rtdll_mathlib_$(host_os)_$(host_cpu)) &
+    $(rtdll_mathlib7_$(host_os)_$(host_cpu)) &
+    $(rtdll_cpplib_$(host_os)_$(host_cpu))
+
+cc              = $(cc_$(host_cpu))
+cl              = $(cl_$(host_cpu))
+cpp             = $(cpp_$(host_cpu))
+linker          = $(linker_$(host_cpu))
+librarian       = $(librarian_$(host_cpu))
+as              = $(as_$(host_cpu))
+vi              = vi -q -d -i
+sed             = sed
+awk             = awk
+!ifdef __UNIX__
+rc_aui          = $(rcaui) -bt=windows -I$(watcom_dir)/h -zk0 -r
+!else
+rc_aui          = $(rcaui) -bt=windows -I$(watcom_dir)\h -zk0 -r
+!endif
+
+# simple C preprocessing
+c_pp            = wcpp
 
 !include bhost.mif
 !include local.mif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debuggee application loading.
 *
 ****************************************************************************/
 
@@ -43,8 +42,11 @@
 
 #define SIG_OFF         0
 #define SIG_SIZE        4
-unsigned short win386sig[] = { 0xDEAD,0xBEEF };
-unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
+
+#define TINY_ERROR(x)  ((signed long)x < 0)
+
+const unsigned short __based(__segname("_CONST")) win386sig[] = { 0xDEAD,0xBEEF };
+const unsigned short __based(__segname("_CONST")) win386sig2[] = { 0xBEEF,0xDEAD };
 
 BOOL WasStarted;
 
@@ -100,7 +102,7 @@ unsigned ReqProg_load( void )
     unsigned            a,b;
     private_msg         pmsg;
     char                sig[sizeof(DWORD)];
-    WORD                tid;
+    HTASK               tid;
     DWORD               csip;
     prog_load_req       *acc;
     prog_load_ret       *ret;
@@ -127,7 +129,7 @@ unsigned ReqProg_load( void )
     src = parm;
     if( *src == '#' ) {
         src++;
-        tid = strtol( src, NULL, 16 );
+        tid = (HTASK)strtol( src, NULL, 16 );
     } else {
         while( *src != 0 ) {
             if( !isdigit( *src ) ) {
@@ -136,7 +138,7 @@ unsigned ReqProg_load( void )
             src++;
         }
         if( *src == 0 && src != parm ) {
-            tid = atoi( parm );
+            tid = (HTASK)atoi( parm );
         }
     }
     if( tid != 0 ) {
@@ -160,7 +162,7 @@ unsigned ReqProg_load( void )
      * get the file to execute
      */
     if( tid == 0 ) {
-        if( FindFilePath( parm, exe_name, ExtensionList ) != 0 ) {
+        if( TINY_ERROR( FindFilePath( parm, exe_name, ExtensionList ) ) ) {
             exe_name[0] = 0;
         } else {
             _splitpath( exe_name, drive, directory, NULL, NULL );
@@ -175,19 +177,23 @@ unsigned ReqProg_load( void )
          */
 
         src = parm;
-        while( *src != 0 ) ++src;
+        while( *src != 0 )
+            ++src;
         ++src;
         end = GetInPtr( GetTotalSize() - 1 );
         dst = &buff[1];
         for( ;; ) {
-            if( src > end ) break;
+            if( src > end )
+                break;
             ch = *src;
-            if( ch == 0 ) ch = ' ';
+            if( ch == 0 )
+                ch = ' ';
             *dst = ch;
             ++dst;
             ++src;
         }
-        if( dst > &buff[1] ) --dst;
+        if( dst > &buff[1] )
+            --dst;
         *dst = '\0';
         buff[0] = dst-buff-1;
 
@@ -215,7 +221,7 @@ unsigned ReqProg_load( void )
         loadp.reserved = 0L;
         DebuggerState = LOADING_DEBUGEE;
         DebugeeInstance = LoadModule( exe_name, (LPVOID) &loadp );
-        if( DebugeeInstance < 32 ) {
+        if( (UINT)DebugeeInstance < 32 ) {
             Out((OUT_ERR,"Debugee did not load %d", DebugeeInstance));
             ret->err = WINERR_NOLOAD;
             LoadingDebugee = FALSE;
@@ -228,7 +234,7 @@ unsigned ReqProg_load( void )
     if( pmsg == START_BP_HIT ) {
 
         ret->err = 0;
-        ret->task_id = DebugeeTask;
+        ret->task_id = (unsigned_32)DebugeeTask;
 
         /*
          * look for 32-bit windows application

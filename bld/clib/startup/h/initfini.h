@@ -24,48 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Init/Fini routines delcarations.
 *
 ****************************************************************************/
 
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//%     Copyright (C) 1994, by WATCOM International Inc.  All rights    %
-//%     reserved.  No part of this software may be reproduced or        %
-//%     used in any form or by any means - graphic, electronic or       %
-//%     mechanical, including photocopying, recording, taping or        %
-//%     information storage and retrieval systems - except with the     %
-//%     written permission of WATCOM International Inc.                 %
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-// Date         By              Reason
-// ----         --              ------
-// 11-nov-93    Greg Bentz      defined to rationalize init and fini routines
-// 21-feb-95    Greg Bentz      alpha support
-// 21-apr-95    Greg Bentz      variety.h for near/far and composite macros
-//
-//
 #ifndef _INITFINI_H_INCLUDED
 #define _INITFINI_H_INCLUDED
 
 #include "variety.h"
 #include "rtinit.h"
 
-#if defined(__AXP__) || defined(__PPC__)
-  #define __PARMREG1
-  #define __PARMREG2
-#elif defined(__386__)
-  #define __PARMREG1    eax
-  #define __PARMREG2    edx
-#elif defined(M_I86)
-  #define __PARMREG1    ax
-  #define __PARMREG2    dx
+#if defined(__386__)
+    #define __PARMREG1      eax
+    #define __PARMREG2      edx
+#elif defined( _M_I86 )
+    #define __PARMREG1      ax
+    #define __PARMREG2      dx
 #else
-  #error unrecognized platform
+    #define __PARMREG1
+    #define __PARMREG2
 #endif
 
-extern void __InitRtns(unsigned);
+extern void __InitRtns( unsigned );
 // - takes priority limit parm in __PARMREG1
 //      code will run init routines whose
 //      priority is <= __PARMREG1 (really [0-255])
@@ -90,7 +71,7 @@ extern void __FiniRtns(unsigned,unsigned);
 #if defined(_M_IX86)
   #pragma aux __FiniRtns "*" parm [__PARMREG1] [__PARMREG2]
   #if !defined(__386__)
-    extern void _WCI86FAR __FFiniRtns(unsigned,unsigned);
+    extern void _WCI86FAR __FFiniRtns( unsigned, unsigned );
     #pragma aux __FFiniRtns "*" parm [__PARMREG1] [__PARMREG2]
   #endif
 #endif

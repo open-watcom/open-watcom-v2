@@ -1,0 +1,24 @@
+#German UTF-8
+
+Countr=49
+CodePage=0
+Note="Anmerkung&colon."
+Caution="ACHTUNG&colon."
+Warning="ACHTUNG&colon."
+Reference="Nachschlagewerk"
+olChars=abcdefghijklmnopqrstuvwxyzäöüß
+olClose1=.
+olClose2=)
+ulItemId1=•
+ulItemId2=◦
+ulItemID3=▪
+cgraphicFontFaceName="Courier"
+cgraphicFontWidth=11
+cgraphicFontHeight=18
+
+# Words defines the characters that make words. This is used for
+# searching and data compression.
+
+Grammer
+Words=0-9+A-Z+a-z+ü+é+ä+à+Ä+É+ö+Ö+Ü+À+ß
+eGrammer

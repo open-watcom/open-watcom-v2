@@ -1,0 +1,3 @@
+cpureq.asm(4): Error! E002: Invalid instruction with current CPU setting
+cpureq.asm(5): Error! E102: Cannot use 386 operand size with current CPU setting
+cpureq.asm(6): Error! E006: Cannot use 386 addressing mode with current CPU setting

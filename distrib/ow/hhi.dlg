@@ -1,0 +1,11 @@
+name=Help_HiThere
+static_text=\
+        //1"Choose whether you want to create installation diskettes"\
+        //2"インストール用ディスケットを作成するか, ハードディスクに"\
+        //0
+dynamic_text=hhi_1,\
+        //1"or install %AppName% on a hard disk."\
+        //2"%AppName% をインストールするかを選択してください."\
+        //0
+static_text=
+include=ok.dlg

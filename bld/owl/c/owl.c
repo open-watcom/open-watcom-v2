@@ -33,3 +33,19 @@
 #include "owlpriv.h"
 
 extern owl_handle OWLENTRY OWLInit( owl_client_funcs *funcs, owl_cpu cpu ) {
+//**************************************************************************
+
+    owl_handle  h;
+
+    h = (owl_handle)(funcs->alloc( sizeof( owl_info ) ));
+    h->client_funcs = *funcs;
+    h->cpu = cpu;
+    h->files = NULL;
+    return( h );
+}
+
+extern void OWLENTRY OWLFini( owl_handle handle ) {
+//*************************************************
+
+    handle->client_funcs.free( handle );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 kbhit() implementation.
 *
 ****************************************************************************/
 
@@ -35,34 +34,38 @@
 #define INCL_16
 #define INCL_SUB
 #include <wos2.h>
+#include <conio.h>
 #include "rtdata.h"
 #include "defwin.h"
 
 #if defined(__OS2_286__)
-    extern  signed char _kbhit();
-    #pragma aux     _kbhit = 0xb4 0x0b      /* mov ah,0bh */\
-                             0xcd 0x21      /* int 21h    */\
+    extern  signed char _os_kbhit( void );
+    #pragma aux  _os_kbhit = "mov ah,0bh"   \
+                             "int 21h"      \
                              value [al];
 #endif
 
-_WCRTLINK int kbhit()
-    {
-        KBDKEYINFO  info;
+_WCRTLINK int kbhit( void )
+{
+    KBDKEYINFO  info;
 
-        if( _RWD_cbyte != 0 ) return( 1 );
-        if( _WindowsKbhit != 0 ) {      // Default windowing
-            LPWDATA     res;
-            res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
-            return( _WindowsKbhit( res ) );
-        }
-        #if defined(__OS2_286__)
-            if( _RWD_osmode == DOS_MODE ) {
-                return( _kbhit() );
-            }
-            KbdPeek( &info, 0 );
-            return( ( info.fbStatus & 0xe0 ) != 0 );
-        #else
-            KbdPeek( &info, 0 );
-            return( ( info.fbStatus & 0xe0 ) != 0 );
-        #endif
+    if( _RWD_cbyte != 0 )
+        return( 1 );
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsKbhit != 0 ) {      // Default windowing
+        LPWDATA     res;
+        res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
+        return( _WindowsKbhit( res ) );
     }
+#endif
+#if defined(__OS2_286__)
+    if( _RWD_osmode == DOS_MODE ) {
+        return( _os_kbhit() );
+    }
+    KbdPeek( &info, 0 );
+    return( ( info.fbStatus & 0xe0 ) != 0 );
+#else
+    KbdPeek( &info, 0 );
+    return( ( info.fbStatus & 0xe0 ) != 0 );
+#endif
+}

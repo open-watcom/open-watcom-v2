@@ -1,0 +1,31 @@
+/*
+ *  wsipx.h     Windows Sockets IPX/SPX definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _WSIPX_
+#define _WSIPX_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* IPX/SPX protocol families */
+#define NSPROTO_IPX     1000
+#define NSPROTO_SPX     1256
+#define NSPROTO_SPXII   1257
+
+/* IPX/SPX socket address */
+typedef struct sockaddr_ipx {
+    short           sa_family;
+    char            sa_netnum[4];
+    char            sa_nodenum[6];
+    unsigned short  sa_socket;
+} SOCKADDR_IPX;
+typedef SOCKADDR_IPX    *PSOCKADDR_IPX;
+typedef SOCKADDR_IPX    *LPSOCKADDR_IPX;
+
+:include cplusepi.sp
+
+#endif /* _WSIPX_ */

@@ -1,0 +1,4 @@
+diag07.asm(10): Error! E069: Illegal use of register
+diag07.asm(11): Error! E069: Illegal use of register
+diag07.asm(12): Error! E076: A constant operand is expected in subtraction
+diag07.asm(13): Error! E076: A constant operand is expected in subtraction

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of spawnl() and _wspawnl().
 *
 ****************************************************************************/
 
@@ -40,61 +39,65 @@
 #include <errno.h>
 #include "seterrno.h"
 #include "rtdata.h"
-#include "wenviron.h"
+#include "_environ.h"
 
 _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
-    {
-        va_list             ap;
-#if defined(__AXP__) || defined(__PPC__)
-        va_list             bp;
-        CHAR_TYPE const **  a;
-        CHAR_TYPE const **  tmp;
-        int                 num;
+{
+    va_list             ap;
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    va_list             bp;
+    CHAR_TYPE const     **a;
+    CHAR_TYPE const     **tmp;
+    int                 num;
 #endif
 
-        arg0 = arg0;
-        va_start(ap, path);
+    arg0 = arg0;
+    va_start( ap, path );
 
-#if defined(__AXP__) || defined(__PPC__)
-        memcpy(&bp, &ap, sizeof(ap));
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    memcpy( &bp, &ap, sizeof( ap ) );
 
-        for(num = 1; va_arg(ap, CHAR_TYPE*); ++num)
-                ;
+    for( num = 1; va_arg(ap, CHAR_TYPE*); ++num )
+        ;
 
-        a = (const CHAR_TYPE**) alloca(num * sizeof(CHAR_TYPE*));
-        if (!a)
-        {
-                __set_errno(ENOMEM);
-                return -1;
-        }
-
-        for(tmp = a; num > 0; --num)
-                *tmp++ = (CHAR_TYPE*)va_arg(bp, CHAR_TYPE*);
-
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-            return( _wspawnve( mode,
-                               path,
-                               a,
-                               (wchar_t const * const *)_RWD_wenviron ) );
-        #else
-            return( spawnve( mode,
-                             path,
-                             a,
-                             (char const * const *)_RWD_environ ) );
-        #endif
-#else
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-            return( _wspawnve( mode,
-                               path,
-                               (wchar_t const * const *)ap[0],
-                               (wchar_t const * const *)_RWD_wenviron ) );
-        #else
-            return( spawnve( mode,
-                             path,
-                             (char const * const *)ap[0],
-                             (char const * const *)_RWD_environ ) );
-        #endif
-#endif
+    a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
+    if( !a ) {
+        __set_errno( ENOMEM );
+        return( -1 );
     }
+
+    for( tmp = a; num > 0; --num )
+        *tmp++ = (CHAR_TYPE *)va_arg( bp, CHAR_TYPE * );
+
+#ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL )
+        __create_wide_environment();
+    return( _wspawnve( mode,
+                       path,
+                       a,
+                       (wchar_t const * const *)_RWD_wenviron ) );
+#else
+    return( spawnve( mode,
+                     path,
+                     a,
+                     (char const * const *)_RWD_environ ) );
+#endif
+
+#else
+
+#ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL )
+        __create_wide_environment();
+    return( _wspawnve( mode,
+                       path,
+                       (wchar_t const * const *)ap[0],
+                       (wchar_t const * const *)_RWD_wenviron ) );
+#else
+    return( spawnve( mode,
+                     path,
+                     (char const * const *)ap[0],
+                     (char const * const *)_RWD_environ ) );
+#endif
+
+#endif
+}

@@ -24,34 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spawn() and Suicide() routines.
 *
 ****************************************************************************/
 
 
-//
-// SPAWN        :  Spawn() and Suicide()
-//
-
-// Modified:    By:             Reason:
-// ---------    ---             -------
-// 90/02/15     G. Coschi       initial implementation
-
 #include <setjmp.h>
+#include "spawn.h"
 
 static  jmp_buf *SpawnStack;
 
 
-int     Spawn( void (*fn)() ) {
-//=============================
-
+int     Spawn( void (*fn)( void ) )
+//=================================
+{
     jmp_buf     *save_env;
     jmp_buf     env;
     int         status;
 
     save_env = SpawnStack;
-    SpawnStack = env;
+    SpawnStack = &env;
     status = setjmp( env );
     if( status == 0 ) {
         (*fn)();
@@ -61,8 +53,8 @@ int     Spawn( void (*fn)() ) {
 }
 
 
-void    Suicide( void ) {
-//=======================
-
-    longjmp( SpawnStack, 1 );
+void    Suicide( void )
+//=====================
+{
+    longjmp( *SpawnStack, 1 );
 }

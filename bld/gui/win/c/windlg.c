@@ -43,10 +43,10 @@
  */
 static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
 {
-#if defined(__NT__) && !defined( UNIX ) //&& !defined(__DEC__)
+#if defined(__NT__) && !defined( __UNIX__ )
     // convert ANSI or DBCS string to Unicode properly - rnk 3/1/96
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, str, -1, (LPWSTR)mem, len );
-    return mem+len;
+    return( mem + len );
 #if 0 // old non-Kanji safe version - rnk
     int i;
 
@@ -163,7 +163,7 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
     _DLGITEMTEMPLATE    _ISFAR *dit;
     char                _ISFAR * ditstr;
 #if defined(__NT__) && !defined(__DEC__)
-    char                newclass[2];
+    unsigned char       newclass[2];
 #endif
 
     style |= WS_CHILD;
@@ -188,7 +188,7 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
         newclass[0] = 0x80;
     }
     newclass[1] = 0;
-    class = newclass;
+    class = (char *)newclass;
 #else
     classlen = SLEN( class );
 #endif

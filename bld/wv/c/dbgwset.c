@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger interface configuration.
 *
 ****************************************************************************/
 
@@ -45,58 +44,58 @@
 #include "madcli.h"
 
 
-extern unsigned int     ScanCmd(char *);
+extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
 extern char             *ScanPos( void );
 extern char             *ReScan( char * );
-extern bool             ScanEOC(void);
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern void             ReqEOC(void);
-extern unsigned         SetCurrRadix(unsigned int );
-extern char             *GetCmdEntry(char *,int ,char *);
-extern char             *CnvULongDec(unsigned long ,char *);
-extern unsigned         ReqExpr();
-extern unsigned         OptExpr();
-extern void             WndUserAdd(char *,unsigned int );
-extern void             CallSet(void);
-extern void             ImplicitSet(void);
-extern void             LookSet(void);
-extern void             RadixSet(void);
-extern void             SourceSet(void);
-extern void             LevelSet(void);
-extern void             CallConf(void);
-extern void             ImplicitConf(void);
-extern void             LookConf(void);
-extern void             RadixConf(void);
-extern void             SourceConf(void);
-extern void             LevelConf(void);
-extern void             DoConfig(char *,char *,void (**)(), void (**)() );
-extern void             ConfigLine(char *);
-extern void             WndMenuOn(void);
-extern void             WndMenuOff(void);
-extern void             LangInit(void);
-extern void             LangFini(void);
-extern bool             LangLoad(char *,int );
-extern char             *StrCopy(char *,char *);
-extern void             WndRedraw(wnd_class);
-extern a_window         *WndFindActive(void);
-extern cmd_list         *AllocCmdList(char *,unsigned int );
-extern void             FreeCmdList(cmd_list *);
-extern char             *Format(char *,char *,... );
-extern void             Recog(unsigned int );
+extern bool             ScanEOC( void );
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern void             ReqEOC( void );
+extern unsigned         SetCurrRadix( unsigned int );
+extern char             *GetCmdEntry( char *, int, char * );
+extern char             *CnvULongDec( unsigned long, char * );
+extern unsigned         ReqExpr( void );
+extern unsigned         OptExpr( void );
+extern void             WndUserAdd( char *, unsigned int );
+extern void             CallSet( void );
+extern void             ImplicitSet( void );
+extern void             LookSet( void );
+extern void             RadixSet( void );
+extern void             SourceSet( void );
+extern void             LevelSet( void );
+extern void             CallConf( void );
+extern void             ImplicitConf( void );
+extern void             LookConf( void );
+extern void             RadixConf( void );
+extern void             SourceConf( void );
+extern void             LevelConf( void );
+extern void             DoConfig( char *, char *, void (**)(), void (**)() );
+extern void             ConfigLine( char * );
+extern void             WndMenuOn( void );
+extern void             WndMenuOff( void );
+extern void             LangInit( void );
+extern void             LangFini( void );
+extern bool             LangLoad( char *, int );
+extern char             *StrCopy( char *, char * );
+extern void             WndRedraw( wnd_class );
+extern a_window         *WndFindActive( void );
+extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern void             FreeCmdList( cmd_list * );
+extern char             *Format( char *, char *, ... );
+extern void             Recog( unsigned int );
 extern void             WndRestoreToFront( a_window* );
 extern a_window         *WndFindClass( a_window*, wnd_class );
-extern wnd_class        ReqWndName();
-extern gui_menu_struct  *AddMenuAccel(char*,char*,wnd_class,bool *);
-extern void             VarChangeOptions();
-extern void             AsmChangeOptions();
-extern void             FuncChangeOptions();
-extern void             GlobChangeOptions();
-extern void             ModChangeOptions();
+extern wnd_class        ReqWndName( void );
+extern gui_menu_struct  *AddMenuAccel( char *, char *, wnd_class, bool * );
+extern void             VarChangeOptions( void );
+extern void             AsmChangeOptions( void );
+extern void             FuncChangeOptions( void );
+extern void             GlobChangeOptions( void );
+extern void             ModChangeOptions( void );
 extern void             ConfigCmdList( char *cmds, int indent );
-extern void             WndDlgTxt(char*);
+extern void             WndDlgTxt( char * );
 extern void             WndMenuSetHotKey( gui_menu_struct *, bool, char *);
-extern char             *UniqStrAddr( address *addr, char *p ,unsigned);
+extern char             *UniqStrAddr( address *addr, char *p ,unsigned );
 extern char             *GetCmdName( int );
 extern void             RegFindData( mad_type_kind kind, mad_reg_set_data **pdata );
 extern mad_handle       FindMAD( char *, unsigned );
@@ -113,9 +112,11 @@ extern wnd_macro        *WndMacroList;
 extern system_config    SysConfig;
 
 static unsigned         TabInterval = 8;
-extern void DClickSet()
+
+
+extern void DClickSet( void )
 {
-    unsigned new;
+    unsigned    new;
     unsigned    old;
 
     old = SetCurrRadix( 10 );
@@ -127,14 +128,14 @@ extern void DClickSet()
 }
 
 
-extern void DClickConf()
+extern void DClickConf( void )
 {
     CnvULongDec( WndGetDClick(), TxtBuff );
     ConfigLine( TxtBuff );
 }
 
 
-extern void InputSet()
+extern void InputSet( void )
 {
     wnd_class   class;
     a_window    *wnd;
@@ -150,7 +151,7 @@ extern void InputSet()
 }
 
 
-extern void InputConf()
+extern void InputConf( void )
 {
     a_window  *wnd;
 
@@ -509,7 +510,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class class, cmd_list *cmds )
 }
 
 
-extern void MacroSet()
+extern void MacroSet( void )
 {
     wnd_class   class;
     cmd_list    *cmds;
@@ -549,7 +550,7 @@ extern void MacroSet()
     MacAddDel( key, class, cmds );
 }
 
-extern void MacroConf()
+extern  void    MacroConf( void )
 {
     char        wnd_name[20];
     wnd_macro     *mac;
@@ -566,7 +567,7 @@ extern void MacroConf()
     }
 }
 
-extern  void    FiniMacros()
+extern  void    FiniMacros( void )
 {
     wnd_macro   *mac;
     wnd_macro   *junk;
@@ -583,7 +584,7 @@ extern  void    FiniMacros()
 }
 
 
-int TabIntervalGet()
+int TabIntervalGet( void )
 {
     return( TabInterval );
 }
@@ -595,7 +596,7 @@ void TabIntervalSet( int new )
     WndRedraw( WND_SOURCE );
 }
 
-extern void TabSet()
+extern void TabSet( void )
 {
     int      new;
     unsigned    old;
@@ -609,7 +610,7 @@ extern void TabSet()
 }
 
 
-extern void TabConf()
+extern void TabConf( void )
 {
     CnvULongDec( TabInterval, TxtBuff );
     ConfigLine( TxtBuff );
@@ -629,7 +630,7 @@ enum {
 };
 
 
-extern void SearchSet()
+extern void SearchSet( void )
 {
     char        *start;
     unsigned    len;
@@ -638,16 +639,16 @@ extern void SearchSet()
         Scan();
         switch( ScanCmd( SearchSettings ) ) {
         case SEARCH_IGNORE:
-            SrchIgnoreCase = TRUE;
+            WndSetSrchIgnoreCase( TRUE );
             break;
         case SEARCH_RESPECT:
-            SrchIgnoreCase = FALSE;
+            WndSetSrchIgnoreCase( FALSE );
             break;
         case SEARCH_RX:
-            SrchRX = TRUE;
+            WndSetSrchRX( TRUE );
             break;
         case SEARCH_NORX:
-            SrchRX = FALSE;
+            WndSetSrchRX( FALSE );
             break;
         default:
             Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
@@ -655,28 +656,28 @@ extern void SearchSet()
         }
     }
     if( ScanItem( TRUE, &start, &len ) ) {
-        if( len > MAX_MAGIC_STR ) len = MAX_MAGIC_STR;
-        memcpy( SrchMagicChars, start, len );
-        SrchMagicChars[len] = '\0';
+        char    c = start[len];
+        start[len] = '\0';
+        WndSetSrchMagicChars( start );
+        start[len] = c;
     }
     ReqEOC();
 }
 
 
-extern void SearchConf()
+extern void SearchConf( void )
 {
     char        *ptr;
 
     ptr = TxtBuff;
     *ptr++ = '/';
     ptr = GetCmdEntry( SearchSettings,
-                       SrchIgnoreCase ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
+                       WndGetSrchIgnoreCase() ? SEARCH_IGNORE : SEARCH_RESPECT, ptr );
     *ptr++ = '/';
     ptr = GetCmdEntry( SearchSettings,
-                       SrchRX ? SEARCH_RX : SEARCH_NORX, ptr );
+                       WndGetSrchRX() ? SEARCH_RX : SEARCH_NORX, ptr );
     ptr = StrCopy( " {", ptr );
-    ptr = StrCopy( SrchMagicChars, ptr );
+    ptr = StrCopy( WndGetSrchMagicChars(), ptr );
     ptr = StrCopy( "}", ptr );
     ConfigLine( TxtBuff );
 }
-

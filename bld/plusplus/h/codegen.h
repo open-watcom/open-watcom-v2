@@ -37,7 +37,7 @@
 //
 // 91/06/11 -- J.W.Welch        -- defined
 
-#define TY_BOOLEAN T_UINT_1
+#define TY_BOOL TY_UINT_1
 
 
 #ifndef NDEBUG
@@ -52,7 +52,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
-#define BY_CG
 #include "cgprotos.h"
 
 #include "ppops.h"

@@ -591,7 +591,7 @@ static void calc_norm_poly(
     int         i;
 
     poly->normal = calculate_normal_vector( poly->num_pts,
-                                poly, polygon_get_pt );
+                                poly, (point(*)(void*,int))polygon_get_pt );
     /* since the the transformation has been applied, a normal is facing */
     /* the viewer if its z coordinate is positive */
     if( poly->normal.v[2] < 0. ) {
@@ -622,7 +622,7 @@ static void calc_norm_solid(
                 + solid->faces.num_faces; curr_face++) {
         side.side = curr_face;
         curr_face->normal = calculate_normal_vector( curr_face->num_pts,
-                        &side, face_get_pt );
+                        &side, (point(*)(void*,int))face_get_pt );
     }
 }
 
@@ -855,7 +855,7 @@ static point * create_points_array(
         out_pts[ curr_pt ] = in_pts[ curr_pt ].pt;
     }
 
-    normal = calculate_normal_vector( num_pts, out_pts, get_pt_from_array );
+    normal = calculate_normal_vector( num_pts, out_pts, (point(*)(void*,int))get_pt_from_array );
 
     /* add the new points to the points list */
     for (curr_pt = num_pts; curr_pt < 2*num_pts; curr_pt++) {

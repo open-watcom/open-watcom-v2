@@ -24,19 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WASM main header file contains globals and limits
 *
 ****************************************************************************/
 
 
-#ifndef ASMGLOB_H
+#ifndef _ASMGLOB_H_INCLUDED
+#define _ASMGLOB_H_INCLUDED
+
 #include <stdio.h>
-#include <watcom.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <time.h>
+#include "watcom.h"
+#include "bool.h"
+
+#define ERROR                   -1
+#define NOT_ERROR               1
+#define EMPTY                   -2
+#define NOT_EMPTY               2
+#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
+
+/* these come back from the jmp() routine */
+#define SCRAP_INSTRUCTION       3
+#define INDIRECT_JUMP           4
 
 #define MAX_TOKEN               100     // there is no restriction for this number
-#define MAX_LINE_LEN            256     // there is no restriction for this number
-#define MAX_TOK_LEN             80
+#define MAX_LINE_LEN            512     // there is no restriction for this number
+#define MAX_TOK_LEN             256
 #define MAX_FILE_NAME           30
 #define MAX_ID_LEN              247
 #define MAX_MEMORY              1024
@@ -47,17 +63,9 @@
 
 /* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
 
-#define ERROR                   -1
-#define NOT_ERROR               1
-#define EMPTY                   -2
-#define NOT_EMPTY               2
-#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
-/* these come back from the jmp() routine */
-#define SCRAP_INSTRUCTION       3
-#define INDIRECT_JUMP           4
-
-#define TRUE                    1
-#define FALSE                   0
+#include "asmerr.h"
+#include "asmins.h"
+#include "asmdefs.h"
 
 #define NULLC                   '\0'
 #define NULLS                   "\0"
@@ -75,23 +83,17 @@
 #define BYTE_6                  6
 #define BYTE_8                  8
 #define BYTE_10                 10
+#define BYTE_16                 16
 
-enum naming_conventions {
-    DO_NOTHING,
-    ADD_USCORES,            /*  put uscores on the front of labels
-                             *  & the back of procedures
-                             *  this is what the compiler does with /3r
-                             */
-    REMOVE_USCORES          /*
-                             * assume that the user manually put uscores
-                             * as described above into the assembly file
-                             * and take them off
-                             */
+enum fpe {
+    DO_FP_EMULATION,
+    NO_FP_EMULATION,
+    NO_FP_ALLOWED
 };
 
-#endif
+extern enum fpe floating_point;
 
-#if ( defined(_WASM_) && !defined( ASMSYM_H ) )
+#if defined( _STANDALONE_ )
 
 #define DELIM                   " ,\t\0"
 #define T_UNDEFINED             -1
@@ -104,49 +106,35 @@ enum {
 enum {
     ASM,
     ERR,
-    OBJ
+    OBJ,
+    LST
 };
-#define FILE_TYPES 3
+#define FILE_TYPES      4
 
 typedef struct {
     FILE        *file[FILE_TYPES];      // ASM, ERR and OBJ
     char        *fname[FILE_TYPES];
 } File_Info;    // Information about the source and object files
 
+extern File_Info        AsmFiles;   // files information
+
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
+#define LST_EXT "lst"
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define OBJ_EXT "o"
 #else
 #define OBJ_EXT "obj"
 #endif
 
-typedef char bool;
-
-typedef struct queuenode {
-    void *next;
-    void *data;
-} queuenode;
-
-/* stuff used by condasm.c,
- * here since we need it so we can tell asmeval where to go if
- * we are in the middle of a false ifdef
- */
-
-enum if_state {
-    ACTIVE,                 /* current IF cond is true */
-    LOOKING_FOR_TRUE_COND,  /* current IF cond is false, looking for elseif */
-    DONE                    /* done TRUE section of current if, just nuke
-                               everything until we see an endif */
-};
-extern enum if_state CurState;
-
-enum fpe {
-    DO_FP_EMULATION,
-    NO_FP_EMULATION,
-    NO_FP_ALLOWED
-};
+typedef enum smode {
+    MODE_MASM6  = 0,
+    MODE_MASM5  = 1,
+    MODE_WATCOM = 2,
+    MODE_TASM   = 4,
+    MODE_IDEAL  = 8
+} smode;
 
 typedef struct global_options {
     bool        sign_value;     /* TRUE -> WORD & DWORD are only unsigned
@@ -155,14 +143,12 @@ typedef struct global_options {
     bool        quiet;
     bool        banner_printed;
     bool        debug_flag;
-    char        naming_convention;
-    enum fpe    floating_point;
-    bool        output_data_in_code_records;
+    bool        output_comment_data_in_code_records;
 
     /* error handling stuff */
-    char        error_count;
-    char        warning_count;
-    char        error_limit;
+    int         error_count;
+    int         warning_count;
+    int         error_limit;
     char        warning_level;
     char        warning_error;
 
@@ -173,11 +159,20 @@ typedef struct global_options {
     char        *text_seg;
     char        *module_name;
 
-    #ifdef DEBUG_OUT
+  #ifdef DEBUG_OUT
     char        debug;
-    #endif
-    char *      default_name_mangler;
+  #endif
+    char        *default_name_mangler;
     bool        allow_c_octals;
+    bool        emit_dependencies;
+    bool        use_stdcall_at_number;
+    bool        mangle_stdcall;
+    bool        write_listing;
+    bool        watcom_parms_passed_by_regs;
+    smode       mode;
+    int         locals_len;
+    char        locals_prefix[3];
+    char        trace_stack;
 } global_options;
 
 extern global_options Options;
@@ -196,6 +191,4 @@ extern global_vars Globals;
 
 #endif
 
-#ifndef ASMGLOB_H
-#define ASMGLOB_H
 #endif

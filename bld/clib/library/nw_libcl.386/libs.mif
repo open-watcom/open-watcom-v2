@@ -1,0 +1,20 @@
+pfx__ =../../../
+__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+
+libs = $+ &
+    $(pfx__)fpu$(__sfx) &
+    $(pfx__)convert$(__sfx) &
+    $(pfx__)handleio$(__sfx) &
+    $(pfx__)intel$(__sfx) &
+    $(pfx__)misc$(__sfx) &
+    $(pfx__)mthread$(__sfx) &
+    $(pfx__)startup$(__sfx) &
+    $(pfx__)streamio$(__sfx) &
+    $-
+
+pfx__ =
+__sfx =
+
+libs += $+ &
+    ../../../cgsupp/library/generic.$(processor)/$(subdir)s/$(libname).lib &
+    $-

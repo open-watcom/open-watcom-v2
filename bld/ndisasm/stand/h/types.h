@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal data types used by standalone disassembler.
 *
 ****************************************************************************/
 
@@ -50,6 +49,7 @@ typedef enum {
     LTYP_UNNAMED,
     LTYP_FUNC_INFO,
     LTYP_GROUP,
+    LTYP_ABSOLUTE
 } label_type;
 
 typedef enum {
@@ -131,9 +131,9 @@ struct externs_struct {
 
 // others
 
-#define MAX_LINE_LEN 255
+#define MAX_SYM_LEN  1024           // C++
+#define MAX_LINE_LEN MAX_SYM_LEN
 #define CMD_LINE_LEN 128
-#define MAX_SYM_LEN  1024       // C++
 
 #define TAB_WIDTH 8
 
@@ -152,6 +152,7 @@ typedef enum {
     SECTION_TYPE_PDATA,
     SECTION_TYPE_DRECTVE,
     SECTION_TYPE_SYM_TABLE,
+    SECTION_TYPE_DYN_SYM_TABLE,
     SECTION_TYPE_NUM_RECOGNIZED,
     SECTION_TYPE_LINES,
     SECTION_TYPE_UNKNOWN,
@@ -163,8 +164,9 @@ typedef enum {
     FORM_ASM            = 0x01,
     PRINT_PUBLICS       = 0x01<<1,
     PRINT_EXTERNS       = 0x01<<2,
-    NODEMANGLE_NAMES    = 0x01<<3,
-    METAWARE_COMPATIBLE = 0x01<<4,
+    PRINT_FPU_EMU_FIXUP = 0x01<<3,
+    NODEMANGLE_NAMES    = 0x01<<4,
+    METAWARE_COMPATIBLE = 0x01<<5,
 } wd_options;
 
 typedef int_16 buffer_position;
@@ -204,6 +206,15 @@ struct unnamed_label_return_struct {
     label_entry         entry;
     return_val          error;
 };
+
+struct sa_disasm_struct {
+    uint_8              *data;
+    orl_sec_offset      offs;
+    orl_sec_offset      last;
+};
+
+typedef struct sa_disasm_struct sa_disasm_struct;
+typedef sa_disasm_struct *sa_disasm;
 
 // hash table definitions
 typedef uint_32         hash_value;

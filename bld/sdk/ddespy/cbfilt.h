@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Constants for callback filter dialog.
 *
 ****************************************************************************/
 
 
-/* constants for callback filter dialog
- *
+/*
  * When future messages are to be added their constants should be the
  * next avalable integer and CFILTER_LAST_MSG must be updated.  The fact
  * that the constants are consecutive is used in accessing the callback
- * filter data structure
+ * filter data structure.
  */
 
 #define CFILTER_FIRST_MSG       CFILTER_START
@@ -57,4 +55,3 @@
 #define CFILTER_LAST_MSG        CFILTER_REG
 #define CFILTER_ALL             301
 #define CFILTER_NONE            302
-

@@ -1,0 +1,292 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs [Compress]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+2.0 - DOS/32 Advanced - SUNSYS Compress Utility
+<br></font></b></p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    SUNSYS  Compress  Utility  program  can be used  to  convert the LE- and
+LX-style  Linear  Executables into DOS/32  Advanced DOS Extender native file
+format,  LC-style Linear Compressed Executable. Note that the protected mode
+executable  compression  is  optional, and  the  LC-style executables can be
+created as uncompressed applications.</font></p>
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The usage of SUNSYS Compress Utility is:
+<blockquote>
+<i>SC [commands] [options] &lt;execname[.xxx]&gt;</i>
+</blockquote>
+where <i>execname[.xxx]</i> is the name of the file you want to compress.
+</font></p>
+
+
+<p><br></p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The supported Commands are:
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td  width="85"bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Command</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/B
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Compress and bind DOS/32A DOS Extender to created LC-style executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/BS
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Compress and bind STUB/32A Standard Stub to created LC-style executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/BC
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Compress and bind STUB/32C Configurable Stub to created LC-style executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/U
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Compress and create Unbound LC-style executable.
+	</font></td>
+</tr>
+</table>
+</blockquote>
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The supported Options are:
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td  width="85"bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Option</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/D
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Disable all optimizations.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/DA
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Disable Advanced preprocessing of Executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/DE
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Disable Encoding of Executable (force no compression).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/DR
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Disable Removing post-zero areas from Executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/DS
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Disable Smart Encoding while compressing Executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/V
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Verbose mode (displays additional information).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/Q
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Quiet mode (partially disables console output).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/S
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Silent mode (totally disables console output, except for errors).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/H
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Help (/? is also accepted).
+	</font></td>
+</tr>
+</table>
+</blockquote>
+</font></p>
+
+
+<p><br></p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Notes:</b><br>
+    Commands  and Options specified at the  command line can be  preceded by
+<b>-</b> (minus) specifier as well as by <b>/</b> (slash).<br>
+<br>
+    Commands  and  Options  specified at the  command  line  can be small or
+capital letters as the Compress Utility is not case sensitive.<br>
+<br>
+    SUNSYS  Compress Utility does not require  the extension to be specified
+with   <i>execname.xxx</i>  file  name.  If  the  Compress  Utility  cannot  open
+<i>execname</i>  file  it  will by default apply the <i>.exe</i> extension to the
+file name in order to succesfully open and process the file.<br>
+<br>
+    The  default action of SUNSYS Compress Utility when run with no Commands
+and Options specified at the command line is to compress the application and
+bind  DOS/32A  DOS  Extender to the  produced Executable (equivalent to <b>/B</b>
+command).<br>
+<br>
+    When  using <b>/U</b> command, the Compress Utility will create an unbound LC
+Executable, that is, an executable not bound to any stub.<br>
+<br>
+    The  <b>/D</b>  Option  is  equivalent to  <b>/DA /DE /DR /DS</b>  sequence and
+completely  disables  all  optimizations  and  forces  no  compression to be
+applied to the produced LC Executable.<br>
+<br>
+    The  "LC"  file  format  is natively  supported  by  DOS/32 Advanced DOS
+Extender. The LC-style executables, when not compressed, are loaded slightly
+faster than the equivalent LE- and  LX-style applications. An insignificant time
+penalty  should  be  taken to the account  when  the DOS Extender is loading
+compressed LC-style executables.<br>
+<br>
+    When loading the LC-style compressed executables DOS/32 Advanced DOS Extender
+requires the DOS Transfer Buffer size to be at least 8KB large. For more information
+about DOS Transfer Buffer option please refer to <a href="3.html">SUNSYS Setup Utility</a>
+documentation.<br>
+<br>
+    During  its  operation, SUNSYS Compress  Utility  will spawn SUNSYS Bind
+Utility, which is required to be either in DOS/32 Advanced default directory
+(specified  by <b>DOS32A</b> environment variable) or  in the same directory as the
+destination files that are to be LC-encoded.<br>
+<br>
+    <b>WARNING:</b>  the  LC-style  executables  cannot  be  converted  back to the
+original file format, either "LE" or "LX". Also, it is not possible to debug
+applications after they have been converted to the "LC" file format.<br>
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Examples:</b><br>
+The examples below will give a further explanation of how
+to use the SUNSYS Compress Utility program.<br>
+<br>
+<br>
+<b>Example 1:</b><br>
+<i>>SC MYPROG.EXE</i><br>
+<blockquote>
+<li>Compress <i>MYPROG.EXE</i> and bind DOS/32A to the produced LC Executable.<br>
+</blockquote>
+
+<b>Example 2:</b><br>
+<i>>SC /DA /V MYPROG.EXE</i><br>
+<blockquote>
+<li>Disable Advanced preprocessing optimization feature.<br>
+<li>Enable Verbose mode.<br>
+<li>Compress <i>MYPROG.EXE</i> and bind DOS/32A to the produced LC Executable.<br>
+</blockquote>
+
+<b>Example 3:</b><br>
+<i>>SC /BC /Q MYPROG</i><br>
+<blockquote>
+<li>Bind STUB/32C Configurable Stub to the produced LC Executable.<br>
+<li>Operate quietly, only reporting errors or the success message.<br>
+<li>Process application with <i>MYPROG</i> or <i>MYPROG.EXE</i> file name.<br>
+</blockquote>
+</font></p>
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

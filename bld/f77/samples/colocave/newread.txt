@@ -1,0 +1,16 @@
+
+Original Colossal Cave adventure, with extensions
+making it a 551 points version.
+
+I found this source (Adventure 6) at 
+http://www.rickadams.org/adventure/index.html
+
+It seems to carry no copyright or other restrictions 
+anywhere, It could be used as a Fortran source sample
+program or as a sanity test source after compiler rebuild.
+
+I have replaced the original makefile dowloaded form site above.
+I have changed .f extensions to .for
+I have changed all file names to lower case only.
+
+Roald Ribe, 15/8/2005

@@ -81,7 +81,7 @@ static SYMBOL lookupOptSym(     // LOOK UP OPTIMIZATION SYMBOL
     SEARCH_RESULT* result;      // - lookup result
     SYMBOL var;                 // - name defined in compiled code
 
-    result = ScopeFindNaked( FileScope, optName( odef ) );
+    result = ScopeFindNaked( GetFileScope(), optName( odef ) );
     if( result == NULL ) {
         var = NULL;
     } else {
@@ -136,7 +136,7 @@ static SYMBOL registerHandler(  // REGISTER THE HANDLER
 #else
     CgAssign( CgSymbolPlusOffset( rw, CgbkInfo.size_data_ptr )
             , CgAddrSymbol( RunTimeCallSymbol( rtn_code ) )
-            , T_CODE_PTR );
+            , TY_CODE_PTR );
 #endif
     return rw;
 }
@@ -154,7 +154,7 @@ void CgFunDeregister(           // DE-REGISTER A FUNCTION
         CgRtCallInit( &def, RTF_FS_POP );
         expr = CgSymbolPlusOffset( rw, 0 );
         expr = CgFetchPtr( expr );
-        CgRtParam( expr, &def, T_POINTER );
+        CgRtParam( expr, &def, TY_POINTER );
         CgRtCallExecDone( &def );
     } else {
         opt_thr = pointOptSym( &optFuncReg );

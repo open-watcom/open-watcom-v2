@@ -86,7 +86,7 @@ void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  ) {
 
     FARPROC     fp;
 
-    fp = MakeProcInstance( NoteLogDlgProc, Instance );
-    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, fp, (DWORD)fn );
+    fp = MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
+    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, (DLGPROC)fp, (DWORD)fn );
     FreeProcInstance( fp );
 }

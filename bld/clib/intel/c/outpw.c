@@ -24,19 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of outpw().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+/* Inline variant must always be used, no equivalent exists */
+#ifndef __INLINE_FUNCTIONS__
+    #define __INLINE_FUNCTIONS__
+#endif
 #include "xconio.h"
 
 #undef  outpw
 
 
 _WCRTLINK unsigned (outpw)( unsigned port, unsigned value )
-    {
-        return( _inline_outpw( port, value ) );
-    }
+{
+    return( _inline_outpw( port, value ) );
+}

@@ -36,7 +36,7 @@
 #include <time.h>
 #include <string.h>
 #include <dos.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "tinyio.h"
 #include "wdebug.h"
 #include "drwatcom.h"
@@ -74,7 +74,7 @@ static BOOL getNewLogName( HWND parent ) {
     of.nFilterIndex = 1L;
     of.lpstrTitle = AllocRCString( STR_LOG_FILENAME );
     ret = GetSaveFileName( &of );
-    FreeRCString( of.lpstrTitle );
+    FreeRCString( (char *)of.lpstrTitle );
     return( ret );
 }
 
@@ -177,8 +177,8 @@ void DoLogDialog( HWND hwnd )
 {
     FARPROC     fp;
 
-    fp = MakeProcInstance( LogDialog, Instance );
-    JDialogBox( Instance, "LOG", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)LogDialog, Instance );
+    JDialogBox( Instance, "LOG", hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
 
 } /* DoLogDialog */
@@ -223,6 +223,16 @@ static BOOL startLogFile( void )
 } /* startLogFile */
 
 /*
+ * logFlush - flush the log file
+ */
+static void logFlush( void )
+{
+    TinyWrite( logFile, workBuff, buffPos );
+    buffPos = 0;
+
+} /* logFlush */
+
+/*
  * finishLogFile - close up log file
  */
 static void finishLogFile( void )
@@ -235,16 +245,6 @@ static void finishLogFile( void )
     workBuff = NULL;
 
 } /* finishLogFile */
-
-/*
- * logFlush - flush the log file
- */
-static void logFlush( void )
-{
-    TinyWrite( logFile, workBuff, buffPos );
-    buffPos = 0;
-
-} /* logFlush */
 
 /*
  * dologPrint - print to the log file
@@ -646,7 +646,7 @@ static void logModuleSegments( MODULEENTRY *me )
     } else {
         for( i=0;i<512;i++ ) {
             if( MyGlobalEntryModule( &ge, me->hModule, i ) ) {
-                formatModuleSeg( i, ge.hBlock );
+                formatModuleSeg( i, (WORD)ge.hBlock );
             }
         }
     }

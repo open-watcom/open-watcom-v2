@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _settextorient( short vecx, short vecy )
+_WCRTLINK void _WCI86FAR _CGRAPH _settextorient( short vecx, short vecy )
 /*========================================================
 
     This routine sets the orientation of graphics text output.  */

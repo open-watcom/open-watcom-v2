@@ -33,20 +33,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
-#include "types.h"
+#include "rctypes.h"
 #include "dbtable.h"
 #include "rcmem.h"
-#include "fcntl.h"
-#include "io.h"
+#include <fcntl.h>
+#include <unistd.h>
 #include "write.h"
 #include "iortns.h"
-#ifdef UNIX
+
+#if defined(__UNIX__) && !defined(__WATCOMC__)
     #include "clibext.h"
 #endif
 
 typedef struct {
     DBTableHeader       header;
-    uint_8              begchars[256];
+    char                begchars[256];
     DBIndexEntry        *index;
     uint_16             *entries;
 }DBCharInfo;
@@ -161,21 +162,21 @@ static uint_16 lookUpDBChar( uint_16 ch ) {
     return( -1 );
 }
 
-const uint_8 *GetLeadBytes( void ) {
+const char *GetLeadBytes( void ) {
     return( charInfo.begchars );
 }
 
 int DBStringToUnicode( int len, const char *str, char *buf ) {
 
-    const char  *ptr;
-    uint_16     *ubuf;
-    uint_16     dbchar;
-    int         ret;
+    const uint_8    *ptr;
+    uint_16         *ubuf;
+    uint_16         dbchar;
+    int             ret;
 
-    ptr = str;
+    ptr = (uint_8 *)str;
     ret = 0;
     ubuf = (uint_16 *)buf;
-    while( ptr < str + len ) {
+    while( (char *)ptr < str + len ) {
         if( charInfo.begchars[ *ptr ] == DB_BEG_CHAR ) {
             dbchar = *ptr << 8;
             ptr++;

@@ -1,0 +1,170 @@
+/*
+ *  lmrepl.h    LAN Manager replicator functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMREPL_
+#define _LMREPL_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Replicator roles */
+#define REPL_ROLE_EXPORT    1L
+#define REPL_ROLE_IMPORT    2L
+#define REPL_ROLE_BOTH      3L
+
+/* Replicator information levels */
+#define REPL_INTERVAL_INFOLEVEL     (PARMNUM_BASE_INFOLEVEL + 0)
+#define REPL_PULSE_INFOLEVEL        (PARMNUM_BASE_INFOLEVEL + 1)
+#define REPL_GUARDTIME_INFOLEVEL    (PARMNUM_BASE_INFOLEVEL + 2)
+#define REPL_RANDOM_INFOLEVEL       (PARMNUM_BASE_INFOLEVEL + 3)
+
+/* Replicator integrity values */
+#define REPL_INTEGRITY_FILE 1L
+#define REPL_INTEGRITY_TREE 2L
+
+/* Replicator extent values */
+#define REPL_EXTENT_FILE    1L
+#define REPL_EXTENT_TREE    2L
+
+/* Replicator export directory information levels */
+#define REPL_EXPORT_INTEGRITY_INFOLEVEL (PARMNUM_BASE_INFOLEVEL + 0)
+#define REPL_EXPORT_EXTENT_INFOLEVEL    (PARMNUM_BASE_INFOLEVEL + 1)
+
+/* NetReplExportDirUnlock() force values */
+#define REPL_UNLOCK_NOFORCE 0L
+#define REPL_UNLOCK_FORCE   1L
+
+/* Replicator states */
+#define REPL_STATE_OK               0L
+#define REPL_STATE_NO_MASTER        1L
+#define REPL_STATE_NO_SYNC          2L
+#define REPL_STATE_NEVER_REPLICATED 3L
+
+/* Replicator information (level 0) */
+typedef struct _REPL_INFO_0 {
+    DWORD   rp0_role;
+    LPWSTR  rp0_exportpath;
+    LPWSTR  rp0_exportlist;
+    LPWSTR  rp0_importpath;
+    LPWSTR  rp0_importlist;
+    LPWSTR  rp0_logonusername;
+    DWORD   rp0_interval;
+    DWORD   rp0_pulse;
+    DWORD   rp0_guardtime;
+    DWORD   rp0_random;
+} REPL_INFO_0;
+typedef REPL_INFO_0 *PREPL_INFO_0;
+typedef REPL_INFO_0 *LPREPL_INFO_0;
+
+/* Replicator information (level 1000) */
+typedef struct _REPL_INFO_1000 {
+    DWORD   rp1000_interval;
+} REPL_INFO_1000;
+typedef REPL_INFO_1000  *PREPL_INFO_1000;
+typedef REPL_INFO_1000  *LPREPL_INFO_1000;
+
+/* Replicator information (level 1001) */
+typedef struct _REPL_INFO_1001 {
+    DWORD   rp1001_pulse;
+} REPL_INFO_1001;
+typedef REPL_INFO_1001  *PREPL_INFO_1001;
+typedef REPL_INFO_1001  *LPREPL_INFO_1001;
+
+/* Replicator information (level 1002) */
+typedef struct _REPL_INFO_1002 {
+    DWORD   rp1002_guardtime;
+} REPL_INFO_1002;
+typedef REPL_INFO_1002  *PREPL_INFO_1002;
+typedef REPL_INFO_1002  *LPREPL_INFO_1002;
+
+/* Replicator information (level 1003) */
+typedef struct _REPL_INFO_1003 {
+    DWORD   rp1003_random;
+} REPL_INFO_1003;
+typedef REPL_INFO_1003  *PREPL_INFO_1003;
+typedef REPL_INFO_1003  *LPREPL_INFO_1003;
+
+/* Replicator export directory information (level 0) */
+typedef struct _REPL_EDIR_INFO_0 {
+    LPWSTR  rped0_dirname;
+} REPL_EDIR_INFO_0;
+typedef REPL_EDIR_INFO_0    *PREPL_EDIR_INFO_0;
+typedef REPL_EDIR_INFO_0    *LPREPL_EDIR_INFO_0;
+
+/* Replicator export directory information (level 1) */
+typedef struct _REPL_EDIR_INFO_1 {
+    LPWSTR  rped1_dirname;
+    DWORD   rped1_integrity;
+    DWORD   rped1_extent;
+} REPL_EDIR_INFO_1;
+typedef REPL_EDIR_INFO_1    *PREPL_EDIR_INFO_1;
+typedef REPL_EDIR_INFO_1    *LPREPL_EDIT_INFO_1;
+
+/* Replicator export directory information (level 2) */
+typedef struct _REPL_EDIR_INFO_2 {
+    LPWSTR  rped2_dirname;
+    DWORD   rped2_integrity;
+    DWORD   rped2_extent;
+    DWORD   rped2_lockcount;
+    DWORD   rped2_locktime;
+} REPL_EDIR_INFO_2;
+typedef REPL_EDIR_INFO_2    *PREPL_EDIR_INFO_2;
+typedef REPL_EDIR_INFO_2    *LPREPL_EDIR_INFO_2;
+
+/* Replicator export directory information (level 1000) */
+typedef struct _REPL_EDIR_INFO_1000 {
+    DWORD   rped1000_integrity;
+} REPL_EDIR_INFO_1000;
+typedef REPL_EDIR_INFO_1000 *PREPL_EDIR_INFO_1000;
+typedef REPL_EDIR_INFO_1000 *LPREPL_EDIR_INFO_1000;
+
+/* Replicator export directory information (level 1001) */
+typedef struct _REPL_EDIR_INFO_1001 {
+    DWORD   rped1001_extent;
+} REPL_EDIR_INFO_1001;
+typedef REPL_EDIR_INFO_1001 *PREPL_EDIR_INFO_1001;
+typedef REPL_EDIR_INFO_1001 *LPREPL_EDIR_INFO_1001;
+
+/* Replicator import directory information (level 0) */
+typedef struct _REPL_IDIR_INFO_0 {
+    LPWSTR  rpid0_dirname;
+} REPL_IDIR_INFO_0;
+typedef REPL_IDIR_INFO_0    *PREPL_IDIR_INFO_0;
+typedef REPL_IDIR_INFO_0    *LPREPL_IDIR_INFO_0;
+
+/* Replicator import directory information (level 1) */
+typedef struct _REPL_IDIR_INFO_1 {
+    LPWSTR  rpid1_dirname;
+    DWORD   rpid1_state;
+    LPWSTR  rpid1_mastername;
+    DWORD   rpid1_last_update_time;
+    DWORD   rpid1_lockcount;
+    DWORD   rpid1_locktime;
+} REPL_IDIR_INFO_1;
+typedef REPL_IDIR_INFO_1    *PREPL_IDIR_INFO_1;
+typedef REPL_IDIR_INFO_1    *LPREPL_IDIR_INFO_1;
+
+/* Functions in NETAPI32.DLL */
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirAdd( LPCWSTR, DWORD, const LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirEnum( LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirLock( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirSetInfo( LPCWSTR, LPCWSTR, DWORD, const LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplExportDirUnlock( LPCWSTR, LPCWSTR, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplGetInfo( LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirAdd( LPCWSTR, DWORD, const LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirEnum( LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirLock( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetReplImportDirUnlock( LPCWSTR, LPCWSTR, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetReplSetInfo( LPCWSTR, DWORD, const LPBYTE, LPDWORD );
+
+:include cplusepi.sp
+
+#endif /* _LMREPL_ */

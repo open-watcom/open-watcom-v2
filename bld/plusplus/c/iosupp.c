@@ -24,20 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  I/O support routines.
 *
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stdio.h>
 #include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -50,8 +48,9 @@
 #include "pcheader.h"
 #include "ring.h"
 #include "brinfo.h"
+#include "autodept.h"
 
-#if defined(__QNX__)
+#if defined(__UNIX__)
  #include <dirent.h>
 #else
  #include <direct.h>
@@ -121,6 +120,8 @@ static char* extsOut[] =        // extensions for output files
 #ifdef OPT_BR
     ,   ".brm"
 #endif
+    ,   ".d"
+    ,   ".obj"
     };
 
 #define IS_DIR_SEP( c )         ((c)=='/'||(c)=='\\')
@@ -128,7 +129,7 @@ static char* extsOut[] =        // extensions for output files
 #define PATH_SEP                '\\'
 #define INC_PATH_SEP            ';'
 
-#elif defined(__QNX__)
+#elif defined(__UNIX__)
 
 static char* pathSrc[] =        // paths for source file
     {   "../C"
@@ -177,6 +178,8 @@ static char* extsOut[] =        // extensions for output files
 #ifdef OPT_BR
     ,   ".brm"
 #endif
+    ,   ".d"
+    ,   ".o"
     };
 
 #define IS_DIR_SEP( c )         ((c)=='/')
@@ -190,7 +193,7 @@ static char* extsOut[] =        // extensions for output files
 
 #endif
 
-
+static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     enum out_file_type typ )    // - extension
@@ -199,6 +202,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     char *dir;
     char *fname;
     char *ext;
+    char *extsrc;
     char *path;
     int use_defaults;
     unsigned mask;
@@ -214,10 +218,36 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         path = WholeFName;
         use_defaults = TRUE;
         break;
+      case OFT_DEP:
+        path = DependFileName;
+        if( path == NULL ) {
+            use_defaults = TRUE;
+            path = WholeFName;
+        }
+        break;
       case OFT_ERR:
-        if( ErrorFileName == NULL ) return( NULL );
+        if( ErrorFileName == NULL )
+            return( NULL );
+        outFileChecked |= 1 << typ; // don't create a file. it's just a name.
         path = ErrorFileName;
         break;
+      case OFT_SRCDEP:
+        outFileChecked |= 1 << typ;
+        if( !(path = SrcDepFileName ) ) {
+            path = WholeFName;
+        }
+        else 
+        {
+            auto char buff[ _MAX_PATH2 ];
+            char *drive;
+            char *dir;
+            char *fname;
+            _splitpath2( WholeFName, buff, &drive, &dir, &fname, &extsrc );
+        }
+        break;
+      case OFT_TRG:
+        outFileChecked |= 1 << typ; // don't create a file. it's just a name.
+        if( path = TargetFileName ) break;
       case OFT_PPO:
       case OFT_OBJ:
       case OFT_MBR:
@@ -233,6 +263,10 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
       case OFT_MBR:
         ext = "";       // don't override extension
         break;
+      case OFT_SRCDEP:
+        if( !ext || !ext[0] )
+            ext = extsrc;
+        break;
     }
     if( use_defaults || ext[0] == '\0' ) {
         ext = extsOut[ typ ];
@@ -244,18 +278,18 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         drive = "";
         dir = "";
     }
-    _makepath( Buffer, drive, dir, fname, ext );
+    _makepath( FNameBuf, drive, dir, fname, ext );
     mask = 1 << typ;
     if(( outFileChecked & mask ) == 0 ) {
         outFileChecked |= mask;
-        try_create = fopen( Buffer, "w" );
+        try_create = fopen( FNameBuf, "w" );
         if( try_create != NULL ) {
             fclose( try_create );
         } else {
-            CErr2p( ERR_CANNOT_CREATE_OUTPUT_FILE, Buffer );
+            CErr2p( ERR_CANNOT_CREATE_OUTPUT_FILE, FNameBuf );
         }
     }
-    return( Buffer );
+    return( FNameBuf );
 }
 
 
@@ -329,7 +363,7 @@ struct path_descr               // path description
 
 
 static void splitFileName(      // SPLIT APART PATH/FILENAME
-    char *name,                 // - name to be split
+    const char *name,           // - name to be split
     struct path_descr *descr )  // - descriptor
 {
     _splitpath2( name
@@ -380,7 +414,7 @@ static boolean openSrc(         // ATTEMPT TO OPEN FILE
     } else {
         SrcFileOpen( fp, name );
         if( typ == FT_SRC ) {
-            SrcFilePrimary();
+            SetSrcFilePrimary();
         }
         might_browse = TRUE;
     }
@@ -423,8 +457,13 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     char *ext;                  // - current extension
 
     if( nd->ext[0] == '\0' ) {
+        int doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
+        int doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
+        int doExt = (doSrc || doInc);
+
         ext = openExt( NULL, nd, typ );
-        if( ext == NULL ) {
+
+        if(( ext == NULL ) && (doExt)) {
             for( ; ; ) {
                 ext = *exts++;
                 if( ext == NULL ) break;
@@ -477,7 +516,7 @@ static boolean openSrcPath(     // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
         pp = NULL;
     }
     if( pp == NULL ) {
-        retn = NULL;
+        retn = FALSE;
     } else {
         pp = concSep( pp, dir );
         makeDirName( pp, fd );
@@ -626,7 +665,7 @@ file_was_found:
 
 
 boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
-    char *file_name,            // - supplied file name
+    const char *file_name,      // - supplied file name
     enum file_type typ )        // - type of search path to use
 {
     struct path_descr   fd;     // - descriptor for file name
@@ -661,7 +700,7 @@ static void tempFname( char *fname )
     char    *env;
     int     i;
 
-    #if defined(__QNX__)
+    #if defined(__UNIX__)
         env = CppGetEnv( "TMPDIR" );
         if( env == NULL ) env = CppGetEnv( "TMP" );
     #else
@@ -718,12 +757,15 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     auto char   fname[ _MAX_PATH ];
 
     mode = O_RDWR | O_CREAT | O_EXCL;
-    #if defined(__QNX__)
-        // QNX files are always binary
-        mode |= O_TEMP;
-    #else
-        mode |= O_BINARY;
-    #endif
+#ifdef __UNIX__
+  #ifndef O_TEMP
+    #define O_TEMP 0    /* Not a standard flag */
+  #endif
+    // Unix files are always binary
+    mode |= O_TEMP;
+#else
+    mode |= O_BINARY;
+#endif
     for(;;) {
         tempFname( fname );
         #if defined(__DOS__)
@@ -759,7 +801,7 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
             break;
         }
     }
-    #if defined(__QNX__)
+    #if defined(__UNIX__)
         /* Under POSIX it's legal to remove a file that's open. The file
            space will be reclaimed when the handle is closed. This makes
            sure that the work file always gets removed. */
@@ -779,8 +821,6 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     char *buff,                 // - output buffer
     unsigned size )             // - output buffer size
 {
-    char *p;
-
     DbgAssert( size >= _MAX_PATH );
 #ifndef NDEBUG
     // caller should use return value only!
@@ -789,23 +829,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     ++buff;
     --size;
 #endif
-    p = _fullpath( buff, name, size );
-    if( p == NULL ) p = name;
-    #if defined(__QNX__)
-        if( p[0] == '/' && p[1] == '/' ) {
-            if( name[0] != '/' || name[1] != '/' ) {
-                /*
-                   if the _fullpath result has a node number and
-                   the user didn't specify one, strip the node number
-                   off before returning
-                */
-                for( p += 2; *p != '/'; ++p ) {
-                    if( *p == '\0' ) break;
-                }
-            }
-        }
-    #endif
-    return( p );
+    return _getFilenameFullPath( buff, name, size );
 }
 
 
@@ -861,7 +885,7 @@ char *IoSuppIncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST
     length = 0;
     for( ; ; ) {
         if( *path == '\0' ) break;
-        if( *path == INC_PATH_SEP ) {
+        if( (*path == INC_PATH_SEP) || (*path == ';') ) {
             ++path;
             if( length != 0 ) {
                 break;
@@ -930,6 +954,7 @@ static void ioSuppInit(         // INITIALIZE IO SUPPORT
     tempname = NULL;
     temphandle = -1;
     workFile[5] = '0';
+    FNameBuf = CMemAlloc( _MAX_PATH );
     carve_buf = CarveCreate( sizeof( BUF_ALLOC ), 8 );
     setPaths( pathSrc );
     setPaths( pathHdr );
@@ -951,6 +976,7 @@ static void ioSuppFini(         // FINALIZE IO SUPPORT
         freeBuffer( buffers );
     }
     CarveDestroy( carve_buf );
+    CMemFree( FNameBuf );
 }
 
 

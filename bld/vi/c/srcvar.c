@@ -30,21 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "vi.h"
 #include "rxsupp.h"
 #include "source.h"
 
 /*
- * VarAddGlobal
+ * VarAddGlobalStr
  */
-void VarAddGlobal( char *name, char *val )
+void VarAddGlobalStr( char *name, char *val )
 {
-    VarAdd( name, val, NULL );
-} /* VarAddGlobal */
+    VarAddStr( name, val, NULL );
+
+} /* VarAddGlobalStr */
 
 
 /*
@@ -61,9 +58,9 @@ void VarAddRandC( void )
         len = CurrentLine->len;
     }
 
-    VarAddGlobalLong( "R", CurrentLineNumber );
+    VarAddGlobalLong( "R", CurrentPos.line );
     VarAddGlobalLong( "Linelen", len );
-    vc = VirtualCursorPosition();
+    vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     VarAddGlobalLong( "C", (long) vc );
     // VarDump( );
 
@@ -85,16 +82,16 @@ void VarAddGlobalLong( char *name, long val )
 {
     char ibuff[MAX_NUM_STR];
 
-    VarAdd( name, ltoa( val, ibuff, 10 ), NULL );
+    VarAddStr( name, ltoa( val, ibuff, 10 ), NULL );
 
 } /* VarAddGlobalLong */
 
 /*
- * VarAdd - add a new variable
+ * VarAddStr - add a new variable
  */
-void VarAdd( char *name, char *val, vlist *vl )
+void VarAddStr( char *name, char *val, vlist *vl )
 {
-    vars        *new,*curr,*head;
+    vars        *new, *curr, *head;
     bool        glob;
     int         len;
     int         name_len;
@@ -132,25 +129,25 @@ void VarAdd( char *name, char *val, vlist *vl )
      */
     name_len = strlen( name );
     new = MemAlloc( sizeof( vars ) + name_len );
-    memcpy( new->name, name, name_len+1 );
+    memcpy( new->name, name, name_len + 1 );
     AddString( &new->value, val );
     new->len = len;
 
     if( glob ) {
-        AddLLItemAtEnd( &VarHead, &VarTail, new );
+        AddLLItemAtEnd( (ss **)&VarHead, (ss **)&VarTail, (ss *)new );
         EditFlags.CompileAssignments = FALSE;
     } else {
-        AddLLItemAtEnd( &vl->head, &vl->tail, new );
+        AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
     }
 
-} /* VarAdd */
+} /* VarAddStr */
 
 /*
  * VarListDelete - delete a local variable list
  */
 void VarListDelete( vlist *vl )
 {
-    vars *curr,*next;
+    vars *curr, *next;
 
     curr = vl->head;
     while( curr != NULL ) {
@@ -170,12 +167,12 @@ bool VarName( char *name, vlist *vl )
     if( name[0] != '%' || name[1] == 0 ) {
         return( FALSE );
     }
-    EliminateFirstN( name,1 );
+    EliminateFirstN( name, 1 );
     if( name[0] == '(' ) {
-        EliminateFirstN( name,1 );
-        name[ strlen( name ) -1 ] = 0;
+        EliminateFirstN( name, 1 );
+        name[strlen( name ) - 1] = 0;
     }
-    if( strchr( name,'%' ) != NULL ) {
+    if( strchr( name, '%' ) != NULL ) {
         Expand( name, vl );
     }
     return( TRUE );
@@ -221,8 +218,9 @@ vars * VarFind( char *name, vlist *vl )
 
 
 /* Free the globals */
-void VarFini( void ){
-    vars *curr,*next;
+void VarFini( void )
+{
+    vars *curr, *next;
 
     curr = VarHead;
     while( curr != NULL ) {
@@ -231,14 +229,13 @@ void VarFini( void ){
         MemFree( curr );
         curr = next;
     }
-
 }
 
 
 void VarDump( void ){
     vars        *curr;
-    int         count=0;
-    FILE *f= fopen( "C:\\vi.out", "a+t" );
+    int         count = 0;
+    FILE        *f = fopen( "C:\\vi.out", "a+t" );
 
     curr = VarHead;
     while( curr != NULL ) {
@@ -246,22 +243,23 @@ void VarDump( void ){
         count++;
         curr = curr->next;
     }
-    if( count == 13){
+    if( count == 13 ) {
         count = 13;
     }
-    fprintf( f,"count %d\n", count );
+    fprintf( f, "count %d\n", count );
     fclose( f );
 }
 
-void VarSC( char *str ){
+void VarSC( char *str )
+{
     /// DEBUG BEGIN
     {
         vars    *currn = VarHead;
-        if( currn ){
+        if( currn ) {
             while( currn->next != NULL ) {
                 currn = currn->next;
             }
-            if( VarTail != currn ){
+            if( VarTail != currn ) {
                printf( "%s\n", str );
             }
         }

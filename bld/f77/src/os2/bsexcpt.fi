@@ -1,0 +1,188 @@
+c$noreference
+
+        integer  XCPT_CONTINUE_SEARCH
+        parameter (XCPT_CONTINUE_SEARCH = '00000000'x)
+        integer  XCPT_CONTINUE_EXECUTION
+        parameter (XCPT_CONTINUE_EXECUTION = 'FFFFFFFF'x)
+        integer  XCPT_CONTINUE_STOP
+        parameter (XCPT_CONTINUE_STOP = '00716668'x)
+
+        integer  EH_NONCONTINUABLE
+        parameter (EH_NONCONTINUABLE = '00000001'x)
+        integer  EH_UNWINDING
+        parameter (EH_UNWINDING = '00000002'x)
+        integer  EH_EXIT_UNWIND
+        parameter (EH_EXIT_UNWIND = '00000004'x)
+        integer  EH_STACK_INVALID
+        parameter (EH_STACK_INVALID = '00000008'x)
+        integer  EH_NESTED_CALL
+        parameter (EH_NESTED_CALL = '00000010'x)
+
+        integer  UNWIND_ALL
+        parameter (UNWIND_ALL = 0)
+
+        integer  XCPT_FATAL_EXCEPTION
+        parameter (XCPT_FATAL_EXCEPTION = 'C0000000'x)
+        integer  XCPT_SEVERITY_CODE
+        parameter (XCPT_SEVERITY_CODE = 'C0000000'x)
+        integer  XCPT_CUSTOMER_CODE
+        parameter (XCPT_CUSTOMER_CODE = '20000000'x)
+        integer  XCPT_FACILITY_CODE
+        parameter (XCPT_FACILITY_CODE = '1FFF0000'x)
+        integer  XCPT_EXCEPTION_CODE
+        parameter (XCPT_EXCEPTION_CODE = '0000FFFF'x)
+
+        integer  XCPT_UNKNOWN_ACCESS
+        parameter (XCPT_UNKNOWN_ACCESS = '00000000'x)
+        integer  XCPT_READ_ACCESS
+        parameter (XCPT_READ_ACCESS = '00000001'x)
+        integer  XCPT_WRITE_ACCESS
+        parameter (XCPT_WRITE_ACCESS = '00000002'x)
+        integer  XCPT_EXECUTE_ACCESS
+        parameter (XCPT_EXECUTE_ACCESS = '00000004'x)
+        integer  XCPT_SPACE_ACCESS
+        parameter (XCPT_SPACE_ACCESS = '00000008'x)
+        integer  XCPT_LIMIT_ACCESS
+        parameter (XCPT_LIMIT_ACCESS = '00000010'x)
+        integer  XCPT_DATA_UNKNOWN
+        parameter (XCPT_DATA_UNKNOWN = 'FFFFFFFF'x)
+
+        integer  XCPT_SIGNAL_INTR
+        parameter (XCPT_SIGNAL_INTR = 1)
+        integer  XCPT_SIGNAL_KILLPROC
+        parameter (XCPT_SIGNAL_KILLPROC = 3)
+        integer  XCPT_SIGNAL_BREAK
+        parameter (XCPT_SIGNAL_BREAK = 4)
+
+        integer  XCPT_GUARD_PAGE_VIOLATION
+        parameter (XCPT_GUARD_PAGE_VIOLATION = '80000001'x)
+
+        integer  XCPT_UNABLE_TO_GROW_STACK
+        parameter (XCPT_UNABLE_TO_GROW_STACK = '80010001'x)
+
+        integer  XCPT_DATATYPE_MISALIGNMENT
+        parameter (XCPT_DATATYPE_MISALIGNMENT = 'C000009E'x)
+
+        integer  XCPT_BREAKPOINT
+        parameter (XCPT_BREAKPOINT = 'C000009F'x)
+        integer  XCPT_SINGLE_STEP
+        parameter (XCPT_SINGLE_STEP = 'C00000A0'x)
+        integer  XCPT_ACCESS_VIOLATION
+        parameter (XCPT_ACCESS_VIOLATION = 'C0000005'x)
+
+        integer  XCPT_ILLEGAL_INSTRUCTION
+        parameter (XCPT_ILLEGAL_INSTRUCTION = 'C000001C'x)
+        integer  XCPT_FLOAT_DENORMAL_OPERAND
+        parameter (XCPT_FLOAT_DENORMAL_OPERAND = 'C0000094'x)
+        integer  XCPT_FLOAT_DIVIDE_BY_ZERO
+        parameter (XCPT_FLOAT_DIVIDE_BY_ZERO = 'C0000095'x)
+        integer  XCPT_FLOAT_INEXACT_RESULT
+        parameter (XCPT_FLOAT_INEXACT_RESULT = 'C0000096'x)
+        integer  XCPT_FLOAT_INVALID_OPERATION
+        parameter (XCPT_FLOAT_INVALID_OPERATION = 'C0000097'x)
+        integer  XCPT_FLOAT_OVERFLOW
+        parameter (XCPT_FLOAT_OVERFLOW = 'C0000098'x)
+        integer  XCPT_FLOAT_STACK_CHECK
+        parameter (XCPT_FLOAT_STACK_CHECK = 'C0000099'x)
+        integer  XCPT_FLOAT_UNDERFLOW
+        parameter (XCPT_FLOAT_UNDERFLOW = 'C000009A'x)
+        integer  XCPT_INTEGER_DIVIDE_BY_ZERO
+        parameter (XCPT_INTEGER_DIVIDE_BY_ZERO = 'C000009B'x)
+        integer  XCPT_INTEGER_OVERFLOW
+        parameter (XCPT_INTEGER_OVERFLOW = 'C000009C'x)
+        integer  XCPT_PRIVILEGED_INSTRUCTION
+        parameter (XCPT_PRIVILEGED_INSTRUCTION = 'C000009D'x)
+
+        integer  XCPT_IN_PAGE_ERROR
+        parameter (XCPT_IN_PAGE_ERROR = 'C0000006'x)
+
+        integer  XCPT_PROCESS_TERMINATE
+        parameter (XCPT_PROCESS_TERMINATE = 'C0010001'x)
+        integer  XCPT_ASYNC_PROCESS_TERMINATE
+        parameter (XCPT_ASYNC_PROCESS_TERMINATE = 'C0010002'x)
+
+        integer  XCPT_NONCONTINUABLE_EXCEPTION
+        parameter (XCPT_NONCONTINUABLE_EXCEPTION = 'C0000024'x)
+        integer  XCPT_INVALID_DISPOSITION
+        parameter (XCPT_INVALID_DISPOSITION = 'C0000025'x)
+
+        integer  XCPT_INVALID_LOCK_SEQUENCE
+        parameter (XCPT_INVALID_LOCK_SEQUENCE = 'C000001D'x)
+        integer  XCPT_ARRAY_BOUNDS_EXCEEDED
+        parameter (XCPT_ARRAY_BOUNDS_EXCEEDED = 'C0000093'x)
+        integer  XCPT_B1NPX_ERRATA_02
+        parameter (XCPT_B1NPX_ERRATA_02 = 'C0010004'x)
+
+        integer  XCPT_UNWIND
+        parameter (XCPT_UNWIND = 'C0000026'x)
+        integer  XCPT_BAD_STACK
+        parameter (XCPT_BAD_STACK = 'C0000027'x)
+        integer  XCPT_INVALID_UNWIND_TARGET
+        parameter (XCPT_INVALID_UNWIND_TARGET = 'C0000028'x)
+
+        integer  XCPT_SIGNAL
+        parameter (XCPT_SIGNAL = 'C0010003'x)
+
+        integer  CONTEXT_CONTROL
+        parameter (CONTEXT_CONTROL = '00000001'x)
+        integer  CONTEXT_INTEGER
+        parameter (CONTEXT_INTEGER = '00000002'x)
+        integer  CONTEXT_SEGMENTS
+        parameter (CONTEXT_SEGMENTS = '00000004'x)
+        integer  CONTEXT_FLOATING_POINT
+        parameter (CONTEXT_FLOATING_POINT = '00000008'x)
+
+        integer CONTEXT_FULL
+        parameter (CONTEXT_FULL = CONTEXT_CONTROL .or.
+     +                 CONTEXT_INTEGER .or. CONTEXT_SEGMENTS .or.
+     +                 CONTEXT_FLOATING_POINT)
+
+        structure /fpreg/
+            integer*4 losig
+            integer*4 hisig
+            integer*2 signexp
+        end structure
+
+        structure /CONTEXT/
+            integer*4 ContextFlags
+            integer*4 ctx_env(7)
+            record /FPREG/ ctx_stack(8)
+            integer*4 ctx_SegGs
+            integer*4 ctx_SegFs
+            integer*4 ctx_SegEs
+            integer*4 ctx_SegDs
+            integer*4 ctx_RegEdi
+            integer*4 ctx_RegEsi
+            integer*4 ctx_RegEax
+            integer*4 ctx_RegEbx
+            integer*4 ctx_RegEcx
+            integer*4 ctx_RegEdx
+            integer*4 ctx_RegEbp
+            integer*4 ctx_RegEip
+            integer*4 ctx_SegCs
+            integer*4 ctx_EFlags
+            integer*4 ctx_RegEsp
+            integer*4 ctx_SegSs
+        end structure
+
+        integer  EXCEPTION_MAXIMUM_PARAMETERS
+        parameter (EXCEPTION_MAXIMUM_PARAMETERS = 4)
+
+        structure /EXCEPTIONREPORTRECORD/
+            integer*4 ExceptionNum
+            integer*4 fHandlerFlags
+            integer*4 NestedExceptionReportRecord
+            integer*4 ExceptionAddress
+            integer*4 cParameters
+            integer*4 ExceptionInfo(EXCEPTION_MAXIMUM_PARAMETERS)
+        end structure
+
+        structure /EXCEPTIONREGISTRATIONRECORD/
+            integer*4 prev_structure
+            integer*4 ExceptionHandler
+        end structure
+
+        integer END_OF_CHAIN
+        parameter (END_OF_CHAIN = -1)
+
+c$reference

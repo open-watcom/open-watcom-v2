@@ -1,0 +1,533 @@
+/*
+ *  afxext.h    Application Framework extension classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXEXT_H__
+#define __AFXEXT_H__
+
+:include readonly.sp
+
+#include <afxdlgs.h>
+
+// Forward declarations
+class CDockBar;
+class CDockContext;
+class CReBarCtrl;
+class CStatusBarCtrl;
+class CToolBarCtrl;
+
+// CControlBar::CalcDynamicLayout() layout modes
+#define LM_STRETCH  0x00000001L
+#define LM_HORZ     0x00000002L
+#define LM_MRUWIDTH 0x00000004L
+#define LM_HORZDOCK 0x00000008L
+#define LM_VERTDOCK 0x00000010L
+#define LM_LENGTHY  0x00000020L
+#define LM_COMMIT   0x00000040L
+
+class _AFXLINK CBitmapButton : public CButton {
+protected:
+    CBitmap m_bitmap;
+    CBitmap m_bitmapSel;
+    CBitmap m_bitmapFocus;
+    CBitmap m_bitmapDisabled;
+    
+    DECLARE_DYNAMIC( CBitmapButton )
+    
+public:
+    CBitmapButton();
+    
+    virtual void    DrawItem( LPDRAWITEMSTRUCT lpDrawItemStruct );
+    
+    BOOL    AutoLoad( UINT nID, CWnd *pParent );
+    BOOL    LoadBitmaps( LPCTSTR lpszBitmapResource, LPCTSTR lpszBitmapResourceSel = NULL, LPCTSTR lpszBitmapResourceFocus = NULL, LPCTSTR lpszBitmapResourceDisabled = NULL );
+    BOOL    LoadBitmaps( UINT nIDBitmapResource, UINT nIDBitmapResourceSel = 0, UINT nIDBitmapResourceFocus = 0, UINT nIDBitmapResourceDisabled = 0 );
+    void    SizeToContent();
+};
+
+class _AFXLINK CControlBar : public CWnd {
+public:
+    BOOL            m_bAutoDelete;
+    int             m_cxLeftBorder;
+    int             m_cxRightBorder;
+    int             m_cyTopBorder;
+    int             m_cyBottomBorder;
+    UINT            m_nMRUWidth;
+    int             m_nCount;
+    void            *m_pData;
+    DWORD           m_dwStyle;
+    DWORD           m_dwDockStyle;
+    CFrameWnd       *m_pDockSite;
+    CDockBar        *m_pDockBar;
+    CDockContext    *m_pDockContext;
+    
+    DECLARE_DYNAMIC( CControlBar )
+    
+public:
+    CControlBar();
+    
+    virtual CSize   CalcDynamicLayout( int nLength, DWORD nMode );
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual void    CalcInsideRect( CRect &rect, BOOL bHorz ) const;
+    virtual void    DoPaint( CDC *pDC );
+    virtual void    DrawBorders( CDC *pDC, CRect &rect );
+    virtual void    DrawGripper( CDC *pDC, const CRect &rect );
+    virtual BOOL    IsDockBar() const;
+    virtual void    OnBarStyleChange( DWORD dwOldStyle, DWORD dwNewStyle );
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler ) = 0;
+    
+    virtual BOOL    PreTranslateMessage( MSG *pMsg );
+    virtual void    PostNcDestroy();
+    virtual LRESULT WindowProc( UINT message, WPARAM wParam, LPARAM lParam );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    void    EnableDocking( DWORD dwDockStyle );
+    void    EraseNonClient();
+    DWORD   GetBarStyle();
+    CRect   GetBorders() const;
+    int     GetCount() const;
+    BOOL    IsFloating() const;
+    void    SetBarStyle( DWORD dwStyle );
+    void    SetBorders( int cxLeft = 0, int cyTop = 0, int cxRight = 0, int cyBottom = 0 );
+    void    SetBorders( LPCRECT lpRect );
+    
+protected:
+    afx_msg int     OnCreate( LPCREATESTRUCT lpCreateStruct );
+    afx_msg void    OnDestroy();
+    afx_msg void    OnLButtonDblClk( UINT nFlags, CPoint point );
+    afx_msg void    OnLButtonDown( UINT nFlags, CPoint point );
+    afx_msg void    OnPaint();
+    afx_msg void    OnTimer( UINT_PTR nIDEvent );
+    afx_msg LRESULT OnHelpHitTest( WPARAM wParam, LPARAM lParam );
+    afx_msg LRESULT OnIdleUpdateCmdUI( WPARAM wParam, LPARAM lParam );
+    afx_msg LRESULT OnSizeParent( WPARAM wParam, LPARAM lParam );
+    DECLARE_MESSAGE_MAP()
+};
+
+// Toolbar button styles
+#define TBBS_BUTTON         MAKELONG( TBSTYLE_BUTTON, 0 )
+#define TBBS_SEPARATOR      MAKELONG( TBSTYLE_SEP, 0 )
+#define TBBS_CHECKBOX       MAKELONG( TBSTYLE_CHECK, 0 )
+#define TBBS_GROUP          MAKELONG( TBSTYLE_GROUP, 0 )
+#define TBBS_CHECKGROUP     MAKELONG( TBSTYLE_CHECKGROUP, 0 )
+#define TBBS_DROPDOWN       MAKELONG( TBSTYLE_DROPDOWN, 0 )
+#define TBBS_AUTOSIZE       MAKELONG( TBSTYLE_AUTOSIZE, 0 )
+#define TBBS_NOPREFIX       MAKELONG( TBSTYLE_NOPREFIX, 0 )
+#define TBBS_CHECKED        MAKELONG( 0, TBSTATE_CHECKED )
+#define TBBS_PRESSED        MAKELONG( 0, TBSTATE_PRESSED )
+#define TBBS_DISABLED       MAKELONG( 0, TBSTATE_ENABLED )
+#define TBBS_HIDDEN         MAKELONG( 0, TBSTATE_HIDDEN )
+#define TBBS_INDETERMINATE  MAKELONG( 0, TBSTATE_INDETERMINATE )
+#define TBBS_WRAPPED        MAKELONG( 0, TBSTATE_WRAP )
+#define TBBS_ELLIPSES       MAKELONG( 0, TBSTATE_ELLIPSES )
+#define TBBS_MARKED         MAKELONG( 0, TBSTATE_MARKED )
+
+class _AFXLINK CToolBar : public CControlBar {
+private:
+    HRSRC       m_hRsrcImageWell;
+    HINSTANCE   m_hInstImageWell;
+    HBITMAP     m_hbmImageWell;
+    CSize       m_sizeImage;
+    CSize       m_sizeButton;
+    
+    DECLARE_DYNAMIC( CToolBar )
+    
+public:
+    CToolBar();
+    virtual ~CToolBar();
+    
+    virtual BOOL    Create( CWnd *pParentWnd, DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_TOP, UINT nID = AFX_IDW_TOOLBAR );
+#if (_WIN32_IE >= 0x0300)
+    virtual BOOL    CreateEx( CWnd *pParentWnd, DWORD dwCtrlStyle = TBSTYLE_FLAT, DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_ALIGN_TOP, CRect rcBorders = CRect( 0, 0, 0, 0 ), UINT nID = AFX_IDW_TOOLBAR );
+#else
+    virtual BOOL    CreateEx( CWnd *pParentWnd, DWORD dwCtrlStyle = 0L, DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_ALIGN_TOP, CRect rcBorders = CRect( 0, 0, 0, 0 ), UINT nID = AFX_IDW_TOOLBAR );
+#endif
+    virtual void    GetItemRect( int nIndex, LPRECT lpRect ) const;
+    
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual INT_PTR OnToolHitTest( CPoint point, TOOLINFO *pTI ) const;
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    int             CommandToIndex( UINT nIDFind ) const;
+    void            GetButtonInfo( int nIndex, UINT &nID, UINT &nStyle, int &iImage ) const;
+    UINT            GetButtonStyle( int nIndex ) const;
+    CString         GetButtonText( int nIndex ) const;
+    void            GetButtonText( int nIndex, CString &rString ) const;
+    UINT            GetItemID( int nIndex ) const;
+    CToolBarCtrl    &GetToolBarCtrl() const;
+    BOOL            LoadBitmap( LPCTSTR lpszResourceName );
+    BOOL            LoadBitmap( UINT nIDResource );
+    BOOL            LoadToolBar( LPCTSTR lpszResourceName );
+    BOOL            LoadToolBar( UINT nIDResource );
+    BOOL            SetBitmap( HBITMAP hbmImageWell );
+    void            SetButtonInfo( int nIndex, UINT nID, UINT nStyle, int iImage );
+    void            SetButtonStyle( int nIndex, UINT nStyle );
+    BOOL            SetButtonText( int nIndex, LPCTSTR lpszText );
+    BOOL            SetButtons( const UINT *lpIDArray, int nIDCount );
+    void            SetSizes( SIZE sizeButton, SIZE sizeImage );
+    
+protected:
+    afx_msg void    OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS *lpncsp );
+    afx_msg void    OnNcPaint();
+    afx_msg void    OnPaint();
+    afx_msg void    OnSysColorChange();
+    DECLARE_MESSAGE_MAP()
+};
+
+// Status bar pane styles
+#define SBPS_NORMAL     0x00000000L
+#define SBPS_NOBORDERS  SBT_NOBORDERS
+#define SBPS_POPOUT     SBT_POPOUT
+#define SBPS_OWNERDRAW  SBT_OWNERDRAW
+#define SBPS_DISABLED   0x04000000L
+#define SBPS_STRETCH    0x08000000L
+
+class _AFXLINK CStatusBar : public CControlBar {
+    DECLARE_DYNAMIC( CStatusBar )
+    
+public:
+    CStatusBar();
+    virtual ~CStatusBar();
+    
+    virtual BOOL    Create( CWnd *pParentWnd, DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_BOTTOM, UINT nID = AFX_IDW_STATUS_BAR );
+    virtual BOOL    CreateEx( CWnd *pParentWnd, DWORD dwCtrlStyle = 0L, DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_BOTTOM, UINT nID = AFX_IDW_STATUS_BAR );
+    
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual void    CalcInsideRect( CRect &rect, BOOL bHorz ) const;
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler );
+
+    int             CommandToIndex( UINT nIDFind ) const;
+    UINT            GetItemID( int nIndex ) const;
+    void            GetItemRect( int nIndex, LPRECT lpRect ) const;
+    void            GetPaneInfo( int nIndex, UINT &nID, UINT &nStyle, int &cxWidth ) const;
+    UINT            GetPaneStyle( int nIndex ) const;
+    CString         GetPaneText( int nIndex ) const;
+    void            GetPaneText( int nIndex, CString &rString ) const;
+    CStatusBarCtrl  &GetStatusBarCtrl() const;
+    BOOL            SetIndicators( const UINT *lpIDArray, int nIDCount );
+    void            SetPaneInfo( int nIndex, UINT nID, UINT nStyle, int cxWidth );
+    void            SetPaneStyle( int nIndex, UINT nStyle );
+    BOOL            SetPaneText( int nIndex, LPCTSTR lpszNewText, BOOL bUpdate = TRUE );
+    
+protected:
+    void    UpdateAllPanes( BOOL bUpdateRects, BOOL bUpdateText );
+    
+    afx_msg void    OnNcPaint();
+    afx_msg void    OnPaint();
+    afx_msg void    OnSize( UINT nType, int cx, int cy );
+    afx_msg LRESULT OnGetText( WPARAM wParam, LPARAM lParam );
+    afx_msg LRESULT OnGetTextLength( WPARAM wParam, LPARAM lParam );
+    afx_msg LRESULT OnSetText( WPARAM wParam, LPARAM lParam );
+    DECLARE_MESSAGE_MAP()
+};
+
+class _AFXLINK CDialogBar : public CControlBar {
+private:
+    CSize   m_sizeDefault;
+    LPCTSTR m_lpszTemplateName;
+    
+    DECLARE_DYNAMIC( CDialogBar )
+    
+public:
+    CDialogBar();
+    
+    virtual BOOL    Create( CWnd *pParentWnd, LPCTSTR lpszTemplateName, UINT nStyle, UINT nID );
+    virtual BOOL    Create( CWnd *pParentWnd, UINT nIDTemplate, UINT nStyle, UINT nID );
+    
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+};
+
+#if (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CReBar : public CControlBar {
+    DECLARE_DYNAMIC( CReBar )
+    
+public:
+    CReBar();
+    
+    virtual BOOL    Create( CWnd *pParentWnd, DWORD dwCtrlStyle = RBS_BANDBORDERS, DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_TOP, UINT nID = AFX_IDW_REBAR );
+    
+    virtual CSize   CalcFixedLayout( BOOL bStretch, BOOL bHorz );
+    virtual INT_PTR OnToolHitTest( CPoint point, TOOLINFO *pTI ) const;
+    virtual void    OnUpdateCmdUI( CFrameWnd *pTarget, BOOL bDisableIfNoHndler );
+    
+#if (_WIN32_IE >= 0x0400)
+    BOOL        AddBar( CWnd *pBar, LPCTSTR pszText = NULL, CBitmap *pbmp = NULL, DWORD dwStyle = RBBS_GRIPPERALWAYS | RBBS_FIXEDBMP );
+    BOOL        AddBar( CWnd *pBar, COLORREF clrFore, COLORREF clrBack, LPCTSTR pszText = NULL, DWORD dwStyle = RBBS_GRIPPERALWAYS );
+#else
+    BOOL        AddBar( CWnd *pBar, LPCTSTR pszText = NULL, CBitmap *pbmp = NULL, DWORD dwStyle = RBBS_FIXEDBMP );
+    BOOL        AddBar( CWnd *pBar, COLORREF clrFore, COLORREF clrBack, LPCTSTR pszText = NULL, DWORD dwStyle = 0L );
+#endif
+    CReBarCtrl  &GetReBarCtrl() const;
+    
+protected:
+    afx_msg void    OnNcCalcSize( BOOL bCalcValidRects, NCCALCSIZE_PARAMS *lpncsp );
+    afx_msg void    OnNcPaint();
+    afx_msg void    OnPaint();
+    afx_msg void    OnEndDrag( NMHDR *pNMHDR, LRESULT *pResult );
+    afx_msg void    OnHeightChange( NMHDR *pNMHDR, LRESULT *pResult );
+    DECLARE_MESSAGE_MAP()
+};
+
+#endif // (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CFormView : public CScrollView {
+private:
+    LPCTSTR         m_lpszTemplateName;
+    CCreateContext  *m_pCreateContext;
+    
+    DECLARE_DYNAMIC( CFormView )
+    
+public:
+    CFormView( LPCTSTR lpszTemplateName );
+    CFormView( UINT nIDTemplate );
+    
+    virtual BOOL    Create( LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID, CCreateContext *pContext );
+    virtual void    OnDraw( CDC *pDC );
+    virtual void    OnInitialUpdate();
+    virtual BOOL    PreTranslateMessage( MSG *pMsg );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+protected:
+    afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
+    DECLARE_MESSAGE_MAP()
+};
+
+class _AFXLINK CEditView : public CCtrlView {
+private:
+    int         m_nTabStops;
+    LPTSTR      m_pShadowBuffer;
+    UINT        m_nShadowSize;
+    CUIntArray  m_aPageStart;
+    HFONT       m_hPrinterFont;
+    
+public:
+    static const DWORD  dwStyleDefault;
+    
+    DECLARE_DYNAMIC( CEditView )
+    
+public:
+    CEditView();
+    
+    virtual void    OnFindNext( LPCTSTR lpszFind, BOOL bNext, BOOL bCase );
+    virtual void    OnReplaceAll( LPCTSTR lpszFind, LPCTSTR lpszReplace, BOOL bCase );
+    virtual void    OnReplaceSel( LPCTSTR lpszFind, BOOL bNext, BOOL bCase, LPCTSTR lpszReplace );
+    virtual void    OnTextNotFound( LPCTSTR lpszFind );
+    
+    virtual void    OnBeginPrinting( CDC *pDC, CPrintInfo *pInfo );
+    virtual void    OnPrepareDC( CDC *pDC, CPrintInfo *pInfo );
+    virtual BOOL    OnPreparePrinting( CPrintInfo *pInfo );
+    virtual void    OnPrint( CDC *pDC, CPrintInfo *pInfo );
+    virtual BOOL    PreCreateWindow( CREATESTRUCT &cs );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    BOOL    FindText( LPCTSTR lpszFind, BOOL bNext = TRUE, BOOL bCase = TRUE );
+    UINT    GetBufferLength() const;
+    CEdit   &GetEditCtrl() const;
+    CFont   *GetPrinterFont() const;
+    void    GetSelectedText( CString &strResult ) const;
+    LPCTSTR LockBuffer() const;
+    UINT    PrintInsideRect( CDC *pDC, RECT &rectLayout, UINT nIndexStart, UINT nIndexStop );
+    void    SerializeRaw( CArchive &ar );
+    void    SetPrinterFont( CFont *pFont );
+    void    SetTabStops( int nTabStops );
+    void    UnlockBuffer() const;
+    
+protected:
+    afx_msg void    OnEditClear();
+    afx_msg void    OnEditCopy();
+    afx_msg void    OnEditCut();
+    afx_msg void    OnEditFind();
+    afx_msg void    OnEditPaste();
+    afx_msg void    OnEditRepeat();
+    afx_msg void    OnEditReplace();
+    afx_msg void    OnEditSelectAll();
+    afx_msg void    OnEditUndo();
+    afx_msg void    OnUpdateNeedClip( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateNeedFind( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateNeedSel( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateNeedText( CCmdUI *pCmdUI );
+    afx_msg void    OnUpdateNeedUndo( CCmdUI *pCmdUI );
+    afx_msg BOOL    OnEditChange();
+    afx_msg LRESULT OnFindReplaceCmd( WPARAM wParam, LPARAM lParam );
+    DECLARE_MESSAGE_MAP()
+};
+
+// Splitter window styles
+#define SPLS_DYNAMIC_SPLIT  0x0001L
+#define SPLS_INVERT_TRACKER 0x0002L
+
+class _AFXLINK CSplitterWnd : public CWnd {
+public:
+    enum ESplitType {
+        splitBox,
+        splitBar,
+        splitIntersection,
+        splitBorder
+    };
+    
+protected:
+    struct CRowColInfo {
+        int nMinSize;
+        int nIdealSize;
+        int nCurSize;
+    };
+    
+    CRuntimeClass   *m_pDynamicViewClass;
+    int             m_nMaxRows;
+    int             m_nMaxCols;
+    int             m_cxSplitter;
+    int             m_cySplitter;
+    int             m_nRows;
+    int             m_nCols;
+    BOOL            m_bHasHScroll;
+    BOOL            m_bHasVScroll;
+    CRowColInfo     *m_pColInfo;
+    CRowColInfo     *m_pRowInfo;
+    BOOL            m_bTracking;
+    CPoint          m_ptTrackOffset;
+    CRect           m_rectLimit;
+    CRect           m_rectTracker;
+    int             m_htTrack;
+    
+    DECLARE_DYNAMIC( CSplitterWnd )
+    
+public:
+    CSplitterWnd();
+    
+    virtual void    ActivateNext( BOOL bPrev = FALSE );
+    virtual BOOL    CanActivateNext( BOOL bPrev = FALSE );
+    virtual BOOL    Create( CWnd *pParentWnd, int nMaxRows, int nMaxCols, SIZE sizeMin, CCreateContext *pContext, DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL | SPLS_DYNAMIC_SPLIT, UINT nID = AFX_IDW_PANE_FIRST );
+    virtual BOOL    CreateScrollBarCtrl( DWORD dwStyle, UINT nID );
+    virtual BOOL    CreateStatic( CWnd *pParentWnd, int nRows, int nCols, DWORD dwStyle = WS_CHILD | WS_VISIBLE, UINT nID = AFX_IDW_PANE_FIRST );
+    virtual BOOL    CreateView( int row, int col, CRuntimeClass *pViewClass, SIZE sizeInit, CCreateContext *pContext );
+    virtual void    DeleteColumn( int colDelete );
+    virtual void    DeleteRow( int rowDelete );
+    virtual void    DeleteView( int row, int col );
+    virtual BOOL    DoKeyboardSplit();
+    virtual CWnd    *GetActivePane( int *pRow = NULL, int *pCol = NULL );
+    virtual int     HitTest( CPoint pt ) const;
+    virtual void    OnDrawSplitter( CDC *pDC, ESplitType nType, const CRect &rect );
+    virtual void    OnInvertTracker( const CRect &rect );
+    virtual void    RecalcLayout();
+    virtual void    SetActivePane( int row, int col, CWnd *pWnd = NULL );
+    virtual void    SetSplitCursor( int ht );
+    virtual BOOL    SplitColumn( int cxBefore );
+    virtual BOOL    SplitRow( int cyBefore );
+    virtual void    StartTracking( int ht );
+    virtual void    StopTracking( BOOL bAccept );
+    
+    int     GetColumnCount() const;
+    void    GetColumnInfo( int col, int &cxCur, int &cxMin ) const;
+    CWnd    *GetPane( int row, int col ) const;
+    int     GetRowCount() const;
+    void    GetRowInfo( int row, int &cyCur, int &cyMin ) const;
+    DWORD   GetScrollStyle() const;
+    int     IdFromRowCol( int row, int col ) const;
+    BOOL    IsChildPane( CWnd *pWnd, int *pRow, int *pCol );
+    BOOL    IsTracking();
+    void    SetColumnInfo( int col, int cxIdeal, int cxMin );
+    void    SetRowInfo( int row, int cyIdeal, int cyMin );
+    void    SetScrollStyle( DWORD dwStyle );
+    
+protected:
+    afx_msg void    OnHScroll( UINT nSBCode, UINT nPos, CScrollBar *pScrollBar );
+    afx_msg void    OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
+    afx_msg void    OnLButtonDown( UINT nFlags, CPoint point );
+    afx_msg void    OnLButtonUp( UINT nFlags, CPoint point );
+    afx_msg void    OnMouseMove( UINT nFlags, CPoint point );
+    afx_msg void    OnPaint();
+    afx_msg BOOL    OnSetCursor( CWnd *pWnd, UINT nHitTest, UINT message );
+    afx_msg void    OnSize( UINT nType, int cx, int cy );
+    afx_msg void    OnVScroll( UINT nSBCode, UINT nPos, CScrollBar *pScrollBar );
+    DECLARE_MESSAGE_MAP()
+};
+
+class _AFXLINK CMetaFileDC : public CDC {
+private:
+    BOOL m_bEnhanced;
+    
+    DECLARE_DYNAMIC( CMetaFileDC )
+    
+public:
+    CMetaFileDC();
+    virtual ~CMetaFileDC();
+    
+    HMETAFILE       Close();
+    HENHMETAFILE    CloseEnhanced();
+    BOOL            Create( LPCTSTR lpszFilename = NULL );
+    BOOL            CreateEnhanced( CDC *pDCRef, LPCTSTR lpszFileName, LPCRECT lpBounds, LPCTSTR lpszDescription );
+    
+    virtual int     GetClipBox( LPRECT lpRect ) const;
+    virtual BOOL    PtVisible( int x, int y ) const;
+    virtual BOOL    RectVisible( LPCRECT lpRect ) const;
+    virtual void    ReleaseOutputDC();
+    virtual void    SetOutputDC( HDC hDC );
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+};
+
+struct _AFXLINK CPrintInfo {
+    CPrintDialog    *m_pPD;
+    BOOL            m_bPreview;
+    BOOL            m_bDirect;
+    BOOL            m_bContinuePrinting;
+    UINT            m_nCurPage;
+    UINT            m_nNumPreviewPages;
+    CString         m_strPageDesc;
+    LPVOID          m_lpUserData;
+    CRect           m_rectDraw;
+
+    CPrintInfo();
+    ~CPrintInfo();
+        
+    UINT    GetFromPage() const;
+    UINT    GetMaxPage() const;
+    UINT    GetMinPage() const;
+    UINT    GetToPage() const;
+    void    SetMaxPage( UINT nMaxPage );
+    void    SetMinPage( UINT nMinPage );
+};
+
+struct _AFXLINK CPrintPreviewState {
+    UINT    nIDMainPane;
+    HMENU   hMenu;
+    DWORD   dwStates;
+    CView   *pViewActiveOld;
+    BOOL    (CALLBACK *lpfnCloseProc)( CFrameWnd * );
+    HACCEL  hAccelTable;
+    
+    CPrintPreviewState();
+};
+
+struct CCreateContext {
+    CRuntimeClass   *m_pNewViewClass;
+    CDocument       *m_pCurrentDoc;
+    CDocTemplate    *m_pNewDocTemplate;
+    CView           *m_pLastView;
+    CFrameWnd       *m_pCurrentFrame;
+};
+
+_AFXLINK HBITMAP AFXAPI AfxLoadSysColorBitmap( HINSTANCE hInst, HRSRC hRsrc, BOOL bMono = FALSE );
+
+#ifndef _DEBUG
+    #include <afxext.inl>
+#endif
+
+#endif /* __AFXEXT_H__ */

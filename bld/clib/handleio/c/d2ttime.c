@@ -32,31 +32,29 @@
 
 #include "variety.h"
 #include <time.h>
-
+#include "d2ttime.h"
 
 /* date extraction macros */
 #define day( x )        (x & 0x001f)
-#define month( x )      ((x & 0x01e0) >> 5)
-#define year( x )       ((x & 0xfe00) >> 9)
-
+#define month( x )      ((x >> 5) & 0x000f)
+#define year( x )       ((x >> 9) & 0x007f)
 /* time extraction macros */
 #define sec2( x )       (x & 0x001f)
-#define min( x )        ((x & 0x07e0) >> 5)
-#define hour( x )       ((x & 0xf800) >> 11)
+#define min( x )        ((x >> 5) & 0x003f)
+#define hour( x )       ((x >> 11) & 0x001f)
 
+time_t _d2ttime( unsigned short date, unsigned short time )
+{
+    struct tm t;
 
-
-_WCRTLINK time_t _d2ttime( date, time )
-        unsigned int date, time;
-    {
-        auto struct tm t;
-
-        t.tm_year = year( date ) + 80;
-        t.tm_mon  = month( date ) - 1;
-        t.tm_mday = day( date );
-        t.tm_hour = hour( time );
-        t.tm_min  = min( time );
-        t.tm_sec  = sec2( time ) * 2;
-        t.tm_isdst = -1;
-        return( mktime( &t ) );
-    }
+    t.tm_year = year( date ) + 80;
+    t.tm_mon  = month( date ) - 1;
+    t.tm_mday = day( date );
+    t.tm_hour = hour( time );
+    t.tm_min  = min( time );
+    t.tm_sec  = sec2( time ) * 2;
+    t.tm_wday = -1;
+    t.tm_yday = -1;
+    t.tm_isdst = -1;
+    return( mktime( &t ) );
+}

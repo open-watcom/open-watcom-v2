@@ -30,43 +30,48 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
+#include "vi.h"
 #include <dos.h>
 
-#pragma off( unreferenced);
+#pragma off( unreferenced );
 
-void RedrawMouse( int p1, int p2 ){}
-int DisplayMouse( int p1 ){ return( FALSE ); }
-void TurnOffCapsLock( void ){}
-int HandleMouseEvent( void ){ return( ERR_NO_ERR ); }
-void SwapAllWindows( void ){}
-void SetMouseSpeed( int i ){}
-void GetClockStart( void ){}
-void GetSpinStart( void ){}
-void WindowAuxUpdate( window_id id, int x, int y ){}
-void DrawBorder( window_id id ){}
-void PushMouseEventHandler( void far *ptr ){}
-void PopMouseEventHandler( void ){}
-void WindowBorderData( window_id id, char *c, int x ){}
-void ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, int flags ){}
-void ResizeWindow( window_id id, int p1, int p2, int p3, int p4, int flags ){}
-void RestoreInterrupts( void ){}
-void WindowSwapFileClose( void ){}
-void FiniMouse( void ){}
-void ScreenFini( void ){}
-int ResizeCurrentWindowWithKeys( void ){ return( ERR_NO_ERR ); }
-int MoveCurrentWindowWithKeys( void ){ return( ERR_NO_ERR ); }
-drive_type DoGetDriveType( int i ){ return( DRIVE_NONE ); }
-void ClearScreen( void ){}
-int ResetWindow( window_id *id ){ return( ERR_NO_ERR ); }
-bool WindowIsVisible( window_id id ){ return( TRUE ); }
-void ScreenInit( void ){}
-void SetInterrupts( void ){}
-void ChkExtendedKbd( void ){}
-void InitMouse( void ){}
-void SetBorderGadgets( window_id id, bool how ){}
-void NewWindow( void ){}
+void RedrawMouse( int p1, int p2 ) {}
+bool DisplayMouse( bool p1 ) { return( FALSE ); }
+void TurnOffCapsLock( void ) {}
+vi_rc HandleMouseEvent( void ) { return( ERR_NO_ERR ); }
+void SwapAllWindows( void ) {}
+void SetMouseSpeed( int i ) {}
+void GetClockStart( void ) {}
+void GetSpinStart( void ) {}
+void WindowAuxUpdate( window_id id, int x, int y ) {}
+void DrawBorder( window_id id ) {}
+void PushMouseEventHandler( mouse_callback cb ) {}
+void PopMouseEventHandler( void ) {}
+void WindowBorderData( window_id id, char *c, int x ) {}
+void ResizeWindowRelative( window_id id, int p1, int p2, int p3, int p4, int flags ) {}
+void ResizeWindow( window_id id, int p1, int p2, int p3, int p4, int flags ) {}
+void RestoreInterrupts( void ) {}
+void WindowSwapFileClose( void ) {}
+void FiniMouse( void ) {}
+void ScreenFini( void ) {}
+vi_rc ResizeCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
+vi_rc MoveCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
+drive_type DoGetDriveType( int i ) { return( DRIVE_NONE ); }
+void ClearScreen( void ) {}
+vi_rc ResetWindow( window_id *id ) { return( ERR_NO_ERR ); }
+bool WindowIsVisible( window_id id ) { return( TRUE ); }
+void ScreenInit( void ) {}
+void SetInterrupts( void ) {}
+void ChkExtendedKbd( void ) {}
+void InitMouse( void ) {}
+void SetBorderGadgets( window_id id, bool how ) {}
+void NewWindow( void ) {}
 int GetNewValueDialog( char *value ) { return( 0 ); }
 void DisplayCrossLineInWindow( window_id id, int line ) {}
-int SetCharInWindowWithColor( window_id wn, int line, int col, char text, type_style *style ) { return( ERR_NO_ERR ); }
-void DisplayLineWithHilite( window_id id, int line, char *text, int start, int end, int ignore ) {}
+int SetCharInWindowWithColor( window_id wn, int line, int col, char text,
+    type_style *style ) { return( ERR_NO_ERR ); }
+void DisplayLineWithHilite( window_id id, int line, char *text, int start, int end,
+    int ignore ) {}
+void SetPosToMessageLine( void ) {}
+void HideCursor( void ) {}
+

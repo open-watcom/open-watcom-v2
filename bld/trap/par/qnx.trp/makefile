@@ -1,9 +1,13 @@
-#pmake: build trap remote qnx 16 32 par x86
+#pmake: trap remote os_qnx cpu_i86 cpu_386 par x86
+host_CPU = 386
+host_OS = qnx
 
 os = qnx
 srv = par
 cpu = x86
+which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs) parqnx.obj
+extra_objs = parqnx.obj
 
-!include $(trap_dir)\trap.mif
+!include $(trap_dir)/master.mif

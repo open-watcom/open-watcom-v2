@@ -135,10 +135,10 @@ void global uigetcursor( row, col, type, attr )
 
 void global uisetcursor( row, col, typ, attr )
 /********************************************/
-register        unsigned                row;
-register        unsigned                col;
-register        int                     typ;
-register        int                     attr;
+register        ORD               row;
+register        ORD               col;
+register        int               typ;
+register        int               attr;
 {
     if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row )  ||
         ( col != UIData->cursor_col )  || ( attr != UIData->cursor_attr ) ) {

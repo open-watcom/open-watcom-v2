@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build a subroutine or a subroutine call.
 *
 ****************************************************************************/
 
@@ -35,66 +34,53 @@
 #include "opcodes.h"
 #include "procdef.h"
 #include "model.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "addrname.h"
 #include "cgdefs.h"
 #include "cgaux.h"
 #include "zoiks.h"
+#include "offset.h"
 #include "feprotos.h"
+#include "namelist.h"
+#include "bldins.h"
+#include "makeaddr.h"
+#include "optask.h"
+#include "bgcall.h"
+#include "x87.h"
+#include "makeins.h"
 
-extern  name            *GenIns(an);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocTemp(type_class_def);
-extern  memory_name     *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
-extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
-extern  instruction     *NewIns(int);
-extern  temp_name       *BGNewTemp(type_def*);
+
+
+extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  type_def        *QParmType(sym_handle,sym_handle,type_def*);
-extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
-extern  instruction     *MakeNop(void);
-extern  void            BGDone(an);
-extern  an              AddrToIns(an);
-extern  sym_handle      AskForLblSym(label_handle);
-extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);
-extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
 extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
 extern  void            AddIns(instruction*);
 extern  bool            CvtOk(type_class_def,type_class_def);
-extern  void            CGFree(pointer);
 extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DbgParmLoc(name_def*, sym_handle);
 extern  void            DbgRetLoc(void);
-extern  void            GenBlock(int,int);
+extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
 extern  void            PGBlip(char*);
 extern  void            EnLink(label_handle,bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  void            FPPushParms(pn,call_state*);
 extern  void            NewProc(int);
 extern  name            *StReturn(an,type_def*,instruction**);
 extern  hw_reg_set      StackReg(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
-extern  void            PreCall(cn);
-extern  void            PostCall(cn);
 extern  bool            IsVolatile(name*);
-extern  void            DoNothing(instruction*);
-extern  void            TNZapParms();
+extern  void            TNZapParms(void);
 extern  name            *AllocS32Const(signed_32);
-extern  void            FPNotStack(name*);
-extern  void            FreeIns(instruction*);
 extern  void            PushInSameBlock(instruction*);
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
 extern  void            TellObjVirtFuncRef(void *);
@@ -108,8 +94,6 @@ extern  pointer         FindAuxInfo( name *, aux_class );
 extern  type_length     ParmAlignment( type_def * );
 extern  void            SuffixIns( instruction *, instruction * );
 
-
-extern type_length      TypeClassSize[];
 extern  type_def        *TypeInteger;
 extern  type_def        *TypeProcParm;
 extern  type_def        *TypeNone;
@@ -148,8 +132,8 @@ extern  void    FreeCallNode( cn call )
 {
     BGDone( call->name );
     CGFree( call->state->parm.table );
-    _Free( call->state, sizeof( call_state ) );
-    _Free( call, sizeof( call_node ) );
+    CGFree( call->state );
+    CGFree( call );
 }
 
 
@@ -167,11 +151,11 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
     void                *cookie;
 #endif
 
-    if( tipe->refno == T_DEFAULT ) {
+    if( tipe->refno == TY_DEFAULT ) {
         tipe = TypeInteger;
     }
-    _Alloc( new, sizeof( call_node ) );
-    _Alloc( new->state, sizeof( call_state ) );
+    new = CGAlloc( sizeof( call_node ) );
+    new->state = CGAlloc( sizeof( call_state ) );
     new->name = node;
     new->tipe = tipe;
     new->parms = NULL;
@@ -180,7 +164,7 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         new->ins->head.opcode = OP_CALL;
         class = CallState( aux, tipe, new->state );
         mem = node->u.name;
-        mem = SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
+        mem = (name *) SAllocMemory( mem->v.symbol, mem->v.offset, mem->m.memory_type,
                             mem->n.name_class, mem->n.size );
         node->u.name = mem;
     } else {
@@ -205,7 +189,7 @@ extern  void    BGAddParm( cn call, an parm ) {
 
     pn          new;
 
-    _Alloc( new, sizeof( parm_node ) );
+    new = CGAlloc( sizeof( parm_node ) );
     new->name = AddrToIns( parm );
     new->name->flags |= ADDR_OK_ACROSS_BLOCKS; /* always taken care of by BGCall*/
     new->next = call->parms;
@@ -244,7 +228,7 @@ static  instruction *DoParmDef( name *result, type_class_def class ) {
     return( parm_def );
 }
 
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+#if _TARGET & _TARG_RISC
 
 #if _TARGET & _TARG_AXP
 #define BASE_TYPE       U8
@@ -334,6 +318,7 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     name                *parm_name;
     type_class_def      class;
     type_def            *ptipe;
+    bool                no_temp;
 
     ptipe = QParmType( AskForLblSym( CurrProc->label ), sym, tipe );
     class = TypeClass( ptipe );
@@ -344,13 +329,25 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         BGDone( MakeAddrName( CG_FE, sym, tipe ) );
     }
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+
+    no_temp = class == XX;
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+    // The arguments of an interrupt routine coming in on the stack are used
+    // for input and output; routine epilog pops them into registers. Handle
+    // them specially to stop the optimizer from eliminating the writes (don't
+    // create temps normally used with simple types).
+    if( _RoutineIsInterrupt( CurrProc->state.attr ) && HW_CEqual( reg, HW_EMPTY ) ) {
+        no_temp = TRUE;
+        temp->v.usage |= USE_ADDRESS;
+    }
+#endif
+#if _TARGET & _TARG_RISC
     if( class == XX ) {
         return( DoAlphaParmDecl( reg, sym, tipe, temp ) );
     }
 #endif
     if( HW_CEqual( reg, HW_EMPTY ) ) {
-        if( class == XX ) {
+        if( no_temp ) {
             parm_name = temp;
             parm_name->t.location = ParmMem( tipe->length, ParmAlignment( ptipe ), &CurrProc->state );
         } else {
@@ -372,7 +369,7 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
     }
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
         if( sym != NULL ) {
-            DbgParmLoc( parm_name, sym );
+            DbgParmLoc( &(parm_name->n), sym );
         }
     }
     parm_def = DoParmDef( parm_name, class );
@@ -384,10 +381,15 @@ extern  name    *DoParmDecl( sym_handle sym, type_def *tipe, hw_reg_set reg ) {
         if( temp->n.class == N_TEMP && parm_name->n.class == N_TEMP ) {
             temp->t.location = parm_name->t.location;
         } else {
-        #if _TARGET & _TARG_PPC
-            // for PPC varargs routines, ensure that taking the address of
-            // a parm coming in in a register will force that parm into
-            // the correct location in the caller's frame (yes - it sucks)
+        #if (_TARGET & _TARG_PPC) || (_TARGET & _TARG_MIPS)
+            // for PowerPC varargs routines, ensure that taking the address
+            // of a parm coming in in a register will force that parm into the
+            // correct home location in the caller's frame (yes - it sucks)
+            // For MIPS, ensure that taking the address of a parm passed in
+            // register will always force it to the right home location,
+            // varargs or not. All this is done basically so that crappy code
+            // that doesn't use stdarg.h properly would work - we have some
+            // in our own clib ;-)
             temp->t.location = CurrProc->state.parm.offset - ptipe->length;
         #endif
         }
@@ -423,7 +425,7 @@ static  void    LinkParms( instruction *call_ins, pn *owner ) {
         // if( parm->ins == NULL ) _Zoiks( ZOIKS_XXX );
         TRAddParm( call_ins, parm->ins );
         next = parm->next;
-        _Free( parm, sizeof( parm_node ) );
+        CGFree( parm );
         parm = next;
     }
 }
@@ -438,16 +440,17 @@ extern  void    AddCallIns( instruction *ins, cn call ) {
     type_class_def      addr_type;
     name                *temp;
     instruction         *new_ins;
+#if _TARGET & (_TARG_80386|_TARG_IAPX86)
     call_class          class;
+#endif
 
-    class = class;
     PreCall( call );
     if( ins->head.opcode == OP_CALL ) {
         call_name = call->name->u.name;
         attr = 0;
         if( call_name->m.memory_type == CG_FE ) {
             attr = FEAttr( call_name->v.symbol );
-            #if _TARGET & (_TARG_AXP|_TARG_PPC)
+            #if _TARGET & _TARG_RISC
             // in case the inline assembly code references a local variable
             if( FEAuxInfo( call_name->v.symbol, CALL_BYTES ) != NULL ) {
                 CurrProc->targ.base_is_fp = TRUE;
@@ -729,7 +732,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
         }
         BGDone( retval );
     } else {
-        ins->zap = AllocRegName( CurrProc->state.return_reg );
+        ins->zap = &AllocRegName( CurrProc->state.return_reg )->r;
         ins->flags.nop_flags |= NOP_ZAP_INFO;
     }
     AddIns( ins );
@@ -742,7 +745,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     TargetModel = SaveModel;
 }
 
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+#if _TARGET & _TARG_RISC
 
 static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using ) {
 /******************************************************************************/
@@ -764,7 +767,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using ) {
     parm->name->u.ins->result = temp;
     while( offset >= 0 ) {
         // create a parm node for this part of the struct
-        _Alloc( curr, sizeof( parm_node ) );
+        curr = CGAlloc( sizeof( parm_node ) );
         ins = MakeMove( STempOffset( temp, offset, using, size ), NULL, using );
         AddIns( ins );
         curr->next = last;
@@ -794,9 +797,13 @@ static void SplitStructParms( pn *parm_list, call_state *state ) {
 #if _TARGET & _TARG_PPC
     if( _IsTargetModel( CG_OS2_CC ) ) return;
     tipe = U4;
-#else
+#elif _TARGET & _TARG_AXP
     state = state;
     tipe = U8;
+#elif _TARGET & _TARG_MIPS
+    tipe = U4;
+#else
+    #error Unknown RISC CPU
 #endif
     last_parm = parm_list;
     parm = *last_parm;
@@ -815,7 +822,7 @@ static void SplitStructParms( pn *parm_list, call_state *state ) {
             *last_parm = BustUpStruct( parm, class, tipe );
             name->format = NF_ADDR;
             BGDone( name );
-            _Free( parm, sizeof( parm_node ) );
+            CGFree( parm );
             parm = *last_parm;
         }
         last_parm = &parm->next;
@@ -848,7 +855,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
     state = call->state;
     call_ins = call->ins;
     parms = 0;
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+#if _TARGET & _TARG_RISC
     SplitStructParms( &call->parms, state );
     parm = call->parms;
 #endif
@@ -904,7 +911,7 @@ extern  bool        AssgnParms( cn call, bool in_line ) {
         call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     }
     call_ins->operands[CALL_OP_POPS] = AllocS32Const( state->parm.offset );
-    call_ins->zap = AllocRegName( CallZap( state ) );
+    call_ins->zap = &AllocRegName( CallZap( state ) )->r;
     return( push_no_pop );
 }
 

@@ -1,0 +1,10 @@
+# NWLIB component of lang.dat
+[ DEFAULT ]
+type="e" usr="wlib.exe" 	dir="binw" 	cond="doshost winhost |" where="c jc f77 jf77 "
+type="e" usr="wlib.exe" 	dir="binp" 	cond="os2host" 		where="c jc f77 jf77 "
+type="d" usr="wlibd.dll" dir="binp/dll" 	cond="os2host" 		where="c jc f77 jf77 "
+type="e" usr="wlib.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc ac f77 jf77 "
+type="d" usr="wlibd.dll"	dir="binnt" 	cond="wnthost" 		where="c jc ac f77 jf77 "
+type="e" usr="wlib.exe" 	dir="axpnt" 	cond="alphahost"	where="ac"
+type="d" usr="wlibd.dll"	dir="axpnt" 	cond="alphahost"	where="ac"
+type="e" usr="wlib" 	dir="binl" 	cond="lnxhost"		where="c jc f77 jf77 "

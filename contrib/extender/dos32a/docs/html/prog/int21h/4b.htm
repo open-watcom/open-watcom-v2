@@ -1,0 +1,68 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">3.25 - DOS function 4Bh - Execute
+Program (sub-function 00h) </font></b></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AH</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 4Bh<br>
+<b>AL</b> = 00h<br>
+<b>DS:EDX</b> = pointer to ASCIIZ path name<br>
+<b>ES:EBX</b> = pointer to parameter block</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>EAX</b> = DOS error code</font></td></tr>
+</table>
+</center></p>
+
+<p>&nbsp;</p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) DOS/32 Advanced will
+  copy the environment provided by the protected mode program into conventional
+  (DOS) memory where it can be reached by the real mode DOS.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) This function will
+  return an error (EAX=0FFFFFFFFh and CF set) when there was not enough conventional
+  (DOS) memory for the protected mode program's environment, or when the
+  DPMI host could not allocate a selector for the allocated memory block.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) The only supported
+  sub-function is AL=00h.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">Refer to &quot;DOS/32
+  Advanced Technical Reference&quot; documentation for more information on
+  how to use this function and how to spawn programs under DOS/32 Advanced
+  DOS Extender. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

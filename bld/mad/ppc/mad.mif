@@ -1,4 +1,4 @@
-!include $(disasm_dir)\core\dis.mif
+target_cpu = ppc
 
 imp_objs = &
         ppcaddr.obj &
@@ -7,13 +7,6 @@ imp_objs = &
         ppcreg.obj &
         ppccall.obj &
         ppcdisas.obj &
-        ppctrace.obj &
-        $(dis_objs)
-
-mad = ppc
-
-extra_incs = $(dis_includes)
-extra_srcs = $(dis_srcs)
-extra_gbls = $(disasm_dir)\core\compile.gbl
+        ppctrace.obj
 
 !include ../../master.mif

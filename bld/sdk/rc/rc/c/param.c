@@ -24,23 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WRC command line parameter parsing.
 *
 ****************************************************************************/
-
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <io.h>
-#ifndef UNIX
-    #include <env.h>
-#endif
+#include <unistd.h>
 #include "errors.h"
 #include "global.h"
 #include "param.h"
-#include "types.h"
+#include "rctypes.h"
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"
@@ -48,6 +43,14 @@
  #include "ostype.h"
 #endif
 #include "leadbyte.h"
+
+#if defined(__UNIX__)
+# define PATH_SPLIT_S       ":"     /* path seperator in string form        */
+#else
+# define PATH_SPLIT_S       ";"     /* path seperator in string form        */
+#endif
+
+extern void AddNewIncludeDirs( const char * arg );
 
 /* forward declaration */
 static bool scanEnvVar( const char *varname, int *nofilenames );
@@ -86,53 +89,26 @@ extern void RcAddCPPArg( char * newarg )
 
 
 /*
- * SetDBRange - set the CharSet array up to recognize double byte character
+ * SetMBRange - set the CharSetLen array up to recognize multi-byte character
  *              sequences
  */
-void SetDBRange( unsigned from, unsigned to ) {
-/***********************************************/
+void SetMBRange( unsigned from, unsigned to, char data ) {
+/********************************************************/
     unsigned    i;
 
-    for( i=from; i <= to; i++ ) {
-        CharSet[i] = DB_CHAR;
+    for( i = from; i <= to; i++ ) {
+        CharSetLen[i] = data;
     }
 }
 
-static void SetDBChars( const uint_8 *bytes ) {
-/**********************************************/
+static void SetMBChars( const char *bytes ) {
+/*******************************************/
     unsigned    i;
 
-    for( i=0; i < 256; i++ ) {
-        if( bytes[i] == 0 ) {
-            CharSet[i] = 0;
-        } else {
-            CharSet[i] = DB_CHAR;
-        }
+    for( i = 0; i < 256; i++ ) {
+        CharSetLen[i] = bytes[i];
     }
 }
-
-#if(0)
-static char *fixNewDirs( char *arg ) {
-/************************************/
-    char        *ret;
-    char        *src;
-    char        *dst;
-
-    src = arg;
-    ret = RcMemMalloc( strlen( src ) + 1 );
-    dst = ret;
-    while( *src != '\0' ) {
-        if( !isspace( *src ) ) {
-            *dst = *src;
-            dst++;
-        }
-        src++;
-    }
-    *dst = '\0';
-    RcMemFree( arg );
-    return( ret );
-}
-#endif
 
 static bool scanString( char *buf, const char *str, unsigned len )
 /*****************************************************************/
@@ -154,35 +130,6 @@ static bool scanString( char *buf, const char *str, unsigned len )
     *buf = '\0';
     return( have_quote );
 }
-
-extern void AddNewIncludeDirs( const char * arg )
-/***********************************************/
-{
-    int     len;
-    int     oldlen;
-
-    len = strlen( arg );
-    if (len == 0) {
-        return;
-    }
-
-    if (NewIncludeDirs == NULL) {
-        /* + 1 for the '\0' */
-        NewIncludeDirs = RcMemMalloc( len + 1 );
-        NewIncludeDirs[ 0 ] = '\0';
-        oldlen = 0;
-    } else {
-        /* + 2 for the '\0' and the ';' */
-        oldlen = strlen( NewIncludeDirs );
-        NewIncludeDirs = RcMemRealloc( NewIncludeDirs, oldlen + len + 2 );
-        strcat( NewIncludeDirs + oldlen , ";" );
-        oldlen ++; //for the semicolon
-    }
-    if( scanString( NewIncludeDirs + oldlen, arg, len + 1 ) ) {
-        RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
-    }
-//    NewIncludeDirs = fixNewDirs( NewIncludeDirs );
-} /* AddNewIncludeDirs */
 
 static bool ScanMultiOptArg( const char * arg )
 /*********************************************/
@@ -292,10 +239,12 @@ static bool ScanOptionsArg( const char * arg )
         if( tolower( *arg ) == 't' ) {
             arg++;
             if( *arg == '=' ) arg++;
-            if( stricmp( arg, "windows" ) == 0 ) {
+            if( stricmp( arg, "windows" ) == 0 || stricmp( arg, "win" ) == 0 ) {
                 CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
             } else if( stricmp( arg, "nt" ) == 0 ) {
                 CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
+            } else if( stricmp( arg, "os2" ) == 0 ) {
+                CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
             } else {
                 RcError( ERR_UNKNOWN_TARGET_OS, arg );
                 contok = FALSE;
@@ -491,31 +440,38 @@ static bool ScanOptionsArg( const char * arg )
         */
         case 'k':
             arg++;
-            switch( *arg ) {
+            switch( tolower( *arg ) ) {
             case '1':
-                SetDBRange( 0x81, 0xfe );
-                CmdLineParms.DBCharSupport = DB_TRADITIONAL_CHINESE;
+                SetMBRange( 0x81, 0xfe, 1 );
+                CmdLineParms.MBCharSupport = DB_TRADITIONAL_CHINESE;
                 break;
             case '2':
-                SetDBRange( 0x81, 0xfe );
-                CmdLineParms.DBCharSupport = DB_WANSUNG_KOREAN;
+                SetMBRange( 0x81, 0xfe, 1 );
+                CmdLineParms.MBCharSupport = DB_WANSUNG_KOREAN;
                 break;
             case '3':
-                SetDBRange( 0xA1, 0xfe );
-                CmdLineParms.DBCharSupport = DB_SIMPLIFIED_CHINESE;
+                SetMBRange( 0xA1, 0xfe, 1 );
+                CmdLineParms.MBCharSupport = DB_SIMPLIFIED_CHINESE;
                 break;
             case '0':
             case ' ':
             case '\0':
-                SetDBRange( 0x81, 0x9f );
-                SetDBRange( 0xe0, 0xfc );
-                CmdLineParms.DBCharSupport = DB_KANJI;
+                SetMBRange( 0x81, 0x9f, 1 );
+                SetMBRange( 0xe0, 0xfc, 1 );
+                CmdLineParms.MBCharSupport = DB_KANJI;
                 break;
-//          case 'u':
-                //
-                // NYI - set up a new code page
-                //
-//              break;
+            case 'u':
+                if( arg[1] == '8' ) {
+                    arg++;
+                    SetMBRange( 0xc0, 0xdf, 1 );
+                    SetMBRange( 0xe0, 0xef, 2 );
+                    SetMBRange( 0xf0, 0xf7, 3 );
+                    SetMBRange( 0xf8, 0xfb, 4 );
+                    SetMBRange( 0xfc, 0xfd, 5 );
+                    CmdLineParms.MBCharSupport = MB_UTF8;
+                    break;
+                }
+                // fall down
             default:
                 RcError( ERR_UNKNOWN_MULT_OPTION, arg - 2 );
                 contok = FALSE;
@@ -662,7 +618,7 @@ static void CheckParms( void )
         RcFatalError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
     }
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        switch( CmdLineParms.DBCharSupport ) {
+        switch( CmdLineParms.MBCharSupport ) {
         case DB_SIMPLIFIED_CHINESE:
             strcpy( CmdLineParms.CodePageFile, "936.uni" );
             break;
@@ -694,6 +650,7 @@ static void defaultParms( void )
     #ifdef YYDEBUG
         CmdLineParms.DebugParser = FALSE;
     #endif
+    CmdLineParms.MBCharSupport = MB_NONE;
     CmdLineParms.PrintHelp = FALSE;
     CmdLineParms.Quiet = FALSE;
     CmdLineParms.Pass1Only = FALSE;
@@ -722,7 +679,6 @@ static void defaultParms( void )
     CmdLineParms.NoPreprocess = FALSE;
     CmdLineParms.GenAutoDep = FALSE;
     CmdLineParms.PreprocessOnly = FALSE;
-    CmdLineParms.EnvVariables = NULL;
     CmdLineParms.ExtraResFiles = NULL;
     CmdLineParms.FindReplaceStrings = NULL;
     #ifdef __OSI__
@@ -733,6 +689,8 @@ static void defaultParms( void )
         }
     #elif defined(__NT__)
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
+    #elif defined(__OS2__)
+        CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
     #else
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
     #endif
@@ -740,32 +698,63 @@ static void defaultParms( void )
 } /* defaultParms */
 
 
-#if( 0 )
+static int getcharUTF8( const char **p, uint_32 *c )
+{
+    int     len;
+    int     i;
+    uint_32 value;
 
-// copied from windows.h
-#define CP_ACP      0
-__declspec(dllimport) int __stdcall MultiByteToWideChar(
-    uint_32 CodePage, uint_32 dwFlags, const char *lpMultiByteStr, int cchMultiByte,
-    char *lpWideCharStr, int cchWideChar);
+    value = *c;
+    len = CharSetLen[value];
+    if( len == 1 ) {
+        value &= 0x1F;
+    } else if( len == 2 ) {
+        value &= 0x0F;
+    } else if( len == 3 ) {
+        value &= 0x07;
+    } else if( len == 4 ) {
+        value &= 0x03;
+    } else if( len == 5 ) {
+        value &= 0x01;
+    } else {
+        return( 0 );
+    }
+    for( i = 0; i < len; ++i ) {
+        value = ( value << 6 ) + ( **p & 0x3F );
+        (*p)++;
+    }
+    *c = value;
+    return( len );
+}
 
-int NativeDBStringToUnicode( int len, const char *str, char *buf ) {
-/*******************************************************************/
-    int         ret;
-    unsigned    outlen;
 
+int UTF8StringToUnicode( int len, const char *str, char *buf )
+/************************************************************/
+{
+    int             ret;
+    unsigned        outlen;
+    uint_32         unicode;
+    int             i;
+
+    ret = 0;
     if( len > 0 ) {
         if( buf == NULL ) {
             outlen = 0;
         } else {
-            outlen = len * 2;
+            outlen = len;
         }
-        ret = MultiByteToWideChar( CP_ACP, 0, str, len, buf, outlen );
-    } else {
-        ret = 0;
+        for( i = 0; i < len; i++ ) {
+            unicode = (unsigned char)*str++;
+            i += getcharUTF8( &str, &unicode );
+            if( ret < outlen ) {
+                *buf++ = unicode;
+                *buf++ = unicode >> 8;
+                ret++;
+            }
+        }
     }
     return( ret * 2 );
 }
-#endif
 
 static void getCodePage( void ) {
 /********************************/
@@ -773,7 +762,9 @@ static void getCodePage( void ) {
     RcStatus            ret;
     char                path[ _MAX_PATH ];
 
-    if( CmdLineParms.CodePageFile[0] != '\0' ) {
+    if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
+        ConvToUnicode = UTF8StringToUnicode;
+    } else if( CmdLineParms.CodePageFile[0] != '\0' ) {
         ret = OpenTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {
         case RS_FILE_NOT_FOUND:
@@ -793,13 +784,15 @@ static void getCodePage( void ) {
             RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
             break;
         default:
-            SetDBChars( GetLeadBytes() );
+            SetMBChars( GetLeadBytes() );
             break;
         }
+#ifdef __NT__
     } else {
-#ifdef NT_HOSTED
-        SetNativeLeadBytes();
-        ConvToUnicode = NativeDBStringToUnicode;
+        if(MB_NONE == CmdLineParms.MBCharSupport){
+            SetNativeLeadBytes();
+            ConvToUnicode = NativeDBStringToUnicode;
+        }
 #endif
     }
 }
@@ -841,8 +834,16 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
     return( contok );
 }
 
-extern unsigned ParseEnvVar( const char *env, char **argv, char *buf ) {
-/***********************************************************************/
+extern unsigned ParseEnvVar( const char *env, char **argv, char *buf )
+/********************************************************************/
+{
+    /*
+     * Returns a count of the "command line" parameters in *env.
+     * Unless argv is NULL, both argv and buf are completed.
+     *
+     * This function ought to be fairly similar to clib(initargv@_SplitParms).
+     * Parameterisation does the same as _SplitParms with historical = 0.
+     */
 
     const char  *start;
     int         switchchar;
@@ -868,12 +869,11 @@ extern unsigned ParseEnvVar( const char *env, char **argv, char *buf ) {
             }
             env ++;
         }
-        while( ( got_quote ||
-               ( *env != switchchar && *env != '-' && !isspace( *env ) )
-               && *env != '\0' ) ) {
+        while( ( got_quote || !isspace( *env ) ) && *env != '\0' ) {
             if( *env == '\"' ) {
                 got_quote = !got_quote;
-            } else if( buf != NULL ) {
+            }
+            if( buf != NULL ) {
                 *bufend = *env;
                 bufend++;
             }
@@ -892,30 +892,65 @@ extern unsigned ParseEnvVar( const char *env, char **argv, char *buf ) {
 }
 
 static bool scanEnvVar( const char *varname, int *nofilenames )
-/*******************************************************/
+/*************************************************************/
 {
-    unsigned    argc;
-    EnvVarInfo  *info;
-    unsigned    argvsize;
-    unsigned    argbufsize;
-    char        *env;
+    /*
+     * Pass nofilenames and analysis of getenv(varname) into argc and argv
+     * to doScanParams. Return view on usability of data. (TRUE is usable.)
+     *
+     * Recursion is supported but circularity is rejected.
+     *
+     * The analysis is fairly similar to that done in clib(initargv@_getargv).
+     * It is possible to use that function but it is not generally exported and
+     * ParseEnvVar() above is called from other places.
+     */
+    typedef struct EnvVarInfo {
+        struct EnvVarInfo       *next;
+        char                    *varname;
+        char                    **argv; /* points into buf */
+        char                    buf[1]; /* dynamic array */
+    } EnvVarInfo;
+
+    unsigned            argc;
+    EnvVarInfo          *info;
+    static EnvVarInfo   *stack = 0; // Needed to detect recursion.
+    unsigned            argvsize;
+    unsigned            argbufsize;
+    char                *env;
+    size_t              varlen;     // size to hold varname copy.
+    bool                result;     // doScanParams Result.
 
     env = RcGetEnv( varname );
     if( env == NULL ) {
         RcWarning( ERR_ENV_VAR_NOT_FOUND, varname );
         return( TRUE );
     }
-    argc = ParseEnvVar( env, NULL, NULL );
-    argbufsize = strlen( env ) + 1 + argc;
-    argvsize = ( argc + 1 ) * sizeof( char * );
-    info = RcMemMalloc( sizeof( EnvVarInfo ) + argbufsize + argvsize );
-    info->next = CmdLineParms.EnvVariables;
-    CmdLineParms.EnvVariables = info;
+    // This used to cause stack overflow: set foo=@foo && wrc @foo.
+    for( info = stack; info != NULL; info = info->next ) {
+#if !defined(__UNIX__)
+        if( stricmp( varname, info->varname ) == 0 ) // Case-insensitive
+#else
+        if( strcmp( varname, info->varname ) == 0 )  // Case-sensitive
+#endif
+            RcFatalError( ERR_RCVARIABLE_RECURSIVE, varname );
+    }
+    argc = ParseEnvVar( env, NULL, NULL );  // count parameters.
+    argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0
+    argvsize = ( argc + 1 ) * sizeof( char * ); // sizeof argv[argc+1]
+    varlen = strlen( varname ) + 1;         // Copy taken to detect recursion.
+    info = RcMemMalloc( sizeof *info + argbufsize + argvsize + varlen );
+    info->next = stack;
+    stack = info;                           // push info on stack
     info->argv = (char **)info->buf;
     ParseEnvVar( env, info->argv, info->buf + argvsize );
+    info->varname = info->buf + argvsize + argbufsize;
+    strcpy( info->varname, varname );
     info->argv[argc] = NULL;    //there must be a NULL element on the end
                                 // of the list
-    return( doScanParams( argc, info->argv, nofilenames ) );
+    result = doScanParams( argc, info->argv, nofilenames );
+    stack = info->next;                     // pop stack
+    RcMemFree( info );
+    return( result );
 }
 
 bool ScanParams( int argc, char * argv[] )
@@ -946,23 +981,19 @@ bool ScanParams( int argc, char * argv[] )
 extern void ScanParamShutdown( void )
 /***********************************/
 {
-    EnvVarInfo          *tmp;
     ExtraRes            *tmpres;
     FRStrings           *strings;
 
     if( CmdLineParms.CPPArgs != NULL ) {
         RcMemFree( CmdLineParms.CPPArgs );
     }
-    RcMemFree( NewIncludeDirs );
+    if( NewIncludeDirs != NULL ) {
+        RcMemFree( NewIncludeDirs );
+    }
     while( CmdLineParms.ExtraResFiles != NULL ) {
         tmpres = CmdLineParms.ExtraResFiles;
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
         RcMemFree( tmpres );
-    }
-    while( CmdLineParms.EnvVariables != NULL ) {
-        tmp = CmdLineParms.EnvVariables;
-        CmdLineParms.EnvVariables = CmdLineParms.EnvVariables->next;
-        RcMemFree( tmp );
     }
     while( CmdLineParms.FindReplaceStrings != NULL) {
         strings = CmdLineParms.FindReplaceStrings;

@@ -204,7 +204,9 @@ static DeclInfoType getSimpleIntType(pDeclInfo decl, int *size, char **s ) {
     return retVal;
 }
 
-static void _expandDeclPrefix(int fileNum, pDeclInfo decl) {
+static void _expandDeclPrefix(int fileNum, void *_decl) {
+    pDeclInfo decl = _decl;
+
     pTokPos pos = getDeclPos(decl);
     char *s;
     int size;
@@ -241,7 +243,9 @@ static pOUnit getMemModelOUnit(pDclr dclr) {
     }
 }
 
-static _expandPushPragmaDeclInfo(int fileNum, pDeclInfo decl) {
+static void _expandPushPragmaDeclInfo(int fileNum, void *_decl) {
+    pDeclInfo decl = _decl;
+
     pTokPos pos = getDeclPos(decl);
     int size;
     char *s;
@@ -328,7 +332,9 @@ static void _expandPushDeclInfo(int fileNum, pDeclInfo dinfo, char *postfix) {
     }
 }
 
-static void _expandPushEnumElem(int fileNum, pEnumElem elem) {
+static void _expandPushEnumElem(int fileNum, void *_elem) {
+    pEnumElem elem = _elem;
+
     pOUnit nameOUnit;
     pOUnit paramOUnit;
     assert(elem->expression != NULL);
@@ -356,8 +362,9 @@ static void _expandPushEnumElem(int fileNum, pEnumElem elem) {
     }
 }
 
-static void _expandPushDeclEnum(int fileNum,
-                                pDeclEnum declEnum) {
+static void _expandPushDeclEnum(int fileNum, void *_declEnum) {
+    pDeclEnum declEnum = _declEnum;
+
     if (declEnum->list == NULL) {
         pushPrintStack( fileNum, OUNIT,
                 createOUnitText("ENUM_INT", declEnum->enumPos ));
@@ -380,8 +387,8 @@ static void _expandPushUnionElem(int fileNum,
     zapTokPos(pos);
 }
 
-static void _expandPushDeclStructInfo(int fileNum,
-                                      pDeclStructInfo dsinfo) {
+static void _expandPushDeclStructInfo(int fileNum, void *_dsinfo) {
+    pDeclStructInfo dsinfo = _dsinfo;
     pDeclStructBody body = dsinfo->body;
     char *name = getTokenIdName(dsinfo->name);
 
@@ -433,17 +440,23 @@ static void _expandPushDclr(int fileNum, pDclr dclr, char *postfix) {
 
 }
 
-static void _expandPushArrElem(int fileNum, pArrElem elem) {
+static void _expandPushArrElem(int fileNum, void *_elem) {
+    pArrElem elem = _elem;
+
     pushPrintStack(fileNum, TOKEN, elem->rBracket);
     pushPrintStack(fileNum, TREE, elem->constExpr);
     pushPrintStack(fileNum, TOKEN, elem->lBracket);
 }
 
-static void _expandPushToken(int fileNum, pToken token) {
+static void _expandPushToken(int fileNum, void *_token) {
+    pToken token = _token;
+
     pushPrintStack(fileNum, OUNIT, createOUnitFromTok(token));
 }
 
-static void _expandPushLogEntry(int fileNum, pToken logEntry) {
+static void _expandPushLogEntry(int fileNum, void *_logEntry) {
+    pToken logEntry = _logEntry;
+
     _expandPushToken(fileNum, logEntry);
     pushPrintStack( fileNum, OUNIT, createOUnitNewline());
 }

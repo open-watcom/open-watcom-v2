@@ -35,7 +35,8 @@
 #include <stdlib.h>
 #include <process.h>
 #include "rtdata.h"
-#include "wenviron.h"
+#include "_environ.h"
+#include "_process.h"
 
 _WCRTLINK int __F_NAME(execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * const *argv )
     {
@@ -43,6 +44,10 @@ _WCRTLINK int __F_NAME(execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * 
             if( _RWD_wenviron == NULL )  __create_wide_environment();
             return( _wexecve( path, argv, (const CHAR_TYPE **)_RWD_wenviron ) );
         #else
-            return( execve( path, argv, (const CHAR_TYPE **)_RWD_environ ) );
+            #ifdef __RDOS__
+                return( _doexec( path, argv );
+            #else
+                return( execve( path, argv, (const CHAR_TYPE **)_RWD_environ ) );
+            #endif            
         #endif
     }

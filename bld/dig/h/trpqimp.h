@@ -24,18 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX and Linux specific trap implementation stuff
 *
 ****************************************************************************/
 
 
-/*
-    QNX specific trap implementation stuff
-*/
-
 typedef struct {
-    trap_version        (TRAPENTRY *init_func)( void *, void *, unsigned_8);
+    trap_version        (TRAPENTRY *init_func)( char *, char *, bool);
     unsigned            (TRAPENTRY *req_func)( unsigned, mx_entry *, unsigned, mx_entry * );
     void                (TRAPENTRY *fini_func)( void );
 } trap_requests;

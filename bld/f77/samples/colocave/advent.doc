@@ -1,0 +1,95 @@
+This is the hopefully portable ADVENTURE 551 program. Its BETA!!!!!
+I've tested it as well as I can, but you never know!!!! It comes as three
+Fortran files, aamain.f, the main game program; asetup.f, a program that 
+reads the ASCII data file ADVDAT and makes a runtime data file ADVTXT;
+asubs.f, that needs to be liked with each of the above; and ADVDAT,
+the ASCII data file itself (note all caps for Unix users). 
+
+
+It is based on the old old old Fortran one posted recently in comp.sources.
+games - or rather one very close to that. I added a small piece of game,
+and the version I started from was lacking a tiny (and uncompleted) part.
+But mostly I fixed bugs. Oh! My! What a mess it was. You think it is
+bad now? Well, it is still F66 spaghetti, but previously it was full
+of Holleriths, system dependencies, and just plain bugs. Code bugs,
+game bugs, out of range subscripts ad nauseum. I played it to
+completion, and got all 551 points. That means it is possible to win. But
+it does NOT guarantee no bugs - as I found a bad one just playing it
+this last time. So have other testers. The only blatent non-portability
+is that it assumes ASCII. 
+
+For Unix people with Fortran, first make sure that the file is ADVDAT,
+all upper case, make sure the name of your Fortran compiler is right in the
+makefile and then type 'make'. To play, type "adventure".
+
+If your Unix system lacks the MIL std Fortran functions ior, ieor, and iand,
+you'll have to make up some with whatever bit functions you do have.
+It's up to you. These functions just take two integer variables and
+return the appropriate bitwise functions OR, XOR, and AND. If you get them
+wrong the asetup program will die at section 9 of the data file. 
+
+For folks on MS-DOS, rename the .f files to .for. Then compile and link
+asetup with asubs to make asetup.exe. Make SURE to have your Fortran compiler
+use 4-byte integers!!! (Use /4I4 for Microsoft Fortran).  Run asetup.exe.
+Then compile aamain.for and link with asubs.obj to make aamain.exe.
+Rename aamain.exe to "adventure" and play the game.
+
+For VMS folks, do as MS-DOS except that you have to add ".dat" to the advdat
+filename, and compile with /check=noover. This last is necessary as the
+random number generator actually depends on overflows.
+
+
+For folks with Unix systems and no (or broken!!! - Sun 3's) Fortran compilers,
+it works with the "f2c" program available from research.att.com. This took
+me a bit of work on our Mips machine. It is easy to generate the f2c program
+and its two libraries libF77 and libI77 but it didn't link right. The solution
+was to use the librarian (ar) to make a single library libF2C with all the
+.o files from BOTH libraries, put that in the directory you are working
+with and tell cc to use that as an ordinary object file - i.e.
+f2c *.f
+<<edit iors.c as instructed in the iors.f file!!!!!>>
+cc -c *.c
+cc asetup.o asubs.o iors.o libF2C -lm -lc
+a.out
+cc aamain.o asubs.o iors.o libF2C -lm -lc
+mv a.out adventure
+
+(Note the lack of a -l before the libF2C - read the READMEs that
+come with f2c.)
+
+then just play! I suppose I could distribute the .c files f2c produces,
+but the main problem is that I would also have to distribute the libs,
+which are the big problem anyway.
+
+
+It hopefully will just work. There are two places to look at the
+source code: First, look in asubs.f for the string ?????, which occurs
+twice. Thereabouts is code which works on VMS, the IBM-PC, and f2c to allow 
+you to get a prompt on the same line as your response. It fails miserably in
+F77 on my MIPS Unix machine. If you can make this or some other prompting
+mechanism work on your machine, PLEASE report it to me. Second, in aamain.f
+look for the the string ?????. There you can uncomment a line to activate
+Wizard mode, which allows a modest amount of cheating. Uncautious use
+of it, however, can prevent actually winning.
+
+This version compiles and runs using f77 on a MIPS unix box, on the VAX using
+VMS VAX Fortran or using Ultrix and its Fortran compiler (though you must
+supply the bitwise functions), on the IBM PC using either the MicroWay 386 
+32-bit compiler or Microsoft Fortran 4.1 in large model, and on the IBM
+Riscstation 6000.
+
+It compiles but does NOT run on a Sun 3 (with a F77 compiler with a 1988
+date) due to the compiler simply being unable (with no help from 
+switches) to compile correctly the main program. Tests indicate that
+this compiler barfs on files with much more than 400 lines of significant code.
+If anybody can get it to run on a Sun 3, please let me know how.
+I find it hard to believe that they would let out a compiler this limited.
+
+
+
+
+Doug McDonald (mcdonald@aries.scs.uiuc.edu)
+
+Adventurer Grandmaster!!!
+(its not easy, even if you do read the source code)
+

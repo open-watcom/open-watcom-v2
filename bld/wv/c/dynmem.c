@@ -24,20 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dynamic memory management routines for debugger.
 *
 ****************************************************************************/
 
 
-//#include <i86.h>
 #include "dbglit.h"
-/* it's important that <malloc> is included up here */
-#define __fmemneed foo
-#define __nmemneed bar
-#include <malloc.h>
-#undef __nmemneed
-#undef __fmemneed
+#ifdef __WATCOMC__
+ /* it's important that <malloc> is included up here */
+ #define __fmemneed foo
+ #define __nmemneed bar
+ #include <malloc.h>
+ #undef __nmemneed
+ #undef __fmemneed
+#endif
 #include "dbgdefn.h"
 #include "dbgerr.h"
 #ifdef TRMEM
@@ -53,28 +53,31 @@
  #define TRMemFree(p)           free(p)
 #endif
 #include <stdlib.h>
+#include <stdio.h>
 #include <dip.h>
 
 
 
-extern bool     VarInfoRelease();
-extern bool     DlgInfoRelease(void);
-extern char     *Format(char *,char *,... );
-extern int      DUIEnvLkup(char *,char *,int);
-extern void     PopErrBox(char*);
+extern bool     VarInfoRelease( void );
+extern bool     DlgInfoRelease( void );
+extern char     *Format( char *, char *, ... );
+extern int      DUIEnvLkup( char *, char *, int );
+extern void     PopErrBox( char * );
 
 
 #ifdef TRMEM
 static  int             TrackFile;
 static _trmem_hdl       TRMemHandle;
 
+
 /* extern to avoid problems with taking address and overlays */
 static bool Closing = FALSE;
+
 static void TRPrintLine( int * handle, const char * buff, size_t len )
 /********************************************************************/
 {
     handle = handle;
-    len=len;
+    len = len;
     if( !Closing ) PopErrBox( (void*)buff );
     write( TrackFile, buff, len );
 }
@@ -120,7 +123,7 @@ extern void TRMemPrtUsage( void )
 }
 
 static unsigned TRMemPrtList( void )
-/******************************/
+/**********************************/
 {
     return( _trmem_prt_list( TRMemHandle ) );
 }
@@ -131,8 +134,8 @@ extern int TRMemValidate( void * ptr )
     return( _trmem_validate( ptr, _trmem_guess_who(), TRMemHandle ) );
 }
 
-extern void TRMemCheck()
-/**********************/
+extern void TRMemCheck( void )
+/****************************/
 {
     _trmem_validate_all( TRMemHandle );
 }
@@ -143,9 +146,9 @@ extern int TRMemChkRange( void * start, size_t len )
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
 }
 
-static void MemTrackInit()
+static void MemTrackInit( void )
 {
-    char        name[256];
+    char        name[FILENAME_MAX];
 
     TrackFile = STDERR_FILENO;
     if( DUIEnvLkup( "TRMEMFILE", name, sizeof( name ) ) ) {
@@ -157,7 +160,7 @@ static void MemTrackInit()
 static char UnFreed[] = { "Memory UnFreed" };
 static char TrackErr[] = { "Memory Tracker Errors Detected" };
 
-static void MemTrackFini()
+static void MemTrackFini( void )
 {
     Closing = TRUE;
     if( TrackFile != STDERR_FILENO ) {
@@ -177,6 +180,7 @@ static void MemTrackFini()
  * Dynamic Memory management routines
  */
 
+#ifdef __WATCOMC__
 #ifdef __386__
 #define __fmemneed __nmemneed
 #endif
@@ -187,6 +191,7 @@ int __saveregs __fmemneed( size_t size )
     if( DUIInfoRelease() ) return( TRUE );
     return( FALSE );
 }
+#endif
 
 void *DbgAlloc( unsigned size )
 {
@@ -227,11 +232,11 @@ void *ChkAlloc( unsigned size, char *error )
 
 #define Heap_Corupt     "ERROR - Heap is corrupted - %s"
 
-void MemFini()
+void MemFini( void )
 {
 #ifdef TRMEM
     MemTrackFini();
-#else
+#elif defined( __WATCOMC__ )
 
     struct _heapinfo    h_info;
     int                 status;
@@ -240,7 +245,7 @@ void MemFini()
 
     if( getenv( "TRMEMFILE" ) == NULL ) return;
     h_info._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         status = _heapwalk( &h_info );
         if( status != _HEAPOK ) break;
 #ifdef DBG_DBG
@@ -273,27 +278,16 @@ void MemFini()
 #ifndef _OVERLAYED_
 
 extern unsigned long MemSize;
-#ifdef M_I86
+#if defined( _M_I86 )
 #define MAX_BLOCK (60U * 1024)
-#else
-#ifdef __DOS__
+#elif defined( __DOS__ )
 #define MAX_BLOCK (4U*1024*1024)
 #else
 #define MAX_BLOCK (1U*1024*1024)
 #endif
-#endif
 
 
-MemInit()
-{
-#ifdef TRMEM
-    MemTrackInit();
-#endif
-    MemExpand();
-}
-
-
-void MemExpand()
+void MemExpand( void )
 {
     unsigned long   size;
     void            **link;
@@ -318,6 +312,14 @@ void MemExpand()
         TRMemFree( link );
         link = p;
     }
+}
+
+void MemInit( void )
+{
+#ifdef TRMEM
+    MemTrackInit();
+#endif
+    MemExpand();
 }
 
 void *ExtraAlloc( unsigned size )

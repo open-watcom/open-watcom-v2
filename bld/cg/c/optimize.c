@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction reordering and dead code elimination.
 *
 ****************************************************************************/
 
@@ -35,21 +34,25 @@
 #include "conflict.h"
 #include "opcodes.h"
 #include "cgdefs.h"
+#include "zoiks.h"
+#include "procdef.h"
+#include "addrname.h"
+#include "x87.h"
+#include "makeins.h"
+
 
 extern    block         *HeadBlock;
 extern    conflict_node *ConfList;
 
-extern  bool            PropagateMoves();
-extern  instruction_id  Renumber();
-extern  bool            FPIsStack(name*);
+extern  bool            PropagateMoves(void);
+extern  instruction_id  Renumber(void);
 extern  bool            SideEffect(instruction*);
-extern  void            FreeIns(instruction*);
 extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
-extern  void            FreeConflicts();
+extern  void            FreeConflicts(void);
 extern  void            NullConflicts(var_usage);
-extern  void            FindReferences();
-extern  void            MakeConflicts();
-extern  void            MakeLiveInfo();
+extern  void            FindReferences(void);
+extern  void            MakeConflicts(void);
+extern  void            MakeLiveInfo(void);
 extern  bool            ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
@@ -102,7 +105,7 @@ static  opcode_attr OpAttrs[LAST_OP-FIRST_OP+1] = {
         MOVEABLE +      SWAPABLE,       /* OP_SINH */
         MOVEABLE +      SWAPABLE,       /* OP_TANH */
         MOVEABLE +      SWAPABLE,       /* OP_PTR_TO_NATIVE  */
-        MOVEABLE +      SWAPABLE,       /* OP_PTR_TO_FORIEGN  */
+        MOVEABLE +      SWAPABLE,       /* OP_PTR_TO_FOREIGN  */
         FALSE,                          /* OP_SLACK */
 
         MOVEABLE +      SWAPABLE,       /* OP_CONVERT,*/
@@ -179,36 +182,6 @@ static  opcode_attr OpAttrs[LAST_OP-FIRST_OP+1] = {
 
 #define _IsIns( ins, attr )        ( OpAttrs[ ins->head.opcode ] & attr )
 #define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == FALSE )
-
-
-extern  void    PushPostOps() {
-/******************************
-    This routine tries to push add and subtract instructions
-    forward in the basic block. The reason for this is that
-    it untangles post increment code allowing for copy propagation
-    and code elimination. Take *x++ = *y++ for example
-
-    Before:                     After:                  With copy propagation:
-
-    MOV x => t1                 MOV x => t1             MOV x => t1 (useless)
-    MOV y => t2                 MOV y => t2             MOV y => t2 (useless)
-    ADD x, 1 => x               MOV [t2] => [t1]        MOV [y] => [x]
-    ADD y, 1 => y               ADD x,1 => x            ADD x,1 => x
-    MOV [t2] => [t1]            ADD y,1 => y            ADD y,1 => y
-*/
-
-/*    Perform instruction optimizations*/
-
-    block       *blk;
-
-    blk = HeadBlock;
-    while( blk != NULL ) {
-        PushInsForward( blk );
-        blk = blk->next_block;
-    }
-    PropagateMoves();
-    Renumber();
-}
 
 
 static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
@@ -373,11 +346,11 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next ) {
     conflict_node       *conf;
     name                *op;
 
-    if( SideEffect( ins ) ) return( FALSE );
     op = ins->result;
     if( op == NULL ) return( FALSE );
 //  if( op->n.class != N_TEMP ) return( FALSE );
     if( op->v.usage & USE_ADDRESS ) return( FALSE );
+    if( SideEffect( ins ) ) return( FALSE );
     conf = FindConflictNode( op, blk, ins );
     if( conf == NULL ) return( FALSE );
     if( _LBitEmpty( conf->id.within_block )
@@ -408,9 +381,14 @@ extern  void    AxeDeadCode() {
     block               *blk;
     instruction         *ins;
     instruction         *next;
+    instruction         *kill;
     bool                change;
 
+/* Reuse field, it's useless for killed instruction */
+#define _INS_KILL_LINK( ins )  ( ins )->u2.cse_link
+
     for(;;) {
+        kill = NULL;
         change = FALSE;
         blk = HeadBlock;
         while( blk != NULL ) {
@@ -421,7 +399,13 @@ extern  void    AxeDeadCode() {
                     ins->result = NULL;
                     change = TRUE;
                     if( _IsntIns( ins, SIDE_EFFECT ) ) {
-                        FreeIns( ins );
+                       /*
+                        * 2005-05-18 RomanT
+                        * Do not free instruction immediately, or conflict
+                        * edges will point to nowhere. Add them to kill list.
+                        */
+                        _INS_KILL_LINK( ins ) = kill;
+                        kill = ins;
                     } else if( _OpIsCondition( ins->head.opcode ) ) {
                         _SetBlockIndex( ins, NO_JUMP, NO_JUMP );
                     }
@@ -432,12 +416,19 @@ extern  void    AxeDeadCode() {
         }
         if( change == FALSE ) break;
         FreeConflicts();
+        /* Now it's safe to free instructions without problems with edges */
+        while ( kill ) {
+            next = _INS_KILL_LINK( kill );
+            FreeIns( kill );
+            kill = next;
+        }
         NullConflicts(EMPTY);
         FindReferences();
         MakeConflicts();
         MakeLiveInfo();
     }
 }
+
 
 extern  void    DeadInstructions() {
 /***********************************
@@ -452,4 +443,34 @@ extern  void    DeadInstructions() {
         FreeJunk( blk );
         blk = blk->next_block;
     }
+}
+
+
+extern  void    PushPostOps() {
+/******************************
+    This routine tries to push add and subtract instructions
+    forward in the basic block. The reason for this is that
+    it untangles post increment code allowing for copy propagation
+    and code elimination. Take *x++ = *y++ for example
+
+    Before:                     After:                  With copy propagation:
+
+    MOV x => t1                 MOV x => t1             MOV x => t1 (useless)
+    MOV y => t2                 MOV y => t2             MOV y => t2 (useless)
+    ADD x, 1 => x               MOV [t2] => [t1]        MOV [y] => [x]
+    ADD y, 1 => y               ADD x,1 => x            ADD x,1 => x
+    MOV [t2] => [t1]            ADD y,1 => y            ADD y,1 => y
+*/
+
+/*    Perform instruction optimizations*/
+
+    block       *blk;
+
+    blk = HeadBlock;
+    while( blk != NULL ) {
+        PushInsForward( blk );
+        blk = blk->next_block;
+    }
+    PropagateMoves();
+    Renumber();
 }

@@ -29,40 +29,23 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  93/05/26    Greg Bentz      pull floating point out of istream/ostream
-//  93/10/08    Greg Bentz      make LDFloatToString set scale_factor to 1
-//                              for _Ftos when 'G' format
-//  93/10/25    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  95/04/20    F.W.Crigger     use the new __LDcvt routine
-//  95/05/24    F.W.Crigger     newer version of __LDcvt
-//  95/06/19    Greg Bentz      indirect call to math library
+#if 0
+#error This function has been folded into the only method to use it - ostream::__outfloat
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "iofhdr.h"
-#include "xfloat.h"
 
-void __LDFloatToString( char *buf, double const *f, int precision,
-/*********************************************************************/
-    ios::fmtflags format_flags ) {
+
+void __LDFloatToString( char *buf,
+                        double const *f,
+                        int precision,
+                        std::ios::fmtflags format_flags ) {
 
     int         i;
     CVT_INFO    cvt;
@@ -73,15 +56,15 @@ void __LDFloatToString( char *buf, double const *f, int precision,
 
     /* convert this double into a long double */
     double_value = *f;
-    __FDLD( (double near *)&double_value, (long_double near *)&ld );
+    __EFG__FDLD( (double _WCNEAR *)&double_value, (long_double _WCNEAR *)&ld );
 #else
     ld.value = *f;
 #endif
 
-    if( (format_flags & (ios::scientific|ios::fixed)) == ios::scientific ) {
+    if( (format_flags & (std::ios::scientific|ios::fixed)) == std::ios::scientific ) {
         cvt.flags = E_FMT;
         cvt.scale = 1;
-    } else if( (format_flags & (ios::scientific|ios::fixed)) == ios::fixed ) {
+    } else if( (format_flags & (std::ios::scientific|ios::fixed)) == std::ios::fixed ) {
         cvt.flags = F_FMT;
         cvt.scale = 0;
     } else {
@@ -91,18 +74,18 @@ void __LDFloatToString( char *buf, double const *f, int precision,
             precision = 1;
         }
     }
-    if( (format_flags & ios::showpoint) ) {
+    if( (format_flags & std::ios::showpoint) ) {
         cvt.flags |= F_DOT;
     }
     cvt.ndigits = precision;
-    cvt.expchar = (format_flags & ios::uppercase) ? 'E' : 'e';
+    cvt.expchar = (format_flags & std::ios::uppercase) ? 'E' : 'e';
     cvt.expwidth = 0;
     __EFG_LDcvt( &ld, &cvt, stkbuf );
     // put all the pieces together
     i = 0;
     if( cvt.sign < 0 ) {
         buf[i++] = '-';
-    } else if( format_flags & ios::showpos ) {
+    } else if( format_flags & std::ios::showpos ) {
         buf[i++] = '+';
     }
     if( cvt.n1 != 0 ) {
@@ -119,3 +102,5 @@ void __LDFloatToString( char *buf, double const *f, int precision,
     i += cvt.nz2;
     buf[i] = '\0';
 }
+
+#endif

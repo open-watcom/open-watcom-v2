@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Scoreboarding routines specific to the i86.
 *
 ****************************************************************************/
 
@@ -38,17 +37,13 @@
 #include "procdef.h"
 #include "vergen.h"
 #include "opcodes.h"
+#include "makeins.h"
 
-extern  void            RegInsert(score*,int,int);
-extern  bool            RegsEqual(score*,int,int);
-extern  name            *AllocRegName(hw_reg_set);
-extern  void            ScoreAssign(score*,int,score_info*);
-extern  void            ScoreInfo(score_info*,name*);
-extern  name            *NearSegment();
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  hw_reg_set      LowReg(hw_reg_set);
-extern  void            FreeIns(instruction*);
-extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
+extern  name            *AllocRegName( hw_reg_set );
+extern  name            *NearSegment( void );
+extern  hw_reg_set      HighReg( hw_reg_set );
+extern  hw_reg_set      LowReg( hw_reg_set );
+extern  bool            IsIndexReg( hw_reg_set, type_class_def, bool );
 
 
 extern  proc_def        *CurrProc;
@@ -72,13 +67,13 @@ static  name    *ES;
 
 
 
-extern  void    ScInitRegs( score *sc ) {
-/****************************************
+extern  void    ScInitRegs( score *sc )
+/**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
-
-    int ss;
-    int ds;
+{
+    int     ss;
+    int     ds;
 
     if( _IsntTargetModel( FLOATING_DS | FLOATING_SS ) ) {
         ss = AllocRegName(HW_SS)->r.reg_index;
@@ -90,11 +85,11 @@ extern  void    ScInitRegs( score *sc ) {
 }
 
 
-static  name    *NewRegName( hw_reg_set reg ) {
-/**********************************************
+static  name    *NewRegName( hw_reg_set reg )
+/********************************************
     Allocate a new "far pointer" register an set its class
 */
-
+{
     name        *reg_name;
 
     reg_name = AllocRegName( reg );
@@ -103,12 +98,12 @@ static  name    *NewRegName( hw_reg_set reg ) {
 }
 
 
-extern  void    AddRegs() {
-/**************************
+extern  void    AddRegs( void )
+/******************************
     Add some registers to the N_REGISTER list, so that we can do
     scoreboarding on them
 */
-
+{
     hw_reg_set  lo_part;
     name        *reg_name;
     int         i;
@@ -153,12 +148,12 @@ extern  void    AddRegs() {
 }
 
 
-extern  void    ScoreSegments( score *sc ) {
-/*******************************************
+extern  void    ScoreSegments( score *sc )
+/*****************************************
     Do special scoreboarding on segment registers.  Given that BX = DI,
     for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
 */
-
+{
     score       *ds;
     score       *xs;
     int         i;
@@ -196,14 +191,13 @@ extern  void    ScoreSegments( score *sc ) {
 }
 
 
-extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
-/************************************************************
+extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
+/**********************************************************
     Is it ok to say that "reg1" = "reg2"?  This is not ok for
     unalterable registers since there may be hidden modifications of
     these registers.
 */
-
-
+{
     if( HW_Ovlap( reg1, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg1, HW_DS ) && !HW_CEqual( reg1, HW_SS ) ) {
             return( FALSE );
@@ -218,12 +212,12 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
 }
 
 
-extern  bool    ScConvert( instruction *ins ) {
-/**********************************************
+extern  bool    ScConvert( instruction *ins )
+/********************************************
     Get rid of instructions like CBW if the high part is not used in the
     next instruction.
 */
-
+{
     hw_reg_set  tmp;
 
     if( ins->u.gen_table->generate == G_SIGNEX ) {
@@ -237,13 +231,13 @@ extern  bool    ScConvert( instruction *ins ) {
 }
 
 
-extern  bool    CanReplace( instruction *ins ) {
-/***********************************************
+extern  bool    CanReplace( instruction *ins )
+/*********************************************
     Are we allowed to replace any of the operands of "ins" with
     different registers?  For long shifts the answer is no since CX is a
     must for the loop counter.
 */
-
+{
     if( ( ins->head.opcode == OP_LSHIFT
        || ins->head.opcode == OP_RSHIFT )
       && ( ins->type_class == U4
@@ -252,11 +246,11 @@ extern  bool    CanReplace( instruction *ins ) {
 }
 
 
-extern  bool    ScRealRegister( name *reg ) {
-/********************************************
+extern  bool    ScRealRegister( name *reg )
+/******************************************
     Return "TRUE" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.
 */
-
+{
     return( reg->n.name_class != XX );
 }

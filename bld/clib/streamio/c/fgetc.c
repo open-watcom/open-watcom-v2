@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent fgetc() implementation.
 *
 ****************************************************************************/
 
@@ -33,11 +32,9 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdio.h>
-#if defined(__PENPOINT__)  ||  defined(__QNX__)
 #include <unistd.h>
-#else
-#include <conio.h>
-#include <io.h>
+#ifndef __UNIX__
+    #include <conio.h>
 #endif
 #include "fileacc.h"
 #include <errno.h>
@@ -47,30 +44,68 @@
     #include <mbstring.h>
     #include <wchar.h>
 #endif
+#include "qread.h"
+#include "orient.h"
+#include "flush.h"
+#include "streamio.h"
 
-extern  void    __ioalloc( FILE * );
-extern  int     __flushall( int );
-
-#if defined(__PENPOINT__)
- #define __qread( h, b, l ) (read( h, b, l ) )
-#elif defined(__QNX__)
- extern int  __qread( int handle, char *buffer, unsigned len );
-#elif defined(NETWARE)
- #define DOS_EOF_CHAR   0x1a
- #define __qread( h, b, l ) read( h, b, l )
-#else
- #define DOS_EOF_CHAR   0x1a
- extern int  __qread( int handle, char *buffer, unsigned len );
-#endif
-
-#if defined( __WIDECHAR__ )
- #define CHARMASK       0xffff
-#else
- #define CHARMASK       0xff
-#endif
-
+#define DOS_EOF_CHAR        0x1a
 
 #ifndef __WIDECHAR__
+
+int __fill_buffer( FILE *fp )
+{
+    if( _FP_BASE(fp) == NULL ) {
+        __ioalloc( fp );
+    }
+    if( fp->_flag & _ISTTY ) {                      /* 20-aug-90 */
+        if( fp->_flag & (_IONBF | _IOLBF) ) {
+            __flushall( _ISTTY );           /* flush all TTY output */
+        }
+    }
+    fp->_flag &= ~_UNGET;                           /* 10-mar-90 */
+    fp->_ptr = _FP_BASE(fp);
+#ifdef __UNIX__
+    fp->_cnt = __qread( fileno( fp ), fp->_ptr,
+        (fp->_flag & _IONBF) ? 1 : fp->_bufsize );
+#else
+    if(( fp->_flag & (_IONBF | _ISTTY)) == (_IONBF | _ISTTY) &&
+       ( fileno( fp ) == STDIN_FILENO ))
+    {
+        int c;                      /* JBS 31-may-91 */
+
+        fp->_cnt = 0;
+        c = getche();
+        if( c != EOF ) {
+            *fp->_ptr = c;
+            fp->_cnt = 1;
+        }
+    } else {
+        fp->_cnt = __qread( fileno( fp ), fp->_ptr,
+            (fp->_flag & _IONBF) ? 1 : fp->_bufsize );
+    }
+#endif
+    if( fp->_cnt <= 0 ) {
+        if( fp->_cnt == 0 ) {
+            fp->_flag |= _EOF;
+        } else {
+            fp->_flag |= _SFERR;
+            fp->_cnt = 0;
+        }
+    }
+    return( fp->_cnt );
+}
+
+static int __filbuf( FILE *fp )
+{
+    if( __fill_buffer( fp ) == 0 ) {
+        return( EOF );
+    } else {
+        fp->_cnt--;
+        fp->_ptr++;
+        return( *(fp->_ptr - 1) );
+    }
+}
 
 _WCRTLINK int fgetc( FILE *fp )
 {
@@ -80,83 +115,66 @@ _WCRTLINK int fgetc( FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    #ifndef __NETWARE__
-        if( _FP_ORIENTATION(fp) != _BYTE_ORIENTED ) {
-            if( _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
-                _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
-            } else {
-                _ReleaseFile( fp );
-                return( EOF );              /* error return */
-            }
-        }
-    #endif
+    ORIENT_STREAM(fp,EOF);
 
-    if(( fp->_flag & _READ ) == 0 ) {
+    if( (fp->_flag & _READ) == 0 ) {
         __set_errno( EBADF );
         fp->_flag |= _SFERR;
         c = EOF;
     } else {
-#if 0
-        /*** If the buffer is _DIRTY, resync it before reading ***/
-        if( fp->_flag & (_WRITE|_UNGET) ) {
-            if( fp->_flag & _DIRTY ) {
-                fseek( fp, 0L, SEEK_CUR );
-            }
-        }
-#endif
-
         fp->_cnt--;
         // it is important that this remain a relative comparison
         // to ensure that the getc() macro works properly
         if( fp->_cnt < 0 ) {
-            c = __F_NAME(__filbuf,__wfilbuf)(fp);
+            c = __filbuf( fp );
         } else {
-            c = *(char*)fp->_ptr;
+            c = *fp->_ptr;
             fp->_ptr++;
         }
     }
-    #if !defined(__PENPOINT__) && !defined(__QNX__)
-        if( ! (fp->_flag & _BINARY) ) {
-            if( c == '\r' ) {
-                fp->_cnt--;
-                // it is important that this remain a relative comparison
-                // to ensure that the getc() macro works properly
-                if( fp->_cnt < 0 ) {
-                    c = __F_NAME(__filbuf,__wfilbuf)(fp);
-                } else {
-                    c = *(CHAR_TYPE*)fp->_ptr & CHARMASK;
-                    fp->_ptr += CHARSIZE;
-                }
-            }
-            if( c == DOS_EOF_CHAR ) {
-                fp->_flag |= _EOF;
-                c = EOF;
+#ifndef __UNIX__
+    if( !(fp->_flag & _BINARY) ) {
+        if( c == '\r' ) {
+            fp->_cnt--;
+            // it is important that this remain a relative comparison
+            // to ensure that the getc() macro works properly
+            if( fp->_cnt < 0 ) {
+                c = __filbuf( fp );
+            } else {
+                c = *fp->_ptr;
+                fp->_ptr++;
             }
         }
-    #endif
+        if( c == DOS_EOF_CHAR ) {
+            fp->_flag |= _EOF;
+            c = EOF;
+        }
+    }
+#endif
     _ReleaseFile( fp );
     return( c );
 }
 
-
 #else
-
 
 static int __read_wide_char( FILE *fp, wchar_t *wc )
 /**************************************************/
 {
     if( fp->_flag & _BINARY ) {
         /*** Read a wide character ***/
-        return( fread( wc, sizeof(wchar_t), 1, fp ) );
+        return( fread( wc, sizeof( wchar_t ), 1, fp ) );
     } else {
         char            mbc[MB_CUR_MAX];
         wchar_t         wcTemp;
         int             rc;
 
         /*** Read the multibyte character ***/
-        if( !fread( &mbc[0], 1, 1, fp ) )  return( 0 );
+        if( !fread( &mbc[0], 1, 1, fp ) )
+            return( 0 );
+
         if( _ismbblead( mbc[0] ) ) {
-            if( !fread( &mbc[1], 1, 1, fp ) )  return( 0 );
+            if( !fread( &mbc[1], 1, 1, fp ) )
+                return( 0 );
         }
 
         /*** Convert it to wide form ***/
@@ -171,7 +189,6 @@ static int __read_wide_char( FILE *fp, wchar_t *wc )
     }
 }
 
-
 _WCRTLINK wint_t fgetwc( FILE *fp )
 {
     wchar_t             c;
@@ -180,23 +197,14 @@ _WCRTLINK wint_t fgetwc( FILE *fp )
     _AccessFile( fp );
 
     /*** Deal with stream orientation ***/
-    #ifndef __NETWARE__
-        if( _FP_ORIENTATION(fp) != _WIDE_ORIENTED ) {
-            if( _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
-                _FP_ORIENTATION(fp) = _WIDE_ORIENTED;
-            } else {
-                _ReleaseFile( fp );
-                return( WEOF );             /* error return */
-            }
-        }
-    #endif
+    ORIENT_STREAM(fp,WEOF);
 
     /*** Read the character ***/
     if( !__read_wide_char( fp, &c ) ) {
         _ReleaseFile( fp );
         return( WEOF );
     }
-    if( !(fp->_flag & _BINARY)  &&  c == L'\r' ) {
+    if( !(fp->_flag & _BINARY) && (c == L'\r') ) {
         if( !__read_wide_char( fp, &c ) ) {
             _ReleaseFile( fp );
             return( WEOF );
@@ -208,69 +216,3 @@ _WCRTLINK wint_t fgetwc( FILE *fp )
 }
 
 #endif
-
-
-int __F_NAME(__filbuf,__wfilbuf)( FILE *fp )
-{
-    if( __F_NAME(__fill_buffer,__wfill_buffer)( fp ) == 0 ) {
-        return( EOF );
-    } else {
-        fp->_cnt -= CHARSIZE;
-        fp->_ptr += CHARSIZE;
-        return( *(CHAR_TYPE*)(fp->_ptr - CHARSIZE) & CHARMASK );
-    }
-}
-
-int __F_NAME(__fill_buffer,__wfill_buffer)( FILE *fp )
-{
-    if( _FP_BASE(fp) == NULL ) {
-        __ioalloc( fp );
-    }
-    if( fp->_flag & _ISTTY ) {                      /* 20-aug-90 */
-        if( fp->_flag & (_IONBF | _IOLBF) ) {
-            __flushall( _ISTTY );           /* flush all TTY output */
-        }
-    }
-    fp->_flag &= ~_UNGET;                           /* 10-mar-90 */
-    fp->_ptr = _FP_BASE(fp);
-#if defined(__PENPOINT__)
-    fp->_cnt = __qread( fileno( fp ), fp->_ptr,
-                        (fp->_flag & _IONBF) ? CHARSIZE : fp->_bufsize );
-#elif defined(__QNX__)
-    fp->_cnt = __qread( fileno( fp ), fp->_ptr,
-                        (fp->_flag & _IONBF) ? CHARSIZE : fp->_bufsize );
-#else
-    if(( fp->_flag & (_IONBF|_ISTTY)) == (_IONBF|_ISTTY) &&
-#ifndef __NETWARE__
-       ( fileno( fp ) == STDIN_FILENO )) {
-#else
-       ( fileno( fp ) == STDIN_HANDLE )) {
-#endif
-        int c;                      /* JBS 31-may-91 */
-
-        fp->_cnt = 0;
-        c = getche();
-        if( c != EOF ) {
-            *(CHAR_TYPE*)fp->_ptr = c;
-            fp->_cnt = CHARSIZE;
-        }
-    } else {
-#ifndef __NETWARE__
-        fp->_cnt = __qread( fileno( fp ), fp->_ptr,
-                            (fp->_flag & _IONBF) ? CHARSIZE : fp->_bufsize );
-#else
-        fp->_cnt = read( fileno( fp ), fp->_ptr,
-                             (fp->_flag & _IONBF) ? CHARSIZE : fp->_bufsize );
-#endif
-    }
-#endif
-    if( fp->_cnt <= 0 ) {
-        if( fp->_cnt == 0 ) {
-            fp->_flag |= _EOF;
-        } else {
-            fp->_flag |= _SFERR;
-            fp->_cnt = 0;
-        }
-    }
-    return( fp->_cnt );
-}

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _settransparency( short trans )
+_WCRTLINK short _WCI86FAR _CGRAPH _settransparency( short trans )
 /*================================================
 
    This routine sets the transparency for pattern filling. */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Text position get/set routines.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include "gbios.h"
 
 
-struct rccoord _WCI86FAR _CGRAPH _gettextposition( void )
+_WCRTLINK struct rccoord _WCI86FAR _CGRAPH _gettextposition( void )
 /*==================================================
 
    This function returns the current text output position relative to
@@ -52,7 +51,7 @@ struct rccoord _WCI86FAR _CGRAPH _gettextposition( void )
 Entry( _GETTEXTPOSITION, _gettextposition ) // alternate entry-point
 
 
-struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short col )
+_WCRTLINK struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short col )
 /*==================================================================
 
    This routine sets the current text output position. */
@@ -78,11 +77,7 @@ struct rccoord _WCI86FAR _CGRAPH _settextposition( short row, short col )
     }
     _TextPos.row = row;
     _TextPos.col = col;
-#if defined( _NEC_PC )
-    NECVideoIntDC( 0x0300, 0, 0x0010, ( row << 8 ) + col );
-    NECVideoInt( _BIOS_CURSOR_SET, 0, 0, _CurrActivePage * 4096 +
-                 2 * ( row * _CurrState->vc.numtextcols + col ) ); // set cursor position
-#elif !defined( _DEFAULT_WINDOWS )
+#if !defined( _DEFAULT_WINDOWS )
     VideoInt( _BIOS_CURSOR_POSN, _CurrActivePage << 8, 0, ( row << 8 ) + col );
 #endif
     _GrEpilog();

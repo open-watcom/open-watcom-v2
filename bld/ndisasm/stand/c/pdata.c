@@ -130,7 +130,7 @@ orl_return StoreReloc( orl_reloc * reloc )
     return( ORL_OKAY );
 }
 
-return_val DumpPDataSection( section_ptr sec, char *contents,
+return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
                         orl_sec_size size, unsigned pass )
 {
     orl_sec_offset      loop;

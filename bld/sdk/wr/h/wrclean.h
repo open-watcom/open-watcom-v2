@@ -36,4 +36,3 @@
 extern void WR_EXPORT WRCleanDir( WResDir dir );
 
 #endif
-

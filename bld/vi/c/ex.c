@@ -30,39 +30,39 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "ex.h"
 #include "win.h"
-#include "colors.h"
 
 static window_info      exwInfo =
-        { 0, BLACK, WHITE, { BRIGHT_WHITE, BLACK, 0 }, { WHITE, BLACK, 0 }, 0,24,79,24 };
+    { 0, BLACK, WHITE, { BRIGHT_WHITE, BLACK, 0 }, { WHITE, BLACK, 0 }, 0, 24, 79, 24 };
+
 /*
  * EnterExMode - start Ex emulation mode
  */
-int EnterExMode( void )
+vi_rc EnterExMode( void )
 {
-    int         i,rc;
+    int         i;
     window_id   clw;
     char        *st;
     char        *prompt;
+    vi_rc       rc;
+    bool        ret;
 
     if( EditFlags.InputKeyMapMode ) {
         return( ERR_NO_ERR );
     }
-    i = WindMaxHeight-1;
+    i = WindMaxHeight - 1;
     exwInfo.y1 = exwInfo.y2 = i;
-    exwInfo.x2 = WindMaxWidth-1;
-    SetCursorOnScreen( i, 0 );
+    exwInfo.x2 = WindMaxWidth - 1;
+    SetPosToMessageLine();
     EditFlags.ExMode = TRUE;
     EditFlags.LineDisplay = TRUE;
     EditFlags.ClockActive = FALSE;
-    MyPrintf("\nEntering EX mode (type vi to return)\n");
-    i = NewWindow2( &clw, &exwInfo );
-    if( i ) {
-        return( i );
+    MyPrintf( "\nEntering EX mode (type vi to return)\n" );
+    rc = NewWindow2( &clw, &exwInfo );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     st = MemAlloc( MaxLine );
 
@@ -72,9 +72,9 @@ int EnterExMode( void )
         } else {
             prompt = ":";
         }
-        rc = ReadStringInWindow( clw, 1, prompt, st, MaxLine, &CLHist );
-        MyPrintf("\n");
-        if( !rc ) {
+        ret = ReadStringInWindow( clw, 1, prompt, st, MaxLine, &CLHist );
+        MyPrintf( "\n" );
+        if( !ret ) {
             continue;
         }
         ScreenPage( 1 );
@@ -87,7 +87,7 @@ int EnterExMode( void )
         if( !EditFlags.ExMode ) {
             break;
         }
-        if( rc > 0 ) {
+        if( rc > ERR_NO_ERR ) {
             Error( GetErrorMsg( rc ) );
         }
         ScreenPage( -1 );
@@ -101,21 +101,22 @@ static char strCmmsg[] = "%l lines %s after line %l";
 /*
  * ProcessEx - process an ex command
  */
-int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
-                 char *data )
+vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
+               char *data )
 {
-    int         rc = ERR_INVALID_COMMAND,i;
-    char        word[MAX_STR],wordback[MAX_STR];
-    linenum     addr,tlines;
-    fcb         *cfcb,*s1fcb,*s2fcb;
+    vi_rc       rc = ERR_INVALID_COMMAND, i;
+    char        word[MAX_STR], wordback[MAX_STR];
+    linenum     addr, tlines;
+    fcb         *cfcb;
     line        *cline;
+    fcb_list    fcblist;
 
     NextWord1( data, word );
     strcpy( wordback, word );
     if( GetAddress( word, &addr ) ) {
         addr = -1;
     }
-    tlines = n2-n1+1;
+    tlines = n2 - n1 + 1;
 
     switch( tkn ) {
     case EX_T_APPEND:
@@ -132,12 +133,12 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         }
         StartUndoGroup( UndoStack );
         rc = DeleteLineRange( n1, n2, 0 );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             EndUndoGroup( UndoStack );
             break;
         }
-        rc = Append( n1-1, FALSE );
-        if( rc ) {
+        rc = Append( n1 - 1, FALSE );
+        if( rc != ERR_NO_ERR ) {
             EndUndoGroup( UndoStack );
             break;
         }
@@ -146,13 +147,13 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         if( addr < 0 || IsPastLastLine( addr ) ) {
             return( ERR_INVALID_ADDRESS );
         }
-        i = GetCopyOfLineRange( n1,n2, &s1fcb, &s2fcb );
+        i = GetCopyOfLineRange( n1, n2, &fcblist );
         if( i ) {
             break;
         }
-        rc = InsertLines( addr, s1fcb, s2fcb, UndoStack );
+        rc = InsertLines( addr, &fcblist, UndoStack );
         GoToLineNoRelCurs( addr );
-        if( !rc ) {
+        if( rc == ERR_NO_ERR ) {
             Message1( strCmmsg, tlines, "copied", addr );
         }
         break;
@@ -161,7 +162,7 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
             return( ERR_ONLY_VALID_IN_EX_MODE );
         }
         if( !n2f ) {
-            rc = Append( n1-1, TRUE );
+            rc = Append( n1 - 1, TRUE );
         }
         break;
     case EX_T_JOIN:
@@ -170,15 +171,15 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
             break;
         }
         if( tlines == 1 ) {
-            n2 = n1+1;
+            n2 = n1 + 1;
             tlines = 2;
         }
-        SetRepeatCount( tlines-1 );
+        SetRepeatCount( tlines - 1 );
         rc = JoinCurrentLineToNext();
         RestoreCurrentFilePos();
         GoToLineNoRelCurs( n1 );
-        if( !rc ) {
-            Message1( "lines %l to %l joined", n1,n2 );
+        if( rc == ERR_NO_ERR ) {
+            Message1( "lines %l to %l joined", n1, n2 );
         }
         break;
     case EX_T_LIST:
@@ -188,9 +189,9 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         rc = CGimmeLinePtr( n1, &cfcb, &cline );
         while( !rc ) {
             if( EditFlags.LineNumbers ) {
-                MyPrintf( "%M %s\n",n1, cline->data );
+                MyPrintf( "%M %s\n", n1, cline->data );
             } else {
-                MyPrintf("%s\n",cline->data );
+                MyPrintf( "%s\n", cline->data );
             }
             if( n1 >= n2 ) {
                 break;
@@ -218,7 +219,7 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
             DoUndo();
             return( ERR_INVALID_COMMAND );
         }
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             EndUndoGroup( UndoStack );
             break;
         }
@@ -227,11 +228,10 @@ int ProcessEx( linenum n1, linenum n2, bool n2f, int dmt, int tkn,
         } else if( addr >= n1 && addr <= n2 ) {
             addr = n1;
         }
-        rc = InsertLines( addr, WorkSavebuf->first.fcb_head,
-                            WorkSavebuf->fcb_tail, UndoStack );
+        rc = InsertLines( addr, &WorkSavebuf->u.fcbs, UndoStack );
         EndUndoGroup( UndoStack );
         GoToLineNoRelCurs( addr );
-        if( !rc ) {
+        if( rc == ERR_NO_ERR ) {
             Message1( strCmmsg, tlines, "moved", addr );
         }
         break;

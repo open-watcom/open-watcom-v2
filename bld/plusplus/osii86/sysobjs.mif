@@ -1,6 +1,0 @@
-# system-dependent files (OS/2 2.0 for i86)
-
-!include ..\ppobj86.mif
-
-common_objs += &
-pragdata.obj

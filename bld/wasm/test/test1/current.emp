@@ -1,0 +1,18 @@
+
+FIXUPP386(9d) len:0024h, chksum:0eh(0e)
+    0000h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0004h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0008h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    000ch Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0010h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0014h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0018h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+
+FIXUPP386(9d) len:0022h, chksum:ffh(ff)
+    000ah Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0010h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    001ah Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    0021h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    002ch Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0031h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0037h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)

@@ -1,0 +1,12 @@
+/*
+ *  sys/utime.h compatibility forwarder
+ *
+:include crwat.sp
+ */
+#ifndef _UTIME_H_INCLUDED
+
+:include readonly.sp
+
+#include "../utime.h"
+
+#endif

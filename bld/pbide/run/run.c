@@ -59,7 +59,7 @@ BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam ) {
     return( TRUE );
 }
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     char        *ptr;
     char        *dst;
@@ -108,8 +108,8 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     while( isspace( *ptr ) ) ptr++;
 
     TheWindow = NULL;
-    enumproc = MakeProcInstance( EnumProc, currinst );
-    EnumWindows( enumproc, 0 );
+    enumproc = MakeProcInstance( (FARPROC)EnumProc, currinst );
+    EnumWindows( (WNDENUMPROC)enumproc, 0 );
     FreeProcInstance( enumproc );
 
     if( TheWindow == NULL ) {

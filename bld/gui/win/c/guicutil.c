@@ -70,14 +70,14 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, unsigned id, WPI_MSG lb_msg,
                             WPI_MSG cb_msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam,
                             WPI_MRESULT ret )
 {
-    gui_control_class   class;
+    gui_control_class   control_class;
     WPI_MRESULT         my_ret;
 
-    if( !GUIGetControlClass( wnd, id, &class ) ) {
+    if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( ret );
     }
     my_ret = ret;
-    switch( class ) {
+    switch( control_class ) {
     case GUI_LISTBOX :
         GUIToComboListControl( wnd, id, lb_msg, wparam, lparam, &my_ret );
         break;
@@ -103,6 +103,6 @@ bool GUIGetControlClass( gui_window *wnd, unsigned id,
     if( item == NULL ) {
         return( FALSE );
     }
-    *control_class = item->class;
+    *control_class = item->control_class;
     return( TRUE );
 }

@@ -1,0 +1,63 @@
+.387
+.386p
+_text16a		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$1:
+    nop         
+    call        near ptr L$1
+    push        cs
+    call        near ptr L$1
+    call        word ptr cs:L$1
+    call        dword ptr cs:L$1
+    call        fword ptr cs:L$1
+    call        far ptr L$2
+_text16a		ENDS
+_text16b		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$2:
+    nop         
+    call        far ptr L$1
+    call        near ptr L$2
+    push        cs
+    call        near ptr L$2
+    call        word ptr cs:L$2
+    call        dword ptr cs:L$2
+    call        fword ptr cs:L$2
+_text16b		ENDS
+_text32a		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$3:
+    nop         
+    call        near ptr L$3
+    push        cs
+    call        near ptr L$3
+    call        word ptr cs:L$3
+    call        dword ptr cs:L$3
+    call        fword ptr cs:L$3
+    call        far ptr L$4
+_text32a		ENDS
+_text32b		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$4:
+    nop         
+    call        far ptr L$3
+    call        near ptr L$4
+    push        cs
+    call        near ptr L$4
+    call        word ptr cs:L$4
+    call        dword ptr cs:L$4
+    call        fword ptr cs:L$4
+_text32b		ENDS
+		END

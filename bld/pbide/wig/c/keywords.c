@@ -36,10 +36,10 @@
 #include "global.h"
 #include "types.h"
 #include "sruinter.h"
-#include "ytab.h"
+#include "ytab.gh"
 #include "keywords.h"
 
-keyword         Statements[] = {
+const keyword __based(__segname("_CONST")) Statements[] = {
         NULL, "end",            ST_END,         FALSE,
         NULL, "forward",        ST_FORWARD,     FALSE,
         NULL, "from",           ST_FROM,        FALSE,
@@ -75,7 +75,7 @@ enum {
     TC_DOUBLE
 };
 
-keyword         DataTypes[] = {
+const keyword __based(__segname("_CONST")) DataTypes[] = {
         NULL, "BOOLean",                TY_BOOLEAN,             TC_INT,
         NULL, "char",                   TY_CHAR,                TC_CHAR,
         NULL, "character",              TY_CHAR,                TC_CHAR,

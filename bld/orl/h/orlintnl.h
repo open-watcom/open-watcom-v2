@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: Internal ORL interfaces. 
 *
 ****************************************************************************/
 
@@ -40,7 +39,7 @@
 #include "orlglobl.h"
 #include "orlhshdf.h"
 
-#ifndef __386__
+#if !defined( __386__ ) && !defined( __GNUC__ )
 #define ORLUNALIGNED __unaligned
 #else
 #define ORLUNALIGNED

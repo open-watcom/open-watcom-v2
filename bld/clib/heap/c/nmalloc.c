@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of near malloc() and _nmalloc().
 *
 ****************************************************************************/
 
@@ -59,6 +58,25 @@ _WCRTLINK void *malloc( size_t amount )
 
 #endif
 
+/* By setting __ALLOC_DEBUG it is possible to spot memory allocation errors in
+   RDOS target. RdosAllocateMem will here allocate whole pages regardless of actual
+   request size. The kernel device-driver should also be set to not reuse pages
+   until all pages have been allocated for this to work properly.  */
+
+#if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
+
+#include <rdos.h>
+
+_WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
+{
+    void *ptr;
+
+    ptr = RdosAllocateDebugMem( amt );
+    
+    return( (void _WCNEAR *)ptr );
+}    
+
+#else
 
 _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 {
@@ -80,7 +98,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     }
 
     _AccessNHeap();
-    ptr = NULL;
+    ptr = 0;
     expanded = 0;
     for(;;) {
         if( size > __LargestSizeB4MiniHeapRover ) {
@@ -101,7 +119,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
             largest = miniheap_ptr->largest_blk;
             if( largest >= amt ) {
                 ptr = __MemAllocator( amt, _DGroup(), (unsigned)miniheap_ptr );
-                if( ptr != NULL ) {
+                if( ptr != 0 ) {
                     goto lbl_release_heap;
                 }
             }
@@ -120,7 +138,8 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
         }
     }
 lbl_release_heap:
-    __nheap_clean = 0;
     _ReleaseNHeap();
     return( (void _WCNEAR *)ptr );
 }
+
+#endif

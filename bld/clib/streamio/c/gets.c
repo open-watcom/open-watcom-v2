@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of gets() - read string from stdin.
 *
 ****************************************************************************/
 
@@ -37,23 +36,18 @@
 
 _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )
 {
-#ifdef __WIDECHAR__
-    wint_t      c;
-#else
-    int         c;
-#endif
+    INTCHAR_TYPE    c;
     CHAR_TYPE       *cs;
-    unsigned    oflag;
+    unsigned        oflag;
 
-    oflag = stdin->_flag & (_SFERR|_EOF);               /* 06-sep-91 */
-    stdin->_flag &= ~(_SFERR|_EOF);
+    oflag = stdin->_flag & (_SFERR | _EOF);             /* 06-sep-91 */
+    stdin->_flag &= ~(_SFERR | _EOF);
     cs = s;
-    #ifdef __WIDECHAR__
-        while( (c=(getwc)(stdin)) != WEOF  &&  c != L'\n' )  *cs++ = c;
-    #else
-        while( (c=(getc)(stdin)) != EOF  &&  c != '\n' )  *cs++ = c;
-    #endif
-    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s  ||  ferror(stdin) ) ) {
+    while( (c = __F_NAME((getc),(getwc))( stdin )) != __F_NAME(EOF,WEOF)
+        && c != STRING( '\n' ) ) {
+        *cs++ = c;
+    }
+    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s || ferror( stdin )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;

@@ -24,25 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PPC register lists.
 *
 ****************************************************************************/
 
 
-RL(     &Empty,         RL_,            0,              0       ),
-RL(     &ByteRegs,      RL_BYTE,        0,              0       ),
-RL(     &WordRegs,      RL_WORD,        0,              0       ),
-RL(     &DWordRegs,     RL_DWORD,       0,              0       ),
-RL(     &QWordRegs,     RL_QWORD,       0,              0       ),
-RL(     &FloatRegs,     RL_FLOAT,       0,              0       ),
-RL(     &Parm8Regs,     RL_PARM_8,      0,              0       ),
-RL(     &Parm8Regs2,    RL_PARM2_8,     0,              0       ),
-RL(     &Return8,       RL_RET_8,       0,              0       ),
-RL(     &Parm4Regs,     RL_PARM_4,      0,              0       ),
-RL(     &Parm4Regs2,    RL_PARM2_4,     0,              0       ),
-RL(     &Parm4Regs3,    RL_PARM3_4,     0,              0       ),
-RL(     &Return4,       RL_RET_4,       0,              0       ),
-RL(     &ParmFRegs,     RL_PARM_F,      0,              0       ),
-RL(     &ReturnD,       RL_RET_F,       0,              0       ),
-RL(     &Empty,         RL_MAX_INDEX,   0,              0       ),
+RL(     Empty,         RL_,            0,              0       ),
+RL(     ByteRegs,      RL_BYTE,        0,              0       ),
+RL(     WordRegs,      RL_WORD,        0,              0       ),
+RL(     DWordRegs,     RL_DWORD,       0,              0       ),
+RL(     QWordRegs,     RL_QWORD,       0,              0       ),
+RL(     FloatRegs,     RL_FLOAT,       0,              0       ),
+RL(     Parm8Regs,     RL_PARM_8,      0,              0       ),
+RL(     Parm8Regs2,    RL_PARM2_8,     0,              0       ),
+RL(     Return8,       RL_RET_8,       0,              0       ),
+RL(     Parm4Regs,     RL_PARM_4,      0,              0       ),
+RL(     Parm4Regs2,    RL_PARM2_4,     0,              0       ),
+RL(     Parm4Regs3,    RL_PARM3_4,     0,              0       ),
+RL(     Return4,       RL_RET_4,       0,              0       ),
+RL(     ParmFRegs,     RL_PARM_F,      0,              0       ),
+RL(     ReturnD,       RL_RET_F,       0,              0       ),
+RL(     Empty,         RL_MAX_INDEX,   0,              0       ),

@@ -63,7 +63,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
     return blk;
 }
 
-extern void InitStringTable( stringtable *strtab, bool dontsplit )
+void InitStringTable( stringtable *strtab, bool dontsplit )
 /****************************************************************/
 {
     strtab->data = NULL;
@@ -75,19 +75,7 @@ extern void InitStringTable( stringtable *strtab, bool dontsplit )
     AllocNewBlock( strtab );
 }
 
-extern void CharStringTable( stringtable *strtab, char data )
-/***********************************************************/
-{
-    AddStringTable( strtab, &data, sizeof(char) );
-}
-
-extern char * StringStringTable( stringtable *strtab, char *data )
-/****************************************************************/
-{
-    return AddStringTable( strtab, data, strlen(data) + 1 );
-}
-
-extern void ReserveStringTable( stringtable *strtab, unsigned len )
+void ReserveStringTable( stringtable *strtab, unsigned len )
 /*****************************************************************/
 {
     stringblock *blk;
@@ -105,13 +93,15 @@ extern void ReserveStringTable( stringtable *strtab, unsigned len )
     }
 }
 
-extern char * AddStringTable( stringtable *strtab, char *data, unsigned len )
-/***************************************************************************/
+static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bool addnullchar )
+/**********************************************************************************************/
 {
     stringblock *blk;
     unsigned    diff;
     char *      dest;
 
+    if( addnullchar )
+        ++len;
     blk = RingLast( strtab->data );
     if( strtab->currbase & 1 && len > STR_BLOCK_SIZE ) {
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
@@ -125,7 +115,7 @@ extern char * AddStringTable( stringtable *strtab, char *data, unsigned len )
             } else {
                 memcpy( &blk->data[blk->size], data, diff );
                 len -= diff;
-                data += diff;
+                data = (char *)data + diff;
             }
         }
         blk->size = STR_BLOCK_SIZE;
@@ -133,12 +123,38 @@ extern char * AddStringTable( stringtable *strtab, char *data, unsigned len )
         blk = AllocNewBlock( strtab );
     }
     dest = &blk->data[blk->size];
-    memcpy( dest, data, len );
     blk->size += len;
-    return dest;
+    if( addnullchar )
+        dest[ --len ] = '\0';
+    memcpy( dest, data, len );
+    return( dest );
 }
 
-extern void ZeroStringTable( stringtable *strtab, unsigned len )
+void AddCharStringTable( stringtable *strtab, char data )
+/*******************************************************/
+{
+    AddToStringTable( strtab, &data, sizeof( char ), FALSE );
+}
+
+char *AddStringStringTable( stringtable *strtab, char *data )
+/***********************************************************/
+{
+    return( AddToStringTable( strtab, data, strlen( data ) + 1, FALSE ) );
+}
+
+char *AddBufferStringTable( stringtable *strtab, void *data, unsigned len )
+/**************************************************************************/
+{
+    return( AddToStringTable( strtab, data, len, FALSE ) );
+}
+
+char *AddSymbolStringTable( stringtable *strtab, char *data, unsigned len )
+/**************************************************************************/
+{
+    return( AddToStringTable( strtab, data, len, TRUE ) );
+}
+
+void ZeroStringTable( stringtable *strtab, unsigned len )
 /**************************************************************/
 {
     stringblock *blk;
@@ -154,14 +170,16 @@ typedef struct {
     void * info;
 } strblkparam;
 
-static bool WriteStringBlock( stringblock *blk, strblkparam *param )
-/******************************************************************/
+static bool WriteStringBlock( void *_blk, void *_param )
+/******************************************************/
 {
+    stringblock *blk = _blk;
+    strblkparam *param = _param;
     param->fn( param->info, blk->data, blk->size );
     return FALSE;
 }
 
-extern void WriteStringTable( stringtable *strtab,
+void WriteStringTable( stringtable *strtab,
                               void (*fn)(void *, char *,unsigned), void *info )
 /*****************************************************************************/
 {
@@ -172,13 +190,13 @@ extern void WriteStringTable( stringtable *strtab,
     RingLookup( strtab->data, WriteStringBlock, &param );
 }
 
-extern void FiniStringTable( stringtable *strtab )
+void FiniStringTable( stringtable *strtab )
 /************************************************/
 {
     RingFree( &strtab->data );
 }
 
-extern unsigned GetStringTableSize( stringtable *strtab )
+unsigned GetStringTableSize( stringtable *strtab )
 /*******************************************************/
 {
     stringblock *blk;

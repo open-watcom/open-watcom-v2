@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal header file for QNX trap file.
 *
 ****************************************************************************/
 
 
-extern char *StrCopy( char *, char * );
-extern unsigned TryOnePath( char *, struct stat *, char *, char * );
-extern unsigned FindFilePath( bool, char *, char * );
-extern char *CollectNid( char *name, unsigned len, nid_t *nidp );
+extern char         **dbg_environ;
+
+extern char         *StrCopy( char *, char * );
+extern unsigned     TryOnePath( char *, struct stat *, char *, char * );
+extern unsigned     FindFilePath( bool, char *, char * );
+extern char         *CollectNid( char *name, unsigned len, nid_t *nidp );

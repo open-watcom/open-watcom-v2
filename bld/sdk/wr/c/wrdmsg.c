@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Keep track of dialog messages.
 *
 ****************************************************************************/
 
@@ -59,7 +58,7 @@
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  LIST    *WRDialogList   = NULL;
+static LIST *WRDialogList = NULL;
 
 void WRDialogMsgInit( void )
 {
@@ -88,12 +87,11 @@ int WR_EXPORT WRIsWRDialogMsg( MSG *msg )
     LIST        *item;
 
     for( item = WRDialogList; item != NULL ; item = ListNext( item ) ) {
-        hdlg = (HWND)ListElement( item );
-        if( ( hdlg != (HWND)NULL ) && IsDialogMessage( hdlg, msg ) ) {
+        hdlg = (HWND)(DWORD)ListElement( item );
+        if( hdlg != (HWND)NULL && IsDialogMessage( hdlg, msg ) ) {
             return( TRUE );
         }
     }
 
     return( FALSE );
 }
-

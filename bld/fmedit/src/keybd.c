@@ -24,17 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to handle keyboard input.
 *
 ****************************************************************************/
 
-
-/*
-    Description:
-    ===========
-    Routines to handle keyboard input.
-*/
 
 #include <windows.h>
 
@@ -51,48 +44,48 @@ static BOOL ContinueKbdMove( int keycode );
 static BOOL EndKbdMove( int keycode );
 
 static BOOL (*KeyDownActions[])( int keycode ) = {
-    CheckKbdMove                    /* DORMANT          */
-,   CheckKbdMove                    /* OVERBOX          */
-,   IgnoreKbd                       /* MOVING           */
-,   IgnoreKbd                       /* EDITING          */
-,   IgnoreKbd                       /* SIZING           */
-,   IgnoreKbd                       /* CREATING         */
-,   IgnoreKbd                       /* ALIGNING         */
-,   IgnoreKbd                       /* PASTE_PENDING    */
-,   IgnoreKbd                       /* PASTEING         */
-,   IgnoreKbd                       /* SELECTING        */
-,   IgnoreKbd                       /* MOVE_PENDING     */
-,   IgnoreKbd                       /* ACTION_ABORTED   */
-,   ContinueKbdMove                 /* KBD_MOVING       */
+    CheckKbdMove,                   /* DORMANT          */
+    CheckKbdMove,                   /* OVERBOX          */
+    IgnoreKbd,                      /* MOVING           */
+    IgnoreKbd,                      /* EDITING          */
+    IgnoreKbd,                      /* SIZING           */
+    IgnoreKbd,                      /* CREATING         */
+    IgnoreKbd,                      /* ALIGNING         */
+    IgnoreKbd,                      /* PASTE_PENDING    */
+    IgnoreKbd,                      /* PASTEING         */
+    IgnoreKbd,                      /* SELECTING        */
+    IgnoreKbd,                      /* MOVE_PENDING     */
+    IgnoreKbd,                      /* ACTION_ABORTED   */
+    ContinueKbdMove                 /* KBD_MOVING       */
 };
 
 static BOOL (*KeyUpActions[])( int keycode ) = {
-    IgnoreKbd                       /* DORMANT          */
-,   IgnoreKbd                       /* OVERBOX          */
-,   IgnoreKbd                       /* MOVING           */
-,   IgnoreKbd                       /* EDITING          */
-,   IgnoreKbd                       /* SIZING           */
-,   IgnoreKbd                       /* CREATING         */
-,   IgnoreKbd                       /* ALIGNING         */
-,   IgnoreKbd                       /* PASTE_PENDING    */
-,   IgnoreKbd                       /* PASTEING         */
-,   IgnoreKbd                       /* SELECTING        */
-,   IgnoreKbd                       /* MOVE_PENDING     */
-,   IgnoreKbd                       /* ACTION_ABORTED   */
-,   EndKbdMove                      /* KBD_MOVING       */
+    IgnoreKbd,                      /* DORMANT          */
+    IgnoreKbd,                      /* OVERBOX          */
+    IgnoreKbd,                      /* MOVING           */
+    IgnoreKbd,                      /* EDITING          */
+    IgnoreKbd,                      /* SIZING           */
+    IgnoreKbd,                      /* CREATING         */
+    IgnoreKbd,                      /* ALIGNING         */
+    IgnoreKbd,                      /* PASTE_PENDING    */
+    IgnoreKbd,                      /* PASTEING         */
+    IgnoreKbd,                      /* SELECTING        */
+    IgnoreKbd,                      /* MOVE_PENDING     */
+    IgnoreKbd,                      /* ACTION_ABORTED   */
+    EndKbdMove                      /* KBD_MOVING       */
 };
 
 extern BOOL ProcessKeyDown( int keycode )
 /***************************************/
 {
-    return( KeyDownActions[ GetState() ]( keycode ) );
-} /* ProcessKeyDown */
+    return( KeyDownActions[GetState()]( keycode ) );
+}
 
 extern BOOL ProcessKeyUp( int keycode )
 /*************************************/
 {
-    return( KeyUpActions[ GetState() ]( keycode ) );
-} /* ProcessKeyUp */
+    return( KeyUpActions[GetState()]( keycode ) );
+}
 
 
 static BOOL IgnoreKbd( int keycode )
@@ -142,12 +135,12 @@ static BOOL FilterMoveKeys( int keycode, LPPOINT pt )
         break;
     }
     return( ret );
-} /* FilterMoveKeys */
+}
 
 static void DoKbdMove( LPPOINT pt )
-/***************************/
+/*********************************/
 {
-    LIST *  list;
+    LIST    *list;
 
     list = GetCurrObjectList();
     SetShowEatoms( FALSE );
@@ -156,7 +149,7 @@ static void DoKbdMove( LPPOINT pt )
     MoveCurrObj( pt );
     FinishMoveOperation( FALSE );
     SetShowEatoms( TRUE );
-} /* DoKbdMove */
+}
 
 static void SetKbdMoveGrid( void )
 /********************************/
@@ -179,10 +172,10 @@ static void SetKbdMoveGrid( void )
     if( hinc != 0 && vinc != 0 ) {
         SetResizeGrid( hinc, vinc );
     }
-} /* SetKbdMoveGrid */
+}
 
 static BOOL CheckKbdMove( int keycode )
-/***********************************/
+/*************************************/
 {
     POINT   pt;
 
@@ -194,7 +187,7 @@ static BOOL CheckKbdMove( int keycode )
     } else {
         return( FALSE );
     }
-} /* ChkKbdMove */
+}
 
 static BOOL ContinueKbdMove( int keycode )
 /****************************************/
@@ -207,7 +200,7 @@ static BOOL ContinueKbdMove( int keycode )
     } else {
         return( FALSE );
     }
-} /* DoKbdMove */
+}
 
 static BOOL EndKbdMove( int keycode )
 /***********************************/
@@ -220,5 +213,4 @@ static BOOL EndKbdMove( int keycode )
     } else {
         return( FALSE );
     }
-} /* EndKbdMove */
-
+}

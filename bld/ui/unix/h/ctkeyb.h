@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Terminal keyboard definitions.
 *
 ****************************************************************************/
 
@@ -52,27 +51,18 @@
 #include "trie.h"
 #include "tixparse.h"
 
-/*
-#ifndef HP
-    #include <termio.h>
-#endif
-*/
-
-#include "clibext.h"
-
-static unsigned short   ShftState;
+extern unsigned short   ShftState;
 extern char *GetTermType( void );
 
-int             ck_init();
-int             ck_fini();
-void intern     ck_arm();
-int             ck_save();
-int             ck_restore();
-int             ck_flush();
-int             ck_stop();
-int             ck_shift_state();
-int             ck_unevent();
-bool            init_interminfo();
-int             init_trie();
+int             ck_init( void );
+int             ck_fini( void );
+void intern     ck_arm( void );
+int             ck_save( void );
+int             ck_restore( void );
+int             ck_flush( void );
+int             ck_stop( void );
+int             ck_shift_state( void );
+int             ck_unevent( EVENT ev );
+bool            init_interminfo( void );
+int             init_trie( void );
 int             kb_wait( int secs, int usecs );
-

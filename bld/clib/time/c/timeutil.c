@@ -24,144 +24,98 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  time utility functions
 *
 ****************************************************************************/
-
 
 #include "variety.h"
 #include <time.h>
 #include "rtdata.h"
 #include "timedata.h"
 
-short const __diyr[] = {        /* days in normal year array */
-        0,                                      /* Jan */
-        31,                                     /* Feb */
-        31+28,                                  /* Mar */
-        31+28+31,                               /* Apr */
-        31+28+31+30,                            /* May */
-        31+28+31+30+31,                         /* Jun */
-        31+28+31+30+31+30,                      /* Jul */
-        31+28+31+30+31+30+31,                   /* Aug */
-        31+28+31+30+31+30+31+31,                /* Sep */
-        31+28+31+30+31+30+31+31+30,             /* Oct */
-        31+28+31+30+31+30+31+31+30+31,          /* Nov */
-        31+28+31+30+31+30+31+31+30+31+30,       /* Dec */
-        31+28+31+30+31+30+31+31+30+31+30+31     /* Jan, next year */
- };
+static int time_less( const struct tm *t1, const struct tm *t2 );
 
-short const __dilyr[] = {       /* days in leap year array */
-        0,                                      /* Jan */
-        31,                                     /* Feb */
-        31+29,                                  /* Mar */
-        31+29+31,                               /* Apr */
-        31+29+31+30,                            /* May */
-        31+29+31+30+31,                         /* Jun */
-        31+29+31+30+31+30,                      /* Jul */
-        31+29+31+30+31+30+31,                   /* Aug */
-        31+29+31+30+31+30+31+31,                /* Sep */
-        31+29+31+30+31+30+31+31+30,             /* Oct */
-        31+29+31+30+31+30+31+31+30+31,          /* Nov */
-        31+29+31+30+31+30+31+31+30+31+30,       /* Dec */
-        31+29+31+30+31+30+31+31+30+31+30+31     /* Jan, next year */
- };
-
-
-int __leapyear( unsigned year )
+static int calc_yday( const struct tm *timetm, int year )
 {
-    if( year & 3 ) return( 0 );
-    if( ( year % 100 ) != 0 ) return( 1 );
-    if( ( year % 400 ) == 0 ) return( 1 );
-    return( 0 );
-}
+    struct tm   tmptm;
+    int         month_days;
+    int         first_wday;
+    int         nth_week;
+    short const *diyr;
 
-static int calc_yday( struct tm *time, int year )
-{
-    struct tm tmptm;
-    int days_in_month;
-    int days_to_first_wday;
-    int nth_week;
-
-    if( time->tm_isdst == 0 ) {    // M.m.n.d form
-        if( __leapyear( year + 1900 ) ) {
-            days_in_month = __dilyr[ time->tm_mon + 1 ] -
-                            __dilyr[ time->tm_mon ];
-        } else {
-            days_in_month = __diyr[ time->tm_mon + 1 ] -
-                            __diyr[ time->tm_mon ];
-        }
-        tmptm.tm_sec = 0;
-        tmptm.tm_min = 0;
-        tmptm.tm_hour = 0;
-        tmptm.tm_mday = 1;
-        tmptm.tm_mon = time->tm_mon;
-        tmptm.tm_year = year;
+    if( timetm->tm_isdst == 0 ) { // M.m.n.d form
+        diyr = ( __leapyear( ( unsigned ) year + 1900 ) ) ? __dilyr : __diyr;
+        month_days = diyr[timetm->tm_mon + 1] - diyr[timetm->tm_mon]; 
+        tmptm.tm_sec   = 0;
+        tmptm.tm_min   = 0;
+        tmptm.tm_hour  = 0;
+        tmptm.tm_mday  = 1;
+        tmptm.tm_mon   = timetm->tm_mon;
+        tmptm.tm_year  = year;
         tmptm.tm_isdst = 0;
-        (void) mktime( &tmptm );
-        days_to_first_wday = ( time->tm_wday - tmptm.tm_wday + 7 ) % 7;
-        if( time->tm_mday == 5 ) {
-            if( ( 1 + days_to_first_wday + ( time->tm_mday - 1 ) * 7 )
-                > days_in_month ) { // fifth req. weekday does not exist
-                nth_week = time->tm_mday - 2;
-            } else {
-                nth_week = time->tm_mday - 1;
-            }
-        } else {
-            nth_week = time->tm_mday - 1;
-        }
-        return( tmptm.tm_yday + days_to_first_wday + nth_week * 7 );
+        ( void ) mktime( &tmptm );
+        first_wday = ( timetm->tm_wday - tmptm.tm_wday + 7 ) % 7;
+        if( timetm->tm_mday == 5 ) {
+            if( ( 1 + first_wday + ( timetm->tm_mday - 1 ) * 7 ) > month_days )
+                nth_week = timetm->tm_mday - 2;   // fifth req. weekday does not exist
+            else 
+                nth_week = timetm->tm_mday - 1;
+        } else 
+            nth_week = timetm->tm_mday - 1;
+        return( tmptm.tm_yday + first_wday + nth_week * 7 );
     }
-    if( time->tm_isdst == 1 ) {    /* if Jn form */
-        return( time->tm_yday - 1 );
-    }
-    return( time->tm_yday );
+    if( timetm->tm_isdst == 1 )  /* if Jn form */
+        return( timetm->tm_yday - 1 );
+    return( timetm->tm_yday );
 }
 
 /* determine if in souther hemisphere -> start is after end */
-static int check_order( struct tm *start, struct tm *end, int year ) {
+static int check_order( const struct tm *start, const struct tm *end, int year )
+{
     int start_day;
     int end_day;
 
     /* these quick checks should always be enough */
-    if( (start->tm_isdst == 0) && (end->tm_isdst == 0) ) {    // M.m.n.d form
-        if( start->tm_mon > end->tm_mon ) {
-            return( 1 );
-        } else if( start->tm_mon < end->tm_mon ) {
+    if( ( start->tm_isdst == 0 ) && ( end->tm_isdst == 0 ) ) { // M.m.n.d form
+        if( start->tm_mon > end->tm_mon ) 
+            return( 1 ); 
+        if( start->tm_mon < end->tm_mon ) 
             return( 0 );
-        }
     }
     /* start/end of daylight savings time is in the same month (rare case) */
     /* these are *expensive* calculations under NT since 2 TZ checks must be done */
     start_day = calc_yday( start, year );
     end_day = calc_yday( end, year );
-    if( start_day > end_day ) {
+    if( start_day > end_day ) 
         return( 1 );
-    }
     return( 0 );
 }
 
 /* determine if daylight savings time */
 int __isindst( struct tm *t )
 {
-    int month;
-    int dst;
-    int n1, n2;
-    int days_in_month;
-    int time_check;
-    int south;
-    struct tm *start;
-    struct tm *end;
+    int                 month;
+    int                 dst;
+    int                 n1;
+    int                 n2;
+    int                 month_days;
+    int                 time_check;
+    int                 south;
+    struct tm const     *start;
+    struct tm const     *end;
+    short const         *diyr;
 
+    // already determined -- if we are sure
+    if( t->tm_isdst >= 0 ) 
+        return( t->tm_isdst );
     dst = 0;
     // if zone doesn't have a daylight savings period
-    if( _RWD_daylight == 0 ) {
+    if( _RWD_daylight == 0 ) 
         return( t->tm_isdst = dst );
-    }
-//  // check for no daylight savings time rule
-//  if( tzname[1][0] == '\0' ) {    // doesn't work since Win32 says
-//      return( t->tm_isdst = dst );// daylight zone name = standard zone name
-//  }
+    //  // check for no daylight savings time rule
+    //  if( tzname[1][0] == '\0' ) {    // doesn't work since Win32 says
+    //      return( t->tm_isdst = dst );// daylight zone name = standard zone name
+    //  }
 
     south = check_order( &_RWD_start_dst, &_RWD_end_dst, t->tm_year );
     if( south ) {
@@ -174,11 +128,8 @@ int __isindst( struct tm *t )
         end = &_RWD_end_dst;
     }
     month = t->tm_mon;
-    if( __leapyear( t->tm_year + 1900 ) ) {
-        days_in_month = __dilyr[ month + 1 ] - __dilyr[ month ];
-    } else {
-        days_in_month = __diyr[ month + 1 ] - __diyr[ month ];
-    }
+    diyr = ( __leapyear( ( unsigned ) t->tm_year + 1900 ) ) ? __dilyr : __diyr;
+    month_days = diyr[month + 1] - diyr[month]; 
     time_check = 0;
     /*
      * M.m.n.d form
@@ -186,10 +137,10 @@ int __isindst( struct tm *t )
      * n = start->tm_mday (n'th week day 1-5)
      * d = start->tm_wday (week day 0-6)
      */
-    if( start->tm_isdst == 0 ) {    /* if Mm.n.d form */
-        if( month > start->tm_mon ) {
-            dst = 1;                        /* assume dst for now */
-        } else if( month == start->tm_mon ) {
+    if( start->tm_isdst == 0 ) { /* if Mm.n.d form */
+        if( month > start->tm_mon ) 
+            dst = 1;                        /* assume dst for now */ 
+        else if( month == start->tm_mon ) {
             /* calculate for current day */
             n1 = t->tm_mday - ( t->tm_wday + 7 - start->tm_wday ) % 7;
             /* calculate for previous day */
@@ -197,101 +148,103 @@ int __isindst( struct tm *t )
             //  n_ stands for the day of the month that is past &&
             //  is closest to today && is the required weekday
             if( start->tm_mday == 5 ) {
-                if( n1 > days_in_month - 7 ) {
+                if( n1 > month_days - 7 ) {
                     dst = 1;                /* assume dst for now */
-                    if( n2 <= days_in_month - 7 ) {
+                    if( n2 <= month_days - 7 ) 
                         time_check = 1;
-                    }
                 }
             } else {
-                if( n1 >= 7 * (start->tm_mday - 1) + 1 ) {
+                if( n1 >= 7 * ( start->tm_mday - 1 ) + 1 ) {
                     dst = 1;                /* assume dst for now */
-                    if( n2 < 7 * (start->tm_mday - 1) + 1 ) {
+                    if( n2 < 7 * ( start->tm_mday - 1 ) + 1 ) 
                         time_check = 1;
-                    }
                 }
             }
         }
     } else {
         n1 = start->tm_yday;
-        if( start->tm_isdst == 1 ) {       /* if Jn form */
-            if( __leapyear( t->tm_year + 1900 ) ) {
-                if( n1 > __diyr[2] ) n1++;      /* past Feb 28 */
+        if( start->tm_isdst == 1 ) { /* if Jn form */
+            if( __leapyear( ( unsigned ) t->tm_year + 1900 ) ) {
+                if( n1 > __diyr[2] )
+                    n1++;      /* past Feb 28 */
             }
             n1--;
         }
         if( t->tm_yday >= n1 ) {
             dst = 1;                        /* assume dst for now */
-            if( t->tm_yday == n1 ) time_check = 1;
+            if( t->tm_yday == n1 )
+                time_check = 1;
         }
     }
     /* if it is the day for a switch-over then check the time too */
-    if( time_check ) dst = ! time_less( t, start );
+    if( time_check )
+        dst = !time_less( t, start );
 
     /* if we are certain that it is before daylight saving then return */
     if( dst == 0 ) {
-        if( south ) dst = south - dst;  /* invert value of dst */
+        if( south )
+            dst = south - dst;  /* invert value of dst */
         return( t->tm_isdst = dst );
     }
 
     /* now see if it is after daylight saving */
     time_check = 0;
-    if( end->tm_isdst == 0 ) {         /* if Mm.n.d form */
-        if( month > end->tm_mon ) {
-            dst = 0;                        /* not dst */
-        } else if( month == end->tm_mon ) {
+    if( end->tm_isdst == 0 ) { /* if Mm.n.d form */
+        if( month > end->tm_mon ) 
+            dst = 0;                        /* not dst */ 
+        else if( month == end->tm_mon ) {
             dst = 0;
             /* calculate for current day */
             n1 = t->tm_mday - ( t->tm_wday + 7 - end->tm_wday ) % 7;
             /* calculate for previous day */
             n2 = t->tm_mday - 1 -
-                        ( t->tm_wday - 1 + 7 - end->tm_wday ) % 7;
+                ( t->tm_wday - 1 + 7 - end->tm_wday ) % 7;
             if( end->tm_mday == 5 ) {
-                if( n1 <= days_in_month - 7 ) {
-                    dst = 1;
-                } else if( n2 <= days_in_month - 7 ) {
+                if( n1 <= month_days - 7 ) 
+                    dst = 1; 
+                else if( n2 <= month_days - 7 ) 
                     time_check = 1;
-                }
             } else {
-                if( n1 < 7 * (end->tm_mday - 1) + 1 ) {
-                    dst = 1;
-                } else if( n2 < 7 * (end->tm_mday - 1) + 1 ) {
+                if( n1 < 7 * ( end->tm_mday - 1 ) + 1 ) 
+                    dst = 1; 
+                else if( n2 < 7 * ( end->tm_mday - 1 ) + 1 ) 
                     time_check = 1;
-                }
             }
         }
     } else {
         n1 = end->tm_yday;
-        if( end->tm_isdst == 1 ) {         /* if Jn form */
-            if( __leapyear( t->tm_year + 1900 ) ) {
-                if( n1 > __diyr[2] ) n1++;      /* past Feb 28 */
+        if( end->tm_isdst == 1 ) { /* if Jn form */
+            if( __leapyear( ( unsigned ) t->tm_year + 1900 ) ) {
+                if( n1 > __diyr[2] )
+                    n1++;      /* past Feb 28 */
             }
             n1--;
         }
         if( t->tm_yday >= n1 ) {
             dst = 0;
-            if( t->tm_yday == n1 ) time_check = 1;
+            if( t->tm_yday == n1 )
+                time_check = 1;
         }
     }
     /* if it is the day for a switch-over then check the time too */
-    if( time_check ) dst = time_less( t, end );
-    if( south ) dst = south - dst;      /* invert value of dst */
+    if( time_check )
+        dst = time_less( t, end );
+    if( south )
+        dst = south - dst;      /* invert value of dst */
     return( t->tm_isdst = dst );
 }
 
-static int time_less( struct tm *t1, struct tm *t2 )
+static int time_less( const struct tm *t1, const struct tm *t2 )
 {
     int before;
 
     before = 0;
-    if( t1->tm_hour < t2->tm_hour ) {
-        before = 1;
-    } else if( t1->tm_hour == t2->tm_hour ) {
-        if( t1->tm_min < t2->tm_min ) {
-            before = 1;
-        } else if( t1->tm_min == t2->tm_min ) {
-            if( t1->tm_sec < t2->tm_sec ) before = 1;
-        }
+    if( t1->tm_hour < t2->tm_hour ) 
+        before = 1; 
+    else if( t1->tm_hour == t2->tm_hour ) {
+        if( t1->tm_min < t2->tm_min
+        ||  t1->tm_min == t2->tm_min && t1->tm_sec < t2->tm_sec )
+                before = 1;
     }
     return( before );
 }

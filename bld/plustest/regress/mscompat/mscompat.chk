@@ -1,0 +1,253 @@
+PASS ms01.cpp
+PASS line 18
+SUCCESS
+PASS line 18
+SUCCESS
+PASS line 18
+SUCCESS
+PASS line 17
+SUCCESS
+PASS line 18
+SUCCESS
+PASS line 4
+PASS line 12
+SUCCESS
+PASS line 5
+SUCCESS
+PASS line 10
+PASS line 14
+SUCCESS
+PASS line 5
+PASS line 10
+PASS line 14
+SUCCESS
+PASS line 10
+PASS line 14
+SUCCESS
+PASS line 5
+PASS line 10
+PASS line 14
+SUCCESS
+PASS line 5
+SUCCESS
+PASS line 15
+SUCCESS
+PASS line 5
+PASS line 15
+SUCCESS
+PASS line 10
+SUCCESS
+PASS line 11
+PASS line 15
+SUCCESS
+PASS line 10
+PASS line 11
+PASS line 15
+SUCCESS
+PASS line 11
+PASS line 15
+SUCCESS
+PASS line 10
+PASS line 11
+PASS line 15
+SUCCESS
+diag0011.cpp
+diag0011.cpp(20) : error C2070: illegal sizeof operand
+diag0011.cpp(20) : error C2056: illegal expression
+diag0011.cpp(20) : error C2466: cannot allocate an array of constant size 0
+diag0011.cpp(20) : error C2133: 'c' : unknown size
+diag0085.cpp
+diag0085.cpp(43) : error C2664: 'hit' : cannot convert parameter 1 from 'const struct A *const ' to 'void *' (new behavior; please see help)
+diag0085.cpp(46) : error C2664: 'hitv' : cannot convert parameter 1 from 'const struct A *const ' to 'volatile void *' (new behavior; please see help)
+diag0085.cpp(50) : error C2664: 'hit' : cannot convert parameter 1 from 'volatile struct A *const ' to 'void *' (new behavior; please see help)
+diag0085.cpp(51) : error C2664: 'hitc' : cannot convert parameter 1 from 'volatile struct A *const ' to 'const void *' (new behavior; please see help)
+diag0085.cpp(57) : error C2664: 'hit' : cannot convert parameter 1 from 'volatile const struct A *const ' to 'void *' (new behavior; please see help)
+diag0085.cpp(58) : error C2664: 'hitc' : cannot convert parameter 1 from 'volatile const struct A *const ' to 'const void *' (new behavior; please see help)
+diag0085.cpp(59) : error C2664: 'hitv' : cannot convert parameter 1 from 'volatile const struct A *const ' to 'volatile void *' (new behavior; please see help)
+diag0086.cpp
+diag0086.cpp(63) : fatal error C1189: #error :  at least one error for DIAGNOSE test stream
+diag0187.cpp
+diag0187.cpp(17) : error C2166: l-value specifies const object
+diag0187.cpp(18) : error C2166: l-value specifies const object
+diag0187.cpp(37) : error C2664: 'foo' : cannot convert parameter 1 from 'double [4][4]' to 'const double [][4]' (new behavior; please see help)
+diag0187.cpp(44) : error C2041: illegal digit '8' for base '8'
+diag0187.cpp(44) : error C2143: syntax error : missing ';' before 'int constant'
+diag0198.cpp
+diag0198.cpp(6) : error C2371: 'QQ1' : redefinition; different basic types
+diag0198.cpp(8) : warning C4038: '__cdecl' : illegal ambient class modifier
+diag0198.cpp(62) : error C2027: use of undefined type 'XX2'
+diag0198.cpp(62) : error C2228: left of '.a' must have class/struct/union type
+diag0198.cpp(75) : error C2086: 'a' : redefinition
+diag0198.cpp(81) : error C2370: 'c' : redefinition; different storage class
+diag0198.cpp(97) : error C2664: 'C::C(const struct C &)' : cannot convert parameter 1 from 'int' to 'const struct C &' (new behavior; please see help)
+diag0198.cpp(124) : error C2061: syntax error : identifier '_segment'
+diag0198.cpp(127) : error C2065: 'sel' : undeclared identifier
+diag0198.cpp(127) : error C2296: ':>' : bad left operand
+diag0198.cpp(127) : error C2214: pointers based on 'void' require the use of :>
+diag0251.cpp
+diag0251.cpp(15) : error C2171: '&' : illegal operand
+diag0251.cpp(15) : error C2668: 'goo' : ambiguous call to overloaded function (new behavior; please see help)
+diag0251.cpp(26) : error C2258: illegal pure syntax, must be '= 0'
+diag0251.cpp(26) : error C2252: 'f3' : pure specifier can only be specified for functions
+diag0251.cpp(27) : error C2258: illegal pure syntax, must be '= 0'
+diag0251.cpp(27) : error C2252: 'f11' : pure specifier can only be specified for functions
+diag0251.cpp(30) : error C2440: 'initializing' : cannot convert from 'int (__cdecl *)(double)' to 'int (S::*)(double)' (new behavior; please see help)
+diag0251.cpp(34) : error C2440: 'initializing' : cannot convert from 'int (S::*)(int)' to 'int (S::*)(double)' (new behavior; please see help)
+diag0251.cpp(38) : error C2563: mismatch in formal parameter list
+diag0251.cpp(44) : error C2440: 'initializing' : cannot convert from 'int' to 'int *' (new behavior; please see help)
+diag0251.cpp(45) : error C2440: 'initializing' : cannot convert from 'int' to 'int *' (new behavior; please see help)
+diag0251.cpp(45) : error C2440: 'initializing' : cannot convert from 'int' to 'int *' (new behavior; please see help)
+diag0251.cpp(52) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(52) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(54) : error C2065: 'moo' : undeclared identifier
+diag0251.cpp(54) : error C2440: 'initializing' : cannot convert from 'int' to 'int (S::*)(int)' (new behavior; please see help)
+diag0251.cpp(55) : error C2065: 'foo' : undeclared identifier
+diag0251.cpp(55) : error C2440: 'initializing' : cannot convert from 'int' to 'int (S::*)(int)' (new behavior; please see help)
+diag0251.cpp(56) : error C2065: 'data3' : undeclared identifier
+diag0251.cpp(56) : error C2440: 'initializing' : cannot convert from 'int' to 'double S::*' (new behavior; please see help)
+diag0251.cpp(65) : error C2597: 'S::data2' : does not specify an object
+diag0251.cpp(65) : error C2597: 'S::data2' : does not specify an object
+diag0251.cpp(65) : error C2597: 'S::data2' : does not specify an object
+diag0251.cpp(65) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(65) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(65) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(66) : error C2065: 'data2' : undeclared identifier
+diag0251.cpp(66) : error C2440: 'initializing' : cannot convert from 'int *' to 'double S::*' (new behavior; please see help)
+diag0251.cpp(66) : error C2440: 'initializing' : cannot convert from 'int *' to 'double S::*' (new behavior; please see help)
+diag0251.cpp(67) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(67) : error C2597: 'S::data3' : does not specify an object
+diag0251.cpp(74) : error C2563: mismatch in formal parameter list
+diag0251.cpp(75) : error C2440: 'initializing' : cannot convert from 'int (__cdecl *)(long)' to 'int (X::*)(long)' (new behavior; please see help)
+diag0251.cpp(81) : error C2563: mismatch in formal parameter list
+diag0251.cpp(81) : error C2568: 'initializing' : unable to resolve function overload 'f'
+diag0267.cpp
+diag0267.cpp(18) : error C2664: 'goo' : cannot convert parameter 1 from 'struct S' to 'struct T' (new behavior; please see help)
+diag0267.cpp(19) : error C2664: 'goo' : cannot convert parameter 1 from 'struct S' to 'struct T' (new behavior; please see help)
+diag0268.cpp
+diag0268.cpp(19) : error C2664: 'foo' : cannot convert parameter 1 from 'struct S' to 'struct T' (new behavior; please see help)
+diag0268.cpp(21) : error C2664: 'foo' : cannot convert parameter 1 from 'struct S' to 'struct T' (new behavior; please see help)
+lisa006.cpp
+lisa006.cpp(7) : error C2632: 'long' followed by 'char' is illegal
+lisa006.cpp(46) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(76) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(76) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(76) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(77) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(77) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(78) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(78) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(78) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(79) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(79) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(79) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(80) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(80) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(81) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(81) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(82) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(82) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(83) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(83) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(83) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(84) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(84) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(85) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(85) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(86) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(86) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(86) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(87) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(87) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(88) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(88) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(89) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(89) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(90) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(90) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(90) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(91) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(92) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(92) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(93) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(93) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(94) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(94) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(94) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(95) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(95) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(96) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(96) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(97) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(97) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(97) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(98) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(98) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(99) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(99) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(100) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(100) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(101) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(101) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(102) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(102) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(102) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(103) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(103) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(103) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(104) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(104) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(104) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(105) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(105) : error C4226: nonstandard extension used : '__far' is an obsolete keyword
+lisa006.cpp(200) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(200) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(353) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(354) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(358) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(359) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(360) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(362) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(363) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(364) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(365) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(366) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(367) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(368) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(369) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(370) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(371) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(374) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(374) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(391) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(391) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(503) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(503) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(595) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(595) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(660) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(660) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(786) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(786) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(848) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(848) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(900) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(900) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(945) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(945) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(1007) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(1007) : warning C4081: expected 'newline'; found ','
+lisa006.cpp(1018) : warning C4079: unexpected token 'identifier'
+lisa006.cpp(1018) : warning C4081: expected 'newline'; found ')'
+lisa006.cpp(1026) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(1027) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(1028) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(1029) : error C4226: nonstandard extension used : '__near' is an obsolete keyword
+lisa006.cpp(1777) : error C2092: array element type cannot be function
+lisa006.cpp(1777) : error C2371: 'new' : redefinition; different basic types
+lisa006.cpp(1778) : error C2092: array element type cannot be function
+lisa006.cpp(1778) : error C2371: 'new' : redefinition; different basic types
+lisa006.cpp(1780) : error C2092: array element type cannot be function
+lisa006.cpp(1780) : error C2372: 'delete' : redefinition; different types of indirection
+lisa006.cpp(4045) : error C2593: 'operator !=' is ambiguous
+lisa012.cpp
+lisa012.cpp(22) : error C2607: 'initializing' : cannot implicitly convert a 'struct X' to a 'struct B &' that is not const

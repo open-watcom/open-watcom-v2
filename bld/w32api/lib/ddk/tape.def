@@ -1,0 +1,10 @@
+LIBRARY TAPE.SYS
+EXPORTS
+TapeClassAllocateSrbBuffer@8
+TapeClassCompareMemory@12
+TapeClassInitialize@12
+TapeClassLiDiv@16
+TapeClassLogicalBlockToPhysicalBlock@16
+TapeClassPhysicalBlockToLogicalBlock@16
+TapeClassZeroMemory@8
+TapeDebugPrint

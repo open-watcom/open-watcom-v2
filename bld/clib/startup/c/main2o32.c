@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit executable entry point.
 *
 ****************************************************************************/
 
@@ -42,14 +41,11 @@
 #include "sigtab.h"
 #include "initfini.h"
 #include "thread.h"
+#include "initarg.h"
 
 #ifdef __SW_BR
-    _WCRTLINK extern    unsigned    __hmodule;
-    _WCRTLINK extern    void        (*__process_fini)(unsigned,unsigned);
-    _WCRTLINK extern    int         ___Argc;    /* argument count */
-    _WCRTLINK extern    char        **___Argv;  /* argument vector */
-    _WCRTLINK extern    int         ___wArgc;   /* argument count */
-    _WCRTLINK extern    wchar_t     **___wArgv; /* argument vector */
+    _WCRTDATA extern    unsigned    __hmodule;
+    _WCRTLINK extern    void        (*__process_fini)( unsigned, unsigned );
 
     extern      void    __CommonInit( void );
     extern      int     main( int, char ** );
@@ -58,59 +54,60 @@
     extern      void    __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *,
                                        void *, unsigned, char *,
                                        char * );
-    #ifdef __WIDECHAR__
-        extern  void    __wCMain( void );
-        #if defined(_M_IX86)
-            #pragma aux __wCMain   "*"
-        #endif
-    #else
-        extern  void    __CMain( void );
-        #if defined(_M_IX86)
-            #pragma aux __CMain   "*"
-        #endif
+  #ifdef __WIDECHAR__
+    extern  void    __wCMain( void );
+    #if defined(_M_IX86)
+        #pragma aux __wCMain   "*"
     #endif
+  #else
+    extern  void    __CMain( void );
+    #if defined(_M_IX86)
+        #pragma aux __CMain   "*"
+    #endif
+  #endif
     extern      unsigned        __ThreadDataSize;
+    extern      void            __InitThreadData( thread_data *tdata );
+#endif
+
+#if defined(_M_IX86)
+  #ifdef __WIDECHAR__
+    #pragma aux __wOS2Main "*" parm caller []
+  #else
+    #pragma aux __OS2Main "*" parm caller []
+  #endif
 #endif
 
 void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
+                                     char *env, char *cmd )
 /********************************************************************/
-    char *env, char *cmd )
 {
-    EXCEPTIONREGISTRATIONRECORD xcpt;
-    reserved = reserved;
-    #ifdef __SW_BR
-        __hmodule = hmod;
-        env = env;
-        cmd = cmd;
-        __XCPTHANDLER = &xcpt;
-        __process_fini = &__FiniRtns;
-        __InitRtns( 255 );
-        __CommonInit();
-        #ifdef __WIDECHAR__
-            exit( wmain( ___wArgc, ___wArgv ) );
-        #else
-            exit( main( ___Argc, ___Argv ) );
-        #endif
-    #else
-    {
-        thread_data     *tdata;
+    EXCEPTIONREGISTRATIONRECORD     xcpt;
 
-        __InitRtns( 1 );
+#ifdef __SW_BR
+    __hmodule = hmod;
+    env = env;
+    cmd = cmd;
+    // Even though the exception handler and all that is
+    // in the runtime DLL, it must be registered from here since
+    // the registration record needs to live on stack
+    __XCPTHANDLER = &xcpt;
+    __process_fini = &__FiniRtns;
+    __InitRtns( 255 );
+    __sig_init_rtn();
+    __CommonInit();
+    exit( __F_NAME(main( ___Argc, ___Argv ),wmain( ___wArgc, ___wArgv )) );
+#else
+    thread_data     *tdata;
 
-        tdata = __alloca( __ThreadDataSize );
-        memset( tdata, 0, __ThreadDataSize );
-        // tdata->__allocated = 0;
-        tdata->__data_size = __ThreadDataSize;
+    __InitRtns( INIT_PRIORITY_THREAD );
 
-        __OS2MainInit( &xcpt, tdata, hmod, env, cmd );
-        __F_NAME(__CMain,__wCMain)();
-    }
-    #endif
-}
-#if defined(_M_IX86)
-    #ifdef __WIDECHAR__
-        #pragma aux __wOS2Main "*" parm caller []
-    #else
-        #pragma aux __OS2Main "*" parm caller []
-    #endif
+    tdata = __alloca( __ThreadDataSize );
+    memset( tdata, 0, __ThreadDataSize );
+    // tdata->__allocated = 0;
+    tdata->__data_size = __ThreadDataSize;
+    __InitThreadData( tdata );
+    __OS2MainInit( &xcpt, tdata, hmod, env, cmd );
+    __F_NAME(__CMain,__wCMain)();
 #endif
+    reserved = reserved;
+}

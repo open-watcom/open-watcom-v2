@@ -1,0 +1,112 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+L$1:
+    je          L$2
+    jmp         near ptr L$33
+L$2:
+    jbe         L$3
+    jmp         near ptr L$33
+L$3:
+    jb          L$4
+    jmp         near ptr L$33
+L$4:
+    jae         L$5
+    jmp         near ptr L$33
+L$5:
+    ja          L$6
+    jmp         near ptr L$33
+L$6:
+    jae         L$7
+    jmp         near ptr L$33
+L$7:
+    jne         L$8
+    jmp         near ptr L$33
+L$8:
+    jle         L$9
+    jmp         near ptr L$33
+L$9:
+    jl          L$10
+    jmp         near ptr L$33
+L$10:
+    jge         L$11
+    jmp         near ptr L$33
+L$11:
+    jg          L$12
+    jmp         near ptr L$33
+L$12:
+    jmp         near ptr L$33
+    jmp         far ptr L$33
+    ja          L$13
+    jmp         near ptr L$33
+L$13:
+    jae         L$14
+    jmp         near ptr L$33
+L$14:
+    jb          L$15
+    jmp         near ptr L$33
+L$15:
+    jbe         L$16
+    jmp         near ptr L$33
+L$16:
+    jb          L$17
+    jmp         near ptr L$33
+L$17:
+    je          L$18
+    jmp         near ptr L$33
+L$18:
+    jg          L$19
+    jmp         near ptr L$33
+L$19:
+    jge         L$20
+    jmp         near ptr L$33
+L$20:
+    jl          L$21
+    jmp         near ptr L$33
+L$21:
+    jle         L$22
+    jmp         near ptr L$33
+L$22:
+    jo          L$23
+    jmp         near ptr L$33
+L$23:
+    jp          L$24
+    jmp         near ptr L$33
+L$24:
+    js          L$25
+    jmp         near ptr L$33
+L$25:
+    je          L$26
+    jmp         near ptr L$33
+L$26:
+    jno         L$27
+    jmp         near ptr L$33
+L$27:
+    jpo         L$28
+    jmp         near ptr L$33
+L$28:
+    jpo         L$29
+    jmp         near ptr L$33
+L$29:
+    jp          L$30
+    jmp         near ptr L$33
+L$30:
+    jns         L$31
+    jmp         near ptr L$33
+L$31:
+    jne         L$32
+    jmp         near ptr L$33
+L$32:
+    DB	01FH DUP(0,0,0,0,0,0,0,0)
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    nop         
+    nop         
+    nop         
+L$33:
+    nop         
+    jmp         near ptr L$1
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

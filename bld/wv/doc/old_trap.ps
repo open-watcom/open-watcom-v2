@@ -1,0 +1,3033 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Creator:  WATCOM Script/GML V4.0 PC/DOS
+%%Title: WATCOM Script/GML
+%%CreationDate: 09:41:15 July 3, 1994
+%%Pages: (atend)
+%%BoundingBox: 0 0 8500 10920
+%%EndComments
+/@uline {
+   currentpoint exch /@underx exch def
+   currentfont /FontInfo get dup
+   /UnderlineThickness get 0
+   currentfont /FontMatrix get transform pop
+   /@underthick exch def
+   /UnderlinePosition get 0
+   currentfont /FontMatrix get transform pop
+   add @underthick sub
+   /@undery exch def } def
+/@euline {
+   currentpoint exch dup
+   @underx @undery moveto
+   @underx sub 0 rlineto
+   @underthick setlinewidth stroke
+   exch moveto } def
+/graphhead {
+   /@scale exch def
+   /@yoff exch def
+   /@xoff exch def
+   /@depth exch def
+   /@width exch def
+   /@y exch def
+   /@x exch def
+   1 setlinewidth /@clw currentlinewidth def
+   @x @clw 2 div sub @y @clw 2 div add moveto
+   0 @depth neg @clw sub rlineto
+   @width @clw add 0 rlineto
+   0 @depth @clw add rlineto
+   closepath clip newpath
+   @x @xoff sub dup @y @yoff add @depth add moveto
+   @y @yoff add translate
+   10 @scale mul 72 div dup scale
+ /restore {systemdict /restore get exec} bind def } def
+/plfdef {
+   /@fgmlname exch def
+   /@fdefname exch def
+   /@fptsiz exch def
+   /@fname exch def
+   /@bf @fname findfont @fptsiz 1000 mul 72 div scalefont def
+   /@nf @bf maxlength dict def
+   @bf { exch dup /FID ne { exch @nf 3 1 roll put } { pop pop }
+   ifelse} forall 
+   @nf /FontName @fdefname put
+   @fdefname @nf definefont pop
+   @fgmlname @fdefname /findfont cvx /setfont cvx 3 array astore cvx def } def
+/sd { exch currentpoint exch pop moveto shwd } def
+/shwd { show } def
+/am { moveto } def
+/Times-Roman 10.0 /@ft0 /@fs0 plfdef
+/Times-Italic 10.0 /@ft1 /@fs1 plfdef
+/Times-Bold 10.0 /@ft2 /@fs2 plfdef
+/Times-BoldItalic 10.0 /@ft3 /@fs3 plfdef
+/Times-Bold 16.0 /@ft4 /@fs4 plfdef
+/Times-BoldItalic 10.0 /@ft5 /@fs5 plfdef
+/Courier 9.0 /@ft6 /@fs6 plfdef
+/Courier-Bold 9.0 /@ft7 /@fs7 plfdef
+/Courier 10.0 /@ft8 /@fs8 plfdef
+/Courier-Bold 10.0 /@ft9 /@fs9 plfdef
+/Times-Roman 24.0 /@ft10 /@fs10 plfdef
+/Times-Bold 24.0 /@ft11 /@fs11 plfdef
+/Times-Roman 24.0 /@ft12 /@fs12 plfdef
+/Times-Roman 24.0 /@ft13 /@fs13 plfdef
+/Times-Roman 24.0 /@ft14 /@fs14 plfdef
+/Times-Roman 24.0 /@ft15 /@fs15 plfdef
+/Times-Roman 24.0 /@ft16 /@fs16 plfdef
+/Times-Roman 24.0 /@ft17 /@fs17 plfdef
+/Times-Roman 24.0 /@ft18 /@fs18 plfdef
+/Times-Roman 24.0 /@ft19 /@fs19 plfdef
+/Symbol 10.0 /@ft20 /@fs20 plfdef
+/draft{save exch dup () eq {pop (DRAFT)}if /drt exch def
+   /rm 7300 dup 0 le {pop 7000}if def
+   /pd 9000 dup 0 le {pop 9660}if def
+   .95 setgray /Helvetica-Bold findfont
+   rm rm mul pd pd mul add sqrt
+   .75 mul drt length 2 add div
+   scalefont setfont
+   10920 newpath 0 0 moveto (X) true charpath flattenpath pathbbox
+   3 -1 roll sub 3 1 roll exch sub rm add 2 div 3 1 roll pd add
+   2 div sub moveto 45 rotate drt stringwidth pop dup 1.25 mul
+   2 div neg 0 rmoveto .25 mul drt length div 0 drt ashow
+   restore}bind def
+%%EndProlog
+%%Page: # 1
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+
+@fs0 
+pageobj restore
+showpage
+%%Page: # 2
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs11 1740 7082 am (WATCOM Debugger Trap File) shwd 3351 6720 am (Interface)
+shwd 2904 5634 am (VERSION 17.0) shwd 
+@fs0 3670 3797 am (Copyright 1994 by WATCOM International Corp.) shwd 5812 3296
+ am (July 3, 1994) shwd 
+pageobj restore
+showpage
+%%Page: # 3
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 3987 10006 am (Table of Contents) shwd 
+@fs0 1500 9672 am (Introduction) shwd 2235 (..................................\
+..............................................................................\
+...........................) sd 7430 (1) sd 1500 9338 am (1 Some Definitions)
+shwd 2655 (...................................................................\
+............................................................) sd 7430 (1) sd 
+1700 9004 am (1.1 Pointer Sizes) shwd 2690 (..................................\
+..............................................................................\
+..............) sd 7430 (1) sd 1700 8837 am (1.2 Base Types) shwd 2620 (......\
+..............................................................................\
+............................................) sd 7430 (1) sd 1500 8503 am (The\
+ Request Interface) shwd 2795 (...............................................\
+............................................................................)
+sd 7430 (3) sd 1500 8169 am (1 Request Structure.) shwd 2690 (................\
+..............................................................................\
+................................) sd 7430 (3) sd 1500 7835 am (2 The Interface\
+ Routines) shwd 2935 (........................................................\
+...............................................................) sd 7430 (3)
+sd 1700 7501 am (2.1 TrapInit) shwd 2410 (....................................\
+..............................................................................\
+....................) sd 7430 (3) sd 1700 7334 am (2.2 TrapRequest) shwd 2690 
+(.............................................................................\
+.................................................) sd 7430 (4) sd 1900 7167 am 
+(2.2.1 Request Example) shwd 3250 (...........................................\
+...................................................................) sd 7430 (\
+5) sd 1700 7000 am (2.3 TrapFini) shwd 2445 (.................................\
+..............................................................................\
+......................) sd 7430 (5) sd 1500 6666 am (The Requests) shwd 2305 (\
+..............................................................................\
+...........................................................) sd 7430 (6) sd 
+1500 6332 am (1 Core Requests) shwd 2480 (....................................\
+..............................................................................\
+..................) sd 7430 (6) sd 1700 5998 am (1.1 REQ_CONNECT \(0\)) shwd 
+3180 (........................................................................\
+........................................) sd 7430 (6) sd 1700 5831 am (1.2 REQ\
+_DISCONNECT \(1\)) shwd 3390 (................................................\
+..........................................................) sd 7430 (7) sd 1700
+ 5664 am (1.3 REQ_SUSPEND \(2\)) shwd 3145 (..................................\
+..............................................................................\
+.) sd 7430 (7) sd 1700 5497 am (1.4 REQ_RESUME \(3\)) shwd 3075 (.............\
+..............................................................................\
+........................) sd 7430 (7) sd 1700 5330 am (1.5 REQ_GET_SUPPLEMENTA\
+RY_SERVICE \(4\)) shwd 4685 (.................................................\
+....................) sd 7430 (8) sd 1700 5163 am (1.6 REQ_PERFORM_SUPPLEMENTA\
+RY_SERVICE \(5\)) shwd 5070 (.................................................\
+.........) sd 7430 (8) sd 1700 4996 am (1.7 REQ_GET_SYS_CONFIG \(6\)) shwd 3705
+ (............................................................................\
+.....................) sd 7430 (9) sd 1700 4829 am (1.8 REQ_MAP_ADDR \(7\))
+shwd 3285 (...................................................................\
+..........................................) sd 7360 (10) sd 1700 4662 am (1.9 \
+REQ_ADDR_INFO \(8\)) shwd 3320 (..............................................\
+..............................................................) sd 7360 (11)
+sd 1700 4495 am (1.10 REQ_CHECKSUM_MEM \(9\)) shwd 3775 (.....................\
+..........................................................................) sd 
+7360 (11) sd 1700 4328 am (1.11 REQ_READ_MEM \(10\)) shwd 3425 (..............\
+..............................................................................\
+.............) sd 7360 (12) sd 1700 4161 am (1.12 REQ_WRITE_MEM \(11\)) shwd 
+3495 (........................................................................\
+...............................) sd 7360 (12) sd 1700 3994 am (1.13 REQ_READ_I\
+O \(12\)) shwd 3250 (.........................................................\
+.....................................................) sd 7360 (12) sd 1700 
+3827 am (1.14 REQ_WRITE_IO \(13\)) shwd 3320 (................................\
+............................................................................)
+sd 7360 (13) sd 1700 3660 am (1.15 REQ_READ_CPU \(14\) .......................\
+..............................................................................\
+......) shwd 7360 (13) sd 1700 3493 am (1.16 REQ_READ_FPU \(15\)) shwd 3355 (.\
+..............................................................................\
+............................) sd 7360 (14) sd 1700 3326 am (1.17 REQ_WRITE_CPU\
+ \(16\)/REQ_WRITE_FPU \(17\)) shwd 4860 (.....................................\
+...........................) sd 7360 (14) sd 1700 3159 am (1.18 REQ_PROG_GO \(\
+18\)/REQ_PROG_STEP \(19\)) shwd 4720 (........................................\
+............................) sd 7360 (15) sd 1700 2992 am (1.19 REQ_PROG_LOAD\
+ \(20\)) shwd 3495 (..........................................................\
+.............................................) sd 7360 (16) sd 1700 2825 am (1\
+.20 REQ_PROG_KILL \(21\)) shwd 3425 (.........................................\
+................................................................) sd 7360 (17)
+sd 1700 2658 am (1.21 REQ_SET_WATCH \(22\)) shwd 3495 (.......................\
+..............................................................................\
+..) sd 7360 (17) sd 1700 2491 am (1.22 REQ_CLEAR_WATCH \(23\)) shwd 3705 (....\
+..............................................................................\
+...............) sd 7360 (18) sd 1700 2324 am (1.23 REQ_SET_BREAK \(24\)) shwd 
+3425 (........................................................................\
+.................................) sd 7360 (18) sd 1700 2157 am (1.24 REQ_CLEA\
+R_BREAK \(25\)) shwd 3635 (...................................................\
+................................................) sd 7360 (18) sd 1700 1990 am 
+(1.25 REQ_GET_NEXT_ALIAS \(26\)) shwd 3845 (..................................\
+...........................................................) sd 7360 (19) sd 
+1700 1823 am (1.26 REQ_SET_USER_SCREEN \(27\)) shwd 3915 (....................\
+.......................................................................) sd 
+7360 (19) sd 1700 1656 am (1.27 REQ_SET_DEBUG_SCREEN \(28\)) shwd 4055 (......\
+..............................................................................\
+...) sd 7360 (19) sd 1700 1489 am (1.28 REQ_READ_USER_KEYBOARD \(29\)) shwd 
+4300 (........................................................................\
+........) sd 7360 (20) sd 
+pageobj restore
+showpage
+%%Page: # 4
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 3987 10006 am (Table of Contents) shwd 
+@fs0 1700 9672 am (1.29 REQ_GET_LIB_NAME \(30\)) shwd 3705 (..................\
+..............................................................................\
+.) sd 7360 (20) sd 1700 9505 am (1.30 REQ_GET_ERR_TEXT \(31\)) shwd 3705 (....\
+..............................................................................\
+...............) sd 7360 (21) sd 1700 9338 am (1.31 REQ_GET_MESSAGE_TEXT \(32\
+\)) shwd 4055 (...............................................................\
+........................) sd 7360 (21) sd 1700 9171 am (1.32 REQ_REDIRECT_STDI\
+N \(33\)/REQ_REDIRECT_STDOUT \(34\)) shwd 5770 (..............................\
+........) sd 7360 (22) sd 1700 9004 am (1.33 REQ_SPLIT_CMD \(35\)) shwd 3425 (\
+..............................................................................\
+...........................) sd 7360 (22) sd 1500 8670 am (2 File I/O requests)
+ shwd 2585 (..................................................................\
+...............................................................) sd 7360 (23)
+sd 1700 8336 am (2.1 REQ_FILE_GET_CONFIG \(0\)) shwd 3740 (...................\
+.............................................................................)
+sd 7360 (23) sd 1700 8169 am (2.2 REQ_FILE_OPEN \(1\)) shwd 3250 (............\
+..............................................................................\
+....................) sd 7360 (23) sd 1700 8002 am (2.3 REQ_FILE_SEEK \(2\))
+shwd 3215 (...................................................................\
+............................................) sd 7360 (24) sd 1700 7835 am (2.\
+4 REQ_FILE_READ \(3\)) shwd 3250 (............................................\
+..................................................................) sd 7360 (2\
+5) sd 1700 7668 am (2.5 REQ_FILE_WRITE \(4\)) shwd 3320 (.....................\
+..............................................................................\
+.........) sd 7360 (25) sd 1700 7501 am (2.6 REQ_FILE_WRITE_CONSOLE \(5\))
+shwd 4020 (...................................................................\
+.....................) sd 7360 (26) sd 1700 7334 am (2.7 REQ_FILE_CLOSE \(6\))
+shwd 3320 (...................................................................\
+.........................................) sd 7360 (26) sd 1700 7167 am (2.8 R\
+EQ_FILE_ERASE \(7\)) shwd 3320 (..............................................\
+..............................................................) sd 7360 (26)
+sd 1700 7000 am (2.9 REQ_FILE_STRING_TO_FULLPATH \(8\)) shwd 4405 (...........\
+..................................................................) sd 7360 (2\
+7) sd 1700 6833 am (2.10 REQ_FILE_RUN_CMD \(9\)) shwd 3635 (..................\
+..............................................................................\
+...) sd 7360 (27) sd 1500 6499 am (3 Overlay requests) shwd 2585 (............\
+..............................................................................\
+.......................................) sd 7360 (28) sd 1700 6165 am (3.1 REQ\
+_OVL_STATE_SIZE \(0\)) shwd 3670 (............................................\
+......................................................) sd 7360 (29) sd 1700 
+5998 am (3.2 REQ_OVL_GET_DATA \(1\)) shwd 3600 (..............................\
+......................................................................) sd 7360
+ (29) sd 1700 5831 am (3.3 REQ_OVL_READ_STATE \(2\)) shwd 3740 (..............\
+..............................................................................\
+....) sd 7360 (29) sd 1700 5664 am (3.4 REQ_OVL_WRITE_STATE \(3\)) shwd 3810 (\
+..............................................................................\
+................) sd 7360 (30) sd 1700 5497 am (3.5 REQ_OVL_TRANS_VECT_ADDR \(\
+4\)) shwd 4230 (..............................................................\
+....................) sd 7360 (30) sd 1700 5330 am (3.6 REQ_OVL_TRANS_RET_ADDR\
+ \(5\)) shwd 4125 (...........................................................\
+..........................) sd 7360 (31) sd 1700 5163 am (3.7 REQ_OVL_GET_REMA\
+P_ENTRY \(6\)) shwd 4230 (....................................................\
+..............................) sd 7360 (31) sd 1500 4829 am (4 Thread request\
+s) shwd 2550 (................................................................\
+..................................................................) sd 7360 (3\
+2) sd 1700 4495 am (4.1 REQ_THREAD_GET_NEXT \(0\)) shwd 3845 (................\
+.............................................................................)
+sd 7360 (32) sd 1700 4328 am (4.2 REQ_THREAD_SET \(1\)) shwd 3390 (...........\
+..............................................................................\
+.................) sd 7360 (32) sd 1700 4161 am (4.3 REQ_THREAD_FREEZE \(2\))
+shwd 3670 (...................................................................\
+...............................) sd 7360 (33) sd 1700 3994 am (4.4 REQ_THREAD_\
+THAW \(3\)) shwd 3565 (.......................................................\
+..............................................) sd 7360 (33) sd 1700 3827 am (\
+4.5 REQ_THREAD_GET_EXTRA \(4\)) shwd 3950 (...................................\
+.......................................................) sd 7360 (34) sd 1500 
+3493 am (5 RFX requests) shwd 2410 (..........................................\
+..............................................................................\
+..............) sd 7360 (34) sd 1700 3159 am (5.1 REQ_RFX_RENAME \(0\)) shwd 
+3425 (........................................................................\
+.................................) sd 7360 (34) sd 1700 2992 am (5.2 REQ_RFX_M\
+KDIR \(1\)) shwd 3320 (.......................................................\
+.....................................................) sd 7360 (35) sd 1700 
+2825 am (5.3 REQ_RFX_RMDIR \(2\)) shwd 3320 (.................................\
+...........................................................................)
+sd 7360 (35) sd 1700 2658 am (5.4 REQ_RFX_SETDRIVE \(3\)) shwd 3530 (.........\
+..............................................................................\
+...............) sd 7360 (35) sd 1700 2491 am (5.5 REQ_RFX_GETDRIVE \(4\))
+shwd 3565 (...................................................................\
+..................................) sd 7360 (36) sd 1700 2324 am (5.6 REQ_RFX_\
+SETCWD \(5\)) shwd 3425 (.....................................................\
+....................................................) sd 7360 (36) sd 1700 2157
+ am (5.7 REQ_RFX_GETCWD \(6\)) shwd 3460 (....................................\
+....................................................................) sd 7360 
+(37) sd 1700 1990 am (5.8 REQ_RFX_SETDATETIME \(7\)) shwd 3810 (..............\
+..............................................................................\
+..) sd 7360 (37) sd 1700 1823 am (5.9 REQ_RFX_GETDATETIME \(8\)) shwd 3845 (..\
+..............................................................................\
+.............) sd 7360 (37) sd 1700 1656 am (5.10 REQ_RFX_GETFREESPACE \(9\))
+shwd 3985 (...................................................................\
+......................) sd 7360 (38) sd 1700 1489 am (5.11 REQ_RFX_SETFILEATTR\
+ \(10\)) shwd 3915 (..........................................................\
+.................................) sd 7360 (38) sd 
+pageobj restore
+showpage
+%%Page: # 5
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 3987 10006 am (Table of Contents) shwd 
+@fs0 1700 9672 am (5.12 REQ_RFX_GETFILEATTR \(11\)) shwd 3915 (...............\
+............................................................................)
+sd 7360 (39) sd 1700 9505 am (5.13 REQ_RFX_NAMETOCANNONICAL \(12\)) shwd 4510 
+(..........................................................................)
+sd 7360 (39) sd 1700 9338 am (5.14 REQ_RFX_FINDFIRST \(13\)) shwd 3705 (......\
+..............................................................................\
+.............) sd 7360 (39) sd 1700 9171 am (5.15 REQ_RFX_FINDNEXT \(14\))
+shwd 3705 (...................................................................\
+..............................) sd 7360 (40) sd 1700 9004 am (5.16 REQ_RFX_FIN\
+DCLOSE \(15\)) shwd 3775 (....................................................\
+...........................................) sd 7360 (41) sd 1500 8670 am (Sys\
+tem Dependent Aspects) shwd 3075 (............................................\
+.......................................................................) sd 
+7360 (42) sd 1500 8336 am (1 Trap Files Under DOS) shwd 2935 (................\
+..............................................................................\
+.........................) sd 7360 (42) sd 1500 8002 am (2 Trap Files Under OS\
+/2) shwd 2935 (...............................................................\
+........................................................) sd 7360 (42) sd 1500 
+7668 am (3 Trap Files Under Windows.) shwd 3215 (.............................\
+..............................................................................\
+....) sd 7360 (43) sd 1500 7334 am (4 Trap Files Under Windows NT.) shwd 3425 
+(.............................................................................\
+............................) sd 7360 (43) sd 1500 7000 am (5 Trap Files Under\
+ QNX) shwd 2935 (.............................................................\
+..........................................................) sd 7360 (44) sd 
+1500 6666 am (6 Trap Files Under Netware 386 or PenPoint) shwd 4055 (.........\
+..............................................................................)
+ sd 7360 (44) sd 
+pageobj restore
+showpage
+%%Page: # 6
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs4 2000 9590 am (Introduction) shwd 
+@fs0 1500 8923 am (The) shwd 1753 (WATCOM) sd 2425 (debugger) sd 2982 (consist\
+s) sd 3460 (of) sd 3613 (a) sd 3711 (number) sd 4174 (of) sd 4327 (separate)
+sd 4821 (pieces of code.) sd 5692 (The main executable, WD.EXE,) sd 1500 8756
+am (provides) shwd 2024 (a) sd 2128 (debugging) sd 2761 (`engine') sd 3270 (an\
+d) sd 3514 (user) sd 3789 (interface.) sd 4405 (When) sd 4781 (the) sd 4994 (e\
+ngine) sd 5409 (wishes) sd 5831 (to) sd 5982 (perform) sd 6475 (an) sd 6649 (o\
+peration) sd 7220 (upon) sd 1500 8589 am (the) shwd 1711 (program) sd 2225 (be\
+ing) sd 2576 (debugged) sd 3160 (such) sd 3456 (as) sd 3612 (reading) sd 4072 
+(memory) sd 4577 (or) sd 4734 (setting) sd 5147 (a) sd 5248 (breakpoint,) sd 
+5922 (it) sd 6039 (creates) sd 6466 (a) sd 6567 (request) sd 7010 (structure)
+sd 1500 8422 am (and) shwd 1746 (sends) sd 2100 (it) sd 2222 (to) sd 2375 (the)
+ sd 2590 (`trap) sd 2899 (file') sd 3177 (\(so) sd 3392 (called) sd 3770 (beca\
+use) sd 4256 (under) sd 4618 (DOS,) sd 4978 (it) sd 5099 (contains) sd 5608 (t\
+he) sd 5822 (first) sd 6091 (level) sd 6406 (trap) sd 6667 (handlers\).) sd 
+7283 (The) sd 1500 8255 am (trap) shwd 1762 (file) sd 1993 (examines) sd 2564 
+(the) sd 2779 (request) sd 3227 (structure,) sd 3799 (performs) sd 4348 (the)
+sd 4563 (indicated) sd 5120 (action) sd 5506 (and) sd 5752 (returns) sd 6185 (\
+a) sd 6290 (result) sd 6644 (structure) sd 7177 (to) sd 7329 (the) sd 1500 8088
+ am (debugger. This design has two main benefits:) shwd 1500 7754 am (1. )
+shwd 1935 (OS) sd 2161 (debugging) sd 2799 (interfaces) sd 3390 (tend) sd 3678 
+(to) sd 3833 (be) sd 4011 (wildly) sd 4415 (varying) sd 4889 (in) sd 5044 (how)
+ sd 5331 (they) sd 5618 (are) sd 5835 (accessed.) sd 6461 (By) sd 6670 (moving)
+ sd 7143 (all) sd 7329 (the) sd 1900 7587 am (OS) shwd 2122 (specific) sd 2600 
+(interface) sd 3133 (code) sd 3440 (into) sd 3701 (the) sd 3915 (trap) sd 4176 
+(file) sd 4406 (and) sd 4651 (having) sd 5075 (a) sd 5180 (defined) sd 5643 (i\
+nterface) sd 6176 (to) sd 6327 (access) sd 6725 (it,) sd 6882 (porting) sd 7329
+ (the) sd 1900 7420 am (debugger becomes much easier.) shwd 1500 7086 am (2. )
+shwd 1935 (The) sd 2193 (trap) sd 2452 (file) sd 2680 (does) sd 2977 (not) sd 
+3197 (have) sd 3502 (to) sd 3652 (actually) sd 4136 (perform) sd 4628 (the) sd 
+4840 (operation.) sd 5457 (Instead) sd 5901 (it) sd 6019 (could) sd 6370 (send)
+ sd 6666 (the) sd 6877 (request) sd 7321 (out) sd 1900 6919 am (to) shwd 2057 
+(a) sd 2167 (remote) sd 2603 (server) sd 2993 (by) sd 3181 (a) sd 3291 (commun\
+ication) sd 4208 (link) sd 4474 (such) sd 4778 (as) sd 4942 (a) sd 5052 (seria\
+l) sd 5403 (line) sd 5660 (or) sd 5824 (LAN.) sd 6218 (The) sd 6482 (remote)
+sd 6917 (server) sd 7306 (can) sd 1900 6752 am (retrieve) shwd 2368 (the) sd 
+2579 (request,) sd 3060 (perform) sd 3551 (the) sd 3762 (operation) sd 4331 (o\
+n) sd 4511 (the) sd 4722 (remote) sd 5150 (machine) sd 5663 (and) sd 5905 (sen\
+d) sd 6201 (the) sd 6412 (results) sd 6816 (back) sd 7119 (via) sd 7329 (the)
+sd 1900 6585 am (link.) shwd 2190 (This) sd 2474 (enables) sd 2929 (the) sd 
+3136 (debugger) sd 3693 (to debug applications in cases where there are memory\
+ contraints or) sd 1900 6418 am (other) shwd 2234 (considerations) sd 3088 (wh\
+ich) sd 3475 (prevent) sd 3940 (the) sd 4156 (debugger) sd 4722 (proper) sd 
+5133 (from) sd 5450 (running) sd 5931 (on) sd 6116 (the) sd 6332 (remote) sd 
+6765 (system) sd 7197 (\(such) sd 1900 6251 am (as Novell Netware 386\).) shwd 
+1500 5917 am (This) shwd 1794 (document) sd 2391 (describes) sd 2957 (the) sd 
+3174 (interface) sd 3710 (used) sd 4012 (by) sd 4198 (version) sd 4656 (4.0)
+sd 4877 (of) sd 5040 (the) sd 5257 (WATCOM) sd 5939 (debugger) sd 6506 (\(ship\
+ped) sd 7034 (with) sd 7329 (the) sd 1500 5750 am (10.0) shwd 1794 (C/C++) sd 
+2226 (and) sd 2477 (FORTRAN) sd 3178 (releases\).) sd 3779 (It) sd 3914 (is)
+sd 4056 (expected) sd 4602 (to) sd 4760 (be) sd 4940 (modified) sd 5493 (in)
+sd 5650 (future) sd 6033 (releases.) sd 6586 (Where) sd 7007 (possible,) sd 
+1500 5583 am (notification of expected changes are given in the document, but \
+all aspects are subject to revision.) shwd 
+@fs3 1500 5082 am (1) shwd 
+@fs2 ( Some Definitions) shwd 
+@fs3 1500 4581 am (1.1 Pointer Sizes) shwd 
+@fs0 1500 4247 am (In) shwd 1654 (a) sd 1753 (16-bit) sd 2125 (hosted) sd 2527 
+(environment) sd 3271 (such) sd 3564 (as) sd 3717 (DOS,) sd 4070 (all) sd 4247 
+(pointers) sd 4735 (used) sd 5028 (by) sd 5205 (the) sd 5413 (trap) sd 5668 (f\
+ile) sd 5891 (are) sd 6098 ("far") sd 6404 (16:16) sd 6759 (pointers.) sd 7285 
+(In) sd 7438 (a) sd 1500 4080 am (32-bit environment such as Windows NT the po\
+inters are "near" 0:32 pointers.) shwd 
+@fs3 1500 3579 am (1.2 Base Types) shwd 
+@fs0 1500 3245 am (A number of basic types are used in the interface. They are\
+ defined as follows:) shwd 
+@fs1 1500 2911 am (Type) shwd 2500 (Definition) sd 
+@fs2 1500 2577 am (unsigned_8) shwd 
+@fs0 2500 (1 byte unsigned quantity) sd 
+@fs2 1500 2243 am (unsigned_16) shwd 
+@fs0 2500 (2 byte unsigned quantity) sd 
+@fs2 1500 1909 am (unsigned_32) shwd 
+@fs0 2500 (4 byte unsigned quantity) sd 1500 1340 am (Introduction) shwd 7430 
+(1) sd 
+pageobj restore
+showpage
+%%Page: # 7
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs2 1500 10173 am (access_req) shwd 
+@fs0 2500 (The) sd 2768 (first) sd 3045 (field) sd 3353 (of) sd 3521 (every)
+sd 3883 (request) sd 4338 (is) sd 4481 (of) sd 4648 (this) sd 4900 (type.) sd 
+5257 (It) sd 5393 (is) sd 5536 (a) sd 5648 (1) sd 5768 (byte) sd 6059 (field)
+sd 6366 (which) sd 6758 (identifies) sd 7329 (the) sd 2500 10006 am (request t\
+o be performed.) shwd 
+@fs2 1500 9672 am (addr48_ptr) shwd 
+@fs0 2500 (This) sd 2800 (type) sd 3093 (encapsulates) sd 3851 (the) sd 4074 (\
+concept) sd 4561 (of) sd 4730 (a) sd 4844 (16:32) sd 5215 (pointer.) sd 5766 (\
+All) sd 5996 (addresses) sd 6582 (in) sd 6742 (the) sd 6964 (debuggee) sd 2500 
+9505 am (memory) shwd 3003 (are) sd 3212 (described) sd 3786 (with) sd 4072 (t\
+hese.) sd 4435 (The) sd 4689 (debugger) sd 5247 (always) sd 5672 (acts) sd 5926
+ (as) sd 6079 (if) sd 6202 (the) sd 6410 (debuggee) sd 6983 (were) sd 7292 (in)
+ sd 7438 (a) sd 2500 9338 am (32-bit large model environment since the 32-bit \
+flat model and all 16-bit memory models) shwd 2500 9171 am (are subsets.  The \
+structure is defined as follows:) shwd 
+@fs6 3350 8754 am (typedef struct {) shwd 3650 8615 am (unsigned_32    offset;)
+ shwd 3650 8476 am (unsigned_16    segment;) shwd 3350 8337 am (} addr48_ptr;)
+shwd 
+@fs0 2500 8003 am (The) shwd 2761 () sd 
+@fs6 (segment) shwd 
+@fs0 3330 (field) sd 3631 (contains) sd 4141 (the) sd 4356 (segment) sd 4865 (\
+of) sd 5026 (the) sd 5241 (address) sd 5704 (and) sd 5950 (the) sd 6165 () sd 
+@fs6 (offset) shwd 
+@fs0 6659 (field) sd 6960 (stores) sd 7329 (the) sd 2500 7836 am (offset of th\
+e address.) shwd 
+@fs2 1500 7502 am (bytes) shwd 
+@fs0 2500 (The) sd 2775 (type) sd 3074 () sd 
+@fs6 (bytes) shwd 
+@fs0 3507 (is) sd 3657 (an) sd 3846 (array) sd 4191 (of) sd 4365 (unsigned_8.)
+sd 5181 (The) sd 5455 (length) sd 5862 (is) sd 6012 (provided) sd 6567 (by) sd 
+6764 (other) sd 7109 (means.) sd 2500 7335 am (Typically) shwd 3083 (a) sd 3192
+ (field) sd 3496 (of) sd 3660 (type) sd 3948 () sd 
+@fs6 (bytes) shwd 
+@fs0 4370 (is) sd 4510 (the) sd 4728 (last) sd 4969 (one) sd 5218 (in) sd 5374 
+(a) sd 5483 (request) sd 5933 (and) sd 6181 (the) sd 6398 (length) sd 6794 (is)
+ sd 6933 (calculated) sd 2500 7168 am (from the total length of the request.)
+shwd 
+@fs2 1500 6834 am (string) shwd 
+@fs0 2500 (The) sd 2767 (type) sd 3058 () sd 
+@fs6 (string) shwd 
+@fs0 3558 (is) sd 3700 (actually) sd 4192 (an) sd 4373 (array) sd 4710 (of) sd 
+4876 (characters.) sd 5590 (The) sd 5856 (array) sd 6193 (is) sd 6335 (termina\
+ted) sd 6982 (by) sd 7171 (a) sd 7282 (null) sd 2500 6667 am (\('\\0'\)) shwd 
+2860 (character.) sd 3562 (The) sd 3842 (length) sd 4255 (is) sd 4411 (provide\
+d) sd 4972 (by) sd 5175 (other) sd 5526 (means.) sd 6036 (Typically) sd 6635 (\
+a) sd 6760 (field) sd 7080 (of) sd 7259 (type) sd 2500 6500 am () shwd 
+@fs6 (string) shwd 
+@fs0 2996 (is) sd 3135 (the) sd 3352 (last) sd 3592 (one) sd 3840 (in) sd 3995 
+(a) sd 4103 (request) sd 4553 (and) sd 4800 (the) sd 5016 (length) sd 5411 (is)
+ sd 5549 (calculated) sd 6161 (from) sd 6478 (the) sd 6694 (total) sd 6988 (le\
+ngth) sd 7383 (of) sd 2500 6333 am (the request.) shwd 
+@fs2 1500 5999 am (trap_error) shwd 
+@fs0 2500 (Some) sd 2892 (trap) sd 3184 (file) sd 3445 (requests) sd 3976 (ret\
+urn) sd 4384 (debuggee) sd 4993 (operating) sd 5595 (system) sd 6055 (error)
+sd 6401 (codes,) sd 6836 (notably) sd 7329 (the) sd 2500 5832 am (requests)
+shwd 3002 (to) sd 3155 (perform) sd 3650 (file) sd 3881 (I/O) sd 4112 (on) sd 
+4296 (the) sd 4511 (remote) sd 4943 (system.) sd 5427 (These) sd 5804 (error)
+sd 6121 (codes) sd 6483 (are) sd 6698 (returned) sd 7209 (as) sd 7368 (an) sd 
+2500 5665 am (unsigned_32. The debugger considers the value zero to indicate n\
+o error.) shwd 1500 1340 am (Introduction) shwd 7430 (2) sd 
+pageobj restore
+showpage
+%%Page: # 8
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs4 2000 9590 am (The Request Interface) shwd 
+@fs3 1500 8923 am (1) shwd 
+@fs2 ( Request Structure.) shwd 
+@fs0 1500 8422 am (Each) shwd 1816 (request) sd 2257 (is) sd 2387 (a) sd 2486 
+(composed) sd 3089 (of) sd 3243 (two) sd 3490 (sequences) sd 4093 (of) sd 4246 
+(bytes) sd 4577 (provided) sd 5111 (by) sd 5287 (the) sd 5494 (debugger) sd 
+6051 (called) sd 6421 (messages.) sd 7021 (The) sd 7274 (first) sd 1500 8255
+am (set) shwd 1697 (contains) sd 2205 (the) sd 2418 (actual) sd 2794 (request)
+sd 3240 (code) sd 3546 (and) sd 3789 (whatever) sd 4343 (parameters) sd 4997 (\
+that) sd 5248 (are) sd 5460 (required) sd 5968 (by) sd 6149 (the) sd 6361 (req\
+uest.) sd 6854 (The) sd 7112 (second) sd 1500 8088 am (sequence is where the r\
+esult of the operation is to be stored by the trap file.) shwd 1500 7754 am (T\
+he) shwd 1754 (two) sd 2001 (sequences) sd 2604 (need) sd 2905 (not) sd 3121 (\
+be) sd 3290 (contiguous.) sd 3977 (The) sd 4230 (sequences) sd 4832 (are) sd 
+5039 (described) sd 5611 (to) sd 5756 (the) sd 5963 (trap) sd 6217 (file) sd 
+6440 (through) sd 6912 (two) sd 7158 (arrays) sd 1500 7587 am (of) shwd 1669 (\
+message) sd 2193 (entry) sd 2533 (structures.) sd 3232 (This) sd 3532 (allows)
+sd 3949 (the) sd 4172 (debugger) sd 4745 (to) sd 4906 (avoid) sd 5268 (unneces\
+sary) sd 6002 (packing) sd 6496 (and) sd 6749 (unpacking) sd 7383 (of) sd 1500 
+7420 am (messages, since mx_entry's can be set to point directly at parameter/\
+result buffers.) shwd 1500 7086 am (Multiple) shwd 2056 (requests) sd 2587 (ar\
+e) sd 2831 () sd 
+@fs2 (not) shwd 
+@fs0 3099 (allowed) sd 3615 (in) sd 3797 (a) sd 3932 (single) sd 4339 (message\
+.) sd 4995 (The) sd 5285 (mx_entry's) sd 5995 (are) sd 6239 (only) sd 6561 (us\
+ed) sd 6890 (to) sd 7072 (provide) sd 1500 6919 am (scatter/gather capabilitie\
+s for one request at a time.) shwd 1500 6585 am (The message entry structure i\
+s as follows:) shwd 
+@fs6 2350 6168 am (typedef struct {) shwd 2650 6029 am (void FAR) shwd 4150 (*\
+ptr;) sd 2650 5890 am (unsigned_16) shwd 4150 (len;) sd 2350 5751 am (} mx_ent\
+ry;) shwd 
+@fs0 1500 5417 am (The) shwd 1754 () sd 
+@fs6 (ptr) shwd 
+@fs0 2016 (is) sd 2146 (pointing) sd 2650 (to) sd 2796 (a) sd 2895 (block) sd 
+3243 (of) sd 3397 (data) sd 3667 (for) sd 3868 (that) sd 4115 (message) sd 4624
+ (entry.) sd 5023 (The) sd 5277 () sd 
+@fs6 (len) shwd 
+@fs0 5538 (field) sd 5831 (gives) sd 6162 (the) sd 6369 (length) sd 6755 (of)
+sd 6908 (that) sd 7154 (block.) sd 1500 5250 am (One array of ) shwd 
+@fs6 (mx_entry) shwd 
+@fs0 ('s describes the request message. The second array describes the return \
+message.) shwd 1500 4916 am (It) shwd 1629 (is) sd 1765 (not) sd 1987 (legal)
+sd 2302 (to) sd 2454 (split) sd 2738 (a) sd 2842 (message) sd 3356 (into) sd 
+3616 (arbitrary) sd 4141 (pieces) sd 4532 (with) sd 4823 (mx_entries.) sd 5570 
+(Each) sd 5891 (request) sd 6337 (documents) sd 6984 (where) sd 7368 (an) sd 
+1500 4749 am (mx_entry is allowed to start with a line of dashes.) shwd 
+@fs3 1500 4248 am (2) shwd 
+@fs2 ( The Interface Routines) shwd 
+@fs0 1500 3747 am (The) shwd 1773 (trap) sd 2047 (file) sd 2290 (interface) sd 
+2836 (must) sd 3162 (provide) sd 3645 (three) sd 3980 (routines:) sd 4565 ()
+sd 
+@fs6 (TrapInit) shwd 
+@fs0 (,) shwd 
+@fs6 5260 (TrapRequest) sd 
+@fs0 (,) shwd 6180 (and) sd 6437 () sd 
+@fs6 (TrapFini) shwd 
+@fs0 (.) shwd 7167 (These) sd 1500 3580 am (routines) shwd 1991 (are) sd 2202 
+(invoked) sd 2693 (with) sd 2981 (standard) sd 3494 (WATCOM) sd 4169 (register)
+ sd 4628 (calling) sd 5048 (conventions.) sd 5806 (How) sd 6117 (the) sd 6327 
+(debugger) sd 6887 (determines) sd 1500 3413 am (the address of these routines\
+ after loading a trap file is system dependent and described later.) shwd 
+@fs3 1500 2912 am (2.1 TrapInit) shwd 
+@fs0 1500 2578 am (This function initializes the environment for proper operat\
+ion of) shwd 
+@fs6 5128 (TrapRequest) sd 
+@fs0 (.) shwd 1500 1340 am (The Request Interface) shwd 7430 (3) sd 
+pageobj restore
+showpage
+%%Page: # 9
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (trap_version FAR TrapInit\( char  FAR    *parm,) shwd 4375 
+10062 am (char  FAR    *error,) shwd 4375 9923 am (unsigned_8   remote) shwd 
+2350 9784 am (\);) shwd 
+@fs0 1500 9450 am (The) shwd 1757 () sd 
+@fs6 (parm) shwd 
+@fs0 2097 (is) sd 2230 (a) sd 2332 (string) sd 2691 (that) sd 2941 (the) sd 
+3152 (user) sd 3425 (passes) sd 3821 (to) sd 3970 (the) sd 4181 (trap) sd 4439 
+(file.) sd 4711 (Its) sd 4891 (interpretation) sd 5686 (is) sd 5819 (completel\
+y) sd 6480 (up) sd 6660 (to) sd 6809 (the) sd 7020 (trap) sd 7278 (file.) sd 
+1500 9283 am (In) shwd 1654 (the) sd 1862 (case) sd 2139 (of) sd 2293 (the) sd 
+2501 (WATCOM) sd 3174 (debugger,) sd 3767 (all) sd 3943 (the) sd 4150 (charact\
+ers) sd 4753 (following) sd 5334 (the) sd 5541 (semicolon) sd 6151 (in) sd 6296
+ (the) sd 6503 (/TRAP) sd 6935 (option) sd 7329 (are) sd 1500 9116 am (passed \
+as the ) shwd 
+@fs6 (parm) shwd 
+@fs0 (. For example:) shwd 
+@fs6 2350 8699 am (wd /trap=nov;testing program) shwd 
+@fs0 1500 8365 am (The) shwd 1755 () sd 
+@fs6 (parm) shwd 
+@fs0 2093 (would) sd 2481 (be) sd 2651 ("testing".) sd 3250 (Any) sd 3528 (err\
+or) sd 3838 (message) sd 4347 (will) sd 4602 (be) sd 4771 (returned) sd 5275 (\
+in) sd 5421 () sd 
+@fs6 (error) shwd 
+@fs0 (.) shwd 5872 (The) sd 6126 () sd 
+@fs6 (remote) shwd 
+@fs0 6613 (field) sd 6907 (is) sd 7037 (a) sd 7136 (zero) sd 7414 (if) sd 1500 
+8198 am (the) shwd 1716 (WATCOM) sd 2397 (debugger) sd 2963 (is) sd 3101 (load\
+ing) sd 3566 (the) sd 3782 (trap) sd 4045 (file) sd 4277 (and) sd 4523 (a) sd 
+4629 (one) sd 4875 (if) sd 5005 (a) sd 5111 (remote) sd 5543 (server) sd 5929 
+(is) sd 6066 (loading) sd 6530 (it.) sd 6741 (This) sd 7033 (function) sd 1500 
+8031 am (returns a structure ) shwd 
+@fs6 (trap_version) shwd 
+@fs0 ( of the following form:) shwd 
+@fs6 2350 7614 am (typedef struct {) shwd 2650 7475 am (unsigned_8  major;)
+shwd 2650 7336 am (unsigned_8  minor;) shwd 2650 7197 am (unsigned_8  remote;)
+shwd 2350 7058 am (} trap_version;) shwd 
+@fs0 1500 6724 am (The) shwd 1762 () sd 
+@fs6 (major) shwd 
+@fs0 2182 (field) sd 2484 (contains) sd 2995 (the) sd 3211 (major) sd 3582 (ve\
+rsion) sd 4039 (number) sd 4511 (of) sd 4673 (the) sd 4889 (trap) sd 5152 (fil\
+e) sd 5384 (while) sd 5739 (the) sd 5954 () sd 
+@fs6 (minor) shwd 
+@fs0 6373 (field) sd 6674 (tells) sd 6951 (the) sd 7166 (minor) sd 1500 6557
+am (version) shwd 1955 (number) sd 2425 (of) sd 2585 (the) sd 2799 (trap) sd 
+3060 (file.) sd 
+@fs6 3375 (Major) sd 
+@fs0 3793 (is) sd 3929 (changed) sd 4438 (whenever) sd 5025 (there) sd 5348 (i\
+s) sd 5484 (a) sd 5588 (modification) sd 6345 (made) sd 6689 (to) sd 6840 (the)
+ sd 7053 (trap) sd 7313 (file) sd 1500 6390 am (that) shwd 1755 (is) sd 1893 (\
+not) sd 2117 (upwardly) sd 2691 (compatable) sd 3380 (with) sd 3674 (previous)
+sd 4201 (versions.) sd 4766 () sd 
+@fs6 (Minor) shwd 
+@fs0 5186 (increments) sd 5843 (by) sd 6027 (one) sd 6273 (whenever) sd 6861 (\
+a) sd 6967 (change) sd 7407 (is) sd 1500 6223 am (made) shwd 1844 (to) sd 1995 
+(the) sd 2208 (trap) sd 2468 (file) sd 2697 (that) sd 2949 (is) sd 3084 (upwar\
+dly) sd 3655 (compatible) sd 4318 (with) sd 4609 (previous) sd 5133 (versions.)
+ sd 5725 (The) sd 5984 (current) sd 6423 (major) sd 6791 (verion) sd 7191 (is)
+sd 7325 (17,) sd 1500 6056 am (the) shwd 1707 (current) sd 2140 (minor) sd 2510
+ (version) sd 2958 (is) sd 3087 (0.) sd 3264 (The) sd 3517 () sd 
+@fs6 (remote) shwd 
+@fs0 4003 (field informs the debugger whether the trap file communicates) sd 
+1500 5889 am (with a remote machine.) shwd 
+@fs6 1500 5555 am (TrapInit) shwd 
+@fs0 2149 (must) sd 2469 (be) sd 2650 (called) sd 3033 (before) sd 3439 (using)
+ sd 3790 () sd 
+@fs6 (TrapRequest) shwd 
+@fs0 4663 (to) sd 4820 (send) sd 5124 (a) sd 5234 (request.) sd 5782 (Failure)
+sd 6227 (to) sd 6384 (do) sd 6572 (so) sd 6744 (may) sd 7032 (result) sd 7391 
+(in) sd 1500 5388 am (unpredictable operation of ) shwd 
+@fs6 (TrapRequest) shwd 
+@fs0 (.) shwd 
+@fs3 1500 4887 am (2.2 TrapRequest) shwd 
+@fs0 1500 4553 am (All requests between the server and the remote trap file ar\
+e handled by TrapRequest.) shwd 
+@fs6 2350 4136 am (unsigned TrapRequest\( unsigned num_in_mx,) shwd 4000 3997
+am (mx_entry *mx_in,) shwd 4000 3858 am (unsigned num_out_mx,) shwd 4000 3719
+am (mx_entry *mx_out) shwd 2350 3580 am (\);) shwd 
+@fs0 1500 3246 am (The) shwd 1779 () sd 
+@fs6 (mx_in) shwd 
+@fs0 2216 (points) sd 2620 (to) sd 2791 (an) sd 2985 (array) sd 3335 (of) sd 
+3514 (request) sd 3980 (mx_entry's.) sd 4803 (The) sd 5082 () sd 
+@fs6 (num_in_mx) shwd 
+@fs0 5818 (field) sd 6136 (contains) sd 6663 (the) sd 6895 (number) sd 7383 (o\
+f) sd 1500 3079 am (elements) shwd 2041 (of) sd 2203 (the) sd 2419 (array.) sd 
+2806 (Similarly,) sd 3409 (the) sd 3625 () sd 
+@fs6 (mx_out) shwd 
+@fs0 4120 (will) sd 4383 (point) sd 4715 (to) sd 4868 (an) sd 5044 (array) sd 
+5376 (of) sd 5537 (return) sd 5916 (mx_entry's.) sd 6651 (The) sd 6912 (number)
+ sd 7383 (of) sd 1500 2912 am (elements) shwd 2036 (will) sd 2294 (be) sd 2466 
+(given) sd 2817 (by) sd 2997 (the) sd 3208 () sd 
+@fs6 (num_out_mx) shwd 
+@fs0 3998 (field.) sd 4339 (The) sd 4596 (total) sd 4885 (number) sd 5352 (of)
+sd 5508 (bytes) sd 5842 (actually) sd 6324 (filled) sd 6659 (in) sd 6807 (to)
+sd 6955 (the) sd 7165 (return) sd 1500 2745 am (message) shwd 2033 (by) sd 2234
+ (the) sd 2466 (trap) sd 2745 (file) sd 2992 (is) sd 3145 (returned) sd 3672 (\
+by) sd 3872 (the) sd 4103 (function) sd 4630 (\(this) sd 4939 (may) sd 5239 (b\
+e) sd 5431 (less) sd 5700 (than) sd 6001 (the) sd 6232 (total) sd 6541 (number)
+ sd 7028 (of) sd 7205 (bytes) sd 1500 2578 am (described by the ) shwd 
+@fs6 (mx_out) shwd 
+@fs0 ( array\).) shwd 1500 2244 am (Since) shwd 1856 (every) sd 2212 (request)
+sd 2661 (must) sd 2977 (start) sd 3263 (with) sd 3557 (an) sd 3734 () sd 
+@fs6 (access_req) shwd 
+@fs0 4529 (field,) sd 4868 (the) sd 5083 (minimum) sd 5669 (size) sd 5930 (of)
+sd 6091 (a) sd 6197 (request) sd 6645 (message) sd 7161 (is) sd 7298 (one) sd 
+1500 2077 am (byte.) shwd 1500 1340 am (The Request Interface) shwd 7430 (4)
+sd 
+pageobj restore
+showpage
+%%Page: # 10
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (Some) shwd 1857 (requests) sd 2354 (do) sd 2533 (not) sd 2751 (\
+require) sd 3186 (a) sd 3286 (return) sd 3659 (message.) sd 4210 (In) sd 4365 
+(this) sd 4605 (case,) sd 4918 (the) sd 5127 (program) sd 5639 (invoking) sd 
+6175 (TrapRequest) sd 6927 () sd 
+@fs2 (must) shwd 
+@fs0 7260 (pass) sd 1500 10006 am (zero for ) shwd 
+@fs6 (num_out_mx) shwd 
+@fs0 ( and NULL for) shwd 
+@fs6 3603 (mx_out) sd 
+@fs0 (.) shwd 
+@fs3 1500 9505 am (2.2.1 Request Example) shwd 
+@fs0 1500 9004 am (The) shwd 1753 (request) sd 2193 (REQ_READ_MEM) sd 3361 (ne\
+eds) sd 3715 (the) sd 3922 (memory) sd 4423 (address and length of memory to r\
+ead as input and will) sd 1500 8837 am (return) shwd 1872 (the) sd 2080 (memor\
+y) sd 2582 (block) sd 2930 (in) sd 3076 (the) sd 3284 (output) sd 3679 (messag\
+e.) sd 4227 (To) sd 4419 (read) sd 4697 (30) sd 4873 (bytes) sd 5204 (of) sd 
+5357 (memory) sd 5858 (from) sd 6166 (address) sd 6621 (0x0010:0x8000) sd 1500 
+8670 am (into a buffer, we can write:) shwd 
+@fs6 2350 8253 am (mx_entry        in[1];) shwd 2350 8114 am (mx_entry        \
+out[1];) shwd 2350 7975 am (unsigned char   buffer[30];) shwd 2350 7836 am (st\
+ruct in_msg_def {) shwd 2650 7697 am (access_req) shwd 4150 (req;) sd 2650 7558
+ am (addr48_ptr) shwd 4150 (addr;) sd 2650 7419 am (unsigned_16 ) shwd 3599 (l\
+en;) sd 2350 7280 am (} in_msg = { REQ_READ_MEM, { 0x8000, 0x0010 }, sizeof\( \
+buffer \) };) shwd 2350 6975 am (unsigned_16     mem_blk_len;) shwd 2350 6670
+am (in[0].ptr = &in_msg;) shwd 2350 6531 am (in[0].len = sizeof\( in_msg \);)
+shwd 2350 6392 am (out[0].ptr = &buffer;) shwd 2350 6253 am (out[0].len = size\
+of\( buffer \);) shwd 2350 5948 am (mem_blk_len = TrapRequest\( 1, in, 2, out \
+\);) shwd 2350 5643 am (if\( mem_blk_length != sizeof\( buffer \) \) {) shwd 
+2650 5504 am (printf\( "Error in reading memory\\n" \);) shwd 2350 5365 am (} \
+else {) shwd 2650 5226 am (printf\( "OK\\n" \);) shwd 2350 5087 am (}) shwd 
+@fs0 1500 4753 am (The) shwd 1753 (program) sd 2263 (will) sd 2517 (print) sd 
+2818 ("OK") sd 3170 (if) sd 3292 (it) sd 3406 (has) sd 3628 (transferred) sd 
+4271 (30) sd 4447 (bytes) sd 4778 (of) sd 4931 (data) sd 5200 (from) sd 5508 (\
+the debuggee's address space to the) sd 1500 4586 am () shwd 
+@fs6 (buffer) shwd 
+@fs0 ( variable. If less than 30 bytes is transfered, an error message is prin\
+ted out.) shwd 
+@fs3 1500 4085 am (2.3 TrapFini) shwd 
+@fs0 1500 3751 am (The) shwd 1756 (function) sd 2262 (terminates) sd 2883 (the)
+ sd 3093 (link) sd 3350 (between) sd 3855 (the) sd 4064 (debugger) sd 4623 (an\
+d) sd 4863 (the) sd 5072 (trap) sd 5328 (file.) sd 5630 (It) sd 5754 (should)
+sd 6165 (be) sd 6335 (called) sd 6707 (after) sd 7002 (finishing) sd 1500 3584
+am (all access requests.) shwd 
+@fs6 2350 3167 am (void FAR TrapFini\(void\);) shwd 
+@fs0 1500 2833 am (After calling ) shwd 
+@fs6 (TrapFini) shwd 
+@fs0 (, it is illegal to call ) shwd 
+@fs6 (TrapRequest) shwd 
+@fs0 ( without calling ) shwd 
+@fs6 (TrapInit) shwd 
+@fs0 ( again.) shwd 1500 1340 am (The Request Interface) shwd 7430 (5) sd 
+pageobj restore
+showpage
+%%Page: # 11
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs4 2000 9590 am (The Requests) shwd 
+@fs0 1500 8923 am (This) shwd 1797 (section) sd 2242 (descibes) sd 2764 (the)
+sd 2984 (individual) sd 3601 (requests,) sd 4146 (their) sd 4452 (parameters,)
+sd 5151 (and) sd 5401 (their) sd 5706 (return) sd 6089 (values.) sd 6556 (A)
+sd 6705 (line) sd 6963 (of) sd 7128 (dashes) sd 1500 8756 am (indicates) shwd 
+2083 (where) sd 2511 (an) sd 2729 (mx_entry) sd 3351 (is) sd 3530 (allowed) sd 
+4059 (\(but) sd 4370 (not) sd 4634 (required\)) sd 5233 (to) sd 5427 (start.)
+sd 5924 (The) sd 6226 (debugger) sd 6832 (allows) sd 7282 (\(via) sd 1500 8589
+am (REQ_GET_SUPPLEMENTARY_SERVICE/REQ_PERFORM_SUPPLEMENTARY_SERVICE\)) shwd 
+1500 8422 am (optional components to be implemented only on specific systems.)
+shwd 1500 8088 am (The) shwd 1791 (numeric) sd 2323 (value) sd 2700 (of) sd 
+2891 (the) sd 3136 (request) sd 3614 (which) sd 4030 (is) sd 4197 (placed) sd 
+4636 (in) sd 4819 (the) sd 5064 () sd 
+@fs6 (req) shwd 
+@fs0 5363 (field) sd 5694 (follows) sd 6187 (the) sd 6431 (symbolic) sd 7016 (\
+name) sd 7391 (in) sd 1500 7921 am (parentheses.) shwd 
+@fs3 1500 7420 am (1) shwd 
+@fs2 ( Core Requests) shwd 
+@fs0 1500 6919 am (These) shwd 1872 (requests) sd 2369 (need) sd 2672 (to) sd 
+2820 (be) sd 2991 (implemented) sd 3759 (in) sd 3907 (all) sd 4086 (versions)
+sd 4590 (of) sd 4745 (the) sd 4954 (trap) sd 5210 (file,) sd 5471 (although)
+sd 5999 (some) sd 6331 (of) sd 6486 (them) sd 6803 (may) sd 7081 (only) sd 7368
+ (be) sd 1500 6752 am (stub implementations in some environments.) shwd 
+@fs3 1500 6251 am (1.1 REQ_CONNECT \(0\)) shwd 
+@fs0 1500 5917 am (Request to connect to the remote machine. This must be the \
+first request made.) shwd 1500 5583 am (Request message:) shwd 
+@fs6 2350 5166 am (access_req      req) shwd 2350 5027 am (unsigned_8      maj\
+or;   <-+- struct trap_version) shwd 2350 4888 am (unsigned_8      minor;     \
+|) shwd 2350 4749 am (unsigned_8      remote;  <-+) shwd 
+@fs0 1500 4415 am (The) shwd 1756 () sd 
+@fs6 (req) shwd 
+@fs0 2020 (field) sd 2316 (contains) sd 2821 (the) sd 3031 (request.) sd 3551 
+(The) sd 3807 () sd 
+@fs6 (trap_version) shwd 
+@fs0 4746 (structure) sd 5275 (tells) sd 5546 (the) sd 5755 (version) sd 6205 
+(of) sd 6360 (the) sd 6569 (program) sd 7081 (making) sd 1500 4248 am (the)
+shwd 1710 (request.) sd 2195 (The) sd 2451 () sd 
+@fs6 (major) shwd 
+@fs0 2865 (field) sd 3161 (contains) sd 3666 (the) sd 3876 (major) sd 4241 (ve\
+rsion) sd 4691 (number) sd 5156 (of) sd 5311 (the) sd 5520 (trap) sd 5776 (fil\
+e) sd 6001 (while) sd 6350 (the) sd 6559 () sd 
+@fs6 (minor) shwd 
+@fs0 6972 (field) sd 7267 (tells) sd 1500 4081 am (the) shwd 1709 (minor) sd 
+2081 (version) sd 2530 (number) sd 2994 (of) sd 3148 (the) sd 3356 (trap) sd 
+3611 (file.) sd 3874 (The) sd 4128 () sd 
+@fs6 (major) shwd 
+@fs0 4540 (is) sd 4670 (changed) sd 5173 (whenever) sd 5754 (there) sd 6071 (i\
+s) sd 6201 (a) sd 6300 (modification) sd 7052 (made) sd 7391 (to) sd 1500 3914
+am (the) shwd 1734 (trap) sd 2015 (file) sd 2265 (that) sd 2538 (is) sd 2694 (\
+not) sd 2935 (upwardly) sd 3526 (compatable) sd 4232 (with) sd 4543 (previous)
+sd 5087 (versions.) sd 5705 (The) sd 5984 () sd 
+@fs6 (minor) shwd 
+@fs0 6421 (increments) sd 7096 (by) sd 7298 (one) sd 1500 3747 am (whenever)
+shwd 2080 (a change is made to the trap file that is upwardly compatable with \
+previous versions. The current) sd 1500 3580 am (major) shwd 1880 (version) sd 
+2346 (is) sd 2493 (17,) sd 2726 (the) sd 2951 (current) sd 3401 (minor) sd 3788
+ (version) sd 4253 (is) sd 4399 (0.) sd 4628 (The) sd 4898 () sd 
+@fs6 (remote) shwd 
+@fs0 5401 (field) sd 5711 (informs) sd 6199 (the) sd 6423 (trap) sd 6694 (file)
+ sd 6934 (whether) sd 7438 (a) sd 1500 3413 am (remote server is between the W\
+ATCOM debugger and the trap file.) shwd 1500 3079 am (Return message:) shwd 
+@fs6 2350 2662 am (unsigned_16     max_msg_size) shwd 2350 2523 am (----------\
+------------------) shwd 2350 2384 am (string) shwd 3550 (err_msg) sd 
+@fs0 1500 2050 am (If) shwd 1660 (error) sd 1999 (has) sd 2251 (occurred,) sd 
+2849 (the) sd 3086 () sd 
+@fs6 (err_msg) shwd 
+@fs0 3676 (field) sd 3998 (will) sd 4281 (returns) sd 4735 (the) sd 4971 (erro\
+r) sd 5309 (message) sd 5846 (string.) sd 6325 (If) sd 6484 (there) sd 6829 (i\
+s) sd 6987 (no) sd 7192 (error,) sd 1500 1883 am () shwd 
+@fs6 (error_msg) shwd 
+@fs0 2217 (returns) sd 2648 (a) sd 2752 (null) sd 3012 (character) sd 3567 (an\
+d) sd 3811 (the) sd 4024 (field) sd 
+@fs6 4323 (max_msg_size) sd 
+@fs0 5265 (will) sd 5525 (contain) sd 5979 (the) sd 6192 (allowed) sd 6677 (ma\
+ximum) sd 7283 (size) sd 1500 1340 am (The Requests) shwd 7430 (6) sd 
+pageobj restore
+showpage
+%%Page: # 12
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (of) shwd 1654 (a) sd 1753 (message) sd 2262 (in) sd 2408 (bytes\
+.) sd 2778 (Any) sd 3056 (message) sd 3565 (\(typically) sd 4138 (reading/writ\
+ing) sd 5038 (memory) sd 5539 (or) sd 5692 (files\)) sd 6016 (which) sd 6394 (\
+would) sd 6780 (require) sd 7213 (more) sd 1500 10006 am (than) shwd 1784 (the)
+ sd 1998 (maximum) sd 2606 (number) sd 3076 (of) sd 3236 (bytes) sd 3574 (to)
+sd 3725 (transmit) sd 4225 (or) sd 4384 (receive) sd 4830 (must) sd 5143 (be)
+sd 5317 (broken) sd 5748 (up) sd 5930 (into) sd 6190 (multiple) sd 6698 (reque\
+sts.) sd 7283 (The) sd 1500 9839 am (minimum acceptable value for this field i\
+s 256.) shwd 
+@fs3 1500 9338 am (1.2 REQ_DISCONNECT \(1\)) shwd 
+@fs0 1500 9004 am (Request) shwd 2047 (to) sd 2253 (terminate) sd 2877 (the)
+sd 3144 (link) sd 3458 (between) sd 4020 (the) sd 4287 (local) sd 4655 (and)
+sd 4953 (remote) sd 5437 (machine.) sd 6198 (After) sd 6590 (this) sd 6888 (re\
+quest,) sd 7438 (a) sd 1500 8837 am (REQ_CONNECT must be the next one made.)
+shwd 1500 8503 am (Request message:) shwd 
+@fs6 2350 8086 am (access_req      req) shwd 
+@fs0 1500 7752 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 7418 am (Return message:) shwd 
+@fs6 2350 7001 am (NONE) shwd 
+@fs3 1500 6500 am (1.3 REQ_SUSPEND \(2\)) shwd 
+@fs0 1500 6166 am (Request) shwd 1988 (to) sd 2135 (suspend) sd 2623 (the) sd 
+2832 (link) sd 3088 (between) sd 3592 (the) sd 3801 (server) sd 4181 (and) sd 
+4420 (the) sd 4628 (remote) sd 5053 (trap) sd 5308 (file.) sd 5607 (The) sd 
+5861 (debugger) sd 6419 (issues) sd 6789 (this) sd 7028 (message) sd 1500 5999
+am (just) shwd 1755 (before) sd 2166 (it) sd 2297 (spawns) sd 2760 (a) sd 2874 
+(sub-shell) sd 3431 (\(the) sd 3701 ("system") sd 4254 (command\).) sd 4972 (T\
+his) sd 5272 (allows) sd 5689 (a) sd 5803 (remote) sd 6243 (server) sd 6637 (t\
+o) sd 6798 (enter) sd 7130 (a) sd 7244 (state) sd 1500 5832 am (where) shwd 
+1879 (it) sd 1994 (allows) sd 2396 (other) sd 2721 (trap) sd 2976 (files) sd 
+3254 (to) sd 3400 (connect) sd 3872 (to) sd 4018 (it) sd 4133 (\(normally,) sd 
+4756 (once) sd 5056 (a) sd 5154 (remote) sd 5578 (server) sd 5956 (has) sd 6178
+ (connected) sd 6781 (to) sd 6926 (a) sd 7024 (trap) sd 7278 (file,) sd 1500 
+5665 am (the) shwd 1726 (remote) sd 2169 (link) sd 2442 (will) sd 2715 (fail)
+sd 2957 (any) sd 3214 (other) sd 3557 (attempts) sd 4085 (to) sd 4249 (connect)
+ sd 4739 (to) sd 4903 (it\).) sd 5157 (This) sd 5459 (allows) sd 5878 (the) sd 
+6103 (user) sd 6390 (to) sd 6553 (start) sd 6848 (up) sd 7042 (an) sd 7228 (RF\
+X) sd 1500 5498 am (process and transfer any missing files to the remote machi\
+ne before continuing the debugging process.) shwd 1500 5164 am (Request messag\
+e:) shwd 
+@fs6 2350 4747 am (access_req      req) shwd 
+@fs0 1500 4413 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 4079 am (Return message:) shwd 
+@fs6 2350 3662 am (NONE) shwd 
+@fs3 1500 3161 am (1.4 REQ_RESUME \(3\)) shwd 
+@fs0 1500 2827 am (Request) shwd 1994 (to) sd 2147 (resume) sd 2594 (the) sd 
+2809 (link) sd 3071 (between) sd 3581 (the) sd 3796 (server) sd 4182 (and) sd 
+4428 (the) sd 4642 (remote) sd 5073 (trap) sd 5334 (file.) sd 5651 (The) sd 
+5911 (debugger) sd 6475 (issues) sd 6851 (this) sd 7096 (request) sd 1500 2660
+am (when the spawned sub-shell exits.) shwd 1500 2326 am (Request message:)
+shwd 
+@fs6 2350 1909 am (access_req      req) shwd 
+@fs0 1500 1340 am (The Requests) shwd 7430 (7) sd 
+pageobj restore
+showpage
+%%Page: # 13
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 9839 am (Return message:) shwd 
+@fs6 2350 9422 am (NONE) shwd 
+@fs3 1500 8921 am (1.5 REQ_GET_SUPPLEMENTARY_SERVICE \(4\)) shwd 
+@fs0 1500 8587 am (Request to obtain a supplementary service id.) shwd 1500 
+8253 am (Request message:) shwd 
+@fs6 2350 7836 am (access_req      req) shwd 2350 7697 am (-------------------\
+-----) shwd 2350 7558 am (string) shwd 3550 (service_name) sd 
+@fs0 1500 7224 am (The) shwd 1803 () sd 
+@fs6 (req) shwd 
+@fs0 2114 (field) sd 2457 (contains) sd 3009 (the) sd 3266 (request.) sd 3893 
+(The) sd 4196 () sd 
+@fs6 (service_name) shwd 
+@fs0 5182 (field) sd 5525 (contains) sd 6077 (a) sd 6225 (string) sd 6629 (ide\
+ntifying) sd 7329 (the) sd 1500 7057 am (supplementary service. This string is\
+ case insensitive.) shwd 1500 6723 am (Return message:) shwd 
+@fs6 2350 6306 am (trap_error      err) shwd 2350 6167 am (unsigned_32     id)
+shwd 
+@fs0 1500 5833 am (The) shwd 1774 () sd 
+@fs6 (err) shwd 
+@fs0 2056 (field) sd 2370 (is) sd 2520 (non-zero) sd 3075 (if) sd 3217 (someth\
+ing) sd 3855 (went) sd 4183 (wrong) sd 4597 (in) sd 4762 (obtaining) sd 5347 (\
+or) sd 5520 (initializing) sd 6183 (the) sd 6410 (service.) sd 
+@fs6 6974 (Id) sd 
+@fs0 7180 (is) sd 7329 (the) sd 1500 5666 am (identifier) shwd 2057 (for) sd 
+2264 (a) sd 2369 (particular) sd 2949 (supplementary) sd 3815 (service.) sd 
+4340 (It) sd 4469 (need) sd 4776 (not) sd 4998 (be) sd 5173 (the) sd 5387 (sam\
+e) sd 5716 (from) sd 6031 (one) sd 6276 (invocation) sd 6910 (of) sd 7069 (the)
+ sd 7282 (trap) sd 1500 5499 am (file) shwd 1724 (to) sd 1870 (another.) sd 
+2401 (If) sd 2532 (both) sd 2818 (it) sd 2933 (and) sd 3172 (the) sd 3380 ()
+sd 
+@fs6 (err) shwd 
+@fs0 3642 (field) sd 3936 (are) sd 4144 (zero,) sd 4458 (it) sd 4573 (means)
+sd 4966 (that) sd 5212 (the) sd 5419 (service) sd 5851 (is) sd 5980 (not) sd 
+6195 (available) sd 6736 (from) sd 7044 (this) sd 7282 (trap) sd 1500 5332 am 
+(file.) shwd 
+@fs2 1500 4998 am (NOTE:) shwd 
+@fs0 (  In) shwd 2185 (the) sd 2412 (future,) sd 2843 (we) sd 3062 (might) sd 
+3444 (allow) sd 3811 (for) sd 4031 (user) sd 4320 (developed) sd 4950 (add-ons)
+ sd 5448 (to) sd 5612 (be) sd 5799 (integrated) sd 6414 (with) sd 6718 (the)
+sd 6944 (debugger.) sd 1977 4831 am (There) shwd 2342 (would) sd 2731 (be) sd 
+2902 (two) sd 3151 (components,) sd 3901 (one) sd 4142 (to) sd 4290 (be) sd 
+4461 (added) sd 4834 (to) sd 4982 (the) sd 5192 (debugger) sd 5752 (and) sd 
+5993 (one) sd 6234 (to) sd 6382 (be) sd 6553 (added) sd 6926 (to) sd 7073 (the)
+ sd 7282 (trap) sd 1977 4664 am (file.) shwd 2370 (The) sd 2668 (two) sd 2959 
+(pieces) sd 3389 (could) sd 3780 (communicate) sd 4612 (with) sd 4941 (each)
+sd 5277 (other) sd 5645 (via) sd 5896 (the) sd 6147 (supplementary) sd 7050 (s\
+ervices) sd 1977 4497 am (mechanism.) shwd 
+@fs3 1500 3996 am (1.6 REQ_PERFORM_SUPPLEMENTARY_SERVICE \(5\)) shwd 
+@fs0 1500 3662 am (Request to perform a supplementary service.) shwd 1500 3328
+am (Request message:) shwd 
+@fs6 2350 2911 am (access_req      req) shwd 2350 2772 am (unsigned_32     ser\
+vice_id) shwd 2350 2633 am (------------------------) shwd 2725 2494 am (unspe\
+cified) shwd 
+@fs0 1500 2160 am (The) shwd 1755 () sd 
+@fs6 (req) shwd 
+@fs0 2018 (field) sd 2313 (contains) sd 2817 (the) sd 3026 (request.) sd 3508 
+(The) sd 3763 () sd 
+@fs6 (service_id) shwd 
+@fs0 4551 (field) sd 4846 (indicates) sd 5380 (which) sd 5759 (service) sd 6192
+ (is) sd 6322 (being) sd 6670 (requested.) sd 7283 (The) sd 1500 1993 am (rema\
+inder of the request is specified by the individual supplementary service prov\
+ider.) shwd 1500 1340 am (The Requests) shwd 7430 (8) sd 
+pageobj restore
+showpage
+%%Page: # 14
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (Return message:) shwd 
+@fs6 2350 9756 am (unspecified) shwd 
+@fs0 1500 9422 am (The return message is specified by the individual supplemen\
+tary service provider.) shwd 
+@fs3 1500 8921 am (1.7 REQ_GET_SYS_CONFIG \(6\)) shwd 
+@fs0 1500 8587 am (Request to get system information from the remote machine.)
+shwd 1500 8253 am (Request message:) shwd 
+@fs6 2350 7836 am (access_req      req) shwd 
+@fs0 1500 7502 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 7168 am (Return message:) shwd 
+@fs6 2350 6751 am (unsigned_8      cpu;) shwd 2350 6612 am (unsigned_8      fp\
+u;) shwd 2350 6473 am (unsigned_8      osmajor;) shwd 2350 6334 am (unsigned_8\
+      osminor;) shwd 2350 6195 am (unsigned_8      os;) shwd 2350 6056 am (uns\
+igned_8      huge_shift;) shwd 
+@fs0 1500 5722 am (The) shwd 1754 () sd 
+@fs6 (cpu) shwd 
+@fs0 2016 (fields) sd 2364 (returns) sd 2790 (the) sd 2998 (type) sd 3276 (of)
+sd 3430 (the) sd 3638 (remote) sd 4063 (CPU.) sd 4411 (The) sd 4665 (size) sd 
+4919 (of) sd 5073 (that) sd 5320 (field) sd 5614 (is) sd 5744 (unsigned_8.) sd 
+6465 (Possible) sd 6967 (cpu) sd 7205 (types) sd 1500 5555 am (are:) shwd 
+@fs6 2350 5138 am (CPU_86  =  0) shwd 2350 4999 am (CPU_186 =  1) shwd 2350 
+4860 am (CPU_286 =  2) shwd 2350 4721 am (CPU_386 =  3) shwd 2350 4582 am (CPU\
+_486 =  4) shwd 2350 4443 am (CPU_586 =  5) shwd 
+@fs0 1500 4109 am (The ) shwd 
+@fs6 (fpu) shwd 
+@fs0 ( fields tells the type of FPU. The size of the field is unsigned_8.  FPU\
+ types include:) shwd 
+@fs6 2350 3692 am (FPU_EMU = -1     - Software emulated FPU) shwd 2350 3553 am 
+(FPU_NO  =  0     - No FPU) shwd 2350 3414 am (FPU_87  =  1) shwd 2350 3275 am 
+(FPU_287 =  2) shwd 2350 3136 am (FPU_387 =  3) shwd 
+@fs0 1500 2802 am (The) shwd 1758 () sd 
+@fs6 (osmajor) shwd 
+@fs0 2324 (and) sd 2567 () sd 
+@fs6 (osminor) shwd 
+@fs0 3133 (contains) sd 3640 (the) sd 3852 (major) sd 4219 (and) sd 4462 (mino\
+r) sd 4837 (version) sd 5290 (number) sd 5758 (for) sd 5963 (the) sd 6175 (ope\
+rating) sd 6745 (system) sd 7172 (of) sd 7329 (the) sd 1500 2635 am (remote)
+shwd 1954 (machine.) sd 2590 (The) sd 2873 (type) sd 3180 (of) sd 3363 (operat\
+ing) sd 3958 (system) sd 4411 (can) sd 4671 (be) sd 4869 (found) sd 5262 (in)
+sd 
+@fs6 5437 (os) sd 
+@fs0 5653 (field.) sd 6072 (The) sd 6354 (size) sd 6636 (of) sd 6818 (this) sd 
+7085 (field) sd 7407 (is) sd 1500 2468 am (unsigned_8. The OS can be :) shwd 
+1500 1340 am (The Requests) shwd 7430 (9) sd 
+pageobj restore
+showpage
+%%Page: # 15
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (OS_IDUNNO    =  0   - Unknown operating system) shwd 2350 
+10062 am (OS_DOS       =  1) shwd 2350 9923 am (OS_OS2       =  2) shwd 2350 
+9784 am (OS_PHAR      =  3   - Phar Lap 386 DOS Extender) shwd 2350 9645 am (O\
+S_ECLIPSE   =  4   - Eclipse 386 DOS Extender) shwd 2350 9506 am (OS_NW386    \
+ =  5   - NetWare 386) shwd 2350 9367 am (OS_QNX       =  6) shwd 2350 9228 am 
+(OS_RATIONAL  =  7   - DOS/4G) shwd 2350 9089 am (OS_WINDOWS   =  8) shwd 2350 
+8950 am (OS_PENPOINT  =  9) shwd 2350 8811 am (OS_NT        = 10) shwd 2350 
+8672 am (OS_AUTOCAD   = 11   - ADS/ADI development) shwd 
+@fs0 1500 8338 am (The) shwd 1763 () sd 
+@fs6 (huge_shift) shwd 
+@fs0 2559 (field) sd 2861 (is) sd 2999 (used) sd 3300 (to) sd 3454 (determine)
+sd 4058 (the) sd 4274 (shift) sd 4568 (needed) sd 5009 (for) sd 5218 (huge) sd 
+5535 (arithmetic) sd 6147 (in) sd 6301 (that) sd 6556 (system.) sd 7043 (It)
+sd 7174 (stores) sd 1500 8171 am (the) shwd 1718 (number) sd 2192 (of) sd 2356 
+(left) sd 2590 (shifts) sd 2940 (required) sd 3454 (in) sd 3610 (order) sd 3952
+ (to) sd 4107 (calculate) sd 4650 (the) sd 4867 (next) sd 5154 (segment) sd 
+5665 (correctly.) sd 6267 (It) sd 6399 (is) sd 6538 (12) sd 6724 (for) sd 6934 
+(real) sd 7190 (mode) sd 1500 8004 am (programs.) shwd 2173 (The) sd 2450 (val\
+ue) sd 2813 (in) sd 2982 (a) sd 3104 (protect) sd 3553 (mode) sd 3923 (environ\
+ment) sd 4690 (must) sd 5021 (be) sd 5213 (obtained) sd 5755 (from) sd 6087 (t\
+he) sd 6318 (OS) sd 6557 (of) sd 6734 (the) sd 6964 (debuggee) sd 1500 7837 am 
+(machine.) shwd 
+@fs3 1500 7336 am (1.8 REQ_MAP_ADDR \(7\)) shwd 
+@fs0 1500 7002 am (Request) shwd 2009 (to) sd 2177 (map) sd 2476 (the) sd 2706 
+(input) sd 3053 (address) sd 3531 (to) sd 3698 (the) sd 3927 (actual) sd 4319 
+(address) sd 4796 (of) sd 4971 (the) sd 5200 (remote) sd 5646 (machine.    The)
+ sd 6569 (addresses) sd 7162 (in) sd 7329 (the) sd 1500 6835 am (symbolic)
+shwd 2054 (information) sd 2757 (provided) sd 3297 (by) sd 3479 (the) sd 3692 
+(linker) sd 4060 (do) sd 4241 (not) sd 4461 (reflect) sd 4860 (any) sd 5103 (r\
+elocation) sd 5704 (performed) sd 6328 (on) sd 6509 (the) sd 6721 (executable)
+sd 7360 (by) sd 1500 6668 am (the) shwd 1725 (system) sd 2166 (loader.) sd 2643
+ (This) sd 2945 (request) sd 3403 (obtains) sd 3861 (that) sd 4125 (relocation)
+ sd 4739 (information) sd 5454 (so) sd 5632 (that) sd 5896 (the) sd 6121 (debu\
+gger) sd 6695 (can) sd 6942 (update) sd 7368 (its) sd 1500 6501 am (addresses.)
+ shwd 1500 6167 am (Request message:) shwd 
+@fs6 2350 5750 am (access_req      req) shwd 2350 5611 am (addr48_ptr      in_\
+addr) shwd 2350 5472 am (unsigned_32     handle;) shwd 
+@fs0 1500 5138 am (The) shwd 1756 () sd 
+@fs6 (req) shwd 
+@fs0 2020 (field) sd 2315 (contains) sd 2819 (the) sd 3028 (request.) sd 3511 
+(The) sd 3766 () sd 
+@fs6 (in_addr) shwd 
+@fs0 4329 (tells) sd 4600 (the) sd 4809 (address) sd 5266 (to) sd 5413 (map.)
+sd 5732 (The) sd 5987 () sd 
+@fs6 (handle) shwd 
+@fs0 6475 (field) sd 6770 (identifies) sd 7329 (the) sd 1500 4971 am (module)
+shwd 1982 (which) sd 2387 (the) sd 2620 (address) sd 3101 (is) sd 3256 (from.)
+sd 3679 (The) sd 3958 (value) sd 4323 (from) sd 4657 (this) sd 4921 (field) sd 
+5240 (is) sd 5395 (obtained) sd 5939 (by) sd 6141 (REQ_PROG_LOAD) sd 7383 (or)
+sd 1500 4804 am (REQ_GET_LIB_NAME. There are two magical values for the ) shwd 
+
+@fs6 (in_addr.segment) shwd 
+@fs0 ( field.) shwd 
+@fs6 2350 4387 am (MAP_FLAT_CODE_SELECTOR  = -1) shwd 2350 4248 am (MAP_FLAT_D\
+ATA_SELECTOR  = -2) shwd 
+@fs0 1500 3914 am (When) shwd 1891 (the) sd 2119 () sd 
+@fs6 (in_addr.segment) shwd 
+@fs0 3301 (equals) sd 3715 (one) sd 3974 (of) sd 4148 (these) sd 4492 (values,)
+ sd 4947 (the) sd 5175 (debugger) sd 5753 (does) sd 6066 (not) sd 6301 (have)
+sd 6621 (a) sd 6739 (map) sd 7035 (segment) sd 1500 3747 am (value) shwd 1842 
+(and) sd 2083 (is) sd 2214 (requesting) sd 2835 (that) sd 3083 (the) sd 3292 (\
+trap) sd 3548 (file) sd 3773 (performs) sd 4316 (the) sd 4525 (mapping) sd 5052
+ (as) sd 5206 (if) sd 5330 (the) sd 5539 (given) sd 5888 (offset) sd 6245 (was)
+ sd 6500 (in) sd 6647 (the) sd 6856 (flat) sd 7081 (address) sd 1500 3580 am (\
+space.) shwd 1500 3246 am (Return message:) shwd 
+@fs6 2350 2829 am (addr48_ptr      out_addr) shwd 2350 2690 am (unsigned_32   \
+  lo_bound;) shwd 2350 2551 am (unsigned_32     hi_bound;) shwd 
+@fs0 1500 2217 am (The) shwd 1753 (mapped) sd 2231 (address) sd 2686 (is) sd 
+2815 (returned) sd 3318 (in) sd 3463 () sd 
+@fs6 (out_addr) shwd 
+@fs0 (.) shwd 4134 (Note that in addition to the segment portion being modifie\
+d,) sd 1500 2050 am (the) shwd 1720 (offset) sd 2088 (of) sd 2254 (the) sd 2474
+ (portion) sd 2928 (of) sd 3094 (the) sd 3313 (address) sd 3780 (may) sd 4068 
+(be) sd 4248 (adjusted) sd 4762 (as) sd 4926 (well) sd 5215 (if) sd 5349 (the)
+sd 5568 (loader) sd 5966 (performs) sd 6519 (offset) sd 6886 (relocations) sd 
+1500 1883 am (\(like) shwd 1793 (OS/2) sd 2117 (2.x) sd 2328 (or Windows NT\).\
+ The ) sd 
+@fs6 (lo_bound) shwd 
+@fs0 ( and ) shwd 
+@fs6 (hi_bound) shwd 
+@fs0 ( fields identify the lowest and highest input) shwd 1500 1340 am (The Re\
+quests) shwd 7360 (10) sd 
+pageobj restore
+showpage
+%%Page: # 16
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (offsets) shwd 1910 (for) sd 2111 (which) sd 2490 (this) sd 2729 
+(mapping) sd 3255 (is) sd 3385 (valid.) sd 3738 (If) sd 3868 (the) sd 4075 (de\
+bugger) sd 4632 (needs) sd 4986 (to) sd 5131 (map) sd 5407 (another) sd 5863 (\
+address) sd 6318 (whose) sd 6711 (input) sd 7035 (segment) sd 1500 10006 am (v\
+alue) shwd 1849 (is) sd 1988 (the) sd 2204 (same) sd 2535 (as) sd 2696 (a) sd 
+2803 (previous) sd 3330 (request,) sd 3816 (and) sd 4063 (the) sd 4279 (input)
+sd 4612 (offset) sd 4976 (falls) sd 5262 (within) sd 5665 (the) sd 5881 (valid)
+ sd 6206 (range) sd 6562 (identified) sd 7144 (by) sd 7329 (the) sd 1500 9839
+am (return) shwd 1876 (of) sd 2034 (that) sd 2285 (previous) sd 2808 (request,)
+ sd 3288 (it) sd 3406 (can) sd 3640 (perform) sd 4131 (the) sd 4342 (mapping)
+sd 4871 (itself) sd 5191 (and) sd 5433 (not) sd 5652 (bother) sd 6050 (sending)
+ sd 6525 (the) sd 6736 (request) sd 7180 (to) sd 7329 (the) sd 1500 9672 am (t\
+rap file.) shwd 
+@fs3 1500 9171 am (1.9 REQ_ADDR_INFO \(8\)) shwd 
+@fs0 1500 8837 am (Request) shwd 1994 (to) sd 2147 (check) sd 2517 (if) sd 2647
+ (a) sd 2753 (given) sd 3108 (address) sd 3571 (is) sd 3708 (using) sd 4055 (3\
+2-bit) sd 4434 (addressing) sd 5076 (\(the) sd 5338 (selector's) sd 5918 (B-bi\
+t) sd 6249 (is) sd 6385 (on\)) sd 6615 (by) sd 6798 (default.) sd 7283 (The)
+sd 1500 8670 am (debugger requires this information to properly disassemble in\
+structions.) shwd 1500 8336 am (Request message:) shwd 
+@fs6 2350 7919 am (access_req      req) shwd 2350 7780 am (addr48_ptr      in_\
+addr) shwd 
+@fs0 1500 7446 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request and the ) shwd 
+@fs6 (in_addr) shwd 
+@fs0 ( tells the input address.) shwd 1500 7112 am (Return message:) shwd 
+@fs6 2350 6695 am (unsigned_8      is_32) shwd 
+@fs0 1500 6361 am (The field returns one if the address is a USE32 segment, ze\
+ro otherwise.) shwd 
+@fs3 1500 5860 am (1.10 REQ_CHECKSUM_MEM \(9\)) shwd 
+@fs0 1500 5526 am (Request) shwd 1986 (to) sd 2131 (calculate) sd 2664 (the)
+sd 2871 (checksum) sd 3465 (for) sd 3665 (a) sd 3763 (block) sd 4110 (of) sd 
+4263 (memory) sd 4764 (in) sd 4909 (the) sd 5116 (debuggee's address space.)
+sd 6658 (This is used by) sd 1500 5359 am (the) shwd 1723 (debugger) sd 2296 (\
+to) sd 2457 (determine) sd 3068 (if) sd 3206 (the) sd 3429 (contents) sd 3947 
+(of) sd 4116 (the) sd 4339 (memory) sd 4856 (block) sd 5218 (have) sd 5533 (ch\
+anged) sd 6050 (since) sd 6388 (the) sd 6610 (last) sd 6855 (time) sd 7154 (it)
+ sd 7283 (was) sd 1500 5192 am (read.) shwd 1820 (Since) sd 2169 (only) sd 2456
+ (a) sd 2556 (four) sd 2828 (byte) sd 3107 (checksum) sd 3703 (has) sd 3927 (t\
+o) sd 4074 (be) sd 4244 (transmitted) sd 4911 (back,) sd 5249 (it) sd 5364 (is)
+ sd 5494 (more) sd 5818 (efficient) sd 6322 (than) sd 6600 (actually) sd 7080 
+(reading) sd 1500 5025 am (the memory again. The debugger does not care how th\
+e checksum is calculated.) shwd 1500 4691 am (Request message:) shwd 
+@fs6 2350 4274 am (access_req      req) shwd 2350 4135 am (addr48_ptr      in_\
+addr) shwd 2350 3996 am (unsigned_16     len) shwd 
+@fs0 1500 3662 am (The) shwd 1764 () sd 
+@fs6 (req) shwd 
+@fs0 2036 (field) sd 2340 (stores) sd 2713 (the) sd 2931 (request.) sd 3441 (T\
+he) sd 3705 () sd 
+@fs6 (in_addr) shwd 
+@fs0 4277 (contains) sd 4790 (the) sd 5008 (starting) sd 5475 (address) sd 5941
+ (and) sd 6189 (the) sd 6406 () sd 
+@fs6 (len) shwd 
+@fs0 6677 (field) sd 6980 (tells) sd 7259 (how) sd 1500 3495 am (large the blo\
+ck of memory is.) shwd 1500 3161 am (Return message:) shwd 
+@fs6 2350 2744 am (unsigned_32     result) shwd 
+@fs0 1500 2410 am (The checksum will be returned in ) shwd 
+@fs6 (result) shwd 
+@fs0 (.) shwd 1500 1340 am (The Requests) shwd 7360 (11) sd 
+pageobj restore
+showpage
+%%Page: # 17
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (1.11 REQ_READ_MEM \(10\)) shwd 
+@fs0 1500 9505 am (Request to read a block of memory.) shwd 1500 9171 am (Requ\
+est message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (addr48_ptr      mem\
+_addr) shwd 2350 8476 am (unsigned_16     len) shwd 
+@fs0 1500 8142 am (The) shwd 1757 () sd 
+@fs6 (mem_addr) shwd 
+@fs0 2397 (contains) sd 2903 (the) sd 3114 (address) sd 3573 (of) sd 3730 (the)
+ sd 3941 (memory) sd 4446 (block) sd 4797 (to) sd 4946 (read) sd 5227 (from)
+sd 5539 (the) sd 5750 (remote) sd 6178 (machine.) sd 6736 (The) sd 6993 (lengt\
+h) sd 7383 (of) sd 1500 7975 am (the block is determined by ) shwd 
+@fs6 (len) shwd 
+@fs0 (. The memory data will be copied to output message.) shwd 1500 7641 am (\
+Return message:) shwd 
+@fs6 2350 7224 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 6890 am (The) shwd 1762 () sd 
+@fs6 (data) shwd 
+@fs0 2107 (field) sd 2408 (stores) sd 2778 (the) sd 2993 (memory) sd 3502 (blo\
+ck) sd 3857 (read) sd 4142 (in.) sd 4348 (The) sd 4609 (length) sd 5003 (of)
+sd 5164 (this) sd 5410 (memory) sd 5919 (block) sd 6274 (is) sd 6411 (given)
+sd 6766 (by) sd 6950 (the) sd 7165 (return) sd 1500 6723 am (value) shwd 1839 
+(from) sd 2147 (TrapRequest.) sd 2934 (If) sd 3064 (error) sd 3373 (has) sd 
+3595 (occurred) sd 4121 (in) sd 4266 (reading) sd 4722 (memory,) sd 5258 (the)
+sd 5465 (length) sd 5851 (of the data returns will not be) sd 1500 6556 am (eq\
+ual to the number of bytes requested.) shwd 
+@fs3 1500 6055 am (1.12 REQ_WRITE_MEM \(11\)) shwd 
+@fs0 1500 5721 am (Request to write a block of memory.) shwd 1500 5387 am (Req\
+uest message:) shwd 
+@fs6 2350 4970 am (access_req      req) shwd 2350 4831 am (addr48_ptr      mem\
+_addr) shwd 2350 4692 am (------------------------) shwd 2350 4553 am (bytes)
+shwd 3550 (data) sd 
+@fs0 1500 4219 am (The) shwd 1754 () sd 
+@fs6 (data) shwd 
+@fs0 2091 (field) sd 2385 (stores) sd 2748 (the) sd 2956 (memory) sd 3458 (dat\
+a) sd 3728 (to) sd 3874 (be) sd 4043 (transferred.) sd 4726 (The) sd 4980 (dat\
+a) sd 5250 (will) sd 5505 (be) sd 5674 (stored) sd 6053 (in) sd 6199 (the) sd 
+6407 (debuggee's) sd 7081 (address) sd 1500 4052 am (space starting at the add\
+ress in the) shwd 
+@fs6 3446 (mem_addr) sd 
+@fs0 ( field.) shwd 1500 3718 am (Return message:) shwd 
+@fs6 2350 3301 am (unsigned_16     len) shwd 
+@fs0 1500 2967 am (The) shwd 1770 () sd 
+@fs6 (len) shwd 
+@fs0 2048 (field) sd 2358 (tells) sd 2644 (the) sd 2868 (length) sd 3271 (of)
+sd 3441 (memory) sd 3959 (block) sd 4323 (actually) sd 4819 (written) sd 5269 
+(to) sd 5431 (the) sd 5655 (debuggee) sd 6244 (machine.) sd 6841 (If) sd 6988 
+(error) sd 7314 (has) sd 1500 2800 am (occurred in writing the memory, the len\
+gth returned will not be equal to the number of bytes requested.) shwd 
+@fs3 1500 2299 am (1.13 REQ_READ_IO \(12\)) shwd 
+@fs0 1500 1965 am (Request to read data from I/O address space of the debuggee\
+.) shwd 1500 1340 am (The Requests) shwd 7360 (12) sd 
+pageobj restore
+showpage
+%%Page: # 18
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (Request message:) shwd 
+@fs6 2350 9756 am (access_req      req) shwd 2350 9617 am (unsigned_32     IO_\
+offset) shwd 2350 9478 am (unsigned_8      len) shwd 
+@fs0 1500 9144 am (The) shwd 1757 () sd 
+@fs6 (IO_offset) shwd 
+@fs0 2472 (contains) sd 2978 (the) sd 3189 (I/O) sd 3416 (address) sd 3875 (of)
+ sd 4032 (the) sd 4243 (debuggee) sd 4819 (machine.) sd 5377 (The) sd 5634 (le\
+ngth) sd 6023 (of) sd 6179 (the) sd 6389 (block) sd 6739 (is) sd 6871 (determi\
+ned) sd 1500 8977 am (by ) shwd 
+@fs6 (len) shwd 
+@fs0 (. It must be 1, 2 or 4 bytes. The data will be copied from ) shwd 
+@fs6 (IO_offset) shwd 
+@fs0 ( to the return message.) shwd 1500 8643 am (Return message:) shwd 
+@fs6 2350 8226 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 7892 am (The) shwd 1762 () sd 
+@fs6 (data) shwd 
+@fs0 2107 (field) sd 2408 (stores) sd 2778 (the) sd 2993 (memory) sd 3502 (blo\
+ck) sd 3857 (read) sd 4142 (in.) sd 4348 (The) sd 4609 (length) sd 5003 (of)
+sd 5164 (this) sd 5410 (memory) sd 5919 (block) sd 6274 (is) sd 6411 (given)
+sd 6766 (by) sd 6950 (the) sd 7165 (return) sd 1500 7725 am (value) shwd 1849 
+(from) sd 2167 (TrapRequest.) sd 2982 (If) sd 3122 (an) sd 3300 (error) sd 3618
+ (has) sd 3849 (occurred) sd 4384 (in) sd 4538 (reading,) sd 5040 (the) sd 5256
+ (length) sd 5651 (returned) sd 6163 (will) sd 6426 (not) sd 6650 (be) sd 6827 
+(equal) sd 7175 (to) sd 7329 (the) sd 1500 7558 am (number of bytes requested.)
+ shwd 
+@fs3 1500 7057 am (1.14 REQ_WRITE_IO \(13\)) shwd 
+@fs0 1500 6723 am (Request to write data to the I/O address space of the debug\
+gee.) shwd 1500 6389 am (Request message:) shwd 
+@fs6 2350 5972 am (access_req      req) shwd 2350 5833 am (unsigned_32     IO_\
+offset) shwd 2350 5694 am (-------------------------) shwd 2350 5555 am (bytes)
+ shwd 3550 (data) sd 
+@fs0 1500 5221 am (The) shwd 1757 () sd 
+@fs6 (IO_offset) shwd 
+@fs0 2472 (contains) sd 2978 (the) sd 3189 (I/O) sd 3416 (address) sd 3875 (of)
+ sd 4032 (the) sd 4243 (debuggee) sd 4819 (machine.) sd 5412 (The) sd 5669 (da\
+ta) sd 5942 (stored) sd 6324 (in) sd 6473 () sd 
+@fs6 (data) shwd 
+@fs0 6813 (field) sd 7110 (will) sd 7368 (be) sd 1500 5054 am (copied to )
+shwd 
+@fs6 (IO_offset) shwd 
+@fs0 ( on the debuggee machine.) shwd 1500 4720 am (Return message:) shwd 
+@fs6 2350 4303 am (unsigned_8      len) shwd 
+@fs0 1500 3969 am (The) shwd 1757 () sd 
+@fs6 (len) shwd 
+@fs0 2022 (field) sd 2319 (tells) sd 2592 (the) sd 2803 (number) sd 3270 (of)
+sd 3427 (bytes) sd 3762 (actually) sd 4244 (written) sd 4680 (out.) sd 4942 (I\
+f) sd 5075 (an) sd 5246 (error) sd 5558 (has) sd 5783 (occurred) sd 6312 (in)
+sd 6460 (writing,) sd 6940 (the) sd 7150 (length) sd 1500 3802 am (returned wi\
+ll not be equal to the number of bytes requested.) shwd 
+@fs3 1500 3301 am (1.15 REQ_READ_CPU \(14\)) shwd 
+@fs0 1500 2967 am (Request to read the CPU registers.) shwd 1500 2633 am (Requ\
+est message:) shwd 
+@fs6 2350 2216 am (access_req      req) shwd 
+@fs0 1500 1882 am (Return message:) shwd 1500 1340 am (The Requests) shwd 7360 
+(13) sd 
+pageobj restore
+showpage
+%%Page: # 19
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 9867 am (The ) shwd 
+@fs6 (data) shwd 
+@fs0 ( field contains the register information requested. It contains the foll\
+owing structure:) shwd 
+@fs6 2350 9450 am (struct cpu_regs {) shwd 2650 9311 am (unsigned_32 EAX;)
+shwd 2650 9172 am (unsigned_32 EBX;) shwd 2650 9033 am (unsigned_32 ECX;) shwd 
+2650 8894 am (unsigned_32 EDX;) shwd 2650 8755 am (unsigned_32 ESI;) shwd 2650 
+8616 am (unsigned_32 EDI;) shwd 2650 8477 am (unsigned_32 EBP;) shwd 2650 8338
+am (unsigned_32 ESP;) shwd 2650 8199 am (unsigned_32 EIP;) shwd 2650 8060 am (\
+unsigned_32 EFL;) shwd 2650 7921 am (unsigned_32 CR0;) shwd 2650 7782 am (unsi\
+gned_32 CR2;) shwd 2650 7643 am (unsigned_32 CR3;) shwd 2650 7504 am (unsigned\
+_16 DS;) shwd 2650 7365 am (unsigned_16 ES;) shwd 2650 7226 am (unsigned_16 SS\
+;) shwd 2650 7087 am (unsigned_16 CS;) shwd 2650 6948 am (unsigned_16 FS;)
+shwd 2650 6809 am (unsigned_16 GS;) shwd 2350 6670 am (};) shwd 
+@fs3 1500 6169 am (1.16 REQ_READ_FPU \(15\)) shwd 
+@fs0 1500 5835 am (Request to read the FPU registers.) shwd 1500 5501 am (Requ\
+est message:) shwd 
+@fs6 2350 5084 am (access_req      req) shwd 
+@fs0 1500 4750 am (Return message:) shwd 
+@fs6 2350 4333 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 3999 am (The) shwd 1755 () sd 
+@fs6 (data) shwd 
+@fs0 2093 (field) sd 2388 (contains) sd 2892 (the) sd 3101 (register) sd 3559 
+(information) sd 4258 (requested.) sd 4873 (Its) sd 5051 (format) sd 5462 (is)
+sd 5593 (the) sd 5802 (same) sd 6126 (as) sd 6280 (the) sd 6489 (result) sd 
+6838 (of) sd 6992 (a) sd 7091 ("fsave") sd 1500 3832 am (instruction) shwd 2148
+ (in) sd 2306 (a) sd 2417 (32-bit) sd 2801 (segment) sd 3315 (\(the) sd 3582 (\
+instruction) sd 4230 (pointer) sd 4676 (and) sd 4927 (operand) sd 5427 (pointe\
+r) sd 5873 (fields) sd 6232 (take) sd 6513 (up) sd 6701 (8) sd 6819 (bytes) sd 
+7162 (each\).) sd 1500 3665 am (Implementations) shwd 2492 (of) sd 2662 (trap)
+sd 2933 (files) sd 3227 (in) sd 3389 (16-bit) sd 3777 (environments) sd 4591 (\
+should) sd 5016 (expand) sd 5472 (the) sd 5695 (instruction) sd 6346 (pointer)
+sd 6795 (and) sd 7049 (operand) sd 1500 3498 am (pointer) shwd 1945 (fields)
+sd 2304 (from) sd 2624 (4) sd 2742 (bytes) sd 3085 (to) sd 3242 (8) sd 3360 (\
+\(shuffling) sd 3961 (the) sd 4180 (data) sd 4461 (register) sd 4929 (fields)
+sd 5288 (down) sd 5647 (in) sd 5804 (memory\)) sd 6363 (before) sd 6768 (retur\
+ning) sd 7329 (the) sd 1500 3331 am (result to the debugger.) shwd 
+@fs3 1500 2830 am (1.17 REQ_WRITE_CPU \(16\)/REQ_WRITE_FPU \(17\)) shwd 
+@fs0 1500 2496 am (Requests to write to the CPU or FPU state.) shwd 1500 2162
+am (Request message:) shwd 1500 1340 am (The Requests) shwd 7360 (14) sd 
+pageobj restore
+showpage
+%%Page: # 20
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (access_req      req) shwd 2350 10062 am (-----------------\
+-------) shwd 2350 9923 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 9589 am (Information) shwd 2209 (in) sd 2358 () sd 
+@fs6 (data) shwd 
+@fs0 2698 (field) sd 2995 (will) sd 3253 (be) sd 3425 (transfered) sd 4025 (to)
+ sd 4174 (the) sd 4385 (debuggee's) sd 5062 (registers.) sd 5619 (The) sd 5875 
+(formats) sd 6341 (of) sd 6497 (data) sd 6769 (can) sd 7002 (be) sd 7173 (foun\
+d) sd 1500 9422 am (in REQ_READ_CPU/REQ_READ_FPU) shwd 
+@fs2 1500 9088 am (NOTE:) shwd 
+@fs0 ( For) shwd 2214 (the) sd 2427 (REQ_WRITE_FPU) sd 3587 (case,) sd 3906 (t\
+he) sd 4119 (data) sd 4394 (will) sd 4654 (be) sd 4828 (in) sd 4979 (a) sd 5083
+ (32-bit) sd 5459 ("fsave") sd 5909 (instruction) sd 6549 (format,) sd 7000 (s\
+o) sd 7165 (16-bit) sd 1977 8921 am (environments) shwd 2788 (will) sd 3056 (h\
+ave) sd 3370 (to) sd 3529 (squish) sd 3936 (the) sd 4157 (instruction) sd 4806 
+(and) sd 5057 (operand) sd 5557 (pointer) sd 6003 (fields) sd 6363 (back) sd 
+6676 (to) sd 6834 (their) sd 7140 (4) sd 7259 (byte) sd 1977 8754 am (forms.)
+shwd 1500 8420 am (Return message:) shwd 
+@fs6 2350 8003 am (NONE) shwd 
+@fs3 1500 7502 am (1.18 REQ_PROG_GO \(18\)/REQ_PROG_STEP \(19\)) shwd 
+@fs0 1500 7168 am (Requests) shwd 2063 (to) sd 2231 (execute) sd 2717 (the) sd 
+2946 (debuggee.) sd 3621 (REQ_PROG_GO) sd 4673 (causes) sd 5095 (the) sd 5324 
+(debuggee) sd 5918 (to) sd 6085 (resume) sd 6546 (execution,) sd 7189 (while)
+sd 1500 7001 am (REQ_PROG_STEP) shwd 2665 (requests) sd 3170 (only) sd 3466 (a)
+ sd 3575 (single) sd 3956 (machine) sd 4475 (instruction) sd 5120 (to) sd 5275 
+(be) sd 5453 (executed) sd 5996 (before) sd 6400 (returning.) sd 7018 (In) sd 
+7181 (either) sd 1500 6834 am (case,) shwd 1819 (this) sd 2064 (request) sd 
+2511 (will) sd 2771 (return) sd 3148 (when) sd 3493 (a) sd 3597 (breakpoint,)
+sd 4274 (watchpoint,) sd 4974 (machine) sd 5489 (exception) sd 6075 (or) sd 
+6234 (other) sd 6564 (significant) sd 7197 (event) sd 1500 6667 am (has) shwd 
+1758 (been) sd 2094 (encountered.) sd 2958 (While) sd 3372 (executing,) sd 4032
+ (a) sd 4166 (trap) sd 4455 (file) sd 4713 (is) sd 4877 (allowed) sd 5391 (to)
+sd 5571 (return) sd 5977 (spurious) sd 6522 (COND_WATCH) sd 1500 6500 am (indi\
+cations.) shwd 2273 (The) sd 2543 (debugger) sd 3117 (always) sd 3558 (checks)
+sd 3991 (its) sd 4176 (own) sd 4470 (watchpoint) sd 5145 (table) sd 5470 (for)
+sd 5687 (changes) sd 6190 (before) sd 6601 (reporting) sd 7168 (to) sd 7329 (t\
+he) sd 1500 6333 am (user.) shwd 1842 (This) sd 2138 (means) sd 2542 (that) sd 
+2800 (a) sd 2910 (legal) sd 3230 (implementation) sd 4155 (of) sd 4320 (a) sd 
+4430 (trap) sd 4696 (file) sd 4931 (\(but) sd 5205 () sd 
+@fs2 (very) shwd 
+@fs0 5516 (inefficient\)) sd 6186 (can) sd 6427 (just) sd 6676 (single) sd 7057
+ (step) sd 7329 (the) sd 1500 6166 am (program and return COND_WATCH for every\
+ instruction when there are active watchpoints present.) shwd 1500 5832 am (Re\
+quest message:) shwd 
+@fs6 2350 5415 am (access_req      req) shwd 
+@fs0 1500 5081 am (The request is in ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field.) shwd 1500 4747 am (Return message:) shwd 
+@fs6 2350 4330 am (addr48_ptr      stack_pointer) shwd 2350 4191 am (addr48_pt\
+r      program_counter) shwd 2350 4052 am (unsigned_16     conditions) shwd 
+@fs0 1500 3718 am (The) shwd 1792 () sd 
+@fs6 (stack_pointer) shwd 
+@fs0 2842 (and) sd 3119 () sd 
+@fs6 (program_counter) shwd 
+@fs0 4319 (fields) sd 4705 (store) sd 5052 (the) sd 5298 (latest) sd 5668 (val\
+ues) sd 6100 (of) sd 6292 (SS:ESP) sd 6803 (and) sd 7080 (CS:EIP) sd 1500 3551
+am (respectively.) shwd 2337 (The) sd 2620 () sd 
+@fs6 (conditions) shwd 
+@fs0 3436 (informs) sd 3937 (the) sd 4173 (debugger) sd 4759 (what) sd 5096 (c\
+onditions) sd 5744 (have) sd 6073 (changed) sd 6604 (since) sd 6956 (execution)
+ sd 1500 3384 am (began.  It contains the following flags:) shwd 1500 1340 am 
+(The Requests) shwd 7360 (15) sd 
+pageobj restore
+showpage
+%%Page: # 21
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (Bit 0   : COND_CONFIG) shwd 4750 (- Configurations change)
+sd 2350 10062 am (Bit 1   : COND_SECTIONS) shwd 4750 (- Program overlays chang\
+e) sd 2350 9923 am (Bit 2   : COND_LIBRARIES        - Libraries \(DLL\) change)
+ shwd 2350 9784 am (Bit 3   : COND_ALIASING) shwd 4750 (- Alias change) sd 2350
+ 9645 am (Bit 4   : COND_THREAD) shwd 4750 (- Thread change) sd 2350 9506 am (\
+Bit 5   : COND_THREAD_EXTRA     - Thread extra change) shwd 2350 9367 am (Bit \
+6   : COND_TRACE) shwd 4750 (- Trace point occurred) sd 2350 9228 am (Bit 7   \
+: COND_BREAK) shwd 4750 (- Break point occurred) sd 2350 9089 am (Bit 8   : CO\
+ND_WATCH) shwd 4750 (- Watch point occurred) sd 2350 8950 am (Bit 9   : COND_U\
+SER) shwd 4750 (- User interrupt) sd 2350 8811 am (Bit 10  : COND_TERMINATE   \
+     - Program terminated) shwd 2350 8672 am (Bit 11  : COND_EXCEPTION        \
+- Machine exception) shwd 2350 8533 am (Bit 12  : COND_MESSAGE) shwd 4750 (- M\
+essage to be displayed) sd 2350 8394 am (Bit 13  : COND_STOP) shwd 4750 (- Deb\
+uggee wants to stop) sd 2350 8255 am (Bit 14-15  :  not used) shwd 
+@fs0 1500 7921 am (When) shwd 1870 (a) sd 1968 (bit) sd 2152 (is) sd 2281 (off\
+,) sd 2517 (the) sd 2724 (debugger) sd 3281 (avoids) sd 3682 (having) sd 4099 
+(to) sd 4244 (make) sd 4582 (additional) sd 5178 (requests) sd 5672 (to) sd 
+5817 (determine) sd 6412 (the new state of the) sd 1500 7754 am (debuggee.)
+shwd 2129 (If) sd 2266 (the) sd 2480 (trap) sd 2741 (file) sd 2971 (is) sd 3107
+ (not) sd 3329 (sure) sd 3604 (that) sd 3856 (a) sd 3960 (particular) sd 4539 
+(item) sd 4829 (has) sd 5057 (changed,) sd 5602 (or) sd 5761 (if) sd 5889 (it)
+sd 6009 (is) sd 6144 (expensive) sd 6745 (to) sd 6896 (find) sd 7164 (out,) sd 
+7422 (it) sd 1500 7587 am (should just turn the bit on.) shwd 
+@fs3 1500 7086 am (1.19 REQ_PROG_LOAD \(20\)) shwd 
+@fs0 1500 6752 am (Request to load a program.) shwd 1500 6418 am (Request mess\
+age:) shwd 
+@fs6 2350 6001 am (access_req      req) shwd 2350 5862 am (unsigned_8      tru\
+e_argv) shwd 2350 5723 am (-------------------------) shwd 2350 5584 am (bytes)
+ shwd 3550 (argv) sd 
+@fs0 1500 5250 am (The) shwd 1753 () sd 
+@fs6 (true_argv) shwd 
+@fs0 2464 (field) sd 2757 (indicates) sd 3290 (whether) sd 3777 (the) sd 3984 
+(argument consists of a single string, or a true C-style argument) sd 1500 5083
+ am (vector.) shwd 1964 (This) sd 2262 (field) sd 2569 (is) sd 2712 (set) sd 
+2917 (to) sd 3076 (be) sd 3258 (one) sd 3510 (for) sd 3724 (a) sd 3835 (true)
+sd 4102 (argument) sd 4679 (vector) sd 5078 (and) sd 5329 (zero) sd 5619 (othe\
+rwise.) sd 6311 (The) sd 6577 () sd 
+@fs6 (argv) shwd 
+@fs0 6926 (is) sd 7068 (a) sd 7179 (set) sd 7383 (of) sd 1500 4916 am (zero-te\
+rminated) shwd 2437 (strings,) sd 2900 (one) sd 3153 (following) sd 3749 (each)
+ sd 4056 (other.) sd 4462 (The) sd 4730 (first) sd 5007 (string) sd 5377 (give\
+s) sd 5723 (the) sd 5945 (name) sd 6297 (of) sd 6464 (the) sd 6685 (program)
+sd 7209 (to) sd 7368 (be) sd 1500 4749 am (loaded.) shwd 1951 (The) sd 2206 (r\
+emainder) sd 2811 (of) sd 2966 (the) sd 3175 () sd 
+@fs6 (argv) shwd 
+@fs0 3513 (field) sd 3808 (contains) sd 4312 (the) sd 4521 (program's) sd 5134 
+(arguments.) sd 5794 (The) sd 6048 (arguments) sd 6667 (can) sd 6898 (be) sd 
+7067 (a) sd 7166 (single) sd 1500 4582 am (string or an array of strings.)
+shwd 1500 4248 am (Return message:) shwd 
+@fs6 2350 3831 am (trap_error      err) shwd 2350 3692 am (unsigned_32     tas\
+k_id) shwd 2350 3553 am (unsigned_32     mod_handle) shwd 2350 3414 am (unsign\
+ed_8      flags) shwd 
+@fs0 1500 3080 am (The) shwd 1753 () sd 
+@fs6 (err) shwd 
+@fs0 2014 (field) sd 2307 (returns) sd 2732 (the) sd 2939 (error) sd 3248 (cod\
+e) sd 3548 (while) sd 3895 (loading) sd 4351 (the) sd 4558 (program.) sd 5140 
+(The) sd 5393 () sd 
+@fs6 (task_id) shwd 
+@fs0 5954 (shows the task \(process\) ID) sd 1500 2913 am (for) shwd 1702 (the)
+ sd 1911 (program) sd 2423 (loaded.) sd 2908 (The) sd 3163 () sd 
+@fs6 (mod_handle) shwd 
+@fs0 3951 (is) sd 4081 (the) sd 4289 (system) sd 4713 (module) sd 5169 (identi\
+fication) sd 5953 (for) sd 6154 (the) sd 6362 (executable) sd 6997 (image.) sd 
+7414 (It) sd 1500 2746 am (is used as input to the REQ_MAP_ADDR request.  The )
+ shwd 
+@fs6 (flags) shwd 
+@fs0 ( field contains the following information:) shwd 1500 1340 am (The Reque\
+sts) shwd 7360 (16) sd 
+pageobj restore
+showpage
+%%Page: # 22
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (Bit 0      :  LD_FLAG_IS_32) shwd 5350 (- 32-bit program)
+sd 2350 10062 am (Bit 1      :  LD_FLAG_IS_PROT) shwd 5350 (- Protected mode)
+sd 2350 9923 am (Bit 2      :  LD_FLAG_IS_STARTED        - Program already sta\
+rted) shwd 2350 9784 am (Bit 3      :  LD_FLAG_IGNORE_SEGMENTS   - Ignore segm\
+ents \(flat\)) shwd 2350 9645 am (Bit 4 - 7  :  not used) shwd 
+@fs3 1500 9144 am (1.20 REQ_PROG_KILL \(21\)) shwd 
+@fs0 1500 8810 am (Request to kill the program.) shwd 1500 8476 am (Request me\
+ssage:) shwd 
+@fs6 2350 8059 am (access_req      req) shwd 2350 7920 am (unsigned_32     tas\
+k_id) shwd 
+@fs0 1500 7586 am (The) shwd 1756 () sd 
+@fs6 (req) shwd 
+@fs0 2020 (field) sd 2316 (contains) sd 2821 (the) sd 3031 (request.) sd 3515 
+(The) sd 3770 () sd 
+@fs6 (task_id) shwd 
+@fs0 4333 (field) sd 4628 (\(obtained) sd 5195 (from) sd 5505 (REQ_PROG_LOAD\))
+ sd 6770 (identifies) sd 7329 (the) sd 1500 7419 am (program to be killed.)
+shwd 1500 7085 am (Return message:) shwd 
+@fs6 2350 6668 am (trap_error      err) shwd 
+@fs0 1500 6334 am (The ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field returns the error code of the OS kill program operation.) shwd 
+@fs3 1500 5833 am (1.21 REQ_SET_WATCH \(22\)) shwd 
+@fs0 1500 5499 am (Request to set a watchpoint at the address given.) shwd 1500
+ 5165 am (Request message:) shwd 
+@fs6 2350 4748 am (access_req      req) shwd 2350 4609 am (addr48_ptr      wat\
+ch_addr) shwd 2350 4470 am (unsigned_8      size) shwd 
+@fs0 1500 4136 am (The) shwd 1769 (address) sd 2240 (of) sd 2409 (the) sd 2632 
+(watchpoint) sd 3306 (is) sd 3451 (given) sd 3814 (by) sd 4006 (the) sd 4229 ()
+ sd 
+@fs6 (watch_addr) shwd 
+@fs0 5031 (field.) sd 5409 (The) sd 
+@fs6 5678 (size) sd 
+@fs0 6029 (field) sd 6337 (gives) sd 6683 (the) sd 6905 (number) sd 7383 (of)
+sd 1500 3969 am (bytes to be watched.) shwd 1500 3635 am (Return message:)
+shwd 
+@fs6 2350 3218 am (trap_error      err) shwd 2350 3079 am (unsigned_32     mul\
+tiplier) shwd 
+@fs0 1500 2745 am (The) shwd 1762 () sd 
+@fs6 (err) shwd 
+@fs0 2032 (field) sd 2334 (returns) sd 2768 (the) sd 2984 (error) sd 3302 (cod\
+e) sd 3611 (if) sd 3742 (the) sd 3958 (setting) sd 4376 (failed.) sd 4830 (If)
+sd 4969 (the) sd 5184 (setting) sd 5601 (of) sd 5762 (the) sd 5977 (watchpoint)
+ sd 6643 (worked,) sd 7145 (the) sd 7360 (31) sd 1500 2578 am (low) shwd 1767 
+(order) sd 2120 (bits) sd 2379 (of) sd 
+@fs6 2553 (multiplier) sd 
+@fs0 3360 (indicate) sd 3860 (the) sd 4088 (expected) sd 4642 (slow) sd 4963 (\
+down) sd 5331 (of) sd 5505 (the) sd 5733 (program) sd 6264 (when) sd 6624 (it'\
+s) sd 6860 (placed) sd 7282 (into) sd 1500 2411 am (execution.) shwd 2150 (The)
+ sd 2414 (top) sd 2640 (bit) sd 2835 (of) sd 2999 (the) sd 3217 (field) sd 3521
+ (is) sd 3661 (set) sd 3863 (to) sd 4019 (one) sd 4268 (if) sd 4401 (a) sd 4510
+ (debug) sd 4899 (register) sd 5366 (is) sd 5506 (being) sd 5863 (used) sd 6165
+ (for) sd 6375 (the) sd 6592 (watchpoint,) sd 7298 (and) sd 1500 2244 am (zero\
+ if the watchpoint is being done by software.) shwd 1500 1340 am (The Requests)
+ shwd 7360 (17) sd 
+pageobj restore
+showpage
+%%Page: # 23
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (1.22 REQ_CLEAR_WATCH \(23\)) shwd 
+@fs0 1500 9505 am (Request) shwd 1986 (to) sd 2131 (clear) sd 2439 (a) sd 2537 
+(watchpoint) sd 3195 (at) sd 3332 (the) sd 3539 (address) sd 3994 (given.) sd 
+4378 (The) sd 4631 (trap) sd 4885 (file) sd 5108 (may) sd 5384 (assume) sd 5830
+ (all) sd 6006 (watch) sd 6376 (points) sd 6754 (are cleared at) sd 1500 9338
+am (once.) shwd 1500 9004 am (Request message:) shwd 
+@fs6 2350 8587 am (access_req      req) shwd 2350 8448 am (addr48_ptr      wat\
+ch_addr) shwd 2350 8309 am (unsigned_8      size) shwd 
+@fs0 1500 7975 am (The) shwd 1766 (address) sd 2234 (of) sd 2400 (the) sd 2620 
+(watch) sd 3003 (point) sd 3340 (is) sd 3482 (given) sd 3842 (by) sd 4031 (the)
+ sd 4251 () sd 
+@fs6 (watch_addr) shwd 
+@fs0 5050 (field.) sd 5419 (The) sd 
+@fs6 5684 (size) sd 
+@fs0 6032 (field) sd 6337 (gives) sd 6680 (the) sd 6899 (size) sd 7164 (of) sd 
+7329 (the) sd 1500 7808 am (watch point.) shwd 1500 7474 am (Return message:)
+shwd 
+@fs6 2350 7057 am (NONE) shwd 
+@fs3 1500 6556 am (1.23 REQ_SET_BREAK \(24\)) shwd 
+@fs0 1500 6222 am (Request to set a breakpoint at the address given.) shwd 1500
+ 5888 am (Request message:) shwd 
+@fs6 2350 5471 am (access_req      req) shwd 2350 5332 am (addr48_ptr      bre\
+ak_addr) shwd 
+@fs0 1500 4998 am (The address of the break point is given by the ) shwd 
+@fs6 (break_addr) shwd 
+@fs0 ( field.) shwd 1500 4664 am (Return message:) shwd 
+@fs6 2350 4247 am (unsigned_32     old) shwd 
+@fs0 1500 3913 am (The ) shwd 
+@fs6 (old) shwd 
+@fs0 ( field returns the original byte\(s\) at the address) shwd 
+@fs6 4625 (break_addr) sd 
+@fs0 (.) shwd 
+@fs3 1500 3412 am (1.24 REQ_CLEAR_BREAK \(25\)) shwd 
+@fs0 1500 3078 am (Request) shwd 1990 (to) sd 2139 (clear) sd 2451 (a) sd 2553 
+(breakpoint) sd 3192 (at) sd 3333 (the) sd 3544 (address) sd 4003 (given.) sd 
+4399 (The) sd 4656 (trap) sd 4914 (file) sd 5141 (may) sd 5421 (assume) sd 5871
+ (all) sd 6051 (breakpoints) sd 6744 (are) sd 6955 (cleared) sd 7399 (at) sd 
+1500 2911 am (once.) shwd 1500 2577 am (Request message:) shwd 
+@fs6 2350 2160 am (access_req      req) shwd 2350 2021 am (addr48_ptr      bre\
+ak_addr) shwd 2350 1882 am (unsigned_32     old) shwd 
+@fs0 1500 1340 am (The Requests) shwd 7360 (18) sd 
+pageobj restore
+showpage
+%%Page: # 24
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The) shwd 1759 (address) sd 2220 (of) sd 2379 (the) sd 2592 (br\
+eak) sd 2945 (point) sd 3275 (is) sd 3410 (given) sd 3763 (by) sd 3945 (the)
+sd 4158 () sd 
+@fs6 (break_addr) shwd 
+@fs0 4950 (field.) sd 5298 (The) sd 
+@fs6 5557 (old) sd 
+@fs0 5824 (field) sd 6123 (holds) sd 6468 (the) sd 6681 (old) sd 6901 (instruc\
+tion) sd 1500 10006 am (returned from the REQ_SET_BREAK request.) shwd 1500 
+9672 am (Return message:) shwd 
+@fs6 2350 9255 am (NONE) shwd 
+@fs3 1500 8754 am (1.25 REQ_GET_NEXT_ALIAS \(26\)) shwd 
+@fs0 1500 8420 am (Request) shwd 1993 (to) sd 2145 (get) sd 2359 (alias) sd 
+2658 (information) sd 3362 (for) sd 3568 (a) sd 3672 (segment.) sd 4229 (In)
+sd 4388 (some) sd 4724 (protect) sd 5155 (mode) sd 5507 (environments) sd 6310 
+(\(typically) sd 6889 (32-bit) sd 7266 (flat\)) sd 1500 8253 am (two) shwd 1749
+ (different) sd 2271 (selectors) sd 2799 (may) sd 3078 (refer) sd 3382 (to) sd 
+3530 (the) sd 3740 (same) sd 4064 (physical) sd 4568 (memory.) sd 5113 (Which)
+sd 5524 (selectors) sd 6051 (do) sd 6229 (this) sd 6469 (is) sd 6600 (importan\
+t) sd 7182 (to) sd 7329 (the) sd 1500 8086 am (debugger in certain cases \(so \
+that symbolic information is properly displayed\).) shwd 1500 7752 am (Request\
+ message:) shwd 
+@fs6 2350 7335 am (access_req      req) shwd 2350 7196 am (unsigned_16     seg)
+ shwd 
+@fs0 1500 6862 am (The ) shwd 
+@fs6 (seg) shwd 
+@fs0 ( field contains the segment. To get the first alias, put zero in this fi\
+eld.) shwd 1500 6528 am (Return message:) shwd 
+@fs6 2350 6111 am (unsigned_16     seg) shwd 2350 5972 am (unsigned_16     ali\
+as) shwd 
+@fs0 1500 5638 am (The) shwd 1767 () sd 
+@fs6 (seg) shwd 
+@fs0 2042 (field) sd 2349 (contains) sd 2865 (the) sd 3086 (next) sd 3377 (seg\
+ment) sd 3891 (where) sd 4282 (an) sd 4463 (alias) sd 4768 (appears.) sd 5307 
+(If) sd 5450 (this) sd 5701 (field) sd 6007 (returns) sd 6445 (zero,) sd 6773 
+(it) sd 6900 (implies) sd 7360 (no) sd 1500 5471 am (more) shwd 1846 (aliases)
+sd 2277 (can) sd 2530 (be) sd 2721 (found.) sd 3189 (The) sd 3465 () sd 
+@fs6 (alias) shwd 
+@fs0 3899 (field) sd 4215 (returns) sd 4663 (the) sd 4892 (alias) sd 5206 (of)
+sd 5381 (the) sd 5610 (input) sd 5956 (segment.   Zero) sd 6883 (indicates) sd 
+7438 (a) sd 1500 5304 am (previously set alias should be deleted.) shwd 
+@fs3 1500 4803 am (1.26 REQ_SET_USER_SCREEN \(27\)) shwd 
+@fs0 1500 4469 am (Request to make the debuggee's screen visible.) shwd 1500 
+4135 am (Request message:) shwd 
+@fs6 2350 3718 am (access_req      req) shwd 
+@fs0 1500 3384 am (Return message:) shwd 
+@fs6 2350 2967 am (NONE) shwd 
+@fs3 1500 2466 am (1.27 REQ_SET_DEBUG_SCREEN \(28\)) shwd 
+@fs0 1500 2132 am (Request to make the debugger's screen visible.) shwd 1500 
+1340 am (The Requests) shwd 7360 (19) sd 
+pageobj restore
+showpage
+%%Page: # 25
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (Request message:) shwd 
+@fs6 2350 9756 am (access_req      req) shwd 
+@fs0 1500 9422 am (Return message:) shwd 
+@fs6 2350 9005 am (NONE) shwd 
+@fs3 1500 8504 am (1.28 REQ_READ_USER_KEYBOARD \(29\)) shwd 
+@fs0 1500 8170 am (Request to read the remote keyboard input.) shwd 1500 7836
+am (Request message:) shwd 
+@fs6 2350 7419 am (access_req      req) shwd 2350 7280 am (unsigned_16     wai\
+t) shwd 
+@fs0 1500 6946 am (The) shwd 1769 (request) sd 2225 (will) sd 2495 (be) sd 2679
+ (time) sd 2979 (out) sd 3210 (if) sd 3348 (it) sd 3478 (waits) sd 3825 (longe\
+r) sd 4235 (than) sd 4528 (the) sd 4751 (period) sd 5161 (specifies) sd 5702 (\
+in) sd 5862 (the) sd 
+@fs6 6084 (wait) sd 
+@fs0 6435 (field.) sd 6812 (The) sd 7080 (waiting) sd 1500 6779 am (period is \
+measured in seconds. A value of zero means to wait forever.) shwd 1500 6445 am 
+(Return message:) shwd 
+@fs6 2350 6028 am (unsigned_8      key) shwd 
+@fs0 1500 5694 am (The ) shwd 
+@fs6 (key) shwd 
+@fs0 ( field returns the input character from remote machine.) shwd 
+@fs3 1500 5193 am (1.29 REQ_GET_LIB_NAME \(30\)) shwd 
+@fs0 1500 4859 am (Request to get the name of a newly loaded library \(DLL\).)
+shwd 1500 4525 am (Request message:) shwd 
+@fs6 2350 4108 am (access_req      req) shwd 2350 3969 am (unsigned_32     han\
+dle) shwd 
+@fs0 1500 3635 am (The) shwd 1766 () sd 
+@fs6 (handle) shwd 
+@fs0 2265 (field) sd 2571 (contains) sd 3086 (the) sd 3306 (library) sd 3729 (\
+handle.) sd 4213 (It) sd 4348 (should) sd 4770 (be) sd 4951 (zero) sd 5241 (to)
+ sd 5399 (get) sd 5618 (the) sd 5837 (name) sd 6187 (of) sd 6352 (the) sd 6571 
+(first) sd 6845 (DLL) sd 7164 (or) sd 7329 (the) sd 1500 3468 am (value from t\
+he ) shwd 
+@fs6 (handle) shwd 
+@fs0 ( of a previous request.) shwd 1500 3134 am (Return message:) shwd 
+@fs6 2350 2717 am (unsigned_32     handle) shwd 2350 2578 am (----------------\
+-----------) shwd 2350 2439 am (string) shwd 3550 (name) sd 
+@fs0 1500 2105 am (The) shwd 1773 () sd 
+@fs6 (handle) shwd 
+@fs0 2279 (field) sd 2591 (contains) sd 3112 (the) sd 3338 (library) sd 3767 (\
+handle.) sd 4270 (It) sd 4411 (contains) sd 4932 (zero) sd 5228 (if) sd 5369 (\
+there) sd 5704 (are) sd 5930 (no) sd 6125 (more) sd 6467 (DLL) sd 6793 (names)
+sd 7204 (to) sd 7368 (be) sd 1500 1938 am (returned. The name of the library w\
+ill be returned in) shwd 
+@fs6 4459 (name) sd 
+@fs0 ( field.) shwd 1500 1340 am (The Requests) shwd 7360 (20) sd 
+pageobj restore
+showpage
+%%Page: # 26
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (1.30 REQ_GET_ERR_TEXT \(31\)) shwd 
+@fs0 1500 9505 am (Request to get the error message text for an error code.)
+shwd 1500 9171 am (Request message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (trap_error      err)
+ shwd 
+@fs0 1500 8281 am (The ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field contains the error code number of the error text requested.) shwd 
+1500 7947 am (Return message:) shwd 
+@fs6 2350 7530 am (string) shwd 3550 (error_msg) sd 
+@fs0 1500 7196 am (The error message text will be returned in ) shwd 
+@fs6 (error_msg) shwd 
+@fs0 ( field.) shwd 
+@fs3 1500 6695 am (1.31 REQ_GET_MESSAGE_TEXT \(32\)) shwd 
+@fs0 1500 6361 am (Request) shwd 2175 (to) sd 2509 (get) sd 2905 (generic) sd 
+3542 (message) sd 4239 (text.) sd 5089 (After) sd 5610 (a) sd 5896 (REQ_PROG_L\
+OAD,) sd 7383 (or) sd 1500 6194 am (REQ_PROG_GO/REQ_PROG_STEP) shwd 3718 (has)
+sd 3971 (returned) sd 4505 (with) sd 4821 (COND_MESSAGE/COND_EXCEPTION,) sd 
+7329 (the) sd 1500 6027 am (debugger) shwd 2065 (will) sd 2327 (make) sd 2673 
+(this) sd 2919 (request) sd 3367 (to) sd 3520 (obtain) sd 3914 (the) sd 4129 (\
+message) sd 4645 (text.) sd 4952 (In) sd 5113 (the) sd 5328 (case) sd 5612 (of)
+ sd 5773 (a) sd 5879 (COND_EXCEPTION) sd 7165 (return) sd 1500 5860 am (text)
+shwd 1756 (describing) sd 2385 (the) sd 2602 (machine) sd 3121 (exception) sd 
+3711 (that) sd 3967 (caused) sd 4393 (the) sd 4610 (return) sd 4991 (to) sd 
+5146 (the) sd 5363 (debugger.) sd 5987 (Otherwise) sd 6607 (return) sd 6987 (w\
+hatever) sd 1500 5693 am (generic message text that the trap file wants to dis\
+play to the user.) shwd 1500 5359 am (Request message:) shwd 
+@fs6 2350 4942 am (access_req      req) shwd 
+@fs0 1500 4608 am (Return message:) shwd 
+@fs6 2350 4191 am (unsigned_8      flags) shwd 2350 4052 am (-----------------\
+----) shwd 2350 3913 am (string) shwd 3550 (msg) sd 
+@fs0 1500 3579 am (The) shwd 1753 (message) sd 2261 (text) sd 2507 (will) sd 
+2761 (be) sd 2929 (returned) sd 3432 (in) sd 3577 (the) sd 3784 () sd 
+@fs6 (msg) shwd 
+@fs0 4045 (field.) sd 4409 (The ) sd 
+@fs6 (flags) shwd 
+@fs0 ( contains a number of bits which control the) shwd 1500 3412 am (next ac\
+tion of the debugger. They are:) shwd 
+@fs6 2350 2995 am (Bit 0) shwd 3550 (: MSG_NEWLINE) sd 2350 2856 am (Bit 1)
+shwd 3550 (: MSG_MORE) sd 2350 2717 am (Bit 2) shwd 3550 (: MSG_WARNING) sd 
+2350 2578 am (Bit 3) shwd 3550 (: MSG_ERROR) sd 2350 2439 am (Bit 4 - 7       \
+: not used) shwd 
+@fs0 1500 2105 am (The) shwd 1793 (MSG_NEWLINE) sd 2878 (bit) sd 3102 (indicat\
+es) sd 3675 (that) sd 3961 (the) sd 4208 (debugger) sd 4805 (should) sd 5254 (\
+scroll) sd 5641 (its) sd 5849 (display) sd 6329 (to) sd 6513 (a) sd 6650 (new)
+sd 6958 (line) sd 7243 (after) sd 1500 1938 am (displaying) shwd 2130 (the) sd 
+2348 (message.   The) sd 3224 (MSG_MORE) sd 4047 (bit) sd 4242 (indicates) sd 
+4785 (that) sd 5041 (there) sd 5367 (is) sd 5506 (another) sd 5972 (line) sd 
+6228 (of) sd 6391 (output) sd 6795 (to) sd 6950 (come) sd 7298 (and) sd 1500 
+1340 am (The Requests) shwd 7360 (21) sd 
+pageobj restore
+showpage
+%%Page: # 27
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (the) shwd 1719 (debugger) sd 2287 (should) sd 2707 (make) sd 
+3056 (another) sd 3523 (REQ_GET_MESSAGE_TEXT.) sd 5432 (MSG_WARNING) sd 6528 (\
+indicates) sd 7072 (that) sd 7329 (the) sd 1500 10006 am (message) shwd 2011 (\
+is) sd 2143 (a) sd 2244 (warning) sd 2741 (level) sd 3051 (message) sd 3561 (w\
+hile) sd 3910 (MSG_ERROR) sd 4786 (is) sd 4917 (an) sd 5087 (error) sd 5398 (l\
+evel) sd 5708 (message.) sd 6259 (If) sd 6391 (neither) sd 6818 (of) sd 6973 (\
+these) sd 7298 (bits) sd 1500 9839 am (are on, the message is merely informati\
+onal.) shwd 
+@fs3 1500 9338 am (1.32 REQ_REDIRECT_STDIN \(33\)/REQ_REDIRECT_STDOUT \(34\))
+shwd 
+@fs0 1500 9004 am (Request) shwd 2120 (to) sd 2399 (redirect) sd 2997 (the) sd 
+3337 (standard) sd 3980 (input) sd 4437 (\(REQ_REDIRECT_STDIN\)) sd 6213 (or)
+sd 6499 (standard) sd 7142 (output) sd 1500 8837 am (\(REQ_REDIRECT_STDOUT\) o\
+f the debuggee.) shwd 1500 8503 am (Request message:) shwd 
+@fs6 2350 8086 am (access_req      req) shwd 2350 7947 am (-------------------\
+-----) shwd 2350 7808 am (string) shwd 3550 (name) sd 
+@fs0 1500 7474 am (The file name to be redirected to/from is given by the )
+shwd 
+@fs6 (name) shwd 
+@fs0 ( field.) shwd 1500 7140 am (Return message:) shwd 
+@fs6 2350 6723 am (trap_error      err) shwd 
+@fs0 1500 6389 am (When) shwd 1873 (an) sd 2044 (error) sd 2356 (has) sd 2581 
+(occurred,) sd 3146 (the) sd 3356 () sd 
+@fs6 (err) shwd 
+@fs0 3620 (field) sd 3916 (contains) sd 4421 (an) sd 4592 (error) sd 4904 (cod\
+e) sd 5207 (indicating) sd 5806 (the) sd 6016 (type) sd 6296 (of) sd 6452 (err\
+or) sd 6764 (that) sd 7012 (has) sd 7236 (been) sd 1500 6222 am (detected.)
+shwd 
+@fs3 1500 5721 am (1.33 REQ_SPLIT_CMD \(35\)) shwd 
+@fs0 1500 5387 am (Request to split the command line into the command name and\
+ parameters.) shwd 1500 5053 am (Request message:) shwd 
+@fs6 2350 4636 am (access_req      req) shwd 2350 4497 am (-------------------\
+-----) shwd 2350 4358 am (string) shwd 3550 (cmd) sd 
+@fs0 1500 4024 am (The) shwd 1764 () sd 
+@fs6 (cmd) shwd 
+@fs0 2036 (field) sd 2340 (contains) sd 2853 (the) sd 3071 (command.  Command)
+sd 4354 (can) sd 4594 (be) sd 4772 (a) sd 4880 (single) sd 5260 (command) sd 
+5856 (line) sd 6112 (or) sd 6275 (an) sd 6453 (array) sd 6787 (of) sd 6950 (co\
+mmand) sd 1500 3857 am (strings.) shwd 1500 3523 am (Return message:) shwd 
+@fs6 2350 3106 am (unsigned_16     cmd_end) shwd 2350 2967 am (unsigned_16    \
+ parm_start) shwd 
+@fs0 1500 2633 am (The) shwd 1760 () sd 
+@fs6 (cmd_end) shwd 
+@fs0 2328 (field) sd 2628 (tells) sd 2904 (the) sd 3118 (position) sd 3612 (in)
+ sd 3764 (command) sd 4357 (line) sd 4610 (where) sd 4994 (the) sd 5207 (comma\
+nd) sd 5799 (name) sd 6143 (ends.) sd 6491 (The) sd 6750 () sd 
+@fs6 (parm_start) shwd 
+@fs0 1500 2466 am (field stores the position where the program arguments begin\
+.) shwd 1500 1340 am (The Requests) shwd 7360 (22) sd 
+pageobj restore
+showpage
+%%Page: # 28
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (2) shwd 
+@fs2 ( File I/O requests) shwd 
+@fs0 1500 9338 am (This) shwd 1792 (section) sd 2232 (describes) sd 2796 (requ\
+ests) sd 3298 (that) sd 3552 (deal) sd 3829 (with) sd 4122 (file) sd 4353 (inp\
+ut/output) sd 5082 (on) sd 5266 (the) sd 5481 (debuggee) sd 6061 (machine.) sd 
+6666 (These) sd 7042 (requests) sd 1500 9171 am (are) shwd 1762 (actually) sd 
+2296 (performed) sd 2970 (by) sd 3201 (the) sd 3463 (core) sd 3795 (request)
+sd 4290 (REQ_PERFORM_SUPPLEMENTARY_SERVICE) sd 7298 (and) sd 1500 9004 am (app\
+ropriate) shwd 2186 (service) sd 2630 (id.) sd 2880 (The) sd 3144 (following)
+sd 3736 (descriptions) sd 4459 (do) sd 4646 (not) sd 4872 (show) sd 5214 (do)
+sd 5401 (not) sd 5627 (show) sd 5969 (that) sd 6226 ("prefix") sd 6722 (to) sd 
+6878 (the) sd 7096 (request) sd 1500 8837 am (messages.) shwd 1500 8503 am (Th\
+e service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is) shwd 1500 
+8169 am ("Files".  The file requests use an new basic type in addition to the \
+ones already described:) shwd 
+@fs1 1500 7835 am (Type) shwd 2500 (Definition) sd 
+@fs2 1500 7501 am (trap_fhandle) shwd 
+@fs0 2500 (This is an unsigned_32 which holds a debuggee file handle.) sd 
+@fs3 1500 7000 am (2.1 REQ_FILE_GET_CONFIG \(0\)) shwd 
+@fs0 1500 6666 am (Request to retreive characteristics of the remote file syst\
+em.) shwd 1500 6332 am (Request message:) shwd 
+@fs6 2350 5915 am (access_req      req) shwd 
+@fs0 1500 5581 am (Return message:) shwd 
+@fs6 2350 5164 am (char        ext_separator;) shwd 2350 5025 am (char        \
+path_separator[3];) shwd 2350 4886 am (char        newline[2];) shwd 
+@fs0 1500 4552 am (The) shwd 
+@fs6 1758 (ext_separator) sd 
+@fs0 2773 (contains) sd 3279 (the) sd 3490 (separator) sd 4043 (for) sd 4247 (\
+file) sd 4474 (name) sd 4816 (extensions.) sd 5491 (The) sd 5748 (possible) sd 
+6246 (path) sd 6527 (separators) sd 7134 (can) sd 7368 (be) sd 1500 4385 am (f\
+ound) shwd 1865 (in) sd 2012 (array) sd 2338 () sd 
+@fs6 (path_separator) shwd 
+@fs0 (.) shwd 3467 (The) sd 3722 (first) sd 3986 (one) sd 4226 (is) sd 4357 (t\
+he) sd 4566 ("preferred") sd 5232 (path) sd 5511 (separator) sd 6062 (for) sd 
+6264 (that) sd 6512 (operating) sd 7078 (system.) sd 1500 4218 am (This) shwd 
+1801 (is) sd 1947 (the) sd 2171 (path) sd 2465 (separator) sd 3031 (that) sd 
+3294 (the) sd 3518 (debugger) sd 4092 (will) sd 4363 (use) sd 4602 (if) sd 4740
+ (it) sd 4870 (needs) sd 5240 (to) sd 5401 (construct) sd 5966 (a) sd 6080 (fi\
+le) sd 6319 (name) sd 6673 (for) sd 6889 (the) sd 7112 (remote) sd 1500 4051
+am (system.) shwd 2010 (The) sd 2268 (new) sd 2542 (line) sd 2793 (control) sd 
+3231 (characters) sd 3839 (are) sd 4051 (stored) sd 4434 (in) sd 4584 (array)
+sd 4913 () sd 
+@fs6 (newline) shwd 
+@fs0 (.) shwd 5526 (If) sd 5661 (the) sd 5873 (operating) sd 6442 (system) sd 
+6869 (uses) sd 7149 (only) sd 7438 (a) sd 1500 3884 am (single character for n\
+ewline, put a zero in the second element.) shwd 
+@fs3 1500 3383 am (2.2 REQ_FILE_OPEN \(1\)) shwd 
+@fs0 1500 3049 am (Request to create/open a file.) shwd 1500 2715 am (Request \
+message:) shwd 
+@fs6 2350 2298 am (access_req      req) shwd 2350 2159 am (unsigned_8      mod\
+e) shwd 2350 2020 am (------------------------) shwd 2350 1881 am (string)
+shwd 3550 (name) sd 
+@fs0 1500 1340 am (The Requests) shwd 7360 (23) sd 
+pageobj restore
+showpage
+%%Page: # 29
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The) shwd 1753 (name) sd 2091 (of) sd 2244 (the) sd 2451 (file)
+sd 2674 (to) sd 2819 (be) sd 2987 (opened) sd 3427 (is) sd 3556 (given) sd 3903
+ (by) sd 4079 () sd 
+@fs6 (name) shwd 
+@fs0 (.) shwd 4485 (The ) sd 
+@fs6 (mode) shwd 
+@fs0 ( field stores the access mode of the file.) shwd 7283 (The) sd 1500 10006
+ am (following bits are defined:) shwd 
+@fs6 2350 9589 am (Bit 0      :  IO_READ) shwd 2350 9450 am (Bit 1      :  IO_\
+WRITE) shwd 2350 9311 am (Bit 2      :  IO_CREATE) shwd 2350 9172 am (Bit 3 - \
+7  :  not used) shwd 
+@fs0 1500 8838 am (For read/write mode, turn both ) shwd 
+@fs6 (IO_READ) shwd 
+@fs0 ( and ) shwd 
+@fs6 (IO_WRITE) shwd 
+@fs0 ( bits on.) shwd 1500 8504 am (Return message:) shwd 
+@fs6 2350 8087 am (trap_error      err) shwd 2350 7948 am (trap_fhandle    han\
+dle) shwd 
+@fs0 1500 7614 am (If) shwd 1634 (successful,) sd 2284 (the) sd 2495 () sd 
+@fs6 (handle) shwd 
+@fs0 2985 (returns) sd 3414 (a) sd 3516 (handle) sd 3929 (for) sd 4133 (the)
+sd 4344 (file.) sd 4616 (When) sd 4990 (an) sd 5162 (error) sd 5474 (has) sd 
+5699 (occurred,) sd 6264 (the) sd 6474 () sd 
+@fs6 (err) shwd 
+@fs0 6738 (field) sd 7034 (contains) sd 1500 7447 am (a value indicating the t\
+ype of error that has been detected.) shwd 
+@fs3 1500 6946 am (2.3 REQ_FILE_SEEK \(2\)) shwd 
+@fs0 1500 6612 am (Request to seek to a particular file position.) shwd 1500 
+6278 am (Request message:) shwd 
+@fs6 2350 5861 am (access_req      req) shwd 2350 5722 am (trap_fhandle    han\
+dle) shwd 2350 5583 am (unsigned_8      mode) shwd 2350 5444 am (unsigned_32  \
+   pos) shwd 
+@fs0 1500 5110 am (The) shwd 1758 (handle) sd 2172 (of) sd 2330 (the) sd 2542 
+(file) sd 2770 (is) sd 2904 (given) sd 3256 (by) sd 3437 (the) sd 3649 () sd 
+@fs6 (handle) shwd 
+@fs0 4140 (field.) sd 4485 (The) sd 4743 () sd 
+@fs6 (mode) shwd 
+@fs0 5084 (field) sd 5381 (stores) sd 5747 (the) sd 5958 (seek) sd 6246 (mode.)
+ sd 6643 (There) sd 7009 (are) sd 7220 (three) sd 1500 4943 am (seek modes:)
+shwd 
+@fs6 2350 4526 am (DBG_SEEK_ORG = 0  - Relative to the start of file) shwd 2350
+ 4387 am (DBG_SEEK_CUR = 1  - Relative to the current file position) shwd 2350 
+4248 am (DBG_SEEK_END = 2  - Rrelative to the end of file) shwd 
+@fs0 1500 3914 am (The position to seek to is in the ) shwd 
+@fs6 (pos) shwd 
+@fs0 ( field.) shwd 1500 3580 am (Return message:) shwd 
+@fs6 2350 3163 am (trap_error      err) shwd 2350 3024 am (unsigned_32     pos)
+ shwd 
+@fs0 1500 2690 am (If) shwd 1636 (an) sd 1810 (error) sd 2125 (has) sd 2352 (o\
+ccurred,) sd 2919 (the) sd 3131 () sd 
+@fs6 (err) shwd 
+@fs0 3397 (field) sd 3695 (contains) sd 4202 (a) sd 4305 (value) sd 4649 (indi\
+cating) sd 5250 (the) sd 5462 (type) sd 5744 (of) sd 5902 (error) sd 6216 (tha\
+t) sd 6467 (has) sd 6694 (been) sd 6999 (detected.) sd 1500 2523 am (The )
+shwd 
+@fs6 (pos) shwd 
+@fs0 ( field returns the current position of the file.) shwd 1500 1340 am (The\
+ Requests) shwd 7360 (24) sd 
+pageobj restore
+showpage
+%%Page: # 30
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (2.4 REQ_FILE_READ \(3\)) shwd 
+@fs0 1500 9505 am (Request to read a block of data from a file.) shwd 1500 9171
+ am (Request message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (trap_fhandle    han\
+dle) shwd 2350 8476 am (unsigned_16     len) shwd 
+@fs0 1500 8142 am (The) shwd 1775 (handle) sd 2206 (of) sd 2381 (the) sd 2610 
+(file) sd 2855 (is) sd 3006 (given) sd 3375 (by) sd 3573 (the) sd 3802 () sd 
+@fs6 (handle) shwd 
+@fs0 4310 (field.) sd 4706 (The) sd 4981 () sd 
+@fs6 (len) shwd 
+@fs0 5264 (field) sd 5579 (stores) sd 5963 (the) sd 6192 (number) sd 6676 (of)
+sd 6850 (bytes) sd 7202 (to) sd 7368 (be) sd 1500 7975 am (transmitted.) shwd 
+1500 7641 am (Return message:) shwd 
+@fs6 2350 7224 am (trap_error      err) shwd 2350 7085 am (-------------------\
+-------) shwd 2350 6946 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 6612 am (If) shwd 1636 (successful,) sd 2288 (the) sd 2501 () sd 
+@fs6 (data) shwd 
+@fs0 2843 (returns) sd 3274 (the) sd 3487 (block) sd 3839 (of) sd 3997 (data.)
+sd 4353 (The) sd 4611 (length) sd 5002 (of) sd 5160 (returned) sd 5668 (data)
+sd 5942 (is) sd 6076 (given) sd 6428 (by) sd 6609 (the) sd 6821 (return) sd 
+7197 (value) sd 1500 6445 am (of) shwd 1665 (TrapRequest) sd 2427 (minus) sd 
+2816 (4) sd 2934 (\(to) sd 3138 (account) sd 3621 (for) sd 3833 (the) sd 4052 
+(size) sd 4316 (of) sd 4480 () sd 
+@fs6 (err) shwd 
+@fs0 (\).) shwd 4894 (The) sd 5158 (length) sd 5555 (will) sd 5820 (normally)
+sd 6372 (be) sd 6551 (equal) sd 6901 (to) sd 7057 (the) sd 7275 () sd 
+@fs6 (len) shwd 
+@fs0 1500 6278 am (field.) shwd 1876 (If) sd 2022 (the) sd 2245 (end) sd 2499 
+(of) sd 2667 (file) sd 2905 (is) sd 3049 (encountered) sd 3784 (before) sd 4193
+ (the) sd 4415 (read) sd 4707 (completes,) sd 5363 (the) sd 5585 (return) sd 
+5971 (value) sd 6325 (will) sd 6594 (be) sd 6777 (less) sd 7037 (than) sd 7329 
+(the) sd 1500 6111 am (number) shwd 1967 (of) sd 2124 (bytes) sd 2459 (request\
+ed.) sd 3079 (When) sd 3453 (an) sd 3625 (error) sd 3938 (has) sd 4164 (occurr\
+ed,) sd 4730 (the) sd 4941 () sd 
+@fs6 (err) shwd 
+@fs0 5206 (field) sd 5502 (contains) sd 6007 (a) sd 6108 (value) sd 6450 (indi\
+cating) sd 7049 (the) sd 7259 (type) sd 1500 5944 am (of error that has been d\
+etected.) shwd 
+@fs3 1500 5443 am (2.5 REQ_FILE_WRITE \(4\)) shwd 
+@fs0 1500 5109 am (Request to write a block of data to a file.) shwd 1500 4775
+am (Request message:) shwd 
+@fs6 2350 4358 am (access_req      req) shwd 2350 4219 am (trap_fhandle    han\
+dle) shwd 2350 4080 am (------------------------) shwd 2350 3941 am (bytes)
+shwd 3550 (data) sd 
+@fs0 1500 3607 am (The handle of the file is given by the ) shwd 
+@fs6 (handle) shwd 
+@fs0 ( field. The data is given in) shwd 
+@fs6 5545 (data) sd 
+@fs0 ( field.) shwd 1500 3273 am (Return message:) shwd 
+@fs6 2350 2856 am (trap_error      err) shwd 2350 2717 am (unsigned_16     len)
+ shwd 
+@fs0 1500 2383 am (If) shwd 1630 (there) sd 1946 (is) sd 2075 (no) sd 2251 (er\
+ror,) sd 2595 () sd 
+@fs6 (len) shwd 
+@fs0 2856 (will) sd 3110 (equal) sd 3449 (to) sd 3594 (that in the ) sd 
+@fs6 (data_len) shwd 
+@fs0 ( field.) shwd 5152 (When an error has occurred, the ) sd 
+@fs6 (err) shwd 
+@fs0 ( field) shwd 1500 2216 am (contains a value indicating the type of error\
+ that has been detected.) shwd 1500 1340 am (The Requests) shwd 7360 (25) sd 
+pageobj restore
+showpage
+%%Page: # 31
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (2.6 REQ_FILE_WRITE_CONSOLE \(5\)) shwd 
+@fs0 1500 9505 am (Request to write a block of data to the debuggee's screen.)
+shwd 1500 9171 am (Request message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (-------------------\
+-----) shwd 2350 8476 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 8142 am (The data is given in ) shwd 
+@fs6 (data) shwd 
+@fs0 ( field.) shwd 1500 7808 am (Return message:) shwd 
+@fs6 2350 7391 am (trap_error      err) shwd 2350 7252 am (unsigned_16     len)
+ shwd 
+@fs0 1500 6918 am (If) shwd 1648 (there) sd 1982 (is) sd 2129 (no) sd 2323 (er\
+ror,) sd 2690 () sd 
+@fs6 (len) shwd 
+@fs0 2969 (will) sd 3241 (equal) sd 3598 (to) sd 3761 (the) sd 3986 () sd 
+@fs6 (data_len) shwd 
+@fs0 4639 (field.) sd 5021 (When) sd 5408 (an) sd 5593 (error) sd 5919 (has)
+sd 6158 (occurred,) sd 6741 (the) sd 6965 () sd 
+@fs6 (err) shwd 
+@fs0 7243 (field) sd 1500 6751 am (contains a value indicating the type of err\
+or that has been detected.) shwd 
+@fs3 1500 6250 am (2.7 REQ_FILE_CLOSE \(6\)) shwd 
+@fs0 1500 5916 am (Request to close a file.) shwd 1500 5582 am (Request messag\
+e:) shwd 
+@fs6 2350 5165 am (access_req      req) shwd 2350 5026 am (trap_fhandle    han\
+dle) shwd 
+@fs0 1500 4692 am (The handle of the file is given by the ) shwd 
+@fs6 (handle) shwd 
+@fs0 ( field.) shwd 1500 4358 am (Return message:) shwd 
+@fs6 2350 3941 am (trap_error      err) shwd 
+@fs0 1500 3607 am (When) shwd 1892 (an) sd 2082 (error) sd 2413 (has) sd 2657 
+(occurred,) sd 3246 (the) sd 3475 () sd 
+@fs6 (err) shwd 
+@fs0 3758 (field) sd 4073 (contains) sd 4597 (a) sd 4717 (value) sd 5078 (indi\
+cating) sd 5696 (the) sd 5924 (type) sd 6222 (of) sd 6396 (error) sd 6726 (tha\
+t) sd 6993 (has) sd 7236 (been) sd 1500 3440 am (detected.) shwd 
+@fs3 1500 2939 am (2.8 REQ_FILE_ERASE \(7\)) shwd 
+@fs0 1500 2605 am (Request to erase a file.) shwd 1500 2271 am (Request messag\
+e:) shwd 1500 1340 am (The Requests) shwd 7360 (26) sd 
+pageobj restore
+showpage
+%%Page: # 32
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (access_req      req) shwd 2350 10062 am (-----------------\
+--------) shwd 2350 9923 am (string) shwd 3550 (file_name) sd 
+@fs0 1500 9589 am (The ) shwd 
+@fs6 (file_name) shwd 
+@fs0 ( field contains the file name to be deleted.) shwd 1500 9255 am (Return \
+message:) shwd 
+@fs6 2350 8838 am (trap_error      err) shwd 
+@fs0 1500 8504 am (If error has occurred when erasing the file, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 8003 am (2.9 REQ_FILE_STRING_TO_FULLPATH \(8\)) shwd 
+@fs0 1500 7669 am (Request to convert a file name to its full path name.) shwd 
+1500 7335 am (Request message:) shwd 
+@fs6 2350 6918 am (access_req      req) shwd 2350 6779 am (unsigned_8      fil\
+e_type) shwd 2350 6640 am (-------------------------) shwd 2350 6501 am (strin\
+g) shwd 3550 (file_name) sd 
+@fs0 1500 6167 am (The ) shwd 
+@fs6 (file_type) shwd 
+@fs0 ( field indicates the type of the input file.  File types can be:) shwd 
+@fs6 2350 5750 am (FILE_EXE  =  0) shwd 2350 5611 am (FILE_DBG  =  1) shwd 2350
+ 5472 am (FILE_PRS  =  2) shwd 2350 5333 am (FILE_HLP  =  3) shwd 
+@fs0 1500 4999 am (This) shwd 1788 (is) sd 1921 (so) sd 2085 (the) sd 2296 (tr\
+ap) sd 2554 (file) sd 2781 (can) sd 3015 (search) sd 3412 (different) sd 3935 
+(paths) sd 4270 (for) sd 4474 (the) sd 4685 (different) sd 5208 (types) sd 5542
+ (of) sd 5698 (files.) sd 6022 (For) sd 6256 (example,) sd 6804 (under) sd 7162
+ (QNX,) sd 1500 4832 am (the) shwd 1727 (PATH) sd 2148 (environment) sd 2911 (\
+variable) sd 3418 (is) sd 3567 (searched) sd 4112 (for) sd 4332 (the) sd 4559 
+(FILE_EXE) sd 5251 (type,) sd 5587 (and) sd 5844 (the) sd 6070 (WD_PATH) sd 
+6793 (environment) sd 1500 4665 am (variable is searched for the others.  The )
+ shwd 
+@fs6 (file_name) shwd 
+@fs0 ( field contains the file name to be converted.) shwd 1500 4331 am (Retur\
+n message:) shwd 
+@fs6 2350 3914 am (trap_error      err) shwd 2350 3775 am (-------------------\
+-------) shwd 2350 3636 am (string) shwd 3550 (path_name) sd 
+@fs0 1500 3302 am (If) shwd 1646 (no) sd 1838 (error) sd 2163 (occurs) sd 2580 
+(the) sd 2803 () sd 
+@fs6 (err) shwd 
+@fs0 3079 (field) sd 3387 (returns) sd 3827 (a) sd 3940 (zero) sd 4232 (and)
+sd 4485 (the) sd 4707 (full) sd 4953 (path) sd 5245 (name) sd 5598 (will) sd 
+5867 (be) sd 6050 (stored) sd 6443 (in) sd 6603 (the) sd 6825 () sd 
+@fs6 (path_name) shwd 
+@fs0 1500 3135 am (field.) shwd 1834 (When) sd 2206 (an) sd 2376 (error) sd 
+2687 (has) sd 2911 (occurred,) sd 3473 (the) sd 
+@fs6 3681 (err) sd 
+@fs0 3943 (field) sd 4237 (contains) sd 4740 (an) sd 4909 (error) sd 5219 (cod\
+e) sd 5520 (indicating) sd 6117 (the) sd 6325 (type) sd 6603 (of) sd 6757 (err\
+or) sd 7067 (that) sd 7314 (has) sd 1500 2968 am (been detected.) shwd 
+@fs3 1500 2467 am (2.10 REQ_FILE_RUN_CMD \(9\)) shwd 
+@fs0 1500 2133 am (Request to run a command on the debuggee's system) shwd 1500
+ 1340 am (The Requests) shwd 7360 (27) sd 
+pageobj restore
+showpage
+%%Page: # 33
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (Request message:) shwd 
+@fs6 2350 9756 am (access_req      req) shwd 2350 9617 am (unsigned_16     chk\
+_size) shwd 2350 9478 am (------------------------) shwd 2350 9339 am (string)
+shwd 3550 (cmd) sd 
+@fs0 1500 9005 am (The) shwd 1753 () sd 
+@fs6 (chk_size) shwd 
+@fs0 2389 (field) sd 2682 (gives) sd 3013 (the check size in kilobytes. This f\
+ield is only useful in the DOS implementation.) sd 1500 8838 am (It) shwd 1637 
+(contains) sd 2154 (the) sd 2376 (value) sd 2730 (of) sd 2898 (the) sd 3120 (/\
+CHECKSIZE) sd 3978 (debugger) sd 4550 (command) sd 5151 (line) sd 5412 (option)
+ sd 5821 (and) sd 6074 (represents) sd 6692 (the) sd 6914 (amount) sd 7383 (of)
+ sd 1500 8671 am (memory) shwd 2013 (the) sd 2232 (user) sd 2513 (wishes) sd 
+2941 (to) sd 3098 (have) sd 3410 (free) sd 3676 (for) sd 3888 (the) sd 4107 (s\
+pawned) sd 4644 (sub-shell.The) sd 5448 () sd 
+@fs6 (cmd) shwd 
+@fs0 5720 (field) sd 6024 (stores) sd 6397 (the) sd 6615 (command) sd 7212 (to)
+ sd 7368 (be) sd 1500 8504 am (executed.) shwd 1500 8170 am (Return message:)
+shwd 
+@fs6 2350 7753 am (trap_error      err) shwd 
+@fs0 1500 7419 am (If error has occurred when executing the command, the )
+shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 6918 am (3) shwd 
+@fs2 ( Overlay requests) shwd 
+@fs0 1500 6417 am (This) shwd 1813 (section) sd 2274 (describes) sd 2859 (requ\
+ests) sd 3382 (that) sd 3657 (deal) sd 3955 (with) sd 4269 (overlays) sd 4808 
+(\(currently) sd 5426 (supported) sd 6043 (only) sd 6356 (under) sd 6739 (16-b\
+it) sd 7138 (DOS\).) sd 1500 6250 am (These) shwd 2215 (requests) sd 3055 (are)
+ sd 3608 (actually) sd 4433 (performed) sd 5398 (by) sd 5920 (the) sd 6473 (co\
+re) sd 7096 (request) sd 1500 6083 am (REQ_PERFORM_SUPPLEMENTARY_SERVICE) shwd 
+4540 (and) sd 4864 (appropriate) sd 5624 (service) sd 6142 (id.) sd 6617 (The)
+sd 6955 (following) sd 1500 5916 am (descriptions do not show do not show that\
+ "prefix" to the request messages.) shwd 1500 5582 am (The service name to be \
+used in the REQ_GET_SUPPLEMENTARY_SERVICE is "Overlays".) shwd 1500 5248 am (T\
+he overlay requests use an new basic type in addition to the ones already desc\
+ribed:) shwd 
+@fs1 1500 4914 am (Type) shwd 2500 (Definition) sd 
+@fs2 1500 4580 am (addr32_ptr) shwd 
+@fs0 2500 (This) sd 2788 (type) sd 3069 (encapsulates) sd 3815 (the) sd 4026 (\
+concept) sd 4501 (of) sd 4658 (a) sd 4760 (16:16) sd 5118 (pointer) sd 5554 (i\
+nto) sd 5811 (the) sd 6021 (debuggee's) sd 6697 (address) sd 7155 (space.) sd 
+2500 4413 am (Since) shwd 2851 (overlays) sd 3365 (are) sd 3576 (only) sd 3865 
+(useful) sd 4247 (for) sd 4451 (16-bit) sd 4826 (environments,) sd 5663 (using)
+ sd 6006 (the) sd 6216 (addr48_ptr) sd 6870 (type) sd 7150 (would) sd 2500 4246
+ am (be inefficient.  The structure is defined as follows:) shwd 
+@fs6 3350 3829 am (typedef struct {) shwd 3650 3690 am (unsigned_16    offset;)
+ shwd 3650 3551 am (unsigned_16    segment;) shwd 3350 3412 am (} addr32_ptr;)
+shwd 
+@fs0 2500 3078 am (The) shwd 2761 () sd 
+@fs6 (segment) shwd 
+@fs0 3330 (field) sd 3631 (contains) sd 4141 (the) sd 4356 (segment) sd 4865 (\
+of) sd 5026 (the) sd 5241 (address) sd 5704 (and) sd 5950 (the) sd 6165 () sd 
+@fs6 (offset) shwd 
+@fs0 6659 (field) sd 6960 (stores) sd 7329 (the) sd 2500 2911 am (offset of th\
+e address.) shwd 1500 1340 am (The Requests) shwd 7360 (28) sd 
+pageobj restore
+showpage
+%%Page: # 34
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (3.1 REQ_OVL_STATE_SIZE \(0\)) shwd 
+@fs0 1500 9505 am (Request) shwd 1988 (to) sd 2135 (return) sd 2508 (the) sd 
+2717 (size) sd 2972 (of) sd 3127 (the) sd 3336 (overlay) sd 3794 (state) sd 
+4088 (information) sd 4787 (in) sd 4934 (bytes) sd 5267 (of) sd 5422 (the) sd 
+5631 (task) sd 5893 (program.) sd 6480 (This) sd 6765 (request) sd 7206 (maps)
+sd 1500 9338 am (onto) shwd 1788 (the) sd 1998 (overlay) sd 2457 (manager's)
+sd 3077 (GET_STATE_SIZE) sd 4255 (request.) sd 4738 (See) sd 4978 (the) sd 5187
+ (Overlay) sd 5676 (Manager) sd 6211 (Interface) sd 6747 (document) sd 7336 (f\
+or) sd 1500 9171 am (more information on the contents of the return message.)
+shwd 1500 8837 am (Request message:) shwd 
+@fs6 2350 8420 am (access_req      req) shwd 
+@fs0 1500 8086 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 7752 am (Return message:) shwd 
+@fs6 2350 7335 am (unsigned_16     size) shwd 
+@fs0 1500 7001 am (The) shwd 1756 () sd 
+@fs6 (size) shwd 
+@fs0 2095 (field) sd 2391 (returns) sd 2819 (the) sd 3029 (size) sd 3285 (in)
+sd 3433 (bytes.) sd 3810 (A) sd 3950 (value) sd 4292 (of) sd 4448 (zero) sd 
+4728 (indicates) sd 5264 (no) sd 5443 (overlays) sd 5956 (are) sd 6166 (presen\
+t) sd 6608 (in) sd 6755 (the) sd 6964 (debuggee) sd 1500 6834 am (and none of \
+the other requests dealing with overlays will ever be called.) shwd 
+@fs3 1500 6333 am (3.2 REQ_OVL_GET_DATA \(1\)) shwd 
+@fs0 1500 5999 am (Request) shwd 1994 (to) sd 2147 (get) sd 2362 (the) sd 2577 
+(address) sd 3040 (and) sd 3286 (size) sd 3547 (of) sd 3708 (an) sd 3884 (over\
+lay) sd 4348 (section.) sd 4874 (This) sd 5165 (request) sd 5612 (maps) sd 5949
+ (onto) sd 6241 (the) sd 6455 (overlay) sd 6918 (manager's) sd 1500 5832 am (G\
+ET_SECTION_DATA) shwd 2937 (request.) sd 3450 (See) sd 3700 (the) sd 3919 (Ove\
+rlay) sd 4418 (Manager) sd 4963 (Interface) sd 5509 (document) sd 6107 (for)
+sd 6318 (more) sd 6652 (information) sd 7360 (on) sd 1500 5665 am (the content\
+s of the return message.) shwd 1500 5331 am (Request message:) shwd 
+@fs6 2350 4914 am (access_req      req) shwd 2350 4775 am (unsigned_16     sec\
+t_id) shwd 
+@fs0 1500 4441 am (The ) shwd 
+@fs6 (sect_id) shwd 
+@fs0 ( field indicates the overlay section the information is being requested \
+of.) shwd 1500 4107 am (Return message:) shwd 
+@fs6 2350 3690 am (unsigned_16     segment) shwd 2350 3551 am (unsigned_32    \
+ size) shwd 
+@fs0 1500 3217 am (The) shwd 1758 () sd 
+@fs6 (segment) shwd 
+@fs0 2324 (field) sd 2622 (contains) sd 3129 (the) sd 3341 (segment) sd 3847 (\
+value) sd 4191 (where) sd 4574 (the) sd 4786 (overlay) sd 5247 (section) sd 
+5684 (is) sd 5818 (loaded) sd 6232 (\(or) sd 6437 (would) sd 6828 (be) sd 7001 
+(loaded) sd 7414 (if) sd 1500 3050 am (it) shwd 1616 (was) sd 1871 (brought)
+sd 2345 (into) sd 2601 (memory\).) sd 3225 (The) sd 3480 () sd 
+@fs6 (size) shwd 
+@fs0 3818 (field) sd 4113 (gives) sd 4446 (the) sd 4654 (size,) sd 4943 (in)
+sd 5089 (bytes,) sd 5456 (of) sd 5610 (the) sd 5818 (overlay) sd 6275 (section\
+.) sd 6782 (If) sd 6913 (there) sd 7230 (is) sd 7360 (no) sd 1500 2883 am (sec\
+tion for the given id, the ) shwd 
+@fs6 (segment) shwd 
+@fs0 ( field will be zero.) shwd 
+@fs3 1500 2382 am (3.3 REQ_OVL_READ_STATE \(2\)) shwd 
+@fs0 1500 2048 am (Request) shwd 2065 (to) sd 2289 (read) sd 2645 (the) sd 2930
+ (overlay) sd 3464 (table) sd 3850 (state.) sd 4448 (This) sd 4810 (request)
+sd 5328 (maps) sd 5736 (onto) sd 6099 (the) sd 6384 (overlay) sd 6918 (manager\
+'s) sd 1500 1881 am (GET_OVERLAY_STATE) shwd 3051 (request.) sd 3535 (See) sd 
+3776 (the) sd 3985 (Overlay) sd 4474 (Manager) sd 5009 (Interface) sd 5545 (do\
+cument) sd 6134 (for) sd 6336 (more) sd 6661 (information) sd 7360 (on) sd 1500
+ 1340 am (The Requests) shwd 7360 (29) sd 
+pageobj restore
+showpage
+%%Page: # 35
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (the) shwd 1786 (contents) sd 2367 (of) sd 2599 (the) sd 2885 (r\
+eturn) sd 3335 (message.) sd 4150 (The) sd 4481 (size) sd 4812 (of) sd 5043 (t\
+he) sd 5328 (returned) sd 5909 (data) sd 6256 (is) sd 6463 (provided) sd 7075 
+(by) sd 7329 (the) sd 1500 10006 am (REQ_OVL_STATE_SIZE trap file request.)
+shwd 1500 9672 am (Request message:) shwd 
+@fs6 2350 9255 am (access_req      req) shwd 
+@fs0 1500 8921 am (Return message:) shwd 
+@fs6 2350 8504 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 8170 am (The ) shwd 
+@fs6 (data) shwd 
+@fs0 ( field contains the overlay state information requested.) shwd 
+@fs3 1500 7669 am (3.4 REQ_OVL_WRITE_STATE \(3\)) shwd 
+@fs0 1500 7335 am (Request) shwd 2062 (to) sd 2282 (write) sd 2681 (the) sd 
+2963 (overlay) sd 3494 (table) sd 3877 (state.) sd 4466 (This) sd 4825 (reques\
+t) sd 5340 (maps) sd 5745 (onto) sd 6105 (the) sd 6387 (overlay) sd 6918 (mana\
+ger's) sd 1500 7168 am (SET_OVERLAY_STATE) shwd 3029 (request.) sd 3518 (See)
+sd 3760 (the) sd 3971 (Overlay) sd 4462 (Manager) sd 4999 (Interface) sd 5537 
+(document) sd 6128 (for) sd 6332 (more) sd 6659 (information) sd 7360 (on) sd 
+1500 7001 am (the contents of the return message.) shwd 1500 6667 am (Request \
+message:) shwd 
+@fs6 2350 6250 am (access_req      req) shwd 2350 6111 am (-------------------\
+-) shwd 2350 5972 am (bytes) shwd 3550 (data) sd 
+@fs0 1500 5638 am (The ) shwd 
+@fs6 (data) shwd 
+@fs0 ( field contains the overlay state information to be restored.) shwd 1500 
+5304 am (Return message:) shwd 
+@fs6 2350 4887 am (NONE) shwd 
+@fs3 1500 4386 am (3.5 REQ_OVL_TRANS_VECT_ADDR \(4\)) shwd 
+@fs0 1500 4052 am (Request) shwd 1999 (to) sd 2157 (check) sd 2532 (if) sd 2667
+ (the) sd 2887 (input) sd 3224 (overlay) sd 3693 (address) sd 4161 (is) sd 4303
+ (actually) sd 4795 (an) sd 4976 (overlay) sd 5445 (vector.) sd 5942 (This) sd 
+6238 (request) sd 6690 (maps) sd 7032 (onto) sd 7329 (the) sd 1500 3885 am (ov\
+erlay) shwd 2011 (manager's) sd 2684 (TRANSLATE_VECTOR_ADDR) sd 4682 (request.)
+ sd 5321 (See) sd 5613 (the) sd 5874 (Overlay) sd 6415 (Manager) sd 7002 (Inte\
+rface) sd 1500 3718 am (document for more information on the contents of the m\
+essages.) shwd 1500 3384 am (Request message:) shwd 
+@fs6 2350 2967 am (access_req      req) shwd 2350 2828 am (ovl_address     ovl\
+_addr) shwd 
+@fs0 1500 2494 am (The ) shwd 
+@fs6 (ovl_addr) shwd 
+@fs0 ( field contains the overlay address. The ) shwd 
+@fs6 (ovl_addr) shwd 
+@fs0 ( field is defined as follows:) shwd 1500 1340 am (The Requests) shwd 7360
+ (30) sd 
+pageobj restore
+showpage
+%%Page: # 36
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (typedef struct {) shwd 2650 10062 am (addr32_ptr  mach;)
+shwd 2650 9923 am (unsigned_16 sect_id;) shwd 2350 9784 am (}) shwd 
+@fs0 1500 9450 am (The) shwd 1775 () sd 
+@fs6 (mach) shwd 
+@fs0 2133 (field) sd 2448 (is) sd 2599 (the) sd 2828 (machine) sd 3359 (addres\
+s.) sd 3917 (The) sd 4192 () sd 
+@fs6 (sect_id) shwd 
+@fs0 4775 (field) sd 5090 (stores) sd 5474 (the) sd 5703 (number) sd 6188 (of)
+sd 6363 (entries) sd 6794 (down) sd 7163 (in) sd 7329 (the) sd 1500 9283 am (o\
+verlay stack.) shwd 1500 8949 am (Return message:) shwd 
+@fs6 2350 8532 am (ovl_address     ovl_addr) shwd 
+@fs0 1500 8198 am (The) shwd 1754 (translated) sd 2335 (address) sd 2791 (will)
+ sd 3046 (be) sd 3215 (returned) sd 3719 (in) sd 3865 (the) sd 4073 () sd 
+@fs6 (ovl_addr) shwd 
+@fs0 4710 (field.) sd 5077 (If) sd 5208 (the) sd 5415 (address) sd 5870 (is)
+sd 5999 (not) sd 6214 (an) sd 6382 (overlay) sd 6838 (vector,) sd 7259 (then)
+sd 1500 8031 am (the input address will be returned and the ) shwd 
+@fs6 (section_id) shwd 
+@fs0 ( field will be zero.) shwd 
+@fs3 1500 7530 am (3.6 REQ_OVL_TRANS_RET_ADDR \(5\)) shwd 
+@fs0 1500 7196 am (Request) shwd 1997 (to) sd 2153 (check) sd 2526 (if) sd 2659
+ (the) sd 2877 (address) sd 3343 (is) sd 3483 (the) sd 3701 (overlay) sd 4168 
+(manager) sd 4696 (parallel) sd 5163 (return) sd 5545 (code.) sd 5950 (This)
+sd 6244 (request) sd 6694 (maps) sd 7034 (onto) sd 7329 (the) sd 1500 7029 am 
+(overlay) shwd 2011 (manager's) sd 2684 (TRANSLATE_RETURN_ADDR) sd 4682 (reque\
+st.) sd 5321 (See) sd 5613 (the) sd 5874 (Overlay) sd 6415 (Manager) sd 7002 (\
+Interface) sd 1500 6862 am (document for more information on the contents of t\
+he messages.) shwd 1500 6528 am (Request message:) shwd 
+@fs6 2350 6111 am (access_req      req) shwd 2350 5972 am (ovl_address     ovl\
+_addr) shwd 
+@fs0 1500 5638 am (Return message:) shwd 
+@fs6 2350 5221 am (ovl_address     ovl_addr) shwd 
+@fs0 1500 4887 am (The) shwd 1754 (translated) sd 2335 (address) sd 2791 (will)
+ sd 3046 (be) sd 3214 (returned) sd 3717 (in) sd 3862 (the) sd 4069 () sd 
+@fs6 (ovl_addr) shwd 
+@fs0 4705 (field.) sd 5070 (If) sd 5200 (the) sd 5407 (address) sd 5862 (is)
+sd 5991 (not) sd 6206 (an) sd 6374 (parallel) sd 6830 (return) sd 7201 (code,)
+sd 1500 4720 am (then the input address will be returned and the ) shwd 
+@fs6 (section_id) shwd 
+@fs0 ( field in the structure ) shwd 
+@fs6 (ovl_addr) shwd 
+@fs0 ( will be zero.) shwd 
+@fs3 1500 4219 am (3.7 REQ_OVL_GET_REMAP_ENTRY \(6\)) shwd 
+@fs0 1500 3885 am (Request) shwd 2013 (to) sd 2185 (check) sd 2574 (if) sd 2723
+ (the) sd 2957 (overlay) sd 3440 (address) sd 3921 (needs) sd 4301 (to) sd 4472
+ (be) sd 4666 (remapped.) sd 5404 (This) sd 5714 (request) sd 6180 (maps) sd 
+6536 (onto) sd 6847 (the) sd 7080 (overlay) sd 1500 3718 am (manager's) shwd 
+2142 (GET_MOVED_SECTION) sd 3715 (request.) sd 4263 (See) sd 4525 (the) sd 4756
+ (Overlay) sd 5267 (Manager) sd 5823 (Interface) sd 6380 (document) sd 6990 (f\
+or) sd 7213 (more) sd 1500 3551 am (information on the contents of the message\
+s.) shwd 1500 3217 am (Request message:) shwd 
+@fs6 2350 2800 am (access_req      req) shwd 2350 2661 am (ovl_address     ovl\
+_addr) shwd 
+@fs0 1500 2327 am (The ) shwd 
+@fs6 (ovl_addr) shwd 
+@fs0 ( field contains the overlay address.) shwd 1500 1993 am (Return message:)
+ shwd 1500 1340 am (The Requests) shwd 7360 (31) sd 
+pageobj restore
+showpage
+%%Page: # 37
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (unsigned_8      remapped) shwd 2350 10062 am (ovl_address \
+    ovl_addr) shwd 
+@fs0 1500 9728 am (If) shwd 1636 (the) sd 1849 (address) sd 2310 (gets) sd 2577
+ (remapped) sd 3170 (the) sd 3383 () sd 
+@fs6 (remapped) shwd 
+@fs0 4025 (field) sd 4324 (will) sd 4584 (return) sd 4961 (one.) sd 5289 (The)
+sd 5548 (remapped) sd 6141 (address) sd 6601 (will) sd 6860 (be) sd 7033 (retu\
+rned) sd 1500 9561 am (in the ) shwd 
+@fs6 (ovl_addr) shwd 
+@fs0 ( field.  The input address will be unchanged if the address has not been\
+ remapped.) shwd 
+@fs3 1500 9060 am (4) shwd 
+@fs2 ( Thread requests) shwd 
+@fs0 1500 8559 am (This) shwd 1795 (section) sd 2238 (descibes) sd 2758 (reque\
+sts) sd 3263 (that) sd 3520 (deal) sd 3800 (with) sd 4095 (threads.) sd 4638 (\
+These) sd 5017 (requests) sd 5521 (are) sd 5738 (actually) sd 6227 (performed)
+sd 6856 (by) sd 7042 (the) sd 7259 (core) sd 1500 8392 am (request) shwd 1968 
+(REQ_PERFORM_SUPPLEMENTARY_SERVICE) sd 4950 (and) sd 5216 (appropriate) sd 5917
+ (service) sd 6376 (id.) sd 6675 (The) sd 6955 (following) sd 1500 8225 am (de\
+scriptions do not show do not show that "prefix" to the request messages.)
+shwd 1500 7891 am (The service name to be used in the REQ_GET_SUPPLEMENTARY_SE\
+RVICE is "Threads".) shwd 
+@fs3 1500 7390 am (4.1 REQ_THREAD_GET_NEXT \(0\)) shwd 
+@fs0 1500 7056 am (Request to get next thread.) shwd 1500 6722 am (Request mes\
+sage:) shwd 
+@fs6 2350 6305 am (access_req      req) shwd 2350 6166 am (unsigned_32     thr\
+ead) shwd 
+@fs0 1500 5832 am (The) shwd 1764 () sd 
+@fs6 (thread) shwd 
+@fs0 2261 (contains) sd 2774 (the) sd 2992 (either) sd 3358 (a) sd 3466 (zero)
+sd 3753 (to) sd 3908 (get) sd 4125 (information) sd 4832 (on) sd 5018 (the) sd 
+5235 (first) sd 5507 (thread,) sd 5941 (or) sd 6104 (the) sd 6321 (value) sd 
+6670 (of) sd 6833 (the) sd 7050 () sd 
+@fs6 (thread) shwd 
+@fs0 1500 5665 am (field in the return message of a previous request.) shwd 
+1500 5331 am (Return message:) shwd 
+@fs6 2350 4914 am (unsigned_32     thread) shwd 2350 4775 am (unsigned_8      \
+state) shwd 
+@fs0 1500 4441 am (The) shwd 1764 () sd 
+@fs6 (thread) shwd 
+@fs0 2261 (field) sd 2565 (returns) sd 3001 (the) sd 3219 (thread) sd 3616 (ID\
+.  There) sd 4242 (are) sd 4460 (no) sd 4647 (more) sd 4980 (threads) sd 5430 
+(in) sd 5585 (the) sd 5802 (list,) sd 6057 (it) sd 6181 (will) sd 6445 (contai\
+n) sd 6903 (zero.) sd 7283 (The) sd 1500 4274 am () shwd 
+@fs6 (state) shwd 
+@fs0 ( field can have two values:) shwd 
+@fs6 2350 3857 am (THREAD_THAWED = 0) shwd 2350 3718 am (THREAD_FROZEN = 1)
+shwd 
+@fs3 1500 3217 am (4.2 REQ_THREAD_SET \(1\)) shwd 
+@fs0 1500 2883 am (Request to set a given thread ID to be the current thread.)
+shwd 1500 2549 am (Request message:) shwd 
+@fs6 2350 2132 am (access_req      req) shwd 2350 1993 am (unsigned_32     thr\
+ead) shwd 
+@fs0 1500 1340 am (The Requests) shwd 7360 (32) sd 
+pageobj restore
+showpage
+%%Page: # 38
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The) shwd 1757 () sd 
+@fs6 (thread) shwd 
+@fs0 2247 (contains) sd 2753 (the) sd 2964 (thread) sd 3354 (number) sd 3821 (\
+to) sd 3970 (set.) sd 4210 (If) sd 4344 (it's) sd 4563 (zero,) sd 4880 (do) sd 
+5060 (not) sd 5279 (attempt) sd 5737 (to) sd 5885 (set) sd 6079 (the) sd 6289 
+(thread,) sd 6714 (just) sd 6955 (return) sd 7329 (the) sd 1500 10006 am (curr\
+ent thread id.) shwd 1500 9672 am (Return message:) shwd 
+@fs6 2350 9255 am (trap_error      error) shwd 2350 9116 am (unsigned_32     o\
+ld_thread) shwd 
+@fs0 1500 8782 am (The ) shwd 
+@fs6 (old_thread) shwd 
+@fs0 ( field returns the previous thread id. If the set fails, the) shwd 
+@fs6 5582 (err) sd 
+@fs0 ( field will be non-zero.) shwd 
+@fs3 1500 8281 am (4.3 REQ_THREAD_FREEZE \(2\)) shwd 
+@fs0 1500 7947 am (Request to freeze a thread so that it will not be run next \
+time when executing the task program.) shwd 1500 7613 am (Request message:)
+shwd 
+@fs6 2350 7196 am (access_req      req) shwd 2350 7057 am (unsigned_32     thr\
+ead) shwd 
+@fs0 1500 6723 am (The ) shwd 
+@fs6 (thread) shwd 
+@fs0 ( contains the thread number to freeze.) shwd 1500 6389 am (Return messag\
+e:) shwd 
+@fs6 2350 5972 am (trap_error      err) shwd 
+@fs0 1500 5638 am (If the thread cannot be frozen, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field returns non zero value.) shwd 
+@fs3 1500 5137 am (4.4 REQ_THREAD_THAW \(3\)) shwd 
+@fs0 1500 4803 am (Request to allow a thread to run next time when executing t\
+he program.) shwd 1500 4469 am (Request message:) shwd 
+@fs6 2350 4052 am (access_req      req) shwd 2350 3913 am (unsigned_32     thr\
+ead) shwd 
+@fs0 1500 3579 am (The ) shwd 
+@fs6 (thread) shwd 
+@fs0 ( contains the thread number to thaw.) shwd 1500 3245 am (Return message:)
+ shwd 
+@fs6 2350 2828 am (trap_error      err) shwd 
+@fs0 1500 2494 am (If the thread cannot be thawed, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field returns non zero value.) shwd 1500 1340 am (The Requests) shwd 
+7360 (33) sd 
+pageobj restore
+showpage
+%%Page: # 39
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (4.5 REQ_THREAD_GET_EXTRA \(4\)) shwd 
+@fs0 1500 9505 am (Request) shwd 1994 (to) sd 2147 (get) sd 2362 (extra) sd 
+2686 (information) sd 3391 (about) sd 3746 (a) sd 3851 (thread.) sd 4296 (This)
+ sd 4587 (is) sd 4723 (arbitrary) sd 5249 (textual) sd 5673 (data) sd 5949 (wh\
+ich) sd 6334 (the) sd 6548 (debugger) sd 7112 (merely) sd 1500 9338 am (displa\
+ys) shwd 1998 (in) sd 2147 (its) sd 2319 (thread) sd 2709 (window.) sd 3244 (T\
+he) sd 3501 (trap) sd 3759 (file) sd 3986 (can) sd 4220 (place) sd 4554 (any)
+sd 4795 (information) sd 5495 (in) sd 5643 (the) sd 5853 (return) sd 6227 (mes\
+sage) sd 6738 (which) sd 7119 (it) sd 7236 (feels) sd 1500 9171 am (would be u\
+seful for the user to know.) shwd 1500 8837 am (Request message:) shwd 
+@fs6 2350 8420 am (access_req      req) shwd 2350 8281 am (unsigned_32     thr\
+ead) shwd 
+@fs0 1500 7947 am (The) shwd 1766 () sd 
+@fs6 (thread) shwd 
+@fs0 2265 (field) sd 2571 (contains) sd 3086 (the) sd 3306 (thread) sd 3705 (I\
+D.) sd 3965 (A) sd 4115 (zero) sd 4405 (value) sd 4757 (means) sd 5162 (to) sd 
+5320 (get) sd 5539 (the) sd 5758 (title) sd 6024 (string) sd 6391 (for) sd 6603
+ (the) sd 6822 (thread) sd 7220 (extra) sd 1500 7780 am (information. This is \
+displayed at the top of the thread window.) shwd 1500 7446 am (Return message:)
+ shwd 
+@fs6 2350 7029 am (string) shwd 3550 (extra) sd 
+@fs0 1500 6695 am (The extra information of the thread will be returned in )
+shwd 
+@fs6 (extra) shwd 
+@fs0 ( field.) shwd 
+@fs3 1500 6194 am (5) shwd 
+@fs2 ( RFX requests) shwd 
+@fs0 1500 5693 am (This) shwd 1805 (section) sd 2258 (deals) sd 2602 (with) sd 
+2908 (requests) sd 3423 (that) sd 3689 (are) sd 3916 (only) sd 4221 (used) sd 
+4533 (by) sd 4729 (the) sd 4956 (RFX) sd 5284 (program.) sd 5927 (These) sd 
+6316 (requests) sd 6830 (are) sd 7057 (actually) sd 1500 5526 am (performed)
+shwd 2122 (by) sd 2301 (the) sd 2511 (core) sd 2790 (request) sd 3232 (REQ_PER\
+FORM_SUPPLEMENTARY_SERVICE) sd 6188 (and) sd 6428 (appropriate) sd 7104 (servi\
+ce) sd 1500 5359 am (id.  The following descriptions do not show do not show t\
+hat "prefix" to the request messages.) shwd 1500 5025 am (The service name to \
+be used in the REQ_GET_SUPPLEMENTARY_SERVICE is "RFX".) shwd 
+@fs3 1500 4524 am (5.1 REQ_RFX_RENAME \(0\)) shwd 
+@fs0 1500 4190 am (Request to rename a file on the debuggee's system.) shwd 
+1500 3856 am (Request message:) shwd 
+@fs6 2350 3439 am (access_req      req) shwd 2350 3300 am (-------------------\
+------) shwd 2350 3161 am (string) shwd 3550 (from_name) sd 2350 3022 am (----\
+---------------------) shwd 2350 2883 am (string) shwd 3550 (to_name) sd 
+@fs0 1500 2549 am (The) shwd 1759 (file) sd 1988 (whose) sd 2387 (name) sd 2731
+ (is) sd 2866 (indicated) sd 3421 (by) sd 3603 (the) sd 3816 (field) sd 4115 ()
+ sd 
+@fs6 (from_name) shwd 
+@fs0 4832 (will) sd 5092 (be) sd 5266 (renamed) sd 5789 (to) sd 5940 (the) sd 
+6153 (name) sd 6497 (given) sd 6850 (by) sd 7031 (the) sd 7243 (field) sd 1500 
+2382 am () shwd 
+@fs6 (to_name) shwd 
+@fs0 1500 2048 am (Return message:) shwd 1500 1340 am (The Requests) shwd 7360 
+(34) sd 
+pageobj restore
+showpage
+%%Page: # 40
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (trap_error      err) shwd 
+@fs0 1500 9867 am (If error has occurred, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 9366 am (5.2 REQ_RFX_MKDIR \(1\)) shwd 
+@fs0 1500 9032 am (Request to create a directory on the debuggee's system.)
+shwd 1500 8698 am (Request message:) shwd 
+@fs6 2350 8281 am (access_req      req) shwd 2350 8142 am (-------------------\
+-----) shwd 2350 8003 am (string) shwd 3550 (dir_name) sd 
+@fs0 1500 7669 am (The ) shwd 
+@fs6 (dir_name) shwd 
+@fs0 ( field contains the name of the directory to be created.) shwd 1500 7335
+am (Return message:) shwd 
+@fs6 2350 6918 am (trap_error      err) shwd 
+@fs0 1500 6584 am (If error has occurred when creating the directory, the )
+shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 6083 am (5.3 REQ_RFX_RMDIR \(2\)) shwd 
+@fs0 1500 5749 am (Request to remove a directory on the debuggee's system.)
+shwd 1500 5415 am (Request message:) shwd 
+@fs6 2350 4998 am (access_req      req) shwd 2350 4859 am (-------------------\
+-----) shwd 2350 4720 am (string) shwd 3550 (dir_name) sd 
+@fs0 1500 4386 am (The ) shwd 
+@fs6 (dir_name) shwd 
+@fs0 ( field contains the name of the directory to be removed.) shwd 1500 4052
+am (Return message:) shwd 
+@fs6 2350 3635 am (trap_error      err) shwd 
+@fs0 1500 3301 am (If error has occurred, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 2800 am (5.4 REQ_RFX_SETDRIVE \(3\)) shwd 
+@fs0 1500 2466 am (Request to set the current drive on the debuggee's system.)
+shwd 1500 2132 am (Request message:) shwd 1500 1340 am (The Requests) shwd 7360
+ (35) sd 
+pageobj restore
+showpage
+%%Page: # 41
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (access_req      req) shwd 2350 10062 am (unsigned_8      d\
+rive) shwd 
+@fs0 1500 9728 am (The ) shwd 
+@fs6 (drive) shwd 
+@fs0 ( field contains the drive number to be set on the debuggee's system.)
+shwd 1500 9394 am (Return message:) shwd 
+@fs6 2350 8977 am (trap_error      err) shwd 
+@fs0 1500 8643 am (If error has occurred, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 
+@fs3 1500 8142 am (5.5 REQ_RFX_GETDRIVE \(4\)) shwd 
+@fs0 1500 7808 am (Request to get the current drive on the debuggee's system.)
+shwd 1500 7474 am (Request message:) shwd 
+@fs6 2350 7057 am (access_req      req) shwd 
+@fs0 1500 6723 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 6389 am (Return message:) shwd 
+@fs6 2350 5972 am (unsigned_8      drive) shwd 
+@fs0 1500 5638 am (The ) shwd 
+@fs6 (drive) shwd 
+@fs0 ( field returns the current drive number on the debuggee's system.) shwd 
+@fs3 1500 5137 am (5.6 REQ_RFX_SETCWD \(5\)) shwd 
+@fs0 1500 4803 am (Request to set a directory on the debuggee's system.) shwd 
+1500 4469 am (Request message:) shwd 
+@fs6 2350 4052 am (access_req      req) shwd 2350 3913 am (-------------------\
+-----) shwd 2350 3774 am (string) shwd 3550 (dir_name) sd 
+@fs0 1500 3440 am (The ) shwd 
+@fs6 (dir_name) shwd 
+@fs0 ( field contains the name of the directory to be set.) shwd 1500 3106 am 
+(Return message:) shwd 
+@fs6 2350 2689 am (trap_error      err) shwd 
+@fs0 1500 2355 am (If error has occurred, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 1500 1340 am (The Reques\
+ts) shwd 7360 (36) sd 
+pageobj restore
+showpage
+%%Page: # 42
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (5.7 REQ_RFX_GETCWD \(6\)) shwd 
+@fs0 1500 9505 am (Request to get the current directory name on the debuggee's\
+ system.) shwd 1500 9171 am (Request message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (unsigned_8      dri\
+ve) shwd 
+@fs0 1500 8281 am (The ) shwd 
+@fs6 (drive) shwd 
+@fs0 ( field contains the target drive number.) shwd 1500 7947 am (Return mess\
+age:) shwd 
+@fs6 2350 7530 am (trap_error      err) shwd 2350 7391 am (-------------------\
+-------) shwd 2350 7252 am (string) shwd 3550 (dir_name) sd 
+@fs0 1500 6918 am (The) shwd 1759 () sd 
+@fs6 (dir_name) shwd 
+@fs0 2401 (field) sd 2700 (contains) sd 3208 (the) sd 3421 (name) sd 3765 (of)
+sd 3924 (the) sd 4137 (directory) sd 4685 (to) sd 4836 (be) sd 5010 (set.) sd 
+5256 (If) sd 5392 (error) sd 5707 (has) sd 5935 (occurred,) sd 6504 (the) sd 
+6717 () sd 
+@fs6 (err) shwd 
+@fs0 6984 (field) sd 7282 (will) sd 1500 6751 am (return the error code number\
+.) shwd 
+@fs3 1500 6250 am (5.8 REQ_RFX_SETDATETIME \(7\)) shwd 
+@fs0 1500 5916 am (Request to set the date and time information on the debugge\
+e's system.) shwd 1500 5582 am (Request message:) shwd 
+@fs6 2350 5165 am (access_req      req) shwd 2350 5026 am (trap_fhandle    han\
+dle) shwd 2350 4887 am (time_t) shwd 3550 (time) sd 
+@fs0 1500 4553 am (The) shwd 1757 () sd 
+@fs6 (handle) shwd 
+@fs0 2247 (contains) sd 2753 (the) sd 2964 (file) sd 3191 (handle.) sd 3647 (T\
+he) sd 3903 () sd 
+@fs6 (time) shwd 
+@fs0 4242 (field) sd 4538 (follows) sd 4997 (the) sd 5207 (UNIX) sd 5596 (time)
+ sd 5883 (format.) sd 6338 (The) sd 6594 () sd 
+@fs6 (time) shwd 
+@fs0 6933 (represents) sd 1500 4386 am (the time since January 1, 1970 \(UTC\)\
+.) shwd 1500 4052 am (Return message:) shwd 
+@fs6 2350 3635 am (NONE) shwd 
+@fs3 1500 3134 am (5.9 REQ_RFX_GETDATETIME \(8\)) shwd 
+@fs0 1500 2800 am (Request to get the date and time information on the debugge\
+e's system.) shwd 1500 2466 am (Request message:) shwd 
+@fs6 2350 2049 am (access_req      req) shwd 2350 1910 am (trap_fhandle    han\
+dle) shwd 
+@fs0 1500 1340 am (The Requests) shwd 7360 (37) sd 
+pageobj restore
+showpage
+%%Page: # 43
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The ) shwd 
+@fs6 (handle) shwd 
+@fs0 ( contains the file handle.) shwd 1500 9839 am (Return message:) shwd 
+@fs6 2350 9422 am (time_t) shwd 3550 (time) sd 
+@fs0 1500 9088 am (The ) shwd 
+@fs6 (time) shwd 
+@fs0 ( field follows the UNIX time format. The ) shwd 
+@fs6 (time) shwd 
+@fs0 ( represents the time since January 1, 1970 \(UTC\).) shwd 
+@fs3 1500 8587 am (5.10 REQ_RFX_GETFREESPACE \(9\)) shwd 
+@fs0 1500 8253 am (Request to get the amount of free space left on the drive.)
+shwd 1500 7919 am (Request message:) shwd 
+@fs6 2350 7502 am (access_req      req) shwd 2350 7363 am (unsigned_8      dri\
+ve) shwd 
+@fs0 1500 7029 am (The ) shwd 
+@fs6 (drive) shwd 
+@fs0 ( field contains the target drive number.) shwd 1500 6695 am (Return mess\
+age:) shwd 
+@fs6 2350 6278 am (unsigned_32     size) shwd 
+@fs0 1500 5944 am (The ) shwd 
+@fs6 (size) shwd 
+@fs0 ( field returns the number of bytes left on the drive.) shwd 
+@fs3 1500 5443 am (5.11 REQ_RFX_SETFILEATTR \(10\)) shwd 
+@fs0 1500 5109 am (Request to set the file attribute of a file.) shwd 1500 4775
+ am (Request message:) shwd 
+@fs6 2350 4358 am (access_req      req) shwd 2350 4219 am (unsigned_32     att\
+ribute) shwd 2350 4080 am (-------------------------) shwd 2350 3941 am (strin\
+g) shwd 3550 (name) sd 
+@fs0 1500 3607 am (The) shwd 1761 () sd 
+@fs6 (name) shwd 
+@fs0 2105 (field) sd 2406 (contains) sd 2916 (the) sd 3131 (name) sd 3477 (who\
+se) sd 3877 (attributes) sd 4441 (are) sd 4655 (to) sd 4807 (be) sd 4982 (set.)
+ sd 5266 (The) sd 5526 () sd 
+@fs6 (attribute) shwd 
+@fs0 6244 (field) sd 6544 (contains) sd 7053 (the) sd 7267 (new) sd 1500 3440
+am (attributes of the file.) shwd 1500 3106 am (Return message:) shwd 
+@fs6 2350 2689 am (trap_error      err) shwd 
+@fs0 1500 2355 am (If error has occurred, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will return the error code number.) shwd 1500 1340 am (The Reques\
+ts) shwd 7360 (38) sd 
+pageobj restore
+showpage
+%%Page: # 44
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (5.12 REQ_RFX_GETFILEATTR \(11\)) shwd 
+@fs0 1500 9505 am (Request to get the file attribute of a file.) shwd 1500 9171
+ am (Request message:) shwd 
+@fs6 2350 8754 am (access_req      req) shwd 2350 8615 am (-------------------\
+-) shwd 2350 8476 am (string) shwd 3550 (name) sd 
+@fs0 1500 8142 am (The ) shwd 
+@fs6 (name) shwd 
+@fs0 ( field contains the name to be checked.) shwd 1500 7808 am (Return messa\
+ge:) shwd 
+@fs6 2350 7391 am (unsigned_32     attribute) shwd 
+@fs0 1500 7057 am (The ) shwd 
+@fs6 (attribute) shwd 
+@fs0 ( field returns the attribute of the file.) shwd 
+@fs3 1500 6556 am (5.13 REQ_RFX_NAMETOCANNONICAL \(12\)) shwd 
+@fs0 1500 6222 am (Request to convert a file name to its canonical form.) shwd 
+1500 5888 am (Request message:) shwd 
+@fs6 2350 5471 am (access_req      req) shwd 2350 5332 am (-------------------\
+------) shwd 2350 5193 am (string) shwd 3550 (file_name) sd 
+@fs0 1500 4859 am (The ) shwd 
+@fs6 (file_name) shwd 
+@fs0 ( field contains the file name to be converted.) shwd 1500 4525 am (Retur\
+n message:) shwd 
+@fs6 2350 4108 am (trap_error      err) shwd 2350 3969 am (-------------------\
+-------) shwd 2350 3830 am (string) shwd 3550 (path_name) sd 
+@fs0 1500 3496 am (If) shwd 1641 (there) sd 1968 (is) sd 2108 (no) sd 2295 (er\
+ror,) sd 2653 (the) sd 2871 () sd 
+@fs6 (err) shwd 
+@fs0 3143 (field) sd 3447 (returns) sd 3883 (a) sd 3992 (zero) sd 4280 (and)
+sd 4529 (the) sd 4747 (full) sd 4988 (path) sd 5275 (name) sd 5623 (will) sd 
+5887 (be) sd 6065 (stored) sd 6453 (in) sd 6608 (the) sd 6825 () sd 
+@fs6 (path_name) shwd 
+@fs0 1500 3329 am (field.) shwd 1834 (When) sd 2206 (an) sd 2376 (error) sd 
+2687 (has) sd 2911 (occurred,) sd 3473 (the) sd 
+@fs6 3681 (err) sd 
+@fs0 3943 (field) sd 4237 (contains) sd 4740 (an) sd 4909 (error) sd 5219 (cod\
+e) sd 5520 (indicating) sd 6117 (the) sd 6325 (type) sd 6603 (of) sd 6757 (err\
+or) sd 7067 (that) sd 7314 (has) sd 1500 3162 am (been detected.) shwd 
+@fs3 1500 2661 am (5.14 REQ_RFX_FINDFIRST \(13\)) shwd 
+@fs0 1500 2327 am (Request to find the first file in a directory.) shwd 1500 
+1993 am (Request message:) shwd 1500 1340 am (The Requests) shwd 7360 (39) sd 
+pageobj restore
+showpage
+%%Page: # 45
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2350 10201 am (access_req      req) shwd 2350 10062 am (unsigned_8      a\
+ttrib) shwd 2350 9923 am (----------------------) shwd 2350 9784 am (string)
+shwd 3550 (name) sd 
+@fs0 1500 9450 am (The) shwd 1753 () sd 
+@fs6 (name) shwd 
+@fs0 2089 (field) sd 2382 (contains) sd 2884 (the) sd 3091 (name) sd 3429 (of \
+the directory and the ) sd 
+@fs6 (attrib) shwd 
+@fs0 ( field contains the attribute of the files to) shwd 1500 9283 am (list i\
+n the directory.) shwd 1500 8949 am (Return message:) shwd 
+@fs6 2350 8532 am (trap_error      err) shwd 2350 8393 am (-------------------\
+-------) shwd 2350 8254 am (dta) shwd 3550 (info) sd 
+@fs0 1500 7920 am (If) shwd 1647 (found,) sd 2067 (the) sd 2291 () sd 
+@fs6 (err) shwd 
+@fs0 2569 (field) sd 2879 (will) sd 3150 (be) sd 3335 (zero.) sd 3699 (The) sd 
+3969 (location) sd 4473 (and) sd 4728 (information) sd 5442 (of) sd 5611 (abou\
+t) sd 5974 (the) sd 6197 (first) sd 6475 (file) sd 6714 (will) sd 6984 (be) sd 
+7168 (in) sd 7329 (the) sd 1500 7753 am (structure ) shwd 
+@fs6 (info.) shwd 
+@fs0 ( Definition of the structure ) shwd 
+@fs6 (dta) shwd 
+@fs0 ( is as follows:) shwd 
+@fs6 2350 7336 am (typedef struct dta {) shwd 2650 7197 am (struct {) shwd 2950
+ 7058 am (char) shwd 4450 (i_dunno[13];) sd 2950 6919 am (unsigned int        \
+dir_entry_num;) shwd 2950 6780 am (unsigned int        cluster;) shwd 2950 6641
+ am (char) shwd 4450 (i_still_dunno[4];) sd 2650 6502 am (} dos;) shwd 2650 
+6363 am (char) shwd 4150 (attr;) sd 2650 6224 am (unsigned int        time;)
+shwd 2650 6085 am (unsigned int        date;) shwd 2650 5946 am (long) shwd 
+4150 (size;) sd 2650 5807 am (char) shwd 4150 (name[14];) sd 2350 5668 am (} d\
+ta;) shwd 
+@fs3 1500 5167 am (5.15 REQ_RFX_FINDNEXT \(14\)) shwd 
+@fs0 1500 4833 am (Request) shwd 2065 (to) sd 2289 (find) sd 2630 (the) sd 2916
+ (next) sd 3272 (file) sd 3574 (in) sd 3798 (the) sd 4083 (directory.) sd 4897 
+(This) sd 5259 (request) sd 5777 (should) sd 6264 (be) sd 6510 (used) sd 6880 
+(only) sd 7243 (after) sd 1500 4666 am (REQ_RFX_FINDFIRST.) shwd 1500 4332 am 
+(Request message:) shwd 
+@fs6 2350 3915 am (access_req      req) shwd 2350 3776 am (-------------------\
+-) shwd 2350 3637 am (dta) shwd 3550 (info) sd 
+@fs0 1500 3303 am (The) shwd 1795 () sd 
+@fs6 (req) shwd 
+@fs0 2098 (field) sd 2433 (contains) sd 2977 (the) sd 3226 (request.) sd 3829 
+(The) sd 4124 () sd 
+@fs6 (info) shwd 
+@fs0 4502 (field) sd 4837 (contains) sd 5381 (the) sd 5629 (dta) sd 5877 (retu\
+rned) sd 6421 (from) sd 6770 (the) sd 7018 (previous) sd 1500 3136 am (REQ_FIN\
+D_NEXT or REQ_FIND_FIRST.) shwd 1500 2802 am (Return message:) shwd 
+@fs6 2350 2385 am (trap_error      err) shwd 2350 2246 am (-------------------\
+-------) shwd 2350 2107 am (dta) shwd 3550 (info) sd 
+@fs0 1500 1340 am (The Requests) shwd 7360 (40) sd 
+pageobj restore
+showpage
+%%Page: # 46
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+1500 10173 am (The ) shwd 
+@fs6 (info) shwd 
+@fs0 ( field is the same as in REQ_FIND_FIRST.) shwd 
+@fs3 1500 9672 am (5.16 REQ_RFX_FINDCLOSE \(15\)) shwd 
+@fs0 1500 9338 am (Request to end the directory search operation.) shwd 1500 
+9004 am (Request message:) shwd 
+@fs6 2350 8587 am (access_req      req) shwd 
+@fs0 1500 8253 am (The ) shwd 
+@fs6 (req) shwd 
+@fs0 ( field contains the request.) shwd 1500 7919 am (Return message:) shwd 
+@fs6 2350 7502 am (trap_error      err) shwd 
+@fs0 1500 7168 am (If successful, the ) shwd 
+@fs6 (err) shwd 
+@fs0 ( field will be zero, otherwise the system error code will be returned.)
+shwd 1500 1340 am (The Requests) shwd 7360 (41) sd 
+pageobj restore
+showpage
+%%Page: # 47
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs4 2000 9590 am (System Dependent Aspects) shwd 
+@fs0 1500 8923 am (Every) shwd 1880 (environment) sd 2633 (has) sd 2865 (a) sd 
+2973 (different) sd 3502 (method) sd 3967 (of) sd 4130 (loading) sd 4596 (the)
+sd 4813 (code) sd 5123 (for) sd 5333 (the) sd 5550 (trap) sd 5814 (file) sd 
+6047 (and) sd 6294 (locating) sd 6790 (the) sd 7006 (TrapInit,) sd 1500 8756
+am (TrapRequest,) shwd 2300 (and) sd 2550 (TrapFini) sd 3088 (routines.) sd 
+3646 (This) sd 3941 (section) sd 4384 (descibes) sd 4904 (how) sd 5192 (the)
+sd 5410 (WATCOM) sd 6093 (debugger) sd 6661 (performs) sd 7213 (these) sd 1500 
+8589 am (operations for the various systems.) shwd 
+@fs3 1500 8088 am (1) shwd 
+@fs2 ( Trap Files Under DOS) shwd 
+@fs0 1500 7587 am (A) shwd 1658 (trap) sd 1933 (file) sd 2177 (is) sd 2327 (an)
+ sd 2516 ("EXE") sd 2958 (format) sd 3388 (file) sd 3632 (with) sd 3938 (the)
+sd 4166 (extension) sd 4759 (".TRP".) sd 5300 (The) sd 5574 (debugger) sd 6152 
+(searches) sd 6682 (the) sd 6909 (directories) sd 1500 7420 am (specified)
+shwd 2051 (by) sd 2237 (the) sd 2454 (PATH) sd 2865 (environment) sd 3618 (var\
+iable.) sd 4206 (Once) sd 4547 (found,) sd 4958 (it) sd 5081 (is) sd 5219 (loa\
+ded) sd 5637 (into) sd 5900 (memory) sd 6410 (and) sd 6657 (has) sd 6888 (the)
+sd 7104 (normal) sd 1500 7253 am (EXE) shwd 1820 (style) sd 2133 (relocations)
+sd 2796 (applied) sd 3256 (to) sd 3413 (the) sd 3632 (image.) sd 4082 (Then)
+sd 4417 (the) sd 4636 (lowest) sd 5049 (address) sd 5516 (in) sd 5673 (the) sd 
+5892 (load) sd 6181 (image) sd 6570 (\(NOTE:) sd 7102 (not) sd 7329 (the) sd 
+1500 7086 am (starting address from EXE header information\) is examined for t\
+he following structure:) shwd 
+@fs6 1750 6669 am (typedef struct {) shwd 2050 6530 am (unsigned_16 ) shwd 3099
+ (signature; /* == 0xDEAF */) sd 2050 6391 am (unsigned_16 ) shwd 3099 (init_o\
+ff;) sd 2050 6252 am (unsigned_16 ) shwd 3099 (acc_off;) sd 2050 6113 am (unsi\
+gned_16 ) shwd 3099 (fini_off;) sd 1750 5974 am (} trap_header;) shwd 
+@fs0 1500 5640 am (If) shwd 1659 (the) sd 1895 (first) sd 2186 (2) sd 2321 (by\
+tes) sd 2681 (contain) sd 3158 (the) sd 3394 (value) sd 3762 (0xDEAF,) sd 4375 
+(the) sd 4611 (file) sd 4863 (is) sd 5021 (considered) sd 5691 (to) sd 5864 (b\
+e) sd 6060 (a) sd 6186 (valid) sd 6530 (trap) sd 6812 (file) sd 7063 (and) sd 
+7329 (the) sd 1500 5473 am () shwd 
+@fs6 (init_off) shwd 
+@fs0 (,) shwd 2171 () sd 
+@fs6 (acc_off) shwd 
+@fs0 (,) shwd 2767 (and) sd 
+@fs6 3005 (fini_off) sd 
+@fs0 3641 (fields are used to obtain the offsets of the TrapInit, TrapRequest,\
+ and) sd 1500 5306 am (TrapFini routines repectively.) shwd 1500 4972 am (The)
+shwd 1777 (starting) sd 2257 (address) sd 2736 (field) sd 3053 (of) sd 3230 (t\
+he) sd 3461 (EXE) sd 3792 (header) sd 4225 (should) sd 4658 (be) sd 4850 (set)
+sd 5065 (to) sd 5234 (point) sd 5582 (at) sd 5743 (some) sd 6097 (code) sd 6421
+ (which) sd 6822 (prints) sd 7200 (out) sd 7438 (a) sd 1500 4805 am (message a\
+bout not being able to be run from the command line and then terminates.) shwd 
+
+@fs3 1500 4304 am (2) shwd 
+@fs2 ( Trap Files Under OS/2) shwd 
+@fs0 1500 3803 am (A) shwd 1645 (trap) sd 1907 (file) sd 2138 (is) sd 2275 (a)
+sd 2381 (normal) sd 2821 (OS/2) sd 3153 (1.x) sd 3372 (DLL.) sd 3739 (The) sd 
+4000 (system) sd 4430 (automatically) sd 5234 (searches) sd 5750 (the) sd 5964 
+(directories) sd 6598 (specified) sd 7146 (by) sd 7329 (the) sd 1500 3636 am (\
+LIBPATH) shwd 2130 (command) sd 2720 (in) sd 2869 (the) sd 3079 (CONFIG.SYS)
+sd 3931 (file.) sd 4200 (Once) sd 4534 (loaded,) sd 4982 (the) sd 5192 (WATCOM)
+ sd 5867 (debugger) sd 6427 (uses) sd 6706 (export) sd 7103 (ordinal) sd 1500 
+3469 am (1) shwd 1615 (from) sd 1932 (the) sd 2148 (DLL) sd 2464 (for) sd 2673 
+(TrapInit,) sd 3215 (export) sd 3618 (ordinal) sd 4060 (2) sd 4175 (for) sd 
+4384 (TrapFini) sd 4919 (and) sd 5166 (export) sd 5569 (ordinal) sd 6011 (3)
+sd 6126 (for) sd 6334 (TrapRequest.) sd 7182 (Some) sd 1500 3302 am (example c\
+ode follows:) shwd 1500 1340 am (System Dependent Aspects) shwd 7360 (42) sd 
+pageobj restore
+showpage
+%%Page: # 48
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs6 2050 10201 am (rc = DosLoadModule\( NULL, 0, trap_file_name, &dll_module \
+\);) shwd 2050 10062 am (if\( rc != 0 \) {) shwd 2350 9923 am (return\( "unabl\
+e to load trap file" \);) shwd 2050 9784 am (}) shwd 2050 9645 am (if\( DosGet\
+ProcAddr\( dll_module, "#1", &TrapInit \) != 0) shwd 2125 9506 am (|| DosGetPr\
+ocAddr\( dll_module, "#2", &TrapFini \) != 0) shwd 2125 9367 am (|| DosGetProc\
+Addr\( dll_module, "#3", &TrapRequest \) != 0 \) {) shwd 2350 9228 am (return\
+\( "incorrect version of trap file" \);) shwd 2050 9089 am (}) shwd 
+@fs3 1500 8588 am (3) shwd 
+@fs2 ( Trap Files Under Windows.) shwd 
+@fs0 1500 8087 am (A) shwd 1643 (trap) sd 1903 (file) sd 2132 (is) sd 2267 (a)
+sd 2371 (normal) sd 2809 (Windows) sd 3387 (DLL.) sd 3749 (The) sd 4008 (syste\
+m) sd 4437 (automatically) sd 5240 (searches) sd 5755 (the) sd 5968 (directori\
+es) sd 6601 (specified) sd 7148 (by) sd 7329 (the) sd 1500 7920 am (PATH) shwd 
+1907 (environment) sd 2656 (variable.) sd 3232 (Once) sd 3569 (loaded,) sd 4021
+ (the) sd 4234 (WATCOM) sd 4912 (debugger) sd 5475 (uses) sd 5756 (export) sd 
+6155 (ordinal) sd 6593 (2) sd 6704 (from) sd 7017 (the) sd 7229 (DLL) sd 1500 
+7753 am (for) shwd 1717 (TrapInit,) sd 2269 (export) sd 2680 (ordinal) sd 3130 
+(3) sd 3253 (for) sd 3470 (TrapFini) sd 4013 (and) sd 4268 (export) sd 4679 (o\
+rdinal) sd 5129 (4) sd 5252 (for) sd 5469 (TrapRequest.) sd 6341 (Some) sd 6711
+ (example) sd 7236 (code) sd 1500 7586 am (follows:) shwd 
+@fs6 2050 7169 am (dll = LoadLibrary\( trap_file_name \);) shwd 2050 7030 am (\
+if\( dll < 32 \) {) shwd 2350 6891 am (return\( "unable to load trap file" \);)
+ shwd 2050 6752 am (}) shwd 2050 6613 am (TrapInit   = \(LPVOID\) GetProcAddre\
+ss\( dll, \(LPSTR\)2 \);) shwd 2050 6474 am (TrapFini   = \(LPVOID\) GetProcAd\
+dress\( dll, \(LPSTR\)3 \);) shwd 2050 6335 am (TrapRequest = \(LPVOID\) GetPr\
+ocAddress\( dll, \(LPSTR\)4 \);) shwd 2050 6196 am (if\( TrapInit == NULL || T\
+rapFini == NULL || TrapRequest == NULL \) {) shwd 2350 6057 am (return\( "inco\
+rrect version of trap file" \);) shwd 2050 5918 am (}) shwd 
+@fs3 1500 5417 am (4) shwd 
+@fs2 ( Trap Files Under Windows NT.) shwd 
+@fs0 1500 4916 am (A) shwd 1643 (trap) sd 1903 (file) sd 2131 (is) sd 2265 (a)
+sd 2368 (normal) sd 2805 (Windows) sd 3382 (NT) sd 3609 (DLL.) sd 3968 (The)
+sd 4226 (system) sd 4654 (automatically) sd 5456 (searches) sd 5970 (the) sd 
+6182 (directories) sd 6814 (specified) sd 7360 (by) sd 1500 4749 am (the) shwd 
+1719 (PATH) sd 2132 (environment) sd 2887 (variable.) sd 3482 (Once) sd 3825 (\
+loaded,) sd 4284 (the) sd 4503 (WATCOM) sd 5187 (debugger) sd 5756 (uses) sd 
+6044 (export) sd 6449 (ordinal) sd 6893 (1) sd 7010 (from) sd 7329 (the) sd 
+1500 4582 am (DLL) shwd 1807 (for) sd 2007 (TrapInit, export ordinal 2 for Tra\
+pFini and export ordinal 3 for TrapRequest.  Some example code) sd 1500 4415
+am (follows:) shwd 
+@fs6 2050 3998 am (dll = LoadLibrary\( trap_file_name \);) shwd 2050 3859 am (\
+if\( dll < 32 \) {) shwd 2350 3720 am (return\( "unable to load trap file" \);)
+ shwd 2050 3581 am (}) shwd 2050 3442 am (TrapInit   = \(LPVOID\) GetProcAddre\
+ss\( dll, \(LPSTR\)1 \);) shwd 2050 3303 am (TrapFini   = \(LPVOID\) GetProcAd\
+dress\( dll, \(LPSTR\)2 \);) shwd 2050 3164 am (TrapRequest = \(LPVOID\) GetPr\
+ocAddress\( dll, \(LPSTR\)3 \);) shwd 2050 3025 am (if\( TrapInit == NULL || T\
+rapFini == NULL || TrapRequest == NULL \) {) shwd 2350 2886 am (return\( "inco\
+rrect version of trap file" \);) shwd 2050 2747 am (}) shwd 
+@fs0 1500 1340 am (System Dependent Aspects) shwd 7360 (43) sd 
+pageobj restore
+showpage
+%%Page: # 49
+/pageobj save def
+.072 .072 scale
+2 setlinecap
+@fs0
+
+@fs3 1500 9839 am (5) shwd 
+@fs2 ( Trap Files Under QNX) shwd 
+@fs0 1500 9338 am (A) shwd 1643 (trap) sd 1903 (file) sd 2132 (is) sd 2267 (a)
+sd 2371 (QNX) sd 2716 (load) sd 2999 (module) sd 3460 (format) sd 3875 (file)
+sd 4104 (with) sd 4395 (the) sd 4608 (extension) sd 5186 (".trp") sd 5532 (and)
+ sd 5775 (whose) sd 6173 (file) sd 6401 (permissions) sd 7109 (are) sd 7321 (n\
+ot) sd 1500 9171 am (marked) shwd 1972 (as) sd 2141 (executable.) sd 2863 (The)
+ sd 3133 (debugger) sd 3707 (searches) sd 4233 (the) sd 4457 (directories) sd 
+5101 (specified) sd 5658 (by) sd 5850 (the) sd 6073 (WD_PATH) sd 6793 (environ\
+ment) sd 1500 9004 am (variable) shwd 2008 (and) sd 2267 (then) sd 2565 (the)
+sd 2793 ("/usr/watcom/wd") sd 3865 (directory.) sd 4542 (Once) sd 4894 (found,)
+ sd 5319 (it) sd 5454 (is) sd 5604 (loaded) sd 6034 (into) sd 6308 (memory) sd 
+6829 (and) sd 7087 (has) sd 7329 (the) sd 1500 8837 am (normal) shwd 1935 (loa\
+der) sd 2324 (relocations) sd 2976 (applied) sd 3426 (to) sd 3573 (the) sd 3782
+ (image.) sd 4202 (Then) sd 4527 (the) sd 4736 (lowest) sd 5139 (address) sd 
+5596 (in) sd 5743 (the) sd 5952 (load) sd 6231 (image) sd 6610 (\(NOTE:) sd 
+7112 (not) sd 7329 (the) sd 1500 8670 am (starting address from load module he\
+ader information\) is examined for the following structure:) shwd 
+@fs6 1750 8253 am (typedef struct {) shwd 2050 8114 am (unsigned_16 ) shwd 3099
+ (signature; /* == 0xDEAF */) sd 2050 7975 am (unsigned_16 ) shwd 3099 (init_o\
+ff;) sd 2050 7836 am (unsigned_16 ) shwd 3099 (acc_off;) sd 2050 7697 am (unsi\
+gned_16 ) shwd 3099 (fini_off;) sd 1750 7558 am (} trap_header;) shwd 
+@fs0 1500 7224 am (If) shwd 1659 (the) sd 1895 (first) sd 2186 (2) sd 2321 (by\
+tes) sd 2681 (contain) sd 3158 (the) sd 3394 (value) sd 3762 (0xDEAF,) sd 4375 
+(the) sd 4611 (file) sd 4863 (is) sd 5021 (considered) sd 5691 (to) sd 5864 (b\
+e) sd 6060 (a) sd 6186 (valid) sd 6530 (trap) sd 6812 (file) sd 7063 (and) sd 
+7329 (the) sd 1500 7057 am () shwd 
+@fs6 (init_off) shwd 
+@fs0 (,) shwd 2171 () sd 
+@fs6 (acc_off) shwd 
+@fs0 (,) shwd 2767 (and) sd 
+@fs6 3005 (fini_off) sd 
+@fs0 3641 (fields are used to obtain the offsets of the TrapInit, TrapRequest,\
+ and) sd 1500 6890 am (TrapFini routines repectively.) shwd 1500 6556 am (The)
+shwd 1759 (starting) sd 2221 (address) sd 2682 (field) sd 2981 (of) sd 3140 (t\
+he) sd 3353 (load) sd 3635 (image) sd 4017 (header) sd 4431 (should) sd 4845 (\
+be) sd 5018 (set) sd 5214 (to) sd 5364 (point) sd 5693 (at) sd 5835 (some) sd 
+6170 (code) sd 6475 (which) sd 6858 (prints) sd 7218 (out) sd 7438 (a) sd 1500 
+6389 am (message about not being able to be run from the command line and then\
+ terminates.) shwd 
+@fs3 1500 5888 am (6) shwd 
+@fs2 ( Trap Files Under Netware 386 or PenPoint) shwd 
+@fs0 1500 5387 am (The) shwd 1761 (trap) sd 2023 (file) sd 2254 (routines) sd 
+2749 (are) sd 2964 (linked) sd 3358 (directly) sd 3830 (into) sd 4092 (the) sd 
+4307 (remote) sd 4739 (server) sd 5125 (code) sd 5432 (and) sd 5677 (TrapInit,)
+ sd 6216 (TrapRequest,) sd 7010 (TrapFini) sd 1500 5220 am (are directly calle\
+d.) shwd 1500 1340 am (System Dependent Aspects) shwd 7360 (44) sd 
+pageobj restore
+showpage
+%%Trailer
+%%Pages: 49

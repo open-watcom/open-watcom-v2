@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strxfrm().
 *
 ****************************************************************************/
 
@@ -40,16 +39,18 @@
 */
 
 _WCRTLINK size_t __F_NAME(strxfrm,wcsxfrm)( CHAR_TYPE *dst, const CHAR_TYPE *src, size_t n )
-    {
-        size_t len;
+{
+    size_t      len;
 
-        len = 0;
-        for(;;) {
-            if( len < n ) *dst = *src;
-            if( *src == __F_NAME('\0',L'\0') )  break;
-            ++src;
-            ++dst;
-            ++len;
-        }
-        return( len );
+    len = 0;
+    for( ;; ) {
+        if( len < n ) 
+            *dst = *src;
+        if( *src == __F_NAME('\0',L'\0') )
+            break;
+        ++src;
+        ++dst;
+        ++len;
     }
+    return( len );
+}

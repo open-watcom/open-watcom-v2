@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WDisplayHint      ( wstatbar *, int id );
-extern void WHandleMenuSelect ( wstatbar *, HMENU, WPARAM, LPARAM );
+extern void WDisplayHint( WStatBar *, int id );
+extern void WHandleMenuSelect( WStatBar *, HMENU, WPARAM, LPARAM );
 
 #endif

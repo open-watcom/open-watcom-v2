@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of atoll() - convert string to long long.
 *
 ****************************************************************************/
 
@@ -33,32 +32,30 @@
 #include "variety.h"
 #include "widechar.h"
 #include "watcom.h"
-#include "clibi64.h"
 #include <stdio.h>
-#include <ctype.h>
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#else
+    #include <ctype.h>    
+#endif
 #include <stdlib.h>
 
-_WCRTLINK void __F_NAME(__clib_atoll,__clib_watoll)( const CHAR_TYPE *p, UINT64_TYPE *pv )  /* convert ASCII string to long integer */
-    {
-        UINT64_TYPE value;
-        UINT64_TYPE radix;
-        UINT64_TYPE digit;
-        CHAR_TYPE    sign;
+_WCRTLINK long long int __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long int */
+{
+    unsigned long long int  value = 0;
+    CHAR_TYPE               sign;
 
-        __ptr_check( p, 0 );
+    __ptr_check( p, 0 );
 
-        while( __F_NAME(isspace,iswspace)( *p ) ) ++p;
-        sign = *p;
-        if( sign == '+' || sign == '-' ) ++p;
-        _clib_U32ToU64( 0, value );
-        _clib_U32ToU64( 10, radix );
-        _clib_U32ToU64( 0, digit );
-        while( __F_NAME(isdigit,iswdigit)(*p) ) {
-            _clib_U64Mul( value, radix, value );
-            _clib_U32ToU64( *p - '0', digit );
-            _clib_U64Add( value, digit, value );
-            ++p;
-        }
-        if( sign == '-' ) _clib_U64Neg( value, value );
-        *pv = value;
+    while( __F_NAME(isspace,iswspace)( *p ) )
+        ++p;
+    sign = *p;
+    if( sign == '+' || sign == '-' ) ++p;
+    while( __F_NAME(isdigit,iswdigit)(*p) ) {
+        value = value * 10 + *p - '0';
+        ++p;
     }
+    if( sign == '-' )
+        value = -value;
+    return( value );
+}

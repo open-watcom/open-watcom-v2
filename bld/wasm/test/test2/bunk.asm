@@ -4,7 +4,7 @@ _data segment 'data'
 _data ends
 _text segment 'code'
 includelib thelib
-include maaak.inc
+;include maaak.inc
     xor ax, ax
 _text ends
 end

@@ -34,9 +34,9 @@
 #include "cplx.h"
 #include "pdiv.h"
 
-_WMRTLINK xcomplex _IF_C32Div( extended a, extended b, extended c, extended d ) {
-//==============================================================================
-
+_WMRTLINK xcomplex _IF_C32Div( extended a, extended b, extended c, extended d )
+//=============================================================================
+{
 // Divide two extended precision complex numbers and return the
 // imaginary part of the result.
 // ( a, b )/( c, d ) = (( a, b )/( d + c*c/d )) * ( c/d, -1 )

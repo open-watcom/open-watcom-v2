@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "usage.h"
 
 static char     **usageList;
@@ -56,9 +55,9 @@ BOOL WINEXP UsageProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         if( usageStr[0] != 0 ) {
             SetDlgItemText( hwnd, USAGE_TEXT, usageStr );
         }
-        for( i=0;i<usageCnt;i++) {
+        for( i = 0; i < usageCnt; i++ ) {
             SendDlgItemMessage( hwnd, USAGE_LISTBOX, LB_ADDSTRING, 0,
-                        (LONG) usageList[i] );
+                                (LONG) usageList[i] );
         }
         return( TRUE );
     case WM_CLOSE:

@@ -1,108 +1,124 @@
-//
-//  stdexcept.h Standard exceptions
+///////////////////////////////////////////////////////////////////////////
+// FILE: stdexcept.h/stdexcept (Standard exception classes)
 //
 :keep CPP_HDR
 :include crwat.sp
 //
+// Description: This header is part of the C++ standard library. It
+//              defines various exception classes based on exception.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
 #ifndef _STDEXCEPT_H_INCLUDED
 #define _STDEXCEPT_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error stdexception.h is for use with C++
+#ifndef _STDEXCEPT_INCLUDED
+ #include <stdexcep>
+#endif
+using std::logic_error;
+using std::domain_error;
+using std::invalid_argument;
+using std::length_error;
+using std::out_of_range;
+using std::runtime_error;
+using std::range_error;
+using std::overflow_error;
+using std::underflow_error;
+
+// All included names should also be in the global namespace.
+#ifndef _EXCEPTION_H_INCLUDED
+ #include <exceptio.h>
 #endif
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+#endif
+:elsesegment
+#ifndef _STDEXCEPT_INCLUDED
+#define _STDEXCEPT_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
+
+#ifndef __STRDEF_H_INCLUDED
+ #include <_strdef.h>
 #endif
 
-:include throws.sp
+#ifndef _EXCEPTION_INCLUDED
+ #include <exceptio>
+#endif
 
-// corresponds to Header<stdexcept>
+namespace std {
 
-// to be fixed later by enhanced string class
-//
-//
-#include <exstring.h>
+  namespace _ow {
+    class _WPRTLINK str_exception : public exception {
+      string message;
+    public:
+      str_exception( const string &what_arg ) _WCTHROWS()
+        : message( what_arg ) { }
 
-typedef __ExcString string;
+      virtual const char *what( ) const _WCTHROWS()
+        { return message.c_str( ); }
+    };
+  }
 
-class _WPRTLINK exception {
-    string _what_val;
-public:
-    exception( void ) _WCTHROWS(()) {
-    }
-    exception( exception const &src ) _WCTHROWS(())
-        : _what_val( src._what_val ) {
-    }
-    exception( string const & what_val ) _WCTHROWS(())
-        : _what_val( what_val ) {
-    }
-    exception& operator=( exception const & src ) _WCTHROWS(()) {
-        _what_val = src._what_val;
-        return *this;
-    }
-    virtual ~exception( void ) _WCTHROWS(()) {
-    }
-    virtual char const * what( void ) const _WCTHROWS(()) {
-        return _what_val;
-    }
-};
+  class _WPRTLINK logic_error : public _ow::str_exception {
+  public:
+    logic_error( const string &what_arg ) _WCTHROWS()
+      : _ow::str_exception( what_arg ) { }
+  };
 
-class _WPRTLINK logic_error : public exception {
-public:
-    logic_error( string const& what_arg ) _WCTHROWS(())
-        : exception( what_arg ) {
-    }
-};
+  class _WPRTLINK domain_error : public logic_error {
+  public:
+    domain_error( const string &what_arg ) _WCTHROWS()
+      : logic_error( what_arg ) { }
+  };
 
-class _WPRTLINK domain_error : public logic_error {
-public:
-    domain_error( string const& what_arg ) _WCTHROWS(())
-        : logic_error( what_arg ) {
-    }
-};
+  class _WPRTLINK invalid_argument : public logic_error {
+  public:
+    invalid_argument( const string &what_arg ) _WCTHROWS()
+      : logic_error( what_arg ) { }
+  };
 
-class _WPRTLINK invalid_argument : public logic_error {
-public:
-    invalid_argument( string const& what_arg ) _WCTHROWS(())
-        : logic_error( what_arg ) {
-    }
-};
+  class _WPRTLINK length_error : public logic_error {
+  public:
+    length_error( const string &what_arg ) _WCTHROWS()
+      : logic_error( what_arg ) { }
+  };
 
-class _WPRTLINK length_error : public logic_error {
-public:
-    length_error( string const& what_arg ) _WCTHROWS(())
-        : logic_error( what_arg ) {
-    }
-};
+  class _WPRTLINK out_of_range : public logic_error {
+  public:
+    out_of_range( const string &what_arg ) _WCTHROWS()
+      : logic_error( what_arg ) { }
+  };
 
-class _WPRTLINK out_of_range : public logic_error {
-public:
-    out_of_range( string const& what_arg ) _WCTHROWS(())
-        : logic_error( what_arg ) {
-    }
-};
+  class _WPRTLINK runtime_error : public _ow::str_exception {
+  public:
+    runtime_error( const string &what_arg ) _WCTHROWS()
+      : _ow::str_exception( what_arg ) { }
+  };
 
-class _WPRTLINK runtime_error : public exception {
-public:
-    runtime_error( string const& what_arg ) _WCTHROWS(())
-        : exception( what_arg ) {
-    }
-};
+  class _WPRTLINK range_error : public runtime_error {
+  public:
+    range_error( const string &what_arg ) _WCTHROWS()
+      : runtime_error( what_arg ) { }
+  };
 
-class _WPRTLINK range_error : public runtime_error {
-public:
-    range_error( string const& what_arg ) _WCTHROWS(())
-        : runtime_error( what_arg ) {
-    }
-};
+  class _WPRTLINK overflow_error : public runtime_error {
+  public:
+    overflow_error( const string &what_arg ) _WCTHROWS()
+      : runtime_error( what_arg ) { }
+  };
 
-class _WPRTLINK overflow_error : public runtime_error {
-public:
-    overflow_error( string const& what_arg ) _WCTHROWS(())
-        : runtime_error( what_arg ) {
-    }
-};
+  class _WPRTLINK underflow_error : public runtime_error {
+  public:
+    underflow_error( const string &what_arg ) _WCTHROWS()
+      : runtime_error( what_arg ) { }
+  };
+
+} // namespace std
 
 #endif
+:endsegment

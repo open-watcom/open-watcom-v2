@@ -35,7 +35,7 @@
 
 void* RingCarveAlloc(           // CARVER ALLOC AND APPEND AN ENTRY
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 {
     void *elt;
 
@@ -47,8 +47,9 @@ void* RingCarveAlloc(           // CARVER ALLOC AND APPEND AN ENTRY
 
 void RingCarveFree(             // CARVER FREE ALL ELEMENTS IN A RING
     carve_t carver,             // - carving control
-    void **hdr )                // - addr( ring header )
+    void *_hdr )                // - addr( ring header )
 {
+    void **hdr = _hdr;
     void *elt;
 
     RingIterBegSafe( *hdr, elt ) {

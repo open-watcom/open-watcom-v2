@@ -40,7 +40,7 @@ static char     sruName[ _MAX_PATH ];
 static char     dllName[ _MAX_PATH ];
 static char     parentName[ _MAX_PATH ];
 
-BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WatIDEErrInfo       *errinfo;
     char                buffer[256];
@@ -63,8 +63,8 @@ BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
                 MessageBox( NULL, "This Directory is OK", "check dir", MB_OK );
             } else {
                 MessageBox( NULL,
-                        "This Directory is contains files that could cause problems",
-                        "check dir", MB_OK );
+                    "This Directory is contains files that could cause problems",
+                    "check dir", MB_OK );
             }
             break;
         case ID_GEN_CODE:
@@ -76,13 +76,13 @@ BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
                 rc = WatIDE_RunWig( sruName, parentName, &errinfo );
             }
             if( rc ) {
-                    MessageBox( hwnd, "Error Occurred", "", MB_OK );
+                MessageBox( hwnd, "Error Occurred", "", MB_OK );
             } else {
-                    MessageBox( hwnd, "Success!", "", MB_OK );
+                MessageBox( hwnd, "Success!", "", MB_OK );
             }
             if( errinfo != NULL ) {
                 sprintf( buffer, "%d Errors, %d Warnings", errinfo->errcnt,
-                         errinfo->warncnt );
+                    errinfo->warncnt );
                 MessageBox( hwnd, buffer, "", MB_OK );
                 MessageBox( hwnd, errinfo->errors, "Error Text", MB_OK );
             }
@@ -92,7 +92,7 @@ BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
             if( WatIDE_RunIDE( dllName ) ) {
                 MessageBox( hwnd, "The IDE was not started", "Error", MB_OK );
             } else {
-//              MessageBox( hwnd, "The IDE started successfully", "", MB_OK );
+                //              MessageBox( hwnd, "The IDE started successfully", "", MB_OK );
             }
             break;
         case ID_CLOSE_IDE:
@@ -110,7 +110,7 @@ BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     return( TRUE );
 }
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     FARPROC             fp;
     unsigned            ver;
@@ -119,13 +119,13 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     previnst = previnst;
     cmdshow = cmdshow;
     cmdline = cmdline;
-
+    
     ver = WatIDE_GetVersion();
     if( ver != WAT_IDE_DLL_CUR_VER ) {
         MessageBox( NULL, "Wrong DLL version", "Error", MB_OK );
     } else {
-        fp = MakeProcInstance( DriverDlgProc, currinst );
-        DialogBox( currinst, "DRIVER_DLG", NULL, fp );
+        fp = MakeProcInstance( (FARPROC)DriverDlgProc, currinst );
+        DialogBox( currinst, "DRIVER_DLG", NULL, (DLGPROC)fp );
         FreeProcInstance( fp );
     }
     return( 0 );

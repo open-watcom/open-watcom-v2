@@ -15,7 +15,7 @@ main(){
     #if defined(__386__)
     __chipbug = (__typeof(__chipbug)) ~0;
     #endif
-  register i;
+  register int i;
   FILE *tmp = tmpfile();
 
 // Default constructor

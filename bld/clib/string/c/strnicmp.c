@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strnicmp() and wcsnicmp().
 *
 ****************************************************************************/
 
@@ -44,22 +43,27 @@
 #else
  _WCRTLINK int __F_NAME(strnicmp,_wcsnicmp)( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 #endif
-    {
-        UCHAR_TYPE      c1;
-        UCHAR_TYPE      c2;
+{
+    UCHAR_TYPE      c1;
+    UCHAR_TYPE      c2;
 
-        for(;;) {
-            if( n == 0 )     return( 0 );       /* equal */
-            c1 = *s;
-            c2 = *t;
-            if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {
-                if( c1 >= 'A'  &&  c1 <= 'Z' )  c1 += 'a' - 'A';
-                if( c2 >= 'A'  &&  c2 <= 'Z' )  c2 += 'a' - 'A';
-            }
-            if( c1 != c2 )   return( c1 - c2 ); /* less than or greater than */
-            if( c1 == NULLCHAR ) return( 0 );       /* equal */
-            ++s;
-            ++t;
-            --n;
+    for( ;; ) {
+        if( n == 0 )
+            return( 0 );            /* equal */
+        c1 = *s;
+        c2 = *t;
+        if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {
+            if( c1 >= 'A'  &&  c1 <= 'Z' )
+                c1 += 'a' - 'A';
+            if( c2 >= 'A'  &&  c2 <= 'Z' )
+                c2 += 'a' - 'A';
         }
+        if( c1 != c2 )
+            return( c1 - c2 );      /* less than or greater than */
+        if( c1 == NULLCHAR )
+            return( 0 );            /* equal */
+        ++s;
+        ++t;
+        --n;
     }
+}

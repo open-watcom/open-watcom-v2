@@ -93,6 +93,7 @@
     #define WPI_HACCEL                  HACCEL
     #define WPI_MSG                     PM1632_WINDOW_MSG
     #define WPI_QMSG                    QMSG
+    #define WPI_WNDPROC                 PFNWP 
     #define WPI_PROC                    PFNWP
     #define WPI_PRES                    HPS
     #define WPI_POINT                   POINTL
@@ -143,7 +144,7 @@
     #define WPI_F_FONT                  LOGFONT
     #define WPI_PARAM1                  WPARAM
     #define WPI_PARAM2                  LPARAM
-    #define WPI_INST                    HANDLE
+    #define WPI_INST                    HINSTANCE
     #define WPI_HACCEL                  HANDLE
     #define WPI_MSG                     UINT
     #define WPI_QMSG                    MSG
@@ -155,6 +156,7 @@
     #define WPI_PRECT                   LPRECT
     #define WPI_RECTDIM                 int
     #define WPI_COLOUR                  COLORREF
+    #define WPI_WNDPROC                 WNDPROC
     #define WPI_PROC                    FARPROC
     #define WPI_ENUMFONTPROC            int CALLBACK
     #define WPI_LINEDDAPROC             LINEDDAPROC
@@ -184,13 +186,23 @@
         HWND            hwndSubMenu;
         unsigned long   hItem;
     } WPI_MENUITEM;
-    #define WC_BUTTON                   "button"
-    #define WC_COMBOBOX                 "combobox"
+    #ifndef WC_BUTTON
+        #define WC_BUTTON               "button"
+    #endif
+    #ifndef WC_COMBOBOX
+        #define WC_COMBOBOX             "combobox"
+    #endif
     #define WC_MLE                      "edit"
     #define WC_ENTRYFIELD               "edit"
-    #define WC_LISTBOX                  "listbox"
-    #define WC_SCROLLBAR                "scrollbar"
-    #define WC_STATIC                   "static"
+    #ifndef WC_LISTBOX
+        #define WC_LISTBOX              "listbox"
+    #endif
+    #ifndef WC_SCROLLBAR
+        #define WC_SCROLLBAR            "scrollbar"
+    #endif
+    #ifndef WC_STATIC
+        #define WC_STATIC               "static"
+    #endif
     #define WC_GROUPBOX                 "button"
 #endif
 
@@ -553,7 +565,7 @@
     #define GetGValue(rgb)              ((BYTE)(((WORD)(rgb)) >> 8))
     #define GetRValue(rgb)              ((BYTE)((rgb)>>16))
     #define RGB(r,g,b)                  ((WPI_COLOUR)(((BYTE)(b)|((WORD)(g)<<8))|(((DWORD)(BYTE)(r))<<16)))
-    #define LPCSTR                      ULONG
+    #define LPCSTR                      const char FAR *
     #define MAKEINTRESOURCE(i)          i
     #define HMENU                       HWND
     #define SW_HIDE                     SWP_HIDE
@@ -629,28 +641,28 @@
     #define WPI_CLIPPED                 CHS_CLIP
 
 typedef struct {
-    DWORD       lStructSize;    /* */
-    HWND        hwndOwner;              /* caller's window handle   */
-    HDC         hDC;            /* printer DC/IC or NULL    */
-    WPI_LOGFONT *lpLogFont;          /* ptr. to a LOGFONT struct */
-    int         iPointSize;             /* 10 * size in points of selected font */
-    DWORD       Flags;          /* enum. type flags         */
+    DWORD       lStructSize;        /* */
+    HWND        hwndOwner;          /* caller's window handle   */
+    HDC         hDC;                /* printer DC/IC or NULL    */
+    WPI_LOGFONT *lpLogFont;         /* ptr. to a LOGFONT struct */
+    int         iPointSize;         /* 10 * size in points of selected font */
+    DWORD       Flags;              /* enum. type flags         */
     WPI_COLOUR  rgbColors;          /* returned text color      */
     LPARAM      lCustData;          /* data passed to hook fn.  */
     UINT (APIENTRY *lpfnHook)(HWND, UINT, WPARAM, LPARAM);
-                                        /* ptr. to hook function    */
-    const LPSTR lpTemplateName;     /* custom template name     */
+                                    /* ptr. to hook function    */
+    LPCSTR      lpTemplateName;     /* custom template name     */
     HINSTANCE   hInstance;          /* instance handle of.EXE that
-                                         * contains cust. dlg. template
-                                         */
-    LPSTR       lpszStyle;              /* return the style field here
-                                         * must be LF_FACESIZE or bigger */
+                                     * contains cust. dlg. template
+                                     */
+    LPSTR       lpszStyle;          /* return the style field here
+                                     * must be LF_FACESIZE or bigger */
     UINT        nFontType;          /* same value reported to the EnumFonts
-                                         * call back with the extra FONTTYPE_
-                                         * bits added */
-    int         nSizeMin;               /* minimum pt size allowed & */
-    int         nSizeMax;               /* max pt size allowed if    */
-                                /* CF_LIMITSIZE is used      */
+                                     * call back with the extra FONTTYPE_
+                                     * bits added */
+    int         nSizeMin;           /* minimum pt size allowed & */
+    int         nSizeMax;           /* max pt size allowed if    */
+                                    /* CF_LIMITSIZE is used      */
 } WPI_CHOOSEFONT;
 
 typedef struct {
@@ -730,13 +742,13 @@ typedef struct {
 } wpi_f_font;
 
 #else
-    #define LIT_END                     NULL
-    #define LIT_SORTASCENDING           NULL
-    #define LIT_SORTDESCENDING          NULL
+    #define LIT_END                     0
+    #define LIT_SORTASCENDING           0
+    #define LIT_SORTDESCENDING          0
     #define LIT_NONE                    -1
-    #define LIT_FIRST                   NULL
-    #define LIT_SELECT                  NULL
-    #define LIT_UNSELECT                NULL
+    #define LIT_FIRST                   0
+    #define LIT_SELECT                  0
+    #define LIT_UNSELECT                0
     #define HINI                        short
     #define MRESULT                     LONG
     #define WM_DLGCOMMAND               WM_COMMAND
@@ -744,7 +756,7 @@ typedef struct {
     #define KEY_ASYNC_PRESSED           0x0001
     #define WPI_VERT_MULT               1
     #define ULONG                       unsigned long
-    #define NULLHANDLE                  NULL
+    #define NULLHANDLE                  ((HANDLE)0)
     #define HFILE                       int
     #define HFILE_FORMAT                int
     #define HMQ                         HANDLE

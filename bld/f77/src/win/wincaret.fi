@@ -1,0 +1,17 @@
+*$noreference
+
+! Caret Functions:
+! ----------------
+
+      external CreateCaret
+      external DestroyCaret
+      external GetCaretBlinkTime
+      external GetCaretPos
+      external HideCaret
+      external SetCaretBlinkTime
+      external SetCaretPos
+      external ShowCaret
+
+      integer*2 GetCaretBlinkTime
+
+*$reference

@@ -1,0 +1,1118 @@
+c$ifdef INCL_GPI
+c$define INCL_GPICONTROL
+c$define INCL_GPICORRELATION
+c$define INCL_GPISEGMENTS
+c$define INCL_GPISEGEDITING
+c$define INCL_GPITRANSFORMS
+c$define INCL_GPIPATHS
+c$define INCL_GPILOGCOLORTABLE
+c$define INCL_GPIPRIMITIVES
+c$define INCL_GPILCIDS
+c$define INCL_GPIBITMAPS
+c$define INCL_GPIREGIONS
+c$define INCL_GPIMETAFILES
+c$define INCL_GPIDEFAULTS
+c$endif
+
+c$ifdef INCL_ERRORS
+c$define INCL_GPIERRORS
+c$endif
+
+c$ifdef INCL_DDIDEFS
+c$define INCL_GPITRANSFORMS
+c$define INCL_GPIPATHS
+c$define INCL_GPILOGCOLORTABLE
+c$define INCL_GPIPRIMITIVES
+c$define INCL_GPILCIDS
+c$define INCL_GPIBITMAPS
+c$define INCL_GPIREGIONS
+c$define INCL_GPIERRORS
+c$endif
+
+c$pragma aux (MAKELONG) MAKEFIXED
+
+c$pragma aux (LOUSHORT) FIXEDFRAC
+
+c$pragma aux (HIUSHORT) FIXEDINT
+
+c$ifdef INCL_GPICONTROL
+   
+c$pragma aux (__syscall) GpiCreatePS parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiDestroyPS parm( value*4 )
+   
+c$pragma aux (__syscall) GpiAssociate parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiRestorePS parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSavePS parm( value*4 )
+   
+c$pragma aux (__syscall) GpiErase parm( value*4 )
+   
+c$pragma aux (__syscall) GpiQueryDevice parm( value*4 )
+   
+c$pragma aux (__syscall) GpiResetPS parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetPS parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryPS parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiErrorSegmentData parm( value*4, \
+c		reference, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryDrawControl parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetDrawControl parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryDrawingMode parm( value*4 )
+   
+c$pragma aux (__syscall) GpiSetDrawingMode parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryStopDraw parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetStopDraw parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_GPICORRELATION
+   
+c$pragma aux (__syscall) GpiCorrelateChain parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryTag parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiSetTag parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryPickApertureSize parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiSetPickApertureSize parm( value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryPickAperturePosition parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetPickAperturePosition parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryBoundaryData parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiResetBoundaryData parm( value*4 )
+   
+c$pragma aux (__syscall) GpiCorrelateFrom parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiCorrelateSegment parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$endif
+
+c$ifdef INCL_GPISEGMENTS
+   
+c$pragma aux (__syscall) GpiOpenSegment parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiCloseSegment parm( value*4 )
+   
+c$pragma aux (__syscall) GpiDeleteSegment parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryInitialSegmentAttrs parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetInitialSegmentAttrs parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQuerySegmentAttrs parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetSegmentAttrs parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQuerySegmentPriority parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetSegmentPriority parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiDeleteSegments parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQuerySegmentNames parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiGetData parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiPutData parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiDrawChain parm( value*4 )
+   
+c$pragma aux (__syscall) GpiDrawFrom parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiDrawSegment parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiDrawDynamics parm( value*4 )
+      
+c$pragma aux (__syscall) GpiRemoveDynamics parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_GPISEGEDITING
+   
+c$pragma aux (__syscall) GpiBeginElement parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiEndElement parm( value*4 )
+   
+c$pragma aux (__syscall) GpiLabel parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiElement parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryElement parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiDeleteElement parm( value*4 )
+   
+c$pragma aux (__syscall) GpiDeleteElementRange parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiDeleteElementsBetweenLabels parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryEditMode parm( value*4 )
+   
+c$pragma aux (__syscall) GpiSetEditMode parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryElementPointer parm( value*4 )
+   
+c$pragma aux (__syscall) GpiSetElementPointer parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiOffsetElementPointer parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryElementType parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetElementPointerAtLabel parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_GPITRANSFORMS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiQuerySegmentTransformMatrix parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetSegmentTransformMatrix parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiConvert parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiConvertWithMatrix parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryModelTransformMatrix parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetModelTransformMatrix parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiCallSegmentMatrix parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryDefaultViewMatrix parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetDefaultViewMatrix parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryPageViewport parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetPageViewport parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryViewingTransformMatrix parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetViewingTransformMatrix parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiTranslate parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiScale parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiRotate parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetGraphicsField parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryGraphicsField parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetViewingLimits parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryViewingLimits parm( value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIPATHS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiBeginPath parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiEndPath parm( value*4 )
+      
+c$pragma aux (__syscall) GpiCloseFigure parm( value*4 )
+      
+c$pragma aux (__syscall) GpiModifyPath parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiFillPath parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetClipPath parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiOutlinePath parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiPathToRegion parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiStrokePath parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPILOGCOLORTABLE
+   
+c$define INCL_GPIBITMAPS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiCreateLogColorTable parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryColorData parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryLogColorTable parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryRealColors parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryNearestColor parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryColorIndex parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryRGBColor parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiCreatePalette parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+         
+c$pragma aux (__syscall) GpiDeletePalette parm( value*4 )
+         
+c$pragma aux (__syscall) GpiSelectPalette parm( value*4, \
+c		value*4 )
+         
+c$pragma aux (__syscall) GpiAnimatePalette parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+         
+c$pragma aux (__syscall) GpiSetPaletteEntries parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+         
+c$pragma aux (__syscall) GpiQueryPalette parm( value*4 )
+         
+c$pragma aux (__syscall) GpiQueryPaletteInfo parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIPRIMITIVES
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiSetColor parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryColor parm( value*4 )
+      
+c$pragma aux (__syscall) GpiBox parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiMove parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiLine parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPolyLine parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPolyLineDisjoint parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetPattern parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryPattern parm( value*4 )
+      
+c$pragma aux (__syscall) GpiBeginArea parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiEndArea parm( value*4 )
+      
+c$pragma aux (__syscall) GpiCharString parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiCharStringAt parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIPRIMITIVES
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiSetAttrMode parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryAttrMode parm( value*4 )
+
+c$pragma aux (__syscall) GpiSetAttrs parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) GpiQueryAttrs parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetBackColor parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryBackColor parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetMix parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryMix parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetBackMix parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryBackMix parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetLineType parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLineType parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetLineWidth parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLineWidth parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetLineWidthGeom parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLineWidthGeom parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetLineEnd parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLineEnd parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetLineJoin parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLineJoin parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetCurrentPosition parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCurrentPosition parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetArcParams parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryArcParams parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPointArc parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiFullArc parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiPartialArc parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiPolyFillet parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPolySpline parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPolyFilletSharp parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetPatternSet parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryPatternSet parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetPatternRefPoint parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryPatternRefPoint parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharStringPos parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharStringPosAt parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryTextBox parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryDefCharBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetCharSet parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryCharSet parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetCharBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetCharAngle parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharAngle parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetCharShear parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharShear parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetCharDirection parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryCharDirection parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSetCharMode parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryCharMode parm( value*4 )
+      
+c$pragma aux (__syscall) GpiCharStringPos parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiCharStringPosAt parm( value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetCharExtra parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetCharBreakExtra parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryCharExtra parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryCharBreakExtra parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiMarker parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPolyMarker parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetMarker parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetMarkerBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetMarkerSet parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryMarker parm( value*4 )
+      
+c$pragma aux (__syscall) GpiQueryMarkerBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryMarkerSet parm( value*4 )
+      
+c$pragma aux (__syscall) GpiImage parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPop parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiPtVisible parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiRectVisible parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiComment parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPILCIDS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiCreateLogFont parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiDeleteSetId parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiLoadFonts parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiUnloadFonts parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryFonts parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryFontMetrics parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryKerningPairs parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryWidthTable parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryNumberSetIds parm( value*4 )
+      
+c$pragma aux (__syscall) GpiQuerySetIds parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryFaceString parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryLogicalFont parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryFontAction parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiLoadPublicFonts parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiUnloadPublicFonts parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetCp parm( value*4, \
+c		value*4 )
+         
+c$pragma aux (__syscall) GpiQueryCp parm( value*4 )
+         
+c$pragma aux (__syscall) GpiQueryFontFileDescriptions parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIBITMAPS
+
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiBitBlt parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiDeleteBitmap parm( value*4 )
+      
+c$pragma aux (__syscall) GpiLoadBitmap parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetBitmap parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiWCBitBlt parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIBITMAPS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiCreateBitmap parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetBitmapBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetBitmapDimension parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetBitmapId parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryBitmapBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryBitmapDimension parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryBitmapHandle parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryBitmapParameters parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryBitmapInfoHeader parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryDeviceBitmapFormats parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetPel parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryPel parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiFloodFill parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiDrawBits parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIREGIONS
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiCombineRegion parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiCreateRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiDestroyRegion parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiEqualRegion parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiOffsetRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPaintRegion parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiFrameRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiPtInRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryRegionBox parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryRegionRects parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiRectInRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetRegion parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiSetClipRegion parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryClipRegion parm( value*4 )
+         
+c$pragma aux (__syscall) GpiQueryClipBox parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiExcludeClipRectangle parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiIntersectClipRectangle parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiOffsetClipRegion parm( value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIMETAFILES
+   
+c$ifndef INCL_DDIDEFS
+      
+c$pragma aux (__syscall) GpiCopyMetaFile parm( value*4 )
+      
+c$pragma aux (__syscall) GpiDeleteMetaFile parm( value*4 )
+      
+c$pragma aux (__syscall) GpiLoadMetaFile parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiPlayMetaFile parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiQueryMetaFileBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) GpiQueryMetaFileLength parm( value*4 )
+      
+c$pragma aux (__syscall) GpiSaveMetaFile parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) GpiSetMetaFileBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$endif
+   
+c$endif
+
+c$ifdef INCL_GPIDEFAULTS
+   
+c$pragma aux (__syscall) GpiQueryDefArcParams parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryDefAttrs parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiQueryDefTag parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiQueryDefViewingLimits parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiSetDefArcParams parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) GpiSetDefAttrs parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetDefTag parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) GpiSetDefViewingLimits parm( value*4, \
+c		reference )
+   
+c$endif
+
+c$ifdef INCL_GPIPOLYGON
+   
+c$ifndef INCL_DDIDEFS
+   
+c$pragma aux (__syscall) GpiPolygons parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+
+c$endif
+   
+c$endif

@@ -30,6 +30,5 @@
 ****************************************************************************/
 
 
-#define WINEXP  __export pascal
-#define WINIEXP __export pascal
-
+#define WINEXP  __export PASCAL
+#define WINIEXP __export PASCAL

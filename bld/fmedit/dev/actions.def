@@ -1,59 +1,57 @@
-
 #ifndef _ACTIONS_INCLUDE
-
 #define _ACTIONS_INCLUDE 
 
 #define APP_ACTIONS  256
 #define APP_NOTE_IDS 256 
 
 enum {
-    REGISTER
-,   MOVE
-,   RESIZE
-,   LOCATE
-,   FIND_SUBOBJECTS
-,   DESTROY
-,   DRAW
-,   DEFINE
-,   NOTIFY
-,   FORWARD
-,   VALIDATE_ACTION
-,   ADD_SUBOBJECT
-,   REMOVE_SUBOBJECT
-,   RESIZE_INFO
-,   CUT
-,   COPY
-,   PASTE
-,   GET_PARENT
-,   GET_PRIORITY
-,   GET_RESIZE_INC
-,   GET_SCROLL_RECT
-,   IS_MARK_VALID
-,   FIND_OBJECTS_PT
+    REGISTER,
+    MOVE,
+    RESIZE,
+    LOCATE,
+    FIND_SUBOBJECTS,
+    DESTROY,
+    DRAW,
+    DEFINE,
+    NOTIFY,
+    FORWARD,
+    VALIDATE_ACTION,
+    ADD_SUBOBJECT,
+    REMOVE_SUBOBJECT,
+    RESIZE_INFO,
+    CUT,
+    COPY,
+    PASTE,
+    GET_PARENT,
+    GET_PRIORITY,
+    GET_RESIZE_INC,
+    GET_SCROLL_RECT,
+    IS_MARK_VALID,
+    FIND_OBJECTS_PT
 };
 
 typedef enum {
-    NEW_PARENT
-,   PARENT_RESIZE
-,   TERMINATE_EDIT
-,   CURRENT_OBJECT
-,   MOVE_START
-,   MOVE_END
-,   PRIMARY_OBJECT
+    NEW_PARENT,
+    PARENT_RESIZE,
+    TERMINATE_EDIT,
+    CURRENT_OBJECT,
+    MOVE_START,
+    MOVE_END,
+    PRIMARY_OBJECT
 };
 
 typedef enum {
-    R_NONE      = 0
-,   R_TOP       = 1
-,   R_BOTTOM    = 2
-,   R_LEFT      = 4
-,   R_RIGHT     = 8
-,   R_ALL       = 15
+    R_NONE      = 0,
+    R_TOP       = 1,
+    R_BOTTOM    = 2,
+    R_LEFT      = 4,
+    R_RIGHT     = 8,
+    R_ALL       = 15
 } RESIZE_ID;    
 
 typedef struct {
    ACTION id;
-   BOOL   (*rtn)(OBJPTR, void *, void *);
+   BOOL   (*rtn)( OBJPTR, void *, void * );
 } DISPATCH_ITEM;
 
 #endif

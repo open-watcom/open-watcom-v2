@@ -1,0 +1,79 @@
+.387
+		PUBLIC	multiply_
+DGROUP		GROUP	CONST,CONST2,_DATA
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+multiply_:
+    mov       ax,3
+    push      ax
+    xor       ax,ax
+L$1:
+    test      word ptr 2[di],8000H
+    jne       L$2
+    shl       word ptr [di],1
+    rcl       word ptr 2[di],1
+    shl       word ptr [si],1
+    rcl       word ptr 2[si],1
+    rcl       word ptr 4[si],1
+    rcl       word ptr 6[si],1
+    rcl       ax,1
+    jmp       L$1
+L$2:
+    mov       bx,ax
+    mov       cx,0ffffH
+    mul       cx
+    add       ax,bx
+    adc       dx,0
+    add       ax,word ptr 6[si]
+    adc       dx,0
+    mov       cx,dx
+    mov       bx,ax
+    div       word ptr 2[di]
+    push      ax
+    mul       word ptr 2[di]
+    sub       bx,ax
+    sbb       cx,dx
+    pop       ax
+    mov       word ptr 6[si],ax
+    mul       word ptr [di]
+    test      cx,cx
+    jne       L$5
+L$3:
+    cmp       dx,bx
+    jb        L$5
+    ja        L$4
+    cmp       ax,word ptr 4[si]
+    jbe       L$5
+L$4:
+    dec       word ptr 6[si]
+    sub       ax,word ptr [di]
+    sbb       dx,0
+    add       bx,word ptr 2[di]
+    adc       cx,0
+    jmp       L$3
+L$5:
+    sub       word ptr 4[si],ax
+    sbb       bx,dx
+    mov       word ptr 6[si],bx
+    sbb       cx,0
+    pop       dx
+    dec       dx
+    cmp       dx,2
+    je        L$6
+    mov       word ptr 8[si],cx
+    test      dx,dx
+    je        L$7
+L$6:
+    sub       si,2
+    mov       ax,bx
+    push      dx
+    jmp       L$2
+L$7:
+_TEXT		ENDS
+CONST		SEGMENT	WORD PUBLIC USE16 'DATA'
+CONST		ENDS
+CONST2		SEGMENT	WORD PUBLIC USE16 'DATA'
+CONST2		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

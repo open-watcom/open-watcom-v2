@@ -1,40 +1,41 @@
-uchmd.obj    : ..\..\..\c\uchmd.c    ..\..\..\c\chmod.c
-uchmdos2.obj : ..\..\..\c\uchmdos2.c ..\..\..\c\chmodos2.c
-uchmdwnt.obj : ..\..\..\c\uchmdwnt.c ..\..\..\c\chmodwnt.c
+uchmd.obj    : ../../../c/uchmd.c    ../../../c/chmod.c
+uchmdos2.obj : ../../../c/uchmdos2.c ../../../c/chmodos2.c
+uchmdwnt.obj : ../../../c/uchmdwnt.c ../../../c/chmodwnt.c
 
-ufindfir.obj : ..\..\..\c\ufindfir.c ..\..\..\c\findfirs.c
-64findfi.obj : ..\..\..\c\64findfi.c ..\..\..\c\findfirs.c
-u64findf.obj : ..\..\..\c\u64findf.c ..\..\..\c\ufindfir.c ..\..\..\c\findfirs.c
+ufindfir.obj : ../../../c/ufindfir.c ../../../c/findfirs.c
+64findfi.obj : ../../../c/64findfi.c ../../../c/findfirs.c
+u64findf.obj : ../../../c/u64findf.c ../../../c/ufindfir.c ../../../c/findfirs.c
 
-ufindnex.obj : ..\..\..\c\ufindnex.c ..\..\..\c\findnext.c
-64findne.obj : ..\..\..\c\64findne.c ..\..\..\c\findnext.c
-u64findn.obj : ..\..\..\c\u64findn.c ..\..\..\c\ufindnex.c ..\..\..\c\findnext.c
+ufindnex.obj : ../../../c/ufindnex.c ../../../c/findnext.c
+64findne.obj : ../../../c/64findne.c ../../../c/findnext.c
+u64findn.obj : ../../../c/u64findn.c ../../../c/ufindnex.c ../../../c/findnext.c
 
-urenm.obj    : ..\..\..\c\urenm.c    ..\..\..\c\renam.c
-urenmos2.obj : ..\..\..\c\urenmos2.c ..\..\..\c\renamos2.c
-urenmwnt.obj : ..\..\..\c\urenmwnt.c ..\..\..\c\renamwnt.c
+urenm.obj    : ../../../c/urenm.c    ../../../c/renam.c
+urenmos2.obj : ../../../c/urenmos2.c ../../../c/renamos2.c
+urenmwnt.obj : ../../../c/urenmwnt.c ../../../c/renamwnt.c
 
-uaccs.obj    : ..\..\..\c\uaccs.c    ..\..\..\c\accss.c
-uaccsos2.obj : ..\..\..\c\uaccsos2.c ..\..\..\c\accssos2.c
-uaccswnt.obj : ..\..\..\c\uaccswnt.c ..\..\..\c\accsswnt.c
+uaccs.obj    : ../../../c/uaccs.c    ../../../c/accss.c
+uaccsos2.obj : ../../../c/uaccsos2.c ../../../c/accssos2.c
+uaccswnt.obj : ../../../c/uaccswnt.c ../../../c/accsswnt.c
 
-umktemp.obj  : ..\..\..\c\umktemp.c  ..\..\..\c\mktemp.c
+umktemp.obj  : ../../../c/umktemp.c  ../../../c/mktemp.c
 
-uremove.obj  : ..\..\..\c\uremove.c  ..\..\..\c\remove.c
+uremove.obj  : ../../../c/uremove.c  ../../../c/remove.c
 
-ustat.obj    : ..\..\..\c\ustat.c    ..\..\..\c\stat.c
-u64stat.obj  : ..\..\..\c\u64stat.c  ..\..\..\c\64stat.c
+ustat.obj    : ../../../c/ustat.c    ../../../c/stat.c
+u64stat.obj  : ../../../c/u64stat.c  ../../../c/64stat.c
 
-ustatos2.obj : ..\..\..\c\ustatos2.c ..\..\..\c\statos2.c
+ustatos2.obj : ../../../c/ustatos2.c ../../../c/statos2.c
 
-ustatwnt.obj : ..\..\..\c\ustatwnt.c ..\..\..\c\statwnt.c
-64stawnt.obj : ..\..\..\c\64stawnt.c ..\..\..\c\statwnt.c
-u64stwnt.obj : ..\..\..\c\u64stwnt.c ..\..\..\c\ustatwnt.c ..\..\..\c\statwnt.c
+ustatwnt.obj : ../../../c/ustatwnt.c ../../../c/statwnt.c
+64stawnt.obj : ../../../c/64stawnt.c ../../../c/statwnt.c
+u64stwnt.obj : ../../../c/u64stwnt.c ../../../c/ustatwnt.c ../../../c/statwnt.c
 
-utempnam.obj : ..\..\..\c\utempnam.c ..\..\..\c\tempnam.c
+utempnam.obj : ../../../c/utempnam.c ../../../c/tempnam.c
 
-utmpnm.obj   : ..\..\..\c\utmpnm.c   ..\..\..\c\tmpnm.c
+utmpnm.obj   : ../../../c/utmpnm.c   ../../../c/tmpnm.c
+utmpnm_s.obj : ../../../c/utmpnm_s.c   ../../../c/tmpnm_s.c
 
-uutim.obj    : ..\..\..\c\uutim.c    ..\..\..\c\utime.c
-uutimos2.obj : ..\..\..\c\uutimos2.c ..\..\..\c\utimeos2.c
-uutimwnt.obj : ..\..\..\c\uutimwnt.c ..\..\..\c\utimewnt.c
+uutim.obj    : ../../../c/uutim.c    ../../../c/utime.c
+uutimos2.obj : ../../../c/uutimos2.c ../../../c/utimeos2.c
+uutimwnt.obj : ../../../c/uutimwnt.c ../../../c/utimewnt.c

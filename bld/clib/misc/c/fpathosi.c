@@ -44,7 +44,7 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-extern __GetFullPathName( char *buff, const char *path, size_t size );
+extern void __GetFullPathName( char *buff, const char *path, size_t size );
 #pragma aux __GetFullPathName = \
         "mov    AH,60h" \
         _INT_21         \

@@ -1,0 +1,1474 @@
+/*
+ *  ndistapi.h  NDIS telephony definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NDIS_TAPI_
+#define _NDIS_TAPI_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef ULONG_PTR   HTAPI_LINE;
+typedef ULONG_PTR   HDRV_LINE;
+typedef ULONG_PTR   HTAPI_CALL;
+typedef ULONG_PTR   HDRV_CALL;
+
+/* NDIS TAPI version number */
+#ifndef NDIS_TAPI_CURRENT_VERSION
+    #define NDIS_TAPI_CURRENT_VERSION   0x00010003
+#endif
+#define CO_TAPI_VERSION                 NDIS_TAPI_CURRENT_VERSION
+
+/* NDIS TAPI status codes */
+#define NDIS_STATUS_TAPI_ADDRESSBLOCKED                 0xC0012000L
+#define NDIS_STATUS_TAPI_BEARERMODEUNAVAIL              0xC0012001L
+#define NDIS_STATUS_TAPI_CALLUNAVAIL                    0xC0012002L
+#define NDIS_STATUS_TAPI_DIALBILLING                    0xC0012003L
+#define NDIS_STATUS_TAPI_DIALDIALTONE                   0xC0012004L
+#define NDIS_STATUS_TAPI_DIALPROMPT                     0xC0012005L
+#define NDIS_STATUS_TAPI_DIALQUIET                      0xC0012006L
+#define NDIS_STATUS_TAPI_INCOMPATIBLEEXTVERSION         0xC0012007L
+#define NDIS_STATUS_TAPI_INUSE                          0xC0012008L
+#define NDIS_STATUS_TAPI_INVALADDRESS                   0xC0012009L
+#define NDIS_STATUS_TAPI_INVALADDRESSID                 0xC001200AL
+#define NDIS_STATUS_TAPI_INVALADDRESSMODE               0xC001200BL
+#define NDIS_STATUS_TAPI_INVALBEARERMODE                0xC001200CL
+#define NDIS_STATUS_TAPI_INVALCALLHANDLE                0xC001200DL
+#define NDIS_STATUS_TAPI_INVALCALLPARAMS                0xC001200EL
+#define NDIS_STATUS_TAPI_INVALCALLSTATE                 0xC001200FL
+#define NDIS_STATUS_TAPI_INVALDEVICECLASS               0xC0012010L
+#define NDIS_STATUS_TAPI_INVALLINEHANDLE                0xC0012011L
+#define NDIS_STATUS_TAPI_INVALLINESTATE                 0xC0012012L
+#define NDIS_STATUS_TAPI_INVALMEDIAMODE                 0xC0012013L
+#define NDIS_STATUS_TAPI_INVALRATE                      0xC0012014L
+#define NDIS_STATUS_TAPI_NODRIVER                       0xC0012015L
+#define NDIS_STATUS_TAPI_OPERATIONUNAVAIL               0xC0012016L
+#define NDIS_STATUS_TAPI_RATEUNAVAIL                    0xC0012017L
+#define NDIS_STATUS_TAPI_RESOURCEUNAVAIL                0xC0012018L
+#define NDIS_STATUS_TAPI_STRUCTURETOOSMALL              0xC0012019L
+#define NDIS_STATUS_TAPI_USERUSERINFOTOOBIG             0xC001201AL
+#define NDIS_STATUS_TAPI_ALLOCATED                      0xC001201BL
+#define NDIS_STATUS_TAPI_INVALADDRESSSTATE              0xC001201CL
+#define NDIS_STATUS_TAPI_INVALPARAM                     0xC001201DL
+#define NDIS_STATUS_TAPI_NODEVICE                       0xC001201EL
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_NORMAL          0xC0012020L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_UNKNOWN         0xC0012021L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_REJECT          0xC0012022L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_PICKUP          0xC0012023L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_FORWARDED       0xC0012024L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_BUSY            0xC0012025L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_NOANSWER        0xC0012026L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_BADADDRESS      0xC0012027L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_UNREACHABLE     0xC0012028L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_CONGESTION      0xC0012029L
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_INCOMPATIBLE    0xC001202AL
+#define NDIS_STATUS_TAPI_DISCONNECTMODE_UNAVAIL         0xC001202BL
+#define NDIS_STATUS_TAPI_RECV_DIGIT                     0x40010020L
+
+/* Line messages */
+#define LINE_ADDRESSSTATE           0L
+#define LINE_CALLINFO               1L
+#define LINE_CALLSTATE              2L
+#define LINE_CLOSE                  3L
+#define LINE_DEVSPECIFIC            4L
+#define LINE_DEVSPECIFICFEATURE     5L
+#define LINE_GATHERDIGITS           6L
+#define LINE_GENERATE               7L
+#define LINE_LINEDEVSTATE           8L
+#define LINE_MONITORDIGITS          9L
+#define LINE_MONITORMEDIA           10L
+#define LINE_MONITORTONE            11L
+#define LINE_REPLY                  12L
+#define LINE_REQUEST                13L
+#define LINE_CREATE                 19L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINE_AGENTSPECIFIC      21L
+    #define LINE_AGENTSTATUS        22L
+    #define LINE_APPNEWCALL         23L
+    #define LINE_PROXYREQUEST       24L
+    #define LINE_REMOVE             25L
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020002)
+    #define LINE_AGENTSESSIONSTATUS 27L
+    #define LINE_QUEUESTATUS        28L
+    #define LINE_AGENTSTATUSEX      29L
+    #define LINE_GROUPSTATUS        30L
+    #define LINE_PROXYSTATUS        31L
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINE_APPNEWCALLHUB      32L
+    #define LINE_CALLHUBCLOSE       33L
+    #define LINE_DEVSPECIFICEX      34L
+#endif
+#define TSPI_MESSAGE_BASE           500L
+#define LINE_NEWCALL                (TSPI_MESSAGE_BASE + 0)
+#define LINE_CALLDEVSPECIFIC        (TSPI_MESSAGE_BASE + 1)
+
+/* String formats */
+#ifndef __NDISTAPI_STRINGFORMATS_DEFINED
+    #define __NDISTAPI_STRINGFORMATS_DEFINED
+    #define STRINGFORMAT_ASCII      0x00000001L
+    #define STRINGFORMAT_DBCS       0x00000002L
+    #define STRINGFORMAT_UNICODE    0x00000003L
+    #define STRINGFORMAT_BINARY     0x00000004L
+#endif
+
+/* Line address capability flags */
+#define LINEADDRCAPFLAGS_FWDNUMRINGS                    0x00000001L
+#define LINEADDRCAPFLAGS_PICKUPGROUPID                  0x00000002L
+#define LINEADDRCAPFLAGS_SECURE                         0x00000004L
+#define LINEADDRCAPFLAGS_BLOCKIDDEFAULT                 0x00000008L
+#define LINEADDRCAPFLAGS_BLOCKIDOVERRIDE                0x00000010L
+#define LINEADDRCAPFLAGS_DIALED                         0x00000020L
+#define LINEADDRCAPFLAGS_ORIGOFFHOOK                    0x00000040L
+#define LINEADDRCAPFLAGS_DESTOFFHOOK                    0x00000080L
+#define LINEADDRCAPFLAGS_FWDCONSULT                     0x00000100L
+#define LINEADDRCAPFLAGS_SETUPCONFNULL                  0x00000200L
+#define LINEADDRCAPFLAGS_AUTORECONNECT                  0x00000400L
+#define LINEADDRCAPFLAGS_COMPLETIONID                   0x00000800L
+#define LINEADDRCAPFLAGS_TRANSFERHELD                   0x00001000L
+#define LINEADDRCAPFLAGS_TRANSFERMAKE                   0x00002000L
+#define LINEADDRCAPFLAGS_CONFERENCEHELD                 0x00004000L
+#define LINEADDRCAPFLAGS_CONFERENCEMAKE                 0x00008000L
+#define LINEADDRCAPFLAGS_PARTIALDIAL                    0x00010000L
+#define LINEADDRCAPFLAGS_FWDSTATUSVALID                 0x00020000L
+#define LINEADDRCAPFLAGS_FWDINTEXTADDR                  0x00040000L
+#define LINEADDRCAPFLAGS_FWDBUSYNAADDR                  0x00080000L
+#define LINEADDRCAPFLAGS_ACCEPTTOALERT                  0x00100000L
+#define LINEADDRCAPFLAGS_CONFDROP                       0x00200000L
+#define LINEADDRCAPFLAGS_PICKUPCALLWAIT                 0x00400000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINEADDRCAPFLAGS_PREDICTIVEDIALER           0x00800000L
+    #define LINEADDRCAPFLAGS_QUEUE                      0x01000000L
+    #define LINEADDRCAPFLAGS_ROUTEPOINT                 0x02000000L
+    #define LINEADDRCAPFLAGS_HOLDMAKESNEW               0x04000000L
+    #define LINEADDRCAPFLAGS_NOINTERNALCALLS            0x08000000L
+    #define LINEADDRCAPFLAGS_NOEXTERNALCALLS            0x10000000L
+    #define LINEADDRCAPFLAGS_SETCALLINGID               0x20000000L
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINEADDRCAPFLAGS_ACDGROUP                   0x40000000L
+    #define LINEADDRCAPFLAGS_NOPSTNADDRESSTRANSLATION   0x80000000L
+#endif
+
+/* Line address modes */
+#define LINEADDRESSMODE_ADDRESSID       0x00000001L
+#define LINEADDRESSMODE_DIALABLEADDR    0x00000002L
+
+/* Line address sharing flags */
+#define LINEADDRESSSHARING_PRIVATE          0x00000001L
+#define LINEADDRESSSHARING_BRIDGEDEXCL      0x00000002L
+#define LINEADDRESSSHARING_BRIDGEDNEW       0x00000004L
+#define LINEADDRESSSHARING_BRIDGEDSHARED    0x00000008L
+#define LINEADDRESSSHARING_MONITORED        0x00000010L
+
+/* Line address states */
+#define LINEADDRESSSTATE_OTHER          0x00000001L
+#define LINEADDRESSSTATE_DEVSPECIFIC    0x00000002L
+#define LINEADDRESSSTATE_INUSEZERO      0x00000004L
+#define LINEADDRESSSTATE_INUSEONE       0x00000008L
+#define LINEADDRESSSTATE_INUSEMANY      0x00000010L
+#define LINEADDRESSSTATE_NUMCALLS       0x00000020L
+#define LINEADDRESSSTATE_FORWARD        0x00000040L
+#define LINEADDRESSSTATE_TERMINALS      0x00000080L
+
+/* Line address types */
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINEADDRESSTYPE_PHONENUMBER 0x00000001L
+    #define LINEADDRESSTYPE_SDP         0x00000002L
+    #define LINEADDRESSTYPE_EMAILNAME   0x00000004L
+    #define LINEADDRESSTYPE_DOMAINNAME  0x00000008L
+    #define LINEADDRESSTYPE_IPADDRESS   0x00000010L
+#endif
+
+/* Line address features */
+#define LINEADDRFEATURE_FORWARD             0x00000001L
+#define LINEADDRFEATURE_MAKECALL            0x00000002L
+#define LINEADDRFEATURE_PICKUP              0x00000004L
+#define LINEADDRFEATURE_SETMEDIACONTROL     0x00000008L
+#define LINEADDRFEATURE_SETTERMINAL         0x00000010L
+#define LINEADDRFEATURE_SETUPCONF           0x00000020L
+#define LINEADDRFEATURE_UNCOMPLETECALL      0x00000040L
+#define LINEADDRFEATURE_UNPARK              0x00000080L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINEADDRFEATURE_PICKUPHELD      0x00000100L
+    #define LINEADDRFEATURE_PICKUPGROUP     0x00000200L
+    #define LINEADDRFEATURE_PICKUPDIRECT    0x00000400L
+    #define LINEADDRFEATURE_PICKUPWAITING   0x00000800L
+    #define LINEADDRFEATURE_FORWARDFWD      0x00001000L
+    #define LINEADDRFEATURE_FORWARDDND      0x00002000L
+#endif
+
+/* Line answer modes */
+#define LINEANSWERMODE_NONE 0x00000001L
+#define LINEANSWERMODE_DROP 0x00000002L
+#define LINEANSWERMODE_HOLD 0x00000004L
+
+/* Line bearer modes */
+#define LINEBEARERMODE_VOICE                0x00000001L
+#define LINEBEARERMODE_SPEECH               0x00000002L
+#define LINEBEARERMODE_MULTIUSE             0x00000004L
+#define LINEBEARERMODE_DATA                 0x00000008L
+#define LINEBEARERMODE_ALTSPEECHDATA        0x00000010L
+#define LINEBEARERMODE_NONCALLSIGNALING     0x00000020L
+#define LINEBEARERMODE_PASSTHROUGH          0x00000040L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINEBEARERMODE_RESTRICTEDDATA   0x00000080L
+#endif
+
+/* Line busy modes */
+#define LINEBUSYMODE_STATION    0x00000001L
+#define LINEBUSYMODE_TRUNK      0x00000002L
+#define LINEBUSYMODE_UNKNOWN    0x00000004L
+#define LINEBUSYMODE_UNAVAIL    0x00000008L
+
+/* Line call complete conditions */
+#define LINECALLCOMPLCOND_BUSY      0x00000001L
+#define LINECALLCOMPLCOND_NOANSWER  0x00000002L
+
+/* Line call complete modes */
+#define LINECALLCOMPLMODE_CAMPON    0x00000001L
+#define LINECALLCOMPLMODE_CALLBACK  0x00000002L
+#define LINECALLCOMPLMODE_INTRUDE   0x00000004L
+#define LINECALLCOMPLMODE_MESSAGE   0x00000008L
+
+/* Line call features */
+#define LINECALLFEATURE_ACCEPT              0x00000001L
+#define LINECALLFEATURE_ADDTOCONF           0x00000002L
+#define LINECALLFEATURE_ANSWER              0x00000004L
+#define LINECALLFEATURE_BLINDTRANSFER       0x00000008L
+#define LINECALLFEATURE_COMPLETECALL        0x00000010L
+#define LINECALLFEATURE_COMPLETETRANSF      0x00000020L
+#define LINECALLFEATURE_DIAL                0x00000040L
+#define LINECALLFEATURE_DROP                0x00000080L
+#define LINECALLFEATURE_GATHERDIGITS        0x00000100L
+#define LINECALLFEATURE_GENERATEDIGITS      0x00000200L
+#define LINECALLFEATURE_GENERATETONE        0x00000400L
+#define LINECALLFEATURE_HOLD                0x00000800L
+#define LINECALLFEATURE_MONITORDIGITS       0x00001000L
+#define LINECALLFEATURE_MONITORMEDIA        0x00002000L
+#define LINECALLFEATURE_MONITORTONES        0x00004000L
+#define LINECALLFEATURE_PARK                0x00008000L
+#define LINECALLFEATURE_PREPAREADDCONF      0x00010000L
+#define LINECALLFEATURE_REDIRECT            0x00020000L
+#define LINECALLFEATURE_REMOVEFROMCONF      0x00040000L
+#define LINECALLFEATURE_SECURECALL          0x00080000L
+#define LINECALLFEATURE_SENDUSERUSER        0x00100000L
+#define LINECALLFEATURE_SETCALLPARAMS       0x00200000L
+#define LINECALLFEATURE_SETMEDIACONTROL     0x00400000L
+#define LINECALLFEATURE_SETTERMINAL         0x00800000L
+#define LINECALLFEATURE_SETUPCONF           0x01000000L
+#define LINECALLFEATURE_SETUPTRANSFER       0x02000000L
+#define LINECALLFEATURE_SWAPHOLD            0x04000000L
+#define LINECALLFEATURE_UNHOLD              0x08000000L
+#define LINECALLFEATURE_RELEASEUSERUSERINFO 0x10000000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINECALLFEATURE_SETTREATMENT    0x20000000L
+    #define LINECALLFEATURE_SETQOS          0x40000000L
+    #define LINECALLFEATURE_SETCALLDATA     0x80000000L
+#endif
+
+/* Line call information states */
+#define LINECALLINFOSTATE_OTHER         0x00000001L
+#define LINECALLINFOSTATE_DEVSPECIFIC   0x00000002L
+#define LINECALLINFOSTATE_BEARERMODE    0x00000004L
+#define LINECALLINFOSTATE_RATE          0x00000008L
+#define LINECALLINFOSTATE_MEDIAMODE     0x00000010L
+#define LINECALLINFOSTATE_APPSPECIFIC   0x00000020L
+#define LINECALLINFOSTATE_CALLID        0x00000040L
+#define LINECALLINFOSTATE_RELATEDCALLID 0x00000080L
+#define LINECALLINFOSTATE_ORIGIN        0x00000100L
+#define LINECALLINFOSTATE_REASON        0x00000200L
+#define LINECALLINFOSTATE_COMPLETIONID  0x00000400L
+#define LINECALLINFOSTATE_NUMOWNERINCR  0x00000800L
+#define LINECALLINFOSTATE_NUMOWNERDECR  0x00001000L
+#define LINECALLINFOSTATE_NUMMONITORS   0x00002000L
+#define LINECALLINFOSTATE_TRUNK         0x00004000L
+#define LINECALLINFOSTATE_CALLERID      0x00008000L
+#define LINECALLINFOSTATE_CALLEDID      0x00010000L
+#define LINECALLINFOSTATE_CONNECTEDID   0x00020000L
+#define LINECALLINFOSTATE_REDIRECTIONID 0x00040000L
+#define LINECALLINFOSTATE_REDIRECTINGID 0x00080000L
+#define LINECALLINFOSTATE_DISPLAY       0x00100000L
+#define LINECALLINFOSTATE_USERUSERINFO  0x00200000L
+#define LINECALLINFOSTATE_HIGHLEVELCOMP 0x00400000L
+#define LINECALLINFOSTATE_LOWLEVELCOMP  0x00800000L
+#define LINECALLINFOSTATE_CHARGINGINFO  0x01000000L
+#define LINECALLINFOSTATE_TERMINAL      0x02000000L
+#define LINECALLINFOSTATE_DIALPARAMS    0x04000000L
+#define LINECALLINFOSTATE_MONITORMODES  0x08000000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINECALLINFOSTATE_TREATMENT 0x10000000L
+    #define LINECALLINFOSTATE_QOS       0x20000000L
+    #define LINECALLINFOSTATE_CALLDATA  0x40000000L
+#endif
+
+/* Line call origins */
+#define LINECALLORIGIN_OUTBOUND     0x00000001L
+#define LINECALLORIGIN_INTERNAL     0x00000002L
+#define LINECALLORIGIN_EXTERNAL     0x00000004L
+#define LINECALLORIGIN_UNKNOWN      0x00000010L
+#define LINECALLORIGIN_UNAVAIL      0x00000020L
+#define LINECALLORIGIN_CONFERENCE   0x00000040L
+#define LINECALLORIGIN_INBOUND      0x00000080L
+
+/* Line call parameter flags */
+#define LINECALLPARAMFLAGS_SECURE               0x00000001L
+#define LINECALLPARAMFLAGS_IDLE                 0x00000002L
+#define LINECALLPARAMFLAGS_BLOCKID              0x00000004L
+#define LINECALLPARAMFLAGS_ORIGOFFHOOK          0x00000008L
+#define LINECALLPARAMFLAGS_DESTOFFHOOK          0x00000010L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINECALLPARAMFLAGS_NOHOLDCONFERENCE 0x00000020L
+    #define LINECALLPARAMFLAGS_PREDICTIVEDIAL   0x00000040L
+    #define LINECALLPARAMFLAGS_ONESTEPTRANSFER  0x00000080L
+#endif
+
+/* Line call party identifiers */
+#define LINECALLPARTYID_BLOCKED     0x00000001L
+#define LINECALLPARTYID_OUTOFAREA   0x00000002L
+#define LINECALLPARTYID_NAME        0x00000004L
+#define LINECALLPARTYID_ADDRESS     0x00000008L
+#define LINECALLPARTYID_PARTIAL     0x00000010L
+#define LINECALLPARTYID_UNKNOWN     0x00000020L
+#define LINECALLPARTYID_UNAVAIL     0x00000040L
+
+/* Line call privileges */
+#define LINECALLPRIVILEGE_NONE      0x00000001L
+#define LINECALLPRIVILEGE_MONITOR   0x00000002L
+#define LINECALLPRIVILEGE_OWNER     0x00000004L
+
+/* Line call reasons */
+#define LINECALLREASON_DIRECT           0x00000001L
+#define LINECALLREASON_FWDBUSY          0x00000002L
+#define LINECALLREASON_FWDNOANSWER      0x00000004L
+#define LINECALLREASON_FWDUNCOND        0x00000008L
+#define LINECALLREASON_PICKUP           0x00000010L
+#define LINECALLREASON_UNPARK           0x00000020L
+#define LINECALLREASON_REDIRECT         0x00000040L
+#define LINECALLREASON_CALLCOMPLETION   0x00000080L
+#define LINECALLREASON_TRANSFER         0x00000100L
+#define LINECALLREASON_REMINDER         0x00000200L
+#define LINECALLREASON_UNKNOWN          0x00000400L
+#define LINECALLREASON_UNAVAIL          0x00000800L
+#define LINECALLREASON_INTRUDE          0x00001000L
+#define LINECALLREASON_PARKED           0x00002000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINECALLREASON_CAMPEDON     0x00004000L
+    #define LINECALLREASON_ROUTEREQUEST 0x00008000L
+#endif
+
+/* Line call select values */
+#define LINECALLSELECT_LINE         0x00000001L
+#define LINECALLSELECT_ADDRESS      0x00000002L
+#define LINECALLSELECT_CALL         0x00000004L
+#if (NDIS_TAPI_CURRENT_VERSION > 0x00020000)
+    #define LINECALLSELECT_DEVICEID 0x00000008L
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINECALLSELECT_CALLID   0x00000010L
+#endif
+
+/* Line call states */
+#define LINECALLSTATE_IDLE                  0x00000001L
+#define LINECALLSTATE_OFFERING              0x00000002L
+#define LINECALLSTATE_ACCEPTED              0x00000004L
+#define LINECALLSTATE_DIALTONE              0x00000008L
+#define LINECALLSTATE_DIALING               0x00000010L
+#define LINECALLSTATE_RINGBACK              0x00000020L
+#define LINECALLSTATE_BUSY                  0x00000040L
+#define LINECALLSTATE_SPECIALINFO           0x00000080L
+#define LINECALLSTATE_CONNECTED             0x00000100L
+#define LINECALLSTATE_PROCEEDING            0x00000200L
+#define LINECALLSTATE_ONHOLD                0x00000400L
+#define LINECALLSTATE_CONFERENCED           0x00000800L
+#define LINECALLSTATE_ONHOLDPENDCONF        0x00001000L
+#define LINECALLSTATE_ONHOLDPENDTRANSFER    0x00002000L
+#define LINECALLSTATE_DISCONNECTED          0x00004000L
+#define LINECALLSTATE_UNKNOWN               0x00008000L
+
+/* Line device capability flags */
+#define LINEDEVCAPFLAGS_CROSSADDRCONF       0x00000001L
+#define LINEDEVCAPFLAGS_HIGHLEVCOMP         0x00000002L
+#define LINEDEVCAPFLAGS_LOWLEVCOMP          0x00000004L
+#define LINEDEVCAPFLAGS_MEDIACONTROL        0x00000008L
+#define LINEDEVCAPFLAGS_MULTIPLEADDR        0x00000010L
+#define LINEDEVCAPFLAGS_CLOSEDROP           0x00000020L
+#define LINEDEVCAPFLAGS_DIALBILLING         0x00000040L
+#define LINEDEVCAPFLAGS_DIALQUIET           0x00000080L
+#define LINEDEVCAPFLAGS_DIALDIALTONE        0x00000100L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINEDEVCAPFLAGS_MSP             0x00000200L
+    #define LINEDEVCAPFLAGS_CALLHUB         0x00000400L
+    #define LINEDEVCAPFLAGS_CALLHUBTRACKING 0x00000800L
+    #define LINEDEVCAPFLAGS_PRIVATEOBJECTS  0x00001000L
+#endif
+
+/* Line device states */
+#define LINEDEVSTATE_OTHER          0x00000001L
+#define LINEDEVSTATE_RINGING        0x00000002L
+#define LINEDEVSTATE_CONNECTED      0x00000004L
+#define LINEDEVSTATE_DISCONNECTED   0x00000008L
+#define LINEDEVSTATE_MSGWAITON      0x00000010L
+#define LINEDEVSTATE_MSGWAITOFF     0x00000020L
+#define LINEDEVSTATE_INSERVICE      0x00000040L
+#define LINEDEVSTATE_OUTOFSERVICE   0x00000080L
+#define LINEDEVSTATE_MAINTENANCE    0x00000100L
+#define LINEDEVSTATE_OPEN           0x00000200L
+#define LINEDEVSTATE_CLOSE          0x00000400L
+#define LINEDEVSTATE_NUMCALLS       0x00000800L
+#define LINEDEVSTATE_NUMCOMPLETIONS 0x00001000L
+#define LINEDEVSTATE_TERMINALS      0x00002000L
+#define LINEDEVSTATE_ROAMMODE       0x00004000L
+#define LINEDEVSTATE_BATTERY        0x00008000L
+#define LINEDEVSTATE_SIGNAL         0x00010000L
+#define LINEDEVSTATE_DEVSPECIFIC    0x00020000L
+#define LINEDEVSTATE_REINIT         0x00040000L
+#define LINEDEVSTATE_LOCK           0x00080000L
+
+/* Line device status flags */
+#define LINEDEVSTATUSFLAGS_CONNECTED    0x00000001L
+#define LINEDEVSTATUSFLAGS_MSGWAIT      0x00000002L
+#define LINEDEVSTATUSFLAGS_INSERVICE    0x00000004L
+#define LINEDEVSTATUSFLAGS_LOCKED       0x00000008L
+
+/* Line dial tone modes */
+#define LINEDIALTONEMODE_NORMAL     0x00000001L
+#define LINEDIALTONEMODE_SPECIAL    0x00000002L
+#define LINEDIALTONEMODE_INTERNAL   0x00000004L
+#define LINEDIALTONEMODE_EXTERNAL   0x00000008L
+#define LINEDIALTONEMODE_UNKNOWN    0x00000010L
+#define LINEDIALTONEMODE_UNAVAIL    0x00000020L
+
+/* Line digit modes */
+#define LINEDIGITMODE_PULSE     0x00000001L
+#define LINEDIGITMODE_DTMF      0x00000002L
+#define LINEDIGITMODE_DTMFEND   0x00000004L
+
+/* Line disconnect modes */
+#define LINEDISCONNECTMODE_NORMAL               0x00000001L
+#define LINEDISCONNECTMODE_UNKNOWN              0x00000002L
+#define LINEDISCONNECTMODE_REJECT               0x00000004L
+#define LINEDISCONNECTMODE_PICKUP               0x00000008L
+#define LINEDISCONNECTMODE_FORWARDED            0x00000010L
+#define LINEDISCONNECTMODE_BUSY                 0x00000020L
+#define LINEDISCONNECTMODE_NOANSWER             0x00000040L
+#define LINEDISCONNECTMODE_BADADDRESS           0x00000080L
+#define LINEDISCONNECTMODE_UNREACHABLE          0x00000100L
+#define LINEDISCONNECTMODE_CONGESTION           0x00000200L
+#define LINEDISCONNECTMODE_INCOMPATIBLE         0x00000400L
+#define LINEDISCONNECTMODE_UNAVAIL              0x00000800L
+#define LINEDISCONNECTMODE_NODIALTONE           0x00001000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINEDISCONNECTMODE_NUMBERCHANGED    0x00002000L
+    #define LINEDISCONNECTMODE_OUTOFORDER       0x00004000L
+    #define LINEDISCONNECTMODE_TEMPFAILURE      0x00008000L
+    #define LINEDISCONNECTMODE_QOSUNAVAIL       0x00010000L
+    #define LINEDISCONNECTMODE_BLOCKED          0x00020000L
+    #define LINEDISCONNECTMODE_DONOTDISTURB     0x00040000L
+    #define LINEDISCONNECTMODE_CANCELLED        0x00080000L
+#endif
+
+/* Line features */
+#define LINEFEATURE_DEVSPECIFIC         0x00000001L
+#define LINEFEATURE_DEVSPECIFICFEAT     0x00000002L
+#define LINEFEATURE_FORWARD             0x00000004L
+#define LINEFEATURE_MAKECALL            0x00000008L
+#define LINEFEATURE_SETMEDIACONTROL     0x00000010L
+#define LINEFEATURE_SETTERMINAL         0x00000020L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINEFEATURE_SETDEVSTATUS    0x00000040L
+    #define LINEFEATURE_FORWARDFWD      0x00000080L
+    #define LINEFEATURE_FORWARDDND      0x00000100L
+#endif
+
+/* Line forward modes */
+#define LINEFORWARDMODE_UNCOND          0x00000001L
+#define LINEFORWARDMODE_UNCONDINTERNAL  0x00000002L
+#define LINEFORWARDMODE_UNCONDEXTERNAL  0x00000004L
+#define LINEFORWARDMODE_UNCONDSPECIFIC  0x00000008L
+#define LINEFORWARDMODE_BUSY            0x00000010L
+#define LINEFORWARDMODE_BUSYINTERNAL    0x00000020L
+#define LINEFORWARDMODE_BUSYEXTERNAL    0x00000040L
+#define LINEFORWARDMODE_BUSYSPECIFIC    0x00000080L
+#define LINEFORWARDMODE_NOANSW          0x00000100L
+#define LINEFORWARDMODE_NOANSWINTERNAL  0x00000200L
+#define LINEFORWARDMODE_NOANSWEXTERNAL  0x00000400L
+#define LINEFORWARDMODE_NOANSWSPECIFIC  0x00000800L
+#define LINEFORWARDMODE_BUSYNA          0x00001000L
+#define LINEFORWARDMODE_BUSYNAINTERNAL  0x00002000L
+#define LINEFORWARDMODE_BUSYNAEXTERNAL  0x00004000L
+#define LINEFORWARDMODE_BUSYNASPECIFIC  0x00008000L
+
+/* Line gather terms */
+#define LINEGATHERTERM_BUFFERFULL   0x00000001L
+#define LINEGATHERTERM_TERMDIGIT    0x00000002L
+#define LINEGATHERTERM_FIRSTTIMEOUT 0x00000004L
+#define LINEGATHERTERM_INTERTIMEOUT 0x00000008L
+#define LINEGATHERTERM_CANCEL       0x00000010L
+
+/* Line generate terms */
+#define LINEGENERATETERM_DONE   0x00000001L
+#define LINEGENERATETERM_CANCEL 0x00000002L
+
+/* Line media control values */
+#define LINEMEDIACONTROL_NONE           0x00000001L
+#define LINEMEDIACONTROL_START          0x00000002L
+#define LINEMEDIACONTROL_RESET          0x00000004L
+#define LINEMEDIACONTROL_MEDIA          0x00000008L
+#define LINEMEDIACONTROL_RESUME         0x00000010L
+#define LINEMEDIACONTROL_RATEUP         0x00000020L
+#define LINEMEDIACONTROL_RATEDOWN       0x00000040L
+#define LINEMEDIACONTROL_RATENORMAL     0x00000080L
+#define LINEMEDIACONTROL_VOLUMEUP       0000000100L
+#define LINEMEDIACONTROL_VOLUMEDOWN     0x00000200L
+#define LINEMEDIACONTROL_VOLUMENORMAL   0x00000400L
+
+/* Line media modes */
+#define LINEMEDIAMODE_UNKNOWN           0x00000002L
+#define LINEMEDIAMODE_INTERACTIVEVOICE  0x00000004L
+#define LINEMEDIAMODE_AUTOMATEDVOICE    0x00000008L
+#define LINEMEDIAMODE_DATAMODEM         0x00000010L
+#define LINEMEDIAMODE_G3FAX             0x00000020L
+#define LINEMEDIAMODE_TDD               0x00000040L
+#define LINEMEDIAMODE_G4FAX             0x00000080L
+#define LINEMEDIAMODE_DIGITALDATA       0x00000100L
+#define LINEMEDIAMODE_TELETEX           0x00000200L
+#define LINEMEDIAMODE_VIDEOTEX          0x00000400L
+#define LINEMEDIAMODE_TELEX             0x00000800L
+#define LINEMEDIAMODE_MIXED             0x00001000L
+#define LINEMEDIAMODE_ADSI              0x00002000L
+#define LINEMEDIAMODE_VOICEVIEW         0x00004000L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020001)
+    #define LINEMEDIAMODE_VIDEO         0x00008000L
+    #define LAST_LINEMEDIAMODE          0x00008000L
+#else
+    #define LAST_LINEMEDIAMODE          0x00004000L
+#endif
+
+/* Line park modes */
+#define LINEPARKMODE_DIRECTED       0x00000001L
+#define LINEPARKMODE_NONDIRECTED    0x00000002L
+
+/* Line remove from conference values */
+#define LINEREMOVEFROMCONF_NONE 0x00000001L
+#define LINEREMOVEFROMCONF_LAST 0x00000002L
+#define LINEREMOVEFROMCONF_ANY  0x00000003L
+
+/* Line request modes */
+#define LINEREQUESTMODE_MAKECALL    0x00000001L
+#define LINEREQUESTMODE_MEDIACALL   0x00000002L
+#define LINEREQUESTMODE_DROP        0x00000004L
+#define LAST_LINEREQUESTMODE        LINEREQUESTMODE_MEDIACALL
+
+/* Line roam modes */
+#define LINEROAMMODE_UNKNOWN    0x00000001L
+#define LINEROAMMODE_UNAVAIL    0x00000002L
+#define LINEROAMMODE_HOME       0x00000004L
+#define LINEROAMMODE_ROAMA      0x00000008L
+#define LINEROAMMODE_ROAMB      0x00000010L
+
+/* Line special information values */
+#define LINESPECIALINFO_NOCIRCUIT   0x00000001L
+#define LINESPECIALINFO_CUSTIRREG   0x00000002L
+#define LINESPECIALINFO_REORDER     0x00000004L
+#define LINESPECIALINFO_UNKNOWN     0x00000008L
+#define LINESPECIALINFO_UNAVAIL     0x00000010L
+
+/* Line term device values */
+#define LINETERMDEV_PHONE   0x00000001L
+#define LINETERMDEV_HEADSET 0x00000002L
+#define LINETERMDEV_SPEAKER 0x00000004L
+
+/* Line term modes */
+#define LINETERMMODE_BUTTONS        0x00000001L
+#define LINETERMMODE_LAMPS          0x00000002L
+#define LINETERMMODE_DISPLAY        0x00000004L
+#define LINETERMMODE_RINGER         0x00000008L
+#define LINETERMMODE_HOOKSWITCH     0x00000010L
+#define LINETERMMODE_MEDIATOLINE    0x00000020L
+#define LINETERMMODE_MEDIAFROMLINE  0x00000040L
+#define LINETERMMODE_MEDIABIDIRECT  0x00000080L
+
+/* Line term sharing */
+#define LINETERMSHARING_PRIVATE     0x00000001L
+#define LINETERMSHARING_SHAREDEXCL  0x00000002L
+#define LINETERMSHARING_SHAREDCONF  0x00000004L
+
+/* Line tone modes */
+#define LINETONEMODE_CUSTOM     0x00000001L
+#define LINETONEMODE_RINGBACK   0x00000002L
+#define LINETONEMODE_BUSY       0x00000004L
+#define LINETONEMODE_BEEP       0x00000008L
+#define LINETONEMODE_BILLING    0x00000010L
+
+/* Line transfer modes */
+#define LINETRANSFERMODE_TRANSFER   0x00000001L
+#define LINETRANSFERMODE_CONFERENCE 0x00000002L
+
+/* Line toll list options */
+#define LINETOLLLISTOPTION_ADD      0x00000001L
+#define LINETOLLLISTOPTION_REMOVE   0x00000002L
+
+/* Line translate options */
+#define LINETRANSLATEOPTION_CARDOVERRIDE    0x00000001L
+
+/* Line translate results */
+#define LINETRANSLATERESULT_CANONICAL           0x00000001L
+#define LINETRANSLATERESULT_INTERNATIONAL       0x00000002L
+#define LINETRANSLATERESULT_LONGDISTANCE        0x00000004L
+#define LINETRANSLATERESULT_LOCAL               0x00000008L
+#define LINETRANSLATERESULT_INTOLLLIST          0x00000010L
+#define LINETRANSLATERESULT_NOTINTOLLLIST       0x00000020L
+#define LINETRANSLATERESULT_DIALBILLING         0x00000040L
+#define LINETRANSLATERESULT_DIALQUIET           0x00000080L
+#define LINETRANSLATERESULT_DIALDIALTONE        0x00000100L
+#define LINETRANSLATERESULT_DIALPROMPT          0x00000200L
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    #define LINETRANSLATERESULT_VOICEDETECT     0x00000400L
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    #define LINETRANSLATERESULT_NOTRANSLATION   0x00000800L
+#endif
+
+/* TAPI call manager capability flags */
+#define CO_TAPI_FLAG_PER_LINE_CAPS  0x00000001L
+
+/* TAPI line capability flags */
+#define CO_TAPI_FLAG_PER_ADDRESS_CAPS   0x00000001L
+
+/* TAPI line and address identifier special values */
+#define CO_TAPI_LINE_ID_UNSPECIFIED     0xFFFFFFFFL
+#define CO_TAPI_ADDRESS_ID_UNSPECIFIED  0xFFFFFFFFL
+
+/* TAPI translate TAPI call flags */
+#define CO_TAPI_FLAG_OUTGOING_CALL          0x00000001L
+#define CO_TAPI_FLAG_INCOMING_CALL          0x00000002L
+#define CO_TAPI_FLAG_USE_DEFAULT_CALLPARAMS 0x00000004L
+
+/* Address family TAPI service access point type */
+#define AF_TAPI_SAP_TYPE    0x00008000L
+
+/* Line address capabilities */
+typedef struct _LINE_ADDRESS_CAPS {
+    ULONG   ulTotalSize;
+    ULONG   ulNeededSize;
+    ULONG   ulUsedSize;
+    ULONG   ulLineDeviceID;
+    ULONG   ulAddressSize;
+    ULONG   ulAddressOffset;
+    ULONG   ulDevSpecificSize;
+    ULONG   ulDevSpecificOffset;
+    ULONG   ulAddressSharing;
+    ULONG   ulAddressStates;
+    ULONG   ulCallInfoStates;
+    ULONG   ulCallerIDFlags;
+    ULONG   ulCalledIDFlags;
+    ULONG   ulConnectedIDFlags;
+    ULONG   ulRedirectionIDFlags;
+    ULONG   ulRedirectingIDFlags;
+    ULONG   ulCallStates;
+    ULONG   ulDialToneModes;
+    ULONG   ulBusyModes;
+    ULONG   ulSpecialInfo;
+    ULONG   ulDisconnectModes;
+    ULONG   ulMaxNumActiveCalls;
+    ULONG   ulMaxNumOnHoldCalls;
+    ULONG   ulMaxNumOnHoldPendingCalls;
+    ULONG   ulMaxNumConference;
+    ULONG   ulMaxNumTransConf;
+    ULONG   ulAddrCapFlags;
+    ULONG   ulCallFeatures;
+    ULONG   ulRemoveFromConfCaps;
+    ULONG   ulRemoveFromConfState;
+    ULONG   ulTransferModes;
+    ULONG   ulParkModes;
+    ULONG   ulForwardModes;
+    ULONG   ulMaxForwardEntries;
+    ULONG   ulMaxSpecificEntries;
+    ULONG   ulMinFwdNumRings;
+    ULONG   ulMaxFwdNumRings;
+    ULONG   ulMaxCallCompletions;
+    ULONG   ulCallCompletionConds;
+    ULONG   ulCallCompletionModes;
+    ULONG   ulNumCompletionMessages;
+    ULONG   ulCompletionMsgTextEntrySize;
+    ULONG   ulCompletionMsgTextSize;
+    ULONG   ulCompletionMsgTextOffset;
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00010004)
+    ULONG   ulAddressFeatures;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    ULONG   ulPredictiveAutoTransferStates;
+    ULONG   ulNumCallTreatments;
+    ULONG   ulCallTreatmentListSize;
+    ULONG   ulCallTreatmentListOffset;
+    ULONG   ulDeviceClassesSize;
+    ULONG   ulDeviceClassesOffset;
+    ULONG   ulMaxCallDataSize;
+    ULONG   ulCallFeatures2;
+    ULONG   ulMaxNoAnswerTimeout;
+    ULONG   ulConnectedModes;
+    ULONG   ulOfferingModes;
+    ULONG   ulAvailableMediaModes;
+#endif
+} LINE_ADDRESS_CAPS;
+typedef LINE_ADDRESS_CAPS   *PLINE_ADDRESS_CAPS;
+
+/* Line address status */
+typedef struct _LINE_ADDRESS_STATUS {
+    ULONG   ulTotalSize;
+    ULONG   ulNeededSize;
+    ULONG   ulUsedSize;
+    ULONG   ulNumInUse;
+    ULONG   ulNumActiveCalls;
+    ULONG   ulNumOnHoldCalls;
+    ULONG   ulNumOnHoldPendCalls;
+    ULONG   ulAddressFeatures;
+    ULONG   ulNumRingsNoAnswer;
+    ULONG   ulForwardNumEntries;
+    ULONG   ulForwardSize;
+    ULONG   ulForwardOffset;
+    ULONG   ulTerminalModesSize;
+    ULONG   ulTerminalModesOffset;
+    ULONG   ulDevSpecificSize;
+    ULONG   ulDevSpecificOffset;
+} LINE_ADDRESS_STATUS;
+typedef LINE_ADDRESS_STATUS *PLINE_ADDRESS_STATUS;
+
+/* Line dial parameters */
+typedef struct _LINE_DIAL_PARAMS {
+    ULONG   ulDialPause;
+    ULONG   ulDialSpeed;
+    ULONG   ulDigitDuration;
+    ULONG   ulWaitForDialtone;
+} LINE_DIAL_PARAMS;
+typedef LINE_DIAL_PARAMS    *PLINE_DIAL_PARAMS;
+
+/* Line call information */
+typedef struct _LINE_CALL_INFO {
+    ULONG               ulTotalSize;
+    ULONG               ulNeededSize;
+    ULONG               ulUsedSize;
+    ULONG               hLine;
+    ULONG               ulLineDeviceID;
+    ULONG               ulAddressID;
+    ULONG               ulBearerMode;
+    ULONG               ulRate;
+    ULONG               ulMediaMode;
+    ULONG               ulAppSpecific;
+    ULONG               ulCallID;
+    ULONG               ulRelatedCallID;
+    ULONG               ulCallParamFlags;
+    ULONG               ulCallStates;
+    ULONG               ulMonitorDigitModes;
+    ULONG               ulMonitorMediaModes;
+    LINE_DIAL_PARAMS    DialParams;
+    ULONG               ulOrigin;
+    ULONG               ulReason;
+    ULONG               ulCompletionID;
+    ULONG               ulNumOwners;
+    ULONG               ulNumMonitors;
+    ULONG               ulCountryCode;
+    ULONG               ulTrunk;
+    ULONG               ulCallerIDFlags;
+    ULONG               ulCallerIDSize;
+    ULONG               ulCallerIDOffset;
+    ULONG               ulCallerIDNameSize;
+    ULONG               ulCallerIDNameOffset;
+    ULONG               ulCalledIDFlags;
+    ULONG               ulCalledIDSize;
+    ULONG               ulCalledIDOffset;
+    ULONG               ulCalledIDNameSize;
+    ULONG               ulCalledIDNameOffset;
+    ULONG               ulConnectedIDFlags;
+    ULONG               ulConnectedIDSize;
+    ULONG               ulConnectedIDOffset;
+    ULONG               ulConnectedIDNameSize;
+    ULONG               ulConnectedIDNameOffset;
+    ULONG               ulRedirectionIDFlags;
+    ULONG               ulRedirectionIDSize;
+    ULONG               ulRedirectionIDOffset;
+    ULONG               ulRedirectionIDNameSize;
+    ULONG               ulRedirectionIDNameOffset;
+    ULONG               ulRedirectingIDFlags;
+    ULONG               ulRedirectingIDSize;
+    ULONG               ulRedirectingIDOffset;
+    ULONG               ulRedirectingIDNameSize;
+    ULONG               ulRedirectingIDNameOffset;
+    ULONG               ulAppNameSize;
+    ULONG               ulAppNameOffset;
+    ULONG               ulDisplayableAddressSize;
+    ULONG               ulDisplayableAddressOffset;
+    ULONG               ulCalledPartySize;
+    ULONG               ulCalledPartyOffset;
+    ULONG               ulCommentSize;
+    ULONG               ulCommentOffset;
+    ULONG               ulDisplaySize;
+    ULONG               ulDisplayOffset;
+    ULONG               ulUserUserInfoSize;
+    ULONG               ulUserUserInfoOffset;
+    ULONG               ulHighLevelCompSize;
+    ULONG               ulHighLevelCompOffset;
+    ULONG               ulLowLevelCompSize;
+    ULONG               ulLowLevelCompOffset;
+    ULONG               ulChargingInfoSize;
+    ULONG               ulChargingInfoOffset;
+    ULONG               ulTerminalModesSize;
+    ULONG               ulTerminalModesOffset;
+    ULONG               ulDevSpecificSize;
+    ULONG               ulDevSpecificOffset;
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    ULONG               ulCallTreatment;
+    ULONG               ulCallDataSize;
+    ULONG               ulCallDataTransfer;
+    ULONG               ulSendingFlowspecSize;
+    ULONG               ulSendingFlowspecOffset;
+    ULONG               ulReceivingFlowspecSize;
+    ULONG               ulReceivingFlowspecOffset;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    ULONG               ulCallerIDAddressType;
+    ULONG               ulCalledIDAddressType;
+    ULONG               ulConnectedIDAddressType;
+    ULONG               ulRedirectionIDAddressType;
+    ULONG               ulRedirectingIDAddressType;
+#endif
+} LINE_CALL_INFO;
+typedef LINE_CALL_INFO  *PLINE_CALL_INFO;
+
+/* Line call parameters */
+typedef struct _LINE_CALL_PARAMS {
+    ULONG               ulTotalSize;
+    ULONG               ulBearerMode;
+    ULONG               ulMinRate;
+    ULONG               ulMaxRate;
+    ULONG               ulMediaMode;
+    ULONG               ulCallParamFlags;
+    ULONG               ulAddressMode;
+    ULONG               ulAddressID;
+    LINE_DIAL_PARAMS    DialParams;
+    ULONG               ulOrigAddressSize;
+    ULONG               ulOrigAddressOffset;
+    ULONG               ulDisplayableAddressSize;
+    ULONG               ulDisplayableAddressOffset;
+    ULONG               ulCalledPartySize;
+    ULONG               ulCalledPartyOffset;
+    ULONG               ulCommentSize;
+    ULONG               ulCommentOffset;
+    ULONG               ulUserUserInfoSize;
+    ULONG               ulUserUserInfoOffset;
+    ULONG               ulHighLevelCompSize;
+    ULONG               ulHighLevelCompOffset;
+    ULONG               ulLowLevelCompSize;
+    ULONG               ulLowLevelCompOffset;
+    ULONG               ulDevSpecificSize;
+    ULONG               ulDevSpecificOffset;
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    ULONG               ulPredictiveAutoTransferStates;
+    ULONG               ulTargetAddressSize;
+    ULONG               ulTargetAddressOffset;
+    ULONG               ulSendingFlowspecSize;
+    ULONG               ulSendingFlowspecOffset;
+    ULONG               ulReceivingFlowspecSize;
+    ULONG               ulReceivingFlowspecOffset;
+    ULONG               ulDeviceClassSize;
+    ULONG               ulDeviceClassOffset;
+    ULONG               ulDeviceConfigSize;
+    ULONG               ulDeviceConfigOffset;
+    ULONG               ulCallDataSize;
+    ULONG               ulCallDataOffset;
+    ULONG               ulNoAnswerTimeout;
+    ULONG               ulCallingPartyIDSize;
+    ULONG               ulCallingPartyIDOffset;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    ULONG               ulAddressType;
+#endif
+} LINE_CALL_PARAMS;
+typedef LINE_CALL_PARAMS    *PLINE_CALL_PARAMS;
+
+/* Line call status */
+typedef struct _LINE_CALL_STATUS {
+    ULONG   ulTotalSize;
+    ULONG   ulNeededSize;
+    ULONG   ulUsedSize;
+    ULONG   ulCallState;
+    ULONG   ulCallStateMode;
+    ULONG   ulCallPrivilege;
+    ULONG   ulCallFeatures;
+    ULONG   ulDevSpecificSize;
+    ULONG   ulDevSpecificOffset;
+} LINE_CALL_STATUS;
+typedef LINE_CALL_STATUS    *PLINE_CALL_STATUS;
+
+/* Line extension identifier */
+typedef struct _LINE_EXTENSION_ID {
+    ULONG   ulExtensionID0;
+    ULONG   ulExtensionID1;
+    ULONG   ulExtensionID2;
+    ULONG   ulExtensionID3;
+} LINE_EXTENSION_ID;
+typedef LINE_EXTENSION_ID   *PLINE_EXTENSION_ID;
+
+/* Line device capabilities */
+typedef struct _LINE_DEV_CAPS {
+    ULONG               ulTotalSize;
+    ULONG               ulNeededSize;
+    ULONG               ulUsedSize;
+    ULONG               ulProviderInfoSize;
+    ULONG               ulProviderInfoOffset;
+    ULONG               ulSwitchInfoSize;
+    ULONG               ulSwitchInfoOffset;
+    ULONG               ulPermanentLineID;
+    ULONG               ulLineNameSize;
+    ULONG               ulLineNameOffset;
+    ULONG               ulStringFormat;
+    ULONG               ulAddressModes;
+    ULONG               ulNumAddresses;
+    ULONG               ulBearerModes;
+    ULONG               ulMaxRate;
+    ULONG               ulMediaModes;
+    ULONG               ulGenerateToneModes;
+    ULONG               ulGenerateToneMaxNumFreq;
+    ULONG               ulGenerateDigitModes;
+    ULONG               ulMonitorToneMaxNumFreq;
+    ULONG               ulMonitorToneMaxNumEntries;
+    ULONG               ulMonitorDigitModes;
+    ULONG               ulGatherDigitsMinTimeout;
+    ULONG               ulGatherDigitsMaxTimeout;
+    ULONG               ulMedCtlDigitMaxListSize;
+    ULONG               ulMedCtlMediaMaxListSize;
+    ULONG               ulMedCtlToneMaxListSize;
+    ULONG               ulMedCtlCallStateMaxListSize;
+    ULONG               ulDevCapFlags;
+    ULONG               ulMaxNumActiveCalls;
+    ULONG               ulAnswerMode;
+    ULONG               ulRingModes;
+    ULONG               ulLineStates;
+    ULONG               ulUUIAcceptSize;
+    ULONG               ulUUIAnswerSize;
+    ULONG               ulUUIMakeCallSize;
+    ULONG               ulUUIDropSize;
+    ULONG               ulUUISendUserUserInfoSize;
+    ULONG               ulUUICallInfoSize;
+    LINE_DIAL_PARAMS    MinDialParams;
+    LINE_DIAL_PARAMS    MaxDialParams;
+    LINE_DIAL_PARAMS    DefaultDialParams;
+    ULONG               ulNumTerminals;
+    ULONG               ulTerminalCapsSize;
+    ULONG               ulTerminalCapsOffset;
+    ULONG               ulTerminalTextEntrySize;
+    ULONG               ulTerminalTextSize;
+    ULONG               ulTerminalTextOffset;
+    ULONG               ulDevSpecificSize;
+    ULONG               ulDevSpecificOffset;
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00010004)
+    ULONG               ulLineFeatures;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020000)
+    ULONG               ulSettableDevStatus;
+    ULONG               ulDeviceClassesSize;
+    ULONG               ulDeviceClassesOffset;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00020002)
+    GUID                PermanentLineGuid;
+#endif
+#if (NDIS_TAPI_CURRENT_VERSION >= 0x00030000)
+    ULONG               ulAddressTypes;
+    GUID                ProtocolGuid;
+    ULONG               ulAvailableTracking;
+#endif
+} LINE_DEV_CAPS;
+typedef LINE_DEV_CAPS   *PLINE_DEV_CAPS;
+
+/* Line device status */
+typedef struct _LINE_DEV_STATUS {
+    ULONG   ulTotalSize;
+    ULONG   ulNeededSize;
+    ULONG   ulUsedSize;
+    ULONG   ulNumOpens;
+    ULONG   ulOpenMediaModes;
+    ULONG   ulNumActiveCalls;
+    ULONG   ulNumOnHoldCalls;
+    ULONG   ulNumOnHoldPendCalls;
+    ULONG   ulLineFeatures;
+    ULONG   ulNumCallCompletions;
+    ULONG   ulRingMode;
+    ULONG   ulSignalLevel;
+    ULONG   ulBatteryLevel;
+    ULONG   ulRoamMode;
+    ULONG   ulDevStatusFlags;
+    ULONG   ulTerminalModesSize;
+    ULONG   ulTerminalModesOffset;
+    ULONG   ulDevSpecificSize;
+    ULONG   ulDevSpecificOffset;
+} LINE_DEV_STATUS;
+typedef LINE_DEV_STATUS *PLINE_DEV_STATUS;
+
+/* Variable string */
+#ifndef __NDISTAPI_VAR_STRING_DECLARED
+#define __NDISTAPI_VAR_STRING_DECLARED
+typedef struct _VAR_STRING {
+    ULONG   ulTotalSize;
+    ULONG   ulNeededSize;
+    ULONG   ulUsedSize;
+    ULONG   ulStringFormat;
+    ULONG   ulStringSize;
+    ULONG   ulStringOffset;
+} VAR_STRING;
+typedef VAR_STRING  *PVAR_STRING;
+#endif
+
+/* NDIS TAPI accept */
+typedef struct _NDIS_TAPI_ACCEPT {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulUserUserInfoSize;
+    UCHAR       UserUserInfo[1];
+} NDIS_TAPI_ACCEPT;
+typedef NDIS_TAPI_ACCEPT    *PNDIS_TAPI_ACCEPT;
+
+/* NDIS TAPI answer */
+typedef struct _NDIS_TAPI_ANSWER {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulUserUserInfoSize;
+    UCHAR       UserUserInfo[1];
+} NDIS_TAPI_ANSWER;
+typedef NDIS_TAPI_ANSWER    *PNDIS_TAPI_ANSWER;
+
+/* NDIS TAPI close */
+typedef struct _NDIS_TAPI_CLOSE {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+} NDIS_TAPI_CLOSE;
+typedef NDIS_TAPI_CLOSE *PNDIS_TAPI_CLOSE;
+
+/* NDIS TAPI close call */
+typedef struct _NDIS_TAPI_CLOSE_CALL {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+} NDIS_TAPI_CLOSE_CALL;
+typedef NDIS_TAPI_CLOSE_CALL    *PNDIS_TAPI_CLOSE_CALL;
+
+/* NDIS TAPI conditional media detection */
+typedef struct _NDIS_TAPI_CONDITIONAL_MEDIA_DETECTION {
+    ULONG               ulRequestID;
+    HDRV_LINE           hdLine;
+    ULONG               ulMediaModes;
+    LINE_CALL_PARAMS    LineCallParams;
+} NDIS_TAPI_CONDITIONAL_MEDIA_DETECTION;
+typedef NDIS_TAPI_CONDITIONAL_MEDIA_DETECTION   *PNDIS_TAPI_CONDITIONAL_MEDIA_DETECTION;
+
+/* NDIS TAPI configuration dialog */
+typedef struct _NDIS_TAPI_CONFIG_DIALOG {
+    ULONG   ulRequestID;
+    ULONG   ulDeviceID;
+    ULONG   ulDeviceClassSize;
+    ULONG   ulDeviceClassOffset;
+    ULONG   ulLibraryNameTotalSize;
+    ULONG   ulLibraryNameNeededSize;
+    CHAR    szLibraryName[1];
+} NDIS_TAPI_CONFIG_DIALOG;
+typedef NDIS_TAPI_CONFIG_DIALOG *PNDIS_TAPI_CONFIG_DIALOG;
+
+/* NDIS TAPI device specific */
+typedef struct _NDIS_TAPI_DEV_SPECIFIC {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulAddressID;
+    HDRV_CALL   hdCall;
+    ULONG       ulParamsSize;
+    UCHAR       Params[1];
+} NDIS_TAPI_DEV_SPECIFIC;
+typedef NDIS_TAPI_DEV_SPECIFIC  *PNDIS_TAPI_DEV_SPECIFIC;
+
+/* NDIS TAPI dial */
+typedef struct _NDIS_TAPI_DIAL {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulDestAddressSize;
+    CHAR        szDestAddress[1];
+} NDIS_TAPI_DIAL;
+typedef NDIS_TAPI_DIAL  *PNDIS_TAPI_DIAL;
+
+/* NDIS TAPI drop */
+typedef struct _NDIS_TAPI_DROP {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulUserUserInfoSize;
+    UCHAR       UserUserInfo[1];
+} NDIS_TAPI_DROP;
+typedef NDIS_TAPI_DROP  *PNDIS_TAPI_DROP;
+
+/* NDIS TAPI get address capabilities */
+typedef struct _NDIS_TAPI_GET_ADDRESS_CAPS {
+    ULONG               ulRequestID;
+    ULONG               ulDeviceID;
+    ULONG               ulAddressID;
+    ULONG               ulExtVersion;
+    LINE_ADDRESS_CAPS   LineAddressCaps;
+} NDIS_TAPI_GET_ADDRESS_CAPS;
+typedef NDIS_TAPI_GET_ADDRESS_CAPS  *PNDIS_TAPI_GET_ADDRESS_CAPS;
+
+/* NDIS TAPI get address identifier */
+typedef struct _NDIS_TAPI_GET_ADDRESS_ID {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulAddressID;
+    ULONG       ulAddressMode;
+    ULONG       ulAddressSize;
+    CHAR        szAddress[1];
+} NDIS_TAPI_GET_ADDRESS_ID;
+typedef NDIS_TAPI_GET_ADDRESS_ID    *PNDIS_TAPI_GET_ADDRESS_ID;
+
+/* NDIS TAPI get address status */
+typedef struct _NDIS_TAPI_GET_ADDRESS_STATUS {
+    ULONG               ulRequestID;
+    HDRV_LINE           hdLine;
+    ULONG               ulAddressID;
+    LINE_ADDRESS_STATUS LineAddressStatus;
+} NDIS_TAPI_GET_ADDRESS_STATUS;
+typedef NDIS_TAPI_GET_ADDRESS_STATUS    *PNDIS_TAPI_GET_ADDRESS_STATUS;
+
+/* NDIS TAPI get call address identifier */
+typedef struct _NDIS_TAPI_GET_CALL_ADDRESS_ID {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulAddressID;
+} NDIS_TAPI_GET_CALL_ADDRESS_ID;
+typedef NDIS_TAPI_GET_CALL_ADDRESS_ID   *PNDIS_TAPI_GET_CALL_ADDRESS_ID;
+
+/* NDIS TAPI get call information */
+typedef struct _NDIS_TAPI_GET_CALL_INFO {
+    ULONG           ulRequestID;
+    HDRV_CALL       hdCall;
+    LINE_CALL_INFO  LineCallInfo;
+} NDIS_TAPI_GET_CALL_INFO;
+typedef NDIS_TAPI_GET_CALL_INFO *PNDIS_TAPI_GET_CALL_INFO;
+
+/* NDIS TAPI get call status */
+typedef struct _NDIS_TAPI_GET_CALL_STATUS {
+    ULONG               ulRequestID;
+    HDRV_CALL           hdCall;
+    LINE_CALL_STATUS    LineCallStatus;
+} NDIS_TAPI_GET_CALL_STATUS;
+typedef NDIS_TAPI_GET_CALL_STATUS   *PNDIS_TAPI_GET_CALL_STATUS;
+
+/* NDIS TAPI get device capabilities */
+typedef struct _NDIS_TAPI_GET_DEV_CAPS {
+    ULONG           ulRequestID;
+    ULONG           ulDeviceID;
+    ULONG           ulExtVersion;
+    LINE_DEV_CAPS   LineDevCaps;
+} NDIS_TAPI_GET_DEV_CAPS;
+typedef NDIS_TAPI_GET_DEV_CAPS  *PNDIS_TAPI_GET_DEV_CAPS;
+
+/* NDIS TAPI get device configuration */
+typedef struct _NDIS_TAPI_GET_DEV_CONFIG {
+    ULONG       ulRequestID;
+    ULONG       ulDeviceID;
+    ULONG       ulDeviceClassSize;
+    ULONG       ulDeviceClassOffset;
+    VAR_STRING  DeviceConfig;
+} NDIS_TAPI_GET_DEV_CONFIG;
+typedef NDIS_TAPI_GET_DEV_CONFIG    *PNDIS_TAPI_GET_DEV_CONFIG;
+
+/* NDIS TAPI get extension identifier */
+typedef struct _NDIS_TAPI_GET_EXTENSION_ID {
+    ULONG               ulRequestID;
+    ULONG               ulDeviceID;
+    LINE_EXTENSION_ID   LineExtensionID;
+} NDIS_TAPI_GET_EXTENSION_ID;
+typedef NDIS_TAPI_GET_EXTENSION_ID  *PNDIS_TAPI_GET_EXTENSION_ID;
+
+/* NDIS TAPI get identifier */
+typedef struct _NDIS_TAPI_GET_ID {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulAddressID;
+    HDRV_CALL   hdCall;
+    ULONG       ulSelect;
+    ULONG       ulDeviceClassSize;
+    ULONG       ulDeviceClassOffset;
+    VAR_STRING  DeviceID;
+} NDIS_TAPI_GET_ID;
+typedef NDIS_TAPI_GET_ID    *PNDIS_TAPI_GET_ID;
+
+/* NDIS TAPI get line device status */
+typedef struct _NDIS_TAPI_GET_LINE_DEV_STATUS {
+    ULONG           ulRequestID;
+    HDRV_LINE       hdLine;
+    LINE_DEV_STATUS LineDevStatus;
+} NDIS_TAPI_GET_LINE_DEV_STATUS;
+typedef NDIS_TAPI_GET_LINE_DEV_STATUS   *PNDIS_TAPI_GET_LINE_DEV_STATUS;
+
+/* NDIS TAPI make call */
+typedef struct _NDIS_TAPI_MAKE_CALL {
+    ULONG               ulRequestID;
+    HDRV_LINE           hdLine;
+    HTAPI_CALL          htCall;
+    HDRV_CALL           hdCall;
+    ULONG               ulDestAddressSize;
+    ULONG               ulDestAddressOffset;
+    BOOLEAN             bUseDefaultLineCallParams;
+    LINE_CALL_PARAMS    LineCallParams;
+} NDIS_TAPI_MAKE_CALL;
+typedef NDIS_TAPI_MAKE_CALL *PNDIS_TAPI_MAKE_CALL;
+
+/* NDIS TAPI negotiate extension version */
+typedef struct _NDIS_TAPI_NEGOTIATE_EXT_VERSION {
+    ULONG   ulRequestID;
+    ULONG   ulDeviceID;
+    ULONG   ulLowVersion;
+    ULONG   ulHighVersion;
+    ULONG   ulExtVersion;
+} NDIS_TAPI_NEGOTIATE_EXT_VERSION;
+typedef NDIS_TAPI_NEGOTIATE_EXT_VERSION *PNDIS_TAPI_NEGOTIATE_EXT_VERSION;
+
+/* NDIS TAPI open */
+typedef struct _NDIS_TAPI_OPEN {
+    ULONG       ulRequestID;
+    ULONG       ulDeviceID;
+    HTAPI_LINE  htLine;
+    HDRV_LINE   hdLine;
+} NDIS_TAPI_OPEN;
+typedef NDIS_TAPI_OPEN  *PNDIS_TAPI_OPEN;
+
+/* NDIS TAPI provider initialize */
+typedef struct _NDIS_TAPI_PROVIDER_INITIALIZE {
+    ULONG       ulRequestID;
+    ULONG       ulDeviceIDBase;
+    ULONG       ulNumLineDevs;
+    ULONG_PTR   ulProviderID;
+} NDIS_TAPI_PROVIDER_INITIALIZE;
+typedef NDIS_TAPI_PROVIDER_INITIALIZE   *PNDIS_TAPI_PROVIDER_INITIALIZE;
+
+/* NDIS TAPI provider shutdown */
+typedef struct _NDIS_TAPI_PROVIDER_SHUTDOWN {
+    ULONG   ulRequestID;
+} NDIS_TAPI_PROVIDER_SHUTDOWN;
+typedef NDIS_TAPI_PROVIDER_SHUTDOWN *PNDIS_TAPI_PROVIDER_SHUTDOWN;
+
+/* NDIS TAPI secure call */
+typedef struct _NDIS_TAPI_SECURE_CALL {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+} NDIS_TAPI_SECURE_CALL;
+typedef NDIS_TAPI_SECURE_CALL   *PNDIS_TAPI_SECURE_CALL;
+
+/* NDIS TAPI select extension version */
+typedef struct _NDIS_TAPI_SELECT_EXT_VERSION {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulExtVersion;
+} NDIS_TAPI_SELECT_EXT_VERSION;
+typedef NDIS_TAPI_SELECT_EXT_VERSION    *PNDIS_TAPI_SELECT_EXT_VERSION;
+
+/* NDIS TAPI send user user information */
+typedef struct _NDIS_TAPI_SEND_USER_USER_INFO {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulUserUserInfoSize;
+    UCHAR       UserUserInfo[1];
+} NDIS_TAPI_SEND_USER_USER_INFO;
+typedef NDIS_TAPI_SEND_USER_USER_INFO   *PNDIS_TAPI_SEND_USER_USER_INFO;
+
+/* NDIS TAPI set application specific */
+typedef struct _NDIS_TAPI_SET_APP_SPECIFIC {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulAppSpecific;
+} NDIS_TAPI_SET_APP_SPECIFIC;
+typedef NDIS_TAPI_SET_APP_SPECIFIC  *PNDIS_TAPI_SET_APP_SPECIFIC;
+
+/* NDIS TAPI set call parameters */
+typedef struct _NDIS_TAPI_SET_CALL_PARAMS {
+    ULONG               ulRequestID;
+    HDRV_CALL           hdCall;
+    ULONG               ulBearerMode;
+    ULONG               ulMinRate;
+    ULONG               ulMaxRate;
+    BOOLEAN             bSetLineDialParams;
+    LINE_DIAL_PARAMS    LineDialParams;
+} NDIS_TAPI_SET_CALL_PARAMS;
+typedef NDIS_TAPI_SET_CALL_PARAMS   *PNDIS_TAPI_SET_CALL_PARAMS;
+
+/* NDIS TAPI set default media detection */
+typedef struct _NDIS_TAPI_SET_DEFAULT_MEDIA_DETECTION {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulMediaModes;
+} NDIS_TAPI_SET_DEFAULT_MEDIA_DETECTION;
+typedef NDIS_TAPI_SET_DEFAULT_MEDIA_DETECTION   *PNDIS_TAPI_SET_DEFAULT_MEDIA_DETECTION;
+
+/* NDIS TAPI set device configuration */
+typedef struct _NDIS_TAPI_SET_DEV_CONFIG {
+    ULONG   ulRequestID;
+    ULONG   ulDeviceID;
+    ULONG   ulDeviceClassSize;
+    ULONG   ulDeviceClassOffset;
+    ULONG   ulDeviceConfigSize;
+    UCHAR   DeviceConfig[1];
+} NDIS_TAPI_SET_DEV_CONFIG;
+typedef NDIS_TAPI_SET_DEV_CONFIG    *PNDIS_TAPI_SET_DEV_CONFIG;
+
+/* NDIS TAPI set media mode */
+typedef struct _NDIS_TAPI_SET_MEDIA_MODE {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulMediaMode;
+} NDIS_TAPI_SET_MEDIA_MODE;
+typedef NDIS_TAPI_SET_MEDIA_MODE    *PNDIS_TAPI_SET_MEDIA_MODE;
+
+/* NDIS TAPI set status messages */
+typedef struct _NDIS_TAPI_SET_STATUS_MESSAGES {
+    ULONG       ulRequestID;
+    HDRV_LINE   hdLine;
+    ULONG       ulLineStates;
+    ULONG       ulAddressStates;
+} NDIS_TAPI_SET_STATUS_MESSAGES;
+typedef NDIS_TAPI_SET_STATUS_MESSAGES   *PNDIS_TAPI_SET_STATUS_MESSAGES;
+
+/* NDIS TAPI event */
+typedef struct _NDIS_TAPI_EVENT {
+    HTAPI_LINE  htLine;
+    HTAPI_CALL  htCall;
+    ULONG       ulMsg;
+    ULONG_PTR   ulParam1;
+    ULONG_PTR   ulParam2;
+    ULONG_PTR   ulParam3;
+} NDIS_TAPI_EVENT;
+typedef NDIS_TAPI_EVENT *PNDIS_TAPI_EVENT;
+
+/* NDIS TAPI characteristics */
+typedef struct _NDISTAPI_CHARACTERISTICS {
+    PVOID                       RequestProc;
+    GUID                        Guid;
+    NDIS_WAN_MEDIUM_SUBTYPE     MediaType;
+} NDISTAPI_CHARACTERISTICS;
+typedef NDISTAPI_CHARACTERISTICS    *PNDISTAPI_CHARACTERISTICS;
+
+/* NDIS TAPI gather digits */
+typedef struct _NDIS_TAPI_GATHER_DIGITS {
+    ULONG       ulRequestID;
+    HDRV_CALL   hdCall;
+    ULONG       ulEndToEndID;
+    ULONG       ulDigitModes;
+    LPWSTR      lpsOrigDigitsBuffer;
+    ULONG       ulDigitsBufferOffset;
+    ULONG       ulNumDigitsNeeded;
+    ULONG       ulNumDigitsRead;
+    ULONG       ulTickCount;
+    ULONG       ulTerminationReason;
+    ULONG       ulTerminationDigitsMask;
+    ULONG       ulFirstDigitTimeout;
+    ULONG       ulInterDigitTimeout;
+} NDIS_TAPI_GATHER_DIGITS;
+typedef NDIS_TAPI_GATHER_DIGITS *PNDIS_TAPI_GATHER_DIGITS;
+
+/* NDIS TAPI monitor digits */
+typedef struct _NDIS_TAPI_MONITOR_DIGITS {
+    HDRV_CALL   hdCall;
+    ULONG       ulDigitModes;
+} NDIS_TAPI_MONITOR_DIGITS;
+typedef NDIS_TAPI_MONITOR_DIGITS    *PNDIS_TAPI_MONITOR_DIGITS;
+
+/* TAPI call manager capabilities */
+typedef struct _CO_TAPI_CM_CAPS {
+    ULONG   ulCoTapiVersion;
+    ULONG   ulNumLines;
+    ULONG   ulFlags;
+} CO_TAPI_CM_CAPS;
+typedef CO_TAPI_CM_CAPS *PCO_TAPI_CM_CAPS;
+
+/* TAPI line capabilities */
+typedef struct _CO_TAPI_LINE_CAPS {
+    ULONG           ulLineID;
+    ULONG           ulFlags;
+    LINE_DEV_CAPS   LineDevCaps;
+} CO_TAPI_LINE_CAPS;
+typedef CO_TAPI_LINE_CAPS   *PCO_TAPI_LINE_CAPS;
+
+/* TAPI address capabilities */
+typedef struct _CO_TAPI_ADDRESS_CAPS {
+    ULONG               ulLineID;
+    ULONG               ulAddressID;
+    ULONG               ulFlags;
+    LINE_ADDRESS_CAPS   LineAddressCaps;
+} CO_TAPI_ADDRESS_CAPS;
+typedef CO_TAPI_ADDRESS_CAPS    *PCO_TAPI_ADDRESS_CAPS;
+
+/* TAPI translate TAPI call parameters */
+typedef struct _CO_TAPI_TRANSLATE_TAPI_CALLPARAMS {
+    ULONG               ulLineID;
+    ULONG               ulAddressID;
+    ULONG               ulFlags;
+    NDIS_VAR_DATA_DESC  DestAddress;
+    NDIS_VAR_DATA_DESC  LineCallParams;
+    NDIS_VAR_DATA_DESC  NdisCallParams;
+} CO_TAPI_TRANSLATE_TAPI_CALLPARAMS;
+typedef CO_TAPI_TRANSLATE_TAPI_CALLPARAMS   *PCO_TAPI_TRANSLATE_TAPI_CALLPARAMS;
+
+/* TAPI translate NDIS call parameters */
+typedef struct _CO_TAPI_TRANSLATE_NDIS_CALLPARAMS {
+    ULONG               ulFlags;
+    NDIS_VAR_DATA_DESC  NdisCallParams;
+    NDIS_VAR_DATA_DESC  LineCallInfo;
+} CO_TAPI_TRANSLATE_NDIS_CALLPARAMS;
+typedef CO_TAPI_TRANSLATE_NDIS_CALLPARAMS   *PCO_TAPI_TRANSLATE_NDIS_CALLPARAMS;
+
+/* TAPI translate SAP */
+typedef struct _CO_TAPI_TRANSLATE_SAP {
+    ULONG               ulLineID;
+    ULONG               ulAddressID;
+    ULONG               ulMediaModes;
+    ULONG               Reserved;
+    ULONG               NumberOfSaps;
+    NDIS_VAR_DATA_DESC  NdisSapParams[1];
+} CO_TAPI_TRANSLATE_SAP;
+typedef CO_TAPI_TRANSLATE_SAP   *PCO_TAPI_TRANSLATE_SAP;
+
+/* TAPI call diagnostics */
+typedef struct _CO_TAPI_CALL_DIAGNOSTICS {
+    ULONG               ulOrigin;
+    ULONG               ulReason;
+    NDIS_VAR_DATA_DESC  DiagInfo;
+} CO_TAPI_CALL_DIAGNOSTICS;
+typedef CO_TAPI_CALL_DIAGNOSTICS    *PCO_TAPI_CALL_DIAGNOSTICS;
+
+/* Address family TAPI make call parameters */
+typedef struct _CO_AF_TAPI_MAKE_CALL_PARAMETERS {
+    ULONG               ulLineID;
+    ULONG               ulAddressID;
+    ULONG               ulFlags;
+    NDIS_VAR_DATA_DESC  DestAddress;
+    NDIS_VAR_DATA_DESC  LineCallParams;
+} CO_AF_TAPI_MAKE_CALL_PARAMETERS;
+typedef CO_AF_TAPI_MAKE_CALL_PARAMETERS *PCO_AF_TAPI_MAKE_CALL_PARAMETERS;
+
+/* Address family TAPI incoming call parameters */
+typedef struct _CO_AF_TAPI_INCOMING_CALL_PARAMETERS {
+    ULONG               ulLineID;
+    ULONG               ulAddressID;
+    ULONG               ulFlags;
+    NDIS_VAR_DATA_DESC  LineCallInfo;
+} CO_AF_TAPI_INCOMING_CALL_PARAMETERS;
+typedef CO_AF_TAPI_INCOMING_CALL_PARAMETERS *PCO_AF_TAPI_INCOMING_CALL_PARAMETERS;
+
+/* Address family TAPI service access point */
+typedef struct _CO_AF_TAPI_SAP {
+    ULONG   ulLineID;
+    ULONG   ulAddressID;
+    ULONG   ulMediaModes;
+} CO_AF_TAPI_SAP;
+typedef CO_AF_TAPI_SAP  *PCO_AF_TAPI_SAP;
+
+:include cplusepi.sp
+
+#endif /* _NDIS_TAPI_ */

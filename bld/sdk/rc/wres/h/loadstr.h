@@ -24,10 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototype for string loading module initialization function.
 *
 ****************************************************************************/
 
 
-extern void LoadstrInitStatics();
+extern void LoadstrInitStatics( void );

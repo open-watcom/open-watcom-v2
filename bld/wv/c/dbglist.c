@@ -42,19 +42,20 @@
 #include "dbglit.h"
 #include <string.h>
 
-extern void     ReqEOC();
-extern void     ShowReplay();
-extern void     ShowCalls();
-extern void     ShowVarDisplay();
 
-void ConfigEvent()
+extern void     ReqEOC( void );
+extern void     ShowReplay( void );
+extern void     ShowCalls( void );
+extern void     ShowVarDisplay( void );
+
+void ConfigEvent( void )
 {
     ReqEOC();
     ShowReplay();
 }
 
 
-void ConfigCalls()
+void ConfigCalls( void )
 {
     ReqEOC();
     ShowCalls();

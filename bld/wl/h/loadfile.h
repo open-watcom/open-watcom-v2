@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes and structures for load file routines.
 *
 ****************************************************************************/
 
@@ -76,17 +75,21 @@ extern offset           CalcGroupSize( group_entry * );
 extern offset           CalcSplitSize( void );
 
 extern void             FreeOutFiles( void );
-extern void             InitBuffFile( outfilelist *, char * );
+extern void             InitBuffFile( outfilelist *outfile, char *, bool );
 extern void             OpenBuffFile( outfilelist * );
 extern void             CloseBuffFile( outfilelist * );
-extern void             WriteLoad3( void *, void *, unsigned );
+extern void             SetOriginLoad( unsigned long );
+extern void             WriteLoad3( void *, char *, unsigned );
 extern void             WriteLoad( void *, unsigned long );
 extern void             PadLoad( unsigned long );
+extern void             PadBuffFile( outfilelist *, unsigned long );
 extern void             SeekLoad( unsigned long );
 extern void             SeekEndLoad( unsigned long );
 extern unsigned long    PosLoad( void );
-extern void             WriteLeaderLoad( seg_leader * );
-extern void             WriteGroupLoad( group_entry * );
+extern void             WriteLeaderLoad( void * );
+extern offset           WriteGroupLoad( group_entry * );
+extern offset           WriteDOSGroupLoad( group_entry *, bool );
 extern unsigned_32      CopyToLoad( f_handle, char * );
 extern unsigned long    NullAlign( unsigned );
 extern unsigned long    OffsetAlign( unsigned long, unsigned long );
+extern void             ResetLoadFile( void );

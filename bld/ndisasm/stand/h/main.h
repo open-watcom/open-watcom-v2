@@ -40,7 +40,7 @@ extern void             PrintTail( section_ptr );
 extern void             PrintAssumeHeader( section_ptr );
 extern void             PrintLinePrefix( void *, orl_sec_offset, orl_sec_offset,
                                          unsigned, unsigned );
-extern void             DumpDataFromSection( char *, orl_sec_offset,
+extern void             DumpDataFromSection( unsigned_8 *, orl_sec_offset,
                                              orl_sec_offset, label_entry *,
                                              ref_entry *, section_ptr );
 extern void             UseFlatModel( void );

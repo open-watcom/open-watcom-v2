@@ -1,0 +1,82 @@
+proj_name = fmedit
+
+#
+#   REPORT EDITOR make include file
+#
+
+name      = fmedit
+
+fmedit_autodepends = .autodepend
+
+sys_dll = 1
+
+suppress_bd = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.extensions: .res .dlg .rc .cur .ico
+
+.ERASE
+
+object =                &
+        align.obj       &
+        space.obj       &
+        fmedit.obj      &
+        grid.obj        &
+        paint.obj       &
+        mouse.obj       &
+        eatom.obj       &
+        object.obj      &
+        state.obj       &
+        list.obj        &
+        memory.obj      &
+        cursor.obj      &
+        scroll.obj      &
+        oitem.obj       &
+        currobj.obj     &
+        curritem.obj    &
+        clip.obj        &
+        dlist.obj       &
+        keybd.obj       &
+        verdll.obj
+
+#
+# Source info
+#
+
+.c:   ../src;$(dev_dir)/version
+.rc : ../src
+
+inc_dirs = -I"../src" -I"../dev"
+
+extra_c_flags = -s
+extra_c_flags_win = -zu -zw
+extra_c_flags_fmedit = -bd
+
+rc_flags_win += -30
+
+extra_l_flags_win = op rwr
+
+#
+# Dependencies
+#
+$(name).lib: $(name).dll
+    $(librarian) $(libflags) +$(name).dll +verimp.obj
+
+# systems where version resource must be added to .DLL
+version_res_nt_386 = version.res
+
+$(name).dll: $(object) verimp.obj $(library_files) $(name).res $(version_res_$(host_os)_$(host_cpu))
+    $(linker) $(lflags) name $^@ file {$(object) verimp.obj}
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(name).res $(name).dll -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+    $(rc) -k $(name).res $(name).dll
+!endif
+
+$(name).res: $(name).rc .AUTODEPEND
+    $(rc) $(rc_flags) $(inc_path) $[@ -fo=$^@
+
+!include verrc.mif

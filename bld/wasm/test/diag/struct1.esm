@@ -1,0 +1,27 @@
+.387
+.386p
+		EXTRN	__OVLTAB__:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov         bx,8
+    test        byte ptr cs:__OVLTAB__-5[di],10H
+    test        byte ptr cs:__OVLTAB__-5[di],10H
+    test        byte ptr cs:__OVLTAB__-5[di],10H
+    test        word ptr cs:__OVLTAB__-5[di],1010H
+    test        dword ptr cs:__OVLTAB__-5[di],101010H
+    mov         byte ptr cs:__OVLTAB__-5[di],10H
+    mov         byte ptr cs:__OVLTAB__-5[di],10H
+    mov         byte ptr cs:__OVLTAB__-5[di],10H
+    mov         word ptr cs:__OVLTAB__-5[di],1010H
+    mov         dword ptr cs:__OVLTAB__-5[di],101010H
+    call        word ptr cs:__OVLTAB__-5[di]
+    call        dword ptr cs:__OVLTAB__-5[di]
+    mov         ax,18H
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0
+
+_DATA		ENDS
+		END

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default Win16 memory allocation flags.
 *
 ****************************************************************************/
 
@@ -33,6 +32,6 @@
 #include "variety.h"
 #include <windows.h>
 
-_WCRTLINK unsigned long _WCNEAR __win_alloc_flags = GMEM_MOVEABLE;
-_WCRTLINK unsigned long _WCNEAR __win_realloc_flags = GMEM_MOVEABLE;
+_WCRTDATA unsigned long _WCNEAR __win_alloc_flags   = GMEM_MOVEABLE;
+_WCRTDATA unsigned long _WCNEAR __win_realloc_flags = GMEM_MOVEABLE;
 

@@ -1,0 +1,27 @@
+proj_name = re2c
+re2c_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"$(re2c_dir)/h"
+
+.cpp: ../cpp
+
+objs =                  &
+       actions.obj      &
+       code.obj         &
+       dfa.obj          &
+       main.obj         &
+       parser.obj       &
+       scanner.obj      &
+       substr.obj       &
+       translat.obj
+
+!ifdef bootstrap
+# awful hack to link this executable; if you know how to do this right, please do!
+cl = g++
+!endif
+
+!include exetarg.mif

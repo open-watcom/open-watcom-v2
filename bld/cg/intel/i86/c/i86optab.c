@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction opcode/type matrix to select generate tables.
 *
 ****************************************************************************/
 
@@ -42,7 +41,7 @@
 table_def OpTable[(XX+1)*(LAST_OP-FIRST_OP+1)] = {
 /*************************************************
     for each opcode/type, indicate which generate table to use.
-    See I86TABLE.C
+    See i86table.c
 */
 /*U1   I1    U2    I2    U4    I4    U8    I8    CP    PT    FS     FD    FL    XX*/
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____ ,_____,_____,_____,/* OP_NOP*/
@@ -80,7 +79,7 @@ __X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,UFUNS ,UFUND,UFUND,_
 __X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,UFUNS ,UFUND,UFUND,__X__,/* OP_SINH */
 __X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,__X__,UFUNS ,UFUND,UFUND,__X__,/* OP_TANH */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____ ,_____,_____,_____,/* OP_PTR_TO_NATIVE */
-_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____ ,_____,_____,_____,/* OP_PTR_TO_FORIEGN */
+_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____ ,_____,_____,_____,/* OP_PTR_TO_FOREIGN */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____ ,_____,_____,_____,/* OP_SLACK*/
 CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT   ,CVT  ,CVT  ,__X__,/* OP_CONVERT*/
 __X__,__X__,LA   ,LA   ,LA4  ,LA4  ,LA4  ,LA4  ,LA4  ,LA4  ,__X__ ,__X__,__X__,__X__,/* OP_LA*/

@@ -36,6 +36,8 @@
 extern orl_return       CreateNamedLabel( orl_symbol_handle );
 extern void             CreateUnnamedLabel( orl_sec_handle, orl_sec_offset,
                                             unnamed_label_return );
+extern void             CreateAbsoluteLabel( orl_sec_handle, orl_sec_offset,
+                                            unnamed_label_return );
 extern orl_return       DealWithSymbolSection( orl_sec_handle );
 
 extern bool             NeedsQuoting( const char *name );

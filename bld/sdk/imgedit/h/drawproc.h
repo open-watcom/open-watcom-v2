@@ -38,5 +38,4 @@
 #define BRUSH_CUR               3
 #define HOTSPOT_CUR             4
 
-#define ESC_CHAR                0x01b
-
+#define ESC_CHAR                0x1b

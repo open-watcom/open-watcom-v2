@@ -1,0 +1,84 @@
+*$noreference
+
+! File I/O Functions:
+! -------------------
+
+      external GetDriveType
+      external GetSystemDirectory
+      external GetTempDrive
+      external GetTempFileName
+      external GetWindowsDirectory
+      external OpenFile
+      external SetHandleCount
+
+      integer*2 GetDriveType
+      integer*2 GetSystemDirectory
+      integer*1 GetTempDrive
+      integer*2 GetTempFileName
+      integer*2 GetWindowsDirectory
+      integer*2 OpenFile
+      integer*2 SetHandleCount
+
+! OpenFile() Structure
+
+      structure /OFSTRUCT/
+          integer*1           cBytes
+          integer*1           fFixedDisk
+          integer*2           nErrCode
+          integer*1           reserved(4)
+          integer*1           szPathName(128)
+      end structure
+
+! OpenFile() Flags
+
+      integer OF_READ
+      integer OF_WRITE
+      integer OF_READWRITE
+      integer OF_SHARE_COMPAT
+      integer OF_SHARE_EXCLUSIVE
+      integer OF_SHARE_DENY_WRITE
+      integer OF_SHARE_DENY_READ
+      integer OF_SHARE_DENY_NONE
+      integer OF_PARSE
+      integer OF_DELETE
+      integer OF_VERIFY
+      integer OF_CANCEL
+      integer OF_CREATE
+      integer OF_PROMPT
+      integer OF_EXIST
+      integer OF_REOPEN
+
+      parameter ( OF_READ             = '0000'x )
+      parameter ( OF_WRITE            = '0001'x )
+      parameter ( OF_READWRITE        = '0002'x )
+      parameter ( OF_SHARE_COMPAT     = '0000'x )
+      parameter ( OF_SHARE_EXCLUSIVE  = '0010'x )
+      parameter ( OF_SHARE_DENY_WRITE = '0020'x )
+      parameter ( OF_SHARE_DENY_READ  = '0030'x )
+      parameter ( OF_SHARE_DENY_NONE  = '0040'x )
+      parameter ( OF_PARSE            = '0100'x )
+      parameter ( OF_DELETE           = '0200'x )
+      parameter ( OF_VERIFY           = '0400'x )
+      parameter ( OF_CANCEL           = '0800'x )
+      parameter ( OF_CREATE           = '1000'x )
+      parameter ( OF_PROMPT           = '2000'x )
+      parameter ( OF_EXIST            = '4000'x )
+      parameter ( OF_REOPEN           = '8000'x )
+
+! GetTempFileName() Flags
+
+      integer TF_FORCEDRIVE
+
+      parameter ( TF_FORCEDRIVE       = '80'x )
+
+! GetDriveType() return values
+
+      integer DRIVE_REMOVABLE
+      integer DRIVE_FIXED
+      integer DRIVE_REMOTE
+
+      parameter ( DRIVE_REMOVABLE = 2 )
+      parameter ( DRIVE_FIXED     = 3 )
+      parameter ( DRIVE_REMOTE    = 4 )
+
+*$reference

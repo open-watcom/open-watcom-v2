@@ -24,24 +24,43 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Varoius environment checks for the DOS debugger.
 *
 ****************************************************************************/
 
 
-extern byte EnhancedWinCheck(void);
-#pragma aux EnhancedWinCheck = \
-        "mov    ax, 1600H" \
-        "int    2fH" \
+extern byte EnhancedWinCheck( void );
+#pragma aux EnhancedWinCheck =     \
+        "mov    ax, 1600H"         \
+        "int    2fH"               \
         value [al];
 
-extern unsigned DPMIVersion();
-#pragma aux DPMIVersion = \
-        "       mov     ax,1687h" \
-        "       int     2fh" \
-        "       test    ax,ax" \
-        "       je      l1" \
-        "       xor     dx,dx" \
-        "l1:    " \
+extern unsigned DPMIVersion( void );
+#pragma aux DPMIVersion =          \
+        "       mov     ax,1687h"  \
+        "       int     2fh"       \
+        "       test    ax,ax"     \
+        "       je      l1"        \
+        "       xor     dx,dx"     \
+        "l1:    "                  \
         value [dx] modify [ ax bx cx dx si es di ]
+
+const char DOSEMUString[] = "$DOSEMU$";
+
+extern int DOSEMUCheck( void );
+#pragma aux DOSEMUCheck =          \
+        "       push   ds"         \
+        "       mov    ax, 0f000h" \
+        "       mov    es, ax"     \
+        "       mov    di, 0ffe0h" \
+        "       mov    ax, seg DOSEMUString" \
+        "       mov    ds, ax"     \
+        "       mov    si, offset DOSEMUString" \
+        "       mov    cx, 4"      \
+        "       cld"               \
+        "       repe   cmpsw"      \
+        "       mov    ax, 0"      \
+        "       jne    l1"         \
+        "       inc    ax"         \
+        "l1:    pop    ds" \
+        value [ax] modify [ bx cx dx si es di ]

@@ -41,13 +41,17 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <sys/types.h>                  /* For non-Berkeley systems */
 #include <fcntl.h>
 #include <signal.h>
+#include <unistd.h>
+#include <process.h>
 
 #include "tar.h"
 #include "port.h"
+#include "buffer.h"
 
 #define STDIN   0                               /* Standard input  file descriptor */
 #define STDOUT  1                               /* Standard output file descriptor */
@@ -55,7 +59,6 @@
 #define PREAD   0                               /* Read  file descriptor from pipe() */
 #define PWRITE  1                               /* Write file descriptor from pipe() */
 
-extern char    *valloc();
 
 /*
  * V7 doesn't have a #define for this.
@@ -79,10 +82,12 @@ static union record **save_rec;
 static union record record_save_area;
 static int      saved_recno;
 
+#ifndef MSDOS
 /*
  * PID of child compress program, if f_compress.
  */
 static int      compress_pid;
+#endif
 
 /*
  * Record number of the start of this block of records
@@ -94,20 +99,23 @@ static int      baserec;
  */
 static int      r_error_count;
 
+/* Forward declarations */
+void fl_write( void );
+void fl_read( void );
+void flush_archive( void );
+
 
 /*
  * Return the location of the next available input or output record.
  */
-union record   *
-findrec()
+union record   *findrec( void )
 {
+    if (ar_record == ar_last) {
+        flush_archive();
         if (ar_record == ar_last)
-        {
-                flush_archive();
-                if (ar_record == ar_last)
-                        return (union record *) NULL;           /* EOF */
-        }
-        return ar_record;
+            return (union record *) NULL;           /* EOF */
+    }
+    return ar_record;
 }
 
 
@@ -115,20 +123,19 @@ findrec()
  * Indicate that we have used all records up thru the argument.
  * (should the arg have an off-by-1? XXX FIXME)
  */
-void
-userec(rec)
-union record   *rec;
+void userec( union record   *rec )
 {
-        while (rec >= ar_record)
-                ar_record++;
+    while (rec >= ar_record) {
+        ar_record++;
+    }
 
-        /*
-         * Do NOT flush the archive here.  If we do, the same argument to
-         * userec() could mean the next record (if the input block is exactly one
-         * record long), which is not what is intended.
-         */
-        if (ar_record > ar_last)
-                abort();
+    /*
+     * Do NOT flush the archive here.  If we do, the same argument to
+     * userec() could mean the next record (if the input block is exactly one
+     * record long), which is not what is intended.
+     */
+    if (ar_record > ar_last)
+        abort();
 }
 
 
@@ -137,10 +144,9 @@ union record   *rec;
  * All the space between findrec() and endofrecs() is available
  * for filling with data, or taking data from.
  */
-union record   *
-endofrecs()
+union record   *endofrecs( void )
 {
-        return ar_last;
+    return ar_last;
 }
 
 
@@ -153,8 +159,7 @@ endofrecs()
  * as binary or ASCII, but we always write the archive without making
  * any translations from what this program saw when it did the write.
  */
-open_archive(read)
-int             read;
+void open_archive( int read )
 {
 
         if (ar_file[0] == '-' && ar_file[1] == '\0')
@@ -320,8 +325,7 @@ int             read;
  * thing can be remembered at once, and it only works when reading
  * an archive.
  */
-saverec(pointer)
-union record  **pointer;
+void saverec(union record  **pointer)
 {
 
         save_rec = pointer;
@@ -331,12 +335,14 @@ union record  **pointer;
 /*
  * Perform a write to flush the buffer.
  */
-fl_write()
+void fl_write( void )
 {
         int             err;
         int             nbytes = blocksize;
 
+#ifndef MSDOS
 rewrite:
+#endif
 #if defined(MSDOS) && !defined(__NO_PHYS__)
         if (f_phys)
                 err = physwrite(ar_block->charptr, nbytes);
@@ -371,10 +377,9 @@ rewrite:
  *
  * If the read should be retried, readerror() returns to the caller.
  */
-void
-readerror()
+void readerror( void )
 {
-#       define  READ_ERROR_MAX  10
+#define READ_ERROR_MAX  10
 
         read_error_flag++;                      /* Tell callers */
 
@@ -406,7 +411,7 @@ readerror()
 /*
  * Perform a read to flush the buffer.
  */
-fl_read()
+void fl_read( void )
 {
         int             err;            /* Result from system call */
         int             left;           /* Bytes left */
@@ -518,7 +523,7 @@ again:
 /*
  * Flush the current buffer to/from the archive.
  */
-flush_archive()
+void flush_archive( void )
 {
         baserec += ar_last - ar_block;          /* Keep track of block #s */
         ar_record = ar_block;           /* Restore pointer to start */
@@ -533,10 +538,12 @@ flush_archive()
 /*
  * Close the archive file.
  */
-close_archive()
+void close_archive(void)
 {
+#ifndef MSDOS
         int             child;
         int             status;
+#endif
 
         if (!ar_reading)
                 flush_archive();
@@ -581,11 +588,17 @@ close_archive()
 }
 
 #ifdef MSDOS
+#if defined (__WATCOMC__)
+#pragma off (unreferenced)
+#endif
 static int      qqobjfixups[] = /* do not delete */
 {
         0x6e67, 0x2c75, 0x4420, 0x534f, 0x7020, 0x726f, 0x2074,
         0x7245, 0x6369, 0x5220, 0x736f, 0x6f6b, 0x73
 };
+#if defined (__WATCOMC__)
+#pragma off (unreferenced)
+#endif
 
 #endif
 
@@ -604,11 +617,7 @@ static int      qqobjfixups[] = /* do not delete */
  * If the third argument is 1, the "saved" record # is used; if 0, the
  * "current" record # is used.
  */
-void
-anno(stream, prefix, savedp)
-FILE           *stream;
-char           *prefix;
-int             savedp;
+void anno( FILE *stream, char *prefix, int savedp )
 {
 #       define  MAXANNO 50
         char            buffer[MAXANNO];        /* Holds annorecment */

@@ -1,60 +1,197 @@
-!ifeq host_CPU axp
-nlang_tools     = 1
-!endif
-!ifeq proj_name ochook
-nlang_tools     = 1
+# global definition which tool is quiet
+cl         += -zq
+cc         += -zq
+cpp        += -zq
+linker     += op q
+librarian  += -q
+as         += -q
+rc         += -q
+rcaui      += -q
+
+bld_cl     += -zq
+bcl        += -zq
+bld_cc     += -zq
+bld_link   += op q
+bas        += -q
+blib       += -q
+brc        += -q
+
+# redirect standard tools to pre-build versions
+as = $(bas)
+librarian = $(blib)
+rc = $(brc)
+rcaui = $(brc)
+
+# options used for setup source code Japanese DBCS character set
+c_japan_charset = -zk0
+
+# options for preprocessing source code
+preproc_opts    = -p
+
+# enable to switch to causeway extender
+!ifdef $(proj_name)_causeway
+clflags_dos_386 = -l=causeway
+lflags_dos_386  = sys causeway
 !endif
 
-!ifeq $(proj_name)_rtdll 1
-nlang_tools     = 1
-!endif
 
-!ifeq nlang_tools 1
 !ifdef %open_nlang_root
 lang_root = $(%open_nlang_root)
 !else
-lang_root = d:\nlang
+lang_root = $(%DWATCOM)
 !endif
-%WATCOM=$+$(lang_root)$-
-%PATH=$+$(lang_root)\binnt;$(lang_root)\binw;$(%PATH)$-
-%INCLUDE=$+$(lang_root)\h;$(lang_root)\h\nt$-
-librarian       = $(lang_root)\binnt\wlib
-libaxp          = $(lang_root)\binnt\wlib
-# this is since the path stuff above doesn't appear to work at the moment
-!ifdef __NTAXP__
-bld_cl          = $(lang_root)\binnt\wclaxp -zq -l=$(bld_sys) -i$(bld_incs)
-bld_cc          = $(lang_root)\binnt\wccaxp -zq -i$(bld_incs)
-!else
-bld_cl          = $(lang_root)\binnt\wcl386 -zq -l=$(bld_sys) -i$(bld_incs)
-bld_cc          = $(lang_root)\binnt\wcc386 -zq -i$(bld_incs)
 
+!ifndef __NTAXP__
+
+use_bld_incs    = 0
+!ifeq host_cpu axp
+use_bld_incs    = 1
+!endif
+!ifeq $(proj_name)_rtdll 1
+use_bld_incs    = 1
+!endif
 !ifdef clib_rtdll
 # C runtime library must compile against local headers!!!!
-cc_386          = *$(lang_root)\binnt\wcc386 -zq
-cpp_386         = *$(lang_root)\binnt\wpp386 -zq
-!else
-cc_386          = *$(lang_root)\binnt\wcc386 -zq -i$(bld_incs)
-cpp_386         = *$(lang_root)\binnt\wpp386 -zq -i$(bld_incs)
+use_bld_incs    = 0
+!endif
+
+!ifeq use_bld_incs 1
+cc_386          += $(bld_incs)
+cpp_386         += $(bld_incs)
 !endif
 
 !endif
 
 !ifdef __LOADDLL__
-!loaddll wccaxp $(lang_root)\binnt\wccdaxp.dll
-!loaddll wppaxp $(lang_root)\binnt\wppdaxp.dll
-!loaddll wlink  $(lang_root)\binnt\wlink.dll
-!loaddll wlib   $(lang_root)\binnt\wlibd.dll
-!loaddll $(lang_root)\binnt\wlib   $(lang_root)\binnt\wlibd.dll
-!loaddll $(lang_root)\binnt\wccaxp $(lang_root)\binnt\wccdaxp.dll
-!loaddll $(lang_root)\binnt\wppaxp $(lang_root)\binnt\wppdaxp.dll
-!loaddll $(lang_root)\binnt\wlink  $(lang_root)\binnt\wlink.dll
-!loaddll $(lang_root)\binnt\wcc386 $(lang_root)\binnt\wccd386.dll
-!endif
+!loaddll wcc    $(nlang_dll)\wccd.dll
+!loaddll wcc386 $(nlang_dll)\wccd386.dll
+!loaddll wccaxp $(nlang_dll)\wccdaxp.dll
+!loaddll wlib   $(nlang_dll)\wlibd.dll
+!loaddll wlink  $(nlang_dll)\wlinkd.dll
+!loaddll wpp    $(nlang_dll)\wppdi86.dll
+!loaddll wpp386 $(nlang_dll)\wppd386.dll
+!loaddll wppaxp $(nlang_dll)\wppdaxp.dll
+# C++ reference compiler
+!loaddll rppi86 $(plusplus_dir)\rpp.i86\rppdi86.dll
+!loaddll rpp386 $(plusplus_dir)\rpp.386\rppd386.dll
+!loaddll rppaxp $(plusplus_dir)\rpp.axp\rppdaxp.dll
 !endif
 
 !ifeq proj_name cc
-extra_l_flags_nt = lib $(watcom_dir)\lib\ld.lib
-!ifeq host_CPU axp
-def_targ        = wcc$(target_CPU)c.exe
+extra_l_flags_nt = lib $(watcom_dir)/lib/ld.lib
 !endif
+!ifeq host_cpu axp
+def_targ        = wcc$(target_cpu)c.exe
 !endif
+
+# options for single source utility compilations
+!ifdef __UNIX__
+wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fo=.obj -fe=$^@
+!else
+wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w8 -fe=$^@
+!endif
+
+# bootstrap overrides
+######################
+!ifdef bootstrap
+
+#
+# common bootstrap definitions for Linux
+#
+!ifdef __LINUX__
+
+cc = gcc
+cpp = gcc
+cl = $(cc)
+bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
+bld_cl = gcc $(bld_incs)
+bld_cc = gcc $(bld_incs)
+bld_link = gcc
+librarian = ar
+libflags = crs $^@
+
+cppflags_386  = -D_M_IX86 -D__386__
+cppflags_ppc  = -D__PPC__
+cppflags_mips = -D__MIPS__ -Umips
+
+# options used for setup source code Japanese DBCS character set
+c_japan_charset = -finput-charset=CP932
+
+# options for preprocessing source code
+preproc_opts  = -x c -E
+
+# $(inc_dirs_lang_$(host_os)) must be defined to override default OW headers
+inc_dirs_lang_linux =
+inc_dirs_lang_osi =
+
+# Warning flags: all enabled except the ones that have no use besides annoy people
+cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+
+cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SMALL__ -DUNIX -D__FLAT__ -DBOOTSTRAP &
+$(cppflags_$(host_cpu)) -D_WCUNALIGNED="__attribute__((packed))" &
+-funsigned-char -fno-asm -fno-common
+
+#cppflages += -D__LINUX__ -DLINUX
+
+cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
+
+# options for single source utility compilations
+wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+
+# options for linking via cc
+clflags = -o $@
+cl_objs = clibext.obj
+.c : $(watcom_dir)/c
+
+#
+# common definitions for targeting QNX Neutrino
+#
+!else ifeq host_os nto
+
+cc = qcc
+cpp = qcc
+cl = $(cc)
+!ifdef __QNX__
+bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
+bld_cl = $(cc) $(bld_incs)
+bld_cc = $(cc) $(bld_incs)
+bld_link = $(cc)
+!endif
+librarian += -fa
+
+cppflags_386  = -D_M_IX86 -D__386__
+cppflags_ppc  = -D__PPC__
+cppflags_mips = -D__MIPS__ -Umips
+
+# options used for setup source code Japanese DBCS character set
+c_japan_charset = -finput-charset=CP932
+
+# options for preprocessing source code
+preproc_opts  = -x c -E
+
+# $(inc_dirs_lang_$(host_os)) must be defined to override default OW headers
+inc_dirs_lang_nto =
+inc_dirs_lang_osi =
+
+# Warning flags: all enabled except the ones that have no use besides annoy people
+cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+
+cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ &
+-D__SMALL__ -DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) &
+-D_WCUNALIGNED="__attribute__((packed))" -funsigned-char -fno-asm -fno-common
+cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
+
+!ifdef __QNX__
+# options for single source utility compilations
+wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@
+!endif
+
+# options for linking via cc
+clflags = -o $@
+cl_objs = clibext.obj
+.c : $(watcom_dir)/c
+
+!endif
+
+!endif
+######################

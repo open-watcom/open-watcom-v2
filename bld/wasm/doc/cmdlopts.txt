@@ -1,0 +1,42 @@
+Command line options:
+
+? help
+
+-cislo processor
+-bt=..|..	build target
+-c		output data in code
+-hc		not used
+-hd		not used
+-hw		not used
+-m?		set memory model
+-nname		kinda name
+-?		help
+-ipath|=path	include path
+-enn		error limit
+-e		stop reading at the END directive
+-wnn		warning level nn
+-we		warning as error
+-j,-s		signed value
+-o		allow C octal
+-dname		define symbol
+-d+
+-d0		debug off
+-d1		debug on
+-d2		debug on
+-d3		debug on
+-d6		internal debug output
+-fi		included files
+-fo		output file
+-fe		error file
+-fr		error file
+-fpi	
+-fpi87	
+-fpc	
+-fp0	
+-fp2	
+-fp3	
+-fp5	
+-q,-zq		quiet
+-u		undefine macro - not used
+
+

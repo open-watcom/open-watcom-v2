@@ -38,7 +38,7 @@
 
 static  void            *MergeList( void *list1, void *list2,
                                    unsigned next_offset,
-                                   int (*compare)(void**,void**) ) {
+                                   int (*compare)(void*,void*) ) {
 /***************************************************************/
 
     void        *list;
@@ -92,7 +92,7 @@ static  void            *BuildList( void **array,
 
 
 static  void            *DoSortList( void *list, unsigned next_offset,
-                                  int (*compare)(void**,void**),
+                                  int (*compare)(void*,void*),
                                   unsigned long length,
                                   void *(*allocrtn)(unsigned),
                                   void (*freertn)(void*) ) {
@@ -138,8 +138,8 @@ static  void            *DoSortList( void *list, unsigned next_offset,
 }
 
 extern  void            *SortLinkedList( void *list, unsigned next_offset,
-                                   int (*compare)(void**,void**),
-                                   void (*allocrtn)(unsigned),
+                                   int (*compare)(void*,void*),
+                                   void *(*allocrtn)(unsigned),
                                    void (*freertn)(void*) ) {
 /****************************************************************/
 

@@ -1,0 +1,18 @@
+* Define registers: These correspond to the element of an
+* array which is to contain the values of the registers.
+
+      integer*4 regd(10), regs(10)
+      integer*2 regw(2*10)
+      integer*1 regb(4*4)
+
+      integer*4 EAX,EBX,ECX,EDX,EBP,EDI,ESI,EFLAGS
+      integer*2 AX,BX,CX,DX,BP,DI,SI,DS,ES,FS,GS,FLAGS
+      integer*1 AH,AL,BH,BL,CH,CL,DH,DL
+      equivalence (regd,regs),(regd,regw),(regd,regb),
+     1(EAX,regd(1)), (EBX,regd(2)), (ECX,regd(3)), (EDX,regd(4)),
+     2(EBP,regd(5)), (EDI,regd(6)), (ESI,regd(7)), (EFLAGS,regd(10)),
+     3(AX,regw(1)),  (BX,regw(3)),  (CX,regw(5)),  (DX,regw(7)),
+     4(BP,regw(9)),  (DI,regw(11)), (SI,regw(13)), (DS,regw(15)),
+     5(FS,regw(16)), (ES,regw(17)), (GS,regw(18)), (FLAGS,regw(19)),
+     6(AL,regb(1)),  (AH,regb(2)),  (BL,regb(5)),  (BH,regb(6)),
+     7(CL,regb(9)),  (CH,regb(10)), (DL,regb(13)), (DH,regb(14))

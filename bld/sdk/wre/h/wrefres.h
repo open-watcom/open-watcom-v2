@@ -42,7 +42,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WResResNode *WREFindResNodeFromLangNode ( WResTypeNode *,
-                                                 WResLangNode * );
+extern WResResNode *WREFindResNodeFromLangNode( WResTypeNode *, WResLangNode * );
 
 #endif

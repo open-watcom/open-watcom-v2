@@ -1,0 +1,8 @@
+#
+#   test MS/UNIX style symbolic targets
+#
+
+clean: force
+    @echo Done.
+
+force:

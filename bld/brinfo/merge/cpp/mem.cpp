@@ -48,6 +48,7 @@ extern "C" {
 #include "fcntl.h"
 #ifdef __WINDOWS__
 #define TRMEM_NO_STDOUT
+#define STRICT
 #include <windows.h>
 #endif
 #ifdef __OS2__

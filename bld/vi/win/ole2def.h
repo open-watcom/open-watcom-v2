@@ -45,7 +45,7 @@ void OLE2Fini( void );
 #include <initguid.h>
 #endif
 
-DEFINE_OLEGUID( CLSID_WATCOMEditor, 0x00020666, 0, 0);
+DEFINE_OLEGUID( CLSID_WATCOMEditor, 0x00020666, 0, 0 );
 
 typedef DISPID          *LPDISPID;
 typedef DISPPARAMS      *LPDISPPARAMS;
@@ -67,7 +67,7 @@ enum {
 };
 
 enum {
-    IDMEMBER_PUTPROP1=1,
+    IDMEMBER_PUTPROP1 = 1,
     IDMEMBER_GETPROP1,
     IDMEMBER_FUNC1,
     IDMEMBER_FUNC2,

@@ -303,11 +303,11 @@ static dip_status DIGREGISTER WVStartup()
 }
 #endif
 
-static void DIGREGISTER WVShutdown()
+static void DIGREGISTER WVShutdown( void )
 {
 }
 
-static void DIGREGISTER WVCancel()
+static void DIGREGISTER WVCancel( void )
 {
 }
 

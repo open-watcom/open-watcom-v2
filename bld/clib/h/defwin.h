@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default windowing support - main API declaration.
+*               Only effective if DEFAULT_WINDOWING is defined.
 *
 ****************************************************************************/
 
@@ -33,34 +33,20 @@
 #ifndef _DEFWIN_H_INCLUDED
 #define _DEFWIN_H_INCLUDED
 
-#include "variety.h"
-
 #if defined(__NT__) || defined(__WINDOWS__) || defined(__OS2__)
 
-#include <unistd.h>
+// DEFWIN switch on Default Windowing
+
+#ifdef DEFWIN
+
+// It is only location with define DEFAULT_WINDOWING
+// It enable Default Windowing support globaly
 
 #define DEFAULT_WINDOWING
 
-struct window_data;
-typedef struct window_data _WCI86FAR *LPWDATA;
-
-extern unsigned (*_WindowsStdin)( LPWDATA, void *, unsigned );
-extern unsigned (*_WindowsStdout)( LPWDATA, const void *, unsigned );
-extern unsigned (*_WindowsKbhit)( LPWDATA );
-extern unsigned (*_WindowsGetch)( LPWDATA );
-extern unsigned (*_WindowsGetche)( LPWDATA );
-extern void     (*_WindowsPutch)( LPWDATA, unsigned );
-extern void     (*_WindowExitRtn)( void );
-extern unsigned (*_WindowsNewWindow)( char *, ... );
-extern int      (*_WindowsCloseWindow)( LPWDATA );
-extern LPWDATA  (*_WindowsIsWindowedHandle)( int );
-extern void     (*_WindowsRemoveWindowedHandle)( int );
-extern int      (*_WindowsSetAbout)( char *, char * );
-extern int      (*_WindowsSetAppTitle)( char * );
-extern int      (*_WindowsSetConTitle)( LPWDATA, char * );
-extern int      (*_WindowsDestroyOnClose)( LPWDATA );
-extern int      (*_WindowsYieldControl)( void );
-extern int      (*_WindowsShutDown)( void );
+#include "_defwin.h"
 
 #endif
+#endif
+
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wglbl.h"
 #include "wrdll.h"
 #include "wrselft.h"
@@ -66,11 +66,10 @@ WRFileType WSelectFileType( HWND parent, char *name,
     WRFileType          file_type;
     FARPROC             cb;
 
-    _wtouch(inst);
+    _wtouch( inst );
     cb = MakeProcInstance( (FARPROC)hcb, inst );
     file_type = WRSelectFileType( parent, name, is32bit, use_wres, cb );
     FreeProcInstance( (FARPROC)cb );
 
     return( file_type );
 }
-

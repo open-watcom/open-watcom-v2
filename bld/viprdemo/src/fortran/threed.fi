@@ -2,31 +2,31 @@ c$noreference
 
 * Definitions for the 3D graphics library
 
-    INTEGER    THREE_D_HORZ_ANGLE
+        INTEGER    THREE_D_HORZ_ANGLE
         PARAMETER (THREE_D_HORZ_ANGLE =     0 )
 
-    INTEGER    THREE_D_VERT_ANGLE
+        INTEGER    THREE_D_VERT_ANGLE
         PARAMETER (THREE_D_VERT_ANGLE =     1 )
 
-    INTEGER    THREE_D_ZOOM
+        INTEGER    THREE_D_ZOOM
         PARAMETER (THREE_D_ZOOM =       2 )
 
-    INTEGER    THREE_D_PERSPECTIVE
+        INTEGER    THREE_D_PERSPECTIVE
         PARAMETER (THREE_D_PERSPECTIVE =    3 )
 
-    INTEGER    THREE_D_BRIGHTNESS
+        INTEGER    THREE_D_BRIGHTNESS
         PARAMETER (THREE_D_BRIGHTNESS =     4 )
 
-    INTEGER    THREE_D_CONTRAST
+        INTEGER    THREE_D_CONTRAST
         PARAMETER (THREE_D_CONTRAST =       5 )
 
-    INTEGER    THREE_D_LIGHT_HORZ
+        INTEGER    THREE_D_LIGHT_HORZ
         PARAMETER (THREE_D_LIGHT_HORZ =     6 )
 
-    INTEGER    THREE_D_LIGHT_VERT
+        INTEGER    THREE_D_LIGHT_VERT
         PARAMETER (THREE_D_LIGHT_VERT =     7 )
 
-    INTEGER    THREE_D_LIGHT_DEPTH
+        INTEGER    THREE_D_LIGHT_DEPTH
         PARAMETER (THREE_D_LIGHT_DEPTH =    8 )
 
 
@@ -55,7 +55,7 @@ c$pragma aux (ENTRYPOINT) three_d_fini
 c$pragma aux (ENTRYPOINT) three_d_begin parm (value*4,reference)
 c$ifdef __386__
 c$pragma aux (ENTRYPOINT) three_d_box parm (value*4,value*4,value*4,value*4,\
-c                               value*4,value*4,value*4,value*1,value*1,value*1)
+c                               value*4,value*4,value*4,value*4,value*4,value*4)
 c Attribute setting & changing
 c$pragma aux (ENTRYPOINT) three_d_get parm (value*4,value*4)
 c$pragma aux (ENTRYPOINT) three_d_set parm (value*4,value*4,value*4)
@@ -73,16 +73,16 @@ c$pragma aux (ENTRYPOINT) three_d_draw parm (value*4)
 c$pragma aux (ENTRYPOINT) three_d_end parm (value*4)
 
 
-    external three_d_init
-    external three_d_fini
-    external three_d_begin
-    external three_d_box
-    external three_d_draw
-    external three_d_end
-    external three_d_get
-    external three_d_set
+        external three_d_init
+        external three_d_fini
+        external three_d_begin
+        external three_d_box
+        external three_d_draw
+        external three_d_end
+        external three_d_get
+        external three_d_set
 
-    integer three_d_begin
-    integer three_d_get
+        integer three_d_begin
+        integer three_d_get
 
 c$reference

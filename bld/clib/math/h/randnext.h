@@ -53,7 +53,7 @@
         #define _RANDNEXT       next
 
     #endif
-#elif !defined(__PENPOINT__)
+#else
     static  unsigned long int next = 1;
     #define _RANDNEXT next
 #endif

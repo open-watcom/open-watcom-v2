@@ -24,16 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF DIP public types and definitions.
 *
 ****************************************************************************/
 
 
-/*
-    There are a number of types that a dip implementation must define.
-    This file contains some example definitions.
-*/
 #ifndef DIP_DFDIP
 
 #include "dip.h"
@@ -88,7 +83,7 @@ struct imp_sym_handle {
     dr_handle       sym;
     dr_tag_type     stype;
     dr_access       acc;
-    imp_state       state        :1;
+    imp_state       state;
     int             isdef        :1;
     int             isstatic     :1;
     int             isartificial :1;
@@ -116,7 +111,7 @@ struct imp_type_handle {
     dr_handle           type;
     dr_typeinfo         typeinfo;
     imp_array           array;
-    imp_state           state     :1;
+    imp_state           state;
     int                 sub_array :1;
 };
 
@@ -162,6 +157,7 @@ struct imp_image_handle {
     scope_ctl         scope;
     addrmod           last;
     unsigned          has_pubnames;
+    unsigned          is_byteswapped;
 };
 
 extern address  NilAddr;

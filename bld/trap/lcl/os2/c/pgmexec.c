@@ -150,7 +150,7 @@ void DoDupFile( HFILE old, HFILE new )
 static char stack[1024];
 
 
-long TaskExecute( long (*rtn)() )
+long TaskExecute( void (*rtn)() )
 {
     long        retval;
 

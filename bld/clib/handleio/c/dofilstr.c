@@ -54,34 +54,34 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
     CHAR_TYPE           buf[9];
 
     /*** Get the environment variable ***/
-    envp = __F_NAME(getenv,_wgetenv)( __F_NAME("C_FILE_INFO",L"C_FILE_INFO") );
+    envp = __F_NAME(getenv,_wgetenv)( STRING( "C_FILE_INFO" ) );
     if( envp == NULL )  return;
 
     /*** Process the items, one by one ***/
-    while( *envp != '\0' ) {
+    while( *envp != NULLCHAR ) {
         p = envp;
 
         /*** Extract the three data fields ***/
-        p = __F_NAME(strchr,wcschr)( p, ':' );      /* POSIX handle field */
+        p = __F_NAME(strchr,wcschr)( p, STRING( ':' ) );      /* POSIX handle field */
         len = p - envp;
         __F_NAME(strncpy,wcsncpy)( buf, envp, len );
-        buf[len] = '\0';
+        buf[len] = NULLCHAR;
         posixHandle = (int)__F_NAME(strtol,wcstol)( buf, NULL, 16 );
         p++;
 
         envp = p;                                   /* OS handle field */
-        p = __F_NAME(strchr,wcschr)( p, ':' );
+        p = __F_NAME(strchr,wcschr)( p, STRING( ':' ) );
         len = p - envp;
         __F_NAME(strncpy,wcsncpy)( buf, envp, len );
-        buf[len] = '\0';
+        buf[len] = NULLCHAR;
         osHandle = (int)__F_NAME(strtol,wcstol)( buf, NULL, 16 );
         p++;
 
         envp = p;                                   /* file mode field */
-        p = __F_NAME(strchr,wcschr)( p, '*' );
+        p = __F_NAME(strchr,wcschr)( p, STRING( '*' ) );
         len = p - envp;
         __F_NAME(strncpy,wcsncpy)( buf, envp, len );
-        buf[len] = '\0';
+        buf[len] = NULLCHAR;
         mode = (int)__F_NAME(strtol,wcstol)( buf, NULL, 16 );
         p++;
 
@@ -93,5 +93,5 @@ _WCRTLINK void __F_NAME(__ParsePosixHandleStr,__wParsePosixHandleStr)( void )
     }
 
     /*** Delete the environment variable ***/
-    __F_NAME(putenv,_wputenv)( __F_NAME("C_FILE_INFO=",L"C_FILE_INFO=") );
+    __F_NAME(putenv,_wputenv)( STRING( "C_FILE_INFO=" ) );
 }

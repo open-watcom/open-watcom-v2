@@ -1,8 +1,0 @@
-//#line "..\c\aboutmsg.c" 60
-extern void AboutOpen(void);
-//#line "..\c\aboutmsg.c" 74
-extern void AboutClose(void);
-//#line "..\c\aboutmsg.c" 147
-extern void AboutSetOff(void);
-//#line "..\c\aboutmsg.c" 158
-extern void DlgAbout(void);

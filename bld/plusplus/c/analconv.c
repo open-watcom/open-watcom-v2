@@ -207,6 +207,7 @@ unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
                                                  , points->u.f.args
                                                  , NULL
                                                  , FNC_EXCLUDE_DEFARG
+                                                 , NULL
                                                  , NULL );
             }
             switch( ov_retn ) {
@@ -350,6 +351,10 @@ boolean ConvertCommonType(      // CONVERT TO COMMON TYPE (:, ==, !=)
     PTREE expr;                 // - expression
 
     expr = *a_expr;
+    expr->u.subtree[0]->type =
+        BindTemplateClass( expr->u.subtree[0]->type, &expr->locn, TRUE );
+    expr->u.subtree[1]->type =
+        BindTemplateClass( expr->u.subtree[1]->type, &expr->locn, TRUE );
     if( NULL != StructType( expr->u.subtree[0]->type )
      || NULL != StructType( expr->u.subtree[1]->type ) ) {
         retn = convertCommonClass( a_expr, diag_class );

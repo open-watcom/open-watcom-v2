@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of atoi() - convert string to int.
 *
 ****************************************************************************/
 
@@ -33,24 +32,30 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdio.h>
-#include <ctype.h>
-
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#else
+    #include <ctype.h>
+#endif
 
 _WCRTLINK int __F_NAME(atoi,_wtoi)( const CHAR_TYPE *p )  /* convert ASCII string to integer */
-    {
-        register int value;
-        CHAR_TYPE    sign;
+{
+    int             value;
+    CHAR_TYPE       sign;
 
-        __ptr_check( p, 0 );
+    __ptr_check( p, 0 );
 
-        while( __F_NAME(isspace,iswspace)( *p ) ) ++p;
-        sign = *p;
-        if( sign == '+' || sign == '-' ) ++p;
-        value = 0;
-        while( __F_NAME(isdigit,iswdigit)(*p) ) {
-            value = value * 10 + *p - '0';
-            ++p;
-        }
-        if( sign == '-' ) value = - value;
-        return( value );
+    while( __F_NAME(isspace,iswspace)( *p ) )
+        ++p;
+    sign = *p;
+    if( sign == '+' || sign == '-' )
+        ++p;
+    value = 0;
+    while( __F_NAME(isdigit,iswdigit)(*p) ) {
+        value = value * 10 + *p - '0';
+        ++p;
     }
+    if( sign == '-' )
+        value = - value;
+    return( value );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit threading routines.
 *
 ****************************************************************************/
 
@@ -36,6 +35,8 @@
 #define INCL_DOSEXCEPTIONS
 #include <wos2.h>
 
+#include <process.h>
+#include <stddef.h>
 #include <string.h>
 #include <dos.h>
 #include <float.h>
@@ -44,22 +45,17 @@
 #include "stacklow.h"
 #include "sigtab.h"
 #include "rtdata.h"
-#include "extfunc.h"
 #include "trdlist.h"
 #include "mthread.h"
+#include "widechar.h"
+#include "initarg.h"
+#include "cthread.h"
 
 #pragma aux __threadstksize "*"
 extern  unsigned        __threadstksize;
 
-extern  int             __Is_DLL;
-
-extern  thread_data     **__InitThreadProcessing(void);
-extern  void            __InitMultipleThread(void);
-extern  unsigned        __threadstack(void);
-extern  void            (*__sig_init_rtn)(void);
-extern  void            (*__sig_fini_rtn)(void);
-
-extern  void            _endthread( void );
+extern  void            __InitMultipleThread( void );
+extern  unsigned        __threadstack( void );
 
 typedef struct thread_args {
     thread_fn   *rtn;
@@ -68,8 +64,8 @@ typedef struct thread_args {
 } thread_args;
 
 
-static APIENTRY begin_thread_helper( thread_args *td )
-/****************************************************/
+static void APIENTRY begin_thread_helper( thread_args *td )
+/*********************************************************/
 {
     thread_fn                   *rtn;
     void                        *arg;

@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MDI container window.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "window.h"
 
 static char *className = "MDICLIENT";
@@ -49,17 +47,19 @@ window_id CreateContainerWindow( RECT *size )
     HWND    container;
     CLIENTCREATESTRUCT client;
 
-    client.hWindowMenu = NULL;
+    client.hWindowMenu = (HMENU)NULLHANDLE;
     client.idFirstChild = 3000; // some arbitrary number that doesn't conflict
 
     container = CreateWindow( className, "Container",
                 WS_CHILD | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL | WS_VISIBLE,
                 size->left, size->top,
                 size->right - size->left, size->bottom - size->top,
-                Root, (HMENU)NULL, InstanceHandle, (LPVOID)&client );
+                Root, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
     SetWindowLong( container, 0, 0 );
     oldContainerProc =(WNDPROC)GetWindowLong( container, GWL_WNDPROC );
-    SetWindowLong( container, GWL_WNDPROC, (LONG)MakeProcInstance((FARPROC)ContainerWindowProc, InstanceHandle));
+    SetWindowLong( container, GWL_WNDPROC,
+                   (LONG)MakeProcInstance( (FARPROC)ContainerWindowProc,
+                                           InstanceHandle ) );
     SetScrollRange( container, SB_VERT, 1, 1, FALSE );
     SetScrollRange( container, SB_HORZ, 1, 1, FALSE );
     return( container );
@@ -76,6 +76,6 @@ LONG WINEXP ContainerWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lpar
         return( SendMessage( Root, msg, wparam, lparam ) );
         break;
     }
-    return( CallWindowProc( (WNDPROC)oldContainerProc, hwnd, msg, wparam, lparam ));
+    return( CallWindowProc( (WNDPROC)oldContainerProc, hwnd, msg, wparam, lparam ) );
 
 } /* ContainerWindowProc */

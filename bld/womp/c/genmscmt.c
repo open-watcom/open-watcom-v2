@@ -52,7 +52,7 @@ STATIC int doDefn( obj_rec *objr, pobj_state *state ) {
     if( Can2MsOS2Flat() && ObjFLATIndex == 0 ) {
         /* add FLAT null GRPDEF for OS/2 2.0 */
         lnames = PObjNewLnames( 1 );
-        ObjAttachData( lnames, MS_FLAT, MS_FLAT_LEN );
+        ObjAttachData( lnames, (uint_8 *) MS_FLAT, MS_FLAT_LEN );
         ObjRSeek( lnames, MS_FLAT_LEN );
         ObjTruncRec( lnames );
         grpdef = PObjNewGrpdef();
@@ -67,7 +67,7 @@ STATIC int doDefn( obj_rec *objr, pobj_state *state ) {
     coment = ObjNewRec( CMD_COMENT );
     coment->d.coment.attr = 0x00;
     coment->d.coment.class = CMT_MS_END_PASS_1;
-    ObjAttachData( coment, "\x1", 1 );
+    ObjAttachData( coment, (uint_8 *) "\x1", 1 );
     ObjRSeek( coment, 0 );
     PObjEnqueue( coment );
     return( 0 );
@@ -86,7 +86,7 @@ STATIC int doTheadr( obj_rec *objr, pobj_state *state ) {
     coment = ObjNewRec( CMD_COMENT );
     coment->d.coment.attr = 0x00;
     coment->d.coment.class = CMT_MS_OMF;
-    ObjAttachData( coment, "\x1" "CV", 3 );
+    ObjAttachData( coment, (uint_8 *) "\x1" "CV", 3 );
     ObjRSeek( coment, 0 );
     PObjEnqueue( coment );
     return( 0 );

@@ -1,0 +1,43 @@
+builtin_trap = 1
+
+nlm_trap_objs = &
+    nlmfile.obj &
+    nlmclib.obj &
+    nlmio.obj &
+    nlmacc.obj &
+    nlmintr.obj &
+    x86cpu.obj &
+    misc7386.obj &
+    supp.obj &
+    core.obj
+
+!ifndef test
+
+extra_objs += $(nlm_trap_objs)
+
+!endif
+
+extra_srcs = ;$(trap_dir)/lcl/nlm/c;$(trap_dir)/lcl/nlm/asm
+inc_dirs   = -I"$(trap_dir)/lcl/nlm/h"
+
+extra_c_flags = -D__NW$(nlm_ver)0__
+!ifeq release 0
+extra_c_flags += -DDEBUG_ME
+!endif
+!ifeq nwlib libc
+extra_c_flags += -D__NETWARE_LIBC__
+!endif
+
+extra_a_flags = -ms -3s
+
+extra_linker5 = module libc
+extra_linker4 = module clib
+extra_linker3 =
+extra_linker = $(extra_linker$(nlm_ver)) debug all debug Novell
+!ifneq release 0
+name= $(srv)serv$(nlm_ver)
+!else
+name= $(srv)srv$(nlm_ver)
+!endif
+
+!include $(trap_dir)/lcl/lcl.mif

@@ -24,40 +24,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Functions to replace those in mem.c in commonui.
 *
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include "wrdll.h"
 
-/* functions to replace those in mem.c in SDK/MISC */
-
+/*
+ * MemStart
+ */
 void MemStart( void )
 {
-#if !defined(__386__) && !defined(__AXP__)
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+#if !defined( __386__ ) && !defined( __AXP__ )
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
-}
 
+} /* MemStart */
+
+/*
+ * MemAlloc
+ */
 void *MemAlloc( unsigned size )
 {
     void *p;
 
     p = WRMemAlloc( size );
 
-    if( p ) {
+    if( p != NULL ) {
         memset( p, 0, size );
     }
 
     return( p );
-}
 
+} /* MemAlloc */
+
+/*
+ * MemReAlloc
+ */
 void *MemReAlloc( void *ptr, unsigned size )
 {
     void *p;
@@ -65,10 +73,14 @@ void *MemReAlloc( void *ptr, unsigned size )
     p = WRMemRealloc( ptr, size );
 
     return( p );
-}
 
+} /* MemReAlloc */
+
+/*
+ * MemFree
+ */
 void MemFree( void *ptr )
 {
     WRMemFree( ptr );
-}
 
+} /* MemFree */

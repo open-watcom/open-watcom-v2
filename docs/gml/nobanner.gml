@@ -1,0 +1,28 @@
+:INCLUDE file="BANNER".
+:LAYOUT.
+:BANNER
+	place=topodd
+	docsect=body
+:BANREGION
+	refnum=1
+	contents=none
+:eBANREGION
+:BANREGION
+	refnum=2
+	contents=none
+:eBANREGION
+:eBANNER
+:BANNER
+	place=topeven
+	docsect=body
+:BANREGION
+	refnum=1
+	contents=none
+:eBANREGION
+:BANREGION
+	refnum=2
+	contents=none
+:eBANREGION
+:eBANNER
+:CONVERT.BOOKLAY.LAY
+:eLAYOUT.

@@ -40,8 +40,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int WR_EXPORT WRSetLBoxWithStr( HWND lbox, char *str, void *data );
-extern int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode );
-extern char * WR_EXPORT WRGetResName( WResResNode *rnode, uint_16 type );
+extern int      WR_EXPORT WRSetLBoxWithStr( HWND lbox, char *str, void *data );
+extern int      WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode );
+extern char *   WR_EXPORT WRGetResName( WResResNode *rnode, uint_16 type );
 
 #endif

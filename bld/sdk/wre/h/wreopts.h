@@ -43,10 +43,10 @@
 /****************************************************************************/
 typedef enum
 {
-  WREOptScreenRECT
-, WREOptScreenMax
-, WREOptLastDir
-, WREOptLastFilter
+    WREOptScreenRECT,
+    WREOptScreenMax,
+    WREOptLastDir,
+    WREOptLastFilter
 } WREOptReq;
 
 /****************************************************************************/
@@ -56,11 +56,11 @@ typedef enum
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WREOptsShutdown       ( void );
-extern void  WREGetScreenPosOption ( RECT * );
-extern void  WRESetScreenPosOption ( RECT * );
-extern void  WREInitOpts           ( void );
-extern int   WREGetOption          ( WREOptReq );
-extern int   WRESetOption          ( WREOptReq, int );
+extern void WREOptsShutdown( void );
+extern void WREGetScreenPosOption( RECT * );
+extern void WRESetScreenPosOption( RECT * );
+extern void WREInitOpts( void );
+extern int  WREGetOption( WREOptReq );
+extern int  WRESetOption( WREOptReq, int );
 
 #endif

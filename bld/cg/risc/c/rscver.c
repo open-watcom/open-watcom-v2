@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction verification routines for RISC architectures.
 *
 ****************************************************************************/
 
@@ -33,6 +32,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "vergen.h"
@@ -46,9 +46,9 @@ extern  bool    OtherVerify( vertype, instruction *, name *, name *, name * );
 extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
 
-static  bool    ByteConst( name *operand ) {
-/******************************************/
-
+static  bool    ByteConst( name *operand )
+/****************************************/
+{
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
             if( operand->c.int_value_2 == 0 ) {
@@ -60,9 +60,9 @@ static  bool    ByteConst( name *operand ) {
     return( FALSE );
 }
 
-static  bool    HalfWordConst( name *operand ) {
-/**********************************************/
-
+static  bool    HalfWordConst( name *operand )
+/********************************************/
+{
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
             if( operand->c.int_value_2 == 0 ) {
@@ -78,9 +78,9 @@ static  bool    HalfWordConst( name *operand ) {
     return( FALSE );
 }
 
-static  bool    UHalfWordConst( name *operand ) {
-/***********************************************/
-
+static  bool    UHalfWordConst( name *operand )
+/*********************************************/
+{
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
             if( operand->c.int_value_2 == 0 ) {
@@ -92,24 +92,22 @@ static  bool    UHalfWordConst( name *operand ) {
     return( FALSE );
 }
 
-static  bool    Is64BitConst( name *operand ) {
-/*********************************************/
-
-    // return TRUE if constant is not a 32-bit (canonical) const
+static  bool    Is64BitConst( name *operand )
+/*******************************************/
+{
+    // Return TRUE if constant is not a 32-bit (canonical) const
+    // A canonical 64-bit constant is one whose bits 63:32 == bit 31
     if( operand->c.const_type == CONS_ABSOLUTE ) {
-        if( operand->c.int_value_2 != 0 ) {
-            if( operand->c.int_value_2 != -1 ||
-                operand->c.int_value >= 0 ) {
-                return( TRUE );
-            }
+        if( operand->c.int_value_2 != (operand->c.int_value >> 31) ) {
+            return( TRUE );
         }
     }
     return( FALSE );
 }
 
-static  bool    Symmetric( opcode_defs opcode ) {
-/***********************************************/
-
+static  bool    Symmetric( opcode_defs opcode )
+/*********************************************/
+{
     switch( opcode ) {
     case OP_ADD:
     case OP_EXT_ADD:
@@ -123,18 +121,18 @@ static  bool    Symmetric( opcode_defs opcode ) {
     return( FALSE );
 }
 
-static  type_class_def  InsTypeClass( instruction *ins ) {
-/********************************************************/
-
+static  type_class_def  InsTypeClass( instruction *ins )
+/******************************************************/
+{
     if( ins->head.opcode == OP_CONVERT ) {
         return( ins->base_type_class );
     }
     return( ins->type_class );
 }
 
-static  bool    Aligned( name *op, type_length align, type_class_def tipe ) {
-/***************************************************************************/
-
+static  bool    Aligned( name *op, type_length align, type_class_def tipe )
+/*************************************************************************/
+{
     type_length         natural;
     type_length         actual;
 
@@ -170,16 +168,16 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe ) {
             actual = FlagsToAlignment( op->i.index_flags );
         }
         if( ( op->i.constant % 8 ) != 0 ) {
-            actual = __min( actual, op->i.constant & 0x07 );
+            actual = min( actual, op->i.constant & 0x07 );
         }
         return( align <= actual );
     }
     return( FALSE );
 }
 
-extern  bool    DoVerify( vertype kind, instruction *ins ) {
-/**********************************************************/
-
+extern  bool    DoVerify( vertype kind, instruction *ins )
+/********************************************************/
+{
     name                *op;
 
     switch( kind ) {
@@ -210,10 +208,13 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
             TypeClassSize[ ins->type_class ] >= 4 ) return( FALSE );
 #endif
         return( HalfWordConst( ins->operands[ 0 ] ) );
-    case V_AXPBRANCH:
+    case V_AXPBRANCH:   // FIXME: appears to be unused!
         op = ins->operands[ 1 ];
         return( ins->result == NULL && op->n.class == N_CONSTANT &&
                 op->c.const_type == CONS_ABSOLUTE && op->c.int_value == 0 );
+    case V_MIPSBRANCH:
+        return( ins->result == NULL && (ins->head.opcode == OP_CMP_EQUAL
+                || ins->head.opcode == OP_CMP_NOT_EQUAL) );
     case V_RESNOTNULL:
         return( ins->result != NULL );
     case V_RESNULL:

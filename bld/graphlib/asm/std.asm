@@ -32,7 +32,7 @@
 
     name std
 
-ifdef _386
+ifdef __386__
     _DATA segment word public 'DATA'
 else
     StdFont_DATA segment para 'FONT_DATA'
@@ -275,7 +275,7 @@ db   20,  19,  19,  16,  19, -99,  16,  19,  18,  18,  20,  16,  21,  14
 db   21,  11,  20,   9,  19,   8,  17,   7,  15,   7,  13,   8,  12,   9
 db   11,  12
 
-ifdef _386
+ifdef __386__
     _DATA ends
 else
     StdFont_DATA ends

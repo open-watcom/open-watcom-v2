@@ -1,0 +1,32 @@
+pfx__ =../../../
+__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
+
+libs = $+ &
+    $(pfx__)alias$(__sfx) &
+#    $(pfx__)cgsupp$(__sfx) &
+    $(pfx__)char$(__sfx) &
+    $(pfx__)conio$(__sfx) &
+    $(pfx__)convert$(__sfx) &
+    $(pfx__)direct$(__sfx) &
+    $(pfx__)environ$(__sfx) &
+    $(pfx__)file$(__sfx) &
+    $(pfx__)fpu$(__sfx) &
+    $(pfx__)handleio$(__sfx) &
+    $(pfx__)heap$(__sfx) &
+    $(pfx__)linux$(__sfx) &
+    $(pfx__)math$(__sfx) &
+    $(pfx__)mbyte$(__sfx) &
+    $(pfx__)memory$(__sfx) &
+    $(pfx__)misc$(__sfx) &
+    $(pfx__)mthread$(__sfx) &
+    $(pfx__)posix$(__sfx) &
+    $(pfx__)process$(__sfx) &
+    $(pfx__)search$(__sfx) &
+    $(pfx__)startup$(__sfx) &
+    $(pfx__)streamio$(__sfx) &
+    $(pfx__)string$(__sfx) &
+    $(pfx__)time$(__sfx) &
+    $-
+
+pfx__ =
+__sfx =

@@ -24,20 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Utilities for handling imports and exports.
 *
 ****************************************************************************/
 
 
-/*
-   IMPEXP : utilities for handling imports and exports
-
-*/
-
 #include <string.h>
-#include <malloc.h>
 #include <ctype.h>
+#include "walloca.h"
 #include "linkstd.h"
 #include "msg.h"
 #include "wlnkmsg.h"
@@ -56,6 +50,9 @@
 #include "loados2.h"
 #include "loadpe.h"
 #include "impexp.h"
+
+static void ReadOldLib( void );
+static void ReadNameTable( f_handle the_file );
 
 static entry_export * FindPlace( entry_export *exp )
 /**************************************************/
@@ -103,7 +100,7 @@ static entry_export *FreeAnExport( entry_export *exp )
     return( next );
 }
 
-extern void FreeExportList( void )
+void FreeExportList( void )
 /********************************/
 {
     entry_export *  exp;
@@ -115,7 +112,7 @@ extern void FreeExportList( void )
     }
 }
 
-extern void AddToExportList( entry_export *exp )
+void AddToExportList( entry_export *exp )
 /**********************************************/
 {
     entry_export **     owner;
@@ -190,7 +187,7 @@ static unsigned CheckStdCall( char *name, unsigned len )
     return chop;
 }
 
-extern entry_export * AllocExport( char *name, unsigned len )
+entry_export * AllocExport( char *name, unsigned len )
 /***********************************************************/
 {
     entry_export *  exp;
@@ -212,9 +209,7 @@ extern entry_export * AllocExport( char *name, unsigned len )
                 len -= chop;
             }
         }
-        ReserveStringTable( &PermStrings, len + 1 );
-        exp->name = AddStringTable( &PermStrings, name, len );
-        CharStringTable( &PermStrings, '\0' );
+        exp->name = AddSymbolStringTable( &PermStrings, name, len );
     }
     exp->impname = NULL;
     exp->iopl_words = 0;
@@ -226,7 +221,7 @@ extern entry_export * AllocExport( char *name, unsigned len )
 #define EXPDEF_RESIDENT 0x40
 #define EXPDEF_IOPLMASK 0x1F
 
-extern void MSExportKeyword( length_name *expname, length_name *intname,
+void MSExportKeyword( length_name *expname, length_name *intname,
                              unsigned flags, unsigned ordinal )
 /**********************************************************************/
 // Process the Microsoft Export keyword.
@@ -238,9 +233,9 @@ extern void MSExportKeyword( length_name *expname, length_name *intname,
     exp->iopl_words = flags & EXPDEF_IOPLMASK;
     exp->isresident = (flags & EXPDEF_RESIDENT) != 0;
     if( intname->len != 0 ) {
-        exp->sym = SymXOp( ST_CREATE|ST_REFERENCE, intname->name, intname->len);
+        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, intname->name, intname->len);
     } else {
-        exp->sym = SymXOp( ST_CREATE|ST_REFERENCE, expname->name, expname->len);
+        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len);
     }
     if( LinkFlags & STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.
@@ -253,7 +248,7 @@ extern void MSExportKeyword( length_name *expname, length_name *intname,
     AddToExportList( exp );
 }
 
-extern dll_sym_info * AllocDLLInfo( void )
+dll_sym_info * AllocDLLInfo( void )
 /****************************************/
 {
     dll_sym_info * dll;
@@ -263,7 +258,7 @@ extern dll_sym_info * AllocDLLInfo( void )
     return dll;
 }
 
-extern void FreeImport( dll_sym_info * dll )
+void FreeImport( dll_sym_info * dll )
 /******************************************/
 {
     CarveFree( CarveDLLInfo, dll );
@@ -289,10 +284,10 @@ static symbol * GetIATSym( symbol *sym )
     memcpy( iatname + prefixlen, name, namelen );
     prefixlen += namelen;
     iatname[prefixlen] = '\0';
-    return SymOp( ST_CREATE, iatname, prefixlen );
+    return( SymOp( ST_CREATE, iatname, prefixlen ) );
 }
 
-extern void MSImportKeyword( symbol *sym, length_name *modname,
+void MSImportKeyword( symbol *sym, length_name *modname,
                              length_name *extname, unsigned long ordinal )
 /************************************************************************/
 /* process the MS import keyword definition */
@@ -325,7 +320,7 @@ extern void MSImportKeyword( symbol *sym, length_name *modname,
     }
 }
 
-extern void KillDependantSyms( symbol *sym )
+void KillDependantSyms( symbol *sym )
 /******************************************/
 {
     if( !(FmtData.type & MK_PE) ) return;
@@ -333,7 +328,7 @@ extern void KillDependantSyms( symbol *sym )
     sym->info |= SYM_KILL;
 }
 
-extern void AssignOrdinals( void )
+void AssignOrdinals( void )
 /********************************/
 /* assign ordinal values to entries in the export list */
 {
@@ -391,7 +386,7 @@ static void ReadOldLib( void )
     fname = FmtData.u.os2.old_lib_name;
     the_file = QOpenR( fname );
     QRead( the_file, &head, sizeof(dos_exe_header), fname );
-    if( head.dos.signature != 0x5A4D || head.dos.reloc_offset != 0x40 ) {
+    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
         LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
     } else {
         QSeek( the_file, 0x3c, fname );
@@ -441,7 +436,7 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-extern void CheckExport( char * name, unsigned_16 ordinal,
+void CheckExport( char * name, unsigned_16 ordinal,
                          int (*compare_rtn)(const char *,const char *))
 /*********************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
@@ -501,7 +496,7 @@ static void ReadNameTable( f_handle the_file )
     }
 }
 
-extern unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
+unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
 /*********************************************************************/
 {
     unsigned_16     max_ord;
@@ -531,25 +526,25 @@ extern unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
     return( exp->ordinal );
 }
 
-extern char * ImpModuleName( dll_sym_info *dll )
+char * ImpModuleName( dll_sym_info *dll )
 /**********************************************/
 {
     return dll->m.modnum->name;
 }
 
-extern bool IsSymElfImported( symbol *s )
+bool IsSymElfImported( symbol *s )
 /***************************************/
 {
     return IS_SYM_IMPORTED(s);
 }
 
-extern bool IsSymElfExported( symbol *s )
+bool IsSymElfExported( symbol *s )
 /***************************************/
 {
     return FmtData.u.elf.exportallsyms || (s->info & SYM_EXPORTED);
 }
 
-extern bool IsSymElfImpExp( symbol *s )
+bool IsSymElfImpExp( symbol *s )
 /*************************************/
 {
     return IsSymElfImported(s) || IsSymElfExported(s);

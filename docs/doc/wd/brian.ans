@@ -1,0 +1,116 @@
+1. Command line option differences?
+
+	The -console option has been enhanced over what's in the
+	documentation (and in the usage message I've just noticed). It
+	now will take a full device specification as well as just a
+	number. If you use a full device name, e.g.:
+
+		-console=//23/dev/ser1
+
+	WD will use that device for it's input and output. In that case,
+	the debugger/application screen flipping features are disabled.
+	You can also optionally follow the device name with a colon and
+	a terminal type. E.g.:
+
+		-con=/dev/ttyp1:vt240
+
+	This will let the debugger know what kind of terminal it's talking
+	to so it can set up the UI library appropriately.
+
+
+	There's also now a -COlumns=<n> option (which is in the usage) that
+	will set the number of columns of the screen/window that the debugger
+	is using.
+
+	Also, there's a -XConfig=<string> to pass X Windows configuration
+	options to xqsh.
+
+
+2. Name of the configuration file?
+
+	The way it works is as follows. When wd starts up it looks for
+	".wdrc" in all the usual places (CWD, WD_PATH, /usr/watcom/<ver>/wd,
+	/usr/watcom/wd). If it is found, it is processed as the default
+	configuration file. If .wdrc is not found, the file specified by
+	the -Invoke command line option is looked for in all of the usual
+	places (if -invoke isn't specified, "wd.dbg" is the default name).
+	An error will be reported if this file is not found. The file
+	"setup.dbg" is not a file name that is known by the debugger code
+	in any way, shape, or form - what it is, however, is a file used
+	in our supplied default profile for the debugger (wd.dbg invokes
+	setup.dbg). Setup.dbg also makes use of the "configfile" debugger
+	command. This marks it as the default file name when the debugger
+	configuration is being written out. It is only the default though.
+	If we changed the name of setup.dbg to something else in our default
+	profile, the name of the default filename for saving the config
+	would change as well.
+
+3. Do you have to be root to run the dumper?
+
+	I'll let you guys figure that out.
+
+4. Is a dump file produced when wd is controlling the program?
+
+	No. Wd turns off the signal bits before terminating the program,
+	so dumper never sees anything that would cause it to create a
+	dump file.
+
+5. When will double clicking in Photon work?
+
+	It's fixed here, it'll be in the next upload of the debugger.
+
+6. Pressing alt-space doesn't work.
+
+7. Ctrl-C, Ctrl-H, Ctrl-I doesn't work in Photon/X/terminfo environments.
+
+	Ctrl-C is reserved for interrupting the debugger, and we can't
+	tell the difference between the others and backspace/tab in those
+	environments.
+
+8. Pressing shift and cursor keys don't cause text selection.
+
+	We can't get the information in a windowing environment (I don't
+	think that this is very important since people will most likely
+	be doing the selection with the mouse in this case). Running on
+	a console, the lying, cheating Dev.con :-) stops this from working.
+
+9. Mentioning DLL's
+
+	I don't know how you want to work this in the doc, but here's the
+	deal. The QNX debugger can also be used to remote debug something
+	on OS/2, Windows, or Windows NT, in which case you will be seeing
+	DLL's. Debugging a QNX 4.x app, the only shared library you'll be
+	seeing is the system shared library Slib16/Slib32. The debugger
+	doesn't get told about any other shared libraries being used (that's
+	something that the trap file has to be told about by the system).
+	I believe that Peter van der Veen is putting in support in the
+	Neutrino trap file so that the debugger will know about all the
+	shared libraries in that case.
+
+10. Missing word.
+
+	Yup, you're right. There's a word missing. Unwind in the calls window
+	and the undo menu are equivalent.
+
+12. Mentioning FORTRAN.
+
+	Well, it is and it isn't relevant. You could be cross debugging
+	something on another system where we do support FORTRAN. Even on
+	QNX, there's nothing stopping a user from doing a:
+
+		set language fortran
+
+	command and having his expressions interpreted using FORTRAN syntax
+	(if anyone's got a yen to do some complex arithmetic, they can do
+	a "set lang fortran" followed by a "? (1.0,4.5) + (4.3,6.1)" :-).
+
+13. Syntax of the configfile command.
+
+	The name of the file is obtained from the invoke file that the
+	command appears in (setup.dbg in the default case).
+
+14. System command.
+
+	I'm working on getting the problems resolved. Granted it's not a
+	terribly useful command under QNX, but I'll make it work.
+

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _displaycursor( short mode )
+_WCRTLINK short _WCI86FAR _CGRAPH _displaycursor( short mode )
 /*=============================================
 
    This routine establishes whether or not the cursor is to be displayed

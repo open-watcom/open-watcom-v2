@@ -36,7 +36,6 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"

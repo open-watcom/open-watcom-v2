@@ -45,29 +45,29 @@
 typedef void *toolbar;
 
 typedef struct {
-    TOOLDISPLAYINFO    dinfo;
-    TOOLITEMINFO      *items;
-    int                num_items;
+    TOOLDISPLAYINFO dinfo;
+    TOOLITEMINFO    *items;
+    int             num_items;
 } WToolBarInfo;
 
 typedef struct {
-    toolbar          tbar;
+    toolbar         tbar;
     WToolBarInfo    *info;
-    HWND             parent;
-    HWND             win;
-    RECT             last_pos;
+    HWND            parent;
+    HWND            win;
+    RECT            last_pos;
 } WToolBar;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WToolBar     *WCreateToolBar       ( WToolBarInfo *, HWND );
-extern void          WDestroyToolBar      ( WToolBar * );
-extern void          WShutdownToolBars    ( void );
-extern void          WFreeToolBarInfo     ( WToolBarInfo * );
-extern WToolBarInfo *WAllocToolBarInfo    ( int );
-extern void          WSetToolBarItemState ( WToolBar *, UINT, UINT );
-extern Bool          WCloseToolBar        ( WToolBar * );
-extern void          WFreeToolBar         ( WToolBar * );
+extern WToolBar     *WCreateToolBar( WToolBarInfo *, HWND );
+extern void         WDestroyToolBar( WToolBar * );
+extern void         WShutdownToolBars( void );
+extern void         WFreeToolBarInfo( WToolBarInfo * );
+extern WToolBarInfo *WAllocToolBarInfo( int );
+extern void         WSetToolBarItemState( WToolBar *, UINT, UINT );
+extern Bool         WCloseToolBar( WToolBar * );
+extern void         WFreeToolBar( WToolBar * );
 
 #endif

@@ -1,0 +1,199 @@
+@@@ pp01.pl @@@
+#line 1 "pp01.c"
+1
+#line 5 "pp01.c"
+5
+@@@ pp02.pl @@@
+#line 1 "pp02.c"
+1
+
+
+4
+@@@ pp03.pl @@@
+#line 1 "pp03.c"
+	1
+	
+	3
+@@@ pp04.pl @@@
+#line 1 "pp04.c"
+
+
+
+#line 1 "pp04.c"
+1
+ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd 
+3
+@@@ pp04.pl0 @@@
+#line 1 "pp04.c"
+
+
+
+#line 1 "pp04.c"
+1
+ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd 
+3
+@@@ pp05.plc @@@
+#line 1 "pp05.c"
+int x;
+	int y;// dfdsf 
+int 		z;/* dfgdhjsf */ 
+int w;
+@@@ pp06.plc @@@
+#line 1 "pp06.c"
+
+int i =  > >1;
+@@@ pp07.plc @@@
+#line 1 "pp07.c"
+
+#pragma on(blah);
+char a[] = { '\'', '\\', '\0', 'a', 'cd' };'a
+@@@ pp08.plc @@@
+#line 1 "pp08.c"
+#line 1 "pp08.h"
+int line1_pp08h;
+
+int line3_pp08h;
+
+int line5_pp08h;
+#line 1 "pp08a.h"
+// line 1 pp08a.h
+/* line 2 pp08a.h */
+#line 1 "pp08b.h"
+
+
+
+// line 4 pp08b.h
+int line5_pp08b;
+
+
+#line 3 "pp08a.h"
+
+/* line 4 pp08a.h */
+// line 5 pp08a.h
+#line 6 "pp08.h"
+/* line 6 pp08.h */
+int line7_pp08h;
+#line 1 "pp08.c"
+	// line 1 pp08.c
+
+// line 3 pp08.c
+@@@ pp09.plc @@@
+#line 1 "pp09.c"
+#pragma on\
+(check_stack);
+@@@ pp10.plc @@@
+#line 1 "pp10.c"
+#line 1 "pp10.c"
+ 1
+ 2
+#line 3 "a"
+ 3
+ 4
+#line 4 "b"
+ 4
+ 5
+@@@ pp11.plc @@@
+#line 1 "pp11.c"
+// 3.8.3.5 ANSI C standard
+
+
+
+
+
+
+
+
+
+
+
+
+ f(2*(y+1))  +  f(2*(f(2*(z[0]))))  %  f(2*(0)) + t (1);
+ f(2*(2+(3,4)-0,1))  |  f(2*(~ 5))  &   f(2*(0,1)) ^ m(0,1) ;
+@@@ pp12.plc @@@
+#line 1 "pp12.c"
+// -p
+
+
+extern int get  (enum aba a) ;
+
+extern int get  
+
+(enum aba a, void *b) ;
+@@@ pp13.pl @@@
+#line 1 "pp13.c"
+pp13.c 1
+#line 5 "pp13.c"
+pp13.c 5
+
+pp13.c 7
+#line 1 "pp13.h"
+pp13.h 1
+#line 5 "pp13.h"
+pp13.h 5
+
+pp13.h 7
+#line 8 "pp13.c"
+
+pp13.c 9
+@@@ pp14.plc @@@
+#line 1 "pp14.c"
+
+ //  int x;
+@@@ pp15.pl0 @@@
+#line 1 "pp15.c"
+
+
+
+
+ extern JNINativeMethod java_lang_Class_Natives[]; extern VMuint Number_java_lang_Class_Natives; 
+ extern JNINativeMethod java_lang_ClassLoader_Natives[]; extern VMuint Number_java_lang_ClassLoader_Natives; 
+ extern JNINativeMethod java_lang_Compiler_Natives[]; extern VMuint Number_java_lang_Compiler_Natives; 
+ extern JNINativeMethod java_lang_Double_Natives[]; extern VMuint Number_java_lang_Double_Natives; 
+ extern JNINativeMethod java_lang_Float_Natives[]; extern VMuint Number_java_lang_Float_Natives; 
+ extern JNINativeMethod java_lang_Math_Natives[]; extern VMuint Number_java_lang_Math_Natives; 
+ extern JNINativeMethod java_lang_Object_Natives[]; extern VMuint Number_java_lang_Object_Natives; 
+ extern JNINativeMethod java_lang_Runtime_Natives[]; extern VMuint Number_java_lang_Runtime_Natives; 
+ extern JNINativeMethod java_lang_SecurityManager_Natives[]; extern VMuint Number_java_lang_SecurityManager_Natives; 
+ extern JNINativeMethod java_lang_String_Natives[]; extern VMuint Number_java_lang_String_Natives; 
+ extern JNINativeMethod java_lang_System_Natives[]; extern VMuint Number_java_lang_System_Natives; 
+ extern JNINativeMethod java_lang_Thread_Natives[]; extern VMuint Number_java_lang_Thread_Natives; 
+ extern JNINativeMethod java_lang_Throwable_Natives[]; extern VMuint Number_java_lang_Throwable_Natives; 
+ extern JNINativeMethod java_lang_reflect_Array_Natives[]; extern VMuint Number_java_lang_reflect_Array_Natives; 
+ extern JNINativeMethod java_lang_reflect_Constructor_Natives[]; extern VMuint Number_java_lang_reflect_Constructor_Natives; 
+ extern JNINativeMethod java_lang_reflect_Field_Natives[]; extern VMuint Number_java_lang_reflect_Field_Natives; 
+ extern JNINativeMethod java_lang_reflect_Method_Natives[]; extern VMuint Number_java_lang_reflect_Method_Natives; 
+
+@@@ pp16.plc @@@
+#line 1 "pp16.c"
+/**********************************************************************
+**********************************************************************/
+
+#line 1 "pp16.h"
+int x;
+#line 4 "pp16.c"
+
+
+int y;
+@@@ pp17.plc @@@
+#line 1 "pp17.c"
+/*****
+ pp17.c
+\*****/
+#line 1 "pp17a.gh"
+/**** pp17a.gh ****/
+int pp17a_line2;
+#line 4 "pp17.c"
+
+int line5;
+#line 1 "pp17b.gh"
+/**** pp17b.gh ****/
+int pp17b_line2;
+#line 6 "pp17.c"
+
+int line7;
+#line 1 "pp17c.gh"
+/**** pp17c.gh ****/
+int pp17c_line2;
+#line 8 "pp17.c"
+
+int line9;

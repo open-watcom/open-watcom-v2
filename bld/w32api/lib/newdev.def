@@ -1,0 +1,10 @@
+LIBRARY NEWDEV.DLL
+EXPORTS
+DiInstallDevice@24
+DiInstallDriverA@16
+DiInstallDriverW@16
+DiRollbackDriver@20
+DiShowUpdateDevice@20
+DiUninstallDevice@20
+UpdateDriverForPlugAndPlayDevicesA@20
+UpdateDriverForPlugAndPlayDevicesW@20

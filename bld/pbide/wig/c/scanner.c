@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Lexical scanner.
 *
 ****************************************************************************/
 
@@ -40,16 +39,16 @@
 #include "types.h"
 #include "list.h"
 #include "sruinter.h"
-#include "ytab.h"
+#include "ytab.gh"
 #include "error.h"
 #include "mem.h"
 #include "filelist.h"
 #include "keywords.h"
 
+#include "sruparse.gh"
+
 #define ID_BUFLEN               (8*1024)
 #define BUF_SIZE_INCREMENT      1024
-
-extern YYSTYPE yylval;
 
 static BOOL     atEOF;                  /* have we reached end of file  */
 static BOOL     yyLineFini;             /* have we finished a line      */
@@ -67,8 +66,16 @@ static char     *yyFileName;            /* name of Current File         */
 static char     idBuffer[ID_BUFLEN];    /* delayed token destroy buffer */
 static int      idPtr;                  /* pointer to current token     */
 
-static void addToTok( char ch ) {
-/********************************/
+
+int wig_parse( void )
+/*******************/
+{
+    return yyparse();
+}
+
+static void addToTok( char ch )
+/*****************************/
+{
     if( yyTextLen == yyTextSize ) {
         yyTextSize += BUF_SIZE_INCREMENT;
         yyText = MemRealloc( yyText, yyTextSize );
@@ -77,17 +84,18 @@ static void addToTok( char ch ) {
     yyTextLen ++;
 
 }
-static void putBackChar( int c ) {
-/***********************************/
 
+static void putBackChar( int c )
+/******************************/
+{
     ungetc( c, yyFhdl );
     yyLineLen--;
 }
 
 
-static int nextChar( void ) {
-/********************************/
-
+static int nextChar( void )
+/*************************/
+{
     int         c;
 
     assert( yyFhdl );
@@ -106,9 +114,9 @@ static int nextChar( void ) {
     return( c );
 }
 
-static char *add2IdBuffer( char *src ) {
-/**************************************/
-
+static char *add2IdBuffer( char *src )
+/************************************/
+{
     int         len;
 
     assert( src );
@@ -124,9 +132,9 @@ static char *add2IdBuffer( char *src ) {
     return( idBuffer + idPtr - len );
 }
 
-BOOL InitLex( char *fname ) {
-/****************************/
-
+BOOL InitLex( char *fname )
+/*************************/
+{
     yyLineFini = FALSE;
     atEOF = FALSE;
 
@@ -151,9 +159,9 @@ BOOL InitLex( char *fname ) {
     return( FALSE );
 }
 
-void FiniLex( void ) {
-/*********************/
-
+void FiniLex( void )
+/******************/
+{
     fclose( yyFhdl );
     MemFree( yyFileName );
     MemFree( yyLine );
@@ -165,15 +173,15 @@ void FiniLex( void ) {
     yyLine = NULL;
 }
 
-int compKeywords( char *p1, keyword *p2 ) {
-/******************************************/
-
-    return( stricmp( p1, p2->key ) );
+int compKeywords( const void *p1, const void *p2 )
+/************************************************/
+{
+    return( stricmp( p1, ((const keyword *)p2)->key ) );
 }
 
-id_type checkKeyWord( char *text ) {
-/***********************************/
-
+id_type checkKeyWord( const char *text )
+/**************************************/
+{
     keyword             *item;
 
     item = bsearch( text, Statements,
@@ -198,9 +206,9 @@ enum {
     S_STRING_END
 };
 
-int yylex() {
-/************/
-
+int yylex( void )
+/***************/
+{
     unsigned    state;
     char        ch;
     unsigned    len;
@@ -279,11 +287,15 @@ int yylex() {
             return( ret );
         case S_STRING:
             ch = nextChar();
-            while( ch != '\"' ) {
-                if( ch == '\n' || ch == EOF ) {
+            while( ch != '\"' )
+            {
+                if( (ch == '\n') || (ch == (char)EOF) )
+                {
                     state = S_ERROR;
                     break;
-                } else if( ch == '~' ) {        //~ is the PB escape character
+                }
+                else if( ch == '~' )
+                {        //~ is the PB escape character
                     addToTok( ch );
                     ch = nextChar();
                 }
@@ -311,14 +323,16 @@ int yylex() {
             break;
         case S_SLASH_SLASH:
             ch = nextChar();
-            while( ch != '\n' && ch != EOF ) ch = nextChar();
+            while( (ch != '\n') && (ch != (char)EOF) )
+                ch = nextChar();
             putBackChar( ch );
             return( ST_COMMENT );
             break;
         case S_SLASH_STAR:
             ch = nextChar();
-            while( ch != '*' && ch != EOF ) ch = nextChar();
-            if( ch == EOF ) {
+            while( (ch != '*') && (ch != (char)EOF) )
+                ch = nextChar();
+            if( ch == (char)EOF ) {
                 state = S_ERROR;
                 putBackChar( ch );
             } else {
@@ -340,23 +354,23 @@ int yylex() {
     }
 }
 
-char *GetParsedLine( void ) {
-/***************************/
-
+char *GetParsedLine( void )
+/*************************/
+{
     return( yyLine );
 }
 
 
-BOOL LineFinished( void ) {
-/*************************/
-
+BOOL LineFinished( void )
+/***********************/
+{
     return( yyLineFini );
 }
 
 
-void    FinishLine( void ) {
-/**************************/
-
+void    FinishLine( void )
+/************************/
+{
     /* if necessary terminate line */
     if( yyLineLen ) {
         yyLine[ yyLineLen ] = 0;
@@ -365,9 +379,9 @@ void    FinishLine( void ) {
 }
 
 
-void    GetToEOS(void) {
+void    GetToEOS( void )
 /**********************/
-
+{
     int         c;
 
     /* process to end of statement, used for error handling */
@@ -385,4 +399,3 @@ void    GetToEOS(void) {
 
     yyLine[ yyLineLen ] = 0;
 }
-

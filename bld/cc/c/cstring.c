@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source code string literal processing.
 *
 ****************************************************************************/
 
@@ -38,9 +37,18 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifndef _MAX_PATH
+    #define _MAX_PATH (PATH_MAX+1)
+#endif
+#ifndef O_BINARY
+    #define O_BINARY 0
+#endif
+
 extern TREEPTR         CurFuncNode;
 
-static int OpenUnicodeFile( char *filename )
+static int RemoveEscapes( char *buf, const char *inbuf, size_t length );
+
+static int OpenUnicodeFile( const char *filename )
 {
     int         handle;
     char        fullpath[ _MAX_PATH ];
@@ -64,33 +72,26 @@ static int OpenUnicodeFile( char *filename )
 
 static void ReadUnicodeFile( int handle )
 {
-    int         i;
-    unsigned short unicode_table[256];
+    int             i;
+    unsigned short  unicode_table[256];
 
-    read( handle, unicode_table, 256 * sizeof(unsigned short) );
+    read( handle, unicode_table, 256 * sizeof( unsigned short ) );
     /* UniCode might be a FAR table */
-    for( i = 0; i <= 255; i++ ) {
-        UniCode[ i ] = unicode_table[i];
+    for( i = 0; i < 256; i++ ) {
+        UniCode[i] = unicode_table[i];
     }
 }
 
-char *LoadUnicodeTable( char *str )
+void LoadUnicodeTable( unsigned codePage )
 {
-    int         i;
     int         handle;
-    char        filename[8+1+3+1];
+    char        filename[ 20 ];
 
-    if( *str == '=' ) ++str;
-    strcpy( filename, "unicode." );
-    for( i = 8; i <= 10; i++ ) {
-        if( *str == '/' )  break;
-        if( *str == '\0' ) break;
-        if( *str == '-'  ) break;
-        if( *str == ' '  ) break;
-        if( *str == '\t' ) break;
-        filename[i] = *str++;
+    sprintf( filename, "unicode.%3.3u", codePage );
+    if( filename[ 11 ] != '\0' ) {
+        filename[ 7 ] = filename[ 8 ];
+        filename[ 8 ] = '.';
     }
-    filename[i] = '\0';
     handle = OpenUnicodeFile( filename );
     if( handle != -1 ) {
         ReadUnicodeFile( handle );
@@ -99,45 +100,75 @@ char *LoadUnicodeTable( char *str )
         CBanner();
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    return( str );
+    return;
 }
 
-void StringInit()
+void StringInit( void )
 {
-    int i;
+    int     i;
 
-    CStringList = 0;
-    CS_StringList = 0;
     for( i = 0; i < STRING_HASH_SIZE; ++i ) {
         StringHash[i] = 0;
     }
 }
 
+void FreeLiteral( STRING_LITERAL *str_lit )
+{
+    CMemFree( str_lit->literal );
+    CMemFree( str_lit );
+}
 
-STRING_LITERAL *GetLiteral()
+STRING_LITERAL *GetLiteral( void )
 {
     unsigned            len, len2;
+    char                *s;
     STRING_LITERAL      *str_lit;
     STRING_LITERAL      *p;
+    STRING_LITERAL      *q;
+    int                 is_wide;
 
-    len = RemoveEscapes( NULL );
-    str_lit = (STRING_LITERAL *)CMemAlloc( sizeof( STRING_LITERAL ) + len );
-    RemoveEscapes( str_lit->literal );
-    NextToken();
-    while( CurToken == T_STRING ) {
-        len2 = RemoveEscapes( NULL );
+    /* first we store the whole string in a linked list to see if
+       the end result is wide or not wide */
+    p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
+    q = NULL;
+    is_wide = 0;
+    do {
+        /* if one component is wide then the whole string is wide */
+        if( CompFlags.wide_char_string )
+            is_wide = 1;
+        if( q != NULL ) {
+            p = CMemAlloc( sizeof( STRING_LITERAL ) );
+            q->next_string = p;
+        }
+        q = p;
+        p->length = CLitLength;
+        p->next_string = NULL;
+        p->literal = Buffer;
+        Buffer = CMemAlloc( BufSize );
+    } while( NextToken() == T_STRING );
+    CompFlags.wide_char_string = is_wide;
+    /* then remove escapes (C99: translation phase 5), and only then
+       concatenate (translation phase 6), not the other way around! */
+    len = 1;
+    s = NULL;
+    q = str_lit;
+    do {
+        len2 = RemoveEscapes( NULL, q->literal, q->length );
         --len;
-        if( CompFlags.wide_char_string && len != 0 ) --len;
-        p = (STRING_LITERAL *)CMemAlloc( sizeof( STRING_LITERAL )
-                                     + len + len2 );
-        memcpy( p->literal, str_lit->literal, len );
-        RemoveEscapes( &p->literal[len] );
+        if( is_wide && len != 0 ) {
+            --len;
+        }
+        s = CMemRealloc( s, len + len2 + 1 );
+        RemoveEscapes( &s[len], q->literal, q->length );
         len += len2;
-        CMemFree( str_lit );
-        str_lit = p;
-        NextToken();
-    }
+        p = q->next_string;
+        if( q != str_lit )
+            FreeLiteral( q );
+        q = p;
+    } while ( q );
     CLitLength = len;
+    CMemFree( str_lit->literal );
+    str_lit->literal = s;
     str_lit->length = len;
     str_lit->flags = 0;
     str_lit->cg_back_handle = 0;
@@ -145,59 +176,62 @@ STRING_LITERAL *GetLiteral()
     return( str_lit );
 }
 
-int RemoveEscapes( char *buf )
+static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
 {
-    unsigned int        c;
-    int                 j;
-    unsigned int        saved_length;
-    char                error;
+    int                 c;
+    size_t              j;
+    bool                error;
+    const unsigned char *end;
+    const unsigned char *p = (const unsigned char *)inbuf;
 
     j = 0;
-    saved_length = CLitLength;
-    CLitLength = 0;
-    error = 0;
-    while( CLitLength < saved_length ) {
-        c = Buffer[CLitLength];
+    error = FALSE;
+    end = p + length;
+    while( p < end ) {
+        c = *p++;
         if( c == '\\' ) {
-            ++CLitLength;
-            c = ESCChar( Buffer[CLitLength], RTN_NEXT_BUF_CHAR, &error );
+            c = ESCChar( *p, &p, &error );
             if( CompFlags.wide_char_string ) {
-                if( buf ) buf[j] = c;
+                if( buf != NULL )
+                    buf[ j ] = c;
                 ++j;
                 c = c >> 8;                     /* 31-may-91 */
             }
         } else {
-            ++CLitLength;
-            if( CharSet[c] & C_DB ) {       /* if double-byte character */
+            if( CharSet[ c ] & C_DB ) {       /* if double-byte character */
                 if( CompFlags.jis_to_unicode &&
                     CompFlags.wide_char_string ) {      /* 15-jun-93 */
-                    c = (c << 8) + Buffer[CLitLength];
+                    c = (c << 8) + *p;
                     c = JIS2Unicode( c );
-                    if( buf ) buf[j] = c;
+                    if( buf != NULL )
+                        buf[ j ] = c;
                     c = c >> 8;
                 } else {
-                    if( buf ) buf[j] = c;
-                    c = Buffer[CLitLength];
+                    if( buf != NULL )
+                        buf[ j ] = c;
+                    c = *p;
                 }
                 ++j;
-                ++CLitLength;
+                ++p;
             } else if( CompFlags.wide_char_string ) {
                 if( CompFlags.use_unicode ) {   /* 05-jun-91 */
                     c = UniCode[ c ];
                 } else if( CompFlags.jis_to_unicode ) {
                     c = JIS2Unicode( c );
                 }
-                if( buf ) buf[j] = c;
+                if( buf != NULL )
+                    buf[ j ] = c;
                 ++j;
                 c = c >> 8;
             } else {
                 _ASCIIOUT( c );
             }
         }
-        if( buf )  buf[j] = c;
+        if( buf != NULL )
+            buf[ j ] = c;
         ++j;
     }
-    if( error != 0 && buf != NULL ) {                   /* 16-nov-94 */
+    if( error && buf != NULL ) {                   /* 16-nov-94 */
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }
@@ -205,7 +239,7 @@ int RemoveEscapes( char *buf )
     return( j );
 }
 
-static TYPEPTR StringLeafType()
+static TYPEPTR StringLeafType( void )
 {
     TYPEPTR     typ;
 
@@ -236,52 +270,45 @@ TREEPTR StringLeaf( int flags )
     TREEPTR             leaf_index;
     unsigned            hash;
 
-    strlit = 0;
+    strlit = NULL;
     new_lit = GetLiteral();
-    if( TargetSwitches & BIG_DATA ) {          /* 06-oct-88 */
-        if( ! CompFlags.strings_in_code_segment ) {         /* 01-sep-89 */
+    if( TargetSwitches & BIG_DATA ) {                   /* 06-oct-88 */
+        if( !CompFlags.strings_in_code_segment ) {      /* 01-sep-89 */
             if( new_lit->length > DataThreshold ) {
-                flags = FLAG_FAR;
+                flags |= FLAG_FAR;
             }
         }
     }
-    if( flags == FLAG_FAR )  CompFlags.far_strings = 1;
+    if( CompFlags.wide_char_string )
+        flags |= STRLIT_WIDE;
+    if( flags & FLAG_FAR )
+        CompFlags.far_strings = 1;
     hash = CalcStringHash( new_lit );
     if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {    /* 24-mar-92 */
-        strlit = StringHash[ hash ];
-        while( strlit != 0 ) {
-            if( strlit->length == new_lit->length  &&
-                strlit->flags == flags ) {
-                if( memcmp(strlit->literal, new_lit->literal,
-                                 new_lit->length) == 0 )
+        for( strlit = StringHash[ hash ]; strlit != NULL; strlit = strlit->next_string ) {
+            if( strlit->length == new_lit->length && strlit->flags == flags ) {
+                if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {
                     break;
+                }
             }
-            strlit = strlit->next_string;
         }
     }
-    if( strlit == 0 ) {
+    if( strlit == NULL ) {
         new_lit->flags = flags;
         ++LitCount;
         LitPoolSize += CLitLength;
-        leaf_index = LeafNode( OPR_PUSHSTRING );
-        leaf_index->op.string_handle = new_lit;
-        // set op.flags field
-        leaf_index->expr_type = StringLeafType();
-        if( CompFlags.strings_in_code_segment ) {       /* 01-sep-89 */
-            new_lit->next_string = CS_StringList;
-            CS_StringList = new_lit;
-        } else {
-            new_lit->next_string = StringHash[ hash ];
-            StringHash[ hash ] = new_lit;
-        }
+        new_lit->next_string = StringHash[ hash ];
+        StringHash[ hash ] = new_lit;
     } else {            // we found a duplicate
-        CMemFree( new_lit );
-        leaf_index = LeafNode( OPR_PUSHSTRING );
-        leaf_index->op.string_handle = strlit;
-        // set op.flags field
-        leaf_index->expr_type = StringLeafType();
-
+        FreeLiteral( new_lit );
+        new_lit = strlit;
     }
+
+    leaf_index = LeafNode( OPR_PUSHSTRING );
+    leaf_index->op.string_handle = new_lit;
+    // set op.flags field
+    leaf_index->expr_type = StringLeafType();
+
     if( CurFunc != NULL ) {                             /* 22-feb-92 */
         CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
     }

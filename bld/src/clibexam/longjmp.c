@@ -2,14 +2,14 @@
 #include <setjmp.h>
 jmp_buf env;
 
-rtn()
-  {
+void rtn()
+{
     printf( "about to longjmp\n" );
     longjmp( env, 14 );
-  }
+}
 
 void main()
-  {
+{
     int ret_val = 293;
 
     if( 0 == ( ret_val = setjmp( env ) ) ) {
@@ -19,4 +19,4 @@ void main()
     } else {
       printf( "back from longjmp %d\n", ret_val );
     }
-  }
+}

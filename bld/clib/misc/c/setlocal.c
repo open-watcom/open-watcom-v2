@@ -38,52 +38,43 @@
 #include "locales.h"
 #include "localset.h"
 
-#ifdef __WIDECHAR__
-static wchar_t *ValidLocales[] = {
-        L"C",           /* C_LOCALE */
-        L"",            /* NATIVE_LOCALE */
+static CHAR_TYPE *ValidLocales[] = {
+        STRING( "C" ),  /* C_LOCALE */
+        STRING( "" ),   /* NATIVE_LOCALE */
         NULL            /* INVALID_LOCALE */
 };
-#else
-static char *ValidLocales[] = {
-        "C",            /* C_LOCALE */
-        "",             /* NATIVE_LOCALE */
-        NULL            /* INVALID_LOCALE */
-};
-#endif
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE const *locale )
-    {
-        register int i;
+{
+    register int i;
 
-        _INITLOCALESETTING
-        if( category < LC_CTYPE  ||  category > LC_ALL ) {
-            return( NULL );
-        }
-        if( locale == NULL ) {
-            i = _LOCALESETTING[category];
-        } else {
-            i = C_LOCALE;
-            if( *locale != __F_NAME('\0',L'\0') ) {
-                for( ; ValidLocales[i]; ++i ) {
-                    if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 )  break;
-                }
-            }
-            if( i != INVALID_LOCALE ) {
-                _LOCALESETTING[category] = i;
-                if( category == LC_ALL ) {
-                    _LOCALESETTING[LC_COLLATE]  = i;
-                    _LOCALESETTING[LC_CTYPE]    = i;
-                    _LOCALESETTING[LC_NUMERIC]  = i;
-                    _LOCALESETTING[LC_TIME]     = i;
-                    _LOCALESETTING[LC_MONETARY] = i;
-#if defined( __QNX__ )
-                    _LOCALESETTING[LC_MESSAGES] = i;
-#endif
-                }
-            }
-        }
-        return( ValidLocales[ i ] );
+    _INITLOCALESETTING
+    if( category < LC_CTYPE  ||  category > LC_ALL ) {
+        return( NULL );
     }
-
+    if( locale == NULL ) {
+        i = _LOCALESETTING[category];
+    } else {
+        i = C_LOCALE;
+        if( *locale != NULLCHAR ) {
+            for( ; ValidLocales[i]; ++i ) {
+                if( __F_NAME(strcmp,wcscmp)( locale, ValidLocales[i] ) == 0 )  break;
+            }
+        }
+        if( i != INVALID_LOCALE ) {
+            _LOCALESETTING[category] = i;
+            if( category == LC_ALL ) {
+                _LOCALESETTING[LC_COLLATE]  = i;
+                _LOCALESETTING[LC_CTYPE]    = i;
+                _LOCALESETTING[LC_NUMERIC]  = i;
+                _LOCALESETTING[LC_TIME]     = i;
+                _LOCALESETTING[LC_MONETARY] = i;
+#if defined( __UNIX__ )
+                _LOCALESETTING[LC_MESSAGES] = i;
+#endif
+            }
+        }
+    }
+    return( ValidLocales[ i ] );
+}

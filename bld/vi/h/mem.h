@@ -33,14 +33,14 @@
 #ifndef _MEM_INCLUDED
 #define _MEM_INCLUDED
 
-#define MAX_X 16
-#define MIN_BLOCK 8
-#define MAX_HEAPS 10
+#define MAX_X       16
+#define MIN_BLOCK   8
+#define MAX_HEAPS   10
 
 typedef struct overlay {
-char active:1;
-char exp:5;
-struct overlay near *next, near *prev;
+    unsigned char       active  : 1;
+    unsigned char       exp     : 5;
+    struct overlay near *next, near *prev;
 } overlay;
 
 #define NIL     (overlay near *) 1
@@ -49,12 +49,12 @@ struct overlay near *next, near *prev;
 #define OVERHEAD sizeof( overlay )
 
 typedef struct heap {
-unsigned segment;
-unsigned maxx;
-overlay near *free[MAX_X+2];
+    unsigned        segment;
+    unsigned        maxx;
+    overlay near    *free[MAX_X + 2];
 } heap;
 
-void *MemAlloc( unsigned );
-void MemFree( void * );
+void    *MemAlloc( unsigned );
+void    MemFree( void * );
 
 #endif

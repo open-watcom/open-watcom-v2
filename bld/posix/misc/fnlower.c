@@ -24,28 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FNameLower() - down case a filename unless the user wants case preserved
 *
 ****************************************************************************/
 
-
 /*
-    Motivation:
-
-        OS/2 preserves the case of filenames, so it would be nice if
-        our utilities also preserved the case of filenames.
-*/
+ *  Motivation:
+ *      OS/2 preserves the case of filenames, so it would be nice if
+ *      our utilities also preserved the case of filenames.
+ */
 
 #include <string.h>
 #include <stdlib.h>
 #include "fnutils.h"
 
-
-char *FNameLower( char *filename ) {
-
-/* down case the filename unless the user wants case preserved */
-
+char *FNameLower( char *filename )
+{
     if( getenv( POSIX_PRESERVE_CASE ) == NULL ) {
         strlwr( filename );
     }

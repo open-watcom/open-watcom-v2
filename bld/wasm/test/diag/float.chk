@@ -1,0 +1,72 @@
+float.asm(15): Warning! W098: Float is used as operand
+float.asm(16): Warning! W098: Float is used as operand
+float.asm(17): Warning! W098: Float is used as operand
+float.asm(17): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(18): Warning! W098: Float is used as operand
+float.asm(18): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(19): Warning! W098: Float is used as operand
+float.asm(20): Warning! W098: Float is used as operand
+float.asm(21): Warning! W098: Float is used as operand
+float.asm(22): Warning! W098: Float is used as operand
+float.asm(23): Warning! W098: Float is used as operand
+float.asm(24): Warning! W098: Float is used as operand
+float.asm(25): Warning! W098: Float is used as operand
+float.asm(25): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(26): Warning! W098: Float is used as operand
+float.asm(26): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(27): Warning! W098: Float is used as operand
+float.asm(28): Warning! W098: Float is used as operand
+float.asm(29): Warning! W098: Float is used as operand
+float.asm(30): Warning! W098: Float is used as operand
+float.asm(54): Warning! W098: Float is used as operand
+float.asm(55): Warning! W098: Float is used as operand
+float.asm(56): Warning! W098: Float is used as operand
+float.asm(56): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(57): Warning! W098: Float is used as operand
+float.asm(57): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(58): Warning! W098: Float is used as operand
+float.asm(59): Warning! W098: Float is used as operand
+float.asm(60): Warning! W098: Float is used as operand
+float.asm(61): Warning! W098: Float is used as operand
+float.asm(62): Warning! W098: Float is used as operand
+float.asm(63): Warning! W098: Float is used as operand
+float.asm(64): Warning! W098: Float is used as operand
+float.asm(64): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(65): Warning! W098: Float is used as operand
+float.asm(65): Warning! W097: size not specified -- DWORD PTR is assumed
+float.asm(66): Warning! W098: Float is used as operand
+float.asm(67): Warning! W098: Float is used as operand
+float.asm(68): Warning! W098: Float is used as operand
+float.asm(69): Warning! W098: Float is used as operand
+float.asm(15): Warning! W098: Float is used as operand
+float.asm(16): Warning! W098: Float is used as operand
+float.asm(17): Warning! W098: Float is used as operand
+float.asm(18): Warning! W098: Float is used as operand
+float.asm(19): Warning! W098: Float is used as operand
+float.asm(20): Warning! W098: Float is used as operand
+float.asm(21): Warning! W098: Float is used as operand
+float.asm(22): Warning! W098: Float is used as operand
+float.asm(23): Warning! W098: Float is used as operand
+float.asm(24): Warning! W098: Float is used as operand
+float.asm(25): Warning! W098: Float is used as operand
+float.asm(26): Warning! W098: Float is used as operand
+float.asm(27): Warning! W098: Float is used as operand
+float.asm(28): Warning! W098: Float is used as operand
+float.asm(29): Warning! W098: Float is used as operand
+float.asm(30): Warning! W098: Float is used as operand
+float.asm(54): Warning! W098: Float is used as operand
+float.asm(55): Warning! W098: Float is used as operand
+float.asm(56): Warning! W098: Float is used as operand
+float.asm(57): Warning! W098: Float is used as operand
+float.asm(58): Warning! W098: Float is used as operand
+float.asm(59): Warning! W098: Float is used as operand
+float.asm(60): Warning! W098: Float is used as operand
+float.asm(61): Warning! W098: Float is used as operand
+float.asm(62): Warning! W098: Float is used as operand
+float.asm(63): Warning! W098: Float is used as operand
+float.asm(64): Warning! W098: Float is used as operand
+float.asm(65): Warning! W098: Float is used as operand
+float.asm(66): Warning! W098: Float is used as operand
+float.asm(67): Warning! W098: Float is used as operand
+float.asm(68): Warning! W098: Float is used as operand
+float.asm(69): Warning! W098: Float is used as operand

@@ -24,15 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source management routines for debugger, profiler etc.
 *
 ****************************************************************************/
 
 
-#include "srcmgt.h"
 #include <limits.h>
 #include <string.h>
+#include "srcmgt.h"
+
+#ifndef O_BINARY
+    #define O_BINARY    0
+#endif
 
 #define SM_CR                   '\r'
 #define SM_LF                   '\n'
@@ -62,7 +65,8 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_file_i
     browser     *hndl;
 
     _SMAlloc( hndl, sizeof( browser ) );
-    if( hndl == NULL ) return( NULL );
+    if( hndl == NULL )
+        return( NULL );
     hndl->next = FileList;
     FileList = hndl;
     hndl->file_off = -SM_BUF_SIZE;
@@ -71,7 +75,7 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_file_i
     hndl->cur_line = 1;
     hndl->file_ptr = fp;
     hndl->bias = SMSeekStart( fp );
-    hndl->eof_off = ULONG_MAX;
+    hndl->eof_off = SMSeekEnd( fp );
     hndl->open_name = NULL;
     hndl->use = 1;
     hndl->mod = mod;
@@ -80,7 +84,7 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_file_i
 }
 
 
-void FClearOpenSourceCache()
+void FClearOpenSourceCache( void )
 {
     browser             *hndl;
 
@@ -91,7 +95,7 @@ void FClearOpenSourceCache()
 
 browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id )
 {
-    sm_file_handle              fp;
+    sm_file_handle      fp;
     browser             *hndl;
 
     if( mod != SM_NO_MOD ) {
@@ -103,7 +107,8 @@ browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id )
         }
     }
     fp = SMOpenRead( name );
-    if( SMNilHandle( fp ) ) return( NULL );
+    if( SMNilHandle( fp ) )
+        return( NULL );
     hndl = FInitSource( fp, mod, id );
     _SMAlloc( hndl->open_name, strlen( name ) + 1 );
     strcpy( hndl->open_name, name );
@@ -131,7 +136,7 @@ unsigned long FLastOffset( browser *hndl )
 
 int FileIsRemote( browser *hndl )
 {
-    hndl=hndl;
+    hndl = hndl;
     return( SMFileRemote( hndl->file_ptr ) );
 }
 
@@ -164,14 +169,16 @@ static int get_block( browser *hndl, unsigned long off )
     int                 len;
     unsigned long       loc;
 
-    if( off >= hndl->eof_off ) return( 0 );
+    if( off >= hndl->eof_off )
+        return( 0 );
     loc = hndl->bias + off;
     if( SMSeekOrg( hndl->file_ptr, loc ) != loc ) {
         hndl->eof_off = off;
         return( 0 );
     }
     len = SM_BUF_SIZE;
-    if( off + len > hndl->eof_off ) len = hndl->eof_off - off;
+    if( off + len > hndl->eof_off )
+        len = hndl->eof_off - off;
     len = SMReadStream( hndl->file_ptr, hndl->line_buf, len );
     if( len <= 0 ) {       /*sf ReadStream returns -1 on error */
         hndl->eof_off = off;
@@ -188,9 +195,8 @@ static int next_src_chr( browser *hndl )
     int         c;
 
     if( hndl->line_ptr == hndl->line_end ) {
-        if( !get_block( hndl, hndl->file_off + SM_BUF_SIZE ) ) {
+        if( !get_block( hndl, hndl->file_off + SM_BUF_SIZE ) )
             return( -1 );
-        }
         hndl->line_ptr = hndl->line_buf;
     }
     c = *hndl->line_ptr++;
@@ -201,10 +207,16 @@ static int next_src_chr( browser *hndl )
 static int next_src_line( browser *hndl )
 {
     int         c;
+    int         count = 0;
 
     do {
         c = next_src_chr( hndl );
-        if( c == -1 ) return( 0 );
+        if( c == -1 ) {
+            if( count )
+                break;
+            return( 0 );
+        }
+        count++;
     } while( c != SM_LF );
     hndl->cur_line++;
     hndl->cur_line_ptr = hndl->line_ptr;
@@ -220,10 +232,9 @@ static int prev_src_chr( browser *hndl )
     int         c;
 
     if( hndl->line_ptr == hndl->line_buf ) {
-        off = (hndl->file_off >= BACKUP) ? BACKUP : hndl->file_off;
-        if( !get_block( hndl, hndl->file_off - off ) ) {
+        off = ( hndl->file_off >= BACKUP ) ? BACKUP : hndl->file_off;
+        if( !get_block( hndl, hndl->file_off - off ) )
             return( -1 );
-        }
         hndl->line_ptr = hndl->line_buf + off;
         if( hndl->line_ptr == hndl->line_buf ) {    /* at start of file */
             hndl->line_ptr--;
@@ -239,9 +250,8 @@ static int prev_src_line( browser *hndl )
 {
     int         c;
 
-    if( prev_src_chr( hndl ) == -1 ) {
+    if( prev_src_chr( hndl ) == -1 )
         return( 0 );
-    }
     do {
         c = prev_src_chr( hndl );
         if( c == -1 ) {
@@ -272,7 +282,8 @@ int FReadLine( browser *hndl, int line, int off,
 
     i = hndl->cur_line - line;
     if( line - 1 < i ) { /* faster to seek to start and go forward */
-        if( hndl->file_off != 0 ) get_block( hndl, 0 );
+        if( hndl->file_off != 0 )
+            get_block( hndl, 0 );
         hndl->cur_line_ptr = hndl->line_buf;
         hndl->cur_line = 1;
         i = 1 - line;
@@ -291,7 +302,8 @@ int FReadLine( browser *hndl, int line, int off,
             }
         } while( --i != 0 );
     }
-    if( size == 0 ) return( 0 );
+    if( size == 0 )
+        return( 0 );
     ptr = buff;
     i = 0;
     do {
@@ -299,21 +311,29 @@ int FReadLine( browser *hndl, int line, int off,
             ch = next_src_chr( hndl );
         } while( ch == SM_CR );
         if( ch == -1 ) {
-            return( -1 );
-        } else if( ch == SM_LF ) {
+            if( i == 0 ) {
+                return( -1 );
+            } else {
+                ch = SM_LF;
+            }
+        }
+        if( ch == SM_LF ) {
             break;
         } else if( ch == SM_TAB ) {
             tab = SMTabIntervalGet();
             if( tab != 0 ) {
-                tab_pos = (i + tab) - ((i + tab) % tab);
+                tab_pos = ( i + tab ) - ( ( i + tab ) % tab );
             } else {
                 tab_pos = i;
             }
             for( ;; ) {
-                if( i >= tab_pos ) break;
+                if( i >= tab_pos )
+                    break;
                 if( i >= off ) {
                     *ptr++ = ' ';
-                    if( --size == 0 ) break;
+                    if( --size == 0 ) {
+                        break;
+                    }
                 }
                 ++i;
             }

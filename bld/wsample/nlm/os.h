@@ -32,6 +32,8 @@
 
 #include <dos.h>
 
+#if 0
+
 #define outp(__x,__y)   _inline_outp(__x,__y)
 extern unsigned outp(unsigned __port, unsigned __value);
 
@@ -92,3 +94,5 @@ enum {
 
 void __far *MK_FP(unsigned short,unsigned);
 #pragma aux      MK_FP = parm caller [dx] [eax] value [eax dx];
+
+#endif

@@ -61,8 +61,8 @@ __osmajor       db      ?
 public          __8087
 __8087          db      0
 
-public          ___FPE_handler
-___FPE_handler  dd      0
+public          "C",__FPE_handler
+__FPE_handler   dd      0
 _DATA            ends
 
 CONST           segment word public 'DATA'

@@ -1,2 +1,2 @@
-lea si,word ptr x
-lea eax,dword ptr x
+ lea si,x
+ lea eax,x

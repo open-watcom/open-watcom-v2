@@ -24,16 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message resource access routines.
 *
 ****************************************************************************/
 
 
-#include <process.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#if defined( __WATCOMC__ )
+    #include <process.h>
+#endif
 #include "wressetr.h"
 #include "wreslang.h"
 #include "msg.h"
@@ -47,7 +48,7 @@ static HANDLE_INFO      hInstance = {0};
 static unsigned         MsgShift;
 extern long             FileShift;
 
-static long resSeek( int handle, long position, int where )
+static off_t resSeek( int handle, off_t position, int where )
 {
     if( where == SEEK_SET ) {
         return( lseek( handle, position+FileShift, where ) - FileShift );
@@ -58,7 +59,7 @@ static long resSeek( int handle, long position, int where )
 
 WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 
-extern int MsgInit()
+extern int MsgInit( void )
 {
     int         error;
     char        name[_MAX_PATH];
@@ -100,7 +101,7 @@ extern int MsgGet( int resourceid, char *buffer )
     return( 1 );
 }
 
-extern void MsgFini()
+extern void MsgFini( void )
 {
     if( hInstance.handle != NIL_HANDLE ) {
         CloseResFile( &hInstance );

@@ -38,7 +38,7 @@
 #undef  errno
 extern int      errno;  /* this is the real variable */
 
-extern void __initerrno()
+extern void __initerrno( void )
 {
     void        *err_ptr;
     int         old_errno;

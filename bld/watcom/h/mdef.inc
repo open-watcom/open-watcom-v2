@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Memory model setup for interfacing with C code.
 ;*
 ;*****************************************************************************
 
@@ -56,6 +55,9 @@ _8087           =       01h
 ifdef __WASM__
     ifdef __FLAT__
         _MODEL = _FLAT
+    endif
+    ifdef __TINY__
+        _MODEL = _TINY
     endif
     ifdef __SMALL__
         _MODEL = _SMALL
@@ -96,7 +98,9 @@ endif
 if _MODEL and _BIG_CODE
 
 modstart        macro   modname,alignment
+ifdef NDEBUG
                 name    modname
+endif
                 ifb <alignment>
 _TEXT           segment word public 'CODE'
                 else
@@ -113,7 +117,7 @@ codeptr         macro   p1,p2
                 ifb <p2>
                 extrn p1 : dword
                 else
-                extrn p1,p2 : dword
+                extrn "&p1",p2 : dword
                 endif
                 endm
 
@@ -172,7 +176,7 @@ xdefp           macro   p1,p2
                 ifb <p2>
                 public p1
                 else
-                public p1,p2
+                public "&p1",p2
                 endif
                 endm
 
@@ -180,14 +184,21 @@ xref            macro   p1,p2
                 ifb <p2>
                 extrn `p1` : far
                 else
-                extrn p1,`p2` : far
+                extrn "&p1",`p2` : far
                 endif
+                endm
+
+lcall           macro   dest
+                push    cs
+                call    near ptr dest
                 endm
 
 else
 
 modstart        macro   modname,alignment
+ifdef NDEBUG
                 name    modname
+endif
                 if _MODEL and _USE_32_SEGS
 _TEXT               segment use32 alignment public 'CODE'
                 else
@@ -205,13 +216,13 @@ codeptr         macro   p1,p2
                     ifb <p2>
                     extrn p1 : dword
                     else
-                    extrn p1,p2 : dword
+                    extrn "&p1",p2 : dword
                     endif
                 else
                     ifb <p2>
                     extrn p1 : word
                     else
-                    extrn p1,p2 : word
+                    extrn "&p1",p2 : word
                     endif
                 endif
                 endm
@@ -266,7 +277,7 @@ xdefp           macro   p1,p2
                 ifb <p2>
                 public p1
                 else
-                public p1,p2
+                public "&p1",p2
                 endif
                 endm
 
@@ -274,8 +285,12 @@ xref            macro   p1,p2
                 ifb <p2>
                 extrn `p1` : near
                 else
-                extrn p1,`p2` : near
+                extrn "&p1",`p2` : near
                 endif
+                endm
+
+lcall           macro   dest
+                call    dest
                 endm
 
 endif
@@ -334,5 +349,13 @@ alias_function  macro   alias, function
                     jmp     `function`
                 endif
          `alias`    endp
+                endm
+
+xred            macro   p1,p2,p3
+                ifb <p3>
+                extrn p1 : p2
+                else
+                extrn "&p1",p2 : p3
+                endif
                 endm
 

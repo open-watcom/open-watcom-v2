@@ -1,0 +1,237 @@
+/*
+ *  wmistr.h    Windows Management Instrumentation (WMI) structures
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _WMISTR_
+#define _WMISTR_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* WMI node header flags */
+#define WNODE_FLAG_ALL_DATA                 0x00000001L
+#define WNODE_FLAG_SINGLE_INSTANCE          0x00000002L
+#define WNODE_FLAG_SINGLE_ITEM              0x00000004L
+#define WNODE_FLAG_EVENT_ITEM               0x00000008L
+#define WNODE_FLAG_FIXED_INSTANCE_SIZE      0x00000010L
+#define WNODE_FLAG_TOO_SMALL                0x00000020L
+#define WNODE_FLAG_INSTANCES_SAME           0x00000040L
+#define WNODE_FLAG_STATIC_INSTANCE_NAMES    0x00000080L
+#define WNODE_FLAG_USE_TIMESTAMP            0x00000200L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define WNODE_FLAG_PERSIST_EVENT        0x00000400L
+#endif
+#define WNODE_FLAG_EVENT_REFERENCE          0x00002000L
+#define WNODE_FLAG_ANSI_INSTANCENAMES       0x00004000L
+#define WNODE_FLAG_METHOD_ITEM              0x00008000L
+#define WNODE_FLAG_PDO_INSTANCE_NAMES       0x00010000L
+#define WNODE_FLAG_TRACED_GUID              0x00020000L
+#define WNODE_FLAG_LOG_WNODE                0x00040000L
+#define WNODE_FLAG_USE_GUID_PTR             0x00080000L
+#define WNODE_FLAG_USE_MOF_PTR              0x00100000L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define WNODE_FLAG_NO_HEADER            0x00200000L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define WNODE_FLAG_SEND_DATA_BLOCK      0x00400000L
+#endif
+#define WNODE_FLAG_SEVERITY_MASK            0xFF000000L
+
+/* WMI register flags */
+#define WMIREG_FLAG_EXPENSIVE           0x00000001L
+#define WMIREG_FLAG_INSTANCE_LIST       0x00000004L
+#define WMIREG_FLAG_INSTANCE_BASENAME   0x00000008L
+#define WMIREG_FLAG_INSTANCE_PDO        0x00000020L
+#define WMIREG_FLAG_EVENT_ONLY_GUID     0x00000040L
+#define WMIREG_FLAG_TRACE_CONTROL_GUID  0x00001000L
+#define WMIREG_FLAG_REMOVE_GUID         0x00010000L
+#define WMIREG_FLAG_TRACED_GUID         0x00080000L
+
+/* WMI GUID types */
+#define WMI_GUIDTYPE_TRACECONTROL   0
+#define WMI_GUIDTYPE_TRACE          1
+#define WMI_GUIDTYPE_DATA           2
+#define WMI_GUIDTYPE_EVENT          3
+
+/* WMI GUID access rights */
+#define WMIGUID_QUERY                   0x0001L
+#define WMIGUID_SET                     0x0002L
+#define WMIGUID_NOTIFICATION            0x0004L
+#define WMIGUID_READ_DESCRIPTION        0x0008L
+#define WMIGUID_EXECUTE                 0x0010L
+#define TRACELOG_CREATE_REALTIME        0x0020L
+#define TRACELOG_CREATE_ONDISK          0x0040L
+#define TRACELOG_GUID_ENABLE            0x0080L
+#define TRACELOG_ACCESS_KERNEL_LOGGER   0x0100L
+#define TRACELOG_LOG_EVENT              0x0200L
+#define TRACELOG_CREATE_INPROC          0x0200L
+#define TRACELOG_ACCESS_REALTIME        0x0400L
+#define TRACELOG_REGISTER_GUIDS         0x0800L
+#define WMIGUID_ALL_ACCESS_WIN2K \
+    (STANDARD_RIGHTS_READ | WMIGUID_QUERY | WMIGUID_SET | WMIGUID_NOTIFICATION | \
+    WMIGUID_READ_DESCRIPTION | WMIGUID_EXECUTE | TRACELOG_CREATE_REALTIME | \
+    TRACELOG_CREATE_ONDISK | TRACELOG_GUID_ENABLE | TRACELOG_ACCESS_KERNEL_LOGGER | \
+    TRACELOG_CREATE_INPROC | TRACELOG_ACCESS_REALTIME)
+#define WMIGUID_ALL_ACCESS_WINXP \
+    (WMIGUID_ALL_ACCESS_WIN2K | SYNCHRONIZE | TRACELOG_REGISTER_GUIDS)
+#if (NTDDI_VERSION >= 0x05010000)
+    #define WMIGUID_ALL_ACCESS          WMIGUID_ALL_ACCESS_WINXP
+#else
+    #define WMIGUID_ALL_ACCESS          WMIGUID_ALL_ACCESS_WIN2K
+#endif
+
+/* WMI global logger identifier */
+#define WMI_GLOBAL_LOGGER_ID    0x0001
+
+/* WMI node header */
+typedef struct _WNODE_HEADER {
+    ULONG   BufferSize;
+    ULONG   ProviderId;
+    union {
+        ULONG64 HistoricalContext;
+        struct {
+            ULONG   Version;
+            ULONG   Linkage;
+        };
+    };
+    union {
+        ULONG           CountLost;
+        HANDLE          KernelHandle;
+        LARGE_INTEGER   TimeStamp;
+    };
+    GUID    Guid;
+    ULONG   ClientContext;
+    ULONG   Flags;
+} WNODE_HEADER;
+typedef WNODE_HEADER    *PWNODE_HEADER;
+
+/* Offset instance data and length */
+typedef struct {
+    ULONG   OffsetInstanceData;
+    ULONG   LengthInstanceData;
+} OFFSETINSTANCEDATAANDLENGTH;
+typedef OFFSETINSTANCEDATAANDLENGTH *POFFSETINSTANCEDATAANDLENGTH;
+
+/* WMI node all data */
+typedef struct tagWNODE_ALL_DATA {
+    struct _WNODE_HEADER    WnodeHeader;
+    ULONG                   DataBlockOffset;
+    ULONG                   InstanceCount;
+    ULONG                   OffsetInstanceNameOffsets;
+    union {
+        ULONG                       FixedInstanceSize;
+        OFFSETINSTANCEDATAANDLENGTH OffsetInstanceDataAndLength[1];
+    };
+} WNODE_ALL_DATA;
+typedef WNODE_ALL_DATA  *PWNODE_ALL_DATA;
+
+/* WMI node single instance */
+typedef struct tagWNODE_SINGLE_INSTANCE {
+    struct _WNODE_HEADER    WnodeHeader;
+    ULONG                   OffsetInstanceName;
+    ULONG                   InstanceIndex;
+    ULONG                   DataBlockOffset;
+    ULONG                   SizeDataBlock;
+    UCHAR                   VariableData[];
+} WNODE_SINGLE_INSTANCE;
+typedef WNODE_SINGLE_INSTANCE   *PWNODE_SINGLE_INSTANCE;
+
+/* WMI node single item */
+typedef struct tagWNODE_SINGLE_ITEM {
+    struct _WNODE_HEADER    WnodeHeader;
+    ULONG                   OffsetInstanceName;
+    ULONG                   InstanceIndex;
+    ULONG                   ItemId;
+    ULONG                   DataBlockOffset;
+    ULONG                   SizeDataItem;
+    UCHAR                   VariableData[];
+} WNODE_SINGLE_ITEM;
+typedef WNODE_SINGLE_ITEM   *PWNODE_SINGLE_ITEM;
+
+/* WMI node method item */
+typedef struct tagWNODE_METHOD_ITEM {
+    struct _WNODE_HEADER    WnodeHeader;
+    ULONG                   OffsetInstanceName;
+    ULONG                   InstanceIndex;
+    ULONG                   MethodId;
+    ULONG                   DataBlockOffset;
+    ULONG                   SizeDataBlock;
+    UCHAR                   VariableData[];
+} WNODE_METHOD_ITEM;
+typedef WNODE_METHOD_ITEM   *PWNODE_METHOD_ITEM;
+
+/* WMI node event item */
+typedef struct tagWNODE_EVENT_ITEM {
+    struct _WNODE_HEADER    WnodeHeader;
+} WNODE_EVENT_ITEM;
+typedef WNODE_EVENT_ITEM    *PWNODE_EVENT_ITEM;
+
+/* WMI node event reference */
+typedef struct tagWNODE_EVENT_REFERENCE {
+    struct _WNODE_HEADER    WnodeHeader;
+    GUID                    TargetGuid;
+    ULONG                   TargetDataBlockSize;
+    union {
+        ULONG   TargetInstanceIndex;
+        WCHAR   TargetInstanceName[1];
+    };
+} WNODE_EVENT_REFERENCE;
+typedef WNODE_EVENT_REFERENCE   *PWNODE_EVENT_REFERENCE;
+
+/* WMI node too small */
+typedef struct tagWNODE_TOO_SMALL {
+    struct _WNODE_HEADER    WnodeHeader;
+    ULONG                   SizeNeeded;
+} WNODE_TOO_SMALL;
+typedef WNODE_TOO_SMALL *PWNODE_TOO_SMALL;
+
+/* WMI register GUID */
+typedef struct {
+    GUID    Guid;
+    ULONG   Flags;
+    ULONG   InstanceCount;
+    union {
+        ULONG       InstanceNameList;
+        ULONG       BaseNameOffset;
+        ULONG_PTR   Pdo;
+        ULONG_PTR   InstanceInfo;
+    };
+} WMIREGGUIDW;
+typedef WMIREGGUIDW     *PWMIREGGUIDW;
+typedef WMIREGGUIDW     WMIREGGUID;
+typedef PWMIREGGUIDW    PWMIREGGUID;
+
+/* WMI register information */
+typedef struct {
+    ULONG       BufferSize;
+    ULONG       NextWmiRegInfo;
+    ULONG       RegistryPath;
+    ULONG       MofResourceName;
+    ULONG       GuidCount;
+    WMIREGGUIDW WmiRegGuid[];
+} WMIREGINFOW;
+typedef WMIREGINFOW     *PWMIREGINFOW;
+typedef WMIREGINFOW     WMIREGINFO;
+typedef PWMIREGINFOW    PWMIREGINFO;
+
+/* WMI request code */
+typedef enum {
+    WMI_GET_ALL_DATA        = 0,
+    WMI_GET_SINGLE_INSTANCE = 1,
+    WMI_SET_SINGLE_INSTANCE = 2,
+    WMI_SET_SINGLE_ITEM     = 3,
+    WMI_ENABLE_EVENTS       = 4,
+    WMI_DISABLE_EVENTS      = 5,
+    WMI_ENABLE_COLLECTION   = 6,
+    WMI_DISABLE_COLLECTION  = 7,
+    WMI_REGINFO             = 8,
+    WMI_EXECUTE_METHOD      = 9,
+    WMI_CAPTURE_STATE       = 10
+} WMIDPREQUESTCODE;
+
+:include cplusepi.sp
+
+#endif /* _WMISTR_ */

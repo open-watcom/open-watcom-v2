@@ -1,11 +1,15 @@
-#pmake: build serv remote os2 16 32 tcp x86
+#pmake: serv remote os_os2 cpu_i86 tcp
 
-os = os2
+host_os  = os2
+host_cpu = i86
+
+os  = os2
 srv = tcp
 cpu = x86
+which = SERVER
+type  = remote_link
 
-extra_objs = $(remote_objs)
-extra_libs = $(watcom_dir)\lib\tcpipdll.lib
-extra_incs = $(watcom_dir)\os220_h\tcpip
+extra_libs = $(watcom_dir)/lib/tcpipdll.lib
+inc_dirs = -I"$(watcom_dir)/os220_h/tcpip"
 
-!include $(trap_dir)\serv.mif
+!include $(trap_dir)/master.mif

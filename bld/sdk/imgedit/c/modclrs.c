@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <commdlg.h>
 #include <string.h>
 #include <stdlib.h>
@@ -40,98 +40,100 @@
 #include "ieprofil.h"
 
 static BOOL     fRestEnabled = FALSE;
-static DWORD    customcolours[16] = {
+static DWORD    customcolors[16] = {
 #if 1
-                RGB(255, 255, 255), RGB(239, 239, 239),
-                RGB(223, 223, 223), RGB(207, 207, 207),
-                RGB(191, 191, 191), RGB(175, 175, 175),
-                RGB(159, 159, 159), RGB(143, 143, 143),
-                RGB(127, 127, 127), RGB(111, 111, 111),
-                RGB(95, 95, 95),    RGB(79, 79, 79),
-                RGB(63, 63, 63),    RGB(47, 47, 47),
-                RGB(31, 31, 31),    RGB(15, 15, 15) };
+                RGB( 255, 255, 255 ), RGB( 239, 239, 239 ),
+                RGB( 223, 223, 223 ), RGB( 207, 207, 207 ),
+                RGB( 191, 191, 191 ), RGB( 175, 175, 175 ),
+                RGB( 159, 159, 159 ), RGB( 143, 143, 143 ),
+                RGB( 127, 127, 127 ), RGB( 111, 111, 111 ),
+                RGB( 95, 95, 95 ),    RGB( 79, 79, 79 ),
+                RGB( 63, 63, 63 ),    RGB( 47, 47, 47 ),
+                RGB( 31, 31, 31 ),    RGB( 15, 15, 15 )
 #else
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255),
-                RGB(255, 255, 255), RGB(255, 255, 255) };
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 ),
+                RGB( 255, 255, 255 ), RGB( 255, 255, 255 )
 #endif
+};
 
 /*
- * EditColours - edits the current colour selection.
+ * EditColors - edit the current color selection
  */
-void EditColours( void )
+void EditColors( void )
 {
-    static CHOOSECOLOR          choosecolour;
-    BOOL                        setcolour = FALSE;
+    static CHOOSECOLOR          choosecolor;
+    BOOL                        setcolor = FALSE;
     wie_clrtype                 type;
-    COLORREF                    current_colour;
+    COLORREF                    current_color;
     HMENU                       hmenu;
     HWND                        parent;
 
     if( ImgedConfigInfo.show_state & SET_SHOW_CLR ) {
-        parent = HColourPalette;
+        parent = HColorPalette;
     } else {
         parent = HMainWindow;
     }
 
-    current_colour = GetSelectedColour( LMOUSEBUTTON, NULL, &type );
+    current_color = GetSelectedColor( LMOUSEBUTTON, NULL, &type );
 
-    choosecolour.lStructSize = sizeof(CHOOSECOLOR);
-    choosecolour.hwndOwner = parent;
-    choosecolour.hInstance = NULL;
-    choosecolour.rgbResult = current_colour;
-    choosecolour.lpCustColors = (LPDWORD)customcolours;
-    choosecolour.Flags = CC_RGBINIT | CC_FULLOPEN;
-    choosecolour.lCustData = 0l;
-    choosecolour.lpfnHook = 0;
-    choosecolour.lpTemplateName = (LPSTR)NULL;
+    choosecolor.lStructSize = sizeof( CHOOSECOLOR );
+    choosecolor.hwndOwner = parent;
+    choosecolor.hInstance = NULL;
+    choosecolor.rgbResult = current_color;
+    choosecolor.lpCustColors = (LPDWORD)customcolors;
+    choosecolor.Flags = CC_RGBINIT | CC_FULLOPEN;
+    choosecolor.lCustData = 0l;
+    choosecolor.lpfnHook = 0;
+    choosecolor.lpTemplateName = (LPSTR)NULL;
 
-    setcolour = ChooseColor( &choosecolour );
+    setcolor = ChooseColor( &choosecolor );
 
-    if (!setcolour) {
+    if( !setcolor ) {
         return;
     }
 
-    ReplacePaletteEntry( choosecolour.rgbResult );
+    ReplacePaletteEntry( choosecolor.rgbResult );
     fRestEnabled = TRUE;
     hmenu = GetMenu( HMainWindow );
     EnableMenuItem( hmenu, IMGED_CRESET, MF_ENABLED );
 
-    PrintHintTextByID( WIE_COLOURPALETTEMODIFIED, NULL );
-} /* EditColours */
+    PrintHintTextByID( WIE_COLORPALETTEMODIFIED, NULL );
+
+} /* EditColors */
 
 /*
- * RestoreColours - restore the original colour palette.
+ * RestoreColors - restore the original color palette
  */
-void RestoreColours( void )
+void RestoreColors( void )
 {
-    ResetColourPalette();
-    PrintHintTextByID( WIE_COLOURPALETTERESTORED, NULL );
-} /* RestoreColours */
+    ResetColorPalette();
+    PrintHintTextByID( WIE_COLORPALETTERESTORED, NULL );
+
+} /* RestoreColors */
 
 /*
- * SetColourMenus - enables/disables those items that need it in the colour
- *                  palette menu.
+ * SetColorMenus - enables/disables those items that need it in the color palette menu
  */
-void SetColourMenus( img_node *node )
+void SetColorMenus( img_node *node )
 {
     HMENU       hmenu;
 
     hmenu = GetMenu( HMainWindow );
-    if (node->imgtype == BITMAP_IMG) {
+    if( node->imgtype == BITMAP_IMG ) {
         EnableMenuItem( hmenu, IMGED_CSCREEN, MF_GRAYED );
     } else {
         EnableMenuItem( hmenu, IMGED_CSCREEN, MF_ENABLED );
     }
 
-    if (node->bitcount > 1) {
+    if( node->bitcount > 1 ) {
         EnableMenuItem( hmenu, IMGED_CEDIT, MF_ENABLED );
-        if (fRestEnabled) {
+        if( fRestEnabled ) {
             EnableMenuItem( hmenu, IMGED_CRESET, MF_ENABLED );
         } else {
             EnableMenuItem( hmenu, IMGED_CRESET, MF_GRAYED );
@@ -140,5 +142,5 @@ void SetColourMenus( img_node *node )
         EnableMenuItem( hmenu, IMGED_CEDIT, MF_GRAYED );
         EnableMenuItem( hmenu, IMGED_CRESET, MF_GRAYED );
     }
-} /* SetColourMenus */
 
+} /* SetColorMenus */

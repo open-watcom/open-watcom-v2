@@ -24,61 +24,58 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of (_w)getenv().
 *
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
 #include <mbstring.h>
-#include <stdlib.h>
 #include <string.h>
-#include "rtdata.h"
 #ifdef __WIDECHAR__
-    #include "wenviron.h"
+    #include <wctype.h>
 #endif
-
-#if defined(__QNX__)
-    #ifdef __WIDECHAR__
-        #define CMP_FUNC        wcsncmp
-    #else
-        #define CMP_FUNC        strncmp
-    #endif
-#else
-    #ifdef __WIDECHAR__
-        #define CMP_FUNC        _wcsnicmp
-    #else
-        #define CMP_FUNC        _mbsnicmp
-    #endif
-#endif
-
+#include "rtdata.h"
+#include "_environ.h"
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getenv,_wgetenv)( const CHAR_TYPE *name )
-    {
+{
 #ifdef __NETWARE__
-        name = name;
+    name = name;
 #else
-        CHAR_TYPE **    envp;
-        CHAR_TYPE *     p;
-        int             len;
+    CHAR_TYPE       **envp;
+    CHAR_TYPE       *p;
 
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-        #endif
+  #ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL ) {
+        __create_wide_environment();
+    }
+  #endif
 
-        /*** Find the environment string ***/
-        __ptr_check( name, 0 );
-        envp = __F_NAME(_RWD_environ,_RWD_wenviron);
-        if( envp != NULL  &&  name != NULL ) {
-            len = __F_NAME(strlen,wcslen)( name );
-            for( ; p = *envp; ++envp ) {
-                if( CMP_FUNC( p, name, len ) == 0 ) {
-                    if( p[len] == __F_NAME('=',L'=') )  return( &p[len+1] );
+    /*** Find the environment string ***/
+    __ptr_check( name, 0 );
+    envp = __F_NAME(_RWD_environ,_RWD_wenviron);
+    if( (envp != NULL) && (name != NULL) ) {
+        for( ; p = *envp; ++envp ) {
+            const CHAR_TYPE     *s = name;
+
+            while( !_TCSTERM( p ) ) {
+                if( _TCSTERM( s ) ) {
+                    if( _TCSNEXTC( p ) == STRING( '=' ) )
+                        return( _TCSINC( p ) );
+                    break;
                 }
+  #if defined(__UNIX__)
+                if( _TCSCMP( p, s ) )
+  #else
+                if( _TCSICMP( p, s ) )
+  #endif
+                    break;
+                p = _TCSINC( p );   /* skip over character */
+                s = _TCSINC( s );   /* skip over character */
             }
         }
-#endif
-        return( NULL );                 /* not found */
     }
+#endif
+    return( NULL );                 /* not found */
+}

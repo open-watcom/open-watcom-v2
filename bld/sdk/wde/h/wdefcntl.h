@@ -47,9 +47,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeControlCreate   ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeControlInit     ( Bool );
-extern void              WdeControlFini     ( void );
+extern OBJPTR WINEXPORT  WdeControlCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeControlInit( Bool );
+extern void              WdeControlFini( void );
 
 extern BOOL WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );
 

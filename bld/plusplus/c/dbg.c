@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugging routines (debug build only).
 *
 ****************************************************************************/
 
-
-#include <stdlib.h>
-#include <string.h>
 
 #include "plusplus.h"
 #include "preproc.h"
@@ -66,6 +62,7 @@
 #define F_HEX_4     "(%x)"
 #define F_S64       "(%i64d)"
 #define F_STRING    "(" F_NAME ")"
+#define F_QSTRING   "('" F_NAME "')"
 #define F_EOL       "\n"
 #define F_NL        "\n    "
 #define F_TGT_OFFSET F_HEX_2
@@ -88,7 +85,7 @@ char *DbgSymNameFull(           // GET FULL SYMBOL NAME
         name_ptr = "**NULL**";
     } else {
         FormatSym( sym, &vbuf );
-        stpcpy( name, vbuf.buf );
+        stpcpy( name, VbufString( &vbuf ) );
         VbufFree( &vbuf );
         name_ptr = name;
     }
@@ -145,10 +142,10 @@ void DumpMacToken(              // DUMP A MACRO TOKEN
 
 void DumpMacPush(               // DUMP PUSH OF MACRO
     const void *p_mac,          // - macro being pushed
-    const void**p_args )        // - arguments
+    const void **p_args )       // - arguments
 {
-    MEDEFN const *mac = p_mac;        // - macro being pushed
-    const char**args = p_args;  // - arguments
+    MEDEFN const *mac = p_mac;  // - macro being pushed
+    const char**args = (const char **)p_args;  // - arguments
     unsigned count;
     if( PragDbgToggle.dump_mtokens ) {
         printf( "Macro Push: %s", mac->macro_name );
@@ -171,71 +168,73 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
 
 
 void DumpMDefn(                 // DUMP MACRO DEFINITION
-    char *p )                   // - definition
-    {
-        int c;
+    char *pdef )                // - definition
+{
+    int             c;
+    unsigned char   *p = (unsigned char *)pdef;
 
-        for(; p;) {
-            if( *p == 0 ) break;
+    if( p == NULL )
+        return;
+    for( ; *p != '\0'; ) {
+        switch( *p ) {
+        case T_CONSTANT:
+            ++p;
             switch( *p ) {
-            case T_CONSTANT:
-                ++p;
-                switch( *p ) {
-                  case TYP_FLOAT :
-                  case TYP_DOUBLE :
-                  case TYP_LONG_DOUBLE :
-                    break;
-                  case TYP_CHAR:
-                  case TYP_SCHAR:
-                  case TYP_UCHAR:
-                  case TYP_WCHAR:
-                  case TYP_SSHORT:
-                  case TYP_USHORT:
-                  case TYP_SINT:
-                  case TYP_UINT:
-                    p += sizeof( target_int );
-                    break;
-                  default:
-                    p += sizeof( target_long );
-                }
-            case T_ID:
-                ++p;
-                for(;;) {
-                    c = *p++;
-                    if( c == '\0' ) break;
-                    putchar( c );
-                }
-                continue;
-            case T_STRING:
-                ++p;
-                putchar( '\"' );
-                for(;;) {
-                    c = *p++;
-                    if( c == '\0' ) break;
-                    putchar( c );
-                }
-                putchar( '\"' );
-                continue;
-            case T_WHITE_SPACE:
-                ++p;
-                putchar( ' ' );
-                continue;
-            case T_BAD_CHAR:
-                ++p;
-                putchar( *p++ );
-                continue;
-            case T_MACRO_PARM:
-                ++p;
-                printf( "parm#%c", '1' + *p++ );
-                continue;
+            case TYP_FLOAT :
+            case TYP_DOUBLE :
+            case TYP_LONG_DOUBLE :
+                break;
+            case TYP_CHAR:
+            case TYP_SCHAR:
+            case TYP_UCHAR:
+            case TYP_WCHAR:
+            case TYP_SSHORT:
+            case TYP_USHORT:
+            case TYP_SINT:
+            case TYP_UINT:
+                p += sizeof( target_int );
+                break;
             default:
-                printf( "%s", Tokens[ *p ] );
-                ++p;
-                continue;
+                p += sizeof( target_long );
             }
+        case T_ID:
+            ++p;
+            for( ;; ) {
+                c = *p++;
+                if( c == '\0' ) break;
+                putchar( c );
+            }
+            continue;
+        case T_STRING:
+            ++p;
+            putchar( '\"' );
+            for( ;; ) {
+                c = *p++;
+                if( c == '\0' ) break;
+                putchar( c );
+            }
+            putchar( '\"' );
+            continue;
+        case T_WHITE_SPACE:
+            ++p;
+            putchar( ' ' );
+            continue;
+        case T_BAD_CHAR:
+            ++p;
+            putchar( *p++ );
+            continue;
+        case T_MACRO_PARM:
+            ++p;
+            printf( "parm#%c", '1' + *p++ );
+            continue;
+        default:
+            printf( "%s", Tokens[ *p ] );
+            ++p;
+            continue;
         }
-        putchar( '\n' );
     }
+    putchar( '\n' );
+}
 
 
 char *DbgOperator(              // GET CGOP NAME
@@ -334,8 +333,8 @@ void DumpCgFront(               // DUMP GENERATED CODE
               , disk_blk, offset
               , opcode
               , uvalue
-              , fmt_prefix.buf
-              , fmt_suffix.buf );
+              , VbufString( &fmt_prefix )
+              , VbufString( &fmt_suffix ) );
         VbufFree( &fmt_prefix );
         VbufFree( &fmt_suffix );
       } break;
@@ -411,25 +410,27 @@ void DumpCgFront(               // DUMP GENERATED CODE
     }
 }
 
-static void dumpTemplateInfo( TEMPLATE_INFO *tinfo )
+void DumpTemplateInfo( TEMPLATE_INFO *tinfo )
 {
+    TEMPLATE_SPECIALIZATION *tprimary;
     VBUF prefix, suffix;
     int i;
     char delim;
 
+    tprimary = RingFirst( tinfo->specializations );
     printf( "    TEMPLATE_INFO" F_BADDR
             " defn"         F_PTR
             " num_args"     F_HEX_4
                             F_EOL
           , tinfo
-          , tinfo->defn
-          , tinfo->num_args
+          , tprimary->defn
+          , tprimary->num_args
           );
-    printf( "  " );
+    printf( "      %s", tinfo->sym->name->name );
     delim = '<';
-    for( i = 0; i < tinfo->num_args; ++i ) {
-        FormatType( tinfo->type_list[i], &prefix, &suffix );
-        printf( "%c %s<id> %s", delim, prefix.buf, suffix.buf );
+    for( i = 0; i < tprimary->num_args; ++i ) {
+        FormatType( tprimary->type_list[i], &prefix, &suffix );
+        printf( "%c %s<id> %s", delim, VbufString( &prefix ), VbufString( &suffix ) );
         VbufFree( &prefix );
         VbufFree( &suffix );
         delim = ',';
@@ -451,12 +452,23 @@ static void dumpNameSpaceInfo( NAME_SPACE *ns )
           );
 }
 
+static void dumpLocation( TOKEN_LOCN *locn )
+{
+    if( locn->src_file != NULL ) {
+        printf( "    " );
+        DbgDumpTokenLocn( locn );
+        printf( F_EOL );
+    }
+}
+
+
 //
 //  SYMBOL-TABLE FUNCTIONS
 //
 void DumpSymbol(                // DUMP SYMBOL ENTRY
-    SYMBOL sym )                // - symbol
+    void *_sym )                // - symbol
 {
+    SYMBOL sym = _sym;
     VBUF vbuf;
 
     static char const *ids[] = {
@@ -480,7 +492,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
                 " flag2"        F_HEX_1
                 " segid"        F_HEX_2
                 F_NL
-                " symbol-name=" F_STRING
+                " symbol-name=" F_QSTRING
                 F_EOL
               , sym
               , sym->next
@@ -493,7 +505,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
               , sym->flag
               , sym->flag2
               , sym->segid
-              , vbuf.buf
+              , VbufString( &vbuf )
               );
         if( sym->sym_type != NULL ) {
             DumpFullType( sym->sym_type );
@@ -504,7 +516,7 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
         }
         switch( sym->id ) {
         case SC_CLASS_TEMPLATE:
-            dumpTemplateInfo( sym->u.tinfo );
+            DumpTemplateInfo( sym->u.tinfo );
             break;
         case SC_NAMESPACE:
             dumpNameSpaceInfo( sym->u.ns );
@@ -601,8 +613,9 @@ static void dumpFnType(         // DUMP EXTRA INFO FOR FUNCTION
 
 
 static void dumpBaseClass(      // DUMP BASE_CLASS
-    BASE_CLASS *base )          // - points to information
+    void *_base )               // - points to information
 {
+    BASE_CLASS *base = _base;
     printf( "    BASECLASS" F_BADDR
             " next"         F_PTR
             " type"         F_PTR
@@ -662,6 +675,7 @@ void DumpClassInfo(             // DUMP CLASSINFO
             " needs_assign" F_HEX_2
                             F_NL "  "
             " defined"      F_HEX_2
+            " opened"       F_HEX_2
             " unnamed"      F_HEX_2
             " anonymous"    F_HEX_2
             " corrupted"    F_HEX_2
@@ -722,6 +736,7 @@ void DumpClassInfo(             // DUMP CLASSINFO
           , ci->needs_vdtor
           , ci->needs_assign
           , ci->defined
+          , ci->opened
           , ci->unnamed
           , ci->anonymous
           , ci->corrupted
@@ -767,7 +782,7 @@ void PrintFullType(             // PRINT FULL TYPE INFORMATION
     VBUF prefix, suffix;
 
     FormatType( tp, &prefix, &suffix );
-    printf( "     Type[%x]: %s<id> %s" F_EOL, tp, prefix.buf, suffix.buf );
+    printf( "     Type[%x]: %s<id> %s" F_EOL, tp, VbufString( &prefix ), VbufString( &suffix ) );
     VbufFree( &prefix );
     VbufFree( &suffix );
 }
@@ -848,16 +863,28 @@ void DumpSymInfo(               // DUMP COMPLETE INFO FOR SYMBOL
 
 
 static void dumpFriendRef(      // DUMP REFERENCE TO FRIEND SCOPE
-    FRIEND *fr )                 // - the reference
+    void *_fr )                 // - the reference
 {
-    printf( "   FRIEND"     F_BADDR
-            " next"         F_PTR
-            " sym"          F_PTR
-            F_EOL
-          , fr
-          , fr->next
-          , fr->sym
-          );
+    FRIEND *fr = _fr;
+    if( FriendIsType( fr ) ) {
+        printf( "   FRIEND"     F_BADDR
+                " next"         F_PTR
+                " type"         F_PTR
+                F_EOL
+              , fr
+              , fr->next
+              , FriendGetType( fr )
+              );
+    } else {
+        printf( "   FRIEND"     F_BADDR
+                " next"         F_PTR
+                " sym"          F_PTR
+                F_EOL
+              , fr
+              , fr->next
+              , FriendGetSymbol( fr )
+              );
+    }
 }
 
 
@@ -904,11 +931,11 @@ void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
           , scope->names
           , scope->owner.sym
           , id
-          , scope->keep
-          , scope->dtor_reqd
-          , scope->dtor_naked
-          , scope->try_catch
-          , scope->in_unnamed
+          , scope->s.keep
+          , scope->s.dtor_reqd
+          , scope->s.dtor_naked
+          , scope->s.try_catch
+          , scope->s.in_unnamed
           );
     switch( scope->id ) {
     case SCOPE_CLASS:
@@ -945,9 +972,10 @@ static void dump_sym_scope(     // DUMP SCOPE FOR A SYMBOL
 
 
 static void dumpFriend(         // DUMP A FRIEND SCOPE
-    FRIEND *fr )                 // - symbol for the friend scope
+    void *_fr )                 // - symbol for the friend scope
 {
-    dump_sym_scope( fr->sym );
+    FRIEND *fr = _fr;
+    dump_sym_scope( fr->u.sym );
 }
 
 
@@ -998,9 +1026,10 @@ void DbgForgetScope(            // SCOPE is useless, so don't dump it
 }
 
 
-static dump_scope_defn(         // DUMP SCOPE, GIVEN A SCOPE_DEFN
-    SCOPE_DEFN *defn )          // - scope definition
+static void dump_scope_defn(    // DUMP SCOPE, GIVEN A SCOPE_DEFN
+    void *_defn )               // - scope definition
 {
+    SCOPE_DEFN *defn = _defn;
     DumpScope( defn->defn );
 }
 
@@ -1012,9 +1041,10 @@ void DumpScopes(                // DUMP ALL SCOPES
 }
 
 
-static dump_hash(               // DUMP HASH STAT FOR SCOPE, GIVEN A SCOPE_DEFN
-    SCOPE_DEFN *defn )          // - scope definition
+static void dump_hash(          // DUMP HASH STAT FOR SCOPE, GIVEN A SCOPE_DEFN
+    void *_defn )               // - scope definition
 {
+    SCOPE_DEFN *defn = _defn;
     printf( "SCOPE: %p\n", defn->defn );
     StatsHASHTAB( defn->defn->names );
 }
@@ -1023,7 +1053,7 @@ static dump_hash(               // DUMP HASH STAT FOR SCOPE, GIVEN A SCOPE_DEFN
 void DumpHashStats(             // DUMP ALL SCOPES' HASH TAB STATS
     void )
 {
-    RingWalk( scopes, dump_hash );
+    RingWalk( scopes, (void(*)(void*))dump_hash );
 }
 
 static void dumpNodeType( PTREE node )
@@ -1056,16 +1086,6 @@ void DbgDumpTokenLocn           // DUMP A TOKEN_LOCN
 }
 
 
-static void dumpLocation( TOKEN_LOCN *locn )
-{
-    if( locn->src_file != NULL ) {
-        printf( "    " );
-        DbgDumpTokenLocn( locn );
-        printf( F_EOL );
-    }
-}
-
-
 static char const * const flag_name[] =
 {
     #define PtfFlag(a,b) # a
@@ -1091,6 +1111,7 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
     char const * end = &line[ sizeof( line ) ];
     char * cur = line;
     unsigned ctr;
+    stpcpy( cur, "" );
     for( ctr = 0; ; ++ ctr ) {
         unsigned flag = flag_value[ ctr ];
         if( 0 == flag ) break;
@@ -1491,6 +1512,23 @@ void DbgGenned(                 // INDICATE SYMBOL GENERATED
         }
     }
 }
+
+
+void DumpTemplateSpecialization(// DUMP A TEMPLATE SPECIALIZATION
+    TEMPLATE_SPECIALIZATION *tspec )// - template specialization
+{
+    TEMPLATE_INFO *tinfo = tspec->tinfo;
+    VBUF vbuf;                  // - variable-sized buffer
+
+    FormatTemplateSpecialization( tspec, &vbuf );
+    printf( "    TEMPLATE_SPECIALIZATION" F_BADDR
+            " tinfo"        F_BADDR
+                            F_EOL
+            , tspec, tinfo );
+    printf( "      %s\n", VbufString( &vbuf ) );
+    VbufFree( &vbuf );
+}
+
 
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition

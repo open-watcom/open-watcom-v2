@@ -40,7 +40,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WGetClipData( HWND main, UINT fmt, void **data, uint_32 *dsize );
+extern Bool WGetClipData( HWND main, UINT fmt, void *data, uint_32 *dsize );
 extern Bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize );
 
 #endif

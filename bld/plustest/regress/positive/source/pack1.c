@@ -5,18 +5,14 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#ifdef M_ALPHA
+#if defined( __AXP__ )
 #define check( intel, c32, c16, axp )           axp
-#else
-#ifdef INTEL_ABI
+#elif defined( INTEL_ABI )
 #define check( intel, c32, c16, axp )           intel
-#else
-#ifdef __386__
+#elif defined( __386__ )
 #define check( intel, c32, c16, axp )           c32
 #else
 #define check( intel, c32, c16, axp )           c16
-#endif
-#endif
 #endif
 
 void verify( size_t gen, size_t check, unsigned line )

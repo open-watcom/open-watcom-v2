@@ -1,4 +1,0 @@
-#
-# LCL_AFS -- local master.mif modifications
-#
-dbg_cflags = -d2

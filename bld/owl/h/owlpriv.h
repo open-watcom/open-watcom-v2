@@ -43,6 +43,10 @@
 #include "owcoff.h"
 #include "log.h"
 
+#ifndef min
+#define min(x,y) (((x)<(y))?(x):(y))
+#endif
+
 typedef struct owl_info         owl_info;
 typedef struct owl_file_info    owl_file_info;
 typedef struct owl_section_info owl_section_info;

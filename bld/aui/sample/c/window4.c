@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sample window #4.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 
 #include "app.h"
 
-extern void W1Open();
+extern void W1Open( void );
 
 extern WNDNUMROWS W4NumRows;
 

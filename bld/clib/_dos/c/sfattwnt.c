@@ -37,15 +37,11 @@
 
 _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attribute )
 {
-    int         error;
-
-    if( attribute == 0 ) attribute = FILE_ATTRIBUTE_NORMAL;
+    if( attribute == 0 )
+        attribute = FILE_ATTRIBUTE_NORMAL;
 
     if( !SetFileAttributes( (LPTSTR) path, attribute ) ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
-
     return( 0 );
 }

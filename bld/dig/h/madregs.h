@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD CPU registers structure.
 *
 ****************************************************************************/
 
 
-#ifndef MADREGS_H
-#define MADREGS_H
-#include "digpck.h"
+#ifndef MADREGS_H_INCLUDED
+#define MADREGS_H_INCLUDED
+
 #include "madtypes.h"
 
 #ifdef MD_x86
@@ -47,9 +46,15 @@
 #include "madppc.h"
 #endif
 
+#ifdef MD_mips
+#include "madmips.h"
+#endif
+
 #ifdef MD_jvm
 #include "madjvm.h"
 #endif
+
+#include "digpck.h"
 
 union mad_registers {
     unsigned_8                  nul;
@@ -62,10 +67,14 @@ union mad_registers {
 #ifdef MD_ppc
     struct ppc_mad_registers    ppc;
 #endif
+#ifdef MD_mips
+    struct mips_mad_registers   mips;
+#endif
 #ifdef MD_jvm
     struct jvm_mad_registers    jvm;
 #endif
 };
 
 #include "digunpck.h"
+
 #endif

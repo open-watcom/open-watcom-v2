@@ -1,0 +1,58 @@
+
+I'm sure that there are a bazillion solutions to the Eight Queens
+chess problem floating around on the net, but I'm still quite
+proud of the solution I came up with way back in '84.  I can't
+resist showing it off to everyone.  Amazingly, it still works!! ;-)
+
+The Eight Queens problem, for those who don't know, involves
+finding all the ways that you can place 8 queens on a chess board
+so that no queen can capture any other -- that is, no more than
+a single queen appears on any rank, file or diagonal.  Try to
+do it yourself -- it's *really* hard.
+
+On a Sun or Mac, my program will find all 92 8x8 solutions
+in a fraction of a second.  OK -- so there are actually only
+23 unique solutions -- my program doesn't exploit rotational
+symmetries to report only unique solutions.  If you have an
+ANSI C compiler, you should be able to get it up and running
+in minutes.  Instructions are included in the source code.
+
+The heart of the code is a recursive pruning algorithm that
+zeros in on solutions quickly without wasting a lot of time.
+I've found that it's an excellent way to teach recursive
+programming techniques to people.  Also, great care has
+been taking to minimize the amount of time it takes to
+detect when queens lie on the same rank, file or diagonal.
+I'm particularly proud of how I did that.
+
+I recently dug up the code to solve another unrelated
+problem, ANSI-fied it in the process, and decided that
+it was about time I posted it for all to see.
+
+Have fun with it!!
+
+some examples...
+
+$ Queens 8   ## Nearly instantaneous
+8 queens on a 8x8 board...
+ Q - - - - - - -
+ - - - - Q - - -
+ - - - - - - - Q
+ - - - - - Q - -
+ - - Q - - - - -
+ - - - - - - Q -
+ - Q - - - - - -
+ - - - Q - - - -
+
+$ Queens -c 8  ## Count all 8x8 solutions.  <1 second.
+8 queens on a 8x8 board...
+...there are 92 solutions
+
+$ Queens -c 12  ## Count all 12x12 solutions. About 20 seconds.
+12 queens on a 12x12 board...
+...there are 14200 solutions
+
+
+   Roberto Sierra
+   Tempered MicroDesigns
+   San Francisco, CA

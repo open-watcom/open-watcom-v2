@@ -29,15 +29,18 @@
 *
 ****************************************************************************/
 
-
 #include "cpplib.h"
 
 #include <string.h>
 #include <typeinfo>
 
-bool type_info::before( type_info const &rhs ) const {
+namespace std {
+
+  bool type_info::before( type_info const &rhs ) const {
     if( this == &rhs ) {
         return( false );
     }
     return( strcmp( __raw, rhs.__raw ) < 0 );
+  }
+
 }

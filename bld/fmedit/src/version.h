@@ -32,6 +32,7 @@
 
 #ifndef DLL_VERSION_VERIFICATION
 #define DLL_VERSION_VERIFICATION
+
 /*
  This is the file that each dll copies and modifies.
 
@@ -42,6 +43,5 @@
 #define DLL_FILE_NAME       fmedit.dll
 #define DLL_PREFIX          fmedit_
 #define DLL_VERSION         1
-
 
 #endif

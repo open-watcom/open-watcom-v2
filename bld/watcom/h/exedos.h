@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS MZ executable header.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEDOS_H
-
-#pragma pack(push,1);
 
 /* DOS EXE file header */
 /* =================== */
@@ -56,8 +53,6 @@ typedef struct dos_exe_header {
 
 #define DOS_SIGNATURE   0x5a4d
 #define NH_OFFSET       0x003c
-
-#pragma pack(pop);
 
 #define _EXEDOS_H
 #endif

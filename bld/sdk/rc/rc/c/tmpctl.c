@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include "types.h"
+#include "rctypes.h"
 #include "tmpctl.h"
 
 #define MAX_NAMES       10

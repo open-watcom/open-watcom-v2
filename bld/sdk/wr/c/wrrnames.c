@@ -39,7 +39,6 @@
 #include "wrmem.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 #include "wrrnames.h"
 
 /****************************************************************************/
@@ -67,16 +66,16 @@ int WR_EXPORT WRSetLBoxWithStr( HWND lbox, char *str, void *data )
     int         ok;
     LRESULT     index;
 
-    ok = ( ( lbox != (HWND)NULL ) && str );
+    ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM) (LPCSTR) str );
-        ok = ( ( index != LB_ERR ) && ( index != LB_ERRSPACE ) );
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
     if( ok ) {
         SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data );
-        ok = ( index != LB_ERR );
+        ok = (index != LB_ERR);
     }
 
     return( ok );
@@ -90,17 +89,17 @@ static int WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
 
     cp = NULL;
 
-    ok = ( ( lbox != (HWND)NULL ) && rnode && lnode );
+    ok = (lbox != (HWND)NULL && rnode != NULL && lnode != NULL);
 
-    ok = ok && ( ( cp = WRGetResName( rnode, type ) ) != NULL );
+    ok = ok && ((cp = WRGetResName( rnode, type )) != NULL);
 
     ok = ok && WRSetLBoxWithStr( lbox, cp, lnode );
 
-    if( cp ) {
+    if( cp != NULL ) {
         WRMemFree( cp );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 static int WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
@@ -108,11 +107,11 @@ static int WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
     WResLangNode        *lnode;
     int                 ok;
 
-    ok = ( ( lbox != (HWND)NULL ) && rnode );
+    ok = (lbox != (HWND)NULL && rnode != NULL);
 
     if( ok ) {
         lnode = rnode->Head;
-        while( ok && lnode ) {
+        while( ok && lnode != NULL ) {
             ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type );
             if( lnode == rnode->Tail ) {
                 lnode = NULL;
@@ -132,7 +131,7 @@ int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
     int         ok;
     int         type;
 
-    ok = ( ( lbox != (HWND)NULL ) && tnode );
+    ok = (lbox != (HWND)NULL && tnode != NULL);
 
     if( ok ) {
         if( !tnode->Info.TypeName.IsName ) {
@@ -142,16 +141,16 @@ int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
         }
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         rnode = tnode->Head;
-        if( ok && ( type == (uint_16)RT_STRING ) ) {
+        if( ok && type == (uint_16)RT_STRING ) {
             str = WRAllocRCString( WR_ALLSTRINGS );
-            if( str ) {
+            if( str != NULL ) {
                 ok = WRSetLBoxWithStr( lbox, str, NULL );
                 WRFreeRCString( str );
             } else {
                 ok = FALSE;
             }
         } else {
-            while( ok && rnode ) {
+            while( ok && rnode != NULL ) {
                 ok = WRSetLBoxWithResNode( lbox, rnode, type );
                 if( rnode == tnode->Tail ) {
                     rnode = NULL;
@@ -173,25 +172,25 @@ int WR_EXPORT WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
 
 char * WR_EXPORT WRGetResName( WResResNode *rnode, uint_16 type )
 {
-    WResID   *id;
-    int       num;
-    char     *str;
-    char     *text;
-    char     *cp;
+    WResID  *id;
+    int     num;
+    char    *str;
+    char    *text;
+    char    *cp;
 
     cp = NULL;
 
-    if( rnode ) {
-        id = &(rnode->Info.ResName);
+    if( rnode != NULL ) {
+        id = &rnode->Info.ResName;
         if( type == (uint_16)RT_STRING ) {
             num = id->ID.Num;
-            if( num ) {
+            if( num != 0 ) {
                 text = WRAllocRCString( WR_STRINGIDS );
-                if( text ) {
+                if( text != NULL ) {
                     // alloc string large enough for 'text' and 20 digits
-                    str = (char *)WRMemAlloc( strlen(text) + 21 );
-                    if( str ) {
-                        sprintf( str, text, (num-1)*16, num*16-1 );
+                    str = (char *)WRMemAlloc( strlen( text ) + 21 );
+                    if( str != NULL ) {
+                        sprintf( str, text, (num - 1) * 16, num * 16 - 1 );
                         cp = WRStrDup( str );
                         WRMemFree( str );
                     }
@@ -205,4 +204,3 @@ char * WR_EXPORT WRGetResName( WResResNode *rnode, uint_16 type )
 
     return( cp );
 }
-

@@ -24,35 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for regular expression processor built into aui.
 *
 ****************************************************************************/
 
-
-// This stuff is just for the RX processor itself
-
-#define ALLOC WndAlloc
-#define STANDALONE_RX
-#define CASEIGNORE SrchIgnoreCase
-#define MAGICFLAG FALSE
-#define MAGICSTR SrchIgnoreMagic
-#define META SrchMetaChars
-extern char SrchIgnoreMagic[];
-extern char near SrchMetaChars[];
-extern void *WndAlloc(unsigned int );
-#define STANDALONE_RX
-#ifdef bool
-    #define BOOL_DEFINED
-#endif
-#include "regexp.h"
-
-// This stuff is for public consumption
-extern char SrchIgnoreCase;
-extern char SrchMagicChars[];
-extern char SrchRX;
 
 extern void             *WndCompileRX( char *expr );
 extern void             WndFreeRX( void *rx );
 extern bool             WndRXFind( void *rx, char **pos, char **endpos );
 extern void             WndSetMagicStr( char *str );
+extern bool             WndGetSrchIgnoreCase( void );
+extern void             WndSetSrchIgnoreCase( bool );
+extern bool             WndGetSrchRX( void );
+extern void             WndSetSrchRX( bool );
+extern char             *WndGetSrchMagicChars( void );
+extern void             WndSetSrchMagicChars( char * );

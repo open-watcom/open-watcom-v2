@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
-#include <ctype.h>
-#include "keys.h"
+#include "vi.h"
 
-static FARPROC      oldEditProc;
+static WNDPROC      oldEditProc;
 static FARPROC      editProc;
 static history_data *hData;
-static int      currHist;
+static int          currHist;
 
 /*
  * setEditText - set the specified edit window's text
@@ -48,7 +45,7 @@ static void setEditText( HWND hwnd, char *tmp )
     int     len;
 
     if( tmp == NULL ) {
-    return;
+        return;
     }
     len = strlen( tmp );
     SetWindowText( hwnd, tmp );
@@ -62,72 +59,72 @@ static void setEditText( HWND hwnd, char *tmp )
 static void insertEditText( HWND hwnd, char *tmp )
 {
     SendMessage( hwnd, EM_REPLACESEL, 0, (LONG) tmp );
+
 } /* insertEditText */
 
 /*
  * handleKey - handle a key press
  */
-static bool handleKey( HWND hwnd, int ch, bool process )
+static bool handleKey( HWND hwnd, vi_key key, bool process )
 {
     char    tmp[MAX_INPUT_LINE];
 
-    switch( ch ) {
+    switch( key ) {
     case VI_KEY( ALT_O ):
     case VI_KEY( CTRL_O ):
         if( process ) {
-        GetWindowText( hwnd, tmp, sizeof( tmp ) );
-        InsertTextForSpecialKey( ch, tmp );
-    }
-    break;
+            GetWindowText( hwnd, tmp, sizeof( tmp ) );
+            InsertTextForSpecialKey( key, tmp );
+        }
+        break;
     case VI_KEY( CTRL_R ):
-    if( !SelRgn.selected || ( SelRgn.lines && ( SelRgn.start_line != SelRgn.end_line ) ) ) {
-        return( FALSE );
-    }
+        if( !SelRgn.selected ||
+            (SelRgn.lines && (SelRgn.start.line != SelRgn.end.line)) ) {
+            return( FALSE );
+        }
     case VI_KEY( CTRL_W ):
     case VI_KEY( CTRL_E ):
     case VI_KEY( ALT_L ):
     case VI_KEY( CTRL_L ):
-    case VI_KEY( CTRL_D ):
         if( process ) {
-        if( GetTextForSpecialKey( sizeof( tmp ), ch, tmp ) ) {
-        insertEditText( hwnd, tmp );
+            if( GetTextForSpecialKey( sizeof( tmp ), key, tmp ) ) {
+                insertEditText( hwnd, tmp );
+            }
         }
-    }
-    break;
+        break;
     case VI_KEY( CTRL_INS ):
         if( process ) {
-        SendMessage( hwnd, EM_UNDO, 0, 0L );
-    }
-    break;
+            SendMessage( hwnd, EM_UNDO, 0, 0L );
+        }
+        break;
     case VI_KEY( UP ):
         if( process ) {
-        currHist--;
-        if( currHist < 0 || currHist < (hData->curr - hData->max) ) {
-        currHist = hData->curr-1;
+            currHist--;
+            if( currHist < 0 || currHist < (hData->curr - hData->max) ) {
+                currHist = hData->curr - 1;
+            }
+            setEditText( hwnd, hData->data[currHist % hData->max] );
         }
-        setEditText( hwnd, hData->data[ currHist % hData->max ] );
-    }
-    break;
+        break;
     case VI_KEY( DOWN ):
         if( process ) {
-        currHist++;
-        if( currHist >= hData->curr ) {
-        currHist = hData->curr - hData->max;
-        if( currHist < 0 ) {
-            currHist = 0;
+            currHist++;
+            if( currHist >= hData->curr ) {
+                currHist = hData->curr - hData->max;
+                if( currHist < 0 ) {
+                    currHist = 0;
+                }
+            }
+            setEditText( hwnd, hData->data[currHist % hData->max] );
         }
-        }
-        setEditText( hwnd, hData->data[ currHist % hData->max ] );
-    }
-    break;
+        break;
     case VI_KEY( CTRL_F ):
     case VI_KEY( CTRL_B ):
         if( process ) {
-    }
+        }
         break;
     default:
-    return( FALSE );
-    break;
+        return( FALSE );
     }
     return( TRUE );
 
@@ -138,22 +135,22 @@ static bool handleKey( HWND hwnd, int ch, bool process )
  */
 long WINEXP EditSubClassProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    int     ch;
+    vi_key      key;
 
     switch( msg ) {
     case WM_KEYDOWN:
-    ch = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
-    if( handleKey( hwnd, ch, TRUE ) ) {
-        return( 0L );
-    }
-    break;
+        key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
+        if( handleKey( hwnd, key, TRUE ) ) {
+            return( 0L );
+        }
+        break;
     case WM_CHAR:
-    if( handleKey( hwnd, wparam, FALSE ) ) {
-        return( 0L );
+        if( handleKey( hwnd, wparam, FALSE ) ) {
+            return( 0L );
+        }
+        break;
     }
-    break;
-    }
-    return( CallWindowProc( (LPVOID) oldEditProc, hwnd, msg, wparam, lparam ) );
+    return( CallWindowProc( oldEditProc, hwnd, msg, wparam, lparam ) );
 
 } /* EditSubClassProc */
 
@@ -167,7 +164,7 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
     hData = h;
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
-    oldEditProc = (FARPROC) GetWindowLong( edit, GWL_WNDPROC );
+    oldEditProc = (WNDPROC) GetWindowLong( edit, GWL_WNDPROC );
     editProc = MakeProcInstance( (FARPROC) EditSubClassProc, InstanceHandle );
     SetWindowLong( edit, GWL_WNDPROC, (LONG) editProc );
     SendMessage( edit, EM_LIMITTEXT, MAX_INPUT_LINE, 0L );
@@ -183,7 +180,9 @@ void RemoveEditSubClass( HWND hwnd, int id )
 
     edit = GetDlgItem( hwnd, id );
     SetWindowLong( edit, GWL_WNDPROC, (LONG) oldEditProc );
+#ifndef __NT__
     (void)FreeProcInstance( editProc );
+#endif
     FinishFileComplete();
 
 } /* RemoveEditSubClass */

@@ -24,42 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/27    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/04/01    Greg Bentz      Add template support, conditionally removed.
-//  93/10/29    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  95/05/18    Greg Bentz      runtime dll linkage
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <ctype.h>
-#include <iomanip.h>
-#include <iostream.h>
+#include <iomanip>
+#include <iostream>
 #endif
 
-_WPRTLINK istream &ws( istream &istrm ) {
-/**************************************/
-// Skip any whitespace characters lurking in the input stream.
+namespace std {
+
+  // Skip any whitespace characters lurking in the input stream.
+
+  _WPRTLINK istream &ws( istream &istrm ) {
 
     int  c;
 
@@ -71,4 +53,6 @@ _WPRTLINK istream &ws( istream &istrm ) {
         istrm.get();
     }
     return( istrm );
+  }
+
 }

@@ -24,25 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Utility program used in wmake regression tests.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <direct.h>
+#ifdef __WATCOMC__
+    #include <direct.h>
+#else
+    #include <unistd.h>
+    #include <limits.h>
+#endif
 
-void main(int argc, char* argv[])
+int main( int argc, char* argv[] )
 {
-    char buffer[PATH_MAX+1];
-    int  size;
+    char buffer[ PATH_MAX + 1 ];
+    int  size = sizeof(buffer);
 
-    if (argc >= 2) {
-        getcwd(buffer,size);
-        printf("\n%s>%s\n",buffer,argv[1]);
+    if( argc >= 2 ) {
+        getcwd( buffer, size );
+        printf( "\n%s>%s\n", buffer, argv[1] );
     } else{
-        printf("Error: %s <argument>\n",argv[0]);
+        printf( "Error: %s <argument>\n", argv[0] );
     }
-
+    return( 0 );
 }

@@ -33,7 +33,7 @@
 #include <string.h>
 #include "watcom.h"
 
-#include "types.h"
+#include "rctypes.h"
 #include "semantic.h"
 #include "rcmem.h"
 #include "global.h"
@@ -42,7 +42,6 @@
 #include "yydriver.h"
 #include "scan.h"
 #include "errprt.h"
-#include "rcmsg.h"
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
@@ -93,7 +92,7 @@ typedef union {
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
 #else
-#ifdef __386__
+#if defined( __386__ ) || defined( __PPC__ ) || defined( __AXP__ )
 #define YYFAR
 #else
 #define YYFAR           __far
@@ -122,7 +121,9 @@ typedef enum {
     P_ERROR
 } p_action;
 
-
+/* definitions and tables here */
+            /*  */
+/* */
 
 #ifdef YYDEBUG
 #include <stdio.h>
@@ -136,18 +137,18 @@ static void dump_rule( unsigned rule )
 
     if (CmdLineParms.DebugParser) {
         for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
-            RcFprintf( stdout, NULL, "%c", *p );
+            RcMsgFprintf( stdout, NULL, "%c", *p );
         }
-        RcFprintf( stdout, NULL, " <-" );
+        RcMsgFprintf( stdout, NULL, " <-" );
         tok = &yyrhstoks[ yyrulebase[ rule ] ];
         for( i = yyplentab[ rule ]; i != 0; --i ) {
-            RcFprintf( stdout, NULL, " " );
+            RcMsgFprintf( stdout, NULL, " " );
             for( p = yytoknames[ *tok ]; *p; ++p ) {
-                RcFprintf( stdout, NULL, "%c", *p );
+                RcMsgFprintf( stdout, NULL, "%c", *p );
             }
             ++tok;
         }
-        RcFprintf( stdout, NULL, "\n" );
+        RcMsgFprintf( stdout, NULL, "\n" );
     }
 }
 static void puts_far( const char YYFAR * string )
@@ -156,9 +157,9 @@ static void puts_far( const char YYFAR * string )
 
     if (CmdLineParms.DebugParser) {
         for( p = string; *p; ++p ) {
-            RcFprintf( stdout, NULL, "%c", *p );
+            RcMsgFprintf( stdout, NULL, "%c", *p );
         }
-        RcFprintf( stdout, NULL, "%c", '\n' );
+        RcMsgFprintf( stdout, NULL, "%c", '\n' );
     }
 }
 
@@ -295,7 +296,8 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
 #endif
         if (!yysyntaxerror) {
             switch( rule ) {
-            /*  *//* */
+            /*  */
+/* */
             default:
 #if 0                                   /*** change with new yacc */
                 yyval = yyvp[1];
@@ -382,6 +384,7 @@ static p_action doParse( parse_stack * resource_state )
     int         token_count;
 
     error_state = FALSE;
+    token_count = 0;
 
     do {
         token = yylex();

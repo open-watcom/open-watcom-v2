@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dummy routines for single-threaded programs.
 *
 ****************************************************************************/
 
@@ -38,7 +37,6 @@
 thread_data *__AllocInitThreadData( thread_data *tdata )
 /******************************************************/
 {
-    thread_data *tdata;
     if( tdata == NULL ) {
         tdata = lib_calloc( 1, __ThreadDataSize );
         if( tdata != NULL ) {
@@ -51,7 +49,6 @@ thread_data *__AllocInitThreadData( thread_data *tdata )
 }
 
 int __NTThreadInit( void ) { return( 1 ); }
-void __NTThreadFini( void ) {}
 int __NTAddThread( thread_data *t ) { t = t; return( 1 ); }
 void __NTRemoveThread( int c ) { c = c; }
 void __InitMultipleThread( void ) {}

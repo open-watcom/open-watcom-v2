@@ -82,6 +82,7 @@ RKD RkdForTypeId(       // GET RKD FOR TYPE ID
         retn = RKD_MEMBPTR;
         break;
       case TYP_GENERIC :
+      case TYP_TYPENAME :
         retn = RKD_GENERIC;
         break;
       DbgDefault( "invalid RKD detected" );

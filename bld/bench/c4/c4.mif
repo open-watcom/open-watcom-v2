@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\c4
+.h: $(bench_dir)\c4
+
+extra_cflags = -I$(bench_dir)\c4 -I$(bench_dir)\support -DMSC
+
+obj_files = c4.obj best.obj mach.obj play.obj trans.obj
+
+run: c4.exe $(bench_dir)\c4\input .SYMBOLIC
+	c4 < $(bench_dir)\c4\input
+    
+build: c4.exe .SYMBOLIC
+
+c4.exe : $(obj_files)
+	$(deflink)

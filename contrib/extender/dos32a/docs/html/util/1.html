@@ -1,0 +1,318 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs [Bind]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+1.0 - DOS/32 Advanced - SUNSYS Bind Utility
+<br></font></b></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    SUNSYS  Bind  Utility  should be used when  you  want  to replace a stub
+program  or  a  DOS  Extender  provided  with  (bound  to)  a protected mode
+application  with  DOS/32  Advanced DOS Extender.  The  Bind Utility is also
+capable   of  unbinding  protected  mode   applications  from  the  existing
+Extender/Stub programs they may be bound to.
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The usage of SUNSYS Bind Utility is:
+<blockquote>
+<i>SB [commands] [options] &lt;execname[.xxx]&gt;</i>
+</blockquote>
+where  <i>execname[.xxx]</i>  is the name of the  file  you want to bind or unbind.
+When run without any commands, SUNSYS Bind Utility will report the format of
+the Linear  Executable,  ie: LE, LX or LC, and  the type of DOS Extender that is
+bound to it (if any).
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    The  Bind Utility  will recognize the following  DOS Extenders  possibly
+bound to your application:
+<blockquote>
+<li>DOS/32 Advanced DOS Extender (DOS/32A)<br>
+<li>DOS/32 Advanced Standard stub (STUB32A)<br>
+<li>DOS/32 Advanced Configurable stub (STUB32C)<br>
+<li>DOS/4G and DOS/4GW Professional DOS Extenders<br>
+<li>PMODE/W DOS Extender<br>
+</blockquote>
+all other bound DOS Extenders or stub files will be reported as "Unknown stub".
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The supported Commands are:
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td width="85" bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Command</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/B
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Bind DOS/32A DOS Extender to LE/LX/LC executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/BS
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Bind STUB/32A Standard Stub file to LE/LX/LC executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/BC
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Bind STUB/32C Configurable Stub file to LE/LX/LC executable.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/R
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Replace existing Extender/Stub with DOS/32A DOS Extender.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/RS
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Replace existing Extender/Stub with STUB/32A Standard Stub file.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/RC
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Replace existing Extender/Stub with STUB/32C Configurable Stub file.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/U
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Unbind and discard existing Extender/Stub from LE/LX/LC executable.
+	</font></td>
+</tr>
+</table>
+</blockquote>
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The supported Options are:
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td width="85" bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Option</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/BNxxx
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Specify destination filename when Binding (use with /Bx and /Rx).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/UNxxx
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Specify destination filename when Unbinding (use with /U command).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/O
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Unconditionally overwrite existing files when Binding/Unbinding.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/Q
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Quiet mode (partially disables console output).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/S
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Silent mode (totally disables console output, except for errors).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/H
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Help (/? is also accepted).
+	</font></td>
+</tr>
+</table>
+</blockquote>
+</font></p>
+
+
+<p>&nbsp;</p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Notes:</b><br>
+    Commands  and Options specified at the  command line can be  preceded by
+<b>-</b> (minus) specifier as well as by <b>/</b> (slash).<br>
+<br>
+    Commands  and  Options  specified at the  command  line  can be small or
+capital letters as the Bind Utility is not case sensitive.<br>
+<br>
+    SUNSYS  Bind Utility does not require the extension to be specified with
+<i>execname.xxx</i> file name. If the Bind Utility cannot open <i>execname</i> file it
+will  by  default apply the <i>.exe</i> extension to the file name in order to successfully
+open and process the file.<br>
+<br>
+    The  default action of SUNSYS Bind Utility when run with no Commands or
+Options  specified at the command line  is to show general information about
+application,  such  as file name, size,  type  of application (LE/LX/LC),
+Extender/Stub bound (if any) as well as the OEM built-in information about
+the protected mode application (if any).<br>
+<br>
+    The   <b>/Bx</b>   and  <b>/Rx</b>  Commands   will,  when  processing  executable
+automatically  unbind and discard any existing Extender/Stub, before binding
+DOS/32 Advanced DOS Extender, or STUB/32A and STUB/32C stub files, to the application.<br>
+<br>
+    The <b>/Rx</b> Commands will unconditionally overwrite any existing files, as
+opposed   to  the  <b>/Bx</b>  Commands  which  will  always  check  whether  the
+destination file with the same file name already exists (in which case the Bind
+Utility will exit with an error message without modifying the original file).<br>
+<br>
+    When using the <b>/U</b> Command, SUNSYS Bind Utility will unbind and discard
+any   Extender/Stub  bound  to  the  LE/LX/LC  application,  writing  Linear
+Executable  to  the file with the same  file name as the original, and extension depending on
+the  type  of  the  executable, either <i>.le</i>,  <i>.lx</i>  or  <i>.lc</i> . It is also
+possible  to directly specify destination file name for unbound applications
+with <b>/UN</b> option.<br>
+<br>
+   When  Binding DOS/32 Advanced DOS Extender or DOS/32 Advanced Stub files,
+the executables <i>DOS32A.EXE</i>, <i>STUB32A.EXE</i> and <i>STUB32C.EXE</i> must be either
+in  DOS/32  Advanced  default  directory  (specified  by  <b>DOS32A</b> environment
+variable)  or in the same directory as  the destination files that are to be
+bound.<br>
+<br>
+    When  Binding or Unbinding programs make sure that the file specified at
+the  command  line does not have "Read  Only" or "Hidden" attributes, or the
+Bind Program will not be able  to find and open it.<br>
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Examples:</b><br>
+The examples below will give a further explanation of how
+to use the SUNSYS Bind Utility program.<br>
+<br>
+<br>
+<b>Example 1:</b><br>
+<i>>SB MYPROG.EXE</i><br>
+<blockquote>
+<li>Show general information about <i>MYPROG.EXE</i> application.<br>
+</blockquote>
+
+<br>
+<b>Example 2:</b><br>
+<i>>SB /B MYPROG.EXE</i><br>
+<blockquote>
+<li>Bind DOS/32A DOS Extender to <i>MYPROG.EXE</i> executable.<br>
+<li>If <i>MYPROG.EXE</i> file already exists, exit with an error.<br>
+</blockquote>
+
+<br>
+<b>Example 3:</b><br>
+<i>>SB /RC /BNmyprog.new /Q MYPROG</i><br>
+<blockquote>
+<li>Replace existing Extender/Stub with STUB/32C Configurable Stub.<br>
+<li>Set destination file name to <i>MYPROG.NEW</i>.<br>
+<li>Operate quietly.<br>
+<li>Process application with <i>MYPROG</i> or <i>MYPROG.EXE</i> file name.<br>
+</blockquote>
+
+</font></p>
+
+
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

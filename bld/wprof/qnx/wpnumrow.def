@@ -1,2 +1,0 @@
-//#line "..\c\wpnumrow.c" 52
-extern int SampleNumRows(a_window *wnd);

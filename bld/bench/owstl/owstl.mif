@@ -1,0 +1,28 @@
+!include $(bench_dir)\mif\bench.mif
+
+.cpp: $(bench_dir)\owstl
+.h: $(bench_dir)\owstl
+
+#cflags_watcom = -zq -xs
+#extra_w_opts = -xs -d2
+extra_m_opts = -GX
+extra_cflags = -I$(bench_dir)\owstl -I$(bench_dir)\support -zq -xs
+
+exe_files = &
+          contain.exe  &
+          strcopyl.exe &
+          strcopys.exe &
+          strpass.exe  &
+          mapins.exe   &
+          mapfind.exe  &
+          sort.exe &
+          random.exe
+          
+
+run: $(exe_files) .SYMBOLIC
+    @echo Compilation complete. Run test programs individually.
+
+build: $(exe_files) .SYMBOLIC
+
+.obj.exe:
+    $(deflink)

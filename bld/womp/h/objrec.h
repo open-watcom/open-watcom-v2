@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF record definitions.
 *
 ****************************************************************************/
 
@@ -46,6 +45,8 @@ typedef struct pubdef_data  pubdef_data;
 #include "namemgr.h"
 #endif
 
+
+#include "pushpck1.h"
 
 struct coment_info {
     uint_8  attr;           /* attribute field from coment record       */
@@ -251,6 +252,9 @@ struct obj_rec {
     uint_8      free_data:1;/* should we MemFree( data )??       (PRIVATE)  */
     union objrec_info d;    /* data depending on record type                */
 };
+
+#include "poppck.h"
+
 /*
     Nothing should rely on the data pointing to the same buffer all the time.
     i.e., any routine is allowed to ObjDetachData( objr ) and
@@ -344,7 +348,7 @@ extern void         ObjPut32( obj_rec *objr, uint_32 dword );
 extern void         ObjPutIndex( obj_rec *objr, uint_16 idx );
 extern void         ObjPutEither( obj_rec *objr, uint_32 val );
 extern void         ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len );
-extern void         ObjPutName( obj_rec *objr, const uint_8 *name, uint_8 len );
+extern void         ObjPutName( obj_rec *objr, const char *name, uint_8 len );
 /*
     Notes:
 

@@ -41,31 +41,29 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-     char          name[LF_FULLFACESIZE];
-     int           fonttype;
-     int           num_children;
-     LIST         *family_list;
+     char           name[LF_FULLFACESIZE];
+     int            fonttype;
+     int            num_children;
+     LIST           *family_list;
 } WdeFontNames;
 
 typedef struct {
-     ENUMLOGFONT   elf;
-     NEWTEXTMETRIC ntm;
-     int           fonttype;
-     uint_32       pointsize;
+     ENUMLOGFONT    elf;
+     NEWTEXTMETRIC  ntm;
+     int            fonttype;
+     uint_32        pointsize;
 } WdeFontData;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WdeDumpFontList      ( void );
-extern void     WdeFreeFontList      ( void );
-extern LIST    *WdeGetFontList       ( void );
-extern void     WdeSetFontList       ( HWND );
-extern Bool     WdeDialogToScreen    ( void *, WdeResizeRatio *,
-                                       DialogSizeInfo *, RECT * );
-extern Bool     WdeScreenToDialog    ( void *, WdeResizeRatio *,
-                                       RECT *, DialogSizeInfo * );
-extern HFONT    WdeGetFont           ( char *, int, int );
-extern Bool     WdeGetResizerFromFont ( WdeResizeRatio *, char *, int );
+extern void     WdeDumpFontList( void );
+extern void     WdeFreeFontList( void );
+extern LIST     *WdeGetFontList( void );
+extern void     WdeSetFontList( HWND );
+extern Bool     WdeDialogToScreen( void *, WdeResizeRatio *, DialogSizeInfo *, RECT * );
+extern Bool     WdeScreenToDialog( void *, WdeResizeRatio *, RECT *, DialogSizeInfo * );
+extern HFONT    WdeGetFont( char *, int, int );
+extern Bool     WdeGetResizerFromFont( WdeResizeRatio *, char *, int );
 
 #endif

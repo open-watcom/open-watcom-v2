@@ -31,6 +31,7 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "cg.h"
 #include "coderep.h"
 #include "feprotos.h"

@@ -24,18 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  REAL*4 math library.
 ;*
 ;*****************************************************************************
 
 
-;
-;   real*4 math library
-;
-;  04-apr-86    G. Coschi       special over/underflow check in mul,div
-;                               have to always point at DGROUP.
-;                               we might be running with SS != DGROUP
 ;
 ;       inputs: EAX - operand 1 (high word, low word resp. ) (op1)
 ;               EDX - operand 2                              (op2)
@@ -64,8 +57,6 @@ include struct.inc
 
         xref    __fdiv_m32
 
-ifndef __PENPOINT__
-
         datasegment
         extrn   __real87 : byte         ; cstart
         extrn   __chipbug : byte
@@ -73,14 +64,6 @@ fsadd   dd      _chkadd
 fsmul   dd      _chkmul
 fsdiv   dd      _chkdiv
         enddata
-
-else                                    ; always emulate
-
-fsadd   dd      __FSAemu                ; addr of add rtn
-fsmul   dd      __FSMemu                ; addr of mul rtn
-fsdiv   dd      __FSDemu                ; addr of div rtn
-
-endif
 
 
         xref    F4DivZero       ; Fstatus
@@ -429,8 +412,6 @@ div_oflow:                      ; handle overflow
         endproc __FSD
 
 
-ifndef __PENPOINT__
-
 _chkadd: call   _chk8087
         jmp     fsadd
 
@@ -467,8 +448,6 @@ _chk8087 proc   near
         pop     eax                     ; restore AX
         ret                             ; return
         endproc _chk8087
-
-endif
 
         endmod
         end

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source browser mainline class.
 *
 ****************************************************************************/
 
@@ -57,7 +56,7 @@ static char * TerminateError = "An unrecoverable error has occured -- applicatio
 static void CatchAll()
 //--------------------
 {
-    WMessageDialog::message( NULL, MsgError, MsgOk, TerminateError, "WATCOM Browser" );
+    WMessageDialog::message( NULL, MsgError, MsgOk, TerminateError, "Open Watcom Browser" );
     exit( 0xff );
 }
 

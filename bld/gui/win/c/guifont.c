@@ -60,7 +60,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     bool        ret;
     WPI_PROC    func;
 #if !(defined(__NT__) || defined(WILLOWS))
-    HANDLE      h;
+    HINSTANCE   h;
 #endif
 #ifdef __WINDOWS_386__
     HINDIR      hIndir;
@@ -85,7 +85,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
     func = ChooseFont;
 #else
     h = LoadLibrary( "COMMDLG.DLL" );
-    if( h < 32 ) {
+    if( (UINT)h < 32 ) {
         return( FALSE );
     }
     func = GetProcAddress( h, "ChooseFont" );
@@ -106,7 +106,7 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
         FreeAlias16( lfAlias );
     }
 #else
-    ret = func( &cf );
+    ret = ((BOOL(WINAPI *)(LPCHOOSEFONT))func)( &cf );
 #endif
 #if !(defined(__NT__) || defined(WILLOWS))
     FreeLibrary( h );
@@ -242,12 +242,22 @@ bool GUIFontsSupported( void )
 bool GUISetSystemFont( gui_window *wnd, bool fixed )
 {
 #ifndef __OS2_PM__
-    HFONT       font;
+    HFONT               font;
+#ifdef __NT__
+    NONCLIENTMETRICS    ncm;
+#endif
 
     if( fixed ) {
         font = GetStockObject( SYSTEM_FIXED_FONT );
     } else {
+#ifdef __NT__
+        ncm.cbSize = sizeof( NONCLIENTMETRICS );
+        SystemParametersInfo( SPI_GETNONCLIENTMETRICS, sizeof( NONCLIENTMETRICS ),
+                              &ncm, 0 );
+        font = CreateFontIndirect( &ncm.lfMessageFont );
+#else
         font = GetStockObject( SYSTEM_FONT );
+#endif
     }
     if( wnd->font != NULL ) {
         DeleteObject( wnd->font );

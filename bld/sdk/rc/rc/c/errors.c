@@ -41,36 +41,14 @@
 #include "reserr.h"
 #include "tmpctl.h"
 #include "errprt.h"
-#include "ldstr.h"
+#include "rcldstr.h"
 #include "iortns.h"
 #include "preproc.h"
+#include "rcspawn.h"
 
-/* The following is required as the resource editor compiles this file
- * directly but finds the exit(-1) on FATAL error highly disheartening.
- * The jmp_buf will contain a more reasonable return address back in
- * the heart of the resource editor.
- */
-#ifdef WR_COMPILED
-
-// the following is a temporary measure to get around the fact
-// that winreg.h defines a type called ppvalue
-#define _WINREG_
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <setjmp.h>
-extern jmp_buf RC_Dead_env;
-#elif defined DLL_COMPILE
-#include <setjmp.h>
-extern jmp_buf DLL_JumpPt;
-#endif
 
 static char             rcStrBuf[1024];
 static char             errBuffer[1024];
-
-#define ERRITEM( a, b ) b
-
-#undef ERRITEM
 
 static int checkForTmpFiles( unsigned errornum, va_list arglist ) {
 
@@ -100,13 +78,11 @@ static int checkForTmpFiles( unsigned errornum, va_list arglist ) {
     }
 }
 
-#define MAX_LINE_LEN            75
 static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
 /***************************************************************************/
 {
     const LogicalFileInfo       *currfile;
     int                         len;
-    const char                  *prefix;
     OutPutInfo                   errinfo;
 
 
@@ -114,20 +90,6 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     errinfo.severity = sev;
     errinfo.flags |= OUTFLAG_ERRID;
     errinfo.errid = errornum;
-    switch( sev ) {
-    case SEV_WARNING:
-        prefix = "Warning!";
-        break;
-    case SEV_ERROR:
-        prefix = "Error!";
-        break;
-    case SEV_FATAL_ERR:
-        prefix = "Fatal Error!";
-        break;
-    default:
-        prefix = "";
-        break;
-    }
     switch (errornum) {
     case ERR_CANT_OPEN_FILE:
     case ERR_READING_TMP:
@@ -150,8 +112,9 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     case ERR_TOO_MANY_ARGS:
     case ERR_UNKNOWN_MULT_OPTION:
     case ERR_UNKNOWN_OPTION:
-    case ERR_WIN_RES_TO_NT_EXE:
-    case ERR_NT_RES_TO_WIN_EXE:
+    case ERR_NONNT_RES_TO_NT_EXE:
+    case ERR_NONWIN_RES_TO_WIN_EXE:
+    case ERR_NONOS2_RES_TO_OS2_EXE:
     case ERR_OLD_RESOURCE_OBJECT:
     case ERR_READING_EXE:
     case ERR_READING_ICON:
@@ -166,13 +129,12 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         /* don't print the filename & line number before these errors */
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );
-        sprintf( errBuffer, "%s %d: %n%s", prefix, errornum, &len, rcStrBuf );
+        sprintf( errBuffer, "%n%s", &len, rcStrBuf );
         break;
     case ERR_RCSTR_NOT_FOUND:
         /* this message means the error strings cannot be obtained from
          * the exe so its text is hard coded */
-        sprintf( errBuffer, "%s %d: %nResource strings not found", prefix,
-                    errornum, &len );
+        sprintf( errBuffer, "%nResource strings not found", &len );
         break;
     case ERR_NO_MSG:
         /* dont print anything */
@@ -185,45 +147,11 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
             errinfo.flags |= OUTFLAG_FILE | OUTFLAG_LINE;
             errinfo.file = currfile->Filename;
             errinfo.lineno = currfile->LineNum;
-#if !defined( DLL_COMPILE )
-            sprintf( errBuffer, "%s(%d): %s %d: %n%s", currfile->Filename,
-                        currfile->LineNum, prefix,
-                        errornum, &len, rcStrBuf );
-#else
-            sprintf( errBuffer, "%s %d: %n%s", prefix, errornum,
-                        &len, rcStrBuf );
-#endif
-        } else {
-            sprintf( errBuffer, "%s %d: %n%s", prefix, errornum, &len,
-                        rcStrBuf );
         }
+        sprintf( errBuffer, "%n%s", &len, rcStrBuf );
         break;
     }
-#if defined( DLL_COMPILE ) || defined( WR_COMPILED )
-    RcFprintf( stdout, &errinfo, "%s\n", errBuffer );
-#else
-    {
-        int             indent;
-        char            *start;
-        char            *end;
-
-        indent = 0;
-        start = errBuffer;
-        while( strlen( start ) > MAX_LINE_LEN - indent ) {
-            end = start + MAX_LINE_LEN - indent;
-            while( !isspace( *end ) && end > start ) end--;
-            if( end != start )  {
-                *end = '\0';
-            } else {
-                break;
-            }
-            RcFprintf( stdout, &errinfo, "%*s%s\n", indent, "", start );
-            start = end + 1;
-            indent = len;
-        }
-        RcFprintf( stdout, &errinfo, "%*s%s\n", indent, "", start );
-    }
-#endif
+    RcMsgFprintf( stdout, &errinfo, "%s\n", errBuffer );
 }
 
 extern void RcWarning( unsigned errornum, ... )
@@ -274,13 +202,7 @@ extern void RcFatalError( unsigned int errornum, ... )
     }
     CloseAllFiles();
     PP_Fini();
-#ifdef WR_COMPILED
-    longjmp( RC_Dead_env, 1 );
-#elif defined DLL_COMPILE
-    longjmp( DLL_JumpPt, 1 );
-#else
-    exit( -1 );
-#endif
+    RCSuicide( -1 );
 }
 
 extern void ErrorInitStatics( void )

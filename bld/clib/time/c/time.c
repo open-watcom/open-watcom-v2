@@ -24,35 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  time() returns current time and date
 *
 ****************************************************************************/
-
-
-/*
- *      Get Current Time and Date
- *
- */
 
 #include "variety.h"
 #include <stdio.h>
 #include <time.h>
 #include "timedata.h"
 
-
 _WCRTLINK time_t time( time_t *timer )
-    {
-        auto struct tm t;
-        time_t seconds;
-        int    milliseconds;
+{
+    auto struct tm      t;
+    time_t              seconds;
+    int                 milliseconds;
 
-        milliseconds = __getctime( &t );        /* get raw time and date */
-        if( milliseconds >= 500 )  t.tm_sec++;
-#if 0
-        t.tm_isdst = -1;        /* 01-nov-90 getctime sets isdst to -1 */
-#endif
-        seconds = mktime( &t );
-        if( timer != NULL )  *timer = seconds;
-        return( seconds );
-    }
+    milliseconds = __getctime( &t );        /* get raw time and date */
+    if( milliseconds >= 500 )
+        t.tm_sec++;
+    seconds = mktime( &t );
+    if( timer != NULL )
+        *timer = seconds;
+    return( seconds );
+}

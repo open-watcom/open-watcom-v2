@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Examine program data.
 *
 ****************************************************************************/
 
@@ -34,29 +33,29 @@
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbgerr.h"
-//#include "dbgwind.h"
 #include "dbggptr.h"
 #include "dbgitem.h"
 #include "dbgtoggl.h"
 #include "dbglit.h"
 #include "mad.h"
 
-extern void             AsmExam(void);
-extern void             OptMemAddr( memory_expr ,address *);
-extern void             ReqEOC(void);
-extern unsigned int     OptExpr(unsigned int );
-extern void             ChkExpr(void);
-extern void             Scan(void);
-extern unsigned int     ScanCmd(char *);
+
+extern void             AsmExam( void );
+extern void             OptMemAddr( memory_expr, address * );
+extern void             ReqEOC( void );
+extern unsigned int     OptExpr( unsigned int );
+extern void             ChkExpr( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
 extern mad_type_handle  ScanType( mad_type_kind, mad_type_kind * );
-extern char             *ScanPos(void);
-extern void             SrcExam(void);
-extern void             WndMemInspect(address,char*,unsigned,mad_type_handle);
-extern void             WndIOInspect(address*,mad_type_handle);
-extern void             WndAddrInspect(address);
+extern char             *ScanPos( void );
+extern void             SrcExam( void );
+extern void             WndMemInspect( address, char *, unsigned, mad_type_handle );
+extern void             WndIOInspect( address *, mad_type_handle );
+extern void             WndAddrInspect( address );
 extern void             SetDataDot( address );
 extern address          GetDataDot( void );
-extern char             *DupStrLen(char*,unsigned);
+extern char             *DupStrLen( char *, unsigned );
 extern char             *GetCmdName( int );
 extern mad_type_handle  GetMADTypeHandleDefaultAt( address a, mad_type_kind mtk );
 
@@ -110,7 +109,7 @@ static void MemExam( mad_type_handle type )
     WndMemInspect( addr, expr, len, type );
 }
 
-OVL_EXTERN void TypeExam()
+OVL_EXTERN void TypeExam( void )
 {
     mad_type_handle     th;
     mad_type_kind       tk;
@@ -131,7 +130,7 @@ static char FmtNameTab[] = {
     "Source\0"
 };
 
-static void (* const ExamJmpTab[])() = {
+static void (* const ExamJmpTab[])( void ) = {
     &TypeExam,
     &AsmExam,
     &SrcExam,
@@ -142,7 +141,7 @@ static void (* const ExamJmpTab[])() = {
  * ProcExamine -- process examine command
  */
 
-void ProcExamine()
+void ProcExamine( void )
 {
     if( CurrToken != T_DIV ) {
         MemExam( GetMADTypeHandleDefaultAt( NilAddr, MTK_BASIC ) );

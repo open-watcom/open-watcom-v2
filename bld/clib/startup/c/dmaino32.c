@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit DLL startup code.
 *
 ****************************************************************************/
 
@@ -44,69 +43,39 @@
 #define INCL_DOSMODULEMGR
 #include <wos2.h>
 #include "initfini.h"
+#include "osthread.h"
+#include "stacklow.h"
+#include "widechar.h"
+#include "initarg.h"
+#include "rtdata.h"
 
 extern  unsigned            __hmodule;
 
 extern  unsigned APIENTRY   LibMain( unsigned, unsigned );
-extern  void                __CommonInit(void);
-extern  int                 __disallow_single_dgroup(unsigned);
+extern  void                __CommonInit( void );
+extern  int                 __disallow_single_dgroup( unsigned );
 
 #ifdef __SW_BR
     int                     __Is_DLL;           /* TRUE => DLL, else not a DLL */
     char                    *_LpDllName;        /* pointer to dll name */
     wchar_t                 *_LpwDllName;       /* pointer to dll name */
 #else
-    extern      char        *_LpDllName;        /* pointer to dll name */
-    extern      wchar_t     *_LpwDllName;       /* pointer to dll name */
-    extern      char        *_Envptr;
-    _WCRTLINK extern char       *_LpCmdLine;    /* pointer to command line */
-    _WCRTLINK extern wchar_t    *_LpwCmdLine;   /* pointer to command line */
-    _WCRTLINK extern char       *_LpPgmName;    /* pointer to program name */
-    _WCRTLINK extern wchar_t    *_LpwPgmName;   /* pointer to program name */
     extern      unsigned    __MaxThreads;
-    extern      unsigned    __ASTACKSIZ;        /* alternate stack size */
-    extern      char        *__ASTACKPTR;       /* alternate stack pointer */
-    extern      char        *_STACKLOW;
 
-    extern      void        __OS2Init(int, void *);
-    extern      void        __OS2Fini(void);
-    extern      int         __OS2AddThread(int, void *);
-    extern      void        __shutdown_stack_checking();
-    extern      void        *__InitThreadProcessing(void);
-    extern      void        __InitMultipleThread(void);
-
-    #ifdef __386__
-        #pragma aux     __ASTACKPTR "*";
-        #pragma aux     __ASTACKSIZ "*";
-    #endif
+    extern      void        __OS2Init( int, void * );
+    extern      void        __OS2Fini( void );
+    extern      int         __OS2AddThread( int, void * );
+    extern      void        __shutdown_stack_checking( void );
+    extern      void        *__InitThreadProcessing( void );
+    extern      void        __InitMultipleThread( void );
+    extern      thread_data *__AllocInitThreadData( thread_data *tdata );
+    extern      void        __FreeInitThreadData( thread_data * );
+    extern      thread_data *__FirstThreadData;
 #endif
 
-static void APIENTRY LibMainExitList( ULONG reason ) {
-    APIRET rc;
-    reason = reason;
-    #ifndef __SW_BR
-        if( _LpwCmdLine ) {
-            lib_free( _LpwCmdLine );
-            _LpwCmdLine = NULL;
-        }
-        if( _LpwPgmName ) {
-            lib_free( _LpwPgmName );
-            _LpwPgmName = NULL;
-        }
-    #endif
-    #ifdef __SW_BR
-        __FiniRtns( 0, 255 );
-    #else
-        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
-        __OS2Fini(); // must be done before following finalizers get called
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-    #endif
-    #ifndef __SW_BR
-        __shutdown_stack_checking();
-    #endif
-    rc = DosExitList( EXLST_EXIT, LibMainExitList );
-}
-
+#ifdef __386__
+    #pragma aux __LibMain "*" parm caller []
+#endif
 
 unsigned __LibMain( unsigned hmod, unsigned termination )
 /*******************************************************/
@@ -115,8 +84,34 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
     unsigned    rc;
 
     if( termination != 0 ) {
+        // If we're running with single DGROUP and tried to load
+        // twice, do not run any termination code! Also reset the
+        // process counter so that the already loaded DLL can
+        // terminate properly
+        if( processes > 1 ) {
+            --processes;
+            return( 0 );
+        }
         rc = LibMain( hmod, termination );
         --processes;
+#ifdef __SW_BR
+        __FiniRtns( 0, 255 );
+#else
+        if( _LpwCmdLine ) {
+            lib_free( _LpwCmdLine );
+            _LpwCmdLine = NULL;
+        }
+        if( _LpwPgmName ) {
+            lib_free( _LpwPgmName );
+            _LpwPgmName = NULL;
+        }
+        __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+        // calls to free memory have to be done before semaphores closed
+        __FreeInitThreadData( __FirstThreadData );
+        __OS2Fini(); // must be done before following finalizers get called
+        __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
+        __shutdown_stack_checking();
+#endif
         return( rc );
     }
     ++processes;
@@ -126,10 +121,11 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
         }
     }
     __hmodule = hmod;
-    #ifdef __SW_BR
+#ifdef __SW_BR
     {
-        static char fname[_MAX_PATH];
-        static wchar_t wfname[_MAX_PATH];
+        static char     fname[_MAX_PATH];
+        static wchar_t  wfname[_MAX_PATH];
+
         __Is_DLL = 1;
         __InitRtns( 255 );
         DosQueryModuleName( hmod, sizeof( fname ), fname );
@@ -137,13 +133,14 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
         _LpwDllName = wfname;
         _atouni( _LpwDllName, _LpDllName );
     }
-    #else
+#else
     {
         PTIB        pptib;
         PPIB        pppib;
         unsigned    i;
+
         DosGetInfoBlocks( &pptib, &pppib );
-        _Envptr = pppib->pib_pchenv;
+        _RWD_Envptr = pppib->pib_pchenv;
         _LpCmdLine = pppib->pib_pchcmd;
         while( *_LpCmdLine ) {          // skip over program name
             _LpCmdLine++;
@@ -156,6 +153,7 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
             // environment space. apparently the OS fullpath name is
             // just before this one in the environment space
             char    *cmd_path;
+
             cmd_path = pppib->pib_pchcmd;
             for( cmd_path -= 2; *cmd_path != '\0'; --cmd_path );
             ++cmd_path;
@@ -163,17 +161,18 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
             _LpwPgmName = lib_malloc( (strlen( _LpPgmName ) + 1) * sizeof( wchar_t ) );
             _atouni( _LpwPgmName, _LpPgmName );
         }
-        __InitRtns( 1 );
+        __InitRtns( INIT_PRIORITY_THREAD );
         if( __InitThreadProcessing() == NULL ) return( 0 );
-        __OS2Init( TRUE, NULL );
+        __OS2Init( TRUE, __AllocInitThreadData( NULL ) );
         for( i = 2; i <= __MaxThreads; i++ ) {
             if( !__OS2AddThread( i, NULL ) ) return( 0 );
         }
-        __InitRtns( 15 );
+        __InitRtns( INIT_PRIORITY_EXIT - 1 );
         __InitMultipleThread();
         {
-            static char fname[_MAX_PATH];
-            static wchar_t wfname[_MAX_PATH];
+            static char     fname[_MAX_PATH];
+            static wchar_t  wfname[_MAX_PATH];
+
             DosQueryModuleName( hmod, sizeof( fname ), fname );
             _LpDllName = fname;
             _LpwDllName = wfname;
@@ -181,20 +180,11 @@ unsigned __LibMain( unsigned hmod, unsigned termination )
         }
         __InitRtns( 255 );
     }
-    #endif
-    // setup shutdown routine
-    #define SHUTDOWN_ORDER 0x0000E000
-    if( DosExitList( EXLST_ADD|SHUTDOWN_ORDER, LibMainExitList ) ) {
-        __FiniRtns( 0, 255 );
-        return( 0 );
-    }
+#endif
     __CommonInit();
-    #ifndef __SW_BR
-        /* allocate alternate stack for F77 */
-        __ASTACKPTR = _STACKLOW + __ASTACKSIZ;
-    #endif
+#ifndef __SW_BR
+    /* allocate alternate stack for F77 */
+    __ASTACKPTR = (char *)_STACKLOW + __ASTACKSIZ;
+#endif
     return( LibMain( hmod, termination ) );
 }
-#ifdef __386__
-    #pragma aux __LibMain "*" parm caller []
-#endif

@@ -1,0 +1,28 @@
+/*
+ *  dshow.h     DirectShow main header file
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __DSHOW_INCLUDED__
+#define __DSHOW_INCLUDED__
+
+:include readonly.sp
+
+#include <windows.h>
+#include <windowsx.h>
+#include <olectl.h>
+#include <ddraw.h>
+#include <mmsystem.h>
+#include <strsafe.h>
+#include <strmif.h>
+#include <amvideo.h>
+#include <control.h>
+#include <evcode.h>
+#include <uuids.h>
+#include <errors.h>
+#include <edevdefs.h>
+#include <audevcod.h>
+#include <dvdevcod.h>
+
+#endif /* __DSHOW_INCLUDED__ */

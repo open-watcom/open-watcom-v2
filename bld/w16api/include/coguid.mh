@@ -1,0 +1,36 @@
+/*
+ *  coguid.h    Component Object Model (COM) GUIDs
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+/* GUIDs */
+EXTERN_C const GUID CDECL FAR   GUID_NULL;
+EXTERN_C const GUID CDECL FAR   IID_IUnknown;
+EXTERN_C const GUID CDECL FAR   IID_IClassFactory;
+EXTERN_C const GUID CDECL FAR   IID_IMalloc;
+EXTERN_C const GUID CDECL FAR   IID_IMarshal;
+EXTERN_C const GUID CDECL FAR   IID_IRpcChannel;
+EXTERN_C const GUID CDECL FAR   IID_IRpcStub;
+EXTERN_C const GUID CDECL FAR   IID_IStubManager;
+EXTERN_C const GUID CDECL FAR   IID_IRpcProxy;
+EXTERN_C const GUID CDECL FAR   IID_IProxyManager;
+EXTERN_C const GUID CDECL FAR   IID_IPSFactory;
+EXTERN_C const GUID CDECL FAR   IID_ILockBytes;
+EXTERN_C const GUID CDECL FAR   IID_IStorage;
+EXTERN_C const GUID CDECL FAR   IID_IStream;
+EXTERN_C const GUID CDECL FAR   IID_IEnumSTATSTG;
+EXTERN_C const GUID CDECL FAR   IID_IBindCtx;
+EXTERN_C const GUID CDECL FAR   IID_IMoniker;
+EXTERN_C const GUID CDECL FAR   IID_IRunningObjectTable;
+EXTERN_C const GUID CDECL FAR   IID_IInternalMoniker;
+EXTERN_C const GUID CDECL FAR   IID_IRootStorage;
+EXTERN_C const GUID CDECL FAR   IID_IDfReserved1;
+EXTERN_C const GUID CDECL FAR   IID_IDfReserved2;
+EXTERN_C const GUID CDECL FAR   IID_IDfReserved3;
+EXTERN_C const GUID CDECL FAR   IID_IMessageFilter;
+EXTERN_C const GUID CDECL FAR   CLSID_StdMarshal;
+EXTERN_C const GUID CDECL FAR   IID_IStdMarshalInfo;
+EXTERN_C const GUID CDECL FAR   IID_IExternalConnection;

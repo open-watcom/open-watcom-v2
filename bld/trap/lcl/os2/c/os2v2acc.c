@@ -55,6 +55,7 @@
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"
+#include "x86cpu.h"
 
 __GINFOSEG              *GblInfo;
 dos_debug               Buff;
@@ -62,8 +63,6 @@ static BOOL             stopOnSecond;
 USHORT                  TaskFS;
 extern char             SetHardMode( char );
 extern VOID             InitDebugThread(VOID);
-
-extern unsigned         X86CPUType();
 
 #ifdef DEBUG_OUT
 
@@ -567,7 +566,7 @@ void DoWritePgmScrn( char *buff, USHORT len )
     BreakPoint( 0 );
 }
 
-unsigned ReqGet_sys_config()
+unsigned ReqGet_sys_config( void )
 {
     USHORT        version;
     USHORT        shift;
@@ -579,9 +578,9 @@ unsigned ReqGet_sys_config()
     ret->sys.os = OS_OS2;
     DosGetVersion( &version );
     ret->sys.osminor = version & 0xff;
-    ret->sys.osmajor = (version >> 16) & 0xff;
+    ret->sys.osmajor = version >> 8;
     ret->sys.cpu = X86CPUType();
-    ret->sys.fpu = X86_387; /* OS/2 2.0 auto-emulates */
+    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
     WriteRegs( &Buff );
 
     buff.Cmd = DBG_C_ReadCoRegs;
@@ -671,7 +670,7 @@ unsigned ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+unsigned ReqMachine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -1023,13 +1022,13 @@ static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
     return( rc );
 }
 
-void AppSession()
+void AppSession( void )
 {
     if( !IsPMDebugger() )
         DosSelectSession( SID, 0 );
 }
 
-void DebugSession()
+void DebugSession( void )
 {
     if( !IsPMDebugger() )
         DosSelectSession( 0, 0 );
@@ -1257,7 +1256,7 @@ unsigned ReqClear_watch( void )
 
 static volatile bool     BrkPending;
 
-void SetBrkPending()
+void SetBrkPending( void )
 {
     BrkPending = TRUE;
 }
@@ -1444,7 +1443,7 @@ unsigned ReqProg_step( void )
     return( rc );
 }
 
-unsigned ReqFile_write_console()
+unsigned ReqFile_write_console( void )
 {
     USHORT       len;
     USHORT       written_len;
@@ -1558,7 +1557,7 @@ unsigned ReqThread_thaw( void )
     return( DoThread( DBG_C_Resume ) );
 }
 
-unsigned ReqGet_message_text()
+unsigned ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1575,7 +1574,7 @@ unsigned ReqGet_message_text()
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqGet_next_alias()
+unsigned ReqGet_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

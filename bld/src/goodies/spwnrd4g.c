@@ -1,8 +1,8 @@
 /*
-    SPWNRD4G.C - The following program demonstrates how to
+    spwnrd4g.c - The following program demonstrates how to
     spawn another Rational Systems DOS/4GW application.
 
-    Compile and link: wcl386 /l=dos4g spwnrd4g
+    Compile and link: wcl386 -l=dos4g spwnrd4g.c
  */
 #include <process.h>
 #include <stdio.h>

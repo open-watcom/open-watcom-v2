@@ -1,0 +1,417 @@
+/*
+ *  dvdmedia.h  DVD media definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __DVDMEDIA_H__
+#define __DVDMEDIA_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* ActiveMovie primitive data types */
+typedef LONG        AM_MaxFullDataRate;
+typedef DWORD       AM_Step;
+typedef LONGLONG    AM_DecoderPosition;
+
+/* ActiveMovie AC3 alternate audio modes */
+#define AM_AC3_ALTERNATE_AUDIO_1    1L
+#define AM_AC3_ALTERNATE_AUDIO_2    2L
+#define AM_AC3_ALTERNATE_AUDIO_BOTH 3L
+
+/* ActiveMovie AC3 bit stream modes */
+#define AM_AC3_SERVICE_MAIN_AUDIO           0L
+#define AM_AC3_SERVICE_NO_DIALOG            1L
+#define AM_AC3_SERVICE_VISUALLY_IMPAIRED    2L
+#define AM_AC3_SERVICE_HEARING_IMPAIRED     3L
+#define AM_AC3_SERVICE_DIALOG_ONLY          4L
+#define AM_AC3_SERVICE_COMMENTARY           5L
+#define AM_AC3_SERVICE_EMERGENCY_FLASH      6L
+#define AM_AC3_SERVICE_VOICE_OVER           7L
+
+/* ActiveMovie copy protection flags */
+#define AM_UseNewCSSKey         0x01
+#define AM_ReverseBlockStart    0x02
+#define AM_ReverseBlockEnd      0x04
+
+/* ActiveMovie DVD CGMS copy protection flags */
+#define AM_DVD_CGMS_COPY_PROTECT_MASK   0x00000018L
+#define AM_DVD_CGMS_COPY_PERMITTED      0x00000000L
+#define AM_DVD_CGMS_COPY_ONCE           0x00000010L
+#define AM_DVD_CGMS_NO_COPY             0x00000018L
+#define AM_DVD_COPYRIGHT_MASK           0x00000040L
+#define AM_DVD_NOT_COPYRIGHTED          0x00000000L
+#define AM_DVD_COPYRIGHTED              0x00000040L
+#define AM_DVD_SECTOR_PROTECT_MASK      0x00000020L
+#define AM_DVD_SECTOR_NOT_PROTECTED     0x00000000L
+#define AM_DVD_SECTOR_PROTECTED         0x00000020L
+
+/* ActiveMovie interlace flags */
+#define AMINTERLACE_IsInterlaced            0x00000001L
+#define AMINTERLACE_1FieldPerSample         0x00000002L
+#define AMINTERLACE_Field1First             0x00000004L
+#define AMINTERLACE_FieldPatternMask        0x00000030L
+#define AMINTERLACE_FieldPatField1Only      0x00000000L
+#define AMINTERLACE_FieldPatField2Only      0x00000010L
+#define AMINTERLACE_FieldPatBothRegular     0x00000020L
+#define AMINTERLACE_FieldPatBothIrregular   0x00000030L
+#define AMINTERLACE_DisplayModeMask         0x000000C0L
+#define AMINTERLACE_DisplayModeBobOnly      0x00000000L
+#define AMINTERLACE_DisplayModeWeaveOnly    0x00000040L
+#define AMINTERLACE_DisplayModeBobOrWeave   0x00000080L
+
+/* ActiveMovie copy protection flags */
+#define AMCOPYPROTECT_RestrictDuplication   0x00000001L
+
+/* ActiveMovie MPEG-2 flags */
+#define AMMPEG2_DoPanScan           0x00000001L
+#define AMMPEG2_DVDLine21Field1     0x00000002L
+#define AMMPEG2_DVDLine22Field2     0x00000004L
+#define AMMPEG2_SourceIsLetterboxed 0x00000008L
+#define AMMPEG2_FilmCameraMode      0x00000010L
+#define AMMPEG2_LetterboxAnalogOut  0x00000020L
+#define AMMPEG2_DSS_UserData        0x00000040L
+#define AMMPEG2_DVB_UserData        0x00000080L
+#define AMMPEG2_27MhzTimebase       0x00000100L
+#define AMMPEG2_WidescreenAnalogOut 0x00000200L
+
+/* ActiveMovie control flags */
+#define AMCONTROL_USED              0x00000001L
+#define AMCONTROL_PAD_TO_4x3        0x00000002L
+#define AMCONTROL_PAD_TO_16x9       0x00000004L
+#define AMCONTROL_COLORINFO_PRESENT 0x00000080L
+
+/* ActiveMovie video flags */
+#define AM_VIDEO_FLAG_FIELD_MASK        0x00000003L
+#define AM_VIDEO_FLAG_INTERLEAVED_MASK  0x00000000L
+#define AM_VIDEO_FLAG_FIELD1            0x00000001L
+#define AM_VIDEO_FLAG_FIELD2            0x00000002L
+#define AM_VIDEO_FLAG_FIELD1FIRST       0x00000004L
+#define AM_VIDEO_FLAG_WEAVE             0x00000008L
+#define AM_VIDEO_FLAG_IPB_MASK          0x00000030L
+#define AM_VIDEO_FLAG_I_SAMPLE          0x00000000L
+#define AM_VIDEO_FLAG_P_SAMPLE          0x00000010L
+#define AM_VIDEO_FLAG_B_SAMPLE          0x00000020L
+#define AM_VIDEO_FLAG_REPEAT_FIELD      0x00000040L
+
+/* ActiveMovie AC3 properties */
+typedef enum {
+    AM_PROPERTY_AC3_ERROR_CONCEALMENT   = 1,
+    AM_PROPERTY_AC3_ALTERNATE_AUDIO     = 2,
+    AM_PROPERTY_AC3_DOWNMIX             = 3,
+    AM_PROPERTY_AC3_BIT_STREAM_MODE     = 4,
+    AM_PROPERTY_AC3_DIALOGUE_LEVEL      = 5,
+    AM_PROPERTY_AC3_LANGUAGE_CODE       = 6,
+    AM_PROPERTY_AC3_ROOM_TYPE           = 7
+} AM_PROPERTY_AC3;
+
+/* ActiveMovie AC3 error concealment */
+typedef struct {
+    BOOL    fRepeatPreviousBlock;
+    BOOL    fErrorInCurrentBlock;
+} AM_AC3_ERROR_CONCEALMENT;
+typedef AM_AC3_ERROR_CONCEALMENT    *PAM_AC3_ERROR_CONCEALMENT;
+
+/* ActiveMovie AC3 alternate audio */
+typedef struct {
+    BOOL    fStereo;
+    ULONG   DualMode;
+} AM_AC3_ALTERNATE_AUDIO;
+typedef AM_AC3_ALTERNATE_AUDIO  *PAM_AC3_ALTERNATE_AUDIO;
+
+/* ActiveMovie AC3 downmix */
+typedef struct {
+    BOOL    fDownMix;
+    BOOL    fDolbySurround;
+} AM_AC3_DOWNMIX;
+typedef AM_AC3_DOWNMIX  *PAM_AC3_DOWNMIX;
+
+/* ActiveMovie AC3 bit stream mode */
+typedef struct {
+    LONG    BitStreamMode;
+} AM_AC3_BIT_STREAM_MODE;
+typedef AM_AC3_BIT_STREAM_MODE  *PAM_AC3_BIT_STREAM_MODE;
+
+/* ActiveMovie AC3 dialogue level */
+typedef struct {
+    ULONG   DialogueLevel;
+} AM_AC3_DIALOGUE_LEVEL;
+typedef AM_AC3_DIALOGUE_LEVEL   *PAM_AC3_DIALOGUE_LEVEL;
+
+/* ActiveMovie AC3 room type */
+typedef struct {
+    BOOL    fLargeRoom;
+} AM_AC3_ROOM_TYPE;
+typedef AM_AC3_ROOM_TYPE    *PAM_AC3_ROOM_TYPE;
+
+/* ActiveMovie DVD subpicture properties */
+typedef enum {
+    AM_PROPERTY_DVDSUBPIC_PALETTE       = 0,
+    AM_PROPERTY_DVDSUBPIC_HLI           = 1,
+    AM_PROPERTY_DVDSUBPIC_COMPOSIT_ON   = 2
+} AM_PROPERTY_DVDSUBPIC;
+
+/* ActiveMovie DVD YUV */
+typedef struct _AM_DVD_YUV {
+    UCHAR   Reserved;
+    UCHAR   Y;
+    UCHAR   U;
+    UCHAR   V;
+} AM_DVD_YUV;
+typedef AM_DVD_YUV  *PAM_DVD_YUV;
+
+/* ActiveMovie subpicture palette */
+typedef struct _AM_PROPERTY_SPPAL {
+    AM_DVD_YUV  sppal[16];
+} AM_PROPERTY_SPPAL;
+typedef AM_PROPERTY_SPPAL   *PAM_PROPERTY_SPPAL;
+
+/* ActiveMovie color contrast */
+typedef struct _AM_COLCON {
+    UCHAR   emph1col    : 4;
+    UCHAR   emph2col    : 4;
+    UCHAR   backcol     : 4;
+    UCHAR   patcol      : 4;
+    UCHAR   emph1con    : 4;
+    UCHAR   emph2con    : 4;
+    UCHAR   backcon     : 4;
+    UCHAR   patcon      : 4;
+} AM_COLCON;
+typedef AM_COLCON   *PAM_COLCON;
+
+/* ActiveMovie subpicture highlighting */
+typedef struct _AM_PROPERTY_SPHLI {
+    USHORT      HLISS;
+    USHORT      Reserved;
+    ULONG       StartPTM;
+    ULONG       EndPTM;
+    USHORT      StartX;
+    USHORT      StartY;
+    USHORT      StopX;
+    USHORT      StopY;
+    AM_COLCON   ColCon;
+} AM_PROPERTY_SPHLI;
+typedef AM_PROPERTY_SPHLI   *PAM_PROPERTY_SPHLI;
+
+/* ActiveMovie composition value */
+typedef BOOL    AM_PROPERTY_COMPOSIT_ON;
+typedef BOOL    *PAM_PROPERTY_COMPOSIT_ON;
+
+/* ActiveMovie DVD copy protection properties */
+typedef enum {
+    AM_PROPERTY_DVDCOPY_CHLG_KEY                = 0x01,
+    AM_PROPERTY_DVDCOPY_DVD_KEY1                = 0x02,
+    AM_PROPERTY_DVDCOPY_DEC_KEY2                = 0x03,
+    AM_PROPERTY_DVDCOPY_TITLE_KEY               = 0x04,
+    AM_PROPERTY_COPY_MACROVISION                = 0x05,
+    AM_PROPERTY_DVDCOPY_REGION                  = 0x06,
+    AM_PROPERTY_DVDCOPY_SET_COPY_STATE          = 0x07,
+    AM_PROPERTY_COPY_ANALOG_COMPONENT           = 0x08,
+    AM_PROPERTY_COPY_DIGITAL_CP                 = 0x09,
+    AM_PROPERTY_COPY_DVD_SRM                    = 0x0A,
+    AM_PROPERTY_DVDCOPY_SUPPORTS_NEW_KEYCOUNT   = 0x0B,
+    AM_PROPERTY_DVDCOPY_DISC_KEY                = 0x80
+} AM_PROPERTY_DVDCOPYPROT;
+
+/* ActiveMovie digital copy protection */
+typedef enum _AM_DIGITAL_CP {
+    AM_DIGITAL_CP_OFF           = 0,
+    AM_DIGITAL_CP_ON            = 1,
+    AM_DIGITAL_CP_DVD_COMPLIANT = 2
+} AM_DIGITAL_CP;
+
+/* ActiveMovie DVD copy protection challenge key */
+typedef struct _AM_DVDCOPY_CHLGKEY {
+    BYTE    ChlgKey[10];
+    BYTE    Reserved[2];
+} AM_DVDCOPY_CHLGKEY;
+typedef AM_DVDCOPY_CHLGKEY  *PAM_DVDCOPY_CHLGKEY;
+
+/* ActiveMovie DVD copy protection bus key */
+typedef struct _AM_DVDCOPY_BUSKEY {
+    BYTE    BusKey[5];
+    BYTE    Reserved[1];
+} AM_DVDCOPY_BUSKEY;
+typedef AM_DVDCOPY_BUSKEY   *PAM_DVDCOPY_BUSKEY;
+
+/* ActiveMovie DVD copy protection disc key */
+typedef struct _AM_DVDCOPY_DISCKEY {
+    BYTE    DiscKey[2048];
+} AM_DVDCOPY_DISCKEY;
+typedef AM_DVDCOPY_DISCKEY  *PAM_DVDCOPY_DISCKEY;
+
+/* ActiveMovie DVD copy protection title key */
+typedef struct _AM_DVDCOPY_TITLEKEY {
+    ULONG   KeyFlags;
+    ULONG   Reserved1[2];
+    UCHAR   TitleKey[6];
+    UCHAR   Reserved2[2];
+} AM_DVDCOPY_TITLEKEY;
+typedef AM_DVDCOPY_TITLEKEY *PAM_DVDCOPY_TITLEKEY;
+
+/* ActiveMovie DVD copy protection MACROVISION */
+typedef struct _AM_COPY_MACROVISION {
+    ULONG   MACROVISIONLevel;
+} AM_COPY_MACROVISION;
+typedef AM_COPY_MACROVISION *PAM_COPY_MACROVISION;
+
+/* ActiveMovie DVD copy protection set copy state */
+typedef struct AM_DVDCOPY_SET_COPY_STATE {
+    ULONG   DVDCopyState;
+} AM_DVDCOPY_SET_COPY_STATE;
+typedef AM_DVDCOPY_SET_COPY_STATE   *PAM_DVDCOPY_SET_COPY_STATE;
+
+/* ActiveMovie DVD copy states */
+typedef enum {
+    AM_DVDCOPYSTATE_INITIALIZE                  = 0,
+    AM_DVDCOPYSTATE_INITIALIZE_TITLE            = 1,
+    AM_DVDCOPYSTATE_AUTHENTICATION_NOT_REQUIRED = 2,
+    AM_DVDCOPYSTATE_AUTHENTICATION_REQUIRED     = 3,
+    AM_DVDCOPYSTATE_DONE                        = 4
+} AM_DVDCOPYSTATE;
+
+/* ActiveMovie MACROVISION levels */
+typedef enum {
+    AM_MACROVISION_DISABLED = 0,
+    AM_MACROVISION_LEVEL1   = 1,
+    AM_MACROVISION_LEVEL2   = 2,
+    AM_MACROVISION_LEVEL3   = 3
+} AM_COPY_MACROVISION_LEVEL;
+typedef AM_COPY_MACROVISION_LEVEL   *PAM_COPY_MACROVISION_LEVEL;
+
+/* DVD region */
+typedef struct _DVD_REGION {
+    UCHAR   CopySystem;
+    UCHAR   RegionData;
+    UCHAR   SystemRegion;
+    UCHAR   ResetCount;
+} DVD_REGION;
+typedef DVD_REGION  *PDVD_REGION;
+
+/* ActiveMovie MPEG-2 levels */
+enum AM_MPEG2Level {
+    AM_MPEG2Level_Low       = 1,
+    AM_MPEG2Level_Main      = 2,
+    AM_MPEG2Level_High1440  = 3,
+    AM_MPEG2Level_High      = 4
+};
+
+/* ActiveMovie MPEG-2 profile values */
+enum AM_MPEG2Profile {
+    AM_MPEG2Profile_Simple              = 1,
+    AM_MPEG2Profile_Main                = 2,
+    AM_MPEG2Profile_SNRScalable         = 3,
+    AM_MPEG2Profile_SpatiallyScalable   = 4,
+    AM_MPEG2Profile_High                = 5
+};
+
+/* Video information header (version 2) */
+typedef struct tagVIDEOINFOHEADER2 {
+    RECT                rcSource;
+    RECT                rcTarget;
+    DWORD               dwBitRate;
+    DWORD               dwBitErrorRate;
+    REFERENCE_TIME      AvgTimePerFrame;
+    DWORD               dwInterlaceFlags;
+    DWORD               dwCopyProtectFlags;
+    DWORD               dwPictAspectRatioX;
+    DWORD               dwPictAspectRatioY;
+    union {
+        DWORD   dwControlFlags;
+        DWORD   dwReserved1;
+    };
+    DWORD               dwReserved2;
+    BITMAPINFOHEADER    bmiHeader;
+} VIDEOINFOHEADER2;
+
+/* MPEG-2 video information */
+typedef struct tagMPEG2VIDEOINFO {
+    VIDEOINFOHEADER2    hdr;
+    DWORD               dwStartTimeCode;
+    DWORD               cbSequenceHeader;
+    DWORD               dwProfile;
+    DWORD               dwLevel;
+    DWORD               dwFlags;
+    DWORD               dwSequenceHeader[1];
+} MPEG2VIDEOINFO;
+
+/* Macros to manipulate MPEG-2 video information */
+#define SIZE_MPEG2VIDEOINFO( x ) \
+    (sizeof( MPEG2VIDEOINFO ) - sizeof( DWORD ) + (x)->cbSequenceHeader)
+#define MPEG1_SEQUENCE_INFO( x ) \
+    ((const BYTE *)(x)->bSequenceHeader)
+#define MPEG2_SEQUENCE_INFO( x ) \
+    ((const BYTE *)(x)->dwSequenceHeader)
+
+/* ActiveMovie DVD karaoke data */
+typedef struct tagAM_DvdKaraokeData {
+    DWORD   dwDownmix;
+    DWORD   dwSpeakerAssignment;
+} AM_DvdKaraokeData;
+
+/* ActiveMovie DVD karaoke properties */
+typedef enum {
+    AM_PROPERTY_DVDKARAOKE_ENABLE   = 0,
+    AM_PROPERTY_DVDKARAOKE_DATA     = 1
+} AM_PROPERTY_DVDKARAOKE;
+
+/* ActiveMovie timestamp rate change properties */
+typedef enum {
+    AM_RATE_SimpleRateChange        = 1,
+    AM_RATE_ExactRateChange         = 2,
+    AM_RATE_MaxFullDataRate         = 3,
+    AM_RATE_Step                    = 4,
+    AM_RATE_UseRateVersion          = 5,
+    AM_RATE_QueryFullFrameRate      = 6,
+    AM_RATE_QueryLastRateSegPTS     = 7,
+    AM_RATE_CorrectTS               = 8,
+    AM_RATE_ReverseMaxFullDataRate  = 9,
+    AM_RATE_ResetOnTimeDisc         = 10,
+    AM_RATE_QueryMapping            = 11
+} AM_PROPERTY_TS_RATE_CHANGE;
+
+/* ActiveMovie DVD rate change properties */
+typedef enum {
+    AM_RATE_ChangeRate      = 1,
+    AM_RATE_FullDataRateMax = 2,
+    AM_RATE_ReverseDecode   = 3,
+    AM_RATE_DecoderPosition = 4,
+    AM_RATE_DecoderVersion  = 5
+} AM_PROPERTY_DVD_RATE_CHANGE;
+
+/* ActiveMovie simple rate change */
+typedef struct {
+    REFERENCE_TIME  StartTime;
+    LONG            Rate;
+} AM_SimpleRateChange;
+
+/* ActiveMovie query rate */
+typedef struct {
+    LONG    lMaxForwardFullFrame;
+    LONG    lMaxReverseFullFrame;
+} AM_QueryRate;
+
+/* ActiveMovie exact rate change */
+typedef struct {
+    REFERENCE_TIME  OutputZeroTime;
+    LONG            Rate;
+} AM_ExactRateChange;
+
+/* ActiveMovie DVD change rate */
+typedef struct {
+    REFERENCE_TIME  StartInTime;
+    REFERENCE_TIME  StartOutTime;
+    LONG            Rate;
+} AM_DVD_ChangeRate;
+
+/* DVD directions */
+typedef enum {
+    DVD_DIR_FORWARD     = 0,
+    DVD_DIR_BACKWARD    = 1
+} DVD_PLAY_DIRECTION;
+
+:include cplusepi.sp
+
+#endif /* __DVDMEDIA_H__ */

@@ -1,0 +1,93 @@
+/*
+ *  dsquery.h   Directory Service query definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __dsquery_h
+#define __dsquery_h
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Directory Service query initialization parameter flags */
+#define DSQPF_NOSAVE                    0x00000001L
+#define DSQPF_SAVELOCATION              0x00000002L
+#define DSQPF_SHOWHIDDENOBJECTS         0x00000004L
+#define DSQPF_ENABLEADMINFEATURES       0x00000008L
+#define DSQPF_ENABLEADVANCEDFEATURES    0x00000010L
+#define DSQPF_HASCREDENTIALS            0x00000020L
+#define DSQPF_NOCHOOSECOLUMNS           0x00000040L
+
+/* Directory Service clipboard format strings */
+#define CFSTR_DSQUERYPARAMS TEXT("DsQueryParameters")
+#define CFSTR_DSQUERYSCOPE  TEXT("DsQueryScope")
+
+/* Directory Service column properties */
+#define DSCOLUMNPROP_ADSPATH        (-1L)
+#define DSCOLUMNPROP_OBJECTCLASS    (-2L)
+
+/* Directory Service query provider messages */
+#define DSQPM_GETCLASSLIST  (CQPM_HANDLERSPECIFIC + 0)
+#define DSQPM_HELPTOPICS    (CQPM_HANDLERSPECIFIC + 1)
+
+/* Directory Service query initialization parameters */
+typedef struct {
+    DWORD   cbStruct;
+    DWORD   dwFlags;
+    LPWSTR  pDefaultScope;
+    LPWSTR  pDefaultSaveLocation;
+    LPWSTR  pUserName;
+    LPWSTR  pPassword;
+    LPWSTR  pServer;
+} DSQUERYINITPARAMS;
+typedef DSQUERYINITPARAMS   *LPDSQUERYINITPARAMS;
+
+/* Directory Service column */
+typedef struct {
+    DWORD   dwFlags;
+    INT     fmt;
+    INT     cx;
+    INT     idsName;
+    LONG    offsetProperty;
+    DWORD   dwReserved;
+} DSCOLUMN;
+typedef DSCOLUMN    *LPDSCOLUMN;
+
+/* Directory Service query parameters */
+typedef struct {
+    DWORD       cbStruct;
+    DWORD       dwFlags;
+    HINSTANCE   hInstance;
+    LONG        offsetQuery;
+    LONG        iColumns;
+    DWORD       dwReserved;
+    DSCOLUMN    aColumns[1];
+} DSQUERYPARAMS;
+typedef DSQUERYPARAMS   *LPDSQUERYPARAMS;
+
+/* Directory Service query class list */
+typedef struct {
+    DWORD   cbStruct;
+    LONG    cClasses;
+    DWORD   offsetClass[1];
+} DSQUERYCLASSLIST;
+typedef DSQUERYCLASSLIST    *LPDSQUERYCLASSINIT;
+
+/* GUIDs */
+EXTERN_C const CLSID    CLSID_DsQuery;
+EXTERN_C const CLSID    CLSID_DsFindObjects;
+EXTERN_C const CLSID    CLSID_DsFindPeople;
+EXTERN_C const CLSID    CLSID_DsFindPrinter;
+EXTERN_C const CLSID    CLSID_DsFindComputer;
+EXTERN_C const CLSID    CLSID_DsFindVolume;
+EXTERN_C const CLSID    CLSID_DsFindContainer;
+EXTERN_C const CLSID    CLSID_DsFindAdvanced;
+EXTERN_C const CLSID    CLSID_DsFindDomainController;
+EXTERN_C const CLSID    CLSID_DsFindWriteableDomainController;
+EXTERN_C const CLSID    CLSID_DsFindFrsMembers;
+
+:include cplusepi.sp
+
+#endif /* __dsquery_h */

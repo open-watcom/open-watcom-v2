@@ -24,7 +24,7 @@ int rMAX() {
 int main() {
     S x(__LINE__);
     if( foo( x ) != (__LINE__-1) ) fail(__LINE__);
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
     if( foo( rMAX ) != INT_MAX ) fail(__LINE__);
 #endif
     _PASS;

@@ -47,6 +47,7 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
+#include "qwrite.h"
 
 /*
     Use caution when setting the file pointer in a multithreaded
@@ -61,10 +62,11 @@
 
 #define MAXBUFF 0x8000
 
-tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
+static tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
 {
-    unsigned    total=0,writamt;
-    int         rc;
+    unsigned    total = 0;
+    unsigned    writamt;
+    tiny_ret_t  rc;
 
     while( len > 0 ) {
 
@@ -74,9 +76,11 @@ tiny_ret_t __TinyWrite( int handle, const void *buffer, unsigned len )
             writamt = len;
         }
         rc = TinyWrite( handle, buffer, writamt );
-        if( rc < 0 ) return( rc );
-        total += (unsigned) rc;
-        if( (unsigned) rc != writamt ) return( total );
+        if( TINY_ERROR( rc ) )
+            return( rc );
+        total += TINY_LINFO( rc );
+        if( TINY_LINFO( rc ) != writamt )
+            return( total );
 
         len -= writamt;
         buffer = ((const char *)buffer) + writamt;
@@ -93,85 +97,84 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     DWORD           len_written;
     HANDLE          h;
     int             error;
-#else
-    tiny_ret_t      rc;
-#if defined(__WARP__)
+#elif defined(__WARP__)
     ULONG           len_written;
 #elif defined(__OS2_286__)
     USHORT          len_written;
 #else
     unsigned        len_written;
 #endif
+#if !defined(__NT__)
+    tiny_ret_t      rc;
 #endif
 
     __handle_check( handle, -1 );
 
-    #if defined(__NT__)
-        h = __getOSHandle( handle );
-    #endif
+#if defined(__NT__)
+    h = __getOSHandle( handle );
+#endif
     atomic = 0;
     if( __GetIOMode( handle ) & _APPEND ) {
         _AccessFileH( handle );
         atomic = 1;
-        #if defined(__NT__)
-            if( SetFilePointer( h, 0, NULL, FILE_END ) == -1 ) {
-                error = GetLastError();
-                _ReleaseFileH( handle );
-                return( __set_errno_dos( error ) );
-            }
-        #else
-            #if defined(__OS2__)
-                {
-                unsigned long       dummy;
-                rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
-                }
-            #else
-                rc = TinySeek( handle, 0L, SEEK_END );
-            #endif
-            if( TINY_ERROR(rc) ) {
-                _ReleaseFileH( handle );
-                return( __set_errno_dos( TINY_INFO(rc) ) );
-            }
-        #endif
-    }
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsStdout != 0 ) {
-            LPWDATA res;
-
-            res = _WindowsIsWindowedHandle( handle );
-            if( res ) {
-                int rt;
-                rt = _WindowsStdout( res, buffer, len );
-                return( rt );
-            }
-        }
-    #endif
-    #if defined(__NT__)
-        if( !WriteFile( h, buffer, len, &len_written, NULL ) ) {
+#if defined(__NT__)
+        if( SetFilePointer( h, 0, NULL, FILE_END ) == -1 ) {
             error = GetLastError();
-            if( atomic == 1 ) {
-                _ReleaseFileH( handle );
-            }
+            _ReleaseFileH( handle );
             return( __set_errno_dos( error ) );
         }
-    #else
-        #if defined(__OS2__)
-            rc = DosWrite( handle, (PVOID)buffer, len, &len_written );
-        #else
-            #if defined(__WINDOWS_386__)
-                rc = __TinyWrite( handle, buffer, len );
-            #else
-                rc = TinyWrite( handle, buffer, len );
-            #endif
-            len_written = TINY_LINFO(rc);
-        #endif
-        if( TINY_ERROR(rc) ) {
-            if( atomic == 1 ) {
-                _ReleaseFileH( handle );
-            }
-            return( __set_errno_dos( TINY_INFO(rc) ) );
+#elif defined(__OS2__)
+        {
+            unsigned long       dummy;
+            rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
         }
-    #endif
+#else
+        rc = TinySeek( handle, 0L, SEEK_END );
+#endif
+#if !defined(__NT__)
+        if( TINY_ERROR( rc ) ) {
+            _ReleaseFileH( handle );
+            return( __set_errno_dos( TINY_INFO( rc ) ) );
+        }
+#endif
+    }
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsStdout != 0 ) {
+        LPWDATA res;
+
+        res = _WindowsIsWindowedHandle( handle );
+        if( res ) {
+            int rt;
+            rt = _WindowsStdout( res, buffer, len );
+            return( rt );
+        }
+    }
+#endif
+#if defined(__NT__)
+    if( !WriteFile( h, buffer, len, &len_written, NULL ) ) {
+        error = GetLastError();
+        if( atomic == 1 ) {
+            _ReleaseFileH( handle );
+        }
+        return( __set_errno_dos( error ) );
+    }
+#elif defined(__OS2__)
+    rc = DosWrite( handle, (PVOID)buffer, len, &len_written );
+#elif defined(__WINDOWS_386__)
+    rc = __TinyWrite( handle, buffer, len );
+    len_written = TINY_LINFO( rc );
+#else
+    rc = TinyWrite( handle, buffer, len );
+    len_written = TINY_LINFO( rc );
+#endif
+#if !defined(__NT__)
+    if( TINY_ERROR( rc ) ) {
+        if( atomic == 1 ) {
+            _ReleaseFileH( handle );
+        }
+        return( __set_errno_dos( TINY_INFO( rc ) ) );
+    }
+#endif
     if( len_written != len ) {
         __set_errno( ENOSPC );
     }

@@ -6,19 +6,20 @@
 //
 #ifndef _WCLIBASE_H_INCLUDED
 #define _WCLIBASE_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wclibase.h is for use with C++
-#endif
+:include cpponly.sp
+
+:include owrtlink.sp
 
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
-
 
 //
 //  The WCListIterBase class is used as a basis for the iterator

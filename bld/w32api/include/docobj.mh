@@ -1,0 +1,681 @@
+/*
+ *  docobj.h    Active Document interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __docobj_h__
+#define __docobj_h__
+
+:include readonly.sp
+
+#include <ocidl.h>
+#include <objidl.h>
+#include <oleidl.h>
+#include <oaidl.h>
+#include <servprov.h>
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IOleDocumentView      IOleDocumentView;
+typedef interface IEnumOleDocumentViews IEnumOleDocumentViews;
+
+/* Page set special value */
+#define PAGESET_TOLASTPAGE  0xFFFF
+
+/* OLE command error codes */
+#define OLECMDERR_E_FIRST           (OLE_E_LAST + 1)
+#define OLECMDERR_E_NOTSUPPORTED    (OLECMDERR_E_FIRST + 0)
+#define OLECMDERR_E_DISABLED        (OLECMDERR_E_FIRST + 1)
+#define OLECMDERR_E_NOHELP          (OLECMDERR_E_FIRST + 2)
+#define OLECMDERR_E_CANCELED        (OLECMDERR_E_FIRST + 3)
+#define OLECMDERR_E_UNKNOWNGROUP    (OLECMDERR_E_FIRST + 4)
+#define MSOCMDERR_E_FIRST           OLECMDERR_E_FIRST
+#define MSOCMDERR_E_NOTSUPPORTED    OLECMDERR_E_NOTSUPPORTED
+#define MSOCMDERR_E_DISABLED        OLECMDERR_E_DISABLED
+#define MSOCMDERR_E_NOHELP          OLECMDERR_E_NOHELP
+#define MSOCMDERR_E_CANCELED        OLECMDERR_E_CANCELED
+#define MSOCMDERR_E_UNKNOWNGROUP    OLECMDERR_E_UNKNOWNGROUP
+
+/* OLE command argument indices */
+#if (NTDDI_VERSION >= 0x05010200)
+    #define OLECMDARGINDEX_SHOWPAGEACTIONMENU_HWND      0
+    #define OLECMDARGINDEX_SHOWPAGEACTIONMENU_X         1
+    #define OLECMDARGINDEX_SHOWPAGEACTIONMENU_Y         2
+    #define OLECMDARGINDEX_ACTIVEXINSTALL_PUBLISHER     0
+    #define OLECMDARGINDEX_ACTIVEXINSTALL_DISPLAYNAME   1
+    #define OLECMDARGINDEX_ACTIVEXINSTALL_CLSID         2
+    #define OLECMDARGINDEX_ACTIVEXINSTALL_INSTALLSCOPE  3
+#endif
+
+/* Install scopes */
+#if (NTDDI_VERSION >= 0x05010200)
+    #define INSTALL_SCOPE_INVALID   0
+    #define INSTALL_SCOPE_MACHINE   1
+    #define INSTALL_SCOPE_USER      2
+#endif
+
+/* Active Document miscellaneous flags */
+typedef enum tagDOCMISC {
+    DOCMISC_CANCREATEMULTIPLEVIEWS      = 1,
+    DOCMISC_SUPPORTCOMPLEXRECTANGLES    = 2,
+    DOCMISC_CANTOPENEDIT                = 4,
+    DOCMISC_NOFILESUPPORT               = 8
+} DOCMISC;
+
+/* Print flags */
+typedef enum {
+    PRINTFLAG_MAYBOTHERUSER         = 1,
+    PRINTFLAG_PROMPTUSER            = 2,
+    PRINTFLAG_USERMAYCHANGEPRINTER  = 4,
+    PRINTFLAG_RECOMPOSETODEVICE     = 8,
+    PRINTFLAG_DONTACTUALLYPRINT     = 16,
+    PRINTFLAG_FORCEPROPERTIES       = 32,
+    PRINTFLAG_PRINTTOFILE           = 64
+} PRINTFLAG;
+
+/* Page range */
+typedef struct tagPAGERANGE {
+    LONG    nFromPage;
+    LONG    nToPage;
+} PAGERANGE;
+
+/* Page set */
+typedef struct tagPAGESET {
+    ULONG       cbStruct;
+    BOOL        fOddPages;
+    BOOL        fEvenPages;
+    ULONG       cPageRange;
+    PAGERANGE   rgPages[1];
+} PAGESET;
+
+/* OLE command flags */
+typedef enum OLECMDF {
+    OLECMDF_SUPPORTED           = 0x00000001,
+    OLECMDF_ENABLED             = 0x00000002,
+    OLECMDF_LATCHED             = 0x00000004,
+    OLECMDF_NINCHED             = 0x00000008,
+    OLECMDF_INVISIBLE           = 0x00000010,
+    OLECMDF_DEFHIDEONCTXTMENU   = 0x00000020
+} OLECMDF;
+#define MSOCMDF_SUPPORTED   OLECMDF_SUPPORTED
+#define MSOCMDF_ENABLED     OLECMDF_ENABLED
+#define MSOCMDF_LATCHED     OLECMDF_LATCHED
+#define MSOCMDF_NINCHED     OLECMDF_NINCHED
+
+/* OLE command */
+typedef struct _tagOLECMD {
+    ULONG   cmdID;
+    DWORD   cmdf;
+} OLECMD;
+typedef OLECMD  MSOCMD;
+
+/* OLE command text */
+typedef struct _tagOLECMDTEXT {
+    DWORD   cmdtextf;
+    ULONG   cwActual;
+    ULONG   cwBuf;
+    wchar_t rgwz[1];
+} OLECMDTEXT;
+typedef OLECMDTEXT  MSOCMDTEXT;
+
+/* OLE command text flags */
+typedef enum OLECMDTEXTF {
+    OLECMDTEXTF_NONE    = 0,
+    OLECMDTEXTF_NAME    = 1,
+    OLECMDTEXTF_STATUS  = 2
+} OLECMDTEXTF;
+#define MSOCMDTEXTF_NONE    OLECMDTEXTF_NONE
+#define MSOCMDTEXTF_NAME    OLECMDTEXTF_NAME
+#define MSOCMDTEXTF_STATUS  OLECMDTEXTF_STATUS
+
+/* OLE command execution options */
+typedef enum OLECMDEXECOPT {
+    OLECMDEXECOPT_DODEFAULT         = 0,
+    OLECMDEXECOPT_PROMPTUSER        = 1,
+    OLECMDEXECOPT_DONTPROMPTUSER    = 2,
+    OLECMDEXECOPT_SHOWHELP          = 3
+} OLECMDEXECOPT;
+#define MSOCMDEXECOPT_DODEFAULT         OLECMDEXECOPT_DODEFAULT
+#define MSOCMDEXECOPT_PROMPTUSER        OLECMDEXECOPT_PROMPTUSER
+#define MSOCMDEXECOPT_DONTPROMPTUSER    OLECMDEXECOPT_DONTPROMPTUSER
+#define MSOCMDEXECOPT_SHOWHELP          OLECMDEXECOPT_SHOWHELP
+
+/* OLE command identifiers */
+typedef enum OLECMDID {
+    OLECMDID_OPEN                           = 1,
+    OLECMDID_NEW                            = 2,
+    OLECMDID_SAVE                           = 3,
+    OLECMDID_SAVEAS                         = 4,
+    OLECMDID_SAVECOPYAS                     = 5,
+    OLECMDID_PRINT                          = 6,
+    OLECMDID_PRINTPREVIEW                   = 7,
+    OLECMDID_PAGESETUP                      = 8,
+    OLECMDID_SPELL                          = 9,
+    OLECMDID_PROPERTIES                     = 10,
+    OLECMDID_CUT                            = 11,
+    OLECMDID_COPY                           = 12,
+    OLECMDID_PASTE                          = 13,
+    OLECMDID_PASTESPECIAL                   = 14,
+    OLECMDID_UNDO                           = 15,
+    OLECMDID_REDO                           = 16,
+    OLECMDID_SELECTALL                      = 17,
+    OLECMDID_CLEARSELECTION                 = 18,
+    OLECMDID_ZOOM                           = 19,
+    OLECMDID_GETZOOMRANGE                   = 20,
+    OLECMDID_UPDATECOMMANDS                 = 21,
+    OLECMDID_REFRESH                        = 22,
+    OLECMDID_STOP                           = 23,
+    OLECMDID_HIDETOOLBARS                   = 24,
+    OLECMDID_SETPROGRESSMAX                 = 25,
+    OLECMDID_SETPROGRESSPOS                 = 26,
+    OLECMDID_SETPROGRESSTEXT                = 27,
+    OLECMDID_SETTITLE                       = 28,
+    OLECMDID_SETDOWNLOADSTATE               = 29,
+    OLECMDID_STOPDOWNLOAD                   = 30,
+    OLECMDID_ONTOOLBARACTIVATED             = 31,
+    OLECMDID_FIND                           = 32,
+    OLECMDID_DELETE                         = 33,
+    OLECMDID_HTTPEQUIV                      = 34,
+    OLECMDID_HTTPEQUIV_DONE                 = 35,
+    OLECMDID_ENABLE_INTERACTION             = 36,
+    OLECMDID_ONUNLOAD                       = 37,
+    OLECMDID_PROPERTYBAG2                   = 38,
+    OLECMDID_PREREFRESH                     = 39,
+    OLECMDID_SHOWSCRIPTERROR                = 40,
+    OLECMDID_SHOWMESSAGE                    = 41,
+    OLECMDID_SHOWFIND                       = 42,
+    OLECMDID_SHOWPAGESETUP                  = 43,
+    OLECMDID_SHOWPRINT                      = 44,
+    OLECMDID_CLOSE                          = 45,
+    OLECMDID_ALLOWUILESSSAVEAS              = 46,
+    OLECMDID_DONTDOWNLOADCSS                = 47,
+    OLECMDID_UPDATEPAGESTATUS               = 48,
+    OLECMDID_PRINT2                         = 49,
+    OLECMDID_PRINTPREVIEW2                  = 50,
+    OLECMDID_SETPRINTTEMPLATE               = 51,
+    OLECMDID_GETPRINTTEMPLATE               = 52,
+    OLECMDID_PAGEACTIONBLOCKED              = 55,
+    OLECMDID_PAGEACTIONUIQUERY              = 56,
+    OLECMDID_FOCUSVIEWCONTROLS              = 57,
+    OLECMDID_FOCUSVIEWCONTROLSQUERY         = 58,
+    OLECMDID_SHOWPAGEACTIONMENU             = 59,
+    OLECMDID_ADDTRAVELENTRY                 = 60,
+    OLECMDID_UPDATETRAVELENTRY              = 61,
+    OLECMDID_UPDATEBACKFORWARDSTATE         = 62,
+    OLECMDID_OPTICAL_ZOOM                   = 63,
+    OLECMDID_OPTICAL_GETZOOMRANGE           = 64,
+    OLECMDID_WINDOWSTATECHANGED             = 65,
+    OLECMDID_ACTIVEXINSTALLSCOPE            = 66,
+    OLECMDID_UPDATETRAVELENTRY_DATARECOVERY = 67
+} OLECMDID;
+#define MSOCMDID_OPEN           OLECMDID_OPEN
+#define MSOCMDID_NEW            OLECMDID_NEW
+#define MSOCMDID_SAVE           OLECMDID_SAVE
+#define MSOCMDID_SAVEAS         OLECMDID_SAVEAS
+#define MSOCMDID_SAVECOPYAS     OLECMDID_SAVECOPYAS
+#define MSOCMDID_PRINT          OLECMDID_PRINT
+#define MSOCMDID_PRINTPREVIEW   OLECMDID_PRINTPREVIEW
+#define MSOCMDID_PAGESETUP      OLECMDID_PAGESETUP
+#define MSOCMDID_SPELL          OLECMDID_SPELL
+#define MSOCMDID_PROPERTIES     OLECMDID_PROPERTIES
+#define MSOCMDID_CUT            OLECMDID_CUT
+#define MSOCMDID_COPY           OLECMDID_COPY
+#define MSOCMDID_PASTE          OLECMDID_PASTE
+#define MSOCMDID_PASTESPECIAL   OLECMDID_PASTESPECIAL
+#define MSOCMDID_UNDO           OLECMDID_UNDO
+#define MSOCMDID_REDO           OLECMDID_REDO
+#define MSOCMDID_SELECTALL      OLECMDID_SELECTALL
+#define MSOCMDID_CLEARSELECTION OLECMDID_CLEARSELECTION
+#define MSOCMDID_ZOOM           OLECMDID_ZOOM
+#define MSOCMDID_GETZOOMRANGE   OLECMDID_GETZOOMRANGE
+
+/* Ignore MIME flags */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum IGNOREMIME {
+    IGNOREMIME_PROMPT   = 0x00000001,
+    IGNOREMIME_TEXT     = 0x00000002
+} IGNOREMIME;
+#endif
+
+/* WPC settings */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum WPCSETTING {
+    WPCSETTING_LOGGING_ENABLED      = 0x00000001,
+    WPCSETTING_FILEDOWNLOAD_BLOCKED = 0x00000002
+} WPCSETTING;
+#endif
+
+/* OLE command identifier refresh flags */
+typedef enum {
+    OLECMDIDF_REFRESH_NORMAL                                = 0x00000000,
+    OLECMDIDF_REFRESH_IFEXPIRED                             = 0x00000001,
+    OLECMDIDF_REFRESH_CONTINUE                              = 0x00000002,
+    OLECMDIDF_REFRESH_COMPLETELY                            = 0x00000003,
+    OLECMDIDF_REFRESH_NO_CACHE                              = 0x00000004,
+    OLECMDIDF_REFRESH_RELOAD                                = 0x00000005,
+    OLECMDIDF_REFRESH_LEVELMASK                             = 0x000000FF,
+    OLECMDIDF_REFRESH_CLEARUSERINPUT                        = 0x00001000,
+    OLECMDIDF_REFRESH_PROMPTIFOFFLINE                       = 0x00002000,
+#if (NTDDI_VERSION >= 0x05010000)
+    OLECMDIDF_REFRESH_THROUGHSCRIPT                         = 0x00004000,
+#endif
+#if (NTDDI_VERSION >= 0x05010200)
+    OLECMDIDF_REFRESH_PAGEACTION_ACTIVEXINSTALL             = 0x00010000,
+    OLECMDIDF_REFRESH_PAGEACTION_FILEDOWNLOAD               = 0x00020000,
+    OLECMDIDF_REFRESH_PAGEACTION_LOCALMACHINE               = 0x00040000,
+    OLECMDIDF_REFRESH_PAGEACTION_POPUPWINDOW                = 0x00080000,
+    OLECMDIDF_REFRESH_PAGEACTION_PROTLOCKDOWNLOCALMACHINE   = 0x00100000,
+    OLECMDIDF_REFRESH_PAGEACTION_PROTLOCKDOWNTRUSTED        = 0x00200000,
+    OLECMDIDF_REFRESH_PAGEACTION_PROTLOCKDOWNINTRANET       = 0x00400000,
+    OLECMDIDF_REFRESH_PAGEACTION_PROTLOCKDOWNINTERNET       = 0x00800000,
+    OLECMDIDF_REFRESH_PAGEACTION_PROTLOCKDOWNRESTRICTED     = 0x01000000,
+#endif
+    OLECMDIDF_REFRESH_PAGEACTION_MIXEDCONTENT               = 0x02000000,
+    OLECMDIDF_REFRESH_PAGEACTION_INVALID_CERT               = 0x04000000
+} OLECMDID_REFRESHFLAG;
+
+/* OLE command identifier page action flags */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum {
+    OLECMDIDF_PAGEACTION_FILEDOWNLOAD                       = 0x00000001,
+    OLECMDIDF_PAGEACTION_ACTIVEXINSTALL                     = 0x00000002,
+    OLECMDIDF_PAGEACTION_ACTIVEXTRUSTFAIL                   = 0x00000004,
+    OLECMDIDF_PAGEACTION_ACTIVEXUSERDISABLE                 = 0x00000008,
+    OLECMDIDF_PAGEACTION_ACTIVEXDISALLOW                    = 0x00000010,
+    OLECMDIDF_PAGEACTION_ACTIVEXUNSAFE                      = 0x00000020,
+    OLECMDIDF_PAGEACTION_POPUPWINDOW                        = 0x00000040,
+    OLECMDIDF_PAGEACTION_LOCALMACHINE                       = 0x00000080,
+    OLECMDIDF_PAGEACTION_MIMETEXTPLAIN                      = 0x00000100,
+    OLECMDIDF_PAGEACTION_SCRIPTNAVIGATE                     = 0x00000200,
+    OLECMDIDF_PAGEACTION_SCRIPTNAVIGATE_ACTIVEXINSTALL      = 0x00000200,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNLOCALMACHINE           = 0x00000400,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNTRUSTED                = 0x00000800,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNINTRANET               = 0x00001000,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNINTERNET               = 0x00002000,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNRESTRICTED             = 0x00004000,
+    OLECMDIDF_PAGEACTION_PROTLOCKDOWNDENY                   = 0x00008000,
+    OLECMDIDF_PAGEACTION_POPUPALLOWED                       = 0x00010000,
+    OLECMDIDF_PAGEACTION_SCRIPTPROMPT                       = 0x00020000,
+    OLECMDIDF_PAGEACTION_ACTIVEXUSERAPPROVAL                = 0x00040000,
+    OLECMDIDF_PAGEACTION_MIXEDCONTENT                       = 0x00080000,
+    OLECMDIDF_PAGEACTION_INVALID_CERT                       = 0x00100000,
+    OLECMDIDF_PAGEACTION_INTRANETZONEREQUEST                = 0x00200000,
+    OLECMDIDF_PAGEACTION_XSSFILTERED                        = 0x00400000,
+    OLECMDIDF_PAGEACTION_SPOOFABLEIDNHOST                   = 0x00800000,
+    OLECMDIDF_PAGEACTION_LOWRIGHTSIE                        = 0x01000000,
+    OLECMDIDF_PAGEACTION_SCRIPTNAVIGATE_ACTIVEXUSERAPPROVAL = 0x02000000,
+    OLECMDIDF_PAGEACTION_WPCBLOCKED                         = 0x04000000,
+    OLECMDIDF_PAGEACTION_WPCBLOCKED_ACTIVEX                 = 0x08000000,
+    OLECMDIDF_PAGEACTION_EXTENSION_COMPAT_BLOCKED           = 0x10000000,
+    OLECMDIDF_PAGEACTION_NORESETACTIVEX                     = 0x20000000,
+    OLECMDIDF_PAGEACTION_GENERIC_STATE                      = 0x40000000,
+    OLECMDIDF_PAGEACTION_RESET                              = 0x80000000
+} OLECMDID_PAGEACTIONFLAG;
+#endif
+
+/* OLE command identifier browser state flags */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum {
+    OLECMDIDF_BROWSERSTATE_EXTENSIONSOFF        = 0x00000001,
+    OLECMDIDF_BROWSERSTATE_IESECURITY           = 0x00000002,
+    OLECMDIDF_BROWSERSTATE_PROTECTEDMODE_OFF    = 0x00000004,
+    OLECMDIDF_BROWSERSTATE_RESET                = 0x00000008
+} OLECMDID_BROWSERSTATEFLAG;
+#endif
+
+/* OLE command identifier optical zoom flags */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum {
+    OLECMDIDF_OPTICAL_ZOOM_NOPERSIST    = 0x00000001
+} OLECMDID_OPTICAL_ZOOMFLAG;
+#endif
+
+/* Page actions */
+#if (NTDDI_VERSION >= 0x05010200)
+typedef enum {
+    PAGEACTION_UI_DEFAULT   = 0,
+    PAGEACTION_UI_MODAL     = 1,
+    PAGEACTION_UI_MODELESS  = 2,
+    PAGEACTION_UI_SILENT    = 3
+} PAGEACTION_UI;
+#endif
+
+/* OLE command identifier window state flags */
+typedef enum {
+    OLECMDIDF_WINDOWSTATE_USERVISIBLE       = 0x00000001,
+    OLECMDIDF_WINDOWSTATE_ENABLED           = 0x00000002,
+    OLECMDIDF_WINDOWSTATE_USERVISIBLE_VALID = 0x00010000,
+    OLECMDIDF_WINDOWSTATE_ENABLED_VALID     = 0x00020000
+} OLECMDID_WINDOWSTATEFLAG;
+
+/* GUIDs */
+EXTERN_C const IID  IID_IOleDocument;
+EXTERN_C const IID  IID_IOleDocumentSite;
+EXTERN_C const IID  IID_IOleDocumentView;
+EXTERN_C const IID  IID_IEnumOleDocumentViews;
+EXTERN_C const IID  IID_IContinueCallback;
+EXTERN_C const IID  IID_IPrint;
+EXTERN_C const IID  IID_IOleCommandTarget;
+EXTERN_C const IID  IID_IZoomEvents;
+EXTERN_C const IID  IID_IProtectFocus;
+EXTERN_C const IID  IID_IProtectedModeMenuServices;
+#define IID_IMsoDocument        IID_IOleDocument
+#define IID_IMsoDocumentSite    IID_IOleDocumentSite
+#define IID_IMsoView            IID_IOleDocumentView
+#define IID_IEnumMsoView        IID_IEnumOleDocumentViews
+#define IID_IMsoCommandTarget   IID_IOleCommandTarget
+
+/* IOleDocument interface */
+#undef INTERFACE
+#define INTERFACE   IOleDocument
+DECLARE_INTERFACE_( IOleDocument, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleDocument methods */
+    STDMETHOD( CreateView )( THIS_ IOleInPlaceSite *, IStream *, DWORD, IOleDocumentView ** ) PURE;
+    STDMETHOD( GetDocMiscStatus )( THIS_ DWORD * ) PURE;
+    STDMETHOD( EnumViews )( THIS_ IEnumOleDocumentViews **, IOleDocumentView ** ) PURE;
+};
+typedef IOleDocument    *LPOLEDOCUMENT;
+
+/* IOleDocumentSite interface */
+#undef INTERFACE
+#define INTERFACE   IOleDocumentSite
+DECLARE_INTERFACE_( IOleDocumentSite, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleDocumentSite methods */
+    STDMETHOD( ActivateMe )( THIS_ IOleDocumentView * ) PURE;
+};
+typedef IOleDocumentSite    *LPOLEDOCUMENTSITE;
+
+/* IOleDocumentView interface */
+#undef INTERFACE
+#define INTERFACE   IOleDocumentView
+DECLARE_INTERFACE_( IOleDocumentView, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleDocumentView methods */
+    STDMETHOD( SetInPlaceSite )( THIS_ IOleInPlaceSite * ) PURE;
+    STDMETHOD( GetInPlaceSite )( THIS_ IOleInPlaceSite ** ) PURE;
+    STDMETHOD( GetDocument )( THIS_ IUnknown ** ) PURE;
+    STDMETHOD( SetRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( GetRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( SetRectComplex )( THIS_ LPRECT, LPRECT, LPRECT, LPRECT ) PURE;
+    STDMETHOD( Show )( THIS_ BOOL ) PURE;
+    STDMETHOD( UIActivate )( THIS_ BOOL ) PURE;
+    STDMETHOD( Open )( THIS ) PURE;
+    STDMETHOD( CloseView )( THIS_ DWORD ) PURE;
+    STDMETHOD( SaveViewState )( THIS_ LPSTREAM ) PURE;
+    STDMETHOD( ApplyViewState )( THIS_ LPSTREAM ) PURE;
+    STDMETHOD( Clone )( THIS_ IOleInPlaceSite *, IOleDocumentView ** ) PURE;
+};
+typedef IOleDocumentView    *LPOLEDOCUMENTVIEW;
+
+/* IEnumOleDocumentViews interface */
+#undef INTERFACE
+#define INTERFACE   IEnumOleDocumentViews
+DECLARE_INTERFACE_( IEnumOleDocumentViews, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumOleDocumentViews methods */
+    STDMETHOD( Next )( THIS_ ULONG, IOleDocumentView **, ULONG * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumOleDocumentViews ** ) PURE;
+};
+typedef IEnumOleDocumentViews   *LPENUMOLEDOCUMENTVIEWS;
+
+/* IContinueCallback interface */
+#undef INTERFACE
+#define INTERFACE   IContinueCallback
+DECLARE_INTERFACE_( IContinueCallback, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IContinueCallback methods */
+    STDMETHOD( FContinue )( THIS ) PURE;
+    STDMETHOD( FContinuePrinting )( THIS_ LONG, LONG, wchar_t * ) PURE;
+};
+typedef IContinueCallback   *LPCONTINUECALLBACK;
+
+/* IPrint interface */
+#undef INTERFACE
+#define INTERFACE   IPrint
+DECLARE_INTERFACE_( IPrint, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IPrint methods */
+    STDMETHOD( SetInitialPageNum )( THIS_ LONG ) PURE;
+    STDMETHOD( GetPageInfo )( THIS_ LONG *, LONG * ) PURE;
+    STDMETHOD( Print )( THIS_ DWORD, DVTARGETDEVICE **, PAGESET **, STGMEDIUM *, IContinueCallback *, LONG, LONG *, LONG * ) PURE;
+};
+typedef IPrint  *LPPRINT;
+
+/* IOleCommandTarget interface */
+#undef INTERFACE
+#define INTERFACE   IOleCommandTarget
+DECLARE_INTERFACE_( IOleCommandTarget, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IOleCommandTarget methods */
+    STDMETHOD( QueryStatus )( THIS_ const GUID *, ULONG, OLECMD [], OLECMDTEXT * ) PURE;
+    STDMETHOD( Exec )( THIS_ const GUID *, DWORD, DWORD, VARIANT *, VARIANT * ) PURE;
+};
+typedef IOleCommandTarget   *LPOLECOMMANDTARGET;
+
+/* IZoomEvents interface */
+#undef INTERFACE
+#define INTERFACE   IZoomEvents
+DECLARE_INTERFACE_( IZoomEvents, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IZoomEvents methods */
+    STDMETHOD( OnZoomPercentChanged )( THIS_ ULONG ) PURE;
+};
+
+/* IProtectFocus interface */
+#undef INTERFACE
+#define INTERFACE   IProtectFocus
+DECLARE_INTERFACE_( IProtectFocus, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IProtectFocus methods */
+    STDMETHOD( AllowFocusChange )( THIS_ BOOL * ) PURE;
+};
+
+/* IProtectedModeMenuServices interface */
+#undef INTERFACE
+#define INTERFACE   IProtectedModeMenuServices
+DECLARE_INTERFACE_( IProtectedModeMenuServices, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IProtectedModeMenuServices methods */
+    STDMETHOD( CreateMenu )( THIS_ HMENU * ) PURE;
+    STDMETHOD( LoadMenu )( THIS_ LPCWSTR, LPCWSTR, HMENU * ) PURE;
+    STDMETHOD( LoadMenuID )( THIS_ LPCWSTR, WORD, HMENU * ) PURE;
+};
+
+/* Old interface names for compatibility */
+#define IMsoDocument        IOleDocument
+#define IMsoDocumentSite    IOleDocumentSite
+#define IMsoView            IOleDocumentView
+#define IEnumMsoView        IEnumOleDocumentViews
+#define IMsoCommandTarget   IOleCommandTarget
+#define LPMSODOCUMENT       LPOLEDOCUMENT
+#define LPMSODOCUMENTSITE   LPOLEDOCUMENTSITE
+#define LPMSOVIEW           LPOLEDOCUMENTVIEW
+#define LPENUMMSOVIEW       LPENUMOLEDOCUMENTVIEWS
+#define LPMSOCOMMANDTARGET  LPOLECOMMANDTARGET
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IOleDocument_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IOleDocument_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IOleDocument_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IOleDocument_CreateView( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreateView( x, p1, p2, p3, p4 )
+    #define IOleDocument_GetDocMiscStatus( x, p ) \
+        (x)->lpVtbl->GetDocMiscStatus( x, p )
+    #define IOleDocument_EnumViews( x, p1, p2 ) \
+        (x)->lpVtbl->EnumViews( x, p1, p2 )
+    #define IOleDocumentSite_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IOleDocumentSite_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IOleDocumentSite_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IOleDocumentSite_ActivateMe( x, p ) \
+        (x)->lpVtbl->ActivateMe( x, p )
+    #define IOleDocumentView_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IOleDocumentView_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IOleDocumentView_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IOleDocumentView_SetInPlaceSite( x, p ) \
+        (x)->lpVtbl->SetInPlaceSite( x, p )
+    #define IOleDocumentView_GetInPlaceSite( x, p ) \
+        (x)->lpVtbl->GetInPlaceSite( x, p )
+    #define IOleDocumentView_GetDocument( x, p ) \
+        (x)->lpVtbl->GetDocument( x, p )
+    #define IOleDocumentView_SetRect( x, p ) \
+        (x)->lpVtbl->SetRect( x, p )
+    #define IOleDocumentView_GetRect( x, p ) \
+        (x)->lpVtbl->GetRect( x, p )
+    #define IOleDocumentView_SetRectComplex( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetRectComplex( x, p1, p2, p3, p4 )
+    #define IOleDocumentView_Show( x, p ) \
+        (x)->lpVtbl->Show( x, p )
+    #define IOleDocumentView_UIActivate( x, p ) \
+        (x)->lpVtbl->UIActivate( x, p )
+    #define IOleDocumentView_Open( x ) \
+        (x)->lpVtbl->Open( x )
+    #define IOleDocumentView_CloseView( x, p ) \
+        (x)->lpVtbl->CloseView( x, p )
+    #define IOleDocumentView_SaveViewState( x, p ) \
+        (x)->lpVtbl->SaveViewState( x, p )
+    #define IOleDocumentView_ApplyViewState( x, p ) \
+        (x)->lpVtbl->ApplyViewState( x, p )
+    #define IOleDocumentView_Clone( x, p1, p2 ) \
+        (x)->lpVtbl->Clone( x, p1, p2 )
+    #define IEnumOleDocumentViews_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IEnumOleDocumentViews_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IEnumOleDocumentViews_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IEnumOleDocumentViews_Next( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Next( x, p1, p2, p3 )
+    #define IEnumOleDocumentViews_Skip( x, p ) \
+        (x)->lpVtbl->Skip( x, p )
+    #define IEnumOleDocumentViews_Reset( x ) \
+        (x)->lpVtbl->Reset( x )
+    #define IEnumOleDocumentViews_Clone( x, p ) \
+        (x)->lpVtbl->Clone( x, p )
+    #define IContinueCallback_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IContinueCallback_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IContinueCallback_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IContinueCallback_FContinue( x ) \
+        (x)->lpVtbl->FContinue( x )
+    #define IContinueCallback_FContinuePrinting( x, p1, p2, p3 ) \
+        (x)->lpVtbl->FContinuePrinting( x, p1, p2, p3 )
+    #define IPrint_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IPrint_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IPrint_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IPrint_SetInitialPageNum( x, p ) \
+        (x)->lpVtbl->SetInitialPageNum( x, p )
+    #define IPrint_GetPageInfo( x, p1, p2 ) \
+        (x)->lpVtbl->GetPageInfo( x, p1, p2 )
+    #define IPrint_Print( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Print( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IOleCommandTarget_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IOleCommandTarget_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IOleCommandTarget_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IOleCommandTarget_QueryStatus( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->QueryStatus( x, p1, p2, p3, p4 )
+    #define IOleCommandTarget_Exec( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Exec( x, p1, p2, p3, p4, p5 )
+    #define IZoomEvents_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IZoomEvents_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IZoomEvents_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IZoomEvents_OnZoomPercentChanged( x, p ) \
+        (x)->lpVtbl->OnZoomPercentChanged( x, p )
+    #define IProtectFocus_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IProtectFocus_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IProtectFocus_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IProtectFocus_AllowFocusChange( x, p ) \
+        (x)->lpVtbl->AllowFocusChange( x, p )
+    #define IProtectedModeMenuServices_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IProtectedModeMenuServices_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IProtectedModeMenuServices_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IProtectedModeMenuServices_CreateMenu( x, p ) \
+        (x)->lpVtbl->CreateMenu( x, p )
+    #define IProtectedModeMenuServices_LoadMenu( x, p1, p2, p3 ) \
+        (x)->lpVtbl->LoadMenu( x, p1, p2, p3 )
+    #define IProtectedModeMenuServices_LoadMenuID( x, p1, p2, p3 ) \
+        (x)->lpVtbl->LoadMenuID( x, p1, p2, p3 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __docobj_h__ */

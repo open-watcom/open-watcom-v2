@@ -1,3 +1,5 @@
+#pragma warning 933 11
+#line 1
 static union {
     int a;
     int b;

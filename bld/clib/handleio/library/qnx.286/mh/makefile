@@ -1,9 +1,9 @@
-#pmake:all huge 16bit qnx handleio iX86 static build os_qnx cpu_i86
+#pmake: nobuild huge 16bit qnx handleio iX86 static os_qnx cpu_i86
 processor=286
 model=mh
 system=qnx
 linkage=static
-!include ..\..\..\objects.mif
-!include $(clib_dir)\master.mif
-!include $(clib_dir)\mklib.mif
-!include ..\..\..\deps.mif
+!include ../../../objects.mif
+!include $(clib_dir)/master.mif
+!include $(clib_dir)/mklib.mif
+!include ../../../deps.mif

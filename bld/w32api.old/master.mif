@@ -1,0 +1,235 @@
+base_autodepends    = .autodepend
+ddk_autodepends     = .autodepend
+directx_autodepends = .autodepend
+
+base_distrib_lib = 1
+ddk_distrib_lib = 1
+directx_distrib_lib = 1
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.EXTENSIONS : .lbc .def
+
+base_libs =        &
+        aclui.lib &
+        advapi32.lib &
+        bthprops.lib &
+        cap.lib &
+        comctl32.lib &
+        comdlg32.lib &
+        crypt32.lib &
+        ctl3d32.lib &
+        dhcpcsvc.lib &
+        dlcapi.lib &
+        dmoguids.lib &
+        dnsapi.lib &
+        faultrep.lib &
+        gdi32.lib &
+        glaux.lib &
+        glu32.lib &
+        glut.lib &
+        glut32.lib &
+        icmui.lib &
+        igmpagnt.lib &
+        imagehlp.lib &
+        imm32.lib &
+        iphlpapi.lib &
+        kernel32.lib &
+        largeint.lib &
+        lz32.lib &
+        mapi32.lib &
+        mfcuia32.lib &
+        mgmtapi.lib &
+        mpr.lib &
+        mprapi.lib &
+        mqrt.lib &
+        msacm32.lib &
+        mscms.lib &
+        msimg32.lib &
+        msvcp60.lib &
+        mswsock.lib &
+        nddeapi.lib &
+        netapi32.lib &
+        ntdll.lib &
+        odbc32.lib &
+        odbccp32.lib &
+        ole32.lib &
+        oleacc.lib &
+        oleaut32.lib &
+        olecli32.lib &
+        oledlg.lib &
+        olepro32.lib &
+        olesvr32.lib &
+        opengl32.lib &
+        penwin32.lib &
+        pkpd32.lib &
+        powrprof.lib &
+        psapi.lib &
+        quartz.lib &
+        rapi.lib &
+        rasapi32.lib &
+        rasdlg.lib &
+        rpcdce4.lib &
+        rpcns4.lib &
+        rpcrt4.lib &
+        rtm.lib &
+        rtutils.lib &
+        scrnsave.lib &
+        secur32.lib &
+        setupapi.lib &
+        shell32.lib &
+        shfolder.lib &
+        shlwapi.lib &
+        snmpapi.lib &
+        strmiids.lib &
+        svrapi.lib &
+        tapi32.lib &
+        th32.lib &
+        thunk32.lib &
+        url.lib &
+        uuid.lib &
+        user32.lib &
+        userenv.lib &
+        usp10.lib &
+        uxtheme.lib &
+        vdmdbg.lib &
+        version.lib &
+        vfw32.lib &
+        win32spl.lib &
+        wininet.lib &
+        winmm.lib &
+        winspool.lib &
+        winstrm.lib &
+        wldap32.lib &
+        wow32.lib &
+        ws2_32.lib &
+        wsnmp32.lib &
+        wsock32.lib &
+        wst.lib &
+        wtsapi32.lib
+
+directx_libs = &
+        d3d8.lib &
+        d3d9.lib &
+        d3dim.lib &
+        d3drm.lib &
+        d3dx8d.lib &
+        d3dx9d.lib &
+        d3dxof.lib &
+        ddraw.lib &
+        dinput.lib &
+        dinput8.lib &
+        dplayx.lib &
+        dpnaddr.lib &
+        dpnet.lib &
+        dpnlobby.lib &
+        dpvoice.lib &
+        dsetup.lib &
+        dsound.lib &
+        dxerr8.lib &
+        dxerr9.lib &
+        dxguid.lib &
+        ksproxy.lib &
+        ksuser.lib &
+        msdmo.lib
+
+vfw32_libs = &
+        msvfw32.lbc &
+        avicap32.lbc &
+        avifil32.lbc
+
+ddk_libs = &
+        apcups.lib &
+        cfgmgr32.lib &
+        dxapi.lib &
+        hal.lib &
+        hid.lib &
+        hidparse.lib &
+        mcd.lib &
+        ndis.lib &
+        newdev.lib &
+        ntoskrnl.lib &
+        scsiport.lib &
+        tdi.lib &
+        usbcamd.lib &
+        usbcamd2.lib &
+        videoprt.lib &
+        win32k.lib
+
+libs = $($(proj_name)_libs)
+
+extra_lib_flags_386 = -io -ii
+extra_lib_flags_axp = -ic -ia
+extra_lib_flags_ppc = -ic -ip
+
+.def: ../../lib;../../lib/directx;../../lib/ddk;
+
+.c: ../../lib;../../lib/directx;../../lib/ddk;
+
+.def.lbc:
+        $(awk) -v cpu=$(host_cpu) -f ../../def2lbc.awk $[@ > $@
+
+.lbc.lib:
+        $(librarian) $(libflags) @$<
+
+.obj.lib:
+        $(librarian) $(libflags) $<
+
+all: $(libs) .symbolic
+
+!ifeq host_cpu axp
+kernel32.lib: kernel32.lbc kernel32.axp
+        $(librarian) $(libflags) @$[@ @$]@
+!else
+kernel32.lib: kernel32.lbc
+        $(librarian) $(libflags) @$[@
+!endif
+
+dinput_objs = dinput_joy.obj dinput_joy2.obj dinput_kbd.obj dinput_mouse.obj &
+        dinput_mouse2.obj
+
+dinput8.lib: dinput8.lbc $(dinput_objs)
+        @%create tmp.lbc
+        @for %i in ($(dinput_objs)) do @%append tmp.lbc +%i
+        $(librarian) $(libflags) @$[@ @tmp.lbc
+
+dinput.lib: dinput.lbc $(dinput_objs)
+        @%create tmp.lbc
+        @for %i in ($(dinput_objs)) do @%append tmp.lbc +%i
+        $(librarian) $(libflags) @$[@ @tmp.lbc
+
+dxerr8.lib: dxerr8.obj dxerr8w.obj
+        $(librarian) $(libflags) $<
+
+dxerr9.lib: dxerr9.obj dxerr9w.obj
+        $(librarian) $(libflags) $<
+	
+ksuser.lib: ksuser.lbc ksuser.obj
+        $(librarian) $(libflags) @$[@ +$]@
+
+shell32.lib: shell32.lbc shell32.obj
+        $(librarian) $(libflags) @$[@ +$]@
+
+ws2_32.lib: ws2_32.lbc ws2_32.obj
+        $(librarian) $(libflags) @$[@ +$]@
+
+vfw32.lbc: $(vfw32_libs)
+        @%create $@
+        @for %i in ($(vfw32_libs)) do @%append $@ @ %i
+
+uuid_objs = mshtml-uuid.obj msxml-uuid.obj unknwn-uuid.obj &
+        servprov-uuid.obj oleidl-uuid.obj oleacc-uuid.obj ocidl-uuid.obj &
+        objsafe-uuid.obj oaidl-uuid.obj docobj-uuid.obj comcat-uuid.obj &
+        exdisp-uuid.obj mlang-uuid.obj objidl-uuid.obj cguid-uuid.obj &
+        olectlid-uuid.obj ativscp-uuid.obj urlmon-uuid.obj hlink-uuid.obj &
+        hlguids-uuid.obj extras-uuid.obj devguid.obj power-uuid.obj
+
+uuid.lib: $(uuid_objs)
+        @%create tmp.lbc
+        @for %i in ($(uuid_objs)) do @%append tmp.lbc +%i
+        $(librarian) $(libflags) @tmp.lbc
+
+.c.obj: .autodepend
+        $(cc) $(cflags) $(inc_path) $<

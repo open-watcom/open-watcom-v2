@@ -34,12 +34,14 @@
 #include "xstring.h"
 #undef  _fmemcmp
 
-_WCRTLINK int _fmemcmp( const unsigned char _WCFAR *s1,
-                       const unsigned char _WCFAR *s2, size_t len )
+_WCRTLINK int _fmemcmp( const void _WCFAR *v1,
+                       const void _WCFAR *v2, size_t len )
     {
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fmemcmp( s1, s2, len ) );
+        return( _inline__fmemcmp( v1, v2, len ) );
 #else
+        const unsigned char _WCFAR *s1 = v1;
+        const unsigned char _WCFAR *s2 = v2;
         for( ; len; --len )  {
             if( *s1 != *s2 ) return( *s1 - *s2 );
             ++s1;

@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX ps utility.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#if defined(__OS_nt__) || defined(__OS_alpha__)
+#if defined(__OS_nt386__) || defined(__OS_ntaxp__)
 void main( void ) { printf( "Not implemented for NT\n" ); }
-#elif defined(__OS_dosos2__) || defined(__OS_os2v2__)
+#elif defined(__OS_dosos2__) || defined(__OS_os2386__)
 void main( void ) { printf( "Not implemented for OS/2\n" ); }
 #elif defined(__OS_qnx__) || defined(__OS_qnx16__)
 void main( void ) { printf( "Not implemented for QNX\n" ); }
@@ -80,7 +79,7 @@ struct device {
     char                name[8];
 };
 
-extern void far *__first_pid();
+void far *__first_pid( void );
 #ifdef __386__
 #pragma aux __first_pid = \
                            "xor ebx,ebx" \
@@ -100,8 +99,8 @@ segment_t far *envp;
 
 void printCommand( unsigned seg )
 {
-    segment_t far *env_seg;
-    char far *p;
+    segment_t far       *env_seg;
+    unsigned char far   *p;
 
     if( _osmajor < 3 ) {
         putchar( '\n' );

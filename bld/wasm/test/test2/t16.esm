@@ -1,0 +1,16 @@
+.387
+		EXTRN	cde:BYTE
+		EXTRN	outside:BYTE
+flora		GROUP	text,donna
+donna		SEGMENT	PARA PRIVATE USE16 'data'
+L$1:
+    DB	1, 0
+
+donna		ENDS
+text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov         ax,word ptr cs:L$1
+    mov         ax,word ptr cs:cde+7
+    mov         ax,word ptr outside
+text		ENDS
+		END

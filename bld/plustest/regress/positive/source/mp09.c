@@ -21,7 +21,7 @@ class Other : public Base {
         Other() {}
         ~Other() {}
 
-        SetCallback( Callback func );
+        void SetCallback( Callback func );
 
     private:
         Callback        _callback;
@@ -32,7 +32,7 @@ class B : public A {
         B() {}
         ~B() {}
 
-        Register();
+        void Register();
 
     private:
         Other           _other;
@@ -47,14 +47,14 @@ class C : public B {
 };
 
 
-B::Register()
-/***********/
+void B::Register()
+/****************/
 {
     _other.SetCallback( (Callback)OverriddenFunc );
 }
 
-Other::SetCallback( Callback func )
-/*********************************/
+void Other::SetCallback( Callback func )
+/**************************************/
 {
     _callback = func;
 }

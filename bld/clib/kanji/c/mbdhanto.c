@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <mbctype.h>
 #include "hanzentb.h"
+#include <mbstring.h>
 
 
 _WCRTLINK unsigned int _mbdhantozen( unsigned int ch )

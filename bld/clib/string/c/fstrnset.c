@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrnset() - far strnset().
 *
 ****************************************************************************/
 
@@ -34,12 +33,13 @@
 #include <string.h>
 
 _WCRTLINK char _WCFAR *_fstrnset( char _WCFAR *str, int c, size_t len )
-    {
-        char _WCFAR *p;
+{
+    char _WCFAR     *p;
 
-        for( p = str; len; --len ) {
-            if( *p == '\0' ) break;
-            *p++ = c;
-        }
-        return( str );
+    for( p = str; len; --len ) {
+        if( *p == '\0' )
+            break;
+        *p++ = c;
     }
+    return( str );
+}

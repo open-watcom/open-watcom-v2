@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emulate _dos_allocmem()/_dos_freemem() on OS/2.
 *
 ****************************************************************************/
 
@@ -34,14 +33,15 @@
 #define INCL_DOSMEMMGR
 #include <wos2.h>
 #include <stdlib.h>
+#include <dos.h>
 #include "rtdata.h"
 #include "seterrno.h"
 
 
 #if defined(__386__) || defined(__PPC__)
   typedef void                  *mem_id;
-#elif defined(M_I86)
-  typedef unsigned short        mem_id;
+#elif defined( _M_I86 )
+  typedef unsigned              mem_id;
   #if defined(__BIG_DATA__)
     #define MODIFIES ds es
   #else
@@ -54,7 +54,7 @@
 _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
 // Note: size is in paragraphs of 16 bytes
 {
-    APIRET      error;
+    APIRET      rc;
 
 #if defined(__386__) || defined(__PPC__)
     /*
@@ -63,40 +63,38 @@ _WCRTLINK unsigned _dos_allocmem( unsigned size, mem_id *p_mem )
     */
     void        *mem;
 
-    error = DosAllocMem( &mem, size << 4, PAG_COMMIT | PAG_READ | PAG_WRITE );
-#elif defined(M_I86)
+    rc = DosAllocMem( &mem, size << 4, PAG_COMMIT | PAG_READ | PAG_WRITE );
+#elif defined( _M_I86 )
     SEL         mem;
     USHORT      number_segments, remaining_bytes;
 
     number_segments = size >> 12;       // Number of 64k segments
     remaining_bytes = (size << 4) & 0xFFFF;     // remainder, < 64k
-    error = DosAllocHuge( number_segments, remaining_bytes, &mem, 0, 0 );
+    rc = DosAllocHuge( number_segments, remaining_bytes, &mem, 0, 0 );
 #else
     #error platform not supported
 #endif
     *p_mem = mem;
-    if( error ) {
-        __set_errno_dos( error );
-        return( error );        /* allocation failed */
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
     return( 0 );
 }
 
-#if defined(M_I86)
+#if defined( _M_I86 )
   extern unsigned __FreeSeg( mem_id );
   #pragma aux _dos_freemem modify [MODIFIES]
 #endif
 _WCRTLINK unsigned _dos_freemem( mem_id mem )
 {
 #if defined(__386__) || defined(__PPC__)
-    APIRET      error;
-    error = DosFreeMem( mem );
-    if( error ) {
-        __set_errno_dos( error );
-        return( error );
+    APIRET      rc;
+    rc = DosFreeMem( mem );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
     return( 0 );
-#elif defined(M_I86)
+#elif defined( _M_I86 )
     // defined inside heap
     return( __FreeSeg( mem ) );
 #else

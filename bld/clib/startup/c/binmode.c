@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Special object file to force binary mode when linked in.
 *
 ****************************************************************************/
 
@@ -36,11 +35,9 @@
 #include "rtdata.h"
 #include "rtinit.h"
 
-
 static void do_it( void )
 {
     _RWD_fmode = O_BINARY;
 }
-
 
 AXI( do_it, INIT_PRIORITY_LIBRARY )

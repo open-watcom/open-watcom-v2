@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <setjmp.h>
 #include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "plusplus.h"
 #include "cgfront.h"
 #include "stats.h"
 #include "memmgr.h"
@@ -63,6 +62,8 @@
 static unsigned reserveSize;
 static void *reserveMem;
 static unsigned reserveDepth;
+static unsigned internalErrCount;
+static unsigned suppressCount;
 
 static FILE *err_file;              // ERROR FILE
 static TOKEN_LOCN err_locn;         // error location
@@ -75,7 +76,7 @@ static SUICIDE_CALLBACK *suicideCallbacks;
 
 #define MSG_SCOPE static
 #define MSG_MEM
-#include "errmsgs.c"
+#include "errmsgs1.gh"
 #include "msgdecod.c"
 #define MSG_CONST
 #include "errlevel.gh"
@@ -206,7 +207,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 }
 
 
-static IDEBool __stdcall idePrt // PRINT FOR IDE
+static IDEBool IDECALL idePrt // PRINT FOR IDE
     ( IDECBHdl hdl              // - handle
     , IDEMsgInfo *info )        // - information
 {
@@ -339,7 +340,6 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     prt_locn = err_locn;
     ++reserveDepth;
     VbufInit( &buffer );
-    VStrNull( &buffer );
     sym = msgBuild( msgnum, args, &buffer );
     switch( severity ) {
       case IDEMSGSEV_ERROR :
@@ -386,7 +386,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     }
     ideDisplay( severity
               , msgnum
-              , buffer.buf
+              , VbufString( &buffer )
               , msg_locn );
     if( context_changed
      && ! CompFlags.ew_switch_used
@@ -400,6 +400,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     VbufFree( &buffer );
     --reserveDepth;
     if( NULL != sym ) {
+        notes_locn = sym->locn->tl;
         MsgDisplayArgs( IDEMSGSEV_NOTE
                       , SymIsFunctionTemplateModel( sym )
                             ? INF_TEMPLATE_FN_DECL : INF_SYMBOL_DECLARATION
@@ -438,12 +439,11 @@ void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     VBUF buffer;                // - buffer
 
     VbufInit( &buffer );
-    VStrNull( &buffer );
     va_start( args, seg );
     for( str = seg; str != NULL; str = va_arg( args, char* ) ) {
-        VStrConcStr( &buffer, str );
+        VbufConcStr( &buffer, str );
     }
-    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, buffer.buf, NULL );
+    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( &buffer ), NULL );
     va_end( args );
     VbufFree( &buffer );
 }
@@ -494,7 +494,7 @@ static void prtMsg(             // PRINT A MESSAGE
 }
 
 
-static void errFileErase(       // ERASE ERROR FILE
+static void fileErase(          // ERASE ERROR FILE
     const char *name )          // - file name
 {
     if( name != NULL ) {
@@ -521,23 +521,29 @@ static void reserveRelease( void )
 }
 
 
-void ErrFileOpen(               // OPEN ERROR FILE
-    void )
+void ErrFileOpen( void )        // OPEN ERROR FILE
 {
     char *buf;                  // - file name
 
-    if( CompFlags.errfile_opened ) return;
-    if( SrcFName != NULL ) {
+    if( !CompFlags.errfile_opened && SrcFName != NULL ) {
         // we want to keep retrying until we get a source file name
         CompFlags.errfile_opened = TRUE;
         buf = IoSuppOutFileName( OFT_ERR );
         if( buf != NULL ) {
-            errFileErase( buf );
+            fileErase( buf );
             err_file = SrcFileFOpen( buf, SFO_WRITE_TEXT );
             if( err_file != NULL ) {
                 IoSuppSetBuffering( err_file, 128 );
             }
         }
+    }
+}
+
+
+void ErrFileErase( void )       // ERASE ERROR FILE
+{
+    if( err_file == NULL ) {
+        fileErase( IoSuppOutFileName( OFT_ERR ) );
     }
 }
 
@@ -633,11 +639,22 @@ static msg_status_t doError(    // ISSUE ERROR
         unsigned too_many : 1;  // - TRUE ==> too many messages
     } flag;
 
+#ifndef NDEBUG
+    fflush(stdout);
+    fflush(stderr);
+#endif
+
     retn = MS_NULL;
     if( ! errLimitExceeded ) {
         flag.too_many = TRUE;
         flag.print_err = okToPrintMsg( msgnum, &level );
-        if( ErrLimit == -1 ) {
+        if( suppressCount > 0 ) {
+            /* suppressed message */
+            if( flag.print_err && ( level == 0 ) ) {
+                internalErrCount++;
+            }
+            return MS_NULL;
+        } else if( ErrLimit == -1 ) {
             /* unlimited messages */
             flag.too_many = FALSE;
         } else if( ErrCount < ErrLimit ) {
@@ -746,6 +763,38 @@ void InfMsgInt(                 // INFORMATION MESSAGE, INT ARG.
 }
 
 
+void CErrSuppress(
+    error_state_t *save )
+{
+    suppressCount++;
+    *save = internalErrCount;
+}
+
+void CErrSuppressRestore(
+    unsigned count )
+{
+    suppressCount += count;
+}
+
+unsigned CErrUnsuppress(
+    void )
+{
+    unsigned val = suppressCount;
+    suppressCount = 0;
+    return val;
+}
+
+boolean CErrSuppressedOccurred(
+    error_state_t *previous_state )
+{
+    suppressCount--;
+    if( *previous_state != internalErrCount ) {
+        internalErrCount = *previous_state;
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
 void CErrCheckpoint(
     error_state_t *save )
 {
@@ -853,7 +902,7 @@ void InfMacroDecl(              // GENERATE MACRO-DECLARATION NOTE
     MEPTR mdef;                 // - macro definition
 
     mdef = parm;
-    if( mdef->macro_flags & MACRO_USER_DEFINED ) {
+    if( mdef->macro_flags & MFLAG_USER_DEFINED ) {
         CErr( INF_MACRO_DECLARATION, mdef->macro_name, &mdef->defn );
     }
 }
@@ -872,7 +921,7 @@ void InfSymbolDeclaration(      // GENERATE SYMBOL-DECLARATION NOTE
 void InfSymbolAmbiguous(        // GENERATE SYMBOL-AMBIGUITY NOTE
     SYMBOL sym )                // - a symbol
 {
-    CErr( SymIsFunctionTemplateModel( sym )
+    CErr( SymIsFnTemplateMatchable( sym )
             ? INF_TEMPLATE_FN_AMBIGUOUS : INF_FUNC_AMBIGUOUS
         , sym
         , &sym->locn->tl );
@@ -894,7 +943,7 @@ static void openDefFile( void )
 
     if( SrcFName != NULL ) {
         def_fname = IoSuppOutFileName( OFT_DEF );
-        errFileErase( def_fname );
+        fileErase( def_fname );
         DefFile = SrcFileFOpen( def_fname, SFO_WRITE_TEXT );
         if( DefFile != NULL ) {
             IoSuppSetBuffering( DefFile, 128 );
@@ -929,7 +978,7 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
            , "//#line \"%s\" %u\n"
            , fileName( fn->locn->tl.src_file )
            , fn->locn->tl.line );
-    fprintf( DefFile, "extern %s;\n", proto.buf );
+    fprintf( DefFile, "extern %s;\n", VbufString( &proto ) );
     VbufFree( &proto );
 }
 
@@ -962,7 +1011,7 @@ static void errFileFini(        // CLOSE ERROR FILE
     defn = defn;
     if( IoSuppCloseFile( &err_file ) ) {
         if( ! CompFlags.errfile_written ) {
-            errFileErase( IoSuppOutFileName( OFT_ERR ) );
+            fileErase( IoSuppOutFileName( OFT_ERR ) );
         }
     }
     CMemFree( ErrorFileName );
@@ -979,12 +1028,12 @@ INITDEFN( error_file, errFileInit, errFileFini )
 
 pch_status PCHReadErrWarnData( void )
 {
-    char tmp_buff[ sizeof( msg_level ) ];
-    char *pch_levels;
-    char *orig_levels;
-    char *p;
-    char *o;
-    char *stop;
+    char            tmp_buff[ sizeof( msg_level ) ];
+    unsigned char   *pch_levels;
+    unsigned char   *orig_levels;
+    unsigned char   *p;
+    unsigned char   *o;
+    unsigned char   *stop;
 
     PCHReadLocSize( pch_levels, tmp_buff, sizeof( msg_level ) );
     if( NULL != orig_err_levs ) {

@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NT Spawn server for Viper (IDE).
 *
 ****************************************************************************/
 
-
-/*
-        BATSERV : NT Spawn server for Viper
-*/
 
 #include <windows.h>
 #include <stdio.h>
@@ -111,7 +106,7 @@ static void SendStatus( unsigned long status )
     BatservWrite( &buff, sizeof( buff ) );
 }
 
-static void ProcessConnection()
+static void ProcessConnection( void )
 {
     char                buff[MAX_TRANS];
     DWORD               bytes_read;
@@ -204,7 +199,7 @@ BOOL WINAPI Ignore( DWORD CtrlType )
 }
 
 
-main( int argc, char *argv[] )
+void main( int argc, char *argv[] )
 {
     SECURITY_ATTRIBUTES attr;
 

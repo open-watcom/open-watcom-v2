@@ -56,12 +56,6 @@ WEXPORT WListBox::WListBox( WStatDialog* parent, unsigned id, WStyle wstyle )
 }
 
 
-WEXPORT WListBox::~WListBox() {
-/*****************************/
-
-}
-
-
 bool WListBox::gettingFocus( WWindow* ) {
 /***************************************/
 
@@ -93,6 +87,8 @@ int WListBox::findString( int index, const char *str ) {
 
     int len = strlen( str );
     int icount = count();
+    int k;
+
     if( icount > 0 ) {
         if( index < 0 ) index = icount-1;
         int i = index;
@@ -101,7 +97,7 @@ int WListBox::findString( int index, const char *str ) {
             if( i >= icount ) i = 0;
             WString s;
             getString( i, s );
-            for( int k=0; isspace( s[k] ); k++ );
+            for( k=0; isspace( s[k] ); k++ );
             if( strnicmp( str, &s[k], len ) == 0 ) {
                 return i;
             }
@@ -154,7 +150,7 @@ void WEXPORT WListBox::getString( int index, WString& str ) {
 
     list_item = GUIGetListItem( parent()->handle(), controlId(), index );
     WString s( list_item );
-    GUIFree( list_item );
+    GUIMemFree( list_item );
     str = s;
 }
 
@@ -245,4 +241,13 @@ void* WEXPORT WListBox::tagPtr( int index ) {
 /*******************************************/
 
     return( GUIGetListItemData( parent()->handle(), controlId(), index ) );
+}
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WListBox::~WListBox() {
+/*****************************/
 }

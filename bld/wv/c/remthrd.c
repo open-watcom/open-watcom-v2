@@ -83,13 +83,6 @@ dtid_t RemoteSetThreadWithErr( dtid_t tid, unsigned *err )
     return( ret.old_thread );
 }
 
-dtid_t RemoteSetThread( dtid_t tid )
-{
-    unsigned            err;
-
-    return( RemoteSetThreadWithErr( tid, &err ) );
-}
-
 long RemoteFreezeThread( dtid_t tid )
 {
     thread_freeze_req   acc;

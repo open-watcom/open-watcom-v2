@@ -52,19 +52,49 @@ extern dis_format_flags DFormat;
 
 static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_entry entry, label_entry previous_entry, label_entry old_entry )
 {
-    if( ( entry->type == LTYP_UNNAMED ) && ( old_entry->type != LTYP_FUNC_INFO )
-        && ( old_entry->type != LTYP_SECTION || !IsMasmOutput() ) ) {
-        // merge entry into old_entry
-        MemFree( entry );
-        entry = old_entry;
-    } else {
-        // two labels for this location!
-        entry->next = old_entry;
-        if( previous_entry ) {
-            previous_entry->next = entry;
+    label_entry first_entry = old_entry;
+
+    for( ; old_entry != NULL && old_entry->offset == entry->offset; old_entry = old_entry->next ) {
+        if( entry->type == LTYP_UNNAMED ) {
+            if( old_entry->type == LTYP_UNNAMED ) {
+                MemFree( entry );
+                entry = old_entry;
+                return( entry );
+            } else if( old_entry->type == LTYP_NAMED ) {
+                MemFree( entry );
+                entry = old_entry;
+                return( entry );
+            } else if( old_entry->type == LTYP_ABSOLUTE ) {
+            } else if( old_entry->type == LTYP_FUNC_INFO ) {
+            } else if( old_entry->type == LTYP_SECTION ) {
+                if( !IsMasmOutput() ) {
+                    MemFree( entry );
+                    entry = old_entry;
+                    return( entry );
+                }
+            } else {
+                MemFree( entry );
+                entry = old_entry;
+                return( entry );
+            }
+        } else if( entry->type == LTYP_ABSOLUTE ) {
+            if( old_entry->type == LTYP_ABSOLUTE ) {
+                // merge entry into old_entry
+                MemFree( entry );
+                entry = old_entry;
+                return( entry );
+            }
+        } else if( entry->type == LTYP_EXTERNAL_NAMED ) {
+            break;
         } else {
-            sec_label_list->first = entry;
         }
+    }
+    // two labels for this location!
+    entry->next = first_entry;
+    if( previous_entry ) {
+        previous_entry->next = entry;
+    } else {
+        sec_label_list->first = entry;
     }
     return( entry );
 }
@@ -95,7 +125,7 @@ static label_entry insertLabelInMiddle( label_list sec_label_list, label_entry e
     return( entry );
 }
 
-static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_sec_handle sym_hnd )
+static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_symbol_handle sym_hnd )
 {
     if( sec_label_list->first == NULL ) {
         sec_label_list->first = entry;
@@ -114,7 +144,7 @@ static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_s
         entry = insertLabelInMiddle( sec_label_list, entry );
     }
     // add entry to list
-    if( sym_hnd != 0 ) {
+    if( sym_hnd != NULL ) {
         HashTableInsert( SymbolToLabelTable, (hash_value) sym_hnd, (hash_data) entry );
     }
     return( entry );
@@ -256,6 +286,34 @@ void CreateUnnamedLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_
     }
     entry->offset = loc;
     entry->type = LTYP_UNNAMED;
+    entry->label.number = 0;
+    entry->shnd = shnd;
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) shnd );
+    if( data_ptr ) {
+        sec_label_list = (label_list) *data_ptr;
+        entry = addLabel( sec_label_list, entry, 0 );
+        return_struct->entry = entry;
+        return_struct->error = OKAY;
+    } else {
+        // error!!!! the label list should have been created
+        return_struct->error = ERROR;
+    }
+    return;
+}
+
+void CreateAbsoluteLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_return return_struct )
+{
+    label_list          sec_label_list;
+    hash_data *         data_ptr;
+    label_entry         entry;
+
+    entry = MemAlloc( sizeof( label_entry_struct ) );
+    if( !entry ) {
+        return_struct->error = OUT_OF_MEMORY;
+        return;
+    }
+    entry->offset = loc;
+    entry->type = LTYP_ABSOLUTE;
     entry->label.number = 0;
     entry->shnd = shnd;
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) shnd );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom debug information location descriptors.
 *
 ****************************************************************************/
 
@@ -77,7 +76,7 @@
 #define LOP_DUP         0x0a
 #define LOP_NOP         0x0b
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 /* no location, class 0x */
 
@@ -147,7 +146,7 @@ typedef union {
     loc_operator        op;
 } loc_entry;
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 typedef byte            *loc_expr;
 

@@ -1,0 +1,32 @@
+.387
+.386p
+		PUBLIC	foo
+		PUBLIC	bar
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    nop       
+    nop       
+    nop       
+    nop       
+    jmp       L$1
+L$1:
+    nop       
+    nop       
+    nop       
+L$2:
+    nop       
+    nop       
+    jmp       L$2
+    nop       
+foo:
+    nop       
+    nop       
+bar:
+    nop       
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	68H, 65H, 6cH, 6cH, 6fH
+
+_DATA		ENDS
+		END

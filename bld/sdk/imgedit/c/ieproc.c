@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "ieprofil.h"
@@ -43,22 +44,28 @@ extern BOOL FusionCalled;
 
 static BOOL ImgEdEnableMenuInput = FALSE;
 
+/*
+ * IEEnableMenuInput
+ */
 void IEEnableMenuInput( BOOL enable )
 {
     ImgEdEnableMenuInput = enable;
-}
+
+} /* IEEnableMenuInput */
 
 /*
- * enableMainItems - enables menu items.
+ * enableMainItems - enable menu items
  */
 static void enableMainItems( HMENU hmenu )
 {
     img_node    *node;
 
-    if( !hmenu ) return;
+    if( hmenu == NULL ) {
+        return;
+    }
 
     node = GetCurrentNode();
-    if ( !(DoImagesExist()) ) {
+    if( !DoImagesExist() ) {
         _wpi_enablemenuitem( hmenu, IMGED_SAVE, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SAVE_AS, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_CLOSE, FALSE, FALSE );
@@ -76,7 +83,7 @@ static void enableMainItems( HMENU hmenu )
         _wpi_enablemenuitem( hmenu, IMGED_LEFT, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_MAXIMIZE, FALSE, FALSE );
-    } else if ( node ) {
+    } else if( node != NULL ) {
         CheckForClipboard( hmenu );
         CheckForUndo( node );
         _wpi_enablemenuitem( hmenu, IMGED_SAVE, TRUE, FALSE );
@@ -94,7 +101,7 @@ static void enableMainItems( HMENU hmenu )
         _wpi_enablemenuitem( hmenu, IMGED_DOWN, TRUE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_RIGHT, TRUE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_LEFT, TRUE, FALSE );
-        if (node->imgtype != BITMAP_IMG) {
+        if( node->imgtype != BITMAP_IMG ) {
             _wpi_enablemenuitem( hmenu, IMGED_SIZE, FALSE, FALSE );
         } else {
             _wpi_enablemenuitem( hmenu, IMGED_SIZE, TRUE, FALSE );
@@ -116,11 +123,13 @@ static void enableMainItems( HMENU hmenu )
         _wpi_enablemenuitem( hmenu, IMGED_NEW, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_OPEN, FALSE, FALSE );
     }
+
 } /* enableMainItems */
 
 #ifndef __OS2_PM__
+
 /*
- * createClientWindow - creates the client window required by mdi.
+ * createClientWindow - create the client window required by MDI
  */
 void createClientWindow( HWND hwnd )
 {
@@ -129,84 +138,81 @@ void createClientWindow( HWND hwnd )
     short               height;
 
     GetClientRect( hwnd, &clientrect );
-    height = clientrect.bottom - FUNCTIONBAR_WIDTH - STATUS_WIDTH;
+    height = clientrect.bottom - FUNCTIONBAR_WIDTH - StatusWidth;
 
-    ccs.hWindowMenu = GetSubMenu( GetMenu(hwnd), 5 );
+    ccs.hWindowMenu = GetSubMenu( GetMenu( hwnd ), 5 );
     ccs.idFirstChild = IDM_FIRSTCHILD;
-    ClientWindow = CreateWindow( "mdiclient",
-                                 NULL,
-                                 WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE |
-                                     WS_HSCROLL | WS_VSCROLL |
-                                     MDIS_ALLCHILDSTYLES,
-                                 0,
-                                 FUNCTIONBAR_WIDTH + 1,
-                                 clientrect.right,
-                                 height,
-                                 hwnd,
-                                 0,
-                                 Instance,
-                                 (LPSTR) &ccs );
+    ClientWindow = CreateWindow( "mdiclient", NULL,
+                                 WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE | WS_HSCROLL |
+                                 WS_VSCROLL | MDIS_ALLCHILDSTYLES,
+                                 0, FUNCTIONBAR_WIDTH + 1, clientrect.right, height,
+                                 hwnd, 0, Instance, (LPSTR)&ccs );
 
 } /* createClientWindow */
 
 /*
- * setClientSize - sets the new size of the client area.
+ * setClientSize - set the new size of the client area
  */
 static void setClientSize( HWND hwnd )
 {
     RECT        rcclient;
     short       height;
+    int         func_height;
 
+    func_height = GetFunctionBarHeight();
     GetClientRect( hwnd, &rcclient );
-    height = rcclient.bottom - FUNCTIONBAR_WIDTH
-                                        - STATUS_WIDTH;
+    height = rcclient.bottom - func_height - StatusWidth;
 
-    MoveWindow(ClientWindow, 0, FUNCTIONBAR_WIDTH+1,
-                                rcclient.right, height, TRUE);
+    MoveWindow( ClientWindow, 0, func_height, rcclient.right, height, TRUE );
 
 } /* setClientSize */
 
 #else
 
 /*
- * resizeClientArea - Resizes the current area of the client
+ * resizeClientArea - resize the current area of the client
  */
 static void resizeClientArea( WPI_PARAM2 mp2 )
 {
     SHORT       width;
     SHORT       height;
 
-    if (!ClientWindow) return;
+    if( ClientWindow == NULL ) {
+        return;
+    }
 
     width = SHORT1FROMMP( mp2 );
     height = SHORT2FROMMP( mp2 );
 
     WinSetWindowPos( ClientWindow, HWND_TOP, 0, STATUS_WIDTH, width,
-                                height - STATUS_WIDTH - FUNCTIONBAR_WIDTH,
-                                SWP_SIZE | SWP_MOVE );
+                     height - STATUS_WIDTH - FUNCTIONBAR_WIDTH, SWP_SIZE | SWP_MOVE );
+
 } /* resizeClientArea */
 
 #endif
 
 /*
- * checkBrushItem - Check the brush size item in the main menu
+ * checkBrushItem - check the brush size item in the main menu
  */
-void checkBrushItem( HMENU hmenu, int newitem )
+static void checkBrushItem( HMENU hmenu, int newitem )
 {
     int         i;
-    int         brush_size=2;
+    int         brush_size = 2;
 
-    for(i=IMGED_2x2; i<=IMGED_5x5; ++i) {
+    for(i = IMGED_2x2; i <= IMGED_5x5; i++ ) {
         _wpi_checkmenuitem( hmenu, i, FALSE, FALSE );
-        if (i == newitem) {
+        if( i == newitem ) {
             SetBrushSize( brush_size );
         }
-        ++brush_size;
+        brush_size++;
     }
     _wpi_checkmenuitem( hmenu, newitem, TRUE, FALSE );
 
 } /* checkBrushItem */
 
+/*
+ * IEIsMenuIDValid
+ */
 static BOOL IEIsMenuIDValid( HMENU menu, WORD id )
 {
     UINT st;
@@ -215,33 +221,34 @@ static BOOL IEIsMenuIDValid( HMENU menu, WORD id )
         return( FALSE );
     }
 
-    if( menu == (HMENU) NULL ) {
+    if( menu == (HMENU)NULL ) {
         return( TRUE );
     }
 
-    // put any menu id's that you would like forced here
+    // put any menu identifiers that you would like forced here
     switch( id ) {
-        case IMGED_CLOSEALL:
-            if( ImgedIsDDE ) {
-                return( TRUE );
-            }
-            break;
+    case IMGED_CLOSEALL:
+        if( ImgedIsDDE ) {
+            return( TRUE );
+        }
+        break;
     }
 
     st = GetMenuState( menu, id, MF_BYCOMMAND );
 
-    if ( ( st == -1 ) || ( ( st & MF_GRAYED ) == MF_GRAYED ) ) {
+    if( st == -1 || (st & MF_GRAYED) == MF_GRAYED ) {
         return( FALSE );
     }
 
     return( TRUE );
-}
+
+} /* IEIsMenuIDValid */
 
 /*
- * ImgEdFrameProc - handle messages for the image editor appl.
+ * ImgEdFrameProc - handle messages for the image editor application
  */
-MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                                            WPI_PARAM2 lparam )
+MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
+                                 WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static BOOL         window_destroyed = FALSE;
     static HMENU        hmenu;
@@ -253,25 +260,23 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
     WPI_RECTDIM         left, top;
 
-    if (!window_destroyed) {
+    if( !window_destroyed ) {
         enableMainItems( hmenu );
     }
 
-    switch ( msg ) {
-
+    switch( msg ) {
     case UM_EXIT:
-            _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
-
-    // fall thru
+        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
+        /* fall through */
 
     case UM_EXIT_NO_SAVE:
-            if ( _wpi_getfirstchild( _wpi_getclient(ClientWindow) ) != NULL ) {
-                break;
-            }
+        if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
+            break;
+        }
 #ifndef __OS2_PM__
-            _wpi_destroywindow( _wpi_getframe(hwnd) );
+        _wpi_destroywindow( _wpi_getframe( hwnd ) );
 #else
-            _wpi_sendmessage( hwnd, WM_CLOSE, 0, 0 );
+        _wpi_sendmessage( hwnd, WM_CLOSE, 0, 0 );
 #endif
 
         break;
@@ -281,7 +286,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         break;
 
     case WM_CREATE:
-        hmenu = _wpi_getmenu( _wpi_getframe(hwnd) );
+        hmenu = _wpi_getmenu( _wpi_getframe( hwnd ) );
 #ifndef __OS2_PM__
         createClientWindow( hwnd );
 #endif
@@ -296,28 +301,32 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         /*
          * Set values from profile information ...
          */
-        if (ImgedConfigInfo.brush_size <= 5 && ImgedConfigInfo.brush_size >=2) {
-            checkBrushItem( hmenu, IMGED_2x2-2+ImgedConfigInfo.brush_size );
+        if( ImgedConfigInfo.brush_size <= 5 && ImgedConfigInfo.brush_size >= 2 ) {
+            checkBrushItem( hmenu, IMGED_2x2 - 2 + ImgedConfigInfo.brush_size );
         }
-        if (ImgedConfigInfo.grid_on) {
-            CheckGridItem(hmenu);
+        if( ImgedConfigInfo.grid_on ) {
+            CheckGridItem( hmenu );
         }
-        if (ImgedConfigInfo.square_grid) {
+        if( ImgedConfigInfo.square_grid ) {
             CheckSquareGrid( hmenu );
         }
-        if (ImgedConfigInfo.show_state & SET_SHOW_VIEW) {
+        if( ImgedConfigInfo.show_state & SET_SHOW_VIEW ) {
             CheckViewItem( hmenu );
         }
 
         _wpi_enablemenuitem( hmenu, IMGED_CRESET, FALSE, FALSE );
-        _wpi_enablemenuitem( hmenu, IMGED_RCOLOUR, FALSE, FALSE );
+        _wpi_enablemenuitem( hmenu, IMGED_RCOLOR, FALSE, FALSE );
 #ifndef __OS2_PM__
         // not necessary for PM
         InitMenus( hmenu );
 #endif
         SetHintText( IEAppTitle );
-        return 0;
-
+        return( 0 );
+#ifdef __NT__
+    case WM_DROPFILES:
+        OpenImage( (HANDLE)wparam );
+        break;
+#endif
     case WM_MOVE:
         _wpi_getwindowrect( hwnd, &rcmain );
         if( !ImgedConfigInfo.ismaximized ) {
@@ -327,21 +336,20 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             ImgedConfigInfo.x_pos = (short)left;
             ImgedConfigInfo.y_pos = (short)top;
         }
-        return 0;
+        return( 0 );
 
     case WM_SIZE:
+        ResizeFunctionBar( lparam );
+        ResizeStatusBar( lparam );
 #ifndef __OS2_PM__
-        if (ClientWindow) {
+        if( ClientWindow != NULL ) {
             setClientSize( hwnd );
         }
 #else
         resizeClientArea( lparam );
 #endif
-        ResizeFunctionBar(lparam);
-        ResizeStatusBar(lparam);
 
-        if( !_imgwpi_issizeminimized(wparam) &&
-                                        !_imgwpi_issizemaximized(wparam) ) {
+        if( !_imgwpi_issizeminimized( wparam ) && !_imgwpi_issizemaximized( wparam ) ) {
             _wpi_getwindowrect( hwnd, &rcmain );
             ImgedConfigInfo.width = (short)_wpi_getwidthrect( rcmain );
             ImgedConfigInfo.height = (short)_wpi_getheightrect( rcmain );
@@ -351,14 +359,14 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             ImgedConfigInfo.y_pos = ImgedConfigInfo.last_ypos;
             ImgedConfigInfo.ismaximized = _imgwpi_issizemaximized( wparam );
         }
-        return FALSE;
+        return( FALSE );
 
     case WM_MENUSELECT:
 #ifndef __OS2_PM__
-        if( GET_WM_MENUSELECT_FLAGS(wparam, lparam) & MF_SEPARATOR ) {
+        if( GET_WM_MENUSELECT_FLAGS( wparam, lparam ) & MF_SEPARATOR ) {
             break;
         }
-        if( GET_WM_MENUSELECT_FLAGS(wparam, lparam) & MF_SYSMENU ) {
+        if( GET_WM_MENUSELECT_FLAGS( wparam, lparam ) & MF_SYSMENU ) {
             PrintHintTextByID( WIE_SYSMENUOPERATIONS, NULL );
             break;
         }
@@ -382,7 +390,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         case IMGED_CLOSE:
             node = GetCurrentNode();
-            if (node) {
+            if( node != NULL ) {
                 _wpi_sendmessage( node->hwnd, WM_CLOSE, 0, 0L );
             }
             break;
@@ -395,6 +403,14 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             IEHelpRoutine();
             break;
 
+        case IMGED_HELP_SEARCH:
+            IEHelpSearchRoutine();
+            break;
+
+        case IMGED_HELP_ON_HELP:
+            IEHelpOnHelpRoutine();
+            break;
+
         case IMGED_ABOUT:
 #ifndef __OS2_PM__
             ai.owner = hwnd;
@@ -404,13 +420,13 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             ai.first_cr_year = IEAllocRCString( WIE_ABOUTFIRSTYEAR );
             ai.title = IEAllocRCString( WIE_ABOUTTITLE );
             DoAbout( &ai );
-            if( ai.name ) {
+            if( ai.name != NULL ) {
                 IEFreeRCString( ai.name );
             }
-            if( ai.title ) {
+            if( ai.title != NULL ) {
                 IEFreeRCString( ai.title );
             }
-            if( ai.first_cr_year ) {
+            if( ai.first_cr_year != NULL ) {
                 IEFreeRCString( ai.first_cr_year );
             }
 #endif
@@ -432,7 +448,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         case IMGED_OPEN:
             if( !ImgedIsDDE ) {
-                OpenImage();
+                OpenImage( NULL );
             }
             break;
 
@@ -499,7 +515,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             CutImage();
             break;
 
-        case IMGED_COLOUR:
+        case IMGED_COLOR:
             CheckPaletteItem( hmenu );
             break;
 
@@ -540,36 +556,36 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         case IMGED_CEDIT:
 #ifndef __OS2_PM__
-            EditColours();
+            EditColors();
 #endif
             break;
 
         case IMGED_CRESET:
 #ifndef __OS2_PM__
-            RestoreColours();
+            RestoreColors();
 #endif
             break;
 
         case IMGED_CSCREEN:
-            ChooseBkColour();
+            ChooseBkColor();
             break;
 
-        case IMGED_SCOLOUR:
+        case IMGED_SCOLOR:
 #ifndef __OS2_PM__
-            SaveColourPalette();
+            SaveColorPalette();
 #endif
             break;
 
-        case IMGED_LCOLOUR:
+        case IMGED_LCOLOR:
 #ifndef __OS2_PM__
-            if( LoadColourPalette() ) {
-                _wpi_enablemenuitem( hmenu, IMGED_RCOLOUR, TRUE, FALSE );
+            if( LoadColorPalette() ) {
+                _wpi_enablemenuitem( hmenu, IMGED_RCOLOR, TRUE, FALSE );
             }
 #endif
             break;
 
-        case IMGED_RCOLOUR:
-            RestoreColourPalette();
+        case IMGED_RCOLOR:
+            RestoreColorPalette();
             break;
 
         case IMGED_FREEHAND:
@@ -588,30 +604,30 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         case IMGED_ARRANGE:
 #ifndef __OS2_PM__
-            SendMessage(ClientWindow, WM_MDIICONARRANGE, 0, 0L);
+            SendMessage( ClientWindow, WM_MDIICONARRANGE, 0, 0L );
 #endif
             break;
 
         case IMGED_TILE:
 #ifndef __OS2_PM__
-            SendMessage(ClientWindow, WM_MDITILE, MDITILE_VERTICAL, 0L);
+            SendMessage( ClientWindow, WM_MDITILE, MDITILE_VERTICAL, 0L );
 #endif
             break;
 
         case IMGED_CASCADE:
 #ifndef __OS2_PM__
-            SendMessage(ClientWindow, WM_MDICASCADE, MDITILE_SKIPDISABLED, 0L);
+            SendMessage( ClientWindow, WM_MDICASCADE, MDITILE_SKIPDISABLED, 0L );
 #endif
             break;
 
         case IMGED_EXIT:
             _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
 
-            if ( _wpi_getfirstchild( _wpi_getclient(ClientWindow) ) != NULL ) {
+            if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
                 break;
             }
 #ifndef __OS2_PM__
-            _wpi_destroywindow( _wpi_getframe(hwnd) );
+            _wpi_destroywindow( _wpi_getframe( hwnd ) );
 #else
             _wpi_sendmessage( hwnd, WM_CLOSE, 0, 0 );
 #endif
@@ -619,13 +635,12 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         default:
 #if 1
-            return( _imgwpi_defframeproc(hwnd, ClientWindow, msg, wparam,
-                                                                    lparam) );
+            return( _imgwpi_defframeproc( hwnd, ClientWindow, msg, wparam, lparam ) );
 #else
-            return 0;
+            return( 0 );
 #endif
         }
-        return 0;
+        return( 0 );
 
 #ifndef __OS2_PM__
     case WM_COMPACTING:
@@ -634,38 +649,38 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
 
     case WM_QUERYENDSESSION:
-        if( _wpi_isiconic(_wpi_getframe(hwnd)) ) {
+        if( _wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
             if( ImgedConfigInfo.ismaximized ) {
-                _wpi_maximizewindow( _wpi_getframe(hwnd) );
+                _wpi_maximizewindow( _wpi_getframe( hwnd ) );
             } else {
-                _wpi_showwindow( _wpi_getframe(hwnd), SW_SHOWNORMAL );
+                _wpi_showwindow( _wpi_getframe( hwnd ), SW_SHOWNORMAL );
             }
         }
         _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
 
-        if( _wpi_getfirstchild(_wpi_getclient(ClientWindow)) != NULL ) {
-            return 0;
+        if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
+            return( 0 );
         }
-        return (MRESULT)1;
+        return( (MRESULT)1 );
 
     case WM_CLOSE:
         // wParam is non-zero if the DDE connection died
         if( !wparam && !ImgEdEnableMenuInput ) {
             // this prevents the user from closing the editor during
             // DDE initialization
-            return 0;
+            return( 0 );
         }
         _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
 #ifdef __OS2_PM__
-        return( _wpi_defwindowproc(hwnd, msg, wparam, lparam) );
+        return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
 #else
 
-        if( _wpi_getfirstchild(_wpi_getclient(ClientWindow)) != NULL ) {
-            return 0;
+        if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
+            return( 0 );
         }
         window_destroyed = TRUE;
-        _wpi_destroywindow(_wpi_getframe(hwnd));
-        return 0;
+        _wpi_destroywindow( _wpi_getframe( hwnd ) );
+        return( 0 );
 #endif
 
     case WM_DESTROY:
@@ -679,7 +694,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         CloseFunctionBar();
         _wpi_deletefont( SmallFont );
         _wpi_postquitmessage( 0 );
-        return 0;
+        return( 0 );
     default:
         break;
     }
@@ -688,38 +703,72 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 } /* ImgEdFrameProc */
 
 #ifdef __OS2_PM__
+
 /*
  * This is necessary since the window does not paint itself
  */
-MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1,
-                                                WPI_PARAM2 mp2 )
+MRESULT CALLBACK ClientProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WPI_PARAM2 mp2 )
 {
     RECTL       rect;
     WPI_PRES    pres;
 
     switch( msg ) {
     case WM_PAINT:
-        pres = WinBeginPaint(hwnd, 0L, (PRECTL)&rect);
-        WinFillRect(pres, (PRECTL)&rect, CLR_BACKGROUND );
-        WinEndPaint(pres);
+        pres = WinBeginPaint( hwnd, 0L, (PRECTL)&rect );
+        WinFillRect( pres, (PRECTL)&rect, CLR_BACKGROUND );
+        WinEndPaint( pres );
         break;
     default:
-        return( _wpi_defwindowproc(hwnd, msg, mp1, mp2) );
+        return( _wpi_defwindowproc( hwnd, msg, mp1, mp2 ) );
     }
-    return 0;
+    return( 0 );
 
 } /* ClientProc */
+
 #endif
 
+/*
+ * IEHelpRoutine
+ */
 void IEHelpRoutine( void )
 {
 #ifndef __OS2_PM__
-    WWinHelp( HMainWindow, "resimg.hlp", HELP_CONTENTS, 0 );
+    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_CONTENTS, 0 ) ) {
+        WWinHelp( HMainWindow, "resimg.hlp", HELP_CONTENTS, 0 );
+    }
 #endif
-}
 
+} /* IEHelpRoutine */
+
+/*
+ * IEHelpSearchRoutine
+ */
+void IEHelpSearchRoutine( void )
+{
+#ifndef __OS2_PM__
+    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
+        WWinHelp( HMainWindow, "resimg.hlp", HELP_PARTIALKEY, (DWORD)"" );
+    }
+#endif
+
+} /* IEHelpSearchRoutine */
+
+/*
+ * IEHelpOnHelpRoutine
+ */
+void IEHelpOnHelpRoutine( void )
+{
+#ifndef __OS2_PM__
+    WWinHelp( HMainWindow, "winhelp.hlp", HELP_HELPONHELP, 0 );
+#endif
+
+} /* IEHelpOnHelpRoutine */
+
+/*
+ * IEHelpCallback
+ */
 void CALLBACK IEHelpCallBack( void )
 {
     IEHelpRoutine();
-}
 
+} /* IEHelpCallback */

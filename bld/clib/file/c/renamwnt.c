@@ -37,7 +37,6 @@
 #include "libwin32.h"
 #include "seterrno.h"
 
-
 _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
     if( __F_NAME(MoveFileA,__lib_MoveFileW)( old, new )  ==  FALSE ) {

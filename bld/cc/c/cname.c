@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Compare two names.
 *
 ****************************************************************************/
 
@@ -36,27 +35,35 @@
 // especially on RISC machines (particularly Alpha since it does not have
 // byte access instructions).
 
-static unsigned DwordMasks[] = {
+static unsigned_32 DwordMasks[] = {
+#ifdef __BIG_ENDIAN__
+    0x00000000,
+    0xFF000000,
+    0xFFFF0000,
+    0xFFFFFF00,
+    0xFFFFFFFF
+#else
     0x00000000,
     0x000000FF,
     0x0000FFFF,
     0x00FFFFFF,
     0xFFFFFFFF
+#endif
 };
 
 
 // len includes the trailing nullchar
 
-int NameCmp( void *p1, void *p2, int len )
+int NameCmp( const void *p1, const void *p2, int len )
 {
-    unsigned *p = p1;
-    unsigned *q = p2;
+    const unsigned_32 *p = p1;
+    const unsigned_32 *q = p2;
 
-    while( len > sizeof(unsigned) ) {
+    while( len > sizeof(unsigned_32) ) {
         if( *p != *q )  return( -1 );   // indicate names not equal
         ++p;
         ++q;
-        len -= sizeof(unsigned);
+        len -= sizeof(unsigned_32);
     }
-    return( (*p ^ *q) & DwordMasks[ len ] );
+    return( ((*p ^ *q) & DwordMasks[ len ]) != 0 );
 }

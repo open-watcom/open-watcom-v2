@@ -149,20 +149,20 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
     if( menu == NULL ) {
         return( EV_NO_EVENT );
     }
-    attr_active = UIData->attrs[ ATTR_ACTIVE ];
-    attr_hot = UIData->attrs[ ATTR_ACTIVE ];
-    attr_curr_active = UIData->attrs[ ATTR_CURR_ACTIVE ];
-    attr_hot_curr = UIData->attrs[ ATTR_HOT_CURR ];
-    attr_inactive = UIData->attrs[ ATTR_INACTIVE ];
-    attr_curr_inactive = UIData->attrs[ ATTR_CURR_INACTIVE ];
+    attr_active = UIData->attrs[ATTR_ACTIVE];
+    attr_hot = UIData->attrs[ATTR_ACTIVE];
+    attr_curr_active = UIData->attrs[ATTR_CURR_ACTIVE];
+    attr_hot_curr = UIData->attrs[ATTR_HOT_CURR];
+    attr_inactive = UIData->attrs[ATTR_INACTIVE];
+    attr_curr_inactive = UIData->attrs[ATTR_CURR_INACTIVE];
     attr_menu = UIData->attrs[ATTR_MENU];
 
-    UIData->attrs[ ATTR_ACTIVE ] = wnd->colours[GUI_MENU_PLAIN];
-    UIData->attrs[ ATTR_HOT ] = wnd->colours[GUI_MENU_STANDOUT];
-    UIData->attrs[ ATTR_CURR_ACTIVE ] = wnd->colours[GUI_MENU_ACTIVE];
-    UIData->attrs[ ATTR_HOT_CURR ] = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
-    UIData->attrs[ ATTR_INACTIVE ] = wnd->colours[GUI_MENU_GRAYED];
-    UIData->attrs[ ATTR_CURR_INACTIVE ] = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
+    UIData->attrs[ATTR_ACTIVE] = wnd->colours[GUI_MENU_PLAIN];
+    UIData->attrs[ATTR_HOT] = wnd->colours[GUI_MENU_STANDOUT];
+    UIData->attrs[ATTR_CURR_ACTIVE] = wnd->colours[GUI_MENU_ACTIVE];
+    UIData->attrs[ATTR_HOT_CURR] = wnd->colours[GUI_MENU_ACTIVE_STANDOUT];
+    UIData->attrs[ATTR_INACTIVE] = wnd->colours[GUI_MENU_GRAYED];
+    UIData->attrs[ATTR_CURR_INACTIVE] = wnd->colours[GUI_MENU_GRAYED_ACTIVE];
     UIData->attrs[ATTR_MENU] = wnd->colours[GUI_MENU_FRAME];
 
     curr = 0;
@@ -188,12 +188,12 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
 
     GUIProcessMenuCurr( NULL );
 
-    UIData->attrs[ ATTR_ACTIVE ] = attr_active;
-    UIData->attrs[ ATTR_ACTIVE ] = attr_hot;
-    UIData->attrs[ ATTR_CURR_ACTIVE ] = attr_curr_active;
-    UIData->attrs[ ATTR_HOT_CURR ] = attr_hot_curr;
-    UIData->attrs[ ATTR_INACTIVE ] = attr_inactive;
-    UIData->attrs[ ATTR_CURR_INACTIVE ] = attr_curr_inactive;
+    UIData->attrs[ATTR_ACTIVE] = attr_active;
+    UIData->attrs[ATTR_ACTIVE] = attr_hot;
+    UIData->attrs[ATTR_CURR_ACTIVE] = attr_curr_active;
+    UIData->attrs[ATTR_HOT_CURR] = attr_hot_curr;
+    UIData->attrs[ATTR_INACTIVE] = attr_inactive;
+    UIData->attrs[ATTR_CURR_INACTIVE] = attr_curr_inactive;
     UIData->attrs[ATTR_MENU] = attr_menu;
 
     if( ( ev != EV_MOUSE_DCLICK ) && ( ev != EV_NO_EVENT ) ) {

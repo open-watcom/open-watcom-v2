@@ -45,37 +45,42 @@ include struct.inc
         xdefp   __FSFD
 
         defpe   __FSFD
-        _guess                  ; guess: number is 0.0 or -0.0
-          mov   EDX,EAX         ; - get float
-          and   EDX,7fffffffh   ; - remove sign
-          _quif ne              ; - quit if number is not +0.0 or -0.0
-        _admit                  ; guess: number is +-infinity
-          cmp   EDX,7f800000h   ; - quit if not +-infinity
-          _quif ne              ; - ...
-          mov   EDX,EAX         ; - get sign
-          or    EDX,7ff00000h   ; - set double precision infinity
-          sub   EAX,EAX         ; - ...
-        _admit                  ; admit: not a special number
-          test  EDX,7f800000h   ; - if exponent is 0 (denormal number)
-          _if   e               ; - then
-            xor   EAX,EDX       ; - - keep just the sign
-            push  ECX           ; - - save ECX
-            sub   ECX,ECX       ; - - exponent adjustment
-            _loop               ; - - loop (normalize the fraction)
-              add  ECX,00800000h; - - - subtract 1 from exponent adjustment
-              _shl EDX,1        ; - - - shift fraction left
-              test EDX,00800000h; - - - check to see if fraction is normalized
-            _until ne           ; - - until normalized
-            or    EAX,EDX       ; - - copy fraction back to EAX
-            sub   EDX,ECX       ; - - adjust the exponent
-            pop   ECX           ; - - restore ECX
+        _guess                   ; guess: number is 0.0 or -0.0
+          mov   EDX,EAX          ; - get float
+          and   EAX,7fffffffh    ; - remove sign
+          _quif ne               ; - quit if number is not +0.0 or -0.0
+        _admit                   ; guess: number is +-infinity
+          cmp   EAX,7f800000h    ; - quit if not +-infinity
+          _quif ne               ; - ...
+          or    EDX,7ff00000h    ; - set double precision infinity
+          sub   EAX,EAX          ; - ...
+        _admit                   ; admit: not a special number
+          test  EAX,7f800000h    ; - if exponent is 0 (denormal number)
+          _if   e                ; - then
+            or    EDX,7F800000h  ; - - set exponent to 0xFF
+            _loop                ; - - loop (normalize the fraction)
+              sub  EDX,00800000h ; - - - subtract 1 from exponent adjustment
+              _shl EAX,1         ; - - - shift fraction left
+              test EAX,00800000h ; - - - check to see if fraction is normalized
+            _until ne            ; - - until normalized
+            and   EDX,0FF800000h ; - - copy fraction back to EDX
+            and   EAX,007FFFFFh  ; - - ...
+            or    EDX,EAX        ; - - ...
+            sar   EDX,3          ; - shift over 3
+            and   EDX,8FFFFFFFh  ; - reset exponent extended bits
+            add   EDX,28200000h  ; - adjust exponent by (3FF - FF -7F + 1) shl 20   
+          _else                  ; - else 
+            sar   EDX,3          ; - shift over 3
+            and   EDX,8FFFFFFFh  ; - reset exponent extended bits
+            cmp   EAX,7F800000h  ; - if number is not number (NaN)
+            _if   a              ;
+              or    EDX,7FF00000h; - adjust exponent to NaN 7FF shl 20
+            _else
+              add   EDX,38000000h; - adjust exponent by (3FF-7F) shl 20
+            _endif
           _endif                ; - endif
-          sar   EDX,2           ; - shift over 2
-          _shl  EAX,1           ; - get sign
-          rcr   EDX,1           ; - shift into result
-          and   EAX,0eh         ; - get bottom 3 bits of fraction
-          ror   EAX,4           ; - shift them to the top
-          add   EDX,(1023-127) shl 20   ; - adjust exponent
+          and   EAX,7           ; - get bottom 3 bits of fraction
+          ror   EAX,3           ; - shift them to the top
         _endguess               ; endguess
         ret                     ; return
         endproc __FSFD

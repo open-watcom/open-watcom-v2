@@ -24,29 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF utility routines.
 *
 ****************************************************************************/
 
 
+//#define IMP_MODULENAME_DLL
+
 /*
  * Structs
  */
-#pragma pack (1)
-typedef struct {
-    unsigned_8  type;
-    unsigned_16 len;
-    unsigned_8  contents[1];
-} OmfBasic;
+
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_8  type;
-    unsigned_16 page_size;  //really page size - 3
-    unsigned_32 dict_offset;
-    unsigned_16 dict_size;
-    unsigned_8  flags;
-} OmfLibHeader;
+    unsigned_16 len;
+    unsigned_8  contents[ 1 ];
+} OmfBasic;
 
 typedef struct {
     unsigned_8  type;
@@ -59,25 +54,33 @@ typedef struct {
 } OmfTimeStamp;
 
 typedef union {
-        OmfBasic        basic;
-        OmfTimeStamp    time;
-        OmfLibHeader    lib_header;
-        unsigned_8      chkcalc[1];
-}OmfRecord;
+    OmfBasic        basic;
+    OmfTimeStamp    time;
+    unsigned_8      chkcalc[ 1 ];
+} OmfRecord;
+
+typedef struct {
+    unsigned_8  type;
+    unsigned_16 page_size;  //really page size - 3
+    unsigned_32 dict_offset;
+    unsigned_16 dict_size;
+    unsigned_8  flags;
+} OmfLibHeader;
+
 #define INIT_OMF_REC_SIZE 1024
 #define NUM_BUCKETS 37
 #define BLOCK_NAME_LEN ( DIC_REC_SIZE - NUM_BUCKETS - 1 )
+
 typedef struct{
-    unsigned_8  htab[NUM_BUCKETS];
+    unsigned_8  htab[ NUM_BUCKETS ];
     unsigned_8  fflag;
     unsigned_8  name[ BLOCK_NAME_LEN ];
 } OmfLibBlock;
-#pragma pack
 
-void InitOmfUtil();
-void PadOmf( bool force );
-void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size );
-unsigned WriteOmfDict( sym_file *first );
-void WriteOmfFile( sym_file *file );
-void WriteOmfLibTrailer();
-void FiniOmfUtil();
+#include "poppck.h"
+
+extern void         InitOmfUtil( void );
+extern void         PadOmf( bool force );
+extern unsigned     WriteOmfDict( sym_file *first_sfile );
+extern void         WriteOmfFile( sym_file *sfile );
+extern void         FiniOmfUtil( void );

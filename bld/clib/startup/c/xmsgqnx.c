@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for QNX.
 *
 ****************************************************************************/
 
@@ -43,8 +42,10 @@ _WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
     for( ;; ) {
         c = *msg++;
         if( c == '\0' ) break;
-        write( 2, &c, 1 );
+        write( STDERR_FILENO, &c, 1 );
     }
+    c = '\n';
+    write( STDERR_FILENO, &c, 1 );
     __qnx_exit( retcode );
 }
 

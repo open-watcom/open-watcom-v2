@@ -24,33 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of remote access routines.
 *
 ****************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include <ctype.h>
-#include <dos.h>
 #include "stdnt.h"
 #include "trperr.h"
 #include "madregs.h"
+#include "x86cpu.h"
 
 BOOL IsBigSel( WORD sel )
 {
-#if defined(MD_axp) | defined(MD_ppc)
+#if defined( MD_axp ) | defined( MD_ppc )
     return( TRUE );
-#elif defined(MD_x86)
+#elif defined( MD_x86 )
     thread_info *ti;
     LDT_ENTRY   ldt;
 
-    if( sel == FlatCS || sel == FlatDS ) return( TRUE );
+    if( sel == FlatCS || sel == FlatDS ) {
+        return( TRUE );
+    }
     ti = FindThread( DebugeeTid );
-    if( ti == NULL ) return( TRUE );
+    if( ti == NULL ) {
+        return( TRUE );
+    }
     GetThreadSelectorEntry( ti->thread_handle, sel, &ldt );
     return( ldt.HighWord.Bits.Default_Big );
 #else
@@ -60,9 +61,9 @@ BOOL IsBigSel( WORD sel )
 
 unsigned ReqAddr_info( void )
 {
-    WORD        seg;
-    addr_info_req       *acc;
-    addr_info_ret       *ret;
+    WORD            seg;
+    addr_info_req   *acc;
+    addr_info_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -71,14 +72,14 @@ unsigned ReqAddr_info( void )
     return( sizeof( *ret ) );
 }
 
-#if defined(MD_axp)
+#if defined( MD_axp )
 typedef struct {
-    unsigned_32         beg_addr;
-    unsigned_32         end_addr;
-    unsigned_32         except_handler;
-    unsigned_32         handler_data;
-    unsigned_32         pro_end_addr;
-} nt_pdata;
+    unsigned_32 beg_addr;
+    unsigned_32 end_addr;
+    unsigned_32 except_handler;
+    unsigned_32 handler_data;
+    unsigned_32 pro_end_addr;
+}               nt_pdata;
 
 bool FindPData( addr_off off, axp_pdata *pdata )
 {
@@ -87,24 +88,31 @@ bool FindPData( addr_off off, axp_pdata *pdata )
     addr_off    size;
     DWORD       bytes;
 
-    if( !FindExceptInfo( off, &tbl, &size ) ) return( FALSE );
+    if( !FindExceptInfo( off, &tbl, &size ) ) {
+        return( FALSE );
+    }
     for( ;; ) {
-        if( size == 0 ) return( FALSE );
-        ReadProcessMemory( ProcessInfo.process_handle, tbl, (LPVOID)&pd,
+        if( size == 0 ) {
+            return( FALSE );
+        }
+        ReadProcessMemory( ProcessInfo.process_handle, tbl, ( LPVOID )&pd,
                     sizeof( pd ), &bytes );
-        if( bytes != sizeof( pd ) ) return( FALSE );
+        if( bytes != sizeof( pd ) ) {
+            return( FALSE );
+        }
         if( off >= pd.beg_addr && off < pd.end_addr ) {
             /*
-                This is an optimization - if the prologue end addr is not
-                in the exception start/end range, this is not the entry
-                for the start of the procedure and the MAD isn't interested.
-                Keep looking for real one.
-            */
-            if( pd.pro_end_addr >= pd.beg_addr && pd.pro_end_addr < pd.end_addr ) {
+             *  This is an optimization - if the prologue end addr is not
+             *  in the exception start/end range, this is not the entry
+             *  for the start of the procedure and the MAD isn't interested.
+             *  Keep looking for real one.
+             */
+            if( pd.pro_end_addr >= pd.beg_addr &&
+                    pd.pro_end_addr < pd.end_addr ) {
                 break;
             }
         }
-        tbl = (LPVOID)((DWORD)tbl + sizeof( pd ));
+        tbl = ( LPVOID ) ( ( DWORD ) tbl + sizeof( pd ) );
         size -= sizeof( pd );
     }
     pdata->beg_addr.u._32[0] = pd.beg_addr;
@@ -121,22 +129,24 @@ unsigned ReqMachine_data()
     machine_data_req    *acc;
     machine_data_ret    *ret;
     union {
-        unsigned_8              u8;
-#if defined(MD_axp)
-        axp_pdata               pd;
+        unsigned_8      u8;
+#if defined( MD_axp )
+        axp_pdata       pd;
 #endif
     }                   *data;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
-#if defined(MD_x86)
+#if defined( MD_x86 )
     ret->cache_start = 0;
-    ret->cache_end = ~(addr_off)0;
+    ret->cache_end = ~( addr_off ) 0;
     data->u8 = 0;
-    if( IsBigSel( acc->addr.segment ) ) data->u8 |= X86AC_BIG;
+    if( IsBigSel( acc->addr.segment ) ) {
+        data->u8 |= X86AC_BIG;
+    }
     return( sizeof( *ret ) + sizeof( data->u8 ) );
-#elif defined(MD_axp)
+#elif defined( MD_axp )
     memset( &data->pd, 0, sizeof( data->pd ) );
     if( FindPData( acc->addr.offset, &data->pd ) ) {
         ret->cache_start = data->pd.beg_addr.u._32[0];
@@ -146,16 +156,12 @@ unsigned ReqMachine_data()
         ret->cache_end = 0;
     }
     return( sizeof( *ret ) + sizeof( data->pd ) );
-#elif defined(MD_ppc)
+#elif defined( MD_ppc )
     return( sizeof( *ret ) );
 #else
     #error ReqMachine_data not configured
 #endif
 }
-
-#if defined(MD_x86)
-    extern unsigned     X86CPUType();
-#endif
 
 unsigned ReqGet_sys_config( void )
 {
@@ -170,25 +176,14 @@ unsigned ReqGet_sys_config( void )
     ret->sys.huge_shift = 3;
 
     GetSystemInfo( &info );
-#if defined(MD_x86)
+#if defined( MD_x86 )
     ret->sys.cpu = X86CPUType();
-    switch( ret->sys.cpu ) {
-    case X86_486:
-        ret->sys.fpu = X86_487;
-        break;
-    case X86_586:
-        ret->sys.fpu = X86_587;
-        break;
-    case X86_686:
-        ret->sys.fpu = X86_687;
-        break;
-    default:
-        ret->sys.fpu = X86_387;
-        break;
+    ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
+    if( IsWOW ) {
+        ret->sys.os = OS_WINDOWS;
     }
-    if( IsWOW ) ret->sys.os = OS_WINDOWS;
     ret->sys.mad = MAD_X86;
-#elif defined(MD_axp)
+#elif defined( MD_axp )
     switch( info.dwProcessorType ) {
     case PROCESSOR_ALPHA_21064:
         ret->sys.cpu = AXP_21064;
@@ -202,7 +197,7 @@ unsigned ReqGet_sys_config( void )
     }
     ret->sys.fpu = 0;
     ret->sys.mad = MAD_AXP;
-#elif defined(MD_ppc)
+#elif defined( MD_ppc )
     switch( info.dwProcessorType ) {
     case PROCESSOR_PPC_601:
         ret->sys.cpu = PPC_601;
@@ -230,9 +225,9 @@ unsigned ReqGet_sys_config( void )
 
 unsigned ReqGet_message_text( void )
 {
-    get_message_text_ret        *ret;
-    char        *err_txt;
-    msg_list    *next;
+    get_message_text_ret    *ret;
+    char                    *err_txt;
+    msg_list                *next;
 
     ret = GetOutPtr( 0 );
     ret->flags = MSG_NEWLINE | MSG_ERROR;
@@ -242,7 +237,9 @@ unsigned ReqGet_message_text( void )
         next = DebugString->next;
         LocalFree( DebugString );
         DebugString = next;
-        if( next != NULL ) ret->flags |= MSG_MORE;
+        if( next != NULL ) {
+            ret->flags |= MSG_MORE;
+        }
     } else {
         switch( LastExceptionCode ) {
         case -1:
@@ -331,7 +328,8 @@ unsigned ReqGet_message_text( void )
             break;
         default:
             strcpy( err_txt, TRP_EXC_unknown );
-            wsprintf( err_txt, "%s (0x%8.8lx)", TRP_EXC_unknown, LastExceptionCode );
+            wsprintf( err_txt, "%s (0x%8.8lx)", TRP_EXC_unknown,
+                LastExceptionCode );
         }
         LastExceptionCode = -1;
     }
@@ -350,16 +348,21 @@ unsigned ReqGet_next_alias( void )
 
 static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
 {
-    va_list     args;
-    DWORD       len;
-    LPSTR       q;
+    va_list args;
+    DWORD   len;
+    LPSTR   q;
+    DWORD   options;
 
     va_start( args, err );
-    len = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL, err, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-        (LPSTR) p, 0, &args );
-    while( ( q = strchr( *p, '\r' ) ) != NULL ) *q = ' ';
-    while( ( q = strchr( *p, '\n' ) ) != NULL ) *q = ' ';
+    options = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
+    len = FormatMessage( options, NULL, err,
+        MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), ( LPSTR )p, 0, &args );
+    while( ( q = strchr( *p, '\r' ) ) != NULL ) {
+        *q = ' ';
+    }
+    while( ( q = strchr( *p, '\n' ) ) != NULL ) {
+        *q = ' ';
+    }
     va_end( args );
     return( len );
 }
@@ -367,15 +370,18 @@ static DWORD DoFmtMsg( LPTSTR *p, DWORD err, ... )
 void AddMessagePrefix( char *buff, int len )
 /******************************************/
 {
-    if( len == 0 ) len = strlen( buff ) + 1;
-    if( MsgPrefix != NULL ) LocalFree( MsgPrefix );
+    if( len == 0 ) {
+        len = strlen( buff ) + 1;
+    }
+    if( MsgPrefix != NULL ) {
+        LocalFree( MsgPrefix );
+    }
     MsgPrefix = LocalAlloc( LMEM_FIXED, len );
     strcpy( MsgPrefix, buff );
 }
 
 unsigned ReqGet_err_text( void )
 {
-
     get_err_text_req    *acc;
     char                *err_txt;
     LPTSTR              lpMessageBuffer;
@@ -386,7 +392,7 @@ unsigned ReqGet_err_text( void )
     err_txt = GetOutPtr( 0 );
 
     if( acc->err >= 0x30000000L || acc->err < 0x20000000L ) {
-        len = DoFmtMsg( &lpMessageBuffer, acc->err, "%1","%2","%3","%4" );
+        len = DoFmtMsg( &lpMessageBuffer, acc->err, "%1", "%2", "%3", "%4" );
         if( len > 0 ) {
             if( MsgPrefix != NULL ) {
                 strcpy( err_txt, MsgPrefix );
@@ -409,19 +415,21 @@ unsigned ReqGet_err_text( void )
 
 static int tryPath( char *name, char *end, char *ext_list )
 {
-    char        *p;
-    BOOL        done;
-    HANDLE      h;
+    char    *p;
+    BOOL    done;
+    HANDLE  h;
 
     done = FALSE;
     do {
-        if( *ext_list == 0 ) done = 1;
-        for( p = end; *p = *ext_list; ++p, ++ext_list )
-            {}
+        if( *ext_list == 0 ) {
+            done = 1;
+        }
+        for( p = end; (*p = *ext_list) != 0; ++p,++ext_list ) {
+        }
 
-        h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ,  NULL,
+        h = CreateFile( name, GENERIC_READ, FILE_SHARE_READ, NULL,
                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-        if( h != (HANDLE)-1 ) {
+        if( h != ( HANDLE ) - 1 ) {
             CloseHandle( h );
             return( 0 );
         }
@@ -432,14 +440,16 @@ static int tryPath( char *name, char *end, char *ext_list )
 
 int FindFilePath( char *pgm, char *buffer, char *ext_list )
 {
-    char        *p,*p2,*p3;
-    BOOL        have_ext,have_path;
-    char        envbuf[512];
-
+    char    *p;
+    char    *p2;
+    char    *p3;
+    BOOL    have_ext;
+    BOOL    have_path;
+    char    envbuf[512];
 
     have_ext = FALSE;
     have_path = FALSE;
-    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
+    for( p = pgm, p2 = buffer; (*p2 = *p) != 0; ++p, ++p2 ) {
         switch( *p ) {
         case '\\':
         case '/':
@@ -452,25 +462,39 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
             break;
         }
     }
-    if( have_ext ) ext_list = "";
-    if( !tryPath( buffer, p2, ext_list ) ) return( 0 );
-    if( have_path ) return( TRUE );
+    if( have_ext ) {
+        ext_list = "";
+    }
+    if( !tryPath( buffer, p2, ext_list ) ) {
+        return( 0 );
+    }
+    if( have_path ) {
+        return( TRUE );
+    }
     GetEnvironmentVariable( "PATH", envbuf, sizeof( envbuf ) );
     p = envbuf;
-    for(;;) {
-        if( *p == '\0' ) break;
+    for( ;; ) {
+        if( *p == '\0' ) {
+            break;
+        }
         p2 = buffer;
         while( *p ) {
-            if( *p == ';' ) break;
+            if( *p == ';' ) {
+                break;
+            }
             *p2++ = *p++;
         }
-        if( p2[-1] != '\\' && p2[-1] != '/' ) {
+        if( p2[ -1] != '\\' && p2[ -1] != '/' ) {
             *p2++ = '\\';
         }
-        for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
-            {}
-        if( !tryPath( buffer, p2, ext_list ) ) return( 0 );
-        if( *p == '\0' ) break;
+        for( p3 = pgm; (*p2 = *p3) != 0; ++p2, ++p3 ) {
+        }
+        if( !tryPath( buffer, p2, ext_list ) ) {
+            return( 0 );
+        }
+        if( *p == '\0' ) {
+            break;
+        }
         ++p;
     }
     return( -1 );
@@ -478,17 +502,19 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list )
 
 unsigned ReqSplit_cmd( void )
 {
-    char                *cmd;
-    char                *start;
-    split_cmd_ret       *ret;
-    unsigned            len;
+    char            *cmd;
+    char            *start;
+    split_cmd_ret   *ret;
+    unsigned        len;
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
-    ret = GetOutPtr( 0 );
-    start = cmd;
     len = GetTotalSize() - sizeof( split_cmd_req );
+    start = cmd;
+    ret = GetOutPtr( 0 );
+    ret->parm_start = 0;
     for( ;; ) {
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         switch( *cmd ) {
         case '/':
         case '=':
@@ -499,39 +525,45 @@ unsigned ReqSplit_cmd( void )
         case '\0':
         case ' ':
         case '\t':
-            ret->parm_start = cmd - start + 1;
-            ret->cmd_end = cmd - start;
-            return( sizeof( *ret ) );
+            ret->parm_start = 1;
+            goto done;
+        case '\"':
+            while( --len && (*++cmd != '\"') )
+                ;
+            if( len == 0 ) {
+                ret->parm_start = 1;
+                goto done;
+            }
         }
         ++cmd;
         --len;
     }
 done:
-    ret->parm_start = cmd - start;
+    ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io()
+unsigned ReqRead_io( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io()
+unsigned ReqWrite_io( void )
 {
-    write_io_ret        *ret;
+    write_io_ret    *ret;
 
-    ret = GetOutPtr(0);
+    ret = GetOutPtr( 0 );
     ret->len = 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen()
+unsigned ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+unsigned ReqSet_debug_screen( void )
 {
     ProcessQueuedRepaints();
     return( 0 );
@@ -539,12 +571,11 @@ unsigned ReqSet_debug_screen()
 
 void say( char *fmt, ... )
 {
-    va_list     args;
-    char        buff[512];
+    va_list args;
+    char    buff[512];
 
     va_start( args, fmt );
     vsprintf( buff, fmt, args );
     va_end( args );
-    MessageBox( NULL, buff, TRP_The_WATCOM_Debugger, MB_SYSTEMMODAL+MB_OK );
+    MessageBox( NULL, buff, TRP_The_WATCOM_Debugger, MB_SYSTEMMODAL + MB_OK );
 }
-

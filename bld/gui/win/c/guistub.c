@@ -95,13 +95,13 @@ void GUIGetDialogColours( gui_colour_set *colours )
     colours = colours;
 }
 
-void GUISetCharacter( gui_draw_char draw_char, char new )
+void GUISetCharacter( gui_draw_char draw_char, int new )
 {
     draw_char = draw_char;
     new = new;
 }
 
-char GUIGetCharacter( gui_draw_char draw_char )
+int GUIGetCharacter( gui_draw_char draw_char )
 {
     draw_char = draw_char;
     return( ' ');

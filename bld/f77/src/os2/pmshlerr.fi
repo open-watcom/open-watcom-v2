@@ -1,0 +1,366 @@
+c$noreference
+
+        integer  PMERR_INVALID_PIB
+        parameter (PMERR_INVALID_PIB = '00001101'x)
+        integer  PMERR_INSUFF_SPACE_TO_ADD
+        parameter (PMERR_INSUFF_SPACE_TO_ADD = '00001102'x)
+        integer  PMERR_INVALID_GROUP_HANDLE
+        parameter (PMERR_INVALID_GROUP_HANDLE = '00001103'x)
+        integer  PMERR_DUPLICATE_TITLE
+        parameter (PMERR_DUPLICATE_TITLE = '00001104'x)
+        integer  PMERR_INVALID_TITLE
+        parameter (PMERR_INVALID_TITLE = '00001105'x)
+        integer  PMERR_HANDLE_NOT_IN_GROUP
+        parameter (PMERR_HANDLE_NOT_IN_GROUP = '00001107'x)
+        integer  PMERR_INVALID_TARGET_HANDLE
+        parameter (PMERR_INVALID_TARGET_HANDLE = '00001106'x)
+        integer  PMERR_INVALID_PATH_STATEMENT
+        parameter (PMERR_INVALID_PATH_STATEMENT = '00001108'x)
+        integer  PMERR_NO_PROGRAM_FOUND
+        parameter (PMERR_NO_PROGRAM_FOUND = '00001109'x)
+        integer  PMERR_INVALID_BUFFER_SIZE
+        parameter (PMERR_INVALID_BUFFER_SIZE = '0000110A'x)
+        integer  PMERR_BUFFER_TOO_SMALL
+        parameter (PMERR_BUFFER_TOO_SMALL = '0000110B'x)
+        integer  PMERR_PL_INITIALISATION_FAIL
+        parameter (PMERR_PL_INITIALISATION_FAIL = '0000110C'x)
+        integer  PMERR_CANT_DESTROY_SYS_GROUP
+        parameter (PMERR_CANT_DESTROY_SYS_GROUP = '0000110D'x)
+        integer  PMERR_INVALID_TYPE_CHANGE
+        parameter (PMERR_INVALID_TYPE_CHANGE = '0000110E'x)
+        integer  PMERR_INVALID_PROGRAM_HANDLE
+        parameter (PMERR_INVALID_PROGRAM_HANDLE = '0000110F'x)
+
+        integer  PMERR_NOT_CURRENT_PL_VERSION
+        parameter (PMERR_NOT_CURRENT_PL_VERSION = '00001110'x)
+        integer  PMERR_INVALID_CIRCULAR_REF
+        parameter (PMERR_INVALID_CIRCULAR_REF = '00001111'x)
+        integer  PMERR_MEMORY_ALLOCATION_ERR
+        parameter (PMERR_MEMORY_ALLOCATION_ERR = '00001112'x)
+        integer  PMERR_MEMORY_DEALLOCATION_ERR
+        parameter (PMERR_MEMORY_DEALLOCATION_ERR = '00001113'x)
+        integer  PMERR_TASK_HEADER_TOO_BIG
+        parameter (PMERR_TASK_HEADER_TOO_BIG = '00001114'x)
+
+        integer  PMERR_INVALID_INI_FILE_HANDLE
+        parameter (PMERR_INVALID_INI_FILE_HANDLE = '00001115'x)
+        integer  PMERR_MEMORY_SHARE
+        parameter (PMERR_MEMORY_SHARE = '00001116'x)
+        integer  PMERR_OPEN_QUEUE
+        parameter (PMERR_OPEN_QUEUE = '00001117'x)
+        integer  PMERR_CREATE_QUEUE
+        parameter (PMERR_CREATE_QUEUE = '00001118'x)
+        integer  PMERR_WRITE_QUEUE
+        parameter (PMERR_WRITE_QUEUE = '00001119'x)
+        integer  PMERR_READ_QUEUE
+        parameter (PMERR_READ_QUEUE = '0000111A'x)
+        integer  PMERR_CALL_NOT_EXECUTED
+        parameter (PMERR_CALL_NOT_EXECUTED = '0000111B'x)
+        integer  PMERR_UNKNOWN_APIPKT
+        parameter (PMERR_UNKNOWN_APIPKT = '0000111C'x)
+        integer  PMERR_INITHREAD_EXISTS
+        parameter (PMERR_INITHREAD_EXISTS = '0000111D'x)
+        integer  PMERR_CREATE_THREAD
+        parameter (PMERR_CREATE_THREAD = '0000111E'x)
+        integer  PMERR_NO_HK_PROFILE_INSTALLED
+        parameter (PMERR_NO_HK_PROFILE_INSTALLED = '0000111F'x)
+        integer  PMERR_INVALID_DIRECTORY
+        parameter (PMERR_INVALID_DIRECTORY = '00001120'x)
+        integer  PMERR_WILDCARD_IN_FILENAME
+        parameter (PMERR_WILDCARD_IN_FILENAME = '00001121'x)
+        integer  PMERR_FILENAME_BUFFER_FULL
+        parameter (PMERR_FILENAME_BUFFER_FULL = '00001122'x)
+        integer  PMERR_FILENAME_TOO_LONG
+        parameter (PMERR_FILENAME_TOO_LONG = '00001123'x)
+        integer  PMERR_INI_FILE_IS_SYS_OR_USER
+        parameter (PMERR_INI_FILE_IS_SYS_OR_USER = '00001124'x)
+        integer  PMERR_BROADCAST_PLMSG
+        parameter (PMERR_BROADCAST_PLMSG = '00001125'x)
+        integer  PMERR_190_INIT_DONE
+        parameter (PMERR_190_INIT_DONE = '00001126'x)
+        integer  PMERR_HMOD_FOR_PMSHAPI
+        parameter (PMERR_HMOD_FOR_PMSHAPI = '00001127'x)
+        integer  PMERR_SET_HK_PROFILE
+        parameter (PMERR_SET_HK_PROFILE = '00001128'x)
+        integer  PMERR_API_NOT_ALLOWED
+        parameter (PMERR_API_NOT_ALLOWED = '00001129'x)
+        integer  PMERR_INI_STILL_OPEN
+        parameter (PMERR_INI_STILL_OPEN = '0000112A'x)
+
+        integer  PMERR_PROGDETAILS_NOT_IN_INI
+        parameter (PMERR_PROGDETAILS_NOT_IN_INI = '0000112B'x)
+        integer  PMERR_PIBSTRUCT_NOT_IN_INI
+        parameter (PMERR_PIBSTRUCT_NOT_IN_INI = '0000112C'x)
+        integer  PMERR_INVALID_DISKPROGDETAILS
+        parameter (PMERR_INVALID_DISKPROGDETAILS = '0000112D'x)
+        integer  PMERR_PROGDETAILS_READ_FAILURE
+        parameter (PMERR_PROGDETAILS_READ_FAILURE = '0000112E'x)
+        integer  PMERR_PROGDETAILS_WRITE_FAILURE
+        parameter (PMERR_PROGDETAILS_WRITE_FAILURE = '0000112F'x)
+        integer  PMERR_PROGDETAILS_QSIZE_FAILURE
+        parameter (PMERR_PROGDETAILS_QSIZE_FAILURE = '00001130'x)
+        integer  PMERR_INVALID_PROGDETAILS
+        parameter (PMERR_INVALID_PROGDETAILS = '00001131'x)
+        integer  PMERR_SHEPROFILEHOOK_NOT_FOUND
+        parameter (PMERR_SHEPROFILEHOOK_NOT_FOUND = '00001132'x)
+        integer  PMERR_190PLCONVERTED
+        parameter (PMERR_190PLCONVERTED = '00001133'x)
+        integer  PMERR_FAILED_TO_CONVERT_INI_PL
+        parameter (PMERR_FAILED_TO_CONVERT_INI_PL = '00001134'x)
+        integer  PMERR_PMSHAPI_NOT_INITIALISED
+        parameter (PMERR_PMSHAPI_NOT_INITIALISED = '00001135'x)
+        integer  PMERR_INVALID_SHELL_API_HOOK_ID
+        parameter (PMERR_INVALID_SHELL_API_HOOK_ID = '00001136'x)
+
+        integer  PMERR_DOS_ERROR
+        parameter (PMERR_DOS_ERROR = '00001200'x)
+
+        integer  PMERR_NO_SPACE
+        parameter (PMERR_NO_SPACE = '00001201'x)
+        integer  PMERR_INVALID_SWITCH_HANDLE
+        parameter (PMERR_INVALID_SWITCH_HANDLE = '00001202'x)
+        integer  PMERR_NO_HANDLE
+        parameter (PMERR_NO_HANDLE = '00001203'x)
+        integer  PMERR_INVALID_PROCESS_ID
+        parameter (PMERR_INVALID_PROCESS_ID = '00001204'x)
+        integer  PMERR_NOT_SHELL
+        parameter (PMERR_NOT_SHELL = '00001205'x)
+        integer  PMERR_INVALID_WINDOW
+        parameter (PMERR_INVALID_WINDOW = '00001206'x)
+        integer  PMERR_INVALID_POST_MSG
+        parameter (PMERR_INVALID_POST_MSG = '00001207'x)
+        integer  PMERR_INVALID_PARAMETERS
+        parameter (PMERR_INVALID_PARAMETERS = '00001208'x)
+        integer  PMERR_INVALID_PROGRAM_TYPE
+        parameter (PMERR_INVALID_PROGRAM_TYPE = '00001209'x)
+        integer  PMERR_NOT_EXTENDED_FOCUS
+        parameter (PMERR_NOT_EXTENDED_FOCUS = '0000120A'x)
+        integer  PMERR_INVALID_SESSION_ID
+        parameter (PMERR_INVALID_SESSION_ID = '0000120B'x)
+        integer  PMERR_SMG_INVALID_ICON_FILE
+        parameter (PMERR_SMG_INVALID_ICON_FILE = '0000120C'x)
+        integer  PMERR_SMG_ICON_NOT_CREATED
+        parameter (PMERR_SMG_ICON_NOT_CREATED = '0000120D'x)
+        integer  PMERR_SHL_DEBUG
+        parameter (PMERR_SHL_DEBUG = '0000120E'x)
+
+        integer  PMERR_OPENING_INI_FILE
+        parameter (PMERR_OPENING_INI_FILE = '00001301'x)
+        integer  PMERR_INI_FILE_CORRUPT
+        parameter (PMERR_INI_FILE_CORRUPT = '00001302'x)
+        integer  PMERR_INVALID_PARM
+        parameter (PMERR_INVALID_PARM = '00001303'x)
+        integer  PMERR_NOT_IN_IDX
+        parameter (PMERR_NOT_IN_IDX = '00001304'x)
+        integer  PMERR_NO_ENTRIES_IN_GROUP
+        parameter (PMERR_NO_ENTRIES_IN_GROUP = '00001305'x)
+
+        integer  PMERR_INI_WRITE_FAIL
+        parameter (PMERR_INI_WRITE_FAIL = '00001306'x)
+        integer  PMERR_IDX_FULL
+        parameter (PMERR_IDX_FULL = '00001307'x)
+        integer  PMERR_INI_PROTECTED
+        parameter (PMERR_INI_PROTECTED = '00001308'x)
+        integer  PMERR_MEMORY_ALLOC
+        parameter (PMERR_MEMORY_ALLOC = '00001309'x)
+        integer  PMERR_INI_INIT_ALREADY_DONE
+        parameter (PMERR_INI_INIT_ALREADY_DONE = '0000130A'x)
+        integer  PMERR_INVALID_INTEGER
+        parameter (PMERR_INVALID_INTEGER = '0000130B'x)
+        integer  PMERR_INVALID_ASCIIZ
+        parameter (PMERR_INVALID_ASCIIZ = '0000130C'x)
+        integer  PMERR_CAN_NOT_CALL_SPOOLER
+        parameter (PMERR_CAN_NOT_CALL_SPOOLER = '0000130D'x)
+        integer  PMERR_VALIDATION_REJECTED
+        parameter (PMERR_VALIDATION_REJECTED =
+     +                 PMERR_CAN_NOT_CALL_SPOOLER)
+
+        integer  PMERR_WARNING_WINDOW_NOT_KILLED
+        parameter (PMERR_WARNING_WINDOW_NOT_KILLED = '00001401'x)
+        integer  PMERR_ERROR_INVALID_WINDOW
+        parameter (PMERR_ERROR_INVALID_WINDOW = '00001402'x)
+        integer  PMERR_ALREADY_INITIALIZED
+        parameter (PMERR_ALREADY_INITIALIZED = '00001403'x)
+        integer  PMERR_MSG_PROG_NO_MOU
+        parameter (PMERR_MSG_PROG_NO_MOU = '00001405'x)
+        integer  PMERR_MSG_PROG_NON_RECOV
+        parameter (PMERR_MSG_PROG_NON_RECOV = '00001406'x)
+        integer  PMERR_WINCONV_INVALID_PATH
+        parameter (PMERR_WINCONV_INVALID_PATH = '00001407'x)
+        integer  PMERR_PI_NOT_INITIALISED
+        parameter (PMERR_PI_NOT_INITIALISED = '00001408'x)
+        integer  PMERR_PL_NOT_INITIALISED
+        parameter (PMERR_PL_NOT_INITIALISED = '00001409'x)
+        integer  PMERR_NO_TASK_MANAGER
+        parameter (PMERR_NO_TASK_MANAGER = '0000140A'x)
+        integer  PMERR_SAVE_NOT_IN_PROGRESS
+        parameter (PMERR_SAVE_NOT_IN_PROGRESS = '0000140B'x)
+        integer  PMERR_NO_STACK_SPACE
+        parameter (PMERR_NO_STACK_SPACE = '0000140C'x)
+        integer  PMERR_INVALID_COLR_FIELD
+        parameter (PMERR_INVALID_COLR_FIELD = '0000140d'x)
+        integer  PMERR_INVALID_COLR_VALUE
+        parameter (PMERR_INVALID_COLR_VALUE = '0000140e'x)
+        integer  PMERR_COLR_WRITE
+        parameter (PMERR_COLR_WRITE = '0000140f'x)
+
+        integer  PMERR_TARGET_FILE_EXISTS
+        parameter (PMERR_TARGET_FILE_EXISTS = '00001501'x)
+        integer  PMERR_SOURCE_SAME_AS_TARGET
+        parameter (PMERR_SOURCE_SAME_AS_TARGET = '00001502'x)
+        integer  PMERR_SOURCE_FILE_NOT_FOUND
+        parameter (PMERR_SOURCE_FILE_NOT_FOUND = '00001503'x)
+        integer  PMERR_INVALID_NEW_PATH
+        parameter (PMERR_INVALID_NEW_PATH = '00001504'x)
+        integer  PMERR_TARGET_FILE_NOT_FOUND
+        parameter (PMERR_TARGET_FILE_NOT_FOUND = '00001505'x)
+        integer  PMERR_INVALID_DRIVE_NUMBER
+        parameter (PMERR_INVALID_DRIVE_NUMBER = '00001506'x)
+        integer  PMERR_NAME_TOO_LONG
+        parameter (PMERR_NAME_TOO_LONG = '00001507'x)
+        integer  PMERR_NOT_ENOUGH_ROOM_ON_DISK
+        parameter (PMERR_NOT_ENOUGH_ROOM_ON_DISK = '00001508'x)
+        integer  PMERR_NOT_ENOUGH_MEM
+        parameter (PMERR_NOT_ENOUGH_MEM = '00001509'x)
+
+        integer  PMERR_LOG_DRV_DOES_NOT_EXIST
+        parameter (PMERR_LOG_DRV_DOES_NOT_EXIST = '0000150B'x)
+        integer  PMERR_INVALID_DRIVE
+        parameter (PMERR_INVALID_DRIVE = '0000150C'x)
+        integer  PMERR_ACCESS_DENIED
+        parameter (PMERR_ACCESS_DENIED = '0000150D'x)
+        integer  PMERR_NO_FIRST_SLASH
+        parameter (PMERR_NO_FIRST_SLASH = '0000150E'x)
+        integer  PMERR_READ_ONLY_FILE
+        parameter (PMERR_READ_ONLY_FILE = '0000150F'x)
+        integer  PMERR_GROUP_PROTECTED
+        parameter (PMERR_GROUP_PROTECTED = '0000151F'x)
+        integer  PMERR_INVALID_PROGRAM_CATEGORY
+        parameter (PMERR_INVALID_PROGRAM_CATEGORY = '0000152F'x)
+        integer  PMERR_INVALID_APPL
+        parameter (PMERR_INVALID_APPL = '00001530'x)
+        integer  PMERR_CANNOT_START
+        parameter (PMERR_CANNOT_START = '00001531'x)
+        integer  PMERR_STARTED_IN_BACKGROUND
+        parameter (PMERR_STARTED_IN_BACKGROUND = '00001532'x)
+        integer  PMERR_INVALID_HAPP
+        parameter (PMERR_INVALID_HAPP = '00001533'x)
+        integer  PMERR_CANNOT_STOP
+        parameter (PMERR_CANNOT_STOP = '00001534'x)
+
+        integer  PMERR_INTERNAL_ERROR_1
+        parameter (PMERR_INTERNAL_ERROR_1 = '00001601'x)
+        integer  PMERR_INTERNAL_ERROR_2
+        parameter (PMERR_INTERNAL_ERROR_2 = '00001602'x)
+        integer  PMERR_INTERNAL_ERROR_3
+        parameter (PMERR_INTERNAL_ERROR_3 = '00001603'x)
+        integer  PMERR_INTERNAL_ERROR_4
+        parameter (PMERR_INTERNAL_ERROR_4 = '00001604'x)
+        integer  PMERR_INTERNAL_ERROR_5
+        parameter (PMERR_INTERNAL_ERROR_5 = '00001605'x)
+        integer  PMERR_INTERNAL_ERROR_6
+        parameter (PMERR_INTERNAL_ERROR_6 = '00001606'x)
+        integer  PMERR_INTERNAL_ERROR_7
+        parameter (PMERR_INTERNAL_ERROR_7 = '00001607'x)
+        integer  PMERR_INTERNAL_ERROR_8
+        parameter (PMERR_INTERNAL_ERROR_8 = '00001608'x)
+        integer  PMERR_INTERNAL_ERROR_9
+        parameter (PMERR_INTERNAL_ERROR_9 = '00001609'x)
+        integer  PMERR_INTERNAL_ERROR_10
+        parameter (PMERR_INTERNAL_ERROR_10 = '0000160A'x)
+        integer  PMERR_INTERNAL_ERROR_11
+        parameter (PMERR_INTERNAL_ERROR_11 = '0000160B'x)
+        integer  PMERR_INTERNAL_ERROR_12
+        parameter (PMERR_INTERNAL_ERROR_12 = '0000160C'x)
+        integer  PMERR_INTERNAL_ERROR_13
+        parameter (PMERR_INTERNAL_ERROR_13 = '0000160D'x)
+        integer  PMERR_INTERNAL_ERROR_14
+        parameter (PMERR_INTERNAL_ERROR_14 = '0000160E'x)
+        integer  PMERR_INTERNAL_ERROR_15
+        parameter (PMERR_INTERNAL_ERROR_15 = '0000160F'x)
+        integer  PMERR_INTERNAL_ERROR_16
+        parameter (PMERR_INTERNAL_ERROR_16 = '00001610'x)
+        integer  PMERR_INTERNAL_ERROR_17
+        parameter (PMERR_INTERNAL_ERROR_17 = '00001611'x)
+        integer  PMERR_INTERNAL_ERROR_18
+        parameter (PMERR_INTERNAL_ERROR_18 = '00001612'x)
+        integer  PMERR_INTERNAL_ERROR_19
+        parameter (PMERR_INTERNAL_ERROR_19 = '00001613'x)
+        integer  PMERR_INTERNAL_ERROR_20
+        parameter (PMERR_INTERNAL_ERROR_20 = '00001614'x)
+        integer  PMERR_INTERNAL_ERROR_21
+        parameter (PMERR_INTERNAL_ERROR_21 = '00001615'x)
+        integer  PMERR_INTERNAL_ERROR_22
+        parameter (PMERR_INTERNAL_ERROR_22 = '00001616'x)
+        integer  PMERR_INTERNAL_ERROR_23
+        parameter (PMERR_INTERNAL_ERROR_23 = '00001617'x)
+        integer  PMERR_INTERNAL_ERROR_24
+        parameter (PMERR_INTERNAL_ERROR_24 = '00001618'x)
+        integer  PMERR_INTERNAL_ERROR_25
+        parameter (PMERR_INTERNAL_ERROR_25 = '00001619'x)
+        integer  PMERR_INTERNAL_ERROR_26
+        parameter (PMERR_INTERNAL_ERROR_26 = '0000161A'x)
+        integer  PMERR_INTERNAL_ERROR_27
+        parameter (PMERR_INTERNAL_ERROR_27 = '0000161B'x)
+        integer  PMERR_INTERNAL_ERROR_28
+        parameter (PMERR_INTERNAL_ERROR_28 = '0000161C'x)
+        integer  PMERR_INTERNAL_ERROR_29
+        parameter (PMERR_INTERNAL_ERROR_29 = '0000161D'x)
+
+        integer  PMERR_INVALID_FREE_MESSAGE_ID
+        parameter (PMERR_INVALID_FREE_MESSAGE_ID = '00001630'x)
+
+        integer  PMERR_FUNCTION_NOT_SUPPORTED
+        parameter (PMERR_FUNCTION_NOT_SUPPORTED = '00001641'x)
+        integer  PMERR_INVALID_ARRAY_COUNT
+        parameter (PMERR_INVALID_ARRAY_COUNT = '00001642'x)
+        integer  PMERR_INVALID_LENGTH
+        parameter (PMERR_INVALID_LENGTH = '00001643'x)
+        integer  PMERR_INVALID_BUNDLE_TYPE
+        parameter (PMERR_INVALID_BUNDLE_TYPE = '00001644'x)
+        integer  PMERR_INVALID_PARAMETER
+        parameter (PMERR_INVALID_PARAMETER = '00001645'x)
+        integer  PMERR_INVALID_NUMBER_OF_PARMS
+        parameter (PMERR_INVALID_NUMBER_OF_PARMS = '00001646'x)
+        integer  PMERR_GREATER_THAN_64K
+        parameter (PMERR_GREATER_THAN_64K = '00001647'x)
+        integer  PMERR_INVALID_PARAMETER_TYPE
+        parameter (PMERR_INVALID_PARAMETER_TYPE = '00001648'x)
+        integer  PMERR_NEGATIVE_STRCOND_DIM
+        parameter (PMERR_NEGATIVE_STRCOND_DIM = '00001649'x)
+        integer  PMERR_INVALID_NUMBER_OF_TYPES
+        parameter (PMERR_INVALID_NUMBER_OF_TYPES = '0000164A'x)
+        integer  PMERR_INCORRECT_HSTRUCT
+        parameter (PMERR_INCORRECT_HSTRUCT = '0000164B'x)
+        integer  PMERR_INVALID_ARRAY_SIZE
+        parameter (PMERR_INVALID_ARRAY_SIZE = '0000164C'x)
+        integer  PMERR_INVALID_CONTROL_DATATYPE
+        parameter (PMERR_INVALID_CONTROL_DATATYPE = '0000164D'x)
+        integer  PMERR_INCOMPLETE_CONTROL_SEQU
+        parameter (PMERR_INCOMPLETE_CONTROL_SEQU = '0000164E'x)
+        integer  PMERR_INVALID_DATATYPE
+        parameter (PMERR_INVALID_DATATYPE = '0000164F'x)
+        integer  PMERR_INCORRECT_DATATYPE
+        parameter (PMERR_INCORRECT_DATATYPE = '00001650'x)
+        integer  PMERR_NOT_SELF_DESCRIBING_DTYP
+        parameter (PMERR_NOT_SELF_DESCRIBING_DTYP = '00001651'x)
+        integer  PMERR_INVALID_CTRL_SEQ_INDEX
+        parameter (PMERR_INVALID_CTRL_SEQ_INDEX = '00001652'x)
+        integer  PMERR_INVALID_TYPE_FOR_LENGTH
+        parameter (PMERR_INVALID_TYPE_FOR_LENGTH = '00001653'x)
+        integer  PMERR_INVALID_TYPE_FOR_OFFSET
+        parameter (PMERR_INVALID_TYPE_FOR_OFFSET = '00001654'x)
+        integer  PMERR_INVALID_TYPE_FOR_MPARAM
+        parameter (PMERR_INVALID_TYPE_FOR_MPARAM = '00001655'x)
+        integer  PMERR_INVALID_MESSAGE_ID
+        parameter (PMERR_INVALID_MESSAGE_ID = '00001656'x)
+        integer  PMERR_C_LENGTH_TOO_SMALL
+        parameter (PMERR_C_LENGTH_TOO_SMALL = '00001657'x)
+        integer  PMERR_APPL_STRUCTURE_TOO_SMALL
+        parameter (PMERR_APPL_STRUCTURE_TOO_SMALL = '00001658'x)
+        integer  PMERR_INVALID_ERRORINFO_HANDLE
+        parameter (PMERR_INVALID_ERRORINFO_HANDLE = '00001659'x)
+        integer  PMERR_INVALID_CHARACTER_INDEX
+        parameter (PMERR_INVALID_CHARACTER_INDEX = '0000165A'x)
+
+c$reference

@@ -33,6 +33,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "drwatcom.h"
 #include "mem.h"
 #include "thrdctl.h"
@@ -127,7 +128,7 @@ BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RetCodeInfo         *info;
     WORD                cmd;
@@ -216,7 +217,7 @@ static void enableChoices( HWND hwnd, BOOL enable ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK ThreadPriorityProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ThreadPriorityProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadPriorityInfo  *info;
@@ -402,7 +403,7 @@ static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadCtlInfo       *info;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hypotenuse routine.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 
 
 _WMRTLINK double hypot( double x, double y )
-/********************************/
-    {
-        return( sqrt( x*x + y*y ) );
-    }
+/******************************************/
+{
+    return( sqrt( x * x + y * y ) );
+}

@@ -33,9 +33,9 @@
 // definitions for purposes of ssbar.c. (could place these in ssbar.h,
 // but would get an annoying warning message from Microsoft dialog
 // editor that duplicate symbols exist)
-#define     SS_FIRST_CONTENT    300
-#define     SS_LAST_CONTENT     305
-#define     SS_FIRST_ALIGNMENT  400
-#define     SS_LAST_ALIGNMENT   402
-#define     SS_FIRST_COMMAND    500
-#define     SS_LAST_COMMAND     502
+#define SS_FIRST_CONTENT    300
+#define SS_LAST_CONTENT     305
+#define SS_FIRST_ALIGNMENT  400
+#define SS_LAST_ALIGNMENT   402
+#define SS_FIRST_COMMAND    500
+#define SS_LAST_COMMAND     502

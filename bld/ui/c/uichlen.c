@@ -24,28 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Multi-byte character support for ui library.
 *
 ****************************************************************************/
 
 
 #include "uidef.h"
-//#if (__WATCOMC__ >= 1050) || defined( CLIB_MB )
-#if !defined(__NETWARE_386__)
-/*
-    These can be the real versions once we're building with 10.5
-    - the C library has built in multibyte support.
-*/
-#ifdef UNIX
+
+#if !defined( __NETWARE_386__ )
+
+#if defined( __UNIX__ )
+
 int global uicharlen( int ch )
 /****************************/
 {
     return( 1 );
 }
 
-int global uiisdbcs()
-/*******************/
+int global uiisdbcs( void )
+/*************************/
 {
     return( FALSE );
 }
@@ -60,37 +57,12 @@ int global uicharlen( int ch )
     return( _mbislead( ch ) ? 2 : 1 );
 }
 
-int global uiisdbcs()
-/*******************/
+int global uiisdbcs( void )
+/*************************/
 {
     return( __IsDBCS );
 }
 
-#endif
-
-#ifdef _NEC_PC
-    int global uionnec()
-    {
-        return( 1 );
-    }
-#elif defined(__AXP__) || defined(__QNX__) || defined( UNIX ) || (defined(__NT__) && (__WATCOMC__ < 1050))
-    int global uionnec()
-    {
-        return( 0 );
-    }
-#else
-    #if (__WATCOMC__ < 1100)
-        #define _nonibmfunc     __nonIBM
-    #else
-        #define _nonibmfunc     __is_nonIBM
-    #endif
-
-    extern int _nonibmfunc();
-
-    int global uionnec()
-    {
-        return( _nonibmfunc() );
-    }
 #endif
 
 #else
@@ -102,13 +74,8 @@ int global uicharlen( int ch )
     return( 1 ); // this is the stub version.  Real verion in system directories
 }
 
-int global uiisdbcs()
-/*******************/
-{
-    return( 0 );
-}
-
-int global uionnec()
+int global uiisdbcs( void )
+/*************************/
 {
     return( 0 );
 }

@@ -1,6 +1,8 @@
-#pmake: all compiler nomodel cpu_axp target_386 os_nt
-host_CPU = axp
-host_OS = nt
-host_CG = axp
-target_CPU = 386
-!include ..\master.mif
+#pmake: build buildwpp flat cpu_386 target_axp os_nt
+
+host_os      = nt
+host_cpu     = 386
+
+plusplus_dll = 1
+
+!include ../targ_axp.mif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a data resource.
 *
 ****************************************************************************/
 
@@ -115,7 +114,8 @@ BOOL CALLBACK DataDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     return( TRUE );
 }
 
-void DisplayData( BOOL rcdata ) {
+void DisplayData( BOOL rcdata )
+{
     FARPROC     fp;
     HRSRC       rchdl;
     HGLOBAL     rcmemhdl;
@@ -124,12 +124,12 @@ void DisplayData( BOOL rcdata ) {
     if( rcdata ) {
         dataType = RT_RCDATA;
     } else {
-        fp = MakeProcInstance( GetDataTypeDlgProc, Instance );
-        DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, fp );
+        fp = MakeProcInstance( (FARPROC)GetDataTypeDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, (DLGPROC)fp );
         FreeProcInstance( fp );
     }
-    fp = MakeProcInstance( GetDataNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetDataNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
 
     rchdl = FindResource( Instance, dataName, dataType );
@@ -152,7 +152,7 @@ void DisplayData( BOOL rcdata ) {
         return;
     }
 
-    fp = MakeProcInstance( DataDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)DataDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
 }

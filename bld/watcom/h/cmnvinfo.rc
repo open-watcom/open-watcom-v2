@@ -1,0 +1,68 @@
+#include <windows.h>
+#include "banner.h"
+
+#ifndef VERINFO_FILEVERSION
+    #error You must define VERINFO_FILEVERSION.
+#endif
+
+#ifndef VERINFO_PRODUCTVERSION
+    #error You must define VERINFO_PRODUCTVERSION.
+#endif
+
+#ifndef VERINFO_FILEDESCRIPTION_STR
+    #error You must define VERINFO_FILEDESCRIPTION_STR.
+#endif
+
+#ifndef VERINFO_FILEVERSION_STR
+    #error You must define VERINFO_FILEVERSION_STR.
+#endif
+
+#ifndef VERINFO_INTERNALNAME_STR
+    #error You must define VERINFO_INTERNALNAME_STR.
+#endif
+
+#ifndef VERINFO_PRODUCTVERSION_STR
+    #error You must define VERINFO_PRODUCTVERSION_STR.
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION VERINFO_FILEVERSION
+PRODUCTVERSION VERINFO_PRODUCTVERSION
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0x0L
+FILEOS VOS_NT_WINDOWS32
+#ifdef VERINFO_EXE
+FILETYPE VFT_APP
+#else
+FILETYPE VFT_DLL
+#endif
+FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"        /* US English, Unicode */
+        BEGIN
+            VALUE "CompanyName", "openwatcom.org\0"
+            VALUE "FileDescription", VERINFO_FILEDESCRIPTION_STR "\0"
+            VALUE "FileVersion", VERINFO_FILEVERSION_STR "\0"
+            VALUE "InternalName", VERINFO_INTERNALNAME_STR "\0"
+            VALUE "LegalCopyright", "Copyright \251 2002-" CURR_YEAR
+                                    " Open Watcom Contributors. "
+#ifndef VERINFO_NO_SYBASE
+                                    "Portions Copyright \251 2002 Sybase, Inc. "
+#endif
+                                    "All Rights Reserved.\0"
+#ifdef VERINFO_EXE
+            VALUE "OriginalFilename", VERINFO_INTERNALNAME_STR ".exe\0"
+#else
+            VALUE "OriginalFilename", VERINFO_INTERNALNAME_STR ".dll\0"
+#endif
+            VALUE "ProductName", "Open Watcom\0"
+            VALUE "ProductVersion", VERINFO_PRODUCTVERSION_STR "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200       /* US English, Unicode */
+    END
+END

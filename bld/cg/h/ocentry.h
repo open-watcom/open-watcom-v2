@@ -33,28 +33,21 @@
 #include "targsys.h"
 
 /* aligned */
-#define OC_DEAD                 0x00    /*  it's going to DIE! */
-#define OC_INFO                 0x01
-#define OC_CODE                 0x02
-#define OC_DATA                 0x03
-#define OC_RCODE                0x04
-#define OC_BDATA                0x05
-#define OC_LABEL                0x06
-#define OC_LREF                 0x07
-#define OC_CALL                 0x08
-#define OC_CALLI                0x09
-#define OC_JCOND                0x0a
-#define OC_JCONDI               0x0b    /*  unused */
-#define OC_JMP                  0x0c
-#define OC_JMPI                 0x0d
-#define OC_RET                  0x0e
-#define OC_IDATA                0x0f    /*  unused */
+typedef enum {
+    // base class 0x00 - 0x0F
+#define pick_class(x) x,
+#include "occlasss.h"
+#undef pick_class
+    // base class attributes
+    ATTR_FAR   = 0x10,
+    ATTR_SHORT = 0x20,
+    ATTR_POP   = 0x40,
+    ATTR_FLOAT = 0x80
+} oc_class;
 
-#define ATTR_FAR                0x10
-#define ATTR_SHORT              0x20
-#define ATTR_POP                0x40
-#define ATTR_FLOAT              0x80
-#define ATTR_IRET               ATTR_SHORT      /*  dual purpose bit */
+#define ATTR_IRET       ATTR_SHORT      /*  dual purpose bit */
+#define GET_BASE        0x0f            /*  get base from class */
+#define BASE_CLASS(x)   ((x)&GET_BASE)
 
 #define INFO_LINE               0x00
 #define INFO_LDONE              0x10
@@ -75,13 +68,11 @@
 #define OC_LDONE                (INFO_LDONE+OC_INFO)
 #define OC_DEAD_JMP             (INFO_DEAD_JMP+OC_INFO)
 
-typedef byte                    oc_class;
 typedef byte                    oc_length;
 typedef byte                    obj_length;
 typedef byte                    cond_no;
 
 #define NULL_COND               16
-#define GET_BASE                0x0f    /*  get base from class */
 #define MAX_OBJ_LEN             128
 
 #include "cgnoalgn.h"
@@ -125,6 +116,7 @@ typedef struct oc_jcond {
         cond_no                 cond;
 #if _TARGET & _TARG_RISC
         int                     index;
+        int                     index2; // MIPS can do reg/reg cond branches
 #endif
 } oc_jcond;
 

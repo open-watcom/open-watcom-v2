@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interface for communicating betwen user applications and
+*               the Open Watcom debugger.
 *
 ****************************************************************************/
 
@@ -38,9 +38,6 @@ extern "C" {
 #endif
 
 /*
-
-        This file let's an application Talk to the Watcom debugger.
-
         entry points:
 
         void CheckEnterDebugger
@@ -89,17 +86,6 @@ extern "C" {
 
  */
 
-/*
-   This next set of lines is a temp fix until the 11.0 headers are
-   in universal usage.
-*/
-#ifndef _WCRTLINK
-    #include <errno.h>
-    #ifndef _WCRTLINK
-        #define _WCRTLINK
-    #endif
-#endif
-
 #define DEBUG_PRESENT_NAME __WD_Present
 #define DEBUG_BREAK_ON_CATCH_NAME __WD_Break_On_Catch
 #define DEBUG_BREAK_ON_THROW_NAME __WD_Break_On_Throw
@@ -108,11 +94,15 @@ extern "C" {
 #define DEBUG_BREAK_ON_CATCH_STR "__WD_Break_On_Catch"
 #define DEBUG_BREAK_ON_THROW_STR "__WD_Break_On_Throw"
 
-_WCRTLINK extern char volatile DEBUG_PRESENT_NAME;
-_WCRTLINK extern char volatile DEBUG_BREAK_ON_THROW_NAME;
-_WCRTLINK extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
+#ifndef _WCRTDATA
+# define _WCRTDATA /* nothing */
+#endif
 
-#if defined( __WATCOMC__ )  &&  (defined(__386__) || defined(M_I86))
+_WCRTDATA extern char volatile DEBUG_PRESENT_NAME;
+_WCRTDATA extern char volatile DEBUG_BREAK_ON_THROW_NAME;
+_WCRTDATA extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
 
     extern void EnterDebugger( void );
     #pragma aux EnterDebugger = "int 3"
@@ -144,7 +134,7 @@ _WCRTLINK extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
     #define EnterDebuggerWithMessage( s )       EnterDebugger()
     #endif
 
-#elif defined(__PPC__) || defined( UNIX ) || defined( MAC )
+#elif defined(__PPC__) || !defined( __WATCOMC__ ) || defined( MAC )
     /*
         This should be replaced when we have in-line assembly support
         in the compiler.
@@ -153,6 +143,20 @@ _WCRTLINK extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
             { volatile int i = 0; volatile int j = 0; i /= j; }
 
     #define EnterDebuggerWithMessage( s )       EnterDebugger()
+
+#elif defined(__MIPS__)
+
+    extern void EnterDebugger( void );
+    #pragma aux EnterDebugger = "break"
+
+    extern void EnterDebuggerWithMessage( const char * );
+    #pragma aux EnterDebuggerWithMessage =      \
+                   "break"                      \
+                   "beq $0,$0,1f"               \
+                   "nop"                        \
+                   ".byte 0x57,0x56,0x49,0x44"  \
+                   ".byte 0x45,0x4f,0,0"        \
+                   "1:"
 
 #else
    #error enterdb.h not configured for CPU
@@ -169,7 +173,8 @@ _WCRTLINK extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
     }
 
 #ifdef __NT__
-    #define PassDebuggerAMessage OutputDebugString
+    // Why? #define PassDebuggerAMessage OutputDebugString
+    #define PassDebuggerAMessage CheckEnterDebuggerWithMessage
 #else
     #define PassDebuggerAMessage CheckEnterDebuggerWithMessage
 #endif
@@ -251,6 +256,26 @@ _WCRTLINK extern char volatile DEBUG_BREAK_ON_CATCH_NAME;
         sprintf( __buff, DEBUGGER_BREAKUNWIND_FORMAT, levels ); \
         PassDebuggerAMessage( __buff ); \
         CheckEnterDebuggerWithMessage( msg ); \
+    }
+
+#define DEBUGGER_LOADMODULE_COMMAND "!LOADMODULE "
+#define DEBUGGER_LOADMODULE_FORMAT DEBUGGER_LOADMODULE_COMMAND "0x%4.4x:0x%8.8x,%s"
+#define DebuggerLoadUserModule( modname, segment, offset ) \
+    { \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_LOADMODULE_COMMAND )+\
+                                      2+4+1+8+1+strlen( modname )+1 ); \
+        sprintf( __buff, DEBUGGER_LOADMODULE_FORMAT, segment, offset, modname ); \
+        PassDebuggerAMessage( __buff ); \
+    }
+
+#define DEBUGGER_UNLOADMODULE_COMMAND "!UNLOADMODULE "
+#define DEBUGGER_UNLOADMODULE_FORMAT DEBUGGER_UNLOADMODULE_COMMAND "%s"
+#define DebuggerUnloadUserModule( modname ) \
+    { \
+        char *__buff = (char*)alloca( sizeof( DEBUGGER_UNLOADMODULE_COMMAND )+\
+                                      strlen( modname )+1 ); \
+        sprintf( __buff, DEBUGGER_UNLOADMODULE_FORMAT, modname ); \
+        PassDebuggerAMessage( __buff ); \
     }
 
 #define DebuggerInitPresent() DebuggerSetCharVariableTrue( DEBUG_PRESENT_NAME )

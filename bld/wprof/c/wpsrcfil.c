@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler source file management.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+#include "walloca.h"
 
 #include "common.h"
 #include "aui.h"
@@ -44,10 +43,7 @@
 #include "srcmgt.h"
 #include "msg.h"
 
-//#include "wpsrcfil.def"
-//#include "srcmgt.def"
-//#include "memutil.def"
-//#include "msg.def"
+
 extern void *ProfRealloc(void *p,size_t new_size);
 extern void *ProfCAlloc(size_t size);
 extern void ErrorMsg(char *msg,... );
@@ -82,10 +78,10 @@ extern char * WPSourceGetLine( a_window * wnd, int line )
                                         wp_src->src_buff_len );
     }
     if( buff_len < 0 ) {
-        wp_src->src_eof = B_TRUE;
+        wp_src->src_eof = P_TRUE;
         return( NULL );
     }
-    wp_src->src_eof = B_FALSE;
+    wp_src->src_eof = P_FALSE;
     wp_src->src_buff[buff_len] = NULLCHAR;
     return( wp_src->src_buff );
 }
@@ -127,7 +123,7 @@ extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bint quiet )
     wpsrc_file->src_file = src_file;
     curr_sio->src_file = wpsrc_file;
     if( SymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
-        ch = __alloca( DIPHandleSize( HK_CUE ) );
+        ch = alloca( DIPHandleSize( HK_CUE ) );
         AddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
         wpsrc_file->rtn_line = CueLine( ch );
     }
@@ -188,7 +184,7 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
     int                     count;
     int                     count2;
 
-    ch = __alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
     lines = NULL;
     line_index = -1;
     last_srcline = 0;

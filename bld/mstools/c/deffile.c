@@ -152,6 +152,32 @@ void FuzzyMassageAXPStdcall( char *name ) {
 }
 #endif
 
+
+/*
+ * Add another string to a StringList.
+ */
+static void add_string( StringList **p, char *str )
+/*************************************************/
+{
+    StringList *        buf;
+    StringList *        curElem;
+
+    /*** Make a new list item ***/
+    buf = AllocMem( sizeof(StringList) );
+    buf->str = DupStrMem( str );
+    buf->next = NULL;
+
+    /*** Put it at the end of the list ***/
+    if( *p == NULL ) {
+        *p = buf;
+    } else {
+        curElem = *p;
+        while( curElem->next != NULL )  curElem = curElem->next;
+        curElem->next = buf;
+    }
+}
+
+
 /*
  * Parse a .def file.  Returns NULL on error, or a DefInfo* on success.
  */
@@ -966,31 +992,6 @@ static int eat_comments( int *newLine )
     ScanWhitespace(newLine);
 
     return( ch=='\0' ? 0 : 1 );
-}
-
-
-/*
- * Add another string to a StringList.
- */
-static void add_string( StringList **p, char *str )
-/*************************************************/
-{
-    StringList *        buf;
-    StringList *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(StringList) );
-    buf->str = DupStrMem( str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
 }
 
 

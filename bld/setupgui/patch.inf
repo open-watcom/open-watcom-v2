@@ -1,0 +1,165 @@
+[Application]
+AppName=WATCOM SQL Patch for Windows
+DstDir=d:\src
+#SrcDir=a:\
+#PatchSrcDir=a:\
+DiskDesc=
+FileDesc=
+ModNow=1
+ModLater=0
+DLLDir=
+OtherDLLDir=
+DLL_Delete_Old=0
+DLL_Keep_Both=1
+DLL_Replace_Old=0
+DLL_Dont_Install=0
+DLL_Abort_Install=0
+DefPMGroup=wsql.grp, WATCOM SQL
+SpaceNeeded=10
+DoCopyFiles=0
+DoModifyAuto=1
+DoCreateIcons=1
+DoLicense=1
+Patch=1
+PatchLog=patch.log
+AutoOptionsDialog=0
+
+[Dialog]
+name=Welcome
+static_text="@ will perform a level E patch to application"
+static_text="in the given directory."
+static_text=
+static_text="If you want to change the directory and/or drive, "
+static_text="type the name of the directory below: "
+static_text=
+edit_control=DstDir,d:\src,"Patch files to:"
+static_text=
+push_button=OK
+push_button=Cancel
+
+#[Dialog]
+#name=InsertDisk
+#static_text="@ needs the following disk:"
+#dynamic_text=DiskDesc,""
+#static_text=
+#static_text="Please insert or specify new path"
+#edit_control=SrcDir,a:\,"Source Directory:"
+#static_text=
+#push_button=OK
+#push_button=Cancel
+
+[ErrorMessage]
+IDS_ERROR=              "%s"
+IDS_NOMEMORY=           "Insufficient memory to run @.\n Close an application and try again."
+IDS_NOSETUPINFOFILE=    "The %s file cannot be found.\nPlease verify the distribution diskette."
+IDS_NODISKSPACE=        "Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.\n\nThe installation may fail. Do you want to proceed anyway?"
+IDS_CANTMAKEDIR=        "The %s directory cannot be created.\nEnter another directory or try another drive."
+IDS_QUERYABORT=         "@ has not completed installing the software.\nAre you sure you want to cancel?"
+IDS_SETUPNOGOOD=        "The software has not been successfully installed!\nYou must run @ again before using the software."
+IDS_PMADDNOGOOD=        "@ could not add the application(s) to the Program Manager."
+IDS_COMPLETE=           "@ has completed installing the software."
+IDS_NOMEMORYCOPY=       "Insufficient memory to copy file.\nTry again or cancel @."
+IDS_CANTOPENDST=        "Cannot create destination file.\nTry again or cancel @."
+IDS_NEWERVERSION=       "A newer version of %s already exists.\nDo you want it replaced?"
+IDS_CANTFINDAUTOEXEC=   "@ cannot find the original AUTOEXEC.BAT file"
+IDS_CANTFINDCONFIGSYS=  "@ cannot find the original CONFIG.SYS file"
+IDS_COPYAUTOEXEC=       "@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"
+IDS_COPYCONFIGSYS=      "@ will place the contents of your original CONFIG.SYS file in the following backup file: \n\n    %s\n"
+IDS_NEWAUTOEXEC=        "@ will save the changes it would make to\nyour AUTOEXEC.BAT and CONFIG.SYS files\nin the following backup files:\n\n    %s\n    %s"
+IDS_NEWCONFIGSYS=       "@ will save the changes it would make to your CONFIG.SYS file in the following backup file:\n\n    %s\n"
+IDS_ERRORBACKAUTO=      "An error occurred trying to create the backup\ncopy of your AUTOEXEC.BAT file"
+IDS_ERRORBACKCONFIG=    "An error occurred trying to create the backup\ncopy of your CONFIG.SYS file"
+IDS_CHANGES=            "@ will save the changes it would make to\nyour Environment in the following file:\n\n    %s"
+IDS_REPLACERDONLY=      "The file %s is marked as read-only.\nDo you want it replaced?"
+IDS_OS2CONFIGSYS=       "The changes to the CONFIG.SYS file are required to run the software.  Please shutdown your system and restart to allow the changes to take effect.\n"
+IDS_COMPLETE_REBOOT=    "@ has completed installing the software.\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT\nand/or CONFIG.SYS will take effect."
+IDS_IO_ERROR=           "An I/O error occurred while %s the file '%s'"
+IDS_QIEST=              "dr=%c,cs=%u,nf=%u,sn=%lu"
+IDS_FIRST=              "%s"
+IDS_UNKNOWNERROR=       "Unknown error"
+# patch specific messages
+IDS_NO_FILES_PATCHED=   "No files were patched"
+IDS_COPYFILEERROR=      "Cannot copy file %s.&\nContinue with PATCH process?"
+IDS_DELETEFILEERROR=    "Cannot delete file %s.&\nContinue with PATCH Process?"
+IDS_PATCHFILEERROR=     "Cannot apply patch file %s.&\nContinue with PATCH process?"
+IDS_CREATEDIRERROR=     "Cannot create directory %s.&\nContinue with PATCH Process?"
+IDS_LOGFILE_EXISTS=     "Requested log file: %s exists already.&\nReplace it?\n(If you choose 'NO', this program will abort.)"
+IDS_CANT_OPEN_LOGFILE=  "Requested log file: %s could not be opened."
+IDS_CANT_WRITE_LOGFILE= "%s could not be written."
+IDS_PATCHABORT=         "Patch Process Aborted."
+IDS_UNPACKING=          "Unpacking %s... "
+IDS_SUCCESS=            "Successful"
+IDS_FAILED_UNPACKING=   "Failed unpacking"
+IDS_DELETING=           "Deleting %s... "
+IDS_FAILED_DELETING=    "Failed deleting."
+IDS_CREATINGDIR=        "Creating directory %s... "
+IDS_FAILED_CREATINGDIR= "Failed creating directory"
+IDS_BADLENGTH=          "File length Error"
+IDS_CANTRENAME=         "Cannot rename %s to %s."
+IDS_WRONGCHECKSUM=      "Invalid Checksum Error"
+IDS_NOTPATCHFILE=       "%s is not a patch file."
+IDS_INVALID_EXE=        "Existing executable is invalid"
+IDS_FAILED_PATCHING=    "Failed patching new file"
+IDS_CANTFINDOUTPUT=     "Cannot find output file (to be patched) %s."
+
+[SetupErrorMessage]
+IDS_WRITEERROR=         "Error writing to destination file"
+IDS_NULLSTRING=         "NULL String"
+IDS_HEAPOK=             "Heap OK"
+IDS_HEAPEND=            "End of Heap"
+IDS_HEAPEMPTY=          "Heap is Empty"
+IDS_HEAPDAMAGE=         "Head is Damaged"
+IDS_HEAPDBADPOINTER=    "Bad Pointer to Heap"
+IDS_HEAPBADHEAD=        "Bad Node in Heap"
+IDS_CONTROLERROR=       "Error creating control"
+IDS_NODIALOGS=          "No More Dialogs"
+IDS_CONTROLCLASSERROR=  "Invalid control class"
+IDS_SETFILEERROR=       "DosSetFileInfo error: return code = %ld"
+IDS_QUERYFILEERROR=     "DosQueryFileInfo error: return code = %ld"
+IDS_QUERYFSERROR=       "DosQueryFSInfo error: return code = %ld"
+
+[StatusLineMessage]
+IDS_CREATEPROGRAMFOLDER="Creating Program Folder"
+IDS_CREATEDIRECTORY=    "Creating Directory"
+IDS_COPYFILE=           "Copying Files..."
+
+[LicenseMessage]
+IDS_LICENSEMESSAGE=     "Name and Company name must be filled in"
+IDS_APPLYLICENSE=	"Applying License..."
+
+[Dirs]
+1=.,1,-1
+2=.,1,-1
+
+# Patch Section Format
+#
+# (note:  Patch variable (in [Application] section) must be set to 1 
+#	  Directories can be referenced by an int or hardcoded into line
+#	  etc. dir could be 1, 2, or c:\wsql\h 
+#
+# patch, <source wpack file>, [ directory of file to be patched ], <destination file>
+#			- default behaviour ( no dir specified ) is to
+#			  first look in DSTDIR, then search the system 
+#                         path for the file.
+#
+# copy, <source wpack file>, [ destination directory ] <destination file>
+#			- default destination directory is DSTDIR
+#			  
+# delete, <file to be deleted>, [ directory of file to be deleted ]
+#			- default directory is DSTDIR
+# 
+
+# examples:
+# [Patch]
+# patch, dbsrvt, win32, dbsrv50.exe		
+# copy, dbengt, win32, dbeng50.exe 
+# delete, dbstopw.exe, win32
+
+[Patch]
+delete, dbstopw.exe, win32
+copy, dbengt, win32, dbeng50.exe
+
+[Disks]
+1=Disk 1
+
+[End]

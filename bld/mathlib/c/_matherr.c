@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  _matherr() implementation.
 *
 ****************************************************************************/
 
@@ -35,40 +34,34 @@
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
-#include "rtdata.h"
-
-#if defined(_M_IX86)
- extern int     __matherr( struct exception * );
- #pragma aux    __matherr "*";
-#endif
+#include "mathlib.h"
 
 static const char * const Msgs[] = {
-        0,
-        "Domain error",
-        "Argument singularity",
-        "Overflow range error",
-        "Underflow range error",
-        "Total loss of significance",
-        "Partial loss of significance"
-   };
+    0,
+    "Domain error",
+    "Argument singularity",
+    "Overflow range error",
+    "Underflow range error",
+    "Total loss of significance",
+    "Partial loss of significance"
+};
 
-#if !defined(__PENPOINT__)
-  int   (*_RWD_matherr)( struct exception * ) =
-  #if defined(__AXP__) || defined(__PPC__)
-    matherr;
-  #elif defined(_M_IX86)
+int (*__matherr_handler)( struct _exception * ) =
+#if defined(_M_IX86)
     __matherr;
-  #endif
+#else
+    matherr;
 #endif
 
-_WMRTLINK void _set_matherr( int (*rtn)( struct exception * ) )
+_WMRTLINK void _set_matherr( int (*rtn)( struct _exception * ) )
 {
     _RWD_matherr = rtn;
 }
 
 void __rterrmsg( const int errcode, const char *funcname )
 {
-    FILE *fp;
+    FILE    *fp;
+
     fp = __get_std_stream( STDERR_FILENO );
     fputs( Msgs[errcode], fp );
     fputs( " in ", fp );
@@ -76,12 +69,12 @@ void __rterrmsg( const int errcode, const char *funcname )
     fputc( '\n', fp );
 }
 
-_WMRTLINK double _matherr( struct exception *excp )
-/***************************************/
-    {
-        if( (*_RWD_matherr)( excp ) == 0 ) {
-            __rterrmsg( excp->type, excp->name );
-            excp->type == DOMAIN ? __set_EDOM() : __set_ERANGE();
-        }
-        return( excp->retval );
+_WMRTLINK double _matherr( struct _exception *excp )
+/**************************************************/
+{
+    if( (*_RWD_matherr)( excp ) == 0 ) {
+        __rterrmsg( excp->type, excp->name );
+        excp->type == DOMAIN ? __set_EDOM() : __set_ERANGE();
     }
+    return( excp->retval );
+}

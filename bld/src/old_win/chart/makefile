@@ -1,4 +1,4 @@
-!include ..\build.mif
+!include ../build.mif
 
 CFLAGS = -zW -oaxt -d1 -w4 -fpc
 !ifeq WIN386 1

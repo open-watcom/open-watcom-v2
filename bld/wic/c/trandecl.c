@@ -64,7 +64,9 @@ pDeclTreeElem createDeclTreeElem(DeclTreeElemType type, void *data) {
     return newElem;
 }
 
-static void zapDeclTreeElem(pDeclTreeElem elem) {
+static void zapDeclTreeElem(void *_elem) {
+    pDeclTreeElem elem = _elem;
+
     if (elem == NULL) {
         return;
     }

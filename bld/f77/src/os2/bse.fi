@@ -1,0 +1,22 @@
+c$noreference
+
+c$ifdef INCL_BASE
+c$define INCL_DOS
+c$define INCL_SUB
+c$define INCL_DOSERRORS
+c$endif
+
+c$include bsedos.fi
+
+c$ifdef INCL_DOSDEVIOCTL
+c$include bsedev.fi
+c$endif
+
+c$include bsesub.fi
+c$include bseerr.fi
+
+c$ifdef INCL_ORDINALS
+c$include bseord.fi
+c$endif
+
+c$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution profiler mainline.
 *
 ****************************************************************************/
 
@@ -35,22 +34,15 @@
 #include <sys/stat.h>
 
 #include "common.h"
-#if _OS == _OS_WIN || _OS == _OS_NT
+#if defined( __WINDOWS__ ) || defined( __NT__ )
 #include <windows.h>
 #endif
 #include "aui.h"
 #include "wpaui.h"
-#if defined(_OS2_PM)
-#include "..\mif\rcdef.h"
+#if defined( __OS2_PM__ )
+#include "rcdef.h"
 #endif
 
-//#include "wpmain.def"
-//#include "wpstart.def"
-//#include "wpsamp.def"
-//#include "aboutmsg.def"
-//#include "wpdriver.def"
-//#include "dlgsamp.def"
-//#include "wphelp.def"
 extern void WPInitHelp(void);
 extern void WPInit(void);
 extern void AboutOpen(void);
@@ -64,30 +56,21 @@ extern void ReportSampleInfo(void);
 
 
 extern gui_colour_set   WndColours[];
-extern gui_colour_set   NecColours[];
 extern int              WndNumColours;
 extern a_window *       WndMain;
 extern char             SamplePath[];
 
-#if defined(_OS2_PM)
+#if defined( __OS2_PM__ )
 STATIC gui_resource     MainIcon = { WPROF_ICON, NULL };
 #endif
-
-extern int uionnec( void );
-
 
 extern void GUImain( void )
 /*************************/
 {
-#if defined(__DOS__)
-    if( uionnec() ) {
-        memcpy( WndColours, NecColours, sizeof(gui_colour_set)*WndNumColours );
-    }
-#endif
     WPInit();
     WndCreateStatusWindow( &WndColours[ WPA_STATUS_LINE ] );
     WndStatusText( "" );
-#if defined(_OS2_PM)
+#if defined( __OS2_PM__ )
     WndSetIcon( WndMain, &MainIcon );
 #endif
     WPInitHelp();
@@ -100,7 +83,6 @@ extern void GUImain( void )
         OpenSample();
     }
 }
-
 
 
 extern bool WndProcMacro( a_window * wnd, unsigned key )

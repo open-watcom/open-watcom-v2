@@ -1,0 +1,1171 @@
+/*
+ *  lmaccess.h  LAN Manager access functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMUSER_
+#define _LMUSER_
+
+:include readonly.sp
+
+#include <lmcons.h>
+
+:include cpluspro.sp
+
+:include ntstatus.sp
+
+/* User flags */
+#define UF_SCRIPT                                   0x00000001L
+#define UF_ACCOUNTDISABLE                           0x00000002L
+#define UF_HOMEDIR_REQUIRED                         0x00000008L
+#define UF_LOCKOUT                                  0x00000010L
+#define UF_PASSWD_NOTREQD                           0x00000020L
+#define UF_PASSWD_CANT_CHANGE                       0x00000040L
+#define UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED          0x00000080L
+#define UF_TEMP_DUPLICATE_ACCOUNT                   0x00000100L
+#define UF_NORMAL_ACCOUNT                           0x00000200L
+#define UF_INTERDOMAIN_TRUST_ACCOUNT                0x00000800L
+#define UF_WORKSTATION_TRUST_ACCOUNT                0x00001000L
+#define UF_SERVER_TRUST_ACCOUNT                     0x00002000L
+#define UF_MACHINE_ACCOUNT_MASK \
+    (UF_INTERDOMAIN_TRUST_ACCOUNT | UF_WORKSTATION_TRUST_ACCOUNT | \
+    UF_SERVER_TRUST_ACCOUNT)
+#define UF_ACCOUNT_TYPE_MASK \
+    (UF_TEMP_DUPLICATE_ACCOUNT | UF_NORMAL_ACCOUNT | UF_INTERDOMAIN_TRUST_ACCOUNT | \
+    UF_WORKSTATION_TRUST_ACCOUNT | UF_SERVER_TRUST_ACCOUNT)
+#define UF_DONT_EXPIRE_PASSWD                       0x00010000L
+#define UF_MNS_LOGON_ACCOUNT                        0x00020000L
+#define UF_SMARTCARD_REQUIRED                       0x00040000L
+#define UF_TRUSTED_FOR_DELEGATION                   0x00080000L
+#define UF_NOT_DELEGATED                            0x00100000L
+#define UF_USE_DES_KEY_ONLY                         0x00200000L
+#define UF_DONT_REQUIRE_PREAUTH                     0x00400000L
+#define UF_PASSWORD_EXPIRED                         0x00800000L
+#define UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION   0x01000000L
+#define UF_NO_AUTH_DATA_REQUIRED                    0x02000000L
+#define UF_PARTIAL_SECRETS_ACCOUNT                  0x04000000L
+#define UF_USE_AES_KEYS                             0x08000000L
+#define UF_SETTABLE_BITS \
+    (UF_SCRIPT | UF_ACCOUNTDISABLE | UF_LOCKOUT | UF_HOMEDIR_REQUIRED | \
+    UF_PASSWD_NOTREQD | UF_PASSWD_CANT_CHANGE | UF_ACCOUNT_TYPE_MASK | \
+    UF_DONT_EXPIRE_PASSWD | UF_MNS_LOGON_ACCOUNT | UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED | \
+    UF_SMARTCARD_REQUIRED | UF_TRUSTED_FOR_DELEGATION | UF_NOT_DELEGATED | \
+    UF_USE_DES_KEY_ONLY | UF_DONT_REQUIRE_PREAUTH | UF_PASSWORD_EXPIRED | \
+    UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION | UF_NO_AUTH_DATA_REQUIRED | \
+    UF_USE_AES_KEYS | UF_PARTIAL_SECRETS_ACCOUNT)
+
+/* NetUserEnum() flags */
+#define FILTER_TEMP_DUPLICATE_ACCOUNT       0x00000001L
+#define FILTER_NORMAL_ACCOUNT               0x00000002L
+#define FILTER_INTERDOMAIN_TRUST_ACCOUNT    0x00000008L
+#define FILTER_WORKSTATION_TRUST_ACCOUNT    0x00000010L
+#define FILTER_SERVER_TRUST_ACCOUNT         0x00000020L
+
+/* NetUserGetLocalGroups() flags */
+#define LG_INCLUDE_INDIRECT 0x00000001L
+
+/* Authentication flags */
+#define AF_OP_PRINT         0x00000001L
+#define AF_OP_COMM          0x00000002L
+#define AF_OP_SERVER        0x00000004L
+#define AF_OP_ACCOUNTS      0x00000008L
+#define AF_SETTABLE_BITS    (AF_OP_PRINT | AF_OP_COMM | AF_OP_SERVER | AF_OP_ACCOUNTS)
+
+/* UAS roles */
+#define UAS_ROLE_STANDALONE 0
+#define UAS_ROLE_MEMBER     1
+#define UAS_ROLE_BACKUP     2
+#define UAS_ROLE_PRIMARY    3
+
+/* User parameter numbers */
+#define USER_NAME_PARMNUM           1
+#define USER_PASSWORD_PARMNUM       2
+#define USER_PASSWORD_AGE_PARMNUM   4
+#define USER_PRIV_PARMNUM           5
+#define USER_HOME_DIR_PARMNUM       6
+#define USER_COMMENT_PARMNUM        7
+#define USER_FLAGS_PARMNUM          8
+#define USER_SCRIPT_PATH_PARMNUM    9
+#define USER_AUTH_FLAGS_PARMNUM     10
+#define USER_FULL_NAME_PARMNUM      11
+#define USER_USR_COMMENT_PARMNUM    12
+#define USER_PARMS_PARMNUM          13
+#define USER_WORKSTATIONS_PARMNUM   14
+#define USER_LAST_LOGON_PARMNUM     15
+#define USER_LAST_LOGOFF_PARMNUM    16
+#define USER_ACCT_EXPIRES_PARMNUM   17
+#define USER_MAX_STORAGE_PARMNUM    18
+#define USER_UNITS_PER_WEEK_PARMNUM 19
+#define USER_LOGON_HOURS_PARMNUM    20
+#define USER_PAD_PW_COUNT_PARMNUM   21
+#define USER_NUM_LOGONS_PARMNUM     22
+#define USER_LOGON_SERVER_PARMNUM   23
+#define USER_COUNTRY_CODE_PARMNUM   24
+#define USER_CODE_PAGE_PARMNUM      25
+#define USER_PRIMARY_GROUP_PARMNUM  51
+#define USER_PROFILE                52
+#define USER_PROFILE_PARMNUM        52
+#define USER_HOME_DIR_DRIVE_PARMNUM 53
+
+/* User information levels */
+#define USER_NAME_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_NAME_PARMNUM)
+#define USER_PASSWORD_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PASSWORD_PARMNUM)
+#define USER_PASSWORD_AGE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PASSWORD_AGE_PARMNUM)
+#define USER_PRIV_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PRIV_PARMNUM)
+#define USER_HOME_DIR_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_HOME_DIR_PARMNUM)
+#define USER_COMMENT_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_COMMENT_PARMNUM)
+#define USER_FLAGS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_FLAGS_PARMNUM)
+#define USER_SCRIPT_PATH_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_SCRIPT_PATH_PARMNUM)
+#define USER_AUTH_FLAGS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_AUTH_FLAGS_PARMNUM)
+#define USER_FULL_NAME_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_FULL_NAME_PARMNUM)
+#define USER_USR_COMMENT_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_USR_COMMENT_PARMNUM)
+#define USER_PARMS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PARMS_PARMNUM)
+#define USER_WORKSTATIONS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_WORKSTATIONS_PARMNUM)
+#define USER_LAST_LOGON_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_LAST_LOGON_PARMNUM)
+#define USER_LAST_LOGOFF_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_LAST_LOGOFF_PARMNUM)
+#define USER_ACCT_EXPIRES_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_ACCT_EXPIRES_PARMNUM)
+#define USER_MAX_STORAGE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_MAX_STORAGE_PARMNUM)
+#define USER_UNITS_PER_WEEK_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_UNITS_PER_WEEK_PARMNUM)
+#define USER_LOGON_HOURS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_LOGON_HOURS_PARMNUM)
+#define USER_PAD_PW_COUNT_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PAD_PW_COUNT_PARMNUM)
+#define USER_NUM_LOGONS_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_NUM_LOGONS_PARMNUM)
+#define USER_LOGON_SERVER_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_LOGON_SERVER_PARMNUM)
+#define USER_COUNTRY_CODE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_COUNTRY_CODE_PARMNUM)
+#define USER_CODE_PAGE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_CODE_PAGE_PARMNUM)
+#define USER_PRIMARY_GROUP_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_PRIMARY_GROUP_PARMNUM)
+#define USER_POSIX_ID_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_POSIX_ID_PARMNUM)
+#define USER_HOME_DIR_DRIVE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + USER_HOME_DIR_DRIVE_PARMNUM)
+
+/* Null password */
+#define NULL_USERSETINFO_PASSWD "              "
+
+/* Special values */
+#define TIMEQ_FOREVER               ((unsigned long)-1)
+#define USER_MAXSTORAGE_UNLIMITED   ((unsigned long)-1)
+#define USER_NO_LOGOFF              ((unsigned long)-1)
+#define UNITS_PER_DAY               24
+#define DAYS_PER_WEEK               (UNITS_PER_DAY * 7)
+
+/* User privilege levels */
+#define USER_PRIV_MASK  0x00000003L
+#define USER_PRIV_GUEST 0x00000000L
+#define USER_PRIV_USER  0x00000001L
+#define USER_PRIV_ADMIN 0x00000002L
+
+/* User modals string lengths */
+#define MAX_PASSWD_LEN      PWLEN
+#define DEF_MIN_PWLEN       6
+#define DEF_PWUNIQUENESS    5
+#define DEF_MAX_PWHIST      8
+#define DEF_MAX_PWAGE       TIMEQ_FOREVER
+#define DEF_MIN_PWAGE       0L
+#define DEF_FORCE_LOGOFF    0xFFFFFFFFL
+#define DEF_MAX_BADPW       0
+#define ONE_DAY             (1 * 24 * 3600)
+
+/* User logon validation return codes */
+#define VALIDATED_LOGON     0
+#define PASSWORD_EXPIRED    2
+#define NON_VALIDATED_LOGON 3
+#define VALID_LOGOFF        1
+
+/* User modals parameter numbers */
+#define MODALS_MIN_PASSWD_LEN_PARMNUM               1
+#define MODALS_MAX_PASSWD_AGE_PARMNUM               2
+#define MODALS_MIN_PASSWD_AGE_PARMNUM               3
+#define MODALS_FORCE_LOGOFF_PARMNUM                 4
+#define MODALS_PASSWD_HIST_LEN_PARMNUM              5
+#define MODALS_ROLE_PARMNUM                         6
+#define MODALS_PRIMARY_PARMNUM                      7
+#define MODALS_DOMAIN_NAME_PARMNUM                  8
+#define MODALS_DOMAIN_ID_PARMNUM                    9
+#define MODALS_LOCKOUT_DURATION_PARMNUM             10
+#define MODALS_LOCKOUT_OBSERVATION_WINDOW_PARMNUM   11
+#define MODALS_LOCKOUT_THRESHOLD_PARMNUM            12
+
+/* User modals information levels */
+#define MODALS_MIN_PASSWD_LEN_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_MIN_PASSWD_LEN_PARMNUM)
+#define MODALS_MAX_PASSWD_AGE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_MAX_PASSWD_AGE_PARMNUM)
+#define MODALS_MIN_PASSWD_AGE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_MIN_PASSWD_AGE_PARMNUM)
+#define MODALS_FORCE_LOGOFF_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_FORCE_LOGOFF_PARMNUM)
+#define MODALS_PASSWD_HIST_LEN_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_PASSWD_HIST_LEN_PARMNUM)
+#define MODALS_ROLE_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_ROLE_PARMNUM)
+#define MODALS_PRIMARY_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_PRIMARY_PARMNUM)
+#define MODALS_DOMAIN_NAME_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_DOMAIN_NAME_PARMNUM)
+#define MODALS_DOMAIN_ID_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + MODALS_DOMAIN_ID_PARMNUM)
+
+/* Group identifier mask */
+#define GROUPIDMASK 0x00008000L
+
+/* Special groups */
+#define GROUP_SPECIALGRP_USERS  L"USERS"
+#define GROUP_SPECIALGRP_ADMINS L"ADMINS"
+#define GROUP_SPECIALGRP_GUESTS L"GUESTS"
+#define GROUP_SPECIALGRP_LOCAL  L"LOCAL"
+
+/* Group parameter numbers */
+#define GROUP_ALL_PARMNUM           0
+#define GROUP_NAME_PARMNUM          1
+#define GROUP_COMMENT_PARMNUM       2
+#define GROUP_ATTRIBUTES_PARMNUM    3
+
+/* Group information levels */
+#define GROUP_ALL_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + GROUP_ALL_PARMNUM)
+#define GROUP_NAME_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + GROUP_NAME_PARMNUM)
+#define GROUP_COMMENT_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + GROUP_COMMENT_PARMNUM)
+#define GROUP_ATTRIBUTES_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + GROUP_ATTRIBUTES_PARMNUM)
+
+/* Local group parameter numbers */
+#define LOCALGROUP_NAME_PARMNUM     0
+#define LOCALGROUP_COMMENT_PARMNUM  1
+
+/* Maximum permission entries */
+#define MAXPERMENTRIES  64
+
+/* Access permissions */
+#define ACCESS_NONE     0x00000000L
+#define ACCESS_READ     0x00000001L
+#define ACCESS_WRITE    0x00000002L
+#define ACCESS_CREATE   0x00000004L
+#define ACCESS_EXEC     0x00000008L
+#define ACCESS_DELETE   0x00000010L
+#define ACCESS_ATRIB    0x00000020L
+#define ACCESS_PERM     0x00000040L
+#define ACCESS_GROUP    0x00008000L
+#define ACCESS_ALL \
+    (ACCESS_READ | ACCESS_WRITE | ACCESS_CREATE | ACCESS_EXEC | ACCESS_DELETE | \
+    ACCESS_ATRIB | ACCESS_PERM)
+
+/* Access attributes */
+#define ACCESS_AUDIT            0x00000001L
+#define ACCESS_SUCCESS_OPEN     0x00000010L
+#define ACCESS_SUCCESS_WRITE    0x00000020L
+#define ACCESS_SUCCESS_DELETE   0x00000040L
+#define ACCESS_SUCCESS_ACL      0x00000080L
+#define ACCESS_SUCCESS_MASK     0x000000F0L
+#define ACCESS_FAIL_OPEN        0x00000100L
+#define ACCESS_FAIL_WRITE       0x00000200L
+#define ACCESS_FAIL_DELETE      0x00000400L
+#define ACCESS_FAIL_ACL         0x00000800L
+#define ACCESS_FAIL_MASK        0x00000F00L
+#define ACCESS_FAIL_SHIFT       4
+
+/* Access parameter numbers */
+#define ACCESS_RESOURCE_NAME_PARMNUM    1
+#define ACCESS_ATTR_PARMNUM             2
+#define ACCESS_COUNT_PARMNUM            3
+#define ACCESS_ACCESS_LIST_PARMNUM      4
+
+/* Access information levels */
+#define ACCESS_RESOURCE_NAME_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + ACCESS_RESOURCE_NAME_PARMNUM)
+#define ACCESS_ATTR_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + ACCESS_ATTR_PARMNUM)
+#define ACCESS_COUNT_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + ACCESS_COUNT_PARMNUM)
+#define ACCESS_ACCESS_LIST_INFOLEVEL \
+    (PARMNUM_BASE_INFOLEVEL + ACCESS_ACCESS_LIST_PARMNUM)
+
+/* Access letters */
+#define ACCESS_LETTERS  "RWCXDAP         "
+
+/* Validation persisted field flags */
+#define NET_VALIDATE_PASSWORD_LAST_SET          0x00000001L
+#define NET_VALIDATE_BAD_PASSWORD_TIME          0x00000002L
+#define NET_VALIDATE_LOCKOUT_TIME               0x00000004L
+#define NET_VALIDATE_BAD_PASSWORD_COUNT         0x00000008L
+#define NET_VALIDATE_PASSWORD_HISTORY_LENGTH    0x00000010L
+#define NET_VALIDATE_PASSWORD_HISTORY           0x00000020L
+
+/* I_NetLogonControl() function codes */
+#define NETLOGON_CONTROL_QUERY                  1L
+#define NETLOGON_CONTROL_REPLICATE              2L
+#define NETLOGON_CONTROL_SYNCHRONIZE            3L
+#define NETLOGON_CONTROL_PDC_REPLICATE          4L
+#define NETLOGON_CONTROL_REDISCOVER             5L
+#define NETLOGON_CONTROL_TC_QUERY               6L
+#define NETLOGON_CONTROL_TRANSPORT_NOTIFY       7L
+#define NETLOGON_CONTROL_FIND_USER              8L
+#define NETLOGON_CONTROL_CHANGE_PASSWORD        9L
+#define NETLOGON_CONTROL_TC_VERIFY              10L
+#define NETLOGON_CONTROL_FORCE_DNS_REG          11L
+#define NETLOGON_CONTROL_QUERY_DNS_REG          12L
+#define NETLOGON_CONTROL_UNLOAD_NETLOGON_DLL    0xFFFBL
+#define NETLOGON_CONTROL_BACKUP_CHANGE_LOG      0xFFFCL
+#define NETLOGON_CONTROL_TRUNCATE_LOG           0xFFFDL
+#define NETLOGON_CONTROL_SET_DBFLAG             0xFFFEL
+#define NETLOGON_CONTROL_BREAKPOINT             0xFFFFL
+
+/* Netlogon flags */
+#define NETLOGON_REPLICATION_NEEDED         0x00000001L
+#define NETLOGON_REPLICATION_IN_PROGRESS    0x00000002L
+#define NETLOGON_FULL_SYNC_REPLICATION      0x00000004L
+#define NETLOGON_REDO_NEEDED                0x00000008L
+#define NETLOGON_HAS_IP                     0x00000010L
+#define NETLOGON_HAS_TIMESERV               0x00000020L
+#define NETLOGON_DNS_UPDATE_FAILURE         0x00000040L
+#define NETLOGON_VERIFY_STATUS_RETURNED     0x00000080L
+
+/* Service account strings */
+#define SERVICE_ACCOUNT_PASSWORD \
+    TEXT("_SA_{262E99C9-6160-4871-ACEC-4E61736B6F21}")
+#define SERVICE_ACCOUNT_SECRET_PREFIX \
+    TEXT("_SC_{262E99C9-6160=4871-ACEC-4E61736B6F21}_")
+
+/* Service account flags */
+#define SERVICE_ACCOUNT_FLAG_LINK_TO_HOST_ONLY      0x00000001L
+#define SERVICE_ACCOUNT_FLAG_UNLINK_FROM_HOST_ONLY  0x00000001L
+
+/* User information (level 0) */
+typedef struct _USER_INFO_0 {
+    LPWSTR  usri0_name;
+} USER_INFO_0;
+typedef USER_INFO_0 *PUSER_INFO_0;
+typedef USER_INFO_0 *LPUSER_INFO_0;
+
+/* User information (level 1) */
+typedef struct _USER_INFO_1 {
+    LPWSTR  usri1_name;
+    LPWSTR  usri1_password;
+    DWORD   usri1_password_age;
+    DWORD   usri1_priv;
+    LPWSTR  usri1_home_dir;
+    LPWSTR  usri1_comment;
+    DWORD   usri1_flags;
+    LPWSTR  usri1_script_path;
+} USER_INFO_1;
+typedef USER_INFO_1 *PUSER_INFO_1;
+typedef USER_INFO_1 *LPUSER_INFO_1;
+
+/* User information (level 2) */
+typedef struct _USER_INFO_2 {
+    LPWSTR  usri2_name;
+    LPWSTR  usri2_password;
+    DWORD   usri2_password_age;
+    DWORD   usri2_priv;
+    LPWSTR  usri2_home_dir;
+    LPWSTR  usri2_comment;
+    DWORD   usri2_flags;
+    LPWSTR  usri2_script_path;
+    DWORD   usri2_auth_flags;
+    LPWSTR  usri2_full_name;
+    LPWSTR  usri2_usr_comment;
+    LPWSTR  usri2_parms;
+    LPWSTR  usri2_workstations;
+    DWORD   usri2_last_logon;
+    DWORD   usri2_last_logoff;
+    DWORD   usri2_acct_expires;
+    DWORD   usri2_max_storage;
+    DWORD   usri2_units_per_week;
+    PBYTE   usri2_logon_hours;
+    DWORD   usri2_bad_pw_count;
+    DWORD   usri2_num_logons;
+    LPWSTR  usri2_logon_server;
+    DWORD   usri2_country_code;
+    DWORD   usri2_code_page;
+} USER_INFO_2;
+typedef USER_INFO_2 *PUSER_INFO_2;
+typedef USER_INFO_2 *LPUSER_INFO_2;
+
+/* User information (level 3) */
+typedef struct _USER_INFO_3 {
+    LPWSTR  usri3_name;
+    LPWSTR  usri3_password;
+    DWORD   usri3_password_age;
+    DWORD   usri3_priv;
+    LPWSTR  usri3_home_dir;
+    LPWSTR  usri3_comment;
+    DWORD   usri3_flags;
+    LPWSTR  usri3_script_path;
+    DWORD   usri3_auth_flags;
+    LPWSTR  usri3_full_name;
+    LPWSTR  usri3_usr_comment;
+    LPWSTR  usri3_parms;
+    LPWSTR  usri3_workstations;
+    DWORD   usri3_last_logon;
+    DWORD   usri3_last_logoff;
+    DWORD   usri3_acct_expires;
+    DWORD   usri3_max_storage;
+    DWORD   usri3_units_per_week;
+    PBYTE   usri3_logon_hours;
+    DWORD   usri3_bad_pw_count;
+    DWORD   usri3_num_logons;
+    LPWSTR  usri3_logon_server;
+    DWORD   usri3_country_code;
+    DWORD   usri3_code_page;
+    DWORD   usri3_user_id;
+    DWORD   usri3_primary_group_id;
+    LPWSTR  usri3_profile;
+    LPWSTR  usri3_home_dir_drive;
+    DWORD   usri3_password_expired;
+} USER_INFO_3;
+typedef USER_INFO_3 *PUSER_INFO_3;
+typedef USER_INFO_3 *LPUSER_INFO_3;
+
+/* User information (level 4) */
+typedef struct _USER_INFO_4 {
+    LPWSTR  usri4_name;
+    LPWSTR  usri4_password;
+    DWORD   usri4_password_age;
+    DWORD   usri4_priv;
+    LPWSTR  usri4_home_dir;
+    LPWSTR  usri4_comment;
+    DWORD   usri4_flags;
+    LPWSTR  usri4_script_path;
+    DWORD   usri4_auth_flags;
+    LPWSTR  usri4_full_name;
+    LPWSTR  usri4_usr_comment;
+    LPWSTR  usri4_parms;
+    LPWSTR  usri4_workstations;
+    DWORD   usri4_last_logon;
+    DWORD   usri4_last_logoff;
+    DWORD   usri4_acct_expires;
+    DWORD   usri4_max_storage;
+    DWORD   usri4_units_per_week;
+    PBYTE   usri4_logon_hours;
+    DWORD   usri4_bad_pw_count;
+    DWORD   usri4_num_logons;
+    LPWSTR  usri4_logon_server;
+    DWORD   usri4_country_code;
+    DWORD   usri4_code_page;
+    PSID    usri4_user_sid;
+    DWORD   usri4_primary_group_id;
+    LPWSTR  usri4_profile;
+    LPWSTR  usri4_home_dir_drive;
+    DWORD   usri4_password_expired;
+} USER_INFO_4;
+typedef USER_INFO_4 *PUSER_INFO_4;
+typedef USER_INFO_4 *LPUSER_INFO_4;
+
+/* User information (level 10) */
+typedef struct _USER_INFO_10 {
+    LPWSTR  usri10_name;
+    LPWSTR  usri10_comment;
+    LPWSTR  usri10_usr_comment;
+    LPWSTR  usri10_full_name;
+} USER_INFO_10;
+typedef USER_INFO_10    *PUSER_INFO_10;
+typedef USER_INFO_10    *LPUSER_INFO_10;
+
+/* User information (level 11) */
+typedef struct _USER_INFO_11 {
+    LPWSTR  usri11_name;
+    LPWSTR  usri11_comment;
+    LPWSTR  usri11_usr_comment;
+    LPWSTR  usri11_full_name;
+    DWORD   usri11_priv;
+    DWORD   usri11_auth_flags;
+    DWORD   usri11_password_age;
+    LPWSTR  usri11_home_dir;
+    LPWSTR  usri11_parms;
+    DWORD   usri11_last_logon;
+    DWORD   usri11_last_logoff;
+    DWORD   usri11_bad_pw_count;
+    DWORD   usri11_num_logons;
+    LPWSTR  usri11_logon_server;
+    DWORD   usri11_country_code;
+    LPWSTR  usri11_workstations;
+    DWORD   usri11_max_storage;
+    DWORD   usri11_units_per_week;
+    PBYTE   usri11_logon_hours;
+    DWORD   usri11_code_page;
+} USER_INFO_11;
+typedef USER_INFO_11    *PUSER_INFO_11;
+typedef USER_INFO_11    *LPUSER_INFO_11;
+
+/* User information (level 20) */
+typedef struct _USER_INFO_20 {
+    LPWSTR  usri20_name;
+    LPWSTR  usri20_full_name;
+    LPWSTR  usri20_comment;
+    DWORD   usri20_flags;
+    DWORD   usri20_user_id;
+} USER_INFO_20;
+typedef USER_INFO_20    *PUSER_INFO_20;
+typedef USER_INFO_20    *LPUSER_INFO_20;
+
+/* User information (level 21) */
+typedef struct _USER_INFO_21 {
+    BYTE    usri21_password[ENCRYPTED_PWLEN];
+} USER_INFO_21;
+typedef USER_INFO_21    *PUSER_INFO_21;
+typedef USER_INFO_21    *LPUSER_INFO_21;
+
+/* User information (level 22) */
+typedef struct _USER_INFO_22 {
+    LPWSTR  usri22_name;
+    BYTE    usri22_password[ENCRYPTED_PWLEN];
+    DWORD   usri22_password_age;
+    DWORD   usri22_priv;
+    LPWSTR  usri22_home_dir;
+    LPWSTR  usri22_comment;
+    DWORD   usri22_flags;
+    LPWSTR  usri22_script_path;
+    DWORD   usri22_auth_flags;
+    LPWSTR  usri22_full_name;
+    LPWSTR  usri22_usr_comment;
+    LPWSTR  usri22_parms;
+    LPWSTR  usri22_workstations;
+    DWORD   usri22_last_logon;
+    DWORD   usri22_last_logoff;
+    DWORD   usri22_acct_expires;
+    DWORD   usri22_max_storage;
+    DWORD   usri22_units_per_week;
+    PBYTE   usri22_logon_hours;
+    DWORD   usri22_bad_pw_count;
+    DWORD   usri22_num_logons;
+    LPWSTR  usri22_logon_server;
+    DWORD   usri22_country_code;
+    DWORD   usri22_code_page;
+} USER_INFO_22;
+typedef USER_INFO_22    *PUSER_INFO_22;
+typedef USER_INFO_22    *LPUSER_INFO_22;
+
+/* User information (level 23) */
+typedef struct _USER_INFO_23 {
+    LPWSTR  usri23_name;
+    LPWSTR  usri23_full_name;
+    LPWSTR  usri23_comment;
+    DWORD   usri23_flags;
+    PSID    usri23_user_sid;
+} USER_INFO_23;
+typedef USER_INFO_23    *PUSER_INFO_23;
+typedef USER_INFO_23    *LPUSER_INFO_23;
+
+/* User information (level 1003) */
+typedef struct _USER_INFO_1003 {
+    LPWSTR  usri1003_password;
+} USER_INFO_1003;
+typedef USER_INFO_1003  *PUSER_INFO_1003;
+typedef USER_INFO_1003  *LPUSER_INFO_1003;
+
+/* User information (level 1005) */
+typedef struct _USER_INFO_1005 {
+    DWORD   usri1005_priv;
+} USER_INFO_1005;
+typedef USER_INFO_1005  *PUSER_INFO_1005;
+typedef USER_INFO_1005  *LPUSER_INFO_1005;
+
+/* User information (level 1006) */
+typedef struct _USER_INFO_1006 {
+    LPWSTR  usri1006_home_dir;
+} USER_INFO_1006;
+typedef USER_INFO_1006  *PUSER_INFO_1006;
+typedef USER_INFO_1006  *LPUSER_INFO_1006;
+
+/* User information (level 1007) */
+typedef struct _USER_INFO_1007 {
+    LPWSTR  usri1007_comment;
+} USER_INFO_1007;
+typedef USER_INFO_1007  *PUSER_INFO_1007;
+typedef USER_INFO_1007  *LPUSER_INFO_1007;
+
+/* User information (level 1008) */
+typedef struct _USER_INFO_1008 {
+    DWORD   usri1008_flags;
+} USER_INFO_1008;
+typedef USER_INFO_1008  *PUSER_INFO_1008;
+typedef USER_INFO_1008  *LPUSER_INFO_1008;
+
+/* User information (level 1009) */
+typedef struct _USER_INFO_1009 {
+    LPWSTR  usri1009_script_path;
+} USER_INFO_1009;
+typedef USER_INFO_1009  *PUSER_INFO_1009;
+typedef USER_INFO_1009  *LPUSER_INFO_1009;
+
+/* User information (level 1010) */
+typedef struct _USER_INFO_1010 {
+    DWORD   usri1010_auth_flags;
+} USER_INFO_1010;
+typedef USER_INFO_1010  *PUSER_INFO_1010;
+typedef USER_INFO_1010  *LPUSER_INFO_1010;
+
+/* User information (level 1011) */
+typedef struct _USER_INFO_1011 {
+    LPWSTR  usri1011_full_name;
+} USER_INFO_1011;
+typedef USER_INFO_1011  *PUSER_INFO_1011;
+typedef USER_INFO_1011  *LPUSER_INFO_1011;
+
+/* User information (level 1012) */
+typedef struct _USER_INFO_1012 {
+    LPWSTR  usri1012_usr_comment;
+} USER_INFO_1012;
+typedef USER_INFO_1012  *PUSER_INFO_1012;
+typedef USER_INFO_1012  *LPUSER_INFO_1012;
+
+/* User information (level 1013) */
+typedef struct _USER_INFO_1013 {
+    LPWSTR  usri1013_parms;
+} USER_INFO_1013;
+typedef USER_INFO_1013  *PUSER_INFO_1013;
+typedef USER_INFO_1013  *LPUSER_INFO_1013;
+
+/* User information (level 1014) */
+typedef struct _USER_INFO_1014 {
+    LPWSTR  usri1014_workstations;
+} USER_INFO_1014;
+typedef USER_INFO_1014  *PUSER_INFO_1014;
+typedef USER_INFO_1014  *LPUSER_INFO_1014;
+
+/* User information (level 1017) */
+typedef struct _USER_INFO_1017 {
+    DWORD   usri1017_acct_expires;
+} USER_INFO_1017;
+typedef USER_INFO_1017  *PUSER_INFO_1017;
+typedef USER_INFO_1017  *LPUSER_INFO_1017;
+
+/* User information (level 1018) */
+typedef struct _USER_INFO_1018 {
+    DWORD   usri1018_max_storage;
+} USER_INFO_1018;
+typedef USER_INFO_1018  *PUSER_INFO_1018;
+typedef USER_INFO_1018  *LPUSER_INFO_1018;
+
+/* User information (level 1020) */
+typedef struct _USER_INFO_1020 {
+    DWORD   usri1020_units_per_week;
+    LPBYTE  usri1020_logon_hours;
+} USER_INFO_1020;
+typedef USER_INFO_1020  *PUSER_INFO_1020;
+typedef USER_INFO_1020  *LPUSER_INFO_1020;
+
+/* User information (level 1023) */
+typedef struct _USER_INFO_1023 {
+    LPWSTR  usri1023_logon_server;
+} USER_INFO_1023;
+typedef USER_INFO_1023  *PUSER_INFO_1023;
+typedef USER_INFO_1023  *LPUSER_INFO_1023;
+
+/* User information (level 1024) */
+typedef struct _USER_INFO_1024 {
+    DWORD   usri1024_country_code;
+} USER_INFO_1024;
+typedef USER_INFO_1024  *PUSER_INFO_1024;
+typedef USER_INFO_1024  *LPUSER_INFO_1024;
+
+/* User information (level 1025) */
+typedef struct _USER_INFO_1025 {
+    DWORD   usri1025_code_page;
+} USER_INFO_1025;
+typedef USER_INFO_1025  *PUSER_INFO_1025;
+typedef USER_INFO_1025  *LPUSER_INFO_1025;
+
+/* User information (level 1051) */
+typedef struct _USER_INFO_1051 {
+    DWORD   usri1051_primary_group_id;
+} USER_INFO_1051;
+typedef USER_INFO_1051  *PUSER_INFO_1051;
+typedef USER_INFO_1051  *LPUSER_INFO_1051;
+
+/* User information (level 1052) */
+typedef struct _USER_INFO_1052 {
+    LPWSTR  usri1052_profile;
+} USER_INFO_1052;
+typedef USER_INFO_1052  *PUSER_INFO_1052;
+typedef USER_INFO_1052  *LPUSER_INFO_1052;
+
+/* User information (level 1053) */
+typedef struct _USER_INFO_1053 {
+    LPWSTR  usri1053_home_dir_drive;
+} USER_INFO_1053;
+typedef USER_INFO_1053  *PUSER_INFO_1053;
+typedef USER_INFO_1053  *LPUSER_INFO_1053;
+
+/* User modals information (level 0) */
+typedef struct _USER_MODALS_INFO_0 {
+    DWORD   usrmod0_min_passwd_len;
+    DWORD   usrmod0_max_passwd_len;
+    DWORD   usrmod0_min_passwd_age;
+    DWORD   usrmod0_force_logoff;
+    DWORD   usrmod0_password_hist_len;
+} USER_MODALS_INFO_0;
+typedef USER_MODALS_INFO_0  *PUSER_MODALS_INFO_0;
+typedef USER_MODALS_INFO_0  *LPUSER_MODALS_INFO_0;
+
+/* User modals information (level 1) */
+typedef struct _USER_MODALS_INFO_1 {
+    DWORD   usrmod1_role;
+    LPWSTR  usrmod1_primary;
+} USER_MODALS_INFO_1;
+typedef USER_MODALS_INFO_1  *PUSER_MODALS_INFO_1;
+typedef USER_MODALS_INFO_1  *LPUSER_MODALS_INFO_1;
+
+/* User modals information (level 2) */
+typedef struct _USER_MODALS_INFO_2 {
+    LPWSTR  usrmod2_domain_name;
+    PSID    usrmod2_domain_id;
+} USER_MODALS_INFO_2;
+typedef USER_MODALS_INFO_2  *PUSER_MODALS_INFO_2;
+typedef USER_MODALS_INFO_2  *LPUSER_MODALS_INFO_2;
+
+/* User modals information (level 3) */
+typedef struct _USER_MODALS_INFO_3 {
+    DWORD   usrmod3_lockout_direction;
+    DWORD   usrmod3_lockout_observation_window;
+    DWORD   usrmod3_lockout_threshold;
+} USER_MODALS_INFO_3;
+typedef USER_MODALS_INFO_3  *PUSER_MODALS_INFO_3;
+typedef USER_MODALS_INFO_3  *LPUSER_MODALS_INFO_3;
+
+/* User modals information (level 1001) */
+typedef struct _USER_MODALS_INFO_1001 {
+    DWORD   usrmod1001_min_passwd_len;
+} USER_MODALS_INFO_1001;
+typedef USER_MODALS_INFO_1001   *PUSER_MODALS_INFO_1001;
+typedef USER_MODALS_INFO_1001   *LPUSER_MODALS_INFO_1001;
+
+/* User modals information (level 1002) */
+typedef struct _USER_MODALS_INFO_1002 {
+    DWORD   usrmod1002_max_passwd_age;
+} USER_MODALS_INFO_1002;
+typedef USER_MODALS_INFO_1002   *PUSER_MODALS_INFO_1002;
+typedef USER_MODALS_INFO_1002   *LPUSER_MODALS_INFO_1002;
+
+/* User modals information (level 1003) */
+typedef struct _USER_MODALS_INFO_1003 {
+    DWORD   usrmod1003_min_passwd_age;
+} USER_MODALS_INFO_1003;
+typedef USER_MODALS_INFO_1003   *PUSER_MODALS_INFO_1003;
+typedef USER_MODALS_INFO_1003   *LPUSER_MODALS_INFO_1003;
+
+/* User modals information (level 1004) */
+typedef struct _USER_MODALS_INFO_1004 {
+    DWORD   usrmod1004_force_logoff;
+} USER_MODALS_INFO_1004;
+typedef USER_MODALS_INFO_1004   *PUSER_MODALS_INFO_1004;
+typedef USER_MODALS_INFO_1004   *LPUSER_MODALS_INFO_1004;
+
+/* User modals information (level 1005) */
+typedef struct _USER_MODALS_INFO_1005 {
+    DWORD   usrmod1005_password_hist_len;
+} USER_MODALS_INFO_1005;
+typedef USER_MODALS_INFO_1005   *PUSER_MODALS_INFO_1005;
+typedef USER_MODALS_INFO_1005   *LPUSER_MODALS_INFO_1005;
+
+/* User modals information (level 1006) */
+typedef struct _USER_MODALS_INFO_1006 {
+    DWORD   usrmod1006_role;
+} USER_MODALS_INFO_1006;
+typedef USER_MODALS_INFO_1006   *PUSER_MODALS_INFO_1006;
+typedef USER_MODALS_INFO_1006   *LPUSER_MODALS_INFO_1006;
+
+/* User modals information (level 1007) */
+typedef struct _USER_MODALS_INFO_1007 {
+    LPWSTR  usrmod1007_primary;
+} USER_MODALS_INFO_1007;
+typedef USER_MODALS_INFO_1007   *PUSER_MODALS_INFO_1007;
+typedef USER_MODALS_INFO_1007   *LPUSER_MODALS_INFO_1007;
+
+/* Group information (level 0) */
+typedef struct _GROUP_INFO_0 {
+    LPWSTR  grpi0_name;
+} GROUP_INFO_0;
+typedef GROUP_INFO_0    *PGROUP_INFO_0;
+typedef GROUP_INFO_0    *LPGROUP_INFO_0;
+
+/* Group information (level 1) */
+typedef struct _GROUP_INFO_1 {
+    LPWSTR  grpi1_name;
+    LPWSTR  grpi1_comment;
+} GROUP_INFO_1;
+typedef GROUP_INFO_1    *PGROUP_INFO_1;
+typedef GROUP_INFO_1    *LPGROUP_INFO_1;
+
+/* Group information (level 2) */
+typedef struct _GROUP_INFO_2 {
+    LPWSTR  grpi2_name;
+    LPWSTR  grpi2_comment;
+    DWORD   grpi2_group_id;
+    DWORD   grpi2_attributes;
+} GROUP_INFO_2;
+typedef GROUP_INFO_2    *PGROUP_INFO_2;
+typedef GROUP_INFO_2    *LPGROUP_INFO_2;
+
+/* Group information (level 3) */
+typedef struct _GROUP_INFO_3 {
+    LPWSTR  grpi3_name;
+    LPWSTR  grpi3_comment;
+    PSID    grpi3_group_sid;
+    DWORD   grpi3_attributes;
+} GROUP_INFO_3;
+typedef GROUP_INFO_3    *PGROUP_INFO_3;
+typedef GROUP_INFO_3    *LPGROUP_INFO_3;
+
+/* Group information (level 1002) */
+typedef struct _GROUP_INFO_1002 {
+    LPWSTR  grpi1002_comment;
+} GROUP_INFO_1002;
+typedef GROUP_INFO_1002 *PGROUP_INFO_1002;
+typedef GROUP_INFO_1002 *LPGROUP_INFO_1002;
+
+/* Group information (level 1005) */
+typedef struct _GROUP_INFO_1005 {
+    DWORD   grpi1005_attributes;
+} GROUP_INFO_1005;
+typedef GROUP_INFO_1005 *PGROUP_INFO_1005;
+typedef GROUP_INFO_1005 *LPGROUP_INFO_1005;
+
+/* Group users information (level 0) */
+typedef struct _GROUP_USERS_INFO_0 {
+    LPWSTR  grui0_name;
+} GROUP_USERS_INFO_0;
+typedef GROUP_USERS_INFO_0  *PGROUP_USERS_INFO_0;
+typedef GROUP_USERS_INFO_0  *LPGROUP_USERS_INFO_0;
+
+/* Group users information (level 1) */
+typedef struct _GROUP_USERS_INFO_1 {
+    LPWSTR  grui1_name;
+    DWORD   grui1_attributes;
+} GROUP_USERS_INFO_1;
+typedef GROUP_USERS_INFO_1  *PGROUP_USER_INFO_1;
+typedef GROUP_USERS_INFO_1  *LPGROUP_USER_INFO_1;
+
+/* Local group information (level 0) */
+typedef struct _LOCALGROUP_INFO_0 {
+    LPWSTR  lgrpi0_name;
+} LOCALGROUP_INFO_0;
+typedef LOCALGROUP_INFO_0   *PLOCALGROUP_INFO_0;
+typedef LOCALGROUP_INFO_0   *LPLOCALGROUP_INFO_0;
+
+/* Local group information (level 1) */
+typedef struct _LOCALGROUP_INFO_1 {
+    LPWSTR  lgrpi1_name;
+    LPWSTR  lgrpi1_comment;
+} LOCALGROUP_INFO_1;
+typedef LOCALGROUP_INFO_1   *PLOCALGROUP_INFO_1;
+typedef LOCALGROUP_INFO_1   *LPLOCALGROUP_INFO_1;
+
+/* Local group information (level 1002) */
+typedef struct _LOCALGROUP_INFO_1002 {
+    LPWSTR  lgrpi1002_comment;
+} LOCALGROUP_INFO_1002;
+typedef LOCALGROUP_INFO_1002    *PLOCALGROUP_INFO_1002;
+typedef LOCALGROUP_INFO_1002    *LPLOCALGROUP_INFO_1002;
+
+/* Local group members information (level 0) */
+typedef struct _LOCALGROUP_MEMBERS_INFO_0 {
+    PSID    lgrmi0_sid;
+} LOCALGROUP_MEMBERS_INFO_0;
+typedef LOCALGROUP_MEMBERS_INFO_0   *PLOCALGROUP_MEMBERS_INFO_0;
+typedef LOCALGROUP_MEMBERS_INFO_0   *LPLOCALGROUP_MEMBERS_INFO_0;
+
+/* Local group members information (level 1) */
+typedef struct _LOCALGROUP_MEMBERS_INFO_1 {
+    PSID            lgrmi1_sid;
+    SID_NAME_USE    lgrmi1_sidusage;
+    LPWSTR          lgrmi1_name;
+} LOCALGROUP_MEMBERS_INFO_1;
+typedef LOCALGROUP_MEMBERS_INFO_1   *PLOCALGROUP_MEMBERS_INFO_1;
+typedef LOCALGROUP_MEMBERS_INFO_1   *LPLOCALGROUP_MEMBERS_INFO_1;
+
+/* Local group members information (level 2) */
+typedef struct _LOCALGROUP_MEMBERS_INFO_2 {
+    PSID            lgrmi2_sid;
+    SID_NAME_USE    lgrmi2_sidusage;
+    LPWSTR          lgrmi2_domainandname;
+} LOCALGROUP_MEMBERS_INFO_2;
+typedef LOCALGROUP_MEMBERS_INFO_2   *PLOCALGROUP_MEMBERS_INFO_2;
+typedef LOCALGROUP_MEMBERS_INFO_2   *LPLOCALGROUP_MEMBERS_INFO_2;
+
+/* Local group members information (level 3) */
+typedef struct _LOCALGROUP_MEMBERS_INFO_3 {
+    LPWSTR  lgrmi3_domainandname;
+} LOCALGROUP_MEMBERS_INFO_3;
+typedef LOCALGROUP_MEMBERS_INFO_3   *PLOCALGROUP_MEMBERS_INFO_3;
+typedef LOCALGROUP_MEMBERS_INFO_3   *LPLOCALGROUP_MEMBERS_INFO_3;
+
+/* Local group users information (level 0) */
+typedef struct _LOCALGROUP_USERS_INFO_0 {
+    LPWSTR  lgrui0_name;
+} LOCALGROUP_USERS_INFO_0;
+typedef LOCALGROUP_USERS_INFO_0 *PLOCALGROUP_USERS_INFO_0;
+typedef LOCALGROUP_USERS_INFO_0 *LPLOCALGROUP_USERS_INFO_0;
+
+/* User display information */
+typedef struct _NET_DISPLAY_USER {
+    LPWSTR  usri1_name;
+    LPWSTR  usri1_comment;
+    DWORD   usri1_flags;
+    LPWSTR  usri1_full_name;
+    DWORD   usri1_user_id;
+    DWORD   usri1_next_index;
+} NET_DISPLAY_USER;
+typedef NET_DISPLAY_USER    *PNET_DISPLAY_USER;
+
+/* Machine display information */
+typedef struct _NET_DISPLAY_MACHINE {
+    LPWSTR  usri2_name;
+    LPWSTR  usri2_comment;
+    DWORD   usri2_flags;
+    DWORD   usri2_user_id;
+    DWORD   usri2_next_index;
+} NET_DISPLAY_MACHINE;
+typedef NET_DISPLAY_MACHINE *PNET_DISPLAY_MACHINE;
+
+/* Group display information */
+typedef struct _NET_DISPLAY_GROUP {
+    LPWSTR  grpi3_name;
+    LPWSTR  grpi3_comment;
+    DWORD   grpi3_group_id;
+    DWORD   grpi3_attributes;
+    DWORD   grpi3_next_index;
+} NET_DISPLAY_GROUP;
+typedef NET_DISPLAY_GROUP   *PNET_DISPLAY_GROUP;
+
+/* Access information (level 0) */
+typedef struct _ACCESS_INFO_0 {
+    LPWSTR  acc0_resource_name;
+} ACCESS_INFO_0;
+typedef ACCESS_INFO_0   *PACCESS_INFO_0;
+typedef ACCESS_INFO_0   *LPACCESS_INFO_0;
+
+/* Access information (level 1) */
+typedef struct _ACCESS_INFO_1 {
+    LPWSTR  acc1_resource_name;
+    DWORD   acc1_attr;
+    DWORD   acc1_count;
+} ACCESS_INFO_1;
+typedef ACCESS_INFO_1   *PACCESS_INFO_1;
+typedef ACCESS_INFO_1   *LPACCESS_INFO_1;
+
+/* Access information (level 1002) */
+typedef struct _ACCESS_INFO_1002 {
+    DWORD   acc1002_attr;
+} ACCESS_INFO_1002;
+typedef ACCESS_INFO_1002    *PACCESS_INFO_1002;
+typedef ACCESS_INFO_1002    *LPACCESS_INFO_1002;
+
+/* Access list */
+typedef struct _ACCESS_LIST {
+    LPWSTR  acl_ugname;
+    DWORD   acl_access;
+} ACCESS_LIST;
+typedef ACCESS_LIST *PACCESS_LIST;
+typedef ACCESS_LIST *LPACCESS_LIST;
+
+/* Password validation types */
+typedef enum _NET_VALIDATE_PASSWORD_TYPE {
+    NetValidateAuthentication   = 1,
+    NetValidatePasswordChange   = 2,
+    NetValidatePasswordReset    = 3
+} NET_VALIDATE_PASSWORD_TYPE;
+typedef NET_VALIDATE_PASSWORD_TYPE  *PNET_VALIDATE_PASSWORD_TYPE;
+
+/* Password validation hash */
+typedef struct _NET_VALIDATE_PASSWORD_HASH {
+    ULONG   Length;
+    LPBYTE  Hash;
+} NET_VALIDATE_PASSWORD_HASH;
+typedef NET_VALIDATE_PASSWORD_HASH  *PNET_VALIDATE_PASSWORD_HASH;
+
+/* Validation persisted fields */
+typedef struct _NET_VALIDATE_PERSISTED_FIELDS {
+    ULONG                       PresentFields;
+    FILETIME                    PasswordLastSet;
+    FILETIME                    BadPasswordTime;
+    FILETIME                    LockoutTime;
+    ULONG                       BadPasswordCount;
+    ULONG                       PasswordHistoryLength;
+    PNET_VALIDATE_PASSWORD_HASH PasswordHistory;
+} NET_VALIDATE_PERSISTED_FIELDS;
+typedef NET_VALIDATE_PERSISTED_FIELDS   *PNET_VALIDATE_PERSISTED_FIELDS;
+
+/* Validation output argument */
+typedef struct _NET_VALIDATE_OUTPUT_ARG {
+    NET_VALIDATE_PERSISTED_FIELDS   ChangedPersistedFields;
+    NET_API_STATUS                  ValidationStatus;
+} NET_VALIDATE_OUTPUT_ARG;
+typedef NET_VALIDATE_OUTPUT_ARG *PNET_VALIDATE_OUTPUT_ARG;
+
+/* Validation authentication input argument */
+typedef struct _NET_VALIDATE_AUTHENTICATION_INPUT_ARG {
+    NET_VALIDATE_PERSISTED_FIELDS   InputPersistedFields;
+    BOOLEAN                         PasswordMatched;
+} NET_VALIDATE_AUTHENTICATION_INPUT_ARG;
+typedef NET_VALIDATE_AUTHENTICATION_INPUT_ARG   *PNET_VALIDATE_AUTHENTICATION_INPUT_ARG;
+
+/* Validation password change input argument */
+typedef struct _NET_VALIDATE_PASSWORD_CHANGE_INPUT_ARG {
+    NET_VALIDATE_PERSISTED_FIELDS   InputPersistedFields;
+    LPWSTR                          ClearPassword;
+    LPWSTR                          UserAccountName;
+    NET_VALIDATE_PASSWORD_HASH      HashedPassword;
+    BOOLEAN                         PasswordMatch;
+} NET_VALIDATE_PASSWORD_CHANGE_INPUT_ARG;
+typedef NET_VALIDATE_PASSWORD_CHANGE_INPUT_ARG  *PNET_VALIDATE_PASSWORD_CHANGE_INPUT_ARG;
+
+/* Validation password reset input argument */
+typedef struct _NET_VALIDATE_PASSWORD_RESET_INPUT_ARG {
+    NET_VALIDATE_PERSISTED_FIELDS   InputPersistedFields;
+    LPWSTR                          ClearPassword;
+    LPWSTR                          UserAccountName;
+    NET_VALIDATE_PASSWORD_HASH      HashedPassword;
+    BOOLEAN                         PasswordMustChangeAtNextLogon;
+    BOOLEAN                         ClearLockout;
+} NET_VALIDATE_PASSWORD_RESET_INPUT_ARG;
+typedef NET_VALIDATE_PASSWORD_RESET_INPUT_ARG   *PNET_VALIDATE_PASSWORD_RESET_INPUT_ARG;
+
+/* Netlogon information (level 1) */
+typedef struct _NETLOGON_INFO_1 {
+    DWORD           netlog1_flags;
+    NET_API_STATUS  netlog1_pdc_connection_status;
+} NETLOGON_INFO_1;
+typedef NETLOGON_INFO_1 *PNETLOGON_INFO_1;
+
+/* Netlogon information (level 2) */
+typedef struct _NETLOGON_INFO_2 {
+    DWORD           netlog2_flags;
+    NET_API_STATUS  netlog2_pdc_connection_status;
+    LPWSTR          netlog2_trusted_dc_name;
+    NET_API_STATUS  netlog2_tc_connection_status;
+} NETLOGON_INFO_2;
+typedef NETLOGON_INFO_2 *PNETLOGON_INFO_2;
+
+/* Netlogon information (level 3) */
+typedef struct _NETLOGON_INFO_3 {
+    DWORD   netlog3_flags;
+    DWORD   netlog3_logon_attempts;
+    DWORD   netlog3_reserved1;
+    DWORD   netlog3_reserved2;
+    DWORD   netlog3_reserved3;
+    DWORD   netlog3_reserved4;
+    DWORD   netlog3_reserved5;
+} NETLOGON_INFO_3;
+typedef NETLOGON_INFO_3 *PNETLOGON_INFO_3;
+
+/* Netlogon information (level 4) */
+typedef struct _NETLOGON_INFO_4 {
+    LPWSTR  netlog4_trusted_dc_name;
+    LPWSTR  netlog4_trusted_domain_name;
+} NETLOGON_INFO_4;
+typedef NETLOGON_INFO_4 *PNETLOGON_INFO_4;
+
+/* MSA information levels */
+typedef enum _MSA_INFO_LEVEL {
+    MsaInfoLevel0   = 0,
+    MsaInfoLevelMax = 1
+} MSA_INFO_LEVEL;
+
+/* MSA information states */
+typedef enum _MSA_INFO_STATE {
+    MsaInfoNotExist         = 1,
+    MsaInfoNotService       = 2,
+    MsaInfoCannotInstall    = 3,
+    MsaInfoCanInstall       = 4,
+    MsaInfoInstalled        = 5
+} MSA_INFO_STATE;
+
+/* MSA information (level 0) */
+typedef struct _MSA_INFO_0 {
+    MSA_INFO_STATE  State;
+} MSA_INFO_0;
+typedef MSA_INFO_0  *PMSA_INFO_0;
+typedef MSA_INFO_0  *LPMSA_INFO_0;
+
+/* Functions in NETAPI32.DLL */
+NET_API_STATUS NET_API_FUNCTION I_NetLogonControl( LPCWSTR, DWORD, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION I_NetLogonControl2( LPCWSTR, DWORD, DWORD, LPBYTE, LPBYTE * );
+NTSTATUS NET_API_FUNCTION       NetAddServiceAccount( LPWSTR, LPWSTR, LPWSTR, DWORD );
+NTSTATUS NET_API_FUNCTION       NetEnumerateServiceAccounts( LPWSTR, DWORD, DWORD *, PZPWSTR * );
+NTSTATUS NET_API_FUNCTION       NetEnumerateTrustedDomains( LPWSTR, LPWSTR * );
+NET_API_STATUS NET_API_FUNCTION NetGetAnyDCName( LPCWSTR, LPCWSTR, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetGetDCName( LPCWSTR, LPCWSTR, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetGetDisplayInformationIndex( LPCWSTR, DWORD, LPCWSTR, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetGroupAdd( LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetGroupAddUser( LPCWSTR, LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetGroupDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetGroupDelUser( LPCWSTR, LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetGroupEnum( LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, PDWORD_PTR );
+NET_API_STATUS NET_API_FUNCTION NetGroupGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetGroupGetUsers( LPCWSTR, LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, PDWORD_PTR );
+NET_API_STATUS NET_API_FUNCTION NetGroupSetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetGroupSetUsers( LPCWSTR, LPCWSTR, DWORD, LPBYTE, DWORD );
+NTSTATUS NET_API_FUNCTION       NetIsServiceAccount( LPWSTR, LPWSTR, BOOL * );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupAdd( LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupAddMember( LPCWSTR, LPCWSTR, PSID );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupAddMembers( LPCWSTR, LPCWSTR, DWORD, LPBYTE, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupDelMember( LPCWSTR, LPCWSTR, PSID );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupDelMembers( LPCWSTR, LPCWSTR, DWORD, LPBYTE, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupEnum( LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, PDWORD_PTR );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupGetMembers( LPCWSTR, LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, PDWORD_PTR );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupSetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetLocalGroupSetMembers( LPCWSTR, LPCWSTR, DWORD, LPBYTE, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetQueryDisplayInformation( LPCWSTR, DWORD, DWORD, DWORD, DWORD, LPDWORD, PVOID * );
+NTSTATUS NET_API_FUNCTION       NetQueryServiceAccount( LPWSTR, LPWSTR, DWORD, PBYTE * );
+NTSTATUS NET_API_FUNCTION       NetRemoveServiceAccount( LPWSTR, LPWSTR, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserAdd( LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserChangePassword( LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetUserDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION NetUserEnum( LPCWSTR, DWORD, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserGetGroups( LPCWSTR, LPCWSTR, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetUserGetLocalGroups( LPCWSTR, LPCWSTR, DWORD, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserModalsGet( LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetUserModalsSet( LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserSetGroups( LPCWSTR, LPCWSTR, DWORD, LPBYTE, DWORD );
+NET_API_STATUS NET_API_FUNCTION NetUserSetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetValidatePasswordPolicy( LPCWSTR, LPVOID, NET_VALIDATE_PASSWORD_TYPE, LPVOID, LPVOID * );
+NET_API_STATUS NET_API_FUNCTION NetValidatePasswordPolicyFree( LPVOID * );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessAdd( LPCWSTR, DWORD, LPBYTE, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessDel( LPCWSTR, LPCWSTR );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessEnum( LPCWSTR, LPCWSTR, DWORD, DWORD, LPBYTE *, DWORD, LPDWORD, LPDWORD, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessGetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessGetUserPerms( LPCWSTR, LPCWSTR, LPCWSTR, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION RxNetAccessSetInfo( LPCWSTR, LPCWSTR, DWORD, LPBYTE, LPDWORD );
+
+/* Aliases */
+#define NetAccessAdd            RxNetAccessAdd
+#define NetAccessDel            RxNetAccessDel
+#define NetAccessEnum           RxNetAccessEnum
+#define NetAccessGetInfo        RxNetAccessGetInfo
+#define NetAccessGetUserPerms   RxNetAccessGetUserPerms
+#define NetAccessSetInfo        RxNetAccessSetInfo
+
+:include cplusepi.sp
+
+#endif /* _LMUSER_ */

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 #include "plusplus.h"
 #include "errdefns.h"
 #include "pragdefn.h"
@@ -51,10 +49,10 @@ typedef struct                  // DUMP INFORMATION
 } DUMP_INFO;
 
 
-static DUMP_INFO* bufferNull(   // INITIALIZE BUFFER
+static DUMP_INFO* bufferRewind(   // INITIALIZE BUFFER
     DUMP_INFO* di )             // - dump information
 {
-    VStrNull( &di->buffer );
+    VbufRewind( &di->buffer );
     return di;
 }
 
@@ -63,7 +61,7 @@ static DUMP_INFO* bufferChr(    // CONCATENATE CHAR TO BUFFER
     DUMP_INFO* di,              // - dump information
     char chr )                  // - to be concatenated
 {
-    VStrConcChr( &di->buffer, chr );
+    VbufConcChr( &di->buffer, chr );
     return di;
 }
 
@@ -72,7 +70,7 @@ static DUMP_INFO* bufferStr(    // CONCATENATE STRING TO BUFFER
     DUMP_INFO* di,              // - dump information
     char* str )                 // - to be concatenated
 {
-    VStrConcStr( &di->buffer, str );
+    VbufConcStr( &di->buffer, str );
     return di;
 }
 
@@ -83,7 +81,7 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
 {
     char buf[16];               // - buffer
 
-    VStrConcDecimal( &di->buffer, numb );
+    VbufConcDecimal( &di->buffer, numb );
     if( numb >= 10 ) {
         itoa( numb, buf, 16 );
         di = bufferStr( di, "/0x" );
@@ -96,7 +94,7 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
 static DUMP_INFO* bufferInit(   // INITIALIZE BUFFER (NON-TITLE LINE)
     DUMP_INFO* di )             // - dump information
 {
-    di = bufferNull( di );
+    di = bufferRewind( di );
     di = bufferStr( di, "    " );
     return di;
 }
@@ -105,7 +103,7 @@ static DUMP_INFO* bufferInit(   // INITIALIZE BUFFER (NON-TITLE LINE)
 static void vbufWrite(          // WRITE A VBUFFER
     VBUF* vbuf )                // - the VBUF to be written
 {
-    MsgDisplayLine( vbuf->buf );
+    MsgDisplayLine( VbufString( vbuf ) );
 }
 
 
@@ -117,8 +115,8 @@ static DUMP_INFO* bufferWrite(  // WRITE A BUFFER
 }
 
 
-static void dumpDirect( BASE_CLASS*, DUMP_INFO* );
-static void dumpVirtual( BASE_CLASS*, DUMP_INFO* );
+static void dumpDirect( BASE_CLASS*, void * );
+static void dumpVirtual( BASE_CLASS*, void * );
 
 
 static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
@@ -126,7 +124,7 @@ static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
     char* title,                // - title line
     char* class_name )          // - name of class
 {
-    di = bufferNull( di );
+    di = bufferRewind( di );
     di = bufferChr( di, '\n' );
     di = bufferStr( di, title );
     di = bufferChr( di, ' ' );
@@ -209,8 +207,9 @@ static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
 
 static void dumpMember(         // DUMP A MEMBER
     SYMBOL memb,                // - member
-    DUMP_INFO* di )             // - dump information
+    void *_di )             // - dump information
 {
+    DUMP_INFO* di = _di;
     target_offset_t offset;     // - offset of symbol
     TYPE type;                  // - type of symbol
     char* name;                 // - symbol's name
@@ -299,16 +298,18 @@ static void dumpBase(           // DUMP BASE
 
 static void dumpVirtual(        // DUMP VIRTUAL BASE
     BASE_CLASS* vbase,          // - virtual base
-    DUMP_INFO* di )             // - dump information
+    void * _di )             // - dump information
 {
+    DUMP_INFO* di = _di;
     dumpBase( vbase, di, "Virtual Base:" );
 }
 
 
 static void dumpDirect(         // DUMP DIRECT BASE
     BASE_CLASS* dbase,          // - direct base
-    DUMP_INFO* di )             // - dump information
+    void * _di )             // - dump information
 {
+    DUMP_INFO* di = _di;
     dumpBase( dbase, di, "Direct Base:" );
 }
 
@@ -346,17 +347,15 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     unsigned long val;          // - value as unsigned
 
     CompFlags.log_note_msgs = TRUE;
-    VbufInit( &buffer );
     base = TypedefModifierRemoveOnly( type );
     sym = base->u.t.sym;
-    VStrNull( &buffer );
-    VStrConcStr( &buffer, "Object Model for: " );
+    VbufInit( &buffer );
+    VbufConcStr( &buffer, "Object Model for: " );
     name = sym->name->name;
-    if( NULL == name
-     || name[0] == '.' ) {
+    if( NULL == name || name[0] == '.' ) {
         name = "anonymous enum type";
     }
-    VStrConcStr( &buffer, name );
+    VbufConcStr( &buffer, name );
     switch( TypedefModifierRemove( base->of ) -> id ) {
       case TYP_CHAR :
       case TYP_UCHAR :
@@ -401,8 +400,8 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
         break;
       DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
     }
-    VStrConcStr( &buffer, ", base type is " );
-    VStrConcStr( &buffer, name );
+    VbufConcStr( &buffer, ", base type is " );
+    VbufConcStr( &buffer, name );
     vbufWrite( &buffer );
     mask = CgMemorySize( base );
     if( mask == sizeof( unsigned long ) ) {
@@ -413,22 +412,22 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     for( ; ; ) {
         sym = sym->thread;
         if( ! SymIsEnumeration( sym ) ) break;
-        VStrNull( &buffer );
-        VStrConcStr( &buffer, "    " );
-        VStrConcStr( &buffer, sym->name->name );
-        VStrConcStr( &buffer, " = " );
+        VbufRewind( &buffer );
+        VbufConcStr( &buffer, "    " );
+        VbufConcStr( &buffer, sym->name->name );
+        VbufConcStr( &buffer, " = " );
         numb = sym->u.sval;
         if( sign && numb < 0 ) {
-            VStrConcChr( &buffer, '-' );
-            VStrConcDecimal( &buffer, -numb );
+            VbufConcChr( &buffer, '-' );
+            VbufConcDecimal( &buffer, -numb );
         } else {
-            VStrConcDecimal( &buffer, numb );
+            VbufConcDecimal( &buffer, numb );
         }
         val = mask & numb;
         if( val > 10 ) {
             itoa( val, buf, 16 );
-            VStrConcStr( &buffer, " /0x" );
-            VStrConcStr( &buffer, buf );
+            VbufConcStr( &buffer, " /0x" );
+            VbufConcStr( &buffer, buf );
         }
         vbufWrite( &buffer );
     }

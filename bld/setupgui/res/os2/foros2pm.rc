@@ -1,0 +1,2 @@
+#include "os2.h"
+rcinclude "setup.i"

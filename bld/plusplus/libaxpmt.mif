@@ -1,3 +1,0 @@
-!include $(plusplus_dir)\libaxp.mif
-mflag = -bm -d__MT__ $(text)
-asm_model = -3r -ms -d__MT__

@@ -1,0 +1,1957 @@
+/*
+ *  vfw.h       Video for Windows (VfW) functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_VFW
+#define _INC_VFW
+
+:include readonly.sp
+
+#include <mmsystem.h>
+#include <mmreg.h>
+#include <ole2.h>
+#include <msacm.h>
+
+:include cpluspro.sp
+
+/* VfW calling conventions */
+#define VFWAPI  WINAPI
+#define VFWAPIV WINAPIV
+
+/* VfW handle data types */
+DECLARE_HANDLE( HIC );
+DECLARE_HANDLE( HVIDEO );
+
+/* VfW pointer to handle data types */
+typedef HVIDEO  *LPHVIDEO;
+
+/* VfW primitive data types */
+typedef HANDLE  HDRAWDIB;
+typedef WORD    TWOCC;
+
+/* Installable compression version */
+#define ICVERSION   0x0104
+
+/* Bitmap compression type */
+#define BI_1632 0x32333631
+
+/* Macro to make a TWOCC value */
+#define aviTWOCC( p1, p2 )  ((WORD)(BYTE)(p1) | ((WORD)(BYTE)(p2) << 8))
+
+/* Installable compression types */
+#define ICTYPE_VIDEO    mmioFOURCC( 'v', 'i', 'd', 'c' )
+#define ICTYPE_AUDIO    mmioFOURCC( 'a', 'u', 'd', 'c' )
+
+/* Installable compression errors */
+#define ICERR_OK            0L
+#define ICERR_DONTDRAW      1L
+#define ICERR_NEWPALETTE    2L
+#define ICERR_GOTOKEYFRAME  3L
+#define ICERR_STOPDRAWING   4L
+#define ICERR_UNSUPPORTED   (-1L)
+#define ICERR_BADFORMAT     (-2L)
+#define ICERR_MEMORY        (-3L)
+#define ICERR_INTERNAL      (-4L)
+#define ICERR_BADFLAGS      (-5L)
+#define ICERR_BADPARAM      (-6L)
+#define ICERR_BADSIZE       (-7L)
+#define ICERR_BADHANDLE     (-8L)
+#define ICERR_CANTUPDATE    (-9L)
+#define ICERR_ABORT         (-10L)
+#define ICERR_ERROR         (-100L)
+#define ICERR_BADBITDEPTH   (-200L)
+#define ICERR_BADIMAGESIZE  (-201L)
+#define ICERR_CUSTOM        (-400L)
+
+/* ICOpen() flags */
+#define ICMODE_COMPRESS         1
+#define ICMODE_DECOMPRESS       2
+#define ICMODE_FASTDECOMPRESS   3
+#define ICMODE_QUERY            4
+#define ICMODE_FASTCOMPRESS     5
+#define ICMODE_DRAW             8
+
+/* AVI file index flags */
+#define AVIIF_LIST      0x00000001L
+#define AVIIF_TWOCC     0x00000002L
+#define AVIIF_KEYFRAME  0x00000010L
+
+/* Installable compression quality values */
+#define ICQUALITY_LOW       0
+#define ICQUALITY_HIGH      10000
+#define ICQUALITY_DEFAULT   (-1)
+
+/* Installable compression messages */
+#define ICM_USER                (DRV_USER + 0x0000)
+#define ICM_RESERVED_LOW        (DRV_USER + 0x1000)
+#define ICM_RESERVED_HIGH       (DRV_USER + 0x2000)
+#define ICM_RESERVED            ICM_RESERVED_LOW
+#define ICM_GETSTATE            (ICM_RESERVED + 0)
+#define ICM_SETSTATE            (ICM_RESERVED + 1)
+#define ICM_GETINFO             (ICM_RESERVED + 2)
+#define ICM_CONFIGURE           (ICM_RESERVED + 10)
+#define ICM_ABOUT               (ICM_RESERVED + 11)
+#define ICM_GETERRORTEXT        (ICM_RESERVED + 12)
+#define ICM_GETFORMATNAME       (ICM_RESERVED + 20)
+#define ICM_ENUMFORMATS         (ICM_RESERVED + 21)
+#define ICM_GETDEFAULTQUALITY   (ICM_RESERVED + 30)
+#define ICM_GETQUALITY          (ICM_RESERVED + 31)
+#define ICM_SETQUALITY          (ICM_RESERVED + 32)
+#define ICM_SET                 (ICM_RESERVED + 40)
+#define ICM_GET                 (ICM_RESERVED + 41)
+
+/* Installable compression specific messages */
+#define ICM_COMPRESS_GET_FORMAT     (ICM_USER + 4)
+#define ICM_COMPRESS_GET_SIZE       (ICM_USER + 5)
+#define ICM_COMPRESS_QUERY          (ICM_USER + 6)
+#define ICM_COMPRESS_BEGIN          (ICM_USER + 7)
+#define ICM_COMPRESS                (ICM_USER + 8)
+#define ICM_COMPRESS_END            (ICM_USER + 9)
+#define ICM_DECOMPRESS_GET_FORMAT   (ICM_USER + 10)
+#define ICM_DECOMPRESS_QUERY        (ICM_USER + 11)
+#define ICM_DECOMPRESS_BEGIN        (ICM_USER + 12)
+#define ICM_DECOMPRESS              (ICM_USER + 13)
+#define ICM_DECOMPRESS_END          (ICM_USER + 14)
+#define ICM_DECOMPRESS_SET_PALETTE  (ICM_USER + 29)
+#define ICM_DECOMPRESS_GET_PALETTE  (ICM_USER + 30)
+#define ICM_DRAW_QUERY              (ICM_USER + 31)
+#define ICM_DRAW_BEGIN              (ICM_USER + 15)
+#define ICM_DRAW_GET_PALETTE        (ICM_USER + 16)
+#define ICM_DRAW_UPDATE             (ICM_USER + 17)
+#define ICM_DRAW_START              (ICM_USER + 18)
+#define ICM_DRAW_STOP               (ICM_USER + 19)
+#define ICM_DRAW_BITS               (ICM_USER + 20)
+#define ICM_DRAW_END                (ICM_USER + 21)
+#define ICM_DRAW_GETTIME            (ICM_USER + 32)
+#define ICM_DRAW                    (ICM_USER + 33)
+#define ICM_DRAW_WINDOW             (ICM_USER + 34)
+#define ICM_DRAW_SETTIME            (ICM_USER + 35)
+#define ICM_DRAW_REALIZE            (ICM_USER + 36)
+#define ICM_DRAW_FLUSH              (ICM_USER + 37)
+#define ICM_DRAW_RENDERBUFFER       (ICM_USER + 38)
+#define ICM_DRAW_START_PLAY         (ICM_USER + 39)
+#define ICM_DRAW_STOP_PLAY          (ICM_USER + 40)
+#define ICM_DRAW_SUGGESTFORMAT      (ICM_USER + 50)
+#define ICM_DRAW_CHANGEPALETTE      (ICM_USER + 51)
+#define ICM_DRAW_IDLE               (ICM_USER + 52)
+#define ICM_GETBUFFERSWANTED        (ICM_USER + 41)
+#define ICM_GETDEFAULTKEYFRAMERATE  (ICM_USER + 42)
+#define ICM_DECOMPRESSEX_BEGIN      (ICM_USER + 60)
+#define ICM_DECOMPRESSEX_QUERY      (ICM_USER + 61)
+#define ICM_DECOMPRESSEX            (ICM_USER + 62)
+#define ICM_DECOMPRESSEX_END        (ICM_USER + 63)
+#define ICM_COMPRESS_FRAMES_INFO    (ICM_USER + 70)
+#define ICM_COMPRESS_FRAMES         (ICM_USER + 71)
+#define ICM_SET_STATUS_PROC         (ICM_USER + 72)
+
+/* ICM_SET constants */
+#define ICM_FRAMERATE       mmioFOURCC( 'F', 'r', 'm', 'R' )
+#define ICM_KEYFRAMERATE    mmioFOURCC( 'K', 'e', 'y', 'R' )
+
+/* Installable compression information flags */
+#define VIDCF_QUALITY           0x00000001L
+#define VIDCF_CRUNCH            0x00000002L
+#define VIDCF_TEMPORAL          0x00000004L
+#define VIDCF_COMPRESSFRAMES    0x00000008L
+#define VIDCF_DRAW              0x00000010L
+#define VIDCF_FASTTEMPORALC     0x00000020L
+#define VIDCF_FASTTEMPORALD     0x00000080L
+
+/* ICCompress() flags */
+#define ICCOMPRESS_KEYFRAME 0x00000001L
+
+/* ICCompressFrames() flags */
+#define ICCOMPRESSFRAMES_PADDING    0x00000001L
+
+/* ICStatus() callback messages */
+#define ICSTATUS_START  0
+#define ICSTATUS_STATUS 1
+#define ICSTATUS_END    2
+#define ICSTATUS_ERROR  3
+#define ICSTATUS_YIELD  4
+
+/* ICDecompress() flags */
+#define ICDECOMPRESS_HURRYUP        0x80000000L
+#define ICDECOMPRESS_UPDATE         0x40000000L
+#define ICDECOMPRESS_PREROLL        0x20000000L
+#define ICDECOMPRESS_NULLFRAME      0x10000000L
+#define ICDECOMPRESS_NOTKEYFRAME    0x08000000L
+
+/* ICDrawBegin() flags */
+#define ICDRAW_QUERY        0x00000001L
+#define ICDRAW_FULLSCREEN   0x00000002L
+#define ICDRAW_HDC          0x00000004L
+#define ICDRAW_ANIMATE      0x00000008L
+#define ICDRAW_CONTINUE     0x00000010L
+#define ICDRAW_MEMORYDC     0x00000020L
+#define ICDRAW_UPDATING     0x00000040L
+#define ICDRAW_RENDER       0x00000080L
+#define ICDRAW_BUFFER       0x00000100L
+
+/* ICDraw() flags */
+#define ICDRAW_HURRYUP      0x80000000L
+#define ICDRAW_UPDATE       0x40000000L
+#define ICDRAW_PREROLL      0x20000000L
+#define ICDRAW_NULLFRAME    0x10000000L
+#define ICDRAW_NOTKEYFRAME  0x08000000L
+
+/* ICInstall() flags */
+#define ICINSTALL_UNICODE   0x8000
+#define ICINSTALL_FUNCTION  0x0001
+#define ICINSTALL_DRIVER    0x0002
+#define ICINSTALL_HDRV      0x0004
+#define ICINSTALL_DRIVERW   0x8002
+
+/* Installable compression manager query flags */
+#define ICMF_CONFIGURE_QUERY    0x00000001
+#define ICMF_ABOUT_QUERY        0x00000001
+
+/* Compressor variables flags */
+#define ICMF_COMPVARS_VALID 0x00000001L
+
+/* ICCompressorChoose() flags */
+#define ICMF_CHOOSE_KEYFRAME        0x0001
+#define ICMF_CHOOSE_DATARATE        0x0002
+#define ICMF_CHOOSE_PREVIEW         0x0004
+#define ICMF_CHOOSE_ALLCOMPRESSORS  0x0008
+
+/* Draw DIB flags */
+#define DDF_UPDATE          0x0002
+#define DDF_SAME_HDC        0x0004
+#define DDF_SAME_DRAW       0x0008
+#define DDF_DONTDRAW        0x0010
+#define DDF_ANIMATE         0x0020
+#define DDF_BUFFER          0x0040
+#define DDF_JUSTDRAWIT      0x0080
+#define DDF_FULLSCREEN      0x0100
+#define DDF_BACKGROUNDPAL   0x0200
+#define DDF_NOTKEYFRAME     0x0400
+#define DDF_HURRYUP         0x0800
+#define DDF_HALFTONE        0x1000
+#define DDF_PREROLL         DDF_DONTDRAW
+#define DDF_SAME_DIB        DDF_SAME_DRAW
+#define DDF_SAME_SIZE       DDF_SAME_DRAW
+
+/* DrawDibProfileDisplay() flags */
+#define PD_CAN_DRAW_DIB         0x0001
+#define PD_CAN_STRETCHDIB       0x0002
+#define PD_STRETCHDIB_1_1_OK    0x0004
+#define PD_STRETCHDIB_1_2_OK    0x0008
+#define PD_STRETCHDIB_1_N_OK    0x0010
+
+/* Form, list, and chunk types */
+#define formtypeAVI             mmioFOURCC( 'A', 'V', 'I', ' ' )
+#define listtypeAVIHEADER       mmioFOURCC( 'h', 'd', 'r', 'l' )
+#define ckidAVIMAINHDR          mmioFOURCC( 'a', 'v', 'i', 'h' )
+#define listtypeSTREAMHEADER    mmioFOURCC( 's', 't', 'r', 'l' )
+#define ckidSTREAMHEADER        mmioFOURCC( 's', 't', 'r', 'h' )
+#define ckidSTREAMFORMAT        mmioFOURCC( 's', 't', 'r', 'f' )
+#define ckidSTREAMHANDLERDATA   mmioFOURCC( 's', 't', 'r', 'd' )
+#define ckidSTREAMNAME          mmioFOURCC( 's', 't', 'r', 'n' )
+#define listtypeAVIMOVIE        mmioFOURCC( 'm', 'o', 'v', 'i' )
+#define listtypeAVIRECORD       mmioFOURCC( 'r', 'e', 'c', ' ' )
+#define ckidAVINEWINDEX         mmioFOURCC( 'i', 'd', 'x', '1' )
+#define ckidAVIPADDING          mmioFOURCC( 'J', 'U', 'N', 'K' )
+
+/* Stream types */
+#define streamtypeVIDEO mmioFOURCC( 'v', 'i', 'd', 's' )
+#define streamtypeAUDIO mmioFOURCC( 'a', 'u', 'd', 's' )
+#define streamtypeMIDI  mmioFOURCC( 'm', 'i', 'd', 's' )
+#define streamtypeTEXT  mmioFOURCC( 't', 'x', 't', 's' )
+
+/* Basic chunk types */
+#define cktypeDIBbits       aviTWOCC( 'd', 'b' )
+#define cktypeDIBcompressed aviTWOCC( 'd', 'c' )
+#define cktypePALchange     aviTWOCC( 'p', 'c' )
+#define cktypeWAVEbytes     aviTWOCC( 'w', 'b' )
+
+/* AVI file header flags */
+#define AVIF_HASINDEX       0x00000010L
+#define AVIF_MUSTUSEINDEX   0x00000020L
+#define AVIF_ISINTERLEAVED  0x00000040L
+#define AVIF_WASCAPTUREFILE 0x00010000L
+#define AVIF_COPYRIGHTED    0x00020000L
+
+/* AVI header size */
+#define AVI_HEADERSIZE  2048
+
+/* AVI stream header flags */
+#define AVISF_DISABLED          0x00000001L
+#define AVISF_VIDEO_PALCHANGES  0x00010000L
+
+/* AVI index flags */
+#define AVIIF_LIST      0x00000001L
+#define AVIIF_KEYFRAME  0x00000010L
+#define AVIIF_FIRSTPART 0x00000020L
+#define AVIIF_LASTPART  0x00000040L
+#define AVIIF_MIDPART   (AVIIF_LASTPART | AVIIF_FIRSTPART)
+#define AVIIF_NOTIME    0x00000100L
+#define AVIIF_COMPUSE   0x0FFF0000L
+
+/* AVIGetFrame() flags */
+#define AVIGETFRAMEF_BESTDISPLAYFMT 1
+
+/* AVI stream information flags */
+#define AVISTREAMINFO_DISABLED      0x00000001L
+#define AVISTREAMINFO_FORMATCHANGES 0x00010000L
+
+/* AVI file information flags */
+#define AVIFILEINFO_HASINDEX        0x00000010L
+#define AVIFILEINFO_MUSTUSEINDEX    0x00000020L
+#define AVIFILEINFO_ISINTERLEAVED   0x00000100L
+#define AVIFILEINFO_WASCAPTUREFILE  0x00010000L
+#define AVIFILEINFO_COPYRIGHTED     0x00020000L
+
+/* AVI file capability flags */
+#define AVIFILECAPS_CANREAD         0x00000001L
+#define AVIFILECAPS_CANWRITE        0x00000002L
+#define AVIFILECAPS_ALLKEYFRAMES    0x00000010L
+#define AVIFILECAPS_NOCOMPRESSION   0x00000020L
+
+/* AVI compression flags */
+#define AVICOMPRESSF_INTERLEAVE 0x00000001L
+#define AVICOMPRESSF_DATARATE   0x00000002L
+#define AVICOMPRESSF_KEYFRAMES  0x00000004L
+#define AVICOMPRESSF_VALID      0x00000008L
+
+/* Macro to define GUIDs for AVI interfaces */
+#define DEFINE_AVIGUID( x, p1, p2, p3 ) \
+    DEFINE_GUID( x, p1, p2, p3, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 )
+
+/* AVI file handler flags */
+#define AVIFILEHANDLER_CANREAD          0x0001
+#define AVIFILEHANDLER_CANWRITE         0x0002
+#define AVIFILEHANDLER_CANACCEPTNONRGB  0x0004
+
+/* AVIStreamRead() special value */
+#define AVISTREAMREAD_CONVENIENT    (-1L)
+
+/* AVIStreamFindSample() flags */
+#define FIND_DIR        0x0000000FL
+#define FIND_NEXT       0x00000001L
+#define FIND_PREV       0x00000004L
+#define FIND_FROM_START 0x00000008L
+#define FIND_TYPE       0x000000F0L
+#define FIND_KEY        0x00000010L
+#define FIND_ANY        0x00000020L
+#define FIND_FORMAT     0x00000040L
+#define FIND_RET        0x0000F000L
+#define FIND_POS        0x00000000L
+#define FIND_LENGTH     0x00001000L
+#define FIND_OFFSET     0x00002000L
+#define FIND_SIZE       0x00003000L
+#define FIND_INDEX      0x00004000L
+#define SEARCH_NEAREST  FIND_PREV
+#define SEARCH_BACKWARD FIND_PREV
+#define SEARCH_FORWARD  FIND_NEXT
+#define SEARCH_KEY      FIND_KEY
+#define SEARCH_ANY      FIND_ANY
+
+/* Compression types */
+#define comptypeDIB mmioFOURCC( 'D', 'I', 'B', ' ' )
+
+/* Macro to make AVI error codes */
+#define MAKE_AVIERR( x )    MAKE_SCODE( SEVERITY_ERROR, FACILITY_ITF, 0x4000 + x )
+
+/* AVI error codes */
+#define AVIERR_OK               0L
+#define AVIERR_UNSUPPORTED      MAKE_AVIERR( 101 )
+#define AVIERR_BADFORMAT        MAKE_AVIERR( 102 )
+#define AVIERR_MEMORY           MAKE_AVIERR( 103 )
+#define AVIERR_INTERNAL         MAKE_AVIERR( 104 )
+#define AVIERR_BADFLAGS         MAKE_AVIERR( 105 )
+#define AVIERR_BADPARAM         MAKE_AVIERR( 106 )
+#define AVIERR_BADSIZE          MAKE_AVIERR( 107 )
+#define AVIERR_BADHANDLE        MAKE_AVIERR( 108 )
+#define AVIERR_FILEREAD         MAKE_AVIERR( 109 )
+#define AVIERR_FILEWRITE        MAKE_AVIERR( 110 )
+#define AVIERR_FILEOPEN         MAKE_AVIERR( 111 )
+#define AVIERR_COMPRESSOR       MAKE_AVIERR( 112 )
+#define AVIERR_NOCOMPRESSOR     MAKE_AVIERR( 113 )
+#define AVIERR_READONLY         MAKE_AVIERR( 114 )
+#define AVIERR_NODATA           MAKE_AVIERR( 115 )
+#define AVIERR_BUFFERTOOSMALL   MAKE_AVIERR( 116 )
+#define AVIERR_CANTCOMPRESS     MAKE_AVIERR( 117 )
+#define AVIERR_USERABORT        MAKE_AVIERR( 198 )
+#define AVIERR_ERROR            MAKE_AVIERR( 199 )
+
+/* These macros are used by other macros in this file to invoke SendMessage(). */
+#ifdef __cplusplus
+    #define MCIWndSM    ::SendMessage
+    #define AVICapSM( x, p1, p2, p3 ) \
+        (::IsWindow( x ) ? ::SendMessage( x, p1, p2, p3 ) : 0)
+#else
+    #define MCIWndSM    SendMessage
+    #define AVICapSM( x, p1, p2, p3 ) \
+        ((IsWindow( x )) ? SendMessage( x, p1, p2, p3 ) : 0)
+#endif
+
+/* MCI window class */
+#define MCIWND_WINDOW_CLASS TEXT("MCIWndClass")
+
+/* MCIWndOpen() flags */
+#define MCIWNDOPENF_NEW 0x0001
+
+/* MCI window styles */
+#define MCIWNDF_NOAUTOSIZEWINDOW    0x0001L
+#define MCIWNDF_NOPLAYBAR           0x0002L
+#define MCIWNDF_NOAUTOSIZEMOVIE     0x0004L
+#define MCIWNDF_NOMENU              0x0008L
+#define MCIWNDF_SHOWNAME            0x0010L
+#define MCIWNDF_SHOWPOS             0x0020L
+#define MCIWNDF_SHOWMODE            0x0040L
+#define MCIWNDF_SHOWALL             0x0070L
+#define MCIWNDF_NOTIFYMODE          0x0100L
+#define MCIWNDF_NOTIFYPOS           0x0200L
+#define MCIWNDF_NOTIFYSIZE          0x0400L
+#define MCIWNDF_NOTIFYERROR         0x1000L
+#define MCIWNDF_NOTIFYALL           0x1F00L
+#define MCIWNDF_NOTIFYANSI          0x0080L
+#define MCIWNDF_NOTIFYMEDIAA        0x0880L
+#define MCIWNDF_NOTIFYMEDIAW        0x0800L
+#define MCIWNDF_RECORD              0x2000L
+#define MCIWNDF_NOERRORDLG          0x4000L
+#define MCIWNDF_NOOPEN              0x8000L
+#ifdef UNICODE
+    #define MCIWNDF_NOTIFYMEDIA     MCIWNDF_NOTIFYMEDIAW
+#else
+    #define MCIWNDF_NOTIFYMEDIA     MCIWNDF_NOTIFYMEDIAA
+#endif
+
+/* MCI window messages */
+#define MCIWNDM_GETDEVICEID         (WM_USER + 100)
+#define MCIWNDM_SENDSTRINGA         (WM_USER + 101)
+#define MCIWNDM_GETPOSITIONA        (WM_USER + 102)
+#define MCIWNDM_GETSTART            (WM_USER + 103)
+#define MCIWNDM_GETLENGTH           (WM_USER + 104)
+#define MCIWNDM_GETEND              (WM_USER + 105)
+#define MCIWNDM_GETMODEA            (WM_USER + 106)
+#define MCIWNDM_EJECT               (WM_USER + 107)
+#define MCIWNDM_SETZOOM             (WM_USER + 108)
+#define MCIWNDM_GETZOOM             (WM_USER + 109)
+#define MCIWNDM_SETVOLUME           (WM_USER + 110)
+#define MCIWNDM_GETVOLUME           (WM_USER + 111)
+#define MCIWNDM_SETSPEED            (WM_USER + 112)
+#define MCIWNDM_GETSPEED            (WM_USER + 113)
+#define MCIWNDM_SETREPEAT           (WM_USER + 114)
+#define MCIWNDM_GETREPEAT           (WM_USER + 115)
+#define MCIWNDM_REALIZE             (WM_USER + 118)
+#define MCIWNDM_SETTIMEFORMATA      (WM_USER + 119)
+#define MCIWNDM_GETTIMEFORMATA      (WM_USER + 120)
+#define MCIWNDM_VALIDATEMEDIA       (WM_USER + 121)
+#define MCIWNDM_PLAYFROM            (WM_USER + 122)
+#define MCIWNDM_PLAYTO              (WM_USER + 123)
+#define MCIWNDM_GETFILENAMEA        (WM_USER + 124)
+#define MCIWNDM_GETDEVICEA          (WM_USER + 125)
+#define MCIWNDM_GETPALETTE          (WM_USER + 126)
+#define MCIWNDM_SETPALETTE          (WM_USER + 127)
+#define MCIWNDM_GETERRORA           (WM_USER + 128)
+#define MCIWNDM_SETTIMERS           (WM_USER + 129)
+#define MCIWNDM_SETACTIVETIMER      (WM_USER + 130)
+#define MCIWNDM_SETINACTIVETIMER    (WM_USER + 131)
+#define MCIWNDM_GETACTIVETIMER      (WM_USER + 132)
+#define MCIWNDM_GETINACTIVETIMER    (WM_USER + 133)
+#define MCIWNDM_NEWA                (WM_USER + 134)
+#define MCIWNDM_CHANGESTYLES        (WM_USER + 135)
+#define MCIWNDM_GETSTYLES           (WM_USER + 136)
+#define MCIWNDM_GETALIAS            (WM_USER + 137)
+#define MCIWNDM_RETURNSTRINGA       (WM_USER + 138)
+#define MCIWNDM_PLAYREVERSE         (WM_USER + 139)
+#define MCIWNDM_GET_SOURCE          (WM_USER + 140)
+#define MCIWNDM_PUT_SOURCE          (WM_USER + 141)
+#define MCIWNDM_GET_DEST            (WM_USER + 142)
+#define MCIWNDM_PUT_DEST            (WM_USER + 143)
+#define MCIWNDM_CAN_PLAY            (WM_USER + 144)
+#define MCIWNDM_CAN_WINDOW          (WM_USER + 145)
+#define MCIWNDM_CAN_RECORD          (WM_USER + 146)
+#define MCIWNDM_CAN_SAVE            (WM_USER + 147)
+#define MCIWNDM_CAN_EJECT           (WM_USER + 148)
+#define MCIWNDM_CAN_CONFIG          (WM_USER + 149)
+#define MCIWNDM_PALETTEKICK         (WM_USER + 150)
+#define MCIWNDM_OPENINTERFACE       (WM_USER + 151)
+#define MCIWNDM_SETOWNER            (WM_USER + 152)
+#define MCIWNDM_OPENA               (WM_USER + 153)
+#define MCIWNDM_SENDSTRINGW         (WM_USER + 201)
+#define MCIWNDM_GETPOSITIONW        (WM_USER + 202)
+#define MCIWNDM_GETMODEW            (WM_USER + 206)
+#define MCIWNDM_SETTIMEFORMATW      (WM_USER + 219)
+#define MCIWNDM_GETTIMEFORMATW      (WM_USER + 220)
+#define MCIWNDM_GETFILENAMEW        (WM_USER + 224)
+#define MCIWNDM_GETDEVICEW          (WM_USER + 225)
+#define MCIWNDM_GETERRORW           (WM_USER + 228)
+#define MCIWNDM_NEWW                (WM_USER + 234)
+#define MCIWNDM_RETURNSTRINGW       (WM_USER + 238)
+#define MCIWNDM_OPENW               (WM_USER + 252)
+#ifdef UNICODE
+    #define MCIWNDM_SENDSTRING      MCIWNDM_SENDSTRINGW
+    #define MCIWNDM_GETPOSITION     MCIWNDM_GETPOSITIONW
+    #define MCIWNDM_GETMODE         MCIWNDM_GETMODEW
+    #define MCIWNDM_SETTIMEFORMAT   MCIWNDM_SETTIMEFORMATW
+    #define MCIWNDM_GETTIMEFORMAT   MCIWNDM_GETTIMEFORMATW
+    #define MCIWNDM_GETFILENAME     MCIWNDM_GETFILENAMEW
+    #define MCIWNDM_GETDEVICE       MCIWNDM_GETDEVICEW
+    #define MCIWNDM_GETERROR        MCIWNDM_GETERRORW
+    #define MCIWNDM_NEW             MCIWNDM_NEWW
+    #define MCIWNDM_RETURNSTRING    MCIWNDM_RETURNSTRINGW
+    #define MCIWNDM_OPEN            MCIWNDM_OPENW
+#else
+    #define MCIWNDM_SENDSTRING      MCIWNDM_SENDSTRINGA
+    #define MCIWNDM_GETPOSITION     MCIWNDM_GETPOSITIONA
+    #define MCIWNDM_GETMODE         MCIWNDM_GETMODEA
+    #define MCIWNDM_SETTIMEFORMAT   MCIWNDM_SETTIMEFORMATA
+    #define MCIWNDM_GETTIMEFORMAT   MCIWNDM_GETTIMEFORMATA
+    #define MCIWNDM_GETFILENAME     MCIWNDM_GETFILENAMEA
+    #define MCIWNDM_GETDEVICE       MCIWNDM_GETDEVICEA
+    #define MCIWNDM_GETERROR        MCIWNDM_GETERRORA
+    #define MCIWNDM_NEW             MCIWNDM_NEWA
+    #define MCIWNDM_RETURNSTRING    MCIWNDM_RETURNSTRINGA
+    #define MCIWNDM_OPEN            MCIWNDM_OPENA
+#endif
+
+/* MCI window notification messages */
+#define MCIWNDM_NOTIFYMODE  (WM_USER + 200)
+#define MCIWNDM_NOTIFYPOS   (WM_USER + 201)
+#define MCIWNDM_NOTIFYSIZE  (WM_USER + 202)
+#define MCIWNDM_NOTIFYMEDIA (WM_USER + 203)
+#define MCIWNDM_NOTIFYERROR (WM_USER + 205)
+
+/* MCI window seek values */
+#define MCIWND_START    (-1)
+#define MCIWND_END      (-2)
+
+/* Video capture error codes */
+#define DV_ERR_OK               0
+#define DV_ERR_BASE             1
+#define DV_ERR_NONSPECIFIC      DV_ERR_BASE
+#define DV_ERR_BADFORMAT        (DV_ERR_BASE + 1)
+#define DV_ERR_STILLPLAYING     (DV_ERR_BASE + 2)
+#define DV_ERR_UNPREPARED       (DV_ERR_BASE + 3)
+#define DV_ERR_SYNC             (DV_ERR_BASE + 4)
+#define DV_ERR_TOOMANYCHANNELS  (DV_ERR_BASE + 5)
+#define DV_ERR_NOTDETECTED      (DV_ERR_BASE + 6)
+#define DV_ERR_BADINSTALL       (DV_ERR_BASE + 7)
+#define DV_ERR_CREATEPALETTE    (DV_ERR_BASE + 8)
+#define DV_ERR_SIZEFIELD        (DV_ERR_BASE + 9)
+#define DV_ERR_PARAM1           (DV_ERR_BASE + 10)
+#define DV_ERR_PARAM2           (DV_ERR_BASE + 11)
+#define DV_ERR_CONFIG1          (DV_ERR_BASE + 12)
+#define DV_ERR_CONFIG2          (DV_ERR_BASE + 13)
+#define DV_ERR_FLAGS            (DV_ERR_BASE + 14)
+#define DV_ERR_13               (DV_ERR_BASE + 15)
+#define DV_ERR_NOTSUPPORTED     (DV_ERR_BASE + 16)
+#define DV_ERR_NOMEM            (DV_ERR_BASE + 17)
+#define DV_ERR_ALLOCATED        (DV_ERR_BASE + 18)
+#define DV_ERR_BADDEVICEID      (DV_ERR_BASE + 19)
+#define DV_ERR_INVALHANDLE      (DV_ERR_BASE + 20)
+#define DV_ERR_BADERRNUM        (DV_ERR_BASE + 21)
+#define DV_ERR_NO_BUFFERS       (DV_ERR_BASE + 22)
+#define DV_ERR_MEM_CONFLICT     (DV_ERR_BASE + 23)
+#define DV_ERR_IO_CONFLICT      (DV_ERR_BASE + 24)
+#define DV_ERR_DMA_CONFLICT     (DV_ERR_BASE + 25)
+#define DV_ERR_INT_CONFLICT     (DV_ERR_BASE + 26)
+#define DV_ERR_PROTECT_ONLY     (DV_ERR_BASE + 27)
+#define DV_ERR_LASTERROR        (DV_ERR_BASE + 27)
+#define DV_ERR_USER_MSG         (DV_ERR_BASE + 1000)
+
+/* Video capture driver messages */
+#define DV_VM_OPEN  MM_DRVM_OPEN
+#define DV_VM_CLOSE MM_DRVM_CLOSE
+#define DV_VM_DATA  MM_DRVM_DATA
+#define DV_VM_ERROR MM_DRVM_ERROR
+
+/* Video header flags */
+#define VHDR_DONE       0x00000001L
+#define VHDR_PREPARED   0x00000002L
+#define VHDR_INQUEUE    0x00000004L
+#define VHDR_KEYFRAME   0x00000008L
+#define VHDR_VALID      0x0000000FL
+
+/* Channel capabilities flags */
+#define VCAPS_OVERLAY       0x00000001L
+#define VCAPS_SRC_CAN_CLIP  0x00000002L
+#define VCAPS_DST_CAN_CLIP  0x00000004L
+#define VCAPS_CAN_SCALE     0x00000008L
+
+/* videoOpen() flags */
+#define VIDEO_EXTERNALIN    0x0001
+#define VIDEO_EXTERNALOUT   0x0002
+#define VIDEO_IN            0x0004
+#define VIDEO_OUT           0x0008
+#define VIDEO_DLG_QUERY     0x0010
+
+/* videoConfigure() flags */
+#define VIDEO_CONFIGURE_QUERYSIZE   0x0001
+#define VIDEO_CONFIGURE_CURRENT     0x0010
+#define VIDEO_CONFIGURE_NORMAL      0x0020
+#define VIDEO_CONFIGURE_MIN         0x0040
+#define VIDEO_CONFIGURE_MAX         0x0080
+#define VIDEO_CONFIGURE_SET         0x1000
+#define VIDEO_CONFIGURE_GET         0x2000
+#define VIDEO_CONFIGURE_QUERY       0x8000
+
+/* Video capture configuration messages */
+#define DVM_USER            0x4000
+#define DVM_CONFIGURE_START 0x1000
+#define DVM_CONFIGURE_END   0x1FFF
+#define DVM_PALETTE         (DVM_CONFIGURE_START + 1)
+#define DVM_FORMAT          (DVM_CONFIGURE_START + 2)
+#define DVM_PALETTERGB555   (DVM_CONFIGURE_START + 3)
+#define DVM_SRC_RECT        (DVM_CONFIGURE_START + 4)
+#define DVM_DST_RECT        (DVM_CONFIGURE_START + 5)
+
+/* Video capture messages */
+#define WM_CAP_START                        WM_USER
+#define WM_CAP_UNICODE_START                (WM_USER + 100)
+#define WM_CAP_GET_CAPSTREAMPTR             (WM_CAP_START + 1)
+#define WM_CAP_SET_CALLBACK_ERRORA          (WM_CAP_START + 2)
+#define WM_CAP_SET_CALLBACK_ERRORW          (WM_CAP_UNICODE_START + 2)
+#define WM_CAP_SET_CALLBACK_STATUSA         (WM_CAP_START + 3)
+#define WM_CAP_SET_CALLBACK_STATUSW         (WM_CAP_UNICODE_START + 3)
+#define WM_CAP_SET_CALLBACK_YIELD           (WM_CAP_START + 4)
+#define WM_CAP_SET_CALLBACK_FRAME           (WM_CAP_START + 5)
+#define WM_CAP_SET_CALLBACK_VIDEOSTREAM     (WM_CAP_START + 6)
+#define WM_CAP_SET_CALLBACK_WAVESTREAM      (WM_CAP_START + 7)
+#define WM_CAP_GET_USER_DATA                (WM_CAP_START + 8)
+#define WM_CAP_SET_USER_DATA                (WM_CAP_START + 9)
+#define WM_CAP_DRIVER_CONNECT               (WM_CAP_START + 10)
+#define WM_CAP_DRIVER_DISCONNECT            (WM_CAP_START + 11)
+#define WM_CAP_DRIVER_GET_NAMEA             (WM_CAP_START + 12)
+#define WM_CAP_DRIVER_GET_NAMEW             (WM_CAP_UNICODE_START + 12)
+#define WM_CAP_DRIVER_GET_VERSIONA          (WM_CAP_START + 13)
+#define WM_CAP_DRIVER_GET_VERSIONW          (WM_CAP_UNICODE_START + 13)
+#define WM_CAP_DRIVER_GET_CAPS              (WM_CAP_START + 14)
+#define WM_CAP_FILE_SET_CAPTURE_FILEA       (WM_CAP_START + 20)
+#define WM_CAP_FILE_SET_CAPTURE_FILEW       (WM_CAP_UNICODE_START + 20)
+#define WM_CAP_FILE_GET_CAPTURE_FILEA       (WM_CAP_START + 21)
+#define WM_CAP_FILE_GET_CAPTURE_FILEW       (WM_CAP_UNICODE_START + 21)
+#define WM_CAP_FILE_ALLOCATE                (WM_CAP_START + 22)
+#define WM_CAP_FILE_SAVEASA                 (WM_CAP_START + 23)
+#define WM_CAP_FILE_SAVEASW                 (WM_CAP_UNICODE_START + 23)
+#define WM_CAP_FILE_SET_INFOCHUNK           (WM_CAP_START + 24)
+#define WM_CAP_FILE_SAVEDIBA                (WM_CAP_START + 25)
+#define WM_CAP_FILE_SAVEDIBW                (WM_CAP_UNICODE_START + 25)
+#define WM_CAP_EDIT_COPY                    (WM_CAP_START + 30)
+#define WM_CAP_SET_AUDIOFORMAT              (WM_CAP_START + 35)
+#define WM_CAP_GET_AUDIOFORMAT              (WM_CAP_START + 36)
+#define WM_CAP_DLG_VIDEOFORMAT              (WM_CAP_START + 41)
+#define WM_CAP_DLG_VIDEOSOURCE              (WM_CAP_START + 42)
+#define WM_CAP_DLG_VIDEODISPLAY             (WM_CAP_START + 43)
+#define WM_CAP_GET_VIDEOFORMAT              (WM_CAP_START + 44)
+#define WM_CAP_SET_VIDEOFORMAT              (WM_CAP_START + 45)
+#define WM_CAP_DLG_VIDEOCOMPRESSION         (WM_CAP_START + 46)
+#define WM_CAP_SET_PREVIEW                  (WM_CAP_START + 50)
+#define WM_CAP_SET_OVERLAY                  (WM_CAP_START + 51)
+#define WM_CAP_SET_PREVIEWRATE              (WM_CAP_START + 52)
+#define WM_CAP_SET_SCALE                    (WM_CAP_START + 53)
+#define WM_CAP_GET_STATUS                   (WM_CAP_START + 54)
+#define WM_CAP_SET_SCROLL                   (WM_CAP_START + 55)
+#define WM_CAP_GRAB_FRAME                   (WM_CAP_START + 60)
+#define WM_CAP_GRAB_FRAME_NOSTOP            (WM_CAP_START + 61)
+#define WM_CAP_SEQUENCE                     (WM_CAP_START + 62)
+#define WM_CAP_SEQUENCE_NOFILE              (WM_CAP_START + 63)
+#define WM_CAP_SET_SEQUENCE_SETUP           (WM_CAP_START + 64)
+#define WM_CAP_GET_SEQUENCE_SETUP           (WM_CAP_START + 65)
+#define WM_CAP_SET_MCI_DEVICEA              (WM_CAP_START + 66)
+#define WM_CAP_SET_MCI_DEVICEW              (WM_CAP_UNICODE_START + 66)
+#define WM_CAP_GET_MCI_DEVICEA              (WM_CAP_START + 67)
+#define WM_CAP_GET_MCI_DEVICEW              (WM_CAP_UNICODE_START + 67)
+#define WM_CAP_STOP                         (WM_CAP_START + 68)
+#define WM_CAP_ABORT                        (WM_CAP_START + 69)
+#define WM_CAP_SINGLE_FRAME_OPEN            (WM_CAP_START + 70)
+#define WM_CAP_SINGLE_FRAME_CLOSE           (WM_CAP_START + 71)
+#define WM_CAP_SINGLE_FRAME                 (WM_CAP_START + 72)
+#define WM_CAP_PAL_OPENA                    (WM_CAP_START + 80)
+#define WM_CAP_PAL_OPENW                    (WM_CAP_UNICODE_START + 80)
+#define WM_CAP_PAL_SAVEA                    (WM_CAP_START + 81)
+#define WM_CAP_PAL_SAVEW                    (WM_CAP_UNICODE_START + 81)
+#define WM_CAP_PAL_PASTE                    (WM_CAP_START + 82)
+#define WM_CAP_PAL_AUTOCREATE               (WM_CAP_START + 83)
+#define WM_CAP_PAL_MANUALCREATE             (WM_CAP_START + 84)
+#define WM_CAP_SET_CALLBACK_CAPCONTROL      (WM_CAP_START + 85)
+#define WM_CAP_UNICODE_END                  WM_CAP_PAL_SAVEW
+#define WM_CAP_END                          WM_CAP_UNICODE_END
+#ifdef UNICODE
+    #define WM_CAP_SET_CALLBACK_ERROR       WM_CAP_SET_CALLBACK_ERRORW
+    #define WM_CAP_SET_CALLBACK_STATUS      WM_CAP_SET_CALLBACK_STATUSW
+    #define WM_CAP_DRIVER_GET_NAME          WM_CAP_DRIVER_GET_NAMEW
+    #define WM_CAP_DRIVER_GET_VERSION       WM_CAP_DRIVER_GET_VERSIONW
+    #define WM_CAP_FILE_SET_CAPTURE_FILE    WM_CAP_FILE_SET_CAPTURE_FILEW
+    #define WM_CAP_FILE_GET_CAPTURE_FILE    WM_CAP_FILE_GET_CAPTURE_FILEW
+    #define WM_CAP_FILE_SAVEAS              WM_CAP_FILE_SAVEASW
+    #define WM_CAP_FILE_SAVEDIB             WM_CAP_FILE_SAVEDIBW
+    #define WM_CAP_SET_MCI_DEVICE           WM_CAP_SET_MCI_DEVICEW
+    #define WM_CAP_GET_MCI_DEVICE           WM_CAP_GET_MCI_DEVICEW
+    #define WM_CAP_PAL_OPEN                 WM_CAP_PAL_OPENW
+    #define WM_CAP_PAL_SAVE                 WM_CAP_PAL_SAVEW
+#else
+    #define WM_CAP_SET_CALLBACK_ERROR       WM_CAP_SET_CALLBACK_ERRORA
+    #define WM_CAP_SET_CALLBACK_STATUS      WM_CAP_SET_CALLBACK_STATUSA
+    #define WM_CAP_DRIVER_GET_NAME          WM_CAP_DRIVER_GET_NAMEA
+    #define WM_CAP_DRIVER_GET_VERSION       WM_CAP_DRIVER_GET_VERSIONA
+    #define WM_CAP_FILE_SET_CAPTURE_FILE    WM_CAP_FILE_SET_CAPTURE_FILEA
+    #define WM_CAP_FILE_GET_CAPTURE_FILE    WM_CAP_FILE_GET_CAPTURE_FILEA
+    #define WM_CAP_FILE_SAVEAS              WM_CAP_FILE_SAVEASA
+    #define WM_CAP_FILE_SAVEDIB             WM_CAP_FILE_SAVEDIBA
+    #define WM_CAP_SET_MCI_DEVICE           WM_CAP_SET_MCI_DEVICEA
+    #define WM_CAP_GET_MCI_DEVICE           WM_CAP_GET_MCI_DEVICEA
+    #define WM_CAP_PAL_OPEN                 WM_CAP_PAL_OPENA
+    #define WM_CAP_PAL_SAVE                 WM_CAP_PAL_SAVEA
+#endif
+
+/* Audio/video stream master flags */
+#define AVSTREAMMASTER_AUDIO    0
+#define AVSTREAMMASTER_NONE     1
+
+/* Video capture control callback */
+#define CONTROLCALLBACK_PREROLL     1
+#define CONTROLCALLBACK_CAPTURING   2
+
+/* Information types */
+#define infotypeDIGITIZATION_TIME   mmioFOURCC( 'I', 'D', 'I', 'T' )
+#define infotypeSMPTE_TIME          mmioFOURCC( 'I', 'S', 'M', 'P' )
+
+/* Video capture string resource identifiers */
+#define IDS_CAP_BEGIN                   300
+#define IDS_CAP_END                     301
+#define IDS_CAP_INFO                    401
+#define IDS_CAP_OUTOFMEM                402
+#define IDS_CAP_FILEEXISTS              403
+#define IDS_CAP_ERRORPALOPEN            404
+#define IDS_CAP_ERRORPALSAVE            405
+#define IDS_CAP_ERRORDIBSAVE            406
+#define IDS_CAP_DEFAVIEXT               407
+#define IDS_CAP_DEDPALEXT               408
+#define IDS_CAP_CANTOPEN                409
+#define IDS_CAP_SEQ_MSGSTART            410
+#define IDS_CAP_SEQ_MSGSTOP             411
+#define IDS_CAP_VIDEDITERR              412
+#define IDS_CAP_READONLYFILE            413
+#define IDS_CAP_WRITEERROR              414
+#define IDS_CAP_NODISKSPACE             415
+#define IDS_CAP_SETFILESIZE             416
+#define IDS_CAP_SAVEASPERCENT           417
+#define IDS_CAP_DRIVER_ERROR            418
+#define IDS_CAP_WAVE_OPEN_ERROR         419
+#define IDS_CAP_WAVE_ALLOC_ERROR        420
+#define IDS_CAP_WAVE_PREPARE_ERROR      421
+#define IDS_CAP_WAVE_ADD_ERROR          422
+#define IDS_CAP_WAVE_SIZE_ERROR         423
+#define IDS_CAP_VIDEO_OPEN_ERROR        424
+#define IDS_CAP_VIDEO_ALLOC_ERROR       425
+#define IDS_CAP_VIDEO_PREPARE_ERROR     426
+#define IDS_CAP_VIDEO_ADD_ERROR         427
+#define IDS_CAP_VIDEO_SIZE_ERROR        428
+#define IDS_CAP_FILE_OPEN_ERROR         429
+#define IDS_CAP_FILE_WRITE_ERROR        430
+#define IDS_CAP_RECORDING_ERROR         431
+#define IDS_CAP_RECORDING_ERROR2        432
+#define IDS_CAP_AVI_INIT_ERROR          433
+#define IDS_CAP_NO_FRAME_CAP_ERROR      434
+#define IDS_CAP_NO_PALETTE_WARN         435
+#define IDS_CAP_MCI_CONTROL_ERROR       436
+#define IDS_CAP_MCI_CANT_STEP_ERROR     437
+#define IDS_CAP_NO_AUDIO_CAP_ERROR      438
+#define IDS_CAP_AVI_DRAWDIB_ERROR       439
+#define IDS_CAP_COMPRESSOR_ERROR        440
+#define IDS_CAP_AUDIO_DROP_ERROR        441
+#define IDS_CAP_AUDIO_DROP_COMPERROR    442
+#define IDS_CAP_STAT_LIVE_MODE          500
+#define IDS_CAP_STAT_OVERLAY_MODE       501
+#define IDS_CAP_STAT_CAP_INIT           502
+#define IDS_CAP_STAT_CAP_FINI           503
+#define IDS_CAP_STAT_PALETTE_BUILD      504
+#define IDS_CAP_STAT_OPTPAL_BUILD       505
+#define IDS_CAP_STAT_I_FRAMES           506
+#define IDS_CAP_STAT_L_FRAMES           507
+#define IDS_CAP_STAT_CAP_L_FRAMES       508
+#define IDS_CAP_STAT_CAP_AUDIO          509
+#define IDS_CAP_STAT_VIDEOCURRENT       510
+#define IDS_CAP_STAT_VIDEOAUDIO         511
+#define IDS_CAP_STAT_VIDEOONLY          512
+#define IDS_CAP_STAT_FRAMESDROPPED      513
+
+/* ICOpen() parameters */
+typedef struct {
+    DWORD   dwSize;
+    DWORD   fccType;
+    DWORD   fccHandler;
+    DWORD   dwVersion;
+    DWORD   dwFlags;
+    LRESULT dwError;
+    LPVOID  pV1Reserved;
+    LPVOID  pV2Reserved;
+    DWORD   dnDevNode;
+} ICOPEN;
+
+/* ICInfo() parameters */
+typedef struct {
+    DWORD   dwSize;
+    DWORD   fccType;
+    DWORD   fccHandler;
+    DWORD   dwFlags;
+    DWORD   dwVersion;
+    DWORD   dwVersionICM;
+    WCHAR   szName[16];
+    WCHAR   szDescription[128];
+    WCHAR   szDriver[128];
+} ICINFO;
+
+/* ICCompress() parameters */
+typedef struct {
+    DWORD               dwFlags;
+    LPBITMAPINFOHEADER  lpbiOutput;
+    LPVOID              lpOutput;
+    LPBITMAPINFOHEADER  lpbiInput;
+    LPVOID              lpInput;
+    LPDWORD             lpckid;
+    LPDWORD             lpdwFlags;
+    LONG                lFrameNum;
+    DWORD               dwFrameSize;
+    DWORD               dwQuality;
+    LPBITMAPINFOHEADER  lpbiPrev;
+    LPVOID              lpPrev;
+} ICCOMPRESS;
+
+/* ICCompressFrames() parameters */
+typedef struct {
+    DWORD               dwFlags;
+    LPBITMAPINFOHEADER  lpbiOutput;
+    LPARAM              lOutput;
+    LPBITMAPINFOHEADER  lpbiInput;
+    LPARAM              lInput;
+    LONG                lStartFrame;
+    LONG                lFrameCount;
+    LONG                lQuality;
+    LONG                lDataRate;
+    LONG                lKeyRate;
+    DWORD               dwRate;
+    DWORD               dwScale;
+    DWORD               dwOverheadPerFrame;
+    DWORD               dwReserved2;
+    LONG                (CALLBACK *GetData)( LPARAM, LONG, LPVOID, LONG );
+    LONG                (CALLBACK *PutData)( LPARAM, LONG, LPVOID, LONG );
+} ICCOMPRESSFRAMES;
+
+/* ICSetStatusProc() parameters */
+typedef struct {
+    DWORD   dwFlags;
+    LPARAM  lParam;
+    LONG    (CALLBACK *Status)( LPARAM, UINT, LONG );
+} ICSETSTATUSPROC;
+
+/* ICDecompress() parameters */
+typedef struct {
+    DWORD               dwFlags;
+    LPBITMAPINFOHEADER  lpbiInput;
+    LPVOID              lpInput;
+    LPBITMAPINFOHEADER  lpbiOutput;
+    LPVOID              lpOutput;
+    DWORD               ckid;
+} ICDECOMPRESS;
+
+/* ICDecompressEx() parameters */
+typedef struct {
+    DWORD               dwFlags;
+    LPBITMAPINFOHEADER  lpbiSrc;
+    LPVOID              lpSrc;
+    LPBITMAPINFOHEADER  lpbiDst;
+    LPVOID              lpDst;
+    int                 xDst;
+    int                 yDst;
+    int                 dxDst;
+    int                 dyDst;
+    int                 xSrc;
+    int                 ySrc;
+    int                 dxSrc;
+    int                 dySrc;
+} ICDECOMPRESSEX;
+
+/* ICDrawBegin() parameters */
+typedef struct {
+    DWORD               dwFlags;
+    HPALETTE            hpal;
+    HWND                hwnd;
+    HDC                 hdc;
+    int                 xDst;
+    int                 yDst;
+    int                 dxDst;
+    int                 dyDst;
+    LPBITMAPINFOHEADER  lpbi;
+    int                 xSrc;
+    int                 ySrc;
+    int                 dxSrc;
+    int                 dySrc;
+    DWORD               dwRate;
+    DWORD               dwScale;
+} ICDRAWBEGIN;
+
+/* ICDraw() parameters */
+typedef struct {
+    DWORD   dwFlags;
+    LPVOID  lpFormat;
+    LPVOID  lpData;
+    DWORD   cbData;
+    LONG    lTime;
+} ICDRAW;
+
+/* ICDrawSuggestFormat() parameters */
+typedef struct {
+    LPBITMAPINFOHEADER  lpbiIn;
+    LPBITMAPINFOHEADER  lpbiSuggest;
+    int                 dxSrc;
+    int                 dySrc;
+    int                 dxDst;
+    int                 dyDst;
+    HIC                 hicDecompressor;
+} ICDRAWSUGGEST;
+
+/* ICPalette() parameters */
+typedef struct {
+    DWORD           dwFlags;
+    int             iStart;
+    int             iLen;
+    LPPALETTEENTRY  lppe;
+} ICPALETTE;
+
+/* Compressor variables */
+typedef struct {
+    LONG            cbSize;
+    DWORD           dwFlags;
+    HIC             hic;
+    DWORD           fccType;
+    DWORD           fccHandler;
+    LPBITMAPINFO    lpbiIn;
+    LPBITMAPINFO    lpbiOut;
+    LPVOID          lpBitsIn;
+    LPVOID          lpBitsPrev;
+    LONG            lFrame;
+    LONG            lKey;
+    LONG            lDataRate;
+    LONG            lQ;
+    LONG            lKeyCount;
+    LPVOID          lpState;
+    LONG            cbState;
+} COMPVARS;
+typedef COMPVARS    *PCOMPVARS;
+
+/* DrawDibTime() parameters */
+typedef struct {
+    LONG    timeCount;
+    LONG    timeDraw;
+    LONG    timeDecompress;
+    LONG    timeDither;
+    LONG    timeStretch;
+    LONG    timeBlt;
+    LONG    timeSetDIBits;
+} DRAWDIBTIME;
+typedef DRAWDIBTIME *LPDRAWDIBTIME;
+
+/* Main AVI header */
+typedef struct {
+    DWORD   dwMicroSecPerFrame;
+    DWORD   dwMaxBytesPerSec;
+    DWORD   dwPaddingGranularity;
+    DWORD   dwFlags;
+    DWORD   dwTotalFrames;
+    DWORD   dwInitialFrames;
+    DWORD   dwStreams;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+    DWORD   dwReserved[4];
+} MainAVIHeader;
+
+/* AVI stream header */
+typedef struct {
+    FOURCC  fccType;
+    FOURCC  fccHandler;
+    DWORD   dwFlags;
+    WORD    wPriority;
+    WORD    wLanguage;
+    DWORD   dwInitialFrames;
+    DWORD   dwScale;
+    DWORD   dwRate;
+    DWORD   dwStart;
+    DWORD   dwLength;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwQuality;
+    DWORD   dwSampleSize;
+    RECT    rcFrame;
+} AVIStreamHeader;
+
+/* AVI index entry */
+typedef struct {
+    DWORD   ckid;
+    DWORD   dwFlags;
+    DWORD   dwChunkOffset;
+    DWORD   dwChunkLength;
+} AVIINDEXENTRY;
+
+/* AVI palette change */
+typedef struct {
+    BYTE            bFirstEntry;
+    BYTE            bNumEntries;
+    WORD            wFlags;
+    PALETTEENTRY    peNew[1];
+} AVIPALCHANGE;
+
+/* AVI stream information */
+typedef struct _AVISTREAMINFOA {
+    DWORD   fccType;
+    DWORD   fccHandler;
+    DWORD   dwFlags;
+    DWORD   dwCaps;
+    WORD    wPriority;
+    WORD    wLanguage;
+    DWORD   dwScale;
+    DWORD   dwRate;
+    DWORD   dwStart;
+    DWORD   dwLength;
+    DWORD   dwInitialFrames;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwQuality;
+    DWORD   dwSampleSize;
+    RECT    rcFrame;
+    DWORD   dwEditCount;
+    DWORD   dwFormatChangeCount;
+    char    szName[64];
+} AVISTREAMINFOA;
+typedef AVISTREAMINFOA      *LPAVISTREAMINFOA;
+typedef struct _AVISTREAMINFOW {
+    DWORD   fccType;
+    DWORD   fccHandler;
+    DWORD   dwFlags;
+    DWORD   dwCaps;
+    WORD    wPriority;
+    WORD    wLanguage;
+    DWORD   dwScale;
+    DWORD   dwRate;
+    DWORD   dwStart;
+    DWORD   dwLength;
+    DWORD   dwInitialFrames;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwQuality;
+    DWORD   dwSampleSize;
+    RECT    rcFrame;
+    DWORD   dwEditCount;
+    DWORD   dwFormatChangeCount;
+    WCHAR   szName[64];
+} AVISTREAMINFOW;
+typedef AVISTREAMINFOW      *LPAVISTREAMINFOW;
+#ifdef UNICODE
+typedef AVISTREAMINFOW      AVISTREAMINFO;
+typedef LPAVISTREAMINFOW    LPAVISTREAMINFO;
+#else
+typedef AVISTREAMINFOA      AVISTREAMINFO;
+typedef LPAVISTREAMINFOA    LPAVISTREAMINFO;
+#endif
+
+/* AVI file information */
+typedef struct _AVIFILEINFOA {
+    DWORD   dwMaxBytesPerSec;
+    DWORD   dwFlags;
+    DWORD   dwCaps;
+    DWORD   dwStreams;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+    DWORD   dwScale;
+    DWORD   dwRate;
+    DWORD   dwLength;
+    DWORD   dwEditCount;
+    char    szFileType[64];
+} AVIFILEINFOA;
+typedef AVIFILEINFOA    *LPAVIFILEINFOA;
+typedef struct _AVIFILEINFOW {
+    DWORD   dwMaxBytesPerSec;
+    DWORD   dwFlags;
+    DWORD   dwCaps;
+    DWORD   dwStreams;
+    DWORD   dwSuggestedBufferSize;
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+    DWORD   dwScale;
+    DWORD   dwRate;
+    DWORD   dwLength;
+    DWORD   dwEditCount;
+    WCHAR   szFileType[64];
+} AVIFILEINFOW;
+typedef AVIFILEINFOW    *LPAVIFILEINFOW;
+#ifdef UNICODE
+typedef AVIFILEINFOW    AVIFILEINFO;
+typedef LPAVIFILEINFOW  LPAVIFILEINFO;
+#else
+typedef AVIFILEINFOA    AVIFILEINFO;
+typedef LPAVIFILEINFOA  LPAVIFILEINFO;
+#endif
+
+/* AVI save callback */
+typedef BOOL (WINAPI *AVISAVECALLBACK)( int );
+
+/* AVI compression options */
+typedef struct {
+    DWORD   fccType;
+    DWORD   fccHandler;
+    DWORD   dwKeyFrameEvery;
+    DWORD   dwQuality;
+    DWORD   dwBytesPerSecond;
+    DWORD   dwFlags;
+    LPVOID  lpFormat;
+    DWORD   cbFormat;
+    LPVOID  lpParms;
+    DWORD   cbParms;
+    DWORD   dwInterleaveEvery;
+} AVICOMPRESSOPTIONS;
+typedef AVICOMPRESSOPTIONS  *LPAVICOMPRESSOPTIONS;
+
+/* Video header */
+typedef struct videohdr_tag {
+    LPBYTE      lpData;
+    DWORD       dwBufferLength;
+    DWORD       dwBytesUsed;
+    DWORD       dwTimeCaptured;
+    DWORD_PTR   dwUser;
+    DWORD       dwFlags;
+    DWORD_PTR   dwReserved[4];
+} VIDEOHDR;
+typedef VIDEOHDR    *PVIDEOHDR;
+typedef VIDEOHDR    *LPVIDEOHDR;
+
+/* Channel capabilities */
+typedef struct channel_caps_tag {
+    DWORD   dwFlags;
+    DWORD   dwSrcRectXMod;
+    DWORD   dwSrcRectYMod;
+    DWORD   dwSrcRectWidthMod;
+    DWORD   dwSrcRectHeightMod;
+    DWORD   dwDstRectXMod;
+    DWORD   dwDstRectYMod;
+    DWORD   dwDstRectWidthMod;
+    DWORD   dwDstRectHeightMod;
+} CHANNEL_CAPS;
+typedef CHANNEL_CAPS    *PCHANNEL_CAPS;
+typedef CHANNEL_CAPS    *LPCHANNEL_CAPS;
+
+/* Video capture driver capabilities */
+typedef struct tagCapDriverCaps {
+    UINT    wDeviceIndex;
+    BOOL    fHasOverlay;
+    BOOL    fHasDlgVideoSource;
+    BOOL    fHasDlgVideoFormat;
+    BOOL    fHasDlgVideoDisplay;
+    BOOL    fCaptureInitialized;
+    BOOL    fDriverSuppliesPalettes;
+    HANDLE  hVideoIn;
+    HANDLE  hVideoOut;
+    HANDLE  hVideoExtIn;
+    HANDLE  hVideoExtOut;
+} CAPDRIVERCAPS;
+typedef CAPDRIVERCAPS   *PCAPDRIVERCAPS;
+typedef CAPDRIVERCAPS   *LPCAPDRIVERCAPS;
+
+/* Video capture status */
+typedef struct tagCapStatus {
+    UINT        uiImageWidth;
+    UINT        uiImageHeight;
+    BOOL        fLiveWindow;
+    BOOL        fOverlayWindow;
+    BOOL        fScale;
+    POINT       ptScroll;
+    BOOL        fUsingDefaultPalette;
+    BOOL        fAudioHardware;
+    BOOL        fCapFileExists;
+    DWORD       dwCurrentVideoFrame;
+    DWORD       dwCurrentVideoFramesDropped;
+    DWORD       dwCurrentWaveSamples;
+    DWORD       dwCurrentTimeElapsedMS;
+    HPALETTE    hPalCurrent;
+    BOOL        fCapturingNow;
+    DWORD       dwReturn;
+    UINT        wNumVideoAllocated;
+    UINT        wNumAudioAllocated;
+} CAPSTATUS;
+typedef CAPSTATUS   *PCAPSTATUS;
+typedef CAPSTATUS   *LPCAPSTATUS;
+
+/* Video capture parameters */
+typedef struct tagCaptureParms {
+    DWORD   dwRequestMicroSecPerFrame;
+    BOOL    fMakeUserHitOKToCapture;
+    UINT    wPercentDropForError;
+    BOOL    fYield;
+    DWORD   dwIndexSize;
+    UINT    wChunkGranularity;
+    BOOL    fUsingDOSMemory;
+    UINT    wNumVideoRequested;
+    BOOL    fCaptureAudio;
+    UINT    wNumAudioRequested;
+    UINT    vKeyAbort;
+    BOOL    fAbortLeftMouse;
+    BOOL    fAbortRightMouse;
+    BOOL    fLimitEnabled;
+    UINT    wTimeLimit;
+    BOOL    fMCIControl;
+    BOOL    fStepMCIDevice;
+    DWORD   dwMCIStartTime;
+    DWORD   dwMCIStopTime;
+    BOOL    fStepCaptureAt2x;
+    UINT    wStepCaptureAverageFrames;
+    DWORD   dwAudioBufferSize;
+    BOOL    fDisableWriteCache;
+    UINT    AVStreamMaster;
+} CAPTUREPARMS;
+typedef CAPTUREPARMS    *PCAPTUREPARMS;
+typedef CAPTUREPARMS    *LPCAPTUREPARMS;
+
+/* Video capture information chunk */
+typedef struct tagCapInfoChunk {
+    FOURCC  fccInfoID;
+    LPVOID  lpData;
+    LONG    cbData;
+} CAPINFOCHUNK;
+typedef CAPINFOCHUNK    *PCAPINFOCHUNK;
+typedef CAPINFOCHUNK    *LPCAPINFOCHUNK;
+
+/* Video capture callbacks */
+typedef LRESULT (CALLBACK *CAPYIELDCALLBACK)( HWND );
+typedef LRESULT (CALLBACK *CAPSTATUSCALLBACKA)( HWND, int, LPCSTR );
+typedef LRESULT (CALLBACK *CAPSTATUSCALLBACKW)( HWND, int, LPCWSTR );
+typedef LRESULT (CALLBACK *CAPERRORCALLBACKA)( HWND, int, LPCSTR );
+typedef LRESULT (CALLBACK *CAPERRORCALLBACKW)( HWND, int, LPCWSTR );
+typedef LRESULT (CALLBACK *CAPVIDEOCALLBACK)( HWND, LPVIDEOHDR );
+typedef LRESULT (CALLBACK *CAPWAVECALLBACK)( HWND, LPWAVEHDR );
+typedef LRESULT (CALLBACK *CAPCONTROLCALLBACK)( HWND, int );
+#ifdef UNICODE
+    #define CAPSTATUSCALLBACK   CAPSTATUSCALLBACKW
+    #define CAPERRORCALLBACK    CAPERRORCALLBACKW
+#else
+    #define CAPSTATUSCALLBACK   CAPSTATUSCALLBACKA
+    #define CAPERRORCALLBACK    CAPERRORCALLBACKA
+#endif
+
+/* GUIDs */
+EXTERN_C const IID      IID_IAVIFile;
+EXTERN_C const IID      IID_IAVIStream;
+EXTERN_C const IID      IID_IAVIStreaming;
+EXTERN_C const IID      IID_IGetFrame;
+EXTERN_C const IID      IID_IAVIEditStream;
+EXTERN_C const IID      IID_IAVIPersistFile;
+EXTERN_C const CLSID    CLSID_AVISimpleUnMarshal;
+EXTERN_C const CLSID    CLSID_AVIFile;
+
+/* IAVIStream interface */
+#undef INTERFACE
+#define INTERFACE   IAVIStream
+DECLARE_INTERFACE_( IAVIStream, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAVIStream methods */
+    STDMETHOD( Create )( THIS_ LPARAM, LPARAM ) PURE;
+    STDMETHOD( Info )( THIS_ AVISTREAMINFOW *, LONG ) PURE;
+    STDMETHOD_( LONG, FindSample )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( ReadFormat )( THIS_ LONG, LPVOID, LONG * ) PURE;
+    STDMETHOD( SetFormat )( THIS_ LONG, LPVOID, LONG ) PURE;
+    STDMETHOD( Read )( THIS_ LONG, LONG, LPVOID, LONG, LONG *, LONG * ) PURE;
+    STDMETHOD( Write )( THIS_ LONG, LONG, LPVOID, LONG, DWORD, LONG *, LONG * ) PURE;
+    STDMETHOD( Delete )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( ReadData )( THIS_ DWORD, LPVOID, LONG * ) PURE;
+    STDMETHOD( WriteData )( THIS_ DWORD, LPVOID, LONG ) PURE;
+    STDMETHOD( SetInfo )( THIS_ AVISTREAMINFOW *, LONG ) PURE;
+};
+typedef IAVIStream  *PAVISTREAM;
+
+/* IAVIStreaming interface */
+#undef INTERFACE
+#define INTERFACE   IAVIStreaming
+DECLARE_INTERFACE_( IAVIStreaming, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAVIStreaming methods */
+    STDMETHOD( Begin )( THIS_ LONG, LONG, LONG ) PURE;
+    STDMETHOD( End )( THIS ) PURE;
+};
+typedef IAVIStreaming   *PAVISTREAMING;
+
+/* IAVIEditStream interface */
+#undef INTERFACE
+#define INTERFACE   IAVIEditStream
+DECLARE_INTERFACE_( IAVIEditStream, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAVIEditStream methods */
+    STDMETHOD( Cut )( THIS_ LONG *, LONG *, PAVISTREAM * ) PURE;
+    STDMETHOD( Copy )( THIS_ LONG *, LONG *, PAVISTREAM * ) PURE;
+    STDMETHOD( Paste )( THIS_ LONG *, LONG *, PAVISTREAM, LONG, LONG ) PURE;
+    STDMETHOD( Clone )( THIS_ PAVISTREAM * ) PURE;
+    STDMETHOD( SetInfo )( THIS_ AVISTREAMINFOW *, LONG ) PURE;
+};
+typedef IAVIEditStream  *PAVIEDITSTREAM;
+
+/* IAVIPersistFile interface */
+#undef INTERFACE
+#define INTERFACE   IAVIPersistFile
+DECLARE_INTERFACE_( IAVIPersistFile, IPersistFile ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IPersist methods */
+    STDMETHOD( GetClassID )( THIS_ CLSID * ) PURE;
+    
+    /* IPersistFile methods */
+    STDMETHOD( IsDirty )( THIS ) PURE;
+    STDMETHOD( Load )( THIS_ LPCOLESTR, DWORD ) PURE;
+    STDMETHOD( Save )( THIS_ LPCOLESTR, BOOL ) PURE;
+    STDMETHOD( SaveCompleted )( THIS_ LPCOLESTR ) PURE;
+    STDMETHOD( GetCurFile )( THIS_ LPOLESTR * ) PURE;
+
+    /* IAVIPersistFile methods */
+    STDMETHOD( Reserved1 )( THIS ) PURE;
+};
+typedef IAVIPersistFile *PAVIPERSISTFILE;
+
+/* IAVIFile interface */
+#undef INTERFACE
+#define INTERFACE   IAVIFile
+DECLARE_INTERFACE_( IAVIFile, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IAVIFile methods */
+    STDMETHOD( Info )( THIS_ AVIFILEINFOW *, LONG ) PURE;
+    STDMETHOD( GetStream )( THIS_ PAVISTREAM *, DWORD, LONG ) PURE;
+    STDMETHOD( CreateStream )( THIS_ PAVISTREAM *, AVISTREAMINFOW * ) PURE;
+    STDMETHOD( WriteData )( THIS_ DWORD, LPVOID, LONG ) PURE;
+    STDMETHOD( ReadData )( THIS_ DWORD, LPVOID, LONG * ) PURE;
+    STDMETHOD( EndRecord )( THIS ) PURE;
+    STDMETHOD( DeleteStream )( THIS_ DWORD, LONG ) PURE;
+};
+typedef IAVIFile    *PAVIFILE;
+
+/* IGetFrame interface */
+#undef INTERFACE
+#define INTERFACE   IGetFrame
+DECLARE_INTERFACE_( IGetFrame, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IGetFrame methods */
+    STDMETHOD_( LPVOID, GetFrame )( THIS_ LONG ) PURE;
+    STDMETHOD( Begin )( THIS_ LONG, LONG, LONG ) PURE;
+    STDMETHOD( End )( THIS ) PURE;
+    STDMETHOD( SetFormat )( THIS_ LPBITMAPINFOHEADER, LPVOID, int, int, int, int ) PURE;
+};
+typedef IGetFrame   *PGETFRAME;
+
+/* Functions in MSVFW32.DLL */
+BOOL VFWAPI     DrawDibBegin( HDRAWDIB, HDC, int, int, LPBITMAPINFOHEADER, int, int, UINT );
+BOOL VFWAPI     DrawDibChangePalette( HDRAWDIB, int, int, LPPALETTEENTRY );
+BOOL VFWAPI     DrawDibClose( HDRAWDIB );
+BOOL VFWAPI     DrawDibDraw( HDRAWDIB, HDC, int, int, int, int, LPBITMAPINFOHEADER, LPVOID, int, int, int, int, UINT );
+BOOL VFWAPI     DrawDibEnd( HDRAWDIB );
+LPVOID VFWAPI   DrawDibGetBuffer( HDRAWDIB, LPBITMAPINFOHEADER, DWORD, DWORD );
+HPALETTE VFWAPI DrawDibGetPalette( HDRAWDIB );
+HDRAWDIB VFWAPI DrawDibOpen( void );
+LRESULT VFWAPI  DrawDibProfileDisplay( LPBITMAPINFOHEADER );
+UINT VFWAPI     DrawDibRealize( HDRAWDIB, HDC, BOOL );
+BOOL VFWAPI     DrawDibSetPalette( HDRAWDIB, HPALETTE );
+BOOL VFWAPI     DrawDibStart( HDRAWDIB, DWORD );
+BOOL VFWAPI     DrawDibStop( HDRAWDIB );
+BOOL VFWAPI     DrawDibTime( HDRAWDIB, LPDRAWDIBTIME );
+LRESULT VFWAPI  ICClose( HIC );
+DWORD VFWAPIV   ICCompress( HIC, DWORD, LPBITMAPINFOHEADER, LPVOID, LPBITMAPINFOHEADER, LPVOID, LPDWORD, LPDWORD, LONG, DWORD, DWORD, LPBITMAPINFOHEADER, LPVOID );
+BOOL VFWAPI     ICCompressorChoose( HWND, UINT, LPVOID, LPVOID, PCOMPVARS, LPSTR );
+void VFWAPI     ICCompressorFree( PCOMPVARS );
+DWORD VFWAPIV   ICDecompress( HIC, DWORD, LPBITMAPINFOHEADER, LPVOID, LPBITMAPINFOHEADER, LPVOID );
+DWORD VFWAPIV   ICDraw( HIC, DWORD, LPVOID, LPVOID, DWORD, LONG );
+DWORD VFWAPIV   ICDrawBegin( HIC, DWORD, HPALETTE, HWND, HDC, int, int, int, int, LPBITMAPINFOHEADER, int, int, int, int, DWORD, DWORD );
+HIC VFWAPI      ICGetDisplayFormat( HIC, LPBITMAPINFOHEADER, LPBITMAPINFOHEADER, int, int, int );
+LRESULT VFWAPI  ICGetInfo( HIC, ICINFO *, DWORD );
+HANDLE VFWAPI   ICImageCompress( HIC, UINT, LPBITMAPINFO, LPVOID, LPBITMAPINFO, LONG, LONG * );
+HANDLE VFWAPI   ICImageDecompress( HIC, UINT, LPBITMAPINFO, LPVOID, LPBITMAPINFO );
+BOOL VFWAPI     ICInfo( DWORD, DWORD, ICINFO * );
+BOOL VFWAPI     ICInstall( DWORD, DWORD, LPARAM, LPSTR, UINT );
+HIC VFWAPI      ICLocate( DWORD, DWORD, LPBITMAPINFOHEADER, LPBITMAPINFOHEADER, WORD );
+HIC VFWAPI      ICOpen( DWORD, DWORD, UINT );
+HIC VFWAPI      ICOpenFunction( DWORD, DWORD, UINT, FARPROC );
+BOOL VFWAPI     ICRemove( DWORD, DWORD, UINT );
+LRESULT VFWAPI  ICSendMessage( HIC, UINT, DWORD_PTR, DWORD_PTR );
+LPVOID VFWAPI   ICSeqCompressFrame( PCOMPVARS, UINT, LPVOID, BOOL *, LONG * );
+void VFWAPI     ICSeqCompressFrameEnd( PCOMPVARS );
+BOOL VFWAPI     ICSeqCompressFrameStart( PCOMPVARS, LPBITMAPINFO );
+HWND VFWAPIV    MCIWndCreateA( HWND, HINSTANCE, DWORD, LPCSTR );
+HWND VFWAPIV    MCIWndCreateW( HWND, HINSTANCE, DWORD, LPCWSTR );
+BOOL VFWAPIV    MCIWndRegisterClass( void );
+DWORD VFWAPI    VideoForWindowsVersion( void );
+#ifdef DRAWDIB_INCLUDE_STRETCHDIB
+void VFWAPI     StretchDIB( LPBITMAPINFOHEADER, LPVOID, int, int, int, int, LPBITMAPINFOHEADER, LPVOID, int, int, int, int );
+#endif
+#ifdef _INC_COMMDLG
+BOOL VFWAPI     GetOpenFileNamePreviewA( LPOPENFILENAMEA );
+BOOL VFWAPI     GetOpenFileNamePreviewW( LPOPENFILENAMEW );
+BOOL VFWAPI     GetSaveFileNamePreviewA( LPOPENFILENAMEA );
+BOOL VFWAPI     GetSaveFileNamePreviewW( LPOPENFILENAMEW );
+#endif
+
+/* Functions in AVIFIL32.DLL */
+STDAPI              AVIBuildFilterA( LPSTR, LONG, BOOL );
+STDAPI              AVIBuildFilterW( LPWSTR, LONG, BOOL );
+STDAPI              AVIClearClipboard( void );
+STDAPI_( ULONG )    AVIFileAddRef( PAVIFILE );
+STDAPI              AVIFileCreateStreamA( PAVIFILE, PAVISTREAM *, AVISTREAMINFOA * );
+STDAPI              AVIFileCreateStreamW( PAVIFILE, PAVISTREAM *, AVISTREAMINFOW * );
+STDAPI              AVIFileEndRecord( PAVIFILE );
+STDAPI_( void )     AVIFileExit( void );
+STDAPI              AVIFileGetStream( PAVIFILE, PAVISTREAM *, DWORD, LONG );
+STDAPI              AVIFileInfoA( PAVIFILE, LPAVIFILEINFOA, LONG );
+STDAPI              AVIFileInfoW( PAVIFILE, LPAVIFILEINFOW, LONG );
+STDAPI_( void )     AVIFileInit( void );
+STDAPI              AVIFileOpenA( PAVIFILE *, LPCSTR, UINT, LPCLSID );
+STDAPI              AVIFileOpenW( PAVIFILE *, LPCWSTR, UINT, LPCLSID );
+STDAPI              AVIFileReadData( PAVIFILE, DWORD, LPVOID, LONG * );
+STDAPI_( ULONG )    AVIFileRelease( PAVIFILE );
+STDAPI              AVIFileWriteData( PAVIFILE, DWORD, LPVOID, LONG );
+STDAPI              AVIGetFromClipboard( PAVIFILE * );
+STDAPI              AVIMakeCompressedStream( PAVISTREAM *, PAVISTREAM, AVICOMPRESSOPTIONS *, CLSID * );
+STDAPI              AVIMakeFileFromStreams( PAVIFILE *, int, PAVISTREAM * );
+STDAPI              AVIMakeStreamFromClipboard( UINT, HANDLE, PAVISTREAM * );
+STDAPI              AVIPutFileOnClipboard( PAVIFILE );
+STDAPIV             AVISaveA( LPCSTR, CLSID *, AVISAVECALLBACK, int, PAVISTREAM, LPAVICOMPRESSOPTIONS, ... );
+STDAPI_( INT_PTR )  AVISaveOptions( HWND, UINT, int, PAVISTREAM *, LPAVICOMPRESSOPTIONS * );
+STDAPI              AVISaveOptionsFree( int, LPAVICOMPRESSOPTIONS * );
+STDAPI              AVISaveVA( LPCSTR, CLSID *, AVISAVECALLBACK, int, PAVISTREAM *, LPAVICOMPRESSOPTIONS * );
+STDAPI              AVISaveVW( LPCWSTR, CLSID *, AVISAVECALLBACK, int, PAVISTREAM *, LPAVICOMPRESSOPTIONS * );
+STDAPIV             AVISaveW( LPCWSTR, CLSID *, AVISAVECALLBACK, int, PAVISTREAM, LPAVICOMPRESSOPTIONS, ... );
+STDAPI_( ULONG )    AVIStreamAddRef( PAVISTREAM );
+STDAPI              AVIStreamBeginStreaming( PAVISTREAM, LONG, LONG, LONG );
+STDAPI              AVIStreamCreate( PAVISTREAM *, LONG, LONG, CLSID * );
+STDAPI              AVIStreamEndStreaming( PAVISTREAM );
+STDAPI_( LONG )     AVIStreamFindSample( PAVISTREAM, LONG, LONG );
+STDAPI_( LPVOID )   AVIStreamGetFrame( PGETFRAME, LONG );
+STDAPI              AVIStreamGetFrameClose( PGETFRAME );
+STDAPI_( PGETFRAME )    AVIStreamGetFrameOpen( PAVISTREAM, LPBITMAPINFOHEADER );
+STDAPI              AVIStreamInfoA( PAVISTREAM, LPAVISTREAMINFOA, LONG );
+STDAPI              AVIStreamInfoW( PAVISTREAM, LPAVISTREAMINFOW, LONG );
+STDAPI_( LONG )     AVIStreamLength( PAVISTREAM );
+STDAPI              AVIStreamOpenFromFileA( PAVISTREAM *, LPCSTR, DWORD, LONG, UINT, CLSID * );
+STDAPI              AVIStreamOpenFileFromW( PAVISTREAM *, LPCWSTR, DWORD, LONG, UINT, CLSID * );
+STDAPI              AVIStreamRead( PAVISTREAM, LONG, LONG, LPVOID, LONG, LONG *, LONG * );
+STDAPI              AVIStreamReadData( PAVISTREAM, DWORD, LPVOID, LONG * );
+STDAPI              AVIStreamReadFormat( PAVISTREAM, LONG, LPVOID, LONG * );
+STDAPI_( ULONG )    AVIStreamRelease( PAVISTREAM );
+STDAPI_( LONG )     AVIStreamSampleToTime( PAVISTREAM, LONG );
+STDAPI              AVIStreamSetFormat( PAVISTREAM, LONG, LPVOID, LONG );
+STDAPI_( LONG )     AVIStreamStart( PAVISTREAM );
+STDAPI_( LONG )     AVIStreamTimeToSample( PAVISTREAM, LONG );
+STDAPI              AVIStreamWrite( PAVISTREAM, LONG, LONG, LPVOID, LONG, DWORD, LONG *, LONG * );
+STDAPI              AVIStreamWriteData( PAVISTREAM, DWORD, LPVOID, LONG );
+STDAPI              CreateEditableStream( PAVISTREAM *, PAVISTREAM );
+STDAPI              EditStreamClone( PAVISTREAM, PAVISTREAM * );
+STDAPI              EditStreamCopy( PAVISTREAM, LONG *, LONG *, PAVISTREAM * );
+STDAPI              EditStreamCut( PAVISTREAM, LONG *, LONG *, PAVISTREAM * );
+STDAPI              EditStreamPaste( PAVISTREAM, LONG *, LONG *, PAVISTREAM, LONG, LONG );
+STDAPI              EditStreamSetInfoA( PAVISTREAM, LPAVISTREAMINFOA, LONG );
+STDAPI              EditStreamSetInfoW( PAVISTREAM, LPAVISTREAMINFOW, LONG );
+STDAPI              EditStreamSetNameA( PAVISTREAM, LPCSTR );
+STDAPI              EditStreamSetNameW( PAVISTREAM, LPCWSTR );
+
+/* Functions in AVICAP32.DLL */
+HWND VFWAPI capCreateCaptureWindowA( LPCSTR, DWORD, int, int, int, int, HWND, int );
+HWND VFWAPI capCreateCaptureWindowW( LPCWSTR, DWORD, int, int, int, int, HWND, int );
+BOOL VFWAPI capGetDriverDescriptionA( UINT, LPSTR, int, LPSTR, int );
+BOOL VFWAPI capGetDriverDescriptionW( UINT, LPWSTR, int, LPWSTR, int );
+
+/* Variable used internally by various macros */
+static DWORD    dwICValue;
+
+/* Functions implemented as macros */
+#define ICQueryAbout( x ) \
+    (ICSendMessage( x, ICM_ABOUT, ((DWORD_PTR)-1), ICMF_ABOUT_QUERY ) == ICERR_OK)
+#define ICAbout( x, p ) \
+    ICSendMessage( x, ICM_ABOUT, (DWORD_PTR)(UINT_PTR)(p), 0 )
+#define ICQueryConfigure( x ) \
+    (ICSendMessage( x, ICM_CONFIGURE, ((DWORD_PTR)-1), ICMF_CONFIGURE_QUERY ) == ICERR_OK )
+#define ICConfigure( x, p ) \
+    ICSendMessage( x, ICM_CONFIGURE, (DWORD_PTR)(UINT_PTR)(p), 0 )
+#define ICGetState( x, p1, p2 ) \
+    ICSendMessage( x, ICM_GETSTATE, (DWORD_PTR)(LPVOID)(p1), (DWORD_PTR)(p2) )
+#define ICSetState( x, p1, p2 ) \
+    ICSendMessage( x, ICM_SETSTATE, (DWORD_PTR)(LPVOID)(p1), (DWORD_PTR)(p2) )
+#define ICGetStateSize( x ) \
+    (DWORD)ICGetState( x, NULL, 0 )
+#define ICDrawWindow( x, p ) \
+    ICSendMessage( x, ICM_DRAW_WINDOW, (DWORD_PTR)(LPVOID)(p), sizeof( RECT ) )
+#define ICCompressBegin( x, p1, p2 ) \
+    ICSendMessage( x, ICM_COMPRESS_BEGIN, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICCompressQuery( x, p1, p2 ) \
+    ICSendMessage( x, ICM_COMPRESS_QUERY, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICCompressGetFormat( x, p1, p2 ) \
+    ICSendMessage( x, ICM_COMPRESS_GET_FORMAT, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICCompressGetFormatSize( x, p ) \
+    (DWORD)ICCompressGetFormat( x, p, NULL )
+#define ICCompressGetSize( x, p1, p2 ) \
+    (DWORD)ICSendMessage( x, ICM_COMPRESS_GET_SIZE, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICCompressEnd( x ) \
+    ICSendMessage( x, ICM_COMPRESS_END, 0, 0 )
+#define ICDecompressBegin( x, p1, p2 ) \
+    ICSendMessage( x, ICM_DECOMPRESS_BEGIN, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICDecompressQuery( x, p1, p2 ) \
+    ICSendMessage( x, ICM_DECOMPRESS_QUERY, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICDecompressGetFormat( x, p1, p2 ) \
+    ((LONG)ICSendMessage( x, ICM_DECOMPRESS_GET_FORMAT, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) ))
+#define ICDecompressGetFormatSize( x, p ) \
+    ICDecompressGetFormat( x, p, NULL )
+#define ICDecompressGetPalette( x, p1, p2 ) \
+    ICSendMessage( x, ICM_DECOMPRESS_GET_PALETTE, (DWORD_PTR)(LPVOID)(p1), \
+    (DWORD_PTR)(LPVOID)(p2) )
+#define ICDecompressSetPalette( x, p ) \
+    ICSendMessage( x, ICM_DECOMPRESS_SET_PALETTE, (DWORD_PTR)(LPVOID)(p1), 0 )
+#define ICDecompressEnd( x ) \
+    ICSendMessage( x, ICM_DECOMPRESS_END, 0, 0 )
+#define ICDecompressExEnd( x ) \
+    ICSendMessage( x, ICM_DECOMPRESSEX_END, 0, 0 )
+#define ICDrawQuery( x, p ) \
+    ICSendMessage( x, ICM_DRAW_QUERY, (DWORD_PTR)(LPVOID)(p), 0 )
+#define ICDrawChangePalette( x, p ) \
+    ICSendMessage( x, ICM_DRAW_CHANGEPALETTE, (DWORD_PTR)(LPVOID)(p), 0 )
+#define ICGetBuffersWanted( x, p ) \
+    ICSendMessage( x, ICM_GETBUFFERSWANTED, (DWORD_PTR)(LPVOID)(p), 0 )
+#define ICDrawEnd( x ) \
+    ICSendMessage( x, ICM_DRAW_END, 0, 0 )
+#define ICDrawStart( x ) \
+    ICSendMessage( x, ICM_DRAW_START, 0, 0 )
+#define ICDrawStartPlay( x, p1, p2 ) \
+    ICSendMessage( x, ICM_DRAW_START_PLAY, (DWORD_PTR)(p1), (DWORD_PTR)(p2) )
+#define ICDrawStop( x ) \
+    ICSendMessage( x, ICM_DRAW_STOP, 0, 0 )
+#define ICDrawStopPlay( x ) \
+    ICSendMessage( x, ICM_DRAW_STOP_PLAY, 0, 0 )
+#define ICDrawGetTime( x, p ) \
+    ICSendMessage( x, ICM_DRAW_GETTIME, (DWORD_PTR)(LPVOID)(p), 0 )
+#define ICDrawSetTime( x, p ) \
+    ICSendMessage( x, ICM_DRAW_SETTIME, (DWORD_PTR)(p), 0 )
+#define ICDrawRealize( x, p1, p2 ) \
+    ICSendMessage( x, ICM_DRAW_REALIZE, (DWORD_PTR)(UINT_PTR)(HDC)(p1), \
+    (DWORD_PTR)(BOOL)(p2) )
+#define ICDrawFlush( x ) \
+    ICSendMessage( x, ICM_DRAW_FLUSH, 0, 0 )
+#define ICDrawRenderBuffer( x ) \
+    ICSendMessage( x, ICM_DRAW_RENDERBUFFER, 0, 0 )
+#define ICDecompressOpen( p1, p2, p3, p4 ) \
+    ICLocate( p1, p2, p3, p4, ICMODE_DECOMPRESS )
+#define ICDrawOpen( p1, p2, p3 ) \
+    ICLocate( p1, p2, p3, NULL, ICMODE_DRAW )
+#define DrawDibUpdate( p1, p2, p3, p4 ) \
+    DrawDibDraw( p1, p2, p3, p4, 0, 0, NULL, NULL, 0, 0, 0, 0, DDF_UPDATE )
+#define FromHex( x ) \
+    (((x) >= 'A') ? ((x) + 10 - 'A') : ((x) - '0'))
+#define StreamFromFOURCC( x ) \
+    ((WORD)((FromHex( LOBYTE( LOWORD( x ) ) ) << 4) + \
+    FromHex( HIBYTE( LOWORD( x ) ) )))
+#define TWOCCFromFOURCC( x ) \
+    HIWORD( x )
+#define ToHex( x ) \
+    ((BYTE)(((x) > 9) ? ((x) - 10 + 'A') : ((x) + '0')))
+#define MAKEAVICKID( p1, p2 ) \
+    MAKELONG( (ToHex( (p2) & 0x0F ) << 8) | (ToHex( ((p2) & 0xF0) >> 4 )), p1 )
+#define AVIStreamSampleToSample( p1, p2, p3 ) \
+    AVIStreamTimeToSample( p1, AVIStreamSampleToTime( p2, p3 ) )
+#define AVIStreamNextSample( p1, p2 ) \
+    AVIStreamFindSample( p1, p2 + 1, FIND_NEXT | FIND_ANY )
+#define AVIStreamPrevSample( p1, p2 ) \
+    AVIStreamFindSample( p1, p2 - 1, FIND_PREV | FIND_ANY )
+#define AVIStreamNearestSample( p1, p2 ) \
+    AVIStreamFindSample( p1, p2, FIND_PREV | FIND_ANY )
+#define AVIStreamNextKeyFrame( p1, p2 ) \
+    AVIStreamFindSample( p1, p2 + 1, FIND_NEXT | FIND_KEY )
+#define AVIStreamPrevKeyFrame( p1, p2 ) \
+    AVIStreamFindSample( p1, p2 - 1, FIND_PREV | FIND_KEY )
+#define AVIStreamNearestKeyFrame( p1, p2 ) \
+    AVIStreamFindSample( p1, p2, FIND_PREV | FIND_KEY )
+#define AVIStreamIsKeyFrame( p1, p2 ) \
+    (AVIStreamNearestKeyFrame( p1, p2 ) == p2)
+#define AVIStreamPrevSampleTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamPrevSample( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamNextSampleTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamNextSample( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamNearestSampleTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamNearestSample( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamNextKeyFrameTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamNextKeyFrame( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamPrevKeyFrameTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamPrevKeyFrame( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamNearestKeyFrameTime( p1, p2 ) \
+    AVIStreamSampleToTime( p1, AVIStreamNearestKeyFrame( p1, \
+    AVIStreamTimeToSample( p1, p2 ) ) )
+#define AVIStreamStartTime( x ) \
+    AVIStreamSampleToTime( x, AVIStreamStart( x ) )
+#define AVIStreamLengthTime( x ) \
+    AVIStreamSampleToTime( x, AVIStreamLength( x ) )
+#define AVIStreamEnd( x ) \
+    (AVIStreamStart( x ) + AVIStreamLength( x ))
+#define AVIStreamEndTime( x ) \
+    AVIStreamSampleToTime( x, AVIStreamEnd( x ) )
+#define AVIStreamSampleSize( p1, p2, p3 ) \
+    AVIStreamRead( p1, p2, 1, NULL, 0, p3, NULL )
+#define AVIStreamFormatSize( p1, p2, p3 ) \
+    AVIStreamReadFormat( p1, p2, NULL, p3 )
+#define AVIStreamDataSize( p1, p2, p3 ) \
+    AVIStreamReadData( p1, p2, NULL, p3 )
+#define MCIWndCanPlay( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_PLAY, 0, 0 )
+#define MCIWndCanRecord( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_RECORD, 0, 0 )
+#define MCIWndCanSave( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_SAVE, 0, 0 )
+#define MCIWndCanWindow( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_WINDOW, 0, 0 )
+#define MCIWndCanEject( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_EJECT, 0, 0 )
+#define MCIWndCanConfig( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_CAN_CONFIG, 0, 0 )
+#define MCIWndPaletteKick( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_PALETTEKICK, 0, 0 )
+#define MCIWndSave( x, p ) \
+    (LONG)MCIWndSM( x, MCI_SAVE, 0, (LPARAM)(LPVOID)(p) )
+#define MCIWndSaveDialog( x ) \
+    MCIWndSave( x, -1 )
+#define MCIWndNew( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_NEW, 0, (LPARAM)(LPVOID)(p) )
+#define MCIWndRecord( x ) \
+    (LONG)MCIWndSM( x, MCI_RECORD, 0, 0 )
+#define MCIWndOpen( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_OPEN, (WPARAM)(UINT)(p2), (LPARAM)(LPVOID)(p1) )
+#define MCIWndOpenDialog( x ) \
+    MCIWndOpen( x, -1, 0 )
+#define MCIWndClose( x ) \
+    (LONG)MCIWndSM( x, MCI_CLOSE, 0, 0 )
+#define MCIWndPlay( x ) \
+    (LONG)MCIWndSM( x, MCI_PLAY, 0, 0 )
+#define MCIWndStop( x ) \
+    (LONG)MCIWndSM( x, MCI_STOP, 0, 0 )
+#define MCIWndPause( x ) \
+    (LONG)MCIWndSM( x, MCI_PAUSE, 0, 0 )
+#define MCIWndResume( x ) \
+    (LONG)MCIWndSM( x, MCI_RESUME, 0, 0 )
+#define MCIWndSeek( x, p ) \
+    (LONG)MCIWndSM( x, MCI_SEEK, 0, (LPARAM)(LONG)(p) )
+#define MCIWndEject( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_EJECT, 0, 0 )
+#define MCIWndHome( x ) \
+    MCIWndSeek( x, MCIWND_START )
+#define MCIWndEnd( x ) \
+    MCIWndSeek( x, MCIWND_END )
+#define MCIWndGetSource( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GET_SOURCE, 0, (LPARAM)(LPRECT)(p) )
+#define MCIWndPutSource( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_PUT_SOURCE, 0, (LPARAM)(LPRECT)(p) )
+#define MCIWndGetDest( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GET_DEST, 0, (LPARAM)(LPRECT)(p) )
+#define MCIWndPutDest( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_PUT_DEST, 0, (LPARAM)(LPRECT)(p) )
+#define MCIWndPlayReverse( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_PLAYREVERSE, 0, 0 )
+#define MCIWndPlayFrom( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_PLAYFROM, 0, (LPARAM)(LONG)(p) )
+#define MCIWndPlayTo( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_PLAYTO, 0, (LPARAM)(LONG)(p) )
+#define MCIWndPlayFromTo( x, p1, p2 ) \
+    (MCIWndSeek( x, p1 ), MCIWndPlayTo( x, p2 ))
+#define MCIWndGetDeviceID( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETDEVICEID, 0, 0 )
+#define MCIWndGetAlias( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETALIAS, 0, 0 )
+#define MCIWndGetMode( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETMODE, (WPARAM)(UINT)(p2), (LPARAM)(LPTSTR)(p1) )
+#define MCIWndGetPosition( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETPOSITION, 0, 0 )
+#define MCIWndGetPositionString( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETPOSITION, (WPARAM)(UINT)(p2), (LPARAM)(LPTSTR)(p1) )
+#define MCIWndGetStart( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETSTART, 0, 0 )
+#define MCIWndGetLength( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETLENGTH, 0, 0 )
+#define MCIWndGetEnd( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETEND, 0, 0 )
+#define MCIWndStep( x, p ) \
+    (LONG)MCIWndSM( x, MCI_STEP, 0, (LPARAM)(long)(p) )
+#define MCIWndDestroy( x ) \
+    (VOID)MCIWndSM( x, WM_CLOSE, 0, 0 )
+#define MCIWndSetZoom( x, p ) \
+    (VOID)MCIWndSM( x, MCIWNDM_SETZOOM, 0, (LPARAM)(UINT)(p) )
+#define MCIWndGetZoom( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETZOOM, 0, 0 )
+#define MCIWndSetVolume( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SETVOLUME, 0, (LPARAM)(UINT)(p) )
+#define MCIWndGetVolume( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETVOLUME, 0, 0 )
+#define MCIWndSetSpeed( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SETSPEED, 0, (LPARAM)(UINT)(p) )
+#define MCIWndGetSpeed( x ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETSPEED, 0, 0 )
+#define MCIWndSetTimeFormat( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SETTIMEFORMAT, 0, (LPARAM)(LPTSTR)(p) )
+#define MCIWndGetTimeFormat( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETTIMEFORMAT, (WPARAM)(UINT)(p2), (LPARAM)(LPTSTR)(p2) )
+#define MCIWndValidateMedia( x ) \
+    (VOID)MCIWndSM( x, MCIWNDM_VALIDATEMEDIA, 0, 0 )
+#define MCIWndSetRepeat( x, p ) \
+    (void)MCIWndSM( x, MCIWNDM_SETREPEAT, 0, (LPARAM)(BOOL)(p) )
+#define MCIWndGetRepeat( x ) \
+    (BOOL)MCIWndSM( x, MCIWNDM_GETREPEAT, 0, 0 )
+#define MCIWndUseFrames( x ) \
+    MCIWndSetTimeFormat( x, TEXT("frames") )
+#define MCIWndUseTime( x ) \
+    MCIWndSetTimeFormat( x, TEXT("ms") )
+#define MCIWndSetActiveTimer( x, p ) \
+    (VOID)MCIWndSM( x, MCIWNDM_SETACTIVETIMER, (WPARAM)(UINT)(p), 0 )
+#define MCIWndSetInactiveTimer( x, p ) \
+    (VOID)MCIWndSM( x, MCIWNDM_SETINACTIVETIMER, (WPARAM)(UINT)(p), 0 )
+#define MCIWndSetTimers( x, p1, p2 ) \
+    (VOID)MCIWndSM( x, MCIWNDM_SETTIMERS, (WPARAM)(UINT)(p1), (LPARAM)(UINT)(p2) )
+#define MCIWndGetActiveTimer( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETACTIVETIMER, 0, 0 )
+#define MCIWndGetInactiveTimer( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETINACTIVETIMER, 0, 0 )
+#define MCIWndRealize( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_REALIZE, (WPARAM)(BOOL)(p), 0 )
+#define MCIWndSendString( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SENDSTRING, 0, (LPARAM)(LPTSTR)(p) )
+#define MCIWndReturnString( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_RETURNSTRING, (WPARAM)(UINT)(p2), (LPARAM)(LPVOID)(p1) )
+#define MCIWndGetError( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETERROR, (WPARAM)(UINT)(p2), (LPARAM)(LPVOID)(p1) )
+#define MCIWndGetPalette( x ) \
+    (HPALETTE)MCIWndSM( x, MCIWNDM_GETPALETTE, 0, 0 )
+#define MCIWndSetPalette( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SETPALETTE, (WPARAM)(HPALETTE)(p), 0 )
+#define MCIWndGetFileName( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETFILENAME, (WPARAM)(UINT)(p2), (LPARAM)(LPVOID)(p1) )
+#define MCIWndGetDevice( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_GETDEVICE, (WPARAM)(UINT)(p2), (LPARAM)(LPVOID)(p1) )
+#define MCIWndGetStyles( x ) \
+    (UINT)MCIWndSM( x, MCIWNDM_GETSTYLES, 0, 0 )
+#define MCIWndChangeStyles( x, p1, p2 ) \
+    (LONG)MCIWndSM( x, MCIWNDM_CHANGESTYLES, (WPARAM)(UINT)(p1), (LPARAM)(LONG)(p2) )
+#define MCIWndOpenInterface( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_OPENINTERFACE, 0, (LPARAM)(LPUNKNOWN)(p) )
+#define MCIWndSetOwner( x, p ) \
+    (LONG)MCIWndSM( x, MCIWNDM_SETOWNER, (WPARAM)(p), 0 )
+#define capSetCallbackOnError( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_ERROR, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnStatus( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_STATUS, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnYield( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_YIELD, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnFrame( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_FRAME, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnVideoStream( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_VIDEOSTREAM, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnWaveStream( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_WAVESTREAM, 0, (LPARAM)(LPVOID)(p) )
+#define capSetCallbackOnCapControl( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_CALLBACK_CAPCONTROL, 0, (LPARAM)(LPVOID)(p) )
+#define capSetUserData( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_USER_DATA, 0, (LPARAM)(p) )
+#define capGetUserData( x ) \
+    AVICapSM( x, WM_CAP_GET_USER_DATA, 0, 0 )
+#define capDriverConnect( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_DRIVER_CONNECT, (WPARAM)(p), 0 )
+#define capDriverDisconnect( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_DRIVER_DISCONNECT, 0, 0 )
+#define capDriverGetName( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_DRIVER_GET_NAME, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPTSTR)(p1) )
+#define capDriverGetVersion( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_DRIVER_GET_VERSION, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPTSTR)(p1) )
+#define capDriverGetCaps( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_DRIVER_GET_CAPS, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPCAPDRIVERCAPS)(p1) )
+#define capFileSetCaptureFile( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_SET_CAPTURE_FILE, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capFileGetCaptureFile( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_GET_CAPTURE_FILE, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPTSTR)(p1) )
+#define capFileAlloc( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_ALLOCATE, 0, (LPARAM)(DWORD)(p) )
+#define capFileSaveAs( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_SAVEAS, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capFileSetInfoChunk( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_SET_INFOCHUNK, 0, (LPARAM)(LPCAPINFOCHUNK)(p) )
+#define capFileSaveDIB( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_FILE_SAVEDIB, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capEditCopy( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_EDIT_COPY, 0, 0 )
+#define capSetAudioFormat( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_AUDIOFORMAT, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPWAVEFORMATEX)(p1) )
+#define capGetAudioFormat( x, p1, p2 ) \
+    (DWORD)AVICapSM( x, WM_CAP_GET_AUDIOFORMAT, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPWAVEFORMATEX)(p1) )
+#define capGetAudioFormatSize( x ) \
+    (DWORD)AVICapSM( x, WM_CAP_GET_AUDIOFORMAT, 0, 0 )
+#define capDlgVideoFormat( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_DLG_VIDEOFORMAT, 0, 0 )
+#define capDlgVideoSource( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_DLG_VIDEOSOURCE, 0, 0 )
+#define capDlgVideoDisplay( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_DLG_VIDEODISPLAY, 0, 0 )
+#define capDlgVideoCompression( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_DLG_VIDEOCOMPRESSION, 0, 0 )
+#define capGetVideoFormat( x, p1, p2 ) \
+    (DWORD)AVICapSM( x, WM_CAP_GET_VIDEOFORMAT, (WPARAM)(p2), (LPARAM)(LPVOID)(p1) )
+#define capGetVideoFormatSize( x ) \
+    (DWORD)AVICapSM( x, WM_CAP_GET_VIDEOFORMAT, 0, 0 )
+#define capSetVideoFormat( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_VIDEOFORMAT, (WPARAM)(p2), (LPARAM)(LPVOID)(p1) )
+#define capPreview( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_PREVIEW, (WPARAM)(BOOL)(p), 0 )
+#define capPreviewRate( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_PREVIEWRATE, (WPARAM)(p), 0 )
+#define capOverlay( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_OVERLAY, (WPARAM)(BOOL)(p), 0 )
+#define capPreviewScale( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_SCALE, (WPARAM)(BOOL)(p), 0 )
+#define capGetStatus( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_GET_STATUS, (WPARAM)(p2), (LPARAM)(LPVOID)(LPCAPSTATUS)(p1) )
+#define capSetScrollPos( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_SCROLL, 0, (LPARAM)(LPPOINT)(p) )
+#define capGrabFrame( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_GRAB_FRAME, 0, 0 )
+#define capGrabFrameNoStop( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_GRAB_FRAME_NOSTOP, 0, 0 )
+#define capCaptureSequence( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_SEQUENCE, 0, 0 )
+#define capCaptureSequenceNoFile( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_SEQUENCE_NOFILE, 0, 0 )
+#define capCaptureStop( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_STOP, 0, 0 )
+#define capCaptureAbort( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_ABORT, 0, 0 )
+#define capCaptureSingleFrameOpen( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_SINGLE_FRAME_OPEN, 0, 0 )
+#define capCaptureSingleFrameClose( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_SINGLE_FRAME_CLOSE, 0, 0 )
+#define capCaptureSingleFrame( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_SINGLE_FRAME, 0, 0 )
+#define capCaptureGetSetup( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_GET_SEQUENCE_SETUP, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPCAPTUREPARMS)(p1) )
+#define capCaptureSetSetup( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_SEQUENCE_SETUP, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPCAPTUREPARMS)(p1) )
+#define capSetMCIDeviceName( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_SET_MCI_DEVICE, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capGetMCIDeviceName( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_GET_MCI_DEVICE, (WPARAM)(p2), \
+    (LPARAM)(LPVOID)(LPTSTR)(p1) )
+#define capPaletteOpen( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_PAL_OPEN, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capPaletteSave( x, p ) \
+    (BOOL)AVICapSM( x, WM_CAP_PAL_SAVE, 0, (LPARAM)(LPVOID)(LPTSTR)(p) )
+#define capPalettePaste( x ) \
+    (BOOL)AVICapSM( x, WM_CAP_PAL_PASTE, 0, 0 )
+#define capPaletteAuto( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_PAL_AUTOCREATE, (WPARAM)(p1), (LPARAM)(DWORD)(p2) )
+#define capPaletteManual( x, p1, p2 ) \
+    (BOOL)AVICapSM( x, WM_CAP_PAL_MANUALCREATE, (WPARAM)(p1), (LPARAM)(DWORD)(p2) )
+
+/* The following two functions are implemented inline rather than as macros to prevent
+ * a compiler warning that dwICValue has not been used.
+ */
+
+__inline DWORD ICGetDefaultQuality( HIC x )
+/*****************************************/
+{
+    ICSendMessage( x, ICM_GETDEFAULTQUALITY, (DWORD_PTR)(LPVOID)&dwICValue,
+                   sizeof( DWORD ) );
+    return( dwICValue );
+}
+
+__inline DWORD ICGetDefaultKeyFrameRate( HIC x )
+/**********************************************/
+{
+    ICSendMessage( x, ICM_GETDEFAULTKEYFRAMERATE, (DWORD_PTR)(LPVOID)&dwICValue,
+                   sizeof( DWORD ) );
+    return( dwICValue );
+}
+
+/* Aliases */
+#define AVIFileClose            AVIFileRelease
+#define AVIStreamClose          AVIStreamRelease
+#define AVIStreamExit           AVIFileExit
+#define AVIStreamFindKeyFrame   AVIStreamFindSample
+#define AVIStreamInit           AVIFileInit
+#define FindKeyFrame            FindSample
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define AVIBuildFilter              AVIBuildFilterW
+    #define AVIFileCreateStream         AVIFileCreateStreamW
+    #define AVIFileInfo                 AVIFileInfoW
+    #define AVIFileOpen                 AVIFileOpenW
+    #define AVISave                     AVISaveW
+    #define AVISaveV                    AVISaveVW
+    #define AVIStreamInfo               AVIStreamInfoW
+    #define AVIStreamOpenFromFile       AVIStreamOpenFromFileW
+    #define EditStreamSetInfo           EditStreamSetInfoW
+    #define EditStreamSetName           EditStreamSetNameW
+    #define MCIWndCreate                MCIWndCreateW
+    #define capCreateCaptureWindow      capCreateCaptureWindowW
+    #define capGetDriverDescription     capGetDriverDescriptionW
+    #ifdef _INC_COMMDLG
+        #define GetOpenFileNamePreview  GetOpenFileNamePreviewW
+        #define GetSaveFileNamePreview  GetSaveFileNamePreviewW
+    #endif
+#else
+    #define AVIBuildFilter              AVIBuildFilterA
+    #define AVIFileCreateStream         AVIFileCreateStreamA
+    #define AVIFileInfo                 AVIFileInfoA
+    #define AVIFileOpen                 AVIFileOpenA
+    #define AVISave                     AVISaveA
+    #define AVISaveV                    AVISaveVA
+    #define AVIStreamInfo               AVIStreamInfoA
+    #define AVIStreamOpenFromFile       AVIStreamOpenFromFileA
+    #define EditStreamSetInfo           EditStreamSetInfoA
+    #define EditStreamSetName           EditStreamSetNameA
+    #define MCIWndCreate                MCIWndCreateA
+    #define capCreateCaptureWindow      capCreateCaptureWindowA
+    #define capGetDriverDescription     capGetDriverDescriptionA
+    #ifdef _INC_COMMDLG
+        #define GetOpenFileNamePreview  GetOpenFileNamePreviewA
+        #define GetSaveFileNamePreview  GetSaveFileNamePreviewA
+    #endif
+#endif
+
+:include cplusepi.sp
+
+#endif /* _INC_VFW */

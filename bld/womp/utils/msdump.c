@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump Microsoft style symbol and type information.
 *
 ****************************************************************************/
 
@@ -143,7 +142,7 @@ void fatal( char *p )
     exit( EXIT_FAILURE );
 }
 
-int getb( void )
+int get_b( void )
 {
     int c;
 
@@ -175,39 +174,39 @@ void flushRec( unsigned len )
     int c;
 
     while( len != 0 ) {
-        c = getb();
+        c = get_b();
         --len;
     }
 }
 
-unsigned getw( void )
+unsigned get_w( void )
 {
     int lo, hi;
 
-    lo = getb();
-    hi = getb();
+    lo = get_b();
+    hi = get_b();
     return( ( hi << 8 ) | lo );
 }
 
-unsigned long getl( void )
+unsigned long get_l( void )
 {
     unsigned lo, hi;
 
-    lo = getw();
-    hi = getw();
+    lo = get_w();
+    hi = get_w();
     return( (((unsigned long) hi) << 16 ) | lo );
 }
 
-unsigned geti( unsigned *len )
+unsigned get_i( unsigned *len )
 {
     int lo, hi;
 
-    lo = getb();
+    lo = get_b();
     --*len;
     hi = 0;
     if( lo & 0x80 ) {
         --*len;
-        hi = getb();
+        hi = get_b();
     }
     return( ( hi << 8 ) | lo );
 }
@@ -228,7 +227,7 @@ void dumpb( void )
 {
     int c;
 
-    c = getb();
+    c = get_b();
     printf( "%02x ", c );
 }
 
@@ -236,7 +235,7 @@ void dumpw( void )
 {
     unsigned w;
 
-    w = getw();
+    w = get_w();
     printf( "%04x ", w );
 }
 
@@ -244,7 +243,7 @@ void dumpl( void )
 {
     unsigned long l;
 
-    l = getl();
+    l = get_l();
     printf( "%08lx ", l );
 }
 
@@ -253,11 +252,11 @@ void dumpName( unsigned *len )
     int name_len;
 
     if( *len == 0 ) return;
-    name_len = getb();
+    name_len = get_b();
     --*len;
     putchar( '"' );
     while( name_len ) {
-        putchar( getb() );
+        putchar( get_b() );
         --*len;
         --name_len;
     }
@@ -268,7 +267,7 @@ void dumpi( unsigned *len )
 {
     unsigned index;
 
-    index = geti( len );
+    index = get_i( len );
     printf( "%u ", index );
 }
 
@@ -277,11 +276,12 @@ void procCOMENT( unsigned len )
     int attrib;
     int comment_class;
 
-    attrib = getb();
-    comment_class = getb();
+    attrib = get_b();
+    comment_class = get_b();
     switch( comment_class ) {
     case CMT_EASY_OMF:
-    case CMT_MS_OMF:
+// MS C 6.0 (16-bit) generates these comments...
+//    case CMT_MS_OMF:
         obj_32 = 1;
         break;
     }
@@ -294,19 +294,19 @@ void procLNAMES( unsigned len )
     char *p;
 
     while( len != 1 ) {
-        name_len = getb();
+        name_len = get_b();
         len -= name_len + 1;
         lnames[ curr_lname ] = memalloc( name_len + 1 );
         p = lnames[ curr_lname ];
         while( name_len ) {
-            *p = getb();
+            *p = get_b();
             ++p;
             --name_len;
         }
         *p = '\0';
         ++curr_lname;
     }
-    getb();     /* checksum */
+    get_b();     /* checksum */
 }
 
 void procSEGDEF( unsigned len )
@@ -314,20 +314,20 @@ void procSEGDEF( unsigned len )
     int acbp;
     unsigned seg_idx;
 
-    acbp = getb();
+    acbp = get_b();
     if(( acbp & 0xe0 ) == ( ALIGN_ABS << 5 )) {
         flushRec( len - 1 );
         return;
     }
     --len;
     if( obj_32 ) {
-        getl();
+        get_l();
         len -= 4;
     } else {
-        getw();
+        get_w();
         len -= 2;
     }
-    seg_idx = geti( &len );
+    seg_idx = get_i( &len );
     segdefs[ curr_segdef ] = lnames[ seg_idx ];
     if( strcmp( lnames[ seg_idx ], "$$TYPES" ) == 0 ) {
         type_seg = curr_segdef;
@@ -464,7 +464,7 @@ void dumpLeaf( unsigned *len )
     unsigned slen;
     unsigned idx;
 
-    leaf = getb();
+    leaf = get_b();
     --*len;
     if( leaf < 0x80 ) {
         printf( "%u ", leaf );
@@ -472,38 +472,38 @@ void dumpLeaf( unsigned *len )
     }
     switch( leaf ) {
     case MS_BCL_INT_8:
-        s1 = getb();
+        s1 = get_b();
         --*len;
         printf( "%d ", s1 );
         break;
     case MS_BCL_INT_16:
-        s2 = getw();
+        s2 = get_w();
         *len -= 2;
         printf( "%d ", s2 );
         break;
     case MS_BCL_INT_32:
-        s4 = getl();
+        s4 = get_l();
         *len -= 4;
         printf( "%ld ", s4 );
         break;
     case MS_BCL_UINT_16:
-        u2 = getw();
+        u2 = get_w();
         *len -= 2;
         printf( "%u ", u2 );
         break;
     case MS_BCL_UINT_32:
-        u4 = getl();
+        u4 = get_l();
         *len -= 4;
         printf( "%lu ", u4 );
         break;
     case MS_BCL_INDEX:
         if( obj_metaware ) {
-            idx = getb();
+            idx = get_b();
             --*len;
             printf( "@%x ", idx + ( FIRST_DEFINED_TYPE - 1 ) );
             break;
         }
-        idx = getw();
+        idx = get_w();
         *len -= 2;
         if( idx < FIRST_DEFINED_TYPE ) {
             dumpSpecial( idx );
@@ -512,11 +512,11 @@ void dumpLeaf( unsigned *len )
         printf( "@%x ", idx );
         break;
     case MS_BCL_STRING:
-        slen = getb();
+        slen = get_b();
         --*len;
         putchar( '"' );
         while( slen ) {
-            putchar( getb() );
+            putchar( get_b() );
             --*len;
             --slen;
         }
@@ -556,25 +556,25 @@ void dumpTypes( unsigned len )
     for(;;) {
         if( len == 1 ) break;
         in_record = record;
-        linkage = getb();
-        lo = getb();
+        linkage = get_b();
+        lo = get_b();
         if( linkage == 0 && lo == 0 ) {
             tlen = len - 3;
             len -= 2;
         } else {
-            hi = getb();
+            hi = get_b();
             tlen = ( hi << 8 ) | lo;
             len -= 3;
         }
         printf( "%3x: %s (%u) ", type_index, linkage ? "T" : "F", tlen );
         ++type_index;
         len -= tlen;
-        c = getb();
+        c = get_b();
         --tlen;
         dumpCode( c, translateType );
         switch( c ) {
         case MS_SL_POINTER:
-            dumpCode( getb(), translateType );
+            dumpCode( get_b(), translateType );
             --tlen;
             while( tlen ) {
                 dumpLeaf( &tlen );
@@ -582,7 +582,7 @@ void dumpTypes( unsigned len )
             break;
         case MS_SL_SCALAR:
             dumpLeaf( &tlen );
-            dumpSpecial( getb() );
+            dumpSpecial( get_b() );
             --tlen;
             while( tlen ) {
                 dumpLeaf( &tlen );
@@ -594,7 +594,7 @@ void dumpTypes( unsigned len )
             dumpLeaf( &tlen );
             dumpLeaf( &tlen );
             dumpLeaf( &tlen );
-            packed = getb();
+            packed = get_b();
             --tlen;
             dumpCode( packed, translateType );
             flushRec( tlen );
@@ -602,7 +602,7 @@ void dumpTypes( unsigned len )
         case MS_SL_PROCEDURE:
             dumpLeaf( &tlen );
             dumpLeaf( &tlen );
-            calling = getb();
+            calling = get_b();
             --tlen;
             dumpCode( calling, translateType );
             dumpi( &tlen );
@@ -612,7 +612,7 @@ void dumpTypes( unsigned len )
         case MS_SL_BITFIELD:
             putchar( ':' );
             dumpi( &tlen );
-            dumpCode( getb(), translateType );
+            dumpCode( get_b(), translateType );
             dumpb();
             break;
         case MS_SL_ARRAY:
@@ -636,7 +636,7 @@ void dumpTypes( unsigned len )
         putchar( '\n' );
         dumpHexRec();
     }
-    getb();     /* checksum */
+    get_b();     /* checksum */
 }
 
 void dumpSymbols( unsigned len )
@@ -647,11 +647,11 @@ void dumpSymbols( unsigned len )
     for(;;) {
         if( len == 1 ) break;
         in_record = record;
-        slen = getb();
+        slen = get_b();
         --len;
         printf( "(%u) ", slen );
         len -= slen;
-        c = getb();
+        c = get_b();
         --slen;
         if( c & MS_SYM_386_FLAG ) {
             obj_32 = 1;
@@ -754,23 +754,23 @@ void dumpSymbols( unsigned len )
         putchar( '\n' );
         dumpHexRec();
     }
-    getb();     /* checksum */
+    get_b();     /* checksum */
 }
 
 void procLEDATA( unsigned len )
 {
     unsigned seg_idx;
 
-    seg_idx = geti( &len );
+    seg_idx = get_i( &len );
     if( seg_idx != type_seg && seg_idx != sym_seg ) {
         flushRec( len );
         return;
     }
     if( obj_32 ) {
-        getl();
+        get_l();
         len -= 4;
     } else {
-        getw();
+        get_w();
         len -= 2;
     }
     if( seg_idx == type_seg ) {
@@ -782,14 +782,14 @@ void procLEDATA( unsigned len )
     }
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     unsigned len;
     int rec;
     char *p;
 
     if( argc != 2 && argc != 3 ) {
-        puts( "usage: MSDUMP <file> [-xm]" );
+        puts( "usage: msdump <file> [-xm]" );
         puts( "-x     dump hex values of type/symbol records" );
         puts( "-m     use MetaWare CodeView interpretation" );
         puts( "options may be combined (i.e., -xm)" );
@@ -827,7 +827,7 @@ void main( int argc, char **argv )
         rec = fgetc( fp );
         if( rec == EOF ) break;
         in_record = record;
-        len = getw();
+        len = get_w();
         if( len > record_len ) {
             record_len = (( len + 1 ) + 0x0f ) & ~0x0f;
             record = memrealloc( record, record_len );
@@ -857,5 +857,5 @@ void main( int argc, char **argv )
         }
     }
     fclose( fp );
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

@@ -1,0 +1,3 @@
+
+FIXUPP386(9d) len:0005h, chksum:47h(47)
+    001ch Self  OFFSET386    Frame: TARGET    Target: EI(1)

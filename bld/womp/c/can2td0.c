@@ -74,7 +74,7 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
 
     obj_rec *coment;
     uint_8  name_len;
-    uint_8  *name;
+    char    *name;
     uint_16 save;
 
 /**/myassert( objr != NULL && objr->command == CMD_THEADR );
@@ -84,7 +84,7 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
     /* we output the default source file information */
     save = ObjRTell( objr );
     name_len = ObjGet8( objr );
-    name = ObjGet( objr, name_len );
+    name = (char *)ObjGet( objr, name_len );
     ObjRSeek( objr, save );
     coment = ObjNewRec( CMD_COMENT );
     coment->d.coment.attr = TD_CMT_ATTR;

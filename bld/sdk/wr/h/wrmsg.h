@@ -33,15 +33,17 @@
 #ifndef WRMSG_INCLUDED
 #define WRMSG_INCLUDED
 
+#include "rcmsg.gh"
+
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WRDisplayMsg            ( const char *msg );
-extern void     WRInitDisplayError      ( HINSTANCE inst );
-extern void     WRDisplayErrorMsg       ( DWORD msg );
-extern char     *WRAllocRCString        ( DWORD id );
-extern void     WRFreeRCString          ( char *str );
-extern DWORD    WRCopyRCString          ( DWORD id, char *buf, DWORD bufsize );
-extern void     WRPrintErrorMsg         ( DWORD msg, ... );
+extern void     WRDisplayMsg( const char *msg );
+extern void     WRInitDisplayError( HINSTANCE inst );
+extern void     WRDisplayErrorMsg( DWORD msg );
+extern char     *WRAllocRCString( DWORD id );
+extern void     WRFreeRCString( char *str );
+extern DWORD    WRCopyRCString( DWORD id, char *buf, DWORD bufsize );
+extern void     WRPrintErrorMsg( DWORD msg, ... );
 
 #endif

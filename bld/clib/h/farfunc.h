@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macros for switching between far and near function version
 *
 ****************************************************************************/
 
 
 #ifndef _FARFUNC_H_INCLUDED
-
+#define _FARFUNC_H_INCLUDED
 
 #ifdef __FARFUNC__
     #define _FFAR               _WCFAR
@@ -41,6 +40,4 @@
     #define _NEARFAR(n1,n2)     n1
 #endif
 
-
-#define _FARFUNC_INCLUDED
 #endif

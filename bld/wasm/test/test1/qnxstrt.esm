@@ -1,0 +1,72 @@
+.387
+		EXTRN	__qnx_exit_:BYTE
+		EXTRN	StartupInit_:BYTE
+		EXTRN	TrapInit_:BYTE
+		EXTRN	TrapAccess_:BYTE
+		EXTRN	TrapFini_:BYTE
+		EXTRN	_small_code_:BYTE
+dgroup		GROUP	_DATA
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    jmp         L$2
+    DB	0afH, 0deH
+    DW	offset Initialize
+    DW	offset Request
+    DW	offset Finalize
+L$1:
+    DW	dgroup
+L$2:
+    mov         ax,0ffffH
+    jmp         near ptr __qnx_exit_
+Initialize:
+    push        bp
+    mov         bp,sp
+    push        ds
+    push        es
+    push        ax
+    push        dx
+    push        cx
+    push        bx
+    mov         bx,word ptr 0cH[bp]
+    mov         cx,word ptr 0eH[bp]
+    mov         ax,word ptr 8[bp]
+    mov         dx,word ptr 0aH[bp]
+    mov         ds,word ptr cs:L$1
+    call        near ptr StartupInit_
+    pop         bx
+    pop         cx
+    pop         dx
+    pop         ax
+    push        word ptr 6[bp]
+    call        near ptr TrapInit_
+    pop         es
+    pop         ds
+    mov         sp,bp
+    pop         bp
+    retf        0aH
+Request:
+    push        bp
+    mov         bp,sp
+    push        ds
+    push        es
+    push        word ptr 8[bp]
+    push        word ptr 6[bp]
+    mov         ds,word ptr cs:L$1
+    call        near ptr TrapAccess_
+    pop         es
+    pop         ds
+    mov         sp,bp
+    pop         bp
+    retf        4
+Finalize:
+    push        ds
+    push        es
+    mov         ds,word ptr cs:L$1
+    call        near ptr TrapFini_
+    pop         es
+    pop         ds
+    retf        
+_TEXT		ENDS
+_DATA		SEGMENT	BYTE PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

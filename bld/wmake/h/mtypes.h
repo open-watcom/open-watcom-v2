@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wmake types and its version of <ctypes.h>
 *
 ****************************************************************************/
 
@@ -43,8 +42,16 @@
 /*
  * provide machine independant definitions for different quantities
  */
+#ifndef _WINDOWS_H
 typedef   signed long   INT32;
 typedef unsigned long   UINT32;
+
+enum {
+    FALSE = (0==1),
+    TRUE = (0==0)
+};
+#endif
+
 typedef   signed short  INT16;
 typedef unsigned short  UINT16;
 typedef   signed char   INT8;
@@ -53,11 +60,6 @@ typedef unsigned char   UINT8;
 typedef unsigned        BIT;        /* for bit fields in structures */
 
 typedef unsigned char   BOOLEAN;
-enum {
-    FALSE = (0==1),
-    TRUE = (0==0)
-};
-
 
 typedef struct Node NODE;       /* for singly linked lists */
 struct Node {
@@ -99,10 +101,11 @@ extern const UINT8 IsArray[258];
 #define isbarf(__c)         (IsArray[(__c)+2] & IS_BARF)
 
 /*
- * Since we have redifined a bunch of things from ctype.h, we can't
+ * Since we have redefined a bunch of things from ctype.h, we can't
  * include ctype.h for toupper() and tolower().  BUT... this is ANSI
  * so we SHOULD be able to do this...
  */
-extern int toupper( int );
+extern int  tolower( int );
+extern int  toupper( int );
 
 #endif  /* !_MTYPES_H */

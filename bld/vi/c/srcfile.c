@@ -30,19 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "source.h"
+
+#define isEOL(x)        ((x == CR) || (x == LF) || (x == CTLZ))
 
 /*
  * SrcOpen - open a file
  */
-int SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
+vi_rc SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
 {
     int         i;
-    char        name[MAX_SRC_LINE],id[MAX_SRC_LINE],type[MAX_SRC_LINE],t;
+    char        name[MAX_SRC_LINE], id[MAX_SRC_LINE], type[MAX_SRC_LINE], t;
     ftype       ft;
 
     /*
@@ -68,7 +67,7 @@ int SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
     }
     i = id[0] - '1';
     t = type[0];
-    if( type[1] != 0 || ( t != 'x' && t != 'r' && t != 'a' && t != 'w' ) ) {
+    if( type[1] != 0 || (t != 'x' && t != 'r' && t != 'a' && t != 'w') ) {
         return( ERR_SRC_INVALID_OPEN );
     }
 
@@ -84,28 +83,26 @@ int SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
         if( !stricmp( &name[1], "." ) ) {
             cinfo = CurrentInfo;
         } else {
-            cinfo = InfoHead;
-            while( cinfo != NULL ) {
+            for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
                 if( !strcmp( cinfo->CurrentFile->name, &name[1] ) ) {
                     break;
                 }
-                cinfo = cinfo->next;
             }
             if( cinfo == NULL ) {
                 return( ERR_FILE_NOT_FOUND );
             }
         }
         ft = SRCFILE_BUFF;
-        fi->buffer[i].cinfo = cinfo;
-        fi->buffer[i].line = 1L;
+        fi->u.buffer[i].cinfo = cinfo;
+        fi->u.buffer[i].line = 1L;
     } else {
         ft = SRCFILE_FILE;
-        fi->f[i] = fopen( name, type );
-        if( fi->f[i] == NULL ) {
+        fi->u.f[i] = fopen( name, type );
+        if( fi->u.f[i] == NULL ) {
             return( ERR_FILE_NOT_FOUND );
         }
         if( t == 'x' ) {
-            fclose( fi->f[i] );
+            fclose( fi->u.f[i] );
         }
     }
     if( t == 'x' ) {
@@ -120,10 +117,11 @@ int SrcOpen( sfile *curr, vlist *vl, files *fi, char *data )
 /*
  * SrcRead - read file
  */
-int SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
+vi_rc SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
 {
     int         i;
-    char        id[MAX_SRC_LINE],v1[MAX_SRC_LINE];
+    int         j;
+    char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
 
     /*
      * validate read statement:
@@ -149,29 +147,29 @@ int SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
         return( ERR_SRC_FILE_NOT_OPEN );
     }
     if( fi->ft[i] == SRCFILE_FILE ) {
-        if( fgets( id,MAX_SRC_LINE-1,fi->f[i] ) != NULL ) {
-            id[ MAX_SRC_LINE-1 ] = 0;
-            id[ strlen(id) - 1] = 0;
-            VarAdd( v1, id, vl );
+        if( fgets( id, MAX_SRC_LINE, fi->u.f[i] ) != NULL ) {
+            for( j = strlen( id ); j && isEOL( id[j - 1] ); --j ) {
+                id[j - 1] = 0;
+            }
+            VarAddStr( v1, id, vl );
         } else {
-            fclose( fi->f[i] );
+            fclose( fi->u.f[i] );
             fi->ft[i] = SRCFILE_NONE;
             return( END_OF_FILE );
         }
     } else {
         fcb     *cfcb;
         line    *cline;
-        int     rc;
+        vi_rc   rc;
 
-        rc = GimmeLinePtr( fi->buffer[i].line,
-                                fi->buffer[i].cinfo->CurrentFile,
-                                &cfcb, &cline );
-        if( rc ) {
+        rc = GimmeLinePtr( fi->u.buffer[i].line, fi->u.buffer[i].cinfo->CurrentFile,
+                           &cfcb, &cline );
+        if( rc != ERR_NO_ERR ) {
             fi->ft[i] = SRCFILE_NONE;
             return( END_OF_FILE );
         }
-        fi->buffer[i].line++;
-        VarAdd( v1, cline->data, vl );
+        fi->u.buffer[i].line++;
+        VarAddStr( v1, cline->data, vl );
     }
     return( ERR_NO_ERR );
 
@@ -180,10 +178,10 @@ int SrcRead( sfile *curr, files *fi, char *data, vlist *vl )
 /*
  * SrcWrite - write file
  */
-int SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
+vi_rc SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
 {
     int         i;
-    char        id[MAX_SRC_LINE],v1[MAX_SRC_LINE];
+    char        id[MAX_SRC_LINE], v1[MAX_SRC_LINE];
 
     /*
      * validate write statement:
@@ -192,7 +190,7 @@ int SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
     if( NextWord1( data, id ) <= 0 ) {
         return( ERR_SRC_INVALID_WRITE );
     }
-    if( GetStringWithPossibleQuote( data, v1 ) ) {
+    if( GetStringWithPossibleQuote( data, v1 ) != ERR_NO_ERR ) {
         return( ERR_SRC_INVALID_WRITE );
     }
     if( curr->hasvar ) {
@@ -208,7 +206,7 @@ int SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
     case SRCFILE_NONE:
         return( ERR_SRC_FILE_NOT_OPEN );
     case SRCFILE_FILE:
-        MyFprintf( fi->f[i], "%s\n", v1 );
+        MyFprintf( fi->u.f[i], "%s\n", v1 );
         break;
     }
     return( ERR_NO_ERR );
@@ -218,7 +216,7 @@ int SrcWrite( sfile *curr, files *fi, char *data, vlist *vl )
 /*
  * SrcClose - close a work file
  */
-int SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
+vi_rc SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
 {
     int         i;
     char        id[MAX_SRC_LINE];
@@ -239,7 +237,7 @@ int SrcClose( sfile *curr, vlist *vl, files *fi, char *data )
     i = id[0] - '1';
 
     if( fi->ft[i] == SRCFILE_FILE ) {
-        fclose( fi->f[i] );
+        fclose( fi->u.f[i] );
     }
     fi->ft[i] = SRCFILE_NONE;
     return( ERR_NO_ERR );

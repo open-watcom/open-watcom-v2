@@ -1,10 +1,20 @@
 #include "msg.h"
-#include "..\rc\messages.rc"
-#ifdef ENGLISH
-#include "..\rc\usagee.rc"
-#elif  defined(JAPANESE)
-#include "..\rc\usagej.rc"
-#else
-#error Invalid language code!
-#endif
+#include "wreslang.h"
 
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
+#include "../rc/wic.msg"
+
+#undef pick
+#define pick( code, string1, string2 )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
+#include "../rc/wic.msg"
+
+#include "usagee.rc"
+#include "usagej.rc"
+
+END

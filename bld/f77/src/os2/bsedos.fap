@@ -1,0 +1,469 @@
+c$ifdef INCL_DOS
+c$define INCL_DOSPROCESS
+c$define INCL_DOSFILEMGR
+c$define INCL_DOSMEMMGR
+c$define INCL_DOSSEMAPHORES
+c$define INCL_DOSDATETIME
+c$define INCL_DOSMODULEMGR
+c$define INCL_DOSRESOURCES
+c$define INCL_DOSNLS
+c$define INCL_DOSEXCEPTIONS
+c$define INCL_DOSMISC
+c$define INCL_DOSMONITORS
+c$define INCL_DOSQUEUES
+c$define INCL_DOSSESMGR
+c$define INCL_DOSDEVICES
+c$define INCL_DOSNMPIPES
+c$define INCL_DOSPROFILE
+c$define INCL_DOSMVDM
+c$endif
+
+c$ifdef INCL_DOSPROCESS
+
+c$pragma aux (__syscall) DosBeep parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosExit parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosCreateThread parm( reference, reference, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosResumeThread parm( value*4 )
+
+c$pragma aux (__syscall) DosSuspendThread parm( value*4 )
+
+c$pragma aux (__syscall) DosGetInfoBlocks parm( reference, reference )
+
+c$pragma aux (__syscall) DosKillThread parm( value*4 )
+
+c$pragma aux (__syscall) DosWaitChild parm( value*4, value*4, reference, reference, value*4 )
+
+c$pragma aux (__syscall) DosWaitThread parm( reference, value*4 )
+
+c$pragma aux (__syscall) DosSleep parm( value*4 )
+
+c$pragma aux (__syscall) DosDebug parm( reference )
+
+c$pragma aux (__syscall) DosEnterCritSec parm(  )
+
+c$pragma aux (__syscall) DosExitCritSec parm(  )
+
+c$pragma aux (__syscall) DosExitList parm( value*4, reference )
+
+c$pragma aux (__syscall) DosExecPgm parm( reference, value*4, value*4, value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosSetPriority parm( value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosKillProcess parm( value*4, value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSFILEMGR
+
+c$pragma aux (__syscall) DosSetFileLocks parm( value*4, reference, reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosCancelLockRequest parm( value*4, reference )
+
+c$pragma aux (__syscall) DosOpen parm( value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) DosClose parm( value*4 )
+
+c$pragma aux (__syscall) DosRead parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosWrite parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosDelete parm( value*4 )
+
+c$pragma aux (__syscall) DosForceDelete parm( value*4 )
+
+c$pragma aux (__syscall) DosDupHandle parm( value*4, reference )
+
+c$pragma aux (__syscall) DosQueryFHState parm( value*4, reference )
+
+c$pragma aux (__syscall) DosSetFHState parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryHType parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosFindFirst parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) DosFindNext parm( value*4, \
+c		reference, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) DosFindClose parm( value*4 )
+
+c$pragma aux (__syscall) DosFSAttach parm( value*4, value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryFSAttach parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) DosFSCtl parm( value*4, value*4, reference, \
+c	value*4, value*4, reference, value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosSetFileSize parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosResetBuffer parm( value*4 )
+
+c$pragma aux (__syscall) DosSetFilePtr parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosMove parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosCopy parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosEditName parm( value*4, value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosCreateDir parm( value*4, reference )
+
+c$pragma aux (__syscall) DosDeleteDir parm( value*4 )
+
+c$pragma aux (__syscall) DosSetDefaultDisk parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryCurrentDisk parm( reference, reference )
+
+c$pragma aux (__syscall) DosSetCurrentDir parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryCurrentDir parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosQueryFSInfo parm( value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosSetFSInfo parm( value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryVerify parm( reference )
+
+c$pragma aux (__syscall) DosSetVerify parm( value*4 )
+
+c$pragma aux (__syscall) DosSetMaxFH parm( value*4 )
+
+c$pragma aux (__syscall) DosSetRelMaxFH parm( reference, reference )
+
+c$pragma aux (__syscall) DosQueryFileInfo parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) DosSetFileInfo parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) DosQueryPathInfo parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) DosSetPathInfo parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) DosShutdown parm( value*4 )
+
+c$pragma aux (__syscall) DosEnumAttribute parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSMEMMGR
+
+c$pragma aux (__syscall) DosAllocMem parm( reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosFreeMem parm( value*4 )
+
+c$pragma aux (__syscall) DosSetMem parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosGiveSharedMem parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosGetSharedMem parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosGetNamedSharedMem parm( reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosAllocSharedMem parm( reference, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryMem parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosSubAllocMem parm( value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosSubFreeMem parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosSubSetMem parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosSubUnsetMem parm( value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSSEMAPHORES
+
+c$pragma aux (__syscall) DosCreateEventSem parm( value*4, reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosOpenEventSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosCloseEventSem parm( value*4 )
+
+c$pragma aux (__syscall) DosResetEventSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosPostEventSem parm( value*4 )
+
+c$pragma aux (__syscall) DosWaitEventSem parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryEventSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosCreateMutexSem parm( value*4, reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosOpenMutexSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosCloseMutexSem parm( value*4 )
+
+c$pragma aux (__syscall) DosRequestMutexSem parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosReleaseMutexSem parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryMutexSem parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosCreateMuxWaitSem parm( value*4, reference, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosOpenMuxWaitSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosCloseMuxWaitSem parm( value*4 )
+
+c$pragma aux (__syscall) DosWaitMuxWaitSem parm( value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosAddMuxWaitSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosDeleteMuxWaitSem parm( value*4, reference )
+
+c$pragma aux (__syscall) DosQueryMuxWaitSem parm( value*4, reference, reference, reference )
+
+c$endif
+
+c$ifdef INCL_DOSDATETIME
+
+c$pragma aux (__syscall) DosGetDateTime parm( reference )
+
+c$pragma aux (__syscall) DosSetDateTime parm( reference )
+
+c$pragma aux (__syscall) DosAsyncTimer parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosStartTimer parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosStopTimer parm( value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSMODULEMGR
+
+c$pragma aux (__syscall) DosLoadModule parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosFreeModule parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryProcAddr parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosQueryModuleHandle parm( value*4, reference )
+
+c$pragma aux (__syscall) DosQueryModuleName parm( value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosQueryProcType parm( value*4, value*4, value*4, reference )
+
+c$endif
+
+c$ifdef INCL_DOSRESOURCES
+
+c$pragma aux (__syscall) DosGetResource parm( value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosFreeResource parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryResourceSize parm( value*4, value*4, value*4, reference )
+
+c$endif
+
+c$ifdef INCL_DOSNLS
+
+c$pragma aux (__syscall) DosQueryCtryInfo parm( value*4, reference, reference, reference )
+
+c$pragma aux (__syscall) DosQueryDBCSEnv parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosMapCase parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosQueryCollate parm( value*4, reference, reference, reference )
+
+c$pragma aux (__syscall) DosQueryCp parm( value*4, reference, reference )
+
+c$pragma aux (__syscall) DosSetProcessCp parm( value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSEXCEPTIONS
+
+c$pragma aux (__syscall) DosSetExceptionHandler parm( reference )
+
+c$pragma aux (__syscall) DosUnsetExceptionHandler parm( reference )
+
+c$pragma aux (__syscall) DosRaiseException parm( reference )
+
+c$pragma aux (__syscall) DosSendSignalException parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosUnwindException parm( reference, value*4, reference )
+
+c$pragma aux (__syscall) DosSetSignalExceptionFocus parm( value*4, reference )
+
+c$pragma aux (__syscall) DosEnterMustComplete parm( reference )
+
+c$pragma aux (__syscall) DosExitMustComplete parm( reference )
+
+c$pragma aux (__syscall) DosAcknowledgeSignalException parm( value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSQUEUES
+
+c$ifdef INCL_DOSFILEMGR
+
+c$pragma aux (__syscall) DosCreatePipe parm( reference, reference, value*4 )
+
+c$pragma aux (__syscall) DosCloseQueue parm( value*4 )
+
+c$pragma aux (__syscall) DosCreateQueue parm( reference, value*4, value*4 )
+
+c$pragma aux (__syscall) DosOpenQueue parm( reference, reference, value*4 )
+
+c$pragma aux (__syscall) DosPeekQueue parm( value*4, reference, reference, reference, reference, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosPurgeQueue parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryQueue parm( value*4, reference )
+
+c$pragma aux (__syscall) DosReadQueue parm( value*4, reference, reference, reference, value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosWriteQueue parm( value*4, value*4, value*4, value*4, value*4 )
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_DOSMISC
+
+c$pragma aux (__syscall) DosError parm( value*4 )
+
+c$pragma aux (__syscall) DosGetMessage parm( reference, value*4, reference, value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosErrClass parm( value*4, reference, reference, reference )
+
+c$pragma aux (__syscall) DosInsertMessage parm( reference, value*4, value*4, value*4, reference, value*4, reference )
+
+c$pragma aux (__syscall) DosPutMessage parm( value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosQuerySysInfo parm( value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosScanEnv parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosSearchPath parm( value*4, value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosQueryMessageCP parm( reference, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosQueryRASInfo parm( value*4, reference )
+
+c$endif
+
+c$ifdef INCL_DOSSESMGR
+
+c$pragma aux (__syscall) DosStartSession parm( reference, reference, reference )
+
+c$pragma aux (__syscall) DosSetSession parm( value*4, reference )
+
+c$pragma aux (__syscall) DosSelectSession parm( value*4 )
+
+c$pragma aux (__syscall) DosStopSession parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryAppType parm( value*4, reference )
+
+c$endif
+
+c$ifdef INCL_DOSDEVICES
+
+c$pragma aux (__syscall) DosDevConfig parm( reference, value*4 )
+
+c$pragma aux (__syscall) DosDevIOCtl parm( value*4, value*4, value*4, value*4, value*4, reference, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosPhysicalDisk parm( value*4, value*4, value*4, value*4, value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSNMPIPES
+
+c$pragma aux (__syscall) DosCallNPipe parm( value*4, value*4, value*4, value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosConnectNPipe parm( value*4 )
+
+c$pragma aux (__syscall) DosDisConnectNPipe parm( value*4 )
+
+c$pragma aux (__syscall) DosCreateNPipe parm( value*4, reference, value*4, value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosPeekNPipe parm( value*4, value*4, value*4, reference, reference, reference )
+
+c$pragma aux (__syscall) DosQueryNPHState parm( value*4, reference )
+
+c$pragma aux (__syscall) DosQueryNPipeInfo parm( value*4, value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) DosQueryNPipeSemState parm( reference, reference, value*4 )
+
+c$pragma aux (__syscall) DosRawReadNPipe parm( value*4, value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosRawWriteNPipe parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosSetNPHState parm( value*4, value*4 )
+
+c$pragma aux (__syscall) DosSetNPipeSem parm( value*4, reference, value*4 )
+
+c$pragma aux (__syscall) DosTransactNPipe parm( value*4, value*4, value*4, value*4, value*4, reference )
+
+c$pragma aux (__syscall) DosWaitNPipe parm( value*4, value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSPROFILE
+
+c$pragma aux (__syscall) DosTmrQueryFreq parm( reference )
+
+c$pragma aux (__syscall) DosTmrQueryTime parm( reference )
+
+c$pragma aux (__syscall) DosRegisterPerfCtrs parm( reference, reference, value*4 )
+
+c$endif
+
+c$ifdef INCL_DOSMVDM
+
+c$pragma aux (__syscall) DosOpenVDD parm( value*4, reference )
+
+c$pragma aux (__syscall) DosRequestVDD parm( value*4, value*2, value*4, \
+c		value*4, value*4, \
+c		value*4, value*4 )
+
+c$pragma aux (__syscall) DosCloseVDD parm( value*4 )
+
+c$pragma aux (__syscall) DosQueryDOSProperty parm( value*2, value*4, \
+c		value*4, value*4 )
+
+c$pragma aux (__syscall) DosSetDOSProperty parm( value*2, value*4, \
+c		value*4, value*4 )
+
+c$endif

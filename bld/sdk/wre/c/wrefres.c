@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wreglbl.h"
 #include "wremem.h"
@@ -51,53 +51,51 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WREResNodeContainsLangNode ( WResResNode *, WResLangNode * );
+static Bool WREResNodeContainsLangNode( WResResNode *, WResLangNode * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-WResResNode *WREFindResNodeFromLangNode ( WResTypeNode *tnode,
-                                          WResLangNode *lnode )
+WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnode )
 {
     WResResNode *rnode;
 
-    if ( !tnode || !lnode ) {
-        return ( NULL );
+    if( tnode == NULL || lnode == NULL ) {
+        return( NULL );
     }
 
     rnode = tnode->Head;
 
-    while ( rnode ) {
-        if ( WREResNodeContainsLangNode ( rnode, lnode ) ) {
-            return ( rnode );
+    while( rnode != NULL ) {
+        if( WREResNodeContainsLangNode( rnode, lnode ) ) {
+            return( rnode );
         }
-        if ( rnode == tnode->Tail ) {
+        if( rnode == tnode->Tail ) {
             break;
         }
         rnode = rnode->Next;
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-Bool WREResNodeContainsLangNode ( WResResNode *rnode, WResLangNode *lnode )
+Bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
 {
     WResLangNode *ln;
 
-    if ( !rnode || !lnode ) {
-        return ( NULL );
+    if( rnode == NULL || lnode == NULL ) {
+        return( FALSE );
     }
 
     ln = rnode->Head;
 
-    while ( ln ) {
-        if ( ln == lnode ) {
-            return ( TRUE );
+    while( ln != NULL ) {
+        if( ln == lnode ) {
+            return( TRUE );
         }
         ln = ln->Next;
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
-

@@ -1,0 +1,7 @@
+
+extra_c_flags += -ot -4s
+extra_hdir = $(watcom_nw40_h)
+extra_incs = -I$(watcom_nw40_h)
+
+!include ../../ui.mif
+

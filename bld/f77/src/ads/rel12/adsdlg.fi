@@ -1,0 +1,83 @@
+c$noreference
+
+!   ADSDLG.FI  -  Definitions for ADS Programmable Dialogue Boxes
+
+        structure /ads_callback_packet/
+            integer*4   dialog
+            integer*4   tile
+            integer*4   value
+            integer*4   client_data
+            integer*4   reason
+            integer*4   x
+            integer*4   y
+        end structure
+
+! The following are used in tile callback packets. Their meaning
+! for each kind of tile can be found in the Programmable Dialogue
+! Boxes documentation.
+
+        integer CBR_SELECT
+        integer CBR_LOST_FOCUS
+        integer CBR_DRAG
+        integer CBR_DOUBLE_CLICK
+
+        parameter (CBR_SELECT       = 1)
+        parameter (CBR_LOST_FOCUS   = 2)
+        parameter (CBR_DRAG         = 3)
+        parameter (CBR_DOUBLE_CLICK = 4)
+
+        integer NULLCB
+        integer BAD_DIALOG
+
+        parameter (NULLCB       = 0)
+        parameter (BAD_DIALOG   = 0)
+
+! Return by reference integers for ads_start_dialog
+
+        integer DLGCANCEL
+        integer DLGOK
+        integer DLGALLDONE
+        integer DLGSTATUS
+
+        parameter (DLGCANCEL     = 0)   ! User pressed Cancel or equivalent
+        parameter (DLGOK         = 1)   ! User pressed Ok
+        parameter (DLGALLDONE    = -1)  ! All dialogs terminated with
+                                        ! term_dialog
+        parameter (DLGSTATUS     = 2)   ! start of user return codes
+
+
+! List argument type for ads_start_list()
+
+        integer LIST_CHANGE
+        integer LIST_APPEND
+        integer LIST_NEW
+
+        parameter (LIST_CHANGE   = 1)   ! Change selected listbox contents
+        parameter (LIST_APPEND   = 2)   ! Append new listbox entry
+        parameter (LIST_NEW      = 3)   ! Delete old list and create new list
+
+! Mode argument type for ads_mode_tile()
+
+        integer MODE_ENABLE
+        integer MODE_DISABLE
+        integer MODE_SETFOCUS
+        integer MODE_SETSEL
+        integer MODE_FLIP
+
+        parameter (MODE_ENABLE   = 0)   ! Enable tile
+        parameter (MODE_DISABLE  = 1)   ! Disable tile
+        parameter (MODE_SETFOCUS = 2)   ! Set focus to tile
+        parameter (MODE_SETSEL   = 3)   ! Set editbox selection--allows
+                                        ! auto-clearing of old string
+        parameter (MODE_FLIP     = 4)   ! Invert current state
+
+
+! For buffers that receive values for tiles.  The number is
+! arbitrary--it's just here to allow changing them all from
+! one place.
+
+        integer MAX_TILE_STR
+        integer TILE_STR_LIMIT
+
+        parameter (MAX_TILE_STR         = 40)
+        parameter (TILE_STR_LIMIT       = 255)  ! real limit of dialog strings

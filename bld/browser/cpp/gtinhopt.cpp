@@ -71,6 +71,7 @@ GTInheritOption::~GTInheritOption()
 void GTInheritOption::initialize()
 //--------------------------------
 {
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();

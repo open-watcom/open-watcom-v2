@@ -1,0 +1,39 @@
+#include <os2.h>
+#include "test.h"
+#include "test_dlg.h"
+
+//DEFAULTICON test.ico
+ICON IDR_MAIN  LOADONCALL   test.ico
+ICON IDR_ICON1 PRELOAD      test1.ico
+ICON IDR_ICON2 FIXED        test2.ico
+ICON IDR_ICON3 DISCARDABLE  test1.ico
+ICON IDR_ICON4 IMPURE       test2.ico
+
+BITMAP IDR_BITMAP PRELOAD MOVEABLE test.bmp
+
+MENU IDR_MAIN LOADONCALL SEGALIGN
+{
+   SUBMENU     "~File", IDM_FILE, MIS_TEXT
+   {
+      MENUITEM    "~New",             IDM_FILENEW,        MIS_TEXT
+      MENUITEM    "~Open...",         IDM_FILEOPEN,       MIS_TEXT
+      MENUITEM SEPARATOR
+      MENUITEM    "~Save",            IDM_FILESAVE,       MIS_TEXT
+      MENUITEM    "Save ~as...",      IDM_FILESAVEAS,     MIS_TEXT
+   }
+}
+
+MENU    IDD_CONTAINERMENU
+{
+   SUBMENU  "~Views", IDM_VIEWS
+   {
+      MENUITEM "ICON",      IDM_ICON,      MIS_TEXT
+      MENUITEM "NAME",      IDM_NAME,      MIS_TEXT
+      MENUITEM "TEXT",      IDM_TEXT,      MIS_TEXT
+      MENUITEM "DETAIL",    IDM_DETAIL,    MIS_TEXT
+    }
+}
+
+/* include dialog templates created by dialog box editor */
+
+//rcinclude test.dlg

@@ -1,0 +1,17 @@
+*$noreference
+
+! Line-Output Functions:
+! ----------------------
+
+      external Arc
+      external LineDDA
+      external LineTo
+      external MoveTo
+      external Polyline
+
+      integer*2 Arc
+      integer*2 LineTo
+      integer*4 MoveTo
+      integer*2 Polyline
+
+*$reference

@@ -1,0 +1,49 @@
+/*
+ *  lzexpand.h  Lempel-Ziv compression functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LZEXPAND_
+#define _LZEXPAND_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* LZ error codes */
+#define LZERROR_BADINHANDLE     (-1)
+#define LZERROR_BADOUTHANDLE    (-2)
+#define LZERROR_READ            (-3)
+#define LZERROR_WRITE           (-4)
+#define LZERROR_GLOBALLOC       (-5)
+#define LZERROR_GLOBLOCK        (-6)
+#define LZERROR_BADVALUE        (-7)
+#define LZERROR_UNKNOWNALG      (-8)
+
+/* Functions in LZ32.DLL */
+LONG APIENTRY   CopyLZFile( INT, INT );
+INT APIENTRY    GetExpandedNameA( LPSTR, LPSTR );
+INT APIENTRY    GetExpandedNameW( LPWSTR, LPWSTR );
+VOID APIENTRY   LZClose( INT );
+LONG APIENTRY   LZCopy( INT, INT );
+VOID APIENTRY   LZDone( VOID );
+INT APIENTRY    LZInit( INT );
+INT APIENTRY    LZOpenFileA( LPSTR, LPOFSTRUCT, WORD );
+INT APIENTRY    LZOpenFileW( LPWSTR, LPOFSTRUCT, WORD );
+INT APIENTRY    LZRead( INT, CHAR *, INT );
+LONG APIENTRY   LZSeek( INT, LONG, INT );
+INT APIENTRY    LZStart( VOID );
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define GetExpandedName GetExpandedNameW
+    #define LZOpenFile      LZOpenFileW
+#else
+    #define GetExpandedName GetExpandedNameA
+    #define LZOpenFile      LZOpenFileA
+#endif
+
+:include cplusepi.sp
+
+#endif /* _LZEXPAND_ */

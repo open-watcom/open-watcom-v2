@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction lists data structures.
 *
 ****************************************************************************/
 
@@ -100,17 +99,18 @@ typedef struct instruction {
         struct ins_header       head;
         struct opcode_entry     *table;
         union {
-            struct opcode_entry *gen_table;
+            struct opcode_entry *gen_table;     /*  do not merge this one! */
+        } u;
+        union {
             struct instruction  *parm_list;
             struct instruction  *cse_link;
-        } u;
+        } u2;
         struct register_name    *zap;
         union name              *result;        /*  result location */
         instruction_id          id;
         type_class_def          type_class;
         type_class_def          base_type_class;
         unsigned_16             sequence;
-#include "cgnoalgn.h"
         union {
                 byte            byte;
                 bool            bool;
@@ -124,13 +124,12 @@ typedef struct instruction {
         } t;
         byte                    stk_entry;
         byte                    num_operands;
-        instruction_flags       ins_flags;
         byte                    stk_exit;
         union {
             byte                stk_extra;
             byte                stk_depth;
         }                       s;
-#include "cgrealgn.h"
+        instruction_flags       ins_flags;
         union name               *operands[ 1 ]; /*  operands */
 } instruction;
 
@@ -153,3 +152,5 @@ typedef struct instruction {
 #define _OpClass( ins )              ( _IsConvert( ins ) \
                                        ? (ins)->base_type_class \
                                        : (ins)->type_class )
+
+#define _INS_NOT_BLOCK( ins )        if ( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )

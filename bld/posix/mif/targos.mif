@@ -3,30 +3,44 @@
     # define targos according to what os wmake was spawned under
     #
 !   ifdef __OS2__
-targos          = os2v2
+targos          = os2386
 !   else ifdef __MSDOS__
-targos          = dosos2
+targos          = dos
 !   else ifdef __NT__
-targos          = nt
+targos          = nt386
 !   else ifdef __QNX__
 targos          = qnx
 !   else
 !       error   targos (operating system) must be defined
 !   endif
+!endif
 
+#
+# validate the targos the user defined
+#
+!ifeq        targos  dos
+host_OS = dos
+host_CPU = i86
+!else ifeq   targos  dosos2
+host_OS = os2
+host_CPU = i86
+!else ifeq   targos  os2386
+host_OS = os2
+host_CPU = 386
+!else ifeq   targos  pharlap
+host_CPU = 386
+!else ifeq   targos  nt386
+host_OS = nt
+host_CPU = 386
+!else ifeq   targos  qnx
+host_OS = qnx
+host_CPU = 386
+!else ifeq   targos  qnx16
+host_OS = qnx
+host_CPU = i86
+!else ifeq   targos  ntaxp
+host_OS = nt
+host_CPU = axp
 !else
-    #
-    # validate the targos the user defined
-    #
-!   ifeq        targos  dos
-!   else ifeq   targos  dosos2
-!   else ifeq   targos  os2v2
-!   else ifeq   targos  pharlap
-!   else ifeq   targos  nt
-!   else ifeq   targos  qnx
-!   else ifeq   targos  qnx16
-!   else ifeq   targos  alpha
-!   else
-!       error   targos is not a recognized target
-!   endif
+!    error   targos is not a recognized target
 !endif

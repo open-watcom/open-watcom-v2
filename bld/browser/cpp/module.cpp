@@ -105,7 +105,7 @@ Module::Module( const char *name, WCValSList<String> & enabled,
 
     checkSourceTime();
 
-    _dbgInfo = DRDbgInit( this, _dataFile->getDRSizes() );
+    _dbgInfo = DRDbgInit( this, _dataFile->getDRSizes(), false );
     DRSetDebug( _dbgInfo );
 }
 
@@ -284,7 +284,7 @@ bool Module::findRefSyms( WVList *list, Symbol * sym )
  * these are the routines which are called by the debug reading library
 */
 
-static void dbgReadHook( void * obj, dr_section sect, void * buf, int len )
+static void dbgReadHook( void * obj, dr_section sect, void * buf, size_t len )
 //-------------------------------------------------------------------------
 {
     ((Module *)obj)->readSect( sect, buf, len );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for OS/2 32-bit debugger.
 *
 ****************************************************************************/
 
@@ -36,7 +35,9 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <process.h>
+#include "autoenv.h"
 
 #define INCL_DOSMISC
 #define INCL_DOSSIGNALS
@@ -44,49 +45,53 @@
 #define INCL_DOSERRORS
 #include <os2.h>
 
-extern void     DebugMain(void);
-extern void     DebugFini(void);
-extern char     *StrCopy(char *, char *);
+extern void     DebugMain( void );
+extern void     DebugFini( void );
+extern char     *StrCopy( char *, char * );
 
-static char             *CmdStart;
+char            *CmdData;
+
 static volatile bool    BrkPending;
 
 #if 0
-static void pascal far BrkHandler(USHORT sig_arg, USHORT sig_num)
+static void pascal far BrkHandler( USHORT sig_arg, USHORT sig_num )
 {
     PFNSIGHANDLER   prev_hdl;
     USHORT          prev_act;
 
     sig_arg = sig_arg;
     BrkPending = TRUE;
-    DosSetSigHandler(BrkHandler, &prev_hdl, &prev_act, 4, sig_num);
+    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 4, sig_num );
 }
 #endif
 
-void GUImain(void)
+#include <stdio.h>
+void GUImain( void )
 {
-    char                buff[CCHMAXPATH];
-    ULONG               ulCurFH;
-    LONG                ulAddFH;
+    char    *buff;
+    int     len;
 
-    /* Instead of setting fixed limit, add 20 new handles */
-    ulAddFH = 20;
-    DosSetRelMaxFH(&ulAddFH, &ulCurFH);
-    CmdStart=buff;
-    getcmd(CmdStart);
+    // fix up env vars if necessary
+    watcom_setup_env();
+
+    len = _bgetcmd( NULL, INT_MAX ) + 1;
+    buff = malloc( len );
+    CmdData = buff;
+    getcmd( CmdData );
     //TODO: replace with exception handler
 //    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
+    free( buff );
 }
 
 
-int GUISysInit(int param)
+int GUISysInit( int param )
 {
     param = param;
     return 1;
 }
 
-void GUISysFini(void)
+void GUISysFini( void )
 {
     DebugFini();
 }
@@ -95,23 +100,23 @@ void WndCleanUp()
 {
 }
 
-char *GetCmdArg(int num)
+char *GetCmdArg( int num )
 {
-    if (num != 0 || CmdStart == NULL)
-        return NULL;
+    if( num != 0 || CmdData == NULL )
+        return( NULL );
 
-    return CmdStart;
+    return( CmdData );
 }
 
-void SetCmdArgStart(int num, char *ptr)
+void SetCmdArgStart( int num, char *ptr )
 {
     num = num; /* must be zero */
-    CmdStart = ptr;
+    CmdData = ptr;
 }
 
-void KillDebugger(int ret_code)
+void KillDebugger( int ret_code )
 {
-    DosExit(EXIT_PROCESS, ret_code);
+    DosExit( EXIT_PROCESS, ret_code );
 }
 
 void GrabHandlers()
@@ -122,28 +127,20 @@ void RestoreHandlers()
 {
 }
 
-unsigned EnvLkup(char *name, char *buff, int max_len)
+unsigned EnvLkup( char *name, char *buff, int max_len )
 {
     char        *env;
-    unsigned    len;
 
     max_len = max_len; // nyi obey
-    if (DosScanEnv(name, &env) == 0) {
-        len = 0;
-        for ( ; ; ) {
-            *buff = *env;
-            if (*buff == NULLCHAR)
-                break;
-            ++len;
-            ++buff;
-            ++env;
-        }
-        return len;
-    }
-    return 0;
+    // use getenv() so that autoenv has an effect (we can't
+    // reliably modify the "master" process environment on OS/2)
+    env = getenv( name );
+    if( env == NULL )
+        return( 0 );
+    return( StrCopy( env, buff ) - buff );
 }
 
-long _fork(char *cmd, unsigned len)
+long _fork( char *cmd, unsigned len )
 {
     char        *dst;
     char        *args;
@@ -157,18 +154,18 @@ long _fork(char *cmd, unsigned len)
     ULONG       act;
     char        buff[CCHMAXPATH];
 
-    cmd_len = EnvLkup("COMSPEC", buff, sizeof(buff));
-    if (cmd_len == 0)
-        return ERROR_FILE_NOT_FOUND;
-    while (len != 0 && *cmd == ' ') {
+    cmd_len = EnvLkup( "COMSPEC", buff, sizeof( buff ) );
+    if( cmd_len == 0 )
+        return( ERROR_FILE_NOT_FOUND );
+    while( len != 0 && *cmd == ' ' ) {
         ++cmd;
         --len;
     }
     args = buff + cmd_len + 1;
-    dst = StrCopy(buff, args) + 1;
+    dst = StrCopy( buff, args ) + 1;
     if( len != 0 ) {
-        dst = StrCopy("/C ", dst);
-        _fmemcpy(dst, cmd, len);
+        dst = StrCopy( "/C ", dst );
+        memcpy( dst, cmd, len );
         dst += len;
         *dst++ = '\0';
     }
@@ -176,35 +173,34 @@ long _fork(char *cmd, unsigned len)
 
     savestdin  = 0xffff;
     savestdout = 0xffff;
-    DosDupHandle(0, &savestdin);
-    DosDupHandle(1, &savestdout);
-    //TODO: check this! I don't like it...
-    if (DosOpen("CON", &console, &act, 0, 0, 0x11, 0x42, 0) == 0) {
+    DosDupHandle( 0, &savestdin );
+    DosDupHandle( 1, &savestdout );
+    if (DosOpen( "CON", &console, &act, 0, 0, 0x11, 0x42, 0) == 0 ) {
         new = 0;
-        DosDupHandle(console, &new);
+        DosDupHandle( console, &new );
         new = 1;
-        DosDupHandle(console, &new);
-        DosClose(console);
+        DosDupHandle( console, &new );
+        DosClose( console );
     }
 
-    rc = DosExecPgm(NULL, 0,            /* don't care about fail name */
+    rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_SYNC,              /* execflags */
                 args,                   /* args */
                 NULL,                   /* inherit environment */
                 &res,                   /* result codes */
-                buff);                  /* pgmname */
+                buff );                 /* pgmname */
 
     new = 0;
-    DosDupHandle(savestdin, &new);
-    DosClose(savestdin);
+    DosDupHandle( savestdin, &new );
+    DosClose( savestdin );
     new = 1;
-    DosDupHandle(savestdout, &new);
-    DosClose(savestdout);
+    DosDupHandle( savestdout, &new );
+    DosClose( savestdout );
 
-    if (rc == 0)
+    if( rc == 0 )
         rc = res.codeTerminate;
 
-    return rc;
+    return( rc );
 }
 
 bool TBreak()
@@ -213,12 +209,12 @@ bool TBreak()
 
     ret = BrkPending;
     BrkPending = 0;
-    return ret;
+    return( ret );
 }
 
-int _set_errno(int a)
+int _set_errno( int a )
 {
-    return a;
+    return( a );
 }
 
 void SysSetMemLimit()

@@ -59,12 +59,12 @@ char *InitDebugging( void )
 
     DebuggerState=ACTIVE;
     StartWDebug386();
-    faultInstance = MakeProcInstance( IntHandler, Instance );
+    faultInstance = MakeProcInstance( (FARPROC)IntHandler, Instance );
     if( !InterruptRegister( NULL, faultInstance ) ) {
         return( TRP_WIN_Failed_to_get_interrupt_hook );
     }
-    notifyInstance = MakeProcInstance( NotifyHandler, Instance );
-    if( !NotifyRegister( NULL, notifyInstance,
+    notifyInstance = MakeProcInstance( (FARPROC)NotifyHandler, Instance );
+    if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notifyInstance,
                          NF_NORMAL | NF_RIP ) ) {
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
@@ -73,7 +73,7 @@ char *InitDebugging( void )
         faultInstance, notifyInstance, Instance ));
     if( WDebug386 ) {
         wint32 = LoadLibrary( "wint32.dll" );
-        if( wint32 < 32 ) {
+        if( (UINT)wint32 < 32 ) {
             WDebug386 = FALSE;
         } else {
             DoneWithInterrupt = (LPVOID) GetProcAddress( wint32, "DoneWithInterrupt" );
@@ -126,7 +126,7 @@ void FinishDebugging( void )
     if( CSAlias != NULL ) {
         FreeSelector( CSAlias );
     }
-    CSAlias = NULL;
+    CSAlias = 0;
 
 } /* FinishDebugging */
 
@@ -134,7 +134,7 @@ void FinishDebugging( void )
 /*
  * TrapInit - debugger initialization entry point
  */
-trap_version TRAPENTRY TrapInit( char *parm, char *err, int remote )
+trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
 {
     trap_version        ver;
 
@@ -271,7 +271,7 @@ void TRAPENTRY SetHardMode( char force )
 /*
  * UnLockInput - unlock input from the debugger
  */
-void TRAPENTRY UnLockInput()
+void TRAPENTRY UnLockInput( void )
 {
     if( DebuggerWindow != NULL && InputLocked ) {
         Out((OUT_SOFT,"Unlocking input from debugger"));

@@ -35,7 +35,7 @@
 
 #include "global.h"
 
-extern return_val       DumpASMSection( section_ptr, char *, orl_sec_size,
+extern return_val       DumpASMSection( section_ptr, unsigned_8 *, orl_sec_size,
                                         unsigned );
 extern return_val       BssASMSection( section_ptr, orl_sec_size, unsigned );
 extern dis_value        HandleAddend( ref_entry );
@@ -43,9 +43,9 @@ orl_sec_offset          RelocSize( ref_entry );
 extern int              IsMasmOutput( void );
 extern int              IsDataReloc( ref_entry );
 extern orl_sec_offset   HandleRefInData( ref_entry, void *, bool );
-extern return_val       DumpASMDataFromSection( char *, orl_sec_offset,
+extern return_val       DumpASMDataFromSection( unsigned_8 *, orl_sec_offset,
                                                 orl_sec_offset, label_entry *,
                                                 ref_entry *, section_ptr );
-extern int              SkipRef( ref_entry );
+extern char             *SkipRef( ref_entry );
 
 #endif

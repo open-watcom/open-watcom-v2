@@ -30,12 +30,7 @@
 ****************************************************************************/
 
 
-// the following is a temporary measure to get around the fact
-// that winreg.h defines a type called ppvalue
-#define _WINREG_
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
@@ -44,7 +39,7 @@
 #include "wgetfn.h"
 #include "wmem.h"
 #include "wmsg.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 #include "weditsym.h"
 #include "wstrdup.h"
 #include "preproc.h"
@@ -63,7 +58,7 @@ void *PP_Malloc( unsigned size )
 {
     void        *p;
 
-    p = WMemAlloc ( size );
+    p = WMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -72,7 +67,7 @@ void *PP_Malloc( unsigned size )
 
 void PP_Free( void *p )
 {
-    WMemFree ( p );
+    WMemFree( p );
 }
 
 static void addSymbols( WRHashTable *table )
@@ -80,7 +75,7 @@ static void addSymbols( WRHashTable *table )
     int                 hash;
     MACRO_ENTRY         *me;
     char                *endptr;
-    PPVALUE             val;
+    PREPROC_VALUE       val;
     WRHashValue         value;
     WRHashEntry         *entry;
     BOOL                dup;
@@ -92,14 +87,14 @@ static void addSymbols( WRHashTable *table )
     dup = TRUE;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for( me = PPHashTable[hash]; me; me = me->next ) {
-            if( me->parmcount == 0  &&  me->replacement_list != NULL ) {
+        for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
+            if( me->parmcount == 0 && me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {
                         if( val.type == PPTYPE_SIGNED ) {
-                            value = (WRHashValue) val.val.ivalue;
+                            value = (WRHashValue)val.val.ivalue;
                         } else {
-                            value = (WRHashValue) val.val.uvalue;
+                            value = (WRHashValue)val.val.uvalue;
                         }
                         entry = WRAddHashEntry( table, me->name, value, &dup, FALSE, FALSE );
                     }
@@ -109,8 +104,7 @@ static void addSymbols( WRHashTable *table )
     }
 }
 
-char *WLoadSymbols( WRHashTable **table, char *file_name,
-                    HWND parent, Bool prompt )
+char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prompt )
 {
     char                *name;
     int                 c;
@@ -122,32 +116,31 @@ char *WLoadSymbols( WRHashTable **table, char *file_name,
 
     name = NULL;
 
-    ok = ( table != NULL );
+    ok = (table != NULL);
 
     if( ok ) {
-        if( !file_name || prompt ) {
+        if( file_name == NULL || prompt ) {
             gf.file_name = file_name;
-            gf.title     = WAllocRCString( W_LOADSYMTITLE );
-            gf.filter    = WAllocRCString( W_SYMFILTER );
+            gf.title = WAllocRCString( W_LOADSYMTITLE );
+            gf.filter = WAllocRCString( W_SYMFILTER );
             WMassageFilter( gf.filter );
             name = WGetOpenFileName( parent, &gf );
-            if( gf.title ) {
+            if( gf.title != NULL ) {
                 WFreeRCString( gf.title );
             }
-            if( gf.filter ) {
+            if( gf.filter != NULL ) {
                 WFreeRCString( gf.filter );
             }
         } else {
             name = WStrDup( file_name );
         }
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     WSetWaitCursor( parent, TRUE );
 
     if( ok ) {
-        flags = 0;
-        flags |= PPFLAG_IGNORE_INCLUDE;
+        flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
         ret = setjmp( SymEnv );
         if( ret ) {
@@ -177,7 +170,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name,
     }
 
     if( !ok ) {
-        if( name ) {
+        if( name != NULL ) {
             WMemFree( name );
             name = NULL;
         }
@@ -195,9 +188,9 @@ Bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     FARPROC             cb;
     Bool                ret;
 
-    _wtouch(inst);
+    _wtouch( inst );
 
-    if( !symbol_table || !*symbol_table ) {
+    if( symbol_table == NULL || *symbol_table == NULL ) {
         return( FALSE );
     }
 
@@ -225,4 +218,3 @@ char *WCreateSymName( char *fname )
 
     return( WStrDup( fn_path ) );
 }
-

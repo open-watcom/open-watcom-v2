@@ -50,7 +50,7 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
     if( hot_spot_field == NULL ) {
         return( FALSE );
     }
-    hot_spot = (a_hot_spot *)GUIAlloc( sizeof( a_hot_spot ) );
+    hot_spot = (a_hot_spot *)GUIMemAlloc( sizeof( a_hot_spot ) );
     hot_spot_field->ptr = hot_spot;
     if( hot_spot == NULL ) {
         return( FALSE );
@@ -78,12 +78,12 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
 void GUIFreeHotSpot( a_hot_spot *hot_spot )
 {
     if( hot_spot != NULL ) {
-        GUIFree( hot_spot->str );
+        GUIMemFree( hot_spot->str );
     }
-    GUIFree( hot_spot );
+    GUIMemFree( hot_spot );
 }
 
-bool GUISetHotSpotText( a_hot_spot *hot_spot, char *text )
+bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 {
     char        *new;
 
@@ -96,7 +96,7 @@ bool GUISetHotSpotText( a_hot_spot *hot_spot, char *text )
             return( FALSE );
         }
     }
-    GUIFree( hot_spot->str );
+    GUIMemFree( hot_spot->str );
     hot_spot->str = new;
     return( TRUE );
 }

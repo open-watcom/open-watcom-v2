@@ -127,17 +127,34 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
 
         target = WResGetTargetOS( resfile->Dir );
         switch( type ) {
-        case EXE_TYPE_NE:
-            if( target == WRES_OS_WIN32 ) {
-                RcError( ERR_NT_RES_TO_WIN_EXE, resfile->name, exename );
+        case EXE_TYPE_NE_WIN:
+            if( target != WRES_OS_WIN16 ) {
+                RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
+                goto HANDLE_ERROR;
+            }
+            break;
+        case EXE_TYPE_NE_OS2:
+            // No way to tell MS and IBM resource files apart, and I can't find
+            // a good way to figure out if this is a Watcom .res file
+            if( target != WRES_OS_WIN16 && target != WRES_OS_OS2 ) {
+                RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
         case EXE_TYPE_PE:
-            if( target == WRES_OS_WIN16 ) {
-                RcError( ERR_WIN_RES_TO_NT_EXE, resfile->name, exename );
+            if( target != WRES_OS_WIN32 ) {
+                RcError( ERR_NONNT_RES_TO_NT_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
+            break;
+        case EXE_TYPE_LX:
+            // Same problem as with EXE_TYPE_NE_OS2
+            if( target != WRES_OS_OS2 && target != WRES_OS_WIN16 ) {
+                RcError( ERR_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
+                goto HANDLE_ERROR;
+            }
+            break;
+        default: // EXE_TYPE_UNKNOWN
             break;
         }
         resnames = resnames->next;
@@ -147,6 +164,7 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
 
 HANDLE_ERROR:
     CloseResFiles( *resinfo );
+    *resinfo = NULL;
     return( FALSE );
 }
 
@@ -256,7 +274,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, char *file1,
             break;
         default:
             type = typebuf;
-            sprintf( type, "%d", typeid->ID.Num );
+            itoa( typeid->ID.Num, type, 10 );
             break;
         }
     }
@@ -265,7 +283,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, char *file1,
         name = WResIDToStr( nameid );
     } else {
         name = namebuf;
-        sprintf( name, "%d", nameid->ID.Num );
+        itoa( nameid->ID.Num, name, 10 );
     }
     if( !typeid->IsName && typeid->ID.Num == (uint_16)RT_STRING ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;

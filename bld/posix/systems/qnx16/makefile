@@ -1,3 +1,5 @@
-targos          = qnx16
+#pmake: os_qnx cpu_i86
 
-!include $(posix_dir)\mif\makeall.mif
+targos = qnx16
+
+!include $(posix_dir)/mif/makeall.mif

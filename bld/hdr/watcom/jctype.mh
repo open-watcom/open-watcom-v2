@@ -5,7 +5,14 @@
  */
 #ifndef _JCTYPE_H_INCLUDED
 #define _JCTYPE_H_INCLUDED
+
 :include readonly.sp
+
+:include owrtlink.sp
+
+#ifndef _CTYPE_H_INCLUDED
+ #include <ctype.h>
+#endif
 
 /*
  *       iskana(c)       カナ・コード
@@ -22,19 +29,13 @@
  *
  */
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-#ifndef _CTYPE_H_INCLUDED
- #include <ctype.h>
-#endif
-
 #define _K      0x01    /* Kana moji      */
 #define _KP     0x02    /* Kana punct.    */
 #define _J1     0x04    /* Kanji 1st byte */
 #define _J2     0x08    /* Kanji 2nd byte */
 
 :include cpluspro.sp
+
 _WCRTLINK extern int    iskana(int);
 _WCRTLINK extern int    iskpun(int);
 _WCRTLINK extern int    iskmoji(int);
@@ -50,7 +51,8 @@ _WCRTLINK extern int    iskanji2(int);
 #if defined(__SW_BR) || defined(_RTDLL)
  #define _IsKTable _IsKTable_br
 #endif
-_WCRTLINK extern const char _WCDATA _IsKTable[257];
+_WCRTDATA extern const char _WCDATA _IsKTable[257];
+
 :include cplusepi.sp
 
 #if !defined(__FUNCTION_DATA_ACCESS)

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 #include <string.h>
 #include <stdlib.h>
@@ -41,7 +41,7 @@
 #include "wre_wres.h"
 #include "wremem.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wreres.h"
 #include "wrestrdp.h"
 #include "wregcres.h"
@@ -68,13 +68,13 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WREDialogInfo {
-    char         *file_name;
-    WResID       *res_name;
-    WResLangType  lang;
-    uint_16       MemFlags;
-    int           is32bit;
-    uint_32       data_size;
-    void         *data;
+    char            *file_name;
+    WResID          *res_name;
+    WResLangType    lang;
+    uint_16         MemFlags;
+    int             is32bit;
+    uint_32         data_size;
+    void            *data;
 } WREDialogInfo;
 
 typedef struct WREDialogSession {
@@ -90,26 +90,26 @@ typedef struct WREDialogSession {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  WResID                  *WRECreateDialogTitle     ( void );
-static  Bool                    WREAddDialogToDir         ( WRECurrentResInfo *curr );
-static  WREDialogSession        *WREStartDialogSession    ( WRECurrentResInfo *curr );
-static  WREDialogSession        *WREAllocDialogSession    ( void );
-static  WREDialogSession        *WREFindDialogSession     ( HCONV conv );
-static  WREDialogSession        *WREFindResDialogSession  ( WREResInfo *rinfo );
-static  WREDialogSession        *WREFindLangDialogSession ( WResLangNode *lnode );
-static  void                    WRERemoveDialogEditSession( WREDialogSession *session );
-static  void                    WREFreeEditSession        ( WREDialogSession *session );
-static  void                    WREDisconnectSession      ( WREDialogSession *session );
-static  void                    WREBringSessionToFront    ( WREDialogSession *session );
-static  void                    WREShowSession            ( WREDialogSession *session, Bool show );
-static  void                    WREPokeDialogCmd          ( WREDialogSession *session, char *cmd, Bool );
+static WResID           *WRECreateDialogTitle( void );
+static Bool             WREAddDialogToDir( WRECurrentResInfo *curr );
+static WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr );
+static WREDialogSession *WREAllocDialogSession( void );
+static WREDialogSession *WREFindDialogSession( HCONV conv );
+static WREDialogSession *WREFindResDialogSession( WREResInfo *rinfo );
+static WREDialogSession *WREFindLangDialogSession( WResLangNode *lnode );
+static void             WRERemoveDialogEditSession( WREDialogSession *session );
+static void             WREFreeEditSession( WREDialogSession *session );
+static void             WREDisconnectSession( WREDialogSession *session );
+static void             WREBringSessionToFront( WREDialogSession *session );
+static void             WREShowSession( WREDialogSession *session, Bool show );
+static void             WREPokeDialogCmd( WREDialogSession *session, char *cmd, Bool );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  WREDialogSession        *PendingSession = NULL;
-static  LIST                    *WREDlgSessions = NULL;
-static  uint_32                 WRENumDialogTitles = 0;
+static WREDialogSession *PendingSession = NULL;
+static LIST             *WREDlgSessions = NULL;
+static uint_32          WRENumDialogTitles = 0;
 
 static void DumpEmptyResource( WREDialogSession *session )
 {
@@ -118,7 +118,7 @@ static void DumpEmptyResource( WREDialogSession *session )
     if( !session->lnode->Info.Length ) {
         curr.info = session->rinfo;
         curr.type = session->tnode;
-        curr.res  = session->rnode;
+        curr.res = session->rnode;
         curr.lang = session->lnode;
         WRERemoveEmptyResource( &curr );
         WRESetStatusByID( -1, WRE_EMPTYREMOVED );
@@ -135,9 +135,9 @@ WResID *WRECreateDialogTitle( void )
 
     name = NULL;
     text = WREAllocRCString( WRE_DEFDIALOGNAME );
-    if( text ) {
-        title = (char *)WREMemAlloc( strlen(text) + 10 + 1 );
-        if( title ) {
+    if( text != NULL ) {
+        title = (char *)WREMemAlloc( strlen( text ) + 10 + 1 );
+        if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumDialogTitles );
             name = WResIDFromStr( title );
@@ -151,19 +151,19 @@ WResID *WRECreateDialogTitle( void )
 
 Bool WREAddDialogToDir( WRECurrentResInfo *curr )
 {
-    WResLangType       lang;
-    int                dup, num_retries;
-    WResID            *rname, *tname;
-    Bool               ok, tname_alloc;
+    WResLangType    lang;
+    int             dup, num_retries;
+    WResID          *rname, *tname;
+    Bool            ok, tname_alloc;
 
-    ok          = TRUE;
+    ok = TRUE;
     tname_alloc = FALSE;
 
     WREGetCurrentResource( curr );
 
-    if( !curr->info ) {
+    if( curr->info == NULL ) {
         curr->info = WRECreateNewResource( NULL );
-        ok = ( curr->info != NULL );
+        ok = (curr->info != NULL);
     }
 
     if( ok ) {
@@ -173,27 +173,26 @@ Bool WREAddDialogToDir( WRECurrentResInfo *curr )
             tname = WResIDFromNum( (uint_16)RT_DIALOG );
             tname_alloc = TRUE;
         }
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
     }
 
     if( ok ) {
-        dup         = TRUE;
+        dup = TRUE;
         num_retries = 0;
-        rname       = NULL;
-        while( ok && dup && ( num_retries <= MAX_RETRIES ) ) {
+        rname = NULL;
+        while( ok && dup && num_retries <= MAX_RETRIES ) {
             rname = WRECreateDialogTitle();
-            ok = ( rname != NULL );
+            ok = (rname != NULL);
             if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, (uint_16)RT_DIALOG,
-                                     tname_alloc );
+                                     &lang, &dup, (uint_16)RT_DIALOG, tname_alloc );
                 if( !ok && dup ) {
                     ok = TRUE;
                 }
                 num_retries++;
             }
-            if( rname ) {
+            if( rname != NULL ) {
                 WREMemFree( rname );
             }
         }
@@ -221,7 +220,7 @@ Bool WRENewDialogResource( void )
     ok = WREAddDialogToDir( &curr );
 
     if( ok ) {
-        ok = ( WREStartDialogSession( &curr ) != NULL );
+        ok = (WREStartDialogSession( &curr ) != NULL);
     }
 
     return( ok );
@@ -266,8 +265,7 @@ Bool WRECommitDialogSession( HCONV server, HCONV client )
 {
     Bool        ok;
 
-    ok = ( ( client != (HCONV)NULL ) && ( server != (HCONV)NULL ) &&
-           ( PendingSession != NULL ) );
+    ok = (client != (HCONV)NULL && server != (HCONV)NULL && PendingSession != NULL);
 
     if( ok ) {
         WREInsertObject( &WREDlgSessions, PendingSession );
@@ -287,17 +285,17 @@ Bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size )
 {
     WREDialogSession *session;
 
-    if( !data || !size ) {
+    if( data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     session = WREFindDialogSession( server );
-    if( !session ) {
+    if( session == NULL ) {
         return( FALSE );
     }
 
     *data = WREStrDup( session->info.file_name );
-    if( *data ) {
+    if( *data != NULL ) {
         *size = strlen( *data ) + 1;
     }
 
@@ -308,12 +306,12 @@ Bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size )
 {
     WREDialogSession *session;
 
-    if( !data || !size ) {
+    if( data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     session = WREFindDialogSession( server );
-    if( !session ) {
+    if( session == NULL ) {
         return( FALSE );
     }
 
@@ -329,12 +327,12 @@ Bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
 {
     WREDialogSession *session;
 
-    if( !data || !size ) {
+    if( data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     session = WREFindDialogSession( server );
-    if( !session ) {
+    if( session == NULL ) {
         return( FALSE );
     }
 
@@ -342,7 +340,7 @@ Bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    *size = sizeof(Bool);
+    *size = sizeof( Bool );
     *data = WREMemAlloc( *size );
     if( *data == NULL ) {
         return( FALSE );
@@ -356,12 +354,12 @@ Bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
 {
     WREDialogSession *session;
 
-    if( !data || !size ) {
+    if( data == NULL || size == NULL ) {
         return( FALSE );
     }
 
     session = WREFindDialogSession( server );
-    if( !session ) {
+    if( session == NULL ) {
         return( FALSE );
     }
 
@@ -389,11 +387,11 @@ Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     uint_32             size;
     Bool                ok;
 
-    ok = ( ( server != (HCONV)NULL ) && ( hdata != (HDDEDATA)NULL ) );
+    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = ( session != NULL );
+        ok = (session != NULL);
     }
 
     if( ok ) {
@@ -402,7 +400,7 @@ Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
 
     if( ok ) {
         name = WRMem2WResID( data, session->info.is32bit );
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     if( ok ) {
@@ -410,16 +408,15 @@ Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        session->rinfo->modified    = TRUE;
-        WRESetResNamesFromType( session->rinfo, (uint_16)RT_DIALOG,
-                                TRUE, name, 0 );
+        session->rinfo->modified = TRUE;
+        WRESetResNamesFromType( session->rinfo, (uint_16)RT_DIALOG, TRUE, name, 0 );
     }
 
-    if( data ) {
+    if( data != NULL ) {
         WREMemFree( data );
     }
 
-    if( name ) {
+    if( name != NULL ) {
         WREMemFree( name );
     }
 
@@ -433,11 +430,11 @@ Bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
     uint_32             size;
     Bool                ok;
 
-    ok = ( ( server != (HCONV)NULL ) && ( hdata != (HDDEDATA)NULL ) );
+    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
-        ok = ( session != NULL );
+        ok = (session != NULL);
     }
 
     if( ok ) {
@@ -445,12 +442,12 @@ Bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        if( session->lnode->data ) {
+        if( session->lnode->data != NULL ) {
             WREMemFree( session->lnode->data );
         }
-        session->lnode->data        = data;
+        session->lnode->data = data;
         session->lnode->Info.Length = size;
-        session->rinfo->modified    = TRUE;
+        session->rinfo->modified = TRUE;
     }
 
     return( ok );
@@ -461,24 +458,24 @@ WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
     WREDialogSession    *session;
     int                 is32bit;
 
-    if( !curr ) {
+    if( curr == NULL ) {
         return( NULL );
     }
 
     is32bit = curr->info->is32bit;
 
     session = WREAllocDialogSession();
-    if( !session ) {
+    if( session == NULL ) {
         return( NULL );
     }
 
     session->info.file_name = WREStrDup( WREGetQueryName( curr->info ) );
-    session->info.res_name  = WRECopyWResID( &curr->res->Info.ResName );
-    session->info.lang      = curr->lang->Info.lang;
-    session->info.MemFlags  = curr->lang->Info.MemoryFlags;
+    session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
+    session->info.lang = curr->lang->Info.lang;
+    session->info.MemFlags = curr->lang->Info.MemoryFlags;
     session->info.data_size = curr->lang->Info.Length;
-    session->info.data      = curr->lang->data;
-    session->info.is32bit   = is32bit;
+    session->info.data = curr->lang->data;
+    session->info.is32bit = is32bit;
 
     session->tnode = curr->type;
     session->rnode = curr->res;
@@ -504,25 +501,25 @@ Bool WREEditDialogResource( WRECurrentResInfo *curr )
     Bool                ok;
     WREDialogSession    *session;
 
-    ok = ( curr && curr->lang );
+    ok = (curr != NULL && curr->lang != NULL);
 
     if( ok ) {
         session = WREFindLangDialogSession( curr->lang );
-        if( session ) {
+        if( session != NULL ) {
             WREBringSessionToFront( session );
             return( TRUE );
         }
     }
 
     if( ok ) {
-        if( !curr->lang->data && curr->lang->Info.Length ) {
+        if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
             curr->lang->data = WREGetCurrentResData( curr );
-            ok = ( curr->lang->data != NULL );
+            ok = (curr->lang->data != NULL);
         }
     }
 
     if( ok ) {
-        ok = ( WREStartDialogSession( curr ) != NULL );
+        ok = (WREStartDialogSession( curr ) != NULL);
     }
 
     return( ok );
@@ -534,14 +531,14 @@ Bool WREEndAllDialogSessions( Bool fatal_exit )
     LIST                *slist;
     Bool                ok;
 
-    _wre_touch(fatal_exit);
+    _wre_touch( fatal_exit );
 
     ok = TRUE;
 
-    if( WREDlgSessions ) {
-        for( slist = WREDlgSessions; ok && slist; slist = ListNext(slist) ) {
-            session = (WREDialogSession *) ListElement(slist);
-            if( session ) {
+    if( WREDlgSessions != NULL ) {
+        for( slist = WREDlgSessions; ok && slist != NULL; slist = ListNext( slist ) ) {
+            session = (WREDialogSession *)ListElement( slist );
+            if( session != NULL ) {
                 WREDisconnectSession( session );
                 WREFreeEditSession( session );
             }
@@ -560,7 +557,7 @@ void WREEndLangDialogSession( WResLangNode *lnode )
     WREDialogSession    *session;
 
     session = WREFindLangDialogSession( lnode );
-    while( session ) {
+    while( session != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
         session = WREFindLangDialogSession( lnode );
@@ -572,7 +569,7 @@ void WREEndResDialogSessions( WREResInfo *rinfo )
     WREDialogSession    *session;
 
     session = WREFindResDialogSession( rinfo );
-    while( session ) {
+    while( session != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
         session = WREFindResDialogSession( rinfo );
@@ -583,10 +580,10 @@ WREDialogSession *WREAllocDialogSession( void )
 {
     WREDialogSession *session;
 
-    session = (WREDialogSession *) WREMemAlloc( sizeof(WREDialogSession) );
+    session = (WREDialogSession *)WREMemAlloc( sizeof( WREDialogSession ) );
 
-    if( session ) {
-        memset( session, 0, sizeof(WREDialogSession) );
+    if( session != NULL ) {
+        memset( session, 0, sizeof( WREDialogSession ) );
     }
 
     return( session );
@@ -597,9 +594,9 @@ WREDialogSession *WREFindDialogSession( HCONV conv )
     WREDialogSession *session;
     LIST             *slist;
 
-    for( slist = WREDlgSessions; slist; slist = ListNext(slist) ) {
-        session = (WREDialogSession *) ListElement(slist);
-        if( ( session->server == conv ) || ( session->client == conv ) ) {
+    for( slist = WREDlgSessions; slist != NULL; slist = ListNext( slist ) ) {
+        session = (WREDialogSession *)ListElement( slist );
+        if( session->server == conv || session->client == conv ) {
             return( session );
         }
     }
@@ -612,8 +609,8 @@ WREDialogSession *WREFindResDialogSession( WREResInfo *rinfo )
     WREDialogSession *session;
     LIST             *slist;
 
-    for( slist = WREDlgSessions; slist; slist = ListNext(slist) ) {
-        session = (WREDialogSession *) ListElement(slist);
+    for( slist = WREDlgSessions; slist != NULL; slist = ListNext( slist ) ) {
+        session = (WREDialogSession *)ListElement( slist );
         if( session->rinfo == rinfo ) {
             return( session );
         }
@@ -627,8 +624,8 @@ WREDialogSession *WREFindLangDialogSession( WResLangNode *lnode )
     WREDialogSession *session;
     LIST             *slist;
 
-    for( slist = WREDlgSessions; slist; slist = ListNext(slist) ) {
-        session = (WREDialogSession *) ListElement(slist);
+    for( slist = WREDlgSessions; slist != NULL; slist = ListNext( slist ) ) {
+        session = (WREDialogSession *)ListElement( slist );
         if( session->lnode == lnode ) {
             return( session );
         }
@@ -639,7 +636,7 @@ WREDialogSession *WREFindLangDialogSession( WResLangNode *lnode )
 
 void WRERemoveDialogEditSession( WREDialogSession *session )
 {
-    if( session ) {
+    if( session != NULL ) {
         ListRemoveElt( &WREDlgSessions, session );
         WREFreeEditSession( session );
     }
@@ -647,11 +644,11 @@ void WRERemoveDialogEditSession( WREDialogSession *session )
 
 void WREFreeEditSession( WREDialogSession *session )
 {
-    if( session ) {
-        if( session->info.file_name ) {
+    if( session != NULL ) {
+        if( session->info.file_name != NULL ) {
             WREMemFree( session->info.file_name );
         }
-        if( session->info.res_name ) {
+        if( session->info.res_name != NULL ) {
             WREMemFree( session->info.res_name );
         }
         WREMemFree( session );
@@ -660,7 +657,7 @@ void WREFreeEditSession( WREDialogSession *session )
 
 void WREDisconnectSession( WREDialogSession *session )
 {
-    if( session ) {
+    if( session != NULL ) {
         WREPokeDialogCmd( session, "endsession", TRUE );
         DumpEmptyResource( session );
         if( session->server != (HCONV)NULL ) {
@@ -685,9 +682,9 @@ void WREShowAllDialogSessions( Bool show )
     LIST                *slist;
 
     if( WREDlgSessions ) {
-        for( slist = WREDlgSessions; slist; slist = ListNext(slist) ) {
-            session = (WREDialogSession *) ListElement(slist);
-            if( session ) {
+        for( slist = WREDlgSessions; slist != NULL; slist = ListNext( slist ) ) {
+            session = (WREDialogSession *)ListElement( slist );
+            if( session != NULL ) {
                 WREShowSession( session, show );
             }
         }
@@ -705,8 +702,7 @@ void WREShowSession( WREDialogSession *session, Bool show )
 
 void WREPokeDialogCmd( WREDialogSession *session, char *cmd, Bool retry )
 {
-    if( session && cmd ) {
-        WREPokeData( session->client, cmd, strlen(cmd) + 1, retry );
+    if( session != NULL && cmd != NULL ) {
+        WREPokeData( session->client, cmd, strlen( cmd ) + 1, retry );
     }
 }
-

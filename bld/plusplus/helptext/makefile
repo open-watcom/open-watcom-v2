@@ -53,7 +53,8 @@ $(help_win) : $(msgs) mkwinhlp.exe $(p2r)
     copy winhelp.ptf+winhelp.idx wpp.ptf
     $(p2r) -bl wpp.ptf winhelp.rtf
     hc wpp.hpj
-!ifdef on_build_machine
+!ifeq release 0
+!else
     rm -f $(temp_files)
 !endif
 

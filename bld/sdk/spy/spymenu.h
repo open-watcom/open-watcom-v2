@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy menu identifiers.
 *
 ****************************************************************************/
 
@@ -59,6 +58,7 @@
 #define SPY_MARK                2026
 #define SPY_TOP                 2027
 #define SPY_SHOW_HELP           2028
-#define SPY_HELP_CONTENTS       2029
-#define SPY_HELP_SRCH           2030
-#define SPY_HELP_ON_HELP        2031
+#define SPY_SHOW_TOOLBAR        2029
+#define SPY_HELP_CONTENTS       2030
+#define SPY_HELP_SRCH           2031
+#define SPY_HELP_ON_HELP        2032

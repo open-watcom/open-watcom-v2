@@ -46,13 +46,14 @@ extern input_stack      *InpStack;
 extern tokens           CurrToken;
 
 extern void             NewLang( char *lang );
-extern void             PopInpStack(void);
-extern void             ProcACmd(void);
+extern void             PopInpStack( void );
+extern void             ProcACmd( void );
 extern bool             IsInternalMod( mod_handle );
-extern void             DUIProcPendingPaint(void);
-extern bool             HookPendingPush(void);
+extern void             DUIProcPendingPaint( void );
+extern bool             HookPendingPush( void );
 
-static bool ProcPending()
+
+static bool ProcPending( void )
 {
     for( ;; ) {
         for( ;; ) {
@@ -75,14 +76,14 @@ static bool ProcPending()
     }
 }
 
-void DoProcPending()
+void DoProcPending( void )
 {
     while( ProcPending() ) ;
     _SwitchOn( SW_CMD_INTERACTIVE );
     _SwitchOff( SW_IN_REPLAY_MODE );
 }
 
-bool ProcInput()
+bool ProcInput( void )
 {
     bool        ret;
 
@@ -93,7 +94,7 @@ bool ProcInput()
     return( ret );
 }
 
-void DoInput()
+void DoInput( void )
 {
     if( _IsOff( SW_WND_DOING_INPUT ) ) {
         for ( ;; ) {
@@ -102,4 +103,3 @@ void DoInput()
         }
     }
 }
-

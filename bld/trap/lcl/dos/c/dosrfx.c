@@ -47,7 +47,7 @@ unsigned ReqRfx_rename()
     new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
     ret = GetOutPtr( 0 );
     rc = TinyRename( old_name, new_name );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -58,7 +58,7 @@ unsigned ReqRfx_mkdir()
 
     ret = GetOutPtr( 0 );
     rc = TinyMakeDir( (char *)GetInPtr( sizeof( rfx_mkdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -69,7 +69,7 @@ unsigned ReqRfx_rmdir()
 
     ret = GetOutPtr( 0 );
     rc = TinyRemoveDir( (char *)GetInPtr( sizeof( rfx_rmdir_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -101,7 +101,7 @@ unsigned ReqRfx_setcwd()
 
     ret = GetOutPtr( 0 );
     rc = TinyChangeDir( GetInPtr( sizeof( rfx_setcwd_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -118,7 +118,7 @@ unsigned ReqRfx_getcwd()
     cwd = GetOutPtr( sizeof( *ret ) );
     rc = TinyGetCWDir( cwd, acc->drive );
     if( TINY_ERROR( rc ) ) {
-        ret->err = TINY_LINFO( rc );
+        ret->err = TINY_INFO( rc );
         *cwd = '\0';
     }
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
@@ -133,7 +133,7 @@ unsigned ReqRfx_setfileattr()
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     rc = TinySetFileAttr( GetInPtr( sizeof( *acc ) ), acc->attribute );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -268,7 +268,7 @@ unsigned ReqRfx_findfirst()
     TinySetDTA( GetOutPtr( sizeof( *ret ) ) );
     rc = TinyFindFirst( (char *)GetInPtr( sizeof( *acc ) ),
                            acc->attrib );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) + sizeof( tiny_find_t ) );
 }
 
@@ -283,7 +283,7 @@ unsigned ReqRfx_findnext()
     TinyFarSetDTA( info );
     rc = TinyFindNext();
     if( TINY_ERROR( rc ) ) {
-        ret->err = TINY_LINFO( rc );
+        ret->err = TINY_INFO( rc );
     } else {
         memcpy( GetOutPtr( sizeof( *ret ) ), info, sizeof( tiny_find_t ) );
         ret->err = 0;

@@ -32,6 +32,7 @@
 
 #define GB_DEFINE_GBITNEXT
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "conflict.h"
 #include "procdef.h"
@@ -39,7 +40,7 @@
 #include "opcodes.h"
 #include "feprotos.h"
 
-extern  void            FindReferences();
+extern  void            FindReferences( void );
 extern  conflict_node   *AddConflictNode(name*);
 extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
@@ -52,11 +53,16 @@ extern  bool            BlockByBlock;
 extern  proc_def        *CurrProc;
 extern  global_bit_set  MemoryBits;
 
+static  void            PropagateConflicts( void );
+static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );
+extern  void            SetInOut( block *blk );
+
 static  bool            MoreUseInOtherTemps;
 
-static  void    AddTempSave( name *op, block *blk ) {
-/***************************************************/
 
+static  void    AddTempSave( name *op, block *blk )
+/*************************************************/
+{
     conflict_node *conf;
 
     if( op->n.class == N_INDEXED ) {
@@ -70,8 +76,11 @@ static  void    AddTempSave( name *op, block *blk ) {
 }
 
 
-static  bool    AllocBefore( name *t1, name *t2 ) {
-/*************************************************/
+static  bool    AllocBefore( void *n1, void *n2 )
+/***********************************************/
+{
+    name    *t1 = n1;
+    name    *t2 = n2;
 
     /* const temps after all others */
     if( (t1->t.temp_flags & CONST_TEMP) && !(t2->t.temp_flags & CONST_TEMP) ) {
@@ -92,14 +101,14 @@ static  bool    AllocBefore( name *t1, name *t2 ) {
 }
 
 
-static  void    RoughSortTemps() {
-/*********************************
+static  void    RoughSortTemps( void )
+/*************************************
 
     Do a real rough sort on the templist by savings in case
     we run out of global bits. This will help the register
     allocator do the right thing
 */
-
+{
     name                *actual_name;
     name                *opnd;
     block               *blk;
@@ -133,9 +142,9 @@ static  void    RoughSortTemps() {
 
 
 static  global_bit_set AssignGlobalBits( name_class_def list,
-                             global_bit_set *bit, bool first_time ) {
-/****************************************************************/
-
+                             global_bit_set *bit, bool first_time )
+/*****************************************************************/
+{
     conflict_node       *conf;
     global_bit_set      all_used;
     name                *actual_name;
@@ -181,9 +190,9 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
 }
 
 
-static  void    CheckGlobals() {
-/******************************/
-
+static  void    CheckGlobals( void )
+/**********************************/
+{
     name        *op;
 
 #define FORCE_MEM (USE_MEMORY|USE_ADDRESS)
@@ -203,9 +212,9 @@ static  void    CheckGlobals() {
 }
 
 
-extern  void    MakeConflicts() {
-/*******************************/
-
+extern  void    MakeConflicts( void )
+/***********************************/
+{
     global_bit_set     bit;
 
     CheckGlobals();
@@ -220,9 +229,9 @@ extern  void    MakeConflicts() {
 }
 
 
-extern  bool    MoreConflicts() {
-/*******************************/
-
+extern  bool    MoreConflicts( void )
+/***********************************/
+{
     global_bit_set     bit;
 
     _GBitFirst( bit );
@@ -238,9 +247,9 @@ extern  bool    MoreConflicts() {
 
 
 
-static  void    PropagateConflicts() {
-/************************************/
-
+static  void    PropagateConflicts( void )
+/****************************************/
+{
     block       *blk;
 
     /*   Assign global bits to temporaries first in case we run out of*/
@@ -252,7 +261,7 @@ static  void    PropagateConflicts() {
         LiveAnalysis( HeadBlock, MemoryBits );
     }
     blk = HeadBlock;
-    for(;;) {
+    for( ;; ) {
         SetInOut( blk );
         blk = blk->next_block;
         if( blk == NULL ) break;
@@ -260,9 +269,9 @@ static  void    PropagateConflicts() {
 }
 
 
-extern  void    SetInOut( block *blk ) {
-/*************************************/
-
+extern  void    SetInOut( block *blk )
+/************************************/
+{
     if( BlockByBlock ) {
         blk->dataflow->in  = blk->dataflow->use;
         _GBitTurnOn( blk->dataflow->in, blk->dataflow->def );
@@ -277,9 +286,9 @@ extern  void    SetInOut( block *blk ) {
 }
 
 
-static  void    LiveAnalysis( block *tail, global_bit_set memory_bits ) {
-/****************************************************************/
-
+static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
+/*********************************************************************/
+{
     block               *blk;
     block               *target;
     data_flow_def       *data;
@@ -294,7 +303,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits ) {
     while( tail->next_block != NULL ) {
         tail = tail->next_block;
     }
-    for(;;) {
+    for( ;; ) {
         change = FALSE;
         blk = tail;
         for(;;) {

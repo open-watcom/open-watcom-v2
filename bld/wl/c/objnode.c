@@ -42,7 +42,7 @@
 #include "wlnkmsg.h"
 #include "linkutil.h"
 #include "distrib.h"
-#include "comdef.h"
+#include "wcomdef.h"
 #include "strtab.h"
 #include "carve.h"
 #include "permdata.h"
@@ -81,7 +81,7 @@ static void * MakeArray( unsigned size )
     return( nodes );
 }
 
-extern void InitNodes( void )
+void InitNodes( void )
 /***************************/
 // initialize the node array structures.
 {
@@ -102,7 +102,7 @@ static void BurnNodeArray( nodearray *list )
     _LnkFree( list );
 }
 
-extern void BurnNodes( void )
+void BurnNodes( void )
 /***************************/
 {
     BurnNodeArray( GrpNodes );
@@ -111,7 +111,7 @@ extern void BurnNodes( void )
     BurnNodeArray( NameNodes );
 }
 
-extern void * FindNode( nodearray *list, unsigned index )
+void * FindNode( nodearray *list, unsigned index )
 /*******************************************************/
 {
     index--;            // index is base 1
@@ -129,7 +129,7 @@ static void AllocNewArray( nodearray *list )
     memset( list->array[list->arraymax], 0, size );
 }
 
-extern void * AllocNode( nodearray * list )
+void * AllocNode( nodearray * list )
 /*****************************************/
 {
     if( ARRAY_NUM(list->num) > list->arraymax ) {
@@ -139,7 +139,7 @@ extern void * AllocNode( nodearray * list )
     return FindNode( list, list->num );
 }
 
-extern void * AllocNodeIdx( nodearray *list, unsigned index )
+void * AllocNodeIdx( nodearray *list, unsigned index )
 /***********************************************************/
 {
     if( list->num < index ) {
@@ -151,7 +151,7 @@ extern void * AllocNodeIdx( nodearray *list, unsigned index )
     return FindNode( list, index );
 }
 
-extern mod_entry * NewModEntry( void )
+mod_entry * NewModEntry( void )
 /************************************/
 /* Allocate a new object file entry structure and initialize it */
 {
@@ -164,13 +164,13 @@ extern mod_entry * NewModEntry( void )
     return( entry );
 }
 
-extern void FreeModEntry( mod_entry *mod )
+void FreeModEntry( mod_entry *mod )
 /****************************************/
 {
     CarveFree( CarveModEntry, mod );
 }
 
-extern void FreeNodes( nodearray *nodes )
+void FreeNodes( nodearray *nodes )
 /***************************************/
 {
     unsigned    index;
@@ -200,7 +200,7 @@ static void IterateNodeArray( char *narray, void (*fn)(void *, void *),
     }
 }
 
-extern void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
+void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
                              void *cookie )
 /***********************************************************************/
 {
@@ -217,7 +217,7 @@ extern void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
                                               ELEMENT_NUM(list->num), cookie );
 }
 
-extern void ReleaseNames( void )
+void ReleaseNames( void )
 /******************************/
 /* Free list of names. */
 {
@@ -225,13 +225,13 @@ extern void ReleaseNames( void )
     FreeNodes( NameNodes );
 }
 
-static void CollapseLazy( char *node, void *dummy )
+static void CollapseLazy( void *node, void *dummy )
 /*************************************************/
 {
     extnode *   curr;
 
     dummy = dummy;
-    curr = (extnode *) node;
+    curr = node;
     if( IS_SYM_A_REF( curr->entry ) && !curr->isweak ) {
         ClearSymUnion( curr->entry );
         SET_SYM_TYPE( curr->entry, SYM_REGULAR );
@@ -242,7 +242,7 @@ static void CollapseLazy( char *node, void *dummy )
     }
 }
 
-extern void CollapseLazyExtdefs( void )
+void CollapseLazyExtdefs( void )
 /*************************************/
 {
     IterateNodelist( ExtNodes, CollapseLazy, NULL );
@@ -286,13 +286,13 @@ static bool DoesExtHandleMatch( void *curr, void *target )
     return ((extnode *)curr)->handle == target;
 }
 
-extern extnode * FindExtHandle( void *handle )
+extnode * FindExtHandle( void *handle )
 /********************************************/
 {
     return (extnode *) IterateFindValue( ExtNodes, handle, DoesExtHandleMatch );
 }
 
-extern segdata * AllocSegData( void )
+segdata * AllocSegData( void )
 /***********************************/
 {
     segdata *sdata;
@@ -302,14 +302,14 @@ extern segdata * AllocSegData( void )
     return sdata;
 }
 
-extern void FreeSegData( segdata * sdata )
-/****************************************/
+void FreeSegData( void * sdata )
+/*************************************/
 /* put a segdata on the list of free segdatas */
 {
     CarveFree( CarveSegData, sdata );
 }
 
-extern list_of_names * MakeListName( char *name, size_t len )
+list_of_names * MakeListName( char *name, size_t len )
 /***********************************************************/
 {
     list_of_names *     new;
@@ -321,9 +321,10 @@ extern list_of_names * MakeListName( char *name, size_t len )
     return new;
 }
 
-extern void BadObjFormat( void )
-/******************************/
+unsigned long BadObjFormat( void )
+/***************************************/
 {
     LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
+    return 0;
 }
 

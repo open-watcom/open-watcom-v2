@@ -219,12 +219,12 @@ int TrieAdd( EVENT event, const char *str )
     }
 }
 
-static int child_comp( const int *pkey, const eNode *pbase )
+static int child_comp( const void *pkey, const void *pbase )
 {
-    return( *pkey - pbase->c );
+    return( *(const int *)pkey - ((const eNode *)pbase)->c );
 }
 
-EVENT TrieRead()
+EVENT TrieRead( void )
 {
     eTrie       *trie;
     char        *buf;

@@ -52,7 +52,7 @@ typedef enum {
         DEST_IS_HEADER          = 0x40
 } block_flags_consts;
 
-enum {
+typedef enum {
         RETURN                  = 0x00000001,
         JUMP                    = 0x00000002,
         CONDITIONAL             = 0x00000004,
@@ -71,16 +71,15 @@ enum {
         RETURNED_TO             = 0x00001000,
         UNKNOWN_DESTINATION     = 0x00002000,
         BLOCK_MARKED            = 0x00004000,
-        MULTIPLE_EXITS          = 0x00008000
+        MULTIPLE_EXITS          = 0x00008000,
 
-#define BIG_JUMP                  0x0000
-};
+        DONT_UNROLL             = 0x00010000,
+        IGNORE                  = 0x00020000,
+        FLOODED                 = 0x00040000,
 
-#define DONT_UNROLL     0x00010000
-#define IGNORE          0x00020000
-#define FLOODED         0x00040000
+        BIG_JUMP                = 0x00000000    /* no longer supported */
+} block_class;
 
-typedef unsigned long   block_class;
 
 typedef struct block            *block_pointer;
 

@@ -1,35 +1,18 @@
-!ifeq cpu ppc
-as_cpu          = AS_PPC
-as_prog_suffix  = ppc
-!else   # alpha
-as_cpu          = AS_ALPHA
-as_prog_suffix  = axp
-!endif
-
-proj_name = was$(as_prog_suffix)
 name = $(proj_name)
 
-.extensions:
-.extensions: .qnx .exe .exp .obj .asm .rc .c .y .re .h .gh .msg
-.extensions: .mif
+.extensions: .rc .y .re .gh .msg
 
-.c: $(as_dir)\$(cpu)\c;$(as_dir)\c;$(trmem_dir);$(cpp_dir)
-.h: $(as_dir)\$(cpu)\h;$(as_dir)\h;$(trmem_dir);$(cpp_dir)
-.y: $(as_dir)\$(cpu)\y;$(as_dir)\y
-.re: $(as_dir)\$(cpu)\y;$(as_dir)\y
-.rc: $(as_dir)\h
-.gh: .
-.msg: $(as_dir)\h
-.mif: $(mif_path)
+additional_cleanup = *.y *.re asytab.c asytab.h ytab.c ytab.h aslexyy.c
 
 !include cproj.mif
 !include defrule.mif
+!include deftarg.mif
 
+!include $(owl_dir)/client.mif
 !include wres.mif
 
-obj             = .obj
-exe             = .exe
-
+# yacc
+#########################
 yacc_flags      = -b -d
 #yacc_flags     = -d -q
 #yacc_flags     = -b -d -f -u
@@ -45,184 +28,204 @@ lex_in          = scan_in.re
 lex_out_c       = aslexyy
 lex_out_h       =
 
-splice_opts     = -k$(as_cpu)
+# objects
+##########
+as_comm_objs = &
+    $(yacc_out_c).obj &
+    $(lex_out_c).obj &
+    asexpr.obj &
+    asopernd.obj &
+    asmem.obj &
+    asutils.obj &
+    asregs.obj &
+    assymbol.obj &
+    asdrectv.obj &
+    asdirop.obj &
+    asnumlab.obj &
+    asmsg.obj &
+    ashash.obj &
+    $(target_as_comm_objs)
+
+as_stand_objs = &
+    main.obj &
+    obj.obj &
+    sections.obj &
+    options.obj &
+    preproc.obj &
+    ppexpr.obj &
+    ppmacro.obj &
+    ppmem.obj &
+    trmemcvr.obj
+!ifeq release 0
+as_stand_objs += trmem.obj
+!endif
+
+as_inline_objs = &
+    asinline.obj &
+    asiobj.obj
+
+as_objs = $(as_comm_objs) $(as_stand_objs)
+
+asi_objs = $(as_comm_objs) $(as_inline_objs)
+
+asi_test_objs = asitest.obj trmemcvr.obj
+!ifeq release 0
+asi_test_objs += trmem.obj
+!endif
+
+# cflags
+#########
+
 !ifndef inline_as
-splice_opts     += -k_STANDALONE_
+as_extra_defines += -D_STANDALONE_
 !endif
 
-exe_deps_osi = $(bld_bin)\os2ldr.exe
-
-libs = $(owl_dir)\o.$(host_CPU)\owl.lib $(wres_lib)
-
-extra_defines           = -d$(as_cpu)
-!ifndef inline_as
-extra_defines           += -d_STANDALONE_
-!endif
-!ifeq release 1
-extra_defines           += -dNDEBUG
-!endif
-
-extra_c_flags           = -fhq $(extra_defines)
-
-as_trmem_flag_386       = -of+
+extra_c_flags = $(as_extra_defines)
 
 !ifeq release 0
-as_trmem                = -dTRMEM $(as_trmem_flag_$(host_CPU))
-as_yydebug              = -dYYDEBUG=1
+!ifeq host_cpu 386
+as_trmem                = -DTRMEM -of+
+!else
+as_trmem                = -DTRMEM
+!endif
+as_yydebug              = -DYYDEBUG=1
+!else
+dbg_extra_defines       = -DNDEBUG
 !endif
 
 extra_c_flags_asitest   = $(as_trmem)
-extra_c_flags_asmem     = -fhq=asmem.pch $(as_trmem)
-extra_c_flags_trmemcvr  = -fhq=trmemcvr.pch $(as_trmem)
-extra_c_flags_trmem     = -fhq=trmem.pch $(as_trmem)
-extra_c_flags_asytab    = -fhq=asytab.pch $(as_yydebug)
-extra_c_flags_aslexyy   = -fhq=aslexyy.pch
-extra_c_flags_preproc   = -fhq=preproc.pch
-extra_c_flags_ppexpr    = -fhq=ppexpr.pch
-extra_c_flags_ppmacro   = -fhq=ppmacro.pch
-extra_c_flags_ppmem     = -fhq=ppmem.pch
 
-extra_l_flags           = option map,quiet
+!ifndef bootstrap
+extra_c_flags_asmem     = -fh=asmem.pch $(as_trmem)
+extra_c_flags_trmemcvr  = -fh=trmemcvr.pch $(as_trmem)
+extra_c_flags_trmem     = -fh=trmem.pch $(as_trmem)
+extra_c_flags_asytab    = -fh=asytab.pch $(as_yydebug)
+extra_c_flags_aslexyy   = -fh=aslexyy.pch
+extra_c_flags_preproc   = -fh=preproc.pch
+extra_c_flags_ppexpr    = -fh=preproc.pch
+extra_c_flags_ppmacro   = -fh=preproc.pch
+extra_c_flags_ppmem     = -fh=preproc.pch
+
+extra_c_flags_asexpr    = -fh
+extra_c_flags_asopernd  = -fh
+extra_c_flags_asutils   = -fh
+extra_c_flags_asregs    = -fh
+extra_c_flags_assymbol  = -fh
+extra_c_flags_asdrectv  = -fh
+extra_c_flags_asdirop   = -fh
+extra_c_flags_asnumlab  = -fh
+extra_c_flags_asmsg     = -fh
+extra_c_flags_asmsgj    =
+extra_c_flags_ashash    = -fh
+extra_c_flags_asinline  = -fh
+extra_c_flags_asiobj    = -fh
+extra_c_flags_main      = -fh
+extra_c_flags_obj       = -fh
+extra_c_flags_sections  = -fh
+extra_c_flags_options   = -fh
+!endif
+
+# lflags
+#########
+
 !ifndef inline_as
-extra_l_flags           += library { $(libs) }
+libs = $(owl_lib) $(wres_lib)
 !endif
 
-inc_dirs = $(as_dir)\$(cpu)\h;$(as_dir)\h;$(owl_dir)\h;$(cpp_dir);$(watcom_dir)\h;$(trmem_dir)
+# rcflags
+##########
 
-.before:
-        @set include=$(inc_path)
+extra_rc_flags = $(as_extra_defines)
 
-as_comm_objs    = $(yacc_out_c)$(obj) &
-                  $(lex_out_c)$(obj) &
-                  asexpr$(obj) &
-                  asopernd$(obj) &
-                  asmem$(obj) &
-                  asutils$(obj) &
-                  $(cpu)fmt$(obj) &
-                  $(cpu)ins$(obj) &
-                  asregs$(obj) &
-                  assymbol$(obj) &
-                  asdrectv$(obj) &
-                  asdirop$(obj) &
-                  asnumlab$(obj) &
-                  asmsg$(obj) &
-                  ashash$(obj)
-
-as_stand_objs   = main$(obj) &
-                  obj$(obj) &
-                  sections$(obj) &
-                  options$(obj) &
-                  preproc$(obj) &
-                  ppexpr$(obj) &
-                  ppmacro$(obj) &
-                  ppmem$(obj) &
-                  trmemcvr$(obj)
-!ifndef on_build_machine
-as_stand_objs   += trmem$(obj)
+# splice options
+##################
+!ifndef inline_as
+splice_opts += -k_STANDALONE_
 !endif
 
-as_inline_objs  = asinline$(obj) &
-                  asiobj$(obj)
+# include directory
+####################
 
-as_objs         = $(as_comm_objs) $(as_stand_objs)
+.c: $(as_cdir);$(trmem_dir);$(cpp_dir)
+.h: $(as_hdir);$(trmem_dir);$(cpp_dir)
+.y: $(as_ydir)
+.re: $(as_ydir)
+.rc: $(as_dir)/h
+.gh: .
+.msg: $(as_dir)/h
 
-asi_objs        = $(as_comm_objs) $(as_inline_objs)
+inc_dirs = -I. $(as_incs) -I"$(owl_dir)/h" -I$(cpp_dir) -I$(trmem_dir)
 
-asi_test_objs   = asitest$(obj) trmemcvr$(obj)
-!ifndef on_build_machine
-asi_test_objs   += trmem$(obj)
-!endif
+# explicit rules
+#################
 
-asi_lib     = $(as_dir)\$(cpu)\inline\o.$(host_CPU)\asinline.lib
-asi_lib_j   = $(as_dir)\$(cpu)\inline\o.$(host_CPU)\asinlinj.lib
+asi_lib     = $(asi_dir)/asinline.lib
+asi_lib_j   = $(asi_dir)/asinlinj.lib
+
 !ifdef test_inline_as
 asi_test_name = asinline
 
-$(asi_test_name)$(exe) : $(asi_test_objs) $(asi_lib)
-        $(linker) $(lflags) name $@ file { $(asi_test_objs) } lib $(asi_lib)
+$(asi_test_name).exe : $(asi_test_objs) $(cl_objs) $(asi_lib)
+        $(cl) $(clflags)  $(asi_test_objs) $(cl_objs) $(asi_lib) $(cl_libs)
 
 $(asi_lib) :
-        cd $(as_dir)\$(cpu)\inline\o.$(host_CPU)
-        wmake -h
-        cd $(as_dir)\$(cpu)\inline\o.$(host_CPU)\test
+curr_dir=$+$(%cwd)$-
+        cd $(asi_dir)
+        !wmake -h
+        cd $(curr_dir)
 !endif
 
 !ifdef asi_build_lib
-all_lib : $(asi_lib) $(asi_lib_j) .symbolic
+all_lib : msg.gh $(asi_lib) $(asi_lib_j) .symbolic
 
 $(asi_lib) : $(asi_objs)
-        @if exist $^&.clb @erase $^&.clb
-        @for %i in ($<) do @%append $^&.clb -+%i
-        $(librarian) -b -q $^. @$^&.clb
+        @rm -f $^&.lbc
+        @for %i in ($<) do @%append $^&.lbc +%i
+        $(librarian) $(libflags) @$^&.lbc
 
-$(asi_lib_j) : $(asi_lib) asmsgj$(obj)
-        copy $(asi_lib) $(asi_lib_j)
-        $(librarian) -b -q $(asi_lib_j) -asmsg.obj
-        $(librarian) -b -q $(asi_lib_j) +asmsgj.obj
-
-asmsgj$(obj): asmsg.c
-        @set include=$(inc_path)
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@ /fo=$^. /dJAPANESE_MSG
+$(asi_lib_j) : $(asi_lib) asmsgj.obj
+        $(librarian) $(libflags) +$[@ -asmsg.obj +asmsgj.obj
 !endif
 
-$(name)$(exe) : $(as_objs) $(libs) $(exe_deps_$(host_OS)) $(name).res
-        $(linker) $(lflags) name $@ file { $(as_objs) } op symfile
-!ifeq host_OS osi
-        $(bld_bin)\w32bind $(name).rex $(name)$(exe) $(bld_bin)\os2ldr.exe
-        erase $(name).rex
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(name).exe : msg.gh $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(name).res $(version_res_$(host_os)_$(host_cpu))
+        $(cl) $(clflags) $(as_objs) $(cl_objs) $(libs) $(owl_lib) $(cl_libs)
+!ifeq host_os osi
+        $(w32bind) $^&.rex $^@ $(os2ldr)
+        @rm -f $^&.rex
 !endif
-        wstrip /q /a /r $^@ . $(name).res
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $(name).exe
+!endif
+        wstrip -q -a -r $@ . $(name).res
 
 !ifndef inline_as
-$(as_objs) : msg.gh
-
 $(name).res : as.rc msg.gh
-        $(rc) /q /bt=windows /r $(extra_defines) $[@ /i$(as_dir)\h /fo=$^@
-!else
-
-$(asi_objs) : msg.gh
-
+        $(rc_aui) $(as_extra_defines) $(dbg_extra_defines) $[@ -fo=$^@
 !endif
 
-msg.gh : mkstrid.c as.msg
-        $(bld_cl) $[@ $(cflags)
-        mkstrid $^@
+!include verrc.mif
 
-$(yacc_in) : $(yacc_src) $(as_dir)\y\yydriver.c
-        $(bld_bin)\wsplice $(splice_opts) $[@ $^.
+msg.gh : ./mkstrid.exe
+        $[@ $^@
+
+./mkstrid.exe : mkstrid.c as.msg
+        $(bld_cl) $(wcl_util_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
+
+$(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
+        wsplice $(splice_opts) $[@ $^@
 
 $(yacc_out_c).c $(yacc_out_h) : $(yacc_in)
-        $(yacc) $(yacc_flags) $[@ $(as_dir)\y\yydriver.c
-        vi -d -i -q -s$(as_dir)\mif\asyy.vi -p"$(yacc_out_c).c" ytab.c
-        vi -d -i -q -s$(as_dir)\mif\asyy.vi -p"$(yacc_out_c).h" ytab.h
-        # $(yacc) $(yacc_flags) $[@
+        $(byacc) $(yacc_flags) $[@ $(as_dir)/y/yydriver.c > $(nulldevice)
+        $(sed) -f $(as_dir)/mif/asyy.sed ytab.c > $(yacc_out_c).c
+        $(sed) -f $(as_dir)/mif/asyy.sed ytab.h > $(yacc_out_c).h
+        # $(byacc) $(yacc_flags) $[@
 
 $(lex_in) : $(lex_src)
-        $(bld_bin)\wsplice $(splice_opts) $[@ $^.
+        wsplice $(splice_opts) $[@ $^.
 
 .ERASE
 $(lex_out_c).c $(lex_out_h) : $(lex_in)
-        $(re2c) $(lex_flags) $[@ > $^.
-
-clean: .symbolic .explicit
-        @if exist *.obj del *.obj
-        @if exist $(name)$(exe) del $(name)$(exe)
-!ifdef test_inline_as
-        @if exist $(asi_test_name)$(exe) del $(asi_test_name)$(exe)
-!endif
-        @if exist *.err del *.err
-        @if exist *.map del *.map
-        @if exist *.pch del *.pch
-        @if exist *.lib del *.lib
-        @if exist *.clb del *.clb
-        @if exist ytab.* del ytab.*
-        @if exist $(lex_in) del $(lex_in)
-        @if exist $(lex_out_c).c del $(lex_out_c).c
-        @if exist $(yacc_in) del $(yacc_in)
-        @if exist $(yacc_out_c).c del $(yacc_out_c).c
-        @if exist $(yacc_out_h) del $(yacc_out_h)
-        @if exist *.res del *.res
-        @if exist *.sym del *.sym
-        @if exist *.tmp del *.tmp
-        @if exist msg.gh del msg.gh
-        @if exist mkstrid$(exe) del mkstrid$(exe)
+        $(bre2c) $(lex_flags) $[@ > $^.

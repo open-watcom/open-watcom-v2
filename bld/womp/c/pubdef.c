@@ -86,15 +86,15 @@ STATIC void doAnAddr( addr_info *addr, symb_handle symb ) {
     addr_fixup = addr->fixup;
     if( addr_fixup->self_relative ) return; /* can't handle these */
     switch( addr_fixup->lr.frame ) {
-    case F_TARG:
-    case F_NONE:
-    case F_GRP:
+    case FRAME_TARG:
+    case FRAME_NONE:
+    case FRAME_GRP:
         break;
     default:
         return;     /* can't handle any other form */
     }
     switch( addr_fixup->lr.target ) {
-    case T_SEGWD:
+    case TARGET_SEGWD:
         seg_idx = addr_fixup->lr.target_datum;
         break;
     default:

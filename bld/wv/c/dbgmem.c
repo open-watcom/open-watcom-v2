@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Access to program memory.
 *
 ****************************************************************************/
 
@@ -36,20 +35,20 @@
 #include "dbgerr.h"
 #include "mad.h"
 
-extern char             *GetCmdName(int);
+extern char             *GetCmdName( int );
 extern char             *Format( char *buff, char *fmt, ... );
-extern char             *CnvULong(unsigned long,char *);
-extern unsigned         ProgPeek(address ,void *,unsigned int );
-extern unsigned         ChangeMem(address ,void *,unsigned int );
+extern char             *CnvULong( unsigned long, char * );
+extern unsigned         ProgPeek( address, void *, unsigned int );
+extern unsigned         ChangeMem( address, void *, unsigned int );
 extern unsigned         PortPeek( unsigned, void *, unsigned );
 extern unsigned         PortPoke( unsigned, void *, unsigned );
 extern char             *StrCopy( char *, char * );
-extern char             *AddHexSpec(char*);
+extern char             *AddHexSpec( char * );
 extern void             AddrFix( address * );
-extern address          AddrAddWrap(address,long);
-extern void             RecordEvent(char*);
+extern address          AddrAddWrap( address, long );
+extern void             RecordEvent( char * );
 extern bool             AdvMachState( int );
-extern void             CollapseMachState();
+extern void             CollapseMachState( void );
 extern void             DbgUpdate( update_list );
 
 extern char             *TxtBuff;
@@ -59,6 +58,9 @@ extern char             *TxtBuff;
 /* this item doesn't really exist, it's just being used for sizeof */
 extern item_mach    Mach;
 
+/***********************************************************************
+  !!!!!! must correspond with enum order (item_type) in dbgitem.h !!!!!
+ ***********************************************************************/
 static unsigned Sizes[] = {
         0,
         sizeof( Mach.ub ),
@@ -67,13 +69,17 @@ static unsigned Sizes[] = {
         sizeof( Mach.sw ),
         sizeof( Mach.ud ),
         sizeof( Mach.sd ),
+        sizeof( Mach.uq ),
+        sizeof( Mach.sq ),
         sizeof( Mach.sf ),
-        sizeof( Mach.xf ),
         sizeof( Mach.lf ),
+        sizeof( Mach.xf ),
         sizeof( Mach.so ),
         sizeof( Mach.lo ),
+        sizeof( Mach.qo ),
         sizeof( Mach.sa ),
         sizeof( Mach.la ),
+        sizeof( Mach.xa ),
         sizeof( Mach.sc ),
         sizeof( Mach.lc ),
         sizeof( Mach.xc ),
@@ -82,7 +88,6 @@ static unsigned Sizes[] = {
         sizeof( Mach.ndscb ),
         sizeof( Mach.fdscb ),
 };
-
 
 void ChangeMemUndoable( address addr, void *item, int size )
 {
@@ -189,6 +194,7 @@ static item_type ItemTypeFromMADType( mad_type_handle th )
     MADTypeInfo( th, &mti );
     switch( mti.b.kind ) {
     case MTK_INTEGER:
+    case MTK_XMM:
     case MTK_CUSTOM:
         return( ItemType( mti.b.bits / BITS_PER_BYTE ) );
     case MTK_ADDRESS:

@@ -30,15 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include "posix.h"
 #include "vi.h"
-#include "keys.h"
+#include "posix.h"
 #include "win.h"
-#include "colors.h"
 #include "menu.h"
 #include "source.h"
 
@@ -47,16 +41,17 @@ extern int      CurrentMenuNumber;
 /*
  * SelectFileOpen - select file from specified directory
  */
-int SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs )
+vi_rc SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs )
 {
-    char                dd[_MAX_PATH],cdir[_MAX_PATH];
-    int                 i,j,rc = ERR_NO_ERR;
+    char                dd[FILENAME_MAX], cdir[FILENAME_MAX];
+    int                 j;
     file                *cfile;
     fcb                 *cfcb;
     line                *cline;
     selflinedata        sfd;
     bool                need_entire_path;
     char                *result = *result_ptr;
+    vi_rc               rc;
 
     /*
      * get current directory
@@ -71,13 +66,13 @@ int SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs
      */
     while( TRUE ) {
 
-        if( dd[ strlen(dd) -1 ] != FILE_SEP ) {
-            strcat( dd,FILE_SEP_STR );
+        if( dd[strlen( dd ) - 1] != FILE_SEP ) {
+            strcat( dd, FILE_SEP_STR );
         }
-        strcat( dd,mask );
-        i = GetSortDir( dd, want_all_dirs );
-        if( i ) {
-            return( i );
+        strcat( dd, mask );
+        rc = GetSortDir( dd, want_all_dirs );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
 
         /*
@@ -98,7 +93,7 @@ int SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs
         sfd.cln = 1;
         sfd.eiw = -1;
         rc = SelectLineInFile( &sfd );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( sfd.sl == -1 ) {
@@ -108,21 +103,21 @@ int SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs
         j = (int) sfd.sl - 1;
         if( j >= DirFileCount || DirFiles[j]->attr & _A_SUBDIR ) {
             if( j >= DirFileCount ) {
-                GimmeLinePtr( j+1, cfile, &cfcb, &cline );
+                GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
                 dd[0] = cline->data[3];
                 dd[1] = ':';
                 dd[2] = 0;
             } else {
                 strcpy( dd, cdir );
-                if( dd[strlen(dd)-1] != FILE_SEP ) {
+                if( dd[strlen(dd) - 1] != FILE_SEP ) {
                     strcat( dd, FILE_SEP_STR );
                 }
                 strcat( dd, DirFiles[j]->name );
             }
             FreeEntireFile( cfile );
-            i = SetCWD( dd );
-            if( i ) {
-                return( i );
+            rc = SetCWD( dd );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
             need_entire_path = TRUE;
             strcpy( cdir, CurrentDirectory );
@@ -131,7 +126,7 @@ int SelectFileOpen( char *dir, char **result_ptr, char *mask, bool want_all_dirs
         }
         if( need_entire_path ) {
             strcpy( result, CurrentDirectory );
-            if( result[ strlen(result) -1 ] != FILE_SEP ) {
+            if( result[strlen(result) - 1] != FILE_SEP ) {
                 strcat( result, FILE_SEP_STR );
             }
         } else {
@@ -157,13 +152,13 @@ static bool             isMenu;
 /*
  * displayGenericLines - display all lines in a window
  */
-static int displayGenericLines( file *f,linenum pagetop, int leftcol,
-                         linenum hilite, type_style *style, char **hichars,
-                         char **vals, int valoff )
+static vi_rc displayGenericLines( file *f, linenum pagetop, int leftcol,
+                                linenum hilite, type_style *style, char **hichars,
+                                char **vals, int valoff )
 {
-    int         i,j,k,text_lines;
-    linenum     cl=pagetop;
-    fcb         *cfcb,*tfcb;
+    int         i, j, k, text_lines;
+    linenum     cl = pagetop;
+    fcb         *cfcb, *tfcb;
     line        *cline;
     char        *ptr;
     type_style  *text, *hot_key;
@@ -171,13 +166,14 @@ static int displayGenericLines( file *f,linenum pagetop, int leftcol,
     type_style  base;
     char        tmp[MAX_STR];
     bool        disabled;
+    vi_rc       rc;
 
     /*
      * get pointer to first line on page, and window info
      */
-    i = GimmeLinePtr( pagetop, f, &cfcb, &cline );
-    if( i ) {
-        return( i );
+    rc = GimmeLinePtr( pagetop, f, &cfcb, &cline );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     base.foreground = WindowAuxInfo( cWin, WIND_INFO_TEXT_COLOR );
     base.background = WindowAuxInfo( cWin, WIND_INFO_BACKGROUND_COLOR );
@@ -187,10 +183,8 @@ static int displayGenericLines( file *f,linenum pagetop, int leftcol,
     /*
      * mark all fcb's as being not in display
      */
-    tfcb = f->fcb_head;
-    while( tfcb != NULL ) {
+    for( tfcb = f->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
         tfcb->on_display = FALSE;
-        tfcb=tfcb->next;
     }
     cfcb->on_display = TRUE;
 
@@ -199,7 +193,7 @@ static int displayGenericLines( file *f,linenum pagetop, int leftcol,
      */
     ptr = (char *) (hichars);
     if( ptr != NULL ) {
-        ptr += 2*(pagetop-1);
+        ptr += 2 * (pagetop - 1);
     }
     for( j = 1; j <= text_lines; j++ ) {
         if( cline != NULL ) {
@@ -233,35 +227,36 @@ static int displayGenericLines( file *f,linenum pagetop, int leftcol,
              * now, display what we can of the line on the window
              */
             if( cline->len == 0 ) {
-                DisplayCrossLineInWindow( cWin,j );
+                DisplayCrossLineInWindow( cWin, j );
                 goto evil_goto;
             } else if( cline->len > leftcol ) {
                 if( vals != NULL ) {
-                    i = cline->len-leftcol;
-                    strncpy( tmp, &(cline->data[leftcol] ), WindMaxWidth+5);
-                    for( k = i; k < valoff; k++ ) tmp[ k ] = ' ';
+                    i = cline->len - leftcol;
+                    strncpy( tmp, &(cline->data[leftcol]), WindMaxWidth + 5 );
+                    for( k = i; k < valoff; k++ ) {
+                        tmp[k] = ' ';
+                    }
                     tmp[k] = 0;
-                    strcat( tmp, vals[j+pagetop-2] );
+                    strcat( tmp, vals[j + pagetop - 2] );
                     DisplayLineInWindowWithColor( cWin, j, tmp, text, 0 );
                 } else {
-                    DisplayLineInWindowWithColor( cWin, j, cline->data,
-                        text, leftcol );
+                    DisplayLineInWindowWithColor( cWin, j, cline->data, text, leftcol );
                 }
             } else {
                 DisplayLineInWindowWithColor( cWin, j, SingleBlank, text, 0 );
             }
             if( ptr != NULL ) {
-                SetCharInWindowWithColor( cWin, j, 1+(int)ptr[1], ptr[0], hot_key );
+                SetCharInWindowWithColor( cWin, j, 1 + (int)ptr[1], ptr[0], hot_key );
             }
 evil_goto:  if( ptr != NULL ) {
                 ptr += 2;
             }
-            i = GimmeNextLinePtr( f, &cfcb, &cline );
-            if( i ) {
-                if( i == ERR_NO_MORE_LINES ) {
+            rc = GimmeNextLinePtr( f, &cfcb, &cline );
+            if( rc != ERR_NO_ERR ) {
+                if( rc == ERR_NO_MORE_LINES ) {
                     continue;
                 }
-                return( i );
+                return( rc );
             }
             cl++;
             cfcb->on_display = TRUE;
@@ -284,8 +279,8 @@ typedef enum {
     MS_EXPOSEUP
 } ms_type;
 
-static window_id        oWin,mouseWin;
-static int              mouseLine=-1;
+static window_id        oWin, mouseWin;
+static int              mouseLine = -1;
 static ms_type          mouseScroll;
 static bool             rlMenu;
 static int              rlMenuNum;
@@ -295,32 +290,32 @@ static int              rlMenuNum;
  */
 bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
 {
-    int x,y,i;
+    int x, y, i;
 
     if( LastMouseEvent != MOUSE_DRAG && LastMouseEvent != MOUSE_PRESS &&
-            LastMouseEvent != MOUSE_DCLICK && LastMouseEvent != MOUSE_RELEASE &&
-            LastMouseEvent != MOUSE_REPEAT && LastMouseEvent != MOUSE_PRESS_R ) {
+        LastMouseEvent != MOUSE_DCLICK && LastMouseEvent != MOUSE_RELEASE &&
+        LastMouseEvent != MOUSE_REPEAT && LastMouseEvent != MOUSE_PRESS_R ) {
         return( FALSE );
     }
     mouseWin = id;
     mouseScroll = MS_NONE;
 
-    if( !isMenu && (id == cWin) && (LastMouseEvent == MOUSE_REPEAT
-                        || LastMouseEvent == MOUSE_PRESS
-                        || LastMouseEvent == MOUSE_DCLICK ) ) {
+    if( !isMenu && (id == cWin) && (LastMouseEvent == MOUSE_REPEAT ||
+                                    LastMouseEvent == MOUSE_PRESS ||
+                                    LastMouseEvent == MOUSE_DCLICK ) ) {
         x = WindowAuxInfo( cWin, WIND_INFO_WIDTH );
         y = WindowAuxInfo( cWin, WIND_INFO_HEIGHT );
-        if( win_x == x-1 ) {
+        if( win_x == x - 1 ) {
             if( win_y == 1 ) {
                 mouseScroll = MS_EXPOSEUP;
                 return( TRUE );
-            } else if( win_y == y-2 ) {
+            } else if( win_y == y - 2 ) {
                 mouseScroll = MS_EXPOSEDOWN;
                 return( TRUE );
-            } else if( win_y > 1 && win_y < y/2 ) {
+            } else if( win_y > 1 && win_y < y / 2 ) {
                 mouseScroll = MS_PAGEUP;
                 return( TRUE );
-            } else if( win_y >= y/2 && win_y < y-1 ) {
+            } else if( win_y >= y / 2 && win_y < y - 1 ) {
                 mouseScroll = MS_PAGEDOWN;
                 return( TRUE );
             }
@@ -342,9 +337,9 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
         return( FALSE );
     }
     if( isMenu && EditFlags.Menus && id == MenuWindow &&
-                LastMouseEvent != MOUSE_PRESS_R ) {
+        LastMouseEvent != MOUSE_PRESS_R ) {
         i = GetMenuIdFromCoord( win_x );
-        if( i >=0 ) {
+        if( i >= 0 ) {
             rlMenuNum = i - GetCurrentMenuId();
             if( rlMenuNum != 0 ) {
                 rlMenu = TRUE;
@@ -359,7 +354,7 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
     if( !InsideWindow( id, win_x, win_y ) ) {
         return( FALSE );
     }
-    mouseLine = win_y-1;
+    mouseLine = win_y - 1;
     return( TRUE );
 
 } /* SelectLineMouseHandler */
@@ -368,9 +363,9 @@ bool SelectLineMouseHandler( window_id id, int win_x, int win_y )
  * adjustCLN - adjust current line number and pagetop
  */
 static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
-                                linenum endline, int text_lines )
+                       linenum endline, int text_lines )
 {
-    bool        drawbord=FALSE;
+    bool        drawbord = FALSE;
 
     if( !isMenu ) {
         if( amt < 0 ) {
@@ -387,13 +382,13 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
         } else {
             if( *cln + amt < endline ) {
                 *cln += amt;
-                if( *cln >= *pagetop+text_lines ) {
+                if( *cln >= *pagetop + text_lines ) {
                     *pagetop += amt;
                     drawbord = TRUE;
                 }
             } else {
                 *cln = endline;
-                *pagetop = endline-text_lines+1;
+                *pagetop = endline - text_lines + 1;
             }
         }
     } else {
@@ -403,7 +398,7 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
                 while( *cln <= 0 ) {
                     *cln += endline;
                 }
-                *pagetop = *cln - text_lines+1;
+                *pagetop = *cln - text_lines + 1;
                 drawbord = TRUE;
             } else if( *cln < *pagetop ) {
                 *pagetop += amt;
@@ -411,7 +406,7 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
             }
         } else {
             if( *cln <= endline ) {
-                if( *cln >= *pagetop+text_lines ) {
+                if( *cln >= *pagetop + text_lines ) {
                     *pagetop += amt;
                     drawbord = TRUE;
                 }
@@ -419,7 +414,7 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
                 while( *cln > endline ) {
                     *cln -= endline;
                 }
-                *pagetop = *cln - text_lines+1;
+                *pagetop = *cln - text_lines + 1;
                 drawbord = TRUE;
             }
         }
@@ -427,8 +422,8 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
     if( *pagetop < 1 ) {
         *pagetop = 1;
     }
-    if( endline - *pagetop+1 < text_lines ) {
-        *pagetop = endline - text_lines+1;
+    if( endline - *pagetop + 1 < text_lines ) {
+        *pagetop = endline - text_lines + 1;
         drawbord = TRUE;
         if( *pagetop < 1 ) {
             *pagetop = 1;
@@ -441,23 +436,25 @@ static bool adjustCLN( linenum *cln, linenum *pagetop, int amt,
 /*
  * SelectLineInFile - select a line in a given file
  */
-int SelectLineInFile( selflinedata *sfd )
+vi_rc SelectLineInFile( selflinedata *sfd )
 {
-    int         i,key=-1,rc=ERR_NO_ERR,winflag;
-    int         leftcol=0,key2;
-    bool        done=FALSE,redraw=TRUE;
-    bool        hiflag=FALSE,drawbord=FALSE;
-    int         farx,text_lines;
-    linenum     pagetop=1,lln=1;
-    char        tmp[MAX_STR],*ptr;
+    int         i, winflag;
+    int         leftcol = 0, key2;
+    bool        done = FALSE, redraw = TRUE;
+    bool        hiflag = FALSE, drawbord = FALSE;
+    int         farx, text_lines;
+    linenum     pagetop = 1, lln = 1;
+    char        tmp[MAX_STR], *ptr;
     linenum     cln;
     linenum     endline;
+    vi_rc       rc;
+    vi_key      key;
 
     /*
      * create the window
      */
     cln = sfd->cln;
-    endline = sfd->f->fcb_tail->end_line;
+    endline = sfd->f->fcbs.tail->end_line;
     farx = sfd->wi->x2;
     if( sfd->show_lineno ) {
         farx++;
@@ -465,9 +462,9 @@ int SelectLineInFile( selflinedata *sfd )
     if( sfd->hilite != NULL ) {
         hiflag = TRUE;
     }
-    i = NewWindow2( &cWin, sfd->wi );
-    if( i ) {
-        return( i );
+    rc = NewWindow2( &cWin, sfd->wi );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     if( !sfd->is_menu ) {
         WindowAuxUpdate( cWin, WIND_INFO_HAS_SCROLL_GADGETS, TRUE );
@@ -482,7 +479,7 @@ int SelectLineInFile( selflinedata *sfd )
     if( sfd->title != NULL ) {
         WindowTitle( cWin, sfd->title );
     }
-    pagetop = text_lines*(cln/text_lines);
+    pagetop = text_lines * (cln / text_lines);
     if( cln % text_lines != 0 ) {
         pagetop++;
     }
@@ -498,14 +495,14 @@ int SelectLineInFile( selflinedata *sfd )
 
         if( redraw ) {
             if( sfd->show_lineno ) {
-                MySprintf(tmp,"%l/%l", cln, endline  );
+                MySprintf(tmp, "%l/%l", cln, endline );
                 i = sfd->wi->x2 - sfd->wi->x1;
-                WindowBorderData( cWin, tmp, i-strlen(tmp) );
+                WindowBorderData( cWin, tmp, i - strlen( tmp ) );
                 drawbord = TRUE;
             }
             if( hiflag ) {
                 ptr = (char *) sfd->hilite;
-                ptr += 2*(cln-1);
+                ptr += 2 * (cln - 1);
                 if( ptr[0] == (char) -1 ) {
                     if( cln > lln ) {
                         cln++;
@@ -518,8 +515,8 @@ int SelectLineInFile( selflinedata *sfd )
                 DrawBorder( cWin );
             }
             displayGenericLines( sfd->f, pagetop, leftcol, cln,
-                &(sfd->wi->hilight), sfd->hilite,
-                sfd->vals, sfd->valoff );
+                                 &(sfd->wi->hilight), sfd->hilite,
+                                 sfd->vals, sfd->valoff );
         }
         lln = cln;
         redraw = TRUE;
@@ -530,10 +527,9 @@ int SelectLineInFile( selflinedata *sfd )
             DisplayMouse( TRUE );
         }
         key = GetNextEvent( TRUE );
-        if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) )
-                        || (key >='a' && key <= 'z') ||
-                        (key >= 'A' && key <= 'Z') ||
-                        (key >= '1' && key <= '9') ) ) {
+        if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
+                       (key >='a' && key <= 'z') || (key >= 'A' && key <= 'Z') ||
+                       (key >= '1' && key <= '9')) ) {
             i = 0;
             if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
                 key2 = key - VI_KEY( ALT_A ) + 'A';
@@ -544,8 +540,8 @@ int SelectLineInFile( selflinedata *sfd )
             }
             ptr = (char *) sfd->hilite;
             while( ptr[0] != 0 ) {
-                if( toupper( ptr[0] ) == (char) key2 ) {
-                    cln = i+1;
+                if( toupper( ptr[0] ) == key2 ) {
+                    cln = i + 1;
                     key = VI_KEY( ENTER );
                     break;
                 }
@@ -566,7 +562,7 @@ int SelectLineInFile( selflinedata *sfd )
                     key = VI_KEY( ENTER );
                 }
             } else {
-                while( sfd->retevents[i] >= 0 ) {
+                while( sfd->retevents[i] != 0 ) {
                     if( key == sfd->retevents[i] ) {
                         sfd->event = key;
                         key = VI_KEY( ENTER );
@@ -585,7 +581,7 @@ int SelectLineInFile( selflinedata *sfd )
             DisplayMouse( FALSE );
             if( hiflag ) {
                 ptr = (char *) sfd->hilite;
-                ptr += 2*(mouseLine);
+                ptr += 2 * mouseLine;
                 if( ptr[0] == (char) -1 ) {
                     break;
                 }
@@ -602,14 +598,13 @@ int SelectLineInFile( selflinedata *sfd )
                 case MS_PAGEUP: goto evil_pageup;
                 case MS_PAGEDOWN: goto evil_pagedown;
                 case MS_EXPOSEDOWN:
-                    adjustCLN( &cln, &pagetop, pagetop+text_lines-cln-1,
-                                endline, text_lines );
+                    adjustCLN( &cln, &pagetop, pagetop + text_lines - cln - 1,
+                               endline, text_lines );
                     adjustCLN( &cln, &pagetop, 1, endline, text_lines );
                     drawbord = TRUE;
                     break;
                 case MS_EXPOSEUP:
-                    adjustCLN( &cln, &pagetop, pagetop-cln, endline,
-                                text_lines );
+                    adjustCLN( &cln, &pagetop, pagetop - cln, endline, text_lines );
                     adjustCLN( &cln, &pagetop, -1, endline, text_lines );
                     drawbord = TRUE;
                     break;
@@ -678,9 +673,9 @@ int SelectLineInFile( selflinedata *sfd )
                 fcb     *cfcb;
                 char    data[64];
 
-                i = cln-1;
+                i = cln - 1;
                 GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
-                strcpy( data,cline->data );
+                strcpy( data, cline->data );
                 RemoveLeadingSpaces( data );
                 winflag = FALSE;
                 strcpy( tmp, sfd->vals[i] );
@@ -695,7 +690,7 @@ int SelectLineInFile( selflinedata *sfd )
                 if( winflag ) {
                     MoveWindowToFront( cWin );
                 }
-                if( !rc ) {
+                if( rc == ERR_NO_ERR ) {
                     AddString2( &(sfd->vals[i]), tmp );
                     redraw = TRUE;
                 }
@@ -742,11 +737,11 @@ int SelectLineInFile( selflinedata *sfd )
             break;
 
         case VI_KEY( CTRL_PAGEUP ):
-            drawbord = adjustCLN( &cln, &pagetop, -cln+1, endline, text_lines );
+            drawbord = adjustCLN( &cln, &pagetop, -cln + 1, endline, text_lines );
             break;
 
         case VI_KEY( CTRL_PAGEDOWN ):
-            drawbord = adjustCLN( &cln, &pagetop, endline-cln, endline, text_lines );
+            drawbord = adjustCLN( &cln, &pagetop, endline - cln, endline, text_lines );
             break;
 
         evil_pageup:
@@ -770,7 +765,7 @@ int SelectLineInFile( selflinedata *sfd )
         case VI_KEY( END ):
             drawbord = TRUE;
             cln = endline;
-            pagetop = endline-text_lines+1;
+            pagetop = endline - text_lines + 1;
             if( pagetop < 1 ) {
                 pagetop = 1;
             }

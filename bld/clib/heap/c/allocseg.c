@@ -45,7 +45,7 @@
     #include <sys/types.h>
     #include <sys/seginfo.h>
     #include <i86.h>
-#elif defined(__WINDOWS__) && defined(M_I86)
+#elif defined(__WINDOWS__) && defined( _M_I86 )
     #include <dos.h>
     #include "windows.h"
 #else

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level pixel drawing routine.
 *
 ****************************************************************************/
 
@@ -50,8 +49,9 @@ short _L1PutDot( short x, short y )
     WPI_PRES            dc;
 #else
     gr_device _FARD     *dev_ptr;
-    short DOT_FUNC      (near *getdot)();
-    void DOT_FUNC       (near *putdot)();
+    get_dot_fn near     *getdot;
+    put_dot_fn near     *putdot;
+
 #endif
 
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
@@ -67,18 +67,14 @@ short _L1PutDot( short x, short y )
         _MyInvalidate( x, y, x, y );
         _RefreshWindow();
 #else
-  #if !defined( _NEC_PC )       // We don't want the graphics charger here
         _StartDevice();
-  #endif
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, _CurrColor );
         getdot = dev_ptr->getdot;
         prev_color = ( *getdot )( _Screen.mem, 0, _Screen.bit_pos );
         putdot = dev_ptr->plot[ _PlotAct ];
         ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
-  #if !defined( _NEC_PC )
         _ResetDevice();
-  #endif
 #endif
     } else {
         _ErrorStatus = _GRNOOUTPUT;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 specific trap I/O.
 *
 ****************************************************************************/
 
@@ -67,6 +66,7 @@ int KeyGet()
 
 int WantUsage( char *ptr )
 {
+    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
     return( *ptr == '?' );
 }
 

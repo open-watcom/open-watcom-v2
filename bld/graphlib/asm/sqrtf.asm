@@ -33,13 +33,13 @@
 include mdef.inc
 include struct.inc
 
-        modstart        sqrtf
+        modstart        sqrtf,WORD
 
         xdefp   sqrtf_          ; calc single precision sqrt(fac1)
 
 
         defp    sqrtf_
-ifdef _386
+ifdef __386__
         push    EBX             ; save registers
         push    ECX             ; ...
         push    EDX             ; ...

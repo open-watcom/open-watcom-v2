@@ -1,0 +1,20 @@
+.387
+.386p
+		EXTRN	b:BYTE
+		EXTRN	d:BYTE
+		EXTRN	e:BYTE
+		EXTRN	i:BYTE
+		EXTRN	j:BYTE
+		EXTRN	h:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    call      word ptr DGROUP:b
+    call      dword ptr DGROUP:d
+    call      fword ptr DGROUP:e
+    call      far ptr i
+    call      far ptr DGROUP:j
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

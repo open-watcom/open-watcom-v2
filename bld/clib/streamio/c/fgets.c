@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fgets() - read string from stream.
 *
 ****************************************************************************/
 
@@ -38,33 +37,24 @@
 
 _WCRTLINK CHAR_TYPE *__F_NAME(fgets,fgetws)( CHAR_TYPE *s, int n, FILE *fp )
 {
-#ifdef __WIDECHAR__
-    wint_t      c;
-#else
-    int         c;
-#endif
+    INTCHAR_TYPE    c;
     CHAR_TYPE       *cs;
-    unsigned    oflag;
+    unsigned        oflag;
 
     _ValidFile( fp, 0 );
     _AccessFile( fp );
 
-    oflag = fp->_flag & (_SFERR|_EOF);                  /* 06-sep-91 */
-    fp->_flag &= ~(_SFERR|_EOF);
+    oflag = fp->_flag & (_SFERR | _EOF);                /* 06-sep-91 */
+    fp->_flag &= ~(_SFERR | _EOF);
     cs = s;
 
     /* don't use macro version of getc: multi-threading issues */
-    #ifdef __WIDECHAR__
-        while( --n > 0  &&  (c = fgetwc(fp)) != WEOF ) {
-            if( (*cs++ = c) == L'\n' )  break;
-        }
-    #else
-        while( --n > 0  &&  (c = fgetc(fp)) != EOF ) {
-            if( (*cs++ = c) == '\n' )  break;
-        }
-    #endif
+    while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != __F_NAME(EOF,WEOF) ) {
+        if( (*cs++ = c) == STRING( '\n' ) )
+            break;
+    }
 
-    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s  ||  ferror(fp) ) ) {
+    if( c == __F_NAME(EOF,WEOF)  &&  (cs == s || ferror( fp )) ) {
         s = NULL;
     } else {
         *cs = NULLCHAR;

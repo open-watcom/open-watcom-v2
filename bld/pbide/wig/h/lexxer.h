@@ -41,6 +41,6 @@ extern  BOOL    LineFinished(void);
 extern void     FinishLine(void);
 extern void     GetToEOS(void);
 extern BOOL     InitLex( char *fname );
-extern BOOL     FiniLex( void );
+extern void     FiniLex( void );
 
 #endif

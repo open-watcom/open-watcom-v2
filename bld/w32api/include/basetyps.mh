@@ -1,0 +1,22 @@
+/*
+ *  basetyps.h  Macros to declare COM interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _BASETYPS_H_
+#define _BASETYPS_H_
+
+:include readonly.sp
+
+#include <guiddef.h>
+
+:include cpluspro.sp
+
+:include stdapi.sp
+
+:include intrface.sp
+
+:include cplusepi.sp
+
+#endif /* _BASETYPS_H_ */

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 
 static WPI_PRES presWindow = NULL;
@@ -41,17 +42,19 @@ static HBITMAP  oldXor;
 static HBITMAP  oldAnd;
 
 /*
- * BeginFreeHand - Creates the DCs for drawing.  To create a DC with each
- *                 pixel drawn proved to be too slow with free hand drawing
- *                 so these routines were needed.  This is called when a
- *                 mouse button down is detected.
+ * BeginFreeHand - creates the device contexts for drawing
+ *               - to create a DC with each pixel drawn proved to be too slow with
+ *                 free hand drawing, so these routines were needed
+ *               - this is called when a mouse button down is detected
  */
 void BeginFreeHand( HWND hwnd )
 {
     img_node    *node;
 
     node = SelectImage( hwnd );
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     presWindow = _wpi_getpres( node->viewhwnd );
     xorMempres = _wpi_createcompatiblepres( presWindow, Instance, &xorMemdc );
@@ -62,58 +65,59 @@ void BeginFreeHand( HWND hwnd )
     _wpi_torgbmode( presWindow );
     oldXor = _wpi_selectbitmap( xorMempres, node->hxorbitmap );
     oldAnd = _wpi_selectbitmap( andMempres, node->handbitmap );
+
 } /* BeginFreeHand */
 
 /*
- * DrawThePoints - Actually sets the points on the DCs.
+ * DrawThePoints - actually set the points on the device contexts
  */
-void DrawThePoints( COLORREF colour, COLORREF xorcolour, COLORREF andcolour,
-                                                            WPI_POINT *pt )
+void DrawThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor, WPI_POINT *pt )
 {
-    _wpi_setpixel( xorMempres, pt->x, pt->y, xorcolour );
-    _wpi_setpixel( andMempres, pt->x, pt->y, andcolour );
-    _wpi_setpixel( presWindow, pt->x + BORDER_WIDTH, pt->y + BORDER_WIDTH,
-                                                                colour );
+    _wpi_setpixel( xorMempres, pt->x, pt->y, xorcolor );
+    _wpi_setpixel( andMempres, pt->x, pt->y, andcolor );
+    _wpi_setpixel( presWindow, pt->x + BORDER_WIDTH, pt->y + BORDER_WIDTH, color );
+
 } /* DrawThePoints */
 
 /*
- * BrushThePoints - Using the brush, draw the points on the view window.
+ * BrushThePoints - using the brush, draw the points on the view window
  */
-void BrushThePoints( COLORREF colour, COLORREF xorcolour, COLORREF andcolour,
-                                                WPI_POINT *pt, int brushsize )
+void BrushThePoints( COLORREF color, COLORREF xorcolor, COLORREF andcolor,
+                     WPI_POINT *pt, int brushsize )
 {
     HBRUSH      hbrush;
     HBRUSH      oldbrush;
 
-    hbrush = _wpi_createsolidbrush( xorcolour );
+    hbrush = _wpi_createsolidbrush( xorcolor );
     oldbrush = _wpi_selectobject( xorMempres, hbrush );
     _wpi_patblt( xorMempres, pt->x, pt->y, brushsize, brushsize, PATCOPY );
     _wpi_selectobject( xorMempres, oldbrush );
     _wpi_deleteobject( hbrush );
 
-    hbrush = _wpi_createsolidbrush( andcolour );
+    hbrush = _wpi_createsolidbrush( andcolor );
     oldbrush = _wpi_selectobject( andMempres, hbrush );
     _wpi_patblt( andMempres, pt->x, pt->y, brushsize, brushsize, PATCOPY );
     _wpi_selectobject( andMempres, oldbrush );
     _wpi_deleteobject( hbrush );
 
-    hbrush = _wpi_createsolidbrush( colour );
+    hbrush = _wpi_createsolidbrush( color );
     oldbrush = _wpi_selectobject( presWindow, hbrush );
-    _wpi_patblt( presWindow, BORDER_WIDTH+pt->x, BORDER_WIDTH+pt->y,
-                                        brushsize, brushsize, PATCOPY );
+    _wpi_patblt( presWindow, BORDER_WIDTH + pt->x, BORDER_WIDTH + pt->y,
+                 brushsize, brushsize, PATCOPY );
     _wpi_selectobject( presWindow, oldbrush );
     _wpi_deleteobject( hbrush );
+
 } /* BrushThePoints */
 
 /*
- * EndFreeHand - Releases the DCs  and the bitmaps.  This is called when a
- *               mouse button up is detected.
+ * EndFreeHand - releases the device contexts and the bitmaps
+ *             - this is called when a mouse button up is detected
  */
 void EndFreeHand( HWND hwnd )
 {
     img_node    *node;
 
-    node = SelectImage(hwnd);
+    node = SelectImage( hwnd );
 
     _wpi_releasepres( node->viewhwnd, presWindow );
     _wpi_getoldbitmap( xorMempres, oldXor );
@@ -123,28 +127,30 @@ void EndFreeHand( HWND hwnd )
     presWindow = (WPI_PRES)NULL;
     xorMempres = (WPI_PRES)NULL;
     andMempres = (WPI_PRES)NULL;
+
 } /* EndFreeHand */
 
-// The purpose of this function is to provide routines that have a
-// need to access the 'and' and 'xor' bitmaps while free hand drawing
-// is taking place. This is 'cause these bitmaps are selected into the
-// presentation spaces of this module and thus cannot be selected into
-// any other presentation spaces.
-BOOL GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and,
-                                    WPI_PRES *xor )
+/*
+ * GetFreeHandPresentationSpace - the purpose of this function is to provide routines
+ *                                that have a need to access the AND and XOR bitmaps
+ *                                while free hand drawing is taking place
+ *                              - this is because these bitmaps are selected into the
+ *                                presentation spaces of this module and thus cannot be
+ *                                selected into any other presentation spaces
+ */
+BOOL GetFreeHandPresentationSpaces( WPI_PRES *win, WPI_PRES *and, WPI_PRES *xor )
 {
-    if( win ) {
+    if( win != NULL ) {
         *win = presWindow;
     }
-    if( and ) {
+    if( and != NULL ) {
         *and = andMempres;
     }
-    if( xor ) {
+    if( xor != NULL ) {
         *xor = xorMempres;
     }
 
-    return( ( presWindow != (WPI_PRES)NULL ) &&
-            ( xorMempres != (WPI_PRES)NULL ) &&
-            ( andMempres != (WPI_PRES)NULL ) );
-}
+    return( presWindow != (WPI_PRES)NULL && xorMempres != (WPI_PRES)NULL &&
+            andMempres != (WPI_PRES)NULL );
 
+} /* GetFreeHandPresentationSpace */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump register tree.
 *
 ****************************************************************************/
 
@@ -34,7 +33,6 @@
 #include "coderep.h"
 #include "conflict.h"
 #include "regset.h"
-#include "sysmacro.h"
 #include "dump.h"
 
 extern  void            DumpNL();
@@ -45,13 +43,33 @@ extern  void            DumpRegName(hw_reg_set);
 
 #define SET_SIZE        (MAX_RG + 1)
 
-extern  void    DumpRegTree( reg_tree *tree ) {
-/*********************************************/
+static  void    DumpIndent( int i ) {
+/***********************************/
 
-    if( tree != NULL ) {
-        DoDump( tree, 0 );
+    while( --i >= 0 ) {
+        DumpLiteral( " " );
     }
 }
+
+
+static  void    DumpRegs( hw_reg_set *regs ) {
+/********************************************/
+
+    int i;
+
+    DumpLiteral( "Choices " );
+    if( regs != NULL ) {
+        i = SET_SIZE;
+        while( --i >= 0 ) {
+            if( !HW_CEqual( *regs, HW_EMPTY ) ) {
+                DumpRegName( *regs );
+                DumpLiteral( "," );
+            }
+            ++regs;
+        }
+    }
+}
+
 
 static  void    DoDump( reg_tree *tree, int indent ) {
 /****************************************************/
@@ -95,28 +113,11 @@ static  void    DoDump( reg_tree *tree, int indent ) {
     }
 }
 
-static  void    DumpIndent( int i ) {
-/***********************************/
 
-    while( --i >= 0 ) {
-        DumpLiteral( " " );
-    }
-}
+extern  void    DumpRegTree( reg_tree *tree ) {
+/*********************************************/
 
-static  void    DumpRegs( hw_reg_set *regs ) {
-/********************************************/
-
-    int i;
-
-    DumpLiteral( "Choices " );
-    if( regs != NULL ) {
-        i = SET_SIZE;
-        while( --i >= 0 ) {
-            if( !HW_CEqual( *regs, HW_EMPTY ) ) {
-                DumpRegName( *regs );
-                DumpLiteral( "," );
-            }
-            ++regs;
-        }
+    if( tree != NULL ) {
+        DoDump( tree, 0 );
     }
 }

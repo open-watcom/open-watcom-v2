@@ -1,0 +1,12 @@
+c$pragma aux (__syscall) WinDBCSIMEControl parm( value*4, value*4, \
+c                                                value*2, reference )
+
+c$pragma aux (__syscall) WinDBCSModeControl parm( value*4, value*4, \
+c                                                value*2, value*2, reference )
+
+c$pragma aux (__syscall) WinDBCSLoadFontDriver parm( value*4, value )
+
+c$pragma aux (__syscall) WinDBCSUnLoadFontDriver parm( value*4, value )
+
+c$pragma aux (__syscall) WinDBCSQueryFDDescription parm( value*4, value, \
+c                               reference )

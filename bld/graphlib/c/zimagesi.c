@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-long _WCI86FAR _CGRAPH _imagesize_w( double x1, double y1, double x2, double y2 )
+_WCRTLINK long _WCI86FAR _CGRAPH _imagesize_w( double x1, double y1, double x2, double y2 )
 /*==========================================================================
 
    This routine returns the size of buffer needed to store the picture
@@ -52,7 +52,7 @@ long _WCI86FAR _CGRAPH _imagesize_w( double x1, double y1, double x2, double y2 
 Entry( _IMAGESIZE_W, _imagesize_w ) // alternate entry-point
 
 
-long _WCI86FAR _CGRAPH _imagesize_wxy( struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK long _WCI86FAR _CGRAPH _imagesize_wxy( struct _wxycoord _WCI86FAR * p1,
 /*=============================*/ struct _wxycoord _WCI86FAR * p2 )
 
 /* This routine returns the size of buffer needed to store the picture
@@ -65,7 +65,7 @@ long _WCI86FAR _CGRAPH _imagesize_wxy( struct _wxycoord _WCI86FAR * p1,
 Entry( _IMAGESIZE_WXY, _imagesize_wxy ) // alternate entry-point
 
 
-long _WCI86FAR _CGRAPH _imagesize_w_87( double x1, double y1, double x2, double y2 )
+_WCRTLINK long _WCI86FAR _CGRAPH _imagesize_w_87( double x1, double y1, double x2, double y2 )
 /*===========================================================================*/
 
 {

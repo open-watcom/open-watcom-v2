@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Tail recursion elimination.
 *
 ****************************************************************************/
 
@@ -37,13 +36,12 @@
 #include "typedef.h"
 #include "procdef.h"
 #include "dump.h"
+#include "makeins.h"
 
 extern proc_def         *CurrProc;
 extern block            *HeadBlock;
 extern bool             BlockByBlock;
 
-extern  void            DumpIns(instruction*);
-extern  void            DumpNL();
 extern  sym_handle      AskForLblSym(label_handle);
 extern  bool            SideEffect(instruction*);
 extern  pointer         SafeRecurse(pointer(*)(),pointer);
@@ -52,15 +50,12 @@ extern  label_handle    AskForNewLabel( void );
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            ReplIns(instruction *,instruction *);
-extern  void            FreeIns(instruction *);
-extern  instruction     *MakeMove(name *,name *,type_class_def );
-extern  instruction     *MakeConvert(name *,name *,type_class_def,type_class_def );
 extern  void            RemoveInputEdge( block_edge * );
 extern  void            PointEdge( block_edge *, block * );
 
 static  name            *ReturnValue;
 
-#define _TR_LINK( x )   x->u.parm_list
+#define _TR_LINK( x )   x->u2.parm_list
 #define _PROC_LINK( x ) x->parms_list
 
 
@@ -278,8 +273,8 @@ static bool ScaryOperand( name *var )
     return( FALSE );
 }
 
-static bool ScaryConditions()
-/****************************
+static bool ScaryConditions( void )
+/**********************************
     Traverse the current function and return
     TRUE if there are any conditions present which
     would scare us out of doing tail recursion
@@ -383,8 +378,8 @@ extern void     TRDeclareParm( instruction *parm_ins )
     _PROC_LINK( CurrProc ) = (void *)parm_ins;
 }
 
-extern bool     TailRecursion()
-/******************************
+extern bool     TailRecursion( void )
+/************************************
     Eliminate any tail recursion. We assume that, for any call in
     the function, we have a linked list of the parameters to that
     call which was built up while creating the call instruction from

@@ -35,7 +35,7 @@
 #include <process.h>
 #include "batcher.h"
 
-main()
+int main( void )
 {
     char                buff[256];
     unsigned long       stat;
@@ -86,4 +86,5 @@ main()
         }
     }
     BatchUnlink( 0 );
+    return( 0 );
 }

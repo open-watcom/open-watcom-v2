@@ -1,0 +1,8 @@
+Installation Instructions
+
+wipfc can be compiled and installed by non-OpenWatcom compilers such as g++ by following these steps:
+    1. cd to the linux386 subdirectory where you found this file
+    2. ./configure
+    3. make
+    4. make install
+

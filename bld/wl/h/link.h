@@ -56,7 +56,7 @@ typedef unsigned long linkflag;
 #define INC_LINK_FLAG   0x00100000UL
 #define NOCACHE_FLAG    0x00200000UL
 #define CACHE_FLAG      0x00400000UL
-#define __UNUSED_FLAG_9 0x00800000UL
+#define FAR_CALLS_FLAG  0x00800000UL    // optimize far calls
 #define __UNUSED_FLAG_8 0x01000000UL
 #define __UNUSED_FLAG_7 0x02000000UL
 #define __UNUSED_FLAG_6 0x04000000UL
@@ -78,7 +78,8 @@ typedef enum mapflag {
     MAP_SORT            = 0x0008,       // sort symbols in the map file
     MAP_ALPHA           = 0x0010,       // sort symbols in alphabetical order
     MAP_GLOBAL          = 0x0020,       // sort symbols globally.
-    MAP_VERBOSE         = 0x0040
+    MAP_VERBOSE         = 0x0040,       // verbose mode
+    MAP_LINES           = 0x0080        // put line numbers in map file
 } mapflag;
 
 typedef unsigned long stateflag;
@@ -87,29 +88,29 @@ typedef unsigned long stateflag;
 #define SEARCHING_LIBRARIES     0x00000002
 #define LIBRARIES_ADDED         0x00000004
 #define LINK_ERROR              0x00000008
-#define RUNNING_OS2_FLAG        0x00000010       // set if running under OS/2
-#define FMT_SPECIFIED           0x00000020
-#define FMT_DECIDED             0x00000040
-#define FMT_SEEN_32_BIT         0x00000080
-#define FMT_SEEN_IMPORT_CMT     0x00000100
-#define PROC_LIBS_ADDED         0x00000200
-#define FMT_INITIALIZED         0x00000400
-#define SEEN_32BIT_DBI          0x00000800
-#define UNDEFED_SYM_ERROR       0x00001000
-#define HAVE_16BIT_CODE         0x00002000      // TRUE if we have 16 bit code.
-#define SEEN_16BIT_DBI          0x00004000
-#define GENERATE_LIB_LIST       0x00008000
-#define HAVE_ALPHA_CODE         0x00010000
-#define HAVE_PPC_CODE           0x00020000
-#define HAVE_I86_CODE           0x00040000
-#define CAN_REMOVE_SEGMENTS     0x00080000
-#define STOP_WORKING            0x00100000      // IDE wants us to stop now
-#define INTERNAL_DEBUG          0x00200000
-#define GOT_PREV_STRUCTS        0x00400000
-#define DOSSEG_FLAG             0x00800000
+#define FMT_SPECIFIED           0x00000010
+#define FMT_DECIDED             0x00000020
+#define FMT_SEEN_32_BIT         0x00000040
+#define FMT_SEEN_IMPORT_CMT     0x00000080
+#define PROC_LIBS_ADDED         0x00000100
+#define FMT_INITIALIZED         0x00000200
+#define UNDEFED_SYM_ERROR       0x00000400
+#define GENERATE_LIB_LIST       0x00000800
+#define HAVE_16BIT_CODE         0x00001000      // TRUE if we have 16 bit code.
+#define HAVE_ALPHA_CODE         0x00002000
+#define HAVE_PPC_CODE           0x00004000
+#define HAVE_I86_CODE           0x00008000
+#define HAVE_MIPS_CODE          0x00010000
+#define CAN_REMOVE_SEGMENTS     0x00020000
+#define STOP_WORKING            0x00040000      // IDE wants us to stop now
+#define INTERNAL_DEBUG          0x00080000
+#define GOT_PREV_STRUCTS        0x00100000
+#define DOSSEG_FLAG             0x00200000
+#define SPEC_ORDER_FLAG         0x00400000
 
-#define HAVE_MACHTYPE_MASK      (HAVE_I86_CODE | HAVE_ALPHA_CODE | HAVE_PPC_CODE)
-#define CLEAR_ON_INC    (STOP_WORKING | INTERNAL_DEBUG | GOT_PREV_STRUCTS | MAKE_RELOCS | RUNNING_OS2_FLAG | FMT_SPECIFIED | FMT_DECIDED | FMT_INITIALIZED)
+#define HAVE_MACHTYPE_MASK      (HAVE_I86_CODE | HAVE_ALPHA_CODE | HAVE_PPC_CODE | HAVE_MIPS_CODE)
+#define CLEAR_ON_INC    (STOP_WORKING | INTERNAL_DEBUG | GOT_PREV_STRUCTS | MAKE_RELOCS | FMT_SPECIFIED | FMT_DECIDED | FMT_INITIALIZED)
+#define ORDER_FLAG_MASK (DOSSEG_FLAG | SPEC_ORDER_FLAG)
 
 // this used for ID splits.
 
@@ -152,29 +153,13 @@ typedef enum obj_format {
 #define IS_FMT_INCREMENTAL(x)   (((x) & FMT_OBJ_FMT_MASK) == FMT_INCREMENTAL)
 #define SET_FMT_TYPE(x,type)    (((x) = (x) & ~FMT_OBJ_FMT_MASK) | (type))
 
-/*  File Extension formats */
-// this corresponds to a table of strings in CMDUTILS.
-enum {
-    E_COMMAND,
-    E_MAP,
-    E_LIBRARY,
-    E_OBJECT,
-    E_LOAD,
-    E_OVL,
-    E_DLL,
-    E_PROTECT,
-    E_NLM,
-    E_LAN,
-    E_DSK,
-    E_NAM,
-    E_COM,
-    E_REX,
-    E_QNX,
-    E_SYM,
-    E_LBC,
-    E_ELF,
-    E_ILK
-};
+/* Default File Extension Enumeration, see ldefext.h */
+
+typedef enum file_defext {
+#undef pick1
+#define pick1(enum,text) enum,
+#include "ldefext.h"
+} file_defext;
 
 
 /*  Generic constants */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution Sampler data file dump utility.
 *
 ****************************************************************************/
 
@@ -36,10 +35,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <malloc.h>
 #include <time.h>
 
 #include "watcom.h"
+#include "banner.h"
+#include "bool.h"
 #include "sample.h"
 
 char *Types[] = {
@@ -56,9 +58,12 @@ char *Types[] = {
         ""
 };
 
-#if defined(__SMALL__) || defined(__MEDIUM__)
-#error must be compiled with a large data model
+#if defined( __SMALL__ ) || defined( __MEDIUM__ )
+    #error must be compiled with a large data model
 #endif
+
+#define COND_SWAP_16( a )   if( byte_swap ) SWAP_16( a );
+#define COND_SWAP_32( a )   if( byte_swap ) SWAP_32( a );
 
 static char path[_MAX_PATH];
 static char drv[_MAX_DRIVE];
@@ -66,31 +71,34 @@ static char dir[_MAX_DIR];
 static char name[_MAX_FNAME];
 static char ext[_MAX_EXT];
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     char                quiet;
     int                 fd;
     unsigned            wanted;
     unsigned            i, j, k, l;
-    int                 length=0;
-    fpos_t              head_off;
+    int                 length = 0;
+    off_t               head_off;
     char *              record_type;
     samp_block *        data;
     auto samp_header    head;
     cgraph_sample *     sptr;
     auto struct stat    file_stat;
+    time_t              stamp;
     count_info          *count;
+    bool                byte_swap = FALSE;
 
+
+    puts( banner1w( "Sample File Dump Utility", _WSAMP_VERSION_ ) );
+    puts( banner2( "1989" ) );
+    puts( banner3 );
+    puts( banner3a );
 
     if( argc != 2 && argc != 3 ) {
-        puts( "usage: SMPDUMP <sample_file> [-q]" );
+        puts( "usage: smpdump <sample_file> [-q]" );
         exit( 1 );
     }
-    puts( "WATCOM Sample File Dump Utility  Version 1.1" );
-    puts( "Copyright by WATCOM Systems Inc. 1989, 1990, 1991."
-                                                "  All rights reserved." );
-    puts( "WATCOM is a trademark of WATCOM Systems Inc." );
-    data = malloc( 63L*1024+512 );
+    data = malloc( 63L * 1024 + 512 );
     quiet = 0;
     if( argc == 3 && strcmp( argv[2], "-q" ) == 0 ) {
         quiet = 1;
@@ -101,17 +109,30 @@ void main( int argc, char **argv )
     }
     _makepath( path, drv, dir, name, ext );
     fd = open( path, O_BINARY | O_RDONLY, 0 );
-    if( fd == -1 ) return;
-    head_off = lseek( fd, -(long) SIZE_HEADER, SEEK_END );
-    if( head_off == -1 ) return;
+    if( fd == -1 )
+        return( 1 );
+    head_off = lseek( fd, -(long)SIZE_HEADER, SEEK_END );
+    if( head_off == -1 )
+        return( 1 );
     read( fd, &head, SIZE_HEADER );
-    if( head.signature != SAMP_SIGNATURE ) return;
+    if( head.signature != SAMP_SIGNATURE ) {
+        SWAP_16( head.signature );
+        if( head.signature == SAMP_SIGNATURE ) {
+            byte_swap = TRUE;
+            SWAP_32( head.sample_start );
+        } else {
+            return( 1 );
+        }
+    }
     printf( "Sample file version: %u.%u\n", head.major_ver, head.minor_ver );
     lseek( fd, head.sample_start, SEEK_SET );
-    for(;;) {
+    for( ;; ) {
         /* read the prefix of record */
         wanted = sizeof( data->pref );
         if( read( fd, &data->pref, wanted ) != wanted ) break;
+        COND_SWAP_32( data->pref.tick );
+        COND_SWAP_16( data->pref.length );
+        COND_SWAP_16( data->pref.kind );
 
         /* read the rest of the record */
         wanted = data->pref.length - sizeof( data->pref );
@@ -128,12 +149,14 @@ void main( int argc, char **argv )
         /* dump specific record data */
         switch( data->pref.kind ) {
         case SAMP_INFO:
-            printf( "  timer rate %ldms\n", data->d.info.timer_rate );
+            COND_SWAP_32( data->d.info.timer_rate );
+            printf( "  timer rate %ld ms\n", data->d.info.timer_rate / 1000 );
             l = data->pref.length;
             if( head.major_ver == 2 && head.minor_ver <= 1 ) {
                 count = &data->d.old_info.count[0];
                 l -= offsetof( samp_block, d.old_info.count );
             } else {
+                COND_SWAP_16( data->d.info.config.mad );
                 printf( "  cpu=%d, fpu=%d, os_maj=%d, os_min=%d, os=%d, mad=%d\n",
                         data->d.info.config.cpu, data->d.info.config.fpu,
                         data->d.info.config.osmajor, data->d.info.config.osminor,
@@ -143,27 +166,35 @@ void main( int argc, char **argv )
             }
             l /= sizeof( count_info );
             for( i = 0; i < l; ++i ) {
-                printf( "    %s number %lu size %lu\n", Types[ i ],
-                        count[ i ].number, count[ i ].size );
+                COND_SWAP_32( count[i].number );
+                COND_SWAP_32( count[i].size );
+                printf( "    %s number %lu size %lu\n", Types[i],
+                        count[i].number, count[i].size );
             }
             break;
         case SAMP_SAMPLES:
             j = data->pref.length;
             j -= offsetof( samp_block, d.sample.sample );
             j /= sizeof( samp_address );
+            COND_SWAP_16( data->d.sample.thread_id );
             printf( "  thread id %u  #samples %u\n",
                     data->d.sample.thread_id, j );
             if( quiet ) {
                 printf( "    ....\n    ....\n    ....\n" );
             } else {
                 for( i = 0; i < j; ++i ) {
+                    COND_SWAP_16( data->d.sample.sample[i].segment );
+                    COND_SWAP_32( data->d.sample.sample[i].offset );
                     printf( "  - %.4x:%.8lx\n",
-                            data->d.sample.sample[ i ].segment,
-                            data->d.sample.sample[ i ].offset );
+                            data->d.sample.sample[i].segment,
+                            data->d.sample.sample[i].offset );
                 }
             }
             break;
         case SAMP_MARK:
+            COND_SWAP_16( data->d.sample.thread_id );
+            COND_SWAP_16( data->d.mark.addr.segment );
+            COND_SWAP_32( data->d.mark.addr.offset );
             printf( "  thread %u - %.4x:%.8lx  \"%s\"\n",
                     data->d.mark.thread_id, data->d.mark.addr.segment,
                     data->d.mark.addr.offset, data->d.mark.mark_string );
@@ -189,11 +220,15 @@ void main( int argc, char **argv )
             break;
         case SAMP_CODE_LOAD:
         case SAMP_MAIN_LOAD:
+            stamp = data->d.code.time_stamp;
+            COND_SWAP_32( stamp );
+            COND_SWAP_16( data->d.code.ovl_tab.segment );
+            COND_SWAP_32( data->d.code.ovl_tab.offset );
             printf( "  name = \"%s\"\n", data->d.code.name );
             printf( "  overlay table = %.4x:%.8lx\n",
                     data->d.code.ovl_tab.segment, data->d.code.ovl_tab.offset );
-            printf( "  time stamp %lx -> %s", data->d.code.time_stamp,
-                    ctime( &(data->d.code.time_stamp) ) );
+            printf( "  time stamp %lx -> %s", stamp,
+                    ctime( &stamp ) );
             if( stat( data->d.code.name, &file_stat ) == 0 ) {
                 printf( "  actual time stamp %lx -> %s", file_stat.st_mtime,
                         ctime( &(file_stat.st_mtime) ) );
@@ -204,11 +239,15 @@ void main( int argc, char **argv )
             j -= offsetof( samp_block, d.map );
             j /= sizeof( data->d.map );
             for( i = 0; i < j; ++i ) {
+                COND_SWAP_16( data->d.map.data[i].map.segment );
+                COND_SWAP_32( data->d.map.data[i].map.offset );
+                COND_SWAP_16( data->d.map.data[i].actual.segment );
+                COND_SWAP_32( data->d.map.data[i].actual.offset );
                 printf( "  - %.4x:%.8lx -> %.4x:%.8lx\n",
-                        data->d.map.data[ i ].map.segment,
-                        data->d.map.data[ i ].map.offset,
-                        data->d.map.data[ i ].actual.segment,
-                        data->d.map.data[ i ].actual.offset );
+                        data->d.map.data[i].map.segment,
+                        data->d.map.data[i].map.offset,
+                        data->d.map.data[i].actual.segment,
+                        data->d.map.data[i].actual.offset );
             }
             break;
         case SAMP_LAST:
@@ -218,9 +257,11 @@ void main( int argc, char **argv )
             j -= offsetof( samp_block, d.remap );
             j /= sizeof( data->d.remap );
             for( i = 0; i < j; ++i ) {
+                COND_SWAP_16( data->d.remap.data[i].section );
+                COND_SWAP_16( data->d.remap.data[i].segment );
                 printf( "  - %.4x -> %.4x\n",
-                        data->d.remap.data[ i ].section,
-                        data->d.remap.data[ i ].segment );
+                        data->d.remap.data[i].section,
+                        data->d.remap.data[i].segment );
             }
             break;
         case SAMP_CALLGRAPH:
@@ -243,8 +284,8 @@ void main( int argc, char **argv )
                         }
                         for( k=sptr->push_n; k > 0; k-- ) {
                             printf( "%.4x:%.8lx    ",
-                                sptr->addr[k-1].segment,
-                                sptr->addr[k-1].offset );
+                                sptr->addr[k - 1].segment,
+                                sptr->addr[k - 1].offset );
                         }
                         length += sptr->push_n;
                         printf( "\n" );
@@ -260,4 +301,5 @@ void main( int argc, char **argv )
         if( data->pref.kind == SAMP_LAST ) break;
     }
     close( fd );
+    return( 0 );
 }

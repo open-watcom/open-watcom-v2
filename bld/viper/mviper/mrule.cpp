@@ -243,18 +243,15 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
             MWorkFile* f = (MWorkFile*)(*workFiles)[j];
             f->removeQuotes();
             if( !f->isMask() && f->match( o->mask() ) ) {
-                if( vv.size() > 0 ) vv.concat( sep );
-                if( oName == "FIL" || oName == "LIBR" ) {
-                    if( f->needQuotes() ) {
-                        f->addSQuotes();
-                    }
-                } else {
-                    if( f->needQuotes() ) {
-                        f->addQuotes();
-                    }
+                char ch = ( oName == "FIL" || oName == "LIBR" ) ? '\'' : '\"';
+
+                if( vv.size() > 0 )
+                    vv.concat( sep );
+                if( f->needQuotes( ch ) ) {
+                    f->addQuotes( ch );
                 }
                 vv.concat( *f );
-                f->removeQuotes();
+                f->removeQuotes( ch );
             }
         }
         if( vv.size() > 0 ) {
@@ -324,7 +321,7 @@ void MRule::makeCommand( WString& s, WFileName* target, WVList* workFiles, WStri
     expandCommand( s, cmd, target, workFiles, mask, stateList, mode, browse );
 }
 
-bool MRule::enumAccel( WObject *obj, bcbi fn ) {
+bool MRule::enumAccel( WObject *obj, bcbk fn ) {
 
     int         icount;
     WKeyCode    key;

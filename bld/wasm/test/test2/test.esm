@@ -1,0 +1,35 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov       ax,5
+    mov       ax,5
+    mov       ax,5
+    mov       ax,5
+    mov       bx,ax
+    mov       cx,15H
+    mov       dx,15H
+    mov       si,2
+    mov       di,3
+    mov       ax,5
+    mov       ax,5
+    mov       ax,5
+    mov       ax,5
+    mov       bx,ax
+    mov       cx,bx
+    mov       dx,1
+    mov       si,2
+    mov       di,3
+    mov       ax,0cH
+    mov       ax,0cH
+    mov       ax,0cH
+    mov       ax,0cH
+    mov       bx,1
+    mov       cx,2
+    mov       dx,3
+    mov       si,4
+    mov       di,5
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

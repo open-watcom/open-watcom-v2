@@ -38,10 +38,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeFrameCreate     ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeTextCreate      ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeIconCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeStaticInit      ( Bool );
-extern void              WdeStaticFini      ( void );
+extern OBJPTR WINEXPORT  WdeFrameCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeTextCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeIconCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeStaticInit( Bool );
+extern void              WdeStaticFini( void );
 
 #endif

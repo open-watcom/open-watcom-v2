@@ -46,22 +46,22 @@
 
 _WCRTLINK unsigned int _mbctoupper( unsigned int ch )
 {
+#ifdef __NT__
     char                mbc[MB_LEN_MAX+1];
 
     mbc[1] = '\0';      // [0] and possibly [1] are set with chars
     mbc[2] = '\0';
     _mbvtop( ch, mbc );
-#ifdef __NT__
     CharUpper( mbc ); // call the Win32 API
     return( _mbsnextc( mbc ) );
 #else                               /* OS/2 and others */
-    if( _ismbblead( mbc[0] ) ) {
+    if( ch & 0xFF00 ) {
         if( __MBCodePage == 932 ) {
             return( _mbdtoupper( ch ) );
         }
         return( ch );   // we don't know what to do - just return it
     } else {
-        return( toupper( mbc[0] ) );
+        return( toupper( ch ) );
     }
 #endif
 }

@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\nsieve
+.h: $(bench_dir)\nsieve
+
+extra_cflags = -I$(bench_dir)\nsieve -I$(bench_dir)\support
+
+obj_files = nsieve.obj
+
+run: nsieve.exe .SYMBOLIC
+	nsieve
+    
+build: nsieve.exe .SYMBOLIC
+
+nsieve.exe : $(obj_files)
+	$(deflink)

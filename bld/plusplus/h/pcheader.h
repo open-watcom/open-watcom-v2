@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Pre-compiled header file support.
 *
 ****************************************************************************/
 
@@ -55,10 +54,10 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x22
+#define PHH_MINOR               0x2e
 
 #define TEXT_HEADER_SIZE        40
-#ifdef __QNX__
+#ifdef __UNIX__
 #define PHH_TEXT_HEADER         "WATCOM C++ Precompiled Header File\n\x0c\x04   "
 #else
 #define PHH_TEXT_HEADER         "WATCOM C++ Precompiled Header File\r\n\x1a   "
@@ -94,7 +93,7 @@ enum {
 #define PHH_SYSTEM_DOS          0x01
 #define PHH_SYSTEM_UNIX         0x02
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define PHH_HOST_SYSTEM         PHH_SYSTEM_UNIX
 #else
 #define PHH_HOST_SYSTEM         PHH_SYSTEM_DOS
@@ -192,8 +191,8 @@ typedef enum {
 
 #define PCHReadLocSize( tgt, src, size )        \
 {   void* cursor = CompInfo.pch_buff_cursor;    \
-    void* last = (char*)cursor + _pch_align_size(size);  \
-    if( last <= CompInfo.pch_buff_end ) {       \
+    void* last = (char *)cursor + _pch_align_size(size);\
+    if( last <= (void *)CompInfo.pch_buff_end ) {       \
         PCHTrashAlreadyRead();                  \
         tgt = cursor;                           \
         CompInfo.pch_buff_cursor = last;        \
@@ -212,7 +211,7 @@ typedef enum {
     void* end;                                  \
     buff_ptr = CompInfo.pch_buff_cursor;        \
     end = (char*)buff_ptr + sizeof( cv_index ); \
-    if( end <= CompInfo.pch_buff_end ) {        \
+    if( end <= (void *)CompInfo.pch_buff_end ) {\
         PCHTrashAlreadyRead();                  \
         p_value = (cv_index*)buff_ptr;          \
         CompInfo.pch_buff_cursor = end;         \

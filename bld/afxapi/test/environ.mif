@@ -1,0 +1,136 @@
+#
+# Test stream environment
+#
+
+!ifndef wpp_386
+!  ifdef %afxapitest_wpp_386
+!    define wpp_386 $(%afxapitest_wpp_386)
+!  endif
+!endif
+
+#
+# architectures -- 386
+#
+!ifndef arch
+!  ifdef %afxapitest_arch
+!    define arch $+$(%afxapitest_arch)$-
+!  else
+!    define arch 386
+!  endif
+!endif
+
+#
+# 386 environments
+#
+# wnt386 -- Win32 .EXE
+#
+!ifndef targ_env_386
+!  ifdef __NT386__
+!    define targ_env_386 wnt386
+!  endif
+!endif
+
+# targ_run
+targ_run_wnt386 =
+
+run_386 = $(targ_run_$(targ_env_386))
+
+run = $(run_$(arch))
+
+# targ_ext
+targ_ext_wnt386 = exe
+
+ext_386 = $(targ_ext_$(targ_env_386))
+
+exe = $(ext_$(arch))
+
+# targ_lnk
+targ_lnk_wnt386 = system nt option offset=64k
+
+lnk_any = op map,quiet
+
+lnk_386 = $(targ_lnk_$(targ_env_386)) $(lnk_any)
+
+# targ_ldb
+targ_ldb_wnt386 = debug all
+
+ldebug_386 = $(targ_ldb_$(targ_env_386))
+
+# targ_bld
+targ_bld_wnt386 = -bt=nt
+
+!ifndef wpp_386
+!  define wpp_386 wpp386
+!endif
+
+# add architecture common options
+wpp_386 += $(targ_bld_$(targ_env_386))
+
+#
+# MAKEINIT vars
+#
+proj_name = afxapitest
+host_cpu = $(arch)
+!ifdef __NT__
+!  define host_OS nt
+!else
+!  error unknown OS
+!endif
+!include cproj.mif
+
+#
+# linker
+#
+!ifdef %afxapitest_linker
+!  define linker $+$(%afxapitest_linker)$-
+!else
+!  ifndef linker
+!    define linker wlink
+!  endif
+!  ifdef use_dll
+!    loaddll wlink wlinkd.dll
+!  endif
+!endif
+
+#
+# output log file location
+#
+!ifndef log_file
+!  ifdef %afxapitest_log_file
+!    define log_file $+$(%afxapitest_log_file)$-
+!  else
+!    define log_file $(afxapitest_name).log
+!  endif
+!endif
+
+first_target : .symbolic start test
+    @%null
+
+start : .symbolic
+!ifdef dll_loaded
+    @echo using !loaddll $(dll_$(arch))
+!endif
+    @cdsay
+    @cdsay >> $(log_file)
+    %append $(log_file) TEST $(arch)/$(alt_error)
+
+clean : .symbolic global
+    @%null
+
+common_clean : .procedure
+    @if exist *.?bj rm *.?bj
+    @if exist *.err rm *.err
+    @if exist *.lnk rm *.lnk
+    @if exist *.lbc rm *.lbc
+    @if exist *.$(exe) rm *.$(exe)
+    @if exist *.dll rm *.dll
+    @if exist *.out rm *.out
+    @if exist *.sym rm *.sym
+    @if exist *.dmp rm *.dmp
+    @if exist *.map rm *.map
+    @if exist *.lst rm *.lst
+    @if exist *.log rm *.log
+    @if exist *.pdb rm *.pdb
+    @if exist *.pch rm *.pch
+    @if exist *.lib rm *.lib
+    @if exist *.res rm *.res

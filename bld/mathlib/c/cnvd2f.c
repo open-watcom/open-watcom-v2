@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Double to float conversion helper routine.
 *
 ****************************************************************************/
 
@@ -38,7 +37,7 @@
 _WMRTLINK int __cnvd2f( double *src, float *tgt )
 // return zero if ok, else non-zero
 {
-    double value = *src;
+    double  value = *src;
 
     if( value == 0 ) {
         *tgt = (float)value;

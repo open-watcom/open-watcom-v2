@@ -1,79 +1,62 @@
 proj_name = wddespy
 name = wddespy
+
+!ifndef wddespy_autodepends
+wddespy_autodepends = .AUTODEPEND
+!endif
+
 sys_windowed = 1
 
 !include cproj.mif
-#!include deftarg.mif
+!include deftarg.mif
 !include defrule.mif
 
-# Got rid of "-we" switch because FreeProcInstance() gives warning.
-cflags_all      = -zq -w4
-
-objs =  savelbox.obj mem.obj font.obj fontstr.obj srchmsg.obj log.obj &
-        pushwin.obj alias.obj toolbr.obj mark.obj ldstr.obj hint.obj &
-        mstatwnd.obj wwinhelp.obj jdlg.obj &
-        dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
-        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj about.obj
+objs =  dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj
 
 
-extra_c_flags_mem = -DNO_WPI
-extra_l_flags_win = option stack=7k option heapsize=2k lib windows.lib &
-                    lib toolhelp.lib lib ddeml.lib lib commdlg.lib &
-                    lib $(sdk_dir)\misc\ctl3d.lib
-
-extra_l_flags_nt_axp  = lib ctl3d32.lib
+extra_c_flags     = -fh
+extra_c_flags_nt  = -DNOUSE3D
 
 extra_l_flags     = option map
+extra_l_flags_nt  = option stack=100k
+extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib
 
-inc_dirs        = $(wddespy_dir);$(sdk_dir)\misc;$(watcom_dir)\h
+#extra_l_flags_nt_axp  = lib ctl3d32.lib
 
-.before:
-        @set INCLUDE=$(inc_path)
+.c: ..
+.h: ..
 
-.c: $(wddespy_dir);$(sdk_dir)\misc
-.h: $(wddespy_dir);$(sdk_dir)\misc
+inc_dirs  = -I.. -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs += -I"$(commonui_dir)/h" -I"$(wpi_dir)/h"
 
-msgh = rcstr.h
-mastermsg = rcstr.msg
-msgfiles  = $(wddespy_dir)\ddespy.msg $(sdk_dir)\misc\about.msg $(sdk_dir)\misc\log.msg &
-            $(sdk_dir)\misc\savelbox.msg $(sdk_dir)\misc\alias.msg
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
 
-resinc    = -i$(wddespy_dir)\res
-resources = $(sdk_dir)\misc\log.rc $(sdk_dir)\misc\mark.rc &
-            $(sdk_dir)\misc\alias.rc $(sdk_dir)\misc\about.dlg &
-            $(mastermsg) $(wddespy_dir)\res\cbfilt.dlg &
-            $(wddespy_dir)\res\msgfilt.dlg $(wddespy_dir)\menu.rc
-rcopts1 = -r -zk0
-rcopts2 = -k
+xlibs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
+        $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
 
-$(name).exe : $(msgh) $(objs) $(name).res
-        $(LINKER) $(lflags) name $(name).exe file { $(objs) }
+$(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_$(host_os)_$(host_cpu))
+        $(LINKER) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
 !ifeq host_CPU axp
-!ifndef on_build_machine
+!ifeq release 0
         cvpack $(name).exe
         wstrip $(name).exe $(name).exe $(name).sym
 !endif
 !endif
-        $(RC) $(rc_flags) $(rcopts2) $(name).res
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(name).res $^@
+!endif
 
-$(msgh) : $(mastermsg)
-        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+rcstr.gh : rcstrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
 
-$(mastermsg) : $(msgfiles)
-        $(cc) -zk0 -p -i=$(sdk_dir)\misc $(wddespy_dir)\ddespy.msg -fo=$(mastermsg)
+rcstrmsg.gh : ../ddespy.msg
+        $(c_pp) -zk0 $(inc_path) $[@ >$^@
 
-$(name).res : $(wddespy_dir)\$(name).rc $(resources)
-        $(RC) $(rc_flags) $(wddespy_dir)\$(name).rc -fo=$(name).res $(rcopts1) $(resinc)
+$(name).res : ../$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj @del *.?bj
-        @if exist *.lnk @del *.lnk
-        @if exist *.exe @del *.exe
-        @if exist *.lib @del *.lib
-        @if exist *.res @del *.res
-        @if exist *.clb @del *.clb
-        @if exist *.err @del *.err
-        @if exist *.sym @del *.sym
-        @if exist $(name).map @del $(name).map
-        @if exist $(msgh) @del $(msgh)
-        @if exist $(mastermsg) @del $(mastermsg)
+!include verrc.mif

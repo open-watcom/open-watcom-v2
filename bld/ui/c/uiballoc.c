@@ -41,12 +41,8 @@ void intern bframe( BUFFER *bptr )
 }
 
 
-bool intern balloc( bptr, rows, cols )
-/************************************/
-
-register        BUFFER                  *bptr;
-register        ORD                     rows;
-register        ORD                     cols;
+bool intern balloc( BUFFER *bptr, ORD rows, ORD cols )
+/****************************************************/
 {
     bptr->increment = cols;
     bptr->origin = faralloc( sizeof( PIXEL ) * rows * cols );

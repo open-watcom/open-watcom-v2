@@ -35,6 +35,7 @@
 #include <string.h>
 #include <dos.h>
 #include "tinyio.h"
+#include "packet.h"
 #define uint mumblyschwartz
 #include "dvapi.h"
 #undef uint
@@ -56,7 +57,7 @@ static int fstrlen( char far *str )
 }
 
 #pragma off(unreferenced);
-unsigned RemoteGet( void far *rec, unsigned len )
+unsigned RemoteGet( char far *rec, unsigned len )
 #pragma on(unreferenced);
 {
     char        far *buffer;
@@ -70,7 +71,7 @@ unsigned RemoteGet( void far *rec, unsigned len )
     return( buflen );
 }
 
-void RemotePut( void far *snd, unsigned len )
+void RemotePut( char far *snd, unsigned len )
 {
     mal_write( PutHandle, snd, len );
 }

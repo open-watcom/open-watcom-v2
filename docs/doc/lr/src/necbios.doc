@@ -1,0 +1,891 @@
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_disk(unsigned service,
+			struct diskinfo_t *diskinfo);
+
+	    service: _DISK_ALTERNATE	_DISK_BADTRACK	    _DISK_DIAGNOSTIC
+		     _DISK_FORMATDRIVE	_DISK_FORMATTRACK   _DISK_INITIALIZE
+		     _DISK_OPMODE	_DISK_RECALIBRATE   _DISK_READ
+		     _DISK_READDDAM	_DISK_READID	    _DISK_RETRACT
+		     _DISK_SEEK 	_DISK_SENSE	    _DISK_VERIFY
+		     _DISK_WRITE	_DISK_WRITEDDAM
+
+	    <sector> etc. means the field of the structure diskinfo_t in the
+	    description below.
+
+	    Constant		    The function of _bios_disk
+
+	    _DISK_ALTERNATE	It set s alternative track. The alternative track
+				address is stored in the area pointed to by <buffer>.
+				It can be used when _CMD_HD is in <command>.
+				If one of the other symbol constants is in <command>,
+				it is error, but it does not return the value which shows
+				errors.
+
+	    _DISK_BADTRACK	It formats bad tracks. Befer this you should set
+				alternative tracks by _DISK_ALTERNATE.
+				It can be used when _CMD_HD is in <command>.
+
+	    _DISK_DIAGNOSTIC	It reads data into <buffer> for diagnostis.
+				It can be used when  _CMD_2HD or _CMD_2DD is
+				in <command>.
+				The result status is stored in the area pointed to
+				by <result>.
+
+	    _DISK_FORMATDRIVE	It formats a disk. Interleave facter is set in
+				<data_len>. it can be used when _CMD_2D
+				or _CMD_HD is in <command>.
+
+	    _DISK_FORMATTRACK	It formats one track.
+				The sector ID information written in the track is set
+				in the area pointed to by <buffer>. It can be used
+				when one of _CMD_2HD, _CMD_2DD or _CMD_HD
+				is in <command>.
+
+	    _DISK_INITIALIZE	It initializes <drive>. It does not use the field <drive>
+				and <command> only. It can be used when one
+				of _CMD_2HD, _CMD_2DD, _CMD_2D or _CMD_HD
+				is in <command>. It is different from the case the
+				other symbol constant is specified, it does not return
+				the status information when it is error.
+
+	    _DISK_OPMODE	It specifies the action when 640 K bytes of
+				floppy disk is accessed under 1 mega bytes interface
+				mode. It can be used when _CMD_2HD, _CMD_2DD
+				or _CMD_2D is in <command>.
+
+	    _DISK_READ		It reads data from the <sector> of the <drive>
+				into <buffer> by <nsectors> sectors. It can be used
+				when _CMD_2HD, _CMD_2DD, _CMD_2D, _CMD_HD
+				is in <command>.
+				The result status information is in the area pointed
+				by <result>.
+
+	    _DISK_READDDAM	It reads Deleted Data Address Marked data
+				into <buffer>. It can be used when _CMD_2HD or
+				_CMD_2DD is in <command>.
+				The result status information is in the area pointed to
+				by <result>.
+
+	    _DISK_READID	It reads ID information into <result>. It can be used
+				when _CMD_2HD or _CMD_2DD is in <command>.
+
+	    _DISK_RECALIBRATE	It seeks cylinder 0 of <drive>. It can be used when
+				_CMD_2HD, _CMD_2DD or _CMD_HD is in <command>.
+
+	    _DISK_RETRACT	It retracts the head of disk. It canbe used
+				when _CMD_HD is in <command>.
+
+	    _DISK_SEEK		It seeks the disk. It can be used when _CMD_2HD
+				or _CMD_2DD is in <command>.
+				The result status informaion is stored in the area pointed
+				to by <result>.
+
+	    _DISK_SENSE 	It checks the status of <drive>. It uses the fields
+				<drive> and <command> only.
+				It can be used when _CMD_2HD, _CMD_2DD,
+				_CMD_2D or _CMD_HD is in <command>.
+
+	    _DISK_VERIFY	It reads data from <sector> of <drive> by <nsectors>
+				sectors. It does not store the data into memory.
+				It can be used when _CMD_2HD, _CMD_2DD,
+				_CMD_2D or _CMD_HD is in <command>.
+				The result status information is stored in the area
+				pointed to by <result>.
+
+	    _DISK_WRITE 	It writes data stored in the area pointed to
+				by <buffer> to <sector> of <drive> by <nsectors>
+				sectors. It can be used when CMD_2HD, _CMD_2DD,
+				_CMD_2D or _CMD_HD is in <command>
+				The result status information is stored in the area
+				pointed to by <result>.
+
+	    _DISK_WRITEDDAM	It writes Deleted Data Address Marked data.
+				It can be used when _CMD_2HD or _CMD_2DD is
+				in <command>.
+				The result status information is stored in the area
+				pointed to by <result>.
+
+  Structure:
+
+  struct diskinfo_t
+  {
+		unsigned command;	/* Command	   */
+		unsigned drive; 	/* The drive number	*/
+		unsigned head;		/* The head number	 */
+		unsigned cylinder;	/* The cylinder number	   */
+		unsigned data_len;	/* The data length	   */
+		unsigned sector_len;	/* The sector length	     */
+		unsigned sector;	/* The start sector number   */
+		unsigned nsectors;	/* The number of sectors	 */
+		void _far *buffer;	/* The data buffer   */
+		void _far *result;	/* The result buffer */
+  };
+
+Returns: The low byte is status information. The upper byte is zero if
+no error, non zero if error.
+
+_bios_disk routine makes disk access operations specified in
+<service>. You must specify the information needed for access in
+structure diskinfo_t type of <diskinfo>.
+Please make caution for use of this function because they access disks
+directly.
+
+  The argument <service> has one of the following symbol constants.
+
+    _DISK_ALTERNATE	_DISK_BADTRACK	    _DISK_DIAGNOSTIC
+    _DISK_FORMATDRIVE	_DISK_FORMATTRACK   _DISK_INITIALIZE
+    _DISK_OPMODE	_DISK_RECALIBRATE   _DISK_READ
+    _DISK_READDDAM	_DISK_READID	    _DISK_RETRACT
+    _DISK_SEEK		_DISK_SENSE	    _DISK_VERIFY
+    _DISK_WRITE 	_DISK_WRITEDDAM
+
+ Return Value
+
+If this function finishes normally, it returns zero in the upper byte
+and the status information in the lower byte. If error, the upper byte
+is not zero and the lower byte is the status information. When
+_DISK_INITIALIZE is specified in <service> and error occurs, the
+lower byte is zero. When it is _DISK_ALTERNATE, error value is not
+returned.
+
+The contents of status information are different depending the
+argument <service>. It depends on some of symbol constants in
+the argument <service> if the result status is stored in the field
+result of structure diskinfo_t type or not. The meaning of the status
+or result information is the below.
+
+    Value     Status information or
+	    result status information
+
+    0x00    Normal end/Ready status
+    0x10    Control mark/Inhibit to write
+    0x20    DMA boundary
+    0x30    End of cylinder
+    0x40    Check device
+    0x50    Over run
+    0x60    Not ready
+    0x70    Disable to write
+    0x80    error
+    0x90    Time out
+    0xA0    Data error ( Control information )
+    0xB0    Data error(Data)
+    0xC0    No data
+    0xD0    Bad Cylinder
+    0xE0    Cannot find address mark(Control information)
+    0xF0    Cannot find address mark(Data)
+
+    0x01    Double side diskette is set
+
+    0x08    Normal data
+    0x78    Invalid disk address
+    0x88    Direct access to alternative track
+    0xB8    Data error
+    0xC8    Seek error
+    0xD8    Cannot read alternative track
+
+/* DISK.C illustrates low-level disk access using functions:
+ *	_bios_disk					     (DOS-only)
+ *
+ */
+
+#include <stdio.h>
+#include <conio.h>
+#include <bios.h>
+#include <dos.h>
+#include <stdlib.h>
+
+char _far diskbuf[ 2048 ], result[ 16 ];
+
+void main( int argc, char *argv[] )
+{
+    unsigned status = 0, i;
+    struct diskinfo_t di;
+    unsigned char _far *p, linebuf[ 17 ];
+
+    if ( argc != 5 ) {
+	printf( "  SYNTAX: DISK <drivenumber> <head> <track> <sector>" );
+	exit( 1 );
+    }
+    di.command	  = _CMD_SEEK | _CMD_MF | _CMD_MT | _CMD_RETRY
+			      | _CMD_2HD;
+    di.drive	  = atoi( argv[ 1 ] );
+    di.head	  = atoi( argv[ 2 ] );
+    di.cylinder   = atoi( argv[ 3 ] );
+    di.sector	  = atoi( argv[ 4 ] );
+    di.data_len   = 2048;
+    di.sector_len = 3;
+    di.buffer	  = diskbuf;
+    di.result	  = result;
+
+    /* Read disk */
+    status = _bios_disk( _DISK_READ, &di );
+
+    /* Display one sector. */
+    if ( status &= 0x00ff )
+	printf( "Error: 0x%.2x\n", status );
+    else {
+	for ( p = diskbuf, i = 0;
+	       p < ( diskbuf + ( 128 << di.sector_len ) ); p++ ) {
+	    linebuf[ i++ ] = ( *p >= 0x20 && *p <= 0x7f ) ? *p : '.';
+	    printf( "%.2x ", *p );
+	    if ( i == 16 ) {
+		linebuf[ i ] = '\0';
+		printf( " %16s\n", linebuf );
+		i = 0;
+	    }
+	}
+    }
+    exit( 1 );
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_equiplist(void);
+
+  Returns:  The 16-bit status word which indicate installed devices installed
+
+  _bios_equiplist  routine checks current installed hardware and peripheral devices.
+
+  Return value
+
+It returns bit sequence like the following which shows installed devices.
+
+    Bit  Meaning
+
+    0	    Reserved
+    1	    If true (1), math co-processor is installed.
+    2	    Reserved
+    3-7     The number of Installed disk drive
+	    (00000=0 drives, 00001=1 drive etc).
+    8	    If true ( 1 ), a mouse is installed.
+    9-11    The number of installed RS-232C serial port.
+    12	    If true ( 1 ), GP-IB is installed.
+    13	    If true ( 1 ), a sound board is installed.
+    14-15   The number of installed printers
+
+/* SYSINFO.C illustrates miscellaneous DOS and BIOS status functions
+ * including:
+ *	_dos_getdrive	    _dos_setdrive	_dos_getdiskfree
+ *	_bios_memsize	    _bios_equiplist	_bios_printer
+ *							       (DOS-only)
+ * See DISK.C for another example of _dos_getdiskfree.
+ *
+ * Also illustrated:
+ *	union		    bitfield struct
+ */
+
+#include <dos.h>
+#include <bios.h>
+#include <conio.h>
+#include <stdio.h>
+#define LPT1 0
+
+void main()
+{
+    struct diskfree_t drvinfo;
+    unsigned drive, drivecount, memory, pstatus;
+    union {			     /* Access equipment either as:  */
+	unsigned u;		     /* unsigned or		    */
+	struct {		     /* bit fields		    */
+	    unsigned reserved1:1;    /* Reserved		    */
+	    unsigned coprocessor:1;  /* Coprocessor?		    */
+	    unsigned reserved2:1;    /* Reserved		    */
+	    unsigned disks:5;	     /* Drives			    */
+	    unsigned mouse:1;	     /* Mouse			    */
+	    unsigned comports:3;     /* Serial ports		    */
+	    unsigned gpib:1;	     /* GP-IB board		    */
+	    unsigned sound:1;	     /* Sound board		    */
+	    unsigned printers:2;     /* Number of printers	    */
+	} bits;
+    } equip;
+    char    y[] = "YES", n[] = "NO";
+
+    /* Get current drive. */
+    _dos_getdrive( &drive );
+    printf( "Current drive:\t\t\t%c:\n", 'A' + drive - 1 );
+
+    /* Set drive to current drive in order to get number of drives. */
+    _dos_setdrive( drive, &drivecount );
+
+    _dos_getdiskfree( drive, &drvinfo );
+    printf( "Disk space free:\t\t%ld\n",
+	     ( long )drvinfo.avail_clusters *
+	     drvinfo.sectors_per_cluster *
+	     drvinfo.bytes_per_sector );
+
+    /* Get new drive and number of logical drives in system. */
+    _dos_getdrive( &drive );
+    printf( "Number of logical drives:\t%d\n", drivecount );
+
+    memory = _bios_memsize();
+    printf( "Memory:\t\t\t\t%dK\n", memory );
+
+    equip.u = _bios_equiplist();
+
+    printf( "Disk drives:\t\t\t%d\n", equip.bits.disks );
+    printf( "Coprocessor:\t\t\t%s\n", equip.bits.coprocessor ? y : n );
+    printf( "Mouse driver:\t\t\t%s\n", equip.bits.mouse ? y : n );
+    printf( "Serial ports:\t\t\t%d\n", equip.bits.comports );
+    printf( "GP-IB interface:\t\t%s\n", equip.bits.gpib ? y : n );
+    printf( "FM-sound:\t\t\t%s\n", equip.bits.sound ? y : n );
+    printf( "Number of printers:\t\t%d\n", equip.bits.printers );
+
+    /* Fail if any error bit is on, or if either operation bit is off. */
+    pstatus = _bios_printer( _PRN_STATUS, 0 );
+    if ( pstatus & 0x01 )
+	pstatus = 0;
+    else
+	pstatus = 1;
+    printf( "Printer available:\t\t%s\n", pstatus ? y : n );
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_keybrd(unsigned service,
+			unsigned char *keytable);
+
+	    service: _KEYBRD_INITIALIZE  _KEYBRD_READ	     _KEYBRD_READY
+		     _KEYBRD_SENSE	 _KEYBRD_SHIFTSTATUS
+
+  Returns: The return value is different depending on specified the
+	value in <service>
+
+  _bios_keybrd	routine  executes keyboard operation specified in <service>
+
+The argument  <service>  indicates one of the below symbol constants.
+
+    _KEYBRD_READ	   _KEYBRD_READY
+    _KEYBRD_SHIFTSTATUS    _KEYBRD_INITIALIZE
+    _KEYBRD_SENSE
+
+  Returned value
+
+  The return value is different depending on specified operation in
+  <service>. Please refer topics of each symbol constants.
+
+ Constant: _KEYBRD_INITIALIZE  _KEYBRD_READ	   _KEYBRD_READY
+	    _KEYBRD_SENSE	_KEYBRD_SHIFTSTATUS
+
+  Summary: Constants of the argument <service> of _bios_keybrd.
+
+	    One of the below symbol constants is specified.
+
+	    Constants		     The function of _bios_keybrd
+
+	    _KEYBRD_INITIALIZE	It initializes keyboard interface.
+				It initializes the memory area and the controller.
+				It enable to  input from keyboard. It returns no values.
+
+	    _KEYBRD_READ	It reads key data code in the top of the key data buffer.
+				It waits for input if no data is in the key data buffer.
+				The lower byte of the read data is ASCII code
+				and the upper byte is the scan code
+
+	    _KEYBRD_READY	It checks whether there are key code in key data buffer.
+				If key data is in the key data buffer, it operates as the same function as
+				_KEYBRD_READ. But the status of the buffer is not changed.
+				It returns zero if no data.
+
+	    _KEYBRD_SENSE	It checks the status of key input and returns it
+				in the 16 bytes of area pointed to by the argument <keytable>.
+				The each byte respond to the code group.
+
+	    _KEYBRD_SHIFTSTATUS It checks whether SHIFT, CAPS, KANA, GRPH,
+				CTRL keys are pressed.
+				The lower byte of the return value shows the pressed key.
+
+				Bit  Pressed key
+
+				0     SHIFT
+				1     CAPS
+				2     KANA
+				3     GRPH
+				4     CTRL
+				5-7   Not used
+
+/* KEYBRD.C illustrates:
+ *	_bios_keybrd						(DOS-only)
+ */
+
+#include <bios.h>
+#include <stdio.h>
+#include <ctype.h>
+
+void main()
+{
+    unsigned key, shift, scan, ascii = 0;
+    int     kread = _KEYBRD_READ;
+    int     kready = _KEYBRD_READY;
+    int     kshiftstatus = _KEYBRD_SHIFTSTATUS;
+
+    /* Read and display keys until ESC is pressed. */
+    while ( ascii != 27 ) {
+	/*
+	 * Drain any keys in the keyboard type-ahead buffer, then get
+	 * the current key. If you want the last key typed rather
+	 * than the key currently being typed, omit the initial loop.
+	 */
+	while ( _bios_keybrd( kready, 0 ) )
+	    _bios_keybrd( kread, 0 );
+	key = _bios_keybrd( kread, 0 );
+
+	/* Get shift state. */
+	shift = _bios_keybrd( kshiftstatus, 0 );
+
+	/* Split key into scan and ascii parts. */
+	scan = key >> 8;
+	ascii = key & 0x00ff;
+
+	/* Categorize key. */
+	if ( ( ascii == 0 ) || ( ascii == 0xE0 ) )
+	    printf( "ASCII: no\tChar: NA\t" );
+	else if ( ascii < 32 )
+	    printf( "ASCII: yes\tChar: ^%c\t", ascii + '@' );
+	else
+	    printf( "ASCII: yes\tChar: %c \t", ascii );
+	printf( "Code: %.2X\tScan: %.2X\t Shift: %.4X\n",
+						   ascii, scan, shift );
+    }
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_memsize(void);
+
+  Returns:  Memory block size (unit:1K bytes)
+
+  _bios_memsize checks the size of total main memory
+
+  Return value
+
+    It returns the size of the installed total main memory by 1 K block
+    unit. The maximum size is 640, which means 640 K bytes.
+
+/* SYSINFO.C illustrates miscellaneous DOS and BIOS status functions
+ * including:
+ *	_dos_getdrive	    _dos_setdrive	_dos_getdiskfree
+ *	_bios_memsize	    _bios_equiplist	_bios_printer
+ *							       (DOS-only)
+ * See DISK.C for another example of _dos_getdiskfree.
+ *
+ * Also illustrated:
+ *	union		    bitfield struct
+ */
+
+#include <dos.h>
+#include <bios.h>
+#include <conio.h>
+#include <stdio.h>
+#define LPT1 0
+
+void main()
+{
+    struct diskfree_t drvinfo;
+    unsigned drive, drivecount, memory, pstatus;
+    union {			     /* Access equipment either as:  */
+	unsigned u;		     /* unsigned or		    */
+	struct {		     /* bit fields		    */
+	    unsigned reserved1:1;    /* Reserved		    */
+	    unsigned coprocessor:1;  /* Coprocessor?		    */
+	    unsigned reserved2:1;    /* Reserved		    */
+	    unsigned disks:5;	     /* Drives			    */
+	    unsigned mouse:1;	     /* Mouse			    */
+	    unsigned comports:3;     /* Serial ports		    */
+	    unsigned gpib:1;	     /* GP-IB board		    */
+	    unsigned sound:1;	     /* Sound board		    */
+	    unsigned printers:2;     /* Number of printers	    */
+	} bits;
+    } equip;
+    char    y[] = "YES", n[] = "NO";
+
+    /* Get current drive. */
+    _dos_getdrive( &drive );
+    printf( "Current drive:\t\t\t%c:\n", 'A' + drive - 1 );
+
+    /* Set drive to current drive in order to get number of drives. */
+    _dos_setdrive( drive, &drivecount );
+
+    _dos_getdiskfree( drive, &drvinfo );
+    printf( "Disk space free:\t\t%ld\n",
+	     ( long )drvinfo.avail_clusters *
+	     drvinfo.sectors_per_cluster *
+	     drvinfo.bytes_per_sector );
+
+    /* Get new drive and number of logical drives in system. */
+    _dos_getdrive( &drive );
+    printf( "Number of logical drives:\t%d\n", drivecount );
+
+    memory = _bios_memsize();
+    printf( "Memory:\t\t\t\t%dK\n", memory );
+
+    equip.u = _bios_equiplist();
+
+    printf( "Disk drives:\t\t\t%d\n", equip.bits.disks );
+    printf( "Coprocessor:\t\t\t%s\n", equip.bits.coprocessor ? y : n );
+    printf( "Mouse driver:\t\t\t%s\n", equip.bits.mouse ? y : n );
+    printf( "Serial ports:\t\t\t%d\n", equip.bits.comports );
+    printf( "GP-IB interface:\t\t%s\n", equip.bits.gpib ? y : n );
+    printf( "FM-sound:\t\t\t%s\n", equip.bits.sound ? y : n );
+    printf( "Number of printers:\t\t%d\n", equip.bits.printers );
+
+    /* Fail if any error bit is on, or if either operation bit is off. */
+    pstatus = _bios_printer( _PRN_STATUS, 0 );
+    if ( pstatus & 0x01 )
+	pstatus = 0;
+    else
+	pstatus = 1;
+    printf( "Printer available:\t\t%s\n", pstatus ? y : n );
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_printer(unsigned service,
+			unsigned char *databyte);
+
+	    service: _PRN_INIT	_PRN_WRITE  _PRN_STRING  _PRN_STATUS
+
+  Returns:  It is different depending on <service>.
+
+  _bios_printer routine operates things specified by <service>.
+
+One of the following symbol constants is specified in the argument  <service>.
+
+    _PRN_INIT	    _PRN_STATUS     _PRN_WRITE	    _PRN_STRING
+
+Return value
+
+It is different depending on <service>. Please refer topics of each symbol constants
+
+ Constant: _PRN_INIT	   _PRN_STATUS	   _PRN_STRING	   _PRN_WRITE
+
+  Summary:  Constants of the argument <service> of _bios_printer
+
+	    One of the below symbol constants is specified.
+
+	    Constants		     The function of _bios_printer
+
+	    _PRN_INIT		It initializes the status area and the controller.
+				The bit 0 of the return value shows the following contents.
+
+				Value  Meaning
+
+				1   Enable to output data
+				0   Disable to output data
+
+	    _PRN_WRITE		It putout one byte of data from the area pointed to
+				by the argument <data>.
+				The bit 0 of the return value shows the following contents.
+
+				Value  Meaning
+
+				1   Complete to output data / Enable to output data
+				0   Data is not output.
+
+				The bit 0 of the return value shows the following contents.
+
+				Value  Meaning
+
+				1   Time out / The data is not output.
+				0   Complete to output data
+
+	    _PRN_STRING 	It output the data in the area pointed to
+				by the argument <data> till the first null character.
+				It returns zero if no errors and the number of characters
+				which is not output if errors.
+
+	    _PRN_STATUS 	It gets the status information of the printer.
+
+				The bit 0 of the return value shows the following contents.
+
+				Value  Meaning
+
+				1   Enable to output data
+				0   Disable to output data
+
+/* SYSINFO.C illustrates miscellaneous DOS and BIOS status functions
+ * including:
+ *	_dos_getdrive	    _dos_setdrive	_dos_getdiskfree
+ *	_bios_memsize	    _bios_equiplist	_bios_printer
+ *							       (DOS-only)
+ * See DISK.C for another example of _dos_getdiskfree.
+ *
+ * Also illustrated:
+ *	union		    bitfield struct
+ */
+
+#include <dos.h>
+#include <bios.h>
+#include <conio.h>
+#include <stdio.h>
+#define LPT1 0
+
+void main()
+{
+    struct diskfree_t drvinfo;
+    unsigned drive, drivecount, memory, pstatus;
+    union {			     /* Access equipment either as:  */
+	unsigned u;		     /* unsigned or		    */
+	struct {		     /* bit fields		    */
+	    unsigned reserved1:1;    /* Reserved		    */
+	    unsigned coprocessor:1;  /* Coprocessor?		    */
+	    unsigned reserved2:1;    /* Reserved		    */
+	    unsigned disks:5;	     /* Drives			    */
+	    unsigned mouse:1;	     /* Mouse			    */
+	    unsigned comports:3;     /* Serial ports		    */
+	    unsigned gpib:1;	     /* GP-IB board		    */
+	    unsigned sound:1;	     /* Sound board		    */
+	    unsigned printers:2;     /* Number of printers	    */
+	} bits;
+    } equip;
+    char    y[] = "YES", n[] = "NO";
+
+    /* Get current drive. */
+    _dos_getdrive( &drive );
+    printf( "Current drive:\t\t\t%c:\n", 'A' + drive - 1 );
+
+    /* Set drive to current drive in order to get number of drives. */
+    _dos_setdrive( drive, &drivecount );
+
+    _dos_getdiskfree( drive, &drvinfo );
+    printf( "Disk space free:\t\t%ld\n",
+	     ( long )drvinfo.avail_clusters *
+	     drvinfo.sectors_per_cluster *
+	     drvinfo.bytes_per_sector );
+
+    /* Get new drive and number of logical drives in system. */
+    _dos_getdrive( &drive );
+    printf( "Number of logical drives:\t%d\n", drivecount );
+
+    memory = _bios_memsize();
+    printf( "Memory:\t\t\t\t%dK\n", memory );
+
+    equip.u = _bios_equiplist();
+
+    printf( "Disk drives:\t\t\t%d\n", equip.bits.disks );
+    printf( "Coprocessor:\t\t\t%s\n", equip.bits.coprocessor ? y : n );
+    printf( "Mouse driver:\t\t\t%s\n", equip.bits.mouse ? y : n );
+    printf( "Serial ports:\t\t\t%d\n", equip.bits.comports );
+    printf( "GP-IB interface:\t\t%s\n", equip.bits.gpib ? y : n );
+    printf( "FM-sound:\t\t\t%s\n", equip.bits.sound ? y : n );
+    printf( "Number of printers:\t\t%d\n", equip.bits.printers );
+
+    /* Fail if any error bit is on, or if either operation bit is off. */
+    pstatus = _bios_printer( _PRN_STATUS, 0 );
+    if ( pstatus & 0x01 )
+	pstatus = 0;
+    else
+	pstatus = 1;
+    printf( "Printer available:\t\t%s\n", pstatus ? y : n );
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_serialcom(unsigned service,
+			unsigned port, struct com_t *serialcom);
+
+	    service: _COM_COMMAND   _COM_GETDTL   _COM_INIT    _COM_INITX
+		     _COM_RECEIVE   _COM_SEND	  _COM_STATUS
+
+	    port:    _COM_CH1	_COM_CH2   _COM_CH3
+
+  Returns:  It returns zero if no error, non-zero if error.
+	    It is different in the structure com_t depending on <service>.
+
+  _bios_serialcom routine operates serial ports by operations specified
+  in <service>.  The argument <port> shows the operated serial port which
+  is one of _COM_CH1,_COM_CH2 or _COM_CH3. The information for operation is
+  specified in <serialcom> of the structure com_t.
+
+One of the following symbol constants is specified in <service>.
+
+    _COM_COMMAND   _COM_GETDTL	 _COM_INIT    _COM_INITX
+    _COM_RECEIVE   _COM_SEND	 _COM_STATUS
+
+Return value
+
+It returns zero if no errors, non-zero if errors. The value stored in
+the structure com_t is different depending on <service>. Please refer
+topics about symbol constants.
+
+ Constant: _COM_COMMAND    _COM_GETDTL	   _COM_INIT	   _COM_INITX
+	    _COM_RECEIVE    _COM_SEND	    _COM_STATUS
+
+  Summary:  Constants of the argument <service> of _bios_serialcom
+
+	    One of the below symbol constants is specified.
+
+	    Constants		     The function of _bios_serialcom
+
+	    _COM_COMMAND    It outputs the command information.
+			   It uses the field command of the structure com_t only.
+
+	    _COM_GETDTL     It gets the data length of the valid data in the receive buffer.
+			    The received data length is stored in the field size of the structure com_t.
+
+	    _COM_INIT	    It initializes the serial port specified in the argument <port>.
+			    It uses all fields of the structure com_t.
+			    When _COM_CH2 or _COM_CH3 is specified in the argument <port>,
+			    the field baud of the structure com_t is ignored.
+
+	    _COM_INITX	    It is the same function as _COM_INIT
+			    except it can set X parameter ( flow control ).
+
+	    _COM_RECEIVE    It received data. It stores the received data
+			    in the field buffer+0, the status in buffer+1 if no errors.
+
+	    _COM_SEND	    It sends one byte of data in the field buffer
+			    of the structure com_t
+
+	    _COM_STATUS     It gets the status of the controller and the system port.
+			    It stores the information of the controller information
+			    in the field buffer+0 and the system port information
+			    in the field buffer+1 of the structure com_t.
+
+			    The controller information is the following.
+
+			    Bit  Meaning  In the case of 1  In the case of  0
+
+			    0	 Send status	      Ready	  Busy
+			    1	 Receive status       Ready	  Busy
+			    2	 Send buffer	      Empty	  Full
+			    3	 Parity error	      Error	  No error
+			    4	 Overrun error	      Error	  No error
+			    5	 Framing error	      Error	  No error
+			    6	 Detect break status  Detect	  Not detect
+			    7	 Data set ready       On	  Off
+
+			    The system port information is is the following.
+
+			    Bit  Meaning		   1	       0
+
+			    0-4  Not used
+			    5	 Received carrier detect  Not detect  Detect
+			    6	 Send			  Disable     Enable
+			    7	 Receive		  No	      Yes
+
+  Structure:
+
+  struct com_t
+  {
+		 unsigned baud; 	 /* Baud rate		*/
+		 unsigned mode; 	 /* Mode set	       */
+		 unsigned command;	 /* Command specified	      */
+		 unsigned tx_time;	 /* The period od time out to send */
+		 unsigned rx_time;	 /* The period od time out to receive */
+		 unsigned size; 	 /* Buffer size to receive   */
+		 void _far *buffer;	 /* Pointer to receive buffer	      */
+  };
+
+/* COM.C illustrates serial port access using function:
+ *	_bios_serialcom 					(DOS-only)
+ */
+
+#include <bios.h>
+#include <stdio.h>
+
+void main()
+{
+    unsigned  status;
+
+    status = _bios_serialcom( _COM_STATUS, _COM_CH1, 0 );
+
+    /*
+     * Report status of serial port and test whether there is a
+     * responding device (such as a modem) for each. If data-set-ready
+     * and clear-to-send bits are set, a device is responding.
+     */
+    printf( "COM status: %.4X\tActive: %s\n",
+	   status, ( status & 0x0003 ) ? "YES" : "NO" );
+}
+
+------------------------------------------------------------------------------
+  Include:  <bios.h>
+
+  Syntax:   unsigned _bios_timeofday(unsigned service, char *timeval);
+
+	    service: _TIME_GETCLOCK  _TIME_SETCLOCK
+
+  Returns:  It returns zero if no errors, non-zero if errors
+
+  _bios_timeofday routine gets or sets system clocks. _TIME_GETCLOCK or
+  _TIME_SETCLOCK is specified in the argument <service>.
+
+the area pointed by  the argument  <timeval> specifies to get or set
+the system clock. This area is assigned like the below.
+
+    timeval+0	Year (BCD 00-99)
+    timeval+1	The upper 4 bit is month   ( 1-12 hex)
+		The lower 4 bits is day ( 0-6 hex)
+    timeval+2	date (BCD 1-31)
+    timeval+3	hours (BCD 0-23)
+    timeval+4	minutes (BCD 0-59)
+    timeval+5	seconds (BCD 0-59)
+
+Return value
+
+It returns zero if no errors, non-zero if errors.
+
+/* SIEVE.C illustrates timing functions including:
+ *	clock		difftime	    _bios_timeofday
+ *
+ * In addition to the timing use shown here, these functions can be
+ * used for delay loops as shown for the clock function
+ * in BEEP.C.
+ */
+
+#include <time.h>
+#include <stdio.h>
+#include <bios.h>
+#define TICKPERSEC	18.2
+
+int	mark[ 10000 ];
+
+void main()
+{
+    time_t   tstart, tend;    /* For difftime	      */
+    clock_t  cstart, cend;    /* For clock	      */
+    long     bstart, bend;    /* For _bios_timeofday  */
+    register int i, loop;
+    int      n, num, step;
+
+    /* Start timing. */
+    printf( "Working...\n" );
+    time( &tstart );  /* Use time and difftime for timing to seconds   */
+    cstart = clock(); /* Use clock for timing to hundredths of seconds */
+#if defined( DOS )    /* Define DOS to use _bios_timeofday	       */
+    _bios_timeofday( _TIME_GETCLOCK, &bstart );
+#endif
+    /* Do timed Sieve of Erotosthenes. */
+    for ( loop = 0; loop < 250; ++loop )
+	for ( num = 0, n = 3; n < 10000; n += 2 )
+	    if ( !mark[ n ] ) {
+		step = 2 * n;
+		for ( i = 3 * n; i < 10000; i += step )
+		    mark[ i ] = -1;
+		++num;
+	    }
+    /*
+     * End timing and print results. Note that _bios_timeofday doesn't
+     * handle midnight rollover.
+     */
+    time( &tend );
+    printf( "\ndifftime:\t\t%4.2f seconds to find %d primes 50 times\n",
+	     difftime( tend, tstart ), num );
+    cend = clock();
+    printf( "\nclock:\t\t\t%4.2f seconds to find %d primes 50 times\n",
+	     ( ( float )cend - cstart ) / CLK_TCK, num );
+
+#if defined( DOS )
+    _bios_timeofday( _TIME_GETCLOCK, &bend );
+    printf( "\n_bios_timeofday:\t%4.2f seconds",
+	     ( ( float )bend - bstart ) / TICKPERSEC );
+    printf( " to find %d primes 50 times\n", num );
+
+#endif
+}

@@ -36,11 +36,11 @@ ANALYSE.C -- analyse parsed tree of tokens
           -- convert parse tree into form that can be directly emitted
              using IcEmitExpr
 */
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
 
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "memmgr.h"
 #include "stringl.h"
 #include "cgfront.h"
@@ -72,7 +72,6 @@ ANALYSE.C -- analyse parsed tree of tokens
 
 typedef enum            // OPAC -- operation actions
 {   REQD_INT_LEFT       // - required: integer on left
-,   REQD_INT_INTREF_LEFT// - required: integer or integer ref on left
 ,   REQD_INT_RIGHT      // - required: integer on right
 ,   REQD_LVALUE_LEFT    // - required: lvalue on left
 ,   REQD_NOT_ENUM_LEFT  // - required: left must not be enum variable
@@ -800,7 +799,7 @@ static OPAC opac_OPEQ_PTR[]     =   {   DIAG_FUNC_LEFT
                                     };
 
 static OPAC opac_OPEQ_INT[]     =   {   REQD_LVALUE_LEFT
-                                    ,   REQD_INT_INTREF_LEFT
+                                    ,   REQD_INT_LEFT
                                     ,   REQD_INT_RIGHT
                                     ,   REQD_NOT_ENUM_LEFT
                                     //,   REQD_NOT_BOOL_LEFT
@@ -1321,33 +1320,37 @@ static void warnPointerZero(    // WARN IF POINTER COMPARISON TO 0 IS CONST
     }
 }
 
-static char numSize( type_id id ) {     // NUMSIZE - number of bits
-// return 0 not a num, else number of bits | 0x80 if signed
-    char size;
+static int numSize( type_id id ) {     // NUMSIZE - number of bits
+// return 0 not a num, else number of bits | SIGN_BIT if signed
+    int     size;
 
     size = 0;
     switch( id ) {
     case TYP_SCHAR:
-        size = 0x80;
+        size = SIGN_BIT;
     case TYP_UCHAR:
         size |= 8;
         break;
     case TYP_SSHORT:
-        size = 0x80;
+        size = SIGN_BIT;
     case TYP_USHORT:
         size |= 16;
         break;
     case TYP_SLONG:
-        size = 0x80;
+        size = SIGN_BIT;
     case TYP_ULONG:
     case TYP_POINTER:
     case TYP_FUNCTION:
     case TYP_MEMBER_POINTER:
         size |= 32;
         break;
+    case TYP_SLONG64:
+        size = SIGN_BIT;
+    case TYP_ULONG64:
+        size |= 64;
+        break;
     case TYP_SINT:
-    case TYP_BITFIELD: // doesn't check ranges depending on number of bits
-        size = 0x80;
+        size = SIGN_BIT;
     case TYP_UINT:
 #if TARGET_INT == 2
         size |= 16;
@@ -1356,7 +1359,29 @@ static char numSize( type_id id ) {     // NUMSIZE - number of bits
 #endif
         break;
     }
-    return size;
+    return( size );
+}
+
+static int numSizeType( TYPE typ ) {     // NUMSIZE - number of bits
+// return 0 not a num, else number of bits | SIGN_BIT if signed
+    int     size;
+
+    size = numSize( typ->id );
+    if( typ->id == TYP_BITFIELD ) {
+        size = typ->u.b.field_width;
+        switch( typ->of->id ) {
+        case TYP_SCHAR:
+        case TYP_SSHORT:
+        case TYP_SINT:
+        case TYP_SLONG:
+        case TYP_SLONG64:
+            size |= SIGN_BIT;
+            break;
+        default:
+            break;
+        }
+    }
+    return( size );
 }
 
 static CGOP commRelOp( CGOP cgop ) {
@@ -1384,17 +1409,18 @@ static CGOP commRelOp( CGOP cgop ) {
 
 void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
 {
-    TYPE        op1_type, op2_type, result_type;
-    long        val, low, high;
-    int         op1_size, result_size;
-    cmp_result  ret;
-    boolean     rev_ret;
-    rel_op      rel;
+    TYPE            op1_type, op2_type, result_type;
+    signed_64       val, low, high;
+    int             op1_size, result_size;
+    cmp_result      ret;
+    boolean         rev_ret;
+    rel_op          rel;
+    char            num1[25], num2[25];
+    INT_CONSTANT    icon;
 
     op1_type = TypedefModifierRemove( op1->type );
     op2_type = TypedefModifierRemove( op2->type );
-    val = NodeConstantValue( op2 );
-    op1_size = numSize( op1_type->id );
+    op1_size = numSizeType( op1_type );
     if( op1_size != 0 ) {
         result_type = TypeBinArithResult( op1_type, op2_type );
         if( result_type->id == TYP_ERROR ) {
@@ -1425,9 +1451,16 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
             break;
         DbgDefault("Default in warnIfUseless in analyse.c.c\n");
         }
+        NodeIsIntConstant( op2, &icon );
+        if( icon.type->id == TYP_SLONG64 || icon.type->id == TYP_ULONG64 ) {
+            val = icon.value;
+        } else {
+            I32ToI64( icon.sval, &val );
+        }
         ret = CheckMeaninglessCompare( rel
                                    , op1_size
                                    , result_size
+                                   , ( op2_type->id == TYP_BITFIELD )
                                    , val
                                    , &low
                                    , &high );
@@ -1445,14 +1478,20 @@ void warnIfUseless( PTREE op1, PTREE op2, CGOP cgop, PTREE expr )
                                WARN_ALWAYS_FALSE ) & MS_PRINTED ) {
                 // msg was issued so give informational messages
                 if( NumSign(op1_size) ) { // signed
-                   CErr( INF_SIGNED_TYPE_RANGE, op1->type, low, high );
+                    sprintf( num1, "%lld", low );
+                    sprintf( num2, "%lld", high );
+                    CErr( INF_SIGNED_TYPE_RANGE, op1->type, num1, num2 );
                 } else {
-                   CErr( INF_UNSIGNED_TYPE_RANGE, op1->type, low, high );
+                    sprintf( num1, "%llu", low );
+                    sprintf( num2, "%llu", high );
+                    CErr( INF_UNSIGNED_TYPE_RANGE, op1->type, num1, num2 );
                 }
                 if( NumSign(result_size) ) {
-                    InfMsgInt( INF_SIGNED_CONST_EXPR_VALUE, val );
+                    sprintf( num1, "%lld", val );
+                    CErr( INF_SIGNED_CONST_EXPR_VALUE, num1 );
                 } else {
-                    InfMsgInt( INF_UNSIGNED_CONST_EXPR_VALUE, val );
+                    sprintf( num1, "%llu", val );
+                    CErr( INF_UNSIGNED_CONST_EXPR_VALUE, num1 );
                 }
             }
         }
@@ -2612,6 +2651,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     OPR_RTN_CODE action_code;   // - code for actions
     TEMP_TYPE temp_class;       // - SC_... for next temporary
     OPAC *ap;                   // - actions pointer
+    PTREE templ;
 
     {   boolean opsok;          // - indicates analysis ok
         PTREE on_left;          // - operand on left
@@ -2620,10 +2660,17 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         PTO_FLAG flags;         // - flags for operator
         flags = PTreeOpFlags( expr );
         orig = expr;
+        templ = NULL;
 //      addr_left = &orig->u.subtree[0];
         opsok = TRUE;
         ExtraRptTabIncr( ctrOps, orig->cgop, 0 );
         on_left = orig->u.subtree[0];
+        if( ( on_left != NULL ) && ( on_left->cgop == CO_TEMPLATE ) ) {
+            // remove template parameters
+            templ = on_left;
+            on_left = orig->u.subtree[0] = on_left->u.subtree[0];
+            templ->u.subtree[0] = NULL;
+        }
         if( flags & PTO_UNARY ) {
             if( orig->cgop == CO_ADDR_OF
              || orig->cgop == CO_INDIRECT ) {
@@ -2686,7 +2733,11 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     if( left == NULL ) {
         type = NULL;
     } else {
+        left->type = BindTemplateClass( left->type, &left->locn, FALSE );
         type = TypedefModifierRemoveOnly( left->type );
+    }
+    if( right != NULL ) {
+        right->type = BindTemplateClass( right->type, &right->locn, FALSE );
     }
     temp_class = TEMP_TYPE_NONE;
     action_code = opr_rtn_table[ expr->cgop ][ index ];
@@ -2825,18 +2876,14 @@ start_opac_string:
                 break;
             }
             continue;
-          case REQD_INT_INTREF_LEFT :
-            // assumes REQD_LVALUE_LEFT has been done
-            if( IntegralType( TypeReferenced( type ) ) != NULL ) continue;
-            // fall thru (will fail next test also)
           case REQD_INT_LEFT :
-            if( IntegralType( type ) != NULL ) continue;
+            if( IntegralType( TypeReferenced( type ) ) != NULL ) continue;
             analyse_err_left( expr
                             , ERR_EXPR_MUST_BE_INTEGRAL
                             , ERR_LEFT_EXPR_MUST_BE_INTEGRAL );
             break;
           case REQD_INT_RIGHT :
-            if( IntegralType( right->type ) != NULL ) continue;
+            if( IntegralType( TypeReferenced( right->type ) ) != NULL ) continue;
             operandError( expr, ERR_RIGHT_EXPR_MUST_BE_INTEGRAL );
             break;
           case REQD_BOOL_LHS_ASSIGN :
@@ -2847,6 +2894,8 @@ start_opac_string:
             if( left->flags & PTF_LVALUE ) continue;
             if( allowClassCastAsLValue( &expr->u.subtree[0] ) ) {
                 left = PTreeOpLeft( expr );
+                left->type = BindTemplateClass( left->type, &left->locn,
+                                                FALSE );
                 type = TypedefModifierRemoveOnly( left->type );
                 continue;
             }
@@ -2860,7 +2909,7 @@ start_opac_string:
             break;
           case REQD_NOT_ENUM_LEFT :
             if( EnumType( left->type ) == NULL ) continue;
-            operandError( expr, ANSI_BAD_ENUM_ASSIGNMENT );
+            operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
             if( expr->op != PT_ERROR ) continue;
             break;
 #if 0
@@ -2874,11 +2923,11 @@ start_opac_string:
             type_l = EnumType( left->type );
             if( type_l == NULL ) continue;
             if( type_l == EnumType( right->type ) ) continue;
-            operandError( expr, ANSI_BAD_ENUM_ASSIGNMENT );
+            operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
             if( expr->op != PT_ERROR ) continue;
           } break;
           case REQD_ZERO_LEFT :
-            if( ! NodeIsZeroConstant( left ) ) {
+            if( ! NodeIsZeroIntConstant( left ) ) {
                 exprError( left, ERR_NOT_PTR_OR_ZERO );
                 break;
             }
@@ -2925,10 +2974,10 @@ start_opac_string:
           case REQD_ZERO_RIGHT :
             if( ( NodeIsBinaryOp( expr, CO_EQUAL ) ||
                   NodeIsBinaryOp( expr, CO_INIT  ) )
-              &&( NULL != TypeIsBasedPtr( type ) ) ) {
+              &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
-            if( ! NodeIsZeroConstant( right ) ) {
+            if( ! NodeIsZeroIntConstant( right ) ) {
                 exprError( right, ERR_NOT_PTR_OR_ZERO );
                 break;
             }
@@ -2976,12 +3025,14 @@ start_opac_string:
             right = PTreeOpRight( expr );
             continue;
           case REQD_PTR_SCALES_LEFT :
+            left->type = BindTemplateClass( left->type, &left->locn, TRUE );
             if( ptr_scales( left ) ) continue;
             analyse_err_left( expr
                             , ERR_PTR_SCALES
                             , ERR_PTR_SCALES_LEFT );
             break;
           case REQD_PTR_SCALES_RIGHT :
+            right->type = BindTemplateClass( right->type, &right->locn, TRUE );
             if( ptr_scales( right ) ) continue;
             operandError( expr, ERR_PTR_SCALES_RIGHT );
             break;
@@ -3072,6 +3123,8 @@ start_opac_string:
           { type_flag flags_l;      // type flags (left)
             type_flag flags_r;      // type flags (right)
             type_flag flags_bad;    // type flags (missing on left)
+            left->type = BindTemplateClass( left->type, &left->locn, FALSE );
+            right->type = BindTemplateClass( right->type, &right->locn, FALSE );
             TypePointedAt( right->type, &flags_r );
             TypePointedAt( left->type, &flags_l );
             flags_bad = flags_r & ~ flags_l;
@@ -3112,14 +3165,14 @@ start_opac_string:
             continue;
           case CONV_CMP_ZERO_LEFT :
             left = expr->u.subtree[0];
-            left = NodeCompareToZero( left );
+            left = NodeConvertToBool( left );
             expr->u.subtree[0] = left;
             if( left->op != PT_ERROR ) continue;
             PTreeErrorNode( expr );
             break;
           case CONV_CMP_ZERO_RIGHT :
             right = expr->u.subtree[1];
-            right = NodeCompareToZero( right );
+            right = NodeConvertToBool( right );
             expr->u.subtree[1] = right;
             if( right->op != PT_ERROR ) continue;
             PTreeErrorNode( expr );
@@ -3141,10 +3194,12 @@ start_opac_string:
             continue;
           case CONV_RVALUE_LEFT :
             left = NodeRvalueLeft( expr );
+            left->type = BindTemplateClass( left->type, &left->locn, FALSE );
             type = TypedefModifierRemoveOnly( left->type );
             continue;
           case CONV_RVALUE_RIGHT :
             right = NodeRvalueRight( expr );
+            right->type = BindTemplateClass( right->type, &right->locn, FALSE );
             continue;
           case CONV_INDEX :
             DbgAssert( expr->cgop == CO_INDEX );
@@ -3152,19 +3207,21 @@ start_opac_string:
             expr->flags |= PTF_WAS_INDEX;
             continue;
           case CONV_TYPE_LEFT :
+            left->type = BindTemplateClass( left->type, &left->locn, FALSE );
             type = left->type;
             continue;
           case CONV_TYPE_RIGHT :
             if( right->flags & PTF_LVALUE ) {
                 expr->flags |= PTF_LVALUE;
             }
+            right->type = BindTemplateClass( right->type, &right->locn, FALSE );
             type = right->type;
             continue;
           case CONV_REFERENCE :
           { TYPE refed;     // referenced type
             refed = TypeReference( type );
             if( refed == NULL ) continue;
-            type = refed;
+            type = BindTemplateClass( refed, &expr->locn, FALSE );
             expr->flags |= PTF_LVALUE;
           } continue;
           case CONV_MEANINGLESS :
@@ -3213,6 +3270,7 @@ start_opac_string:
           case ASSIGN_OTHER :
           { CNV_RETN retn;  // - conversion return
             type = TypedefModifierRemoveOnly( TypeReferenced( type ) );
+            type = BindTemplateClass( type, &expr->locn, FALSE );
             if( type->id == TYP_CLASS ) {
                 expr = ClassAssign( expr );
             } else if( type->id == TYP_MEMBER_POINTER ) {
@@ -3244,6 +3302,7 @@ start_opac_string:
             continue;
           case RESULT_RETURN :
           { TYPE type_l;        // - left type
+            type = BindTemplateClass( type, &expr->locn, FALSE );
             if( NULL != StructType( type ) ) {
                 expr = AnalyseReturnClassVal( expr );
                 if( expr->op == PT_ERROR ) break;
@@ -3259,7 +3318,7 @@ start_opac_string:
                 if( ( NULL != type_l )
                   &&( ! ( type_l->flag & TF1_REFERENCE ) )
                   &&( NULL != ArithType( right->type ) )
-                  &&( ! NodeIsZeroConstant( right ) ) ) {
+                  &&( ! NodeIsZeroIntConstant( right ) ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
                     break;
                 }
@@ -3272,7 +3331,7 @@ start_opac_string:
           { TYPE type_l;        // - left type
             type_l = PointerTypeEquivalent( type );
             if( ! ( type_l->flag & TF1_REFERENCE ) ) {
-                if( ! NodeIsZeroConstant( right ) ) {
+                if( ! NodeIsZeroIntConstant( right ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
                     break;
                 }
@@ -3376,6 +3435,7 @@ start_opac_string:
                 break;
             }
             class_type = StructType( ArrayBaseType( type ) );
+            class_type = BindTemplateClass( class_type, &expr->locn, FALSE );
             if( class_type != NULL && ! TypeDefined( class_type ) ) {
                 PTreeSetErrLoc( expr );
                 CErr2p( WARN_ASSUMING_NO_OVERLOADED_OP_ADDR, class_type );
@@ -3694,13 +3754,19 @@ start_opac_string:
                 exprError( expr, ERR_NOT_A_FUNCTION );
                 break;
             }
+            if( templ != NULL ) {
+                // re-insert template parameters
+                templ->u.subtree[0] = expr->u.subtree[0];
+                expr->u.subtree[0] = templ;
+                templ = NULL;
+            }
             expr = AnalyseCall( expr, &diagCall );
             if( expr->op == PT_ERROR ) break;
             continue;
           case RESULT_NEW :
             expr = AnalyseNew( expr, left->type );
             if( expr->op == PT_ERROR ) break;
-            type = expr->type;
+            type = BindTemplateClass( expr->type, &expr->locn, TRUE );
             continue;
           case RESULT_DLT :
             expr = AnalyseDelete( expr, FALSE );
@@ -4099,11 +4165,14 @@ start_opac_string:
             continue;
           case RELOAD_EXPR_BINARY :             // drops thru
             right = PTreeOpRight( expr );
+            right->type = BindTemplateClass( right->type, &right->locn, FALSE );
           case RELOAD_EXPR_UNARY :
             left = PTreeOpLeft( expr );
+            left->type = BindTemplateClass( left->type, &left->locn, FALSE );
           case RELOAD_EXPR_TYPE :               // drops thru
             if( expr->op == PT_ERROR ) break;
             type = expr->type;
+            type = BindTemplateClass( type, &expr->locn, FALSE );
             continue;
           case CONV_BASIC_TYPE :
             type = TypedefModifierRemove( type );
@@ -4146,6 +4215,9 @@ start_opac_string:
         expr->flags |= PTF_LV_CHECKED;
         break;
     }
+    if( templ != NULL ) {
+        PTreeFreeSubtrees( templ );
+    }
     return expr;
 }
 
@@ -4153,6 +4225,9 @@ start_opac_string:
 PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
     PTREE expr )                // - current node
 {
+    if( expr->flags & PTF_ALREADY_ANALYSED ) {
+        return expr;
+    }
     CtxTokenLocn( &expr->locn );
     switch( expr->op ) {
       case PT_ID :
@@ -4168,6 +4243,8 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
             switch( expr->cgop ) {
               case CO_COLON_COLON :
                 ExtraRptTabIncr( ctrOps, CO_COLON_COLON, 0 );
+                break;
+              case CO_TEMPLATE :
                 break;
               case CO_OFFSETOF :
                 ExtraRptTabIncr( ctrOps, CO_OFFSETOF, 0 );
@@ -4196,9 +4273,16 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
         }
         break;
     }
+    expr->flags |= PTF_ALREADY_ANALYSED;
     return expr;
 }
 
+static PTREE clearAnalysedFlag(
+    PTREE expr )
+{
+    expr->flags &= ~PTF_ALREADY_ANALYSED;
+    return expr;
+}
 
 static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
     PTREE expr )
@@ -4218,6 +4302,9 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
         return PTreeErrorNode( NULL );
     }
     expr = PTreeTraversePostfix( expr, &AnalyseNode );
+    if( expr->op != PT_ERROR) {
+        expr = PTreeTraversePostfix( expr, &clearAnalysedFlag );
+    }
     if( expr->op != PT_ERROR
      && !( expr->flags & PTF_LV_CHECKED ) ) {
 //      AnalyseLvalue( PTreeRef( &expr ) );
@@ -4273,7 +4360,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             if( 0 == ( expr->flags & PTF_BOOLEAN ) ) {
                 warnBoolAssignment( expr );
             }
-            expr = NodeCompareToZero( expr );
+            expr = NodeConvertToBool( expr );
         }
     }
     return expr;

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 
 char near *near InternalCommands[] = {

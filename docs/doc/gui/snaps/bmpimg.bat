@@ -1,0 +1,7 @@
+bmp2eps IMG1.BMP IMG1.PS /h 300
+bmp2eps IMG2.BMP IMG2.PS /h 300
+bmp2eps IMG3.BMP IMG3.PS /h 300
+bmp2eps IMG4.BMP IMG4.PS /h 300
+bmp2eps IMG5.BMP IMG5.PS /h 300
+bmp2eps IMG6.BMP IMG6.PS /h 300
+bmp2eps IMG7.BMP IMG7.PS /h 300

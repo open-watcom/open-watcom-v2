@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _settextpath( short path )
+_WCRTLINK void _WCI86FAR _CGRAPH _settextpath( short path )
 /*==========================================
 
    This routine sets the direction of graphics text output. */

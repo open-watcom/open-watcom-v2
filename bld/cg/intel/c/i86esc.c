@@ -31,6 +31,7 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
 #include "escape.h"
@@ -42,7 +43,7 @@
 #include "fppatch.h"
 #include "feprotos.h"
 
-extern  void            DbgSetBase();
+extern  void            DbgSetBase( void );
 extern  void            OutAbsPatch(abspatch*,patch_attr);
 extern  void            OutFPPatch(fp_patches);
 extern  void            OutImport(sym_handle,fix_class,bool);
@@ -58,7 +59,7 @@ extern  void            DbgEpiBeg(pointer,offset);
 extern  void            DbgProEnd(pointer,offset);
 extern  void            DbgBlkBeg(pointer,offset);
 extern  void            DbgRtnBeg(pointer,offset);
-extern  offset          AskLocation();
+extern  offset          AskLocation( void );
 extern  void            TellScrapLabel(label_handle);
 extern  void            OutLineNum( cg_linenum,bool);
 extern  void            GenKillLabel(pointer);
@@ -67,7 +68,7 @@ extern  void            OutDataInt(int);
 extern  void            OutDataLong(long);
 extern  void            OutPatch(label_handle,patch_attr);
 extern  void            OutReloc(seg_id,fix_class,bool);
-extern  seg_id          AskOP();
+extern  seg_id          AskOP( void );
 extern  void            OutLabel(label_handle);
 extern  void            OutDataByte(byte);
 extern  void            OutDBytes(unsigned_32,byte*);
@@ -77,7 +78,7 @@ extern  label_handle    AskForSymLabel(pointer,cg_class);
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
-extern  abspatch        *NewAbsPatch();
+extern  abspatch        *NewAbsPatch( void );
 extern  void            EmitByte(byte);
 extern  void            EmitSegId(seg_id);
 extern  void            InsertByte(byte);
@@ -87,7 +88,15 @@ extern  unsigned        SavePendingLine(unsigned);
 extern bool             AskIfUniqueLabel(label_handle);
 extern bool             UseImportForm(fe_attr);
 extern bool             AskIfCommonLabel(label_handle);
-extern void             OutSpecialCommon(int,fix_class,bool);
+extern void             OutSpecialCommon(import_handle,fix_class,bool);
+
+extern void             DoLblRef( label_handle lbl, seg_id seg, offset val,
+                                                            escape_class kind );
+static void             DoRelocRef( sym_handle sym, cg_class class, seg_id seg,
+                                                offset val, escape_class kind );
+static  void            OutShortDisp( label_handle lbl );
+static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel,
+                                                            oc_class class );
 
 extern byte             *NopLists[];
 
@@ -113,11 +122,13 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
     byte        *curr;
     byte        *final;
 
-    curr = &code->data[ 0 ];
+    curr = &code->data[0];
     final = curr + code->reclen - sizeof( oc_header );
     while( curr < final ) {
         if( *curr++ == ESC ) {
-            if( *curr++ == ABS ) return( TRUE );
+            if( *curr++ == ABS ) {
+                return( TRUE );
+            }
         }
     }
     return( FALSE );
@@ -152,11 +163,11 @@ extern  void    DoFunnyRef( int segover ) {
 
 
 extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
-                                int fixup ) {
+                                fe_fixup_types fixup ) {
 /*******************************************************************/
 
     fe_attr             attr;
-    byte                kind;
+    escape_class        kind;
 
     kind = 0;
     switch( fixup ) {
@@ -214,9 +225,9 @@ extern  void    DoSegRef( seg_id seg ) {
 }
 
 static  void    DoRelocRef( sym_handle sym, cg_class class,
-                            seg_id seg, offset val, byte kind ) {
+                      seg_id seg, offset val, escape_class kind )
 /***************************************************************/
-
+{
     offset              addr;
     label_handle        lbl;
 
@@ -248,9 +259,9 @@ static  void    DoRelocRef( sym_handle sym, cg_class class,
 }
 
 extern  void    DoLblRef( label_handle lbl, seg_id seg,
-                          offset val, byte kind ) {
-/*************************************************/
-
+                        offset val, escape_class kind )
+/*****************************************************/
+{
     EmitByte( ESC );
     EmitByte( LBL | kind );
     EmitSegId( seg );
@@ -260,10 +271,12 @@ extern  void    DoLblRef( label_handle lbl, seg_id seg,
     }
 }
 
-static void SendBytes( byte *ptr, unsigned len ) {
-/************************************************/
-
-    if( len != 0 ) OutDBytes( len, ptr );
+static void SendBytes( byte *ptr, unsigned len )
+/**********************************************/
+{
+    if( len != 0 ) {
+        OutDBytes( len, ptr );
+    }
 }
 
 #define INFO_NOT_DEBUG      INFO_SELECT
@@ -271,7 +284,7 @@ static oc_class SaveDbgOc = INFO_NOT_DEBUG;
 static pointer  SaveDbgPtr;
 static offset   LastUnique = ADDR_UNKNOWN;
 
-static  void    DumpSavedDebug()
+static  void    DumpSavedDebug( void )
 /******************************/
 {
     switch( SaveDbgOc ) {
@@ -343,7 +356,7 @@ static  void    ExpandCJ( any_oc *oc ) {
             f = F_PTR;
             rel = FALSE;
             if( ( class & GET_BASE ) == OC_CALL ) {
-                if( oc->oc_entry.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ){
+                if( oc->oc_entry.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ) {
                     f = F_OFFSET;
                     rel = TRUE;
                     class &= ~ ATTR_FAR;
@@ -398,7 +411,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
             _OutFarOff( 0 );
         }
     } else if( AskIfCommonLabel( lbl ) ) {
-        OutSpecialCommon( (int)sym, f, rel );
+        OutSpecialCommon( (import_handle)sym, f, rel );
         _OutFarOff( 0 );
     } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) { /* 90-05-22 */
         OutImport( sym, f, rel );
@@ -430,11 +443,11 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 static  label_handle    ExpandObj( byte *cur, int explen ) {
 /**********************************************************/
 
-    pointer             fini;
-    byte                key;
+    byte                *fini;
+    escape_class        key;
     label_handle        lbl;
     sym_handle          sym;
-    offset              val;
+    offset              val = 0;
     seg_id              seg;
     fix_class           class;
     bool                rel;
@@ -446,12 +459,16 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
         len = 0;
         while( cur[len] != ESC ) {
             ++len;
-            if( cur + len >= fini ) break;
+            if( cur + len >= fini ) {
+                break;
+            }
         }
         if( len != 0 ) {
             OutDBytes( len, cur );
             cur += len;
-            if( cur >= fini ) break;
+            if( cur >= fini ) {
+                break;
+            }
         }
         cur++;
         key = *cur++;
@@ -503,7 +520,7 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
-                    OutSpecialCommon( (int)AskForLblSym( lbl ), class, rel );
+                    OutSpecialCommon( (import_handle)AskForLblSym( lbl ), class, rel );
                 } else {
                     OutReloc( seg, class, rel );
                 }
@@ -571,7 +588,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     switch( base ) {
     case OC_CODE:
     case OC_DATA:
-        ExpandObj( &oc->oc_entry.data, oc->oc_entry.reclen-sizeof(oc_header) );
+        ExpandObj( oc->oc_entry.data, oc->oc_entry.reclen - sizeof( oc_header ) );
         break;
     case OC_IDATA:
         if( next_lbl != NULL ) { /* cause next_lbl to need no alignment */
@@ -580,11 +597,11 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             DoAlignment( len );
         }
         OutSelect( TRUE );
-        SendBytes( &oc->oc_entry.data[ 0 ], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
         OutSelect( FALSE );
         break;
     case OC_BDATA:
-        SendBytes( &oc->oc_entry.data[ 0 ], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
         break;
     case OC_LABEL:
         /* figure out number of bytes to pad */
@@ -610,7 +627,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             OutRTImport( (int)sym, F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
-            OutSpecialCommon( (int)sym, F_OFFSET, FALSE );
+            OutSpecialCommon( (import_handle)sym, F_OFFSET, FALSE );
             lc = 0;
         } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) {
             OutImport( sym, F_OFFSET, FALSE );
@@ -628,7 +645,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     case OC_JMPI:
     case OC_CALLI:
     case OC_JCONDI:
-        ptr = &oc->oc_entry.data;
+        ptr = oc->oc_entry.data;
         len = 0;
         while( ptr[len] != M_CJINEAR ) {
             ++len; /* skip over top of any prefixes */
@@ -649,7 +666,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             *ptr |= B_IND_RMR_JMP;
         }
         OutDataByte( *ptr++ );
-        lbl = ExpandObj( ptr, oc->oc_entry.reclen - sizeof(oc_header) - 1 - len );
+        lbl = ExpandObj( ptr, oc->oc_entry.reclen - sizeof( oc_header ) - 1 - len );
         if( lbl != NULL && base == OC_JMPI ) {
             TellKeepLabel( lbl ); /* make sure label comes out*/
             GenKillLabel( lbl );  /* but kill it when it does*/

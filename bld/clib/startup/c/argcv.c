@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Argument vector definition and startup.
 *
 ****************************************************************************/
 
@@ -34,11 +33,9 @@
 #include "rtinit.h"
 #include "widechar.h"
 #include <stdlib.h>
+#include "initarg.h"
 
-extern void __F_NAME(__Init_Argv,__wInit_Argv)( void );
-extern void __F_NAME(__Fini_Argv,__wFini_Argv)( void );
-
-unsigned    __F_NAME(_argc,_wargc);
+int         __F_NAME(_argc,_wargc);
 CHAR_TYPE** __F_NAME(_argv,_wargv);
 int         __F_NAME(__argc,__wargc);
 CHAR_TYPE** __F_NAME(__argv,__wargv);

@@ -43,7 +43,7 @@ typedef struct {
 } dr_context_stack;
 
 typedef struct {
-    void *              compunit;       /* current compile unit */
+    dr_cu_handle        compunit;       /* current compile unit */
     dr_handle           start;          /* die to start from */
     dr_handle           end;            /* end of compile unit */
     dr_handle           functionhdl;    /* containing function */

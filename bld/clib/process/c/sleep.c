@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sleep() for DOS, Win16 and Netware.
 *
 ****************************************************************************/
 
@@ -35,28 +34,30 @@
 #include <dos.h>
 
 
-_WCRTLINK void sleep( unsigned seconds )
-    {
+_WCRTLINK unsigned sleep( unsigned seconds )
+{
 #ifndef __NETWARE__
-        unsigned char old_second;
-        unsigned char old_hundredths;
-        struct dostime_t  t;
+    unsigned char       old_second;
+    unsigned char       old_hundredths;
+    struct dostime_t    t;
 #endif
 
 #ifdef __NETWARE__
-        delay( seconds * 1000 );
+    delay( seconds * 1000 );
 #else
-        _dos_gettime( &t );
-        old_hundredths = t.hsecond;
-        if( old_hundredths > 90 )  old_hundredths = 90;
-        for( ; seconds; --seconds ) {
-            old_second = t.second;
-            do {                        /* loop until second changes */
-                _dos_gettime( &t );
-            } while( t.second == old_second );
-        }
-        do {
+    _dos_gettime( &t );
+    old_hundredths = t.hsecond;
+    if( old_hundredths > 90 )  old_hundredths = 90;
+    for( ; seconds; --seconds ) {
+        old_second = t.second;
+        do {                        /* loop until second changes */
             _dos_gettime( &t );
-        } while( t.hsecond < old_hundredths );
-#endif
+        } while( t.second == old_second );
     }
+    do {
+        _dos_gettime( &t );
+    } while( t.hsecond < old_hundredths );
+#endif
+
+    return( 0 );    /* never returns before time elapsed */
+}

@@ -32,4 +32,4 @@
 
 #include "variety.h"
 #define __LIB__
-#include "..\c\demangle.c"
+#include "../c/demangle.c"

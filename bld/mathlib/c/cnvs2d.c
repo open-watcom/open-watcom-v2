@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  String to double conversion helper routine.
 *
 ****************************************************************************/
 
@@ -37,12 +36,13 @@
 /* This routine is called from scnf.c */
 
 _WMRTLINK void __cnvs2d( char *buf, double *value )
-    {
-        *value = strtod( buf, NULL );
-    }
+{
+    *value = strtod( buf, NULL );
+}
 
 #ifdef __MAKE_DLL_MATHLIB
-_WMRTLINK void (*__get__cnvs2d())() {
-    return &__cnvs2d;
+_WMRTLINK void (*__get__cnvs2d( void ))( char *, double * )
+{
+    return( &__cnvs2d );
 }
 #endif

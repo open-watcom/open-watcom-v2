@@ -1,0 +1,36 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	31H, 0, 32H, 31H, 31H, 0, 0, 0
+    DB	32H, 31H, 0, 0, 33H, 32H, 31H, 0
+    DB	34H, 33H, 32H, 31H, 31H, 0, 0, 0
+    DB	0, 0, 32H, 31H, 0, 0, 0, 0
+    DB	33H, 32H, 31H, 0, 0, 0, 34H, 33H
+    DB	32H, 31H, 0, 0, 35H, 34H, 33H, 32H
+    DB	31H, 0, 36H, 35H, 34H, 33H, 32H, 31H
+    DB	31H, 0, 0, 0, 0, 0, 0, 0
+    DB	32H, 31H, 0, 0, 0, 0, 0, 0
+    DB	33H, 32H, 31H, 0, 0, 0, 0, 0
+    DB	34H, 33H, 32H, 31H, 0, 0, 0, 0
+    DB	35H, 34H, 33H, 32H, 31H, 0, 0, 0
+    DB	36H, 35H, 34H, 33H, 32H, 31H, 0, 0
+    DB	37H, 36H, 35H, 34H, 33H, 32H, 31H, 0
+    DB	38H, 37H, 36H, 35H, 34H, 33H, 32H, 31H
+    DB	31H, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 32H, 31H, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 33H, 32H, 31H, 0
+    DB	0, 0, 0, 0, 0, 0, 34H, 33H
+    DB	32H, 31H, 0, 0, 0, 0, 0, 0
+    DB	35H, 34H, 33H, 32H, 31H, 0, 0, 0
+    DB	0, 0, 36H, 35H, 34H, 33H, 32H, 31H
+    DB	0, 0, 0, 0, 37H, 36H, 35H, 34H
+    DB	33H, 32H, 31H, 0, 0, 0, 38H, 37H
+    DB	36H, 35H, 34H, 33H, 32H, 31H, 0, 0
+    DB	39H, 38H, 37H, 36H, 35H, 34H, 33H, 32H
+    DB	31H, 0, 30H, 39H, 38H, 37H, 36H, 35H
+    DB	34H, 33H, 32H, 31H
+
+_DATA		ENDS
+		END

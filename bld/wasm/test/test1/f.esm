@@ -1,0 +1,41 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_bar:
+    push        bp 
+    mov         bp,sp 
+    mov         ah,byte ptr 4[bp] 
+    mov         ah,byte ptr 6[bp] 
+    mov         ah,byte ptr 8[bp] 
+    mov         ah,byte ptr 0aH[bp] 
+    mov         ah,byte ptr 0cH[bp] 
+    mov         ah,byte ptr 0eH[bp] 
+    pop         bp 
+    ret         
+_sam:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,word ptr 4[bp] 
+    mov         ax,word ptr 6[bp] 
+    mov         ax,word ptr 8[bp] 
+    mov         ax,word ptr 0aH[bp] 
+    mov         ax,word ptr 0cH[bp] 
+    mov         ax,word ptr 0eH[bp] 
+    pop         bp 
+    ret         
+_kyb:
+    push        bp 
+    mov         bp,sp 
+    lea         dx,4[bp] 
+    lea         dx,8[bp] 
+    lea         dx,0cH[bp] 
+    lea         dx,10H[bp] 
+    lea         dx,14H[bp] 
+    lea         dx,18H[bp] 
+    pop         bp 
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

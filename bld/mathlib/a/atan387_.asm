@@ -32,12 +32,12 @@
 
 include mdef.inc
 include struct.inc
-include math387.inc
+include math87.inc
 
         extern_chipbug
 
 .287
-        modstart        atan87
+        modstart        atan387
 
         xdefp   __atan87        ; calc atan(fac1)
 

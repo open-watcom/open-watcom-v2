@@ -70,7 +70,7 @@ pick( INVALID_USE_OF_SHORT_NEAR_FAR_OPERATOR,
 pick( NO_MEMORY,
                                 "No memory" ,
                                 "メモリがありません" )
-pick( CANNOT_USE_386_SEGMEMT_REGISTER_WITH_CURRENT_CPU_SETTING,
+pick( CANNOT_USE_386_SEGMENT_REGISTER_WITH_CURRENT_CPU_SETTING,
                                 "Cannot use 386 segment register with current CPU setting" ,
                                 "現在のCPUの設定では386セグメントレジスタは使用できません" )
 pick( POP_CS_IS_NOT_ALLOWED,
@@ -289,3 +289,18 @@ pick( ASSUMING_WORD,
 pick( ASSUMING_DWORD,
                                 "size not specified -- DWORD PTR is assumed" ,
                                 "大きさが指定されていません -- DWORD PTRを仮定します" )
+pick( FLOAT_OPERAND,
+                                "Float is used as operand" ,
+                                "Float is used as operand" )
+pick( ONLY_SHORT_AND_NEAR_DISPLACEMENT_IS_ALLOWED,
+                                "Only SHORT and NEAR displacement is allowed" ,
+                                "SHORT,NEARディスプレースメントのみ可能です" )
+pick( MISSING_PTR_OPERATOR,
+                                "Missing 'PTR' operator" ,
+                                "Missing 'PTR' operator" )
+pick( REPX_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION,
+                                "REPZ, REPNZ, REPE or REPNE prefix is not allowed on this instruction" ,
+                                "REPZ, REPNZ, REPE or REPNE prefix is not allowed on this instruction" )
+pick( CANNOT_USE_386_OPSIZE_MODE_WITH_CURRENT_CPU_SETTING,
+                                "Cannot use 386 operand size with current CPU setting" ,
+                                "Cannot use 386 operand size with current CPU setting" )

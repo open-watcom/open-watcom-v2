@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction reordering for better pipeline utilization.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "model.h"
 #include "spawn.h"
 #include "memout.h"
@@ -45,6 +44,9 @@
 #include "pattern.h"
 #include "vergen.h"
 #include "zoiks.h"
+#include "addrname.h"
+#include "x87.h"
+
 
 extern  void            ProcMessage(msg_class);
 extern  sym_handle      AskForLblSym(label_handle);
@@ -54,23 +56,13 @@ extern  bool            ReDefinedBy(instruction *, name *);
 extern  instruction_id  Renumber(void);
 extern  hw_reg_set      StackReg(void);
 extern  FU_entry        *FUEntry(instruction *);
-extern  bool            FPStackIns(instruction *);
 extern  int             CountIns(block*);
 extern  bool            VisibleToCall(instruction *,name *, bool);
 extern  bool            IsSegReg(hw_reg_set);
-extern  bool            FPStackReg(name*);
-extern  bool            FPInsIntroduced(instruction*);
-extern  int             FPStkOver(instruction *,int);
-extern  void            FPCalcStk(instruction*,int*);
-extern  void            FPPreSched(block*);
-extern  void            FPPostSched(block*);
-extern  bool            FPFreeIns(instruction*);
-extern  int             FPMaxDepth( instruction *ins );
 extern  bool            DoesSomething(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  hw_reg_set      LowReg(hw_reg_set);
 extern  hw_reg_set      HighReg(hw_reg_set);
-extern  int             FPStackExit( block *);
 extern  void            ClearInsBits( instruction_flags );
 extern  hw_reg_set      FullReg( hw_reg_set );
 
@@ -94,21 +86,21 @@ typedef enum {
 
 
 data_dag                *DataDag;   /* global for dump routines */
-static pointer          DepFrl;
+static pointer          *DepFrl;
 static dep_list_block   *CurrDepBlock;
 static block            *SBlock;
 
 
-extern  bool    SchedFrlFree()
-/****************************
+extern  bool    SchedFrlFree( void )
+/***********************************
     Free the instruction schedulers dependancy link lists.
 */
 {
     return( FrlFreeAll( &DepFrl, sizeof( dep_list_block ) ) );
 }
 
-static dep_list_entry *AllocDep()
-/*******************************
+static dep_list_entry *AllocDep( void )
+/**************************************
     Allocate one dependancy link structure.
 */
 {
@@ -156,8 +148,8 @@ static unsigned InsStallable( instruction *ins )
     return( stallable );
 }
 
-static void InitDag()
-/********************
+static void InitDag( void )
+/**************************
     Allocate the data dependancy dag list, and initialize the fields
     in it.
 */
@@ -190,7 +182,7 @@ static void InitDag()
             }
             break;
         }
-        _Alloc( dag, sizeof( data_dag ) );
+        dag = CGAlloc( sizeof( data_dag ) );
         dag->ins = ins;
         dag->height = 0;
         dag->anc_count = 0;
@@ -235,14 +227,16 @@ static bool StackOp( instruction *ins )
 
 
 static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
-                                 name *op, bool ins_linked ) {
-/***************************************************************/
-
+                                 name *op, bool ins_linked )
+/**********************************************************************/
+{
     bool        redefd;
     instruction *ins;
 
     redefd = ReDefinedBy( ins_i, op );
     if( redefd != MAYBE || !ins_linked ) return( redefd );
+    _INS_NOT_BLOCK( ins_i );
+    _INS_NOT_BLOCK( ins_j );
     if( ins_i->id > ins_j->id ) {
         ins = ins_i;
         ins_i = ins_j;
@@ -415,10 +409,9 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
 }
 
 
-extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j ) {
-/***********************************************************************/
-
-
+extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
+/*********************************************************************/
+{
     if( ins_j->head.opcode == OP_NOP
         && ins_j->result == NULL
         && !DoesSomething( ins_j ) ) return( TRUE );
@@ -446,11 +439,11 @@ extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j ) {
 }
 
 
-static  bool    MultiIns( instruction *ins ) {
-/*********************************************
+static  bool    MultiIns( instruction *ins )
+/*******************************************
     Is ins part of a two instruction sequence, like SUB, SBB?
 */
-
+{
     switch( ins->head.opcode ) {
     case OP_ADD:
     case OP_SUB:
@@ -461,11 +454,11 @@ static  bool    MultiIns( instruction *ins ) {
     return( FALSE );
 }
 
-static  bool    InsUsesCC( instruction *ins ) {
-/**********************************************
+static  bool    InsUsesCC( instruction *ins )
+/********************************************
     Does 'ins' uses the condition codes set from a previous instruction?
 */
-
+{
     switch( ins->head.opcode ) {
     case OP_EXT_ADD:
     case OP_EXT_SUB:
@@ -498,8 +491,8 @@ static void BuildLink( data_dag *i, data_dag *j )
     dep->dep = j;
 }
 
-static void BuildDag()
-/*********************
+static void BuildDag( void )
+/***************************
     Build the data dependancy DAG. Note that this sucker is an N**2 algorithm
     on the size of the basic block, so blocks had better not be too big.
 */
@@ -601,8 +594,8 @@ static pointer AnnointADag( data_dag *dag )
     return( NULL );
 }
 
-static void AnnointDag()
-/***********************
+static void AnnointDag( void )
+/*****************************
     Add additional information to data dependancy DAG.
 */
 {
@@ -722,6 +715,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     bias = adj->operands[1]->c.int_value;
     if( adj->head.opcode == OP_SUB ) bias = -bias;
     if( forward ) bias = -bias;
+    _INS_NOT_BLOCK( adj );
     reg = adj->result->r.reg;
     chk = adj;
     for( ;; ) {
@@ -763,8 +757,8 @@ static void FixIndexAdjust( instruction *adj, bool forward )
 }
 
 
-static void ScheduleIns()
-/************************
+static void ScheduleIns( void )
+/******************************
     Rearrange the instructions in a block according to the data dependancy
     DAG for maximum overlap of the instruction pipeline. The block is built
     from bottom to the top. At each point we have an list of instructions
@@ -855,6 +849,8 @@ static void ScheduleIns()
                             // try to avoid fxch instructions
                             MARK_BEST;
                         } else {
+                            _INS_NOT_BLOCK( curr->ins );
+                            _INS_NOT_BLOCK( best->ins );
                             if( curr->ins->id > best->ins->id ) {
                                 MARK_BEST;
                             }
@@ -930,8 +926,8 @@ static void ScheduleIns()
     }
 }
 
-static  void    FreeDataDag()
-/****************************
+static  void    FreeDataDag( void )
+/**********************************
     Free all the memory allocated for the data dependancy DAG.
 */
 {
@@ -942,7 +938,7 @@ static  void    FreeDataDag()
 
     for( dag = DataDag; dag != NULL; dag = prev ) {
         prev = dag->prev;
-        _Free( dag, sizeof( data_dag ) );
+        CGFree( dag );
     }
     DataDag = NULL;
     for( dep = CurrDepBlock; dep != NULL; dep = next ) {
@@ -952,8 +948,8 @@ static  void    FreeDataDag()
     CurrDepBlock = NULL;
 }
 
-static  void    SchedBlock()
-/***************************
+static  void    SchedBlock( void )
+/*********************************
     Reorder one block for maximum parallelism.
 */
 {
@@ -981,12 +977,12 @@ static  void    SchedBlock()
     }
 }
 
-void    Schedule() {
-/*******************
+void    Schedule( void )
+/***********************
     Reorder the instructions in a routine for maximum overlap of the
     instruction pipeline.
 */
-
+{
     mem_out_action      old_memout;
     bool                first_time;
 

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "ring.h"
 #include "carve.h"
@@ -72,8 +70,8 @@ POOL_CON *ConPoolFloatAdd       // ADD AN ITEM TO THE CONSTANTS POOL
     stg = CPermAlloc( len );
     stg = memcpy( stg, buff, len );
     pool = allocPoolCon( &pool_float );
-    pool->len = len;
-    pool->fp_constant = stg;
+    pool->s.len = len;
+    pool->s.fp_constant = stg;
     pool->flt  = TRUE;
     return( pool );
 }
@@ -132,7 +130,7 @@ static void saveConstant( void *e, carve_walk_base *d )
     PCHWriteCVIndex( d->index );
     PCHWrite( fcon, sizeof( *fcon ) );
     if( fcon->flt ) {
-        PCHWrite( fcon->fp_constant, fcon->len );
+        PCHWrite( fcon->s.fp_constant, fcon->s.len );
     }
     fcon->next = save_next;
 }
@@ -170,9 +168,9 @@ pch_status PCHReadConstantPool( void )
         PCHRead( c, sizeof( *c ) );
         c->next = ConstantPoolMapIndex( c->next );
         if( c->flt ) {
-            len = c->len;
-            c->fp_constant = CPermAlloc( len );
-            PCHRead( c->fp_constant, len );
+            len = c->s.len;
+            c->s.fp_constant = CPermAlloc( len );
+            PCHRead( c->s.fp_constant, len );
         }
     }
     return( PCHCB_OK );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Structures, defines and enums for OMF files.
 *
 ****************************************************************************/
 
@@ -41,8 +40,9 @@
 #define OMF_STATUS_ARCH_SET             0x00000002
 #define OMF_STATUS_ADD_LIDATA           0x00000008
 #define OMF_STATUS_EASY_OMF             0x00000010
+#define OMF_STATUS_ADD_BAKPAT           0x00000020
 
-#define OMF_STATUS_ADD_MASK             OMF_STATUS_ADD_LIDATA
+#define OMF_STATUS_ADD_MASK             (OMF_STATUS_ADD_LIDATA | OMF_STATUS_ADD_BAKPAT)
 
 /* section flags
  */
@@ -66,6 +66,13 @@ enum{
     OMF_SEC_DATA_CODE_START
 };
 
+/* Debug info styles we recognize */
+enum {
+    OMF_DBG_STYLE_UNKNOWN = -1,
+    OMF_DBG_STYLE_CODEVIEW,
+    OMF_DBG_STYLE_HLL
+};
+
 // handle definitions
 
 typedef uint_8                          omf_file_flags;
@@ -86,6 +93,7 @@ typedef int_32                          omf_quantity;
 
 typedef uint_8                          *omf_bytes;
 typedef uint_8                          omf_rectyp;
+typedef int_8                           omf_dbg_style;
 
 typedef struct omf_handle_struct        omf_handle_struct;
 typedef omf_handle_struct               *omf_handle;
@@ -110,6 +118,12 @@ typedef omf_tmp_lidata_struct           *omf_tmp_lidata;
 
 typedef struct omf_tmp_fixup_struct     omf_tmp_fixup_struct;
 typedef omf_tmp_fixup_struct            *omf_tmp_fixup;
+
+typedef struct omf_tmp_bakpat_struct    omf_tmp_bakpat_struct;
+typedef omf_tmp_bakpat_struct           *omf_tmp_bakpat;
+
+typedef struct omf_tmp_bkfix_struct    omf_tmp_bkfix_struct;
+typedef omf_tmp_bkfix_struct           *omf_tmp_bkfix;
 
 typedef struct omf_thred_fixup_struct   omf_thred_fixup;
 
@@ -137,6 +151,20 @@ struct omf_tmp_fixup_struct {
     orl_sec_offset      disp;
 };
 
+struct omf_tmp_bakpat_struct {
+    omf_tmp_bkfix       first_fixup;
+    omf_tmp_bkfix       last_fixup;
+};
+
+struct omf_tmp_bkfix_struct {
+    omf_tmp_bkfix       next;
+    orl_reloc_type      reltype;
+    omf_idx             segidx;
+    omf_idx             symidx;
+    orl_sec_offset      offset;
+    orl_sec_offset      disp;
+};
+
 struct omf_handle_struct {
     orl_funcs *         funcs;
     omf_file_handle     first_file_hnd;
@@ -154,8 +182,6 @@ struct omf_file_handle_struct {
     unsigned char       *parsebuf;
     unsigned short      parselen;
     long                status;
-    int                 modnamelen;
-    char                modname[256];
 
     omf_sec_handle      lnames;
     omf_sec_handle      extdefs;
@@ -186,6 +212,9 @@ struct omf_file_handle_struct {
     omf_sec_handle      work_sec;
 
     omf_tmp_lidata      lidata;
+    omf_tmp_bakpat      bakpat;
+
+    omf_dbg_style       debug_style;
 
     omf_sec_handle      symbol_table;
     omf_rectyp          last_rec;
@@ -233,7 +262,7 @@ struct omf_sym_assoc_struct {
 
 typedef struct omf_string_struct {
     unsigned char       len;
-    unsigned char       string[1];
+    char                string[1];
 } omf_string_struct;
 
 struct omf_string_assoc_struct {
@@ -260,7 +289,7 @@ struct omf_sec_handle_struct {
     orl_sec_size        size;
     orl_sec_type        type;
     orl_sec_flags       flags;
-    char *              contents;
+    omf_bytes           contents;
     omf_quantity        index;
     // assoc - things associated with the section
     union {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RISC instruction spliting reductions.
 *
 ****************************************************************************/
 
@@ -37,9 +36,12 @@
 #include "tables.h"
 #include "pattern.h"
 #include "rtclass.h"
+#include "system.h"
 #include "zoiks.h"
 #include "model.h"
 #include "regset.h"
+#include "cfloat.h"
+#include "makeins.h"
 #include <assert.h>
 
 extern  instruction     *rMOVRESREG(instruction*);
@@ -56,7 +58,7 @@ extern  instruction     *rOP1MEM(instruction*);
 extern  instruction     *rOP2MEM(instruction*);
 extern  instruction     *rCONSTLOAD(instruction*);
 extern  instruction     *rSWAPCMP(instruction*);
-extern  instruction     *rSPLITCMP(instruction*);
+extern  instruction     *rSIMPCMP(instruction*);
 extern  instruction     *rDOSET(instruction*);
 extern  instruction     *rDOLOAD(instruction*);
 extern  instruction     *rDOSTORE(instruction*);
@@ -85,10 +87,19 @@ extern  instruction     *rMOVEXX_8(instruction*);
 extern  instruction     *rMOVEXX_4(instruction*);
 extern  instruction     *rMOD2DIV(instruction*);
 extern  instruction     *rALLOCA(instruction*);
+extern  instruction     *rM_SIMPCMP( instruction * );
+extern  instruction     *rSPLITOP( instruction * );
+extern  instruction     *rSPLITMOVE( instruction * );
+extern  instruction     *rSPLITCMP( instruction * );
+extern  instruction     *rSPLITNEG( instruction * );
+extern instruction      *rSPLITUNARY( instruction * );
+extern  instruction     *rSEX_4TO8( instruction * );
+extern  instruction     *rCLRHI_4( instruction * );
+extern  instruction     *rMOVELOW( instruction * );
 
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      ReturnAddrReg();
-extern  hw_reg_set      SavedRegs();
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      ReturnAddrReg( void );
+extern  hw_reg_set      SavedRegs( void );
 
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
@@ -106,15 +117,6 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
 extern  label_handle    RTLabel(int);
 extern  void            ChangeType(instruction*,type_class_def);
-extern  void            FreeIns( instruction * );
-
-extern  instruction     *MakeNary(opcode_defs,name*,name*,name*,type_class_def,type_class_def,int);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
-extern  instruction     *NewIns( int );
 
 extern  name            *GenFloat( name *, type_class_def );
 
@@ -127,6 +129,25 @@ extern  hw_reg_set      FirstReg( reg_set_index );
 
 extern  type_length     TypeClassSize[];
 extern  type_class_def  Unsigned[];
+extern  type_class_def  HalfClass[];
+
+extern  opcode_entry    *CodeTable( instruction * );
+extern  name            *AllocConst( pointer );
+extern  name            *AllocIntConst( int );
+extern  name            *AllocUIntConst( uint );
+extern  name            *AddrConst( name *, int, constant_class );
+extern  name            *AllocU64Const( unsigned_32, unsigned_32 );
+extern  hw_reg_set      Low16Reg( hw_reg_set regs );
+extern  hw_reg_set      Low32Reg( hw_reg_set regs );
+extern  hw_reg_set      Low64Reg( hw_reg_set regs );
+extern  hw_reg_set      High16Reg( hw_reg_set regs );
+extern  hw_reg_set      High32Reg( hw_reg_set regs );
+extern  hw_reg_set      High64Reg( hw_reg_set regs );
+extern  constant_defn   *GetFloat( name *, type_class_def );
+extern  name            *TempOffset( name *, type_length, type_class_def );
+extern  void            HalfType( instruction * );
+extern  bool            SameThing( name *, name * );
+
 
 extern instruction *(* ReduceTab[])() = {
 /***************************************/
@@ -204,9 +225,12 @@ extern  instruction     *rDOSET( instruction *ins ) {
     return( ins );
 }
 
-extern instruction      *rSPLITCMP( instruction *ins ) {
-/******************************************************/
-
+extern instruction      *rSIMPCMP( instruction *ins )
+/****************************************************
+* Simplify a comparison instruction for a platform that can't perform
+* arbitrary reg/reg comparisons.
+*/
+{
     instruction         *new;
     opcode_defs         opcode;
     bool                reverse;
@@ -473,7 +497,7 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     HW_TurnOff( all_regs, SavedRegs() );
     HW_CTurnOff( all_regs, HW_UNUSED );
     HW_TurnOn( all_regs, ReturnAddrReg() );
-    new_ins->zap = reg_name;            /* all parm regs could be zapped*/
+    new_ins->zap = &reg_name->r;        /* all parm regs could be zapped*/
     ReplIns( ins, new_ins );
     UpdateLive( first_ins, new_ins );
     return( first_ins );
@@ -592,18 +616,190 @@ extern  bool    UnChangeable( instruction *ins ) {
     return( FALSE );
 }
 
-extern  name    *HighPart( name *n ) {
-/************************************/
+extern  name    *Int64Equivalent( name *name )
+/*********************************************
+* Return a U64 equivalent of a double value
+*/
+{
+    constant_defn       *defn;
+    unsigned_32         *low;
+    unsigned_32         *high;
 
-    n = n;
-    return( NULL );
+    defn = GetFloat( name, FD );
+    low  = (unsigned_32 *)&defn->value[0];
+    high = (unsigned_32 *)&defn->value[2];
+    return( AllocU64Const( *low, *high ) );
 }
 
-extern  name    *LowPart( name *n ) {
-/***********************************/
+extern  name    *LowPart( name *tosplit, type_class_def class )
+/**************************************************************
+* Return the low (of type 'class') part of name 'tosplit'
+* Note: There may not be any need to support splitting to
+* classes other than U4/I4 on RISC (assuming that registers are
+* at least 32-bit).
+*/
+{
+    name                *new;
+    signed_8            s8;
+    unsigned_8          u8;
+    signed_16           s16;
+    unsigned_16         u16;
+    unsigned_32         u32;
+    constant_defn       *floatval;
 
-    n = n;
-    return( NULL );
+    switch( tosplit->n.class ) {
+    case N_CONSTANT:
+        if( tosplit->c.const_type == CONS_ABSOLUTE ) {
+            if( class == U1 ) {
+                u8 = tosplit->c.int_value & 0xff;
+                new = AllocUIntConst( u8 );
+            } else if( class == I1 ) {
+                s8 = tosplit->c.int_value & 0xff;
+                new = AllocIntConst( s8 );
+            } else if( class == U2 ) {
+                u16 = tosplit->c.int_value & 0xffff;
+                new = AllocUIntConst( u16 );
+            } else if( class == I2 ) {
+                s16 = tosplit->c.int_value & 0xffff;
+                new = AllocIntConst( s16 );
+            } else if( class == I4 ) {
+                new = AllocS32Const( tosplit->c.int_value );
+            } else if( class == U4 ) {
+                new = AllocUIntConst( tosplit->c.int_value );
+            } else if( class == FL ) {
+                _Zoiks( ZOIKS_129 );
+            } else { /* FD */
+                floatval = GetFloat( tosplit, FD );
+                u32 = (unsigned_32)floatval->value[1] << 16;
+                u32 += floatval->value[0];
+                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+            }
+#if 0
+        } else if( tosplit->c.const_type == CONS_ADDRESS ) {
+            new = AddrConst( tosplit->c.value,
+                                   tosplit->c.int_value, CONS_OFFSET );
+#endif
+        } else {
+            _Zoiks( ZOIKS_044 );
+        }
+        break;
+    case N_REGISTER:
+        if( class == U1 || class == I1 ) {
+            new = AllocRegName( Low16Reg( tosplit->r.reg ) );
+        } else if( class == U2 || class == I2 ) {
+            new = AllocRegName( Low32Reg( tosplit->r.reg ) );
+        } else {
+            new = AllocRegName( Low64Reg( tosplit->r.reg ) );
+        }
+        break;
+    case N_TEMP:
+        new = TempOffset( tosplit, 0, class );
+        if( new->t.temp_flags & CONST_TEMP ) {
+            name *cons = tosplit->v.symbol;
+            if( tosplit->n.name_class == FD ) {
+                cons = Int64Equivalent( cons );
+            }
+            new->v.symbol = LowPart( cons, class );
+        }
+        break;
+    case N_MEMORY:
+        new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
+                            tosplit->m.memory_type, class );
+        new->v.usage = tosplit->v.usage;
+        break;
+    case N_INDEXED:
+        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+                            tosplit->i.constant, class,
+                            0, tosplit->i.scale, tosplit->i.index_flags );
+        break;
+    }
+    return( new );
+}
+
+extern  name    *HighPart( name *tosplit, type_class_def class )
+/***************************************************************
+* Return the high (of type 'class') part of name 'tosplit'
+* Note: There may not be any need to support splitting to
+* classes other than U4/I4 on RISC (assuming that registers are
+* at least 32-bit).
+*/
+{
+    name                *new;
+    signed_8            s8;
+    unsigned_8          u8;
+    signed_16           s16;
+    unsigned_16         u16;
+    unsigned_32         u32;
+    constant_defn       *floatval;
+
+    switch( tosplit->n.class ) {
+    case N_CONSTANT:
+        if( tosplit->c.const_type == CONS_ABSOLUTE ) {
+            if( class == U1 ) {
+                u8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                new = AllocUIntConst( u8 );
+            } else if( class == I1 ) {
+                s8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                new = AllocIntConst( s8 );
+            } else if( class == U2 ) {
+                u16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                new = AllocUIntConst( u16 );
+            } else if( class == I2 ) {
+                s16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                new = AllocIntConst( s16 );
+            } else if( class == I4 ) {
+                new = AllocS32Const( tosplit->c.int_value_2 );
+            } else if( class == U4 ) {
+                new = AllocUIntConst( tosplit->c.int_value_2 );
+            } else if( class == FL ) {
+                _Zoiks( ZOIKS_129 );
+            } else { /* FD */
+                floatval = GetFloat( tosplit, FD );
+                u32 = (unsigned_32)floatval->value[ 3 ] << 16;
+                u32 += floatval->value[ 2 ];
+                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+            }
+#if 0
+        } else if( tosplit->c.const_type == CONS_ADDRESS ) {
+            new = AddrConst( tosplit->c.value,
+                                   tosplit->c.int_value, CONS_SEGMENT );
+#endif
+        } else {
+            _Zoiks( ZOIKS_044 );
+        }
+        break;
+    case N_REGISTER:
+        if( class == U1 || class == I1 ) {
+            new = AllocRegName( High16Reg( tosplit->r.reg ) );
+        } else if( class == U2 || class == I2 ) {
+            new = AllocRegName( High32Reg( tosplit->r.reg ) );
+        } else {
+            new = AllocRegName( High64Reg( tosplit->r.reg ) );
+        }
+        break;
+    case N_TEMP:
+        new = TempOffset( tosplit, tosplit->n.size/2, class );
+        if( new->t.temp_flags & CONST_TEMP ) {
+            name *cons = tosplit->v.symbol;
+            if( tosplit->n.name_class == FD ) {
+                cons = Int64Equivalent( cons );
+            }
+            new->v.symbol = HighPart( cons, class );
+        }
+        break;
+    case N_MEMORY:
+        new = AllocMemory( tosplit->v.symbol,
+                                tosplit->v.offset + tosplit->n.size/2,
+                                tosplit->m.memory_type, class );
+        new->v.usage = tosplit->v.usage;
+        break;
+    case N_INDEXED:
+        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+                tosplit->i.constant+ tosplit->n.size/2, class,
+                0, tosplit->i.scale, tosplit->i.index_flags );
+        break;
+    }
+    return( new );
 }
 
 extern  name    *OffsetMem( name *mem, type_length offset, type_class_def tipe ) {
@@ -757,3 +953,422 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
     return( first_ins );
 }
 
+
+static  void  CnvOpToInt( instruction * ins, int op )
+/***************************************************/
+{
+    name        *name1;
+
+    switch( ins->type_class ) {
+#if 0
+    case FS:
+        name1 = ins->operands[op];
+        if( name1->n.class == N_CONSTANT ) {
+            ins->operands[op] = IntEquivalent( name1 );
+        }
+        break;
+#endif
+    // this is for the I8 stuff - can't tell what to do in
+    // HighPart and LowPart if we don't get rid on constant
+    // here
+    case FD:
+        name1 = ins->operands[op];
+        if( name1->n.class == N_CONSTANT ) {
+            ins->operands[op] = Int64Equivalent( name1 );
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+
+static bool IndexOverlaps( instruction *ins, int i )
+/**************************************************/
+{
+    if( ins->operands[ i ]->n.class != N_INDEXED ) return( FALSE );
+    if( SameThing( ins->operands[ i ]->i.index, ins->result ) ) return( TRUE );
+    return( FALSE );
+}
+
+/* Note: This could be used for 128-bit types implemented on top of
+ * 64-bit regs or anything along those lines.
+ */
+#define WORD                U4
+#define LONG_WORD           U8
+#define HIGH_WORD( x )      ( (x)->c.int_value_2 )
+
+/* NB: The following routines are clones of their Intel counterparts
+ * with all segment related junk stripped off.
+ */
+
+extern  instruction     *rSPLITOP( instruction *ins )
+/****************************************************
+* Split a multi-word operation instruction.
+*/
+{
+    instruction *new_ins;
+    instruction *ins2;
+    name        *temp;
+
+    if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
+        temp = AllocTemp( LONG_WORD );
+        HalfType( ins );
+        new_ins = MakeBinary( ins->head.opcode,
+                        LowPart( ins->operands[0], WORD ),
+                        LowPart( ins->operands[1], WORD ),
+                        LowPart( temp,             WORD ),
+                        WORD );
+        ins2 = MakeBinary( ins->head.opcode,
+                        HighPart( ins->operands[0], WORD ),
+                        HighPart( ins->operands[1], WORD ),
+                        HighPart( temp,             WORD ),
+                        WORD );
+        if( ins->head.opcode == OP_ADD ) {
+            ins2->head.opcode = OP_EXT_ADD;
+        } else if( ins->head.opcode == OP_SUB ) {
+            ins2->head.opcode = OP_EXT_SUB;
+        }
+        ins2->table = CodeTable( ins2 );
+        new_ins->table = ins2->table;
+        ins->operands[0] = temp;
+        ins->operands[1] = temp;
+        PrefixIns( ins, new_ins );
+        PrefixIns( ins, ins2 );
+        ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
+        PrefixIns( ins, ins2 );
+        ins2 = MakeMove( HighPart( temp, WORD ),
+                          HighPart( ins->result, WORD ), WORD );
+        ReplIns( ins, ins2 );
+    } else {
+        HalfType( ins );
+        new_ins = MakeBinary( ins->head.opcode,
+                        LowPart( ins->operands[0], ins->type_class ),
+                        LowPart( ins->operands[1], ins->type_class ),
+                        LowPart( ins->result,      ins->type_class ),
+                        ins->type_class );
+        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
+        ins->operands[1] = HighPart( ins->operands[1], ins->type_class );
+        ins->result = HighPart( ins->result, ins->type_class );
+        if( ins->head.opcode == OP_ADD ) {
+            ins->head.opcode = OP_EXT_ADD;
+        } else if( ins->head.opcode == OP_SUB ) {
+            ins->head.opcode = OP_EXT_SUB;
+        }
+        ins->table = CodeTable( ins );
+        new_ins->table = ins->table;
+
+        PrefixIns( ins, new_ins );
+    }
+    new_ins->ins_flags |= INS_CC_USED;
+    return( new_ins );
+}
+
+
+extern instruction *rSPLITMOVE( instruction *ins )
+/*************************************************
+* Split a multi-word move instruction.
+*/
+{
+    instruction     *new_ins;
+    instruction     *ins2;
+    name            *temp;
+
+    CnvOpToInt( ins, 0 );
+    if( IndexOverlaps( ins, 0 ) ) {
+        temp = AllocTemp( LONG_WORD );
+        new_ins = MakeMove( LowPart( ins->operands[0], WORD ),
+                             LowPart( temp, WORD ), WORD );
+        ins2 = MakeMove( HighPart( ins->operands[0], WORD ),
+                             HighPart( temp, WORD ), WORD );
+        ins->operands[0] = temp;
+        PrefixIns( ins, new_ins );
+        PrefixIns( ins, ins2 );
+        ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
+        PrefixIns( ins, ins2 );
+        ins2 = MakeMove( HighPart( temp, WORD ),
+                          HighPart( ins->result, WORD ), WORD );
+        ReplIns( ins, ins2 );
+    } else {
+        HalfType( ins );
+        new_ins = MakeMove( LowPart( ins->operands[0], ins->type_class ),
+                             LowPart( ins->result, ins->type_class ),
+                             ins->type_class );
+        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
+        ins->result = HighPart( ins->result, ins->type_class );
+        if( new_ins->result->n.class == N_REGISTER
+         && ins->operands[0]->n.class == N_REGISTER
+         && HW_Ovlap( new_ins->result->r.reg, ins->operands[0]->r.reg ) ) {
+            SuffixIns( ins, new_ins );
+            new_ins = ins;
+        } else {
+            PrefixIns( ins, new_ins );
+        }
+    }
+    return( new_ins );
+}
+
+
+extern  instruction     *rSPLITNEG( instruction *ins )
+/*****************************************************
+* Split a multi-word negate instruction.
+*/
+{
+    name            *hi_res;
+    name            *lo_res;
+    name            *hi_src;
+    name            *lo_src;
+    instruction     *hi_ins;
+    instruction     *lo_ins;
+    instruction     *subtract;
+
+    HalfType( ins );
+    hi_res = HighPart( ins->result, ins->type_class );
+    hi_src = HighPart( ins->operands[0], ins->type_class );
+    lo_res = LowPart( ins->result, ins->type_class );
+    lo_src = LowPart( ins->operands[0], ins->type_class );
+    hi_ins = MakeUnary( OP_NEGATE, hi_src, hi_res, ins->type_class );
+    lo_ins = MakeUnary( OP_NEGATE, lo_src, lo_res, ins->type_class );
+    lo_ins->ins_flags |= INS_CC_USED;
+    subtract = MakeBinary( OP_EXT_SUB, hi_res, AllocIntConst( 0 ), hi_res,
+                            ins->type_class );
+    PrefixIns( ins, hi_ins );
+    ins->operands[0] = ins->result;
+    ins->operands[1] = AllocIntConst( 0 );
+    PrefixIns( ins, lo_ins );
+    ReplIns( ins, subtract );
+    UpdateLive( hi_ins, subtract );
+    return( hi_ins );
+}
+
+
+extern instruction      *rSPLITUNARY( instruction *ins )
+/*******************************************************
+* Split a multi-word unary operation. Only valid for ops
+* which can be split into two independent operations on
+* constituent types (e.g. bitwise complement).
+*/
+{
+    instruction         *new_ins;
+    name                *high_res;
+    name                *low_res;
+
+    CnvOpToInt( ins, 0 );
+    HalfType( ins );
+    if( ins->result == NULL ) {
+        high_res = NULL;
+        low_res = NULL;
+    } else {
+        high_res = HighPart( ins->result, ins->type_class );
+        low_res  = LowPart( ins->result, ins->type_class );
+    }
+    new_ins = MakeUnary( ins->head.opcode,
+                         LowPart( ins->operands[0], ins->type_class ),
+                         low_res, ins->type_class );
+    ins->operands[0] = HighPart( ins->operands[0],ins->type_class );
+    ins->result = high_res;
+    if( ins->head.opcode == OP_PUSH ) {
+        SuffixIns( ins, new_ins );
+        new_ins = ins;
+    } else {
+        PrefixIns( ins, new_ins );
+    }
+    return( new_ins );
+}
+
+
+extern  instruction     *rCLRHI_4( instruction *ins )
+/****************************************************
+* Clear the high 32 bits of a 64-bit name
+*/
+{
+    name                *high;
+    name                *low;
+    instruction         *new_ins;
+    type_class_def      tipe;
+
+    tipe = HalfClass[ins->type_class];
+    low = LowPart( ins->result, tipe );
+    high = HighPart( ins->result, tipe );
+    ChangeType( ins, tipe );
+    ins->head.opcode = OP_MOV;
+    ins->result = low;
+    new_ins = MakeMove( AllocS32Const( 0 ), high, tipe );
+    PrefixIns( ins, new_ins );
+    return( new_ins );
+}
+
+
+extern  instruction     *rSEX_4TO8( instruction *ins )
+/*****************************************************
+* Sign-extend a 32-bit name to 64-bit
+*/
+{
+    instruction         *ins1;
+    instruction         *ins2;
+    name                *high;
+
+    high = HighPart( ins->result, WD );
+    ins->result = LowPart( ins->result, WD );
+    ins->head.opcode = OP_MOV;
+    ins->type_class = WD;
+    ins->base_type_class = WD;
+    ins->table = NULL;
+    ins1 = MakeMove( ins->operands[0], high, WD );
+    SuffixIns( ins, ins1 );
+    ins2 = MakeBinary( OP_RSHIFT, high, AllocIntConst( 31 ), high, SW );
+    SuffixIns( ins1, ins2 );
+    return( ins );
+}
+
+
+extern  instruction     *rSPLITCMP( instruction *ins )
+/*****************************************************
+* Split a multi-word comparison instruction
+*/
+{
+    name                *left;
+    name                *right;
+    instruction         *low = NULL;
+    instruction         *high = NULL;
+    instruction         *not_equal = NULL;
+    type_class_def      high_class;
+    type_class_def      low_class;
+    byte                true_idx;
+    byte                false_idx;
+
+    high_class = HalfClass[ins->type_class];
+    low_class  = Unsigned[high_class];
+    left = ins->operands[0];
+    right = ins->operands[1];
+    true_idx = _TrueIndex( ins );
+    false_idx = _FalseIndex( ins );
+    switch( ins->head.opcode ) {
+    case OP_BIT_TEST_TRUE:
+        high = MakeCondition( ins->head.opcode,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        true_idx, NO_JUMP,
+                        WORD );
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        WORD );
+        not_equal = NULL;
+        break;
+    case OP_BIT_TEST_FALSE:
+        high = MakeCondition( OP_BIT_TEST_TRUE,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        false_idx, NO_JUMP,
+                        WORD );
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        WORD );
+        not_equal = NULL;
+        break;
+    case OP_CMP_EQUAL:
+        high = MakeCondition( OP_CMP_NOT_EQUAL,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        false_idx, NO_JUMP,
+                        WORD );
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        WORD );
+        not_equal = NULL;
+        break;
+    case OP_CMP_NOT_EQUAL:
+        high = MakeCondition( OP_CMP_NOT_EQUAL,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        true_idx, NO_JUMP,
+                        WORD );
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        WORD );
+        not_equal = NULL;
+        break;
+    case OP_CMP_LESS:
+    case OP_CMP_LESS_EQUAL:
+        not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        false_idx, NO_JUMP,
+                        high_class );
+        if( high_class == WORD
+         && right->n.class == N_CONSTANT
+         && right->c.const_type == CONS_ABSOLUTE
+         && HIGH_WORD( right ) == 0 ) {
+            high = NULL;
+        } else {
+            high = MakeCondition( OP_CMP_LESS,
+                        not_equal->operands[0], not_equal->operands[1],
+                        true_idx, NO_JUMP,
+                        high_class );
+        }
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        low_class );
+        break;
+    case OP_CMP_GREATER_EQUAL:
+    case OP_CMP_GREATER:
+        not_equal = MakeCondition( OP_CMP_NOT_EQUAL,
+                        HighPart( left, high_class ),
+                        HighPart( right, high_class ),
+                        false_idx, NO_JUMP,
+                        high_class );
+        if( high_class == WORD
+         && right->n.class == N_CONSTANT
+         && right->c.const_type == CONS_ABSOLUTE
+         && HIGH_WORD( right ) == 0 ) {
+            _SetBlockIndex( not_equal, true_idx, NO_JUMP );
+            high = NULL;
+        } else {
+            high = MakeCondition( OP_CMP_GREATER,
+                        not_equal->operands[0], not_equal->operands[1],
+                        true_idx, NO_JUMP,
+                        high_class );
+        }
+        low = MakeCondition( ins->head.opcode,
+                        LowPart( left, low_class ),
+                        LowPart( right, low_class ),
+                        true_idx, false_idx,
+                        low_class );
+        break;
+    default:
+        break;
+    }
+    if( high != NULL ) {
+        PrefixIns( ins, high );
+    } else {
+        high = not_equal;              /* for return value */
+    }
+    if( not_equal != NULL ) {
+        PrefixIns( ins, not_equal );
+    }
+    ReplIns( ins, low );
+    return( high );
+}
+
+
+extern instruction      *rMOVELOW( instruction *ins )
+/****************************************************
+* Move low part of a name, in other words chop off the
+* high part (e.g. convert U8==>U4)
+*/
+{
+    ins->head.opcode = OP_MOV;
+    ins->operands[0] = LowPart( ins->operands[0], ins->type_class );
+    ins->table = NULL;
+    return( ins );
+}

@@ -1,0 +1,161 @@
+3P Import/Export format
+=======================
+
+I've added 3 entries to the main header to support imports and exports so the new header (strucs.inc)
+has the entries NewExports, NewImports & NewImportModCnt. NewExports is the length of the export
+section, NewImports the length of the import section and NewImportModCnt the number of modules being
+imported from.
+
+
+The IMPORT details follow the EXPORT details which come after the relocation entries. So the order is
+now main header, segment definitions, relocation table, exports, imports and then the program.
+
+
+
+The export section is the following format:
+
+dword - number of entries
+
+followed by number of entries+1 of:
+
+dword - offset of export record.
+
+Each export record has the following format:
+
+dword - offset value
+word - segment number.
+byte - name string length.
+
+then name string length bytes of the symbol name.
+
+The first export entry should always be the modules name and have zero's in the segment & offset
+fields. eg,
+
+	org 0
+
+	dd 2	;2 entries (not counting module name)
+
+	dd ModName	;offset of module name entry
+	dd Export1	;offset of first real export entry
+	dd Export2	;offset of second export entry.
+
+ModName:
+	dd 0	;dummy offset value.
+	dw 0	;dummy segment value.
+	db 4	;name string length.
+	db "TEST"
+
+Export1:
+	dd ?	;offset of exported value within its segment
+	dw ?	;segment of exported value.
+	db 7
+	db "EXPORT1"
+
+Export2:
+	dd ?	;offset of exported value within its segment
+	dw ?	;segment of exported value
+	db 7
+	db "EXPORT2"
+
+
+The above would export EXPORT1 & EXPORT2 in a module called TEST. As far as I can remember case IS
+significant to the loader so generally it's a good idea to upper case things.
+
+
+
+The import section has the following format:
+
+dword - offset of module name table.
+dword - offset of function name table.
+dword - offset of import fixup data.
+
+
+The module name table is as follows:
+
+dword - number of entries
+
+then number of entries dwords of name string offsets.
+
+Module names must allow 4 bytes of space even if not required by the name. The loader needs a
+guarentee that 4 bytes are available so the name can be converted to a pointer and stored in the
+same place.
+
+
+The function name table is as follows:
+
+dword - number of entries
+
+then number of entries dwords of name string offsets.
+
+
+
+The import fixup data is as follows:
+
+dword - number of entries
+
+then variable length number of entries.
+
+byte - fixup type
+ bit 7  is the ordinal/name flag. SET means function number is an ordinal.
+ bit 6  is the self relative flag. SET means fixup is self relative.
+ bits 5-0 are the fixup type.
+  0 - 16-bit offset.
+  1 - 32-bit offset.
+  2 - 16-bit seg:offset pointer.
+  3 - 32-bit seg:offset pointer.
+  4 - 16-bit seg only.
+dword - fixup lengths / offset
+ bits 31&30 are module number length in bytes.
+ bits 29&28 are function number length in bytes.
+ bits 27-0 are fixup offset within program image same as a normal fixup.
+
+
+eg,
+
+	org 0
+
+	dd ModNames			;offset of list of module names imported.
+	dd FuncNames		;offset of list of function names imported.
+	dd Fixups			;offset of fixup data.
+
+ModNames:
+	dd 1					;number of module names.
+	dd Module1			;offset of name string.
+
+Module1:
+	db 4					;name string length.
+	db "TEST"			;name of module to IMPORT from.
+
+FuncNames:
+	dd 2					;number of function names.
+	dd Function1		;offset of name string.
+	dd Function2		;offset of name string.
+
+Function1:
+	db 9					;name string length.
+	db "FUNCTION1"		;name of function to import.
+
+Function2:
+	db 9					;name string length.
+	db "FUNCTION2"		;name of function to import.
+
+Fixups:
+	dd 2					;number of fixup entries.
+
+	db 1+64						;32-bit offset, self relative.
+	dd ?+(1<<28)+(1<<30)		;function number only needs 1 byte and module number only needs 1 byte.
+	db 0							;module name number.
+	db 0							;function name number (FUNCTION1)
+
+	db 1+64						;32-bit offset, self relative.
+	dd ?+(1<<28)+(1<<30)		;function number only needs 1 byte and module number only needs 1 byte.
+	db 0							;module name number.
+	db 1							;function name number (FUNCTION2)
+
+
+
+Remember to make sure you leave room for at least 4 bytes of module name includeing the length byte
+for internal use even if the string only requires 2 bytes.
+
+Modules can have imports without exports and exports without imports.
+

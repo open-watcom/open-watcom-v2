@@ -32,12 +32,16 @@
 
 #include "ctkeyb.h"
 #include <termios.h>
+#include <sys/ioctl.h>
+
+extern void restorekeyb( void );
+extern void savekeyb( void );
 
 static struct termios   SaveTermSet;
 static pid_t            SavePGroup;
 
 int ck_unevent( EVENT ev )
-/*******************************/
+/************************/
 
 // Somebody wants us to pretend that the specified event has occurred
 // (one of EV_SHIFT/CTRL/ALT_RELEASE) so that the corresponding press
@@ -61,26 +65,44 @@ int ck_unevent( EVENT ev )
     #endif
     return( 0 );
 }
-int ck_stop()
-/******************/
+
+int ck_stop( void )
+/*****************/
 {
     return( 0 );
 }
 
-int ck_flush()
-/********************/
+int ck_flush( void )
+/******************/
 {
     tcflush( UIConHandle, TCIFLUSH );
     return 0;
 }
 
-int ck_shift_state()
-/*************************/
+int ck_shift_state( void )
+/************************/
 {
+// FIXME: This is nonsense - the two should not be defined at the same time
+#if defined( __LINUX__ ) && !defined( __FreeBSD__ )
+    /* read the shift state on the Linux console. Works only locally. */
+    /* and WARNING: see console_ioctl(4)                              */
+    char shift_state = 6;
+    if( ioctl( 0, TIOCLINUX, &shift_state ) >= 0 ) {
+        /* Linux console modifiers */
+        ShftState &= ~(S_SHIFT|S_CTRL|S_ALT);
+        if( shift_state & 1 )
+            ShftState |= S_SHIFT;
+        if( shift_state & ( 2 | 8 ) )
+            ShftState |= S_ALT;
+        if( shift_state & 4 )
+            ShftState |= S_CTRL;
+    }
+#endif
     return( ShftState );
 }
-int ck_restore()
-/*********************/
+
+int ck_restore( void )
+/********************/
 {
     struct termios  new;
 
@@ -91,14 +113,13 @@ int ck_restore()
     new.c_lflag |= ISIG;
     new.c_cc[VMIN] = 1;
     new.c_cc[VTIME] = 0;
-    tcsetattr( UIConHandle, TCSADRAIN, &new );
+    while( tcsetattr( UIConHandle, TCSADRAIN, &new ) == -1 && errno == EINTR );
     return 0;
 }
 
-int ck_init()
-/******************/
+int ck_init( void )
+/*****************/
 {
-    extern void restorekeyb();
     tcgetattr( UIConHandle, &SaveTermSet );
 
     if( !init_trie() ) return( FALSE );
@@ -111,16 +132,16 @@ int ck_init()
     return( TRUE );
 }
 
-int ck_fini()
-/************************/
+int ck_fini( void )
+/*****************/
 {
-    extern void savekeyb();
     savekeyb();
     tcsetpgrp( UIConHandle, SavePGroup );
     return 0;
 }
-int ck_save()
-/******************/
+
+int ck_save( void )
+/*****************/
 {
     tcsetattr( UIConHandle, TCSADRAIN, &SaveTermSet );
     return 0;

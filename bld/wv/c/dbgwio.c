@@ -77,7 +77,7 @@ enum {
 typedef struct {
     item_mach   value;
     address     addr;
-    char        type;
+    int         type;
     unsigned    value_known     : 1;
 } io_location;
 

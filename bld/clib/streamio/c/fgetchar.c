@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fgetchar() - read character from stdin.
 *
 ****************************************************************************/
 
@@ -35,11 +34,7 @@
 #include <stdio.h>
 
 
-#ifdef __WIDECHAR__
-_WCRTLINK wint_t fgetwchar( void )
-#else
-_WCRTLINK int fgetchar( void )
-#endif
-    {
-        return( __F_NAME(fgetc,fgetwc)(stdin) );
-    }
+_WCRTLINK INTCHAR_TYPE __F_NAME(fgetchar,fgetwchar)( void )
+{
+    return( __F_NAME(fgetc,fgetwc)( stdin ) );
+}

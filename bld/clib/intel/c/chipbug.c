@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  verify Pentium processor divide bug
 *
 ****************************************************************************/
 
@@ -40,7 +39,7 @@ enum {
     PROB_P5_DIV = 0x0001
 };
 
-_WCRTLINK void __verify_pentium_fdiv_bug()
+_WCRTLINK void __verify_pentium_fdiv_bug( void )
 {
     /*
         Verify we have got the Pentium FDIV problem.
@@ -56,4 +55,4 @@ _WCRTLINK void __verify_pentium_fdiv_bug()
     }
 }
 
-AXI( __verify_pentium_fdiv_bug, INIT_PRIORITY_FPU+1 );
+AXI( __verify_pentium_fdiv_bug, INIT_PRIORITY_FPU + 4 );

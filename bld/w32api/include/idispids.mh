@@ -1,0 +1,15 @@
+/*
+ *  idispids.h  Internet dispatch identifiers
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Additional ambient property dispatch identifiers */
+#define DISPID_AMBIENT_OFFLINEIFNOTCONNECTED    (-5501)
+#define DISPID_AMBIENT_SILENT                   (-5502)
+
+:include cplusepi.sp

@@ -355,7 +355,7 @@ static WicErrors scanCPlusPlusComment(pTokData tokData)
     }
 }
 
-static char scanESCChar() {
+static char scanESCChar(void) {
     int i;
     char n;
 
@@ -835,7 +835,7 @@ WicErrors getNextToken(pToken tok)
                         retVal = RERR_INV_CHAR;
                         goto Return;
                     }
-                } else if isdigit(NEXT_CHAR) {
+                } else if (isdigit(NEXT_CHAR)) {
                     if (pushFloatDotExp(tok->data, 1)) {
                         retVal = convStr2Const(tok->data);
                         goto Return;

@@ -37,6 +37,9 @@
 #include <errno.h>
 #if defined(__NT__)
     #include <windows.h>
+#elif defined(__WINDOWS__)
+    #include <windows.h>
+    #include "tinyio.h"
 #elif defined(__OS2__)
     #include "tinyos2.h"
     #define INCL_DOSMEMMGR
@@ -50,103 +53,100 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
-
-
-#if defined(DEFAULT_WINDOWING) && defined( __WINDOWS__ )
-    extern short _WCI86FAR pascal _lread( short, char _WCI86FAR *, short );
-#endif
+#include "lseek.h"
 
 
 #if defined(__WINDOWS_386__)
-    int __read
+  static int __read( int handle, void *buf, unsigned len )
 #else
-    _WCRTLINK int read
+  _WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
-                     ( int handle, char *buffer, unsigned len )
 {
     unsigned read_len, total_len;
     unsigned reduce_idx, finish_idx;
     unsigned iomode_flags;
-    #if defined(__NT__)
-        DWORD   amount_read;
-        BOOL    rc;
-        HANDLE  h;
-    #else
-        tiny_ret_t rc;
-        #if defined(__WARP__)
-            ULONG amount_read;
-        #elif defined(__OS2_286__)
-            USHORT amount_read;
-        #else
-            unsigned amount_read;
-        #endif
-    #endif
-    #ifdef DEFAULT_WINDOWING
-        LPWDATA res;
-    #endif
+    char *buffer = buf;
+#if defined(__NT__)
+    DWORD   amount_read;
+    BOOL    rc;
+    HANDLE  h;
+#elif defined(__WARP__)
+    ULONG amount_read;
+#elif defined(__OS2_286__)
+    USHORT amount_read;
+#else
+    unsigned amount_read;
+#endif
+#if !defined(__NT__)
+    tiny_ret_t rc;
+#endif
+#ifdef DEFAULT_WINDOWING
+    LPWDATA res;
+#endif
 
     __handle_check( handle, -1 );
+    __ChkTTYIOMode( handle );
     iomode_flags = __GetIOMode( handle );
     if( iomode_flags == 0 ) {
-        #if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
-            return( _lread( handle, buffer, len ) );
-        #else
-            __set_errno( EBADF );
-            return( -1 );
-        #endif
+#if defined( __WINDOWS__ ) || defined( __WINDOWS_386__ )
+        return( _lread( handle, buffer, len ) );
+#else
+        __set_errno( EBADF );
+        return( -1 );
+#endif
     }
     if( !(iomode_flags & _READ) ) {
         __set_errno( EACCES );     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
-    #ifdef __NT__
-        h = __getOSHandle( handle );
-    #endif
+#ifdef __NT__
+    h = __getOSHandle( handle );
+#endif
     if( iomode_flags & _BINARY ) {       /* if binary mode */
-        #ifdef DEFAULT_WINDOWING
-            if( _WindowsStdin != 0 &&
-                    (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
-                total_len = _WindowsStdin( res, buffer, len );
-                rc = 0;
-            } else {
-        #endif
-        #if defined(__NT__)
-                rc = ReadFile( h, buffer, len, &amount_read, NULL );
-                total_len = amount_read;
-                if( !rc ) {
-                    if (GetLastError() == ERROR_BROKEN_PIPE)
-                        return total_len;
+#ifdef DEFAULT_WINDOWING
+        if( _WindowsStdin != 0 &&
+                (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
+            total_len = _WindowsStdin( res, buffer, len );
+            rc = 0;
+        } else
+#endif
+        {
+#if defined(__NT__)
+            rc = ReadFile( h, buffer, len, &amount_read, NULL );
+            total_len = amount_read;
+            if( !rc ) {
+                if (GetLastError() == ERROR_BROKEN_PIPE)
+                    return total_len;
 
-                    return( __set_errno_nt() );
-                }
-        #elif defined( __OS2__ )
-                rc = DosRead( handle, buffer, len, &amount_read );
-                total_len = amount_read;
-        #else
-                rc = TinyRead( handle, buffer, len );
-                total_len = TINY_LINFO(rc);
-        #endif
-        #ifdef DEFAULT_WINDOWING
+                return( __set_errno_nt() );
             }
-        #endif
-        #if !defined(__NT__)
-            if( TINY_ERROR(rc) ) {
-                return( __set_errno_dos( TINY_INFO(rc) ) );
-            }
-        #endif
+#elif defined( __OS2__ )
+            rc = DosRead( handle, buffer, len, &amount_read );
+            total_len = amount_read;
+#else
+            rc = TinyRead( handle, buffer, len );
+            total_len = TINY_LINFO( rc );
+#endif
+        }
+#if !defined(__NT__)
+        if( TINY_ERROR( rc ) ) {
+            return( __set_errno_dos( TINY_INFO( rc ) ) );
+        }
+#endif
     } else {
         _AccessFileH( handle );
         total_len = 0;
         read_len = len;
         do {
-            #ifdef DEFAULT_WINDOWING
-                if( _WindowsStdin != 0 &&
-                        (res = _WindowsIsWindowedHandle( handle )) != 0L ) {
-                    amount_read = _WindowsStdin( res, buffer, read_len );
-                    rc = 0;
-                } else {
-            #endif
-            #if defined(__NT__)
+#ifdef DEFAULT_WINDOWING
+            if( _WindowsStdin != 0 &&
+                    (res = _WindowsIsWindowedHandle( handle )) != 0L ) {
+                amount_read = _WindowsStdin( res, buffer, read_len );
+                rc = 0;
+            } else
+#endif
+            {
+#if defined(__NT__)
                 rc = ReadFile( h, buffer, read_len, &amount_read, NULL );
                 if( !rc ) {
                     _ReleaseFileH( handle );
@@ -156,29 +156,27 @@
 
                     return( __set_errno_nt() );
                 }
-            #elif defined( __OS2__ )
+#elif defined( __OS2__ )
                 rc = DosRead( handle, buffer, read_len, &amount_read );
-            #else
+#else
                 rc = TinyRead( handle, buffer, read_len );
-                amount_read = TINY_LINFO(rc);
-            #endif
-            #ifdef DEFAULT_WINDOWING
+                amount_read = TINY_LINFO( rc );
+#endif
             }
-            #endif
-            #if !defined(__NT__)
-                if( TINY_ERROR(rc) ) {
-                    _ReleaseFileH( handle );
-                    return( __set_errno_dos( TINY_INFO(rc) ) );
-                }
-            #endif
+#if !defined(__NT__)
+            if( TINY_ERROR( rc ) ) {
+                _ReleaseFileH( handle );
+                return( __set_errno_dos( TINY_INFO( rc ) ) );
+            }
+#endif
             if( amount_read == 0 ) {                    /* EOF */
                 break;
             }
             reduce_idx = 0;
             finish_idx = reduce_idx;
-            for(; reduce_idx < amount_read; ++reduce_idx ) {
+            for( ; reduce_idx < amount_read; ++reduce_idx ) {
                 if( buffer[ reduce_idx ] == 0x1a ) {    /* EOF */
-                    lseek( handle,
+                    __lseek( handle,
                            ((long)reduce_idx - (long)amount_read)+1L,
                            SEEK_CUR );
                     total_len += finish_idx;
@@ -192,7 +190,9 @@
             total_len += finish_idx;
             buffer += finish_idx;
             read_len -= finish_idx;
-            if( iomode_flags & _ISTTY ) break;  /* 04-feb-88, FWC */
+            if( iomode_flags & _ISTTY ) {
+                break;  /* 04-feb-88, FWC */
+            }
         } while( read_len != 0 );
         _ReleaseFileH( handle );
     }
@@ -201,9 +201,10 @@
 
 #if defined( __WINDOWS_386__ )
 #define MAXBUFF 0x8000
-_WCRTLINK int read( int handle, char *buffer, unsigned len )
+_WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
-    unsigned    total=0,readamt;
+    unsigned    total = 0;
+    unsigned    readamt;
     int         rc;
 
     __handle_check( handle, -1 );
@@ -215,15 +216,16 @@ _WCRTLINK int read( int handle, char *buffer, unsigned len )
             readamt = len;
         }
         rc = __read( handle, buffer, readamt );
-        if( rc < 0 ) return( rc );
-        total += (unsigned) rc;
-        if( rc != readamt ) return( total );
+        if( rc == -1 )
+            return( rc );
+        total += (unsigned)rc;
+        if( rc != readamt )
+            return( total );
 
         len -= readamt;
-        buffer += readamt;
+        buffer = ((char *)buffer) + readamt;
     }
     return( total );
 
 }
 #endif
-

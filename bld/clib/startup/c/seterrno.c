@@ -24,11 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of __set_errno().
 *
 ****************************************************************************/
 
+
+#ifdef __WATCOMC__
 
 #include "variety.h"
 #include <stdlib.h>
@@ -37,29 +38,39 @@
 #include "seterrno.h"
 
 _WCRTLINK void __set_errno( unsigned int err )
-    {
-        _RWD_errno = err;
-    }
+{
+    _RWD_errno = err;
+}
 
-_WCRTLINK void __set_EDOM()
-    {
-        __set_errno( EDOM );
-    }
+_WCRTLINK void __set_EDOM( void )
+{
+    __set_errno( EDOM );
+}
 
-_WCRTLINK void __set_ERANGE()
-    {
-        __set_errno( ERANGE );
-    }
+_WCRTLINK void __set_ERANGE( void )
+{
+    __set_errno( ERANGE );
+}
 
-_WCRTLINK int __set_EINVAL()
-    {
-        __set_errno( EINVAL );
-        return( -1 );
-    }
+_WCRTLINK int __set_EINVAL( void )
+{
+    __set_errno( EINVAL );
+    return( -1 );
+}
 
-#if !defined(__QNX__) && !defined(__PENPOINT__) && !defined(__NETWARE__)
+#if !defined(__UNIX__) && !defined(__NETWARE__)
 _WCRTLINK void __set_doserrno( unsigned int err )
-    {
-        _RWD_doserrno = err;
-    }
+{
+    _RWD_doserrno = err;
+}
+#endif
+
+#else
+
+#include <errno.h>
+void __set_errno( unsigned int err )
+{
+    errno = err;
+}
+
 #endif

@@ -33,8 +33,9 @@
 #ifndef _SEGMENT_H_
 #define _SEGMENT_H_
 
+#include "compcfg.h"
+
 #include "cgsegid.h"
-#include "tgtenv.h"
 
 enum segments {
     SEG_NULL       = 0,         // no segment yet assigned

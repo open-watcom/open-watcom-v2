@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <dos.h>
 #include "vi.h"
+#include <dos.h>
 #include "win.h"
 #include "dosx.h"
 #include "curses.h"
@@ -84,6 +81,7 @@ void PopDirectory( void )
 void NewCursor( window_id id, cursor_type ct )
 {
     // could do a curs_set() here
+
 } /* NewCursor */
 
 void StupidCursesWrite( int y, int x, char c )
@@ -104,6 +102,7 @@ void MyBeep( void )
     if( EditFlags.BeepFlag ) {
         beep();
     }
+
 } /* MyBeep */
 
 /*
@@ -123,6 +122,7 @@ void ScreenInit( void )
     // EditFlags.Monocolor = TRUE;
     EditFlags.HasSystemMouse = FALSE;
     curson();
+
 } /* ScreenInit */
 
 /*
@@ -132,6 +132,7 @@ void ScreenFini( void )
 {
     cursoff();
     endwin();
+
 } /* ScreenFini */
 
 /*
@@ -140,6 +141,7 @@ void ScreenFini( void )
 void ChkExtendedKbd( void )
 {
     EditFlags.ExtendedKeyboard = 0;
+
 } /* ChkExtendedKbd */
 
 /*
@@ -164,6 +166,7 @@ long MemSize( void )
 void ScreenPage( int page )
 {
     PageCnt += page;
+
 } /* ScreenPage */
 
 /*
@@ -173,10 +176,10 @@ int ChangeDrive( int drive )
 {
     char        a;
     unsigned    b;
-    unsigned    total,c;
+    unsigned    total, c;
 
-    a = (char) tolower(drive) - (char) 'a';
-    b = a+1;
+    a = (char) tolower( drive ) - (char) 'a';
+    b = a + 1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );
     if( b != c ) {
@@ -187,10 +190,11 @@ int ChangeDrive( int drive )
 }/* ChangeDrive */
 
 #if defined( __386__ ) && !defined( __4G__ )
-#define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #else
-#define KEY_PTR (char *) 0x00400017;
+    #define KEY_PTR (char *) 0x00400017;
 #endif
+
 /*
  * ShiftDown - test if shift key is down
  */
@@ -228,15 +232,15 @@ void TurnOffCapsLock( void )
 
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax,04408h" \
+        "mov    ax, 04408h" \
         "int    021h" \
-        "cmp    ax,0fh" \
+        "cmp    ax, 0fh" \
         "jne    ok" \
-        "mov    ax,0" \
+        "mov    ax, 0" \
         "jmp    done" \
         "ok:    inc ax" \
         "done:" \
-        parm [bl] value[ax];
+    parm [bl] value[ax];
 
 /*
  * DoGetDriveType - get the type of drive A-Z
@@ -254,7 +258,7 @@ void MyDelay( int ms )
 {
     int         final_ticks;
 
-    final_ticks = ClockTicks + ((ms*182L+5000L)/10000L );
+    final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
     while( ClockTicks < final_ticks );
 
 } /* MyDelay */
@@ -278,7 +282,7 @@ void MyVioShowBuf( unsigned short offset, unsigned short length )
     if( PageCnt > 0 || EditFlags.Quiet ) {
         return;
     }
-    info = &Scrn[ offset ];
+    info = &Scrn[offset];
     offset /= sizeof( char_info );
     getyx( CursesWindow, y, x );
 
@@ -290,18 +294,19 @@ void MyVioShowBuf( unsigned short offset, unsigned short length )
     }
     wmove( CursesWindow, y, x );
     refresh();
+
 } /* MyVioShowBuf */
 
-// void BIOSSetColorRegister( short, char, char, char );
-// void BIOSGetColorPalette( void _FAR * );
-// void BIOSSetBlinkAttr( void );
-// void BIOSSetNoBlinkAttr( void );
-// short BIOSTestKeyboard( void );
-// short BIOSGetKeyboard( char );
-// short BIOSKeyboardHit( char );
-// char BIOSGetRowCount( void );
-// unsigned long BIOSGetVideoMode( void );
-// long BIOSGetColorRegister( short );
+// void            BIOSSetColorRegister( short, char, char, char );
+// void            BIOSGetColorPalette( void _FAR * );
+// void            BIOSSetBlinkAttr( void );
+// void            BIOSSetNoBlinkAttr( void );
+// short           BIOSTestKeyboard( void );
+// short           BIOSGetKeyboard( char );
+// short           BIOSKeyboardHit( char );
+// char            BIOSGetRowCount( void );
+// unsigned long   BIOSGetVideoMode( void );
+// long            BIOSGetColorRegister( short );
 
 short BIOSGetCursor( char type )
 {
@@ -326,7 +331,7 @@ unsigned short BIOSGetKeyboard( int extended )
  * come up with a correct curses attribute given a color combo and a
  * window.
  */
-unsigned short WindowAttr( wind *w, short foreground, short background )
+unsigned short WindowAttr( wind *w, vi_color foreground, vi_color background )
 {
     unsigned short      attr = A_NORMAL;
 
@@ -335,8 +340,7 @@ unsigned short WindowAttr( wind *w, short foreground, short background )
         if( background == w->text_color && foreground == w->background_color ) {
             attr |= A_REVERSE;
         } else {
-            if( foreground != w->text_color ||
-                background != w->background_color ) {
+            if( foreground != w->text_color || background != w->background_color ) {
                 attr |= A_BOLD;
             }
         }

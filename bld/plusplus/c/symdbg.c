@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <assert.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "cgfront.h"
 #include "cgback.h"
@@ -76,10 +77,10 @@ static dbg_loc symbolicDebugSetSegment( dbg_loc dl, SYMBOL sym );
 static dbg_loc symbolicDebugSetCodeSegment( dbg_loc dl );
 static dbg_type symbolicDebugClassType( TYPE type );
 static void doSymbolicDebugFundamentalType( TYPE type, void *data );
-static void symbolicDebugFundamentalType();
+static void symbolicDebugFundamentalType( void );
 static void doSymbolicDebugNamedType( TYPE type, void *data );
-static void symbolicDebugNamedType();
-static void symbolicDebugSymbol();
+static void symbolicDebugNamedType( void );
+static void symbolicDebugSymbol( void );
 
 void SymbolicDebugInit( void )
 /****************************/
@@ -775,7 +776,8 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
     // normally we ignore typedefs, but we want the names to come out
     if( type->id == TYP_TYPEDEF ) {
         if( ScopeType( type->u.t.scope, SCOPE_TEMPLATE_DECL ) ) return( dt );
-        if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) ) {
+        if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM )
+         && !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) ) {
             if( !CompFlags.no_debug_type_names ) {
                 if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_INST ) ) {
                     fwd_info->dn = DBBegName( SimpleTypeName( type ),
@@ -901,8 +903,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
             prevFwdInfo = fwd_info;
             {
                 // from code generator
-                extern dbg_type SafeRecurse( dbg_type (*)( TYPE ), TYPE );
-                dt = SafeRecurse( &symbolicDebugClassType, type );
+                dt = (dbg_type)CGSafeRecurse( &symbolicDebugClassType, type );
             }
             if( fwd_info->dn != NULL ) {
                 dt = DBEndName( fwd_info->dn, dt );
@@ -1006,8 +1007,9 @@ static void doSymbolicDebugFundamentalType( TYPE type, void *data )
     }
 }
 
-static void symbolicDebugSegmentType( void ){
-/*************************************/
+static void symbolicDebugSegmentType( void )
+/******************************************/
+{
     TYPE        type;
     dbg_type    dt;
 
@@ -1018,7 +1020,7 @@ static void symbolicDebugSegmentType( void ){
 }
 
 static void symbolicDebugFundamentalType( void )
-/****************************************/
+/**********************************************/
 {
     type_id     id;
     dbg_type    data;
@@ -1061,6 +1063,7 @@ static void doSymbolicDebugNamedType( TYPE type, void *data )
 {
     data = data;
     if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) &&
+        !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_SPEC_PARM ) &&
         !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_DECL ) ) {
         if( CompFlags.all_debug_type_names ||
             typedef_is_of_basic_types( type ) ) {
@@ -1069,8 +1072,8 @@ static void doSymbolicDebugNamedType( TYPE type, void *data )
     }
 }
 
-static void symbolicDebugNamedType()
-/**********************************/
+static void symbolicDebugNamedType( void )
+/****************************************/
 {
     int    data;
 
@@ -1104,13 +1107,13 @@ void SymbolicDebugGenSymbol( SYMBOL sym, boolean scoped, boolean by_ref )
     DBLocFini( dl );
 }
 
-static void symbolicDebugSymbol()
-/*******************************/
+static void symbolicDebugSymbol( void )
+/*************************************/
 {
     SYMBOL stop;
     SYMBOL curr;
 
-    stop = ScopeOrderedStart( FileScope );
+    stop = ScopeOrderedStart( GetFileScope() );
     curr = ScopeOrderedNext( stop, NULL );
     while( curr != NULL ) {
         if( ! SymIsFunctionTemplateModel( curr ) &&
@@ -1146,8 +1149,9 @@ void SymbolicDebugEmit( void )
     }
 }
 
-void SymbolicDebugMemberFunc( SYMBOL func, SYMBOL this_sym ){
-/***********************************************************/
+void SymbolicDebugMemberFunc( SYMBOL func, SYMBOL this_sym )
+/**********************************************************/
+{
     TYPE    sym_type;
     dbg_loc dl;
 

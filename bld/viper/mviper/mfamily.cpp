@@ -113,6 +113,10 @@ MSwitch* WEXPORT MFamily::findSwitch( WString& switchtag )
         if( tag == switchtag ) {
             return sw;
         }
+        sw->getCompatibleTag( tag );
+        if( !stricmp( tag, switchtag ) ) {
+            return sw;
+        }
     }
     return NULL;
 }

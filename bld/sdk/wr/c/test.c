@@ -38,99 +38,101 @@
 #include "wrselimg.h"
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
-                    LPSTR     lpszCmdLine,  int       nCmdShow)
+                    LPSTR lpszCmdLine, int nCmdShow )
 {
-    extern char **_argv;
-    extern int    _argc;
-    int           ret;
-    int           i, dup;
-    int           ltype;
-    int           stype;
-    int           backup;
-    WRInfo       *info;
-    WRFileType    ftype;
-    char         *data;
-    WResID        type, name;
-    uint_16       mflags;
-    WRSelectImageInfo *sii;
+    extern char         **_argv;
+    extern int          _argc;
+    int                 ret;
+    int                 i;
+    int                 ltype;
+    int                 stype;
+    int                 backup;
+    WRInfo              *info;
+    WRFileType          ftype;
+    uint_16             mflags;
+    WRSelectImageInfo   *sii;
+#if 0
+    int                 dup;
+    char                *data;
+    WResID              type;
+    WResID              name;
+#endif
 
-    hinstCurrent  = hinstCurrent;
+    hinstCurrent = hinstCurrent;
     hinstPrevious = hinstPrevious;
-    lpszCmdLine   = lpszCmdLine;
-    nCmdShow      = nCmdShow;
+    lpszCmdLine = lpszCmdLine;
+    nCmdShow = nCmdShow;
 
     info = NULL;
     ret = TRUE;
 
     WRInit();
     if( _argc == 6 ) {
-        ltype  = atoi( _argv[2] );
-        stype  = atoi( _argv[4] );
-        backup = ( atoi( _argv[5] ) != 0);
-        if( stype ) {
+        ltype = atoi( _argv[2] );
+        stype = atoi( _argv[4] );
+        backup = (atoi( _argv[5] ) != 0);
+        if( stype != 0 ) {
             info = WRLoadResource( _argv[1], ltype );
-            if( info ) {
+            if( info != NULL ) {
                 info->save_name = _argv[3];
                 info->save_type = stype;
-                ret = WRSaveResource ( info, backup );
+                ret = WRSaveResource( info, backup );
             } else {
                 ret = FALSE;
             }
         }
 #if 0
-    } else if ( _argc == 2 ) {
+    } else if( _argc == 2 ) {
         ret = FALSE;
-        data = WRMemAlloc ( 32 );
-        if( data ) {
-            for( i=0; i<32; i++ ) {
-                data[i]=i;
+        data = WRMemAlloc( 32 );
+        if( data != NULL ) {
+            for( i = 0; i < 32; i++ ) {
+                data[i] = i;
             }
             type.IsName = name.IsName = FALSE;
             type.ID.Num = 10;
             name.ID.Num = 200;
-            ret = WRSaveObjectAs( _argv[1], WR_WIN16M_RES, &type, &name,
-                                  data, 32, 0 );
+            ret = WRSaveObjectAs( _argv[1], WR_WIN16M_RES, &type, &name, data, 32, 0 );
             WRMemFree( data );
         }
     } else if( _argc == 3 ) {
         ret = FALSE;
         data = WRMemAlloc( 32 );
-        if( data ) {
-            for( i=0; i<32; i++ ) {
-                data[i]=i;
+        if( data != NULL ) {
+            for( i = 0; i < 32; i++ ) {
+                data[i] = i;
             }
             type.IsName = name.IsName = FALSE;
             type.ID.Num = 10;
             name.ID.Num = 100;
-            ret = WRSaveObjectInto( _argv[1], &type, &name, data,
-                                    32, 0, &dup );
+            ret = WRSaveObjectInto( _argv[1], &type, &name, data, 32, 0, &dup );
             WRMemFree( data );
         }
 #endif
     } else {
-        for( i=1; i<_argc; i++ ) {
-            WRSelectFileType( HWND_DESKTOP, _argv[i], FALSE, i%2 );
+        for( i = 1; i < _argc; i++ ) {
+            WRSelectFileType( HWND_DESKTOP, _argv[i], FALSE, i % 2, NULL );
             ftype = WRIdentifyFile( _argv[i] );
         }
         ret = TRUE;
     }
 
-    WRChangeMemFlags( HWND_DESKTOP, "test", &mflags );
+    WRChangeMemFlags( HWND_DESKTOP, "test", &mflags, NULL );
 
-    if( info ) {
+    if( info != NULL ) {
         info->save_name = NULL;
         WRFreeWRInfo( info );
     }
 
     info = WRLoadResource( _argv[1], WR_DONT_KNOW );
-    sii = WRSelectImage( HWND_DESKTOP, info );
-    if( sii ) {
+    sii = WRSelectImage( HWND_DESKTOP, info, NULL );
+    if( sii != NULL ) {
         WRFreeSelectImageInfo( sii );
     }
     WRFreeWRInfo( info );
 
     if( !ret ) {
-        MessageBox( (HWND) NULL, "Error occurred!", "TEST WR",
+        MessageBox( (HWND)NULL, "Error occurred!", "TEST WR",
                     MB_ICONEXCLAMATION | MB_OK | MB_APPLMODAL );
     }
 
@@ -138,4 +140,3 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 
     return( ret );
 }
-

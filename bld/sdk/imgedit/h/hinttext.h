@@ -35,13 +35,13 @@ typedef struct {
 #ifndef __OS2_PM__
     DWORD       hint;
 #else
-    char        text[ HINT_TEXT_LEN ];
+    char        text[HINT_TEXT_LEN];
 #endif
 } a_hint_text_line;
 
 #ifndef __OS2_PM__
 
-#define MAX_HINT        71
+#define MAX_HINT        74
 #define POPUP_START     59
 #define POPUP_COUNT     12
 

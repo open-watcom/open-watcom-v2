@@ -16,7 +16,7 @@ foo ends
 
 .code
     mov ax, sizeof a
-bar:    mov ax, sizeof b
+    mov ax, sizeof b
     mov ax, sizeof d
     mov ax, sizeof e
     mov ax, sizeof f
@@ -28,5 +28,4 @@ bar:    mov ax, sizeof b
     mov ax, sizeof j.y
     mov ax, sizeof j.z
     mov ax, sizeof j.z+2
-    mov ax, sizeof bar
 end

@@ -5,25 +5,33 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    cdsay obj
-    wmake /h /i
-    cdsay ..\nt
-    wmake /h /i
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
-<cpcmd> <projdir>\obj\fmedit.dll <relroot>\rel2\binw\
-<cpcmd> <projdir>\nt\fmedit.dll <relroot>\rel2\binnt\
+#========================
+  [ IFDEF (os_win "") <2*> ]
+    <CPCMD> <PROJDIR>/wini86/fmedit.dll <RELROOT>/binw/
+  [ IFDEF (os_nt "") <2*> ]
+    <CPCMD> <PROJDIR>/nt386/fmedit.dll <RELROOT>/binnt/
+  [ IFDEF (cpu_axp) <2*> ]
+    <CPCMD> <PROJDIR>/ntaxp/fmedit.dll <RELROOT>/axpnt/
 
 [ BLOCK <1> clean ]
 #==================
-    cdsay obj
-    wmake /h /i clean
-    cdsay ..\nt
-    wmake /h /i clean
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

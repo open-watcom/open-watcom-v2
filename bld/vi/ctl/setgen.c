@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "source.h"
 #include "setgen.h"
 #include "stddef.h"
@@ -45,12 +44,12 @@
 #define HISTORYFILEWIDTH        129
 
 typedef struct {
-    char        Word[ WORDWIDTH ];
-    char        WordAlt[ WORDWIDTH ];
+    char        Word[WORDWIDTH];
+    char        WordAlt[WORDWIDTH];
     BOOL        Undo;
     BOOL        AutoSave;
     int         AutoSaveInterval;
-    // int              MaxLineLen;
+    // int         MaxLineLen;
     BOOL        SaveConfig;
     BOOL        SaveOnBuild;
     BOOL        BeepFlag;
@@ -59,8 +58,8 @@ typedef struct {
     BOOL        Modal;
     BOOL        CaseIgnore;
     BOOL        SearchWrap;
-    char        TmpDir[ TMPDIRWIDTH ];
-    char        HistoryFile[ HISTORYFILEWIDTH ];
+    char        TmpDir[TMPDIRWIDTH];
+    char        HistoryFile[HISTORYFILEWIDTH];
 } dlg_data;
 
 static  dlg_data    dlgData;
@@ -130,7 +129,8 @@ static void dlgDataToGlobal( void )
     UtilUpdateBoolean( EditFlags.SaveConfig, dlgData.SaveConfig, "saveconfig" );
     UtilUpdateBoolean( EditFlags.SaveOnBuild, dlgData.SaveOnBuild, "saveonbuild" );
     UtilUpdateBoolean( EditFlags.BeepFlag, dlgData.BeepFlag, "beepflag" );
-    UtilUpdateBoolean( EditFlags.QuitMovesForward, dlgData.QuitMovesForward, "quitmovesforward" );
+    UtilUpdateBoolean( EditFlags.QuitMovesForward, dlgData.QuitMovesForward,
+                       "quitmovesforward" );
     UtilUpdateBoolean( EditFlags.SameFileCheck, dlgData.SameFileCheck, "samefilecheck" );
     UtilUpdateBoolean( EditFlags.Modeless, !dlgData.Modal, "modeless" );
     UtilUpdateBoolean( EditFlags.CaseIgnore, dlgData.CaseIgnore, "caseignore" );
@@ -163,15 +163,13 @@ static void setdlgDataDefaults( void )
 /*
  * SetGenProc - processes messages for the Data Control Dialog
  */
-BOOL WINEXP SetGenProc( HWND hwndDlg, unsigned msg,
-                        UINT wParam, LONG lParam )
+BOOL WINEXP SetGenProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwndDlg );
         globalTodlgData();
-        ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg,
-                      &dlgData, &Ctl_setgen );
+        ctl_dlg_init( GET_HINSTANCE( hwndDlg ), hwndDlg, &dlgData, &Ctl_setgen );
         dyn_tpl_init( &Dyn_setgen, hwndDlg );
         return( TRUE );
 
@@ -218,4 +216,5 @@ bool GetSetGenDialog( void )
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( FALSE );
     return( rc );
+
 } /* GetSetGenDialog */

@@ -6,11 +6,12 @@
 
 main()
 {
+    int i;
     dbits x(5), y, null; // grb
 
     cout << "Initial x: " << x << endl;
 
-    for (int i = 0; i <= 5; ++i)
+    for (i = 0; i <= 5; ++i)
         x.set(i);
     cout << "x: " << x << " (" << x.count() << " bits set)" << endl;
     cout << "x == 3f? " << (x == 0x3f) << endl;

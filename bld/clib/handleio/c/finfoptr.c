@@ -34,6 +34,6 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK int (*__get_fileinfo_ptr()) {
-    return &_fileinfo;
+_WCRTLINK int (*__get_fileinfo_ptr( void )) {
+    return( &_fileinfo );
 }

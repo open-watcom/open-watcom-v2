@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default WEP function for Windows apps.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 
-// default WEP function for windows apps
 #if defined(__WINDOWS_386__)
     #define _EXPORT_ENTRY
 #elif defined(__WINDOWS_286__)
@@ -43,13 +41,13 @@
 
 int _EXPORT_ENTRY _WCFAR __pascal WEP( int arg )
 {
-    #if defined(__WINDOWS_386__)
-        arg = arg;
-        return( 1 );
-    #else
-        extern int _EXPORT_ENTRY _WCI86FAR __pascal _WEP( int );
-        return( _WEP( arg ) );
-    #endif
+#if defined(__WINDOWS_386__)
+    arg = arg;
+    return( 1 );
+#else
+    extern int _EXPORT_ENTRY _WCI86FAR __pascal _WEP( int );
+    return( _WEP( arg ) );
+#endif
 }
 #if defined(__WINDOWS_286__)
     void __clib_WEP( void ) {}

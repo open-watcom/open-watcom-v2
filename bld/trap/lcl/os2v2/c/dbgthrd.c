@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger thread issuing DosDebug calls.
 *
 ****************************************************************************/
 
@@ -46,30 +45,19 @@
 #include "softmode.h"
 #include "trperr.h"
 
-dos_debug               *DebugReqBuff;
-unsigned int            DebugReqResult;
-HEV                     DebugReqSem = NULL;
-HEV                     DebugDoneSem = NULL;
-HEV                     StopDoneSem = NULL;
-HWND                    FocusWnd;
-BOOL                    InDosDebug;
+static uDB_t            *DebugReqBuff;
+static uDB_t            StopBuff;
+static unsigned int     DebugReqResult;
+static HEV              DebugReqSem = NULLHANDLE;
+static HEV              DebugDoneSem = NULLHANDLE;
+static HEV              StopDoneSem = NULLHANDLE;
+static BOOL             InDosDebug;
 
-extern HAB              HabDebugger;
-extern HWND             HwndDebugger;
-
-#define STACK_SIZE 32768
-
-extern void WakeThreads(PID);
-extern void WakeOneThread(PID, TID);
-extern void SetBrkPending();
-
-
+#define STACK_SIZE      32768
 #define MAX_PAINTS      100
 #define MAX_CLASS_NAME  80
 
-static dos_debug StopBuff;
-
-VOID StopApplication(VOID)
+static void StopApplication(void)
 {
     StopBuff.Cmd = DBG_C_Stop;
     DosDebug(&StopBuff);
@@ -77,7 +65,7 @@ VOID StopApplication(VOID)
     DosExit(EXIT_THREAD, 0);
 }
 
-static void CantDoIt()
+static void CantDoIt(void)
 {
      WinMessageBox(HWND_DESKTOP, HwndDebugger,
         TRP_WIN_no_can_do,
@@ -85,7 +73,7 @@ static void CantDoIt()
 }
 
 
-ULONG CallDosDebug(dos_debug *buff)
+ULONG CallDosDebug(uDB_t *buff)
 {
     QMSG        qmsg;
     int         num_paints;
@@ -95,7 +83,7 @@ ULONG CallDosDebug(dos_debug *buff)
         HWND    hwnd;
     }           paints[MAX_PAINTS];
     HPS         ps;
-    char        class_name[80];
+    char        class_name[MAX_CLASS_NAME];
     TID         tid;
     ULONG       ulCount;
 
@@ -142,7 +130,7 @@ ULONG CallDosDebug(dos_debug *buff)
                     ULONG    ulCount;
 
                     SetBrkPending();
-                    DosCreateThread(&tid, (PFNTHREAD)StopApplication, NULL, 0, STACK_SIZE);
+                    DosCreateThread(&tid, (PFNTHREAD)StopApplication, NULLHANDLE, 0, STACK_SIZE);
                     DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 10, tid);
                     WakeThreads(StopBuff.Pid);
                     DosWaitEventSem(StopDoneSem, SEM_INDEFINITE_WAIT);
@@ -199,10 +187,10 @@ ULONG CallDosDebug(dos_debug *buff)
     for (i = 0; i < num_paints; ++i) {
         WinInvalidateRect(paints[i].hwnd, &paints[i].rcl, FALSE);
     }
-    return (DebugReqResult);
+    return DebugReqResult;
 }
 
-VOID DoDebugRequests(VOID)
+VOID APIENTRY DoDebugRequests(ULONG arg)
 {
     ULONG   ulCount;
 
@@ -225,17 +213,18 @@ VOID InitDebugThread(VOID)
     TID                 tid;
     ULONG               ulCount;
 
-    if (StopDoneSem == NULL)
+    if (StopDoneSem == NULLHANDLE)
         DosCreateEventSem(NULL, &StopDoneSem, 0, FALSE);
 
-    if (DebugReqSem == NULL)
+    if (DebugReqSem == NULLHANDLE)
         DosCreateEventSem(NULL, &DebugReqSem, 0, FALSE);
 
-    if (DebugDoneSem == NULL)
+    if (DebugDoneSem == NULLHANDLE)
         DosCreateEventSem(NULL, &DebugDoneSem, 0, FALSE);
 
     DosResetEventSem(StopDoneSem, &ulCount);
     DosResetEventSem(DebugReqSem, &ulCount);
-    DosCreateThread(&tid, (PFNTHREAD)DoDebugRequests, NULL, 0, STACK_SIZE);
-    DosSetPrty(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid);
+    DosResetEventSem(DebugDoneSem, &ulCount);
+    DosCreateThread(&tid, DoDebugRequests, NULLHANDLE, 0, STACK_SIZE);
+    DosSetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid);
 }

@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Report form editing error messages.
 *
 ****************************************************************************/
 
-
-/* FMERROR - report form editting error messages */
 
 #include <string.h>
 #include <windows.h>
@@ -39,13 +36,11 @@
 #include "state.def"
 #include "memory.def"
 
-extern void SetError( char * msg )
-/********************************/
-
-/* record the passed error so it can be reported later */
-
-  {
-    char * err;
+extern void SetError( char *msg )
+/*******************************/
+{
+    /* record the passed error so it can be reported later */
+    char *err;
 
     err = GetErr();
     if( GetErr() != NULL ) {
@@ -54,15 +49,13 @@ extern void SetError( char * msg )
     err = EdAlloc( strlen( msg ) + 1 );
     strcpy( err, msg );
     SetErr( err );
-  }
+}
 
 extern void ReportPendingError()
 /******************************/
-
-/* report the previously reported error, if there is one */
-
-  {
-    char * err;
+{
+    /* report the previously reported error, if there is one */
+    char *err;
 
     err = GetErr();
     if( err != NULL )  {
@@ -70,13 +63,11 @@ extern void ReportPendingError()
         EdFree( err );
         SetErr( NULL );
     }
-  }
+}
 
-extern void ReportError( char * msg, HANDLE hwnd )
-/************************************************/
-
-/* report the passed error */
-
-  {
+extern void ReportError( char *msg, HANDLE hwnd )
+/***********************************************/
+{
+    /* report the passed error */
     MessageBox( hwnd, msg, NULL, MB_OK | MB_ICONEXCLAMATION );
-  }
+}

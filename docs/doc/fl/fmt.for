@@ -1,0 +1,8 @@
+      INTEGER FMT(2)
+      DATA FMT /'(A2,', 'I10)'/
+      PRINT '(2A)', FMT
+      PRINT FMT, 'HI', 1234567890
+      ASSIGN 100 TO FMT
+      PRINT FMT, 'HI', 1234567890
+100   FORMAT(A4,X,I10)
+      END

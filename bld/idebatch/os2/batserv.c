@@ -24,14 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 Spawn server for Viper (IDE).
 *
 ****************************************************************************/
 
-/*
-        BATSERV : OS/2 Spawn server for Viper
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -95,7 +91,7 @@ static void SendStatus( unsigned long status )
     DosWrite( LnkHdl, &buff, sizeof( buff ), &dummy );
 }
 
-static void ProcessConnection()
+static void ProcessConnection( void )
 {
     char                buff[MAX_TRANS];
     ULONG               bytes_read;
@@ -171,7 +167,7 @@ static void ProcessConnection()
 }
 
 
-main( int argc, char *argv[] )
+void main( int argc, char *argv[] )
 {
     APIRET      rc;
     HFILE       h;

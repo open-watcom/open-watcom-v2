@@ -24,25 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Pentium profiling support (RDTSC based).
 *
 ****************************************************************************/
 
 
 typedef unsigned long reg_32;
 
-#if __WATCOMC__ < 1100
-typedef struct __int64 {
-    long                lo;
-    unsigned long       hi;
-} __int64;
-#ifndef _WCRTLINK
-#define _WCRTLINK
-#endif
-#endif
+#include "pushpck1.h"
 
-#pragma pack(push,1)
 typedef struct P5_timing_info {
     reg_32      count;
     reg_32      semaphore;
@@ -72,24 +62,27 @@ typedef struct block_count_info {
     reg_32      address;
     reg_32      function;
 } block_count_info;
-#pragma pack(pop)
+
+#include "poppck.h"
 
 #define PROFILE_FLAG_DYNAMIC    '+'
 #define PROFILE_FLAG_END_GROUP  '-'
 #define PROFILE_FLAG_BLOCK      'b'
 #define PROFILE_LONG_FORMAT_LEN 20
 
-_WCRTLINK extern void __ProfInit();
-_WCRTLINK extern void __ProfExitCriticalSection();
-_WCRTLINK extern void __ProfEnterCriticalSection();
-_WCRTLINK extern void __ProfEnable();
-_WCRTLINK extern void __ProfDisable();
-_WCRTLINK extern __int64 __P5_overhead();
+_WCRTLINK extern void __ProfInit( void );
+_WCRTLINK extern void __ProfExitCriticalSection( void );
+_WCRTLINK extern void __ProfEnterCriticalSection( void );
+_WCRTLINK extern void __ProfEnable( void );
+_WCRTLINK extern void __ProfDisable( void );
+_WCRTLINK extern __int64 __P5_overhead( void );
 
-extern char *__ProfAlloc();
+extern void *__ProfAlloc( unsigned long size );
 
+#if defined( __WATCOMC__ ) && defined( __386__ )
 #pragma aux __ProfProlog "__PON" parm routine [] modify []
 _WCRTLINK extern void __ProfProlog( new_P5_timing_info *block );
 
 #pragma aux __ProfEpilog "__POFF" parm routine [] modify []
 _WCRTLINK extern void __ProfEpilog( new_P5_timing_info *block );
+#endif

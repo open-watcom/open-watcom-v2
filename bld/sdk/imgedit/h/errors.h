@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "rcstr.h"
+#include "rcstr.gh"
 
                                    //1234567890123456789012345678901234567890
 #define WIE_INTERNAL_001            "Internal Error 001- No active image."
@@ -42,15 +42,12 @@
 #define WIE_INTERNAL_007            "Internal Error 007- Icon out of range."
 #define WIE_INTERNAL_008            "Internal Error 008- Icon count imbalance"
 
-extern void     IEPrintErrorMsg         ( char *title, char *msg, char *fname,
-                                          UINT style );
-extern void     IEPrintErrorMsgByID     ( DWORD title, DWORD msg, char *fname,
-                                          UINT style );
-extern void     IEInitDisplayError      ( HINSTANCE inst );
-extern void     IEDisplayErrorMsg       ( DWORD title, DWORD msg, UINT style);
-extern char     *IEAllocRCString        ( DWORD id );
-extern void     IEFreeRCString          ( char *str );
-extern DWORD    IECopyRCString          ( DWORD id, char *buf, DWORD bufsize);
-extern void     IEFiniErrors            ( void );
-extern BOOL     IEInitErrors            ( HINSTANCE inst );
-
+extern void     IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style );
+extern void     IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style );
+extern void     IEInitDisplayError( HINSTANCE inst );
+extern void     IEDisplayErrorMsg( DWORD title, DWORD msg, UINT style );
+extern char     *IEAllocRCString( DWORD id );
+extern void     IEFreeRCString( char *str );
+extern DWORD    IECopyRCString( DWORD id, char *buf, DWORD bufsize );
+extern void     IEFiniErrors( void );
+extern BOOL     IEInitErrors( HINSTANCE inst );

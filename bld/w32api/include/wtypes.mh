@@ -1,0 +1,367 @@
+/*
+ *  wtypes.h    COM basic data types
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+
+#ifndef __wtypes_h__
+#define __wtypes_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* OLE string data types */
+typedef WCHAR           OLECHAR;
+typedef OLECHAR         *LPOLESTR;
+typedef const OLECHAR   *LPCOLESTR;
+#define OLESTR( x )     L##x
+
+/* Status code data type */
+typedef LONG    SCODE;
+typedef SCODE   *PSCODE;
+
+/* Context handle */
+typedef void    *HCONTEXT;
+
+/* Clipboard format data type */
+typedef WORD    CLIPFORMAT;
+
+/* Date data type */
+typedef double  DATE;
+
+/* String data type for automation */
+typedef OLECHAR *BSTR;
+typedef BSTR    *LPBSTR;
+
+/* Boolean data type for automation */
+typedef short           VARIANT_BOOL;
+
+/* Variant type data type */
+typedef unsigned short  VARTYPE;
+
+/* Property identifier data type */
+typedef ULONG   PROPID;
+
+/* Metafile picture handle */
+DECLARE_HANDLE( HMETAFILEPICT );
+
+/* Double used by COM */
+typedef double  DOUBLE;
+
+/* IRunningObjectTable::Register() flags */
+#define ROTFLAGS_REGISTRATIONKEEPSALIVE 0x00000001L
+#define ROTFLAGS_ALLOWANYCLIENT         0x00000002L
+
+/* Running object table registry flags */
+#define ROTREGFLAGS_ALLOWANYCLIENT  0x00000001L
+
+/* Application identifier registry flags */
+#define APPIDREGFLAGS_ACTIVATE_IUSERVER_INDESKTOP       0x00000001L
+#define APPIDREGFLAGS_SECURE_SERVER_PROCESS_SD_AND_BIND 0x00000002L
+#define APPIDREGFLAGS_ISSUE_ACTIVATION_RPC_AT_IDENTITY  0x00000004L
+
+/* IROTData::GetComparisonData() maximum buffer size */
+#define ROT_COMPARE_MAX 2048
+
+/* Remote call flags */
+#define DCOMSCM_ACTIVATION_USE_ALL_AUTHNSERVICES    0x00000001L
+#define DCOMSCM_ACTIVATION_DISALLOW_UNSECURE_CALL   0x00000002L
+#define DCOMSCM_RESOLVE_USE_ALL_AUTHNSERVICES       0x00000004L
+#define DCOMSCM_RESOLVE_DISALLOW_UNSECURE_CALL      0x00000008L
+#define DCOMSCM_PING_USE_MID_AUTHNSERVICE           0x00000010L
+#define DCOMSCM_PING_DISALLOW_UNSECURE_CALL         0x00000020L
+
+/* Call context constants */
+#define WDT_INPROC_CALL     0x48746457
+#define WDT_REMOTE_CALL     0x52746457
+#define WDT_INPROC64_CALL   0x50746457
+
+/* Value to indicate a negative decimal */
+#define DECIMAL_NEG 0x80
+
+/* Boolean values for Automation */
+#define VARIANT_TRUE    (-1)
+#define VARIANT_FALSE   0
+
+/* COM authentication identity */
+typedef struct _COAUTHIDENTITY {
+    USHORT  *User;
+    ULONG   UserLength;
+    USHORT  *Domain;
+    ULONG   DomainLength;
+    USHORT  *Password;
+    ULONG   PasswordLength;
+    ULONG   Flags;
+} COAUTHIDENTITY;
+
+/* COM authentication information */
+typedef struct _COAUTHINFO {
+    DWORD           dwAuthnSvc;
+    DWORD           dwAuthzSvc;
+    LPWSTR          pwszServerPrincName;
+    DWORD           dwAuthnLevel;
+    DWORD           dwImpersonationLevel;
+    COAUTHIDENTITY  *pAuthIdentityData;
+    DWORD           dwCapabilities;
+} COAUTHINFO;
+
+/* Memory contexts */
+typedef enum tagMEMCTX {
+    MEMCTX_TASK         = 1,
+    MEMCTX_SHARED       = 2,
+    MEMCTX_MACSYSTEM    = 3,
+    MEMCTX_UNKNOWN      = -1,
+    MEMCTX_SAME         = -2
+} MEMCTX;
+
+/* Class contexts */
+typedef enum tagCLSCTX {
+    CLSCTX_INPROC_SERVER            = 0x00000001,
+    CLSCTX_INPROC_HANDLER           = 0x00000002,
+    CLSCTX_LOCAL_SERVER             = 0x00000004,
+    CLSCTX_INPROC_SERVER16          = 0x00000008,
+    CLSCTX_REMOTE_SERVER            = 0x00000010,
+    CLSCTX_INPROC_HANDLER16         = 0x00000020,
+    CLSCTX_NO_CODE_DOWNLOAD         = 0x00000400,
+    CLSCTX_NO_CUSTOM_MARSHAL        = 0x00001000,
+    CLSCTX_ENABLE_CODE_DOWNLOAD     = 0x00002000,
+    CLSCTX_NO_FAILURE_LOG           = 0x00004000,
+    CLSCTX_DISABLE_AAA              = 0x00008000,
+    CLSCTX_ENABLE_AAA               = 0x00010000,
+    CLSCTX_FROM_DEFAULT_CONTEXT     = 0x00020000,
+    CLSCTX_ACTIVATE_32_BIT_SERVER   = 0x00040000,
+    CLSCTX_ACTIVATE_64_BIT_SERVER   = 0x00080000,
+    CLSCTX_ENABLE_CLOAKING          = 0x00100000,
+    CLSCTX_PS_DLL                   = 0x80000000
+} CLSCTX;
+#define CLSCTX_VALID_MASK \
+    (CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | \
+    CLSCTX_INPROC_SERVER16 | CLSCTX_REMOT_SERVER | CLSCTX_NO_CODE_DOWNLOAD | \
+    CLSCTX_NO_CUSTOM_MARSHAL | CLSCTX_ENABLE_CODE_DOWNLOAD | CLSCTX_NO_FAILURE_LOG | \
+    CLSCTX_DISABLE_AAA | CLSCTX_ENABLE_AAA | CLSCTX_FROM_DEFAULT_CONTEXT | \
+    CLSCTX_ACTIVATE_32_BIT_SERVER | CLSCTX_ACTIVATE_64_BIT_SERVER | \
+    CLSCTX_ENABLE_CLOAKING | CLSCTX_PS_DLL)
+
+/* Marshal flags */
+typedef enum tagMSHLFLAGS {
+    MSHLFLAGS_NORMAL        = 0,
+    MSHLFLAGS_TABLESTRONG   = 1,
+    MSHLFLAGS_TABLEWEAK     = 2,
+    MSHLFLAGS_NOPING        = 4
+} MSHLFLAGS;
+
+/* Marshal contexts */
+typedef enum tagMSHCTX {
+    MSHCTX_LOCAL            = 0,
+    MSHCTX_NOSHAREDMEM      = 1,
+    MSHCTX_DIFFERENTMACHINE = 2,
+    MSHCTX_INPROC           = 3,
+    MSHCTX_CROSSCTX         = 4
+} MSHCTX;
+
+/* Data/view aspect */
+typedef enum tagDVASPECT {
+    DVASPECT_CONTENT    = 1,
+    DVASPECT_THUMBNAIL  = 2,
+    DVASPECT_ICON       = 4,
+    DVASPECT_DOCPRINT   = 8
+} DVASPECT;
+
+/* Storage commit types */
+typedef enum tagSTGC {
+    STGC_DEFAULT                            = 0,
+    STGC_OVERWRITE                          = 1,
+    STGC_ONLYIFCURRENT                      = 2,
+    STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE = 4,
+    STGC_CONSOLIDATE                        = 8
+} STGC;
+
+/* Storage moves */
+typedef enum tagSTGMOVE {
+    STGMOVE_MOVE        = 0,
+    STGMOVE_COPY        = 1,
+    STGMOVE_SHALLOWCOPY = 2,
+} STGMOVE;
+
+/* Statistical flags */
+typedef enum tagSTATFLAG {
+    STATFLAG_DEFAULT    = 0,
+    STATFLAG_NONAME     = 1,
+    STATFLAG_NOOPEN     = 2
+} STATFLAG;
+
+/* Byte blob */
+typedef struct _BYTE_BLOB {
+    unsigned long   clSize;
+    byte            abData[1];
+} BYTE_BLOB;
+typedef BYTE_BLOB   *UP_BYTE_BLOB;
+
+/* Word blob */
+typedef struct _WORD_BLOB {
+    unsigned long   clSize;
+    unsigned short  asData[1];
+} WORD_BLOB;
+typedef WORD_BLOB   *UP_WORD_BLOB;
+
+/* Double word blob */
+typedef struct _DWORD_BLOB {
+    unsigned long   clSize;
+    unsigned long   alData[1];
+} DWORD_BLOB;
+typedef DWORD_BLOB  *UP_DWORD_BLOB;
+
+/* Flagged byte blob */
+typedef struct _FLAGGED_BYTE_BLOB {
+    unsigned long   fFlags;
+    unsigned long   clSize;
+    byte            abData[1];
+} FLAGGED_BYTE_BLOB;
+typedef FLAGGED_BYTE_BLOB   *UP_FLAGGED_BYTE_BLOB;
+
+/* Flagged word blob */
+typedef struct _FLAGGED_WORD_BLOB {
+    unsigned long   fFlags;
+    unsigned long   clSize;
+    unsigned short  asData[1];
+} FLAGGED_WORD_BLOB;
+typedef FLAGGED_WORD_BLOB   *UP_FLAGGED_WORD_BLOB;
+
+/* Byte sized array */
+typedef struct _BYTE_SIZEDARR {
+    unsigned long   clSize;
+    byte            *pData;
+} BYTE_SIZEDARR;
+
+/* Word sized array */
+typedef struct _SHORT_SIZEDARR {
+    unsigned long   clSize;
+    unsigned short  *pData;
+} WORD_SIZEDARR;
+
+/* Double word sized array */
+typedef struct _LONG_SIZEDARR {
+    unsigned long   clSize;
+    unsigned long   *pData;
+} DWORD_SIZEDARR;
+
+/* Hyper sized array */
+typedef struct _HYPER_SIZEDARR {
+    unsigned long   clSize;
+    hyper           *pData;
+} HYPER_SIZEDARR;
+
+/* Currency */
+typedef union tagCY {
+    struct {
+        unsigned long   Lo;
+        long            Hi;
+    };
+    LONGLONG    int64;
+} CY;
+typedef CY  *LPCY;
+
+/* Decimal */
+typedef struct tagDEC {
+    USHORT      wReserved;
+    union {
+        struct {
+            BYTE        scale;
+            BYTE        sign;
+        };
+        USHORT  signscale;
+    };
+    ULONG       Hi32;
+    union {
+        struct {
+            ULONG   Lo32;
+            ULONG   Mid32;
+        };
+        ULONGLONG   Lo64;
+    };
+} DECIMAL;
+typedef DECIMAL *LPDECIMAL;
+#define DECIMAL_SETZERO( x ) \
+    { \
+        (x).Lo64 = 0; \
+        (x).Hi32 = 0; \
+        (x).signscale = 0; \
+    }
+
+/* Automation string blob */
+typedef struct tagBSTRBLOB {
+    ULONG   cbSize;
+    BYTE    *pData;
+} BSTRBLOB;
+typedef BSTRBLOB    *LPBSTRBLOB;
+
+:include blob.sp
+
+/* Clipboard data */
+typedef struct tagCLIPDATA {
+    ULONG   cbSize;
+    long    ulClipFmt;
+    BYTE    *pClipData;
+} CLIPDATA;
+
+/* Variant types */
+:include varenum.sp
+
+/* Property key */
+typedef struct _tagpropertykey {
+    GUID    fmtid;
+    DWORD   pid;
+} PROPERTYKEY;
+
+/* Class store platform */
+typedef struct tagCSPLATFORM {
+    DWORD   dwPlatformId;
+    DWORD   dwVersionHi;
+    DWORD   dwVersionLo;
+    DWORD   dwProcessorArch;
+} CSPLATFORM;
+
+/* Query context */
+typedef struct tagQUERYCONTEXT {
+    DWORD       dwContext;
+    CSPLATFORM  Platform;
+    LCID        Locale;
+    DWORD       dwVersionHi;
+    DWORD       dwVersionLo;
+} QUERYCONTEXT;
+
+/* Type specifiers */
+typedef enum tagTYSPEC {
+    TYSPEC_CLSID        = 0,
+    TYSPEC_FILEEXT      = 1,
+    TYSPEC_MIMETYPE     = 2,
+    TYSPEC_FILENAME     = 3,
+    TYSPEC_PROGID       = 4,
+    TYSPEC_PACKAGENAME  = 5,
+    TYSPEC_OBJECTID     = 6
+} TYSPEC;
+
+/* Class specifier */
+typedef union {
+    CLSID       clsid;
+    LPOLESTR    pFileExt;
+    LPOLESTR    pMimeType;
+    LPOLESTR    pProgId;
+    LPOLESTR    pFileName;
+    struct {
+        LPOLESTR    pPackageName;
+        GUID        PolicyId;
+    } ByName;
+    struct {
+        GUID    ObjectId;
+        GUID    PolicyId;
+    } ByObjectId;
+} uCLSSPEC;
+
+:include cplusepi.sp
+
+#endif /* __wtypes_h__ */

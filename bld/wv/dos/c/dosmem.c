@@ -92,13 +92,11 @@ void MemInit()
 #endif
     }
     LastSeg = 0;
-#ifdef TRMEM
     {
         extern void MemTrackInit(void);
 
         MemTrackInit();
     }
-#endif
 }
 
 void *ExtraAlloc( unsigned size )

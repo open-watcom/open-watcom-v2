@@ -24,43 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Target dependent code generation switches for x86.
 *
 ****************************************************************************/
 
 
-/*
-    These grow up while the target independant switches grow down
-*/
-#define I_MATH_INLINE           0x00000001L
-#define EZ_OMF                  0x00000002L
-#define BIG_DATA                0x00000004L
-#define BIG_CODE                0x00000008L
-#define CHEAP_POINTER           0x00000010L
-#define FLAT_MODEL              0x00000020L
-#define FLOATING_FS             0x00000040L
-#define FLOATING_GS             0x00000080L
-#define FLOATING_ES             0x00000100L
-#define FLOATING_SS             0x00000200L
-#define FLOATING_DS             0x00000400L
-#define USE_32                  0x00000800L
-#define INDEXED_GLOBALS         0x00001000L
-#define WINDOWS                 0x00002000L
-#define CHEAP_WINDOWS           0x00004000L
-#define NO_CALL_RET_TRANSFORM   0x00008000L
-#define CONST_IN_CODE           0x00010000L
-#define NEED_STACK_FRAME        0x00020000L
-#define LOAD_DS_DIRECTLY        0x00040000L
-#define SMART_WINDOWS           0x00100000L
-#define P5_PROFILING            0x00200000L
-#define P5_DIVIDE_CHECK         0x00400000L
-#define GENERIC_TLS             0x00800000L
-#define NEW_P5_PROFILING        0x01000000L
-#define STATEMENT_COUNTING      0x02000000L
-#define NULL_SELECTOR_BAD       0x04000000L
-#define P5_PROFILING_CTR0       0x08000000L
-#define LAST_TARG_CGSWITCH      0x08000000L
+#define I_MATH_INLINE           0x00000001L     /* Inline math functions */
+#define EZ_OMF                  0x00000002L     /* Generate EZ-OMF objects */
+#define BIG_DATA                0x00000004L     /* Data pointers are far */
+#define BIG_CODE                0x00000008L     /* Code pointers are far */
+#define CHEAP_POINTER           0x00000010L     /* Model isn't huge */
+#define FLAT_MODEL              0x00000020L     /* Flat memory model */
+#define FLOATING_FS             0x00000040L     /* FS selector is floating */
+#define FLOATING_GS             0x00000080L     /* GS selector is floating */
+#define FLOATING_ES             0x00000100L     /* ES selector is floating */
+#define FLOATING_SS             0x00000200L     /* SS selector is floating */
+#define FLOATING_DS             0x00000400L     /* DS selector is floating */
+#define USE_32                  0x00000800L     /* Generate 32-bit segments */
+#define INDEXED_GLOBALS         0x00001000L     /* Position Independent Code (faulty!) */
+#define WINDOWS                 0x00002000L     /* Generate Win16 prologs */
+#define CHEAP_WINDOWS           0x00004000L     /* Cheap Win16 prologs */
+#define NO_CALL_RET_TRANSFORM   0x00008000L     /* Don't turn calls into jumps */
+#define CONST_IN_CODE           0x00010000L     /* FP consts in code segment */
+#define NEED_STACK_FRAME        0x00020000L     /* Always generate stack frame */
+#define LOAD_DS_DIRECTLY        0x00040000L     /* No runtime call to load DS */
+#define SMART_WINDOWS           0x00100000L     /* Smart Win16 prolog (DS==SS) */
+#define P5_PROFILING            0x00200000L     /* Pentium RDTSC profiling (-et) */
+#define P5_DIVIDE_CHECK         0x00400000L     /* Check for bad Pentium FDIV */
+#define GENERIC_TLS             0x00800000L     /* TLS code not NT specific (unused?) */
+#define NEW_P5_PROFILING        0x01000000L     /* "New" profiling (-etp) */
+#define STATEMENT_COUNTING      0x02000000L     /* Statement counting (-esp) */
+#define NULL_SELECTOR_BAD       0x04000000L     /* Avoid null selectors on i86 */
+#define P5_PROFILING_CTR0       0x08000000L     /* Use RDPMC instead of RDTSC */
+#define GEN_FWAIT_386           0x10000000L     /* Generate FWAITs on 386 and up */
+#define LAST_TARG_CGSWITCH      0x10000000L
 
 
 typedef enum {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low level bitmap reading routine.
 *
 ****************************************************************************/
 
@@ -64,8 +63,8 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
   #endif
     char                *tmp;
     gr_device _FARD     *dev_ptr;       /* pointer to _CurrState->deviceptr */
-    char _WCI86HUGE *        pic;            /* buffer to store image            */
-    void PIC_FUNC       (near *copy)(); /* pointer to copy routine          */
+    char _WCI86HUGE     *pic;           /* buffer to store image            */
+    pic_fn near         *copy;          /* pointer to copy routine          */
 #endif
 
     if( x1 > x2 ) {         // ensure x1 < x2
@@ -112,9 +111,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     image->bpp = _CurrState->vc.bitsperpixel;   /* save bpp - never used ?  */
     line_len = _RowLen( dx );                   /* width of row in bytes    */
 
-  #if !defined( _NEC_PC ) // We don't want the graphics charger here
     _StartDevice();
-  #endif
 
     dev_ptr = _CurrState->deviceptr;
     copy = dev_ptr->readrow;
@@ -152,8 +149,6 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
   #endif
     }
 
-  #if !defined( _NEC_PC )
     _ResetDevice();
-  #endif
 #endif
 }

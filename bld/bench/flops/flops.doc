@@ -1,0 +1,163 @@
+-------
+   I have finally revised the flops.c program to version 2.0 which
+   addresses the concerns brought out over the last year or so (version
+   1.2c and earliar versions). Below is a discussion of the new flops.c
+   program (flops20.c) and some results for the HP 9000/730 and IBM
+   RS/6000 Model 550 systems.
+
+   Flops.c is a 'c' program which attempts to estimate your systems
+   floating-point 'MFLOPS' rating for the FADD, FSUB, FMUL, and FDIV
+   operations based on specific 'instruction mixes' (discussed below).
+   The program provides an estimate of PEAK MFLOPS performance by making
+   maximal use of register variables with minimal interaction with main
+   memory. The execution loops are all small so that they will fit in
+   any cache. Flops.c can be used along with Linpack and the Livermore
+   kernels (which exercise memory much more extensively) to gain further
+   insight into the limits of system performance. The flops.c execution
+   modules include various percent weightings of FDIV's (from 0% to 25%
+   FDIV's) so that the range of performance can be obtained when using
+   FDIV's. FDIV's, being computationally more intensive than FADD's or
+   FMUL's, can impact performance considerably on some systems.
+   
+   Flops.c consists of 8 independent 'modules' which, except for module
+   2, conduct numerical integration of various functions. Some of the
+   functions (sin(x) and cos(x)) are approximated using a power series
+   expansion accurate to 1.0e-14 over the integration interval. Module 2,
+   estimates the value of pi based upon the Maclaurin series expansion of
+   atan(1). MFLOPS ratings are provided for each module, but the programs
+   overall results are summerized by the MFLOPS(1), MFLOPS(2), MFLOPS(3),
+   and MFLOPS(4) outputs.
+
+   The MFLOPS(1) result is identical to the result provided by all
+   previous versions of flops.c (flops12c.c and earliar versions). It is
+   based only upon the results from modules 2 and 3. Actually, on faster
+   machines, MFLOPS(1) from flops.c V2.0 is expected to provide more
+   accurate results since the number of iterations conducted (which is
+   reflected in the timing accuracy) is more tightly controlled than in
+   previous versions of flops.c.
+   
+   Two problems surfaced in using MFLOPS(1). First, it was difficult to
+   completely 'vectorize' the result due to the recurrence of the 's'
+   variable in module 2. This problem is addressed in the MFLOPS(2) result
+   which does not use module 2, but maintains nearly the same weighting of
+   FDIV's (9.2%) as in MFLOPS(1) (9.6%). For scalar machines the MFLOPS(2)
+   results 'should' be similar to the MFLOPS(1) results. However, for
+   vector machines the MFLOPS(1) and MFLOPS(2) results may differ
+   considerably since the MFLOPS(2) result is expected to be more
+   completely vectorizable. The second problem with MFLOPS(1) centers
+   around the percentage of FDIV's (9.6%) which was viewed as too high for
+   an important class of problems. This concern is addressed in the
+   MFLOPS(3) result which does only 3.4% FDIV's, and the MFLOPS(4) result
+   where NO FDIV's are conducted at all.
+   
+   The number of floating-point instructions per iteration (loop) is
+   given below for each module executed.
+
+   MODULE   FADD   FSUB   FMUL   FDIV   TOTAL  Comment
+     1        7      0      6      1      14   7.1%  FDIV's
+     2        3      2      1      1       7   difficult to vectorize.
+     3        6      2      9      0      17   0.0%  FDIV's
+     4        7      0      8      0      15   0.0%  FDIV's
+     5       13      0     15      1      29   3.4%  FDIV's
+     6       13      0     16      0      29   0.0%  FDIV's
+     7        3      3      3      3      12   25.0% FDIV's
+     8       13      0     17      0      30   0.0%  FDIV's
+   
+   A*2+3     21     12     14      5      52   A=5, MFLOPS(1), Same as
+	    40.4%  23.1%  26.9%  9.6%          previous versions of the
+					       flops.c program. Includes
+					       only Modules 2 and 3.
+   
+   1+3+4     58     14     66     14     152   A=4, MFLOPS(2), New output
+   +5+6+    38.2%  9.2%   43.4%  9.2%          does not include Module 2,
+   A*7                                         but does 9.2% FDIV's.
+   
+   1+3+4     62      5     74      5     146   A=0, MFLOPS(3), New output
+   +5+6+    42.5%  3.4%   50.7%  3.4%          does not include Module 2,
+   7+8                                         but does 3.4% FDIV's.
+
+   3+4+6     39      2     50      0      91   A=0, MFLOPS(4), New output
+   +8       42.9%  2.2%   54.9%  0.0%          does not include Module 2,
+					       and does NO FDIV's.
+
+   I hope that flops.c V2.0 (flops20.c) proves more useful than earliar
+   versions.
+
+
+(1) HP 9000/730 flops.c V2.0 Results, cc +OS +O3 -W1-a,archive   
+
+   Below are the HP 9000/730 results (provided by Bo Thide'). The minimum
+   MFLOPS rating is 15.1 MFLOPS for module 7, which does 25% FDIV's. The
+   maximum MFLOPS rating is 37.1 MFLOPS for module 6, which does 0.0%
+   FDIV's. FDIV appears to be reasonably efficient on the HP 9000/730,
+   as indicated by the overall MFLOPS(n) outputs. 
+
+   The 'Runtime' output is the time in microseconds (usec) for one
+   iteration (loop) through the module. The MFLOPS rating is obtained by
+   dividing the number of floating-point instructions in the loop by the
+   Runtime (in microseconds). For example for module 1 below:
+   MFLOPS = 14.0 / 0.5978 = 23.42.
+
+   The Runtime output has already been adjusted for an estimate of the
+   time in microseconds to conduct one empty 'for' loop (NullTime). If
+   NullTime is not calculated (that is, NullTime = 0.0), due to compiler
+   optimization, it can produce a 3% to 5% lower MFLOPS rating than would
+   otherwise be obtained.
+
+
+   FLOPS C Program (Double Precision), V2.0 18 Dec 1992
+
+   Module     Error        RunTime      MFLOPS
+			    (usec)
+     1     -4.6896e-13      0.5978     23.4187
+     2      2.2160e-13      0.2447     28.6079
+     3     -6.9944e-15      0.7412     22.9342
+     4     -9.7256e-14      0.6906     21.7195
+     5     -1.6542e-14      0.9200     31.5217
+     6      4.3632e-14      0.7822     37.0755
+     7     -4.9454e-11      0.7972     15.0529
+     8      7.2164e-14      0.8275     36.2538
+
+   Iterations      =   32000000
+   NullTime (usec) =     0.0306
+   MFLOPS(1)       =    26.4673  [same as flops12c.c, 9.6% FDIV's]
+   MFLOPS(2)       =    21.9633  [9.2% FDIV's]
+   MFLOPS(3)       =    27.2566  [3.4% FDIV's]
+   MFLOPS(4)       =    29.9188  [0.0% FDIV's]
+
+
+(2) IBM RS/6000 Model 550 flops.c V2.0 results, cc -DUNIX -O -Q
+
+   The IBM RS/6000 Model 550 flops20.c results are shown below. Here,
+   the minimum MFLOPS rating is 7.3 MFLOPS also for module 7 which does
+   25.0% FDIV's. The maximum MFLOPS rating is 56.9 MFLOPS (!) also for
+   module 6 which does 0.0% FDIV's. While the Model 550 works wonders
+   with FADD's and FMULS's its performance falls off rapidly with FDIV's.
+
+
+   FLOPS C Program (Double Precision), V2.0 18 Dec 1992
+
+   Module     Error        RunTime      MFLOPS
+			    (usec)
+     1     -4.6896e-13      0.7028     19.9200
+     2      2.2160e-13      0.5806     12.0560
+     3     -7.0499e-15      0.4372     38.8849
+     4     -9.7145e-14      0.4359     34.4086
+     5     -1.6542e-14      0.9903     29.2837
+     6      4.3632e-14      0.5100     56.8627
+     7     -4.9454e-11      1.6456      7.2921
+     8      7.2164e-14      0.5572     53.8418
+
+   Iterations      =   32000000
+   NullTime (usec) =     0.0484
+   MFLOPS(1)       =    15.5674  [same as flops12c.c, 9.6% FDIV's]
+   MFLOPS(2)       =    15.7370  [9.2% FDIV's]
+   MFLOPS(3)       =    27.6568  [3.4% FDIV's]
+   MFLOPS(4)       =    46.8997  [0.0% FDIV's]
+
+Al Aburto
+aburto@marlin.nosc.mil
+
+-------
+
+

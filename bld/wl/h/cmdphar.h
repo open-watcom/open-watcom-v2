@@ -33,7 +33,7 @@
 extern bool     ProcPackExp( void );
 extern bool     ProcMinData( void );
 extern bool     ProcMaxData( void );
-extern bool     ProcPharlap( void );
+extern bool     ProcPharLap( void );
 
 extern bool     ProcMinReal( void );
 extern bool     ProcMaxReal( void );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resolve operator overloading.
 *
 ****************************************************************************/
 
@@ -42,6 +41,7 @@
 #include "pcheader.h"
 #include "stats.h"
 #include "class.h"
+#include "template.h"
 
 
 typedef enum                    // Used to control scalar operand types
@@ -190,6 +190,8 @@ static void setupOVOP(          // SETUP OVOP
             olinf->have_user_type = TRUE;
             if( user_type->id == TYP_CLASS ) {
                 olinf->have_class_type = TRUE;
+                class_type = BindTemplateClass( class_type, &node->locn,
+                                                FALSE );
                 class_type = user_type;
             }
         }
@@ -471,6 +473,14 @@ static boolean symInResult( SYMBOL sym, SEARCH_RESULT *result )
     RingIterBeg( result->sym_name->name_syms, curr ) {
         if( curr == sym ) {
             return TRUE;
+        } else if( SymIsFunctionTemplateModel( curr ) ) {
+            FN_TEMPLATE_INST *fn_inst;
+
+            RingIterBeg( curr->u.defn->instantiations, fn_inst ) {
+                if( fn_inst->bound_sym == sym ) {
+                    return TRUE;
+                }
+            } RingIterEnd( fn_inst )
         }
     } RingIterEnd( curr )
     RingIterBeg( result->region, ptr ) {
@@ -502,7 +512,7 @@ static PTREE transform_to_call( // TRANSFORM NODE TO FUNCTION CALL
 
 static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
     OLINF* olinf,
-    SYMBOL fun )              // - overload information
+    SYMBOL fun )                // - overload information
 {
     CGOP cgop;                  // - expression operator
     PTREE param;                // - parameters node
@@ -515,7 +525,11 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
         if( cgop == CO_CALL ) {
             param->u.subtree[0] = olinf->right.operand;
         } else {
-            param = NodeArgument( param, olinf->right.operand );
+            if( olinf->right.operand != NULL ) {
+                param = NodeArgument( param, olinf->right.operand );
+            } else {
+                PTreeErrorNode( param );
+            }
         }
     } else if( cgop == CO_POST_PLUS_PLUS
             || cgop == CO_POST_MINUS_MINUS ) {
@@ -754,8 +768,8 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                     fun = next;
                 }
             } else {
-                    fun = NULL;
-                    break;
+                fun = NULL;
+                break;
             }
         }
         if( fun == NULL ) {
@@ -831,7 +845,7 @@ static SCOPE nsExtract( OLINF *inf )
         scope = user_type->u.t.scope;
     }
     scope = ScopeEnclosingId( scope, SCOPE_FILE );
-    if( scope == FileScope ) {
+    if( scope == GetFileScope() ) {
         scope = NULL;
     }
     return( scope );
@@ -862,7 +876,7 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
                  && cgop != CO_EQUAL ) {
                     SCOPE scope;
                     ov_fun_name = CppOperatorName( cgop );
-                    oli.result_nonmem = ScopeFindNaked( FileScope
+                    oli.result_nonmem = ScopeFindNaked( GetFileScope()
                                                       , ov_fun_name );
                     scope = nsExtract( &oli );
                     if( scope != NULL ) {
@@ -877,7 +891,7 @@ PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
                     oli.result_mem = ScopeContainsMember( scope, ov_fun_name );
                 } else {
                     oli.result_mem = ScopeFindMember( scope, ov_fun_name );
-                    oli.result_nonmem = ScopeFindNaked( FileScope, ov_fun_name );
+                    oli.result_nonmem = ScopeFindNaked( GetFileScope(), ov_fun_name );
                     enclosing = nsExtract( &oli );
                     if( enclosing != NULL ) {
                         oli.result_nonmem_namespace = ScopeContainsNaked( enclosing, ov_fun_name );

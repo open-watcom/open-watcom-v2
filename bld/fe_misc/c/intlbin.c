@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "lsspec.h"
 #include "encodlng.h"
@@ -91,6 +92,7 @@ void processLang( char *prefix, unsigned lang ) {
     for( component = LS_MIN; component < LS_MAX; ++component ) {
         header.offset[ curr_offset++ ] = ftell( fp );
         sprintf( fname, "%s%02u." LOCALE_DATA_EXT, componentName[ component ], lang );
+        fname[0] = tolower(fname[0]);
         ifp = fopen( fname, "rb" );
         if( !ifp ) {
             fatal( "cannot open output file" );

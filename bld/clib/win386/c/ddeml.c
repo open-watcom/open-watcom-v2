@@ -37,7 +37,7 @@ WORD PASCAL _Cover_DdeInitialize( LPDWORD pidInst, PFNCALLBACK p,
                                 DWORD afCmd, DWORD ulRes)
 {
     return( DdeInitialize( pidInst,
-        (PFNCALLBACK) SetProc( (LPVOID) p, GETPROC_DDEMLCALLBACK ),
+        (PFNCALLBACK) SetProc( (FARPROC)p, GETPROC_DDEMLCALLBACK ),
                 afCmd, ulRes ) );
 }
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Math library verification test.
 *
 ****************************************************************************/
 
@@ -34,8 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 #ifdef __FPI__
- #include <float.h>
  #include <signal.h>
 #endif
 
@@ -54,10 +53,10 @@
 #define MYABS( a )      ((a) < 0 ? -(a) : (a) )
 
 #ifdef __FPI__
-volatile int sig_count = 0;
-double a = 1.0;
-double b = 3.0;
-double q;
+volatile int    sig_count = 0;
+double          a = 1.0;
+double          b = 3.0;
+double          q;
 
 void my_handler( int sig, int fpe ) {
     if( sig == SIGFPE ) {
@@ -67,14 +66,14 @@ void my_handler( int sig, int fpe ) {
     } else {
         abort();
     }
-    signal( SIGFPE, (__sig_func)my_handler );
+    signal( SIGFPE, (void (*)(int))my_handler );
 }
 
-#else
+//#else
 
 volatile int my_matherrno;
 
-int matherr( struct exception *err )
+int matherr( struct _exception *err )
 {
     if( strcmp( err->name, "sqrt" ) == 0 ) {
         if( err->type == DOMAIN ) {
@@ -89,40 +88,18 @@ int matherr( struct exception *err )
 }
 #endif
 
-void test_integer_math( void )
+int CompDbl( double n1, double n2 )
 {
-    div_t div_result;
-    ldiv_t ldiv_result;
-    int num[20], ctr;
+    double  num;
 
-    printf( "Testing integer functions...\n" );
-    VERIFY( abs( -1 ) == 1 );
-    VERIFY( abs( 0 ) == 0 );
-    VERIFY( abs( 1 ) == 1 );
-    VERIFY( labs( -999999L ) == 999999L );
-    VERIFY( labs( 0L ) == 0L );
-    VERIFY( labs( 999999L ) == 999999L );
-    div_result = div( 100, 100 );
-    VERIFY( div_result.quot == 1 && div_result.rem == 0 );
-    div_result = div( 0, 100 );
-    VERIFY( div_result.quot == 0 && div_result.rem == 0 );
-    div_result = div( 101, 100 );
-    VERIFY( div_result.quot == 1 && div_result.rem == 1 );
-    ldiv_result = ldiv( 100000L, 100000L );
-    VERIFY( ldiv_result.quot == 1L && ldiv_result.rem == 0L );
-    ldiv_result = ldiv( 0L, 100000L );
-    VERIFY( ldiv_result.quot == 0L && ldiv_result.rem == 0L );
-    ldiv_result = ldiv( 101000L, 100000L );
-    VERIFY( ldiv_result.quot == 1L && ldiv_result.rem == 1000L );
-    for( ctr = 0; ctr < 20; ++ctr ) {
-        num[ctr] = rand();
-        VERIFY( num[ctr] >= 0 );
+    if( MYABS( n1 ) < 0.000001 && MYABS( n2 ) < 0.000001 ) return( TRUE );
+    if( n1 == 0.0 || n2 == 0.0 ) {
+        return( FALSE );
+    } else {
+        num = ( n1 - n2 ) / ( n1 < n2 ? n1 : n2 );
+        if( MYABS( num ) > 0.0001 ) return( FALSE );
     }
-    srand( 1 );
-    for( ctr = 0; ctr < 20; ++ctr ) {
-        num[ctr] -= rand();
-        VERIFY( num[ctr] == 0 );
-    }
+    return( TRUE );
 }
 
 void test_complex_math( void )
@@ -135,7 +112,6 @@ void test_complex_math( void )
 
 void test_trig( void )
 {
-    //double num;
     printf( "Testing trigonometric functions...\n" );
     VERIFY( CompDbl( sin( PI ), 0.0 ) );
     VERIFY( CompDbl( sin( 0.0 ), 0.0 ) );
@@ -179,12 +155,14 @@ void test_trig( void )
     VERIFY( CompDbl( cosh( 0.0 ), 1.0 ) );
     VERIFY( CompDbl( tanh( 1.0 ), 0.7615941560 ) );
     VERIFY( CompDbl( tanh( 0.0 ), 0.0 ) );
+#ifdef __WATCOMC__      /* Not in Microsoft libs. */
     VERIFY( CompDbl( asinh( 1.1752011936 ), 1.0 ) );
     VERIFY( CompDbl( asinh( 0.0 ), 0.0 ) );
     VERIFY( CompDbl( acosh( 1.5430806348 ), 1.0 ) );
     VERIFY( CompDbl( acosh( 1.0 ), 0.0 ) );
     VERIFY( CompDbl( atanh( 0.7615941560 ), 1.0 ) );
     VERIFY( CompDbl( atanh( 0.0 ), 0.0 ) );
+#endif
     /*
         Note:
         sinh(1) = 1.175201193643802
@@ -200,14 +178,14 @@ void test_fp_and_80x87_math( void )
 {
     double      dnum;
     int         inum;
-    #ifdef __FPI__
+#ifdef __FPI__
     unsigned    fp_status, fp_control, fp_mask, origbits, bits;
-    #endif
+#endif
 
     printf( "Testing other floating point " );
-    #ifdef __FPI__
+#ifdef __FPI__
     printf( "and 80x87 specific " );
-    #endif
+#endif
     printf( "functions...\n" );
     VERIFY( CompDbl( j0( 2.387 ), 0.009288 ) );
     VERIFY( CompDbl( j1( 2.387 ), 0.522941 ) );
@@ -240,12 +218,14 @@ void test_fp_and_80x87_math( void )
     VERIFY( CompDbl( log10( 10.0 ), 1.0 ) );
     VERIFY( CompDbl( log10( 1 ), 0.0 ) );
     VERIFY( CompDbl( log10( 0.1 ), -1.0 ) );
+#ifdef __WATCOMC__      /* Not in Microsoft libs. */
     VERIFY( CompDbl( log2( 65536.0 ), 16.0 ) );
     VERIFY( CompDbl( log2( 1 ), 0.0 ) );
     VERIFY( CompDbl( log2( 0.25 ), -2.0 ) );
+#endif
     VERIFY( CompDbl( sqrt( 99980001.0 ), 9999.0 ) );
     dnum = 1.0/DBL_MIN;
-    VERIFY( CompDbl( 1.0 / dnum, DBL_MIN, __LINE__ ) );
+    VERIFY( CompDbl( 1.0 / dnum, DBL_MIN ) );
     VERIFY( CompDbl( modf( PI, &dnum ), PI - 3.0 ) );
     VERIFY( dnum == 3.0 );
     VERIFY( CompDbl( modf( -PI, &dnum ) , - PI + 3.0 ) );
@@ -253,7 +233,7 @@ void test_fp_and_80x87_math( void )
     VERIFY( pow( 1.0, 123456789.0 ) == 1.0 );
     VERIFY( pow( 2.0, 16.0 ) == 65536.0 );
     VERIFY( CompDbl( pow( E, log(1234.0) ), 1234.0 ) );
-    #ifndef __FPI__
+#ifdef __FPI__
     VERIFY( sqrt( -1 ) == 1 );
     // Now my_matherrno should == DOMAIN after calling sqrt( -1 )
     // If not, matherr() fails
@@ -288,40 +268,64 @@ void test_fp_and_80x87_math( void )
     //
     _fpreset();
     fp_control = 0;
-    fp_mask = EM_PRECISION;
-    signal( SIGFPE, (__sig_func)my_handler );
+    fp_mask = _EM_INEXACT;
+    signal( SIGFPE, (void (*)(int))my_handler );
     (void)_control87( fp_control, fp_mask );
     q = a / b;
     VERIFY( sig_count > 0 );
-    fp_control = EM_PRECISION;
+    fp_control = _EM_INEXACT;
     (void)_control87( fp_control, fp_mask );
     sig_count = 0;
     q = a / b;
     VERIFY( sig_count == 0 );
     signal( SIGFPE, SIG_DFL );
-    #endif
+#endif
 }
 
-int CompDbl( double n1, double n2 )
+void test_fp_classification( void )
 {
-    double num;
+#if __STDC_VERSION__ >= 199901L && !defined( __WINDOWS__ )
+    printf( "Testing C99 floating-point classification functions...\n" );
 
-    if( MYABS( n1 ) < 0.000001 && MYABS( n2 ) < 0.000001 ) return( TRUE );
-    if( n1 == 0.0 || n2 == 0.0 ) {
-        return( FALSE );
-    } else {
-        num = ( n1 - n2 ) / ( n1 < n2 ? n1 : n2 );
-        if( MYABS( num ) > 0.0001 ) return( FALSE );
-    }
-    return( TRUE );
+    VERIFY( fpclassify( 0.0 ) == FP_ZERO );
+    VERIFY( fpclassify( 0.0f ) == FP_ZERO );
+    VERIFY( fpclassify( 0.0L ) == FP_ZERO );
+    VERIFY( fpclassify( INFINITY ) == FP_INFINITE );
+    VERIFY( fpclassify( -INFINITY ) == FP_INFINITE );
+    VERIFY( fpclassify( NAN ) == FP_NAN );
+    VERIFY( fpclassify( 1.0f ) == FP_NORMAL );
+    VERIFY( fpclassify( 0.3L ) == FP_NORMAL );
+    VERIFY( fpclassify( 423.e34 ) == FP_NORMAL );
+    VERIFY( isfinite( 0.0 ) );
+    VERIFY( isfinite( 1.23f ) );
+    VERIFY( isfinite( 4.56L ) );
+    VERIFY( !isfinite( NAN ) );
+    VERIFY( !isfinite( INFINITY ) );
+    VERIFY( !isinf( NAN ) );
+    VERIFY( isinf( INFINITY ) );
+    VERIFY( !isinf( 0.0L ) );
+    VERIFY( !isinf( 3.0 ) );
+    VERIFY( isnan( NAN ) );
+    VERIFY( !isnan( INFINITY ) );
+    VERIFY( !isnan( 0.0 ) );
+    VERIFY( !isnan( 3.0f ) );
+    VERIFY( !isnormal( NAN ) );
+    VERIFY( !isnormal( INFINITY ) );
+    VERIFY( !isnormal( 0.0 ) );
+    VERIFY( isnormal( .4 ) );
+    VERIFY( isnormal( 3.0f ) );
+    VERIFY( signbit( -1.0 ) );
+    VERIFY( !signbit( 1.0L ) );
+    VERIFY( !signbit( NAN ) );
+    VERIFY( signbit( -INFINITY ) );
+#endif
 }
-
 
 void main( void )
 {
-    test_integer_math();
     test_complex_math();
     test_trig();
+    test_fp_classification();
     test_fp_and_80x87_math();
     printf( "Tests completed.\n" );
 }

@@ -24,28 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Turn DOS Ctrl-C checking on or off (dummy on other systems).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <stdlib.h>
 #include "tinyio.h"
 
-_WCRTLINK void break_on()
-/**********************/
+
+_WCRTLINK void break_on( void )
+/*****************************/
 {
-#if !(defined(__NT__) || defined(__OS2__) || defined(__NETWARE__))
     TinySetCtrlBreak( 1 );
-#endif
 }
 
 
-_WCRTLINK void break_off()
-/***********************/
+_WCRTLINK void break_off( void )
+/******************************/
 {
-#if !(defined(__NT__) || defined(__OS2__) || defined(__NETWARE__))
     TinySetCtrlBreak( 0 );
-#endif
 }

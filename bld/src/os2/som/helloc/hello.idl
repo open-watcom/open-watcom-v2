@@ -1,0 +1,14 @@
+#include <somobj.idl>  //# Get the parent class definition.
+
+interface Hello : SOMObject
+/*  This is a simple class that demonstrates how to define the
+ *  interface to a new class of objects in SOM IDL.
+ */
+{
+    void sayHello();
+    // This method outputs the string "Hello, World!".
+
+    implementation {
+        releaseorder: sayHello;
+    };
+};

@@ -1,0 +1,4 @@
+# RTDLL piece of lang.dat
+[ DEFAULT where="c jc" desc="C/C++ DLL Runtime Libraries" ]
+
+[ DEFAULT type="l" where="c jc" desc="C/C++ DLL Runtime Libraries" ]

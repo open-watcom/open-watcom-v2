@@ -128,7 +128,7 @@ void Ack( HPIPE hdl )
 
 #define STACK_SIZE      8*1024
 
-static void StartThread( void (*rtn)(void*), a_link *link, a_pipe *me, a_pipe *him )
+static void StartThread( void (*rtn)(void FAR *), a_link *link, a_pipe *me, a_pipe *him )
 {
     void        *stack;
     threadinfo  *thread;
@@ -141,8 +141,9 @@ static void StartThread( void (*rtn)(void*), a_link *link, a_pipe *me, a_pipe *h
     _beginthread( rtn, stack, STACK_SIZE, thread );
 }
 
-void JoinPipeThread( threadinfo * thread )
+void JoinPipeThread( void FAR * _thread )
 {
+    threadinfo  *thread = (threadinfo *)_thread;
     char        buff[BUFF_LEN];
     APIRET      rc;
     USHORT      bytes_read;
@@ -173,9 +174,20 @@ void JoinPipeThread( threadinfo * thread )
 }
 
 
-
-void ConnectThread( threadinfo * thread )
+static void FreeLink( a_link *junk )
 {
+    a_link      **owner;
+
+    for( owner = &Links; *owner != junk; owner = &(*owner)->next ) ;
+    *owner = junk->next;
+    free( junk->name );
+    free( junk );
+}
+
+
+void ConnectThread( void FAR * _thread )
+{
+    threadinfo  *thread = (threadinfo *)_thread;
     char        buff[BUFF_LEN];
     APIRET      rc;
     USHORT      bytes_read;
@@ -267,16 +279,6 @@ static a_link *FindLink( char *buff )
 }
 
 
-static void FreeLink( a_link *junk )
-{
-    a_link      **owner;
-
-    for( owner = &Links; *owner != junk; owner = &(*owner)->next ) ;
-    *owner = junk->next;
-    free( junk->name );
-    free( junk );
-}
-
 void ProcessRequest( HPIPE hdl, char *buff )
 {
     a_link      *link;
@@ -344,8 +346,14 @@ static void CheckForTraffic( HPIPE hdl )
     DosDisConnectNmPipe( hdl );
 }
 
+void Error( char *msg )
+{
+    mywrite( 2, msg, strlen( msg ) );
+    mywrite( 2, "\r\n", 2 );
+    exit( 1 );
+}
 
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     APIRET      rc;
     char        req;
@@ -369,11 +377,6 @@ main( int argc, char *argv[] )
     for( ;; ) {
         CheckForTraffic( BindHdl );
     }
+    return( 0 );
 }
 
-void Error( char *msg )
-{
-    mywrite( 2, msg, strlen( msg ) );
-    mywrite( 2, "\r\n", 2 );
-    exit( 1 );
-}

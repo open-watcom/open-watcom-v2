@@ -31,7 +31,7 @@
 
 
 #include <cpplib.h>
-#include <process.h>
+#include <stdlib.h>
 #include "exitwmsg.h"
 
 void CPPLIB(fatal_runtime_error)(   // FATAL RUNTIME ERROR

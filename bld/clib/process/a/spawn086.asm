@@ -35,11 +35,7 @@ include msdos.inc
 include struct.inc
 
         name    dospawn
-        if __WASM__ ge 100
-            xref    "C",_dosretax
-        else
-            xref    <"C",_dosretax>
-        endif
+        xref    "C",_dosretax
         extrn   __close_ovl_file    :dword
 if _MODEL eq _SMALL
         extrn   __GETDS         :near

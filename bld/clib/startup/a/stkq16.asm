@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for 16-bit QNX.
 ;*
 ;*****************************************************************************
 
@@ -52,11 +51,7 @@ _DATA   ends
 dgroupp dw      DGROUP
 
         xdefp   __STK
-        if __WASM__ ge 100
-            xdefp  "C",__STKOVERFLOW
-        else
-            xdefp  <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
 
 msg     db      "Stack Overflow at "
 msg_end label byte
@@ -116,10 +111,6 @@ endif                           ; dx:ax points at retaddr
         stosb
         pop     bx              ; get offset
         call    _putw
-        mov     al,0dh
-        stosb
-        mov     al,0ah
-        stosb
         mov     al,0
         stosb
         mov     ds,cs:dgroupp

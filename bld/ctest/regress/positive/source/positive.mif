@@ -1,0 +1,263 @@
+#
+# awaiting bug fixes
+#
+# pch01.$(exe) &    # All of the PCH tests are currently broken!
+# pch02.$(exe) &    # There are at least three distinct problems
+# pch05.$(exe) &    # - Count of SpecialSyms may not match and
+# pch06.$(exe) &    #   PCH will be endlessly regenerated if there
+# pch07.$(exe) &    #   are inlined assembly functions in header
+# pch08.$(exe) &    #   (pch01/02)
+# pch09.$(exe) &    # - Expression trees aren't stored in PCH, any
+# pch10.$(exe) &    #   functions defined in headers will screw
+# pch11.$(exe) &    #   things up (pch05/06 and others)
+
+!ifdef %ctest_bad_br
+no_br_except30 = no
+!endif
+
+#
+# special options
+#
+opt_bool01 = -za99
+opt_bool02 = -za99
+opt_cmdln01 = /d+XXX=0+1
+opt_cmdln02 = /d+ /dXXX=0+1
+opt_cmdln03 = /dX /DXX /uXX /DXXX /uXXX /UXXX /dXXX /DXXXX /uXXXX /DXXXX /uXXXX
+opt_cmdln04 = /dCMDMAC -DCMD1= /DCMD2$#
+opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
+opt_cmp02 = -za99
+opt_init21  = -za99
+opt_init22  = -za99
+opt_opt09 = -za
+opt_opt41 = -ot -ol+
+opt_opt45 = -za99
+opt_opt46 = -za99
+opt_opt47 = -ri
+opt_pack04 = -wx
+opt_pch01 = -fhq
+opt_pch02 = -fhq
+# pch03,04,05 are same test
+opt_pch03 =             # (1) no PCH
+opt_pch04 = -fhq        # (2) write PCH
+opt_pch05 = -fhq        # (3) read PCH
+opt_pch06 = -fhq
+opt_pch07 = -fhq
+# pch08,09,10,11 use the same PCH
+opt_pch08 = -fhq -dAFS_CM
+opt_pch09 = -fhq -dAFS_CM
+opt_pch10 = -fhq -dAFS_CM
+opt_pch11 = -fhq -dAFS_CM
+opt_pp08 = -w0
+opt_prag01 = -fhq       # (1) write PCH
+opt_prag02 = -fhq       # (2) read PCH
+opt_thread01 = -i$(lang_root)\h\nt
+
+!ifneq arch i86
+opt_link_opt32 = option stack=128k
+!endif
+
+#
+# architecture specific options
+#
+!ifeq arch axp
+# AXP specific
+!else ifeq arch 386
+# 386 specific
+opt_opt13 = -fpd
+opt_opt42 = -ms
+!else ifeq arch i86
+# i86 specific
+opt_opt13 = -fpd
+opt_opt29 = -3 -zff
+opt_opt31 = -zff
+opt_opt42 = -2
+!endif
+
+#
+# tests temporarily excluded from alpha
+#
+bad_on_axp = &
+
+
+positive_tests = &
+    alias01.$(exe) &
+    asm01.$(exe) &
+    asm02.$(exe) &
+    asm03.$(exe) &
+    asm04.$(exe) &
+    asm05.$(exe) &
+    asm06.$(exe) &
+    asm07.$(exe) &
+    asm08.$(exe) &
+    asm09.$(exe) &
+    based01.$(exe) &
+    based02.$(exe) &
+    based03.$(exe) &
+    bf01.$(exe) &
+    bf02.$(exe) &
+    bf03.$(exe) &
+    bool01.$(exe) &
+    bool02.$(exe) &
+    callc01.$(exe) &
+    cmp01.$(exe) &
+    cmp02.$(exe) &
+    conv02.$(exe) &
+    conv03.$(exe) &
+    conv04.$(exe) &
+    enum01.$(exe) &
+    enum02.$(exe) &
+    enum03.$(exe) &
+    enum04.$(exe) &
+    expr01.$(exe) &
+    expr02.$(exe) &
+    far1601.$(exe) &
+    float01.$(exe) &
+    float02.$(exe) &
+    float03.$(exe) &
+    float04.$(exe) &
+    i64cmp.$(exe) &
+    i64cnv.$(exe) &
+    i64op.$(exe) &
+    i6402.$(exe) &
+    i6402.$(exe) &
+    i6404.$(exe) &
+    i6405.$(exe) &
+    i6407.$(exe) &
+    i6408.$(exe) &
+    init01.$(exe) &
+    init02.$(exe) &
+    init03.$(exe) &
+    init04.$(exe) &
+    init05.$(exe) &
+    init06.$(exe) &
+    init07.$(exe) &
+    init08.$(exe) &
+    init09.$(exe) &
+    init10.$(exe) &
+    init11.$(exe) &
+    init12.$(exe) &
+    init13.$(exe) &
+    init14.$(exe) &
+    init15.$(exe) &
+    init16.$(exe) &
+    init17.$(exe) &
+    init18.$(exe) &
+    init19.$(exe) &
+    init20.$(exe) &
+    init21.$(exe) &
+    init22.$(exe) &
+    init23.$(exe) &
+    inline01.$(exe) &
+    inline04.$(exe) &
+    int01.$(exe) &
+    intel01.$(exe) &
+    opt01.$(exe) &
+    opt02.$(exe) &
+    opt03.$(exe) &
+    opt04.$(exe) &
+    opt05.$(exe) &
+    opt06.$(exe) &
+    opt07.$(exe) &
+    opt08.$(exe) &
+    opt09.$(exe) &
+    opt10.$(exe) &
+    opt11.$(exe) &
+    opt12.$(exe) &
+    opt14.$(exe) &
+    opt15.$(exe) &
+    opt16.$(exe) &
+    opt17.$(exe) &
+    opt18.$(exe) &
+    opt19.$(exe) &
+    opt20.$(exe) &
+    opt21.$(exe) &
+    opt24.$(exe) &
+    opt25.$(exe) &
+    opt26.$(exe) &
+    opt27.$(exe) &
+    opt28.$(exe) &
+    opt29.$(exe) &
+    opt30.$(exe) &
+    opt31.$(exe) &
+    opt32.$(exe) &
+    opt34.$(exe) &
+    opt35.$(exe) &
+    opt36.$(exe) &
+    opt37.$(exe) &
+    opt38.$(exe) &
+    opt39.$(exe) &
+    opt40.$(exe) &
+    opt41.$(exe) &
+    opt42.$(exe) &
+    opt43.$(exe) &
+    opt44.$(exe) &
+    opt45.$(exe) &
+    opt46.$(exe) &
+    opt47.$(exe) &
+    opt48.$(exe) &
+    opt49.$(exe) &
+    opt50.$(exe) &
+    pack01.$(exe) &
+    pack02.$(exe) &
+    pack03.$(exe) &
+    pack04.$(exe) &
+    pack05.$(exe) &
+    parm01.$(exe) &
+    parm02.$(exe) &
+    pch03.$(exe) &
+    pch04.$(exe) &
+    pp01.$(exe) &
+    pp02.$(exe) &
+    pp03.$(exe) &
+    pp04.$(exe) &
+    pp05.$(exe) &
+    pp06.$(exe) &
+    pp07.$(exe) &
+    pp08.$(exe) &
+    pp09.$(exe) &
+    pp10.$(exe) &
+    pp11.$(exe) &
+    pp12.$(exe) &
+    pp13.$(exe) &
+    pp14.$(exe) &
+    pp15.$(exe) &
+    pp16.$(exe) &
+    pp17.$(exe) &
+    pp18.$(exe) &
+    pp19.$(exe) &
+    pp20.$(exe) &
+    pp21.$(exe) &
+    pp22.$(exe) &
+    pp23.$(exe) &
+    pp24.$(exe) &
+    pp25.$(exe) &
+    pp26.$(exe) &
+    pp27.$(exe) &
+    pp28.$(exe) &
+    pp29.$(exe) &
+    pp30.$(exe) &
+    pp31.$(exe) &
+    prag01.$(exe) &
+    prag02.$(exe) &
+    prep01.$(exe) &
+    quest01.$(exe) &
+    quest02.$(exe) &
+    ret01.$(exe) &
+    ret02.$(exe) &
+    ret03.$(exe) &
+    ret04.$(exe) &
+    seh01.$(exe) &
+    sizeof01.$(exe) &
+    sizeof02.$(exe) &
+    src01.$(exe) &
+    str01.$(exe) &
+    str02.$(exe) &
+    switch01.$(exe) &
+    thread01.$(exe) &
+    thread02.$(exe) &
+
+!ifeq arch axp
+positive_exes = $+ $(positive_tests) $-
+!else
+positive_exes = $+ $(positive_tests) $(bad_on_axp) $-
+!endif

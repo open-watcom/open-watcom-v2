@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump scores.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "score.h"
 #include "dump.h"
@@ -44,43 +44,6 @@ extern  void            DumpOperand(name *);
 
 extern  int             ScoreCount;
 extern  score_reg       **ScoreList;
-
-extern  void    DumpSc( score *sc ) {
-/***********************************/
-
-    score_reg   *entry;
-    score_list  *curr;
-    score       *reg;
-    int         i;
-
-    i = 0;
-    while( i < ScoreCount ) {
-        entry = ScoreList[ i ];
-        DumpInt( i );
-        DumpLiteral( " reg " );
-        DumpRegName( entry->reg );
-        DumpLiteral( " low " );
-        DumpInt( entry->low );
-        DumpLiteral( " high " );
-        DumpInt( entry->high );
-        reg = sc->next_reg;
-        while( reg != sc ) {
-            DumpLiteral( "==" );
-            DumpRegName( ScoreList[ reg->index ]->reg );
-            reg = reg->next_reg;
-        }
-        DumpLiteral( " generation " );
-        DumpInt( sc->generation );
-        DumpNL();
-        curr = *sc->list;
-        while( curr != NULL ) {
-            DumpScList( curr );
-            curr = curr->next;
-        }
-        ++ sc;
-        ++ i;
-    }
-}
 
 static  void    DumpScList( score_list *curr ) {
 /**********************************************/
@@ -133,4 +96,42 @@ static  void    DumpScList( score_list *curr ) {
         break;
     }
     DumpNL();
+}
+
+
+extern  void    DumpSc( score *sc ) {
+/***********************************/
+
+    score_reg   *entry;
+    score_list  *curr;
+    score       *reg;
+    int         i;
+
+    i = 0;
+    while( i < ScoreCount ) {
+        entry = ScoreList[ i ];
+        DumpInt( i );
+        DumpLiteral( " reg " );
+        DumpRegName( entry->reg );
+        DumpLiteral( " low " );
+        DumpInt( entry->low );
+        DumpLiteral( " high " );
+        DumpInt( entry->high );
+        reg = sc->next_reg;
+        while( reg != sc ) {
+            DumpLiteral( "==" );
+            DumpRegName( ScoreList[ reg->index ]->reg );
+            reg = reg->next_reg;
+        }
+        DumpLiteral( " generation " );
+        DumpInt( sc->generation );
+        DumpNL();
+        curr = *sc->list;
+        while( curr != NULL ) {
+            DumpScList( curr );
+            curr = curr->next;
+        }
+        ++ sc;
+        ++ i;
+    }
 }

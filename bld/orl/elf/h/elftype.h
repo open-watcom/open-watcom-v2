@@ -74,10 +74,9 @@ struct elf_file_handle_struct {
     elf_sec_handle *    elf_sec_hnd;
     elf_sec_handle *    orig_sec_hnd;
     void *              file;
-    char *              e_hdr_buffer;
-    char *              s_hdr_table_buffer;
     char *              contents_buffer1;
     char *              contents_buffer2;
+    uint16_t            shentsize;
     orl_machine_type    machine_type;
     orl_file_type       type;
     orl_file_size       size;
@@ -129,6 +128,7 @@ struct elf_sec_handle_struct {
     char *              contents;
     orl_sec_offset      base;
     elf_quantity        index;
+    uint64_t            entsize;
     // assoc - things associated with the section
     union {
         struct elf_normal_assoc_struct  normal;
@@ -145,7 +145,9 @@ struct elf_symbol_handle_struct {
     orl_symbol_binding  binding;
     orl_symbol_type     type;
     char *              name;
-    Elf32_Sym *         symbol;
+    uint64_t            value;
+    uint16_t            shndx;
+    uint8_t             info;
 };
 
 #endif

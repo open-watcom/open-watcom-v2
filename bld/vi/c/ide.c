@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
 
 #ifdef __IDE__
@@ -77,7 +74,7 @@ void IDEFini( void )
 void IDEGetKeys( void )
 {
     char        buff[MAX_STR];
-    char        path[_MAX_PATH];
+    char        path[FILENAME_MAX];
 
     if( !EditFlags.UseIDE ) {
         return;
@@ -88,7 +85,7 @@ void IDEGetKeys( void )
     VxDGet( buff, sizeof( buff ) );
     KeyAddString( buff );
     GetCurrentFilePath( path );
-    MySprintf( buff,"(%ld, %d) %s\r\n", CurrentLineNumber, CurrentColumn, path );
+    MySprintf( buff, "(%ld, %d) %s\r\n", CurrentLineNumber, CurrentColumn, path );
     VxDPut( buff, strlen( buff ) + 1 );
     VxDPut( TERMINATE_COMMAND_STR, sizeof( TERMINATE_COMMAND_STR ) );
 

@@ -73,6 +73,7 @@ opt_diag0285 = -fh -fi=diag0285.hh
 opt_diag0287 = -dMACRO_0287=1
 opt_diag0292 = -zpw -zk0
 opt_diag0296 = -jw
+opt_diag0306 = -za0x
 
 diags_sys_defn = &
     diag0077$(err_sys) &
@@ -370,7 +371,6 @@ diags_0299_defn = &
     diag0278$(err_sin) &
     diag0279$(err_sin) &
     diag0280$(err_sin) &
-    diag0281$(err_sin) &
     diag0282$(err_sin) &
     diag0283$(err_sin) &
     diag0284$(err_sin) &
@@ -394,7 +394,17 @@ diags_0399_defn = &
     diag0300$(err_sin) &
     diag0301$(err_sin) &
     diag0302$(err_sin) &
-    
+    diag0303$(err_sin) &
+    diag0304$(err_sin) &
+    diag0305$(err_sin) &
+    diag0306$(err_sin) &
+    diag0307$(err_sin) &
+    diag0308$(err_sin) &
+    diag0309$(err_sin) &
+    diag0310$(err_sin) &
+    diag0311$(err_sin) &
+    diag0312$(err_sin) &
+    diag0313$(err_sin) &
     
 err_sin = .err
 err_sys = .ser

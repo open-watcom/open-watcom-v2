@@ -1,0 +1,169 @@
+/*
+ *  ntiologc.h  NT I/O log codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTIOLOGC_
+#define _NTIOLOGC_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Facility codes */
+#define FACILITY_RPC_STUBS      0x03
+#define FACILITY_RPC_RUNTIME    0x02
+#define FACILITY_MCA_ERROR_CODE 0x05
+#define FACILITY_IO_ERROR_CODE  0x04
+
+/* Status severity codes */
+#define STATUS_SEVERITY_SUCCESS         0x0
+#define STATUS_SEVERITY_INFORMATIONAL   0x1
+#define STATUS_SEVERITY_WARNING         0x2
+#define STATUS_SEVERITY_ERROR           0x3
+
+/* NT I/O log codes */
+#define IO_ERR_RETRY_SUCCEEDED                      0x00040001L
+#define IO_ERR_INSUFFICIENT_RESOURCES               0xC0040002L
+#define IO_ERR_CONFIGURATION_ERROR                  0xC0040003L
+#define IO_ERR_DRIVER_ERROR                         0xC0040004L
+#define IO_ERR_PARITY                               0xC0040005L
+#define IO_ERR_SEEK_ERROR                           0xC0040006L
+#define IO_ERR_BAD_BLOCK                            0xC0040007L
+#define IO_ERR_OVERRUN_ERROR                        0xC0040008L
+#define IO_ERR_TIMEOUT                              0xC0040009L
+#define IO_ERR_SEQUENCE                             0xC004000AL
+#define IO_ERR_CONTROLLER_ERROR                     0xC004000BL
+#define IO_ERR_INTERNAL_ERROR                       0xC004000CL
+#define IO_ERR_INCORRECT_IRQL                       0xC004000DL
+#define IO_ERR_INVALID_IOBASE                       0xC004000EL
+#define IO_ERR_NOT_READY                            0xC004000FL
+#define IO_ERR_INVALID_REQUEST                      0xC0040010L
+#define IO_ERR_VERSION                              0xC0040011L
+#define IO_ERR_LAYERED_FAILURE                      0xC0040012L
+#define IO_ERR_RESET                                0xC0040013L
+#define IO_ERR_PROTOCOL                             0xC0040014L
+#define IO_ERR_MEMORY_CONFLICT_DETECTED             0xC0040015L
+#define IO_ERR_PORT_CONFLICT_DETECTED               0xC0040016L
+#define IO_ERR_DMA_CONFLICT_DETECTED                0xC0040017L
+#define IO_ERR_IRQ_CONFLICT_DETECTED                0xC0040018L
+#define IO_ERR_BAD_FIRMWARE                         0xC0040019L
+#define IO_WRN_BAD_FIRMWARE                         0x8004001AL
+#define IO_ERR_DMA_RESOURCE_CONFLICT                0xC004001BL
+#define IO_ERR_INTERRUPT_RESOURCE_CONFLICT          0xC004001CL
+#define IO_ERR_MEMORY_RESOURCE_CONFLICT             0xC004001DL
+#define IO_ERR_PORT_RESOURCE_CONFLICT               0xC004001EL
+#define IO_BAD_BLOCK_WITH_NAME                      0xC004001FL
+#define IO_WRITE_CACHE_ENABLED                      0x80040020L
+#define IO_RECOVERED_VIA_ECC                        0x80040021L
+#define IO_WRITE_CACHE_DISABLED                     0x80040022L
+#define IO_FILE_QUOTA_THRESHOLD                     0x40040024L
+#define IO_FILE_QUOTA_LIMIT                         0x40040025L
+#define IO_FILE_QUOTA_STARTED                       0x40040026L
+#define IO_FILE_QUOTA_SUCCEEDED                     0x40040027L
+#define IO_FILE_QUOTA_FAILED                        0x80040028L
+#define IO_FILE_SYSTEM_CORRUPT                      0xC0040029L
+#define IO_FILE_QUOTA_CORRUPT                       0xC004002AL
+#define IO_SYSTEM_SLEEP_FAILED                      0xC004002BL
+#define IO_DUMP_POINTER_FAILURE                     0xC004002CL
+#define IO_DUMP_DRIVER_LOAD_FAILURE                 0xC004002DL
+#define IO_DUMP_INITIALIZATION_FAILURE              0xC004002EL
+#define IO_DUMP_DUMPFILE_CONFLICT                   0xC004002FL
+#define IO_DUMP_DIRECT_CONFIG_FAILED                0xC0040030L
+#define IO_DUMP_PAGE_CONFIG_FAILED                  0xC0040031L
+#define IO_LOST_DELAYED_WRITE                       0x80040032L
+#define IO_WARNING_PAGING_FAILURE                   0x80040033L
+#define IO_WRN_FAILURE_PREDICTED                    0x80040034L
+#define IO_WARNING_INTERRUPT_STILL_PENDING          0x80040035L
+#define IO_DRIVER_CANCEL_TIMEOUT                    0x80040036L
+#define IO_FILE_SYSTEM_CORRUPT_WITH_NAME            0xC0040037L
+#define IO_WARNING_ALLOCATION_FAILED                0x80040038L
+#define IO_WARNING_LOG_FLUSH_FAILED                 0x80040039L
+#define IO_WARNING_DUPLICATE_SIGNATURE              0x8004003AL
+#define IO_WARNING_DUPLICATE_PATH                   0x8004003BL
+#define MCA_WARNING_CACHE                           0x8005003CL
+#define MCA_ERROR_CACHE                             0xC005003DL
+#define MCA_WARNING_TLB                             0x8005003EL
+#define MCA_ERROR_TLB                               0xC005003FL
+#define MCA_WARNING_CPU_BUS                         0x80050040L
+#define MCA_ERROR_CPU_BUS                           0xC0050041L
+#define MCA_WARNING_REGISTER_FILE                   0x80050042L
+#define MCA_ERROR_REGISTER_FILE                     0xC0050043L
+#define MCA_WARNING_MAS                             0x80050044L
+#define MCA_ERROR_MAS                               0xC0050045L
+#define MCA_WARNING_MEM_UNKNOWN                     0x80050046L
+#define MCA_ERROR_MEM_UNKNOWN                       0xC0050047L
+#define MCA_WARNING_MEM_1_2                         0x80050048L
+#define MCA_ERROR_MEM_1_2                           0xC0050049L
+#define MCA_WARNING_MEM_1_2_5                       0x8005004AL
+#define MCA_ERROR_MEM_1_2_5                         0xC005004BL
+#define MCA_WARNING_MEM_1_2_5_4                     0x8005004CL
+#define MCA_ERROR_MEM_1_2_5_4                       0xC005004DL
+#define MCA_WARNING_SYSTEM_EVENT                    0x8005004EL
+#define MCA_ERROR_SYSTEM_EVENT                      0xC005004FL
+#define MCA_WARNING_PCI_BUS_PARITY                  0x80050050L
+#define MCA_ERROR_PCI_BUS_PARITY                    0xC0050051L
+#define MCA_WARNING_PCI_BUS_PARITY_NO_INFO          0x80050052L
+#define MCA_ERROR_PCI_BUS_PARITY_NO_INFO            0xC0050053L
+#define MCA_WARNING_PCI_BUS_SERR                    0x80050054L
+#define MCA_ERROR_PCI_BUS_SERR                      0xC0050055L
+#define MCA_WARNING_PCI_BUS_SERR_NO_INFO            0x80050056L
+#define MCA_ERROR_PCI_BUS_SERR_NO_INFO              0xC0050057L
+#define MCA_WARNING_PCI_BUS_MASTER_ABORT            0x80050058L
+#define MCA_ERROR_PCI_BUS_MASTER_ABORT              0xC0050059L
+#define MCA_WARNING_PCI_BUS_MASTER_ABORT_NO_INFO    0x8005005AL
+#define MCA_ERROR_PCI_BUS_MASTER_ABORT_NO_INFO      0xC005005BL
+#define MCA_WARNING_PCI_BUS_TIMEOUT                 0x8005005CL
+#define MCA_ERROR_PCI_BUS_TIMEOUT                   0xC005005DL
+#define MCA_WARNING_PCI_BUS_TIMEOUT_NO_INFO         0x8005005EL
+#define MCA_ERROR_PCI_BUS_TIMEOUT_NO_INFO           0xC005005FL
+#define MCA_WARNING_PCI_BUS_UNKNOWN                 0x80050060L
+#define MCA_ERROR_PCI_BUS_UNKNOWN                   0xC0050061L
+#define MCA_WARNING_PCI_DEVICE                      0x80050062L
+#define MCA_ERROR_PCI_DEVICE                        0xC0050063L
+#define MCA_WARNING_SMBIOS                          0x80050064L
+#define MCA_ERROR_SMBIOS                            0xC0050065L
+#define MCA_WARNING_PLATFORM_SPECIFIC               0x80050066L
+#define MCA_ERROR_PLATFORM_SPECIFIC                 0xC0050067L
+#define MCA_WARNING_UNKNOWN                         0x80050068L
+#define MCA_ERROR_UNKNOWN                           0xC0050069L
+#define MCA_WARNING_UNKNOWN_NO_CPU                  0x8005006AL
+#define MCA_ERROR_UNKNOWN_NO_CPU                    0xC005006BL
+#define IO_ERR_THREAD_STUCK_IN_DEVICE_DRIVER        0xC004006CL
+#define MCA_WARNING_CMC_THRESHOLD_EXCEEDED          0xC005006DL
+#define MCA_WARNING_CPE_THRESHOLD_EXCEEDED          0xC005006EL
+#define MCA_WARNING_CPU_THERMAL_THROTTLED           0xC005006FL
+#define MCA_INFO_CPU_THERMAL_THROTTLING_REMOVED     0x40050070L
+#define MCA_WARNING_CPU                             0x80050071L
+#define MCA_ERROR_CPU                               0xC0050072L
+#define MCA_INFO_NO_MORE_CORRECTED_ERROR_LOGS       0x40050073L
+#define MCA_INFO_MEMORY_PAGE_MARKED_BAD             0x40050074L
+#define IO_ERR_PORT_TIMEOUT                         0xC0040075L
+#define IO_WARNING_BUS_RESET                        0x80040076L
+#define IO_INFO_THROTTLE_COMPLETE                   0x40040077L
+#define MCA_MEMORYHIERARCHY_ERROR                   0xC0050078L
+#define MCA_TLB_ERROR                               0xC0050079L
+#define MCA_BUS_ERROR                               0xC005007AL
+#define MCA_BUS_TIMEOUT_ERROR                       0xC005007BL
+#define MCA_INTERNALTIMER_ERROR                     0xC005007CL
+#define MCA_MICROCODE_ROM_PARITY_ERROR              0xC005007EL
+#define MCA_EXTERNAL_ERROR                          0xC005007FL
+#define MCA_FRC_ERROR                               0xC0050080L
+#define IO_WARNING_RESET                            0x80040081L
+#define IO_FILE_SYSTEM_REPAIR_SUCCESS               0x80040082L
+#define IO_FILE_SYSTEM_REPAIR_FAILED                0xC0040083L
+#define IO_WARNING_WRITE_FUA_PROBLEM                0x80040084L
+#define IO_CDROM_EXCLUSIVE_LOCK                     0x40040085L
+#define IO_FILE_SYSTEM_TXF_RECOVERY_FAILURE         0x80040086L
+#define IO_FILE_SYSTEM_TXF_LOG_FULL_HANDLING_FAILED 0xC0040087L
+#define IO_FILE_SYSTEM_TXF_RESOURCE_MANAGER_RESET   0x80040088L
+#define IO_FILE_SYSTEM_TXF_RESOURCE_MANAGER_START_FAILED    0xC0040089L
+#define IO_FILE_SYSTEM_TXF_RESOURCE_MANAGER_SHUT_DOWN   0xC004008AL
+#define IO_LOST_DELAYED_WRITE_NETWORK_DISCONNECTED  0x8004008BL
+#define IO_LOST_DELAYED_WRITE_NETWORK_SERVER_ERROR  0x8004008CL
+#define IO_LOST_DELAYED_WRITE_NETWORK_LOCAL_DISK_ERROR  0x8004008DL
+
+:include cplusepi.sp
+
+#endif /* _NTIOLOGC_ */

@@ -3,7 +3,7 @@
 #
 # No recursion for microsoft option 
 #
-temp = HELLO
-temp = $(temp$temp) 
+fubar = HELLO
+fubar = $(fubar$fubar) 
 all: .symbolic
-   echo $(temp) $$
+   echo $(fubar) $$

@@ -46,47 +46,47 @@
 #define extern
 #include "stubdata.h"
 cg_type CGIntTypes[] = {
-    T_UINT_1,
-    T_INT_1,
-    T_UINT_2,
-    T_INT_2,
-    T_UINT_4,
-    T_INT_4,
-    T_LONG_POINTER,
-    T_HUGE_POINTER,
-    T_NEAR_POINTER,
-    T_INTEGER,
-    T_UNSIGNED,
-    T_POINTER,
-    T_LONG_CODE_PTR,
-    T_NEAR_CODE_PTR,
-    T_CODE_PTR,
-    T_SINGLE,
-    T_DOUBLE,
-    T_DEFAULT
+    TY_UINT_1,
+    TY_INT_1,
+    TY_UINT_2,
+    TY_INT_2,
+    TY_UINT_4,
+    TY_INT_4,
+    TY_LONG_POINTER,
+    TY_HUGE_POINTER,
+    TY_NEAR_POINTER,
+    TY_INTEGER,
+    TY_UNSIGNED,
+    TY_POINTER,
+    TY_LONG_CODE_PTR,
+    TY_NEAR_CODE_PTR,
+    TY_CODE_PTR,
+    TY_SINGLE,
+    TY_DOUBLE,
+    TY_DEFAULT
     };
 cg_type DGIntTypes[] = {
-    T_UINT_1,
-    T_INT_1,
-    T_UINT_2,
-    T_INT_2,
-    T_UINT_4,
-    T_INT_4,
-    T_LONG_POINTER,
-    T_HUGE_POINTER,
-    T_NEAR_POINTER,
-    T_INTEGER,
-    T_UNSIGNED,
-    T_POINTER,
-    T_LONG_CODE_PTR,
-    T_NEAR_CODE_PTR,
-    T_CODE_PTR,
-    T_DEFAULT
+    TY_UINT_1,
+    TY_INT_1,
+    TY_UINT_2,
+    TY_INT_2,
+    TY_UINT_4,
+    TY_INT_4,
+    TY_LONG_POINTER,
+    TY_HUGE_POINTER,
+    TY_NEAR_POINTER,
+    TY_INTEGER,
+    TY_UNSIGNED,
+    TY_POINTER,
+    TY_LONG_CODE_PTR,
+    TY_NEAR_CODE_PTR,
+    TY_CODE_PTR,
+    TY_DEFAULT
 };
 cg_type FloatTypes[] = {
-    T_SINGLE,
-    T_DOUBLE,
-    T_DEFAULT
+    TY_SINGLE,
+    TY_DOUBLE,
+    TY_DEFAULT
 };
 cg_op ControlOps[  ] = {
     O_GOTO,
@@ -133,7 +133,7 @@ cg_op UnaryOps[  ] = {
     O_SINH,
     O_TANH,
     O_PARENTHESIS,
-    O_PTR_TO_FORIEGN,
+    O_PTR_TO_FOREIGN,
     O_PTR_TO_NATIVE,
     O_NOP
 };

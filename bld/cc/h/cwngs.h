@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of warning levels for each message.
 *
 ****************************************************************************/
 
@@ -51,7 +50,7 @@ warn( WARN_SYM_NOT_ASSIGNED,                    2 )
 warn( WARN_DEAD_CODE,                           2 )
 warn( WARN_SYM_NOT_REFERENCED,                  2 )
 warn( WARN_UNDECLARED_PP_SYM,                   2 )
-warn( WARN_ASSUMED_IMPORT,                      3 )
+warn( WARN_ASSUMED_IMPORT,                      1 )
 warn( WARN_NESTED_COMMENT,                      3 )
 warn( WARN_USEFUL_SIDE_EFFECT,                  3 )
 warn( WARN_RET_ADDR_OF_AUTO,                    1 )
@@ -63,9 +62,28 @@ warn( WARN_LVALUE_CAST,                         1 )
 warn( WARN_JUNK_FOLLOWS_DIRECTIVE,              1 )
 warn( WARN_LIT_TOO_LONG,                        1 )
 warn( WARN_SPLICE_IN_CPP_COMMENT,               1 )
-warn( WARN_COMPARE_ALWAYS,                      3 )
+warn( WARN_COMPARE_ALWAYS,                      1 )
 warn( WARN_REPEATED_MODIFIER,                   3 )
 warn( WARN_QUALIFIER_MISMATCH,                  1 )
 warn( WARN_SIGN_MISMATCH,                       1 )
 warn( WARN_PARM_NOT_REFERENCED,                 3 )
+warn( WARN_LOSE_PRECISION,                      1 )
 warn( WARN_LEVEL_1,                             1 )
+warn( WARN_ENUM_CONSTANT_TOO_LARGE,             1 )
+warn( WARN_NO_STG_OR_TYPE,                      1 )
+warn( WARN_NO_RET_TYPE_GIVEN,                   3 )
+warn( WARN_NO_DATA_TYPE_GIVEN,                  3 )
+warn( WARN_ASSEMBLER_WARNING,                   3 )
+warn( WARN_SYMBOL_NAME_TOO_LONG,                1 )
+warn( WARN_SHIFT_AMOUNT_NEGATIVE,               1 )
+warn( WARN_SHIFT_AMOUNT_TOO_BIG,                1 )
+warn( WARN_COMPARE_UNSIGNED_VS_ZERO,            1 )
+warn( WARN_FUNCTION_STG_CLASS_REDECLARED,       1 )
+warn( WARN_NO_EOL_BEFORE_EOF,                   1 )
+warn( WARN_OBSOLETE_FUNC_DECL,                  3 )
+warn( WARN_NONPROTO_FUNC_CALLED,                3 )
+warn( WARN_NONPROTO_FUNC_CALLED_INDIRECT,       3 )
+warn( WARN_MISSING_QUOTE,                       1 )
+warn( WARN_PLAIN_CHAR_SUBSCRIPT,                4 )
+warn( WARN_DIV_BY_ZERO,                         1 )
+warn( WARN_CAST_POINTER_TRUNCATION,             3 )

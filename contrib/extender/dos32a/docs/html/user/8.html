@@ -1,0 +1,493 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: User's Reference [Error Codes and Messages]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- User's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">8.0 - DOS/32 Advanced -
+Error Codes and Messages<br>
+</font></b></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Legend:</font></b></p>
+
+<blockquote>
+  <p><tt>%d</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a decimal value<br>
+  </font><tt>%b</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a heximal value (8 bits)<br>
+  </font><tt>%w</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a heximal value (16 bits)<br>
+  </font><tt>%l</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a heximal value (32 bits)<br>
+  </font><tt>%c</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a character<br>
+  </font><tt>%s</tt><font size=-1 face="Verdana, Arial, Helvetica"> - a sting</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A fatal (0000): this program requires DOS 4.00 or higher </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced requires
+DOS 4.00 or higher.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (0001): 80386 processor or better required to run protected
+mode<br>
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced requires
+an 80386 processor or better.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (0002): system software does not follow VCPI/DPMI specifications
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- Unknown memory manager
+is present and running protected mode. There is no way for DOS/32 Advanced
+to switch into protected mode. Replace memory manager and try again. The
+supported memory managers are: clean system, also known as &quot;Clean&quot;,
+&quot;raw&quot; or &quot;INT 15h&quot;, XMS, VCPI and DPMI.</font></p>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A fatal (0003): present DPMI host does not support 32bit applications
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- An older 16-bit version
+of DPMI host that is in place cannot run 32-bit programs. Try to unload the
+software which installs 16-bit DPMI, or change the memory manager.</font></p>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A fatal (0004): incompatible VCPI PIC mappings </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- VCPI Programmable Interrupt
+Controllers (PICs) have been relocated to the values which DOS/32 Advanced
+does not support. PICs must NOT be mapped at software interrupt vectors
+INT 00-07h, INT 21h and INT 31h. Neither can both of the PICs be mapped
+at the same interrupt vector at the same time. To solve the problem try
+to replace the memory manager.</font></p>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A fatal (0005): could not enter 32bit protected mode </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- External DPMI host could
+not switch DOS/32 Advanced into protected mode. Try running DOS/32 Advanced
+with another memory manager.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (0006): could not allocate system selectors </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- External DPMI host could
+not allocate selectors required by DOS/32 Advanced. Try running DOS/32 Advanced
+with another memory manager.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (0007): could not enable A20 line </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- A20 line could not be
+enabled, machine may be not 100 percent PC/AT or PS/2 compatible. Try to
+install a memory manager or replace the present one.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (1001): not enough DOS memory, additional %dKB needed
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- You don't have enough
+conventional memory. Try to free up some by unloading not needed TSRs, changing
+memory manager or reconfiguring DOS/32 Advanced. The &quot;%d&quot; number
+will show how much memory (in KB) is missing.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (1002): DOS reported insufficient memory </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- You don't have enough
+conventional memory. Try to free up some by unloading not needed TSRs, changing
+memory manager or reconfiguring DOS/32 Advanced.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (2000): invalid environment </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced built-in
+DPMI, or the external DPMI server could not allocate a selector for the
+environment. Try to install or replace memory manager. This error is also
+reported when DOS/32 Advanced was not able to create the environment for
+the program that was specified on command line. Make sure you have enough
+conventional memory and you configured the DOS Extender to allocate enough
+selectors.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (2001): could not open exec file &quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced could
+not find file &quot;%s&quot;. The file may be corrupted in some way or does
+not exist. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (2002): error in exec file &quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced detected
+an error in file &quot;%s&quot;. The file may be corrupted in some way or
+does not exist. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (3001): could not open application file &quot;%s&quot;
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced could
+not find and/or open application file &quot;%s&quot; specified on the command
+line. Either the file does not exist or the path was incorrect, or the file
+may be corrupted in some way. Check that file &quot;%s&quot; exists and
+the path is correct. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (3002): error in application file &quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced detected
+an error in application file &quot;%s&quot; specified at command line. The
+file may be corrupted in some way. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (3003): file &quot;%s&quot; does not contain any valid
+exec format </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced cannot
+execute file &quot;%s&quot;. Either the executable file format is not supported,
+or the file has been corrupted in some way. Check that the file &quot;%s&quot;
+is executable. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (3004): exec format not supported in file &quot;%s&quot;
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced cannot
+execute file &quot;%s&quot;. Either the executable file format is not supported,
+or the file has been corrupted in some way. Check that the file &quot;%s&quot;
+is executable. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (3005): error in application file &quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced cannot
+execute file &quot;%s&quot;. Either the executable file format is not supported,
+or the file has been corrupted in some way. Check that the file &quot;%s&quot;
+is executable. Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4001): too many objects in application exec &quot;%s&quot;
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced supports
+up to 64 Objects per application. Rebuild your program so that the executable
+contains no more than 64 Objects.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4002): not enough DOS memory to load application exec
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- There is not enough
+conventional (DOS) memory to load your application. Rebuild your program
+so that it occupies less memory, free some of conventional memory or reconfigure
+DOS/32 Advanced.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4003): not enough extended memory to load application
+exec &quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- There is not enough
+extended (High) memory to load your application. Rebuild your program so
+that it occupies less memory, free some of extended memory or reconfigure
+DOS/32 Advanced.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4004): not enough extended memory to load fixups for
+%s </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced could
+not load fixups for file &quot;%s&quot; because of extended memory shortage.
+This problem often arises when a DOS/32 Advanced application was spawned
+from non-compatible DOS Extender. Try to replace the DOS Extender for the
+program that spawned DOS/32 Advanced, make sure you have enough extended
+memory.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4005): unrecognized fixup data in application exec
+&quot;%s&quot; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- The program was loaded,
+but could not be relocated because of bad fixup data records. Either an
+error occurred at link time or the application was corrupted in some way.
+It is also possible that DOS/32 Advanced does not support a fixup record
+in &quot;%s&quot;. Recompile, recopy or rebuild application file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4006): 16bit fixup overflow in application exec &quot;%s&quot;
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- The program was loaded,
+but could not be relocated because of bad fixup data records. Either an
+error occurred at link time or the application was corrupted in some way.
+Recompile or recopy file &quot;%s&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (4007): not enough DOS Transfer Buffer space to load
+LC-exec &quot;%s&quot;</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced cannot
+load Linear Compressed executable &quot;%s&quot; because the size of DOS
+Transfer Buffer is set too small. Reconfigure the DOS Extender and set DOS
+Transfer Buffer size to any value that is equal to or is greater than 8KB
+(8192 bytes).</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (8001): syntax is DOS32A &lt;execname.xxx&gt; </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- The syntax is DOS32A[.EXE]
+&lt;executable[.xxx]&gt;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A fatal (8002): DOS reported an error (#%w) </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- An error was reported
+by DOS. The value &quot;%w&quot; will show returned DOS error code.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A fatal (8003): DPMI host reported an error (#%w) </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- An error was reported
+by a DPMI host. The value &quot;%w&quot; will show returned DPMI error code.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A warning (9001): no extended memory had been allocated </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced could
+not allocate any extended memory. Note that when an external DPMI host and
+a VCPI server are present at the same time, and DOS/32 Advanced is configured
+to detect VCPI first, no extended memory can be available due to the fact
+that the DPMI host might have already allocated it all. Another possibility
+is that a DOS/32 Advanced application was spawned from a software incompatible
+with DOS/32 Advanced in the matter of extended memory allocation. Finally,
+DOS/32 Advanced might have been configured to not allocate any extended
+memory at all. Reconfigure DOS/32 Advanced. Make sure that the software,
+from which the application was spawned is DOS/32 Advanced compatible. Replace
+memory manager.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A warning (9002): PICs have been relocated to INT %bh, INT
+%bh </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- Programmable Interrupt
+Controllers (PICs) have been remapped by the previously run/installed software.
+The first number will show the current mapping of the master PIC, the second,
+mapping of the slave PIC.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A warning (9003): real mode interrupt vector had been modified:
+INT %bh </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- This warning will be
+issued on your protected mode program's exit. It will inform you that the
+protected mode program that was just run, did install a real mode interrupt
+&quot;%b&quot;, or did modify the real mode interrupt vector table in some
+other way, but it did not restore the original value of &quot;%b&quot;.
+Note that many protected mode programs do not care for restoring certain
+real mode interrupts, such as INT 1Ch, INT 23h and INT 24h. However, since
+DOS/32 Advanced DOS Extender will restore the whole real mode interrupt
+vector table on exit to DOS (unless this option is disabled), this will
+usually do no harm to the system.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A warning (9004): mouse initialization failed </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- Either mouse driver
+was not installed, or the mouse driver is incompatible with DOS/32 Advanced
+in some way. This warning may also be issued if the Low Buffer size is set
+to a value below 4096 bytes.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+<p><tt>DOS/32A warning (9005): object #%d contains no data or code </tt></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica">- This warning will be
+reported when a protected mode application contains Objects with the size
+of zero (empty Objects). Normally, the linker will automatically remove
+such Objects from the application, unless they are referenced from somewhere
+in the program.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+<p><tt>DOS/32A warning (9006): incompatible version of DOS/32A already running </tt></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica">- This warning will be
+issued when spawning a DOS/32 Advanced application from another DOS/32 Advanced
+program, and the DOS Extenders' versions are not compatible (ie they have
+different versions). Make sure that all the applications that are to be spawned
+run under one and the same version of DOS/32 Advanced DOS Extender.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+<p><tt>DOS/32A run-time (6000): unknown error code (#%b) </tt></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced Terminate
+Program on Error routine was called with unknown error code. This can happen
+when a protected mode program improperly installs exception handlers.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+<p><tt>DOS/32A run-time (6001): exception (INT %bh)<br>
+DOS/32A run-time (6001): unexpected interrupt (INT %bh) </tt></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica">- The protected mode applications
+contains errors, which prevent it from normal operation. Recompile or recopy
+the program.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+<p><tt>DOS/32A run-time (6002): out of real-mode virtual stacks </tt></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced run
+out of real-mode virtual stacks. This can happen when a protected mode program
+makes too many nested calls to real mode software. Make sure that you configured
+DOS/32 Advanced properly. Check that the timer is not reprogrammed to run
+at a frequency that is too high for the CPU and the rest of the hardware.</font></p>
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A run-time (6003): out of protected-mode virtual stacks </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- DOS/32 Advanced run
+out of protected-mode virtual stacks. This can happen when a real mode software
+makes too many nested calls to a protected mode program. Make sure that
+you configured DOS/32 Advanced properly. Check that the timer is not reprogrammed
+to run at a frequency that is too high for the CPU and the rest of the hardware.</font></p>
+
+<p>&nbsp;</p>
+
+<p><hr align=left size="1"></p>
+
+<p><tt>DOS/32A run-time (6004): extended memory blocks have been destroyed
+</tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- Each time DOS/32 Advanced
+built-in DPMI functions 05xxh (extended memory management) are called, the
+integrity of already allocated extended memory blocks will be checked. If
+DOS/32 Advanced detects that the blocks had been overwritten or corrupted
+in some other way (happens when a program writes to memory it had not allocated),
+this error will be reported.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr size="1"></center></p>
+
+<p><tt>DOS/32A run-time (6005): DOS/4G API calls not supported </tt></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- When a protected mode
+program makes a call to access DOS/4G DPMI API extensions, this error will
+be reported. Currently DOS/32 Advanced does not support DOS/4G DPMI API
+extensions.</font></p>
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

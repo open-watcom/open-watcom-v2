@@ -37,7 +37,6 @@
 #include "libwin32.h"
 #include "osver.h"
 
-
 HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName,
                              LPWIN32_FIND_DATAW lpFindFileData )
 /**************************************************************/

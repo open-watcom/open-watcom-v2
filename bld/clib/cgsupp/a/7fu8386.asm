@@ -44,7 +44,6 @@ defpe __FSU87
         mov     [esp],eax
         fld     dword ptr [esp]
         jmp     short convert
-endproc __FSU87
 
 defpe __FDU87
         sub     esp,12
@@ -53,7 +52,6 @@ defpe __FDU87
         fld     qword ptr [esp]
 
         ; fall through
-endproc __FDU87
 
 convert:
         push    ecx
@@ -94,6 +92,8 @@ ret_inf:
         mov     edx,0ffffffffh
         mov     eax,edx
         jmp     done
+endproc __FDU87
+endproc __FSU87
 
         endmod
         end

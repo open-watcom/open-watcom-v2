@@ -1,0 +1,7 @@
+#### WDISASM component of LANG11.DAT
+###[ DEFAULT type="e" ]
+###    
+###usr="wdisasm.exe" 	dir="binw" 	cond="doshost" 		where="c jc f77 jf77"
+###usr="wdisasm.exe" 	dir="binp" 	cond="os2host" 		where="c jc f77 jf77"
+###usr="wdisasm.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc ac f77 jf77"
+###usr="wdisasm.exe" 	dir="axpnt" 	cond="alphahost"	where="c jc ac f77 jf77"

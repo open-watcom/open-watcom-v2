@@ -60,13 +60,8 @@ static EVENT deadfieldevents[] = {
 };
 
 
-static EVENT setfield( vptr, header, cur, col )
+static EVENT setfield( VSCREEN *vptr, VFIELDEDIT *header, VFIELD *cur, ORD col )
 /*********************************************/
-
-register        VSCREEN*                vptr;
-register        VFIELDEDIT*             header;
-register        VFIELD*                 cur;
-register        ORD                     col;
 {
     register    EVENT                   ev;
     register    VFIELD*                 prev;
@@ -93,16 +88,11 @@ register        ORD                     col;
 }
 
 
-static EVENT movecursor( vptr, header, row, col )
+static EVENT movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
 /***********************************************/
-
-register        VSCREEN*                 vptr;
-register        VFIELDEDIT*              header;
-                int                      row;
-                int                      col;
 {
     register    int                      cursor;
-    register    int                      field;
+    register    int                      field = 0; // GCC wrongly thinks this might be uninited
     register    VFIELD*                  cur;
 
     if( col < 0 ) {
@@ -127,12 +117,8 @@ register        VFIELDEDIT*              header;
 }
 
 
-static VFIELD* tabfield( vptr, fieldlist, forward )
+static VFIELD *tabfield( VSCREEN *vptr, VFIELD *fieldlist, bool forward )
 /*************************************************/
-
-register        VSCREEN*                vptr;
-register        VFIELD*                 fieldlist;
-register        bool                    forward;
 {
     register    VFIELD*                 chase;
     register    VFIELD*                 cur;
@@ -163,11 +149,8 @@ register        bool                    forward;
 }
 
 
-EVENT global uivfieldedit( vptr, header )
-/***************************************/
-
-register        VSCREEN*                vptr;
-register        VFIELDEDIT*             header;
+EVENT global uivfieldedit( VSCREEN *vptr, VFIELDEDIT *header )
+/************************************************************/
 {
     register    EVENT                   ev;
     register    VFIELD*                 cur;

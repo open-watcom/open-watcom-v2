@@ -36,6 +36,6 @@ UINT PASCAL _Cover_EnumSymbols(LPSYG lpsyg, WORD maxstr, ENUMPROC lpfn,
                 LPVOID data )
 {
     return( EnumSymbols( lpsyg, maxstr,
-                SetProc( lpfn, GETPROC_PENWIN_ENUMPROC ), data ) );
+                SetProc( (FARPROC)lpfn, GETPROC_PENWIN_ENUMPROC ), data ) );
 
 }

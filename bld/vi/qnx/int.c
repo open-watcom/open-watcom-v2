@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include "vi.h"
 #include <i86.h>
 #include <signal.h>
-#include "vi.h"
 #include "win.h"
 
 void RestoreInterrupts( void ) {}

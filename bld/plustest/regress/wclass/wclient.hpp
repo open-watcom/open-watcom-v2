@@ -15,7 +15,7 @@ typedef int WClientFlags;
 WCLASS WClient : public WObject
 {
 	public:
-		WEXPORT WClient( HANDLE inst, WObject* owner, cbc notify );
+		WEXPORT WClient( HINSTANCE inst, WObject* owner, cbc notify );
 		WEXPORT ~WClient();
 		bool WEXPORT connected() { return _connected; }
 		bool WEXPORT connect( char* service );

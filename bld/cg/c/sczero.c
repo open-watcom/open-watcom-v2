@@ -33,23 +33,18 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "pattern.h"
 #include "vergen.h"
 #include "procdef.h"
 #include "score.h"
 #include "zerobits.h"
+#include "makeins.h"
 
 extern  name            *LowPart(name*,type_class_def);
 extern  name            *HighPart(name*,type_class_def);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
-extern  void            FreeIns(instruction*);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
-extern  byte            HasZero(score*,name*);
 extern  bool            VolatileIns(instruction*);
 
 extern  type_class_def  HalfClass[];
@@ -142,7 +137,7 @@ static  instruction     *MakeClear( name *res, type_class_def class ) {
 }
 
 
-extern  bool    ScoreZero( pointer sc, instruction **pins ) {
+extern  bool    ScoreZero( score *sc, instruction **pins ) {
 /***********************************************************/
 
     instruction         *ins;

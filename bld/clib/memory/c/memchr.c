@@ -24,15 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of memchr() and wmemchr().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
-#include <stddef.h>
+#include <wchar.h>
 #include "xstring.h"
 
 /* locate the first occurrence of c in the initial n characters of the
@@ -40,18 +40,20 @@
    If the character c is not found, NULL is returned.
 */
 
-#undef  memchr
-
-_WCRTLINK void *memchr( const char *s, int c, size_t n )
-    {
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memchr,wmemchr)( const VOID_WC_TYPE *s, INT_WC_TYPE c, size_t n )
+{
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( _inline_memchr( s, c, n ) );
+    return( _inline_memchr( s, c, n ) );
 #else
-        while( n ) {
-            if( *s == c ) return( (void*)s );
-            ++s;
-            --n;
+    const CHAR_TYPE *cs = s;
+
+    while( n ) {
+        if( *cs == c ) {
+            return( (VOID_WC_TYPE *)cs );
         }
-        return( NULL );
-#endif
+        ++cs;
+        --n;
     }
+    return( NULL );
+#endif
+}

@@ -24,14 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Define data declared in "globals.h"
 *
 ****************************************************************************/
 
-
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include "stdnt.h"
 #define TRPGLOBAL

@@ -31,12 +31,11 @@
 
 
 #include "variety.h"
-#include <process.h>
+#include "_process.h"
 
-typedef int (*execaddr_type)();
-execaddr_type  __Exec_addr = 0;
+execveaddr_type  __Exec_addr = 0;
 
-execaddr_type __execaddr()
-    {
-        return( __Exec_addr );
-    }
+execveaddr_type __execaddr( void )
+{
+    return( __Exec_addr );
+}

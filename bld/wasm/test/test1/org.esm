@@ -1,0 +1,109 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    test        ax,ax
+    je          L$1
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    DB	0, 90H, 90H, 90H, 90H
+L$1:
+    xor         ax,ax
+    nop         
+    nop         
+    nop         
+    nop         
+    test        ax,ax
+    je          L$2
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    add         byte ptr [eax],al
+    nop         
+    nop         
+    nop         
+    nop         
+L$2:
+    xor         ax,ax
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

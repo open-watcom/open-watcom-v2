@@ -40,9 +40,9 @@
         DO NOT put any other routines into this file.
         DO NOT merge this file back into UIRFRSH.C
 */
-extern void global uidorefresh();
+extern void global uidorefresh( void );
 
-void global uirefresh()
+void global uirefresh( void )
 {
     uidorefresh();
 }

@@ -24,17 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  prototypes for routines used in signaling ( Windows NT )
 *
 ****************************************************************************/
 
-
-extern void *(*__oscode_check_func)(int, long);
-extern int (*__raise_func)(int);
-extern unsigned char __ExceptionHandled;
-extern  void            __terminate();
-extern  void            (*__abort)();
-extern  void            __null_int23_exit();
-extern  void            (*__int23_exit)();
+extern  __sig_func      (*__oscode_check_func)( int, long );
+extern  int             (*__raise_func)( int );
+extern  unsigned char   __ExceptionHandled;
 

@@ -49,8 +49,8 @@ extern HASHTAB HashMakeMax( HASHTAB );
 extern boolean HashEmpty( HASHTAB );
 extern SYMBOL_NAME HashLookup( HASHTAB, char * );
 extern void HashInsert( HASHTAB, SYMBOL_NAME, char * );
-extern void HashWalk( HASHTAB, void (*)( void * ) );
-extern void HashWalkData( HASHTAB, void (*)( void *, void * ), void * );
+extern void HashWalk( HASHTAB, void (*)( SYMBOL_NAME ) );
+extern void HashWalkData( HASHTAB, void (*)( SYMBOL_NAME, void * ), void * );
 
 HASHTAB HashGetIndex( HASHTAB );
 HASHTAB HashMapIndex( HASHTAB );

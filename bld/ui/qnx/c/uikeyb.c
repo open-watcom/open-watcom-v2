@@ -52,20 +52,20 @@
 
 /*- these are lame */
 
-void intern flushkey()
-/********************/
+void intern flushkey( void )
+/**************************/
 {
     _flushkey();
 }
 
-unsigned char intern checkshift()
-/*******************************/
+unsigned char intern checkshift( void )
+/*************************************/
 {
     return _checkshift();
 }
 
-unsigned char global uicheckshift()
-/*********************************/
+unsigned char global uicheckshift( void )
+/***************************************/
 {
     return _uicheckshift();
 }
@@ -80,30 +80,30 @@ extern void uishiftrelease( EVENT ev )
     _uishiftrelease(ev);
 }
 
-void intern restorekeyb()
+void intern restorekeyb( void )
 {
     _restorekeyb();
 }
 
 
-bool intern initkeyboard()
-/************************/
+bool intern initkeyboard( void )
+/******************************/
 {
     return _initkeyboard();
 }
 
-void intern finikeyboard()
-/************************/
+void intern finikeyboard( void )
+/******************************/
 {
     _finikeyboard();
 }
 
-void intern savekeyb()
+void intern savekeyb( void )
 {
     _savekeyb();
 }
 
-void stopkeyboard()
+void stopkeyboard( void )
 {
     _stopkeyb();
 }

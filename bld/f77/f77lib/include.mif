@@ -1,0 +1,44 @@
+include_default = -I"../../h" -I"../../../h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+include_watcom = -I"$(watcom_dir)/h"
+
+# include_c_(system)
+!ifndef runtime_library_source
+include_c_msdos    = -I"$(hdr_dir)/dos"
+include_c_netware  = -I"$(hdr_dir)/dos"
+include_c_os2_286  = $(inc_dirs_sys_os2_i86)
+include_c_os2_287  = $(inc_dirs_sys_os2_i86)
+include_c_os2_386  = $(inc_dirs_sys_os2_386)
+include_c_os2_387  = $(inc_dirs_sys_os2_386)
+include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"
+include_c_os2      = -I"$(hdr_dir)/dos" $(include_c_os2_$(processor))
+include_c_qnx      = -I"$(hdr_dir)/qnx"
+include_c_linux    = -I"$(hdr_dir)/linux"
+include_c_windows  = $(inc_dirs_sys_win)  -I"$(hdr_dir)/dos"
+include_c_winnt    = $(inc_dirs_sys_nt) -I"$(hdr_dir)/dos"
+!else
+include_c_msdos    = -I"$(%WATCOM)/h"
+include_c_netware  = -I"$(%WATCOM)/h"
+include_c_os2_286  = $(inc_dirs_sys_os2_i86)
+include_c_os2_287  = $(inc_dirs_sys_os2_i86)
+include_c_os2_386  = $(inc_dirs_sys_os2_386)
+include_c_os2_387  = $(inc_dirs_sys_os2_386)
+include_c_os2_ppc  = -I"$(%WATCOM)/h/os2ppc"
+include_c_os2      = $(include_c_os2_$(processor)) -I"$(%WATCOM)/h"
+include_c_qnx      = -I"$(%WATCOM)/qh"
+include_c_linux    = -I"$(%WATCOM)/lh
+include_c_windows  = $(inc_dirs_sys_win) -I"$(%WATCOM)/h"
+include_c_winnt    = $(inc_dirs_sys_nt) -I"$(%WATCOM)/h"
+!endif
+
+include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
+
+# include_a_(system)
+include_a_msdos    =
+include_a_netware  =
+include_a_os2      =
+include_a_qnx      =
+include_a_windows  =
+include_a_winnt    =
+include_a_linux    =
+
+include_a_path = $(include_default) $(include_a_$(system)) $(include_watcom)

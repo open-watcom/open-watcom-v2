@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dynamically build a Windows dialog template.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 /*
  * copyString - copy from string to memory
  */
-static char _WCI86FAR *copyString( char _WCI86FAR *mem, char _WCI86FAR *str, int len )
+static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
 {
 #if defined(__NT__) && !defined(__DEC__)
     int i;
@@ -67,11 +66,11 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 {
     GLOBALHANDLE        data;
     UINT                blocklen,menulen, classlen, captionlen, typefacelen;
-    UINT                _WCI86FAR *numbytes;
-    char                _WCI86FAR *dlgtemp;
-    char                _WCI86FAR *dlgtypeface;
-    _DLGTEMPLATE        _WCI86FAR *dt;
-    FONTINFO            _WCI86FAR *fi;
+    UINT                _ISFAR *numbytes;
+    char                _ISFAR *dlgtemp;
+    char                _ISFAR *dlgtypeface;
+    _DLGTEMPLATE        _ISFAR *dt;
+    FONTINFO            _ISFAR *fi;
 
 
     /*
@@ -93,15 +92,15 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     }
 
     data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
-    if( data == NULL ) return( NULL );
+    if( data == NULL ) return( (GLOBALHANDLE)NULL );
 
-    numbytes = (UINT _WCI86FAR *) MK_FP32( GlobalLock( data ) );
+    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
     *numbytes = (UINT) blocklen;
 
     /*
      * set up template
      */
-    dt = (_DLGTEMPLATE _WCI86FAR *) (numbytes + 1);
+    dt = (_DLGTEMPLATE _ISFAR *) (numbytes + 1);
 
     dt->dtStyle = dtStyle;
     dt->dtItemCount = 0;
@@ -110,7 +109,7 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     dt->dtCX = dtcx;
     dt->dtCY = dtcy;
 
-    dlgtemp = (char _WCI86FAR *) (dt + 1);
+    dlgtemp = (char _ISFAR *) (dt + 1);
 
     /*
      * add extra strings to block
@@ -124,9 +123,9 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
      * add font data (if needed)
      */
     if (dtStyle & DS_SETFONT) {
-      fi = (FONTINFO _WCI86FAR *) dlgtemp;
+      fi = (FONTINFO _ISFAR *) dlgtemp;
       fi->PointSize = pointsize;
-      dlgtypeface = (char _WCI86FAR *) (fi + 1);
+      dlgtypeface = (char _ISFAR *) (fi + 1);
       copyString( dlgtypeface, typeface, typefacelen );
     }
 
@@ -144,10 +143,10 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
 {
     GLOBALHANDLE        new;
     UINT                blocklen, classlen, textlen;
-    UINT                _WCI86FAR *numbytes;
-    _DLGTEMPLATE        _WCI86FAR *dt;
-    _DLGITEMTEMPLATE    _WCI86FAR *dit;
-    char                _WCI86FAR * ditstr;
+    UINT                _ISFAR *numbytes;
+    _DLGTEMPLATE        _ISFAR *dt;
+    _DLGITEMTEMPLATE    _ISFAR *dit;
+    char                _ISFAR * ditstr;
 #if defined(__NT__) && !defined(__DEC__)
     char                newclass[2];
 #endif
@@ -180,25 +179,25 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
                sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN( blocklen );
 
-    blocklen += *(UINT _WCI86FAR *) MK_FP32( GlobalLock( data ) );
+    blocklen += *(UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
-    if( new == NULL ) return( NULL );
+    if( new == NULL ) return( (GLOBALHANDLE)NULL );
 
-    numbytes = (UINT _WCI86FAR *) MK_FP32( GlobalLock( new ) );
+    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( new ) );
 
     /*
      * one more item...
      */
-    dt = (_DLGTEMPLATE _WCI86FAR *) (numbytes + 1);
+    dt = (_DLGTEMPLATE _ISFAR *) (numbytes + 1);
     dt->dtItemCount++;
 
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGITEMTEMPLATE _WCI86FAR *) (((char _WCI86FAR *) numbytes) + *numbytes);
+    dit = (_DLGITEMTEMPLATE _ISFAR *) (((char _ISFAR *) numbytes) + *numbytes);
     dit->dtilStyle = style;
     dit->dtilX = dtilx;
     dit->dtilY = dtily;
@@ -209,7 +208,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
     dit->crap = 0xffff;
 #endif
 
-    ditstr = (char _WCI86FAR *) (dit + 1);
+    ditstr = (char _ISFAR *) (dit + 1);
 
     /*
      * append extra data
@@ -217,12 +216,12 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
     _FARmemcpy( ditstr, class, classlen );
     ditstr += ROUND_CLASSLEN( classlen );
     ditstr = copyString( ditstr, text, textlen );
-    *((INFOTYPE *)ditstr) = infolen;
+    *((INFOTYPE _ISFAR *)ditstr) = infolen;
     ditstr += sizeof( INFOTYPE );
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *numbytes = (UINT) ( ditstr - (char _WCI86FAR *) numbytes);
+    *numbytes = (UINT) ( ditstr - (char _ISFAR *) numbytes);
     ADJUST_BLOCKLEN( *numbytes );
 
     GlobalUnlock( new );
@@ -235,9 +234,9 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
  */
 void _DoneAddingControls( GLOBALHANDLE data )
 {
-    UINT        _WCI86FAR *numbytes;
+    UINT        _ISFAR *numbytes;
 
-    numbytes = (UINT _WCI86FAR *) MK_FP32( GlobalLock( data ) );
+    numbytes = (UINT _ISFAR *) MK_FP32( GlobalLock( data ) );
     _FARmemcpy( numbytes, numbytes + 1, *numbytes - 2 );
     GlobalUnlock( data );
 

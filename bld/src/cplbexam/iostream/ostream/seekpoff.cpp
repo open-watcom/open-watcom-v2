@@ -15,7 +15,7 @@ void main( void ) {
     cout << endl;
     test.clear();
     test.seekp( pos, ios::beg );
-    test << "Watcom C++ users." << endl;
+    test << "Open Watcom C++ users." << endl;
     test.seekg( 0, ios::beg );
     while( (test >> ch).good() ) {
         cout << ch << " " << flush;

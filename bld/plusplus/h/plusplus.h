@@ -37,6 +37,9 @@
 // 91/11/07 -- J.W.Welch        -- placed common definitions in WCCP.H
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
+#include <stdlib.h>
+#include <string.h>
+
 #define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
 #define PAD_UNSIGNED unsigned :0;
 
@@ -48,10 +51,10 @@
 
 #ifndef NDEBUG
 #define OPT_BR          // OPTIMA-STYLE BROWSING
-#if _INTEL_HOST
+#if defined( __X86__ )
 void __trap();
 #pragma aux __trap = "int 3h";
-#elif _HOST == _AXP
+#elif defined( __AXP__ )
 #define __trap()        _asm { call_pal 0x080 };
 #endif
 #endif
@@ -100,8 +103,7 @@ void CFatal( char *msg );
 typedef int boolean;                // - boolean: FALSE, ! FALSE
 typedef unsigned MSG_NUM;           // - message number
 
-#define BY_C_PLUS_PLUS              // - for use in code-generator
-#define BY_C_FRONT_END              // - for use in code-generator
+#define BY_CPP_FRONT_END            // - for use in code-generator
 
 #define NULL_CGLABEL    (-1)
 #define NULL_CGREFNO    (0)
@@ -112,7 +114,7 @@ typedef unsigned        RTF;        // type for run-time function code
 typedef unsigned        LINE_NO;    // a line number
 typedef unsigned        COLUMN_NO;  // a column number
 typedef short           fe_seg_id;  // segment ids (must be a signed type)
-typedef struct src_file *SRCFILE;   // SOURCE FILE (PERMANENT)
+typedef struct _src_file *SRCFILE;  // SOURCE FILE (PERMANENT)
 typedef struct symbol   *SYMBOL;    // symbol pointer
 typedef struct type     *TYPE;      // type pointer
 
@@ -133,6 +135,9 @@ enum {
     TS_CHEAP_WINDOWS,
     TS_NETWARE,
     TS_OS2,
+    TS_QNX,
+    TS_NETWARE5,
+    TS_LINUX,
     TS_MAX
 };
 

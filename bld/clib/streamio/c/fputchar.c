@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fputchar() - print character to stdout.
 *
 ****************************************************************************/
 
@@ -35,11 +34,7 @@
 #include <stdio.h>
 
 
-#ifdef __WIDECHAR__
-_WCRTLINK wint_t fputwchar( wint_t c )
-#else
-_WCRTLINK int fputchar( int c )
-#endif
-    {
-        return( __F_NAME(fputc,fputwc)( c, stdout ) );
-    }
+_WCRTLINK INTCHAR_TYPE __F_NAME(fputchar,fputwchar)( INTCHAR_TYPE c )
+{
+    return( __F_NAME(fputc,fputwc)( c, stdout ) );
+}

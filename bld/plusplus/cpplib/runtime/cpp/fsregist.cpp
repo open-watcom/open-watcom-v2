@@ -127,8 +127,7 @@ THREAD_CTL* CPPLIB( fs_lookup ) // LOOK THRU FS ENTRIES FOR LAST, THREAD_CTL
 
 
 extern "C"
-_WPRTLINK
-unsigned FS_REGISTRATION_CONVENTION CPPLIB( fs_handler_rtn ) // HANDLER FOR FS REGISTRATIONS
+FSREGAPI unsigned CPPLIB( fs_handler_rtn ) // HANDLER FOR FS REGISTRATIONS
     ( FsExcRec* rec_exc         // - exception record
     , RW_DTREG* rw              // - current R/W block
     , FsCtxRec*                 // - context record
@@ -160,7 +159,8 @@ unsigned FS_REGISTRATION_CONVENTION CPPLIB( fs_handler_rtn ) // HANDLER FOR FS R
         if( dispatch->fnexc_skip == rw ) {
             dispatch->fnexc_skip = NULL;
         }
-        for( _EXC_PR* srch_ctl = dispatch->srch_ctl
+        _EXC_PR* srch_ctl;
+        for( srch_ctl = dispatch->srch_ctl
            ; NULL != srch_ctl && srch_ctl->_rw == rw
            ; srch_ctl = srch_ctl->_prev ) {
             if( NULL == dispatch->fnexc_skip ) {

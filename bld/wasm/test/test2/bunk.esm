@@ -1,0 +1,27 @@
+.387
+dgroup		GROUP	_data
+_data		SEGMENT	PARA PRIVATE USE16 'data'
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3, 1, 2, 3, 1
+    DB	2, 3, 1, 2, 3, 1, 2, 3
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3, 1, 2, 3, 1
+    DB	2, 3, 1, 2, 3, 1, 2, 3
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3, 1, 2, 3, 1
+    DB	2, 3, 1, 2, 3, 1, 2, 3
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3, 1, 2, 3, 1
+    DB	2, 3, 1, 2, 3, 1, 2, 3
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3, 1, 2, 3, 1
+    DB	2, 3, 1, 2, 3, 1, 2, 3
+    DB	1, 2, 3, 1, 2, 3, 1, 2
+    DB	3, 1, 2, 3
+
+_data		ENDS
+_text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
+    xor       ax,ax
+_text		ENDS
+		END

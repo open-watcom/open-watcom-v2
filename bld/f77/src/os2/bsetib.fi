@@ -1,0 +1,30 @@
+c$noreference
+
+        structure /tib2/
+            integer*4 tib2_ultid
+            integer*4 tib2_ulpri
+            integer*4 tib2_version
+            integer*2 tib2_usMCCount
+            integer*2 tib2_fMCForceFlag
+        end structure
+
+        structure /tib/
+            integer*4 tib_pexchain
+            integer*4 tib_pstack
+            integer*4 tib_pstacklimit
+            integer*4 tib_ptib2
+            integer*4 tib_version
+            integer*4 tib_arbpointer
+        end structure
+
+        structure /pib/
+            integer*4 pib_ulpid
+            integer*4 pib_ulppid
+            integer*4 pib_hmte
+            integer*4 pib_pchcmd
+            integer*4 pib_pchenv
+            integer*4 pib_flstatus
+            integer*4 pib_ultype
+        end structure
+
+c$reference

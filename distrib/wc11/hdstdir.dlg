@@ -1,0 +1,27 @@
+name=Help_DstDir
+dynamic_text=hdd_1,\
+        //1"Choose the directory you want to install %AppName% in."\
+        //2"%AppName% をインストールするディレクトリを選択してください."\
+        //0
+dynamic_text=hdd_2,\
+        //1"If you have previously installed %AppName%,"\
+        //2"以前に %AppName% をインストールしていた場合,"\
+        //0
+static_text=\
+        //1"@ will use the WATCOM environment variable to decide"\
+        //2"@ は環境変数 WATCOM を使って, コンパイラを"\
+        //0
+static_text=\
+        //1"where to install the compiler.  If you do not"\
+        //2"インストールするディレクトリを決めます. もし"\
+        //0
+static_text=\
+        //1"want to upgrade a previous installation, choose"\
+        //2"以前にインストールしたものをアップグレードしたく"\
+        //0
+static_text=\
+        //1"a different directory."\
+        //2"ない場合, 異なるディレクトリを選択してください."\
+        //0
+static_text=
+include=ok.dlg

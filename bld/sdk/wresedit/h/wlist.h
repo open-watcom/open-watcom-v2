@@ -47,22 +47,22 @@ typedef struct list {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void   WInsertObject   ( LIST **, void *);
-extern void   WListLastElt    ( LIST *, LIST **);
-extern int    WListConcat     ( LIST **, LIST *, uint_32 );
-extern LIST  *WListCopy       ( LIST * );
+extern void WInsertObject( LIST **, void * );
+extern void WListLastElt( LIST *, LIST ** );
+extern int  WListConcat( LIST **, LIST *, uint_32 );
+extern LIST *WListCopy( LIST * );
 
-extern void  *ListElement     ( LIST * );
-extern void   ListFree        ( LIST * );
-extern LIST  *ListNext        ( LIST * );
-extern LIST  *ListPrev        ( LIST * );
-extern void   ListAddElt      ( LIST **, void * );
-extern void   ListRemoveElt   ( LIST **, void * );
-extern LIST  *ListConsume     ( LIST * );
-extern LIST  *ListFindElt     ( LIST *, void * );
-extern LIST  *ListCopy        ( LIST * );
-extern int    ListCount       ( LIST * );
-extern void   ListInsertElt   ( LIST *, void * );
-extern void   ListMerge       ( LIST **, LIST * );
+extern void *ListElement( LIST * );
+extern void ListFree( LIST * );
+extern LIST *ListNext( LIST * );
+extern LIST *ListPrev( LIST * );
+extern void ListAddElt( LIST **, void * );
+extern void ListRemoveElt( LIST **, void * );
+extern LIST *ListConsume( LIST * );
+extern LIST *ListFindElt( LIST *, void * );
+extern LIST *ListCopy( LIST * );
+extern int  ListCount( LIST * );
+extern void ListInsertElt( LIST *, void * );
+extern void ListMerge( LIST **, LIST * );
 
 #endif

@@ -1,0 +1,46 @@
+/*
+ *  afxcview.h  Application Framework common control view classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXCVIEW_H__
+#define __AFXCVIEW_H__
+
+:include readonly.sp
+
+#include <afxcmn.h>
+
+class _AFXLINK CTreeView : public CCtrlView {
+    DECLARE_DYNCREATE( CTreeView )
+    
+public:
+    CTreeView();
+    
+    CTreeCtrl   &GetTreeCtrl() const;
+    void        RemoveImageList( int nImageList );
+
+protected:
+    afx_msg void    OnDestroy();
+    DECLARE_MESSAGE_MAP()
+};
+
+class _AFXLINK CListView : public CCtrlView {
+    DECLARE_DYNCREATE( CListView )
+    
+public:
+    CListView();
+    
+    CListCtrl   &GetListCtrl() const;
+    void        RemoveImageList( int nImageList );
+    
+protected:
+    afx_msg void    OnDestroy();
+    DECLARE_MESSAGE_MAP()
+};
+
+#ifndef _DEBUG
+    #include <afxcview.inl>
+#endif
+
+#endif /* __AFXCVIEW_H__ */

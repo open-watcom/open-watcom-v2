@@ -36,7 +36,7 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -44,6 +44,7 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include "feprotos.h"
 #ifndef NDEBUG
@@ -63,9 +64,8 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 extern  void            DataBytes(unsigned_32,byte*);
 extern  void            DoBigBckPtr(back_handle,offset);
-extern  type_def        *TypeAddress(cg_type);
 extern  type_length     NewBase(name*);
-extern  int     ParmsAtPrologue( void ) ;
+extern  int             ParmsAtPrologue( void ) ;
 
 
 static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
@@ -73,7 +73,7 @@ static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
 
     dbg_loc     new;
 
-    _Alloc( new, sizeof( location ) );
+    new = CGAlloc( sizeof( location ) );
     new->next = loc;
     new->class = typ;
     new->use = 1;
@@ -235,24 +235,24 @@ extern  dbg_loc _CGAPI DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
     case DB_OP_POINTS:
         switch( TypeAddress( other )->refno ) {
         #if _TARGET & _TARG_IAPX86
-            case T_NEAR_POINTER:
-            case T_NEAR_CODE_PTR:
+            case TY_NEAR_POINTER:
+            case TY_NEAR_CODE_PTR:
         #endif
-        case T_UINT_2:
-        case T_INT_2:
+        case TY_UINT_2:
+        case TY_INT_2:
             stkop = LOC_OPER+LOP_IND_2;
             break;
         #if !( _TARGET & _TARG_IAPX86 )
-            case T_NEAR_POINTER:
-            case T_NEAR_CODE_PTR:
+            case TY_NEAR_POINTER:
+            case TY_NEAR_CODE_PTR:
         #endif
-        case T_UINT_4:
-        case T_INT_4:
+        case TY_UINT_4:
+        case TY_INT_4:
             stkop = LOC_OPER+LOP_IND_4;
             break;
-        case T_LONG_POINTER:
-        case T_HUGE_POINTER:
-        case T_LONG_CODE_PTR:
+        case TY_LONG_POINTER:
+        case TY_HUGE_POINTER:
+        case TY_LONG_CODE_PTR:
             #if  _TARGET & _TARG_80386
                 stkop = LOC_OPER+LOP_IND_ADDR386;
             #else
@@ -322,7 +322,7 @@ extern  void _CGAPI DBLocFini( dbg_loc loc ) {
         curr->use--;
         if( curr->use == 0 ) {
             *owner = curr->next;
-            _Free( curr, sizeof( location ) );
+            CGFree( curr );
         } else {
             owner = &curr->next;
         }

@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS portability header.
 *
 ****************************************************************************/
-
 
 
 #ifndef _DOSX_INCLUDED
@@ -36,26 +34,30 @@
 
 #define USE_FCNS
 
-#if defined(__QNX__)
-#include <sys/seginfo.h>
-#include <sys/console.h>
-#include <sys/con_msg.h>
-#include <sys/osinfo.h>
-#include <sys/kernel.h>
-#include <sys/sendmx.h>
-#include <sys/dev.h>
-#include <sys/psinfo.h>
-#include <sys/proxy.h>
-#include <termios.h>
-#include <i86.h>
-#include "dosext.h"
+#if defined(__LINUX__)
+  #include "dosext.h"
+#elif defined(__QNX__)
+  #include <sys/seginfo.h>
+  #include <sys/console.h>
+  #include <sys/con_msg.h>
+  #include <sys/osinfo.h>
+  #include <sys/kernel.h>
+  #include <sys/sendmx.h>
+  #include <sys/dev.h>
+  #include <sys/psinfo.h>
+  #include <sys/proxy.h>
+  #include <termios.h>
+  #include <i86.h>
+  #include "dosext.h"
 #else
-#include <dos.h>
-#include "dosext.h"
-#if defined(__OS2__)
-#define INCL_BASE
-#include "os2.h"
-#endif
+  #if defined(__DOS__)
+    #include <dos.h>
+  #endif  
+  #include "dosext.h"
+  #if defined(__OS2__)
+    #define INCL_BASE
+    #include "os2.h"
+  #endif
 #endif
 
 extern InterruptData idata;

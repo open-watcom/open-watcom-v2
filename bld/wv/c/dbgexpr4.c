@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger expression handling, Part IV (Arithmetic).
 *
 ****************************************************************************/
 
@@ -46,37 +45,37 @@
 #include "i64.h"
 
 
-extern void             BinOp(stack_entry *,stack_entry *);
-extern void             AddOp(stack_entry *,stack_entry *);
-extern address          AddrAdd(address ,long );
+extern void             BinOp( stack_entry *, stack_entry * );
+extern void             AddOp( stack_entry *, stack_entry * );
+extern address          AddrAdd( address, long );
 extern int              AddrComp( address, address );
-extern long             AddrDiff(address ,address );
+extern long             AddrDiff( address, address );
 extern bool             NameResolve( stack_entry *, bool );
 extern void             SymResolve( stack_entry *entry );
-extern void             RValue(stack_entry *);
-extern void             LRValue(stack_entry *);
-extern void             LValue(stack_entry *);
-extern void             ExprResolve(stack_entry *);
-extern void             ConvertTo(stack_entry *,type_kind,type_modifier,unsigned);
+extern void             RValue( stack_entry * );
+extern void             LRValue( stack_entry * );
+extern void             LValue( stack_entry * );
+extern void             ExprResolve( stack_entry * );
+extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
 extern void             ClassifyEntry( stack_entry *, type_info * );
 extern bool             ClassifyType( location_context *, type_handle *, type_info * );
-extern void             LclLValue(stack_entry *);
-extern void             FreezeRegs(void);
-extern bool             PerformCall(address, bool, unsigned int );
-extern void             UnFreezeRegs(void);
+extern void             LclLValue( stack_entry * );
+extern void             FreezeRegs( void );
+extern bool             PerformCall( address, bool, unsigned int );
+extern void             UnFreezeRegs( void );
 extern void             SetRegSP( address );
-extern void             CreateEntry(void);
-extern void             DeleteEntry(stack_entry *);
-extern stack_entry      *StkEntry(int );
-extern void             MoveSP(int );
-extern void             SwapStack(int );
-extern char             *DupStringEntry(char *,unsigned long );
-extern void             PushType(type_handle *);
-extern void             FreePgmStack(bool );
-extern void             RtnRetValSetup(sym_handle *,unsigned long,address *);
-extern void             RtnRetValGet(sym_handle *,unsigned long,address *);
+extern void             CreateEntry( void );
+extern void             DeleteEntry( stack_entry * );
+extern stack_entry      *StkEntry( int );
+extern void             MoveSP( int );
+extern void             SwapStack( int );
+extern char             *DupStringEntry( char *, unsigned long );
+extern void             PushType( type_handle * );
+extern void             FreePgmStack( bool );
+extern void             RtnRetValSetup( sym_handle *, unsigned long, address * );
+extern void             RtnRetValGet( sym_handle *, unsigned long, address * );
 extern unsigned         ToItem( stack_entry *, item_mach * );
-extern void             CombineEntries(stack_entry *,stack_entry *,stack_entry *);
+extern void             CombineEntries( stack_entry *, stack_entry *, stack_entry * );
 extern void             PushAddr( address );
 extern void             MoveTH( stack_entry *, stack_entry * );
 extern bool             CreateSym( lookup_item *, type_info * );
@@ -87,8 +86,8 @@ extern void             ExprSymbol( stack_entry *, sym_handle * );
 extern void             CreateLC( stack_entry * );
 extern void             MoveLC( stack_entry *, stack_entry * );
 extern address          DefAddrSpaceForAddr( address );
-extern address          GetRegSP(void);
-extern void             SetRegSP(address);
+extern address          GetRegSP( void );
+extern void             SetRegSP( address );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             AddrFix( address * );
 extern void             PushLocation( location_list *, type_info * );
@@ -105,7 +104,7 @@ extern address          NilAddr;
  * DoPlus - add two stack entries
  */
 
-void DoPlus()
+void DoPlus( void )
 {
     stack_entry *left;
 
@@ -165,7 +164,7 @@ void DoPlus()
  * DoMinus - subtract two stack entries
  */
 
-void DoMinus()
+void DoMinus( void )
 {
     stack_entry *left;
 
@@ -222,7 +221,7 @@ void DoMinus()
  * DoMul - multiply two stack entries
  */
 
-void DoMul()
+void DoMul( void )
 {
     stack_entry *left;
     xreal       re, im, t1, t2;
@@ -262,7 +261,7 @@ void DoMul()
  * DoDiv - divide two stack entries
  */
 
-void DoDiv()
+void DoDiv( void )
 {
     stack_entry *left;
     xreal       re, im, mag, t1, t2;
@@ -324,7 +323,7 @@ void DoDiv()
  * DoMod - calculate modulus of two stack entries
  */
 
-void DoMod()
+void DoMod( void )
 {
     stack_entry *left;
     union {
@@ -360,7 +359,7 @@ void DoMod()
  * DoAnd - AND two stack entries
  */
 
-void DoAnd()
+void DoAnd( void )
 {
     stack_entry *left;
 
@@ -385,7 +384,7 @@ void DoAnd()
  * DoOr - OR two stack entries
  */
 
-void DoOr()
+void DoOr( void )
 {
     stack_entry *left;
 
@@ -410,7 +409,7 @@ void DoOr()
  * DoXor - XOR two stack entries
  */
 
-void DoXor()
+void DoXor( void )
 {
     stack_entry *left;
 
@@ -435,7 +434,7 @@ void DoXor()
  * DoShift - shift a stack entry left or right
  */
 
-void DoShift()
+void DoShift( void )
 {
     stack_entry *left;
     int          shift;
@@ -453,9 +452,9 @@ void DoShift()
         if( shift >= 0 ) {
             U64ShiftL( &left->v.uint, shift, &left->v.uint );
         } else if( (left->info.modifier & TM_MOD_MASK) == TM_UNSIGNED ) {
-            U64ShiftR( &left->v.uint, shift, &left->v.uint );
+            U64ShiftR( &left->v.uint, -shift, &left->v.uint );
         } else {
-            I64ShiftR( &left->v.sint, shift, &left->v.sint );
+            I64ShiftR( &left->v.sint, -shift, &left->v.sint );
         }
         break;
     default:
@@ -470,7 +469,7 @@ void DoShift()
  * DoAddr - take the address of a stack entry
  */
 
-void DoAddr()
+void DoAddr( void )
 {
     mad_type_info       mti;
 
@@ -608,7 +607,7 @@ no_adjust:
  * DoConvert - convert a stack entry to a given type
  */
 
-void DoConvert()
+void DoConvert( void )
 {
     stack_entry *left;
 
@@ -623,7 +622,7 @@ void DoConvert()
  * DoLConvert - convert an lvalue stack entry to a given type
  */
 
-void DoLConvert()
+void DoLConvert( void )
 {
     stack_entry *left;
     type_info   new;
@@ -650,7 +649,7 @@ void DoLConvert()
  * DoMakeComplex - combine the top 2 stack entries into a complex number
  */
 
-void DoMakeComplex()
+void DoMakeComplex( void )
 {
     stack_entry *left;
     xreal       zero;
@@ -680,7 +679,7 @@ void DoMakeComplex()
  * DoStringConcat -- Concaternate two character strings
  */
 
-void DoStringConcat()
+void DoStringConcat( void )
 {
     stack_entry         *left, *rite;
 
@@ -731,9 +730,10 @@ typedef struct {
     bool                found;
 } find_context;
 
-CALL_CHAIN_RTN FindContext;
-OVL_EXTERN bool FindContext( call_chain_entry *entry, find_context *info )
+OVL_EXTERN CALL_CHAIN_RTN FindContext;
+OVL_EXTERN bool FindContext( call_chain_entry *entry, void *_info )
 {
+    find_context *info = _info;
     unsigned    save_use;
 
     if( AddrComp( entry->start, info->proc_addr ) != 0 ) return( TRUE );
@@ -748,7 +748,7 @@ OVL_EXTERN bool FindContext( call_chain_entry *entry, find_context *info )
  * DoField - do a structure field selection
  */
 
-void DoField()
+void DoField( void )
 {
     stack_entry         *object;
     find_context        find;
@@ -808,7 +808,7 @@ void DoField()
 
 static char ScopeBuff[TXT_LEN]; // nyi - this should be dynamic
 
-void DoScope()
+void DoScope( void )
 {
     stack_entry         *scope;
     char                *p;
@@ -847,7 +847,7 @@ void DoScope()
  * DoAssign - do an assignment operation
  */
 
-void DoAssign()
+void DoAssign( void )
 {
     stack_entry         *dest;
     item_mach           item;

@@ -1,0 +1,28 @@
+.387
+flora		GROUP	pat
+don		SEGMENT	PARA PRIVATE USE16 'data'
+L$1:
+    DB	1, 0
+L$2:
+    DB	1
+L$3:
+    DB	0
+
+don		ENDS
+pat		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov         ax,word ptr L$3[bx]
+    mov         ax,word ptr L$2[bx+di]
+L$4:
+    mov         ax,word ptr L$2[bx+di]
+    mov         ax,word ptr L$2[bx+di]
+    mov         ax,word ptr L$1+8[bx+di]
+    mov         ax,3
+    mov         ax,0fffbH
+    mov         ax,word ptr cs:L$3
+    mov         ax,word ptr L$2[bx]
+    mov         ax,word ptr L$2[bx+di]
+    mov         ax,1fH
+    jmp         L$4
+pat		ENDS
+		END

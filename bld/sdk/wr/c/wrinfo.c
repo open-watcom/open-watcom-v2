@@ -41,7 +41,6 @@
 #include "wrfindt.h"
 #include "wrmem.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -77,36 +76,36 @@ int WRCopyFileToTemp( WRInfo *info, char *filename )
     return( TRUE );
 }
 
-WRInfo * WR_EXPORT WRAllocWRInfo ( void )
+WRInfo * WR_EXPORT WRAllocWRInfo( void )
 {
     WRInfo  *info;
 
-    if ( info = (WRInfo *) WRMemAlloc ( sizeof(WRInfo) ) ) {
-        memset ( info, 0, sizeof(WRInfo) );
+    if( (info = (WRInfo *)WRMemAlloc( sizeof( WRInfo ) )) != NULL ) {
+        memset( info, 0, sizeof( WRInfo ) );
     }
 
-    return ( info );
+    return( info );
 }
 
-void WR_EXPORT WRFreeWRInfo ( WRInfo *info )
+void WR_EXPORT WRFreeWRInfo( WRInfo *info )
 {
-    if( info ) {
-        if( info->file_name ) {
+    if( info != NULL ) {
+        if( info->file_name != NULL ) {
             WRMemFree( info->file_name );
         }
-        if( info->save_name ) {
+        if( info->save_name != NULL ) {
             WRMemFree( info->save_name );
         }
-        if( info->internal_filename ) {
+        if( info->internal_filename != NULL ) {
             WRMemFree( info->internal_filename );
         }
-        if( info->tmp_file ) {
+        if( info->tmp_file != NULL ) {
             if( WRFileExists( info->tmp_file ) ) {
                 WRDeleteFile( info->tmp_file );
             }
             WRMemFree( info->tmp_file );
         }
-        if( info->dir ) {
+        if( info->dir != NULL ) {
             WRFreeWResDirData( info->dir );
             WResFreeDir( info->dir );
         }
@@ -114,24 +113,24 @@ void WR_EXPORT WRFreeWRInfo ( WRInfo *info )
     }
 }
 
-void WR_EXPORT WRFreeWResDirData ( WResDir dir )
+void WR_EXPORT WRFreeWResDirData( WResDir dir )
 {
     WResTypeNode  *tnode;
     WResResNode   *rnode;
     WResLangNode  *lnode;
 
-    if ( !dir ) {
+    if( dir == NULL ) {
         return;
     }
 
     tnode = dir->Head;
-    while ( tnode ) {
+    while( tnode != NULL ) {
         rnode = tnode->Head;
-        while ( rnode ) {
+        while( rnode != NULL ) {
             lnode = rnode->Head;
-            while ( lnode ) {
-                if ( lnode->data ) {
-                    WRMemFree ( lnode->data );
+            while( lnode != NULL ) {
+                if( lnode->data != NULL ) {
+                    WRMemFree( lnode->data );
                     lnode->data = NULL;
                 }
                 lnode = lnode->Next;
@@ -149,18 +148,18 @@ int WR_EXPORT WRCountZeroLengthResources( WResDir dir )
     WResLangNode        *lnode;
     int                 count;
 
-    if( !dir ) {
+    if( dir == NULL ) {
         return( 0 );
     }
 
     count = 0;
 
     tnode = dir->Head;
-    while ( tnode ) {
+    while( tnode != NULL ) {
         rnode = tnode->Head;
-        while ( rnode ) {
+        while( rnode != NULL ) {
             lnode = rnode->Head;
-            while ( lnode ) {
+            while( lnode != NULL ) {
                 if( lnode->Info.Length == 0 ) {
                     count++;
                 }
@@ -176,55 +175,54 @@ int WR_EXPORT WRCountZeroLengthResources( WResDir dir )
 
 int WRRelinkDir( WResDir dest, WResDir src )
 {
-    WResLangType   lt;
-    WResTypeNode  *dtnode;
-    WResResNode   *drnode;
-    WResLangNode  *dlnode;
-    WResTypeNode  *stnode;
-    WResResNode   *srnode;
-    WResLangNode  *slnode;
+    WResLangType    lt;
+    WResTypeNode    *dtnode;
+    WResResNode     *drnode;
+    WResLangNode    *dlnode;
+    WResTypeNode    *stnode;
+    WResResNode     *srnode;
+    WResLangNode    *slnode;
 
-    if( !dest || !src ) {
+    if( dest == NULL || src == NULL ) {
         return( FALSE );
     }
 
-    if( ( dest->NumTypes != src->NumTypes ) ||
-        ( dest->NumResources != src->NumResources ) ) {
+    if( dest->NumTypes != src->NumTypes || dest->NumResources != src->NumResources ) {
         return( FALSE );
     }
 
     dtnode = dest->Head;
-    if( dtnode ) {
+    if( dtnode != NULL ) {
         stnode = WRFindTypeNodeFromWResID( src, &dtnode->Info.TypeName );
     }
-    while( dtnode && stnode ) {
+    while( dtnode != NULL && stnode != NULL ) {
         drnode = dtnode->Head;
-        if( drnode ) {
+        if( drnode != NULL ) {
             srnode = WRFindResNodeFromWResID( stnode, &drnode->Info.ResName );
         }
-        while( drnode && srnode ) {
+        while( drnode != NULL && srnode != NULL ) {
             dlnode = drnode->Head;
-            if( dlnode ) {
+            if( dlnode != NULL ) {
                 lt = dlnode->Info.lang;
                 slnode = WRFindLangNodeFromLangType( srnode, &lt );
             }
-            while( dlnode && slnode ) {
+            while( dlnode != NULL && slnode != NULL ) {
                 if( dlnode->data == NULL ) {
                     dlnode->Info.Offset = slnode->Info.Offset;
                 }
                 dlnode = dlnode->Next;
-                if( dlnode ) {
+                if( dlnode != NULL ) {
                     lt = dlnode->Info.lang;
                     slnode = WRFindLangNodeFromLangType( srnode, &lt );
                 }
             }
             drnode = drnode->Next;
-            if( drnode ) {
+            if( drnode != NULL ) {
                 srnode = WRFindResNodeFromWResID( stnode, &drnode->Info.ResName );
             }
         }
         dtnode = dtnode->Next;
-        if( dtnode ) {
+        if( dtnode != NULL ) {
             stnode = WRFindTypeNodeFromWResID( src, &dtnode->Info.TypeName );
         }
     }
@@ -236,13 +234,13 @@ int WRRelinkDir( WResDir dest, WResDir src )
 // something a little less pristine.
 int WRRelinkInfo( WRInfo *info )
 {
-    char        fn_path[ _MAX_PATH ];
+    char        fn_path[_MAX_PATH];
     WRInfo      *tinfo;
     int         ok;
 
     tinfo = NULL;
 
-    ok = ( info != NULL );
+    ok = (info != NULL);
 
     if( ok ) {
         if( info->internal_filename != NULL ) {
@@ -255,14 +253,14 @@ int WRRelinkInfo( WRInfo *info )
 
     if( ok ) {
         tinfo = WRLoadResource( fn_path, info->save_type );
-        ok = ( tinfo != NULL );
+        ok = (tinfo != NULL);
     }
 
     if( ok ) {
         ok = WRRelinkDir( info->dir, tinfo->dir );
     }
 
-    if( tinfo ) {
+    if( tinfo != NULL ) {
         WRFreeWRInfo( tinfo );
     }
 
@@ -274,9 +272,9 @@ int WR_EXPORT WRGetInternalRESName( char *filename, char *newname )
     char                fn_drive[_MAX_DRIVE];
     char                fn_dir[_MAX_DIR];
     char                fn_name[_MAX_FNAME];
-    char                fn_ext[_MAX_EXT+1];
+    char                fn_ext[_MAX_EXT + 1];
 
-    if( filename && newname ) {
+    if( filename != NULL && newname != NULL ) {
         _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
         strcpy( fn_ext, ".res" );
         _makepath( newname, fn_drive, fn_dir, fn_name, fn_ext );
@@ -285,4 +283,3 @@ int WR_EXPORT WRGetInternalRESName( char *filename, char *newname )
 
     return( FALSE );
 }
-

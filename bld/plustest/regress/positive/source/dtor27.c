@@ -33,7 +33,7 @@ void *B::operator new []( unsigned s )
     return new char[s];
 }
 
-virtual B::~B() {
+B::~B() {
 }
 
 unsigned dcount;

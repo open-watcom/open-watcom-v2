@@ -1,0 +1,10 @@
+emsroot = &
+    emsfini.obj
+
+emsovl1 =
+
+emsovl2 = &
+    emschk.obj &
+    emslib.obj
+
+emsfiles = $(emsroot) $(emsovl1) $(emsovl2)

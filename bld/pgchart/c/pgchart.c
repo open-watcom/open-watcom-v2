@@ -226,7 +226,7 @@ static void _BarChart( chartenv _WCI86FAR *env, float _WCI86FAR *values,
 }
 
 
-short _WCI86FAR _CGRAPH _pg_chartms( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_chartms( chartenv _WCI86FAR *env,
                         char _WCI86FAR *_WCI86FAR *categories,
                         float _WCI86FAR *values, short nseries, short n,
                         short arraydim, char _WCI86FAR *_WCI86FAR *serieslabels )
@@ -276,7 +276,7 @@ short _WCI86FAR _CGRAPH _pg_chartms( chartenv _WCI86FAR *env,
 Entry( _PG_CHARTMS, _pg_chartms ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pg_chart( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_chart( chartenv _WCI86FAR *env,
                               char _WCI86FAR *_WCI86FAR *categories,
                               float _WCI86FAR *values, short n )
 //=========================================================

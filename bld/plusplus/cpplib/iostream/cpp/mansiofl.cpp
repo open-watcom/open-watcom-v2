@@ -24,73 +24,53 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/27    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/04/01    Greg Bentz      Add template support, conditionally removed.
-//  93/10/29    Raymond Tang    Split into separate files.
-//  94/01/26    Greg Bentz      switch to use of template support
-//  94/04/06    Greg Bentz      combine header files
-//  95/05/05    Greg Bentz      use _HUGEDATA
-//  95/05/18    Greg Bentz      runtime dll linkage
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iomanip.h>
-#include <iostream.h>
+#include <iomanip>
+#include <iostream>
 #endif
 
-// Note that each manipulator function takes a single parameter called "__p".
-// This name is defined in the SMANIP_make macro definition.
-// Each function creates an object of type SMANIPint or SMANIPlong.
-// It copies "__p" into the "__p" member of the returned object,
-// and copies a function pointer into the "__f" member.
-// Later, when the returned object is operated upon by << or >>, an indirect
-// call is made via the stored function pointer, passing "__p" as a value.
-// This called function is the one that actually changes the state of the
-// stream.
+// Note that each manipulator function takes a single parameter called
+// "__p". This name is defined in the SMANIP_make macro definition. Each
+// function creates an object of type SMANIPint or SMANIPlong. It copies
+// "__p" into the "__p" member of the returned object, and copies a
+// function pointer into the "__f" member. Later, when the returned
+// object is operated upon by << or >>, an indirect call is made via the
+// stored function pointer, passing "__p" as a value. This called
+// function is the one that actually changes the state of the stream.
 
-static ios &__setiosflags( ios &strm, long flags ) {
-/************************************************/
 // Handles "setioflags" manipulator.
+static std::ios &__setiosflags( std::ios &strm, long flags ) {
     strm.setf( flags );
     return( strm );
 }
 
 #ifdef MACRO_IOMANIP
-SMANIP_make( long, setiosflags ) {
-/********************************/
-// SMANIPlong setiosflags( long __p )
-//      Turn on all format flags specified in "__p".
+namespace std {
+  SMANIP_make( long, setiosflags ) {
+    // SMANIPlong setiosflags( long __p )
+    //      Turn on all format flags specified in "__p".
     return SMANIPlong( __setiosflags, __p );
+  }
 }
 #endif
 
 
 #ifdef __SIMPLIFY__
-smanip<long> setiosflags( long parm ) {
-/*************************************/
+namespace std {
+  smanip<long> setiosflags( long parm ) {
     return smanip<long>( __setiosflags, parm );
+  }
 }
 #else
 #pragma initialize 22; // just after the rest of the C++ library
-_WPRTLINK sapp<long> _HUGEDATA setiosflags( __setiosflags );
+namespace std {
+  _WPRTLINK sapp<long> _HUGEDATA setiosflags( __setiosflags );
+}
 #endif

@@ -24,41 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy pick window dialog functions.
 *
 ****************************************************************************/
 
 
+#include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
-#include "spy.h"
 
-static HWND SpyPickWindow;
-static HWND SpyPickDialog;
 static FARPROC SpyPickInst;
-static volatile int QuitPickProc;
 static HWND LastFramed;
-static BOOL LastFramedPicked;
 static BOOL Cancelled;
-static BOOL Moving;
-static HWND PickDialogOK, PickDialogCancel;
-static HWND PickDialogStyleCB, PickDialogStyleClassCB;
+static BOOL Picking;
+static HWND PickDialogOK;
+static HWND PickDialogIcon;
 static WORD pickProcCmdId;
-static RECT NewPosition;
-static POINT StartingPoint;
-static HDC  MovingDC;
-static HDC  MovingPen;
-#ifdef USE_SNAP_WINDOW
-static HWND snapHwnd;
-#endif
 
 /*
  * FrameAWindow - draw a frame around a window
  */
-void FrameAWindow( HWND hwnd, BOOL use_snap )
+void FrameAWindow( HWND hwnd )
 {
     HDC         hdc;
     RECT        rect;
@@ -68,41 +56,20 @@ void FrameAWindow( HWND hwnd, BOOL use_snap )
         return;
     }
 
-#ifdef USE_SNAP_WINDOW
-    if( use_snap ) {
-        UpdateWindow( snapHwnd );
-        if( snapHwnd == NULL ) {
-            return;
-        }
-        hdc = GetWindowDC( snapHwnd );
-    } else  {
-        hdc = GetWindowDC( hwnd );
-    }
-#else
-    use_snap = use_snap;
     hdc = GetWindowDC( hwnd );
-#endif
 
-    SetROP2( hdc, R2_NOT); /* reverse screen color */
+    SetROP2( hdc, R2_NOT ); /* reverse screen color */
 
-    SelectObject( hdc, GetStockObject( NULL_BRUSH) );
+    SelectObject( hdc, GetStockObject( NULL_BRUSH ) );
 
     hpen = CreatePen( PS_INSIDEFRAME, 4 * GetSystemMetrics( SM_CXBORDER ),
-                  RGB( 0, 0, 0) );
+                      RGB( 0, 0, 0) );
     SelectObject( hdc, hpen );
 
     GetWindowRect( hwnd, &rect );
 
-#ifdef USE_SNAP_WINDOW
-    if( use_snap ) {
-        Rectangle( hdc, rect.left, rect.top, rect.right, rect.bottom );
-        ReleaseDC( snapHwnd, hdc );
-    } else
-#endif
-    {
-        Rectangle( hdc, 0, 0, rect.right - rect.left, rect.bottom - rect.top );
-        ReleaseDC( hwnd, hdc );
-    }
+    Rectangle( hdc, 0, 0, rect.right - rect.left, rect.bottom - rect.top );
+    ReleaseDC( hwnd, hdc );
 
     DeleteObject( hpen );
 
@@ -129,14 +96,18 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  )
         SetDlgItemText( dlg, PEEKMSG_PARENT, str );
 
         len = GetClassName( framedhwnd, name, sizeof( name ) );
-        name[ len ] = 0;
+        name[len] = 0;
         SetDlgItemText( dlg, PEEKMSG_CLASS, name );
 
-        GetWindowRect( framedhwnd, &rect );
-        fmtstr = GetRCString( STR_DIM_COORD_FMT );
-        sprintf( str, fmtstr, rect.left, rect.top, rect.right, rect.bottom,
-                rect.right-rect.left, rect.bottom - rect.top);
-        SetDlgItemText( dlg, PEEKMSG_SIZE, str );
+        if( framedhwnd != NULL ) {
+            GetWindowRect( framedhwnd, &rect );
+            fmtstr = GetRCString( STR_DIM_COORD_FMT );
+            sprintf( str, fmtstr, rect.left, rect.top, rect.right, rect.bottom,
+                     rect.right - rect.left, rect.bottom - rect.top);
+            SetDlgItemText( dlg, PEEKMSG_SIZE, str );
+        } else {
+            SetDlgItemText( dlg, PEEKMSG_SIZE, NULL );
+        }
 
         GetWindowStyleString( framedhwnd, name, str );
         SetDlgItemText( dlg, PEEKMSG_STYLE, name );
@@ -148,80 +119,19 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  )
 
     } else {
 
-        GetHexStr( id, (DWORD) framedhwnd, SPYOUT_HWND_LEN );
+#ifdef __NT__
+        GetHexStr( id, (DWORD)framedhwnd, SPYOUT_HWND_LEN );
+#else
+        GetHexStr( id, (DWORD)(WORD)framedhwnd, SPYOUT_HWND_LEN );
+#endif
         id[SPYOUT_HWND_LEN] = 0;
         SetDlgItemText( dlg, WINSEL_HWND, id );
         len = GetWindowText( framedhwnd, name, sizeof( name ) );
-        name[ len ] = 0;
+        name[len] = 0;
         SetDlgItemText( dlg, WINSEL_NAME, name );
     }
 
 } /* UpdateFramedInfo */
-
-
-/*
- * setLastFramed - set up the last framed window
- */
-static BOOL setLastFramed( HWND who )
-{
-    if( IsMyWindow( who ) ) return( FALSE );
-    if( LastFramed == who ) return( TRUE );
-    if( LastFramed != NULL ) {
-        FrameAWindow( LastFramed, SNAP_MODE );
-    }
-    FrameAWindow( who, SNAP_MODE );
-    LastFramed = who;
-    UpdateFramedInfo( SpyPickDialog, LastFramed, (pickProcCmdId == SPY_PEEK_WINDOW) );
-    return( TRUE );
-
-} /* setLastFramed */
-
-
-/*
- * PickDialog - select a window
- */
-BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
-{
-    lparam = lparam;
-
-    switch( msg ) {
-    case WM_INITDIALOG:
-        PickDialogOK = GetDlgItem( hwnd, IDOK );
-        PickDialogCancel = GetDlgItem( hwnd, IDCANCEL );
-        if( pickProcCmdId == SPY_PEEK_WINDOW ) {
-            PickDialogStyleCB = GetDlgItem( hwnd, PEEKMSG_STYLECB );
-            PickDialogStyleClassCB = GetDlgItem( hwnd, PEEKMSG_STYLECLASSCB );
-        }
-        break;
-#ifndef NOUSE3D
-    case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
-        break;
-#endif
-    case WM_COMMAND:
-        switch( LOWORD( wparam ) ) {
-        case IDCANCEL:
-            Cancelled = TRUE;
-            PostMessage( hwnd, WM_CLOSE, 0, 0L );
-            break;
-        case IDOK:
-            PostMessage( hwnd, WM_CLOSE, 0, 0L );
-            break;
-        }
-        break;
-    case WM_CLOSE:
-        if( LastFramed != NULL ) {
-            FrameAWindow( LastFramed, SNAP_MODE );
-        }
-        EndDialog( hwnd, 0 );
-        DestroyWindow( SpyPickWindow );
-        break;
-    default:
-        return( FALSE );
-    }
-    return( TRUE );
-
-} /* PickDialog */
 
 /*
  * GetWindowID - get window ID from mouse coordinates
@@ -234,7 +144,6 @@ void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
     p.x = (int_16)LOWORD( lparam );
     p.y = (int_16)HIWORD( lparam );
 
-
     ClientToScreen( hwnd, &p );
     *who = WindowFromPoint( p );
     ScreenToClient( *who, &p );
@@ -242,218 +151,133 @@ void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
     if( child != NULL ) {
         *who = child;
     }
-#ifdef USE_SNAP_WINDOW
-    if( *who == snapHwnd ) {
-        *who = GetHwndFromPt( &p );
-    }
-#endif
+
 } /* GetWindowID */
 
 /*
- * MoveMe - move the rectangle
+ * PickDialog - select a window
  */
-void MoveMe( DWORD pnt, BOOL justdraw )
+BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 {
-    POINT       p;
-    int         dx,dy;
+    RECT    rect;
+    RECT    client_rect;
+    POINT   point;
+    HWND    who;
 
-    Rectangle( MovingDC, NewPosition.left, NewPosition.top,
-            NewPosition.right, NewPosition.bottom );
-    if( justdraw ) return;
-
-    p.x = (int_16)LOWORD( pnt );
-    p.y = (int_16)HIWORD( pnt );
-    dx = p.x - StartingPoint.x;
-    dy = p.y - StartingPoint.y;
-    NewPosition.right += dx;
-    NewPosition.left += dx;
-    NewPosition.top += dy;
-    NewPosition.bottom += dy;
-    Rectangle( MovingDC, NewPosition.left, NewPosition.top,
-            NewPosition.right, NewPosition.bottom );
-    StartingPoint = p;
-
-} /* MoveMe */
-
-/*
- * SpyPickProc - handle messages for picking procedure
- */
-LONG CALLBACK SpyPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
-{
-    HWND        who;
-    static BOOL pdscb=FALSE;
-    static BOOL pdsccb=FALSE;
-
-    switch ( msg ) {
-    case WM_LBUTTONDOWN:
-        GetWindowID( hwnd, &who, lparam );
-        if( who == SpyPickWindow ) {
-            if( LastFramed != NULL ) {
-                FrameAWindow( LastFramed, SNAP_MODE );
-            }
-            Moving = TRUE;
-            GetWindowRect( SpyPickWindow, &NewPosition );
-            MovingDC = GetWindowDC( GetDesktopWindow() );
-//          SetROP2( MovingDC, R2_XORPEN );
-            SetROP2( MovingDC, R2_NOT);
-            SelectObject( MovingDC, GetStockObject( NULL_BRUSH) );
-            MovingPen = CreatePen( PS_INSIDEFRAME, 1, RGB( 0, 0, 0) );
-            SelectObject( MovingDC, MovingPen );
-            StartingPoint.x = (int_16)LOWORD( lparam );
-            StartingPoint.y = (int_16)HIWORD( lparam );
-            MoveMe( 0L, TRUE );
-            break;
-        }
-        if( who == PickDialogStyleCB ) {
-            pdscb = !pdscb;
-            SendMessage( who, CB_SHOWDROPDOWN, pdscb, 0L );
-            break;
-        }
-        if( who == PickDialogStyleClassCB ) {
-            pdsccb = !pdsccb;
-            SendMessage( who, CB_SHOWDROPDOWN, pdsccb, 0L );
-            break;
-        }
-        if( who == PickDialogOK || who == PickDialogCancel ) {
-            SetFocus( who );
-            SendMessage( who, WM_KEYDOWN, VK_SPACE, 0x48390001L );
-            SetCapture( SpyPickWindow );
-            break;
-        }
-        if( LastFramedPicked ) {
-            setLastFramed( who );
+    switch( msg ) {
+    case WM_INITDIALOG:
+        PickDialogOK = GetDlgItem( hwnd, IDOK );
+        if( pickProcCmdId == SPY_PEEK_WINDOW ) {
+            PickDialogIcon = GetDlgItem( hwnd, PEEKMSG_ICON );
         } else {
-            if( !IsMyWindow( who ) ) {
-                LastFramedPicked = TRUE;
-            }
+            PickDialogIcon = GetDlgItem( hwnd, WINSEL_ICON );
         }
+        GetWindowRect( PickDialogIcon, &rect );
+        ScreenToClient( hwnd, (POINT *)&rect );
+        ScreenToClient( hwnd, (POINT *)&rect + 1 );
+        GetClientRect( hwnd, &client_rect );
+        rect.left = (client_rect.left + client_rect.right) / 2 -
+                    (rect.right - rect.left) / 2;
+        SetWindowPos( PickDialogIcon, NULL, rect.left, rect.top, 0, 0,
+                      SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER );
+        SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW) );
+        if( pickProcCmdId != SPY_PEEK_WINDOW ) {
+            EnableWindow( PickDialogOK, FALSE );
+        }
+        Picking = FALSE;
+        LastFramed = NULL;
         break;
-
-    case WM_LBUTTONUP:
-        if( Moving ) {
-            Moving = FALSE;
-            MoveMe( 0L, TRUE );
-            ReleaseDC( GetDesktopWindow(), MovingDC );
-            DeleteObject( MovingPen );
-            MoveWindow( SpyPickWindow, NewPosition.left, NewPosition.top,
-                        NewPosition.right - NewPosition.left,
-                        NewPosition.bottom - NewPosition.top, TRUE );
-            if( LastFramed != NULL ) {
-                FrameAWindow( LastFramed, SNAP_MODE );
-            }
+#ifndef NOUSE3D
+    case WM_SYSCOLORCHANGE:
+        CvrCtl3dColorChange();
+        break;
+#endif
+    case WM_COMMAND:
+        switch( LOWORD( wparam ) ) {
+        case IDCANCEL:
+            Cancelled = TRUE;
+            EndDialog( hwnd, 0 );
+            break;
+        case IDOK:
+            EndDialog( hwnd, 0 );
             break;
         }
-        GetWindowID( hwnd, &who, lparam );
-        if( who == PickDialogOK || who == PickDialogCancel ) {
-            SetFocus( who );
-            SendMessage( who, WM_KEYUP, VK_SPACE, 0xC8390001L );
-            SetCapture( SpyPickWindow );
-            break;
-        }
         break;
-    case WM_LBUTTONDBLCLK:
-        GetWindowID( hwnd, &who, lparam );
-        if( setLastFramed( who ) ) {
-            PostMessage( SpyPickDialog, WM_COMMAND,
-                         GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
+    case WM_LBUTTONDOWN:
+        point.x = LOWORD( lparam );
+        point.y = HIWORD( lparam );
+        ClientToScreen( hwnd, &point );
+        GetWindowRect( PickDialogIcon, &rect);
+        if( PtInRect( &rect, point ) ) {
+            Picking = TRUE;
+            LastFramed = NULL;
+            UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW) );
+            SetCapture( hwnd );
         }
         break;
     case WM_MOUSEMOVE:
-        if( Moving ) {
-            MoveMe( lparam, FALSE );
-            break;
-        }
-        if( !LastFramedPicked ) {
+        if( Picking ) {
             GetWindowID( hwnd, &who, lparam );
-            setLastFramed( who );
+            if( LastFramed != who ) {
+                if( who != NULL && who != hwnd && GetParent( who ) != hwnd ) {
+                    if( LastFramed != NULL ) {
+                        FrameAWindow( LastFramed );
+                    }
+                    FrameAWindow( who );
+                    UpdateFramedInfo( hwnd, who, (pickProcCmdId == SPY_PEEK_WINDOW) );
+                    LastFramed = who;
+                    if( pickProcCmdId != SPY_PEEK_WINDOW ) {
+                        EnableWindow( PickDialogOK, TRUE );
+                    }
+                } else {
+                    if( LastFramed != NULL ) {
+                        FrameAWindow( LastFramed );
+                    }
+                    UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW ) );
+                    LastFramed = NULL;
+                    if( pickProcCmdId != SPY_PEEK_WINDOW ) {
+                        EnableWindow( PickDialogOK, FALSE );
+                    }
+                }
+            }
         }
         break;
-    case WM_DESTROY:
-        QuitPickProc = TRUE;
+    case WM_LBUTTONUP:
+        if( Picking ) {
+            Picking = FALSE;
+            ReleaseCapture();
+            if( LastFramed != NULL ) {
+                FrameAWindow( LastFramed );
+            }
+        }
         break;
     default:
-        return( DefWindowProc( hwnd, msg, wparam, lparam ) );
+        return( FALSE );
     }
-    return( 0 );
+    return( TRUE );
 
-} /* SpyPickProc */
+} /* PickDialog */
 
 /*
  * DoPickDialog - start dialog for window selection
  */
 HWND DoPickDialog( WORD cmdid )
 {
-    MSG         msg;
-    RECT        rect,rect2;
-    DWORD       style;
-    char        *caption;
-
     pickProcCmdId = cmdid;
     ShowWindow( SpyMainWindow, SW_MINIMIZE );
 
-    style = WS_CAPTION | DS_MODALFRAME | WS_POPUP;
-    if( cmdid == SPY_PEEK_WINDOW ) {
-        caption = GetRCString( STR_PEEK_AT_WIN );
-    } else {
-        caption = GetRCString( STR_SELECT_WIN );
-    }
-
-    SpyPickWindow = CreateWindow(
-        SpyPickClass,       /* Window class name */
-        caption,            /* Window caption */
-        style,              /* Window style */
-        20,                 /* Initial X position */
-        20,                 /* Initial Y position */
-        0,                  /* Initial X size */
-        0,                  /* Initial Y size */
-        SpyMainWindow,      /* Parent window handle */
-        (HMENU) NULL,       /* Window menu handle */
-        Instance,           /* Program instance handle */
-        NULL );             /* Create parameters */
-
-    if( SpyPickWindow == NULL ) return( NULL );
-
-    QuitPickProc = FALSE;
     LastFramed = NULL;
-    LastFramedPicked = FALSE;
     Cancelled = FALSE;
 
-#ifdef USE_SNAP_WINDOW
-    snapHwnd = DisplayDesktop( (HWND)NULL );
-    SetWindowPos( SpyPickWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    SetWindowPos( snapHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    SetWindowPos( SpyPickWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-    IdentifyWindows( SpyPickWindow, snapHwnd );
-    RemoveWindow( snapHwnd );
-#endif
-    SpyPickInst = MakeProcInstance( (FARPROC) PickDialog, Instance );
+    SpyPickInst = MakeProcInstance( (FARPROC)PickDialog, Instance );
     if( cmdid == SPY_PEEK_WINDOW ) {
-        SpyPickDialog = JCreateDialog( ResInstance, "PEEKMSGS", SpyPickWindow,
-                (LPVOID) SpyPickInst );
+        JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, (LPVOID)SpyPickInst );
     } else {
-        SpyPickDialog = JCreateDialog( ResInstance, "WINDOWPICK", SpyPickWindow,
-                (LPVOID) SpyPickInst );
-    }
-    GetWindowRect( SpyPickWindow, &rect);
-    GetWindowRect( SpyPickDialog, &rect2);
-    MoveWindow( SpyPickWindow, rect.left, rect.top, rect2.right - rect2.left,
-                rect2.bottom - rect2.top + GetSystemMetrics(SM_CYCAPTION), TRUE );
-    ShowWindow( SpyPickWindow, SW_NORMAL );
-    UpdateWindow( SpyPickWindow );
-    SetCapture( SpyPickWindow );
-    SetActiveWindow( SpyPickWindow );
-    while( !QuitPickProc ) {
-        GetMessage( &msg, (HWND) NULL, 0, 0 );
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, (LPVOID)SpyPickInst );
     }
 
-    ReleaseCapture();
     FreeProcInstance( SpyPickInst );
-#ifdef USE_SNAP_WINDOW
-    DestroyWindow( snapHwnd );
-    snapHwnd = NULL;
-#endif
     ShowWindow( SpyMainWindow, SW_NORMAL );
     if( !Cancelled ) {
         return( LastFramed );
@@ -461,3 +285,4 @@ HWND DoPickDialog( WORD cmdid )
     return( NULL );
 
 } /* DoPickDialog */
+

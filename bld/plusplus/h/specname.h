@@ -59,6 +59,7 @@ special( SPECIAL_DWARF_ABBREV,  "__DFABBREV" )
 special( SPECIAL_TYPE_INFO,     "type_info" )
 special( SPECIAL_BEGINTHREAD,   "_beginthread" )
 special( SPECIAL_BEGINTHREADEX, "_beginthreadex" )
+special( SPECIAL_STD,           "std" )
 
 #undef special
 #ifdef SPECNAME_DEFINE

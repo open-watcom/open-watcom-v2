@@ -24,19 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of _bios functions.
 *
 ****************************************************************************/
 
-
-/*
- *  BIOSTEST.C
- *  Currently, this program only tests the _bios functions.
- *  They now decide at run-time whether or not they're on an IBM or a NEC
- *  machine; this program is to ensure they still work.
- *
- */
 
 #include <bios.h>
 #include <conio.h>
@@ -44,6 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __SW_BW
+    #include <wdefwin.h>
+#endif
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\
@@ -71,10 +65,9 @@ struct EquipBits {
 };
 
 
-extern int      __NonIBM;
-
 char    ProgramName[128];                       /* executable filename */
 int     NumErrors = 0;                          /* number of errors */
+int     Interactive = 0;                        /* run tests requiring input */
 
 #if defined(__DOS__) || defined(__WINDOWS__)
     #define DO_TESTING
@@ -83,29 +76,49 @@ int     NumErrors = 0;                          /* number of errors */
 
 #ifdef DO_TESTING
 
+#define HI( w )     (((w) >> 8) & 0xFF)
+#define LO( w )     (((w) & 0xFF)
+
+unsigned short      Sector[256];
 
 void TestDisk( void )
 /*******************/
 {
     struct diskinfo_t   di;
     unsigned short      rc;
+    int                 skip;
 
-    di.drive = 3 | 0x80;
-    di.head = di.track = di.sector = 0;
+    di.drive = 0x80;    /* First hard drive (C:). */
+    di.head = di.track = 0;
+    di.sector = 1;      /* The first sector isn't 0! */
     di.nsectors = 1;
-    di.buffer = NULL;
-    if( !__NonIBM ) {
-        rc = _bios_disk( _DISK_RESET, &di );
-        VERIFY( rc == 0 );
+    di.buffer = &Sector;
 
-        rc = _bios_disk( _DISK_STATUS, &di );
-        VERIFY( rc == 0 );
+    /* NB: The return code is in the high byte of 'rc' only. The low byte
+     * contains generally unpredictable data and does not indicate errors.
+     */
+    rc = _bios_disk( _DISK_RESET, &di );
+    VERIFY( HI( rc ) == 0 );
 
-        rc = _bios_disk( _DISK_VERIFY, &di );
-        VERIFY( rc == 0 );
+    /* BIOS calls which actually access disk are not likely to work in
+     * NTVDM. Skip them if reported DOS version is 5.0.
+     */
+    skip = _osmajor == 5 && _osminor == 0;
+    if ( skip ) {
+        printf( "Warning: Skipping disk tests!\n" );
     } else {
+        rc = _bios_disk( _DISK_STATUS, &di );
+        VERIFY( HI( rc ) == 0 );
+
+        rc = _bios_disk( _DISK_READ, &di );
+        VERIFY( HI( rc ) == 0 );
+        /* It is safe to assume that the first sector of the disk is a BIOS
+         * boot sector and hence contains the 0x55 0xAA signature.
+         */
+        VERIFY( Sector[255] == 0xAA55 );
+
         rc = _bios_disk( _DISK_VERIFY, &di );
-        VERIFY( rc == 0x01 );
+        VERIFY( HI( rc ) == 0 );
     }
 }
 
@@ -191,35 +204,35 @@ void TestPrinter( void )
     rc = _bios_printer( _PRINTER_STATUS, PRINTER_PORT, 0 );
     printf( "STATUS: %04X\n", rc );
 
-    #ifdef HARDWARE_ATTACHED
-        rc = _bios_printer( _PRINTER_WRITE, PRINTER_PORT, '!' );
-        VERIFY( (rc&0x08) == 0 );
-        rc = _bios_printer( _PRINTER_WRITE, PRINTER_PORT, '\r' );
-        VERIFY( (rc&0x08) == 0 );
-    #endif
+#ifdef HARDWARE_ATTACHED
+    rc = _bios_printer( _PRINTER_WRITE, PRINTER_PORT, '!' );
+    VERIFY( (rc&0x08) == 0 );
+    rc = _bios_printer( _PRINTER_WRITE, PRINTER_PORT, '\r' );
+    VERIFY( (rc&0x08) == 0 );
+#endif
 }
 
 
 void TestSerialcom( void )
 /************************/
 {
-    #ifdef HARDWARE_ATTACHED
-        char *          outStr = "foo";
-        int             count;
-        unsigned short  rc;
+#ifdef HARDWARE_ATTACHED
+    char *          outStr = "foo";
+    int             count;
+    unsigned short  rc;
 
-        rc = _bios_serialcom( _COM_INIT, COM_PORT,
-                        _COM_2400 | _COM_NOPARITY | _COM_CHR8 | _COM_STOP1 );
-        VERIFY( (rc&0x8E00) == 0 );
-        rc = _bios_serialcom( _COM_STATUS, COM_PORT,
-                        _COM_2400 | _COM_NOPARITY | _COM_CHR8 | _COM_STOP1 );
-        VERIFY( (rc&0x8E00) == 0 );
+    rc = _bios_serialcom( _COM_INIT, COM_PORT,
+                    _COM_2400 | _COM_NOPARITY | _COM_CHR8 | _COM_STOP1 );
+    VERIFY( (rc&0x8E00) == 0 );
+    rc = _bios_serialcom( _COM_STATUS, COM_PORT,
+                    _COM_2400 | _COM_NOPARITY | _COM_CHR8 | _COM_STOP1 );
+    VERIFY( (rc&0x8E00) == 0 );
 
-        for( count=0; count<strlen(outStr); count++ ) {
-            rc = _bios_serialcom( _COM_SEND, COM_PORT, outStr[count] );
-            VERIFY( rc == outStr[count] );
-        }
-    #endif
+    for( count = 0; count < strlen( outStr ); count++ ) {
+        rc = _bios_serialcom( _COM_SEND, COM_PORT, outStr[count] );
+        VERIFY( rc == outStr[count] );
+    }
+#endif
 }
 
 
@@ -255,27 +268,48 @@ void TestTimeofday( void )
 int main( int argc, char *argv[] )
 /********************************/
 {
+#ifdef __SW_BW
+    FILE    *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
     /*** Initialize ***/
-    strcpy( ProgramName, strlwr(argv[0]) );
-    printf( "%s: Machine type is %s.\n", ProgramName, __NonIBM ? "NEC" : "IBM" );
+    strcpy( ProgramName, strlwr( argv[0] ) );
+    if( (argc == 2) && (strcmp( argv[1], "-i" ) == 0) )
+        Interactive = 1;
 
     /*** Test stuff ***/
-    #ifdef DO_TESTING
-        TestDisk();
-        TestEquiplist();
+#ifdef DO_TESTING
+    printf( "DOS version %d.%d\n", _osmajor, _osminor );
+    /* DOS extenders often don't support INT 13h, skip. */
+  #ifndef __386__
+    TestDisk();
+  #endif
+    TestEquiplist();
+    if( Interactive ) {
         TestKeybrd();
-        TestMemsize();
-        TestPrinter();
-        TestSerialcom();
-        TestTimeofday();
-    #endif
+    }
+    TestMemsize();
+    TestPrinter();
+    TestSerialcom();
+    TestTimeofday();
+#endif
 
     /*** Print a pass/fail message and quit ***/
-    if( NumErrors==0 ) {
-        printf( "%s: SUCCESS.\n", ProgramName );
-        return( EXIT_SUCCESS );
-    } else {
+    if( NumErrors != 0 ) {
         printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
         return( EXIT_FAILURE );
     }
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+
+    return( EXIT_SUCCESS );
 }

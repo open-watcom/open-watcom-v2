@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Win32 and OS/2 DLL startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++32 DLL's
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm dstrt386 -ms -3r
 ;               wasm dstrt386 -ms -3s
@@ -69,9 +65,9 @@ endif
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
 __DLLstart_ endp
 
 _TEXT   ends

@@ -30,176 +30,201 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "funcbar.h"
 
+#define NUM_TOOLS       26
+#define NUM_TOOLS_DDE   23
+
 static void             *functionBar;
 static HWND             hFunctionBar = NULL;
-static button           toolList[] = {
-    { NEWBMP, IMGED_NEW, FALSE, NONE, 0, 0},
-    { OPENBMP, IMGED_OPEN, FALSE, NONE, 0, 0 },
-    { SAVEBMP, IMGED_SAVE, FALSE, NONE, 0, 0 },
-    { GRIDBMP, IMGED_GRID, TRUE, GRIDDBMP, 0, 0 },
-    { MAXIMIZEBMP, IMGED_MAXIMIZE, TRUE, MAXIMIZEDBMP, 0, 0 },
-    { CUTBMP, IMGED_CUT, FALSE, NONE, 0, 0 },
-    { COPYBMP, IMGED_COPY, FALSE, NONE, 0, 0 },
-    { PASTEBMP, IMGED_PASTE, FALSE, NONE, 0, 0 },
-    { UNDOBMP, IMGED_UNDO, FALSE, NONE, 0, 0 },
-    { REDOBMP, IMGED_REDO, FALSE, NONE, 0, 0 },
-    { CLEARBMP, IMGED_CLEAR, FALSE, NONE, 0, 0 },
-    { SNAPBMP, IMGED_SNAP, FALSE, NONE, 0, 0 },
-    { RIGHTBMP, IMGED_RIGHT, FALSE, NONE, 0, 0 },
-    { LEFTBMP, IMGED_LEFT, FALSE, NONE, 0, 0 },
-    { UPBMP, IMGED_UP, FALSE, NONE, 0, 0 },
-    { DOWNBMP, IMGED_DOWN, FALSE, NONE, 0, 0 },
-    { HFLIPBMP, IMGED_FLIPHORZ, TRUE, HFLIPDBMP, 0, 0 },
-    { VFLIPBMP, IMGED_FLIPVERT, TRUE, VFLIPDBMP, 0, 0 },
-    { CLROTBMP, IMGED_ROTATECL, TRUE, CLROTDBMP, 0, 0 },
-    { CCROTBMP, IMGED_ROTATECC, TRUE, CCROTDBMP, 0, 0 },
-    { SAVEBMP, IMGED_DDE_UPDATE_PRJ, FALSE, NONE, 0, 0}
+
+static button           toolList[NUM_TOOLS] = {
+    { NEWBMP,       IMGED_NEW,      FALSE,  NONE,           0, 0, WIE_TIP_NEW       },
+    { OPENBMP,      IMGED_OPEN,     FALSE,  NONE,           0, 0, WIE_TIP_OPEN      },
+    { SAVEBMP,      IMGED_SAVE,     FALSE,  NONE,           0, 0, WIE_TIP_SAVE      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { GRIDBMP,      IMGED_GRID,     TRUE,   GRIDDBMP,       0, 0, WIE_TIP_GRID      },
+    { MAXIMIZEBMP,  IMGED_MAXIMIZE, FALSE,  MAXIMIZEDBMP,   0, 0, WIE_TIP_MAXIMIZE  },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { CUTBMP,       IMGED_CUT,      FALSE,  NONE,           0, 0, WIE_TIP_CUT       },
+    { COPYBMP,      IMGED_COPY,     FALSE,  NONE,           0, 0, WIE_TIP_COPY      },
+    { PASTEBMP,     IMGED_PASTE,    FALSE,  NONE,           0, 0, WIE_TIP_PASTE     },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { UNDOBMP,      IMGED_UNDO,     FALSE,  NONE,           0, 0, WIE_TIP_UNDO      },
+    { REDOBMP,      IMGED_REDO,     FALSE,  NONE,           0, 0, WIE_TIP_REDO      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { CLEARBMP,     IMGED_CLEAR,    FALSE,  NONE,           0, 0, WIE_TIP_CLEAR     },
+    { SNAPBMP,      IMGED_SNAP,     FALSE,  NONE,           0, 0, WIE_TIP_SNAP      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { RIGHTBMP,     IMGED_RIGHT,    FALSE,  NONE,           0, 0, WIE_TIP_RIGHT     },
+    { LEFTBMP,      IMGED_LEFT,     FALSE,  NONE,           0, 0, WIE_TIP_LEFT      },
+    { UPBMP,        IMGED_UP,       FALSE,  NONE,           0, 0, WIE_TIP_UP        },
+    { DOWNBMP,      IMGED_DOWN,     FALSE,  NONE,           0, 0, WIE_TIP_DOWN      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { HFLIPBMP,     IMGED_FLIPHORZ, FALSE,  HFLIPDBMP,      0, 0, WIE_TIP_FLIPHORZ  },
+    { VFLIPBMP,     IMGED_FLIPVERT, FALSE,  VFLIPDBMP,      0, 0, WIE_TIP_FLIPVERT  },
+    { CLROTBMP,     IMGED_ROTATECL, FALSE,  CLROTDBMP,      0, 0, WIE_TIP_ROTATECL  },
+    { CCROTBMP,     IMGED_ROTATECC, FALSE,  CCROTDBMP,      0, 0, WIE_TIP_ROTATECC  }
 };
 
+static button           toolListDDE[NUM_TOOLS_DDE] = {
+    { CLEARBMP,     IMGED_CLEAR,    FALSE,  NONE,           0, 0, WIE_TIP_CLEAR     },
+    { SAVEBMP,      IMGED_DDE_UPDATE_PRJ, FALSE, NONE,      0, 0, WIE_TIP_UPDATE    },
+    { GRIDBMP,      IMGED_GRID,     FALSE,  GRIDDBMP,       0, 0, WIE_TIP_GRID      },
+    { MAXIMIZEBMP,  IMGED_MAXIMIZE, FALSE,  MAXIMIZEDBMP,   0, 0, WIE_TIP_MAXIMIZE  },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { CUTBMP,       IMGED_CUT,      FALSE,  NONE,           0, 0, WIE_TIP_CUT       },
+    { COPYBMP,      IMGED_COPY,     FALSE,  NONE,           0, 0, WIE_TIP_COPY      },
+    { PASTEBMP,     IMGED_PASTE,    FALSE,  NONE,           0, 0, WIE_TIP_PASTE     },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { UNDOBMP,      IMGED_UNDO,     FALSE,  NONE,           0, 0, WIE_TIP_UNDO      },
+    { REDOBMP,      IMGED_REDO,     FALSE,  NONE,           0, 0, WIE_TIP_REDO      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { SNAPBMP,      IMGED_SNAP,     FALSE,  NONE,           0, 0, WIE_TIP_SNAP      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { RIGHTBMP,     IMGED_RIGHT,    FALSE,  NONE,           0, 0, WIE_TIP_RIGHT     },
+    { LEFTBMP,      IMGED_LEFT,     FALSE,  NONE,           0, 0, WIE_TIP_LEFT      },
+    { UPBMP,        IMGED_UP,       FALSE,  NONE,           0, 0, WIE_TIP_UP        },
+    { DOWNBMP,      IMGED_DOWN,     FALSE,  NONE,           0, 0, WIE_TIP_DOWN      },
+    { NONE,         0,              FALSE,  NONE,           0, 0, -1                },
+    { HFLIPBMP,     IMGED_FLIPHORZ, FALSE,  HFLIPDBMP,      0, 0, WIE_TIP_FLIPHORZ  },
+    { VFLIPBMP,     IMGED_FLIPVERT, FALSE,  VFLIPDBMP,      0, 0, WIE_TIP_FLIPVERT  },
+    { CLROTBMP,     IMGED_ROTATECL, FALSE,  CLROTDBMP,      0, 0, WIE_TIP_ROTATECL  },
+    { CCROTBMP,     IMGED_ROTATECC, FALSE,  CCROTDBMP,      0, 0, WIE_TIP_ROTATECC  }
+};
+    
 /*
- * addFunctionButton - adds a button to the function bar.
+ * addFunctionButton - add a button to the function bar
  */
-static void addFunctionButton( button *tb, BOOL is_sticky )
+static void addFunctionButton( button *tb )
 {
     TOOLITEMINFO        info;
 
-    tb->hbmp = _wpi_loadbitmap( Instance, tb->name );
-    info.u.bmp = tb->hbmp;
-    info.id = tb->id;
-    info.flags = ITEM_DOWNBMP;
+    if( tb->id > 0 ) {
+        tb->hbmp = _wpi_loadbitmap( Instance, tb->name );
+        info.bmp = tb->hbmp;
+        info.id = tb->id;
+        info.flags = ITEM_DOWNBMP;
 
-    if (is_sticky) {
-        info.flags |= ITEM_STICKY;
-    }
-    if (tb->has_down) {
-        tb->downbmp = _wpi_loadbitmap( Instance, tb->downname );
+        if( tb->sticky ) {
+            info.flags |= ITEM_STICKY;
+        }
+        if( tb->downbmp != NONE ) {
+            tb->downbmp = _wpi_loadbitmap( Instance, tb->downname );
+        } else {
+            tb->downbmp = tb->hbmp;
+        }
+        if( tb->tip_id >= 0 ) {
+            _wpi_loadstring( Instance, tb->tip_id, info.tip, MAX_TIP );
+        } else {
+            info.tip[0] = '\0';
+        }
+
+        info.depressed = tb->downbmp;
     } else {
-        tb->downbmp = tb->hbmp;
-    }
-
-    info.depressed = tb->downbmp;
+        info.flags = ITEM_BLANK;
+        info.blank_space = 5;
+    };
     ToolBarAddItem( functionBar, &info );
 
 } /* addFunctionButton */
 
 /*
- * addItems - adds the buttons to the function bar
+ * addItems - add the buttons to the function bar
  */
-void addItems( void )
+static void addItems( void )
 {
-    TOOLITEMINFO        tii;
-    int                 i;
+    int i;
 
-    tii.flags = ITEM_BLANK;
-    tii.u.blank_space = 5;
-
-    ToolBarAddItem( functionBar, &tii );
     if( ImgedIsDDE ) {
-        addFunctionButton( &(toolList[10]), FALSE );
-        addFunctionButton( &(toolList[20]), FALSE );
+        for( i = 0; i < NUM_TOOLS_DDE; i++ ) {
+            addFunctionButton( &toolListDDE[i] );
+        }
     } else {
-        for (i=0; i < 3; ++i) {
-            addFunctionButton( &(toolList[i]), FALSE );
+        for( i = 0; i < NUM_TOOLS; i++ ) {
+            addFunctionButton( &toolList[i] );
         }
     }
 
-    ToolBarAddItem( functionBar, &tii );
-    addFunctionButton( &(toolList[3]), TRUE );
-    addFunctionButton( &(toolList[4]), FALSE );
-    ToolBarAddItem( functionBar, &tii );
-
-    for (i=5; i < 8; ++i) {
-        addFunctionButton( &(toolList[i]), FALSE );
-    }
-
-    ToolBarAddItem( functionBar, &tii );
-    for (i=8; i < 10; ++i) {
-        addFunctionButton( &(toolList[i]), FALSE );
-    }
-
-    ToolBarAddItem( functionBar, &tii );
-
-    if( ImgedIsDDE ) {
-        addFunctionButton( &(toolList[11]), FALSE );
-    } else {
-        for (i=10; i < 12; ++i) {
-            addFunctionButton( &(toolList[i]), FALSE );
-        }
-    }
-
-    ToolBarAddItem( functionBar, &tii );
-    for (i=12; i < 16; ++i) {
-        addFunctionButton( &(toolList[i]), FALSE );
-    }
-
-    ToolBarAddItem( functionBar, &tii );
-    for (i=16; i < 20; ++i) {
-        addFunctionButton( &(toolList[i]), FALSE );
-    }
 } /* addItems */
 
+/*
+ * FunctionBarHelpProc
+ */
 void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, BOOL pressed )
 {
-    hwnd=hwnd;
+    hwnd = hwnd;
     if( pressed ) {
         ShowHintText( wparam );
     } else {
         SetHintText( " " );
     }
-}
+
+} /* FunctionBarHelpProc */
 
 /*
- * FunctionBarProc - hook function which intercepts messages to the tool bar.
+ * FunctionBarProc - hook function which intercepts messages to the toolbar
  */
-BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                                        WPI_PARAM2 lparam )
+BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
 
     hwnd = hwnd;
 
-    switch(msg) {
+    switch( msg ) {
     case WM_CREATE:
         break;
 
     case WM_USER:
-        if (!lparam) {
+        if( !lparam ) {
             ShowHintText( wparam );
         }
 
-        if( LOWORD(wparam) == IMGED_GRID ) {
-            ToolBarSetState( functionBar, LOWORD(wparam), BUTTON_DOWN );
+        if( LOWORD( wparam ) == IMGED_GRID ) {
+            ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_DOWN );
         } else {
-            return 1;
+            return( 1 );
         }
         break;
 
     case WM_COMMAND:
-        if( LOWORD(wparam) == IMGED_GRID ) {
+        if( LOWORD( wparam ) == IMGED_GRID ) {
             if( !gridButtonDown ) {
-                gridButtonDown  = TRUE;
+                gridButtonDown = TRUE;
             } else {
-                gridButtonDown  = FALSE;
+                gridButtonDown = FALSE;
             }
-            if( !HMainWindow ) {
+            if( HMainWindow == NULL ) {
                 break;
             }
-            CheckGridItem( _wpi_getmenu(_wpi_getframe(HMainWindow)) );
+            CheckGridItem( _wpi_getmenu( _wpi_getframe( HMainWindow ) ) );
             return( 1 );
         }
 
-        ToolBarSetState(functionBar, LOWORD(wparam), BUTTON_UP);
+        ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_UP );
         break;
 
     case WM_DESTROY:
-        for( i=0; i < NUMBER_OF_FUNCTIONS; ++i ) {
-            _wpi_deletebitmap( toolList[i].hbmp );
-            if ( toolList[i].has_down ) {
-                _wpi_deletebitmap( toolList[i].downbmp );
+        if( ImgedIsDDE ) {
+            for( i = 0; i < NUM_TOOLS_DDE; i++ ) {
+                if( toolListDDE[i].name != NONE ) {
+                    _wpi_deletebitmap( toolListDDE[i].hbmp );
+                }
+                if( toolListDDE[i].downbmp != NONE ) {
+                    _wpi_deletebitmap( toolListDDE[i].downbmp );
+                }
+            }
+        } else {
+            for( i = 0; i < NUM_TOOLS; i++ ) {
+                if( toolList[i].name != NONE ) {
+                    _wpi_deletebitmap( toolList[i].hbmp );
+                }
+                if( toolList[i].downbmp != NONE ) {
+                    _wpi_deletebitmap( toolList[i].downbmp );
+                }
             }
         }
         break;
@@ -209,12 +234,12 @@ BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 } /* FunctionBarProc */
 
 /*
- * InitFunctionBar - Initializes the tool bar at the top of the image editor.
+ * InitFunctionBar - initializes the toolbar at the top of the image editor
  */
 void InitFunctionBar( HWND hparent )
 {
-    WPI_POINT           buttonsize = {FUNC_BUTTON_WIDTH, FUNC_BUTTON_HEIGHT};
-    WPI_POINT           border = {FUNC_BORDER_X, FUNC_BORDER_Y};
+    WPI_POINT           buttonsize = { FUNC_BUTTON_WIDTH, FUNC_BUTTON_HEIGHT };
+    WPI_POINT           border = { FUNC_BORDER_X, FUNC_BORDER_Y };
     WPI_RECT            functionbar_loc;
     TOOLDISPLAYINFO     tdi;
     WPI_RECT            rect;
@@ -225,14 +250,14 @@ void InitFunctionBar( HWND hparent )
     width = _wpi_getwidthrect( rect );
     height = _wpi_getheightrect( rect );
 
-    _wpi_setwrectvalues( &(functionbar_loc), 0, 0, max(MIN_WIDTH, width),
-                                                    FUNC_BUTTON_HEIGHT + 5 );
-    _wpi_cvth_rect( &(functionbar_loc), height );
+    _wpi_setwrectvalues( &functionbar_loc, 0, 0, max( MIN_WIDTH, width ),
+                         FUNC_BUTTON_HEIGHT + 5 );
+    _wpi_cvth_rect( &functionbar_loc, height );
 #ifdef __OS2_PM__
     functionbar_loc.yBottom += 1;
 #endif
 
-    functionBar = ToolBarInit(hparent);
+    functionBar = ToolBarInit( hparent );
     tdi.button_size = buttonsize;
     tdi.border_size = border;
     tdi.area = functionbar_loc;
@@ -242,8 +267,9 @@ void InitFunctionBar( HWND hparent )
     tdi.background = (HBITMAP)0;
     tdi.foreground = (HBITMAP)0;
     tdi.is_fixed = 1;
+    tdi.use_tips = 1;
 
-    ToolBarDisplay(functionBar, &tdi);
+    ToolBarDisplay( functionBar, &tdi );
 
     addItems();
     hFunctionBar = ToolBarWindow( functionBar );
@@ -252,18 +278,20 @@ void InitFunctionBar( HWND hparent )
     _wpi_updatewindow( hFunctionBar );
 
     GrayEditOptions();
+
 } /* InitFunctionBar */
 
 /*
- * CloseFunctionBar - Call the clean up routine.
+ * CloseFunctionBar - call the clean up routine
  */
 void CloseFunctionBar( void )
 {
     ToolBarFini( functionBar );
+
 } /* CloseFunctionBar */
 
 /*
- * ResizeFunctionBar - handles the resizing of the function bar.
+ * ResizeFunctionBar - handle the resizing of the function bar
  */
 void ResizeFunctionBar( WPI_PARAM2 lparam )
 {
@@ -271,47 +299,65 @@ void ResizeFunctionBar( WPI_PARAM2 lparam )
     int         top;
     int         bottom;
     HWND        hwnd;
+#ifdef __OS2_PM__
+    short       height;
+    WPI_RECT    rect;
+#endif
 
-    if (!hFunctionBar) {
+    if( hFunctionBar == NULL ) {
         return;
     }
 #ifndef __OS2_PM__
     width = max( MIN_WIDTH, LOWORD( lparam ) );
     top = 0;
-    bottom = FUNC_BUTTON_HEIGHT+5;
+    bottom = FUNC_BUTTON_HEIGHT + 5;
 #else
     width = max( MIN_WIDTH, SHORT1FROMMP( lparam ) );
 
-    {
-        short           height;
-        WPI_RECT        rect;
-
-        _wpi_getclientrect( HMainWindow, &rect );
-        height = _wpi_getheightrect( rect );
-        /*
-         * these are actually switched but it's necessary for the setwindowpos
-         * macro
-         */
-        bottom = _wpi_cvth_y( 0, height );
-        top = _wpi_cvth_y( FUNC_BUTTON_HEIGHT+3, height );
-    }
+    _wpi_getclientrect( HMainWindow, &rect );
+    height = _wpi_getheightrect( rect );
+    /*
+     * These are actually switched, but it's necessary for the _wpi_setwindowpos macro.
+     */
+    bottom = _wpi_cvth_y( 0, height );
+    top = _wpi_cvth_y( FUNC_BUTTON_HEIGHT + 3, height );
 #endif
 
     hwnd = ToolBarWindow( functionBar );
     _wpi_setwindowpos( hwnd, HWND_TOP, 0, top, width, bottom,
-                        SWP_SHOWWINDOW | SWP_MOVE | SWP_SIZE );
+                       SWP_SHOWWINDOW | SWP_MOVE | SWP_SIZE );
+
 } /* ResizeFunctionBar */
 
 /*
- * PressGridButton - (de)presses the grid button as necessary.
+ * PressGridButton - (de)press the grid button as necessary
  */
 void PressGridButton( void )
 {
-    if (!functionBar) return;
-
-    if (ImgedConfigInfo.grid_on) {
-        ToolBarSetState(functionBar, IMGED_GRID, BUTTON_DOWN);
-    } else {
-        ToolBarSetState(functionBar, IMGED_GRID, BUTTON_UP);
+    if( functionBar == NULL ) {
+        return;
     }
+
+    if( ImgedConfigInfo.grid_on ) {
+        ToolBarSetState( functionBar, IMGED_GRID, BUTTON_DOWN );
+    } else {
+        ToolBarSetState( functionBar, IMGED_GRID, BUTTON_UP );
+    }
+
 } /* PressGridButton */
+
+/*
+ * GetFunctionBarHeight - get the height of the function bar
+ */
+int GetFunctionBarHeight( void )
+{
+    WPI_RECT    rect;
+
+    if( functionBar == NULL ) {
+        return( 0 );
+    }
+
+    _wpi_getwindowrect( hFunctionBar, &rect );
+    return( _wpi_getheightrect( rect ) );
+
+} /* GetFunctionBarHeight */

@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  OS/2 16-bit executable and DLL startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++16 under OS/2
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm cstrto16 -bt=OS2 -ms -2r
 ;               wasm cstrto16 -bt=OS2 -mm -2r
@@ -42,7 +38,7 @@
 ;
 ; NOTE: This code must NEVER NEVER NEVER NEVER define any variable or routines
 ;       which are needed by the C Library. It should also be MINIMAL.
-;       This is so we can make CLIB DLL's.
+;       This is so we can make CLIB DLLs.
 ;
 include mdef.inc
 
@@ -55,7 +51,7 @@ include mdef.inc
         extrn   __DOSseg__      : byte
 
 
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,_BSS,STACK,XIB,XI,XIE,YIB,YI,YIE
+DGROUP  group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 ife _MODEL and _BIG_CODE
 
@@ -128,7 +124,7 @@ _BSS          ends
 
 STACK   segment para stack 'STACK'
         stklow  label   word
-        db      800h dup(?)
+        db      1000h dup(?)
 STACK   ends
 
         assume  nothing
@@ -145,9 +141,9 @@ __DLLstart_:
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++16 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      ' All rights reserved.'
+include msgrt16.inc
+include msgcpyrt.inc
+
 ife _MODEL and _BIG_CODE
         dw      ___begtext      ; make sure dead code elimination
                                 ; doesn't kill BEGTEXT
@@ -186,4 +182,3 @@ _cstart_ endp
 _TEXT   ends
 
         end     _cstart_
-

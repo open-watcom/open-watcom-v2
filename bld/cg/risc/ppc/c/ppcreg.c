@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC register classification and conventions.
 *
 ****************************************************************************/
 
@@ -35,8 +34,9 @@
 #include "procdef.h"
 #include "model.h"
 #include "cgaux.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "typedef.h"
+
 
 extern  proc_def        *CurrProc;
 
@@ -44,17 +44,20 @@ extern  hw_reg_set      ReturnReg(type_class_def);
 extern  hw_reg_set      *ParmRegs( void );
 extern type_class_def   ReturnClass(type_def*,call_attributes);
 extern  byte            *Copy(void*,void*,uint);
-extern  hw_reg_set      FixedRegs();
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      DisplayReg();
-extern  int             SizeDisplayReg();
+extern  hw_reg_set      FixedRegs( void );
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      DisplayReg( void );
+extern  int             SizeDisplayReg( void );
 extern  void            FEMessage(msg_class,pointer);
 extern  pointer         FEAuxInfo(pointer*,aux_class);
 extern  hw_reg_set      ReturnAddrReg(void);
 extern  void            InitPPCParmState( call_state * );
+extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
 
-extern hw_reg_set SavedRegs() {
-/*****************************/
+
+extern hw_reg_set SavedRegs( void )
+/*********************************/
+{
     hw_reg_set          saved;
 
     HW_CAsgn( saved, HW_EMPTY );
@@ -98,9 +101,9 @@ extern hw_reg_set SavedRegs() {
 }
 
 extern  type_class_def  CallState( aux_handle aux,
-                                  type_def *tipe, call_state *state ) {
-/*********************************************************************/
-
+                                  type_def *tipe, call_state *state )
+/*******************************************************************/
+{
     type_class_def      class;
     uint                i;
     hw_reg_set          parms[ 24 ];
@@ -129,7 +132,7 @@ extern  type_class_def  CallState( aux_handle aux,
         i++;
     }
     i++;
-    _Alloc( state->parm.table, i*sizeof( hw_reg_set ) );
+    state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
     Copy( parms, state->parm.table, i*sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
@@ -146,21 +149,21 @@ extern  type_class_def  CallState( aux_handle aux,
 
 
 extern  void    UpdateReturn( call_state *state, type_def *tipe,
-                              type_class_def class, aux_handle aux ) {
-/********************************************************************/
-
+                              type_class_def class, aux_handle aux )
+/******************************************************************/
+{
     state->return_reg = ReturnReg( class );
 }
 
-extern  hw_reg_set      RAReg( void ) {
-/*************************************/
-
+extern  hw_reg_set      RAReg( void )
+/***********************************/
+{
     return( HW_EMPTY );
 }
 
-extern  hw_reg_set      CallZap( call_state *state ) {
-/****************************************************/
-
+extern  hw_reg_set      CallZap( call_state *state )
+/**************************************************/
+{
     hw_reg_set  zap;
     hw_reg_set  tmp;
 
@@ -175,9 +178,9 @@ extern  hw_reg_set      CallZap( call_state *state ) {
     return( zap );
 }
 
-extern  hw_reg_set      MustSaveRegs() {
-/**************************************/
-
+extern  hw_reg_set      MustSaveRegs( void )
+/******************************************/
+{
     hw_reg_set  save;
     hw_reg_set  tmp;
 
@@ -204,9 +207,9 @@ extern  hw_reg_set      MustSaveRegs() {
     return( save );
 }
 
-extern  hw_reg_set      SaveRegs() {
-/**********************************/
-
+extern  hw_reg_set      SaveRegs( void )
+/**************************************/
+{
     hw_reg_set   save;
 
     save = MustSaveRegs();
@@ -214,9 +217,9 @@ extern  hw_reg_set      SaveRegs() {
     return( save );
 }
 
-extern  bool            IsStackReg( name *n ) {
-/*********************************************/
-
+extern  bool            IsStackReg( name *n )
+/*******************************************/
+{
     if( n == NULL ) return( FALSE );
     if( n->n.class != N_REGISTER ) return( FALSE );
     if( !HW_CEqual( n->r.reg, HW_R1 ) &&
@@ -224,14 +227,14 @@ extern  bool            IsStackReg( name *n ) {
     return( TRUE );
 }
 
-extern  hw_reg_set      HighOffsetReg( hw_reg_set regs ) {
-/********************************************************/
-
+extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )
+/******************************************************/
+{
     return( HW_EMPTY );
 }
 
-extern  hw_reg_set      LowOffsetReg( hw_reg_set regs ) {
-/*******************************************************/
-
+extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
+/*****************************************************/
+{
     return( HW_EMPTY );
 }

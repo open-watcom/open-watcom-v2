@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a bitmap resource.
 *
 ****************************************************************************/
 
@@ -44,8 +43,6 @@ static BITMAP           bmInfo;
 BOOL __export FAR PASCAL BitmapWndProc( HWND hwnd, UINT msg, UINT wparam,
                                     LONG lparam )
 {
-    WORD        cmd;
-    char        buf[256];
     HBITMAP     new;
     PAINTSTRUCT paintinfo;
 
@@ -103,7 +100,8 @@ BOOL CALLBACK GetBitmapNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpar
     return( TRUE );
 }
 
-void doDisplayBitmap( HBITMAP newbm ) {
+void doDisplayBitmap( HBITMAP newbm )
+{
     HDC         windc;
 
     windc = GetDC( MainHwnd );
@@ -113,14 +111,15 @@ void doDisplayBitmap( HBITMAP newbm ) {
     GetObject( newbm, sizeof( BITMAP ), &bmInfo );
 }
 
-void DisplayBitmap( void ) {
+void DisplayBitmap( void )
+{
     FARPROC     fp;
     HBITMAP     bitmap;
     char        buf[256];
     HWND        hwnd;
 
-    fp = MakeProcInstance( GetBitmapNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetBitmapNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     bitmap = LoadBitmap( Instance, bitmapName );
     if( bitmap == NULL ) {

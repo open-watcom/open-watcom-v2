@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stuff dealing with module handles.
 *
 ****************************************************************************/
 
@@ -39,9 +38,6 @@
 #include "dfld.h"
 #include "dfaddr.h"
 #include "dfaddsym.h"
-/*
-        Stuff dealing with module handles
-*/
 
 //NYI: should be OS && location sensitive
 #define IS_PATH_CHAR( c ) ((c)=='\\'||(c)=='/'||(c)==':')
@@ -83,10 +79,11 @@ do_copy:
     *buff = '\0';
 }
 
-static bool ModFill( mod_list *mod, dr_handle mod_handle ){
+static bool ModFill( void *_mod, dr_handle mod_handle ){
 /**************************************************************/
 // fill in mod_handle for dip to dwarf mod map
 // pick up general info about mod while here for later calls
+    mod_list *mod = _mod;
     char    fname[MAX_PATH];
     char   *name;
     char   *path;
@@ -115,7 +112,9 @@ static bool ModFill( mod_list *mod, dr_handle mod_handle ){
 
         df_ver version;
 
-        if( strcmp( path, "V1.0 WATCOM" ) == 0 ){
+        if( strcmp( path, "V2.0 WATCOM" ) == 0 ) {
+            version = VER_V3;
+        } else if( strcmp( path, "V1.0 WATCOM" ) == 0 ) {
             version = VER_V2;
         }else if( strcmp( path, "WATCOM" ) == 0 ){
             version = VER_V1;
@@ -166,9 +165,11 @@ extern  dip_status     InitModMap( imp_image_handle *ii ){
     DRDbgClear( ii->dwarf->handle ); /* clear some mem */
     ii->mod_count = list.count;
     ii->mod_map = FiniModInfo( &list );
-    if( list.version == VER_V1 ){
-        DRDbgOldVersion( ii->dwarf->handle );
-    }else if( list.version == VER_ERROR ){
+    if( list.version == VER_V1 ) {
+        DRDbgOldVersion( ii->dwarf->handle, 1 );
+    } else if( list.version == VER_V2 ) {
+        DRDbgOldVersion( ii->dwarf->handle, 2 );
+    } else if( list.version == VER_ERROR ) {
         DCStatus( DS_INFO_BAD_VERSION );
         ret = DS_FAIL | DS_INFO_BAD_VERSION;
     }
@@ -413,8 +414,9 @@ typedef struct{
     address           *ret;
 }l_walk_info;
 
-static int AModAddr( l_walk_info  *info, dr_line_data *curr ){
+static int AModAddr( void *_info, dr_line_data *curr ){
 /*************************************************************/
+    l_walk_info *info = _info;
     int ret;
     imp_image_handle  *ii;
 
@@ -435,8 +437,9 @@ static int AModAddr( l_walk_info  *info, dr_line_data *curr ){
     return( ret );
 }
 
-static int ALineCue( l_walk_info  *info, dr_line_data *curr ){
+static int ALineCue( void *_info, dr_line_data *curr ){
 /*************************************************************/
+    l_walk_info *info = _info;
     int ret;
 
     ret = TRUE;
@@ -463,7 +466,7 @@ address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
     }
     imx = IM2IMX( im );
     stmts =  ii->mod_map[imx].stmts;
-    if( stmts == NULL ){
+    if( stmts == 0 ) {
         DCStatus( DS_FAIL );
         return( NilAddr );
     }
@@ -501,12 +504,12 @@ dip_status      DIPENTRY DIPImpModInfo( imp_image_handle *ii,
         ret = DS_FAIL;
         break;
     case HK_TYPE:
-        if( stmts != NULL ){
+        if( stmts != 0 ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
-        if( stmts != NULL ){ // need to get rid of stmts for file with no cues
+        if( stmts != 0 ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
 
@@ -602,22 +605,25 @@ dip_status      DIPENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-extern unsigned NameCopy( char *to, char *from, unsigned max ){
-/**********************************************************/
-    unsigned  len;
+extern unsigned NameCopy( char *to, char *from, unsigned max )
+/************************************************************/
+{
+    unsigned    len;
 
     len = strlen( from );
-    if( max > 0 ){
-        if( len < max ){
+    if( max > 0 ) {
+        if( len < max ) {
             max = len;
-        }else{
-            max = max-1;
+        } else {
+            max = max - 1;
         }
-        do{
-            *to = *from;
-            ++to;
-            ++from;
-        }while( --max > 0 );
+        if( max > 0 ) {     // Check max to prevent underflow
+            do {
+                *to = *from;
+                ++to;
+                ++from;
+            } while( --max > 0 );
+        }
         *to = '\0';
     }
     return( len );

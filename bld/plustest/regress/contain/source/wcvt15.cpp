@@ -49,7 +49,8 @@ void test4() {
 
     vect.clearAndDestroy();
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	vect.insert( new str_data( str_text[ i ] ) );
     };
     for( i = 0; i < 20; i++ ) {
@@ -66,7 +67,8 @@ void test6() {
 
     vect.clearAndDestroy();
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	vect.insert( new str_data( str_text[ i ] ) );
     };
     for( i = 0; i < 20; i++ ) {

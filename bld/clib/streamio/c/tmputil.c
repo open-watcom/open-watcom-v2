@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal helper routines __MkTmpFile() and __RmTmpFile().
 *
 ****************************************************************************/
 
@@ -40,6 +39,7 @@
 #include "rtdata.h"
 #include "tmpfname.h"
 
+
 static unsigned __GetTmpPath( char *buf )
 {
 #ifndef __NETWARE__
@@ -50,8 +50,8 @@ static unsigned __GetTmpPath( char *buf )
     unsigned    i;
 
     buf[0] = '\0';  // initialize path
-#if defined(__NETWARE__)
-    getcwd( buf, PATH_MAX );
+#ifdef __NETWARE__
+    getcwd( buf, PATH_MAX );    // No environment vars on Netware
 #else
     for( evar = evars; **evar; ++evar ) {
         tmp = getenv( *evar );
@@ -84,26 +84,28 @@ static unsigned __GetTmpPath( char *buf )
 static char __hex( int num )
 {
     num += '0';
-    if( num > '9' )  num += 'a' - '0' - 10;
+    if( num > '9' ) {
+        num += 'a' - '0' - 10;
+    }
     return( num );
 }
 
-#if defined(__NETWARE__)
-extern int              GetThreadID( void );
-#define getuniqueid()   GetThreadID()
-#elif defined(__NT__)
-#define getuniqueid()   ((getpid() << 12) + *_threadid)
-#elif defined(__OS2__)
-#define getuniqueid()   ((getpid() << 12) + *_threadid)
+#if defined( __NETWARE__ )
+    extern int              GetThreadID( void );
+    #define getuniqueid()   GetThreadID()
+#elif defined( __NT__ )
+    #define getuniqueid()   ((getpid() << 12) + *_threadid)
+#elif defined( __OS2__ )
+    #define getuniqueid()   ((getpid() << 12) + *_threadid)
 #else
-#define getuniqueid()   (getpid())
+    #define getuniqueid()   (getpid())
 #endif
 
 void __MkTmpFile( char *buf, int num )
 {
-    unsigned pid;
-    unsigned i;
-    char     *ptr;
+    unsigned    pid;
+    unsigned    i;
+    char        *ptr;
 
     pid = getuniqueid();
 //  JBS on Win32 pid's range from 0 to n where n is not very large for

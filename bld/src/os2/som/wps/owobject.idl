@@ -1,0 +1,107 @@
+
+/*  This is a simple WPS class that demonstrates how to define the
+ *  interface to a new WPS class in SOM IDL.
+ *
+ *  The class inherits everything from the parent class WPAbstract,
+ *  which provides an object icon and a settings notebook with
+ *  an icon page.
+ *
+ *  See welcome.txt for details about the overridden methods.
+ */
+
+#ifndef owobject_idl
+#define owobject_idl
+
+#include <wpabs.idl>
+#include <somcls.idl>
+
+interface M_OWObject;
+
+interface OWObject : WPAbstract
+{
+
+   ULONG sampInsertWelcomePage( in HWND hwndDlg );
+
+   #ifdef __SOMIDL__
+   implementation
+   {
+
+      releaseorder: sampInsertWelcomePage;
+
+      //  Class Modifiers
+      functionprefix = OWS_;
+      externalprefix = OWS_;
+      local;
+      majorversion   = 1;
+      minorversion   = 2;
+      filestem       = owobject;
+      metaclass      = M_OWObject;
+      callstyle      = oidl;
+      dllname        = "owobject.dll";
+
+      // object instance data
+      ULONG      ulTestValue;
+      HWND       hwndNotebookPage;
+
+      // Passthru to our .ih file the following.
+      passthru C_ih =
+      "#define INCL_PM"
+      "#define INCL_DOS"
+      "#define INCL_ERRORS"
+
+      "#include <os2.h>"
+      "#include <stdlib.h>"
+      "#include <string.h>"
+      "#include <stdio.h>"
+      ""
+      "#include <helper.h>"
+      "#include <nbpage.h>"
+      "#include <owobjrc.h>"
+      "";
+
+      // Method Modifiers
+      wpInitData:                      override;
+      wpUnInitData:                    override;
+      wpSaveState:                     override;
+      wpRestoreState:                  override;
+      wpAddSettingsPages:              override;
+      wpAddObjectWindowPage:           override;
+      wpSetup:                         override;
+
+   };
+   #endif /* __SOMIDL__ */
+};
+
+interface M_OWObject : M_WPAbstract
+{
+   #ifdef __SOMIDL__
+   implementation
+   {
+      // Class Modifiers
+      functionprefix = MOWS_;
+      externalprefix = MOWS_;
+      local;
+      majorversion   = 1;
+      minorversion   = 2;
+      filestem       = owobject;
+      callstyle      = oidl;
+      dllname        = "owobject.dll";
+
+      // metaclass data
+      PSZ        pszMleText;
+
+      // Method Modifiers
+      wpclsInitData:                   override;
+      wpclsUnInitData:                 override;
+      wpclsQueryIconData:              override;
+      wpclsQueryTitle:                 override;
+      wpclsQueryStyle:                 override;
+      wpclsCreateDefaultTemplates:     override;
+      wpclsQueryDefaultView:           override;
+
+   };
+   #endif /* __SOMIDL__ */
+};
+
+#endif  /* owobject_idl */
+

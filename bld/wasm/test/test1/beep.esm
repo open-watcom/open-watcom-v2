@@ -1,0 +1,15 @@
+.387
+DGROUP		GROUP	_TEXT,_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:DGROUP, DS:DGROUP, SS:DGROUP
+    mov         ah,2 
+    mov         dl,7 
+    int         21H 
+    mov         ah,2 
+    mov         dl,7 
+    int         21H 
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

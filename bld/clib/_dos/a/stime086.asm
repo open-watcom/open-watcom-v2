@@ -35,19 +35,11 @@
 include mdef.inc
 include struct.inc
 
-        if __WASM__ ge 100
-            xref    "C",__set_EINVAL
-        else
-            xref    <"C",__set_EINVAL>
-        endif
+        xref    "C",__set_EINVAL
         modstart dosstime
 
         defp    _dos_setdate
-        if __WASM__ ge 100
-            xdefp   "C",_dos_setdate
-        else
-            xdefp   <"C",_dos_setdate>
-        endif
+        xdefp   "C",_dos_setdate
 ;
 ;       unsigned _dos_setdate( struct dosdate_t *date );
 ;       struct dosdate_t {
@@ -84,12 +76,9 @@ endif
         pop     DX              ; restore DX
         ret                     ; return to caller
         endproc _dos_setdate
+
         defp    _dos_settime
-        if __WASM__ ge 100
-            xdefp   "C",_dos_settime
-        else
-            xdefp   <"C",_dos_settime>
-        endif
+        xdefp   "C",_dos_settime
 ;
 ;       unsigned _dos_settime( struct dostime_t *time );
 ;       struct dostime_t {

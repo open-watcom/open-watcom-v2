@@ -43,22 +43,38 @@
 #include "guihotsp.h"
 #include <string.h>
 
-bool GUISetEditText( an_edit_control *edit_control, char *text )
+bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
+/*
+ * "free" edit_control->buffer and "strdup" text to it.
+ * isGUIdata chooses between local and ui functions to allow ui to realloc
+ */
 {
+    void        *uimalloc( unsigned size );
+    void        uifree( void *ptr );
+    void        *(*allocate)( unsigned size );
+    void        (*dealloc)( void *ptr );
+    char const  *filler;
+    size_t      fillerLength;
     char        *new;
 
-    if( text == NULL ) {
-        if( !GUIStrDup( LIT( Empty ), &new ) ) {
-            return( FALSE );
-        }
-    } else {
-        if( !GUIStrDup( text, &new) ) {
-            return( FALSE );
-        }
+    if( is_GUI_data ) {
+        allocate = GUIMemAlloc;
+        dealloc = GUIMemFree;
     }
-    GUIFree( edit_control->buffer );
+    else {
+        allocate = uimalloc;
+        dealloc = uifree;
+    }
+    filler = ( text == NULL ) ? LIT( Empty ) : text;
+    fillerLength = strlen( filler );
+    new = allocate( fillerLength + 1 );
+    if( new == NULL ) {
+        return( FALSE );
+    }
+    strcpy( new, filler );
+    dealloc( edit_control->buffer );
     edit_control->buffer = new;
-    edit_control->length = strlen( new );
+    edit_control->length = fillerLength;
     return( TRUE );
 }
 
@@ -66,7 +82,7 @@ bool GUISetEditText( an_edit_control *edit_control, char *text )
  * GUISetText - set the text in the given control
  */
 
-bool GUISetText( gui_window *wnd, unsigned id, char *text )
+bool GUISetText( gui_window *wnd, unsigned id, const char *text )
 {
     VFIELD              *field;
     a_dialog            *dialog;
@@ -100,7 +116,7 @@ bool GUISetText( gui_window *wnd, unsigned id, char *text )
             if( !GUIStrDup( text, &new ) ) {
                 return( FALSE );
             } else {
-                GUIFree( *fldtext );
+                GUIMemFree( *fldtext );
                 *fldtext = new;
                 ret = TRUE;
             }
@@ -120,7 +136,7 @@ bool GUISetText( gui_window *wnd, unsigned id, char *text )
         break;
     }
     if( ( edit != NULL ) && ( dialog != NULL ) ) {
-        ret = GUISetEditText( edit, text );
+        ret = GUISetEditText( edit, text, field->typ != FLD_EDIT );
         if( ret ) {
             uiupdateedit( dialog, field );
         }

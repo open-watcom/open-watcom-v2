@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instuction size calculation and NOP padding.
 *
 ****************************************************************************/
 
@@ -34,25 +33,25 @@
 
 
 static byte NopList1[] = {
-6,
-0x8d,0x80,0x00,0x00,0x00,0x00,  // lea     eax,+00000000H[eax]
-0x8d,0x40,0x00,                 // lea     eax,+00H[eax]
-0x8b,0xc9,                      // mov     ecx,ecx
-0x8d,0x44,0x20,0x00,            // lea     eax,+00H[eax+no_index_reg]
-0x8d,0x40,0x00,                 // lea     eax,+00H[eax]
-0x8b,0xc0,                      // mov     eax,eax
-0x90                            // nop
+    6,
+    0x8d,0x80,0x00,0x00,0x00,0x00,  // lea     eax,+00000000H[eax]
+    0x8d,0x40,0x00,                 // lea     eax,+00H[eax]
+    0x8b,0xc9,                      // mov     ecx,ecx
+    0x8d,0x44,0x20,0x00,            // lea     eax,+00H[eax+no_index_reg]
+    0x8d,0x40,0x00,                 // lea     eax,+00H[eax]
+    0x8b,0xc0,                      // mov     eax,eax
+    0x90                            // nop
 };
 
 static byte NopList2[] = {
-6,
-0x8d,0x92,0x00,0x00,0x00,0x00,  // lea     edx,+00000000H[edx]
-0x8d,0x52,0x00,                 // lea     edx,+00H[edx]
-0x8b,0xdb,                      // mov     ebx,ebx
-0x8d,0x54,0x22,0x00,            // lea     edx,+00H[edx+no_index_reg]
-0x8d,0x52,0x00,                 // lea     edx,+00H[edx]
-0x8b,0xd2,                      // mov     edx,edx
-0x90                            // nop
+    6,
+    0x8d,0x92,0x00,0x00,0x00,0x00,  // lea     edx,+00000000H[edx]
+    0x8d,0x52,0x00,                 // lea     edx,+00H[edx]
+    0x8b,0xdb,                      // mov     ebx,ebx
+    0x8d,0x54,0x22,0x00,            // lea     edx,+00H[edx+no_index_reg]
+    0x8d,0x52,0x00,                 // lea     edx,+00H[edx]
+    0x8b,0xd2,                      // mov     edx,edx
+    0x90                            // nop
 };
 
 byte *NopLists[] = { NopList1, NopList2 };
@@ -67,12 +66,13 @@ static  byte    InsSize[ 6 ][ OC_DEST_FAR+1 ] = {
 {       2,              6,              0,              0 }     /* JCOND,32 */
 };
 
-extern  int     OptInsSize( oc_class class, oc_dest_attr attr) {
-/***************************************************************
+
+extern  int     OptInsSize( oc_class class, oc_dest_attr attr )
+/**************************************************************
     return the object code size of a given call/branch with a
     given attribute (short/near/far)
 */
-
+{
     int         i;
 
     switch( class ) {

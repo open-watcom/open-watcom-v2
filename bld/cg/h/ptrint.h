@@ -29,7 +29,8 @@
 *
 ****************************************************************************/
 
-
+#ifndef PTRINT_H
+#define PTRINT_H
 #include "hostsys.h"
 #if defined(__LARGE__) || defined(__HUGE__) || defined(__COMPACT__) \
    || (_HOST_INTEGER == 32)
@@ -39,3 +40,5 @@
     typedef     unsigned_16             pointer_int;
     typedef     signed_16               signed_pointer_int;
 #endif
+#endif
+

@@ -1,0 +1,283 @@
+c$pragma library graph
+
+c$ifdef __stack_conventions__
+c$pragma aux wcgraph "!"
+c$ifdef __FPI__
+c$pragma aux wcgraph_87 "!_87"
+c$else
+c$pragma aux wcgraph_87 "!"
+c$endif
+c$else
+c$pragma aux wcgraph "!_"
+c$ifdef __FPI__
+c$pragma aux wcgraph_87 "!_87_"
+c$else
+c$pragma aux wcgraph_87 "!_"
+c$endif
+c$endif
+
+! Video Setup and Query Functions
+
+c$pragma aux (wcgraph) _setvideomode parm( value*2 )
+c$pragma aux (wcgraph) _setvideomoderows parm( value*2, value*2 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _getvideoconfig parm( reference )
+c$else
+c$pragma aux (wcgraph) _getvideoconfig parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _grstatus
+c$pragma aux (wcgraph) _setactivepage parm( value*2 )
+c$pragma aux (wcgraph) _getactivepage
+c$pragma aux (wcgraph) _setvisualpage parm( value*2 )
+c$pragma aux (wcgraph) _getvisualpage
+
+! Colour Setting and Query Functions
+
+c$pragma aux (wcgraph) _setcolor parm( value*2 )
+c$pragma aux (wcgraph) _getcolor
+c$pragma aux (wcgraph) _setbkcolor parm( value*4 )
+c$pragma aux (wcgraph) _getbkcolor
+c$pragma aux (wcgraph) _remappalette parm( value*2, value*4 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _remapallpalette parm( reference )
+c$else
+c$pragma aux (wcgraph) _remapallpalette parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _selectpalette parm( value*2 )
+
+! Shape and Curve Drawing Functions
+
+c$pragma aux (wcgraph) _lineto parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _lineto_w parm( value*8, value*8 )
+c$pragma aux (wcgraph) _rectangle parm( value*2, value*2, value*2, value*2, value*2 )
+c$pragma aux (wcgraph_87) _rectangle_w parm( value*2, value*8, value*8, value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _rectangle_wxy parm( value*2, reference, reference )
+c$else
+c$pragma aux (wcgraph) _rectangle_wxy parm( value*2, reference far, reference far )
+c$endif
+c$pragma aux (wcgraph) _arc parm( value*2, value*2, value*2, value*2, value*2, value*2, value*2,value*2 )
+c$pragma aux (wcgraph_87) _arc_w parm( value*8, value*8, value*8, value*8, value*8, value*8, value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _arc_wxy parm( reference, reference, reference, reference )
+c$else
+c$pragma aux (wcgraph) _arc_wxy parm( reference far, reference far, reference far, reference far )
+c$endif
+c$pragma aux (wcgraph) _ellipse parm( value*2, value*2, value*2, value*2, value*2 )
+c$pragma aux (wcgraph_87) _ellipse_w parm( value*2, value*8, value*8, value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _ellipse_wxy parm( value*2, reference, reference )
+c$else
+c$pragma aux (wcgraph) _ellipse_wxy parm( value*2, reference far, reference far )
+c$endif
+c$pragma aux (wcgraph) _pie parm( value*2, value*2, value*2, value*2, value*2, value*2, value*2, value*2, value*2 )
+c$pragma aux (wcgraph_87) _pie_w parm( value*2, value*8, value*8, value*8, value*8, value*8, value*8, value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _pie_wxy parm( value*2, reference, reference, reference, reference )
+c$else
+c$pragma aux (wcgraph) _pie_wxy parm( value*2, reference far, reference far, reference far, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _polygon parm( value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _polygon parm( value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _polygon_w parm( value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _polygon_w parm( value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _polygon_wxy parm( value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _polygon_wxy parm( value*2, value*2, reference far )
+c$endif
+c$pragma aux (wcgraph) _floodfill parm( value*2, value*2, value*2 )
+c$pragma aux (wcgraph_87) _floodfill_w parm( value*8, value*8, value*2 )
+c$pragma aux (wcgraph) _setpixel parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _setpixel_w parm( value*8, value*8 )
+c$pragma aux (wcgraph) _getpixel parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _getpixel_w parm( value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _getarcinfo parm( reference, reference, reference )
+c$else
+c$pragma aux (wcgraph) _getarcinfo parm( reference far, reference far, reference far )
+c$endif
+
+! Position Determination Functions
+
+c$pragma aux (wcgraph) _getcurrentposition
+c$pragma aux (wcgraph) _getcurrentposition_w
+c$pragma aux (wcgraph) _getviewcoord parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _getviewcoord_w parm( value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _getviewcoord_wxy parm( reference )
+c$else
+c$pragma aux (wcgraph) _getviewcoord_wxy parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _getphyscoord parm( value*2, value*2 )
+c$pragma aux (wcgraph) _getwindowcoord parm( value*2, value*2 )
+c$pragma aux (wcgraph) _moveto parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _moveto_w parm( value*8, value*8 )
+c$pragma aux (wcgraph) _setvieworg parm( value*2, value*2 )
+
+c$pragma aux (_getviewcoord) _getlogcoord "_getviewcoord_"
+c$pragma aux (_setvieworg) _setlogorg "_setvieworg_"
+
+! Output Determination Functions
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _setfillmask parm( reference )
+c$else
+c$pragma aux (wcgraph) _setfillmask parm( reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _getfillmask parm( reference )
+c$else
+c$pragma aux (wcgraph) _getfillmask parm( reference far )
+c$endif
+c$pragma aux (wcgraph) _setlinestyle parm( value*2 )
+c$pragma aux (wcgraph) _getlinestyle
+c$pragma aux (wcgraph) _setplotaction parm( value*2 )
+c$pragma aux (wcgraph) _getplotaction
+
+* for compatibility
+c$pragma aux (_getplotaction) _getwritemode "_getplotaction_"
+c$pragma aux (_setplotaction) _setwritemode "_setplotaction_"
+
+! Screen Manipulation Functions
+
+c$pragma aux (wcgraph) _clearscreen parm( value*2 )
+c$pragma aux (wcgraph) _setviewport parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (wcgraph) _setcliprgn parm( value*2, value*2, value*2, value*2 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _getcliprgn parm( reference, reference, reference, reference )
+c$else
+c$pragma aux (wcgraph) _getcliprgn parm( reference far, reference far, reference far, reference far )
+c$endif
+c$pragma aux (wcgraph) _displaycursor parm( value*2 )
+c$pragma aux (wcgraph) _wrapon parm( value*2 )
+c$pragma aux (wcgraph_87) _setwindow parm( value*2, value*8, value*8, value*8, value*8 )
+
+! Graphics Text Manipulation Functions and Constants
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _gettextsettings parm( reference )
+c$else
+c$pragma aux (wcgraph) _gettextsettings parm( reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _gettextextent parm( value*2, value*2, value, reference, reference )
+c$else
+c$pragma aux (wcgraph) _gettextextent parm( value*2, value*2, value far, reference far, reference far )
+c$endif
+c$pragma aux (wcgraph) _setcharsize parm( value*2, value*2 )
+c$pragma aux (wcgraph_87) _setcharsize_w parm( value*8, value*8 )
+c$pragma aux (wcgraph) _settextalign parm( value*2, value*2 )
+c$pragma aux (wcgraph) _settextpath parm( value*2 )
+c$pragma aux (wcgraph) _settextorient parm( value*2, value*2 )
+c$pragma aux (wcgraph) _setcharspacing parm( value*2 )
+c$pragma aux (wcgraph_87) _setcharspacing_w parm( value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _grtext parm( value*2, value*2, value )
+c$else
+c$pragma aux (wcgraph) _grtext parm( value*2, value*2, value far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph_87) _grtext_w parm( value*8, value*8, value )
+c$else
+c$pragma aux (wcgraph_87) _grtext_w parm( value*8, value*8, value far )
+c$endif
+
+! Text Manipulation Functions
+
+c$pragma aux (wcgraph) _settextwindow parm( value*2, value*2, value*2, value*2 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _outtext parm( value )
+c$else
+c$pragma aux (wcgraph) _outtext parm( value far )
+c$endif
+c$pragma aux (wcgraph) _settextcolor parm( value*2 )
+c$pragma aux (wcgraph) _gettextcolor
+c$pragma aux (wcgraph) _settextposition parm( value*2, value*2 )
+c$pragma aux (wcgraph) _gettextposition
+c$pragma aux (wcgraph) _scrolltextwindow parm( value*2 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _gettextwindow parm( reference, reference, reference, reference  )
+c$else
+c$pragma aux (wcgraph) _gettextwindow parm( reference far, reference far, reference far, reference far  )
+c$endif
+c$pragma aux (wcgraph) _gettextcursor
+c$pragma aux (wcgraph) _settextcursor parm( value*2 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _outmem parm( value, value*2 )
+c$else
+c$pragma aux (wcgraph) _outmem parm( value far, value*2 )
+c$endif
+c$pragma aux (wcgraph) _settextrows parm( value*2 )
+
+! Image Manipulation Functions
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _getimage parm( value*2, value*2, value*2, value*2, reference )
+c$else
+c$pragma aux (wcgraph) _getimage parm( value*2, value*2, value*2, value*2, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph_87) _getimage_w parm( value*8, value*8, value*8, value*8, reference )
+c$else
+c$pragma aux (wcgraph_87) _getimage_w parm( value*8, value*8, value*8, value*8, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _getimage_wxy parm( reference, reference, reference )
+c$else
+c$pragma aux (wcgraph) _getimage_wxy parm( reference far, reference far, reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _putimage parm( value*2, value*2, reference, value*2 )
+c$else
+c$pragma aux (wcgraph) _putimage parm( value*2, value*2, reference far, value*2 )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph_87) _putimage_w parm( value*8, value*8, reference, value*2 )
+c$else
+c$pragma aux (wcgraph_87) _putimage_w parm( value*8, value*8, reference far, value*2 )
+c$endif
+c$pragma aux (wcgraph) _imagesize parm( value*2, value*2, value*2, value*2 )
+c$pragma aux (wcgraph_87) _imagesize_w parm( value*8, value*8, value*8, value*8 )
+c$ifdef __386__
+c$pragma aux (wcgraph) _imagesize_wxy parm( reference, reference )
+c$else
+c$pragma aux (wcgraph) _imagesize_wxy parm( reference far, reference far )
+c$endif
+
+! Font Manipulation Functions
+
+c$ifdef __386__
+c$pragma aux (wcgraph) _registerfonts parm( value )
+c$else
+c$pragma aux (wcgraph) _registerfonts parm( value far )
+c$endif
+c$pragma aux (wcgraph) _unregisterfonts
+c$ifdef __386__
+c$pragma aux (wcgraph) _setfont parm( value )
+c$else
+c$pragma aux (wcgraph) _setfont parm( value far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _getfontinfo parm( reference )
+c$else
+c$pragma aux (wcgraph) _getfontinfo parm( reference far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _outgtext parm( value )
+c$else
+c$pragma aux (wcgraph) _outgtext parm( value far )
+c$endif
+c$ifdef __386__
+c$pragma aux (wcgraph) _getgtextextent parm( value )
+c$else
+c$pragma aux (wcgraph) _getgtextextent parm( value far )
+c$endif
+c$pragma aux (wcgraph) _setgtextvector parm( value*2, value*2 )
+c$pragma aux (wcgraph) _getgtextvector

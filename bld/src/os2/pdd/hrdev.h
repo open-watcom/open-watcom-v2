@@ -9,3 +9,5 @@ enum {
     i8253CmdReadCtrZero = 0x00, // Latch Command, LSB first, MSB second
     i8253CmdInitCtrZero = 0x34, // Rate generator
 };
+
+extern VOID StratInit( REQP_INIT FAR *rp );

@@ -24,26 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UI debugging support.
 *
 ****************************************************************************/
 
 
-//#define QNX_DEBUG
-#if defined QNX_DEBUG
-extern void QNXDebugPrintf(const char *f,...);
-#define QNXDebugPrintf0(f) QNXDebugPrintf(f)
-#define QNXDebugPrintf1(f,a) QNXDebugPrintf(f,a)
-#define QNXDebugPrintf2(f,a,b) QNXDebugPrintf(f,a,b)
-#define QNXDebugPrintf3(f,a,b,c) QNXDebugPrintf(f,a,b,c)
-#define QNXDebugPrintf4(f,a,b,c,d) QNXDebugPrintf(f,a,b,c,d)
-#else
-#define QNXDebugPrintf0(f)
-#define QNXDebugPrintf1(f,a)
-#define QNXDebugPrintf2(f,a,b)
-#define QNXDebugPrintf3(f,a,b,c)
-#define QNXDebugPrintf4(f,a,b,c,d)
+/* This could be done much cleaner with C99 variable argument macros, but
+ * we might need to build this code with compilers that don't support that.
+ */
 
-#define QNXDebugPrintf DONT USE THIS DIRECTLY
+//#define UI_DEBUG
+#if defined UI_DEBUG
+extern void UIDebugPrintf( const char *f, ... );
+#define UIDebugPrintf0( f )                 UIDebugPrintf( f )
+#define UIDebugPrintf1( f, a )              UIDebugPrintf( f, a )
+#define UIDebugPrintf2( f, a, b )           UIDebugPrintf( f, a, b )
+#define UIDebugPrintf3( f, a, b, c )        UIDebugPrintf( f, a, b, c )
+#define UIDebugPrintf4( f, a, b, c, d )     UIDebugPrintf( f, a, b, c, d )
+#else
+#define UIDebugPrintf0( f )
+#define UIDebugPrintf1( f, a )
+#define UIDebugPrintf2( f, a, b)
+#define UIDebugPrintf3( f, a, b, c )
+#define UIDebugPrintf4( f, a, b, c, d )
+
+#define UIDebugPrintf DONT USE THIS DIRECTLY
 #endif

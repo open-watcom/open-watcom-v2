@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Disassembler command line argument processing macros.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #ifndef WDIS_ARGS_INCLUDED
 #define WDIS_ARGS_INCLUDED
 
-#if defined(__QNX__)
+#if defined( __UNIX__ )
     #define OBJ_FILE_EXTENSION ".o"
     #define IS_OPT_DELIM( c )   ((c) == '-')
 #else

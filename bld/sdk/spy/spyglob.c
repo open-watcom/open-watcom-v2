@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy global variables.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "spy.h"
+#include <stdio.h>
 
 WndConfigInfo   SpyMainWndInfo;
 char            *SpyName;
-char            near SpyPickClass[]="WatSpyPickClass";
+char            near SpyPickClass[] = "WatSpyPickClass";
 char            *TitleBar;
 char            *TitleBarULine;
 int             TitleBarLen;
@@ -46,28 +45,14 @@ WORD            WindowCount;
 HWND            *WindowList;
 HANDLE          MyTask;
 BOOL            SpyMessagesPaused;
-BOOL            SpyMessagesAutoScroll=TRUE;
+BOOL            SpyMessagesAutoScroll = TRUE;
 BOOL            AutoSaveConfig;
-spystate        SpyState=NEITHER;
+spystate        SpyState = NEITHER;
 HANDLE          Instance;
 HANDLE          ResInstance;
 LPVOID          HandleMessageInst;
 HMENU           SpyMenu;
 statwnd         *StatusHdl;
-filters         Filters =
-                { {
-                    { 1, 0, MC_CLIPBRD },
-                    { 1, 0, MC_DDE },
-                    { 1, 0, MC_IME },
-                    { 1, 0, MC_INIT },
-                    { 1, 0, MC_INPUT },
-                    { 1, 0, MC_MDI },
-                    { 1, 0, MC_MOUSE },
-                    { 1, 0, MC_NC_MISC },
-                    { 1, 0, MC_NC_MOUSE },
-                    { 1, 0, MC_OTHER },
-                    { 1, 0, MC_SYSTEM },
-                    { 1, 0, MC_UNKNOWN },
-                    { 1, 0, MC_USER },
-                    { 1, 0, MC_WINDOW }
-                } };
+
+filter          Filters[FILTER_ENTRIES];
+

@@ -1,0 +1,6 @@
+c$pragma aux wc "!"
+
+c$pragma aux (wc) atoi parm( value )
+
+        integer atoi
+        external atoi

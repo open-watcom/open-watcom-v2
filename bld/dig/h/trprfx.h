@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote file access supplementary trap requests.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 #include "trpfile.h"
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define RFX_SUPP_NAME           "RFX"
 
@@ -229,7 +228,7 @@ typedef struct {
     /* followed by a trap_dta */
 } rfx_findclose_ret;
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 #define TRPRFX_H
 

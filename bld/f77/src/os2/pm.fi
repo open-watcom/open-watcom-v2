@@ -1,0 +1,41 @@
+c$noreference
+
+c$ifdef INCL_PM
+c$define INCL_AVIO
+c$define INCL_BITMAPFILEFORMAT
+c$define INCL_DEV
+c$define INCL_ERRORS
+c$define INCL_FONTFILEFORMAT
+c$define INCL_GPI
+c$define INCL_ORDERS
+c$define INCL_PIC
+c$define INCL_SPL
+c$define INCL_WIN
+c$define INCL_WINSTDDLGS
+c$define INCL_WINWORKPLACE
+c$endif
+
+c$include pmwin.fi
+c$include pmgpi.fi
+c$include pmdev.fi
+c$include pmwp.fi
+
+c$ifdef INCL_SPL
+c$include pmspl.fi
+c$endif
+
+c$ifdef INCL_PIC
+c$include pmpic.fi
+c$endif
+
+c$ifdef INCL_ORDERS
+c$include pmord.fi
+c$endif
+
+c$ifdef INCL_FONTFILEFORMAT
+c$include pmfont.fi
+c$endif
+
+c$include pmstddlg.fi
+
+c$reference

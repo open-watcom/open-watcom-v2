@@ -100,9 +100,11 @@ extern scope_node *AddScope( scope_node *where, addr_off start,
     new->what = what;
     if( where != NULL ){
         down = FindScope( where, start );
-        new->down = down;
-        new->next = down->up;
-        down->up = new;
+	if( down != NULL ) {
+            new->down = down;
+            new->next = down->up;
+            down->up = new;
+	}
     }
     return( new );
 }

@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIC client callback function prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H
-#include "digpck.h"
+#ifndef DIGCLI_H_INCLUDED
+#define DIGCLI_H_INCLUDED
+
 void            *DIGCLIENT DIGCliAlloc( unsigned );
 void            *DIGCLIENT DIGCliRealloc( void *, unsigned );
 void            DIGCLIENT DIGCliFree( void * );
@@ -45,6 +45,4 @@ void            DIGCLIENT DIGCliRemove( const char *, dig_open );
 
 unsigned        DIGCLIENT DIGCliMachineData( address, unsigned, unsigned, const void *, unsigned, void * );
 
-#define DIGCLI_H
-#include "digunpck.h"
 #endif

@@ -24,17 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy toolbar functions.
 *
 ****************************************************************************/
 
 
+#include "spy.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "spy.h"
 #include "toolbr.h"
 
 #define OFFON_ITEM      8
@@ -43,18 +42,19 @@ typedef struct {
     char        *name;
     int         id;
     HBITMAP     hbmp;
+    int         tip_id;
 } button;
 
 static button toolList[] = {
-    { "MAGNIFY", SPY_ANOTHER_WINDOW, 0 },
-    { "MAGNO", SPY_STOP, 0 },
-    { "PEEK", SPY_PEEK_WINDOW, 0 },
-    { "MARK", SPY_MARK, 0 },
-    { "ERASE", SPY_CLEAR_MESSAGES, 0 },
-    { "SHOWWIN", SPY_SHOW_SELECTED_WINDOWS, 0 },
-    { "WATCHMSG", SPY_MESSAGES_WATCH, 0 },
-    { "STOPMSG", SPY_MESSAGES_STOP, 0 },
-    { "NOTONOFF", SPY_OFFON, 0 }
+    { "MAGNIFY",    SPY_ANOTHER_WINDOW,         0,  STR_TIP_ANOTHER_WINDOW        },
+    { "MAGNO",      SPY_STOP,                   0,  STR_TIP_STOP                  },
+    { "PEEK",       SPY_PEEK_WINDOW,            0,  STR_TIP_PEEK_WINDOW           },
+    { "MARK",       SPY_MARK,                   0,  STR_TIP_MARK                  },
+    { "ERASE",      SPY_CLEAR_MESSAGES,         0,  STR_TIP_CLEAR_MESSAGES        },
+    { "SHOWWIN",    SPY_SHOW_SELECTED_WINDOWS,  0,  STR_TIP_SHOW_SELECTED_WINDOWS },
+    { "WATCHMSG",   SPY_MESSAGES_WATCH,         0,  STR_TIP_MESSAGES_WATCH        },
+    { "STOPMSG",    SPY_MESSAGES_STOP,          0,  STR_TIP_MESSAGES_STOP         },
+    { "NOTONOFF",   SPY_OFFON,                  0,  STR_TIP_OFFON                 }
 };
 
 static void     *toolBar = NULL;
@@ -71,6 +71,11 @@ static void addToolButton( button *tb )
     info.id = tb->id;
     info.flags = 0;
     info.depressed = 0;
+    if( tb->tip_id >= 0 ) {
+        LoadString( Instance, tb->tip_id, info.tip, MAX_TIP );
+    } else {
+        info.tip[0] = '\0';
+    }
     ToolBarAddItem( toolBar, &info );
 
 } /* addToolButton */
@@ -99,7 +104,7 @@ static void spyToolBarHint( HWND hwnd, UINT menuid, BOOL select ) {
 }
 
 /*
- * CreateSpyTool - create the spy listbox
+ * CreateSpyTool - create the spy toolbar
  */
 void CreateSpyTool( HWND parent )
 {
@@ -121,11 +126,12 @@ void CreateSpyTool( HWND parent )
     dinfo.hook = MyToolBarProc;
     dinfo.helphook = spyToolBarHint;
     dinfo.background = NULL;
+    dinfo.use_tips = TRUE;
     toolBar = ToolBarInit( parent );
 
     ToolBarDisplay( toolBar, &dinfo );
 
-    for( i=0;i<sizeof( toolList ) / sizeof( button );i++ ) {
+    for( i = 0; i < sizeof( toolList ) / sizeof( button ); i++ ) {
         addToolButton( &toolList[i] );
     }
 
@@ -135,7 +141,20 @@ void CreateSpyTool( HWND parent )
 } /* CreateSpyTool */
 
 /*
- * ResizeSpyTool - resize tool bar
+ * ShowSpyTool - show or hide toolbar
+ */
+void ShowSpyTool( BOOL show )
+{
+    if( show ) {
+        ShowWindow( ToolBarWindow( toolBar ), SW_SHOW );
+    } else {
+        ShowWindow( ToolBarWindow( toolBar ), SW_HIDE );
+    }
+
+} /* ShowSpyTool */
+
+/*
+ * ResizeSpyTool - resize toolbar
  */
 void ResizeSpyTool( WORD width, WORD height )
 {
@@ -146,7 +165,16 @@ void ResizeSpyTool( WORD width, WORD height )
 } /* ResizeSpyTool */
 
 /*
- * DestroySpyTool - destroy the spy tool bar
+ * GetSpyToolRect - get toolbar position and size
+ */
+void GetSpyToolRect( RECT *prect )
+{
+    GetWindowRect( ToolBarWindow( toolBar ), prect );
+
+} /* GetSpyToolRect */
+
+/*
+ * DestroySpyTool - destroy the spy toolbar
  */
 void DestroySpyTool( void )
 {
@@ -156,7 +184,7 @@ void DestroySpyTool( void )
         ToolBarFini( toolBar );
         toolBar = NULL;
     }
-    for( i=0;i<sizeof( toolList ) / sizeof( button );i++ ) {
+    for( i = 0; i < sizeof( toolList ) / sizeof( button ); i++ ) {
         DeleteObject( toolList[i].hbmp );
     }
 
@@ -180,8 +208,9 @@ void SetOnOffTool( spystate ss )
         str = "NOTONOFF";
         break;
     }
-    DeleteObject( toolList[ OFFON_ITEM ].hbmp );
-    toolList[ OFFON_ITEM ].hbmp = LoadBitmap( Instance, str );
-    ChangeToolButtonBitmap( toolBar, SPY_OFFON, toolList[ OFFON_ITEM].hbmp );
+    DeleteObject( toolList[OFFON_ITEM].hbmp );
+    toolList[OFFON_ITEM].hbmp = LoadBitmap( Instance, str );
+    ChangeToolButtonBitmap( toolBar, SPY_OFFON, toolList[OFFON_ITEM].hbmp );
 
 } /* SetOnOffTool */
+

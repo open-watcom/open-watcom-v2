@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "ocentry.h"
-#include "sysmacro.h"
 #include "system.h"
 #include "cgaux.h"
 #include "cgdefs.h"
@@ -51,6 +50,10 @@ extern  seg_id          AskCodeSeg( void );
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 extern  seg_id          SetOP(seg_id);
+extern  void            DumpString( char * );
+extern  void            DumpPtr( pointer );
+extern  void            DumpInt( int );
+extern  void            DumpNL( void );
 
 extern  byte            OptForSize;
 
@@ -79,7 +82,7 @@ extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum
     temp.op.objlen = align - 1;
     temp.handle = label;
     temp.line = line;
-    InputOC( &temp );
+    InputOC( (any_oc *)&temp );
 
 }
 #endif
@@ -90,6 +93,14 @@ extern  void    CodeLabel( label_handle label, unsigned align ) {
 */
     if( OptForSize > 50 || align == 0 ) align = 1;
     CodeHandle( OC_LABEL, align-1, label );
+#if _TARGET & _TARG_RISC
+    if( _IsTargetModel( ASM_OUTPUT ) ) {
+        DumpString( "L" );
+        DumpPtr( label );
+        DumpString( ":" );
+        DumpNL();
+    }
+#endif
 }
 
 extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
@@ -105,7 +116,14 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
         temp.op.objlen = 0;
         temp.label_line = label_line;
         temp.line = line;
-        InputOC( &temp );
+#if _TARGET & _TARG_RISC
+        if( _IsTargetModel( ASM_OUTPUT ) ) {
+            DumpString( "Source Line: " );
+            DumpInt( line );
+            DumpNL();
+        }
+#endif
+        InputOC( (any_oc *)&temp );
     }
 }
 
@@ -125,7 +143,7 @@ extern  void    CodeHandle( oc_class class, int len, label_handle handle ) {
 #if _TARGET & _TARG_RISC
     temp.line = 0;
 #endif
-    InputOC( &temp );
+    InputOC( (any_oc *)&temp );
 }
 
 static  void    DoCondJump( instruction *cond ) {
@@ -166,6 +184,10 @@ static  void    DoCondJump( instruction *cond ) {
 #else
         assert( cond->operands[ 0 ]->n.class == N_REGISTER );
         temp.index = cond->operands[ 0 ]->r.arch_index;
+        if( cond->operands[1]->n.class == N_REGISTER )
+            temp.index2 = cond->operands[1]->r.arch_index;
+        else
+            temp.index2 = -1;
         if( _IsFloating( cond->type_class ) ) {
             temp.op.class |= ATTR_FLOAT;
         }
@@ -174,7 +196,14 @@ static  void    DoCondJump( instruction *cond ) {
         temp.op.reclen = sizeof( oc_jcond );
         temp.cond = CondCode( cond );
         temp.handle = dest_true;
-        InputOC( &temp );
+        InputOC( (any_oc *)&temp );
+#if _TARGET & _TARG_RISC
+        if( _IsTargetModel( ASM_OUTPUT ) ) {
+            DumpString( "Jcc L" );
+            DumpPtr( dest_true );
+            DumpNL();
+        }
+#endif
     }
     if( dest_false != dest_next && dest_false != NULL ) {
         GenJumpLabel( dest_false );
@@ -209,6 +238,13 @@ extern  void    GenJumpLabel( pointer label ) {
 */
 
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
+#if _TARGET & _TARG_RISC
+    if( _IsTargetModel( ASM_OUTPUT ) ) {
+        DumpString( "JMP L" );
+        DumpPtr( label );
+        DumpNL();
+    }
+#endif
 }
 
 extern  void    GenKillLabel( pointer label ) {

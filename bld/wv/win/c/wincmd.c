@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line parsing for Windows debugger.
 *
 ****************************************************************************/
 
 
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
-#include "..\..\dos\h\dbgscrn.h"
+#include "../../dos/h/dbgscrn.h"
 
 
 extern unsigned         Lookup(char *,char *, unsigned);
@@ -76,7 +75,7 @@ enum { OPT_MONO = 1,
     OPT_POPUPS
 };
 
-static void GetLines()
+static void GetLines( void )
 {
     if( HasEquals() ) {
         ForceLines( GetValue() );
@@ -90,14 +89,14 @@ bool OptDelim( char ch )
 }
 
 
-static void SetEGA43()
+static void SetEGA43( void )
 {
     FlipMech = FLIP_SWAP;
     ScrnMode = MD_EGA;
     ScrnLines = 43;
 }
 
-static void SetVGA50()
+static void SetVGA50( void )
 {
     FlipMech = FLIP_SWAP;
     ScrnMode = MD_EGA;
@@ -168,7 +167,7 @@ bool ProcSysOption( char *start, unsigned len, int pass )
  * ProcSysOptInit -- initial system options
  */
 
-void ProcSysOptInit()
+void ProcSysOptInit( void )
 {
     ScrnMode = MD_DEFAULT;
     FlipMech = FLIP_TWO;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 main routines for executables and DLLs.
 *
 ****************************************************************************/
 
@@ -52,6 +51,8 @@
 #include "rtdata.h"
 #include "initfini.h"
 #include "rtinit.h"
+#include "widechar.h"
+#include "initarg.h"
 
 DWORD __TlsIndex = NO_INDEX;
 
@@ -61,10 +62,8 @@ _WCRTLINK int *__threadid( void )
 }
 
 thread_data             *__FirstThreadData = NULL;
-thread_data             *__AllocInitThreadData( thread_data * );
-void                     __FreeInitThreadData( thread_data * );
 
-static void *__SingleThread()
+static struct thread_data *__SingleThread()
 {
     return( __FirstThreadData );
 }
@@ -80,7 +79,7 @@ static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
 
-_WCRTLINK void  *(*__GetThreadPtr)() = &__SingleThread;
+_WCRTDATA struct thread_data    *(*__GetThreadPtr)() = &__SingleThread;
 void    (*_AccessFileH)(int)     = &__NullAccessRtn;
 void    (*_ReleaseFileH)(int)    = &__NullAccessRtn;
 void    (*_AccessIOB)(void)      = &__NullAccIOBRtn;
@@ -104,18 +103,11 @@ _WCRTLINK void  (*__sig_fini_rtn)(void) = __sig_null_rtn;
 #endif
 extern  char            _end;
 
-extern  char            *_Envptr;
-
-_WCRTLINK extern char   *_LpCmdLine;    /* pointer to command line */
-_WCRTLINK extern char   *_LpPgmName;    /* pointer to program name */
-          extern char   *_LpDllName;    /* pointer to dll name */
-_WCRTLINK extern wchar_t *_LpwCmdLine;  /* pointer to wide command line */
-_WCRTLINK extern wchar_t *_LpwPgmName;  /* pointer to wide program name */
-          extern wchar_t *_LpwDllName;  /* pointer to wide dll name */
-
 int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
+
+// called once at DLL_PROCESS_ATTACH or by __NTMainInit
 
 int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
 {
@@ -123,17 +115,13 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     WORD        os_ver;
 
     __Is_DLL = is_dll;                                  /* 15-feb-93 */
-    __FirstThreadData = __AllocInitThreadData( tdata );
-    if( __FirstThreadData == NULL ) {
-        if( is_dll ) {
-            return( FALSE );
-        }
-        ExitProcess( 1 );
-    }
-
+    // tdata is guaranteed to never be NULL. If starting up for an EXE,
+    // it's pointing on the stack (alloca). If this is run on behalf of
+    // a DLL startup, it's already NULL checked by the caller.
+    __FirstThreadData = tdata;
     __initPOSIXHandles();
 
-    _Envptr = GetEnvironmentStrings();
+    _RWD_Envptr = GetEnvironmentStrings();
 
     /*
      * Force reference to environ so that __setenvp is linked in; hence,
@@ -233,21 +221,18 @@ void __NTFini( void )
         lib_free( _wcmd_ptr );
         _wcmd_ptr = NULL;
     }
-    /* do we need to do the next two ? */
-    if( _Envptr != NULL ) {
-        FreeEnvironmentStrings( _Envptr );
-        _Envptr = NULL;
+    if( _RWD_Envptr != NULL ) {
+        FreeEnvironmentStrings( _RWD_Envptr );
+        _RWD_Envptr = NULL;
     }
-//  gets done by __FreeThreadDataList which is activated from FiniSema4s
-//  __FreeInitThreadData( __FirstThreadData );
-//  __FirstThreadData = NULL;
 }
 
 void __NTMainInit( REGISTRATION_RECORD *rr, thread_data *tdata )
 {
+    __DefaultExceptionHandler();
     __NTInit( FALSE, tdata, GetModuleHandle(NULL) );
     __init_stack_limits( &_STACKLOW, &_STACKTOP );
-    __NewExceptionHandler( rr, 1 );
+    __NewExceptionFilter( rr );
     __InitRtns( INIT_PRIORITY_LIBRARY+1 );
     __sig_init_rtn();
     __InitRtns( 255 );
@@ -263,9 +248,12 @@ _WCRTLINK void __exit( unsigned ret_code )
             (*__process_fini)( 0, FINI_PRIORITY_EXIT-1 );
         }
     } else {
-        __DoneExceptionHandler();
+        __DoneExceptionFilter();
         __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
         (*_ThreadExitRtn)();
     }
+    // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
+    // for multi-threaded apps
+    __FirstThreadData = NULL;
     ExitProcess( ret_code );
 }

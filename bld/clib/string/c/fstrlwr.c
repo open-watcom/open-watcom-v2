@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrlwr() - far strlwr().
 *
 ****************************************************************************/
 
@@ -35,18 +34,18 @@
 #include <string.h>
 
 _WCRTLINK char _WCFAR *_fstrlwr( char _WCFAR *str )
-    {
-        char _WCFAR *p;
-        unsigned char c;
+{
+    char _WCFAR     *p;
+    unsigned char   c;
 
-        p = str;
-        while( c = *p ) {
-            c -= 'A';
-            if( c <= 'Z' - 'A' ) {
-                c += 'a';
-                *p = c;
-            }
-            ++p;
+    p = str;
+    while( c = *p ) {
+        c -= 'A';
+        if( c <= 'Z' - 'A' ) {
+            c += 'a';
+            *p = c;
         }
-        return( str );
+        ++p;
     }
+    return( str );
+}

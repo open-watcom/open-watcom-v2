@@ -31,6 +31,7 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
 #include "escape.h"
@@ -57,27 +58,31 @@ extern  void            CodeBytes(byte*,uint);
 extern  void            CodeLabel(label_handle, unsigned);
 extern  label_handle    AskForLabel(sym_handle);
 extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskBackSeg();
+extern  seg_id          AskBackSeg( void );
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(long);
 extern  void            OutDataInt(int);
 extern  void            OutDBytes(unsigned_32,byte*);
 extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( sym_handle );
-extern  void            TellOptimizerByPassed();
-extern  void            TellByPassOver();
+extern  void            TellOptimizerByPassed( void );
+extern  void            TellByPassOver( void );
 extern  seg_id          AskOP(void);
 extern  seg_id          AskCodeSeg(void);
 extern  bool            IsFarFunc(sym_handle);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  void            GenSelEntry(bool);
 extern  bool            Equal(char*,char*,int);
-extern  void            EmptyQueue();
+extern  void            EmptyQueue( void );
 extern  bool            UseImportForm( fe_attr );
 extern  offset          AskLocation(void);
 extern  void            IncLocation(offset);
 extern  bool            AskSegBlank(segment_id);
+extern  void            IterBytes( offset len, byte pat );
 
+extern  void            OutLblPatch( label_handle lbl, fix_class class, offset plus );
+static  void            DoLblPtr( label_handle lbl, seg_id seg,
+                          fix_class class, offset plus );
 
 extern  type_length     TypeClassSize[];
 
@@ -324,7 +329,7 @@ extern  void    BackPtrBase( bck_info *bck, seg_id seg ){
     TellByPassOver();
 }
 
-extern  bool    FPCInCode() {
+extern  bool    FPCInCode( void ) {
 /*******************************/
 
     return( _IsTargetModel( CONST_IN_CODE ) ||
@@ -341,7 +346,7 @@ static  cg_class ConstDataClass( void ) {
     }
 }
 
-extern  name    *GenConstData( char *buffer, type_class_def class ) {
+extern  name    *GenConstData( byte *buffer, type_class_def class ) {
 /*******************************************************************/
 
     seg_id              old;

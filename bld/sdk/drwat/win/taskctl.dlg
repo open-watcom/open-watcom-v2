@@ -1,4 +1,4 @@
-#include "TASKCTL.H"
+#include "taskctl.h"
 #include "windows.h"
 
 TASKCTL DIALOG 45, 23, 242, 146

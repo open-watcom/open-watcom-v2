@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Allocate and free thread data.
 *
 ****************************************************************************/
 
@@ -37,12 +36,12 @@
 #include "trdlist.h"
 #include "liballoc.h"
 
-#ifdef __NETWARE__
+#ifdef _NETWARE_CLIB
 void                    **__ThreadIDs;
 #endif
 
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #if !defined(__NT__) && !defined(__QNX__)
+    #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
         thread_data_vector      *__ThreadData;
     #endif
 #else
@@ -50,9 +49,9 @@ void                    **__ThreadIDs;
 #endif
 
 
-#if !defined(__NT__) && !defined(__QNX__)
-void *__InitThreadProcessing()
-/****************************/
+#if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
+void *__InitThreadProcessing( void )
+/**********************************/
 {
 // Thread structures must be initialized to 0 so that if it's for a DLL
 // _STACKLOW is 0.
@@ -90,16 +89,16 @@ void __SetupThreadProcessing( int i ) {
 #endif
 
 
-void __FiniThreadProcessing()
-/***************************/
+void __FiniThreadProcessing( void )
+/*********************************/
 {
 
-    #ifdef __NETWARE__
+    #ifdef _NETWARE_CLIB
         if( __ThreadIDs != NULL ) {
             lib_free( __ThreadIDs );
         }
     #endif
-    #if !defined(__NT__) && !defined(__QNX__)
+    #if !defined(__NT__) && !defined(__UNIX__) && !defined(_NETWARE_LIBC) && !defined(__RDOS__) && !defined(__RDOSDEV__)
         if( __ThreadData != NULL ) {
             unsigned    i;
             thread_data *tdata;
@@ -122,7 +121,8 @@ void __FiniThreadProcessing()
             lib_free( __ThreadData );
         }
     #endif
-    #if !defined(__NETWARE__) && (defined(__386__) || defined(__AXP__) || defined(__PPC__) )
+
+    #if !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__) && (defined(__386__) || defined(__AXP__) || defined(__PPC__) )
         __FreeThreadDataList();
     #endif
 }

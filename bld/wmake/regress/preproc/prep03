@@ -1,0 +1,25 @@
+#
+#  Preprocessor Test 3
+#
+!ifdef AS # This is a proxy for !if microsoft
+all:
+!else 
+all: .symbolic
+!endif
+# test mpreproc@makeAlphaToken() fills current->data.string only to capacity
+module=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz_063_bytes
+max=$(module)$(module)$(module)$(module)255
+!if exist($(max)) # This fills datum
+!endif
+!if exist(o$(max)) # This gives a parse error because we overfill
+!endif
+# exercise error paths in mpreproc@makeFuncToken()
+!if defined == "defined"
+!endif
+!if defunct("league")
+!endif
+!if defined(
+!endif
+!if exist(league of nations)
+!endif
+    @echo failed

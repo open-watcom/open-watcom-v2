@@ -1,0 +1,36 @@
+# ORL library finder.
+# ~~~~~~~~~~~~~~~~~~
+#
+!ifdef __UNIX__
+__orl_prefix=$(orl_dir)/
+__orl_suffix=/orl.lib
+!else
+__orl_prefix=$(orl_dir)\
+__orl_suffix=\orl.lib
+!endif
+#
+# ORL library
+#
+
+orl_lib_386 = $(__orl_prefix)osi386$(__orl_suffix)
+orl_lib_axp = $(__orl_prefix)osiaxp$(__orl_suffix)
+orl_lib_ppc = $(__orl_prefix)osippc$(__orl_suffix)
+orl_lib_mps = $(__orl_prefix)osimps$(__orl_suffix)
+
+#
+# ORL run-time DLL used
+#
+!ifeq $(proj_name)_rtdll 1
+orl_lib_nt_386  = $(__orl_prefix)nt386.dll$(__orl_suffix)
+orl_lib_nt_axp  = $(__orl_prefix)ntaxp.dll$(__orl_suffix)
+orl_lib_os2_386 = $(__orl_prefix)os2386.dll$(__orl_suffix)
+!endif
+
+#
+!ifdef bootstrap
+orl_lib = $(orl_dir)/$(%OBJDIR)/orl.lib
+!else ifdef orl_lib_$(host_os)_$(host_cpu)
+orl_lib = $(orl_lib_$(host_os)_$(host_cpu))
+!else
+orl_lib = $(orl_lib_$(host_cpu))
+!endif

@@ -33,10 +33,11 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "typedef.h"
+#include "types.h"
 #include "zoiks.h"
 #include "dbgstrct.h"
 #include <stdio.h>
@@ -46,12 +47,9 @@
 #include <string.h>
 #include "dw.h"
 #include "dwarf.h"
-#define BY_CG
 #include "cgprotos.h"
 
-extern  uint            Length(char*);
 extern  byte            *Copy(void*,void*,uint);
-extern  type_def        *TypeAddress(cg_type);
 extern  type_length     NewBase(name*);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern  void            DBLocFini( dbg_loc loc );
@@ -156,7 +154,16 @@ extern  dbg_type        DFCharBlock( unsigned_32 len ) {
 
     dbg_type    ret;
 
-    ret = DWString( Client, NULL, len, NULL, NULL, 0 );
+    ret = DWString( Client, NULL, len, NULL, 0, 0 );
+    return( ret );
+}
+
+extern  dbg_type        DFCharBlockNamed( char * name, unsigned_32 len ) {
+/******************************************************/
+
+    dbg_type    ret;
+
+    ret = DWString( Client, NULL, len, name, 0, 0 );
     return( ret );
 }
 
@@ -243,7 +250,7 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     dw_segloc = NULL;
 #endif
     obj = DWVariable( Client, tipe, dw_loc,
-                NULL, dw_segloc, "__bck", NULL, 0 );
+                0, dw_segloc, "__bck", 0, 0 );
 
     DWLocTrash( Client, dw_loc );
     if( dw_segloc != NULL ){
@@ -292,7 +299,7 @@ extern  dbg_type    DFEndArray( array_list *ar ){
 
         }
         ar->list = dim->entry.next;
-        _Free( dim, sizeof( field_entry )  );
+        CGFree( dim );
     }
     DWEndArray( Client );
     return( ret );
@@ -337,7 +344,7 @@ static  uint   DFPtrClass( cg_type ptr_type ){
     type_def    *tipe_addr;
     uint        flags;
 
-    if( (ptr_type == T_POINTER || ptr_type == T_CODE_PTR)
+    if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR)
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
       && _IsTargetModel( FLAT_MODEL )  ){
 #else
@@ -347,20 +354,20 @@ static  uint   DFPtrClass( cg_type ptr_type ){
     }else{
         tipe_addr = TypeAddress( ptr_type );
         switch( tipe_addr->refno ) {
-        case T_HUGE_POINTER:
+        case TY_HUGE_POINTER:
             flags = DW_PTR_TYPE_HUGE16;
         //  flags = DW_PTR_TYPE_FAR16;
             break;
-        case T_LONG_POINTER:
-        case T_LONG_CODE_PTR:
+        case TY_LONG_POINTER:
+        case TY_LONG_CODE_PTR:
             if( tipe_addr->length == 6 ){
                 flags = DW_PTR_TYPE_FAR32;
             }else{
                 flags = DW_PTR_TYPE_FAR16;
             }
             break;
-        case T_NEAR_POINTER:
-        case T_NEAR_CODE_PTR:
+        case TY_NEAR_POINTER:
+        case TY_NEAR_CODE_PTR:
             if( tipe_addr->length == 4 ){
                 flags = DW_PTR_TYPE_NEAR32;
             }else{
@@ -489,6 +496,7 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
                 size = 4;
             }
             if( state->addr_seg ){
+                dref_op =  DW_LOC_xderef_size;
                 DWLocOp0( Client, locid, DW_LOC_pick );  /* dup seg */
                 DWLocOp0( Client, locid, DW_LOC_pick );  /* dup offset */
                 DWLocOp( Client, locid, DW_LOC_plus_uconst, size ); /* seg offset*/
@@ -730,7 +738,7 @@ extern  dbg_type        DFEndStruct( struct_list  *st ) {
             break;
         }
         st->list = field->entry.next;
-        _Free( field, sizeof( field_entry ) );
+        CGFree( field );
     }
     DWEndStruct( Client );
     return( ret );
@@ -756,7 +764,7 @@ extern  dbg_type        DFEndEnum( enum_list *en ) {
             DWAddConstant( Client, val.u._32[I64LO32], cons->name );
         }
         en->list = cons->next;
-        _Free( cons, sizeof( const_entry ) + cons->len );
+        CGFree( cons );
     }
     DWEndEnumeration( Client );
     return( ret );
@@ -782,7 +790,7 @@ extern  dbg_type        DFEndProc( proc_list  *pr ) {
         if( parm == NULL ) break;
         DWAddParmToSubroutineType( Client, parm->tipe, NULL, NULL, NULL );
         pr->list = parm->next;
-        _Free( parm, sizeof( parm_entry ) );
+        CGFree( parm );
         parm = pr->list;
     }
     DWEndSubroutineType( Client );

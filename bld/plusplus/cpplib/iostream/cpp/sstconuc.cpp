@@ -24,52 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-//  93/11/05    Greg Bentz      ios::atend|ios::append only affect the put
-//                              pointer
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <string.h>
-#include <strstrea.h>
+#include <strstrea>
 #endif
 
-strstream::strstream( unsigned char *str, int size, ios::openmode mode )
-/**********************************************************************/
-         : strstreambase( (char *)str
-                        , size
-                        , ((str==0) ? 0 : (char *)str +
+namespace std {
+
+  // Construct a strstream that will put characters into the buffer
+  // starting at str for length size. If ios::append or ios::atend are
+  // specified, the putting will commence at the end of the buffer. Gets
+  // are also allowed. Gets start at the beginning. The array will not
+  // grow dynamically.
+
+  strstream::strstream( unsigned char *str, int size, ios::openmode mode )
+    : strstreambase( (char *)str,
+                     size,
+                     ((str==0) ? 0 : (char *)str +
                             ((mode & (ios::atend|ios::append)) ?
                                        ::strlen( (char *)str ) : 0) ) ) {
-// Construct a strstream that will put characters into the buffer
-// starting at str for length size.
-// If ios::append or ios::atend are specified, the putting will commence
-// at the end of the buffer.
-// Gets are also allowed.
-// Gets start at the beginning.
-// The array will not grow dynamically.
+  }
+
 }

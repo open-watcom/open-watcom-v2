@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP module loader for 32-bit OS/2.
 *
 ****************************************************************************/
 
 
 #include <string.h>
+#include <stdlib.h>
 
 #define INCL_DOSMODULEMGR
 #define INCL_DOSMISC
@@ -39,11 +39,11 @@
 #include "dip.h"
 #include "dipimp.h"
 
-dip_status DIPSysLoad(char *path, dip_client_routines *cli,
-                      dip_imp_routines **imp, unsigned long *sys_hdl)
+dip_status DIPSysLoad( char *path, dip_client_routines *cli,
+                       dip_imp_routines **imp, unsigned long *sys_hdl )
 {
     HMODULE             dll;
-    dip_imp_routines    *(*init_func)(dip_status *, dip_client_routines *);
+    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
     dip_status          status;
     char                dipname[CCHMAXPATH] = "";
     char                dippath[CCHMAXPATH] = "";
@@ -51,29 +51,29 @@ dip_status DIPSysLoad(char *path, dip_client_routines *cli,
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy(dipname, path);
-    strcat(dipname, ".D32");
-    if (DosSearchPath(SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
-            "PATH", dipname, dippath, sizeof(dippath)) != 0)
-        return DS_ERR | DS_FOPEN_FAILED;
-
-    if (DosLoadModule(NULL, 0, dippath, &dll) != 0) {
-        return DS_ERR | DS_FOPEN_FAILED;
+    strcpy( dipname, path );
+    strcat( dipname, ".D32" );
+    _searchenv( dipname, "PATH", dippath );
+    if( dippath[0] == '\0' ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    if (DosQueryProcAddr(dll, 0, "DIPLOAD", (PFN FAR *)&init_func) != 0) {
-        DosFreeModule(dll);
-        return DS_ERR | DS_INVALID_DIP;
+    if( DosLoadModule( NULL, 0, dippath, &dll ) != 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    *imp = init_func(&status, cli);
-    if (*imp == NULL) {
-        DosFreeModule(dll);
-        return status;
+    if( DosQueryProcAddr( dll, 0, "DIPLOAD", (PFN FAR *)&init_func ) != 0 ) {
+        DosFreeModule( dll );
+        return( DS_ERR | DS_INVALID_DIP );
+    }
+    *imp = init_func( &status, cli );
+    if( *imp == NULL ) {
+        DosFreeModule( dll );
+        return( status );
     }
     *sys_hdl = dll;
-    return DS_OK;
+    return( DS_OK );
 }
 
-void DIPSysUnload(unsigned long sys_hdl)
+void DIPSysUnload( unsigned long sys_hdl )
 {
-    DosFreeModule(sys_hdl);
+    DosFreeModule( sys_hdl );
 }

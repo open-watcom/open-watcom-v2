@@ -69,7 +69,7 @@ static void eatComment( void )
 {
     int         ch;
     int         nesting_level;
-    bool        done=FALSE;
+    bool        done = FALSE;
 
     nesting_level = 1;
     while( !done ) {
@@ -181,11 +181,11 @@ static void doPreProcessorDirective( void )
      * swallow #else and #elif shit
      */
     if( !acceptOnlyEndif ) {
-        if( !stricmp( buff,"else" ) || !stricmp( buff, "elif" ) ) {
+        if( !stricmp( buff, "else" ) || !stricmp( buff, "elif" ) ) {
             acceptOnlyEndif = 1;
         }
     } else {
-        if( !stricmp( buff,"endif" ) ) {
+        if( !stricmp( buff, "endif" ) ) {
             acceptOnlyEndif--;
         } else if( !strnicmp( buff, "if", 2 ) ) {
             acceptOnlyEndif++;
@@ -195,8 +195,8 @@ static void doPreProcessorDirective( void )
     /*
      * if it is a #define, and we want macros, then get macro
      */
-    if( !stricmp( buff,"define" ) && (WantMacros || WantAllDefines) &&
-                !acceptOnlyEndif ) {
+    if( !stricmp( buff, "define" ) && (WantMacros || WantAllDefines) &&
+        !acceptOnlyEndif ) {
         ch = eatWhiteSpace();
         buffptr = buff;
         while( 1 ) {
@@ -224,7 +224,7 @@ static void doPreProcessorDirective( void )
     if( ch == '\n' ) {
         NewFileLine();
         if( buffptr > buff ) {
-            if( *(buffptr-1) != '\\' ) {
+            if( *(buffptr - 1) != '\\' ) {
                 return;
             }
         }
@@ -240,7 +240,7 @@ static void eatUntilClosingBracket( void )
 {
     char        escape;
     int         ch;
-    int         brace_level=1;
+    int         brace_level = 1;
 
     escape = FALSE;
 
@@ -320,9 +320,15 @@ static tag_type doFunction( int *brace_level )
     eatUntilClosingBracket();
     while( 1 ) {
         ch = eatWhiteSpace();
-        if( IsTokenChar( ch ) || ch == '{' ) break;
-        if( WantProtos && ch == ';' ) return( TAG_PROTO );
-        if( eatStuffBeforeOpenBrace( ch ) ) continue;
+        if( IsTokenChar( ch ) || ch == '{' ) {
+            break;
+        }
+        if( WantProtos && ch == ';' ) {
+            return( TAG_PROTO );
+        }
+        if( eatStuffBeforeOpenBrace( ch ) ) {
+            continue;
+        }
         return( TAG_NOTHING );
     }
     if( ch != '{' ) {
@@ -453,7 +459,7 @@ void ScanC( void )
         case '}':
             if( !acceptOnlyEndif ) {
                 if( structStackDepth > 1 ) {
-                    if( structStack[ structStackDepth-1] == brace_level ) {
+                    if( structStack[structStackDepth - 1] == brace_level ) {
                         structStackDepth--;
                     }
                 }
@@ -478,7 +484,8 @@ void ScanC( void )
             }
             continue;
 
-        case '"': case '\'':
+        case '"':
+        case '\'':
             eatUntilChar( ch );
             break;
 
@@ -504,24 +511,24 @@ void ScanC( void )
                     if( brace_level == 0 ) {
                         doit = TRUE;
                     } else if( structStackDepth > 1 ) {
-                        if( structStack[ structStackDepth-1 ] == brace_level ) {
+                        if( structStack[structStackDepth - 1] == brace_level ) {
                             doit = TRUE;
                         }
                     }
                     if( doit ) {
 #ifdef __ENABLE_FNAME_PROCESSING__
-                        if (!strnicmp(buff, "__F_NAME", 8)) {
+                        if( !strnicmp( buff, "__F_NAME", 8 ) ) {
                             *buffptr++ = '(';
 
                             do {
                                 ch = GetChar();
-                                if (ch == EOF) {
+                                if( ch == EOF ) {
                                     break;
                                 }
                                 *buffptr++ = ch;
-                            } while (ch != ')');
+                            } while( ch != ')' );
 
-                            if (ch == EOF) {
+                            if( ch == EOF ) {
                                 break;
                             }
 
@@ -541,7 +548,7 @@ void ScanC( void )
                     }
                 }
                 if( structStackDepth > 1 ) {
-                    if( structStack[ structStackDepth-1] == brace_level ) {
+                    if( structStack[structStackDepth - 1] == brace_level ) {
                         structStackDepth--;
                     }
                 }
@@ -576,8 +583,8 @@ void ScanC( void )
 
         case ',':
             if( !acceptOnlyEndif ) {
-                if( ( have_typedef && brace_level == typedef_level ) ||
-                    ( WantEnums && have_token && have_enum ) ) {
+                if( (have_typedef && brace_level == typedef_level) ||
+                    (WantEnums && have_token && have_enum) ) {
                     RecordCurrentLineData();
                     if( buffptr != buff ) {
                         *buffptr = 0;
@@ -609,8 +616,7 @@ void ScanC( void )
                 }
                 *buffptr = 0;
                 if( !acceptOnlyEndif ) {
-                    if( WantTypedefs && !have_typedef &&
-                                !stricmp( buff, "typedef" ) ) {
+                    if( WantTypedefs && !have_typedef && !stricmp( buff, "typedef" ) ) {
                         have_typedef = TRUE;
                         typedef_level = brace_level;
                         paren_level = 0;
@@ -625,11 +631,11 @@ void ScanC( void )
                         if( !have_typedef ) {
                             have_struct = FALSE;
                             have_cuse = FALSE;
-                            if( WantClasses && !stricmp( buff,"class" ) ) {
+                            if( WantClasses && !stricmp( buff, "class" ) ) {
                                 have_struct = TRUE;
                                 have_cuse = TRUE;
                             } else if( WantUSE ) {
-                                if( !stricmp( buff,"struct" ) ) {
+                                if( !stricmp( buff, "struct" ) ) {
                                     have_struct = TRUE;
                                     have_cuse = TRUE;
                                 } else if( !stricmp( buff, "union" ) ){
@@ -644,8 +650,8 @@ void ScanC( void )
                                 if( doCUSE( ch ) ) {
                                     brace_level++;
                                     if( structStackDepth < MAX_STRUCT_DEPTH &&
-                                                have_struct ) {
-                                        structStack[ structStackDepth ] = brace_level;
+                                        have_struct ) {
+                                        structStack[structStackDepth] = brace_level;
                                         structStackDepth++;
                                     }
                                 }

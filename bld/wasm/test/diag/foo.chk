@@ -1,0 +1,3 @@
+foo.asm(8): Warning! W095: size not specified -- BYTE PTR is assumed
+foo.asm(9): Warning! W096: size not specified -- WORD PTR is assumed
+foo.asm(10): Warning! W097: size not specified -- DWORD PTR is assumed

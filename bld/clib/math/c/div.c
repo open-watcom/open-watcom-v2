@@ -24,31 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of div().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <stdlib.h>
-#if defined(M_I86)
-extern  div_t   __div(int,int);
-#pragma aux     __div = 0x99       /* cwd     */\
-                        0xf7 0xf9  /* idiv cx */\
-                        parm [ax] [cx] value [ax dx] \
+
+
+#if defined( _M_I86 )
+extern  div_t   __div( int, int );
+#pragma aux     __div = "cwd"           \
+                        "idiv cx"       \
+                        parm [ax] [cx]  \
+                        value [ax dx]   \
                         modify exact [ax dx];
 #endif
 
-_WCRTLINK div_t (div)( int numer, int denom )
-    {
-#if defined(M_I86)
-        return( __div( numer, denom ) );
-#else
-        auto div_t result;
 
-        result.quot = numer / denom;
-        result.rem  = numer % denom;
-        return( result );
+_WCRTLINK div_t div( int numer, int denom )
+/*****************************************/
+{
+#ifdef _M_I86
+    return( __div( numer, denom ) );
+#else
+    div_t   result;
+
+    result.quot = numer / denom;
+    result.rem  = numer % denom;
+    return( result );
 #endif
-    }
+}

@@ -38,26 +38,26 @@
 #include "model.h"
 #include "addrname.h"
 #include "procdef.h"
-#include "sysmacro.h"
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
+#include "x87.h"
+#include "makeins.h"
+
+#include "addrfold.h"
 
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddrFree(an);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 extern  void            AddIns(instruction*);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  void            FPSetStack(name*);
 extern  cg_type         NamePtrType(name*);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            BGDone(an);
 extern  void            CheckPointer(an );
@@ -70,6 +70,8 @@ extern  void            InsToAddr(an );
 extern  name            *MaybeTemp(name *,type_class_def );
 extern  void            MoveAddress(an ,an );
 extern  i_flags         AlignmentToFlags( type_length );
+
+static  void    LoadTempInt( an addr );
 
 typedef enum {
         /* actions which require further actions*/
@@ -143,7 +145,7 @@ static  mode_action     AddTable[][9] = {
  * tables so I just used this table to map CL constants onto the tables
  */
 
-static  char    Idx[] = {
+static  byte    Idx[] = {
         0,        /* CL_ADDR_GLOBAL */
         2,        /* CL_ADDR_TEMP */
         4,        /* CL_POINTER */
@@ -355,7 +357,7 @@ extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
 
     mode_action action;
 
-    if( tipe->refno == T_HUGE_POINTER ) return( FALSE );
+    if( tipe->refno == TY_HUGE_POINTER ) return( FALSE );
     CheckPointer( l_addr );
     if( l_addr->format == NF_NAME ) return( FALSE );
     CheckPointer( r_addr );
@@ -402,7 +404,7 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
     if( !AddToTypeLength( l_addr->offset, r_addr->offset ) ) return( NULL );
     if( l_addr->format == NF_NAME ) return( NULL );
     if( r_addr->format == NF_NAME ) return( NULL );
-    if( tipe->refno == T_HUGE_POINTER ) return( NULL );
+    if( tipe->refno == TY_HUGE_POINTER ) return( NULL );
     addr = NewAddrName();
     for(;;) {
         action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
@@ -633,6 +635,8 @@ extern  name    *GetValue( an addr, name *suggest ) {
                                 addr->offset, XX );
             op = LoadAddress( op, suggest, addr->tipe );
             break;
+        default:
+            break;
         }
     } else if( addr->format == NF_BOOL ) {
         _Zoiks( ZOIKS_025 );
@@ -665,6 +669,8 @@ extern  name    *AddrToName( an addr ) {
             if( addr->offset == 0 ) {
                 op = addr->u.name;
             }
+            break;
+        default:
             break;
         }
     }

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wderesin.h"
@@ -113,8 +113,8 @@ Bool WdeHandleGotoCurrentObject( void )
     obj = GetMainObject();
     Forward( obj, GET_SCROLL_RECT, &srect, NULL );
     GetClientRect( info->forms_win, &crect );
-    rect.left = srect.right - ( crect.right - crect.left ) + 1;
-    rect.top = srect.bottom - ( crect.bottom - crect.top ) + 1;
+    rect.left = srect.right - (crect.right - crect.left) + 1;
+    rect.top = srect.bottom - (crect.bottom - crect.top) + 1;
     rect.right = srect.right;
     rect.bottom = srect.bottom;
 
@@ -142,4 +142,3 @@ Bool WdeHandleGotoCurrentObject( void )
 
     return( TRUE );
 }
-

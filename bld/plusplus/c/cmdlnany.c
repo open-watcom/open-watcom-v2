@@ -24,19 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent command line processing.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include "plusplus.h"
+
+#include "compcfg.h"
+
 #include <ctype.h>
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "plusplus.h"
 #include "memmgr.h"
 #include "errdefns.h"
 #include "preproc.h"
@@ -56,9 +56,8 @@
 #include "pdefn2.h"
 #include "initdefs.h"
 #include "brinfo.h"
-#include "langenv.h"
 
-#include "cmdlnprs.gh"
+#include "cmdlnpr1.gh"
 #include "cmdlnsys.h"
 
 
@@ -96,9 +95,7 @@ static void checkTabWidth( unsigned *p )
 
 static void checkOENumber( unsigned *p )
 {
-    if( *p == 0 ) {
-        *p = 100;
-    }
+    p = p;
 }
 
 static void checkPrologSize( unsigned *p )
@@ -119,7 +116,7 @@ static int scanDefine( OPT_STRING **p )
     p = p;
     cmdln_mac = DefineCmdLineMacro( CompFlags.extended_defines );
     if( cmdln_mac != NULL ) {
-        cmdln_mac->macro_flags |= MACRO_USER_DEFINED;
+        cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
     }
     return( 1 );
 }
@@ -134,7 +131,7 @@ static int scanDefinePlus( OPT_STRING **p )
     } else {
         cmdln_mac = DefineCmdLineMacro( TRUE );
         if( cmdln_mac != NULL ) {
-            cmdln_mac->macro_flags |= MACRO_USER_DEFINED;
+            cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
         }
     }
     return( 1 );
@@ -411,7 +408,10 @@ static void stripQuotes( char *fname )
         // string will shrink so we can reduce in place
         d = fname;
         for( s = d + 1; *s && *s != '"'; ++s ) {
-            if( s[0] == '\\' && s[1] == '"' ) {
+            // collapse double backslashes, only then look for escaped quotes
+            if( s[0] == '\\' && s[1] == '\\' ) {
+                ++s;
+            } else if( s[0] == '\\' && s[1] == '"' ) {
                 ++s;
             }
             *d++ = *s;
@@ -496,6 +496,9 @@ int MergeIncludeFromEnv( char *env )
 /**********************************/
 {
     char *env_value;
+
+    if( CompFlags.cpp_ignore_env )
+        return( 0 );
 
     env_value = CppGetEnv( env );
     if( NULL != env_value ) {
@@ -633,6 +636,10 @@ static void handleOptionEQ( OPT_STORAGE *data, int value )
     CompFlags.eq_switch_used = value;
 }
 
+static void procOptions(        // PROCESS AN OPTIONS LINE
+    OPT_STORAGE *data,          // - options data
+    char *str );                // - scan position in command line
+
 static void handleOptionFC( OPT_STORAGE *data, int value )
 {
     value = value;
@@ -650,7 +657,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
                 VBUF buf;
                 if( CmdLnBatchRead( &buf ) ) {
                     CmdLnCtxPush( CTX_CLTYPE_FC );
-                    procOptions( data, buf.buf );
+                    procOptions( data, VbufString( &buf ) );
                     CmdLnCtxPop();
                 }
                 CmdLnBatchFreeRecord( &buf );
@@ -662,7 +669,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
     }
 }
 
-#include "cmdlnprs.c"
+#include "cmdlnpr2.gh"
 
 static boolean openCmdFile(     // OPEN A COMMAND FILE
     char const *filename,       // - file name
@@ -777,22 +784,19 @@ static void processCmdFile(     // PROCESS A COMMAND FILE
     int c;                      // - next character
 
     VbufInit( &rec );
-    VStrNull( &rec );
     for(;;) {
         for(;;) {
             c = NextChar();
             if( c == LCHR_EOF ) break;
             if( c == '\n' ) break;
             if( c == '\r' ) break;
-            VStrConcChr( &rec, c );
+            VbufConcChr( &rec, c );
         }
-        if( rec.used > 1 ) {
-            procOptions( data, rec.buf );
-        }
+        procOptions( data, VbufString( &rec ) );
         for( ; ( c == '\n' ) || ( c == '\r' ); c = NextChar() );
         if( c == LCHR_EOF ) break;
-        VStrNull( &rec );
-        VStrConcChr( &rec, c );
+        VbufRewind( &rec );
+        VbufConcChr( &rec, c );
     }
     VbufFree( &rec );
 }
@@ -823,12 +827,13 @@ static void loadUnicodeTable( unsigned code_page )
 {
     size_t amt;
     int fh;
-    char filename[ _MAX_PATH ];
-    char cp[ 16 ];
+    char filename[ 20 ];
 
-    ultoa( code_page, cp, 10 );
-    strcpy( filename, "unicode." );
-    strcat( filename, cp );
+    sprintf( filename, "unicode.%3.3u", code_page );
+    if( filename[ 11 ] != '\0' ) {
+        filename[ 7 ] = filename[ 8 ];
+        filename[ 8 ] = '.';
+    }
     fh = openUnicodeFile( filename );
     if( fh != -1 ) {
         amt = 256 * sizeof( unsigned short );
@@ -854,7 +859,7 @@ static int debugOptionAfterOptOption( OPT_STORAGE *data )
 static void analyseAnyTargetOptions( OPT_STORAGE *data )
 {
     // quickly do the quiet option so the banner can be printed
-    if( data->zq ) {
+    if( data->q || data->zq ) {
         CompFlags.quiet_mode = 1;
     }
     switch( data->char_set ) {
@@ -923,13 +928,20 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     }
     switch( data->opt_level ) {
-    case OPT_opt_level_ox:  /* -ox => -oilmr -s */
+    case OPT_opt_level_ox:  /* -ox => -obmiler -s */
         GenSwitches &= ~ NO_OPTIMIZATION;
         GenSwitches |= BRANCH_PREDICTION;       // -ob
         GenSwitches |= LOOP_OPTIMIZATION;       // -ol
         GenSwitches |= INS_SCHEDULING;          // -or
         CmdSysSetMaxOptimization();             // -om
         CompFlags.inline_intrinsics = 1;        // -oi
+#if 0   // Disabled - introduces too many problems which no one is ready to fix
+        if( ! data->oe ) {
+            data->oe = 1;                       // -oe
+            // keep in sync with options.gml
+            data->oe_value = 100;
+        }
+#endif
         PragToggle.check_stack = 0;             // -s
         break;
     case OPT_opt_level_od:
@@ -1112,6 +1124,28 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
     }
+    if( data->ad ) {
+        SetStringOption( &DependFileName, &(data->ad_value) );
+        CompFlags.generate_auto_depend = 1;
+    }
+    if( data->adt ) {
+        SetStringOption( &TargetFileName, &(data->adt_value) );
+        CompFlags.generate_auto_depend = 1;
+    }
+    if( data->add ) {
+        SetStringOption( &SrcDepFileName, &(data->add_value) );
+        CompFlags.generate_auto_depend = 1;
+    }
+    if( data->adhp ) {
+        SetStringOption( &DependHeaderPath, &(data->adhp_value) );
+        CompFlags.generate_auto_depend = 1;
+    }
+    if( data->adfs ) {
+        ForceSlash = '/';
+    }
+    if( data->adbs ) {
+        ForceSlash = '\\';
+    }
     if( data->fo ) {
         SetStringOption( &ObjectFileName, &(data->fo_value) );
         CompFlags.cpp_output_to_file = 1;   /* in case '-p' option */
@@ -1188,6 +1222,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->oz ) {
         GenSwitches |= NULL_DEREF_OK;
     }
+    if( data->pil ) {
+        CompFlags.cpp_ignore_line = 1;
+    }
     if( data->p ) {
         CompFlags.cpp_output_requested = 1;
     }
@@ -1255,6 +1292,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->we ) {
         CompFlags.warnings_cause_bad_exit = 1;
     }
+    if( data->x ) {
+        CompFlags.cpp_ignore_env = 1;
+    }
     if( data->xbnm ) {
         CompFlags.fixed_name_mangling = 1;
     }
@@ -1276,6 +1316,15 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->xto ) {
         CompFlags.obfuscate_typesig_names = 1;
     }
+    if( data->zat ) {
+        CompFlags.no_alternative_tokens = 1;
+    }
+    if( data->za0x ) {
+        CompFlags.enable_std0x = 1;
+    }
+    if( data->zf ) {
+        CompFlags.use_old_for_scope = 1;
+    }
     if( data->zg ) {
         CompFlags.use_base_types = 1;
     }
@@ -1284,6 +1333,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->zlf ) {
         CompFlags.emit_default_libs = 1;
+    }
+    if( data->zls ) {
+        CompFlags.emit_targimp_symbols = 0;
+    }
+    if( data->fzh ) {   /* Define the switch macros for STLPort */
+        CompFlags.dont_autogen_ext_inc = 1;
+        DefSwitchMacro( "FZH" );
+    }
+    if( data->fzs ) {   /* Define the switch macros for STLPort */
+        CompFlags.dont_autogen_ext_src = 1;
+        DefSwitchMacro( "FZS" );
     }
     if( data->zl ) {
         CompFlags.emit_library_names = 0;
@@ -1302,6 +1362,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     #if COMP_CFG_COFF == 0
         CompFlags.virtual_stripping = TRUE;
     #endif
+    }
+    if( data->na ) {
+        CompFlags.disable_ialias = 1;
     }
 #ifndef NDEBUG
     if( data->tp ) {

@@ -30,22 +30,20 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
+#include "posix.h"
 
-extern char  near * near ExeExtensions[];
+extern char  _NEAR * _NEAR ExeExtensions[];
 extern int ExeExtensionCount;
-extern char near * near InternalCommands[];
+extern char _NEAR * _NEAR InternalCommands[];
 extern int InternalCommandCount;
 
 void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds )
 {
-    char        orgcmd[ MAX_INPUT_LINE ];
-    char        cmd[ MAX_INPUT_LINE ];
-    char        full[_MAX_PATH];
-    char        drive[_MAX_DRIVE],directory[_MAX_DIR],name[_MAX_FNAME];
+    char        orgcmd[MAX_INPUT_LINE];
+    char        cmd[MAX_INPUT_LINE];
+    char        full[FILENAME_MAX];
+    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
     char        ext[_MAX_EXT];
     int         i;
     bool        is_internal;
@@ -63,7 +61,7 @@ void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds )
         }
     } else {
         if( drive[0] == 0 && directory[0] == 0 ) {
-            for( i=0;i<InternalCommandCount;i++ ) {
+            for( i = 0; i < InternalCommandCount; i++ ) {
                 if( !stricmp( full, InternalCommands[i] ) ) {
                     is_internal = TRUE;
                     break;
@@ -71,7 +69,7 @@ void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds )
             }
         }
         if( !is_internal ) {
-            for( i=0;i<ExeExtensionCount;i++ ) {
+            for( i = 0; i < ExeExtensionCount; i++ ) {
                 _makepath( full, drive, directory, name, ExeExtensions[i] );
                 GetFromEnv( full, path );
                 if( path[0] != 0 ) {
@@ -84,11 +82,11 @@ void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds )
     _splitpath( full, drive, directory, name, ext );
     if( !stricmp( ext, ExeExtensions[0] ) || is_internal ) {
         strcpy( path, Comspec );
-        strcpy( cmds->cmd,"/c " );
+        strcpy( cmds->cmd, "/c " );
         strcat( cmds->cmd, orgcmd );
     } else {
         strcpy( cmds->cmd, cmd );
     }
     cmds->len = strlen( cmds->cmd );
-    cmds->cmd[ cmds->len ] = 0x0d;
+    cmds->cmd[cmds->len] = 0x0d;
 }

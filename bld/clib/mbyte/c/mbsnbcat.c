@@ -51,8 +51,8 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbcat,_fmbsnbcat)( unsigned char _FF
 
 //    if( !__IsDBCS )  return( strncat( s1, s2, n ) );
 
-    /*** Abort if n<=0 ***/
-    if( n <= 0 )  return( s1 );
+    /*** Abort if n==0 ***/
+    if( n == 0 )  return( s1 );
 
     /*** Determine where to begin copying ***/
     if( *s1 != '\0' ) {

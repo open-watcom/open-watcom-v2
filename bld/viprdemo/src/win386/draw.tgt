@@ -73,7 +73,7 @@ WVList
 18
 MItem
 11
-..\back.bmp
+../back.bmp
 19
 WString
 3
@@ -91,7 +91,7 @@ WVList
 22
 MItem
 15
-..\brighter.bmp
+../brighter.bmp
 23
 WString
 3
@@ -109,7 +109,7 @@ WVList
 26
 MItem
 13
-..\darker.bmp
+../darker.bmp
 27
 WString
 3
@@ -127,7 +127,7 @@ WVList
 30
 MItem
 11
-..\down.bmp
+../down.bmp
 31
 WString
 3
@@ -145,7 +145,7 @@ WVList
 34
 MItem
 14
-..\forward.bmp
+../forward.bmp
 35
 WString
 3
@@ -163,7 +163,7 @@ WVList
 38
 MItem
 11
-..\left.bmp
+../left.bmp
 39
 WString
 3
@@ -181,7 +181,7 @@ WVList
 42
 MItem
 12
-..\right.bmp
+../right.bmp
 43
 WString
 3
@@ -199,7 +199,7 @@ WVList
 46
 MItem
 9
-..\up.bmp
+../up.bmp
 47
 WString
 3
@@ -235,7 +235,7 @@ WVList
 54
 MItem
 12
-..\drawwin.c
+../drawwin.c
 55
 WString
 4
@@ -283,7 +283,7 @@ WVList
 65
 MItem
 10
-..\box.cpp
+../box.cpp
 66
 WString
 6
@@ -301,7 +301,7 @@ WVList
 69
 MItem
 15
-..\drawroom.cpp
+../drawroom.cpp
 70
 WString
 6
@@ -319,7 +319,7 @@ WVList
 73
 MItem
 14
-..\furnitu.cpp
+../furnitu.cpp
 74
 WString
 6
@@ -394,8 +394,8 @@ w????Include directories:
 1
 91
 WString
-32
-..;$(%watcom)\h;$(%watcom)\h\win
+34
+"..;$(%watcom)/h;$(%watcom)/h/win"
 0
 92
 WVList
@@ -407,7 +407,7 @@ WVList
 93
 MItem
 10
-..\draw.rc
+../draw.rc
 94
 WString
 5

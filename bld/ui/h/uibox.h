@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Box drawing character definitions.
 *
 ****************************************************************************/
 
@@ -46,41 +45,6 @@
  */
 
 #if 0
-#if defined(_NEC_PC) || defined(_FMR_PC)
-
-    /* These codes are mapped into screen graphics in uibios.c */
-
-    #define     B_BSBS                  (char) 0x01
-    #define     B_BDBD                  (char) 0x02
-    #define     B_SBSB                  (char) 0x03
-    #define     B_DBDB                  (char) 0x04
-    #define     B_BSSB                  (char) 0x05
-    #define     B_BSDB                  (char) 0x06
-    #define     B_BDDB                  (char) 0x07
-    #define     B_BBSS                  (char) 0x08
-    #define     B_BBDD                  (char) 0x09
-    #define     B_SSBB                  (char) 0x0a
-    #define     B_DSBB                  (char) 0x0b
-    #define     B_DDBB                  (char) 0x0c
-    #define     B_SBBS                  (char) 0x0d
-    #define     B_SBBD                  (char) 0x0e
-    #define     B_DBBD                  (char) 0x0f
-    #define     B_SSSB                  (char) 0x10
-    #define     B_SDSB                  (char) 0x11
-    #define     B_SBSS                  (char) 0x12
-    #define     B_SBSD                  (char) 0x13
-    #define     B_DSBS                  (char) 0x14
-    #define     B_DDDD                  (char) 0x15
-
-  #if defined(_FMR_PC)
-    #define     B_DBLK                  (char) 0x16
-    #define     B_UBLK                  (char) 0x17
-  #else
-    #define     B_DBLK                  (char) 0x20
-    #define     B_UBLK                  (char) 0x20
-  #endif
-
-#else
 
     #define     B_SBSB                  (char) 0xb3
     #define     B_SBSS                  (char) 0xb4
@@ -129,6 +93,5 @@
     #define     B_RBLK                  (char) 0xde
     #define     B_UBLK                  (char) 0xdf
 
-#endif
 #endif
 #endif

@@ -61,7 +61,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 
     /* Setup Paint */
     wnd->ps = &ps;
-    wnd->hdc = _wpi_beginpaint( hwnd, NULL, wnd->ps );
+    wnd->hdc = _wpi_beginpaint( hwnd, NULLHANDLE, wnd->ps );
     _wpi_torgbmode( wnd->hdc );
     _wpi_getpaintrect( wnd->ps, &fill_area );
 #ifdef __OS2_PM__

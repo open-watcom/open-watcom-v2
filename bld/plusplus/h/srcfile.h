@@ -142,7 +142,7 @@ void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
 void SrcFilePoint(              // SET CURRENT SRCFILE
     SRCFILE srcfile )           // - source file to be set as current
 ;
-void SrcFilePrimary(            // MARK CURRENT SOURCE FILE AS THE PRIMARY FILE
+void SetSrcFilePrimary(         // MARK CURRENT SOURCE FILE AS THE PRIMARY FILE
     void )
 ;
 SRCFILE SrcFileGetPrimary(      // GET PRIMARY SOURCE FILE
@@ -157,7 +157,7 @@ void SrcFileReadOnlyFile(       // SPECIFY FILE AS READ-ONLY
 void SrcFileReadOnlyDir(        // SPECIFY DIRECTORY AS READ-ONLY
     char const *dir )           // - the directory
 ;
-time_t *SrcFileTimeStamp(       // GET TIME STAMP FOR FILE
+time_t SrcFileTimeStamp(        // GET TIME STAMP FOR FILE
     SRCFILE srcfile )           // - source file
 ;
 void SrcFileTraceBack(          // INDICATE SRCFILE USED IN TRACE-BACK

@@ -30,10 +30,13 @@
 ****************************************************************************/
 
 
+#include "guiwind.h"
 #include <stdlib.h>
 #include <string.h>
-#include "mbstring.h"
-#include "guiwind.h"
+#include <mbstring.h>
+#ifndef __OS2_PM__
+    #include "wwinhelp.h"
+#endif
 
 extern  WPI_INST        GUIMainHInst;
 
@@ -62,7 +65,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *
     if( hwndHelpInstance != (HWND)NULL ) {
         if( !WinAssociateHelpInstance( hwndHelpInstance, hwnd ) ) {
             WinDestroyHelpInstance( hwndHelpInstance );
-            hwndHelpInstance = NULL;
+            hwndHelpInstance = NULLHANDLE;
         }
     }
 
@@ -74,7 +77,7 @@ static void FiniHelp( gui_help_instance inst, HWND hwnd, char *file )
     hwnd=hwnd;
     file=file;
     if( (HWND)inst != (HWND)NULL ) {
-        WinAssociateHelpInstance( (HWND)inst, NULL );
+        WinAssociateHelpInstance( (HWND)inst, NULLHANDLE );
         WinDestroyHelpInstance( (HWND)inst );
     }
 }
@@ -121,56 +124,6 @@ bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, char *file, char *to
 
 #else
 
-
-BOOL WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, DWORD data )
-{
-    char        buff[_MAX_PATH];
-    static char open=FALSE;
-
-    if( fuCommand == HELP_QUIT && !open ) return( FALSE );
-    open = TRUE;
-
-    if( helpFile != NULL ) {
-        if( __IsDBCS ) {
-            /* Look for Japanese version of help file first */
-
-            char        drive[_MAX_DRIVE];
-            char        dir[_MAX_DIR];
-            char        fname[_MAX_FNAME];
-            char        ext[_MAX_EXT];
-            char    new_filename[_MAX_PATH];
-
-            _splitpath( helpFile, drive, dir, fname, ext );
-            if( strlen( fname ) < 8 ) {
-                strcat( fname, "j" );
-            } else {
-                fname[7] = 'j';
-            }
-            _makepath( new_filename, drive, dir, fname, ext );
-
-            if( new_filename != NULL ) {
-                _searchenv( new_filename, "WWINHELP", buff );
-                if( buff[0] != '\0' ) {
-                    helpFile = buff;
-                    return( WinHelp( hwnd, helpFile, fuCommand, data ) );
-                }
-                _searchenv( new_filename, "PATH", buff );
-                if( buff[0] != '\0' ) {
-                    helpFile = buff;
-                    return( WinHelp( hwnd, helpFile, fuCommand, data ) );
-                }
-            }
-        }
-
-        /* Can't find the Japanese version, just look for the english one */
-
-        _searchenv( helpFile, "WWINHELP", buff );
-        if( buff[0] != '\0' ) helpFile = buff;
-    }
-    return( WinHelp( hwnd, helpFile, fuCommand, data ) );
-}
-
-
 static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *help_file )
 {
     hwnd = hwnd;
@@ -192,6 +145,12 @@ bool DisplayContents( gui_help_instance inst, HWND hwnd, char *file )
     return( WWinHelp( hwnd, file, (UINT)HELP_CONTENTS, 0 ) );
 }
 
+bool DisplayContentsHH( gui_help_instance inst, HWND hwnd, char *file )
+{
+    inst = inst;
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_CONTENTS, 0 ) );
+}
+
 bool DisplayHelpOnHelp( gui_help_instance inst, HWND hwnd, char *file )
 {
     inst=inst;
@@ -207,6 +166,15 @@ bool DisplayHelpSearch( gui_help_instance inst, HWND hwnd, char *file, char *top
     return( WWinHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (DWORD)(LPCSTR)topic ) );
 }
 
+bool DisplayHelpSearchHH( gui_help_instance inst, HWND hwnd, char *file, char *topic )
+{
+    inst = inst;
+    if( topic == NULL ) {
+        topic = "";
+    }
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_PARTIALKEY, (DWORD)(LPCSTR)topic ) );
+}
+
 bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, char *file, char *topic )
 {
     inst=inst;
@@ -217,6 +185,12 @@ bool DisplayHelpKey( gui_help_instance inst, HWND hwnd, char *file, char *topic 
 {
     inst=inst;
     return( WWinHelp( hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
+}
+
+bool DisplayHelpKeyHH( gui_help_instance inst, HWND hwnd, char *file, char *topic )
+{
+    inst = inst;
+    return( WHtmlHelp( hwnd, file, (UINT)HELP_KEY, (DWORD)topic ) );
 }
 
 #endif
@@ -232,29 +206,54 @@ void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file )
     FiniHelp( inst, wnd->hwnd, file );
 }
 
-bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic )
+bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
+                  char *file, char *topic )
 {
     bool        ret;
 
     ret = FALSE;
 
     switch( act ) {
-        case GUI_HELP_CONTENTS:
-            ret = DisplayContents( inst, wnd->hwnd, file );
-            break;
-        case GUI_HELP_ON_HELP:
-            ret = DisplayHelpOnHelp( inst, wnd->hwnd, file );
-            break;
-        case GUI_HELP_SEARCH:
-            ret = DisplayHelpSearch( inst, wnd->hwnd, file, topic );
-            break;
-        case GUI_HELP_CONTEXT:
-            ret = DisplayHelpContext( inst, wnd->hwnd, file, topic );
-            break;
-        case GUI_HELP_KEY:
-            ret = DisplayHelpKey( inst, wnd->hwnd, file, topic );
-            break;
+    case GUI_HELP_CONTENTS:
+        ret = DisplayContents( inst, wnd->hwnd, file );
+        break;
+    case GUI_HELP_ON_HELP:
+        ret = DisplayHelpOnHelp( inst, wnd->hwnd, file );
+        break;
+    case GUI_HELP_SEARCH:
+        ret = DisplayHelpSearch( inst, wnd->hwnd, file, topic );
+        break;
+    case GUI_HELP_CONTEXT:
+        ret = DisplayHelpContext( inst, wnd->hwnd, file, topic );
+        break;
+    case GUI_HELP_KEY:
+        ret = DisplayHelpKey( inst, wnd->hwnd, file, topic );
+        break;
     }
+
+    return( ret );
+}
+
+bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
+                      char *file, char *topic )
+{
+    bool        ret;
+
+    ret = FALSE;
+
+#ifndef __OS2_PM__
+    switch( act ) {
+    case GUI_HELP_CONTENTS:
+        ret = DisplayContentsHH( inst, wnd->hwnd, file );
+        break;
+    case GUI_HELP_SEARCH:
+        ret = DisplayHelpSearchHH( inst, wnd->hwnd, file, topic );
+        break;
+    case GUI_HELP_KEY:
+        ret = DisplayHelpKeyHH( inst, wnd->hwnd, file, topic );
+        break;
+    }
+#endif
 
     return( ret );
 }

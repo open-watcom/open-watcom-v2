@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit CodeView type information.
 *
 ****************************************************************************/
 
@@ -34,23 +33,23 @@
 #include "string.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "typedef.h"
+#include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cvdbg.h"
 #include "dbgstrct.h"
-#define BY_CG
 #include "feprotos.h"
 #include "cgprotos.h"
 
 struct lf_info {
      char       size;
      lf_values  code;
-}lf_info;
+} lf_info;
 
 static struct lf_info LFInfo[LFG_LAST] = {
     #define _LFMAC( n, N, c )    { sizeof( lf_##n ), c },
@@ -60,11 +59,10 @@ static struct lf_info LFInfo[LFG_LAST] = {
 
 extern  void        FEPtrBase(sym_handle);
 extern  void        BuffWSLString(char*);
-extern  uint        Length(char*);
 extern  byte        *Copy(void*,void*,uint);
 extern  seg_id      SetOP(seg_id);
 extern  void        SetBigLocation( long_offset loc );
-extern  long_offset AskBigLocation();
+extern  long_offset AskBigLocation( void );
 extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataInt(short_offset);
 extern  void        LocDump( dbg_loc );
@@ -72,7 +70,6 @@ extern  dbg_loc     LocDupl( dbg_loc );
 extern  void        DBLocFini( dbg_loc loc );
 extern  offset      LocSimpField( dbg_loc );
 extern  void        DataBytes(unsigned_32,byte*);
-extern  type_def    *TypeAddress(cg_type);
 extern  void        CVSymIConst( char *nm, long val, dbg_type tipe );
 extern  void        CVSymIConst64( char *nm, signed_64 val, dbg_type tipe );
 extern  void        CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe );
@@ -85,25 +82,28 @@ extern  uint        TypeIdx;
 extern  seg_id      CVTypes;
 
 
-static  void    BuffWrite( cv_out *out, void *to ){
-/*********************************************/
+static  void    BuffWrite( cv_out *out, void *to )
+/************************************************/
+{
     int     len;
     seg_id  old;
 
-    len = (char *)to - out->beg;
+    len = (byte *)to - out->beg;
     old = SetOP( out->seg );
     DataBytes( len, out->beg );
     out->beg = to;
     SetOP( old );
 }
 
-static  void   BuffSkip( cv_out *out, void *to ){
-/*********************************************/
+static  void   BuffSkip( cv_out *out, void *to )
+/**********************************************/
+{
     out->beg = to;
 }
 
-static  void    BuffEnd( cv_out *out ){
-/*********************************************/
+static  void    BuffEnd( cv_out *out )
+/************************************/
+{
     int     len;
     seg_id  old;
 
@@ -113,25 +113,28 @@ static  void    BuffEnd( cv_out *out ){
     SetOP( old );
 }
 
-static  void  *BuffInc( cv_out *out, int size ){
-    void *ptr;
+static  void    *BuffInc( cv_out *out, int size )
+/***********************************************/
+{
+    void    *ptr;
 
     ptr = out->ptr;
     out->ptr += size;
     return( ptr );
 }
 
-static  void  *AlignBuff( cv_out *out ){
+static  void  *AlignBuff( cv_out *out )
 /*** round out->ptr up to align size ***/
-    int   len;
-    int   len4;
-    char *ptr;
+{
+    int     len;
+    int     len4;
+    byte    *ptr;
 
     ptr = out->ptr;
     len = ptr - out->buff;
     len4 = ((len+CV_ALIGN-1)& -CV_ALIGN);
     len = ((len+CV_ALIGN-1)& -CV_ALIGN) - len;
-    for(; len > 0; --len ){
+    for( ; len > 0; --len ) {
         *ptr = (LF_PAD0 | len);
         ++ptr;
     }
@@ -140,8 +143,9 @@ static  void  *AlignBuff( cv_out *out ){
 }
 
 
-static  void    SegReloc(  seg_id seg,  sym_handle sym ){
-/*****************************************/
+static  void    SegReloc( seg_id seg,  sym_handle sym )
+/*****************************************************/
+{
     seg_id      old;
 
     old = SetOP( seg );
@@ -149,8 +153,10 @@ static  void    SegReloc(  seg_id seg,  sym_handle sym ){
     SetOP( old );
 }
 
-static  void  *StartType( cv_out *out, lfg_index what ){
-    lf_common *ptr;
+static  void    *StartType( cv_out *out, lfg_index what )
+/*******************************************************/
+{
+    lf_common   *ptr;
 
     ptr = (lf_common *)out->ptr;
     out->ptr += LFInfo[what].size;
@@ -159,28 +165,29 @@ static  void  *StartType( cv_out *out, lfg_index what ){
     return( ptr );
 }
 
-static  void    NewTypeString( cv_out *out ) {
-/*******************************************************/
-
+static  void    NewTypeString( cv_out *out )
+/******************************************/
+{
     out->seg = CVTypes;
     out->ptr = &out->buff[sizeof( u2 )];  /*skip length*/
     out->beg = out->buff;
 }
 
-static  void    NewType( cv_out *out ) {
-/*******************************************************/
-
+static  void    NewType( cv_out *out )
+/************************************/
+{
     out->ptr = out->buff;   /* no length field */
     out->beg = out->buff;
 }
 
-static  int  EndSub( cv_out *out ){
+static  int  EndSub( cv_out *out )
 /*** write out a member of a subfield (don't write a length) ***/
 /* return length so it can be backpatched to list head       ***/
 /* reset buff to start **/
-    int     len;
-    seg_id  old;
-    long_offset  here;
+{
+    int             len;
+    seg_id          old;
+    long_offset     here;
 
     AlignBuff( out );
     len = out->ptr - out->buff;
@@ -194,11 +201,12 @@ static  int  EndSub( cv_out *out ){
     return( len );
 }
 
-static  long_offset   EndTypeString( cv_out *out ) {
-/*********************************************/
-    seg_id  old;
-    int     len;
-    long_offset  here;
+static  long_offset   EndTypeString( cv_out *out )
+/************************************************/
+{
+    seg_id          old;
+    int             len;
+    long_offset     here;
 
     if( _IsModel( DBG_TYPES ) ) {
         AlignBuff( out );
@@ -212,8 +220,9 @@ static  long_offset   EndTypeString( cv_out *out ) {
     return( here );
 }
 
-extern   CVEndType( cv_out *out ) {
-/*********************************************/
+extern  void    CVEndType( cv_out *out )
+/**************************************/
+{
     int     len;
 
     AlignBuff( out );
@@ -221,8 +230,9 @@ extern   CVEndType( cv_out *out ) {
     *((u2 *)&out->buff[0]) = len-sizeof( u2 );  /* set type rec len*/
 }
 
-static  PatchLen( long_offset where, u2 what ){
-/********** back patch field list length **/
+static  void    PatchLen( long_offset where, u2 what )
+/********** back patch field list length ************/
+{
     long_offset         here;
     seg_id              old;
 
@@ -234,16 +244,17 @@ static  PatchLen( long_offset where, u2 what ){
     SetOP( old );
 }
 
-static  void PutFld2( cv_out *out, short num ){
-/***********************************/
-
+static  void PutFld2( cv_out *out, short num )
+/********************************************/
+{
     *((short*)out->ptr) = num;  /* set an imbedded num */
     out->ptr += sizeof( short );
 }
 
-static void PutFldSized( cv_out *out, int size, unsigned_32 val ){
-/***********************************************************/
-    switch( size ){
+static void PutFldSized( cv_out *out, int size, unsigned_32 val )
+/***************************************************************/
+{
+    switch( size ) {
     case 1:
         *((u1*)out->ptr) = val;  /* out 1 */
         out->ptr += sizeof( u1 );
@@ -259,9 +270,10 @@ static void PutFldSized( cv_out *out, int size, unsigned_32 val ){
     }
 }
 
-static void PutLFInt( cv_out *out, enum cv_psize size, unsigned_32 val ){
-/***********************************************************/
-    switch( size ){
+static void PutLFInt( cv_out *out, enum cv_psize size, unsigned_32 val )
+/**********************************************************************/
+{
+    switch( size ) {
     case CV_IB1:
         *((u1*)out->ptr) = val;  /* out 1 */
         out->ptr += sizeof( u1 );
@@ -277,11 +289,12 @@ static void PutLFInt( cv_out *out, enum cv_psize size, unsigned_32 val ){
     }
 }
 
-static lf_values   LFIntType( int size ){
-/******************************/
+static lf_values   LFIntType( int size )
+/**************************************/
+{
     lf_values itipe ;
 
-    switch( size ){
+    switch( size ) {
     case 4:
         itipe = LF_TINT4;
         break;
@@ -297,9 +310,10 @@ static lf_values   LFIntType( int size ){
     return( itipe );
 }
 
-extern void CVPutINum( cv_out *out, signed_32 num ){
-/***********************************************************/
-    char       *ptr;
+extern void CVPutINum( cv_out *out, signed_32 num )
+/*************************************************/
+{
+    byte       *ptr;
 #define LC( what, to )   *((to *)&what)
     if( num >= 0 && num < 0x00008000 ){
         *((u2*)out->ptr) = num;  /* out num as is */
@@ -328,25 +342,27 @@ extern void CVPutINum( cv_out *out, signed_32 num ){
 #undef LC
 }
 
-extern void CVPutINum64( cv_out *out, signed_64 val ){
+extern  void        CVPutINum64( cv_out *out, signed_64 val )
 /***********************************************************/
-    char       *ptr;
+{
+    byte       *ptr;
 #define LC( what, to )   *((to *)&what)
-    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ){
+    if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
         CVPutINum( out, val.u._32[I64LO32] );
-    }else{
+    } else {
         ptr = out->ptr;
         LC( ptr[0],u2 ) = LF_QUADWORD;
         LC( ptr[2],u4 ) = val.u._32[I64LO32];
-        LC( ptr[2],u4 ) = val.u._32[I64HI32];
+        LC( ptr[6],u4 ) = val.u._32[I64HI32];
         ptr += sizeof(u2) + sizeof( u8 );
         out->ptr = ptr;
     }
 #undef LC
 }
-extern void CVPutStr( cv_out *out, char *str ){
-/***********************************************************/
-    int len;
+extern  void        CVPutStr( cv_out *out, char *str )
+/****************************************************/
+{
+    int     len;
 
     len = strlen( str );
     len &= 0xff;
@@ -356,16 +372,17 @@ extern void CVPutStr( cv_out *out, char *str ){
     out->ptr += len;
 }
 
-extern void CVPutNullStr( cv_out *out ){
-/***********************************************************/
+extern  void        CVPutNullStr( cv_out *out )
+/*********************************************/
+{
     *((char*)out->ptr) = 0;
     out->ptr += sizeof( char );
 }
 
 
-static  lf_values    LFSignedSize( signed_32 num ) {
+static  lf_values   LFSignedSize( signed_32 num )
 /***********************************************/
-
+{
     cv_primitive    index;
 
     index.s = 0;
@@ -381,9 +398,9 @@ static  lf_values    LFSignedSize( signed_32 num ) {
     return( index.s );
 }
 
-static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi ) {
-/***********************************************/
-
+static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi )
+/**************************************************************/
+{
     cv_primitive    index;
 
     index.s = 0;
@@ -398,9 +415,10 @@ static  lf_values    LFSignedRange( signed_32 lo, signed_32 hi ) {
     }
     return( index.s );
 }
-extern  dbg_type    CVFtnType( char *name, dbg_ftn_type tipe ) {
-/*****************************************************************/
 
+extern  dbg_type    CVFtnType( char *name, dbg_ftn_type tipe )
+/************************************************************/
+{
     unsigned        size;
     cv_primitive    index;
 
@@ -428,8 +446,9 @@ static char const RealNames[MAX_REAL_NAME][17] = {
     "signed __int64",
 };
 
-extern  dbg_type    CVScalar( char *name, cg_type tipe ) {
-/************************************************************/
+extern  dbg_type    CVScalar( char *name, cg_type tipe )
+/******************************************************/
+{
     type_def          *tipe_addr;
     int                length;
     cv_primitive       index;
@@ -446,18 +465,18 @@ extern  dbg_type    CVScalar( char *name, cg_type tipe ) {
         index.f.mode =  CV_DIRECT;
         if( tipe_addr->attr & TYPE_FLOAT ) {
             index.f.type = CV_REAL;
-            if( length == 4 ){
+            if( length == 4 ) {
                 index.f.size  =  CV_RC32;
-            }else if( length == 8 ){
+            } else if( length == 8 ) {
                 index.f.size = CV_RC64;
             }
         } else {
-            for( count =  0; count < MAX_REAL_NAME; ++count ){
-                if( strcmp( name, RealNames[count] ) == 0 ){
+            for( count =  0; count < MAX_REAL_NAME; ++count ) {
+                if( strcmp( name, RealNames[count] ) == 0 ) {
                     index.f.type =  CV_REALLYINT;
-                    if( length == 1 ){
+                    if( length == 1 ) {
                         index.f.size = 0; /* assume char (could be wide char )*/
-                    }else{
+                    } else {
                         if( !(tipe_addr->attr & TYPE_SIGNED) ) {
                             ++length;
                         }
@@ -468,10 +487,10 @@ extern  dbg_type    CVScalar( char *name, cg_type tipe ) {
             }
             if( tipe_addr->attr & TYPE_SIGNED ) {
                 index.f.type =  CV_SIGNED;
-            }else{
+            } else {
                 index.f.type = CV_UNSIGNED;
             }
-            switch( length ){
+            switch( length ) {
             case 1:
                 index.f.size = CV_IB1;
                 break;
@@ -508,30 +527,32 @@ static char const ScopeNames[SCOPE_MAX][7] = {
     "class"
 };
 
-extern char const *CVScopeName( dbg_type scope ){
+extern char const *CVScopeName( dbg_type scope )
+{
     return( ScopeNames[scope] );
 }
 
-extern  dbg_type    CVScope( char *name ) {
-/*********************************************/
-
+extern  dbg_type    CVScope( char *name )
+/***************************************/
+{
     enum scope_name index;
 
-    for( index = 0; index < SCOPE_MAX; ++index ){
+    for( index = 0; index < SCOPE_MAX; ++index ) {
         if( strcmp( name, ScopeNames[index] ) == 0 )break;
     }
     return( index );
 }
 
 
-extern  void    CVDumpName( name_entry *name, dbg_type tipe ) {
+extern  void    CVDumpName( name_entry *name, dbg_type tipe )
 /***********************************************************/
-    cv_out      out[1];
+{
+    cv_out          out[1];
     ct_modifier     *mod;
-    long_offset      here;
+    long_offset     here;
 
 // we are going to loose the name so a fix is needed in the interface
-    if( tipe == DBG_FWD_TYPE ){
+    if( tipe == DBG_FWD_TYPE ) {
         NewTypeString( out );
         tipe = ++TypeIdx;
         name->refno = tipe;
@@ -547,10 +568,11 @@ extern  void    CVDumpName( name_entry *name, dbg_type tipe ) {
     name->refno = tipe;
 }
 
-extern void CVBackRefType( name_entry *name, dbg_type tipe ){
-/******************************************************/
-    long_offset  here;
-    seg_id  old;
+extern void CVBackRefType( name_entry *name, dbg_type tipe )
+/**********************************************************/
+{
+    long_offset     here;
+    seg_id          old;
 
     old = SetOP( name->patch.segment );
     here = AskBigLocation();
@@ -561,11 +583,12 @@ extern void CVBackRefType( name_entry *name, dbg_type tipe ){
     name->refno = tipe;
 }
 
-extern  dbg_type    CVArray( dbg_type dims, dbg_type base ) {
-/**************************************************************/
-    cv_out  out[1];
-    ct_dimarray *array;
-    dbg_type    ret;
+extern  dbg_type    CVArray( dbg_type dims, dbg_type base )
+/*********************************************************/
+{
+    cv_out          out[1];
+    ct_dimarray     *array;
+    dbg_type        ret;
 
 // Need the length to make things simple
     NewTypeString( out );
@@ -578,10 +601,11 @@ extern  dbg_type    CVArray( dbg_type dims, dbg_type base ) {
     return( ret );
 }
 
-extern  dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
+extern  dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base )
+/***************************************************************************/
+{
     cv_out      out[1];
-    ct_array   *array;
+    ct_array    *array;
     dbg_type    ret;
 
 // Need the length to make things simple
@@ -596,12 +620,13 @@ extern  dbg_type    CVArraySize( offset size, unsigned_32 hi, dbg_type base ) {
     return( ret );
 }
 
-static  lf_values   ArrayDim( unsigned_32  hi ){
-/************ Make 1 dim array bound *******/
-    cv_out      out[1];
-    ct_dimconu         *dim;
+static  lf_values   ArrayDim( unsigned_32  hi )
+/************ Make 1 dim array bound *********/
+{
+    cv_out          out[1];
+    ct_dimconu      *dim;
     cv_primitive    index;
-    lf_values        ret;
+    lf_values       ret;
 
     NewTypeString( out );
     ret = ++TypeIdx;
@@ -614,16 +639,18 @@ static  lf_values   ArrayDim( unsigned_32  hi ){
     return( ret );
 }
 
-extern  dbg_type    CVCharBlock( unsigned_32 len ) {
-/******************************************************/
+extern  dbg_type    CVCharBlock( unsigned_32 len )
+/************************************************/
+{
     dbg_type        ret;
 
     ret = CVArraySize( len, len, LF_TRCHAR );
     return( ret );
 }
 
-static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe ){
-/*********************************************************************/
+static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe )
+/*******************************************************************/
+{
     cv_out          out[1];
 
     NewTypeString( out );
@@ -632,8 +659,9 @@ static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe ){
     return( ++TypeIdx );
 }
 
-static dbg_type  OutBckCon( long val, dbg_type tipe ){
-/*********************************************************************/
+static dbg_type  OutBckCon( long val, dbg_type tipe )
+/***************************************************/
+{
     cv_out          out[1];
 
     NewTypeString( out );
@@ -643,15 +671,16 @@ static dbg_type  OutBckCon( long val, dbg_type tipe ){
 }
 
 extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type,
-                    int off ) {
-/************************************************************************/
+                    int off )
+/********************************************************************/
+{
     dbg_type        itipe;
     dbg_type        symref;
     cv_out          out[1];
-    ct_dimvaru       *dim;
+    ct_dimvaru      *dim;
     cv_primitive    index;
-    lf_values        ret;
-    type_def          *tipe_addr;
+    lf_values       ret;
+    type_def        *tipe_addr;
 
     tipe_addr = TypeAddress( len_type );
     itipe = LFIntType( tipe_addr->length );
@@ -669,36 +698,37 @@ extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type,
 }
 
 typedef struct {
-    union{
+    union {
       sym_handle s;
       name      *n;
-    }v;
+    } v;
     long       o;
     enum {
         EXPR_NONE     = 0x00,
         EXPR_NAME     = 0x01,
         EXPR_SYM      = 0x02,
         EXPR_VAR      = (EXPR_NAME | EXPR_SYM ),
-    }state;
-}fold_leaf;
+    } state;
+} fold_leaf;
 
 enum{ FOLD_EXPR = 10 };
 typedef struct {
     fold_leaf *stk;
     fold_leaf ops[FOLD_EXPR];
     bool  error;
-}fold_expr;
+} fold_expr;
 
-static  void    DoLocFold( dbg_loc loc, fold_expr *what ) {
-/****************************************/
-    offset disp;
-    fold_leaf tmp;
-    fold_leaf *stk;
+static  void    DoLocFold( dbg_loc loc, fold_expr *what )
+/*******************************************************/
+{
+    offset      disp;
+    fold_leaf   tmp;
+    fold_leaf   *stk;
 
     if( loc->next != NULL ) {
         DoLocFold( loc->next, what );
     }
-    if( what->error ){
+    if( what->error ) {
         return;
     }
     stk = what->stk;
@@ -710,7 +740,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what ) {
     case LOC_CONSTANT:
     case LOC_BP_OFFSET:
         --stk;
-        if( (loc->class & 0xf0) == LOC_BP_OFFSET ){
+        if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
             stk[0].v.n  = ((name *)loc->u.be_sym)->v.symbol;
             stk[0].state = EXPR_NAME;
             stk[0].o = 0;
@@ -729,7 +759,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what ) {
     case LOC_OPER:
         switch( loc->class & 0x0f ) {
         case LOP_ADD:
-            if( (stk[0].state & stk[1].state) & EXPR_VAR ){
+            if( (stk[0].state & stk[1].state) & EXPR_VAR ) {
                 what->error = TRUE;
                 return;
             }
@@ -757,15 +787,16 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what ) {
     what->stk = stk;
 }
 
-static bool FoldExpr( dbg_loc loc, fold_leaf *ret ){
-/***************************************************/
+static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
+/*************************************************/
+{
     fold_expr      expr;
 
     expr.stk = &expr.ops[FOLD_EXPR];
     expr.error = FALSE;
     DoLocFold( loc, &expr );
-    if( !expr.error ){
-        if( expr.stk == &expr.ops[FOLD_EXPR-1] ){
+    if( !expr.error ) {
+        if( expr.stk == &expr.ops[FOLD_EXPR-1] ) {
             *ret = expr.ops[FOLD_EXPR-1];
             return( TRUE );
         }
@@ -773,9 +804,9 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret ){
     return( FALSE );
 }
 
-extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type ) {
-/***********************************************************************/
-
+extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
+/*****************************************************************/
+{
     dbg_type        itipe;
     dbg_type        symref;
     cv_out          out[1];
@@ -786,18 +817,18 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type ) {
 
     tipe_addr = TypeAddress( len_type );
     itipe = LFIntType( tipe_addr->length );
-    if( FoldExpr( loc, &tmp ) ){
-        if( tmp.state & EXPR_NAME ){
+    if( FoldExpr( loc, &tmp ) ) {
+        if( tmp.state & EXPR_NAME ) {
             NewTypeString( out );
             symref = ++TypeIdx;
             StartType( out, LFG_REFSYM );
             CVOutLocal( out, tmp.v.n, tmp.o, itipe );
-        }else{
+        } else {
             bck_info       *bck;
             bck = FEBack( tmp.v.s );
             symref = OutBckSym( bck, tmp.o, itipe );
         }
-    }else{
+    } else {
         symref = OutBckCon( 1, itipe );
     }
     NewTypeString( out );
@@ -813,14 +844,15 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type ) {
 
 extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
                     cg_type num_elts_tipe, int off,
-                    dbg_type base ) {
-/***************************************************************************/
+                    dbg_type base )
+/**********************************************************************/
+{
     dbg_type        itipe;
     dbg_type        symref[2];
     cv_out          out[1];
     ct_dimvarlu     *dim;
-    lf_values        ret;
-    type_def          *tipe_addr;
+    lf_values       ret;
+    type_def        *tipe_addr;
 
 
     num_elts_tipe = num_elts_tipe;
@@ -842,12 +874,13 @@ extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
 
 
-extern  dbg_type    CVIntArray( unsigned_32 hi, dbg_type base ) {
-/*******************************************************************/
-    cv_out  out[1];
-    ct_dimarray *array;
-    dbg_type    ret;
-    lf_values    dim;
+extern  dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
+/*************************************************************/
+{
+    cv_out          out[1];
+    ct_dimarray     *array;
+    dbg_type        ret;
+    lf_values       dim;
 
 // Need the length to make things simple
     dim = ArrayDim( hi );
@@ -863,12 +896,13 @@ extern  dbg_type    CVIntArray( unsigned_32 hi, dbg_type base ) {
 
 
 
-static  lf_values   ArrayDimL( signed_32  low, signed_32  hi ){
-/************ Make 1 dim array bound *******/
-    cv_out      out[1];
+static  lf_values   ArrayDimL( signed_32  low, signed_32  hi )
+/************ Make 1 dim array bound ************************/
+{
+    cv_out          out[1];
     ct_dimconlu     *dim;
     cv_primitive    index;
-    lf_values        ret;
+    lf_values       ret;
 
     NewTypeString( out );
     ret = ++TypeIdx;
@@ -882,8 +916,9 @@ static  lf_values   ArrayDimL( signed_32  low, signed_32  hi ){
     return( ret );
 }
 
-static  dbg_type    CVDimVarLU( array_list *ar ){
-/***********************************************/
+static  dbg_type    CVDimVarLU( array_list *ar )
+/**********************************************/
+{
     cv_out         out[1];
     ct_dimvarlu    *var;
     dbg_type       itipe;
@@ -921,14 +956,15 @@ static  dbg_type    CVDimVarLU( array_list *ar ){
         PutFld2( out, symref[0] );
         PutFld2( out, symref[1] );
         ar->list = dim->entry.next;
-        _Free( dim, sizeof( field_entry )  );
+        CGFree( dim  );
     }
     EndTypeString( out );
     return( ++TypeIdx );
 }
 
-static  dbg_type    CVDimConLU( array_list *ar ){
-/***********************************************/
+static  dbg_type    CVDimConLU( array_list *ar )
+/**********************************************/
+{
     cv_out         out[1];
     ct_dimconlu   *con;
     dim_any        *dim;
@@ -937,7 +973,7 @@ static  dbg_type    CVDimConLU( array_list *ar ){
     con = StartType( out, LFG_DIMCONLU );
     con->rank = ar->num;
     con->index = LF_TINT4;
-    for(;;) {
+    for( ;; ) {
         dim = ar->list;
         if( dim == NULL ) break;
         switch( dim->entry.kind ) {
@@ -951,55 +987,58 @@ static  dbg_type    CVDimConLU( array_list *ar ){
 
         }
         ar->list = dim->entry.next;
-        _Free( dim, sizeof( field_entry )  );
+        CGFree( dim  );
     }
     EndTypeString( out );
     return( ++TypeIdx );
 }
 
-extern  dbg_type    CVEndArray( array_list *ar ){
-/************************************************/
+extern  dbg_type    CVEndArray( array_list *ar )
+/**********************************************/
+{
     dbg_type        dims;
-    if( ar->is_variable ){
+
+    if( ar->is_variable ) {
         dims = CVDimVarLU( ar );
-    }else{
+    } else {
         dims = CVDimConLU( ar );
     }
     return( CVArray( dims, ar->base ) );
 }
 
 extern  dbg_type    CVSubRange( signed_32 lo, signed_32 hi,
-                    dbg_type base ) {
-/***************************************************/
-
+                    dbg_type base )
+/*********************************************************/
 /* not supported by CV */
+{
     base = base;
-    return(  ArrayDimL( lo, hi ) );
+    return( ArrayDimL( lo, hi ) );
 }
 
-static  enum cv_ptrtype   PtrClass( cg_type ptr_type ){
-/*******************************************************************/
+static  enum cv_ptrtype   PtrClass( cg_type ptr_type )
+/****************************************************/
+{
     type_def        *tipe_addr;
     enum cv_ptrtype ret;
 
     tipe_addr = TypeAddress( ptr_type );
     switch( tipe_addr->refno ) {
-    case T_HUGE_POINTER:
+    case TY_HUGE_POINTER:
         ret = CV_HUGE;
         break;
-    case T_LONG_POINTER:
-    case T_LONG_CODE_PTR:
-        if( tipe_addr->length == 6 ){
+    case TY_LONG_POINTER:
+    case TY_LONG_CODE_PTR:
+        if( tipe_addr->length == 6 ) {
             ret = CV_FAR32;
-        }else{
+        } else {
             ret = CV_FAR;
         }
         break;
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-        if( tipe_addr->length == 4 ){
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
+        if( tipe_addr->length == 4 ) {
             ret = CV_NEAR32;
-        }else{
+        } else {
             ret = CV_NEAR;
         }
         break;
@@ -1007,9 +1046,10 @@ static  enum cv_ptrtype   PtrClass( cg_type ptr_type ){
     return( ret );
 }
 
-static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, enum cv_ptrmode mode ) {
-/*******************************************************************/
-    cv_out  out[1];
+static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, enum cv_ptrmode mode )
+/********************************************************************************/
+{
+    cv_out      out[1];
     dbg_type    ret;
     ct_pointer  *cvptr;
 
@@ -1024,23 +1064,25 @@ static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, enum cv_ptrmode mode
     return( ret );
 }
 
-extern  dbg_type    CVDereference( cg_type ptr_type, dbg_type base ) {
-/************************************************************************/
+extern  dbg_type    CVDereference( cg_type ptr_type, dbg_type base )
+/******************************************************************/
+{
     dbg_type    ret;
 
     ret = MkPtr( ptr_type, base, CV_REF );
     return( ret );
 }
 
-extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base ) {
-/****************************************************************/
+extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
+/**********************************************************/
+{
     dbg_type        ret;
     cv_primitive    index;
 
     index.s = base;
     if( index.s < CV_FIRST_USER_TYPE
-     && index.s > LF_TSEGMENT && index.f.mode == 0 ){
-         switch( PtrClass( ptr_type ) ){
+     && index.s > LF_TSEGMENT && index.f.mode == 0 ) {
+         switch( PtrClass( ptr_type ) ) {
          case CV_NEAR:
             index.f.mode =  CV_NEARP;
             break;
@@ -1060,7 +1102,7 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base ) {
             Zoiks( ZOIKS_106 ); /* bad pointer */
          }
          ret = index.s;
-    }else{
+    } else {
         ret = MkPtr( ptr_type, base, CV_PTR );
     }
     return( ret );
@@ -1069,14 +1111,16 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base ) {
 
 
 static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
-                                sym_handle  sym, cv_based_kind kind ) {
-/****************************************************************/
-    cv_out      out[1];
+                                sym_handle  sym, cv_based_kind kind )
+/*******************************************************************/
+{
+    cv_out          out[1];
     dbg_type        ret;
-    ct_pointer     *cvptr;
+    ct_pointer      *cvptr;
     enum cv_ptrtype ptype;
-    void           *ptr1;
-    void           *ptr2;
+    void            *ptr1;
+    void            *ptr2;
+
     //TODO: Need to do somthing about segments
     //TODO: Need to do somthing about BasePtr
     NewTypeString( out );
@@ -1127,9 +1171,9 @@ typedef struct {
         SYM_SYM,
         SYM_IND,
         SYM_ZERO,
-    }kind;
+    } kind;
     bool indirect;
-}based_leaf;
+} based_leaf;
 
 #define MAX_OP 2
 typedef struct {
@@ -1144,36 +1188,37 @@ typedef struct {
         IS_VOID,
         IS_SELF,
         IS_ERROR,
-    }state;
-}based_expr;
+    } state;
+} based_expr;
 
-static  void    DoLocBase( dbg_loc loc, based_expr *what ) {
-/****************************************/
-    offset disp;
-    based_leaf tmp;
-    based_leaf *stk;
+static  void    DoLocBase( dbg_loc loc, based_expr *what )
+/********************************************************/
+{
+    offset      disp;
+    based_leaf  tmp;
+    based_leaf  *stk;
 
     if( loc->next != NULL ) {
         DoLocBase( loc->next, what );
     }
-    if( what->state == IS_ERROR ){
+    if( what->state == IS_ERROR ) {
         return;
     }
     stk = what->stk;
     switch( loc->class & 0xf0 ) {
     case LOC_CONSTANT:
     case LOC_BP_OFFSET:
-        if( what->count < MAX_OP ){
+        if( what->count < MAX_OP ) {
             ++what->count;
             --stk;
-        }else{
+        } else {
             what->state = IS_ERROR;
             return;
         }
-        if( (loc->class & 0xf0) == LOC_BP_OFFSET ){
+        if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
             stk[0].s  = ((name *)loc->u.be_sym)->v.symbol;
             stk[0].kind = SYM_SYM;
-        }else{
+        } else {
             if( loc->class == LOC_MEMORY ) {
                 stk[0].s = loc->u.fe_sym;
                 stk[0].kind = SYM_SYM;
@@ -1189,7 +1234,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what ) {
         what->stk = stk;
         break;
     case LOC_OPER:
-        if( what->count == 0 ){
+        if( what->count == 0 ) {
             what->state = IS_ERROR;
         }
         switch( loc->class & 0x0f ) {
@@ -1197,20 +1242,20 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what ) {
         case LOP_IND_4:
         case LOP_IND_ADDR286:
         case LOP_IND_ADDR386:
-            if( stk[0].kind == SYM_SYM ){
+            if( stk[0].kind == SYM_SYM ) {
                 stk[0].kind = SYM_IND;
                 what->state = IS_VALUE;
                 what->sym = stk[0].s;
-            }else{
+            } else {
                  what->state = IS_ERROR;
             }
             break;
         case LOP_MK_FP:
-            switch( stk[0].kind ){
+            switch( stk[0].kind ) {
             case SYM_ZERO:
                 what->state = IS_SELF;
-                if( what->count == 2 ){
-                    switch( stk[1].kind ){
+                if( what->count == 2 ) {
+                    switch( stk[1].kind ) {
                     case SYM_ZERO:
                         what->state = IS_VOID;
                         break;
@@ -1225,7 +1270,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what ) {
                     default:
                        what->state = IS_ERROR;
                     }
-                }else if( what->count != 1 ){
+                } else if( what->count != 1 ) {
                    what->state = IS_ERROR;
                 }
                break;
@@ -1262,8 +1307,9 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what ) {
 }
 
 extern  dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base,
-                    dbg_loc loc_segment ) {
-/****************************************************************/
+                    dbg_loc loc_segment )
+/**************************************************************/
+{
     based_expr     expr;
     uint           kind;
     dbg_type       ret;
@@ -1294,11 +1340,12 @@ extern  dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base,
     return( ret );
 }
 
-static void MkBits( field_any *field ){
-/*******************************************/
-    lf_values        biti;
+static void MkBits( field_any *field )
+/************************************/
+{
+    lf_values       biti;
     ct_bitfield     *bit;
-    cv_out      out[1];
+    cv_out          out[1];
 
     for( ; field != NULL; field= field->entry.next ) {
         if( field->entry.field_type == FIELD_OFFSET ) {
@@ -1316,7 +1363,8 @@ static void MkBits( field_any *field ){
     }
 }
 
-static enum cv_access WVCVAccess( uint attr ){
+static enum cv_access WVCVAccess( uint attr )
+{
     enum cv_access ret;
 
     switch( attr ){
@@ -1333,7 +1381,8 @@ static enum cv_access WVCVAccess( uint attr ){
     return( ret );
 }
 
-static enum cv_mprop WVCVMProp( uint kind ){
+static enum cv_mprop WVCVMProp( uint kind )
+{
     enum cv_mprop ret;
 
     switch( kind ){
@@ -1353,26 +1402,27 @@ static enum cv_mprop WVCVMProp( uint kind ){
     return( ret );
 }
 
-static   cv_vtshape   CVVTShape( cg_type ptr_type ){
-/*******************************************************************/
+static   cv_vtshape   CVVTShape( cg_type ptr_type )
+/*************************************************/
+{
     type_def        *tipe_addr;
     enum cv_ptrtype ret;
 
     tipe_addr = TypeAddress( ptr_type );
     switch( tipe_addr->refno ) {
-    case T_HUGE_POINTER:
+    case TY_HUGE_POINTER:
         ret = CV_VTFAR;
         break;
-    case T_LONG_POINTER:
-    case T_LONG_CODE_PTR:
+    case TY_LONG_POINTER:
+    case TY_LONG_CODE_PTR:
         if( tipe_addr->length == 6 ){
             ret = CV_VTFAR32;
         }else{
             ret = CV_VTFAR;
         }
         break;
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
         if( tipe_addr->length == 4 ){
             ret = CV_VTNEAR32;
         }else{
@@ -1383,10 +1433,11 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type ){
     return( ret );
 }
 
-static lf_values MkVTShape( cv_out *out, field_vfunc *vf ){
-/****************************************************/
+static lf_values MkVTShape( cv_out *out, field_vfunc *vf )
+/********************************************************/
+{
     lf_values   vshape;
-    ct_vtshape *vt;
+    ct_vtshape  *vt;
     char        val;
     int         count;
     cv_vtshape  shape;
@@ -1396,15 +1447,15 @@ static lf_values MkVTShape( cv_out *out, field_vfunc *vf ){
     vt->count = vf->vft_size;
     shape = CVVTShape( vf->vft_cgtype );
     val = 0;
-    for( count = 0; count < vf->vft_size; ++count ){
+    for( count = 0; count < vf->vft_size; ++count ) {
         if( (count & 1) == 0 ){
             val = shape << 4;
-        }else{
+        } else {
             val |= shape;
             PutLFInt( out, CV_IB1, val );
         }
     }
-    if( (count & 1) ){
+    if( (count & 1) ) {
         PutLFInt( out, CV_IB1, val );
     }
     EndTypeString( out );
@@ -1413,10 +1464,11 @@ static lf_values MkVTShape( cv_out *out, field_vfunc *vf ){
     return( vshape );
 }
 
-static int  MkFlist( struct_list *st  ){
-/********************************************/
+static int  MkFlist( struct_list *st )
+/************************************/
+{
     field_any         *field;
-    field_entry       *old;
+    field_any         *old;
     cv_out            out[1];
     ct_subfield_ptrs  fld;
     cv_mlist          *a_mlist;
@@ -1435,12 +1487,12 @@ static int  MkFlist( struct_list *st  ){
     NewType( out ); /* reset buff for subfields */
     field = st->list;
     old = field;
-    while(  field != NULL ) {
+    while( field != NULL ) {
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
-            if( field->bclass.u.adjustor->class == LOC_CONST_1 ){
+            if( field->bclass.u.adjustor->class == LOC_CONST_1 ) {
                 disp = field->bclass.u.adjustor->u.val;
-                switch( field->bclass.kind ){
+                switch( field->bclass.kind ) {
                 case INHERIT_DBASE:
                     fld.a_bclass = StartType( out, LFG_BCLASS );
                     fld.a_bclass->type = field->bclass.base;
@@ -1545,19 +1597,19 @@ static int  MkFlist( struct_list *st  ){
     }
     PatchLen( fstart, len ); /* fill in length */
     field = old;
-    while(  field != NULL ) {
+    while( field != NULL ) {
         if( field->entry.field_type == FIELD_METHOD ) {
             field_any       *curr;
 
             NewTypeString( out );
-            a_mlist = StartType( out, LFG_MLIST );
-            for(;;){
+            a_mlist = StartType( out, LFG_METHODLIST );
+            for( ;; ) {
                 a_mlist->attr.s = 0; /* zero bits */
                 a_mlist->attr.f.access = WVCVAccess( field->method.attr );
                 a_mlist->attr.f.mprop = WVCVMProp( field->method.kind );
                 a_mlist->type = field->method.base;
-                if( field->method.kind == METHOD_VIRTUAL ){
-                    if( field->method.u.loc->class == LOC_CONST_1 ){
+                if( field->method.kind == METHOD_VIRTUAL ) {
+                    if( field->method.u.loc->class == LOC_CONST_1 ) {
                         disp = field->method.u.loc->u.val;
                     }else{
                         disp = -1;
@@ -1578,17 +1630,17 @@ static int  MkFlist( struct_list *st  ){
         field = field->entry.next;
     }
     field = old;
-    while( field != NULL ){
+    while( field != NULL ) {
         old = field;
         field  = field->entry.next;
-        _Free( old, sizeof( field_entry ) );
+        CGFree( old );
     }
     return( count );
 }
 
-static  field_any  *UnLinkMethod( field_any **owner, char *name  ){
-/*** UnLink method with name  ********************************/
-
+static  field_any  *UnLinkMethod( field_any **owner, char *name )
+/*** UnLink method with name  **********************************/
+{
     field_any    *curr;
 
     while( (curr = *owner) != NULL ) {
@@ -1603,24 +1655,24 @@ static  field_any  *UnLinkMethod( field_any **owner, char *name  ){
     return( curr );
 }
 
-static  int   SortMethods( struct_list *st  ){
-/***********************************************/
-
-    field_any   *curr;
-    field_entry *next;
-    field_entry *add;
+static  int   SortMethods( struct_list *st  )
+/*******************************************/
+{
+    field_any  *curr;
+    field_any  *next;
+    field_any  *add;
     int        overops;
 
     overops = 0;
     curr = st->list;
     while( curr != NULL ) {
-        if( curr->entry.field_type == FIELD_METHOD ){
+        if( curr->entry.field_type == FIELD_METHOD ) {
             add = UnLinkMethod(  &curr->entry.next, curr->method.name );
             if( add != NULL ){
                 overops = 1;
                 next = curr->entry.next;
                 curr->entry.next = add;
-                add->next = next;
+                add->entry.next = next;
             }
         }
         curr = curr->entry.next;
@@ -1628,8 +1680,9 @@ static  int   SortMethods( struct_list *st  ){
     return( overops );
 }
 
-static int  FlistCount( field_any *field ){
-/********************************************/
+static int  FlistCount( field_any *field )
+/****************************************/
+{
     int               count;
     offset            disp;
 
@@ -1670,8 +1723,8 @@ extern  dbg_type    CVEndStruct( struct_list  *st ) {
         ct_structure s;
         ct_union     u;
     }          *head;
-    int         count;
-    cv_out      out[1];
+    int             count;
+    cv_out          out[1];
 
     if( st->vtbl_type != DBG_NIL_TYPE ){
         lf_values        vtbl_type;
@@ -1681,16 +1734,16 @@ extern  dbg_type    CVEndStruct( struct_list  *st ) {
         st->vtbl_type = vtbl_type;
     }
     MkBits(  st->list );
-    if( st->vf != NULL ){
+    if( st->vf != NULL ) {
         vshape = MkVTShape( out, st->vf );
-    }else{
+    } else {
         vshape = 0;
     }
     NewTypeString( out );
     hd = ++TypeIdx;
     flisti = ++TypeIdx;
     count = FlistCount( st->list );
-    if( st->is_struct ){
+    if( st->is_struct ) {
         head = StartType( out, LFG_STRUCTURE );
 //      head->s.count  = st->num;
         head->s.count  = count;
@@ -1701,7 +1754,7 @@ extern  dbg_type    CVEndStruct( struct_list  *st ) {
         head->s.property.f.overops = SortMethods( st );
         head->s.dList = 0;
         head->s.vshape = vshape;
-    }else{
+    } else {
         head = StartType( out, LFG_UNION );
         head->u.count  = st->num;
         head->u.field = flisti;
@@ -1716,8 +1769,9 @@ extern  dbg_type    CVEndStruct( struct_list  *st ) {
     return( hd );
 }
 
-static  const_entry  *RevEnums( const_entry *cons  ){
-/***********************************************/
+static  const_entry  *RevEnums( const_entry *cons )
+/*************************************************/
+{
     const_entry *head;
     const_entry *next;
 
@@ -1731,9 +1785,9 @@ static  const_entry  *RevEnums( const_entry *cons  ){
     return( head );
 }
 
-extern  dbg_type    CVEndEnum( enum_list *en ) {
-/**************************************************/
-
+extern  dbg_type    CVEndEnum( enum_list *en )
+/********************************************/
+{
     const_entry     *cons;
     const_entry     *old;
     lf_values        fList;
@@ -1784,15 +1838,15 @@ extern  dbg_type    CVEndEnum( enum_list *en ) {
     while( cons != NULL ) {
         old = cons;
         cons = cons->next;
-        _Free( old, sizeof( const_entry ) + old->len );
+        CGFree( old );
     }
     return( headi );
 }
 
 
-extern  dbg_type    CVEndProc( proc_list  *pr ) {
-/***************************************************/
-
+extern  dbg_type    CVEndProc( proc_list  *pr )
+/*********************************************/
+{
     parm_entry   *parm;
     parm_entry   *old;
     ct_arglist   *args;
@@ -1814,11 +1868,11 @@ extern  dbg_type    CVEndProc( proc_list  *pr ) {
         PutFld2( out, parm->tipe );
         old = parm;
         parm = parm->next;
-        _Free( old, sizeof( parm_entry ) );
+        CGFree( old );
     }
     EndTypeString( out );
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
-    if( pr->call == T_NEAR_CODE_PTR ) {
+    if( pr->call == TY_NEAR_CODE_PTR ) {
         call = CV_NEARC;
     } else {
         call = CV_FARC;

@@ -1,0 +1,122 @@
+c$noreference
+
+! Constants for GetProc16() (included for 16-bits windows so same source
+! will work in 16 and 32-bit environments)
+
+      integer GETPROC_CALLBACK
+      integer GETPROC_SETTIMER
+      integer GETPROC_ABORTPROC
+      integer GETPROC_ENUMFONTS
+      integer GETPROC_ENUMMETAFILE
+      integer GETPROC_ENUMOBJECTS
+      integer GETPROC_ENUMPROPS_FIXED_DS
+      integer GETPROC_GRAYSTRING
+      integer GETPROC_ENUMPROPS_MOVEABLE_DS
+      integer GETPROC_ENUMTASKWINDOWS
+      integer GETPROC_ENUMWINDOWS
+      integer GETPROC_ENUMCHILDWINDOWS
+      integer GETPROC_GLOBALNOTIFY
+      integer GETPROC_LINEDDA
+      integer GETPROC_SETWINDOWSHOOK
+      integer GETPROC_SETRESOURCEHANDLER
+
+      parameter ( GETPROC_CALLBACK              = 0 )
+      parameter ( GETPROC_SETTIMER              = 0 )
+      parameter ( GETPROC_ABORTPROC             = 1 )
+      parameter ( GETPROC_ENUMFONTS             = 2 )
+      parameter ( GETPROC_ENUMMETAFILE          = 3 )
+      parameter ( GETPROC_ENUMOBJECTS           = 4 )
+      parameter ( GETPROC_ENUMPROPS_FIXED_DS    = 5 )
+      parameter ( GETPROC_GRAYSTRING            = 5 )
+      parameter ( GETPROC_ENUMPROPS_MOVEABLE_DS = 6 )
+      parameter ( GETPROC_ENUMTASKWINDOWS       = 7 )
+      parameter ( GETPROC_ENUMWINDOWS           = 7 )
+      parameter ( GETPROC_ENUMCHILDWINDOWS      = 7 )
+      parameter ( GETPROC_GLOBALNOTIFY          = 8 )
+      parameter ( GETPROC_LINEDDA               = 9 )
+      parameter ( GETPROC_SETWINDOWSHOOK        = 9 )
+      parameter ( GETPROC_SETRESOURCEHANDLER    = 10 )
+
+! Special win386 library functions (included for 16-bits Windows so same source
+! will work in 16 and 32-bit environments). Stubbed versions of these functions
+! exist for 16-bit Windows.
+
+      external GetProc16
+      external ReleaseProc16
+      external AllocAlias16
+      external AllocHugeAlias16
+      external FreeAlias16
+      external FreeHugeAlias16
+      external MapAliasToFlat
+      external PASS_WORD_AS_POINTER
+
+      integer*4 GetProc16
+      integer*4 AllocAlias16
+      integer*4 AllocHugeAlias16
+      integer*4 MapAliasToFlat
+      integer*4 PASS_WORD_AS_POINTER
+
+c$ifdef __386__
+
+! Constants for GetIndirectFunctionHandle()
+
+      integer INDIR_DWORD
+      integer INDIR_WORD
+      integer INDIR_CHAR
+      integer INDIR_PTR
+      integer INDIR_ENDLIST
+      integer INDIR_CDECL
+
+      parameter ( INDIR_DWORD     = 4 )
+      parameter ( INDIR_WORD      = 2 )
+      parameter ( INDIR_CHAR      = 2 )
+      parameter ( INDIR_PTR       = -1 )
+      parameter ( INDIR_ENDLIST   = -2 )
+      parameter ( INDIR_CDECL     = -3 )
+
+! Constants for DefineDLLEntry()
+
+      integer DLL_DWORD
+      integer DLL_PTR
+      integer DLL_WORD
+      integer DLL_CHAR
+      integer DLL_ENDLIST
+
+      parameter ( DLL_DWORD       = 4 )
+      parameter ( DLL_PTR         = 4 )
+      parameter ( DLL_WORD        = 2 )
+      parameter ( DLL_CHAR        = 2 )
+      parameter ( DLL_ENDLIST     = -1 )
+
+! Constants for DefineUserProc16()
+
+      integer UPD16_DWORD
+      integer UPD16_PTR
+      integer UPD16_WORD
+      integer UPD16_CHAR
+      integer UPD16_ENDLIST
+
+      parameter ( UPD16_DWORD       = 4 )
+      parameter ( UPD16_PTR         = 4 )
+      parameter ( UPD16_WORD        = 2 )
+      parameter ( UPD16_CHAR        = 2 )
+      parameter ( UPD16_ENDLIST     = -1 )
+
+! Special win386 library functions
+
+      external InvokeIndirectFunction
+      external GetIndirectFunctionHandle
+      external FreeIndirectFunctionHandle
+      external DefineDLLEntry
+      external DefineUserProc16
+      external _Call16
+
+      integer*4 InvokeIndirectFunction
+      integer*4 GetIndirectFunctionHandle
+      integer*4 DefineDLLEntry
+      integer*4 DefineUserProc16
+      integer*4 _Call16
+
+c$endif
+
+c$reference

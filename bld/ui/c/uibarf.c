@@ -33,7 +33,7 @@
 #include "uidef.h"
 
 
-void global uibarf()
-/******************/
+void global uibarf( void )
+/************************/
 {
 }

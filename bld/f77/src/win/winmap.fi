@@ -1,0 +1,56 @@
+*$noreference
+
+! Mapping Functions:
+! ------------------
+
+      external GetMapMode
+      external GetViewportExt
+      external GetViewportOrg
+      external GetWindowExt
+      external GetWindowOrg
+      external OffsetViewportOrg
+      external OffsetWindowOrg
+      external ScaleViewportExt
+      external ScaleWindowExt
+      external SetMapMode
+      external SetViewportExt
+      external SetViewportOrg
+      external SetWindowExt
+      external SetWindowOrg
+
+      integer*2 GetMapMode
+      integer*4 GetViewportExt
+      integer*4 GetViewportOrg
+      integer*4 GetWindowExt
+      integer*4 GetWindowOrg
+      integer*4 OffsetViewportOrg
+      integer*4 OffsetWindowOrg
+      integer*4 ScaleViewportExt
+      integer*4 ScaleWindowExt
+      integer*2 SetMapMode
+      integer*4 SetViewportExt
+      integer*4 SetViewportOrg
+      integer*4 SetWindowExt
+      integer*4 SetWindowOrg
+
+! Mapping Modes
+
+      integer MM_TEXT
+      integer MM_LOMETRIC
+      integer MM_HIMETRIC
+      integer MM_LOENGLISH
+      integer MM_HIENGLISH
+      integer MM_TWIPS
+      integer MM_ISOTROPIC
+      integer MM_ANISOTROPIC
+
+      parameter ( MM_TEXT             = 1 )
+      parameter ( MM_LOMETRIC         = 2 )
+      parameter ( MM_HIMETRIC         = 3 )
+      parameter ( MM_LOENGLISH        = 4 )
+      parameter ( MM_HIENGLISH        = 5 )
+      parameter ( MM_TWIPS            = 6 )
+      parameter ( MM_ISOTROPIC        = 7 )
+      parameter ( MM_ANISOTROPIC      = 8 )
+
+*$reference

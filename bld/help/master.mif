@@ -1,0 +1,33 @@
+proj_name = whelp
+
+whelp_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"$(help_dir)/h" -I"$(ui_dir)/h" -I$(trmem_dir)
+
+.c: ../c;$(trmem_dir)
+
+!include ../help.mif
+
+objs =  main.obj filelist.obj
+objs += $(help_objs)
+
+!ifdef whelp_trmem
+extra_c_flags += -DTRMEM
+objs +=  trmemcvr.obj trmem.obj
+!endif
+
+!ifdef bootstrap
+libs = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+!else
+!ifeq host_os linux
+libs = $(ui_dir)/unix/$(host_os)$(host_cpu)/ui.lib $(ncurses_dir)/$(host_os)$(host_cpu)/ncurses.lib
+!else
+libs = $(ui_dir)/$(host_os)/$(host_os)$(host_cpu)/ui.lib
+!endif
+!endif
+
+!include exetarg.mif

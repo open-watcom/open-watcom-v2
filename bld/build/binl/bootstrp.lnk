@@ -1,0 +1,60 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+#
+# Note: Since there is no 16-bit target for Linux, we simply
+# make the default 16-bit compiler produce 16-bit DOS apps.
+system begin osi
+    option osname='OS Independent'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/osi
+    format pharlap rex ^
+end
+system begin 286
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    format dos
+end
+system begin 386
+    option osname='Linux x86 (bootstrap)'
+    libpath %DEVDIR%/clib/library/linux.386/mf_r
+    libpath %DEVDIR%/clib/library/linux.386/mf_s
+    libpath %DEVDIR%/plusplus/cpplib/generic.386/mf_r
+    libpath %DEVDIR%/plusplus/cpplib/generic.386/mf_s
+    libpath %DEVDIR%/mathlib/library/msdos.387/mf_r
+    libpath %DEVDIR%/mathlib/library/msdos.387/mf_s
+    libpath %DEVDIR%/mathlib/library/msdos.386/mf_r
+    libpath %DEVDIR%/mathlib/library/msdos.386/mf_s
+    libpath %DEVDIR%/emu/stub386
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+system begin linux
+    option osname='Linux x86 (bootstrap)'
+    debug all
+    libpath %DEVDIR%/clib/library/linux.386/mf_r
+    libpath %DEVDIR%/clib/library/linux.386/mf_s
+    libpath %DEVDIR%/plusplus/cpplib/generic.386/mf_r
+    libpath %DEVDIR%/plusplus/cpplib/generic.386/mf_s
+    libpath %DEVDIR%/mathlib/library/msdos.387/mf_r
+    libpath %DEVDIR%/mathlib/library/msdos.387/mf_s
+    libpath %DEVDIR%/mathlib/library/msdos.386/mf_r
+    libpath %DEVDIR%/mathlib/library/msdos.386/mf_s
+    libpath %DEVDIR%/emu/stub386
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+system begin linuxmips
+    option osname='Linux MIPS (bootstrap)'
+    debug all
+    libpath %DEVDIR%/clib/library/linux.mps/_s
+    libpath %DEVDIR%/plusplus/cpplib/generic.mps/_s
+    libpath %DEVDIR%/mathlib/library/linux.mps/_s
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ctype.h>
 #include <string.h>
 #include "wglbl.h"
@@ -59,80 +59,78 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WDeleteAccelEntry ( WAccelEditInfo *einfo )
+Bool WDeleteAccelEntry( WAccelEditInfo *einfo )
 {
     HWND         lbox;
     Bool         ok;
     LRESULT      ret;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_ACCEDLIST );
-        ok = ( lbox != NULL );
+    if( ok ) {
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
+        ok = (lbox != NULL);
     }
 
-    if ( ok ) {
-        ret = SendMessage ( lbox, LB_GETCURSEL, 0, 0 );
-        ok = ( ret != LB_ERR );
+    if( ok ) {
+        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = (ret != LB_ERR);
     }
 
-    if ( ok ) {
-        ok = WDeleteEditWinLBoxEntry ( einfo, (int) ret, TRUE );
+    if( ok ) {
+        ok = WDeleteEditWinLBoxEntry( einfo, (int)ret, TRUE );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WDeleteEditWinLBoxEntry ( WAccelEditInfo *einfo, int pos, Bool free_it )
+Bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, Bool free_it )
 {
-    HWND         lbox;
-    Bool         ok;
+    HWND        lbox;
+    Bool        ok;
     WAccelEntry *entry;
-    LRESULT      ret, max;
+    LRESULT     ret, max;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
-    if ( ok ) {
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_ACCEDLIST );
-        ok = ( lbox != NULL );
+    if( ok ) {
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
+        ok = (lbox != NULL);
     }
 
-    if ( ok ) {
-        ret = SendMessage ( lbox, LB_GETCOUNT, 0, 0 );
+    if( ok ) {
+        ret = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
         max = ret;
-        ok = ( ret && ( ret != LB_ERR ) && ( pos < (int)ret ) );
+        ok = (ret != 0 && ret != LB_ERR && pos < (int)ret);
     }
 
-    if ( ok ) {
-        entry = (WAccelEntry *)
-            SendMessage ( lbox, LB_GETITEMDATA, (WPARAM) pos, 0 );
-        if ( entry ) {
-            if ( free_it ) {
-                ok = WFreeAccelTableEntry ( einfo->tbl, entry );
+    if( ok ) {
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        if( entry != NULL ) {
+            if( free_it ) {
+                ok = WFreeAccelTableEntry( einfo->tbl, entry );
             }
         } else {
             ok = FALSE;
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         einfo->info->modified = TRUE;
-        ret = SendMessage ( lbox, LB_DELETESTRING, (WPARAM) pos, 0 );
-        ok = ( ret != LB_ERR );
+        ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
+        ok = (ret != LB_ERR);
     }
 
-    if ( ok ) {
+    if( ok ) {
         einfo->current_entry = NULL;
-        einfo->current_pos   = -1;
-        pos = min ( max-2, pos );
-        ret = SendMessage ( lbox, LB_SETCURSEL, (WPARAM) pos, 0 );
-        ok = ( ret != LB_ERR );
-        if ( ok ) {
-            WHandleSelChange ( einfo );
+        einfo->current_pos = -1;
+        pos = min( max - 2, pos );
+        ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
+        ok = (ret != LB_ERR);
+        if( ok ) {
+            WHandleSelChange( einfo );
         }
     }
 
-    return ( ok );
+    return( ok );
 }
-

@@ -1,0 +1,37 @@
+proj_name = causeway
+
+causeway_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+extra_a_flags = -DENGLISH=1 -I"../../inc"
+
+extra_l_flags = op map, verbose, statics
+
+.asm : ../../asm
+
+!ifeq host_cpu i86
+
+all : cwstub.exe cwdstub.exe .symbolic
+
+cwstub.exe : cw32.obj $(__MAKEFILES__)
+    $(linker) $(lflags) name cw32.exe disable 1080 file $[@
+    bcwc cw32.exe cwstub.exe
+
+cwdstub.exe : cwdstub.obj
+    $(linker) $(lflags) name $@ disable 1014 file $[@
+
+!else ifeq host_cpu 386
+
+objs = &
+    cwkrnl1.obj &
+    cwkrnl2.obj &
+    cwkrnl3.obj &
+    cwkrnl4.obj
+
+cwdll.lib : $(objs) ../../inc/cwapi.lbc
+    $(librarian) $(libflags) $(objs) @$]@
+
+!endif

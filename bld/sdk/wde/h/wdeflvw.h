@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeLViewCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeLViewInit        ( Bool );
-extern void              WdeLViewFini        ( void );
+extern OBJPTR WINEXPORT  WdeLViewCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeLViewInit( Bool );
+extern void              WdeLViewFini( void );
 
 #endif

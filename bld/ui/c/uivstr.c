@@ -35,7 +35,7 @@
 
 
 void global uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
-                         ATTR attr, char __FAR *string, int slen )
+                   ATTR attr, const char __FAR *string, int slen )
 /****************************************************************/
 {
     int             count;
@@ -68,7 +68,7 @@ void global uivtextput( register VSCREEN        *vptr,
                         register ORD            row,
                         register ORD            col,
                         register ATTR           attr,
-                        register char           *string,
+                        register const char     *string,
                         register int            len )
 /***************************************************/
 {

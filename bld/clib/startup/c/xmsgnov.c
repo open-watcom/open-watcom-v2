@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for NetWare.
 *
 ****************************************************************************/
 
@@ -35,17 +34,39 @@
 #include <io.h>
 #include "exitwmsg.h"
 
+#if defined (_NETWARE_CLIB)
 extern void             ExitThread( int,int );
+#endif
+#if defined (_NETWARE_LIBC)
+extern void             NXThreadExit( void *);
+#endif
 
 _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
 {
-    write( STDOUT_HANDLE, msg, strlen( msg ) );
+    char    newline[2];
+
+    write( STDOUT_FILENO, msg, strlen( msg ) );
+    newline[0] = '\r';
+    newline[1] = '\n';
+    write( STDOUT_FILENO, &newline, 2 );
+#if defined (_NETWARE_CLIB)
     ExitThread( 0, retcode );
+#else
+    NXThreadExit(&retcode);
+#endif
 }
 
 _WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
 {
-    if( !__EnterWVIDEO( msg ) ) {
+    if( !__EnterWVIDEO( msg ) )
+    {
         __exit_with_msg( msg, retcode );
     }
 }
+
+#if defined (_NETWARE_LIBC)
+_WCRTLINK void AbortWithStackOverflow( unsigned TID )
+{
+    __fatal_runtime_error("OpenWatcom RTL : Stack Overflow", TID);
+}
+#endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <limits.h>
 #include "wglbl.h"
@@ -52,82 +52,82 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    WStringHandle     hndl;
+    WStringHandle   hndl;
     WStringEditInfo *info;
 } WHndlInfo;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WHndlInfo *WFindHndlInfo  ( WStringHandle );
-static WHndlInfo *WFindHndlInfoR ( WStringEditInfo *info );
-static void       WFreeHndlInfo  ( WHndlInfo * );
-static WHndlInfo *WAllocHndlInfo ( void );
+static WHndlInfo    *WFindHndlInfo( WStringHandle );
+static WHndlInfo    *WFindHndlInfoR( WStringEditInfo *info );
+static void         WFreeHndlInfo( WHndlInfo * );
+static WHndlInfo    *WAllocHndlInfo( void );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static WStringHandle  WNextHndl = 1;
-static LIST        *WHndlList = NULL;
+static WStringHandle    WNextHndl = 1;
+static LIST             *WHndlList = NULL;
 
-WStringHandle WRegisterEditSession ( WStringEditInfo *info )
+WStringHandle WRegisterEditSession( WStringEditInfo *info )
 {
     WHndlInfo   *hinfo;
 
-    if ( !info || ( WNextHndl == INT_MAX ) || !( hinfo=WAllocHndlInfo() ) ) {
-        return ( 0 );
+    if( info == NULL || WNextHndl == INT_MAX || (hinfo = WAllocHndlInfo()) == NULL ) {
+        return( 0 );
     }
 
     hinfo->hndl = WNextHndl;
     hinfo->info = info;
 
-    WInsertObject ( &WHndlList, hinfo );
+    WInsertObject( &WHndlList, hinfo );
 
     WNextHndl++;
 
-    return ( hinfo->hndl );
+    return( hinfo->hndl );
 }
 
-int WUnRegisterEditSession ( WStringHandle hndl )
+int WUnRegisterEditSession( WStringHandle hndl )
 {
     WHndlInfo *hinfo;
 
-    if ( !hndl || !( hinfo = WFindHndlInfo ( hndl ) ) ) {
-        return ( FALSE );
+    if( hndl == 0 || (hinfo = WFindHndlInfo( hndl )) == NULL ) {
+        return( FALSE );
     }
 
-    ListRemoveElt ( &WHndlList, hinfo );
+    ListRemoveElt( &WHndlList, hinfo );
 
-    WFreeHndlInfo ( hinfo );
+    WFreeHndlInfo( hinfo );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-WStringEditInfo *WGetEditSessionInfo ( WStringHandle hndl )
+WStringEditInfo *WGetEditSessionInfo( WStringHandle hndl )
 {
     WHndlInfo *hinfo;
 
-    if ( !hndl || !( hinfo = WFindHndlInfo ( hndl ) ) ) {
-        return ( NULL );
+    if( hndl == NULL || (hinfo = WFindHndlInfo( hndl )) == NULL ) {
+        return( NULL );
     }
 
-    return ( hinfo->info );
+    return( hinfo->info );
 }
 
-WStringHandle WGetEditSessionHandle ( WStringEditInfo *info )
+WStringHandle WGetEditSessionHandle( WStringEditInfo *info )
 {
     WHndlInfo *hinfo;
 
-    if ( !info || !( hinfo = WFindHndlInfoR ( info ) ) ) {
-        return ( NULL );
+    if( info == NULL || (hinfo = WFindHndlInfoR( info )) == NULL ) {
+        return( 0 );
     }
 
-    return ( hinfo->hndl );
+    return( hinfo->hndl );
 }
 
 int WIsValidHandle( WStringHandle hndl )
 {
-    return ( hndl && WFindHndlInfo ( hndl ) );
+    return( hndl != 0 && WFindHndlInfo( hndl ) );
 }
 
 int WIsStringDialogMessage( MSG *msg, HACCEL accel_table )
@@ -138,11 +138,11 @@ int WIsStringDialogMessage( MSG *msg, HACCEL accel_table )
     HWND        active;
 
     ret = FALSE;
-    active  = GetActiveWindow();
+    active = GetActiveWindow();
 
-    for ( l=WHndlList; l && !ret; l = ListNext( l ) ) {
+    for( l = WHndlList; l != NULL && !ret; l = ListNext( l ) ) {
         hinfo = ListElement( l );
-        if( hinfo && ( hinfo->info->win == active ) ) {
+        if( hinfo != NULL && hinfo->info->win == active ) {
             if( WDoesEditHaveFocus() ) {
                 if( hinfo->info->edit_dlg != (HWND)NULL ) {
                     ret = IsDialogMessage( hinfo->info->edit_dlg, msg );
@@ -159,54 +159,53 @@ int WIsStringDialogMessage( MSG *msg, HACCEL accel_table )
         }
     }
 
-    return ( ret );
+    return( ret );
 }
 
-WHndlInfo *WFindHndlInfo ( WStringHandle hndl )
+WHndlInfo *WFindHndlInfo( WStringHandle hndl )
 {
-    WHndlInfo *hinfo;
-    LIST       *l;
+    WHndlInfo   *hinfo;
+    LIST        *l;
 
-    for ( l=WHndlList; l; l = ListNext ( l ) ) {
-        hinfo = ListElement ( l );
-        if ( hinfo->hndl == hndl ) {
-            return ( hinfo );
+    for( l = WHndlList; l != NULL; l = ListNext( l ) ) {
+        hinfo = ListElement( l );
+        if( hinfo->hndl == hndl ) {
+            return( hinfo );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-WHndlInfo *WFindHndlInfoR ( WStringEditInfo *info )
+WHndlInfo *WFindHndlInfoR( WStringEditInfo *info )
 {
-    WHndlInfo *hinfo;
-    LIST       *l;
+    WHndlInfo   *hinfo;
+    LIST        *l;
 
-    for ( l=WHndlList; l; l = ListNext ( l ) ) {
-        hinfo = ListElement ( l );
-        if ( hinfo->info == info ) {
-            return ( hinfo );
+    for( l = WHndlList; l != NULL; l = ListNext( l ) ) {
+        hinfo = ListElement( l );
+        if( hinfo->info == info ) {
+            return( hinfo );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-WHndlInfo *WAllocHndlInfo ( void )
+WHndlInfo *WAllocHndlInfo( void )
 {
     WHndlInfo *info;
 
-    info = (WHndlInfo *) WMemAlloc ( sizeof(WHndlInfo) );
+    info = (WHndlInfo *)WMemAlloc( sizeof( WHndlInfo ) );
 
-    memset ( info, 0, sizeof(WHndlInfo) );
+    memset( info, 0, sizeof( WHndlInfo ) );
 
-    return ( info );
+    return( info );
 }
 
-void WFreeHndlInfo ( WHndlInfo *info )
+void WFreeHndlInfo( WHndlInfo *info )
 {
-    if ( info ) {
-        WMemFree ( info );
+    if( info != NULL ) {
+        WMemFree( info );
     }
 }
-

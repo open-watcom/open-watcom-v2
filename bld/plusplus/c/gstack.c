@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"

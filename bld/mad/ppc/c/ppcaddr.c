@@ -38,14 +38,14 @@ void            DIGENTRY MIAddrAdd( address *a, long b, mad_address_format af )
     a->mach.offset += b;
 }
 
-int             DIGENTRY MIAddrComp( address *ap, address *bp, mad_address_format af )
+int             DIGENTRY MIAddrComp( address const *ap, address const *bp, mad_address_format af )
 {
     if( ap->mach.offset == bp->mach.offset ) return(  0 );
     if( ap->mach.offset >  bp->mach.offset ) return( +1 );
                                              return( -1 );
 }
 
-long            DIGENTRY MIAddrDiff( address *a, address *b, mad_address_format af )
+long            DIGENTRY MIAddrDiff( address const *a, address const *b, mad_address_format af )
 {
     long        diff;
 
@@ -54,17 +54,17 @@ long            DIGENTRY MIAddrDiff( address *a, address *b, mad_address_format 
     return( diff );
 }
 
-mad_status      DIGENTRY MIAddrMap( addr_ptr *a, addr_ptr *map, addr_ptr *real, mad_registers *mr )
+mad_status      DIGENTRY MIAddrMap( addr_ptr *a, addr_ptr const *map, addr_ptr const *real, mad_registers const *mr )
 {
     return( MS_FAIL );
 }
 
-mad_status      DIGENTRY MIAddrFlat( mad_registers *mr )
+mad_status      DIGENTRY MIAddrFlat( mad_registers const *mr )
 {
     return( MS_FAIL );
 }
 
-mad_status      DIGENTRY MIAddrInterrupt( addr_ptr *a, unsigned size, mad_registers *mr )
+mad_status      DIGENTRY MIAddrInterrupt( addr_ptr const *a, unsigned size, mad_registers const *mr )
 {
     return( MS_FAIL );
 }

@@ -3,132 +3,141 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
-[ BLOCK <1> reference ]
-    cdsay <PROJDIR>\c
-    cdsay ..\nti86
-    wmake /h /k
-    wmake /h /k reference
-    cdsay ..\nt386
-    wmake /h /k
-    wmake /h /k reference
-    checkall .
-
-[ BLOCK <1> referenceos2 ]
-    cdsay <PROJDIR>\c
-    cdsay ..\os2i86
-    wmake /h /k
-    wmake /h /k reference
-    cdsay ..\os2386
-    wmake /h /k
-    wmake /h /k reference
-    checkall .
-
 [ BLOCK <1> build rel2 ]
-    cdsay <PROJDIR>\c
-    cdsay ..\nti86
-    wmake /h /k
-    cdsay ..\nt386
-    wmake /h /k
-    cdsay ..\nt386dll
-    wmake /h /k
-#    MEP - 3/27/00 just make NT for now
-    cdsay ..\osii86
-    wmake /h /k
-    cdsay ..\osi386
-    wmake /h /k
-    cdsay ..\os2i86
-    wmake /h /k
-    cdsay ..\os2386
-    wmake /h /k
-    cdsay ..\qnxi86
-    wmake /h /k
-    cdsay ..\qnx386
-    wmake /h /k
-    cd ..
+#=======================
+    pmake -d buildwpp <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 acprel2 ]
 #================================
+
 #
 # 386 NT hosted compilers
 #
+  [ IFDEF (os_nt "") <2*> ]
 #  i86 target
-    <CPCMD> nti86\wcppi86.exe <relroot>\rel2\binnt\wpp.exe
-    <CPCMD> nti86\wppdi86.dll <relroot>\rel2\binnt\wppdi86.dll
-    <CPCMD> nti86\wppdi86.sym <relroot>\rel2\binnt\wppdi86.sym
-    <CPCMD> nti86\wppi8601.int <relroot>\rel2\binnt\wppi8601.int
+    <CPCMD> <PROJDIR>/nt386.i86/wcppi86.exe   <RELROOT>/binnt/wpp.exe
+    <CPCMD> <PROJDIR>/nt386.i86/wcppi86.sym   <RELROOT>/binnt/wpp.sym
+    <CPCMD> <PROJDIR>/nt386.i86/wppdi86.dll   <RELROOT>/binnt/wppdi86.dll
+    <CPCMD> <PROJDIR>/nt386.i86/wppdi86.sym   <RELROOT>/binnt/wppdi86.sym
+    <CPCMD> <PROJDIR>/nt386.i86/wppi8601.int  <RELROOT>/binnt/wppi8601.int
 #  386 target
-    <CPCMD> nt386\wcpp386.exe <relroot>\rel2\binnt\wpp386.exe
-    <CPCMD> nt386\wppd386.dll <relroot>\rel2\binnt\wppd386.dll
-    <CPCMD> nt386\wppd386.sym <relroot>\rel2\binnt\wppd386.sym
-    <CPCMD> nt386\wpp38601.int <relroot>\rel2\binnt\wpp38601.int
+    <CPCMD> <PROJDIR>/nt386.386/wcpp386.exe   <RELROOT>/binnt/wpp386.exe
+    <CPCMD> <PROJDIR>/nt386.386/wcpp386.sym   <RELROOT>/binnt/wpp386.sym
+    <CPCMD> <PROJDIR>/nt386.386/wppd386.dll   <RELROOT>/binnt/wppd386.dll
+    <CPCMD> <PROJDIR>/nt386.386/wppd386.sym   <RELROOT>/binnt/wppd386.sym
+    <CPCMD> <PROJDIR>/nt386.386/wpp38601.int  <RELROOT>/binnt/wpp38601.int
+#  AXP target
+    <CPCMD> <PROJDIR>/nt386.axp/wcppaxp.exe   <RELROOT>/binnt/wppaxp.exe
+    <CPCMD> <PROJDIR>/nt386.axp/wcppaxp.sym   <RELROOT>/binnt/wppaxp.sym
+    <CPCMD> <PROJDIR>/nt386.axp/wppdaxp.dll   <RELROOT>/binnt/wppdaxp.dll
+    <CPCMD> <PROJDIR>/nt386.axp/wppdaxp.sym   <RELROOT>/binnt/wppdaxp.sym
+    <CPCMD> <PROJDIR>/nt386.axp/wppaxp01.int  <RELROOT>/binnt/wppaxp01.int
 
 #  Optima 386 target (with -br switch)
-    <CPCMD> nt386dll\wcpp386.exe <relroot>\rel2\binnt\rtdll\wpp386.exe
-    <CPCMD> nt386dll\wppd386.dll <relroot>\rel2\binnt\rtdll\wppd386.dll
-    <CPCMD> nt386dll\wppd386.sym <relroot>\rel2\binnt\rtdll\wppd386.sym
-    <CPCMD> nt386dll\wpp38601.int <relroot>\rel2\binnt\rtdll\wpp38601.int
+    <CPCMD> <PROJDIR>/nt386dll.386/wcpp386.exe   <RELROOT>/binnt/rtdll/wpp386.exe
+    <CPCMD> <PROJDIR>/nt386dll.386/wcpp386.sym   <RELROOT>/binnt/rtdll/wpp386.sym
+    <CPCMD> <PROJDIR>/nt386dll.386/wppd386.dll   <RELROOT>/binnt/rtdll/wppd386.dll
+    <CPCMD> <PROJDIR>/nt386dll.386/wppd386.sym   <RELROOT>/binnt/rtdll/wppd386.sym
+    <CPCMD> <PROJDIR>/nt386dll.386/wpp38601.int  <RELROOT>/binnt/rtdll/wpp38601.int
 
 #
 # 386 OS/2 hosted compilers
 #
+  [ IFDEF (os_os2 "") <2*> ]
 #  i86 target
-    <CPCMD> os2i86\wcppi86.exe <relroot>\rel2\binp\wpp.exe
-    <CPCMD> os2i86\wppdi86.dll <relroot>\rel2\binp\dll\wppdi86.dll
-    <CPCMD> os2i86\wppdi86.sym <relroot>\rel2\binp\dll\wppdi86.sym
-    <CPCMD> os2i86\wppi8601.int <relroot>\rel2\binp\dll\wppi8601.int
+    <CPCMD> <PROJDIR>/os2386.i86/wcppi86.exe   <RELROOT>/binp/wpp.exe
+    <CPCMD> <PROJDIR>/os2386.i86/wcppi86.sym   <RELROOT>/binp/wpp.sym
+    <CPCMD> <PROJDIR>/os2386.i86/wppdi86.dll   <RELROOT>/binp/dll/wppdi86.dll
+    <CPCMD> <PROJDIR>/os2386.i86/wppdi86.sym   <RELROOT>/binp/dll/wppdi86.sym
+    <CPCMD> <PROJDIR>/os2386.i86/wppi8601.int  <RELROOT>/binp/dll/wppi8601.int
 #  386 target
-    <CPCMD> os2386\wcpp386.exe <relroot>\rel2\binp\wpp386.exe
-    <CPCMD> os2386\wppd386.dll <relroot>\rel2\binp\dll\wppd386.dll
-    <CPCMD> os2386\wppd386.sym <relroot>\rel2\binp\dll\wppd386.sym
-    <CPCMD> os2386\wpp38601.int <relroot>\rel2\binp\dll\wpp38601.int
+    <CPCMD> <PROJDIR>/os2386.386/wcpp386.exe   <RELROOT>/binp/wpp386.exe
+    <CPCMD> <PROJDIR>/os2386.386/wcpp386.sym   <RELROOT>/binp/wpp386.sym
+    <CPCMD> <PROJDIR>/os2386.386/wppd386.dll   <RELROOT>/binp/dll/wppd386.dll
+    <CPCMD> <PROJDIR>/os2386.386/wppd386.sym   <RELROOT>/binp/dll/wppd386.sym
+    <CPCMD> <PROJDIR>/os2386.386/wpp38601.int  <RELROOT>/binp/dll/wpp38601.int
+#  386 target
+    <CPCMD> <PROJDIR>/os2386.axp/wcppaxp.exe   <RELROOT>/binp/wppaxp.exe
+    <CPCMD> <PROJDIR>/os2386.axp/wcppaxp.sym   <RELROOT>/binp/wppaxp.sym
+    <CPCMD> <PROJDIR>/os2386.axp/wppdaxp.dll   <RELROOT>/binp/dll/wppdaxp.dll
+    <CPCMD> <PROJDIR>/os2386.axp/wppdaxp.sym   <RELROOT>/binp/dll/wppdaxp.sym
+    <CPCMD> <PROJDIR>/os2386.axp/wppaxp01.int  <RELROOT>/binp/dll/wppaxp01.int
+  [ ENDIF ]
 #
 # 386 OSI hosted compilers
 #
 #  i86 target
-    <CPCMD> osii86\wcppi86.exe <relroot>\rel2\binw\wpp.exe
-    <CPCMD> osii86\wcppi86.sym <relroot>\rel2\binw\wpp.sym
-    <CPCMD> osii86\wppi8601.int <relroot>\rel2\binw\wppi8601.int
+#    <CPCMD> <PROJDIR>/osi386.i86/wcppi86.exe   <RELROOT>/binw/wpp.exe
+#    <CPCMD> <PROJDIR>/osi386.i86/wcppi86.sym   <RELROOT>/binw/wpp.sym
+#    <CPCMD> <PROJDIR>/osi386.i86/wppi8601.int  <RELROOT>/binw/wppi8601.int
 #  386 target
-    <CPCMD> osi386\wcpp386.exe <relroot>\rel2\binw\wpp386.exe
-    <CPCMD> osi386\wcpp386.sym <relroot>\rel2\binw\wpp386.sym
-    <CPCMD> osi386\wpp38601.int <relroot>\rel2\binw\wpp38601.int
+#    <CPCMD> <PROJDIR>/osi386.386/wcpp386.exe   <RELROOT>/binw/wpp386.exe
+#    <CPCMD> <PROJDIR>/osi386.386/wcpp386.sym   <RELROOT>/binw/wpp386.sym
+#    <CPCMD> <PROJDIR>/osi386.386/wpp38601.int  <RELROOT>/binw/wpp38601.int
+
+#
+# 386 DOS hosted compilers
+#
+  [ IFDEF (os_dos "") <2*> ]
+#  i86 target
+    <CPCMD> <PROJDIR>/dos386.i86/wcppi86.exe   <RELROOT>/binw/wpp.exe
+    <CPCMD> <PROJDIR>/dos386.i86/wcppi86.sym   <RELROOT>/binw/wpp.sym
+    <CPCMD> <PROJDIR>/dos386.i86/wppi8601.int  <RELROOT>/binw/wppi8601.int
+#  386 target
+    <CPCMD> <PROJDIR>/dos386.386/wcpp386.exe   <RELROOT>/binw/wpp386.exe
+    <CPCMD> <PROJDIR>/dos386.386/wcpp386.sym   <RELROOT>/binw/wpp386.sym
+    <CPCMD> <PROJDIR>/dos386.386/wpp38601.int  <RELROOT>/binw/wpp38601.int
 #
 # 386 QNX hosted compilers
 #
+  [ IFDEF (os_qnx) <2*> ]
 #  i86 target
-    <CPCMD> qnxi86\wcppi86.qnx <relroot>\rel2\qnx\binq\wpp.
-    <CPCMD> qnxi86\wcppi86.sym <relroot>\rel2\qnx\sym\wpp.sym
-    <CPCMD> qnxi86\wppi8601.int <relroot>\rel2\qnx\sym\wppi8601.int
+    <CPCMD> <PROJDIR>/qnx386.i86/wcppi86.exe   <RELROOT>/qnx/binq/wpp.
+    <CPCMD> <PROJDIR>/qnx386.i86/wcppi86.sym   <RELROOT>/qnx/sym/wpp.sym
+    <CPCMD> <PROJDIR>/qnx386.i86/wppi8601.int  <RELROOT>/qnx/sym/wppi8601.int
 #  386 target
-    <CPCMD> qnx386\wcpp386.qnx <relroot>\rel2\qnx\binq\wpp386.
-    <CPCMD> qnx386\wcpp386.sym <relroot>\rel2\qnx\sym\wpp386.sym
-    <CPCMD> qnx386\wpp38601.int <relroot>\rel2\qnx\sym\wpp38601.int
+    <CPCMD> <PROJDIR>/qnx386.386/wcpp386.exe   <RELROOT>/qnx/binq/wpp386.
+    <CPCMD> <PROJDIR>/qnx386.386/wcpp386.sym   <RELROOT>/qnx/sym/wpp386.sym
+    <CPCMD> <PROJDIR>/qnx386.386/wpp38601.int  <RELROOT>/qnx/sym/wpp38601.int
+
+#
+# 386 Linux hosted compilers
+#
+  [ IFDEF (os_linux "") <2*> ]
+#  i86 target
+    <CPCMD> <PROJDIR>/linux386.i86/wcppi86.exe   <RELROOT>/binl/wpp
+    <CPCMD> <PROJDIR>/linux386.i86/wcppi86.sym   <RELROOT>/binl/wpp.sym
+    <CPCMD> <PROJDIR>/linux386.i86/wppi8601.int  <RELROOT>/binl/wppi8601.int
+#  386 target
+    <CPCMD> <PROJDIR>/linux386.386/wcpp386.exe   <RELROOT>/binl/wpp386
+    <CPCMD> <PROJDIR>/linux386.386/wcpp386.sym   <RELROOT>/binl/wpp386.sym
+    <CPCMD> <PROJDIR>/linux386.386/wpp38601.int  <RELROOT>/binl/wpp38601.int
+
+#
+# AXP NT hosted compilers
+#
+  [ IFDEF (cpu_axp) <2*> ]
+#  AXP target
+    <CPCMD> <PROJDIR>/ntaxp.axp/wcppaxp.exe   <RELROOT>/axpnt/wppaxp.exe
+    <CPCMD> <PROJDIR>/ntaxp.axp/wcppaxp.sym   <RELROOT>/axpnt/wppaxp.sym
+#  386 target
+    <CPCMD> <PROJDIR>/ntaxp.386/wcpp386.exe   <RELROOT>/axpnt/wpp386.exe
+    <CPCMD> <PROJDIR>/ntaxp.386/wcpp386.sym   <RELROOT>/axpnt/wpp386.sym
 
 [ BLOCK <1> clean ]
 #==================
-    cdsay <PROJDIR>\c
-    cdsay ..\nti86
-    wmake /h /k clean
-    cdsay ..\nt386
-    wmake /h /k clean
-    cdsay ..\nt386dll
-    wmake /h /k clean
-    cdsay ..\osii86
-    wmake /h /k clean
-    cdsay ..\osi386
-    wmake /h /k clean
-    cdsay ..\os2i86
-    wmake /h /k clean
-    cdsay ..\os2386
-    wmake /h /k clean
-    cdsay ..\qnxi86
-    wmake /h /k clean
-    cdsay ..\qnx386
-    wmake /h /k clean
-    cd ..
+    pmake -d buildwpp <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

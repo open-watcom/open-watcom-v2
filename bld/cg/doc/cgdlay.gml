@@ -6,6 +6,14 @@
         depth = '8.5i'
 :DEFAULT
         justify = no
+:TITLEP
+        spacing=1
+:TITLE
+        page_position=centre
+        pre_top_skip=13
+        left_adjust=0
+        right_adjust=0
+        font=9
 :WIDOW
         threshold = 5
 :FIG
@@ -17,7 +25,8 @@
         pre_top_skip = 2
         post_skip = 1
         number_form = none
-        page_eject = no
+        page_eject = yes
+        font=9
 :H2
         pre_top_skip = 1
         pre_skip = 0
@@ -36,6 +45,8 @@
 :DD
         line_left = '1.5i'
         font = 0
+:DTHD
+        font = 3
 :DDHD
         font = 3
 :INDEX
@@ -58,4 +69,16 @@
         left_indent = '0.25i'
         skip = 0
         align = '1i'
+:BANNER
+        depth=3
+        place=top
+        docsect=toc
+:BANREGION
+        width='4i'
+        depth=1
+        font=9
+        refnum=1
+        contents='Table of Contents'
+:eBANREGION
+:eBANNER
 :eLAYOUT

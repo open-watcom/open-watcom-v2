@@ -1,0 +1,33 @@
+linux_trap_objs = &
+    lnxacc.obj &
+    lnxmap.obj &
+    lnxcomm.obj &
+    lnx$(cpu).obj &
+    lnxfile.obj &
+    lnxutl.obj &
+    supp.obj &
+    core.obj
+
+!ifeq cpu x86
+linux_trap_objs += x86cpu.obj
+!endif
+
+!ifdef builtin_trap
+!ifndef test
+
+extra_objs += $(linux_trap_objs)
+
+extra_srcs = $(trap_dir)/lcl/linux/c
+inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
+
+!endif
+!else ifeq srv lcl
+
+extra_objs += $(linux_trap_objs)
+
+extra_srcs = $(trap_dir)/lcl/linux/c
+inc_dirs   = -I"$(trap_dir)/lcl/linux/h"
+
+!endif
+
+!include $(trap_dir)/lcl/lcl.mif

@@ -14,7 +14,7 @@ set source {.}
 if _dbg@dbg$kanji {
     font all {-16 0 0 0 400 0 0 0 128 3 2 1 17 "‚l‚r –¾’©"}
 } else {
-    font all {-13 0 0 0 700 0 0 0 0 1 2 1 34 "MS Sans Serif"}
+    font all {-13 0 0 0 400 0 0 0 0 1 2 1 49 "Courier"}
 }
 font memory {-12 0 0 0 400 0 0 0 0 1 2 1 49 "Fixedsys"}
 set autosave off

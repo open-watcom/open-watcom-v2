@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Data types holding object file information.
 *
 ****************************************************************************/
 
@@ -50,33 +49,35 @@ typedef struct member_list      MEMBER_LIST;
 typedef struct segdata          SEGDATA;
 typedef struct pubdeflist       PUBDEFLIST;
 typedef struct trace_info       TRACE_INFO;
-
 typedef struct ovl_area {
-    OVL_AREA *  next_area;
-    SECTION *   sections;
+    OVL_AREA    *next_area;
+    SECTION     *sections;
 } ovl_area;
+typedef struct order_class      ORDER_CLASS;
+typedef struct order_segment    ORDER_SEGMENT;
 
 #include "hash.h"
 
 typedef struct section {
-    SECTION *           next_sect;
-    FILE_LIST *         files;
+    SECTION             *next_sect;
+    FILE_LIST           *files;
     pHTable             modFilesHashed;
-    MOD_ENTRY *         mods;
-    CLASS_ENTRY *       classlist;
+    MOD_ENTRY           *mods;
+    CLASS_ENTRY         *classlist;
+    ORDER_CLASS         *orderlist; // Link to data for ordering, if used
     targ_addr           sect_addr;
     unsigned_16         ovl_num;
-    OVL_AREA *          areas;
-    SECTION *           parent;
+    OVL_AREA            *areas;
+    SECTION             *parent;
     unsigned_32         relocs;
     unsigned_32         size;
-    void *              reloclist;
+    void                *reloclist;
     union {
         unsigned_32         file_loc;
-        MOD_ENTRY *         dist_mods;
+        MOD_ENTRY           *dist_mods;
     } u;
-    void *              dbg_info;
-    OUTFILELIST *       outfile;
+    void                *dbg_info;
+    OUTFILELIST         *outfile;
 } section;
 
 typedef struct path_entry {
@@ -85,13 +86,15 @@ typedef struct path_entry {
 } path_entry;
 
 typedef struct outfilelist {
-    OUTFILELIST *   next;
-    char *          fname;      // name of the file to be written to.
+    OUTFILELIST     *next;
+    char            *fname;     // name of the file to be written to.
     f_handle        handle;
     unsigned long   file_loc;
-    char *          buffer;
+    char            *buffer;
     unsigned long   bufpos;
     unsigned        ovlfnoff;   // offset of filename from _OVLTAB
+    bool            is_exe;     // executable flag (for file permissions)
+    unsigned long   origin;
 } outfilelist;
 
 enum infile_flags {
@@ -109,61 +112,68 @@ enum infile_flags {
 #define INSTAT_SET_CACHE (INSTAT_FULL_CACHE | INSTAT_PAGE_CACHE)
 
 typedef struct infilelist {
-    INFILELIST *        next;
-    PATH_ENTRY *        path_list;
-    char *              prefix;
-    void *              cache;   // used when object file cached in mem
+    INFILELIST          *next;
+    PATH_ENTRY          *path_list;
+    char                *prefix;
+    void                *cache;  // used when object file cached in mem
     unsigned long       len;     // length of the file.
     unsigned long       currpos; // current position of the file.
     f_handle            handle;
     time_t              modtime;
-    char *              name;
+    char                *name;
     enum infile_flags   flags;
 } infilelist;
 
 enum file_status {
-    DBI_LINE        = 0x00000001,    /*  values for DBIFlag */
-    DBI_TYPE        = 0x00000002,
-    DBI_LOCAL       = 0x00000004,
-    DBI_EXPORTS     = 0x00000008,
-    DBI_STATICS     = 0x00000010,
-    DBI_ALL         = (DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS),
-    DBI_MASK        = (DBI_ALL | DBI_EXPORTS),
-    STAT_HAS_CHANGED= 0x00000040,
-    STAT_OMF_LIB    = 0x00000080,
-    STAT_AR_LIB     = 0x00000100,
-    STAT_IS_LIB     = (STAT_AR_LIB | STAT_OMF_LIB),
-    STAT_LAST_SEG   = 0x00000200,    // set by newsegment option
-    STAT_TRACE_SYMS = 0x00000400,
-    STAT_LIB_FIXED  = 0x00000800,
-    STAT_OLD_LIB    = 0x00001000,
-    STAT_LIB_USED   = 0x00002000,
-    STAT_SEEN_LIB   = 0x00004000,
-    STAT_HAS_MEMBER = 0x00008000,
-    STAT_USER_SPECD = 0x00010000
+    DBI_LINE            = 0x00000001,    /*  values for DBIFlag */
+    DBI_TYPE            = 0x00000002,
+    DBI_LOCAL           = 0x00000004,
+    DBI_ONLY_EXPORTS    = 0x00000008,
+    DBI_STATICS         = 0x00000010,
+    DBI_ALL             = ( DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS ),
+    DBI_MASK            = ( DBI_ALL | DBI_ONLY_EXPORTS ),
+    STAT_HAS_CHANGED    = 0x00000040,
+    STAT_OMF_LIB        = 0x00000080,
+    STAT_AR_LIB         = 0x00000100,
+    STAT_IS_LIB         = ( STAT_AR_LIB | STAT_OMF_LIB ),
+    STAT_LAST_SEG       = 0x00000200,    // set by newsegment option
+    STAT_TRACE_SYMS     = 0x00000400,
+    STAT_LIB_FIXED      = 0x00000800,
+    STAT_OLD_LIB        = 0x00001000,
+    STAT_LIB_USED       = 0x00002000,
+    STAT_SEEN_LIB       = 0x00004000,
+    STAT_HAS_MEMBER     = 0x00008000,
+    STAT_USER_SPECD     = 0x00010000
 };
 
+typedef enum lib_priorities {
+    LIB_PRIORITY_MIN    = 0,
+    LIB_PRIORITY_MID    = 128,
+    LIB_PRIORITY_MAX    = 255
+} lib_priority;
+
 typedef struct file_list {
-    FILE_LIST *         next_file;
-    infilelist *        file;
+    FILE_LIST           *next_file;
+    infilelist          *file;
     union {
-        union dict_entry * dict;
-        MEMBER_LIST *       member;
+        union dict_entry    *dict;
+        MEMBER_LIST         *member;
     } u;
-    char *              strtab; /* for AR format */
+    char                *strtab; /* for AR format */
     enum file_status    status;
+    lib_priority        priority;       /* for libraries */
     unsigned            ovlref   : 16;  /* for fixed libraries */
-    unsigned            priority :  8; /* for libraries */
+    unsigned                     :  0;
 } file_list;
 
 typedef struct trace_info {
-    TRACE_INFO *    next;
+    TRACE_INFO          *next;
     union {
-        char *      name;
-        file_list * lib;
+        char            *name;
+        file_list       *lib;
     } u;
-    char *  member;
-    bool    found;
+    char                *member;
+    bool                found;
 } trace_info;
 
 typedef enum {
@@ -184,9 +194,9 @@ typedef enum {
 } module_flags;
 
 typedef struct member_list {
-    MEMBER_LIST *   next;
-    module_flags    flags;     //dbi & newseg flags to be xferred to mod entry
-    char            name[1];
+    MEMBER_LIST         *next;
+    module_flags        flags;      //dbi & newseg flags to be xferred to mod entry
+    char                name[1];
 } member_list;
 
 #define NO_ARCS_YET 0xFFFF
@@ -199,52 +209,67 @@ typedef struct member_list {
 */
 
 typedef union {
-    symbol *    sym;
-    unsigned_16 mod;
-    unsigned_32 test;
+    symbol              *sym;
+    unsigned_16         mod;
+    unsigned_32         test;
 } dist_arc;
 
 // fields used only in distributing libs are marked dist:
 // remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
 
 typedef struct arcdata {
-    unsigned_16 ovlref;     // dist: # of the module
-    unsigned_16 numarcs;    // dist: of arcs in the list
-    dist_arc    arcs[1];    // dist: the actual arcs.
+    unsigned_16         ovlref;     // dist: # of the module
+    unsigned_16         numarcs;    // dist: of arcs in the list
+    dist_arc            arcs[1];    // dist: the actual arcs.
 } arcdata;
 
 #define DIST_ONLY_SIZE (2*sizeof(unsigned_16)+sizeof(dist_arc))
+
+typedef struct name_list {
+    struct name_list    *next;
+    unsigned            len;
+    unsigned_32         num;
+    char                *name;          // NYI: make this vbl length again.
+} name_list;
 
 typedef struct odbimodinfo      ODBIMODINFO;    // defd in dbg information hdrs
 typedef struct dwarfmodinfo     DWARFMODINFO;
 typedef struct cvmodinfo        CVMODINFO;
 
+// OMF debug information formats
+typedef enum {
+    OMF_DBG_UNKNOWN,
+    OMF_DBG_CODEVIEW,
+    OMF_DBG_HLL
+} omf_dbg_type;
+
 typedef struct mod_entry {
     union {
-        MOD_ENTRY * next_mod;   // regular next pointer
-        section *   sect;       // when distributing - section of current mod.
+        MOD_ENTRY       *next_mod;  // regular next pointer
+        section         *sect;      // when distributing - section of current mod.
     } n;
     union {
-        FILE_LIST *     source;
-        char *          fname;
+        FILE_LIST       *source;
+        char            *fname;
     } f;
-    char *              name;
+    char                *name;
     unsigned_32         location;
-    symbol *            publist;
-    SEGDATA *           segs;
+    symbol              *publist;
+    SEGDATA             *segs;
     time_t              modtime;
     unsigned            relocs;
     unsigned            sizerelocs;
     module_flags        modinfo;
-    void *              lines;
+    void                *lines;
+    omf_dbg_type        omfdbg;
     union {
-        arcdata *   arclist;    // segment definition data.
-        MOD_ENTRY * next;       // for keeping track of modules when distrib
+        arcdata         *arclist;   // segment definition data.
+        MOD_ENTRY       *next;      // for keeping track of modules when distrib
     } x;
     union {
-        ODBIMODINFO *   o;
-        DWARFMODINFO *  d;
-        CVMODINFO *     cv;
+        ODBIMODINFO     *o;
+        DWARFMODINFO    *d;
+        CVMODINFO       *cv;
     } d;                        // union used for debugging information
 } mod_entry;
 
@@ -254,44 +279,51 @@ typedef enum {
     CLASS_MS_TYPE       = 0x00000004,
     CLASS_MS_LOCAL      = 0x00000008,
     CLASS_DWARF         = 0x0000000C,
-    CLASS_HANDS_OFF     = (CLASS_MS_TYPE | CLASS_MS_LOCAL),
+    CLASS_DEBUG_INFO    = (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF),
     CLASS_CODE          = 0x00000010,
     CLASS_LXDATA_SEEN   = 0x00000020,
     CLASS_READ_ONLY     = 0x00000040,
     CLASS_STACK         = 0x00000080,
     CLASS_IDATA         = 0x00000100,
+    CLASS_FIXED         = 0x00001000,   // Class should load at specified address
+    CLASS_COPY          = 0x00002000,   // Class should use data from DupClass
+    CLASS_NOEMIT        = 0x00004000,   // Class should not generate output
     CLASS_IS_FREE       = 0x80000000,   // not used, but guarantees 4 byte enum
 } class_status;
 
 typedef struct class_entry {
-    CLASS_ENTRY *       next_class;
-    SEG_LEADER *        segs;
-    char *              name;
+    CLASS_ENTRY         *next_class;
+    SEG_LEADER          *segs;
+    char                *name;
     class_status        flags;
-    section *           section;
+    section             *section;
+    targ_addr           BaseAddr;   // Fixed location to of this class for loadfile
+    CLASS_ENTRY         *DupClass;  // Class to get data from for output
 } class_entry;
 
 typedef struct group_entry {
-    GROUP_ENTRY *       next_group;
-    SEG_LEADER *        leaders;
-    symbol *            sym;
-    section *           section;
+    GROUP_ENTRY         *next_group;
+    SEG_LEADER          *leaders;
+    symbol              *sym;
+    section             *section;
     targ_addr           grp_addr;
     unsigned_16         segflags;
     offset              size;
     offset              totalsize;
     offset              linear;         // preferred base address
     union {
-        void *          grp_relocs;     // OS2/ELF only.
-        class_entry *   class;          // CV (during addr calc )
+        void            *grp_relocs;    // OS2/ELF only.
+        class_entry     *class;         // CV (during addr calc )
     } g;
     union {
         unsigned        qnxflags;       // QNX
         unsigned        miscflags;      // OS/2
+        segment         dos_segment;    // DOS/16M: DOS segment value
     } u;
     unsigned            num;
     unsigned            isfree : 1;
     unsigned            isautogrp : 1;
+    unsigned            isdup : 1;
 } group_entry;
 
 // this is a bit in the segflags field. This is also defined in exeos2.h
@@ -309,13 +341,14 @@ typedef struct group_entry {
 #define SEG_16_ALIAS    1
 
 typedef struct seg_leader {
-    SEG_LEADER *    next_seg;
-    SEG_LEADER *    grp_next;
-    char *          segname;
-    SEGDATA *       pieces;
-    group_entry *   group;
-    class_entry *   class;
+    SEG_LEADER      *next_seg;
+    SEG_LEADER      *grp_next;
+    char            *segname;
+    SEGDATA         *pieces;
+    group_entry     *group;
+    class_entry     *class;
     offset          size;               // total size of segment
+    SEG_LEADER      *DupSeg;            // Segment to get data from for output
     unsigned_16     info;
     unsigned_16     align   : 5;        // alignment of seg (power of 2)
     unsigned_16     dbgtype : 3;        // debugging type of seg
@@ -334,15 +367,18 @@ typedef struct seg_leader {
  *
  *  b            l b b        b b              n b
  *  x x x x      x x x x      x x x x      x x x x
- *  |            | | |        | |              | |
- *  |            | | |        | |              | +---> seg. is absolute
- *  |            | | |        | |              +-----> seg. is comdat (ORL)
- *  |            | | |        | +--------------------> seg. in ovl. class
- *  |            | | |        +--(leader)------------> generate an addr_info.
- *  |            | | |        +--(node)--------------> segdef dead (terminated)
- *  |            | | +-------------------------------> seg. is code.
- *  |            | +---------------------------------> 32-bit segment.
- *  |            +-(leader)--------------------------> last segment in group
+ *  | | | |      | | |        | |              | |
+ *  | | | |      | | |        | |              | +---> seg. is absolute
+ *  | | | |      | | |        | |              +-----> seg. is comdat (ORL)
+ *  | | | |      | | |        | +--------------------> seg. in ovl. class
+ *  | | | |      | | |        +--(leader)------------> generate an addr_info.
+ *  | | | |      | | |        +--(node)--------------> segdef dead (terminated)
+ *  | | | |      | | +-------------------------------> seg. is code.
+ *  | | | |      | +---------------------------------> 32-bit segment.
+ *  | | | |      +-(leader)--------------------------> last segment in group
+ *  | | | +-(leader)---------------------------------> Segment should load at specified address
+ *  | | +---(leader)---------------------------------> Segment should use data copied from DupSeg
+ *  | +-----(leader)---------------------------------> Segment should not generate output
  *  +------------------------------------------------> LxDATA seen for this seg.
  ***********************************************************************/
 
@@ -362,6 +398,8 @@ enum {
     USE_32              = 0x0400,   /* segment uses 32 bit addresses      */
     LAST_SEGMENT        = 0x0800,   /* force last segment in a code group */
     SEG_LXDATA_SEEN     = 0x8000,   /* LxDATA rec. seen for this segment */
+    SEG_FIXED           = 0x1000,   // Segment should start at seg_addr, not next addr
+    SEG_NOEMIT          = 0x2000,   // Segment should not generate output
     SEG_BOTH_MASK       = 0x8641    /* flags common to both structures */
 };
 
@@ -383,6 +421,7 @@ enum {
 };
 
 #define IS_DBG_DWARF( x ) ((x)->dbgtype >= DWARF_DEBUG_INFO)
+#define IS_DBG_INFO( x ) ((x)->dbgtype != NOT_DEBUGGING_INFO)
 
 /*
  * these are used to keep track of each individual contribution to a segment.
@@ -391,75 +430,68 @@ enum {
 */
 
 typedef struct segdata {
-    SEGDATA *   next;
-    SEGDATA *   mod_next;       // next segdata in module list.
-    offset      length;         // length of segment in current module.
-    virt_mem    data;           // data for this segment
+    SEGDATA         *next;
+    SEGDATA         *mod_next;      // next segdata in module list.
+    offset          length;         // length of segment in current module.
+    virt_mem        data;           // data for this segment
     union {
-        char *          name;   // name of the segment
-        seg_leader *    leader; // leader for the segment.
-        SEGDATA *       sdata;  // for explicit comdats
+        char        *name;          // name of the segment
+        seg_leader  *leader;        // leader for the segment.
+        SEGDATA     *sdata;         // for explicit comdats
     } u;
     union {
-        void *      refs;       // P1dce: list of other seg's this references
-        unsigned_16 frame;      // the frame of an absolute segment.
-        signed_32   delta;      // P2: for calc'ing segment & symbol addrs
+        void        *refs;          // P1dce: list of other seg's this references
+        signed_32   delta;          // P2: for calc'ing segment & symbol addrs
     } a;
     union {
-        unsigned_32     addrinfo; // P2VIDEO: offset into addrinfo of seg.
-        mod_entry *     mod;      // P2CV&DW: pointer to defining module.
-        char *          clname;   // INC: class name for segment
+        mod_entry   *mod;           // P2CV&DW: pointer to defining module.
+        char        *clname;        // INC: class name for segment
     } o;
-    unsigned        align       : 5;
-    unsigned        select      : 3; // comdat: selection type
+    unsigned_32     addrinfo;       // P2VIDEO: offset into addrinfo of seg.
+    unsigned_16     frame;          // the frame of an absolute segment.
+    unsigned        align      : 5;
+    unsigned        select     : 3; // comdat: selection type
 
-    unsigned        combine     : 2; // how to combine segment with others
-    unsigned        alloc       : 2; // comdat: where to allocate segment.
-    unsigned        is32bit     : 1; // TRUE if segment is 32 bits
-    unsigned        iscode      : 1; // TRUE if a code segment.
-    unsigned        isabs       : 1; // TRUE if this is an absolute segment.
-    unsigned        iscdat      : 1; // TRUE if this is a comdat
+    unsigned        combine    : 2; // how to combine segment with others
+    unsigned        alloc      : 2; // comdat: where to allocate segment.
+    unsigned        is32bit    : 1; // TRUE if segment is 32 bits
+    unsigned        iscode     : 1; // TRUE if a code segment.
+    unsigned        isabs      : 1; // TRUE if this is an absolute segment.
+    unsigned        iscdat     : 1; // TRUE if this is a comdat
 
-    unsigned        isuninit    : 1; // TRUE if seg is uninitialized
-    unsigned        isidata     : 1; // TRUE if segment is .idata (ORL only)
-    unsigned        ispdata     : 1; // TRUE if segment is .pdata
-    unsigned        isreldata   : 1; // TRUE if segment is .reldata
-    unsigned        visited     : 1; // dce: TRUE if visited in graph search.
-    unsigned        isrefd      : 1; // dce: TRUE if this module is referenced.
-    unsigned        isdead      : 1; // dce: TRUE if segdata or segdef killed.
-    unsigned        isdefd      : 1; // segdata has been defined
+    unsigned        isuninit   : 1; // TRUE if seg is uninitialized
+    unsigned        isidata    : 1; // TRUE if segment is .idata (ORL only)
+    unsigned        ispdata    : 1; // TRUE if segment is .pdata
+    unsigned        isreldata  : 1; // TRUE if segment is .reldata
+    unsigned        visited    : 1; // dce: TRUE if visited in graph search.
+    unsigned        isrefd     : 1; // dce: TRUE if this module is referenced.
+    unsigned        isdead     : 1; // dce: TRUE if segdata or segdef killed.
+    unsigned        isdefd     : 1; // segdata has been defined
 
-    unsigned        isfree      : 1; // segdata is free (used in carver stuff)
-    unsigned        isprepd     : 1; // has been prepped for inc linking
-    unsigned        canfarcall  : 1; // OK to do far call optimization here
-    unsigned        hascdatsym  : 1; // TRUE if comdat and has a symbol defd
+    unsigned        isfree     : 1; // segdata is free (used in carver stuff)
+    unsigned        isprepd    : 1; // has been prepped for inc linking
+    unsigned        canfarcall : 1; // OK to do far call optimization here
+    unsigned        hascdatsym : 1; // TRUE if comdat and has a symbol defd
 } segdata;
 
 typedef struct node {
-    void *      next;
-    void *      entry;
+    void                *next;
+    void                *entry;
 } node;
-
-typedef struct name_list {
-    struct name_list *  next;
-    unsigned            len;
-    unsigned            num;
-    char *              name;           // NYI: make this vbl length again.
-} name_list;
 
 typedef struct dll_sym_info {
     union {
-        name_list *     modnum;         /* # of DLL in imported names table */
-        char *          modname;
+        name_list       *modnum;        /* # of DLL in imported names table */
+        char            *modname;
     } m;
     union {
-        name_list *     entry;          /* # of entry in DLL */
-        char *          entname;
+        name_list       *entry;         /* # of entry in DLL */
+        char            *entname;
         unsigned        ordinal;
     } u;
     unsigned            isordinal : 1;
     unsigned            isfree : 1;
-    symbol *            iatsym;         // NT: symbol for address in iat
+    symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
 
 typedef enum {
@@ -471,44 +503,65 @@ typedef enum {
 
 // this structure used for processing segment flags for various executable types
 typedef struct seg_flags {
-    struct seg_flags *  next;
+    struct seg_flags    *next;
     unsigned_16         flags;  // as above.
-    char *              name;
+    char                *name;
     segflag_type        type;
 } seg_flags;
 
 typedef struct extnode {
-    symbol *            entry;
-    void *              handle; // ORL: handle for the symbol
+    symbol              *entry;
+    void                *handle;    // ORL: handle for the symbol
     unsigned            ovlref : 12;
     unsigned            isweak : 1;
-    unsigned            isdefd : 1;     // used in ORL
+    unsigned            isdefd : 1; // used in ORL
 } extnode;
 
 typedef struct grpnode {
-    GROUP_ENTRY *       entry;
+    GROUP_ENTRY         *entry;
 } grpnode;
 
 typedef struct segnode {
-    SEGDATA *   entry;
-    void *      handle;   // ORL: handle for the segment.
-    char *      contents; // ORL: pointer to contents of segment.
-    unsigned    info;
+    SEGDATA             *entry;
+    void                *handle;    // ORL: handle for the segment.
+    unsigned_8          *contents;  // ORL: pointer to contents of segment.
+    unsigned            info;
 } segnode;
 
 typedef struct list_of_names {
-    LIST_OF_NAMES *     next_name;
+    LIST_OF_NAMES       *next_name;
     char                name[ 1 ];
 } list_of_names;
 
 typedef struct lobject_data {
-    segdata *           seg;
-    offset              obj_offset;     // pass 1: delta for fixup offsets
+    segdata             *seg;
+    offset              obj_offset; // pass 1: delta for fixup offsets
     targ_addr           addr;
-    char *              data;
+    unsigned_8          *data;
 } lobject_data;
 
 typedef struct {
-    size_t      len;
-    char *      name;
+    size_t              len;
+    char                *name;
 } length_name;
+
+typedef struct order_class {
+    ORDER_CLASS         *NextClass;
+    class_entry         *Ring;  // Used for sorting
+    char                *Name;
+    char                *SrcName;
+    targ_addr           Base;
+    ORDER_SEGMENT       *SegList;
+    unsigned            FixedAddr :  1;
+    unsigned            NoEmit    :  1;
+    unsigned            Copy      :  1;
+} order_class;
+
+typedef struct order_segment {
+    ORDER_SEGMENT       *NextSeg;
+    char                *Name;
+    targ_addr           Base;
+    unsigned            FixedAddr :  1;
+    unsigned            NoEmit    :  1;
+} order_segment;
+

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Loader for OSI executables.
 *
 ****************************************************************************/
 
@@ -34,7 +33,6 @@
 #include <stdarg.h>
 #include <i86.h>
 #include "tinyio.h"
-#include <io.h>
 #include <fcntl.h>
 #include "wreslang.h"
 
@@ -82,7 +80,7 @@ char    *ProgramEnv     = "\0";
 #pragma aux _end "*"
 extern  char            _end;
 
-extern  int     __fInt21();
+extern  int     __fInt21( void );
 
 struct  pgmparms {
         char    *pgmname;       // program name (argv[0])
@@ -98,7 +96,7 @@ extern  int _InvokePgm( char os,
                         DWORD baseaddr,
                         DWORD eip,
                         DWORD stacklow,
-                        int (*int21)(),
+                        int (*int21)( void ),
                         struct pgmparms *parms );
 #pragma aux _InvokePgm = "push  cs"     \
                          "mov   bx,cs"  \
@@ -107,7 +105,7 @@ extern  int _InvokePgm( char os,
 
 extern  int _LaunchPgm( DWORD baseaddr,
                         DWORD eip,
-                        int (*int21)(),
+                        int (*int21)( void ),
                         struct pgmparms *parms );
 #pragma aux _LaunchPgm parm [ebx] [esi] [edx] [edi] value [eax];
 
@@ -136,10 +134,10 @@ char *getenv( const char *var )
     const char  *v;
 
     p = ProgramEnv;
-    for(;;) {
+    for( ;; ) {
         if( *p == '\0' ) break;
         v = var;
-        for(;;) {
+        for( ;; ) {
             if( *v == '\0' ) {
                 if( *p == '=' )  return( p + 1 );
                 break;
@@ -181,14 +179,14 @@ void PrintMsg( char *fmt, ... )
 
     va_start( args, fmt );
     len = 0;
-    for(;;) {
+    for( ;; ) {
         c = *fmt++;
         if( c == '\0' ) break;
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
                 p = va_arg( args, char * );
-                for(;;) {
+                for( ;; ) {
                     c = *p++;
                     if( c == '\0' ) break;
                     buf[len++] = c;
@@ -207,7 +205,7 @@ void PrintMsg( char *fmt, ... )
                     i = 2;
                     value <<= 24;
                 }
-                for(;;) {
+                for( ;; ) {
                     c = value >> 28;
                     value <<= 4;
                     if( c < 10 ) {
@@ -235,13 +233,13 @@ void DoRelocations( unsigned short *rel )
     unsigned long       base_addr;
 
     base_addr = CodeLoadAddr;
-    for(;;) {
+    for( ;; ) {
         count = *rel++;
         if( count == 0 ) break;
         addr = *rel++ << 16;
         addr |= *rel++;
         addr += base_addr;
-        for(;;) {
+        for( ;; ) {
             *(unsigned long *)addr += base_addr;
             --count;
             if( count == 0 ) break;
@@ -304,7 +302,7 @@ void BPE_Expand( char *dst, char *src, char *srcend )
         while( size != 0 ) {
             --size;
             c = *src++;
-            for(;;) {
+            for( ;; ) {
                 while( c != left[c] ) {
                     stack[i++] = right[c];
                     c = left[c];
@@ -323,7 +321,7 @@ void BPE_Expand( char *dst, char *src, char *srcend )
 int Init32BitTask( char *file )
 {
     int         handle;
-    long        rc;
+    tiny_ret_t  rc;
     char        *small_chunks;
     DWORD       load_addr;
     DWORD       total_size;
@@ -335,7 +333,7 @@ int Init32BitTask( char *file )
     } u;
 
     rc = TinyOpen( file, TIO_READ );
-    if( rc < 0 ) {
+    if( TINY_ERROR( rc ) ) {
         PrintMsg( PickMsg( LOADER_CANT_OPEN_EXE ), file, rc & 0x7fffffff );
         return( LOADER_CANT_OPEN_EXE );
     }
@@ -362,6 +360,13 @@ int Init32BitTask( char *file )
         PrintMsg( PickMsg( LOADER_NOT_ENOUGH_MEMORY ) );
         return( LOADER_NOT_ENOUGH_MEMORY );
     }
+#ifdef __NT__
+    {
+    DWORD   old_flags;
+    /* Adjust page protection to allow code execution. Required for DEP-enabled systems. */
+    VirtualProtect( (LPVOID)BaseAddr, w32_hdr->memory_size, PAGE_EXECUTE_READWRITE, &old_flags );
+    }
+#endif
     CodeLoadAddr = BaseAddr;
     load_addr = CodeLoadAddr;
     CodeEntryPoint = w32_hdr->initial_EIP + CodeLoadAddr;
@@ -405,13 +410,13 @@ int Init32BitTask( char *file )
 } /* Init32BitTask */
 
 #if defined(__OS2) || defined(__NT)
-void DumpEnvironment()
+void DumpEnvironment( void )
 {
     char        *p;
 
     PrintMsg( "Environment Variables:\r\n" );
     p = ProgramEnv;
-    for(;;) {
+    for( ;; ) {
         if( *p == '\0' ) break;
         PrintMsg( "%s\r\n", p );
         while( *p != '\0' ) ++p;
@@ -432,24 +437,6 @@ typedef struct SysERegRec {
                            PCONTEXTRECORD,
                            PVOID);
 } SYSEREGREC;
-
-void Fatal( char *what, PCONTEXTRECORD p )
-{
-    long        rc;
-
-    DumpContext( what, p );
-    rc = TinyCreate( "_watcom_.dmp", 0 );
-    if( rc >= 0 ) {
-        MsgFileHandle = TINY_INFO( rc );
-        PrintMsg( "Program: %s\r\n", ProgramName );
-        PrintMsg( "CmdLine: %s\r\n", ProgramArgs );
-        DumpContext( what, p );
-        DumpEnvironment();
-        TinyClose( MsgFileHandle );
-        MsgFileHandle = 1;
-    }
-    DosExit( EXIT_PROCESS, 8 );
-}
 
 void DumpContext( char *what, PCONTEXTRECORD p )
 {
@@ -479,6 +466,24 @@ void DumpContext( char *what, PCONTEXTRECORD p )
         i++;
     }
     PrintMsg( "\r\n" );
+}
+
+void Fatal( char *what, PCONTEXTRECORD p )
+{
+    tiny_ret_t  rc;
+
+    DumpContext( what, p );
+    rc = TinyCreate( "_watcom_.dmp", 0 );
+    if( TINY_OK( rc ) ) {
+        MsgFileHandle = TINY_INFO( rc );
+        PrintMsg( "Program: %s\r\n", ProgramName );
+        PrintMsg( "CmdLine: %s\r\n", ProgramArgs );
+        DumpContext( what, p );
+        DumpEnvironment();
+        TinyClose( MsgFileHandle );
+        MsgFileHandle = 1;
+    }
+    DosExit( EXIT_PROCESS, 8 );
 }
 
 ULONG _cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
@@ -520,10 +525,10 @@ ULONG _cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
     return( XCPT_CONTINUE_EXECUTION );
 }
 
-int __checkIsDBCS()
+int __checkIsDBCS( void )
 {
     COUNTRYCODE         countryInfo;
-    unsigned char       leadBytes[12];
+    CHAR                leadBytes[12];
 
     countryInfo.country = 0;                /* default country */
     countryInfo.codepage = 0;               /* default code page */
@@ -538,10 +543,8 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
     char        *args;
     char        *pgm;
     int         rc;
-    USHORT      action;
     ULONG       nesting;
     LONG        req_count;
-    ULONG       curr_max_fh;
     struct pgmparms parms;
     auto SYSEREGREC RegRec;
 
@@ -549,9 +552,11 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
     parms.isDBCS = __IsDBCS;
     hmod = hmod;
     reserved = reserved;
-    for( args = cmd; *args != '\0'; ++args ); /* skip over program name */
+    for( args = cmd; *args != '\0'; ++args )
+        ; /* skip over program name */
     ++args;
-    for( pgm = cmd - 2; *pgm != '\0'; --pgm );
+    for( pgm = cmd - 2; *pgm != '\0'; --pgm )
+        ;
     ++pgm;
     ProgramArgs = args;
     ProgramName = pgm;
@@ -578,13 +583,13 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
     return( rc );
 }
 
-void main() {}
+void main( void ) {}
 
 //////////////////////////////////////////////////////////////////////
 #elif defined(__NT)
 
 #pragma aux __NTMain "*"
-extern  void    __InitInt21();
+extern  void    __InitInt21( void );
 
 extern DWORD GetFromFS( DWORD off );
 extern void PutToFS( DWORD value, DWORD off );
@@ -602,25 +607,6 @@ typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
     void                        *RegistrationRecordFilter;
 } REGISTRATION_RECORD;
-
-
-void Fatal( char *what, PCONTEXT p )
-{
-    long        rc;
-
-    DumpContext( what, p );
-    rc = TinyCreate( "_watcom_.dmp", 0 );
-    if( rc >= 0 ) {
-        MsgFileHandle = TINY_INFO( rc );
-        PrintMsg( "Program: %s\r\n", ProgramName );
-        PrintMsg( "CmdLine: %s\r\n", ProgramArgs );
-        DumpContext( what, p );
-        DumpEnvironment();
-        TinyClose( MsgFileHandle );
-        MsgFileHandle = 1;
-    }
-    ExitProcess( 8 );
-}
 
 void DumpContext( char *what, PCONTEXT p )
 {
@@ -650,6 +636,24 @@ void DumpContext( char *what, PCONTEXT p )
         i++;
     }
     PrintMsg( "\r\n" );
+}
+
+void Fatal( char *what, PCONTEXT p )
+{
+    tiny_ret_t  rc;
+
+    DumpContext( what, p );
+    rc = TinyCreate( "_watcom_.dmp", 0 );
+    if( TINY_OK( rc ) ) {
+        MsgFileHandle = TINY_INFO( rc );
+        PrintMsg( "Program: %s\r\n", ProgramName );
+        PrintMsg( "CmdLine: %s\r\n", ProgramArgs );
+        DumpContext( what, p );
+        DumpEnvironment();
+        TinyClose( MsgFileHandle );
+        MsgFileHandle = 1;
+    }
+    ExitProcess( 8 );
 }
 
 int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
@@ -723,7 +727,7 @@ BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
             ExitProcess(1);
         BreakFlag = 1;
         h = __FileHandleIDs[ 0 ];
-        for(;;) {
+        for( ;; ) {
             n = 0;
             if( PeekConsoleInput( h, &r, 1, &n ) == 0 ) break;
             if( n == 0 ) break;
@@ -734,7 +738,7 @@ BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
     return( TRUE );
 }
 
-int __checkIsDBCS()
+int __checkIsDBCS( void )
 {
     CPINFO              cpInfo;
 
@@ -764,7 +768,7 @@ void __NTMain( void )
     parms.envptr = cmd;
     ProgramEnv = cmd;
     pgm = NULL;
-    for(;;) {
+    for( ;; ) {
         if( *cmd == '$'  &&  cmd[1] == '=' )  pgm = cmd + 2;
         while( *cmd )  ++cmd;
         ++cmd;
@@ -779,7 +783,7 @@ void __NTMain( void )
     }
     cmd = GetCommandLine();
     while( *cmd == ' '  ||  *cmd == '\t' ) ++cmd;
-    for(;;) {                   // skip program name (\path\w32run.exe)
+    for( ;; ) {                 // skip program name (\path\w32run.exe)
         if( *cmd == '\0' ) break;
         if( *cmd == ' '  ) break;
         if( *cmd == '\t' ) break;
@@ -810,8 +814,8 @@ void __ChgBINNT( char *fn )
     char        *p;
 
     p = fn;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             if( *p == '\0' ) break;
             if( *p == '\\' ) break;
             ++p;
@@ -848,7 +852,7 @@ void __NTMain( void )
     // cmd should look like:
     // PROGRAM command line arguments
     while( *cmd == ' '  ||  *cmd == '\t' )  ++cmd;
-    for(;;) {                           // skip over program name
+    for( ;; ) {                         // skip over program name
         if( *cmd == '\0' ) break;
         if( *cmd == ' '  ) break;
         if( *cmd == '\t' ) break;
@@ -876,14 +880,19 @@ void __NTMain( void )
 }
 #endif
 
-void main() {}
+void main( void ) {}
 
 //////////////////////////////////////////////////////////////////////
 #else   // __DOS
 
+#include <string.h>
+
+#if defined(__DOS4G) || defined(__CAUSEWAY)
+ #include "dpmi.h"
+#endif
+
 #ifdef __DOS4G
  #include "dginfo.gh"
- #include "dpmi.h"
 char DOS4GOPTIONS[] =
         "[dos4g-global]\n"
         "Include=OSIOPTS.INI\n"
@@ -910,7 +919,7 @@ typedef struct {
 extern unsigned short __get_ds( void );
 #pragma aux __get_ds = "mov ax,ds" value [ax];
 
-int __checkIsDBCS()
+int __checkIsDBCS( void )
 {
 #if defined(__TNT)
     unsigned short far *leadBytes;
@@ -933,7 +942,7 @@ int __checkIsDBCS()
         }
     }
     return( 0 );
-#elif defined(__DOS4G)
+#elif defined(__DOS4G) || defined(__CAUSEWAY)
     unsigned short  *leadBytes;
     rm_call_struct  dblock;
 
@@ -993,7 +1002,7 @@ int __checkIsDBCS()
 #endif
 }
 
-int main()
+int main( void )
 {
     char        *cmd;
     char        *pgm;
@@ -1009,7 +1018,7 @@ int main()
     ProgramEnv = _Envptr;
     cmd = _Envptr;
     pgm = NULL;
-    for(;;) {
+    for( ;; ) {
         if( *cmd == '$'  &&  cmd[1] == '=' )  pgm = cmd + 2;
         while( *cmd )  ++cmd;
         ++cmd;
@@ -1033,7 +1042,7 @@ int main()
         #endif
         parms.max_handle = 0;
         rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end,
-                                (int (*)())&__fInt21, &parms );
+                                (int (*)( void ))&__fInt21, &parms );
     }
     return( rc );
 }

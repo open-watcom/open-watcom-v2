@@ -24,20 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory references for PowerPC CPUs.
 *
 ****************************************************************************/
 
 
 refpick( BYTE, "" )
 refpick( HWORD, "" )
-refpick( BRHWORD, "" ) // byte-reversed
-refpick( WORD, "" ) // word size is 4 bytes
-refpick( BRWORD, "" ) // byte-reversed
-refpick( DWORD, "" ) // 8 byter
+refpick( BRHWORD, "" )  // byte-reversed
+refpick( WORD, "" )     // word size is 4 bytes
+refpick( BRWORD, "" )   // byte-reversed
+refpick( DWORD, "" )    // 8 byter
 refpick( BRDWORD, "" )
-refpick( SWORD, "" ) // string word
-refpick( MWORD, "" ) // multiple word
+refpick( SWORD, "" )    // string word
+refpick( MWORD, "" )    // multiple word
 refpick( SFLOAT, "" )
 refpick( DFLOAT, "" )

@@ -1,0 +1,41 @@
+/*
+ *  errorrep.h  Error reporting functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __ERRORREP_H__
+#define __ERRORREP_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Fault reporting return values */
+typedef enum tagEFaultRepRetVal {
+    frrvOk                  = 0,
+    frrvOkManifest          = 1,
+    frrvOkQueued            = 2,
+    frrvErr                 = 3,
+    frrvErrNoDW             = 4,
+    frrvErrTimeout          = 5,
+    frrvLaunchDebugger      = 6,
+    frrvOkHeadless          = 7,
+    frrvErrAnotherInstance  = 8
+} EFaultRepRetVal;
+
+/* Functions in FAULTREP.DLL */
+BOOL APIENTRY               AddERExcludedApplicationA( LPCSTR );
+BOOL APIENTRY               AddERExcludedApplicationW( LPCWSTR );
+EFaultRepRetVal APIENTRY    ReportFault( LPEXCEPTION_POINTERS, DWORD );
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define AddERExcludedApplication    AddERExcludedApplicationW
+#else
+    #define AddERExcludedApplication    AddERExcludedApplicationA
+#endif
+
+:include cplusepi.sp
+
+#endif /* __ERRORREP_H__ */

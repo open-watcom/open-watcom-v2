@@ -73,7 +73,9 @@ namespace {
 
 __INITFINI __type_info_name_free;
 
-const char *type_info::name() const {
+namespace std {
+
+  const char *type_info::name() const {
     const char *ret_name;
     unsigned len;
     __TID_NAME *name;
@@ -99,4 +101,7 @@ const char *type_info::name() const {
         }
     }
     return( ret_name );
-}
+  }
+
+} // namespace std
+

@@ -2,10 +2,10 @@
 
 void main( void ) {
 
-    String    s1 ("Watcom "), s2 ("C++");
+    String    s1 ("Open Watcom "), s2 ("C++");
     char     *pch1, *pch2;
 
-    pch1 = "Watcom ";
+    pch1 = "Open Watcom ";
     pch2 = "C++";
     cout << "String \"" << s1 << "\" + string \""
          << s2 << "\" = string \"" << operator +( s1, s2 )

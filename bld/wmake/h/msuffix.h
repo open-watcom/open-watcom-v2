@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  msuffix.c interfaces
 *
 ****************************************************************************/
 
@@ -66,25 +65,25 @@ struct Suffix {
  * (ie: cretarg->depend->clist are the commands to be executed.)
  */
 struct Creator {
-    CREATOR         *next;          /* next creator for this suffix     */
-    SUFFIX          *suffix;        /* suffix node for this creation    */
-    TARGET          *cretarg;       /* target node for creation target  */
+    CREATOR     *next;          /* next creator for this suffix     */
+    SUFFIX      *suffix;        /* suffix node for this creation    */
+    TARGET      *cretarg;       /* target node for creation target  */
 };
 
 
 
-extern void SuffixInit( void );
-extern void SuffixFini( void );
+extern void     SuffixInit( void );
+extern void     SuffixFini( void );
 
-extern void ClearSuffixes( void );
-extern BOOLEAN SufExists( const char *suf );
-extern BOOLEAN SufBothExist( const char *sufsuf );
-extern void AddSuffix( char *name );
-extern void SetSufPath( const char *name, const char *path );
-extern void AddCreator( const char *sufsuf );
-extern void PrintSuffixes( void );
-extern SUFFIX *FindSuffix( const char *name );
-extern RET_T TrySufPath( char *buffer, const char *filename,
+extern void     ClearSuffixes( void );
+extern BOOLEAN  SufExists( const char *suf );
+extern BOOLEAN  SufBothExist( const char *sufsuf );
+extern void     AddSuffix( char *name );
+extern void     SetSufPath( const char *name, const char *path );
+extern void     AddCreator( const char *sufsuf );
+extern void     PrintSuffixes( void );
+extern SUFFIX   *FindSuffix( const char *name );
+extern RET_T    TrySufPath( char *buffer, const char *filename,
     TARGET **chktarg, BOOLEAN tryenv );
 
 #endif

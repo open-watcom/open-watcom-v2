@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -48,7 +48,7 @@
 #include "wredel.h"
 #include "wrestat.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wreres.h"
 #include "wreftype.h"
 #include "wretoolb.h"
@@ -79,51 +79,51 @@ typedef struct WREStringSession {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  WREStringSession  *WREFindStringSession   ( WStringHandle );
-static  WREStringSession  *WREAllocStringSession  ( void );
-static  WREStringSession  *WREStartStringSession  ( WRECurrentResInfo *, WStringNode *node );
-static  Bool              WREAddStringToDir       ( WRECurrentResInfo * );
-static  WStringNode      *WREMakeNode             ( WRECurrentResInfo * );
-static  WStringNode      *WRECreateStringNodes    ( WRECurrentResInfo * );
-static  void              WREFreeStringNode       ( WStringNode *node );
-static  Bool              WREGetStringSessionData ( WREStringSession *, Bool );
-static  void              WRERemoveStringEditSession( WREStringSession * );
-static  WREStringSession *WREFindResStringSession ( WREResInfo *rinfo );
-static  WResTypeNode     *WREUseStringNodes       ( WResDir dir, WStringNode *node );
+static WREStringSession *WREFindStringSession( WStringHandle );
+static WREStringSession *WREAllocStringSession( void );
+static WREStringSession *WREStartStringSession( WRECurrentResInfo *, WStringNode *node );
+static Bool             WREAddStringToDir( WRECurrentResInfo * );
+static WStringNode      *WREMakeNode( WRECurrentResInfo * );
+static WStringNode      *WRECreateStringNodes( WRECurrentResInfo * );
+static void             WREFreeStringNode( WStringNode *node );
+static Bool             WREGetStringSessionData( WREStringSession *, Bool );
+static void             WRERemoveStringEditSession( WREStringSession * );
+static WREStringSession *WREFindResStringSession( WREResInfo *rinfo );
+static WResTypeNode     *WREUseStringNodes( WResDir dir, WStringNode *node );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  LIST     *WREStringSessions  = NULL;
+static LIST *WREStringSessions = NULL;
 
 extern Bool WRENoInterface;
 
 void WRERemoveStringEditSession( WREStringSession *session )
 {
-    if( session ) {
+    if( session != NULL ) {
         ListRemoveElt( &WREStringSessions, session );
-        if( session->info ) {
+        if( session->info != NULL ) {
             WStrFreeStringInfo( session->info );
         }
         WREMemFree( session );
     }
 }
 
-Bool WREAddStringToDir ( WRECurrentResInfo *curr )
+Bool WREAddStringToDir( WRECurrentResInfo *curr )
 {
-    WResLangType       lang;
-    int                dup, num_retries;
-    WResID            *rname, *tname;
-    Bool               ok, tname_alloc;
+    WResLangType    lang;
+    int             dup, num_retries;
+    WResID          *rname, *tname;
+    Bool            ok, tname_alloc;
 
-    ok          = TRUE;
+    ok = TRUE;
     tname_alloc = FALSE;
 
-    WREGetCurrentResource ( curr );
+    WREGetCurrentResource( curr );
 
-    if( !curr->info ) {
+    if( curr->info == NULL ) {
         curr->info = WRECreateNewResource( NULL );
-        ok = ( curr->info != NULL );
+        ok = (curr->info != NULL);
     }
 
     // check for an existing string tables
@@ -138,30 +138,29 @@ Bool WREAddStringToDir ( WRECurrentResInfo *curr )
         if( curr->info->current_type == (uint_16)RT_STRING ) {
             tname = &curr->type->Info.TypeName;
         } else {
-            tname = WResIDFromNum ( (uint_16)RT_STRING );
+            tname = WResIDFromNum( (uint_16)RT_STRING );
             tname_alloc = TRUE;
         }
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
     }
 
-    if ( ok ) {
-        dup         = TRUE;
+    if( ok ) {
+        dup = TRUE;
         num_retries = 0;
-        rname       = NULL;
-        while ( ok && dup && ( num_retries <= MAX_RETRIES ) ) {
+        rname = NULL;
+        while( ok && dup && num_retries <= MAX_RETRIES ) {
             rname = WResIDFromNum( 0 );
-            ok = ( rname != NULL );
-            if ( ok ) {
+            ok = (rname != NULL);
+            if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, (uint_16)RT_STRING,
-                                     tname_alloc );
+                                     &lang, &dup, (uint_16)RT_STRING, tname_alloc );
                 if( !ok && dup ) {
                     ok = TRUE;
                 }
                 num_retries++;
             }
-            if( rname ) {
+            if( rname != NULL ) {
                 WREMemFree( rname );
             }
         }
@@ -178,24 +177,24 @@ Bool WREAddStringToDir ( WRECurrentResInfo *curr )
         WREMemFree( tname );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WRENewStringResource ( void )
+Bool WRENewStringResource( void )
 {
     WRECurrentResInfo  curr;
     Bool               ok;
 
-    ok = WREAddStringToDir ( &curr );
+    ok = WREAddStringToDir( &curr );
 
-    if ( ok ) {
-        ok = ( WREStartStringSession ( &curr, NULL ) != NULL );
+    if( ok ) {
+        ok = (WREStartStringSession( &curr, NULL ) != NULL);
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WREEditStringResource ( WRECurrentResInfo *curr )
+Bool WREEditStringResource( WRECurrentResInfo *curr )
 {
     WStringNode         *nodes;
     Bool                ok;
@@ -203,29 +202,29 @@ Bool WREEditStringResource ( WRECurrentResInfo *curr )
 
     nodes = NULL;
 
-    ok = ( curr && curr->info && curr->type );
+    ok = (curr != NULL && curr->info != NULL && curr->type != NULL);
 
     if( ok ) {
         session = WREFindResStringSession( curr->info );
-        if( session ) {
+        if( session != NULL ) {
             WStringBringToFront( session->hndl );
             return( TRUE );
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         nodes = WRECreateStringNodes( curr );
-        ok = ( nodes != NULL );
+        ok = (nodes != NULL);
     }
 
-    if ( ok ) {
-        ok = ( WREStartStringSession ( curr, nodes ) != NULL );
+    if( ok ) {
+        ok = (WREStartStringSession( curr, nodes ) != NULL);
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WREEndEditStringResource ( WStringHandle hndl )
+Bool WREEndEditStringResource( WStringHandle hndl )
 {
     WREStringSession    *session;
     WRECurrentResInfo   curr;
@@ -233,14 +232,14 @@ Bool WREEndEditStringResource ( WStringHandle hndl )
 
     ret = FALSE;
 
-    session = WREFindStringSession ( hndl );
+    session = WREFindStringSession( hndl );
 
-    if( session ) {
+    if( session != NULL ) {
         ret = TRUE;
-        if( !session->tnode || !session->tnode->Head->Head->Info.Length ) {
+        if( session->tnode == NULL || session->tnode->Head->Head->Info.Length == 0 ) {
             curr.info = session->rinfo;
             curr.type = session->tnode;
-            curr.res  = NULL;
+            curr.res = NULL;
             curr.lang = NULL;
             ret = WREDeleteStringResources( &curr, TRUE );
             WRESetStatusByID( -1, WRE_EMPTYREMOVED );
@@ -256,60 +255,59 @@ Bool WRESaveEditStringResource( WStringHandle hndl )
     WREStringSession *session;
 
     session = WREFindStringSession( hndl );
-     if( !session ) {
+    if( session == NULL ) {
         return( FALSE );
     }
 
     return( WREGetStringSessionData( session, FALSE ) );
 }
 
-WREStringSession *WREStartStringSession ( WRECurrentResInfo *curr,
-                                          WStringNode *nodes )
+WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *nodes )
 {
     WREStringSession *session;
 
-    if ( !curr ) {
-        return ( NULL );
+    if( curr == NULL ) {
+        return( NULL );
     }
 
-    session = WREAllocStringSession ();
-    if ( !session ) {
-        return ( NULL );
+    session = WREAllocStringSession();
+    if( session == NULL ) {
+        return( NULL );
     }
 
-    session->info = WStrAllocStringInfo ();
-    if ( !session->info ) {
-        return ( NULL );
+    session->info = WStrAllocStringInfo();
+    if( session->info == NULL ) {
+        return( NULL );
     }
 
-    session->info->parent    = WREGetMainWindowHandle();
-    session->info->inst      = WREGetAppInstance ();
-    session->info->file_name = WREStrDup ( WREGetQueryName ( curr->info ) );
-    session->info->tables    = nodes;
-    session->info->is32bit   = curr->info->is32bit;
+    session->info->parent = WREGetMainWindowHandle();
+    session->info->inst = WREGetAppInstance();
+    session->info->file_name = WREStrDup( WREGetQueryName( curr->info ) );
+    session->info->tables = nodes;
+    session->info->is32bit = curr->info->is32bit;
 
-    session->info->stand_alone  = WRENoInterface;
+    session->info->stand_alone = WRENoInterface;
     session->info->symbol_table = curr->info->symbol_table;
-    session->info->symbol_file  = curr->info->symbol_file;
+    session->info->symbol_file = curr->info->symbol_file;
 
     session->tnode = curr->type;
     session->rinfo = curr->info;
 
     session->hndl = WRStringStartEdit( session->info );
 
-    if ( session->hndl ) {
-        WREInsertObject ( &WREStringSessions, session );
-        if( nodes ) {
+    if( session->hndl != NULL ) {
+        WREInsertObject( &WREStringSessions, session );
+        if( nodes != NULL ) {
             WREFreeStringNode( nodes );
             session->info->tables = NULL;
         }
     } else {
-        WStrFreeStringInfo ( session->info );
-        WREMemFree ( session );
+        WStrFreeStringInfo( session->info );
+        WREMemFree( session );
         session = NULL;
     }
 
-    return ( session );
+    return( session );
 }
 
 Bool WREGetStringSessionData( WREStringSession *session, Bool close )
@@ -318,7 +316,7 @@ Bool WREGetStringSessionData( WREStringSession *session, Bool close )
     uint_16             type;
     Bool                ok;
 
-    ok = ( session && session->info && session->hndl );
+    ok = (session != NULL && session->info != NULL && session->hndl != NULL);
 
     if( ok ) {
         if( close ) {
@@ -326,15 +324,14 @@ Bool WREGetStringSessionData( WREStringSession *session, Bool close )
         } else {
             session->info = WStringGetEditInfo( session->hndl );
         }
-        ok = ( session->info != NULL );
+        ok = (session->info != NULL);
     }
 
     if( ok ) {
-        tnode = WREFindTypeNode( session->rinfo->info->dir,
-                                 (uint_16)RT_STRING, NULL );
+        tnode = WREFindTypeNode( session->rinfo->info->dir, (uint_16)RT_STRING, NULL );
     }
 
-    if( ok && tnode && session->info->modified ) {
+    if( ok && tnode != NULL && session->info->modified ) {
         ok = WRRemoveTypeNodeFromDir( session->rinfo->info->dir, tnode );
         tnode = NULL;
     }
@@ -349,8 +346,8 @@ Bool WREGetStringSessionData( WREStringSession *session, Bool close )
         ok = WREInitResourceWindow( session->rinfo, type );
         session->tnode = tnode;
         WREFreeStringNode( session->info->tables );
-        session->info->tables    = NULL;
-        session->info->modified  = FALSE;
+        session->info->tables = NULL;
+        session->info->modified = FALSE;
         session->rinfo->modified = TRUE;
     }
 
@@ -365,10 +362,10 @@ Bool WREEndAllStringSessions( Bool fatal_exit )
 
     ok = TRUE;
 
-    if( WREStringSessions ) {
-        for( slist = WREStringSessions; slist; slist = ListNext(slist) ) {
-            session = (WREStringSession *) ListElement(slist);
-            if( session ) {
+    if( WREStringSessions != NULL ) {
+        for( slist = WREStringSessions; slist != NULL; slist = ListNext( slist ) ) {
+            session = (WREStringSession *)ListElement( slist );
+            if( session != NULL ) {
                 ok = WStringCloseSession( session->hndl, fatal_exit );
             }
         }
@@ -386,26 +383,26 @@ void WREEndResStringSessions( WREResInfo *rinfo )
     WREStringSession    *session;
 
     session = WREFindResStringSession( rinfo );
-    while( session ) {
+    while( session != NULL ) {
         session->info = WStringEndEdit( session->hndl );
         WRERemoveStringEditSession( session );
         session = WREFindResStringSession( rinfo );
     }
 }
 
-WREStringSession *WREFindStringSession ( WStringHandle hndl )
+WREStringSession *WREFindStringSession( WStringHandle hndl )
 {
-    WREStringSession *session;
-    LIST           *slist;
+    WREStringSession    *session;
+    LIST                *slist;
 
-    for ( slist = WREStringSessions; slist; slist = ListNext(slist) ) {
-        session = (WREStringSession *) ListElement(slist);
-        if ( session->hndl == hndl ) {
-            return ( session );
+    for( slist = WREStringSessions; slist != NULL; slist = ListNext( slist ) ) {
+        session = (WREStringSession *)ListElement( slist );
+        if( session->hndl == hndl ) {
+            return( session );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
 WREStringSession *WREFindResStringSession( WREResInfo *rinfo )
@@ -413,8 +410,8 @@ WREStringSession *WREFindResStringSession( WREResInfo *rinfo )
     WREStringSession    *session;
     LIST                *slist;
 
-    for( slist = WREStringSessions; slist; slist = ListNext(slist) ) {
-        session = (WREStringSession *) ListElement(slist);
+    for( slist = WREStringSessions; slist != NULL; slist = ListNext( slist ) ) {
+        session = (WREStringSession *)ListElement( slist );
         if( session->rinfo == rinfo ) {
             return( session );
         }
@@ -423,39 +420,38 @@ WREStringSession *WREFindResStringSession( WREResInfo *rinfo )
     return( NULL );
 }
 
-WREStringSession *WREAllocStringSession  ( void )
+WREStringSession *WREAllocStringSession( void )
 {
     WREStringSession *session;
 
-    session = (WREStringSession *) WREMemAlloc ( sizeof(WREStringSession) );
+    session = (WREStringSession *)WREMemAlloc( sizeof( WREStringSession ) );
 
-    if ( session ) {
-        memset ( session, 0, sizeof(WREStringSession) );
+    if( session != NULL ) {
+        memset( session, 0, sizeof( WREStringSession ) );
     }
 
-    return ( session );
+    return( session );
 }
-
 
 WStringNode *WREMakeNode( WRECurrentResInfo *curr )
 {
     WStringNode *node;
 
-    if( !curr ) {
+    if( curr == NULL ) {
         return( NULL );
     }
 
-    node = (WStringNode *)WREMemAlloc( sizeof(WStringNode) );
+    node = (WStringNode *)WREMemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }
-    memset( node, 0, sizeof(WStringNode) );
+    memset( node, 0, sizeof( WStringNode ) );
 
-    node->lang       = curr->lang->Info.lang;
-    node->MemFlags   = curr->lang->Info.MemoryFlags;
-    node->block_name = WRECopyWResID ( &curr->res->Info.ResName );
-    node->data_size  = curr->lang->Info.Length;
-    node->data       = WREGetCurrentResData( curr );
+    node->lang = curr->lang->Info.lang;
+    node->MemFlags = curr->lang->Info.MemoryFlags;
+    node->block_name = WRECopyWResID( &curr->res->Info.ResName );
+    node->data_size = curr->lang->Info.Length;
+    node->data = WREGetCurrentResData( curr );
 
     if( node->data == NULL ) {
         WREFreeStringNode( node );
@@ -484,20 +480,20 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 
     while( rnode ) {
         lnode = rnode->Head;
-        if( lnode ) {
+        if( lnode != NULL ) {
             lang = lnode->Info.lang;
         }
-        while( lnode ) {
-            if( ( lnode->Info.lang.lang == lang.lang ) &&
-                ( lnode->Info.lang.sublang == lang.sublang ) ) {
+        while( lnode != NULL ) {
+            if( lnode->Info.lang.lang == lang.lang &&
+                lnode->Info.lang.sublang == lang.sublang ) {
                 tcurr.res = rnode;
                 tcurr.lang = lnode;
                 new = WREMakeNode( &tcurr );
-                if( !new ) {
+                if( new == NULL ) {
                     WREFreeStringNode( nodes );
                     return( NULL );
                 }
-                if( nodes ) {
+                if( nodes != NULL ) {
                     new->next = nodes;
                     nodes = new;
                 } else {
@@ -516,7 +512,7 @@ void WREFreeStringNode( WStringNode *node )
 {
     WStringNode *n;
 
-    while( node ) {
+    while( node != NULL ) {
         n = node;
         node = node->next;
         if( n->block_name ) {
@@ -537,9 +533,9 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 
     tnode = NULL;
     tname = WResIDFromNum( (long)RT_STRING );
-    ok = ( tname != NULL );
+    ok = (tname != NULL);
 
-    while( ok && node ) {
+    while( ok && node != NULL ) {
         ok = !WResAddResource( tname, node->block_name, node->MemFlags, 0,
                                node->data_size, dir, &node->lang, NULL );
         if( ok ) {
@@ -550,7 +546,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
         node = node->next;
     }
 
-    if( tname ) {
+    if( tname != NULL ) {
         WREMemFree( tname );
     }
 
@@ -560,4 +556,3 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 
     return( tnode );
 }
-

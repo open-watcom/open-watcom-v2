@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to grow heap (allocate memory from OS).
 *
 ****************************************************************************/
 
@@ -37,6 +36,7 @@
 #include <malloc.h>
 #if defined(__QNX__)
     #include <sys/seginfo.h>
+#elif defined(__LINUX__)
 #elif defined(__OS2__)
     #include "tinyos2.h"
     #define INCL_DOSMEMMGR
@@ -47,7 +47,7 @@
 #include "heap.h"
 #include "heapacc.h"
 
-#if defined(M_I86)
+#if defined( _M_I86 )
 
 _WCRTLINK void _fheapgrow( void )
 {
@@ -76,7 +76,7 @@ _WCRTLINK void _heapgrow( void )
 
 _WCRTLINK void _nheapgrow( void )
     {
-#if defined(__WINDOWS_286__) || defined(__386__) || defined(__AXP__) || defined(__PPC__)
+#if defined(__WINDOWS_286__) || defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
         _nfree( _nmalloc( 1 ) );        /* get something into the heap */
 #else
         unsigned max_paras;

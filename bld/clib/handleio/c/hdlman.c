@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Handle manager routines.
 *
 ****************************************************************************/
 
@@ -45,13 +44,36 @@
  #include <wos2.h>
 #elif defined(__WINDOWS__) || defined(__NT__)
  #include <windows.h>
+#elif defined(__DOS__)
+ #include "tinyio.h"
 #endif
 #include "iomode.h"
 #include "fileacc.h"
 #include "rtinit.h"
 #include "seterrno.h"
+#include "handleio.h"
 
 #undef __getOSHandle
+
+#if defined(__DOS__)
+    extern tiny_ret_t _Set_File_Handle_Count( unsigned );
+  #if defined(__386__)
+    #pragma aux _Set_File_Handle_Count = \
+        "mov        ah,67h"             \
+        "int        0x21"               \
+        "rcl        eax,1"              \
+        "ror        eax,1"              \
+        value [eax]                     \
+        parm caller [ebx]
+  #else
+    #pragma aux _Set_File_Handle_Count = \
+        "mov        ah,67h"             \
+        "int        0x21"               \
+        "sbb        dx,dx"              \
+        value [dx ax]                   \
+        parm caller [bx]
+  #endif
+#endif
 
 extern  unsigned    __NFiles;       // the size of the iomode array
 extern  void        __grow_iomode( int num );
@@ -228,32 +250,17 @@ void __set_handles( int num )
 _WCRTLINK int _grow_handles( int num )
 {
     if( num > __NHandles ) {
-        #if defined(MSDOS)
+        #if defined(__DOS__)
             /* increase the number of file handles beyond 20 */
 
             if( _osmajor > 3 || ( _osmajor == 3 && _osminor >= 30 ) ) {
-                extern long _Set_File_Handle_Count( char, unsigned );
-                #if defined(__386__)
-                    #pragma aux _Set_File_Handle_Count = \
-                        "int        0x21"                   \
-                        "rcl        eax,1"                  \
-                        "ror        eax,1"                  \
-                        value [eax]                 \
-                        parm caller [ah] [ebx]
-                #else
-                    #pragma aux _Set_File_Handle_Count = \
-                        "int        0x21"                   \
-                        "sbb        dx,dx"                  \
-                        value [dx ax]                       \
-                        parm caller [ah] [bx]
-                #endif
-                long rc;
+                tiny_ret_t  rc;
 
                 /* may allocate a segment of memory! */
                 num = (num+1) & ~1; /* make even */
-                rc = _Set_File_Handle_Count( 0x67, num );
-                if( rc < 0 ) {
-                    __set_errno_dos( (unsigned)rc );
+                rc = _Set_File_Handle_Count( num );
+                if( TINY_ERROR( rc ) ) {
+                    __set_errno_dos( TINY_INFO( rc ) );
                     num = __NHandles;
                 }
             } else {
@@ -315,7 +322,7 @@ _WCRTLINK int _grow_handles( int num )
             ULONG   curr_max_fh;
             APIRET  rc;
 
-            req_count = num;
+            req_count = num - __NHandles;
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
         }
@@ -331,7 +338,7 @@ _WCRTLINK int _grow_handles( int num )
         {
             #error NO HANDLE MANAGER UNDER NETWARE
         }
-        #elif defined(__QNX__)
+        #elif defined(__UNIX__)
         {
             // nothing to do
         }

@@ -82,6 +82,7 @@ void VEditDlg::initialize()
     const int   button_width = 50;
     const int   button_hite = 14;
 
+    setSystemFont( FALSE );
     this->textMetrics( average, max );
     sx = average.x() / 4;
     sy = average.y() / 8;
@@ -171,7 +172,7 @@ void VEditDlg::initialize()
         _exeButton->setCheck( TRUE );
     }
 
-    size( (WOrdinal)225*sx, (WOrdinal)150*sy );
+    size( (WOrdinal)225*sx, (WOrdinal)155*sy );
     centre();
     show();
     _editorName->setFocus();
@@ -190,7 +191,7 @@ void VEditDlg::okButton( WWindow* ) {
                                   "'%s' is not a valid editor name",
                                   _fn.gets() );
     }
-    _fn.toLower();
+//    _fn.toLower();
     if( _exeButton->checked() ) {
         _isDll = FALSE;
     } else {

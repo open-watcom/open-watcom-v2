@@ -35,9 +35,9 @@
 #include "mathcode.h"
 
 
-_WMRTLINK double _IF_PowRR( double base, double power ) {
-//======================================================
-
+_WMRTLINK double _IF_PowRR( double base, double power )
+//=====================================================
+{
 // Return base ** power.
 
     if( base < 0.0 ) {

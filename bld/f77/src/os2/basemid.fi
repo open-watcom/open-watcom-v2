@@ -1,0 +1,1413 @@
+c$noreference
+
+        integer  MSG_RESPONSE_DATA
+        parameter (MSG_RESPONSE_DATA = 0)
+        integer  MSG_INVALID_FUNCTION
+        parameter (MSG_INVALID_FUNCTION = 1)
+        integer  MSG_FILE_NOT_FOUND
+        parameter (MSG_FILE_NOT_FOUND = 2)
+        integer  MSG_PATH_NOT_FOUND
+        parameter (MSG_PATH_NOT_FOUND = 3)
+        integer  MSG_OUT_OF_HANDLES
+        parameter (MSG_OUT_OF_HANDLES = 4)
+        integer  MSG_ACCESS_DENIED
+        parameter (MSG_ACCESS_DENIED = 5)
+        integer  MSG_INVALID_HANDLE
+        parameter (MSG_INVALID_HANDLE = 6)
+        integer  MSG_MEMORY_BLOCKS_BAD
+        parameter (MSG_MEMORY_BLOCKS_BAD = 7)
+        integer  MSG_NO_MEMORY
+        parameter (MSG_NO_MEMORY = 8)
+        integer  MSG_INVALID_MEM_ADDR
+        parameter (MSG_INVALID_MEM_ADDR = 9)
+        integer  MSG_INVALID_ENVIRON
+        parameter (MSG_INVALID_ENVIRON = 10)
+        integer  MSG_INVALID_FORMAT
+        parameter (MSG_INVALID_FORMAT = 11)
+        integer  MSG_INVALID_ACC_CODE
+        parameter (MSG_INVALID_ACC_CODE = 12)
+        integer  MSG_INVALID_DATA
+        parameter (MSG_INVALID_DATA = 13)
+        integer  MSG_INVALID_DRIVE
+        parameter (MSG_INVALID_DRIVE = 15)
+        integer  MSG_ATT_RD_CURDIR
+        parameter (MSG_ATT_RD_CURDIR = 16)
+        integer  MSG_NOT_SAME_DEVICE
+        parameter (MSG_NOT_SAME_DEVICE = 17)
+        integer  MSG_NO_MORE_FILES
+        parameter (MSG_NO_MORE_FILES = 18)
+        integer  MSG_ATT_WRITE_PROT
+        parameter (MSG_ATT_WRITE_PROT = 19)
+        integer  MSG_UNKNOWN_UNIT
+        parameter (MSG_UNKNOWN_UNIT = 20)
+        integer  MSG_DRIVE_NOT_READY
+        parameter (MSG_DRIVE_NOT_READY = 21)
+        integer  MSG_UNKNOWN_COMMAND
+        parameter (MSG_UNKNOWN_COMMAND = 22)
+        integer  MSG_DATA_ERROR
+        parameter (MSG_DATA_ERROR = 23)
+        integer  MSG_BAD_REQ_STRUCTURE
+        parameter (MSG_BAD_REQ_STRUCTURE = 24)
+        integer  MSG_SEEK_ERROR
+        parameter (MSG_SEEK_ERROR = 25)
+        integer  MSG_UNKNOWN_MEDIA
+        parameter (MSG_UNKNOWN_MEDIA = 26)
+        integer  MSG_SECTOR_NOT_FOUND
+        parameter (MSG_SECTOR_NOT_FOUND = 27)
+        integer  MSG_OUT_OF_PAPER
+        parameter (MSG_OUT_OF_PAPER = 28)
+        integer  MSG_WRITE_FAULT
+        parameter (MSG_WRITE_FAULT = 29)
+        integer  MSG_READ_FAULT
+        parameter (MSG_READ_FAULT = 30)
+        integer  MSG_GENERAL_FAILURE
+        parameter (MSG_GENERAL_FAILURE = 31)
+        integer  MSG_SHARING_VIOLATION
+        parameter (MSG_SHARING_VIOLATION = 32)
+        integer  MSG_SHAR_VIOLAT_FIND
+        parameter (MSG_SHAR_VIOLAT_FIND = 32)
+        integer  MSG_LOCK_VIOLATION
+        parameter (MSG_LOCK_VIOLATION = 33)
+        integer  MSG_INVALID_DISK_CHANGE
+        parameter (MSG_INVALID_DISK_CHANGE = 34)
+        integer  MSG_35
+        parameter (MSG_35 = 35)
+        integer  MSG_SHARING_BUFF_OFLOW
+        parameter (MSG_SHARING_BUFF_OFLOW = 36)
+        integer  MSG_ERROR_WRITE_PROTECT
+        parameter (MSG_ERROR_WRITE_PROTECT = 37)
+        integer  MSG_ERROR_BAD_UNIT
+        parameter (MSG_ERROR_BAD_UNIT = 38)
+        integer  MSG_ERROR_NOT_READY
+        parameter (MSG_ERROR_NOT_READY = 39)
+        integer  MSG_ERROR_BAD_COMMAND
+        parameter (MSG_ERROR_BAD_COMMAND = 40)
+        integer  MSG_ERROR_CRC
+        parameter (MSG_ERROR_CRC = 41)
+        integer  MSG_ERROR_BAD_LENGTH
+        parameter (MSG_ERROR_BAD_LENGTH = 42)
+        integer  MSG_ERROR_SEEK
+        parameter (MSG_ERROR_SEEK = 43)
+        integer  MSG_ERROR_NOT_DOS_DISK
+        parameter (MSG_ERROR_NOT_DOS_DISK = 44)
+        integer  MSG_ERROR_SECTOR_NOT_FOUND
+        parameter (MSG_ERROR_SECTOR_NOT_FOUND = 45)
+        integer  MSG_ERROR_OUT_OF_PAPER
+        parameter (MSG_ERROR_OUT_OF_PAPER = 46)
+        integer  MSG_ERROR_WRITE_FAULT
+        parameter (MSG_ERROR_WRITE_FAULT = 47)
+        integer  MSG_ERROR_READ_FAULT
+        parameter (MSG_ERROR_READ_FAULT = 48)
+        integer  MSG_ERROR_GEN_FAILURE
+        parameter (MSG_ERROR_GEN_FAILURE = 49)
+        integer  MSG_NET_REQ_NOT_SUPPORT
+        parameter (MSG_NET_REQ_NOT_SUPPORT = 50)
+        integer  MSG_NET_REMOTE_NOT_ONLINE
+        parameter (MSG_NET_REMOTE_NOT_ONLINE = 51)
+        integer  MSG_NET_DUP_FILENAME
+        parameter (MSG_NET_DUP_FILENAME = 52)
+        integer  MSG_NET_PATH_NOT_FOUND
+        parameter (MSG_NET_PATH_NOT_FOUND = 53)
+        integer  MSG_NET_BUSY
+        parameter (MSG_NET_BUSY = 54)
+        integer  MSG_NET_DEV_NOT_INSTALLED
+        parameter (MSG_NET_DEV_NOT_INSTALLED = 55)
+        integer  MSG_NET_BIOS_LIMIT_REACHED
+        parameter (MSG_NET_BIOS_LIMIT_REACHED = 56)
+        integer  MSG_NET_ADAPT_HRDW_ERROR
+        parameter (MSG_NET_ADAPT_HRDW_ERROR = 57)
+        integer  MSG_NET_INCORRECT_RESPONSE
+        parameter (MSG_NET_INCORRECT_RESPONSE = 58)
+        integer  MSG_NET_UNEXPECT_ERROR
+        parameter (MSG_NET_UNEXPECT_ERROR = 59)
+        integer  MSG_NET_REMOT_ADPT_INCOMP
+        parameter (MSG_NET_REMOT_ADPT_INCOMP = 60)
+        integer  MSG_NET_PRINT_Q_FULL
+        parameter (MSG_NET_PRINT_Q_FULL = 61)
+        integer  MSG_NET_NO_SPACE_TO_PRINT_FL
+        parameter (MSG_NET_NO_SPACE_TO_PRINT_FL = 62)
+        integer  MSG_NET_PRINT_FILE_DELETED
+        parameter (MSG_NET_PRINT_FILE_DELETED = 63)
+        integer  MSG_NET_NAME_DELETED
+        parameter (MSG_NET_NAME_DELETED = 64)
+        integer  MSG_NET_ACCESS_DENIED
+        parameter (MSG_NET_ACCESS_DENIED = 65)
+        integer  MSG_NET_DEV_TYPE_INVALID
+        parameter (MSG_NET_DEV_TYPE_INVALID = 66)
+        integer  MSG_NET_NAME_NOT_FOUND
+        parameter (MSG_NET_NAME_NOT_FOUND = 67)
+        integer  MSG_NET_NAME_LIMIT_EXCEED
+        parameter (MSG_NET_NAME_LIMIT_EXCEED = 68)
+        integer  MSG_NET_BIOS_LIMIT_EXCEED
+        parameter (MSG_NET_BIOS_LIMIT_EXCEED = 69)
+        integer  MSG_NET_TEMP_PAUSED
+        parameter (MSG_NET_TEMP_PAUSED = 70)
+        integer  MSG_NET_REQUEST_DENIED
+        parameter (MSG_NET_REQUEST_DENIED = 71)
+        integer  MSG_NET_PRT_DSK_REDIR_PAUSE
+        parameter (MSG_NET_PRT_DSK_REDIR_PAUSE = 72)
+        integer  MSG_XGA_OUT_MEMORY
+        parameter (MSG_XGA_OUT_MEMORY = 75)
+        integer  MSG_FILE_EXISTS
+        parameter (MSG_FILE_EXISTS = 80)
+        integer  MSG_CANNOT_MAKE
+        parameter (MSG_CANNOT_MAKE = 82)
+        integer  MSG_NET_FAIL_INT_TWO_FOUR
+        parameter (MSG_NET_FAIL_INT_TWO_FOUR = 83)
+        integer  MSG_NET_TOO_MANY_REDIRECT
+        parameter (MSG_NET_TOO_MANY_REDIRECT = 84)
+        integer  MSG_NET_DUP_REDIRECTION
+        parameter (MSG_NET_DUP_REDIRECTION = 85)
+        integer  MSG_NET_INVALID_PASSWORD
+        parameter (MSG_NET_INVALID_PASSWORD = 86)
+        integer  MSG_NET_INCORR_PARAMETER
+        parameter (MSG_NET_INCORR_PARAMETER = 87)
+        integer  MSG_NET_DATA_FAULT
+        parameter (MSG_NET_DATA_FAULT = 88)
+        integer  MSG_NO_PROC_SLOTS
+        parameter (MSG_NO_PROC_SLOTS = 89)
+        integer  MSG_DEVICE_IN_USE
+        parameter (MSG_DEVICE_IN_USE = 99)
+        integer  MSG_TOO_MANY_SEMAPHORES
+        parameter (MSG_TOO_MANY_SEMAPHORES = 100)
+        integer  MSG_EXCL_SEM_ALREADY_OWNED
+        parameter (MSG_EXCL_SEM_ALREADY_OWNED = 101)
+        integer  MSG_SEM_IS_SET
+        parameter (MSG_SEM_IS_SET = 102)
+        integer  MSG_TOO_MANY_SEM_REQUESTS
+        parameter (MSG_TOO_MANY_SEM_REQUESTS = 103)
+        integer  MSG_INVALID_AT_INTERRUPT_TIME
+        parameter (MSG_INVALID_AT_INTERRUPT_TIME = 104)
+        integer  MSG_SEM_OWNER_DIED
+        parameter (MSG_SEM_OWNER_DIED = 105)
+        integer  MSG_ERROR_DISK_CHANGE
+        parameter (MSG_ERROR_DISK_CHANGE = 106)
+        integer  MSG_DISK_CHANGE
+        parameter (MSG_DISK_CHANGE = 107)
+        integer  MSG_DRIVE_LOCKED
+        parameter (MSG_DRIVE_LOCKED = 108)
+        integer  MSG_BROKEN_PIPE
+        parameter (MSG_BROKEN_PIPE = 109)
+        integer  MSG_ERROR_OPEN_FAILED
+        parameter (MSG_ERROR_OPEN_FAILED = 110)
+        integer  MSG_ERROR_FILENAME_LONG
+        parameter (MSG_ERROR_FILENAME_LONG = 111)
+        integer  MSG_DISK_FULL
+        parameter (MSG_DISK_FULL = 112)
+        integer  MSG_NO_SEARCH_HANDLES
+        parameter (MSG_NO_SEARCH_HANDLES = 113)
+        integer  MSG_ERR_INV_TAR_HANDLE
+        parameter (MSG_ERR_INV_TAR_HANDLE = 114)
+        integer  MSG_INVALID_CATEGORY
+        parameter (MSG_INVALID_CATEGORY = 117)
+        integer  MSG_INVALID_VERIFY_SWITCH
+        parameter (MSG_INVALID_VERIFY_SWITCH = 118)
+        integer  MSG_BAD_DRIVER_LEVEL
+        parameter (MSG_BAD_DRIVER_LEVEL = 119)
+        integer  MSG_BAD_DYNALINK
+        parameter (MSG_BAD_DYNALINK = 120)
+        integer  MSG_SEM_TIMEOUT
+        parameter (MSG_SEM_TIMEOUT = 121)
+        integer  MSG_INSUFFICIENT_BUFFER
+        parameter (MSG_INSUFFICIENT_BUFFER = 122)
+        integer  MSG_INVALID_NAME
+        parameter (MSG_INVALID_NAME = 123)
+        integer  MSG_HPFS_INVALID_VOLUME_CHAR
+        parameter (MSG_HPFS_INVALID_VOLUME_CHAR = 123)
+        integer  MSG_INVALID_LEVEL
+        parameter (MSG_INVALID_LEVEL = 124)
+        integer  MSG_NO_VOLUME_LABEL
+        parameter (MSG_NO_VOLUME_LABEL = 125)
+        integer  MSG_MOD_NOT_FOUND
+        parameter (MSG_MOD_NOT_FOUND = 126)
+        integer  MSG_PROC_NOT_FOUND
+        parameter (MSG_PROC_NOT_FOUND = 127)
+        integer  MSG_PROT_MODE_ONLY
+        parameter (MSG_PROT_MODE_ONLY = 129)
+        integer  MSG_APPL_SINGLEFRAMECHAR
+        parameter (MSG_APPL_SINGLEFRAMECHAR = 130)
+        integer  MSG_APPL_DOUBLEFRAMECHAR
+        parameter (MSG_APPL_DOUBLEFRAMECHAR = 131)
+        integer  MSG_APPL_ARROWCHAR
+        parameter (MSG_APPL_ARROWCHAR = 132)
+        integer  MSG_JOIN_ON_DRIV_IS_TAR
+        parameter (MSG_JOIN_ON_DRIV_IS_TAR = 133)
+        integer  MSG_JOIN_DRIVE_IS
+        parameter (MSG_JOIN_DRIVE_IS = 134)
+        integer  MSG_SUB_DRIVE_IS
+        parameter (MSG_SUB_DRIVE_IS = 135)
+        integer  MSG_DRIVE_IS_NOT_JOINED
+        parameter (MSG_DRIVE_IS_NOT_JOINED = 136)
+        integer  MSG_DRIVE_NOT_SUBSTED
+        parameter (MSG_DRIVE_NOT_SUBSTED = 137)
+        integer  MSG_JOIN_CANNOT_JOIN_DRIVE
+        parameter (MSG_JOIN_CANNOT_JOIN_DRIVE = 138)
+        integer  MSG_SUB_CANNOT_SUBST_DRIVE
+        parameter (MSG_SUB_CANNOT_SUBST_DRIVE = 139)
+        integer  MSG_JOIN_CANNOT_SUB_DRIVE
+        parameter (MSG_JOIN_CANNOT_SUB_DRIVE = 140)
+        integer  MSG_SUB_CANNOT_JOIN_DRIVE
+        parameter (MSG_SUB_CANNOT_JOIN_DRIVE = 141)
+        integer  MSG_DRIVE_IS_BUSY
+        parameter (MSG_DRIVE_IS_BUSY = 142)
+        integer  MSG_JOIN_SUB_SAME_DRIVE
+        parameter (MSG_JOIN_SUB_SAME_DRIVE = 143)
+        integer  MSG_DIRECT_IS_NOT_SUBDIR
+        parameter (MSG_DIRECT_IS_NOT_SUBDIR = 144)
+        integer  MSG_DIRECT_IS_NOT_EMPTY
+        parameter (MSG_DIRECT_IS_NOT_EMPTY = 145)
+        integer  MSG_PATH_USED_SUBST_JOIN
+        parameter (MSG_PATH_USED_SUBST_JOIN = 146)
+        integer  MSG_NO_NEEDED_RESOURCES
+        parameter (MSG_NO_NEEDED_RESOURCES = 147)
+        integer  MSG_PATH_BUSY
+        parameter (MSG_PATH_BUSY = 148)
+        integer  MSG_SUB_ON_DRIVE_IS_JOIN
+        parameter (MSG_SUB_ON_DRIVE_IS_JOIN = 149)
+        integer  MSG_SYSTEM_TRACE
+        parameter (MSG_SYSTEM_TRACE = 150)
+        integer  MSG_INVALID_EVENT_COUNT
+        parameter (MSG_INVALID_EVENT_COUNT = 151)
+        integer  MSG_TOO_MANY_MUXWAITERS
+        parameter (MSG_TOO_MANY_MUXWAITERS = 152)
+        integer  MSG_INVALID_LIST_FORMAT
+        parameter (MSG_INVALID_LIST_FORMAT = 153)
+        integer  MSG_VOLUME_TOO_LONG
+        parameter (MSG_VOLUME_TOO_LONG = 154)
+        integer  MSG_HPFS_VOL_LABEL_LONG
+        parameter (MSG_HPFS_VOL_LABEL_LONG = 154)
+        integer  MSG_TOO_MANY_TCBS
+        parameter (MSG_TOO_MANY_TCBS = 155)
+        integer  MSG_SIGNAL_REFUSED
+        parameter (MSG_SIGNAL_REFUSED = 156)
+        integer  MSG_DISCARDED
+        parameter (MSG_DISCARDED = 157)
+        integer  MSG_NOT_LOCKED
+        parameter (MSG_NOT_LOCKED = 158)
+        integer  MSG_BAD_THREADID_ADDR
+        parameter (MSG_BAD_THREADID_ADDR = 159)
+        integer  MSG_BAD_ARGUMENTS
+        parameter (MSG_BAD_ARGUMENTS = 160)
+        integer  MSG_SIGNAL_PENDING
+        parameter (MSG_SIGNAL_PENDING = 162)
+        integer  MSG_MAX_THRDS_REACHED
+        parameter (MSG_MAX_THRDS_REACHED = 164)
+        integer  MSG_UNC_DRIVER_NOT_INSTALLED
+        parameter (MSG_UNC_DRIVER_NOT_INSTALLED = 166)
+        integer  MSG_LOCK_FAILED
+        parameter (MSG_LOCK_FAILED = 167)
+        integer  MSG_SWAPIO_FAILED
+        parameter (MSG_SWAPIO_FAILED = 168)
+        integer  MSG_SWAPIN_ATTEMPT_FAILED
+        parameter (MSG_SWAPIN_ATTEMPT_FAILED = 169)
+        integer  MSG_SEGMENT_BUSY
+        parameter (MSG_SEGMENT_BUSY = 170)
+        integer  MSG_INT_TOO_LONG
+        parameter (MSG_INT_TOO_LONG = 171)
+        integer  MSG_UNLOCK_VIOLATION
+        parameter (MSG_UNLOCK_VIOLATION = 173)
+        integer  MSG_INVALID_SEGMENT_NUM
+        parameter (MSG_INVALID_SEGMENT_NUM = 180)
+        integer  MSG_INVALID_ORDINAL
+        parameter (MSG_INVALID_ORDINAL = 182)
+        integer  MSG_INVALID_FLAG_NUMBER
+        parameter (MSG_INVALID_FLAG_NUMBER = 186)
+        integer  MSG_SEM_NOT_FOUND
+        parameter (MSG_SEM_NOT_FOUND = 187)
+        integer  MSG_INVALID_STARTING_CODESEG
+        parameter (MSG_INVALID_STARTING_CODESEG = 188)
+        integer  MSG_INVALID_STACKSEG
+        parameter (MSG_INVALID_STACKSEG = 189)
+        integer  MSG_INVALID_MODULETYPE
+        parameter (MSG_INVALID_MODULETYPE = 190)
+        integer  MSG_INVALID_EXE_SIGNATURE
+        parameter (MSG_INVALID_EXE_SIGNATURE = 191)
+        integer  MSG_EXE_MARKED_INVALID
+        parameter (MSG_EXE_MARKED_INVALID = 192)
+        integer  MSG_BAD_EXE_FORMAT
+        parameter (MSG_BAD_EXE_FORMAT = 193)
+        integer  MSG_ITERATED_DATA_EXCEEDS_64K
+        parameter (MSG_ITERATED_DATA_EXCEEDS_64K = 194)
+        integer  MSG_INVALID_MINALLOCSIZE
+        parameter (MSG_INVALID_MINALLOCSIZE = 195)
+        integer  MSG_DYNLINK_FROM_INVALID_RING
+        parameter (MSG_DYNLINK_FROM_INVALID_RING = 196)
+        integer  MSG_IOPL_NOT_ENABLED
+        parameter (MSG_IOPL_NOT_ENABLED = 197)
+        integer  MSG_INVALID_SEGDPL
+        parameter (MSG_INVALID_SEGDPL = 198)
+        integer  MSG_AUTODATASEG_EXCEEDS_64K
+        parameter (MSG_AUTODATASEG_EXCEEDS_64K = 199)
+        integer  MSG_CODESEG_CANNOT_BE_64K
+        parameter (MSG_CODESEG_CANNOT_BE_64K = 200)
+        integer  MSG_RELOC_CHAIN_XEEDS_SEGMENT
+        parameter (MSG_RELOC_CHAIN_XEEDS_SEGMENT = 201)
+        integer  MSG_INFLOOP_IN_RELOC_CHAIN
+        parameter (MSG_INFLOOP_IN_RELOC_CHAIN = 202)
+        integer  MSG_ENVVAR_NOT_FOUND
+        parameter (MSG_ENVVAR_NOT_FOUND = 203)
+        integer  MSG_SIGNAL_NOT_SENT
+        parameter (MSG_SIGNAL_NOT_SENT = 205)
+        integer  MSG_NAME_TOO_LONG
+        parameter (MSG_NAME_TOO_LONG = 206)
+        integer  MSG_RING2_STACK_IN_USE
+        parameter (MSG_RING2_STACK_IN_USE = 207)
+        integer  MSG_WILD_CARD_NAME
+        parameter (MSG_WILD_CARD_NAME = 208)
+        integer  MSG_INVALID_SIGNAL_NUMBER
+        parameter (MSG_INVALID_SIGNAL_NUMBER = 209)
+        integer  MSG_THREAD_1_INACTIVE
+        parameter (MSG_THREAD_1_INACTIVE = 210)
+        integer  MSG_LOCKED
+        parameter (MSG_LOCKED = 212)
+        integer  MSG_TOO_MANY_MODULES
+        parameter (MSG_TOO_MANY_MODULES = 214)
+        integer  MSG_CANNOT_SHRINK
+        parameter (MSG_CANNOT_SHRINK = 216)
+        integer  MSG_INVALID_EXITROUTINE_RING
+        parameter (MSG_INVALID_EXITROUTINE_RING = 219)
+        integer  MSG_NO_CHILDREN
+        parameter (MSG_NO_CHILDREN = 228)
+        integer  MSG_ERROR_BAD_PIPE
+        parameter (MSG_ERROR_BAD_PIPE = 230)
+        integer  MSG_ERROR_PIPE_BUSY
+        parameter (MSG_ERROR_PIPE_BUSY = 231)
+        integer  MSG_ERROR_NO_DATA
+        parameter (MSG_ERROR_NO_DATA = 232)
+        integer  MSG_ERROR_PIPE_NOT_CONNECTED
+        parameter (MSG_ERROR_PIPE_NOT_CONNECTED = 233)
+        integer  MSG_ERROR_MORE_DATA
+        parameter (MSG_ERROR_MORE_DATA = 234)
+        integer  MSG_ERROR_VC_DISCONNECTED
+        parameter (MSG_ERROR_VC_DISCONNECTED = 240)
+        integer  MSG_CIRCULARITY_REQUESTED
+        parameter (MSG_CIRCULARITY_REQUESTED = 250)
+        integer  MSG_DIRECTORY_IN_CDS
+        parameter (MSG_DIRECTORY_IN_CDS = 251)
+        integer  MSG_INVALID_FSD_NAME
+        parameter (MSG_INVALID_FSD_NAME = 252)
+        integer  MSG_INVALID_PATH
+        parameter (MSG_INVALID_PATH = 253)
+        integer  MSG_INVALID_EA_NAME
+        parameter (MSG_INVALID_EA_NAME = 254)
+        integer  MSG_EA_LIST_INCONSISTENT
+        parameter (MSG_EA_LIST_INCONSISTENT = 255)
+        integer  MSG_EA_LIST_TOO_LONG
+        parameter (MSG_EA_LIST_TOO_LONG = 256)
+        integer  MSG_NO_META_MATCH
+        parameter (MSG_NO_META_MATCH = 257)
+        integer  MSG_FINDNOTIFY_TIMEOUT
+        parameter (MSG_FINDNOTIFY_TIMEOUT = 258)
+        integer  MSG_NO_MORE_ITEMS
+        parameter (MSG_NO_MORE_ITEMS = 259)
+        integer  MSG_SEARCH_STRUC_REUSED
+        parameter (MSG_SEARCH_STRUC_REUSED = 260)
+        integer  MSG_CHAR_NOT_FOUND
+        parameter (MSG_CHAR_NOT_FOUND = 261)
+        integer  MSG_TOO_MUCH_STACK
+        parameter (MSG_TOO_MUCH_STACK = 262)
+        integer  MSG_INVALID_ATTR
+        parameter (MSG_INVALID_ATTR = 263)
+        integer  MSG_INVALID_STARTING_RING
+        parameter (MSG_INVALID_STARTING_RING = 264)
+        integer  MSG_INVALID_DLL_INIT_RING
+        parameter (MSG_INVALID_DLL_INIT_RING = 265)
+        integer  MSG_CANNOT_COPY
+        parameter (MSG_CANNOT_COPY = 266)
+        integer  MSG_DIRECTORY
+        parameter (MSG_DIRECTORY = 267)
+        integer  MSG_OPLOCKED_FILE
+        parameter (MSG_OPLOCKED_FILE = 268)
+        integer  MSG_OPLOCK_THREAD_EXISTS
+        parameter (MSG_OPLOCK_THREAD_EXISTS = 269)
+        integer  MSG_ERROR_EAS_CORRUPT
+        parameter (MSG_ERROR_EAS_CORRUPT = 276)
+        integer  MSG_EA_TABLE_FULL
+        parameter (MSG_EA_TABLE_FULL = 277)
+        integer  MSG_INVALID_EA_HANDLE
+        parameter (MSG_INVALID_EA_HANDLE = 278)
+        integer  MSG_NO_CLUSTER
+        parameter (MSG_NO_CLUSTER = 279)
+        integer  MSG_ERROR_CREATE_EA_FILE
+        parameter (MSG_ERROR_CREATE_EA_FILE = 280)
+        integer  MSG_CANNOT_OPEN_FILE
+        parameter (MSG_CANNOT_OPEN_FILE = 281)
+        integer  MSG_EAS_NOT_SUPPORTED
+        parameter (MSG_EAS_NOT_SUPPORTED = 282)
+        integer  MSG_NEED_EAS_FOUND
+        parameter (MSG_NEED_EAS_FOUND = 283)
+        integer  MSG_EAS_DISCARDED
+        parameter (MSG_EAS_DISCARDED = 284)
+        integer  MSG_DUPLICATE_SEM_NAME
+        parameter (MSG_DUPLICATE_SEM_NAME = 285)
+        integer  MSG_EMPTY_MUXWAIT_SEM
+        parameter (MSG_EMPTY_MUXWAIT_SEM = 286)
+        integer  MSG_MUTEX_SEM_OWNED
+        parameter (MSG_MUTEX_SEM_OWNED = 287)
+        integer  MSG_NOT_MUTEX_SEM_OWNER
+        parameter (MSG_NOT_MUTEX_SEM_OWNER = 288)
+        integer  MSG_QUERY_MUX_PARAM_TOO_SMALL
+        parameter (MSG_QUERY_MUX_PARAM_TOO_SMALL = 289)
+        integer  MSG_TOO_MANY_SEM_HANDLES
+        parameter (MSG_TOO_MANY_SEM_HANDLES = 290)
+        integer  MSG_TOO_MANY_SEM_OPENS
+        parameter (MSG_TOO_MANY_SEM_OPENS = 291)
+        integer  MSG_SEM_WRONG_TYPE
+        parameter (MSG_SEM_WRONG_TYPE = 292)
+        integer  MSG_TOO_MANY_EVENT_SEM_POSTS
+        parameter (MSG_TOO_MANY_EVENT_SEM_POSTS = 298)
+        integer  MSG_EVENT_SEM_ALREADY_POSTED
+        parameter (MSG_EVENT_SEM_ALREADY_POSTED = 299)
+        integer  MSG_EVENT_SEM_ALREADY_RESET
+        parameter (MSG_EVENT_SEM_ALREADY_RESET = 300)
+        integer  MSG_SEM_BUSY
+        parameter (MSG_SEM_BUSY = 301)
+        integer  MSG_MR_MSG_TOO_LONG
+        parameter (MSG_MR_MSG_TOO_LONG = 316)
+        integer  MSG_MR_CANT_FORMAT
+        parameter (MSG_MR_CANT_FORMAT = 317)
+        integer  MSG_MR_NOT_FOUND
+        parameter (MSG_MR_NOT_FOUND = 318)
+        integer  MSG_MR_READ_ERROR
+        parameter (MSG_MR_READ_ERROR = 319)
+        integer  MSG_MR_IVCOUNT_ERROR
+        parameter (MSG_MR_IVCOUNT_ERROR = 320)
+        integer  MSG_MR_UN_PERFORM
+        parameter (MSG_MR_UN_PERFORM = 321)
+        integer  MSG_QUE_PROC_NOT_OWNED
+        parameter (MSG_QUE_PROC_NOT_OWNED = 330)
+        integer  MSG_QUE_DUPLICATE
+        parameter (MSG_QUE_DUPLICATE = 332)
+        integer  MSG_QUE_ELEMENT_NOT_EXIST
+        parameter (MSG_QUE_ELEMENT_NOT_EXIST = 333)
+        integer  MSG_QUE_NO_MEMORY
+        parameter (MSG_QUE_NO_MEMORY = 334)
+        integer  MSG_VIO_INVALID_MASK
+        parameter (MSG_VIO_INVALID_MASK = 349)
+        integer  MSG_VIO_PTR
+        parameter (MSG_VIO_PTR = 350)
+        integer  MSG_DIS_ERROR
+        parameter (MSG_DIS_ERROR = 355)
+        integer  MSG_VIO_WIDTH
+        parameter (MSG_VIO_WIDTH = 356)
+        integer  MSG_VIO_ROW
+        parameter (MSG_VIO_ROW = 358)
+        integer  MSG_VIO_COL
+        parameter (MSG_VIO_COL = 359)
+        integer  MSG_VIO_WAIT_FLAG
+        parameter (MSG_VIO_WAIT_FLAG = 366)
+        integer  MSG_VIO_UNLOCK
+        parameter (MSG_VIO_UNLOCK = 367)
+        integer  MSG_SMG_INVALID_SESSION_ID
+        parameter (MSG_SMG_INVALID_SESSION_ID = 369)
+        integer  MSG_SMG_GRP_NOT_FOUND
+        parameter (MSG_SMG_GRP_NOT_FOUND = 371)
+        integer  MSG_SMG_SESSION_NOT_FOUND
+        parameter (MSG_SMG_SESSION_NOT_FOUND = 371)
+        integer  MSG_SMG_SET_TITLE
+        parameter (MSG_SMG_SET_TITLE = 372)
+        integer  MSG_KBD_PARAMETER
+        parameter (MSG_KBD_PARAMETER = 373)
+        integer  MSG_KBD_INVALID_IOWAIT
+        parameter (MSG_KBD_INVALID_IOWAIT = 375)
+        integer  MSG_KBD_INVALID_LENGTH
+        parameter (MSG_KBD_INVALID_LENGTH = 376)
+        integer  MSG_KBD_INVALID_ECHO_MASK
+        parameter (MSG_KBD_INVALID_ECHO_MASK = 377)
+        integer  MSG_KBD_INVALID_INPUT_MASK
+        parameter (MSG_KBD_INVALID_INPUT_MASK = 377)
+        integer  MSG_MON_INVALID_PARMS
+        parameter (MSG_MON_INVALID_PARMS = 379)
+        integer  MSG_MON_INVALID_DEVNAME
+        parameter (MSG_MON_INVALID_DEVNAME = 380)
+        integer  MSG_MON_INVALID_HANDLE
+        parameter (MSG_MON_INVALID_HANDLE = 381)
+        integer  MSG_MON_BUFFER_TOO_SMALL
+        parameter (MSG_MON_BUFFER_TOO_SMALL = 382)
+        integer  MSG_MON_BUFFER_EMPTY
+        parameter (MSG_MON_BUFFER_EMPTY = 383)
+        integer  MSG_MON_DATA_TOO_LARGE
+        parameter (MSG_MON_DATA_TOO_LARGE = 384)
+        integer  MSG_MOUSE_NO_DEVICE
+        parameter (MSG_MOUSE_NO_DEVICE = 385)
+        integer  MSG_MOUSE_INV_HANDLE
+        parameter (MSG_MOUSE_INV_HANDLE = 386)
+        integer  MSG_MOUSE_CALLER_NOT_SYBSYS
+        parameter (MSG_MOUSE_CALLER_NOT_SYBSYS = 387)
+        integer  MSG_NLS_NO_COUNTRY_FILE
+        parameter (MSG_NLS_NO_COUNTRY_FILE = 396)
+        integer  MSG_NO_COUNTRY_SYS
+        parameter (MSG_NO_COUNTRY_SYS = 396)
+        integer  MSG_NLS_OPEN_FAILED
+        parameter (MSG_NLS_OPEN_FAILED = 397)
+        integer  MSG_OPEN_COUNTRY_SYS
+        parameter (MSG_OPEN_COUNTRY_SYS = 397)
+        integer  MSG_NLS_NO_CTRY_CODE
+        parameter (MSG_NLS_NO_CTRY_CODE = 398)
+        integer  MSG_NO_COUNTRY_OR_CODEPAGE
+        parameter (MSG_NO_COUNTRY_OR_CODEPAGE = 398)
+        integer  MSG_NLS_TABLE_TRUNCATED
+        parameter (MSG_NLS_TABLE_TRUNCATED = 399)
+        integer  MSG_NLS_BAD_TYPE
+        parameter (MSG_NLS_BAD_TYPE = 400)
+        integer  MSG_NLS_TYPE_NOT_FOUND
+        parameter (MSG_NLS_TYPE_NOT_FOUND = 401)
+        integer  MSG_COUNTRY_NO_TYPE
+        parameter (MSG_COUNTRY_NO_TYPE = 401)
+        integer  MSG_SWAPIN_FAILED
+        parameter (MSG_SWAPIN_FAILED = 402)
+        integer  MSG_SEGVALIDATE_FAILURE
+        parameter (MSG_SEGVALIDATE_FAILURE = 403)
+        integer  MSG_VIO_DEREGISTER
+        parameter (MSG_VIO_DEREGISTER = 404)
+        integer  MSG_VIO_NO_POPUP
+        parameter (MSG_VIO_NO_POPUP = 405)
+        integer  MSG_VIO_EXISTING_POPUP
+        parameter (MSG_VIO_EXISTING_POPUP = 406)
+        integer  MSG_KBD_SMG_ONLY
+        parameter (MSG_KBD_SMG_ONLY = 407)
+        integer  MSG_KBD_INVALID_ASCIIZ
+        parameter (MSG_KBD_INVALID_ASCIIZ = 408)
+        integer  MSG_KBD_INVALID_MASK
+        parameter (MSG_KBD_INVALID_MASK = 409)
+        integer  MSG_KBD_REGISTER
+        parameter (MSG_KBD_REGISTER = 410)
+        integer  MSG_KBD_DEREGISTER
+        parameter (MSG_KBD_DEREGISTER = 411)
+        integer  MSG_MOUSE_SMG_ONLY
+        parameter (MSG_MOUSE_SMG_ONLY = 412)
+        integer  MSG_MOUSE_INVALID_ASCIIZ
+        parameter (MSG_MOUSE_INVALID_ASCIIZ = 413)
+        integer  MSG_MOUSE_INVALID_MASK
+        parameter (MSG_MOUSE_INVALID_MASK = 414)
+        integer  MSG_MOUSE_REGISTER
+        parameter (MSG_MOUSE_REGISTER = 415)
+        integer  MSG_MOUSE_DEREGISTER
+        parameter (MSG_MOUSE_DEREGISTER = 416)
+        integer  MSG_SMG_BAD_ACTION
+        parameter (MSG_SMG_BAD_ACTION = 417)
+        integer  MSG_SMG_INVALID_CALL
+        parameter (MSG_SMG_INVALID_CALL = 418)
+        integer  MSG_VIO_INVALID_PARMS
+        parameter (MSG_VIO_INVALID_PARMS = 421)
+        integer  MSG_VIO_FUNCTION_OWNED
+        parameter (MSG_VIO_FUNCTION_OWNED = 422)
+        integer  MSG_VIO_REGISTER
+        parameter (MSG_VIO_REGISTER = 426)
+        integer  MSG_VIO_NO_SAVE_RESTORE_THD
+        parameter (MSG_VIO_NO_SAVE_RESTORE_THD = 428)
+        integer  MSG_VIO_IN_BG
+        parameter (MSG_VIO_IN_BG = 429)
+        integer  MSG_VIO_ILLEGAL_DURING_POPUP
+        parameter (MSG_VIO_ILLEGAL_DURING_POPUP = 430)
+        integer  MSG_SMG_NOT_BASESHELL
+        parameter (MSG_SMG_NOT_BASESHELL = 431)
+        integer  MSG_SMG_BAD_STATUSREQ
+        parameter (MSG_SMG_BAD_STATUSREQ = 432)
+        integer  MSG_VIO_LOCK
+        parameter (MSG_VIO_LOCK = 434)
+        integer  MSG_MOUSE_INVALID_IOWAIT
+        parameter (MSG_MOUSE_INVALID_IOWAIT = 435)
+        integer  MSG_VIO_INVALID_HANDLE
+        parameter (MSG_VIO_INVALID_HANDLE = 436)
+        integer  MSG_VIO_INVALID_LENGTH
+        parameter (MSG_VIO_INVALID_LENGTH = 438)
+        integer  MSG_KBD_INVALID_HANDLE
+        parameter (MSG_KBD_INVALID_HANDLE = 439)
+        integer  MSG_KBD_NO_MORE_HANDLE
+        parameter (MSG_KBD_NO_MORE_HANDLE = 440)
+        integer  MSG_KBD_CANNOT_CREATE_KCB
+        parameter (MSG_KBD_CANNOT_CREATE_KCB = 441)
+        integer  MSG_KBD_CODEPAGE_LOAD_INCOMPL
+        parameter (MSG_KBD_CODEPAGE_LOAD_INCOMPL = 442)
+        integer  MSG_KBD_INVALID_CODEPAGE_ID
+        parameter (MSG_KBD_INVALID_CODEPAGE_ID = 443)
+        integer  MSG_KBD_NO_CODEPAGE_SUPPORT
+        parameter (MSG_KBD_NO_CODEPAGE_SUPPORT = 444)
+        integer  MSG_KBD_FOCUS_REQUIRED
+        parameter (MSG_KBD_FOCUS_REQUIRED = 445)
+        integer  MSG_KBD_FOCUS_ALREADY_ACTIVE
+        parameter (MSG_KBD_FOCUS_ALREADY_ACTIVE = 446)
+        integer  MSG_KBD_KEYBOARD_BUSY
+        parameter (MSG_KBD_KEYBOARD_BUSY = 447)
+        integer  MSG_KBD_INVALID_CODEPAGE
+        parameter (MSG_KBD_INVALID_CODEPAGE = 448)
+        integer  MSG_KBD_UNABLE_TO_FOCUS
+        parameter (MSG_KBD_UNABLE_TO_FOCUS = 449)
+        integer  MSG_SMG_SESSION_NON_SELECT
+        parameter (MSG_SMG_SESSION_NON_SELECT = 450)
+        integer  MSG_SMG_SESSION_NOT_FOREGRND
+        parameter (MSG_SMG_SESSION_NOT_FOREGRND = 451)
+        integer  MSG_SMG_SESSION_NOT_PARENT
+        parameter (MSG_SMG_SESSION_NOT_PARENT = 452)
+        integer  MSG_SMG_INVALID_START_MODE
+        parameter (MSG_SMG_INVALID_START_MODE = 453)
+        integer  MSG_SMG_INVALID_RELATED_OPT
+        parameter (MSG_SMG_INVALID_RELATED_OPT = 454)
+        integer  MSG_SMG_INVALID_BOND_OPTION
+        parameter (MSG_SMG_INVALID_BOND_OPTION = 455)
+        integer  MSG_SMG_INVALID_SELECT_OPT
+        parameter (MSG_SMG_INVALID_SELECT_OPT = 456)
+        integer  MSG_SMG_START_IN_BACKGROUND
+        parameter (MSG_SMG_START_IN_BACKGROUND = 457)
+        integer  MSG_SMG_INVALID_STOP_OPTION
+        parameter (MSG_SMG_INVALID_STOP_OPTION = 458)
+        integer  MSG_SMG_BAD_RESERVE
+        parameter (MSG_SMG_BAD_RESERVE = 459)
+        integer  MSG_SMG_PROCESS_NOT_PARENT
+        parameter (MSG_SMG_PROCESS_NOT_PARENT = 460)
+        integer  MSG_SMG_INVALID_DATA_LENGTH
+        parameter (MSG_SMG_INVALID_DATA_LENGTH = 461)
+        integer  MSG_SMG_NOT_BOUND
+        parameter (MSG_SMG_NOT_BOUND = 462)
+        integer  MSG_SMG_RETRY_SUB_ALLOC
+        parameter (MSG_SMG_RETRY_SUB_ALLOC = 463)
+        integer  MSG_KBD_DETACHED
+        parameter (MSG_KBD_DETACHED = 464)
+        integer  MSG_VIO_DETACHED
+        parameter (MSG_VIO_DETACHED = 465)
+        integer  MSG_MOU_DETACHED
+        parameter (MSG_MOU_DETACHED = 466)
+        integer  MSG_VIO_FONT
+        parameter (MSG_VIO_FONT = 467)
+        integer  MSG_VIO_USER_FONT
+        parameter (MSG_VIO_USER_FONT = 468)
+        integer  MSG_VIO_BAD_CP
+        parameter (MSG_VIO_BAD_CP = 469)
+        integer  MSG_VIO_NA_CP
+        parameter (MSG_VIO_NA_CP = 471)
+        integer  MSG_SMG_INVALID_TRACE_OPTION
+        parameter (MSG_SMG_INVALID_TRACE_OPTION = 478)
+        integer  MSG_VIO_SHELL_INIT
+        parameter (MSG_VIO_SHELL_INIT = 480)
+        integer  MSG_SMG_NO_HARD_ERRORS
+        parameter (MSG_SMG_NO_HARD_ERRORS = 481)
+        integer  MSG_VIO_TRANSPARENT_POPUP
+        parameter (MSG_VIO_TRANSPARENT_POPUP = 483)
+        integer  MSG_VIO_BAD_RESERVE
+        parameter (MSG_VIO_BAD_RESERVE = 486)
+        integer  MSG_INVALID_ADDRESS
+        parameter (MSG_INVALID_ADDRESS = 487)
+        integer  MSG_ZERO_SELECTORS_REQUESTED
+        parameter (MSG_ZERO_SELECTORS_REQUESTED = 488)
+        integer  MSG_NOT_ENOUGH_SELECTORS_AVA
+        parameter (MSG_NOT_ENOUGH_SELECTORS_AVA = 489)
+        integer  MSG_INVALID_SELECTOR
+        parameter (MSG_INVALID_SELECTOR = 490)
+        integer  MSG_SMG_INVALID_PROGRAM_TYPE
+        parameter (MSG_SMG_INVALID_PROGRAM_TYPE = 491)
+        integer  MSG_SMG_INVALID_PGM_CONTROL
+        parameter (MSG_SMG_INVALID_PGM_CONTROL = 492)
+        integer  MSG_SMG_INVALID_INHERIT_OPT
+        parameter (MSG_SMG_INVALID_INHERIT_OPT = 493)
+        integer  MSG_VIO_EXTENDED_SG
+        parameter (MSG_VIO_EXTENDED_SG = 494)
+        integer  MSG_VIO_NOT_PRES_MGR_SG
+        parameter (MSG_VIO_NOT_PRES_MGR_SG = 495)
+        integer  MSG_VIO_SHIELD_OWNED
+        parameter (MSG_VIO_SHIELD_OWNED = 496)
+        integer  MSG_VIO_NO_MORE_HANDLES
+        parameter (MSG_VIO_NO_MORE_HANDLES = 497)
+        integer  MSG_KBD_NO_CONSOLE
+        parameter (MSG_KBD_NO_CONSOLE = 500)
+        integer  MSG_DOS_STOPPED
+        parameter (MSG_DOS_STOPPED = 501)
+        integer  MSG_MOUSE_INVALID_HANDLE
+        parameter (MSG_MOUSE_INVALID_HANDLE = 502)
+        integer  MSG_SMG_INVALID_DEBUG_PARMS
+        parameter (MSG_SMG_INVALID_DEBUG_PARMS = 503)
+        integer  MSG_KBD_EXTENDED_SG
+        parameter (MSG_KBD_EXTENDED_SG = 504)
+        integer  MSG_MOU_EXTENDED_SG
+        parameter (MSG_MOU_EXTENDED_SG = 505)
+        integer  MSG_TRC_PID_NON_EXISTENT
+        parameter (MSG_TRC_PID_NON_EXISTENT = 507)
+        integer  MSG_TRC_COUNT_ACTIVE
+        parameter (MSG_TRC_COUNT_ACTIVE = 508)
+        integer  MSG_TRC_SUSPENDED_BY_COUNT
+        parameter (MSG_TRC_SUSPENDED_BY_COUNT = 509)
+        integer  MSG_TRC_COUNT_INACTIVE
+        parameter (MSG_TRC_COUNT_INACTIVE = 510)
+        integer  MSG_TRC_COUNT_REACHED
+        parameter (MSG_TRC_COUNT_REACHED = 511)
+        integer  MSG_NO_MC_TRACE
+        parameter (MSG_NO_MC_TRACE = 512)
+        integer  MSG_MC_TRACE
+        parameter (MSG_MC_TRACE = 513)
+        integer  MSG_TRC_COUNT_ZERO
+        parameter (MSG_TRC_COUNT_ZERO = 514)
+        integer  MSG_SMG_TOO_MANY_DDS
+        parameter (MSG_SMG_TOO_MANY_DDS = 515)
+        integer  MSG_SMG_INVALID_NOTIFICATION
+        parameter (MSG_SMG_INVALID_NOTIFICATION = 516)
+        integer  MSG_LF_INVALID_FUNCTION
+        parameter (MSG_LF_INVALID_FUNCTION = 517)
+        integer  MSG_LF_NOT_AVAIL
+        parameter (MSG_LF_NOT_AVAIL = 518)
+        integer  MSG_LF_SUSPENDED
+        parameter (MSG_LF_SUSPENDED = 519)
+        integer  MSG_LF_BUF_TOO_SMALL
+        parameter (MSG_LF_BUF_TOO_SMALL = 520)
+        integer  MSG_LF_BUF_FULL
+        parameter (MSG_LF_BUF_FULL = 521)
+        integer  MSG_LF_INVAL_RECORD
+        parameter (MSG_LF_INVAL_RECORD = 522)
+        integer  MSG_LF_INVAL_SERVICE
+        parameter (MSG_LF_INVAL_SERVICE = 523)
+        integer  MSG_LF_GENERAL_FAILURE
+        parameter (MSG_LF_GENERAL_FAILURE = 524)
+        integer  MSG_HPFS_DISK_ALREADY_INUSE
+        parameter (MSG_HPFS_DISK_ALREADY_INUSE = 525)
+        integer  MSG_HPFS_CANNOT_FORMAT_DISK
+        parameter (MSG_HPFS_CANNOT_FORMAT_DISK = 526)
+        integer  MSG_HPFS_CANNOT_COPY_SYS_DATA
+        parameter (MSG_HPFS_CANNOT_COPY_SYS_DATA = 527)
+        integer  MSG_HPFS_FORMAT_NOT_DONE
+        parameter (MSG_HPFS_FORMAT_NOT_DONE = 528)
+        integer  MSG_HPFS_FMT_NOT_ENOUGH_MEM
+        parameter (MSG_HPFS_FMT_NOT_ENOUGH_MEM = 529)
+        integer  MSG_HPFS_SPECIFY_FIXDSK
+        parameter (MSG_HPFS_SPECIFY_FIXDSK = 530)
+        integer  MSG_HPFS_SPECIFY_ONE_DRIVE
+        parameter (MSG_HPFS_SPECIFY_ONE_DRIVE = 531)
+        integer  MSG_HPFS_UNKNOWN_ERR_NO_FORMAT
+        parameter (MSG_HPFS_UNKNOWN_ERR_NO_FORMAT = 532)
+        integer  MSG_HPFS_SYNTAX_HELP
+        parameter (MSG_HPFS_SYNTAX_HELP = 533)
+        integer  MSG_HPFS_DISK_FORMATING
+        parameter (MSG_HPFS_DISK_FORMATING = 534)
+        integer  MSG_HPFS_AVAIL_DISK_SPACE
+        parameter (MSG_HPFS_AVAIL_DISK_SPACE = 535)
+        integer  MSG_HPFS_BAD_BLOCKS
+        parameter (MSG_HPFS_BAD_BLOCKS = 536)
+        integer  MSG_HPFS_DISK_SPACE_AVAIL
+        parameter (MSG_HPFS_DISK_SPACE_AVAIL = 537)
+        integer  MSG_HPFS_SPACE_FORMATTED
+        parameter (MSG_HPFS_SPACE_FORMATTED = 538)
+        integer  MSG_HPFS_TYPE_CUR_VOLUME_LABEL
+        parameter (MSG_HPFS_TYPE_CUR_VOLUME_LABEL = 539)
+        integer  MSG_HPFS_DRIVER_NOT_LOADED
+        parameter (MSG_HPFS_DRIVER_NOT_LOADED = 540)
+        integer  MSG_HPFS_DRIVER_LOADER
+        parameter (MSG_HPFS_DRIVER_LOADER = 541)
+        integer  MSG_HPFS_CACHE_BUF_SPECIFIED
+        parameter (MSG_HPFS_CACHE_BUF_SPECIFIED = 542)
+        integer  MSG_HPFS_CHKDSK_PARM_ERROR
+        parameter (MSG_HPFS_CHKDSK_PARM_ERROR = 543)
+        integer  MSG_HPFS_CHKDSK_NOACCESS_DRIVE
+        parameter (MSG_HPFS_CHKDSK_NOACCESS_DRIVE = 544)
+        integer  MSG_HPFS_UNKNOWN_ERR_NO_CHKDSK
+        parameter (MSG_HPFS_UNKNOWN_ERR_NO_CHKDSK = 545)
+        integer  MSG_HPFS_CHKDSK_NOT_ENOUGH_MEM
+        parameter (MSG_HPFS_CHKDSK_NOT_ENOUGH_MEM = 546)
+        integer  MSG_HPFS_CHKDSK_NOWRITEODATA
+        parameter (MSG_HPFS_CHKDSK_NOWRITEODATA = 547)
+        integer  MSG_HPFS_CHKDSK_NORECOVER_DATA
+        parameter (MSG_HPFS_CHKDSK_NORECOVER_DATA = 548)
+        integer  MSG_HPFS_CHKDSK_NO_PARM_SPACE
+        parameter (MSG_HPFS_CHKDSK_NO_PARM_SPACE = 549)
+        integer  MSG_HPFS_CHKDSK_NORECOGNIZE
+        parameter (MSG_HPFS_CHKDSK_NORECOGNIZE = 550)
+        integer  MSG_HPFS_CHKDSK_NOROOT_FIND
+        parameter (MSG_HPFS_CHKDSK_NOROOT_FIND = 551)
+        integer  MSG_HPFS_CHKDSK_NOFIX_FS_ERROR
+        parameter (MSG_HPFS_CHKDSK_NOFIX_FS_ERROR = 552)
+        integer  MSG_HPFS_CHKDSK_CORRECT_FS_ERR
+        parameter (MSG_HPFS_CHKDSK_CORRECT_FS_ERR = 553)
+        integer  MSG_HPFS_CHKDSK_ORGAN_FIX
+        parameter (MSG_HPFS_CHKDSK_ORGAN_FIX = 554)
+        integer  MSG_HPFS_CHKDSK_RELOC_BBPDATA
+        parameter (MSG_HPFS_CHKDSK_RELOC_BBPDATA = 555)
+        integer  MSG_HPFS_CHKDSK_REM_CORRU_BLOC
+        parameter (MSG_HPFS_CHKDSK_REM_CORRU_BLOC = 556)
+        integer  MSG_HPFS_CHKDSK_REM_CORRUP_FIL
+        parameter (MSG_HPFS_CHKDSK_REM_CORRUP_FIL = 557)
+        integer  MSG_HPFS_CHKDSK_FIX_SPACE_ALLO
+        parameter (MSG_HPFS_CHKDSK_FIX_SPACE_ALLO = 558)
+        integer  MSG_HPFS_NOT_FORMATTED_DISK
+        parameter (MSG_HPFS_NOT_FORMATTED_DISK = 559)
+        integer  MSG_HPFS_CHKDSK_COR_ALLOC
+        parameter (MSG_HPFS_CHKDSK_COR_ALLOC = 560)
+        integer  MSG_HPFS_CHKDSK_SEARC_UNALLOC
+        parameter (MSG_HPFS_CHKDSK_SEARC_UNALLOC = 561)
+        integer  MSG_HPFS_CHKDSK_DET_LOST_DATA
+        parameter (MSG_HPFS_CHKDSK_DET_LOST_DATA = 562)
+        integer  MSG_HPFS_CHKDSK_PERCENT_SEARC
+        parameter (MSG_HPFS_CHKDSK_PERCENT_SEARC = 563)
+        integer  MSG_HPFS_CHKDSK_LOST_DATASEARC
+        parameter (MSG_HPFS_CHKDSK_LOST_DATASEARC = 564)
+        integer  MSG_HPFS_CHKDSK_CRIT_NOREAD
+        parameter (MSG_HPFS_CHKDSK_CRIT_NOREAD = 565)
+        integer  MSG_HPFS_CHKDSK_DISK_INUSE
+        parameter (MSG_HPFS_CHKDSK_DISK_INUSE = 566)
+        integer  MSG_HPFS_CHKDSK_RECOVTEMP_RELOC
+        parameter (MSG_HPFS_CHKDSK_RECOVTEMP_RELOC = 567)
+        integer  MSG_HPFS_TOTAL_DISK_SPACE
+        parameter (MSG_HPFS_TOTAL_DISK_SPACE = 568)
+        integer  MSG_HPFS_DIR_KBYTES
+        parameter (MSG_HPFS_DIR_KBYTES = 569)
+        integer  MSG_HPFS_FILE_KBYTES
+        parameter (MSG_HPFS_FILE_KBYTES = 570)
+        integer  MSG_HPFS_KBYTES_AVAILABLE
+        parameter (MSG_HPFS_KBYTES_AVAILABLE = 571)
+        integer  MSG_HPFS_CHKDSK_PLACE_REC_FILE
+        parameter (MSG_HPFS_CHKDSK_PLACE_REC_FILE = 572)
+        integer  MSG_HPFS_CHKDSK_RECO_DIR_AS
+        parameter (MSG_HPFS_CHKDSK_RECO_DIR_AS = 573)
+        integer  MSG_HPFS_CHKDSK_PLACEED_DATA
+        parameter (MSG_HPFS_CHKDSK_PLACEED_DATA = 574)
+        integer  MSG_HPFS_CHKDSK_RECOV_EA
+        parameter (MSG_HPFS_CHKDSK_RECOV_EA = 575)
+        integer  MSG_HPFS_CHKDSK_FIND_EA_INTEM
+        parameter (MSG_HPFS_CHKDSK_FIND_EA_INTEM = 576)
+        integer  MSG_HPFS_CHKDSK_RELOC_TEMP_EA
+        parameter (MSG_HPFS_CHKDSK_RELOC_TEMP_EA = 577)
+        integer  MSG_HPFS_CHKDSK_RELOC_AC_LIST
+        parameter (MSG_HPFS_CHKDSK_RELOC_AC_LIST = 578)
+        integer  MSG_HPFS_CHKDSK_LIST_NORELOC
+        parameter (MSG_HPFS_CHKDSK_LIST_NORELOC = 579)
+        integer  MSG_HPFS_CHKDSK_TRUN_EA_LIST
+        parameter (MSG_HPFS_CHKDSK_TRUN_EA_LIST = 580)
+        integer  MSG_HPFS_CHKDSK_TRUN_EA_NAME
+        parameter (MSG_HPFS_CHKDSK_TRUN_EA_NAME = 581)
+        integer  MSG_HPFS_CHKDSK_TRUN_EA_BBLOCK
+        parameter (MSG_HPFS_CHKDSK_TRUN_EA_BBLOCK = 582)
+        integer  MSG_HPFS_CHKDSK_REM_INVALID_EA
+        parameter (MSG_HPFS_CHKDSK_REM_INVALID_EA = 583)
+        integer  MSG_HPFS_CHKDSK_FIX_EA_ALLOC
+        parameter (MSG_HPFS_CHKDSK_FIX_EA_ALLOC = 584)
+        integer  MSG_HPFS_CHKDSK_FIX_ALACCCTRL
+        parameter (MSG_HPFS_CHKDSK_FIX_ALACCCTRL = 585)
+        integer  MSG_HPFS_CHKDSK_ACCTR_LIST_BBL
+        parameter (MSG_HPFS_CHKDSK_ACCTR_LIST_BBL = 586)
+        integer  MSG_HPFS_CHKDSK_REM_ACLIST
+        parameter (MSG_HPFS_CHKDSK_REM_ACLIST = 587)
+        integer  MSG_HPFS_CHKDSK_FOUND_DATANORL
+        parameter (MSG_HPFS_CHKDSK_FOUND_DATANORL = 588)
+        integer  MSG_HPFS_WRONG_VERSION
+        parameter (MSG_HPFS_WRONG_VERSION = 589)
+        integer  MSG_HPFS_CHKDSK_FOUND_DATATEMP
+        parameter (MSG_HPFS_CHKDSK_FOUND_DATATEMP = 590)
+        integer  MSG_HPFS_CHKDSK_FIX_TEMPSTATUS
+        parameter (MSG_HPFS_CHKDSK_FIX_TEMPSTATUS = 591)
+        integer  MSG_HPFS_CHKDSK_FIX_NEEDEADATA
+        parameter (MSG_HPFS_CHKDSK_FIX_NEEDEADATA = 592)
+        integer  MSG_HPFS_RECOVER_PARM_ERROR
+        parameter (MSG_HPFS_RECOVER_PARM_ERROR = 593)
+        integer  MSG_HPFS_RECOV_FILE_NOT_FOUND
+        parameter (MSG_HPFS_RECOV_FILE_NOT_FOUND = 594)
+        integer  MSG_HPFS_RECOV_UNKNOWN_ERROR
+        parameter (MSG_HPFS_RECOV_UNKNOWN_ERROR = 595)
+        integer  MSG_HPFS_RECOV_NOT_ENOUGH_MEM
+        parameter (MSG_HPFS_RECOV_NOT_ENOUGH_MEM = 596)
+        integer  MSG_HPFS_RECOV_NOWRITE_DATA
+        parameter (MSG_HPFS_RECOV_NOWRITE_DATA = 597)
+        integer  MSG_HPFS_RECOV_NOTEMP_CREATE
+        parameter (MSG_HPFS_RECOV_NOTEMP_CREATE = 598)
+        integer  MSG_HPFS_RECOV_EA_NOREAD
+        parameter (MSG_HPFS_RECOV_EA_NOREAD = 599)
+        integer  MSG_HPFS_RECOV_FILE_BYTES
+        parameter (MSG_HPFS_RECOV_FILE_BYTES = 600)
+        integer  MSG_HPFS_RECOV_BAD_BYTES_RECOV
+        parameter (MSG_HPFS_RECOV_BAD_BYTES_RECOV = 601)
+        integer  MSG_HPFS_RECOV_FILEBYTES_NOREC
+        parameter (MSG_HPFS_RECOV_FILEBYTES_NOREC = 602)
+        integer  MSG_HPFS_RECOV_DISK_INUSE
+        parameter (MSG_HPFS_RECOV_DISK_INUSE = 603)
+        integer  MSG_HPFS_RECOV_FILE_NODELETE
+        parameter (MSG_HPFS_RECOV_FILE_NODELETE = 604)
+        integer  MSG_HPFS_RECOV_NOCREATE_NEWFILE
+        parameter (MSG_HPFS_RECOV_NOCREATE_NEWFILE = 605)
+        integer  MSG_HPFS_RECOV_SYSTEM_ERROR
+        parameter (MSG_HPFS_RECOV_SYSTEM_ERROR = 606)
+        integer  MSG_HPFS_SYS_PARM_ERROR
+        parameter (MSG_HPFS_SYS_PARM_ERROR = 607)
+        integer  MSG_HPFS_SYS_CANNOT_INSTALL
+        parameter (MSG_HPFS_SYS_CANNOT_INSTALL = 608)
+        integer  MSG_HPFS_SYS_DRIVE_NOTFORMATED
+        parameter (MSG_HPFS_SYS_DRIVE_NOTFORMATED = 609)
+        integer  MSG_HPFS_SYS_FILE_NOCREATE
+        parameter (MSG_HPFS_SYS_FILE_NOCREATE = 610)
+        integer  MSG_HPFS_SIZE_EXCEED
+        parameter (MSG_HPFS_SIZE_EXCEED = 611)
+        integer  MSG_HPFS_SYNTAX_ERR
+        parameter (MSG_HPFS_SYNTAX_ERR = 612)
+        integer  MSG_HPFS_NOTENOUGH_MEM
+        parameter (MSG_HPFS_NOTENOUGH_MEM = 613)
+        integer  MSG_HPFS_WANT_MEM
+        parameter (MSG_HPFS_WANT_MEM = 614)
+        integer  MSG_HPFS_GET_RETURNED
+        parameter (MSG_HPFS_GET_RETURNED = 615)
+        integer  MSG_HPFS_SET_RETURNED
+        parameter (MSG_HPFS_SET_RETURNED = 616)
+        integer  MSG_HPFS_BOTH_RETURNED
+        parameter (MSG_HPFS_BOTH_RETURNED = 617)
+        integer  MSG_HPFS_STOP_RETURNED
+        parameter (MSG_HPFS_STOP_RETURNED = 618)
+        integer  MSG_HPFS_SETPRTYRETURNED
+        parameter (MSG_HPFS_SETPRTYRETURNED = 619)
+        integer  MSG_HPFS_ALCSG_RETURNED
+        parameter (MSG_HPFS_ALCSG_RETURNED = 620)
+        integer  MSG_HPFS_MSEC_SET
+        parameter (MSG_HPFS_MSEC_SET = 621)
+        integer  MSG_HPFS_OPTIONS
+        parameter (MSG_HPFS_OPTIONS = 622)
+        integer  MSG_HPFS_POS_NUM_VALUE
+        parameter (MSG_HPFS_POS_NUM_VALUE = 623)
+        integer  MSG_HPFS_VALUE_TOO_LARGE
+        parameter (MSG_HPFS_VALUE_TOO_LARGE = 624)
+        integer  MSG_HPFS_LAZY_NOT_VALID
+        parameter (MSG_HPFS_LAZY_NOT_VALID = 625)
+        integer  MSG_HPFS_VOLUME_ERROR
+        parameter (MSG_HPFS_VOLUME_ERROR = 626)
+        integer  MSG_HPFS_VOLUME_DIRTY
+        parameter (MSG_HPFS_VOLUME_DIRTY = 627)
+        integer  MSG_HPFS_NEW_SECTOR
+        parameter (MSG_HPFS_NEW_SECTOR = 628)
+        integer  MSG_HPFS_FORMAT_PARM_ERROR
+        parameter (MSG_HPFS_FORMAT_PARM_ERROR = 629)
+        integer  MSG_HPFS_CANNOT_ACCESS_CONFIG
+        parameter (MSG_HPFS_CANNOT_ACCESS_CONFIG = 630)
+        integer  MSG_HPFS_RECOV_FILE
+        parameter (MSG_HPFS_RECOV_FILE = 631)
+        integer  MSG_HPFS_CHKDSK_KBYTES_RESERVE
+        parameter (MSG_HPFS_CHKDSK_KBYTES_RESERVE = 632)
+        integer  MSG_HPFS_CHKDSK_KBYTES_IN_EA
+        parameter (MSG_HPFS_CHKDSK_KBYTES_IN_EA = 633)
+        integer  MSG_HPFS_BYTEBUF_SET
+        parameter (MSG_HPFS_BYTEBUF_SET = 634)
+        integer  MSG_HPFS_FORMATTING_COMPLETE
+        parameter (MSG_HPFS_FORMATTING_COMPLETE = 635)
+        integer  MSG_HPFS_WRONG_VOLUME_LABEL
+        parameter (MSG_HPFS_WRONG_VOLUME_LABEL = 636)
+        integer  MSG_HPFS_FMAT_TOO_MANY_DRS
+        parameter (MSG_HPFS_FMAT_TOO_MANY_DRS = 637)
+        integer  MSG_VDD_UNSUPPORTED_ACCESS
+        parameter (MSG_VDD_UNSUPPORTED_ACCESS = 638)
+        integer  MSG_VDD_MISSING
+        parameter (MSG_VDD_MISSING = 651)
+        integer  MSG_HPFS_LAZY_ON
+        parameter (MSG_HPFS_LAZY_ON = 689)
+        integer  MSG_HPFS_LAZY_OFF
+        parameter (MSG_HPFS_LAZY_OFF = 690)
+        integer  MSG_HPFS_DISK_ERROR_WARN
+        parameter (MSG_HPFS_DISK_ERROR_WARN = 693)
+        integer  MSG_BAD_MON_BUFFER
+        parameter (MSG_BAD_MON_BUFFER = 730)
+        integer  MSG_MODULE_CORRUPTED
+        parameter (MSG_MODULE_CORRUPTED = 731)
+        integer  MSG_LF_TIMEOUT
+        parameter (MSG_LF_TIMEOUT = 2055)
+        integer  MSG_LF_SUSP_SUCCESS
+        parameter (MSG_LF_SUSP_SUCCESS = 2057)
+        integer  MSG_LF_RESUM_SUCCESS
+        parameter (MSG_LF_RESUM_SUCCESS = 2058)
+        integer  MSG_LF_REDIR_SUCCESS
+        parameter (MSG_LF_REDIR_SUCCESS = 2059)
+        integer  MSG_LF_REDIR_FAILURE
+        parameter (MSG_LF_REDIR_FAILURE = 2060)
+
+        integer  MSG_BAD_PARM1
+        parameter (MSG_BAD_PARM1 = 1001)
+        integer  MSG_BAD_PARM2
+        parameter (MSG_BAD_PARM2 = 1002)
+        integer  MSG_BAD_SYNTAX
+        parameter (MSG_BAD_SYNTAX = 1003)
+        integer  MSG_STAND_BY
+        parameter (MSG_STAND_BY = 1004)
+        integer  MSG_INVALID_DATE
+        parameter (MSG_INVALID_DATE = 1036)
+        integer  MSG_DEV_INSTALL_FAIL
+        parameter (MSG_DEV_INSTALL_FAIL = 1111)
+        integer  MSG_DEV_AT_ONLY
+        parameter (MSG_DEV_AT_ONLY = 1112)
+        integer  MSG_DEV_PS2_ONLY
+        parameter (MSG_DEV_PS2_ONLY = 1113)
+        integer  MSG_DEV_HW_UNSUPPORTED
+        parameter (MSG_DEV_HW_UNSUPPORTED = 1114)
+        integer  MSG_DEV_HW_UNAVAILABLE
+        parameter (MSG_DEV_HW_UNAVAILABLE = 1115)
+        integer  MSG_DEV_IRQ
+        parameter (MSG_DEV_IRQ = 1116)
+        integer  MSG_DEV_ABIOS
+        parameter (MSG_DEV_ABIOS = 1117)
+        integer  MSG_NO_HELP_MSG
+        parameter (MSG_NO_HELP_MSG = 1118)
+        integer  MSG_NEXT_DISKETTE
+        parameter (MSG_NEXT_DISKETTE = 1120)
+        integer  MSG_SYSINIT_NO_IFS_STMT
+        parameter (MSG_SYSINIT_NO_IFS_STMT = 1191)
+        integer  MSG_SYSINIT_287_DISABLED
+        parameter (MSG_SYSINIT_287_DISABLED = 1193)
+        integer  MSG_SYSINIT_387_WITH_386B1
+        parameter (MSG_SYSINIT_387_WITH_386B1 = 1194)
+        integer  MSG_SYSINIT_INVAL_CMD
+        parameter (MSG_SYSINIT_INVAL_CMD = 1195)
+        integer  MSG_SYSINIT_INVAL_PARM
+        parameter (MSG_SYSINIT_INVAL_PARM = 1196)
+        integer  MSG_SYSINIT_MISSING_PARM
+        parameter (MSG_SYSINIT_MISSING_PARM = 1197)
+        integer  MSG_SYSINIT_BAD_DOS_DD
+        parameter (MSG_SYSINIT_BAD_DOS_DD = 1198)
+        integer  MSG_SYSINIT_BOOT_FAILURE
+        parameter (MSG_SYSINIT_BOOT_FAILURE = 1199)
+        integer  MSG_SYSINIT_DOS_FAIL
+        parameter (MSG_SYSINIT_DOS_FAIL = 1200)
+        integer  MSG_SYSINIT_UDRVR_FAIL
+        parameter (MSG_SYSINIT_UDRVR_FAIL = 1201)
+        integer  MSG_SYSINIT_SDRVR_FAIL
+        parameter (MSG_SYSINIT_SDRVR_FAIL = 1202)
+        integer  MSG_SYSINIT_UFILE_IOPL
+        parameter (MSG_SYSINIT_UFILE_IOPL = 1203)
+        integer  MSG_SYSINIT_SFILE_IOPL
+        parameter (MSG_SYSINIT_SFILE_IOPL = 1204)
+        integer  MSG_SYSINIT_DOS_MODIFIED
+        parameter (MSG_SYSINIT_DOS_MODIFIED = 1205)
+        integer  MSG_SYSINIT_UFILE_NO_MEM
+        parameter (MSG_SYSINIT_UFILE_NO_MEM = 1206)
+        integer  MSG_INCORRECT_DOSVERSION
+        parameter (MSG_INCORRECT_DOSVERSION = 1210)
+        integer  MSG_ABORT_RTRY_IGNORE
+        parameter (MSG_ABORT_RTRY_IGNORE = 1211)
+        integer  MSG_HPFS_FORMAT_YES_NO
+        parameter (MSG_HPFS_FORMAT_YES_NO = 1271)
+        integer  MSG_HPFS_SYS_FILES_COPIED
+        parameter (MSG_HPFS_SYS_FILES_COPIED = 1272)
+        integer  MSG_HPFS_BAD_BLOCKS_CRIT_AREA
+        parameter (MSG_HPFS_BAD_BLOCKS_CRIT_AREA = 1279)
+        integer  MSG_HPFS_TYPE_VOLUME_LABEL
+        parameter (MSG_HPFS_TYPE_VOLUME_LABEL = 1288)
+        integer  MSG_HPFS_SPECIFY_DRIVE_LETTER
+        parameter (MSG_HPFS_SPECIFY_DRIVE_LETTER = 1310)
+        integer  MSG_HPFS_DIRECTORY
+        parameter (MSG_HPFS_DIRECTORY = 1338)
+        integer  MSG_HPFS_CHKDSK_NOREAD_DATA
+        parameter (MSG_HPFS_CHKDSK_NOREAD_DATA = 1341)
+
+        integer  MSG_SAD_REMOTE_DUMP
+        parameter (MSG_SAD_REMOTE_DUMP = 1394)
+        integer  MSG_SAD_INSERT_DUMP
+        parameter (MSG_SAD_INSERT_DUMP = 1395)
+        integer  MSG_SAD_NOT_AVAILABLE
+        parameter (MSG_SAD_NOT_AVAILABLE = 1398)
+
+        integer  MSG_DLL_CANT_LOAD_RESOURCE
+        parameter (MSG_DLL_CANT_LOAD_RESOURCE = 1417)
+
+        integer  MSG_SWAP_INVALID_DRIVE
+        parameter (MSG_SWAP_INVALID_DRIVE = 1470)
+        integer  MSG_SWAP_INVALID_PATH
+        parameter (MSG_SWAP_INVALID_PATH = 1471)
+        integer  MSG_SWAP_CANNOT_CREATE
+        parameter (MSG_SWAP_CANNOT_CREATE = 1472)
+        integer  MSG_SWAP_DISABLED
+        parameter (MSG_SWAP_DISABLED = 1473)
+        integer  MSG_SWAP_CANT_INIT
+        parameter (MSG_SWAP_CANT_INIT = 1474)
+        integer  MSG_SYSINIT_BOOT_NOT_FD
+        parameter (MSG_SYSINIT_BOOT_NOT_FD = 1475)
+        integer  MSG_SWAP_INVALID_PATH_ROOT
+        parameter (MSG_SWAP_INVALID_PATH_ROOT = 1476)
+        integer  MSG_STRI_FILE_NOT_FOUND
+        parameter (MSG_STRI_FILE_NOT_FOUND = 1490)
+        integer  MSG_SWAP_NOT_READY
+        parameter (MSG_SWAP_NOT_READY = 1500)
+        integer  MSG_SWAP_WRITE_PROTECT
+        parameter (MSG_SWAP_WRITE_PROTECT = 1501)
+        integer  MSG_SWAP_IN_ERROR
+        parameter (MSG_SWAP_IN_ERROR = 1502)
+        integer  MSG_SWAP_IO_ERROR
+        parameter (MSG_SWAP_IO_ERROR = 1502)
+        integer  MSG_SWAP_FILE_FULL
+        parameter (MSG_SWAP_FILE_FULL = 1503)
+        integer  MSG_SWAP_TABLE_FULL
+        parameter (MSG_SWAP_TABLE_FULL = 1504)
+        integer  MSG_SYSINIT_SFILE_NOT_FND
+        parameter (MSG_SYSINIT_SFILE_NOT_FND = 1518)
+        integer  MSG_SYSINIT_SFILE_NO_MEM
+        parameter (MSG_SYSINIT_SFILE_NO_MEM = 1519)
+        integer  MSG_SYSINIT_DSKT_NOT_INSTALLED
+        parameter (MSG_SYSINIT_DSKT_NOT_INSTALLED = 1520)
+        integer  MSG_SYSINIT_TOO_MANY_PARMS
+        parameter (MSG_SYSINIT_TOO_MANY_PARMS = 1521)
+        integer  MSG_SYSINIT_DSKT_INSTALLED_AS
+        parameter (MSG_SYSINIT_DSKT_INSTALLED_AS = 1522)
+        integer  MSG_SYSINIT_MISSING_SYMB
+        parameter (MSG_SYSINIT_MISSING_SYMB = 1523)
+        integer  MSG_SYSINIT_START_NO_LOAD
+        parameter (MSG_SYSINIT_START_NO_LOAD = 1709)
+        integer  MSG_SYSINIT_START_NO_INIT
+        parameter (MSG_SYSINIT_START_NO_INIT = 1710)
+        integer  MSG_SYSINIT_UFILE_NOT_FND
+        parameter (MSG_SYSINIT_UFILE_NOT_FND = 1718)
+        integer  MSG_SYSINIT_UDRVR_INVAL
+        parameter (MSG_SYSINIT_UDRVR_INVAL = 1719)
+        integer  MSG_SYSINIT_FSD_NOT_VAL
+        parameter (MSG_SYSINIT_FSD_NOT_VAL = 1720)
+        integer  MSG_SYSINIT_BANNER
+        parameter (MSG_SYSINIT_BANNER = 1721)
+        integer  MSG_SYSINIT_CANT_LOAD_MOD
+        parameter (MSG_SYSINIT_CANT_LOAD_MOD = 1722)
+        integer  MSG_SYSINIT_EPT_MISSING
+        parameter (MSG_SYSINIT_EPT_MISSING = 1723)
+        integer  MSG_SYSINIT_CANT_OPEN_CON
+        parameter (MSG_SYSINIT_CANT_OPEN_CON = 1724)
+        integer  MSG_SYSINIT_WRONG_HANDLE
+        parameter (MSG_SYSINIT_WRONG_HANDLE = 1725)
+        integer  MSG_SYSINIT_PRESS_ENTER
+        parameter (MSG_SYSINIT_PRESS_ENTER = 1726)
+        integer  MSG_SYSINIT_CANT_GET_CACHE
+        parameter (MSG_SYSINIT_CANT_GET_CACHE = 1727)
+        integer  MSG_SYSINIT_CANT_INIT_CACHE
+        parameter (MSG_SYSINIT_CANT_INIT_CACHE = 1728)
+        integer  MSG_SYSINIT_VIO_CP
+        parameter (MSG_SYSINIT_VIO_CP = 1729)
+        integer  MSG_SYSINIT_KBD_CP
+        parameter (MSG_SYSINIT_KBD_CP = 1730)
+        integer  MSG_SYSINIT_SCFILE_INVAL
+        parameter (MSG_SYSINIT_SCFILE_INVAL = 1733)
+        integer  MSG_SYSINIT_CP_ASSUME
+        parameter (MSG_SYSINIT_CP_ASSUME = 1735)
+        integer  MSG_SYSINIT_CP_FATAL
+        parameter (MSG_SYSINIT_CP_FATAL = 1737)
+        integer  MSG_SYSINIT_NOT_INIT_NMI
+        parameter (MSG_SYSINIT_NOT_INIT_NMI = 1738)
+
+        integer  MSG_VLPT_NO_SPOOL
+        parameter (MSG_VLPT_NO_SPOOL = 1797)
+        integer  MSG_VCOM_DEVICE_IN_USE
+        parameter (MSG_VCOM_DEVICE_IN_USE = 1798)
+        integer  MSG_VLPT_DEVICE_BUSY
+        parameter (MSG_VLPT_DEVICE_BUSY = 1799)
+
+        integer  MSG_ASYNC_BAD_ARBT
+        parameter (MSG_ASYNC_BAD_ARBT = 1903)
+        integer  MSG_INTERNAL_ERROR
+        parameter (MSG_INTERNAL_ERROR = 1915)
+        integer  MSG_USER_ERROR
+        parameter (MSG_USER_ERROR = 1916)
+        integer  MSG_SYSINIT_UEXEC_FAIL
+        parameter (MSG_SYSINIT_UEXEC_FAIL = 1919)
+        integer  MSG_PAGE_FAULT
+        parameter (MSG_PAGE_FAULT = 1923)
+        integer  MSG_INTERRUPTS_DISABLED
+        parameter (MSG_INTERRUPTS_DISABLED = 1924)
+        integer  MSG_SYSINIT_SEXEC_FAIL
+        parameter (MSG_SYSINIT_SEXEC_FAIL = 1925)
+        integer  MSG_GEN_PROT_FAULT
+        parameter (MSG_GEN_PROT_FAULT = 1926)
+        integer  MSG_CHANGE_INT_VECTOR
+        parameter (MSG_CHANGE_INT_VECTOR = 1927)
+        integer  MSG_NOMEM_FOR_RELOAD
+        parameter (MSG_NOMEM_FOR_RELOAD = 1928)
+        integer  MSG_STACK_OVERFLOW
+        parameter (MSG_STACK_OVERFLOW = 1929)
+        integer  MSG_TRAP0
+        parameter (MSG_TRAP0 = 1930)
+        integer  MSG_TRAP1
+        parameter (MSG_TRAP1 = 1931)
+        integer  MSG_TRAP2
+        parameter (MSG_TRAP2 = 1932)
+        integer  MSG_TRAP3
+        parameter (MSG_TRAP3 = 1933)
+        integer  MSG_TRAP4
+        parameter (MSG_TRAP4 = 1934)
+        integer  MSG_TRAP5
+        parameter (MSG_TRAP5 = 1935)
+        integer  MSG_TRAP6
+        parameter (MSG_TRAP6 = 1936)
+        integer  MSG_TRAP7
+        parameter (MSG_TRAP7 = 1937)
+        integer  MSG_TRAP8
+        parameter (MSG_TRAP8 = 1938)
+        integer  MSG_TRAP9
+        parameter (MSG_TRAP9 = 1939)
+        integer  MSG_TRAPA
+        parameter (MSG_TRAPA = 1940)
+        integer  MSG_TRAPB
+        parameter (MSG_TRAPB = 1941)
+        integer  MSG_TRAPC
+        parameter (MSG_TRAPC = 1942)
+        integer  MSG_TRAPD
+        parameter (MSG_TRAPD = 1943)
+        integer  MSG_NMI
+        parameter (MSG_NMI = 1944)
+        integer  MSG_NMI_EXC1
+        parameter (MSG_NMI_EXC1 = 1945)
+        integer  MSG_NM12_EXC2
+        parameter (MSG_NM12_EXC2 = 1946)
+        integer  MSG_NMI2_EXC3
+        parameter (MSG_NMI2_EXC3 = 1947)
+        integer  MSG_NMI2_EXC4
+        parameter (MSG_NMI2_EXC4 = 1948)
+        integer  MSG_TRAPE
+        parameter (MSG_TRAPE = 1949)
+        integer  MSG_NPXIEMSG
+        parameter (MSG_NPXIEMSG = 1950)
+        integer  MSG_NPXDEMSG
+        parameter (MSG_NPXDEMSG = 1951)
+        integer  MSG_NPXZEMSG
+        parameter (MSG_NPXZEMSG = 1952)
+        integer  MSG_NPXOEMSG
+        parameter (MSG_NPXOEMSG = 1953)
+        integer  MSG_NPXUEMSG
+        parameter (MSG_NPXUEMSG = 1954)
+        integer  MSG_NPXPEMSG
+        parameter (MSG_NPXPEMSG = 1955)
+        integer  MSG_NPXINSTEMSG
+        parameter (MSG_NPXINSTEMSG = 1956)
+        integer  MSG_NPXBADSW
+        parameter (MSG_NPXBADSW = 1957)
+        integer  MSG_PAGEMGR_TRAP02_MEM_REC
+        parameter (MSG_PAGEMGR_TRAP02_MEM_REC = 1958)
+        integer  MSG_PAGEMGR_TRAP02_APP_TERM
+        parameter (MSG_PAGEMGR_TRAP02_APP_TERM = 1959)
+        integer  MSG_SYSINIT_BOOT_ERROR
+        parameter (MSG_SYSINIT_BOOT_ERROR = 2025)
+        integer  MSG_SYSINIT_BIO_NOT_FD
+        parameter (MSG_SYSINIT_BIO_NOT_FD = 2026)
+        integer  MSG_SYSINIT_INSER_DK
+        parameter (MSG_SYSINIT_INSER_DK = 2027)
+        integer  MSG_SYSINIT_DOS_NOT_FD
+        parameter (MSG_SYSINIT_DOS_NOT_FD = 2028)
+        integer  MSG_SYSINIT_DOS_NOT_VAL
+        parameter (MSG_SYSINIT_DOS_NOT_VAL = 2029)
+        integer  MSG_SYSINIT_MORE_MEM
+        parameter (MSG_SYSINIT_MORE_MEM = 2030)
+        integer  MSG_SYSINIT_DOS_TOO_BIG
+        parameter (MSG_SYSINIT_DOS_TOO_BIG = 2063)
+        integer  MSG_SYSINIT_DOS_NO_MEM
+        parameter (MSG_SYSINIT_DOS_NO_MEM = 2064)
+        integer  MSG_SYSINIT_SYS_STOPPED
+        parameter (MSG_SYSINIT_SYS_STOPPED = 2065)
+        integer  MSG_SYSINIT_DOS_STOPPED
+        parameter (MSG_SYSINIT_DOS_STOPPED = 2066)
+        integer  MSG_SYSINIT_SDRVR_INVAL
+        parameter (MSG_SYSINIT_SDRVR_INVAL = 2067)
+        integer  MSG_SYSINIT_MSG_LOST
+        parameter (MSG_SYSINIT_MSG_LOST = 2068)
+        integer  MSG_SYSINIT_UCFILE_INVAL
+        parameter (MSG_SYSINIT_UCFILE_INVAL = 2069)
+        integer  MSG_DEMAND_LOAD_FAILED
+        parameter (MSG_DEMAND_LOAD_FAILED = 2070)
+
+        integer  MSG_CDFS_BAD_OS_VERSION
+        parameter (MSG_CDFS_BAD_OS_VERSION = 3100)
+        integer  MSG_CDFS_DEB_STAT_SIGNON
+        parameter (MSG_CDFS_DEB_STAT_SIGNON = 3101)
+        integer  MSG_CDFS_DEB_SIGNON
+        parameter (MSG_CDFS_DEB_SIGNON = 3102)
+        integer  MSG_CDFS_STAT_SIGNON
+        parameter (MSG_CDFS_STAT_SIGNON = 3103)
+        integer  MSG_CDFS_SIGNON
+        parameter (MSG_CDFS_SIGNON = 3104)
+        integer  MSG_CDFS_UNKNOWN_ERR_CODE
+        parameter (MSG_CDFS_UNKNOWN_ERR_CODE = 3105)
+        integer  MSG_CDFS_BAD_PARM
+        parameter (MSG_CDFS_BAD_PARM = 3106)
+        integer  MSG_CDFS_MIN_SECTORS
+        parameter (MSG_CDFS_MIN_SECTORS = 3107)
+        integer  MSG_CDFS_DEBUG
+        parameter (MSG_CDFS_DEBUG = 3108)
+        integer  MSG_CDFS_MAX_SECTORS
+        parameter (MSG_CDFS_MAX_SECTORS = 3109)
+        integer  MSG_CDFS_MIN_FILE_SECT
+        parameter (MSG_CDFS_MIN_FILE_SECT = 3110)
+        integer  MSG_CDFS_MAX_FILE_SECT
+        parameter (MSG_CDFS_MAX_FILE_SECT = 3111)
+        integer  MSG_CDFS_PRIMARY_VD
+        parameter (MSG_CDFS_PRIMARY_VD = 3112)
+        integer  MSG_CDFS_SECONDARY_VD
+        parameter (MSG_CDFS_SECONDARY_VD = 3113)
+        integer  MSG_CDFS_SECTOR_CACHE
+        parameter (MSG_CDFS_SECTOR_CACHE = 3114)
+        integer  MSG_CDFS_SECTORS_READ
+        parameter (MSG_CDFS_SECTORS_READ = 3115)
+        integer  MSG_CDFS_INIT_FAIL
+        parameter (MSG_CDFS_INIT_FAIL = 3116)
+        integer  MSG_CDFS_MEM_INIT_FAIL
+        parameter (MSG_CDFS_MEM_INIT_FAIL = 3117)
+        integer  MSG_CDFS_PARTIAL_MEM_FAIL
+        parameter (MSG_CDFS_PARTIAL_MEM_FAIL = 3118)
+        integer  MSG_CDFS_NO_INFOSEG
+        parameter (MSG_CDFS_NO_INFOSEG = 3119)
+
+        integer  MSG_SYSINIT_DISPLAY_MISMATCH
+        parameter (MSG_SYSINIT_DISPLAY_MISMATCH = 3135)
+
+        integer  MSG_EISA_NMI_SOFTWARE
+        parameter (MSG_EISA_NMI_SOFTWARE = 3140)
+        integer  MSG_EISA_NMI_BUS
+        parameter (MSG_EISA_NMI_BUS = 3141)
+        integer  MSG_EISA_NMI_FAILSAFE
+        parameter (MSG_EISA_NMI_FAILSAFE = 3142)
+        integer  MSG_EISA_NMI_IOCHK
+        parameter (MSG_EISA_NMI_IOCHK = 3143)
+        integer  MSG_EISA_NMI_PARITY
+        parameter (MSG_EISA_NMI_PARITY = 3144)
+
+        integer  MSG_BAD_COMMAND_COM
+        parameter (MSG_BAD_COMMAND_COM = 3145)
+        integer  MSG_SYSINIT_LDR_MSG_NOT_FD
+        parameter (MSG_SYSINIT_LDR_MSG_NOT_FD = 3146)
+        integer  MSG_SYSINIT_LDR_MSG_NOT_VAL
+        parameter (MSG_SYSINIT_LDR_MSG_NOT_VAL = 3147)
+
+        integer  MSG_NOT_80386_CPU
+        parameter (MSG_NOT_80386_CPU = 3161)
+        integer  MSG_80_STEPPING
+        parameter (MSG_80_STEPPING = 3162)
+        integer  MSG_32BIT_MULTIPLY
+        parameter (MSG_32BIT_MULTIPLY = 3163)
+
+        integer  MSG_XCPT_USER
+        parameter (MSG_XCPT_USER = 3170)
+        integer  MSG_XCPT_STACK_OVERRUN
+        parameter (MSG_XCPT_STACK_OVERRUN = 3171)
+        integer  MSG_XCPT_CANNOT_DISPATCH
+        parameter (MSG_XCPT_CANNOT_DISPATCH = 3172)
+        integer  MSG_XCPT_BREAKPOINT
+        parameter (MSG_XCPT_BREAKPOINT = 3173)
+        integer  MSG_XCPT_SINGLE_STEP
+        parameter (MSG_XCPT_SINGLE_STEP = 3174)
+        integer  MSG_XCPT_ACCESS_VIOLATION
+        parameter (MSG_XCPT_ACCESS_VIOLATION = 3175)
+        integer  MSG_XCPT_ILLEGAL_INSTRUCTION
+        parameter (MSG_XCPT_ILLEGAL_INSTRUCTION = 3176)
+        integer  MSG_XCPT_FLOAT_DENORMAL_OPERAND
+        parameter (MSG_XCPT_FLOAT_DENORMAL_OPERAND = 3177)
+        integer  MSG_XCPT_FLOAT_DIVIDE_BY_ZERO
+        parameter (MSG_XCPT_FLOAT_DIVIDE_BY_ZERO = 3178)
+        integer  MSG_XCPT_FLOAT_INEXACT_RESULT
+        parameter (MSG_XCPT_FLOAT_INEXACT_RESULT = 3179)
+        integer  MSG_XCPT_FLOAT_INVALID_OPERATIO
+        parameter (MSG_XCPT_FLOAT_INVALID_OPERATIO = 3180)
+        integer  MSG_XCPT_FLOAT_OVERFLOW
+        parameter (MSG_XCPT_FLOAT_OVERFLOW = 3181)
+        integer  MSG_XCPT_FLOAT_STACK_CHECK
+        parameter (MSG_XCPT_FLOAT_STACK_CHECK = 3182)
+        integer  MSG_XCPT_FLOAT_UNDERFLOW
+        parameter (MSG_XCPT_FLOAT_UNDERFLOW = 3183)
+        integer  MSG_XCPT_INTEGER_DIVIDE_BY_ZERO
+        parameter (MSG_XCPT_INTEGER_DIVIDE_BY_ZERO = 3184)
+        integer  MSG_XCPT_INTEGER_OVERFLOW
+        parameter (MSG_XCPT_INTEGER_OVERFLOW = 3185)
+        integer  MSG_XCPT_PRIVILEGED_INSTRUCTION
+        parameter (MSG_XCPT_PRIVILEGED_INSTRUCTION = 3186)
+        integer  MSG_XCPT_IN_PAGE_ERROR
+        parameter (MSG_XCPT_IN_PAGE_ERROR = 3187)
+        integer  MSG_XCPT_NONCONTINUABLE_EXCEPTI
+        parameter (MSG_XCPT_NONCONTINUABLE_EXCEPTI = 3188)
+        integer  MSG_XCPT_INVALID_DISPOSITION
+        parameter (MSG_XCPT_INVALID_DISPOSITION = 3189)
+        integer  MSG_XCPT_INVALID_LOCK_SEQUENCE
+        parameter (MSG_XCPT_INVALID_LOCK_SEQUENCE = 3190)
+        integer  MSG_XCPT_ARRAY_BOUNDS_EXCEEDED
+        parameter (MSG_XCPT_ARRAY_BOUNDS_EXCEEDED = 3191)
+        integer  MSG_XCPT_B1NPX_ERRATA_02
+        parameter (MSG_XCPT_B1NPX_ERRATA_02 = 3192)
+
+        integer  MSG_HARDWARE_CONFIGURATION
+        parameter (MSG_HARDWARE_CONFIGURATION = 3332)
+
+c$reference

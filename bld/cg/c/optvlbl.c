@@ -33,8 +33,6 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern  code_lbl        *Handles;
-
 extern  bool    ValidLbl( code_lbl *lbl ) {
 /*****************************************/
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strset() and _wcsset()
 *
 ****************************************************************************/
 
@@ -37,9 +36,9 @@
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple__wcsset( CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__simple__wcsset( CHAR_TYPE *s, INTCHAR_TYPE c )
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strset,_wcsset)( CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__F_NAME(strset,_wcsset)( CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif
 {
     CHAR_TYPE *p;

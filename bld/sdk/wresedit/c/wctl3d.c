@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wglbl.h"
 #include "wctl3d.h"
 #include "wrctl3d.h"
@@ -56,59 +56,58 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WCtl3DInit ( HINSTANCE inst )
+Bool WCtl3DInit( HINSTANCE inst )
 {
-#if !defined(W_USE_3D)
-    _wtouch(inst);
-    return ( TRUE );
+#if !defined( W_USE_3D )
+    _wtouch( inst );
+    return( TRUE );
 #else
     Bool ok;
 
-    ok = WRCtl3dRegister ( inst );
-    if ( ok ) {
-        ok = WRCtl3dAutoSubclass ( inst );
+    ok = WRCtl3dRegister( inst );
+    if( ok ) {
+        ok = WRCtl3dAutoSubclass( inst );
     }
 
-    return ( ok );
+    return( ok );
 #endif
 }
 
-void WCtl3DFini ( HINSTANCE inst )
+void WCtl3DFini( HINSTANCE inst )
 {
-#if !defined(W_USE_3D)
-    _wtouch(inst);
+#if !defined( W_USE_3D )
+    _wtouch( inst );
 #else
-    WRCtl3dUnregister ( inst );
+    WRCtl3dUnregister( inst );
 #endif
 }
 
-void WCtl3dColorChange ( void )
+void WCtl3dColorChange( void )
 {
-#if defined(W_USE_3D)
-    WRCtl3dColorChange ();
+#if defined( W_USE_3D )
+    WRCtl3dColorChange();
 #endif
 }
 
-void WCtl3dSubclassDlg ( HWND win, WORD w )
+void WCtl3dSubclassDlg( HWND win, WORD w )
 {
-#if !defined(W_USE_3D)
-    _wtouch(win);
-    _wtouch(w);
+#if !defined( W_USE_3D )
+    _wtouch( win );
+    _wtouch( w );
 #else
-    WRCtl3dSubclassDlg ( win, w );
+    WRCtl3dSubclassDlg( win, w );
 #endif
 }
 
 HBRUSH WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
-#if !defined(W_USE_3D)
-    _wtouch(msg);
-    _wtouch(wp);
-    _wtouch(lp);
+#if !defined( W_USE_3D )
+    _wtouch( msg );
+    _wtouch( wp );
+    _wtouch( lp );
 
     return( (HBRUSH)NULL );
 #else
     return( WRCtl3dCtlColorEx( msg, wp, lp ) );
 #endif
 }
-

@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  COFF definitions.
 *
 ****************************************************************************/
 
 
 #include <watcom.h>
-#pragma pack( 1 );
+#include "pushpck1.h"
 
 typedef struct {
     uint_16     cpu_type;
@@ -134,10 +133,10 @@ typedef struct {
 } coff_sym_section;
 
 typedef struct {
-    union type {
+    union {
         uint_32         symbol_table_index;
         uint_32         RVA;
-    };
+    } ir;
     uint_16             line_number;
 } coff_line_num;
 
@@ -146,12 +145,13 @@ typedef struct {
 // CPU types
 enum {
     IMAGE_FILE_MACHINE_UNKNOWN          = 0,
-    IMAGE_FILE_MACHINE_I386             = 0x014c, // Intel 386.
+    IMAGE_FILE_MACHINE_I386             = 0x014c, // Intel 386 (Sys V).
     IMAGE_FILE_MACHINE_I860             = 0x014d, // Intel 860.
     IMAGE_FILE_MACHINE_R3000            = 0x0162, // MIPS little-endian, 0x160 big-endian
     IMAGE_FILE_MACHINE_R4000            = 0x0166, // MIPS little-endian
     IMAGE_FILE_MACHINE_R10000           = 0x0168, // MIPS little-endian
     IMAGE_FILE_MACHINE_WCEMIPSV2        = 0x0169, // MIPS little-endian WCE v2
+    IMAGE_FILE_MACHINE_I386A            = 0x0175, // Intel 386 (AIX).
     IMAGE_FILE_MACHINE_ALPHA            = 0x0184, // Alpha_AXP
     IMAGE_FILE_MACHINE_POWERPC          = 0x01F0, // IBM PowerPC Little-Endian
     IMAGE_FILE_MACHINE_SH3              = 0x01a2, // SH3 little-endian
@@ -164,7 +164,8 @@ enum {
     IMAGE_FILE_MACHINE_MIPSFPU          = 0x0366, // MIPS
     IMAGE_FILE_MACHINE_MIPSFPU16        = 0x0466, // MIPS
     IMAGE_FILE_MACHINE_ALPHA64          = 0x0284, // ALPHA64
-    IMAGE_FILE_MACHINE_AXP64            = IMAGE_FILE_MACHINE_ALPHA64
+    IMAGE_FILE_MACHINE_AXP64            = IMAGE_FILE_MACHINE_ALPHA64,
+    IMAGE_FILE_MACHINE_AMD64            = 0x8664  // AMD64 / Intel EM64T
 };
 
 // file flag values
@@ -452,6 +453,44 @@ enum {
 #define IMAGE_REL_PPC_BRNTAKEN          0x0400  // fix branch prediction bit to predict branch not taken
 #define IMAGE_REL_PPC_TOCDEFN           0x0800  // toc slot defined in file (or, data in toc)
 
+//
+// AMD64 (X86-64) relocations
+//
+#define IMAGE_REL_AMD64_ABSOLUTE        0x0000  // Reference is absolute, no relocation is necessary
+#define IMAGE_REL_AMD64_ADDR64          0x0001  // 64-bit address
+#define IMAGE_REL_AMD64_ADDR32          0x0002  // 32-bit address
+#define IMAGE_REL_AMD64_ADDR32NB        0x0003  // 32-bit address reference to the virtual address, base not included
+#define IMAGE_REL_AMD64_REL32           0x0004  // PC-relative 32-bit reference to the symbols virtual address (0 byte distance to target)
+#define IMAGE_REL_AMD64_REL32_1         0x0005  // PC-relative 32-bit reference to the symbols virtual address (1 byte distance to target)
+#define IMAGE_REL_AMD64_REL32_2         0x0006  // PC-relative 32-bit reference to the symbols virtual address (2 byte distance to target)
+#define IMAGE_REL_AMD64_REL32_3         0x0007  // PC-relative 32-bit reference to the symbols virtual address (3 byte distance to target)
+#define IMAGE_REL_AMD64_REL32_4         0x0008  // PC-relative 32-bit reference to the symbols virtual address (4 byte distance to target)
+#define IMAGE_REL_AMD64_REL32_5         0x0009  // PC-relative 32-bit reference to the symbols virtual address (5 byte distance to target)
+#define IMAGE_REL_AMD64_SECTION         0x000A  // va of containing section (size unknown yet; I think its 32-bit)
+#define IMAGE_REL_AMD64_SECREL          0x000B  // 32-bit section relative reference
+#define IMAGE_REL_AMD64_SECREL7         0x000C  // 7-bit section relative reference
+//
+// I think that I've figured out for what these REL32_x relocations are.
+// following is a simple asm program to demonstate the behavoir:
+//
+// asdf:
+// ; ex for IMAGE_REL_AMD64_REL32
+// ;          vvvvvvvvvvv <- distance: 0 (to the end)
+// ; 44 12 05 00 00 00 00
+// adc r8b, byte ptr [asdf]
+//
+// ; ex for IMAGE_REL_AMD64_REL32_1
+// ;       vvvvvvvvvvv <- distance: 1 (to the end)
+// ; 83 15 00 00 00 00 12 
+// adc    dword ptr asdf, 12h
+//
+// ; ex for IMAGE_REL_AMD64_REL32_4
+// ;          vvvvvvvvvvv  <- distance: 4 (to the end)
+// ; 48 81 15 00 00 00 00 78 56 34 12
+// adc qword ptr [asdf], 12345678h
+//
+
+
 typedef struct {
     uint_32     rva;
     uint_32     size;
@@ -524,7 +563,7 @@ typedef struct {
     union {
         uint_16 ordinal;                // if grf & IMPORT_OBJECT_ORDINAL
         uint_16 hint;
-    };
+    } oh;
 
     uint_16 object_type : 2;            // import_object_type
     uint_16 name_type : 3;              // import_name_type
@@ -549,18 +588,4 @@ typedef enum
                                         // and truncating at first @
 } coff_import_object_name_type;
 
-
-#if 0
-// old identifiers - I hate these
-typedef coff_file_head CoffFHdr;
-typedef coff_section_header CoffSHdr;
-typedef coff_reloc CoffReloc;
-typedef coff_symbol CoffSymEnt;
-typedef coff_sym_func CoffAuxSymFuncDef;
-typedef coff_sym_bfef CoffAuxSymBFEF;
-typedef coff_sym_weak CoffAuxSymWeakExtern;
-typedef coff_sym_file CoffAuxSymFile;
-typedef coff_sym_section CoffAuxSymSecDef;
-typedef coff_line_num CoffLineNum;
-#endif
-#pragma pack();
+#include "poppck.h"

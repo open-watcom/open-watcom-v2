@@ -33,11 +33,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tinyio.h>
+#include "tinyio.h"
 
 void Output( char *str )
 {
-    TinyWrite( 2, str, strlen( str ) );
+    TinyWrite( TINY_ERR, str, strlen( str ) );
 }
 
 void StartupErr( char *err )

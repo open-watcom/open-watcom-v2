@@ -73,7 +73,7 @@ return_val      DumpASMGroupMember( char *name )
 }
 
 
-return_val      DumpASMGroupFini()
+return_val      DumpASMGroupFini( void )
 {
     BufferConcatNL();
     BufferPrint();

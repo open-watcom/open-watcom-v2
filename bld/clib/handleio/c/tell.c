@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of tell(). 
 *
 ****************************************************************************/
 
@@ -33,8 +32,21 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include "lseek.h"
 
-_WCRTLINK long int tell( int handle )
+
+#ifdef __INT64__
+
+_WCRTLINK __int64 _telli64( int handle )
 {
-    return( lseek( handle, 0L, SEEK_CUR ) );
+    return( __lseeki64( handle, 0LL, SEEK_CUR ) );
 }
+
+#else
+
+_WCRTLINK off_t tell( int handle )
+{
+    return( __lseek( handle, 0L, SEEK_CUR ) );
+}
+
+#endif

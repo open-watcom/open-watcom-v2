@@ -1,0 +1,105 @@
+#include <os2.h>
+#include "test.h"
+
+ACCELTABLE IDR_MAIN
+{
+    VK_F3,          IDM_EXIT,           VIRTUALKEY
+    VK_BACKSPACE,   IDM_EDITUNDO,       VIRTUALKEY,    ALT
+    VK_DELETE,      IDM_EDITCUT,        VIRTUALKEY,    SHIFT
+    VK_INSERT,      IDM_EDITCOPY,       VIRTUALKEY,    CONTROL
+    VK_INSERT,      IDM_EDITPASTE,      VIRTUALKEY,    SHIFT
+    VK_DELETE,      IDM_EDITCLEAR,      VIRTUALKEY,    LONEKEY
+    "c",       IDM_OPTIONSFORECOLOR,    CHAR,  CONTROL, SYSCOMMAND
+    "f",       IDM_OPTIONSFONT,         CHAR,  CONTROL, HELP
+}
+
+STRINGTABLE
+{
+   IDS_APPNAME                 "Style"
+   IDS_FILEOPENEXT             "*.TXT"
+   IDS_HELPLIBRARYNAME         "STYLE.HLP"
+   IDS_OPENDLGTITLE            "Open"
+   IDS_OPENDLGBUTTON           "~Open"
+   IDS_HELPWINDOWTITLE         "Style Help"
+   IDS_SAVEDLGTITLE            "Save"
+   IDS_SAVEDLGBUTTON           "Save"
+   IDS_UNTITLED                "Untitled"
+   IDS_TITLEBARSEPARATOR       " - "
+   IDS_FONTDLGTITLE            "Font"
+   IDS_PPFONTPOINT             "8."
+   IDS_DEMOMSGBOXOK            "Ok button"
+   IDS_DEMOMSGBOXOKCANCEL      "Ok and Cancel buttons"
+   IDS_DEMOMSGBOXYESNO         "Yes and No buttons"
+   IDS_DEMOMSGBOXYESNOCANCEL   "Yes, No, and Cancel buttons"
+   IDS_DEMOMSGBOXRETRYCANCEL   "Retry and Cancel buttons"
+   IDS_DEMOMSGBOXABORT         "Abort, Retry, and Ignore buttons"
+   IDS_DEMOMSGBOXENTER         "Enter button"
+   IDS_DEMOMSGBOXENTERCANCEL   "Enter and Cancel buttons"
+   IDS_DEMOMSGBOXQUERY         "Query icon"
+   IDS_DEMOMSGBOXWARNING       "Warning icon"
+   IDS_DEMOMSGBOXINFO          "Information icon"
+   IDS_DEMOMSGBOXCRITICAL      "Action icon"
+   IDS_DEMOMSGBOXAPP           "Application modal message box"
+   IDS_DEMOMSGBOXSYS           "System modal message box"
+   IDS_DEMOMSGBOXHELP          "Help button"
+
+   IDS_LISTBOX1                "Test Text 1"
+   IDS_LISTBOX2                "Test Text 2"
+   IDS_LISTBOX3                "Test Text 3"
+   IDS_LISTBOX4                "Test Text 4"
+   IDS_LISTBOX5                "Test Text 5"
+   IDS_LISTBOX6                "Test Text 6"
+   IDS_LISTBOX7                "Test Text 7"
+   IDS_LISTBOX8                "Test Text 8"
+   IDS_LISTBOX9                "Test Text 9"
+   IDS_LISTBOX10               "Test Text 10"
+}
+
+MESSAGETABLE
+{
+   IDMSG_INITFAILED            "Initalization failed."
+   IDMSG_MAINWINCREATEFAILED   "Failed to create main window."
+   IDMSG_CANNOTOPENINPUTFILE   "Cannot open input file."
+   IDMSG_CANNOTOPENOUTPUTFILE  "Cannot open output file."
+   IDMSG_CANNOTRUNCOLOR        "Cannot run Color dialog."
+   IDMSG_CANNOTGETHPS          "Cannot get HPS for window."
+   IDMSG_HELPLOADERROR         "Failed to load help manager."
+   IDMSG_CANNOTLOADSTRING      "Failed to load string."
+   IDMSG_CANNOTOPENPRINTER     "Failed to open printer."
+   IDMSG_HELPDISPLAYERROR      "Failed to display help panel."
+   IDMSG_CANNOTLOADEXITLIST    "Cannot load Exit List processor."
+   IDMSG_OVERWRITEFILE         "The file exists.  Do you want to overwrite it?"
+   IDMSG_FILECHANGED           "The file has changed.  Do you want to save it?"
+   IDMSG_UNDOFAILED            "Failed to Undo."
+   IDMSG_CANNOTGETFILEINFO     "Error getting file information."
+   IDMSG_CANNOTALLOCATEMEMORY  "Not enough memory."
+   IDMSG_CANNOTREADFILE        "Error reading file."
+   IDMSG_CANNOTWRITETOFILE     "Error writing file."
+   IDMSG_CANNOTLOADFONTS       "Cannot load fonts."
+   IDMSG_CANNOTSETPP           "Error setting presentation parameters."
+   IDMSG_ISOFAILED             "The font selected is not compliant with the"
+                               " ISO 9241 standard on the IBM 9515, 9517, or"
+                               " 9518 displays."
+   IDMSG_ISONOTTESTED          "The font selected is not tested for compliance"
+                               " with the ISO 9241 standard."
+}
+
+STRINGTABLE
+BEGIN
+   IDS_BLUE                    "Blue"
+   IDS_RED                     "Red"
+   IDS_PINK                    "Pink"
+   IDS_GREEN                   "Green"
+   IDS_CYAN                    "Cyan"
+   IDS_YELLOW                  "Yellow"
+   IDS_DARKGRAY                "Dark Gray"
+   IDS_DARKBLUE                "Dark Blue"
+   IDS_DARKRED                 "Dark Red"
+   IDS_DARKPINK                "Dark Pink"
+   IDS_DARKGREEN               "Dark Green"
+   IDS_DARKCYAN                "Dark Cyan"
+   IDS_BROWN                   "Brown"
+   IDS_PALEGRAY                "Pale Gray"
+   IDS_DEFAULT                 "Default"
+   IDS_WARNING                 "Warning"
+END

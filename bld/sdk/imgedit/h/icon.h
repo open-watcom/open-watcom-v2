@@ -31,17 +31,19 @@
 
 
 /* move these here from icon.c */
-#define BITS_INTO_BYTES( x, y )   ( ( ( x ) * ( y ) + 7 ) / 8 )
+#define BITS_INTO_BYTES( x, y )   (((x) * (y) + 7) / 8)
 
-#define BITMAP_SIZE( bm )       ( sizeof(BITMAPINFO) + \
-                                    sizeof(RGBQUAD) * ((1<<(bm)->biBitCount)-1))
+#define BITMAP_SIZE( bc )  \
+    ((bc)->biBitCount < 9 ? \
+     sizeof( BITMAPINFO ) + (sizeof( RGBQUAD ) * ((1 << (bc)->biBitCount) - 1)) : \
+     sizeof( BITMAPINFOHEADER ))
 
-#pragma pack (1);
+#pragma pack( 1 );
 
 typedef struct an_img_resource {
     BYTE        width;
     BYTE        height;
-    BYTE        colour_count;
+    BYTE        color_count;
     BYTE        reserved;
     WORD        xhotspot;
     WORD        yhotspot;
@@ -50,9 +52,9 @@ typedef struct an_img_resource {
 } an_img_resource;
 
 typedef struct an_img_file {
-    WORD        reserved;
-    WORD        type;
-    WORD        count;
+    WORD            reserved;
+    WORD            type;
+    WORD            count;
     an_img_resource resources[1];
 } an_img_file;
 
@@ -65,4 +67,3 @@ typedef struct an_img {
     BYTE        *and_mask;
     WORD        and_size;
 } an_img;
-

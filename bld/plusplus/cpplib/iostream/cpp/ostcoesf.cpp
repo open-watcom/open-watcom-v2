@@ -24,45 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/29    Greg Bentz      Change ostream::op<<(streambuf &) to
-//                              ostream::op<<( streambuf * )
-//  93/10/26    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "lock.h"
 
-ostream &ostream::operator = ( streambuf *sb ) {
-/**********************************************/
-// *this is an ostream that has been initialized, and may or may not
-// have a streambuf associated with it.
-// Associate the streambuf "sb" with the stream.
+namespace std {
+
+  // *this is an ostream that has been initialized, and may or may not
+  // have a streambuf associated with it. Associate the streambuf "sb"
+  // with the stream.
+
+  ostream &ostream::operator = ( streambuf *sb ) {
 
     __lock_it( __i_lock );
     ios::init( sb );
     return( *this );
+  }
+
 }

@@ -175,7 +175,7 @@ MergeAbbrevSection::~MergeAbbrevSection()
 
     #if INSTRUMENTS
         Log.printf( "\nMergeAbbrevSection\n------------------\n" );
-        Log.printf( "MergeAbbrevSection::_abbrevs:          %u entries, loaded %%%3.2f\n", _abbrevs->entries(), 100.0 * ((double)_abbrevs->entries() / (double)_abbrevs->buckets()) );
+        Log.printf( "MergeAbbrevSection::_abbrevs:          %5u entries, loaded %3.1f%%\n", _abbrevs->entries(), 100.0 * ((double)_abbrevs->entries() / (double)_abbrevs->buckets()) );
     #endif
 
     while( ++ iter ) {

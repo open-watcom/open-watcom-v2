@@ -1,1 +1,2 @@
-chksize.obj  : ..\..\..\c\chksize.c    ..\..\..\h\heap.h
+chksize.obj  : ../../../c/chksize.c    ../../../h/heap.h
+grownear.obj : ../../../c/grownear.c   ../../../h/heap.h

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _setclip( short mode )
+_WCRTLINK short _WCI86FAR _CGRAPH _setclip( short mode )
 /*=======================================
 
    This routine sets the clipping indicator. */

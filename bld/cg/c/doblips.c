@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Output "blips".
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "hostsys.h"
 #include "coderep.h"
 #include "feprotos.h"
@@ -48,10 +48,10 @@ extern  uint            Length(char*);
 extern  bool            Equal(char*,char*,int);
 extern  void            FatalError(char *);
 extern  void            Blip(unsigned_16,char);
-extern  void            BlipInit();
+extern  void            BlipInit( void );
 extern  bool            GetEnvVar(char*,char*,int);
-extern  bool            TBreak();
-extern  uint            GetTickCount();
+extern  bool            TBreak( void );
+extern  uint            GetTickCount( void );
 
 static uint             LastBlipCount;
 static uint             NextTickCount;
@@ -92,9 +92,9 @@ static    bool          Zoiks2;
 
 bool                    BlipsOn;
 
-static  void    DoBlip( int *count, uint pos, char ch ) {
-/*******************************************************/
-
+static  void    DoBlip( int *count, uint pos, char ch )
+/*****************************************************/
+{
     if( ( ++(*count) & 1 ) != 0 ) {
         Blip( pos + 1, ' ' );
         Blip( pos    , ch );
@@ -104,14 +104,52 @@ static  void    DoBlip( int *count, uint pos, char ch ) {
     }
 }
 
-extern  void    FiniBlip() {
-/**************************/
+
+static  void    SetNextTickCount( void )
+/**************************************/
+{
+    NextTickCount = NextTickCount + BRK_CHECK_TICKS;
+    if( NextTickCount < BRK_CHECK_TICKS )  NextTickCount = ~0;
 }
 
 
-extern  void    InitBlip() {
-/**************************/
+static  void    SetNextBlipCount( void )
+/**************************************/
+{
+    NextBlipCount = LastBlipCount + BLIP_TICKS;
+    if( NextBlipCount < BLIP_TICKS )  NextBlipCount = ~0;
+}
 
+
+static  void    CheckEvents( void )
+/*********************************/
+{
+    uint        ticks;
+
+    ticks = GetTickCount();
+    if( ticks < LastBlipCount || ticks >= NextTickCount ) {
+        OSCall();       /* force a DOS call to get version number */
+        if( ticks < LastBlipCount || ticks >= NextBlipCount ) {
+            FEMessage( MSG_BLIP, NULL );
+            LastBlipCount = ticks;
+            SetNextBlipCount();
+        }
+        SetNextTickCount();
+    }
+    if( TBreak() ) {
+        FatalError( "Program interrupted from keyboard" );
+    }
+}
+
+extern  void    FiniBlip( void )
+/******************************/
+{
+}
+
+
+extern  void    InitBlip( void )
+/******************************/
+{
     char        buff[80];
 
     LastBlipCount = GetTickCount();
@@ -133,16 +171,16 @@ extern  void    InitBlip() {
 #endif
 }
 
-extern  bool    WantZoiks2() {
-/****************************/
-
+extern  bool    WantZoiks2( void )
+/********************************/
+{
     return( Zoiks2 );
 }
 
 
-extern  void    LNBlip( source_line_number num ) {
-/************************************************/
-
+extern  void    LNBlip( source_line_number num )
+/**********************************************/
+{
     int         i;
     char        ch;
 
@@ -162,9 +200,9 @@ extern  void    LNBlip( source_line_number num ) {
 }
 
 
-extern  void    PGBlip(char *name) {
-/***********************************/
-
+extern  void    PGBlip(char *name)
+/********************************/
+{
     int         count;
 
     CheckEvents();
@@ -194,135 +232,101 @@ extern  void    PGBlip(char *name) {
 }
 
 
-extern  void    TGBlip() {
-/************************/
-
+extern  void    TGBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &TGCount, TGPos, 'T' );
     }
 }
 
-extern  void    LPBlip() {
-/************************/
-
+extern  void    LPBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &LPCount, LPPos, 'L' );
     }
 }
 
-extern  void    URBlip() {
-/************************/
-
+extern  void    URBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &URCount, URPos, 'U' );
     }
 }
 
-extern  void    SXBlip() {
-/************************/
-
+extern  void    SXBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &SXCount, SXPos, 'X' );
     }
 }
 
-extern  void    EXBlip() {
-/************************/
-
+extern  void    EXBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &EXCount, EXPos, 'E' );
     }
 }
 
-extern  void    GRBlip() {
-/************************/
-
+extern  void    GRBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &GRCount, GRPos, 'R' );
     }
 }
 
-extern  void    IMBlip() {
-/************************/
-
+extern  void    IMBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &IMCount, IMPos, 'M' );
     }
 }
 
-extern  void    SCBlip() {
-/************************/
-
+extern  void    SCBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &SCCount, SCPos, 'S' );
     }
 }
 
-extern  void    PSBlip() {
-/************************/
-
+extern  void    PSBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &PSCount, PSPos, 'O' );
     }
 }
 
-extern  void    PLBlip() {
-/************************/
-
+extern  void    PLBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &PLCount, PLPos, 'o' );
     }
 }
 
-extern  void    DGBlip() {
-/************************/
-
+extern  void    DGBlip( void )
+/****************************/
+{
     CheckEvents();
     if( BlipsOn ) {
         DoBlip( &DGCount, DGPos, 'D' );
     }
-}
-
-static  void    CheckEvents() {
-/*****************************/
-
-    uint        ticks;
-
-    ticks = GetTickCount();
-    if( ticks < LastBlipCount || ticks >= NextTickCount ) {
-        OSCall();       /* force a DOS call to get version number */
-        if( ticks < LastBlipCount || ticks >= NextBlipCount ) {
-            FEMessage( MSG_BLIP, NULL );
-            LastBlipCount = ticks;
-            SetNextBlipCount();
-        }
-        SetNextTickCount();
-    }
-    if( TBreak() ) {
-        FatalError( "Program interrupted from keyboard" );
-    }
-}
-
-static  void    SetNextTickCount() {
-/**********************************/
-
-    NextTickCount = NextTickCount + BRK_CHECK_TICKS;
-    if( NextTickCount < BRK_CHECK_TICKS )  NextTickCount = ~0;
-}
-
-static  void    SetNextBlipCount() {
-/**********************************/
-
-    NextBlipCount = LastBlipCount + BLIP_TICKS;
-    if( NextBlipCount < BLIP_TICKS )  NextBlipCount = ~0;
 }

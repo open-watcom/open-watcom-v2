@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <jstring.h>
+#include <mbstring.h>
 
 
 

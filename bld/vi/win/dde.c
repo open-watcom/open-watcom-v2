@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#define INCLUDE_DDEML_H
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "source.h"
 #include "ddedef.h"
 
@@ -42,11 +40,11 @@ typedef struct hsz_list {
     HSZ                 hsz;
     char                string[1];
 } hsz_list;
-static hsz_list *hszHead,*hszTail;
+static hsz_list *hszHead, *hszTail;
 
 DWORD           DDERet;
 DWORD           DDEInstId;
-UINT            ClipboardFormat=CF_TEXT;
+UINT            ClipboardFormat = CF_TEXT;
 UINT            ServerCount;
 bool            UseDDE;
 
@@ -54,11 +52,11 @@ bool            UseDDE;
  * DDECallback - callback routine for DDE
  */
 HDDEDATA WINEXP DDECallback( UINT type, UINT fmt, HCONV hconv,
-                    HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
-                    DWORD data2 )
+                             HSZ topicstrh, HSZ itemstrh, HDDEDATA hmem, DWORD data1,
+                             DWORD data2 )
 {
     char        tmp[64];
-    int         rc;
+    vi_rc       rc;
 
     fmt = fmt;
     data1 = data1;
@@ -71,19 +69,20 @@ HDDEDATA WINEXP DDECallback( UINT type, UINT fmt, HCONV hconv,
     case XTYP_REQUEST:
     case XTYP_POKE:
         MySprintf( tmp, "%u %U %U %U %U", type, (DWORD) hconv,
-                        (DWORD) topicstrh, (DWORD) itemstrh, (DWORD) hmem );
+                   (DWORD) topicstrh, (DWORD) itemstrh, (DWORD) hmem );
         DDERet = 0;
         rc = SourceHookData( SRC_HOOK_DDE, tmp );
         if( rc != ERR_NO_ERR ) {
-            DDERet = (DWORD)DdeCreateDataHandle( (DWORD)DDEInstId, "err",
-                        (DWORD)4, (DWORD)0, (HSZ)itemstrh, (UINT)fmt, (UINT)0 );
+            DDERet = (DWORD)DdeCreateDataHandle( (DWORD)DDEInstId, (LPBYTE)"err",
+                                                 (DWORD)4, (DWORD)0, (HSZ)itemstrh,
+                                                 (UINT)fmt, (UINT)0 );
         } else {
-            DDERet = (DWORD)DdeCreateDataHandle( DDEInstId, "ok", 3, 0,
-                                          itemstrh, fmt, 0 );
+            DDERet = (DWORD)DdeCreateDataHandle( DDEInstId, (LPBYTE)"ok", 3, 0,
+                                                 itemstrh, fmt, 0 );
         }
         return( (HDDEDATA) DDERet );
     }
-    return( NULL );
+    return( (HDDEDATA) NULL );
 
 } /* DDECallback */
 
@@ -111,8 +110,8 @@ bool CreateStringHandle( char *name, HSZ *hdl )
     hlptr = MemAlloc( sizeof( hsz_list ) + len );
 
     hlptr->hsz = *hdl;
-    memcpy( hlptr->string, name, len+1 );
-    AddLLItemAtEnd( &hszHead, &hszTail, hlptr );
+    memcpy( hlptr->string, name, len + 1 );
+    AddLLItemAtEnd( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
     return( TRUE );
 
 } /* CreateStringHandle */
@@ -123,7 +122,7 @@ bool CreateStringHandle( char *name, HSZ *hdl )
 static void deleteStringData( hsz_list *hlptr )
 {
     DdeFreeStringHandle( DDEInstId, hlptr->hsz );
-    DeleteLLItem( &hszHead, &hszTail, hlptr );
+    DeleteLLItem( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
     MemFree( hlptr );
 
 } /* deleteStringData */
@@ -151,7 +150,7 @@ void DeleteStringHandle( HSZ hdl )
  */
 static void freeAllStringHandles( void )
 {
-    hsz_list    *hlptr,*next;
+    hsz_list    *hlptr, *next;
 
     hlptr = hszHead;
     while( hlptr != NULL ) {
@@ -167,17 +166,17 @@ static void freeAllStringHandles( void )
  */
 bool DDEInit( void )
 {
-    FARPROC     fp;
+    PFNCALLBACK  fp;
 
     if( UseDDE ) {
         return( TRUE );
     }
 
-    fp = MakeProcInstance( (LPVOID) DDECallback, InstanceHandle );
+    fp = (PFNCALLBACK)MakeProcInstance( (FARPROC)DDECallback, InstanceHandle );
 
-    if( DdeInitialize( &DDEInstId, (LPVOID) fp, CBF_FAIL_EXECUTES |
-                        CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
-                        CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
+    if( DdeInitialize( &DDEInstId, fp, CBF_FAIL_EXECUTES |
+                       CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
+                       CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
         return( FALSE );
     }
 

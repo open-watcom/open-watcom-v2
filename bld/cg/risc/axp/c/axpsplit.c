@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP specific instruction splitting.
 *
 ****************************************************************************/
 
@@ -41,6 +40,7 @@
 #include "model.h"
 #include "procdef.h"
 #include <assert.h>
+#include "makeins.h"
 
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
@@ -51,24 +51,15 @@ extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def)
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *STempOffset(name*,type_length,type_class_def,type_length);
 
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      ScratchReg();
-extern  hw_reg_set      ReturnAddrReg();
+extern  hw_reg_set      StackReg(void);
+extern  hw_reg_set      ScratchReg(void);
+extern  hw_reg_set      ReturnAddrReg(void);
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            ReplIns(instruction*,instruction*);
 extern  label_handle    RTLabel(int);
 extern  void            ChangeType(instruction*,type_class_def);
-extern  void            FreeIns( instruction * );
-
-extern  instruction     *MakeNary(opcode_defs,name*,name*,name*,type_class_def,type_class_def,int);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
-extern  instruction     *NewIns( int );
 
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
@@ -620,7 +611,7 @@ static instruction *CheapCall( instruction *ins, int rt_call, name *p1, name *p2
     HW_CTurnOn( reg, HW_R2 );   // and this one two!
     HW_CTurnOn( reg, HW_R3 );   // and this one three!
     reg_name = AllocRegName( reg );
-    call->zap = reg_name;
+    call->zap = &reg_name->r;
     PrefixIns( ins, call );
     return( call );
 }

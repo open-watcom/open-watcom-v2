@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 1.x serial port interface.
 *
 ****************************************************************************/
 
@@ -81,19 +80,19 @@ extern int                              MaxBaud;
 #define INPUT           0x0001
 #define OUTPUT          0x0002
 
-void ZeroWaitCount()
+void ZeroWaitCount( void )
 {
     MSecsAtZero = GInfoSeg->msecs;
 }
 
 
-unsigned WaitCount()
+unsigned WaitCount( void )
 {
     return( ( GInfoSeg->msecs - MSecsAtZero ) / MILLISEC_PER_TICK );
 }
 
 
-void ClearCom()
+void ClearCom( void )
 {
     BYTE        command;
 
@@ -103,7 +102,7 @@ void ClearCom()
     DosDevIOCtl( 0L, &command, OUTPUT, FLUSH, ComPort );
 }
 
-static void WaitTransmit()
+static void WaitTransmit( void )
 {
     USHORT      event;
 
@@ -120,12 +119,12 @@ void SendByte( int value )
     if( !BlockTransmission ) WaitTransmit();
 }
 
-void StartBlockTrans()
+void StartBlockTrans( void )
 {
     BlockTransmission = TRUE;
 }
 
-void StopBlockTrans()
+void StopBlockTrans( void )
 {
     if( BlockTransmission ) {
         BlockTransmission = FALSE;
@@ -133,7 +132,7 @@ void StopBlockTrans()
     }
 }
 
-void far Reader(void)
+void far Reader( void )
 {
     int         data;
     USHORT      read;
@@ -174,7 +173,7 @@ int WaitByte( unsigned ticks )
 }
 
 
-int GetByte()
+int GetByte( void )
 {
     return( WaitByte( 0 ) );
 }
@@ -245,7 +244,7 @@ char *ParsePortSpec( char * *spec )
 }
 
 
-void DonePort()
+void DonePort( void )
 {
     if( ComPort != 0 ) {
 //      DosClose( ComPort ); // Can't do this ... OS/2 blocks us forever
@@ -254,7 +253,7 @@ void DonePort()
 }
 
 
-bool CheckPendingError()
+bool CheckPendingError( void )
 {
     USHORT      event;
     bool        over_run;
@@ -266,7 +265,7 @@ bool CheckPendingError()
 }
 
 
-void ClearLastChar()
+void ClearLastChar( void )
 {
 }
 

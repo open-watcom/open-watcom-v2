@@ -56,11 +56,7 @@ _DATA   ends
 _TEXT   segment
 
         defp    _harderr
-        if __WASM__ ge 100
-            xdefp   "C",_harderr
-        else
-            xdefp   <"C",_harderr>
-        endif
+        xdefp   "C",_harderr
 ;
 ;       unsigned _harderr( void (far *fptr)() );
 ;
@@ -84,11 +80,8 @@ _TEXT   segment
         pop     DS              ; restore DS
         ret                     ; return to caller
         endproc _harderr
-        if __WASM__ ge 100
-            xdefp   "C",_hardresume
-        else
-            xdefp   <"C",_hardresume>
-        endif
+
+        xdefp   "C",_hardresume
 
         defp    int24rtn
         push    ES              ; save registers

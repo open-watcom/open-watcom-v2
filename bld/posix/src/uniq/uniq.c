@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX uniq utility
+*               Finds unique lines in input
 *
 ****************************************************************************/
-
 
 
 #include <stdlib.h>
@@ -49,7 +48,7 @@
 
 char *OptEnvVar="uniq";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: uniq [-?ud] [-c] [-number] [+number] [@env] [input [output]]",
     "\tenv                : environment variable to expand",
     "\tinput              : name of input file",

@@ -1,0 +1,18 @@
+THE WINHELP |KWBTREE INTERNAL FILE
+==================================
+
+The |KWBTREE file acts as an index to the |KWDATA file, and is arranged as
+a b-tree.  See b-tree.txt for a general discussion of b-trees.  This file
+along with the |KWDATA and |KWMAP files are used by WinHelp for keyword
+searching.
+
+The index pages of the b-tree use zero-terminated ASCII strings as their
+key values.  The leaf pages store variable-length records which begin
+with zero-terminated ASCII strings (the actual names of the 'keywords'),
+and then contain a two-byte 'count' value (the number of topics to which
+this keyword refers) and a four-byte plain offset into the |KWDATA file.
+The list of topics to which this keyword refer begins in the |KWDATA file
+at that offset.
+
+The records in the leaf pages are stored alphabetically by the keyword
+strings.

@@ -390,17 +390,17 @@ pToken dupToken(pToken elem, pTokPos pos);
 pTokPos dupTokPos(pTokPos elem, pTokPos pos);
 
 /*---------------- Zap functions ---------------------------------*/
-void zapCTree(pCTree elem);
+void zapCTree(void *elem);
 void zapLabel(pLabel elem);
-void zapDeclInfo(pDeclInfo elem);
-void zapDclr(pDclr elem);
+void zapDeclInfo(void *elem);
+void zapDclr(void *elem);
 void zapDeclStructInfo(pDeclStructInfo elem);
 void zapDeclStructBody(pDeclStructBody elem);
 void zapArrElem(pArrElem elem);
 void zapDclrPtr(pDclrPtr elem);
 void zapDeclEnum(pDeclEnum elem);
 void zapEnumElem(pEnumElem elem);
-void zapToken(pToken elem);
+void zapToken(void *elem);
 void zapTokens2(pToken elem1, pToken elem2);
 void zapTokens3(pToken elem1, pToken elem2, pToken elem3);
 void zapTokPos(pTokPos elem);

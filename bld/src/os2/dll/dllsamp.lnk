@@ -1,0 +1,5 @@
+system os2v2 dll initinstance terminstance
+option manyautodata
+export dll_entry_1_
+export dll_entry_2_
+file dllsamp

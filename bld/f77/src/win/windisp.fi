@@ -1,0 +1,115 @@
+*$noreference
+
+! Display and Movement Functions:
+! -------------------------------
+
+      external ArrangeIconicWindows
+      external BeginDeferWindowPos
+      external BringWindowToTop
+      external CloseWindow
+      external DeferWindowPos
+      external EndDeferWindowPos
+      external GetClientRect
+      external GetWindowRect
+      external GetWindowText
+      external GetWindowTextLength
+      external IsIconic
+      external IsWindowVisible
+      external IsZoomed
+      external MoveWindow
+      external OpenIcon
+      external SetWindowPos
+      external SetWindowText
+      external ShowOwnedPopups
+      external ShowWindow
+
+      integer*2 BeginDeferWindowPos
+      integer*2 ArrangeIconicWindows
+      integer*2 DeferWindowPos
+      integer*2 GetWindowText
+      integer*2 GetWindowTextLength
+      integer*2 IsIconic
+      integer*2 IsWindowVisible
+      integer*2 IsZoomed
+      integer*2 OpenIcon
+      integer*2 ShowWindow
+
+! ShowWindow() Commands
+
+      integer SW_HIDE
+      integer SW_SHOWNORMAL
+      integer SW_NORMAL
+      integer SW_SHOWMINIMIZED
+      integer SW_SHOWMAXIMIZED
+      integer SW_MAXIMIZE
+      integer SW_SHOWNOACTIVATE
+      integer SW_SHOW
+      integer SW_MINIMIZE
+      integer SW_SHOWMINNOACTIVE
+      integer SW_SHOWNA
+      integer SW_RESTORE
+
+      parameter ( SW_HIDE             = 0 )
+      parameter ( SW_SHOWNORMAL       = 1 )
+      parameter ( SW_NORMAL           = 1 )
+      parameter ( SW_SHOWMINIMIZED    = 2 )
+      parameter ( SW_SHOWMAXIMIZED    = 3 )
+      parameter ( SW_MAXIMIZE         = 3 )
+      parameter ( SW_SHOWNOACTIVATE   = 4 )
+      parameter ( SW_SHOW             = 5 )
+      parameter ( SW_MINIMIZE         = 6 )
+      parameter ( SW_SHOWMINNOACTIVE  = 7 )
+      parameter ( SW_SHOWNA           = 8 )
+      parameter ( SW_RESTORE          = 9 )
+
+! Old ShowWindow() Commands
+
+      integer HIDE_WINDOW
+      integer SHOW_OPENWINDOW
+      integer SHOW_ICONWINDOW
+      integer SHOW_FULLSCREEN
+      integer SHOW_OPENNOACTIVATE
+
+      parameter ( HIDE_WINDOW         = 0 )
+      parameter ( SHOW_OPENWINDOW     = 1 )
+      parameter ( SHOW_ICONWINDOW     = 2 )
+      parameter ( SHOW_FULLSCREEN     = 3 )
+      parameter ( SHOW_OPENNOACTIVATE = 4 )
+
+! Identifiers for the WM_SHOWWINDOW message
+
+      integer SW_PARENTCLOSING
+      integer SW_OTHERZOOM
+      integer SW_PARENTOPENING
+      integer SW_OTHERUNZOOM
+
+      parameter ( SW_PARENTCLOSING    = 1 )
+      parameter ( SW_OTHERZOOM        = 2 )
+      parameter ( SW_PARENTOPENING    = 3 )
+      parameter ( SW_OTHERUNZOOM      = 4 )
+
+! SetWindowPos() Flags
+
+      integer SWP_NOSIZE
+      integer SWP_NOMOVE
+      integer SWP_NOZORDER
+      integer SWP_NOREDRAW
+      integer SWP_NOACTIVATE
+      integer SWP_DRAWFRAME
+      integer SWP_SHOWWINDOW
+      integer SWP_HIDEWINDOW
+      integer SWP_NOCOPYBITS
+      integer SWP_NOREPOSITION
+
+      parameter ( SWP_NOSIZE          = '0001'x )
+      parameter ( SWP_NOMOVE          = '0002'x )
+      parameter ( SWP_NOZORDER        = '0004'x )
+      parameter ( SWP_NOREDRAW        = '0008'x )
+      parameter ( SWP_NOACTIVATE      = '0010'x )
+      parameter ( SWP_DRAWFRAME       = '0020'x )
+      parameter ( SWP_SHOWWINDOW      = '0040'x )
+      parameter ( SWP_HIDEWINDOW      = '0080'x )
+      parameter ( SWP_NOCOPYBITS      = '0100'x )
+      parameter ( SWP_NOREPOSITION    = '0200'x )
+
+*$reference

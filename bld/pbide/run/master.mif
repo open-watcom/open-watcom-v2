@@ -1,0 +1,12 @@
+proj_name = run
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: ..
+
+extra_l_flags = op map
+
+run.exe : run.obj
+        $(linker) $(lflags) name $@ file $[@

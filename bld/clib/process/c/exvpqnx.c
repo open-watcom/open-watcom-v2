@@ -35,9 +35,9 @@
 #include <sys/types.h>
 #include <process.h>
 
-_WCRTLINK int (execvp)( file, argv )
-    const char  *file;          /* file name of file to be executed */
-    const char  *const argv[];  /* Array of pointers to arguments */
+_WCRTLINK int (execvp)(
+    const char  *file,          /* file name of file to be executed */
+    const char  *const argv[] ) /* Array of pointers to arguments */
 {
     return( spawnvpe( P_OVERLAY, file, argv, (const char **)environ ) );
     /* EXEC's shouldn't return unless there was an error */

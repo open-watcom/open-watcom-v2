@@ -34,25 +34,24 @@
 #include "coderep.h"
 #include "opcodes.h"
 #include "stackok.h"
-#include "sysmacro.h"
 #include "conflict.h"
 #include "stackok.h"
+#include "makeins.h"
+#include "foldins.h"
 
 extern  type_class_def  Unsigned[];
 extern  name            *Names[];
 extern  block           *HeadBlock;
 
 extern  name            *AllocTemp(type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  instruction     *rDOCVT(instruction*);
 extern  name            *TempOffset(name*,type_length,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  void            DoNothing(instruction*);
-extern  conflict_node   *InMemory(conflict_node *);
+extern  pointer         InMemory(pointer);
 extern  bool            IsStackReg(name*);
-extern  instruction     *FoldIns(instruction*);
 
 static  block           *Head;
 static  block           *(*Next)(block*);

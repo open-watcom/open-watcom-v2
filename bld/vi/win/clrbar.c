@@ -24,19 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Colour selection dialog.
 *
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
-#include <stdlib.h>
+#include "vi.h"
 #include "clrbar.h"
 #include "utils.h"
 
-HWND        hColorbar = NULL;
+HWND        hColorbar;
 
 /*
  * ClrDlgProc - callback routine for colour drag & drop dialog
@@ -62,7 +59,7 @@ BOOL WINEXP ClrDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
-        hColorbar = NULL;
+        hColorbar = (HWND)NULLHANDLE;
         // update editflags (may have closed from system menu)
         EditFlags.Colorbar = FALSE;
         break;
@@ -97,5 +94,6 @@ void RefreshColorbar( void )
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();
+
 } /* RefreshColorbar */
 

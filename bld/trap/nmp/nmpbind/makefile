@@ -1,34 +1,56 @@
-#pmake: build remote support nmp os2 dos nt win 16 32 x86
+#pmake: build remote support nmp os_os2 cpu_i86 cpu_386
 
-!ifndef bin_root
-!ifdef bin_root_wv
-bin_root = $(bin_root_wv)
+host_os  = os2
+host_cpu = i86
+
+proj_name = nmpbind
+
+!ifndef nmpbind_autodepends
+nmpbind_autodepends = .AUTODEPEND
 !endif
-!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
 objs = nmpbind.obj nmpos2.obj
 
-!ifdef on_build_machine
-default_targ    = w
-!else
+extra_c_flags = -bm -zu
+extra_l_flags = op stack=8k
+
+!ifeq release 0
 default_targ    = d
+!else
+default_targ    = w
 !endif
 
 first : $(default_targ) .SYMBOLIC
         @%null
 
-w : $(bin_root)\binp\nmpbind.exe .SYMBOLIC
+w : nmpbind.exe .SYMBOLIC
         @%null
 
-d : $(bin_root)\binp\dnmpbind.exe .SYMBOLIC
+d : dnmpbind.exe .SYMBOLIC
         @%null
 
-$(bin_root)\binp\nmpbind.exe : $(objs)
-    $(linker) sys os2 file {$objs} name $^@ op stack=8k
+nmpbind.exe : _err.gh _jerr.gh $(objs)
+    $(linker) $(lflags) file {$objs} name $^@
 
-$(bin_root)\binp\dnmpbind.exe : $(objs)
-    $(linker) sys os2 d a file {$objs} name $^@ op stack=8k
+dnmpbind.exe : _err.gh _jerr.gh $(objs)
+    $(linker) $(lflags) file {$objs} name $^@
 
-.c: ..\c
-.c.obj:
-    $(comp286) $[@ /d1 /w3 /oaxs /bm /zu /ml /i$(watcom_dir)\os21x_h;$(trap_dir)\h
+.c: ../c
+
+inc_dirs = -I"$(trap_dir)/h"
+
+_err.gh : ./mkstr.exe
+        $[@ $^@
+
+_jerr.gh : ./jmkstr.exe
+        $[@ $^@
+
+./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
+        $(bld_cl) $[@ $(wcl_util_opts) -I"$(trap_dir)/h"
+
+./jmkstr.exe: $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
+        $(bld_cl) $[@ $(wcl_util_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"

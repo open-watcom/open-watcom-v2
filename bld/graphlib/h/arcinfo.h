@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Arc descriptor structure.
 *
 ****************************************************************************/
 
@@ -38,7 +37,7 @@ struct arcinfo {
     struct xycoord      vecta;
     struct xycoord      vectb;
     short               qinf[ 4 ];
-    void                (*plot)();
+    void                (*plot)( int x, int y, int );
 };
 
 

@@ -1,0 +1,589 @@
+--------splassoc--------
+[0] ((3)"one", 1)
+[1] ((3)"two", 2)
+[2] ((5)"three", 3)
+
+Keys:
+[0](3)"one"
+[1](3)"two"
+[2](5)"three"
+
+Values:
+[0]1 [1]2 [2]3 
+
+a.isin("three")= 3
+a.isin("four")= 0
+a.adelete("two") returns: 2, a= 
+[0] ((3)"one", 1)
+[1] ((5)"three", 3)
+
+--------justify--------
+(13)"/*  *  Simple"
+(13)"program    to"
+(13)"read    STDIN"
+(13)"and   justify"
+(13)"the  text  to"
+(13)"the         *"
+(13)"specified    "
+(13)"number     of"
+(13)"columns   and"
+(13)"output     to"
+(13)"STDOUT. * The"
+(13)"padding    is"
+(13)"alternated   "
+(13)"from line  to"
+(13)"line so as to"
+(13)"look  even. *"
+(13)"Blank   lines"
+(13)"in  the input"
+(13)"stream    are"
+(13)"preserved.  *"
+(13)"This      was"
+(13)"designed   to"
+(13)"be used as  a"
+(10)"filter. */"
+
+(13)"#include     "
+(13)"<iostream.h> "
+(13)"#include     "
+(10)"<stdlib.h>"
+
+(13)"#include     "
+(13)""splash.h"   "
+(13)"#include     "
+(10)""tracer.h""
+
+(13)"//       Some"
+(13)"useful       "
+(13)"synonyms     "
+(13)"typedef      "
+(13)"SPString Str;"
+(13)"typedef      "
+(13)"SPStringList "
+(8)"StrList;"
+
+(11)"int tog= 0;"
+
+(13)"static    int"
+(18)"nextnonspace(const"
+(13)"Str&  s,  int"
+(13)"n)  { while(n"
+(13)"<  s.length()"
+(13)"&&  s[n] == '"
+(13)"')       n++;"
+(11)"return n; }"
+
+(13)"static    int"
+(18)"prevnonspace(const"
+(13)"Str&  s,  int"
+(13)"n)  { while(n"
+(13)">= 0 &&  s[n]"
+(13)"==  ' ') n--;"
+(11)"return n; }"
+
+(13)"void         "
+(13)"justify(Str& "
+(13)"ln,       int"
+(13)"width)      {"
+(19)"TRACER("justify(Str"
+(13)"ln,       int"
+(13)"width)")     "
+(13)"LTRACE(2, ln)"
+(13)"int   p,   o="
+(18)"tog?0:ln.length();"
+(17)"while(ln.length()"
+(13)"<     width){"
+(13)"if(tog){   //"
+(13)"left to right"
+(13)"pad        p="
+(13)"ln.index(" ","
+(13)"o); // find a"
+(13)"space if(p  >"
+(13)"0){          "
+(13)"ln.substr(p, "
+(13)"0)=  "  "; //"
+(13)"insert      a"
+(13)"space      o="
+(16)"nextnonspace(ln,"
+(13)"p); //  start"
+(13)"from     next"
+(13)"non-space    "
+(13)"}else   if(o)"
+(13)"o=   0;    //"
+(13)"reset else ln"
+(13)"+=  "  ";  //"
+(13)"put at end of"
+(13)"line   }else{"
+(13)"//  right  to"
+(13)"left  pad  p="
+(13)"ln.rindex("  "
+(13)"",   o);   //"
+(13)"find  a space"
+(13)"if(p  >   0){"
+(13)"ln.substr(p, "
+(13)"0)= "  ";  //"
+(13)"insert      a"
+(13)"space      o="
+(16)"prevnonspace(ln,"
+(13)"p);  // start"
+(13)"from previous"
+(13)"non-space    "
+(13)"}else if(o !="
+(13)"ln.length()) "
+(13)"o=           "
+(13)"ln.length(); "
+(13)"// reset else"
+(13)"ln += " "; //"
+(13)"put at end of"
+(13)"line } }  tog"
+(7)"^= 1; }"
+
+(13)"int  main(int"
+(13)"argc,    char"
+(13)"**argv)     {"
+(17)"FTRACER("main()","
+(13)"0, cout)  Str"
+(13)"inl,   curln,"
+(13)"curword;     "
+(13)"StrList      "
+(13)"words;    int"
+(10)"width= 79;"
+
+(13)"if(argc < 2){"
+(13)"cerr       <<"
+(13)""Usage:      "
+(13)"justify      "
+(13)"width"     <<"
+(13)"endl;        "
+(10)"exit(1); }"
+
+(13)"width=       "
+(14)"atoi(argv[1]);"
+(13)"while(cin  >>"
+(13)"inl){        "
+(13)"LTRACE(2,    "
+(13)"inl)         "
+(15)"if(inl.length()"
+(13)"==   0){   //"
+(13)"honour       "
+(13)"existing     "
+(13)"blank   lines"
+(18)"if(curln.length())"
+(13)"cout << curln"
+(13)"<<  endl;  //"
+(13)"flush        "
+(13)"previous line"
+(13)"cout << endl;"
+(13)"//     output"
+(13)"blank    line"
+(13)"curln=    "";"
+(13)"continue;   }"
+(23)"words.push(inl.split("'"
+(13)"'"));  // put"
+(13)"at   end   of"
+(13)"word     FIFO"
+(13)"LTRACE(2,    "
+(13)"words)       "
+(13)"while(words){"
+(17)"if(curln.length()"
+(13)"== 0)  curln="
+(14)"words.shift();"
+(13)"//  get first"
+(13)"word         "
+(20)"while(curln.length()"
+(13)"<     width){"
+(13)"if(!words)   "
+(13)"break;     //"
+(13)"need       to"
+(13)"refill   FIFO"
+(13)"curword=     "
+(14)"words.shift();"
+(13)"//  next word"
+(17)"if(curln.length()"
+(13)"+            "
+(16)"curword.length()"
+(13)"+ 1 > width){"
+(23)"words.unshift(curword);"
+(13)"//   put   it"
+(13)"back         "
+(14)"justify(curln,"
+(13)"width);    //"
+(13)"pads     with"
+(13)"spaces     to"
+(13)"width   }else"
+(13)"curln += (" ""
+(13)"+   curword);"
+(13)"//  add  word"
+(13)"to   line   }"
+(17)"if(curln.length()"
+(13)">= width){ //"
+(13)"done     with"
+(13)"this     line"
+(13)"cout << curln"
+(13)"<<      endl;"
+(13)"curln=  ""; }"
+(13)"}           }"
+(18)"if(curln.length())"
+(13)"cout << curln"
+(13)"<<      endl;"
+(13)"return( 0  );"
+(1)"}"
+--------spltest--------
+x is empty
+x.isempty() is true
+x is not empty
+x.isempty() is false
+x.split(a b c d e f)= 6: [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+
+x[0] = (1)"a"
+z= x; z[0]="x" z: [0](1)"x"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+
+ss= (19)"1.2.3.4.5.6.7.8.9.0", y= ss.split("\."), y=
+[0](1)"1"
+[1](1)"2"
+[2](1)"3"
+[3](1)"4"
+[4](1)"5"
+[5](1)"6"
+[6](1)"7"
+[7](1)"8"
+[8](1)"9"
+[9](1)"0"
+
+y.join(" ")(19)"1 2 3 4 5 6 7 8 9 0"
+(15)"a b c
+d e	f   g"
+xx.split()= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+[6](1)"g"
+
+(13)"a b c d e f g"
+xx.split(",")= [0](13)"a b c d e f g"
+
+(20)"  a b c d e f g hi  "
+xx.split("")= [0](1)" "
+[1](1)" "
+[2](1)"a"
+[3](1)" "
+[4](1)"b"
+[5](1)" "
+[6](1)"c"
+[7](1)" "
+[8](1)"d"
+[9](1)" "
+[10](1)"e"
+[11](1)" "
+[12](1)"f"
+[13](1)" "
+[14](1)"g"
+[15](1)" "
+[16](1)"h"
+[17](1)"i"
+[18](1)" "
+[19](1)" "
+
+(18)"a,b,c,d,,e,f,g,,,,"
+xx.split(",")= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](0)""
+[5](1)"e"
+[6](1)"f"
+[7](1)"g"
+
+(16)"a,b,c,d,,e,f,g,,"
+xx.split(",", 5)= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](8)",e,f,g,,"
+
+(16)" a b c d e f g  "
+xx.split(" ")= [0](0)""
+[1](1)"a"
+[2](1)"b"
+[3](1)"c"
+[4](1)"d"
+[5](1)"e"
+[6](1)"f"
+[7](1)"g"
+
+(13)"a b c d,e,f g"
+xx.split("([ ,])+")= [0](1)"a"
+[1](1)" "
+[2](1)"b"
+[3](1)" "
+[4](1)"c"
+[5](1)" "
+[6](1)"d"
+[7](1)","
+[8](1)"e"
+[9](1)","
+[10](1)"f"
+[11](1)" "
+[12](1)"g"
+
+(4)",,,,"
+xx.split(",")= 
+(0)""
+xx.split(",")= 
+(23)"   a b c	d    e
+f  g   "
+xx.split("' '")= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+[6](1)"g"
+
+x = [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+
+x.pop() : (1)"f", (1)"e"
+x= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+
+x.shift() : (1)"a", (1)"b"
+x= [0](1)"c"
+[1](1)"d"
+
+x.unshift(y): [0](1)"1"
+[1](1)"2"
+[2](1)"3"
+[3](1)"4"
+[4](1)"5"
+[5](1)"6"
+[6](1)"7"
+[7](1)"8"
+[8](1)"9"
+[9](1)"0"
+[10](1)"c"
+[11](1)"d"
+
+il is empty
+il is not empty
+il(1, 2, 3, 4) : [0]1 [1]2 [2]3 [3]4 
+
+il3= il; il3[0]= 9999; il3 = [0]9999 [1]2 [2]3 [3]4 
+
+il= [0]1 [1]2 [2]3 [3]4 
+
+il.reverse: [0]4 [1]3 [2]2 [3]1 
+
+il1.sort(): [0]1 [1]2 [2]3 [3]4 
+
+y = 
+[0](3)"one"
+[1](3)"two"
+[2](5)"three"
+[3](4)"four"
+y.reverse() [0](4)"four" [1](5)"three" [2](3)"two" [3](3)"one" 
+
+y.sort() [0](4)"four" [1](3)"one" [2](5)"three" [3](3)"two" 
+
+y.sort().reverse() [0](3)"two" [1](5)"three" [2](3)"one" [3](4)"four" 
+
+il2.push(3, 4) : [0]3 [1]4 
+
+il.push(il2) : [0]1 [1]2 [2]3 [3]4 [4]3 [5]4 
+
+il.pop() : 4, 3
+il.unshift(il2) : [0]3 [1]4 [2]1 [3]2 [4]3 [5]4 
+
+il.shift() : 3, 4
+testing splice:
+x = [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+[6](1)"g"
+[7](1)"h"
+[8](1)"i"
+
+z= x.splice(2, 3): z= [0](1)"c"
+[1](1)"d"
+[2](1)"e"
+
+x = [0](1)"a"
+[1](1)"b"
+[2](1)"f"
+[3](1)"g"
+[4](1)"h"
+[5](1)"i"
+
+x.splice(2, 0, z): 
+x= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+[6](1)"g"
+[7](1)"h"
+[8](1)"i"
+
+z.splice(1, 1, x): [0](1)"d" 
+z= [0](1)"c"
+[1](1)"a"
+[2](1)"b"
+[3](1)"c"
+[4](1)"d"
+[5](1)"e"
+[6](1)"f"
+[7](1)"g"
+[8](1)"h"
+[9](1)"i"
+[10](1)"e"
+
+x= [0](1)"a"
+[1](1)"b"
+[2](1)"c"
+[3](1)"d"
+[4](1)"e"
+[5](1)"f"
+[6](1)"g"
+[7](1)"h"
+[8](1)"i"
+
+z.splice(20, 1, x): 
+z= [0](1)"c"
+[1](1)"a"
+[2](1)"b"
+[3](1)"c"
+[4](1)"d"
+[5](1)"e"
+[6](1)"f"
+[7](1)"g"
+[8](1)"h"
+[9](1)"i"
+[10](1)"e"
+[11](1)"a"
+[12](1)"b"
+[13](1)"c"
+[14](1)"d"
+[15](1)"e"
+[16](1)"f"
+[17](1)"g"
+[18](1)"h"
+[19](1)"i"
+
+4, 3
+101, 5678, 1234
+Index check done
+201, 0, 200
+
+testing regexp stuff:
+x.m(".*X((...)...(...))", "12345Xabcxyzdef") returns 4
+subs matched = [0](15)"12345Xabcxyzdef"
+[1](9)"abcxyzdef"
+[2](3)"abc"
+[3](3)"def"
+
+rst.m(rexp) returns 1
+
+testing grep:
+x: 
+[0](4)"abcd"
+[1](5)"a2345"
+[2](5)"X2345"
+[3](6)"Xaaaaa"
+[4](5)"aaaaa"
+
+grep(^a.*)
+Expect 3 matches:
+[0](4)"abcd"
+[1](5)"a2345"
+[2](5)"aaaaa"
+
+s1= (6)"abcdef", s1.m("^cde") : 0
+s1= (6)"abcdef", s1.m("^..cde") : 1
+sl = m("(..) (..)", "ab cd ef"); sl = 
+[0](2)"ab"
+[1](2)"cd"
+
+s= (3)"ABC": s.m(ncr)= 1
+s= (3)"ABC": s.m(cr)= 0
+s.m("abc", "i")= 1
+s.m("abc")= 0
+test string stuff:
+Empty string: (0)"" length= 0,  strlen(s2) = 0
+s1:(7)"string1"
+s[0]= s, s[5]= g
+const char *s= s1: s= string1
+s2=s1,  s2:(7)"string1"
+s1.chop()(6)"string"
+s3= s: s3 = (6)"string"
+index("ri") in (6)"string": 2
+index((1)"1") in (6)"string": -1
+rindex(abc) in(9)"abcabcabc": 6
+rindex(abc, 5) in(9)"abcabcabc": 3
+substr(5, 3) in (9)"abcabcabc": (3)"cab"
+s3.substr(5, 3) = "XXX"(9)"abcabXXXc"
+s3.substr(5, 3) = s1(12)"abcabstringc"
+s3.substr(5, 3) = s1.substr(1, 3)(12)"abcabtriingc"
+s3.substr(0, 6) = s1.substr(0, 3)(9)"strriingc"
+s3.substr(-3, 2) = s1.substr(0, 2)(9)"strriistc"
+s1 = (10)"1234567890"
+s1.substr(0, 10)= s1.substr(1, 9) (9)"234567890"
+s1 = (10)"1234567890"
+s1.substr(1, 9)= s1.substr(0, 10) (11)"11234567890"
+s1.substr(7, 10)= "abcdefghij" (17)"1234567abcdefghij"
+s1.substr(10, 5)= "abcdefghij" (20)"1234567890abcdefghij"
+s1.substr(20, 1)= "abcdefghij" (20)"1234567890abcdefghij"
+(6)"abcdef" + (6)"123456": (12)"abcdef123456"
+(6)"abcdef" + "hello"= (11)"abcdefhello"
+"hello" + (6)"abcdef"= (11)"helloabcdef"
+(6)"abcdef" + 'x' = (7)"abcdefx"
+(3)"abc" == (3)"def": 0
+(3)"abc" != (3)"def": 1
+(3)"abc" == (3)"abc": 1
+(3)"abc" != (3)"abc": 0
+(3)"abc" < (3)"def": 1
+(3)"abc" > (3)"def": 0
+(3)"abc" <= (3)"def": 1
+(3)"abc" >= (3)"abc": 1
+s1 = (9)"abcdefghi", s1.tr("ceg", "123") = 3, s1 = (9)"ab1d2f3hi"
+s1.tr("a-z", "A-Z") = 9, s1 = (9)"ABCDEFGHI"
+s1.tr("efg", "") = 3, s1 = (9)"abcdefghi"
+s1.tr("ac-e", "X") = 4, s1 = (9)"XbXXXfghi"
+s1 = (12)"abcdefghiiii", s1.tr("ac-e", "X", "s") = 4, s1 = (10)"XbXfghiiii"
+s1.tr("ac-e", "", "d") = 4, s1 = (5)"bfghi"
+s1.tr("ac-e", "d", "d") = 4, s1 = (6)"dbfghi"
+s1.tr("ac-e", "", "cd") = 5, s1 = (4)"acde"
+(10)"bookkeeper": s1.tr("a-zA-Z", "", "s") = 10, s1 = (7)"bokeper"
+(15)"abc123def456ghi": s1.tr("a-zA-Z", " ", "c") = 6, s1 = (15)"abc   def   ghi"
+(21)"abc123def456ghi789aaa": s1.tr("a-zA-Z", " ", "cs") = 9, s1 = (15)"abc def ghi aaa"
+(12)"abcdddaaaxxx": s1.tr("a", "d", "s") = 4, s1 = (9)"dbcdddxxx"
+(9)"abcdefghi" s1.s("def", "FED") = 1, s1= (9)"abcFEDghi"
+(9)"abcDEFghi" s1.s("def", "FED") = 0, s1= (9)"abcDEFghi"
+(9)"abcDEFghi" s1.s("def", "FED", "i") = 1, s1= (9)"abcFEDghi"
+(9)"abcdefghi" s1.s("(...)(...)", "\$,$&,$2 $1") = 1, s1= (19)"$,abcdef,def abcghi"
+(15)"abcdefabcghiabc" s1.s("abc", "XabcX", "g") = 3, s1= (21)"XabcXdefXabcXghiXabcX"
+(15)"abcdefabcghiabc" s1.s("abc", "X", "g") = 3, s1= (9)"XdefXghiX"
+(15)"abcdefabcghiabc" s1.s("abc(.)", "X$1abcX$1", "g") = 2, s1= (21)"XdabcXdefXgabcXghiabc"
+(15)"abcdefabcghiabc" s1.s("(.)abc", "$1X$1abcX", "g") = 2, s1= (21)"abcdefXfabcXghiXiabcX"
+(10)"1234567890" s1.s("(.)(.)", "$2$1", "g") = 5, s1= (10)"2143658709"

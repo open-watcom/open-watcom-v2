@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _dos_getftime() for Win32.
 *
 ****************************************************************************/
 
@@ -37,17 +36,17 @@
 #include "ntex.h"
 #include "seterrno.h"
 
-_WCRTLINK unsigned _dos_getftime( int hid, WORD *date, WORD *time )
-{
-    int         error;
-    FILETIME    ctime,atime,wtime;
 
-    error = 0;
+_WCRTLINK unsigned _dos_getftime( int hid, unsigned *date, unsigned *time )
+{
+    FILETIME        ctime, atime, wtime;
+    unsigned short  d, t;
+
     if( GetFileTime( __getOSHandle( hid ), &ctime, &atime, &wtime ) ) {
-        __MakeDOSDT( &wtime, date, time );
-    } else {
-        error = GetLastError();
-        __set_errno_dos( error );
+        __MakeDOSDT( &wtime, &d, &t );
+        *date = d;
+        *time = t;
+        return( 0 );
     }
-    return( error );
+    return( __set_errno_nt_reterr() );
 }

@@ -10,12 +10,12 @@ char chars[] = {
 #define SIZE sizeof( chars ) / sizeof( char )
 
 void main()
-  {
+{
     int   i;
 
     for( i = 0; i < SIZE; i++ ) {
-      printf( "Char %c is %sa digit character\n",
-            chars[i],
-            ( isdigit( chars[i] ) ) ? "" : "not " );
+        printf( "Char %c is %sa digit character\n",
+                chars[i],
+                ( isdigit( chars[i] ) ) ? "" : "not " );
     }
-  }
+}

@@ -1,0 +1,83 @@
+.387
+.386p
+_d16		SEGMENT	PARA PRIVATE USE16 'DATA'
+L$1:
+    DB	0
+L$2:
+    DB	0, 0
+
+_d16		ENDS
+_d32		SEGMENT	PARA PRIVATE USE32 'DATA'
+L$3:
+    DB	0
+L$4:
+    DB	0, 0
+
+_d32		ENDS
+_c16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_c16, DS:DGROUP, SS:DGROUP
+    movsx       ax,dl
+    movsx       eax,bh
+    movsx       eax,si
+    movzx       ax,dl
+    movzx       eax,bh
+    movzx       eax,si
+    movsx       ax,byte ptr L$1
+    movsx       eax,byte ptr L$1
+    movsx       eax,word ptr L$2
+    movsx       ax,byte ptr L$2
+    movsx       eax,byte ptr L$2
+    movsx       eax,word ptr L$1
+    movzx       ax,byte ptr L$1
+    movzx       eax,byte ptr L$1
+    movzx       eax,word ptr L$2
+    movzx       ax,byte ptr L$2
+    movzx       eax,byte ptr L$2
+    movzx       eax,word ptr L$1
+    movsx       ax,byte ptr L$3
+    movsx       eax,byte ptr L$3
+    movsx       eax,word ptr L$4
+    movsx       ax,byte ptr L$4
+    movsx       eax,byte ptr L$4
+    movsx       eax,word ptr L$3
+    movzx       ax,byte ptr L$3
+    movzx       eax,byte ptr L$3
+    movzx       eax,word ptr L$4
+    movzx       ax,byte ptr L$4
+    movzx       eax,byte ptr L$4
+    movzx       eax,word ptr L$3
+_c16		ENDS
+_c32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_c32, DS:DGROUP, SS:DGROUP
+    movsx       ax,dl
+    movsx       eax,bh
+    movsx       eax,si
+    movzx       ax,dl
+    movzx       eax,bh
+    movzx       eax,si
+    movsx       ax,byte ptr L$1
+    movsx       eax,byte ptr L$1
+    movsx       eax,word ptr L$2
+    movsx       ax,byte ptr L$2
+    movsx       eax,byte ptr L$2
+    movsx       eax,word ptr L$1
+    movzx       ax,byte ptr L$1
+    movzx       eax,byte ptr L$1
+    movzx       eax,word ptr L$2
+    movzx       ax,byte ptr L$2
+    movzx       eax,byte ptr L$2
+    movzx       eax,word ptr L$1
+    movsx       ax,byte ptr L$3
+    movsx       eax,byte ptr L$3
+    movsx       eax,word ptr L$4
+    movsx       ax,byte ptr L$4
+    movsx       eax,byte ptr L$4
+    movsx       eax,word ptr L$3
+    movzx       ax,byte ptr L$3
+    movzx       eax,byte ptr L$3
+    movzx       eax,word ptr L$4
+    movzx       ax,byte ptr L$4
+    movzx       eax,byte ptr L$4
+    movzx       eax,word ptr L$3
+_c32		ENDS
+		END

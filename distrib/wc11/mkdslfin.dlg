@@ -1,0 +1,33 @@
+name=MakeDisksSelFinal
+condition=MakeDisks FullInstall !
+static_text=\
+        //1"@ will now make the diskette set."\
+        //2"@ はディスケット・セットを作成します."\
+        //0
+dynamic_text=mdff_1,\
+        //1"You will need %NumDisksNeeded% diskettes."\
+        //2"%NumDisksNeeded% 枚のディスケットが必要です."\
+        //0
+static_text=
+static_text=\
+        //1"You will be creating a partial installation diskette set."\
+        //2"サブセットのインストール・ディスケット・セットを作成できます."\
+        //0
+static_text=\
+        //1"When installing from this diskette set, do not"\
+        //2"サブセットのディスケット・セットからインストールする場合, "\
+        //0
+static_text=\
+        //1"attempt to select any options that you did not"\
+        //2"ディスケット作成時に選択しなかったオプションをインストール時に"\
+        //0
+static_text=\
+        //1"select during this installation, or you will be"\
+        //2"選択してはなりません. 作成されていないディスケットを入れる"\
+        //0
+static_text=\
+        //1"prompted for a diskette that you do not have."\
+        //2"指示のメッセージが出ます."\
+        //0
+static_text=
+include=poc.dlg

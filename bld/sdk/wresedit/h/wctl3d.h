@@ -46,10 +46,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WCtl3DInit              ( HINSTANCE );
-extern void     WCtl3DFini              ( HINSTANCE );
-extern void     WCtl3dColorChange       ( void );
-extern void     WCtl3dSubclassDlg       ( HWND, WORD );
-extern HBRUSH   WCtl3dCtlColorEx        ( UINT msg, WPARAM wp, LPARAM lp );
+extern Bool     WCtl3DInit( HINSTANCE );
+extern void     WCtl3DFini( HINSTANCE );
+extern void     WCtl3dColorChange( void );
+extern void     WCtl3dSubclassDlg( HWND, WORD );
+extern HBRUSH   WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp );
 
 #endif

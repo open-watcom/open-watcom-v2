@@ -1,0 +1,4 @@
+
+FIXUPP386(9d) len:0009h, chksum:d5h(d5)
+    0007h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    000ch Seg   OFFSET386    Frame: TARGET    Target: SI(1)

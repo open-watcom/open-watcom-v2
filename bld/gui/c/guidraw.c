@@ -36,7 +36,7 @@
  * GUIDrawText
  */
 
-extern void GUIDrawText( gui_window *wnd, char *text, int length,
+extern void GUIDrawText( gui_window *wnd, const char *text, int length,
                          gui_ord row, gui_ord indent, gui_attr attr )
 {
     gui_text_metrics    metrics;
@@ -48,7 +48,7 @@ extern void GUIDrawText( gui_window *wnd, char *text, int length,
     GUIXDrawText( wnd, text, length, &pos, attr, GUI_NO_COLUMN, FALSE );
 }
 
-extern void GUIDrawTextPos( gui_window *wnd, char *text, int length,
+extern void GUIDrawTextPos( gui_window *wnd, const char *text, int length,
                             gui_coord *pos, gui_attr attr )
 {
     GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_COLUMN, FALSE );
@@ -58,7 +58,7 @@ extern void GUIDrawTextPos( gui_window *wnd, char *text, int length,
  * GUIDrawTextExtent
  */
 
-void GUIDrawTextExtent( gui_window *wnd, char *text, int length,
+void GUIDrawTextExtent( gui_window *wnd, const char *text, int length,
                         gui_ord row, gui_ord indent, gui_attr attr,
                         gui_ord extent )
 {
@@ -71,7 +71,7 @@ void GUIDrawTextExtent( gui_window *wnd, char *text, int length,
     GUIXDrawText( wnd, text, length, &pos, attr, extent, TRUE );
 }
 
-void GUIDrawTextExtentPos( gui_window *wnd, char *text, int length,
+void GUIDrawTextExtentPos( gui_window *wnd, const char *text, int length,
                            gui_coord *pos, gui_attr attr, gui_ord extent )
 {
     GUIXDrawText( wnd, text, length, pos, attr, extent, TRUE );

@@ -1,0 +1,8 @@
+bmp2eps STR1.BMP STR1.PS /h 300
+bmp2eps STR2.BMP STR2.PS /h 300
+bmp2eps STR3.BMP STR3.PS /h 300
+bmp2eps STR4.BMP STR4.PS /h 300
+bmp2eps STR5.BMP STR5.PS /h 300
+bmp2eps STR6.BMP STR6.PS /h 300
+bmp2eps STR7.BMP STR7.PS /h 300
+bmp2eps STR8.BMP STR8.PS /h 300

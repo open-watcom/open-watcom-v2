@@ -24,28 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker virtual memory interface.
 *
 ****************************************************************************/
 
 
-#if _OS == _NT || _OS == _OS2V2 && !defined(__OSI__)
-
-extern void WriteLoad( void *, unsigned long );
-
-#define ReadInfo( v, b, l ) memcpy( b, (void *)(v), l )
-#define PutInfo( v, b, l ) memcpy( (void *)(v), b, l )
-#define CopyInfo( v1, v2, l ) memcpy( (void *)(v1), (void *)(v2), l )
-#define WriteInfo( v, l ) WriteLoad( (void *)(v), l )
-#define PutNulls( v, l ) memset( (void *)(v), 0, l )
-#define CompareInfo( v, b, l ) (memcmp( (void *)(v), b, l ) == 0)
-#define GET32INFO( v, b ) b = *((unsigned_32 *)(v))
-#define GET16INFO( v, b ) b = *((unsigned_16 *)(v))
-#define PUT32INFO( v, b ) *((unsigned_32 *)(v)) = b
-#define PUT16INFO( v, b ) *((unsigned_16 *)(v)) = b
-
-#else
+#if defined( USE_VIRTMEM )
 
 extern void ReadInfo( virt_mem, void *, unsigned );
 extern void PutInfo( virt_mem, void *, unsigned );
@@ -58,6 +42,22 @@ extern bool CompareInfo( virt_mem, void *, unsigned );
 #define GET16INFO( v, b ) ReadInfo( v, &(b), sizeof(unsigned_16) )
 #define PUT32INFO( v, b ) PutInfo( v, &(b), sizeof(unsigned_32) )
 #define PUT16INFO( v, b ) PutInfo( v, &(b), sizeof(unsigned_16) )
+
+#else
+
+extern void WriteLoad( void *, unsigned long );
+
+#define ReadInfo( v, b, l ) memcpy( b, (void *)(v), l )
+#define PutInfo( v, b, l ) memcpy( (void *)(v), b, l )
+#define CopyInfo( v1, v2, l ) memcpy( (void *)(v1), (void *)(v2), l )
+#define WriteInfo( v, l ) WriteLoad( (void *)(v), l )
+#define PutNulls( v, l ) memset( (void *)(v), 0, l )
+#define CompareInfo( v, b, l ) (memcmp( (void *)(v), b, l ) == 0)
+
+#define GET32INFO( v, b ) b = *((unsigned_32 *)(v))
+#define GET16INFO( v, b ) b = *((unsigned_16 *)(v))
+#define PUT32INFO( v, b ) *((unsigned_32 *)(v)) = b
+#define PUT16INFO( v, b ) *((unsigned_16 *)(v)) = b
 
 #endif
 

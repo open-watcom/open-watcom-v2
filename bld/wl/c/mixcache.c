@@ -48,7 +48,7 @@
 
 static bool             DumpFileCache( infilelist *, bool );
 
-static bool     Multipage;
+static bool             Multipage;
 
 #define CACHE_PAGE_SIZE         (8*1024)
 
@@ -62,19 +62,21 @@ static unsigned NumCacheBlocks( unsigned long len )
     if( len % CACHE_PAGE_SIZE != 0 ) {
         numblocks++;
     }
-    return numblocks;
+    return( numblocks );
 }
 
-extern bool CacheOpen( file_list *list )
+bool CacheOpen( file_list *list )
 /**************************************/
 {
-    infilelist *file;
+    infilelist  *file;
     unsigned    numblocks;
-    char **     cache;
+    char        **cache;
 
-    if( list == NULL ) return TRUE;
+    if( list == NULL )
+        return( TRUE );
     file = list->file;
-    if( file->flags & INSTAT_IOERR ) return( FALSE );
+    if( file->flags & INSTAT_IOERR )
+        return( FALSE );
     if( DoObjOpen( file ) ) {
         file->flags |= INSTAT_IN_USE;
     } else {
@@ -112,7 +114,7 @@ extern bool CacheOpen( file_list *list )
             file->currpos = file->len;
         } else {
             numblocks = NumCacheBlocks( file->len );
-            _Pass1Alloc( file->cache, numblocks * sizeof(char *) );
+            _Pass1Alloc( file->cache, numblocks * sizeof( char * ) );
             cache = file->cache;
             while( numblocks > 0 ) {
                 *cache = NULL;
@@ -121,16 +123,17 @@ extern bool CacheOpen( file_list *list )
             }
         }
     }
-    return TRUE;
+    return( TRUE );
 }
 
-extern void CacheClose( file_list *list, unsigned pass )
+void CacheClose( file_list *list, unsigned pass )
 /******************************************************/
 {
     infilelist *file;
     bool        nukecache;
 
-    if( list == NULL ) return;
+    if( list == NULL )
+        return;
     file = list->file;
 //    if( file->handle == NIL_HANDLE ) return;
     file->flags &= ~INSTAT_IN_USE;
@@ -155,14 +158,15 @@ extern void CacheClose( file_list *list, unsigned pass )
     }
 }
 
-extern void * CachePermRead( file_list *list, unsigned long pos, unsigned len )
+void *CachePermRead( file_list *list, unsigned long pos, unsigned len )
 /*****************************************************************************/
 {
-    char *      buf;
-    char *      result;
+    char        *buf;
+    char        *result;
 
     buf = CacheRead( list, pos, len );
-    if( list->file->flags & INSTAT_FULL_CACHE ) return buf;
+    if( list->file->flags & INSTAT_FULL_CACHE )
+        return( buf );
     if( Multipage ) {
         _LnkReAlloc( result, buf, len );
         _ChkAlloc( TokBuff, TokSize );
@@ -171,25 +175,26 @@ extern void * CachePermRead( file_list *list, unsigned long pos, unsigned len )
         _ChkAlloc( result, len );
         memcpy( result, buf, len );
     }
-    return result;
+    return( result );
 }
 
-extern void * CacheRead( file_list * list, unsigned long pos, unsigned len )
+void *CacheRead( file_list *list, unsigned long pos, unsigned len )
 /**************************************************************************/
 /* read len bytes out of the cache. */
 {
-    unsigned    bufnum;
-    unsigned    startnum;
-    unsigned    offset;
-    unsigned    amtread;
-    char *      result;
-    char **     cache;
-    unsigned long newpos;
-    infilelist *file;
+    unsigned        bufnum;
+    unsigned        startnum;
+    unsigned        offset;
+    unsigned        amtread;
+    char            *result;
+    char            **cache;
+    unsigned long   newpos;
+    infilelist      *file;
 
     if( list->file->flags & INSTAT_FULL_CACHE ) {
-        if( pos + len > list->file->len ) return NULL;
-        return (char *)list->file->cache + pos;
+        if( pos + len > list->file->len )
+            return( NULL );
+        return( (char *)list->file->cache + pos );
     }
     Multipage = FALSE;
     file = list->file;
@@ -198,66 +203,67 @@ extern void * CacheRead( file_list * list, unsigned long pos, unsigned len )
     startnum = pos / CACHE_PAGE_SIZE;
     bufnum = startnum;
     cache = file->cache;
-    for(;;) {
-        if( cache[bufnum] == NULL ) {   // make sure page is in.
-            _ChkAlloc( cache[bufnum], CACHE_PAGE_SIZE );
-            newpos = (unsigned long) bufnum * CACHE_PAGE_SIZE;
+    for( ;; ) {
+        if( cache[ bufnum ] == NULL ) {   // make sure page is in.
+            _ChkAlloc( cache[ bufnum ], CACHE_PAGE_SIZE );
+            newpos = (unsigned long)bufnum * CACHE_PAGE_SIZE;
             if( file->currpos != newpos ) {
                 QSeek( file->handle, newpos, file->name );
             }
             file->currpos = newpos + CACHE_PAGE_SIZE;
-            QRead( file->handle, cache[bufnum], CACHE_PAGE_SIZE, file->name );
+            QRead( file->handle, cache[ bufnum ], CACHE_PAGE_SIZE, file->name );
         }
-        if( amtread >= len ) break;
+        if( amtread >= len )
+            break;
         amtread += CACHE_PAGE_SIZE;     // it spans pages.
         bufnum++;
         Multipage = TRUE;
     }
     if( !Multipage ) {
-        result = cache[startnum] + offset;
+        result = cache[ startnum ] + offset;
     } else {
         if( len > TokSize ) {
             TokSize = ROUND_UP( len, SECTOR_SIZE );
             _LnkReAlloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
-        memcpy( TokBuff, cache[startnum] + offset, amtread );
+        memcpy( TokBuff, cache[ startnum ] + offset, amtread );
         len -= amtread;
         result = TokBuff + amtread;
-        for(;;) {
+        for( ;; ) {
             startnum++;
             if( len <= CACHE_PAGE_SIZE ) {
-                memcpy( result, cache[startnum], len );
+                memcpy( result, cache[ startnum ], len );
                 break;
             } else {
-                memcpy( result, cache[startnum], CACHE_PAGE_SIZE );
+                memcpy( result, cache[ startnum ], CACHE_PAGE_SIZE );
                 len -= CACHE_PAGE_SIZE;
                 result += CACHE_PAGE_SIZE;
             }
         }
         result = TokBuff;
     }
-    return result;
+    return( result );
 }
 
-extern bool CacheIsPerm( void )
+bool CacheIsPerm( void )
 /*****************************/
 {
-    return !Multipage;
+    return( !Multipage );
 }
 
-extern bool CacheEnd( file_list * list, unsigned long pos )
+bool CacheEnd( file_list *list, unsigned long pos )
 /*********************************************************/
 {
-    return pos >= list->file->len;
+    return( pos >= list->file->len );
 }
 
-extern void CacheFini( void )
+void CacheFini( void )
 /***************************/
 {
 }
 
-extern void CacheFree( file_list *list, void *mem )
+void CacheFree( file_list *list, void *mem )
 /*************************************************/
 // used for disposing things allocated by CachePermRead
 {
@@ -293,13 +299,14 @@ static bool DumpFileCache( infilelist *file, bool nuke )
             blocklist++;
         }
     }
-    return blockfreed;
+    return( blockfreed );
 }
 
-extern void FreeObjCache( file_list *list )
+void FreeObjCache( file_list *list )
 /*****************************************/
 {
-    if( list == NULL ) return;
+    if( list == NULL )
+        return;
     if( list->file->flags & INSTAT_FULL_CACHE ) {
         _LnkFree( list->file->cache );
     } else {
@@ -308,21 +315,21 @@ extern void FreeObjCache( file_list *list )
     list->file->cache = NULL;
 }
 
-extern bool DumpObjCache( void )
+bool DumpObjCache( void )
 /******************************/
 // find and dump an object file cache.
 {
     infilelist *file;
 
-    file = CachedFiles;
-    while( file != NULL ) {
+    for( file = CachedFiles; file != NULL; file = file->next ) {
         if( file->flags & INSTAT_PAGE_CACHE ) {
             if( CurrMod == NULL || CurrMod->f.source == NULL
                                 || CurrMod->f.source->file != file ) {
-                if( DumpFileCache( file, TRUE ) ) return TRUE;
+                if( DumpFileCache( file, TRUE ) ) {
+                    return( TRUE );
+                }
             }
         }
-        file = file->next;
     }
-    return FALSE;
+    return( FALSE );
 }

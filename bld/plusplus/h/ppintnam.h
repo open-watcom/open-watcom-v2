@@ -128,9 +128,3 @@
 
 #define IN_REFER        'r'
 #define IN_MEMBER       'm'
-
-#define MANGLED_MAX_LEN         (TS_MAX_OBJNAME-1)
-#define CODE_OBJNAME            TS_CODE_MANGLE
-#define DATA_OBJNAME            TS_DATA_MANGLE
-
-#define MANGLED_HASH_LEN        4

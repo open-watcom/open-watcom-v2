@@ -32,4 +32,5 @@
 
 #define STARTUP_EDITORBITMAP        101
 #define STARTUP_WATCOMBITMAP        104
+#define STARTUP_VERSION             105
 #define STARTUP_EDITORNAME          2

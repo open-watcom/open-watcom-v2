@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Kanji character detction table.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include <jctype.h>
 
-_WCRTLINK const char _HUGEDATA _IsKTable[257] = {
+_WCRTDATA const char _HUGEDATA  _IsKTable[257] = {
 
 #define ___0__ 0
 #define ___K__ _K

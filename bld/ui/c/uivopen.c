@@ -36,11 +36,8 @@
 #include "uibox.h"
 #include "uigchar.h"
 
-static void update( area, vptr )
-/******************************/
-
-register        VSCREEN*                vptr;
-register        SAREA                   area;
+static void update( SAREA area, VSCREEN *vptr )
+/*********************************************/
 {
     register    int                     row;
     register    int                     vrow;
@@ -60,7 +57,7 @@ VSCREEN* global uivopen( register VSCREEN *vptr )
     register    char*                   box;
     register    ATTR                    attr;
     register    int                     priority;
-    register    void                    (*updatertn)();
+    register    void                    (_FAR *updatertn)( struct sarea, void * );
     register    bool                    okbuffer;
     register    int                     len;
     register    ORD                     col;
@@ -100,7 +97,7 @@ VSCREEN* global uivopen( register VSCREEN *vptr )
         updatertn = NULL;
     } else {
         okbuffer = balloc( &(vptr->window.type.buffer), area.height, area.width );
-        updatertn = update;
+        updatertn = (void(*)(struct sarea,void *))update;
     }
     if( okbuffer ) {
         vptr->window.area = area;
@@ -151,10 +148,8 @@ do not delete this stuff
 }
 
 
-void global uivclose( vptr )
-/**************************/
-
-register        VSCREEN*                 vptr;
+void global uivclose( VSCREEN *vptr )
+/***********************************/
 {
     if( vptr->open ) {
         closewindow( &(vptr->window) );
@@ -173,11 +168,8 @@ register        VSCREEN*                 vptr;
  *              persists instead of losing the data
  */
 
-VSCREEN * global uivresize( vptr, new )
-/**************************************/
-
-register        VSCREEN*                vptr;
-register        SAREA                   new;
+VSCREEN * global uivresize( VSCREEN *vptr, SAREA new )
+/****************************************************/
 {
     BUFFER      old_buff;
     int         i;

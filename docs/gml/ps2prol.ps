@@ -1,0 +1,18 @@
+8.5 72 mul 0 translate
+90 rotate
+/sx 5.2 8.5 div def
+/sy 8.5 11 div def
+sx sy scale
+/xi {1000 mul} def
+/yi {1000 mul} def
+/orest {restore} bind def
+/restore {/showflag showflag currentpoint 5 -1 roll orest translate def
+          0 0 moveto } bind def
+/oshow {showpage} bind def
+/showflag 1 def
+/showpage { showflag 1 eq
+  {8.5 xi 0 moveto 0 11 yi rlineto closepath stroke
+   8.5 xi 0 moveto /showflag 2 def }
+  { oshow -8.5 xi 0 moveto /showflag 1 def } ifelse
+  } def
+/showfinish { showflag 2 eq {oshow} if } def

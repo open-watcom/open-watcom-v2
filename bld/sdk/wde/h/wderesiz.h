@@ -41,8 +41,8 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WdeResizeRatioStruct {
-    int  xmap;
-    int  ymap;
+    int xmap;
+    int ymap;
 } WdeResizeRatio;
 
 #endif

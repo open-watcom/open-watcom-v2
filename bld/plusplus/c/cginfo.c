@@ -24,18 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Callback functions invoked from cg - communicate
+*               auxiliary information to the backend.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <process.h>
+#include "plusplus.h"
+
+#include "compcfg.h"
+#include "tgtenv.h"
+
 #include <limits.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 #include "cgdata.h"
 #include "codegen.h"
@@ -65,7 +66,7 @@
 #include "cginmisc.h"
 #include "pragdefn.h"
 #include "specfuns.h"
-#include "compcfg.h"
+#include "autodept.h"
 
 #if _CPU == 386
     extern struct  inline_funcs Fs_Functions[];   // FS PRAGMAS
@@ -116,7 +117,10 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     void *parm )                // - parameter
 {
     switch( class ) {
-      case MSG_BLIP:
+    case MSG_SYMBOL_TOO_LONG:
+        CErr2p( WARN_MANGLED_NAME_TOO_LONG, (SYMBOL)parm );
+        break;
+    case MSG_BLIP:
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
                 putchar( '.' );
@@ -124,15 +128,15 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-      case MSG_INFO_FILE:
-      case MSG_INFO_PROC:
+    case MSG_INFO_FILE:
+    case MSG_INFO_PROC:
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
-                MsgDisplayLine( "" );
+                MsgDisplayLine( parm );
             }
         }
         break;
-      case MSG_CODE_SIZE:
+    case MSG_CODE_SIZE:
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
                 char buffer[16];
@@ -143,24 +147,24 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-      case MSG_DATA_SIZE:
+    case MSG_DATA_SIZE:
         break;
-      case MSG_ERROR:
+    case MSG_ERROR:
         CErr2p( ERR_USER_ERROR_MSG, parm );
         break;
-      case MSG_FATAL:
+    case MSG_FATAL:
         CErr2p( ERR_FATAL_ERROR, parm );
         CppExit( 1 );         /* exit to DOS do not pass GO */
         break;
-      case MSG_BAD_PARM_REGISTER:
+    case MSG_BAD_PARM_REGISTER:
         CErr2( ERR_BAD_PARM_REGISTER, (int)parm );
         break;
-      case MSG_BAD_RETURN_REGISTER:
+    case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (SYMBOL)parm ) );
         break;
-      case MSG_SCHEDULER_DIED:
-      case MSG_REGALLOC_DIED:
-      case MSG_SCOREBOARD_DIED:
+    case MSG_SCHEDULER_DIED:
+    case MSG_REGALLOC_DIED:
+    case MSG_SCOREBOARD_DIED:
         if( ! (GenSwitches & NO_OPTIMIZATION) ) {
             if( lastFunctionOutOfMem != parm ) {
                 lastFunctionOutOfMem = parm;
@@ -168,7 +172,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-      case MSG_PEEPHOLE_FLUSHED:
+    case MSG_PEEPHOLE_FLUSHED:
         if( ! (GenSwitches & NO_OPTIMIZATION) ) {
             if( ! CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = TRUE;
@@ -176,13 +180,13 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
-      case MSG_BACK_END_ERROR:
+    case MSG_BACK_END_ERROR:
         CErr2( ERR_BACK_END_ERROR, (int)parm );
         break;
-      case MSG_BAD_SAVE:
+    case MSG_BAD_SAVE:
         CErr2p( ERR_BAD_SAVE, FEName( (SYMBOL)parm ) );
         break;
-      case MSG_NO_SEG_REGS:
+    case MSG_NO_SEG_REGS:
         CErr2p( ERR_NO_SEG_REGS, FEName( (SYMBOL)parm ) );
         break;
     }
@@ -222,12 +226,15 @@ static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
 
     switch( sym->id ) {
     case SC_EXTERN:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL | FE_IMPORT ;
         break;
     case SC_PUBLIC:
+    case SC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_GLOBAL;
         break;
     case SC_STATIC:
+    case SC_STATIC_FUNCTION_TEMPLATE:
         attr = FE_STATIC | FE_VISIBLE;
         break;
     default :
@@ -235,23 +242,6 @@ static fe_attr basic_attributes(// GET BASIC ATTRIBUTES
         break;
     }
     return( attr );
-}
-
-static char *objectName(        // GET TARGET-DEPENDENT OBJECT NAME
-    SYMBOL sym )                // - symbol or NULL
-{
-    AUX_INFO *inf;              // - auxilary info
-    void *retn;                 // - return value
-
-    inf = getLangInfo( sym );
-    if( inf->objname != NULL ) {
-        retn = CppMangleName( inf->objname, sym );
-    } else if( sym == NULL ) {
-        retn = "*_";
-    } else {
-        retn = CppMangleName( NULL, sym );
-    }
-    return retn;
 }
 
 fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
@@ -310,10 +300,8 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_VARARGS;
         }
     } else {
-        if( SymIsInitialized( sym ) ) {
-            if( SymIsComdatData( sym ) ) {
-                attr |= FE_COMMON;
-            }
+        if( SymIsComdatData( sym ) ) {
+            attr |= FE_COMMON;
         }
         if( mod_flags & TF1_STAY_MEMORY ) {
             attr |= FE_VOLATILE;
@@ -354,7 +342,12 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_UNIQUE;
         }
         if( SymIsInitialized( sym ) ) {
-            attr |= FE_STATIC | FE_GLOBAL;
+            attr |= FE_STATIC;
+            /* only set FE_GLOBAL if it's not an in-class
+         * initialization of a const static member */
+            if( ! ( sym->flag & SF_IN_CLASS_INIT ) ) {
+                attr |= FE_GLOBAL;
+            }
         } else {
             attr |= FE_STATIC | FE_GLOBAL | FE_IMPORT ;
         }
@@ -374,7 +367,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     if( PragDbgToggle.auxinfo ) {
         printf( "FeAttr( %x = %s ) -> %x\n"
               , sym
-              , objectName( sym )
+              , GetMangledName( sym )
               , attr );
     }
 #endif
@@ -397,7 +390,7 @@ int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
 }
 
 
-int FEParmType(                 // ARGUMENT PROMOTION ?
+cg_type FEParmType(                 // ARGUMENT PROMOTION ?
     SYMBOL func,                // function being called
     SYMBOL parm,                // parameter being passed
     cg_type type )              // - original type
@@ -406,36 +399,36 @@ int FEParmType(                 // ARGUMENT PROMOTION ?
     parm = parm;
     switch( type ) {
 #if _CPU == _AXP
-    case T_INT_1:
-    case T_INT_2:
-    case T_INT_4:
-    case T_INTEGER:
-    case T_POINTER:
-    case T_CODE_PTR:
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-        return( T_INT_8 );
-    case T_UINT_1:
-    case T_UINT_2:
-    case T_UINT_4:
-        return( T_UINT_8 );
+    case TY_INT_1:
+    case TY_INT_2:
+    case TY_INT_4:
+    case TY_INTEGER:
+    case TY_POINTER:
+    case TY_CODE_PTR:
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
+        return( TY_INT_8 );
+    case TY_UINT_1:
+    case TY_UINT_2:
+    case TY_UINT_4:
+        return( TY_UINT_8 );
 #else
 #if _CPU == 386
-    case T_UINT_2:
-    case T_INT_2:
+    case TY_UINT_2:
+    case TY_INT_2:
 #endif
-    case T_INT_1:
-    case T_UINT_1:
+    case TY_INT_1:
+    case TY_UINT_1:
 #if _CPU == 386
         if( func != NULL ) {
             type_flag fn_flags;
             TypeModFlags( func->sym_type, &fn_flags );
             if( fn_flags & TF1_FAR16 ) {
-                return( T_INT_2 );
+                return( TY_INT_2 );
             }
         }
 #endif
-        type = T_INTEGER;
+        type = TY_INTEGER;
         break;
 #endif
     }
@@ -549,25 +542,24 @@ static AUX_INFO *IntrinsicAuxLookup(
     struct inline_funcs *ifunc;
     AUX_INFO *inf;
 
-    inf = &DefaultInfo;
     ifunc = InlineLookup( sym->name->name );
-    if( ifunc == NULL )  return( inf );
+    if( ifunc == NULL )  return( NULL );
     if( HW_CEqual( ifunc->returns, HW_DX_AX ) ||
         HW_CEqual( ifunc->returns, HW_DS_SI ) ||
         HW_CEqual( ifunc->returns, HW_ES_DI ) ||
         HW_CEqual( ifunc->returns, HW_CX_DI ) ) {
         TYPE type;
         type = FunctionDeclarationType( sym->sym_type )->of;
-        if( CgTypeSize( type ) != 4 )  return( inf );
+        if( CgTypeSize( type ) != 4 )  return( NULL );
     }
     inf = &InlineInfo;
-    inf->_class = (DefaultInfo._class & FAR) | MODIFY_EXACT;
+    inf->cclass = (DefaultInfo.cclass & FAR) | MODIFY_EXACT;
     inf->code = ifunc->code;
     inf->parms = ifunc->parms;
     inf->returns = ifunc->returns;
     if( !HW_CEqual( inf->returns, HW_AX )
      && !HW_CEqual( inf->returns, HW_EMPTY ) ) {
-        inf->_class |= SPECIAL_RETURN;
+        inf->cclass |= SPECIAL_RETURN;
     }
     HW_CAsgn( inf->streturn, HW_EMPTY );
     inf->save = ifunc->save;
@@ -577,7 +569,7 @@ static AUX_INFO *IntrinsicAuxLookup(
     AUX_INFO *inf;
 
     sym = sym;
-    inf = &DefaultInfo;
+    inf = NULL;
 #endif
     return( inf );
 }
@@ -586,7 +578,6 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
     SYMBOL sym )                // - the symbol
 {
     AUX_INFO *inf;              // - information ptr.
-    AUX_INFO *test_inf;         // - information ptr.
     TYPE unmod_type;            // - unmodified type of symbol
     type_flag mod_flags;        // - modifier flags
 
@@ -595,20 +586,21 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
     } else {
         unmod_type = TypeModFlags( sym->sym_type, &mod_flags );
         if( unmod_type->id == TYP_FUNCTION ) {
-            if( unmod_type->u.f.pragma != NULL ) {
-                inf = unmod_type->u.f.pragma;
-            } else if( unmod_type->flag & TF1_INTRINSIC ) {
-                if( sym->name != NULL ) {
-                    inf = IntrinsicAuxLookup( sym );
+            inf = NULL;
+            if( ( unmod_type->flag & TF1_INTRINSIC )
+             && ( sym->name != NULL ) ) {
+                inf = IntrinsicAuxLookup( sym );
+            }
+            if( inf == NULL ) {
+                if( unmod_type->u.f.pragma != NULL ) {
+                    inf = unmod_type->u.f.pragma;
                 } else {
                     inf = &DefaultInfo;
                 }
-            } else {
-                inf = &DefaultInfo;
             }
             #if _CPU == 386
                 if(( mod_flags & TF1_FAR16 ) || ( inf->flags & AUX_FLAG_FAR16 )) {
-                    if( inf->_class & REVERSE_PARMS ) {
+                    if( inf->cclass & REVERSE_PARMS ) {
                         inf = &Far16PascalInfo;
                     } else {
                         inf = &Far16CdeclInfo;
@@ -616,36 +608,114 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
                 }
             #endif
         } else {
-            test_inf = TypeHasPragma( sym->sym_type );
-            if( test_inf == NULL ) {
+            inf = TypeHasPragma( sym->sym_type );
+            if( inf == NULL ) {
                 inf = &DefaultInfo;
-            } else {
-                inf = test_inf;
             }
         }
     }
     return( inf );
 }
 
-char *FEExtName(                   // RETURN THE SYMBOL'S External NAME
-    SYMBOL sym,
-    char  **pat_ret )              // pattern string
+static target_size_t GetParmsSize( SYMBOL sym )
 {
-    char *retn;               // - symbol's name
-    AUX_INFO *inf;              // - auxilary info
+    TYPE fn_type;
+    target_size_t size;
 
-    *pat_ret = "*";
+    size = 0;
+    fn_type = FunctionDeclarationType( sym->sym_type );
+    if( fn_type == NULL ) {
+        size = -1;
+    } else {
+        TypeParmSize( fn_type, &size );
+    }
+    return( size );
+}
+
+static char *allowStrictReplacement( char *patbuff )
+{
+    char *p;
+    char prev;
+
+    // mangled C++ name will be injected as the name so
+    // we only allow 'patbuff' to be a pure replacement
+    // rather than like "_*" "*_" "^" "__!"
+    if( patbuff == NULL ) {
+        return( patbuff );
+    }
+    prev = '\0';
+    for( p = patbuff; *p != '\0'; ++p ) {
+        if( prev != '\\' ) {
+            switch( *p ) {
+            case '*':
+            case '^':
+            case '!':
+            case '#':
+                return( NULL );
+            }
+        }
+        prev = *p;
+    }
+    return( patbuff );
+}
+
+
+static char *GetNamePattern(           // MANGLE SYMBOL NAME
+    SYMBOL sym )                // - symbol to mangle
+{
+    SCOPE       scope;          // - scope for function
+    TYPE        fn_type;        // - symbol's function type
+    char        *patbuff;       // - control of result
+    AUX_INFO    *inf;           // - auxilary info
+
     if( sym == NULL || sym->name == NULL ) {
-        retn = "!NULL!";
+        patbuff = NULL;
     } else {
         inf = getLangInfo( sym );
-        if( inf->objname != NULL ) {
-            retn = CppMangleName( inf->objname, sym );
+        patbuff = inf->objname;
+        scope = SymScope( sym );
+        fn_type = FunctionDeclarationType( sym->sym_type );
+        if( fn_type != NULL ) {
+            if( ( scope->id != SCOPE_FILE )
+              || LinkageIsCpp( sym ) && ( fn_type->flag & TF1_PLUSPLUS ) ) {
+                patbuff = allowStrictReplacement( patbuff );
+            } else {
+                if( patbuff == NULL )
+                    patbuff = TS_CODE_MANGLE ;
+                return( patbuff );
+            }
         } else {
-            retn = CppMangleName( NULL, sym );
+            if( ( scope->id != SCOPE_FILE )
+              || LinkageIsCpp( sym ) ) {
+                patbuff = allowStrictReplacement( patbuff );
+            } else {
+                patbuff = VarNamePattern( inf );
+                if( patbuff == NULL )
+                    patbuff = TS_DATA_MANGLE ;
+                return( patbuff );
+            }
         }
     }
-    return( retn );
+    if( patbuff == NULL )
+        patbuff = "*";
+    return( patbuff );
+}
+
+char *FEExtName( SYMBOL sym, int request ) {
+//******************************************
+
+// Return symbol name related info for object file.
+
+    switch( request ) {
+    case EXTN_BASENAME:
+        return( GetMangledName( sym ) );
+    case EXTN_PATTERN:
+        return( GetNamePattern( sym ) );
+    case EXTN_PRMSIZE:
+        return( (char *)GetParmsSize( sym ) );
+    default:
+        return( NULL );
+    }
 }
 
 #if _INTEL_CPU
@@ -694,7 +764,7 @@ static call_class getCallClass( // GET CLASS OF CALL
     call_class value;           // - call class
 
     inf = getLangInfo( sym );
-    value = inf->_class;
+    value = inf->cclass;
     if( sym != NULL ) {
         if( SymIsFunction( sym ) ) {
             #if _CPU == _AXP
@@ -754,18 +824,12 @@ static call_class getCallClass( // GET CLASS OF CALL
                     }
                 }
             }
-            #endif
-            #if _INTEL_CPU
             if( fn_flags & TF1_INTERRUPT ) {
                 value |= INTERRUPT;
             }
-            #endif
-            #if _INTEL_CPU
             if( fn_flags & TF1_LOADDS ) {
                 value |= LOAD_DS_ON_ENTRY;
             }
-            #endif
-            #if _INTEL_CPU
             if( CompFlags.emit_names ) {
                 value |= EMIT_FUNCTION_NAME;
             }
@@ -825,46 +889,16 @@ static sym_access getSymAccess( // GET access flag of symbol
     return( access );
 }
 
-
-enum {
-    TIME_SEC_B  = 0,
-    TIME_MIN_B  = 5,
-    TIME_HOUR_B = 11,
-};
-
-enum {
-    DATE_DAY_B  = 0,
-    DATE_MON_B  = 5,
-    DATE_YEAR_B = 9,
-};
-
-static uint_32 *makeDOSTimeStamp( void *h )
+static time_t *getFileDepTimeStamp( SRCFILE h )
 {
-#if COMP_CFG_COFF == 0
-    time_t *t;
-    struct tm *ltime;
-    uint_16 dos_date;
-    uint_16 dos_time;
-    static uint_32 dos_stamp;
+    static time_t            stamp;
 
-    t = SrcFileTimeStamp( (SRCFILE)h );
-    ltime = localtime( t );
-    dos_date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
-             | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B );
-    dos_time = (( ltime->tm_hour ) << TIME_HOUR_B )
-             | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
-    dos_stamp = dos_time | ( dos_date << 16 );
-    return( &dos_stamp );
+#if ( ( _CPU == 8086 ) || ( _CPU == 386 ) ) && ( COMP_CFG_COFF == 0 )
+    stamp = _timet2dos( SrcFileTimeStamp( h ) );
 #else
-    time_t              *t;
-    static time_t       stamp;
-
-    t = SrcFileTimeStamp( (SRCFILE)h );
-    stamp = *t;
-    return( &stamp );
+    stamp = SrcFileTimeStamp( h );
 #endif
+    return( &stamp );
 }
 
 static void addDefaultLibs( void )
@@ -902,12 +936,11 @@ static void addDefaultLibs( void )
     }
 }
 
-
 void CgInfoAddPragmaExtref(     // ADD EXTREF FOR PRAGMA'D NAME
     SYMBOL sym )
 {
     DbgVerify( NULL != sym, "CgInfoAddPragmaExtref -- null symbol" );
-    CgInfoAddImport( objectName( sym ) );
+    CgInfoAddImportS( sym );
 }
 
 static void addDefaultImports( void )
@@ -1060,7 +1093,7 @@ static void addDefaultImports( void )
      && ! CompFlags.fs_registration ) {
         CgInfoAddImport( RunTimeCodeString( RTF_LONGJMP_REF ) );
     }
-    if( CompFlags.has_main && TargetSystem == TS_NETWARE ) {
+    if( CompFlags.has_main && ( (TargetSystem == TS_NETWARE) || (TargetSystem == TS_NETWARE5) ) ) {
         CgInfoAddImport( "__WATCOM_Prelude" );
     }
 #endif
@@ -1096,7 +1129,6 @@ static void addDefaultImports( void )
     #endif
 }
 
-
 #ifndef NDEBUG
     #define DbgNotSym() isSym = FALSE;
     #define DbgNotRetn() isRetn = FALSE;
@@ -1111,7 +1143,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         aux_class request )     // - request
 {
     AUX_INFO *inf;              // - auxilary info
-    void *retn;                 // - return value
+    void *retn = NULL;          // - return value
     static char *buf = NULL;    // - temporary buffer
     static SYMBOL dtor_sym;     // - symbol to be DTOR'ed
     static EXTRF res_info;      // - external-symbol resolution information
@@ -1124,77 +1156,77 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     inf = &DefaultInfo;
     switch( request ) {
 #if _INTEL_CPU
-      case P5_CHIP_BUG_SYM:
+    case P5_CHIP_BUG_SYM:
         DbgNotSym();
         retn = ChipBugSym;
         break;
 #endif
-      case SOURCE_LANGUAGE:
+    case SOURCE_LANGUAGE:
         DbgNotSym();
         DbgNotRetn();
         retn = "CPP";
         break;
 #if _INTEL_CPU
-      case STACK_SIZE_8087:
+    case STACK_SIZE_8087:
         DbgNotSym();
         DbgNotRetn();
         retn = (char *)Stack87;
         break;
 #endif
 #if _INTEL_CPU
-      case CODE_GROUP:
+    case CODE_GROUP:
         DbgNotSym();
         DbgNotRetn();
         retn = GenCodeGroup;
         break;
 #endif
 #if _INTEL_CPU
-      case DATA_GROUP:
+    case DATA_GROUP:
         DbgNotSym();
         DbgNotRetn();
         retn = DataSegName;
         break;
 #endif
-      case OBJECT_FILE_NAME:
+    case OBJECT_FILE_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = IoSuppOutFileName( OFT_OBJ );
         break;
-      case REVISION_NUMBER:
+    case REVISION_NUMBER:
         DbgNotSym();
         DbgNotRetn();
         retn = (char *)II_REVISION;
         break;
-      case AUX_LOOKUP:
+    case AUX_LOOKUP:
         retn = sym;
         break;
-      case DBG_PCH_SYM:
+    case DBG_PCH_SYM:
         DbgNotSym();
         retn = PCHDebugSym;
         break;
-      case DBG_PREDEF_SYM:
+    case DBG_PREDEF_SYM:
         DbgNotSym();
         retn = DFAbbrevSym;
         break;
-      case DBG_SYM_ACCESS:
+    case DBG_SYM_ACCESS:
         DbgNotRetn();
       { static sym_access access;
         access= getSymAccess( sym );
         retn = &access;
       } break;
 #if _INTEL_CPU
-      case PROEPI_DATA_SIZE:
+    case PROEPI_DATA_SIZE:
         DbgNotSym();
         DbgNotRetn();
         retn = (void *) ProEpiDataSize;
         break;
 #if _CPU == 386
-      case P5_PROF_DATA:
+    case P5_PROF_DATA:
         DbgNotSym();
         DbgNotRetn();
         retn = CgProfData();
         break;
-      case P5_PROF_SEG:
+    case P5_PROF_SEG:
         DbgNotSym();
         DbgNotRetn();
         retn = (void*)SEG_PROF_REF;
@@ -1202,7 +1234,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 #endif
 #endif
 #if _INTEL_CPU
-      case CODE_LABEL_ALIGNMENT:
+    case CODE_LABEL_ALIGNMENT:
       {
         DbgNotSym();
         DbgNotRetn();
@@ -1210,7 +1242,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
       } break;
 #endif
 #if _INTEL_CPU
-      case CLASS_NAME:
+    case CLASS_NAME:
         DbgNotSym();
         DbgNotRetn();
         if(((fe_seg_id) sym) == SEG_CODE ) {
@@ -1221,14 +1253,14 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
 #endif
 #if _INTEL_CPU
-      case USED_8087:
+    case USED_8087:
         DbgNotSym();
         DbgNotRetn();
         CompFlags.pgm_used_8087 = 1;
         retn = NULL;
         break;
 #endif
-      case SOURCE_NAME:
+    case SOURCE_NAME:
         DbgNotSym();
         DbgNotRetn();
         if( strcmp( SrcFName, ModuleName ) == 0 ) {
@@ -1242,18 +1274,18 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = ModuleName;
         }
         break;
-      case CALL_CLASS:
+    case CALL_CLASS:
         DbgNotRetn();
       { static call_class curr_call_class;
         curr_call_class = getCallClass( sym );
         retn = &curr_call_class;
       } break;
-      case FREE_SEGMENT:
+    case FREE_SEGMENT:
         DbgNotSym();
         DbgNotRetn();
         retn = NULL;
         break;
-      case NEXT_LIBRARY:
+    case NEXT_LIBRARY:
         DbgNotSym();
         DbgNotRetn();
         if( sym == NULL ) {
@@ -1261,12 +1293,12 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = CgInfoLibNext( sym );
         break;
-      case LIBRARY_NAME:
+    case LIBRARY_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoLibName( sym );
         break;
-      case NEXT_IMPORT:
+    case NEXT_IMPORT:
         DbgNotSym();
         DbgNotRetn();
         if( sym == NULL ) {
@@ -1274,12 +1306,22 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = CgInfoImportNext( sym );
         break;
-      case IMPORT_NAME:
+    case NEXT_IMPORT_S:
+        DbgNotSym();
+        DbgNotRetn();
+        retn = CgInfoImportNextS( sym );
+        break;
+    case IMPORT_NAME:
         DbgNotSym();
         DbgNotRetn();
         retn = CgInfoImportName( sym );
         break;
-      case SAVE_REGS:
+    case IMPORT_NAME_S:
+        DbgNotSym();
+        DbgNotRetn();
+        retn = CgInfoImportNameS( sym );
+        break;
+    case SAVE_REGS:
       { static hw_reg_set save_set;
         TYPE type;
         DbgNotRetn();
@@ -1293,24 +1335,24 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
         retn = &save_set;
       } break;
-      case RETURN_REG:
+    case RETURN_REG:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = &inf->returns;
         break;
-      case CALL_BYTES:
+    case CALL_BYTES:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = inf->code;
         break;
 #if _INTEL_CPU
-      case STRETURN_REG:
+    case STRETURN_REG:
         DbgNotRetn();
         inf = getLangInfo( sym );
         retn = &inf->streturn;
         break;
 #endif
-      case PARM_REGS:
+    case PARM_REGS:
         DbgNotRetn();
         inf = getLangInfo( sym );
         if( inf->code == NULL && SymIsEllipsisFunc( sym ) ) {
@@ -1322,7 +1364,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = inf->parms;
         }
         break;
-      case NEXT_DEPENDENCY :
+    case NEXT_DEPENDENCY :
         DbgNotSym();
         DbgNotRetn();
         if( !CompFlags.emit_dependencies ) {
@@ -1336,66 +1378,67 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             retn = SrcFileNotReadOnly( retn );
         }
         break;
-      case DEPENDENCY_TIMESTAMP :
+    case DEPENDENCY_TIMESTAMP :
         DbgNotSym();
         DbgNotRetn();
-        retn = makeDOSTimeStamp( sym );
+        retn = getFileDepTimeStamp( (SRCFILE)sym );
         break;
-      case DEPENDENCY_NAME :
+    case DEPENDENCY_NAME :
         DbgNotSym();
         DbgNotRetn();
         retn = SrcFileFullName( (SRCFILE)sym );
         break;
-      case TEMP_LOC_NAME :
+    case TEMP_LOC_NAME :
         DbgNotRetn();
         dtor_sym = sym;
         retn = (void*)TEMP_LOC_YES;
         break;
-      case TEMP_LOC_TELL :
+    case TEMP_LOC_TELL :
+        DbgNotSym();
         DbgNotRetn();
         CgBackDtorAutoOffset( dtor_sym, (unsigned)sym );
         break;
-      case DEFAULT_IMPORT_RESOLVE :
+    case DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
             printf( "DEFAULT_IMPORT_RESOLVE[%x]: %s ==> %s\n", sym
-                  , objectName( sym )
-                  , retn == NULL ? "0" : objectName( retn ) );
+                  , GetMangledName( sym )
+                  , retn == NULL ? "0" : GetMangledName( retn ) );
         }
   #endif
         break;
-      case IMPORT_TYPE :
+    case IMPORT_TYPE :
         DbgNotRetn();
         retn = ExtrefImportType( &res_info );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
             printf( "  IMPORT_TYPE[%x]: %s <%x>\n"
-                  , sym, objectName( sym ), retn );
+                  , sym, GetMangledName( sym ), retn );
         }
   #endif
         break;
-      case CONDITIONAL_IMPORT :
-      case NEXT_CONDITIONAL :
+    case CONDITIONAL_IMPORT :
+    case NEXT_CONDITIONAL :
         DbgNotSym();
         retn = ExtrefVirtualSymbol( &res_info );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
             printf( "  NEXT_/CONDITIONAL/_IMPORT: %s\n"
-                  , objectName( retn ) );
+                  , GetMangledName( retn ) );
         }
   #endif
         break;
-      case CONDITIONAL_SYMBOL :
+    case CONDITIONAL_SYMBOL :
         retn = sym;
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
             printf( "  CONDITIONAL_SYMBOL: %s\n"
-                  , objectName( retn ) );
+                  , GetMangledName( retn ) );
         }
   #endif
         break;
-      case VIRT_FUNC_REFERENCE :
+    case VIRT_FUNC_REFERENCE :
   #ifndef NDEBUG
         DbgNotRetn();
         if( ( PragDbgToggle.extref )
@@ -1403,7 +1446,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
             printf( "VIRTUAL_FUNC_REFERENCE[%x]: %s"
-                      , vsym, objectName( vsym ) );
+                      , vsym, GetMangledName( vsym ) );
             retn = ExtrefVfunInfo( sym );
             printf( " <%x>\n", retn );
         } else {
@@ -1413,7 +1456,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = ExtrefVfunInfo( sym );
   #endif
         break;
-      case VIRT_FUNC_NEXT_REFERENCE:
+    case VIRT_FUNC_NEXT_REFERENCE:
         DbgNotSym();
         DbgNotRetn();
         retn = ExtrefNextVfunSym( sym );
@@ -1423,38 +1466,38 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         }
   #endif
         break;
-      case VIRT_FUNC_SYM :
+    case VIRT_FUNC_SYM :
         DbgNotSym();
         retn = ExtrefVfunSym( sym );
   #ifndef NDEBUG
         if( PragDbgToggle.extref ) {
             printf( "  VIRT_FUNC_SYM[%x]: %s\n"
-                  , sym, objectName( retn ) );
+                  , sym, GetMangledName( retn ) );
         }
   #endif
         break;
 #if _INTEL_CPU
-      case PEGGED_REGISTER :
+    case PEGGED_REGISTER :
         DbgNotSym();
         DbgNotRetn();
         retn = SegmentBoundReg( (fe_seg_id)sym );
         break;
 #endif
-      case CLASS_APPENDED_NAME :
+    case CLASS_APPENDED_NAME :
         DbgNotRetn();
         retn = CppClassPathDebug( sym );
         break;
 #if _CPU == _AXP
-      case EXCEPTION_HANDLER: //based on sym return sym of exception handler
+    case EXCEPTION_HANDLER: //based on sym return sym of exception handler
         DbgNotSym();
         retn = FstabExcHandler();
         break;
-      case EXCEPTION_DATA://based on sym return sym of exception data
+    case EXCEPTION_DATA://based on sym return sym of exception data
         DbgNotSym();
         retn = FstabExcData();
         break;
 #endif
-      default :
+    default :
         DbgNotSym();
         DbgNotRetn();
         retn = NULL;
@@ -1463,11 +1506,11 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 #ifndef NDEBUG
     if( PragDbgToggle.auxinfo ) {
         printf( "FeAuxInfo( %x, %x ) -> %x\n", sym, request, retn );
-        if( isSym && NULL != sym ) {
-            printf( "  sym = %s\n", objectName( sym ) );
+        if( isSym && ( NULL != sym )) {
+            printf( "  sym = %s\n", GetMangledName( sym ) );
         }
         if( isRetn && NULL != retn ) {
-            printf( "  retn = %s\n", objectName( retn ) );
+            printf( "  retn = %s\n", GetMangledName( retn ) );
         }
     }
 #endif
@@ -1478,7 +1521,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 boolean IsPragmaAborts(         // TEST IF FUNCTION NEVER RETURNS
     SYMBOL sym )                // - function symbol
 {
-    return(( getLangInfo( sym )->_class & SUICIDAL ) != 0 );
+    return(( getLangInfo( sym )->cclass & SUICIDAL ) != 0 );
 }
 
 

@@ -40,8 +40,8 @@ extern bool MouseInstalled;
 extern void intern savekeyb(void);
 extern void intern restorekeyb(void);
 
-void global uispawnstart()
-/************************/
+void global uispawnstart( void )
+/******************************/
 {
     uiswap();
     uisetcursor( 0, 0, C_NORMAL, -1 );
@@ -49,8 +49,8 @@ void global uispawnstart()
     savekeyb();
 }
 
-void global uispawnend()
-/**********************/
+void global uispawnend( void )
+/****************************/
 {
     restorekeyb();
     if( MouseInstalled ) _initmouse( TRUE );

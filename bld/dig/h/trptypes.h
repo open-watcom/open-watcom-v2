@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Basic trap file types and interface functions.
 *
 ****************************************************************************/
 
 
 #ifndef TRPTYPES_H
-#include "digpck.h"
 
 #include <digtypes.h>
 
-#pragma pack(push,1);
+#include "digpck.h"
 
 #define TRAP_MAJOR_VERSION      17
 #define TRAP_MINOR_VERSION      1
@@ -84,9 +82,8 @@ extern unsigned TrapAccess( unsigned, mx_entry *, unsigned, mx_entry * );
 extern unsigned TrapSimpAccess( unsigned, void *, unsigned, void * );
 extern void     KillTrap(void);
 
-#pragma pack(pop);
+#include "digunpck.h"
 
 #define TRPTYPES_H
 
-#include "digunpck.h"
 #endif

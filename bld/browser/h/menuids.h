@@ -163,8 +163,9 @@ enum WindowsMenus {
 enum HelpMenus {
     HMContents,
     HMSearch,
-    HMUsingHelp,
     HMSep0,
+    HMUsingHelp,
+    HMSep1,
     HMAbout,
     HMNumHelpMenus
 };

@@ -35,10 +35,9 @@
 #include "tinyio.h"
 
 #if !defined(__WINDOWS_386__)
-extern  int                     DoDosCall();
-extern  int                     _dosretax();
+extern  int                     _dosretax( int eax, int carry );
 
-
+extern  int                     DoDosCall( void *in, void *out );
 #pragma aux                     DoDosCall = \
         "push ebp"      \
         "push edx"      \

@@ -1,0 +1,83 @@
+installer_c_dos_386     = open-watcom-c-dos-$(%BLD_VER_STR).exe
+installer_c_nt_386      = open-watcom-c-win32-$(%BLD_VER_STR).exe
+installer_c_os2_386     = open-watcom-c-os2-$(%BLD_VER_STR).exe
+installer_c_linux_386   = open-watcom-c-linux-$(%BLD_VER_STR)
+installer_c = $(installer_c_$(host_os)_$(host_cpu))
+
+installer_f77_dos_386   = open-watcom-f77-dos-$(%BLD_VER_STR).exe
+installer_f77_nt_386    = open-watcom-f77-win32-$(%BLD_VER_STR).exe
+installer_f77_os2_386   = open-watcom-f77-os2-$(%BLD_VER_STR).exe
+installer_f77_linux_386 = open-watcom-f77-linux-$(%BLD_VER_STR)
+installer_f77 = $(installer_f77_$(host_os)_$(host_cpu))
+
+setupgui_dir = $(%OWROOT)/bld/setupgui
+
+setup_c_dos_386     = $(setupgui_dir)/dos386/setup.exe
+setup_c_nt_386      = $(setupgui_dir)/nt386.gui/csetup.exe
+setup_c_os2_386     = $(setupgui_dir)/os2386.gui/csetup.exe
+setup_c_linux_386   = $(setupgui_dir)/linux386/setup.exe
+setup_c = $(setup_c_$(host_os)_$(host_cpu))
+
+setup_f77_dos_386   = $(setupgui_dir)/dos386/setup.exe
+setup_f77_nt_386    = $(setupgui_dir)/nt386.gui/f77setup.exe
+setup_f77_os2_386   = $(setupgui_dir)/os2386.gui/f77setup.exe
+setup_f77_linux_386 = $(setupgui_dir)/linux386/setup.exe
+setup_f77 = $(setup_f77_$(host_os)_$(host_cpu))
+
+!ifdef __UNIX__
+dstdir_dos_386     = C:\\WATCOM
+dstdir_nt_386      = C:\\WATCOM
+dstdir_os2_386     = C:\\WATCOM
+dstdir_linux_386   = /usr/bin/watcom
+!else
+dstdir_dos_386     = C:\WATCOM
+dstdir_nt_386      = C:\WATCOM
+dstdir_os2_386     = C:\WATCOM
+dstdir_linux_386   = /usr/bin/watcom
+!endif
+dstdir = $(dstdir_$(host_os)_$(host_cpu))
+
+!ifdef __UNIX__
+nulldevice = /dev/null
+!else
+nulldevice = nul
+!endif
+
+all : ../$(installer_c) ../$(installer_f77) .SYMBOLIC
+
+../$(installer_c) : ../files.dat $(setup_c) .ALWAYS
+    langdat -l filelist -c $[@ c
+    @cp $]@ setup.exe >$(nulldevice)
+    mkinf -i.. -i../../include -dDstDir=$(dstdir) c filelist $(%RELROOT)
+    @rm filelist
+    @cp setup.inf $(%RELROOT)/setup.inf >$(nulldevice)
+    uzip setup.zip instarch.lst $(%RELROOT)
+    @rm instarch.lst
+    @rm $(%RELROOT)/setup.inf
+    @rm setup.exe
+    @rm setup.inf
+    mkexezip $@ setup.zip $]@
+    @rm setup.zip
+
+../$(installer_f77) : ../files.dat $(setup_f77) .ALWAYS
+    langdat -l filelist -c $[@ f77
+    @cp $]@ setup.exe >$(nulldevice)
+    mkinf -i.. -i../../include -dDstDir=$(dstdir) f77 filelist $(%RELROOT)
+    @rm filelist
+    @cp setup.inf $(%RELROOT)/setup.inf >$(nulldevice)
+    uzip setup.zip instarch.lst $(%RELROOT)
+    @rm instarch.lst
+    @rm $(%RELROOT)/setup.inf
+    @rm setup.exe
+    @rm setup.inf
+    mkexezip $@ setup.zip $]@
+    @rm setup.zip
+
+clean : .symbolic
+    @if exist ../$(installer_c) rm ../$(installer_c)
+    @if exist ../$(installer_f77) rm ../$(installer_f77)
+    @if exist setup.zip rm setup.zip
+    @if exist filelist rm filelist
+    @if exist instarch.lst rm instarch.lst
+    @if exist setup.exe rm setup.exe
+    @if exist setup.inf rm setup.inf

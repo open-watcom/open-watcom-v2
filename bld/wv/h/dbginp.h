@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger input stack structure.
 *
 ****************************************************************************/
 
@@ -55,7 +54,7 @@ typedef struct input_stack {
         struct  input_stack     *link;
         char                    *scan;
         void                    *handle;
-        bool                    (*rtn)();
+        bool                    (*rtn)( void *, inp_rtn_action );
         input_type              type;
         char                    *lang;
 } input_stack;

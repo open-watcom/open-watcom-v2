@@ -42,24 +42,7 @@ extern  char    CompilerID[];
 /* COMMAND LINE PARSING OF MACRO DEFINITIONS */
 
 
-int fndlen( char *str )
-{
-    int         i;
-
-    i = 0;
-    for(;;) {
-        if( *str == '\0' ) break;
-        if( *str == '-' ) break;
-        if( *str == ' ' ) break;
-        if( *str == SwitchChar ) break;
-        str++;
-        i++;
-    }
-    return( i );
-}
-
-
-char *copy_eq( char *dest, char *src )
+static char *copy_eq( char *dest, char *src )
 {
     char        c;
 
@@ -98,12 +81,11 @@ char *BadCmdLine( int error_code, char *str )
 }
 
 
-static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
+static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflags )
 {
     int         i;
     MEPTR       mentry;
-    FCB         tmp_file;
-    FCB         *old_file;
+    TOKEN       *p_token;
 
     str = copy_eq( Buffer, str);
     i = strlen( Buffer );
@@ -116,15 +98,15 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
     mentry->parm_count = 0;
     i = 0;
     if( !EqualChar( *str ) ) {
-        TokenBuf[ i++ ] = T_PPNUMBER;
+        p_token = (TOKEN *)&TokenBuf[i];
+        *p_token = T_PPNUMBER;
+        i += sizeof( TOKEN );
         TokenBuf[ i++ ] = '1';
         TokenBuf[ i++ ] = '\0';
     } else {
         int ppscan_mode;
 
         ppscan_mode = InitPPScan();
-        old_file = SrcFile;
-        SrcFile = &tmp_file; /* to keep scanner happy */
         ReScanInit( ++str );
         for(;;) {
             if( *str == '\0' ) break;
@@ -132,7 +114,10 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
             if( ReScanPos() == str ) break;
             if( CurToken == T_WHITE_SPACE ) break;      /* 28-apr-94 */
             if( CurToken == T_BAD_CHAR && ! multiple_tokens ) break;
-            TokenBuf[i++] = CurToken;
+            p_token = (TOKEN *)&TokenBuf[i];
+            *p_token = CurToken;
+            i += sizeof( TOKEN );
+
             switch( CurToken ) {
             case T_BAD_CHAR:
                 TokenBuf[i++] = Buffer[0];
@@ -148,16 +133,17 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
                 memcpy( &TokenBuf[i], &Buffer[0], TokenLen );
                 i += TokenLen;
                 break;
+            default:
+                break;
             }
             str = ReScanPos();
             if( !multiple_tokens ) break;
         }
         FiniPPScan( ppscan_mode );
-        SrcFile = old_file;
     }
-    TokenBuf[i] = T_NULL;
+    *(TOKEN *)&TokenBuf[i] = T_NULL;
     if( strcmp( mentry->macro_name, "defined" ) != 0 ){
-        MacroAdd( mentry, TokenBuf, i + 1, flags );
+        MacroAdd( mentry, TokenBuf, i + sizeof( TOKEN ), mflags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
         CMemFree( mentry );
@@ -167,14 +153,12 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
 
 char *Define_Macro( char *str )
 {
-    return( Def_Macro_Tokens( str, CompFlags.extended_defines, 0 ) );
+    return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_NONE ) );
 }
 
 char *Define_UserMacro( char *str )
 {
-    return( Def_Macro_Tokens( str,
-                              CompFlags.extended_defines,
-                              MACRO_USER_DEFINED ) );
+    return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_USER_DEFINED ) );
 }
 
 void PreDefine_Macro( char *str )
@@ -199,7 +183,7 @@ void PreDefine_Macro( char *str )
                 }
             }
         }
-        Def_Macro_Tokens( str, 1, MACRO_CAN_BE_REDEFINED );
+        Def_Macro_Tokens( str, 1, MFLAG_CAN_BE_REDEFINED );
     }
 }
 
@@ -228,11 +212,11 @@ char *AddUndefName( char *str )
 }
 
 
-void FreeUndefNames()
+static void FreeUndefNames( void )
 {
     struct undef_names *uname;
 
-    for(; uname = UndefNames; ) {
+    for(; (uname = UndefNames); ) {
         UndefNames = uname->next;
         CMemFree( uname->name );
         CMemFree( uname );
@@ -240,7 +224,7 @@ void FreeUndefNames()
 }
 
 
-void Define_Extensions()
+static void Define_Extensions( void )
 {
     PreDefine_Macro( "_far16=__far16" );
     PreDefine_Macro( "near=__near" );
@@ -263,53 +247,44 @@ void Define_Extensions()
     PreDefine_Macro( "_loadds=__loadds" );
     PreDefine_Macro( "_saveregs=__saveregs" );
     PreDefine_Macro( "_stdcall=__stdcall" );
-    PreDefine_Macro( "_syscall=_Syscall" );        /* 04-jul-91 */
-    PreDefine_Macro( "_based=__based" );                /* 31-jan-92 */
+    PreDefine_Macro( "_syscall=__syscall" );
+    PreDefine_Macro( "_based=__based" );
     PreDefine_Macro( "_self=__self" );
     PreDefine_Macro( "_segname=__segname" );
     PreDefine_Macro( "_segment=__segment" );
-    PreDefine_Macro( "_try=_Try");
-    PreDefine_Macro( "_except=_Except");
-    PreDefine_Macro( "_finally=_Finally");
-    PreDefine_Macro( "_leave=_Leave");
+    PreDefine_Macro( "_try=__try");
+    PreDefine_Macro( "_except=__except");
+    PreDefine_Macro( "_finally=__finally");
+    PreDefine_Macro( "_leave=__leave");
     PreDefine_Macro( "_asm=__asm");
 #if _CPU == 8086
     /* SOM for Windows macros */
-    PreDefine_Macro( "SOMLINK=__cdecl" );               /* 29-mar-94 */
+    PreDefine_Macro( "SOMLINK=__cdecl" );
     PreDefine_Macro( "SOMDLINK=__far" );
 #else
-    PreDefine_Macro( "SOMLINK=_Syscall" );              /* 09-apr-93 */
-    PreDefine_Macro( "SOMDLINK=_Syscall" );             /* 10-apr-95 */
+    PreDefine_Macro( "SOMLINK=_Syscall" );
+    PreDefine_Macro( "SOMDLINK=_Syscall" );
 #endif
 }
 
 
-void MiscMacroDefs()
+void MiscMacroDefs( void )
 {
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
-    if( ! CompFlags.extensions_enabled ) {  /* 21-jul-88 */
+    if( ! CompFlags.extensions_enabled ) {
         Define_Macro( "NO_EXT_KEYS" );
     } else {
         Define_Extensions();
     }
     if( CompFlags.signed_char ) {
-        Define_Macro( "__CHAR_SIGNED__" );              /* 20-apr-90 */
+        Define_Macro( "__CHAR_SIGNED__" );
     }
     if( CompFlags.rent ) {
-        Define_Macro( "__RENT__" );                     /* 20-apr-90 */
+        Define_Macro( "__RENT__" );
     }
-    PreDefine_Macro( "_Far16=__far16" );
-    PreDefine_Macro( "__syscall=_Syscall" );            /* 04-jul-91 */
-    PreDefine_Macro( "_System=_Syscall" );
-    PreDefine_Macro( "_Cdecl=__cdecl" );
-    PreDefine_Macro( "_Pascal=__pascal");
-    PreDefine_Macro( "__try=_Try");
-    PreDefine_Macro( "__except=_Except");
-    PreDefine_Macro( "__finally=_Finally");
-    PreDefine_Macro( "__leave=_Leave");
-    PreDefine_Macro( "_PUSHPOP_SUPPORTED" );             /* 10-apr-95 */
+    PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }
@@ -327,11 +302,13 @@ void InitModInfo( void )
     WholeFName = NULL;
     ObjectFileName = NULL;
     ErrorFileName = CStrSave( "*" );
+    DependFileName = NULL;
+    DependForceSlash = 0;
     ModuleName = NULL;
     ErrLimit = 20;
     WngLevel = 1;
     PackAmount = 8;
-#if _MACHINE == _ALPHA || _MACHINE == _PPC
+#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
     CompFlags.make_enums_an_int = 1;     // make enums ints
     CompFlags.original_enum_setting = 1;
     PackAmount = 8;
@@ -360,6 +337,7 @@ void InitModInfo( void )
     CompFlags.emit_library_any = 0;
     CompFlags.emit_library_with_main = 1;
     CompFlags.emit_dependencies   = 1;                  /* 04-dec-92 */
+    CompFlags.emit_targimp_symbols  = 1;                  /* 27-oct-02 */
     CompFlags.use_unicode         = 1;                  /* 05-jun-91 */
     CompFlags.no_debug_type_names = 0;                  /* 16-aug-91 */
     CompFlags.auto_agg_inits      = 0;
@@ -369,15 +347,5 @@ void InitModInfo( void )
     CompFlags.use_stdcall_at_number = 1;
     CompFlags.rent = 0;
 
-    DefaultInfo.class   = 0;
-    DefaultInfo.code    = NULL;
-    DefaultInfo.parms   = DefaultParms;
-#if _CPU == 370
-    DefaultInfo.linkage = &DefaultLinkage;
-#endif
-    HW_CAsgn( DefaultInfo.returns, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.streturn, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.save, HW_FULL );
-    DefaultInfo.use     = 0;
-    DefaultInfo.objname = NULL;      /* DefaultObjName; */
+    SetAuxWatcallInfo();
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom resource file format structures and constants.
 *
 ****************************************************************************/
 
@@ -35,10 +34,7 @@
 
 #include "watcom.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[ 2 ];     /* must be WRESMAGIC0 and WRESMAGIC1 */
     uint_32     DirOffset;      /* offset to the start of the directory */
@@ -49,7 +45,8 @@ typedef struct WResHeader {
 
 enum {
     WRES_OS_WIN16 = 1,
-    WRES_OS_WIN32
+    WRES_OS_WIN32,
+    WRES_OS_OS2
 };
 typedef uint_16 WResTargetOS;
 
@@ -144,10 +141,7 @@ typedef struct WResLangInfo {
     uint_32             Offset; /* offset of resource body in file */
     uint_32             Length; /* length in bytes of resource body */
 } _WCUNALIGNED WResLangInfo;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 /* Wes uses this stuff in the resource editors - not really file formats, don't have to be packed */
 #define WRESMAXCHUNK  ( 31 * 1024 )

@@ -35,19 +35,19 @@
 #include "dbgtoggl.h"
 #include <string.h>
 #include <stddef.h>
-#include "..\..\dos\h\dbgscrn.h"
+#include "../../dos/h/dbgscrn.h"
 #include <windows.h>
 
 extern void     *ExtraAlloc( unsigned );
 extern void     ExtraFree( void * );
-extern HWND     GUIGetSysHandle(gui_window*);
+extern HWND     GUIGetSysHandle( gui_window * );
 extern void     GUISetModalDlgs( bool modal );
-extern void     SaveMainScreen(char*);
-extern void     RestoreMainScreen(char*);
+extern void     SaveMainScreen( char * );
+extern void     RestoreMainScreen( char * );
 
 extern int      HardModeRequired;
 
-unsigned        ScrnLines=50;
+unsigned        ScrnLines = 50;
 unsigned        FlipMech;
 unsigned        ScrnMode;
 HWND            DebuggerHwnd;
@@ -57,12 +57,12 @@ volatile int    BrkPending;
 int             ForceHardMode;
 static HWND     FocusWnd;
 #ifdef __GUI__
-extern void  (__pascal *SetHardMode)(char);
-extern void  (__pascal *UnLockInput)();
+extern void  (__pascal *SetHardMode)( char );
+extern void  (__pascal *UnLockInput)( void );
 #endif
 
 #if 0
-ToggleHardMode()
+ToggleHardMode( void )
 {
     ForceHardMode = !ForceHardMode;
     #ifdef __GUI__
@@ -74,11 +74,11 @@ ToggleHardMode()
 }
 #endif
 
-void InitHookFunc()
+void InitHookFunc( void )
 {
 }
 
-void FiniHookFunc()
+void FiniHookFunc( void )
 {
     UnLockInput();
 }
@@ -88,7 +88,7 @@ void ForceLines( unsigned lines )
     ScrnLines = lines;
 }
 
-void RingBell()
+void RingBell( void )
 {
     MessageBeep( 0 );
 }
@@ -151,12 +151,12 @@ bool DebugScreen( void )
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
 
-bool UserScreen()
+bool UserScreen( void )
 {
     if( ScreenState == USER_SCREEN ) return( FALSE );
     if( WndMain ) {
@@ -166,7 +166,7 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
     SaveMainScreen( "WDWIN" );
 }
@@ -181,7 +181,7 @@ void uifarfree( void *ptr )
     ExtraFree( ptr );
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( TRUE );
 }

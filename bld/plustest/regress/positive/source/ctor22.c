@@ -35,7 +35,8 @@ int should_be;
 
 void Test_Print( StringClass *p, unsigned line )
 {
-    for( char **curr = choices; *curr != NULL; ++curr ) {
+    char **curr;
+    for( curr = choices; *curr != NULL; ++curr ) {
         if( strcmp( p->mem, *curr ) == 0 ) break;
     }
     if( *curr == NULL ) {

@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WSetWaitCursor ( HWND, Bool );
+extern void WSetWaitCursor( HWND, Bool );
 
 #endif

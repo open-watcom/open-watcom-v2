@@ -70,15 +70,16 @@ static char const *MsgPrefix[grp_index_max] = {
 #undef GRP_DEF
 };
 
-#ifndef __target_CPU
-#error no target
+#ifndef __msg_file_prefix
+#error no message file prefix
 #endif
 #define _mkstr( a ) #a
 #define _str( a ) _mkstr( a )
 void InitMsg( void )
 {
-    internationalData = LoadInternationalData( _str( __target_CPU ) );
+    internationalData = LoadInternationalData( _str( __msg_file_prefix ) );
 }
+
 void FiniMsg( void )
 {
     if( internationalData != NULL ){
@@ -88,6 +89,7 @@ void FiniMsg( void )
 static char const EUsage[] = {
 #include "usage.gh"
 "\0" };
+
 char const * UsageText(void)      // GET INTERNATIONAL USAGE TEXT
 {
     char const *usage_text;
@@ -136,17 +138,19 @@ msgtype CGetMsgType( msg_codes msgcode )
 
 char const *CGetMsgStr(  msg_codes msgcode )
 {
-    char    const   *p;
-    int              msgnum;
-    IntlData *data = internationalData;
+    char const *p;
+    int         msgnum;
+    IntlData   *data = internationalData;
     enum grp_index   index;
 
     index = GetGrpIndex( msgcode );
     msgnum = msgcode - LevelIndex[index] + GroupBase[index];
     if( data != NULL ) {
-        if( msgnum < data->errors_count ) {
+        if( msgnum < (data->errors_count) ) {
             p = data->errors_text[ msgnum ];
         }
+        else
+            p = NULL;   // this might be a bug, but otherwise its random.
     }else{
         p = EMsgArray[ msgnum ];
     }
@@ -155,7 +159,7 @@ char const *CGetMsgStr(  msg_codes msgcode )
 
 void CGetMsg( char *msgbuf, msg_codes msgcode )
 {
-    char    const   *p;
-    p = CGetMsgStr( msgcode );
-    while( *msgbuf++ = *p++ );
+    char const *p = CGetMsgStr( msgcode );
+    while( (*msgbuf++ = *p++) )
+        /* empty */;
 }

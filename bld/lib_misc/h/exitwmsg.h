@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handlers.
 *
 ****************************************************************************/
 
@@ -41,17 +40,15 @@
 
 #undef _EWM_PARM1
 #undef _EWM_PARM2
-#if defined(__AXP__) || defined(__PPC__)
-    #define _EWM_PARM1
-    #define _EWM_PARM2
-#elif defined(__386__)
+#if defined(__386__)
     #define _EWM_PARM1  eax
     #define _EWM_PARM2  edx
-#elif defined(M_I86)
+#elif defined( _M_I86 )
     #define _EWM_PARM1  ax dx
     #define _EWM_PARM2  bx
 #else
-    #error unrecognized platform
+    #define _EWM_PARM1
+    #define _EWM_PARM2
 #endif
 
 // C interface
@@ -74,11 +71,11 @@ extern void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #undef _EWM_PARM1
 #undef _EWM_PARM2
 
-_WCRTLINK extern char volatile __WD_Present;
+_WCRTDATA extern char volatile __WD_Present;
 
 // WVIDEO interface
 // this function should be called before __exit_with_msg()
-// to allow WVIDEO to trap runtime errors.
+// to allow Watcom Debugger (nee WVIDEO) to trap runtime errors.
 // this really needs to be far!!!
 _WCRTLINK extern int __EnterWVIDEO( char _WCFAR *string );
 

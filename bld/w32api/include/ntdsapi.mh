@@ -1,0 +1,1217 @@
+/*
+ *  ntdsapi.h   NT Directory Service functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDSAPI_H_
+#define _NTDSAPI_H_
+
+:include readonly.sp
+
+#include <schedule.h>
+#include <accctrl.h>
+
+:include cpluspro.sp
+
+/* Macro to specify Directory Service functions */
+#define NTDSAPI DECLSPEC_IMPORT
+
+/* Directory Service behavior version numbers */
+#define DS_BEHAVIOR_WIN2000                     0
+#define DS_BEHAVIOR_WIN2003_WITH_MIXED_DOMAINS  1
+#define DS_BEHAVIOR_WIN2003                     2
+#define DS_BEHAVIOR_WIN2008                     3
+#define DS_BEHAVIOR_WIN2008R2                   4
+#define DS_BEHAVIOR_LONGHORN                    DS_BEHAVIOR_WIN2008
+#define DS_BEHAVIOR_WIN7                        DS_BEHAVIOR_WIN2008R2
+
+/* Directory Service default NLS settings */
+#define DS_DEFAULT_LOCALE \
+    MAKELCID( MAKELANGID( LANG_ENGLISH, SUBLANG_ENGLISH_US ), SORT_DEFAULT )
+#define DS_DEFAULT_LOCALE_COMPARE_FLAGS \
+    (NORM_IGNORECASE | NORM_IGNOREKANATYPE | NORM_IGNORENONSPACE | NORM_IGNOREWIDTH | \
+    SORT_STRINGSORT)
+
+/* Directory Service event name */
+#define DS_SYNCED_EVENT_NAME    "NTDSInitialSyncsCompleted"
+#define DS_SYNCED_EVENT_NAME_W  L"NTDSInitialSyncsCompleted"
+
+/* Directory Service access rights */
+#define DS_GENERIC_READ \
+    (STANDARD_RIGHTS_READ | ACTRL_DS_LIST | ACTRL_DS_READ_PROP | ACTRL_DS_LIST_OBJECT)
+#define DS_GENERIC_WRITE \
+    (STANDARD_RIGHTS_WRITE | ACTRL_DS_SELF | ACTRL_DS_WRITE_PROP)
+#define DS_GENERIC_EXECUTE \
+    (STANDARD_RIGHTS_EXECUTE | ACTRL_DS_LIST)
+#define DS_GENERIC_ALL \
+    (STANDARD_RIGHTS_REQUIRED | ACTRL_DS_CREATE_CHILD | ACTRL_DS_DELETE_CHILD | \
+    ACTRL_DS_DELETE_TREE | ACTRL_DS_READ_PROP | ACTRL_DS_WRITE_PROP | ACTRL_DS_LIST | \
+    ACTRL_DS_LIST_OBJECT | ACTRL_DS_CONTROL_ACCESS | ACTRL_DS_SELF)
+
+/* DsBindWithSpnEx() flags */
+#define NTDSAPI_BIND_ALLOW_DELEGATION   0x00000001L
+#define NTDSAPI_BIND_FIND_BINDING       0x00000002L
+#define NTDSAPI_BIND_FORCE_KERBEROS     0x00000004L
+
+/* Replica synchronize flags */
+#define DS_REPSYNC_ASYNCHRONOUS_OPERATION   0x00000001L
+#define DS_REPSYNC_WRITEABLE                0x00000002L
+#define DS_REPSYNC_PERIODIC                 0x00000004L
+#define DS_REPSYNC_INTERSITE_MESSAGING      0x00000008L
+#define DS_REPSYNC_ALL_SOURCES              0x00000010L
+#define DS_REPSYNC_FULL                     0x00000020L
+#define DS_REPSYNC_URGENT                   0x00000040L
+#define DS_REPSYNC_NO_DISCARD               0x00000080L
+#define DS_REPSYNC_FORCE                    0x00000100L
+#define DS_REPSYNC_ADD_REFERENCE            0x00000200L
+#define DS_REPSYNC_NEVER_COMPLETED          0x00000400L
+#define DS_REPSYNC_TWO_WAY                  0x00000800L
+#define DS_REPSYNC_NEVER_NOTIFY             0x00001000L
+#define DS_REPSYNC_INITIAL                  0x00002000L
+#define DS_REPSYNC_USE_COMPRESSION          0x00004000L
+#define DS_REPSYNC_ABANDONED                0x00008000L
+#define DS_REPSYNC_SELECT_SECRETS           0x00008000L
+#define DS_REPSYNC_INITIAL_IN_PROGRESS      0x00010000L
+#define DS_REPSYNC_PARTIAL_ATTRIBUTE_SET    0x00020000L
+#define DS_REPSYNC_REQUEUE                  0x00040000L
+#define DS_REPSYNC_NOTIFICATION             0x00080000L
+#define DS_REPSYNC_ASYNCHRONOUS_REPLICA     0x00100000L
+#define DS_REPSYNC_CRITICAL                 0x00200000L
+#define DS_REPSYNC_FULL_IN_PROGRESS         0x00400000L
+#define DS_REPSYNC_PREEMPTED                0x00800000L
+#define DS_REPSYNC_NONGC_RO_REPLICA         0x01000000L
+
+/* Replica add flags */
+#define DS_REPADD_ASYNCHRONOUS_OPERATION    0x00000001L
+#define DS_REPADD_WRITEABLE                 0x00000002L
+#define DS_REPADD_INITIAL                   0x00000004L
+#define DS_REPADD_PERIODIC                  0x00000008L
+#define DS_REPADD_INTERSITE_MESSAGING       0x00000010L
+#define DS_REPADD_ASYNCHRONOUS_REPLICA      0x00000020L
+#define DS_REPADD_DISABLE_NOTIFICATION      0x00000040L
+#define DS_REPADD_DISABLE_PERIODIC          0x00000080L
+#define DS_REPADD_USE_COMPRESSION           0x00000100L
+#define DS_REPADD_NEVER_NOTIFY              0x00000200L
+#define DS_REPADD_TWO_WAY                   0x00000400L
+#define DS_REPADD_CRITICAL                  0x00000800L
+#define DS_REPADD_SELECT_SECRETS            0x00001000L
+#define DS_REPADD_NONGC_RO_REPLICA          0x01000000L
+
+/* Replica delete flags */
+#define DS_REPDEL_ASYNCHRONOUS_OPERATION    0x00000001L
+#define DS_REPDEL_WRITEABLE                 0x00000002L
+#define DS_REPDEL_INTERSITE_MESSAGING       0x00000004L
+#define DS_REPDEL_IGNORE_ERRORS             0x00000008L
+#define DS_REPDEL_LOCAL_ONLY                0x00000010L
+#define DS_REPDEL_NO_SOURCE                 0x00000020L
+#define DS_REPDEL_REF_OK                    0x00000040L
+
+/* Replica modify flags */
+#define DS_REPMOD_ASYNCHRONOUS_OPERATION    0x00000001L
+#define DS_REPMOD_WRITEABLE                 0x00000002L
+
+/* Replica modify fields */
+#define DS_REPMOD_UPDATE_FLAGS      0x00000001L
+#define DS_REPMOD_UPDATE_INSTANCE   0x00000002L
+#define DS_REPMOD_UPDATE_ADDRESS    DS_REPMOD_UPDATE_INSTANCE
+#define DS_REPMOD_UPDATE_SCHEDULE   0x00000004L
+#define DS_REPMOD_UPDATE_RESULT     0x00000008L
+#define DS_REPMOD_UPDATE_TRANSPORT  0x00000010L
+
+/* Replica update flags */
+#define DS_REPUPD_ASYNCHRONOUS_OPERATION    0x00000001L
+#define DS_REPUPD_WRITEABLE                 0x00000002L
+#define DS_REPUPD_ADD_REFERENCE             0x00000004L
+#define DS_REPUPD_DELETE_REFERENCE          0x00000008L
+#define DS_REPUPD_REFERENCE_GCSPN           0x00000010L
+
+/* Directory Service instance types */
+#define DS_INSTANCETYPE_IS_NC_HEAD      0x00000001L
+#define DS_INSTANCETYPE_NC_IS_WRITEABLE 0x00000004L
+#define DS_INSTANCETYPE_NC_COMING       0x00000010L
+#define DS_INSTANCETYPE_NC_GOING        0x00000020L
+
+/* NTDS-DSA options */
+#define NTDSDSA_OPT_IS_GC                               (1 << 0)
+#define NTDSDSA_OPT_DISABLE_INBOUND_REPL                (1 << 1)
+#define NTDSDSA_OPT_DISABLE_OUTBOUND_REPL               (1 << 2)
+#define NTDSDSA_OPT_DISABLE_NTDSCONN_XLATE              (1 << 3)
+#define NTDSDSA_OPT_DISABLE_SPN_REGISTRATION            (1 << 4)
+#define NTDSDSA_OPT_GENERATE_OWN_TOPO                   (1 << 5)
+
+/* NTDS-Connection options */
+#define NTDSCONN_OPT_IS_GENERATED                   (1 << 0)
+#define NTDSCONN_OPT_TWOWAY_SYNC                    (1 << 1)
+#define NTDSCONN_OPT_OVERRIDE_NOTIFY_DEFAULT        (1 << 2)
+#define NTDSCONN_OPT_USE_NOTIFY                     (1 << 3)
+#define NTDSCONN_OPT_DISABLE_INTERSITE_COMPRESSION  (1 << 4)
+#define NTDSCONN_OPT_USER_OWNED_SCHEDULE            (1 << 5)
+#define NTDSCONN_OPT_RODC_TOPOLOGY                  (1 << 6)
+#define NTDSCONN_OPT_IGNORE_SCHEDULE_MASK           0x80000000L
+
+/* NTDS-Connection connection reasons */
+#define NTDSCONN_KCC_NO_REASON                          0x00000000L
+#define NTDSCONN_KCC_GC_TOPOLOGY                        (1 << 0)
+#define NTDSCONN_KCC_RING_TOPOLOGY                      (1 << 1)
+#define NTDSCONN_KCC_MINIMIZE_HOPS_TOPOLOGY             (1 << 2)
+#define NTDSCONN_KCC_STALE_SERVERS_TOPOLOGY             (1 << 3)
+#define NTDSCONN_KCC_OSCILLATING_CONNECTION_TOPOLOGY    (1 << 4)
+#define NTDSCONN_KCC_INTERSITE_GC_TOPOLOGY              (1 << 5)
+#define NTDSCONN_KCC_INTERSITE_TOPOLOGY                 (1 << 6)
+#define NTDSCONN_KCC_SERVER_FAILOVER_TOPOLOGY           (1 << 7)
+#define NTDSCONN_KCC_SITE_FAILOVER_TOPOLOGY             (1 << 8)
+#define NTDSCONN_KCC_REDUNDANT_SERVER_TOPOLOGY          (1 << 9)
+
+/* FRS connection priority constants */
+#define FRSCONN_PRIORITY_MASK   0x70000000L
+#define FRSCONN_MAX_PRIORITY    0x00000008L
+
+/* NTDS-Site-Settings options */
+#define NTDSSETTINGS_OPT_IS_AUTO_TOPOLOGY_DISABLED              (1 << 0)
+#define NTDSSETTINGS_OPT_IS_TOPL_CLEANUP_DISABLED               (1 << 1)
+#define NTDSSETTINGS_OPT_IS_TOPL_MIN_HOPS_DISABLED              (1 << 2)
+#define NTDSSETTINGS_OPT_IS_TOPL_DETECT_STALE_DISABLED          (1 << 3)
+#define NTDSSETTINGS_OPT_IS_INTER_SITE_AUTO_TOPOLOGY_DISABLED   (1 << 4)
+#define NTDSSETTINGS_OPT_IS_GROUP_CACHING_ENABLED               (1 << 5)
+#define NTDSSETTINGS_OPT_FORCE_KCC_WHISTLER_BEHAVIOR            (1 << 6)
+#define NTDSSETTINGS_OPT_FORCE_KCC_W2K_ELECTION                 (1 << 7)
+#define NTDSSETTINGS_OPT_IS_RAND_BH_SELECTION_DISABLED          (1 << 8)
+#define NTDSSETTINGS_OPT_IS_SCHEDULE_HASHING_ENABLED            (1 << 9)
+#define NTDSSETTINGS_OPT_IS_REDUNDANT_SERVER_TOPOLOGY_ENABLED   (1 << 10)
+#define NTDSSETTINGS_OPT_W2K3_IGNORE_SCHEDULES                  (1 << 11)
+#define NTDSSETTINGS_OPT_W2K3_BRIDGES_REQUIRED                  (1 << 12)
+
+/* NTDS-Site-Settings default number of redundant connections */
+#define NTDSSETTINGS_DEFAULT_SERVER_REDUNDANCY  2
+
+/* Inter-Site-Transport options */
+#define NTDSTRANSPORT_OPT_IGNORE_SCHEDULES  (1 << 0)
+#define NTDSTRANSPORT_OPT_BRIDGES_REQUIRED  (1 << 1)
+
+/* Site-Connection options */
+#define NTDSSITECONN_OPT_USE_NOTIFY             (1 << 0)
+#define NTDSSITECONN_OPT_TWOWAY_SYNC            (1 << 1)
+#define NTDSSITECONN_OPT_DISABLE_COMPRESSION    (1 << 2)
+
+/* Site-Link options */
+#define NTDSSITELINK_OPT_USE_NOTIFY             (1 << 0)
+#define NTDSSITELINK_OPT_TWOWAY_SYNC            (1 << 1)
+#define NTDSSITELINK_OPT_DISABLE_COMPRESSION    (1 << 2)
+
+/* Macros to manipulate Directory Service options */
+#define NTDSCONN_IGNORE_SCHEDULE( x ) \
+    (((x) & NTDSCONN_OPT_IGNORE_SCHEDULE_MASK) >> 31)
+#define FRSCONN_GET_PRIORITY( x ) \
+    (((((x) & FRSCONN_PRIORITY_MASK) >> 28) != 0) ? \
+    (((x) & FRSCONN_PRIORITY_MASK) >> 28) : FRSCONN_MAX_PRIORITY)
+
+/* Well-known object GUIDs */
+#define GUID_USERS_CONTAINER_A              "a9d1ca15768811d1aded00c04fd8d5cd"
+#define GUID_USERS_CONTAINER_W              L"a9d1ca15768811d1aded00c04fd8d5cd"
+#define GUID_COMPUTRS_CONTAINER_A           "aa312825768811d1aded00c04fd8d5cd"
+#define GUID_COMPUTRS_CONTAINER_W           L"aa312825768811d1aded00c04fd8d5cd"
+#define GUID_SYSTEMS_CONTAINER_A            "ab1d30f3768811d1aded00c04fd8d5cd"
+#define GUID_SYSTEMS_CONTAINER_W            L"ab1d30f3768811d1aded00c04fd8d5cd"
+#define GUID_DOMAIN_CONTROLLERS_CONTAINER_A "a361b2ffffd211d1aa4b00c04fd7f83a"
+#define GUID_DOMAIN_CONTROLLERS_CONTAINER_W L"a361b2ffffd211d1aa4b00c04fd7f83a"
+#define GUID_INFRASTRUCTURE_CONTAINER_A     "2fbac1870ade11d297c400c04fd8d5cd"
+#define GUID_INFRASTRUCTURE_CONTAINER_W     L"2fbac1870ade11d297c400c04fd8d5cd"
+#define GUID_DELETED_OBJECTS_CONTAINER_A    "18e2ea80684f11d2b9aa00c04f79f805"
+#define GUID_DELETED_OBJECTS_CONTAINER_W    L"18e2ea80684f11d2b9aa00c04f79f805"
+#define GUID_LOSTANDFOUND_CONTAINER_A       "ab8153b7768811d1aded00c04fd8f5cd"
+#define GUID_LOSTANDFOUND_CONTAINER_W       L"ab8153b7768811d1aded00c04fd8f5cd"
+#define GUID_FOREIGNSECURITYPRINCIPALS_CONTAINER_A \
+    "22b70c67d56e4efb91e9300fca3dc1aa"
+#define GUID_FOREIGNSECURITYPRINCIPALS_CONTAINER_W \
+    L"22b70c67d56e4efb91e9300fca3dc1aa"
+#define GUID_PROGRAM_DATA_CONTAINER_A       "09460c08ae1e4a4ea0f64aee7daa1e5a"
+#define GUID_PROGRAM_DATA_CONTAINER_W       L"09460c08ae1e4a4ea0f64aee7daa1e5a"
+#define GUID_MICROSOFT_PROGRAM_DATA_CONTAINER_A \
+    "f4be92a4c777485e878e9421d53087db"
+#define GUID_MICROSOFT_PROGRAM_DATA_CONTAINER_W \
+    L"f4be92a4c777485e878e9421d53087db"
+#define GUID_NTDS_QUOTAS_CONTAINER_A        "6227f0af1fc2410d8e3bb10615bb5b0f"
+#define GUID_NTDS_QUOTAS_CONTAINER_W        L"6227f0af1fc2410d8e3bb10615bb5b0f"
+#define GUID_USERS_CONTAINER_BYTE \
+    "\xA9\xD1\xCA\x15\x76\x88\x11\xD1\xAD\xED\x00\xC0\x4F\xD8\xD5\xCD"
+#define GUID_COMPUTRS_CONTAINER_BYTE \
+    "\xAA\x31\x28\x25\x76\x88\x11\xD1\xAD\xED\x00\xC0\x4F\xD8\xD5\xCD"
+#define GUID_SYSTEMS_CONTAINER_BYTE \
+    "\xAB\x1D\x30\xF3\x76\x88\x11\xD1\xAD\xED\x00\xC0\x4F\xD8\xD5\xCD"
+#define GUID_DOMAIN_CONTROLLERS_CONTAINER_BYTE \
+    "\xA3\x61\xB2\xFF\xFF\xD2\x11\xD1\xAA\x4B\x00\xC0\x4F\xD7\xF8\x3A"
+#define GUID_INFRASTRUCTURE_CONTAINER_BYTE \
+    "\x2F\xBA\xC1\x87\x0A\xDE\x11\xD2\x97\xC4\x00\xC0\x4F\xD8\xD5\xCD"
+#define GUID_DELETED_OBJECTS_CONTAINER_BYTE \
+    "\x18\xE2\xEA\x80\x68\x4F\x11\xD2\xB9\xAA\x00\xC0\x4F\x79\xF8\x05"
+#define GUID_LOSTANDFOUND_CONTAINER_BYTE \
+    "\xAB\x81\x53\xB7\x76\x88\x11\xD1\xAD\xED\x00\xC0\x4F\xD8\xF5\xCD"
+#define GUID_FOREIGNSECURITYPRINCIPALS_CONTAINER_BYTE \
+    "\x22\xB7\x0C\x67\xD5\x6E\x4E\xFB\x91\xE9\x30\x0F\xCA\x3D\xC1\xAA"
+#define GUID_PROGRAM_DATA_CONTAINER_BYTE \
+    "\x09\x46\x0C\x08\xAE\x1E\x4A\x4E\xA0\xF6\x4A\xEE\x7D\xAA\x1E\x5A"
+#define GUID_MICROSOFT_PROGRAM_DATA_CONTAINER_BYTE \
+    "\xF4\xBE\x92\xA4\xC7\x77\x58\x5E\x87\x8E\x94\x21\xD5\x30\x87\xDB"
+#define GUID_NTDS_QUOTAS_CONTAINER_BYTE \
+    "\x62\x27\xF0\xAF\x1F\xC2\x41\x0D\x8E\x3B\xB1\x06\x15\xBB\x5B\x0F"
+
+/* DsReplicaSyncAll() flags */
+#define DS_REPSYNCALL_NO_OPTIONS                    0x00000000L
+#define DS_REPSYNCALL_ABORT_IF_SERVER_UNAVAILABLE   0x00000001L
+#define DS_REPSYNCALL_SYNC_ADJACENT_SERVERS_ONLY    0x00000002L
+#define DS_REPSYNCALL_ID_SERVERS_BY_DN              0x00000004L
+#define DS_REPSYNCALL_DO_NOT_SYNC                   0x00000008L
+#define DS_REPSYNCALL_SKIP_INITIAL_CHECK            0x00000010L
+#define DS_REPSYNCALL_PUSH_CHANGES_OUTWARD          0x00000020L
+#define DS_REPSYNCALL_CROSS_SITE_BOUNDARIES         0x00000040L
+
+/* DsListInfoForServer() indices */
+#define DS_LIST_DSA_OBJECT_FOR_SERVER       0
+#define DS_LIST_DNS_HOST_NAME_FOR_SERVER    1
+#define DS_LIST_ACCOUNT_OBJECT_FOR_SERVER   2
+
+/* DsListRoles() indices */
+#define DS_ROLE_SCHEMA_OWNER            0
+#define DS_ROLE_DOMAIN_OWNER            1
+#define DS_ROLE_PDC_OWNER               2
+#define DS_ROLE_RID_OWNER               3
+#define DS_ROLE_INFRASTRUCTURE_OWNER    4
+
+/* DsMapSchemaGuid() GUID types */
+#define DS_SCHEMA_GUID_NOT_FOUND        0L
+#define DS_SCHEMA_GUID_ATTR             1L
+#define DS_SCHEMA_GUID_ATTR_SET         2L
+#define DS_SCHEMA_GUID_CLASS            3L
+#define DS_SCHEMA_GUID_CONTROL_RIGHT    4L
+
+/* DsReplicaConsistencyCheck() flags */
+#define DS_KCC_FLAG_ASYNC_OP    (1 << 0)
+#define DS_KCC_FLAG_DAMPED      (1 << 1)
+
+/* DsReplicaVerifyObjects() flags */
+#define DS_EXIST_ADVISORY_MODE  0x00000001L
+
+/* Directory Service replica information flags */
+#define DS_REPL_INFO_FLAG_IMPROVE_LINKED_ATTRS  0x00000001L
+
+/* Directory Service replica neighbor flags */
+#define DS_REPL_NBR_WRITEABLE                       0x00000010L
+#define DS_REPL_NBR_SYNC_ON_STARTUP                 0x00000020L
+#define DS_REPL_NBR_DO_SCHEDULED_SYNCS              0x00000040L
+#define DS_REPL_NBR_USE_ASYNC_INTERSITE_TRANSPORT   0x00000080L
+#define DS_REPL_NBR_TWO_WAY_SYNC                    0x00000200L
+#define DS_REPL_NBR_NONGC_RO_REPLICA                0x00000400L
+#define DS_REPL_NBR_RETURN_OBJECT_PARENTS           0x00000800L
+#define DS_REPL_NBR_SELECT_SECRETS                  0x00001000L
+#define DS_REPL_NBR_FULL_SYNC_IN_PROGRESS           0x00010000L
+#define DS_REPL_NBR_FULL_SYNC_NEXT_PACKET           0x00020000L
+#define DS_REPL_NBR_GCSPN                           0x00100000L
+#define DS_REPL_NBR_NEVER_SYNCED                    0x00200000L
+#define DS_REPL_NBR_PREEMPTED                       0x01000000L
+#define DS_REPL_NBR_IGNORE_CHANGE_NOTIFICATIONS     0x04000000L
+#define DS_REPL_NBR_DISABLE_SCHEDULED_SYNC          0x08000000L
+#define DS_REPL_NBR_COMPRESS_CHANGES                0x10000000L
+#define DS_REPL_NBR_NO_CHANGE_NOTIFICATIONS         0x20000000L
+#define DS_REPL_NBR_PARTIAL_ATTRIBUTE_SET           0x40000000L
+#define DS_REPL_NBR_MODIFIABLE_MASK \
+    (DS_REPL_NBR_SYNC_ON_STARTUP | DS_REPL_NBR_DO_SCHEDULED_SYNCS | \
+    DS_REPL_NBR_TWO_WAY_SYNC | DS_REPL_NBR_IGNORE_CHANGE_NOTIFICATIONS | \
+    DS_REPL_NBR_DISABLE_SCHEDULED_SYNC | DS_REPL_NBR_COMPRESS_CHANGES | \
+    DS_REPL_NBR_NO_CHANGE_NOTIFICATIONS)
+
+/* ADAM strings */
+#define ADAM_SCP_SITE_NAME_STRING       "site:"
+#define ADAM_SCP_SITE_NAME_STRINGW      L"site:"
+#define ADAM_SCP_PARTITION_STRING       "partition:"
+#define ADAM_SCP_PARTITION_STRINGW      L"partition:"
+#define ADAM_SCP_INSTANCE_NAME_STRING   "instance:"
+#define ADAM_SCP_INSTANCE_NAME_STRINGW  L"instance:"
+#define ADAM_SCP_FSMO_STRING            "fsmo:"
+#define ADAM_SCP_FSMO_STRINGW           L"fsmo:"
+#define ADAM_SCP_FSMO_NAMING_STRING     "naming"
+#define ADAM_SCP_FSMO_NAMING_STRINGW    L"naming"
+#define ADAM_SCP_FSMO_SCHEMA_STRING     "schema"
+#define ADAM_SCP_FSMO_SCHEMA_STRINGW    L"schema"
+
+/* ADAM replica authentication modes */
+#define ADAM_REPL_AUTHENTICATION_MODE_NEGOTIATE_PASS_THROUGH    0
+#define ADAM_REPL_AUTHENTICATION_MODE_NEGOTIATE                 1
+#define ADAM_REPL_AUTHENTICATION_MODE_MUTUAL_AUTH_REQUIRED      2
+
+/* Optional feature flags */
+#define FLAG_FOREST_OPTIONAL_FEATURE        0x00000001L
+#define FLAG_DOMAIN_OPTIONAL_FEATURE        0x00000002L
+#define FLAG_DISABLABLE_OPTIONAL_FEATURE    0x00000004L
+
+/* Recycle bin GUID */
+#define GUID_RECYCLE_BIN_OPTIONAL_FEATURE_A \
+    "d8dc6d76d0ac5e44f3b9a7f9b6744f2a"
+#define GUID_RECYCLE_BIN_OPTIONAL_FEATURE_W \
+    L"d8dc6d76d0ac5e44f3b9a7f9b6744f2a"
+#define GUID_RECYCLE_BIN_OPTIONAL_FEATURE_BYTE \
+    "\xd8\xdc\x6d\x76\xd0\xac\x5e\x44\xf3\xb9\xa7\xf9\b6\x74\x4f\x2a"
+
+/* Directory Service name formats */
+typedef enum {
+    DS_UNKNOWN_NAME             = 0,
+    DS_FQDN_1779_NAME           = 1,
+    DS_NT4_ACCOUT_NAME          = 2,
+    DS_DISPLAY_NAME             = 3,
+    DS_UNIQUE_ID_NAME           = 6,
+    DS_CANONICAL_NAME           = 7,
+    DS_USER_PRINCIPAL_NAME      = 8,
+    DS_CANONICAL_NAME_EX        = 9,
+    DS_SERVICE_PRINCIPAL_NAME   = 10,
+    DS_SID_OR_SID_HISTORY_NAME  = 11,
+    DS_DNS_DOMAIN_NAME          = 12
+} DS_NAME_FORMAT;
+
+/* Old name formats for compatiblity */
+#define DS_DOMAIN_SIMPLE_NAME       DS_USER_PRINCIPAL_NAME
+#define DS_ENTERPRISE_SIMPLE_NAME   DS_USER_PRINCIPAL_NAME
+
+/* Directory Service name flags */
+typedef enum {
+    DS_NAME_NO_FLAGS                = 0x00000000,
+    DS_NAME_FLAG_SYNTACTICAL_ONLY   = 0x00000001,
+    DS_NAME_FLAG_EVAL_AT_DC         = 0x00000002,
+    DS_NAME_FLAG_GCVERIFY           = 0x00000004,
+    DS_NAME_FLAG_TRUST_REFERRAL     = 0x00000008
+} DS_NAME_FLAGS;
+
+/* Directory Service name errors */
+typedef enum {
+    DS_NAME_NO_ERROR                        = 0,
+    DS_NAME_ERROR_RESOLVING                 = 1,
+    DS_NAME_ERROR_NOT_FOUND                 = 2,
+    DS_NAME_ERROR_NOT_UNIQUE                = 3,
+    DS_NAME_ERROR_NO_MAPPING                = 4,
+    DS_NAME_ERROR_DOMAIN_ONLY               = 5,
+    DS_NAME_ERROR_NO_SYNTACTICAL_MAPPING    = 6,
+    DS_NAME_ERROR_TRUST_REFERRAL            = 7
+} DS_NAME_ERROR;
+
+/* Directory Service SPN name types */
+typedef enum {
+    DS_SPN_DNS_HOST     = 0,
+    DS_SPN_DN_HOST      = 1,
+    DS_SPN_NB_HOST      = 2,
+    DS_SPN_DOMAIN       = 3,
+    DS_SPN_NB_DOMAIN    = 4,
+    DS_SPN_SERVICE      = 5
+} DS_SPN_NAME_TYPE;
+
+/* Directory Service SPN write operations */
+typedef enum {
+    DS_SPN_ADD_SPN_OP       = 0,
+    DS_SPN_RELEASE_SPN_OP   = 1,
+    DS_SPN_DELETE_SPN_OP    = 2
+} DS_SPN_WRITE_OP;
+
+/* Directory Service name result item */
+typedef struct {
+    DWORD   status;
+    LPSTR   pDomain;
+    LPSTR   pName;
+} DS_NAME_RESULT_ITEMA;
+typedef DS_NAME_RESULT_ITEMA    *PDS_NAME_RESULT_ITEMA;
+typedef struct {
+    DWORD   status;
+    LPWSTR  pDomain;
+    LPWSTR  pName;
+} DS_NAME_RESULT_ITEMW;
+typedef DS_NAME_RESULT_ITEMW    *PDS_NAME_RESULT_ITEMW;
+#ifdef UNICODE
+typedef DS_NAME_RESULT_ITEMW    DS_NAME_RESULT_ITEM;
+typedef PDS_NAME_RESULT_ITEMW   PDS_NAME_RESULT_ITEM;
+#else
+typedef DS_NAME_RESULT_ITEMA    DS_NAME_RESULT_ITEM;
+typedef PDS_NAME_RESULT_ITEMA   PDS_NAME_RESULT_ITEM;
+#endif
+
+/* Directory Service name result */
+typedef struct {
+    DWORD                   cItems;
+    PDS_NAME_RESULT_ITEMA   rItems;
+} DS_NAME_RESULTA;
+typedef DS_NAME_RESULTA     *PDS_NAME_RESULTA;
+typedef struct {
+    DWORD                   cItems;
+    PDS_NAME_RESULT_ITEMW   rItems;
+} DS_NAME_RESULTW;
+typedef DS_NAME_RESULTW     *PDS_NAME_RESULTW;
+#ifdef UNICODE
+typedef DS_NAME_RESULTW     DS_NAME_RESULT;
+typedef PDS_NAME_RESULTW    PDS_NAME_RESULT;
+#else
+typedef DS_NAME_RESULTA     DS_NAME_RESULT;
+typedef PDS_NAME_RESULTA    PDS_NAME_RESULT;
+#endif
+
+/* Directory Service mangle reasons*/
+typedef enum _DS_MANGLE_FOR {
+    DS_MANGLE_UNKNOWN                       = 0,
+    DS_MANGLE_OBJECT_RDN_FOR_DELETION       = 1,
+    DS_MANGLE_OBJECT_RDN_FOR_NAME_CONFLICT  = 2
+} DS_MANGLE_FOR;
+
+/* DsReplicaSyncAll() errors */
+typedef enum {
+    DS_REPSYNCALL_WIN32_ERROR_CONTACTING_SERVER = 0,
+    DS_REPSYNCALL_WIN32_ERROR_REPLICATING       = 1,
+    DS_REPSYNCALL_SERVER_UNREACHABLE            = 2
+} DS_REPSYNCALL_ERROR;
+
+/* DsReplicaSyncAll() events */
+typedef enum {
+    DS_REPSYNCALL_EVENT_ERROR           = 0,
+    DS_REPSYNCALL_EVENT_SYNC_STARTED    = 1,
+    DS_REPSYNCALL_EVENT_SYNC_COMPLETED  = 2,
+    DS_REPSYNCALL_EVENT_FINISHED        = 3
+} DS_REPSYNCALL_EVENT;
+
+/* DsReplicaSyncAll() synchronization information */
+typedef struct {
+    LPSTR   pszSrcId;
+    LPSTR   pszDstId;
+    LPSTR   pszNC;
+    GUID    *pguidSrc;
+    GUID    *pguidDst;
+} DS_REPSYNCALL_SYNCA;
+typedef DS_REPSYNCALL_SYNCA     *PDS_REPSYNCALL_SYNCA;
+typedef struct {
+    LPWSTR  pszSrcId;
+    LPWSTR  pszDstId;
+    LPWSTR  pszNC;
+    GUID    *pguidSrc;
+    GUID    *pguidDst;
+} DS_REPSYNCALL_SYNCW;
+typedef DS_REPSYNCALL_SYNCW     *PDS_REPSYNCALL_SYNCW;
+#ifdef UNICODE
+typedef DS_REPSYNCALL_SYNCW     DS_REPSYNCALL_SYNC;
+typedef PDS_REPSYNCALL_SYNCW    PDS_REPSYNCALL_SYNC;
+#else
+typedef DS_REPSYNCALL_SYNCA     DS_REPSYNCALL_SYNC;
+typedef PDS_REPSYNCALL_SYNCA    PDS_REPSYNCALL_SYNC;
+#endif
+
+/* DsReplicaSyncAll() error information */
+typedef struct {
+    LPSTR               pszSvrId;
+    DS_REPSYNCALL_ERROR error;
+    DWORD               dwWin32Err;
+    LPSTR               pszSrcId;
+} DS_REPSYNCALL_ERRINFOA;
+typedef DS_REPSYNCALL_ERRINFOA  *PDS_REPSYNCALL_ERRINFOA;
+typedef struct {
+    LPWSTR              pszSvrId;
+    DS_REPSYNCALL_ERROR error;
+    DWORD               dwWin32Err;
+    LPWSTR              pszSrcId;
+} DS_REPSYNCALL_ERRINFOW;
+typedef DS_REPSYNCALL_ERRINFOW  *PDS_REPSYNCALL_ERRINFOW;
+#ifdef UNICODE
+typedef DS_REPSYNCALL_ERRINFOW  DS_REPSYNCALL_ERRINFO;
+typedef PDS_REPSYNCALL_ERRINFOW PDS_REPSYNCALL_ERRINFO;
+#else
+typedef DS_REPSYNCALL_ERRINFOA  DS_REPSYNCALL_ERRINFO;
+typedef PDS_REPSYNCALL_ERRINFOA PDS_REPSYNCALL_ERRINFO;
+#endif
+
+/* DsReplicaSyncAll() update information */
+typedef struct {
+    DS_REPSYNCALL_EVENT     event;
+    DS_REPSYNCALL_ERRINFOA  *pErrInfo;
+    DS_REPSYNCALL_SYNCA     *pSync;
+} DS_REPSYNCALL_UPDATEA;
+typedef DS_REPSYNCALL_UPDATEA   *PDS_REPSYNCALL_UPDATEA;
+typedef struct {
+    DS_REPSYNCALL_EVENT     event;
+    DS_REPSYNCALL_ERRINFOW  *pErrInfo;
+    DS_REPSYNCALL_SYNCW     *pSync;
+} DS_REPSYNCALL_UPDATEW;
+typedef DS_REPSYNCALL_UPDATEW   *PDS_REPSYNCALL_UPDATEW;
+#ifdef UNICODE
+typedef DS_REPSYNCALL_UPDATEW   DS_REPSYNCALL_UPDATE;
+typedef PDS_REPSYNCALL_UPDATEW  PDS_REPSYNCALL_UPDATE;
+#else
+typedef DS_REPSYNCALL_UPDATEA   DS_REPSYNCALL_UPDATE;
+typedef PDS_REPSYNCALL_UPDATEA  PDS_REPSYNCALL_UPDATE;
+#endif
+
+/* Directory Service site cost information */
+typedef struct {
+    DWORD   errorCode;
+    DWORD   cost;
+} DS_SITE_COST_INFO;
+typedef DS_SITE_COST_INFO   *PDS_SITE_COST_INFO;
+
+/* Directory Service schema GUID map */
+typedef struct {
+    GUID    guid;
+    DWORD   guidType;
+    LPSTR   pName;
+} DS_SCHEMA_GUID_MAPA;
+typedef DS_SCHEMA_GUID_MAPA     *PDS_SCHEMA_GUID_MAPA;
+typedef struct {
+    GUID    guid;
+    DWORD   guidType;
+    LPWSTR  pName;
+} DS_SCHEMA_GUID_MAPW;
+typedef DS_SCHEMA_GUID_MAPW     *PDS_SCHEMA_GUID_MAPW;
+#ifdef UNICODE
+typedef DS_SCHEMA_GUID_MAPW     DS_SCHEMA_GUID_MAP;
+typedef PDS_SCHEMA_GUID_MAPW    PDS_SCHEMA_GUID_MAP;
+#else
+typedef DS_SCHEMA_GUID_MAPA     DS_SCHEMA_GUID_MAP;
+typedef PDS_SCHEMA_GUID_MAPA    PDS_SCHEMA_GUID_MAP;
+#endif
+
+/* Directory Service domain controller information (level 1) */
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_1A {
+    LPSTR   NetbiosName;
+    LPSTR   DnsHostName;
+    LPSTR   SiteName;
+    LPSTR   ComputerObjectName;
+    LPSTR   ServerObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+} DS_DOMAIN_CONTROLLER_INFO_1A;
+typedef DS_DOMAIN_CONTROLLER_INFO_1A    *PDS_DOMAIN_CONTROLLER_INFO_1A;
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_1W {
+    LPWSTR  NetbiosName;
+    LPWSTR  DnsHostName;
+    LPWSTR  SiteName;
+    LPWSTR  ComputerObjectName;
+    LPWSTR  ServerObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+} DS_DOMAIN_CONTROLLER_INFO_1W;
+typedef DS_DOMAIN_CONTROLLER_INFO_1W    *PDS_DOMAIN_CONTROLLER_INFO_1W;
+#ifdef UNICODE
+typedef DS_DOMAIN_CONTROLLER_INFO_1W    DS_DOMAIN_CONTROLLER_INFO_1;
+typedef PDS_DOMAIN_CONTROLLER_INFO_1W   PDS_DOMAIN_CONTROLLER_INFO_1;
+#else
+typedef DS_DOMAIN_CONTROLLER_INFO_1A    DS_DOMAIN_CONTROLLER_INFO_1;
+typedef PDS_DOMAIN_CONTROLLER_INFO_1A   PDS_DOMAIN_CONTROLLER_INFO_1;
+#endif
+
+/* Directory Service domain controller information (level 2) */
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_2A {
+    LPSTR   NetbiosName;
+    LPSTR   DnsHostName;
+    LPSTR   SiteName;
+    LPSTR   SiteObjectName;
+    LPSTR   ComputerObjectName;
+    LPSTR   ServerObjectName;
+    LPSTR   NtdsDsaObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+    BOOL    fIsGc;
+    GUID    SiteObjectGuid;
+    GUID    ComputerObjectGuid;
+    GUID    ServerObjectGuid;
+    GUID    NtdsDsaObjectGuid;
+} DS_DOMAIN_CONTROLLER_INFO_2A;
+typedef DS_DOMAIN_CONTROLLER_INFO_2A    *PDS_DOMAIN_CONTROLLER_INFO_2A;
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_2W {
+    LPWSTR  NetbiosName;
+    LPWSTR  DnsHostName;
+    LPWSTR  SiteName;
+    LPWSTR  SiteObjectName;
+    LPWSTR  ComputerObjectName;
+    LPWSTR  ServerObjectName;
+    LPWSTR  NtdsDsaObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+    BOOL    fIsGc;
+    GUID    SiteObjectGuid;
+    GUID    ComputerObjectGuid;
+    GUID    ServerObjectGuid;
+    GUID    NtdsDsaObjectGuid;
+} DS_DOMAIN_CONTROLLER_INFO_2W;
+typedef DS_DOMAIN_CONTROLLER_INFO_2W    *PDS_DOMAIN_CONTROLLER_INFO_2W;
+#ifdef UNICODE
+typedef DS_DOMAIN_CONTROLLER_INFO_2W    DS_DOMAIN_CONTROLLER_INFO_2;
+typedef PDS_DOMAIN_CONTROLLER_INFO_2W   PDS_DOMAIN_CONTROLLER_INFO_2;
+#else
+typedef DS_DOMAIN_CONTROLLER_INFO_2A    DS_DOMAIN_CONTROLLER_INFO_2;
+typedef PDS_DOMAIN_CONTROLLER_INFO_2A   PDS_DOMAIN_CONTROLLER_INFO_2;
+#endif
+
+/* Directory Service domain controller information (level 3) */
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_3A {
+    LPSTR   NetbiosName;
+    LPSTR   DnsHostName;
+    LPSTR   SiteName;
+    LPSTR   SiteObjectName;
+    LPSTR   ComputerObjectName;
+    LPSTR   ServerObjectName;
+    LPSTR   NtdsDsaObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+    BOOL    fIsGc;
+    BOOL    fIsRodc;
+    GUID    SiteObjectGuid;
+    GUID    ComputerObjectGuid;
+    GUID    ServerObjectGuid;
+    GUID    NtdsDsaObjectGuid;
+} DS_DOMAIN_CONTROLLER_INFO_3A;
+typedef DS_DOMAIN_CONTROLLER_INFO_3A    *PDS_DOMAIN_CONTROLLER_INFO_3A;
+typedef struct _DS_DOMAIN_CONTROLLER_INFO_3W {
+    LPWSTR  NetbiosName;
+    LPWSTR  DnsHostName;
+    LPWSTR  SiteName;
+    LPWSTR  SiteObjectName;
+    LPWSTR  ComputerObjectName;
+    LPWSTR  ServerObjectName;
+    LPWSTR  NtdsDsaObjectName;
+    BOOL    fIsPdc;
+    BOOL    fDsEnabled;
+    BOOL    fIsGc;
+    BOOL    fIsRodc;
+    GUID    SiteObjectGuid;
+    GUID    ComputerObjectGuid;
+    GUID    ServerObjectGuid;
+    GUID    NtdsDsaObjectGuid;
+} DS_DOMAIN_CONTROLLER_INFO_3W;
+typedef DS_DOMAIN_CONTROLLER_INFO_3W    *PDS_DOMAIN_CONTROLLER_INFO_3W;
+#ifdef UNICODE
+typedef DS_DOMAIN_CONTROLLER_INFO_3W    DS_DOMAIN_CONTROLLER_INFO_3;
+typedef PDS_DOMAIN_CONTROLLER_INFO_3W   PDS_DOMAIN_CONTROLLER_INFO_3;
+#else
+typedef DS_DOMAIN_CONTROLLER_INFO_3A    DS_DOMAIN_CONTROLLER_INFO_3;
+typedef PDS_DOMAIN_CONTROLLER_INFO_3A   PDS_DOMAIN_CONTROLLER_INFO_3;
+#endif
+
+/* Directory Service task identifiers */
+typedef enum {
+    DS_KCC_TASKID_UPDATE_TOPOLOGY   = 0
+} DS_KCC_TASKID;
+
+/* Directory Service replica information types */
+typedef enum _DS_REPL_INFO_TYPE {
+    DS_REPL_INFO_NEIGHBORS                  = 0,
+    DS_REPL_INFO_CURSORS_FOR_NC             = 1,
+    DS_REPL_INFO_METADATA_FOR_OBJ           = 2,
+    DS_REPL_INFO_KCC_DSA_CONNECT_FAILURES   = 3,
+    DS_REPL_INFO_KCC_DSA_LINK_FAILURES      = 4,
+    DS_REPL_INFO_PENDING_OPS                = 5,
+    DS_REPL_INFO_METADATA_FOR_ATTR_VALUE    = 6,
+    DS_REPL_INFO_CURSORS_2_FOR_NC           = 7,
+    DS_REPL_INFO_CURSORS_3_FOR_NC           = 8,
+    DS_REPL_INFO_METADATA_2_FOR_OBJ         = 9,
+    DS_REPL_INFO_METADATA_2_FOR_ATTR_VALUE  = 10,
+    DS_REPL_INFO_TYPE_MAX                   = 11
+} DS_REPL_INFO_TYPE;
+
+/* Directory Service replica neighbor */
+typedef struct _DS_REPL_NEIGHBORW {
+    LPWSTR      pszNamingContext;
+    LPWSTR      pszSourceDsaDN;
+    LPWSTR      pszSourceDsaAddress;
+    LPWSTR      pszAsyncIntersiteTransportDN;
+    DWORD       dwReplicaFlags;
+    DWORD       dwReserved;
+    UUID        uuidNamingContextObjGuid;
+    UUID        uuidSourceDsaObjGuid;
+    UUID        uuidSourceDsaInvocationID;
+    UUID        uuidAsyncIntersiteTransportObjGuid;
+    USN         usnLastObjChangeSynced;
+    USN         usnAttributeFilter;
+    FILETIME    ftimeLastSyncSuccess;
+    FILETIME    ftimeLastSyncAttempt;
+    DWORD       dwLastSyncResult;
+    DWORD       cNumConsecutiveSyncFailures;
+} DS_REPL_NEIGHBORW;
+#ifdef UNICODE
+typedef DS_REPL_NEIGHBORW   DS_REPL_NEIGHBOR;
+#endif
+
+/* Directory Service replica neighbor blob */
+typedef struct _DS_REPL_NEIGHBORW_BLOB {
+    DWORD       oszNamingContext;
+    DWORD       oszSourceDsaDN;
+    DWORD       oszSourceDsaAddress;
+    DWORD       oszAsyncIntersiteTransportDN;
+    DWORD       dwReplicaFlags;
+    DWORD       dwReserved;
+    UUID        uuidNamingContextObjGuid;
+    UUID        uuidSourceDsaObjGuid;
+    UUID        uuidSourceDsaInvocationID;
+    UUID        uuidAsyncIntersiteTransportObjGuid;
+    USN         usnLastObjChangedSynced;
+    USN         usnAttributeFilter;
+    FILETIME    ftimeLastSyncSuccess;
+    FILETIME    ftimeLastSyncAttempt;
+    DWORD       dwLastSyncResult;
+    DWORD       cNumConsecutiveSyncFailures;
+} DS_REPL_NEIGHBORW_BLOB;
+
+/* Directory Service replica neighbors */
+typedef struct _DS_REPL_NEIGHBORSW {
+    DWORD               cNumNeighbors;
+    DWORD               dwReserved;
+    DS_REPL_NEIGHBORW   rgNeighbor[1];
+} DS_REPL_NEIGHBORSW;
+#ifdef UNICODE
+typedef DS_REPL_NEIGHBORSW  DS_REPL_NEIGHBORS;
+#endif
+
+/* Directory Service replica cursor */
+typedef struct _DS_REPL_CURSOR {
+    UUID    uuidSourceDsaInvocationID;
+    USN     usnAttributeFilter;
+} DS_REPL_CURSOR;
+
+/* Directory Service replica cursor (version 2) */
+typedef struct _DS_REPL_CURSOR_2 {
+    UUID        uuidSourceDsaInvocationID;
+    USN         usnAttributeFilter;
+    FILETIME    ftimeLastSyncSuccess;
+} DS_REPL_CURSOR_2;
+
+/* Directory Service replica cursor (version 3) */
+typedef struct _DS_REPL_CURSOR_3W {
+    UUID        uuidSourceDsaInvocationID;
+    USN         usnAttributeFilter;
+    FILETIME    ftimeLastSyncSuccess;
+    LPWSTR      pszSourceDsaDN;
+} DS_REPL_CURSOR_3W;
+#ifdef UNICODE
+typedef DS_REPL_CURSOR_3W   DS_REPL_CURSOR_3;
+#endif
+
+/* Directory Service replica cursor blob */
+typedef struct _DS_REPL_CURSOR_BLOB {
+    UUID        uuidSourceDsaInvocationID;
+    USN         usnAttributeFilter;
+    FILETIME    ftimeLastSyncSuccess;
+    DWORD       oszSourceDsaDN;
+} DS_REPL_CURSOR_BLOB;
+
+/* Directory Service replica cursors */
+typedef struct _DS_REPL_CURSORS {
+    DWORD           cNumCursors;
+    DWORD           dwReserved;
+    DS_REPL_CURSOR  rgCursor[1];
+} DS_REPL_CURSORS;
+
+/* Directory Service replica cursors (version 2) */
+typedef struct _DS_REPL_CURSORS_2 {
+    DWORD               cNumCursors;
+    DWORD               dwEnumerationContext;
+    DS_REPL_CURSOR_2    rgCursor[1];
+} DS_REPL_CURSORS_2;
+
+/* Directory Service replica cursors (version 3) */
+typedef struct _DS_REPL_CURSORS_3W {
+    DWORD               cNumCursors;
+    DWORD               dwEnumerationContext;
+    DS_REPL_CURSOR_3W   rgCursor[1];
+} DS_REPL_CURSORS_3W;
+#ifdef UNICODE
+typedef DS_REPL_CURSOR_3W   DS_REPL_CURSOR_3;
+#endif
+
+/* Directory Service replica attribute metadata */
+typedef struct _DS_REPL_ATTR_META_DATA {
+    LPWSTR      pszAttributeName;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+} DS_REPL_ATTR_META_DATA;
+
+/* Directory Service replica attribute metadata (version 2) */
+typedef struct _DS_REPL_ATTR_META_DATA_2 {
+    LPWSTR      pszAttributeName;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+    LPWSTR      pszLastOriginatingDsaDN;
+} DS_REPL_ATTR_META_DATA_2;
+
+/* Directory Service replica attribute metadata blob */
+typedef struct _DS_REPL_ATTR_META_DATA_BLOB {
+    DWORD       oszAttributeName;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+    DWORD       oszLastOriginatingDsaDN;
+} DS_REPL_ATTR_META_DATA_BLOB;
+
+/* Directory Service replica object metadata */
+typedef struct _DS_REPL_OBJ_META_DATA {
+    DWORD                   cNumEntries;
+    DWORD                   dwReserved;
+    DS_REPL_ATTR_META_DATA  rgMetaData[1];
+} DS_REPL_OBJ_META_DATA;
+
+/* Directory Service replica object metadata (version 2) */
+typedef struct _DS_REPL_OBJ_META_DATA_2 {
+    DWORD                       cNumEntries;
+    DWORD                       dwReserved;
+    DS_REPL_ATTR_META_DATA_2    rgMetaData[1];
+} DS_REPL_OBJ_META_DATA_2;
+
+/* Directory Service replica KCC DSA failure */
+typedef struct _DS_REPL_KCC_DSA_FAILUREW {
+    LPWSTR      pszDsaDN;
+    UUID        uuidDsaObjGuid;
+    FILETIME    ftimeFirstFailure;
+    DWORD       cNumFailures;
+    DWORD       dwLastResult;
+} DS_REPL_KCC_DSA_FAILUREW;
+#ifdef UNICODE
+typedef DS_REPL_KCC_DSA_FAILUREW    DS_REPL_KCC_DSA_FAILURE;
+#endif
+
+/* Directory Service replica KCC DSA failure blob */
+typedef struct _DS_REPL_KCC_DSA_FAILUREW_BLOB {
+    DWORD       oszDsaDN;
+    UUID        uuidDsaObjGuid;
+    FILETIME    ftimeFirstFailure;
+    DWORD       cNumFailures;
+    DWORD       dwLastResult;
+} DS_REPL_KCC_DSA_FAILUREW_BLOB;
+
+/* Directory Service replica KCC DSA failures */
+typedef struct _DS_REPL_KCC_DSA_FAILURESW {
+    DWORD                       cNumEntries;
+    DWORD                       dwReserved;
+    DS_REPL_KCC_DSA_FAILUREW    rgDsaFailure[1];
+} DS_REPL_KCC_DSA_FAILURESW;
+#ifdef UNICODE
+typedef DS_REPL_KCC_DSA_FAILURESW   DS_REPL_KCC_DSA_FAILURES;
+#endif
+
+/* Directory Service replica operation types */
+typedef enum _DS_REPL_OP_TYPE {
+    DS_REPL_OP_TYPE_SYNC        = 0,
+    DS_REPL_OP_TYPE_ADD         = 1,
+    DS_REPL_OP_TYPE_DELETE      = 2,
+    DS_REPL_OP_TYPE_MODIFY      = 3,
+    DS_REPL_OP_TYPE_UPDATE_REFS = 4
+} DS_REPL_OP_TYPE;
+
+/* Directory Service replica operation */
+typedef struct _DS_REPL_OPW {
+    FILETIME        ftimeEnqueued;
+    ULONG           ulSerialNumber;
+    ULONG           ulPriority;
+    DS_REPL_OP_TYPE OpType;
+    ULONG           ulOptions;
+    LPWSTR          pszNamingContext;
+    LPWSTR          pszDsaDN;
+    LPWSTR          pszDsaAddress;
+    UUID            uuidNamingContextObjGuid;
+    UUID            uuidDsaObjGuid;
+} DS_REPL_OPW;
+#ifdef UNICODE
+typedef DS_REPL_OPW DS_REPL_OP;
+#endif
+
+/* Directory Service replica operation blob */
+typedef struct _DS_REPL_OPW_BLOB {
+    FILETIME        ftimeEnqueued;
+    ULONG           ulSerialNumber;
+    ULONG           ulPriority;
+    DS_REPL_OP_TYPE OpType;
+    ULONG           ulOptions;
+    DWORD           oszNamingContext;
+    DWORD           oszDsaDN;
+    DWORD           oszDsaAddress;
+    UUID            uuidNamingContextObjGuid;
+    UUID            uuidDsaObjGuid;
+} DS_REPL_OPW_BLOB;
+
+/* Directory Service replica pending operations */
+typedef struct _DS_REPL_PENDING_OPSW {
+    FILETIME    ftimeCurrentOpStarted;
+    DWORD       cNumPendingOps;
+    DS_REPL_OPW rgPendingOp[1];
+} DS_REPL_PENDING_OPSW;
+#ifdef UNICODE
+typedef DS_REPL_PENDING_OPSW    DS_REPL_PENDING_OPS;
+#endif
+
+/* Directory Service replica value metadata */
+typedef struct _DS_REPL_VALUE_META_DATA {
+    LPWSTR      pszAttributeName;
+    LPWSTR      pszObjectDn;
+    DWORD       cbData;
+    BYTE        *pbData;
+    FILETIME    ftimeDeleted;
+    FILETIME    ftimeCreated;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+} DS_REPL_VALUE_META_DATA;
+
+/* Directory Service replica value metadata (version 2) */
+typedef struct _DS_REPL_VALUE_META_DATA_2 {
+    LPWSTR      pszAttributeName;
+    LPWSTR      pszObjectDn;
+    DWORD       cbData;
+    BYTE        *pbData;
+    FILETIME    ftimeDeleted;
+    FILETIME    ftimeCreated;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+    LPWSTR      pszLastOriginatingDsaDN;
+} DS_REPL_VALUE_META_DATA_2;
+
+/* Directory Service replica value metadata blob */
+typedef struct _DS_REPL_VALUE_META_DATA_BLOB {
+    DWORD       oszAttributeName;
+    DWORD       oszObjectDn;
+    DWORD       cbData;
+    DWORD       obData;
+    FILETIME    ftimeDeleted;
+    FILETIME    ftimeCreated;
+    DWORD       dwVersion;
+    FILETIME    ftimeLastOriginatingChange;
+    UUID        uuidLastOriginatingDsaInvocationID;
+    USN         usnOriginatingChange;
+    USN         usnLocalChange;
+    DWORD       oszLastOriginatingDsaDN;
+} DS_REPL_VALUE_META_DATA_BLOB;
+
+/* Directory Service replica attribute value metadata */
+typedef struct _DS_REPL_ATTR_VALUE_META_DATA {
+    DWORD                   cNumEntries;
+    DWORD                   dwEnumerationContext;
+    DS_REPL_VALUE_META_DATA rgMetaData[1];
+} DS_REPL_ATTR_VALUE_META_DATA;
+
+/* Directory Service replica attribute value metadata (version 2) */
+typedef struct _DS_REPL_ATTR_VALUE_META_DATA_2 {
+    DWORD                       cNumEntries;
+    DWORD                       dwEnumerationContext;
+    DS_REPL_VALUE_META_DATA_2   rgMetaData[1];
+} DS_REPL_ATTR_VALUE_META_DATA_2;
+
+/* Directory Service replica queue statistics */
+typedef struct _DS_REPL_QUEUE_STATISTICSW {
+    FILETIME    ftimeCurrentOpStarted;
+    DWORD       cNumPendingOps;
+    FILETIME    ftimeOldestSync;
+    FILETIME    ftimeOldestAdd;
+    FILETIME    ftimeOldestMod;
+    FILETIME    ftimeOldestDel;
+    FILETIME    ftimeOldestUpdRefs;
+} DS_REPL_QUEUE_STATISTICSW;
+typedef DS_REPL_QUEUE_STATISTICSW   DS_REPL_QUEUE_STATISTICSW_BLOB;
+
+/* Functions in NTDSAPI.DLL */
+NTDSAPI DWORD WINAPI    DsAddSidHistoryA( HANDLE, DWORD, LPCSTR, LPCSTR, LPCSTR, RPC_AUTH_IDENTITY_HANDLE, LPCSTR, LPCSTR );
+NTDSAPI DWORD WINAPI    DsAddSidHistoryW( HANDLE, DWORD, LPCWSTR, LPCWSTR, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE, LPCWSTR, LPCWSTR );
+NTDSAPI DWORD WINAPI    DsBindA( LPCSTR, LPCSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindByInstanceA( LPCSTR, LPCSTR, GUID *, LPCSTR, RPC_AUTH_IDENTITY_HANDLE, LPCSTR, DWORD, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindByInstanceW( LPCWSTR, LPCWSTR, GUID *, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE, LPCWSTR, DWORD, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindToISTGA( LPCSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindToISTGW( LPCWSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindW( LPCWSTR, LPCWSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithCredA( LPCSTR, LPCSTR, RPC_AUTH_IDENTITY_HANDLE, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithCredW( LPCWSTR, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithSpnA( LPCSTR, LPCSTR, RPC_AUTH_IDENTITY_HANDLE, LPCSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithSpnExA( LPCSTR, LPCSTR, RPC_AUTH_IDENTITY_HANDLE, LPCSTR, DWORD, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithSpnExW( LPCWSTR, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE, LPCWSTR, DWORD, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindWithSpnW( LPCWSTR, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE, LPCWSTR, HANDLE * );
+NTDSAPI DWORD WINAPI    DsBindingSetTimeout( HANDLE, ULONG );
+NTDSAPI DWORD WINAPI    DsClientMakeSpnForTargetServerA( LPCSTR, LPCSTR, DWORD *, LPSTR );
+NTDSAPI DWORD WINAPI    DsClientMakeSpnForTargetServerW( LPCWSTR, LPCWSTR, DWORD *, LPWSTR );
+NTDSAPI DWORD WINAPI    DsCrackNamesA( HANDLE, DS_NAME_FLAGS, DS_NAME_FORMAT, DS_NAME_FORMAT, DWORD, const LPCSTR *, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsCrackNamesW( HANDLE, DS_NAME_FLAGS, DS_NAME_FORMAT, DS_NAME_FORMAT, DWORD, const LPCWSTR *, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsCrackSpnA( LPCSTR, LPDWORD, LPSTR, LPDWORD, LPSTR, LPDWORD, LPSTR, USHORT * );
+NTDSAPI DWORD WINAPI    DsCrackSpnW( LPCWSTR, LPDWORD, LPWSTR, LPDWORD, LPWSTR, LPDWORD, LPWSTR, USHORT * );
+NTDSAPI BOOL WINAPI     DsCrackUnquotedMangledRdnA( LPCSTR, DWORD, GUID *, DS_MANGLE_FOR * );
+NTDSAPI BOOL WINAPI     DsCrackUnquotedMangledRdnW( LPCWSTR, DWORD, GUID *, DS_MANGLE_FOR * );
+NTDSAPI VOID WINAPI     DsFreeDomainControllerInfoA( DWORD, DWORD, VOID * );
+NTDSAPI VOID WINAPI     DsFreeDomainControllerInfoW( DWORD, DWORD, VOID * );
+NTDSAPI void WINAPI     DsFreeNameResultA( DS_NAME_RESULTA * );
+NTDSAPI void WINAPI     DsFreeNameResultW( DS_NAME_RESULTW * );
+NTDSAPI VOID WINAPI     DsFreePasswordCredentials( RPC_AUTH_IDENTITY_HANDLE );
+NTDSAPI VOID WINAPI     DsFreeSchemaGuidMapA( PDS_SCHEMA_GUID_MAPA );
+NTDSAPI VOID WINAPI     DsFreeSchemaGuidMapW( PDS_SCHEMA_GUID_MAPW );
+NTDSAPI void WINAPI     DsFreeSpnArrayA( DWORD, LPSTR * );
+NTDSAPI void WINAPI     DsFreeSpnArrayW( DWORD, LPWSTR * );
+NTDSAPI DWORD WINAPI    DsGetDomainControllerInfoA( HANDLE, LPCSTR, DWORD, DWORD *, VOID ** );
+NTDSAPI DWORD WINAPI    DsGetDomainControllerInfoW( HANDLE, LPCWSTR, DWORD, DWORD *, VOID ** );
+NTDSAPI DWORD WINAPI    DsGetRdnW( LPCWCH *, DWORD *, LPCWCH *, DWORD *, LPCWCH *, DWORD * );
+NTDSAPI DWORD WINAPI    DsGetSpnA( DS_SPN_NAME_TYPE, LPCSTR, LPCSTR, USHORT, USHORT, LPCSTR *, const USHORT *, DWORD *, LPSTR ** );
+NTDSAPI DWORD WINAPI    DsGetSpnW( DS_SPN_NAME_TYPE, LPCWSTR, LPCWSTR, USHORT, USHORT, LPCWSTR *, const USHORT *, DWORD *, LPWSTR ** );
+NTDSAPI DWORD WINAPI    DsInheritSecurityIdentityA( HANDLE, DWORD, LPCSTR, LPCSTR );
+NTDSAPI DWORD WINAPI    DsInheritSecurityIdentityW( HANDLE, DWORD, LPCWSTR, LPCWSTR );
+NTDSAPI BOOL WINAPI     DsIsMangledDnA( LPCSTR, DS_MANGLE_FOR );
+NTDSAPI BOOL WINAPI     DsIsMangledDnW( LPCWSTR, DS_MANGLE_FOR );
+NTDSAPI BOOL WINAPI     DsIsMangledRdnValueA( LPCSTR, DWORD, DS_MANGLE_FOR );
+NTDSAPI BOOL WINAPI     DsIsMangledRdnValueW( LPCWSTR, DWORD, DS_MANGLE_FOR );
+NTDSAPI DWORD WINAPI    DsListDomainsInSiteA( HANDLE, LPCSTR, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListDomainsInSiteW( HANDLE, LPCWSTR, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsListInfoForServerA( HANDLE, LPCSTR, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListInfoForServerW( HANDLE, LPCWSTR, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsListRolesA( HANDLE, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListRolesW( HANDLE, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsListServersForDomainInSiteA( HANDLE, LPCSTR, LPCSTR, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListServersForDomainInSiteW( HANDLE, LPCWSTR, LPCWSTR, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsListServersInSiteA( HANDLE, LPCSTR, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListServersInSiteW( HANDLE, LPCWSTR, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsListSitesA( HANDLE, PDS_NAME_RESULTA * );
+NTDSAPI DWORD WINAPI    DsListSitesW( HANDLE, PDS_NAME_RESULTW * );
+NTDSAPI DWORD WINAPI    DsMakePasswordCredentialsA( LPCSTR, LPCSTR, LPCSTR, RPC_AUTH_IDENTITY_HANDLE * );
+NTDSAPI DWORD WINAPI    DsMakePasswordCredentialsW( LPCWSTR, LPCWSTR, LPCWSTR, RPC_AUTH_IDENTITY_HANDLE * );
+NTDSAPI DWORD WINAPI    DsMakeSpnA( LPCSTR, LPCSTR, LPCSTR, USHORT, LPCSTR, DWORD *, LPSTR );
+NTDSAPI DWORD WINAPI    DsMakeSpnW( LPCWSTR, LPCWSTR, LPCWSTR, USHORT, LPCWSTR, DWORD *, LPWSTR );
+NTDSAPI DWORD WINAPI    DsMapSchemaGuidsA( HANDLE, DWORD, GUID *, DS_SCHEMA_GUID_MAPA ** );
+NTDSAPI DWORD WINAPI    DsMapSchemaGuidsW( HANDLE, DWORD, GUID *, DS_SCHEMA_GUID_MAPW ** );
+NTDSAPI DWORD WINAPI    DsQuerySitesByCostA( HANDLE, LPSTR, LPSTR *, DWORD, DWORD, PDS_SITE_COST_INFO * );
+NTDSAPI DWORD WINAPI    DsQuerySitesByCostW( HANDLE, LPWSTR, LPWSTR *, DWORD, DWORD, PDS_SITE_COST_INFO * );
+NTDSAPI VOID WINAPI     DsQuerySitesFree( PDS_SITE_COST_INFO );
+NTDSAPI DWORD WINAPI    DsQuoteRdnValueA( DWORD, LPCCH, DWORD *, LPCH );
+NTDSAPI DWORD WINAPI    DsQuoteRdnValueW( DWORD, LPCWCH, DWORD *, LPWCH );
+NTDSAPI DWORD WINAPI    DsRemoveDsDomainA( HANDLE, LPSTR );
+NTDSAPI DWORD WINAPI    DsRemoveDsDomainW( HANDLE, LPWSTR );
+NTDSAPI DWORD WINAPI    DsRemoveDsServerA( HANDLE, LPSTR, LPSTR, BOOL *, BOOL );
+NTDSAPI DWORD WINAPI    DsRemoveDsServerW( HANDLE, LPWSTR, LPWSTR, BOOL *, BOOL );
+NTDSAPI DWORD WINAPI    DsReplicaAddA( HANDLE, LPCSTR, LPCSTR, LPCSTR, LPCSTR, const PSCHEDULE, DWORD );
+NTDSAPI DWORD WINAPI    DsReplicaAddW( HANDLE, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR, const PSCHEDULE, DWORD );
+NTDSAPI DWORD WINAPI    DsReplicaConsistencyCheck( HANDLE, DS_KCC_TASKID, DWORD );
+NTDSAPI DWORD WINAPI    DsReplicaDelA( HANDLE, LPCSTR, LPCSTR, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaDelW( HANDLE, LPCWSTR, LPCWSTR, ULONG );
+NTDSAPI void WINAPI     DsReplicaFreeInfo( DS_REPL_INFO_TYPE, VOID * );
+NTDSAPI DWORD WINAPI    DsReplicaGetInfo2W( HANDLE, DS_REPL_INFO_TYPE, LPCWSTR, UUID *, LPCWSTR, LPCWSTR, DWORD, DWORD, VOID ** );
+NTDSAPI DWORD WINAPI    DsReplicaGetInfoW( HANDLE, DS_REPL_INFO_TYPE, LPCWSTR, UUID *, VOID ** );
+NTDSAPI DWORD WINAPI    DsReplicaModifyA( HANDLE, LPCSTR, const UUID *, LPCSTR, LPCSTR, const PSCHEDULE, DWORD, DWORD, DWORD );
+NTDSAPI DWORD WINAPI    DsReplicaModifyW( HANDLE, LPCWSTR, const UUID *, LPCWSTR, LPCWSTR, const PSCHEDULE, DWORD, DWORD, DWORD );
+NTDSAPI DWORD WINAPI    DsReplicaSyncA( HANDLE, LPCSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaSyncAllA( HANDLE, LPCSTR, ULONG, BOOL (__stdcall *)( LPVOID, PDS_REPSYNCALL_UPDATEA ), LPVOID, PDS_REPSYNCALL_ERRINFOA ** );
+NTDSAPI DWORD WINAPI    DsReplicaSyncAllW( HANDLE, LPCWSTR, ULONG, BOOL (__stdcall *)( LPVOID, PDS_REPSYNCALL_UPDATEW ), LPVOID, PDS_REPSYNCALL_ERRINFOW ** );
+NTDSAPI DWORD WINAPI    DsReplicaSyncW( HANDLE, LPCWSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaUpdateRefsA( HANDLE, LPCSTR, LPCSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaUpdateRefsW( HANDLE, LPCWSTR, LPCWSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaVerifyObjectsA( HANDLE, LPCSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsReplicaVerifyObjectsW( HANDLE, LPCWSTR, const UUID *, ULONG );
+NTDSAPI DWORD WINAPI    DsServerRegisterSpnA( DS_SPN_WRITE_OP, LPCSTR, LPCSTR );
+NTDSAPI DWORD WINAPI    DsServerRegisterSpnW( DS_SPN_WRITE_OP, LPCWSTR, LPCWSTR );
+NTDSAPI DWORD WINAPI    DsUnBindA( HANDLE * );
+NTDSAPI DWORD WINAPI    DsUnBindW( HANDLE * );
+NTDSAPI DWORD WINAPI    DsUnquoteRdnValueA( DWORD, LPCCH, DWORD *, LPCH );
+NTDSAPI DWORD WINAPI    DsUnquoteRdnValueW( DWORD, LPCWCH, DWORD *, LPWCH );
+NTDSAPI DWORD WINAPI    DsWriteAccountSpnA( HANDLE, DS_SPN_WRITE_OP, LPCSTR, DWORD, LPCSTR * );
+NTDSAPI DWORD WINAPI    DsWriteAccountSpnW( HANDLE, DS_SPN_WRITE_OP, LPCWSTR, DWORD, LPCWSTR * );
+
+/* Aliases */
+#define DsFreePasswordCredentialsA  DsFreePasswordCredentials
+#define DsFreePasswordCredentialsW  DsFreePasswordCredentials
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define DsAddSidHistory                 DsAddSidHistoryW
+    #define DsBind                          DsBindW
+    #define DsBindByInstance                DsBindByInstanceW
+    #define DsBindToISTG                    DsBindToISTGW
+    #define DsBindWithCred                  DsBindWithCredW
+    #define DsBindWithSpn                   DsBindWithSpnW
+    #define DsBindWithSpnEx                 DsBindWithSpnExW
+    #define DsClientMakeSpnForTargetServer  DsClientMakeSpnForTargetServerW
+    #define DsCrackNames                    DsCrackNamesW
+    #define DsCrackSpn                      DsCrackSpnW
+    #define DsCrackUnquotedMangledRdn       DsCrackUnquotedMangledRdnW
+    #define DsFreeDomainControllerInfo      DsFreeDomainControllerInfoW
+    #define DsFreeNameResult                DsFreeNameResultW
+    #define DsFreeSchemaGuidMap             DsFreeSchemaGuidMapW
+    #define DsFreeSpnArray                  DsFreeSpnArrayW
+    #define DsGetDomainControllerInfo       DsGetDomainControllerInfoW
+    #define DsGetSpn                        DsGetSpnW
+    #define DsInheritSecurityIdentity       DsInheritSecurityIdentityW
+    #define DsIsMangledDn                   DsIsMangledDnW
+    #define DsIsMangledRdnValue             DsIsMangledRdnValueW
+    #define DsListDomainsInSite             DsListDomainsInSiteW
+    #define DsListInfoForServer             DsListInfoForServerW
+    #define DsListRoles                     DsListRolesW
+    #define DsListServersForDomainInSite    DsListServersForDomainInSiteW
+    #define DsListServersInSite             DsListServersInSiteW
+    #define DsListSites                     DsListSitesW
+    #define DsMakePasswordCredentials       DsMakePasswordCredentialsW
+    #define DsMakeSpn                       DsMakeSpnW
+    #define DsMapSchemaGuids                DsMapSchemaGuidsW
+    #define DsQuerySitesByCost              DsQuerySitesByCostW
+    #define DsQuoteRdnValue                 DsQuoteRdnValueW
+    #define DsRemoveDsDomain                DsRemoveDsDomainW
+    #define DsRemoveDsServer                DsRemoveDsServerW
+    #define DsReplicaAdd                    DsReplicaAddW
+    #define DsReplicaDel                    DsReplicaDelW
+    #define DsReplicaGetInfo                DsReplicaGetInfoW
+    #define DsReplicaGetInfo                DsReplicaGetInfo2W
+    #define DsReplicaModify                 DsReplicaModifyW
+    #define DsReplicaSync                   DsReplicaSyncW
+    #define DsReplicaSyncAll                DsReplicaSyncAllW
+    #define DsReplicaUpdateRefs             DsReplicaUpdateRefsW
+    #define DsReplicaVerifyObjects          DsReplicaVerifyObjectsW
+    #define DsServerRegisterSpn             DsServerRegisterSpnW
+    #define DsUnBind                        DsUnBindW
+    #define DsUnquoteRdnValue               DsUnquoteRdnValueW
+    #define DsWriteAccountSpn               DsWriteAccountSpnW
+#else
+    #define DsAddSidHistory                 DsAddSidHistoryA
+    #define DsBind                          DsBindA
+    #define DsBindByInstance                DsBindByInstanceA
+    #define DsBindToISTG                    DsBindToISTGA
+    #define DsBindWithCred                  DsBindWithCredA
+    #define DsBindWithSpn                   DsBindWithSpnA
+    #define DsBindWithSpnEx                 DsBindWithSpnExA
+    #define DsClientMakeSpnForTargetServer  DsClientMakeSpnForTargetServerA
+    #define DsCrackNames                    DsCrackNamesA
+    #define DsCrackSpn                      DsCrackSpnA
+    #define DsCrackUnquotedMangledRdn       DsCrackUnquotedMangledRdnA
+    #define DsFreeDomainControllerInfo      DsFreeDomainControllerInfoA
+    #define DsFreeNameResult                DsFreeNameResultA
+    #define DsFreeSchemaGuidMap             DsFreeSchemaGuidMapA
+    #define DsFreeSpnArray                  DsFreeSpnArrayA
+    #define DsGetDomainControllerInfo       DsGetDomainControllerInfoA
+    #define DsGetSpn                        DsGetSpnA
+    #define DsInheritSecurityIdentity       DsInheritSecurityIdentityA
+    #define DsIsMangledDn                   DsIsMangledDnA
+    #define DsIsMangledRdnValue             DsIsMangledRdnValueA
+    #define DsListDomainsInSite             DsListDomainsInSiteA
+    #define DsListInfoForServer             DsListInfoForServerA
+    #define DsListRoles                     DsListRolesA
+    #define DsListServersForDomainInSite    DsListServersForDomainInSiteA
+    #define DsListServersInSite             DsListServersInSiteA
+    #define DsListSites                     DsListSitesA
+    #define DsMakePasswordCredentials       DsMakePasswordCredentialsA
+    #define DsMakeSpn                       DsMakeSpnA
+    #define DsMapSchemaGuids                DsMapSchemaGuidsA
+    #define DsQuerySitesByCost              DsQuerySitesByCostA
+    #define DsQuoteRdnValue                 DsQuoteRdnValueA
+    #define DsRemoveDsDomain                DsRemoveDsDomainA
+    #define DsRemoveDsServer                DsRemoveDsServerA
+    #define DsReplicaAdd                    DsReplicaAddA
+    #define DsReplicaDel                    DsReplicaDelA
+    #define DsReplicaModify                 DsReplicaModifyA
+    #define DsReplicaSync                   DsReplicaSyncA
+    #define DsReplicaSyncAll                DsReplicaSyncAllA
+    #define DsReplicaUpdateRefs             DsReplicaUpdateRefsA
+    #define DsReplicaVerifyObjects          DsReplicaVerifyObjectsA
+    #define DsServerRegisterSpn             DsServerRegisterSpnA
+    #define DsUnBind                        DsUnBindA
+    #define DsUnquoteRdnValue               DsUnquoteRdnValueA
+    #define DsWriteAccountSpn               DsWriteAccountSpnA
+#endif
+
+:include cplusepi.sp
+
+#endif /* _NTDSAPI_H_ */

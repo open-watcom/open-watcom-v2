@@ -34,8 +34,9 @@
 #include "guidlg.h"
 #include <string.h>
 
+#if !defined( __NT__ ) || (GUI_IS_GUI == FALSE)
 static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {
-    /* Fore              Back        */
+  /* Fore              Back        */
   { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
   { GUI_BRIGHT_WHITE, GUI_BLUE },           /* GUI_MENU_STANDOUT  */
   { GUI_WHITE,        GUI_BRIGHT_WHITE },   /* GUI_BACKGROUND     */
@@ -45,6 +46,7 @@ static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {
   { GUI_GREY,         GUI_WHITE },          /* GUI_FRAME_INACTIVE */
   { GUI_BRIGHT_CYAN,  GUI_CYAN }            /* GUI_FIRST_UNUSED   */
 };
+#endif
 
 static gui_create_info DlgControl = {
     NULL,
@@ -54,8 +56,13 @@ static gui_create_info DlgControl = {
     NULL,
     0,
     NULL,
-    GUI_NUM_ATTRS+1,
+#if !defined( __NT__ ) || (GUI_IS_GUI == FALSE)
+    GUI_NUM_ATTRS + 1,
     DlgColours,
+#else
+    0,
+    NULL,
+#endif
     NULL,
     NULL
 };
@@ -73,7 +80,7 @@ extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
     } else {
         strncpy( buff, str, max_len-1 );
         buff[max_len-1] = '\0';
-        GUIFree( str );
+        GUIMemFree( str );
     }
     return( strlen( buff ) );
 }

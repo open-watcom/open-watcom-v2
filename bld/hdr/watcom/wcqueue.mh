@@ -6,20 +6,18 @@
 //
 #ifndef _WCQUEUE_H_INCLUDED
 #define _WCQUEUE_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wcqueue.h is for use with C++
-#endif
+:include cpponly.sp
 
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCLIST_H_INCLUDED
  #include <wclist.h>
 #endif
-
-
 
 //
 //  The WCQueue template class defines a queue.  The template supplies

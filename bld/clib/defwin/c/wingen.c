@@ -143,7 +143,7 @@ void _WindowsExit( void )
 {
     _ExecutionComplete();
     if( !_MainWindowDestroyed )  while( _BlockingMessageLoop( FALSE ) );
-    _WindowExitRtn = NULL;
+    _WindowsExitRtn = NULL;
 
 } /* _WindowsExit */
 
@@ -176,7 +176,7 @@ void _InitFunctionPointers( void )
     _WindowsGetch = _DoGetch;
     _WindowsGetche = _DoGetche;
     _WindowsPutch = _DoPutch;
-    _WindowExitRtn = _WindowsExit;
+    _WindowsExitRtn = _WindowsExit;
     _WindowsIsWindowedHandle = _IsWindowedHandle;
     _WindowsRemoveWindowedHandle = _RemoveWindowedHandle;
     _WindowsNewWindow = _NewWindow;
@@ -201,7 +201,7 @@ void _WCI86FAR *_MemAlloc( unsigned size )
     if( tmp == NULL ) {
         _OutOfMemory();
         while( _MessageLoop( FALSE ) );
-        _WindowExitRtn = NULL;
+        _WindowsExitRtn = NULL;
         exit( 0 );
     }
     FARmemset( tmp, 0, size );
@@ -220,7 +220,7 @@ void _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size )
     if( tmp == NULL ) {
         _OutOfMemory();
         while( _MessageLoop( FALSE ) );
-        _WindowExitRtn = NULL;
+        _WindowsExitRtn = NULL;
         exit( 0 );
     }
     return( tmp );

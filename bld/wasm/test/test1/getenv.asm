@@ -1,12 +1,14 @@
-include test.inc
-include osdef.inc
+_MODEL = _LARGE
+
+;include test.inc
+;include osdef.inc
 include mdef.inc
 include struct.inc
 
 extrn   DOSGETENV       : far
                 modstart        GetEnvVar
 
-               if 0
+               if 1
                 dataseg
                 enddata
                 endif
@@ -80,3 +82,4 @@ epi:            pop     bp                      ; return to caller
                 endproc GetEnvVar_
 
                 endmod
+end

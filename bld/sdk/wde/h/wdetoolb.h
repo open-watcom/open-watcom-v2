@@ -45,32 +45,31 @@
 typedef void *toolbar;
 
 typedef struct {
-    TOOLDISPLAYINFO    dinfo;
-    TOOLITEMINFO      *items;
-    int                num_items;
+    TOOLDISPLAYINFO dinfo;
+    TOOLITEMINFO    *items;
+    int             num_items;
 } WdeToolBarInfo;
 
 typedef struct {
-    toolbar            tbar;
-    WdeToolBarInfo    *info;
-    HWND               parent;
-    HWND               win;
-    RECT               last_pos;
+    toolbar         tbar;
+    WdeToolBarInfo  *info;
+    HWND            parent;
+    HWND            win;
+    RECT            last_pos;
 } WdeToolBar;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeToolBar     *WdeCreateToolBar       ( WdeToolBarInfo *, HWND );
-extern void            WdeDestroyToolBar      ( WdeToolBar * );
-extern void            WdeShutdownToolBars    ( void );
-extern void            WdeFreeToolBarInfo     ( WdeToolBarInfo * );
-extern WdeToolBarInfo *WdeAllocToolBarInfo    ( int );
-extern void            WdeSetToolBarItemState ( WdeToolBar *, UINT, UINT );
-extern Bool            WdeCloseToolBar        ( WdeToolBar * );
-extern void            WdeFreeToolBar         ( WdeToolBar * );
-extern void            WdeHandleToolHint      ( WPARAM, BOOL );
-extern void            WdeHandleStickyToolPress ( WdeToolBar *,
-                                                WPARAM, LPARAM );
+extern WdeToolBar       *WdeCreateToolBar( WdeToolBarInfo *, HWND );
+extern void             WdeDestroyToolBar( WdeToolBar * );
+extern void             WdeShutdownToolBars( void );
+extern void             WdeFreeToolBarInfo( WdeToolBarInfo * );
+extern WdeToolBarInfo   *WdeAllocToolBarInfo( int );
+extern void             WdeSetToolBarItemState( WdeToolBar *, UINT, UINT );
+extern Bool             WdeCloseToolBar( WdeToolBar * );
+extern void             WdeFreeToolBar( WdeToolBar * );
+extern void             WdeHandleToolHint( WPARAM, BOOL );
+extern void             WdeHandleStickyToolPress( WdeToolBar *, WPARAM, LPARAM );
 
 #endif

@@ -1,0 +1,497 @@
+#
+# WASM test environment
+#
+
+#
+# configuration flags (default: flag symbol not defined)
+#
+# no_continue = yes     -- continue in the face of errors
+# dev = yes             -- use development tools
+# use_dll = yes         -- use !loaddll
+
+#
+# configuration values:
+#
+# targ_env_386 = wnt386/d4g386/cw386/os2386/linux386 (depends on current OS)
+# targ_env_i86 = os2i86/dosi86 (depends on current OS)
+# targ_env_axp = ntaxp (depends on current OS)
+# targ_env_ppc = linuxppc/ntppc (depends on current OS)
+# targ_env_mps = linuxmips (depends on current OS)
+#
+# nb: above directories can have extensions:
+#   .    - Intel 386 hosted compiler
+#   .axp - Digital AXP hosted compiler
+#   ( more to be defined )
+#
+# wasm_386 = wasm
+# wasm_i86 = wasm
+# wasm_axp = wasmaxp
+# wasm_ppc = wasmppc
+# wasm_mps = wasmmps
+#
+# arch = 386/axp/ppc/mps (depends on current hardware)
+#
+# linker = wlink
+# log_file = $(wasmtest_dir)/$(wasmtest_name).log
+
+#
+# use wasmtest_* environment vars to set make variables
+#
+!ifndef dev
+!  ifdef %WASMTEST_DEV
+!    define dev $+$(%WASMTEST_DEV)$-
+!  endif
+!endif
+
+!ifndef use_dll
+!  ifdef %WASMTEST_USE_DLL
+!    define use_dll $+$(%WASMTEST_USE_DLL)$-
+!  endif
+!endif
+
+!ifndef comp_wasm_386
+!  ifdef %WASMTEST_WASM_386
+!    define comp_wasm_386 $(%WASMTEST_WASM_386)
+!  endif
+!endif
+
+!ifndef comp_wasm_i86
+!  ifdef %WASMTEST_WASM_I86
+!    define comp_wasm_i86 $(%WASMTEST_WASM_I86)
+!  endif
+!endif
+
+!ifndef comp_wasm_axp
+!  ifdef %WASMTEST_WASM_AXP
+!    define comp_wasm_axp $(%WASMTEST_WASM_AXP)
+!  endif
+!endif
+
+!ifndef comp_wasm_ppc
+!  ifdef %WASMTEST_WASM_PPC
+!    define comp_wasm_ppc $(%WASMTEST_WASM_PPC)
+!  endif
+!endif
+
+!ifndef comp_wasm_mps
+!  ifdef %WASMTEST_WASM_MPS
+!    define comp_wasm_mps $(%WASMTEST_WASM_MPS)
+!  endif
+!endif
+
+!ifndef targ_env_386
+!  ifdef %WASMTEST_TARG_ENV_386
+!    define targ_env_386 $(%WASMTEST_TARG_ENV_386)
+!  endif
+!endif
+
+!ifndef targ_env_i86
+!  ifdef %WASMTEST_TARG_ENV_I86
+!    define targ_env_i86 $(%WASMTEST_TARG_ENV_I86)
+!  endif
+!endif
+
+!ifndef targ_env_axp
+!  ifdef %WASMTEST_TARG_ENV_AXP
+!    define targ_env_axp $(%WASMTEST_TARG_ENV_AXP)
+!  endif
+!endif
+
+!ifndef targ_env_ppc
+!  ifdef %WASMTEST_TARG_ENV_PPC
+!    define targ_env_ppc $(%WASMTEST_TARG_ENV_PPC)
+!  endif
+!endif
+
+!ifndef targ_env_mps
+!  ifdef %WASMTEST_TARG_ENV_MPS
+!    define targ_env_mps $(%WASMTEST_TARG_ENV_MPS)
+!  endif
+!endif
+
+!ifndef wasmtest_name
+!error macro 'wasmtest_name' has not been set
+!endif
+
+.extensions:
+.extensions: .exe .dis .dib .obj .err .c .asm .mif
+.mif: ..;$(mif_path)
+
+!ifndef no_continue
+.continue
+!else
+!  ifneq no_continue yes
+.continue
+!  endif
+!endif
+
+.erase
+
+#
+# architectures -- 386, i86, axp, ppc, mps
+#
+!ifndef arch
+!   ifdef __NTAXP__
+!       define arch axp
+!   else ifdef __LINUXPPC__
+!       define arch ppc
+!   else ifdef __LINUXMIPS__
+!       define arch mps
+!   else
+!       define arch 386
+!   endif
+!endif
+
+#
+# 386 environments
+#
+# pls386 -- PharLap .EXP
+# d4g386 -- DOS4G .EXE
+# cw386  -- CauseWay .EXE
+# tnt386 -- PharLap TNT .EXE
+# os2386 -- OS/2 2.x .EXE
+# lnx386 -- Linux x86 executable
+# wnt386 -- Windows NT x86 .EXE
+#
+
+#
+# i86 environments
+#
+# dosi86 -- DOS .EXE
+# os2i86 -- OS/2 1.x .EXE
+#
+
+#
+# Alpha AXP environments
+#
+# wntaxp -- Windows NT Alpha AXP .EXE
+#
+
+#
+# PowerPC environments
+#
+# lnxppc -- Linux PowerPC executable
+#
+
+#
+# MIPS environments
+#
+# lnxmps -- Linux MIPS executable
+#
+
+
+!ifndef targ_env_386
+!  ifdef __DOS__
+!    define targ_env_386 d4g386
+#!    define targ_env_386 cw386
+!  else ifdef __OS2__
+!    define targ_env_386 os2386
+!  else ifdef __LINUX__
+!    define targ_env_386 lnx386
+!  else ifdef __NT386__
+!    define targ_env_386 wnt386
+!  endif
+!endif
+
+!ifndef targ_env_i86
+!  ifdef __DOS__
+!    define targ_env_i86 dosi86
+!  else ifdef __OS2__
+!    define targ_env_i86 os2i86
+!  else ifdef __NT__
+!    define targ_env_i86 wnti86
+!  endif
+!endif
+
+!ifndef targ_env_axp
+!  ifdef __DOS__
+!    define targ_env_axp dosaxp
+!  else ifdef __OS2__
+!    define targ_env_axp os2axp
+!  else ifdef __NT__
+!    define targ_env_axp wntaxp
+!  endif
+!endif
+
+!ifndef targ_env_mps
+!  ifdef __LINUX__
+!    define targ_env_mps lnxmps
+!  endif
+!endif
+
+# targ_br
+targ_br_pls386 =
+targ_br_d4g386 =
+targ_br_cw386  =
+targ_br_tnt386 =
+targ_br_os2386 = -br
+targ_br_wnt386 = -br
+targ_br_lnx386 =
+targ_br_wnti86 =
+targ_br_dosi86 =
+targ_br_os2i86 = -br
+targ_br_wntaxp = -br
+targ_br_lnxppc =
+targ_br_lnxmps =
+
+br_opt = $(targ_br_$(targ_env_$(arch)))
+
+#
+# targ_run      name of executable loader (e.g., run386)
+targ_run_pls386 = run386
+targ_run_d4g386 = dos4gw
+targ_run_cw386  =
+targ_run_tnt386 = tntrun
+targ_run_os2386 =
+targ_run_wnt386 =
+targ_run_lnx386 =
+targ_run_wnti86 =
+targ_run_dosi86 =
+targ_run_os2i86 =
+targ_run_wntaxp =
+targ_run_lnxppc =
+targ_run_lnxmps =
+
+run_386 = $(targ_run_$(targ_env_386))
+run_i86 = $(targ_run_$(targ_env_i86))
+run_axp = $(targ_run_$(targ_env_axp))
+run_ppc = $(targ_run_$(targ_env_ppc))
+run_mps = $(targ_run_$(targ_env_mps))
+
+run = $(run_$(arch))
+
+#
+# targ_ext      extension (e.g., exp ) - must have one for default rules to work
+targ_ext_pls386 = exp
+targ_ext_d4g386 = exe
+targ_ext_cw386  = exe
+targ_ext_tnt386 = exe
+targ_ext_os2386 = exe
+targ_ext_wnt386 = exe
+targ_ext_lnx386 = exe
+
+ext_386 = $(targ_ext_$(targ_env_386))
+ext_i86 = exe
+ext_axp = exe
+ext_ppc = exe
+ext_mps = exe
+
+exe = $(ext_$(arch))
+
+#
+# targ_lnk      linker directives (e.g., system pharlap option offset=64k)
+targ_lnk_pls386 = system pharlap option offset=64k
+targ_lnk_d4g386 = system dos4g
+targ_lnk_cw386  = system causeway
+targ_lnk_tnt386 = system nt option offset=64k
+targ_lnk_os2386 = system os2v2 option offset=64k
+targ_lnk_wnt386 = system nt option offset=64k
+targ_lnk_lnx386 = system linux
+!ifdef __NT386__
+targ_lnk_wnti86 = system dos option stack=3k
+!else
+targ_lnk_wnti86 = system os2 pmc libpath $(watcom_dir)\lib
+!endif
+targ_lnk_dosi86 = system dos option stack=3k
+targ_lnk_os2i86 = system os2 pmc libpath $(watcom_dir)\lib
+targ_lnk_wntaxp = system ntaxp
+targ_lnk_lnxppc = system linuxppc
+targ_lnk_lnxmps = system linuxmips
+
+lnk_any    = # option noundefsok # add once we only use 11.0 linkers
+
+lnk_386 = $(targ_lnk_$(targ_env_386)) $(lnk_any)
+lnk_i86 = $(targ_lnk_$(targ_env_i86)) $(lnk_any)
+lnk_axp = $(targ_lnk_$(targ_env_axp)) $(lnk_any)
+lnk_ppc = $(targ_lnk_$(targ_env_ppc)) $(lnk_any)
+lnk_mps = $(targ_lnk_$(targ_env_mps)) $(lnk_any)
+
+#
+# targ_ldb      linker debug directive (e.g., DEBUG all)
+targ_ldb_pls386 = debug all
+targ_ldb_d4g386 = debug all
+targ_ldb_cw386  = debug all
+targ_ldb_tnt386 = debug all
+targ_ldb_os2386 = debug all
+targ_ldb_wnt386 = debug all
+targ_ldb_lnx386 = debug all
+targ_ldb_wnti86 = debug all
+targ_ldb_dosi86 = debug all
+targ_ldb_os2i86 = debug all
+targ_ldb_wntaxp = debug codeview
+targ_ldb_lnxppc = debug all
+targ_ldb_lnxmps = debug all
+
+ldebug_386 = $(targ_ldb_$(targ_env_386))
+ldebug_i86 = $(targ_ldb_$(targ_env_i86))
+ldebug_axp = $(targ_ldb_$(targ_env_axp))
+ldebug_ppc = $(targ_ldb_$(targ_env_ppc))
+ldebug_mps = $(targ_ldb_$(targ_env_mps))
+
+#
+# targ_bld      build options (e.g., -bt=dos)
+targ_bld_pls386 = -bt=dos
+targ_bld_d4g386 = -bt=dos
+targ_bld_cw386  = -bt=dos
+targ_bld_tnt386 = -bt=nt
+targ_bld_os2386 = -bt=os2
+targ_bld_wnt386 = -bt=nt
+targ_bld_lnx386 = -bt=linux
+!ifdef __NT386__
+targ_bld_wnti86 = -bt=dos
+!else
+targ_bld_wnti86 = -bt=nt
+!endif
+targ_bld_dosi86 = -bt=dos
+targ_bld_os2i86 = -bt=os2
+#
+# these will be empty
+#
+targ_bld_wntaxp = -si
+
+#
+# build environment
+#
+
+!ifndef comp_wasm_386
+!  ifdef dev
+!    ifdef __DOS__
+!      define comp_wasm_386 $(wasm_dir)\dos386.386\wasm
+!    else ifdef __OS2__
+!      define comp_wasm_386 $(wasm_dir)\os2386.386\wasm
+!    else ifdef __NT386__
+!      define comp_wasm_386 $(wasm_dir)\nt386.386\wasm
+!    else ifdef __LINUX386__
+!      define comp_wasm_386 $(wasm_dir)/linux386.386/wasm
+!    endif
+!  else
+!    define comp_wasm_386 wasm
+!  endif
+!endif
+!ifndef comp_wasm_i86
+!  ifdef dev
+!    ifdef __DOS__
+!      define comp_wasm_i86 $(wasm_dir)\dos386.i86\wasm
+!    else ifdef __OS2__
+!      define comp_wasm_i86 $(wasm_dir)\os2386.i86\wasm
+!    else ifdef __NT386__
+!      define comp_wasm_i86 $(wasm_dir)\nt386.i86\wasm
+!    else ifdef __LINUX386__
+!      define comp_wasm_i86 $(wasm_dir)/linux386.i86/wasm
+!    endif
+!  else
+!    define comp_wasm_i86 wasmr
+!  endif
+!endif
+!ifndef comp_wasm_axp
+!  ifdef dev
+!    ifdef __DOS__
+!      define comp_wasm_axp $(wasm_dir)\dos386.axp\wasmaxp
+!    else ifdef __OS2__
+!      define comp_wasm_axp $(wasm_dir)\os2386.axp\wasmaxp
+!    else ifdef __NT386__
+!      define comp_wasm_axp $(wasm_dir)\nt386.axp\wasmaxp
+!    else ifdef __LINUX386__
+!      define comp_wasm_axp $(wasm_dir)/linux386.axp/wasmaxp
+!    endif
+!  else
+!    define comp_wasm_axp wasmaxp
+!  endif
+!endif
+!ifndef comp_wasm_ppc
+!  ifdef dev
+!    ifdef __DOS__
+!      define comp_wasm_ppc $(wasm_dir)\dos386.ppc\wasmppc
+!    else ifdef __OS2__
+!      define comp_wasm_ppc $(wasm_dir)\os2386.ppc\wasmppc
+!    else ifdef __NT386__
+!      define comp_wasm_ppc $(wasm_dir)\nt386.ppc\wasmppc
+!    else ifdef __LINUX386__
+!      define comp_wasm_ppc $(wasm_dir)/linux386.ppc/wasmppc
+!    endif
+!  else
+!    define comp_wasm_ppc wasmppc
+!  endif
+!endif
+!ifndef comp_wasm_mps
+!  ifdef dev
+!    ifdef __DOS__
+!      define comp_wasm_mps $(wasm_dir)\dos386.mps\wasmmps
+!    else ifdef __OS2__
+!      define comp_wasm_mps $(wasm_dir)\os2386.mps\wasmmps
+!    else ifdef __NT386__
+!      define comp_wasm_mps $(wasm_dir)\nt386.mps\wasmmps
+!    else ifdef __LINUX386__
+!      define comp_wasm_mps $(wasm_dir)/linux386.mps/wasmmps
+!    endif
+!  else
+!    define comp_wasm_mps wasmmps
+!  endif
+!endif
+
+# add architecture common options
+wasm_386 = $(comp_wasm_386) $(targ_bld_$(targ_env_386))
+wasm_i86 = $(comp_wasm_i86) $(targ_bld_$(targ_env_i86))
+wasm_axp = $(comp_wasm_axp) $(targ_bld_$(targ_env_axp))
+wasm_ppc = $(comp_wasm_ppc) $(targ_bld_$(targ_env_ppc))
+wasm_mps = $(comp_wasm_mps) $(targ_bld_$(targ_env_mps))
+
+#
+# MAKEINIT vars
+#
+proj_name = wasmtest
+host_cpu = $(arch)
+!ifdef __MSDOS__
+!  define host_os dos
+!else ifdef __OS2__
+!  define host_os os2
+!else ifdef __NT__
+!  define host_os
+!else ifdef __LINUX__
+!  define host_os linux
+!else
+!  error unknown OS
+!endif
+!include cproj.mif
+
+#
+# linker
+#
+!ifdef %WASMTEST_LINKER
+!  define linker $+$(%WASMTEST_LINKER)$-
+!else
+!  ifndef linker
+!    define linker wlink
+!  endif
+!  ifdef use_dll
+!    loaddll wlink wlinkd.dll
+!  endif
+!endif
+
+#
+# output log file location
+#
+!ifndef log_file
+!  ifdef %WASMTEST_LOG_FILE
+!    define log_file $+$(%WASMTEST_LOG_FILE)$-
+!  else ifdef %WASMTEST_NAME
+!    define log_file $(wasmtest_dir)/$+$(%WASMTEST_NAME)$-.log
+!  else
+!    define log_file $(wasmtest_dir)/$(wasmtest_name).log
+!  endif
+!endif
+
+first_target : .symbolic start test
+    @%null
+
+start : .symbolic
+    @cdsay
+    @cdsay >> $(log_file)
+    %append $(log_file) TEST $(arch)
+
+clean : .symbolic global
+    @%null
+
+common_clean : .procedure
+    rm -f *.?bj *.err *.lnk *.exe *.out *.sym
+    rm -f *.dmp *.map *.lst *.log *.dis *.dib *.tmp

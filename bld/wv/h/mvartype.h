@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
+MENU_ITEM( MENU_VAR_ALLHEX,             XAllHex )
 MENU_ITEM( MENU_VAR_HEX,                XHex )
+MENU_ITEM( MENU_VAR_ALLDECIMAL,         XAllDecimal )
 MENU_ITEM( MENU_VAR_DECIMAL,            DeXcimal )
 MENU_ITEM( MENU_VAR_CHAR,               CharacteXr )
 MENU_BAR

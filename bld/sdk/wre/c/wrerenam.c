@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 #include <string.h>
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wremain.h"
 #include "wrenames.h"
 #include "wregcres.h"
@@ -61,20 +61,20 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WREResRenameProc ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WINEXPORT WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WRESetWinInfo             ( HWND, WREResRenameInfo * );
-static void         WREGetWinInfo             ( HWND, WREResRenameInfo * );
-static WResResNode *WREAllocResNodeFromWResID ( WResID * );
+static void         WRESetWinInfo( HWND, WREResRenameInfo * );
+static void         WREGetWinInfo( HWND, WREResRenameInfo * );
+static WResResNode *WREAllocResNodeFromWResID( WResID * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WRERenameResource ( void )
+Bool WRERenameResource( void )
 {
     WRECurrentResInfo  curr;
     WREResRenameInfo   info;
@@ -83,7 +83,7 @@ Bool WRERenameResource ( void )
     info.old_name = NULL;
     info.new_name = NULL;
 
-    ok = WREGetCurrentResource ( &curr );
+    ok = WREGetCurrentResource( &curr );
 
     if( ok ) {
         if( curr.info->current_type == (uint_16)RT_STRING ) {
@@ -92,33 +92,30 @@ Bool WRERenameResource ( void )
         }
     }
 
-    if ( ok )  {
+    if( ok ) {
         info.old_name = &curr.res->Info.ResName;
-        if ( WREGetNewName ( &info ) && info.new_name ) {
-            ok = WRERenameWResResNode ( curr.type, &curr.res, info.new_name );
+        if( WREGetNewName( &info ) && info.new_name != NULL ) {
+            ok = WRERenameWResResNode( curr.type, &curr.res, info.new_name );
             curr.info->modified = TRUE;
-            if ( ok ) {
-                WRESetResNamesFromType
-                    ( curr.info, curr.info->current_type,
-                      TRUE, info.new_name, 0 );
+            if( ok ) {
+                WRESetResNamesFromType( curr.info, curr.info->current_type,
+                                        TRUE, info.new_name, 0 );
             }
         }
     }
 
-
-    if ( info.new_name ) {
-        WREMemFree ( info.new_name );
+    if( info.new_name != NULL ) {
+        WREMemFree( info.new_name );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WRERenameWResResNode ( WResTypeNode *type_node, WResResNode **res_node,
-                            WResID *name )
+Bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WResID *name )
 {
     WResResNode *rn, *r;
 
-    if( !type_node || !res_node || !*res_node || !name ) {
+    if( type_node == NULL || res_node == NULL || *res_node == NULL || name == NULL ) {
         return( FALSE );
     }
 
@@ -127,29 +124,29 @@ Bool WRERenameWResResNode ( WResTypeNode *type_node, WResResNode **res_node,
         return( TRUE );
     }
 
-    if( ( rn = WREAllocResNodeFromWResID ( name ) ) == NULL ) {
-        return ( FALSE );
+    if( (rn = WREAllocResNodeFromWResID( name )) == NULL ) {
+        return( FALSE );
     }
 
-    r = WREFindResNodeFromWResID ( type_node, &rn->Info.ResName );
-    if( ( r != NULL ) && ( r != *res_node ) ) {
+    r = WREFindResNodeFromWResID( type_node, &rn->Info.ResName );
+    if( r != NULL && r != *res_node ) {
         WREDisplayErrorMsg( WRE_DUPRESNAME );
         WREMemFree( rn );
         return( FALSE );
     }
 
-    if ( type_node->Head == *res_node ) {
+    if( type_node->Head == *res_node ) {
         type_node->Head = rn;
     }
 
-    if ( type_node->Tail == *res_node ) {
+    if( type_node->Tail == *res_node ) {
         type_node->Tail = rn;
     }
 
-    rn->Head              = (*res_node)->Head;
-    rn->Tail              = (*res_node)->Tail;
-    rn->Next              = (*res_node)->Next;
-    rn->Prev              = (*res_node)->Prev;
+    rn->Head = (*res_node)->Head;
+    rn->Tail = (*res_node)->Tail;
+    rn->Next = (*res_node)->Next;
+    rn->Prev = (*res_node)->Prev;
     rn->Info.NumResources = (*res_node)->Info.NumResources;
 
     if( (*res_node)->Prev != NULL ) {
@@ -163,115 +160,110 @@ Bool WRERenameWResResNode ( WResTypeNode *type_node, WResResNode **res_node,
 
     *res_node = rn;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-WResResNode *WREAllocResNodeFromWResID ( WResID *id )
+WResResNode *WREAllocResNodeFromWResID( WResID *id )
 {
     WResResNode *rnode;
-    int          len, id_len;
+    int         len, id_len;
 
-    if ( !id ) {
-        return ( NULL );
+    if( id == NULL ) {
+        return( NULL );
     }
 
-    len    = sizeof ( WResResNode );
-    id_len = sizeof ( WResID );
+    len = sizeof( WResResNode );
+    id_len = sizeof( WResID );
 
-    if ( id->IsName ) {
+    if( id->IsName ) {
         id_len += id->ID.Name.NumChars - 1;
-        len    += id->ID.Name.NumChars - 1;
+        len += id->ID.Name.NumChars - 1;
     }
 
-    rnode = (WResResNode *) WREMemAlloc ( len );
+    rnode = (WResResNode *)WREMemAlloc( len );
 
-    if ( rnode ) {
-        memset ( rnode, 0, len - id_len );
-        memcpy ( &rnode->Info.ResName, id, id_len );
+    if( rnode != NULL ) {
+        memset( rnode, 0, len - id_len );
+        memcpy( &rnode->Info.ResName, id, id_len );
     }
 
-    return ( rnode );
+    return( rnode );
 }
 
-Bool WREGetNewName ( WREResRenameInfo *info )
+Bool WREGetNewName( WREResRenameInfo *info )
 {
     HWND        dialog_owner;
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
     Bool        modified;
 
-    dialog_owner  = WREGetMainWindowHandle();
-    app_inst      = WREGetAppInstance();
+    dialog_owner = WREGetMainWindowHandle();
+    app_inst = WREGetAppInstance();
 
-    proc_inst = (DLGPROC)
-        MakeProcInstance ( (FARPROC) WREResRenameProc, app_inst );
+    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResRenameProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner,
-                                proc_inst, (LPARAM) info );
+                                proc_inst, (LPARAM)info );
 
-    FreeProcInstance ( (FARPROC) proc_inst );
+    FreeProcInstance( (FARPROC)proc_inst );
 
-    return  ( ( modified != -1 ) && ( modified == IDOK ) );
+    return( modified != -1 && modified == IDOK );
 }
 
-void WRESetWinInfo ( HWND hDlg, WREResRenameInfo *info )
+void WRESetWinInfo( HWND hDlg, WREResRenameInfo *info )
 {
-    if ( info && info->old_name ) {
-        WRESetEditWithWResID ( GetDlgItem(hDlg, IDM_RENOLD), info->old_name );
-        WRESetEditWithWResID ( GetDlgItem(hDlg, IDM_RENNEW), info->old_name );
+    if( info != NULL && info->old_name != NULL ) {
+        WRESetEditWithWResID( GetDlgItem( hDlg, IDM_RENOLD ), info->old_name );
+        WRESetEditWithWResID( GetDlgItem( hDlg, IDM_RENNEW ), info->old_name );
         info->new_name = NULL;
     }
 }
 
-void WREGetWinInfo ( HWND hDlg, WREResRenameInfo *info )
+void WREGetWinInfo( HWND hDlg, WREResRenameInfo *info )
 {
-    if ( info ) {
-        info->new_name =
-            WREGetWResIDFromEdit ( GetDlgItem ( hDlg,IDM_RENNEW ), NULL );
+    if( info != NULL ) {
+        info->new_name = WREGetWResIDFromEdit( GetDlgItem( hDlg, IDM_RENNEW ), NULL );
     }
 }
 
-BOOL WR_EXPORT WREResRenameProc( HWND hDlg, UINT message,
-                                 WPARAM wParam, LPARAM lParam )
+BOOL WR_EXPORT WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WREResRenameInfo *info;
-    BOOL   ret;
+    WREResRenameInfo    *info;
+    BOOL                ret;
 
     ret = FALSE;
 
-    switch(message) {
+    switch( message ) {
+    case WM_INITDIALOG:
+        info = (WREResRenameInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WRESetWinInfo( hDlg, info );
+        ret = TRUE;
+        break;
 
-        case WM_INITDIALOG:
-            info = (WREResRenameInfo *) lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG)info );
-            WRESetWinInfo( hDlg, info );
+    case WM_SYSCOLORCHANGE:
+        WRECtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDM_HELP:
+            WREHelpRoutine();
+            break;
+
+        case IDOK:
+            info = (WREResRenameInfo *)GetWindowLong( hDlg, DWL_USER );
+            WREGetWinInfo( hDlg, info );
+            EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRECtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            switch( LOWORD(wParam) ) {
-                case IDM_HELP:
-                    WREHelpRoutine();
-                    break;
-
-                case IDOK:
-                    info = (WREResRenameInfo *)GetWindowLong(hDlg, DWL_USER);
-                    WREGetWinInfo( hDlg, info );
-                    EndDialog( hDlg, TRUE );
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-            }
+        }
     }
 
     return( ret );
 }
-

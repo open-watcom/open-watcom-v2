@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PE Dump Utility mainline.
 *
 ****************************************************************************/
 
 
 #include "param.h"
 #include "read.h"
+#include "format.h"
 #include "strings2.h"
 
 void main( int argc, char *argv[] ) {

@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 
 static char *buffPtr;
@@ -54,16 +51,16 @@ static int createLine( char *res )
         if( c < 32 ) {
             if( c == '\t' ) {
                 if( !EditFlags.RealTabs ) {
-                    int tb,i;
+                    int tb, i;
 
-                    tb = Tab( len+1, HardTab );
+                    tb = Tab( len + 1, HardTab );
                     if( len + tb >= MaxLinem1 ) {
                         *res = 0;
                         buffPtr = buff;
                         return( len );
                     }
                     len += tb;
-                    for( i=0;i<tb;i++ ) {
+                    for( i = 0; i < tb; i++ ) {
                         *res++ = ' ';
                     }
                     buff++;
@@ -83,7 +80,7 @@ static int createLine( char *res )
                     return( len );
                 }
                 if( c == LF || c == 0 ) {
-                    buffPtr = buff+1;
+                    buffPtr = buff + 1;
                     *res = 0;
                     return( len );
                 }
@@ -105,16 +102,16 @@ static int createLine( char *res )
 /*
  * CreateLinesFromBuffer - create a set of lines from specified buffer
  */
-bool CreateLinesFromBuffer( int cnt, line **head, line **tail, int *used,
-                           int *lcnt, short *bytecnt )
+bool CreateLinesFromBuffer( int cnt, line_list *linelist, int *used,
+                            int *lcnt, short *bytecnt )
 {
-    int         curr,copylen,total,tmpmio;
-    short       bcnt,llcnt;
+    int         curr, copylen, total, tmpmio;
+    short       bcnt, llcnt;
     char        *tmpbuff;
 
     total = bcnt = copylen = llcnt = curr = 0;
-    *tail = *head = NULL;
-    tmpmio = MAX_IO_BUFFER-2;
+    linelist->tail = linelist->head = NULL;
+    tmpmio = MAX_IO_BUFFER - 2;
     tmpbuff = StaticAlloc();
 
     /*
@@ -164,9 +161,9 @@ bool CreateLinesFromBuffer( int cnt, line **head, line **tail, int *used,
             /*
              * update line counts and buffer pointer
              */
-            InsertNewLine( *tail, head, tail, tmpbuff, copylen, INSERT_AFTER );
+            InsertNewLine( linelist->tail, linelist, tmpbuff, copylen, INSERT_AFTER );
             llcnt++;
-            bcnt += copylen+1;
+            bcnt += copylen + 1;
             curr = (int) (buffPtr - ReadBuffer);
         }
 

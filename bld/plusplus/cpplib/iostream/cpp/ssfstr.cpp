@@ -24,48 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  94/08/09    A.F.Scian       fixed delete of base() to be delete []
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <string.h>
-#include <strstrea.h>
+#include <strstrea>
 #endif
 #include "ioutil.h"
 
-char *strstreambuf::str() {
-/*************************/
-// Freeze the strstreambuf, and return a pointer to the contents.
-// This effectively terminates modification of the buffer, and the
-// buffer is now the responsibility of the user.
-// We also realloc() the reserve area down to the exact required size.
-// This involves some fancy pointer computations to set the get area and
-// put area up correctly in the new reserve areay.
+namespace std {
+
+  // Freeze the strstreambuf, and return a pointer to the contents. This
+  // effectively terminates modification of the buffer, and the buffer
+  // is now the responsibility of the user. We also realloc() the
+  // reserve area down to the exact required size. This involves some
+  // fancy pointer computations to set the get area and put area up
+  // correctly in the new reserve areay.
+
+  char *strstreambuf::str() {
 
     char    *newbuf;
     char    *oldbuf;
@@ -102,4 +83,6 @@ char *strstreambuf::str() {
     }
     __frozen = 1;
     return( base() );
+  }
+
 }

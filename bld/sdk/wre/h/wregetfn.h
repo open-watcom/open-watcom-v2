@@ -37,21 +37,21 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    char *file_name;
-    char *title;
-    char *filter;
-    Bool save_ext;
+    char    *file_name;
+    char    *title;
+    char    *filter;
+    Bool    save_ext;
 } WREGetFileStruct;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern char *WREGetFileFilter   ( void );
-extern void  WRESetFileFilter   ( char * );
-extern void  WREFreeFileFilter  ( void );
-extern char *WREGetInitialDir   ( void );
-extern void  WRESetInitialDir   ( char * );
-extern char *WREGetOpenFileName ( WREGetFileStruct * );
-extern char *WREGetSaveFileName ( WREGetFileStruct * );
+extern char *WREGetFileFilter( void );
+extern void WRESetFileFilter( char * );
+extern void WREFreeFileFilter( void );
+extern char *WREGetInitialDir( void );
+extern void WRESetInitialDir( char * );
+extern char *WREGetOpenFileName( WREGetFileStruct * );
+extern char *WREGetSaveFileName( WREGetFileStruct * );
 
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PM debugging helper routines.
 *
 ****************************************************************************/
 
@@ -34,5 +33,5 @@ extern void TellSoftModeHandles( HAB, HWND );
 extern void AssumeQueue( PID pid, TID tid );
 extern void ReleaseQueue( PID pid, TID tid );
 extern VOID InitSoftDebug( VOID );
-extern BOOL IsPMDebugger();
+extern BOOL IsPMDebugger( void );
 extern char SetHardMode( char hard );

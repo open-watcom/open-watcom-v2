@@ -36,9 +36,13 @@
 #include <typeinfo>
 #include <string.h>
 
-bool type_info::operator !=( type_info const &rhs ) const {
+namespace std {
+
+  bool type_info::operator !=( type_info const &rhs ) const {
     if( this == &rhs ) {
         return( false );
     }
     return( strcmp( __raw, rhs.__raw ) != 0 );
+  }
+
 }

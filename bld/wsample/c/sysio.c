@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  System I/O layered on top of POSIX calls.
 *
 ****************************************************************************/
 
@@ -35,6 +34,10 @@
 #include <malloc.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#ifndef O_BINARY
+    #define O_BINARY 0
+#endif
 
 int SysCreate( char *name )
 {

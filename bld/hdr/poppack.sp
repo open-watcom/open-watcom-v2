@@ -1,1 +1,1 @@
-#pragma pack(__pop);
+#pragma pack( __pop )

@@ -43,7 +43,7 @@ extern  hotspot_info    *GUIHotSpots;
 static void Cleanup( void )
 {
     GUIXCleanupHotSpots();
-    GUIFree( GUIHotSpots );
+    GUIMemFree( GUIHotSpots );
     GUIHotSpots = NULL;
     GUINumHotSpots = 0;
 }
@@ -55,7 +55,7 @@ bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
         GUIHotSpots = NULL;
         return( TRUE );
     }
-    GUIHotSpots = (hotspot_info *)GUIAlloc( sizeof( hotspot_info ) * num_hot_spots );
+    GUIHotSpots = (hotspot_info *)GUIMemAlloc( sizeof( hotspot_info ) * num_hot_spots );
     if( GUIHotSpots == NULL ) {
         GUINumHotSpots = 0;
         return( FALSE );

@@ -24,24 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple program to return specified error code. 
 *
 ****************************************************************************/
 
 
-/*
- * simple program to return an error code
- */
-
 #include <stdlib.h>
 
-void main( int argc, char **argv )
-/********************************/
+int main( int argc, char **argv )
+/*******************************/
 {
     if( argc < 2 ) {
-        exit( 1 );
+        return( 1 );
     }
-    exit( atoi( argv[1] ) );
+    return( atoi( argv[1] ) );
 }
-

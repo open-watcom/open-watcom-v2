@@ -41,17 +41,17 @@
 #define WDE_VERSION  0x0100
 
 #ifndef TRUE
-#define TRUE 1
+    #define TRUE 1
 #endif
 #ifndef FALSE
-#define FALSE 0
+    #define FALSE 0
 #endif
 
-#define _wde_touch(unused_var)  (unused_var=unused_var)
+#define _wde_touch( unused_var )    (unused_var = unused_var)
 
 #define WINEXPORT   __export CALLBACK
 
-#define MAXFILENAME _MAX_PATH * 2
+#define MAXFILENAME (_MAX_PATH * 2)
 #define MAX_NAME    MAXFILENAME
 
 #define EDIT_WINDOW_BASE   400

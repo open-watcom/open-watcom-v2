@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate C files from messages stored in GML source text.
 *
 ****************************************************************************/
 
@@ -39,7 +38,15 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#ifndef __UNIX__
 #include <sys/utime.h>
+#else
+#include <sys/types.h>
+#include <utime.h>
+#endif
+#ifdef __USE_BSD
+#define stricmp strcasecmp
+#endif
 
 #include "lsspec.h"
 #include "encodlng.h"
@@ -176,6 +183,7 @@ static struct {
     unsigned    ignore_prefix : 1;  // - ignore matching XXX_ prefix with message type
     unsigned    warnings_always_rebuild:1;//- warnings gen files with old dates
                                     //   to constantly force rebuilds
+    unsigned    no_warn     : 1;    // - don't print warning messages
 } flags;
 
 typedef enum {
@@ -234,6 +242,9 @@ static unsigned maxMsgLen;
 static unsigned totalMsgLen;
 static unsigned totalBytes;
 
+// some local functions which need predefining
+static void outputNum (FILE *fp, unsigned n);
+
 // encoding
 #define MAX_WORD_LEN    31
 #define ENC_BIT         0x80
@@ -259,10 +270,12 @@ static void warn( char *f, ... ) {
 
     ++warnings;
     va_start( args, f );
-    if( line ) {
-        printf( "%s(%u): Warning! W000: ", fname, line );
+    if( !flags.no_warn ) {
+        if( line ) {
+            printf( "%s(%u): Warning! W000: ", fname, line );
+        }
+        vprintf( f, args );
     }
-    vprintf( f, args );
     va_end( args );
 }
 
@@ -297,9 +310,14 @@ static void initFILE( FILE **f, char *n, char *m ) {
     }
 }
 
-static void processOptions( char **argv ) {
+static void processOptions( char **argv )
+{
     if( strcmp( *argv, "-w" ) == 0 ) {
         flags.warnings_always_rebuild = 1;
+        ++argv;
+    }
+    if( strcmp( *argv, "-s" ) == 0 ) {
+        flags.no_warn = 1;
         ++argv;
     }
     if( strcmp( *argv, "-i" ) == 0 ) {
@@ -844,6 +862,8 @@ static void checkMessages( void ) {
             #define def_msg_type( e, p ) case MSG_TYPE_##e: if( strPref( m, p ) ) errorLocn( m->fname, m->line, "MSGSYM %s has incorrect prefix (should be " p ")\n", m->name ); break;
                 ALL_MSG_TYPES
             #undef def_msg_type
+            default:
+                break;
             }
         }
     }
@@ -1055,7 +1075,6 @@ static void writeExtraDefs( FILE *fp ) {
 static void writeMsgH( void ) {
     MSGSYM *m;
 
-    fputs( "#pragma read_only_file;\n", o_msgh );
     if( ! flags.gen_pick ) {
         for( m = messageSyms; m != NULL; m = m->next ) {
             fputs( "#define ", o_msgh );
@@ -1147,7 +1166,7 @@ static void writeLevHGP( void ) {
 static void outputNum( FILE *fp, unsigned n ) {
     char buff[16];
 
-    utoa( n, buff, 10 );
+    sprintf( buff, "%u", n );
     fputs( buff, fp );
 }
 
@@ -1155,7 +1174,7 @@ static void outputNumJ( FILE *fp, unsigned n, int width ) {
     char buff[16];
     char *p;
 
-    utoa( n, buff, 10 );
+    sprintf( buff, "%u", n );
     for( p = buff; *p; ++p ) {
         --width;
     }
@@ -1185,7 +1204,7 @@ static void outputChar( FILE *fp, char c ) {
 
             fputc( '\\', fp );
             fputc( 'x', fp );
-            utoa( c, buff, 16 );
+            sprintf( buff, "%x", c );
             fputs( buff, fp );
         }
     }
@@ -1274,7 +1293,7 @@ static void writeMsgTable( void ) {
     current_text = 0;
     current_base = 0;
     msg_base = malloc( ( messageCounter + 1 ) * sizeof( unsigned ) );
-    outputTableName( o_msgc, "char const", "msg_text" );
+    outputTableName( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[ current_base++ ] = current_text;
         fputs( "\n/* ", o_msgc );
@@ -1374,7 +1393,6 @@ static void writeMsgC( void ) {
 static void writeLevH( void ) {
     MSGSYM *m;
 
-    fputs( "#pragma read_only_file;\n", o_levh );
     fputs( "#ifndef MSG_CONST\n", o_levh );
     fputs( "#define MSG_CONST const\n", o_levh );
     fputs( "#endif\n", o_levh );
@@ -1491,7 +1509,7 @@ int main( int argc, char **argv ) {
     int defs_ok = _LANG_DEFS_OK();
 
     if( argc < 5 || argc > 10 ) {
-        fatal( "usage: msgencod [-w] [-i] [-ip] [-q] [-p] <gml> <msgc> <msgh> <levh>" );
+        fatal( "usage: msgencod [-w] [-s] [-i] [-ip] [-q] [-p] <gml> <msgc> <msgh> <levh>" );
     }
     if( ! defs_ok ) {
         fatal( "language index mismatch" );

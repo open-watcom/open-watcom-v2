@@ -1,0 +1,248 @@
+DLGINCLUDE 1 "test.h"
+
+DLGTEMPLATE IDD_BUTTONSDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Buttons", IDD_BUTTONSDLG, 27, 1, 217, 82, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        GROUPBOX        "Radio buttons", 256, 11, 33, 68, 41, NOT WS_GROUP
+        AUTORADIOBUTTON "Radio ~1", IDC_RADIO1, 20, 55, 52, 10, WS_TABSTOP
+        AUTORADIOBUTTON "Radio ~2", IDC_RADIO2, 20, 45, 48, 10, WS_TABSTOP
+        AUTORADIOBUTTON "Radio ~3", IDC_RADIO3, 20, 35, 49, 10, WS_TABSTOP
+        AUTOCHECKBOX    "~Check Box", IDC_CHECKBOX, 90, 65, 61, 10, WS_GROUP
+        CONTROL         "~Three State", IDC_3STATE, 90, 51, 67, 10,
+                        WC_BUTTON, BS_AUTO3STATE | WS_TABSTOP | WS_VISIBLE
+        PUSHBUTTON      "~Push button", IDC_PUSHBUTTON, 12, 8, 60, 14
+        PUSHBUTTON      "#1", IDC_ICONBUTTON, 102, 7, 40, 28, WS_GROUP |
+                        BS_ICON
+        DEFPUSHBUTTON   "~OK", IDC_OK, 173, 64, 38, 13, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 173, 48, 38, 13, NOT
+                        WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 173, 32, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+        CONTROL         "Text", 257, 162, 6, 1, 70, WC_STATIC, SS_FGNDRECT |
+                        WS_GROUP | WS_VISIBLE
+    END
+END
+
+DLGTEMPLATE IDD_COMBOBOXDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Combo Boxes", IDD_COMBOBOXDLG, 11, 46, 301, 69, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        RTEXT           "~Simple:", 257, 7, 49, 38, 8, DT_MNEMONIC
+        COMBOBOX        "", IDC_SIMPLE, 50, 10, 95, 47
+        RTEXT           "~Drop Down:", 258, 167, 49, 52, 8, DT_MNEMONIC
+        CONTROL         "", IDC_DROPDOWN, 225, 17, 64, 42, WC_COMBOBOX,
+                        CBS_DROPDOWN | WS_TABSTOP | WS_VISIBLE
+        RTEXT           "Drop Down ~List:", 259, 149, 33, 71, 8, DT_MNEMONIC
+        CONTROL         "", IDC_DROPDOWNLIST, 225, 3, 64, 40, WC_COMBOBOX,
+                        CBS_DROPDOWNLIST | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", IDC_OK, 153, 5, 38, 13, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 203, 5, 38, 13, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 253, 5, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_ENTRYFIELDDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Entry Fields", IDD_ENTRYFIELDDLG, 21, 9, 242, 85,
+            FS_NOBYTEALIGN | WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        RTEXT           "~Single Line:", 256, 17, 65, 53, 8, DT_MNEMONIC
+        ENTRYFIELD      "Single Line Entry", IDC_ENTRY, 77, 65, 106, 8,
+                        ES_MARGIN
+        RTEXT           "~Multiple line:", 257, 8, 49, 62, 8, DT_MNEMONIC
+        MLE             "This is a multiple line entry field.  Notice that t"
+                        "he text wraps after each line."
+                        , IDC_MLE, 75, 6,
+                        110, 49, MLS_WORDWRAP | MLS_VSCROLL
+        DEFPUSHBUTTON   "~OK", IDC_OK, 193, 56, 38, 13, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 193, 36, 38, 13, NOT
+                        WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 193, 16, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_LISTBOXDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "List Boxes", IDD_LISTBOXDLG, 15, 33, 232, 76, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        LTEXT           "~Single selection", 257, 9, 59, 72, 8, DT_MNEMONIC
+        LISTBOX         IDC_LISTBOX, 15, 12, 64, 43
+        LTEXT           "~Multiple selection", 258, 99, 59, 78, 8,
+                        DT_MNEMONIC
+        LISTBOX         IDC_MULTISELLISTBOX, 110, 12, 64, 42, LS_MULTIPLESEL
+        DEFPUSHBUTTON   "~OK", IDC_OK, 185, 50, 38, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 185, 30, 38, 13, NOT
+                        WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 185, 10, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_PPDEMODLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Presentation Parameters", IDD_PPDEMODLG, 15, 25, 240, 91,
+            FS_NOBYTEALIGN | WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        RTEXT           "~Foreground:", 256, 100, 75, 60, 8, DT_MNEMONIC
+        CONTROL         "", IDC_FORECOLORLIST, 165, 41, 64, 42, WC_COMBOBOX,
+                        CBS_DROPDOWNLIST | WS_TABSTOP | WS_VISIBLE
+        RTEXT           "~Background:", 258, 100, 55, 60, 8, DT_MNEMONIC
+        CONTROL         "", IDC_BACKCOLORLIST, 165, 21, 64, 43, WC_COMBOBOX,
+                        CBS_DROPDOWNLIST | WS_TABSTOP | WS_VISIBLE
+        RTEXT           "~Font:", 259, 129, 35, 28, 8, DT_MNEMONIC
+        CONTROL         "", IDC_FONTLIST, 165, 6, 64, 38, WC_COMBOBOX,
+                        CBS_DROPDOWNLIST | WS_TABSTOP | WS_VISIBLE
+        CONTROL         "Text", 260, 90, 7, 2, 74, WC_STATIC, SS_FGNDRECT |
+                        WS_GROUP | WS_VISIBLE
+        LTEXT           "This is the sample text window.", IDC_SAMPLETEXT,
+                        4, 27, 52, 51, DT_WORDBREAK | NOT WS_GROUP
+        CHECKBOX        "Sample Button", IDC_CHECKBOX, 4, 11, 83, 10,
+                        BS_NOPOINTERFOCUS | WS_GROUP | NOT WS_TABSTOP
+        DEFPUSHBUTTON   "~Apply", IDC_APPLY, 100, 7, 38, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 149, 7, 38, 13, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 197, 7, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_STATICDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Static Controls", IDD_STATICDLG, 9, 17, 210, 98, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        GROUPBOX        "Group Box", IDC_GROUPBOX, 27, 63, 74, 30
+        LTEXT           "Static text", IDC_STATICTEXT, 27, 49, 61, 8
+        ICON            IDC_OK, IDC_ICON, 69, 22, 20, 21, WS_GROUP
+        RTEXT           "Icon:", 257, 41, 34, 20, 8, DT_MNEMONIC
+        CONTROL         "", IDC_STATICFRAME, 153, 62, 48, 29, WC_STATIC,
+                        SS_FGNDFRAME | WS_GROUP | WS_VISIBLE
+        RTEXT           "~Frame:", 258, 111, 85, 34, 8, DT_MNEMONIC
+        RTEXT           "~Rect:", 259, 119, 45, 26, 8, DT_MNEMONIC
+        CONTROL         "", IDC_STATICRECT, 153, 31, 48, 22, WC_STATIC,
+                        SS_FGNDRECT | WS_GROUP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", IDC_OK, 65, 5, 38, 13, WS_GROUP
+        PUSHBUTTON      "Help", IDC_HELP, 165, 5, 38, 13, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 115, 5, 38, 13, NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_SLIDERDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Sliders", IDD_SLIDERDLG, 35, -57, 239, 149, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", IDC_VSLIDER, 11, 33, 50, 110, WC_SLIDER,
+                        SLS_VERTICAL | SLS_BUTTONSBOTTOM | SLS_HOMEBOTTOM |
+                        WS_VISIBLE
+        CTLDATA         12, 0, 10,20,10,20
+        CONTROL         "", IDC_HSLIDER, 75, 110, 150, 30, WC_SLIDER,
+                        SLS_HORIZONTAL | SLS_HOMELEFT | SLS_BUTTONSLEFT |
+                        WS_VISIBLE
+        CTLDATA         12, 0,10,20,10,20
+        ENTRYFIELD      "", IDC_HSLIDERDATA, 201, 51, 28, 8, NOT
+                        ES_AUTOSCROLL | ES_MARGIN | NOT WS_TABSTOP
+        ENTRYFIELD      "", IDC_VSLIDERDATA, 201, 75, 28, 8, NOT
+                        ES_AUTOSCROLL | ES_MARGIN | NOT WS_TABSTOP
+        LTEXT           "Vertical Slider Value", 258, 80, 75, 105, 8,
+                        DT_VCENTER | NOT WS_GROUP
+        LTEXT           "Horizontal Slider Value", 258, 80, 49, 105, 8,
+                        DT_VCENTER | NOT WS_GROUP
+        DEFPUSHBUTTON   "~OK", IDC_OK, 30, 4, 40, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 100, 4, 40, 14, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 170, 4, 40, 14, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_SPINBUTTONDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Spinbuttons", IDD_SPINBUTTONDLG, 27, 1, 217, 82, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CTEXT           "Servant", 256, 132, 67, 65, 8, NOT WS_GROUP
+        CTEXT           "Master", 256, 13, 67, 65, 8, NOT WS_GROUP
+        CONTROL         "", IDC_MASTER, 11, 44, 69, 14, WC_SPINBUTTON,
+                        SPBS_ALLCHARACTERS | SPBS_MASTER | SPBS_SERVANT |
+                        SPBS_JUSTDEFAULT | SPBS_JUSTLEFT | WS_GROUP |
+                        WS_TABSTOP | WS_VISIBLE
+        CONTROL         "", IDC_SERVANT, 144, 44, 40, 14, WC_SPINBUTTON,
+                        SPBS_ALLCHARACTERS | SPBS_SERVANT | SPBS_JUSTDEFAULT |
+                        SPBS_JUSTLEFT | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", IDC_OK, 18, 10, 38, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 71, 10, 38, 14, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 124, 10, 38, 14, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_VALUESETDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Valueset", IDD_VALUESETDLG, 23, 6, 239, 97, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", IDC_VALUESET, 40, 36, 162, 52, WC_VALUESET,
+                        VS_ICON | VS_BORDER | VS_ITEMBORDER | WS_TABSTOP |
+                        WS_VISIBLE
+        CTLDATA         8, 0, 2,4
+        LTEXT           "", IDC_VALUESETTEXT, 30, 20, 205, 8, NOT WS_GROUP
+        DEFPUSHBUTTON   "~OK", IDC_OK, 30, 4, 40, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 100, 4, 40, 14, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 170, 4, 40, 14, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_NOTEBOOKDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Notebook", IDD_NOTEBOOKDLG, 79, -65, 276, 189, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", IDC_NOTEBOOK, 30, 18, 220, 162, WC_NOTEBOOK,
+                        WS_VISIBLE | BKS_BACKPAGESBR | BKS_MAJORTABRIGHT |
+                        BKS_SQUARETABS | BKS_STATUSTEXTCENTER |
+                        WS_GROUP | WS_TABSTOP
+        DEFPUSHBUTTON   "~OK", IDC_OK, 35, 3, 40, 14, WS_GROUP | WS_TABSTOP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 105, 3, 40, 14, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 175, 3, 40, 14, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_CONTAINERDLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Container", IDD_CONTAINERDLG, 23, 6, 239, 97, FS_NOBYTEALIGN |
+            WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         "", IDC_CONTAINER, 0, 24, 239, 73, WC_CONTAINER,
+                        CCS_MULTIPLESEL | CCS_AUTOPOSITION | CCS_READONLY |
+                        WS_GROUP | WS_TABSTOP | WS_VISIBLE
+        DEFPUSHBUTTON   "~OK", IDC_OK, 30, 4, 40, 14, WS_GROUP
+        PUSHBUTTON      "Cancel", IDC_CANCEL, 100, 4, 40, 14, NOT WS_TABSTOP
+        PUSHBUTTON      "Help", IDC_HELP, 170, 4, 40, 14, BS_HELP |
+                        BS_NOPOINTERFOCUS | NOT WS_TABSTOP
+    END
+END
+
+DLGTEMPLATE IDD_PRODINFO LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Product Information", IDD_PRODINFO, 75, 75, 275, 130,
+            FS_NOBYTEALIGN | WS_VISIBLE, FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CONTROL         IDR_BITMAP, IDC_BITMAP, 110, 70, 21, 21, WC_STATIC,
+                        SS_BITMAP | WS_GROUP | WS_VISIBLE
+        CTEXT           "(C) Copyright IBM Corporation 1991. All Rights rese"
+                        "rved.", 256, 7, 54, 255, 8
+        CTEXT           "OS/2 is a registered trademark of", 258, 7, 44, 255,
+                        8
+        CTEXT           "International Business Machines Corp.", 257, 7, 34,
+                        255, 8
+        DEFPUSHBUTTON   "~OK", IDC_OK, 111, 8, 45, 15
+    END
+END

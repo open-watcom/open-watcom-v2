@@ -1,0 +1,50 @@
+#
+# special options
+#
+
+#
+# architecture specific options
+#
+!ifeq arch axp
+# AXP specific
+!else ifeq arch 386
+# 386 specific
+!else ifeq arch i86
+# i86 specific
+opt_op_add = -DTREE_PARTS
+opt_op_sub = -DTREE_PARTS
+opt_op_mul = -DTREE_PARTS
+opt_op_div = -DTREE_PARTS
+opt_op_add2 = -DTREE_PARTS
+opt_op_sub2 = -DTREE_PARTS
+opt_op_mul2 = -DTREE_PARTS
+opt_op_div2 = -DTREE_PARTS
+opt_op_add3 = -DTREE_PARTS
+opt_op_sub3 = -DTREE_PARTS
+opt_op_mul3 = -DTREE_PARTS
+opt_op_div3 = -DTREE_PARTS
+!endif
+
+codegen_tests = &
+    op_add.$(exe) &
+    op_sub.$(exe) &
+    op_mul.$(exe) &
+    op_div.$(exe) &
+    op_mod.$(exe) &
+    op_and.$(exe) &
+    op_or.$(exe) &
+    op_xor.$(exe) &
+    oprshift.$(exe) &
+    oplshift.$(exe) &
+!ifeq arch i86
+    op_add2.$(exe) &
+    op_sub2.$(exe) &
+    op_mul2.$(exe) &
+    op_div2.$(exe) &
+    op_add3.$(exe) &
+    op_sub3.$(exe) &
+    op_mul3.$(exe) &
+    op_div3.$(exe) &
+!endif
+
+codegen_exes = $+ $(codegen_tests) $-

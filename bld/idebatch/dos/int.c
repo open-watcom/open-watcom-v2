@@ -76,7 +76,7 @@ static void endClog( void )
     _dos_setvect( 0x21, OldInt21 );
 }
 
-main()
+int main( void )
 {
     char        buff[512];
     char        names[2*_MAX_PATH+2];
@@ -96,7 +96,7 @@ main()
 #ifdef DEBUG
         if( kbhit() ) {
             if( getch() == 'q' ) {
-                exit( 0 );
+                return( 0 );
             }
         }
 #endif
@@ -184,6 +184,5 @@ main()
     VxDDisconnect();
     VxDUnLink();
 
-    exit( 0 );
-
+    return( 0 );
 }

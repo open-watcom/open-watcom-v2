@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions called by the YACC generated driver.
 *
 ****************************************************************************/
 
@@ -181,7 +180,9 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     ms_head.DataVersion = 0L;
     ms_head.Characteristics = 0L; /* Currently Unsupported */
 
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
+    /* OS/2 resource header happens to be identical to Win16 */
+    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ||
+        CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, FALSE );
     } else {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, TRUE );

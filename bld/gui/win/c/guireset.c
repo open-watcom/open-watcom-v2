@@ -70,7 +70,7 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || ( wnd->style & GUI_POPUP ) ) {
         if( menu == NULL ) {
-            GUISetMenu( wnd, NULL );
+            GUISetMenu( wnd, NULLHANDLE );
             GUIFreePopupList( wnd );
         } else {
             if( GUICreateMenus( wnd, num_menus, menu, &hmenu ) ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Standalone disassembler mainline.
 *
 ****************************************************************************/
 
@@ -47,7 +46,9 @@
 #include "pdata.h"
 #include "groups.h"
 #include "demangle.h"
-
+#if !defined( __WATCOMC__ )
+    #include "clibext.h"
+#endif
 
 #define SMALL_STRING_LEN        8
 #define TMP_TABLE_SIZE          29
@@ -254,12 +255,10 @@ static void printMasmHeader( section_ptr sec )
     char                *gname;
     char                *astr;
     orl_sec_handle      sh;
-    orl_group_handle    grp;
+    orl_group_handle    grp = NULL;
     char                comname[ MAX_LINE_LEN ];
 
-    // Check if we need to display this segment
     size = ORLSecGetSize( sec->shnd );
-    if( !size && !( DFormat & DFF_ASM ) ) return;
 
     // Load all necessary information
     name = sec->name;
@@ -398,10 +397,9 @@ void PrintTail( section_ptr sec )
 }
 
 
-static unsigned DoPrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offset total,
+static void DoPrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offset total,
                         unsigned item_size, unsigned len )
 {
-    unsigned    amount;
     unsigned    done;
     union {
         unsigned_8      u8;
@@ -411,53 +409,59 @@ static unsigned DoPrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offse
 
 
     if( total >= 0x10000 ) {
-        amount = BufferStore( "%08X   ", off );
+        BufferStore( "%08X", off );
     } else {
-        amount = BufferStore( "%04X   ", off );
+        BufferStore( "%04X", off );
+    }
+    if( len ) {
+        BufferConcat( " " );
     }
     for( done = 0; done < len; done += item_size ) {
+        BufferConcat( " " );
         if( off >= total ) {
-            item_size = 1;
-            BufferConcat( "   " );
+            switch( item_size ) {
+            case 1:
+                BufferConcat( "  " );
+                break;
+            case 2:
+                BufferConcat( "    " );
+                break;
+            case 4:
+                BufferConcat( "        " );
+                break;
+            }
         } else {
             p = (void *)((unsigned_8 *)data + off);
             switch( item_size ) {
             case 1:
-                amount += BufferStore( " %02X", p->u8 );
+                BufferStore( "%02X", p->u8 );
                 break;
             case 2:
-                amount += BufferStore( " %04X", p->u16 );
+                BufferStore( "%04X", p->u16 );
                 break;
             case 4:
-                amount += BufferStore( " %08X", p->u32 );
+                BufferStore( "%08X", p->u32 );
                 break;
             }
         }
         off += item_size;
     }
-    return( amount );
+    return;
 }
 
-#define PREFIX_SIZE     30
 
 void PrintLinePrefix( void *data, orl_sec_offset off, orl_sec_offset total,
                         unsigned item_size, unsigned len )
 {
-    unsigned amount;
-
-    amount = DoPrintLinePrefix( data, off, total, item_size, len );
-    if( amount >= PREFIX_SIZE ) {
-        BufferStore( "\n" );
-        amount = 0;
-    }
-    BufferStore( "%*s ", (PREFIX_SIZE - 1) - amount, "" );
+    DoPrintLinePrefix( data, off, total, item_size, len );
+    BufferAlignToTab( PREFIX_SIZE_TABS );
 }
 
 
-static return_val disassembleSection( section_ptr sec, char * contents,
+static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
                 orl_sec_size size, unsigned pass )
 {
-    hash_data *                 data_ptr;
+    hash_data                   *data_ptr;
     label_list                  sec_label_list;
     ref_list                    sec_ref_list;
     return_val                  error;
@@ -512,31 +516,44 @@ static return_val disassembleSection( section_ptr sec, char * contents,
 static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
                               orl_sec_offset loop, orl_sec_offset end )
 {
-    while( l_entry != NULL && l_entry->offset == loop ) {
+    while( l_entry != NULL
+        && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= loop ) ) {
         switch( l_entry->type ){
-            case LTYP_UNNAMED:
-                PrintLinePrefix( NULL, loop, end, 1, 0 );
+        case LTYP_ABSOLUTE:
+            break;
+        case LTYP_UNNAMED:
+            PrintLinePrefix( NULL, loop, end, 1, 0 );
+            if( loop != l_entry->offset ) {
+                BufferStore("%c$%d equ $-%d", LabelChar, l_entry->label.number, loop - l_entry->offset );
+            } else {
                 BufferStore("%c$%d:", LabelChar, l_entry->label.number );
-                BufferConcatNL();
+            }
+            BufferConcatNL();
+            break;
+        case LTYP_SECTION:
+        case LTYP_NAMED:
+            if( strcmp( l_entry->label.name, sec->name ) == 0 )
                 break;
-            default:
-                if( sec && strncmp( l_entry->label.name, sec->name, 8 ) ) {
-                    PrintLinePrefix( NULL, loop, end, 1, 0 );
-                    BufferStore("%s:", l_entry->label.name );
-                    BufferConcatNL();
-                }
-                break;
+        default:
+            PrintLinePrefix( NULL, loop, end, 1, 0 );
+            if( loop != l_entry->offset ) {
+                BufferStore("%s equ $-%d", l_entry->label.name, loop - l_entry->offset  );
+            } else {
+                BufferStore("%s:", l_entry->label.name );
+            }
+            BufferConcatNL();
+            break;
         }
         l_entry = l_entry->next;
     }
     return( l_entry );
 }
 
-static orl_sec_offset checkForDupLines( char *contents, orl_sec_offset loop,
+static orl_sec_offset checkForDupLines( unsigned_8 *contents, orl_sec_offset loop,
                                         orl_sec_size size, label_entry l_entry,
                                         ref_entry r_entry )
 {
-    char                        *cmp;
+    unsigned_8                  *cmp;
     orl_sec_offset              d;
     unsigned int                lines;
 
@@ -556,9 +573,9 @@ static orl_sec_offset checkForDupLines( char *contents, orl_sec_offset loop,
     return( d );
 }
 
-void DumpDataFromSection( char *contents, orl_sec_offset start,
-                                 orl_sec_offset end, label_entry *labent,
-                                 ref_entry *refent, section_ptr sec )
+void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
+                          orl_sec_offset end, label_entry *labent,
+                          ref_entry *refent, section_ptr sec )
 {
     orl_sec_offset              loop;
     unsigned                    loop2;
@@ -625,10 +642,10 @@ void DumpDataFromSection( char *contents, orl_sec_offset start,
     *refent = r_entry;
 }
 
-static void dumpSection( section_ptr sec, char * contents, orl_sec_size size,
+static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
                         unsigned pass )
 {
-    hash_data *                 data_ptr;
+    hash_data                   *data_ptr;
     label_list                  sec_label_list;
     label_entry                 l_entry;
     ref_list                    sec_ref_list;
@@ -678,9 +695,9 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
     label_list                  sec_label_list;
     label_entry                 l_entry;
 
-    if( pass == 1 ) {
+    if( pass == 1 )
         return;
-    }
+
     /* Obtain the Symbol Table */
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
     if( data_ptr ) {
@@ -694,19 +711,18 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
 
     while( l_entry != NULL ){
         switch( l_entry->type ){
-            case LTYP_UNNAMED:
-                PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
-                BufferStore("%c$%d:\n", LabelChar, l_entry->label.number );
+        case LTYP_UNNAMED:
+            PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
+            BufferStore("%c$%d:\n", LabelChar, l_entry->label.number );
+            break;
+        case LTYP_SECTION:
+            if( strcmp( l_entry->label.name, sec->name ) == 0 )
                 break;
-            case LTYP_SECTION:
-                if( strcmp( l_entry->label.name, sec->name ) ==0 ) {
-                    break;
-                }
-                /* Fall through */
-            case LTYP_NAMED:
-                PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
-                BufferStore("%s:\n", l_entry->label.name );
-                break;
+            /* Fall through */
+        case LTYP_NAMED:
+            PrintLinePrefix( NULL, l_entry->offset, size, 1, 0 );
+            BufferStore("%s:\n", l_entry->label.name );
+            break;
         }
         BufferPrint();
         l_entry = l_entry->next;
@@ -723,7 +739,7 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
 static return_val DealWithSection( section_ptr sec, unsigned pass )
 {
     orl_sec_size        size;
-    char *              contents;
+    unsigned_8          *contents;
     return_val          error = OKAY;
 
     switch( sec->type ) {
@@ -772,7 +788,7 @@ static void numberUnnamedLabels( label_entry l_entry )
     }
 }
 
-static hash_table emitGlobls()
+static hash_table emitGlobls( void )
 {
     section_ptr         sec;
     hash_data *         data_ptr;
@@ -802,7 +818,7 @@ static hash_table emitGlobls()
                     name = l_entry->label.name;
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
                         (l_entry->type == LTYP_NAMED) &&
-                        strncmp(name,sec->name,8) ) {
+                        strcmp( name, sec->name ) ) {
                         BufferConcat( globl );
                         BufferConcat( name );
                         BufferConcatNL();
@@ -914,7 +930,7 @@ void UseFlatModel( void )
     }
 }
 
-static void doPrologue()
+static void doPrologue( void )
 {
     int         masm;
 
@@ -955,7 +971,7 @@ static void doPrologue()
     }
 }
 
-static void    doEpilogue()
+static void    doEpilogue( void )
 {
     if( IsMasmOutput() ) {
         if( DFormat & DFF_ASM ) {
@@ -972,6 +988,11 @@ int main( int argc, char *argv[] )
     return_val          error;
     hash_data *         data_ptr;
     label_list          sec_label_list;
+
+#if !defined( __WATCOMC__ )
+    _argv = argv;
+    _argc = argc;
+#endif
 
     Init();
     /* build the symbol table */

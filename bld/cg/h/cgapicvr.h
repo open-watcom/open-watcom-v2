@@ -24,11 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate indirect cg API call cover macros.
 *
 ****************************************************************************/
 
 
-#define CGAPIDEF( a, b, c ) #define a (CGFuncTable->##a)
+#define HASH_DEF            #define
+#define CGAPIDEF( a, b, c ) HASH_DEF a (CGFuncTable->a)
+
 #include "cgfuntab.h"
+
+#undef HASH_DEF
+#undef CGAPIDEF

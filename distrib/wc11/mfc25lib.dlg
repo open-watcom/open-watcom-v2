@@ -1,0 +1,36 @@
+name=dMFC25LIB
+any_check=mfc25lib
+static_text=\
+        //1"Select MFC 2.5 Library Options:"\
+        //2"MFC 2.5 ライブラリ・オプションを選択してください:"\
+        //0
+static_text=
+check_box=mfc25src,,\
+        //1"&Include source code and makefiles"\
+        //2"ソースコードとメイクファイルを含めます (&I)"\
+        //0
+check_box=mfc25libdbg,,\
+        //1"Include debug &versions"\
+        //2"デバッグ版を含めます (&v)"\
+        //0
+static_text=
+check_box=mfc25libdll,,\
+        //1"D&ynamic link libraries for Windows"\
+        //2"Windows 用ダイナミック・リンク・ライブラリ (&y)"\
+        //0
+check_box=mfc25libste,,\
+        //1"Static link libraries for Windows &EXE files"\
+        //2"Windows EXE ファイル用スタティック・リンク・ライブラリ (&E)"\
+        //0
+check_box=mfc25libstd,,\
+        //1"Static link libraries for Windows &DLL files"\
+        //2"Windows DLL ファイル用スタティック・リンク・ライブラリ (&D)"\
+        //0
+check_box=mfc25libstr,,\
+        //1"&Static link libraries for DOS"\
+        //2"DOS 用スタティック・リンク・ライブラリ (&S)"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

@@ -377,27 +377,27 @@ static void extraRptTable(      // PRINT A TABLE
         sprintf( fmt, "%%%dd", digits + 1 );
         for( r = 0; r < reg->tab.dim_row; ++ r ) {
             long* row = &reg->tab.table[ r * reg->tab.dim_col ];
-            VStrNull( &buffer );
+            VbufRewind( &buffer );
             if( row_lbl == NULL ) {
                 sprintf( buf, "%4d", r );
                 buf[4] = ':';
                 buf[5] = ' ';
                 buf[6] = '\0';
-                VStrConcStr( &buffer, buf );
+                VbufConcStr( &buffer, buf );
             } else {
                 char const *l = row_lbl[r];
                 unsigned b;
                 for( b = label_width - strlen(l); b != 0; --b ) {
-                    VStrConcChr( &buffer, ' ' );
+                    VbufConcChr( &buffer, ' ' );
                 }
-                VStrConcStr( &buffer, l );
-                VStrConcStr( &buffer, ": " );
+                VbufConcStr( &buffer, l );
+                VbufConcStr( &buffer, ": " );
             }
             for( c = 0; c < reg->tab.dim_col; ++ c ) {
                 sprintf( buf, fmt, row[ c ] );
-                VStrConcStr( &buffer, buf );
+                VbufConcStr( &buffer, buf );
             }
-            outputLine( fp, buffer.buf );
+            outputLine( fp, VbufString( &buffer ) );
         }
         outputLine( fp, "" );
         VbufFree( &buffer );

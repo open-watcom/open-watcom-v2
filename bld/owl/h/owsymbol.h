@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol management data and routines.
 *
 ****************************************************************************/
 
@@ -51,14 +50,14 @@ struct  owl_func_file {
     char            name[1];        // variable len path
 };
 
-typedef struct owl_func_info {
+struct owl_func_info {
     owl_offset          start;                  // start of the function
     owl_offset          end;                    // end of the function
     owl_line_num        first_line;             // first line of function source
     owl_line_num        last_line;              // last line of function source
     owl_offset          linenum_offset;         // offset within section linenum buffer of first linenum record
     owl_line_num        num_lines;              // num lines for function start
-    owl_func_file      *head;                   // list of file thins
+    owl_func_file      *head;                   // list of file things
     owl_func_file      **lnk;                   // last link
 };
 
@@ -76,6 +75,7 @@ typedef enum {
     OWL_SYM_EXPORT              = 0x0008,       // client wants this sym exported
     OWL_SYM_DEAD                = 0x0010,       // no longer needed
     OWL_SYM_COMDEF              = 0x0020,       // a comdef symbol
+    OWL_SYM_ALIAS               = 0x0040,       // alias symbol
 } owl_sym_flags;
 
 struct owl_symbol_info {

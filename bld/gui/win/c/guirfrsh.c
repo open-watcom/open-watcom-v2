@@ -32,7 +32,7 @@
 
 #include "guiwind.h"
 
-void GUIRefresh()
+void GUIRefresh( void )
 {
 #if 0
     if( GUIMainHwnd != NULL ) {

@@ -1,0 +1,921 @@
+c$noreference
+
+c$ifndef __BSESUB_FI__
+c$define __BSESUB_FI__
+
+c$ifdef INCL_SUB
+c$define INCL_KBD
+c$define INCL_VIO
+c$define INCL_MOU
+c$endif
+
+c$ifdef INCL_KBD
+
+        external KbdRegister
+        integer*2 KbdRegister
+
+        integer  KR_KBDCHARIN
+        parameter (KR_KBDCHARIN = '00000001'x)
+        integer  KR_KBDPEEK
+        parameter (KR_KBDPEEK = '00000002'x)
+        integer  KR_KBDFLUSHBUFFER
+        parameter (KR_KBDFLUSHBUFFER = '00000004'x)
+        integer  KR_KBDGETSTATUS
+        parameter (KR_KBDGETSTATUS = '00000008'x)
+        integer  KR_KBDSETSTATUS
+        parameter (KR_KBDSETSTATUS = '00000010'x)
+        integer  KR_KBDSTRINGIN
+        parameter (KR_KBDSTRINGIN = '00000020'x)
+        integer  KR_KBDOPEN
+        parameter (KR_KBDOPEN = '00000040'x)
+        integer  KR_KBDCLOSE
+        parameter (KR_KBDCLOSE = '00000080'x)
+        integer  KR_KBDGETFOCUS
+        parameter (KR_KBDGETFOCUS = '00000100'x)
+        integer  KR_KBDFREEFOCUS
+        parameter (KR_KBDFREEFOCUS = '00000200'x)
+        integer  KR_KBDGETCP
+        parameter (KR_KBDGETCP = '00000400'x)
+        integer  KR_KBDSETCP
+        parameter (KR_KBDSETCP = '00000800'x)
+        integer  KR_KBDXLATE
+        parameter (KR_KBDXLATE = '00001000'x)
+        integer  KR_KBDSETCUSTXT
+        parameter (KR_KBDSETCUSTXT = '00002000'x)
+
+        integer  IO_WAIT
+        parameter (IO_WAIT = 0)
+        integer  IO_NOWAIT
+        parameter (IO_NOWAIT = 1)
+
+        external KbdDeRegister
+        integer*2 KbdDeRegister
+
+        structure /KBDKEYINFO/
+            integer*1 chChar
+            integer*1 chScan
+            integer*1 fbStatus
+            integer*1 bNlsShift
+            integer*2 fsState
+            integer*4 time
+        end structure
+
+        external KbdCharIn
+        integer*2 KbdCharIn
+
+        external KbdPeek
+        integer*2 KbdPeek
+
+! structure for KbdStringIn()
+
+        structure /STRINGINBUF/
+            integer*2 cb
+            integer*2 cchIn
+        end structure
+
+        external KbdStringIn
+        integer*2 KbdStringIn
+
+        external KbdFlushBuffer
+        integer*2 KbdFlushBuffer
+
+! KBDINFO.fsMask
+
+        integer  KEYBOARD_ECHO_ON
+        parameter (KEYBOARD_ECHO_ON = '00000001'x)
+        integer  KEYBOARD_ECHO_OFF
+        parameter (KEYBOARD_ECHO_OFF = '00000002'x)
+        integer  KEYBOARD_BINARY_MODE
+        parameter (KEYBOARD_BINARY_MODE = '00000004'x)
+        integer  KEYBOARD_ASCII_MODE
+        parameter (KEYBOARD_ASCII_MODE = '00000008'x)
+        integer  KEYBOARD_MODIFY_STATE
+        parameter (KEYBOARD_MODIFY_STATE = '00000010'x)
+        integer  KEYBOARD_MODIFY_INTERIM
+        parameter (KEYBOARD_MODIFY_INTERIM = '00000020'x)
+        integer  KEYBOARD_MODIFY_TURNAROUND
+        parameter (KEYBOARD_MODIFY_TURNAROUND = '00000040'x)
+        integer  KEYBOARD_2B_TURNAROUND
+        parameter (KEYBOARD_2B_TURNAROUND = '00000080'x)
+        integer  KEYBOARD_SHIFT_REPORT
+        parameter (KEYBOARD_SHIFT_REPORT = '00000100'x)
+
+c$ifndef INCL_DOSDEVIOCTL
+
+! KBDINFO.fsState/KBDKEYINFO.fsState/KBDTRANS.fsState
+
+        integer  KBDSTF_RIGHTSHIFT
+        parameter (KBDSTF_RIGHTSHIFT = '00000001'x)
+        integer  KBDSTF_LEFTSHIFT
+        parameter (KBDSTF_LEFTSHIFT = '00000002'x)
+        integer  KBDSTF_CONTROL
+        parameter (KBDSTF_CONTROL = '00000004'x)
+        integer  KBDSTF_ALT
+        parameter (KBDSTF_ALT = '00000008'x)
+        integer  KBDSTF_SCROLLLOCK_ON
+        parameter (KBDSTF_SCROLLLOCK_ON = '00000010'x)
+        integer  KBDSTF_NUMLOCK_ON
+        parameter (KBDSTF_NUMLOCK_ON = '00000020'x)
+        integer  KBDSTF_CAPSLOCK_ON
+        parameter (KBDSTF_CAPSLOCK_ON = '00000040'x)
+        integer  KBDSTF_INSERT_ON
+        parameter (KBDSTF_INSERT_ON = '00000080'x)
+        integer  KBDSTF_LEFTCONTROL
+        parameter (KBDSTF_LEFTCONTROL = '00000100'x)
+        integer  KBDSTF_LEFTALT
+        parameter (KBDSTF_LEFTALT = '00000200'x)
+        integer  KBDSTF_RIGHTCONTROL
+        parameter (KBDSTF_RIGHTCONTROL = '00000400'x)
+        integer  KBDSTF_RIGHTALT
+        parameter (KBDSTF_RIGHTALT = '00000800'x)
+        integer  KBDSTF_SCROLLLOCK
+        parameter (KBDSTF_SCROLLLOCK = '00001000'x)
+        integer  KBDSTF_NUMLOCK
+        parameter (KBDSTF_NUMLOCK = '00002000'x)
+        integer  KBDSTF_CAPSLOCK
+        parameter (KBDSTF_CAPSLOCK = '00004000'x)
+        integer  KBDSTF_SYSREQ
+        parameter (KBDSTF_SYSREQ = '00008000'x)
+
+c$endif
+
+! KBDINFO structure for KbdSetStatus()/KbdGetStatus()
+
+        structure /KBDINFO/
+            integer*2 cb
+            integer*2 fsMask
+            integer*2 chTurnAround
+            integer*2 fsInterim
+            integer*2 fsState
+        end structure
+
+        external KbdSetStatus
+        integer*2 KbdSetStatus
+
+        external KbdGetStatus
+        integer*2 KbdGetStatus
+
+        external KbdSetCp
+        integer*2 KbdSetCp
+
+        external KbdGetCp
+        integer*2 KbdGetCp
+
+        external KbdOpen
+        integer*2 KbdOpen
+
+        external KbdClose
+        integer*2 KbdClose
+
+        external KbdGetFocus
+        integer*2 KbdGetFocus
+
+        external KbdFreeFocus
+        integer*2 KbdFreeFocus
+
+        external KbdSynch
+        integer*2 KbdSynch
+
+        external KbdSetFgnd
+        integer*2 KbdSetFgnd
+
+! structure for KbdGetHWID()
+
+        structure /KBDHWID/
+            integer*2 cb
+            integer*2 idKbd
+            integer*2 usReserved1
+            integer*2 usReserved2
+        end structure
+
+        external KbdGetHWID
+        integer*2 KbdGetHWID
+
+        external KbdSetHWID
+        integer*2 KbdSetHWID
+
+! KBDTRANS.fbStatus
+
+        integer  KBDTRF_SHIFT_KEY_IN
+        parameter (KBDTRF_SHIFT_KEY_IN = '00000001'x)
+        integer  KBDTRF_CONVERSION_REQUEST
+        parameter (KBDTRF_CONVERSION_REQUEST = '00000020'x)
+        integer  KBDTRF_FINAL_CHAR_IN
+        parameter (KBDTRF_FINAL_CHAR_IN = '00000040'x)
+        integer  KBDTRF_INTERIM_CHAR_IN
+        parameter (KBDTRF_INTERIM_CHAR_IN = '00000080'x)
+
+! structure for KbdXlate()
+
+        structure /KBDTRANS/
+            integer*1 chChar
+            integer*1 chScan
+            integer*1 fbStatus
+            integer*1 bNlsShift
+            integer*2 fsState
+            integer*4 time
+            integer*2 fsDD
+            integer*2 fsXlate
+            integer*2 fsShift
+            integer*2 sZero
+        end structure
+
+        external KbdXlate
+        integer*2 KbdXlate
+
+        external KbdSetCustXt
+        integer*2 KbdSetCustXt
+
+c$endif
+
+c$ifdef INCL_VIO
+
+        external VioRegister
+        integer*2 VioRegister
+
+        external VioGlobalReg
+        integer*2 VioGlobalReg
+
+! first parameter registration constants
+
+        integer  VR_VIOGETCURPOS
+        parameter (VR_VIOGETCURPOS = '00000001'x)
+        integer  VR_VIOGETCURTYPE
+        parameter (VR_VIOGETCURTYPE = '00000002'x)
+        integer  VR_VIOGETMODE
+        parameter (VR_VIOGETMODE = '00000004'x)
+        integer  VR_VIOGETBUF
+        parameter (VR_VIOGETBUF = '00000008'x)
+        integer  VR_VIOGETPHYSBUF
+        parameter (VR_VIOGETPHYSBUF = '00000010'x)
+        integer  VR_VIOSETCURPOS
+        parameter (VR_VIOSETCURPOS = '00000020'x)
+        integer  VR_VIOSETCURTYPE
+        parameter (VR_VIOSETCURTYPE = '00000040'x)
+        integer  VR_VIOSETMODE
+        parameter (VR_VIOSETMODE = '00000080'x)
+        integer  VR_VIOSHOWBUF
+        parameter (VR_VIOSHOWBUF = '00000100'x)
+        integer  VR_VIOREADCHARSTR
+        parameter (VR_VIOREADCHARSTR = '00000200'x)
+        integer  VR_VIOREADCELLSTR
+        parameter (VR_VIOREADCELLSTR = '00000400'x)
+        integer  VR_VIOWRTNCHAR
+        parameter (VR_VIOWRTNCHAR = '00000800'x)
+        integer  VR_VIOWRTNATTR
+        parameter (VR_VIOWRTNATTR = '00001000'x)
+        integer  VR_VIOWRTNCELL
+        parameter (VR_VIOWRTNCELL = '00002000'x)
+        integer  VR_VIOWRTTTY
+        parameter (VR_VIOWRTTTY = '00004000'x)
+        integer  VR_VIOWRTCHARSTR
+        parameter (VR_VIOWRTCHARSTR = '00008000'x)
+
+        integer  VR_VIOWRTCHARSTRATT
+        parameter (VR_VIOWRTCHARSTRATT = '00010000'x)
+        integer  VR_VIOWRTCELLSTR
+        parameter (VR_VIOWRTCELLSTR = '00020000'x)
+        integer  VR_VIOSCROLLUP
+        parameter (VR_VIOSCROLLUP = '00040000'x)
+        integer  VR_VIOSCROLLDN
+        parameter (VR_VIOSCROLLDN = '00080000'x)
+        integer  VR_VIOSCROLLLF
+        parameter (VR_VIOSCROLLLF = '00100000'x)
+        integer  VR_VIOSCROLLRT
+        parameter (VR_VIOSCROLLRT = '00200000'x)
+        integer  VR_VIOSETANSI
+        parameter (VR_VIOSETANSI = '00400000'x)
+        integer  VR_VIOGETANSI
+        parameter (VR_VIOGETANSI = '00800000'x)
+        integer  VR_VIOPRTSC
+        parameter (VR_VIOPRTSC = '01000000'x)
+        integer  VR_VIOSCRLOCK
+        parameter (VR_VIOSCRLOCK = '02000000'x)
+        integer  VR_VIOSCRUNLOCK
+        parameter (VR_VIOSCRUNLOCK = '04000000'x)
+        integer  VR_VIOSAVREDRAWWAIT
+        parameter (VR_VIOSAVREDRAWWAIT = '08000000'x)
+        integer  VR_VIOSAVREDRAWUNDO
+        parameter (VR_VIOSAVREDRAWUNDO = '10000000'x)
+        integer  VR_VIOPOPUP
+        parameter (VR_VIOPOPUP = '20000000'x)
+        integer  VR_VIOENDPOPUP
+        parameter (VR_VIOENDPOPUP = '40000000'x)
+        integer  VR_VIOPRTSCTOGGLE
+        parameter (VR_VIOPRTSCTOGGLE = '80000000'x)
+
+! second parameter registration constants
+
+        integer  VR_VIOMODEWAIT
+        parameter (VR_VIOMODEWAIT = '00000001'x)
+        integer  VR_VIOMODEUNDO
+        parameter (VR_VIOMODEUNDO = '00000002'x)
+        integer  VR_VIOGETFONT
+        parameter (VR_VIOGETFONT = '00000004'x)
+        integer  VR_VIOGETCONFIG
+        parameter (VR_VIOGETCONFIG = '00000008'x)
+        integer  VR_VIOSETCP
+        parameter (VR_VIOSETCP = '00000010'x)
+        integer  VR_VIOGETCP
+        parameter (VR_VIOGETCP = '00000020'x)
+        integer  VR_VIOSETFONT
+        parameter (VR_VIOSETFONT = '00000040'x)
+        integer  VR_VIOGETSTATE
+        parameter (VR_VIOGETSTATE = '00000080'x)
+        integer  VR_VIOSETSTATE
+        parameter (VR_VIOSETSTATE = '00000100'x)
+
+        external VioDeRegister
+        integer*2 VioDeRegister
+
+        external VioGetBuf
+        integer*2 VioGetBuf
+
+        external VioGetCurPos
+        integer*2 VioGetCurPos
+
+        external VioSetCurPos
+        integer*2 VioSetCurPos
+
+! structure for VioSetCurType()/VioGetCurType()
+
+        structure /VIOCURSORINFO/
+            integer*2 yStart
+            integer*2 cEnd
+            integer*2 cx
+            integer*2 attr
+        end structure
+
+        external VioGetCurType
+        integer*2 VioGetCurType
+
+        external VioSetCurType
+        integer*2 VioSetCurType
+
+! VIOMODEINFO.color constants
+
+        integer  COLORS_2
+        parameter (COLORS_2 = '00000001'x)
+        integer  COLORS_4
+        parameter (COLORS_4 = '00000002'x)
+        integer  COLORS_16
+        parameter (COLORS_16 = '00000004'x)
+
+! structure for VioSetMode()/VioGetMode()
+
+        structure /VIOMODEINFO/
+            integer*2 cb
+            integer*1 fbType
+            integer*1 color
+            integer*2 col
+            integer*2 row
+            integer*2 hres
+            integer*2 vres
+            integer*1 fmt_ID
+            integer*1 attrib
+            integer*4 buf_addr
+            integer*4 buf_length
+            integer*4 full_length
+            integer*4 partial_length
+            integer*4 ext_data_addr
+        end structure
+
+        integer  VGMT_OTHER
+        parameter (VGMT_OTHER = '00000001'x)
+        integer  VGMT_GRAPHICS
+        parameter (VGMT_GRAPHICS = '00000002'x)
+        integer  VGMT_DISABLEBURST
+        parameter (VGMT_DISABLEBURST = '00000004'x)
+
+        external VioGetMode
+        integer*2 VioGetMode
+
+        external VioSetMode
+        integer*2 VioSetMode
+
+! structure for VioGetPhysBuf()
+
+        structure /VIOPHYSBUF/
+            integer*4 pBuf
+            integer*4 cb
+            integer*2 asel(1)
+        end structure
+
+        external VioGetPhysBuf
+        integer*2 VioGetPhysBuf
+
+        external VioReadCellStr
+        integer*2 VioReadCellStr
+
+        external VioReadCharStr
+        integer*2 VioReadCharStr
+
+        external VioWrtCellStr
+        integer*2 VioWrtCellStr
+
+        external VioWrtCharStr
+        integer*2 VioWrtCharStr
+
+        external VioScrollDn
+        integer*2 VioScrollDn
+
+        external VioScrollUp
+        integer*2 VioScrollUp
+
+        external VioScrollLf
+        integer*2 VioScrollLf
+
+        external VioScrollRt
+        integer*2 VioScrollRt
+
+        external VioWrtNAttr
+        integer*2 VioWrtNAttr
+
+        external VioWrtNCell
+        integer*2 VioWrtNCell
+
+        external VioWrtNChar
+        integer*2 VioWrtNChar
+
+        external VioWrtTTY
+        integer*2 VioWrtTTY
+
+        external VioWrtCharStrAtt
+        integer*2 VioWrtCharStrAtt
+
+        integer  VCC_SBCSCHAR
+        parameter (VCC_SBCSCHAR = 0)
+        integer  VCC_DBCSFULLCHAR
+        parameter (VCC_DBCSFULLCHAR = 1)
+        integer  VCC_DBCS1STHALF
+        parameter (VCC_DBCS1STHALF = 2)
+        integer  VCC_DBCS2NDHALF
+        parameter (VCC_DBCS2NDHALF = 3)
+
+        external VioCheckCharType
+        integer*2 VioCheckCharType
+
+        external VioShowBuf
+        integer*2 VioShowBuf
+
+        integer  ANSI_ON
+        parameter (ANSI_ON = 1)
+        integer  ANSI_OFF
+        parameter (ANSI_OFF = 0)
+
+        external VioSetAnsi
+        integer*2 VioSetAnsi
+
+        external VioGetAnsi
+        integer*2 VioGetAnsi
+
+        external VioPrtSc
+        integer*2 VioPrtSc
+
+        external VioPrtScToggle
+        integer*2 VioPrtScToggle
+
+        integer  VSRWI_SAVEANDREDRAW
+        parameter (VSRWI_SAVEANDREDRAW = 0)
+        integer  VSRWI_REDRAW
+        parameter (VSRWI_REDRAW = 1)
+
+        integer  VSRWN_SAVE
+        parameter (VSRWN_SAVE = 0)
+        integer  VSRWN_REDRAW
+        parameter (VSRWN_REDRAW = 1)
+
+        integer  UNDOI_GETOWNER
+        parameter (UNDOI_GETOWNER = 0)
+        integer  UNDOI_RELEASEOWNER
+        parameter (UNDOI_RELEASEOWNER = 1)
+
+        integer  UNDOK_ERRORCODE
+        parameter (UNDOK_ERRORCODE = 0)
+        integer  UNDOK_TERMINATE
+        parameter (UNDOK_TERMINATE = 1)
+
+        external VioRedrawSize
+        integer*2 VioRedrawSize
+
+        external VioSavRedrawWait
+        integer*2 VioSavRedrawWait
+
+        external VioSavRedrawUndo
+        integer*2 VioSavRedrawUndo
+
+        integer  VMWR_POPUP
+        parameter (VMWR_POPUP = 0)
+        integer  VMWN_POPUP
+        parameter (VMWN_POPUP = 0)
+
+        external VioModeWait
+        integer*2 VioModeWait
+
+        external VioModeUndo
+        integer*2 VioModeUndo
+
+        integer  LOCKIO_NOWAIT
+        parameter (LOCKIO_NOWAIT = 0)
+        integer  LOCKIO_WAIT
+        parameter (LOCKIO_WAIT = 1)
+
+        integer  LOCK_SUCCESS
+        parameter (LOCK_SUCCESS = 0)
+        integer  LOCK_FAIL
+        parameter (LOCK_FAIL = 1)
+
+        external VioScrLock
+        integer*2 VioScrLock
+
+        external VioScrUnLock
+        integer*2 VioScrUnLock
+
+        integer  VP_NOWAIT
+        parameter (VP_NOWAIT = '00000000'x)
+        integer  VP_WAIT
+        parameter (VP_WAIT = '00000001'x)
+        integer  VP_OPAQUE
+        parameter (VP_OPAQUE = '00000000'x)
+        integer  VP_TRANSPARENT
+        parameter (VP_TRANSPARENT = '00000002'x)
+
+        external VioPopUp
+        integer*2 VioPopUp
+
+        external VioEndPopUp
+        integer*2 VioEndPopUp
+
+! VIOCONFIGINFO.adapter constants
+
+        integer  DISPLAY_MONOCHROME
+        parameter (DISPLAY_MONOCHROME = '00000000'x)
+        integer  DISPLAY_CGA
+        parameter (DISPLAY_CGA = '00000001'x)
+        integer  DISPLAY_EGA
+        parameter (DISPLAY_EGA = '00000002'x)
+        integer  DISPLAY_VGA
+        parameter (DISPLAY_VGA = '00000003'x)
+        integer  DISPLAY_8514A
+        parameter (DISPLAY_8514A = '00000007'x)
+        integer  DISPLAY_IMAGEADAPTER
+        parameter (DISPLAY_IMAGEADAPTER = '00000008'x)
+        integer  DISPLAY_XGA
+        parameter (DISPLAY_XGA = '00000009'x)
+
+! VIOCONFIGINFO.display constants
+
+        integer  MONITOR_MONOCHROME
+        parameter (MONITOR_MONOCHROME = '00000000'x)
+        integer  MONITOR_COLOR
+        parameter (MONITOR_COLOR = '00000001'x)
+        integer  MONITOR_ENHANCED
+        parameter (MONITOR_ENHANCED = '00000002'x)
+        integer  MONITOR_8503
+        parameter (MONITOR_8503 = '00000003'x)
+        integer  MONITOR_851X_COLOR
+        parameter (MONITOR_851X_COLOR = '00000004'x)
+        integer  MONITOR_8514
+        parameter (MONITOR_8514 = '00000009'x)
+        integer  MONITOR_FLATPANEL
+        parameter (MONITOR_FLATPANEL = '0000000A'x)
+        integer  MONITOR_8507_8604
+        parameter (MONITOR_8507_8604 = '0000000B'x)
+        integer  MONITOR_8515
+        parameter (MONITOR_8515 = '0000000C'x)
+        integer  MONITOR_9515
+        parameter (MONITOR_9515 = '0000000F'x)
+        integer  MONITOR_9517
+        parameter (MONITOR_9517 = '00000011'x)
+        integer  MONITOR_9518
+        parameter (MONITOR_9518 = '00000012'x)
+
+! structure for VioGetConfig()
+
+        structure /VIOCONFIGINFO/
+            integer*2 cb
+            integer*2 adapter
+            integer*2 display
+            integer*4 cbMemory
+            integer*2 Configuration
+            integer*2 VDHVersion
+            integer*2 Flags
+            integer*4 HWBufferSize
+            integer*4 FullSaveSize
+            integer*4 PartSaveSize
+            integer*2 EMAdaptersOFF
+            integer*2 EMDisplaysOFF
+        end structure
+
+        integer  VIO_CONFIG_CURRENT
+        parameter (VIO_CONFIG_CURRENT = 0)
+        integer  VIO_CONFIG_PRIMARY
+        parameter (VIO_CONFIG_PRIMARY = 1)
+        integer  VIO_CONFIG_SECONDARY
+        parameter (VIO_CONFIG_SECONDARY = 2)
+
+        external VioGetConfig
+        integer*2 VioGetConfig
+
+! structure for VioGet/SetFont()
+
+        structure /VIOFONTINFO/
+            integer*2 cb
+            integer*2 type
+            integer*2 cxCell
+            integer*2 cyCell
+            integer*4 pbData
+            integer*2 cbData
+        end structure
+
+        integer  VGFI_GETCURFONT
+        parameter (VGFI_GETCURFONT = 0)
+        integer  VGFI_GETROMFONT
+        parameter (VGFI_GETROMFONT = 1)
+
+        external VioGetFont
+        integer*2 VioGetFont
+
+        external VioSetFont
+        integer*2 VioSetFont
+
+        external VioGetCp
+        integer*2 VioGetCp
+
+        external VioSetCp
+        integer*2 VioSetCp
+
+        structure /VIOPALSTATE/
+            integer*2 cb
+            integer*2 type
+            integer*2 iFirst
+            integer*2 acolor(1)
+        end structure
+
+        structure /VIOOVERSCAN/
+            integer*2 cb
+            integer*2 type
+            integer*2 color
+        end structure
+
+        structure /VIOINTENSITY/
+            integer*2 cb
+            integer*2 type
+            integer*2 fs
+        end structure
+
+        structure /VIOCOLORREG/
+            integer*2 cb
+            integer*2 type
+            integer*2 firstcolorreg
+            integer*2 numcolorregs
+            integer*4 colorregaddr
+        end structure
+
+        structure /VIOSETULINELOC/
+            integer*2 cb
+            integer*2 type
+            integer*2 scanline
+        end structure
+
+        structure /VIOSETTARGET/
+            integer*2 cb
+            integer*2 type
+            integer*2 defaultalgorithm
+        end structure
+
+        external VioGetState
+        integer*2 VioGetState
+        external VioSetState
+        integer*2 VioSetState
+
+c$endif
+
+c$ifdef INCL_MOU
+
+        external MouRegister
+        integer*2 MouRegister
+
+        integer  MR_MOUGETNUMBUTTONS
+        parameter (MR_MOUGETNUMBUTTONS = '00000001'x)
+        integer  MR_MOUGETNUMMICKEYS
+        parameter (MR_MOUGETNUMMICKEYS = '00000002'x)
+        integer  MR_MOUGETDEVSTATUS
+        parameter (MR_MOUGETDEVSTATUS = '00000004'x)
+        integer  MR_MOUGETNUMQUEEL
+        parameter (MR_MOUGETNUMQUEEL = '00000008'x)
+        integer  MR_MOUREADEVENTQUE
+        parameter (MR_MOUREADEVENTQUE = '00000010'x)
+        integer  MR_MOUGETSCALEFACT
+        parameter (MR_MOUGETSCALEFACT = '00000020'x)
+        integer  MR_MOUGETEVENTMASK
+        parameter (MR_MOUGETEVENTMASK = '00000040'x)
+        integer  MR_MOUSETSCALEFACT
+        parameter (MR_MOUSETSCALEFACT = '00000080'x)
+        integer  MR_MOUSETEVENTMASK
+        parameter (MR_MOUSETEVENTMASK = '00000100'x)
+        integer  MR_MOUOPEN
+        parameter (MR_MOUOPEN = '00000800'x)
+        integer  MR_MOUCLOSE
+        parameter (MR_MOUCLOSE = '00001000'x)
+        integer  MR_MOUGETPTRSHAPE
+        parameter (MR_MOUGETPTRSHAPE = '00002000'x)
+        integer  MR_MOUSETPTRSHAPE
+        parameter (MR_MOUSETPTRSHAPE = '00004000'x)
+        integer  MR_MOUDRAWPTR
+        parameter (MR_MOUDRAWPTR = '00008000'x)
+        integer  MR_MOUREMOVEPTR
+        parameter (MR_MOUREMOVEPTR = '00010000'x)
+        integer  MR_MOUGETPTRPOS
+        parameter (MR_MOUGETPTRPOS = '00020000'x)
+        integer  MR_MOUSETPTRPOS
+        parameter (MR_MOUSETPTRPOS = '00040000'x)
+        integer  MR_MOUINITREAL
+        parameter (MR_MOUINITREAL = '00080000'x)
+        integer  MR_MOUSETDEVSTATUS
+        parameter (MR_MOUSETDEVSTATUS = '00100000'x)
+
+        external MouDeRegister
+        integer*2 MouDeRegister
+
+        external MouFlushQue
+        integer*2 MouFlushQue
+
+        integer  MHK_BUTTON1
+        parameter (MHK_BUTTON1 = '00000001'x)
+        integer  MHK_BUTTON2
+        parameter (MHK_BUTTON2 = '00000002'x)
+        integer  MHK_BUTTON3
+        parameter (MHK_BUTTON3 = '00000004'x)
+
+! structure for MouGet/SetPtrPos()
+
+        structure /PTRLOC/
+            integer*2 row
+            integer*2 col
+        end structure
+
+        external MouGetPtrPos
+        integer*2 MouGetPtrPos
+        external MouSetPtrPos
+        integer*2 MouSetPtrPos
+
+        structure /PTRSHAPE/
+            integer*2 cb
+            integer*2 col
+            integer*2 row
+            integer*2 colHot
+            integer*2 rowHot
+        end structure
+
+        external MouSetPtrShape
+        integer*2 MouSetPtrShape
+
+        external MouGetPtrShape
+        integer*2 MouGetPtrShape
+
+        integer  MOUSE_QUEUEBUSY
+        parameter (MOUSE_QUEUEBUSY = '00000001'x)
+        integer  MOUSE_BLOCKREAD
+        parameter (MOUSE_BLOCKREAD = '00000002'x)
+        integer  MOUSE_FLUSH
+        parameter (MOUSE_FLUSH = '00000004'x)
+        integer  MOUSE_UNSUPPORTED_MODE
+        parameter (MOUSE_UNSUPPORTED_MODE = '00000008'x)
+        integer  MOUSE_DISABLED
+        parameter (MOUSE_DISABLED = '00000100'x)
+        integer  MOUSE_MICKEYS
+        parameter (MOUSE_MICKEYS = '00000200'x)
+
+        external MouGetDevStatus
+        integer*2 MouGetDevStatus
+
+        external MouGetNumButtons
+        integer*2 MouGetNumButtons
+
+        external MouGetNumMickeys
+        integer*2 MouGetNumMickeys
+
+! MouReadEventQue()
+
+        integer  MOU_NOWAIT
+        parameter (MOU_NOWAIT = '00000000'x)
+        integer  MOU_WAIT
+        parameter (MOU_WAIT = '00000001'x)
+
+! structure for MouReadEventQue()
+
+        structure /MOUEVENTINFO/
+            integer*2 fs
+            integer*4 time
+            integer*2 row
+            integer*2 col
+        end structure
+
+        external MouReadEventQue
+        integer*2 MouReadEventQue
+
+! structure for MouGetNumQueEl()
+
+        structure /MOUQUEINFO/
+            integer*2 cEvents
+            integer*2 cmaxEvents
+        end structure
+
+        external MouGetNumQueEl
+        integer*2 MouGetNumQueEl
+
+! MouGetEventMask()/MouSetEventMask() events
+
+        integer  MOUSE_MOTION
+        parameter (MOUSE_MOTION = '00000001'x)
+        integer  MOUSE_MOTION_WITH_BN1_DOWN
+        parameter (MOUSE_MOTION_WITH_BN1_DOWN = '00000002'x)
+        integer  MOUSE_BN1_DOWN
+        parameter (MOUSE_BN1_DOWN = '00000004'x)
+        integer  MOUSE_MOTION_WITH_BN2_DOWN
+        parameter (MOUSE_MOTION_WITH_BN2_DOWN = '00000008'x)
+        integer  MOUSE_BN2_DOWN
+        parameter (MOUSE_BN2_DOWN = '00000010'x)
+        integer  MOUSE_MOTION_WITH_BN3_DOWN
+        parameter (MOUSE_MOTION_WITH_BN3_DOWN = '00000020'x)
+        integer  MOUSE_BN3_DOWN
+        parameter (MOUSE_BN3_DOWN = '00000040'x)
+
+        external MouGetEventMask
+        integer*2 MouGetEventMask
+
+        external MouSetEventMask
+        integer*2 MouSetEventMask
+
+! structure for MouGetScaleFact()/MouSetScaleFact()
+
+        structure /SCALEFACT/
+            integer*2 rowScale
+            integer*2 colScale
+        end structure
+
+        external MouGetScaleFact
+        integer*2 MouGetScaleFact
+
+        external MouSetScaleFact
+        integer*2 MouSetScaleFact
+
+        external MouOpen
+        integer*2 MouOpen
+
+        external MouClose
+        integer*2 MouClose
+
+! structure for MouRemovePtr()
+
+        structure /NOPTRRECT/
+            integer*2 row
+            integer*2 col
+            integer*2 cRow
+            integer*2 cCol
+        end structure
+
+        external MouRemovePtr
+        integer*2 MouRemovePtr
+
+        external MouDrawPtr
+        integer*2 MouDrawPtr
+
+        integer  MOU_NODRAW
+        parameter (MOU_NODRAW = '00000001'x)
+        integer  MOU_DRAW
+        parameter (MOU_DRAW = '00000000'x)
+        integer  MOU_MICKEYS
+        parameter (MOU_MICKEYS = '00000002'x)
+        integer  MOU_PELS
+        parameter (MOU_PELS = '00000000'x)
+
+        external MouSetDevStatus
+        integer*2 MouSetDevStatus
+
+        external MouInitReal
+        integer*2 MouInitReal
+
+        external MouSynch
+        integer*2 MouSynch
+
+        structure /THRESHOLD/
+            integer*2 Length
+            integer*2 Level1
+            integer*2 Lev1Mult
+            integer*2 Level2
+            integer*2 lev2Mult
+        end structure
+
+        external MouGetThreshold
+        integer*2 MouGetThreshold
+
+        external MouSetThreshold
+        integer*2 MouSetThreshold
+
+c$endif
+
+c$endif
+
+c$reference

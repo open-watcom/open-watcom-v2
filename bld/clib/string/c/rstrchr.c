@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strchr() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -45,7 +44,7 @@
 #if USE_INT64
     RISC_DATA_LOCALREF;
 #endif
-    UINT *              dw = ROUND(s);          /* round down to dword */
+    UINT                *dw = ROUND(s); /* round down to dword */
     UINT                dword, cdword, tmpdword;
     INT                 len = 0;
     int                 offset = OFFSET(s);
@@ -58,141 +57,143 @@
 #endif
 #endif
 
-    #ifdef __WIDECHAR__
-        if( offset % 2 )  return( __simple_wcschr( s, c ) );
-    #endif
+#ifdef __WIDECHAR__
+    if( offset % 2 )
+        return( __simple_wcschr( s, c ) );
+#endif
 
     /*** Initialize locals ***/
     c &= CHR1MASK;
-    #ifdef __WIDECHAR__
-        cShl16 = c << 16;
-        cdword = cShl16 | c;
-    #else
-        cShl8 = c << 8;
-        cShl16 = c << 16;
-        cShl24 = c << 24;
-        #if USE_INT64
-            cShl32 = (UINT)c << 32;
-            cShl40 = (UINT)c << 40;
-            cShl48 = (UINT)c << 48;
-            cShl56 = (UINT)c << 56;
-            cdword = cShl56 | cShl48 | cShl40 | cShl32 | cShl24 | cShl16 | cShl8 | c;
-        #else
-            cdword = cShl24 | cShl16 | cShl8 | c;
-        #endif
-    #endif
+#ifdef __WIDECHAR__
+    cShl16 = c << 16;
+    cdword = cShl16 | c;
+#else
+    cShl8 = c << 8;
+    cShl16 = c << 16;
+    cShl24 = c << 24;
+  #if USE_INT64
+    cShl32 = (UINT)c << 32;
+    cShl40 = (UINT)c << 40;
+    cShl48 = (UINT)c << 48;
+    cShl56 = (UINT)c << 56;
+    cdword = cShl56 | cShl48 | cShl40 | cShl32 | cShl24 | cShl16 | cShl8 | c;
+  #else
+    cdword = cShl24 | cShl16 | cShl8 | c;
+  #endif
+#endif
 
     /*** Scan any bytes up to a 4-byte alignment ***/
     if( offset != 0 ) {
         dword = *dw++;
-        #ifdef __WIDECHAR__
+#ifdef __WIDECHAR__
+        tmpdword = CHR2(dword);
+        if( tmpdword == cShl16 ) {
+            return( (CHAR_TYPE*)s + len );
+        } else if( tmpdword == 0 ) {
+            return( NULL );
+        }
+        len++;
+#else
+        switch( offset ) {
+          case 1:
             tmpdword = CHR2(dword);
+            if( tmpdword == cShl8 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+          case 2:
+            tmpdword = CHR3(dword);
             if( tmpdword == cShl16 ) {
-                return( (CHAR_TYPE*)s+len );
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+        #if USE_INT64
+          case 3:
+            tmpdword = CHR4(dword);
+            if( tmpdword == cShl24 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+          case 4:
+            tmpdword = CHR5(dword);
+            if( tmpdword == cShl32 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+          case 5:
+            tmpdword = CHR6(dword);
+            if( tmpdword == cShl40 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+          case 6:
+            tmpdword = CHR7(dword);
+            if( tmpdword == cShl48 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
+            }
+            len++;
+            /* fall through */
+          default:
+            tmpdword = CHR8(dword);
+            if( tmpdword == cShl56 ) {
+                return( (CHAR_TYPE*)s + len );
             } else if( tmpdword == 0 ) {
                 return( NULL );
             }
             len++;
         #else
-            switch( offset ) {
-              case 1:
-                tmpdword = CHR2(dword);
-                if( tmpdword == cShl8 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-              case 2:
-                tmpdword = CHR3(dword);
-                if( tmpdword == cShl16 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-            #if USE_INT64
-              case 3:
-                tmpdword = CHR4(dword);
-                if( tmpdword == cShl24 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-              case 4:
-                tmpdword = CHR5(dword);
-                if( tmpdword == cShl32 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-              case 5:
-                tmpdword = CHR6(dword);
-                if( tmpdword == cShl40 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-              case 6:
-                tmpdword = CHR7(dword);
-                if( tmpdword == cShl48 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-                /* fall through */
-              default:
-                tmpdword = CHR8(dword);
-                if( tmpdword == cShl56 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-            #else
-              default:
-                tmpdword = CHR4(dword);
-                if( tmpdword == cShl24 ) {
-                    return( (CHAR_TYPE*)s+len );
-                } else if( tmpdword == 0 ) {
-                    return( NULL );
-                }
-                len++;
-            #endif
+          default:
+            tmpdword = CHR4(dword);
+            if( tmpdword == cShl24 ) {
+                return( (CHAR_TYPE*)s + len );
+            } else if( tmpdword == 0 ) {
+                return( NULL );
             }
+            len++;
         #endif
+        }
+#endif
     }
 
     /*** Scan in aligned 4-byte groups ***/
     for( ;; ) {
         dword = *dw++;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
         tmpdword = dword ^ cdword;
         if( GOT_NIL(tmpdword) ) {
-            #ifdef __WIDECHAR__
-                if( !CHR1(tmpdword) )  return( (CHAR_TYPE*)s+len );
-                /* otherwise */        return( (CHAR_TYPE*)s+len+1 );
-            #else
-                if( !CHR1(tmpdword) )  return( (char*)s+len );
-                if( !CHR2(tmpdword) )  return( (char*)s+len+1 );
-                if( !CHR3(tmpdword) )  return( (char*)s+len+2 );
-                if( !CHR4(tmpdword) )  return( (char*)s+len+3 );
-                #if USE_INT64
-                    if( !CHR5(tmpdword) )  return( (char*)s+len+4 );
-                    if( !CHR6(tmpdword) )  return( (char*)s+len+5 );
-                    if( !CHR7(tmpdword) )  return( (char*)s+len+6 );
-                    if( !CHR8(tmpdword) )  return( (char*)s+len+7 );
-                #endif
-            #endif
+#ifdef __WIDECHAR__
+            if( !CHR1(tmpdword) )  return( (CHAR_TYPE*)s + len );
+            /* otherwise */        return( (CHAR_TYPE*)s + len + 1 );
+#else
+            if( !CHR1(tmpdword) )  return( (char*)s + len );
+            if( !CHR2(tmpdword) )  return( (char*)s + len + 1 );
+            if( !CHR3(tmpdword) )  return( (char*)s + len + 2 );
+            if( !CHR4(tmpdword) )  return( (char*)s + len + 3 );
+    #if USE_INT64
+            if( !CHR5(tmpdword) )  return( (char*)s + len + 4 );
+            if( !CHR6(tmpdword) )  return( (char*)s + len + 5 );
+            if( !CHR7(tmpdword) )  return( (char*)s + len + 6 );
+            if( !CHR8(tmpdword) )  return( (char*)s + len + 7 );
+    #endif
+#endif
         }
         len += CHARS_PER_WORD;
     }
@@ -200,70 +201,70 @@
     /*** Scan the last byte(s) in the string ***/
     tmpdword = CHR1(dword);
     if( tmpdword == c ) {
-        return( (CHAR_TYPE*)s+len );
+        return( (CHAR_TYPE*)s + len );
     } else if( tmpdword == 0 ) {
         return( NULL );
     }
 
-    #ifdef __WIDECHAR__
-        tmpdword = CHR2(dword);
-        if( tmpdword == cShl16 ) {
-            return( (CHAR_TYPE*)s+len+1 );
-        } else if( tmpdword == 0 ) {
-            return( NULL );
-        }
-    #else
-        tmpdword = CHR2(dword);
-        if( tmpdword == cShl8 ) {
-            return( (CHAR_TYPE*)s+len+1 );
-        } else if( tmpdword == 0 ) {
-            return( NULL );
-        }
+#ifdef __WIDECHAR__
+    tmpdword = CHR2(dword);
+    if( tmpdword == cShl16 ) {
+        return( (CHAR_TYPE*)s + len + 1 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
+#else
+    tmpdword = CHR2(dword);
+    if( tmpdword == cShl8 ) {
+        return( (CHAR_TYPE*)s + len + 1 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-        tmpdword = CHR3(dword);
-        if( tmpdword == cShl16 ) {
-            return( (CHAR_TYPE*)s+len+2 );
-        } else if( tmpdword == 0 ) {
-            return( NULL );
-        }
+    tmpdword = CHR3(dword);
+    if( tmpdword == cShl16 ) {
+        return( (CHAR_TYPE*)s + len + 2 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-        tmpdword = CHR4(dword);
-        if( tmpdword == cShl24 ) {
-            return( (CHAR_TYPE*)s+len+3 );
-        } else if( tmpdword == 0 ) {
-            return( NULL );
-        }
+    tmpdword = CHR4(dword);
+    if( tmpdword == cShl24 ) {
+        return( (CHAR_TYPE*)s + len + 3 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-        #if USE_INT64
-            tmpdword = CHR5(dword);
-            if( tmpdword == cShl32 ) {
-                return( (CHAR_TYPE*)s+len+4 );
-            } else if( tmpdword == 0 ) {
-                return( NULL );
-            }
+  #if USE_INT64
+    tmpdword = CHR5(dword);
+    if( tmpdword == cShl32 ) {
+        return( (CHAR_TYPE*)s + len + 4 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-            tmpdword = CHR6(dword);
-            if( tmpdword == cShl40 ) {
-                return( (CHAR_TYPE*)s+len+5 );
-            } else if( tmpdword == 0 ) {
-                return( NULL );
-            }
+    tmpdword = CHR6(dword);
+    if( tmpdword == cShl40 ) {
+        return( (CHAR_TYPE*)s + len + 5 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-            tmpdword = CHR7(dword);
-            if( tmpdword == cShl48 ) {
-                return( (CHAR_TYPE*)s+len+6 );
-            } else if( tmpdword == 0 ) {
-                return( NULL );
-            }
+    tmpdword = CHR7(dword);
+    if( tmpdword == cShl48 ) {
+        return( (CHAR_TYPE*)s + len + 6 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
 
-            tmpdword = CHR8(dword);
-            if( tmpdword == cShl48 ) {
-                return( (CHAR_TYPE*)s+len+7 );
-            } else if( tmpdword == 0 ) {
-                return( NULL );
-            }
-        #endif
-    #endif
+    tmpdword = CHR8(dword);
+    if( tmpdword == cShl48 ) {
+        return( (CHAR_TYPE*)s + len + 7 );
+    } else if( tmpdword == 0 ) {
+        return( NULL );
+    }
+  #endif
+#endif
 
     return( NULL );
 }

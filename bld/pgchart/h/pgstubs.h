@@ -38,10 +38,4 @@
     #define _WCI86FAR    __far
 #endif
 
-void _WCI86FAR       _GR_ecvt( float _WCI86FAR *, int, int _WCI86FAR *, int _WCI86FAR *, char _WCI86FAR * );
-void _WCI86FAR       _GR_fcvt( float _WCI86FAR *, int, int _WCI86FAR *, int _WCI86FAR *, char _WCI86FAR * );
-void _WCI86FAR       _GR_ceil( float _WCI86FAR * );
-void _WCI86FAR       _GR_cos( float _WCI86FAR * );
-void _WCI86FAR       _GR_log( float _WCI86FAR * );
-void _WCI86FAR       _GR_log10( float _WCI86FAR * );
-void _WCI86FAR       _GR_sin( float _WCI86FAR * );
+#include "grfuncs.h"

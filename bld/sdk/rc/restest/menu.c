@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a menu resource.
 *
 ****************************************************************************/
 
@@ -58,7 +57,8 @@ BOOL __export FAR PASCAL MenuWndProc( HWND hwnd, UINT msg, UINT wparam,
     return( FALSE );
 }
 
-BOOL RegisterMenuClass( void ) {
+BOOL RegisterMenuClass( void )
+{
     WNDCLASS    wc;
 
     /* fixed window */
@@ -94,14 +94,15 @@ BOOL CALLBACK GetMenuNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
     return( TRUE );
 }
 
-void DisplayMenu( void ) {
+void DisplayMenu( void )
+{
     FARPROC     fp;
     HMENU       menu;
     char        buf[256];
     HWND        hwnd;
 
-    fp = MakeProcInstance( GetMenuNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetMenuNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     menu = LoadMenu( Instance, menuName );
     if( menu == NULL ) {

@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "rxsupp.h"
 
@@ -50,12 +46,12 @@ extern void Lead( char c, int num, char *buff );
  */
 int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
 {
-    char        *src,*dst,c;
-    int         no,len,splitit = FALSE;
-    bool        upper_flag=FALSE,lower_flag=FALSE,perm_flag=FALSE;
+    char        *src, *dst, c;
+    int         no, len, splitit = FALSE;
+    bool        upper_flag = FALSE, lower_flag = FALSE, perm_flag = FALSE;
     char        *tmp;
     char        buff[MAX_STR];
-    int         i,j;
+    int         i, j;
     linenum     ll;
 
 
@@ -64,9 +60,9 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
     src = source;
     dst = dest;
     while( (c = *src++) != '\0' ) {
-        if(c == '&') {
+        if( c == '&' ) {
             no = 0;
-        } else if (c == '\\' && '0' <= *src && *src <= '9') {
+        } else if( c == '\\' && '0' <= *src && *src <= '9' ) {
             no = *src++ - '0';
         } else {
             no = -1;
@@ -91,9 +87,9 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                         buff[i++] = *src++;
                     }
                     buff[i] = 0;
-                    j = atoi( buff )-1;
+                    j = atoi( buff ) - 1;
                     *dst = 0;
-                    i = RealLineLen( dest );
+                    i = VirtualLineLen( dest );
                     while( i < j ) {
                         *dst++ = ' ';
                         i++;
@@ -106,7 +102,7 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                     i = strlen( buff );
                     ltoa( lineno, buff, 10 );
                     Lead( '0', i, buff );
-                    for( j=0;j<i;j++ ) {
+                    for( j = 0; j < i; j++ ) {
                         *dst++ = buff[j];
                     }
                     break;
@@ -166,12 +162,12 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
              */
             } else {
                 if( upper_flag ) {
-                    c = toupper(c);
+                    c = toupper( c );
                     if( !perm_flag ) {
                         upper_flag = FALSE;
                     }
                 } else if( lower_flag ) {
-                    c = tolower(c);
+                    c = tolower( c );
                     if( !perm_flag ) {
                         lower_flag = FALSE;
                     }
@@ -181,22 +177,22 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
         /*
          * copy in a sub expression
          */
-        } else if (prog->startp[no] != NULL && prog->endp[no] != NULL) {
+        } else if( prog->startp[no] != NULL && prog->endp[no] != NULL ) {
             len = prog->endp[no] - prog->startp[no];
             if( upper_flag ) {
                 strcpy( tmp, prog->startp[no] );
-                strncpy( dst, strupr( tmp ), len);
+                strncpy( dst, strupr( tmp ), len );
                 if( !perm_flag ) {
                     upper_flag = FALSE;
                 }
             } else if( lower_flag ) {
                 strcpy( tmp, prog->startp[no] );
-                strncpy( dst, strlwr( tmp ), len);
+                strncpy( dst, strlwr( tmp ), len );
                 if( !perm_flag ) {
                     lower_flag = FALSE;
                 }
             } else {
-                strncpy(dst, prog->startp[no], len);
+                strncpy( dst, prog->startp[no], len );
             }
             dst += len;
         }

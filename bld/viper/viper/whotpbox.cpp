@@ -78,6 +78,8 @@ bool WHotPickBox::gettingFocus( WWindow * )
 void WEXPORT WHotPickBox::fillBox()
 /********************************/
 {
+    int i;
+
     if( _sorted ) {
         _model->sort();
     }
@@ -86,7 +88,7 @@ void WEXPORT WHotPickBox::fillBox()
     _tagsWidth = 0;
     int icount = _model->count();
     int jcount = 0;
-    for( int i=0; i<icount; i++ ) {
+    for( i=0; i<icount; i++ ) {
         if( (((*_model)[ i ])->*_gincluded)() ) {
             jcount += 1;
         }

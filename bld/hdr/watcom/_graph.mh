@@ -1,0 +1,6 @@
+::
+:: This file generates internal _graph.h header file
+:: used for build graphics library.
+::
+:keep INTERNAL
+:include watcom/graph.mh

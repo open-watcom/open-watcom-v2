@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WRC code page generator.
 *
 ****************************************************************************/
 
@@ -33,12 +32,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <windows.h>
 #include <string.h>
 #include "watcom.h"
 #include "banner.h"
-#include "types.h"
+#include "rctypes.h"
 #include "dbtable.h"
 
 typedef struct {
@@ -244,6 +244,7 @@ int main( int argc, char *argv[] ) {
     printf( "%s\n", banner1( "WRC Code Page Generator", "1.0") );
     printf( "%s\n", banner2a() );
     printf( "%s\n\n", banner3 );
+    printf( "%s\n\n", banner3a );
     if( argc != 3 ) {
         printf( "This program creates data files used by the resource compiler to convert text\n" );
         printf( "from a given code page into UNICODE. It can only create data files for code\n" );

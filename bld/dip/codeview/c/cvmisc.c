@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous CodeView support routines.
 *
 ****************************************************************************/
 
@@ -57,7 +56,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpStartup()
+dip_status      DIPENTRY DIPImpStartup(void)
 {
     return( DS_OK );
 }
@@ -235,7 +234,7 @@ dip_status DoIndirection( imp_image_handle *ii, type_info *ti,
     return( DS_OK );
 }
 
-void NYI()
+void NYI( void )
 {
     volatile int a = 0;
     volatile int b = 0;
@@ -243,7 +242,7 @@ void NYI()
     a /= b; /* cause a fault */
 }
 
-void Confused()
+void Confused( void )
 {
     /* don't know what's happening */
     NYI();

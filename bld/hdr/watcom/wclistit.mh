@@ -6,7 +6,10 @@
 //
 #ifndef _WCLISTIT_H_INCLUDED
 #define _WCLISTIT_H_INCLUDED
+
 :include readonly.sp
+
+:include cpponly.sp
 
 //
 // There are 12 list iterator classes.
@@ -26,22 +29,17 @@
 
 #pragma warning 621 9       // I want the behaviour this warning points to
 
-#ifndef __cplusplus
-#error wclistit.h is for use with C++
-#endif
-
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCLIST_H_INCLUDED
  #include <wclist.h>
 #endif
+
 #ifndef _WCLIBASE_H_INCLUDED
  #include <wclibase.h>
 #endif
-
-
-
 
 //
 //  This defines an iterator class for non-const single linked list of

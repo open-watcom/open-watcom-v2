@@ -3,11 +3,7 @@
 #include <conio.h>
 #include <math.h>
 #include <dos.h>
-#if defined( __PC98__ )
-  #include <graph98.h>
-#else
-  #include <graph.h>
-#endif
+#include <graph.h>
 
 
 #define PI          3.141592654
@@ -53,8 +49,8 @@ int main( void )
 }
 
 
-static void Do_Demo1()
-/*==================*/
+static void Do_Demo1( void )
+/*========================*/
 {
     int                 width, y;
 
@@ -76,18 +72,14 @@ static void Do_Demo1()
 
     _setcolor( BorderColour );
     _rectangle( _GBORDER, 0, 0, VC.numxpixels - 1, VC.numypixels - 1 );
-#if defined( __PC98__ )
-    FadeColors();
-#else
     if( VC.adapter > _MCGA ) {
         FadeColors();
     }
-#endif
 }
 
 
-static void Press_any_key()
-/*=======================*/
+static void Press_any_key( void )
+/*=============================*/
 
 /*  wait for keyboard input */
 {
@@ -106,9 +98,9 @@ static void DrawText( short width, short y )
     int                 xc;
 
     xc = VC.numxpixels / 2;
-    _setcharsize( width, width * 3 / 2 );
+    _setcharsize( width, width * 5 / 4 );
     _settextalign( _CENTER, _BOTTOM );
-    _grtext( xc, y, "WATCOM C" );
+    _grtext( xc, y, "Open Watcom" );
     _setcharsize( width, width );
     _settextalign( _CENTER, _TOP );
     _grtext( xc, VC.numypixels - y, "GRAPHICS" );
@@ -123,9 +115,6 @@ static int InitScreen( void )
 {
     int                 mode;
 
-#if defined( __PC98__ )
-    mode = _MAXCOLORMODE;
-#else
     _getvideoconfig( &VC );
     switch( VC.adapter ) {
     case _VGA :
@@ -151,7 +140,6 @@ static int InitScreen( void )
     default :
         return( 0 );          /* report insufficient hardware */
     }
-#endif
 
     if( _setvideomode( mode ) == 0 ) {
         return( 0 );
@@ -166,28 +154,17 @@ static int InitScreen( void )
         TextColour2 = 3;
         BorderColour = 2;
     }
-#if defined( __PC98__ )
-    /* set up new colours */
-    _remappalette( TextColour, _98BLUE );       /* light blue */
-    _remappalette( TextColour2, _98BLUE );      /* light blue */
-    _remappalette( BorderColour, _98BLACK );    /* black      */
-#else
     if( VC.adapter >= _MCGA ) {
         /* set up new colours */
         _remappalette( TextColour, 0x3f0000 );  /* light blue */
         _remappalette( TextColour2, 0x3f0000 ); /* light blue */
         _remappalette( BorderColour, _BLACK );  /* black      */
     }
-#endif
     return( 1 );
 }
 
 
-#if defined( __PC98__ )
-  #define _MAX 15   // 4 colour bits
-#else
-  #define _MAX 63   // 6 colour bits
-#endif
+#define _MAX 63   // 6 colour bits
 
 
 static void FadeColors( void )
@@ -207,9 +184,7 @@ static void FadeColors( void )
         _remappalette( TextColour, blue );
         _remappalette( TextColour2, blue + green );
         _remappalette( BorderColour, red );
-#if defined( __PC98__ )
-        delay( 125 );
-#endif
+        delay( 75 );
     }
 }
 

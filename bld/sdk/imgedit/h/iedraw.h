@@ -36,23 +36,14 @@
 #define MAKELOGPTX( a ) ((int)(a - (a % pointSize.x)))
 #define MAKELOGPTY( a ) ((int)(a - (a % pointSize.y)))
 
-// Macros for 16 bit vs. NT
-#ifdef __OS2_PM__
-
-#define SET_HWND_PARAM2( lp, hwnd )     lp = (WPI_PARAM2)hwnd
-#define GET_HWND_PARAM2( lp )           (HWND)lp
-
+// Macros for 16-bit vs. NT
+#if defined( __OS2_PM__ )
+    #define SET_HWND_PARAM2( lp, hwnd )     lp = (WPI_PARAM2)hwnd
+    #define GET_HWND_PARAM2( lp )           (HWND)lp
+#elif defined( __NT__ )
+    #define SET_HWND_PARAM2( lp, hwnd )     lp = (LPARAM)hwnd
+    #define GET_HWND_PARAM2( lp )           (HWND)lp
 #else
-#ifdef __NT__
-
-#define SET_HWND_PARAM2( lp, hwnd )     lp = (LPARAM)hwnd
-#define GET_HWND_PARAM2( lp )           (HWND)lp
-
-#else
-
-#define SET_HWND_PARAM2( lp, hwnd )     lp = MAKELPARAM( hwnd, 0 )
-#define GET_HWND_PARAM2( lp )           (HWND)LOWORD( lp )
-
+    #define SET_HWND_PARAM2( lp, hwnd )     lp = MAKELPARAM( hwnd, 0 )
+    #define GET_HWND_PARAM2( lp )           (HWND)LOWORD( lp )
 #endif
-#endif
-

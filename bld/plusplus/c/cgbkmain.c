@@ -24,17 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Back-end control for C++.
 *
 ****************************************************************************/
 
 
-#include <float.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <float.h>
+
 #include "cgfront.h"
 #include "cgback.h"
 #include "memmgr.h"
@@ -65,6 +63,7 @@
 #include "fmtsym.h"
 #include "floatsup.h"
 #include "rtti.h"
+#include "cgdllcli.h"
 
 #ifndef NDEBUG
 #include "pragdefn.h"
@@ -123,7 +122,6 @@
 
 static VSTK_CTL stack_labs_cs;      // stack: labels (control)
 static VSTK_CTL stack_goto_near;    // stack: gotos (near)
-static VSTK_CTL stack_object_init;  // stack: array initializations
 
 static unsigned max_inline_depth;   // maximum depth of inlining
 static unsigned depth_inline;       // depth of inlining
@@ -160,10 +158,10 @@ static void cgResetThis(        // RESET THIS, IF REQUIRED
     if( ! IbpReference( NULL, &sym, &ref, &offset_ref ) ) {
         expr = CgExprPop();
         if( offset > 0 ) {
-           expr = CGBinary( O_MINUS, expr, CgOffset( offset ), T_POINTER );
+           expr = CGBinary( O_MINUS, expr, CgOffset( offset ), TY_POINTER );
         }
-        expr = CGLVAssign( CgSymbol( sym ), expr, T_POINTER );
-        CgExprPush( expr, T_POINTER );
+        expr = CGLVAssign( CgSymbol( sym ), expr, TY_POINTER );
+        CgExprPush( expr, TY_POINTER );
     }
 }
 
@@ -347,13 +345,13 @@ static void cgDtorThisOffset(   // DESTRUCT (*this)+offset
                                    , refd_sym
                                    , offset + refd_off
                                    , cdtor )
-              , T_POINTER );
+              , TY_POINTER );
     } else {
         expr = CgFetchSymbolAddOffset( this_sym, offset );
         expr = CgDestructExpr( dtor, expr, cdtor );
-        CgExprPush( expr, T_POINTER );
+        CgExprPush( expr, TY_POINTER );
         cgResetThis( offset );
-        CgDone( CgExprPop(), T_POINTER );
+        CgDone( CgExprPop(), TY_POINTER );
     }
 }
 
@@ -503,7 +501,7 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
                                            , se->sym_auto.sym
                                            , 0
                                            , cdtor )
-                      , T_POINTER );
+                      , TY_POINTER );
             } else {
                 ++ destructions;
                 flags |= DGRP_TAB_CALL;
@@ -520,9 +518,9 @@ static unsigned cgDestructGroup(// DESTRUCT UP TO STATE ENTRY
                 lab = CondLabelAdd( &lab_ring, se->test_flag.se_true );
                 CondInfoSetup( se->test_flag.index, &cond, fctl );
                 expr = CgSymbolPlusOffset( cond.sym, cond.offset );
-                expr = CgFetchType( expr, T_UINT_1 );
-                expr = CGBinary( O_AND, expr, CgOffset( cond.mask ), T_UINT_1 );
-                CgControl( O_IF_TRUE, expr, T_UINT_1, lab );
+                expr = CgFetchType( expr, TY_UINT_1 );
+                expr = CGBinary( O_AND, expr, CgOffset( cond.mask ), TY_UINT_1 );
+                CgControl( O_IF_TRUE, expr, TY_UINT_1, lab );
                 lab = CondLabelAdd( &lab_ring, se->test_flag.se_false );
                 CGControl( O_GOTO, NULL, lab );
                 flags &= ~ DGRP_LIVE;
@@ -1048,8 +1046,8 @@ static void cdArgTest(          // TESTING CODE FOR CDARG
         // test not needed
     } else {
         expr = CgFetchSym( fctl->cdtor_sym );
-        expr = CGBinary( O_AND, expr, CGInteger( mask, T_UINT_1 ), T_UINT_1 );
-        expr = CGCompare( O_NE, expr, CGInteger( 0, T_UINT_1 ), TY_BOOLEAN );
+        expr = CGBinary( O_AND, expr, CGInteger( mask, TY_UINT_1 ), TY_UINT_1 );
+        expr = CGCompare( O_NE, expr, CGInteger( 0, TY_UINT_1 ), TY_BOOL );
         optype = branch_on ? O_IF_TRUE : O_IF_FALSE;
         fctl->cdarg_lab = BENewLabel();
         CGControl( optype, expr, fctl->cdarg_lab );
@@ -1081,29 +1079,29 @@ static void genCtorDispInitCode(// generate ctor-disp init code
     BASE_CLASS *base;
 
     /* unsigned const *cdp; */
-    cdp = CGTemp( T_POINTER );
+    cdp = CGTemp( TY_POINTER );
     /* unsigned cdv; */
     cdv = CGTemp( TY_UNSIGNED );
     /* cdp = this->vbptr; */
     info = class_type->u.c.info;
     vb_offset = info->vb_offset;
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
-    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
-    e2 = CGTempName( cdp, T_POINTER );
-    e1 = CGAssign( e2, e1, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+    e2 = CGTempName( cdp, TY_POINTER );
+    e1 = CGAssign( e2, e1, TY_POINTER );
     CGDone( e1 );
     RingIterBeg( info->bases, base ) {
         if( _IsVirtualBase( base ) ) {
             if( TypeCtorDispRequired( class_type, base->type ) ) {
                 /* cdv = cdp[i] + offsetof(scope,vbptr); */
-                e1 = CGTempName( cdp, T_POINTER );
-                e1 = CGUnary( O_POINTS, e1, T_POINTER );
+                e1 = CGTempName( cdp, TY_POINTER );
+                e1 = CGUnary( O_POINTS, e1, TY_POINTER );
                 e2 = CgOffset( base->vb_index * TARGET_UINT );
-                e1 = CGBinary( O_PLUS, e1, e2, T_POINTER );
+                e1 = CGBinary( O_PLUS, e1, e2, TY_POINTER );
                 e1 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
-                e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), T_POINTER );
+                e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), TY_POINTER );
                 e2 = CGTempName( cdv, TY_UNSIGNED );
                 e1 = CGAssign( e2, e1, TY_UNSIGNED );
                 CGDone( e1 );
@@ -1112,9 +1110,9 @@ static void genCtorDispInitCode(// generate ctor-disp init code
                 e1 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
                 e2 = CgOffset( TARGET_UINT );
                 e2 = CGBinary( O_MINUS, e1, e2, TY_UNSIGNED );
-                e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-                e1 = CGUnary( O_POINTS, e1, T_POINTER );
-                e2 = CGBinary( O_PLUS, e1, e2, T_POINTER );
+                e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+                e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+                e2 = CGBinary( O_PLUS, e1, e2, TY_POINTER );
                 e1 = CGTempName( cdv, TY_UNSIGNED );
                 e1 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
                 e1 = CGAssign( e2, e1, TY_UNSIGNED );
@@ -1133,14 +1131,14 @@ static void genExactVPtrInit(   // generate a vptr init with exact delta
     cg_name e1;
     cg_name e2;
 
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
-    e1 = CGBinary( O_PLUS, e1, CgOffset( delta ), T_POINTER );
-    e2 = CGFEName( (cg_sym_handle)table_sym, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+    e1 = CGBinary( O_PLUS, e1, CgOffset( delta ), TY_POINTER );
+    e2 = CGFEName( (cg_sym_handle)table_sym, TY_POINTER );
     if( ! vbptr ) {
-        e2 = CGBinary( O_PLUS, e2, CgOffset( CgDataPtrSize() ), T_POINTER );
+        e2 = CGBinary( O_PLUS, e2, CgOffset( CgDataPtrSize() ), TY_POINTER );
     }
-    e1 = CGAssign( e1, e2, T_POINTER );
+    e1 = CGAssign( e1, e2, TY_POINTER );
     CGDone( e1 );
 }
 
@@ -1162,22 +1160,22 @@ static void genVBaseVPtrInit(   // generate a vptr init in a virtual base
         cdv = cdp[i] + vb_offset + delta;
         *(this + cdv) = &sym;
     */
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
-    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset ), TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
     e2 = CgOffset( vb_index * TARGET_UINT );
-    e1 = CGBinary( O_PLUS, e1, e2, T_POINTER );
+    e1 = CGBinary( O_PLUS, e1, e2, TY_POINTER );
     e1 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
-    e2 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e2 = CGUnary( O_POINTS, e2, T_POINTER );
-    e1 = CGBinary( O_PLUS, e2, e1, T_POINTER );
-    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset + delta ), T_POINTER );
-    e2 = CGFEName( (cg_sym_handle)table_sym, T_POINTER );
+    e2 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e2 = CGUnary( O_POINTS, e2, TY_POINTER );
+    e1 = CGBinary( O_PLUS, e2, e1, TY_POINTER );
+    e1 = CGBinary( O_PLUS, e1, CgOffset( vb_offset + delta ), TY_POINTER );
+    e2 = CGFEName( (cg_sym_handle)table_sym, TY_POINTER );
     if( ! vbptr ) {
-        e2 = CGBinary( O_PLUS, e2, CgOffset( CgDataPtrSize() ), T_POINTER );
+        e2 = CGBinary( O_PLUS, e2, CgOffset( CgDataPtrSize() ), TY_POINTER );
     }
-    e1 = CGAssign( e1, e2, T_POINTER );
+    e1 = CGAssign( e1, e2, TY_POINTER );
     CGDone( e1 );
 }
 
@@ -1195,9 +1193,9 @@ static void genVthunkDelta(     // generate virtual function thunk deltas
     cg_name e1;
     cg_name e2;
 
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
     e2 = CgOffset( delta );
-    e1 = CGPreGets( op, e1, e2, T_POINTER );
+    e1 = CGPreGets( op, e1, e2, TY_POINTER );
     CGDone( e1 );
 }
 
@@ -1211,13 +1209,13 @@ static void genVthunkCDisp(     // generate virtual function thunk ctor-disp
     cg_name e1;
     cg_name e2;
 
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
     e2 = CgOffset( TARGET_UINT );
-    e1 = CGBinary( O_MINUS, e1, e2, T_POINTER );
+    e1 = CGBinary( O_MINUS, e1, e2, TY_POINTER );
     e2 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGPreGets( O_MINUS, e1, e2, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGPreGets( O_MINUS, e1, e2, TY_POINTER );
     CGDone( e1 );
 }
 
@@ -1232,14 +1230,14 @@ static void genVthunkVBase(     // generate virtual function thunk ctor-disp
     cg_name e1;
     cg_name e2;
 
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
-    e1 = CGUnary( O_POINTS, e1, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
+    e1 = CGUnary( O_POINTS, e1, TY_POINTER );
     e2 = CgOffset( index * TARGET_UINT );
-    e1 = CGBinary( O_PLUS, e1, e2, T_POINTER );
+    e1 = CGBinary( O_PLUS, e1, e2, TY_POINTER );
     e2 = CGUnary( O_POINTS, e1, TY_UNSIGNED );
-    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, T_POINTER );
-    e1 = CGPreGets( O_PLUS, e1, e2, T_POINTER );
+    e1 = CGFEName( (cg_sym_handle)fctl->this_sym, TY_POINTER );
+    e1 = CGPreGets( O_PLUS, e1, e2, TY_POINTER );
     CGDone( e1 );
 }
 
@@ -1251,9 +1249,9 @@ static cg_name accessAuto(      // get cg_name for an auto var
     cg_name cgname;
 
     if( sym == file_ctl->opt_retn && CgRetnOptActive( fctl ) ) {
-        if( file_ctl->opt_retn_val ) {
+        if( file_ctl->s.opt_retn_val ) {
             cgname = CgSymbol( fctl->return_symbol );
-        } else if( file_ctl->opt_retn_ref ) {
+        } else if( file_ctl->s.opt_retn_ref ) {
             cgname = IbpFetchRef( fctl->return_symbol );
         }
     } else {
@@ -1270,7 +1268,7 @@ static void genAutoStaticInit(  // generate code to copy array into auto
     SYMBOL dst,                 // - destination auto var
     SYMBOL src )                // - source static var
 {
-    unsigned type_refno;
+    cg_type type_refno;
     cg_name d1;
     cg_name s1;
     cg_name e1;
@@ -1288,7 +1286,6 @@ static void emitProfilingData(
     FN_CTL* fctl,               // - function information
     SYMBOL sym )                // - function symbol
 {
-    char *fn_name;
     size_t len;
     uint_16 old_seg;
     back_handle fnh;
@@ -1300,17 +1297,16 @@ static void emitProfilingData(
             return;
         }
         FormatSym( sym, &data );
-        fn_name = data.buf;
-        len = strlen( fn_name ) + 1;
         old_seg = BESetSeg( SEG_PROF_REF );
         DbgVerify( 0 == ( 3 & DGTell() ), "P5 segment out of wack" );
-        fnh = BENewBack( NULL );
+        fnh = BENewBack( 0 );
         DGLabel( fnh );
-        DGInteger( 0,   T_INTEGER );
-        DGInteger( -1,  T_INTEGER );
-        DGInteger( 0,   T_INTEGER );
-        DGInteger( 0,   T_INTEGER );
-        DGBytes( len, fn_name );
+        DGInteger( 0,   TY_INTEGER );
+        DGInteger( -1,  TY_INTEGER );
+        DGInteger( 0,   TY_INTEGER );
+        DGInteger( 0,   TY_INTEGER );
+        len = VbufLen( &data ) + 1;
+        DGBytes( len, VbufString( &data ) );
         len &= 0x03;
         if( len ) {
             DGIBytes( 4 - len, 0 );
@@ -1546,7 +1542,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_LEAF_CONST_FLT :          // LEAF: FLOATING-POINT CONSTANT
           { POOL_CON *con;                  // - constant in pool
             con = ins_value.pvalue;
-            CgExprPush( CGFloat( con->fp_constant, exprn_type )
+            CgExprPush( CGFloat( con->s.fp_constant, exprn_type )
                       , exprn_type );
           } break;
 
@@ -1666,14 +1662,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
               case CO_GT :
               case CO_LE :
                 CgExprPush( CGCompare( cg_opcode, op1, op2, exprn_type )
-                          , TY_BOOLEAN );
-                exprn_type = TY_BOOLEAN;
+                          , TY_BOOL );
+                exprn_type = TY_BOOL;
                 break;
 
               case CO_AND_AND :
               case CO_OR_OR :
-                CgExprPush( CGFlow( cg_opcode, op1, op2 ), TY_BOOLEAN );
-                exprn_type = TY_BOOLEAN;
+                CgExprPush( CGFlow( cg_opcode, op1, op2 ), TY_BOOL );
+                exprn_type = TY_BOOL;
                 break;
 
               case CO_INDEX :
@@ -1703,11 +1699,11 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 #if _CPU == _AXP
               case CO_VASTART :
               { cg_name x;
-                x = CGVarargsBasePtr( T_POINTER );
-                op1 = CGLVAssign( op1, x, T_POINTER );
-                x = CGInteger( TARGET_POINTER, T_INTEGER );
-                x = CGBinary( O_PLUS, op1, x, T_POINTER );
-                CgExprPush( CGAssign( x, op2, T_INTEGER ), T_INTEGER );
+                x = CGVarargsBasePtr( TY_POINTER );
+                op1 = CGLVAssign( op1, x, TY_POINTER );
+                x = CGInteger( TARGET_POINTER, TY_INTEGER );
+                x = CGBinary( O_PLUS, op1, x, TY_POINTER );
+                CgExprPush( CGAssign( x, op2, TY_INTEGER ), TY_INTEGER );
               } break;
 #endif
 
@@ -1724,19 +1720,19 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             op1 = CgExprPopType( &op_type );
             switch( ins_value.uvalue ) {
               case CO_EXCLAMATION :
-                CgExprPush( CGFlow( cg_opcode, op1, NULL ), TY_BOOLEAN );
-                exprn_type = TY_BOOLEAN;
+                CgExprPush( CGFlow( cg_opcode, op1, NULL ), TY_BOOL );
+                exprn_type = TY_BOOL;
                 break;
               case CO_UPLUS :
                 CgExprPush( op1, exprn_type );
                 break;
               case CO_FAR16_TO_POINTER:
-                CgExprPush( CGUnary( O_PTR_TO_NATIVE, op1, T_POINTER )
-                          , T_POINTER );
+                CgExprPush( CGUnary( O_PTR_TO_NATIVE, op1, TY_POINTER )
+                          , TY_POINTER );
                 break;
               case CO_POINTER_TO_FAR16:
-                CgExprPush( CGUnary( O_PTR_TO_FORIEGN, op1, T_POINTER )
-                          , T_POINTER );
+                CgExprPush( CGUnary( O_PTR_TO_FOREIGN, op1, TY_POINTER )
+                          , TY_POINTER );
                 break;
               case CO_VOLATILE_TOP:
                 CgExprPushWithAttr( op1, exprn_type, CG_SYM_VOLATILE );
@@ -1780,8 +1776,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             op1 = CGLVAssign( op1
                             , op2
                             , CgTypeOutput( ins_value.pvalue ) );
-            CgExprPush( op1, T_POINTER );
-            exprn_type = T_POINTER;
+            CgExprPush( op1, TY_POINTER );
+            exprn_type = TY_POINTER;
           } break;
 
           case IC_OPR_INDEX :               // INDEX : SET INDEX TYPE
@@ -1808,18 +1804,18 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             SegmentLabelGen( seg_id );
             type = ((SYMBOL)ins_value.pvalue)->sym_type;
             if( FunctionDeclarationType( type ) == NULL ) {
-                far_type = T_LONG_POINTER;
+                far_type = TY_LONG_POINTER;
             } else {
-                far_type = T_LONG_CODE_PTR;
+                far_type = TY_LONG_CODE_PTR;
             }
             ref = CGLVAssign( CGTempName( CGTemp( far_type ), far_type )
                             , CgSymbol( ins_value.pvalue )
                             , far_type );
             ref = CgOffsetExpr( ref
                               , TARGET_FAR_POINTER - TARGET_SHORT
-                              , T_POINTER );
-            ref = CgFetchType( ref, T_UINT_2 );
-            CgExprPush( ref, T_UINT_2 );
+                              , TY_POINTER );
+            ref = CgFetchType( ref, TY_UINT_2 );
+            CgExprPush( ref, TY_UINT_2 );
           } break;
 
           case IC_RARG_FETCH :              // FETCH A REFERENCE ARGUMENT
@@ -1883,8 +1879,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_ALLOCA :                  // ALLOCA SUPPORT
           { cg_name expr;                   // - top expression
             expr = CgExprPop();
-            expr = CGUnary( O_STACK_ALLOC, expr, T_POINTER );
-            CgExprPush( expr, T_POINTER );
+            expr = CGUnary( O_STACK_ALLOC, expr, TY_POINTER );
+            CgExprPush( expr, TY_POINTER );
           } break;
 #endif
 
@@ -1994,7 +1990,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             sym = ins_value.pvalue;
             if( ( file_ctl->symbol != NULL )
               &&( sym->id == SC_STATIC )
-              &&( file_ctl->stgen ) ) {
+              &&( file_ctl->s.stgen ) ) {
                 flushOverInitialization( file_ctl );
             } else if( CgDeclSkippableConstObj( sym ) ) {
                 flushOverInitialization( file_ctl );
@@ -2108,7 +2104,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             con = ins_value.pvalue;
             DbgVerify( con->flt, "NON FLOAT CONSTANT" );
             if( curr_seg != SEG_BSS ) {
-                DGFloat( con->fp_constant, exprn_type );
+                DGFloat( con->s.fp_constant, exprn_type );
             }
           } break;
 
@@ -2200,9 +2196,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_FUNCTION_DTM :            // SET DTOR METHOD
           { DT_METHOD dtm;                  // - function dtor method
             dtm = ins_value.uvalue;
-            if( ! file_ctl->state_table ) {
+            if( ! file_ctl->s.state_table ) {
                 dtm = DTM_DIRECT;
-            } else if( ! file_ctl->stab_gen ) {
+            } else if( ! file_ctl->s.stab_gen ) {
                 dtm = DtmDirect( dtm );
             }
             fctl->dtor_method = dtm;
@@ -2221,7 +2217,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 
           case IC_FUNCTION_STAB :           // SET UP FUNCTION STATE-TABLE
             fctl->cond_flags = ins_value.uvalue;
-            if( file_ctl->ctor_test ) {
+            if( file_ctl->s.ctor_test ) {
                 fctl->has_ctor_test = TRUE;
             }
             break;
@@ -2308,22 +2304,22 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             BlkPosnTrash();
             CgLabelsFinish( &stack_goto_near, fctl->base_goto_near );
             CgLabelsFinish( &stack_labs_cs, fctl->base_labs_cs );
-            file_ctl->stgen = TRUE;
+            file_ctl->s.stgen = TRUE;
             DbgVerify( depth_inline != 0 || IbpEmpty(), "ibrps unfreed" );
             FstabDeRegister( fctl );
             retn_sym = fctl->return_symbol;
             if( retn_sym == NULL ) {
                 if( SpecialFunction( fctl->func ) == SPFN_MAIN ) {
                     // C++ requires main() to return 0 if nothing returned
-                    cgname = CGInteger( 0, T_INTEGER );
-                    cgtype = T_INTEGER;
+                    cgname = CGInteger( 0, TY_INTEGER );
+                    cgtype = TY_INTEGER;
                 } else {
                     cgname = NULL;
                     cgtype = CgTypeOutput( GetBasicType( TYP_VOID ) );
                 }
             } else {
                 exprn_type = CgFuncRetnType( fctl->func );
-                if( file_ctl->opt_retn_ref
+                if( file_ctl->s.opt_retn_ref
                  && CgRetnOptActive( fctl ) ) {
                     cgname = IbpFetchRef( retn_sym );
                 } else {
@@ -2410,17 +2406,17 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                         cg_name e2;                 // - expression(2)
                         e1 = FstabEmitStateVar( se, fctl );
                         e2 = ObjInitAssignIndex( fctl, init, 0 );
-                        e2 = CgComma( e1, e2, T_POINTER );
+                        e2 = CgComma( e1, e2, TY_POINTER );
                         e1 = CGLVAssign
                                 ( CgSymbolPlusOffset( init->reg->sym
                                                     , CgbkInfo.size_data_ptr )
                                 , CgSymbol( BeTypeSignature( array_element )
                                              ->sym )
-                                , T_POINTER );
-                        e2 = CgComma( e1, e2, T_POINTER );
+                                , TY_POINTER );
+                        e2 = CgComma( e1, e2, TY_POINTER );
                         e1 = ObjInitAssignBase( fctl, init );
-                        e2 = CgComma( e1, e2, T_POINTER );
-                        CgCommaBefore( e2, T_POINTER );
+                        e2 = CgComma( e1, e2, TY_POINTER );
+                        CgCommaBefore( e2, TY_POINTER );
                         se->array_init.reg = init->reg;
                     }
                 }
@@ -2439,7 +2435,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 init = ObjInitArray();
                 se = init->obj_se;
                 expr = ObjInitAssignIndex( fctl, init, ins_value.uvalue + 1 );
-                CgExprPush( expr, T_POINTER );
+                CgExprPush( expr, TY_POINTER );
             } else {
                 CgPushGarbage();
             }
@@ -2450,7 +2446,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             scope = ins_value.pvalue;
             BlkPosnPush( scope );
             if( scope != NULL ) {
-                scope->dtor_reqd = FALSE;
+                scope->s.dtor_reqd = FALSE;
                 if( fctl->debug_info
                  && ( GenSwitches & DBG_LOCALS )
                  && ScopeDebugable( scope ) ) {
@@ -2563,7 +2559,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_DTOR_STATIC :     // STATIC SYMBOL NEEDS DTOR
             fctl->pre_init = FstabCurrPosn();
             CompFlags.genned_static_dtor = TRUE;
-            CgCommaOptional( CgDtorStatic( ins_value.pvalue ), T_POINTER );
+            CgCommaOptional( CgDtorStatic( ins_value.pvalue ), TY_POINTER );
             break;
 
           // values:
@@ -2642,8 +2638,8 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 cg_name sv_expr;
                 sv_expr = FstabEmitStateVar( fctl->pre_init, fctl );
                 if( NULL != sv_expr ) {
-                    top_expr = CgComma( top_expr, sv_expr, T_POINTER );
-                    top_type = T_POINTER;
+                    top_expr = CgComma( top_expr, sv_expr, TY_POINTER );
+                    top_type = TY_POINTER;
                 }
             }
             CgExprPush( top_expr, top_type );
@@ -2834,7 +2830,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                 new_expr = CgExprPopType( &type_new_expr );
                 expr = CGLVAssign( CgSymbol( FnCtlNewCtorPtr( fctl ) )
                                  , CgMakeDup( &new_expr, type_new_expr )
-                                 , T_POINTER );
+                                 , TY_POINTER );
                 CgExprPush( CgComma( expr, new_expr, type_new_expr )
                           , type_new_expr );
             }
@@ -2918,7 +2914,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             FstabAssignStateVar( se );
             CgRtCallInit( &def, RTF_SETJMP );
             CgRtParamAddrSym( &def, se->try_blk.try_impl->jmp_sym );
-            CgExprPush( CgRtCallExec( &def ), T_INTEGER );
+            CgExprPush( CgRtCallExec( &def ), TY_INTEGER );
           } break;
 
           case IC_TRY_DONE :                // TRY HAS BEEN COMPLETED
@@ -3018,7 +3014,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             temp = saveGenedExpr( exprn_type );
             if( DtmTabularFunc( fctl ) ) {
                 SE* se;                     // - current state entry
-                DbgAssert( file_ctl->state_table );
+                DbgAssert( file_ctl->s.state_table );
                 se = SeSetSvPosition( BlkPosnTempEnd() );
                 if( se == NULL ) {
                     CgDtorAll();
@@ -3058,7 +3054,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
             break;
 
           case IC_SET_LABEL_SV :            // SET STATE AT LABEL
-            CgDone( FstabEmitStateVar( BlkPosnCurr(), fctl ), T_POINTER );
+            CgDone( FstabEmitStateVar( BlkPosnCurr(), fctl ), TY_POINTER );
             break;
 
           case IC_DTOR_KIND :               // SET KIND OF DTOR IF REQ'D
@@ -3074,6 +3070,9 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_COMPCTOR_BEG :            // START COMPONENT CTOR, TEMPS
           { OBJ_INIT* init;                 // - initialization object
             init = ObjInitClass();
+            if(NULL == init){
+                CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
+            }
             if( init->defn != NULL ) {
                 if( NULL != dtor_last_reqd ) {
                     SE* se;
@@ -3084,14 +3083,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                     fctl->ctored_obj = se;
                     BlkPosnTempEndSet( se );
                     expr = CgCallBackCtorStart( NULL
-                                              , T_POINTER
+                                              , TY_POINTER
                                               , se );
-                    CgCommaBefore( expr, T_POINTER );
+                    CgCommaBefore( expr, TY_POINTER );
                     if( dtor_kind == DTC_ACTUAL_DBASE
                      || dtor_kind == DTC_ACTUAL_VBASE ) {
                         if( DtmTabular( fctl ) ) {
                             expr = ObjInitRegActualBase( se );
-                            CgCommaBefore( expr, T_POINTER );
+                            CgCommaBefore( expr, TY_POINTER );
                         }
                     }
                 }
@@ -3102,12 +3101,15 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { OBJ_INIT* init;                 // - initialization object
             cg_name expr;                   // - new expr
             init = ObjInitClass();
+            if(NULL == init){
+                CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
+            }
             if( init->defn != NULL
              && init->obj_se != NULL ) {
                 expr = CgCallBackCtorDone( NULL
-                                         , T_POINTER
+                                         , TY_POINTER
                                          , init->obj_se );
-                CgCommaOptional( expr, T_POINTER );
+                CgCommaOptional( expr, TY_POINTER );
             }
           } break;
 
@@ -3258,10 +3260,10 @@ static void process_virtual_file( // PROCESS A VIRTUAL FILE
     sym = file_ctl->symbol;
     if( sym == NULL ) {
         data_file = file_ctl;
-    } else if( file_ctl->thunk ) {
+    } else if( file_ctl->s.thunk ) {
         CgioThunkStash( file_ctl );
     } else {
-        if( file_ctl->refed ) {
+        if( file_ctl->s.refed ) {
             writeVirtualFile( file_ctl );
         }
     }
@@ -3273,10 +3275,10 @@ static void process_thunk(      // PROCESS THUNK AFTER VIRTUAL FILES
 {
     EXTRF ext_info;             // - extern-reference information (not used)
 
-    if( thunk->refed
-     && ! thunk->thunk_gen
+    if( thunk->s.refed
+     && ! thunk->s.thunk_gen
      && NULL == ExtrefResolve( thunk->symbol, &ext_info ) ) {
-        thunk->thunk_gen = TRUE;
+        thunk->s.thunk_gen = TRUE;
         writeVirtualFile( thunk );
     }
 }
@@ -3307,7 +3309,6 @@ static void cgbackInit(         // INITIALIZATION FOR MODULE
 #endif
     VstkOpen( &stack_labs_cs, sizeof( label_handle ), 8 );
     VstkOpen( &stack_goto_near, sizeof( label_handle ), 16 );
-    VstkOpen( &stack_object_init, sizeof( OBJ_INIT ), 4 );
     carveTRY_IMPL = CarveCreate( sizeof( TRY_IMPL ), 4 );
     carveSTAB_OBJ = CarveCreate( sizeof( STAB_OBJ ), 4 );
     CompFlags.has_longjmp = FALSE;
@@ -3323,7 +3324,6 @@ static void cgbackFini(         // COMPLETION FOR MODULE
     defn = defn;
     VstkClose( &stack_labs_cs );
     VstkClose( &stack_goto_near );
-    VstkClose( &stack_object_init );
     CarveDestroy( carveTRY_IMPL );
     CarveDestroy( carveSTAB_OBJ );
 }
@@ -3347,70 +3347,75 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     }
 #endif
     CtxSetContext( CTX_CG_FUNC );
-    cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
-    if( ! cg_info.success ) {
+    if( BEDLLLoad( NULL ) ) {
+        cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
+        if( ! cg_info.success ) {
+            CErr1( ERR_CODEGEN_CANT_INITIALIZE );
+            CSuicide();
+#ifndef NDEBUG
+        } else if( cg_info.version.revision != II_REVISION ) {
+            CFatal( "Incorrect Code Generator version" );
+#endif
+        } else {
+            ExitPointAcquire( cgback );
+            SegmentCgInit();
+            BEStart();
+            CgBackStatHandlesInit();
+            thisSym = AllocSymbol();
+            thisSym->id = SC_AUTO;
+            cdtorSym = AllocSymbol();
+            cdtorSym->id = SC_AUTO;
+            statics = NULL;
+            if( GenSwitches & DBG_DF ){
+                DwarfDebugInit();
+                DwarfDebugEmit();
+            }else{
+                SymbolicDebugInit();
+                SymbolicDebugEmit();
+            }
+#ifdef FASTCG
+            if( GenSwitches & NO_OPTIMIZATION ) {
+                extern void InitExpressCode(int,int);
+                InitExpressCode( SEG_CONST2, 1 );
+            }
+#endif
+//            MstabInit();
+            CgioWalkFiles( &process_virtual_file );
+            writeVirtualFile( data_file );
+//            MstabGenerate();
+            do {
+                CgCmdsGenerate();
+                ThrowRoGen();
+                BeGenTypeSignatures();
+                sig_thunk_genned = FALSE;
+                BeGenRttiInfo();
+                CgioWalkThunks( &process_thunk );
+            } while( sig_thunk_genned );
+            freeObjTables();
+            CgioWalkFiles( &CgioFreeFile );
+            if( GenSwitches & DBG_DF ){
+                DwarfDebugFini();
+            }else{
+                SymbolicDebugFini();
+            }
+            CtxSetContext( CTX_CG_OPT );
+            if( ErrCount != 0 ) {
+                BEAbort();
+            }
+            BEStop();
+            // BEStop() can generate some back handles that must be freed
+            CgBackFreeFileHandles();
+            StringWalk( &undefine_string_const );
+            CgBackStatHandlesFini();
+            BEFiniCg();
+            ExitPointRelease( cgback );
+            FreeSymbol( thisSym );
+            FreeSymbol( cdtorSym );
+        }
+        BEDLLUnload();
+    } else {
         CErr1( ERR_CODEGEN_CANT_INITIALIZE );
         CSuicide();
-#ifndef NDEBUG
-    } else if( cg_info.version.revision != II_REVISION ) {
-        CFatal( "Incorrect Code Generator version" );
-#endif
-    } else {
-        ExitPointAcquire( cgback );
-        SegmentCgInit();
-        BEStart();
-        DBSrcFile( SrcFileFullName( CompInfo.primary_srcfile ) );
-        CgBackStatHandlesInit();
-        thisSym = AllocSymbol();
-        thisSym->id = SC_AUTO;
-        cdtorSym = AllocSymbol();
-        cdtorSym->id = SC_AUTO;
-        statics = NULL;
-        if( GenSwitches & DBG_DF ){
-            DwarfDebugInit();
-            DwarfDebugEmit();
-        }else{
-            SymbolicDebugInit();
-            SymbolicDebugEmit();
-        }
-#ifdef FASTCG
-        if( GenSwitches & NO_OPTIMIZATION ) {
-            extern void InitExpressCode(int,int);
-            InitExpressCode( SEG_CONST2, 1 );
-        }
-#endif
-//      MstabInit();
-        CgioWalkFiles( &process_virtual_file );
-        writeVirtualFile( data_file );
-//      MstabGenerate();
-        do {
-            CgCmdsGenerate();
-            ThrowRoGen();
-            BeGenTypeSignatures();
-            sig_thunk_genned = FALSE;
-            BeGenRttiInfo();
-            CgioWalkThunks( &process_thunk );
-        } while( sig_thunk_genned );
-        freeObjTables();
-        CgioWalkFiles( &CgioFreeFile );
-        if( GenSwitches & DBG_DF ){
-            DwarfDebugFini();
-        }else{
-            SymbolicDebugFini();
-        }
-        CtxSetContext( CTX_CG_OPT );
-        if( ErrCount != 0 ) {
-            BEAbort();
-        }
-        BEStop();
-        // BEStop() can generate some back handles that must be freed
-        CgBackFreeFileHandles();
-        StringWalk( &undefine_string_const );
-        CgBackStatHandlesFini();
-        BEFiniCg();
-        ExitPointRelease( cgback );
-        FreeSymbol( thisSym );
-        FreeSymbol( cdtorSym );
     }
 }
 

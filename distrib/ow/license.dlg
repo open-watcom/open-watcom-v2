@@ -1,0 +1,6 @@
+name=License
+static_text=
+text_window=14,"@instlic.txt",true
+static_text=
+push_button=.-"&Cancel"
+push_button=>"I &Agree"

@@ -1,3 +1,0 @@
-clean global : .SYMBOLIC
-    @rm -f *.obj *.xbj *.lib *.exe *.err *.tmp *.out *.map *.lnk *.lst *.gh *.gc
-    @rm -f compile.tim export.def exportx.def

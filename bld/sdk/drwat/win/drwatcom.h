@@ -52,7 +52,7 @@
 #include "di386.h"
 #include "memwnd.h"
 #include "listbox.h"
-#include "rcstr.h"
+#include "rcstr.gh"
 #include "ldstr.h"
 #include "dbgopt.h"
 #include "rvalue.h"
@@ -110,7 +110,7 @@ typedef struct {
  */
 extern struct interrupt_struct  IntData;
 extern HANDLE                   Instance;
-extern WORD                     DeadTask;
+extern HTASK                    DeadTask;
 extern TASKENTRY                DTTaskEntry;
 extern MODULEENTRY              DTModuleEntry;
 extern HWND                     MainWindow;
@@ -140,10 +140,9 @@ extern WORD                     ExceptionAction;
 /*
  * function prototypes
  */
-extern void FAR PASCAL DirectedYield( HANDLE );
 
 /* debug.c */
-WORD NumToAddr( HANDLE modhandle, WORD num );
+WORD NumToAddr( HMODULE modhandle, WORD num );
 DWORD GetFaultString( int intnum, char *buff );
 
 /* disasm.c */
@@ -195,7 +194,7 @@ BOOL LoadDbgInfo( void );
 
 /* win32app.c */
 BOOL CheckIsWin32App( HANDLE );
-BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HANDLE hmod, WORD seg );
+BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
 BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
@@ -203,7 +202,7 @@ BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 void Death( DWORD msgid, ... );
 
 /* winproc.c */
-extern LONG __export FAR PASCAL WindowProc( HWND, int, WORD, LONG );
+extern LONG __export FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );
 
 /* drwatcom.c */
 void Alert( void );

@@ -30,23 +30,20 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
 #include "vi.h"
+#include <setjmp.h>
 #include "source.h"
 #include "parsecl.h"
 #include "ex.h"
 
 static sfile    *tmpTail;
-static bool     freeSrcData,hasVar;
+static bool     freeSrcData, hasVar;
 static labels   *cLab;
-jmp_buf         GenExit;
+static jmp_buf  genExit;
 
-static void abortGen( int err )
+void AbortGen( vi_rc rc )
 {
-    longjmp( GenExit, err );
+    longjmp( genExit, (int)rc );
 }
 
 /*
@@ -66,7 +63,7 @@ static void genItem( int token, label where )
         AddString( &(tsf->data), where );
     }
 
-    InsertLLItemAfter( &tmpTail, tmpTail, tsf );
+    InsertLLItemAfter( (ss **)&tmpTail, (ss *)tmpTail, (ss *)tsf );
 
 } /* genItem */
 
@@ -75,7 +72,6 @@ static void genItem( int token, label where )
  */
 void GenJmpIf( int when, label where )
 {
-
     if( !EditFlags.ScriptIsCompiled ) {
         genItem( SRC_T_GOTO, where );
         tmpTail->branchcond = when;
@@ -89,7 +85,6 @@ void GenJmpIf( int when, label where )
  */
 void GenJmp( label where )
 {
-
     genItem( SRC_T_GOTO, where );
     tmpTail->branchcond = 2;
     tmpTail->hasvar = FALSE;
@@ -101,14 +96,14 @@ void GenJmp( label where )
  */
 void GenLabel( label where )
 {
-    int i;
+    vi_rc   rc;
 
     genItem( SRC_T_LABEL, where );
-    if( i = AddLabel( tmpTail, cLab, where ) ) {
-        abortGen( i );
+    if( rc = AddLabel( tmpTail, cLab, where ) ) {
+        AbortGen( rc );
     }
     tmpTail->hasvar = FALSE;
-    strcpy( where, cLab->name[cLab->cnt-1] );
+    strcpy( where, cLab->name[cLab->cnt - 1] );
 
 } /* GenLabel */
 
@@ -126,7 +121,7 @@ void GenTestCond( void )
     strcpy( v1, CurrentSrcData );
     RemoveLeadingSpaces( v1 );
     if( v1[0] == 0 ) {
-        abortGen( ERR_SRC_INVALID_IF );
+        AbortGen( ERR_SRC_INVALID_IF );
     }
 
     /*
@@ -146,7 +141,7 @@ void GenTestCond( void )
  */
 static void genExpr( void )
 {
-    char        v1[MAX_SRC_LINE],v2[MAX_SRC_LINE],tmp[MAX_SRC_LINE];
+    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], tmp[MAX_SRC_LINE];
     expr_oper   oper;
 
     /*
@@ -154,10 +149,10 @@ static void genExpr( void )
      * EXPR %v = v1
      */
     if( NextWord1( CurrentSrcData, v1 ) <= 0 ) {
-        abortGen( ERR_SRC_INVALID_EXPR );
+        AbortGen( ERR_SRC_INVALID_EXPR );
     }
     if( NextWord1( CurrentSrcData, tmp ) <= 0 ) {
-        abortGen( ERR_SRC_INVALID_EXPR );
+        AbortGen( ERR_SRC_INVALID_EXPR );
     }
     oper = EXPR_EQ;
     if( tmp[1] == '=' && tmp[2] == 0 ) {
@@ -170,28 +165,28 @@ static void genExpr( void )
         } else if( tmp[0] == '/' ) {
             oper = EXPR_DIVIDEEQ;
         } else {
-            abortGen( ERR_SRC_INVALID_EXPR );
+            AbortGen( ERR_SRC_INVALID_EXPR );
         }
     } else {
         if( tmp[0] != '=' || tmp[1] != 0 ) {
-            abortGen( ERR_SRC_INVALID_EXPR );
+            AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
     strcpy( v2, CurrentSrcData );
     RemoveLeadingSpaces( v2 );
     if( v2[0] == 0 ) {
-        abortGen( ERR_SRC_INVALID_EXPR );
+        AbortGen( ERR_SRC_INVALID_EXPR );
     }
     if( EditFlags.CompileScript ) {
 
-        genItem( SRC_T_EXPR, StrMerge(  4,v1,SingleBlank, tmp,SingleBlank, v2 ) );
+        genItem( SRC_T_EXPR, StrMerge( 4, v1, SingleBlank, tmp, SingleBlank, v2 ) );
 
     } else {
         /*
          * build the expr data structure
          */
         genItem( SRC_T_EXPR, NULL );
-        tmpTail->oper = oper;
+        tmpTail->u.oper = oper;
         AddString( &tmpTail->arg1, v1 );
         AddString( &tmpTail->arg2, v2 );
     }
@@ -206,7 +201,7 @@ label NewLabel( void )
     char        buff[MAX_NUM_STR];
     label       tmp;
 
-    MySprintf( buff,"_l_%l",CurrentSrcLabel++ );
+    MySprintf( buff, "_l_%l", CurrentSrcLabel++ );
     AddString( &tmp, buff );
     return( tmp );
 
@@ -215,13 +210,15 @@ label NewLabel( void )
 /*
  * PreProcess - pre-process source file
  */
-int PreProcess( char *fn, sfile **sf, labels *lab )
+vi_rc PreProcess( char *fn, sfile **sf, labels *lab )
 {
     GENERIC_FILE        gf;
-    int                 i,token,k,len,dammit,rec;
+    int                 i, token, k, len, dammit, rec;
     sfile               *tsf;
-    char                tmp[MAX_SRC_LINE],tmp2[MAX_SRC_LINE];
+    char                tmp[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
     char                tmp3[MAX_SRC_LINE];
+    vi_rc               rc;
+    bool                ret;
 
     /*
      * get source file
@@ -229,9 +226,9 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
     if( EditFlags.CompileScript ) {
         EditFlags.OpeningFileToCompile = TRUE;
     }
-    i = SpecialOpen( fn, &gf );
+    ret = SpecialOpen( fn, &gf );
     EditFlags.OpeningFileToCompile = FALSE;
-    if( !i ) {
+    if( !ret ) {
         return( ERR_FILE_NOT_FOUND );
     }
 
@@ -249,16 +246,16 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
     /*
      * set up error handler
      */
-    i = setjmp( GenExit );
+    i = setjmp( genExit );
     if( i != 0 ) {
         SpecialFclose( &gf );
-        return( i );
+        return( (vi_rc)i );
     }
 
     /*
      * process each line
      */
-    while( SpecialFgets( tmp,MAX_SRC_LINE-1,&gf ) >= 0 ) {
+    while( SpecialFgets( tmp, MAX_SRC_LINE - 1, &gf ) >= 0 ) {
 
         /*
          * prepare this line
@@ -267,15 +264,15 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
         if( !EditFlags.ScriptIsCompiled ) {
             RemoveLeadingSpaces( tmp );
             k = strlen( tmp );
-            memcpy( tmp3, tmp, k+1 );
-            if( (len=NextWord1( tmp, tmp2 )) <= 0 ) {
+            memcpy( tmp3, tmp, k + 1 );
+            if( (len = NextWord1( tmp, tmp2 )) <= 0 ) {
                 continue;
             }
             if( tmp2[0] == '#' ) {
                 continue;
             }
             hasVar = FALSE;
-            for( i=0;i<k;i++ ){
+            for( i = 0; i < k; i++ ){
                 if( tmp3[i] == '%' ) {
                     hasVar = TRUE;
                     break;
@@ -297,10 +294,9 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
             }
         } else {
             len = NextWord1( tmp, tmp2 );
-            hasVar = (bool) tmp2[0]-'0';
+            hasVar = (bool) tmp2[0] - '0';
             token = atoi( &tmp2[1] );
         }
-
 
         /*
          * process recognized tokens
@@ -347,7 +343,8 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
             case SRC_T_LOOP:
                 CSLoop();
                 break;
-            case SRC_T_ENDLOOP: case SRC_T_ENDWHILE:
+            case SRC_T_ENDLOOP:
+            case SRC_T_ENDWHILE:
                 CSEndLoop();
                 break;
             case SRC_T_WHILE:
@@ -389,9 +386,9 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
                 genItem( token, tmp );
                 continue;
             }
-            if( tmp2[ len-1 ] == '!' ) {
+            if( tmp2[len - 1] == '!' ) {
                 dammit = TRUE;
-                tmp2[ len-1 ] = 0;
+                tmp2[len - 1] = 0;
             } else {
                 dammit = FALSE;
             }
@@ -399,34 +396,61 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
             if( !EditFlags.Appending ) {
                 rec = token = Tokenize( ParseClTokens, tmp2, TRUE );
                 if( dammit && token != PCL_T_MAP ) {
-                    tmp2[ len-1 ] = '!';
+                    tmp2[len - 1] = '!';
                     token = -1;
                 }
             } else {
                 token = -1;
             }
             switch( token ) {
-            case PCL_T_COMMANDWINDOW: case PCL_T_STATUSWINDOW:
-            case PCL_T_COUNTWINDOW: case PCL_T_EDITWINDOW:
-            case PCL_T_EXTRAINFOWINDOW: case PCL_T_FILECWINDOW: case PCL_T_LINENUMBERWINDOW:
-            case PCL_T_DIRWINDOW: case PCL_T_FILEWINDOW: case PCL_T_SETWINDOW:
-            case PCL_T_SETVALWINDOW: case PCL_T_MESSAGEWINDOW:
-            case PCL_T_MENUWINDOW: case PCL_T_MENUBARWINDOW: case PCL_T_ENDWINDOW:
-            case PCL_T_SETCOLOR: case PCL_T_MATCH: case PCL_T_DIMENSION:
-            case PCL_T_BORDER: case PCL_T_HILIGHT: case PCL_T_TEXT:
-            case PCL_T_ALIAS: case PCL_T_ABBREV:
-            case PCL_T_MENU: case PCL_T_MENUITEM: case PCL_T_ENDMENU:
-            case PCL_T_WHITESPACE: case PCL_T_SELECTION:
-            case PCL_T_EOFTEXT: case PCL_T_KEYWORD:
-            case PCL_T_OCTAL: case PCL_T_HEX: case PCL_T_INTEGER:
-            case PCL_T_CHAR: case PCL_T_PREPROCESSOR: case PCL_T_SYMBOL:
-            case PCL_T_INVALIDTEXT: case PCL_T_IDENTIFIER:
-            case PCL_T_JUMPLABEL: case PCL_T_COMMENT: case PCL_T_FLOAT:
+            case PCL_T_COMMANDWINDOW:
+            case PCL_T_STATUSWINDOW:
+            case PCL_T_COUNTWINDOW:
+            case PCL_T_EDITWINDOW:
+            case PCL_T_EXTRAINFOWINDOW:
+            case PCL_T_FILECWINDOW:
+            case PCL_T_LINENUMBERWINDOW:
+            case PCL_T_DIRWINDOW:
+            case PCL_T_FILEWINDOW:
+            case PCL_T_SETWINDOW:
+            case PCL_T_SETVALWINDOW:
+            case PCL_T_MESSAGEWINDOW:
+            case PCL_T_MENUWINDOW:
+            case PCL_T_MENUBARWINDOW:
+            case PCL_T_ENDWINDOW:
+            case PCL_T_SETCOLOR:
+            case PCL_T_MATCH:
+            case PCL_T_DIMENSION:
+            case PCL_T_BORDER:
+            case PCL_T_HILIGHT:
+            case PCL_T_TEXT:
+            case PCL_T_ALIAS:
+            case PCL_T_ABBREV:
+            case PCL_T_MENU:
+            case PCL_T_MENUITEM:
+            case PCL_T_ENDMENU:
+            case PCL_T_WHITESPACE:
+            case PCL_T_SELECTION:
+            case PCL_T_EOFTEXT:
+            case PCL_T_KEYWORD:
+            case PCL_T_OCTAL:
+            case PCL_T_HEX:
+            case PCL_T_INTEGER:
+            case PCL_T_CHAR:
+            case PCL_T_PREPROCESSOR:
+            case PCL_T_SYMBOL:
+            case PCL_T_INVALIDTEXT:
+            case PCL_T_IDENTIFIER:
+            case PCL_T_JUMPLABEL:
+            case PCL_T_COMMENT:
+            case PCL_T_FLOAT:
             case PCL_T_STRING:
-            case PCL_T_FILETYPESOURCE: case PCL_T_ENDFILETYPESOURCE:
+            case PCL_T_VARIABLE:
+            case PCL_T_FILETYPESOURCE:
+            case PCL_T_ENDFILETYPESOURCE:
             case PCL_T_LOCATE:
                 RemoveLeadingSpaces( tmp );
-                token += SRC_T_NULL+1;
+                token += SRC_T_NULL + 1;
                 genItem( token, tmp );
                 break;
 
@@ -435,19 +459,19 @@ int PreProcess( char *fn, sfile **sf, labels *lab )
                 if( !dammit ) {
                     genItem( token, tmp );
                 } else {
-                    strcpy( tmp2,"! ");
+                    strcpy( tmp2, "! " );
                     strcat( tmp2, tmp );
                     genItem( token, tmp2 );
                 }
                 break;
 
             case PCL_T_SET:
-                token += SRC_T_NULL+1;
+                token += SRC_T_NULL + 1;
                 if( EditFlags.CompileScript ) {
                     WorkLine->data[0] = 0;
-                    i = Set( tmp );
-                    if( i ) {
-                        Error( GetErrorMsg( i ) );
+                    rc = Set( tmp );
+                    if( rc != ERR_NO_ERR ) {
+                        Error( GetErrorMsg( rc ) );
                     }
                     genItem( token, WorkLine->data );
                 } else {

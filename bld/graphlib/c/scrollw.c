@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Scrolling routines.
 *
 ****************************************************************************/
 
@@ -74,6 +73,86 @@ static void ScrollDC( WPI_PRES dc, short dx, short dy, WPI_RECT *scroll,
     _wpi_deletecliprgn( dc, temprgn );
 }
 
+#endif
+
+
+#if !defined( _DEFAULT_WINDOWS )
+static void GrShift( short src_y, short dst_y,
+                     short dir, short rows, short xl, short xr )
+//==============================================================
+
+{
+    short               width;
+    short               size;
+    short               plane_len;
+    short               prev_action;
+    char                *buf;
+    gr_device _FARD     *dev_ptr;
+    pic_fn near         *get;
+    pic_fn near         *put;
+
+    width = xr - xl + 1;
+    size = _RoundUp( _RowLen( width ) );
+    if( _stackavail() - size > 0x100 ) {
+        buf = __alloca( size );
+    } else {            /* not enough memory to proceed */
+        _ErrorStatus = _GRINSUFFICIENTMEMORY;
+        return;
+    }
+    prev_action = _setplotaction( _GPSET );
+
+    _StartDevice();
+
+    dev_ptr = _CurrState->deviceptr;
+    get = dev_ptr->readrow;
+    put = dev_ptr->pixcopy;
+    plane_len = size / _CurrState->vc.bitsperpixel;
+
+    while( rows != 0 ) {
+        ( *dev_ptr->setup )( xl, src_y, 0 );
+        ( *get )( (char far *)buf, _Screen.mem, width, _Screen.bit_pos, 0 );
+        ( *dev_ptr->setup )( xl, dst_y, 0 );
+        ( *put )( _Screen.mem, (char far *)buf, width, _Screen.bit_pos << 8, plane_len );
+        src_y += dir;
+        dst_y += dir;
+        --rows;
+    }
+
+    _ResetDevice();
+    _setplotaction( prev_action );
+}
+
+
+static void TxtShift( short src_y, short dst_y,
+                      short dir, short rows, short xl, short xr )
+//===============================================================
+
+{
+    char far            *p;
+    short far           *src;
+    short far           *dst;
+    short               width;
+
+    if( _CurrState->vc.mode == _TEXTMONO ) {
+        p = MK_FP( _MonoSeg, _MonoOff );
+    } else {
+        p = MK_FP( _CgaSeg, _CgaOff );
+    }
+    p += _CurrActivePage * *(short far *)_BIOS_data( CRT_LEN );
+    src = (short far *) p;
+    src += src_y * _CurrState->vc.numtextcols + xl;
+    dst = (short far *) p;
+    dst += dst_y * _CurrState->vc.numtextcols + xl;
+
+    dir *= _CurrState->vc.numtextcols;
+    width = ( xr - xl + 1 ) * 2;        // char & attr
+    while( rows != 0 ) {
+        _fmemcpy( dst, src, width );
+        src += dir;
+        dst += dir;
+        --rows;
+    }
+}
 #endif
 
 
@@ -185,121 +264,3 @@ void _ScrollWindow( short dir, short rows )
     }
 #endif
 }
-
-
-#if !defined( _DEFAULT_WINDOWS )
-static void GrShift( short src_y, short dst_y,
-                     short dir, short rows, short xl, short xr )
-//==============================================================
-
-{
-    short               width;
-    short               size;
-    short               plane_len;
-    short               prev_action;
-    char                *buf;
-    gr_device _FARD     *dev_ptr;
-    void PIC_FUNC       (near *get)();
-    void PIC_FUNC       (near *put)();
-
-    width = xr - xl + 1;
-    size = _RoundUp( _RowLen( width ) );
-    if( _stackavail() - size > 0x100 ) {
-        buf = __alloca( size );
-    } else {            /* not enough memory to proceed */
-        _ErrorStatus = _GRINSUFFICIENTMEMORY;
-        return;
-    }
-    prev_action = _setplotaction( _GPSET );
-
-#if !defined( _NEC_PC )
-    _StartDevice();
-#endif
-
-    dev_ptr = _CurrState->deviceptr;
-    get = dev_ptr->readrow;
-    put = dev_ptr->pixcopy;
-    plane_len = size / _CurrState->vc.bitsperpixel;
-
-    while( rows != 0 ) {
-        ( *dev_ptr->setup )( xl, src_y, 0 );
-        ( *get )( (char far *)buf, _Screen.mem, width, _Screen.bit_pos, 0 );
-        ( *dev_ptr->setup )( xl, dst_y, 0 );
-        ( *put )( _Screen.mem, (char far *)buf, width, _Screen.bit_pos << 8, plane_len );
-        src_y += dir;
-        dst_y += dir;
-        --rows;
-    }
-
-#if !defined( _NEC_PC )
-    _ResetDevice();
-#endif
-    _setplotaction( prev_action );
-}
-
-
-static void TxtShift( short src_y, short dst_y,
-                      short dir, short rows, short xl, short xr )
-//===============================================================
-
-{
-#if defined( _NEC_PC )
-    short               width;
-    unsigned short      screen_seg;
-    unsigned short      attrib_seg;
-    unsigned short      screen_offset;
-    unsigned short      src_offset;
-    unsigned short      dst_offset;
-    short far           *src_char;
-    short far           *dst_char;
-    short far           *src_attr;
-    short far           *dst_attr;
-
-    width = xr - xl + 1;
-    screen_seg = _TextSeg;
-    attrib_seg = _AttrSeg;
-    screen_offset = _CurrActivePage * 4096;
-    src_offset = 2 * ( src_y * _CurrState->vc.numtextcols + xl );
-    dst_offset = 2 * ( dst_y * _CurrState->vc.numtextcols + xl );
-    src_char = MK_FP( screen_seg, _TextOff + screen_offset + src_offset );
-    dst_char = MK_FP( screen_seg, _TextOff + screen_offset + dst_offset );
-    src_attr = MK_FP( attrib_seg, _AttrOff + screen_offset + src_offset );
-    dst_attr = MK_FP( attrib_seg, _AttrOff + screen_offset + dst_offset );
-    dir *= 80;  // each row is 80 characters (160 bytes) wide
-    while( rows != 0 ) {
-        _fmemcpy( dst_char, src_char, width * 2 );
-        _fmemcpy( dst_attr, src_attr, width * 2 );
-        src_char += dir;
-        dst_char += dir;
-        src_attr += dir;
-        dst_attr += dir;
-        --rows;
-    }
-#else
-    char far            *p;
-    short far           *src;
-    short far           *dst;
-    short               width;
-
-    if( _CurrState->vc.mode == _TEXTMONO ) {
-        p = MK_FP( _MonoSeg, _MonoOff );
-    } else {
-        p = MK_FP( _CgaSeg, _CgaOff );
-    }
-    p += _CurrActivePage * *(short far *)_BIOS_data( CRT_LEN );
-    src = (short far *) p;
-    src += src_y * _CurrState->vc.numtextcols + xl;
-    dst = (short far *) p;
-    dst += dst_y * _CurrState->vc.numtextcols + xl;
-
-    dir *= _CurrState->vc.numtextcols;
-    width = ( xr - xl + 1 ) * 2;        // char & attr
-    while( rows != 0 ) {
-        _fmemcpy( dst, src, width );
-        src += dir;
-        dst += dir;
-        --rows;
-    }
-#endif
-}
-#endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction decoding for Sun SPARC architecture.
 *
 ****************************************************************************/
 
@@ -34,14 +33,14 @@
 #include <ctype.h>
 #include "distypes.h"
 #include "dis.h"
+
 #include "bool.h"
 #include "sparcenc.h"
 
 extern long SEX( unsigned long v, unsigned bit );
 
-#if DISCPU & DISCPU_sparc
-
 extern const dis_range          SPARCRangeTable[];
+extern const int                SPARCRangeTablePos[];
 extern const unsigned char      SPARCMaxInsName;
 
 #define _SparcReg( x )          ( (x) + DR_SPARC_r0 )
@@ -70,7 +69,7 @@ dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_RELATIVE;
     ins->op[0].value = ( SEX( code.branch.disp22, 21 ) ) * sizeof( ins->opcode );
     if( code.branch.anul != 0 ) {
-        ins->flags |= DIF_SPARC_ANUL;
+        ins->flags.u.sparc |= DIF_SPARC_ANUL;
     }
     ins->num_ops = 1;
     return( DHR_DONE );
@@ -82,7 +81,11 @@ dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type  = DO_RELATIVE;
-    ins->op[0].value = ( SEX( code.call.disp, 29 ) + 1) * sizeof( ins->opcode );
+    // BartoszP 16.10.2005
+    // SPARC Architecture Manual says:
+    // CALL saves self address not next instruction into the %o7 register
+    //ins->op[0].value = ( SEX( code.call.disp, 29 ) + 1) * sizeof( ins->opcode );
+    ins->op[0].value = ( SEX( code.call.disp, 29 ) ) * sizeof( ins->opcode );
     ins->num_ops     = 1;
     return( DHR_DONE );
 }
@@ -168,6 +171,43 @@ static const dis_ref_type floatRefTypes[] = {
     DRT_SPARC_DFLOAT,
 };
 
+dis_handler_return SPARCFPop2( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    sparc_ins   code;
+
+    code.full = _SparcIns( ins->opcode );
+    if( code.op3opf.opcode_3 == 0x35 ) {
+        // fcmp
+        ins->op[ 0 ].type = DO_REG;
+        ins->op[ 0 ].base = _SparcFReg( code.op3opf.rs1 );
+        ins->op[ 1 ].type = DO_REG;
+        ins->op[ 1 ].base = _SparcFReg( code.op3opf.rs2 );
+    } else {
+        ins->op[ 0 ].type = DO_REG;
+        ins->op[ 0 ].base = _SparcFReg( code.op3opf.rs2 );
+        ins->op[ 1 ].type = DO_REG;
+        ins->op[ 1 ].base = _SparcFReg( code.op3opf.rd );
+    }
+    ins->num_ops = 2;
+    return( DHR_DONE );
+}
+
+dis_handler_return SPARCFPop3( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    sparc_ins   code;
+
+    code.full = _SparcIns( ins->opcode );
+    ins->op[ 0 ].type = DO_REG;
+    ins->op[ 0 ].base = _SparcFReg( code.op3opf.rs1 );
+    ins->op[ 1 ].type = DO_REG;
+    ins->op[ 1 ].base = _SparcFReg( code.op3opf.rs2 );
+    ins->op[ 2 ].type = DO_REG;
+    ins->op[ 2 ].base = _SparcFReg( code.op3opf.rd );
+    ins->num_ops = 3;
+    return( DHR_DONE );
+}
+
+
 dis_handler_return SPARCMemF( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
@@ -226,15 +266,15 @@ dis_handler_return SPARCMemC( dis_handle *h, void *d, dis_dec_ins *ins )
 static unsigned SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
-    const char  *new;
+    const char  *new_op_name;
 
     if( !(flags & DFF_PSEUDO) ) return( 0 );
-    new = NULL;
+    new_op_name = NULL;
     switch( ins->type ) {
     case DI_SPARC_sethi:
         if( ins->op[ 1 ].base == DR_SPARC_r0 &&
             ins->op[ 0 ].value == 0 ) {
-            new = "nop";
+            new_op_name = "nop";
             ins->num_ops = 0;
         }
         break;
@@ -243,34 +283,49 @@ static unsigned SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             ins->op[ 0 ].value == 8 &&
             ins->op[ 1 ].base == DR_SPARC_r0 ) {
             // jmpl %i7+8, %g0 -> ret
-            new = "ret";
+            new_op_name = "ret";
             ins->num_ops = 0;
         } else if( ins->op[ 0 ].base == DR_SPARC_r15 &&
             ins->op[ 0 ].value == 8 &&
             ins->op[ 1 ].base == DR_SPARC_r0 ) {
             // jmpl %o7+8, %g0 -> retl
-            new = "retl";
+            new_op_name = "retl";
             ins->num_ops = 0;
         }
         break;
     case DI_SPARC_subcc:
         if( ins->op[ 2 ].base == DR_SPARC_r0 ) {
-            new = "cmp";
+            new_op_name = "cmp";
             ins->num_ops = 2;
         }
         break;
     case DI_SPARC_or:
         if( ins->op[ 0 ].base == DR_SPARC_r0 ) {
-            new = "mov";
+            new_op_name = "mov";
             ins->num_ops = 2;
             ins->op[ 0 ] = ins->op[ 1 ];
             ins->op[ 1 ] = ins->op[ 2 ];
+            if( ins->op[ 0 ].base == DR_SPARC_r0
+                 || ( ins->op[ 0 ].type == DO_IMMED
+                     && ins->op[ 0 ].value == 0 )  ) {
+                new_op_name = "clr";
+                ins->num_ops = 1;
+                ins->op[ 0 ] = ins->op[ 1 ];
+            }
+        } else {
+            if( ins->op[ 1 ].base == DR_SPARC_r0
+                 || ( ins->op[ 1 ].type == DO_IMMED
+                     && ins->op[ 1 ].value == 0 )  ) {
+                new_op_name = "mov";
+                ins->num_ops = 2;
+                ins->op[ 1 ] = ins->op[ 2 ];
+            }
         }
         break;
     case DI_SPARC_orcc:
         if( ins->op[ 0 ].base == DR_SPARC_r0 &&
             ins->op[ 2 ].base == DR_SPARC_r0 ) {
-            new = "tst";
+            new_op_name = "tst";
             ins->num_ops = 1;
             ins->op[ 0 ] = ins->op[ 1 ];
         }
@@ -283,9 +338,11 @@ static unsigned SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             ins->num_ops = 0;
         }
         break;
+    default:
+        break;
     }
-    if( name != NULL && new != NULL ) {
-        strcpy( name, new );
+    if( name != NULL && new_op_name != NULL ) {
+        strcpy( name, new_op_name );
         return( strlen( name ) );
     }
     return( 0 );
@@ -299,7 +356,7 @@ static unsigned SPARCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_register sparcTranslate( dis_register reg ) {
 
-    if( reg >= DR_SPARC_r0 && reg < DR_SPARC_r31 ) {
+    if( reg >= DR_SPARC_r0 && reg <= DR_SPARC_r31 ) {
         reg += DR_SPARC_g0 - DR_SPARC_r0;
         switch( reg ) {
         case DR_SPARC_i6:
@@ -307,6 +364,8 @@ static dis_register sparcTranslate( dis_register reg ) {
             break;
         case DR_SPARC_o6:
             reg = DR_SPARC_sp;
+            break;
+        default:
             break;
         }
     }
@@ -318,22 +377,43 @@ static unsigned SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     dis_operand *op;
 
-    if( flags & DFF_AXP_SYMBOLIC_REG ) {
+    ins->op[op_num].ref_type = DRT_SPARC_WORD;
+    if( flags & DFF_SYMBOLIC_REG ) {
         op = &ins->op[op_num];
-        if( op->base >= DR_SPARC_r0 && op->base < DR_SPARC_r31 ) {
+        if( op->base >= DR_SPARC_r0 && op->base <= DR_SPARC_r31 ) {
             op->base = sparcTranslate( op->base );
         }
-        if( op->index >= DR_SPARC_r0 && op->index < DR_SPARC_r31 ) {
+        if( op->index >= DR_SPARC_r0 && op->index <= DR_SPARC_r31 ) {
             op->index = sparcTranslate( op->index );
         }
     }
     return( 0 );
 }
 
-const dis_cpu_data SPARCData = {
-    SPARCRangeTable, SPARCInsHook, SPARCFlagHook, SPARCOpHook, &SPARCMaxInsName, 4
-};
-#else
+static dis_handler_return SPARCDecodeTableCheck( int page, dis_dec_ins *ins )
+{
+    return( DHR_DONE );
+}
 
-const dis_cpu_data SPARCData;
-#endif
+static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    if( h->need_bswap ) {
+        SWAP_32( ins->opcode );
+    }
+}
+
+static void SPARCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    ByteSwap( h, d, ins );
+}
+
+static unsigned SPARCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+        dis_format_flags flags, unsigned op_num, char *op_buff )
+{
+    // Nothing to do
+    return( 0 );
+}
+
+const dis_cpu_data SPARCData = {
+    SPARCRangeTable, SPARCRangeTablePos, SPARCPreprocHook, SPARCDecodeTableCheck, SPARCInsHook, SPARCFlagHook, SPARCOpHook, SPARCPostOpHook, &SPARCMaxInsName, 4
+};

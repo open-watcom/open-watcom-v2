@@ -41,9 +41,9 @@
 #define INCL_GPILOGCOLORTABLE
 #include <os2.h>
 
-#include "..\h\wbitmap.h"
-#include "..\h\palette.h"
-#include "..\..\..\misc\mem.h"
+#include "wbitmap.h"
+#include "palette.h"
+#include "mem.h"
 
 #define CHUNK_SIZE      (48 * 1024)
 

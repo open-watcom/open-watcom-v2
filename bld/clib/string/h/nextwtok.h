@@ -42,7 +42,7 @@
         static wchar_t *nextwtok = NULL;
         #define _NEXTWTOK nextwtok
     #endif
-#elif !defined(__PENPOINT__)
+#else
     static wchar_t *nextwtok = NULL;
     #define _NEXTWTOK nextwtok
 #endif

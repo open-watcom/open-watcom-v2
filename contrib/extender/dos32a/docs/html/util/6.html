@@ -1,0 +1,253 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Additional Resources [Problems]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+6.0 - DOS/32 Advanced - Known Problems
+<br></font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    This  is  not  a  list of bugs,  rather  than  a list of incompatibility
+problems that can arise due to the fact that DOS/32 Advanced DOS Extender is
+written  and operates in a completely  different way than DOS/4GW. Most of
+the  problems  apply to the already  written applications that use DOS/4GW
+(very) specific resources.
+</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 1:</b><br>
+    DOS/32  Advanced built-in DPMI does not support  selector 0020h (nor
+any other DOS/4GW specific system selectors), which is used in
+DOS/4GW  as  a  system selector. Under  Clean,  XMS  and VCPI systems this
+selector  will  be  unavailable to the  applications  and any attempt to load
+value 0020h in any of the segment registers in protected mode will result in
+a general protection fault exception.<br>
+<br>
+Known effects/incompatibilies:<br>
+The game "Top Gun - Fire at will" does not work.<br>
+<br>
+Workaround:<br>
+None.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 2:</b><br>
+    Some  video  BIOSes (for example  Matrox  Mystique/Millenium) return the
+list of video modes in the VBE information block (INT 10h function AX=4F00h,
+EDI=ptr  to  VBE  info block). This means  that  the pointer in the VBE info
+block  at  offset  0Eh, *VideoModePtr, is  relative  to the beginning of the
+memory  and  becomes  invalid  if the  structure  is  moved  to other memory
+locations.  DOS/32  Advanced is aware of  this and if extended VBE functions
+are  called,  will  correctly  translate  the  pointer  to  mode  list  when
+transferring  the structure from the buffer in low memory to the destination
+location.  However, the structure is then not to be moved unless the user is
+manually adjusting the pointer.<br><br>
+    This  problem  is  not  specific to  DOS/32  Advanced only and applies to other DOS
+Extenders,  such as DOS/4G(W), PMODE/W and CauseWay, which cannot deal with
+it correctly.<br>
+<br>
+Known effects/incompatibilities:<br>
+The game "Star Gunner" does not work with VESA modes.<br>
+<br>
+Workaround:<br>
+None.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 3:</b><br>
+    When  using  extended  Mouse  functions  (protected  mode  INT 33h) that
+install  a custom interrupt handler (functions  0014h, 0018h and so on), the
+handler  routine  must return with a RETF  command, not RET or IRETD. DOS/32
+Advanced  DOS  Extender strictly follows the  rules  defined in mouse driver
+documentation for real mode which are valid in protected mode as well.<br>
+<br>
+Known effects/incompatibilities:<br>
+The game "Dungeon Keeper" does not work.<br>
+<br>
+Workaround:<br>
+None.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 4:</b><br>
+    DOS/32 Advanced DOS Extender can not correctly load the last Object with
+data  placed  behind it when using  LX-style  linear executables. An example
+would  be a program linked in LX format with debug information included. The
+linker  will place the debug info data  right behind the last Object's data.
+This  will, in some cases, mislead the  DOS Extender which will believe that
+it  reads the correct number of bytes. That will not be true, of course, and
+whatever  would  be in memory after  the last Object's data (most likely the
+beginning of the BSS segment) will be corrupted.<br><br>
+    Some programs, depending on how they are written, will tolerate this and
+the  problem will not show up. However,  this is quite a serious problem and
+you  should  consider  using a workaround  when  linking your programs in LX
+format with debug info included.<br><br>
+    This problem does not apply to  LE/LC-style  executables.  You can place
+whatever you want behind the last Object when using those file formats.<br>
+<br>
+Known effects/incompatibilities:<br>
+Since there are  no DOS/4GW programs that use LX-style executables, there are
+no incompatibility problems.<br>
+<br>
+Workaround:<br>
+Use WATCOM Linker option "SYMFILE" to place the debugging information outside
+your protected mode application. Consider the following example:<br>
+<br>
+system begin my_program<br>
+&nbsp;&nbsp;option osname='My Program'<br>
+&nbsp;&nbsp;libpath %WATCOM%\lib386<br>
+&nbsp;&nbsp;libpath %WATCOM%\lib386\dos<br>
+&nbsp;&nbsp;debug watcom all<br>
+&nbsp;&nbsp;option stub=stub32a.exe<br>
+&nbsp;&nbsp;option symfile=myprog<br>
+&nbsp;&nbsp;option internalrelocs<br>
+&nbsp;&nbsp;format os2 lx<br>
+end<br>
+<br>
+The  linker  will create a file  <i>myprog.sym</i>  containing all the debug info
+data,  instead of binding it to your program. You can also use the
+"op symfile" line without specifying any file name. Look in your WATCOM docs
+for  more  information.  Also look into  <i>dos32a.lnk</i>  file. These lines are
+actually there, they are only commented out.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 5:</b><br>
+    DOS/32  Advanced built-in DPMI will  create non-standard stack frames on
+exceptions. This problem does not affect most applications because they rely
+on  system which should normally handle  exceptions. However, if you attempt
+to  install  an exception handler using  DPMI functions 0202h and 0203h, you
+must  return  from it (if it returns)  using an IRETD instruction, not RETF,
+when  running under DOS/32 Advanced ADPMI. You may need to install different
+exception  handlers depending on under which system you run: RAW/XMS/VCPI or
+DPMI.<br>
+<br>
+Known effects/incompatibilities:<br>
+None of tested programs has suffered from this so far.<br>
+<br>
+Workaround:<br>
+None.<br>
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 6:</b><br>
+    DOS/32 Advanced does not do automatical pass-up of interrupts other than
+INT 08h thru INT 0Fh (ie IRQs 0-7, when PICs are not remapped) as opposed to
+DOS/4G(W) Extenders which callback any interrupt hooked in protected mode to
+a  protected mode handler in range INT 08h through INT 2Eh.  In other words,
+DOS/32  Advanced  will install a real  mode IRQ callback only for interrupts
+INT  08-0Fh which are mapped on IRQs 0-7. The interrupts outside this range,
+except  for  INTs  70-77h  (IRQs 8-15)  which  are  also  auto-callbacked to
+protected  mode,  will not be callbacked  to protected mode when a protected
+mode interrupt handler is installed for those.<br><br>
+    As  DOS/4GW  DOS  Extender cannot callback  IRQs  of the slave PIC (IRQs
+8-15),  some  protected mode programs and  third party libraries, written to
+work  exclusively  with  DOS/4GW,  will  workaround  this  by  installing  a
+protected mode ISR in DOS/4GW auto-passup range, typically INT 18h, and then
+redirect  real mode IRQ vector  of the slave PIC to that interrupt. Whenever
+an  IRQ  would  occur  (either in  real  or  protected  modes), DOS/4GW will
+typically pass it down to the real mode, where it will be redirected to that
+interrupt which is in auto-passup range, which in its turn will callback the
+IRQ occurred to the proper interrupt service routine.<br>
+<br>
+    A  simplier  and  less  technical  explanation  would  be:  if  you  are
+experiencing  lockups and/or crashes with a program run under DOS/32A, which
+was originally written for DOS/4GW Extender, check that your hardware is not
+configured  to  issue IRQs in range 8 thru  15,  and that the program is not
+using those hardware interrupts.<br>
+<br>
+PLEASE NOTE:   this is *NOT* a problem  with  DOS/32 Advanced, rather than a
+problem  with  older software which  were  written to workaround DOS/4GW
+lack of a fully featured DPMI host.<br>
+<br>
+Known effects/incompatibilities:<br>
+Lockups  at startup of your applications,  blank screen and a message "PRESS
+ANY  KEY  TO REBOOT" or computer reboots  all  can be effects caused by this
+problem.  Typical  examples of hardware which  can cause this problem are: a
+PnP sound cards with IRQ set in range 8-15 and graphics cards (Matrox) which
+use IRQ in the same range.<br>
+<br>
+Workaround:<br>
+There  is  no  easy  workaround for  this  problem.  Try  reconfiguring your
+hardware  which uses hardware interrupts in range IRQ 8-15. This can be done
+quite  easily  on machines with Plug&Play  BIOS,  otherwise you will need to
+mess  with jumpers on the card. If  you have a third party libraries written
+for  DOS/4GW which cause this problem, contact person/company from which you
+obtained  those  to  get an updated  version  which will hopefully solve the
+problem. It is also possible that running under an external DPMI server will
+solve the problem.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 7:</b><br>
+    When  a  DOS/32 Advanced application  that uses "Start Full-Screen under
+Windows" feature under  Windows 95/98 exits, the  desktop image and Windows icons
+may  appear  to be messed up. This  problem  is related to the graphics card
+driver  installed in the system, and has been observed on computers equipped
+with ATI, STB and Matrox graphics cards. Apparently this seems to be a bug
+in the Windows, not in the DOS Extender.<br>
+<br>
+Workaround:<br>
+Turn  off  "Start Full-Screen under Windows"  feature  by using SUNSYS Setup
+Utility,  and  change  application attributes (by  using  PIF Editor) to run
+Full-Screen from within Windows.<br>
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Problem 8:</b><br>
+    DOS/32  Advanced does not emulate DOS/4G(W) behavior of exclusive volume
+locking  under  Windows 95+, which is  required  by programs that use direct
+access  to disk drives through interrupts INT  13h, INT 25h, INT 26h and INT
+21h  (IOCTL).  Windows 95+ Operating Systems  do  not allow direct access to
+disk  drives (for protection reasons) and  require an application to acquire
+exclusive  volume  lock on a drive, before  it can directly read or write to
+that  drive. This results in that applications which directly write, read or
+in  any  other way directly communicate with  disk drives (disk utility
+programs such as disk defragmenting and partitioning utilities as well as
+some anti-virus programs fall into this category)
+ will fail when run
+under DOS/32 Advanced in Windows 95+ protected mode environment.<br>
+<br>
+    As  a  workaround  you can run  applications  that  directly access disk
+drives from the real mode DOS (reboot to Win95+ DOS mode). As to the application
+developers,   you   are   suggested   to   manually   use   exclusive  volume
+locking/unlocking  before using interrupts INT 13h,  INT 25h, INT 26h or INT
+21h  (IOCTL)  as needed. Refer to  MSDN articles on exclusive volume locking
+(<i>Platform SDK/Windows Base Services/Windows 95 features/Using Windows 95
+Features/Exclusive Volume Locking</i>) and description of INT 21h function 440Dh
+for further information.
+</font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

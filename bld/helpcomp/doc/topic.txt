@@ -1,0 +1,370 @@
+THE WINHELP |TOPIC INTERNAL FILE
+================================
+
+Okay, this is the biggie.  |TOPIC is where all of the actual help
+text is stored, along with spacing directives, font changes, and hotlinks.
+There's a lot of stuff going on in here.  The following topics will be
+covered:
+	
+	The |TOPIC page structure
+	Compression and phrase replacement
+	Nodes and linked lists
+	Topic Nodes
+	Text Nodes
+	Offsets within the |TOPIC file
+	
+The last section should be read only after understanding the first three.
+The terms "Extended" and "Character" offsets are defined in that section.
+	
+The |TOPIC page structure
+-------------------------
+
+The text and other data in the |TOPIC file is broken down into 4KB pages.
+The first 12 bytes of each page is always a page header, with the remaining
+4084 bytes reserved for data.  Thus page headers can always be found at
+4KB intervals within the |TOPIC file.
+
+A page header has the following structure:
+	
+	Bytes		Meaning
+	-----------------------
+	0-4		Offset of last node in previous page
+	5-7		Offset of first node in this page
+	8-11		Offset of last topic node in previous page
+	
+'Nodes' are linked list structures used by WinHelp and are described
+later on.  These three fields are used to properly connect the data in
+seperate pages back together again.  Note the following things:
+	
+	-- Pages need not be full.  If the last page is not full, it
+	   will extend to the end of the |TOPIC file (the |TOPIC file
+	   need not be a multiple of 4KB in size).  If any other page
+	   is not full, the page will still extend to the whole 4KB, but
+	   some of the data at the end will be garbage.  The linked list
+	   structures and the header of the next page must be used to
+	   reconstruct the true end of the page.
+	-- The last node in a page need not be contained entirely within
+	   that page; it may spill onto the next page.  This is true even
+	   if the first page is not full.  Again, the page header of the
+	   next page can be used to determine how much of the node has
+	   spilled over.  (And thus where the node ends in the first page.)
+	
+In the first page, the first field is set to 0xFFFFFFFF and the last field
+is set to 0x00000000.  All three offsets are "Extended" offsets.
+
+Compression and Phrase replacement
+----------------------------------
+
+If the .HLP file is uncompressed, the |TOPIC data is simply hacked into
+pages with an eye for filling all but the last page.  Compression makes
+things trickier since 4KB of compressed data may expand into 5KB or 6KB of 
+uncompressed data.  
+
+If the help file is compiled with compression set to MEDIUM or HIGH,
+everything in each page except the 12-byte header is compressed via
+the LZ77 algorithm described in compress.txt.  If a page is not full
+(and is not the last page) the entire 4084 bytes will still be in
+compressed format.  Each page must be decompressed before anything can
+be read, including the linked list structures and formatting directives.
+
+However, each page is compressed seperately.  This permits incremental
+decompression:  to read a certain piece of data, you only need to decompress
+all the data before it in that page, not any of the data in previous pages.
+This complicates things for the compiler; see the section on offsets.
+
+Phrase replacement is handled differently; a byte with a value between 0x01
+and 0x0A in the uncompressed help text is always the first byte of a two
+byte code referring to some phrase from the |Phrases file.  See phrases.txt
+for more info on that.
+
+So just to sum up so far, the algorithm for reading all of the text stored
+in a help file is:
+	1)	Read in a page.
+	2)	If compression is being used, decompress the page.
+	3)	Use the header of the next page and the info on this
+	        page to determine where the page ends.
+ 	4)	Add the decompressed data up to the true end of the
+		page to your uncompressed data pool.
+	5)	Repeat for each page.
+Then go through the text, throw away the linked list data and other crud,
+and add the phrases back in.  Simple, huh?
+
+Nodes and Linked Lists
+-----------------------
+
+It's about time I explained what these linked list structures actually are.
+All of the help text and other information is stored in linked list nodes
+consisting of a 21-byte header followed by two variable-length blocks
+of data.  The headers have the following format:
+
+	Bytes		Meaning
+	-----------------------
+	0-3		Size of the entire node
+	4-7		Size of second data block AFTER PHRASE
+			REPLACEMENT
+	8-11		Offset of previous node (Extended offset)
+	12-15		Offset of next node (Extended offset)
+	16-19		Offset of second data block within in this node
+			(i.e., size of header and first block )
+	20		Record Type
+	
+There are three known values for the Record Type:  0x02 for topic header
+header info (referred to here as 'Topic node'), 0x20 for displayable info,
+and 0x23 for a table of displayable info (both 0x20 and 0x23 are referred
+to as 'Data nodes').
+
+Immediately following the header are the two data blocks, which have
+different meaning depending on the Record Type.
+
+Topic Nodes
+-----------
+
+A Record Type of 0x02 in a node header indicates a topic header node.  Each
+topic begins with one of these nodes.  The first data block of a type 0x02
+node contains a 28-byte record of information pertaining to the entire
+topic:
+	Bytes		Meaning
+	-----------------------
+	0-3		Size of all nodes making up this topic
+	4-7		Offset of previous topic in Browse sequence
+			(Character Offset!)
+	8-11		Offset of next topic in Browse sequence
+			(Character Offset!)
+	12-15		Topic Number, assigned by compiler
+	16-19		Offset of first node in non-scrolling region
+			of text for this topic (Extended offset)
+	20-23		Offset of first node in scrolling region of
+			text for this topic (Extended offset)
+	24-27		Offset of next topic header node (Extended offset)
+	
+Note the two Character offsets; I beleive these are the only places Character
+offsets are used within the |TOPIC file itself.
+
+The second data area for a type 0x02 record contains one or more zero-
+seperated ASCII strings.  The first string is always the title of the topic;
+this matches the title stored in the |TTLBTREE file.  Note the History window
+gets it's titles from here, *not* from the |TTLBTREE file.  Following the
+title string are the strings of all the macros, if any, to be executed
+when the topic is displayed.  The last string in this list is not zero-
+terminated.
+
+Text Nodes   /*   Hang on, folks :-(   */
+----------
+
+If the Record Type is 0x20 or 0x23, the node contains displayable text.
+0x20 indicates normal text while 0x23 indicates a WinHelp table.  The two
+types of nodes have similar formats.  In each case, the first data block
+contains formatting information, font changes, hotlinks, and the like,
+while the second data area contains text and references to the first
+data area.
+
+The format of the first data block is VERY complex, with a large number
+of optional or variable length components.  I don't understand all of it
+myself yet, but here goes:
+
+First size word:  The first two bytes give TWICE the size of the data
+                  stored in the first data block NOT INCLUDING this field
+		  and the next.  For no apparent reason, the highest bit
+		  of this field is always set, so "1C 80" means a size of
+		  0xE, not 0x400E bytes.
+Second size byte: The next byte contains TWICE the size of the data
+		  in the second data block.  However, if the lowest bit
+		  of this value is set, the size could not fit in a byte
+		  so you must read in the next byte as well to get the true
+		  size.  E.g., "3C" means a size of 0x1E bytes, while
+		  "3D" followed by "01" means a size of (0x13D/2) or 0x9E
+		  bytes.
+# of columns:	  The next byte will contain the number of columns in the
+		  table, if this is a 0x23 record.  In a 0x20 record this
+		  byte is set to zero.
+		  
+In a 0x23 node, the next thing is a list of 6-byte records, one for each
+column:
+	Bytes		Meaning
+	-----------------------
+	0-1		Column number (0xFFFF if this is the last record)
+	2-5		Unknown (sigh) (width?)
+	
+In a 0x20 node, those records are not included.
+
+The final section is included once in a 0x20 node, once for each column in
+a 0x23 node.  This section includes paragraph attributes and text attributes.
+
+The paragraph attributes begin with a 5-byte record:
+	Bytes		Meaning
+	-----------------------
+	0		Unknown, usually 0x80
+	1-4		Paragraph flags
+	
+See below for a list of known flags.  If any flags require arguments
+(for example, if a line spacing flag is set) these arguments follow
+the flags.  If more than one flag requires arguments, the arguments are
+stored in order of the flags to which they correspond, from the flag in the
+lowest bit to the flag in the highest bit.
+
+Known paragraph flags are:
+
+No Line-Wrap			0x10000000	Takes no argument
+
+Centre justification		0x08000000	Takes no argument
+Right justification		0x04000000	Takes no argument
+(Left justification seems to be default)
+
+Tab Stops			0x02000000	Takes variable argument
+						(See below)
+
+Bordered paragraph		0x01000000	Takes 3-byte argument
+
+First Line Indent		0x00400000	Takes 1- or 2-byte argument
+Right Indent			0x00200000	Takes 1- or 2-byte argument
+Left Indent			0x00100000	Takes 1- or 2-byte argument
+
+Line Spacing			0x00080000	Takes 1- or 2-byte argument
+Space After			0x00040000	Takes 1- or 2-byte argument
+Space Before			0x00020000	Takes 1- or 2-byte argument
+
+The first byte of the argument to the "Bordered paragraph" flag is itself
+a set of flags:
+	Dotted Border		0x80
+	Double Border		0x40
+	Thick Border		0x20
+	Right Border		0x10
+	Bottom Border		0x08
+	Left Border		0x04
+	Top Border		0x02
+	Boxed Border		0x01
+The meaning of the remaining word is unknown so far.
+
+Most of the other flags take a variable-length argument which measures a
+distance in units of tens of twips (ten twips is half a printer's point,
+or 1/144 of an inch).   The format used to store these numbers is
+ridiculous, and I had better take a moment to go over it here.
+I call it "Bass-ackwards three's complement", or "Wha?" for short.
+
+   To convert x to "Wha?":
+      if abs(x) > 0x3FFF or x == -1 stop;
+      let sign = (x >= 0);
+      let x = 2*abs(x);
+      if x < 0x80 then
+         let x = x & 0x80;
+	 if sign == TRUE then
+	    let x = x ^ 0xFE;
+	    let x = x + 0x4;
+	 end if;
+	 store x as a BYTE;
+      else
+         let x = x & 0x8001;
+	 if sign == TRUE Then
+	    let x = x ^ 0xFFFE;
+	    let x = x + 0x4;
+	 end if;
+	 store x as a WORD;
+      end if;
+      
+I am not making this up.
+Converting from "Wha?" back to normal numbers is simpler.  The low bit
+signals whether the number is two bytes long instead of one byte, while the
+high bit acts as a reversed sign bit, which is set when the number is
+positive.  However to convert negative numbers to positive ones, once you've
+flipped the bits and dropped the low bit, you have to add two to the result
+(which is why I call it three's complement).  You'll note that -1 cannot
+be represented in this scheme, and as a result you cannot specify indents
+between -1 and -19 twips in a help file (they will be ignored if you do).
+Who wrote this???
+
+There's one addition complication with the tab-stop flag.  That flag
+takes a series of numbers.  The first is the number of stops that were
+set, in the above format.  The remaining numbers are the positions of
+the individual stops, but since tab stops can't be negative the above format
+is modified: the low bit is still a "size bit", but the high bit is just
+a normal bit an isn't automatically set.
+
+There are other paragraph flags whose purpose has not
+been determined.
+
+Text attributes are better understood, and immediately follow the paragraph
+attributes.  The text attributes are a list of bytes, each indicating
+a change that happens in some part of the text.  The changes are listed 
+in order that they appear in the text.  Known changes are:
+
+	0x80 -- Font change.  Followed immediately by a WORD index, which
+		refers to one of the font attributes in the |FONT file
+		(see font.txt).
+	0x81 -- New Line.
+	0x82 -- New paragraph.
+	0x83 -- Horizontal tab.
+	0x89 -- End of a text hotlink.
+	0xC8 -- Start of a macro hotlink.  Followed by a two-byte value
+	        giving the length of the macro string, then the zero-
+		terminated macro string itself.
+	0xE2, 0xE3 -- start of a pop-up and jump hotlink, respectively.
+	        Each is followed immediately by a 4-byte hash value
+		used to 'dereference' the hotlink via the |CONTEXT table.
+		(see context.txt)
+	0xEA, 0xEB -- start of a "complex" popup or jump hotlink respectively.
+	        By "complex" I mean a jump involving another file or a
+		secondary window.  These flags are followed by a two-byte
+		value giving the length of the remaining data, then a
+		one-byte flag:
+			0x01 -- This hotlink uses a secondary window
+			0x04 -- This hotlink uses another help file.
+			0x06 -- Both a secondary window and another file.
+		Finally the data is given: first the 4-byte hash value
+		of the context string to jump to, then (optionally) the
+		window to use (as a one-byte number if the destination topic
+		is in this file; as an ASCII string if in another file)
+		and then the destination filename if applicable.
+	(NOTE:  With any of the above 5 hotlink flags, setting bit 3 makes
+	        the hotlink "invisible"; that is, not coloured green in the
+		document.  Thus there are 5 other attribute flags: 0xCC,
+		0xE6, 0xE7, 0xEE, and 0xEF )
+	0xFF -- End of the list of attributes.
+	
+The end of the text attributes is the end of the first data block in a 0x20
+node.  In a 0x23 node, there is one set of paragraph+text attributes for
+each column.
+
+(Whew!)  The SECOND data area for these nodes is much simpler.  It's just
+raw ASCII text with certain additional bytes inserted:
+	-- A 0x00 byte signifies a change in the text.  The next text
+	   attribute from the first section is read and applied.  (I'm not
+	   sure how this works in 0x23 records; they have multiple sets
+	   of text attributes but only one second data area.)
+	-- A byte between 0x01 and 0x0A is the first byte of a two-byte
+	   phrase code.  See phrases.txt.
+	   
+
+Offsets within the |TOPIC file
+------------------------------
+
+There are two different (and highly annoying) ways of referring to text
+within the |TOPIC file, both using unsigned longs as offsets.  Both make
+use of the fact that text in the |TOPIC file is broken into pages (see below).
+The simpler form is the "Extended" offset (Pete Davis's words), with the
+following format:
+
+	Bits		Meaning
+	-----------------------
+	Upper 18	Page number
+	Lower 14	Offset within data of that page
+			(AFTER decompression, if applicable)
+
+"Extended" offsets are used only within the |TOPIC file.
+
+The other, more complex offset is (suprise) used more often; it appears in
+|TOPIC occasionally, and is the only offset used in other files which refer
+to |TOPIC, that is: |CONTEXT, |KWDATA, |SYSTEM, |CTXOMAP, and |TTLBTREE.
+This form, called the "Character" offset (again, Pete Davis's words) is as
+follows:
+
+	Bits		Meaning
+	-----------------------
+	Upper 17	Page number
+	Lower 15	Offset within TEXT of that page
+	
+The offset here is tricky; it is as if you calculated a normal offset within
+that page, but ignored everything that wasn't text.  Here, 'text' refers to
+the actual help text AFTER decompression but BEFORE phrase replacement and
+BEFORE processing formatting codes (see the section on Data Blocks) -- in
+short, the text as it appears in the uncompressed page.  'Text' does NOT
+include the linked list structures and other internal gobbledygook.

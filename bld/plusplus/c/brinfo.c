@@ -24,17 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Browsing information generation routines.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-
 #include "plusplus.h"
+
+#include <stdio.h>
+#include <errno.h>
 
 #ifdef OPT_BR
 
@@ -52,7 +50,7 @@
 #include "pcheader.h"
 #include "fname.h"
 
-#if defined(__QNX__)
+#if defined(__UNIX__)
  #include <unistd.h>
 #else
  #include <direct.h>
@@ -134,14 +132,8 @@ static BRI_Handle* bri_handle;  // handle for browse-file writer
     brinfo_state == BRS_COLLECTING
 
 
-typedef struct {                // BRINF_PCH_CTL
-    unsigned bsize;             // - buffer size
-    char* buffer;               // - buffer
-} BRINF_PCH_CTL;
-
-
 static char* brinfPchGetBuffer  // GET BUFFER FOR READ
-    ( BRINF_PCH_CTL* ctl        // - control
+    ( BRI_PCH_CTL* ctl        // - control
     , unsigned size )           // - size required
 {
     if( size > ctl->bsize ) {
@@ -152,8 +144,8 @@ static char* brinfPchGetBuffer  // GET BUFFER FOR READ
 }
 
 
-static BRINF_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
-    ( BRINF_PCH_CTL* ctl )      // - control
+static BRI_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
+    ( BRI_PCH_CTL* ctl )      // - control
 {
     ctl->bsize = 0;
     ctl->buffer = 0;
@@ -162,8 +154,8 @@ static BRINF_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
 }
 
 
-static BRINF_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
-    ( BRINF_PCH_CTL* ctl )      // - control
+static BRI_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
+    ( BRI_PCH_CTL* ctl )         // - control
 {
     CMemFreePtr( &ctl->buffer );
     return ctl;
@@ -171,7 +163,7 @@ static BRINF_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
 
 
 static uint_8 brinfReadPch1     // READ ONE BYTE FROM PCH
-    ( BRINF_PCH_CTL* ctl )      // - control
+    ( BRI_PCH_CTL * ctl )     // - control
 {
     PCHReadUnaligned( ctl->buffer, 1 );
     return *ctl->buffer;
@@ -179,15 +171,16 @@ static uint_8 brinfReadPch1     // READ ONE BYTE FROM PCH
 
 
 static uint_32 brinfReadPch4    // READ FOUR BYTES FROM PCH
-    ( BRINF_PCH_CTL* ctl )      // - control
+    ( BRI_PCH_CTL * ctl )     // - control
 {
     ctl = ctl;
+
     return PCHReadUIntUnaligned();
 }
 
 
 static void* brinfReadPch       // READ SUPPLIED # OF BYTES
-    ( BRINF_PCH_CTL* ctl        // - control
+    ( BRI_PCH_CTL * ctl       // - control
     , unsigned size )           // - size required
 {
     return PCHReadLocateUnaligned( brinfPchGetBuffer( ctl, size ), size );
@@ -338,7 +331,7 @@ static void endBlkScope         // END OF BLK SCOPE
     if( canWriteIc() ) {
         ACTBLK* act = findActiveScope( scope );
         if( NULL != act ) {
-            if( ! scope->keep ) {
+            if( ! scope->s.keep ) {
                 SCPINS* curr;
                 RingIterBeg( act->ins, curr ) {
                     CgioBuffZap( curr->scope_ins, &nop_ins );
@@ -581,7 +574,7 @@ static void brinfIcReference    // WRITE OUT A REFERENCE, IF REQ'D
     locn = adjustLocn( locn, &curr_locn );
     if( NULL == locn ) return;
     if( canWriteIc()
-     && activeScopesReset( CurrScope, locn ) ) {
+     && activeScopesReset( GetCurrScope(), locn ) ) {
         BrinfIcReference( opcode, ptr, locn );
     }
 }
@@ -613,7 +606,7 @@ static void brinfIcDclSym       // PUT OUT A SYMBOL DECLARATION
 }
 
 
-static typeUsage                // TYPE USAGE
+static void typeUsage           // TYPE USAGE
     ( TYPE type                 // - the type
     , TOKEN_LOCN* locn )        // - reference location
 {
@@ -965,6 +958,19 @@ MEPTR BrinfDeclMacro            // DECLARE MACRO
 }
 
 
+void BrinfDependsMacroValue     // DEPENDENCY: MACRO VALUE
+    ( MEPTR mac )               // - the macro
+{
+    MACVALUE* val;              // - value for macro
+
+    if( BrinfActive() ) {
+        ExtraRptIncrementCtr( ctr_dep_macro_value );
+        val = BrinfMacAddValue( mac );
+        BrinfDepMacAdd( mac, val, MVT_VALUE );
+    }
+}
+
+
 MEPTR BrinfReferenceMacro       // REFERENCE A MACRO VALUE
     ( MEPTR mac )               // - the macro
 {
@@ -1009,19 +1015,6 @@ boolean BrinfDependsMacroDefined // DEPENDENCY: MACRO DEFINED OR NOT
 }
 
 
-void BrinfDependsMacroValue     // DEPENDENCY: MACRO VALUE
-    ( MEPTR mac )               // - the macro
-{
-    MACVALUE* val;              // - value for macro
-
-    if( BrinfActive() ) {
-        ExtraRptIncrementCtr( ctr_dep_macro_value );
-        val = BrinfMacAddValue( mac );
-        BrinfDepMacAdd( mac, val, MVT_VALUE );
-    }
-}
-
-
 void BrinfUndefMacro            // UNDEFINE A MACRO
     ( MEPTR mac )               // - that macro
 {
@@ -1045,7 +1038,7 @@ void BrinfCloseScope            // CLOSE A SCOPE
 #ifdef XTRA_RPT
         _dbgScope( scope, "Br-inf-end" );
         if( ! ScopeType( scope, SCOPE_CLASS )
-         && scope->keep
+         && scope->s.keep
          && NULL != scope->ordered ) {
             ExtraRptIncrementCtr( ctr_nontrivial_scopes );
         }
@@ -1180,7 +1173,7 @@ unsigned long BrinfPch          // WRITE OUT PCH IF REQ'D
 void BrinfPchRead               // INSERT PCH REFERENCE INTO BROWSING
     ( void )
 {
-    BRINF_PCH_CTL       ctl;
+    BRI_PCH_CTL         ctl;
     BRI_PCHRtns         pchrtns = {
         &brinfReadPch1,
         &brinfReadPch4,

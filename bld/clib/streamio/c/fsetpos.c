@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fsetpos() - set stream position.
 *
 ****************************************************************************/
 
@@ -35,7 +34,6 @@
 
 
 _WCRTLINK int fsetpos( FILE *fp, const fpos_t *pos )
-    {
-        return( fseek( fp, *pos, SEEK_SET ) );
-    }
-
+{
+    return( fseek( fp, *pos, SEEK_SET ) );
+}

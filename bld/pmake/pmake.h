@@ -24,12 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  pmake interfaces
 *
 ****************************************************************************/
-
-
 
 typedef struct pmake_list       pmake_list;
 struct pmake_list {
@@ -39,7 +36,7 @@ struct pmake_list {
     char                dir_name[1];    /* variable sized */
 };
 
-typedef struct target_list target_list;
+typedef struct target_list      target_list;
 struct target_list {
     target_list         *next;
     char                *string;
@@ -47,14 +44,15 @@ struct target_list {
 };
 
 typedef struct {
-    unsigned    verbose         : 1;
-    unsigned    notargets       : 1;
-    unsigned    reverse         : 1;
-    unsigned    batch           : 1;
-    unsigned    display         : 1;
-    unsigned    optimize        : 1;
-    unsigned    want_help       : 1;
-    unsigned    signaled        : 1;
+    unsigned    verbose : 1;
+    unsigned    notargets : 1;
+    unsigned    reverse : 1;
+    unsigned    batch : 1;
+    unsigned    display : 1;
+    unsigned    optimize : 1;
+    unsigned    want_help : 1;
+    unsigned    signaled : 1;
+    unsigned    ignore_err : 1;
     unsigned    levels;
     char        *command;
     char        *cmd_args;

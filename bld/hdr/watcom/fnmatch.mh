@@ -1,0 +1,33 @@
+/*
+ *  fnmatch.h   POSIX filename pattern matching
+ *
+:include crwat.sp
+ */
+#ifndef _FNMATCH_H_INCLUDED
+#define _FNMATCH_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+#define FNM_NOMATCH     1           /* Failed to match. */
+
+#define FNM_NOESCAPE    0x01        /* No backslash escaping. */
+#define FNM_PATHNAME    0x02        /* Slash in string only matched by slash in pattern. */
+#define FNM_PERIOD      0x04        /* Leading period in string only matched by period in pattern. */
+
+#define FNM_NOSYS       (-1)        /* Reserved, obsolete. */
+
+:include ext.sp
+#define FNM_IGNORECASE  0x08        /* Case insensitive matching. */
+#define FNM_LEADING_DIR 0x10        /* Ignore final path component. */
+#define FNM_CASEFOLD    FNM_IGNORECASE
+:include extepi.sp
+
+:include cpluspro.sp
+
+_WCRTLINK extern int    fnmatch( const char *__pattern, const char *__string, int __flags );
+
+:include cplusepi.sp
+
+#endif

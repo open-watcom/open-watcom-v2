@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <assert.h>
-#include "winvi.h"
+#include "vi.h"
 #include "winaux.h"
 #include "win.h"
 #include "color.h"
@@ -42,19 +40,18 @@
 #include "sstyle.h"
 
 static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
-                HDC hdc, int max_width, type_style *ts, HBRUSH thisBrush );
+                      HDC hdc, int max_width, type_style *ts, HBRUSH thisBrush );
 
 void MyTabbedTextOut( HDC hdc, char **display, int len,
                       int funny_italic, POINT *p, type_style *ts, RECT *rect,
                       window_id id, char *otmp, int y );
 
-BOOL            AllowDisplay = TRUE;
-static int      pageCnt;
-static int      lastFont, thisFont;
-static int      lastFore, thisFore;
-static int      lastBack, thisBack;
-static HBRUSH   thisBrush;
-
+BOOL                AllowDisplay = TRUE;
+static int          pageCnt;
+static font_type    lastFont, thisFont;
+static vi_color     lastFore, thisFore;
+static vi_color     lastBack, thisBack;
+static HBRUSH       thisBrush;
 
 
 void ScreenPage( int page )
@@ -86,18 +83,19 @@ void ClearWindow( window_id id )
         return;
     }
     w = WINDOW_FROM_ID( id );
-    GetWindowRect( id, &rect );
+    GetClientRect( id, &rect );
     hdc = TextGetDC( id, WIN_STYLE( w ) );
-    // should clear with SEType[ SE_WHITESPACE ].background for edit windows
+    // should clear with SEType[SE_WHITESPACE].background for edit windows
     FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( w ) ) );
     TextReleaseDC( id, hdc );
 }
 
-void DisplayLineInWindow( window_id id, int line, char *text )
+vi_rc DisplayLineInWindow( window_id id, int line, char *text )
 {
     text = text;
     id = id;
     DCDisplaySomeLines( line - 1, line - 1 );
+    return( ERR_NO_ERR );
 }
 
 void ShiftWindowUpDown( window_id id, int lines )
@@ -121,7 +119,7 @@ void ShiftWindowUpDown( window_id id, int lines )
     // clip extra bit in case scrolling w/ positive change
     GetClientRect( id, &clip_rect );
     clip_rect.bottom = wd->extra.top;
-    if( change > 0 ){
+    if( change > 0 ) {
         // dont scroll into extra bit
         ScrollWindow( id, 0, change, &clip_rect, &clip_rect );
     } else {
@@ -130,12 +128,13 @@ void ShiftWindowUpDown( window_id id, int lines )
     UpdateWindow( id );
     MyShowCaret( id );
 
-    wd =wd;
+    wd = wd;
     clip_rect.top = 0;
 
 } /* ShiftWindowUpDown */
 
-int SetDrawingObjects( HDC hdc, type_style *ts ){
+int SetDrawingObjects( HDC hdc, type_style *ts )
+{
     static int funny_italic = 0;
 
     // setup font and colours for next string.
@@ -156,7 +155,7 @@ int SetDrawingObjects( HDC hdc, type_style *ts ){
     if( lastFont != thisFont ) {
         SelectObject( hdc, FontHandle( thisFont ) );
         lastFont = thisFont;
-        if( FontIsFunnyItalic( thisFont ) ){
+        if( FontIsFunnyItalic( thisFont ) ) {
             funny_italic = TRUE;
         } else {
             funny_italic = FALSE;
@@ -168,13 +167,12 @@ int SetDrawingObjects( HDC hdc, type_style *ts ){
 #ifndef BITBLT_BUFFER_DISPLAY
 
 static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
-                HDC hdc, int max_width, type_style *ts, HBRUSH brush ){
-
+                      HDC hdc, int max_width, type_style *ts, HBRUSH brush )
+{
     // FunnyItalic so draw at bit at begining and end!
-
-    RECT smallrect;
-    int advance;
-    int width;
+    RECT    smallrect;
+    int     advance;
+    int     width;
 
     smallrect.top = rect->top;
     smallrect.bottom = rect->bottom;
@@ -194,16 +192,16 @@ static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
 }
 
 void MyTabbedTextOut( HDC hdc,
-                 char   **display,      // a reference to a string
-                 int    len,            // number of chars to display
-                 int    funny_italic,   // fix up begin and end ?
-                 POINT  *p,             // reference to current position
-                 type_style *ts,        // current style
-                 RECT   *rect,
-                 window_id id,
-                 char   *otmp,
-                 int    y
-                 ){
+                      char **display,        // a reference to a string
+                      int len,               // number of chars to display
+                      int funny_italic,      // fix up begin and end ?
+                      POINT *p,              // reference to current position
+                      type_style *ts,        // current style
+                      RECT *rect,
+                      window_id id,
+                      char *otmp,
+                      int y )
+{
     if( EditFlags.RealTabs ) {
         char    *tstring = *display;
         char    *string_end = tstring + len;
@@ -216,44 +214,51 @@ void MyTabbedTextOut( HDC hdc,
                 // BAD! Kevin.P.
                 // I think this portion of code is 8-bit dependant.
                 // Should call getNext() or something from TabHell
-                if( tstring == string_end ) break;
+                if( tstring == string_end ) {
+                    break;
+                }
                 tstring++;
                 tlen++;
             }
-            if( funny_italic ){
+            if( funny_italic ) {
                 // FunnyItalic so draw at bit at begining and end!
                 funnyFix( rect, p->x, id, *display, tlen,
-                          hdc, FontMaxWidth(thisFont), ts, thisBrush );
+                          hdc, FontMaxWidth( thisFont ), ts, thisBrush );
             }
             TextOut( hdc, 0, 0, *display, tlen );
             *display = tstring;
-            if( tstring >= string_end ) break;
+            if( tstring >= string_end ) {
+                break;
+            }
 
             tlen = 0;
-            while( *tstring == '\t' ){
-                if( tstring == string_end ) break;
+            while( *tstring == '\t' ) {
+                if( tstring == string_end ) {
+                    break;
+                }
                 tstring++;
                 tlen++;
             }
-            if( tlen == 0 ) break;
+            if( tlen == 0 ) {
+                break;
+            }
             *display = tstring;
 
             GetCurrentPositionEx( hdc, p );
             new.left = p->x;
-            new.right = (WinVirtualCursorPosition(otmp,tstring-otmp)
-                           -LeftColumn) * FontAverageWidth(thisFont);
+            new.right = (WinVirtualCursorPosition( otmp, tstring - otmp ) -
+                         LeftTopPos.column) * FontAverageWidth( thisFont );
             new.top = rect->top;
             new.bottom = rect->bottom;
             FillRect(hdc, &new, thisBrush );
             MoveToEx( hdc, new.right, y, NULL );
             GetCurrentPositionEx( hdc, p );
         }
-    }
-    else {
-        if( funny_italic ){
+    } else {
+        if( funny_italic ) {
             // FunnyItalic so draw at bit at begining and end!
             funnyFix( rect, p->x, id, *display, len,
-                  hdc, FontMaxWidth( thisFont ), ts, thisBrush );
+                      hdc, FontMaxWidth( thisFont ), ts, thisBrush );
         }
         TextOut( hdc, 0, 0, *display, len );
         *display += len;
@@ -277,17 +282,18 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
     type_style  *ts;
     POINT       p;
-    BOOL        funny_italic=FALSE;
-    //
-    int prev_col;
+    BOOL        funny_italic = FALSE;
+    int         prev_col;
 
-    if( !AllowDisplay || BAD_ID( id ) ) return( ERR_NO_ERR );
+    if( !AllowDisplay || BAD_ID( id ) ) {
+        return( ERR_NO_ERR );
+    }
 
     /* all font heights should be the same
      *   - note this may not quite be true for bold fonts but so what!
      */
-    height = FontHeight( SEType[ SE_WHITESPACE ].font );
-    y = ( c_line_no - 1 ) * height;
+    height = FontHeight( SEType[SE_WHITESPACE].font );
+    y = (c_line_no - 1) * height;
     GetClientRect( id, &rect );
     rect.top = y;
     rect.bottom = y + height;
@@ -311,19 +317,18 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
     prev_col = start_col;
     if( EditFlags.RealTabs ){
-        start_col = WinRealCursorPosition( otmp, start_col+1 ) -1;
+        start_col = WinRealCursorPosition( otmp, start_col + 1 ) -1;
     }
 
     tmp += start_col;
     display = tmp;
-
 
     // this section of code makes the ss blocks for this line.
     // it also compares the new blocks to the ones which existed
     // so that we can draw less ( although its not very good at it )
     x = 0;
     c_line = DCFindLine( c_line_no - 1, id );
-    SSGetLanguageFlags( &( c_line->flags ) );
+    SSGetLanguageFlags( &(c_line->flags) );
     ss_cache = c_line->ss;
     indent = 0;
     changed = TRUE;
@@ -334,7 +339,9 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
 
         while( *old == *display ) {
-            if( *old == 0 || indent == ssDifIndex ) break;
+            if( *old == 0 || indent == ssDifIndex ) {
+                break;
+            }
             old++;
             display++;
             indent++;
@@ -350,7 +357,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             // grap pixel offset of where to start next block
             x = 0;
             if( ss_step != ss_cache ) {
-                x = ( ss_step - 1 )->offset;
+                x = (ss_step - 1)->offset;
             }
         }
     } else {
@@ -360,7 +367,6 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         x = 0;
     }
 
-
     // this section of code performs the drawing of the current line
     // to the display, by interpreting the ss_blocks.
     // The function MyTabbedTextOut prints one ss_block at a time,
@@ -369,7 +375,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     // current ss_block if they have changed.
     if( changed == TRUE ) {
 
-        lastPos = indent -1;
+        lastPos = indent - 1;
         MoveToEx( hdc, x, y, NULL );
         p.x = x;
         SetTextAlign( hdc, TA_UPDATECP );
@@ -382,26 +388,28 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         while( ss_step->end != BEYOND_TEXT ) {
 
             // setup font and colors for next string.
-            ts = &SEType[ ss_step->type ];
+            ts = &SEType[ss_step->type];
             funny_italic = SetDrawingObjects( hdc, ts );
             len = ss_step->end - lastPos;
 
             // MyTabbedTextOut is long and used in 2 places but needs so
             // many arguments maybe it should be inline.
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                                &p, ts, &rect, id, otmp, y );
+                             &p, ts, &rect, id, otmp, y );
 
             // save pixel offset where next block is to start
             GetCurrentPositionEx( hdc, &p );
             ss_step->offset = p.x;
 
-            if( p.x > rect.right ){
+            if( p.x > rect.right ) {
                 // gone off the edge of the display!
                 // put in dummy offsets for the rest of the blocks
                 // and exit
                 ss_step++;
-                while( 1 ){
-                    if( ss_step->end == BEYOND_TEXT ) break;
+                while( 1 ) {
+                    if( ss_step->end == BEYOND_TEXT ) {
+                        break;
+                    }
                     ss_step->offset = 10000;
                     ss_step++;
                 }
@@ -420,13 +428,13 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
         // now "beyond text" but there still could be more "text"
         // if there is, display the rest of it!
-        ts = &SEType[ ss_step->type ];
+        ts = &SEType[ss_step->type];
         funny_italic = SetDrawingObjects( hdc, ts );
         len = strlen( display );
 
         if( *display != '\0' ) {
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                                &p, ts, &rect, id, otmp, y );
+                             &p, ts, &rect, id, otmp, y );
         }
 
         // if the previous line was longer than this one, blot it out.
@@ -447,8 +455,8 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     return( ERR_NO_ERR );
 }
 
-
 #else
+
 // unfortunately bitblting each line is considerably slower on standard
 // vga, and at best only comparable to direct TextOut on Window accelerators
 int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
@@ -465,9 +473,9 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     int         ssDifIndex;
     ss_block    *ss_cache, *ss_step;
     int         lastPos;
-    int         lastFont, thisFont;
-    int         lastFore, thisFore;
-    int         lastBack, thisBack;
+    font_type   lastFont, thisFont;
+    vi_color    lastFore, thisFore;
+    vi_color    lastBack, thisBack;
     type_style  *ts;
     POINT       p;
 
@@ -476,9 +484,9 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     }
 
     // all font heights should be the same
-    height = FontHeight( SEType[ SE_WHITESPACE ].font );
+    height = FontHeight( SEType[SE_WHITESPACE].font );
     width = WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH );
-    y = ( c_line_no - 1 ) * height;
+    y = (c_line_no - 1) * height;
     GetClientRect( id, &rect );
     rect.top = y;
     rect.bottom = y + height;
@@ -498,7 +506,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     display = tmp;
     x = 0;
     c_line = DCFindLine( c_line_no - 1, id );
-    SSGetLanguageFlags( &( c_line->flags ) );
+    SSGetLanguageFlags( &(c_line->flags) );
     ss_cache = c_line->ss;
     indent = 0;
     changed = TRUE;
@@ -507,7 +515,9 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         old = c_line->text;
         SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
         while( *old == *display ) {
-            if( *old == 0 || indent == ssDifIndex ) break;
+            if( *old == 0 || indent == ssDifIndex ) {
+                break;
+            }
             old++;
             display++;
             indent++;
@@ -523,7 +533,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             // grap pixel offset of where to start next block
             x = 0;
             if( ss_step != ss_cache ) {
-                x = ( ss_step - 1 )->offset;
+                x = (ss_step - 1)->offset;
             }
         }
     } else {
@@ -541,7 +551,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         SetTextAlign( hdc_mem, TA_UPDATECP );
         lastFore = lastBack = lastFont = -1;
         while( ss_step->end != BEYOND_TEXT ) {
-            ts = &SEType[ ss_step->type ];
+            ts = &SEType[ss_step->type];
             thisFore = ts->foreground;
             if( lastFore != thisFore ) {
                 SetTextColor( hdc_mem, ColorRGB( thisFore ) );
@@ -567,7 +577,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             display += len;
             ss_step++;
         }
-        ts = &SEType[ ss_step->type ];
+        ts = &SEType[ss_step->type];
         if( *display != '\0' ) {
             SetTextColor( hdc_mem, ColorRGB( ts->foreground ) );
             SetBkColor( hdc_mem, ColorRGB( ts->background ) );
@@ -586,4 +596,5 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     }
     return( ERR_NO_ERR );
 }
+
 #endif

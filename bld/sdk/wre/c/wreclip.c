@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <limits.h>
 #include <string.h>
 #include <ddeml.h>
@@ -39,7 +39,7 @@
 #include "wregcres.h"
 #include "wre_wres.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wremem.h"
 #include "wredel.h"
 #include "wrenames.h"
@@ -67,7 +67,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WR_EXPORT WREResPasteProc ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WR_EXPORT WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -97,38 +97,32 @@ typedef struct WREPasteData {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  WREClipData     *WRECreateClipData      ( WRECurrentResInfo *curr );
-static  Bool            WREGetClipData          ( WREClipFormat *fmt,
-                                                  void **data,
-                                                  uint_32 *dsize );
-static  Bool            WREClipBitmap           ( WRECurrentResInfo *curr,
-                                                  HWND main );
-static  Bool            WREClipResource         ( WRECurrentResInfo *curr,
-                                                  HWND main, UINT fmt );
-static  Bool            WREQueryPasteReplace    ( WResID *name, uint_16 type,
-                                                  Bool *replace );
+static WREClipData  *WRECreateClipData( WRECurrentResInfo *curr );
+static Bool         WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize );
+static Bool         WREClipBitmap( WRECurrentResInfo *curr, HWND main );
+static Bool         WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt );
+static Bool         WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  WREClipFormat WREClipFormats[] =
-{
-    { 0,        WR_CLIPBD_ACCEL,        (uint_16)RT_ACCELERATOR         }
-,   { 0,        WR_CLIPBD_MENU,         (uint_16)RT_MENU                }
-,   { 0,        WR_CLIPBD_STRING,       (uint_16)RT_STRING              }
-,   { 0,        WR_CLIPBD_CURSOR,       (uint_16)RT_GROUP_CURSOR        }
-,   { 0,        WR_CLIPBD_ICON,         (uint_16)RT_GROUP_ICON          }
-,   { 0,        WR_CLIPBD_DIALOG,       (uint_16)RT_DIALOG              }
-,   { 0,        WR_CLIPBD_FONT,         (uint_16)RT_FONT                }
-,   { 0,        WR_CLIPBD_RCDATA,       (uint_16)RT_RCDATA              }
-,   { 0,        WR_CLIPBD_BITMAP,       (uint_16)RT_BITMAP              }
-,   { CF_BITMAP,NULL,                   (uint_16)RT_BITMAP              }
-,   { CF_DIB,   NULL,                   (uint_16)RT_BITMAP              }
-,   { 0,        NULL,                   0                               }
-// last entry is a sentinel
+static WREClipFormat WREClipFormats[] = {
+    { 0,            WR_CLIPBD_ACCEL,    (uint_16)RT_ACCELERATOR     },
+    { 0,            WR_CLIPBD_MENU,     (uint_16)RT_MENU            },
+    { 0,            WR_CLIPBD_STRING,   (uint_16)RT_STRING          },
+    { 0,            WR_CLIPBD_CURSOR,   (uint_16)RT_GROUP_CURSOR    },
+    { 0,            WR_CLIPBD_ICON,     (uint_16)RT_GROUP_ICON      },
+    { 0,            WR_CLIPBD_DIALOG,   (uint_16)RT_DIALOG          },
+    { 0,            WR_CLIPBD_FONT,     (uint_16)RT_FONT            },
+    { 0,            WR_CLIPBD_RCDATA,   (uint_16)RT_RCDATA          },
+    { 0,            WR_CLIPBD_BITMAP,   (uint_16)RT_BITMAP          },
+    { CF_BITMAP,    NULL,               (uint_16)RT_BITMAP          },
+    { CF_DIB,       NULL,               (uint_16)RT_BITMAP          },
+    { 0,            NULL,               0                           }
+    // last entry is a sentinel
 };
 
-static  HBITMAP WPrivateFormat          = NULL;
+static HBITMAP WPrivateFormat       = NULL;
 
 Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 {
@@ -138,21 +132,21 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 
     hclipdata = (HANDLE)NULL;
     mem = NULL;
-    ok = ( fmt && fmt->fmt && data && dsize );
+    ok = (fmt != NULL && fmt->fmt != 0 && data != NULL && dsize != 0);
 
     if( ok ) {
         hclipdata = GetClipboardData( fmt->fmt );
-        ok = ( hclipdata != NULL );
+        ok = (hclipdata != NULL);
     }
 
     if( ok ) {
         mem = GlobalLock( hclipdata );
-        ok = ( mem != NULL );
+        ok = (mem != NULL);
     }
 
     if( ok ) {
         *dsize = (uint_32)GlobalSize( hclipdata );
-        ok = ( *dsize != 0 );
+        ok = (*dsize != 0);
     }
 
     if( ok ) {
@@ -164,7 +158,7 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 
     if( ok ) {
         *data = WREMemAlloc( *dsize );
-        ok = ( *data != NULL );
+        ok = (*data != NULL);
     }
 
     if( ok ) {
@@ -190,7 +184,7 @@ static WREClipFormat *WREFindClipFormatFromType( uint_16 type )
 {
     int         i;
 
-    for( i=0; WREClipFormats[i].type; i++ ) {
+    for( i = 0; WREClipFormats[i].type != 0; i++ ) {
         if( WREClipFormats[i].type == type ) {
             return( &WREClipFormats[i] );
         }
@@ -204,7 +198,7 @@ static WREClipFormat *WREGetClipFormat( void )
 {
     int         i;
 
-    for( i=0; WREClipFormats[i].type; i++ ) {
+    for( i = 0; WREClipFormats[i].type != 0; i++ ) {
         if( IsClipboardFormatAvailable( WREClipFormats[i].fmt ) ) {
             return( &WREClipFormats[i] );
         }
@@ -234,16 +228,17 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
     Bool                exists;
     Bool                ok;
 
-    lang.lang    = DEF_LANG;
+    lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
-    ok = ( info && info->info && type && name && *name && replace );
+    ok = (info != NULL && info->info != NULL && type != NULL && name != NULL &&
+          *name != NULL && replace != NULL);
 
     if( ok ) {
         t = 0;
         if( !type->IsName ) {
             t = type->ID.Num;
         }
-        ok = ( t != 0 );
+        ok = (t != 0);
     }
 
     if( ok ) {
@@ -256,7 +251,7 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
             if( *replace ) {
                 curr.info = info;
                 curr.type = WREFindTypeNodeFromWResID( info->info->dir, type );
-                curr.res  = WREFindResNodeFromWResID( curr.type, *name );
+                curr.res = WREFindResNodeFromWResID( curr.type, *name );
                 curr.lang = WREFindLangNodeFromLangType( curr.res, &lang );
                 ok = WREDeleteResource( &curr, TRUE );
                 if( !ok ) {
@@ -265,7 +260,7 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
             } else {
                 ren_info.old_name = *name;
                 ren_info.new_name = NULL;
-                ok = ( WREGetNewName( &ren_info ) && ren_info.new_name );
+                ok = (WREGetNewName( &ren_info ) && ren_info.new_name != NULL);
                 if( ok ) {
                     WREMemFree( *name );
                     *name = ren_info.new_name;
@@ -301,19 +296,19 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     cname = NULL;
     ctype = NULL;
     new_type = TRUE;
-    lang.lang    = DEF_LANG;
+    lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    ok = ( fmt != NULL );
+    ok = (fmt != NULL);
 
     if( ok ) {
         tn = WREGetTypeNameFromRT( fmt->type );
-        ok = ( tn != NULL );
+        ok = (tn != NULL);
     }
 
     if( ok ) {
         ctype = WResIDFromNum( fmt->type );
-        ok = ( ctype != NULL );
+        ok = (ctype != NULL);
     }
 
     if( ok ) {
@@ -323,25 +318,25 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     if( ok ) {
         cdata = (WREClipData *)data;
         data = NULL;
-        ok = ( cdata != NULL );
+        ok = (cdata != NULL);
     }
 
     if( ok ) {
         data = WREMemAlloc( cdata->data_size );
-        ok = ( data != NULL );
+        ok = (data != NULL);
     }
 
     if( ok ) {
         memcpy( data, (BYTE *)cdata + cdata->data_offset, cdata->data_size );
         cname = WREGetClipDataName( cdata );
-        ok = ( cname != NULL );
+        ok = (cname != NULL);
     }
 
     if( ok ) {
         WREGetCurrentResource( &curr );
         if( curr.info == NULL ) {
             curr.info = WRECreateNewResource( NULL );
-            ok = ( curr.info != NULL );
+            ok = (curr.info != NULL);
         }
     }
 
@@ -352,9 +347,8 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     if( ok ) {
         if( curr.info != NULL ) {
             if( curr.info->info->dir ) {
-                new_type =
-                    ( WREFindTypeNodeFromWResID( curr.info->info->dir, ctype )
-                      == NULL );
+                new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir,
+                                                       ctype ) == NULL);
             }
         }
         ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
@@ -406,14 +400,14 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     cname = NULL;
     ctype = NULL;
     new_type = TRUE;
-    lang.lang    = DEF_LANG;
+    lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    ok = ( fmt != NULL );
+    ok = (fmt != NULL);
 
     if( ok ) {
         ctype = WResIDFromNum( fmt->type );
-        ok = ( ctype != NULL );
+        ok = (ctype != NULL);
     }
 
     if( ok ) {
@@ -423,25 +417,25 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     if( ok ) {
         cdata = (WREClipData *)data;
         data = NULL;
-        ok = ( cdata != NULL );
+        ok = (cdata != NULL);
     }
 
     if( ok ) {
         data = WREMemAlloc( cdata->data_size );
-        ok = ( data != NULL );
+        ok = (data != NULL);
     }
 
     if( ok ) {
         memcpy( data, (BYTE *)cdata + cdata->data_offset, cdata->data_size );
         cname = WREGetClipDataName( cdata );
-        ok = ( cname != NULL );
+        ok = (cname != NULL);
     }
 
     if( ok ) {
         WREGetCurrentResource( &curr );
         if( curr.info == NULL ) {
             curr.info = WRECreateNewResource( NULL );
-            ok = ( curr.info != NULL );
+            ok = (curr.info != NULL);
         }
     }
 
@@ -452,9 +446,8 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     if( ok ) {
         if( curr.info != NULL ) {
             if( curr.info->info->dir ) {
-                new_type =
-                    ( WREFindTypeNodeFromWResID( curr.info->info->dir, ctype )
-                      == NULL );
+                new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir,
+                                                       ctype ) == NULL );
             }
         }
         ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
@@ -515,14 +508,14 @@ static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     cname = NULL;
     ctype = NULL;
     new_type = TRUE;
-    lang.lang    = DEF_LANG;
+    lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    ok = ( fmt && data && dsize );
+    ok = (fmt != NULL && data != NULL && dsize != 0);
 
     if( ok ) {
         ctype = WResIDFromNum( fmt->type );
-        ok = ( ctype != NULL );
+        ok = (ctype != NULL);
     }
 
     if( ok ) {
@@ -530,14 +523,14 @@ static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
         if( cname == NULL ) {
             cname = WRECreateImageTitle( (uint_16)RT_BITMAP );
         }
-        ok = ( cname != NULL );
+        ok = (cname != NULL);
     }
 
     if( ok ) {
         WREGetCurrentResource( &curr );
         if( curr.info == NULL ) {
             curr.info = WRECreateNewResource( NULL );
-            ok = ( curr.info != NULL );
+            ok = (curr.info != NULL);
         }
     }
 
@@ -548,9 +541,8 @@ static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     if( ok ) {
         if( curr.info != NULL ) {
             if( curr.info->info->dir ) {
-                new_type =
-                    ( WREFindTypeNodeFromWResID( curr.info->info->dir, ctype )
-                      == NULL );
+                new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir,
+                                                       ctype ) == NULL );
             }
         }
         ok = WRENewResource( &curr, ctype, cname, DEF_MEMFLAGS, 0,
@@ -582,7 +574,7 @@ static Bool WREGetAndPasteDIB( WREClipFormat *fmt )
 
     data = NULL;
 
-    ok = ( fmt != NULL );
+    ok = (fmt != NULL);
 
     if( ok ) {
         ok = WREGetClipData( fmt, &data, &dsize );
@@ -610,11 +602,11 @@ static Bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 
     data = NULL;
 
-    ok = ( fmt != NULL );
+    ok = (fmt != NULL);
 
     if( ok ) {
-        hbitmap = (HBITMAP) GetClipboardData( fmt->fmt );
-        ok = ( hbitmap != (HBITMAP)NULL );
+        hbitmap = (HBITMAP)GetClipboardData( fmt->fmt );
+        ok = (hbitmap != (HBITMAP)NULL);
     }
 
     if( ok ) {
@@ -652,12 +644,11 @@ Bool WRERegisterClipFormats( HINSTANCE inst )
     int         i;
 
     WPrivateFormat = LoadBitmap( inst, "PrivateFmt" );
-    ok = ( WPrivateFormat != (HBITMAP)NULL );
+    ok = (WPrivateFormat != (HBITMAP)NULL);
 
-    for( i=0; ok && WREClipFormats[i].fmt_name; i++ ) {
-        WREClipFormats[i].fmt =
-            RegisterClipboardFormat( WREClipFormats[i].fmt_name );
-        ok = ( WREClipFormats[i].fmt != 0 );
+    for( i = 0; ok && WREClipFormats[i].fmt_name != NULL; i++ ) {
+        WREClipFormats[i].fmt = RegisterClipboardFormat( WREClipFormats[i].fmt_name );
+        ok = (WREClipFormats[i].fmt != 0);
     }
 
     return( ok );
@@ -672,9 +663,8 @@ void WRESetCopyMenuItem( HWND main )
     hmenu = GetMenu( main );
     WREGetCurrentResource( &curr );
     enable = MF_GRAYED;
-    if( curr.info ) {
-        if( ( curr.info->current_type != 0 ) &&
-            ( curr.info->current_type != (uint_16)RT_STRING ) ) {
+    if( curr.info != NULL ) {
+        if( curr.info->current_type != 0 && curr.info->current_type != (uint_16)RT_STRING ) {
             enable = MF_ENABLED;
         }
     }
@@ -692,7 +682,7 @@ void WRESetPasteMenuItem( HWND main )
     enable = MF_GRAYED;
 
     if( OpenClipboard( main ) ) {
-        for( i=0; WREClipFormats[i].type; i++ ) {
+        for( i = 0; WREClipFormats[i].type != NULL; i++ ) {
             if( IsClipboardFormatAvailable( WREClipFormats[i].fmt ) ) {
                 enable = MF_ENABLED;
                 break;
@@ -708,7 +698,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 {
     WREClipData *cdata;
     uint_32     cdata_size;
-    void        *rdata;
+    BYTE        *rdata;
     uint_32     rdata_size;
     void        *name;
     uint_32     name_size;
@@ -719,14 +709,14 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
     rdata = NULL;
     name = NULL;
 
-    ok = ( curr && curr->type && curr->res && curr->lang );
+    ok = (curr != NULL && curr->type != NULL && curr->res != NULL && curr->lang != NULL);
 
     if( ok ) {
         type = 0;
         if( !curr->type->Info.TypeName.IsName ) {
             type = curr->type->Info.TypeName.ID.Num;
         }
-        ok = ( type != 0 );
+        ok = (type != 0);
     }
 
     if( ok ) {
@@ -742,14 +732,14 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         } else {
             rdata = WREGetCurrentResData( curr );
             rdata_size = curr->lang->Info.Length;
-            ok = ( rdata && rdata_size );
+            ok = (rdata != NULL && rdata_size != 0);
         }
     }
 
     if( ok ) {
-        cdata_size = sizeof(WREClipData) + name_size + rdata_size - 1;
-        cdata = (WREClipData *) WREMemAlloc( cdata_size );
-        ok = ( cdata != NULL );
+        cdata_size = sizeof( WREClipData ) + name_size + rdata_size - 1;
+        cdata = (WREClipData *)WREMemAlloc( cdata_size );
+        ok = (cdata != NULL);
     }
 
     if( ok ) {
@@ -789,11 +779,11 @@ Bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     data = NULL;
     hbitmap = (HBITMAP)NULL;
 
-    ok = ( curr && curr->type && curr->res && curr->lang );
+    ok = (curr != NULL && curr->type != NULL && curr->res != NULL && curr->lang != NULL);
 
     if( ok ) {
         data = (BYTE *)WREGetCurrentResData( curr );
-        ok = ( data != NULL );
+        ok = (data != NULL);
     }
 
     if( ok ) {
@@ -803,7 +793,7 @@ Bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
 
     if( ok ) {
         hbitmap = WRBitmapFromData( data, NULL );
-        ok = ( hbitmap != (HBITMAP)NULL );
+        ok = (hbitmap != (HBITMAP)NULL);
     }
 
     if( ok ) {
@@ -839,21 +829,21 @@ Bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
     cdata = NULL;
     mem = NULL;
     hmem = (HGLOBAL)NULL;
-    ok = ( curr != NULL && fmt != 0 );
+    ok = (curr != NULL && fmt != 0);
 
     if( ok ) {
         cdata = WRECreateClipData( curr );
-        ok = ( cdata != NULL );
+        ok = (cdata != NULL);
     }
 
     if( ok ) {
         hmem = GlobalAlloc( GMEM_MOVEABLE, cdata->clip_size );
-        ok = ( hmem != (HGLOBAL)NULL );
+        ok = (hmem != (HGLOBAL)NULL);
     }
 
     if( ok ) {
         mem = GlobalLock( hmem );
-        ok = ( mem != NULL );
+        ok = (mem != NULL);
     }
 
     if( ok ) {
@@ -871,7 +861,7 @@ Bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
         WPrivateFormat = LoadBitmap( inst, "PrivateFmt" );
         CloseClipboard();
         hmem = (HGLOBAL)NULL;
-        ok = ( WPrivateFormat != (HBITMAP)NULL );
+        ok = (WPrivateFormat != (HBITMAP)NULL);
     }
 
     if( hmem != (HGLOBAL)NULL ) {
@@ -894,26 +884,26 @@ Bool WREClipCurrentResource( HWND main, Bool cut )
 
     WREGetCurrentResource( &curr );
 
-    ok = ( curr.info && curr.type );
+    ok = (curr.info != NULL && curr.type != NULL);
 
     if( ok ) {
         type = 0;
         if( !curr.type->Info.TypeName.IsName ) {
             type = curr.type->Info.TypeName.ID.Num;
         }
-        ok = ( type != 0 );
+        ok = (type != 0);
     }
 
     if( ok ) {
         fmt = WREFindClipFormatFromType( type );
-        ok = ( fmt != NULL );
+        ok = (fmt != NULL);
     }
 
     if( ok ) {
         if( curr.info->current_type == (uint_16)RT_BITMAP ) {
             ok = WREClipBitmap( &curr, main );
-        } else if( ( curr.info->current_type == (uint_16)RT_STRING ) ||
-                   ( curr.info->current_type == 0 ) ) {
+        } else if( curr.info->current_type == (uint_16)RT_STRING ||
+                   curr.info->current_type == 0 ) {
             ok = FALSE;
         } else {
             ok = WREClipResource( &curr, main, fmt->fmt );
@@ -943,7 +933,7 @@ Bool WREPasteResource( HWND main )
     if( ok ) {
         clipbd_open = TRUE;
         fmt = WREGetClipFormat();
-        ok = ( fmt != NULL );
+        ok = (fmt != NULL);
     }
 
     if( ok ) {
@@ -975,7 +965,7 @@ Bool WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace )
     HINSTANCE           inst;
     int                 ret;
 
-    if( !name || !type || !replace ) {
+    if( name == NULL || type == 0 || replace == NULL ) {
         return( FALSE );
     }
 
@@ -984,15 +974,15 @@ Bool WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace )
     pdata.name = name;
     *replace = FALSE;
     dialog_owner  = WREGetMainWindowHandle();
-    inst      = WREGetAppInstance();
-    proc_inst = (DLGPROC) MakeProcInstance( (FARPROC)WREResPasteProc, inst );
+    inst = WREGetAppInstance();
+    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResPasteProc, inst );
 
     ret = JDialogBoxParam( inst, "WREPaste", dialog_owner,
-                           proc_inst, (LPARAM) &pdata );
+                           proc_inst, (LPARAM)&pdata );
 
-    FreeProcInstance( (FARPROC) proc_inst );
+    FreeProcInstance( (FARPROC)proc_inst );
 
-    if( ( ret == -1 ) || ( ret == IDCANCEL ) ) {
+    if( ret == -1 || ret == IDCANCEL ) {
         return( FALSE );
     }
 
@@ -1009,10 +999,10 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
     char        *text;
 
     tn = WREGetTypeNameFromRT( pdata->type );
-    if( tn ) {
+    if( tn != NULL ) {
         text = WREAllocRCString( tn->name );
         WRESetEditWithStr( GetDlgItem( hDlg, IDM_PASTE_TYPE ), text );
-        if( text ) {
+        if( text != NULL ) {
             WREFreeRCString( text );
         }
     }
@@ -1028,33 +1018,32 @@ BOOL WR_EXPORT WREResPasteProc ( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
-        case WM_INITDIALOG:
-            pdata = (WREPasteData *)lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG)pdata );
-            WRESetPasteInfo( hDlg, pdata );
+    case WM_INITDIALOG:
+        pdata = (WREPasteData *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)pdata );
+        WRESetPasteInfo( hDlg, pdata );
+        ret = TRUE;
+        break;
+
+    case WM_SYSCOLORCHANGE:
+        WRECtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDM_PASTE_RENAME:
+        case IDM_PASTE_REPLACE:
+            pdata = (WREPasteData *)GetWindowLong( hDlg, DWL_USER );
+            EndDialog( hDlg, LOWORD( wParam ) );
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRECtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, IDCANCEL );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            switch ( LOWORD(wParam) ) {
-                case IDM_PASTE_RENAME:
-                case IDM_PASTE_REPLACE:
-                    pdata = (WREPasteData *)GetWindowLong( hDlg, DWL_USER );
-                    EndDialog( hDlg, LOWORD(wParam) );
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, IDCANCEL );
-                    ret  = TRUE;
-                    break;
-            }
+        }
     }
 
     return( ret );
 }
-

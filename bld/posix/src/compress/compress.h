@@ -273,7 +273,7 @@ char *malloc();
 #if defined(__OS_qnx__) || defined(__OS_qnx16__)
  #include <utime.h>
 #else
- #include <sys\utime.h>
+ #include <sys/utime.h>
 #endif
 #endif
 

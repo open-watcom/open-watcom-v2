@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "cmd.h"
 
 static char     *cmdStr;
@@ -57,10 +56,10 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         EditSubClass( hwnd, CMD_EDIT, &CLHist );
         SetDlgItemText( hwnd, CMD_EDIT, cmdStr );
         curr = CLHist.curr + CLHist.max - 1;
-        for( i=0;i<CLHist.max;i++ ) {
-            if( CLHist.data[ curr % CLHist.max ] != NULL ) {
+        for( i = 0; i < CLHist.max; i++ ) {
+            if( CLHist.data[curr % CLHist.max] != NULL ) {
                 SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_ADDSTRING, 0,
-                            (LONG) CLHist.data[ curr % CLHist.max ] );
+                                    (LONG) CLHist.data[curr % CLHist.max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -76,13 +75,11 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         case CMD_LISTBOX:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETCURSEL,
-                                                        0, 0L );
+                index = SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index,
-                                        (LONG) str );
+                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index, (LONG) str );
                 SetDlgItemText( hwnd, CMD_EDIT, str );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, IDOK, 0L );
@@ -91,7 +88,7 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             break;
         case IDCANCEL:
             RemoveEditSubClass( hwnd, CMD_EDIT );
-            EndDialog( hwnd, 0 );
+            EndDialog( hwnd, FALSE );
             break;
         case IDOK:
             GetDlgItemText( hwnd, CMD_EDIT, cmdStr, cmdLen );
@@ -99,14 +96,14 @@ BOOL WINEXP CmdDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {
-                ptr = h->data[ curr % h->max ];
+                ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, cmdStr ) ) {
-                AddString2( &(h->data[ h->curr % h->max ] ), cmdStr );
+                AddString2( &(h->data[h->curr % h->max]), cmdStr );
                 h->curr += 1;
             }
             RemoveEditSubClass( hwnd, CMD_EDIT );
-            EndDialog( hwnd, 1 );
+            EndDialog( hwnd, TRUE );
             break;
         default:
             return( FALSE );

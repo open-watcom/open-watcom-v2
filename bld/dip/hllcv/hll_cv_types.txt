@@ -1,0 +1,915 @@
+
+ IBM HLL and Microsoft CodeView Debugging Information Type Representation
+ ========================================================================
+
+ This document describes the format used by IBM and Microsoft tools to store
+ type information in $$TYPES segments in object files and sstTypes subsections
+ in executable modules. It applies to Microsoft DOS, OS/2 and Windows compilers
+ up to and including MS C 6.0, as well as all known IBM OS/2 compilers. This
+ includes IBM C/2, CSet/2, CSet++, and VisualAge C++ compilers as well as other
+ language tools. Executable modules using debugging information described here
+ use the NB02 or NB04 signatures. Both 16-bit and 32-bit modules are supported.
+
+ A more comprehensive description of the IBM HL03 debugging information format
+ may be found in a separate document. Not all types used by HL03 format are
+ listed here. However, this is the only known document describing the format
+ of Microsoft CodeView version 3 (CV3) type record information.
+
+ The following information is based on a document that is part of the publicly
+ available IBM SD386 debugger source code archive.
+
+
+
+ Type Records
+ ------------
+
+                 Record type
+                ----------------------
+               |                      |
+   Start Leaves| MS-16 | MS-32 | IBM  |
+   ------------------------------------
+   Type Record |       |       |      |
+   Structure   | 0x79  | 0x79  | 0x79 |
+   Bit Fields  | 0x5C  | 0x5C  | 0x5C |
+   Type Defs   | 0x5D  | 0x5D  | 0x5D |
+   Pointers    | 0x7A  | 0x7A  | 0x7A |
+   Enums       | 0x7B  | 0x7B  | 0x7B |
+   Scalars     | 0x7B  | 0x7B  | 0x51 |
+   Array       | 0x78  | 0x78  | 0x78 |
+   List        | 0x7F  | 0x7F  | 0x7F |
+   Procedure   | 0x75  | 0x75  | 0x75 | <-- these two records are identical
+   Function    | 0x54  | 0x54  | 0x54 | <-- in the IBM format.
+   Skip        | 0x90  | 0x90  | 0x90 |
+   Null        | 0x80  | 0x80  | 0x80 |
+   Class       |  -    |  -    | 0x40 |
+   Member Fcn  |  -    |  -    | 0x45 |
+   Class Member|  -    |  -    | 0x46 |
+
+
+ Notes:
+
+  1. Trec is the representation of the first leaf of all type records.
+
+  2. In the IBM HL03 format, the rec id was removed from all records.
+
+  3. The doc contains the following abbreviations for the various leaves.
+
+        T  = Trec.
+        N  = 1 byte signed numeric leaf w/o a FID_SPAN prefix.
+        SN = Signed numeric leaf.
+        UN = Unsigned numeric leaf.
+        S  = String leaf.
+        I  = Index leaf.
+
+  4. * => variable length name.
+     @ => variable length leaf.
+
+  5. The MS format lumps scalars and enums into one scalar record.  The
+     simplified form of the record only includes a primitive type index.
+     We have not seen the MS C compilers actually generate any simplified
+     forms of the enums; however, PLX which generates MS format records
+     does.  PL/X also generates actual enum records.  What we have to do
+     is distinguish between the actual enums and the "scalar" enums.  We
+     will have to use the record length to distinguish between the two.
+
+1------------------------------------------------------------------------------
+
+  Primitive types as taken from the MSC object module format doc.
+
+  Types 0-511 are reserved. Types 0-255 (high byte = 0) have meaning
+  according to the decoding of the following bits:
+
+  xxxx xxxx x xx xxx xx
+  xxxx xxxx i md typ sz
+
+  i=0 ==> special type don't interpret md,typ,and sz.
+  i=1 ==> interpret low order 7 bits as follows.
+
+  md - Model
+  00 - Direct
+  01 - Near pointer
+  10 - Far pointer
+  11 - Huge pointer
+
+  type - base type
+  000  - signed
+  001  - unsigned
+  010  - real
+  011  -
+  100  -
+  101  - void in IBM format.
+  110  -
+  111  - void in Microsoft format.
+
+  sz   - size
+  00   - 8-bit
+  01   - 16-bit
+  10   - 32-bit
+  11   - void in IBM format.
+
+ These are the primitives that we currently use. We may need to define others.
+
+                        i md typ sz
+                        7 65 432 10
+  -----------------------------------------------------
+  TYPE_CHAR        0x80 1 00 000 00    8-bit  signed.
+  TYPE_SHORT       0x81 1 00 000 01    16-bit signed.
+  TYPE_LONG        0x82 1 00 000 10    32-bit signed.
+  TYPE_UCHAR       0x84 1 00 001 00    8-bit  unsigned.
+  TYPE_USHORT      0x85 1 00 001 01    16-bit unsigned.
+  TYPE_ULONG       0x86 1 00 001 10    32-bit unsigned.
+  TYPE_FLOAT       0x88 1 00 010 00    32-bit real.
+  TYPE_DOUBLE      0x89 1 00 010 01    64-bit real.
+  TYPE_LDOUBLE     0x8A 1 00 010 10    80-bit real.
+  TYPE_VOID        0x97 1 00 101 11    void.
+
+  TYPE_PCHAR       0xA0 1 01 000 00    0:32 near ptr to 8-bit  signed.
+  TYPE_PSHORT      0xA1 1 01 000 01    0:32 near ptr to 16-bit signed.
+  TYPE_PLONG       0xA2 1 01 000 10    0:32 near ptr to 32-bit signed.
+  TYPE_PUCHAR      0xA4 1 01 001 00    0:32 near ptr to 8-bit  unsigned.
+  TYPE_PUSHORT     0xA5 1 01 001 01    0:32 near ptr to 16-bit unsigned.
+  TYPE_PULONG      0xA6 1 01 001 10    0:32 near ptr to 32-bit unsigned.
+  TYPE_PFLOAT      0xA8 1 01 010 00    0:32 near ptr to 32-bit real.
+  TYPE_PDOUBLE     0xA9 1 01 010 01    0:32 near ptr to 64-bit real.
+  TYPE_PLDOUBLE    0xAA 1 01 010 10    0:32 near ptr to 80-bit real.
+  TYPE_PVOID       0xB7 1 01 101 11    0:32 near ptr to void.
+
+  TYPE_FPCHAR      0xC0 1 10 000 00    far ptr to 8-bit  signed.
+  TYPE_FPSHORT     0xC1 1 10 000 01    far ptr to 16-bit signed.
+  TYPE_FPLONG      0xC2 1 10 000 10    far ptr to 32-bit signed.
+  TYPE_FPUCHAR     0xC4 1 10 001 00    far ptr to 8-bit  unsigned.
+  TYPE_FPUSHORT    0xC5 1 10 001 01    far ptr to 16-bit unsigned.
+  TYPE_FPULONG     0xC6 1 10 001 10    far ptr to 32-bit unsigned.
+  TYPE_FPFLOAT     0xC8 1 10 010 00    far ptr to 32-bit real.
+  TYPE_FPDOUBLE    0xC9 1 10 010 01    far ptr to 64-bit real.
+  TYPE_FPLDOUBLE   0xCA 1 10 010 10    far ptr to 80-bit real.
+  TYPE_FPVOID      0xD7 1 10 101 11    far ptr to void.
+
+  TYPE_N16PCHAR    0xE0 1 11 011 11    0:16 near ptr to 8-bit  signed.
+  TYPE_N16PSHORT   0xE1 1 11 000 01    0:16 near ptr to 16-bit signed.
+  TYPE_N16PLONG    0xE2 1 11 000 10    0:16 near ptr to 32-bit signed.
+  TYPE_N16PUCHAR   0xE4 1 11 001 00    0:16 near ptr to 8-bit  unsigned.
+  TYPE_N16PUSHORT  0xE5 1 11 001 01    0:16 near ptr to 16-bit unsigned.
+  TYPE_N16PULONG   0xE6 1 11 001 10    0:16 near ptr to 32-bit unsigned.
+  TYPE_N16PFLOAT   0xE8 1 11 010 00    0:16 near ptr to 32-bit real.
+  TYPE_N16PDOUBLE  0xE9 1 11 010 01    0:16 near ptr to 64-bit real.
+  TYPE_N16PLDOUBLE 0xEA 1 11 010 10    0:16 near ptr to 80-bit real.
+  TYPE_N16PVOID    0xF7 1 11 101 11    0:16 near ptr to void.
+
+1------------------------------------------------------------------------------
+
+ Leaf definitions.
+ ----------------
+
+    The following prefixes define the leaves:
+
+      FID_NIL    0x80
+      FID_STRING 0x82
+      FID_INDEX  0x83
+      FID_SPAN
+
+        Numeric Leaves
+        -----------------------
+          0x8B - 8  bit unsigned
+          0x85 - 16 bit unsigned
+          0x86 - 32 bit unsigned
+
+          0x88 - 8  bit signed
+          0x89 - 16 bit signed
+          0x8A - 32 bit signed
+
+
+                   1
+                   ----
+             -----|    |<--- 1 byte numeric value <= 127.
+            |     |    |                            (0x7F)
+            |      ----
+            |
+            or if bit 7 of the first byte is set, then
+            |
+            |         --FID_span byte
+            |        |
+            |      1 |
+            |      ---- ----
+            |     |0x88|    |<--1 byte number signed/unsigned.
+            |     |0x8B|    |
+            |      ---- --------
+            |     |0x85|        |<--2 byte number signed/unsigned.
+             -----|0x89|        |
+                   ---- ----------------
+                  |0x86|                |<--4 byte number signed/unsigned.
+                  |0x8A|                |
+                   ---- ----------------
+
+
+1------------------------------------------------------------------------------
+
+ Structure
+ ---------
+
+  Microsoft 16/32 bit.
+  -------------------
+
+      T          UN         UN         I          I          S          N
+     ---------- --------- ---------- ---------- ---------- ---------- ----------
+    | Trec     | Length  | Number of|  Type    | Name     | Tag      | Packing  |
+    |          | in bits | members  |  List    | List     | Name     |          |
+     ---------- --------- ---------- ---------- ---------- ---------- ----------
+
+
+    1     2        1    @    @    1    2        1    2        1     1     *              1
+    ---- -------- ---- ---- ---- ---- -------- ---- -------- ----- ----- ---------//--- -----
+   |rec |rec len |type|bit |num |FID |type lst|FID |name lst|FID  |name |struct        |pck'd|
+   |id  |        |    |len |mems|indx|index   |indx|index   |strng|len  |tag name      |     |
+   |0x01|        |0x79|    |    |0x83|        |0x83|        |0x82 |     |              |     |
+    ---- -------- ---- ---- ---- ---- -------- ---- -------- ---------------------//--- -----
+
+  IBM HL01,HL02.
+  -------------
+    1     2        1   1     4                2        1    2        1    2        1     1     *
+    ---- -------- ---- ---- ---------------- -------- ---- -------- ---- -------- ----- ----- ---------/
+   |rec |rec len |type|type| size of struct |items in|FID |type lst|FID |name lst|FID  |name |struct
+   |id  |        |    |qual| in bytes       |struct  |indx|index   |indx|index   |strng|len  |tag name
+   |0x01|        |0x79|    |                |        |0x83|        |0x83|        |0x82 |     |
+    ---- -------- ---- ---- ---------------- -------- ---- -------- ---- -------- --------------------//
+
+  IBM HL03.
+  ---------
+          2        1   1     4                2        1    2        1    2        1     1     *
+         -------- ---- ---- ---------------- -------- ---- -------- ---- -------- ----- ----- ---------/
+        |rec len |type|type| size of struct |items in|FID |type lst|FID |name lst|FID  |name |struct
+        |        |    |qual| in bytes       |struct  |indx|index   |indx|index   |strng|len  |tag name
+        |        |0x79|    |                |        |0x83|        |0x83|        |0x82 |     |
+         -------- ---- ---- ---------------- -------- ---- -------- ---- -------- --------------------//
+
+
+ Notes:
+
+   1. The "type qualifier" in HL01 and HL02 only contained "packing" information.
+      It was removed in HL03.
+
+1------------------------------------------------------------------------------
+
+ Bit Fields
+ ---------
+
+  Microsoft 16/32 bit.
+  -------------------
+
+      T          UN        UN         I
+     ---------- --------- ---------- ----------
+    | Trec     | Bitfield| Bitfield | Bitfield |
+    | 0x5C     | size    | base type| offset   |
+     ---------- --------- ---------- ----------
+
+    1     2        1    1    1    1
+    ---- -------- ---- ---- ---- ----
+   |rec |rec len |type|size|base|off-|
+   |id  |        |    |    |type|set |<--offset of the bitfield within the base type.
+   |0x01|        |0x5C|    |    |    |
+    ---- -------- ---- ---- ---- ----
+                        |    |
+   numeric leaf of the--      ---- 0x6F - character
+   size of the bit                 0x7C - unsigned
+   field. Allowed values           0x7D - signed
+   are 0x00 - 0x20.                The Microsoft compilers will allow you to
+                                   specify a char type for a bitfield; however,
+                                   it will get mapped to an int in the debug info.
+
+  IBM HL01,HL02.
+  -------------                                                          --FID_span byte
+    1     2        1   1     1    @                                     |
+    ---- -------- ---- ---- ---- ----                                 1 |
+   |rec |rec len |type|type|off-|size|                                ---- ----
+   |id  |        |    |qual|set |    |<---Numeric leaf of the size   |0x88|    |<--1 byte signed number.
+   |0x01|        |0x5C|    |    |    |  | of the bit field in bits.  |    |    |     from 0x01 - 0x20.
+    ---- -------- ---- ---- ---- ----   |                             ---- ----
+                        |               |
+                        |               |                   ---------
+                        |<--------------|------------------ 4 3 2 1 0 <-bit
+                        |               |                   ---------
+                        |               |                   x x x x 0 - non-varying
+                        |               |                   x x x x 1 - varying
+                        |               |                   x x x 0 x - unsigned
+                        |               |                   x x x 1 x - signed
+                        |               |                   x x 0 x x - byte alignment
+                        |               |                   x x 1 x x - word alignment
+                        |               |                   x 0 x x x - display as string of 0 and 1
+                        |               |                   x 1 x x x - display as a value
+                        |               |                   0 x x x x - no descriptor required
+  IBM HL03.             |               |                   1 x x x x - descriptor required
+  --------              |               |
+          2        1   1|    1    @     |
+         -------- ---- ---- ---- ----   |
+        |rec len |type|type|off-|size|  |
+        |        |    |qual|set |    |<-
+        |        |0x5C|    |    |    |
+         -------- ---- ---- ---- ----
+
+
+ Note:
+
+  1. In Microsoft format, a base type of 0x7C can be either 16 bits or
+     32 bits depending on whether the subsection is Microsoft 16 bit or
+     32 bit.
+
+1------------------------------------------------------------------------------
+
+ TypeDefs/UserDefs
+ -----------------
+
+  Microsoft 16/32 bit.
+  -------------------
+
+      T          I         S
+     ---------- --------- ----------
+    | Trec     | type    | typedef  |
+    | 0x5D     | index   | name     |
+     ---------- --------- ----------
+
+
+    1     2        1    1    2        1     1     *
+    ---- -------- ---- ---- -------- ----- ----- ---------//---
+   |rec |rec len |type|FID |type    |FID  |name |typedef       |
+   |id  |        |    |indx|index   |strng|len  |name          |
+   |0x01|        |0x5D|0x83|        |0x82 |     |              |
+    ---- -------- ---- ---- -------- ---------------------//---
+
+
+  IBM HL01,HL02.
+  -------------
+    1     2        1   1     1    2        1     1     *
+    ---- -------- ---- ---- ---- -------- ----- ----- ---------//---
+   |rec |rec len |type|type|FID |type    |FID  |name |typedef       |
+   |id  |        |    |qual|indx|index   |strng|len  |name          |
+   |0x01|        |0x5D|    |0x83|        |0x82 |     |              |
+    ---- -------- ---  ---- ---- -------- ----- ---------------//---
+
+
+  IBM HL03.
+  --------
+          2        1   1     1    2        1     1    *
+         -------- ---- ---- ---- -------- ----- ---- ---------//---
+        |rec len |type|type|FID |type    |FID  |name|typedef       |
+        |        |    |qual|indx|index   |strng|len |name          |
+        |        |0x5D|    |0x83|        |0x82 |    |              |
+         -------- ---  ---- ---- -------- ----- --------------//---
+
+
+   Notes:
+
+    1. Microsoft compilers do not emit typedef records; however, IBM uses
+       the typedef record to support the PL/X based variables.
+
+    2. All type index fields for IBM or Microsoft may be primitive
+       or complex numbers.
+
+
+1------------------------------------------------------------------------------
+
+ Pointers.
+ --------
+
+  Microsoft 16/32 bit.
+  -------------------
+      T          N         I          I
+     ---------- --------- ---------- ----------
+    | Trec     | Model   | type     | ptr      |
+    | 0x7A     |         | index    | name     |
+     ---------- --------- ---------- ----------
+
+                            -------------------------------------------------  NEAR 0x74
+    1     2        1    1  |       2        1     1     *                      FAR  0x73
+    ---- -------- ---- ----- ---- -------- ----- ----- ---------//---          HUGE 0x5E
+   |rec |rec len |type|Model|FID |type    |FID  |name |pointer       |
+   |id  |        |    |     |indx|index   |strng|len  |name          |
+   |0x01|        |0x7A|     |0x83|        |0x82 |     |              |
+    ---- -------- ---- ---------- -------- ----- ---------------//---
+
+  IBM HL01,HL02.
+  -------------
+    1     2        1    1    1     2        1     1     *
+    ---- -------- ---- ----- ---- -------- ----- ----- ---------//---
+   |rec |rec len |type|type |FID |type    |FID  |name |pointer       |
+   |id  |        |    |qual |indx|index   |strng|len  |name          |
+   |0x01|        |0x7A|     |0x83|        |0x82 |     |              |
+    ---- -------- ---- ---------- -------- ----- ---------------//---
+                       |                  |                          |
+                       |                  |<----optional------------>|
+                       |
+                        ------------------------------------------------------------
+                                                                                    |
+                                                                                    |
+  IBM HL03.                                                                         |
+  --------                                                                          |
+          2        1    1    1     2        1     1     *                           |
+         -------- ---- ----- ---- -------- ----- ----- ---------//---               |
+        |rec len |type|type |FID |type    |FID  |name |pointer       |              |
+        |        |    |qual |indx|index   |strng|len  |name          |              |
+        |        |0x7A|     |0x83|        |0x82 |     |              |              |
+         -------- ---- ---------- -------- ----- ---------------//---               |
+                       |                                                            |    Pointer Model
+                       |                                                            |    ------------
+                        ---------------------------------------------------------------> 2 1 0
+                                                                                    |    x x 1 - 32 bit
+                                                                                    |    x 0 x - near
+                                                                                    |    x 1 x - far
+1------------------------------------------------------------------------------
+
+ Enums.
+ -----
+
+  Microsoft 16/32 bit.
+  -------------------
+
+      T          N         N         S         I         SN        SN
+     ---------- --------- --------- --------- --------- --------- ---------
+    | Trec     | Length  | base    | name    | name lst| lbnd    | ubnd    |
+    |          | in bits | type    |         | index   |         |         |
+     ---------- --------- --------- --------- --------- --------- ---------
+
+    1     2        1    1    1    1     1    *             1     2        @    @
+    ---- -------- ---- ---- ---- ----- ---- ---------//--- ---- -------- ---- ----
+   |rec |rec len |type|len |base|FID  |name|enum tag name |FID |name lst|lbnd|ubnd|
+   |id  |        |    |    |type|strng|len |              |indx|index   |    |    |
+   |0x01|        |0x7B|    |    |0x82 |    |              |0x83|        |    |    |
+    ---- -------- ---- ---- ---- ----- --------------//--- ---- -------- ---- ----
+                         |    |                                            |    |
+    numeric leaf of the -      ---- 0x7C - unsigned   numeric leaf of the -      - numeric leaf of the
+    size of the scalar              0x7D - signed     minimum value that           maximum value that
+    in bits. This will be:          0x6F - character  the scalar is                the scalar is
+    0x08 -  8 bits                                    allowed to take.             allowed to take.
+    0x10 - 16 bits
+    0x20 - 32 bits
+
+
+
+  IBM HL01,HL02. (The doc shows the name following the data type; however, the dumper shows it like this:)
+  -------------
+    1     2        1    1    1     2       1     2        @    @    1     1    *
+    ---- -------- ---- ----- ---- -------- ---- -------- ---- ---- ----- ---- ---------//---
+   |rec |rec len |type|type |FID |data    |FID |member  |lbnd|ubnd|FID  |name|enum tag name |
+   |id  |        |    |qual |indx|type    |indx|list    |    |    |strng|len |              |
+   |0x01|        |0x7B|     |0x83|        |0x83|index   |    |    |0x82 |    |              |
+    ---- -------- ---- ---------- -------- ---- -------- ---- ---- ----- --------------//---
+                                   |                       |    |
+       One of the primitive -------   numeric leaf of the -      - numeric leaf of the -
+       data types.                    minimum value that           maximum value that
+                                      the scalar is allowed        the scalar is allowed
+                                      to take.                     to take.
+
+  IBM HL03.
+  --------
+          2        1    1    1     2       1     2        @    @    1     1    *
+         -------- ---- ----- ---- -------- ---- -------- ---- ---- ----- ---- ---------//---
+        |rec len |type|type |FID |data    |FID |member  |lbnd|ubnd|FID  |name|enum tag name |
+        |        |    |qual |indx|type    |indx|list    |    |    |strng|len |              |
+        |        |0x7B|     |0x83|        |0x83|index   |    |    |0x82 |    |              |
+         -------- ---- ---------- -------- ---- -------- ---- ---- ----- --------------//---
+                                   |                       |    |
+       One of the primitive -------   numeric leaf of the -      - numeric leaf of the -
+       data types.                    minimum value that           maximum value that
+                                      the scalar is allowed        the scalar is allowed
+                                      to take.                     to take.
+
+  Notes:
+
+   1. We will map the Microsoft "base type" field to "data type" by converting
+      the Microsoft designators to primitive types.
+
+   2. The IBM format supports a Scalar( 0x51 ) type in addition an enum type.
+      The IBM enum type is the same as the Microsoft Scalar record.
+
+
+1------------------------------------------------------------------------------
+
+ Scalars ( simplified form of the enum record.)
+ -------
+
+  Microsoft 16/32 bit.
+  -------------------
+
+      T          N         N
+     ---------- --------- ---------
+    | Trec     | Length  | base    |
+    |          | in bits | type    |
+     ---------- --------- ---------
+
+    1     2        1    1    1
+    ---- -------- ---- ---- ----
+   |rec |rec len |type|len |base|
+   |id  |        |    |    |type|
+   |0x01|        |0x7B|    |    |
+    ---- -------- ---- ---- ----
+                         |    |
+    numeric leaf of the -      ---- 0x7C - unsigned
+    size of the scalar              0x7D - signed
+    in bits. This should            0x6F - character
+    always be 0x10 for 16
+    bit and 0x20 for 32 bit.
+
+
+    IBM HL01,HL02.
+    -------------                                                                                ---------
+                            ----------------------------------------------------------------------3 2 1 0
+                          |                                                                       --------
+                          |                                                                       x x x 0 - unpacked
+    1     2        1    1 |  1     2       1     1        1                                       x x x 1 - packed
+    ---- -------- ---- ----- ---- -------- ---- -------- -----                                    x x 0 x - real
+   |rec |rec len |type|type |FID |data    |FID |precis- |scale|                                   x x 1 x - complex
+   |id  |        |    |qual |indx|type    |prec|ion     |factr|                                   x 0 x x - fixed
+   |0x01|        |0x51|     |0x83|        |0x8C|        |     |                                   x 1 x x - float
+    ---- -------- ---- ---------- -------- ---- -------- -----                                    0 x x x - binary
+                                   |      |<----ignore these->|                                   1 x x x - decimal
+       One of the primitive -------             fields. Do
+       data types.                              not map.
+
+
+  IBM HL03.
+  --------
+                            ----------------------------------------------------------------------3 2 1 0
+                          |                                                                       --------
+                          |                                                                       x x x 0 - unpacked
+          2        1    1 |  1     2       1     1        1                                         x x x 1 - packed
+         -------- ---- ----- ---- -------- ---- -------- -----                                      x x 0 x - real
+        |rec len |type|type |FID |data    |FID |precis- |scale|                                     x x 1 x - complex
+        |        |    |qual |indx|type    |prec|ion     |factr|                                     x 0 x x - fixed
+        |        |0x51|     |0x83|        |0x8C|        |     |                                     x 1 x x - float
+         -------- ---- ---------- -------- ---- -------- -----                                      0 x x x - binary
+                                   |      |<----ignore these->|                                     1 x x x - decimal
+       One of the primitive -------             fields. Do
+       data types.                              not map.
+
+
+1------------------------------------------------------------------------------
+
+ Arrays.
+ ------
+
+  Microsoft 16/32 bit.
+  -------------------
+      T          UN        I         I         S
+     ---------- --------- --------- --------- ---------
+    | Trec     | Size in | Element | Indexing| Array   |<-- These last two fields are optional
+    | 0x78     | bits    | Type    | Method  | Name    |    and probably won't be there.
+     ---------- --------- --------- --------- ---------
+
+
+    1     2        1    @   1     2       1     2       1     1     *
+    ---- -------- ---- ---- ---- -------- ---- -------- ---- ----- ---------//---
+   |rec |rec len |type|len |FID |element |FID |indexing|FID |name |name          |
+   |id  |        |    |    |indx|type    |indx|method  |indx|len  |              |
+   |0x01|        |0x78|    |0x83|        |0x83|        |0x82|     |              |
+    ---- -------- ---- ---- ---- -------- ---- -------- ---- ----- ---------//---
+                         |         |       optional.
+                         |         |     |<------------------------------------->|
+    numeric leaf of the -          |
+    size of the array              |       We do not see these in a dump of
+    in bits.                       |       the Microsoft format.
+                                   |
+                                     ---This is a primitive type or an index of a complex type.
+
+  IBM HL01,HL02.
+  -------------
+    1     2        1    1    4                   1     2       1     2       1     1     *
+    ---- -------- ---- ---- -------------------- ---- -------- ---- -------- ---- ----- ---------//---
+   |rec |rec len |type|type|array size in bytes |FID |bounds  |FID |elem    |FID |name |array name    |
+   |id  |        |    |qual|                    |indx|index   |indx|type    |indx|len  |              |
+   |0x01|        |0x78|    |                    |0x83|        |0x83|        |0x82|     |              |
+    ---- -------- ---- ---- -------------------- ---- -------- ---- -------- ---- ----- ---------//---
+                        |    |                         |             |
+                        |    |                         |              ---This is a primitive type or an index of a complex type.
+                        |    |                         |
+                        |    |                          --This is the type index for a record that
+                        |    |                            contains the array bounds.
+                        |    |
+                        |      --- note that this number is not a numeric leaf
+                        |          and it should be.
+                        |
+  -----                 |
+  2 1 0 <-bit ----------
+  -----
+  x x 0 - row major
+  x x 1 - column major
+  x 0 x - unpacked
+  x 1 x - packed
+  0 x x - no descriptor required
+  1 x x - descriptor provided
+
+
+  IBM HL03.
+  --------
+          2        1    1    4                   1     2       1     2       1     1     *
+         -------- ---- ---- -------------------- ---- -------- ---- -------- ---- ----- ---------//---
+        |rec len |type|type|array size in bytes |FID |bounds  |FID |elem    |FID |name |array name    |
+        |        |    |qual|                    |indx|index   |indx|type    |indx|len  |              |
+        |        |0x78|    |                    |0x83|        |0x83|        |0x82|     |              |
+         -------- ---- ---- -------------------- ---- -------- ---- -------- ---- ----- ---------//---
+                        |    |                         |             |
+                        |    |                         |              ---This is a primitive type or an index of a complex type.
+                        |    |                         |
+                        |    |                          --This is the type index for a record that
+                        |    |                            contains the array bounds.
+                        |    |
+                        |      --- note that this number is not a numeric leaf
+                        |          and it should be.
+                        |
+  -----                 |
+  2 1 0 <-bit ----------
+  -----
+  x x 0 - row major
+  x x 1 - column major
+  x 0 x - unpacked
+  x 1 x - packed
+  0 x x - no descriptor required
+  1 x x - descriptor provided
+1------------------------------------------------------------------------------
+
+    Notes:
+     1. Set the bounds index = 0;
+     2. In the Microsoft records, the indexing method leaf and the name leaf are optional.
+     3. We assume that the "indexing method" specified in the Microsoft format is always "int" so
+        we will ignore this field.
+     4. In the IBM records, there will be a name leaf;however, it will have a zero length.
+     5. Example Microsoft dump:
+
+                              523) Array  : Bytes:40 Type:515
+                                            7885 4001 8303 02
+     6. Example IBM dump:
+                              515) Array    : RowMjr Unpacked No-Desc-Req Bytes:80 Bounds:0 Type:LONG
+                                              Name:**NoName**
+                                              7800 5000 0000 8300 0083 8200 8200
+
+1------------------------------------------------------------------------------
+
+ Lists.
+ ------
+
+  Microsoft 16/32 bit.
+  -------------------
+
+    Type List
+      T          I         I
+     ---------- --------- --------- ----/...
+    | Trec     | Type    | Type    |
+    | 0x7F     | Index   | Index   |
+     ---------- --------- --------- ----/...
+
+    1     2        1   1     2       1     2
+    ---- -------- ---- ---- -------- ---- -------- ----/...
+   |rec |rec len |type|FID |type    |FID |type    |
+   |id  |        |    |indx|        |indx|        |
+   |0x01|        |0x7F|0x83|        |0x83|        |
+    ---- -------- ---- ---- -------- ---- -------- ----/...
+
+    Name List
+      T          S         SN
+     ---------- --------- --------- ----/...
+    | Trec     | Name    | Offset  |
+    | 0x7F     |         |         |
+     ---------- --------- --------- ----/...
+
+    1     2        1   1     1     *             @      1     1     *             @
+    ---- -------- ---- ---- ----- ---------//--- ------ ---- ----- ---------//--- ------ ----/...
+   |rec |rec len |type|FID |name |member name   |offset|FID |name |member name   |offset|
+   |id  |        |    |indx|len  |              |      |indx|len  |              |      |
+   |0x01|        |0x7F|0x82|     |              |      |0x82|     |              |      |
+    ---- -------- ---- ---- ----- ---------//--- ------ ---- ----- ---------//--- ------ ----/...
+
+  IBM HL01,HL02.
+  -------------
+
+    Type List
+    1     2        1    1   1     2       1     2
+    ---- -------- ---- ---- ---- -------- ---- -------- ----/...
+   |rec |rec len |type|type|FID |type    |FID |type    |
+   |id  |        |    |qual|indx|        |indx|        |
+   |0x01|        |0x7F|    |0x83|        |0x83|        |
+    ---- -------- ---- ---- ---- -------- ---- -------- ----/...
+                        |
+                        |                                                  -----
+                        |<-----------------------------------------------  2 1 0 <-bit
+                        |                                                  -----
+                        |                                                  0 0 0 - not used
+                        |                                                  0 0 1 - type list
+                        |                                                  0 1 0 - name list
+                        |                                                  0 1 1 - enumerated list
+                        |                                                  1 0 0 - proc list
+                        |
+    Name List           |
+    1     2        1    1   1     1     *             @      1     1     *             @
+    ---- -------- ---- ---- ---- ----- ---------//--- ------ ---- ----- ---------//--- ------ ----/...
+   |rec |rec len |type|type|FID |name |member name   |byte  |FID |name |member name   |byte  |
+   |id  |        |    |qual|indx|len  |              |offset|indx|len  |              |offset|
+   |0x01|        |0x7F|    |0x82|     |              |      |0x82|     |              |      |
+    ---- -------- ---- ---- ---- ----- ---------//--- ------ ---- ----- ---------//--- ------ ----/...
+                                                            |
+                                                             --numeric leaf with the offset of the
+                                                               member relative to the beginning
+                                                               of the structure.
+
+  IBM HL03.
+  --------                  -- see flags for HL01/HL02
+                          |
+    Type List             |
+          2        1    1 | 1     2       1     2
+         -------- ---- ---- ---- -------- ---- -------- ----/...
+        |rec len |type|type|FID |type    |FID |type    |
+        |        |    |qual|indx|        |indx|        |
+        |        |0x7F|    |0x83|        |0x83|        |
+         -------- ---- ---- ---- -------- ---- -------- ----/...
+
+    Name List
+          2        1    1   1      1     *             @      1      1     *             @
+         -------- ---- ---- ----- ----- ---------//--- ------ ----- ----- ---------//--- ------ ----/...
+        |rec len |type|type|FID  |name |member name   |byte  |FID  |name |member name   |byte  |
+        |        |    |qual|strng|len  |              |offset|strng|len  |              |offset|
+        |        |0x7F|    |0x82 |     |              |      |0x82 |     |              |      |
+         -------- ---- ---- ----- ----- ---------//--- ------ ----- ----- ---------//--- ------ ----/...
+                                                            |
+                                                             --numeric leaf with the offset of the
+                                                               member relative to the beginning
+                                                               of the structure.
+
+
+1------------------------------------------------------------------------------
+
+ Procedures/Functions.
+ ---------------------
+
+  Microsoft 16/32 bit.
+  -------------------
+      T                    I         N         N         I
+     ---------- --------- --------- --------- --------- ----------
+    | Trec     | Null    | Return  | Calling | Num     | Parm Type|
+    | 0x75     |         | Type    | conv    | Parms   | Index    |
+     ---------- --------- --------- --------- --------- ----------
+
+    1     2        1    1   1     2       1    1     1     2
+    ---- -------- ---- ---- ---- -------- ---- ----- ---- --------
+   |rec |rec len |type|null|FID |ret type|call|num  |FID |type    |<-----type index of list of type
+   |id  |        |    |    |indx|index   |conv|parms|indx|index   |      indexes for the parameter types.
+   |0x01|        |0x75|0x80|0x83|        |    |     |0x83|        |
+    ---- -------- ---- ---- ---- -------- ---- ----- ---- --------
+                                           |
+                                           |
+                                             ----------------------------calling convention of
+                                                                         the procedure.
+
+                                                                          0x63 - C ( args pushed right to left, caller pops )
+                                                                          0x64 - C long
+                                                                          0x95 - near fastcall
+                                                                          0x96 - far fastcall
+
+  IBM HL01, HL02. ( IBM generates function(0x54) records.)
+  --------------
+    1     2        1    1   2             2          1     2       1     2
+    ---- -------- ---- ---- ------------ ----------- ---- -------- ---- --------
+   |rec |rec len |type|type|num of parms|max parms  |FID |ret type|FID |type    |<----- type index of list of type indexes for the
+   |id  |        |    |qual|            |           |indx|index   |indx|index   |  |    parameter types.
+   |0x01|        |0x54|    |            |           |0x83|        |0x83|        |  |
+    ---- -------- ---- ---- ------------ ----------- ---- -------- ---- --------   |
+                         |                                                         |
+                         |                                                         |    -----------
+                         |<-------------------------------------------------------- --- 5 4 3 2 1 0 <-bit
+                         |                                                         |    -----------
+                         |                                                         |    x x x x x 0 - args pushed left to right
+                         |                                                         |    x x x x x 1 - args pushed right to left
+                         |                                                         |    x x x x 0 x - callee pops
+                         |                                                         |    x x x x 1 x - caller pops
+                         |                                                         |    x x x 0 x x - 16 bit function
+                         |                                                         |    x x x 1 x x - 32 bit function
+                         |                                                         |    x x 0 x x x - near
+                         |                                                         |    x x 1 x x x - far
+                         |                                                         |    x 0 x x x x - fixed parms
+                         |                                                         |    x 1 x x x x - variable parms
+                         |                                                         |    0 x x x x x - OS/2 calling convention
+                         |                                                         |    1 x x x x x - private calling convention
+                         |                                                         |
+  IBM HL03.              |                                                         |
+  --------               |                                                         |
+          2        1    1|  2             2          1     2       1     2         |
+         -------- ---- ---- ------------ ----------- ---- -------- ---- --------   |
+        |rec len |type|type|num of parms|max parms  |FID |ret type|FID |type    |  |
+        |        |    |qual|            |           |indx|index   |indx|index   |<-
+        |        |0x54|    |            |           |0x83|        |0x83|        |
+         -------- ---- ---- ------------ ----------- ---- -------- ---- --------
+
+   Notes:
+
+     1. The Microsoft "null" leaf may be ignored.
+
+
+1------------------------------------------------------------------------------
+
+ Skip.
+ ----
+
+  Microsoft 16/32 bit.
+  -------------------
+      T          2         ?
+     ---------- --------- ---------
+    | Trec     | Next    | padding |
+    | 0x90     | Index   |         |
+     ---------- --------- ---------
+
+    1     2        1    2        *
+    ---- -------- ---- -------- ----
+   |rec |rec len |type|new     |pad |
+   |id  |        |    |index   |    |
+   |0x01|        |0x90|        |    |
+    ---- -------- ---- -------- ----
+                             |
+                             |
+                              -- this is the next sequential index.
+
+  IBM HL01,HL02,HL03.
+  -------------------
+
+    Not supported.
+
+
+1------------------------------------------------------------------------------
+
+ Null.
+ ----
+
+  Microsoft.
+  ---------
+
+      T
+     ----------
+    | Trec     |
+    | 0x80     |
+     ----------
+
+    1     2        1
+    ---- -------- ----
+   |rec |rec len |type|
+   |id  |        |    |
+   |0x01|        |0x80|
+    ---- -------- ----
+
+  IBM HL01,HL02,HL03.
+  -------------------
+
+    Not supported.
+
+
+1------------------------------------------------------------------------------
+
+ Class
+ -----
+
+  Microsoft 16/32 bit.
+  -------------------
+  IBM HL01,HL02,HL03.
+  ------------------
+
+    - Not supported.
+
+  IBM HL04.
+  ---------
+          2        1   1     4                2        2        1     1     *
+         -------- ---- ---- ---------------- -------- -------- ----- ----- ---------/
+        |rec len |type|type| size of class  |num     |item lst|ENC  |ENC  |class
+        |        |    |qual| in bytes       |class   |index   |1st  |2nd  |name
+        |        |0x40|    |                |members |        |Byte |Byte |
+         -------- ---- ---- ---------------- -------- -------- --------------------//
+
+1------------------------------------------------------------------------------
+
+ Member Function
+ ---------------
+
+  Microsoft 16/32 bit.
+  -------------------
+  IBM HL01,HL02,HL03.
+  ------------------
+
+    - Not supported.
+
+  IBM HL04.
+  ---------
+
+     non-virtual member
+     ------------------
+
+          2        1   1     1    2        1/2         *
+         -------- ---- ---- ---- -------- ----- ----- ---------/
+        |rec len |type|type|pro-|sub     |ENC        |member
+        |        |    |qual|tect|record  |Length     |name
+        |        |0x45|    |ion |index   |Prefix     |
+         -------- ---- ---- ---- -------- --------------------//
+
+
+     virtual member
+     --------------
+
+          2        1   1     1    2        @               @         *
+         -------- ---- ---- ---- -------- --------------- --------- ---------/
+        |rec len |type|type|pro-|sub     |FID_span/virtno|  ENC    |member
+        |        |    |qual|tect|record  |               |         |name
+        |        |0x45|    |ion |index   |               |         |
+         -------- ---- ---- ---- -------- ----------------------------------//
+

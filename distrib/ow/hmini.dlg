@@ -1,0 +1,12 @@
+static_text=\
+        //1"Minimal CD-ROM Installation"\
+        //2"最小 CD-ROM インストール"\
+        //0,SrcIsCD
+static_text=\
+        //1"	- Only boot files will be copied to the hard disk."\
+        //2"	- ブートファイルのみハードディスクにコピーします."\
+        //0,SrcIsCD
+static_text=\
+        //1"	- All other executables will run from the CD-ROM"\
+        //2"	- 他のすべての実行ファイルは CD-ROM から起動します."\
+        //0,SrcIsCD

@@ -1,0 +1,12 @@
+dis_srcs = $(wdisasm_dir)/c
+dis_includes = -I"$(wdisasm_dir)/h"
+
+dis_objs =  &
+docode.obj  &
+formins.obj &
+fpptab.obj  &
+fpputil.obj &
+insname.obj &
+instab.obj  &
+regname.obj &
+rwdata.obj

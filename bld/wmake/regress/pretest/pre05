@@ -36,6 +36,44 @@ true=
 !   error shouldn't get here
 !endif
 
+foo = bar
+
+!ifeq foo bar
+!else
+!   error shouldn't get here
+!endif
+
+!ifeq foo bare
+!   error shouldn't get here
+!endif
+
+!ifneq foo bare
+!else
+!   error shouldn't get here
+!endif
+
+!ifneq foo bar
+!   error shouldn't get here
+!endif
+
+!ifeqi foo BaR
+!else
+!   error shouldn't get here
+!endif
+
+!ifeqi foo BaRe
+!   error shouldn't get here
+!endif
+
+!ifneqi foo bArE
+!else
+!   error shouldn't get here
+!endif
+
+!ifneqi foo bAr
+!   error shouldn't get here
+!endif
+
 pre05 : .symbolic
     @%null
 

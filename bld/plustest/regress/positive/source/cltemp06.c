@@ -1,6 +1,6 @@
 #include "fail.h"
 
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
 template <class S, class C, class U, class E>
     struct Template {
 	struct S *p;

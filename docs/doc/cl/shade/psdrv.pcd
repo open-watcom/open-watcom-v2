@@ -1,0 +1,460 @@
+:CMT. This driver definition is used for a PostScript printer.
+
+:CMT. Definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. PSDRV                           psdrv
+
+:CMT. Corresponding device
+:CMT. definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. PS                              ps
+:CMT.eoc
+
+:DRIVER
+   defined_name = 'psdrv'
+   member_name  = 'PSDRV'
+   rec_spec     = '(t:79)'
+   fill_char    = ' '
+
+:INIT
+   place=start
+   :value.
+      %image('%!PS-Adobe-2.0 EPSF-1.2')%recordbreak()
+      %image('%%Creator:  WATCOM GML ')
+      %image(%wgml_header())%recordbreak()
+      %image('%%Title: WATCOM GML')%recordbreak()
+      %image('%%CreationDate: ')
+      %image(%time())
+      %image(' ')
+      %image(%date())%recordbreak()
+      %image('%%Pages: (atend)')%recordbreak()
+      %image('%%BoundingBox: 0 0 ')
+      %image(%decimal(%page_width()))
+      %image(' ')
+      %image(%decimal(%page_depth()))%recordbreak()
+      %image('%%EndComments')%recordbreak()
+      %image('/@uline {')%recordbreak()
+      %image('   currentpoint exch /@underx exch def')%recordbreak()
+      %image('   currentfont /FontInfo get dup')%recordbreak()
+      %image('   /UnderlineThickness get 0')%recordbreak()
+      %image('   currentfont /FontMatrix get transform pop')
+      %recordbreak()
+      %image('   /@underthick exch def')%recordbreak()
+      %image('   /UnderlinePosition get 0')%recordbreak()
+      %image('   currentfont /FontMatrix get transform pop')
+      %recordbreak()
+      %image('   add @underthick sub')%recordbreak()
+      %image('   /@undery exch def } def')%recordbreak()
+      %image('/@euline {')%recordbreak()
+      %image('   currentpoint exch dup')%recordbreak()
+      %image('   @underx @undery moveto')%recordbreak()
+      %image('   @underx sub 0 rlineto')%recordbreak()
+      %image('   @underthick setlinewidth stroke')%recordbreak()
+      %image('   exch moveto } def')%recordbreak()
+      %image('/graphhead {')%recordbreak()
+      %image('   /@scale exch def')%recordbreak()
+      %image('   /@yoff exch def')%recordbreak()
+      %image('   /@xoff exch def')%recordbreak()
+      %image('   /@depth exch def')%recordbreak()
+      %image('   /@width exch def')%recordbreak()
+      %image('   /@y exch def')%recordbreak()
+      %image('   /@x exch def')%recordbreak()
+      %image('   1 setlinewidth /@clw currentlinewidth def')%recordbreak()
+      %image('   @x @clw 2 div sub @y @clw 2 div add moveto')%recordbreak()
+      %image('   0 @depth neg @clw sub rlineto')%recordbreak()
+      %image('   @width @clw add 0 rlineto')%recordbreak()
+      %image('   0 @depth @clw add rlineto')%recordbreak()
+      %image('   closepath clip newpath')%recordbreak()
+      %image('   @x @xoff sub dup @y @yoff add @depth add moveto')%recordbreak()
+      %image('   @y @yoff add translate')%recordbreak()
+      %image('   10 @scale mul 72 div dup scale')%recordbreak()
+%image(' /restore {systemdict /restore get exec} bind def } def')%recordbreak()
+      %image('/plfdef {')%recordbreak()
+      %image('   /@fgmlname exch def')%recordbreak()
+      %image('   /@fdefname exch def')%recordbreak()
+      %image('   /@fptsiz exch def')%recordbreak()
+      %image('   /@fname exch def')%recordbreak()
+      %image('   /@bf @fname')
+      %image(' findfont @fptsiz 1000 mul 72 div')
+      %image(' scalefont def')%recordbreak()
+      %image('   /@nf @bf maxlength dict def')%recordbreak()
+      %image('   @bf { exch dup /FID ne { exch @nf 3 1 roll put }')
+      %image(' { pop pop }')%recordbreak()
+      %image('   ifelse} forall ')%recordbreak()
+      %image('   @nf /FontName @fdefname')
+      %image(' put')%recordbreak()
+      %image('   @fdefname')
+      %image(' @nf definefont pop')%recordbreak()
+      %image('   @fgmlname @fdefname /findfont cvx /setfont cvx ')
+      %image('3 array astore cvx def')
+      %image(' } def')%recordbreak()
+      %image('/sd { exch currentpoint exch pop moveto shwd } def')
+      %recordbreak()
+      %image('/shwd { show currentpoint pop /amlrov exch def} def')%recordbreak()
+      %image('/am { chklmar moveto } def')%recordbreak()
+   :evalue.
+   :fontvalue.
+      %image('/')%image(%font_outname1())%image(' ')
+      %image(%decimal(%div(%font_height(),100)))%image('.')
+      %image(%decimal(%remainder(%font_height(),100)))%image(' ')
+      %image('/@ft')%image(%decimal(%font_number()))%image(' ')
+      %image('/@fs')%image(%decimal(%font_number()))
+      %image(' plfdef')%recordbreak()
+   :efontvalue.
+:eINIT.
+
+:INIT
+   place=document
+   :value.
+      %image('/draft{save exch dup () eq {pop (DRAFT)}if')
+      %image(' /drt exch def')%recordbreak()
+      %image('   /rm ')
+      %image(%decimal(%getnumsymbol('$pagerm')))
+      %image(' dup 0 le {pop 7000}if def')%recordbreak()
+      %image('   /pd ')
+      %image(%decimal(%getnumsymbol('$paged')))
+      %image(' dup 0 le {pop 9660}if def')%recordbreak()
+      %image('   .95 setgray /Helvetica-Bold findfont')%recordbreak()
+      %image('   rm rm mul pd pd mul add sqrt')%recordbreak()
+      %image('   .75 mul drt length 2 add div')%recordbreak()
+      %image('   scalefont setfont')%recordbreak()
+      %image('   ')
+      %image(%decimal(%page_depth()))
+      %image(' newpath 0 0 moveto (X) true')
+      %image(' charpath flattenpath pathbbox')%recordbreak()
+      %image('   3 -1 roll sub 3 1 roll exch sub rm add')
+      %image(' 2 div 3 1 roll pd add')%recordbreak()
+      %image('   2 div sub moveto 45 rotate drt')
+      %image(' stringwidth pop dup 1.25 mul')%recordbreak()
+      %image('   2 div neg 0 rmoveto .25 mul drt length')
+      %image(' div 0 drt ashow')%recordbreak()
+      %image('   restore}bind def')%recordbreak()
+      %image('%%EndProlog')%recordbreak()
+      %image('%%Page: # 1')%recordbreak()
+      %image('/pageobj save def')%recordbreak()
+      %image('.072 .072 scale' )%recordbreak()
+      %image('2 setlinecap')%recordbreak()
+      %ifeqs(%lower(%getstrsymbol('$draft')),'yes')
+          %image('(')
+          %image(%getstrsymbol('$drtext'))%image(') draft')%recordbreak()
+      %endif()
+   :evalue
+:eINIT.
+
+:CMT. The following sequence forces out the last page.  The recordbreak
+:CMT. ensures that these last control characters are sent to the
+:CMT. output device.
+:FINISH
+   place=end
+   :value.
+      %recordbreak()%image('pageobj restore')%recordbreak()
+      %image('showpage')%recordbreak()
+      %image('%%Trailer')%recordbreak()
+      %image('%%Pages: ')%image(%decimal(%pages()))%recordbreak()
+   :evalue.
+:eFINISH.
+
+:NEWLINE
+   advance=0
+   :value.
+      %image( '' )
+   :evalue.
+:eNEWLINE.
+
+:CMT.Starting a new line is handled by the absolute addressing feature
+:CMT.of PostScript. The following command sequence will cause
+:CMT.no additional action to be taken when a new line is to be started.
+:NEWLINE
+   advance=1
+   :value.
+      %recordbreak()
+   :evalue.
+:eNEWLINE.
+
+:NEWPAGE
+   :value.
+      %recordbreak()%image('pageobj restore')%recordbreak()
+      %image('showpage')%recordbreak()
+      %image('%%Page: # ')%image(%decimal(%add(%pages(),1)))
+      %recordbreak()
+      %image('/pageobj save def')%recordbreak()
+      %image('.072 .072 scale' )%recordbreak()
+      %image('2 setlinecap')%recordbreak()
+      %ifeqs(%lower(%getstrsymbol('$draft')),'yes')
+          %image('(')
+          %image(%getstrsymbol('$drtext'))%image(') draft ')
+      %endif()
+      %image('@fs')%image(%decimal(%font_number()))%recordbreak()
+   :evalue.
+:eNEWPAGE.
+
+:FONTSTYLE
+   type='uline'
+   :lineproc
+      pass=1
+      :startvalue.
+         %textpass()
+      :estartvalue.
+      :firstword.
+         %dotab()
+         %image('@uline')
+         %recordbreak()
+      :efirstword.
+      :endvalue.
+         %dotab()
+         %image('@euline')
+         %recordbreak()
+      :eendvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='uscore'
+   :lineproc
+      pass=1
+      :startvalue.
+         %textpass()
+      :estartvalue.
+      :startword.
+         %dotab()
+         %image('@uline')
+         %recordbreak()
+      :estartword.
+      :endword.
+         %dotab()
+         %image('@euline')
+         %recordbreak()
+      :eendword.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='bold'
+   :lineproc
+      pass=1
+      :startvalue.
+         %textpass()
+      :estartvalue.
+   :elineproc.
+   :lineproc
+      pass=2
+      :startvalue.
+         %textpass()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='ulbold'
+   :lineproc
+      pass=1
+      :startvalue.
+         %textpass()
+      :estartvalue.
+      :firstword.
+         %dotab()
+         %image('@uline')
+         %recordbreak()
+      :efirstword.
+      :endvalue.
+         %dotab()
+         %image('@euline')
+         %recordbreak()
+      :eendvalue.
+   :elineproc.
+   :lineproc
+      pass=2
+      :startvalue.
+         %textpass()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='usbold'
+   :lineproc
+      pass=1
+      :startvalue.
+         %textpass()
+      :estartvalue.
+      :startword.
+         %dotab()
+         %image('@uline')
+         %recordbreak()
+      :estartword.
+      :endword.
+         %dotab()
+         %image('@euline')
+         %recordbreak()
+      :eendword.
+   :elineproc.
+   :lineproc
+      pass=2
+      :startvalue.
+         %textpass()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='shade-para'
+   :lineproc
+      pass=1
+      :startvalue.
+         %dotab()
+         %recordbreak()
+         %image('shadepara')
+         %recordbreak()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='shade-slim'
+   :lineproc
+      pass=1
+      :startvalue.
+         %dotab()
+         %recordbreak()
+         %image('shadeslim')
+         %recordbreak()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+   type='shade-fig'
+   :lineproc
+      pass=1
+      :startvalue.
+         %dotab()
+         %recordbreak()
+         %image('shadefig')
+         %recordbreak()
+      :estartvalue.
+   :elineproc.
+:eFONTSTYLE.
+
+:CMT. This control character sequence is sent to the printer when
+:CMT. WGML wants to start printing with a different font.  The
+:CMT. font_number is the font ID assigned to the new font at
+:CMT. initialization time.
+:FONTSWITCH
+   type='PS font switch'
+   :startvalue.
+      %recordbreak()%image('@fs')%image(%decimal(%font_number()))%image(' ')
+   :estartvalue.
+:eFONTSWITCH.
+
+:FONTSWITCH
+   type='Shade font switch'
+   :startvalue.
+      %recordbreak()
+   :estartvalue.
+:eFONTSWITCH.
+
+:CMT. The (0,0) position for the PostScript printer is at the
+:CMT. bottom left corner of the page.
+:PAGEADDRESS
+   x_positive = yes
+   y_positive = no
+:ePAGEADDRESS.
+
+:CMT. The following sequence specifies the
+:CMT. absolute amount in the X direction with the current Y value.
+:HTAB.
+   :value.
+      %image(%decimal(%x_address()))
+      %image( ' ' )
+   :evalue.
+:eHTAB.
+
+:CMT. The following sequence specifies the mechanism to move to a
+:CMT. specific position on the page.  Horizontal and vertical space
+:CMT. units are each 1/1000 inch wide.
+:ABSOLUTEADDRESS
+   :value.
+      %image(%decimal(%x_address()))%image(' ')
+      %image(%decimal(%y_address()))%image(' am ')
+   :evalue.
+:eABSOLUTEADDRESS.
+
+:CMT. Specify the mechanism to print a horizontal line.  Assumes that
+:CMT. the starting point is the current position.  Horizontal movement
+:CMT. is based on 1/1000 inch increments.
+:HLINE
+   thickness=10
+   :value.
+      %recordbreak()
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' ')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' rmoveto ')
+      %recordbreak()
+      %text(%decimal(%subtract(%x_size(),%thickness())))%text(' 0 rlineto ')
+      %text(%decimal(%thickness()))
+      %text(' setlinewidth currentpoint stroke moveto')
+      %recordbreak()
+      %text('-')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' -')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' rmoveto ')
+      %recordbreak()
+   :evalue.
+:eHLINE.
+
+:CMT. Specify the mechanism to print a vertical line.
+:VLINE
+   thickness=10
+   :value.
+      %recordbreak()
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' ')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' rmoveto')%recordbreak()
+      %text('0 ')%text(%decimal(%subtract(%y_size(),%thickness())))
+      %text(' rlineto ')
+      %text(%decimal(%thickness()))
+      %text(' setlinewidth currentpoint stroke moveto')
+      %recordbreak()
+      %text(' -')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' -')
+      %text(%decimal(%subtract(%y_size(),%divide(%thickness(),2))))
+      %text(' rmoveto')
+      %recordbreak()
+   :evalue.
+:eVLINE.
+
+:CMT. Specify the mechanism to print a box.  Assumes that the
+:CMT. starting point is the current position.  Horizontal movement
+:CMT. is based on 1/1000 inch increments.
+:DBOX
+   thickness=10
+   :value.
+      %recordbreak()
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' ')
+      %text(%decimal(%divide(%thickness(),2)))
+      %text(' rmoveto')%recordbreak()
+      %text('0 ')%text(%decimal(%subtract(%y_size(),%thickness())))
+      %text(' rlineto ')%recordbreak()
+      %text(%decimal(%subtract(%x_size(),%thickness())))
+      %text(' 0 rlineto ')%recordbreak()
+      %text('0 -')%text(%decimal(%subtract(%y_size(),%thickness())))
+      %text(' rlineto ')%recordbreak()
+      %text('-')%text(%decimal(%subtract(%x_size(),%thickness())))
+      %text(' 0 rlineto ')%recordbreak()
+      %text('closepath ')
+      %text(%decimal(%thickness()))
+      %text(' setlinewidth currentpoint stroke moveto')
+      %recordbreak()
+      %text(%decimal(%subtract(%x_size(),%divide(%thickness(),2))))
+      %text(' -')%text(%decimal(%divide(%thickness(),2)))
+      %text(' rmoveto')
+      %recordbreak()
+   :evalue.
+:eDBOX.
+
+:eDRIVER.

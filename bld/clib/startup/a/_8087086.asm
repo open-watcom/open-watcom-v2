@@ -31,28 +31,29 @@
 
 
 include mdef.inc
-
-        if __WASM__ ge 100
-            xref    "C",__chk8087
-        else
-            xref    <"C",__chk8087>
-        endif
-
-        name    _8087
-
 include xinit.inc
 
-_DATA   segment word public 'DATA'
+        modstart    _8087
 
-        assume DS:DGROUP
+        xref    "C",__chk8087
 
+datasegment
         public  __8087
         public  __real87
-__8087  db      0               ; 0 => no 8087, otherwise 8087 present
-__real87 db     0               ; 0 => no 8087, otherwise 8087 present
-_DATA   ends
+ifdef __DOS__
+        public  __dos87emucall
+        public  __dos87real
+endif
 
+__8087          db  0   ; 0 => no real 80x87 and no EMU, otherwise real 80x87 or EMU present
+__real87        db  0   ; 0 => no real 80x87 is used, otherwise real 80x87 is used
+ifdef __DOS__
+__dos87emucall  dw  0   ; (DOS) 0 => no 80x87 EMU, otherwise 80x87 EMU control routine
+__dos87real     db  0   ; (DOS) 0 => no real 80x87 installed, otherwise real 80x87 installed
+endif
+enddata
 
-        xinit   __chk8087,2
+        xinit   __chk8087,INIT_PRIORITY_FPU + 3
 
+        endmod
         end

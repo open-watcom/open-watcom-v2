@@ -1,0 +1,33 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: sstream/sstream.h (std::string streams)
+//
+:keep CPP_HDR
+:include crwat.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
+#ifndef _SSTREAM_H_INCLUDED
+#define _SSTREAM_H_INCLUDED
+
+:include readonly.sp
+
+#ifndef _SSTREAM_INCLUDED
+ #include <sstream>
+#endif
+
+#endif
+:elsesegment
+#ifndef _SSTREAM_INCLUDED
+#define _SSTREAM_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+} // namespace std
+
+#endif
+:endsegment

@@ -1,0 +1,110 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.50 - DPMI function 0E01h
+- Set Coprocessor Emulation </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Enables or disables the
+numeric coprocessor for this virtual machine and the reflection of coprocessor
+exceptions to the client.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><p><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> = 0E01h<br>
+<b>BX</b> = coprocessor bits</font></p>
+
+<p><table width="100%" border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td bgcolor="#dcdcdc"><b><font size=-1 face="Verdana, Arial, Helvetica">Bit</font></b></td>
+<td bgcolor="#dcdcdc"><b><font size=-1 face="Verdana, Arial, Helvetica">Significance</font></b></td></tr>
+<tr>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 new value of MPv bit for
+client's virtual CR0</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = disable numeric coprocessor
+for this client<br>
+1 = enable numeric coprocessor for this client</font></td></tr>
+<tr>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">1 new value of EMv bit for
+client's virtual CR0</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">0 = client will not supply
+coprocessor emulation<br>
+1 = client will supply coprocessor emulation</font></td></tr>
+<tr>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">2-15 not applicable</font></td>
+<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">reserved</font></td></tr>
+</table>
+</td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8026h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - invalid request (client requested
+  disabling coprocessor on a processor which does not support it)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) If the MPv bit is
+  not set, the host may not need to save the coprocessor state for this virtual
+  machine to improve system performance.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) If the virtual EM
+  (EMv) bit is set, the host delivers all coprocessor exceptions to the client,
+  so that the client can provide its own floating point emulation (whether
+  or not a coprocessor is present or the host also has a floating point emulator).
+  In other words, if the EMv bit is set, the host sets the EM bit in the
+  real CR0 while the client is active, and reflects coprocessor not present
+  faults (Int 7) to the client.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) Floating point emulation
+  can be tested on a system with a numeric coprocessor by using this function
+  to enable client handling of coprocessor exceptions and disable the coprocessor.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) The client should
+  use DPMI function 0203h to register an exception handler for Coprocessor
+  not Present faults (INT 07h) prior to setting the EMv bit with this function.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) A client can determine
+  the CPU type with DPMI function 0400h and the presence or absence of a
+  coprocessor with DPMI function 0E00h. The client should not draw any conclusions
+  about the presence or absence of a coprocessor based on the CPU type alone.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) DOS/32 Advanced DPMI
+  does not have a built-in FPU emulator. That is, when client enables FPU
+  emulation (using Set Coprocessor Emulation DPMI function 0E01h), but does
+  not handle the exception 07h (Coprocessor not available), the first instruction
+  executed by the CPU that uses FPU will cause exception 07h which will be
+  trapped by DOS/32 Advanced which in its turn will terminate the client
+  and return to DOS with an error message. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

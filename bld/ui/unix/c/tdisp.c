@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Terminal display routines.
 *
 ****************************************************************************/
 
@@ -48,16 +47,15 @@
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
 #include <assert.h>
-#include <alloca.h>
 #ifdef _AIX
-    #define alloca __alloca
     #define _HAS_NO_CHAR_BIT_FIELDS
 #endif
 #include <ctype.h>
 
-#ifndef HP
-    #include <termio.h>
+#if defined( __WATCOMC__ )
+#elif !defined( HP )
 #else
     #define TIOCGWINSZ      _IOR('t', 107, struct winsize) /* get window size */
     struct  winsize {
@@ -70,7 +68,9 @@
 
 #include <curses.h>
 #include <term.h>
+#ifdef __WATCOMC__
 #include <process.h>
+#endif
 #include <sys/ioctl.h>
 
 #include "uidef.h"
@@ -81,7 +81,7 @@
 #include "qnxuiext.h"
 
 #include "tixparse.h"
-#include "clibext.h"
+#include "walloca.h"
 
 #ifdef AIX
     struct _bool_struct       _aix_cur_bools;
@@ -105,21 +105,22 @@
 #if defined( SUN )
 #define __putp( str )   {tputs( str, 1, (int (*)(char))_con_putchar );}
 #elif defined( HP )  && ( OSVER >= 1100 ) && !defined( __GNUC__ )
-#define __putp( str ) {tputs( str, 1, (int(*)(int))_con_putchar );}
+#define __putp( str )   {tputs( str, 1, _con_putchar );}
 #elif defined( HP )
 #define __putp( str )   {tputs( str, 1, (void (*)(int))_con_putchar );}
 #elif defined( AIX )
-#define __putp( str )   {tputs( str, 1, (int (*)(int))_con_putchar  );}
+#define __putp( str )   {tputs( str, 1, _con_putchar );}
 #else
 #define __putp( str )   {tputs( str, 1, _con_putchar );}
 #endif
 #define __putc( c )     {fputc( c, UIConFile );}
 
-extern char     *GetTermType(void);
+extern char     *GetTermType( void );
+extern EVENT    tk_keyboardevent( void );
 
 bool    UserForcedTermRefresh= FALSE;
 
-static int _con_putchar( char ch )
+static int _con_putchar( int ch )
 {
     fputc( ch, UIConFile );
     return( 0 );
@@ -144,8 +145,8 @@ static int _con_putchar( char ch )
 
 #endif
 
-bool TInfCheck()
-/***************/
+bool TInfCheck( void )
+/********************/
 {
     extern unsigned     UIDisableShiftChanges;
 
@@ -178,7 +179,7 @@ static bool TIARev=     0;      // inverted (reverse)
 static bool TIAACS=     0;      // alternate character set
 
 // True if clearing/filling operations will use the current back colour
-static TI_FillColourSet= FALSE;
+static bool TI_FillColourSet= FALSE;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         if( _capable_of( cursor_invisible ) ) { \
@@ -219,6 +220,12 @@ static TI_FillColourSet= FALSE;
                                 }
 #define TI_CA_DISABLE()         if( _capable_of( exit_ca_mode ) ) {     \
                                     __putp( exit_ca_mode );             \
+                                }
+#define TI_KP_ENABLE()          if( _capable_of( keypad_xmit ) ) {    \
+                                    __putp( keypad_xmit );            \
+                                }
+#define TI_KP_DISABLE()         if( _capable_of( keypad_local ) ) {     \
+                                    __putp( keypad_local );             \
                                 }
 
 #define TI_RESTORE_ATTR()                               \
@@ -308,10 +315,10 @@ static void TI_SETATTR( void )
                         0, 0, TIAACS );
         __putp( x );
 
-QNXDebugPrintf0("\n[******]");
-QNXDebugPrintf1("%s", set_attributes);
-QNXDebugPrintf1("%s",x);
-QNXDebugPrintf0("[~~~~~~]\n");
+        UIDebugPrintf0( "\n[******]" );
+        UIDebugPrintf1( "%s", set_attributes );
+        UIDebugPrintf1( "%s", x );
+        UIDebugPrintf0( "[~~~~~~]\n" );
     } else {
 /*
         fprintf(stderr, "Doing attributes %s %s %s %s %s\n", \
@@ -429,7 +436,7 @@ int             OldCol= -1,
             }
 
 // move in the optimal way from (OldCol,OldRow) to (c,r)
-static void TI_CURSOR_MOVE( register int c, register int r )
+void TI_CURSOR_MOVE( register int c, register int r )
 /**********************************************************/
 {
     unsigned            newLen;
@@ -626,17 +633,19 @@ static void TI_SETCOLOUR( register int f, register int b )
 /********************************************************/
 {
     // an array of colour brightnesses
-    static      colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
+    static int  colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
+    // vga to ansi conversion table
+    static int  colorans[]={ 0, 4, 2, 6, 1, 5, 3, 7 };
 
-QNXDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
+    UIDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
 
     if( TCAP_MONOCHROME ){
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[ f%8 ]<colorpri[ b%8 ] ){
-            QNXDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-            QNXDebugPrintf1( "\n%s\n", enter_reverse_mode );
-            QNXDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+            UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+            UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
+            UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev= 1;
             TI_FillColourSet= FALSE;
         } else {
@@ -648,14 +657,14 @@ QNXDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
         TI_SETATTR();
         TI_FillColourSet= (b==0) || back_color_erase;
         // If we can set a colour pair then do so
-        if( _capable_of( set_foreground ) && _capable_of( set_background ) ){
-            __putp( UNIX_TPARM2( set_foreground, f ) );
-            __putp( UNIX_TPARM2( set_background, b ) );
+        if( _capable_of( set_a_foreground ) && _capable_of( set_a_background ) ){
+            __putp( UNIX_TPARM2( set_a_foreground, colorans[f] ) );
+            __putp( UNIX_TPARM2( set_a_background, colorans[b] ) );
+        } else if( _capable_of( set_foreground ) && _capable_of( set_background ) ){
+            __putp( UNIX_TPARM2( set_foreground, colorans[f] ) );
+            __putp( UNIX_TPARM2( set_background, colorans[b] ) );
         } else if( _capable_of( set_color_pair ) ){
-            __putp( UNIX_TPARM2( set_color_pair, f*10+b ) );
-        } else if( _capable_of( set_a_foreground ) && _capable_of( set_a_background ) ){
-            __putp( UNIX_TPARM2( set_a_foreground, f ) );
-            __putp( UNIX_TPARM2( set_a_background, b ) );
+            __putp( UNIX_TPARM2( set_color_pair, colorans[f]*10+colorans[b] ) );
         }
     }
 }
@@ -703,6 +712,7 @@ static int TI_EXEC_PROG( char *pnam )
         strcat( ppath, pnam );
         ppath[TI_PATH_LEN-3]= pnam[0]; // replace '?' with first char of pnam
 
+#ifdef __WATCOMC__
         // attempt to call pgm in /usr/lib/terminfo/?/
         ret= spawnl( P_WAIT, ppath, NULL );
 
@@ -716,6 +726,9 @@ static int TI_EXEC_PROG( char *pnam )
                 ret= spawnlp( P_WAIT, pnam, NULL );
             }
         }
+#else
+        ret = -1;
+#endif
 
         // if program failed...
         if( ret==-1 ) return( FALSE );
@@ -737,7 +750,7 @@ static MONITOR  ui_data = {
 };
 
 
-static  PIXEL far *shadow;
+static  PIXEL _FAR *shadow;
 static  int   save_cursor_type;
 
 static bool setupscrnbuff( int rows, int cols )
@@ -799,8 +812,8 @@ static void size_handler(int signo)
 }
 
 
-static EVENT td_sizeevent()
-/*************************/
+static EVENT td_sizeevent( void )
+/*******************************/
 {
     SAREA           area;
 
@@ -830,13 +843,14 @@ static bool intern ti_initconsole( void )
 
     // Now we're initialized, so set term to usable mode:
     TI_CA_ENABLE();
+    TI_KP_ENABLE();
     TI_ENABLE_ACS();
 
     // disable auto-right-margin
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right= !TCAP_NOSCROLL;
-    QNXDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+    UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -846,8 +860,8 @@ static bool intern ti_initconsole( void )
     return( TRUE );
 }
 
-int intern initmonitor()
-/**********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     struct sigaction sa;
 
@@ -878,7 +892,7 @@ static int new_attr(int nattr, int oattr)
     #define _attr_bold( a )  (((a).blink_back_bold_fore>>3)&1)
     #define _attr_fore( a )  ( (a).blink_back_bold_fore    &7)
 #else
-    #if defined( WATCOM_BIG_ENDIAN )
+    #if defined( __BIG_ENDIAN__ )
                     unsigned char   blink:1;
                     unsigned char   back:3;
                     unsigned char   bold:1;
@@ -921,8 +935,8 @@ static int new_attr(int nattr, int oattr)
 
 static int ti_refresh( int must );
 
-static int ti_init()
-/******************/
+static int ti_init( void )
+/************************/
 {
     int         rows, cols;
     char        *tmp;
@@ -934,6 +948,7 @@ static int ti_init()
     if( !ti_initconsole() ) return( FALSE );
 
     if( !initmonitor() ) return( FALSE );
+    if( !initkeyboard() ) return( FALSE );
 
     if( TCAP_MONOCHROME ){
         UIData->colour= M_TERMINFO_MONO;
@@ -943,7 +958,7 @@ static int ti_init()
 
     tmp= getenv( "TIOPTIMIZE" );
     if( tmp!=NULL ){
-        OptimizeTerminfo= (stricmp( tmp, "no" )!=0);
+        OptimizeTerminfo= (strcasecmp( tmp, "no" )!=0);
     }
 
     // Figure out the number of columns to use
@@ -964,7 +979,6 @@ static int ti_init()
     if( !setupscrnbuff( rows, cols ) ) return( FALSE );
 
     uiinitcursor();
-    if( !initkeyboard() )return(FALSE);
 
     UIData->mouse_acc_delay= 277;
     UIData->mouse_rpt_delay= 55;
@@ -979,19 +993,19 @@ static int ti_init()
     return( TRUE );
 }
 
-static int ti_fini()
-/******************/
+static int ti_fini( void )
+/************************/
 {
     TI_RESTORE_ATTR();
     TI_HOME();
     TI_CLS();
     TI_CURSOR_NORMAL();
     TI_RESTORE_COLOUR();
+    TI_ACS_OFF();
+    TI_CA_DISABLE();
+    TI_KP_DISABLE();
 
-    TI_RESET1_STRING();
-    TI_RESET2_STRING();
     TI_PUT_FILE( reset_file );
-    TI_RESET3_STRING();
     __flush();
 
     finikeyboard();
@@ -1011,15 +1025,15 @@ static struct {
 static int td_update(SAREA *area)
 {
     if (!area) {
-QNXDebugPrintf0("td_update: no arg");
+        UIDebugPrintf0( "td_update: no arg" );
         dirty.row0 = 0;
         dirty.col0 = 0;
         dirty.row1 = UIData->height;
         dirty.col1 = UIData->width;
         return 0;
     }
-QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
-                                        area->width);
+    UIDebugPrintf4( "td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
+                                        area->width );
     if (area->row < dirty.row0) {
         dirty.row0 = area->row;
     }
@@ -1035,8 +1049,8 @@ QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
     return 0;
 }
 
-static int ti_hwcursor()
-/**********************/
+static int ti_hwcursor( void )
+/****************************/
 {
     // Set cursor to correct visibility
     switch( UIData->cursor_type ){
@@ -1070,16 +1084,6 @@ static int ti_hwcursor()
 // there are multiple chars
 #define TI_DUMPCHARS()  {TI_REPEAT_CHAR( rchar, rcount, ralt, rcol );\
                         rcount= 0;}
-
-// Slurps a char to be output. Will dump existing chars if new char is
-// different.
-#define TI_SLURPCHAR( c )  {if( rcount!=0 &&\
-                            (rchar!=ti_char_map[c] || ralt!=ti_alt_map(c))\
-                                        ) TI_DUMPCHARS();\
-                            rcol=(rcount==0)?j:rcol;\
-                            rcount++;\
-                            rchar= ti_char_map[c];\
-                            ralt= ti_alt_map(c);}
 
 void update_shadow(void)
 /**********************/
@@ -1141,7 +1145,7 @@ static int ti_refresh( int must )
         return 0;
     }
 
-    QNXDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty.row0,
+    UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty.row0,
                                     dirty.col0, dirty.row1, dirty.col1 );
 
     // Disable cursor during draw if we can
@@ -1289,9 +1293,9 @@ static int ti_refresh( int must )
         bool            ca_valid;       // is cursor address valid?
 
         int             rcount;         // repeat count
-        char            rchar;          // repeated character
-        int             ralt;           // if repeated character is in acs
-        int             rcol;           // starting column of repeated chars
+        char            rchar = 0;      // repeated character
+        int             ralt = 0;       // if repeated character is in acs
+        int             rcol = 0;       // starting column of repeated chars
 
         bufp+= dirty.row0 * incr;
         sbufp+= dirty.row0 * incr;
@@ -1322,7 +1326,7 @@ static int ti_refresh( int must )
                 }
 
                 if( !ca_valid ){
-                    QNXDebugPrintf2( "cursor address %d, %d\n", j, i );
+                    UIDebugPrintf2( "cursor address %d, %d\n", j, i );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
@@ -1351,8 +1355,20 @@ static int ti_refresh( int must )
 
                 if( !TI_ignore_bottom_right || (j!=UIData->width-1) ||
                                                     (i!=UIData->height-1) ){
-                    // slurp up the char
-                    TI_SLURPCHAR( (unsigned)bufp[j].ch );
+                    // Slurp up the char to be output. Will dump existing
+                    // chars if new char is different.
+                    unsigned c = bufp[j].ch;
+                    if( rcount != 0 && ( rchar != ti_char_map[c][0] || ralt != ti_alt_map( c ) ) )
+                         TI_DUMPCHARS();
+                    rcol = ( rcount == 0 ) ? j : rcol;
+                    rcount++;
+                    if( ti_char_map[c][1] ) {
+                         /* a UTF-8 string: write it immediately, 1-byte repeats unlikely */
+                         fputs( ti_char_map[c], UIConFile );
+                         rcount = 0;
+                    }
+                    rchar = ti_char_map[c][0];
+                    ralt = ti_alt_map(c);
                     OldCol++;
 
                     // if we walk off the edge our position is undefined
@@ -1403,9 +1419,8 @@ static int td_setcur( ORD row, ORD col, int typ, int attr )
 }
 
 
-EVENT td_event()
+EVENT td_event( void )
 {
-    extern      EVENT tk_keyboardevent();
     EVENT       ev;
 
     ev = td_sizeevent();

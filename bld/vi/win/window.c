@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
+#include "vi.h"
 #include "winaux.h"
 #include "font.h"
+#include "wstatus.h"
 
 window *Windows[] = {
     &StatusBar,
@@ -43,7 +44,9 @@ window *Windows[] = {
     &RepeatCountWindow
 };
 
-#define NUM_WINDOWS ( sizeof( Windows ) / sizeof( window  * ) )
+#define NUM_WINDOWS (sizeof( Windows ) / sizeof( window  * ))
+
+extern void FiniInstance( void );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
@@ -61,6 +64,9 @@ void DefaultWindows( RECT *world, RECT *workspace )
     int         border;
     int         screeny;
     int         diff;
+#ifdef __NT__
+    int         statusHeight = GetStatusHeight();
+#endif
 
     border = GetSystemMetrics( SM_CYBORDER );
     screeny = GetSystemMetrics( SM_CYSCREEN );
@@ -77,7 +83,15 @@ void DefaultWindows( RECT *world, RECT *workspace )
          * like adding yet another define.
          * This whole function reeks a little anyway :)
          */
-        r->top = r->bottom - FontHeight( WIN_FONT( w ) ) - 2 * border - 7;
+#ifdef __NT__
+        if( statusHeight != 0 ) {
+            r->top = r->bottom - statusHeight;
+        } else {
+#endif
+            r->top = r->bottom - (FontHeight( WIN_FONT( w ) ) + 2 * border + 7);
+#ifdef __NT__
+        }
+#endif
         last = r;
     } else {
         tmp = *world;
@@ -88,9 +102,17 @@ void DefaultWindows( RECT *world, RECT *workspace )
     /* next the message bar */
     w = &MessageBar;
     r = &w->area;
-    // let these windows share a common border
+    // let these windows share a common border, except when Win32 common controls
+    // are used
     *r = *last;
-    r->bottom = last->top + border;
+    r->bottom = last->top;
+#ifdef __NT__
+    if( statusHeight == 0 ) {
+#endif
+        r->bottom += border;
+#ifdef __NT__
+    }
+#endif
     r->top = r->bottom - FontHeight( WIN_FONT( w ) ) - 4 * border;
     last = r;
 
@@ -127,8 +149,8 @@ void DefaultWindows( RECT *world, RECT *workspace )
     r->left += BORDER;
     r->right -= BORDER;
     r->top += BORDER;
-    if( (r->bottom - r->top) > screeny/3 ) {
-        diff = r->bottom - r->top - screeny/3;
+    if( (r->bottom - r->top) > screeny / 3 ) {
+        diff = r->bottom - r->top - screeny / 3;
         r->top += diff;
     }
 
@@ -143,7 +165,7 @@ void InitWindows( void )
     window      *w;
 
     for( i = 0; i < NUM_WINDOWS; i++ ) {
-        w = Windows[ i ];
+        w = Windows[i];
         (*w->init)( w, NULL );
     }
     EditFlags.WindowsStarted = TRUE;
@@ -155,7 +177,7 @@ void FiniWindows( void )
     window      *w;
 
     for( i = 0; i < NUM_WINDOWS; i++ ) {
-        w = Windows[ i ];
+        w = Windows[i];
         (*w->fini)( w, NULL );
     }
 }
@@ -223,7 +245,7 @@ int WindowAuxInfo( window_id id, int type )
     return( value );
 }
 
-int NewWindow2( window_id *id, window_info *info )
+vi_rc NewWindow2( window_id *id, window_info *info )
 {
     if( info == &editw_info ) {
         *id = NewEditWindow();
@@ -307,15 +329,15 @@ void MoveWindowToFrontDammit( window_id id )
     MoveWindowToFront( id );
 }
 
-int MaximizeCurrentWindow( void )
+vi_rc MaximizeCurrentWindow( void )
 {
     if( !BAD_ID( CurrentWindow ) ) {
-        SendMessage( EditContainer, WM_MDIMAXIMIZE, ( UINT )CurrentWindow, 0L );
+        SendMessage( EditContainer, WM_MDIMAXIMIZE, (UINT)CurrentWindow, 0L );
     }
     return( ERR_NO_ERR );
 }
 
-int MinimizeCurrentWindow( void )
+vi_rc MinimizeCurrentWindow( void )
 {
     if( !BAD_ID( CurrentWindow ) ) {
         SendMessage( CurrentWindow, WM_SYSCOMMAND, SC_MINIMIZE, 0L );
@@ -325,12 +347,10 @@ int MinimizeCurrentWindow( void )
 
 void FinishWindows( void )
 {
-    extern void FiniInstance();
-
     if( IsWindow( hColorbar ) ) {
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );
     }
-    if( IsWindow( hFontbar) ) {
+    if( IsWindow( hFontbar ) ) {
         SendMessage( hFontbar, WM_CLOSE, 0, 0L );
     }
     if( IsWindow( hSSbar ) ) {

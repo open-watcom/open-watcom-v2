@@ -47,8 +47,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int      WRFreeResNodes  ( WResTypeNode *tnode );
-static int      WRFreeLangNodes ( WResResNode *rnode );
+static int      WRFreeResNodes( WResTypeNode *tnode );
+static int      WRFreeLangNodes( WResResNode *rnode );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -59,74 +59,73 @@ static int      WRFreeLangNodes ( WResResNode *rnode );
 /****************************************************************************/
 
 int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
-                                       WResResNode **rnode,
-                                       WResLangNode **lnode )
+                                       WResResNode **rnode, WResLangNode **lnode )
 {
-    if( !dir || !tnode || !*tnode || !rnode || !*rnode ||
-        !lnode || !*lnode ) {
-        return ( FALSE );
+    if( dir == NULL || tnode == NULL || *tnode == NULL || rnode == NULL ||
+        *rnode == NULL || lnode == NULL || *lnode == NULL ) {
+        return( FALSE );
     }
 
-    if ( (*rnode)->Head == (*rnode)->Tail ) {
-        if ( (*tnode)->Head == (*tnode)->Tail ) {
-            if ( dir->Head == dir->Tail ) {
+    if( (*rnode)->Head == (*rnode)->Tail ) {
+        if( (*tnode)->Head == (*tnode)->Tail ) {
+            if( dir->Head == dir->Tail ) {
                 dir->Head = NULL;
                 dir->Tail = NULL;
             } else {
-                if ( dir->Head == *tnode ) {
+                if( dir->Head == *tnode ) {
                     dir->Head = (*tnode)->Next;
                 }
-                if ( dir->Tail == *tnode ) {
+                if( dir->Tail == *tnode ) {
                     dir->Tail = (*tnode)->Prev;
                 }
-                if ( (*tnode)->Prev ) {
+                if( (*tnode)->Prev != NULL ) {
                     (*tnode)->Prev->Next = (*tnode)->Next;
                 }
-                if ( (*tnode)->Next ) {
+                if( (*tnode)->Next != NULL ) {
                     (*tnode)->Next->Prev = (*tnode)->Prev;
                 }
             }
-            WRMemFree ( *tnode );
+            WRMemFree( *tnode );
             *tnode = NULL;
         } else {
-            if ( (*tnode)->Head == *rnode ) {
+            if( (*tnode)->Head == *rnode ) {
                 (*tnode)->Head = (*rnode)->Next;
             }
-            if ( (*tnode)->Tail == *rnode ) {
+            if( (*tnode)->Tail == *rnode ) {
                 (*tnode)->Tail = (*rnode)->Prev;
             }
-            if ( (*rnode)->Prev ) {
+            if( (*rnode)->Prev != NULL ) {
                 (*rnode)->Prev->Next = (*rnode)->Next;
             }
-            if ( (*rnode)->Next ) {
+            if( (*rnode)->Next != NULL ) {
                 (*rnode)->Next->Prev = (*rnode)->Prev;
             }
         }
-        WRMemFree ( *rnode );
+        WRMemFree( *rnode );
         *rnode = NULL;
     } else {
-        if ( (*rnode)->Head == *lnode ) {
+        if( (*rnode)->Head == *lnode ) {
             (*rnode)->Head = (*lnode)->Next;
         }
-        if ( (*rnode)->Tail == *lnode ) {
+        if( (*rnode)->Tail == *lnode ) {
             (*rnode)->Tail = (*lnode)->Prev;
         }
-        if ( (*lnode)->Prev ) {
+        if( (*lnode)->Prev != NULL ) {
             (*lnode)->Prev->Next = (*lnode)->Next;
         }
-        if ( (*lnode)->Next ) {
+        if( (*lnode)->Next != NULL ) {
             (*lnode)->Next->Prev = (*lnode)->Prev;
         }
     }
 
-    WRMemFree ( *lnode );
+    WRMemFree( *lnode );
     *lnode = NULL;
 
-    if ( *rnode ) {
+    if( *rnode != NULL ) {
         (*rnode)->Info.NumResources--;
     }
 
-    if ( *tnode ) {
+    if( *tnode != NULL ) {
         (*tnode)->Info.NumResources--;
     } else {
         dir->NumTypes--;
@@ -134,13 +133,13 @@ int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
 
     dir->NumResources--;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 int WR_EXPORT WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 {
-    if( !dir || !tnode ) {
-        return ( FALSE );
+    if( dir == NULL || tnode == NULL ) {
+        return( FALSE );
     }
 
     if( dir->Head == tnode ) {
@@ -149,10 +148,10 @@ int WR_EXPORT WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
     if( dir->Tail == tnode ) {
         dir->Tail = dir->Tail->Prev;
     }
-    if( tnode->Next ) {
+    if( tnode->Next != NULL ) {
         tnode->Next->Prev = tnode->Prev;
     }
-    if( tnode->Prev ) {
+    if( tnode->Prev != NULL ) {
         tnode->Prev->Next = tnode->Next;
     }
 
@@ -207,4 +206,3 @@ int WRFreeLangNodes( WResResNode *rnode )
 
     return( count );
 }
-

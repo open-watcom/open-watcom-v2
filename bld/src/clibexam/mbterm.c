@@ -14,13 +14,12 @@ const unsigned char chars[] = {
 #define SIZE sizeof( chars ) / sizeof( unsigned char )
 
 void main()
-  {
-    int     i, j, k;
+{
+    int     i;
 
     _setmbcp( 932 );
-    k = 0;
     for( i = 0; i < SIZE; i++ ) {
-      printf( "0x%2.2x %d\n", chars[i],
-              _mbterm( &chars[i] ) );
+        printf( "0x%2.2x %d\n", chars[i],
+                _mbterm( &chars[i] ) );
     }
-  }
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler symbol table interface.
 *
 ****************************************************************************/
 
@@ -89,13 +88,14 @@ typedef enum {
     ASM_RELOC_UNSPECIFIED,
     ASM_RELOC_WORD,
     ASM_RELOC_HALF_HI,
+    ASM_RELOC_HALF_HA,                  // high half adjusted for signed addition
     ASM_RELOC_HALF_LO,
     ASM_RELOC_JUMP,                     // j^ reloc
     ASM_RELOC_BRANCH,                   // PPC: 14-bit reloc; Alpha: jump hint
 } asm_reloc_type;
 
 
-extern void             AsSymInit();
+extern void             AsSymInit( void );
 extern sym_handle       AsSymLookup( const char *sym );
 extern sym_handle       AsSymAdd( const char *sym, sym_class class );
 #ifndef _STANDALONE_
@@ -121,11 +121,11 @@ extern sym_reloc        AsSymGetReloc( bool is_high, sym_handle *get_hdl );
 extern bool             AsSymRelocIsClean( bool is_clean );
 #endif
 extern sym_obj_hdl      AsSymObjHandle( sym_handle );
-extern void             AsSymFini();
+extern void             AsSymFini( void );
 
 #ifdef _STANDALONE_
 #ifndef NDEBUG
-extern void             DumpSymbolTable();
+extern void             DumpSymbolTable( void );
 #endif
 #endif
 

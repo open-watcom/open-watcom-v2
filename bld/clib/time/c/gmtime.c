@@ -24,26 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  __brktime() is an internal function to convert time to struct tm
 *
 ****************************************************************************/
 
-
-/*
- *      Convert time_t into struct tm
- */
-
 #include "variety.h"
 #include <time.h>
-#include "rtdata.h"
 #include "thetime.h"
 #include "timedata.h"
 
-#define DAYS_IN_4_YRS   (365+365+365+366)
-#define DAYS_IN_400_YRS ((100*DAYS_IN_4_YRS)-3)
+// #define DAYS_IN_4_YRS   ( 365 + 365 + 365 + 366 )
+// #define DAYS_IN_400_YRS ( ( 100 * DAYS_IN_4_YRS ) - 3 )
 
-//  #define SECONDS_PER_DAY (24*60*60)
+//  #define SECONDS_PER_DAY ( 24 * 60 * 60 )
 //  extern  short   __diyr[], __dilyr[];
 
 /*
@@ -58,17 +51,17 @@
 static unsigned long __DaysToJan1( unsigned year )
 {
     unsigned    years = 1900 + year - 1;
-    unsigned    leap_days = years/4 - years/100 + years/400 - 460;
+    unsigned    leap_days = years / 4 - years / 100 + years / 400 - 460;
 
     return( year * 365UL + leap_days );
 }
 
 /*  __brktime breaks down a calendar time (clock) into a struct tm t */
 
-struct tm *__brktime( unsigned long days,
-                      time_t clock,
-                      long timezone,
-                      struct tm *t )
+struct tm *__brktime( unsigned long     days,
+                      time_t            wallclock,
+                      long              gmtdelta,       // localtime - gmtime
+                      struct tm         *t )
 {
     unsigned long       secs;
     unsigned            year;
@@ -78,68 +71,60 @@ struct tm *__brktime( unsigned long days,
 
     /*
         If date is Jan 1, 1970 0:00 to 12:00 UTC and we are west of UTC
-        then add a day to clock, subtract the timezone value, and
+        then add a day to wallclock, subtract the gmtdelta value, and
         decrement the calculated days. This prevents local times
         such as "Wed Dec 31 19:00:00 1969 (EST)" from being
         erroneously reported as "Sun Feb 6 01:28:16 2106 (EST)"
-        since (clock - timezone) wraps (i.e., clock < timezone).
+        since (wallclock - gmtdelta) wraps (i.e., wallclock < gmtdelta).
     */
-    if( (clock < 12*60*60UL) && (timezone > 0 ) ) {
-        clock += SECONDS_PER_DAY;
-        clock -= timezone;
-        days += clock / SECONDS_PER_DAY;
-        days--;
-        /*
-            clock is now ahead one day but this doesn't
-            affect the time-of-day calculation
-        */
-    } else {
-        clock -= timezone;
-        days += clock / SECONDS_PER_DAY;
-    }
-    secs = clock % SECONDS_PER_DAY;
-    t->tm_hour = secs / 3600;
-    secs = secs % 3600;
-    t->tm_min = secs / 60;
-    t->tm_sec = secs % 60;
+    if( wallclock < 12 * 60 * 60UL && gmtdelta > 0 )
+        wallclock += SECONDS_PER_DAY, days--; /* days compensated for wallclock one day ahead */
+    wallclock -= ( time_t ) gmtdelta;
+    days      += wallclock / SECONDS_PER_DAY;
+    secs       = wallclock % SECONDS_PER_DAY;
+    t->tm_hour = ( int ) ( secs / 3600 ) ;
+    secs       = secs % 3600;
+    t->tm_min  = ( int ) ( secs / 60 );
+    t->tm_sec  = secs % 60;
 
-
-// The following two lines are not needed in the current implementation
-// because the range of values for days does not exceed DAYS_IN_400_YRS.
-// Even if it did, the algorithm still computes the correct values.
-//
-//    unsigned  year400s;
-//
-//    year400s = (days / DAYS_IN_400_YRS) * 400;
-//    days %= DAYS_IN_400_YRS;
-//
-// It is OK to reduce days to a value less than DAYS_IN_400_YRS, because
-// DAYS_IN_400_YRS is exactly divisible by 7. If it wasn't divisible by 7,
-// then the following line which appears at the bottom, should be computed
-// before the value of days is range reduced.
-//    t->tm_wday = (days + 1) % 7;                /* 24-sep-92 */
-//
+    // The following two lines are not needed in the current implementation
+    // because the range of values for days does not exceed DAYS_IN_400_YRS.
+    // Even if it did, the algorithm still computes the correct values.
+    //
+    //    unsigned  year400s;
+    //
+    //    year400s = (days / DAYS_IN_400_YRS) * 400;
+    //    days %= DAYS_IN_400_YRS;
+    //
+    // It is OK to reduce days to a value less than DAYS_IN_400_YRS, because
+    // DAYS_IN_400_YRS is exactly divisible by 7. If it wasn't divisible by 7,
+    // then the following line which appears at the bottom, should be computed
+    // before the value of days is range reduced.
+    //    t->tm_wday = (days + 1) % 7;                /* 24-sep-92 */
+    //
     year = days / 365;
-    day_of_year = days - __DaysToJan1( year );
+    day_of_year = ( int ) ( days - __DaysToJan1( year ) );
     while( day_of_year < 0 ) {
         --year;
         day_of_year += __leapyear( year + 1900 ) + 365;
     }
-//    year += year400s;
+    // year += year400s;
 
     t->tm_yday = day_of_year;
-    t->tm_year = year;
+    t->tm_year = ( int ) year;
     month_start = __diyr;
-    if( __leapyear( year + 1900 ) )  month_start = __dilyr;
+    if( __leapyear( year + 1900 ) )
+        month_start = __dilyr;
     month = day_of_year / 31;               /* approximate month */
-    if( day_of_year >= month_start[ month + 1 ] ) ++month;
+    if( day_of_year >= month_start[month + 1] )
+        ++month;
     t->tm_mon  = month;
-    t->tm_mday = day_of_year - month_start[ month ] + 1;
+    t->tm_mday = day_of_year - month_start[month] + 1;
 
-/*  Calculate the day of the week */
-/*   Jan 1,1900 is a Monday */
+    /*  Calculate the day of the week */
+    /*   Jan 1,1900 is a Monday */
 
-    t->tm_wday = (days + 1) % 7;                /* 24-sep-92 */
+    t->tm_wday = ( days + 1 ) % 7;                /* 24-sep-92 */
     return( t );
 }
 

@@ -1,0 +1,38 @@
+#include <afxres.h>
+#include "resource.h"
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    IDR_MAINFRAME   "Hello, World!"
+END
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 1, 0, 0, 0
+PRODUCTVERSION 1, 0, 0, 0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "openwatcom.org"
+            VALUE "FileDescription", "Open Watcom Hello World Sample"
+            VALUE "FileVersion", "1.0"
+            VALUE "InternalName", "hello"
+            VALUE "LegalCopyright", "Copyright (c) 2010 The Open Watcom Contributors.  All rights reserved."
+            VALUE "OriginalFilename", "hello.exe"
+            VALUE "ProductName", "Open Watcom Hello World Sample"
+            VALUE "ProductVersion", "1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1252
+    END
+END
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST DISCARDABLE appmanif.xml

@@ -24,18 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Flags for controlling code generation, set by compiler
+*               front ends into GenSwitches.
 *
 ****************************************************************************/
 
 
 #ifndef _CG_SWITCH_INCLUDED
-/*
-    The target independant switches start at the top of the long and grow
-    down, while the target dependant switches grow up. That way we can add
-    switches to either set without having to do a global re-compile.
-*/
+
 #define NO_OPTIMIZATION         0x80000000L
 #define NUMBERS                 0x40000000L
 #define FORTRAN_ALIASING        0x20000000L
@@ -55,11 +51,20 @@
 #define DBG_PREDEF              0x00020000L
 #define BRANCH_PREDICTION       0x00010000L
 #define FLOW_REG_SAVES          0x00008000L
+
+#define FPU_ROUNDING_INLINE     0x00004000L
+#define FPU_ROUNDING_OMIT       0x00002000L
+
 #define SUPER_OPTIMAL           0x00001000L
 #define ECHO_API_CALLS          0x00000800L
 #define MICROSOFT_COMPATIBLE    0x00000400L
 #define POSITION_INDEPENDANT    0x00000200L
 #define DLL_RESIDENT_CODE       0x00000100L
+
+#define OBJ_ELF                 0x00000080L
+#define OBJ_COFF                0x00000040L
+#define OBJ_OWL                 (OBJ_COFF | OBJ_ELF)
+#define OBJ_ENDIAN_BIG          0x00000020L
 
 #define _TARG_CGSWITCH_SHIFT     0
 

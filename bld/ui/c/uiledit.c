@@ -155,7 +155,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, ORD len,
     return( UIEdit );
 }
 
-void uieditpushlist()
+void uieditpushlist( void )
 {
     static EVENT mousepress[] = {
         EV_NO_EVENT,
@@ -167,7 +167,7 @@ void uieditpushlist()
     uipushlist( mousepress );
 }
 
-void uieditpoplist()
+void uieditpoplist( void )
 {
     uipoplist();
     uipoplist();
@@ -258,7 +258,7 @@ void uieditinsert( char *str, unsigned n )
     }
 }
 
-unsigned uiendedit()
+unsigned uiendedit( void )
 {
     unsigned            i;
     a_ui_edit           *edit;
@@ -273,7 +273,7 @@ unsigned uiendedit()
     return( i );
 }
 
-bool uieditisdirty()
+bool uieditisdirty( void )
 {
     if( UIEdit != NULL ) {
         uiedittrim( UIEdit->edit_buffer );
@@ -283,7 +283,7 @@ bool uieditisdirty()
     }
 }
 
-bool uieditautoclear( )
+bool uieditautoclear( void )
 {
     return( UIEdit != NULL && UIEdit->edit_eline.auto_clear );
 }
@@ -294,12 +294,12 @@ void uieditcursor( unsigned i )
     UIEdit->edit_eline.update = TRUE;
 }
 
-void uieditdirty( )
+void uieditdirty( void )
 {
     UIEdit->edit_eline.dirty = TRUE;
 }
 
-void uieditclean( )
+void uieditclean( void )
 {
     UIEdit->edit_eline.dirty = FALSE;
 }

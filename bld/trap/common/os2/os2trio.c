@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 1.x system specific trap I/O.
 *
 ****************************************************************************/
 
@@ -72,6 +71,8 @@ int WantUsage( char *ptr )
     /* This is a stupid place to do this, but it's the only system
        specific hook that I've got. */
     DosSetMaxFH( 40 );
+
+    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
     return( *ptr == '?' );
 }
 

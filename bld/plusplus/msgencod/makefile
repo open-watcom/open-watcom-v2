@@ -3,14 +3,12 @@ host_OS = dos
 !include cproj.mif
 .erase
 
-!include ..\tools.mif
-
 objs = wrdencod.obj msgencio.obj
 
 .c.obj:
-    $(ppsp) $[@ $(ramdisk)\$[.
-    $(cc) $(ramdisk)\$[. -oailt -s -d1 -zq -w3 -ml
-    rm -f $(ramdisk)\$[.
+    $(plusplus_dir)\bin\ppsp.exe $[@ $[.
+    $(cc) $[. -oailt -s -d1 -zq -w3 -ml
+    rm -f $[.
 
 msgencod.exe : $(objs) setbin.obj dosencod.exe msgencod.lnk
     $(linker) @msgencod.lnk
@@ -41,4 +39,4 @@ global : .symbolic
     rm -f *.obj *.exe *.gh *.lnk
 
 reference : .symbolic msgencod.exe
-    copy msgencod.exe ..\bin
+    cp msgencod.exe ../bin

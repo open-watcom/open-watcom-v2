@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strupr() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -39,140 +38,142 @@ CHAR_TYPE *__F_NAME(strupr,_wcsupr)( CHAR_TYPE *s )
 /*************************************************/
 {
     RISC_DATA_LOCALREF;
-    UINT *           dw = ROUND(s);
-    UINT             dword;
-    INT              offset = OFFSET(s);
-    INT              tmpdword, tmpchr;
+    UINT                *dw = ROUND(s);
+    UINT                dword;
+    INT                 offset = OFFSET(s);
+    INT                 tmpdword, tmpchr;
 
-    #ifdef __WIDECHAR__
-        if( offset % 2 )  return( __simple__wcsupr( s ) );
-    #endif
+#ifdef __WIDECHAR__
+    if( offset % 2 )
+        return( __simple__wcsupr( s ) );
+#endif
 
     /*** Initialize locals ***/
     dword = *dw;
 
     /*** Set any bytes up to a 4-byte alignment ***/
     tmpdword = FRONT_CHRS(dword,offset/CHARSIZE);
-    #ifdef __WIDECHAR__
-        switch( offset ) {
-          case 0:
-            tmpchr = CHR1(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR1(tmpchr);
-            } else {
-                return( s );
-            }
-            /* fall through */
-          default:              /* offset must equal 2 (no odd offsets) */
-            tmpchr = CHR2(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR2(tmpchr);
-                *dw = tmpdword;
-            } else {
-                *dw = tmpdword;
-                return( s );
-            }
+#ifdef __WIDECHAR__
+    switch( offset ) {
+      case 0:
+        tmpchr = CHR1(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR1(tmpchr);
+        } else {
+            return( s );
         }
-    #else
-        switch( offset ) {
-          case 0:
-            tmpchr = CHR1(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR1(tmpchr);
-            } else {
-                return( s );
-            }
-            /* fall through */
-          case 1:
-            tmpchr = CHR2(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR2(tmpchr);
-            } else {
-                tmpdword |= SKIP_CHRS(dword,2);
-                *dw = tmpdword;
-                return( s );
-            }
-            /* fall through */
-          case 2:
-            tmpchr = CHR3(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR3(tmpchr);
-            } else {
-                tmpdword |= SKIP_CHRS(dword,3);
-                *dw = tmpdword;
-                return( s );
-            }
-            /* fall through */
-          default:
-            tmpchr = CHR4(dword);
-            if( tmpchr ) {
-                tmpdword |= TO_UPR_CHR4(tmpchr);
-                *dw = tmpdword;
-            } else {
-                *dw = tmpdword;
-                return( s );
-            }
+        /* fall through */
+      default:              /* offset must equal 2 (no odd offsets) */
+        tmpchr = CHR2(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR2(tmpchr);
+            *dw = tmpdword;
+        } else {
+            *dw = tmpdword;
+            return( s );
         }
-    #endif
+    }
+#else
+    switch( offset ) {
+      case 0:
+        tmpchr = CHR1(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR1(tmpchr);
+        } else {
+            return( s );
+        }
+        /* fall through */
+      case 1:
+        tmpchr = CHR2(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR2(tmpchr);
+        } else {
+            tmpdword |= SKIP_CHRS(dword,2);
+            *dw = tmpdword;
+            return( s );
+        }
+        /* fall through */
+      case 2:
+        tmpchr = CHR3(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR3(tmpchr);
+        } else {
+            tmpdword |= SKIP_CHRS(dword,3);
+            *dw = tmpdword;
+            return( s );
+        }
+        /* fall through */
+      default:
+        tmpchr = CHR4(dword);
+        if( tmpchr ) {
+            tmpdword |= TO_UPR_CHR4(tmpchr);
+            *dw = tmpdword;
+        } else {
+            *dw = tmpdword;
+            return( s );
+        }
+    }
+#endif
 
     dw++;
 
     /*** Write in aligned 4-byte groups ***/
     for( ;; ) {
         dword = *dw;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
         tmpdword = 0;
         tmpchr = CHR1(dword);
         tmpdword |= TO_UPR_CHR1(tmpchr);
         tmpchr = CHR2(dword);
         tmpdword |= TO_UPR_CHR2(tmpchr);
-        #ifndef __WIDECHAR__
-            tmpchr = CHR3(dword);
-            tmpdword |= TO_UPR_CHR3(tmpchr);
-            tmpchr = CHR4(dword);
-            tmpdword |= TO_UPR_CHR4(tmpchr);
-        #endif
+#ifndef __WIDECHAR__
+        tmpchr = CHR3(dword);
+        tmpdword |= TO_UPR_CHR3(tmpchr);
+        tmpchr = CHR4(dword);
+        tmpdword |= TO_UPR_CHR4(tmpchr);
+#endif
         *dw++ = tmpdword;
     }
 
     /*** Write in last dword ***/
-    #ifdef __WIDECHAR__
-        if( !CHR1(dword) ) {
-            return( s );
-        } else {
-            tmpdword = SKIP_CHRS(dword,1);
-            tmpchr = CHR1(dword);
-            tmpdword |= TO_UPR_CHR1(tmpchr);
-            *dw = tmpdword;
-            return( s );
-        }
-    #else
-        if( !CHR1(dword) ) {
-            return( s );
-        } else if( !CHR2(dword) ) {
-            tmpdword = SKIP_CHRS(dword,1);
-            tmpchr = CHR1(dword);
-            tmpdword |= TO_UPR_CHR1(tmpchr);
-            *dw = tmpdword;
-            return( s );
-        } else if( !CHR3(dword) ) {
-            tmpdword = SKIP_CHRS(dword,2);
-            tmpchr = CHR1(dword);
-            tmpdword |= TO_UPR_CHR1(tmpchr);
-            tmpchr = CHR2(dword);
-            tmpdword |= TO_UPR_CHR2(tmpchr);
-            *dw = tmpdword;
-            return( s );
-        } else {
-            tmpdword = SKIP_CHRS(dword,3);
-            tmpchr = CHR1(dword);
-            tmpdword |= TO_UPR_CHR1(tmpchr);
-            tmpchr = CHR2(dword);
-            tmpdword |= TO_UPR_CHR2(tmpchr);
-            tmpchr = CHR3(dword);
-            tmpdword |= TO_UPR_CHR3(tmpchr);
-            *dw = tmpdword;
-            return( s );
-        }
-    #endif
+#ifdef __WIDECHAR__
+    if( !CHR1(dword) ) {
+        return( s );
+    } else {
+        tmpdword = SKIP_CHRS(dword,1);
+        tmpchr = CHR1(dword);
+        tmpdword |= TO_UPR_CHR1(tmpchr);
+        *dw = tmpdword;
+        return( s );
+    }
+#else
+    if( !CHR1(dword) ) {
+        return( s );
+    } else if( !CHR2(dword) ) {
+        tmpdword = SKIP_CHRS(dword,1);
+        tmpchr = CHR1(dword);
+        tmpdword |= TO_UPR_CHR1(tmpchr);
+        *dw = tmpdword;
+        return( s );
+    } else if( !CHR3(dword) ) {
+        tmpdword = SKIP_CHRS(dword,2);
+        tmpchr = CHR1(dword);
+        tmpdword |= TO_UPR_CHR1(tmpchr);
+        tmpchr = CHR2(dword);
+        tmpdword |= TO_UPR_CHR2(tmpchr);
+        *dw = tmpdword;
+        return( s );
+    } else {
+        tmpdword = SKIP_CHRS(dword,3);
+        tmpchr = CHR1(dword);
+        tmpdword |= TO_UPR_CHR1(tmpchr);
+        tmpchr = CHR2(dword);
+        tmpdword |= TO_UPR_CHR2(tmpchr);
+        tmpchr = CHR3(dword);
+        tmpdword |= TO_UPR_CHR3(tmpchr);
+        *dw = tmpdword;
+        return( s );
+    }
+#endif
 }

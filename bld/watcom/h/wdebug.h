@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom wdebug VxD for Win16 interface.
 *
 ****************************************************************************/
 
@@ -96,7 +95,7 @@ extern void GetDescriptor( short, void far * );         /* 02 */
 extern short GetDebugRegister( short, _dword far * );   /* 04 */
 extern short SetDebugRegister( short, _dword far * );   /* 05 */
 extern _word InitSampler( void far *, _word, _word );   /* 06 */
-extern QuitSampler( _dword far * );                     /* 07 */
+extern void QuitSampler( _dword far * );                /* 07 */
 extern _word StartSampler( void );                      /* 08 */
 extern void StopSampler( _dword far * );                /* 09 */
 extern void GetCurrTick( _dword far * );                /* 0a */
@@ -145,273 +144,284 @@ extern short UseHotKey( int );                          /* 33 */
 extern short RaiseInterruptInVM( _dword, _word );       /* 34 */
 
 #pragma aux DS = \
-        0x8C 0xD8       /* mov  ax,ds */ \
+        "mov  ax,ds" \
         value[ax];
 
 #pragma aux CS = \
-        0x8C 0xC8       /* mov  ax,cs */ \
+        "mov  ax,cs" \
         value[ax];
 
 #pragma aux TimeSlice = \
-        0xB8 0x80 0x16  /* mov ax,01680 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,01680h" \
+        "int 2fh" \
         modify [ax];
 
 #pragma aux CheckWin386Debug = \
-        0xB8 0x00 0xfa  /* mov ax,0fa00 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa00h" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux GetDescriptor = \
-        0xb8 0x02 0xfa  /* mov ax,0fa02 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa02h" \
+        "int 2fh" \
         parm [cx] [es bx];
 
 #pragma aux GetDebugRegister = \
-        0xB8 0x04 0xfa          /* mov ax,0fa04 */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x1D     /* mov  dword ptr es:[di], ebx */ \
+        ".386" \
+        "mov ax,0fa04h" \
+        "int 2fh" \
+        "mov  dword ptr es:[di], ebx" \
         parm [cx] [es di] value[ax] modify[bx];
 
 #pragma aux SetDebugRegister = \
-        0xB8 0x05 0xfa          /* mov ax,0fa05 */ \
-        0x26 0x66 0x8B 0x1D     /* mov  ebx, dword ptr es:[di] */ \
-        0xcd 0x2f               /* int 2f */ \
+        ".386" \
+        "mov ax,0fa05h" \
+        "mov  ebx, dword ptr es:[di]" \
+        "int 2fh" \
         parm [cx] [es di] value[ax] modify[bx];
 
 
 #pragma aux InitSampler = \
-        0xb8 0x06 0xfa  /* mov ax,0fa06 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa06h" \
+        "int 2fh" \
         parm [es bx] [cx] [dx] value[ax];
 
 #pragma aux QuitSampler = \
-        0xb8 0x07 0xfa          /* mov ax,0fa07 */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x07     /* mov dword ptr es:[bx],eax */ \
+        ".386" \
+        "mov ax,0fa07h" \
+        "int 2fh" \
+        "mov dword ptr es:[bx],eax" \
         parm [es bx] modify[ax];
 
 #pragma aux StartSampler = \
-        0xb8 0x08 0xfa  /* mov ax,0fa08 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa08h" \
+        "int 2fh" \
         value [ax];
 
 #pragma aux StopSampler =  \
-        0xb8 0x09 0xfa          /* mov ax,0fa09 */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x07     /* mov dword ptr es:[bx],eax */ \
+        ".386" \
+        "mov ax,0fa09h" \
+        "int 2fh" \
+        "mov dword ptr es:[bx],eax" \
         parm [es bx] modify[ax];
 
 #pragma aux GetCurrTick =  \
-        0xb8 0x0a 0xfa          /* mov ax, 0fa0a */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x07     /* mov dword ptr es:[bx],eax */ \
+        ".386" \
+        "mov ax,0fa0ah" \
+        "int 2fh" \
+        "mov dword ptr es:[bx],eax" \
         parm [es bx] modify[ax];
 
 #pragma aux SetTimerTick =  \
-        0xb8 0x0b 0xfa  /* mov ax, 0fa0b */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa0bh" \
+        "int 2fh" \
         parm [bx] modify[ax];
 
 #pragma aux GetTimerTick =  \
-        0xb8 0x0c 0xfa  /* mov ax, 0fa0c */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa0ch" \
+        "int 2fh" \
         value [ax];
 
 #pragma aux GetSampleCount =  \
-        0xb8 0x0d 0xfa  /* mov ax, 0fa0d */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa0dh" \
+        "int 2fh" \
         value [ax];
 
 #pragma aux GetSample0Tick =  \
-        0xb8 0x0e 0xfa          /* mov ax, 0fa0e */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x07     /* mov dword ptr es:[bx],eax */ \
+        ".386" \
+        "mov ax,0fa0dh" \
+        "int 2fh" \
+        "mov dword ptr es:[bx],eax" \
         parm [es bx] modify[ax];
 
 #pragma aux RegisterName = \
-        0xb8 0x0f 0xfa  /* mov ax, 0fa0f */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa0fh" \
+        "int 2fh" \
         parm [es bx] value [ax];
 
 #pragma aux AccessName = \
-        0xb8 0x10 0xfa  /* mov ax, 0fa10 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa10h" \
+        "int 2fh" \
         parm [es bx] [di si] value[ax];
 
 #pragma aux UnregisterName = \
-        0xb8 0x11 0xfa  /* mov ax, 0fa11 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa11h" \
+        "int 2fh" \
         parm [es bx] value[ax];
 
 #pragma aux UnaccessName = \
-        0xb8 0x12 0xfa  /* mov ax, 0fa12 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa12h" \
+        "int 2fh" \
         parm [es bx] value[ax];
 
 #pragma aux StartConv = \
-        0xb8 0x13 0xfa  /* mov ax, 0fa13 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa13h" \
+        "int 2fh" \
         parm [cx bx] value[ax];
 
 #pragma aux LookForConv = \
-        0xb8 0x14 0xfa  /* mov ax, 0fa14 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa14h" \
+        "int 2fh" \
         parm[es bx] value[ax];
 
 #pragma aux EndConv = \
-        0xb8 0x15 0xfa  /* mov ax, 0fa15 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa15h" \
+        "int 2fh" \
         parm[cx bx] value[ax];
 
 #pragma aux ConvGet = \
-        0xb8 0x16 0xfa  /* mov ax, 0fa16 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa16h" \
+        "int 2fh" \
         parm[cx bx] [es dx] [si] [di] value[dx ax];
 
 #pragma aux ConvPut = \
-        0xb8 0x17 0xfa  /* mov ax, 0fa17 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa17h" \
+        "int 2fh" \
         parm[cx bx] [es dx] [si] [di] value[ax];
 
 #pragma aux IsConvAck = \
-        0xb8 0x18 0xfa  /* mov ax, 0fa18 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa18h" \
+        "int 2fh" \
         parm [cx bx] value[ax];
 
 #pragma aux MyID =  \
-        0xb8 0x19 0xfa          /* mov ax, 0fa19 */ \
-        0xcd 0x2f               /* int 2f */ \
-        0x26 0x66 0x89 0x07     /* mov dword ptr es:[bx],eax */ \
+        ".386" \
+        "mov ax,0fa19h" \
+        "int 2fh" \
+        "mov dword ptr es:[bx],eax" \
         parm [es bx] modify[ax];
 
 #pragma aux SetExecutionFocus = \
-        0xb8 0x1a 0xfa  /* mov ax, 0fa1a */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1ah" \
+        "int 2fh" \
         parm [cx bx] value[ax];
 
 #pragma aux WhatHappened = \
-        0xb8 0x1b 0xfa  /* mov ax, 0fa1b */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1bh" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux ConvGetTimeOut = \
-        0xb8 0x1c 0xfa  /* mov ax, 0fa1c */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1ch" \
+        "int 2fh" \
         parm[cx bx] [es dx] [si] [di] value[ax];
 
 #pragma aux ConvPutTimeOut = \
-        0xb8 0x1d 0xfa  /* mov ax, 0fa1d */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1dh" \
+        "int 2fh" \
         parm[cx bx] [es dx] [si] [di] value[ax];
 
 #pragma aux EMUInit = \
-        0xb8 0x1e 0xfa  /* mov ax, 0fa1e */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1eh" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux EMUShutdown = \
-        0xb8 0x1f 0xfa  /* mov ax, 0fa1f */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa1fh" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux EMURegister = \
-        0xb8 0x20 0xfa  /* mov ax, 0fa20 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa20h" \
+        "int 2fh" \
         parm[dx] [cx bx] value[ax];
 
 #pragma aux EMUUnRegister = \
-        0xb8 0x21 0xfa  /* mov ax, 0fa21 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa21h" \
+        "int 2fh" \
         parm [dx] value[ax];
 
 #pragma aux FPUPresent = \
-        0xb8 0x22 0xfa  /* mov ax, 0fa22 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa22h" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux EMUSaveRestore = \
-        0xb8 0x23 0xfa  /* mov ax, 0fa23 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa23h" \
+        "int 2fh" \
         parm [dx] [cx bx] [si] value[ax];
 
 #pragma aux PauseSampler = \
-        0xb8 0x24 0xfa  /* mov ax, 0fa24 */ \
-        0xcd 0x2f       /* int 2f */;
+        "mov ax,0fa24h" \
+        "int 2fh" \
+        modify[ax];
 
 #pragma aux UnPauseSampler = \
-        0xb8 0x25 0xfa  /* mov ax, 0fa25 */ \
-        0xcd 0x2f       /* int 2f */;
+        "mov ax,0fa25h" \
+        "int 2fh" \
+        modify[ax];
 
 #pragma aux EGAWrite = \
-        0xb8 0x26 0xfa  /* mov ax, 0fa26 */ \
-        0xcd 0x2f       /* int 2f */ \
-        parm [dx] [bl] [bh];
+        "mov ax,0fa26h" \
+        "int 2fh" \
+        parm [dx] [bl] [bh] modify[ax];
 
 #pragma aux VGARead = \
-        0xb8 0x27 0xfa  /* mov ax, 0fa27 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa27h" \
+        "int 2fh" \
         parm [dx] [bl] value[al];
 
 #pragma aux DisableVideo = \
-        0xb8 0x28 0xfa  /* mov ax, 0fa28 */ \
-        0xcd 0x2f       /* int 2f */ \
-        parm [dx];
+        "mov ax,0fa28h" \
+        "int 2fh" \
+        parm [dx] modify[ax];
 
 #pragma aux RegisterInterruptCallback = \
-        0xb8 0x29 0xfa  /* mov ax, 0fa29 */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa29h" \
+        "int 2fh" \
         parm [cx bx] [es dx] [di si] value[ax];
 
 #pragma aux UnRegisterInterruptCallback = \
-        0xb8 0x2a 0xfa  /* mov ax, 0fa2a */ \
-        0xcd 0x2f       /* int 2f */ \
-        parm [cx bx];
+        "mov ax,0fa2ah" \
+        "int 2fh" \
+        parm [cx bx] modify[ax];
 
 #pragma aux GetInterruptCallback = \
-        0xb8 0x2b 0xfa  /* mov ax, 0fa2b */ \
-        0xcd 0x2f       /* int 2f */ \
-        parm [cx bx];
+        "mov ax,0fa2bh" \
+        "int 2fh" \
+        parm [cx bx] modify[ax];
 
 #pragma aux RestartFromInterrupt = \
-        0xb8 0x2c 0xfa  /* mov ax, 0fa2c */ \
-        0xcd 0x2f       /* int 2f */
+        "mov ax,0fa2ch" \
+        "int 2fh" \
+        modify[ax]
 
 #pragma aux Is32BitSel = \
-        0xb8 0x2d 0xfa  /* mov ax, 0fa2d */ \
-        0xcd 0x2f       /* int 2f */ \
-        parm [bx];
+        "mov ax,0fa2dh" \
+        "int 2fh" \
+        parm [bx] modify[ax];
 
 #pragma aux GetVMId = \
-        0xb8 0x2e 0xfa  /* mov ax, 0fa2e */ \
-        0xcd 0x2f       /* int 2f */ \
+        "mov ax,0fa2eh" \
+        "int 2fh" \
         value [dx ax];
 
 #pragma aux HookIDT = \
         "mov    ax,0fa2fh" \
-        "int    02fh" \
-        parm [cx bx];
+        "int 2fh" \
+        parm [cx bx] modify[ax];
 
 #pragma aux IDTFini = \
         "mov    ax,0fa30h" \
-        "int    02fh";
+        "int 2fh" \
+        modify[ax]
 
 #pragma aux IDTInit = \
         "mov    ax,0fa31h" \
-        "int    02fh" \
-        parm [bx];
+        "int 2fh" \
+        parm [bx] modify[ax];
 
 #pragma aux ConvPutPending = \
         "mov    ax,0fa32h" \
-        "int    02fh" \
+        "int 2fh" \
         value[ax];
 
 #pragma aux UseHotKey = \
         "mov    ax,0fa33h" \
         "int    02fh" \
-        parm[bx];
+        parm[bx] modify[ax];
 
 #pragma aux RaiseInterruptInVM = \
         "mov    ax,0fa34h" \
         "int    02fh" \
-        parm[cx bx] [dx];
+        parm[cx bx] [dx] modify[ax];

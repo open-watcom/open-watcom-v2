@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  errno related CLIB internal declarations.
 *
 ****************************************************************************/
-
 
 #ifndef _SETERNO_H_INCLUDED
 #define _SETERNO_H_INCLUDED
@@ -37,17 +35,24 @@
 
 // defined in _dos\c\dosret.c
 _WCRTLINK extern int __set_errno_dos( unsigned int );
+_WCRTLINK extern int __set_errno_dos_reterr( unsigned int );
 #if defined(__NT__)
     _WCRTLINK extern int __set_errno_nt( void );
+    _WCRTLINK extern int __set_errno_nt_reterr( void );
 #endif
 
 // defined in startup\c\seterrno.c
+#ifdef __WATCOMC__
 _WCRTLINK extern void __set_errno( unsigned int );
+#else
+extern void __set_errno( unsigned int );
+#endif
 _WCRTLINK extern int  __set_EINVAL( void );
 _WCRTLINK extern void __set_EDOM( void );
 _WCRTLINK extern void __set_ERANGE( void );
-#if !defined(__QNX__) && !defined(__PENPOINT__)
+#if !defined(__UNIX__)
     _WCRTLINK extern void __set_doserrno( unsigned int );
 #endif
 
 #endif
+

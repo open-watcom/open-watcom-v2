@@ -56,7 +56,7 @@ char doRequest( char *szCommand )
 {
     HDDEDATA    hddeData;
     HSZ         hszCommand;
-    char        result;
+    BYTE        result;
 
     hszCommand = DdeCreateStringHandle( idInstance, szCommand, CP_WINANSI );
     hddeData = DdeClientTransaction( NULL, 0, hConv, hszCommand, CF_TEXT,
@@ -157,6 +157,12 @@ int EDITAPI EDITConnect( void )
                         if( n++ == MAX_TRIES ) break;
                     }
                 }
+                /*
+                //  Carl Young 2004-01-27
+                //  Close handles as they are no longer needed and nobody has been passed them anyway
+                */
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
             }
         }
         #else
@@ -226,7 +232,7 @@ int EDITAPI EDITLocate( long iRow, int iCol, int iLen )
     return( EDITLocateError( iRow, iCol, iLen, 0, NULL ) );
 }
 
-int EDITAPI EDITShowWindow( int iCmdShow )
+int EDITAPI EDITShowWindow( show_method iCmdShow )
 {
     if( !bConnected ) {
         return( FALSE );
@@ -282,7 +288,8 @@ int EDITAPI EDITQueryThisFile( const char *filename )
 }
 
 #ifdef __NT__
-int FAR PASCAL LibMain( HANDLE hDll, DWORD reason, LPVOID res )
+
+int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
@@ -291,8 +298,10 @@ int FAR PASCAL LibMain( HANDLE hDll, DWORD reason, LPVOID res )
 
     return( 1 );
 }
+
 #else
-int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
+
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
                         LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
@@ -304,8 +313,9 @@ int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
     return( 1 );
 }
 
-int WEP( int q ){
-    q=q;
+int WINAPI WEP( int q )
+{
+    q = q;
     return( 1);
 }
 

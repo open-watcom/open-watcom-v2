@@ -1,0 +1,19 @@
+.387
+		EXTRN	doodle:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    add         ax,word ptr DGROUP:doodle+4
+    add         ax,word ptr DGROUP:doodle+0fffcH
+    add         ax,word ptr DGROUP:doodle+4
+    DB	12H, 0, 0
+    nop         
+    nop         
+    nop         
+    nop         
+    nop         
+    add         ax,word ptr DGROUP:doodle+4
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

@@ -47,7 +47,7 @@ void SetListBoxFont( LBoxHdl *lb ) {
     HFONT       newfont, oldfont;
     SIZE        sz;
     HDC         hdc;
-    DWORD       cnt;
+    LRESULT     cnt;
 
     SetMonoFont( lb->hwnd );
     InvalidateRect( lb->hwnd, NULL, TRUE );

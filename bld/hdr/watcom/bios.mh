@@ -5,12 +5,12 @@
  */
 #ifndef _BIOS_H_INCLUDED
 #define _BIOS_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include pshpackl.sp
 
@@ -26,7 +26,7 @@ struct  _ibm_diskinfo_t {       /* disk parameters */
 
 :include ext.sp
 #define diskinfo_t      _ibm_diskinfo_t
-#endif
+:include extepi.sp
 
 /* constants for BIOS disk access functions */
 #define _DISK_RESET     0
@@ -113,7 +113,8 @@ _WCRTLINK extern unsigned short _bios_serialcom(unsigned __cmd,unsigned __port,
                                                 unsigned __data);
 _WCRTLINK extern unsigned short _bios_timeofday(unsigned __cmd,long *__timeval);
 
-
 :include poppack.sp
+
 :include cplusepi.sp
+
 #endif

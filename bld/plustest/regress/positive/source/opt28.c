@@ -4,7 +4,6 @@
 #include <string.h>
 #include <limits.h>
 
-#if __WATCOM_REVISION__>7
 int foo( char *s, size_t slen, char *patt, size_t pattlen, int esc )
 {
     static unsigned count;
@@ -72,6 +71,3 @@ int main()
     if( r != 0 ) fail(__LINE__);
     _PASS;
 }
-#else
-ALWAYS_PASS
-#endif

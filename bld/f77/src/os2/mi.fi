@@ -1,0 +1,523 @@
+c$noreference
+
+        integer  F_AC
+        parameter (F_AC = '00040000'x)
+        integer  F_VM
+        parameter (F_VM = '00020000'x)
+        integer  F_RF
+        parameter (F_RF = '00010000'x)
+        integer  F_NT
+        parameter (F_NT = '00004000'x)
+        integer  F_NTCLEAR
+        parameter (F_NTCLEAR = .not. F_NT)
+        integer  F_IOPL0
+        parameter (F_IOPL0 = 0)
+        integer  F_IOPL1
+        parameter (F_IOPL1 = '00001000'x)
+        integer  F_IOPL2
+        parameter (F_IOPL2 = '00002000'x)
+        integer  F_IOPL3
+        parameter (F_IOPL3 = '00003000'x)
+        integer  F_IOPLMASK
+        parameter (F_IOPLMASK = '00003000'x)
+        integer  F_IOPLSYS
+        parameter (F_IOPLSYS = F_IOPL3)
+        integer  F_IOPLclear
+        parameter (F_IOPLclear = .not. F_IOPLMASK)
+        integer  F_OVERFLOW
+        parameter (F_OVERFLOW = '00000800'x)
+        integer  F_DIRECTION
+        parameter (F_DIRECTION = '00000400'x)
+        integer  F_INTERRUPT
+        parameter (F_INTERRUPT = '00000200'x)
+        integer  F_TRACE
+        parameter (F_TRACE = '00000100'x)
+        integer  F_SIGN
+        parameter (F_SIGN = '00000080'x)
+        integer  F_ZERO
+        parameter (F_ZERO = '00000040'x)
+        integer  F_AUX
+        parameter (F_AUX = '00000010'x)
+        integer  F_PARITY
+        parameter (F_PARITY = '00000004'x)
+        integer  F_CARRY
+        parameter (F_CARRY = '00000001'x)
+        integer  F_UNDEFINED
+        parameter (F_UNDEFINED = '0000802A'x)
+
+        integer  CR0_PE
+        parameter (CR0_PE = '00000001'x)
+        integer  CR0_MP
+        parameter (CR0_MP = '00000002'x)
+        integer  CR0_EM
+        parameter (CR0_EM = '00000004'x)
+        integer  CR0_TS
+        parameter (CR0_TS = '00000008'x)
+        integer  CR0_ET
+        parameter (CR0_ET = '00000010'x)
+        integer  CR0_NE
+        parameter (CR0_NE = '00000020'x)
+        integer  CR0_WP
+        parameter (CR0_WP = '00010000'x)
+        integer  CR0_AM
+        parameter (CR0_AM = '00040000'x)
+        integer  CR0_NW
+        parameter (CR0_NW = '20000000'x)
+        integer  CR0_CD
+        parameter (CR0_CD = '40000000'x)
+        integer  CR0_PG
+        parameter (CR0_PG = '80000000'x)
+        integer  CR0_RESERVED
+        parameter (CR0_RESERVED = '1ffaffc0'x)
+
+        integer  MSW_PE
+        parameter (MSW_PE = CR0_PE)
+        integer  MSW_MP
+        parameter (MSW_MP = CR0_MP)
+        integer  MSW_EM
+        parameter (MSW_EM = CR0_EM)
+        integer  MSW_TS
+        parameter (MSW_TS = CR0_TS)
+        integer  MSW_ET
+        parameter (MSW_ET = CR0_ET)
+
+        integer  CR3_WRITETHROUGH
+        parameter (CR3_WRITETHROUGH = '00000008'x)
+        integer  CR3_CACHEDISABLE
+        parameter (CR3_CACHEDISABLE = '00000010'x)
+        integer  CR3_FRAME
+        parameter (CR3_FRAME = 'fffff000'x)
+        integer  CR3_RESERVED
+        parameter (CR3_RESERVED = '00000fe7'x)
+
+        integer DR_COUNT
+        parameter (DR_COUNT = 4)
+
+        integer  DR6_B0
+        parameter (DR6_B0 = '00000001'x)
+        integer  DR6_B1
+        parameter (DR6_B1 = '00000002'x)
+        integer  DR6_B2
+        parameter (DR6_B2 = '00000004'x)
+        integer  DR6_B3
+        parameter (DR6_B3 = '00000008'x)
+        integer  DR6_BD
+        parameter (DR6_BD = '00002000'x)
+        integer  DR6_BS_BIT_INDEX
+        parameter (DR6_BS_BIT_INDEX = '0000000e'x)
+        integer  DR6_BS
+        parameter (DR6_BS = 2**DR6_BS_BIT_INDEX)
+        integer  DR6_BT
+        parameter (DR6_BT = '00008000'x)
+
+        integer DR6_VALID
+        parameter (DR6_VALID = DR6_B0.or.DR6_B1.or.DR6_B2.or.
+     +                         DR6_B3.or.DR6_BD.or.DR6_BS.or.DR6_BT)
+        integer DR6_RESERVED
+        parameter (DR6_RESERVED = .not. DR6_VALID)
+
+        integer  DR7_L0
+        parameter (DR7_L0 = '00000001'x)
+        integer  DR7_G0
+        parameter (DR7_G0 = '00000002'x)
+        integer  DR7_L1
+        parameter (DR7_L1 = '00000004'x)
+        integer  DR7_G1
+        parameter (DR7_G1 = '00000008'x)
+        integer  DR7_L2
+        parameter (DR7_L2 = '00000010'x)
+        integer  DR7_G2
+        parameter (DR7_G2 = '00000020'x)
+        integer  DR7_L3
+        parameter (DR7_L3 = '00000040'x)
+        integer  DR7_G3
+        parameter (DR7_G3 = '00000080'x)
+
+        integer  DR7_LE
+        parameter (DR7_LE = '00000100'x)
+        integer  DR7_GE
+        parameter (DR7_GE = '00000200'x)
+
+        integer  DR7_RW0
+        parameter (DR7_RW0 = '00030000'x)
+        integer  DR7_LEN0
+        parameter (DR7_LEN0 = '000c0000'x)
+        integer  DR7_RW1
+        parameter (DR7_RW1 = '00300000'x)
+        integer  DR7_LEN1
+        parameter (DR7_LEN1 = '00c00000'x)
+        integer  DR7_RW2
+        parameter (DR7_RW2 = '03000000'x)
+        integer  DR7_LEN2
+        parameter (DR7_LEN2 = '0c000000'x)
+        integer  DR7_RW3
+        parameter (DR7_RW3 = '30000000'x)
+        integer  DR7_LEN3
+        parameter (DR7_LEN3 = 'c0000000'x)
+
+        integer  DR7_RESERVED
+        parameter (DR7_RESERVED = '0000fc00'x)
+
+        integer  DR7_EXECUTE
+        parameter (DR7_EXECUTE = '00000000'x)
+        integer  DR7_WRITE
+        parameter (DR7_WRITE = '00000001'x)
+        integer  DR7_READWRITE
+        parameter (DR7_READWRITE = '00000003'x)
+
+        integer  DR7_LEN_1
+        parameter (DR7_LEN_1 = '00000000'x)
+        integer  DR7_LEN_2
+        parameter (DR7_LEN_2 = '00000001'x)
+        integer  DR7_LEN_4
+        parameter (DR7_LEN_4 = '00000003'x)
+
+        integer  MI_ARPL
+        parameter (MI_ARPL = '00000063'x)
+        integer  MI_HLT
+        parameter (MI_HLT = '000000f4'x)
+        integer  MI_OPERANDSIZE
+        parameter (MI_OPERANDSIZE = '00000066'x)
+        integer  MI_ADDRESSSIZE
+        parameter (MI_ADDRESSSIZE = '00000067'x)
+        integer  MI_TWOBYTEOP
+        parameter (MI_TWOBYTEOP = '0000000f'x)
+
+        integer  MI_POP_DS
+        parameter (MI_POP_DS = '0000001f'x)
+        integer  MI_POP_ES
+        parameter (MI_POP_ES = '00000007'x)
+        integer  MI_POP_FS
+        parameter (MI_POP_FS = '000000A1'x)
+        integer  MI_POP_GS
+        parameter (MI_POP_GS = '000000A9'x)
+
+        integer  MI_INT3
+        parameter (MI_INT3 = '000000CC'x)
+        integer  MI_INT
+        parameter (MI_INT = '000000CD'x)
+        integer  MI_IRET
+        parameter (MI_IRET = '000000CF'x)
+        integer  MI_LONG_JMP
+        parameter (MI_LONG_JMP = '000000EA'x)
+        integer  MI_LONG_CALL
+        parameter (MI_LONG_CALL = '0000009A'x)
+        integer  MI_LONG_RET
+        parameter (MI_LONG_RET = '000000CB'x)
+        integer  MI_LONG_RETn
+        parameter (MI_LONG_RETn = '000000CA'x)
+        integer  MI_NEAR_RET
+        parameter (MI_NEAR_RET = '000000C3'x)
+
+        integer  MI_IN_PORT_AL
+        parameter (MI_IN_PORT_AL = '000000E4'x)
+        integer  MI_IN_PORT_AX
+        parameter (MI_IN_PORT_AX = '000000E5'x)
+        integer  MI_OUT_PORT_AL
+        parameter (MI_OUT_PORT_AL = '000000E6'x)
+        integer  MI_OUT_PORT_AX
+        parameter (MI_OUT_PORT_AX = '000000E7'x)
+        integer  MI_IN_DX_AL
+        parameter (MI_IN_DX_AL = '000000EC'x)
+        integer  MI_IN_DX_AX
+        parameter (MI_IN_DX_AX = '000000ED'x)
+        integer  MI_OUT_DX_AL
+        parameter (MI_OUT_DX_AL = '000000EE'x)
+        integer  MI_OUT_DX_AX
+        parameter (MI_OUT_DX_AX = '000000EF'x)
+
+        integer  MI_GROUP5
+        parameter (MI_GROUP5 = '000000FF'x)
+        integer  MI_SEGES
+        parameter (MI_SEGES = '00000026'x)
+        integer  MI_SEGCS
+        parameter (MI_SEGCS = '0000002E'x)
+        integer  MI_SEGSS
+        parameter (MI_SEGSS = '00000036'x)
+        integer  MI_SEGDS
+        parameter (MI_SEGDS = '0000003E'x)
+        integer  MI_SEGFS
+        parameter (MI_SEGFS = '00000064'x)
+        integer  MI_SEGGS
+        parameter (MI_SEGGS = '00000065'x)
+
+        integer  MI_ESCMASK
+        parameter (MI_ESCMASK = '000000F8'x)
+        integer  MI_ESC
+        parameter (MI_ESC = '000000D8'x)
+
+        integer  MI_MODMASK
+        parameter (MI_MODMASK = '000000C0'x)
+        integer  MI_MODSHIFT
+        parameter (MI_MODSHIFT = 6)
+        integer  MI_MODNONE
+        parameter (MI_MODNONE = '00000000'x)
+        integer  MI_MODBYTE
+        parameter (MI_MODBYTE = '00000040'x)
+        integer  MI_MODWORD
+        parameter (MI_MODWORD = '00000080'x)
+        integer  MI_MODREG
+        parameter (MI_MODREG = '000000C0'x)
+
+        integer  MI_REGMASK
+        parameter (MI_REGMASK = '00000038'x)
+        integer  MI_REGSHIFT
+        parameter (MI_REGSHIFT = 3)
+        integer  MI_REGAX
+        parameter (MI_REGAX = '00000000'x)
+        integer  MI_REGCX
+        parameter (MI_REGCX = '00000008'x)
+        integer  MI_REGDX
+        parameter (MI_REGDX = '00000010'x)
+        integer  MI_REGBX
+        parameter (MI_REGBX = '00000018'x)
+        integer  MI_REG3
+        parameter (MI_REG3 = '00000018'x)
+        integer  MI_REGSP
+        parameter (MI_REGSP = '00000020'x)
+        integer  MI_REGBP
+        parameter (MI_REGBP = '00000028'x)
+        integer  MI_REGSI
+        parameter (MI_REGSI = '00000030'x)
+        integer  MI_REGDI
+        parameter (MI_REGDI = '00000038'x)
+
+        integer  MI_REGES
+        parameter (MI_REGES = '00000000'x)
+        integer  MI_REGCS
+        parameter (MI_REGCS = '00000008'x)
+        integer  MI_REGSS
+        parameter (MI_REGSS = '00000010'x)
+        integer  MI_REGDS
+        parameter (MI_REGDS = '00000018'x)
+        integer  MI_REGFS
+        parameter (MI_REGFS = '00000020'x)
+        integer  MI_REGGS
+        parameter (MI_REGGS = '00000028'x)
+
+        integer  MI_RMMASK
+        parameter (MI_RMMASK = '00000007'x)
+        integer  MI_RMSHIFT
+        parameter (MI_RMSHIFT = 0)
+        integer  MI_RMBXSI
+        parameter (MI_RMBXSI = '00000000'x)
+        integer  MI_RMBXDI
+        parameter (MI_RMBXDI = '00000001'x)
+        integer  MI_RMBPSI
+        parameter (MI_RMBPSI = '00000002'x)
+        integer  MI_RMBPDI
+        parameter (MI_RMBPDI = '00000003'x)
+        integer  MI_RMSI
+        parameter (MI_RMSI = '00000004'x)
+        integer  MI_RMDI
+        parameter (MI_RMDI = '00000005'x)
+        integer  MI_RMBP
+        parameter (MI_RMBP = '00000006'x)
+        integer  MI_RMBX
+        parameter (MI_RMBX = '00000007'x)
+
+        integer  MI_SIB_SSMASK
+        parameter (MI_SIB_SSMASK = '000000c0'x)
+        integer  MI_SIB_SSSHIFT
+        parameter (MI_SIB_SSSHIFT = '00000006'x)
+
+        integer  MI_SIB_INDEXMASK
+        parameter (MI_SIB_INDEXMASK = '00000038'x)
+        integer  MI_SIB_INDEXSHIFT
+        parameter (MI_SIB_INDEXSHIFT = '00000003'x)
+        integer  MI_SIB_INDEXNONE
+        parameter (MI_SIB_INDEXNONE = '00000020'x)
+
+        integer  MI_SIB_BASEMASK
+        parameter (MI_SIB_BASEMASK = '00000007'x)
+        integer  MI_SIB_BASESHIFT
+        parameter (MI_SIB_BASESHIFT = '00000000'x)
+        integer  MI_SIB_BASEESP
+        parameter (MI_SIB_BASEESP = '00000004'x)
+        integer  MI_SIB_BASENONE
+        parameter (MI_SIB_BASENONE = '00000005'x)
+
+        integer  MI_RMEDX
+        parameter (MI_RMEDX = '00000002'x)
+        integer  MI_RMSIB
+        parameter (MI_RMSIB = '00000004'x)
+        integer  MI_RMDISP
+        parameter (MI_RMDISP = '00000005'x)
+        integer  MI_RMEBP
+        parameter (MI_RMEBP = '00000005'x)
+
+        integer  MI_REG6
+        parameter (MI_REG6 = '00000030'x)
+        integer  MI_REGCR0
+        parameter (MI_REGCR0 = '00000000'x)
+
+        integer  MI_PUSH_AX
+        parameter (MI_PUSH_AX = '00000050'x)
+        integer  MI_PUSH_IMM
+        parameter (MI_PUSH_IMM = '00000068'x)
+        integer  MI_MOV_REG_IMM
+        parameter (MI_MOV_REG_IMM = '000000B8'x)
+        integer  MI_MOV_REG_IMMEDIATE
+        parameter (MI_MOV_REG_IMMEDIATE = '000000B8'x)
+        integer  MI_MOV_REG_REGMEM
+        parameter (MI_MOV_REG_REGMEM = '0000008B'x)
+
+        integer  MI_ADD_AX_IMM
+        parameter (MI_ADD_AX_IMM = '00000005'x)
+        integer  MI_CALL_NEAR_REL
+        parameter (MI_CALL_NEAR_REL = '000000E8'x)
+        integer  SIZE_CALL_NEAR_REL
+        parameter (SIZE_CALL_NEAR_REL = 5)
+
+        integer  MI_LMSW_OPCODE
+        parameter (MI_LMSW_OPCODE = '00000001'x)
+
+        integer  MI_GET_CRx_OPCODE
+        parameter (MI_GET_CRx_OPCODE = '00000020'x)
+        integer  MI_GET_DRx_OPCODE
+        parameter (MI_GET_DRx_OPCODE = '00000021'x)
+        integer  MI_SET_CRx_OPCODE
+        parameter (MI_SET_CRx_OPCODE = '00000022'x)
+        integer  MI_SET_DRx_OPCODE
+        parameter (MI_SET_DRx_OPCODE = '00000023'x)
+        integer  MI_GET_TRx_OPCODE
+        parameter (MI_GET_TRx_OPCODE = '00000024'x)
+        integer  MI_SET_TRx_OPCODE
+        parameter (MI_SET_TRx_OPCODE = '00000026'x)
+
+        integer  MI_MOV_REG8_MEM8
+        parameter (MI_MOV_REG8_MEM8 = '0000008A'x)
+        integer  MI_MOV_SEG_MEM_OPCODE
+        parameter (MI_MOV_SEG_MEM_OPCODE = '0000008e'x)
+
+        structure /w_s/
+            integer*1 lobyte
+            integer*1 hibyte
+        end structure
+
+        structure /dw_s/
+            integer*2 loword
+            integer*2 hiword
+        end structure
+
+        structure /FarPtr/
+            integer*2 Offst
+            integer*2 Segmt
+        end structure
+
+        structure /FarPtr32/
+            integer*4 Offst32
+            integer*2 Segmt32
+            integer*2 Pad32
+        end structure
+
+        structure /RETF16/
+            integer*2 retf16_ip
+            integer*2 retf16_cs
+        end structure
+
+        structure /RETF32/
+            integer*4 retf32_eip
+            integer*2 retf32_cs
+            integer*2 retf32_padcs
+        end structure
+
+        structure /IRET16/
+            integer*2 iret16_ip
+            integer*2 iret16_cs
+            integer*2 iret16_flag
+        end structure
+
+        structure /Iret_s/
+            record /FarPtr/  I_CSIP
+            integer*2 I_FLAGS
+        end structure
+
+        structure /IretFrame/
+            integer*2 IretIP
+            integer*2 IretCS
+            integer*2 IretFLAGS
+        end structure
+
+        structure /IRET32/
+            integer*4 iret32_eip
+            integer*2 iret32_cs
+            integer*2 iret32_padcs
+            integer*4 iret32_eflag
+        end structure
+
+        structure /Iret32_s/
+            record /FarPtr32/ I32_CSEIP
+            integer*4 I32_EFLAGS
+        end structure
+
+        structure /PLTIRET16/
+            integer*2 pltiret16_ip
+            integer*2 pltiret16_cs
+            integer*2 pltiret16_flag
+            integer*2 pltiret16_sp
+            integer*2 pltiret16_ss
+        end structure
+
+        structure /PLTIret_s/
+            record /FarPtr/  PI_CSIP
+            integer*2 PI_FLAGS
+            record /FarPtr/  PI_SSSP
+        end structure
+
+        structure /PLTIretFrame/
+            integer*2 PLTIretIP
+            integer*2 PLTIretCS
+            integer*2 PLTIretFLAGS
+            integer*2 PLTIretSP
+            integer*2 PLTIretSS
+        end structure
+
+        structure /PLTIRET32/
+            integer*4 pltiret32_eip
+            integer*2 pltiret32_cs
+            integer*2 pltiret32_padcs
+            integer*4 pltiret32_eflag
+            integer*4 pltiret32_esp
+            integer*2 pltiret32_ss
+            integer*2 pltiret32_padss
+        end structure
+
+        structure /PLTIret32_s/
+            record /FarPtr32/ PI32_CSEIP
+            integer*4 PI32_EFLAGS
+            record /FarPtr32/ PI32_SSESP
+        end structure
+
+        structure /ptr_t/
+            map
+                record /FarPtr/ ptr_far16
+            end map
+            map
+                integer*4 ptr_flat
+            end map
+        end structure
+
+        structure /pusha_s/
+            integer*2 pas_di
+            integer*2 pas_si
+            integer*2 pas_bp
+            integer*2 pas_sp
+            integer*2 pas_bx
+            integer*2 pas_dx
+            integer*2 pas_cx
+            integer*2 pas_ax
+        end structure
+
+        structure /pushad_s/
+            integer*4 pads_edi
+            integer*4 pads_esi
+            integer*4 pads_ebp
+            integer*4 pads_esp
+            integer*4 pads_ebx
+            integer*4 pads_edx
+            integer*4 pads_ecx
+            integer*4 pads_eax
+        end structure
+
+c$reference

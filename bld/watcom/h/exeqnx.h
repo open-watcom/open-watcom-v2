@@ -24,22 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  QNX executable format.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEQNX_H
 
-#pragma pack(push,1);
-
-// structures used in processing QNX load files.
+#include "pushpck1.h"
 
 #define QNX_VERSION 400
 
 #define QNX_MAX_REC_SIZE 0x7E00     // was 0xFFFF
-#define QNX_MAX_FIXUPS   0x7E00      // maximum fixup size that can be put
+#define QNX_MAX_FIXUPS   0x7E00     // maximum fixup size that can be put
                                     // into one record.
                                     // was 65532
 
@@ -122,7 +119,7 @@ typedef struct lmf_rw_end {
 
 #define VERIFY_OFFSET 36
 
-#pragma pack(pop);
+#include "poppck.h"
 
 #define _EXEQNX_H
 #endif

@@ -1,13 +1,17 @@
-WINDOWPICK DIALOG 0, 0, 120, 82
-STYLE WS_CHILD | WS_VISIBLE
+WINDOWPICK DIALOG 0, 0, 134, 130
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Window"
 FONT 8, "Helv"
 BEGIN
-    PUSHBUTTON      "OK", IDOK, 10, 64, 40, 14
-    PUSHBUTTON      "Cancel", IDCANCEL, 66, 64, 40, 14
-    LTEXT           "Click on window to spy on", -1, 14, 4, 92, 8
-    GROUPBOX        "Current Window", -1, 4, 16, 110, 42
-    LTEXT           "hWnd:", -1, 6, 30, 24, 8
-    LTEXT           "", WINSEL_HWND, 30, 30, 64, 8
-    LTEXT           "Name:", -1, 6, 42, 20, 8
-    LTEXT           "", WINSEL_NAME, 28, 42, 82, 8
+    LTEXT           "To select a window, click on the", -1, 14, 4, 92, 8
+    LTEXT           "icon below and drag to the", -1, 14, 12, 92, 8
+    LTEXT           "window to be selected.", -1, 14, 20, 92, 8
+    ICON            "WINPICKICON", WINSEL_ICON, 58, 32, 18, 20
+    GROUPBOX        "Current Window", -1, 6, 60, 118, 42
+    LTEXT           "hWnd:", -1, 8, 74, 24, 8
+    LTEXT           "", WINSEL_HWND, 30, 74, 64, 8
+    LTEXT           "Name:", -1, 8, 86, 20, 8
+    LTEXT           "", WINSEL_NAME, 30, 86, 82, 8
+    PUSHBUTTON      "OK", IDOK, 6, 108, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 74, 108, 50, 14
 END

@@ -1,0 +1,1189 @@
+/*
+ *  dxtrans.h   DirectX transformation interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __dxtrans_h__
+#define __dxtrans_h__
+
+:include readonly.sp
+
+#include <oaidl.h>
+#include <ocidl.h>
+#include <comcat.h>
+#include <servprov.h>
+#include <ddraw.h>
+#include <d3d.h>
+#include <d3drm.h>
+#include <urlmon.h>
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IDXTransform      IDXTransform;
+typedef interface IDXSurface        IDXSurface;
+typedef interface IDXLookupTable    IDXLookupTable;
+typedef interface IDXDCLock         IDXDCLock;
+typedef interface IDXRawSurface     IDXRawSurface;
+
+/* DirectX transformation type library version numbers */
+#define DXTRANS_TLB_MAJOR_VER   1
+#define DXTRANS_TLB_MINOR_VER   1
+
+/* DirectX maximum run information count */
+#define DX_MAX_RUN_INFO_COUNT   128
+
+/* DirectX bound identifiers */
+typedef enum DXBNDID {
+    DXB_X   = 0,
+    DXB_Y   = 1,
+    DXB_Z   = 2,
+    DXB_T   = 3
+} DXBNDID;
+
+/* DirectX bound types */
+typedef enum DXBNDTYPE {
+    DXBT_DISCRETE       = 0,
+    DXBT_DISCRETE64     = DXBT_DISCRETE + 1,
+    DXBT_CONTINUOUS     = DXBT_DISCRETE64 + 1,
+    DXBT_CONTINUOUS64   = DXBT_CONTINUOUS + 1
+} DXBNDTYPE;
+
+/* DirectX discrete bound */
+typedef struct DXDBND {
+    long    Min;
+    long    Max;
+} DXDBND;
+typedef DXDBND  DXDBNDS[4];
+
+/* DirectX discrete bound (64-bit version) */
+typedef struct DXDBND64 {
+    LONGLONG    Min;
+    LONGLONG    Max;
+} DXDBND64;
+typedef DXDBND64    DXDBNDS64[4];
+
+/* DirectX continuous bound */
+typedef struct DXCBND {
+    float   Min;
+    float   Max;
+} DXCBND;
+typedef DXCBND  DXCBNDS[4];
+
+/* DirectX continuous bound (64-bit version) */
+typedef struct DXCBND64 {
+    double  Min;
+    double  Max;
+} DXCBND64;
+typedef DXCBND64    DXCBNDS64[4];
+
+/* DirectX bounds */
+typedef struct DXBNDS {
+    DXBNDTYPE   eType;
+    union {
+        DXDBND      D[4];
+        DXDBND64    LD[4];
+        DXCBND      C[4];
+        DXCBND64    LC[4];
+    } u;
+} DXBNDS;
+
+/* DirectX discrete and continuous vectors */
+typedef long        DXDVEC[4];
+typedef LONGLONG    DXDVEC64[4];
+typedef float       DXCVEC[4];
+typedef double      DXCVEC64[4];
+
+/* DirectX vector */
+typedef struct DXVEC {
+    DXBNDTYPE   eType;
+    union {
+        long        D[4];
+        LONGLONG    LD[4];
+        float       C[4];
+        double      LC[4];
+    } u;
+} DXVEC;
+
+/* DirectX transformation miscellaneous flags */
+typedef enum DXTMISCFLAGS {
+    DXTMF_BLEND_WITH_OUTPUT     = 1 << 0,
+    DXTMF_DITHER_OUTPUT         = 1 << 1,
+    DXTMF_OPTION_MASK           = 0x0000FFFF,
+    DXTMF_VALID_OPTIONS         = DXTMF_BLEND_WITH_OUTPUT | DXTMF_DITHER_OUTPUT,
+    DXTMF_BLEND_SUPPORTED       = 1 << 16,
+    DXTMF_DITHER_SUPPORTED      = 1 << 17,
+    DXTMF_INPLACE_OPERATION     = 1 << 24,
+    DXTMF_BOUNDS_SUPPORTED      = 1 << 25,
+    DXTMF_PLACEMENT_SUPPORTED   = 1 << 26,
+    DXTMF_QUALITY_SUPPORTED     = 1 << 27,
+    DXTMF_OPAQUE_RESULT         = 1 << 28
+} DXTMISCFLAGS;
+
+/* DirectX in/out information flags */
+typedef enum DXINOUTINFOFLAGS {
+    DXINOUTF_OPTIONAL   = 1 << 0
+} DXINOUTINFOFLAGS;
+
+/* DirectX callbacks */
+typedef void (__stdcall DXTASKPROC)( void *, BOOL );
+typedef void (__stdcall DXAPCPROC)( DWORD );
+typedef DXTASKPROC  *PFNDXTASKPROC;
+typedef DXAPCPROC   *PFNDXAPCPROC;
+
+/* DirectX task information */
+typedef struct DXTMTASKINFO {
+#ifdef __cplusplus
+    PFNDXTASKPROC   pfnTaskProc;
+#else
+    PVOID           pfnTaskProc;
+#endif
+    PVOID           pTaskData;
+#ifdef __cplusplus
+    PFNDXAPCPROC    pfnCompletionAPC;
+#else
+    PVOID           pfnCompletionAPC;
+#endif
+    DWORD           dwCompletionData;
+    const GUID      *pRequestID;
+} DXTMTASKINFO;
+
+/* DirectX base sample */
+typedef struct DXBASESAMPLE {
+    BYTE    Blue;
+    BYTE    Green;
+    BYTE    Red;
+    BYTE    Alpha;
+} DXBASESAMPLE;
+
+/* DirectX sample */
+typedef struct DXSAMPLE {
+    BYTE    Blue;
+    BYTE    Green;
+    BYTE    Red;
+    BYTE    Alpha;
+} DXSAMPLE;
+
+/* DirectX premultiplied sample */
+typedef struct DXPMSAMPLE {
+    BYTE    Blue;
+    BYTE    Green;
+    BYTE    Red;
+    BYTE    Alpha;
+} DXPMSAMPLE;
+
+/* DirectX run types */
+typedef enum DXRUNTYPE {
+    DXRUNTYPE_CLEAR     = 0,
+    DXRUNTYPE_OPAQUE    = 1,
+    DXRUNTYPE_TRANS     = 2,
+    DXRUNTYPE_UNKNOWN   = 3
+} DXRUNTYPE;
+
+/* DirectX run information */
+typedef struct DXRUNINFO {
+    ULONG   Type : 2;
+    ULONG   Count : 30;
+} DXRUNINFO;
+
+/* IDXSurfaceFactory::CreateSurface() flags */
+typedef enum DXSFCREATE {
+    DXSF_FORMAT_IS_CLSID    = 1 << 0,
+    DXSF_NO_LAZY_DDRAW_LOCK = 1 << 1
+} DXSFCREATE;
+
+/* DirectX block transfer options */
+typedef enum DXBLTOPTIONS {
+    DXBOF_DO_OVER   = 1 << 0,
+    DXBOF_DITHER    = 1 << 1
+} DXBLTOPTIONS;
+
+/* DirectX surface modifier composite operations */
+typedef enum DXSURFMODCOMPOP {
+    DXSURFMOD_COMP_OVER         = 0,
+    DXSURFMOD_COMP_ALPHA_MASK   = 1,
+    DXSURFMOD_COMP_MAX_VALID    = 1
+} DXSURFMODCOMPOP;
+
+/* DirectX sample format flags */
+typedef enum DXSAMPLEFORMATENUM {
+    DXPF_FLAGSMASK      = 0xFFFF0000,
+    DXPF_NONPREMULT     = 0x00010000,
+    DXPF_TRANSPARENCY   = 0x00020000,
+    DXPF_TRANSLUCENCY   = 0x00040000,
+    DXPF_2BITERROR      = 0x00200000,
+    DXPF_3BITERROR      = 0x00300000,
+    DXPF_4BITERROR      = 0x00400000,
+    DXPF_5BITERROR      = 0x00500000,
+    DXPF_ERRORMASK      = 0x00700000,
+    DXPF_NONSTANDARD    = 0,
+    DXPF_PMARGB32       = 1 | DXPF_TRANSPARENCY | DXPF_TRANSLUCENCY,
+    DXPF_ARGB32         = 2 | DXPF_NONPREMULT | DXPF_TRANSPARENCY | DXPF_TRANSLUCENCY,
+    DXPF_ARGB4444       = 3 | DXPF_NONPREMULT | DXPF_TRANSPARENCY | DXPF_TRANSLUCENCY
+        | DXPF_4BITERROR,
+    DXPF_A8             = 4 | DXPF_TRANSPARENCY | DXPF_TRANSLUCENCY,
+    DXPF_RGB32          = 5,
+    DXPF_RGB24          = 6,
+    DXPF_RGB565         = 7 | DXPF_3BITERROR,
+    DXPF_RGB555         = 8 | DXPF_3BITERROR,
+    DXPF_RGB8           = 9 | DXPF_5BITERROR,
+    DXPF_ARGB1555       = 10 | DXPF_TRANSPARENCY | DXPF_3BITERROR,
+    DXPF_RGB32_CK       = DXPF_RGB32 | DXPF_TRANSPARENCY,
+    DXPF_RGB24_CK       = DXPF_RGB24 | DXPF_TRANSPARENCY,
+    DXPF_RGB555_CK      = DXPF_RGB555 | DXPF_TRANSPARENCY,
+    DXPF_RGB565_CK      = DXPF_RGB565 | DXPF_TRANSPARENCY,
+    DXPF_RGB8_CK        = DXPF_RGB8 | DXPF_TRANSPARENCY
+} DXSAMPLEFORMATENUM;
+
+/* DirectX lock surface flags */
+typedef enum DXLOCKSURF {
+    DXLOCKF_READ                = 0,
+    DXLOCKF_READWRITE           = 1 << 0,
+    DXLOCKF_EXISTINGINFOONLY    = 1 << 1,
+    DXLOCKF_WANTRUNINFO         = 1 << 2,
+    DXLOCKF_NONPREMULT          = 1 << 16,
+    DXLOCKF_VALIDFLAGS          = DXLOCKF_READWRITE | DXLOCKF_EXISTINGINFOONLY
+        | DXLOCKF_WANTRUNINFO | DXLOCKF_NONPREMULT
+} DXLOCKSURF;
+
+/* DirectX surface status flags */
+typedef enum DXSURFSTATUS {
+    DXSURF_TRANSIENT    = 1 << 0,
+    DXSURF_READONLY     = 1 << 1,
+    DXSURF_VALIDFLAGS   = DXSURF_TRANSIENT | DXSURF_READONLY
+} DXSURFSTATUS;
+
+/* DirectX native type information */
+typedef struct tagDXNATIVETYPEINFO {
+    BYTE    *pCurrentData;
+    BYTE    *pFirstByte;
+    long    lPitch;
+    DWORD   dwColorKey;
+} DXNATIVETYPEINFO;
+
+/* DirectX packed rectangle description */
+typedef struct tagDXPACKEDRECTDESC {
+    DXBASESAMPLE    *pSamples;
+    BOOL            bPremult;
+    RECT            rect;
+    long            lRowPadding;
+} DXPACKEDRECTDESC;
+
+/* DirectX over sample description */
+typedef struct tagDXOVERSAMPLEDESC {
+    POINT       p;
+    DXPMSAMPLE  Color;
+} DXOVERSAMPLEDESC;
+
+/* DirectX bounded effect dispatch identifiers */
+typedef enum DISPIDDXEFFECT {
+    DISPID_DXECAPABILITIES  = 10000,
+    DISPID_DXEPROGRESS      = DISPID_DXECAPABILITIES + 1,
+    DISPID_DXESTEP          = DISPID_DXEPROGRESS + 1,
+    DISPID_DXEDURATION      = DISPID_DXESTEP + 1,
+    DISPID_DXE_NEXT_ID      = DISPID_DXEDURATION + 1
+} DISPIDDXBOUNDEDEFFECT;
+
+/* DirectX effect types */
+typedef enum DXEFFECTTYPE {
+    DXTET_PERIODIC  = 1 << 0,
+    DXTET_MORPH     = 1 << 1
+} DXEFFECTTYPE;
+
+/* DirectX raw surface information */
+typedef struct DXRAWSURFACEINFO {
+    BYTE            *pFirstByte;
+    long            lPitch;
+    ULONG           Width;
+    ULONG           Height;
+    const GUID      *pPixelFormat;
+    HDC             hdc;
+    DWORD           dwColorKey;
+    DXBASESAMPLE    *pPalette;
+} DXRAWSURFACEINFO;
+
+/* DirectX transformation filter status values */
+typedef enum DXTFILTER_STATUS {
+    DXTFILTER_STATUS_Stopped    = 0,
+    DXTFILTER_STATUS_Applied    = DXTFILTER_STATUS_Stopped + 1,
+    DXTFILTER_STATUS_Playing    = DXTFILTER_STATUS_Applied + 1,
+    DXTFILTER_STATUS_MAX        = DXTFILTER_STATUS_Playing + 1
+} DXTFILTER_STATUS;
+
+/* DirectX transformation filter dispatch identifiers */
+typedef enum DXTFILTER_DISPID {
+    DISPID_DXTFilter_Percent    = 1,
+    DISPID_DXTFilter_Duration   = DISPID_DXTFilter_Percent + 1,
+    DISPID_DXTFilter_Enabled    = DISPID_DXTFilter_Duration + 1,
+    DISPID_DXTFilter_Status     = DISPID_DXTFilter_Enabled + 1,
+    DISPID_DXTFilter_Apply      = DISPID_DXTFilter_Status + 1,
+    DISPID_DXTFilter_Play       = DISPID_DXTFilter_Apply + 1,
+    DISPID_DXTFilter_Stop       = DISPID_DXTFilter_Play + 1,
+    DISPID_DXTFilter_MAX        = DISPID_DXTFilter_Stop + 1
+} DXTFILTER_DISPID;
+
+/* GUIDs */
+EXTERN_C const IID      IID_IDXBaseObject;
+EXTERN_C const IID      IID_IDXTransformFactory;
+EXTERN_C const IID      IID_IDXTransform;
+EXTERN_C const IID      IID_IDXSurfacePick;
+EXTERN_C const IID      IID_IDXTBindHost;
+EXTERN_C const IID      IID_IDXTaskManager;
+EXTERN_C const IID      IID_IDXSurfaceFactory;
+EXTERN_C const IID      IID_IDXSurfaceModifier;
+EXTERN_C const IID      IID_IDXSurface;
+EXTERN_C const IID      IID_IDXSurfaceInit;
+EXTERN_C const IID      IID_IDXARGBSurfaceInit;
+EXTERN_C const IID      IID_IDXARGBReadPtr;
+EXTERN_C const IID      IID_IDXARGBReadWritePtr;
+EXTERN_C const IID      IID_IDXDCLock;
+EXTERN_C const IID      IID_IDXTScaleOutput;
+EXTERN_C const IID      IID_IDXGradient;
+EXTERN_C const IID      IID_IDXTScale;
+EXTERN_C const IID      IID_IDXEffect;
+EXTERN_C const IID      IID_IDXLookupTable;
+EXTERN_C const IID      IID_IDXRawSurface;
+EXTERN_C const IID      IID_IHTMLDXTransform;
+EXTERN_C const IID      IID_ICSSFilterDispatch;
+EXTERN_C const CLSID    CLSID_DXTransformFactory;
+EXTERN_C const CLSID    CLSID_DXTaskManager;
+EXTERN_C const CLSID    CLSID_DXTScale;
+EXTERN_C const CLSID    CLSID_DXSurface;
+EXTERN_C const CLSID    CLSID_DXSurfaceModifier;
+EXTERN_C const CLSID    CLSID_DXGradient;
+EXTERN_C const CLSID    CLSID_DXTFilter;
+
+/* IDXBaseObject interface */
+#undef INTERFACE
+#define INTERFACE   IDXBaseObject
+DECLARE_INTERFACE_( IDXBaseObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXBaseObject methods */
+    STDMETHOD( GetGenerationId )( THIS_ ULONG * ) PURE;
+    STDMETHOD( IncrementGenerationId )( THIS_ BOOL ) PURE;
+    STDMETHOD( GetObjectSize )( THIS_ ULONG * ) PURE;
+};
+
+/* IDXTransformFactory interface */
+#undef INTERFACE
+#define INTERFACE   IDXTransformFactory
+DECLARE_INTERFACE_( IDXTransformFactory, IServiceProvider ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IServiceProvider methods */
+    STDMETHOD( QueryService )( THIS_ REFGUID, REFIID, void ** ) PURE;
+
+    /* IDXTransformFactory methods */
+    STDMETHOD( SetService )( THIS_ REFGUID, IUnknown *, BOOL ) PURE;
+    STDMETHOD( CreateTransform )( THIS_ IUnknown **, ULONG, IUnknown **, ULONG, IPropertyBag *, IErrorLog *, REFCLSID, REFIID, void ** ) PURE;
+    STDMETHOD( InitializeTransform )( THIS_ IDXTransform *, IUnknown **, ULONG, IUnknown **, ULONG, IPropertyBag *, IErrorLog * ) PURE;
+};
+
+/* IDXTransform interface */
+#undef INTERFACE
+#define INTERFACE   IDXTransform
+DECLARE_INTERFACE_( IDXTransform, IDXBaseObject ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXBaseObject methods */
+    STDMETHOD( GetGenerationId )( THIS_ ULONG * ) PURE;
+    STDMETHOD( IncrementGenerationId )( THIS_ BOOL ) PURE;
+    STDMETHOD( GetObjectSize )( THIS_ ULONG * ) PURE;
+
+    /* IDXTransform methods */
+    STDMETHOD( Setup )( THIS_ IUnknown **, ULONG, IUnknown **, ULONG, DWORD ) PURE;
+    STDMETHOD( Execute )( THIS_ const GUID *, const DXBNDS *, const DXVEC * ) PURE;
+    STDMETHOD( MapBoundsIn2Out )( THIS_ const DXBNDS *, ULONG, ULONG, DXBNDS * ) PURE;
+    STDMETHOD( MapBoundsOut2In )( THIS_ ULONG, const DXBNDS *, ULONG, DXBNDS * ) PURE;
+    STDMETHOD( SetMiscFlags )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetMiscFlags )( THIS_ DWORD * ) PURE;
+    STDMETHOD( GetInOutInfo )( THIS_ BOOL, ULONG, DWORD *, GUID *, ULONG *, IUnknown ** ) PURE;
+    STDMETHOD( SetQuality )( THIS_ float ) PURE;
+    STDMETHOD( GetQuality )( THIS_ float * ) PURE;
+};
+
+/* IDXSurfacePick interface */
+#undef INTERFACE
+#define INTERFACE   IDXSurfacePick
+DECLARE_INTERFACE_( IDXSurfacePick, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXSurfacePick methods */
+    STDMETHOD( PointPick )( THIS_ const DXVEC *, ULONG *, DXVEC * ) PURE;
+};
+
+/* IDXTBindHost interface */
+#undef INTERFACE
+#define INTERFACE   IDXTBindHost
+DECLARE_INTERFACE_( IDXTBindHost, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXTBindHost methods */
+    STDMETHOD( SetBindHost )( THIS_ IBindHost * ) PURE;
+};
+
+/* IDXTaskManager interface */
+#undef INTERFACE
+#define INTERFACE   IDXTaskManager
+DECLARE_INTERFACE_( IDXTaskManager, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXTaskManager methods */
+    STDMETHOD( QueryNumProcessors )( THIS_ ULONG * ) PURE;
+    STDMETHOD( SetThreadPoolSize )( THIS_ ULONG ) PURE;
+    STDMETHOD( GetThreadPoolSize )( THIS_ ULONG * ) PURE;
+    STDMETHOD( SetConcurrencyLimit )( THIS_ ULONG ) PURE;
+    STDMETHOD( GetConcurrencyLimit )( THIS_ ULONG * ) PURE;
+    STDMETHOD( ScheduleTasks )( THIS_ DXTMTASKINFO [], HANDLE [], DWORD [], ULONG, ULONG ) PURE;
+    STDMETHOD( TerminateTasks )( THIS_ DWORD [], ULONG, ULONG ) PURE;
+    STDMETHOD( TerminateRequest )( THIS_ REFIID, ULONG ) PURE;
+};
+
+/* IDXSurfaceFactory interface */
+#undef INTERFACE
+#define INTERFACE   IDXSurfaceFactory
+DECLARE_INTERFACE_( IDXSurfaceFactory, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXSurfaceFactory methods */
+    STDMETHOD( CreateSurface )( THIS_ IUnknown *, const DDSURFACEDESC *, const GUID *, const DXBNDS *, DWORD, IUnknown *, REFIID, void ** ) PURE;
+    STDMETHOD( CreateFromDDSurface )( THIS_ IUnknown *, const GUID *, DWORD, IUnknown *, REFIID, void ** ) PURE;
+    STDMETHOD( LoadImage )( THIS_ const LPWSTR, IUnknown *, const DDSURFACEDESC *, const GUID *, REFIID, void ** ) PURE;
+    STDMETHOD( LoadImageFromStream )( THIS_ IStream *, IUnknown *, const DDSURFACEDESC *, const GUID *, REFIID, void ** ) PURE;
+    STDMETHOD( CopySurfaceToNewFormat )( THIS_ IDXSurface *, IUnknown *, const DDSURFACEDESC *, const GUID *, IDXSurface ** ) PURE;
+    STDMETHOD( CreateD3DRMTexture )( THIS_ IDXSurface *, IUnknown *, IUnknown *, REFIID, void ** ) PURE;
+    STDMETHOD( BitBlt )( THIS_ IDXSurface *, const DXVEC *, IDXSurface *, const DXBNDS *, DWORD ) PURE;
+};
+
+/* IDXSurfaceModifier interface */
+#undef INTERFACE
+#define INTERFACE   IDXSurfaceModifier
+DECLARE_INTERFACE_( IDXSurfaceModifier, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXSurfaceModifier methods */
+    STDMETHOD( SetFillColor )( THIS_ DXSAMPLE ) PURE;
+    STDMETHOD( GetFillColor )( THIS_ DXSAMPLE * ) PURE;
+    STDMETHOD( SetBounds )( THIS_ const DXBNDS * ) PURE;
+    STDMETHOD( SetBackground )( THIS_ IDXSurface * ) PURE;
+    STDMETHOD( GetBackground )( THIS_ IDXSurface ** ) PURE;
+    STDMETHOD( SetCompositeOperation )( THIS_ DXSURFMODCOMPOP ) PURE;
+    STDMETHOD( GetCompositeOperation )( THIS_ DXSURFMODCOMPOP * ) PURE;
+    STDMETHOD( SetForeground )( THIS_ IDXSurface *, BOOL, const POINT * ) PURE;
+    STDMETHOD( GetForeground )( THIS_ IDXSurface **, BOOL *, POINT * ) PURE;
+    STDMETHOD( SetOpacity )( THIS_ float ) PURE;
+    STDMETHOD( GetOpacity )( THIS_ float * ) PURE;
+    STDMETHOD( SetLookup )( THIS_ IDXLookupTable * ) PURE;
+    STDMETHOD( GetLookup )( THIS_ IDXLookupTable ** ) PURE;
+};
+
+/* IDXSurface interface */
+#undef INTERFACE
+#define INTERFACE   IDXSurface
+DECLARE_INTERFACE_( IDXSurface, IDXBaseObject ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXBaseObject methods */
+    STDMETHOD( GetGenerationId )( THIS_ ULONG * ) PURE;
+    STDMETHOD( IncrementGenerationId )( THIS_ BOOL ) PURE;
+    STDMETHOD( GetObjectSize )( THIS_ ULONG * ) PURE;
+
+    /* IDXSurface methods */
+    STDMETHOD( GetPixelFormat )( THIS_ GUID *, DXSAMPLEFORMATENUM * ) PURE;
+    STDMETHOD( GetBounds )( THIS_ DXBNDS * ) PURE;
+    STDMETHOD( GetStatusFlags )( THIS_ DWORD * ) PURE;
+    STDMETHOD( SetStatusFlags )( THIS_ DWORD ) PURE;
+    STDMETHOD( LockSurface )( THIS_ const DXBNDS *, ULONG, DWORD, REFIID, void **, ULONG * ) PURE;
+    STDMETHOD( GetDirectDrawSurface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DXSAMPLE * ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DXSAMPLE ) PURE;
+    STDMETHOD( LockSurfaceDC )( THIS_ const DXBNDS *, ULONG, DWORD, IDXDCLock ** ) PURE;
+    STDMETHOD( SetAppData )( THIS_ DWORD_PTR ) PURE;
+    STDMETHOD( GetAppData )( THIS_ DWORD_PTR * ) PURE;
+};
+
+/* IDXSurfaceInit interface */
+#undef INTERFACE
+#define INTERFACE   IDXSurfaceInit
+DECLARE_INTERFACE_( IDXSurfaceInit, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXSurfaceInit methods */
+    STDMETHOD( InitSurface )( THIS_ IUnknown *, const DDSURFACEDESC *, const GUID *, const DXBNDS *, DWORD ) PURE;
+};
+
+/* IDXARGBSurfaceInit interface */
+#undef INTERFACE
+#define INTERFACE   IDXARGBSurfaceInit
+DECLARE_INTERFACE_( IDXARGBSurfaceInit, IDXSurfaceInit ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXSurfaceInit methods */
+    STDMETHOD( InitSurface )( THIS_ IUnknown *, const DDSURFACEDESC *, const GUID *, const DXBNDS *, DWORD ) PURE;
+
+    /* IDXARGBSurfaceInit methods */
+    STDMETHOD( InitFromDDSurface )( THIS_ IUnknown *, const GUID *, DWORD ) PURE;
+    STDMETHOD( InitFromRawSurface )( THIS_ IDXRawSurface * ) PURE;
+};
+
+/* IDXARGBReadPtr interface */
+#undef INTERFACE
+#define INTERFACE   IDXARGBReadPtr
+DECLARE_INTERFACE_( IDXARGBReadPtr, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXARGBReadPtr methods */
+    STDMETHOD( GetSurface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( DXSAMPLEFORMATENUM, GetNativeType )( THIS_ DXNATIVETYPEINFO * ) PURE;
+    STDMETHOD_( void, Move )( THIS_ long ) PURE;
+    STDMETHOD_( void, MoveToRow )( THIS_ ULONG ) PURE;
+    STDMETHOD_( void, MoveToXY )( THIS_ ULONG, ULONG ) PURE;
+    STDMETHOD_( ULONG, MoveAndGetRunInfo )( THIS_ ULONG, const DXRUNINFO ** ) PURE;
+    STDMETHOD_( DXSAMPLE *, Unpack )( THIS_ DXSAMPLE *, ULONG, BOOL ) PURE;
+    STDMETHOD_( DXPMSAMPLE *, UnpackPremult )( THIS_ DXPMSAMPLE *, ULONG, BOOL ) PURE;
+    STDMETHOD_( void, UnpackRest )( THIS_ const DXPACKEDRECTDESC * ) PURE;
+};
+
+/* IDXARGBReadWritePtr interface */
+#undef INTERFACE
+#define INTERFACE   IDXARGBReadWritePtr
+DECLARE_INTERFACE_( IDXARGBReadWritePtr, IDXARGBReadPtr ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXARGBReadPtr methods */
+    STDMETHOD( GetSurface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( DXSAMPLEFORMATENUM, GetNativeType )( THIS_ DXNATIVETYPEINFO * ) PURE;
+    STDMETHOD_( void, Move )( THIS_ long ) PURE;
+    STDMETHOD_( void, MoveToRow )( THIS_ ULONG ) PURE;
+    STDMETHOD_( void, MoveToXY )( THIS_ ULONG, ULONG ) PURE;
+    STDMETHOD_( ULONG, MoveAndGetRunInfo )( THIS_ ULONG, const DXRUNINFO ** ) PURE;
+    STDMETHOD_( DXSAMPLE *, Unpack )( THIS_ DXSAMPLE *, ULONG, BOOL ) PURE;
+    STDMETHOD_( DXPMSAMPLE *, UnpackPremult )( THIS_ DXPMSAMPLE *, ULONG, BOOL ) PURE;
+    STDMETHOD_( void, UnpackRest )( THIS_ const DXPACKEDRECTDESC * ) PURE;
+
+    /* IDXARGBReadWritePtr methods */
+    STDMETHOD_( void, PackAndMove )( THIS_ const DXSAMPLE *, ULONG ) PURE;
+    STDMETHOD_( void, PackPremultAndMove )( THIS_ const DXPMSAMPLE *, ULONG ) PURE;
+    STDMETHOD_( void, PackRect )( THIS_ const DXPACKEDRECTDESC * ) PURE;
+    STDMETHOD_( void, CopyAndMoveBoth )( THIS_ DXBASESAMPLE *, IDXARGBReadPtr *, ULONG, BOOL ) PURE;
+    STDMETHOD_( void, CopyRect )( THIS_ DXBASESAMPLE *, const RECT *, IDXARGBReadPtr *, const POINT *, BOOL ) PURE;
+    STDMETHOD_( void, FillAndMove )( THIS_ DXBASESAMPLE *, DXPMSAMPLE, ULONG, BOOL ) PURE;
+    STDMETHOD_( void, FillRect )( THIS_ const RECT *, DXPMSAMPLE, BOOL ) PURE;
+    STDMETHOD_( void, OverSample )( THIS_ const DXOVERSAMPLEDESC * ) PURE;
+    STDMETHOD_( void, OverArrayAndMove )( THIS_ DXBASESAMPLE *, const DXPMSAMPLE *, ULONG ) PURE;
+};
+
+/* IDXDCLock interface */
+#undef INTERFACE
+#define INTERFACE   IDXDCLock
+DECLARE_INTERFACE_( IDXDCLock, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXDCLock methods */
+    STDMETHOD_( HDC, GetDC )( THIS ) PURE;
+};
+
+/* IDXTScaleOutput interface */
+#undef INTERFACE
+#define INTERFACE   IDXTScaleOutput
+DECLARE_INTERFACE_( IDXTScaleOutput, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXTScaleOutput methods */
+    STDMETHOD( SetOutputSize )( THIS_ const SIZE, BOOL ) PURE;
+};
+
+/* IDXGradient interface */
+#undef INTERFACE
+#define INTERFACE   IDXGradient
+DECLARE_INTERFACE_( IDXGradient, IDXTScaleOutput ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXTScaleOutput methods */
+    STDMETHOD( SetOutputSize )( THIS_ const SIZE, BOOL ) PURE;
+
+    /* IDXGradient methods */
+    STDMETHOD( SetGradient )( THIS_ DXSAMPLE, DXSAMPLE, BOOL ) PURE;
+    STDMETHOD( GetOutputSize )( THIS_ SIZE * ) PURE;
+};
+
+/* IDXTScale interface */
+#undef INTERFACE
+#define INTERFACE   IDXTScale
+DECLARE_INTERFACE_( IDXTScale, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXTScale methods */
+    STDMETHOD( SetScales )( THIS_ float [2] ) PURE;
+    STDMETHOD( GetScales )( THIS_ float [2] ) PURE;
+    STDMETHOD( ScaleFitToSize )( THIS_ DXBNDS *, SIZE, BOOL ) PURE;
+};
+
+/* IDXEffect interface */
+#undef INTERFACE
+#define INTERFACE   IDXEffect
+DECLARE_INTERFACE_( IDXEffect, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IDXEffect methods */
+    STDMETHOD( get_Capabilities )( THIS_ long * ) PURE;
+    STDMETHOD( get_Progress )( THIS_ float * ) PURE;
+    STDMETHOD( put_Progress )( THIS_ float ) PURE;
+    STDMETHOD( get_StepResolution )( THIS_ float * ) PURE;
+    STDMETHOD( get_Duration )( THIS_ float * ) PURE;
+    STDMETHOD( put_Duration )( THIS_ float ) PURE;
+};
+
+/* IDXLookupTable interface */
+#undef INTERFACE
+#define INTERFACE   IDXLookupTable
+DECLARE_INTERFACE_( IDXLookupTable, IDXBaseObject ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXBaseObject methods */
+    STDMETHOD( GetGenerationId )( THIS_ ULONG * ) PURE;
+    STDMETHOD( IncrementGenerationId )( THIS_ BOOL ) PURE;
+    STDMETHOD( GetObjectSize )( THIS_ ULONG * ) PURE;
+
+    /* IDXLookupTable methods */
+    STDMETHOD( GetTables )( THIS_ BYTE [256], BYTE [256], BYTE [256], BYTE [256] ) PURE;
+    STDMETHOD( IsChannelIdentity )( THIS_ DXBASESAMPLE * ) PURE;
+    STDMETHOD( GetIndexValues )( THIS_ ULONG, DXBASESAMPLE * ) PURE;
+    STDMETHOD( ApplyTables )( THIS_ DXSAMPLE *, ULONG ) PURE;
+};
+
+/* IDXRawSurface interface */
+#undef INTERFACE
+#define INTERFACE   IDXRawSurface
+DECLARE_INTERFACE_( IDXRawSurface, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDXRawSurface methods */
+    STDMETHOD( GetSurfaceInfo )( THIS_ DXRAWSURFACEINFO * ) PURE;
+};
+
+/* IHTMLDXTransform interface */
+#undef INTERFACE
+#define INTERFACE   IHTMLDXTransform
+DECLARE_INTERFACE_( IHTMLDXTransform, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IHTMLDXTransform methods */
+    STDMETHOD( SetHostUrl )( THIS_ BSTR ) PURE;
+};
+
+/* ICSSFilterDispatch interface */
+#undef INTERFACE
+#define INTERFACE   ICSSFilterDispatch
+DECLARE_INTERFACE_( ICSSFilterDispatch, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* ICSSFilterDispatch methods */
+    STDMETHOD( get_Percent )( THIS_ float * ) PURE;
+    STDMETHOD( put_Percent )( THIS_ float ) PURE;
+    STDMETHOD( get_Duration )( THIS_ float * ) PURE;
+    STDMETHOD( put_Duration )( THIS_ float ) PURE;
+    STDMETHOD( get_Enabled )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( put_Enabled )( THIS_ VARIANT_BOOL ) PURE;
+    STDMETHOD( get_Status )( THIS_ DXTFILTER_STATUS * ) PURE;
+    STDMETHOD( Apply )( THIS ) PURE;
+    STDMETHOD( Play )( THIS_ VARIANT ) PURE;
+    STDMETHOD( Stop )( THIS ) PURE;
+};
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IDXBaseObject_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXBaseObject_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXBaseObject_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXBaseObject_GetGenerationId( x, p ) \
+        (x)->lpVtbl->GetGenerationId( x, p )
+    #define IDXBaseObject_IncrementGenerationId( x, p ) \
+        (x)->lpVtbl->IncrementGenerationId( x, p )
+    #define IDXBaseObject_GetObjectSize( x, p ) \
+        (x)->lpVtbl->GetObjectSize( x, p )
+    #define IDXTransformFactory_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTransformFactory_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTransformFactory_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTransformFactory_QueryService( x, p1, p2, p3 ) \
+        (x)->lpVtbl->QueryService( x, p1, p2, p3 )
+    #define IDXTransformFactory_SetService( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetService( x, p1, p2, p3 )
+    #define IDXTransformFactory_CreateTransform( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 ) \
+        (x)->lpVtbl->CreateTransform( x, p1, p2, p3, p4, p5, p6, p7, p8, p9 )
+    #define IDXTransformFactory_InitializeTransform( x, p1, p2, p3, p4, p5, p6, p7 ) \
+        (x)->lpVtbl->InitializeTransform( x, p1, p2, p3, p4, p5, p6, p7 )
+    #define IDXTransform_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTransform_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTransform_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTransform_GetGenerationId( x, p ) \
+        (x)->lpVtbl->GetGenerationId( x, p )
+    #define IDXTransform_IncrementGenerationId( x, p ) \
+        (x)->lpVtbl->IncrementGenerationId( x, p )
+    #define IDXTransform_GetObjectSize( x, p ) \
+        (x)->lpVtbl->GetObjectSize( x, p )
+    #define IDXTransform_Setup( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Setup( x, p1, p2, p3, p4, p5 )
+    #define IDXTransform_Execute( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Execute( x, p1, p2, p3 )
+    #define IDXTransform_MapBoundsIn2Out( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->MapBoundsIn2Out( x, p1, p2, p3, p4 )
+    #define IDXTransform_MapBoundsOut2In( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->MapBoundsOut2In( x, p1, p2, p3, p4 )
+    #define IDXTransform_SetMiscFlags( x, p ) \
+        (x)->lpVtbl->SetMiscFlags( x, p )
+    #define IDXTransform_GetMiscFlags( x, p ) \
+        (x)->lpVtbl->GetMiscFlags( x, p )
+    #define IDXTransform_GetInOutInfo( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->GetInOutInfo( x, p1, p2, p3, p4, p5, p6 )
+    #define IDXTransform_SetQuality( x, p ) \
+        (x)->lpVtbl->SetQuality( x, p )
+    #define IDXTransform_GetQuality( x, p ) \
+        (x)->lpVtbl->GetQuality( x, p )
+    #define IDXSurfacePick_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXSurfacePick_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXSurfacePick_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXSurfacePick_PointPick( x, p1, p2, p3 ) \
+        (x)->lpVtbl->PointPick( x, p1, p2, p3 )
+    #define IDXTBindHost_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTBindHost_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTBindHost_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTBindHost_SetBindHost( x, p ) \
+        (x)->lpVtbl->SetBindHost( x, p )
+    #define IDXTaskManager_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTaskManger_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTaskManager_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTaskManager_QueryNumProcessors( x, p ) \
+        (x)->lpVtbl->QueryNumProcessors( x, p )
+    #define IDXTaskManager_SetThreadPoolSize( x, p ) \
+        (x)->lpVtbl->SetThreadPoolSize( x, p )
+    #define IDXTaskManager_GetThreadPoolSize( x, p ) \
+        (x)->lpVtbl->GetThreadPoolSize( x, p )
+    #define IDXTaskManager_SetConcurrencyLimit( x, p ) \
+        (x)->lpVtbl->SetConcurrencyLimit( x, p )
+    #define IDXTaskManager_GetConcurrencyLimit( x, p ) \
+        (x)->lpVtbl->GetConcurrencyLimit( x, p )
+    #define IDXTaskManager_ScheduleTasks( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->ScheduleTasks( x, p1, p2, p3, p4, p5 )
+    #define IDXTaskManager_TerminateTasks( x, p1, p2, p3 ) \
+        (x)->lpVtbl->TerminateTasks( x, p1, p2, p3 )
+    #define IDXTaskManager_TerminateRequest( x, p1, p2 ) \
+        (x)->lpVtbl->TerminateRequest( x, p1, p2 )
+    #define IDXSurfaceFactory_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXSurfaceFactory_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXSurfaceFactory_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXSurfaceFactory_CreateSurface( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->CreateSurface( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IDXSurfaceFactory_CreateFromDDSurface( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->CreateFromDDSurface( x, p1, p2, p3, p4, p5, p6 )
+    #define IDXSurfaceFactory_LoadImage( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->LoadImage( x, p1, p2, p3, p4, p5, p6 )
+    #define IDXSurfaceFactory_LoadImageFromStream( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->LoadImageFromStream( x, p1, p2, p3, p4, p5, p6 )
+    #define IDXSurfaceFactory_CopySurfaceToNewFormat( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->CopySurfaceToNewFormat( x, p1, p2, p3, p4, p5 )
+    #define IDXSurfaceFactory_CreateD3DRMTexture( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->CreateD3DRMTexture( x, p1, p2, p3, p4, p5 )
+    #define IDXSurfaceFactory_BitBlt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BitBlt( x, p1, p2, p3, p4, p5 )
+    #define IDXSurfaceModifier_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXSurfaceModifier_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXSurfaceModifier_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXSurfaceModifier_SetFillColor( x, p ) \
+        (x)->lpVtbl->SetFillColor( x, p )
+    #define IDXSurfaceModifier_GetFillColor( x, p ) \
+        (x)->lpVtbl->GetFillColor( x, p )
+    #define IDXSurfaceModifier_SetBounds( x, p ) \
+        (x)->lpVtbl->SetBounds( x, p )
+    #define IDXSurfaceModifier_SetBackground( x, p ) \
+        (x)->lpVtbl->SetBackground( x, p )
+    #define IDXSurfaceModifier_GetBackground( x, p ) \
+        (x)->lpVtbl->GetBackground( x, p )
+    #define IDXSurfaceModifier_SetCompositeOperation( x, p ) \
+        (x)->lpVtbl->SetCompositeOperation( x, p )
+    #define IDXSurfaceModifier_GetCompositeOperation( x, p ) \
+        (x)->lpVtbl->GetCompositeOperation( x, p )
+    #define IDXSurfaceModifier_SetForeground( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetForeground( x, p1, p2, p3 )
+    #define IDXSurfaceModifier_GetForeground( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetForeground( x, p1, p2, p3 )
+    #define IDXSurfaceModifier_SetOpacity( x, p ) \
+        (x)->lpVtbl->SetOpacity( x, p )
+    #define IDXSurfaceModifier_GetOpacity( x, p ) \
+        (x)->lpVtbl->GetOpacity( x, p )
+    #define IDXSurfaceModifier_SetLookup( x, p ) \
+        (x)->lpVtbl->SetLookup( x, p )
+    #define IDXSurfaceModifier_GetLookup( x, p ) \
+        (x)->lpVtbl->GetLookup( x, p )
+    #define IDXSurface_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXSurface_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXSurface_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXSurface_GetGenerationId( x, p ) \
+        (x)->lpVtbl->GetGenerationId( x, p )
+    #define IDXSurface_IncrementGenerationId( x, p ) \
+        (x)->lpVtbl->IncrementGenerationId( x, p )
+    #define IDXSurface_GetObjectSize( x, p ) \
+        (x)->lpVtbl->GetObjectSize( x, p )
+    #define IDXSurface_GetPixelFormat( x, p1, p2 ) \
+        (x)->lpVtbl->GetPixelFormat( x, p1, p2 )
+    #define IDXSurface_GetBounds( x, p ) \
+        (x)->lpVtbl->GetBounds( x, p )
+    #define IDXSurface_GetStatusFlags( x, p ) \
+        (x)->lpVtbl->GetStatusFlags( x, p )
+    #define IDXSurface_SetStatusFlags( x, p ) \
+        (x)->lpVtbl->SetStatusFlags( x, p )
+    #define IDXSurface_LockSurface( x, p1, p2, p3, p4, p5, p6 ) \
+        (x)->lpVtbl->LockSurface( x, p1, p2, p3, p4, p5, p6 )
+    #define IDXSurface_GetDirectDrawSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetDirectDrawSurface( x, p1, p2 )
+    #define IDXSurface_GetColorKey( x, p ) \
+        (x)->lpVtbl->GetColorKey( x, p )
+    #define IDXSurface_SetColorKey( x, p ) \
+        (x)->lpVtbl->SetColorKey( x, p )
+    #define IDXSurface_LockSurfaceDC( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->LockSurfaceDC( x, p1, p2, p3, p4 )
+    #define IDXSurface_SetAppData( x, p ) \
+        (x)->lpVtbl->SetAppData( x, p )
+    #define IDXSurface_GetAppData( x, p ) \
+        (x)->lpVtbl->GetAppData( x, p )
+    #define IDXSurfaceInit_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXSurfaceInit_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXSurfaceInit_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXSurfaceInit_InitSurface( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->InitSurface( x, p1, p2, p3, p4, p5 )
+    #define IDXARGBSurfaceInit_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXARGBSurfaceInit_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXARGBSurfaceInit_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXARGBSurfaceInit_InitSurface( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->InitSurface( x, p1, p2, p3, p4, p5 )
+    #define IDXARGBSurfaceInit_InitFromDDSurface( x, p1, p2, p3 ) \
+        (x)->lpVtbl->InitFromDDSurface( x, p1, p2, p3 )
+    #define IDXARGBSurfaceInit_InitFromRawSurface( x, p ) \
+        (x)->lpVtbl->InitFromRawSurface( x, p )
+    #define IDXARGBReadPtr_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXARGBReadPtr_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXARGBReadPtr_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXARGBReadPtr_GetSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetSurface( x, p1, p2 )
+    #define IDXARGBReadPtr_GetNativeType( x, p ) \
+        (x)->lpVtbl->GetNativeType( x, p )
+    #define IDXARGBReadPtr_Move( x, p ) \
+        (x)->lpVtbl->Move( x, p )
+    #define IDXARGBReadPtr_MoveToRow( x, p ) \
+        (x)->lpVtbl->MoveToRow( x, p )
+    #define IDXARGBReadPtr_MoveToXY( x, p1, p2 ) \
+        (x)->lpVtbl->MoveToXY( x, p1, p2 )
+    #define IDXARGBReadPtr_MoveAndGetRunInfo( x, p1, p2 ) \
+        (x)->lpVtbl->MoveAndGetRunInfo( x, p1, p2 )
+    #define IDXARGBReadPtr_Unpack( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Unpack( x, p1, p2, p3 )
+    #define IDXARGBReadPtr_UnpackPremult( x, p1, p2, p3 ) \
+        (x)->lpVtbl->UnpackPremult( x, p1, p2, p3 )
+    #define IDXARGBReadPtr_UnpackRect( x, p ) \
+        (x)->lpVtbl->UnpackRect( x, p )
+    #define IDXARGBReadWritePtr_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXARGBReadWritePtr_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXARGBReadWritePtr_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXARGBReadWritePtr_GetSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetSurface( x, p1, p2 )
+    #define IDXARGBReadWritePtr_GetNativeType( x, p ) \
+        (x)->lpVtbl->GetNativeType( x, p )
+    #define IDXARGBReadWritePtr_Move( x, p ) \
+        (x)->lpVtbl->Move( x, p )
+    #define IDXARGBReadWritePtr_MoveToRow( x, p ) \
+        (x)->lpVtbl->MoveToRow( x, p )
+    #define IDXARGBReadWritePtr_MoveToXY( x, p1, p2 ) \
+        (x)->lpVtbl->MoveToXY( x, p1, p2 )
+    #define IDXARGBReadWritePtr_MoveAndGetRunInfo( x, p1, p2 ) \
+        (x)->lpVtbl->MoveAndGetRunInfo( x, p1, p2 )
+    #define IDXARGBReadWritePtr_Unpack( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Unpack( x, p1, p2, p3 )
+    #define IDXARGBReadWritePtr_UnpackPremult( x, p1, p2, p3 ) \
+        (x)->lpVtbl->UnpackPremult( x, p1, p2, p3 )
+    #define IDXARGBReadWritePtr_UnpackRect( x, p ) \
+        (x)->lpVtbl->UnpackRect( x, p )
+    #define IDXARGBReadWritePtr_PackAndMove( x, p1, p2 ) \
+        (x)->lpVtbl->PackAndMove( x, p1, p2 )
+    #define IDXARGBReadWritePtr_PackPremultAndMove( x, p1, p2 ) \
+        (x)->lpVtbl->PackPremultAndMove( x, p1, p2 )
+    #define IDXARGBReadWritePtr_PackRect( x, p ) \
+        (x)->lpVtbl->PackRect( x, p )
+    #define IDXARGBReadWritePtr_CopyAndMoveBoth( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CopyAndMoveBoth( x, p1, p2, p3, p4 )
+    #define IDXARGBReadWritePtr_CopyRect( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->CopyRect( x, p1, p2, p3, p4, p5 )
+    #define IDXARGBReadWritePtr_FillAndMove( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->FillAndMove( x, p1, p2, p3, p4 )
+    #define IDXARGBReadWritePtr_FillRect( x, p1, p2, p3 ) \
+        (x)->lpVtbl->FillRect( x, p1, p2, p3 )
+    #define IDXARGBReadWritePtr_OverSample( x, p ) \
+        (x)->lpVtbl->OverSample( x, p )
+    #define IDXARGBReadWritePtr_OverArrayAndMove( x, p1, p2, p3 ) \
+        (x)->lpVtbl->OverArrayAndMove( x, p1, p2, p3 )
+    #define IDXDCLock_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXDCLock_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXDCLock_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXDCLock_GetDC( x ) \
+        (x)->lpVtbl->GetDC( x )
+    #define IDXTScaleOutput_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTScaleOutput_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTScaleOutput_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTScaleOutput_SetOutputSize( x, p1, p2 ) \
+        (x)->lpVtbl->SetOutputSize( x, p1, p2 )
+    #define IDXGradient_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXGradient_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXGradient_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXGradient_SetOutputSize( x, p1, p2 ) \
+        (x)->lpVtbl->SetOutputSize( x, p1, p2 )
+    #define IDXGradient_SetGradient( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetGradient( x, p1, p2, p3 )
+    #define IDXGradient_GetOutputSize( x, p ) \
+        (x)->lpVtbl->GetOutputSize( x, p )
+    #define IDXTScale_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXTScale_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXTScale_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXTScale_SetScales( x, p ) \
+        (x)->lpVtbl->SetScales( x, p )
+    #define IDXTScale_GetScales( x, p ) \
+        (x)->lpVtbl->GetScales( x, p )
+    #define IDXTScale_ScaleFitToSize( x, p1, p2, p3 ) \
+        (x)->lpVtbl->ScaleFitToSize( x, p1, p2, p3 )
+    #define IDXEffect_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXEffect_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXEffect_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXEffect_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IDXEffect_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IDXEffect_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IDXEffect_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IDXEffect_get_Capabilities( x, p ) \
+        (x)->lpVtbl->get_Capabilities( x, p )
+    #define IDXEffect_get_Progress( x, p ) \
+        (x)->lpVtbl->get_Progress( x, p )
+    #define IDXEffect_put_Progress( x, p ) \
+        (x)->lpVtbl->put_Progress( x, p )
+    #define IDXEffect_get_StepResolution( x, p ) \
+        (x)->lpVtbl->get_StepResolution( x, p )
+    #define IDXEffect_get_Duration( x, p ) \
+        (x)->lpVtbl->get_Duration( x, p )
+    #define IDXEffect_put_Duration( x, p ) \
+        (x)->lpVtbl->put_Duration( x, p )
+    #define IDXLookupTable_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXLookupTable_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXLookupTable_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXLookupTable_GetGenerationId( x, p ) \
+        (x)->lpVtbl->GetGenerationId( x, p )
+    #define IDXLookupTable_IncrementGenerationId( x, p ) \
+        (x)->lpVtbl->IncrementGenerationId( x, p )
+    #define IDXLookupTable_GetObjectSize( x, p ) \
+        (x)->lpVtbl->GetObjectSize( x, p )
+    #define IDXLookupTable_GetTables( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetTables( x, p1, p2, p3, p4 )
+    #define IDXLookupTable_IsChannelIdentity( x, p ) \
+        (x)->lpVtbl->IsChannelIdentity( x, p )
+    #define IDXLookupTable_GetIndexValues( x, p1, p2 ) \
+        (x)->lpVtbl->GetIndexValues( x, p1, p2 )
+    #define IDXLookupTable_ApplyTables( x, p1, p2 ) \
+        (x)->lpVtbl->ApplyTables( x, p1, p2 )
+    #define IDXRawSurface_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDXRawSurface_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDXRawSurface_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDXRawSurface_GetSurfaceInfo( x, p ) \
+        (x)->lpVtbl->GetSurfaceInfo( x, p )
+    #define IHTMLDXTransform_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IHTMLDXTransform_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IHTMLDXTransform_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IHTMLDXTransform_SetHostUrl( x, p ) \
+        (x)->lpVtbl->SetHostUrl( x, p )
+    #define ICSSFilterDispatch_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define ICSSFilterDispatch_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define ICSSFilterDispatch_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define ICSSFilterDispatch_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define ICSSFilterDispatch_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define ICSSFilterDispatch_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define ICSSFilterDispatch_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define ICSSFilterDispatch_get_Percent( x, p ) \
+        (x)->lpVtbl->get_Percent( x, p )
+    #define ICSSFilterDispatch_put_Percent( x, p ) \
+        (x)->lpVtbl->put_Percent( x, p )
+    #define ICSSFilterDispatch_get_Duration( x, p ) \
+        (x)->lpVtbl->get_Duration( x, p )
+    #define ICSSFilterDispatch_put_Duration( x, p ) \
+        (x)->lpVtbl->put_Duration( x, p )
+    #define ICSSFilterDispatch_get_Enabled( x, p ) \
+        (x)->lpVtbl->get_Enabled( x, p )
+    #define ICSSFilterDispatch_put_Enabled( x, p ) \
+        (x)->lpVtbl->put_Enabled( x, p )
+    #define ICSSFilterDispatch_get_Status( x, p ) \
+        (x)->lpVtbl->get_Status( x, p )
+    #define ICSSFilterDispatch_Apply( x ) \
+        (x)->lpVtbl->Apply( x )
+    #define ICSSFilterDispatch_Play( x, p ) \
+        (x)->lpVtbl->Play( x, p )
+    #define ICSSFilterDispatch_Stop( x ) \
+        (x)->lpVtbl->Stop( x )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __dxtrans_h__ */

@@ -1,0 +1,81 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">2.28 - DPMI function 0305h
+- Get State Save/Restore Addresses </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns the addresses
+of two procedures used to save and restore the state of the current task's
+registers in the mode which is not currently executing.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0305h</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">CF</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> clear<br>
+<b>AX</b> = size of buffer in bytes required to save state<br>
+<b>BX:CX</b> = real mode address of routine used to save/restore state<br>
+<b>SI:EDI</b> = protected mode address of routine used to save/restore state</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The real mode address
+  returned by this function in BX:CX is called only in real mode to save/restore
+  the state of the protected mode registers. The protected mode address returned
+  by this function in SI:EDI is called only in protected mode to save/restore
+  the state of the real mode registers. Registers for the current mode can
+  be saved by simply pushing them on the stack.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) Both of the state-save
+  procedures are entered by a FAR CALL with the following parameters:</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">AL = 0 to save state<br>
+  AL = 1 to restore state<br>
+  ES:EDI= (selector or segment):offset of state-save buffer</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) The state-save buffer
+  must be at least as large as the value returned in AX by DPMI function
+  0305h. The state save/restore procedures do not modify any registers.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) Some DPMI hosts will
+  not require the state to be saved, indicating this by returning a buffer
+  size of zero in AX. In such cases, the addresses returned by this function
+  can still be called, although they will simply return without performing
+  any useful function.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) Clients do not need
+  to call the state save/restore procedures before using DPMI functions 0300h,
+  0301h, or 0302h. The state save/restore procedures are provided specifically
+  for clients that use the raw mode switch services.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) A client can use the
+  function to save its state in the destination mode before switching modes
+  using the raw mode switch or issuing real-mode calls from a protected mode
+  hardware interrupt handler. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

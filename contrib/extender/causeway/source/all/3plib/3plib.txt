@@ -1,0 +1,125 @@
+Just a short note to explain the workings of 3PLIB.EXE to anyone interested in
+playing with CauseWay DLL's.
+
+CauseWay's DLL loader now has the ability to find modules (a DLL) within a
+larger combination of modules. As an example, if you have one DLL that deals
+with file I/O called FILEIO and another that deals with memory allocation called
+MEMORY, you could do: copy /b fileio.dll + memory.dll system.dll . Now the file
+system.dll contains both FILEIO & MEMORY and CauseWays DLL loader will still be
+able to find both of them. They are still independant of each other, ie, if
+only FILEIO is imported in a program then only the FILEIO module will be load'd
+into memory.
+
+All that's happening here is that when the DLL module finder opens a file and
+finds a CauseWay 3P header, if the module name it finds isn't the one it's after
+it moves past the 3P section of the file and starts again. If the next part of
+the file is a CauseWay 3P header it'll look in that and do the same thing again
+until it finds the module it wants. This process also extends to skipping the
+stub loader used in CauseWay programs so a stand alone EXE can also have
+additional modules appended to it.
+
+3PLIB simply automates the copy /b process and generaly makes life simpler when
+trying to deal with multiple module files. You can add a module, update an
+existing one, delete a module, extract (copy) a module, list all module
+names and exported symbols, and generate an import object to build an import
+library. What you effectively wind up with is a library of DLL modules which
+are much more dynamic in use than a standard DLL and neater than lots of small
+DLL files.
+
+Remember that all you're dealing with here is a bunch of CauseWay files appended
+to create one big file.
+
+
+If you run 3PLIB without any comands you'll see something like this:
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+3PLib v1.00 Copyright 1995 John Wildsmith; All rights reserved.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+Usage:
+
+3plib commands lib_name mod_name [out_name]
+
+commands:
+
+ A - add/replace module in library.
+ D - delete module in library.
+ E - extract module from library.
+ I - write Import object file.
+ L - list modules in library.
+
+lib_name  name of library to process.
+mod_name  name of module to process.
+out_name  name of extracted module file.
+
+commands should be prefixed with /, - or +
+
+
+That should be pretty self explanatory but I'll go through an example of each
+command just to make sure.
+
+
+To add or update a module,
+
+3PLIB /a system.dll fileio.dll
+
+If system.dll doesn't already exist it will be created. If it has a stub loader
+or any trailing data of a none CauseWay nature, that will all be left intact.
+If the module name of the file fileio.dll is already in system.dll the existing
+module will be replaced with the new module. If the module doesn't already
+exist it will be inserted after the last module in the file, before any none 3P
+trailing data, after any stub loader.
+
+
+To delete a module,
+
+3PLIB /d system.dll memory
+
+system.dll will be searched for a module with a name of "memory". When that
+module is found it will be removed from system.dll. It's important to note that
+"memory" is the real name of the module, NOT it's origional file name. It's
+file name got lost when it was put in the library. Module names are NOT
+restricted to 8.3 characters. If you didn't use a NAME command in the DEF file
+when the module was linked then the modules name will be the origional file
+name without an extension.
+
+
+To extract a module,
+
+3PLIB /e system.dll fileio fileio.dll
+
+This is more copy than extract as the module is NOT deleted from system.dll but
+calling it extract is more consistent with file archivers and more likely to be
+remembered. system.dll will be searched for a module with a name of "fileio".
+When that module is found it will be copied to fileio.dll. If the output file
+name isn't specified the file name will be made up of the first 8 characters of
+the module name with .dll appended. "fileio.dll" is optional. Again it's
+important to note that "fileio" is the real name of the module, not it's
+origional file name.
+
+
+3PLIB /i fileio.dll fileio.obj
+
+This creates an object module "fileio.obj" and puts EXTDEF & IMPDEF records in
+it for every exported symbol in fileio.dll. You can then use a standard LIB
+manager to put the OBJ in a LIB file to create an import library for your DLL's.
+Note that if the file "fileio.dll" actually contains multiple modules the
+output OBJ file will have entries for ALL exported symbols in the DLL, not just
+the first module or anything like that. You should really only ever use this
+option on DLL's containing a single module.
+
+
+To list module details,
+
+3PLIB /l system.dll
+
+This lists all module names and all the symbols exported in each module. The
+output for each module is seperated by a blank line, module names start in
+column one, export names in column 4.
+
+
+Commands can appear anywhere on the command line, they don't _have_ to be at
+the start.
+
+
+Have fun!

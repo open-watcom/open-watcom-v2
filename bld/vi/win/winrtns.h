@@ -24,130 +24,131 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows specific prototypes.
 *
 ****************************************************************************/
 
 
-/* windows stuff */
 #ifdef __WIN__
 
 #ifndef WINRTNS_INCLUDED
 #define WINRTNS_INCLUDED
 
 #include "winhdr.h"
-void DDEFini( void );
-void MessageLoop( bool block );
-void StatusDisplay( char * );
-window_id NewEditWindow( void );
-window_id NewCommandWindow( void );
-window_id NewFileCompleteWindow( void );
-window_id NewRepeatCountWindow( void );
-window_id NewMsgWindow( void );
-window_id NewStatWindow( void );
-void RecalcStatusBarSize( window_id );
-bool WindowsKeyPush( WORD, WORD );
-int MenuCommand( unsigned int );
-void StatusLine( int, char *, int );
+void        DDEFini( void );
+void        MessageLoop( bool block );
+window_id   NewEditWindow( void );
+window_id   NewCommandWindow( void );
+window_id   NewFileCompleteWindow( void );
+window_id   NewRepeatCountWindow( void );
+window_id   NewMsgWindow( void );
+window_id   NewStatWindow( void );
+bool        WindowsKeyPush( WORD, WORD );
+vi_rc       MenuCommand( UINT );
+void        StatusLine( int, char *, int );
+int         GetStatusHeight( void );
 
 // display.c
-void ClearWindow( window_id );
+void    ClearWindow( window_id );
 #ifdef BITBLT_BUFFER_DISPLAY
-int DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC, HDC );
+int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC, HDC );
 #else
-int DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
+int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
 #endif
 // int CountChars( char *, char * );
 // int FindPos( char *, int );
 
-void ColorAColumnRange( int, int, int, type_style * );
-void HiliteAColumnRange( linenum, int, int );
-void BarfFontData( FILE * );
-void ResizeRoot( void );
-bool RegisterContainerWindow( HANDLE );
-window_id CreateMainWindow( HANDLE );
-window_id CreateContainerWindow( LPRECT );
-void SetInitialWindowSize( char * );
-void SetInitialWindowRect( RECT *r );
-bool GetDWORD( char *str, LPVOID res );
-void SelRgnInit( void );
-void SelRgnFini( void );
-void ExecWait( char * );
-void NewToolBar( RECT * );
-void DestroyToolBar( void );
-void CloseToolBar( void );
-BOOL AddIconToToolBar( char * );
-int AddBitmapToToolBar( char * );
-int DeleteFromToolBar( char * );
-UINT NextMenuId();
-int HandleToolCommand( UINT );
-void Draw3DBox( window_id, RECT *, RECT * );
-void ResetExtraRects( void );
-void HandleInitMenu( HMENU hmenu );
-void ResetMenuBits( void );
-HWND GetToolbarWindow( void );
-char GetAutosaveResponse( void );
-void ReadProfile( void );
-void WriteProfile( void );
-void StatusDisplay( char * );
+void        ColorAColumnRange( int, int, int, type_style * );
+void        HiliteAColumnRange( linenum, int, int );
+void        BarfFontData( FILE * );
+void        ResizeRoot( void );
+bool        RegisterContainerWindow( HANDLE );
+window_id   CreateMainWindow( HANDLE );
+window_id   CreateContainerWindow( LPRECT );
+void        SetInitialWindowSize( char * );
+void        SetInitialWindowRect( RECT *r );
+bool        GetDWORD( char *str, LPVOID res );
+void        SelRgnInit( void );
+void        SelRgnFini( void );
+void        ExecWait( char * );
+void        NewToolBar( RECT * );
+void        DestroyToolBar( void );
+void        CloseToolBar( void );
+BOOL        AddIconToToolBar( char * );
+vi_rc       AddBitmapToToolBar( char * );
+vi_rc       DeleteFromToolBar( char * );
+UINT        NextMenuId( void );
+vi_rc       HandleToolCommand( UINT );
+void        Draw3DBox( window_id, RECT *, RECT * );
+void        ResetExtraRects( void );
+void        HandleInitMenu( HMENU hmenu );
+void        ResetMenuBits( void );
+HWND        GetToolbarWindow( void );
+vi_key      GetAutosaveResponse( void );
+void        ReadProfile( void );
+void        WriteProfile( void );
+void        FiniProfile( void );
+void        StatusDisplay( char * );
 
 // Cursor.c
-void GoodbyeCursor( HWND );
+void        GoodbyeCursor( HWND );
 
 // Tab_hell.c
-int CursorPositionOffRight( int vc );
+bool        CursorPositionOffRight( int vc );
 
 // Snoop.c
-bool GetSnoopStringDialog( fancy_find **ff );
+bool        GetSnoopStringDialog( fancy_find **ff );
 
 // Find.c
-bool GetFindStringDialog( fancy_find *ff );
+bool        GetFindStringDialog( fancy_find *ff );
 
-bool GetReplaceStringDialog( fancy_find *ff );
-void EditSubClass( HWND hwnd, int id, history_data *h );
-void RemoveEditSubClass( HWND hwnd, int id );
-int MapVirtualKeyToVIKey( WORD vk, WORD data );
-void InitGrepDialog( void );
-void FiniGrepDialog( void );
-bool SetGrepDialogFile( char *str );
-bool GetCmdDialog( char *str, int len );
-bool GetLineDialog( long * );
-void RefreshColorbar( void );
-void RefreshSSbar( void );
-void RefreshFontbar( void );
-void SetSaveConfig( void );
-void BarfToolBarData( void * );
-DWORD GetEditStyle( bool is_max );
-void EditDrawScrollBars( HWND hwnd );
-void SetWindowTitle( HWND hwnd );
-void HandleMenuSelect( UINT wparam, LONG lparam );
-void GetMenuHelpString( char *res );
-void SetMenuHelpString( char *str );
-void ShowStartupDialog( void );
-void CloseStartupDialog( void );
-void UsageDialog( char **, char *, int );
-char *GetInitialFileName( void );
-int HasShare( void );
-int MyGetInstanceData( unsigned short p1, char near *p2, short p3 );
-int PickATag( int clist, char **list, char *tagname );
+bool    GetReplaceStringDialog( fancy_find *ff );
+void    EditSubClass( HWND hwnd, int id, history_data *h );
+void    RemoveEditSubClass( HWND hwnd, int id );
+vi_key  MapVirtualKeyToVIKey( WORD vk, WORD data );
+void    InitGrepDialog( void );
+void    FiniGrepDialog( void );
+bool    SetGrepDialogFile( char *str );
+bool    GetCmdDialog( char *str, int len );
+bool    GetLineDialog( long * );
+void    RefreshColorbar( void );
+void    RefreshSSbar( void );
+void    RefreshFontbar( void );
+void    SetSaveConfig( void );
+void    BarfToolBarData( FILE * );
+DWORD   GetEditStyle( bool is_max );
+void    EditDrawScrollBars( HWND hwnd );
+void    SetWindowTitle( HWND hwnd );
+void    HandleMenuSelect( UINT wparam, LONG lparam );
+void    GetMenuHelpString( char *res );
+void    SetMenuHelpString( char *str );
+void    ShowStartupDialog( void );
+void    CloseStartupDialog( void );
+void    UsageDialog( char **, char *, int );
+char    *GetInitialFileName( void );
+int     HasShare( void );
+int     MyGetInstanceData( unsigned short p1, char near *p2, short p3 );
+int     PickATag( int clist, char **list, char *tagname );
 
 // clrpick.c
-void InitClrPick( void );
-void FiniClrPick( void );
+void    InitClrPick( void );
+void    FiniClrPick( void );
 
 // ftpick.c
-void InitFtPick( void );
-void FiniFtPick( void );
+void    InitFtPick( void );
+void    FiniFtPick( void );
 
-bool GetSetFSDialog( void );
-bool GetSetScrDialog( void );
-bool GetSetGenDialog( void );
-void CenterWindowInRoot( HWND );
-void StatusWndSetSeparatorsWithArray( short *, int );
+bool    GetSetFSDialog( void );
+bool    GetSetScrDialog( void );
+bool    GetSetGenDialog( void );
+void    CenterWindowInRoot( HWND );
+void    StatusWndSetSeparatorsWithArray( short *, int );
 
 // ideactiv.c
-void StartIDE( HANDLE instance, BOOL dospawn );
+void    StartIDE( HANDLE instance, BOOL dospawn );
+
+// filetype.c
+void    UpdateFileTypeIcon( HWND hwnd, const char *filename );
 
 #endif
 

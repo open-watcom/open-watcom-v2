@@ -24,28 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of memcpy() and wmemcpy().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
+#include <wchar.h>
 #include "xstring.h"
-#undef  memcpy
 
-_WCRTLINK void *memcpy( void *in_dst, const void *in_src, size_t len )
-    {
 
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *in_dst, const VOID_WC_TYPE *in_src, size_t len )
+{
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( _inline_memcpy( in_dst, in_src, len ) );
+    return( _inline_memcpy( in_dst, in_src, len ) );
 #else
-        char *dst = (char *)in_dst;
-        const char *src = (const char *)in_src;
-        for( ; len; --len ) {
-            *dst++ = *src++;
-        }
-        return( in_dst );
-#endif
+    CHAR_TYPE           *dst = in_dst;
+    const CHAR_TYPE     *src = in_src;
+
+    for( ; len; --len ) {
+        *dst++ = *src++;
     }
+    return( in_dst );
+#endif
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getcmd() and _bgetcmd() for DOS.
 *
 ****************************************************************************/
 
@@ -36,30 +35,29 @@
 #include <ctype.h>
 #include <dos.h>
 #include <limits.h>
+#include <process.h>
 #include "rtdata.h"
 
 _WCRTLINK int _bgetcmd( char *buffer, int len )
 {
-    int i;
-    int cmdlen;
-    char *p;
+    int         i;
+    int         cmdlen;
+    char        *p;
     char _WCFAR *cmd;
 
     cmd    = MK_FP( _RWD_psp, 0x0080 );
     cmdlen = *cmd++;
 
-    while ((cmdlen > 0) && isspace(*cmd))
-    {
+    while( (cmdlen > 0) && (*cmd == ' ' || *cmd == '\t') ) {
         ++cmd;
         --cmdlen;
     }
 
-    if (cmdlen <= 0)
-    {
-        if (buffer && (len > 0))
-            *buffer = 0x00;
+    if( cmdlen <= 0 ) {
+        if( buffer && (len > 0) )
+            *buffer = '\0';
 
-        return 0;
+        return( 0 );
     }
 
     i = cmdlen;
@@ -76,8 +74,7 @@ _WCRTLINK int _bgetcmd( char *buffer, int len )
             *p++ = *cmd++;
         }
         *p = '\0';
-        return cmdlen;
-        //return( p - buffer );
+        return( cmdlen );
     }
 }
 
@@ -86,4 +83,3 @@ _WCRTLINK char *getcmd( char *buffer )
     _bgetcmd( buffer, INT_MAX );
     return( buffer );
 }
-

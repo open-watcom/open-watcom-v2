@@ -1,0 +1,13 @@
+name=VisualProgrammer
+condition=IsWin IsWinNT IsWin95 | | UnInstall ! MakeDisks ! IsFortranInstall !
+static_text=\
+        //1"Choose whether you want to install Blue Sky Visual Programmer"\
+        //2"Blue Sky Visual Programmer をインストールするかどうかを選択してください"\
+        //0
+static_text=
+check_box=vp_install,,\
+        //1"&Install Visual Programmer"\
+        //2"Visual Programmerをインストールします (&I)"\
+        //0
+static_text=
+include=pohc.dlg

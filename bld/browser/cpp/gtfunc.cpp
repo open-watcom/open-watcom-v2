@@ -50,7 +50,7 @@
 const int PTRPOOLSIZE = 128;
 const int NODEPOOLSIZE = 64;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool TreeFuncPtr::_pool( sizeof( TreeFuncPtr ), "TreeFuncPtr",
                                 PTRPOOLSIZE );
 MemoryPool TreeFuncNode::_pool( sizeof( TreeFuncNode ), "TreeFuncNode",
@@ -320,7 +320,9 @@ bool TreeFuncNode::TreeFuncHook( dr_handle owner, dr_ref_info * ref,
                 ((TreeFuncPtr *)ptr)->incRefs();
             }
         } else {
-            for( int i = child->_flatNodes->count(); i > 0; i -= 1 ) {
+            int     i;
+
+            for( i = child->_flatNodes->count(); i > 0; i -= 1 ) {
                 parent->_flatNodes->add( (*child->_flatNodes)[ i - 1 ] );
             }
 
@@ -412,11 +414,6 @@ TreeFuncWindow::TreeFuncWindow( char * title )
     show();
 }
 
-TreeFuncWindow::~TreeFuncWindow()
-//-------------------------------
-{
-}
-
 bool TreeFuncWindow::contextHelp( bool is_active_window )
 //-------------------------------------------------------
 {
@@ -450,4 +447,13 @@ void TreeFuncWindow::fillRoots( void )
             }
         }
     }
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+TreeFuncWindow::~TreeFuncWindow()
+//-------------------------------
+{
 }

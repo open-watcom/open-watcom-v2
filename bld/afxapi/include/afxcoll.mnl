@@ -1,0 +1,1071 @@
+/*
+ * afxcoll.inl  Inline implementation of functions declared in afxcoll.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE BYTE &CByteArray::ElementAt( INT_PTR nIndex )
+/******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE BYTE CByteArray::GetAt( INT_PTR nIndex ) const
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CByteArray::GetCount() const
+/*********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const BYTE *CByteArray::GetData() const
+/************************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE BYTE *CByteArray::GetData()
+/************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CByteArray::GetSize() const
+/********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CByteArray::GetUpperBound() const
+/**************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CByteArray::IsEmpty() const
+/*****************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CByteArray::RemoveAll()
+/*************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CByteArray::SetAt( INT_PTR nIndex, BYTE newElement )
+/******************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE BYTE &CByteArray::operator[]( INT_PTR nIndex )
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE BYTE CByteArray::operator[]( INT_PTR nIndex ) const
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE WORD &CWordArray::ElementAt( INT_PTR nIndex )
+/******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE WORD CWordArray::GetAt( INT_PTR nIndex ) const
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CWordArray::GetCount() const
+/*********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const WORD *CWordArray::GetData() const
+/************************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE WORD *CWordArray::GetData()
+/************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CWordArray::GetSize() const
+/********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CWordArray::GetUpperBound() const
+/**************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CWordArray::IsEmpty() const
+/*****************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CWordArray::RemoveAll()
+/*************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CWordArray::SetAt( INT_PTR nIndex, WORD newElement )
+/******************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE WORD &CWordArray::operator[]( INT_PTR nIndex )
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE WORD CWordArray::operator[]( INT_PTR nIndex ) const
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE DWORD &CDWordArray::ElementAt( INT_PTR nIndex )
+/********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE DWORD CDWordArray::GetAt( INT_PTR nIndex ) const
+/*********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CDWordArray::GetCount() const
+/**********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const DWORD *CDWordArray::GetData() const
+/**************************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE DWORD *CDWordArray::GetData()
+/**************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CDWordArray::GetSize() const
+/*********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CDWordArray::GetUpperBound() const
+/***************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CDWordArray::IsEmpty() const
+/******************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CDWordArray::RemoveAll()
+/**************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CDWordArray::SetAt( INT_PTR nIndex, DWORD newElement )
+/********************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE DWORD &CDWordArray::operator[]( INT_PTR nIndex )
+/*********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE DWORD CDWordArray::operator[]( INT_PTR nIndex ) const
+/**************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE UINT &CUIntArray::ElementAt( INT_PTR nIndex )
+/******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE UINT CUIntArray::GetAt( INT_PTR nIndex ) const
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CUIntArray::GetCount() const
+/*********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const UINT *CUIntArray::GetData() const
+/************************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE UINT *CUIntArray::GetData()
+/************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CUIntArray::GetSize() const
+/********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CUIntArray::GetUpperBound() const
+/**************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CUIntArray::IsEmpty() const
+/*****************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CUIntArray::RemoveAll()
+/*************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CUIntArray::SetAt( INT_PTR nIndex, UINT newElement )
+/******************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE UINT &CUIntArray::operator[]( INT_PTR nIndex )
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE UINT CUIntArray::operator[]( INT_PTR nIndex ) const
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE void *&CPtrArray::ElementAt( INT_PTR nIndex )
+/******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE void *CPtrArray::GetAt( INT_PTR nIndex ) const
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CPtrArray::GetCount() const
+/********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const void **CPtrArray::GetData() const
+/************************************************/
+{
+    return( (const void **)m_pData );
+}
+
+AFX_INLINE void **CPtrArray::GetData()
+/************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CPtrArray::GetSize() const
+/*******************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CPtrArray::GetUpperBound() const
+/*************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CPtrArray::IsEmpty() const
+/****************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CPtrArray::RemoveAll()
+/************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CPtrArray::SetAt( INT_PTR nIndex, void *newElement )
+/******************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE void *&CPtrArray::operator[]( INT_PTR nIndex )
+/*******************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE void *CPtrArray::operator[]( INT_PTR nIndex ) const
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CObject *&CObArray::ElementAt( INT_PTR nIndex )
+/********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CObject *CObArray::GetAt( INT_PTR nIndex ) const
+/*********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CObArray::GetCount() const
+/*******************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const CObject **CObArray::GetData() const
+/**************************************************/
+{
+    return( (const CObject **)m_pData );
+}
+
+AFX_INLINE CObject **CObArray::GetData()
+/**************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CObArray::GetSize() const
+/******************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CObArray::GetUpperBound() const
+/************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CObArray::IsEmpty() const
+/***************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CObArray::RemoveAll()
+/***********************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CObArray::SetAt( INT_PTR nIndex, CObject *newElement )
+/********************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE CObject *&CObArray::operator[]( INT_PTR nIndex )
+/*********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CObject *CObArray::operator[]( INT_PTR nIndex ) const
+/**************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CString &CStringArray::ElementAt( INT_PTR nIndex )
+/***********************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CString CStringArray::GetAt( INT_PTR nIndex ) const
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE INT_PTR CStringArray::GetCount() const
+/***********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE const CString *CStringArray::GetData() const
+/*****************************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE CString *CStringArray::GetData()
+/*****************************************/
+{
+    return( m_pData );
+}
+
+AFX_INLINE INT_PTR CStringArray::GetSize() const
+/**********************************************/
+{
+    return( m_nSize );
+}
+
+AFX_INLINE INT_PTR CStringArray::GetUpperBound() const
+/****************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+AFX_INLINE BOOL CStringArray::IsEmpty() const
+/*******************************************/
+{
+    return( m_nSize == 0 );
+}
+
+AFX_INLINE void CStringArray::RemoveAll()
+/***************************************/
+{
+    m_nSize = 0;
+}
+
+AFX_INLINE void CStringArray::SetAt( INT_PTR nIndex, LPCTSTR newElement )
+/***********************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE void CStringArray::SetAt( INT_PTR nIndex, const CString &newElement )
+/******************************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+AFX_INLINE CString &CStringArray::operator[]( INT_PTR nIndex )
+/************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE CString CStringArray::operator[]( INT_PTR nIndex ) const
+/*****************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+AFX_INLINE const void *CPtrList::GetAt( POSITION position ) const
+/***************************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE void *&CPtrList::GetAt( POSITION position )
+/****************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE INT_PTR CPtrList::GetCount() const
+/*******************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const void *CPtrList::GetHead() const
+/**********************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE void *&CPtrList::GetHead()
+/***********************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE POSITION CPtrList::GetHeadPosition() const
+/***************************************************/
+{
+    return( (POSITION)m_pNodeHead );
+}
+
+AFX_INLINE const void *CPtrList::GetNext( POSITION &rPosition ) const
+/*******************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE void *&CPtrList::GetNext( POSITION &rPosition )
+/********************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE const void *CPtrList::GetPrev( POSITION &rPosition ) const
+/*******************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE void *&CPtrList::GetPrev( POSITION &rPosition )
+/********************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE INT_PTR CPtrList::GetSize() const
+/******************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const void *CPtrList::GetTail() const
+/**********************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE void *&CPtrList::GetTail()
+/***********************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE POSITION CPtrList::GetTailPosition() const
+/***************************************************/
+{
+    return( (POSITION)m_pNodeTail );
+}
+
+AFX_INLINE BOOL CPtrList::IsEmpty() const
+/***************************************/
+{
+    return( m_pNodeHead != NULL );
+}
+
+AFX_INLINE void CPtrList::SetAt( POSITION position, void *newElement )
+/********************************************************************/
+{
+    ASSERT( position != NULL );
+    ((CNode *)position)->data = newElement;
+}
+
+AFX_INLINE const CObject *CObList::GetAt( POSITION position ) const
+/*****************************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE CObject *&CObList::GetAt( POSITION position )
+/******************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE INT_PTR CObList::GetCount() const
+/******************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const CObject *CObList::GetHead() const
+/************************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE CObject *&CObList::GetHead()
+/*************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE POSITION CObList::GetHeadPosition() const
+/**************************************************/
+{
+    return( (POSITION)m_pNodeHead );
+}
+
+AFX_INLINE const CObject *CObList::GetNext( POSITION &rPosition ) const
+/*********************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE CObject *&CObList::GetNext( POSITION &rPosition )
+/**********************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE const CObject *CObList::GetPrev( POSITION &rPosition ) const
+/*********************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE CObject *&CObList::GetPrev( POSITION &rPosition )
+/**********************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE INT_PTR CObList::GetSize() const
+/*****************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const CObject *CObList::GetTail() const
+/************************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE CObject *&CObList::GetTail()
+/*************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE POSITION CObList::GetTailPosition() const
+/**************************************************/
+{
+    return( (POSITION)m_pNodeTail );
+}
+
+AFX_INLINE BOOL CObList::IsEmpty() const
+/**************************************/
+{
+    return( m_pNodeHead != NULL );
+}
+
+AFX_INLINE void CObList::SetAt( POSITION position, CObject *newElement )
+/**********************************************************************/
+{
+    ASSERT( position != NULL );
+    ((CNode *)position)->data = newElement;
+}
+
+AFX_INLINE const CString &CStringList::GetAt( POSITION position ) const
+/*********************************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE CString &CStringList::GetAt( POSITION position )
+/*********************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+AFX_INLINE INT_PTR CStringList::GetCount() const
+/**********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const CString &CStringList::GetHead() const
+/****************************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE CString &CStringList::GetHead()
+/****************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+AFX_INLINE POSITION CStringList::GetHeadPosition() const
+/******************************************************/
+{
+    return( (POSITION)m_pNodeHead );
+}
+
+AFX_INLINE const CString &CStringList::GetNext( POSITION &rPosition ) const
+/*************************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE CString &CStringList::GetNext( POSITION &rPosition )
+/*************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+AFX_INLINE const CString &CStringList::GetPrev( POSITION &rPosition ) const
+/*************************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE CString &CStringList::GetPrev( POSITION &rPosition )
+/*************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+AFX_INLINE INT_PTR CStringList::GetSize() const
+/*********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE const CString &CStringList::GetTail() const
+/****************************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE CString &CStringList::GetTail()
+/****************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+AFX_INLINE POSITION CStringList::GetTailPosition() const
+/******************************************************/
+{
+    return( (POSITION)m_pNodeTail );
+}
+
+AFX_INLINE BOOL CStringList::IsEmpty() const
+/******************************************/
+{
+    return( m_pNodeHead != NULL );
+}
+
+AFX_INLINE void CStringList::SetAt( POSITION position, LPCTSTR newElement )
+/*************************************************************************/
+{
+    ASSERT( position != NULL );
+    ((CNode *)position)->data = newElement;
+}
+
+AFX_INLINE void CStringList::SetAt( POSITION position, const CString &newElement )
+/********************************************************************************/
+{
+    ASSERT( position != NULL );
+    ((CNode *)position)->data = newElement;
+}
+
+AFX_INLINE INT_PTR CMapWordToPtr::GetCount() const
+/************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapWordToPtr::GetHashTableSize() const
+/*****************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapWordToPtr::GetSize() const
+/***********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapWordToPtr::IsEmpty() const
+/********************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapPtrToWord::GetCount() const
+/************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapPtrToWord::GetHashTableSize() const
+/*****************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapPtrToWord::GetSize() const
+/***********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapPtrToWord::IsEmpty() const
+/********************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapPtrToPtr::GetCount() const
+/***********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapPtrToPtr::GetHashTableSize() const
+/****************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapPtrToPtr::GetSize() const
+/**********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapPtrToPtr::IsEmpty() const
+/*******************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapWordToOb::GetCount() const
+/***********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapWordToOb::GetHashTableSize() const
+/****************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapWordToOb::GetSize() const
+/**********************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapWordToOb::IsEmpty() const
+/*******************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapStringToPtr::GetCount() const
+/**************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapStringToPtr::GetHashTableSize() const
+/*******************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapStringToPtr::GetSize() const
+/*************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapStringToPtr::IsEmpty() const
+/**********************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapStringToOb::GetCount() const
+/*************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapStringToOb::GetHashTableSize() const
+/******************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapStringToOb::GetSize() const
+/************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapStringToOb::IsEmpty() const
+/*********************************************/
+{
+    return( m_nCount == 0 );
+}
+
+AFX_INLINE INT_PTR CMapStringToString::GetCount() const
+/*****************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE UINT CMapStringToString::GetHashTableSize() const
+/**********************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+AFX_INLINE INT_PTR CMapStringToString::GetSize() const
+/****************************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE BOOL CMapStringToString::IsEmpty() const
+/*************************************************/
+{
+    return( m_nCount == 0 );
+}

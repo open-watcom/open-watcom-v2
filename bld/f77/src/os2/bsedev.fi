@@ -1,0 +1,658 @@
+c$noreference
+
+        integer  IOCTL_ASYNC
+        parameter (IOCTL_ASYNC = '00000001'x)
+        integer  IOCTL_SCR_AND_PTRDRAW
+        parameter (IOCTL_SCR_AND_PTRDRAW = '00000003'x)
+        integer  IOCTL_KEYBOARD
+        parameter (IOCTL_KEYBOARD = '00000004'x)
+        integer  IOCTL_PRINTER
+        parameter (IOCTL_PRINTER = '00000005'x)
+        integer  IOCTL_LIGHTPEN
+        parameter (IOCTL_LIGHTPEN = '00000006'x)
+        integer  IOCTL_POINTINGDEVICE
+        parameter (IOCTL_POINTINGDEVICE = '00000007'x)
+        integer  IOCTL_DISK
+        parameter (IOCTL_DISK = '00000008'x)
+        integer  IOCTL_PHYSICALDISK
+        parameter (IOCTL_PHYSICALDISK = '00000009'x)
+        integer  IOCTL_MONITOR
+        parameter (IOCTL_MONITOR = '0000000A'x)
+        integer  IOCTL_GENERAL
+        parameter (IOCTL_GENERAL = '0000000B'x)
+
+        integer  ASYNC_SETBAUDRATE
+        parameter (ASYNC_SETBAUDRATE = '00000041'x)
+        integer  ASYNC_SETLINECTRL
+        parameter (ASYNC_SETLINECTRL = '00000042'x)
+        integer  ASYNC_TRANSMITIMM
+        parameter (ASYNC_TRANSMITIMM = '00000044'x)
+        integer  ASYNC_SETBREAKOFF
+        parameter (ASYNC_SETBREAKOFF = '00000045'x)
+        integer  ASYNC_SETMODEMCTRL
+        parameter (ASYNC_SETMODEMCTRL = '00000046'x)
+        integer  ASYNC_SETBREAKON
+        parameter (ASYNC_SETBREAKON = '0000004B'x)
+        integer  ASYNC_STOPTRANSMIT
+        parameter (ASYNC_STOPTRANSMIT = '00000047'x)
+        integer  ASYNC_STARTTRANSMIT
+        parameter (ASYNC_STARTTRANSMIT = '00000048'x)
+        integer  ASYNC_SETDCBINFO
+        parameter (ASYNC_SETDCBINFO = '00000053'x)
+        integer  ASYNC_GETBAUDRATE
+        parameter (ASYNC_GETBAUDRATE = '00000061'x)
+        integer  ASYNC_GETLINECTRL
+        parameter (ASYNC_GETLINECTRL = '00000062'x)
+        integer  ASYNC_GETCOMMSTATUS
+        parameter (ASYNC_GETCOMMSTATUS = '00000064'x)
+        integer  ASYNC_GETLINESTATUS
+        parameter (ASYNC_GETLINESTATUS = '00000065'x)
+        integer  ASYNC_GETMODEMOUTPUT
+        parameter (ASYNC_GETMODEMOUTPUT = '00000066'x)
+        integer  ASYNC_GETMODEMINPUT
+        parameter (ASYNC_GETMODEMINPUT = '00000067'x)
+        integer  ASYNC_GETINQUECOUNT
+        parameter (ASYNC_GETINQUECOUNT = '00000068'x)
+        integer  ASYNC_GETOUTQUECOUNT
+        parameter (ASYNC_GETOUTQUECOUNT = '00000069'x)
+        integer  ASYNC_GETCOMMERROR
+        parameter (ASYNC_GETCOMMERROR = '0000006D'x)
+        integer  ASYNC_GETCOMMEVENT
+        parameter (ASYNC_GETCOMMEVENT = '00000072'x)
+        integer  ASYNC_GETDCBINFO
+        parameter (ASYNC_GETDCBINFO = '00000073'x)
+
+        integer  SCR_ALLOCLDT
+        parameter (SCR_ALLOCLDT = '00000070'x)
+        integer  SCR_DEALLOCLDT
+        parameter (SCR_DEALLOCLDT = '00000071'x)
+        integer  PTR_GETPTRDRAWADDRESS
+        parameter (PTR_GETPTRDRAWADDRESS = '00000072'x)
+        integer  SCR_ALLOCLDTOFF
+        parameter (SCR_ALLOCLDTOFF = '00000075'x)
+
+        integer  KBD_SETTRANSTABLE
+        parameter (KBD_SETTRANSTABLE = '00000050'x)
+        integer  KBD_SETINPUTMODE
+        parameter (KBD_SETINPUTMODE = '00000051'x)
+        integer  KBD_SETINTERIMFLAG
+        parameter (KBD_SETINTERIMFLAG = '00000052'x)
+        integer  KBD_SETSHIFTSTATE
+        parameter (KBD_SETSHIFTSTATE = '00000053'x)
+        integer  KBD_SETTYPAMATICRATE
+        parameter (KBD_SETTYPAMATICRATE = '00000054'x)
+        integer  KBD_SETFGNDSCREENGRP
+        parameter (KBD_SETFGNDSCREENGRP = '00000055'x)
+        integer  KBD_SETSESMGRHOTKEY
+        parameter (KBD_SETSESMGRHOTKEY = '00000056'x)
+        integer  KBD_SETFOCUS
+        parameter (KBD_SETFOCUS = '00000057'x)
+        integer  KBD_SETKCB
+        parameter (KBD_SETKCB = '00000058'x)
+        integer  KBD_SETNLS
+        parameter (KBD_SETNLS = '0000005C'x)
+        integer  KBD_CREATE
+        parameter (KBD_CREATE = '0000005D'x)
+        integer  KBD_DESTROY
+        parameter (KBD_DESTROY = '0000005E'x)
+        integer  KBD_GETINPUTMODE
+        parameter (KBD_GETINPUTMODE = '00000071'x)
+        integer  KBD_GETINTERIMFLAG
+        parameter (KBD_GETINTERIMFLAG = '00000072'x)
+        integer  KBD_GETSHIFTSTATE
+        parameter (KBD_GETSHIFTSTATE = '00000073'x)
+        integer  KBD_READCHAR
+        parameter (KBD_READCHAR = '00000074'x)
+        integer  KBD_PEEKCHAR
+        parameter (KBD_PEEKCHAR = '00000075'x)
+        integer  KBD_GETSESMGRHOTKEY
+        parameter (KBD_GETSESMGRHOTKEY = '00000076'x)
+        integer  KBD_GETKEYBDTYPE
+        parameter (KBD_GETKEYBDTYPE = '00000077'x)
+        integer  KBD_GETCODEPAGEID
+        parameter (KBD_GETCODEPAGEID = '00000078'x)
+        integer  KBD_XLATESCAN
+        parameter (KBD_XLATESCAN = '00000079'x)
+
+        integer  PRT_QUERYJOBHANDLE
+        parameter (PRT_QUERYJOBHANDLE = '00000021'x)
+        integer  PRT_SETFRAMECTL
+        parameter (PRT_SETFRAMECTL = '00000042'x)
+        integer  PRT_SETINFINITERETRY
+        parameter (PRT_SETINFINITERETRY = '00000044'x)
+        integer  PRT_INITPRINTER
+        parameter (PRT_INITPRINTER = '00000046'x)
+        integer  PRT_ACTIVATEFONT
+        parameter (PRT_ACTIVATEFONT = '00000048'x)
+        integer  PRT_GETFRAMECTL
+        parameter (PRT_GETFRAMECTL = '00000062'x)
+        integer  PRT_GETINFINITERETRY
+        parameter (PRT_GETINFINITERETRY = '00000064'x)
+        integer  PRT_GETPRINTERSTATUS
+        parameter (PRT_GETPRINTERSTATUS = '00000066'x)
+        integer  PRT_QUERYACTIVEFONT
+        parameter (PRT_QUERYACTIVEFONT = '00000069'x)
+        integer  PRT_VERIFYFONT
+        parameter (PRT_VERIFYFONT = '0000006A'x)
+
+        integer  MOU_ALLOWPTRDRAW
+        parameter (MOU_ALLOWPTRDRAW = '00000050'x)
+        integer  MOU_UPDATEDISPLAYMODE
+        parameter (MOU_UPDATEDISPLAYMODE = '00000051'x)
+        integer  MOU_SCREENSWITCH
+        parameter (MOU_SCREENSWITCH = '00000052'x)
+        integer  MOU_SETSCALEFACTORS
+        parameter (MOU_SETSCALEFACTORS = '00000053'x)
+        integer  MOU_SETEVENTMASK
+        parameter (MOU_SETEVENTMASK = '00000054'x)
+        integer  MOU_SETHOTKEYBUTTON
+        parameter (MOU_SETHOTKEYBUTTON = '00000055'x)
+        integer  MOU_SETPTRSHAPE
+        parameter (MOU_SETPTRSHAPE = '00000056'x)
+        integer  MOU_DRAWPTR
+        parameter (MOU_DRAWPTR = '00000057'x)
+        integer  MOU_REMOVEPTR
+        parameter (MOU_REMOVEPTR = '00000058'x)
+        integer  MOU_SETPTRPOS
+        parameter (MOU_SETPTRPOS = '00000059'x)
+        integer  MOU_SETPROTDRAWADDRESS
+        parameter (MOU_SETPROTDRAWADDRESS = '0000005A'x)
+        integer  MOU_SETREALDRAWADDRESS
+        parameter (MOU_SETREALDRAWADDRESS = '0000005B'x)
+        integer  MOU_SETMOUSTATUS
+        parameter (MOU_SETMOUSTATUS = '0000005C'x)
+        integer  MOU_DISPLAYMODECHANGE
+        parameter (MOU_DISPLAYMODECHANGE = '0000005D'x)
+        integer  MOU_GETBUTTONCOUNT
+        parameter (MOU_GETBUTTONCOUNT = '00000060'x)
+        integer  MOU_GETMICKEYCOUNT
+        parameter (MOU_GETMICKEYCOUNT = '00000061'x)
+        integer  MOU_GETMOUSTATUS
+        parameter (MOU_GETMOUSTATUS = '00000062'x)
+        integer  MOU_READEVENTQUE
+        parameter (MOU_READEVENTQUE = '00000063'x)
+        integer  MOU_GETQUESTATUS
+        parameter (MOU_GETQUESTATUS = '00000064'x)
+        integer  MOU_GETEVENTMASK
+        parameter (MOU_GETEVENTMASK = '00000065'x)
+        integer  MOU_GETSCALEFACTORS
+        parameter (MOU_GETSCALEFACTORS = '00000066'x)
+        integer  MOU_GETPTRPOS
+        parameter (MOU_GETPTRPOS = '00000067'x)
+        integer  MOU_GETPTRSHAPE
+        parameter (MOU_GETPTRSHAPE = '00000068'x)
+        integer  MOU_GETHOTKEYBUTTON
+        parameter (MOU_GETHOTKEYBUTTON = '00000069'x)
+        integer  MOU_VER
+        parameter (MOU_VER = '0000006A'x)
+
+        integer  DSK_LOCKDRIVE
+        parameter (DSK_LOCKDRIVE = '00000000'x)
+        integer  DSK_UNLOCKDRIVE
+        parameter (DSK_UNLOCKDRIVE = '00000001'x)
+        integer  DSK_REDETERMINEMEDIA
+        parameter (DSK_REDETERMINEMEDIA = '00000002'x)
+        integer  DSK_SETLOGICALMAP
+        parameter (DSK_SETLOGICALMAP = '00000003'x)
+        integer  DSK_BLOCKREMOVABLE
+        parameter (DSK_BLOCKREMOVABLE = '00000020'x)
+        integer  DSK_GETLOGICALMAP
+        parameter (DSK_GETLOGICALMAP = '00000021'x)
+        integer  DSK_SETDEVICEPARAMS
+        parameter (DSK_SETDEVICEPARAMS = '00000043'x)
+        integer  DSK_WRITETRACK
+        parameter (DSK_WRITETRACK = '00000044'x)
+        integer  DSK_FORMATVERIFY
+        parameter (DSK_FORMATVERIFY = '00000045'x)
+        integer  DSK_GETDEVICEPARAMS
+        parameter (DSK_GETDEVICEPARAMS = '00000063'x)
+        integer  DSK_READTRACK
+        parameter (DSK_READTRACK = '00000064'x)
+        integer  DSK_VERIFYTRACK
+        parameter (DSK_VERIFYTRACK = '00000065'x)
+
+        integer  PDSK_LOCKPHYSDRIVE
+        parameter (PDSK_LOCKPHYSDRIVE = '00000000'x)
+        integer  PDSK_UNLOCKPHYSDRIVE
+        parameter (PDSK_UNLOCKPHYSDRIVE = '00000001'x)
+        integer  PDSK_WRITEPHYSTRACK
+        parameter (PDSK_WRITEPHYSTRACK = '00000044'x)
+        integer  PDSK_GETPHYSDEVICEPARAMS
+        parameter (PDSK_GETPHYSDEVICEPARAMS = '00000063'x)
+        integer  PDSK_READPHYSTRACK
+        parameter (PDSK_READPHYSTRACK = '00000064'x)
+        integer  PDSK_VERIFYPHYSTRACK
+        parameter (PDSK_VERIFYPHYSTRACK = '00000065'x)
+
+        integer  MON_REGISTERMONITOR
+        parameter (MON_REGISTERMONITOR = '00000040'x)
+
+        integer  DEV_FLUSHINPUT
+        parameter (DEV_FLUSHINPUT = '00000001'x)
+        integer  DEV_FLUSHOUTPUT
+        parameter (DEV_FLUSHOUTPUT = '00000002'x)
+        integer  DEV_QUERYMONSUPPORT
+        parameter (DEV_QUERYMONSUPPORT = '00000060'x)
+
+        integer  RX_QUE_OVERRUN
+        parameter (RX_QUE_OVERRUN = '00000001'x)
+        integer  RX_HARDWARE_OVERRUN
+        parameter (RX_HARDWARE_OVERRUN = '00000002'x)
+        integer  PARITY_ERROR
+        parameter (PARITY_ERROR = '00000004'x)
+        integer  FRAMING_ERROR
+        parameter (FRAMING_ERROR = '00000008'x)
+
+        integer  CHAR_RECEIVED
+        parameter (CHAR_RECEIVED = '00000001'x)
+        integer  LAST_CHAR_SENT
+        parameter (LAST_CHAR_SENT = '00000004'x)
+        integer  CTS_CHANGED
+        parameter (CTS_CHANGED = '00000008'x)
+        integer  DSR_CHANGED
+        parameter (DSR_CHANGED = '00000010'x)
+        integer  DCD_CHANGED
+        parameter (DCD_CHANGED = '00000020'x)
+        integer  BREAK_DETECTED
+        parameter (BREAK_DETECTED = '00000040'x)
+        integer  ERROR_OCCURRED
+        parameter (ERROR_OCCURRED = '00000080'x)
+        integer  RI_DETECTED
+        parameter (RI_DETECTED = '00000100'x)
+
+        integer  TX_WAITING_FOR_CTS
+        parameter (TX_WAITING_FOR_CTS = '00000001'x)
+        integer  TX_WAITING_FOR_DSR
+        parameter (TX_WAITING_FOR_DSR = '00000002'x)
+        integer  TX_WAITING_FOR_DCD
+        parameter (TX_WAITING_FOR_DCD = '00000004'x)
+        integer  TX_WAITING_FOR_XON
+        parameter (TX_WAITING_FOR_XON = '00000008'x)
+        integer  TX_WAITING_TO_SEND_XON
+        parameter (TX_WAITING_TO_SEND_XON = '00000010'x)
+        integer  TX_WAITING_WHILE_BREAK_ON
+        parameter (TX_WAITING_WHILE_BREAK_ON = '00000020'x)
+        integer  TX_WAITING_TO_SEND_IMM
+        parameter (TX_WAITING_TO_SEND_IMM = '00000040'x)
+        integer  RX_WAITING_FOR_DSR
+        parameter (RX_WAITING_FOR_DSR = '00000080'x)
+
+        integer  WRITE_REQUEST_QUEUED
+        parameter (WRITE_REQUEST_QUEUED = '00000001'x)
+        integer  DATA_IN_TX_QUE
+        parameter (DATA_IN_TX_QUE = '00000002'x)
+        integer  HARDWARE_TRANSMITTING
+        parameter (HARDWARE_TRANSMITTING = '00000004'x)
+        integer  CHAR_READY_TO_SEND_IMM
+        parameter (CHAR_READY_TO_SEND_IMM = '00000008'x)
+        integer  WAITING_TO_SEND_XON
+        parameter (WAITING_TO_SEND_XON = '00000010'x)
+        integer  WAITING_TO_SEND_XOFF
+        parameter (WAITING_TO_SEND_XOFF = '00000020'x)
+
+        integer  CTS_ON
+        parameter (CTS_ON = '00000010'x)
+        integer  DSR_ON
+        parameter (DSR_ON = '00000020'x)
+        integer  RI_ON
+        parameter (RI_ON = '00000040'x)
+        integer  DCD_ON
+        parameter (DCD_ON = '00000080'x)
+
+        integer  BUILD_BPB_FROM_MEDIUM
+        parameter (BUILD_BPB_FROM_MEDIUM = '00000000'x)
+        integer  REPLACE_BPB_FOR_DEVICE
+        parameter (REPLACE_BPB_FOR_DEVICE = '00000001'x)
+        integer  REPLACE_BPB_FOR_MEDIUM
+        parameter (REPLACE_BPB_FOR_MEDIUM = '00000002'x)
+
+        integer  ASCII_MODE
+        parameter (ASCII_MODE = '00000000'x)
+        integer  BINARY_MODE
+        parameter (BINARY_MODE = '00000080'x)
+
+        integer  CONVERSION_REQUEST
+        parameter (CONVERSION_REQUEST = '00000020'x)
+        integer  INTERIM_CHAR
+        parameter (INTERIM_CHAR = '00000080'x)
+
+        integer  HOTKEY_MAX_COUNT
+        parameter (HOTKEY_MAX_COUNT = '00000000'x)
+        integer  HOTKEY_CURRENT_COUNT
+        parameter (HOTKEY_CURRENT_COUNT = '00000001'x)
+
+        integer  KBD_DATA_RECEIVED
+        parameter (KBD_DATA_RECEIVED = '00000001'x)
+        integer  KBD_DATA_BINARY
+        parameter (KBD_DATA_BINARY = '00008000'x)
+
+        integer  KBD_READ_WAIT
+        parameter (KBD_READ_WAIT = '00000000'x)
+        integer  KBD_READ_NOWAIT
+        parameter (KBD_READ_NOWAIT = '00008000'x)
+
+        integer  SHIFT_REPORT_MODE
+        parameter (SHIFT_REPORT_MODE = '00000001'x)
+
+c$ifndef INCL_MOU
+
+        integer  MOUSE_MOTION
+        parameter (MOUSE_MOTION = '00000001'x)
+        integer  MOUSE_MOTION_WITH_BN1_DOWN
+        parameter (MOUSE_MOTION_WITH_BN1_DOWN = '00000002'x)
+        integer  MOUSE_BN1_DOWN
+        parameter (MOUSE_BN1_DOWN = '00000004'x)
+        integer  MOUSE_MOTION_WITH_BN2_DOWN
+        parameter (MOUSE_MOTION_WITH_BN2_DOWN = '00000008'x)
+        integer  MOUSE_BN2_DOWN
+        parameter (MOUSE_BN2_DOWN = '00000010'x)
+        integer  MOUSE_MOTION_WITH_BN3_DOWN
+        parameter (MOUSE_MOTION_WITH_BN3_DOWN = '00000020'x)
+        integer  MOUSE_BN3_DOWN
+        parameter (MOUSE_BN3_DOWN = '00000040'x)
+
+        integer  MHK_BUTTON1
+        parameter (MHK_BUTTON1 = '00000001'x)
+        integer  MHK_BUTTON2
+        parameter (MHK_BUTTON2 = '00000002'x)
+        integer  MHK_BUTTON3
+        parameter (MHK_BUTTON3 = '00000004'x)
+
+        integer  MOU_NOWAIT
+        parameter (MOU_NOWAIT = '00000000'x)
+        integer  MOU_WAIT
+        parameter (MOU_WAIT = '00000001'x)
+
+c$endif
+
+        integer  MHK_NO_HOTKEY
+        parameter (MHK_NO_HOTKEY = '00000000'x)
+
+        integer  MOUSE_QUEUEBUSY
+        parameter (MOUSE_QUEUEBUSY = '00000001'x)
+        integer  MOUSE_BLOCKREAD
+        parameter (MOUSE_BLOCKREAD = '00000002'x)
+        integer  MOUSE_FLUSH
+        parameter (MOUSE_FLUSH = '00000004'x)
+        integer  MOUSE_UNSUPPORTED_MODE
+        parameter (MOUSE_UNSUPPORTED_MODE = '00000008'x)
+        integer  MOUSE_DISABLED
+        parameter (MOUSE_DISABLED = '00000100'x)
+        integer  MOUSE_MICKEYS
+        parameter (MOUSE_MICKEYS = '00000200'x)
+
+        integer  PRINTER_TIMEOUT
+        parameter (PRINTER_TIMEOUT = '00000001'x)
+        integer  PRINTER_IO_ERROR
+        parameter (PRINTER_IO_ERROR = '00000008'x)
+        integer  PRINTER_SELECTED
+        parameter (PRINTER_SELECTED = '00000010'x)
+        integer  PRINTER_OUT_OF_PAPER
+        parameter (PRINTER_OUT_OF_PAPER = '00000020'x)
+        integer  PRINTER_ACKNOWLEDGED
+        parameter (PRINTER_ACKNOWLEDGED = '00000040'x)
+        integer  PRINTER_NOT_BUSY
+        parameter (PRINTER_NOT_BUSY = '00000080'x)
+
+        integer  MODE_DTR_CONTROL
+        parameter (MODE_DTR_CONTROL = '00000001'x)
+        integer  MODE_DTR_HANDSHAKE
+        parameter (MODE_DTR_HANDSHAKE = '00000002'x)
+        integer  MODE_CTS_HANDSHAKE
+        parameter (MODE_CTS_HANDSHAKE = '00000008'x)
+        integer  MODE_DSR_HANDSHAKE
+        parameter (MODE_DSR_HANDSHAKE = '00000010'x)
+        integer  MODE_DCD_HANDSHAKE
+        parameter (MODE_DCD_HANDSHAKE = '00000020'x)
+        integer  MODE_DSR_SENSITIVITY
+        parameter (MODE_DSR_SENSITIVITY = '00000040'x)
+
+        integer  MODE_AUTO_TRANSMIT
+        parameter (MODE_AUTO_TRANSMIT = '00000001'x)
+        integer  MODE_AUTO_RECEIVE
+        parameter (MODE_AUTO_RECEIVE = '00000002'x)
+        integer  MODE_ERROR_CHAR
+        parameter (MODE_ERROR_CHAR = '00000004'x)
+        integer  MODE_NULL_STRIPPING
+        parameter (MODE_NULL_STRIPPING = '00000008'x)
+        integer  MODE_BREAK_CHAR
+        parameter (MODE_BREAK_CHAR = '00000010'x)
+        integer  MODE_RTS_CONTROL
+        parameter (MODE_RTS_CONTROL = '00000040'x)
+        integer  MODE_RTS_HANDSHAKE
+        parameter (MODE_RTS_HANDSHAKE = '00000080'x)
+        integer  MODE_TRANSMIT_TOGGLE
+        parameter (MODE_TRANSMIT_TOGGLE = '000000C0'x)
+
+        integer  MODE_NO_WRITE_TIMEOUT
+        parameter (MODE_NO_WRITE_TIMEOUT = '00000001'x)
+        integer  MODE_READ_TIMEOUT
+        parameter (MODE_READ_TIMEOUT = '00000002'x)
+        integer  MODE_WAIT_READ_TIMEOUT
+        parameter (MODE_WAIT_READ_TIMEOUT = '00000004'x)
+        integer  MODE_NOWAIT_READ_TIMEOUT
+        parameter (MODE_NOWAIT_READ_TIMEOUT = '00000006'x)
+
+        structure /DCBINFO/
+            integer*2 usWriteTimeout
+            integer*2 usReadTimeout
+            integer*1 fbCtlHndShake
+            integer*1 fbFlowReplace
+            integer*1 fbTimeout
+            integer*1 bErrorReplacementChar
+            integer*1 bBreakReplacementChar
+            integer*1 bXONChar
+            integer*1 bXOFFChar
+        end structure
+
+        structure /TRACKTABLE/
+            integer*2 usSectorNumber
+            integer*2 usSectorSize
+        end structure
+
+        structure /TRACKLAYOUT/
+            integer*1 bCommand
+            integer*2 usHead
+            integer*2 usCylinder
+            integer*2 usFirstSector
+            integer*2 cSectors
+            record /TRACKTABLE/ TrackTable(1)
+        end structure
+
+        integer  DEVTYPE_48TPI
+        parameter (DEVTYPE_48TPI = '00000000'x)
+        integer  DEVTYPE_96TPI
+        parameter (DEVTYPE_96TPI = '00000001'x)
+        integer  DEVTYPE_35
+        parameter (DEVTYPE_35 = '00000002'x)
+        integer  DEVTYPE_8SD
+        parameter (DEVTYPE_8SD = '00000003'x)
+        integer  DEVTYPE_8DD
+        parameter (DEVTYPE_8DD = '00000004'x)
+        integer  DEVTYPE_FIXED
+        parameter (DEVTYPE_FIXED = '00000005'x)
+        integer  DEVTYPE_TAPE
+        parameter (DEVTYPE_TAPE = '00000006'x)
+        integer  DEVTYPE_UNKNOWN
+        parameter (DEVTYPE_UNKNOWN = '00000007'x)
+
+        structure /BIOSPARAMETERBLOCK/
+            integer*2 usBytesPerSector
+            integer*1 bSectorsPerCluster
+            integer*2 usReservedSectors
+            integer*1 cFATs
+            integer*2 cRootEntries
+            integer*2 cSectors
+            integer*1 bMedia
+            integer*2 usSectorsPerFAT
+            integer*2 usSectorsPerTrack
+            integer*2 cHeads
+            integer*4 cHiddenSectors
+            integer*4 cLargeSectors
+            integer*1 abReserved(6)
+            integer*2 cCylinders
+            integer*1 bDeviceType
+            integer*2 fsDeviceAttr
+        end structure
+
+        structure /SCREENGROUP/
+            integer*2 idScreenGrp
+            integer*2 fTerminate
+        end structure
+
+        structure /FRAME/
+            integer*1 bCharsPerLine
+            integer*1 bLinesPerInch
+        end structure
+
+        structure /KBDTYPE/
+            integer*2 usType
+            integer*2 reserved1
+            integer*2 reserved2
+        end structure
+
+        structure /LINECONTROL/
+            integer*1 bDataBits
+            integer*1 bParity
+            integer*1 bStopBits
+            integer*1 fTransBreak
+        end structure
+
+        integer  DTR_ON
+        parameter (DTR_ON = '00000001'x)
+        integer  RTS_ON
+        parameter (RTS_ON = '00000002'x)
+
+        integer  DTR_OFF
+        parameter (DTR_OFF = '000000FE'x)
+        integer  RTS_OFF
+        parameter (RTS_OFF = '000000FD'x)
+
+        structure /MODEMSTATUS/
+            integer*1 fbModemOn
+            integer*1 fbModemOff
+        end structure
+
+        structure /FORMATTABLE/
+            integer*1 bCylinder
+            integer*1 bHead
+            integer*1 idSector
+            integer*1 bBytesSector
+        end structure
+
+        structure /TRACKFORMAT/
+            integer*1 bCommand
+            integer*2 usHead
+            integer*2 usCylinder
+            integer*2 usReserved
+            integer*2 cSectors
+            record /FORMATTABLE/ FormatTable(1)
+        end structure
+
+        structure /RXQUEUE/
+            integer*2 cch
+            integer*2 cb
+        end structure
+
+        structure /DEVICEPARAMETERBLOCK/
+            integer*2 reserved1
+            integer*2 cCylinders
+            integer*2 cHeads
+            integer*2 cSectorsPerTrack
+            integer*2 reserved2
+            integer*2 reserved3
+            integer*2 reserved4
+            integer*2 reserved5
+        end structure
+
+        structure /PTRDRAWFUNCTION/
+            integer*2 usReturnCode
+            integer*4 pfnDraw
+            integer*4 pchDataSeg
+        end structure
+
+        structure /PTRDRAWADDRESS/
+            integer*2 reserved
+            record /PTRDRAWFUNCTION/ ptrdfnc
+        end structure
+
+        structure /SHIFTSTATE/
+            integer*2 fsState
+            integer*1 fNLS
+        end structure
+
+        integer  RIGHTSHIFT
+        parameter (RIGHTSHIFT = '00000001'x)
+        integer  LEFTSHIFT
+        parameter (LEFTSHIFT = '00000002'x)
+        integer  CONTROL
+        parameter (CONTROL = '00000004'x)
+        integer  ALT
+        parameter (ALT = '00000008'x)
+        integer  SCROLLLOCK_ON
+        parameter (SCROLLLOCK_ON = '00000010'x)
+        integer  NUMLOCK_ON
+        parameter (NUMLOCK_ON = '00000020'x)
+        integer  CAPSLOCK_ON
+        parameter (CAPSLOCK_ON = '00000040'x)
+        integer  INSERT_ON
+        parameter (INSERT_ON = '00000080'x)
+        integer  LEFTCONTROL
+        parameter (LEFTCONTROL = '00000100'x)
+        integer  LEFTALT
+        parameter (LEFTALT = '00000200'x)
+        integer  RIGHTCONTROL
+        parameter (RIGHTCONTROL = '00000400'x)
+        integer  RIGHTALT
+        parameter (RIGHTALT = '00000800'x)
+        integer  SCROLLLOCK
+        parameter (SCROLLLOCK = '00001000'x)
+        integer  NUMLOCK
+        parameter (NUMLOCK = '00002000'x)
+        integer  CAPSLOCK
+        parameter (CAPSLOCK = '00004000'x)
+        integer  SYSREQ
+        parameter (SYSREQ = '00008000'x)
+
+        structure /HOTKEY/
+            integer*2 fsHotKey
+            integer*1 uchScancodeMake
+            integer*1 uchScancodeBreak
+            integer*2 idHotKey
+        end structure
+
+        structure /MONITORPOSITION/
+            integer*2 fPosition
+            integer*2 index
+            integer*4 pbInBuf
+            integer*2 offOutBuf
+        end structure
+
+        structure /RATEDELAY/
+            integer*2 usDelay
+            integer*2 usRate
+        end structure
+
+        structure /CODEPAGEINFO/
+            integer*4 pbTransTable
+            integer*2 idCodePage
+            integer*2 idTable
+        end structure
+
+        structure /CPID/
+            integer*2 idCodePage
+            integer*2 Reserved
+        end structure
+
+        structure /LDTADDRINFO/
+            integer*4 pulPhysAddr
+            integer*2 cb
+        end structure
+
+        structure /PTRDRAWDATA/
+            integer*2 cb
+            integer*2 usConfig
+            integer*2 usFlag
+        end structure
+
+c$reference

@@ -41,8 +41,8 @@
 extern EVENT    Event;
 
 
-void global uiflush()
-/*******************/
+void global uiflush( void )
+/*************************/
 {
     Event = EV_NO_EVENT;
     flushkey();
@@ -113,8 +113,8 @@ EVENT global uieventsource( int update )
 }
 
 
-EVENT global uiget()
-/******************/
+EVENT global uiget( void )
+/************************/
 {
     return( uieventsource( 1 ) );
 }

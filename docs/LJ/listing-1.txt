@@ -1,0 +1,9 @@
+#include <stdio.h>
+
+int main(void)
+{
+  printf("Hello, Linux!\n");
+  return 0;
+}
+
+Caption: Classic test program.

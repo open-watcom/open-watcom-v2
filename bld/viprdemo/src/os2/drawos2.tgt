@@ -1,4 +1,4 @@
-39
+40
 targetIdent
 0
 MProject
@@ -55,7 +55,7 @@ WPickList
 14
 MItem
 5
-*.BMP
+*.bmp
 15
 WString
 3
@@ -73,7 +73,7 @@ WVList
 18
 MItem
 11
-..\BACK.BMP
+../back.bmp
 19
 WString
 3
@@ -91,7 +91,7 @@ WVList
 22
 MItem
 15
-..\BRIGHTER.BMP
+../brighter.bmp
 23
 WString
 3
@@ -109,7 +109,7 @@ WVList
 26
 MItem
 13
-..\DARKER.BMP
+../darker.bmp
 27
 WString
 3
@@ -127,7 +127,7 @@ WVList
 30
 MItem
 11
-..\DOWN.BMP
+../down.bmp
 31
 WString
 3
@@ -145,7 +145,7 @@ WVList
 34
 MItem
 14
-..\FORWARD.BMP
+../forward.bmp
 35
 WString
 3
@@ -163,7 +163,7 @@ WVList
 38
 MItem
 11
-..\LEFT.BMP
+../left.bmp
 39
 WString
 3
@@ -181,7 +181,7 @@ WVList
 42
 MItem
 12
-..\RIGHT.BMP
+../right.bmp
 43
 WString
 3
@@ -199,7 +199,7 @@ WVList
 46
 MItem
 9
-..\UP.BMP
+../up.bmp
 47
 WString
 3
@@ -235,7 +235,7 @@ WVList
 54
 MItem
 12
-..\drawos2.c
+../drawos2.c
 55
 WString
 4
@@ -253,7 +253,7 @@ WVList
 58
 MItem
 5
-*.CPP
+*.cpp
 59
 WString
 6
@@ -283,7 +283,7 @@ WVList
 65
 MItem
 10
-..\BOX.CPP
+../box.cpp
 66
 WString
 6
@@ -301,7 +301,7 @@ WVList
 69
 MItem
 15
-..\DRAWROOM.CPP
+../drawroom.cpp
 70
 WString
 6
@@ -319,7 +319,7 @@ WVList
 73
 MItem
 14
-..\FURNITU.CPP
+../furnitu.cpp
 74
 WString
 6
@@ -354,8 +354,8 @@ WVList
 0
 81
 MItem
-13
-..\os2_3d.dll
+10
+os2_3d.dll
 82
 WString
 3
@@ -427,7 +427,7 @@ WVList
 97
 MItem
 13
-..\drawos2.rc
+../drawos2.rc
 98
 WString
 5

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NLM serial link core.
 *
 ****************************************************************************/
 
@@ -60,7 +59,7 @@ static void Tick( LONG dummy )
 }
 
 
-static void SetupTimerData()
+static void SetupTimerData( void )
 {
     TimerData.TCallBackProcedure = Tick;
     TimerData.TCallBackEBXParameter = 0;
@@ -69,19 +68,19 @@ static void SetupTimerData()
 }
 
 
-void ZeroWaitCount()
+void ZeroWaitCount( void )
 {
     Ticks = 0;
 }
 
 
-unsigned WaitCount()
+unsigned WaitCount( void )
 {
     return( Ticks );
 }
 
 
-void ClearCom()
+void ClearCom( void )
 {
     AIOFlushBuffers( ComPortHandle,
                       AIO_FLUSH_READ_BUFFER+AIO_FLUSH_WRITE_BUFFER );
@@ -108,22 +107,22 @@ void SendByte( int value )
 {
     LONG count;
 
-    AIOWriteData( ComPortHandle, (BYTE *)&value, 1, &count );
+    AIOWriteData( ComPortHandle, (char *)&value, 1, &count );
     do {
         AIOWriteStatus( ComPortHandle, &count, NULL );
     } while( count != 0 );
 }
 
 
-void StartBlockTrans()
+void StartBlockTrans( void )
 {
 }
 
-void StopBlockTrans()
+void StopBlockTrans( void )
 {
 }
 
-int GetByte()
+int GetByte( void )
 {
     int         data;
     LONG        count;
@@ -133,7 +132,7 @@ int GetByte()
         data = NO_DATA;
     } else {
         data = 0;
-        AIOReadData( ComPortHandle, (BYTE *)&data, 1, &count );
+        AIOReadData( ComPortHandle, (char *)&data, 1, &count );
     }
     return( data );
 }
@@ -213,7 +212,7 @@ char *ParsePortSpec( char * *spec )
     }
     if( SerialTag == 0 ) {
         SerialTag = AllocateResourceTag( MyNLMHandle,
-                                        "Debug Server Serial IO",
+                                        (BYTE *)"Debug Server Serial IO",
                                         ASYNCIOSignature );
     }
     if( port == -1 ) port = com_num - 1;
@@ -249,7 +248,7 @@ char *ParsePortSpec( char * *spec )
 }
 
 
-void DonePort()
+void DonePort( void )
 {
     if( PortNumber != -1 ) {
         AIOReleasePort( ComPortHandle );
@@ -257,11 +256,11 @@ void DonePort()
     }
 }
 
-bool CheckPendingError()
+bool CheckPendingError( void )
 {
     return( FALSE );                    // NYI -- waiting for Rich Jeske
 }
 
-void ClearLastChar()
+void ClearLastChar( void )
 {
 }

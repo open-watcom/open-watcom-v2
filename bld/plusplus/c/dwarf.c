@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <setjmp.h>
 #include <assert.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 #include "errdefns.h"
 #include "cgfront.h"
@@ -62,10 +63,6 @@
 
 #define _typeHasPCHDwarfHandle( type ) \
 ( CompFlags.pch_debug_info_read && ((type)->dbgflag & TF2_DBG_IN_PCH ) != 0 )
-
-
-extern dw_client DFClient( void );
-extern void DFDwarfLocal( dw_client client, dw_loc_id locid, cg_sym_handle sym  );
 
 typedef enum
 {   DC_RETURN           = 0x01,         // this is a return type
@@ -252,34 +249,34 @@ static dw_loc_handle dwarfDebugStaticSeg( SYMBOL sym )
 static uint  dwarfAddressClassFlags( TYPE type ){
 /**********************************/
     uint    flags;
-    uint    ptr_type;
-    uint    offset_type;
+    cg_type ptr_type;
+    cg_type offset_type;
 
     ptr_type = CgTypeOutput( type );
     switch( ptr_type ) {
-    case T_HUGE_POINTER:
+    case TY_HUGE_POINTER:
         flags = DW_PTR_TYPE_HUGE16;
         break;
-    case T_LONG_POINTER:
-    case T_LONG_CODE_PTR:
+    case TY_LONG_POINTER:
+    case TY_LONG_CODE_PTR:
         offset_type = CgTypeOffset();
-        if( offset_type == T_UINT_4 ){
+        if( offset_type == TY_UINT_4 ){
             flags = DW_PTR_TYPE_FAR32;
-        }else{
+        } else {
             flags = DW_PTR_TYPE_FAR16;
         }
         break;
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-    case T_POINTER:
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
+    case TY_POINTER:
 #if _CPU == _AXP
         flags = DW_PTR_TYPE_DEFAULT;
 #else
         if(  TargetSwitches & FLAT_MODEL ) {
             flags = DW_PTR_TYPE_DEFAULT;
-        }else{
+        } else {
             offset_type = CgTypeOffset();
-            if( offset_type == T_UINT_4 ){
+            if( offset_type == TY_UINT_4 ){
                 flags = DW_PTR_TYPE_NEAR32;
             }else{
                 flags = DW_PTR_TYPE_NEAR16;
@@ -425,14 +422,16 @@ static boolean dwarfClassInfoFriend( TYPE type, boolean addfriend )
     check_friends = FALSE;
     if( !InDebug ){ /* TODO: if debug need handle */
         RingIterBeg( ScopeFriends( type->u.c.scope ), friend ) {
-            check_friends = TRUE;
-            if( addfriend ) {
-                dh = dwarfSymbol( friend->sym, DC_DEFAULT );
-                if( dh ) {
-                    DWAddFriend( Client, dh );
+            if( FriendIsSymbol( friend ) ) {
+                check_friends = TRUE;
+                if( addfriend ) {
+                    dh = dwarfSymbol( FriendGetSymbol( friend ), DC_DEFAULT );
+                    if( dh ) {
+                        DWAddFriend( Client, dh );
+                    }
+                } else {
+                    dh = dwarfSymbol( FriendGetSymbol( friend ), DC_DEFINE );
                 }
-            } else {
-                dh = dwarfSymbol( friend->sym, DC_DEFINE );
             }
         } RingIterEnd( friend )
     }
@@ -616,7 +615,7 @@ static boolean dwarfClassInfo( TYPE type )
                 dh = DWVariable( Client,
                          dh,
                          dl,
-                         NULL,
+                         0,
                          dl_seg,
                          CppNameDebug( curr ),
                          0,
@@ -884,7 +883,7 @@ static bool dwarfRefSymLoc( dw_loc_id locid, SYMBOL sym ){
 
     ret = FALSE;
     if( SymIsAutomatic( sym ) ){
-        DFDwarfLocal( Client, locid, (cg_sym_handle)sym );
+        DFDwarfLocal( Client, locid, sym );
     }else{
 #if _INTEL_CPU
         if(!( TargetSwitches & FLAT_MODEL )) { /* should check Client */
@@ -1316,7 +1315,7 @@ static void dwarf_block_open( SYMBOL sym )
         if( IsCppNameInterestingDebug( sym ) ) {
             name = CppNameDebug( sym );
         } else {
-            name = NULL;
+            name = "<unnamed>";
         }
         if( !InDebug ){
             dwarfLocation( sym );
@@ -1324,7 +1323,7 @@ static void dwarf_block_open( SYMBOL sym )
         dh = DWVariable( Client,
                          dh,
                          dummyLoc,
-                         NULL,
+                         0,
                          dummyLoc,
                          name,
                          0,
@@ -1528,7 +1527,7 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
                    dummyLoc,
                    class_dh,
                    dummyLoc,
-                   CppMangleName( NULL, sym ),
+                   GetMangledName( sym ),
                    0,
                    flags );
     if( file_ctl != NULL ) {
@@ -1576,7 +1575,7 @@ static dw_handle dwarfData( SYMBOL sym )
         }
     #endif
     flags = 0;
-    class_dh = NULL;
+    class_dh = 0;
     if( SymIsClassMember( sym ) ) {
         if( SymIsStaticDataMember( sym ) ) {
             class_dh = dwarfType( SymClass( sym ), DC_DEFAULT );
@@ -1622,7 +1621,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
         }
     #endif
     flags = 0;
-    class_dh = NULL;
+    class_dh = 0;
     if( SymIsClassMember( sym ) ) {
         if( SymIsStaticDataMember( sym ) ) {
             class_dh = dwarfType( SymClass( sym ), DC_DEFAULT );
@@ -1821,7 +1820,7 @@ extern void DwarfBrowseEmit( void )
     Client = DwarfInit();
     dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
     dwarfEmitFundamentalType();
-    dwarfEmitSymbolScope( FileScope );
+    dwarfEmitSymbolScope( GetFileScope() );
     DWLocTrash( Client, dummyLoc );
     DwarfFini( Client );
 }
@@ -1873,7 +1872,7 @@ extern void DwarfDebugFini( void )
 {
     if( GenSwitches & DBG_TYPES ) {
         if( !CompFlags.all_debug_type_names  ){ // generate what's used
-            dwarfUsedTypeSymbol(FileScope);
+            dwarfUsedTypeSymbol(GetFileScope());
             dwarfForwardFollowup();
         }
         if( CompFlags.pch_debug_info_write ) {
@@ -1904,7 +1903,7 @@ static bool ADirtyNameSpace( SYMBOL curr )
     bool ret;
     ret = FALSE;
     if( SymIsNameSpace( curr ) ){
-        ret = curr->u.ns->scope->dirty;
+        ret = curr->u.ns->scope->s.dirty;
     }
     return( ret );
 }
@@ -1922,11 +1921,13 @@ static void dwarfBegNameSpace( SYMBOL curr )
     type_update( type, TF2_DWARF_DEF, dh );
 }
 
+static void dwarfDebugSymbol( SCOPE scope );
+
 static void dwarfNameSpace( SYMBOL curr )
 /***************************************/
 {
     SCOPE scope = curr->u.ns->scope;
-    if( curr->u.ns->unnamed ){
+    if( curr->u.ns->s.unnamed ){
         dwarfDebugSymbol( scope );
     } else {
         dwarfBegNameSpace( curr );
@@ -1999,11 +2000,11 @@ static bool dwarfUsedNameSpace( SYMBOL curr )
 {
     bool   has_changed;
 
-    if( !curr->u.ns->unnamed ){
+    if( !curr->u.ns->s.unnamed ){
         dwarfBegNameSpace( curr );
     }
     has_changed = dwarfUsedTypeSymbol( curr->u.ns->scope );
-    if( !curr->u.ns->unnamed ){
+    if( !curr->u.ns->s.unnamed ){
         DWEndNameSpace( Client );
     }
     return( has_changed );
@@ -2059,15 +2060,17 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
     return( has_changed );
 }
 
+static void dwarfPreUsedSymbol( SCOPE scope );
+
 static void dwarfPreUsedNameSpace( SYMBOL curr )
 /***************************************/
 {
 
-    if( !curr->u.ns->unnamed ){
+    if( !curr->u.ns->s.unnamed ){
         dwarfBegNameSpace( curr );
     }
     dwarfPreUsedSymbol( curr->u.ns->scope );
-    if( !curr->u.ns->unnamed ){
+    if( !curr->u.ns->s.unnamed ){
         DWEndNameSpace( Client );
     }
 }
@@ -2159,9 +2162,9 @@ extern void DwarfDebugEmit( void )
     if( GenSwitches & DBG_TYPES ) {
         dwarfEmitFundamentalType();
         if( CompFlags.all_debug_type_names  ){ // generate the works
-            dwarfDebugSymbol( FileScope );
+            dwarfDebugSymbol( GetFileScope() );
          }else{
-            dwarfPreUsedSymbol( FileScope ); // generate whats used
+            dwarfPreUsedSymbol( GetFileScope() ); // generate whats used
          }
     }
 }

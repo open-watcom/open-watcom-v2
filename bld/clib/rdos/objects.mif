@@ -1,0 +1,5 @@
+#                  rdu
+#===========================
+!inject rdos.obj   rdu
+
+!include ../../../../objlist.mif

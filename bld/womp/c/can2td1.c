@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Turbo Debugger style output.
 *
 ****************************************************************************/
 
@@ -66,6 +65,8 @@ struct type_rec {
 
 STATIC carve_t  typeRecCarver;  /* we carve type_recs from here */
 STATIC idx_t    nextIdx;        /* next available index */
+
+STATIC int typePass2( void *type, void *force );
 
 STATIC uint_8 *getTrData( type_rec *tr, uint_16 len ) {
 
@@ -344,8 +345,9 @@ STATIC void typ1Complex( cantype *type ) {
     endType( tr );
 }
 
-STATIC int typePass1( cantype *type, void *parm ) {
+STATIC int typePass1( void *_type, void *parm ) {
 
+    cantype *type = _type;
 /**/myassert( type != NULL && parm == NULL );
     parm = parm;
     switch( type->class ) {
@@ -692,8 +694,10 @@ STATIC void typ2CharBlockI( cantype *type ) {
     type->extra = TD_TYPE_VOID;
 }
 
-STATIC int typePass2( cantype *type, int *force ) {
+STATIC int typePass2( void *_type, void *_force ) {
 
+    cantype *type = _type;
+    int *force = _force;
 /**/myassert( type != NULL );
     if( type->extra != 0 ) {    /* already processed */
         return( 0 );
@@ -734,8 +738,9 @@ void Can2TDT( void ) {
     }
 }
 
-STATIC int doTypeDef( cantype *type, void *parm ) {
+STATIC int doTypeDef( void *_type, void *parm ) {
 
+    cantype     *type = _type;
     obj_rec     *coment;
     const char  *name;
     size_t      name_len;

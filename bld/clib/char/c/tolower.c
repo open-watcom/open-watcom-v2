@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of tolower().
 *
 ****************************************************************************/
 
@@ -33,23 +32,12 @@
 #include "variety.h"
 #include "widechar.h"
 #include <ctype.h>
-#include <wchar.h>
-
-#ifdef __NETWARE__
- #ifndef _WCTYPE_T_DEFINED
-  #define _WCTYPE_T_DEFINED
-  #define _WCTYPE_T_DEFINED_
-  typedef long wint_t;
-  typedef int wctype_t;
- #endif
-#endif
-
-
 #ifdef __WIDECHAR__
- _WCRTLINK wint_t towlower( wint_t c ) {
-#else
- _WCRTLINK int tolower( int c ) {
+ #include <wchar.h>
 #endif
+
+_WCRTLINK INTCHAR_TYPE __F_NAME(tolower,towlower)( INTCHAR_TYPE c )
+{
     if( c >= 'A' && c <= 'Z' ) {
         c = c - 'A' + 'a';
     }

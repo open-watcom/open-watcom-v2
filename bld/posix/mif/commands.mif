@@ -1,63 +1,69 @@
 #
-#   COMMANDS:   define the names of all the commands in the project
+#   commands:   define the names of all the commands in the project
 #
 
 #   The directory $(posix_dir)\src\<command_name> must exist and contain
 #   the source for each command.
 
-COMMANDS = &
-    basename &
-    cat &
-    cmp &
-    comm &
-    compress &
-    cut &
-    date &
-    dev &
-    dirname &
-    env &
-    expand &
-    false &
-    fmt &
-    fold &
-    head &
-    lc &
-    line &
-    more &
-    paste &
-    ps &
-    pwd &
-    rev &
-    split &
-    strings &
-    tail &
-    tee &
-    tr &
-    true &
-    trunc &
-    unexpand &
-    uniq &
-    uuencode &
-    uudecode &
-    wc &
-    who
+#                 all qnx build doc test
+#======================================
+!inject basename  all qnx 
+!inject cat       all qnx build     test
+!inject cmp       all qnx 
+!inject comm      all qnx 
+!inject compress  all qnx 
+!inject cp        all     build doc test
+!inject cut       all qnx 
+!inject date      all qnx 
+!inject dev       all qnx 
+!inject df        all 
+!inject dirname   all qnx 
+!inject du        all 
+!inject egrep     all     build doc
+!inject env       all qnx 
+!inject expand    all qnx 
+!inject false     all qnx 
+!inject fgrep     all 
+!inject fmt       all qnx 
+!inject fold      all qnx 
+!inject gnutar    all 
+!inject head      all qnx 
+!inject chmod     all     build
+!inject lc        all qnx 
+!inject line      all qnx 
+!inject ls        all     build
+!inject mkdir     all     build doc
+!inject more      all qnx 
+!inject od        all 
+!inject paste     all qnx 
+!inject ps        all qnx 
+!inject pwd       all qnx 
+!inject rev       all qnx 
+!inject rm        all 
+!inject rmdir     all           doc
+!inject sed       all qnx build     test
+!inject sleep     all 
+!inject split     all qnx 
+!inject strings   all qnx 
+!inject tail      all qnx 
+!inject tee       all qnx 
+!inject tr        all qnx 
+!inject true      all qnx 
+!inject trunc     all qnx 
+!inject unexpand  all qnx 
+!inject uniq      all qnx build
+!inject uudecode  all qnx 
+!inject uuencode  all qnx 
+!inject wc        all qnx build     test
+!inject which     all     build
+!inject who       all qnx 
 
-!ifeq           targos  qnx
-!else ifeq      targos  qnx16
+!if defined(bootstrap) || defined(prebuild)
+commands = $(build)
+!else ifeq targos qnx16
+commands = $(qnx)
+!else ifeq targos qnx
+commands = $(qnx)
 !else
-COMMANDS += &
-    chmod &
-    cp &
-    df &
-    du &
-    egrep &
-    fgrep &
-    gnutar &
-    ls &
-    mkdir &
-    od &
-    rm &
-    rmdir &
-    sleep &
-    which
+commands = $(all)
 !endif

@@ -1,0 +1,59 @@
+hardware    date        compiler    lib             os  options result
+
+mapins : mapsize=20000, repetitions=1000
+whiteseal   11Aug05     ow1.4beta   owstl           xp  A,1     6.5ms, 482714, 8.7ms, 293937
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  A,1     10.9ms,502713, 13.8ms,313936
+whiteseal   11Aug05     ow1.4beta   owstl           xp  B,1     5.9ms, 482714, 7.5ms, 293937
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  B,1     8.4ms, 502713, 11.1ms,313936
+whiteseal   11Aug05     ow1.4beta   owstl           xp  C,1     5.7ms, 482714, 7.2ms, 293937
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  C,1     7.3ms, 502713, 10.3ms,313936
+mesh307     12Aug05     ow1.4beta   owstl           xp  C,1     7.7ms, 482714, 12.4ms,293937
+mesh307     12Aug05     ow1.3       stlport4.6.2    xp  C,1     6.1ms, 502713, 12.6ms,313936
+mesh307     12Aug05     msvc6.0 (12.00.8804)        xp  MA,M1   13.3ms,502713, 23.1ms,316071 (needs a custom fast allocator for fair test???)
+
+mapfind  : mapsize=20000, repetitions=1000
+whiteseal   11Aug05     ow1.4beta   owstl           xp  A,1     2.8ms, 317674, 6.1ms, 315608
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  A,1     5.3ms, 317661, 7.1ms, 315602
+whiteseal   11Aug05     ow1.4beta   owstl           xp  C,1     2.7ms, 317674, 5.5ms, 315608
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  C,1     4.5ms, 317661, 6.3ms, 315602
+mesh307     12Aug05     ow1.4beta   owstl           xp  C,1     2.5ms, 317674, 8.5ms, 315608
+mesh307     12Aug05     ow1.3       stlport4.6.2    xp  C,1     2.9ms, 317661, 6.6ms, 315602
+mesh307     12Aug05     msvc6.0 (12.00.8804)        xp  MA,M1   3.0ms, 317661, 9.0ms, 316191
+
+strcopyl : LONG_SIZE=1000, LONGDUMP_SIZE=10000, LONG_COUNT=10000
+whiteseal   11Aug05     ow1.4beta   owstl           xp  C,1     2.0ms
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  C,1     2.2ms
+mesh307     12Aug05     ow1.4beta   owstl           xp  C,1     2.1ms
+mesh307     12Aug05     ow1.3       stlport4.6.2    xp  C,1     1.9ms
+mesh307     12Aug05     msvc6.0 (12.00.8804)        xp  C,1     0.15ms
+
+strcopys : SHRT_SIZE=3, SHRTDUMP_SIZE=10000, SHRT_COUNT=10000
+whiteseal   11Aug05     ow1.4beta   owstl           xp  C,1     0.28ms
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  C,1     0.38ms
+mesh307     12Aug05     ow1.4beta   owstl           xp  C,1     0.27ms
+mesh307     12Aug05     ow1.3       stlport4.6.2    xp  C,1     0.33ms
+mesh307     12Aug05     msvc6.0 (12.00.8804)        xp  MA,M1   0.15ms
+
+strpass : SIZE=40, COUNT=10000000
+whiteseal   11Aug05     ow1.4beta   owstl           xp  C,1     0.76us
+whiteseal   11Aug05     ow1.3       stlport4.6.2    xp  C,1     1.4us
+mesh307     12Aug05     ow1.4beta   owstl           xp  C,1     0.86us
+mesh307     12Aug05     ow1.3       stlport4.6.2    xp  C,1     0.87us
+mesh307     12Aug05     msvc6.0 (12.00.8804)        xp  MA,M1   0.62us
+
+
+
+
+description of compile/link options:
+A: -5s -zq -d2 -xs -ox
+B: -5s -zq -d0 -xs -ox
+C: -zq -d0 -xs -oabehkmrt -ol+ -oi+ -ei -s -zp8 -6s -fpi87 -fp6
+
+MA:-c -O2 -Ox -nologo -GX
+
+1: debug all op quiet op map
+M1: -nologo
+
+description of hardware:
+whiteseal: Intel P4 Northwood 3GHz cache=?, 2GB DDR ram, asus P4P800SE motherboard
+mesh307: AMD Athlon XP 2600+ 2.13GHz cache=?, 480MB ram, asus ....

@@ -29,13 +29,24 @@
 *
 ****************************************************************************/
 
+/*
+ -------------------------------------------
+ Tossed old algorithm and wrote new one.
+ No longer based on delay loop iteration.
+ No initialization delay. Works on
+ multi-processing operating systems (even DOS).
+ Minimum delay is 50-60 milliseconds.
+ Seems to be accurate to within 10 milliseconds.
+ -------------------------------------------
+ 
+   The trouble with the old code is that in a multitasking OS, the
+ initial calibration may be wildly inaccurate! That's why the algorithm
+ was scrapped.
+*/ 
 
-#include <stdio.h>
 #include "variety.h"
-
-#if !defined(_WCRTLINK)
-#define _WCRTLINK
-#endif
+#include <stdio.h>
+#include <i86.h>
 
 /*
  * Using interupt 21 service 2C, we get the time from DOS

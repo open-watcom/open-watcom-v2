@@ -30,14 +30,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-
 #include "vi.h"
-
-typedef struct ss {
-struct ss *next,*prev;
-} ss;
 
 /*
  * AddLLItemAtEnd - create a new item at the tail of a linked list
@@ -151,7 +144,9 @@ bool ValidateLL( ss *head, ss *tail )
 
     prev = NULL;
     for( curr = head; curr->next != NULL; curr = curr->next ) {
-        if( curr->prev != prev ) return( FALSE );
+        if( curr->prev != prev ) {
+            return( FALSE );
+        }
         prev = curr;
     }
     return( curr == tail );

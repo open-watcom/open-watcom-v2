@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Handle interrupts for trap file (called from asm wrapper).
 *
 ****************************************************************************/
 
@@ -35,9 +34,9 @@
 #include <string.h>
 #include "wdebug.h"
 #include "stdwin.h"
-#include "squish87.h"
 #include "mad.h"
 #include "madregs.h"
+#include "misc7086.h"
 
 /*
  * How we get our registers:
@@ -103,8 +102,22 @@ typedef struct {
 // nyi - put in header or something!
 #define SIG_OFF         0
 #define SIG_SIZE        4
-extern unsigned short win386sig[];
-extern unsigned short win386sig2[];
+extern const unsigned short __based(__segname("_CONST")) win386sig[];
+extern const unsigned short __based(__segname("_CONST")) win386sig2[];
+
+extern WORD     far NewAX;
+extern WORD     far NewCS;
+extern WORD     far NewIP;
+extern WORD     far NewFLAGS;
+extern WORD     far OldretCS;
+extern WORD     far OldretIP;
+extern WORD     far Oldintnumber;
+extern WORD     far Oldhandle;
+
+extern WORD     far NewSS;
+extern DWORD    far NewESP;
+
+extern WORD     far RetHow;
 
 #define EXCESS_CRAP_ON_STACK    (sizeof( int_frame ) )
 
@@ -148,15 +161,7 @@ static void saveState( volatile fault_frame *ff )
  */
 static void restoreState( volatile fault_frame *ff )
 {
-    WORD                *wptr;
-    extern WORD far     NewAX;
-    extern WORD far     NewCS;
-    extern WORD far     NewIP;
-    extern WORD far     NewFLAGS;
-    extern WORD far     OldretCS;
-    extern WORD far     OldretIP;
-    extern WORD far     Oldintnumber;
-    extern WORD far     Oldhandle;
+    WORD        far *wptr;
 
     /*
      * we save all this stuff in our own code segment (see int.asm)
@@ -215,10 +220,8 @@ static void restoreState( volatile fault_frame *ff )
  */
 static void newStack( WORD SS, DWORD ESP )
 {
-    extern WORD far     NewSS;
-    extern DWORD far    NewESP;
-    WORD                *wptr;
-    DWORD               *dwptr;
+    WORD        far *wptr;
+    DWORD       far *dwptr;
 
     wptr = MK_FP( CSAlias, FP_OFF( &NewSS ) );
     dwptr = MK_FP( CSAlias, FP_OFF( &NewESP ) );
@@ -237,8 +240,7 @@ static void newStack( WORD SS, DWORD ESP )
  */
 static void setRetHow( WORD rc )
 {
-    extern WORD far     RetHow;
-    WORD                *wptr;
+    WORD        far *wptr;
 
     wptr = MK_FP( CSAlias, FP_OFF( &RetHow ) );
 
@@ -367,13 +369,12 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     FaultHandlerEntered = TRUE;
     TaskAtFault = GetCurrentTask();
 
-    if( NPXType <= X86_NO ) {
+    if( FPUType == X86_NO ) {
         memset( &FPResult, 0, sizeof( FPResult ) );
-    } else if( NPXType < X86_387 ) {
-        Read8087( &FPResult );          // in misc.asm
-        FPUExpand( &FPResult );
+    } else if( FPUType < X86_387 ) {
+        Read8087( &FPResult );
     } else {
-        Read80387( &FPResult );         // in misc.asm
+        Read387( &FPResult );
     }
 
     /*
@@ -392,13 +393,10 @@ void __loadds __cdecl FaultHandler( volatile fault_frame ff )
     }
     Out((OUT_RUN,"***** ---> restarting app, rc=%d",rc));
 
-    if( NPXType > X86_NO ) {
-        if( NPXType < X86_387 ) {
-            FPUContract( &FPResult );
-            Write8087( &FPResult );             // in misc.asm
-        } else {
-            Write80387( &FPResult );            // in misc.asm
-        }
+    if( FPUType >= X86_387 ) {
+        Write387( &FPResult );
+    } else if( FPUType != X86_NO ) {
+        Write8087( &FPResult );
     }
 
     if( !WasInt32 ) {

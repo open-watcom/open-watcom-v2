@@ -48,13 +48,13 @@ static void init_3d( three_d_op * three_d )
     three_d->view.h_angle = 45;
     three_d->view.v_angle = 10;
     three_d->view.perspective = 70;             // Percentage, 100 is too high
-    three_d->view.zoom = 100;                    // Percentage
+    three_d->view.zoom = 100;                   // Percentage
     three_d->view.type = PROJ_PERSPECTIVE;      // PARALLEL or PERSPECTIVE
     three_d->lighting.type = LIGHT_MANUAL;      // AUTO (based on chart type) or MANUAL
     three_d->lighting.vert = LIGHT_VERT_TOP;    // TOP, MID or BOTTOM
     three_d->lighting.horz = LIGHT_HORZ_MID;    // LEFT, MID or RIGHT
     three_d->lighting.depth = LIGHT_DEPTH_FRONT;// FRONT, MID or BACK
-    three_d->lighting.brightness = 50;         // between 0 and 100
+    three_d->lighting.brightness = 50;          // between 0 and 100
     three_d->lighting.contrast = 70;            // between 0 and 100
     three_d->black_edges = FALSE;
     three_d->resolution = SURFACE_RES_MED;      // LOW, MED or HIGH
@@ -114,9 +114,9 @@ void ENTRYPOINT three_d_box(
     float       y2,
     float       z1,
     float       z2,
-    unsigned char red,
-    unsigned char green,
-    unsigned char blue )
+    unsigned    red,
+    unsigned    green,
+    unsigned    blue )
 {
     w3coord     pt1;
     w3coord     pt2;
@@ -166,19 +166,3 @@ void ENTRYPOINT three_d_set( three_d_handle handle, three_d_attr attr, int new_v
     case THREE_D_LIGHT_DEPTH:   Three_d.lighting.depth = new_val; break;
     }
 }
-
-// Stubs
-
-#if defined(PLAT_OS2)
-
-void _wpi_free( void * ptr )
-{
-    free( ptr );
-}
-
-void * _wpi_malloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-#endif

@@ -1,0 +1,105 @@
+#
+# Watcom GML/Script (wgml) Makefile
+# =======================================
+#
+
+proj_name = wgml_research
+wgml_research_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+!include ..\..\wgmlobjs.mif
+!include wres.mif
+
+inc_dirs = -I"../h;../../h;$(wres_dir)/h;$(wrc_dir)/h"
+
+.c: ../c;../../c;$(watcom_dir)/c
+
+wgml_libs = $(wres_lib)
+
+research_common_objs = &
+            cmdlhelp.obj  &
+            common.obj    &
+            dfinterp.obj  &
+            heapchk.obj   &
+            research.obj
+
+cf_common_objs = &
+            $(research_common_objs) &
+            cfdir.obj     &
+            cfdev.obj     &
+            cfdrv.obj     &
+            cffon.obj     &
+            cffunc.obj    &
+            cfheader.obj  &
+            lhdirect.obj
+
+cfc_objs = &
+            $(cf_common_objs) &
+            cfcheck.obj   &
+            cfcutils.obj
+
+cfp_objs = &
+            $(cf_common_objs) &
+            cfparse.obj       &
+            cfputils.obj
+
+cop_common_objs = &
+            $(research_common_objs) &
+            $(common_objs) &
+            $(scr_objs)   &
+            $(gml_objs)   &
+            $(lay_objs)   &
+            $(dev_objs)
+
+copp_objs = &
+            $(cop_common_objs) &
+            copparse.obj
+
+devld_objs = &
+            $(cop_common_objs) &
+            devldchk.obj
+
+ff_objs = &
+            $(research_common_objs) &
+            findfunc.obj
+
+outc_objs = &
+            $(cop_common_objs) &
+            outcheck.obj
+
+nwgml : wgmlmsge.gh wgmlmsgs.gh wgml.res cfcheck.exe cfparse.exe copparse.exe &
+        devldchk.exe findfunc.exe outcheck.exe .SYMBOLIC
+
+cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(cfc_objs) }
+
+cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(cfp_objs) }
+
+copparse.exe : $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(copp_objs) }
+    wstrip -q -a -r $@ . wgml.res
+
+devldchk.exe : $(devld_objs) $(wgml_libs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(devld_objs) }
+    wstrip -q -a -r $@ . wgml.res
+
+findfunc.exe : $(ff_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(ff_objs) }
+
+outcheck.exe : wgml.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(outc_objs) }
+    wstrip -q -a -r $@ . wgml.res
+
+wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
+        $(awk) -v base=000 -f ../../makemdef.awk $< > $^@
+
+wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
+        $(awk) -v rcbase=000 -f ../../msgtoenm.awk $< > $^@
+
+wgml.res : wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h $(__MAKEFILES__) &
+                       ../../h/wgmlerr.msg ../../h/wgml.rc
+        $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$@
+

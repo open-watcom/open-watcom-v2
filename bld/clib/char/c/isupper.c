@@ -24,25 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of isupper().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <ctype.h>
 #include "widechar.h"
+#include <ctype.h>
+#ifdef __WIDECHAR__
+ #include <wctype.h>
+#endif
 #include "istable.h"
 #undef  isupper
 
-
-_WCRTLINK int __F_NAME(isupper,iswupper)( c )
-        register int c;
-    {
-        if( IS_ASCII( c ) ) {
-            return( IsWhat( c ) & _UPPER );
-        } else {
-            return( 0 );
-        }
+_WCRTLINK int __F_NAME(isupper,iswupper)( INTCHAR_TYPE c )
+{
+    if( IS_ASCII( c ) ) {
+        return( IsWhat( c ) & _UPPER );
+    } else {
+        return( 0 );
     }
+}

@@ -36,9 +36,9 @@
 #include "pdiv.h"
 
 
-_WMRTLINK extended _IF_PowXI( extended base, intstar4 power ) {
-//============================================================
-
+_WMRTLINK extended _IF_PowXI( extended base, intstar4 power )
+//===========================================================
+{
 // Return base ** power where power could be <= 0.
 
     extended    result;
@@ -53,7 +53,7 @@ _WMRTLINK extended _IF_PowXI( extended base, intstar4 power ) {
     } else {
         if( power < 0 ) {
             power = -power;
-            base = PDIV( 1.0 , base );
+            base = PDIV( 1.0, base );
         }
         result = 1.0;
         while( power > 0 ) {

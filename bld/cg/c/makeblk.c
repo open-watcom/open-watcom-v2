@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Block creation and destruction functions.
 *
 ****************************************************************************/
 
@@ -35,33 +34,31 @@
 #include "model.h"
 #include "coderep.h"
 #include "procdef.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "opcodes.h"
 #include "addrname.h"
 #include "cgaux.h"
 #include "zoiks.h"
 #include "feprotos.h"
 #include <string.h>
+#include "makeins.h"
 
-extern  void            CGFree(pointer);
-extern  void            FreeIns(instruction*);
-extern  void            TellBeginExecutions();
-extern  void            FreeNames();
+extern  void            TellBeginExecutions(void);
+extern  void            FreeNames(void);
 extern  int             AskDisplaySize(int);
-extern  void            ReInitNames();
-extern  label_handle    AskForNewLabel();
+extern  void            ReInitNames(void);
+extern  label_handle    AskForNewLabel(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
-extern  name    *       AllocMemory(pointer,type_length,cg_class,type_class_def);
+extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  type_class_def  TypeClass(type_def*);
 extern  sym_handle      AskForLblSym(label_handle);
-extern  byte    *       Copy(void*,void*,uint);
-extern  void            NamesCrossBlocks();
+extern  byte            *Copy(void*,void*,uint);
+extern  void            NamesCrossBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  pointer         SafeRecurse( pointer (* rtn)(), pointer arg );
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
-extern  instruction*    MakeNop(void);
 
 
 extern    bool                  BlocksUnTrimmed;
@@ -79,13 +76,15 @@ extern    bool                  HaveCurrBlock;
 proc_def              *CurrProc;
 block                 *CurrBlock;
 
-extern  block   *MakeBlock( label_handle label, block_num edges ) {
-/*****************************************************************/
+
+extern  block   *MakeBlock( label_handle label, block_num edges )
+/***************************************************************/
+{
     block       *blk;
     block_edge  *edge;
     block_num   i;
 
-    _Alloc( blk, sizeof( block ) + (edges-1)*sizeof( block_edge ) );
+    blk = CGAlloc( sizeof( block ) + (edges-1)*sizeof( block_edge ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -106,6 +105,7 @@ extern  block   *MakeBlock( label_handle label, block_num edges ) {
     blk->loop_head = NULL;
     blk->unroll_count = 0;
     blk->stack_depth = 0;
+    blk->depth = 0;
     _DBitInit( blk->dom.id, 0 );
     for( i = 0; i < edges; i++ ) {
         edge = &blk->edge[ i ];
@@ -114,8 +114,10 @@ extern  block   *MakeBlock( label_handle label, block_num edges ) {
     return( blk );
 }
 
-extern  block   *NewBlock( label_handle label, bool label_dies ) {
-/****************************************************************/
+
+extern  block   *NewBlock( label_handle label, bool label_dies )
+/**************************************************************/
+{
     block       *blk;
 
     blk = MakeBlock( label, 1 );
@@ -128,9 +130,33 @@ extern  block   *NewBlock( label_handle label, bool label_dies ) {
 }
 
 
-extern  void    EnLink( label_handle label, bool label_dies ) {
-/*************************************************************/
+extern  void    FreeABlock( block * blk )
+/***************************************/
+{
+    if( blk->targets <= 1 ) {
+        CGFree( blk );
+    } else {
+        CGFree( blk );
+    }
+}
 
+
+extern  void    FreeBlock( void )
+/*******************************/
+{
+    while( CurrBlock->ins.hd.next != (instruction *)&CurrBlock->ins ) {
+        FreeIns( CurrBlock->ins.hd.next );
+    }
+    if( CurrBlock->dataflow != NULL ) {
+        CGFree( CurrBlock->dataflow );
+    }
+    FreeABlock( CurrBlock );
+}
+
+
+extern  void    EnLink( label_handle label, bool label_dies )
+/***********************************************************/
+{
     block       *blk;
 
     blk = NewBlock( label, label_dies );
@@ -139,9 +165,27 @@ extern  void    EnLink( label_handle label, bool label_dies ) {
     SrcLine = 0;
 }
 
-extern  void    GenBlock( int class, int targets ) {
-/**************************************************/
+extern  void    AddIns( instruction *ins )
+/****************************************/
+{
+    if( HaveCurrBlock == FALSE ) {
+        EnLink( AskForNewLabel(), TRUE );
+        HaveCurrBlock = TRUE;
+    }
+    ins->head.next = (instruction *)&CurrBlock->ins;
+    ins->head.prev = CurrBlock->ins.hd.prev;
+    CurrBlock->ins.hd.prev->head.next = ins;
+    CurrBlock->ins.hd.prev = ins;
+    ins->head.line_num = SrcLine;
+    _INS_NOT_BLOCK( ins );
+    ins->id = ++ InsId;
+    SrcLine = 0;
+}
 
+
+extern  void    GenBlock( block_class class, int targets )
+/********************************************************/
+{
     block       *new;
     block_edge  *edge;
     instruction *ins;
@@ -167,7 +211,7 @@ extern  void    GenBlock( int class, int targets ) {
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        _Alloc( new, sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+        new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
         Copy( CurrBlock, new, sizeof( block ) );
         if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) {
             new->ins.hd.next = (instruction *)&new->ins;
@@ -197,7 +241,7 @@ extern  void    GenBlock( int class, int targets ) {
             edge->destination = new;
             edge = edge->next_source;
         }
-        _Free( CurrBlock, sizeof( block ) );
+        CGFree( CurrBlock );
         CurrBlock = new;
     }
     CurrBlock->class &= BIG_LABEL;   /* the only one that sticks*/
@@ -208,15 +252,15 @@ extern  void    GenBlock( int class, int targets ) {
 }
 
 
-extern  block   *ReGenBlock( block *blk, label_handle lbl ) {
-/***********************************************************/
-
+extern  block   *ReGenBlock( block *blk, label_handle lbl )
+/*********************************************************/
+{
     block       *new;
     block_edge  *edge;
     int         targets;
 
     targets = blk->targets + 1;
-    _Alloc( new, sizeof( block ) + (targets-1) * sizeof( block_edge ) );
+    new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
     new->edge[ targets-1 ].destination = lbl;
     new->edge[ targets-1 ].flags = 0;
@@ -257,9 +301,9 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl ) {
 }
 
 
-extern  type_class_def  InitCallState( type_def *tipe ) {
-/***************************************************/
-
+extern  type_class_def  InitCallState( type_def *tipe )
+/*****************************************************/
+{
     name        *name;
     sym_handle  sym;
     pointer     aux;
@@ -272,11 +316,10 @@ extern  type_class_def  InitCallState( type_def *tipe ) {
 }
 
 
-extern  void    AddTarget( label_handle dest, bool dest_label_dies ) {
-/********************************************************************/
-
-  /*   Don't handle expression jumps yet*/
-
+extern  void    AddTarget( label_handle dest, bool dest_label_dies )
+/******************************************************************/
+/*   Don't handle expression jumps yet*/
+{
     block_edge  *edge;
 
     edge = &CurrBlock->edge[  CurrBlock->targets++  ];
@@ -289,13 +332,13 @@ extern  void    AddTarget( label_handle dest, bool dest_label_dies ) {
 }
 
 
-extern  block   *FindBlockWithLbl( label_handle label ) {
-/*******************************************************/
-
+extern  block   *FindBlockWithLbl( label_handle label )
+/*****************************************************/
+{
     block       *blk;
 
     blk = HeadBlock;
-    for(;;) {
+    for( ;; ) {
         if( blk == NULL ) return( NULL );
         if( blk->label == label ) return( blk );
         blk = blk->next_block;
@@ -303,9 +346,9 @@ extern  block   *FindBlockWithLbl( label_handle label ) {
 }
 
 
-extern  void    FixEdges() {
-/**************************/
-
+extern  void    FixEdges( void )
+/******************************/
+{
     block       *blk;
     block       *dest;
     int         targets;
@@ -333,9 +376,10 @@ extern  void    FixEdges() {
 
 
 static label_handle LinkReturnsParms[ 2 ];
-static  pointer  LinkReturns() {
-/******************************/
 
+static  pointer  LinkReturns( void )
+/**********************************/
+{
     block               *blk;
     int                 i;
     bool                found;
@@ -350,7 +394,7 @@ static  pointer  LinkReturns() {
     if( blk->class & BLOCK_VISITED ) return( (pointer)TRUE );
     if( blk->class & LABEL_RETURN ) {
         i = blk->targets;
-        for(;;) {
+        for( ;; ) {
             if( --i < 0 ) {
                 blk = ReGenBlock( blk, link_to );
                 break;
@@ -383,12 +427,11 @@ static  pointer  LinkReturns() {
     return( (pointer)TRUE );
 }
 
-extern  bool        FixReturns() {
-/********************************/
-
+extern  bool        FixReturns( void )
+/************************************/
 /* link all LABEL_RETURN blocks to any CALL_LABEL block they could*/
 /* have been invoked from*/
-
+{
     block       *blk;
     block       *other_blk;
 
@@ -415,9 +458,9 @@ extern  bool        FixReturns() {
 }
 
 
-extern  void    UnFixEdges() {
-/****************************/
-
+extern  void    UnFixEdges( void )
+/********************************/
+{
     block       *blk;
     int         targets;
     block_edge  *edge;
@@ -440,9 +483,9 @@ extern  void    UnFixEdges() {
 }
 
 
-extern  void    AddAnIns( block *blk, instruction *ins ) {
-/********************************************************/
-
+extern  void    AddAnIns( block *blk, instruction *ins )
+/******************************************************/
+{
     block       *curr_block;
 
     curr_block = CurrBlock;
@@ -452,31 +495,15 @@ extern  void    AddAnIns( block *blk, instruction *ins ) {
 }
 
 
-extern  void    AddIns( instruction *ins ) {
-/******************************************/
-
-    if( HaveCurrBlock == FALSE ) {
-        EnLink( AskForNewLabel(), TRUE );
-        HaveCurrBlock = TRUE;
-    }
-    ins->head.next = (instruction *)&CurrBlock->ins;
-    ins->head.prev = CurrBlock->ins.hd.prev;
-    CurrBlock->ins.hd.prev->head.next = ins;
-    CurrBlock->ins.hd.prev = ins;
-    ins->head.line_num = SrcLine;
-    ins->id = ++ InsId;
-    SrcLine = 0;
-}
-
-
-extern  bool    BlkTooBig() {
-/***************************/
-
+extern  bool    BlkTooBig( void )
+/*******************************/
+{
     label_handle        blk;
 
     if( !HaveCurrBlock ) return( FALSE );
     if( CurrBlock == NULL ) return( FALSE );
     if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) return( FALSE );
+    _INS_NOT_BLOCK( CurrBlock->ins.hd.next );
     if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( FALSE );
     if( CurrBlock->targets != 0 ) return( FALSE );
     blk = AskForNewLabel();
@@ -487,9 +514,9 @@ extern  bool    BlkTooBig() {
 }
 
 
-extern  void    NewProc( int level ) {
-/************************************/
-
+extern  void    NewProc( int level )
+/**********************************/
+{
     proc_def    *new;
 
     if( CurrProc != NULL ) {
@@ -515,7 +542,7 @@ extern  void    NewProc( int level ) {
     HeadBlock = NULL;
     BlockList = NULL;
     ReInitNames();
-    _Alloc( new, sizeof( proc_def ) );
+    new = CGAlloc( sizeof( proc_def ) );
     memset( new, 0, sizeof( proc_def ) );
     new->next_proc = CurrProc;
     CurrProc = new;
@@ -531,12 +558,12 @@ extern  void    NewProc( int level ) {
 }
 
 
-extern  void    FreeProc() {
-/**************************/
-
+extern  void    FreeProc( void )
+/******************************/
+{
     proc_def    *oldproc;
 
-    for(;;) {
+    for( ;; ) {
         CurrBlock = HeadBlock;
         if( CurrBlock == NULL ) break;
         HeadBlock = CurrBlock->next_block;
@@ -551,7 +578,7 @@ extern  void    FreeProc() {
         if( oldproc->state.parm.table ) {
             CGFree( oldproc->state.parm.table );
         }
-        _Free( oldproc, sizeof( proc_def ) );
+        CGFree( oldproc );
         if( CurrProc != NULL ) {
             RestoreFromTargProc();
             InsId = CurrProc->ins_id;
@@ -571,28 +598,5 @@ extern  void    FreeProc() {
             InsId = 0;
             BlockByBlock = FALSE;
         }
-    }
-}
-
-
-extern  void    FreeBlock() {
-/***************************/
-
-    while( CurrBlock->ins.hd.next != (instruction *)&CurrBlock->ins ) {
-        FreeIns( CurrBlock->ins.hd.next );
-    }
-    if( CurrBlock->dataflow != NULL ) {
-        _Free( CurrBlock->dataflow, sizeof( data_flow_def ) );
-    }
-    FreeABlock( CurrBlock );
-}
-
-extern  void    FreeABlock( block * blk ) {
-/*****************************************/
-
-    if( blk->targets <= 1 ) {
-        _Free( blk, sizeof( block ) );
-    } else {
-        _Free( blk, sizeof( block ) + (blk->targets-1) * sizeof( block_edge ) );
     }
 }

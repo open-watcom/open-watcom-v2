@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Safe recursion routine with explicit stack overflow check.
 *
 ****************************************************************************/
 
@@ -33,25 +32,26 @@
 #include "standard.h"
 #include "hostsys.h"
 
-#if defined( __AXP__ ) || defined( __NT__ )
+#if defined( __AXP__ ) || defined( __MIPS__ ) || defined( __NT__ ) || !defined( __WATCOMC__ )
 
-pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
-/*****************************************************/
-
+pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
+/************************************************************/
+{
     return( rtn( arg ) );
 }
 
 #else
 
+#include <malloc.h>
 #include "stackok.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "cypfunc.h"
 #include "memout.h"
 #include "cg.h"
 
-pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
-/*****************************************************/
-
+pointer SafeRecurse( pointer (* rtn)( pointer ), pointer arg )
+/************************************************************/
+{
     #define SAVE_SIZE   512     /* this must be smaller than the stack */
 
     extern  mem_out_action  SetMemOut(mem_out_action);
@@ -61,10 +61,10 @@ pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
     pointer             retval;
     mem_out_action      old_action;
 
-    if( (unsigned)(sp() - stacklow()) < 0x200 ) { /* stack getting low! */
+    if( stackavail() < 0x2000 ) { /* stack getting low! */
 /*      This code assumes NO parameters on the stack! */
         old_action = SetMemOut( MO_OK );
-        _Alloc( savearea, SAVE_SIZE );
+        savearea = CGAlloc( SAVE_SIZE );
         if( savearea == NULL ) {
             FatalError( "No memory to save stack" );
         }
@@ -78,7 +78,7 @@ pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
         CypCopy( sp() + SAVE_SIZE, sp(), bp() - sp() - SAVE_SIZE );
         setbp( bp() - SAVE_SIZE );
         CypCopy( savearea, bp(), SAVE_SIZE );
-        _Free( savearea, SAVE_SIZE );
+        CGFree( savearea );
         return( retval );
     } else {
         return( rtn( arg ) );
@@ -93,9 +93,6 @@ pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {
 
 static uint_32  oldValue;
 const char *errString = "Stack hit!";
-
-extern void DumpString( char * );
-extern void DumpNL( void );
 
 #pragma aux _stashit modify exact [] = \
         "push   eax" \

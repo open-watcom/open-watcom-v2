@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dummy stack check routines for non-x86 Win32 platforms.
 *
 ****************************************************************************/
 
@@ -36,29 +35,34 @@
 #include "exitwmsg.h"
 
 #if defined(__AXP__) || defined(__PPC__)
-void _init_stk( void ) {
+void _init_stk( void )
+{
 }
 
-_WCRTLINK unsigned __CHK( unsigned i ) {
+_WCRTLINK unsigned __CHK( unsigned i )
+{
     return( i );
 }
 
-_WCRTLINK void __GRO( unsigned i ) {
+_WCRTLINK void __GRO( unsigned i )
+{
     i = i;
 }
 
-_WCRTLINK void __STKOVERFLOW( void ) {
+_WCRTLINK void __STKOVERFLOW( void )
+{
     __fatal_runtime_error( "stack overflow", -1 );
 }
 #endif
 
-_WCRTLINK unsigned stackavail() {
-    #if defined(__AXP__) || defined(__PPC__)
-        unsigned _SP;
-        _SP = (unsigned)&_SP;
-        return( _SP - _RWD_stacklow );
-    #else
-        return( _SP() - _RWD_stacklow );
-    #endif
-}
+_WCRTLINK unsigned stackavail()
+{
+#if defined(__AXP__) || defined(__PPC__)
+    unsigned    _SP;
 
+    _SP = (unsigned)&_SP;
+    return( _SP - _RWD_stacklow );
+#else
+    return( _SP() - _RWD_stacklow );
+#endif
+}

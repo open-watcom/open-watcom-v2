@@ -24,13 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple CPU cycle wasting program, useful for testing
+*               the profiler.
 *
 ****************************************************************************/
 
 
-#define ITER 5000
+#ifndef ITER
+    #define ITER 5000
+#endif
+
 unsigned long count;
 
 void f10()

@@ -1,0 +1,122 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.63 - DPMI error codes </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">If a DPMI function was
+unsuccessful, carry flag (CF) will be set and an error code will be placed
+in register AX. The following is a list of error codes returned by a DPMI
+host.</font></p>
+
+<p>&nbsp;</p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8001h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Unsupported function<br>
+Returned in response to any function call which is not implemented by this
+host, because the requested function is either undefined or optional.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8002h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid state<br>
+Some object is in the wrong state for the requested operation.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8003h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - System integrity<br>
+The requested operation would endanger system integrity, eg, a request to
+map linear addresses onto system code or data.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8004h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Deadlock<br>
+Host detected a deadlock situation.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8005h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Request canceled<br>
+A pending serialization request was canceled.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8010h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Resource Unavailable<br>
+The DPMI host cannot allocate internal resources to complete an operation.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8011h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Descriptor unavailable<br>
+Host is unable to allocate a descriptor.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8012h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Linear memory unavailable<br>
+Host is unable to allocate the required linear memory.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8013h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Physical memory unavailable<br>
+Host is unable to allocate the required physical memory.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8014h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Backing store unavailable<br>
+Host is unable to allocate the required backing store.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8015h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Callback unavailable<br>
+Host is unable to allocate the required callback address.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8016h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Handle unavailable<br>
+Host is unable to allocate the required handle.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8017h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Lock count exceeded<br>
+A locking operation exceeds the maximum count maintained by the host.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8018h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Resource owned exclusively<br>
+A request for serialization of a shared memory block could not be satisfied
+because it is already serialized exclusively by another client.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8019h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Resource owned shared<br>
+A request for exclusive serialization of a shared memory block could not
+be satisfied because it is already serialized shared by another client.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8021h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid value<br>
+A numeric or flag parameter has an invalid value.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8022h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid selector<br>
+A selector does not correspond to a valid descriptor.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8023h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid handle<br>
+A handle parameter is invalid.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8024h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid callback<br>
+A callback parameter is invalid.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8025h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid linear address<br>
+A linear address range (either supplied as a parameter or implied by the
+call) is invalid.</font></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">8026h</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> - Invalid request<br>
+The request is not supported by the underlying hardware. </font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

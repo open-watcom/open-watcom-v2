@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction decoding for Java Virtual Machine.
 *
 ****************************************************************************/
 
@@ -38,9 +37,8 @@
 extern long SEX( unsigned long v, unsigned bit );
 
 extern const dis_range          JVMRangeTable[];
+extern const int                JVMRangeTablePos[];
 extern const unsigned char      JVMMaxInsName;
-
-#if DISCPU & DISCPU_jvm
 
 static unsigned GetUByte( void *d, unsigned off )
 {
@@ -112,7 +110,7 @@ dis_handler_return JVMUByte( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = GetUByte( d, ins->size + 1 );
+    ins->op[0].value = 0 | GetUByte( d, ins->size + 1 );
     ins->size += 2;
     return( DHR_DONE );
 }
@@ -121,7 +119,7 @@ dis_handler_return JVMUShort( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = GetUShort( d, ins->size + 1 );
+    ins->op[0].value = 0 | GetUShort( d, ins->size + 1 );
     ins->size += 3;
     return( DHR_DONE );
 }
@@ -137,11 +135,11 @@ dis_handler_return JVMIInc( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
-    if( ins->flags & DIF_JVM_WIDE ) {
-        ins->op[0].value = GetUShort( d, ins->size + 1 );
+    if( ins->flags.u.jvm & DIF_JVM_WIDE ) {
+        ins->op[0].value = 0 | GetUShort( d, ins->size + 1 );
         ins->size += 1;
     } else {
-        ins->op[0].value = GetUByte( d, ins->size + 1 );
+        ins->op[0].value = 0 | GetUByte( d, ins->size + 1 );
     }
     ins->op[1].type = DO_IMMED;
     ins->op[1].value = GetSByte( d, ins->size + 2 );
@@ -151,7 +149,7 @@ dis_handler_return JVMIInc( dis_handle *h, void *d, dis_dec_ins *ins )
 
 dis_handler_return JVMWIndex( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    if( ins->flags & DIF_JVM_WIDE ) {
+    if( ins->flags.u.jvm & DIF_JVM_WIDE ) {
         return( JVMUShort( h, d, ins ) );
     } else {
         return( JVMUByte( h, d, ins ) );
@@ -163,7 +161,7 @@ dis_handler_return JVMWide( dis_handle *h, void *d, dis_dec_ins *ins )
     //this affects the following iload,lload,fload,dload,aload,istore,
     //lstore,fstore,dstore,astore,iinc,ret instructions.
     ins->op[0].extra = GetUByte( d, 1 );
-    ins->flags |= DIF_JVM_WIDE;
+    ins->flags.u.jvm |= DIF_JVM_WIDE;
     ins->size += 1;
     return( DHR_CONTINUE );
 }
@@ -173,9 +171,9 @@ dis_handler_return JVMMultiANewArray( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 4;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
-    ins->op[0].value = GetUShort( d, 1 );
+    ins->op[0].value = 0 | GetUShort( d, 1 );
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = GetUByte( d, 3 );
+    ins->op[1].value = 0 | GetUByte( d, 3 );
     return( DHR_DONE );
 }
 
@@ -184,7 +182,7 @@ dis_handler_return JVMBrShort( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 3;
     ins->num_ops = 1;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = GetUShort( d, 1 );
+    ins->op[0].value = 0 | GetUShort( d, 1 );
     return( DHR_DONE );
 }
 
@@ -241,9 +239,9 @@ dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 5;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
-    ins->op[0].value = GetUShort( d, 1 );
+    ins->op[0].value = 0 | GetUShort( d, 1 );
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = GetUByte( d, 3 );
+    ins->op[1].value = 0 | GetUByte( d, 3 );
     return( DHR_DONE );
 }
 
@@ -265,10 +263,28 @@ static unsigned JVMOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     return( 0 );
 }
 
-const dis_cpu_data JVMData = {
-    JVMRangeTable, JVMInsHook, JVMFlagHook, JVMOpHook, &JVMMaxInsName, 1
-};
-#else
+static dis_handler_return JVMDecodeTableCheck( int page, dis_dec_ins *ins )
+{
+    return( DHR_DONE );
+}
 
-const dis_cpu_data JVMData;
-#endif
+static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    // FIXME !!!!
+}
+
+static void JVMPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
+{
+    ByteSwap( h, d, ins );
+}
+
+static unsigned JVMPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
+        dis_format_flags flags, unsigned op_num, char *op_buff )
+{
+    // Nothing to do
+    return( 0 );
+}
+
+const dis_cpu_data JVMData = {
+    JVMRangeTable, JVMRangeTablePos, JVMPreprocHook, JVMDecodeTableCheck, JVMInsHook, JVMFlagHook, JVMOpHook, JVMPostOpHook, &JVMMaxInsName, 1
+};

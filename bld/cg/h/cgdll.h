@@ -30,20 +30,7 @@
 ****************************************************************************/
 
 
-#if defined( _CGDLL )
-#if defined( __NT__ )
-#define _CGDLLEXPORT    __stdcall __export
-#define _CGAPI          __stdcall
-#elif defined( __OS2V2__ )
-#define _CGDLLEXPORT    __syscall __export
-#define _CGAPI          __syscall
-#else
-#error Unsupported OS
-#endif
-#else
-#define _CGDLLEXPORT
-#define _CGAPI
-#endif
+#include "cgapi.h"
 
 extern struct cg_interface * _CGDLLEXPORT BEDLLInit( struct fe_interface * );
 extern void                  _CGDLLEXPORT BEDLLFini( struct cg_interface * );

@@ -39,8 +39,6 @@
 #include "vergen.h"
 #include "opcodes.h"
 
-extern  void            RegInsert(score*,int,int);
-extern  bool            RegsEqual(score*,int,int);
 extern  name            *AllocRegName(hw_reg_set);
 
 extern  proc_def        *CurrProc;

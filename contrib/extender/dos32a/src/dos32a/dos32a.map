@@ -1,0 +1,56 @@
+WATCOM Linker Version 11.0c
+Copyright by Sybase, Inc., and its subsidiaries, 1985, 2000.
+Created on:       02/10/15 11:25:07
+Executable Image: dos32a.exe
+creating a DOS executable
+
+
+                        +------------+
+                        |   Groups   |
+                        +------------+
+
+Group                           Address              Size
+=====                           =======              ====
+
+
+
+
+                        +--------------+
+                        |   Segments   |
+                        +--------------+
+
+Segment                Class          Group          Address         Size
+=======                =====          =====          =======         ====
+
+_ID32                  CODE0          AUTO           0000:0000       00000080
+_KERNEL                CODE1          AUTO           0008:0000       00002c80
+_TEXT16                CODE2          AUTO           02d0:0000       000040ac
+_STACK                 STACK          AUTO           06db:0000       00000800
+
+
+                        +----------------+
+                        |   Memory Map   |
+                        +----------------+
+
+* = unreferenced symbol
++ = symbol only referenced locally
+
+Address        Symbol
+=======        ======
+
+Module: kernel.OBJ(kernel.asm)
+0008:0500*     @kernel_beg
+0008:0368      pm32_init
+0008:007c      pm32_info
+0008:0000      pm32_data
+0008:2c80*     @kernel_end
+
+
+                        +-----------------------+
+                        |   Linker Statistics   |
+                        +-----------------------+
+
+Stack size:  0800 (2048.)
+Memory size:  75b0 (30128.)
+Entry point address: 02d0:2f48
+Link time: 00:00.02

@@ -31,11 +31,10 @@
 
 
 #include "leadbyte.h"
+#include "param.h"
 
-#ifdef NT_HOSTED
+#ifdef __NT__
 #include <windows.h>
-
-void SetDBRange( unsigned from, unsigned to );
 
 void SetNativeLeadBytes( void ) {
 /*********************************/
@@ -43,9 +42,9 @@ void SetNativeLeadBytes( void ) {
     unsigned    i;
 
     GetCPInfo( CP_ACP, &info );
-    i=0;
+    i = 0;
     while( info.LeadByte[ i ] != 0 && info.LeadByte[i+1] != 0 ) {
-        SetDBRange( info.LeadByte[i], info.LeadByte[i+1] );
+        SetMBRange( info.LeadByte[i], info.LeadByte[i+1], 1 );
         i += 2;
     }
 }

@@ -31,76 +31,122 @@
 
 
 #include <string.h>
-#include <i86.h>
-#include "tinyio.h"
 #include "trpimp.h"
-#include "doshdl.h"
+#if defined( ACAD ) || defined( PHARLAP )
+#include <fcntl.h>
+#include <io.h>
+#else
+#include "tinyio.h"
+#endif
+#include "dosredir.h"
 
-extern void            SetUsrTask(void);
-extern void            SetDbgTask(void);
+#if defined( ACAD ) || defined( PHARLAP )
+#define REDIR_dup       dup
+#define REDIR_open(x)   open( x, O_BINARY | O_RDWR, 0 )
+#define REDIR_create(x) open( x, O_BINARY | O_RDWR | O_TRUNC | O_CREAT, 0 )
+#define REDIR_dup2      dup2
+#define REDIR_close     close
+#define HANDLE_INP      0
+#define HANDLE_OUT      1
+#define t_rc            int
+#define t_handle        int
+#define IsError(x)      (x == -1)
+#define Handle(x)       (x)
+#else
+#define REDIR_dup       TinyDup
+#define REDIR_open(x)   TinyOpen( x, TIO_READ )
+#define REDIR_create(x) TinyCreate( x, TIO_NORMAL )
+#define REDIR_dup2      TinyDup2
+#define REDIR_close     TinyClose
+#define HANDLE_INP      TINY_IN
+#define HANDLE_OUT      TINY_OUT
+#define t_rc            tiny_ret_t
+#define t_handle        tiny_handle_t
+#define IsError(x)      TINY_ERROR(x)
+#define Handle(x)       TINY_INFO(x)
+#endif
 
-static tiny_handle_t   SaveStdIn;
-static tiny_handle_t   SaveStdOut;
+extern int  SetUsrTask(void);
+extern void SetDbgTask(void);
+
+#define NIL_DOS_HANDLE  (t_handle)-1
+
+static t_handle SaveStdIn;
+static t_handle SaveStdOut;
 
 static unsigned Redirect( bool input )
 {
-    tiny_ret_t      bigint;
-    tiny_handle_t   std_hndl;
-    tiny_handle_t   *var;
-    char            *name;
+    t_handle            std_hndl;
+    t_handle            *var;
+    char                *name;
     redirect_stdin_ret  *ret;
+    t_rc                rc;
 
     ret = GetOutPtr( 0 );
+#if defined( PHARLAP )
+    if( !SetUsrTask() ) {
+        ret->err = 1;
+        return( sizeof( *ret ) );
+    }
+#else
+    SetUsrTask();
+#endif
     name = GetInPtr( sizeof( redirect_stdin_req ) );
     ret->err = 0;
     if( input ) {
-        std_hndl = TINY_IN;
+        std_hndl = HANDLE_INP;
         var = &SaveStdIn;
     } else {
-        std_hndl = TINY_OUT;
+        std_hndl = HANDLE_OUT;
         var = &SaveStdOut;
     }
     if( *name == '\0' ) {
         if( *var != NIL_DOS_HANDLE ) {
-            SetUsrTask();
-            bigint = TinyDup2( *var, std_hndl );
-            if( TINY_ERROR( bigint ) ) {
-                ret->err = 1;
+            rc = REDIR_dup2( *var, std_hndl );
+            if( IsError( rc ) ) {
+                ret->err = 1;  // error!
             } else {
-                TinyClose( *var );
+                REDIR_close( *var );
                 *var = NIL_DOS_HANDLE;
             }
         }
     } else {
-        SetUsrTask();
-        if( *var == NIL_DOS_HANDLE ) *var = TinyDup( std_hndl );
-        if( input ) {
-            bigint = TinyOpen( name, TIO_READ );
-        } else {
-            bigint = TinyCreate( name, TIO_NORMAL );
+        if( *var == NIL_DOS_HANDLE ) {
+            *var = REDIR_dup( std_hndl );
         }
-        if( TINY_ERROR( bigint ) ) {
-            ret->err = 1;
+        if( input ) {
+            rc = REDIR_open( name );
         } else {
-            TinyDup2( (tiny_handle_t) bigint, std_hndl );
-            TinyClose( (tiny_handle_t) bigint );
+            rc = REDIR_create( name );
+        }
+        if( IsError( rc ) ) {
+            ret->err = 1;  // error!
+        } else {
+            REDIR_dup2( Handle( rc ), std_hndl );
+            REDIR_close( Handle( rc ) );
         }
     }
     SetDbgTask();
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdin()
+unsigned ReqRedirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-unsigned ReqRedirect_stdout()
+unsigned ReqRedirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }
 
-InitRedirect()
+void RedirectInit( void )
+{
+    SaveStdIn = NIL_DOS_HANDLE;
+    SaveStdOut = NIL_DOS_HANDLE;
+}
+
+void RedirectFini( void )
 {
     SaveStdIn = NIL_DOS_HANDLE;
     SaveStdOut = NIL_DOS_HANDLE;

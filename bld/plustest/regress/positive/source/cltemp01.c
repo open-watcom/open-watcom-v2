@@ -1,15 +1,16 @@
 #include "fail.h"
 
 template <int i>
-    struct Fib {
-	enum {
-	    val = Fib<i-1>::val + Fib<i-2>::val
-	};
-    };
+struct Fib {
+    enum { val = Fib<i-1>::val + Fib<i-2>::val };
+};
 
+template<>
 struct Fib<0> {
     enum { val = 1 };
 };
+
+template<>
 struct Fib<1> {
     enum { val = 1 };
 };

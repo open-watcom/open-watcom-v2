@@ -24,15 +24,46 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Viper INI file function prototypes.
 *
 ****************************************************************************/
+#ifndef inifile_class
+#define inifile_class
 
+#ifdef __OS2__
+    #define INCL_WINSHELLDATA
+    #include <os2.h>
+#endif
+#include "wstring.hpp"
 
-int MyGetProfileString( const char *dir, const char *filename,
-                        const char *section, const char *key,
-                        const char *def, char *buffer, int len );
-int MyWriteProfileString( const char *dir, const char *filename,
-                          const char *section, const char *key,
-                          const char *string );
+#define IDE_INI_IDENTIFIER      "OPEN_WATCOM_IDE"
+#define IDE_INI_TOOLBAR         "toolbar"
+#define IDE_INI_STATWND         "statuswnd"
+#define IDE_INI_AUTOREFRESH     "refresh"
+#define IDE_INI_EDITOR          "editor"
+#define IDE_INI_EDITOR_ISDLL    "dll_editor"
+#define IDE_INI_EDITOR_PARMS    "editor_parms"
+#define IDE_INI_HEIGHT          "height"
+#define IDE_INI_WIDTH           "width"
+#define IDE_INI_X               "x_coord"
+#define IDE_INI_Y               "y_coord"
+
+class IniFile
+{
+    public:
+        IniFile();
+        ~IniFile();
+        int read( const char *section, const char *key, const char *deflt,
+                  char *buffer, int len );
+        int write( const char *section, const char *key, const char *string);
+    private:
+#ifdef __OS2__
+        HINI _handle;
+#elif defined( __WINDOWS__ ) || defined( __NT__ )
+        WString _path;
+#else
+    #error UNSUPPORTED OS
+#endif
+};
+
+#endif

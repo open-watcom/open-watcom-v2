@@ -47,20 +47,20 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern uint_8                   WdeGetClassFromClassName  ( char *);
-extern WdeDialogBoxHeader       *WdeAllocDialogBoxHeader  ( void );
-extern void                     WdeFreeDialogBoxHeader    ( WdeDialogBoxHeader **);
-extern WdeDialogBoxControl      *WdeAllocDialogBoxControl ( void );
-extern void                     WdeFreeDialogBoxControl   ( WdeDialogBoxControl **);
-extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader   ( WdeDialogBoxHeader * );
-extern WdeDialogBoxControl      *WdeCopyDialogBoxControl  ( WdeDialogBoxControl * );
-extern ControlClass             *WdeCopyControlClass      ( ControlClass *);
-extern ResNameOrOrdinal         *WdeCopyResNameOr         ( ResNameOrOrdinal *);
-extern WResID                   *WdeCopyWResID            ( WResID *);
-extern char                     *WdeControlClassToStr     ( ControlClass *);
-extern ControlClass             *WdeStrToControlClass     ( char *);
-extern char                     *WdeResNameOrOrdinalToStr ( ResNameOrOrdinal *, int );
-extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal ( char *str );
+extern uint_8                   WdeGetClassFromClassName( char *);
+extern WdeDialogBoxHeader       *WdeAllocDialogBoxHeader( void );
+extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader **);
+extern WdeDialogBoxControl      *WdeAllocDialogBoxControl( void );
+extern void                     WdeFreeDialogBoxControl( WdeDialogBoxControl **);
+extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( WdeDialogBoxHeader * );
+extern WdeDialogBoxControl      *WdeCopyDialogBoxControl( WdeDialogBoxControl * );
+extern ControlClass             *WdeCopyControlClass( ControlClass *);
+extern ResNameOrOrdinal         *WdeCopyResNameOr( ResNameOrOrdinal *);
+extern WResID                   *WdeCopyWResID( WResID *);
+extern char                     *WdeControlClassToStr( ControlClass *);
+extern ControlClass             *WdeStrToControlClass( char *);
+extern char                     *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *, int );
+extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal( char *str );
 extern OBJ_ID                   WdeGetCommonControlClassFromClassName( char *class_name );
 
 #endif

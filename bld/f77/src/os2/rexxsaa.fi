@@ -1,0 +1,509 @@
+c$noreference
+
+c$ifndef OS2_INCLUDED
+c$include os2.fi
+c$endif
+
+c$ifdef INCL_REXXSAA
+c$define INCL_RXSUBCOM
+c$define INCL_RXSHV
+c$define INCL_RXFUNC
+c$define INCL_RXSYSEXIT
+c$define INCL_RXMACRO
+c$define INCL_RXARI
+c$endif
+
+c$include rxstring.fi
+
+        integer  RXAUTOBUFLEN
+        parameter (RXAUTOBUFLEN = 256)
+
+        structure /RXSYSEXIT/
+            integer*4 sysexit_name
+            integer*4 sysexit_code
+        end structure
+
+        logical RXNULLSTRING
+        external RXNULLSTRING
+
+        logical RXZEROLENSTRING
+        external RXZEROLENSTRING
+
+        logical RXVALIDSTRING
+        external RXVALIDSTRING
+
+        integer RXSTRLEN
+        external RXSTRLEN
+
+        integer RXSTRPTR
+        external RXSTRPTR
+
+        external MAKERXSTRING
+
+        integer  RXCOMMAND
+        parameter (RXCOMMAND = 0)
+        integer  RXSUBROUTINE
+        parameter (RXSUBROUTINE = 1)
+        integer  RXFUNCTION
+        parameter (RXFUNCTION = 2)
+
+c$ifdef INCL_RXSUBCOM
+
+        integer  RXSUBCOM_DROPPABLE
+        parameter (RXSUBCOM_DROPPABLE = '00000000'x)
+        integer  RXSUBCOM_NONDROP
+        parameter (RXSUBCOM_NONDROP = '00000001'x)
+
+        integer  RXSUBCOM_ISREG
+        parameter (RXSUBCOM_ISREG = '00000001'x)
+        integer  RXSUBCOM_ERROR
+        parameter (RXSUBCOM_ERROR = '00000001'x)
+        integer  RXSUBCOM_FAILURE
+        parameter (RXSUBCOM_FAILURE = '00000002'x)
+        integer  RXSUBCOM_BADENTRY
+        parameter (RXSUBCOM_BADENTRY = 1001)
+        integer  RXSUBCOM_NOEMEM
+        parameter (RXSUBCOM_NOEMEM = 1002)
+        integer  RXSUBCOM_BADTYPE
+        parameter (RXSUBCOM_BADTYPE = 1003)
+        integer  RXSUBCOM_NOTINIT
+        parameter (RXSUBCOM_NOTINIT = 1004)
+        integer  RXSUBCOM_OK
+        parameter (RXSUBCOM_OK = 0)
+        integer  RXSUBCOM_DUP
+        parameter (RXSUBCOM_DUP = 10)
+        integer  RXSUBCOM_MAXREG
+        parameter (RXSUBCOM_MAXREG = 20)
+        integer  RXSUBCOM_NOTREG
+        parameter (RXSUBCOM_NOTREG = 30)
+        integer  RXSUBCOM_NOCANDROP
+        parameter (RXSUBCOM_NOCANDROP = 40)
+        integer  RXSUBCOM_LOADERR
+        parameter (RXSUBCOM_LOADERR = 50)
+        integer  RXSUBCOM_NOPROC
+        parameter (RXSUBCOM_NOPROC = 127)
+
+c$endif
+
+c$ifdef INCL_RXSHV
+
+        integer  RXSHV_SET
+        parameter (RXSHV_SET = '00000000'x)
+        integer  RXSHV_FETCH
+        parameter (RXSHV_FETCH = '00000001'x)
+        integer  RXSHV_DROPV
+        parameter (RXSHV_DROPV = '00000002'x)
+        integer  RXSHV_SYSET
+        parameter (RXSHV_SYSET = '00000003'x)
+        integer  RXSHV_SYFET
+        parameter (RXSHV_SYFET = '00000004'x)
+        integer  RXSHV_SYDRO
+        parameter (RXSHV_SYDRO = '00000005'x)
+        integer  RXSHV_NEXTV
+        parameter (RXSHV_NEXTV = '00000006'x)
+        integer  RXSHV_PRIV
+        parameter (RXSHV_PRIV = '00000007'x)
+        integer  RXSHV_EXIT
+        parameter (RXSHV_EXIT = '00000008'x)
+
+        integer  RXSHV_NOAVL
+        parameter (RXSHV_NOAVL = 144)
+
+        integer  RXSHV_OK
+        parameter (RXSHV_OK = '00000000'x)
+        integer  RXSHV_NEWV
+        parameter (RXSHV_NEWV = '00000001'x)
+        integer  RXSHV_LVAR
+        parameter (RXSHV_LVAR = '00000002'x)
+        integer  RXSHV_TRUNC
+        parameter (RXSHV_TRUNC = '00000004'x)
+        integer  RXSHV_BADN
+        parameter (RXSHV_BADN = '00000008'x)
+        integer  RXSHV_MEMFL
+        parameter (RXSHV_MEMFL = '00000010'x)
+        integer  RXSHV_BADF
+        parameter (RXSHV_BADF = '00000080'x)
+
+        structure /SHVBLOCK/
+            integer*4 shvnext
+            record /RXSTRING/ shvname
+            record /RXSTRING/ shvvalue
+            integer*4 shvnamelen
+            integer*4 shvvaluelen
+            integer*1 shvcode
+            integer*1 shvret
+        end structure
+
+c$endif
+
+c$ifdef INCL_RXFUNC
+
+        integer  RXFUNC_DYNALINK
+        parameter (RXFUNC_DYNALINK = 1)
+        integer  RXFUNC_CALLENTRY
+        parameter (RXFUNC_CALLENTRY = 2)
+
+        integer  RXFUNC_OK
+        parameter (RXFUNC_OK = 0)
+        integer  RXFUNC_DEFINED
+        parameter (RXFUNC_DEFINED = 10)
+        integer  RXFUNC_NOMEM
+        parameter (RXFUNC_NOMEM = 20)
+        integer  RXFUNC_NOTREG
+        parameter (RXFUNC_NOTREG = 30)
+        integer  RXFUNC_MODNOTFND
+        parameter (RXFUNC_MODNOTFND = 40)
+        integer  RXFUNC_ENTNOTFND
+        parameter (RXFUNC_ENTNOTFND = 50)
+        integer  RXFUNC_NOTINIT
+        parameter (RXFUNC_NOTINIT = 60)
+        integer  RXFUNC_BADTYPE
+        parameter (RXFUNC_BADTYPE = 70)
+
+c$endif
+
+c$ifdef INCL_RXSYSEXIT
+
+        integer  RXEXIT_DROPPABLE
+        parameter (RXEXIT_DROPPABLE = '00000000'x)
+        integer  RXEXIT_NONDROP
+        parameter (RXEXIT_NONDROP = '00000001'x)
+
+        integer  RXEXIT_HANDLED
+        parameter (RXEXIT_HANDLED = 0)
+        integer  RXEXIT_NOT_HANDLED
+        parameter (RXEXIT_NOT_HANDLED = 1)
+        integer  RXEXIT_RAISE_ERROR
+        parameter (RXEXIT_RAISE_ERROR = -1)
+
+        integer  RXEXIT_ISREG
+        parameter (RXEXIT_ISREG = '00000001'x)
+        integer  RXEXIT_ERROR
+        parameter (RXEXIT_ERROR = '00000001'x)
+        integer  RXEXIT_FAILURE
+        parameter (RXEXIT_FAILURE = '00000002'x)
+        integer  RXEXIT_BADENTRY
+        parameter (RXEXIT_BADENTRY = 1001)
+        integer  RXEXIT_NOEMEM
+        parameter (RXEXIT_NOEMEM = 1002)
+        integer  RXEXIT_BADTYPE
+        parameter (RXEXIT_BADTYPE = 1003)
+        integer  RXEXIT_NOTINIT
+        parameter (RXEXIT_NOTINIT = 1004)
+        integer  RXEXIT_OK
+        parameter (RXEXIT_OK = 0)
+        integer  RXEXIT_DUP
+        parameter (RXEXIT_DUP = 10)
+        integer  RXEXIT_MAXREG
+        parameter (RXEXIT_MAXREG = 20)
+        integer  RXEXIT_NOTREG
+        parameter (RXEXIT_NOTREG = 30)
+        integer  RXEXIT_NOCANDROP
+        parameter (RXEXIT_NOCANDROP = 40)
+        integer  RXEXIT_LOADERR
+        parameter (RXEXIT_LOADERR = 50)
+        integer  RXEXIT_NOPROC
+        parameter (RXEXIT_NOPROC = 127)
+
+        integer  RXENDLST
+        parameter (RXENDLST = 0)
+        integer  RXFNC
+        parameter (RXFNC = 2)
+        integer  RXFNCCAL
+        parameter (RXFNCCAL = 1)
+        integer  RXCMD
+        parameter (RXCMD = 3)
+        integer  RXCMDHST
+        parameter (RXCMDHST = 1)
+        integer  RXMSQ
+        parameter (RXMSQ = 4)
+        integer  RXMSQPLL
+        parameter (RXMSQPLL = 1)
+        integer  RXMSQPSH
+        parameter (RXMSQPSH = 2)
+        integer  RXMSQSIZ
+        parameter (RXMSQSIZ = 3)
+        integer  RXMSQNAM
+        parameter (RXMSQNAM = 20)
+        integer  RXSIO
+        parameter (RXSIO = 5)
+        integer  RXSIOSAY
+        parameter (RXSIOSAY = 1)
+        integer  RXSIOTRC
+        parameter (RXSIOTRC = 2)
+        integer  RXSIOTRD
+        parameter (RXSIOTRD = 3)
+        integer  RXSIODTR
+        parameter (RXSIODTR = 4)
+        integer  RXSIOTLL
+        parameter (RXSIOTLL = 5)
+        integer  RXHLT
+        parameter (RXHLT = 7)
+        integer  RXHLTCLR
+        parameter (RXHLTCLR = 1)
+        integer  RXHLTTST
+        parameter (RXHLTTST = 2)
+        integer  RXTRC
+        parameter (RXTRC = 8)
+        integer  RXTRCTST
+        parameter (RXTRCTST = 1)
+        integer  RXINI
+        parameter (RXINI = 9)
+        integer  RXINIEXT
+        parameter (RXINIEXT = 1)
+        integer  RXTER
+        parameter (RXTER = 10)
+        integer  RXTEREXT
+        parameter (RXTEREXT = 1)
+        integer  RXNOOFEXITS
+        parameter (RXNOOFEXITS = 11)
+
+c$endif
+
+c$ifdef INCL_RXARI
+
+        integer  RXARI_OK
+        parameter (RXARI_OK = 0)
+        integer  RXARI_NOT_FOUND
+        parameter (RXARI_NOT_FOUND = 1)
+        integer  RXARI_PROCESSING_ERROR
+        parameter (RXARI_PROCESSING_ERROR = 2)
+
+c$endif
+
+c$ifdef INCL_RXMACRO
+
+        integer  RXMACRO_SEARCH_BEFORE
+        parameter (RXMACRO_SEARCH_BEFORE = 1)
+        integer  RXMACRO_SEARCH_AFTER
+        parameter (RXMACRO_SEARCH_AFTER = 2)
+
+        integer  RXMACRO_OK
+        parameter (RXMACRO_OK = 0)
+        integer  RXMACRO_NO_STORAGE
+        parameter (RXMACRO_NO_STORAGE = 1)
+        integer  RXMACRO_NOT_FOUND
+        parameter (RXMACRO_NOT_FOUND = 2)
+        integer  RXMACRO_EXTENSION_REQUIRED
+        parameter (RXMACRO_EXTENSION_REQUIRED = 3)
+        integer  RXMACRO_ALREADY_EXISTS
+        parameter (RXMACRO_ALREADY_EXISTS = 4)
+        integer  RXMACRO_FILE_ERROR
+        parameter (RXMACRO_FILE_ERROR = 5)
+        integer  RXMACRO_SIGNATURE_ERROR
+        parameter (RXMACRO_SIGNATURE_ERROR = 6)
+        integer  RXMACRO_SOURCE_NOT_FOUND
+        parameter (RXMACRO_SOURCE_NOT_FOUND = 7)
+        integer  RXMACRO_INVALID_POSITION
+        parameter (RXMACRO_INVALID_POSITION = 8)
+        integer  RXMACRO_NOT_INIT
+        parameter (RXMACRO_NOT_INIT = 9)
+
+c$endif
+
+        external RexxStart
+        integer*4 RexxStart
+
+c$ifdef INCL_RXSUBCOM
+
+        external RexxSubcomHandler
+        integer*4 RexxSubcomHandler
+
+        external RexxRegisterSubcomDll
+        integer*4 RexxRegisterSubcomDll
+
+        external RexxRegisterSubcomExe
+        integer*4 RexxRegisterSubcomExe
+
+        external RexxQuerySubcom
+        integer*4 RexxQuerySubcom
+
+        external RexxDeregisterSubcom
+        integer*4 RexxDeregisterSubcom
+
+c$endif
+
+c$ifdef INCL_RXSHV
+
+        external RexxVariablePool
+        integer*4 RexxVariablePool
+
+c$endif
+
+c$ifdef INCL_RXFUNC
+
+        external RexxRegisterFunctionDll
+        integer*4 RexxRegisterFunctionDll
+
+        external RexxRegisterFunctionExe
+        integer*4 RexxRegisterFunctionExe
+
+        external RexxDeregisterFunction
+        integer*4 RexxDeregisterFunction
+
+        external RexxQueryFunction
+        integer*4 RexxQueryFunction
+
+c$endif
+
+c$ifdef INCL_RXSYSEXIT
+
+        integer*4 rxfferr
+        parameter (rxfferr = '00000001'x)
+        integer*4 rxffnfnd
+        parameter (rxffnfnd = '00000002'x)
+        integer*4 rxffsub
+        parameter (rxffsub = '00000004'x)
+
+        structure /RXFNC_FLAGS/
+            integer*4 rxfnc_flags
+        end structure
+
+        structure /RXFNCCAL_PARM/
+            record /RXFNC_FLAGS/ rxfnc_flags
+            integer*4 rxfnc_name
+            integer*2 rxfnc_namel
+            integer*4 rxfnc_que
+            integer*2 rxfnc_quel
+            integer*2 rxfnc_argc
+            integer*4 rxfnc_argv
+            record /RXSTRING/ rxfnc_retc
+        end structure
+
+        integer*4 rxfcfail
+        parameter (rxfcfail = '00000001'x)
+        integer*4 rxfcerr
+        parameter (rxfcerr = '00000002'x)
+
+        structure /RXCMD_FLAGS/
+            integer*4 rxcmd_flags
+        end structure
+
+        structure /RXCMDHST_PARM/
+            record /RXCMD_FLAGS/ rxcmd_flags
+            integer*4 rxcmd_address
+            integer*2 rxcmd_addressl
+            integer*4 rxcmd_dll
+            integer*2 rxcmd_dll_len
+            record /RXSTRING/ rxcmd_command
+            record /RXSTRING/ rxcmd_retc
+        end structure
+
+        structure /RXMSQPLL_PARM/
+            record /RXSTRING/ rxmsq_retc
+        end structure
+
+        integer*4 rxfmlifo
+        parameter (rxfmlifo = '00000001'x)
+
+        structure /RXMSQ_FLAGS/
+            integer*4 rxmsq_flags
+        end structure
+
+        structure /RXMSQPSH_PARM/
+            record /RXMSQ_FLAGS/ rxmsq_flags
+            record /RXSTRING/ rxmsq_value
+        end structure
+
+        structure /RXMSQSIZ_PARM/
+            integer*4 rxmsq_size
+        end structure
+
+        structure /RXMSQNAM_PARM/
+            record /RXSTRING/ rxmsq_name
+        end structure
+
+        structure /RXSIOSAY_PARM/
+            record /RXSTRING/ rxsio_string
+        end structure
+
+        structure /RXSIOTRC_PARM/
+            record /RXSTRING/ rxsio_string
+        end structure
+
+        structure /RXSIOTRD_PARM/
+            record /RXSTRING/ rxsiotrd_retc
+        end structure
+
+        structure /RXSIODTR_PARM/
+            record /RXSTRING/ rxsiodtr_retc
+        end structure
+
+        integer*4 rxfhhalt
+        parameter (rxfhhalt = '00000001'x)
+
+        structure /RXHLT_FLAGS/
+            integer*4 rxhlt_flags
+        end structure
+
+        structure /RXHLTTST_PARM/
+            record /RXHLT_FLAGS/ rxhlt_flags
+        end structure
+
+        integer*4 rxftrace
+        parameter (rxftrace = '00000001'x)
+
+        structure /RXTRC_FLAGS/
+            integer*4 rxtrc_flags
+        end structure
+
+        structure /RXTRCTST_PARM/
+            record /RXTRC_FLAGS/ rxtrc_flags
+        end structure
+
+        external RexxExitHandler
+        integer*4 RexxExitHandler
+
+        external RexxRegisterExitDll
+        integer*4 RexxRegisterExitDll
+
+        external RexxRegisterExitExe
+        integer*4 RexxRegisterExitExe
+
+        external RexxDeregisterExit
+        integer*4 RexxDeregisterExit
+
+        external RexxQueryExit
+        integer*4 RexxQueryExit
+
+c$endif
+
+c$ifdef INCL_RXARI
+
+        external RexxSetHalt
+        integer*4 RexxSetHalt
+
+        external RexxSetTrace
+        integer*4 RexxSetTrace
+
+        external RexxResetTrace
+        integer*4 RexxResetTrace
+
+c$endif
+
+c$ifdef INCL_RXMACRO
+
+        external RexxAddMacro
+        integer*4 RexxAddMacro
+
+        external RexxDropMacro
+        integer*4 RexxDropMacro
+
+        external RexxSaveMacroSpace
+        integer*4 RexxSaveMacroSpace
+
+        external RexxLoadMacroSpace
+        integer*4 RexxLoadMacroSpace
+
+        external RexxQueryMacro
+        integer*4 RexxQueryMacro
+
+        external RexxReorderMacro
+        integer*4 RexxReorderMacro
+
+        external RexxClearMacroSpace
+        integer*4 RexxClearMacroSpace
+
+c$endif
+
+c$reference

@@ -1,5 +1,5 @@
-pfx__ =..\..\..\
-__sfx =\library\$(system).$(processor)\$(subdir)\$(libname).lib
+pfx__ =../../../
+__sfx =/library/$(system).$(processor)/$(subdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)alias$(__sfx) &
@@ -20,12 +20,12 @@ libs = $+ &
     $(pfx__)mbyte$(__sfx) &
     $(pfx__)memory$(__sfx) &
     $(pfx__)misc$(__sfx) &
+    $(pfx__)posix$(__sfx) &
     $(pfx__)process$(__sfx) &
     $(pfx__)search$(__sfx) &
     $(pfx__)startup$(__sfx) &
     $(pfx__)streamio$(__sfx) &
     $(pfx__)string$(__sfx) &
-    $(pfx__)tchar$(__sfx) &
     $(pfx__)time$(__sfx) &
     $(pfx__)_dos$(__sfx) &
     $-
@@ -34,5 +34,5 @@ pfx__ =
 __sfx =
 
 libs += $+ &
-    ..\..\..\cgsupp\library\windows.$(processor)\$(subdir)\$(libname).lib &
+    ../../../cgsupp/library/windows.$(processor)/$(subdir)/$(libname).lib &
     $-

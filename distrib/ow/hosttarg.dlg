@@ -1,0 +1,12 @@
+static_text=\
+        //1"Target operating systems are the systems for which you want"\
+        //2"ターゲットOSとは、作成したアプリケーションが"\
+        //0
+static_text=\
+        //1"to generate applications. Host operating systems"\
+        //2"動作するシステムです。ホストOSとは、コンパイラを"\
+        //0
+static_text=\
+        //1"are the systems on which you want to run the compiler."\
+        //2"実行するシステムです."\
+        //0

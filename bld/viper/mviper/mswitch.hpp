@@ -53,13 +53,12 @@ WCLASS MSwitch : public WObject
         void name( WString& name ) { name = _text; }
         WString& text() { return _text; }
         void getTag( WString& tag );
+        void getCompatibleTag( WString& tag );
         virtual void displayText( WString& s );
 
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;
-        virtual void readSelf( WObjectFile& );
-        virtual void writeSelf( WObjectFile& );
         virtual WString& on() =0;
     protected:
         void findStates( WVList* states, WVList& found );
@@ -67,6 +66,7 @@ WCLASS MSwitch : public WObject
         int             _panel;
         WString         _mask;
         WString         _text;
+        WString         _compatibleText;
 };
 
 #endif

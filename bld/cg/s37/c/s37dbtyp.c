@@ -37,7 +37,7 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "offset.h"
 #include "typedef.h"
 #include "s37bead.h"
@@ -89,8 +89,8 @@ extern  dbg_type DBScalar( char *nm, cg_type tipe ){
     dbg_type           tnum;
 
     tipe_addr = TypeAddress( tipe );
-    _Alloc( new, sizeof( *new ) );
-    if( tipe_addr->refno == T_DEFAULT ) { /* SCALAR_VOID */
+    new = CGAlloc( sizeof( *new ) );
+    if( tipe_addr->refno == TY_DEFAULT ) { /* SCALAR_VOID */
         new->common.class = CDEBUG_TYPE_INTEGER;
         new->common.len = 4;
         new->sign = 0;
@@ -132,8 +132,8 @@ extern  name_entry      *DBBegName( char *nm, dbg_type scope ) {
     uint        len;
 
     len = Length( nm );
-    _Alloc( name, sizeof( *name )  );
-    _Alloc( id, sizeof( *id )-1 +len );
+    name = CGAlloc( sizeof( *name )  );
+    id = CGAlloc( sizeof( *id )-1 +len );
     id->len = len;
     Copy( nm, id->name, len );
     name->id = id;
@@ -160,13 +160,13 @@ extern  dbg_type  DBEndName( name_entry *name, dbg_type tipe ) {
     }
     if( name->scope == DBG_NIL_TYPE  ) {
         AddTId( name->id, tptr->common.refno ); /*typedef ?*/
-        _Free( name->id, sizeof( id_entry )-1 + name->id->len );
+        CGFree( name->id );
     }else if( name->scope == SCOPE_ENUM ){
         tptr->enums.id = name->id;
     }else{
         tptr->tags.id = name->id;
     }
-    _Free( name, sizeof( *name ) );
+    CGFree( name );
     return( tptr->common.refno );
 }
 
@@ -213,7 +213,7 @@ extern  dbg_type DBIntArray( unsigned_32 hi, dbg_type base ) {
     cdebug_type_array *new;
     cdebug_type_any *bptr;
 
-    new = _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->common.class = CDEBUG_TYPE_ARRAY;
     new->base = base;
     bptr = FindType( base );
@@ -233,7 +233,7 @@ extern  dbg_type DBPtr( cg_type ptr_tipe, dbg_type base ){
     type_def           *tipe_addr;
 
     tipe_addr = TypeAddress( ptr_tipe );
-    _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->common.len = tipe_addr->length;
     new->common.class = CDEBUG_TYPE_POINTER;
     new->base = base;
@@ -245,7 +245,7 @@ extern  cdebug_type_tags *DBBegStruct( cg_type tipe, bool is_struct ) {
 /**************************************/
     cdebug_type_tags   *new;
 
-    new = _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->common.class =  is_struct ? CDEBUG_TYPE_STRUCT
                                    : CDEBUG_TYPE_UNION;
     new->common.len = TypeAddress( tipe )->length;
@@ -272,7 +272,7 @@ extern  void    DBAddBitField( cdebug_type_tags *st, unsigned_32 off,
     uint                  len;
 
     len = Length( nm );
-    _Alloc( field, sizeof( cdebug_member_entry ) - 1 + len );
+    field = CGAlloc( sizeof( cdebug_member_entry ) - 1 + len );
     field->id.len = len;
     Copy( nm, field->id.name, len );
     if( b_len != 0 ){
@@ -306,7 +306,7 @@ extern  cdebug_type_enums *DBBegEnum( cg_type  tipe ) {
 
     cdebug_type_enums   *new;
 
-    _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->common.class = CDEBUG_TYPE_ENUMS;
     new->common.len = TypeAddress( tipe )->length;
     new->index = 0;
@@ -325,7 +325,7 @@ extern  void DBAddConst( cdebug_type_enums *en, char *nm, signed_32  val ) {
     uint          len;
 
     len = Length( nm );
-    _Alloc( cons, sizeof( *cons ) - 1 + len );
+    cons = CGAlloc( sizeof( *cons ) - 1 + len );
     cons->id.len = len;
     Copy( nm, cons->id.name, len );
     cons->val = val;
@@ -353,7 +353,7 @@ extern  proc_list       *DBBegProc(  cg_type call_type,  dbg_type  ret ) {
     proc_list   *pr;
 
     call_type = 0;
-    _Alloc( pr, sizeof( proc_list ) );
+    pr = CGAlloc( sizeof( proc_list ) );
     pr->num = 0;
     pr->list = NULL;
     pr->call = NULL;
@@ -368,7 +368,7 @@ extern  void    DBAddParm( proc_list *pr, dbg_type tipe ) {
     parm_entry  *parm;
     parm_entry  **owner;
 
-    _Alloc( parm, sizeof( parm_entry ) );
+    parm = CGAlloc( sizeof( parm_entry ) );
     pr->num++;
     owner = &pr->list;
     while( *owner != NULL ) {
@@ -394,9 +394,9 @@ extern  dbg_type        DBEndProc( proc_list  *pr ) {
     while( parm != NULL ){
         old = parm;
         parm = parm->next;
-        _Free( old, sizeof( *old ) );
+        CGFree( old );
     }
-    _Free( pr, sizeof( *pr ) );
+    CGFree( pr );
     return( 0 );
 }
 
@@ -431,7 +431,7 @@ static void AddTName( char *name, dbg_type tref ) {
     uint              len;
 
     len = Length( name );
-    _Alloc( new, sizeof( *new )-1 + len );
+    new = CGAlloc( sizeof( *new )-1 + len );
     new->tref = tref;
     new->id.len = len;
     Copy( name, new->id.name, len );
@@ -445,7 +445,7 @@ static void  AddTId( id_entry *id, dbg_type tref ) {
 /** Add id to type name list and bump type name index */
     cdebug_type_name *new;
 
-    _Alloc( new, sizeof( *new )-1 + id->len );
+    new = CGAlloc( sizeof( *new )-1 + id->len );
     new->tref = tref;
     new->id.len = id->len;
     Copy( id->name, new->id.name, id->len );
@@ -460,7 +460,7 @@ static dbg_type MkBitType( byte start, byte len ){
     cdebug_type_field *new;
     unsigned long mask;
 
-    new = _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->common.class = CDEBUG_TYPE_FIELD;
     new->common.len = 0;
     new->len = len;
@@ -551,7 +551,7 @@ static void TTags( handle dbgfile, cdebug_type_any *list, int index ) {
         }
         old = list;
         list = list->common.next;
-        _Free( old, size );
+        CGFree( old );
     }
 
 }
@@ -564,7 +564,7 @@ static void DbgStruct( handle dbgfile, cdebug_type_tags *tags ) {
 
     if( tags->id != NULL ){
         tag=DbgFmtStr( &tagbuff[0], tags->id->name, tags->id->len );
-        _Free( tags->id, sizeof( *tags->id )-1 +tags->id->len );
+        CGFree( tags->id );
     }else{
         tag=DbgFmtInt( &tagbuff[0], 0 );
     }
@@ -583,7 +583,7 @@ static void DbgStruct( handle dbgfile, cdebug_type_tags *tags ) {
         PutStream( dbgfile, tagbuff, tag-tagbuff );
         old = list;
         list = list->next;
-        _Free( old, sizeof( *old ) + old->id.len );
+        CGFree( old );
     }
 
 }
@@ -595,7 +595,7 @@ static void DbgUnion( handle dbgfile, cdebug_type_tags *tags ) {
 
     if( tags->id != NULL ){
         tag=DbgFmtStr( &tagbuff[0], tags->id->name, tags->id->len );
-        _Free( tags->id, sizeof( *tags->id )-1 +tags->id->len );
+        CGFree( tags->id );
     }else{
         tag=DbgFmtInt( &tagbuff[0], 0 );
     }
@@ -611,7 +611,7 @@ static void DbgUnion( handle dbgfile, cdebug_type_tags *tags ) {
         PutStream( dbgfile, tagbuff, tag-tagbuff );
         old = list;
         list = list->next;
-        _Free( old, sizeof( *old ) + old->id.len );
+        CGFree( old );
     }
 
 }
@@ -623,7 +623,7 @@ static void DbgEnum( handle dbgfile, cdebug_type_enums *enums ) {
 
     if( enums->id != NULL ){
         tag=DbgFmtStr( &tagbuff[0], enums->id->name, enums->id->len );
-        _Free( enums->id, sizeof( *enums->id )-1 +enums->id->len );
+        CGFree( enums->id );
     }else{
         tag=DbgFmtInt( &tagbuff[0], 0 );
     }
@@ -639,7 +639,7 @@ static void DbgEnum( handle dbgfile, cdebug_type_enums *enums ) {
         PutStream( dbgfile, tagbuff, tag-tagbuff );
         old = list;
         list = list->next;
-        _Free( old, sizeof( *old ) + old->id.len );
+        CGFree( old );
     }
 
 }
@@ -661,7 +661,7 @@ static void NTags( handle dbgfile, cdebug_type_name *list, int index ) {
         old = list;
         size = sizeof( *list ) + list->id.len;
         list = list->next;
-        _Free( old, size );
+        CGFree( old );
     }
 
 }

@@ -1,2 +1,4 @@
-!include ..\..\..\objs.mif
-!include ..\..\..\..\objlist.mif
+!if exist(../../../objs.mif)
+!   include ../../../objs.mif
+!endif
+!include ../../../../objlist.mif

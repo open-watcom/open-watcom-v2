@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Get a character from source stream.
 *
 ****************************************************************************/
 
@@ -64,36 +63,43 @@ static  int     Tab1Count;
 
 static int ReadBuffer( FCB *srcfcb )
 {
+    int         last_char;
+
     if( srcfcb->src_fp == NULL ) {          /* in-memory buffer */
         CloseSrcFile( srcfcb );
         return( 0 );
     }
-    do {
-        srcfcb->src_ptr = &srcfcb->src_buf[0];
-        srcfcb->src_cnt = read( fileno( srcfcb->src_fp ),
-                                srcfcb->src_ptr,
-                                srcfcb->src_bufsize );
-        if( srcfcb->src_cnt == 0 ) {
-            CloseSrcFile( srcfcb );
-            return( 1 );
-        } else if( srcfcb->src_cnt == -1 ) {
-            CErr( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
-            CloseSrcFile( srcfcb );
-            return( 1 );
-        }
-    } while( srcfcb->src_cnt < 0 );
-    if( CompFlags.cpp_line_wanted ) {
-    //hoke up a newline so #line comes out after last token in include
-        if( eof( fileno( srcfcb->src_fp ) ) ){
-            if(  srcfcb->src_ptr[ srcfcb->src_cnt-1 ] != '\n' ){
-                srcfcb->src_ptr[ srcfcb->src_cnt ] = '\n';  // mark end of buffer
-                srcfcb->src_cnt++;
-            }
-        }
+    /* ANSI/ISO C says a non-empty source file must be terminated
+     * with a newline. If it's not, we insert one, otherwise
+     * whatever comes next will be tacked onto that unterminated
+     * line, possibly confusing the hell out of the user.
+     */
+    srcfcb->src_ptr = srcfcb->src_buf;
+    if( srcfcb->src_cnt ) {
+        last_char = srcfcb->src_ptr[ srcfcb->src_cnt - 1 ];
+    } else {
+        last_char = '\n';
     }
-    srcfcb->src_ptr[ srcfcb->src_cnt ] = '\0';  // mark end of buffer
-    ScanCharPtr = srcfcb->src_ptr;                      // point to buffer
-    return( 0 );        // indicate CurrChar does not contain a character
+    srcfcb->src_cnt = read( fileno( srcfcb->src_fp ),
+                            srcfcb->src_ptr,
+                            srcfcb->src_bufsize );
+    if( srcfcb->src_cnt == -1 ) {
+        CErr( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
+        CloseSrcFile( srcfcb );
+        return( 1 );
+    } else if( ( srcfcb->src_cnt == 0 ) && ( last_char == '\n' ) ) {
+        CloseSrcFile( srcfcb );
+        return( 1 );
+    } else if( srcfcb->src_cnt != 0 ) {
+        last_char = srcfcb->src_ptr[ srcfcb->src_cnt - 1 ];
+    }
+    if( ( srcfcb->src_cnt < srcfcb->src_bufsize ) && ( last_char != '\n' ) ) {
+        srcfcb->no_eol = 1;         // emit warning later so line # is right
+        srcfcb->src_ptr[ srcfcb->src_cnt ] = '\n';      // mark end of buffer
+        srcfcb->src_cnt++;
+    }
+    srcfcb->src_ptr[ srcfcb->src_cnt ] = '\0';          // mark end of buffer
+    return( 0 );            // indicate CurrChar does not contain a character
 }
 
 
@@ -103,9 +109,8 @@ int GetNextChar( void )
 {
     int c;
 
-//    c = *SrcFile->src_ptr++;
-    c = *ScanCharPtr++;
-    if(( CharSet[c] & C_EX ) == 0 ) {
+    c = *SrcFile->src_ptr++;
+    if(( CharSet[ c ] & C_EX ) == 0 ) {
 //      SrcFile->column++;
         CurrChar = c;
         return( c );
@@ -154,18 +159,20 @@ int getCharAfterBackSlash( void )
     return( GetCharCheck( LastChar ) );
 }
 
-static int getTestCharFromFile()
+static int getTestCharFromFile( void )
 {
     int c;
 
-    for(;;) {
-        c = *ScanCharPtr++;
-        if( c != '\0' ) break;
+    for( ;; ) {
+        c = *SrcFile->src_ptr++;
+        if( c != '\0' )
+            break;
         /* check to make sure the NUL character we just found is at the
            end of the buffer, and not an embedded NUL character in the
            source file.  26-may-94 */
-        if( ScanCharPtr != &SrcFile->src_buf[ SrcFile->src_cnt + 1 ] ) break;
-        if( ReadBuffer( SrcFile ) ) {                   // 10-jul-94
+        if( SrcFile->src_ptr != SrcFile->src_buf + SrcFile->src_cnt + 1 )
+            break;
+        if( ReadBuffer( SrcFile ) ) {
             return( CurrChar );
         }
     }
@@ -200,7 +207,7 @@ static char translateTriGraph( char c )
     return( c );
 }
 
-static int tryBackSlashNewLine()
+static int tryBackSlashNewLine( void )
 {
     int nc;
 
@@ -232,14 +239,15 @@ static int tryBackSlashNewLine()
         }
         if( CompFlags.cpp_output ) {            /* 30-may-95 */
             if( CompFlags.in_pragma ) {
-                PrtChar( '\\' );
-                PrtChar( '\n' );
+                CppPrtChar( '\\' );
+                CppPrtChar( '\n' );
             } else if( CompFlags.cpp_line_wanted ) {
-                PrtChar( '\n' );
+                CppPrtChar( '\n' );
             }
         }
-        SrcFile->src_line++;
-        SrcFileLineNum = SrcFile->src_line;
+        SrcFile->src_line_cnt++;
+        SrcFile->src_loc.line++;
+        SrcFileLoc = SrcFile->src_loc;
 //      SrcFile->column = 0;
         return( GetNextChar() );
     }
@@ -282,7 +290,7 @@ int GetCharCheck( int c )
     int nc;
     int nnc;
 
-    if( NextChar == ReScanBuffer ) {
+    if( InReScanMode() ) {
         if( c == '\0' ) {
             CompFlags.rescan_buffer_done = 1;
         }
@@ -296,15 +304,15 @@ int GetCharCheck( int c )
                end of the buffer, and not an embedded NUL character in the
                source file.  26-may-94 */
             CurrChar = '\0';
-            if( ScanCharPtr == &SrcFile->src_buf[ SrcFile->src_cnt + 1 ] ) {
-                if( ! ReadBuffer( SrcFile ) ) {         // 10-jul-94
+            if( SrcFile->src_ptr == SrcFile->src_buf + SrcFile->src_cnt + 1 ) {
+                if( ! ReadBuffer( SrcFile ) ) {
                     return( GetNextChar() );
                 }
             }
             return( CurrChar );
         case '\n':
-            SrcFile->src_line++;
-            SrcFileLineNum = SrcFile->src_line;
+            SrcFile->src_line_cnt++;
+            SrcFile->src_loc.line++;
 //          SrcFile->column = 0;
             break;
         case '\t':
@@ -319,7 +327,7 @@ int GetCharCheck( int c )
             break;
         default:
 //          SrcFile->column++;
-            if( c > 0x7f && CharSet[c] & C_DB ) {
+            if( c > 0x7f && CharSet[ c ] & C_DB ) {
                 // we should not process the second byte through
                 // normal channels since its value is meaningless
                 // out of context

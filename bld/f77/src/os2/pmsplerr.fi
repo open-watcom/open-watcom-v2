@@ -1,0 +1,242 @@
+c$noreference
+
+        integer  PMERR_SPL_DRIVER_ERROR
+        parameter (PMERR_SPL_DRIVER_ERROR = '00004001'x)
+        integer  PMERR_SPL_DEVICE_ERROR
+        parameter (PMERR_SPL_DEVICE_ERROR = '00004002'x)
+        integer  PMERR_SPL_DEVICE_NOT_INSTALLED
+        parameter (PMERR_SPL_DEVICE_NOT_INSTALLED = '00004003'x)
+        integer  PMERR_SPL_QUEUE_ERROR
+        parameter (PMERR_SPL_QUEUE_ERROR = '00004004'x)
+        integer  PMERR_SPL_INV_HSPL
+        parameter (PMERR_SPL_INV_HSPL = '00004005'x)
+        integer  PMERR_SPL_NO_DISK_SPACE
+        parameter (PMERR_SPL_NO_DISK_SPACE = '00004006'x)
+        integer  PMERR_SPL_NO_MEMORY
+        parameter (PMERR_SPL_NO_MEMORY = '00004007'x)
+        integer  PMERR_SPL_PRINT_ABORT
+        parameter (PMERR_SPL_PRINT_ABORT = '00004008'x)
+        integer  PMERR_SPL_SPOOLER_NOT_INSTALLED
+        parameter (PMERR_SPL_SPOOLER_NOT_INSTALLED = '00004009'x)
+        integer  PMERR_SPL_INV_FORMS_CODE
+        parameter (PMERR_SPL_INV_FORMS_CODE = '0000400A'x)
+        integer  PMERR_SPL_INV_PRIORITY
+        parameter (PMERR_SPL_INV_PRIORITY = '0000400B'x)
+        integer  PMERR_SPL_NO_FREE_JOB_ID
+        parameter (PMERR_SPL_NO_FREE_JOB_ID = '0000400C'x)
+        integer  PMERR_SPL_NO_DATA
+        parameter (PMERR_SPL_NO_DATA = '0000400D'x)
+        integer  PMERR_SPL_INV_TOKEN
+        parameter (PMERR_SPL_INV_TOKEN = '0000400E'x)
+        integer  PMERR_SPL_INV_DATATYPE
+        parameter (PMERR_SPL_INV_DATATYPE = '0000400F'x)
+        integer  PMERR_SPL_PROCESSOR_ERROR
+        parameter (PMERR_SPL_PROCESSOR_ERROR = '00004010'x)
+        integer  PMERR_SPL_INV_JOB_ID
+        parameter (PMERR_SPL_INV_JOB_ID = '00004011'x)
+        integer  PMERR_SPL_JOB_NOT_PRINTING
+        parameter (PMERR_SPL_JOB_NOT_PRINTING = '00004012'x)
+        integer  PMERR_SPL_JOB_PRINTING
+        parameter (PMERR_SPL_JOB_PRINTING = '00004013'x)
+        integer  PMERR_SPL_QUEUE_ALREADY_EXISTS
+        parameter (PMERR_SPL_QUEUE_ALREADY_EXISTS = '00004014'x)
+        integer  PMERR_SPL_INV_QUEUE_NAME
+        parameter (PMERR_SPL_INV_QUEUE_NAME = '00004015'x)
+        integer  PMERR_SPL_QUEUE_NOT_EMPTY
+        parameter (PMERR_SPL_QUEUE_NOT_EMPTY = '00004016'x)
+        integer  PMERR_SPL_DEVICE_ALREADY_EXISTS
+        parameter (PMERR_SPL_DEVICE_ALREADY_EXISTS = '00004017'x)
+        integer  PMERR_SPL_DEVICE_LIMIT_REACHED
+        parameter (PMERR_SPL_DEVICE_LIMIT_REACHED = '00004018'x)
+        integer  PMERR_SPL_STATUS_STRING_TRUNC
+        parameter (PMERR_SPL_STATUS_STRING_TRUNC = '00004019'x)
+        integer  PMERR_SPL_INV_LENGTH_OR_COUNT
+        parameter (PMERR_SPL_INV_LENGTH_OR_COUNT = '0000401A'x)
+        integer  PMERR_SPL_FILE_NOT_FOUND
+        parameter (PMERR_SPL_FILE_NOT_FOUND = '0000401B'x)
+        integer  PMERR_SPL_CANNOT_OPEN_FILE
+        parameter (PMERR_SPL_CANNOT_OPEN_FILE = '0000401C'x)
+        integer  PMERR_SPL_DRIVER_NOT_INSTALLED
+        parameter (PMERR_SPL_DRIVER_NOT_INSTALLED = '0000401D'x)
+        integer  PMERR_SPL_INV_PROCESSOR_DATTYPE
+        parameter (PMERR_SPL_INV_PROCESSOR_DATTYPE = '0000401E'x)
+        integer  PMERR_SPL_INV_DRIVER_DATATYPE
+        parameter (PMERR_SPL_INV_DRIVER_DATATYPE = '0000401F'x)
+        integer  PMERR_SPL_PROCESSOR_NOT_INST
+        parameter (PMERR_SPL_PROCESSOR_NOT_INST = '00004020'x)
+        integer  PMERR_SPL_NO_SUCH_LOG_ADDRESS
+        parameter (PMERR_SPL_NO_SUCH_LOG_ADDRESS = '00004021'x)
+        integer  PMERR_SPL_PRINTER_NOT_FOUND
+        parameter (PMERR_SPL_PRINTER_NOT_FOUND = '00004022'x)
+        integer  PMERR_SPL_DD_NOT_FOUND
+        parameter (PMERR_SPL_DD_NOT_FOUND = '00004023'x)
+        integer  PMERR_SPL_QUEUE_NOT_FOUND
+        parameter (PMERR_SPL_QUEUE_NOT_FOUND = '00004024'x)
+        integer  PMERR_SPL_MANY_QUEUES_ASSOC
+        parameter (PMERR_SPL_MANY_QUEUES_ASSOC = '00004025'x)
+        integer  PMERR_SPL_NO_QUEUES_ASSOCIATED
+        parameter (PMERR_SPL_NO_QUEUES_ASSOCIATED = '00004026'x)
+        integer  PMERR_SPL_INI_FILE_ERROR
+        parameter (PMERR_SPL_INI_FILE_ERROR = '00004027'x)
+        integer  PMERR_SPL_NO_DEFAULT_QUEUE
+        parameter (PMERR_SPL_NO_DEFAULT_QUEUE = '00004028'x)
+        integer  PMERR_SPL_NO_CURRENT_FORMS_CODE
+        parameter (PMERR_SPL_NO_CURRENT_FORMS_CODE = '00004029'x)
+        integer  PMERR_SPL_NOT_AUTHORISED
+        parameter (PMERR_SPL_NOT_AUTHORISED = '0000402A'x)
+        integer  PMERR_SPL_TEMP_NETWORK_ERROR
+        parameter (PMERR_SPL_TEMP_NETWORK_ERROR = '0000402B'x)
+        integer  PMERR_SPL_HARD_NETWORK_ERROR
+        parameter (PMERR_SPL_HARD_NETWORK_ERROR = '0000402C'x)
+        integer  PMERR_DEL_NOT_ALLOWED
+        parameter (PMERR_DEL_NOT_ALLOWED = '0000402D'x)
+        integer  PMERR_CANNOT_DEL_QP_REF
+        parameter (PMERR_CANNOT_DEL_QP_REF = '0000402E'x)
+        integer  PMERR_CANNOT_DEL_QNAME_REF
+        parameter (PMERR_CANNOT_DEL_QNAME_REF = '0000402F'x)
+        integer  PMERR_CANNOT_DEL_PRINTER_DD_REF
+        parameter (PMERR_CANNOT_DEL_PRINTER_DD_REF = '00004030'x)
+        integer  PMERR_CANNOT_DEL_PRN_NAME_REF
+        parameter (PMERR_CANNOT_DEL_PRN_NAME_REF = '00004031'x)
+        integer  PMERR_CANNOT_DEL_PRN_ADDR_REF
+        parameter (PMERR_CANNOT_DEL_PRN_ADDR_REF = '00004032'x)
+        integer  PMERR_SPOOLER_QP_NOT_DEFINED
+        parameter (PMERR_SPOOLER_QP_NOT_DEFINED = '00004033'x)
+        integer  PMERR_PRN_NAME_NOT_DEFINED
+        parameter (PMERR_PRN_NAME_NOT_DEFINED = '00004034'x)
+        integer  PMERR_PRN_ADDR_NOT_DEFINED
+        parameter (PMERR_PRN_ADDR_NOT_DEFINED = '00004035'x)
+        integer  PMERR_PRINTER_DD_NOT_DEFINED
+        parameter (PMERR_PRINTER_DD_NOT_DEFINED = '00004036'x)
+        integer  PMERR_PRINTER_QUEUE_NOT_DEFINED
+        parameter (PMERR_PRINTER_QUEUE_NOT_DEFINED = '00004037'x)
+        integer  PMERR_PRN_ADDR_IN_USE
+        parameter (PMERR_PRN_ADDR_IN_USE = '00004038'x)
+        integer  PMERR_SPL_TOO_MANY_OPEN_FILES
+        parameter (PMERR_SPL_TOO_MANY_OPEN_FILES = '00004039'x)
+        integer  PMERR_SPL_CP_NOT_REQD
+        parameter (PMERR_SPL_CP_NOT_REQD = '0000403A'x)
+        integer  PMERR_UNABLE_TO_CLOSE_DEVICE
+        parameter (PMERR_UNABLE_TO_CLOSE_DEVICE = '00004040'x)
+
+        integer  PMERR_SPL_ERROR_1
+        parameter (PMERR_SPL_ERROR_1 = SPLERR_BASE + 4001)
+        integer  PMERR_SPL_ERROR_2
+        parameter (PMERR_SPL_ERROR_2 = SPLERR_BASE + 4002)
+        integer  PMERR_SPL_ERROR_3
+        parameter (PMERR_SPL_ERROR_3 = SPLERR_BASE + 4003)
+        integer  PMERR_SPL_ERROR_4
+        parameter (PMERR_SPL_ERROR_4 = SPLERR_BASE + 4004)
+        integer  PMERR_SPL_ERROR_5
+        parameter (PMERR_SPL_ERROR_5 = SPLERR_BASE + 4005)
+        integer  PMERR_SPL_ERROR_6
+        parameter (PMERR_SPL_ERROR_6 = SPLERR_BASE + 4006)
+        integer  PMERR_SPL_ERROR_7
+        parameter (PMERR_SPL_ERROR_7 = SPLERR_BASE + 4007)
+        integer  PMERR_SPL_ERROR_8
+        parameter (PMERR_SPL_ERROR_8 = SPLERR_BASE + 4008)
+        integer  PMERR_SPL_ERROR_9
+        parameter (PMERR_SPL_ERROR_9 = SPLERR_BASE + 4009)
+        integer  PMERR_SPL_ERROR_10
+        parameter (PMERR_SPL_ERROR_10 = SPLERR_BASE + 4010)
+        integer  PMERR_SPL_ERROR_11
+        parameter (PMERR_SPL_ERROR_11 = SPLERR_BASE + 4011)
+        integer  PMERR_SPL_ERROR_12
+        parameter (PMERR_SPL_ERROR_12 = SPLERR_BASE + 4012)
+        integer  PMERR_SPL_ERROR_13
+        parameter (PMERR_SPL_ERROR_13 = SPLERR_BASE + 4013)
+        integer  PMERR_SPL_ERROR_14
+        parameter (PMERR_SPL_ERROR_14 = SPLERR_BASE + 4014)
+        integer  PMERR_SPL_ERROR_15
+        parameter (PMERR_SPL_ERROR_15 = SPLERR_BASE + 4015)
+        integer  PMERR_SPL_ERROR_16
+        parameter (PMERR_SPL_ERROR_16 = SPLERR_BASE + 4016)
+        integer  PMERR_SPL_ERROR_17
+        parameter (PMERR_SPL_ERROR_17 = SPLERR_BASE + 4017)
+        integer  PMERR_SPL_ERROR_18
+        parameter (PMERR_SPL_ERROR_18 = SPLERR_BASE + 4018)
+        integer  PMERR_SPL_ERROR_19
+        parameter (PMERR_SPL_ERROR_19 = SPLERR_BASE + 4019)
+        integer  PMERR_SPL_ERROR_20
+        parameter (PMERR_SPL_ERROR_20 = SPLERR_BASE + 4020)
+        integer  PMERR_SPL_ERROR_21
+        parameter (PMERR_SPL_ERROR_21 = SPLERR_BASE + 4021)
+        integer  PMERR_SPL_ERROR_22
+        parameter (PMERR_SPL_ERROR_22 = SPLERR_BASE + 4022)
+        integer  PMERR_SPL_ERROR_23
+        parameter (PMERR_SPL_ERROR_23 = SPLERR_BASE + 4023)
+        integer  PMERR_SPL_ERROR_24
+        parameter (PMERR_SPL_ERROR_24 = SPLERR_BASE + 4024)
+        integer  PMERR_SPL_ERROR_25
+        parameter (PMERR_SPL_ERROR_25 = SPLERR_BASE + 4025)
+        integer  PMERR_SPL_ERROR_26
+        parameter (PMERR_SPL_ERROR_26 = SPLERR_BASE + 4026)
+        integer  PMERR_SPL_ERROR_27
+        parameter (PMERR_SPL_ERROR_27 = SPLERR_BASE + 4027)
+        integer  PMERR_SPL_ERROR_28
+        parameter (PMERR_SPL_ERROR_28 = SPLERR_BASE + 4028)
+        integer  PMERR_SPL_ERROR_29
+        parameter (PMERR_SPL_ERROR_29 = SPLERR_BASE + 4029)
+        integer  PMERR_SPL_ERROR_30
+        parameter (PMERR_SPL_ERROR_30 = SPLERR_BASE + 4030)
+        integer  PMERR_SPL_ERROR_31
+        parameter (PMERR_SPL_ERROR_31 = SPLERR_BASE + 4031)
+        integer  PMERR_SPL_ERROR_32
+        parameter (PMERR_SPL_ERROR_32 = SPLERR_BASE + 4032)
+        integer  PMERR_SPL_ERROR_33
+        parameter (PMERR_SPL_ERROR_33 = SPLERR_BASE + 4033)
+        integer  PMERR_SPL_ERROR_34
+        parameter (PMERR_SPL_ERROR_34 = SPLERR_BASE + 4034)
+        integer  PMERR_SPL_ERROR_35
+        parameter (PMERR_SPL_ERROR_35 = SPLERR_BASE + 4035)
+        integer  PMERR_SPL_ERROR_36
+        parameter (PMERR_SPL_ERROR_36 = SPLERR_BASE + 4036)
+        integer  PMERR_SPL_ERROR_37
+        parameter (PMERR_SPL_ERROR_37 = SPLERR_BASE + 4037)
+        integer  PMERR_SPL_ERROR_38
+        parameter (PMERR_SPL_ERROR_38 = SPLERR_BASE + 4038)
+        integer  PMERR_SPL_ERROR_39
+        parameter (PMERR_SPL_ERROR_39 = SPLERR_BASE + 4039)
+        integer  PMERR_SPL_ERROR_40
+        parameter (PMERR_SPL_ERROR_40 = SPLERR_BASE + 4040)
+
+        integer  PMERR_SPLMSGBOX_INFO_CAPTION
+        parameter (PMERR_SPLMSGBOX_INFO_CAPTION = SPLERR_BASE + 4041)
+        integer  PMERR_SPLMSGBOX_WARNING_CAPTION
+        parameter (PMERR_SPLMSGBOX_WARNING_CAPTION = SPLERR_BASE + 4042)
+        integer  PMERR_SPLMSGBOX_ERROR_CAPTION
+        parameter (PMERR_SPLMSGBOX_ERROR_CAPTION = SPLERR_BASE + 4043)
+        integer  PMERR_SPLMSGBOX_SEVERE_CAPTION
+        parameter (PMERR_SPLMSGBOX_SEVERE_CAPTION = SPLERR_BASE + 4044)
+
+        integer  PMERR_SPLMSGBOX_JOB_DETAILS
+        parameter (PMERR_SPLMSGBOX_JOB_DETAILS = SPLERR_BASE + 4045)
+
+        integer  PMERR_SPLMSGBOX_ERROR_ACTION
+        parameter (PMERR_SPLMSGBOX_ERROR_ACTION = SPLERR_BASE + 4046)
+        integer  PMERR_SPLMSGBOX_SEVERE_ACTION
+        parameter (PMERR_SPLMSGBOX_SEVERE_ACTION = SPLERR_BASE + 4047)
+
+        integer  PMERR_SPLMSGBOX_BIT_0_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_0_TEXT = SPLERR_BASE + 4048)
+        integer  PMERR_SPLMSGBOX_BIT_1_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_1_TEXT = SPLERR_BASE + 4049)
+        integer  PMERR_SPLMSGBOX_BIT_2_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_2_TEXT = SPLERR_BASE + 4050)
+        integer  PMERR_SPLMSGBOX_BIT_3_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_3_TEXT = SPLERR_BASE + 4051)
+        integer  PMERR_SPLMSGBOX_BIT_4_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_4_TEXT = SPLERR_BASE + 4052)
+        integer  PMERR_SPLMSGBOX_BIT_5_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_5_TEXT = SPLERR_BASE + 4053)
+        integer  PMERR_SPLMSGBOX_BIT_15_TEXT
+        parameter (PMERR_SPLMSGBOX_BIT_15_TEXT = SPLERR_BASE + 4054)
+        integer  PMERR_SPL_NOPATHBUFFER
+        parameter (PMERR_SPL_NOPATHBUFFER = SPLERR_BASE + 4055)
+
+        integer  PMERR_SPL_ALREADY_INITIALISED
+        parameter (PMERR_SPL_ALREADY_INITIALISED = SPLERR_BASE + 4093)
+        integer  PMERR_SPL_ERROR
+        parameter (PMERR_SPL_ERROR = SPLERR_BASE + 4095)
+
+c$reference

@@ -64,102 +64,136 @@
 :special. parse_t010101010101
 :usage. a way to reserve storage space for tagets and macros in OPT_STORAGE
 
-:cmt    /a
-:option. a
+:cmt     A
+:option. A
 :target. any
+:immediate. parse_combining
 :usage. build all evaluated targets
 
-:cmt    /b
-:option. b
+:cmt     B
+:option. B
 :target. any
+:immediate. parse_combining
 :internal.
 :usage. forces build even if timestamps are equal
 
-:cmt    /c
-:option. c
+:cmt     C
+:option. C
 :target. any
+:immediate. parse_combining
 :internal.
 :usage. suppress output messages
 
-:cmt    /d
-:option. d
+:cmt     D
+:option. D
 :target. any
+:immediate. parse_combining
 :usage. display build information
 
-:cmt    /e
-:option. e
+:cmt     E
+:option. E
 :target. any
+:immediate. parse_combining
 :internal.
 :usage. override env-var macros
 
-:cmt    /f
-:option. f
+:cmt     F
+:option. F
 :target. any
 :special. parse_F <filename>
 :usage. specifies filename as a makefile
 
-:cmt    /help
-:option. help
+:cmt     HELP
+:option. HELP
 :target. any
 :usage. display brief usage message
 
-:cmt    /?
+:cmt     \?
 :option. ?
 :target. any
 :usage. display brief usage message
 
-:cmt    /i
-:option. i
+:cmt     I
+:option. I
 :target. any
+:immediate. parse_combining
 :usage. ignore exit codes from commands
 
-:cmt    /k
-:option. k
+:cmt     K
+:option. K
 :target. any
+:immediate. parse_combining
 :usage. build unrelated targets on error
 
-:cmt    /n
-:option. n
+:cmt     L
+:option. L
 :target. any
+:immediate. parse_combining
+:internal.
+:usage. don't display copyright banner
+
+:cmt     N
+:option. N
+:target. any
+:immediate. parse_combining
 :usage. display commands but do not execute
    
 :option. noinvoke
 :target. any
 :usage. don't invoke the Watcom tool
 
-:cmt    /NOLOGO
-:option. nologo
+:cmt     NOLOGO
+:option. NOLOGO
 :target. any
 :usage. don't display copyright banner
 
-:cmt    /p
-:option. p
+:cmt     P
+:option. P
 :target. any
+:immediate. parse_combining
 :usage. display MAKE information
 
-:cmt    /q
-:option. q
+:cmt     Q
+:option. Q
 :target. any
+:immediate. parse_combining
 :usage. check time stamps but do not build
 
-:cmt    /r
-:option. r
+:cmt     R
+:option. R
 :target. any
+:immediate. parse_combining
 :internal.
 :usage. ignore predefined rules/macros
 
-:cmt    /s
-:option. s
+:cmt     S
+:option. S
 :target. any
+:immediate. parse_combining
 :usage. suppress executed-commands display
 
-:cmt    /t
-:option. t
+:cmt     T
+:option. T
 :target. any
+:immediate. parse_combining
 :usage. change time stamps but do not build
 
-:cmt    /x
-:option. x
+:cmt     U
+:option. U
+:target. any
+:immediate. parse_combining
+:internal.
+:usage. dump inline files
+
+:cmt     Y
+:option. Y
+:target. any
+:immediate. parse_combining
+:internal.
+:usage. disable batch-mode
+
+:cmt     X
+:option. X
 :target. any
 :special. parse_X <filename>
 :internal.

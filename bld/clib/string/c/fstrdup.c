@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrdup() - far strdup().
 *
 ****************************************************************************/
 
@@ -37,8 +36,8 @@
 
 _WCRTLINK char _WCFAR *_fstrdup( const char _WCFAR *str )
 {
-    char _WCFAR *mem;
-    int len;
+    char _WCFAR     *mem;
+    int             len;
 
     len = _fstrlen( str ) + 1;
     mem = lib_malloc( len );

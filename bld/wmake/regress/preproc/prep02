@@ -22,15 +22,16 @@ HELLO=GOOD
 !else
 !message bad3
 !endif
-!if (1+2*3 +(4+5)/3 * 4) == +19
+!if (1+2*3 +(4+5)/3 * 4) == 19 # nmake does not support +19; wmake does
 !message good4
 !else 
 !message bad4
 !endif
 
-hello: .symbolic   
+!ifdef AS # This is a proxy for !if microsoft
+hello: # .symbolic not needed when -ms set
    echo 1\
-!if (1*2*3*4 -25) == -1    #this part will only work for microsoft option
+!if (1*2*3*4 -25) == -1
 good5\
 !else
 bad5
@@ -45,8 +46,32 @@ bad7\
 !else
 good7\
 !endif
-!if exist(PREP02) 
+!if exist(prep02) 
 good8
 !else
 bad8
+!endif
+!else 
+hello: .symbolic   
+   echo 1 &
+!if (1*2*3*4 -25) == -1
+good5 &
+!else
+bad5
+!endif
+!if !0
+good6 &
+!else
+bad6 &
+!endif
+!if exist(XXXXX.XXX)
+bad7 &
+!else
+good7 &
+!endif
+!if exist(prep02) 
+good8
+!else
+bad8
+!endif
 !endif

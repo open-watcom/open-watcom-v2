@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MDI window processing.
 *
 ****************************************************************************/
 
@@ -123,14 +122,14 @@ static void SetWindowTitle( HWND hwnd )
 {
     char        buffer[MAX_LENGTH];
 
-    _wpi_getwindowtext( hwnd, &buffer, MAX_LENGTH - 1 );
-    MDISetMainWindowTitle( &buffer );
+    _wpi_getwindowtext( hwnd, buffer, sizeof( buffer ) );
+    MDISetMainWindowTitle( buffer );
 }
 
 void XChangeTitle( gui_window *wnd )
 {
     if( wnd->root != NULLHANDLE ) {
-        _wpi_getwindowtext( wnd->root, &Buffer, MAX_LENGTH - 1 );
+        _wpi_getwindowtext( wnd->root, Buffer, sizeof( Buffer ) );
         MDIInitMenu();
     } else {
         SetWindowTitle( wnd->hwnd );
@@ -190,8 +189,8 @@ bool XInitMDI( gui_window *wnd )
         MDIInfo.root = wnd->root;
         MDIInfo.container = wnd->hwnd;
         MDIInfo.data_off = GUI_MDI_WORD * EXTRA_SIZE;
-        _wpi_getwindowtext( wnd->root, &Buffer, MAX_LENGTH - 1 );
-        MDIInfo.main_name = &Buffer;
+        _wpi_getwindowtext( wnd->root, Buffer, sizeof( Buffer ) );
+        MDIInfo.main_name = Buffer;
         MDIInfo.start_max_restore = &StartMaxRestore;
         MDIInfo.end_max_restore = &EndMaxRestore;
         MDIInfo.set_window_title = SetWindowTitle;

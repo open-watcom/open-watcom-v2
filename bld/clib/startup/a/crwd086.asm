@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  C runtime read/write data (i86 version).
 ;*
 ;*****************************************************************************
 
 
-;
-; read/write data for WATCOM C
-;
 include mdef.inc
 .286p
         name    crwdata
@@ -47,46 +43,13 @@ endif
 
 _DATA   segment word public 'DATA'
 
-        assume  DS:DGROUP
-
-_curbrk   dw 0          ; top of usable memory
-ifndef __QNX__
-_psp       dw 0                 ; segment addr of program segment prefix
-_osmajor  db 0          ; major DOS version number
-_osminor  db 0          ; minor DOS version number
-ifdef _PROT_MODE_
-__osmode   db 1                 ; 0 => DOS real mode, 1 => protect-mode
-__HShift   db 3                 ; Huge Shift amount (real-mode=12,prot-mode=3)
-else
-__osmode   db 0                 ; 0 => DOS real mode
-__HShift   db 12                ; Huge Shift amount (real-mode=12,prot-mode=3)
-endif
-endif
-_STACKLOW dw 0          ; lowest address in stack
-_STACKTOP dw 0          ; highest address in stack
-_cbyte    dw 0          ; used by getch, getche
-_child    dw 0          ; non-zero => a spawned process is running
-__no87     dw 0                 ; non-zero => "NO87" environment var present
-ifndef __QNX__
-__get_ovl_stack dw 0,0          ; get overlay stack pointer
-__restore_ovl_stack dw 0,0      ; restore overlay stack pointer
-__close_ovl_file dw 0,0         ; close the overlay file handle
-endif
- __FPE_handler label dword
-___FPE_handler dw 0,0           ; FPE handler
-ifndef __QNX__
-_LpCmdLine dw 0,0               ; lpCmdLine (for _argc, _argv processing)
-_LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
-endif
-
         public  "C",_curbrk
         public  "C",_STACKLOW
         public  "C",_STACKTOP
         public  "C",_cbyte
         public  "C",_child
         public  __no87
-        public   __FPE_handler
-        public  ___FPE_handler
+        public  "C",__FPE_handler
 ifndef __QNX__
         public  "C",_psp
         public  __get_ovl_stack
@@ -96,8 +59,39 @@ ifndef __QNX__
         public  "C",_LpPgmName
         public  "C",_osmajor
         public  "C",_osminor
-        public  __osmode
-        public  __HShift
+        public  "C",_osmode
+        public  "C",_HShift
+endif
+
+        assume  DS:DGROUP
+
+_curbrk    dw 0                 ; top of usable memory
+ifndef __QNX__
+_psp       dw 0                 ; segment addr of program segment prefix
+_osmajor   db 0                 ; major DOS version number
+_osminor   db 0                 ; minor DOS version number
+ifdef _PROT_MODE_
+_osmode    db 1                 ; 0 => DOS real mode, 1 => protect-mode
+_HShift    db 3                 ; Huge Shift amount (real-mode=12,prot-mode=3)
+else
+_osmode    db 0                 ; 0 => DOS real mode
+_HShift    db 12                ; Huge Shift amount (real-mode=12,prot-mode=3)
+endif
+endif
+_STACKLOW  dw 0                 ; lowest address in stack
+_STACKTOP  dw 0                 ; highest address in stack
+_cbyte     dw 0                 ; used by getch, getche
+_child     dw 0                 ; non-zero => a spawned process is running
+__no87     dw 0                 ; non-zero => "NO87" environment var present
+ifndef __QNX__
+__get_ovl_stack     dw 0,0      ; get overlay stack pointer
+__restore_ovl_stack dw 0,0      ; restore overlay stack pointer
+__close_ovl_file    dw 0,0      ; close the overlay file handle
+endif
+__FPE_handler dd 0              ; FPE handler
+ifndef __QNX__
+_LpCmdLine dw 0,0               ; lpCmdLine (for _argc, _argv processing)
+_LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
 endif
 
 _DATA   ends

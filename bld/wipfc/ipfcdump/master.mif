@@ -1,0 +1,21 @@
+proj_name = ipfcdump
+
+ipfcdump_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+extra_l_flags = op eliminate, map
+
+inc_dirs = -I..
+
+.c : ..
+
+objs =  ipfcdump.obj bitmap.obj cells.obj child.obj controls.obj dict.obj&
+        extfiles.obj fonts.obj fts.obj gnames.obj header.obj&
+        index.obj nls.obj panel.obj strings.obj toc.obj
+
+ipfcdump.exe : $(objs)
+    $(linker) $(lflags) name $@ file {$(objs)}
+

@@ -38,135 +38,135 @@
 #include "linkstd.h"
 #include "dbgall.h"
 
-extern void DBIInit( void )
+void DBIInit( void )
 /*************************/
 {
 }
 
-extern void DBISectInit( section *sect )
+void DBISectInit( section *sect )
 /**************************************/
 {
     sect = sect;
 }
 
-extern void DBIInitModule( mod_entry *obj )
+void DBIInitModule( mod_entry *obj )
 /*****************************************/
 {
     obj = obj;
 }
 
-extern void DBIP1Source( byte *buff, byte *endbuff )
+void DBIP1Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
     buff = buff;
     endbuff = endbuff;
 }
 
-extern void DBIP2Source( byte *buff, byte *endbuff )
+void DBIP2Source( byte *buff, byte *endbuff )
 /**************************************************/
 {
     buff = buff;
     endbuff = endbuff;
 }
 
-extern section * DBIGetSect( char *clname )
+section * DBIGetSect( char *clname )
 /*****************************************/
 {
     clname = clname;
     return NULL;
 }
 
-extern void DBIColClass( class_entry *class )
+void DBIColClass( class_entry *class )
 /*******************************************/
 {
     class = class;
 }
 
-extern unsigned_16 DBIColSeg( class_entry *class )
+unsigned_16 DBIColSeg( class_entry *class )
 /************************************************/
 {
     class = class;
     return 0;
 }
 
-extern void DBIP1ModuleScanned( void )
+void DBIP1ModuleScanned( void )
 /************************************/
 {
 }
 
-extern bool DBISkip( unsigned_16 info )
+bool DBISkip( seg_leader *seg )
 /*************************************/
 {
-    info = info;
+    seg = seg;
     return FALSE;
 }
 
-extern bool DBINoReloc( unsigned_16 info )
+bool DBINoReloc( seg_leader *seg )
 /****************************************/
 {
-    info = info;
+    seg = seg;
     return FALSE;
 }
 
-extern void DBIP1ModuleFinished( mod_entry *obj )
+void DBIP1ModuleFinished( mod_entry *obj )
 /***********************************************/
 {
      obj = obj;
 }
 
-extern void DBIComment( void )
+void DBIComment( void )
 /****************************/
 {
 }
 
-extern void DBIAddModule( mod_entry *obj, section *sect )
+void DBIAddModule( mod_entry *obj, section *sect )
 /*******************************************************/
 {
     obj = obj;
     sect = sect;
 }
 
-extern void DBIGenModule( void )
+void DBIGenModule( void )
 /*********************************/
 {
 }
 
-extern void DBIDefClass( class_entry *cl, unsigned_32 size )
+void DBIDefClass( class_entry *cl, unsigned_32 size )
 /**********************************************************/
 {
     cl = cl;
     size = size;
 }
 
-extern void DBIAddLocal( unsigned_16 info, offset length )
+void DBIAddLocal( seg_leader *seg, offset length )
 /**********************************************************/
 {
-    info = info;
+    seg = seg;
     length = length;
 }
 
-extern void DBIGenLocal( seg_leader * leader, offset length )
+void DBIGenLocal( seg_leader * leader, offset length )
 /***********************************************************/
 {
     leader = leader;
     length = length;
 }
 
-extern void DBIAddGlobal( symbol *sym, unsigned add )
+void DBIAddGlobal( symbol *sym, unsigned add )
 /*****************************************************/
 {
     sym = sym;
     add = add;
 }
 
-extern void DBIGenGlobal( symbol * sym, section *sect )
+void DBIGenGlobal( symbol * sym, section *sect )
 /********************************************************/
 {
     sym = sym;
     sect = sect;
 }
 
-extern void DBIAddLines( seg_leader * seg, bool is32bit, bool issdata )
+void DBIAddLines( seg_leader * seg, bool is32bit, bool issdata )
 /***********************************************************************/
 {
     seg = seg;
@@ -174,13 +174,13 @@ extern void DBIAddLines( seg_leader * seg, bool is32bit, bool issdata )
     issdata = issdata;
 }
 
-extern void DBIStoreLines( unsigned_32 size )
+void DBIStoreLines( unsigned_32 size )
 /*******************************************/
 {
     size = size;
 }
 
-extern void DBIGenLines( seg_leader * seg, bool is32bit )
+void DBIGenLines( seg_leader * seg, bool is32bit )
 /*******************************************************/
 {
     seg = seg;
@@ -189,14 +189,14 @@ extern void DBIGenLines( seg_leader * seg, bool is32bit )
     is32bit = is32bit;
 }
 
-extern void DBIAddAddrInfo( seg_leader *seg, offset oldsize )
+void DBIAddAddrInfo( seg_leader *seg, offset oldsize )
 /***********************************************************/
 {
     seg = seg;
     oldsize = oldsize;
 }
 
-extern void DBIGenAddrInfo( seg_leader *seg, offset oldsize, unsigned_32 pad,
+void DBIGenAddrInfo( seg_leader *seg, offset oldsize, unsigned_32 pad,
                             section *sect )
 /**************************************************************************/
 {
@@ -206,48 +206,48 @@ extern void DBIGenAddrInfo( seg_leader *seg, offset oldsize, unsigned_32 pad,
     sect = sect;
 }
 
-extern virt_mem DBIAlloc( unsigned long size )
+virt_mem DBIAlloc( unsigned long size )
 /********************************************/
 {
     size = size;
     return( 0 );
 }
 
-extern void DBIAddrStart( void )
+void DBIAddrStart( void )
 /******************************/
 {
 }
 
-extern void DBIAddrSectStart( section * sect )
+void DBIAddrSectStart( section * sect )
 /********************************************/
 {
     sect = sect;
 }
 
-extern void DBIP2Start( section *sect )
+void DBIP2Start( section *sect )
 /*************************************/
 {
     sect = sect;
 }
 
-extern void DBIFini( section *sect )
+void DBIFini( section *sect )
 /**********************************/
 {
     sect = sect;
 }
 
-extern void DBISectCleanup( section *sect )
+void DBISectCleanup( section *sect )
 /*****************************************/
 {
     sect = sect;
 }
 
-extern void DBICleanup( void )
+void DBICleanup( void )
 /****************************/
 {
 }
 
-extern void WriteDBI( void )
+void DBIWrite( void )
 /**************************/
 {
 }

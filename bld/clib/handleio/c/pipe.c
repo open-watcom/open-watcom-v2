@@ -77,8 +77,7 @@ _WCRTLINK int _pipe( int *phandles, unsigned psize, int textmode )
         sa.bInheritHandle = (((textmode & O_NOINHERIT)==O_NOINHERIT)?FALSE:TRUE);
         rc = CreatePipe( &hRead, &hWrite, &sa, psize );
         if( rc == FALSE ) {
-            __set_errno_nt();
-            return( -1 );
+            return( __set_errno_nt() );
         }
     #elif defined(__OS2__)
         if( psize == 0 )  psize = 4096;

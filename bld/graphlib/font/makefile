@@ -1,9 +1,11 @@
+host_os = dos
+host_cpu = i86
+
+libname = dummy
+
 objs = selfont.obj std2.obj roman.obj italic.obj
 
 font.lib : $(objs)
-    wlib /n /b font -+selfont -+std2 -+roman -+italic
+    $(librarian) -n -b font.lib -+selfont.obj -+std2.obj -+roman.obj -+italic.obj
 
-!include ..\o.s\makefile
-
-selfont.obj : selfont.c
-        wccp $(cflags) $[*
+!include ../graphics.mif

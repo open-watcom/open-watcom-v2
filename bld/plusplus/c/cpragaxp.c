@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "memmgr.h"
 #include "pragdefn.h"
@@ -41,9 +39,10 @@
 #include "fnovload.h"
 #include "name.h"
 #include "asmstmt.h"
-#include "asinline.h"
 #include "carve.h"
 #include "pcheader.h"
+
+static risc_byte_seq *AuxCodeDup( risc_byte_seq *code );
 
 static void pragmaInit(         // INIT PRAGMAS
     INITFINI* defn )            // - definition
@@ -53,6 +52,7 @@ static void pragmaInit(         // INIT PRAGMAS
     if( ! CompFlags.dll_subsequent ) {
         AsmInit();
     }
+    SetAuxDefaultInfo();
 }
 
 static void pragmaFini(         // FINISH PRAGMAS
@@ -62,6 +62,7 @@ static void pragmaFini(         // FINISH PRAGMAS
     AsmFini();
     CgInfoFreeLibs();
     CgInfoFreeImports();
+    CgInfoFreeImportsS();
 }
 
 
@@ -107,7 +108,7 @@ boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
         return( TRUE );
     }
     def_info = &DefaultInfo;
-    if( datap->_class != def_info->_class ) {
+    if( datap->cclass != def_info->cclass ) {
         return( FALSE );
     }
     if( datap->code != def_info->code ) {
@@ -118,7 +119,6 @@ boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     }
     return( TRUE );
 }
-
 
 // The following defines which flags are to be ignored when checking
 // a pragma call classes for equivalence.
@@ -142,25 +142,27 @@ boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         return TRUE;
     }
     return
-           ( ( inf1->_class & ~CALL_CLASS_IGNORE ) ==
-             ( inf2->_class & ~CALL_CLASS_IGNORE ) )
+           ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
+             ( inf2->cclass & ~CALL_CLASS_IGNORE ) )
         && ( inf1->flags == inf2->flags );
 }
 
 boolean AsmSysInsertFixups( VBUF *code )
 /**************************************/
 {
-    SYMBOL sym;
-    boolean uses_auto;
-    asmreloc *curr;
-    asmreloc *next;
-    byte_seq_reloc *cg_relocs;
-    byte_seq_reloc *new_reloc;
-    risc_byte_seq *seq;
+    SYMBOL          sym;
+    boolean         uses_auto;
+    asmreloc        *curr;
+    asmreloc        *next;
+    byte_seq_reloc  *cg_relocs;
+    byte_seq_reloc  *new_reloc;
+    risc_byte_seq   *seq;
+    unsigned        len;
 
-    seq = CMemAlloc( offsetof( risc_byte_seq, data ) + code->used );
-    seq->length = code->used;
-    memcpy( seq->data, code->buf, code->used );
+    len = VbufLen( code );
+    seq = CMemAlloc( offsetof( risc_byte_seq, data ) + len );
+    seq->length = len;
+    memcpy( seq->data, VbufBuffer( code ), len );
     cg_relocs = NULL;
     uses_auto = FALSE;
     for( curr = AsmRelocs; curr != NULL; curr = next ) {
@@ -182,11 +184,22 @@ boolean AsmSysInsertFixups( VBUF *code )
     return( uses_auto );
 }
 
-void *AsmSysCreateAux( char *name )
-/**********************************/
+static void AuxCopy(           // COPY AUX STRUCTURE
+    AUX_INFO *to,               // - destination
+    AUX_INFO *from )            // - source
+{
+    freeAuxInfo( to );
+    *to = *from;
+    to->parms = AuxParmDup( from->parms );
+    to->objname = AuxObjnameDup( from->objname );
+    to->code = AuxCodeDup( from->code );
+}
+
+AUX_INFO *AsmSysCreateAux( char *name )
+/*************************************/
 {
     CreateAux( name );
-    AuxCopy( CurrInfo, &DefaultInfo );
+    AuxCopy( CurrInfo, &WatcallInfo );
     CurrInfo->use = 1;
     CurrEntry->info = CurrInfo;
     return( CurrInfo );
@@ -204,6 +217,12 @@ void AsmSysInit( void )
     AsmCodeAddress = 0;
 }
 
+void AsmSysFini( void )
+/*********************/
+{
+
+}
+
 char const *AsmSysDefineByte( void )
 /**********************************/
 {
@@ -214,24 +233,6 @@ void AsmSysDone( void )
 /*********************/
 {
     PragEnding( FALSE );
-}
-
-uint_32 AsmSysAddress( void )
-/***************************/
-{
-    return AsmCodeAddress;
-}
-
-void AsmSysSetCodeBuffer( void *buff )
-/************************************/
-{
-    AsmCodeBuffer = buff;
-}
-
-void AsmSysParseLine( char *line )
-/********************************/
-{
-    AsmLine( line );
 }
 
 enum sym_state AsmQueryExternal( char *name )
@@ -311,8 +312,13 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     }
 }
 
-syscode_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    syscode_seq *code )
+void AsmSysLine( char *buff )
+{
+    AsmLine( buff );
+}
+
+static risc_byte_seq *AuxCodeDup(        // DUPLICATE AUX CODE
+    risc_byte_seq *code )
 {
     byte_seq_len code_length;
     byte_seq_len size;

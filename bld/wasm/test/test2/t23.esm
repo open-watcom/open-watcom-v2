@@ -1,0 +1,25 @@
+.387
+text2		SEGMENT	BYTE PRIVATE USE16 'code'
+		ASSUME CS:text2, DS:DGROUP, SS:DGROUP
+`_abcd@6`:
+    push        bp 
+    mov         bp,sp 
+    sub         sp,4 
+    add         ax,word ptr -2[bp] 
+    add         ax,word ptr -4[bp] 
+    add         ax,word ptr 7[bp] 
+    add         ax,word ptr 8[bp] 
+    add         ax,word ptr 8[bp] 
+    mov         ax,word ptr 0aH[bp] 
+    cmp         word ptr -2[bp],5a4dH 
+    cmp         word ptr -4[bp],4d5aH 
+    mov         sp,bp 
+    pop         bp 
+    retf        5 
+    mov         ax,ax 
+text2		ENDS
+text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:text, DS:DGROUP, SS:DGROUP
+    call        far ptr `_abcd@6` 
+text		ENDS
+		END

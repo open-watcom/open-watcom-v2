@@ -1,0 +1,82 @@
+Rationale for adding new extentions to Open Watcom data files:
+--------------------------------------------------------------
+
+- The graphical user interface is here to stay (doh!) and is in fact
+  even preferred over command line tools by a *large* majority.
+- Many of the file extensions in use by Open Watcom today are the same 
+  as in use by other programs, but with no file format compatibility.
+- In a GUI, the file extensions can normally be used to tie file content
+  information and standard or custom functions in the desktop or
+  utility programs together. This can be interesting functionality 
+  in console mode too, with a shell like Midnight Commander or the like.
+- In some cases the existing extensions collide with other systems that
+  are not likely to change. One such example is .lnk, which is expected
+  to signify a shortcut in Explorer/shell in WIN32.
+- There is no intention to invalidate or disable use of the extensions
+  in use today. The intention is to define supplemental sets (but default in
+  new projects and new distributions) to enable better shell integration.
+- The unique, non 8.3 conforming column is only planned at this stage. It
+  is defined to show plans to support *guaranteed* unique extension names 
+  on modern file systems with virtually unlimited extension length 
+  support. According to current Open Watcom project goals, the 8.3 system
+  will be observed for as long as deemed necessary.
+- The implementation/registration of support for OW extentions in the 
+  OS shell must be totally controlled by the user. Enabling/disabling 
+  support should be possible on a per extension basis, and restoring old 
+  value if something was overwritten by previous selction must be possible.
+  Therefore the suggested "enabler" for this is at post-installation
+  time, in a new dialog in the IDE, or in a new utility program designed 
+  for this purpose only.
+- Some OS shell integration features can be (but is not limited to):
+  - Double click -> auto-start application from associated data file
+  - OS fileview popup menu action(s), can be more than one per extension
+  - Data file drag/drop support from OS fileview to OW tools
+  - OW tools as default handlers for well known file extensions
+  - Recognizeable image for each OW supported file type in host OS filesview
+
+Based on the rationale above, and on feedback from newsgroup,
+the list below is started, and will be updated and maintained until
+such a time when design/implementation can be started.
+
+Today   Unique(8.3)  Unique          Source  Type  Use(d by)         Comments
+.vi     .owv         .owvi           eddat   text  vi/viw            Common for all vi implem or not?
+.cfg    .owc         .owconfig       eddat   text  dos ide?          Conflicts with others
+.dat    .owd         .owdata         eddat   text  vi/viw            Conflicts with others
+.hlp    .owh         .owhelp         eddat   text  vi/viw            Conflicts with others
+.wpj    .owp         .owproject              text  ide               Project defined in IDE.
+
+.int    .owi         .owlocale       binnt   bin   ?                 Some type of locale info?
+.uni    .owu         .owunicode      binw    bin   ?
+.NNN    .NNN         .NNN            binw    bin                     Non-constant extension
+
+.mak    .owm         .owmake                 text  wmake             Conflicts with other make programs
+.lnk    .owl         .owlink         binw    text  wmake             Explorer thinks .lnk is a shortcut
+
+.dbg                                 binw    text  wd/wdw            Only possible to load manually.
+.trp                                 binw    bin   wd                DOS only, no need for new ext.
+.prs    .owp         .owlangdef      binw    bin   wd/wdw            Src expression syntax file
+.d32    .d32                                 bin   wd OS/2 trap      May change to .dll in future
+
+The extensions below represents text files in general meant to be read by 
+humans for informational purposes. All of the in use in OW today.
+So far, most seems not to want to create a new extension for that,
+just rename all to .txt. (Ignore read only usage property)
+
+.doc    .txt                                 text  read only
+.w32    .txt                                 text  read only
+.txt    .txt                                 text  read only
+.faq    .txt                                 text  read only
+
+The extensions below is a list of general, well known extensions, 
+that could be handled in a commonly expected fashion, by one ore more 
+of th OW tools. They should be possbile to associate with OW tools
+if the users wants it.
+
+.c .h .cpp .hpp .for .fi .asm .inc .mak .txt
+
+.rc .dlg .ico .bmp .cur .res (.dll .exe)
+
+...
+
+
+

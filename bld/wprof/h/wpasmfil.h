@@ -45,7 +45,7 @@ typedef struct asm_info {
 typedef struct wp_asmline {
     uint_8                      source_line : 1;
     union {
-        asm_info                asm;
+        asm_info                asm_line;
         src_info                src;
     } u;
 } wp_asmline;

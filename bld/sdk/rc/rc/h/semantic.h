@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions interface (used by yydriver).
 *
 ****************************************************************************/
 
@@ -39,10 +38,19 @@
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
     ResMemFlags         flags;
-    uint_8              loadOptGiven        : 1;
-    uint_8              memOptGiven         : 1;
-    uint_8              purityOptGiven      : 1;
+    unsigned            loadOptGiven        : 1;
+    unsigned            memOptGiven         : 1;
+    unsigned            purityOptGiven      : 1;
 } FullMemFlags;
+
+typedef struct FullOptFlagsOS2 {
+    ResMemFlags         flags;
+    uint_32             codePage;
+    unsigned            loadOptGiven        : 1;
+    unsigned            memOptGiven         : 1;
+    unsigned            purityOptGiven      : 1;
+    unsigned            cpOptGiven          : 1;
+} FullOptFlagsOS2;
 
 typedef uint_32 SemOffset;
 typedef uint_32 SemLength;
@@ -55,6 +63,8 @@ typedef struct ResLocation {
 typedef struct IntMask {
     uint_32     Mask;
     uint_32     Value;
+    unsigned    longVal         : 1;
+    unsigned    unsgVal         : 1;
 } IntMask;
 
 
@@ -74,6 +84,14 @@ extern void             SemCheckMemFlags( FullMemFlags * currflags,
                                 ResMemFlags loadopts, ResMemFlags memopts,
                                 ResMemFlags pureopts );
 extern char             *SemTokenToString( uint_8 token );
+extern FullOptFlagsOS2  SemOS2AddFirstResOption( uint_8 token, uint_32 value );
+extern FullOptFlagsOS2  SemOS2AddResOption( FullOptFlagsOS2, uint_8 token, uint_32 value );
+extern void             SemOS2CheckResFlags( FullOptFlagsOS2 *currflags,
+                                ResMemFlags loadopts, ResMemFlags memopts,
+                                ResMemFlags pureopts );
+extern char             *SemOS2TokenToString( uint_8 token );
+extern uint_32          SemOS2DefaultCodepage( void );
+extern void             SemOS2SetCodepage( uint_32 codepage );
 extern void             SetDefLang( void );
 extern void             SemSetGlobalLanguage( WResLangType *newlang );
 extern void             SemSetResourceLanguage( WResLangType *newlang,
@@ -81,7 +99,7 @@ extern void             SemSetResourceLanguage( WResLangType *newlang,
 extern WResLangType     GetResourceLanguage( void );
 extern void             ClearResourceLanguage( void );
 extern void             SemUnsupported( uint_8 token );
-extern void SemanticInitStatics( void );
+extern void             SemanticInitStatics( void );
 
 
 /**** include all the semantic structures and routine prototypes for each ****/
@@ -94,5 +112,7 @@ extern void SemanticInitStatics( void );
 #include "semver.h"
 #include "semtbar.h"
 #include "semresfl.h"
+#include "semhelp.h"
+#include "semutil.h"
 
 #endif

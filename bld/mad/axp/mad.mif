@@ -1,4 +1,4 @@
-!include $(disasm_dir)\core\dis.mif
+target_cpu = axp
 
 imp_objs = &
         axpaddr.obj &
@@ -7,13 +7,6 @@ imp_objs = &
         axpreg.obj &
         axpcall.obj &
         axpdisas.obj &
-        axptrace.obj &
-        $(dis_objs)
-
-mad = axp
-
-extra_incs = $(dis_includes)
-extra_srcs = $(dis_srcs)
-extra_gbls = $(disasm_dir)\core\compile.gbl
+        axptrace.obj
 
 !include ../../master.mif

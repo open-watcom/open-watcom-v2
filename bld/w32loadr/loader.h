@@ -24,11 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Structure definitions for the OSI loader.
 *
 ****************************************************************************/
 
+#pragma pack(1)
 
 typedef struct {
     DWORD off;
@@ -68,3 +68,4 @@ typedef struct w32_hdr {
     DWORD       initial_EIP;
 } w32_hdr;
 
+#pragma pack()

@@ -1,0 +1,33 @@
+#include <windows.h>
+
+#define BOXDEV_VERSION     1,00,00,001
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    BOXDEV_VERSION
+PRODUCTVERSION BOXDEV_VERSION
+FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+FILEFLAGS      0
+FILEOS         VOS_NT_WINDOWS32
+FILETYPE       VFT_DRV
+FILESUBTYPE    VFT2_DRV_SYSTEM
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"   /* US English, Unicode codepage */
+        BEGIN
+            VALUE "CompanyName",     "Open Watcom"
+            VALUE "FileDescription", "Sample WDM Device Driver"
+            VALUE "FileVersion",     "1.0.0"
+            VALUE "InternalName",    "boxdev.sys"
+            VALUE "LegalCopyright",  "\251 2010 Open Watcom Contributors"
+            VALUE "OriginalFilename","boxdev.sys"
+            VALUE "ProductName",     "WDM Sample"
+            VALUE "ProductVersion",  "1.0.0"
+        END
+
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04B0
+    END
+END

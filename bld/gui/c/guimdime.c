@@ -54,14 +54,14 @@ static bool MDIMenuStructInitialized = FALSE;
 
 static void InitMDIMenuStruct( void )
 {
-    MDIMenu[ 0 ].label = LIT( XCascade );
-    MDIMenu[ 0 ].hinttext = LIT( Cascade_Hint );
-    MDIMenu[ 1 ].label = LIT( Tile_XHorz );
-    MDIMenu[ 1 ].hinttext = LIT( Tile_Horz_Hint );
-    MDIMenu[ 2 ].label = LIT( Tile_XVert );
-    MDIMenu[ 2 ].hinttext = LIT( Tile_Vert_Hint );
-    MDIMenu[ 3 ].label = LIT( XArrange_Icons );
-    MDIMenu[ 3 ].hinttext = LIT( Arrange_Icons_Hint );
+    MDIMenu[0].label = LIT( XCascade );
+    MDIMenu[0].hinttext = LIT( Cascade_Hint );
+    MDIMenu[1].label = LIT( Tile_XHorz );
+    MDIMenu[1].hinttext = LIT( Tile_Horz_Hint );
+    MDIMenu[2].label = LIT( Tile_XVert );
+    MDIMenu[2].hinttext = LIT( Tile_Vert_Hint );
+    MDIMenu[3].label = LIT( XArrange_Icons );
+    MDIMenu[3].hinttext = LIT( Arrange_Icons_Hint );
 }
 
 void EnableMDIActions( bool enable )

@@ -41,14 +41,10 @@
 #include "zoiks.h"
 #include "conflict.h"
 #include "cfloat.h"
-
+#include "makeins.h"
 #include "s37split.def"
 
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern instruction      *MoveConst(unsigned_32 ,name *,type_class_def );
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
+extern  instruction     *MoveConst(unsigned_32 ,name *,type_class_def );
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocConst(pointer);

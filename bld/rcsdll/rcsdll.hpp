@@ -24,16 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  SCM interface library classes.
 *
 ****************************************************************************/
 
 
-#include "api.h"
-
-#define WPROJ           6
-#define MAX_RCS_TYPE    6
+#include "rcsapi.h"
 
 #define RCS_CFG "rcs.cfg"
 #define RCS_SECTION "rcs settings"
@@ -145,6 +141,24 @@ private:
     long dllId;
 };
 extern objectCycleSystem ObjCycle;
+
+/* Perforce */
+class p4System : public rcsSystem
+{
+public:
+    p4System() { checkin_name = "p4_ci"; checkout_name = "p4_co"; };
+    int hasShell() { return( 1 ); };
+    int runShell() {
+        #if defined( __WINDOWS__ ) || defined( __NT__ )
+            DWORD       rc;
+            rc = WinExec( (LPSTR)"p4win.exe", SW_RESTORE );
+            return( rc > 31 );
+        #else
+            return( system( "p4win.exe" ) == 0 );
+        #endif
+    };
+};
+extern p4System Perforce;
 
 class userData {
 public:

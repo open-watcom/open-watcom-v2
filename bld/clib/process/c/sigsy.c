@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS Ctrl-Break, critical error and FPE hooking and handling.
 *
 ****************************************************************************/
 
@@ -34,18 +33,25 @@
 #include <signal.h>
 #include <string.h>
 #include <dos.h>
-#include "nonibm.h"
 #include "rtdata.h"
 #include "stacklow.h"
+#include "sigfunc.h"
+#include "_int23.h"
+
+/* Ctrl-Break vector (IBM compatible) */
+#define CTRL_BRK_VEC    0x1B
 
 typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
 
-#if defined(__386__)
- #if defined(__WINDOWS_386__)
+#if defined( __386__ )
+ #if defined( __WINDOWS_386__ )
   #include "tinyio.h"
  #else
   #include "extender.h"
   #include "dpmi.h"
+
+  extern  int __DPMI_hosted( void );
+
   extern  void pharlap_setvect( unsigned, pfun );
   #pragma aux  pharlap_setvect =  0x1e   /* push ds    */\
                                0x8e 0xd9 /* mov ds,cx  */\
@@ -106,11 +112,9 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
  #endif
 #endif
 
-extern  void    (*__int23_exit)();
-extern  void    __null_int23_exit();
-        void    __restore_int23();
-        void    __restore_int_ctrl_break();
-static  void    __restore_int();
+        void    __restore_int23( void );
+        void    __restore_int_ctrl_break( void );
+static  void    __restore_int( void );
 // __int23_exit is now a multi-state pointer:
 // __null_int23_exit        -> implies no vectors are hooked
 // __restore_int23          -> implies only int 23 is hooked
@@ -119,34 +123,37 @@ static  void    __restore_int();
 
 static pfun __old_int23 = 0;
 static pfun __old_int_ctrl_break = 0;
-#if defined(__386__)
-  static pfun __old_pm_int23 = 0;
-  static pfun __old_pm_int_ctrl_break = 0;
-  #define MY_STACK_SIZE 256
-  static unsigned int my_stack[256];
+
+#if defined( __386__ )
+
+static pfun __old_pm_int23 = 0;
+static pfun __old_pm_int_ctrl_break = 0;
+#define MY_STACK_SIZE 256
+static unsigned int my_stack[256];
+
 #endif
 
-static void _WCINTERRUPT _WCFAR __int23_handler()
+static void _WCINTERRUPT _WCFAR __int23_handler( void )
 {
-    #if defined(__386__)
-        unsigned save_stacklow;
-        void _WCFAR *save_stack;
-        save_stack = set_stack( &(my_stack[MY_STACK_SIZE-1]) );
-        save_stacklow = _STACKLOW;
-        _STACKLOW = (unsigned)&my_stack;
-    #endif
-    if( (_RWD_child == 0)
-     && (__int23_exit != __null_int23_exit)
-     && (__int23_exit != __restore_int_ctrl_break) ) {
+#if defined( __386__ )
+    unsigned save_stacklow;
+    void _WCFAR *save_stack;
+    save_stack = set_stack( &(my_stack[MY_STACK_SIZE-1]) );
+    save_stacklow = _STACKLOW;
+    _STACKLOW = (unsigned)&my_stack;
+#endif
+    if(( _RWD_child == 0 )
+      && ( __int23_exit != __null_int23_exit )
+      && ( __int23_exit != __restore_int_ctrl_break )) {
         _enable();
         raise( SIGINT );
     } else {
         _chain_intr( __old_int23 );
     }
-    #if defined(__386__)
-        set_stack( save_stack );
-        _STACKLOW = save_stacklow;
-    #endif
+#if defined( __386__ )
+    set_stack( save_stack );
+    _STACKLOW = save_stacklow;
+#endif
 }
 
 /*
@@ -155,27 +162,27 @@ static void _WCINTERRUPT _WCFAR __int23_handler()
  *       SIZE OF __int23_handler()!!!
  */
 
-static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler()
+static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler( void )
 {
-    #if defined(__386__)
-        unsigned save_stacklow;
-        void _WCFAR *save_stack;
-        save_stack = set_stack( &(my_stack[(sizeof(my_stack)-sizeof(my_stack[0]))]) );
-        save_stacklow = _STACKLOW;
-        _STACKLOW = (unsigned)&my_stack;
-    #endif
-    if( (_RWD_child == 0)
-     && (__int23_exit != __null_int23_exit)
-     && (__int23_exit != __restore_int23 ) ) {
+#if defined( __386__ )
+    unsigned save_stacklow;
+    void _WCFAR *save_stack;
+    save_stack = set_stack( &(my_stack[(sizeof(my_stack)-sizeof(my_stack[0]))]) );
+    save_stacklow = _STACKLOW;
+    _STACKLOW = (unsigned)&my_stack;
+#endif
+    if(( _RWD_child == 0 )
+     && ( __int23_exit != __null_int23_exit )
+     && ( __int23_exit != __restore_int23 )) {
         _enable();
         raise( SIGBREAK );
     } else {
         _chain_intr( __old_int_ctrl_break );
     }
-    #if defined(__386__)
-        set_stack( save_stack );
-        _STACKLOW = save_stacklow;
-    #endif
+#if defined( __386__ )
+    set_stack( save_stack );
+    _STACKLOW = save_stacklow;
+#endif
 }
 
 /*
@@ -184,33 +191,7 @@ static void _WCINTERRUPT _WCFAR __int_ctrl_break_handler()
  *       SIZE OF __int_ctrl_break_handler()!!!
  */
 
-#if defined(__386__)
-int __DPMI_hosted( void )
-{
-    static signed int _mode = 0;
-
-    if( _mode == 0 ) {
-        if( _IsRational() || DPMIModeDetect() == 0 ) {
-            version_info vi;
-            vi.major_version = 0;
-            vi.minor_version = 0;
-            vi.flags = 0;
-            vi.processor_type = 0;
-            DPMIGetVersion( &vi );
-            if( (vi.major_version + vi.minor_version) > 0 ) {
-                _mode = 1;
-            } else {
-                _mode = -1;
-            }
-        } else {
-            _mode = -1;
-        }
-    }
-    return( _mode );
-}
-#endif
-
-void __restore_int23()
+void __restore_int23( void )
 {
     if( __old_int23 == 0 ) {
         return;
@@ -220,35 +201,26 @@ void __restore_int23()
     } else if( __int23_exit == __restore_int23 ) {
         __int23_exit = __null_int23_exit;
     }
-    #if defined(__WINDOWS_386__)
-        TinySetVect( 0x23, __old_int23 );
-    #elif defined(__386__)
-        if( _IsPharLap() ) {
-            pharlap_rm_setvect( 0x23, __old_int23 );
-            pharlap_pm_setvect( 0x23, __old_pm_int23 );
-        } else if( __DPMI_hosted() == 1 ) {
-            DPMISetRealModeInterruptVector( 0x23, __old_int23 );
-            DPMISetPMInterruptVector( 0x23, __old_pm_int23 );
-        } else {        /* this is what it used to do */
-            _dos_setvect( 0x23, __old_int23 );
-        }
-    #else
+#if defined(__WINDOWS_386__)
+    TinySetVect( 0x23, __old_int23 );
+#elif defined( __386__ )
+    if( _IsPharLap() ) {
+        pharlap_rm_setvect( 0x23, __old_int23 );
+        pharlap_pm_setvect( 0x23, __old_pm_int23 );
+    } else if( __DPMI_hosted() == 1 ) {
+        DPMISetRealModeInterruptVector( 0x23, __old_int23 );
+        DPMISetPMInterruptVector( 0x23, __old_pm_int23 );
+    } else {        /* this is what it used to do */
         _dos_setvect( 0x23, __old_int23 );
-    #endif
+    }
+#else
+    _dos_setvect( 0x23, __old_int23 );
+#endif
     __old_int23 = 0;
 }
 
-void __restore_int_ctrl_break()
+void __restore_int_ctrl_break( void )
 {
-    int                 ctrlBreakVector;
-
-    /*** Support both NEC and IBM at runtime ***/
-    if( !__NonIBM ) {
-        ctrlBreakVector = 0x1B;
-    } else {
-        ctrlBreakVector = 0x06;
-    }
-
     if( __old_int_ctrl_break == 0 ) {
         return;
     }
@@ -257,55 +229,55 @@ void __restore_int_ctrl_break()
     } else if( __int23_exit == __restore_int_ctrl_break ) {
         __int23_exit = __null_int23_exit;
     }
-    #if defined(__WINDOWS_386__)
-        TinySetVect( ctrlBreakVector, __old_int_ctrl_break );
-    #elif defined(__386__)
-        if( _IsPharLap() ) {
-            pharlap_rm_setvect( ctrlBreakVector, __old_int_ctrl_break );
-            pharlap_pm_setvect( ctrlBreakVector, __old_pm_int_ctrl_break );
-        } else if( __DPMI_hosted() == 1 ) {
-            DPMISetRealModeInterruptVector( ctrlBreakVector, __old_int_ctrl_break );
-            DPMISetPMInterruptVector( ctrlBreakVector, __old_pm_int_ctrl_break );
-        } else {
-            _dos_setvect( ctrlBreakVector, __old_int_ctrl_break );
-        }
-    #else
-        _dos_setvect( ctrlBreakVector, __old_int_ctrl_break );
-    #endif
+#if defined(__WINDOWS_386__)
+    TinySetVect( CTRL_BRK_VEC, __old_int_ctrl_break );
+#elif defined( __386__ )
+    if( _IsPharLap() ) {
+        pharlap_rm_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+        pharlap_pm_setvect( CTRL_BRK_VEC, __old_pm_int_ctrl_break );
+    } else if( __DPMI_hosted() == 1 ) {
+        DPMISetRealModeInterruptVector( CTRL_BRK_VEC, __old_int_ctrl_break );
+        DPMISetPMInterruptVector( CTRL_BRK_VEC, __old_pm_int_ctrl_break );
+    } else {
+        _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+    }
+#else
+    _dos_setvect( CTRL_BRK_VEC, __old_int_ctrl_break );
+#endif
     __old_int_ctrl_break = 0;
 }
 
-static void __restore_int()
+static void __restore_int( void )
 {
     __restore_int23();
     __restore_int_ctrl_break();
 }
 
-void __grab_int23()
+void __grab_int23( void )
 {
     if( __old_int23 == 0 ) {
-        #if defined(__WINDOWS_386__)
-            __old_int23 = _dos_getvect( 0x23 );
-            TinySetVect( 0x23, (void (_WCNEAR *)(void))__int23_handler );
-        #elif defined(__386__)
-            if( _IsPharLap() ) {
-                __old_int23 = pharlap_rm_getvect( 0x23 );
-                __old_pm_int23 = pharlap_pm_getvect( 0x23 );
-                pharlap_setvect( 0x23, (pfun) (void (_WCNEAR *)(void))__int23_handler );
-            } else if( __DPMI_hosted() == 1 ) {
-                DPMILockLinearRegion((long)__int23_handler,
-                    ((long)__int_ctrl_break_handler - (long)__int23_handler));
-                __old_int23 = DPMIGetRealModeInterruptVector( 0x23 );
-                __old_pm_int23 = DPMIGetPMInterruptVector( 0x23 );
-                DPMISetPMInterruptVector( 0x23, __int23_handler );
-            } else {        /* what it used to do */
-                __old_int23 = _dos_getvect( 0x23 );
-                _dos_setvect( 0x23, __int23_handler );
-            }
-        #else
+#if defined(__WINDOWS_386__)
+        __old_int23 = _dos_getvect( 0x23 );
+        TinySetVect( 0x23, (void (_WCNEAR *)(void))__int23_handler );
+#elif defined( __386__ )
+        if( _IsPharLap() ) {
+            __old_int23 = pharlap_rm_getvect( 0x23 );
+            __old_pm_int23 = pharlap_pm_getvect( 0x23 );
+            pharlap_setvect( 0x23, (pfun) (void (_WCNEAR *)(void))__int23_handler );
+        } else if( __DPMI_hosted() == 1 ) {
+            DPMILockLinearRegion((long)__int23_handler,
+                ((long)__int_ctrl_break_handler - (long)__int23_handler));
+            __old_int23 = DPMIGetRealModeInterruptVector( 0x23 );
+            __old_pm_int23 = DPMIGetPMInterruptVector( 0x23 );
+            DPMISetPMInterruptVector( 0x23, __int23_handler );
+        } else {        /* what it used to do */
             __old_int23 = _dos_getvect( 0x23 );
             _dos_setvect( 0x23, __int23_handler );
-        #endif
+        }
+#else
+        __old_int23 = _dos_getvect( 0x23 );
+        _dos_setvect( 0x23, __int23_handler );
+#endif
         if( __int23_exit == __null_int23_exit ) {
             __int23_exit = __restore_int23;
         } else if( __int23_exit == __restore_int_ctrl_break ) {
@@ -314,40 +286,31 @@ void __grab_int23()
     }
 }
 
-void __grab_int_ctrl_break()
+void __grab_int_ctrl_break( void )
 {
-    int                 ctrlBreakVector;
-
-    /*** Support both NEC and IBM at runtime ***/
-    if( !__NonIBM ) {
-        ctrlBreakVector = 0x1B;
-    } else {
-        ctrlBreakVector = 0x06;
-    }
-
     if( __old_int_ctrl_break == 0 ) {
-        #if defined(__WINDOWS_386__)
-            __old_int_ctrl_break = _dos_getvect( ctrlBreakVector );
-            TinySetVect( ctrlBreakVector, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
-        #elif defined(__386__)
-            if( _IsPharLap() ) {
-                __old_int_ctrl_break = pharlap_rm_getvect( ctrlBreakVector );
-                __old_pm_int_ctrl_break = pharlap_pm_getvect( ctrlBreakVector );
-                pharlap_setvect( ctrlBreakVector, (pfun) (void (_WCNEAR *)(void))__int_ctrl_break_handler );
-            } else if( __DPMI_hosted() == 1 ) {
-                DPMILockLinearRegion((long)__int_ctrl_break_handler,
-                    ((long)__DPMI_hosted - (long)__int_ctrl_break_handler));
-                __old_int_ctrl_break = DPMIGetRealModeInterruptVector( ctrlBreakVector );
-                __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( ctrlBreakVector );
-                DPMISetPMInterruptVector( ctrlBreakVector, __int_ctrl_break_handler );
-            } else {        /* what it used to do */
-                __old_int_ctrl_break = _dos_getvect( ctrlBreakVector );
-                _dos_setvect( ctrlBreakVector, __int_ctrl_break_handler );
-            }
-        #else
-            __old_int_ctrl_break = _dos_getvect( ctrlBreakVector );
-            _dos_setvect( ctrlBreakVector, __int_ctrl_break_handler );
-        #endif
+#if defined(__WINDOWS_386__)
+        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
+        TinySetVect( CTRL_BRK_VEC, (void (_WCNEAR *)(void))__int_ctrl_break_handler );
+#elif defined( __386__ )
+        if( _IsPharLap() ) {
+            __old_int_ctrl_break = pharlap_rm_getvect( CTRL_BRK_VEC );
+            __old_pm_int_ctrl_break = pharlap_pm_getvect( CTRL_BRK_VEC );
+            pharlap_setvect( CTRL_BRK_VEC, (pfun) (void (_WCNEAR *)(void))__int_ctrl_break_handler );
+        } else if( __DPMI_hosted() == 1 ) {
+            DPMILockLinearRegion((long)__int_ctrl_break_handler,
+                ((long)__restore_int23 - (long)__int_ctrl_break_handler));
+            __old_int_ctrl_break = DPMIGetRealModeInterruptVector( CTRL_BRK_VEC );
+            __old_pm_int_ctrl_break = DPMIGetPMInterruptVector( CTRL_BRK_VEC );
+            DPMISetPMInterruptVector( CTRL_BRK_VEC, __int_ctrl_break_handler );
+        } else {        /* what it used to do */
+            __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
+            _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+        }
+#else
+        __old_int_ctrl_break = _dos_getvect( CTRL_BRK_VEC );
+        _dos_setvect( CTRL_BRK_VEC, __int_ctrl_break_handler );
+#endif
         if( __int23_exit == __null_int23_exit ) {
             __int23_exit = __restore_int_ctrl_break;
         } else if( __int23_exit == __restore_int23 ) {
@@ -355,3 +318,25 @@ void __grab_int_ctrl_break()
         }
     }
 }
+
+#if defined( __DOS__ )
+
+static FPEhandler   *__old_FPE_handler = NULL;
+
+void __restore_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        return;
+    }
+    __FPE_handler = __old_FPE_handler;
+    __old_FPE_handler = NULL;
+}
+
+void __grab_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        __old_FPE_handler = __FPE_handler;
+        __FPE_handler = __sigfpe_handler;
+    }
+}
+#endif

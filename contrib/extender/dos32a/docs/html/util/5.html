@@ -1,0 +1,130 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Additional Resources [Advices]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+5.0 - DOS/32 Advanced - Programming Advices
+<br></font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    You  should consider the following  when programming for DOS/32 Advanced
+DOS Extender or porting already written applications to it:
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    Remember,  if  your  program  does  not  work  with  DOS/32  Advanced as
+expected,  first always try to reconfigure it. Do not blame the DOS Extender
+for  being broken in the first  place. Try different configurations provided
+with  DOS/32 Advanced located in  <i>.\D32</i> directory  and see if they help. Use
+<i>dos4gw.d32</i>  configuration to force DOS/32  Advanced to emulate DOS/4GW DOS
+Extender as close as possible.
+</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 1:</b><br>
+    Be  careful  with  Object alignment and  "watch  your STACK". By default
+DOS/32  Advanced  DOS Extender will use  PARAgraph alignment (16 bytes) when
+loading  Objects  into  extended memory. In  most  cases  this will cause no
+trouble  but sometimes you will need to  use larger STACK. It is recommended
+that  you  use at least 64KB large  STACK if your program heavily uses local
+variables. And just to make sure that everything works as it should it would
+not be a bad idea to use 128KB or 256KB stacks.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 2:</b><br>
+    When  developing  an  application, turn  on  the Null-Pointer Protection
+feature  in  the DOS Extender. It will  help  you locate the accesses to the
+uninitialized pointers. Remember that by default the Null-Pointer Protection
+feature is disabled.<br><br>
+    Also  note  that when the Null-Pointer  Protection is triggered, the DOS
+Extender  will  enter the Debug Mode, rather  than  just exit to DOS with an
+error  message  as  does  DOS/4GW.  Null-Pointer  Protection  feature is not
+available when running under external DPMI (for example Windows) and will be
+automatically turned off by the DOS Extender.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 3:</b><br>
+    It  is  recommended  that you use  the  LX-style  executables instead of
+LE-style.  They are loaded faster into memory, and occupy less space on disk
+(when  Object  Alignment = 0). Use  "-l=dos32x" or "-l=stub32x" options with
+<i>wcl386.exe</i>  when  compiling  and  linking  your  programs.  Remember  that
+DOS/4G(W)  DOS Extenders are also capable  of loading LX executables, though
+it  is  not  documented, so if you  need  to  switch to another DOS Extender
+quickly, you will not have to relink you application.<br><br>
+    NOTE: the official file format used by DOS/32 Advanced is "LX", starting
+with DOS Extender version 4.30. Although the "LE" format is still supported,
+you  are highly recommended to use  the LX-style executables for the reasons
+mentioned above.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 4:</b><br>
+    Although  DOS/32  Advanced is a WATCOM  C/C++ oriented DOS Extender, you
+may  use it with other compilers as  long as your applications can be linked
+in  "LE" or "LX" formats. The DOS Extender and the built-in DPMI server will
+load  and  execute  your  applications  regardless  of  which  compilers  or
+development tools you use.<br><br>
+    Note that you do not have to use WATCOM libraries and startup code, when
+writing  applications for use with DOS/32 Advanced.  But if you do so, going
+on  and using your own libraries, you will  not be able to run your programs
+under  DOS/4GW  DOS Extender as it is  strictly WATCOM oriented and will not
+execute  any  LE/LX programs that  are  not  using WATCOM  startup/libraries
+(DOS/4G will work fine though).
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 5:</b><br>
+    Most  of  DOS/32  Advanced extended API  functions  will not require the
+parameters passed in 32-bit registers to be actual 32-bit zero-extended values
+as  it  is documented in  "Programmer's Reference" documentation. An example
+would  be a DOS API function AH=42h, "Set Current File Position". The actual
+parameters passed down to real mode will be 16-bit registers, not 32-bit. Even
+though,  it  is recommended that you  use 32-bit zero-extended registers when
+using extended API functions because it is much safer and less confusing for
+both  the  program and the programmer  himself. Remember that in most cases,
+the values returned by the DOS Extender (even selector values) will be 32-bit
+zero-extended values.
+</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Advice 5:</b><br>
+    When   running   under  VCPI  and   spawning   several  DOS/32  Advanced
+applications  make sure that all of  them have the same memory configuration
+(verify  with  SUNSYS Setup Utility).  In  particular, VCPI PageTables, VCPI
+PhysTables,  Extended  Memory, VCPI SmartPage  Allocation  Mode and VCPI+XMS
+Allocation   Scheme   fields  must  be   configured  equially  for  all  the
+applications  that are to be spawned. If  this condition is not met, the DOS
+Extender will most likely crash.
+</font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

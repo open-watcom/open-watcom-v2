@@ -6,6 +6,9 @@ long *pl;
 float *pf;
 double *pd;
 
+typedef int I;
+typedef short S;
+
 void foo( void )
 {
     pi->int::~char();
@@ -15,4 +18,6 @@ void foo( void )
     pl->long::~char();
     pf->float::~int();
     pd->double::~long();
+
+    pi->I::~S();
 }

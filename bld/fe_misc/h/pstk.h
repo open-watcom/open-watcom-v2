@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Virtual pointer stacking.
 *
 ****************************************************************************/
 
@@ -37,8 +36,6 @@
 extern "C" {
 #endif
 
-// PSTK.H -- virtual pointer stacking
-//
 typedef struct pstk_ctl     PSTK_CTL;       // control element for PSTK
 typedef struct pstk_blk     PSTK_BLK;       // block of items
 typedef struct pstk_iter    PSTK_ITER;      // iterator
@@ -58,19 +55,19 @@ struct pstk_iter {              // PSTK_ITER -- iterator for PSTK
 };
 
 void PstkPush( PSTK_CTL *, void const * );
-void **PstkPop( PSTK_CTL * );
-void* PstkPopElement( PSTK_CTL * );
+void *PstkPop( PSTK_CTL * );
+void *PstkPopElement( PSTK_CTL * );
 void PstkOpen( PSTK_CTL * );
 void PstkClose( PSTK_CTL * );
 void PstkPopAll( PSTK_CTL * );
-void* PstkTopElement( PSTK_CTL * );
+void *PstkTopElement( PSTK_CTL * );
 void *PstkContainsElement( PSTK_CTL *, void const * );
 
 int PstkIterDnOpen( PSTK_ITER*, PSTK_CTL const * );
-void* PstkIterDnNext( PSTK_ITER* );
+void *PstkIterDnNext( PSTK_ITER* );
 
 int PstkIterUpOpen( PSTK_ITER*, PSTK_CTL const * );
-void* PstkIterUpNext( PSTK_ITER* );
+void *PstkIterUpNext( PSTK_ITER* );
 
 #define PstkTop( addr_ctl )     ((addr_ctl)->top_item)
 

@@ -1,0 +1,30 @@
+:CMT. This driver definition is used for a PostScript printer.
+
+:CMT. Definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. PSSDRV                          psspecdrv
+
+:CMT. Corresponding device
+:CMT. definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. PSSPEC                          psspec
+:CMT.eoc
+
+:DRIVER
+   defined_name = 'psspecdrv'
+   member_name  = 'pssdrv'
+   rec_spec     = '(t:79)'
+   fill_char    = ' '
+
+:INCLUDE file='drv01.inc'.
+
+:INCLUDE file='drv02.inc'.
+
+:PAGEADDRESS
+   x_positive = yes
+   y_positive = no
+:ePAGEADDRESS.
+
+:INCLUDE file='drv04.inc'.
+
+:eDRIVER.

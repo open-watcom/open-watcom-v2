@@ -1,0 +1,46 @@
+/*
+ *  pwd.h passwd structure and prototypes
+ *
+:include crwatqnx.sp
+ */
+#ifndef _PWD_H_INCLUDED
+#define _PWD_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include systypes.sp
+
+:include cpluspro.sp
+
+:include pshpackl.sp
+
+struct passwd {
+    char        *pw_name;       /* user's login name */
+    char        *pw_passwd;     /* user's password   */
+    uid_t       pw_uid;         /* user ID number    */
+    gid_t       pw_gid;         /* group ID number   */
+:segment QNX
+    char        *pw_age;
+    char        *pw_comment;
+:endsegment
+    char        *pw_gecos;      /* real name         */
+    char        *pw_dir;        /* home directory    */
+    char        *pw_shell;      /* initial program   */
+};
+
+:include poppack.sp
+
+/*
+ *  POSIX 1003.1 Prototypes.
+ */
+_WCRTLINK extern struct passwd *getpwnam( const char *__name );
+_WCRTLINK extern struct passwd *getpwuid( uid_t __uid );
+_WCRTLINK extern struct passwd *getpwent( void );
+_WCRTLINK extern int           setpwent( void );
+_WCRTLINK extern int           endpwent( void );
+
+:include cplusepi.sp
+
+#endif

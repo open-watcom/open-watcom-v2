@@ -32,15 +32,17 @@
 
 /*     character classes    */
 
-#define C_AL    0x01    /* alphabetic characters and '_'  */
-#define C_DI    0x02    /* digit 0-9                      */
-#define C_HX    0x04    /* upper or lower case hex character (A-F,a-f) */
-#define C_EX    0x08    /* must be examined by GetNextChar */
-#define C_D1    0x10    /* one byte delimiter             */
-#define C_D2    0x20    /* two byte delimiters            */
-#define C_WS    0x40    /* white space                    */
-#define C_DB    0x80    /* first byte of double-byte char */
-#define C_BC    0       /* illegal source input character */
+typedef enum charset_flags {
+    C_BC = 0,       /* illegal source input character */
+    C_AL = 0x01,    /* alphabetic characters and '_'  */
+    C_DI = 0x02,    /* digit 0-9                      */
+    C_HX = 0x04,    /* upper or lower case hex character (A-F,a-f) */
+    C_EX = 0x08,    /* must be examined by GetNextChar */
+    C_D1 = 0x10,    /* one byte delimiter             */
+    C_D2 = 0x20,    /* two byte delimiters            */
+    C_WS = 0x40,    /* white space                    */
+    C_DB = 0x80     /* first byte of double-byte char */
+} charset_flags;
 
 #define EQ      0x80    /* delimiter can have = following */
 #define DUP     0x40    /* delimiter can be duplicated    */
@@ -52,7 +54,7 @@
 
         (( c | HEX_MASK ) - HEX_BASE ) + 10
 */
-#if _HOST == 370
+#if defined( __370__ )
 /* EBCDIC */
 #define HEX_MASK        0x40
 #define HEX_BASE        'A'
@@ -64,4 +66,4 @@
 
 extern unsigned JIS2Unicode( unsigned );
 
-extern char CharSet[];
+extern charset_flags CharSet[];

@@ -49,13 +49,13 @@ WCLASS AppChild : public WMdiChild
 WCLASS AppClient : public WMdiChild
 {
 	public:
-		WEXPORT AppClient( AppMain* parent, char* title, HANDLE inst );
+		WEXPORT AppClient( AppMain* parent, char* title, HINSTANCE inst );
 		WEXPORT ~AppClient();
 		void WEXPORT timeTick( WTimer* timer, DWORD sysTime );
 		void WEXPORT activate( bool active );
 		bool paint() { return FALSE; }
 	private:
-		HANDLE		_inst;
+		HINSTANCE	_inst;
 		WPopupMenu*	_pop;
 		WEditBox*	e1;
 		WClient*	_client;
@@ -72,13 +72,13 @@ WCLASS AppClient : public WMdiChild
 WCLASS AppServer : public WMdiChild
 {
 	public:
-		WEXPORT AppServer( AppMain* parent, char* title, HANDLE inst );
+		WEXPORT AppServer( AppMain* parent, char* title, HINSTANCE inst );
 		WEXPORT ~AppServer();
 		void WEXPORT timeTick( WTimer* timer, DWORD sysTime );
 		void WEXPORT activate( bool active );
 		bool paint() { return FALSE; }
 	private:
-		HANDLE		_inst;
+		HINSTANCE	_inst;
 		WPopupMenu*	_pop;
 		WEditBox*	e1;
 		WServer*	_server;
@@ -92,7 +92,7 @@ WCLASS AppServer : public WMdiChild
 WCLASS AppMain : public WMdiWindow
 {
 	public:
-		WEXPORT AppMain( LPSTR cmdstr, HANDLE inst );
+		WEXPORT AppMain( LPSTR cmdstr, HINSTANCE inst );
 		WEXPORT ~AppMain();
 		void WEXPORT exit();
 		void openFile();

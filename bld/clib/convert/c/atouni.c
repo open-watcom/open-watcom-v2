@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _atouni() - convert integer to wide string.
 *
 ****************************************************************************/
 
@@ -41,8 +40,8 @@
  *          buf and src MAY be the same
  */
 
-_WCRTLINK wchar_t *_atouni( wchar_t *buf, const char *src ) {
-
+_WCRTLINK wchar_t *_atouni( wchar_t *buf, const char *src ) 
+{
     size_t      len;
 
     len = strlen( src ) + 1;            /* use single-byte strlen() */

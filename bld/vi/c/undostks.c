@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 /*
@@ -45,8 +43,8 @@ static void dropUndoStackTop( undo_stack *stack )
         return;
     }
     UndoFree( stack->stack[0], TRUE );
-    for( i=1;i<=stack->current;i++ ) {
-        stack->stack[i-1] = stack->stack[i];
+    for( i = 1; i <= stack->current; i++ ) {
+        stack->stack[i - 1] = stack->stack[i];
     }
     stack->rolled = TRUE;
 
@@ -62,7 +60,7 @@ static void shrinkUndoStack( undo_stack *stack )
         MemFree2( &stack->stack );
     } else {
         stack->stack = MemReAlloc( stack->stack,
-                        (stack->current+1)*sizeof( undo * ) );
+                                   (stack->current + 1) * sizeof( undo * ) );
     }
 
 } /* shrinkUndoStack */
@@ -123,20 +121,18 @@ undo *UndoAlloc( undo_stack *stack, int type )
  */
 void UndoFree( undo *cundo, int freefcbs )
 {
-    undo *tundo;
+    undo    *tundo;
 
     while( cundo != NULL ) {
-
         /*
          * release any fcbs
          */
         if( freefcbs && cundo->type == UNDO_DELETE_FCBS ) {
-            FreeFcbList( cundo->data.fcbs.fcb_head );
+            FreeFcbList( cundo->data.fcbs.head );
         }
         tundo = cundo->next;
         MemFree( cundo );
         cundo = tundo;
-
     }
 
 } /* UndoFree */
@@ -148,14 +144,14 @@ void PushUndoStack( undo *item, undo_stack *stack )
 {
     void        *tmp;
 
-    tmp = MemReAllocUnsafe( stack->stack, (stack->current+2)*sizeof(undo *));
+    tmp = MemReAllocUnsafe( stack->stack, (stack->current + 2) * sizeof( undo * ) );
     if( tmp == NULL ) {
         dropUndoStackTop( stack );
     } else {
         stack->current++;
         stack->stack = tmp;
     }
-    stack->stack[ stack->current ] = item;
+    stack->stack[stack->current] = item;
 
 } /* PushUndoStack */
 
@@ -170,7 +166,7 @@ undo *PopUndoStack( undo_stack *stack )
         return( NULL );
     }
 
-    tmp = stack->stack[ stack->current ];
+    tmp = stack->stack[stack->current];
     shrinkUndoStack( stack );
 
     return( tmp );
@@ -188,7 +184,7 @@ void PurgeUndoStack( undo_stack *stack )
         return;
     }
 
-    for( i=stack->current;i>=0;i-- ) {
+    for( i = stack->current; i >= 0; i-- ) {
         UndoFree( stack->stack[i], TRUE );
     }
     MemFree2( &(stack->stack) );
@@ -203,8 +199,8 @@ void AddUndoToCurrent( undo *item, undo_stack *stack )
 {
     undo        *cundo;
 
-    cundo = stack->stack[ stack->current ];
-    stack->stack[ stack->current ] = item;
+    cundo = stack->stack[stack->current];
+    stack->stack[stack->current] = item;
     item->next = cundo;
 
 } /* AddUndoToCurrent */
@@ -214,8 +210,8 @@ void AddUndoToCurrent( undo *item, undo_stack *stack )
  */
 void AllocateUndoStacks( void )
 {
-    UndoStack = MemAlloc( sizeof (undo_stack) );
-    UndoUndoStack = MemAlloc( sizeof (undo_stack) );
+    UndoStack = MemAlloc( sizeof( undo_stack ) );
+    UndoUndoStack = MemAlloc( sizeof( undo_stack ) );
     UndoStack->stack = NULL;
     UndoUndoStack->stack = NULL;
     UndoStack->current = -1;
@@ -264,33 +260,30 @@ bool TossUndos( void )
     info        *least;
     undo_stack  *stack;
 
-    cinfo = InfoHead;
-
     least = NULL;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         stack = cinfo->UndoStack;
         if( stack->current >=0 ) {
             if( least == NULL ) {
                 least = cinfo;
             } else {
                 if( least->UndoStack->stack[0]->data.sdata.time_stamp <
-                        stack->stack[0]->data.sdata.time_stamp ) {
+                    stack->stack[0]->data.sdata.time_stamp ) {
                     least = cinfo;
                 }
             }
         }
         stack = cinfo->UndoUndoStack;
-        if( stack->current >=0 ) {
+        if( stack->current >= 0 ) {
             if( least == NULL ) {
                 least = cinfo;
             } else {
                 if( least->UndoUndoStack->stack[0]->data.sdata.time_stamp <
-                        stack->stack[0]->data.sdata.time_stamp ) {
+                    stack->stack[0]->data.sdata.time_stamp ) {
                     least = cinfo;
                 }
             }
         }
-        cinfo = cinfo->next;
     }
     if( least != NULL ) {
         if( doTossUndo( least->UndoUndoStack ) ) {
@@ -307,7 +300,6 @@ bool TossUndos( void )
  */
 void FreeAllUndos( void )
 {
-
     PurgeUndoStack( UndoStack );
     PurgeUndoStack( UndoUndoStack );
 

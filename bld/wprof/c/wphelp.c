@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution profiler (console version) online help processing.
 *
 ****************************************************************************/
 
@@ -38,33 +37,30 @@
 #include "msg.h"
 #include "pathlist.h"
 
-//#include "wphelp.def"
-//#include "utils.def"
-//#include "msg.def"
 extern void ErrorMsg(char *msg,... );
 extern char *FindFile(char *path,char *name,path_list *path_tail);
 
 
 STATIC gui_help_instance    helpHandle;
 
-extern a_window *           WndMain;
-extern path_list *          HelpPathList;
+extern a_window             *WndMain;
+extern path_list            *HelpPathList;
 
-#define HELPNAME "wprof.hlp"
+#define HELPNAME        "wprof.hlp"
+#define HTMLHELPNAME    "wprof.chm"
 
 
-
-void WPInitHelp()
-/***************/
+void WPInitHelp( void )
+/*********************/
 {
     helpHandle = GUIHelpInit( WndGui( WndMain ), HELPNAME,
-                              "WATCOM Profiler Help" );
+                              "Open Watcom Profiler Help" );
 }
 
 
 
-void WPFiniHelp()
-/***************/
+void WPFiniHelp( void )
+/*********************/
 {
     GUIHelpFini( helpHandle, WndGui( WndMain ), HELPNAME );
 }
@@ -75,11 +71,16 @@ void WPProcHelp( gui_help_actions action )
 /****************************************/
 {
     char        help_name[_MAX_PATH2];
-#if _OS != _OS_WIN && _OS != _OS_NT && !defined(_OS2_PM)
+#if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2_PM__ )
     char *      filename;
 #endif
 
-#if _OS == _OS_WIN || _OS == _OS_NT || defined(_OS2_PM)
+#ifdef __NT__
+    if( GUIShowHtmlHelp( helpHandle, WndGui( WndMain ), action, HTMLHELPNAME, "" ) ) {
+        return;
+    }
+#endif
+#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
     strcpy( help_name, HELPNAME );
 #else
     filename = FindFile( help_name, "wprof.ihp", HelpPathList );
@@ -88,5 +89,5 @@ void WPProcHelp( gui_help_actions action )
         return;
     }
 #endif
-    GUIShowHelp( helpHandle, WndGui( WndMain ), action, help_name, "Contents" );
+    GUIShowHelp( helpHandle, WndGui( WndMain ), action, help_name, "" );
 }

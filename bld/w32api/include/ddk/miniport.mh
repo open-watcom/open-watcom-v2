@@ -1,0 +1,48 @@
+/*
+ *  miniport.h  Miniport definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _MINIPORT_
+#define _MINIPORT_
+
+:include readonly.sp
+
+/* The Microsoft version of miniport.h is mostly a lot of the same stuff that's in
+ * ntddk.h and wdm.h.  To save space, include ntddk.h and just define those constants
+ * and structures that are unique to this header.
+ */
+#include <ntddk.h>
+
+:include cpluspro.sp
+
+/* Emulator access modes */
+#define EMULATOR_READ_ACCESS    0x01
+#define EMULATOR_WRITE_ACCESS   0x02
+
+/* Emulator port access types */
+typedef enum _EMULATOR_PORT_ACCESS_TYPE {
+    Uchar   = 0,
+    Ushort  = 1,
+    Ulong   = 2
+} EMULATOR_PORT_ACCESS_TYPE;
+typedef EMULATOR_PORT_ACCESS_TYPE   *PEMULATOR_PORT_ACCESS_TYPE;
+
+/* Emulator access entry */
+typedef struct _EMULATOR_ACCESS_ENTRY {
+    ULONG                       BasePort;
+    ULONG                       NumConsecutivePorts;
+    EMULATOR_PORT_ACCESS_TYPE   AccessType;
+    UCHAR                       AccessMode;
+    UCHAR                       StringSupport;
+    PVOID                       Routine;
+} EMULATOR_ACCESS_ENTRY;
+typedef EMULATOR_ACCESS_ENTRY   *PEMULATOR_ACCESS_ENTRY;
+
+/* Banked section routine */
+typedef VOID (NTAPI *PBANKED_SECTION_ROUTINE)( ULONG, ULONG, PVOID );
+
+:include cplusepi.sp
+
+#endif /* _MINIPORT */

@@ -32,14 +32,14 @@
 
 #define PALETTE_SIZE    28
 
-/* Dimensions of the Colour Palette Window */
+/* Dimensions of the Color Palette Window */
 #define CP_WIDTH        418     /* Initial window horizontal size */
 #define CP_HEIGHT       60      /* Initial window vertical size */
 
 typedef struct {
     wie_clrtype type;           /* NORMAL_CLR, INVERSE_CLR, or SCREEN_CLR */
-    COLORREF    colour;
-    COLORREF    solid;          /* for the solid colour */
+    COLORREF    color;
+    COLORREF    solid;          /* for the solid color */
     HBITMAP     bitmap;
 } selected_colour;
 
@@ -49,24 +49,24 @@ typedef struct {
 #define CUR_WND_WIDTH   42
 #define CUR_WND_HEIGHT  37
 #define CUR_SQR_SIZE    18      /* Size of the sample squares */
-#define CUR_LCOL_X      0       /* Position of left button display colour */
+#define CUR_LCOL_X      0       /* Position of left button display color */
 #define CUR_COL_Y       0
 #define CUR_RCOL_X      23
 
-/* Definitions for Available Colours */
+/* Definitions for Available Colors */
 #define SQR_SIZE        17      /* Size of a palette square */
 #define COL_WND_X       170
 #define COL_WND_Y       10
-#define COL_WND_WIDTH   SQR_SIZE*14 + 1
+#define COL_WND_WIDTH   (SQR_SIZE * 14 + 1)
 #define COL_WND_HEIGHT  37
 
 #define FIRST_SQR_X     0       /* Position of first square (position of */
 #define FIRST_SQR_Y     0       /* other square are dependent on the first) */
 
-/* Definitions for the Screen and Inverse Colours */
+/* Definitions for the Screen and Inverse Colors */
 #define SCRN_WND_X      145
 #define SCRN_WND_Y      10
-#define SCRN_WND_WIDTH  SQR_SIZE+1
+#define SCRN_WND_WIDTH  (SQR_SIZE + 1)
 #define SCRN_WND_HEIGHT 37
 #define SCRN_COL_X      0
 #define SCRN_COL_Y      0
@@ -85,7 +85,7 @@ typedef struct {
 #define CUR_BMP_WIDTH   239
 #define CUR_BMP_HEIGHT  35
 
-/* definitions for the window classes */
+/* Definitions for the window classes */
 #define CURRENT_CLASS   "CurrentClass"
-#define AVAIL_CLASS     "ColoursClass"
+#define AVAIL_CLASS     "ColorsClass"
 #define SCREEN_CLASS    "ScreenClass"

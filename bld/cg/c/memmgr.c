@@ -24,464 +24,221 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fast memory manager used by the code generator.
 *
 ****************************************************************************/
 
 
+/****************************************************************************
+
+This is a free list based memory manager optimized for codegen performance.
+It will allocate fixed size blocks of several classes (sizes), any freed
+memory blocks will be kept in a singly linked free list. If an attempt is
+made to allocate memory and a free block of appropriate size exists, it will
+be found extremely quickly. The memory manager allocates memory from the
+system via malloc() and free(), but it could use OS functions that allocate
+memory pages directly.
+
+Memory classes/sizes are powers of two, but they might be arbitrary sizes
+designed to fit typical allocation sizes. Allocations greater than certain
+maximum size will go directly to the OS.
+
+Expected usage is great number of mostly small allocs and frees. The
+allocator is designed to reuse memory well, and do it fast.
+
+Disadvantages: May waste memory in certain scenarios. No attempts are made
+to coalesce free memory blocks. Since the codegen extremely rarely allocates
+more than even 256KB memory, some wastage is considered acceptable.
+
+Advantages: Speed. Memory allocation is extremely fast, with no searches if
+appropriately sized block is available. Memory frees are instantaneous, with
+no searching whatsoever. Did I mention speed? Memory blocks will be reused
+immediately, which should produce helpful memory access patterns. There is
+essentially no worst case performance scenario.
+
+****************************************************************************/
+
+
 #include <stdlib.h>
+#include <assert.h>
+#include <string.h>
 
 #include "standard.h"
 #include "ptrint.h"
 #include "hostsys.h"
 #include "cg.h"
-#if defined( M_I86 ) || defined( M_I386 )
-#include <i86.h>
+#if defined( _M_IX86 ) && defined( __WATCOMC__ )
+    #include <i86.h>
 #endif
 #include <unistd.h>
 #if defined( __NT__ )
-#include <windows.h>
-#endif
-
-#ifdef __DOS__
-
-    #include "tinyio.h"
-
-    typedef struct {
-            unsigned long largest_free;
-            unsigned long max_unlocked_page_alloc;
-            unsigned long max_locked_page_alloc;
-            unsigned long linear_addr_space_in_pages;
-            unsigned long total_unlocked_pages;
-            unsigned long free_pages;
-            unsigned long physical_pages;
-            unsigned long free_linear_addr_space_in_pages;
-            unsigned long size_of_page_file_in_pages;
-            unsigned long fill[4];
-    } dpmi_mem;
-
-    extern long _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
-    #pragma aux _TinyDPMIGetFreeMemoryInformation = \
-            0x06                  /* push es */ \
-            0x1E                  /* push ds */ \
-            0x07                  /* pop es */ \
-            _MOV_AH 0x05          /* mov ah,05h */ \
-            _MOV_AL 0x00          /* mov al,00h */ \
-            _INT 0x31         /* int 31h */ \
-            0x07                  /* pop es */ \
-            _SBB_AX_AX    /* sbb ax,ax */ \
-            parm[edi] value[eax];
-
-    #include "extender.h"
-
-    extern char int2f( short );
-    #pragma aux int2f = 0xcd 0x2f parm [ ax ] value [ al ];
-
-#endif
-
-#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
-    #define PtrGreater( a, b ) ( FP_SEG( a ) > FP_SEG( b ) || \
-                                 ( FP_SEG( a ) == FP_SEG( b ) && \
-                                   FP_OFF( a ) > FP_OFF( b ) ) )
-#else
-    #define PtrGreater( a,b ) ( (a) > (b) )
-#endif
-
-typedef    unsigned_32  tag;
-
-#ifdef __AXP__
-#define WORD_SIZE 8
-#else
-#define WORD_SIZE (_HOST_INTEGER/8)
-#endif
-
-extern      bool    GetEnvVar(char*,char*,int);
-extern      char    *CopyStr( char *src, char *dst );
-extern      uint    Length(char*);
-
-
-#if defined( __DOS__ )
-    #pragma     aux     __psp "*";
-    extern      short   __psp;
-#endif
-
-#if defined( __OSI__ )
+    #include <windows.h>
+#elif defined( __OSI__ )
     #define __CALL21__
     #include "tinyio.h"
 #elif defined( __QNX__ )
     #include <sys/osinfo.h>
     #include <sys/seginfo.h>
-#elif defined( __DOS__ )
-    #include    "dosmem.h"
 #endif
 
-#define PARAGRAPH_SIZE  16L
-#define _64K            (4096L*PARAGRAPH_SIZE)
+#ifdef __DOS__
+
+#include "tinyio.h"
+#include "dosmem.h"
+
+typedef struct {
+    unsigned long largest_free;
+    unsigned long max_unlocked_page_alloc;
+    unsigned long max_locked_page_alloc;
+    unsigned long linear_addr_space_in_pages;
+    unsigned long total_unlocked_pages;
+    unsigned long free_pages;
+    unsigned long physical_pages;
+    unsigned long free_linear_addr_space_in_pages;
+    unsigned long size_of_page_file_in_pages;
+    unsigned long fill[4];
+} dpmi_mem;
+
+extern long _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
+#pragma aux _TinyDPMIGetFreeMemoryInformation = \
+        "push es"    \
+        "push ds"    \
+        "pop es"     \
+        "mov ah,05h" \
+        "mov al,00h" \
+        "int 31h"    \
+        "pop es"     \
+        "sbb ax,ax"  \
+        parm[edi] value[eax];
+
+#include "extender.h"
+
+extern char int2f( short );
+#pragma aux int2f parm [ ax ] value [ al ] = "int 2fh";
+
+#pragma     aux     __psp "*";
+extern      short   __psp;
+
+#endif
+
+typedef unsigned_32     tag;
+
+extern bool     GetEnvVar( char*, char*, int );
+extern char     *CopyStr( char *src, char *dst );
+extern uint     Length( char* );
+extern void     FatalError( char* );
+
+
 #define _1K             1024L
 #define _4K             (4*_1K)
+#define _64K            (64*_1K)
 #define _1M             (_1K*_1K)
 #define _4M             (4*_1M)
 #define _16M            (16*_1M)
 
-extern  void    FatalError(char *);
 static  char    *MemFromSys( tag );
 
-static  pointer_int     AllocSize = { 0 };
-static  pointer_int     MemorySize;
+static pointer_int  AllocSize = { 0 };
+static pointer_int  MemorySize;
+static int          Initialized = 0;
+#ifdef MEMORY_STATS
+static pointer_int  PeakAlloc    = 0;
+#endif
 
 
 #define ALLOCATED       1
 
-#ifdef __AXP__
-#define MAX_SIZE        15 /* 32k */
-#define MIN_SIZE        8  /* 32 */
-#else
-#define MAX_SIZE        11 /* 2048 */
+#define MAX_SIZE        14 /* 16384 */
 #define MIN_SIZE        4  /* 16 */
-#endif
+#define WORD_SIZE       4
+#define MAX_CLASS       (MAX_SIZE-MIN_SIZE)
 
-#if (1<<MIN_SIZE) < (4*WORD_SIZE)
+/* Free list structure - length holds the size of memory block, which
+ * is necessary for freeing memory. Note that the length field is set
+ * when the block is first allocated and never changes afterwards.
+ * The link member holds the address of the next free block of the
+ * same size, or NULL if it's the last free block.
+ */
+typedef struct frl {
+    tag         length;
+    struct frl  *link;
+} frl;
+
+#if (1 << MIN_SIZE) < (2 * WORD_SIZE)
     #error "Free list will not fit into freed chunk"
 #endif
 
-#define MAX_CLASS       (MAX_SIZE-MIN_SIZE)
+/* Memory block structure - memory is allocated from the OS in large
+ * chunks (perhaps 64K, perhaps more or less than that). If there is
+ * no memory in a free list, it will be allocated from a block, and
+ * will end up on a free list when (if) it's freed.
+ */
+typedef struct mem_blk {
+    struct mem_blk  *next;
+    tag             free;
+    tag             size;   /* This must be the last member! */
+} mem_blk;
 
-typedef struct next_prev {
-        struct  frl     *next;
-        struct  frl     *prev;
-} next_prev;
+typedef struct blk_hdr {
+    struct mem_blk  *block;
+    tag             size;   /* This must be the last member! */
+} blk_hdr;
 
-typedef struct frl {
-        tag             length;
-        int             class;
-        next_prev       link[ MAX_CLASS+1 ];
-} frl;
-
-#ifdef __AXP__
-#define TAG_SIZE        8
-#else
 #define TAG_SIZE        sizeof( tag )
-#endif
 
-#define MIN_ALLOC (((TAG_SIZE+sizeof(int)+sizeof(next_prev))+(WORD_SIZE-1))&~(WORD_SIZE-1))
-
-int     Initialized     = 0;
-
-frl     _FreeList = {
-        ALLOCATED,
-        0,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList,
-        &_FreeList
-        };
-
+#define MIN_ALLOC ((sizeof(frl)+(WORD_SIZE-1))&~(WORD_SIZE-1))
+#define MAX_ALLOC (1 << MAX_SIZE)
 #define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
-typedef struct mem_blk {
-    struct mem_blk   *next;
-    tag               len;
-}mem_blk;
-#define BLK_ADJUST  ((sizeof( mem_blk) + PARAGRAPH_SIZE)/PARAGRAPH_SIZE*PARAGRAPH_SIZE)
-mem_blk  *Blks;
-
-static  int     SizeToClass( tag amount ) {
-/*****************************************/
-
-    int class;
-
-    if( amount >= ( 1 << MAX_SIZE ) ) {
-        return( MAX_CLASS );
-    }
-    if( amount < ( 1 << ( MIN_SIZE + 1 ) ) ) {
-        return( 0 );
-    }
-    amount >>= MIN_SIZE;
-    class = 0;
-    for( ;; ) {
-        ++class;
-        amount >>= 1;
-        if( amount == 0 ) break;
-    }
-    return( class );
-}
-
-
-static  pointer GetFromFrl( tag amount, int frl_class ) {
-/***************************************************/
-
-    frl                 *alloc;
-    frl                 *free;
-    int                 i;
-    int                 class;
-    signed_pointer_int  amount_left;
-
-    free = _FreeList.link[ frl_class ].next;
-    while( free != &_FreeList ) {
-        amount_left = (signed_pointer_int)free->length - amount;
-        if( amount_left >= 0 ) {
-            if( amount_left >= MIN_ALLOC ) {
-                class = SizeToClass( amount_left );
-                for( i = class + 1; i <= free->class; ++i ) {
-                    free->link[ i ].next->link[ i ].prev = free->link[ i ].prev;
-                    free->link[ i ].prev->link[ i ].next = free->link[ i ].next;
-                }
-                free->class = class;
-                free->length = amount_left;
-                alloc = _WALKTAG( free );
-                alloc->length = amount;
-            } else {
-                for( i = 0; i <= free->class; ++i ) {
-                    free->link[ i ].next->link[ i ].prev = free->link[ i ].prev;
-                    free->link[ i ].prev->link[ i ].next = free->link[ i ].next;
-                }
-                alloc = free;
-            }
-            AllocSize += alloc->length;
-            alloc->length |= ALLOCATED;
-            return( alloc );
-        }
-        free = free->link[ frl_class ].next;
-    }
-    return( NULL );
-}
-
-
-extern  pointer MemAlloc( tag amount ) {
-/**************************************/
-
-    char        *chunk;
-    int         class;
-
-    if( !Initialized ) MemInit();
-    if( amount == 0 ) return( NULL );
-    amount = ( amount + TAG_SIZE + (WORD_SIZE-1) ) & ~(WORD_SIZE-1);
-    if( amount < MIN_ALLOC ) {
-        amount = MIN_ALLOC;
-    }
-    class = SizeToClass( amount );
-    for( ;; ) {
-        chunk = GetFromFrl( amount, class );
-        if( chunk != NULL ) return( chunk + TAG_SIZE );
-        if( class == MAX_CLASS ) break;
-        ++class;
-    }
-    return( (pointer)MemFromSys( amount ) );
-}
-
-
-static  void    UnHook( frl *unhook, frl *neighbours ) {
-/******************************************************/
-
-    int         i;
-    next_prev   *neighbour_link;
-    next_prev   *unhook_link;
-
-    unhook_link = unhook->link;
-    neighbour_link = neighbours->link;
-    for( i = 0; i <= unhook->class; ++i ) {
-        if( neighbour_link->next == unhook ) {
-            neighbour_link->next = unhook_link->next;
-        }
-        if( neighbour_link->prev == unhook ) {
-            neighbour_link->prev = unhook_link->prev;
-        }
-        ++neighbour_link;
-        ++unhook_link;
-    }
-    unhook_link = unhook->link;
-    for( i = 0; i <= unhook->class; ++i ) {
-        unhook_link->next->link[ i ].prev = unhook_link->prev;
-        unhook_link->prev->link[ i ].next = unhook_link->next;
-        ++unhook_link;
-    }
-}
-
-
-extern  tag     MemBlkSize( char *block )
-/***************************************/
-{
-    frl         *alloc;
-
-    block -= TAG_SIZE;
-    alloc = (frl *)block;
-    return( ( alloc->length & ~ALLOCATED ) - TAG_SIZE );
-}
-
-
-extern  void    MemFree( char *block ) {
-/**************************************/
-
-    int         i;
-    frl         *free;
-    frl         *prev;
-    frl         *next;
-    frl         *search;
-    frl         neighbours;
-    next_prev   *neighbour_link;
-    next_prev   *free_link;
-
-    block -= TAG_SIZE;
-    free = (frl *)block;
-    free->length &= ~ALLOCATED;
-    AllocSize -= free->length;
-    search = &_FreeList;
-    neighbour_link = &neighbours.link[ MAX_CLASS ];
-    for( i = MAX_CLASS; i >= 0; --i ) {
-        for( ;; ) {
-            prev = search;
-            search = search->link[ i ].next;
-            if( PtrGreater( search, free ) ) break;
-            if( search->length == ALLOCATED ) break;
-        }
-        search = prev;
-        neighbour_link->prev = prev;
-        neighbour_link->next = prev->link[ i ].next;
-        --neighbour_link;
-    }
-    next = prev->link[ 0 ].next;
-    if( _WALKTAG( prev ) == free ) {
-        UnHook( prev, &neighbours );
-        prev->length += free->length;
-        free = prev;
-    }
-    if( _WALKTAG( free ) == next ) {
-        UnHook( next, &neighbours );
-        free->length += next->length;
-    }
-    free->class = SizeToClass( free->length );
-    neighbour_link = neighbours.link;
-    free_link = free->link;
-    for( i = 0; i <= free->class; ++i ) {
-        neighbour_link->prev->link[ i ].next = free;
-        neighbour_link->next->link[ i ].prev = free;
-        free_link->next = neighbour_link->next;
-        free_link->prev = neighbour_link->prev;
-        ++free_link;
-        ++neighbour_link;
-    }
-}
-
-extern  void    MemCoalesce() {
-/*****************************/
-
-    return;
-}
-
-
-extern  pointer_int     MemInUse( ) {
-/***********************************/
-
-    if( !Initialized ) MemInit();
-    return( AllocSize );
-}
-
-
-extern  pointer_int     MemSize( ) {
-/**********************************/
-
-
-    switch( Initialized ) {
-    case 0:
-        MemInit();
-#if defined( __QNX__ )
-        /* fall through */
-    case 1:
-        CalcMemSize();
-#endif
-    }
-    return( MemorySize );
-}
-
+static mem_blk  *_Blks;
+static frl      *_FreeList[ MAX_CLASS + 1 ];
+static tag      _ClassSizes[ MAX_CLASS + 1 ];
 
 #if  defined( __DOS__ ) || defined( __QNX__ )
 
-static  void    NotEnoughMem()
-/****************************/
+static  void    NotEnoughMem( void )
+/**********************************/
 {
     FatalError( "Not enough memory to satisfy WCGMEMORY" );
 }
 
 #endif
 
-static  tag     AddBlock( char *block, int paragraphs ) {
-/*****************************************************/
 
-    tag         length;
-    frl         *free;
+static int myatoi( char *p )
+/**************************/
+{
+    int         i;
 
-    if( paragraphs == 0 ) return( 0 );
-    length = ( paragraphs-1 ) * PARAGRAPH_SIZE + ( PARAGRAPH_SIZE-TAG_SIZE );
-    ((frl *)(block + length))->length = ALLOCATED;
-    free = (frl *)block;
-    free->length = length;
-    AllocSize += length;
-    MemFree( block + TAG_SIZE );
-    return( length );
-}
-
-
-extern  void    MemAddBlock( pointer blk ) {
-/******************************************/
-
-
-#if defined( __DOS__ )
-    unsigned_16 seg;
-    unsigned_16 paragraphs;
-    char        *free;
-
-    seg = (unsigned_16)blk;
-    free = (char *)MK_FP( seg, 0 );
-    paragraphs = *(unsigned_16 *)free / PARAGRAPH_SIZE;
-    AddBlock( free, paragraphs );
-    MemorySize += (pointer_int)paragraphs * PARAGRAPH_SIZE;
-#endif
-    blk = blk;
-}
-
-
-static  char    *MemFromSys( tag amount ) {
-/*****************************************/
-    char    *ptr;
-    mem_blk *blk;
-    unsigned size;
-
-    size = (amount+sizeof( mem_blk ) + (_64K - 1)) & - _64K;  // round up to multiple of 64K
-    ptr = malloc( size );
-    if( ptr != NULL ) {
-        blk = (void *)ptr;
-        blk->len = size;
-        blk->next = Blks;
-        Blks = blk;
-        ptr += BLK_ADJUST;
-        size -= BLK_ADJUST;
-        AddBlock( ptr, ( size / PARAGRAPH_SIZE ) );
-        return( MemAlloc( amount ) );
+    i = 0;
+    while( *p != '\0' ) {
+        i *= 10;
+        i += *p - '0';
+        ++p;
     }
-    return( NULL );
+    return( i );
 }
 
-static  void MemtoSys( mem_blk *what ) {
-/*****************************************/
-    free( what );
+
+static void myitoa( int i, char *p )
+/**********************************/
+{
+    char        buff[20];
+    char        *q;
+
+    q = buff + 20;
+    *--q = '\0';
+    while( i != 0 ) {
+        *--q = ( i % 10 ) + '0';
+        i /= 10;
+    }
+    CopyStr( q, p );
 }
 
-static  void    CalcMemSize() {
-/*****************************/
 
+static  void    CalcMemSize( void )
+/*********************************/
+{
     bool        max_size_queried;
     bool        size_queried;
     unsigned_32 size_requested;
@@ -580,75 +337,277 @@ static  void    CalcMemSize() {
             MemorySize = memory_available;
         }
     }
+    #else
+        if( size_requested != 0 ) {
+            MemorySize = size_requested;
+        } else {
+            MemorySize = _16M;
+        }
+        memory_available = _16M;
     #endif
     if( max_size_queried || size_queried ) {
-        myitoa( (int)(memory_available/_1K), CopyStr( (char *)"Maximum WCGMEMORY=", (char *)buff ) );
+        myitoa( (int)(memory_available/_1K), CopyStr( "Maximum WCGMEMORY=", buff ) );
         write( 1, buff, Length( buff ) );
         write( 1, "\r\n", 2 );
     }
 }
 
-static  void    MemInit() {
-/*************************/
-
+static  void    MemInit( void )
+/*****************************/
+{
     if( !Initialized ) {
         int i;
 
-        _FreeList.length = ALLOCATED;
-        _FreeList.class = 0;
-        for( i=0; i<= MAX_CLASS; ++i ){
-            _FreeList.link[i].next = &_FreeList;
-            _FreeList.link[i].prev = &_FreeList;
+        for( i = 0; i <= MAX_CLASS; ++i ) {
+            _FreeList[i]   = NULL;
+            _ClassSizes[i] = 1 << ( MIN_SIZE + i );
         }
+
         Initialized = 1;
-        AllocSize = 0;
-        Blks = NULL;
+        AllocSize   = 0;
+        _Blks       = NULL;
 #if !defined( __QNX__ )
         CalcMemSize();
 #endif
     }
 }
 
-extern void MemFini( void ){
-/**************************/
+
+static int SizeToClass( tag amount )
+/**********************************/
+{
+    int mem_class;
+
+    if( amount >= MAX_ALLOC ) {
+        return( MAX_CLASS );
+    }
+    if( amount <= ( 1 << MIN_SIZE ) ) {
+        return( 0 );
+    }
+    --amount;
+    amount >>= MIN_SIZE;
+    mem_class = 0;
+    for( ;; ) {
+        ++mem_class;
+        amount >>= 1;
+        if( amount == 0 )
+            break;
+    }
+    return( mem_class );
+}
+
+
+static tag ClassToSize( int mem_class )
+/*************************************/
+{
+    return( _ClassSizes[mem_class] );
+}
+
+
+static pointer  GetFromFrl( tag amount, int frl_class )
+/*****************************************************/
+{
+    frl     *free;
+
+    free = _FreeList[ frl_class ];
+    if( free != NULL ) {
+        assert( !( free->length & ALLOCATED ) );
+        free->length |= ALLOCATED;
+        _FreeList[ frl_class ] = free->link;
+        return( free );
+    }
+    return( NULL );
+}
+
+
+static pointer  GetFromBlk( tag amount )
+/**************************************/
+{
+    mem_blk     *block;
+    tag         *alloc;
+
+    block = _Blks;
+    while( block && (block->free < amount) )
+        block = block->next;
+
+    if( block ) {
+        alloc = (tag*)((char*)block + block->size - block->free);
+        assert( *alloc == 0 );
+        *alloc = amount | ALLOCATED;
+        block->free -= amount;
+        return( ++alloc );
+    }
+    if( MemFromSys( 0 ) == NULL)    // Grab one empty block
+        return( NULL );
+    return( GetFromBlk( amount ) ); // We know this will now succeed
+}
+
+
+extern pointer  MemAlloc( tag amount )
+/************************************/
+{
+    char        *chunk;
+    int         mem_class;
+
+    if( !Initialized )
+        MemInit();
+    if( amount == 0 )
+        return( NULL );
+    amount = ( amount + TAG_SIZE + (WORD_SIZE-1) ) & ~(WORD_SIZE-1);
+    if( amount > MAX_ALLOC ) {
+        return( (pointer)MemFromSys( amount ) );
+    }
+
+    if( amount < MIN_ALLOC )
+        amount = MIN_ALLOC;
+
+    mem_class = SizeToClass( amount );
+    chunk = GetFromFrl( amount, mem_class );
+    if( chunk != NULL )
+        return( chunk + TAG_SIZE );
+
+    return( GetFromBlk( ClassToSize( mem_class ) ) );
+}
+
+
+extern void     MemFree( char *block )
+/************************************/
+{
+    frl     *free;
+    int     mem_class;
+    tag     length;
+
+    free   = (frl *)( block - TAG_SIZE );
+    assert( free->length & ALLOCATED );
+    free->length &= ~ALLOCATED;
+    length = free->length;
+    if( length > MAX_ALLOC ) {   // This was a full block
+        blk_hdr     *header;
+        mem_blk     *blk;
+
+        header = (blk_hdr *)( block - sizeof( blk_hdr ) );
+        blk    = header->block;
+        blk->free += header->size + sizeof( blk_hdr );
+        blk->size += header->size + sizeof( blk_hdr );
+#ifndef NDEBUG
+        // Must zero the memory for later checks in GetFromBlk
+        memset( header, 0, length + sizeof( blk_hdr ) );
+#endif
+    } else {
+        mem_class  = SizeToClass( length );
+        free->link = _FreeList[ mem_class ];
+        _FreeList[ mem_class ] = free;
+    }
+}
+
+extern void     MemCoalesce( void )
+/*********************************/
+{
+    return;
+}
+
+
+extern pointer_int      MemInUse( void )
+/**************************************/
+{
+    if( !Initialized )
+        MemInit();
+    return( AllocSize );
+}
+
+
+extern pointer_int      MemSize( void )
+/*************************************/
+{
+    switch( Initialized ) {
+    case 0:
+        MemInit();
+#if defined( __QNX__ )
+        /* fall through */
+    case 1:
+        CalcMemSize();
+#endif
+    }
+    return( MemorySize );
+}
+
+
+static  char    *MemFromSys( tag amount )
+/***************************************/
+{
+    char        *ptr;
+    char        *chunk;
+    blk_hdr     *allocated;
+    mem_blk     *blk;
+    unsigned    size;
+
+    // round up size to multiple of 64K
+    size = (amount + sizeof( mem_blk ) + sizeof( blk_hdr ) + (_64K - 1)) & - _64K;
+#ifdef NDEBUG
+    ptr = malloc( size );
+#else
+    ptr = calloc( 1, size );   // Need to clear memory for later assert() calls
+#endif
+    if( ptr != NULL ) {
+        AllocSize += size;
+#ifdef MEMORY_STATS
+        if( AllocSize > PeakAlloc )
+            PeakAlloc = AllocSize;
+#endif
+        blk = (void *)ptr;
+        // If amount was zero, this block will be chopped up into
+        // small chunks immediately. If nonzero, return pointer
+        // to memory at the end of the block and use the rest for
+        // small chunks. If the initial large allocation is freed,
+        // it will also be reused for small blocks.
+        blk->next = _Blks;
+        _Blks = blk;
+        blk->free = size - amount - sizeof( mem_blk );
+        blk->size = size;
+        if( amount ) {
+            blk->size -= amount + sizeof( blk_hdr );
+            blk->free -= sizeof( blk_hdr );
+            allocated = (blk_hdr*)((char*)blk + sizeof( mem_blk ) + blk->free);
+            allocated->block = blk;
+            allocated->size  = amount | ALLOCATED;
+            chunk = (char*)allocated + sizeof( blk_hdr );
+        } else {
+            chunk = (char*)blk + sizeof( mem_blk );
+        }
+        return( chunk );
+    }
+    return( NULL );
+}
+
+
+static  void MemToSys( mem_blk *what )
+/************************************/
+{
+    free( what );
+}
+
+
+extern void MemFini( void )
+/*************************/
+{
     mem_blk *curr;
     mem_blk *next;
 
-    curr = Blks;
-    while( curr != NULL ){
+    curr = _Blks;
+    while( curr != NULL ) {
         next = curr->next;
-        MemtoSys( curr );
+        MemToSys( curr );
         curr = next;
     }
+#ifdef MEMORY_STATS
+    {
+        char    buff[80];
+
+        myitoa( (int)(PeakAlloc/_1K), CopyStr( "Peak WCG memory usage (KB): ", buff ) );
+        write( 1, buff, Length( buff ) );
+        write( 1, "\r\n", 2 );
+        PeakAlloc = 0;
+    }
+#endif
     Initialized = 0;
-}
-
-int myatoi( char *p ) {
-/*********************/
-
-    int         i;
-
-    i = 0;
-    while( *p != '\0' ) {
-        i *= 10;
-        i += *p - '0';
-        ++p;
-    }
-    return( i );
-}
-
-
-void myitoa( int i, char *p ) {
-/*****************************/
-
-    char        buff[20];
-    char        *q;
-
-    q = buff+20;
-    *--q = '\0';
-    while( i != 0 ) {
-        *--q = ( i % 10 ) + '0';
-        i /= 10;
-    }
-    CopyStr( q, p );
 }

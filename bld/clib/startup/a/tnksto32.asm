@@ -24,8 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack thunking routines for OS/2. These are needed for
+;*               mixed 32-bit and 16-bit code. 
 ;*
 ;*****************************************************************************
 

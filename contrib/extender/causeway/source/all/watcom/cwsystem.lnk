@@ -1,0 +1,25 @@
+system begin causeway
+    option osname='CauseWay'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    op stub=cwstub.exe
+    format os2 le ^
+end
+
+system begin cwdlls
+    option osname='CauseWay DLL (Stack parameter passing)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    op stub=cwdstub.exe
+    format os2 le dll ^
+    libfile dllstrts
+end
+
+system begin cwdllr
+    option osname='CauseWay DLL (Register parameter passing)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    op stub=cwdstub.exe
+    format os2 le dll ^
+    libfile dllstrtr
+end

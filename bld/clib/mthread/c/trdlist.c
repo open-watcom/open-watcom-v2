@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Thread list and thread data management.
 *
 ****************************************************************************/
 
@@ -52,7 +51,8 @@ typedef struct thread_data_list {
 static thread_data_list *__thread_data_list;
 
 // lookup thread data
-thread_data *__GetThreadData( void ) {
+thread_data *__GetThreadData( void )
+{
     thread_data *tdata = NULL;
     #ifdef __OS2__
         TID             tid;
@@ -61,7 +61,7 @@ thread_data *__GetThreadData( void ) {
             tdata = __AllocInitThreadData( tdata );
             if( tdata != NULL ) {
                 if( __initthread( tdata ) ) {
-                    lib_free( tdata );
+                    __FreeInitThreadData( tdata );
                     tdata = NULL;
                 } else {
                     __ThreadData[tid].data = tdata;
@@ -86,7 +86,7 @@ thread_data *__GetThreadData( void ) {
                 tdata = __AllocInitThreadData( tdata );
                 if( tdata != NULL ) {
                     if( !__AddThreadData( tid, tdata ) ) {
-                        lib_free( tdata );
+                        __FreeInitThreadData( tdata );
                         tdata = NULL;
                     }
                 }
@@ -103,18 +103,31 @@ thread_data *__GetThreadData( void ) {
             _ReleaseTDList();
         }
     #elif defined(__NT__)
-        if( __NTAddThread( tdata ) ) {
+        if( __NTAddThread( tdata ) ) 
+        {
             tdata = (thread_data *)TlsGetValue( __TlsIndex );
+        }
+    #elif defined(_NETWARE_LIBC)
+        if( __LibCAddThread( tdata ) )
+        {
+            if(0 != NXKeyGetValue(__NXSlotID, (void **) &tdata))
+                tdata = NULL;
+        }
+    #elif defined(__RDOS__)
+        if( __RdosAddThread( tdata ) ) 
+        {
+            tdata = (thread_data *)__tls_get_value( __TlsIndex );
         }
     #endif
     if( tdata == NULL ) {
-        __fatal_runtime_error( "Thread has no thread-specific data\r\n", 1 );
+        __fatal_runtime_error( "Thread has no thread-specific data", 1 );
     }
     return( tdata );
 }
 
 // realloc thread data
-thread_data *__ReallocThreadData( void ) {
+thread_data *__ReallocThreadData( void )
+{
     TID tid;
     thread_data *tdata;
 
@@ -124,16 +137,32 @@ thread_data *__ReallocThreadData( void ) {
         if( tid <= __MaxThreads ) {
             thread_data_vector *tdv;
             tdv = &(__ThreadData[tid]);
-            if( tdv->allocated_entry ) {
-                tdata = lib_realloc( tdv->data, __ThreadDataSize );
+            if( tdv->allocated_entry ) 
+            {
+                #if defined (_NETWARE_LIBC)
+                /*
+                //  we don't want to lose __FirstThreadData as our global
+                //  destructors will try and access it as they are called
+                //  from a different thread.
+                */
+                if(__IsFirstThreadData(tdv->data))
+                {
+                    tdata = lib_realloc( tdv->data, __ThreadDataSize );
+                    __RegisterFirstThreadData(tdata);
+                }
+                else
+                #endif
+                    tdata = lib_realloc( tdv->data, __ThreadDataSize );
                 if( tdata == NULL ) {
-                    __fatal_runtime_error( "Unable to resize thread-specific data\r\n", 1 );
+                    __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
                 }
                 tdv->data = tdata;
-            } else {
+            } 
+            else 
+            {
                 tdata = lib_calloc( 1, __ThreadDataSize );
                 if( tdata == NULL ) {
-                    __fatal_runtime_error( "Unable to resize thread-specific data\r\n", 1 );
+                    __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
                 }
                 memcpy( tdata, tdv->data, tdv->data->__data_size );
                 tdv->allocated_entry = 1;
@@ -150,18 +179,31 @@ thread_data *__ReallocThreadData( void ) {
             }
         }
         if( tdl == NULL ) {
-            __fatal_runtime_error( "Thread has no thread-specific data\r\n", 1 );
+            __fatal_runtime_error( "Thread has no thread-specific data", 1 );
         }
-        if( tdl->allocated_entry ) {
+        if( tdl->allocated_entry ) 
+        {
+            #if defined(_NETWARE_LIBC)
+            if(tdata = lib_malloc( __ThreadDataSize ))
+            {
+                memcpy(tdata, tdl->data, min(__ThreadDataSize, tdl->data->__data_size));
+                lib_free(tdl->data);
+            }
+            #else
             tdata = lib_realloc( tdl->data, __ThreadDataSize );
-            if( tdata == NULL ) {
-                __fatal_runtime_error( "Unable to resize thread-specific data\r\n", 1 );
+            #endif
+            if( tdata == NULL ) 
+            {
+                __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
             }
             tdl->data = tdata;
-        } else {
+        } 
+        else 
+        {
             tdata = lib_calloc( 1, __ThreadDataSize );
-            if( tdata == NULL ) {
-                __fatal_runtime_error( "Unable to resize thread-specific data\r\n", 1 );
+            if( tdata == NULL ) 
+            {
+                __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
             }
             memcpy( tdata, tdl->data, tdl->data->__data_size );
             tdl->allocated_entry = 1;
@@ -174,28 +216,48 @@ thread_data *__ReallocThreadData( void ) {
     #if defined(__NT__)
         TlsSetValue( __TlsIndex, tdata );
     #endif
+    #if defined(_NETWARE_LIBC)
+        if(0 != NXKeySetValue(__NXSlotID, tdata))
+        {
+            lib_free(tdata);
+            tdata = NULL;
+        }
+    #endif
     _ReleaseTDList();
     return( tdata );
 }
 
 // add to list of thread data
-int __AddThreadData( TID tid, thread_data *tdata ) {
+int __AddThreadData( TID tid, thread_data *tdata )
+{
     int             retn = 1;
     thread_data_list *tdl;
+
     _AccessTDList();
     tdl = lib_calloc( 1, sizeof( *tdl ) );
-    if( tdl != NULL ) {
-        if( __initthread( tdata ) ) {
+    if( tdl != NULL ) 
+    {
+        /*
+        //  Thin doesn't need to call __initthread
+        */
+#if !defined(_THIN_LIB)
+        if( __initthread( tdata ) ) 
+        {
             lib_free( tdl );
             retn = 0;
-        } else {
+        } 
+        else 
+#endif
+        {
             tdl->data = tdata;
             tdl->tid = tid;
             tdl->allocated_entry = tdata->__allocated;
             tdl->next = __thread_data_list;
             __thread_data_list = tdl;
         }
-    } else {
+    } 
+    else 
+    {
         retn = 0;
     }
     _ReleaseTDList();
@@ -203,15 +265,17 @@ int __AddThreadData( TID tid, thread_data *tdata ) {
 }
 
 // remove from list of thread data
-void __RemoveThreadData( TID tid ) {
+void __RemoveThreadData( TID tid )
+{
     thread_data_list *tdl;
     thread_data_list **pprev;
-    _AccessTDList();
 
+    _AccessTDList();
     pprev = &__thread_data_list;
     for( tdl = *pprev; tdl != NULL ; tdl = tdl->next ) {
         if( tdl->tid == tid ) {
-            if( tdl->allocated_entry ) {
+            if( tdl->allocated_entry ) 
+            {
                 lib_free( tdl->data );
                 #ifdef __RUNTIME_CHECKS__
                     tdl->data = (void *)1;
@@ -226,8 +290,39 @@ void __RemoveThreadData( TID tid ) {
     _ReleaseTDList();
 }
 
+#if defined _NETWARE_LIBC
+void __RemoveAllThreadData( void )
+{
+    thread_data_list *tdl;
+    thread_data_list *next;
+
+    _AccessTDList();
+
+    next = NULL;
+
+    for( tdl = __thread_data_list; tdl != NULL ; ) 
+    {
+        next = tdl->next;
+
+        if( tdl->allocated_entry ) 
+        {
+            lib_free( tdl->data );
+            #ifdef __RUNTIME_CHECKS__
+            tdl->data = (void *)1;
+            #endif
+        }
+        lib_free( tdl );
+
+        tdl = next;
+    }
+
+    _ReleaseTDList();
+}
+#endif
+
 // mark for resize in list of thread data
-void __ResizeThreadDataList( void ) {
+void __ResizeThreadDataList( void )
+{
     thread_data_list *tdl;
 
     _AccessTDList();
@@ -257,8 +352,9 @@ void __ResizeThreadDataList( void ) {
 }
 
 // clean up list of thread data
-// don't need semaphores becuase shutdown only has one thread executing
-void __FreeThreadDataList() {
+// don't need semaphores because shutdown only has one thread executing
+void __FreeThreadDataList( void )
+{
     thread_data_list *tdl;
     thread_data_list *next;
 
@@ -271,4 +367,18 @@ void __FreeThreadDataList() {
         lib_free( tdl );
         tdl = next;
     }
+}
+
+// a sanity check routine that can be called from a termination routine
+int __ActiveThreads( void )
+{
+
+    thread_data_list *tdl;
+    int threads;
+
+    threads = 0;
+    for( tdl = __thread_data_list ; tdl != NULL ; tdl = tdl->next ) {
+      threads++;
+    }
+    return( threads );
 }

@@ -30,23 +30,20 @@
 ****************************************************************************/
 
 
-#include "standard.h"
+#include "cgdefs.h"
 #include "optwif.h"
-#include "cg.h"
 #include "targsys.h"
 #include "feprotos.h"
 
-extern    code_lbl      *Handles;
+extern  array_control   *InitPatch( void );
 
-extern  array_control   *InitPatch();
-
-static  label_handle    DoAskForLabel( sym_handle sym ) {
-/*******************************************************/
-
+static  label_handle    DoAskForLabel( sym_handle sym )
+/*****************************************************/
+{
     code_lbl    *new;
 
   optbegin
-    _Alloc( new, sizeof( code_lbl ) );
+    new = CGAlloc( sizeof( code_lbl ) );
     new->lbl.link    = Handles;
     Handles = new;
     new->lbl.sym     = sym;
@@ -56,13 +53,13 @@ static  label_handle    DoAskForLabel( sym_handle sym ) {
     new->alias       = NULL;
     new->ins         = NULL;
     new->refs        = NULL;
-    #if( OPTIONS & SHORT_JUMPS )
-        new->redirect = NULL;
-    #endif
-    #if( _TARGET & ( _TARG_AXP | _TARG_PPC ) )
-        new->ppc_alt_name = NULL;
-        new->owl_symbol = NULL;
-    #endif
+#if( OPTIONS & SHORT_JUMPS )
+    new->redirect    = NULL;
+#endif
+#if _TARGET & _TARG_RISC
+    new->ppc_alt_name = NULL;
+    new->owl_symbol   = NULL;
+#endif
 #ifndef NDEBUG
     new->useinfo.hdltype = NO_HANDLE;
     new->useinfo.used = 0;
@@ -71,9 +68,9 @@ static  label_handle    DoAskForLabel( sym_handle sym ) {
 }
 
 
-extern  label_handle    AskForNewLabel() {
-/****************************************/
-
+extern  label_handle    AskForNewLabel( void )
+/********************************************/
+{
     code_lbl    *new;
 
   optbegin
@@ -85,9 +82,9 @@ extern  label_handle    AskForNewLabel() {
 }
 
 
-extern  label_handle    AskRTLabel( sym_handle *sym ) {
-/*****************************************************/
-
+extern  label_handle    AskRTLabel( sym_handle *sym )
+/***************************************************/
+{
     code_lbl    *lbl;
 
   optbegin
@@ -97,9 +94,9 @@ extern  label_handle    AskRTLabel( sym_handle *sym ) {
 }
 
 
-extern  label_handle    AskForLabel( sym_handle sym ) {
-/*****************************************************/
-
+extern  label_handle    AskForLabel( sym_handle sym )
+/***************************************************/
+{
     code_lbl    *new;
     fe_attr     attr;
 
@@ -113,54 +110,54 @@ extern  label_handle    AskForLabel( sym_handle sym ) {
 }
 
 
-extern  bool    AskIfReachedLabel( code_lbl *lbl ) {
-/**************************************************/
-
+extern  bool    AskIfReachedLabel( code_lbl *lbl )
+/************************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( _TstStatus( lbl, REACHED ) );
 }
 
 
-extern  bool    AskIfRTLabel( code_lbl *lbl ) {
-/**********************************************/
-
+extern  bool    AskIfRTLabel( code_lbl *lbl )
+/*******************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( _TstStatus( lbl, RUNTIME ) );
 }
 
 
-extern  bool    AskIfUniqueLabel( code_lbl *lbl ) {
-/*************************************************/
-
+extern  bool    AskIfUniqueLabel( code_lbl *lbl )
+/***********************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( _TstStatus( lbl, UNIQUE ) != 0 );
 }
 
 
-extern  bool    AskIfCommonLabel( code_lbl *lbl ) {
-/*************************************************/
-
+extern  bool    AskIfCommonLabel( code_lbl *lbl )
+/***********************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( _TstStatus( lbl, COMMON_LBL ) != 0 );
 }
 
 
-extern  offset  AskAddress( code_lbl *lbl ) {
-/********************************************/
-
+extern  offset  AskAddress( code_lbl *lbl )
+/*****************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( lbl->lbl.address );
 }
 
 
-extern  pointer AskLblPatch( code_lbl *lbl ) {
-/*********************************************/
-
+extern  pointer AskLblPatch( code_lbl *lbl )
+/******************************************/
+{
   optbegin
     _ValidLbl( lbl );
     if( lbl->lbl.patch == NULL ) {
@@ -170,9 +167,9 @@ extern  pointer AskLblPatch( code_lbl *lbl ) {
 }
 
 
-extern  sym_handle      AskForLblSym( code_lbl *lbl ) {
-/******************************************************/
-
+extern  sym_handle      AskForLblSym( code_lbl *lbl )
+/***************************************************/
+{
   optbegin
     _ValidLbl( lbl );
     optreturn( lbl->lbl.sym );

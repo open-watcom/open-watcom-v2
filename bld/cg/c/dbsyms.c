@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit debug information for debugging locals.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -44,9 +43,10 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include "dbcue.h"
-#define BY_CG
+#include "makeins.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 #ifndef NDEBUG
@@ -54,13 +54,11 @@
 #endif
 #include <string.h>
 
-extern  type_def        *TypeAddress(cg_type);
-extern  instruction     *MakeNop();
 extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg();
-extern  void            EmptyQueue();
+extern  seg_id          AskCodeSeg(void);
+extern  void            EmptyQueue(void);
 extern  void            InputOC(any_oc *);
 extern  char            DBNested( char nested );
 extern  dbg_loc         LocDupl(dbg_loc);
@@ -71,19 +69,19 @@ extern  dbg_loc         DBLocSym(dbg_loc,sym_handle);
 extern  void            DBLocFini(dbg_loc);
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
 /* WV interface */
-extern  void    WVInitDbgInfo() ;
-extern  void    WVFiniDbgInfo() ;
-extern  void    WVGenStatic( sym_handle sym, dbg_loc loc ) ;
-extern  void    WVObjectPtr(  cg_type ptr_type );
-extern  void    WVSetBase() ;
-extern  void    WVBlkEnd( dbg_block *blk, offset lc ) ;
-extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc ) ;
+extern  void    WVInitDbgInfo( void );
+extern  void    WVFiniDbgInfo( void );
+extern  void    WVGenStatic( sym_handle sym, dbg_loc loc );
+extern  void    WVObjectPtr( cg_type ptr_type );
+extern  void    WVSetBase( void );
+extern  void    WVBlkEnd( dbg_block *blk, offset lc );
+extern  void    WVRtnEnd( dbg_rtn *rtn, offset lc );
 #endif
 /* DF interface */
-extern  void    DFInitDbgInfo();
+extern  void    DFInitDbgInfo( void );
 extern  void    DFObjInitInfo( void );
-extern  void    DFFiniDbgInfo();
-extern  void    DFObjFiniDbgInfo();
+extern  void    DFFiniDbgInfo( void );
+extern  void    DFObjFiniDbgInfo( void );
 extern  void    DFGenStatic( sym_handle sym, dbg_loc loc );
 extern  void    DFTypedef( char *nm, dbg_type tipe );
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc );
@@ -93,13 +91,13 @@ extern  void    DFEpiBeg( dbg_rtn *blk, offset lc );
 extern  void    DFRtnEnd( dbg_rtn *rtn, offset lc );
 
 /* CV interface */
-extern  void    CVInitDbgInfo();
+extern  void    CVInitDbgInfo( void );
 extern  void    CVObjInitInfo( void );
-extern  void    CVFiniDbgInfo();
-extern  void    CVObjFiniDbgInfo();
+extern  void    CVFiniDbgInfo( void );
+extern  void    CVObjFiniDbgInfo( void );
 extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem );
 extern  void    CVTypedef( char *nm, dbg_type tipe );
-extern  void    CVSetBase();
+extern  void    CVSetBase( void );
 extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc );
 extern  void    CVProEnd( dbg_rtn *rtn, offset lc );
 extern  void    CVBlkBeg( dbg_block *blk, offset lc );
@@ -110,6 +108,10 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc );
 extern    source_line_number    SrcLine;
 extern    proc_def              *CurrProc;
 extern    struct opcode_entry   DbgInfo[];
+
+static  void    EmitDbg( byte class, pointer ptr );
+static  void    MkBlock( void );
+static  void    AddBlockInfo( dbg_block *blk, bool start );
 
 cue_ctl     LineInfo;
 fname_ctl   DBFiles;
@@ -132,7 +134,7 @@ static  void    DBSrcFileFini( void ){
     while( curr != NULL ){
         old = curr;
         curr = curr->next;
-        _Free( old, sizeof( *old ) );
+        CGFree( old );
     }
     DBFiles.lst = NULL;
 }
@@ -157,7 +159,7 @@ extern  uint    _CGAPI DBSrcFile( char *fname ) {
        lnk = &curr->next;
     }
     len = strlen( fname );
-    _Alloc( curr, sizeof( *curr )+len );
+    curr = CGAlloc( sizeof( *curr )+len );
     curr->len = len+1;
     curr->next = NULL;
     strcpy( curr->fname, fname );
@@ -191,9 +193,10 @@ found:;
 
 
 static void  AddCueBlk( cue_ctl *ctl ){
+/**************************************/
     cue_blk *new;
 
-    new = _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->next = NULL;
     *ctl->lnk = new;
     ctl->curr = new;
@@ -417,7 +420,7 @@ static void SourceCueFini( cue_ctl *ctl ){
     while( list != NULL ){
         old = list;
         list = list->next;
-        _Free( old, sizeof( *old ) );
+        CGFree( old );
     }
     ctl->head = NULL;
 }
@@ -425,18 +428,15 @@ static void SourceCueFini( cue_ctl *ctl ){
 extern  void    InitDbgInfo() {
 /******************************/
     cue_idx     idx;
-    char       *fname;
+    char        *fname;
     uint        fno;
 
-    idx = idx;
-    fname = fname;
-    fno = fno;
     SrcFileNoInit();
     DBNested( FALSE ); /* set nesting */
     SourceCueInit( &LineInfo );
-//  fname = FEAuxInfo( NULL, SOURCE_NAME );
- // fno = DBSrcFile( fname );
-//  idx = CueAdd( fno, 1, 1 );
+    fname = FEAuxInfo( NULL, SOURCE_NAME );
+    fno = DBSrcFile( fname );
+    idx = CueAdd( fno, 1, 1 );
     SrcLine = 1;
     if( _IsModel( DBG_DF ) ) {
         DFInitDbgInfo();
@@ -537,7 +537,7 @@ extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped ) {
         if( (attr & FE_IMPORT) == 0 ) {
             if( attr & FE_PROC ) {
                 CurrProc->state.attr |= ROUTINE_WANTS_DEBUGGING;
-                _Alloc( CurrProc->targ.debug, sizeof( dbg_rtn ) );
+                CurrProc->targ.debug = CGAlloc( sizeof( dbg_rtn ) );
                 CurrProc_debug->blk = NULL;
                 CurrProc_debug->parms = NULL;
                 CurrProc_debug->reeturn = LocDupl( loc );
@@ -546,7 +546,7 @@ extern  void _CGAPI DBGenSym( sym_handle sym, dbg_loc loc, int scoped ) {
                 MkBlock();
             } else if( scoped ) {
                 blk = CurrProc_debug->blk;
-                _Alloc( new, sizeof( dbg_local ) );
+                new = CGAlloc( sizeof( dbg_local ) );
                 new->sym = sym;
                 new->loc = LocDupl( loc );
                 new->kind = DBG_SYM_VAR;
@@ -669,7 +669,7 @@ extern  void    _CGAPI DBLocalType( sym_handle sym, char kind ) {
     if( _IsModel( DBG_LOCALS ) ) {
         if( _IsModel( DBG_CV | DBG_DF ) ) {
             blk = CurrProc_debug->blk;
-            _Alloc( new, sizeof( dbg_local ) );
+            new = CGAlloc( sizeof( dbg_local ) );
             new->sym = sym;
             new->loc = NULL;
             AddLocal( &blk->locals, new );
@@ -703,13 +703,13 @@ extern  void _CGAPI     DBBegBlock() {
 }
 
 
-static  void    MkBlock() {
-/*************************/
+static  void    MkBlock( void ) {
+/********************************/
 
 
     dbg_block   *new;
 
-    _Alloc( new, sizeof( dbg_block ) );
+    new = CGAlloc( sizeof( dbg_block ) );
     new->parent = CurrProc_debug->blk;
     CurrProc_debug->blk = new;
     new->locals = NULL;
@@ -784,9 +784,9 @@ extern  void    DbgParmLoc( name_def *parm, sym_handle sym ) {
             return;
         }
     }
-    _Alloc( new, sizeof( dbg_local ) );
+    new = CGAlloc( sizeof( dbg_local ) );
     loc = DBLocInit();
-    loc = LocParm( loc, parm );
+    loc = LocParm( loc, (name *) parm );
     new->loc = loc;
     new->sym = sym;
     new->kind = DBG_SYM_VAR;
@@ -945,7 +945,7 @@ extern  void    DbgBlkEnd( dbg_block *blk, offset lc ) {
         WVBlkEnd( blk, lc );
 #endif
     }
-    _Free( blk, sizeof( dbg_block ) );
+    CGFree( blk );
 }
 
 
@@ -975,6 +975,6 @@ extern  void    DbgRtnEnd( dbg_rtn *rtn, offset lc ) {
         WVRtnEnd( rtn, lc );
 #endif
     }
-    _Free( rtn->blk, sizeof( dbg_block ) );
-    _Free( rtn, sizeof( dbg_rtn ) );
+    CGFree( rtn->blk );
+    CGFree( rtn );
 }

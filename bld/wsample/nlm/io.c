@@ -37,6 +37,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <dos.h>
+
+#include <ownwdos.h>
+
 #include "sample.h"
 #include "smpstuff.h"
 

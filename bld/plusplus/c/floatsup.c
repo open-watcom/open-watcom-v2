@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
+#include "plusplus.h"
+
 #include <stdarg.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 #include "codegen.h"
 #include "errdefns.h"

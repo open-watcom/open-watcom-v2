@@ -30,29 +30,30 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "precomp.h"
 #include "imgedit.h"
+#include <string.h>
 #include "ieclrpal.h"
 
-static HWND             hColoursWnd;
+static HWND             hColorsWnd;
 static HWND             hScreenWnd;
-static int              coloursHeight;
+static int              colorsHeight;
 static int              screenHeight;
 static palette_box      paletteBox[PALETTE_SIZE];
-static palette_box      screenColour;
-static palette_box      inverseColour;
+static palette_box      screenColor;
+static palette_box      inverseColor;
 static BOOL             fShowScreenClr = FALSE;
 static HWND             hScreenTxt;
 static HWND             hInverseTxt;
-static short            numberOfColours;
-static HBITMAP          hColourBitmap;
+static short            numberOfColors;
+static HBITMAP          hColorBitmap;
 static HBITMAP          hMonoBitmap;
 static int              prevRestoreState = FALSE;
 
 /*
- * paintColours - paint the available colours on the colour palette.
+ * paintColors - paint the available colors on the color palette
  */
-static void paintColours( HWND hwnd )
+static void paintColors( HWND hwnd )
 {
     WPI_PRES    pres;
     WPI_PRES    mempres;
@@ -67,28 +68,28 @@ static void paintColours( HWND hwnd )
 #endif
 
     _wpi_torgbmode( pres );
-    if (numberOfColours == 2) {
+    if( numberOfColors == 2 ) {
         bitmap = hMonoBitmap;
     } else {
-        bitmap = hColourBitmap;
+        bitmap = hColorBitmap;
     }
 
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
     _wpi_torgbmode( mempres );
     oldbitmap = _wpi_selectbitmap( mempres, bitmap );
 
-    _wpi_bitblt( pres, 0, 0, CUR_BMP_WIDTH, CUR_BMP_HEIGHT, mempres,
-                                                            0, 0, SRCCOPY );
+    _wpi_bitblt( pres, 0, 0, CUR_BMP_WIDTH, CUR_BMP_HEIGHT, mempres, 0, 0, SRCCOPY );
     _wpi_getoldbitmap( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, hdc );
 
     _wpi_endpaint( hwnd, pres, &ps );
-} /* paintColours */
+
+} /* paintColors */
 
 /*
- * paintScreen - paints the screen and inverse window
+ * paintScreen - paint the screen and inverse window
   */
-void paintScreen( HWND hwnd )
+static void paintScreen( HWND hwnd )
 {
     WPI_PRES    pres;
     PAINTSTRUCT ps;
@@ -98,52 +99,55 @@ void paintScreen( HWND hwnd )
    WinFillRect( pres, &ps, CLR_PALEGRAY );
 #endif
     _wpi_torgbmode( pres );
-    if (fShowScreenClr) {
-        DisplayColourBox(pres, &(screenColour));
-        DisplayColourBox(pres, &(inverseColour));
+    if( fShowScreenClr ) {
+        DisplayColorBox( pres, &screenColor );
+        DisplayColorBox( pres, &inverseColor );
     }
     _wpi_endpaint( hwnd, pres, &ps );
 
 } /* paintScreen */
 
 #ifdef __OS2_PM__
+
 /*
- * convertToPMCoords - converts coordinates to PM (ie. origin at bottom left)
+ * convertToPMCoords - converts coordinates to PM (i.e. origin at bottom left)
  */
 static void convertToPMCoords( void )
 {
     int         i;
     long        temp;
 
-    for (i=0; i < PALETTE_SIZE; i+=2) {
+    for( i = 0; i < PALETTE_SIZE; i += 2 ) {
         temp = paletteBox[i].box.top;
         paletteBox[i].box.top = paletteBox[i].box.bottom;
         paletteBox[i].box.bottom = temp;
 
-        temp = paletteBox[i+1].box.top;
-        paletteBox[i+1].box.top = paletteBox[i+1].box.bottom;
-        paletteBox[i+1].box.bottom = temp;
+        temp = paletteBox[i + 1].box.top;
+        paletteBox[i + 1].box.top = paletteBox[i + 1].box.bottom;
+        paletteBox[i + 1].box.bottom = temp;
     }
+
 } /* convertToPMCoords */
+
 #endif
 
 /*
- * initPaletteBoxes - Assigns the values of the colours in the palette and
- *               initializes the palette boxes.
+ * initPaletteBoxes - assign the values of the colors in the palette and
+ *                    initialize the palette boxes
  */
 static void initPaletteBoxes( BOOL firsttime )
 {
-    SetBoxColours(&screenColour, &inverseColour, numberOfColours, paletteBox );
-    if (firsttime) {
-        SetColour( LMOUSEBUTTON, BLACK, BLACK, NORMAL_CLR );
-        SetColour( RMOUSEBUTTON, WHITE, WHITE, NORMAL_CLR );
+    SetBoxColors( &screenColor, &inverseColor, numberOfColors, paletteBox );
+    if( firsttime ) {
+        SetColor( LMOUSEBUTTON, BLACK, BLACK, NORMAL_CLR );
+        SetColor( RMOUSEBUTTON, WHITE, WHITE, NORMAL_CLR );
         /*
-         * screenColour has been set by profile information
+         * screenColor has been set by profile information
          */
-        inverseColour.colour = GetInverseColour( screenColour.colour );
-        inverseColour.solid_colour = inverseColour.colour;
+        inverseColor.color = GetInverseColor( screenColor.color );
+        inverseColor.solid_color = inverseColor.color;
     } else {
-        SetCurrentColours(fShowScreenClr);
+        SetCurrentColors( fShowScreenClr );
     }
 #ifdef __OS2_PM__
     convertToPMCoords();
@@ -152,130 +156,131 @@ static void initPaletteBoxes( BOOL firsttime )
 } /* initPaletteBoxes */
 
 /*
- * editCurrentColour - edits the colour under the cursor.
+ * editCurrentColor - edit the color under the cursor
   */
-static void editCurrentColour( WPI_POINT *pt )
+static void editCurrentColor( WPI_POINT *pt )
 {
     int         i;
     WPI_RECT    wrect;
     int         top;
     int         bottom;
 
-    for (i=0; i < PALETTE_SIZE; ++i) {
-        top = _wpi_cvth_y( paletteBox[i].box.top, coloursHeight );
-        bottom = _wpi_cvth_y( paletteBox[i].box.bottom, coloursHeight );
+    for( i = 0; i < PALETTE_SIZE; i++ ) {
+        top = _wpi_cvth_y( paletteBox[i].box.top, colorsHeight );
+        bottom = _wpi_cvth_y( paletteBox[i].box.bottom, colorsHeight );
 
         _wpi_setintwrectvalues( &wrect, paletteBox[i].box.left, top,
-                                            paletteBox[i].box.right, bottom );
-        if ( _wpi_ptinrect(&wrect, *pt) ) {
-            if (numberOfColours == 2) {
+                                        paletteBox[i].box.right, bottom );
+        if( _wpi_ptinrect( &wrect, *pt ) ) {
+            if( numberOfColors == 2 ) {
                 return;
             } else {
 #ifndef __OS2_PM__
-                EditColours();
+                EditColors();
 #endif
                 return;
             }
         }
     }
-} /* editCurrentColour */
+
+} /* editCurrentColor */
 
 /*
- * selectColour - Select the colour under the cursor
+ * selectColor - select the color under the cursor
  */
-static void selectColour( WPI_POINT *pt, int mousebutton )
+static void selectColor( WPI_POINT *pt, int mousebutton )
 {
     short       i;
     WPI_RECT    wrect;
     int         top;
     int         bottom;
 
-    for (i=0; i < PALETTE_SIZE; ++i) {
-        top = _wpi_cvth_y( paletteBox[i].box.top, coloursHeight );
-        bottom = _wpi_cvth_y( paletteBox[i].box.bottom, coloursHeight );
+    for( i = 0; i < PALETTE_SIZE; i++ ) {
+        top = _wpi_cvth_y( paletteBox[i].box.top, colorsHeight );
+        bottom = _wpi_cvth_y( paletteBox[i].box.bottom, colorsHeight );
 
         _wpi_setintrectvalues( &wrect, paletteBox[i].box.left, top,
-                                            paletteBox[i].box.right, bottom );
-        if ( _wpi_ptinrect(&wrect, *pt) ) {
-            SetColour( mousebutton, paletteBox[i].colour,
-                                    paletteBox[i].solid_colour, NORMAL_CLR );
+                                       paletteBox[i].box.right, bottom );
+        if( _wpi_ptinrect( &wrect, *pt ) ) {
+            SetColor( mousebutton, paletteBox[i].color,
+                                   paletteBox[i].solid_color, NORMAL_CLR );
             return;
         }
     }
-} /* selectColour */
+
+} /* selectColor */
 
 /*
- * selectScreen - selects the screen colour.
+ * selectScreen - selects the screen color
  */
-void selectScreen( WPI_POINT *pt, int mousebutton )
+static void selectScreen( WPI_POINT *pt, int mousebutton )
 {
     WPI_RECT    wrect;
     int         top;
     int         bottom;
 
-    if (!fShowScreenClr) {
+    if( !fShowScreenClr ) {
         return;
     }
-    top = _wpi_cvth_y( screenColour.box.top, screenHeight );
-    bottom = _wpi_cvth_y( screenColour.box.bottom, screenHeight );
+    top = _wpi_cvth_y( screenColor.box.top, screenHeight );
+    bottom = _wpi_cvth_y( screenColor.box.bottom, screenHeight );
 
-    _wpi_setintwrectvalues( &wrect, screenColour.box.left, top,
-                                        screenColour.box.right, bottom );
+    _wpi_setintwrectvalues( &wrect, screenColor.box.left, top,
+                                    screenColor.box.right, bottom );
 
-    if ( _wpi_ptinrect(&wrect, *pt) ) {
-        SetColour( mousebutton, screenColour.colour, screenColour.colour,
-                                                                SCREEN_CLR );
+    if( _wpi_ptinrect( &wrect, *pt ) ) {
+        SetColor( mousebutton, screenColor.color, screenColor.color, SCREEN_CLR );
         return;
     }
 
-    top = _wpi_cvth_y( inverseColour.box.top, screenHeight );
-    bottom = _wpi_cvth_y( inverseColour.box.bottom, screenHeight );
+    top = _wpi_cvth_y( inverseColor.box.top, screenHeight );
+    bottom = _wpi_cvth_y( inverseColor.box.bottom, screenHeight );
 
-    _wpi_setintwrectvalues( &wrect, inverseColour.box.left, top,
-                                        inverseColour.box.right, bottom );
-    if ( _wpi_ptinrect(&wrect, *pt) ) {
-        SetColour( mousebutton, inverseColour.colour, inverseColour.colour,
-                                                                INVERSE_CLR );
+    _wpi_setintwrectvalues( &wrect, inverseColor.box.left, top,
+                                    inverseColor.box.right, bottom );
+    if( _wpi_ptinrect( &wrect, *pt ) ) {
+        SetColor( mousebutton, inverseColor.color, inverseColor.color, INVERSE_CLR );
         return;
     }
+
 } /* selectScreen */
 
 /*
- * ColoursWndProc - handle messages for the available colour selection window.
+ * ColorsWndProc - handle messages for the available color selection window
  */
-MRESULT CALLBACK ColoursWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                                          WPI_PARAM2 lparam )
+MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg,
+                                WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     static WPI_POINT            pt;
 
-    switch ( msg ) {
+    switch( msg ) {
     case WM_CREATE:
-        numberOfColours = 16;
-        initPaletteBoxes(TRUE);
-        InitPaletteBitmaps( hwnd, &hColourBitmap, &hMonoBitmap );
+        numberOfColors = 16;
+        initPaletteBoxes( TRUE );
+        InitPaletteBitmaps( hwnd, &hColorBitmap, &hMonoBitmap );
         break;
 
     case WM_PAINT:
-        paintColours( hwnd );
+        paintColors( hwnd );
         break;
 
     case WM_LBUTTONDOWN:
         IMGED_MAKEPOINT( wparam, lparam, pt );
-        selectColour(&pt, LMOUSEBUTTON);
+        selectColor( &pt, LMOUSEBUTTON );
         break;
 
     case WM_LBUTTONDBLCLK:
         IMGED_MAKEPOINT( wparam, lparam, pt );
-        editCurrentColour( &pt );
+        editCurrentColor( &pt );
         break;
 
     case WM_RBUTTONDOWN:
         IMGED_MAKEPOINT( wparam, lparam, pt );
-        selectColour(&pt, RMOUSEBUTTON);
+        selectColor( &pt, RMOUSEBUTTON );
         break;
 
     case WM_DESTROY:
-        _wpi_deletebitmap( hColourBitmap );
+        _wpi_deletebitmap( hColorBitmap );
         _wpi_deletebitmap( hMonoBitmap );
         break;
 
@@ -284,13 +289,13 @@ MRESULT CALLBACK ColoursWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     }
     return( 0 );
 
-} /* CurrentWndProc */
+} /* ColorsWndProc */
 
 /*
  * ScreenWndProc - handle messages for the screen and inverse windows
  */
-MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                                         WPI_PARAM2 lparam )
+MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg,
+                                WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_POINT   pt;
     WPI_RECT    wrect1;
@@ -298,72 +303,71 @@ MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     int         top;
     int         bottom;
 
-    switch ( msg ) {
+    switch( msg ) {
     case WM_PAINT:
         paintScreen( hwnd );
         break;
 
     case WM_LBUTTONDOWN:
         IMGED_MAKEPOINT( wparam, lparam, pt );
-        selectScreen(&pt, LMOUSEBUTTON);
+        selectScreen( &pt, LMOUSEBUTTON );
         break;
 
     case WM_LBUTTONDBLCLK:
-        if (!fShowScreenClr) {
+        if( !fShowScreenClr ) {
             break;
         }
 
         IMGED_MAKEPOINT( wparam, lparam, pt );
 
-        top = _wpi_cvth_y( screenColour.box.top, screenHeight );
-        bottom = _wpi_cvth_y( screenColour.box.bottom, screenHeight );
-        _wpi_setintwrectvalues( &wrect1, screenColour.box.left, top,
-                                            screenColour.box.right, bottom );
+        top = _wpi_cvth_y( screenColor.box.top, screenHeight );
+        bottom = _wpi_cvth_y( screenColor.box.bottom, screenHeight );
+        _wpi_setintwrectvalues( &wrect1, screenColor.box.left, top,
+                                         screenColor.box.right, bottom );
 
-        top = _wpi_cvth_y( inverseColour.box.top, screenHeight );
-        bottom = _wpi_cvth_y( inverseColour.box.bottom, screenHeight );
-        _wpi_setintwrectvalues( &wrect2, inverseColour.box.left, top,
-                                            inverseColour.box.right, bottom );
-        if ( _wpi_ptinrect(&wrect1, pt) ||
-                                _wpi_ptinrect(&wrect2, pt) ) {
-            ChooseBkColour();
+        top = _wpi_cvth_y( inverseColor.box.top, screenHeight );
+        bottom = _wpi_cvth_y( inverseColor.box.bottom, screenHeight );
+        _wpi_setintwrectvalues( &wrect2, inverseColor.box.left, top,
+                                         inverseColor.box.right, bottom );
+        if( _wpi_ptinrect( &wrect1, pt ) || _wpi_ptinrect( &wrect2, pt ) ) {
+            ChooseBkColor();
         }
         break;
 
     case WM_RBUTTONDOWN:
         IMGED_MAKEPOINT( wparam, lparam, pt );
-        selectScreen(&pt, RMOUSEBUTTON);
+        selectScreen( &pt, RMOUSEBUTTON );
         break;
 
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
     return( 0 );
+
 } /* ScreenWndProc */
 
 /*
- * CreateColourControls - Creates controls in the colour palette window.
+ * CreateColorControls - create controls in the color palette window
  */
-void CreateColourControls( HWND hparent )
+void CreateColorControls( HWND hparent )
 {
     WPI_RECT    rect;
 #ifdef __OS2_PM__
-    PM_CreateColourCtrls( hparent, &hColoursWnd, &hScreenWnd, &hScreenTxt,
-                                        &hInverseTxt );
+    PM_CreateColorCtrls( hparent, &hColorsWnd, &hScreenWnd, &hScreenTxt, &hInverseTxt );
 #else
-    Win_CreateColourCtrls( hparent, &hColoursWnd, &hScreenWnd, &hScreenTxt,
-                                        &hInverseTxt );
+    Win_CreateColorCtrls( hparent, &hColorsWnd, &hScreenWnd, &hScreenTxt, &hInverseTxt );
 #endif
-    _wpi_getclientrect( hColoursWnd, &rect );
-    coloursHeight = _wpi_getheightrect( rect );
+    _wpi_getclientrect( hColorsWnd, &rect );
+    colorsHeight = _wpi_getheightrect( rect );
     _wpi_getclientrect( hScreenWnd, &rect );
     screenHeight =_wpi_getheightrect( rect );
-} /* CreateColourControls */
+
+} /* CreateColorControls */
 
 /*
- * DisplayScreenClrs - Depending on the parameter, display the screen colour
- *                     and the inverse colour (for icons and cursors but
- *                     not for bitmaps).
+ * DisplayScreenClrs - depending on the parameter, display the screen color
+ *                     and the inverse color (for icons and cursors but
+ *                     not for bitmaps)
  */
 void DisplayScreenClrs( BOOL fdisplay )
 {
@@ -372,24 +376,24 @@ void DisplayScreenClrs( BOOL fdisplay )
 
     frame = _wpi_getframe( hScreenWnd );
 
-    if (!fdisplay) {
-        if (fShowScreenClr) {
-            ChangeCurrentColour();
+    if( !fdisplay ) {
+        if( fShowScreenClr ) {
+            ChangeCurrentColor();
         }
         SetWindowText( hScreenTxt, "" );
-        SetWindowText( hInverseTxt, "");
+        SetWindowText( hInverseTxt, "" );
         fShowScreenClr = FALSE;
         ShowWindow( frame, SW_HIDE );
     } else {
         text = IEAllocRCString( WIE_SCREENTEXT );
-        if( text ) {
+        if( text != NULL ) {
             SetWindowText( hScreenTxt, text );
             IEFreeRCString( text );
         } else {
             SetWindowText( hScreenTxt, "Screen:" );
         }
         text = IEAllocRCString( WIE_INVERSETEXT );
-        if( text ) {
+        if( text != NULL ) {
             SetWindowText( hInverseTxt, text );
             IEFreeRCString( text );
         } else {
@@ -401,74 +405,75 @@ void DisplayScreenClrs( BOOL fdisplay )
         InvalidateRect( hScreenWnd, NULL, TRUE );
 #endif
     }
+
 } /* DisplayScreenClrs */
 
 /*
- * SetNumColours - sets the number of colours in the image and repaints the
- *                      window.
+ * SetNumColors - set the number of colors in the image and repaint the window
  */
-void SetNumColours( int number_of_colours )
+void SetNumColors( int number_of_colors )
 {
     HMENU       hmenu;
     HWND        frame;
 
-    if (numberOfColours == number_of_colours) {
+    if( numberOfColors == number_of_colors ) {
         return;
     }
-    SetCurrentNumColours( number_of_colours );
-    numberOfColours = number_of_colours;
-    initPaletteBoxes(FALSE);
-    _wpi_invalidaterect( hColoursWnd, NULL, FALSE );
+    SetCurrentNumColors( number_of_colors );
+    numberOfColors = number_of_colors;
+    initPaletteBoxes( FALSE );
+    _wpi_invalidaterect( hColorsWnd, NULL, FALSE );
 
-    if (numberOfColours == 2) {
-        if (HMainWindow) {
+    if( numberOfColors == 2 ) {
+        if( HMainWindow != NULL ) {
             frame = _wpi_getframe( HMainWindow );
             hmenu = GetMenu( frame );
-            if ( _wpi_isitemenabled(hmenu, IMGED_RCOLOUR) ) {
+            if( _wpi_isitemenabled( hmenu, IMGED_RCOLOR ) ) {
                 prevRestoreState = TRUE;
             } else {
                 prevRestoreState = FALSE;
             }
-            _wpi_enablemenuitem( hmenu, IMGED_SCOLOUR, FALSE, FALSE );
-            _wpi_enablemenuitem( hmenu, IMGED_RCOLOUR, FALSE, FALSE );
-            _wpi_enablemenuitem( hmenu, IMGED_LCOLOUR, FALSE, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_SCOLOR, FALSE, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_RCOLOR, FALSE, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_LCOLOR, FALSE, FALSE );
         }
     } else {
-        if (HMainWindow) {
+        if( HMainWindow != NULL ) {
             frame = _wpi_getframe( HMainWindow );
             hmenu = GetMenu( frame );
-            _wpi_enablemenuitem( hmenu, IMGED_SCOLOUR, TRUE, FALSE );
-            _wpi_enablemenuitem(hmenu, IMGED_RCOLOUR, prevRestoreState, FALSE);
-            _wpi_enablemenuitem( hmenu, IMGED_LCOLOUR, TRUE, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_SCOLOR, TRUE, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_RCOLOR, prevRestoreState, FALSE );
+            _wpi_enablemenuitem( hmenu, IMGED_LCOLOR, TRUE, FALSE );
         }
     }
-} /* SetNumColours */
+
+} /* SetNumColors */
 
 /*
- * SetScreenClr - sets the colour to represent the screen.
+ * SetScreenClr - set the color to represent the screen
  */
-void SetScreenClr( COLORREF screen_colour )
+void SetScreenClr( COLORREF screen_color )
 {
     WPI_PRES    pres;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     _wpi_torgbmode( pres );
-    screenColour.colour = _wpi_getnearestcolor(pres, screen_colour);
-    screenColour.solid_colour = screenColour.colour;
+    screenColor.color = _wpi_getnearestcolor( pres, screen_color );
+    screenColor.solid_color = screenColor.color;
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    inverseColour.colour = GetInverseColour( screenColour.colour );
-    inverseColour.solid_colour = inverseColour.colour;
+    inverseColor.color = GetInverseColor( screenColor.color );
+    inverseColor.solid_color = inverseColor.color;
 
-    VerifyCurrentClr( screenColour.colour, inverseColour.colour );
+    VerifyCurrentClr( screenColor.color, inverseColor.color );
     _wpi_invalidaterect( hScreenWnd, NULL, FALSE );
+
 } /* SetScreenClr */
 
 /*
- * ShowNewColour - replaces the colour of the colour box and re-displays the
- *                      boxes.
+ * ShowNewColor - replace the color of the color box and redisplay the boxes
  */
-void ShowNewColour( int index, COLORREF newcolour, BOOL repaint )
+void ShowNewColor( int index, COLORREF newcolor, BOOL repaint )
 {
     WPI_POINT   topleft;
     WPI_POINT   bottomright;
@@ -483,36 +488,35 @@ void ShowNewColour( int index, COLORREF newcolour, BOOL repaint )
 
     pres = _wpi_getpres( HWND_DESKTOP );
     _wpi_torgbmode( pres );
-    paletteBox[index].colour = newcolour;
-    paletteBox[index].solid_colour = _wpi_getnearestcolor( pres, newcolour );
+    paletteBox[index].color = newcolor;
+    paletteBox[index].solid_color = _wpi_getnearestcolor( pres, newcolor );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    if (numberOfColours != 2) {
+    if( numberOfColors != 2 ) {
         topleft.x = (index / 2) * SQR_SIZE;
         bottomright.x = topleft.x + SQR_SIZE + 1;
-        if ( (index/2) == (index+1)/2 ) {
+        if( index / 2 == (index + 1) / 2 ) {
             topleft.y = 0;
             bottomright.y = SQR_SIZE + 1;
         } else {
             topleft.y = SQR_SIZE;
-            bottomright.y = 2*SQR_SIZE + 1;
+            bottomright.y = 2 * SQR_SIZE + 1;
         }
         pres = _wpi_getpres( HWND_DESKTOP );
         mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
         _wpi_releasepres( HWND_DESKTOP, pres );
         _wpi_torgbmode( mempres );
 
-        brush = _wpi_createsolidbrush( newcolour );
+        brush = _wpi_createsolidbrush( newcolor );
         oldbrush = _wpi_selectobject( mempres, brush );
         blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
         oldpen = _wpi_selectobject( mempres, blackpen );
-        oldbitmap = _wpi_selectbitmap( mempres, hColourBitmap );
+        oldbitmap = _wpi_selectbitmap( mempres, hColorBitmap );
 
-        _wpi_cvth_pt( &topleft, coloursHeight );
-        _wpi_cvth_pt( &bottomright, coloursHeight );
+        _wpi_cvth_pt( &topleft, colorsHeight );
+        _wpi_cvth_pt( &bottomright, colorsHeight );
 
-        _wpi_rectangle( mempres, topleft.x, topleft.y, bottomright.x,
-                                                            bottomright.y );
+        _wpi_rectangle( mempres, topleft.x, topleft.y, bottomright.x, bottomright.y );
         _wpi_selectobject( mempres, oldpen );
         _wpi_selectobject( mempres, oldbrush );
         _wpi_deleteobject( blackpen );
@@ -521,25 +525,26 @@ void ShowNewColour( int index, COLORREF newcolour, BOOL repaint )
         _wpi_deletecompatiblepres( mempres, hdc );
     }
 
-    if (repaint) {
-        _wpi_invalidaterect( hColoursWnd, NULL, FALSE );
+    if( repaint ) {
+        _wpi_invalidaterect( hColorsWnd, NULL, FALSE );
     }
-} /* ShowNewColour */
+
+} /* ShowNewColor */
 
 /*
- * SetInitScreenColour - sets the initial screen and inverse colours from
- *                       the profile information.
+ * SetInitScreenColor - set the initial screen and inverse colors from
+ *                      the profile information
  */
-void SetInitScreenColour( COLORREF colour )
+void SetInitScreenColor( COLORREF color )
 {
     WPI_PRES    pres;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     _wpi_torgbmode( pres );
-    screenColour.colour = _wpi_getnearestcolor(pres, colour);
-    screenColour.solid_colour = screenColour.colour;
+    screenColor.color = _wpi_getnearestcolor( pres, color );
+    screenColor.solid_color = screenColor.color;
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    SetBkColour( screenColour.colour );
-} /* SetInitScreenColour */
+    SetViewBkColor( screenColor.color );
 
+} /* SetInitScreenColor */

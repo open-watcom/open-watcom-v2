@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Select registers used for passing an arguments.
 *
 ****************************************************************************/
 
@@ -33,17 +32,18 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "typedef.h"
+#include "types.h"
 #include "regset.h"
 #include "zoiks.h"
 #include "feprotos.h"
+#include "cgaux.h"
+
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
 extern  reg_list        *ParmChoices(type_class_def);
-extern  type_def        *TypeAddress(cg_type);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 
 extern  type_length     ParmAlignment( type_def *tipe ) {
@@ -85,5 +85,12 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
         }
         state->parm.curr_entry ++;
     }
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+    /* Optionally consider registers again for the next argument, even if
+     * this one could not be passed in regsiters. Required for __fastcall.
+     */
+    if( state->attr & ROUTINE_PREFER_REGS )
+        state->parm.curr_entry = state->parm.table;
+#endif
     return( HW_EMPTY );
 }

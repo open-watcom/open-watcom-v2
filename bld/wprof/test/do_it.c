@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler test app, Part III.
 *
 ****************************************************************************/
 
@@ -40,7 +39,7 @@ extern int count, niter;
 
 extern void (*check_if)(int);
 
-hopla_oops( unsigned num )
+void hopla_oops( unsigned num )
 {
         while( --num )
         {
@@ -49,7 +48,7 @@ hopla_oops( unsigned num )
         }
 }
 
-blink_one( unsigned num )
+void blink_one( unsigned num )
 {
     unsigned long   dogy;
 
@@ -64,7 +63,7 @@ blink_one( unsigned num )
     }
 }
 
-up_and_down( unsigned num )
+void up_and_down( unsigned num )
 {
         while( --num )
         {
@@ -75,7 +74,7 @@ up_and_down( unsigned num )
         printf( "\r ;;;; \r" );
 }
 
-do_it()
+void do_it()
 {
 _MARK_( "start of B/U/H phase ..." );
     blink_one( SIZE );

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "source.h"
 
@@ -40,7 +38,7 @@ static int findLabel( labels *, char * );
 /*
  * SrcGoTo - goto processor
  */
-int SrcGoTo( sfile **sf, char *data, labels *lab )
+vi_rc SrcGoTo( sfile **sf, char *data, labels *lab )
 {
     int         i;
     char        dest[MAX_SRC_LINE];
@@ -53,7 +51,7 @@ int SrcGoTo( sfile **sf, char *data, labels *lab )
     }
     i = findLabel( lab, dest );
     if( i >= 0 ) {
-        if( (*sf)->branchcond == 2 || (*sf)->branchcond == (*sf)->prev->branchres ) {
+        if( (*sf)->branchcond == 2 || (*sf)->branchcond == (*sf)->prev->u.branchres ) {
             (*sf) = lab->pos[i];
         }
         return( ERR_NO_ERR );
@@ -66,33 +64,33 @@ int SrcGoTo( sfile **sf, char *data, labels *lab )
 /*
  * AddLabel - add a label in the file
  */
-int AddLabel( sfile *sf, labels *lab, char *data )
+vi_rc AddLabel( sfile *sf, labels *lab, char *data )
 {
-    int         j,i;
+    int         j, i;
     char        tmp[MAX_SRC_LINE];
 
     /*
      * find label name
      */
-    if( (j=NextWord1( data, tmp )) <= 0 ) {
+    if( (j = NextWord1( data, tmp )) <= 0 ) {
         return( ERR_SRC_INVALID_LABEL );
     }
-    if( (i=findLabel( lab, tmp )) >= 0 ) {
+    if( (i = findLabel( lab, tmp )) >= 0 ) {
         return( ERR_NO_ERR );
     }
 
     /*
      * reallocate buffers
      */
-    lab->name = MemReAlloc( lab->name, (lab->cnt+1) * sizeof(char *) );
-    lab->pos = MemReAlloc( lab->pos, (lab->cnt+1) * sizeof( struct sfile *) );
+    lab->name = MemReAlloc( lab->name, (lab->cnt + 1) * sizeof( char * ) );
+    lab->pos = MemReAlloc( lab->pos, (lab->cnt + 1) * sizeof( struct sfile * ) );
 
     /*
      * set name and position of label
      */
-    AddString( &(lab->name[ lab->cnt ]), tmp );
+    AddString( &(lab->name[lab->cnt]), tmp );
     lab->pos[lab->cnt] = sf;
-    lab->cnt ++;
+    lab->cnt++;
     return( ERR_NO_ERR );
 
 } /* AddLabel */
@@ -104,7 +102,7 @@ static int findLabel( labels *lab, char *dest )
 {
     int i;
 
-    for( i=0;i<lab->cnt;i++ ) {
+    for( i = 0; i < lab->cnt; i++ ) {
         if( !stricmp( dest, lab->name[i] ) )  {
             return( i );
         }

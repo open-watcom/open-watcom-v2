@@ -449,10 +449,19 @@ static boolean analyseMemberExpr( // ANALYSE A MEMBER EXPRESION
     expr = *a_expr;
     if( expr->op == PT_ERROR ) {
         retn = FALSE;
+    } else if( NodeIsBinaryOp( expr->u.subtree[1], CO_TEMPLATE ) ) {
+        DbgAssert( expr->u.subtree[1]->u.subtree[0]->op == PT_SYMBOL );
+        sym = expr->u.subtree[1]->u.subtree[0]->u.symcg.symbol;
+        expr->type = sym->sym_type;
+
+        DbgAssert( NULL != FunctionDeclarationType( sym->sym_type ) );
+        retn = analyseFunction( expr->u.subtree[1],
+                                expr->u.subtree[1]->u.subtree[0] );
     } else {
         DbgAssert( expr->u.subtree[1]->op == PT_SYMBOL );
         sym = expr->u.subtree[1]->u.symcg.symbol;
         expr->type = sym->sym_type;
+
         if( NULL != FunctionDeclarationType( sym->sym_type ) ) {
             retn = analyseFunction( expr, expr->u.subtree[1] );
         } else if( SymIsStaticDataMember( sym ) || SymIsEnumeration( sym ) ) {
@@ -517,8 +526,17 @@ static boolean analyseMember(   // ANALYSE A MEMBER NODE
                                                 , TF1_NULL );
         retn = checkConversionLookup( result, member, expr );
     } else {
-        result = ScopeFindScopedMember( start, disamb, member->u.id.name );
-        retn = checkIdLookup( result, start, member, expr );
+        if( member->op == PT_ID ) {
+            result = ScopeFindScopedMember( start, disamb, member->u.id.name );
+            retn = checkIdLookup( result, start, member, expr );
+        } else if( NodeIsBinaryOp( member, CO_TEMPLATE )
+                && ( member->u.subtree[0]->op == PT_ID ) ) {
+            result = ScopeFindScopedMember( start, disamb,
+                                            member->u.subtree[0]->u.id.name );
+            retn = checkIdLookup( result, start, member->u.subtree[0], expr );
+        } else {
+            DbgAssert( 0 );
+        }
     }
     if( retn ) {
         retn = analyseMemberExpr( a_expr );
@@ -538,6 +556,12 @@ static boolean simpleTypeDtor(  // TEST IF DTOR OF A SIMPLE TYPE
     right = PTreeOpRight( expr );
     if( ( right->op == PT_ID )
       &&( right->cgop == CO_NAME_DTOR ) ) {
+        if( TypedefRemove( type )->id == TYP_VOID ) {
+            CErr1( ERR_DTOR_TYPE_VOID );
+        } else if( ! TypesIdentical( type,
+                                     expr->u.subtree[1]->type ) ) {
+            CErr1( ERR_INVALID_SCALAR_DESTRUCTOR );
+        }
         retn = TRUE;
     } else {
         retn = FALSE;
@@ -633,6 +657,19 @@ static boolean analyseMembRight(// ANALYSE MEMBER ON RIGHT
                 }
             } else if( right->op == PT_SYMBOL ) {
                 // this will be the form from datainit.c
+                retn = analyseMemberExpr( a_expr );
+            } else if( NodeIsBinaryOp( right, CO_TEMPLATE )
+                    && ( right->u.subtree[0]->op == PT_ID ) ) {
+                disamb = NULL;
+                retn = analyseMember( a_expr, scope, disamb );
+            } else if( NodeIsBinaryOp( right, CO_TEMPLATE )
+                    && ( right->u.subtree[0]->op == PT_SYMBOL ) ) {
+                // TODO
+#ifndef NDEBUG
+                void DumpPTree( PTREE );
+                printf("%s:%d\n", __FILE__, __LINE__);
+                DumpPTree( right );
+#endif
                 retn = analyseMemberExpr( a_expr );
 #ifndef NDEBUG
             } else {
@@ -730,10 +767,10 @@ static boolean analyseClQual(   // ANALYSE :: operator
     expr = *a_expr;
     right = expr->u.subtree[1];
     if( expr->u.subtree[0] == NULL ) {
-        start = FileScope;
-        disam = FileScope;
+        start = GetFileScope();
+        disam = GetFileScope();
     } else {
-        start = CurrScope;
+        start = GetCurrScope();
         DbgAssert( NodeIsBinaryOp( expr, CO_COLON_COLON ) );
         DbgAssert( expr->u.subtree[0] != NULL );
         DbgAssert( expr->u.subtree[0]->op == PT_TYPE );
@@ -792,13 +829,13 @@ boolean AnalyseLvalue(          // ANALYSE AN LVALUE
             retn = FALSE;
         } else {
             if( isUDF( expr ) ) {
-                result = ScopeFindNakedConversion( CurrScope
+                result = ScopeFindNakedConversion( GetCurrScope()
                                                  , expr->type
                                                  , TF1_NULL );
                 retn = checkConversionLookup( result, expr, expr );
             } else {
-                result = ScopeFindNaked( CurrScope, expr->u.id.name );
-                retn = checkIdLookup( result, CurrScope, expr, expr );
+                result = ScopeFindNaked( GetCurrScope(), expr->u.id.name );
+                retn = checkIdLookup( result, GetCurrScope(), expr, expr );
             }
             if( ! retn ) break;
             retn = analyseSymbol( a_expr );
@@ -818,6 +855,10 @@ boolean AnalyseLvalue(          // ANALYSE AN LVALUE
         break;
     }
     DbgAssert( DbgIsBoolean( retn ) );
+    if( retn ) {
+        (*a_expr)->type =
+            BindTemplateClass( (*a_expr)->type, &(*a_expr)->locn, FALSE );
+    }
     return retn;
 }
 
@@ -866,7 +907,7 @@ PTREE AnalyseLvArrow(           // ANALYSE LVALUE "->"
      || AnalyseLvalue( &expr->u.subtree[0] ) ) {
         if( expr->type == NULL ) {
             PTREE orig = expr;
-            orig = OverloadOperator( orig );
+            //orig = OverloadOperator( orig );
             if( orig->op != PT_ERROR ) {
                 type = analyseClPtrLeft( &orig );
                 if( analyseMembRight( &orig, type ) ) {
@@ -1006,7 +1047,7 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
     SCOPE scope;                // - search scope
     SEARCH_RESULT *result;      // - search result
 
-    type = expr->u.subtree[0]->type;
+    type = BindTemplateClass( expr->u.subtree[0]->type, &expr->locn, FALSE );
     field = PtdGetOffsetofExpr( expr );
     DbgAssert( field != NULL );
     offset = 0;

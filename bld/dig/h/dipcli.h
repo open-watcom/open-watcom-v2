@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP client callback function prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef _DIPCLI_H_INCLUDED
-#define _DIPCLI_H_INCLUDED
-#include "digpck.h"
+#ifndef DIPCLI_H_INCLUDED
+#define DIPCLI_H_INCLUDED
+
 #include "diptypes.h"
 #include "digcli.h"
 
@@ -48,5 +47,5 @@ void            DIGCLIENT DIPCliAddrSection( address * );
 void            DIGCLIENT DIPCliStatus( dip_status );
 
 mad_handle      DIGCLIENT DIPCliCurrMAD(void);
-#include "digunpck.h"
+
 #endif

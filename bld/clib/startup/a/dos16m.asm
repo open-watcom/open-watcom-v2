@@ -24,20 +24,18 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS/16M 16-bit protected mode startup code.
 ;*
 ;*****************************************************************************
 
 
 ;
-; startup code for WATCOM C/C++16 and WATCOM FORTRAN 77
-;        under Rational's DOS/16M
-;
 ;  To reassemble this file for DOS/16M, use the following command:
 ;               wasm dos16m -bt=DOS -ml -2r
 ;
         .286p
+
+include xinit.inc
 
         name    dos16m
         .dosseg
@@ -55,7 +53,7 @@
 public  __acrtused              ; trick to lend harmony to dealings with
         __acrtused = 9876h      ; DOS16LIB
 
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK,verylast
+DGROUP  group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK,verylast
 
 _TEXT   segment word public 'CODE'
 
@@ -216,22 +214,45 @@ YIE     ends
 _DATA   segment word public 'DATA'
 
         extrn   ___d16_selectors:far
+        extrn   "C",__uselfn:byte
+
+        public  __ovlflag
+        public  __intno
+        public  __ovlvec
+
+        public  "C",_curbrk
+        public  "C",_psp
+        public  "C",_osmajor
+        public  "C",_osminor
+        public  "C",_osmode
+        public  "C",_HShift
+        public  "C",_STACKLOW
+        public  "C",_STACKTOP
+        public  "C",_cbyte
+        public  "C",_child
+        public  __no87
+        public  __get_ovl_stack
+        public  __restore_ovl_stack
+        public  __close_ovl_file
+        public  "C",__FPE_handler
+        public  "C",_LpCmdLine
+        public  "C",_LpPgmName
+
 _curbrk     dw 0                ; top of usable memory
 _psp        dw 0                ; segment addr of program segment prefix
 _osmajor    db 0                ; major DOS version number
 _osminor    db 0                ; minor DOS version number
-__osmode    db 1                ; 0 => DOS real mode, 1 =>protect mode
-__HShift    db 3                ; Huge Shift amount (real-mode=12,prot-mode=3)
+_osmode     db 1                ; 0 => DOS real mode, 1 =>protect mode
+_HShift     db 3                ; Huge Shift amount (real-mode=12,prot-mode=3)
 _STACKLOW   dw 0                ; lowest address in stack
 _STACKTOP   dw 0                ; highest address in stack
 _cbyte      dw 0                ; used by getch, getche
 _child      dw 0                ; non-zero => a spawned process is running
-__no87      dw 0                ; non-zero => "NO87" enviroment var present
+__no87      db 0                ; non-zero => "NO87" enviroment var present
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer
 __close_ovl_file dw 0,0         ; close the overlay file handle
- __FPE_handler label dword
-___FPE_handler dw 0,0           ; FPE handler
+__FPE_handler dd 0              ; FPE handler
 _LpCmdLine dw 0,0               ; lpCmdLine (for _argc, _argv processing)
 _LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
 
@@ -241,28 +262,6 @@ _LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
 __ovlflag  db 0                 ; non-zero => program is overlayed
 __intno    db 0                 ; interrupt number used by MS Overlay Manager
 __ovlvec   dd 0                 ; saved contents of interrupt vector used
-        public  __ovlflag
-        public  __intno
-        public  __ovlvec
-
-        public  "C",_curbrk
-        public  "C",_psp
-        public  "C",_osmajor
-        public  "C",_osminor
-        public  __osmode
-        public  __HShift
-        public  "C",_STACKLOW
-        public  "C",_STACKTOP
-        public  "C",_cbyte
-        public  "C",_child
-        public  __no87
-        public  __get_ovl_stack
-        public  __restore_ovl_stack
-        public  __close_ovl_file
-        public   __FPE_handler
-        public  ___FPE_handler
-        public  "C",_LpCmdLine
-        public  "C",_LpPgmName
 
 _DATA   ends
 
@@ -272,8 +271,8 @@ DATA    ends
 BCSD    segment word public 'DATA'
 BCSD    ends
 
-_BSS          segment word public 'BSS'
-_BSS          ends
+_BSS    segment word public 'BSS'
+_BSS    ends
 
 STACK_SIZE      equ    1000h
 
@@ -295,7 +294,7 @@ verylast ends
 
         assume  cs:_TEXT
 
- _startup_ proc near
+_startup_ proc near
         dd      stackavail_
 _cstart_:
         jmp     around
@@ -303,20 +302,17 @@ _cstart_:
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++16 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      ' All rights reserved.'
+include msgrt16.inc
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
-NullAssign      db      0dh,0ah,'*** NULL assignment detected',0dh,0ah,0
-
-NoMemory        db      'Not enough memory',0dh,0ah,0
-ConsoleName     db      'con',00h
-
-__OurDS         dw      0
-
-msg_notPM db    'requires DOS/16M', 0Ah, 0Dh, '$'
+NullAssign      db      '*** NULL assignment detected',0
+NoMemory        db      'Not enough memory',0
+ConsoleName     db      'con',0
+NewLine         db      0Dh,0Ah
+msg_notPM       db      'requires DOS/16M', 0Dh, 0Ah, '$'
 
 _Not_Enough_Memory_:
         mov     bx,1                    ; - set exit code
@@ -371,7 +367,7 @@ not64k:                                 ; endif
         mov     ch,0
         cld                             ; set direction forward
         mov     al,' '
-        rep     scasb
+        repe    scasb
         lea     si,-1[di]
 
         mov     dx,DGROUP
@@ -434,7 +430,9 @@ nopgmname:                              ; endif
         mov     dx,DGROUP
         mov     ds,dx
         mov     es,dx
-        mov     __no87,bp               ; set state of "NO87" environment var
+        mov     ax,bp
+        mov     __no87,al               ; set state of "NO87" environment var
+        and     __uselfn,ah             ; set "LFN" support status
         mov     _STACKLOW,di            ; save low address of stack
 
         mov     cx,offset DGROUP:_end   ; end of _BSS segment (start of STACK)
@@ -458,8 +456,8 @@ _is_ovl:                                ; endif
         mov     bp,sp                   ; ...
         ; DON'T MODIFY BP FROM THIS POINT ON!
         mov     ax,offset __null_FPE_rtn; initialize floating-point exception
-        mov     ___FPE_handler,ax       ; ... handler address
-        mov     ___FPE_handler+2,cs     ; ...
+        mov     word ptr __FPE_handler,ax       ; ... handler address
+        mov     word ptr __FPE_handler+2,cs     ; ...
 
         mov     ax,0ffh                 ; run all initializers
         call    __FInitRtns             ; call initializer routines
@@ -498,8 +496,8 @@ __do_exit_with_msg__:
         push    bx                      ; save return code
         push    ax                      ; save address of msg
         push    dx                      ; . . .
-        mov     dx,_TEXT
-        mov     ds,dx
+        mov     di,cs
+        mov     ds,di
         mov     dx,offset ConsoleName
         mov     ax,03d01h               ; write-only access to screen
         int     021h
@@ -516,6 +514,11 @@ L3:     lodsb                           ; get char
         dec     cx                      ; . . .
         mov     ah,040h                 ; write out the string
         int     021h                    ; . . .
+        mov     ds,di
+        mov     dx,offset NewLine       ; write out the new line
+        mov     cx,sizeof NewLine       ; . . .
+        mov     ah,040h                 ; . . .
+        int     021h                    ; . . .
         pop     ax                      ; restore return code
 ok:
         mov     dx,DGROUP               ; get access to DGROUP
@@ -531,7 +534,7 @@ ok:
 no_ovl:                                 ; endif
         push    ax                      ; save return code
         mov     ax,00h                  ; run finalizers
-        mov     dx,0fh                  ; less than exit
+        mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FFiniRtns             ; call finalizer routines
         pop     ax                      ; restore return code
         mov     ah,04cH                 ; DOS call to exit with return code

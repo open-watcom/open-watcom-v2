@@ -37,7 +37,7 @@
 #include "dbgadget.h"
 #include <string.h>
 
-extern brk              *BrkList;
+extern brkp             *BrkList;
 extern char             *TxtBuff;
 extern address          NilAddr;
 
@@ -47,13 +47,13 @@ extern void             RemoveBreak(address);
 extern bool             DlgBreak(address);
 extern char             *AddrLineNum( address *addr, char *buff );
 extern char             *DeAliasAddrModName( address *addr, char *buff );
-extern void             FileBreakGadget( a_window *, wnd_line_piece *line, bool curr, brk *bp );
+extern void             FileBreakGadget( a_window *, wnd_line_piece *line, bool curr, brkp *bp );
 extern int              AddrComp(address,address);
 extern bool             OpenGadget( a_window *, wnd_line_piece *, mod_handle, bool );
 extern bool             CheckOpenGadget( a_window*, wnd_row, bool, mod_handle, bool, int );
-extern void             GetBPText( brk *bp, char *buff );
-extern void             GetBPAddr( brk *bp, char *buff );
-extern void             ActPoint( brk *bp, bool act );
+extern void             GetBPText( brkp *bp, char *buff );
+extern void             GetBPAddr( brkp *bp, char *buff );
+extern void             ActPoint( brkp *bp, bool act );
 
 enum {
     #ifdef OPENER_GADGET
@@ -78,9 +78,9 @@ static gui_menu_struct BrkMenu[] = {
 };
 
 
-static brk      *BrkGetBP( int row )
+static brkp     *BrkGetBP( int row )
 {
-    brk         *bp;
+    brkp        *bp;
     int         count;
 
     count = 0;
@@ -95,42 +95,10 @@ static brk      *BrkGetBP( int row )
     return( bp );
 }
 
-
-static  WNDMODIFY       BrkModify;
-static void     BrkModify( a_window *wnd, int row, int piece )
-{
-    brk         *bp;
-
-    if( row < 0 ) {
-        BrkMenuItem( wnd, MENU_BREAK_CREATE_NEW, row, piece );
-        return;
-    }
-    bp = BrkGetBP( row );
-    if( bp == NULL ) return;
-    if( piece == PIECE_ACTIVE ) {
-        WndRowDirty( wnd, row );
-        WndBreak( wnd )->toggled_break = TRUE;
-        ActPoint( bp, !bp->status.b.active );
-#ifdef OPENER_GADGET
-    } else if( piece == PIECE_OPENER ) {
-        if( bp->size == 0 ) {
-            if( bp->source_line ) {
-                WndSrcInspect( bp->loc.addr );
-            } else {
-                WndAsmInspect( bp->loc.addr );
-            }
-        }
-#endif
-    } else {
-        WndFirstMenuItem( wnd, row, piece );
-    }
-}
-
-
 static  WNDMENU BrkMenuItem;
 static void     BrkMenuItem( a_window *wnd, unsigned id, int row, int piece )
 {
-    brk         *bp;
+    brkp        *bp;
 
     piece=piece;
     if( row < 0 ) {
@@ -176,10 +144,40 @@ static void     BrkMenuItem( a_window *wnd, unsigned id, int row, int piece )
     }
 }
 
+static  WNDMODIFY       BrkModify;
+static void     BrkModify( a_window *wnd, int row, int piece )
+{
+    brkp        *bp;
+
+    if( row < 0 ) {
+        BrkMenuItem( wnd, MENU_BREAK_CREATE_NEW, row, piece );
+        return;
+    }
+    bp = BrkGetBP( row );
+    if( bp == NULL ) return;
+    if( piece == PIECE_ACTIVE ) {
+        WndRowDirty( wnd, row );
+        WndBreak( wnd )->toggled_break = TRUE;
+        ActPoint( bp, !bp->status.b.active );
+#ifdef OPENER_GADGET
+    } else if( piece == PIECE_OPENER ) {
+        if( bp->size == 0 ) {
+            if( bp->source_line ) {
+                WndSrcInspect( bp->loc.addr );
+            } else {
+                WndAsmInspect( bp->loc.addr );
+            }
+        }
+#endif
+    } else {
+        WndFirstMenuItem( wnd, row, piece );
+    }
+}
+
 static WNDNUMROWS BrkNumRows;
 static int BrkNumRows( a_window *wnd )
 {
-    brk         *bp;
+    brkp        *bp;
     int         count;
 
     wnd=wnd;
@@ -194,7 +192,7 @@ static WNDGETLINE BrkGetLine;
 static  bool    BrkGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
-    brk                 *bp;
+    brkp                *bp;
     break_window        *wndbreak = WndBreak( wnd );
     bool                curr;
 
@@ -246,7 +244,7 @@ static void     BrkInit( a_window *wnd )
 {
     gui_ord             length,max;
     break_window        *wndbreak = WndBreak( wnd );
-    brk                 *bp;
+    brkp                *bp;
     int                 count;
 
     max = 0;
@@ -278,7 +276,7 @@ static void     BrkInit( a_window *wnd )
 static WNDREFRESH BrkRefresh;
 static void     BrkRefresh( a_window *wnd )
 {
-    brk         *bp;
+    brkp        *bp;
     int         row;
 
     if( ( WndFlags & ~(UP_OPEN_CHANGE|UP_MEM_CHANGE) ) & BrkInfo.flags ) {
@@ -295,7 +293,7 @@ static void     BrkRefresh( a_window *wnd )
     #ifdef OPENER_GADGET
     {
         int             i;
-        brk             *bp;
+        brkp            *bp;
         mod_handle      mh;
 
         if( WndFlags & UP_OPEN_CHANGE ) {
@@ -352,10 +350,10 @@ extern WNDOPEN WndBrkOpen;
 extern a_window *WndBrkOpen()
 {
     a_window            *wnd;
-    break_window        *brk;
+    break_window        *brkw;
 
-    brk = WndMustAlloc( sizeof( *brk ) );
-    wnd = DbgWndCreate( LIT( WindowBrk ), &BrkInfo, WND_BREAK, brk, &BrkIcon );
+    brkw = WndMustAlloc( sizeof( *brkw ) );
+    wnd = DbgWndCreate( LIT( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
     if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

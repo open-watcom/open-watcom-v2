@@ -179,7 +179,7 @@ extern void FixEnd( fixinfo *info );
 
 /********** the following are used for generating fixups *************/
 
-extern size_t FixGenFix( fixup *fix, char *buf, int type );
+extern size_t FixGenFix( fixup *fix, uint_8 *buf, int type );
 /*
     Create the binary representation of fix, for the OMF described by
     fixgen_type type, into buf.  Returns the number of bytes written.
@@ -187,9 +187,9 @@ extern size_t FixGenFix( fixup *fix, char *buf, int type );
 */
 
 
-extern size_t FixGenLRef( logref *log, char *buf, int type );
-extern size_t FixGenPRef( physref *phys, char *buf, int type );
-extern size_t FixGenRef( logphys *lp, int is_logical, char *buf, int type );
+extern size_t FixGenLRef( logref *log, uint_8 *buf, int type );
+extern size_t FixGenPRef( physref *phys, uint_8 *buf, int type );
+extern size_t FixGenRef( logphys *lp, int is_logical, uint_8 *buf, int type );
 /*
     Generate references.  See FixGenFix comment for details.
 */

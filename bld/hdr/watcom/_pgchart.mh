@@ -1,0 +1,6 @@
+::
+:: This file generates internal _pgchart.h header file
+:: used for build graphics library.
+::
+:keep INTERNAL
+:include watcom/pgchart.mh

@@ -24,64 +24,73 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of editor's global variables.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
-#include "colors.h"
-#include "keys.h"
+#include "menu.h"
+#include "ex.h"
 #include "rxsupp.h"
 
 /* strings */
-char near MSG_CHARACTERS[] = "characters";
-char near MSG_LINES[] = "lines";
-char near MSG_PRESSANYKEY[] = "Press any key";
-char near MSG_DELETEDINTOBUFFER[] = " deleted into buffer ";
-char near MEMORIZE_MODE[]="Memorize Mode ";
-char near CONFIG_FILE[] = CFG_NAME;
-char near SingleBlank[] = " ";
-char near SingleSlash[] = "/";
-char near *near BoolStr[] = { "FALSE", "TRUE" };
+char _NEAR      MSG_CHARACTERS[] = "characters";
+char _NEAR      MSG_LINES[] = "lines";
+char _NEAR      MSG_PRESSANYKEY[] = "Press any key";
+char _NEAR      MSG_DELETEDINTOBUFFER[] = " deleted into buffer ";
+char _NEAR      MEMORIZE_MODE[] = "Memorize Mode ";
+char _NEAR      CONFIG_FILE[] = CFG_NAME;
+char _NEAR      SingleBlank[] = " ";
+char _NEAR      SingleSlash[] = "/";
+char            * _NEAR BoolStr[] = { "FALSE", "TRUE" };
 
 /* edit options */
-char near *near EditOpts[] =  {
+char * _NEAR EditOpts[] =  {
     "<F1> Go To",
     "<F2> Edit",
     "<F3> Get All"
 };
-int NumEditOpts = (sizeof( EditOpts )/sizeof( char near * ) );
+int NumEditOpts = sizeof( EditOpts ) / sizeof( char _NEAR * );
+
+/* event data */
+#undef vi_pick
+#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) \
+    modeless, insert, command, nm_bits, bits,
+event _NEAR EventList[] = {
+#include "events.h"
+#undef vi_pick
+};
 
 /* mouse data */
+#if !defined( __UNIX__ )
 int             MouseRow;
 int             MouseCol;
-int             MouseSpeed=4;
 int             MouseStatus;
-int             MouseDoubleClickSpeed=3;
-int             MouseRepeatStartDelay=5;
+#endif
+int             MouseSpeed = 4;
+int             MouseDoubleClickSpeed = 3;
+int             MouseRepeatStartDelay = 5;
 int             MouseRepeatDelay;
-int             LastMouseEvent=-1;
+vi_mouse_event  LastMouseEvent = MOUSE_NONE;
 
 /* generic editing data */
-char            *FileEndString=NULL;
-char            *StatusString=NULL;
-int             MaxPush=15;
-int             Radix=10;
+char            *FileEndString = NULL;
+char            *StatusString = NULL;
+int             MaxPush = 15;
+int             Radix = 10;
 char            *WordDefn;
 char            *WordAltDefn;
-int             AutoSaveInterval=30;
+int             AutoSaveInterval = 30;
 long            NextAutoSave;
-int             PageLinesExposed=1;
+int             PageLinesExposed = 1;
 int             HalfPageLines;
 char            *GrepDefault;
-int             LastEvent;
-int             StackK=MIN_STACK_K;
-char            SpinCount;
-char            near SpinData[]="Ä\\|/";
-char            ExitAttr=7;
+vi_key          LastEvent;
+int             StackK = MIN_STACK_K;
+int             SpinCount;
+char            _NEAR SpinData[] = { '\xC4', '\\', '|', '/' };
+char            ExitAttr = 7;
 char            VideoPage;
 char            *EXEName;
 char            *Majick;
@@ -103,24 +112,21 @@ file            *CurrentFile;
 fcb             *CurrentFcb;
 line            *CurrentLine;
 line            *WorkLine;
-linenum         CurrentLineNumber=1;
-linenum         TopOfPage=1;
-int             CurrentColumn=1;
-int             LeftColumn;
-int             ColumnDesired=1;
-window_id       CurrentWindow=-1;
-window_id       MessageWindow=-1;
-window_id       StatusWindow=-1;
-window_id       MenuWindow=-1;
-window_id       CurrNumWindow=-1;
-int             LastEvent;
+i_mark          CurrentPos = { 1, 1 };
+i_mark          LeftTopPos = { 1, 0 };
+int             VirtualColumnDesired = 1;
+window_id       CurrentWindow = (window_id)-1;
+window_id       MessageWindow = (window_id)-1;
+window_id       StatusWindow = (window_id)-1;
+window_id       MenuWindow = (window_id)-1;
+window_id       CurrNumWindow = (window_id)-1;
 select_rgn      SelRgn;
-int             CursorBlinkRate=-1;
+int             CursorBlinkRate = -1;
 
 /*
  * directory data
  */
-direct_ent      * near DirFiles[MAX_FILES];
+direct_ent      * _NEAR DirFiles[MAX_FILES];
 int             DirFileCount;
 
 /*
@@ -170,7 +176,7 @@ key_map         *InputKeyMaps;
 /*
  * savebuf data
  */
-int             _NEAR SavebufBound[ MAX_SAVEBUFS ] =
+vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] =
                         { VI_KEY( CTRL_F1 ), VI_KEY( CTRL_F2 ),
                           VI_KEY( CTRL_F3 ), VI_KEY( CTRL_F4 ),
                           VI_KEY( CTRL_F5 ), VI_KEY( CTRL_F6 ),
@@ -178,10 +184,10 @@ int             _NEAR SavebufBound[ MAX_SAVEBUFS ] =
                           VI_KEY( CTRL_F9 ) };
 int             CurrentSavebuf = 0;     /* this is 0 based */
 char            LastSavebuf;    /* this is 1 based - users see it */
-savebuf         near Savebufs[ MAX_SAVEBUFS ];
-savebuf         near SpecialSavebufs[ MAX_SPECIAL_SAVEBUFS+1 ];
-savebuf         *WorkSavebuf = &SpecialSavebufs[ MAX_SPECIAL_SAVEBUFS ];
-int             SavebufNumber=NO_SAVEBUF; /* this is 0 based */
+savebuf         _NEAR Savebufs[MAX_SAVEBUFS];
+savebuf         _NEAR SpecialSavebufs[MAX_SPECIAL_SAVEBUFS + 1];
+savebuf         *WorkSavebuf = &SpecialSavebufs[MAX_SPECIAL_SAVEBUFS];
+int             SavebufNumber = NO_SAVEBUF; /* this is 0 based */
 
 /*
  * undo data
@@ -208,7 +214,7 @@ window_info filecw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
 window_info linenumw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
 window_info dirw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17};
+    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
 window_info filelistw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
 window_info setw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
@@ -246,7 +252,7 @@ window_info filecw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
 window_info linenumw_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 1, 21, 8, 24 };
 window_info dirw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
-    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17};
+    { BRIGHT_WHITE, BLACK, 0 }, 10, 2, 69, 17 };
 window_info filelistw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
     { BRIGHT_WHITE, BLACK, 0 }, 26, 2, 78, 18 };
 window_info setw_info = { 1, WHITE, BLACK, { WHITE, BLACK, 0 },
@@ -273,17 +279,17 @@ window_info activegreyedmenu_info = { 0, WHITE, BLACK, { WHITE, BLACK, 0 },
  * file io data
  */
 char            *TmpDir;
-char            *CommandBuffer=NULL;
+char            *CommandBuffer = NULL;
 char            *CurrentDirectory;
 char            *HomeDirectory;
 char            *ReadBuffer;
 char            *WriteBuffer;
-char            *SwapBlocks;
-int             SwapFileHandle=-1;
+unsigned char   *SwapBlocks;
+int             SwapFileHandle = -1;
 int             SwapBlockArraySize;
 int             SwapBlocksInUse;
-int             MaxSwapBlocks=2048;
-int             MaxLine=512,MaxLinem1=511;
+int             MaxSwapBlocks = 2048;
+int             MaxLine = 512, MaxLinem1 = 511;
 char            *Comspec;
 
 /*
@@ -292,24 +298,24 @@ char            *Comspec;
 int             WrapMargin;
 short           *StatusSections;
 int             NumStatusSections;
-int             LastRetCode;
-long            LastRC;
+vi_rc           LastRetCode;
+vi_rc           LastRC;
 long            MaxMemFree;
 long            MaxMemFreeAfterInit;
 int             RegExpError;
 regexp          *CurrentRegularExpression;
-char            near crlf[] = { 13,10 };
-cursor_type     OverstrikeCursorType={100,100};
-cursor_type     InsertCursorType={50,0};
-cursor_type     NormalCursorType={7,0};
-char            * near MatchData[ MAX_SEARCH_STRINGS*2 ];
-int             MatchCount=INITIAL_MATCH_COUNT;
-int             LastError;
+char            _NEAR crlf[] = { 13, 10 };
+cursor_type     OverstrikeCursorType = { 100, 100 };
+cursor_type     InsertCursorType = { 50, 0 };
+cursor_type     NormalCursorType = { 7, 0 };
+char            * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
+int             MatchCount = INITIAL_MATCH_COUNT;
+vi_rc           LastError;
 int             LineNumWinWidth = 8;
 int             TabAmount = 8;
 int             ShiftWidth = 4;
 int             HardTab = 8;
-int             maxdotbuffer=1024;
+int             maxdotbuffer = 1024;
 vi_key          *DotBuffer;
 vi_key          *AltDotBuffer;
 vi_key          *DotCmd;
@@ -321,28 +327,28 @@ int             AltDotCount;
 volatile long   ClockTicks;
 int             RepeatDigits;
 bool            NoRepeatInfo;
-char            near RepeatString[MAX_REPEAT_STRING];
+char            _NEAR RepeatString[MAX_REPEAT_STRING];
 int             SourceErrCount;
-char            near SpawnPrompt[ MAX_STR ];
+char            _NEAR SpawnPrompt[MAX_STR];
 
 /*
  * windowing data
  */
-int             CurrentStatusColumn=56;
-int             ClockX=74,ClockY;
-int             SpinX=68,SpinY;
-char            *TileColors;
-int             MaxTileColors=10;
+int             CurrentStatusColumn = 56;
+int             ClockX = 74, ClockY = 0;
+int             SpinX = 68, SpinY = 0;
+type_style      *TileColors;
+int             MaxTileColors = 10;
 int             MaxWindowTileX = 3;
-int             MaxWindowTileY=1;
-int             MoveColor=CYAN;
-int             ResizeColor=YELLOW;
-int             InactiveWindowColor=WHITE;
-char            WindMaxWidth=80;
-char            WindMaxHeight=25;
+int             MaxWindowTileY = 1;
+vi_color        MoveColor = CYAN;
+vi_color        ResizeColor = YELLOW;
+vi_color        InactiveWindowColor = WHITE;
+short           WindMaxWidth = 80;
+short           WindMaxHeight = 25;
 int             ToolBarButtonHeight = 24;
 int             ToolBarButtonWidth = 24;
-int             ToolBarColor = 1;
+vi_color        ToolBarColor = BLUE;
 char            EndOfLineChar = 0;
 
 /*

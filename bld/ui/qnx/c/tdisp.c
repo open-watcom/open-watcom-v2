@@ -69,19 +69,27 @@
     #define _fmemcpy memcpy
 #endif
 
+extern  unsigned    UIDisableShiftChanges;
+extern  unsigned    UIDisableShiftChanges;
 
-extern  char            *GetTermType(void);
+extern  char        *GetTermType( void );
+extern  LPPIXEL     asmNonBlankEnd( LPPIXEL, int, PIXEL );
+extern  void        newcursor( void );
+extern  EVENT       tk_keyboardevent( void );
 
 // this is handy for those functions that do *almost* the same thing
 // for the two terminal types
-static bool             TermIsQNXTerm;
+static bool         TermIsQNXTerm;
 
-bool    UserForcedTermRefresh= FALSE;
+bool    UserForcedTermRefresh = FALSE;
 
-bool TermCheck()
-/***************/
+static void         TI_SETATTR( void );
+static int          new_attr(int nattr, int oattr);
+static int          ti_refresh( int must );
+
+bool TermCheck( void )
+/********************/
 {
-    extern unsigned UIDisableShiftChanges;
     char        *term;
 
     term = GetTermType();
@@ -92,11 +100,9 @@ bool TermCheck()
     return( TRUE );
 }
 
-bool TInfCheck()
-/***************/
+bool TInfCheck( void )
+/********************/
 {
-    extern unsigned     UIDisableShiftChanges;
-
     // Check to see if the term variable is set
     if( GetTermType()[0]!='\0' ){
         UIDisableShiftChanges= TRUE;
@@ -118,7 +124,7 @@ struct ostream {
 
 static struct ostream _con_out;
 
-static ostream_init(int f)
+static bool ostream_init( int f )
 {
         if ((_con_out.sbuf = malloc(2048)) == 0) {
                 return( FALSE );
@@ -131,7 +137,7 @@ static ostream_init(int f)
 #define __putchar(_c) ((_con_out.curp < _con_out.ebuf) ? \
                         (*_con_out.curp++ = (_c)) : __oflush(_c))
 
-static __flush(void)
+static void __flush( void )
 {
         int     len = _con_out.curp - _con_out.sbuf;
         int     offs = 0;
@@ -147,14 +153,14 @@ static __flush(void)
         _con_out.curp = _con_out.sbuf;
 }
 
-static __oflush(int c)
+static int __oflush( int c )
 {
         __flush();
         //assert( _con_out.curp < _con_out.ebuf );
         return __putchar(c);
 }
 
-static __puts(char *s)
+static void __puts( char *s )
 {
         int     c;
         if( s==NULL )return;
@@ -191,14 +197,14 @@ static __puts(char *s)
  */
 
 
-static QNX_CURSOR_MOVE(register int c, register int r)
+static void QNX_CURSOR_MOVE( register int c, register int r )
 {
     __putchar(033); __putchar('=');
     __putchar(r+' ');
     __putchar(c+' ');
 }
 
-static QNX_SETCOLOUR(register int f, register int b)
+static void QNX_SETCOLOUR( register int f, register int b )
 {
     __putchar(033); __putchar('@');
     __putchar('0' + f);
@@ -283,7 +289,7 @@ static bool TIARev=     0;      // inverted (reverse)
 static bool TIAACS=     0;      // alternate character set
 
 // True if clearing/filling operations will use the current back colour
-static TI_FillColourSet= FALSE;
+static bool TI_FillColourSet= FALSE;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         putp( cursor_invisible )
@@ -568,7 +574,7 @@ static void TI_CURSOR_MOVE( register int c, register int r )
 static void TI_SETCOLOUR( register int f, register int b )
 {
     // an array of colour brightnesses
-    static      colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
+    static char colorpri[]={ 0, 1, 4, 2, 6, 5, 3, 7 };
 
     if( TCAP_MONOCHROME ){
         // simulate colour using reverse (this assumes background is
@@ -599,7 +605,7 @@ static void TI_SETCOLOUR( register int f, register int b )
     }
 }
 
-static TI_SETATTR( void )
+static void TI_SETATTR( void )
 {
     // we have to reset attributes as some terminals can't turn off
     // attributes with "set_attribues"
@@ -631,7 +637,6 @@ QNXDebugPrintf0("[~~~~~~]\n");
         if( TIABold )   putp( enter_bold_mode );
         if( TIAACS )    putp( enter_alt_charset_mode );
     }
-    return 0;
 }
 
 
@@ -724,7 +729,7 @@ static  PIXEL __FAR *shadow;
 static  int   save_cursor_type;
 
 static bool setupscrnbuff( int srows, int scols )
-/*********************************/
+/***********************************************/
 {
     static const PIXEL blank = {' ', 7};
     PIXEL __FAR   *scrn;
@@ -801,7 +806,7 @@ static bool setupscrnbuff( int srows, int scols )
 
 static volatile int SizePending;
 
-static void size_handler(int signo)
+static void size_handler( int signo )
 /***********************************/
 {
     signo = signo;
@@ -809,8 +814,8 @@ static void size_handler(int signo)
 }
 
 
-static EVENT td_sizeevent()
-/**********************/
+static EVENT td_sizeevent( void )
+/*******************************/
 {
     SAREA           area;
 
@@ -829,8 +834,8 @@ static EVENT td_sizeevent()
 
 
 #if 0
-static bool intern td_initconsole()
-/******************************/
+static bool intern td_initconsole( void )
+/***************************************/
 {
     if( !ostream_init(UIConHandle) ) return( FALSE );
     QNX_NOWRAP();
@@ -842,7 +847,7 @@ static bool intern td_initconsole()
 #endif
 
 static bool intern td_initconsole( void )
-/********************/
+/***************************************/
 {
     if( !ostream_init( UIConHandle ) ) return( FALSE );
 
@@ -873,8 +878,8 @@ static bool intern td_initconsole( void )
     return( TRUE );
 }
 
-static int intern initmonitor()
-/***********************/
+int intern initmonitor( void )
+/****************************/
 {
     UIData->colour = M_VGA;
     /* notify if screen size changes */
@@ -884,8 +889,8 @@ static int intern initmonitor()
 
 
 #if 0
-static int td_init()
-/*******************/
+static int td_init( void )
+/************************/
 {
     if (UIData == NULL) {
         UIData = &ui_data;
@@ -907,8 +912,8 @@ static int td_init()
 }
 #endif
 
-static int td_init()
-/*******/
+static int td_init( void )
+/************************/
 {
     int         rows, cols;
     char        *tmp;
@@ -961,8 +966,8 @@ static int td_init()
 
 
 #if 0
-static int td_fini()
-/********************/
+static int td_fini( void )
+/************************/
 {
     QNX_RESTORE_ATTR();
     QNX_HOME();
@@ -975,8 +980,8 @@ static int td_fini()
 }
 #endif
 
-static int td_fini()
-/********************/
+static int td_fini( void )
+/************************/
 {
     TI_RESTORE_ATTR();
     TI_HOME();
@@ -1004,7 +1009,7 @@ static struct {
 } dirty;
 
 
-static int td_update(SAREA *area)
+static int td_update( SAREA *area )
 {
     if (!area) {
 QNXDebugPrintf0("td_update: no arg");
@@ -1032,8 +1037,8 @@ QNXDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
 }
 
 
-static td_hwcursor()
-/***********/
+static void td_hwcursor( void )
+/*****************************/
 {
     switch (UIData->cursor_type) {
     case C_OFF:
@@ -1048,11 +1053,10 @@ static td_hwcursor()
     }
     QNX_CURSOR_MOVE(UIData->cursor_col, UIData->cursor_row);
     __flush();
-    return 0;
 }
 
-static ti_hwcursor()
-/***********/
+static void ti_hwcursor( void )
+/*****************************/
 {
     // Set cursor to correct visibility
     switch( UIData->cursor_type ){
@@ -1076,12 +1080,11 @@ static ti_hwcursor()
     }
 
     __flush();
-    return 0;
 }
 
 
-static int td_refresh(int must)
-/***********************************/
+static int td_refresh( int must )
+/*******************************/
 {
         int             i;
         int             incr;
@@ -1166,7 +1169,6 @@ QNXDebugPrintf2("cursor address %d,%d\n",j,i);
                             ralt= ti_alt_map(c);}
 
 
-extern LPPIXEL asmNonBlankEnd( LPPIXEL, int, PIXEL );
 #define NonBlankEnd(b,n,c) (((c).ch==' ')?(asmNonBlankEnd((b),(n),(c))):(b))
 
 #ifdef __386__
@@ -1190,8 +1192,8 @@ extern LPPIXEL asmNonBlankEnd( LPPIXEL, int, PIXEL );
 #endif
 
 
-void update_shadow(void)
-/**********************/
+void update_shadow( void )
+/************************/
 {
     LPPIXEL     bufp, sbufp;    // buffer and shadow buffer
     int         incr= UIData->screen.increment;
@@ -1217,7 +1219,7 @@ void update_shadow(void)
 
 
 static int ti_refresh( int must )
-/********************/
+/*******************************/
 {
     int         i;
     int         incr;           // chars per line
@@ -1464,7 +1466,7 @@ static int ti_refresh( int must )
                 if( !TI_ignore_bottom_right || (j!=UIData->width-1) ||
                                                     (i!=UIData->height-1) ){
                     // slurp up the char
-                    TI_SLURPCHAR( bufp[j].ch );
+                    TI_SLURPCHAR( (unsigned char)(bufp[j].ch) );
                     OldCol++;
 
                     // if we walk off the edge our position is undefined
@@ -1487,7 +1489,7 @@ static int ti_refresh( int must )
 }
 
 
-static int new_attr(int nattr, int oattr)
+static int new_attr( int nattr, int oattr )
 {
         union {
             unsigned char       attr;
@@ -1543,7 +1545,7 @@ static int new_attr(int nattr, int oattr)
 }
 
 static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
-/*********************************************/
+/**************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -1553,9 +1555,8 @@ static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
 }
 
 static int td_setcur( ORD row, ORD col, int typ, int attr )
-/********************************************/
+/*********************************************************/
 {
-    extern void newcursor(void);
     attr = attr;
 
     if( ( typ != UIData->cursor_type ) ||
@@ -1575,9 +1576,8 @@ static int td_setcur( ORD row, ORD col, int typ, int attr )
 }
 
 
-EVENT td_event()
+EVENT td_event( void )
 {
-    extern      EVENT tk_keyboardevent();
     EVENT       ev;
 
     ev = td_sizeevent();

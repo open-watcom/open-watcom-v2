@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _setviewport( short x1, short y1, short x2, short y2 )
+_WCRTLINK void _WCI86FAR _CGRAPH _setviewport( short x1, short y1, short x2, short y2 )
 /*======================================================================
 
    This routine sets the clip region and moves the origin to the top left

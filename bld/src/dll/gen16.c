@@ -41,8 +41,8 @@ typedef long (FAR PASCAL *FARPROC2_WIN386_WEP)( int );
   typedef long (FAR CDECL *FARPROC2C)();
 #endif
 
-int PASCAL WinMain( HANDLE hInstance,
-                    HANDLE hPrevInstance,
+int PASCAL WinMain( HINSTANCE hInstance,
+                    HINSTANCE hPrevInstance,
                     LPSTR lpCmdLine,
                     int nCmdShow )
 {

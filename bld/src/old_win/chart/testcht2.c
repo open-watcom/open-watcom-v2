@@ -15,6 +15,6 @@ CALLBACKPTR             cbp;
 #endif
     cbp = GetProc16( (PROCPTR) FetchData, GETPROC_USERDEFINED_1 );
     SetWindowWord( hwnd, 0,
-                    ChartAdd( MakeProcInstance( cbp,
+                    ChartAdd( MakeProcInstance( (FARPROC)cbp,
                     GetWindowWord( hwnd, GWW_HINSTANCE ) ) ) );
 }

@@ -24,28 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Special 386 pointer types.
 *
 ****************************************************************************/
-
 
 
 #include "standard.h"
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "model.h"
 
-extern  type_def        *TypeAlias(cg_type,cg_type);
-extern  type_def        *TypeAddress( cg_type );
-
-// type_def THugeCP= {  T_HUGE_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
-type_def TLongCP= {  T_LONG_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
-type_def TNearCP= {  T_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
-type_def THugeP = {  T_HUGE_POINTER, 6,      TYPE_POINTER };
-type_def TLongP = {  T_LONG_POINTER, 6,      TYPE_POINTER };
-type_def TNearP = {  T_NEAR_POINTER, 4,      TYPE_POINTER };
+// type_def THugeCP= {  TY_HUGE_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
+type_def TLongCP= {  TY_LONG_CODE_PTR,6,      TYPE_POINTER + TYPE_CODE };
+type_def TNearCP= {  TY_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
+type_def THugeP = {  TY_HUGE_POINTER, 6,      TYPE_POINTER };
+type_def TLongP = {  TY_LONG_POINTER, 6,      TYPE_POINTER };
+type_def TNearP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 
 extern type_def *PTInteger;
 extern type_def *PTUnsigned;
@@ -53,30 +49,30 @@ extern type_def *PTPointer;
 extern type_def *PTCodePointer;
 
 
-extern  void    TargTypeInit() {
-/**************************/
+extern  void    TargTypeInit( void )
+/**********************************/
+{
+    TypeAlias( TY_UNSIGNED, TY_UINT_4 );
+    TypeAlias( TY_INTEGER, TY_INT_4 );
 
-    TypeAlias( T_UNSIGNED, T_UINT_4 );
-    TypeAlias( T_INTEGER, T_INT_4 );
-
-    PTInteger = TypeAddress( T_INT_4 );
-    PTUnsigned = TypeAddress( T_UINT_4 );
+    PTInteger = TypeAddress( TY_INT_4 );
+    PTUnsigned = TypeAddress( TY_UINT_4 );
 
     if( _IsTargetModel( BIG_CODE ) ) {
-        TypeAlias( T_CODE_PTR, T_LONG_CODE_PTR );
-        PTCodePointer = TypeAddress( T_LONG_CODE_PTR );
+        TypeAlias( TY_CODE_PTR, TY_LONG_CODE_PTR );
+        PTCodePointer = TypeAddress( TY_LONG_CODE_PTR );
     } else {
-        TypeAlias( T_CODE_PTR, T_NEAR_CODE_PTR );
-        PTCodePointer = TypeAddress( T_NEAR_CODE_PTR );
+        TypeAlias( TY_CODE_PTR, TY_NEAR_CODE_PTR );
+        PTCodePointer = TypeAddress( TY_NEAR_CODE_PTR );
     }
     if( _IsTargetModel( BIG_DATA ) ) {
-        TypeAlias( T_POINTER, T_LONG_POINTER );
-        PTPointer = TypeAddress( T_LONG_POINTER );
+        TypeAlias( TY_POINTER, TY_LONG_POINTER );
+        PTPointer = TypeAddress( TY_LONG_POINTER );
     } else {
-        TypeAlias( T_POINTER, T_NEAR_POINTER );
-        PTPointer = TypeAddress( T_NEAR_POINTER );
+        TypeAlias( TY_POINTER, TY_NEAR_POINTER );
+        PTPointer = TypeAddress( TY_NEAR_POINTER );
     }
-    TypeAlias( T_NEAR_INTEGER, T_INT_4 );
-    TypeAlias( T_LONG_INTEGER, T_INT_4 );
-    TypeAlias( T_HUGE_INTEGER, T_INT_4 );
+    TypeAlias( TY_NEAR_INTEGER, TY_INT_4 );
+    TypeAlias( TY_LONG_INTEGER, TY_INT_4 );
+    TypeAlias( TY_HUGE_INTEGER, TY_INT_4 );
 }

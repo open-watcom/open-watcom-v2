@@ -24,46 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Case insensitive filename comparison functions.
 *
 ****************************************************************************/
 
-
 /*
-    Motivation:
-
-        OS/2 preserves the case of filenames, so it would be nice if
-        our utilities also preserved the case of filenames.
-*/
+ *  Motivation:
+ *      OS/2 preserves the case of filenames, so it would be nice if
+ *      our utilities also preserved the case of filenames.
+ */
 
 #include <ctype.h>
 #include <string.h>
 #include "fnutils.h"
 
-
 #undef FNameCompare
-int FNameCompare( const char *a, const char *b ) {
-
 /* compare two filenames */
-
+int FNameCompare( const char *a, const char *b )
+{
     return( stricmp( a, b ) );
 }
 
 
 #undef FNameCompareN
-int FNameCompareN( const char *a, const char *b, size_t len ) {
-
 /* compare two filenames */
-
+int FNameCompareN( const char *a, const char *b, size_t len )
+{
     return( strnicmp( a, b, len ) );
 }
 
 
 #undef FNameCharCmp
-int FNameCharCmp( char a, char b ) {
-
-/* compare two filenames */
-
+/* compare a pair of filename characters */
+int FNameCharCmp( char a, char b )
+{
     return( tolower( a ) - tolower( b ) );
 }

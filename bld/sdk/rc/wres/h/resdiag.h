@@ -45,10 +45,6 @@
 #include "resnamor.h"
 #include "layer0.h"
 
-#ifdef __ALPHA__
-#pragma pack(1);
-#endif
-
 typedef uint_32     DialogStyle;
 typedef uint_32     DialogExstyle;
 
@@ -112,10 +108,7 @@ typedef uint_32     DialogExstyle;
 
 #endif
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct DialogSizeInfo {
     uint_16             x;
     uint_16             y;
@@ -133,12 +126,9 @@ typedef struct DialogBoxHeader {
     uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
     char *              FontName;       /* only here if (Style & DS_SETFONT) */
 } _WCUNALIGNED DialogBoxHeader;
+#include "poppck.h"
 
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#include "pshpk2.h"
-#endif
-
+#include "pushpck2.h"
 typedef struct DialogBoxHeader32 {
     DialogStyle           Style;
     uint_32               ExtendedStyle;
@@ -160,12 +150,9 @@ typedef struct DialogExHeader32 {
     char                FontItalicDefined;
     char                FontExtraDefined;
 } DialogExHeader32;
+#include "poppck.h"
 
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef union ControlClass {
     uint_8              Class;          /* if (class & 0x80) */
     char                ClassName[1];   /* '\0' terminated */
@@ -179,12 +166,9 @@ typedef struct DialogBoxControl {
     ResNameOrOrdinal   *Text;
     uint_8              ExtraBytes;         /* should be 0 */
 } _WCUNALIGNED DialogBoxControl;
+#include "poppck.h"
 
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#include "pshpk2.h"
-#endif
-
+#include "pushpck2.h"
 typedef struct DialogBoxControl32 {
     uint_32               Style;
     uint_32               ExtendedStyle;
@@ -205,11 +189,7 @@ typedef struct DialogBoxExControl32 {
     ResNameOrOrdinal     *Text;
     uint_16               ExtraBytes;
 } DialogBoxExControl32;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-//#include "pshpk1.h"
-#endif
+#include "poppck.h"
 
 /* predefined classes for controls */
 #define CLASS_BUTTON    0x80
@@ -242,7 +222,4 @@ extern int ResWriteDialogExHeader32( DialogBoxHeader32 *head,
 extern int ResWriteDialogExControl32( DialogBoxExControl32 *control,
                                         WResFileID );
 
-#ifdef __ALPHA__
-#pragma pack();
-#endif
 #endif

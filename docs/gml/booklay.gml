@@ -1,0 +1,204 @@
+:LAYOUT.
+:PAGE
+	top_margin='.37i'
+	depth='8.50i'
+:DEFAULT
+	input_esc='~'
+:XMP
+	pre_skip=0
+	post_skip=0
+	font=4
+:FIG
+	font=4
+:FN
+	align = '0.25i'
+	skip = 0
+	font = 1
+:P
+	post_skip=0
+:PC
+	pre_skip=1
+	post_skip=0
+:DL
+	left_indent='0.0i'
+	post_skip=0
+	align='0.75i'
+:OL
+	post_skip=0
+:UL
+	post_skip=0
+	skip=1
+:SL
+	post_skip=0
+:TITLE
+	page_position=centre
+	pre_top_skip=3
+	font=9
+:AUTHOR
+	page_position=centre
+	pre_skip=10
+	skip=0
+:ADDRESS
+	page_position=centre
+	pre_skip=12
+:PREFACE
+	spacing=1
+:H0
+	number_font=9
+	font=9
+:H2
+	pre_top_skip=0
+	pre_skip=2
+:H3
+	pre_top_skip=0
+	pre_skip=2
+:H4
+	pre_top_skip=0
+	pre_skip=2
+:H5
+	pre_top_skip=0
+	pre_skip=2
+:H6
+	number_form=none
+	post_skip=0
+	pre_top_skip=1
+	font=2
+	page_eject=no
+	line_break=yes
+:APPENDIX
+	page_eject=odd
+	header=yes
+	appendix_string="APPENDIX "
+:NOTE
+	note_string="Notes: "
+:IXHEAD
+	pre_skip=1
+	post_skip=1
+:TOC
+	toc_levels=5
+:BANNER
+	left_adjust=0
+	right_adjust=0
+	depth=3
+	place=topodd
+	docsect=appendix
+:BANREGION
+	indent=0
+	hoffset=left
+	width='3.2i'
+	voffset=0
+	depth=2
+	font=0
+	refnum=1
+	region_position=left
+	pouring=last
+	contents=headtext1
+:eBANREGION
+:BANREGION
+	indent=0
+	hoffset=right
+	width='.7i'
+	voffset=0
+	depth=1
+	font=0
+	refnum=2
+	region_position=right
+	pouring=last
+	contents=pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+	left_adjust=0
+	right_adjust=0
+	depth=3
+	place=topeven
+	docsect=appendix
+:BANREGION
+	indent=0
+	hoffset=left
+	width='.7i'
+	voffset=0
+	depth=1
+	font=0
+	refnum=1
+	region_position=left
+	pouring=last
+	contents=pgnuma
+:eBANREGION
+:BANREGION
+	indent=0
+	hoffset=right
+	width='3.2i'
+	voffset=0
+	depth=2
+	font=0
+	refnum=2
+	region_position=right
+	pouring=last
+	contents=headtext1
+:eBANREGION
+:eBANNER
+:BANNER
+	left_adjust=0
+	right_adjust=0
+	depth=3
+	place=topodd
+	docsect=index
+:BANREGION
+	indent=0
+	hoffset=left
+	width='4i'
+	voffset=0
+	depth=2
+	font=8
+	refnum=1
+	region_position=left
+	pouring=last
+	contents='Index'
+:eBANREGION
+:BANREGION
+	indent=0
+	hoffset=right
+	width='.7i'
+	voffset=0
+	depth=1
+	font=0
+	refnum=2
+	region_position=right
+	pouring=last
+	contents=pgnuma
+:eBANREGION
+:eBANNER
+:BANNER
+	left_adjust=0
+	right_adjust=0
+	depth=3
+	place=topeven
+	docsect=index
+:BANREGION
+	indent=0
+	hoffset=left
+	width='.7i'
+	voffset=0
+	depth=1
+	font=0
+	refnum=1
+	region_position=left
+	pouring=last
+	contents=pgnuma
+:eBANREGION
+:BANREGION
+	indent=0
+	hoffset=right
+	width='4i'
+	voffset=0
+	depth=2
+	font=8
+	refnum=2
+	region_position=right
+	pouring=last
+	contents='Index'
+:eBANREGION
+:eBANNER
+:CONVERT.BOOKLAY.LAY
+:eLAYOUT.

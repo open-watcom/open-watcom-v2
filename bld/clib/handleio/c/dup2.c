@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include <unistd.h>
 #include "tinyio.h"
 #include "iomode.h"
 #include "rtcheck.h"

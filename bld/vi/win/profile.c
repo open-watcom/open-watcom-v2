@@ -30,14 +30,23 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include <dos.h>
+#include <sys/stat.h>
 #include <io.h>
+#ifdef __NT__
+    #include <shlobj.h>
+    typedef HRESULT (WINAPI *GetFolderPath)( HWND, int, HANDLE, DWORD, LPTSTR );
+#endif
+#include <direct.h>
 
 #define CONFIG_INI "weditor.ini"
+#define CONFIG_DIR "Open Watcom"
+#define INI_FILE   "watcom.ini"
 
-static char     *iniFile = "watcom.ini";
+static char     *iniFile = NULL;
+static char     *iniPath = NULL;
+static char     *cfgFile = NULL;
 static char     *keyToolBar = "ToolBar";
 static char     *keyInitialPosition = "InitialPosition";
 static char     *keyInitialPositionState = "InitialPositionState";
@@ -48,11 +57,11 @@ static DWORD    cfgTime;
 
 static bool     saveConfig;
 #if defined(__WINDOWS_386__)
-#define STUPIDINT       short
+    #define STUPIDINT       short
 #elif defined(__NT__)
-#define STUPIDINT       LONG
+    #define STUPIDINT       LONG
 #else
-#define STUPIDINT       int
+    #define STUPIDINT       int
 #endif
 
 /*
@@ -74,8 +83,7 @@ static bool getInt( char *str, STUPIDINT *i )
  */
 static void getProfileString( char *key, char *initial, char *buffer )
 {
-    GetPrivateProfileString( EditorName, key, initial, buffer, MAX_STR,
-                                iniFile );
+    GetPrivateProfileString( EditorName, key, initial, buffer, MAX_STR, iniFile );
 
 } /* getProfileString */
 
@@ -84,7 +92,7 @@ static void getProfileString( char *key, char *initial, char *buffer )
  */
 static void getProfileRect( char *key, char *initial, RECT *r )
 {
-    char        str[ MAX_STR ];
+    char        str[MAX_STR];
 
     getProfileString( key, initial, str );
     getInt( str, &r->left );
@@ -101,8 +109,7 @@ static long getProfileLong( char *key )
 {
     char        buffer[32];
 
-    GetPrivateProfileString( EditorName, key, "0", buffer, sizeof( buffer ),
-                                iniFile );
+    GetPrivateProfileString( EditorName, key, "0", buffer, sizeof( buffer ), iniFile );
     return( atol( buffer ) );
 
 } /* getProfileLong */
@@ -121,7 +128,7 @@ static void writeProfileString( char *key, char *buffer )
  */
 static void writeProfileRect( char *key, RECT *r )
 {
-    char        str[ MAX_STR ];
+    char        str[MAX_STR];
 
     MySprintf( str, "%d %d %d %d", r->left, r->top, r->right, r->bottom );
     writeProfileString( key, str );
@@ -131,9 +138,9 @@ static void writeProfileRect( char *key, RECT *r )
 /*
  * writeProfileLong - write a long integer to the profile
  */
-static void writeProfileLong( char *key, long value  )
+static void writeProfileLong( char *key, long value )
 {
-    char        str[ MAX_STR ];
+    char        str[MAX_STR];
 
     MySprintf( str, "%l", value );
     writeProfileString( key, str );
@@ -187,21 +194,57 @@ void writeInitialPosition( void )
 } /* writeInitialPosition */
 
 /*
+ * getConfigFilePaths - get the path to the directory containing the config files
+ * shfolder.dll is loaded explicitly for compatability with Win98 -- calling
+ * SHGetFolderPathA directly doesn't work, probably due to order of linking
+ */
+static void getConfigFilePaths( void )
+{
+    char path[FILENAME_MAX];
+#ifdef __NT__
+    HINSTANCE library = LoadLibrary( "shfolder.dll" );
+    if ( library ) {
+        GetFolderPath getpath = (GetFolderPath)GetProcAddress( library,
+                                                               "SHGetFolderPathA" );
+        if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0,
+                                path ) ) ) {
+            if( strlen( path ) + strlen( "\\" CONFIG_DIR ) + 12 < FILENAME_MAX ) {
+                strcat( path, "\\" CONFIG_DIR );
+                if( access( path, F_OK ) ) {    /* make sure CONFIG_DIR diretory is present */
+                    mkdir( path );              /* if not, create it */
+                }
+            }
+        }
+        FreeLibrary( library );
+    }
+    else {                                          /* should only get here on old machines */
+        GetWindowsDirectory( path, FILENAME_MAX );  /* that don't have shfolder.dll */
+    }
+#else
+    GetWindowsDirectory( path, FILENAME_MAX );
+#endif
+    AddString2( &iniPath, path );           /* these freed in WriteProfile */
+    VarAddGlobalStr( "IniPath", iniPath );  /* make accessable to scripts */
+    strcat( path, "\\" INI_FILE );
+    AddString2( &iniFile, path);
+    strcpy( path, iniPath );
+    strcat( path, "\\" CONFIG_INI );
+    AddString2( &cfgFile, path);
+
+} /* getConfigFilePaths */
+
+/*
  * readConfigFileName - get the name of the config file that we are to read
  */
 static void readConfigFileName( void )
 {
-    char        fname[_MAX_PATH];
-    char        cname[_MAX_PATH];
+    char        cname[FILENAME_MAX];
     //char      str[MAX_STR]; // not used if not prompting for new cfg files
     char        *cfgname;
     struct stat cfg;
     int         rc;
 
     cfgTime = getProfileLong( keyCfgTime );
-    GetWindowsDirectory( fname, sizeof( fname ) );
-    strcat( fname, "\\" CONFIG_INI );
-
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
     if( cname[0] != 0 ) {
@@ -211,22 +254,22 @@ static void readConfigFileName( void )
         }
     }
 
-    if( access( fname, ACCESS_RD ) != -1 ) {
+    if( access( cfgFile, ACCESS_RD ) != -1 ) {
         rc = IDNO;
-        #if 0
+#if 0
         // don't prompt for newer config files
         if( cfg.st_mtime > cfgTime ) {
             MySprintf( str, "The configuration file \"%s\" is newer than your .INI file, do you wish to use the new configuration?",
-                        cname );
+                       cname );
             rc = MessageBox( (HWND) NULL, str, EditorName, MB_YESNO | MB_TASKMODAL );
             if( rc == IDYES ) {
                 cfgTime = cfg.st_mtime;
             }
 
         }
-        #endif
+#endif
         if( rc == IDNO ) {
-            SetConfigFileName( fname );
+            SetConfigFileName( cfgFile );
         }
     } else {
         cfgTime = cfg.st_mtime;
@@ -240,7 +283,6 @@ static void readConfigFileName( void )
  */
 static void writeConfigFile( void )
 {
-    char        fname[_MAX_PATH];
     struct stat cfg;
 
     writeProfileLong( keySaveConfig, EditFlags.SaveConfig );
@@ -249,10 +291,8 @@ static void writeConfigFile( void )
         return;
     }
     writeProfileLong( keyChildrenMaximized, 0 );
-    GetWindowsDirectory( fname, sizeof( fname ) );
-    strcat( fname, "\\" CONFIG_INI );
-    GenerateConfiguration( fname, FALSE );
-    stat( fname, &cfg );
+    GenerateConfiguration( cfgFile, FALSE );    /* never write over %watcom%\eddat\weditor.ini */
+    stat( cfgFile, &cfg );
     writeProfileLong( keyCfgTime, cfg.st_mtime );
 
 } /* writeConfigFile */
@@ -271,6 +311,7 @@ void SetSaveConfig( void )
  */
 void ReadProfile( void )
 {
+    getConfigFilePaths();   /* get paths to ini files */
     readToolBarSize();
     readInitialPosition();
     readConfigFileName();
@@ -287,3 +328,14 @@ void WriteProfile( void )
     writeConfigFile();
 
 } /* WriteProfile */
+
+/*
+ * FiniProfile - free the profile path strings
+ */
+void FiniProfile( void )
+{
+    DeleteString( &cfgFile );
+    DeleteString( &iniFile );
+    DeleteString( &iniPath );
+
+} /* FiniProfile */

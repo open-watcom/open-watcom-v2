@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for dealing with Win95's crippled Win32 support.
 *
 ****************************************************************************/
 
@@ -39,10 +38,6 @@
     #include <windows.h>
 #endif
 
-
-/*
- * Function prototypes for dealing with Win95's crippled Win32 support.
- */
 
 extern BOOL     __lib_CreateDirectoryW( LPCWSTR lpPathName,
                                         LPSECURITY_ATTRIBUTES lpSecurityAttributes );
@@ -70,6 +65,8 @@ extern BOOL     __lib_FindNextFileW( HANDLE hFindFile,
 
 extern DWORD    __lib_GetCurrentDirectoryW( DWORD nBufferLength,
                                             LPWSTR lpBuffer );
+
+extern UINT     __lib_GetDriveTypeW( LPCWSTR lpRootPathName );
 
 extern DWORD    __lib_GetFileAttributesW( LPCWSTR lpFileName );
 
@@ -124,6 +121,7 @@ extern DWORD    __fixed_GetFileAttributesW( LPCWSTR lpFileName );
     #define __lib_FindFirstFileW                FindFirstFileW
     #define __lib_FindNextFileW                 FindNextFileW
     #define __lib_GetCurrentDirectoryW          GetCurrentDirectoryW
+    #define __lib_GetDriveTypeW                 GetDriveTypeW
     #define __lib_GetFileAttributesW            __fixed_GetFileAttributesW
     #define __lib_GetFullPathNameW              GetFullPathNameW
     #define __lib_GetModuleFileNameW            GetModuleFileNameW

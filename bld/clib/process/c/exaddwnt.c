@@ -32,11 +32,9 @@
 
 #include "variety.h"
 #include <process.h>
+#include "_process.h"
 
-extern  int execve();
-typedef int (*execaddr_type)();
-
-execaddr_type __execaddr()
+execveaddr_type __execaddr( void )
 {
     return( execve );
 }

@@ -1,8 +1,8 @@
-#pmake:winnt threading dll defwin ppc dynamic no_build os_nt cpu_ppc
+#pmake:winnt threading dll defwin ppc dynamic os_nt cpu_ppc
 processor=ppc
 system=winnt
 linkage=dynamic
-!include ..\..\..\objects.mif
-!include $(clib_dir)\master.mif
-!include $(clib_dir)\mklib.mif
-!include ..\..\..\deps.mif
+!include ../../../objects.mif
+!include $(clib_dir)/master.mif
+!include $(clib_dir)/mklib.mif
+!include ../../../deps.mif

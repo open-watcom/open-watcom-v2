@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <float.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <float.h>
+
 #include "cgfront.h"
 #include "cgback.h"
 #include "memmgr.h"
@@ -263,11 +263,11 @@ static cg_name condSet(         // SET/RESET FLAG
     CondInfoSetup( index, &cond, fctl );
     op_flg = CgSymbolPlusOffset( cond.sym, cond.offset );
     if( set_flag ) {
-        op_mask = CGInteger( cond.mask, T_UINT_1 );
-        op_flg = CGLVPreGets( O_OR, op_flg, op_mask, T_UINT_1 );
+        op_mask = CGInteger( cond.mask, TY_UINT_1 );
+        op_flg = CGLVPreGets( O_OR, op_flg, op_mask, TY_UINT_1 );
     } else {
-        op_mask = CGInteger( 0xFF - cond.mask, T_UINT_1 );
-        op_flg = CGLVPreGets( O_AND, op_flg, op_mask, T_UINT_1 );
+        op_mask = CGInteger( 0xFF - cond.mask, TY_UINT_1 );
+        op_flg = CGLVPreGets( O_AND, op_flg, op_mask, TY_UINT_1 );
     }
     return op_flg;
 }
@@ -287,7 +287,7 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     stk = PstkTopElement( &stack_cond_blks );
     CondInfoSetup( stk->offset, &cond, fctl );
     patch = BEPatch();
-    op_mask = CGPatchNode( patch, T_UINT_1 );
+    op_mask = CGPatchNode( patch, TY_UINT_1 );
     if( set_flag ) {
         stk->mask_set = cond.mask;
         stk->handle_set = patch;
@@ -298,8 +298,8 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
         opcode = O_AND;
     }
     op_flg = CgSymbolPlusOffset( cond.sym, cond.offset );
-    op_flg = CGLVPreGets( opcode, op_flg, op_mask, T_UINT_1 );
-    CgExprPush( op_flg, T_POINTER );
+    op_flg = CGLVPreGets( opcode, op_flg, op_mask, TY_UINT_1 );
+    CgExprPush( op_flg, TY_POINTER );
 }
 
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap walker window procedre.
 *
 ****************************************************************************/
 
@@ -42,7 +41,7 @@ static  BOOL    NoRefresh = FALSE;
 /*
  * HideResources - hide all resource display windows
  */
-static HideResources( BOOL hide ) {
+static void HideResources( BOOL hide ) {
 
     int         cmd;
     WORD        i;
@@ -79,7 +78,7 @@ static HWND *SetUpPushWindows( HWND hwnd, WORD type ) {
  *                  be the first call to SetDisplayType and the heap display
  *                  type is set to 'HeapType'
  */
-static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
+static void SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
 
     HMENU       mh;
     char        buf[256];
@@ -118,8 +117,8 @@ static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
         EnableMenuItem( mh, HEAPMENU_LOCAL_MONITOR,
                         MF_BYCOMMAND | MF_ENABLED );
         ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
-                    LoadMenu( Instance, "SORTMENU" ),
-                    GetRCString( STR_SORT ) );
+                    (UINT)LoadMenu( Instance, "SORTMENU" ),
+                    HWGetRCString( STR_SORT ) );
         KillPushWin( *title );
         *title = SetUpPushWindows( hwnd, HEAPMENU_DISPLAY_ENTIRE );
         if( GSortType == HEAPMENU_SORT_GRAN ||
@@ -133,8 +132,8 @@ static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
         if( type != HEAPMENU_DISPLAY_DPMI ) {
             *title = SetUpPushWindows( hwnd, type );
             ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
-                    LoadMenu( Instance, "SORTMENU" ),
-                    GetRCString( STR_SORT ) );
+                    (UINT)LoadMenu( Instance, "SORTMENU" ),
+                    HWGetRCString( STR_SORT ) );
         } else {
             *title = NULL;
         }
@@ -144,8 +143,8 @@ static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
     switch( type ) {
     case HEAPMENU_DISPLAY_DPMI:
         ModifyMenu( mh, 2, MF_BYPOSITION | MF_POPUP,
-                    LoadMenu( Instance, "SORTDPMIMENU" ),
-                    GetRCString( STR_SORT ) );
+                    (UINT)LoadMenu( Instance, "SORTDPMIMENU" ),
+                    HWGetRCString( STR_SORT ) );
         EnableMenuItem( mh, HEAPMENU_ADD, MF_BYCOMMAND | MF_GRAYED );
         EnableMenuItem( mh, HEAPMENU_OBJECT_DISCARD,
                         MF_BYCOMMAND | MF_GRAYED );
@@ -169,18 +168,18 @@ static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
 //      SetTitle( HeapDPMITitles, title );
         KillPushWin( *title );
         *title = SetUpPushWindows( hwnd, type );
-        typename = AllocRCString( STR_SELECTOR_LIST_ITEMS );
+        typename = HWAllocRCString( STR_SELECTOR_LIST_ITEMS );
         break;
     case HEAPMENU_DISPLAY_LRU:
         InsertMenu( mh, HEAPMENU_SORT_FLAG, MF_BYCOMMAND, HEAPMENU_SORT_LRU,
                    GetRCString( STR_BY_AGE ) );
-        typename = AllocRCString( STR_LRU_ITEMS );
+        typename = HWAllocRCString( STR_LRU_ITEMS );
         break;
     case HEAPMENU_DISPLAY_ENTIRE:
-        typename = AllocRCString( STR_ENTIRE_HEAP );
+        typename = HWAllocRCString( STR_ENTIRE_HEAP );
         break;
     case HEAPMENU_DISPLAY_FREE:
-        typename = AllocRCString( STR_FREE_ITEMS );
+        typename = HWAllocRCString( STR_FREE_ITEMS );
         break;
     default:
         typename = "";
@@ -190,7 +189,7 @@ static SetDisplayType( HWND hwnd, HWND **title, WORD type ) {
     CheckMenuItem( mh, GSortType, MF_CHECKED | MF_BYCOMMAND );
     DrawMenuBar( hwnd );
     sprintf( buf, "%s - %s", HeapWalkName, typename );
-    FreeRCString( typename );
+    HWFreeRCString( typename );
     SetWindowText( hwnd, buf );
     HeapType = type;
 } /* SetDisplayType */
@@ -216,7 +215,7 @@ static void ResetFont( GblWndInfo *info ) {
  */
 static DWORD CheckForLocalSelect( GblWndInfo *info ) {
 
-    DWORD       index;
+    LRESULT    index;
 
     index = SendMessage( info->list.box, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
@@ -233,8 +232,8 @@ static DWORD CheckForLocalSelect( GblWndInfo *info ) {
 /*
  * HeapWalkProc - show task status
  */
-BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam )
+BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam )
 {
     HMENU       mh;
     HMENU       mh2;
@@ -263,9 +262,9 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
 //      ReleaseDC(hwnd, hdc);
         SetDisplayType( hwnd, &( info->list.title ), HEAPMENU_DISPLAY_INIT );
         CreateListBox( hwnd, &info->list, GLOBAL_LB );
-        info->alloc_proc = MakeProcInstance( AllocDlgProc, Instance );
+        info->alloc_proc = MakeProcInstance( (FARPROC)AllocDlgProc, Instance );
         info->alloc_dialog = JCreateDialog( Instance, "ALLOC_DLG",
-                                           hwnd, info->alloc_proc );
+                                           hwnd, (DLGPROC)info->alloc_proc );
         memset( &ResHwnd, 0, MAX_RES * sizeof( HWND ) );
         break;
     case WM_MEASUREITEM:
@@ -314,7 +313,8 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
             MemFree( info );
         }
         DestroyMonoFonts();
-        Ctl3dUnregister( Instance );
+        CvrCtl3dUnregister( Instance );
+        CvrCtl3DFini( Instance );
         WWinHelp( hwnd, "heapwalk.hlp", HELP_QUIT, 0 );
         PostQuitMessage( 0 );
         break;
@@ -331,11 +331,11 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
         if( LOWORD( lparam & MF_POPUP ) ) {
             mh = GetMenu( hwnd );
             mh2 = GetSubMenu( mh, 6 );
-            if( wparam == mh2  ) {
+            if( (HMENU)wparam == mh2  ) {
                 ShowWindow( info->alloc_dialog, SW_SHOWNOACTIVATE );
-            } else if( wparam != GetSubMenu( mh2, 3 ) &&
-                        wparam != GetSubMenu( mh2, 4 ) &&
-                        wparam != GetSubMenu( mh2, 5 ) ) {
+            } else if( (HMENU)wparam != GetSubMenu( mh2, 3 ) &&
+                        (HMENU)wparam != GetSubMenu( mh2, 4 ) &&
+                        (HMENU)wparam != GetSubMenu( mh2, 5 ) ) {
                 ShowWindow( info->alloc_dialog, SW_HIDE );
             }
         }
@@ -346,10 +346,10 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
         case HEAPMENU_ABOUT:
             ai.owner = hwnd;
             ai.inst = Instance;
-            ai.name = GetRCString( STR_ABOUT_NAME );
+            ai.name = HWGetRCString( STR_ABOUT_NAME );
             ai.version = banner1p2( _HEAPWALKER_VERSION_ );
-            ai.first_cr_year = GetRCString( STR_ABOUT_COPYRIGHT_YEAR );
-            ai.title = GetRCString( STR_ABOUT_TITLE );
+            ai.first_cr_year = HWGetRCString( STR_ABOUT_COPYRIGHT_YEAR );
+            ai.title = HWGetRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
             break;
         case HEAPMENU_HELP_CONTENTS:
@@ -364,7 +364,7 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
         case HEAPEX_LIST:
             if( !info->doing_add ) {
                 if( HIWORD( lparam ) == LBN_DBLCLK ) {
-                    ShowHeapObject( LOWORD( lparam ) );
+                    ShowHeapObject( (HWND)LOWORD( lparam ) );
                 }
             } else {
                 if( HIWORD( lparam ) == LBN_SELCHANGE
@@ -451,8 +451,8 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
             InitHeapList( info->list.box, TRUE );
             break;
         case HEAPMENU_GLOBAL_CODE_SIZE:
-            fp = MakeProcInstance( SetCodeDlgProc, Instance );
-            JDialogBox( Instance, "CODE_AREA_DLG", hwnd, fp );
+            fp = MakeProcInstance( (FARPROC)SetCodeDlgProc, Instance );
+            JDialogBox( Instance, "CODE_AREA_DLG", hwnd, (DLGPROC)fp );
             FreeProcInstance( fp );
             break;
         case HEAPMENU_FILE_SAVE:
@@ -576,7 +576,7 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, WORD msg, WORD wparam,
     default:
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
-    return( NULL );
+    return( FALSE );
 
 } /* HeapWalkProc */
 

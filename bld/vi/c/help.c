@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 #ifdef __WIN__
-  #include "winvi.h"
   #include "wwinhelp.h"
 #endif
 
@@ -67,7 +62,7 @@ int nHelpFiles = sizeof( helpFiles ) / sizeof( char * );
  * DoHelp - do help on specified topic
  */
 #ifdef __WIN__
-int DoHelpOnContext( void )
+vi_rc DoHelpOnContext( void )
 {
     //Until we have a global context string, use thi local
     char *context_str = "Contents";
@@ -75,41 +70,49 @@ int DoHelpOnContext( void )
     return( ERR_NO_ERR );
 }
 
-int DoHelp( char *data )
+vi_rc DoHelp( char *data )
 {
     // Use the windows help till we get one of our own
+    LPSTR vi_chmfile = "editor.chm";
     LPSTR vi_helpfile = "editor.hlp";
-    #ifdef __NT__
-        //LPSTR win_helpfile = "api32wh.hlp";
-        LPSTR win_helpfile = "win32sdk.hlp";
-    #else
-        LPSTR win_helpfile = "win31wh.hlp";
-    #endif
+#ifdef __NT__
+    //LPSTR win_helpfile = "api32wh.hlp";
+    LPSTR win_helpfile = "win32sdk.hlp";
+#else
+    LPSTR win_helpfile = "win31wh.hlp";
+#endif
 
     RemoveLeadingSpaces( data );
-    if( !strcmp( data, "OnHelp" ) ){
-       WWinHelp( Root, NULL, HELP_HELPONHELP, NULL );
-    } else if( !strcmp( data, "Contents" ) ){
-       WWinHelp( Root, vi_helpfile,  HELP_CONTENTS, 0L );
-    } else if( !strcmp( data, "Search" ) ){
-       WWinHelp( Root, vi_helpfile,  HELP_PARTIALKEY, (DWORD)(LPSTR)"" );
+    if( !strcmp( data, "OnHelp" ) ) {
+        WWinHelp( Root, NULL, HELP_HELPONHELP, 0L );
+    } else if( !strcmp( data, "Contents" ) ) {
+        if( !WHtmlHelp( Root, vi_chmfile, HELP_CONTENTS, 0L ) ) {
+            WWinHelp( Root, vi_helpfile, HELP_CONTENTS, 0L );
+        }
+    } else if( !strcmp( data, "Search" ) ) {
+        if( !WHtmlHelp( Root, vi_chmfile, HELP_PARTIALKEY, (DWORD)(LPSTR)"" ) ) {
+            WWinHelp( Root, vi_helpfile, HELP_PARTIALKEY, (DWORD)(LPSTR)"" );
+        }
     } else {
-       WWinHelp( Root, win_helpfile, HELP_KEY, (DWORD)(LPSTR)data );
+        WWinHelp( Root, win_helpfile, HELP_KEY, (DWORD)(LPSTR)data );
     }
     return ( ERR_NO_ERR );
 }
 
 #else
 
-int DoHelpOnContext( void ){ return(ERR_NO_ERR); }
+vi_rc DoHelpOnContext( void )
+{
+    return( ERR_NO_ERR );
+}
 
-int DoHelp( char *data )
+vi_rc DoHelp( char *data )
 {
     char        *hfile;
     char        *tstr;
     int         token;
-    int         rc;
-    char        path[_MAX_PATH];
+    vi_rc       rc;
+    char        path[FILENAME_MAX];
     char        tmp[MAX_STR];
     int         i;
 
@@ -117,10 +120,10 @@ int DoHelp( char *data )
     token = Tokenize( helpCmds, data, FALSE );
     if( token < 0 ) {
         if( data[0] == 0 ) {
-            strcpy( tmp,"Topics: " );
-            for( i=0;i<nHelpFiles;i++ ) {
+            strcpy( tmp, "Topics: " );
+            for( i = 0; i < nHelpFiles; i++ ) {
                 if( i != 0 ) {
-                    strcat( tmp,", " );
+                    strcat( tmp, ", " );
                 }
                 strcat( tmp, GetTokenString( helpCmds, i ) );
             }
@@ -139,7 +142,7 @@ int DoHelp( char *data )
     EditFlags.ViewOnly = TRUE;
     rc = EditFile( path, FALSE );
     EditFlags.ViewOnly = FALSE;
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     tstr = GetTokenString( helpCmds, token );

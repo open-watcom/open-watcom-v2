@@ -32,9 +32,10 @@
 
 #include "variety.h"
 #include <mbctype.h>
+#include <mbstring.h>
 
 
-_WCRTLINK int _mbdtoupper( unsigned int ch )
+_WCRTLINK unsigned int _mbdtoupper( unsigned int ch )
 {
-    return( _ismbdlower( ch )  ?  ( ch - 0x21 )  :  ch );
+    return( ch >= 0x8281  &&  ch <= 0x829A  ?  ( ch - 0x21 )  :  ch );
 }

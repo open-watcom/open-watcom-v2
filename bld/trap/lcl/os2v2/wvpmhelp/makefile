@@ -1,82 +1,62 @@
-#pmake: build os2 lcl 32 support x86
+#pmake: build os_os2 cpu_386 lcl support
+
+host_os  = os2
+host_cpu = 386
+
 #
-# Create WDPMHELP.EXE, WDPMHOOK.DLL
+# Builds wdpmhelp.exe, wdpmhook.dll
 #
 
-.EXTENSIONS
-.EXTENSIONS : .dll .lbj .obj .c .asm .res .rc
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
-!ifndef bin_root
-!ifdef bin_root_wv
-bin_root = $(bin_root_wv)
-!endif
-!endif
+description = 'Open Watcom Debugger PM Helper'
 
-bdir = $(bin_root)\binp
+extra_c_flags = -s -fpc
 
-w d : $(bdir)\dll\wdpmhook.dll $(bdir)\wdpmhelp.exe .SYMBOLIC
+inc_dirs = -I"$(trap_dir)/h"
+
+w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null
 
-tmplnk = $(%ramdisk)\tmp.lnk
+tmplnk = tmp.lnk
 
-$(bdir)\dll\wdpmhook.dll: pmhook.obj loadstd.obj
-    @%write  $(tmplnk) name $(bdir)\dll\wdpmhook.dll sys os2 dll initglobal
-    @%append $(tmplnk) debug all op symfile
-    @%append $(tmplnk) option dosseg,quiet
+wdpmhook.dll: pmhook.obj
+    @%write  $(tmplnk) name $^@ sys os2v2 dll
+    @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map
-    @%append $(tmplnk) file loadstd,pmhook
-    @%append $(tmplnk) library $(watcom_dir)\lib\os2.lib
+    @%append $(tmplnk) file pmhook.obj
+    @%append $(tmplnk) library $(os2386)
     @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
-    @%append $(tmplnk) segment class 'DATA' shared
-    @%append $(tmplnk) segment class 'BSS' shared
     $(linker) @$(tmplnk)
 
-$(bdir)\wdpmhelp.exe: pmhelp.lbj pmhelp.res
-    @%write  $(tmplnk) name $(bdir)\wdpmhelp.exe system os2 pm
-    @%append $(tmplnk) debug all op symfile
-    @%append $(tmplnk) file pmhelp.lbj
-    @%append $(tmplnk) library clibl.lib
-    @%append $(tmplnk) library $(watcom_dir)\lib\os2.lib
-    @%append $(tmplnk) option alignment=16
-    @%append $(tmplnk) option nodefaultlibs,quiet
+wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res
+    @%write  $(tmplnk) name $^@ system os2v2 pm
+    @%append $(tmplnk) debug all op symf
+    @%append $(tmplnk) option map
+    @%append $(tmplnk) import WinLockInput PMMERGE.5225
+    @%append $(tmplnk) import WinThreadAssocQueue PMMERGE.5398
+    @%append $(tmplnk) file pmhelp.obj
+    @%append $(tmplnk) library os2386.lib
     @%append $(tmplnk) option modname=wdpmhelp
-    @%append $(tmplnk) option description 'OS/2 Presentation Manager Sample'
-    @%append $(tmplnk) option manyautodata
-    @%append $(tmplnk) option stack=4096
-    @%append $(tmplnk) option heapsize=1024
-    @%append $(tmplnk) option protmode
+    @%append $(tmplnk) option description $(description)
     $(linker) @$(tmplnk)
-    $(os2_tools_root)\rc pmhelp.res $(bdir)\wdpmhelp.exe
+    $(rc) pmhelp.res $^@
 
-.c: ..\c
+.c: ../c
 
-.c.obj:
-        $(comp286) $[* -bt=os2 -zq-fpc-d1-oais-s-w3-mc-zu-i$(watcom_dir)\h;$(watcom_dir)\os21x_h;$(watcom_dir)\os220_h;$(trap_dir)\h
+pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+        $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
 
-.c.lbj
-        $(comp286) $[* -bt=os2 -zq-fpc-d1-ml-zu-w3-s-i$(watcom_dir)\os21x_h;$(trap_dir)\h -fo=.lbj
+_err.gh : ./mkstr.exe
+        $[@ $^@
 
-.asm: ..\asm
+_jerr.gh : ./jmkstr.exe
+        $[@ $^@
 
-.asm.obj:
-        wasm -zq -2 -bt=os2 $[*
+./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
+        $(bld_cl) $[@ $(wcl_util_opts) -I"$(trap_dir)/h"
 
-pmlock.obj : pmlock.c ..\h\wdpmhelp.h
-
-#.rc.res:
-#       @set oinc=$(%include)
-#       set include=$(watcom_dir)\os220_h;$(%include)
-#       set opath=$(%path)
-#       set path=$(%toolkit)\os2bin
-#        $(%toolkit)\os2bin\rc -r $*.rc
-#       set path=$(%opath)
-#       @set include=$(%oinc)
-
-pmhelp.res: pmhelp.rc ..\h\wdpmhelp.h
-        @set oinc=$(%include)
-        @set include=$(watcom_dir)\os21x_h;..\h;$(%include)
-        @set opath=$(%path)
-        @set path=$(os2_tools_root)
-        $(os2_tools_root)\rc -r pmhelp.rc
-        @set path=$(%opath)
-        @set include=$(%oinc)
+./jmkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
+        $(bld_cl) $[@ $(wcl_util_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"

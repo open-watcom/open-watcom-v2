@@ -35,7 +35,6 @@
 #include "standard.h"
 #include "coderep.h"
 #include "conflict.h"
-#include "sysmacro.h"
 #include "opcodes.h"
 #include "cgdefs.h"
 #include "model.h"
@@ -48,9 +47,9 @@ extern block    *HeadBlock;
 extern bool     HaveDominatorInfo;
 static block    *ReturnBlock;
 
-static bool             AssignDominatorBits() {
-/*********************************************/
-
+static bool             AssignDominatorBits( void )
+/*************************************************/
+{
     block       *blk;
     dom_bit_set id;
 
@@ -70,12 +69,13 @@ static bool             AssignDominatorBits() {
     return( ReturnBlock != NULL );
 }
 
-bool CalcDominatorInfo() {
-/************************/
-
+bool CalcDominatorInfo( void )
+/****************************/
+{
     block       *blk;
     block_edge  *edge;
     int         i;
+
     dom_bit_set predecessors;
     dom_bit_set successors;
     dom_bit_set full_set;

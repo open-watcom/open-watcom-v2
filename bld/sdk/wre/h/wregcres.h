@@ -44,16 +44,16 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WRECurrentResInfo {
-    WREResInfo   *info;
-    WResTypeNode *type;
-    WResResNode  *res;
-    WResLangNode *lang;
+    WREResInfo      *info;
+    WResTypeNode    *type;
+    WResResNode     *res;
+    WResLangNode    *lang;
 } WRECurrentResInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void *WREGetCurrentResData  ( WRECurrentResInfo * );
-extern Bool  WREGetCurrentResource ( WRECurrentResInfo * );
+extern void *WREGetCurrentResData( WRECurrentResInfo * );
+extern Bool WREGetCurrentResource( WRECurrentResInfo * );
 
 #endif

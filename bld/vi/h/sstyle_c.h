@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-void GetCBlock( ss_block *, char *, line *, linenum );
-void InitCFlags( linenum );
-void GetCFlags( ss_flags_c * );
-void InitCFlagsGivenValues( ss_flags_c * );
-void InitCLine( char * );
+void    GetCBlock( ss_block *, char *, line *, linenum );
+void    InitCFlags( linenum );
+void    GetCFlags( ss_flags_c * );
+void    InitCFlagsGivenValues( ss_flags_c * );
+void    InitCLine( char * );

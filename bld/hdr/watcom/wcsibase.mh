@@ -7,16 +7,14 @@
 //
 #ifndef _WCSIBASE_H_INCLUDED
 #define _WCSIBASE_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wcsibase.h is for use with C++
-#endif
+:include cpponly.sp
 
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
-
 
 //
 // The WCSkipListIterBase is the base iterator class for all skip list

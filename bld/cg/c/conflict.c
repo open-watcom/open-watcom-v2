@@ -24,34 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Conflict manager functions (selection of best register set
+*               for variable).
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "conflict.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "regset.h"
 #include "model.h"
 #include "freelist.h"
 #include "feprotos.h"
+#include "zoiks.h"
 
 extern  reg_set_index   IndexIntersect(reg_set_index,type_class_def,bool);
 extern  reg_set_index   RegIntersect(reg_set_index,reg_set_index);
-extern  reg_set_index   SegIndex();
+extern  reg_set_index   SegIndex(void);
 extern  name            *DeAlias(name*);
 
 extern  conflict_node   *ConfList;
-static  pointer         ConfFrl;
+static  pointer         *ConfFrl;
+static  pointer         *ConfAliasVarsFrl;
 
+/* forward declarations */
+extern  void    MarkPossible( instruction *ins,
+                              name *opnd, reg_set_index idx );
+extern  void    FreeAConflict( conflict_node *conf );
 
-extern  conflict_node   *AddConflictNode( name *opnd ) {
-/******************************************************/
-
+extern  conflict_node   *AddConflictNode( name *opnd )
+/****************************************************/
+{
     conflict_node       *new;
     name                *scan;
     t_flags             flags;
@@ -73,6 +79,7 @@ extern  conflict_node   *AddConflictNode( name *opnd ) {
     new->savings        = 0;
     new->tree           = NULL;
     new->state          = EMPTY;
+    new->possible_for_alias_list = NULL;
     if( opnd->n.class == N_TEMP ) {
         flags = HAD_CONFLICT;
         if( new->next_for_name != NULL ) {
@@ -101,9 +108,9 @@ extern  conflict_node   *AddConflictNode( name *opnd ) {
 }
 
 
-static  conflict_node   *AddOne( name *opnd, block *blk ) {
-/*********************************************************/
-
+static  conflict_node   *AddOne( name *opnd, block *blk )
+/*******************************************************/
+{
     if( opnd->v.usage & USE_MEMORY ) {
         if( opnd->n.class == N_TEMP ) {
             if( !( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
@@ -123,15 +130,17 @@ static  conflict_node   *AddOne( name *opnd, block *blk ) {
 
 
 static  conflict_node   *FindConf( name *opnd,
-                                  block *blk, instruction *ins ) {
-/*************************************************************************/
-
+                                  block *blk, instruction *ins )
+/**************************************************************/
+{
     conflict_node *conf;
 
     conf = opnd->v.conflict;
     if( conf == NULL ) return( AddOne( opnd, blk ) );
     if( conf->start_block == NULL ) return( conf ); /* not filled in yet */
     for(;;) {                                       /* find the right one */
+        _INS_NOT_BLOCK( conf->ins_range.first );
+        _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->start_block != NULL
          && ins->id >= conf->ins_range.first->id
          && ins->id <= conf->ins_range.last->id ) return( conf );
@@ -151,9 +160,9 @@ static  conflict_node   *FindConf( name *opnd,
 
 
 extern  conflict_node   *FindConflictNode( name *opnd,
-                                          block *blk, instruction *ins ) {
-/*************************************************************************/
-
+                                          block *blk, instruction *ins )
+/**********************************************************************/
+{
     conflict_node       *conf;
     name                *old;
     name                *scan;
@@ -164,6 +173,7 @@ extern  conflict_node   *FindConflictNode( name *opnd,
     } else if( ( opnd->n.class != N_MEMORY || _IsntModel( RELAX_ALIAS ) ) ) {
         return( NULL );
     }
+    _INS_NOT_BLOCK( ins );
     conf = FindConf( opnd, blk, ins );
     if( conf == NULL ) return( NULL );
     if( conf->start_block == NULL ) {
@@ -194,16 +204,16 @@ extern  conflict_node   *FindConflictNode( name *opnd,
 }
 
 
-extern  void    MarkSegment( instruction *ins, name *opnd ) {
-/***********************************************************/
-
+extern  void    MarkSegment( instruction *ins, name *opnd )
+/*********************************************************/
+{
     MarkPossible( ins, opnd, SegIndex() );
 }
 
 
-extern  conflict_node   *NameConflict( instruction *ins, name *opnd ) {
-/*********************************************************************/
-
+extern  conflict_node   *NameConflict( instruction *ins, name *opnd )
+/*******************************************************************/
+{
     conflict_node       *conf;
 
     if( opnd->n.class == N_TEMP ) {
@@ -211,8 +221,11 @@ extern  conflict_node   *NameConflict( instruction *ins, name *opnd ) {
     } else if( opnd->n.class != N_MEMORY ) {
         return( NULL );
     }
+    _INS_NOT_BLOCK( ins );
     conf = opnd->v.conflict;
     while( conf != NULL ) {
+        _INS_NOT_BLOCK( conf->ins_range.first );
+        _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->ins_range.first->id <= ins->id
          && conf->ins_range.last->id  >= ins->id ) return( conf );
         conf = conf->next_for_name;
@@ -221,24 +234,84 @@ extern  conflict_node   *NameConflict( instruction *ins, name *opnd ) {
 }
 
 
-extern  void    MarkPossible( instruction *ins,
-                              name *opnd, reg_set_index idx ) {
-/*************************************************************/
+/*
+ * Find "possible" list entry for alias temp variable, or return NULL if
+ * variable is not in list.
+ */
+static  possible_for_alias *FindPossibleForAlias( conflict_node *conf, name *opnd )
+{
+    possible_for_alias   *aposs;
+
+    aposs = conf->possible_for_alias_list;
+    while( aposs != NULL ) {
+        if( aposs->temp == opnd ) {
+            break;
+        }
+        aposs = aposs->next;
+    }
+    return aposs;
+}
 
 
-    conflict_node       *conf;
+/*
+ * Return "possible" list entry for alias temp variable. If none found 
+ * (new variable), create new entry and assign RL_NUMBER_OF_SETS
+ * (no restictions yet) to it.
+ */
+static  possible_for_alias *MakePossibleForAlias( conflict_node *conf, name *opnd )
+{
+    possible_for_alias   *aposs;
+
+    aposs = FindPossibleForAlias( conf, opnd );
+    if( aposs == NULL ) {
+        aposs = AllocFrl( &ConfAliasVarsFrl, sizeof( possible_for_alias ) );
+        aposs->next     = conf->possible_for_alias_list;
+        aposs->temp     = opnd;
+        aposs->possible = RL_NUMBER_OF_SETS;
+        conf->possible_for_alias_list = aposs;
+    }
+    return aposs;
+}
+
+
+/*
+ * Return "possible" field (reg_set_index of possible registers) for temp
+ * variable. For master variables, it's kept in "conf->possible", aliases
+ * are stored in "conf->possible_for_alias_list" list.
+ */
+extern  reg_set_index   GetPossibleForTemp(conflict_node *conf, name *temp)
+{
     reg_set_index       possible;
+    possible_for_alias  *aposs;
+
+    if( temp->t.temp_flags & ALIAS ) {
+        aposs = FindPossibleForAlias( conf, temp );
+        if( aposs == NULL ) {
+            possible = RL_NUMBER_OF_SETS; /* not referenced, no restrictions yet */
+        } else {
+            possible = aposs->possible;
+        }
+    }
+    else {
+        possible = conf->possible;
+    }
+
+    return possible;
+}
+
+
+extern  void    MarkPossible( instruction *ins,
+                              name *opnd, reg_set_index idx )
+/***********************************************************/
+{
+    conflict_node       *conf;
+    possible_for_alias  *aposs;
 
     conf = NameConflict( ins, opnd );
     if( conf != NULL ) {
-        if( opnd->n.class == N_TEMP ) {
-            if( !( opnd->t.temp_flags & ALIAS ) ) {
-                possible = RegIntersect( conf->possible, idx );
-                conf->possible = possible;
-            } else {
-                possible = RegIntersect( opnd->t.possible, idx );
-            }
-            opnd->t.possible = possible;
+        if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
+            aposs = MakePossibleForAlias( conf, opnd );
+            aposs->possible = RegIntersect( aposs->possible, idx );
         } else {
             conf->possible = RegIntersect( conf->possible, idx );
         }
@@ -247,48 +320,57 @@ extern  void    MarkPossible( instruction *ins,
 
 
 extern  reg_set_index   MarkIndex( instruction *ins,
-                                   name *opnd, bool is_temp_index ) {
-/*******************************************************************/
-
-
+                                   name *opnd, bool is_temp_index )
+/*****************************************************************/
+{
     conflict_node       *conf;
     reg_set_index       possible;
     type_class_def      class;
+    possible_for_alias  *aposs;
 
     conf = NameConflict( ins, opnd );
     if( conf == NULL ) return( RG_ );
     class = opnd->n.name_class;
-    if( opnd->n.class == N_TEMP ) {
-        if( !( opnd->t.temp_flags & ALIAS ) ) {
-            possible = IndexIntersect( conf->possible,
-                                    class, is_temp_index );
-            conf->possible = possible;
-        } else {
-            possible = IndexIntersect( opnd->t.possible,
-                                    class, is_temp_index );
-        }
-        opnd->t.possible = possible;
+    if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
+        aposs = MakePossibleForAlias( conf, opnd );
+        possible = IndexIntersect( aposs->possible, class, is_temp_index );
+        aposs->possible = possible;
     } else {
-        possible = IndexIntersect( conf->possible,
-                                    class, is_temp_index );
+        possible = IndexIntersect( conf->possible, class, is_temp_index );
         conf->possible = possible;
     }
     return( possible );
 }
 
+/*
+ * Free list of "possible" records for aliased temp vars
+ */
+extern  void    FreePossibleForAlias( conflict_node *conf )
+{
+    possible_for_alias  *aposs, *next;
 
-extern  void    FreeConflicts() {
-/*******************************/
+    aposs = conf->possible_for_alias_list;
+    while ( aposs != NULL ) {
+        next = aposs->next;
+        FrlFreeSize( &ConfAliasVarsFrl, (pointer *)aposs, sizeof( possible_for_alias ) );
+        aposs = next;
+    }
+    conf->possible_for_alias_list = NULL;
+}
 
+
+extern  void    FreeConflicts( void )
+/***********************************/
+{
     while( ConfList != NULL ) {
         FreeAConflict( ConfList );
     }
 }
 
 
-extern  void    FreeAConflict( conflict_node *conf ) {
-/****************************************************/
-
+extern  void    FreeAConflict( conflict_node *conf )
+/**************************************************/
+{
     name                *opnd;
     name                *scan;
     conflict_node       *prev;
@@ -335,20 +417,26 @@ extern  void    FreeAConflict( conflict_node *conf ) {
             opnd->t.u.block_id = conf->start_block->id;
         }
     }
+    FreePossibleForAlias( conf );
     FrlFreeSize( &ConfFrl, (pointer *)conf, sizeof( conflict_node ) );
 }
 
 
-extern  void    InitConflict() {
-/******************************/
-
+extern  void    InitConflict( void )
+/**********************************/
+{
     InitFrl( &ConfFrl );
+    InitFrl( &ConfAliasVarsFrl );
     ConfList = NULL;
 }
 
 
-extern  bool    ConfFrlFree() {
-/*****************************/
+extern  bool    ConfFrlFree( void )
+/*********************************/
+{
+    bool    ret;
 
-    return( FrlFreeAll( &ConfFrl, sizeof( conflict_node ) ) );
+    ret  = FrlFreeAll( &ConfFrl, sizeof( conflict_node ) );
+    ret |= FrlFreeAll( &ConfAliasVarsFrl, sizeof( possible_for_alias ) );
+    return ret;
 }

@@ -3,35 +3,29 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    cdsay dos\ofw
-    wmake /h /i
-    cdsay ..\..\os2\olw
-    wmake /h /i
-    cdsay ..\..\qnx\olwq
-    wmake /h /i
-    cdsay ..\os32q
-    wmake /h /i
-    cdsay ..\..\win\olw
-    wmake /h /i
-    cdsay ..\..\nt\ofw
-    wmake /h /i
-    cdsay ..\..\necdos\ofw
-    wmake /h /i
-    cdsay ..\..\necwin\olw
-    wmake /h /i
-    cd <PROJDIR>
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <PROJDIR>\qnx\tix\*.tix <relroot>\rel2\qnx\tix\
+  [ IFDEF (os_qnx) <2*> ]
+    <CPCMD> <PROJDIR>/qnx/tix/*.tix <RELROOT>/qnx/tix/
 
 [ BLOCK <1> clean ]
 #==================
-    sweep killobjs
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

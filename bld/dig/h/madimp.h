@@ -24,16 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD import routines.
 *
 ****************************************************************************/
 
 
-#ifndef _MADIMP_H_INCLUDED
-#define _MADIMP_H_INCLUDED
-#include "digpck.h"
+#ifndef MADIMP_H_INCLUDED
+#define MADIMP_H_INCLUDED
+
 #include "madtypes.h"
+#include "digpck.h"
 
 typedef struct imp_mad_state_data       imp_mad_state_data;
 
@@ -323,5 +323,7 @@ mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, cons
 mad_status      MCTypeToString( unsigned radix, const mad_type_info *, const void *data, unsigned *max, char *buff );
 
 void            MCStatus( mad_status );
+
 #include "digunpck.h"
+
 #endif

@@ -33,9 +33,9 @@
 #ifndef UTIL_INCLUDED
 #define UTIL_INCLUDED
 
-int UtilUpdateBoolean( BOOL, BOOL, char * );
-int UtilUpdateInt( int, int, char * );
-int UtilUpdateChar( char, char, char * );
-int UtilUpdateStr( char *, char *, char * );
+vi_rc UtilUpdateBoolean( BOOL, BOOL, char * );
+vi_rc UtilUpdateInt( int, int, char * );
+vi_rc UtilUpdateChar( char, char, char * );
+vi_rc UtilUpdateStr( char *, char *, char * );
 
 #endif

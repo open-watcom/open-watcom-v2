@@ -36,7 +36,6 @@
 #include <unistd.h>
 #include <winsock.h>
 #include <wsipx.h>
-#include <wsnwlink.h>
 #include <svcguid.h>
 #include <nspapi.h>
 
@@ -46,6 +45,10 @@
 #include "trperr.h"
 #include "trptypes.h"
 #include "bool.h"
+
+#ifdef __NT__
+#pragma library("wsock32")
+#endif
 
 #ifdef SERVER
 static HANDLE                   ResponderThreadHandle;
@@ -67,7 +70,7 @@ bool Terminate( void )
     return( FALSE );
 }
 
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 {
     unsigned    got;
     unsigned    total;
@@ -79,19 +82,19 @@ unsigned RemoteGet( void *rec, unsigned len )
         total += got;
         if( got != MAX_DATA_SIZE ) break;
         len -= got;
-        rec = (unsigned_8 *)rec + got;
+        rec = (char *)rec + got;
     }
     return( total );
 }
 
-unsigned RemotePut( void *snd, unsigned len )
+unsigned RemotePut( char *snd, unsigned len )
 {
 
     while( len >= MAX_DATA_SIZE ) {
         if( send( ConnectionSocket, snd, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
             return( REQUEST_FAILED );
         }
-        snd = (unsigned_8 *)snd + MAX_DATA_SIZE;
+        snd = (char *)snd + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( send( ConnectionSocket, snd, len, 0 ) == SOCKET_ERROR ) {

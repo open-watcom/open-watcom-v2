@@ -138,7 +138,6 @@ typedef struct {
 
 
 extern void                     StartupErr( char * );
-extern int                      initmouse( int );
 extern int                      GUIInitMouse( int );
 extern void                     GUIFiniMouse( void );
 extern void                     GUIInitGraphicsMouse( gui_window_styles );

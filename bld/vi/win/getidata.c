@@ -32,9 +32,9 @@
 
 #ifndef __NT__
 #ifdef __WINDOWS_386__
-#define FAR
+    #define FAR
 #else
-#define FAR     __far
+    #define FAR     __far
 #endif
 
 int FAR __pascal GetInstanceData( unsigned short, char near *, short );

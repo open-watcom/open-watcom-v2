@@ -1,0 +1,224 @@
+c$noreference
+
+        integer SIG_IGN
+        parameter (SIG_IGN = 1)
+        integer SIG_DFL
+        parameter (SIG_DFL = 2)
+        integer SIG_ERR
+        parameter (SIG_ERR = 3)
+
+        integer SIGABRT
+        parameter (SIGABRT = 1)
+        integer SIGFPE
+        parameter (SIGFPE = 2)
+        integer SIGILL
+        parameter (SIGILL = 3)
+        integer SIGINT
+        parameter (SIGINT = 4)
+        integer SIGSEGV
+        parameter (SIGSEGV = 5)
+        integer SIGTERM
+        parameter (SIGTERM = 6)
+        integer SIGBREAK
+        parameter (SIGBREAK = 7)
+        ! following are OS/2 1.x process flag A,B and C
+        integer SIGUSR1
+        parameter (SIGUSR1 = 8)
+        integer SIGUSR2
+        parameter (SIGUSR2 = 9)
+        integer SIGUSR3
+        parameter (SIGUSR3 = 10)
+        integer SIGIDIVZ
+        parameter (SIGIDIVZ = 11)
+        integer SIGIOVFL
+        parameter (SIGIOVFL = 12)
+
+        integer FLOAT_RADIX
+        parameter (FLOAT_RADIX  = 2)
+
+! number of base-FLT_RADIX digits in the floating point mantissa
+
+        integer SINGLE_MANT_DIG
+        parameter (SINGLE_MANT_DIG      = 23)
+        integer DOUBLE_MANT_DIG
+        parameter (DOUBLE_MANT_DIG      = 53)
+
+! number of decimal digits of precision
+
+        integer SINGLE_DIG
+        parameter (SINGLE_DIG   = 6)
+        integer DOUBLE_DIG
+        parameter (DOUBLE_DIG   = 15)
+
+! minimum negative integer such that FLT_RADIX raised to that power minus 1
+! is a normalized floating point number
+
+        integer SINGLE_MIN_EXP
+        parameter (SINGLE_MIN_EXP       = -127)
+        integer DOUBLE_MIN_EXP
+        parameter (DOUBLE_MIN_EXP       = -1023)
+
+! minimum negative integer such that 10 raised to that power is in the
+! range of normalized floating point numbers
+
+        integer SINGLE_MIN_10_EXP
+        parameter (SINGLE_MIN_10_EXP    = -38)
+        integer DOUBLE_MIN_10_EXP
+        parameter (DOUBLE_MIN_10_EXP    = -307)
+
+! maximum integer such that FLT_RADIX raised to that power minus 1 is a
+! representable floating point number
+
+        integer SINGLE_MAX_EXP
+        parameter (SINGLE_MAX_EXP       = 127)
+        integer DOUBLE_MAX_EXP
+        parameter (DOUBLE_MAX_EXP       = 1023)
+
+! maximum integer such that 10 raised to that power is in the range of
+! representable floating point numbers
+
+        integer SINGLE_MAX_10_EXP
+        parameter (SINGLE_MAX_10_EXP    = 38 )
+        integer DOUBLE_MAX_10_EXP
+        parameter (DOUBLE_MAX_10_EXP    = 308 )
+
+! maximum representable floating-point number
+
+        real SINGLE_MAX
+        parameter (SINGLE_MAX   = 3.402823e+38)
+        double precision DOUBLE_MAX
+        parameter (DOUBLE_MAX   = 1.79769313486231d+308)
+
+! minimum positive floating point number x such that 1.0 + x .ne. 1.0
+
+        real SINGLE_EPSILON
+        parameter (SINGLE_EPSILON       = 1.192092896e-7)
+        double precision DOUBLE_EPSILON
+        parameter (DOUBLE_EPSILON       = 2.2204460492503131d-16)
+
+! minimum representable positive floating point number
+
+        real SINGLE_MIN
+        parameter (SINGLE_MIN   = 1.175495e-38)
+        double precision DOUBLE_MIN
+        parameter (DOUBLE_MIN   = 2.22507385850721d-308)
+
+
+! 8087/80287/80387 math co-processor control information
+
+! 80(x)87 Control Word Mask and bit definitions
+
+        integer MCW_EM
+        parameter (MCW_EM               = '003f'x) ! interrupt Exception Masks */
+        integer EM_INVALID
+        parameter (EM_INVALID           = '0001'x) !   invalid
+        integer EM_DENORMAL
+        parameter (EM_DENORMAL          = '0002'x) !   denormal
+        integer EM_ZERODIVIDE
+        parameter (EM_ZERODIVIDE        = '0004'x) !   zero divide
+        integer EM_OVERFLOW
+        parameter (EM_OVERFLOW          = '0008'x) !   overflow
+        integer EM_UNDERFLOW
+        parameter (EM_UNDERFLOW         = '0010'x) !   underflow
+        integer EM_PRECISION
+        parameter (EM_PRECISION         = '0020'x) !   inexact result
+
+        integer MCW_IC
+        parameter (MCW_IC               = '1000'x) ! Infinity Control
+        integer IC_AFFINE
+        parameter (IC_AFFINE            = '1000'x) !   affine
+        integer IC_PROJECTIVE
+        parameter (IC_PROJECTIVE        = '0000'x) !   projective
+
+        integer MCW_RC
+        parameter (MCW_RC               = '0c00'x) ! Rounding Control
+        integer RC_NEAR
+        parameter (RC_NEAR              = '0000'x) !   near
+        integer RC_DOWN
+        parameter (RC_DOWN              = '0400'x) !   down
+        integer RC_UP
+        parameter (RC_UP                = '0800'x) !   up
+        integer RC_CHOP
+        parameter (RC_CHOP              = '0c00'x) !   chop
+
+        integer MCW_PC
+        parameter (MCW_PC               = '0300'x) ! Precision Control
+        integer PC_24
+        parameter (PC_24                = '0000'x) !    24 bits
+        integer PC_53
+        parameter (PC_53                = '0200'x) !    53 bits
+        integer PC_64
+        parameter (PC_64                = '0300'x) !    64 bits
+
+! 80(x)87 Status Word bit definitions
+
+        integer SW_INVALID
+        parameter (SW_INVALID           = '0001'x)      ! invalid
+        integer SW_DENORMAL
+        parameter (SW_DENORMAL          = '0002'x)      ! denormal
+        integer SW_ZERODIVIDE
+        parameter (SW_ZERODIVIDE        = '0004'x)      ! zero divide
+        integer SW_OVERFLOW
+        parameter (SW_OVERFLOW          = '0008'x)      ! overflow
+        integer SW_UNDERFLOW
+        parameter (SW_UNDERFLOW         = '0010'x)      ! underflow
+        integer SW_INEXACT
+        parameter (SW_INEXACT           = '0020'x)      ! inexact (precision)
+
+! Floating-point error codes
+
+        integer FPE_INVALID
+        parameter (FPE_INVALID          = '81'x)
+        integer FPE_DENORMAL
+        parameter (FPE_DENORMAL         = '82'x)
+        integer FPE_ZERODIVIDE
+        parameter (FPE_ZERODIVIDE       = '83'x)
+        integer FPE_OVERFLOW
+        parameter (FPE_OVERFLOW         = '84'x)
+        integer FPE_UNDERFLOW
+        parameter (FPE_UNDERFLOW        = '85'x)
+        integer FPE_INEXACT
+        parameter (FPE_INEXACT          = '86'x)
+        integer FPE_UNEMULATED
+        parameter (FPE_UNEMULATED       = '87'x)
+        integer FPE_SQRTNEG
+        parameter (FPE_SQRTNEG          = '88'x)
+        integer FPE_STACKOVERFLOW
+        parameter (FPE_STACKOVERFLOW    = '8a'x)
+        integer FPE_STACKUNDERFLOW
+        parameter (FPE_STACKUNDERFLOW   = '8b'x)
+        integer FPE_EXPLICITGEN
+        parameter (FPE_EXPLICITGEN      = '8c'x)
+        integer FPE_IOVERFLOW
+        parameter (FPE_IOVERFLOW        = '8d'x)
+
+        integer fsignal
+        external fsignal
+
+c$pragma aux fsignal parm( value )
+
+        integer _control87
+        external _control87
+
+c$ifdef __386__
+c$ifdef __stack_conventions__
+c$pragma aux _control87 "!" parm( value )
+c$else
+c$pragma aux _control87 "!_" parm( value )
+c$endif
+c$else
+c$pragma aux _control87 "!_" parm( value*2 )
+c$endif
+
+        integer _clear87
+        external _clear87
+
+c$ifdef __386__
+c$ifdef __stack_conventions__
+c$pragma aux _clear87 "!"
+c$else
+c$pragma aux _clear87 "!_"
+c$endif
+c$else
+c$pragma aux _clear87 "!_"
+c$endif

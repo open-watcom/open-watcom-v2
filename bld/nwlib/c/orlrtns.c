@@ -24,54 +24,58 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Librarian interface to ORL.
 *
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
 
 static orl_handle       ORLHnd;
 static orl_funcs        OrlFuncs;
 
-static void * ObjRead( obj_file *file, int len )
-/************************************************/
+static void * ObjRead( void *fil, size_t len )
+/********************************************/
 {
-    buf_list *  buf;
+    buf_list    *buf;
+    obj_file    *ofile = fil;
 
-    buf = MemAlloc( len + sizeof(buf_list) - 1 );
-    if( LibRead( file->hdl, buf->buf, len ) != len ) {
+    buf = MemAlloc( len + sizeof( buf_list ) - 1 );
+    if( LibRead( ofile->hdl, buf->buf, len ) != len ) {
         MemFree( buf );
         return( NULL );
     }
-    buf->next = file->buflist;
-    file->buflist = buf;
+    buf->next = ofile->buflist;
+    ofile->buflist = buf;
     return( buf->buf );
 }
 
-static long ObjSeek( obj_file *file, long pos, int where )
-/***********************************************************/
+static long ObjSeek( void *fil, long pos, int where )
+/***************************************************/
 {
+    obj_file    *ofile = fil;
+
     switch( where ) {
     case SEEK_SET:
-        where += file->offset;
+        pos += ofile->offset;
         break;
     case SEEK_CUR:
         break;
     }
-    LibSeek( file->hdl, pos, where );
-    return( pos - file->offset );
+    LibSeek( ofile->hdl, pos, where );
+    return( pos - ofile->offset );
 }
 
 static void *ObjAlloc( size_t size )
 /**********************************/
 {
-    if( size == 0 ) size = 1;
+    if( size == 0 )
+        size = 1;
     return( MemAllocGlobal( size ) );
 }
 
 static void ObjFree( void *ptr )
+/******************************/
 {
     MemFreeGlobal( ptr );
 }
@@ -92,43 +96,45 @@ void InitObj( void )
     OrlFuncs.free = &ObjFree;
     ORLHnd = ORLInit( &OrlFuncs );
     if( ORLHnd == NULL ) {
-        longjmp( Env , 1);
+        longjmp( Env , 1 );
     }
 }
 
 
 static obj_file *DoOpenObjFile( char *name, libfile hdl, long offset )
-/************************************************************************/
+/********************************************************************/
 {
-    obj_file            *file;
+    obj_file            *ofile;
     orl_file_format     format;
 
-    file = MemAlloc( sizeof( *file ) );
-    file->hdl = hdl;
-    file->buflist = NULL;
-    file->offset = offset;
-    format = ORLFileIdentify( ORLHnd, file );
+    ofile = MemAlloc( sizeof( *ofile ) );
+    ofile->hdl = hdl;
+    ofile->buflist = NULL;
+    ofile->offset = offset;
+    format = ORLFileIdentify( ORLHnd, ofile );
     switch( format ) {
-        case ORL_COFF: case ORL_ELF:
-            file->orl = ORLFileInit( ORLHnd, file, format );
-            if( Options.libtype == WL_TYPE_MLIB ) {
-                if( (ORLFileGetFlags( file->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
-                    FatalError( ERR_NOT_LIB, "64-bit or big-endian" );
+        case ORL_COFF:
+        case ORL_ELF:
+            ofile->orl = ORLFileInit( ORLHnd, ofile, format );
+            if( Options.libtype == WL_LTYPE_MLIB ) {
+                if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
+                    FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );
                 }
             }
-            if( !file->orl ) {
+            if( ofile->orl == NULL ) {
                 FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
             }
             break;
 
         default: // case ORL_UNRECOGNIZED_FORMAT:
-            file->orl = NULL;
+            ofile->orl = NULL;
             break;
     }
-    return( file );
+    return( ofile );
 }
 
 obj_file *OpenObjFile( char *name )
+/*********************************/
 {
     libfile     hdl;
 
@@ -137,34 +143,38 @@ obj_file *OpenObjFile( char *name )
 }
 
 obj_file *OpenLibFile( char *name, libfile hdl )
+/**********************************************/
 {
     return( DoOpenObjFile( name, hdl, LibTell( hdl ) ) );
 }
 
-static void DoCloseObjFile( obj_file *file )
+static void DoCloseObjFile( obj_file *ofile )
+/*******************************************/
 {
     buf_list    *list,*next;
 
-    if( file->orl != NULL ) {
-        ORLFileFini( file->orl );
+    if( ofile->orl != NULL ) {
+        ORLFileFini( ofile->orl );
     }
-    for( list = file->buflist; list != NULL; list = next ) {
+    for( list = ofile->buflist; list != NULL; list = next ) {
         next = list->next;
         MemFree( list );
     }
-    MemFree( file );
+    MemFree( ofile );
 }
 
-void CloseObjFile( obj_file *file )
+void CloseObjFile( obj_file *ofile )
+/**********************************/
 {
     libfile     hdl;
 
-    hdl = file->hdl;
-    DoCloseObjFile( file );
+    hdl = ofile->hdl;
+    DoCloseObjFile( ofile );
     LibClose( hdl );
 }
 
-void CloseLibFile( obj_file *file )
+void CloseLibFile( obj_file *ofile )
+/**********************************/
 {
-    DoCloseObjFile( file );
+    DoCloseObjFile( ofile );
 }

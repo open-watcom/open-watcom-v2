@@ -1,0 +1,35 @@
+# WIPFC component of install manifest
+[ DEFAULT type="e" ]
+    
+usr="wipfc.exe"     dir="binnt"     cond="wnthost os2targ"              where="c f77"
+usr="wipfc.exe"     dir="binw"  cond="doshost winhost | os2targ"        where="c f77"
+usr="wipfc.exe"     dir="axpnt"     cond="alphahost os2targ"            where="ac"
+usr="wipfc.exe"     dir="binp"  cond="os2host os2targ"              where="c f77"
+usr="wipfc"         dir="binl"  cond="lnxhost os2targ"              where="c f77"
+
+# WIPFC data files
+[ DEFAULT type="s" dir="wipfc" cond="os2targ"   where="c f77 ac" ]
+
+usr="de_DE.nls"
+usr="en_GB.nls"
+usr="en_US.nls"
+usr="fr_CA.nls"
+usr="fr_FR.nls"
+usr="ja_JA.nls"
+usr="xx_YY.nls"
+usr="entity.txt"
+usr="enti0932.txt"
+usr="enti0934.txt"
+usr="enti0938.txt"
+
+#WIPFC UTF-8 data files
+[ DEFAULT type="s" dir="wipfc" cond="wnthost os2host alphahost lnxhost | | | os2targ" where="c f77 ac" ]
+
+usr="deDEUTF8.nls"
+usr="enGBUTF8.nls"
+usr="enUSUTF8.nls"
+usr="frCAUTF8.nls"
+usr="frFRUTF8.nls"
+usr="jaJAUTF8.nls"
+usr="enti0000.txt"
+

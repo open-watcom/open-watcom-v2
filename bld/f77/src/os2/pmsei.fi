@@ -1,0 +1,30 @@
+c$noreference
+
+        external WinSetErrorInfo
+        integer*4 WinSetErrorInfo
+
+        integer  SEI_RESERVED
+        parameter (SEI_RESERVED = '00000FE0'x)
+
+        integer  SEI_BREAKPOINT
+        parameter (SEI_BREAKPOINT = '00008000'x)
+        integer  SEI_NOBEEP
+        parameter (SEI_NOBEEP = '00004000'x)
+        integer  SEI_NOPROMPT
+        parameter (SEI_NOPROMPT = '00002000'x)
+        integer  SEI_DBGRSRVD
+        parameter (SEI_DBGRSRVD = '00001000'x)
+        integer SEI_DEBUGONLY
+        parameter (SEI_DEBUGONLY = SEI_BREAKPOINT .or. SEI_NOBEEP .or.
+     +                             SEI_NOPROMPT .or. SEI_RESERVED)
+
+        integer  SEI_STACKTRACE
+        parameter (SEI_STACKTRACE = '00000001'x)
+        integer  SEI_REGISTERS
+        parameter (SEI_REGISTERS = '00000002'x)
+        integer  SEI_ARGCOUNT
+        parameter (SEI_ARGCOUNT = '00000004'x)
+        integer  SEI_DOSERROR
+        parameter (SEI_DOSERROR = '00000008'x)
+
+c$reference

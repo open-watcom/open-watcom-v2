@@ -50,12 +50,6 @@ WEXPORT WBoolSwitch::WBoolSwitch( WStatDialog *parent, unsigned id,
 }
 
 
-WEXPORT WBoolSwitch::~WBoolSwitch() {
-/***********************************/
-
-}
-
-
 void WEXPORT WBoolSwitch::setCheck( bool check ) {
 /************************************************/
 
@@ -67,4 +61,13 @@ bool WEXPORT WBoolSwitch::checked() {
 /***********************************/
 
     return( (bool) GUIIsChecked( parent()->handle(), controlId() ) );
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WBoolSwitch::~WBoolSwitch() {
+/***********************************/
+
 }

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdecursr.h"
 
@@ -58,19 +58,18 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WdeSetWaitCursor ( Bool use_wait )
+void WdeSetWaitCursor( Bool use_wait )
 {
-    static Bool    waiting = FALSE;
-    static HCURSOR old_cursor = (HCURSOR)NULL;
+    static Bool     waiting = FALSE;
+    static HCURSOR  old_cursor = (HCURSOR)NULL;
 
-    if ( use_wait && !waiting ) {
-        old_cursor = SetCursor ( LoadCursor ( NULL, IDC_WAIT ) );
-    } else if ( !use_wait && waiting ) {
-        if ( old_cursor != (HCURSOR)NULL ) {
-            SetCursor ( old_cursor );
+    if( use_wait && !waiting ) {
+        old_cursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
+    } else if( !use_wait && waiting ) {
+        if( old_cursor != (HCURSOR)NULL ) {
+            SetCursor( old_cursor );
         } else {
-            SetCursor ( LoadCursor ( NULL, IDC_ARROW ) );
+            SetCursor( LoadCursor( NULL, IDC_ARROW ) );
         }
     }
 }
-

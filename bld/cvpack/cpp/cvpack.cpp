@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CVPACK mainline.
 *
 ****************************************************************************/
 
@@ -46,16 +45,18 @@
 #include "cssymbol.hpp"
 #include "symdis.hpp"
 
+#include "banner.h"
 
-static const char* CVpackHeader = "Watcom (R) CV4 Symbolic Debugging "\
-                                  "Information Compactor Version 1.00\n"\
-                                  "Copyright (c) Watcom International Corp. "\
-                                  "1995.  All rights reserved.\n";
+static const char* CVpackHeader =
+    banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
+    banner2( "1995" ) "\n" \
+    banner3 "\n" \
+    banner3a;
 
 static const char* CVpackUsage = "usage : cvpack [/nologo] <exefile>\n";
 
-static const MAX_FILE_NAME = 256;
-static char  fName[MAX_FILE_NAME];
+static const int MAX_FILE_NAME = 256;
+static char      fName[MAX_FILE_NAME];
 
 // map table for type indices.
 TypeIndexMap    TypeMap;
@@ -118,6 +119,7 @@ void CVpack::DoExeCode()
         delete [] buffer;
     }
     _lfaBase = length;
+    _ddeBase = _aRetriever.TellDDEBase();
 }
 
 uint CVpack::DoSstModule()
@@ -125,12 +127,13 @@ uint CVpack::DoSstModule()
 {
     char*       buffer;
     unsigned_32 length;
+    uint        module;
 
-    for ( uint module = 1;
-          _aRetriever.ReadSubsection(buffer,length,sstModule,module);
+    for( module = 1;
+          _aRetriever.ReadSubsection( buffer, length, sstModule, module );
           module++ ) {
-        _newDir.Insert(sstModule,module,OFBase(),length);
-        _eMaker.DumpToExe(buffer,length);
+        _newDir.Insert( sstModule, module, OFBase(), length );
+        _eMaker.DumpToExe( buffer, length );
     }
     return module-1;
 }
@@ -138,7 +141,8 @@ uint CVpack::DoSstModule()
 void CVpack::DumpSig()
 /********************/
 {
-    _eMaker.DumpToExe(NB09, LONG_WORD);
+    _eMaker.DumpToExe( NB09, LONG_WORD );
+    //_eMaker.DumpToExe( NB11, LONG_WORD );
 }
 
 uint CVpack::DoSrcModule( const uint module )
@@ -146,6 +150,7 @@ uint CVpack::DoSrcModule( const uint module )
 {
     unsigned_32 length;
     char*       buffer;
+
     if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
         _newDir.Insert(sstSrcModule,module,OFBase(),length);
         _eMaker.DumpToExe(buffer,length);
@@ -162,6 +167,7 @@ uint CVpack::DoSegMap()
     uint        cSeg = 0;
     unsigned_32 length;
     char*       buffer;
+
     if ( _aRetriever.ReadSubsection(buffer,length,sstSegMap) ) {
         cSeg = * (unsigned_16 *) buffer;
         _newDir.Insert(sstSegMap,MODULE_INDEPENDENT,OFBase(),length);
@@ -169,7 +175,7 @@ uint CVpack::DoSegMap()
     } else {
         throw MiscError("no sstSegMap present.");
     }
-    return cSeg;
+    return( cSeg );
 }
 
 void CVpack::DoAlignSym( SstAlignSym*      alignSym,
@@ -203,13 +209,21 @@ void CVpack::DoDirectory()
 /************************/
 {
     streampos dirOffset = OFBase();
+    unsigned_32 cvSize;
     _newDir.Put(_eMaker);
+
     DumpSig();
     // compute lfoBase and dump it out.
-    _eMaker.DumpToExe((unsigned_32)(_eMaker.TellPos()+LONG_WORD-_lfaBase));
+    cvSize = (unsigned_32)(_eMaker.TellPos()+LONG_WORD-_lfaBase);
+    _eMaker.DumpToExe(cvSize);
 
     _eMaker.SeekTo(_lfaBase+LONG_WORD);
     _eMaker.DumpToExe((unsigned_32)dirOffset);
+
+    if (_ddeBase) {
+        _eMaker.SeekTo(_ddeBase+0x10);  // offset of debug_size field entry
+        _eMaker.DumpToExe(cvSize);      // write new segment size to PE debug dir entry
+    }
 }
 
 void CVpack::DoPublics( const uint segNum,
@@ -232,14 +246,31 @@ void CVpack::DoPublics( const uint segNum,
         while ( ptr < end ) {
             index = * (unsigned_16 *)(ptr + WORD);
             if ( index == S_PUB16 ) {
-                globalPub.Insert(CSPub16::Construct(ptr));
+                if (!globalPub.Insert(CSPub16::Construct(ptr))) {
+                    cerr << "Error: Failed : globalPub.Insert(CSPub16::Construct(ptr))\n";
+                    cerr.flush();
+                }
             } else if ( index == S_PUB32 ) {
-                globalPub.Insert(CSPub32::Construct(ptr));
+                if (!globalPub.Insert(CSPub32::Construct(ptr))) {
+                    cerr << "Error: Failed :globalPub.Insert(CSPub32::Construct(ptr))\n";
+                    cerr.flush();
+                }
+            } else if ( index == S_PUB32_NEW ) {
+                if (!globalPub.Insert(CSPub32_new::Construct(ptr))) {
+                    cerr << "Error: Failed :globalPub.Insert(CSPub32_new::Construct(ptr))\n";
+                    cerr.flush();
+                }
             }
             ptr += * (unsigned_16 *) ptr + WORD;
         }
     }
     unsigned_32 oldOffset = OFBase();
+    /*
+    cerr << "writing publics for segment ";
+    cerr << segNum;
+    cerr << " now\n";
+    cerr.flush();
+    */
     globalPub.Put(_eMaker,segNum);
     unsigned_32 secLen = OFBase() - oldOffset;
     if ( secLen != 0 ) {
@@ -283,12 +314,21 @@ void CVpack::CreatePackExe()
     SstAlignSym*   alignSym;
     SstGlobalSym   globalSym;
     SstStaticSym   staticSym;
-    bool           gottype;
+    bool           gottype, gotsrcmod;
+    unsigned_32    length;
+    char           *buffer, *buffer2;
+
     SymbolDistributor symDis(_aRetriever, globalSym, staticSym);
     for ( uint module = 1; ; module++ ) {
         if( _aRetriever.IsAtSubsection( sstSegMap ) ) break;
         gottype = globalType.LoadTypes(_aRetriever,module);
-        moduleSeg = DoSrcModule(module);
+        gotsrcmod = FALSE;
+        if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
+            moduleSeg = ( * (unsigned_16 *) (buffer + WORD) );
+            gotsrcmod = TRUE;
+            buffer2 = new char [length];
+            memcpy( buffer2, buffer, length );
+        }
         if( gottype ) {
             alignSym = new SstAlignSym(moduleSeg);
             if ( ! symDis.Distribute(module, *alignSym) ) {
@@ -298,15 +338,35 @@ void CVpack::CreatePackExe()
             DoAlignSym(alignSym, module);
             delete alignSym;
         }
+        if (gotsrcmod) {
+            _newDir.Insert(sstSrcModule,module,OFBase(),length);
+            _eMaker.DumpToExe(buffer2,length);
+            delete buffer2;
+            buffer2 = 0;
+        }
+
     }
     uint cSeg = DoSegMap();
     DoPublics(cSeg,moduleNum);
+    //cerr << "finished DoPublics.\n"; cerr.flush();
+
     DoGlobalSym(globalSym,cSeg);
+    //cerr << "finished DoGlobalSym.\n"; cerr.flush();
+
     DoLibraries();
+    //cerr << "finished DoLibraries.\n"; cerr.flush();
+
     DoGlobalTypes(globalType);
+    //cerr << "finished DoGlobalTypes.\n"; cerr.flush();
+
     DoStaticSym(staticSym,cSeg);
+    //cerr << "finished DoStaticSym.\n"; cerr.flush();
+
     DoDirectory();
+    //cerr << "finished DoDirectory.\n"; cerr.flush();
+
     _eMaker.Close();
+    //cerr << "finished CreatePackExe()\n"; cerr.flush();
 }
 
 
@@ -338,7 +398,13 @@ int main(int argc, char* argv[])
         }
         tmpnam(tmpFile);
         CVpack packMaker(fd,tmpFile);
+        //cerr << "calling packMaker.CreatePackExe()\n";
+        //cerr.flush();
+
         packMaker.CreatePackExe();
+        //cout << "cvpack, packMaker.CreatePackExe() OK\n";
+        //cout.flush();
+
         fd.close();
         if ( remove(fName) ) {
             throw MiscError(strerror(errno));

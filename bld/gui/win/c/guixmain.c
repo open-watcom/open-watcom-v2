@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include "guiwind.h"
 #include <stdlib.h>
-#if defined( UNIX )
+#if defined( __UNIX__ )
     #include "unsoasyc.h"
     #include "stdtypes.h"
 #endif
-#include "guiwind.h"
 
 
 // This makes sure that the main routine is actially linked in
@@ -54,7 +54,7 @@ int main( SHORT sArgc,CHAR  *ppArgv[] )
 
 #else
 
-#if defined( UNIX )
+#if defined( __UNIX__ )
 
 a_bool In_raw_mode = FALSE;
 struct termios Saved_terminal_configuration;
@@ -101,10 +101,10 @@ extern int          GUIXMain( int argc, char *argv[],
  * WinMain -- main windows message loop
  */
 
-int PASCAL WinMain( WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                     int nShowCmd )
 {
-#if !defined( UNIX )
+#if !defined( __UNIX__ )
     extern char **_argv;
     extern int  _argc;
 #endif

@@ -6,11 +6,10 @@
 //
 #ifndef _GENERIC_H_INCLUDED
 #define _GENERIC_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error generic.h is for use with C++
-#endif
+:include cpponly.sp
 
 #define name2(__n1,__n2)                __paste2(__n1,__n2)
 #define __paste2(__p1,__p2)             __p1##__p2

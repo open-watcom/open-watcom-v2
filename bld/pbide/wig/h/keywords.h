@@ -43,15 +43,15 @@ typedef struct keyword {
 } keyword;
 
 
-extern keyword  Statements[];
-extern keyword  DataTypes[];
+extern const keyword __based(__segname("_CONST")) Statements[];
+extern const keyword __based(__segname("_CONST")) DataTypes[];
 
 extern int      IsPtrType( id_type );
 extern char     *FindType( id_type );
 extern char     *FindStmt( id_type );
 extern unsigned GetStmntCnt( void );
 extern char     *ConvertRetType( id_type id );
-extern void     ConvertVarType( char *typebuf, char *arraybuf, id_type id, void *array );
-extern void     ConvertParmType( char *buf, char *name, id_type id, void *array );
+extern void     ConvertVarType( char *typebuf, char *arraybuf, id_type id, ArrayInfo *array );
+extern void     ConvertParmType( char *buf, char *name, id_type id, ArrayInfo *array );
 
 #endif

@@ -44,15 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WR_EXPORT WRForgetBitmapName    ( void );
-extern void     WR_EXPORT WRRememberBitmapName  ( WResID *name );
-extern WResID * WR_EXPORT WRRecallBitmapName    ( void );
-extern int      WR_EXPORT WRAddBitmapFileHeader ( BYTE **data, uint_32 *size );
+extern void     WR_EXPORT WRForgetBitmapName( void );
+extern void     WR_EXPORT WRRememberBitmapName( WResID *name );
+extern WResID * WR_EXPORT WRRecallBitmapName( void );
+extern int      WR_EXPORT WRAddBitmapFileHeader( BYTE **data, uint_32 *size );
 extern int      WR_EXPORT WRStripBitmapFileHeader( BYTE **data, uint_32 *size );
-extern HBITMAP  WR_EXPORT WRBitmapFromData      ( BYTE *data,
-                                                  bitmap_info *info );
-extern int      WR_EXPORT WRWriteBitmapToData   ( HBITMAP hbitmap,
-                                                  BYTE **data,
-                                                  uint_32 *size );
+extern HBITMAP  WR_EXPORT WRBitmapFromData( BYTE *data, bitmap_info *info );
+extern int      WR_EXPORT WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size );
 
 #endif

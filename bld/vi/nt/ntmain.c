@@ -30,27 +30,25 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "vi.h"
 #include "source.h"
 
 void main( int argc, char *argv[] )
 {
-    #ifdef TRMEM
-        InitTRMEM();
-    #endif
+#ifdef TRMEM
+    InitTRMEM();
+#endif
 
     argc = argc;
     EXEName = argv[0];
     EditFlags.HasSystemMouse = TRUE;
-    VarAddGlobal( "OS", "nt" );
+    VarAddGlobalStr( "OS", "nt" );
     Comspec = getenv( "ComSpec" );
     InitializeEditor();
     EditMain();
 
-    #ifdef TRMEM
-        DumpTRMEM();
-    #endif
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
 
 } /* main */

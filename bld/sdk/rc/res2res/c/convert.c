@@ -56,7 +56,7 @@ static int ConvertFileMResToWRes( WResFileID infile )
     }
     /* put a message out if quiet option not selected */
     if (!CmdLineParms.Quiet) {
-        puts( "Converting Microsoft .RES to WATCOM .RES" );
+        puts( "Converting Microsoft .RES to Open Watcom .RES" );
     }
     error = ConvertMResToWRes( infile, tempfile );
 
@@ -79,7 +79,7 @@ static int ConvertFileWResToMRes( WResFileID infile )
     }
     /* put a message out if quiet option not selected */
     if (!CmdLineParms.Quiet) {
-        puts( "Converting WATCOM .RES to Microsoft .RES" );
+        puts( "Converting Open Watcom .RES to Microsoft .RES" );
     }
     error = ConvertWResToMRes( infile, tempfile );
 
@@ -130,10 +130,10 @@ int ConvertFiles( void )
     }
 
     if (WResIsWResFile( infile )) {
-        /* the input file is in WATCOM format so convert to MS format */
+        /* the input file is in Open Watcom format so convert to MS format */
         error = ConvertFileWResToMRes( infile );
     } else {
-        /* the input file is in MS format so convert to WATCOM format */
+        /* the input file is in MS format so convert to Open Watcom format */
         error = ConvertFileMResToWRes( infile );
     }
 

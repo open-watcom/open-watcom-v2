@@ -1,5 +1,7 @@
 set nomagic
 g!/^pick/d
-%s/^.*( \([A-Z0-9_]*\).*$/#define \1 (MSG_RC_BASE+0x\#)/
-w!
+%s/^.*( \([A-Z0-9_]*\).*$/#define \1 (MSG_RC_BASE+\#)/
+%s/\+0/+/
+%s/\+0/+/
+w! %1
 q!

@@ -41,7 +41,7 @@ bool GUISetIcon( gui_window * wnd, gui_resource *res )
 {
     if( ( res != NULL ) && ( res->chars != NULL ) ) {
         if( wnd->icon_name != NULL ) {
-            GUIFree( wnd->icon_name );
+            GUIMemFree( wnd->icon_name );
         }
         if( !GUIStrDup( res->chars, &wnd->icon_name ) ) {
             return( FALSE );

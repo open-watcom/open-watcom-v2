@@ -1,0 +1,16 @@
+.387
+		EXTRN	woo:BYTE
+flora		GROUP	text
+text		SEGMENT	PARA PUBLIC USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov         ax,ax
+L$1:
+    mov         dx,dx
+text		ENDS
+donna		SEGMENT	PAGE PUBLIC USE16 'code'
+		ASSUME CS:donna, DS:DGROUP, SS:DGROUP
+    mov         dx,dx
+    DB	0, 0
+    mov         ax,offset flora:L$1
+donna		ENDS
+		END

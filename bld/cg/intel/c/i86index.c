@@ -24,22 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel x86 indexed addressing instruction processing.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "procdef.h"
 #include "conflict.h"
 #include "pattern.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "regset.h"
 #include "model.h"
 #include "feprotos.h"
+#include "makeins.h"
 
 extern proc_def             *CurrProc;
 extern  block               *HeadBlock;
@@ -49,7 +49,6 @@ extern  opcode_defs         String[];
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  bool            SegOver(name*);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocTemp(type_class_def);
@@ -67,10 +66,12 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *IndexToTemp(instruction*,name*);
 extern  name            *FindIndex(instruction*);
-extern  bool            FPCInCode();
+extern  bool            FPCInCode( void );
 extern  sym_handle      AskForLblSym(label_handle);
 extern  void            ExpandThreadDataRef(instruction*);
 
+static  void            Merge( name **pname, instruction *ins );
+static  void            PropSegments(void);
 
 extern  instruction     *NeedIndex( instruction *ins ) {
 /*******************************************************
@@ -277,7 +278,7 @@ extern  void    AddSegment( instruction *ins ) {
     }
 }
 
-extern  void    FixMemRefs() {
+extern  void    FixMemRefs( void ) {
 /*****************************
     Make sure that no N_MEMORY names are used as indecies.  This would
     cause problems since we might need a segment override for the INDEX
@@ -304,7 +305,7 @@ extern  void    FixMemRefs() {
 }
 
 
-extern  void    FixSegments() {
+extern  void    FixSegments( void ) {
 /******************************
     Add segment overrides to any instruction in the routine that needs
     them.
@@ -318,21 +319,22 @@ extern  void    FixSegments() {
         ins = blk->ins.hd.next;
         while( ins->head.opcode != OP_BLOCK ) {
             AddSegment( ins );
+            /* Generate an error if segment override is requested and all segment
+             * registers are pegged. However we do NOT want to generate an error
+             * if this is a CS override in flat model - that particular case is not
+             * an error because the CS override is essentially a no-op.  MN
+             */
 #define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
             if( _IsntTargetModel( ANY_FLOATING ) &&
-                ins->num_operands > NumOperands( ins ) ) {
+                ins->num_operands > NumOperands( ins )
+            #if _TARGET & _TARG_80386
+                 && !(_IsTargetModel( FLAT_MODEL ) &&
+                (ins->operands[ ins->num_operands-1 ]->n.class == N_REGISTER) &&
+                HW_CEqual( ins->operands[ ins->num_operands-1 ]->r.reg, HW_CS ))
+            #endif
+            ) {
                 /* throw away override */
                 ins->num_operands--;
-#ifdef QNX_FLAKEY
-{
-extern unsigned long OrigModel;
-DumpString( "CG:about to issue msg: " );
-Dump8h( OrigModel );
-DumpString( " -> " );
-Dump8h( Model );
-DumpString( "\r\n" );
-}
-#endif
                 FEMessage( MSG_NO_SEG_REGS, AskForLblSym( CurrProc->label ) );
             }
             ins = ins->head.next;
@@ -353,7 +355,7 @@ static  type_class_def  FltClass( instruction *ins ) {
     return( XX );
 }
 
-extern  void    MergeIndex() {
+extern  void    MergeIndex( void ) {
 /*****************************
     Merge segment overrides back into the index registers.  This is
     called just before scoreboarding to simplify matters.  For example
@@ -416,7 +418,7 @@ static  void    Merge( name **pname, instruction *ins ) {
 }
 
 
-extern  void    FixChoices() {
+extern  void    FixChoices( void ) {
 /*****************************
     Run through the conflict list and make sure that no conflict is
     allowed to get cached in a segment register unless it was actually
@@ -425,14 +427,19 @@ extern  void    FixChoices() {
 */
 
     conflict_node       *conf;
+#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     name                *temp;
     name                *alias;
+#else
+    possible_for_alias  *aposs;
+#endif
 
     PropSegments();
     conf = ConfList;
     while( conf != NULL ) {
         if( _Isnt( conf, VALID_SEGMENT ) ) {
             conf->possible = NoSegments( conf->possible );
+#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
             temp = conf->name;
             if( temp->n.class == N_TEMP ) {
                 alias = temp;
@@ -442,12 +449,19 @@ extern  void    FixChoices() {
                     if( alias == temp ) break;
                 }
             }
+#else
+            aposs = conf->possible_for_alias_list;
+            while( aposs != NULL ) {
+                aposs->possible = NoSegments( aposs->possible );
+                aposs = aposs->next;
+            }
+#endif
         }
         conf = conf->next_conflict;
     }
 }
 
-static  void    PropSegments() {
+static  void    PropSegments( void ) {
 /*******************************
     For every instruction of the form MOV X => Y, mark the conflict node
     for X as a valid segment if the conflict for Y is marked as a valid

@@ -1,0 +1,52 @@
+proj_name = conv
+
+conv_autodepends = .AUTODEPEND
+conv_distrib_lib = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.EXTENSIONS: .def
+
+.def : ../def
+.asm : ../asm
+.c : ../c
+.h : ../h
+
+def_files = &
+clib.def &
+commdlg.def &
+ddeml.def &
+dpmi.def &
+lzexpand.def &
+mmsystem.def &
+odbc.def &
+ole.def &
+penwin.def &
+shell.def &
+stress.def &
+toolhelp.def &
+ver.def &
+win31.def &
+win31_16.def &
+
+extra_a_flags_fldenv = -i"$(watcomdir)h"
+
+all : ./conv.exe win386.lib
+
+./conv.exe : conv.c makefile
+    $(bld_cl) $(wcl_util_opts) $[@
+
+win386.lib : ./conv.exe $(def_files) ../def/win386 fldenv.obj _call16.obj
+    $[@ ../def/win386 ../def -s -q
+    ls -1 win*.obj >tmp.lbc
+    $(librarian) $(libflags) +fldenv.obj +_call16.obj @tmp.lbc
+    @cp winglue.asm ../../asm >$(nulldevice)
+    @cp dllthunk.c ../../c >$(nulldevice)
+    @cp dllthk.asm ../../asm >$(nulldevice)
+    @cp winglue.inc ../../h >$(nulldevice)
+    @rm -f winglue.asm
+    @rm -f dllthk.asm
+    @rm -f dllthunk.c
+    @rm -f winglue.inc

@@ -70,11 +70,7 @@ _BSS    ends
 _TEXT   segment
 
         defp    _harderr
-        if __WASM__ ge 100
-            xdefp       "C",_harderr
-        else
-            xdefp       <"C",_harderr>
-        endif
+        xdefp   "C",_harderr
 ;
 ;       void _harderr( void (far *fptr)() );
 ;
@@ -114,11 +110,8 @@ endif
         pop     EDX             ; restore EDX
         ret                     ; return to caller
         endproc _harderr
-        if __WASM__ ge 100
-            xdefp       "C",_hardresume
-        else
-            xdefp       <"C",_hardresume>
-        endif
+
+        xdefp   "C",_hardresume
 
         defp    int24rtn
         push    ES              ; save registers

@@ -1,0 +1,245 @@
+*$noreference
+
+! Communication Functions:
+! ------------------------
+
+      external BuildCommDCB
+      external ClearCommBreak
+      external CloseComm
+      external EscapeCommFunction
+      external FlushComm
+      external GetCommError
+      external GetCommEventMask
+      external GetCommState
+      external OpenComm
+      external ReadComm
+      external SetCommBreak
+      external SetCommEventMask
+      external SetCommState
+      external TransmitCommChar
+      external UngetCommChar
+      external WriteComm
+
+      integer*2 BuildCommDCB
+      integer*2 ClearCommBreak
+      integer*2 CloseComm
+      integer*2 EscapeCommFunction
+      integer*2 FlushComm
+      integer*2 GetCommError
+      integer*2 GetCommEventMask
+      integer*2 GetCommState
+      integer*2 OpenComm
+      integer*2 ReadComm
+      integer*2 SetCommBreak
+      integer*4 SetCommEventMask
+      integer*2 SetCommState
+      integer*2 TransmitCommChar
+      integer*2 UngetCommChar
+      integer*2 WriteComm
+
+! Event masks for SetCommEventMask()
+
+      integer EV_RXCHAR
+      integer EV_RXFLAG
+      integer EV_TXEMPTY
+      integer EV_CTS
+      integer EV_DSR
+      integer EV_RLSD
+      integer EV_BREAK
+      integer EV_ERR
+      integer EV_RING
+      integer EV_PERR
+
+      parameter ( EV_RXCHAR           = '0001'x )  ! Any Character received
+      parameter ( EV_RXFLAG           = '0002'x )  ! Received certain character
+      parameter ( EV_TXEMPTY          = '0004'x )  ! Transmitt Queue Empty
+      parameter ( EV_CTS              = '0008'x )  ! CTS changed state
+      parameter ( EV_DSR              = '0010'x )  ! DSR changed state
+      parameter ( EV_RLSD             = '0020'x )  ! RLSD changed state
+      parameter ( EV_BREAK            = '0040'x )  ! BREAK received
+      parameter ( EV_ERR              = '0080'x )  ! Line status error occurred
+      parameter ( EV_RING             = '0100'x )  ! Ring signal detected
+      parameter ( EV_PERR             = '0200'x )  ! Printer error occured
+
+! SetCommFunction() Codes
+
+      integer SETXOFF
+      integer SETXON
+      integer SETRTS
+      integer CLRRTS
+      integer SETDTR
+      integer CLRDTR
+      integer RESETDEV
+
+      parameter ( SETXOFF             = 1 )      ! Simulate XOFF received
+      parameter ( SETXON              = 2 )      ! Simulate XON received
+      parameter ( SETRTS              = 3 )      ! Set RTS high
+      parameter ( CLRRTS              = 4 )      ! Set RTS low
+      parameter ( SETDTR              = 5 )      ! Set DTR high
+      parameter ( CLRDTR              = 6 )      ! Set DTR low
+      parameter ( RESETDEV            = 7 )      ! Reset device if possible
+
+! GetCommError() Flags
+
+      integer CE_RXOVER
+      integer CE_OVERRUN
+      integer CE_RXPARITY
+      integer CE_FRAME
+      integer CE_BREAK
+      integer CE_CTSTO
+      integer CE_DSRTO
+      integer CE_RLSDTO
+      integer CE_TXFULL
+      integer CE_PTO
+      integer CE_IOE
+      integer CE_DNS
+      integer CE_OOP
+      integer CE_MODE
+
+      parameter ( CE_RXOVER           = '0001'x )  ! Receive Queue overflow
+      parameter ( CE_OVERRUN          = '0002'x )  ! Receive Overrun Error
+      parameter ( CE_RXPARITY         = '0004'x )  ! Receive Parity Error
+      parameter ( CE_FRAME            = '0008'x )  ! Receive Framing error
+      parameter ( CE_BREAK            = '0010'x )  ! Break Detected
+      parameter ( CE_CTSTO            = '0020'x )  ! CTS Timeout
+      parameter ( CE_DSRTO            = '0040'x )  ! DSR Timeout
+      parameter ( CE_RLSDTO           = '0080'x )  ! RLSD Timeout
+      parameter ( CE_TXFULL           = '0100'x )  ! TX Queue is full
+      parameter ( CE_PTO              = '0200'x )  ! LPTx Timeout
+      parameter ( CE_IOE              = '0400'x )  ! LPTx I/O Error
+      parameter ( CE_DNS              = '0800'x )  ! LPTx Device not selected
+      parameter ( CE_OOP              = '1000'x )  ! LPTx Out-Of-Paper
+      parameter ( CE_MODE             = '8000'x )  ! Requested mode unsupported
+
+! OpenComm() return codes
+
+      integer IE_BADID
+      integer IE_OPEN
+      integer IE_NOPEN
+      integer IE_MEMORY
+      integer IE_DEFAULT
+      integer IE_HARDWARE
+      integer IE_BYTESIZE
+      integer IE_BAUDRATE
+
+      parameter ( IE_BADID            = -1 )    ! Invalid or unsupported id
+      parameter ( IE_OPEN             = -2 )    ! Device Already Open
+      parameter ( IE_NOPEN            = -3 )    ! Device Not Open
+      parameter ( IE_MEMORY           = -4 )    ! Unable to allocate queues
+      parameter ( IE_DEFAULT          = -5 )    ! Error in default parameters
+      parameter ( IE_HARDWARE         = -10 )   ! Hardware Not Present
+      parameter ( IE_BYTESIZE         = -11 )   ! Illegal Byte Size
+      parameter ( IE_BAUDRATE         = -12 )   ! Unsupported BaudRate
+
+      integer NOPARITY
+      integer ODDPARITY
+      integer EVENPARITY
+      integer MARKPARITY
+      integer SPACEPARITY
+
+      integer ONESTOPBIT
+      integer ONE5STOPBITS
+      integer TWOSTOPBITS
+
+      integer IGNORE
+      integer INFINITE
+
+      parameter ( NOPARITY            = 0 )
+      parameter ( ODDPARITY           = 1 )
+      parameter ( EVENPARITY          = 2 )
+      parameter ( MARKPARITY          = 3 )
+      parameter ( SPACEPARITY         = 4 )
+
+      parameter ( ONESTOPBIT          = 0 )
+      parameter ( ONE5STOPBITS        = 1 )
+      parameter ( TWOSTOPBITS         = 2 )
+
+      parameter ( IGNORE              = 0 )       ! Ignore signal
+      parameter ( INFINITE            = 'FFFF'x ) ! Infinite timeout
+
+      integer LPTx
+      parameter ( LPTx                = '80'x )  ! Set if ID is for LPT device
+
+      structure /DCB/
+          integer*1             Id              ! Internal Device ID
+          integer*2             BaudRate        ! Baudrate at which runing
+          integer*1             ByteSize        ! Number of bits/byte, 4-8
+          integer*1             Parity          ! 0-4=None,Odd,Even,Mark,Space
+          integer*1             StopBits        ! 0,1,2 = 1, 1.5, 2
+          integer*2             RlsTimeout      ! Timeout for RLSD to be set
+          integer*2             CtsTimeout      ! Timeout for CTS to be set
+          integer*2             DsrTimeout      ! Timeout for DSR to be set
+          integer*1             flags_1         ! flags field 1
+          integer*1             flags_2         ! flags field 2
+          integer*1             XonChar         ! Tx and Rx X-ON character
+          integer*1             XoffChar        ! Tx and Rx X-OFF character
+          integer*2             XonLim          ! Transmit X-ON threshold
+          integer*2             XoffLim         ! Transmit X-OFF threshold
+          integer*1             PeChar          ! Parity error replacement char
+          integer*1             EofChar         ! End of Input character
+          integer*1             EvtChar         ! Recieved Event character
+          integer*2             TxDelay         ! Amount of time between chars
+      end structure
+
+! Bit definitions for "flags_1" field in DBC
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer fBinary
+      integer fRtsDisable
+      integer fParity
+      integer fOutxCtsFlow
+      integer fOutxDsrFlow
+      integer fDtrDisable
+
+      parameter ( fBinary        = '01'x )       ! Binary Mode (skip EOF check
+      parameter ( fRtsDisable    = '02'x )       ! Don't assert RTS at init time
+      parameter ( fParity        = '04'x )       ! Enable parity checking
+      parameter ( fOutxCtsFlow   = '08'x )       ! CTS handshaking on output
+      parameter ( fOutxDsrFlow   = '10'x )       ! DSR handshaking on output
+      parameter ( fDtrDisable    = '80'x )       ! Don't assert DTR at init time
+
+! Bit definitions for "flags_2" field in DBC
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer fOutX
+      integer fInX
+      integer fPeChar
+      integer fNull
+      integer fChEvt
+      integer fDtrflow
+      integer fRtsflow
+
+      parameter ( fOutX         = '01'x )       ! Enable output X-ON/X-OFF
+      parameter ( fInX          = '02'x )       ! Enable input X-ON/X-OFF
+      parameter ( fPeChar       = '04'x )       ! Enable Parity Err Replacement
+      parameter ( fNull         = '08'x )       ! Enable Null stripping
+      parameter ( fChEvt        = '10'x )       ! Enable Rx character event
+      parameter ( fDtrflow      = '20'x )       ! DTR handshake on input
+      parameter ( fRtsflow      = '40'x )       ! RTS handshake on input
+
+      structure /COMSTAT/
+          integer*1             flags         ! flags
+          integer*2             cbInQue       ! count of characters in Rx Queue
+          integer*2             cbOutQue      ! count of characters in Tx Queue
+      end structure
+
+! Bit definitions for "flags" field in COMSTAT
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer fCtsHold
+      integer fDsrHold
+      integer fRlsdHold
+      integer fXoffHold
+      integer fXoffSent
+      integer fEof
+      integer fTxim
+
+      parameter ( fCtsHold       = '01'x )   ! Transmit is on CTS hold
+      parameter ( fDsrHold       = '02'x )   ! Transmit is on DSR hold
+      parameter ( fRlsdHold      = '04'x )   ! Transmit is on RLSD hold
+      parameter ( fXoffHold      = '08'x )   ! Received handshake
+      parameter ( fXoffSent      = '10'x )   ! Issued handshake
+      parameter ( fEof           = '20'x )   ! End of file character found
+      parameter ( fTxim          = '40'x )   ! Character being transmitted
+
+*$reference

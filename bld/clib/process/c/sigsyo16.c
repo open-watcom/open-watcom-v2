@@ -36,34 +36,53 @@
 #include <dos.h>
 #define INCL_DOSSIGNALS
 #include <wos2.h>
-
-extern  void    __null_int23_exit();
-extern  void    (*__int23_exit)();
+#include "rtdata.h"
+#include "sigfunc.h"
+#include "_int23.h"
 
 static PFNSIGHANDLER handler = 0;
 static USHORT        action;
 
-//#pragma off(unreferenced);
-static _WCFAR pascal break_handler( USHORT sigarg, USHORT signum )
-//#pragma on(unreferenced);
-    {
-        if( __int23_exit != __null_int23_exit ) raise( SIGINT );
+static void _WCFAR pascal break_handler( USHORT sigarg, USHORT signum )
+{
+    if( __int23_exit != __null_int23_exit ) {
+        raise( SIGINT );
     }
+}
 
-static void restore_handler()
-    {
-        DosSetSigHandler( handler, &handler, &action, action, SIG_CTRLC );
-        handler = 0;
-        __int23_exit = __null_int23_exit;
+static void restore_handler( void )
+{
+    DosSetSigHandler( handler, &handler, &action, action, SIG_CTRLC );
+    handler = 0;
+    __int23_exit = __null_int23_exit;
+}
+
+
+void __grab_int23( void )
+{
+    USHORT          action;
+
+    if( handler != 0 )
+        return;
+    DosSetSigHandler( (PFNSIGHANDLER)break_handler, &handler, &action, 2, SIG_CTRLC );
+    __int23_exit = restore_handler;
+}
+
+static FPEhandler   *__old_FPE_handler = NULL;
+
+void __restore_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        return;
     }
+    __FPE_handler = __old_FPE_handler;
+    __old_FPE_handler = NULL;
+}
 
-
-void __grab_int23()
-    {
-        USHORT          action;
-
-        if( handler != 0 ) return;
-        DosSetSigHandler( break_handler, &handler, &action, 2, SIG_CTRLC );
-        __int23_exit = restore_handler;
+void __grab_FPE_handler( void )
+{
+    if( __old_FPE_handler == NULL ) {
+        __old_FPE_handler = __FPE_handler;
+        __FPE_handler = __sigfpe_handler;
     }
-
+}

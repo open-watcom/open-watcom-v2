@@ -35,7 +35,7 @@
 #include "pgvars.h"
 
 
-short _WCI86FAR _CGRAPH _pg_analyzechartms( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzechartms( chartenv _WCI86FAR *env,
                     char _WCI86FAR *_WCI86FAR *categories, float _WCI86FAR *values,
                     short nseries, short n,
                     short arraydim, char _WCI86FAR *_WCI86FAR *serieslabels )
@@ -60,7 +60,7 @@ short _WCI86FAR _CGRAPH _pg_analyzechartms( chartenv _WCI86FAR *env,
 Entry( _PG_ANALYZECHARTMS, _pg_analyzechartms ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pg_analyzechart( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_analyzechart( chartenv _WCI86FAR *env,
                                      char _WCI86FAR *_WCI86FAR *categories,
                                      float _WCI86FAR *values, short n )
 //================================================================

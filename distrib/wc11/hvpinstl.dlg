@@ -1,0 +1,28 @@
+name=Help_VisualProgrammer
+static_text=\
+        //1"You may choose to install Blue Sky Visual Programmer."\
+        //2"Blue Sky Visual Programmerのインストールを選択できます."\
+        //0
+static_text=\
+        //1"@ will run Visual Programmer's setup program when"\
+        //2"@ は Visual Programmer の setup プログラムを"\
+        //0
+dynamic_text=hvp_1,\
+        //1"%AppName% installation is complete."\
+        //2"%AppName% インストール完了後に起動します."\
+        //0
+static_text=
+static_text=\
+        //1"If you want to install Visual Programmer you need to choose"\
+        //2"Visual Programmer をインストールする場合には, このオプションを"\
+        //0
+static_text=\
+        //1"this option so that @ can determine where Visual Programmer"\
+        //2"選択して, @ が Visual Programmer をインストールする場所を"\
+        //0
+static_text=\
+        //1"is installed."\
+        //2"決められるようにします."\
+        //0
+static_text=
+include=ok.dlg

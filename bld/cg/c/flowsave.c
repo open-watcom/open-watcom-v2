@@ -36,15 +36,15 @@
 #include "pattern.h"
 #include "zoiks.h"
 #include "procdef.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "model.h"
+#include "makeins.h"
 
 extern  bool            HaveDominatorInfo;
 extern  block           *HeadBlock;
 extern  hw_reg_set      PushRegs[];
 extern  proc_def        *CurrProc;
 
-extern  instruction     *MakeUnary( opcode_defs, name *, name *, type_class_def );
 extern  opcode_entry    *ResetGenEntry( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            SuffixIns( instruction *, instruction * );
@@ -60,12 +60,12 @@ static  hw_reg_set      flowedRegs;
 #pragma off (unreferenced);
 
 #if 0
-static block *FindDominatorBlock( dom_bit_set *dom, bool post ) {
-/****************************************************************
+static block *FindDominatorBlock( dom_bit_set *dom, bool post )
+/**************************************************************
     Returns pointer to the block with the given dominator set. If
     post == TRUE, then looks at post_dominator set instead.
 */
-
+{
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -79,9 +79,9 @@ static block *FindDominatorBlock( dom_bit_set *dom, bool post ) {
 }
 #endif
 
-static bool OpRefsReg( name *op, hw_reg_set reg ) {
-/*************************************************/
-
+static bool OpRefsReg( name *op, hw_reg_set reg )
+/***********************************************/
+{
     switch( op->n.class ) {
     case N_REGISTER:
         if( HW_Ovlap( op->r.reg, reg ) ) return( TRUE );
@@ -94,9 +94,9 @@ static bool OpRefsReg( name *op, hw_reg_set reg ) {
     return( FALSE );
 }
 
-static bool BlockUses( block *blk, hw_reg_set reg ) {
-/***************************************************/
-
+static bool BlockUses( block *blk, hw_reg_set reg )
+/*************************************************/
+{
     instruction *ins;
     int         i;
 
@@ -112,18 +112,18 @@ static bool BlockUses( block *blk, hw_reg_set reg ) {
     return( FALSE );
 }
 
-static bool     InLoop( block *blk ) {
-/************************************/
-
+static bool     InLoop( block *blk )
+/**********************************/
+{
     if( blk->loop_head != NULL ) return( TRUE );
     if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( TRUE );
     return( FALSE );
 }
 
 #if 1
-static void DoFix( block *blk ) {
-/*******************************/
-
+static void DoFix( block *blk )
+/*****************************/
+{
     int         i;
 
     if( ( blk->class & BLOCK_VISITED ) != EMPTY ) return;
@@ -135,14 +135,15 @@ static void DoFix( block *blk ) {
     }
 }
 
-static void FixStackDepth( block *save, block *restore ) {
-/*********************************************************
+static void FixStackDepth( block *save, block *restore )
+/*******************************************************
     Flow down our flow-graph noodling the stack-depth
     variable for each block to take into account the
     additional register pushed on. NOTE: we don't change
     the stack_depth for the save block itself
     since AdjustStackDepth will take care of that.
 */
+{
     int         i;
 
     ClearBlockBits( BLOCK_VISITED );
@@ -157,9 +158,9 @@ static void FixStackDepth( block *save, block *restore ) {
 }
 #endif
 
-static int CountBlocks() {
-/************************/
-
+static int CountBlocks( void )
+/****************************/
+{
     block               *blk;
     int                 i;
 
@@ -167,9 +168,9 @@ static int CountBlocks() {
     return( i );
 }
 
-static int CountRegs( hw_reg_set regs ) {
-/***************************************/
-
+static int CountRegs( hw_reg_set regs )
+/*************************************/
+{
     hw_reg_set          *curr;
     int                 count;
 
@@ -182,9 +183,9 @@ static int CountRegs( hw_reg_set regs ) {
     return( count );
 }
 
-static void InitBlockArray() {
-/****************************/
-
+static void InitBlockArray( void )
+/********************************/
+{
     block               *blk;
     int                 i;
 
@@ -193,15 +194,15 @@ static void InitBlockArray() {
     }
 }
 
-static void DoCountBits( a_bit_set set ) {
-/****************************************/
-
+static void DoCountBits( a_bit_set set )
+/**************************************/
+{
     bitCount += CountBits( set );
 }
 
-static int CountDomBits( dom_bit_set *dbits ) {
-/*********************************************/
-
+static int CountDomBits( dom_bit_set *dbits )
+/*******************************************/
+{
     bitCount = 0;
     _DBitIter( DoCountBits, *dbits );
     return( bitCount );
@@ -215,9 +216,9 @@ typedef struct {
     block               *restore;               // ditto for restore
 } reg_flow_info;
 
-static void GetRegUsage( reg_flow_info *info ) {
-/**********************************************/
-
+static void GetRegUsage( reg_flow_info *info )
+/********************************************/
+{
     block       *blk;
 
     _DBitInit( info->dom_usage, ~0 );
@@ -230,9 +231,9 @@ static void GetRegUsage( reg_flow_info *info ) {
     }
 }
 
-static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_reg ) {
-/************************************************************************************/
-
+static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_reg )
+/**********************************************************************************/
+{
     int                 i;
 
     if( !_DBitOverlap( save->dom.id, info[ curr_reg ].dom_usage ) ) return( FALSE );
@@ -259,9 +260,9 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
     return( TRUE );
 }
 
-void FlowSave( hw_reg_set *preg ) {
-/*********************************/
-
+void FlowSave( hw_reg_set *preg )
+/*******************************/
+{
     int                 score;
     int                 i, j;
     int                 best;
@@ -347,8 +348,8 @@ void FlowSave( hw_reg_set *preg ) {
     CGFree( reg_info );
 }
 
-void FlowRestore( hw_reg_set *preg ) {
-/************************************/
-
+void FlowRestore( hw_reg_set *preg )
+/**********************************/
+{
     HW_TurnOff( *preg, flowedRegs );
 }

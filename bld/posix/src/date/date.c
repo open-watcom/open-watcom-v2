@@ -24,26 +24,73 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX date utility
+*               Displays current date and time
 *
 ****************************************************************************/
-
 
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include "getopt.h"
+#include "misc.h"
 
-void main( void )
-/***************/
+static const char *usageTxt[] = {
+    "Usage:\tdate [-?u] [\"+format\"]",
+    "\t+format     : string with formatspecifiers for strftime",
+    "\tOptions: -? : print this list",
+    "\t\t -u : Use UTC0 instead of TZ setting",
+    NULL
+};
+
+char *OptEnvVar = "";
+
+static int      flagUTC;
+
+void main( int argc, char **argv )
 {
-    struct tm  time_of_day;
-    time_t     ltime;
-    auto char  buf[26];
+    struct tm   time_of_day;
+    time_t      ltime;
+    char        buf[ 256 ];
+    int         ch;
+    char        fmt[ 256 ] = "%a %b %e %H:%M:%S %Z %Y";
 
+    for(;;) {
+        ch = GetOpt( &argc, argv, "u", usageTxt );
+        if( ch == -1 ) break;
+        switch( ch ) {
+        case 'u':
+            flagUTC = 1;
+            break;
+        }
+    }
+    if( argc > 2 ) {
+        Quit( usageTxt, "invalid number of arguments\n" );
+    }
+    argv++;
+    if( *argv != NULL ) {
+        if( **argv == '+' ) {
+            if( (*argv)[ 1 ] == '\0' ) {
+                Quit( usageTxt, "empty formatstring not allowed\n" );
+            }
+            strncpy( fmt, &((*argv)[ 1 ]), sizeof( fmt ) );
+            fmt[ sizeof( fmt ) - 1 ] = '\0';
+        } else {
+            Quit( usageTxt, "invalid argument %s\n", *argv );
+        }
+    }
     time( &ltime );
-    _localtime( &ltime, &time_of_day );
-    cputs( _asctime( &time_of_day, buf ) );
+    if( flagUTC ) {
+        _gmtime( &ltime, &time_of_day );
+    } else {
+        _localtime( &ltime, &time_of_day );
+    }
+    if( 0 == strftime( buf, sizeof( buf ), fmt, &time_of_day ) ) {
+        Quit( usageTxt, "strftime formatting error %s\n", fmt );
+    } else {
+        cputs( buf );
+    }
     exit( EXIT_SUCCESS );
 }

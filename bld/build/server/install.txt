@@ -1,0 +1,98 @@
+
+BUILD SERVER INSTALLATION
+=========================
+
+NOTE: At the time of this writing the build server scripts assume you are using
+a Windows system. Obviously this limitation should be removed at some point.
+
+NEW: The script is changed and tested for a eCS (OS/2) System.
+     Links given for OS/2 tools were valid in May 2012.
+     - P4 client: ftp://ftp.perforce.com/perforce/r02.2/bin.os2/p4.exe
+     - PERL:      http://download.smedley.info/perl-5.10.0-os2-20071227.zip
+     - 7z:
+     http://hobbes.nmsu.edu/download/pub/os2/util/archiver/p7zip-9.20.1-os2.zip
+
+0. First install the necessary tools.
+   - The latest version of Open Watcom to use as the compiler for building.
+     Be sure to select ALL possible targets during the installation.
+   - Whatever external help compilers are necessary.
+   - The latest version of the Perforce command line client.
+     For OS/2 (output from p4 -V):
+         Perforce - The Fast Software Configuration Management System.
+         Copyright 1995, 2002 Perforce Software.  All rights reserved.
+         Rev. P4/OS2/2002.2/41879 (2003/02/24).
+   - A reasonably recent version of Perl. The build scripts are written in Perl
+   - For optionally creating a snapshot 7z
+
+1. Create a folder OUTSIDE the Open Watcom source tree and copy the contents of
+this folder to that folder. Do not attempt to use the system from a folder
+inside the Open Watcom source tree. In this document the working copy of the
+build system is assumed to be in a folder named C:\OWBUILD. However, any folder
+can be used (avoid folders with spaces in their names) provided is is on the
+same drive as the OW source tree.
+
+2. Review the file config.txt and make any changes as necessary. See the
+comments in the file for more information.
+Create necessary directories: www\installers
+                              www\reports
+                              www\snapshots
+Create empty files:           owbuild\bldbase1.txt
+                              owbuild\bldbase2.txt
+                              owbuild\bldbased.txt
+3. Run the build system via 'perl dobuild.pl'. It will not run to completion as the
+message base is not correct. The baseline is created next.
+
+4. The created log files pass1.log, pass2.log and docs\build.log will serve as
+your baseline. Run the program summary.pl over these
+
+        summary c:\OW\bld\pass1.log bldbase1.txt
+        summary c:\OW\bld\pass2.log bldbase2.txt
+        summary c:\OW\docs\pass1.log bldbased.txt
+
+and save the results to files such as bldbase1.txt, ...
+(use the same names as you specified in config.txt).
+
+You should verify that all messages in bldbasex.txt are normal. This build system
+will compare the result of each build with this baseline and report on any
+deviations. If bldbasex.txt contain serious errors, this build system will not
+notice those errors in the future.
+
+5. The scripts provided are as follows
+
+   - summary.pl : Computes a summary of build.log that contains all the strange
+     entries in the log file. Use this script to compute a baseline.
+
+   - compare.pl : Computes the difference between a baseline summary and a new
+     summary. Reports on messages that have been removed or that have been
+     added in the new summary.
+
+   - dobuild.pl : This is the main script. It prepares a batch file that does
+     the build based on the current setvars.*. It cleans the source tree,
+     builds the system, and then invokes summary.pl and compare.pl to check
+     the results. Finally it stores a report in the reports subdirectory.
+
+     NOTE: The build is run only if the perforce highest change number has changed.
+           The highest changeno is stored in owbuild\changeno.txt. This file can
+           be deleted to force a build.
+
+     NOTE: On OS/2 the failing regression tests BLD\PLUSTEST\REGRESS\EHMIX are
+           ignored and don't trigger failure.
+
+   - common.pm : common perl routines for the other scripts
+
+   - psummary.cmd (OS/2 only) for running summary.pl
+   - pdobuild.cmd (OS/2 only) for running dobuild.pl
+
+   - rotate.* commandfile to create snapshots *.7z and *.zip
+              and to move the generated installers to www\installers
+              Does NOT have access to config.txt, so adjust pathes.
+
+Schedule dobuild.pl to run periodically using your operating system's facilities
+for that purpose.
+
+NOTE: dobuild.pl never, never, never updates the baseline summary on its own.
+You must do that manually when and if you feel it is appropriate to do so. This
+policy ensures that the baseline is always appropriate and that human
+intelligence is used to make a judgement about when the baseline needs to be
+updated.
+

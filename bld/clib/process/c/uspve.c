@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _wspawnve().
 *
 ****************************************************************************/
 
@@ -49,7 +48,7 @@
 #include "exwc2mb.h"
 
 
-_WCRTLINK int _wspawnve( unsigned mode, const wchar_t *path,
+_WCRTLINK int _wspawnve( int mode, const wchar_t *path,
 /**********************************************************/
     const wchar_t *const argv[], const wchar_t *const envp[] )
 {

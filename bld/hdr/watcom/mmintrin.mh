@@ -5,17 +5,19 @@
  */
 #ifndef _MMINTRIN_H_INCLUDED
 #define _MMINTRIN_H_INCLUDED
+
 :include readonly.sp
-:include cpluspro.sp
 
 #ifndef __386__
-   #error mmintrin.h only for use with 32-bit Intel Architectures
+ #error mmintrin.h only for use with 32-bit Intel Architectures
 #endif
 
+:include cpluspro.sp
+
 typedef union {
-    #ifdef __WATCOM_INT64__
-       unsigned __int64 _64[1];
-    #endif
+ #ifdef __WATCOM_INT64__
+    unsigned __int64 _64[1];
+ #endif
     unsigned long       _32[2];
     unsigned short      _16[4];
     unsigned char        _8[8];
@@ -523,4 +525,5 @@ __m64 _m_pcmpgtd(__m64 *__m1, __m64 *__m2);
                 "movq   [esi],mm0"
 
 :include cplusepi.sp
+
 #endif

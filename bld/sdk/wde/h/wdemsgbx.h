@@ -44,11 +44,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WdeDisplayMsgBox        ( const char *);
-extern void     WdeInitDisplayError     ( HINSTANCE inst );
-extern void     WdeDisplayErrorMsg      ( DWORD msg );
-extern char     *WdeAllocRCString       ( DWORD id );
-extern void     WdeFreeRCString         ( char *str );
-extern DWORD    WdeCopyRCString         ( DWORD id, char *buf, DWORD bufsize );
+extern void     WdeDisplayMsgBox( const char * );
+extern void     WdeInitDisplayError( HINSTANCE inst );
+extern void     WdeDisplayErrorMsg( DWORD msg );
+extern char     *WdeAllocRCString( DWORD id );
+extern void     WdeFreeRCString( char *str );
+extern DWORD    WdeCopyRCString( DWORD id, char *buf, DWORD bufsize );
 
 #endif

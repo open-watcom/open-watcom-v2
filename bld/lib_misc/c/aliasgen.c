@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembly alias stubs generation utility.
 *
 ****************************************************************************/
 
@@ -35,7 +34,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <limits.h>
 
+#ifndef _MAX_PATH
+#define _MAX_PATH PATH_MAX
+#endif
 
 struct SysElem {
     char *              system;
@@ -307,7 +310,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
 
 
 /*
- * Make a PPC assembler file defining the alias.
+ * Make a PowerPC assembler file defining the alias.
  */
 static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
 /**************************************************************************/
@@ -322,15 +325,49 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
         FatalError( "Cannot create '%s'.", filename );
     }
 
-    /*** Write data to it (this is a stub template) ***/
-    fprintf( asmfile, "%s --> %s\n", alias->aliasname, alias->realname );
+    /*** Write data to it ***/
+    fprintf( asmfile, "\t.text\n" );
+    fprintf( asmfile, "\t.globl\t%s\n", alias->aliasname );
+    fprintf( asmfile, "%s:\n", alias->aliasname );
+    fprintf( asmfile, "\tb\t%s\n", alias->realname );
     if( ferror( asmfile ) ) {
         FatalError( "Cannot write to '%s'.", filename );
     }
     fclose( asmfile );
 
     sprintf( filename, "_p%6s.obj", alias->filename );
-//    update_mif_file( miffile, filename, alias );
+    update_mif_file( miffile, filename, alias );
+}
+
+
+/*
+ * Make a MIPS assembler file defining the alias.
+ */
+static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
+/***************************************************************************/
+{
+    char                filename[_MAX_PATH];
+    FILE *              asmfile;
+
+    /*** Open the assembler file ***/
+    sprintf( filename, "%s_m%6s.asm", outdir, alias->filename );
+    asmfile = fopen( filename, "wt" );
+    if( asmfile == NULL ) {
+        FatalError( "Cannot create '%s'.", filename );
+    }
+
+    /*** Write data to it ***/
+    fprintf( asmfile, "\t.text\n" );
+    fprintf( asmfile, "\t.globl\t%s\n", alias->aliasname );
+    fprintf( asmfile, "%s:\n", alias->aliasname );
+    fprintf( asmfile, "\tj\t%s\n", alias->realname );
+    if( ferror( asmfile ) ) {
+        FatalError( "Cannot write to '%s'.", filename );
+    }
+    fclose( asmfile );
+
+    sprintf( filename, "_m%6s.obj", alias->filename );
+    update_mif_file( miffile, filename, alias );
 }
 
 
@@ -343,9 +380,10 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
     struct Alias        aliasaxp;
     struct Alias        aliasix86;
     struct Alias        aliasppc;
+    struct Alias        aliasmips;
     struct SysElem *    syselem;
 
-    /*** Initialize the x86 and AXP aliases ***/
+    /*** Initialize the CPU specific aliases ***/
     aliasix86.filename = alias->filename;
     aliasix86.realname = alias->realname;
     aliasix86.aliasname = alias->aliasname;
@@ -358,6 +396,10 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
     aliasppc.realname = alias->realname;
     aliasppc.aliasname = alias->aliasname;
     aliasppc.systems = NULL;
+    aliasmips.filename = alias->filename;
+    aliasmips.realname = alias->realname;
+    aliasmips.aliasname = alias->aliasname;
+    aliasmips.systems = NULL;
 
     /*** Separate into groups by CPU type ***/
     syselem = alias->systems;
@@ -370,6 +412,14 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
             add_system( &aliasppc, syselem->system );
         } else if( !strcmp( syselem->system, "op" ) ) {         /* PPC */
             add_system( &aliasppc, syselem->system );
+        } else if( !strcmp( syselem->system, "lpc" ) ) {        /* PPC */
+            add_system( &aliasppc, syselem->system );
+        } else if( !strcmp( syselem->system, "ppc" ) ) {        /* PPC */
+            add_system( &aliasppc, syselem->system );
+        } else if( !strcmp( syselem->system, "lmp" ) ) {        /* MIPS */
+            add_system( &aliasmips, syselem->system );
+        } else if( !strcmp( syselem->system, "mps" ) ) {        /* MIPS */
+            add_system( &aliasmips, syselem->system );
         } else {                                                /* x86 */
             add_system( &aliasix86, syselem->system );
         }
@@ -385,6 +435,9 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
     }
     if( aliasppc.systems != NULL ) {
         make_asm_ppc( miffile, &aliasppc, outdir );
+    }
+    if( aliasppc.systems != NULL ) {
+        make_asm_mips( miffile, &aliasmips, outdir );
     }
 }
 
@@ -455,7 +508,7 @@ static int do_line( FILE *infile, FILE *miffile, char *outdir )
 /*
  * Program entry point.
  */
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 /*********************************/
 {
     FILE *              infile;
@@ -467,7 +520,7 @@ void main( int argc, char *argv[] )
     /*** Parse the command line ***/
     if( argc != 4 ) {
         printf( "Usage: ALIASGEN <alias_file> <output_dir\\> <objects_mif_file>\n" );
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
     infile = fopen( argv[1], "rt" );    /* open alias file */
     if( infile == NULL ) {
@@ -499,5 +552,5 @@ void main( int argc, char *argv[] )
     }
     fputc( '\n', stdout );
 
-    exit( EXIT_SUCCESS );
+    return( EXIT_SUCCESS );
 }

@@ -1,0 +1,41 @@
+# "Miscellaneous junk" component of install manifest
+
+[ DEFAULT desc="MISC" ]
+
+type="s"			dir="."		usr="watcom.ico"	cond="os2host"	where="c jc f77 jf77"	desc="Icon for program group/folder"
+
+#type="s"			dir="."		usr="wf77.res"						where="f77      jf77"	desc="FORTRAN 77 run-time error message resource file"
+#type="s"			dir="."		usr="wf77386.prf"	cond="wkframe"			where="f77      jf77"	desc="FORTRAN 77 profile for WorkFrame/2"
+#type="s"			dir="."		usr="wcc386.prf"	cond="wkframe"			where="c jc"	desc="Watcom C profile for WorkFrame/2"
+#type="s"			dir="."		usr="wpp386.prf"	cond="wkframe cplusplus"	where="c jc"	desc="Watcom C++ profile for WorkFrame/2"
+
+#type="e"			dir="binw"	usr="dbglib.rex"	cond="doshost winhost |"	where="c jc f77 jf77"	desc="Rational DOS extender debugging extension"	old="bin"
+type="s"			dir="binw"	usr="unicode.850"		where="c jc"		old="binb"
+type="s"			dir="binw"	usr="unicode.437"		where="c jc"		old="binb"
+type="s"			dir="binw"	usr="unicode.852"		where="c jc"
+type="s"			dir="binw"	usr="unicode1.250"		where="c jc"
+type="s"			dir="binw"	usr="unicode1.252"		where="c jc"
+type="e"			dir="binw"	usr="techinfo.exe"		where="c jc f77 jf77"	old="binb"
+
+#type="e"	redist="X"	dir="binw"	usr="ftui.dll"		cond="winhost wnthost |"	where="c jc f77 jf77"
+#type="e"	redist="X"	dir="binw"	usr="ftengine.dll"	cond="winhost wnthost |"	where="c jc f77 jf77"
+#type="e"	redist="X"	dir="binw"	usr="mvapi.dll"		cond="winhost wnthost |"	where="c jc f77 jf77"
+
+type="l"			dir="lib386/dos"	usr="wresf.lib"			where="f77      jf77"
+type="l"			dir="lib386/dos"	usr="wresfs.lib"		where="f77      jf77"
+type="l"			dir="lib386"	usr="wresf.lib"			where="f77      jf77"
+type="l"			dir="lib386"	usr="wresfs.lib"		where="f77      jf77"
+#type="l"			dir="lib386"	usr="wresm.lib"			where="f77      jf77"
+#type="l"			dir="lib386"	usr="wresl.lib"			where="f77      jf77"
+
+#type="e"			dir="binw"	usr="cfig386.exe"	cond="doshost winhost |"	where="c jc f77 jf77"	desc="PharLap DOS extender configuration utility"	old="bin"
+#type="e"			dir="binw"	usr="privatxm.exe"	cond="doshost winhost |"	where="c jc f77 jf77"		old="bin"
+
+#type="e"			dir="binnt"	usr="api32wh.hlp"	cond="wnttarg helpfiles"	where="jc jf77"
+#type="e"			dir="binnt"	usr="api32wh.ind"	cond="wnttarg helpfiles"	where="jc jf77"
+
+type="s"			dir="binl"	usr="unicode.850"	cond="lnxhost"	where="c jc"
+type="s"			dir="binl"	usr="unicode.437"	cond="lnxhost"	where="c jc"
+type="s"			dir="binl"	usr="unicode.852"	cond="lnxhost"	where="c jc"
+type="s"			dir="binl"	usr="unicode1.250"	cond="lnxhost"	where="c jc"
+type="s"			dir="binl"	usr="unicode1.252"	cond="lnxhost"	where="c jc"

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mtarget.c interfaces
 *
 ****************************************************************************/
 
@@ -38,15 +37,15 @@
 #include "mlex.h"
 #include "mtypes.h"
 
-typedef struct TargAttr   TATTR;
-typedef struct Target     TARGET;
-typedef struct Depend     DEPEND;
-typedef struct TargList   TLIST;
-typedef struct CmdList    CLIST;
-typedef struct fileStruct FLIST;
-typedef struct envStruct  ELIST;
-typedef struct fileList   NKLIST;
-typedef struct sufsufList SLIST;
+typedef struct TargAttr     TATTR;
+typedef struct Target       TARGET;
+typedef struct Depend       DEPEND;
+typedef struct TargList     TLIST;
+typedef struct CmdList      CLIST;
+typedef struct fileStruct   FLIST;
+typedef struct envStruct    ELIST;
+typedef struct fileList     NKLIST;
+typedef struct sufsufList   SLIST;
 
 #define BEFORE_S   "BEFORE"
 #define AFTER_S    "AFTER"
@@ -63,6 +62,8 @@ struct TargAttr {
     BIT     explicit    : 1;    /* .explicit flag                       */
     BIT     always      : 1;    /* .always flag                         */
     BIT     auto_dep    : 1;    /* .auto_depend flag                    */
+    BIT     existsonly  : 1;    /* .existsonly flag                     */
+    BIT     recheck     : 1;    /*  re-check timestamp flag             */
 };
 
 
@@ -140,30 +141,30 @@ struct Depend {
 };
 
 struct fileStruct {
-    char*       fileName;
-    char*       body;
-    BOOLEAN     keep;
-    FLIST* next;
+    char    *fileName;
+    char    *body;
+    BOOLEAN keep;
+    FLIST   *next;
 };
 
 struct envStruct {
-    char*      envVarName;
-    char*      envOldVal;
-    ELIST* next;
+    char    *envVarName;
+    char    *envOldVal;
+    ELIST   *next;
 };
 
 
 struct fileList {
-    char*     fileName;
-    NKLIST*   next;
+    char    *fileName;
+    NKLIST  *next;
 };
 
 
 struct CmdList {
-    CLIST *next;      /* next command or NULL                      */
-    FLIST *inlineHead;/* contains the information for inline files */
-                      /* associated with the command               */
-    char  *text;      /* Text of command to execute                */
+    CLIST   *next;      /* next command or NULL                      */
+    FLIST   *inlineHead;/* contains the information for inline files */
+                        /* associated with the command               */
+    char    *text;      /* Text of command to execute                */
 };
 
 struct TargList {
@@ -172,29 +173,29 @@ struct TargList {
 };
 
 struct sufsufList {
-    char   *targ_path;
-    char   *dep_path;
-    CLIST  *clist;
-    SLIST  *next;
+    char    *targ_path;
+    char    *dep_path;
+    CLIST   *clist;
+    SLIST   *next;
 };
 
 
-extern const TATTR FalseAttr;
+extern const TATTR  FalseAttr;
 
-extern void TargetInit( void );
-extern void TargetFini( void );
+extern void     TargetInit( void );
+extern void     TargetFini( void );
 
 extern TLIST    *NewTList( void );
 extern TARGET   *NewTarget( const char *name );
 extern DEPEND   *NewDepend( void );
 extern NKLIST   *NewNKList( void );
 extern SLIST    *NewSList( void );
-extern ELIST    *NewEList( void );
+// extern ELIST    *NewEList( void );
 extern FLIST    *NewFList( void );
 extern CLIST    *NewCList( void );
-extern TLIST    *DupTList( TLIST *old );
-extern DEPEND   *DupDepend( DEPEND *dep );
-extern CLIST    *DupCList( CLIST *clist );
+extern CLIST    *DupCList( const CLIST *clist );
+extern TLIST    *DupTList( const TLIST *old );
+extern DEPEND   *DupDepend( const DEPEND *dep );
 extern void     FreeTList( TLIST *tlist );
 extern void     FreeNKList( NKLIST *rule );
 extern void     FreeSList( SLIST *rule );
@@ -206,11 +207,12 @@ extern void     KillTarget( const char *name );
 
 extern void     RenameTarget( TARGET *targ, const char *newname );
 extern TARGET   *FindTarget( const char *name );
-extern void     PrintCList( CLIST *list );
-extern void     PrintTargFlags( TARGET *targ );
+extern void     PrintCList( const CLIST *list );
+extern void     PrintTargFlags( const TARGET *targ );
 extern void     PrintTargets( void );
 extern CLIST    *DotCList( enum DotNames dot );
 extern void     ResetExecuted( void );
+extern void     CheckNoCmds( void );
 extern RET_T    WildTList( TLIST **stack, const char *base, BOOLEAN mentioned,
                 BOOLEAN expandWildCardPath );
 extern void     TargInitAttr( TATTR *attr );

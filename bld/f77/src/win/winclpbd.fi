@@ -1,0 +1,86 @@
+*$noreference
+
+! Clipboard Functions:
+! --------------------
+
+      external ChangeClipboardChain
+      external CloseClipboard
+      external EmptyClipboard
+      external EnumClipboardFormats
+      external GetClipboardData
+      external GetClipboardFormatName
+      external GetClipboardOwner
+      external GetClipboardViewer
+      external GetPriorityClipboardFormat
+      external IsClipboardFormatAvailable
+      external OpenClipboard
+      external RegisterClipboardFormat
+      external SetClipboardData
+      external SetClipboardViewer
+      external CountClipboardFormats
+
+      integer*2 ChangeClipboardChain
+      integer*2 CloseClipboard
+      integer*2 EmptyClipboard
+      integer*2 EnumClipboardFormats
+      integer*2 GetClipboardData
+      integer*2 GetClipboardFormatName
+      integer*2 GetClipboardOwner
+      integer*2 GetClipboardViewer
+      integer*2 GetPriorityClipboardFormat
+      integer*2 IsClipboardFormatAvailable
+      integer*2 OpenClipboard
+      integer*2 RegisterClipboardFormat
+      integer*2 SetClipboardData
+      integer*2 SetClipboardViewer
+      integer*2 CountClipboardFormats
+
+! Predefined Clipboard Formats
+
+      integer CF_TEXT
+      integer CF_BITMAP
+      integer CF_METAFILEPICT
+      integer CF_SYLK
+      integer CF_DIF
+      integer CF_TIFF
+      integer CF_OEMTEXT
+      integer CF_DIB
+      integer CF_PALETTE
+
+      integer CF_OWNERDISPLAY
+      integer CF_DSPTEXT
+      integer CF_DSPBITMAP
+      integer CF_DSPMETAFILEPICT
+
+      parameter ( CF_TEXT             = 1 )
+      parameter ( CF_BITMAP           = 2 )
+      parameter ( CF_METAFILEPICT     = 3 )
+      parameter ( CF_SYLK             = 4 )
+      parameter ( CF_DIF              = 5 )
+      parameter ( CF_TIFF             = 6 )
+      parameter ( CF_OEMTEXT          = 7 )
+      parameter ( CF_DIB              = 8 )
+      parameter ( CF_PALETTE          = 9 )
+
+      parameter ( CF_OWNERDISPLAY     = '0080'x )
+      parameter ( CF_DSPTEXT          = '0081'x )
+      parameter ( CF_DSPBITMAP        = '0082'x )
+      parameter ( CF_DSPMETAFILEPICT  = '0083'x )
+
+! "Private" formats don't get GlobalFree()'d
+
+      integer CF_PRIVATEFIRST
+      integer CF_PRIVATELAST
+
+      parameter ( CF_PRIVATEFIRST     = '0200'x )
+      parameter ( CF_PRIVATELAST      = '02FF'x )
+
+! "GDIOBJ" formats do get DeleteObject()'d
+
+      integer CF_GDIOBJFIRST
+      integer CF_GDIOBJLAST
+
+      parameter ( CF_GDIOBJFIRST      = '0300'x )
+      parameter ( CF_GDIOBJLAST       = '03FF'x )
+
+*$reference

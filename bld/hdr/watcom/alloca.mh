@@ -1,0 +1,23 @@
+/*
+ *  alloca.h    Dynamic stack storage allocation
+ *
+:include crwat.sp
+ */
+#ifndef _STRINGS_H_INCLUDED
+#define _STRINGS_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include sizet.sp
+
+:include null.sp
+
+:include cpluspro.sp
+
+:include alloca.sp
+
+:include cplusepi.sp
+
+#endif

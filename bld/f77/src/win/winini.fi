@@ -1,0 +1,20 @@
+*$noreference
+
+! Initialization-File Functions:
+! ------------------------------
+
+      external GetPrivateProfileInt
+      external GetPrivateProfileString
+      external GetProfileInt
+      external GetProfileString
+      external WriteProfileString
+      external WritePrivateProfileString
+
+      integer*2 GetPrivateProfileInt
+      integer*2 GetPrivateProfileString
+      integer*2 GetProfileInt
+      integer*2 GetProfileString
+      integer*2 WriteProfileString
+      integer*2 WritePrivateProfileString
+
+*$reference

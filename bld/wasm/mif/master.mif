@@ -1,0 +1,200 @@
+proj_name = wasm
+name = wasm
+
+!ifndef wasm_autodepends
+wasm_autodepends = .AUTODEPEND
+!endif
+
+additional_cleanup += *.u *.msg
+
+wasm_trmem = 1
+
+!ifdef bootstrap
+use_text_msgs = 1
+!else ifdef prebuild
+use_text_msgs = 1
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include trmem.mif
+
+fpu_flags = -fpc
+
+inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
+
+!ifndef use_text_msgs
+!include wres.mif
+libs = $(wres_dir)/$(%OBJDIR)/wres.lib
+!endif
+
+#cflags stuff
+#########
+extra_c_flags =-D_STANDALONE_
+!ifeq release 0
+extra_c_flags += -DDEBUG_OUT
+!endif
+!ifdef use_text_msgs
+extra_c_flags += -DUSE_TEXT_MSGS
+!endif
+
+extra_c_flags_genmsomf = -DMSG_WOMP_RC_BASE=200
+extra_c_flags_fixup = -DMSG_WOMP_RC_BASE=200
+extra_c_flags_asmalloc = $(trmem_cover_cflags)
+extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_asmfixup = -I"$(cg_dir)/intel/h"
+extra_c_flags_asmmatch = -I"$(cg_dir)/intel/h"
+
+#lflags stuff
+#########
+extra_l_flags = option map,symfile
+!ifndef use_text_msgs
+extra_l_flags += lib $(wres_lib)
+!endif
+extra_l_flags_qnx = option offset=16k, res=usage.u, stack=12k
+extra_l_flags_dos_i86 = option stack=6k
+extra_l_flags_dos_386 = option stack=12k
+extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
+extra_l_flags_linux = option stack=12k
+
+.c : ../c;$(womp_dir)/c;$(trmem_dir);$(watcom_dir)/c
+
+proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
+    main.obj            &
+    write.obj           &
+    fatal.obj           &
+    womputil.obj        &
+    direct.obj          &
+    posndir.obj         &
+    asmeval.obj         &
+    asmalloc.obj        &
+    asmmsg.obj          &
+    wasmmsg.obj         &
+    macro.obj           &
+    condasm.obj         &
+    breakout.obj        &
+    asmstruc.obj        &
+    asmexpnd.obj        &
+    mangle.obj          &
+    for.obj             &
+    objio.obj           &
+    carve.obj           &
+    genmsomf.obj        &
+    objrec.obj          &
+    queue.obj           &
+    fixup.obj           &
+    lifix.obj           &
+    asmins.obj          &
+    asmscan.obj         &
+    asmline.obj         &
+    asmsym.obj          &
+    tbyte.obj           &
+    asmlabel.obj        &
+    asmfixup.obj        &
+    asmmatch.obj        &
+    asmdata.obj         &
+    asmjump.obj         &
+    autodept.obj        &
+    queues.obj          &
+    finger.obj
+
+proj_obj += $(trmem_objs)
+
+!ifdef bootstrap
+proj_obj += clibext.obj
+!endif
+
+#explicit rules
+######
+
+!ifndef use_text_msgs
+res_objs = $(name).res
+!endif
+
+# systems where version resources must be added to .EXE
+!ifndef prebuild
+version_res_nt_386 = exever.res
+!endif
+
+$(name).exe : usage.msg asmops.gh asmopsd.gh wmpmsg.gh $(res_objs) $(proj_obj) $(version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifdef bootstrap
+        $(cl) -o $@ $(proj_obj) $(libs)
+!else
+        @%write  $^&.lnk $(lflags)
+        @%append $^&.lnk file { $(proj_obj) }
+!ifeq host_OS osi
+        @%append $^&.lnk name $^&.rex
+        $(linker) @$^&.lnk
+        $(w32bind) $^&.rex $@ $(os2ldr)
+        @rm -f $^&.rex
+!else
+        @%append $^&.lnk name $@
+        $(linker) @$^&.lnk
+!endif
+!endif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+!ifdef res_objs
+        wstrip -a -r -q $@ . $(res_objs)
+!endif
+
+!include verrc.mif
+
+###################################################################
+# resource stuff
+
+$(name).res : ../h/$(proj_name).rc usage.rc usagej.rc msg.gh wasmmsg.gh wmpmsg.gh
+        $(rc_aui) -D_STANDALONE_ $[@ -fo=$^@
+
+msg.gh : ../h/asmshare.msg
+        $(awk) -v base=MSG_SHARE_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+
+wasmmsg.gh : ../h/wasm.msg
+        $(awk) -v base=MSG_WASM_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+
+wmpmsg.gh : ../h/womp.msg
+        $(awk) -v base=MSG_WOMP_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+
+usage.rc : usage.u
+        @%write $^&.tmp -t8 -f "(MSG_USE_E_BASE+%$#%+), \"%s\"" $< $^@
+        wsplice @$^&.tmp
+
+usagej.rc : usagej.u
+        @%write $^&.tmp -t8 -f "(MSG_USE_J_BASE+%$#%+), \"%s\"" $< $^@
+        wsplice @$^&.tmp
+
+usage.msg : usage.u
+        @%write $^&.tmp -t8 -f "pick((MSG_USE_BASE+%$#%+), \"%s\")" $< $^@
+        wsplice @$^&.tmp
+
+usagej.msg : usagej.u
+        @%write $^&.tmp -t8 -f "pick((MSG_USE_BASE+%$#%+), \"%s\")" $< $^@
+        wsplice @$^&.tmp
+
+./optencod.exe: $(fe_misc_dir)/c/optencod.c
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts)
+ 
+usage.u : ./optencod.exe ../h/options.gml
+        $[@ -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
+        %append $@ .
+
+usagej.u : ./optencod.exe ../h/options.gml
+        $[@ -l 1 -q -u $@ $]@ $(nulldevice) $(nulldevice) $(nulldevice) any
+        %append $@ .
+
+###################################################################
+
+./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(cl_objs)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+
+asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
+        $< $@
+
+./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(cl_objs)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+
+asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
+        $< $@

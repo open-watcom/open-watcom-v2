@@ -34,7 +34,7 @@
 #include "pgvars.h"
 
 
-short _WCI86FAR _CGRAPH _pg_initchart( void )
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_initchart( void )
 //======================================
 
 /*  Initializes the global styleset variable and the global

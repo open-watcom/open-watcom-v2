@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default LibMain implementation for Win32.
 *
 ****************************************************************************/
 
@@ -33,7 +32,8 @@
 #include "variety.h"
 #include <windows.h>
 
-int APIENTRY LibMain( HANDLE h, DWORD d, LPVOID l ) {
+int APIENTRY LibMain( HANDLE h, DWORD d, LPVOID l )
+{
     h = h;
     d = d;
     l = l;

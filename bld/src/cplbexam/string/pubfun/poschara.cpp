@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String    s ("Watcom C++ compaler");
+    String    s ("Open Watcom C++ compaler");
     int       pos = 15;
     char      ch  = 'i';
 

@@ -64,7 +64,8 @@ void test1() {
     if( skip_list.find( temp, temp2 ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	skip_list.insert( temp );
 	if( skip_list.isEmpty() ) cout << i << " IS Empty!\n";
@@ -104,7 +105,8 @@ void test2() {
     if( !skip_list.isEmpty() ) cout << "NOT Empty!\n";
     if( skip_list.find( &str_text[ 0 ] ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( &str_text[ 0 ] ) ) cout << "Found in empty list!" << temp << '\n';
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	skip_list.insert( &str_text[ i ] );
 	if( skip_list.isEmpty() ) cout << i << " IS Empty!\n";
     };
@@ -145,7 +147,8 @@ void test3() {
     if( skip_list.find( temp, temp2 ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	if( i == 13 ) {
 	    if( skip_list.insert( temp ) ) cout << "Inserted non-unique value!!\n";
@@ -185,7 +188,8 @@ void test4() {
     if( skip_list.find( &temp ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( &temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	if( i == 13 ) {
 	    if( skip_list.insert( &str_text[ i ] ) ) cout << "Inserted non-unique value!!\n";
 	} else {
@@ -225,7 +229,8 @@ void test5() {
     if( skip_list.find( temp, inttemp ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	temp = text[ i ];
 	if( i == 13 ) {
 	    if( skip_list.insert( temp, i ) ) cout << "Inserted non-unique value!!\n";
@@ -267,7 +272,8 @@ void test6() {
     if( skip_list.find( &temp ) ) cout << "Found in empty list!" << temp << '\n';
     if( skip_list.contains( &temp ) ) cout << "Found in empty list!" << temp << '\n';
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	int_array[ i ] = i;
 	if( i == 13 ) {
 	    if( skip_list.insert( &str_text[ i ], &int_array[ i ] ) ) cout << "Inserted non-unique value!!\n";

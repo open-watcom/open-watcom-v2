@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Code generator type system.
 *
 ****************************************************************************/
 
@@ -34,28 +33,42 @@
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
-#include "sysmacro.h"
+#include "cgmem.h"
+#include "types.h"
 
 typedef enum {
-                TYPE_DEFINITION,
-                TYPE_ALIAS
+        TYPE_DEFINITION,
+        TYPE_ALIAS
 } type_class;
 
 typedef struct alias {
-    struct type_def     *tptr;
-    cg_type             refno;
+        struct type_def     *tptr;
+        cg_type             refno;
 } alias;
 
 typedef union type_alloc {
-        struct alias    alias;
-        struct type_def type_def;
+        struct alias        alias;
+        struct type_def     type_def;
 } type_alloc;
 
 typedef struct type_list {
-        union type_alloc        tipe;
-        struct type_list        *link;
-        type_class              format;
+        union type_alloc    tipe;
+        struct type_list    *link;
+        type_class          format;
 } type_list;
+
+extern    type_def      *TypeInteger;
+extern    type_def      *TypeHugeInteger;
+extern    type_def      *TypeLongInteger;
+extern    type_def      *TypeLongLongInteger;
+extern    type_def      *TypeNearInteger;
+extern    type_def      *TypeUnsigned;
+extern    type_def      *TypePtr;
+extern    type_def      *TypeBoolean;
+extern    type_def      *TypeNone;
+extern    type_def      *TypeProcParm;
+
+extern    void          TargTypeInit(void);
 
 static    type_list     *TypeList;
 
@@ -63,40 +76,31 @@ static    type_list     *TypeList;
 /*                          refno           length  attributes*/
 /*                          ======          ======  ==========*/
 
-static type_def TUInt1 = {  T_UINT_1,       1,      0 };
-static type_def TInt1  = {  T_INT_1,        1,      TYPE_SIGNED };
-static type_def TUInt2 = {  T_UINT_2,       2,      0 };
-static type_def TInt2  = {  T_INT_2,        2,      TYPE_SIGNED };
-static type_def TUInt4 = {  T_UINT_4,       4,      0 };
-static type_def TInt4  = {  T_INT_4,        4,      TYPE_SIGNED };
-static type_def TUInt8 = { T_UINT_8,        8,      0 };
-static type_def TInt8  = { T_INT_8,         8,      TYPE_SIGNED };
+static type_def TUInt1 = {  TY_UINT_1,       1,      0 };
+static type_def TInt1  = {  TY_INT_1,        1,      TYPE_SIGNED };
+static type_def TUInt2 = {  TY_UINT_2,       2,      0 };
+static type_def TInt2  = {  TY_INT_2,        2,      TYPE_SIGNED };
+static type_def TUInt4 = {  TY_UINT_4,       4,      0 };
+static type_def TInt4  = {  TY_INT_4,        4,      TYPE_SIGNED };
+static type_def TUInt8 = {  TY_UINT_8,       8,      0 };
+static type_def TInt8  = {  TY_INT_8,        8,      TYPE_SIGNED };
 extern type_def TNearCP;
 extern type_def TLongCP;
 extern type_def THugeCP;
 extern type_def TNearP;
 extern type_def TLongP;
 extern type_def THugeP;
-static type_def TSingle     = {  T_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
-static type_def TDouble     = {  T_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
-static type_def TLongDouble = {  T_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
-static type_def TBool       = {  T_BOOLEAN,      0,      0 };
-static type_def TNull       = {  T_DEFAULT,      0,      0 };
-static type_def TPascal     = {  T_PROC_PARM,    4,      0 };
+static type_def TSingle     = {  TY_SINGLE,       4,      TYPE_SIGNED + TYPE_FLOAT };
+static type_def TDouble     = {  TY_DOUBLE,       8,      TYPE_SIGNED + TYPE_FLOAT };
+static type_def TLongDouble = {  TY_LONG_DOUBLE,  10,     TYPE_SIGNED + TYPE_FLOAT };
+static type_def TBool       = {  TY_BOOLEAN,      0,      0 };
+static type_def TNull       = {  TY_DEFAULT,      0,      0 };
+static type_def TPascal     = {  TY_PROC_PARM,    4,      0 };
 
 type_def *PTInteger;
 type_def *PTUnsigned;
 type_def *PTPointer;
 type_def *PTCodePointer;
-
-extern  void    InitTyping() {
-/*****************************
-    initialize our typeing system
-*/
-
-    TypeList = NULL;
-}
-
 
 extern  type_def        *TypeAddress( cg_type tipe ) {
 /*****************************************************
@@ -108,51 +112,51 @@ extern  type_def        *TypeAddress( cg_type tipe ) {
 
     switch( tipe ) {
 
-    case T_UINT_1:
+    case TY_UINT_1:
         return( &TUInt1 );
-    case T_INT_1:
+    case TY_INT_1:
         return( &TInt1 );
-    case T_UINT_2:
+    case TY_UINT_2:
         return( &TUInt2 );
-    case T_INT_2:
+    case TY_INT_2:
         return( &TInt2 );
-    case T_UINT_4:
+    case TY_UINT_4:
         return( &TUInt4 );
-    case T_INT_4:
+    case TY_INT_4:
         return( &TInt4 );
-    case T_UINT_8:
+    case TY_UINT_8:
         return( &TUInt8 );
-    case T_INT_8:
+    case TY_INT_8:
         return( &TInt8 );
-    case T_NEAR_CODE_PTR:
+    case TY_NEAR_CODE_PTR:
         return( &TNearCP );
-    case T_LONG_CODE_PTR:
+    case TY_LONG_CODE_PTR:
         return( &TLongCP );
-    case T_NEAR_POINTER:
+    case TY_NEAR_POINTER:
         return( &TNearP );
-    case T_LONG_POINTER:
+    case TY_LONG_POINTER:
         return( &TLongP );
-    case T_HUGE_POINTER:
+    case TY_HUGE_POINTER:
         return( &THugeP );
-    case T_SINGLE:
+    case TY_SINGLE:
         return( &TSingle );
-    case T_DOUBLE:
+    case TY_DOUBLE:
         return( &TDouble );
-    case T_LONG_DOUBLE:
+    case TY_LONG_DOUBLE:
         return( &TLongDouble );
-    case T_BOOLEAN:
+    case TY_BOOLEAN:
         return( &TBool );
-    case T_DEFAULT:
+    case TY_DEFAULT:
         return( &TNull );
-    case T_PROC_PARM:
+    case TY_PROC_PARM:
         return( &TPascal );
-    case T_INTEGER:
+    case TY_INTEGER:
         return( PTInteger );
-    case T_UNSIGNED:
+    case TY_UNSIGNED:
         return( PTUnsigned );
-    case T_POINTER:
+    case TY_POINTER:
         return( PTPointer );
-    case T_CODE_PTR:
+    case TY_CODE_PTR:
         return( PTCodePointer );
     default:
         list = TypeList;
@@ -195,8 +199,8 @@ extern  type_def        *TypeAlias( cg_type define, cg_type existing ) {
     type_list   *list;
 
     t = TypeAddress( existing );
-    if( t->refno == T_DEFAULT ) return( t );
-    _Alloc( list, sizeof( type_list ) );
+    if( t->refno == TY_DEFAULT ) return( t );
+    list = CGAlloc( sizeof( type_list ) );
     list->link = TypeList;
     TypeList = list;
     list->format = TYPE_ALIAS;
@@ -215,14 +219,14 @@ extern  type_def        *TypeDef( cg_type refno, type_length length, type_length
     type_list   *list;
 
     align = align;
-    _Alloc( list, sizeof( type_list ) );
+    list = CGAlloc( sizeof( type_list ) );
     list->link = TypeList;
     TypeList = list;
     list->format = TYPE_DEFINITION;
     list->tipe.type_def.refno  =  refno;
     list->tipe.type_def.length = length;
     list->tipe.type_def.attr   = 0;
-#if _TARGET & ( _TARG_AXP | _TARG_PPC )
+#if _TARGET & _TARG_RISC
     list->tipe.type_def.align  = align;
 #endif
     return( &list->tipe.type_def );
@@ -241,6 +245,24 @@ extern  void    TypeFini() {
     while( next != NULL ) {
         junk = next;
         next = next->link;
-        _Free( junk, sizeof( type_list ) );
+        CGFree( junk );
     }
+}
+
+extern  void    TypeInit( void )
+/******************************/
+{
+    TypeList = NULL;
+
+    TargTypeInit();
+    TypeProcParm = TypeAddress( TY_PROC_PARM );
+    TypeInteger = TypeAddress( TY_INTEGER );
+    TypeHugeInteger = TypeAddress( TY_HUGE_INTEGER );
+    TypeLongInteger = TypeAddress( TY_LONG_INTEGER );
+    TypeLongLongInteger = TypeAddress( TY_INT_8 );   // should be something else perhaps?
+    TypeNearInteger = TypeAddress( TY_NEAR_INTEGER );
+    TypeUnsigned = TypeAddress( TY_UNSIGNED );
+    TypeBoolean = TypeAddress( TY_BOOLEAN );
+    TypeNone = TypeAddress( TY_DEFAULT );
+    TypePtr = TypeAddress( TY_POINTER );
 }

@@ -56,26 +56,6 @@ extern char         *TxtBuff;
 
 static char SystemOps[] = { "Remote\0Local\0" };
 
-void ProcSystem()
-{
-    char        *start;
-    unsigned    len;
-    int         loc;
-
-    loc = 0;
-    if( CurrToken == T_DIV ) {
-        Scan();
-        loc = ScanCmd( SystemOps );
-        if( loc == 0 ) {
-            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
-        }
-        if( loc == 2 ) loc = -1;
-    }
-    ScanItem( FALSE, &start, &len );
-    ReqEOC();
-    DoSystem( start, len, loc );
-}
-
 void DoSystem( char *cmd, unsigned len, int loc )
 {
     long        ret;
@@ -94,4 +74,25 @@ void DoSystem( char *cmd, unsigned len, int loc )
     }
     DUISysEnd( ret >= 0 );
     if( ret < 0 ) Error( ERR_NONE, LIT( ERR_SYS_FAIL ), (int) ret );
+}
+
+
+void ProcSystem()
+{
+    char        *start;
+    unsigned    len;
+    int         loc;
+
+    loc = 0;
+    if( CurrToken == T_DIV ) {
+        Scan();
+        loc = ScanCmd( SystemOps );
+        if( loc == 0 ) {
+            Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SYSTEM ) );
+        }
+        if( loc == 2 ) loc = -1;
+    }
+    ScanItem( FALSE, &start, &len );
+    ReqEOC();
+    DoSystem( start, len, loc );
 }

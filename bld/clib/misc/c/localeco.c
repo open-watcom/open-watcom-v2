@@ -57,7 +57,7 @@ static struct lconv C_lconv = {
 };
 
 
-_WCRTLINK struct lconv *localeconv()
-    {
-        return( &C_lconv );
-    }
+_WCRTLINK struct lconv *localeconv( void )
+{
+    return( &C_lconv );
+}

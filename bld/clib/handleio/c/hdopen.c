@@ -59,7 +59,7 @@ static int check_mode( int handle, int mode ) {
 
     handle=handle;mode=mode;flags=flags;
     __errno = 0;
-    #if defined(__QNX__)
+    #if defined(__UNIX__)
         if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
             return( -1 );
         }
@@ -138,7 +138,7 @@ _WCRTLINK int _open_osfhandle( long osfhandle, int flags )
         if( check_mode( posix_handle, flags ) ) {
             return( -1 );
         }
-        #if !defined(__QNX__)
+        #if !defined(__UNIX__)
         {
             int         rwmode;
             unsigned    io_mode;

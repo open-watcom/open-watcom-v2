@@ -1,0 +1,100 @@
+.387
+.386p
+		EXTRN	extern32_dword:BYTE
+		EXTRN	extern32_fword:BYTE
+DATA16		SEGMENT	PARA PRIVATE USE16 ''
+L$1:
+    DB	0, 0, 0, 0, 0, 0
+L$2:
+    DB	0, 0, 0, 0
+
+DATA16		ENDS
+TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:TEXT16, DS:DGROUP, SS:DGROUP
+    lds         bx,dword ptr DATA16:extern32_dword
+    lds         bx,dword ptr L$2
+    lds         ebx,fword ptr DATA16:extern32_fword
+    lds         ebx,fword ptr L$1
+    lds         dx,dword ptr 4[bx]
+    lds         dx,dword ptr 4[ebx]
+    lds         edx,fword ptr 4[bx]
+    lds         edx,fword ptr 4[ebx]
+    lss         bx,dword ptr DATA16:extern32_dword
+    lss         bx,dword ptr L$2
+    lss         ebx,fword ptr DATA16:extern32_fword
+    lss         ebx,fword ptr L$1
+    lss         dx,dword ptr 4[bx]
+    lss         dx,dword ptr 4[ebx]
+    lss         edx,fword ptr 4[bx]
+    lss         edx,fword ptr 4[ebx]
+    les         bx,dword ptr DATA16:extern32_dword
+    les         bx,dword ptr L$2
+    les         ebx,fword ptr DATA16:extern32_fword
+    les         ebx,fword ptr L$1
+    les         dx,dword ptr 4[bx]
+    les         dx,dword ptr 4[ebx]
+    les         edx,fword ptr 4[bx]
+    les         edx,fword ptr 4[ebx]
+    lfs         bx,dword ptr DATA16:extern32_dword
+    lfs         bx,dword ptr L$2
+    lfs         ebx,fword ptr DATA16:extern32_fword
+    lfs         ebx,fword ptr L$1
+    lfs         dx,dword ptr 4[bx]
+    lfs         dx,dword ptr 4[ebx]
+    lfs         edx,fword ptr 4[bx]
+    lfs         edx,fword ptr 4[ebx]
+    lgs         bx,dword ptr DATA16:extern32_dword
+    lgs         bx,dword ptr L$2
+    lgs         ebx,fword ptr DATA16:extern32_fword
+    lgs         ebx,fword ptr L$1
+    lgs         dx,dword ptr 4[bx]
+    lgs         dx,dword ptr 4[ebx]
+    lgs         edx,fword ptr 4[bx]
+    lgs         edx,fword ptr 4[ebx]
+    ret         
+TEXT16		ENDS
+TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:TEXT32, DS:DGROUP, SS:DGROUP
+    lds         bx,dword ptr DATA16:extern32_dword
+    lds         bx,dword ptr L$2
+    lds         ebx,fword ptr DATA16:extern32_fword
+    lds         ebx,fword ptr L$1
+    lds         dx,dword ptr 4[bx]
+    lds         dx,dword ptr 4[ebx]
+    lds         edx,fword ptr 4[bx]
+    lds         edx,fword ptr 4[ebx]
+    lss         bx,dword ptr DATA16:extern32_dword
+    lss         bx,dword ptr L$2
+    lss         ebx,fword ptr DATA16:extern32_fword
+    lss         ebx,fword ptr L$1
+    lss         dx,dword ptr 4[bx]
+    lss         dx,dword ptr 4[ebx]
+    lss         edx,fword ptr 4[bx]
+    lss         edx,fword ptr 4[ebx]
+    les         bx,dword ptr DATA16:extern32_dword
+    les         bx,dword ptr L$2
+    les         ebx,fword ptr DATA16:extern32_fword
+    les         ebx,fword ptr L$1
+    les         dx,dword ptr 4[bx]
+    les         dx,dword ptr 4[ebx]
+    les         edx,fword ptr 4[bx]
+    les         edx,fword ptr 4[ebx]
+    lfs         bx,dword ptr DATA16:extern32_dword
+    lfs         bx,dword ptr L$2
+    lfs         ebx,fword ptr DATA16:extern32_fword
+    lfs         ebx,fword ptr L$1
+    lfs         dx,dword ptr 4[bx]
+    lfs         dx,dword ptr 4[ebx]
+    lfs         edx,fword ptr 4[bx]
+    lfs         edx,fword ptr 4[ebx]
+    lgs         bx,dword ptr DATA16:extern32_dword
+    lgs         bx,dword ptr L$2
+    lgs         ebx,fword ptr DATA16:extern32_fword
+    lgs         ebx,fword ptr L$1
+    lgs         dx,dword ptr 4[bx]
+    lgs         dx,dword ptr 4[ebx]
+    lgs         edx,fword ptr 4[bx]
+    lgs         edx,fword ptr 4[ebx]
+    ret         
+TEXT32		ENDS
+		END

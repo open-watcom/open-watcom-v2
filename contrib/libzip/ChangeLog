@@ -1,0 +1,282 @@
+2005-07-14  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* configure.ac: bump version to 0.6.1
+
+	* lib/zip_fread.c (zip_fread): remove unsigned.
+
+2005-07-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip.h: make usable from C++. Patch from Heiko Hund.
+
+2005-07-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* libzip.pc.in (zipcmp): Fix path to zipcmp.
+
+2005-06-18  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* lib/zip_close.c, lib/zip_dirent.c, lib/zip_fread.c,
+	lib/zipint.h, src/zipcmp.c: fix some warnings with -Wsign-compare.
+
+	* configure.ac, man/Makefile.am: smarter man page installation
+	handling, avoiding symlinks.
+
+2005-06-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* libzip.pc: return full path to zipcmp.
+
+2005-06-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.ac: bump version to 0.6
+
+2005-06-09  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* regress/buffadd.c (main): check string length before comparing.
+	* ltmain.sh: update from libtool-1.5.18.
+	* compile, depcomp, install-sh, missing, mkinstalldirs: Update
+	from automake-1.9.5.
+
+2005-06-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_source_zip.c (zip_source_zip): if reading uncompressed,
+	set crc in stat buffer to 0.
+
+	* lib/zip_close.c (ch_set_error): use ZIP_SOURCE_ERROR to get
+	error code from source callback.
+	
+	* regress/Makefile.am: add srcdir to TESTS_ENVIRONMENT.
+	* regress/mkname.c, regress/mkname.h: add.
+	* regress/fread.c, regress/name_locate.c, regress/open.c: use
+	mkname.
+
+	* man/Makefile.am: fix DESTDIR support and uninstall.
+	
+2005-01-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_get_name.c (_zip_get_name): return ZIP_ER_DELETED for
+	deleted entries if ZIP_FL_UNCHANGED isn't set.
+
+2005-01-11  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* lib/zip_name_locate.c (_zip_name_locate): fix ZIP_FL_NODIR;
+	also follow appnote.txt and only accept forward slashes as
+	directory separators.
+
+2005-01-11  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_fopen_index.c (zip_fopen_index), lib/zip_fread.c
+	(zip_fread), lib/zip_fclose.c (zip_fclose): fix CRC checking for
+	stored files.
+	
+	* lib/zip_new.c (_zip_new): init error.
+
+	* lib/zip_error.c (_zip_error_get): set system error to 0 for
+	ZIP_ET_NONE.
+
+	* lib/zip_open.c (_zip_memdup): make static, use size_t for size
+	argument, add error argument for passing error code back to
+	caller.
+	* lib/zip_open.c (_zip_readcdir): error out if _zip_memdup
+	failes.
+	
+2004-12-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_free.c (_zip_free): correctly set error of open
+	files to ZIP_ER_ZIPCLOSED.
+
+2004-12-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip.h: rename zip_read_func to zip_source_callback, struct
+	zip_cmd to struct zip_source_cmd, and ZIP_CMD_* to ZIP_SOURCE_*;
+	adapt users.
+	
+	* lib/zip_open.c (_zip_checkcons): always initialize variables
+
+2004-12-22  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* zip.h: Rename zip_error_sys_type to zip_error_get_sys_type.
+	Adapt callers and documentation.
+
+2004-11-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_get_name.c (zip_get_name): add flags argument.
+	(_zip_get_name): new function.
+	* lib/zip_uncange.c (zip_unchange): return error if unchanging
+	name would result in duplicate name in archive.
+	
+	* lib/zip_name_locate.c (_zip_name_locate): new function.
+	(zip_name_locate): move actual name lookup to _zip_name_locate.
+	* lib/zip_set_name.c (_zip_set_name): don't allow duplicate names
+	in archive; return error if name is NULL.
+	* lib/zip_replace.c (_zip_replace): don't call _zip_set_name when
+	name is NULL.
+	* lib/zip_get_name.c (zip_get_name): fix when called with
+	partially initialized entry.
+	
+2004-11-30  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* zipint.h: Include zip.h; add zlib.h.
+	* zip.h: Remove zlib.h.
+	* src/zipcmp.c: Add zlib.h.
+
+	* zipint.h: Rename _zip_new_entry to _zip_entry_new;
+	rename _zip_free_entry to _zip_entry_free; adapt users.
+
+2004-11-18  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* zip.h: Rename zip_source_data to zip_source_buffer.
+	Adapt users and documentation.
+
+	* lib/zip_source_*: Verify user-supplied data.
+
+	* zip.h: Rename zip_get_error to zip_error_get;
+	rename zip_file_get_error to zip_file_error_get;
+	rename zip_error_str to zip_error_to_str;
+	replace various zip_add_* and zip_replace_* functions
+	with zip_source_*.  Adapt users.  Update docs.
+
+2004-11-17  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* zip.h: Rename ZERR_* to ZIP_ER_*; rename ZIP_ET_ZIP to
+	ZIP_ET_ZLIB; remove ZIP_CH_ISCOMP from zip.h.  Adapt users.
+
+2004-04-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_replace_zip.c (_zip_replace_zip): set ZIP_CH_ISCOMP when
+	copying compressed data.
+
+	* lib/zip_fclose.c (zip_fclose): don't compare crc when reading
+	compressed data.
+	* lib/zip_fread.c (zip_fread): don't compute crc when reading
+	compressed data.
+
+2004-04-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_name_locate.c (zip_name_locate): honour
+	ZIP_FL_UNCHANGED, handle `\' for ZIP_FL_NODIR.
+
+	* lib/zip_stat_index.c (zip_stat_index): return ZERR_INVAL if
+	ZIP_FL_UNCHANGED is specified and file was added.  Honour
+	ZIP_FL_UNCHANGED for name.  If file was changed and
+	ZIP_FL_UNCHANGED is not given, call ch_func with command
+	ZIP_CMD_STAT.
+
+	* lib/zip_fopen_index.c (zip_fopen_index): return ZERR_INVAL if
+	ZIP_FL_UNCHANGED is specified and file was added.
+	
+2004-04-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+        * TODO, lib/Makefile.am, lib/zip.h, lib/zip_add.c,
+          lib/zip_add_data.c, lib/zip_add_file.c, lib/zip_add_filep.c,
+          lib/zip_add_zip.c, lib/zip_close.c, lib/zip_delete.c,
+          lib/zip_dirent.c, lib/zip_error.c, lib/zip_error_str.c,
+          lib/zip_fclose.c, lib/zip_file_get_offset.c, lib/zip_fopen.c,
+          lib/zip_fopen_index.c, lib/zip_fread.c, lib/zip_free.c,
+          lib/zip_free_entry.c, lib/zip_free_meta.c, lib/zip_get_name.c,
+          lib/zip_merge_meta.c, lib/zip_name_locate.c, lib/zip_new.c,
+          lib/zip_new_entry.c, lib/zip_new_meta.c, lib/zip_open.c,
+          lib/zip_rename.c, lib/zip_replace.c, lib/zip_replace_data.c,
+          lib/zip_replace_file.c, lib/zip_replace_filep.c,
+          lib/zip_replace_zip.c, lib/zip_set_name.c, lib/zip_stat.c,
+          lib/zip_stat_index.c, lib/zip_unchange.c,
+          lib/zip_unchange_data.c, lib/zipint.h, man/zip_fopen.man,
+          man/zip_fopen.mdoc, man/zip_name_locate.man,
+          man/zip_name_locate.mdoc, man/zip_stat.man, man/zip_stat.mdoc,
+	  regress/buffadd.c, regress/open.c, src/zipcmp.c: Remove
+	  zip_meta structure.
+
+2003-12-30  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* src/zipcmp.c (compare_zip): use correct index.
+
+2003-10-06  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip_unchange_all.c (zip_unchange_all): remove check for za
+	!= NULL.
+
+	* lib/zip_set_name.c (_zip_set_name): adapt to new error code
+	handling.  clean up error handling.
+
+2003-10-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip.h, lib/zipint.h: Don't expose struct zip, struct
+	zip_file.
+	* lib/zip_open.c (zip_open): new argument errp, use it to store
+	error code.
+	* lib/zip_error_str.c (zip_error_str): new function.
+	* lib/zip_error_sys_type.c (zip_error_sys_type): new function.
+	* lib/zip_get_num_files.c (zip_get_num_files): new function.
+	* src/zipcmp.c (compare_zip): adapt to new API.
+
+	* lib/zip.h, lib/zipint.h: Don't expose zip_err_str, rename to
+	_zip_err_str.  Adapt users.
+	
+	* lib/zip_error.c(_zip_error_get): new function.
+	* lib/zip_get_error.c (zip_get_error): new function.
+	* lib/zip_file_get_error.c (zip_file_get_error): new function.
+	
+	* lib/zip.h (struct zip_stat): new struct.
+	* lib/zip_stat.c (zip_stat): new function.
+	* lib/zip_stat_index.c (zip_stat_index) new function.
+
+	* lib/zip_error.c (_zip_error_set): new function.
+	* lib/zip_name_locate.c (zip_name_locate): set za->error if name
+	not found.
+	
+	* lib/zip.h: (struct zip_error): new struct.
+	* lib/zip.h: (struct zip, struct zip_file): add new member error.
+	* lib/zip.h, lib/zipint.h, lib/make_zip_err_str.sh: add
+	_zip_err_errno.
+	* lib/zip_error.c (_zip_error_fini, _zip_error_init): new
+	functions.
+	* lib/zip_error_strerror.c (_zip_error_strerror): new function.
+	* lib/zip_file_strerror.c (zip_file_strerror): new function.
+	* lib/zip_strerror.c (zip_strerror): new function.
+
+2003-10-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* lib/zip.h, lib/make_zip_err_str.sh: make zip_err_str const.
+
+	* src/zipcmp.c (entry_cmp, main): add -i flag (compare names
+	ignoring case distinctions). 
+
+2003-10-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* src/zipcmp.c (compare_zip): exit with 2 in case of error.
+
+2003-01-30  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* configure.ac: bump to 0.5.
+
+	* libzip/tests/buffadd.c: include <string.h>.
+	* libzip/zip_replace_data.c: include <string.h>.
+
+2001-10-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct
+	length to zip_read()
+
+2001-10-20  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* libzip/zip_open.c (_zip_readcdir): Work around some broken zip
+	files.
+
+2000-11-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* libzip/Makefile.am: install public header file
+
+2000-11-04  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* zip/Makefile.am, libzip/tests/Makefile.am: make libzip
+	shared by using libtool
+	* config.guess, config.sub, libtool.m4, ltconfig, ltmain.sh: new
+	files for above
+
+	* libzip/Makefile.am, zip.h: add zip_get_name
+	* libzip/zip_get_name.c: new file
+
+	* libzip/tests/ziptest.c (main): add some '\n'
+
+1999-10-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* libzip/zip_close.c (zip_close): make zip_close work under DOS,
+	free zip structure for temp file

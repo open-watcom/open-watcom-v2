@@ -31,42 +31,41 @@
 
 
 #include <string.h>
-#include "dbgdefn.h"
-#include "dbginfo.h"
+#include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgbreak.h"// brk changed
-#include "dbgtoggl.h"
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgbrk.h"
 #include "mad.h"
 
-extern bool             RemovePoint(brk*);
-extern brk              *FindBreak(address);
-extern brk              *AddBreak(address);
-extern cmd_list         *AllocCmdList(char *,unsigned int );
-extern void             FreeCmdList(cmd_list *);
+extern bool             RemovePoint( brkp * );
+extern brkp             *FindBreak( address );
+extern brkp             *AddBreak( address );
+extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern void             FreeCmdList( cmd_list * );
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );
-extern bool             DlgGetCodeAddr( gui_window *gui, unsigned id, address*);
-extern bool             DlgGetDataAddr( gui_window *gui, unsigned id, address*);
-extern void             PrevError(char*);
-extern char             *UniqStrAddr(address *,char * ,unsigned);
+extern bool             DlgGetCodeAddr( gui_window *gui, unsigned id, address* );
+extern bool             DlgGetDataAddr( gui_window *gui, unsigned id, address* );
+extern void             PrevError( char * );
+extern char             *UniqStrAddr( address *,char * ,unsigned );
 extern void             DbgUpdate( update_list flags );
-extern void             SetPointAddr( brk *bp, address addr );
-extern void             GetBPText( brk *bp, char *buff );
+extern void             SetPointAddr( brkp *bp, address addr );
+extern void             GetBPText( brkp *bp, char *buff );
 extern void             SymComplete( gui_window *gui, int id );
-extern void             WndMsgBox(char *);
-extern  char            *CnvULongDec( unsigned long value, char *buff );
+extern void             WndMsgBox( char * );
+extern char             *CnvULongDec( unsigned long value, char *buff );
 extern char             *StrCopy( char *src, char *dst ); // backwards. ugh
 extern bool             BrkCheckWatchLimit( address loc, mad_type_handle );
-extern void             RecordNewPoint( brk *bp );
-extern void             RecordClearPoint( brk *bp );
+extern void             RecordNewPoint( brkp *bp );
+extern void             RecordClearPoint( brkp *bp );
 extern void             SetRecord( bool on );
 extern mad_type_handle  FindMADTypeHandle( mad_type_kind tk, unsigned size );
 
 extern char             *TxtBuff;
 extern address          NilAddr;
+
+//extern int              Supports8ByteBreakpoints;
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {
@@ -83,7 +82,7 @@ static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
             ok = TRUE;
             addr = dlg->tmpbp.loc.addr;
         }
-        WndFree( new );
+        GUIMemFree( new );
     } else {
         ok = DlgGetDataAddr( gui, CTL_BRK_ADDRESS, &addr );
     }
@@ -93,8 +92,8 @@ static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 
 static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
 {
-    brk         *bp;
-    brk         *tmp_bp;
+    brkp        *bp;
+    brkp        *tmp_bp;
 
     tmp_bp = &dlg->tmpbp;
     GUIDlgBuffGetText( gui, CTL_BRK_COUNTDOWN, TxtBuff, TXT_LEN );
@@ -116,6 +115,8 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
         tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 2 );
     } else if( GUIIsChecked( gui, CTL_BRK_DWORD ) ) {
         tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 4 );
+    } else if( GUIIsChecked( gui, CTL_BRK_QWORD ) ) {
+        tmp_bp->th = FindMADTypeHandle( MAS_MEMORY | MTK_INTEGER, 8 );
     }
     if( !GetAddr( dlg, gui ) ) {
         PrevError( TxtBuff );
@@ -151,7 +152,7 @@ static  bool    GetDlgStatus( dlg_brk *dlg, gui_window *gui )
 
 static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
 {
-    brk                 *tmp_bp = &dlg->tmpbp;
+    brkp                *tmp_bp = &dlg->tmpbp;
     unsigned            id;
     mad_type_info       mti;
 
@@ -186,6 +187,9 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == 1*BITS_PER_BYTE );
     GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == 2*BITS_PER_BYTE );
     GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == 4*BITS_PER_BYTE );
+    
+    GUIEnableControl(gui, CTL_BRK_QWORD, Supports8ByteBreakpoints != 0);
+    GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == 8*BITS_PER_BYTE );
 
     if( dlg->cmd_error ) {
         id = CTL_BRK_CMD_LIST;
@@ -217,8 +221,8 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
     unsigned    id,from,to;
     dlg_brk     *dlg;
-    brk         *bp;
-    brk         saved;
+    brkp        *bp;
+    brkp        saved;
     bool        ok;
 
     dlg = GUIGetExtra( gui );
@@ -243,6 +247,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_BRK_BYTE:
         case CTL_BRK_WORD:
         case CTL_BRK_DWORD:
+        case CTL_BRK_QWORD:
             return( TRUE );
 #if 0
         case CTL_BRK_GET_TOTAL:
@@ -321,7 +326,7 @@ OVL_EXTERN bool BrkEvent( gui_window * gui, gui_event gui_ev, void * param )
 
 bool DlgBreak( address addr )
 {
-    brk         *bp;
+    brkp        *bp;
     dlg_brk     dlg;
 
     SetRecord( FALSE );

@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "imgedit.h"
 #ifdef __NT__
-#include "desknt.h"
+    #include "desknt.h"
 #endif
 
 static UINT     prevState;
@@ -46,40 +47,41 @@ static HWND     deskTopWindow;
 #endif
 
 /*
- * checkRectBounds - makes sure that the rectangle isn't bigger than 512x512
+ * checkRectBounds - make sure that the rectangle isn't bigger than 512x512
   */
 static void checkRectBounds( RECT *rect )
 {
     short       width;
     short       height;
 
-    if ( rect->right > rect->left ) {
+    if( rect->right > rect->left ) {
         width = (short)(rect->right - rect->left);
-        if (width > MAX_DIM) {
+        if( width > MAX_DIM ) {
             rect->right = rect->left + MAX_DIM;
         }
     } else {
         width = (short)(rect->left - rect->right);
-        if (width > MAX_DIM) {
+        if( width > MAX_DIM ) {
             rect->right = rect->left - MAX_DIM;
         }
     }
 
-    if ( rect->bottom > rect->top ) {
+    if( rect->bottom > rect->top ) {
         height = (short)(rect->bottom - rect->top);
-        if (height > MAX_DIM) {
+        if( height > MAX_DIM ) {
             rect->bottom = rect->top + MAX_DIM;
         }
     } else {
         height = (short)(rect->top - rect->bottom);
-        if (height > MAX_DIM) {
+        if( height > MAX_DIM ) {
             rect->bottom = rect->top - MAX_DIM;
         }
     }
+
 } /* checkRectBounds */
 
 /*
- * SelectDynamicBitmap - Lets the user select the bitmap from the screen.
+ * SelectDynamicBitmap - let the user select the bitmap from the screen
  */
 BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
 {
@@ -90,19 +92,19 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
     MSG         msg;
     RECT        screen_coords;
 
-    if (IsZoomed(HMainWindow)) {
+    if( IsZoomed( HMainWindow ) ) {
         prevState = SW_SHOWMAXIMIZED;
     } else {
         prevState = SW_SHOWNORMAL;
     }
 #ifdef __NT__
-    RegisterSnapClass(Instance);
-    ShowWindow(HMainWindow, SW_SHOWMINIMIZED);
-    ShowWindow(HMainWindow, SW_HIDE);
+    RegisterSnapClass( Instance );
+    ShowWindow( HMainWindow, SW_SHOWMINIMIZED );
+    ShowWindow( HMainWindow, SW_HIDE );
     deskTopWindow = DisplayDesktop( HMainWindow );
 #else
     ShowWindow( HMainWindow, SW_SHOWMINIMIZED );
-    ShowWindow(HMainWindow, SW_HIDE);
+    ShowWindow( HMainWindow, SW_HIDE );
 #endif
 
     bitmappickwindow = CreateWindow(
@@ -114,33 +116,35 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
         0,                  /* Initial X size */
         0,                  /* Initial Y size */
         HMainWindow,        /* Parent window handle */
-        (HMENU) NULL,       /* Window menu handle */
+        (HMENU)NULL,        /* Window menu handle */
         Instance,           /* Program instance handle */
         NULL );             /* Create parameters */
 
-    if( bitmappickwindow == NULL ) return FALSE;
-
-    while(notDestroyed && GetMessage(&msg, bitmappickwindow, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    if( bitmappickwindow == NULL ) {
+        return( FALSE );
     }
 
-    if (bmpRegion.right > bmpRegion.left) {
+    while( notDestroyed && GetMessage( &msg, bitmappickwindow, 0, 0 ) ) {
+        TranslateMessage( &msg );
+        DispatchMessage( &msg );
+    }
+
+    if( bmpRegion.right > bmpRegion.left ) {
         screen_coords.left = bmpRegion.left;
         screen_coords.right = bmpRegion.right;
     } else {
         screen_coords.left = bmpRegion.right;
         screen_coords.right = bmpRegion.left;
     }
-    if (bmpRegion.bottom > bmpRegion.top) {
+    if( bmpRegion.bottom > bmpRegion.top ) {
         screen_coords.bottom = bmpRegion.bottom;
         screen_coords.top = bmpRegion.top;
     } else {
         screen_coords.bottom = bmpRegion.top;
         screen_coords.top = bmpRegion.bottom;
     }
-    if ( (screen_coords.right - screen_coords.left == 0) ||
-                        (screen_coords.bottom - screen_coords.top == 0) ) {
+    if( screen_coords.right - screen_coords.left == 0 ||
+        screen_coords.bottom - screen_coords.top == 0 ) {
         ShowWindow( HMainWindow, prevState );
 #ifdef __NT__
         DestroyWindow( deskTopWindow );
@@ -148,7 +152,7 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
         IEDisplayErrorMsg( WIE_APPNAME, WIE_INVALIDREGIONSELECTED,
                            MB_OK | MB_ICONINFORMATION );
         notDestroyed = TRUE;
-        return(FALSE);
+        return( FALSE );
     }
 
     node->imgtype = BITMAP_IMG;
@@ -169,16 +173,16 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
 
     MakeBitmap( node, TRUE );
 
-    hdc = GetDC(NULL);
+    hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
     oldbitmap = SelectObject( memdc, node->handbitmap );
     PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
 
     SelectObject( memdc, node->hxorbitmap );
-    BitBlt(memdc, 0, 0, node->width, node->height, hdc, screen_coords.left,
-                                                screen_coords.top, SRCCOPY);
-    ReleaseDC(NULL, hdc);
+    BitBlt( memdc, 0, 0, node->width, node->height, hdc, screen_coords.left,
+            screen_coords.top, SRCCOPY );
+    ReleaseDC( NULL, hdc );
     SelectObject( memdc, oldbitmap );
     DeleteDC( memdc );
 
@@ -187,12 +191,13 @@ BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
     DestroyWindow( deskTopWindow );
 #endif
     notDestroyed = TRUE;
-    return(TRUE);
+    return( TRUE );
+
 } /* SelectDynamicBitmap */
 
 /*
  * BitmapPickProc - handle messages for choosing the region to begin the
- *                  editing session.
+ *                  editing session
  */
 LONG CALLBACK BitmapPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
@@ -232,7 +237,7 @@ LONG CALLBACK BitmapPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         break;
 
     case WM_MOUSEMOVE:
-        if (buttondown) {
+        if( buttondown ) {
             GetCursorPos( &bottomright );
             SetRect( &bmpRegion, topleft.x, topleft.y, bottomright.x, bottomright.y );
             checkRectBounds( &bmpRegion );
@@ -256,4 +261,3 @@ LONG CALLBACK BitmapPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     return( 0 );
 
 } /* BitmapPickProc */
-

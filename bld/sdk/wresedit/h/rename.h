@@ -32,4 +32,3 @@
 
 #define IDM_RENOLD         200
 #define IDM_RENNEW         201
-

@@ -1,4 +1,4 @@
-!include $(disasm_dir)\core\dis.mif
+target_cpu = jvm
 
 imp_objs = &
         jvmaddr.obj &
@@ -7,13 +7,8 @@ imp_objs = &
         jvmreg.obj &
         jvmcall.obj &
         jvmdisas.obj &
-        jvmtrace.obj &
-        $(dis_objs)
+        jvmtrace.obj
 
-mad = jvm
-
-extra_incs = $(dis_includes);$(javasdk)\include;$(javasdk)\include\win32;$(java_src_dir)\SRC\WIN32\JAVA\INCLUDE;$(lang_root)\h\nt
-extra_srcs = $(dis_srcs)
-extra_gbls = $(disasm_dir)\core\compile.gbl
+extra_incs = -I"$(javasdk)/include" -I"$(javasdk)/include/win32" -I"$(java_src_dir)/src/win32/java/include"
 
 !include ../../master.mif

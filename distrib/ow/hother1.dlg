@@ -1,0 +1,29 @@
+static_text=\
+        //1"Select other options you want to install. They are:"\
+        //2"インストールしたいその他のオプションを選択してください:"\
+        //0
+static_text=
+static_text=\
+        //1"C++ compiler components"\
+        //2"C++ コンパイラ・コンポーネント"\
+        //0
+static_text=\
+        //1"	- choose whether you want to program in C++ in addition to C"\
+        //2"	- C ではなく､ C++でプログラムするかどうかを選択してください"\
+        //0
+static_text=\
+        //1"Sample Programs"\
+        //2"サンプル・プログラム"\
+        //0
+static_text=\
+        //1"	- example programs for various operating systems"\
+        //2"	- 各OS用のサンプルプログラム"\
+        //0
+static_text=\
+        //1"Run-time Startup Source Code"\
+        //2"ランタイム・スタートアップ・ソースコード"\
+        //0
+static_text=\
+        //1"	- startup code for the run-time library"\
+        //2"	- ランタイム・ライブラリ用のスタートアップ・コード"\
+        //0

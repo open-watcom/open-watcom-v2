@@ -24,87 +24,55 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macro dump utility.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <conio.h>
-#include <stdlib.h>
 #include "preproc.h"
-#include <malloc.h>
 
 
-main( int argc, char *argv[] )
-{
-    int         c;
-
-    dumpheap();
-    if( argc < 2 ) {
-        cprintf( "Usage: testpp filename\r\n" );
-        exit( 1 );
-    }
-    if( argv[2] != NULL ) {
-        PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
-        cprintf( "Unable to open '%s'\r\n", argv[1] );
-        exit( 1 );
-    }
-    for(;;) {
-        c = PP_Char();
-        if( c == EOF ) break;
-//      if( c == '\n' )  putch( '\r' );
-//      putch( c );
-    }
-    PP_Dump_Macros();
-    dumpheap();
-    PP_Fini();
-    dumpheap();
-}
-
-void dumpheap()
+void dumpheap( void )
 {
 #if 0
     struct _heapinfo h;
     int         status;
 
     h._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         status = _heapwalk( &h );
-        if( status != _HEAPOK ) break;
-        cprintf( "%s block at %Fp of size %4.4X\r\n",
+        if( status != _HEAPOK )
+            break;
+        printf( "%s block at %Fp of size %4.4X\r\n",
                 (h._useflag == _USEDENTRY ? "USED": "FREE"),
                 h._pentry, h._size );
     }
     switch( status ) {
     case _HEAPEND:
-        cprintf( "OK - end of heap\r\n" );
+        printf( "OK - end of heap\r\n" );
         break;
     case _HEAPEMPTY:
-        cprintf( "OK - heap is empty\r\n" );
+        printf( "OK - heap is empty\r\n" );
         break;
     case _HEAPBADBEGIN:
-        cprintf( "ERROR - heap is damaged\r\n" );
+        printf( "ERROR - heap is damaged\r\n" );
         break;
     case _HEAPBADPTR:
-        cprintf( "ERROR - bad pointer to heap\r\n" );
+        printf( "ERROR - bad pointer to heap\r\n" );
         break;
     case _HEAPBADNODE:
-        cprintf( "ERROR - bad node in heap\r\n" );
+        printf( "ERROR - bad node in heap\r\n" );
         break;
     }
 #endif
 }
 
-void PP_Dump_Macros()
+void PP_Dump_Macros( void )
 {
-    int         hash;
-    char        *endptr;
-    MACRO_ENTRY *me;
-    PPVALUE     val;
+    int             hash;
+    char            *endptr;
+    MACRO_ENTRY     *me;
+    PREPROC_VALUE   val;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         for( me = PPHashTable[hash]; me; me = me->next ) {
@@ -114,13 +82,42 @@ void PP_Dump_Macros()
                         printf( "#define %s %s ", me->name,
                                 me->replacement_list );
                         if( val.type == PPTYPE_SIGNED ) {
-                            printf( "(value=%ld)\n", val.ivalue );
+                            printf( "(value=%ld)\n", val.val.ivalue );
                         } else {
-                            printf( "(value=%luUL)\n", val.uvalue );
+                            printf( "(value=%luUL)\n", val.val.uvalue );
                         }
                     }
                 }
             }
         }
     }
+}
+
+int main( int argc, char *argv[] )
+{
+    int         c;
+
+    dumpheap();
+    if( argc < 2 ) {
+        printf( "Usage: dumpmac filename\r\n" );
+        exit( 1 );
+    }
+    if( argv[2] != NULL ) {
+        PreProcChar = argv[2][0];
+    }
+    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
+        printf( "Unable to open '%s'\r\n", argv[1] );
+        exit( 1 );
+    }
+    for( ;; ) {
+        c = PP_Char();
+        if( c == EOF )
+            break;
+//      putchar( c );
+    }
+    PP_Dump_Macros();
+    dumpheap();
+    PP_Fini();
+    dumpheap();
+    return( 0 );
 }

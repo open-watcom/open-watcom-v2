@@ -126,7 +126,7 @@ template<class T> void TemplateList<T>::reset()
 template<class T> void TemplateList<T>::growBlock()
 {
         if( _set == NULL ) {
-                static _countInit = 10;
+                static int _countInit = 10;
                 _set = new T[ _countInit ];
                 if( _set ) {
                         _count = _countInit;
@@ -135,7 +135,7 @@ template<class T> void TemplateList<T>::growBlock()
         }
         if( _set ) {
                 if( _free >= _count ) {
-                        static _countIncr = 5;
+                        static int _countIncr = 5;
                         T* nset = new T[ _count + _countIncr ];
                         if( nset ) {
                                 for( int i=0; i<_count; i++ ) {

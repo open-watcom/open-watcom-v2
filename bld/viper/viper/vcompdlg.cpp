@@ -72,6 +72,7 @@ void VCompDialog::initialize()
     const int   button_width = 50;
     const int   button_hite = 14;
 
+    setSystemFont( FALSE );
     this->textMetrics( average, max );
     sx = average.x() / 4;
     sy = average.y() / 8;
@@ -288,10 +289,11 @@ void VCompDialog::updateCurOs( void )
     MTarget     *curtarg;
     int         pos;
     WString     curname;
+    int         i;
 
     WPickList&  targets = _config->targets();
     int icount = _imagelist->count();
-    for( int i=0; i < icount; i++ ) {
+    for( i=0; i < icount; i++ ) {
         _imagelist->deleteString( 0 );
     }
     pos = 0;
@@ -319,7 +321,7 @@ void VCompDialog::osButton( WWindow *item )
 void VCompDialog::okButton( WWindow* )
 {
     _eName->getText( *_fn );
-    _fn->toLower();
+//    _fn->toLower();
     if( _fn->isMask() ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "'%s' cannot be a wildcard", (const char*)*_fn );
     } else if( !_fn->legal() ) {

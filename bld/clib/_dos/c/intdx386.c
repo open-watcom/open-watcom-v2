@@ -35,10 +35,9 @@
 
 #if !defined(__WINDOWS_386__)
 
-extern  int                     DoDosxCall();
-extern  int                     _dosretax();
+extern  int                     _dosretax( int eax, int carry );
 
-
+extern  int                     DoDosxCall( void *in, void *out, void *sr );
 #pragma aux                     DoDosxCall = \
         0x55            /* push ebp        -----. */\
         0x06            /* push es         ----.| */\
@@ -88,15 +87,15 @@ extern int pascal _clib_intdosx( union REGS *, union REGS *, struct SREGS * );
 
 
 _WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
-    {
+{
 #if !defined(__WINDOWS_386__)
-        register int            status;
+    register int            status;
 
-        status = DoDosxCall( inregs, outregs, segregs );
-        outregs->x.cflag = status;
-        _dosretax( outregs->x.eax, status );
-        return( outregs->x.eax );
+    status = DoDosxCall( inregs, outregs, segregs );
+    outregs->x.cflag = status;
+    _dosretax( outregs->x.eax, status );
+    return( outregs->x.eax );
 #else
-        return( _clib_intdosx( inregs, outregs, segregs ) );
+    return( _clib_intdosx( inregs, outregs, segregs ) );
 #endif
-    }
+}

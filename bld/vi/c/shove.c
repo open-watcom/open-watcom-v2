@@ -30,44 +30,41 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 #include "vi.h"
-#include "keys.h"
 #include "win.h"
 
 /*
  * Shift - shove a tab in/out over a line range
  */
-int Shift( linenum s, linenum e, char dir, bool msgflag )
+vi_rc Shift( linenum s, linenum e, char dir, bool msgflag )
 {
-    int         i,shv;
-    linenum     fullcnt=0;
+    int         shv;
+    linenum     fullcnt = 0;
+    vi_rc       rc;
 
     /*
      * set up undo
      */
-    if( i = ModificationTest() ) {
-        return( i );
+    if( rc = ModificationTest() ) {
+        return( rc );
     }
-    i = UndoReplaceLines( s,e );
-    if( i ) {
-        return( i );
+    rc = UndoReplaceLines( s, e );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
      * now, point to start line
      */
-    i = SaveAndResetFilePos( s );
-    if( i ) {
-        return( i );
+    rc = SaveAndResetFilePos( s );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
      * process all lines
      */
-    for( CurrentLineNumber=s;CurrentLineNumber<=e;CurrentLineNumber++ ) {
+    for( CurrentPos.line = s; CurrentPos.line <= e; CurrentPos.line++ ) {
 
         /*
          * Add/Subtract leading tab space
@@ -77,14 +74,16 @@ int Shift( linenum s, linenum e, char dir, bool msgflag )
         if( dir != '>' ) {
             shv *= -1;
         }
-        fullcnt += AddLeadingTabSpace( &WorkLine->len, WorkLine->data, shv );
+        if( AddLeadingTabSpace( &WorkLine->len, WorkLine->data, shv ) ) {
+            ++fullcnt;
+        }
         ReplaceCurrentLine();
 
-        if( CurrentLineNumber != e ) {
-            i = CGimmeNextLinePtr( &CurrentFcb, &CurrentLine );
-            if( i ) {
+        if( CurrentPos.line != e ) {
+            rc = CGimmeNextLinePtr( &CurrentFcb, &CurrentLine );
+            if( rc != ERR_NO_ERR ) {
                 RestoreCurrentFilePos();
-                return( i );
+                return( rc );
             }
         }
 
@@ -95,12 +94,12 @@ int Shift( linenum s, linenum e, char dir, bool msgflag )
      */
     RestoreCurrentFilePos();
     if( msgflag ) {
-        Message1( "%l lines %c'ed",e-s+1, dir );
+        Message1( "%l lines %c'ed", e - s + 1, dir );
         if( fullcnt > 0 ) {
             Message2( "%l full lines not processed", fullcnt );
         }
     }
-    if( CurrentLineNumber >= s && CurrentLineNumber <= e ) {
+    if( CurrentPos.line >= s && CurrentPos.line <= e ) {
         CheckCurrentColumn();
     }
     DCDisplayAllLines();

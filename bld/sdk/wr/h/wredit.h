@@ -47,12 +47,11 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 
-extern void             WRSetEditWithStr        ( char *cp, HWND hDlg, int id );
-extern char             *WRGetStrFromEdit       ( HWND hDlg, int id, BOOL *mod );
-extern void             WRSetEditWithSLONG      ( signed long val, int base, HWND hDlg, int id );
-extern BOOL             WRGetSLONGFromEdit      ( HWND hDlg, int id, BOOL *mod, signed long *value );
-extern void             WRSetEditWithULONG      ( unsigned long val, int base, HWND hDlg, int id );
-extern char             *WRGetStrFromListBox    ( HWND hDlg, int id, int index );
+extern void WRSetEditWithStr( char *cp, HWND hDlg, int id );
+extern char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod );
+extern void WRSetEditWithSLONG( signed long val, int base, HWND hDlg, int id );
+extern BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value );
+extern void WRSetEditWithULONG( unsigned long val, int base, HWND hDlg, int id );
+extern char *WRGetStrFromListBox( HWND hDlg, int id, int index );
 
 #endif
-

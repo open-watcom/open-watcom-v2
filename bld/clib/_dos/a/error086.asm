@@ -35,11 +35,7 @@
 include mdef.inc
 include struct.inc
 
-        if __WASM__ ge 100
-            xref    "C",__set_errno_dos
-        else
-            xref    <"C",__set_errno_dos>
-        endif
+        xref    "C",__set_errno_dos
         modstart doserror
 
         xdefp   __doserror_
@@ -47,12 +43,9 @@ include struct.inc
 ;
         defp    __doserror_
         _if     c               ; if error
-          push  DX              ; - save DX
           push  AX              ; - save return code
-          mov   DX,AX           ; - duplicate return code in DX
           call  __set_errno_dos ; - set errno
           pop   AX              ; - restore return code
-          pop   DX              ; - restore DX
         _else                   ; else
           sub   AX,AX           ; - return 0
         _endif                  ; endif

@@ -5,4 +5,4 @@
 
 "hello tmp.tmp": hello.h
       echo hello
-      type "hello tmp.tmp"
+      cat "hello tmp.tmp"

@@ -102,7 +102,7 @@ typedef struct ptd_type         PTD_TYPE;
 typedef struct ptd_ptree        PTD_PTREE;
 
 struct ptd_base                 // PTD_BASE -- base entry
-{   PTD_BASE* next;             // - next in list
+{   PTD* next;                  // - next in list
     PTD_KIND kind;              // - type of entry
     PTD_FMT fmt;                // - format of entry
     unsigned :0;                // - force alignment
@@ -696,7 +696,7 @@ PTREE PtdDltDtorSize            // DECORATE FOR SIZE OF DTORABLE-ELEMENT
 PTREE PtdDltDtorEnd             // DECORATE FOR END OF DTORABLE-ELEMENT ON DEL
     ( PTREE expr )              // - expression
 {
-    ScopeKeep( CurrScope );
+    ScopeKeep( GetCurrScope() );
     FunctionHasRegistration();
     return ptdBase( expr, PTD_DEL_DTORED );
 }
@@ -1065,7 +1065,7 @@ void PtdPrint(                  // DEBUG: print decoration for a node
           case PTD_FMT_TYPE :
           { VBUF fmt_prefix, fmt_suffix;
             FormatType( curr->type.type, &fmt_prefix, &fmt_suffix );
-            printf( " %s<id>%s\n", fmt_prefix.buf, fmt_suffix.buf );
+            printf( " %s<id>%s\n", VbufString( &fmt_prefix ), VbufString( &fmt_suffix ) );
             VbufFree( &fmt_prefix );
             VbufFree( &fmt_suffix );
           } break;

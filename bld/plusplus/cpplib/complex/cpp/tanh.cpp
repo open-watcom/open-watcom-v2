@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <complex>
+#include <complex.h>
 #include <math.h>
 
 _WPRTLINK Complex tanh( const Complex &z ) {

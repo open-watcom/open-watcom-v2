@@ -37,7 +37,6 @@
 #include "libwin32.h"
 #include "osver.h"
 
-
 DWORD __lib_GetCurrentDirectoryW( DWORD nBufferLength, LPWSTR lpBuffer )
 /**********************************************************************/
 {

@@ -39,14 +39,10 @@ include struct.inc
 
         xref            __8087  ; indicate that NDP instructions are present
 
-ifndef __PENPOINT__
-
         datasegment
         extrn   __real87 : byte         ; 8087.asm
         extrn   __chipbug: byte
         enddata
-
-endif
 
         xref    F8DivZero       ; Fstatus
         xref    F8OverFlow      ; Fstatus
@@ -80,7 +76,6 @@ hi      equ     4
           rcr   EDX,1                   ; - restore sign of dividend
         _endif                          ; endif
 
-ifndef __PENPOINT__
         cmp     byte ptr __real87,0     ; if no 80x87 is present
         je      short __FDDemu          ; then emulate
 
@@ -107,7 +102,6 @@ __FDD87:
           mov   EAX,EDX                 ; - ...
         _endif                          ; endif
         ret                             ; return
-endif
 
 __FDDemu:
         push    EBP                     ; save EBP

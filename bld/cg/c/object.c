@@ -24,35 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate object code from symbolic instructions.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "model.h"
 #include "procdef.h"
-#include "sysmacro.h"
 #include "cgaux.h"
 #include "zoiks.h"
 #include "feprotos.h"
 
-extern  seg_id          AskCodeSeg();
+extern  seg_id          AskCodeSeg( void );
 extern  seg_id          SetOP(seg_id);
 extern  void            CodeLabel(label_handle,unsigned);
 extern  void            GenObjCode(instruction*);
 extern  void            GenJumpLabel(pointer);
-extern  void            GenEpilog();
+extern  void            GenEpilog( void );
 extern  void            GenCallLabel(pointer);
-extern  void            GenLabelReturn();
+extern  void            GenLabelReturn( void );
 extern  void            TellCondemnedLabel(label_handle);
-extern  void            FreeBlock();
+extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
-extern  void            InitZeroPage();
-extern  void            FiniZeroPage();
+extern  void            InitZeroPage( void );
+extern  void            FiniZeroPage( void );
 extern  void            TellReachedLabel(label_handle);
 extern  unsigned        DepthAlign( unsigned );
 extern  void            InitStackDepth(block*);
@@ -63,9 +62,9 @@ extern  bool            ReDefinedBy( instruction *, name * );
 extern  pointer         AskForLblSym(pointer);
 extern  pointer         FindAuxInfo( name *, aux_class );
 extern  void            StartBlockProfiling( block *blk );
-extern  void            EndBlockProfiling();
+extern  void            EndBlockProfiling( void );
 
-extern  void            *EdgeStackInit();
+extern  void            *EdgeStackInit( void );
 extern  void            EdgeStackFini( void * );
 extern  bool            EdgeStackEmpty( void * );
 extern  void            EdgeStackPush( void *, block_edge * );
@@ -94,9 +93,9 @@ static  source_line_number      DumpLineNum( source_line_number n,
 }
 
 
-extern  void    GenObject() {
-/***************************/
-
+extern  void    GenObject( void )
+/*******************************/
+{
     block               *blk;
     block               *next_blk;
     instruction         *ins;
@@ -457,7 +456,12 @@ typedef enum {
     STOP,               // Stop the entire flood down
 } flood_decision;
 
-typedef flood_decision (*flood_func)( block *, void * );
+typedef struct flood_info {
+    bool        post_dominates;
+    block       *dominator;
+} flood_info;
+
+typedef flood_decision (*flood_func)( block *, flood_info * );
 
 static  void    FloodDown( block *from, flood_func func, void *parm ) {
 /*********************************************************************/
@@ -483,11 +487,6 @@ static  void    FloodDown( block *from, flood_func func, void *parm ) {
     }
     EdgeStackFini( stack );
 }
-
-typedef struct flood_info {
-    bool        post_dominates;
-    block       *dominator;
-} flood_info;
 
 static  flood_decision PDFloodFunc( block *blk, flood_info *info ) {
 /******************************************************************/
@@ -802,9 +801,9 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
     return( best );
 }
 
-extern  void    SortBlocks() {
-/****************************/
-
+extern  void    SortBlocks( void )
+/********************************/
+{
     block_queue unplaced;
     block_queue placed;
     block       *curr;

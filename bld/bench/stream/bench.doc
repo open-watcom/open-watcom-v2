@@ -1,0 +1,90 @@
+Section 0.  Introduction
+------------------------
+The bench project is a set of benchmarks to determine the performance of our
+compiler relative to other compilers.  The bench project is organized into 
+several subdirectories.  The subdirectory STREAM contains the script files
+for the building and execution of the benchmarks.  The subdirectory SUPPORT 
+code for timing and reporting the benchmarks and is common among all 
+benchmarks.  The MIF subdirectory contains rules for building the benchmarks.
+The rest of the subdirectories contain benchmark suites, one benchmark per 
+subdirectory.  Each of these subdirectories contains the code and support 
+files as well as the build subdirectories.  The build subdirectories is where 
+the benchmarks are compiled and executed.  Currently there are two build 
+subdirectories in the benchmarks' subdirectories, these are WATCOM and MSVC.
+
+In order to run the bench marks, the support code must first be compiled, 
+followed by the benchmarks.  The benchmarks are then run emitting lots of
+pretty numbers which can then be 'statistically' analyzed to yield any 
+result we want.
+
+The rest of this document consists of several sections these are:
+
+Section 1.                                 Running the Benchmarks
+Section 2.                                 Command parms for all scripts
+Section 3.                                 What to do with the resulting data
+
+More sections will be added later.
+
+
+
+Section 1.  Running the Benchmarks.
+-----------------------------------
+Step 0.  Set the environment CG_BENCH to point to where the benchmarks 
+         directory is.
+
+Step 1.	 Run INITBNCH, this builds the support library.  See Section 2 for 
+         parameters of INITBNCH.
+
+Step 3.  Run BLDBENCH to build the benchmarks themselves.  This is a separate
+         step because benchmarks for different compilers can be built
+	 all at once while they cannot be run all at once.
+	 
+Step 4.  Run RUNBENCH to execute the benchmarks and collect the data.
+
+Step 5.  If you wish to rebuild the benchmarks you should first run
+         CLNBENCH which will delete all executables and object files
+	 for the benchmarks.  You may then go to Step 3.
+	 
+Almost all these scripts must be run with parameters, please see Section
+2 for the description of all the parameters.
+
+
+
+Section 2.  Description of the Scripts
+--------------------------------------	 	 
+BLDBENCH.CMD %1 %2
+	%1 : benchmark to be built, or "all" for all benchmarks to be built
+	%2 : compiler to use, "watcom" or "msvc" or nothing for both 
+	
+	e.g.
+	BLDBENCH bmark msvc
+	BLDBENCH all watcom
+	BLDBENCH fft
+	
+CLNBENCH.CMD %1
+	%1 : benchmark to be cleaned or "all" for all benchmarks and support to
+	     be cleaned
+	e.g.
+	CLNBENCH support
+	CLNBENCH all
+	CLNBENCH watcom
+	CLNBENCH fft
+	
+INITBNCH.CMD %1
+	%1 : which support library to build, "watcom", "msvc" or "" for both
+	e.g.
+	INITBNCH watcom
+	INITBNCH msvc
+	INITBNCH
+	
+RUNBENCH.CMD %1 %2 %3
+	%1 : benchmark to run, or "all" to run all benchmarks
+	%2 : compiled with which compiler, "watcom", "msvc", or "all"
+	%3 : log file to use, recommended that absolute path be used.
+
+
+	
+Section 3. What to do with the Resulting Data
+---------------------------------------------
+Currently all you can do is eyeball it.
+

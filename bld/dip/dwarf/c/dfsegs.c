@@ -240,9 +240,11 @@ end_wlk:
     return( FALSE );
 }
 
-static int  SegCmp(  seg_entry const *seg1, seg_entry const *seg2 ){
+static int  SegCmp( void const *_seg1, void const *_seg2 ){
 /****************************************************************/
 //Compare segments
+    seg_entry const *seg1 = _seg1;
+    seg_entry const *seg2 = _seg2;
     int diff;
 
     diff = (int)seg1->real - (int)seg2->real;

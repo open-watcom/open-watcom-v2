@@ -1,35 +1,3 @@
-/****************************************************************************
-*
-*                            Open Watcom Project
-*
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-*
-*  ========================================================================
-*
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
-*
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
-*
-*  ========================================================================
-*
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
-
-
 // NOTE -- yydriver.h is not explicitly included here.  It must be included
 //         in the yacc file, and the yacc file must define YYPARSER suitably.
 
@@ -40,7 +8,7 @@
 #define yyplentab   YYPARSER::yyplentab
 #define yyplhstab   YYPARSER::yyplhstab
 
-
+
 
 #ifndef YYSTYPE
 #define YYSTYPE         int
@@ -55,7 +23,8 @@
 
 #define YYABORT         return(1)
 #define YYACCEPT        return(0)
-#define YYERROR         goto yyerrlab
+//Never used
+//#define YYERROR         goto yyerrlab
 
 YYPARSER::YYPARSER( const char * fileName )
 //-----------------------------------------
@@ -93,8 +62,10 @@ int YYPARSER::yyparse()
   int yypnum;
   int yyi, yyk, yylhs, yyaction;
   int yytoken;
-  int yys[MAXDEPTH], *yysp;
-  YYSTYPE yyv[MAXDEPTH], *yyvp;
+  YYSTYPE yys[MAXDEPTH];
+  YYSTYPE *yysp;
+  YYSTYPE yyv[MAXDEPTH];
+  YYSTYPE *yyvp;
   int yyerrflag;
 
   yyerrflag = 0;
@@ -125,7 +96,8 @@ yycheck2:
               switch( yyerrflag ){
                 case 0:
                   yyerror( "syntax error" );
-                  yyerrlab:
+                  //Never used
+                  //yyerrlab:
                 case 1:
                 case 2:
                   yyerrflag = 3;
@@ -186,7 +158,7 @@ yycheck2:
           *++yysp = yyacttab[yyi];
           ++yyvp;
           switch( yypnum ){
-
+
             default:
               yyval = yyvp[0];
           };

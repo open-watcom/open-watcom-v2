@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
@@ -59,25 +59,6 @@ static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 /* still have the same purity */
 #define CUR_ICON_PURITY_30      MEMFLAG_PURE
 #define CUR_ICON_PURITY_31      0           /* impure */
-
-void ReportCopyError( RcStatus status, int read_msg, char *filename,
-                             int err_code ) {
-    switch( status ) {
-    case RS_READ_ERROR:
-        RcError( read_msg, filename, strerror( err_code ) );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, filename );
-        break;
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                 strerror( err_code ) );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
-        break;
-    }
-}
 
 extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
 /********************************************************************/
@@ -277,58 +258,6 @@ static RcStatus readIcoFileDir( int handle, FullIconDir *dir, int *err_code )
     return( error );
 } /* readIcoFileDir */
 
-/*
- * CopyData -
- */
-RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
-                void *buff, int buffsize, int *err_code )
-/***************************************************************************/
-{
-    int     error;
-    int     numread;
-    long    seekrc;
-
-    seekrc = RcSeek( handle, offset, SEEK_SET );
-    if (seekrc == -1) {
-        *err_code = errno;
-        return( RS_READ_ERROR );
-    }
-
-    while( length > buffsize ) {
-        numread = RcRead( handle, buff, buffsize );
-        if (numread != buffsize) {
-            if( numread == -1 ) {
-                *err_code = errno;
-                return( RS_READ_ERROR );
-            } else {
-                return( RS_READ_INCMPLT );
-            }
-        }
-        length -= buffsize;
-        error = ResWrite( buff, buffsize, CurrResFile.handle );
-        if( error ) {
-            *err_code = LastWresErr();
-            return( RS_WRITE_ERROR );
-        }
-    }
-
-    numread = RcRead( handle, buff, length );
-    if( numread != length ) {
-        if( numread == -1 ) {
-            *err_code = errno;
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
-    }
-    error = ResWrite( buff, length, CurrResFile.handle );
-    if( error ) {
-        *err_code = errno;
-        return( RS_WRITE_ERROR );
-    }
-
-    return( RS_OK );
-} /* CopyData */
 
 static RcStatus copyOneIcon( const IcoFileDirEntry *entry, int handle,
                 void *buffer, int buffer_size, BitmapInfoHeader *dibhead,
@@ -598,9 +527,9 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, int handle,
 static RcStatus copyCursors( FullCurDir * dir, int handle,
                              ResMemFlags flags, int *err_code )
 /***********************************************************************/
-/* this function uses the same size of buffers to copy info as for icons */
+/* This function uses the same size of buffers to copy info as for icons */
 {
-    RcStatus            error;
+    RcStatus            error = RS_OK; // should this be RS_PARAM_ERROR ??
     char *              buffer;
     FullCurDirEntry *   entry;
     CurFileDirEntry     fileentry;

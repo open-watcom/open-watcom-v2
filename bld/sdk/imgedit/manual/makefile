@@ -30,24 +30,24 @@ imged.hlp: wgmlst.cop vihelp.src toc vihlp
 vihelp.src: imged.gml .SYMBOLIC
    -wgmlp 'imged' ( line verbose stat pass 2 cpi 10 &
         out vihelp.src proc vihelp file help
-    vi -q -sremtoc.vi vihelp.src
-    @copy toc.src vitoc.src
+    $(vi) -s remtoc.vi vihelp.src
+    @cp toc.src vitoc.src
 
 vihelp2: .SYMBOLIC
-    copy vihelp2.src vihelp.src
-    vi -q -sremtoc.vi vihelp.src
-    @copy toc.src vitoc.src
+    cp vihelp2.src vihelp.src
+    $(vi) -s remtoc.vi vihelp.src
+    @cp toc.src vitoc.src
 
 toc: .SYMBOLIC
     egrep '^  ..[^ ]' vitoc.src >t1
-    vi -q -s tocind.vi t1
-    vi -q -s links.vi vitoc.src
-    vi -q -s toc.vi vitoc.src
+    $(vi) -s tocind.vi t1
+    $(vi) -s links.vi vitoc.src
+    $(vi) -s toc.vi vitoc.src
     erase t1
 
 vihlp: toc .SYMBOLIC
     @copy toc.ind+toc.hlp+links.hlp+index.hlp+vihelp.src t2
-    vi -q -s help.vi t2
+    $(vi) -s help.vi t2
     erase t2
 #    sorthelp -w 80 -h 25 t1 t2 >sorthelp.out
 #    sorthelp t1

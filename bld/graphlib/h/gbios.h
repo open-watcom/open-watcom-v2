@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS related constants and function prototypes.
 *
 ****************************************************************************/
 
@@ -34,8 +33,6 @@
 #pragma pack(push, 1);
 
 #define _BIOS_data( p ) MK_FP( _BiosSeg, _BiosOff + p )
-
-#if !defined( _NEC_PC )
 
 #define EQUIP_FLAGS     0x0010      /* equipment flags */
 #define CRT_MODE        0x0049      /* current CRT mode */
@@ -90,91 +87,5 @@ extern short            VideoInt_cx( short, short, short, short );
 
 #define GetVideoMode()  ( VideoInt( _BIOS_GET_MODE, 0, 0, 0 ) & 0x7f )
 #define EGA_Memory()    ( VideoInt_bx( 0x1200, 0x0010, 0, 0 ) )
-
-#else
-
-/* NECVideoInt Function type parameters */
-
-#define _BIOS_SIZE_25           0x0A00
-#define _BIOS_SIZE_20           0x0A01
-#define _BIOS_SENSE_MODE        0x0B00
-#define _BIOS_TEXT_START        0x0C00
-#define _BIOS_TEXT_STOP         0x0D00
-#define _BIOS_PAGE_SET          0x0E00
-#define _BIOS_CURSOR_START      0x1100
-#define _BIOS_CURSOR_STOP       0x1200
-#define _BIOS_CURSOR_SET        0x1300
-#define _BIOS_FONT_READ         0x1400
-#define _BIOS_FONT_WRITE        0x1A00
-#define _BIOS_HIRES_FONT_READ   0x1F00
-#define _BIOS_HIRES_FONT_WRITE  0x2000
-#define _BIOS_GRAPH_START       0x4000
-#define _BIOS_GRAPH_STOP        0x4100
-#define _BIOS_GRAPH_SET         0x4200
-
-/* BIOS data area defines */
-#define HIRES_FLAG              0x0101
-#define GRAPH_ON_FLAG           0x014C
-
-/* NEC Video Interrupt Routines */
-
-extern short            NECVideoInt( short, short, short, short );
-extern short            NECVideoIntDC( short, short, short, short );
-extern short            NECHiresVideoInt( short, short, short, short );
-
-#if defined( __386__ )
-
-typedef struct {
-    long                EDI;
-    long                ESI;
-    long                EBP;
-    long                reserved_by_system;
-    long                EBX;
-    long                EDX;
-    long                ECX;
-    long                EAX;
-    short               flags;
-    short               ES,DS,FS,GS,IP,CS,SP,SS;
-} RMI;
-
-typedef struct {
-    short               int_num;
-    short               DS;
-    short               ES;
-    short               FS;
-    short               GS;
-    long                EAX;
-    long                EDX;
-} phar_regs;
-
-extern void             DPMICall( int, int, int, int, RMI far * );
-#pragma aux             DPMICall = \
-                        "int     31h  " \
-                        parm caller [eax] [ebx] [ecx] [edx] [es edi] \
-                        modify [eax ebx ecx edx];
-#else
-
-#pragma aux             NECVideoInt = \
-                        "push    bp   " \
-                        "int     18h  " \
-                        "pop     bp   " \
-                        parm caller [ax] [bx] [cx] [dx] value [ax];
-
-#pragma aux             NECVideoIntDC = \
-                        "push    bp    " \
-                        "int     0DCh  " \
-                        "pop     bp    " \
-                        parm caller [ax] [bx] [cx] [dx] value [ax];
-
-#pragma aux             NECHiresVideoInt = \
-                        "push    bp    " \
-                        "push    ds    " \
-                        "mov     ds,cx " \
-                        "int     18h   " \
-                        "pop     ds    " \
-                        "pop     bp    " \
-                        parm caller [ax] [cx] [bx] [dx] value [ax];
-#endif
-#endif
 
 #pragma pack (pop);

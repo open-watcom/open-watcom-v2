@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Convert sample data to DIF or CSV format.
 *
 ****************************************************************************/
 
@@ -39,115 +38,26 @@
 #include "dip.h"
 #include "sampinfo.h"
 
-//#include "wpcnvt.def"
-//#include "dlgcnvt.def"
+
 extern void DlgGetConvert(a_window *wnd);
 
-extern sio_data *       SIOData;
-extern FILE *           ConvertFile;
+extern sio_data         *SIOData;
+extern FILE             *ConvertFile;
 extern bint             OptDIFFormat;
-//extern bint             OptCommaFormat;
 
 typedef void (DUMPRTNS)( char *, char *, char *, char *, int );
 
 STATIC int  convertEntryCount;
 STATIC int  convertEntrySize[4];
 
-STATIC void countDIFData( char *, char *, char *, char *, int );
-STATIC void initDIFData();
-STATIC void finiDIFData();
-STATIC void dumpDIFData( char *, char *, char *, char *, int );
-STATIC void dumpCommaData( char *, char *, char *, char *, int );
-STATIC void doConvert( a_window *, pointer, int );
-STATIC void dumpSampleImages( sio_data *, pointer );
-STATIC void dumpImage( image_info *, DUMPRTNS * );
-STATIC void dumpModule( image_info *, mod_info *, DUMPRTNS * );
 
 
-
-extern void WPConvert( a_window * wnd, int convert_select )
-/*********************************************************/
+STATIC void dumpModule( image_info *curr_image, mod_info *curr_mod,
+                                                DUMPRTNS *dump_rtn )
+/******************************************************************/
 {
-    DlgGetConvert( wnd );
-    if( ConvertFile == NULL ) return;
-    if( OptDIFFormat ) {
-        convertEntryCount = 0;
-        memset( convertEntrySize, 0, sizeof( convertEntrySize ) );
-        doConvert( wnd, &countDIFData, convert_select );
-        initDIFData();
-        doConvert( wnd, &dumpDIFData, convert_select );
-    } else {
-        doConvert( wnd, &dumpCommaData, convert_select );
-    }
-    if( OptDIFFormat ) {
-        finiDIFData();
-    }
-    fclose( ConvertFile );
-}
-
-
-
-STATIC void doConvert( a_window * wnd, DUMPRTNS * dump_rtn, int convert_select )
-/******************************************************************************/
-{
-    sio_data *      curr_sio;
-
-    curr_sio = WndExtra( wnd );
-    if( curr_sio->curr_image == NULL ) {
-        curr_sio->curr_image = curr_sio->images[0];
-    }
-    if( curr_sio->curr_mod == NULL ) {
-        curr_sio->curr_mod = curr_sio->curr_image->module[0];
-    }
-    if( convert_select == MENU_CONVERT_ALL ) {
-        dumpSampleImages( curr_sio, dump_rtn );
-    } else if( convert_select == MENU_CONVERT_IMAGE ) {
-        dumpImage( curr_sio->curr_image, dump_rtn );
-    } else if( convert_select == MENU_CONVERT_MODULE ) {
-        dumpModule( curr_sio->curr_image, curr_sio->curr_mod, dump_rtn );
-    }
-}
-
-
-
-STATIC void dumpSampleImages( sio_data * curr_sio, DUMPRTNS * dump_rtn )
-/**********************************************************************/
-{
-    image_info *    curr_image;
-    int             image_index;
-
-    image_index = 0;
-    while( image_index < curr_sio->image_count ) {
-        curr_image = curr_sio->images[image_index];
-        dumpImage( curr_image, dump_rtn );
-        image_index++;
-    }
-}
-
-
-
-STATIC void dumpImage( image_info * curr_image, DUMPRTNS * dump_rtn )
-/*******************************************************************/
-{
-    mod_info *      curr_mod;
-    int             mod_count;
-
-    mod_count = 0;
-    while( mod_count < curr_image->mod_count ) {
-        curr_mod = curr_image->module[mod_count];
-        dumpModule( curr_image, curr_mod, dump_rtn );
-        mod_count++;
-    }
-}
-
-
-
-STATIC void dumpModule( image_info * curr_image, mod_info * curr_mod,
-                                                  DUMPRTNS * dump_rtn )
-/*********************************************************************/
-{
-    file_info *     curr_file;
-    rtn_info *      curr_rtn;
+    file_info       *curr_file;
+    rtn_info        *curr_rtn;
     int             file_count;
     int             rtn_count;
 
@@ -170,6 +80,39 @@ STATIC void dumpModule( image_info * curr_image, mod_info * curr_mod,
 
 
 
+STATIC void dumpImage( image_info *curr_image, DUMPRTNS *dump_rtn )
+/*****************************************************************/
+{
+    mod_info        *curr_mod;
+    int             mod_count;
+
+    mod_count = 0;
+    while( mod_count < curr_image->mod_count ) {
+        curr_mod = curr_image->module[mod_count];
+        dumpModule( curr_image, curr_mod, dump_rtn );
+        mod_count++;
+    }
+}
+
+
+
+STATIC void dumpSampleImages( sio_data *curr_sio, pointer _dump_rtn )
+/*******************************************************************/
+{
+    DUMPRTNS        *dump_rtn = _dump_rtn;
+    image_info      *curr_image;
+    int             image_index;
+
+    image_index = 0;
+    while( image_index < curr_sio->image_count ) {
+        curr_image = curr_sio->images[image_index];
+        dumpImage( curr_image, dump_rtn );
+        image_index++;
+    }
+}
+
+
+
 STATIC void countDIFData( char * image, char * module, char * file,
                                           char * routine, int count )
 /*******************************************************************/
@@ -184,8 +127,8 @@ STATIC void countDIFData( char * image, char * module, char * file,
 
 
 
-STATIC void initDIFData()
-/***********************/
+STATIC void initDIFData( void )
+/*****************************/
 {
     fprintf( ConvertFile, "TABLE\n0,1\n\"WProf\"\n" );
     fprintf( ConvertFile, "VECTORS\n0,5\n\"\"\n" );
@@ -205,17 +148,17 @@ STATIC void initDIFData()
 
 
 
-STATIC void finiDIFData()
-/***********************/
+STATIC void finiDIFData( void )
+/*****************************/
 {
     fprintf( ConvertFile, "-1,0\nEOD\n" );
 }
 
 
 
-STATIC void dumpDIFData( char * image, char * module, char * file,
-                                         char * routine, int count )
-/******************************************************************/
+STATIC void dumpDIFData( char *image, char *module, char *file,
+                                      char *routine, int count )
+/**************************************************************/
 {
     fprintf( ConvertFile, "-1,0\nBOT\n" );
     fprintf( ConvertFile, "1,0\n\"%s\"\n", image );
@@ -227,10 +170,56 @@ STATIC void dumpDIFData( char * image, char * module, char * file,
 
 
 
-STATIC void dumpCommaData( char * image, char * module, char * file,
-                                           char * routine, int count )
-/********************************************************************/
+STATIC void dumpCommaData( char *image, char *module, char *file,
+                                        char *routine, int count )
+/****************************************************************/
 {
     fprintf( ConvertFile, "\"%s\",\"%s\",\"%s\",\"%s\",\"%d\"\n", image,
              module, file, routine, count );
+}
+
+
+
+STATIC void doConvert( a_window *wnd, pointer _dump_rtn, int convert_select )
+/***************************************************************************/
+{
+    DUMPRTNS        *dump_rtn = _dump_rtn;
+    sio_data        *curr_sio;
+
+    curr_sio = WndExtra( wnd );
+    if( curr_sio->curr_image == NULL ) {
+        curr_sio->curr_image = curr_sio->images[0];
+    }
+    if( curr_sio->curr_mod == NULL ) {
+        curr_sio->curr_mod = curr_sio->curr_image->module[0];
+    }
+    if( convert_select == MENU_CONVERT_ALL ) {
+        dumpSampleImages( curr_sio, dump_rtn );
+    } else if( convert_select == MENU_CONVERT_IMAGE ) {
+        dumpImage( curr_sio->curr_image, dump_rtn );
+    } else if( convert_select == MENU_CONVERT_MODULE ) {
+        dumpModule( curr_sio->curr_image, curr_sio->curr_mod, dump_rtn );
+    }
+}
+
+
+
+extern void WPConvert( a_window * wnd, int convert_select )
+/*********************************************************/
+{
+    DlgGetConvert( wnd );
+    if( ConvertFile == NULL ) return;
+    if( OptDIFFormat ) {
+        convertEntryCount = 0;
+        memset( convertEntrySize, 0, sizeof( convertEntrySize ) );
+        doConvert( wnd, &countDIFData, convert_select );
+        initDIFData();
+        doConvert( wnd, &dumpDIFData, convert_select );
+    } else {
+        doConvert( wnd, &dumpCommaData, convert_select );
+    }
+    if( OptDIFFormat ) {
+        finiDIFData();
+    }
+    fclose( ConvertFile );
 }

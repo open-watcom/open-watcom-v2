@@ -1,4 +1,0 @@
-# macros that are dependent on the system MAKE is running on
-truncate=$(bld_bin)\trunc.exe
-concatenate=$(plusplus_dir)\bin\cat.exe
-ppsp=$(plusplus_dir)\bin\ppsp.exe

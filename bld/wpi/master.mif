@@ -1,67 +1,41 @@
 proj_name = wpi
 
-.c      : $(wpi_dir)\c
-.h      : $(wpi_dir)\h
-.mif    : $(mif_path)
-!include cproj.mif
-
-!define MKS_ECHO        %null
-
-# database team uses fpi87 as default in 6.0
-!ifdef wsqlver
-!  ifeqi wsqlver 6.0
-!    define deffp -fpi87
-!  else
-!    define deffp -fpc
-!  endif
-!else
-!    define deffp -fpc
+!ifndef wpi_autodepends
+wpi_autodepends = .AUTODEPEND
 !endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
 #-------- CFLAGS
-extra_c_flags_nt_386    = -mf$(deffp)-zc
-extra_c_flags_nt        = $(extra_c_flags_nt_$(host_CPU))
+extra_c_flags = -s
 
-extra_c_flags_os2_i86   = $(deffp)-s-zu-ml
-extra_c_flags_os2_386   = -3r
-!ifdef OS2F
-extra_c_flags_os2_386   += $(deffp)
-!endif
-extra_c_flags_os2       = $(extra_c_flags_os2_$(host_CPU))
+extra_c_flags_i86 = -zu
 
-extra_c_flags_win_i86   = $(deffp)-zc-zu-zw-zW
-!ifdef WINM
-mem_model_i86 = -mm
+!ifeq host_cpu 386
+extra_c_flags_os2 = -3r
 !endif
-extra_c_flags_win_386   = $(deffp)-zc-zw-mf
-extra_c_flags_win       = $(extra_c_flags_win_$(host_CPU))
+
+extra_c_flags_win = -zw
+!ifeq host_cpu i86
+extra_c_flags_win += -zc-zW
+!endif
 
 !ifeq wpitest yes
 extra_c_flags_os2 += -d_WPI_TEST_
 extra_c_flags_win += -d_WPI_TEST_
 !endif
 
-extra_c_flags = -ox -s -v
-
-!ifndef %MAKE_DEBUG
-!ifdef codeview
-extra_c_flags += -hc
-!endif
-!else
-mode_cflags = -$(%MAKE_DEBUG)
-!endif
-
 #-------- INCLUDES
-inc_dirs_win = $(win31_hdrs)
-inc_dirs_os2_i86 = $(watcom_dir)\os21x_h
-inc_dirs_os2_386 = $(watcom_dir)\os220_h
-inc_dirs_os2 = $(inc_dirs_os2_$(host_CPU))
 
-inc_dirs = $(inc_dirs_$(host_OS));$(watcom_dir)\h
+.c : $(wpi_dir)/c
+.h : $(wpi_dir)/h
 
 #-------- OBJECTS
-objs_win = wpi_win.obj
-objs_os2 = wpi_os2.obj
+objs_win = wpi_win.obj wpi_wfnf.obj
+objs_os2 = wpi_os2.obj wpi_arc.obj wpi_fntf.obj wpi_line.obj wpi_dbcs.obj &
+           wpi_ffnt.obj wpi_libs.obj wpi_inif.obj wpi_file.obj
 objs_nt = wpi_win.obj
 
 !ifeq wpitest yes
@@ -71,70 +45,10 @@ extra_objs_os2 = new_os2.obj
 
 objs = $(objs_$(host_OS)) $(extra_objs_$(host_OS))
 
-#-------- LIBRARY NAME
-libname_nt_axp = wpi_axp
-libname_nt_386 = wpi_nt
-libname_os2_i86 = wpi_pm16
-!ifdef OS2F
-libname_os2_386 = wpi_os2f
-!else
-libname_os2_386 = wpi_os2
-!endif
-!ifdef WINM
-libname_win_i86 = wpi_winm
-!else
-libname_win_i86 = wpi_win
-!endif
-libname_win_386 = wpi_w386
-
-libname = $(libname_$(host_OS)_$(host_CPU))
-
-.before
-    set INCS=-i$(inc_path)
-
-.error
-    @cd $(MAIN_DIR)
-
-UPD_DIR = $(%LIBROOT)\wpi
-
-.obj: $(OBJ_DIR)
-.c: $(MAIN_DIR)\c
-.h: $(MAIN_DIR)\h
-
-$(wpi_dir)\lib\$(libname).lib: $(objs)
-        ls -1 *.obj > tmp.lbc
-        $(librarian) -n -q $(wpi_dir)\lib\$(libname) @tmp.lbc
-        del tmp.lbc
-
-lib :: $(LIB_DIR)\$(libname).lib .SYMBOLIC
-    %null
-
-.c.obj :
-    @$(MKS_ECHO)
-    @$(MKS_ECHO) "**********   Compiling  $[&.c   **************"
-    $(cc) @INCS $(cflags) $[*
-
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.dll del *.dll
-        @if exist *.lib del *.lib
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.map del *.map
-        @if exist *.def del *.def
-        @if exist *.lbc del *.lbc
-        @if exist $(wpi_dir)\lib\$(libname).lib del $(wpi_dir)\lib\$(libname).lib
-
-update : .SYMBOLIC
-    #@copy $(wpi_dir)\read.me $(UPD_DIR)
-    @copy $(wpi_dir)\h\wpi.h $(UPD_DIR)\h
-    @copy $(wpi_dir)\h\wpi_win.h $(UPD_DIR)\h
-    @copy $(wpi_dir)\h\wpi_os2.h $(UPD_DIR)\h
-    @copy $(wpi_dir)\lib\$(libname).lib $(UPD_DIR)\lib
+wpi.lib: $(objs)
+        @%create tmp.lbc
+        @for %i in ($(objs)) do @%append tmp.lbc +%i
+        $(librarian) $(libflags) @tmp.lbc
 
 wpi_win.obj : wpi_win.c wpi_win.h wpitypes.h wpi.h
 wpi_os2.obj : wpi_os2.c wpi_os2.h wpitypes.h wpi.h
-

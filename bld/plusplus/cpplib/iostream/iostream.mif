@@ -1,9 +1,7 @@
 # C++ files in CPP directory
-no_precompiled_headers=yes    # suppress use of pre-compiled headers
 
-# files that must not be compressed
 targdir=
-!include $(plusplus_cpplib_dir)\iostream\static.mif
+!include $(cpplib_dir)/iostream/static.mif
 !ifneq linkage dynamic
 objs_dyn = $(static_objs)
 !else
@@ -261,9 +259,13 @@ objs_cpp = &
 
 !endif
 
-!include $(plusplus_cpplib_dir)\plibname.mif
+pch_flags = -fh=pch01.pch
+pch_flags_x = -fh=pch02.pch
+extra_cpp_flags_iofdefg = -fh=pch03.pch
+
+!include $(cpplib_dir)/plibname.mif
 
 prefix = $(iost_n)
 prefix_x = $(iost_x)
 
-!include $(plusplus_dir)\mklibtgt.mif
+!include $(cpplib_dir)/mklibtgt.mif

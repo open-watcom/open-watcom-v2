@@ -42,6 +42,8 @@
 
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <dos.h>
 
 #define D32RealSeg(P)   ((((DWORD) (P)) >> 4) & 0xFFFF)

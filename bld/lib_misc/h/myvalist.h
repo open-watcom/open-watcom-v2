@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mask differences between platforms where va_list is an
+*               array and platforms where it's not.
 *
 ****************************************************************************/
 
@@ -39,7 +39,7 @@ typedef struct my_va_list {
     va_list v;
 } my_va_list;
 
-#if defined(__AXP__) || defined(__PPC__)
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
   #define MY_VA_LIST( a ) (*(my_va_list *)&(a))
 #else
   #define MY_VA_LIST( a ) (*(my_va_list *)(a))

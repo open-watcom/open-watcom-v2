@@ -33,8 +33,8 @@
 #include "variety.h"
 #include <jctype.h>
 #include <mbstring.h>
+#include <mbctype.h>
 #include "mbchar.h"
-
 
 _WCRTLINK int _ismbbalnum( unsigned int ch )
 {

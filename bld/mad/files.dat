@@ -1,0 +1,35 @@
+# MAD component of install manifest
+
+[ DEFAULT ]
+type="s" dir="binw"	usr="madx86.mad" cond="doshost dostarg |"  	where="c f77"
+# It seems rather unlikely anyone would want to cross debug from DOS...
+#type="s" dir="binw"	usr="madaxp.mad" cond="doshost dostarg |" 	where="c f77"
+#type="s" dir="binw"	usr="madppc.mad" cond="doshost dostarg |"  	where="c f77"
+#type="s" dir="binw"	usr="madmips.mad" cond="doshost dostarg |"  	where="c f77"
+
+type="d" dir="binw"	usr="madx86.dll" cond="winhost wintarg |"	where="c f77"
+type="d" dir="binw"	usr="madaxp.dll" cond="winhost wintarg |"	where="c f77 ac"
+type="d" dir="binw"	usr="madppc.dll" cond="winhost wintarg |"	where="c f77"
+type="d" dir="binw"	usr="madmips.dll" cond="winhost wintarg |"	where="c f77"
+
+type="d" dir="binp"	usr="madx86.d32" cond="os2host os2targ |"  	where="c f77"
+type="d" dir="binp"	usr="madaxp.d32" cond="os2host os2targ |"  	where="c f77 ac"
+type="d" dir="binp"	usr="madppc.d32" cond="os2host os2targ |"  	where="c f77"
+type="d" dir="binp"	usr="madmips.d32" cond="os2host os2targ |"  	where="c f77"
+
+type="s" dir="binl"	usr="madx86.mad" cond="lnxhost lnxtarg |"  	where="c f77"
+type="s" dir="binl"	usr="madaxp.mad" cond="lnxhost lnxtarg |"  	where="c f77 ac"
+type="s" dir="binl"	usr="madppc.mad" cond="lnxhost lnxtarg |"  	where="c f77"
+type="s" dir="binl"	usr="madmips.mad" cond="lnxhost lnxtarg |"  	where="c f77"
+
+type="d" dir="axpnt"	usr="madx86.dll" cond="alphahost alphatarg |" 	where="ac"
+type="d" dir="axpnt"	usr="madaxp.dll" cond="alphahost alphatarg |" 	where="ac"
+type="d" dir="axpnt"	usr="madppc.dll" cond="alphahost alphatarg |" 	where="ac"
+type="d" dir="axpnt"	usr="madmips.dll" cond="alphahost alphatarg |" 	where="ac"
+
+type="d" dir="binnt"	usr="madx86.dll" cond="wnthost wnttarg |"  	where="c f77 ac"
+type="d" dir="binnt"	usr="madaxp.dll" cond="wnthost wnttarg |"  	where="c f77 ac"
+type="d" dir="binnt"	usr="madppc.dll" cond="wnthost wnttarg |"  	where="c f77 ac"
+type="d" dir="binnt"	usr="madmips.dll" cond="wnthost wnttarg |"  	where="c f77 ac"
+
+type="d" dir="rdos"	usr="madx86.dll" cond="rdoshost rdostarg |"	where="c f77"

@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "wddespy.h"
 #include "about.h"
 #include "banner.h"
@@ -12,31 +13,35 @@
  #define sp( s1, s2 ) s1
 #endif
 
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
 
-"APPLICON" ICON 10ddespy.ico
+"APPLICON" ICON "ddespy.ico"
 
-"CONV"    BITMAP "10conv.bmp"
-"LINK"    BITMAP "10link.bmp"
-"STRING"  BITMAP "10string.bmp"
-"SERVER"  BITMAP "10server.bmp"
-"LOG"     BITMAP "10log.bmp"
-"MARK"    BITMAP "10mark.bmp"
-"ERASE"   BITMAP "10erase.bmp"
-"HWNDAKA" BITMAP "10halias.bmp"
-"CONVAKA" BITMAP "10calias.bmp"
-"TASKAKA" BITMAP "10talias.bmp"
+"CONV"    BITMAP "conv.bmp"
+"LINK"    BITMAP "link.bmp"
+"STRING"  BITMAP "string.bmp"
+"SERVER"  BITMAP "server.bmp"
+"LOG"     BITMAP "log.bmp"
+"MARK"    BITMAP "mark.bmp"
+"ERASE"   BITMAP "erase.bmp"
+"HWNDAKA" BITMAP "hwndaka.bmp"
+"CONVAKA" BITMAP "convaka.bmp"
+"TASKAKA" BITMAP "taskaka.bmp"
 
 #include "menu.rc"
 
 STRINGTABLE
 BEGIN
-    #include "rcstr.msg"
+    #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 
 #include "msgfilt.dlg"
 #include "cbfilt.dlg"
-#include "..\misc\log.rc"
-#include "..\misc\alias.rc"
-#include "..\misc\mark.rc"
-#include "..\misc\about.dlg"
+#include "log.rc"
+#include "alias.rc"
+#include "mark.rc"
+#include "about.dlg"

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Setup for standard EGA modes.
 *
 ****************************************************************************/
 
@@ -33,36 +32,6 @@
 #include <conio.h>
 #include "gdefn.h"
 #include "gbios.h"
-
-
-extern void pascal      _EGAMoveUpHi();
-extern void pascal      _EGAMoveUpLo();
-extern void pascal      _EGAMoveLeft();
-extern void pascal      _EGAMoveDownHi();
-extern void pascal      _EGAMoveDownLo();
-extern void pascal      _EGAMoveRight();
-extern void pascal      _EGARep();
-extern void pascal      _EGAGetDot();
-extern void pascal      _EGAGetDotEO();
-extern void pascal      _EGAGetDotMono();
-extern void pascal      _EGAZap();
-extern void pascal      _EGAZapEO();
-extern void pascal      _EGAZapMono();
-extern void pascal      _EGAFill();
-extern void pascal      _EGAFillEO();
-extern void pascal      _EGAFillMono();
-extern void pascal      _EGAPixCopy();
-extern void pascal      _EGAPixCopyEO();
-extern void pascal      _EGAPixCopyMono();
-extern void pascal      _EGAReadRow();
-extern void pascal      _EGAReadRowEO();
-extern void pascal      _EGAReadRowMono();
-extern short pascal     _EGAScanLeft();
-extern short pascal     _EGAScanLeftEO();
-extern short pascal     _EGAScanLeftMono();
-extern short pascal     _EGAScanRight();
-extern short pascal     _EGAScanRightEO();
-extern short pascal     _EGAScanRightMono();
 
 
 #define SEQADDR         0x03C4
@@ -120,15 +89,15 @@ static short _EGAInit( short mode )
 
 {
     if( _SetMode( mode ) == mode ) {
-        //             x,   y, col, bpp, pag, seg,     off,     siz,   mis
+        //             x,   y, str, col, bpp, pag, seg,     off,     siz,   mis
         if( mode == 13 ) {
-            _GrInit( 320, 200,  16,   4,   8, _EgaSeg, _EgaOff, 0x200, PLANAR );
+            _GrInit( 320, 200,  40,  16,   4,   8, _EgaSeg, _EgaOff, 0x200, PLANAR );
         } else if( mode == 14 ) {
-            _GrInit( 640, 200,  16,   4,   4, _EgaSeg, _EgaOff, 0x400, PLANAR );
+            _GrInit( 640, 200,  80,  16,   4,   4, _EgaSeg, _EgaOff, 0x400, PLANAR );
         } else if( mode == 15 ) {
-            _GrInit( 640, 350,   4,   2,   2, _EgaSeg, _EgaOff, 0x800, PLANAR );
+            _GrInit( 640, 350,  40,   4,   2,   2, _EgaSeg, _EgaOff, 0x800, PLANAR );
         } else {    // mode is 16
-            _GrInit( 640, 350,  16,   4,   2, _EgaSeg, _EgaOff, 0x800, PLANAR );
+            _GrInit( 640, 350,  80,  16,   4,   2, _EgaSeg, _EgaOff, 0x800, PLANAR );
         }
         if( ( EGA_Memory() & 0x00ff ) == 0 ) {      // only 64K memory
             _CurrState->vc.numvideopages = max( 1, _CurrState->vc.numvideopages / 4 );
@@ -299,7 +268,7 @@ gr_device _FARD         _GrEGA_16 = {
 };
 
 gr_device _FARD         _GrEGA_EO = {
-    _NoOp, _NoOp,     // init routine is never called
+    (short (*)(short))_NoOp, _NoOp,     // init routine is never called
     _EGASetEO, _EGAResetEO,
     _EGASetupMono,
     _EGAMoveUpHi,_EGAMoveLeft,_EGAMoveDownHi,_EGAMoveRight,

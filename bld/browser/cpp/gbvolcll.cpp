@@ -50,11 +50,6 @@ GBVCallOutline::GBVCallOutline( const char * text )
     load();
 }
 
-GBVCallOutline::~GBVCallOutline()
-//-------------------------------------
-{
-}
-
 bool GBVCallOutline::contextHelp( bool is_active_win )
 //----------------------------------------------------
 {
@@ -124,3 +119,11 @@ void GBVCallOutline::load()
     reset();
 }
 
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+GBVCallOutline::~GBVCallOutline()
+//-------------------------------------
+{
+}

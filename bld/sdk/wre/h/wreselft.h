@@ -36,6 +36,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WRFileType WRESelectFileType ( char *, Bool );
+extern WRFileType WRESelectFileType( char *, Bool );
 
 #endif

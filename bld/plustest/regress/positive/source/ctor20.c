@@ -3,7 +3,7 @@
 struct B {
     int b;
     B();
-    B(B&);
+    B(const B&);
 };
 struct D : B {
     B d;
@@ -11,7 +11,7 @@ struct D : B {
 
 B::B() : b(0) {
 }
-B::B(B&s) : b(s.b) {
+B::B(const B&s) : b(s.b) {
 }
 
 D foo( int x )

@@ -1,0 +1,35 @@
+/*
+ *  ntddbeep.h  Beep device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDDBEEP_
+#define _NTDDBEEP_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Beep device name */
+#define DD_BEEP_DEVICE_NAME     "\\Device\\Beep"
+#define DD_BEEP_DEVICE_NAME_U   L"\\Device\\Beep"
+
+/* Beep device I/O control codes */
+#define IOCTL_BEEP_SET \
+    CTL_CODE( FILE_DEVICE_BEEP, 0, METHOD_BUFFERED, FILE_ANY_ACCESS )
+
+/* Beep frequency special values */
+#define BEEP_FREQUENCY_MINIMUM  0x0025
+#define BEEP_FREQUENCY_MAXIMUM  0x7FFF
+
+/* Beep set parameters */
+typedef struct _BEEP_SET_PARAMETERS {
+    ULONG   Frequency;
+    ULONG   Duration;
+} BEEP_SET_PARAMETERS;
+typedef BEEP_SET_PARAMETERS *PBEEP_SET_PARAMETERS;
+
+:include cplusepi.sp
+
+#endif /* _NTDDBEEP_ */

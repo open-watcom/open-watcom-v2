@@ -4,11 +4,11 @@
 #
 #===================================================================
 OS22_H = $(%WATCOM)\h\os2
-C32FLAGS  = -i=$(OS22_H) -bt=OS2 -zq
+C32FLAGS  = -i=$(OS22_H) -bt=OS2 -zq -wx
 WC32    = wcc386 $(C32FLAGS)
 
 OS21_H = $(%WATCOM)\h\os21x
-C16FLAGS  = -i=$(OS21_H) -bt=os2 -ms -5 -omi -s -zdp -zff -zgf -zu -zl -zq
+C16FLAGS  = -i=$(OS21_H) -bt=os2 -ms -5 -omi -s -zdp -zff -zgf -zu -zl -zq -wx
 WC16    = wcc $(C16FLAGS)
 
 ASM     = wasm $(AFLAGS)
@@ -54,3 +54,11 @@ timer.exe: timer.obj
 
 timer.obj: timer.c
         $(WC32) $*.c
+
+clean: .SYMBOLIC
+        @if exist *.obj del *.obj
+        @if exist *.exe del *.exe
+        @if exist *.sys del *.sys
+        @if exist *.err del *.err
+        @if exist *.map del *.map
+        @if exist *.lnk del *.lnk

@@ -57,7 +57,7 @@ const char * MergeOffset::getString() const
     if( fileIdx < 0 ) {
         sprintf( buffer, "<>" );
     } else {
-        sprintf( buffer, "<%d,%#lx>", fileIdx, offset );
+        sprintf( buffer, "<File: %d, Offset: %#lx>", fileIdx, offset );
     }
     return buffer;
 }

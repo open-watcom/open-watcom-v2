@@ -161,6 +161,9 @@ extern int cchar, cerrflag;
 extern CSTYPE cval, clval;
 static pToken savedToken;
 
+/* Forward declarations */
+int cparse( void );
+
 int cerror(char *str) {
     str = str;
     return 0;
@@ -685,7 +688,7 @@ extern int      cnstate, cnvar, cntoken, cnrule;
 # define cassert(condition, msg, arg)
 #endif
 
-cparse()
+int cparse( void )
 {
 
         register short          ci, *cp;        /* for table lookup */

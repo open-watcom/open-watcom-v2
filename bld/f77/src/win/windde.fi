@@ -1,0 +1,119 @@
+! DDE window messages
+
+      integer WM_DDE_FIRST
+      integer WM_DDE_INITIATE
+      integer WM_DDE_TERMINATE
+      integer WM_DDE_ADVISE
+      integer WM_DDE_UNADVISE
+      integer WM_DDE_ACK
+      integer WM_DDE_DATA
+      integer WM_DDE_REQUEST
+      integer WM_DDE_POKE
+      integer WM_DDE_EXECUTE
+      integer WM_DDE_LAST
+
+      parameter ( WM_DDE_FIRST          = '03E0'x )
+      parameter ( WM_DDE_INITIATE       = WM_DDE_FIRST )
+      parameter ( WM_DDE_TERMINATE      = WM_DDE_FIRST+1 )
+      parameter ( WM_DDE_ADVISE         = WM_DDE_FIRST+2 )
+      parameter ( WM_DDE_UNADVISE       = WM_DDE_FIRST+3 )
+      parameter ( WM_DDE_ACK            = WM_DDE_FIRST+4 )
+      parameter ( WM_DDE_DATA           = WM_DDE_FIRST+5 )
+      parameter ( WM_DDE_REQUEST        = WM_DDE_FIRST+6 )
+      parameter ( WM_DDE_POKE           = WM_DDE_FIRST+7 )
+      parameter ( WM_DDE_EXECUTE        = WM_DDE_FIRST+8 )
+      parameter ( WM_DDE_LAST           = WM_DDE_FIRST+8 )
+
+!-------------------------------------------------------------------------------
+!
+! DDEACK structure
+!
+! Structure of wStatus (LOWORD(lParam)) in WM_DDE_ACK message sent in response
+! to a WM_DDE_DATA, WM_DDE_REQUEST, WM_DDE_POKE, WM_DDE_ADVISE, or
+! WM_DDE_UNADVISE message.
+!
+!-------------------------------------------------------------------------------
+
+      structure /DDEACK/
+          integer*1     bAppReturnCode
+          integer*1     flags
+      end structure
+
+! Bit definitions for "flags" field in DDEACK
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer ACK_fBusy
+      integer ACK_fAck
+
+      parameter ( ACK_fBusy     = '40'x )
+      parameter ( ACK_fAck      = '80'x )
+
+!-------------------------------------------------------------------------------
+!
+! DDEADVISE structure
+!
+! WM_DDE_ADVISE parameter structure for hOptions (LOWORD(lParam))
+!
+!-------------------------------------------------------------------------------
+
+      structure /DDEADVISE/
+          integer*2     flags
+          integer*2     cfFormat
+      end structure
+
+! Bit definitions for "flags" field in DDEADVISE
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer ADVISE_fDeferUpd
+      integer ADVISE_fAckReq
+
+      parameter ( ADVISE_fDeferUpd      = '4000'x )
+      parameter ( ADVISE_fAckReq        = '8000'x )
+
+!-------------------------------------------------------------------------------
+!
+! DDEDATA structure
+!
+! WM_DDE_DATA parameter structure for hData (LOWORD(lParam)).
+! The actual size of this structure depends on the size of the Value array.
+!
+!-------------------------------------------------------------------------------
+
+      structure /DDEDATA/
+          integer*2     flags
+          integer*2     cfFormat
+          integer*1     value(1)
+      end structure
+
+! Bit definitions for "flags" field in DDEDATA
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer DATA_fResponse
+      integer DATA_fRelease
+      integer DATA_fAckReq
+
+      parameter ( DATA_fResponse        = '1000'x )
+      parameter ( DATA_fRelease         = '2000'x )
+      parameter ( DATA_fAckReq          = '8000'x )
+
+!-------------------------------------------------------------------------------
+!
+! DDEPOKE structure
+!
+! WM_DDE_POKE parameter structure for hData (LOWORD(lParam)).
+! The actual size of this structure depends on the size of the Value array.
+!
+!-------------------------------------------------------------------------------
+
+      structure /DDEPOKE/
+          integer*2     flags
+          integer*2     cfFormat
+          integer*1     Value(1)
+      end structure
+
+! Bit definitions for "flags" field in DDEPOKE
+! Use IBSET/IBCLR intrinsic functions to set/clear a bit
+
+      integer POKE_fRelease
+
+      parameter ( POKE_fRelease = '2000'x )

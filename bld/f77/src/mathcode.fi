@@ -1,0 +1,67 @@
+c$noreference
+        integer FUNC_ACOS
+        integer FUNC_ASIN
+        integer FUNC_SQRT
+        integer FUNC_EXP
+        integer FUNC_COSH
+        integer FUNC_SINH
+        integer FUNC_POW
+        integer FUNC_ACOSH
+        integer FUNC_LOG2
+        integer FUNC_LOG
+        integer FUNC_LOG10
+        integer FUNC_ATANH
+        integer FUNC_ATAN2
+        integer FUNC_IPOW
+        integer FUNC_DPOWI
+        integer FUNC_COS
+        integer FUNC_SIN
+        integer FUNC_TAN
+        integer FUNC_Y0
+        integer FUNC_Y1
+        integer FUNC_YN
+        integer FUNC_MOD
+        integer FUNC_COTAN
+
+        parameter ( FUNC_ACOS   = 1 )
+        parameter ( FUNC_ASIN   = 2 )
+        parameter ( FUNC_SQRT   = 3 )
+        parameter ( FUNC_EXP    = 4 )
+        parameter ( FUNC_COSH   = 5 )
+        parameter ( FUNC_SINH   = 6 )
+        parameter ( FUNC_POW    = 7 )
+        parameter ( FUNC_ACOSH  = 8 )
+        parameter ( FUNC_LOG2   = 9 )
+        parameter ( FUNC_LOG    = 10 )
+        parameter ( FUNC_LOG10  = 11 )
+        parameter ( FUNC_ATANH  = 12 )
+        parameter ( FUNC_ATAN2  = 13 )
+        parameter ( FUNC_IPOW   = 14 )
+        parameter ( FUNC_DPOWI  = 15 )
+        parameter ( FUNC_COS    = 16 )
+        parameter ( FUNC_SIN    = 17 )
+        parameter ( FUNC_TAN    = 18 )
+        parameter ( FUNC_Y0     = 19 )
+        parameter ( FUNC_Y1     = 20 )
+        parameter ( FUNC_YN     = 21 )
+        parameter ( FUNC_MOD    = 22 )
+        parameter ( FUNC_COTAN  = 23 )
+
+        integer FUNC_MASK
+        parameter ( FUNC_MASK = '0000001f'x )
+
+! bits for the type of math errors
+
+        integer M_DOMAIN
+        integer M_SING
+        integer M_OVERFLOW
+        integer M_PLOSS
+        integer M_TLOSS
+        integer M_UNDERFLOW
+
+        parameter ( M_DOMAIN    = '00000040'x )
+        parameter ( M_SING      = '00000080'x )
+        parameter ( M_OVERFLOW  = '00000100'x )
+        parameter ( M_PLOSS     = '00000200'x )
+        parameter ( M_TLOSS     = '00000400'x )
+        parameter ( M_UNDERFLOW = '00000800'x )

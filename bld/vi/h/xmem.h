@@ -36,9 +36,9 @@
 /*
  * Extended memory defs
  */
-#define XMEM_INTERRUPT           0x15
-#define XMEM_MEMORY_SIZE         0x88
-#define XMEM_MEMORY_START        0x00100000L
+#define XMEM_INTERRUPT          0x15
+#define XMEM_MEMORY_SIZE        0x88
+#define XMEM_MEMORY_START       0x00100000L
 
 /* VDISK definitions */
 #define VDISK_INTERRUPT         0x19
@@ -47,7 +47,7 @@
 
 /* GDT definitions */
 typedef unsigned long   flat_address;
-#define MAKE_LINEAR(x)  ((((flat_address) FP_SEG(x)) << 4 ) + FP_OFF(x) )
+#define MAKE_LINEAR(x)  ((((flat_address) FP_SEG( x )) << 4) + FP_OFF( x ))
 
 /* read/write data, 16 bit (byte length) segment, ring 0 */
 #define GDT_RW_DATA     0x93000000L
@@ -57,17 +57,17 @@ typedef unsigned long   flat_address;
 #define GDT_TARGET      3
 
 typedef struct {
-    unsigned short length;
-    flat_address address;
-    unsigned short reserved;
+    unsigned short  length;
+    flat_address    address;
+    unsigned short  reserved;
 } descriptor;
 
 typedef struct {
-    flat_address offset;
-    long amount_left;
-    long allocated;
-    void *xtd_vector;
-    unsigned char inuse : 1;
+    flat_address    offset;
+    long            amount_left;
+    long            allocated;
+    void            *xtd_vector;
+    unsigned char   inuse   : 1;
 } xtd_struct;
 
 /* extd. mem pragmas */
@@ -77,13 +77,13 @@ extern long _XtdGetSize( void );
         0xb4 0x88    /* mov ah, 87h */ \
         0xcd 0x15    /* int 15h */ \
         0x19 0xd2    /* sbb dx,dx  ; makes result negative if carry set */ \
-        parm caller [] value [ax dx];
+    parm caller [] value [ax dx];
 
 extern void _XtdMoveMemory( descriptor *, unsigned short );
 #pragma aux _XtdMoveMemory = \
         0xb4 0x87    /* mov ah, 87h */ \
         0xcd 0x15    /* int 15h */ \
-        parm caller [es si] [cx];
+    parm caller [es si] [cx];
 
 /*
  * EMS defs
@@ -98,15 +98,15 @@ extern void _XtdMoveMemory( descriptor *, unsigned short );
 typedef struct {
     unsigned char       handle;
     unsigned char       logical : 2;
-    unsigned char       used : 1;
+    unsigned char       used    : 1;
 } physical_descriptor;
 
 typedef union {
     long external;
     struct {
-    unsigned short offset;
-    unsigned char logical;
-    unsigned char handle;
+        unsigned short  offset;
+        unsigned char   logical;
+        unsigned char   handle;
     } internal;
 } ems_addr;
 
@@ -118,8 +118,8 @@ typedef struct {
     unsigned char       max_logical;
     unsigned char       handles[EMS_MAX_HANDLES];
     physical_descriptor physical[EMS_MAX_PHYSICAL_PAGES];
-    unsigned char       inuse : 1;
-    unsigned char       exhausted : 1;
+    unsigned char       inuse       : 1;
+    unsigned char       exhausted   : 1;
 } ems_struct;
 
 /* ems pragmas */
@@ -127,33 +127,33 @@ extern unsigned char _EMSStatus( void );
 #pragma aux _EMSStatus = \
         0xb4 0x40   /* mov ah, 40h   ;EMS status */ \
         0xcd 0x67   /* int 67h */ \
-        parm value [ah] modify exact [ax];
+    parm value [ah] modify exact [ax];
 
 extern unsigned char _EMSGetPageFrame( unsigned short * );
 #pragma aux _EMSGetPageFrame = \
         0xb4 0x41   /* mov ah, 41h   ;EMS get page frame */ \
         0xcd 0x67   /* int 67h */ \
-        0x89 0x1d   /* mov [di],bx */ \
-        parm caller [ds di] value [ah] modify exact [ax bx];
+        0x89 0x1d   /* mov [di], bx */ \
+    parm caller [ds di] value [ah] modify exact [ax bx];
 
 extern unsigned char _EMSAllocateMemory( unsigned short num_pages, unsigned char * );
 #pragma aux _EMSAllocateMemory = \
         0xb4 0x43   /* mov ah, 43h   ;alloc EMS */ \
         0xcd 0x67   /* int 67h */ \
         0x88 0x15   /* mov [di], dl */  \
-        parm caller [bx] [ds di] value [ah] modify exact [ax bx dx];
+    parm caller [bx] [ds di] value [ah] modify exact [ax bx dx];
 
 extern unsigned char _EMSMapMemory( unsigned char, unsigned char, unsigned char );
 #pragma aux _EMSMapMemory = \
         0xb4 0x44   /* mov ah, 44h   ;EMS map memory */ \
         0xcd 0x67   /* int 67h */ \
-        parm caller [dx] [bx] [al] value [ah] modify exact [ax bx dx];
+    parm caller [dx] [bx] [al] value [ah] modify exact [ax bx dx];
 
 extern unsigned char _EMSReleaseMemory( unsigned char );
 #pragma aux _EMSReleaseMemory = \
         0xb4 0x45   /* mov ah, 45h   ;EMS release */ \
         0xcd 0x67   /* int 67h */ \
-        parm caller [dx] value [ah] modify exact [ax dx];
+    parm caller [dx] value [ah] modify exact [ax dx];
 
 /*
  * XMS definitions
@@ -170,17 +170,17 @@ extern unsigned char _EMSReleaseMemory( unsigned char );
 #define XMS_HMA_INITIAL_OFFSET  0x0010
 #define XMS_HMA_BLOCK_SIZE      0xfff0
 
-#define XMS_MAX_BLOCK_SIZE      0x00010000L
+#define XMS_MAX_BLOCK_SIZE              0x00010000L
 #define XMS_MAX_BLOCK_SIZE_IN_K         64
 #define XMS_BLOCK_ADJUST_SIZE_IN_K      4
 #define XMS_MAX_HANDLES                 256
 
 typedef union {
-    long external;
+    long    external;
     struct {
-    unsigned short handle;
-    unsigned short offset:14;
-    unsigned short fill:2;
+        unsigned short  handle;
+        unsigned short  offset  : 14;
+        unsigned short  fill    : 2;
     } internal;
 } xms_addr;
 
@@ -189,8 +189,8 @@ typedef struct {
     unsigned short      next_handle;
     unsigned long       offset;
     unsigned long       size;
-    unsigned char       inuse : 1;
-    unsigned char       exhausted : 1;
+    unsigned char       inuse       : 1;
+    unsigned char       exhausted   : 1;
     unsigned char       small_block : 1;
 } xms_struct;
 
@@ -213,7 +213,7 @@ extern unsigned char _XMSInstalled( void );
         0xb4 0x43       /* mov ah, 43h */ \
         0xb0 0x00       /* mov al, 0h */ \
         0xcd 0x2f       /* int 2fh */  \
-        parm caller [] value [al] modify exact [ax];
+    parm caller [] value [al] modify exact [ax];
 
 
 extern void *_XMSControl( void );
@@ -221,84 +221,84 @@ extern void *_XMSControl( void );
         0xb4 0x43       /* mov ah, 43h */\
         0xb0 0x10       /* mov al, 10h */\
         0xcd 0x2f       /* int 2fh */  \
-        parm caller [] value [es bx] modify exact [ax bx es];
+    parm caller [] value [es bx] modify exact [ax bx es];
 
 extern unsigned short _XMSVersion( void ** );
 #pragma aux _XMSVersion = \
         0xb4 0x00       /* mov ah, 0h */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] value [ax] modify exact [ax bx dx];
 
 extern unsigned short _XMSRequestHMA( void **, unsigned short amt );
 #pragma aux _XMSRequestHMA = \
         0xb4 0x01       /* mov ah, 1h */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
 extern unsigned short _XMSRequestHMA( void  **, unsigned short amt );
 
 extern unsigned short _XMSReleaseHMA( void ** );
 #pragma aux _XMSReleaseHMA = \
         0xb4 0x02       /* mov ah, 2h */\
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [ax] modify exact [ax bx];
+    parm caller [ds si] value [ax] modify exact [ax bx];
 
 extern unsigned short _XMSQuerySize( void ** );
 #pragma aux _XMSQuerySize = \
         0xb4 0x08       /* mov ah, 8h */\
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [dx] modify exact [ax bx dx];
+    parm caller [ds si] value [dx] modify exact [ax bx dx];
 
 extern unsigned short _XMSAllocate( void **, unsigned short amt, unsigned short * );
 #pragma aux _XMSAllocate = \
         0xb4 0x09       /* mov ah, 9h */\
         0xff 0x1c       /* call far [si] */ \
         0x26 0x89 0x15  /* mov es:[di], dx  */ \
-        parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
 
 extern unsigned short _XMSFree( void **, unsigned short );
 #pragma aux _XMSFree = \
         0xb4 0x0a       /* mov ah, 0ah */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] [dx] value [ax] modify exact [ax bx dx];
 
 extern unsigned short _XMSReallocate( void **, unsigned short, unsigned short );
 #pragma aux _XMSReallocate = \
         0xb4 0x0f       /* mov ah, 0fh */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] [dx] [bx] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] [dx] [bx] value [ax] modify exact [ax bx dx];
 
 
 extern unsigned short _XMSMove( void **, xms_move_descriptor * );
 #pragma aux _XMSMove = \
         0xb4 0x0b       /* mov ah, 0bh */ \
         0x26 0xff 0x1d  /* call far es:[di] */ \
-        parm caller [es di] [ds si] value [ax] \
-        modify exact [ax bx dx si ds ];
+    parm caller [es di] [ds si] value [ax] \
+    modify exact [ax bx dx si ds ];
 
 extern unsigned short _XMSEnableA20( void ** );
 #pragma aux _XMSEnableA20 = \
         0xb4 0x05       /* mov ah, 05h */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] value [ax] modify exact [ax bx dx];
 
 extern unsigned short _XMSDisableA20( void ** );
 #pragma aux _XMSDisableA20 = \
         0xb4 0x06       /* mov ah, 06h */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] value [ax] modify exact [ax bx dx];
 
 extern unsigned char _XMSOK( void ** );
 #pragma aux _XMSOK = \
         0xb4 0x08       /* mov ah, 08h */ \
         0xff 0x1c       /* call far [si] */ \
-        parm caller [ds si] value [bl] modify exact [ax bx dx];
+    parm caller [ds si] value [bl] modify exact [ax bx dx];
 
 extern unsigned short _XMSQueryHandles( void **, unsigned short, unsigned short * );
 #pragma aux _XMSQueryHandles = \
         0xb4 0x0e       /* mov ah, 0eh */ \
         0xff 0x1c       /* call far [si] */ \
         0x26 0x89 0x15  /* mov es:[di], dx */ \
-        parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
+    parm caller [ds si] [dx] [es di] value [ax] modify exact [ax bx dx];
 
 extern void _XMSCopyWords( void *, void *, unsigned short );
 #pragma aux _XMSCopyWords = \
@@ -306,6 +306,6 @@ extern void _XMSCopyWords( void *, void *, unsigned short );
         0x8e 0xda       /* mov ds,dx */ \
         0xf3 0xa5       /* rep movsw */ \
         0x1f            /* pop ds */ \
-        parm caller [dx si] [es di] [cx] modify exact [si di cx];
+    parm caller [dx si] [es di] [cx] modify exact [si di cx];
 
 #endif

@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Automated Initialization/Completion processing.
 *
 ****************************************************************************/
 
-
-// Automated Initialization/Completion processing
 
 #ifndef __INITFINI_H__
 #define __INITFINI_H__

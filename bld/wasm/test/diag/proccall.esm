@@ -1,0 +1,14 @@
+.387
+DGROUP		GROUP	_DATA
+proccall_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:proccall_TEXT, DS:DGROUP, SS:DGROUP
+__U8ME:
+    push        cs
+    call        near ptr __U8M
+    retf        
+__U8M:
+    retf        
+proccall_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

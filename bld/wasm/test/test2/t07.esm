@@ -1,0 +1,8 @@
+.387
+		EXTRN	abc:BYTE
+flora		GROUP	text
+text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov       ax,ax
+text		ENDS
+		END

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF file parsing routines.
 *
 ****************************************************************************/
 
@@ -56,6 +55,7 @@ static void             setInitialData( omf_file_handle ofh )
     ofh->flags = 0;
     ofh->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
     ofh->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
+    ofh->debug_style = OMF_DBG_STYLE_CODEVIEW;
 }
 
 
@@ -195,7 +195,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
     int                 location;
     int                 offset;
     int                 fmethod;
-    omf_idx             fidx;
+    omf_idx             fidx = 0;
     int                 thred;
     int                 tmethod;
     omf_idx             tidx;
@@ -230,15 +230,15 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
     } else {
         fmethod = ( datum >> 4 ) & 0x07;
         switch( fmethod ) {
-        case( F_SEG ):                  /* segment index                */
-        case( F_GRP ):                  /* group index                  */
-        case( F_EXT ):                  /* external index               */
+        case( FRAME_SEG ):                  /* segment index                */
+        case( FRAME_GRP ):                  /* group index                  */
+        case( FRAME_EXT ):                  /* external index               */
             fidx = loadIndex( &buf, &len );
             break;
-        case( F_LOC ):                  /* frame containing location    */
-        case( F_ABS ):                  /* absolute frame number        */
-        case( F_TARG ):                 /* frame same as target         */
-        case( F_NONE ):                 /* no frame                     */
+        case( FRAME_LOC ):                  /* frame containing location    */
+        case( FRAME_ABS ):                  /* absolute frame number        */
+        case( FRAME_TARG ):                 /* frame same as target         */
+        case( FRAME_NONE ):                 /* no frame                     */
             fidx = 0;
             break;
         }
@@ -251,7 +251,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32,
     } else {
         tmethod = datum & 0x07;
         tidx = loadIndex( &buf, &len );
-        if( fmethod == F_TARG ) {
+        if( fmethod == FRAME_TARG ) {
             /* fmethod becomes the same as tmethod (1 of first 3)
              */
             fmethod = tmethod & 0x03;
@@ -324,20 +324,14 @@ static orl_return       processThreadFixup( omf_file_handle ofh,
 
 static orl_return       doTHEADR( omf_file_handle ofh )
 {
-    orl_return  err;
-    int         len;
+    orl_return          err;
 
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
-    if( ofh->modnamelen ) return( ORL_ERROR );
-    len = ofh->parsebuf[0];
-    if( len > ofh->parselen ) return( ORL_ERROR );
-    memcpy( ofh->modname, ofh->parsebuf + 1, len );
-    ofh->modname[len] = 0;
-    ofh->modnamelen = len;
-    return( ORL_OKAY );
+    if( err != ORL_OKAY )
+        return( err );
+    return( OmfTheadr( ofh ) );
 }
 
 
@@ -401,6 +395,24 @@ static orl_return       doCOMENT( omf_file_handle ofh )
             ofh->status |= OMF_STATUS_ARCH_SET;
         }
         break;
+    case( CMT_MS_OMF ):
+        /* If we see the "New OMF" COMENT record, we need to see if it
+         * contains the debug info style information. If it isn't CodeView,
+         * we don't want to parse LINNUM records as they will be in different
+         * format and could confuse us. This happens with .obj files generated
+         * by IBM's compilers. Note that we default to CodeView (MS) style
+         * but we might encounter a COMENT record setting some unknown style.
+         */
+         if (*buffer)
+             buffer++;
+         if( ( len == 0 ) || !memcmp( buffer, "CV", 2 ) ) {
+             ofh->debug_style = OMF_DBG_STYLE_CODEVIEW;
+         } else if( !memcmp( buffer, "HL", 2 ) ) {
+             ofh->debug_style = OMF_DBG_STYLE_HLL;
+         } else {
+             ofh->debug_style = OMF_DBG_STYLE_UNKNOWN;
+         }
+         break;
     }
     return( err );
 }
@@ -474,7 +486,7 @@ static orl_return       doCEXTDEF( omf_file_handle ofh, omf_rectyp typ )
         loadIndex( &buffer, &len );
         slen = OmfGetLName( ofh->lnames, idx, name );
         if( slen < 0 ) return( ORL_ERROR );
-        err = OmfAddExtDef( ofh, name, slen, typ );
+        err = OmfAddExtDef( ofh, (omf_bytes)name, slen, typ );
         if( err != ORL_OKAY ) break;
     }
     return( err );
@@ -542,17 +554,17 @@ static orl_return       doCOMDEF( omf_file_handle ofh, omf_rectyp typ )
     return( err );
 }
 
-
 static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
     omf_bytes           buffer;
     long                len;
-    omf_idx             seg;
-    omf_idx             name;
+    omf_idx             seg = 0;
+    omf_idx             name = 0;
     unsigned_16         line;
     unsigned_32         offset;
     int                 wordsize;
+    omf_sec_handle      sh;
 
     assert( ofh );
 
@@ -572,27 +584,46 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
         break;
     case( CMD_LINNUM ):
     case( CMD_LINNUM32 ):
-        loadIndex( &buffer, &len );
-        seg = loadIndex( &buffer, &len );
-        if( !seg ) return( ORL_OKAY );
-        name = 0;
+        switch( ofh->debug_style ) {
+        case( OMF_DBG_STYLE_CODEVIEW ):
+            // We have MS style line numbers.
+            loadIndex( &buffer, &len );
+            seg = loadIndex( &buffer, &len );
+            if( !seg ) return( ORL_OKAY );
+            name = 0;
+            break;
+        case( OMF_DBG_STYLE_HLL ):
+            // We have IBM HLL style line numbers.
+            // TODO
+            return( ORL_OKAY );
+        case( OMF_DBG_STYLE_UNKNOWN ):
+            // We don't know what this is. Do not attempt to parse.
+            return( ORL_OKAY );
+        }
         break;
     default:
         assert( 0 );
     }
 
+    sh = OmfFindSegOrComdat( ofh, seg, name );
+    if( !sh )
+        return( ORL_ERROR );
+
     wordsize = OmfGetWordSize( check32Bit( ofh, typ ) );
 
     while( len ) {
-        if( len < ( wordsize + 2 ) ) return( ORL_ERROR );
+        if( len < ( wordsize + 2 ) )
+            return( ORL_ERROR );
         line = getUWord( buffer, 2 );
         buffer += 2;
         len -= 2;
         offset = getUWord( buffer, wordsize );
         buffer += wordsize;
         len -= wordsize;
-        err = OmfAddLineNum( ofh, seg, name, line, offset );
-        if( err != ORL_OKAY ) break;
+        err = OmfAddLineNum( sh, line, offset );
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
     return( err );
 }
@@ -606,8 +637,8 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     int                 slen;
     omf_idx             seg;
     omf_idx             group;
-    omf_frame           frame;
-    omf_bytes           name;
+    omf_frame           frame = 0;
+    char                *name;
     orl_sec_offset      offset;
     int                 is32;
     int                 wordsize;
@@ -639,7 +670,7 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
         buffer++;
         len--;
         if( ( slen + 1 + wordsize ) > len ) return( ORL_ERROR );
-        name = buffer;
+        name = (char *)buffer;
         buffer += slen;
         len -= slen;
         offset = getUWord( buffer, wordsize );
@@ -693,7 +724,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     int                 is32;
     int                 wordsize;
     orl_sec_alignment   align;
-    orl_sec_size        size;
+    orl_sec_size        size = 0;
     int                 combine;
     int                 max = 0;
     int                 use32 = 0;
@@ -719,22 +750,25 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
 
     if( ( datum >> 5 ) == ALIGN_ABS ) {
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
-            frame = getUWord( buffer, 4 );
+            // FIXME !!! it looks bugy, frame should be 16-bit and offset ? 
+            // I can not found any information about it
+            frame = getUWord( buffer, 2 );
         } else {
             frame = getUWord( buffer, 2 );
         }
         buffer += 3;
         len -= 3;
-        if( len < ( wordsize + 3 ) ) return( ORL_ERROR );
+        if( len < ( wordsize + 3 ) ) {
+            return( ORL_ERROR );
+        }
     } else {
         frame = ORL_SEC_NO_ABS_FRAME;
     }
 
     if( datum & 0x02 ) {
         max = 1;
-    } else {
-        size = getUWord( buffer, wordsize );
     }
+    size = getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
 
@@ -846,6 +880,74 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
 }
 
 
+static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
+{
+    orl_return          err;
+    omf_bytes           buffer;
+    long                len;
+    uint_8              loctype;
+    int                 is32;
+    int                 wordsize;
+    orl_sec_offset      displacement;
+    orl_sec_offset      offset;
+    omf_idx             segidx;
+    omf_idx             symidx;
+
+    assert( ofh );
+
+    /* BAKPAT records are created by Microsoft QuickC, as well as by 16-bit
+     * Microsoft C/C++ 7.0 and later when compiling without optimizations.
+     * NBKPAT records are probably specific to MS C++ 7.0 and later only.
+     */
+    err = loadRecord( ofh );
+    if( err != ORL_OKAY )
+        return( err );
+
+    is32 = check32Bit( ofh, typ );
+    wordsize = OmfGetWordSize( is32 );
+
+    len = ofh->parselen;
+    buffer = ofh->parsebuf;
+    if( len < 0 )
+        return( ORL_ERROR );
+
+    segidx = symidx = 0;
+
+    if( typ == CMD_BAKPAT || typ == CMD_BAKPAT32 ) {
+        /* Segment index first, then location type. */
+        segidx = loadIndex( &buffer, &len );
+        if( !segidx )
+            return( ORL_ERROR );
+
+        loctype = buffer[0];
+        --len; ++buffer;
+    } else {
+        assert( typ == CMD_NBKPAT || typ == CMD_NBKPAT32 );
+        /* Location first, then symbol index. */
+        loctype = buffer[0];
+        --len; ++buffer;
+        symidx = loadIndex( &buffer, &len );
+        if( !symidx )
+            return( ORL_ERROR );
+    }
+
+    while( len ) {
+        /* Read the offset and displacement (always the same size). */
+        offset = getUWord( buffer, wordsize );
+        buffer += wordsize;
+        len -= wordsize;
+        displacement = getUWord( buffer, wordsize );
+        buffer += wordsize;
+        len -= wordsize;
+
+        err = OmfAddBakpat( ofh, loctype, offset, segidx, symidx, displacement );
+        if( err != ORL_OKAY )
+            break;
+    }
+    return( err );
+}
+
+
 static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
@@ -920,9 +1022,9 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     long                len;
     int                 wordsize;
-    omf_idx             seg;
-    omf_idx             group;
-    omf_frame           frame;
+    omf_idx             seg = 0;
+    omf_idx             group = 0;
+    omf_frame           frame = 0;
     omf_idx             name;
     uint_8              attr;
     int                 align;
@@ -1030,18 +1132,20 @@ static orl_return       procRecord( omf_file_handle ofh, omf_rectyp typ )
     case( CMD_LCOMDEF ):        /* local comdev                         */
         return( doCOMDEF( ofh, typ ) );
 
+    case( CMD_THEADR ):         /* additonal header record              */
+        return( doTHEADR( ofh ) );
+
     case( CMD_LINNUM ):         /* line number record                   */
     case( CMD_LINNUM32 ):       /* 32-bit line number record.           */
     case( CMD_LINSYM ):         /* LINNUM for a COMDAT                  */
     case( CMD_LINSYM32 ):       /* 32-bit LINNUM for a COMDAT           */
         return( doLINNUM( ofh, typ ) );
 
-                                /* No idea what to do with these yet    */
     case( CMD_BAKPAT ):         /* backpatch record (for Quick C)       */
-    case( CMD_BAKPAT32 ):
-    case( CMD_NBKPAT ):         /* named backpatch record (quick c?)    */
+    case( CMD_BAKPAT32 ):       /* 32-bit backpatch record              */
+    case( CMD_NBKPAT ):         /* named backpatch record (MS C++)      */
     case( CMD_NBKPAT32 ):       /* 32-bit named backpatch record        */
-        return( loadRecord( ofh ) );
+        return( doBAKPAT( ofh, typ ) );
 
     case( CMD_RHEADR ):         /* These records are simply ignored     */
     case( CMD_REGINT ):         /****************************************/
@@ -1066,7 +1170,6 @@ static orl_return       procRecord( omf_file_handle ofh, omf_rectyp typ )
     case( CMD_VERNUM ):         /* TIS version number record            */
     case( CMD_VENDEXT ):        /* TIS vendor extension record          */
     case( CMD_TYPDEF ):         /* type definition record               */
-    case( CMD_THEADR ):         /* additonal header record              */
         return( loadRecord( ofh ) );
 
     default:

@@ -1,13 +1,13 @@
-!ifdef on_build_machine
+!ifeq release 0
 
-debug_cpp_opts=/ox/s/dNDEBUG
-debug_link_opts=
+debug_cpp_opts= -d2 -dDEBUG_PRT
+debug_link_opts=d all
 
 !else
 
-debug_cpp_opts=/d2/dDEBUG_PRT
-debug_link_opts=d all
+debug_cpp_opts=-ox -s -dNDEBUG
+debug_link_opts=
 
 !endif
 
-!include ..\wbrowse.mif
+!include ../wbrowse.mif

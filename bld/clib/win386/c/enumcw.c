@@ -32,8 +32,8 @@
 
 #include "cover.h"
 
-BOOL PASCAL _Cover_EnumChildWindows( HWND wnd, FARPROC p, DWORD param )
+BOOL PASCAL _Cover_EnumChildWindows( HWND wnd, WNDENUMPROC p, LPARAM param )
 {
-    return( EnumChildWindows( wnd, SetProc( p, GETPROC_ENUMCHILDWINDOWS ),
+    return( EnumChildWindows( wnd, SetProc( (FARPROC)p, GETPROC_ENUMCHILDWINDOWS ),
                 param ) );
 }

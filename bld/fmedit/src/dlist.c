@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to handle the operations on a DLIST.
 *
 ****************************************************************************/
 
-
-/* DLIST.C - routines to handle the operations on a DLIST */
 
 #include <windows.h>
 
@@ -40,12 +37,10 @@
 #include "dlist.def"
 #include "global.h"
 
-extern void DListAddElt( DLIST ** head, DLIST_ELT obj )
-/******************************************************/
-
-/* add a new element to the dlist */
-
-  {
+extern void DListAddElt( DLIST **head, DLIST_ELT obj )
+/****************************************************/
+{
+    /* add a new element to the dlist */
     DLIST * new;
 
     new = EdAlloc( sizeof( DLIST ) );
@@ -56,61 +51,51 @@ extern void DListAddElt( DLIST ** head, DLIST_ELT obj )
         (*head)->prev = new;
     }
     *head = new;
-  }
+}
 
 
-extern void DListFree( DLIST * lst )
-/**********************************/
-
-/* free the passed dlist */
-
-  {
-    DLIST * next;
+extern void DListFree( DLIST *lst )
+/*********************************/
+{
+    /* free the passed dlist */
+    DLIST *next;
 
     while( lst != NULL ) {
         next = lst->next;
         EdFree( lst );
         lst = next;
     }
-  }
+}
 
 
-extern DLIST_ELT DListElement( DLIST * lst )
-/******************************************/
-
-/* return the first elt of the dlist */
-
-  {
+extern DLIST_ELT DListElement( DLIST *lst )
+/*****************************************/
+{
+    /* return the first elt of the dlist */
     return( lst->elt );
-  }
+}
 
 
-extern DLIST * DListNext( DLIST * curr )
-/**************************************/
-
-/* return the next element of the dlist */
-
-  {
+extern DLIST *DListNext( DLIST *curr )
+/************************************/
+{
+    /* return the next element of the dlist */
     return( curr->next );
-  }
+}
 
 
-extern DLIST * DListPrev( DLIST * curr )
-/**************************************/
-
-/* return the next element of the dlist */
-
-  {
+extern DLIST *DListPrev( DLIST* curr )
+/************************************/
+{
+    /* return the next element of the dlist */
     return( curr->prev );
-  }
+}
 
 
-extern void DListRemoveElt( DLIST ** lst, DLIST_ELT obj )
-/*******************************************************/
-
-/* delete the object from the dlist */
-
-  {
+extern void DListRemoveElt( DLIST **lst, DLIST_ELT obj )
+/******************************************************/
+{
+    /* delete the object from the dlist */
     DLIST * node;
 
     for( node = *lst; node != NULL; node = node->next ) {
@@ -127,28 +112,24 @@ extern void DListRemoveElt( DLIST ** lst, DLIST_ELT obj )
             break;
         }
     }
-  }
+}
 
-extern DLIST * DListConsume( DLIST * curr )
-/*****************************************/
-
-/* free the current element and return the next element */
-
-  {
+extern DLIST *DListConsume( DLIST *curr )
+/***************************************/
+{
+    /* free the current element and return the next element */
     DLIST * next;
 
     next = curr->next;
     EdFree( curr );
     return( next );
-  }
+}
 
 
-extern DLIST * DListFindElt( DLIST * l, DLIST_ELT  elt )
-/******************************************************/
-
-/* find the given element in the dlist */
-
-  {
+extern DLIST *DListFindElt( DLIST *l, DLIST_ELT elt )
+/***************************************************/
+{
+    /* find the given element in the dlist */
     while( l != NULL ) {
         if( elt.original != NULL ) {
             if( l->elt.original == elt.original ) {
@@ -162,31 +143,27 @@ extern DLIST * DListFindElt( DLIST * l, DLIST_ELT  elt )
         l = l->next;
     }
     return( l );
-  }
+}
 
 
-extern DLIST * DListCopy( DLIST * l )
-/***********************************/
-
-/* make a copy of the passed dlist */
-
-  {
-    DLIST * head;
+extern DLIST *DListCopy( DLIST* l )
+/*********************************/
+{
+    /* make a copy of the passed dlist */
+    DLIST *head;
 
     head = NULL;
     for( ; l != NULL; l = l->next ) {
         DListAddElt( &head, l->elt );
     }
     return( head );
-  }
+}
 
-extern void DListInsertElt( DLIST * prev, DLIST_ELT obj )
-/*******************************************************/
-
-/* add a new element to the list */
-
-  {
-    DLIST * new;
+extern void DListInsertElt( DLIST *prev, DLIST_ELT obj )
+/******************************************************/
+{
+    /* add a new element to the list */
+    DLIST *new;
 
     new = EdAlloc( sizeof( DLIST ) );
     new->elt = obj;
@@ -196,4 +173,4 @@ extern void DListInsertElt( DLIST * prev, DLIST_ELT obj )
     if( new->next != NULL ) {
         new->next->prev = new;
     }
-  }
+}

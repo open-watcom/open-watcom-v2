@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler mainline.
 *
 ****************************************************************************/
 
@@ -33,12 +32,15 @@
 #include "as.h"
 #include <setjmp.h>
 #include "preproc.h"
+#if !defined( __WATCOMC__ )
+    #include "clibext.h"
+#endif
 
 extern bool     OptionsInit( int argc, char *argv[] );
 extern void     OptionsFini( void );
 extern void     OptionsPPDefine( void );
-extern int      asyyparse();
-extern void     AsLexerFini();
+extern int      asyyparse( void );
+extern void     AsLexerFini( void );
 
 extern bool     DoReport;
 extern int      CurrLineno;
@@ -48,4 +50,71 @@ extern char     *AsIncPath;
 jmp_buf         AsmParse;
 int             ExitStatus = EXIT_SUCCESS;
 
-void main( int argc, char **argv ) {
+
+int main( int argc, char **argv )
+//*******************************
+{
+    static char *fname;
+
+#ifndef __WATCOMC__
+    _argv = argv;
+    _argc = argc;
+#endif
+    MemInit();
+    if( !AsMsgInit() ) {
+        return( EXIT_FAILURE );
+    }
+    if( argc == 1 ) {
+        Banner();
+        Usage();
+    } else if( OptionsInit( --argc, ++argv ) ) {
+        Banner();
+        if( _IsOption( PRINT_HELP ) ) {
+            Usage();
+            *argv = NULL;
+        } else if( !*argv ) {
+            AsOutMessage( stderr, AS_MSG_ERROR );
+            AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
+            fputc( '\n', stderr );
+        }
+        while( *argv ) {
+            fname = MakeAsmFilename( *argv );
+            if( PP_Init( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE, AsIncPath ) != 0 ) {
+                AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
+                fputc( '\n', stderr );
+            } else {
+                OptionsPPDefine();
+                SymInit();
+                InsInit();
+                DirInit();
+                if( ObjInit( fname ) ) {
+                    if( setjmp( AsmParse ) == 0 ) {
+                        ErrorCountsReset();
+                        DoReport = TRUE;
+                        if( !asyyparse() ) {
+                            CurrLineno--;    // This is the total # of lines
+                            ObjRelocsFini(); // Must be done before ErrorReport
+                                             // and other finis
+                        } else {
+                            DoReport = FALSE;
+                        }
+                    } else { // AbortParse() was invoked
+                        DoReport = FALSE;
+                    }
+                    ErrorReport();
+                    AsLexerFini();
+                    ObjFini();
+                }
+                DirFini();
+                InsFini();
+                SymFini();
+            }
+            PP_Fini();
+            ++argv;
+        }
+    }
+    OptionsFini();
+    AsMsgFini();
+    MemFini();
+    return( ExitStatus );
+}

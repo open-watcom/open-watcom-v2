@@ -1,0 +1,11 @@
+c$define        INCL_WIN
+c$define        INCL_GPI
+c$define        INCL_DEV
+
+        include 'os2.fap'
+
+        include 'os2def.fi'
+        include 'pmwin.fi'
+        include 'pmdev.fi'
+        include 'pmgpi.fi'
+        include 'life.fi'

@@ -1,0 +1,8 @@
+c$ifdef INCL_BASE
+c$define INCL_DOS
+c$define INCL_SUB
+c$endif
+
+c$include bsedos.fap
+
+c$include bsesub.fap

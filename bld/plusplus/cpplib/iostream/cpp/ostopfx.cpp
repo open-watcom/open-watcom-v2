@@ -24,30 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/29    Greg Bentz      Change ostream::op<<(streambuf &) to
-//                              ostream::op<<( streambuf * )
-//  93/10/26    Raymond Tang    Split into separate files.
-//  93/12/08    Raymond Tang    Change opfx() to be an inline-function.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
@@ -55,23 +34,27 @@
 #include "variety.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 
-int ostream::do_opfx() {
-/*******************/
-// Prefix to all ostream activities.
-// Return a 0 (fail) if an error state is set.
+namespace std {
+
+  // Prefix to all ostream activities. Return a 0 (fail) if an error
+  // state is set.
+
+  int ostream::do_opfx() {
 
     __lock_it( __i_lock );
     if( tie() != NULL ) {
-        tie()->flush();
+      tie()->flush();
     }
     if( flags() & ios::stdio ) {
-        ::__flush( __get_std_stream( STDOUT_FILENO ) );
-        ::__flush( __get_std_stream( STDERR_FILENO ) );
+      ::__flush( __get_std_stream( STDOUT_FILENO ) );
+      ::__flush( __get_std_stream( STDERR_FILENO ) );
     }
     return( good() );
+  }
+
 }

@@ -1,0 +1,13 @@
+.387
+foo		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:foo, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	0, 0
+    jmp         word ptr cs:L$1
+foo		ENDS
+woo		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:woo, DS:DGROUP, SS:DGROUP
+L$2:
+    jmp         L$2
+woo		ENDS
+		END

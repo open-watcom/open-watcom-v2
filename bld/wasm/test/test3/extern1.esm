@@ -1,0 +1,16 @@
+.387
+.386p
+		PUBLIC	proc1
+		EXTRN	proc2:BYTE
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+proc1:
+    ret         
+_main:
+    call        near ptr proc1 
+    call        near ptr proc2 
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

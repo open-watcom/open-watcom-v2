@@ -384,7 +384,7 @@ void PushBaseLocation( location_list *ll )
 dip_status EvalLocation( imp_image_handle *ii, location_context *lc, loc_expr e,
                         location_list *ll )
 {
-    char                        *end;
+    byte                        *end;
     struct loc_stack_entry      *sp, *op1, *start;
     int                         i;
     int                         j;

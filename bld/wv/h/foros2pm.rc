@@ -1,0 +1,3 @@
+#define INCL_WINSYS
+#include "os2.h"
+rcinclude "wvpm.i"

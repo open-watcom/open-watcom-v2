@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool             WdeDBI2Mem ( WdeDialogBoxInfo *, uint_8 **, uint_32 * );
+extern Bool             WdeDBI2Mem( WdeDialogBoxInfo *, uint_8 **, uint_32 * );
 extern WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, Bool );
 
 #endif

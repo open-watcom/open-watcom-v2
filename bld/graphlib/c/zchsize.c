@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _setcharsize_w( double height, double width )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharsize_w( double height, double width )
 /*=============================================================
 
    This routine sets the height and width for graphics text output. */
@@ -45,7 +45,7 @@ void _WCI86FAR _CGRAPH _setcharsize_w( double height, double width )
 Entry( _SETCHARSIZE_W, _setcharsize_w ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _setcharsize_w_87( double height, double width )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharsize_w_87( double height, double width )
 /*==============================================================*/
 
 {
@@ -55,7 +55,7 @@ void _WCI86FAR _CGRAPH _setcharsize_w_87( double height, double width )
 Entry( _SETCHARSIZE_W_87, _setcharsize_w_87 ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _setcharspacing_w( double space )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w( double space )
 /*=================================================
 
    This routine sets the character spacing for graphics text output. */
@@ -67,7 +67,7 @@ void _WCI86FAR _CGRAPH _setcharspacing_w( double space )
 Entry( _SETCHARSPACING_W, _setcharspacing_w ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _setcharspacing_w_87( double space )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing_w_87( double space )
 /*==================================================*/
 
 {

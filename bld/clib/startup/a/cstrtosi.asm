@@ -24,20 +24,21 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  OS Independent startup code for 32-bit hosted Open Watcom
+;*               character-mode apps.
 ;*
 ;*****************************************************************************
 
 
-;
-; OS independent startup code for 32-bit hosted WATCOM character-mode apps
-;
 ;       This must be assembled using the following command:
 ;               masm /mx /s cstrtosi
 ;
+
 .386p
+
 include struct.inc
+include xinit.inc
+
 
 DGROUP group CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
@@ -107,52 +108,50 @@ _DATA   segment use32 word public 'DATA'
 FarProc __INT21ADDR
 ;FarProc __INT31ADDR
 
-__LpCmdLine dd 0                ; pointer to raw command line
-__LpPgmName dd 0                ; pointer to program name (for argv[0])
-__EnvPtr    dd 0                ; pointer to environment strings
+_LpCmdLine  dd 0                ; pointer to raw command line
+_LpPgmName  dd 0                ; pointer to program name (for argv[0])
+_EnvPtr     dd 0                ; pointer to environment strings
 __BreakFlagPtr dd 0             ; pointer to break flag
 __Copyright dd 0                ; copyright string
 __IsDBCS    dd 0                ; IsDBCS indicator
 _environ    dd 0                ; char **envv;
 ___env_mask dd 0                ; environment mask
-__STACKLOW dd 0                 ; lowest address in stack
-__STACKTOP dd 0                 ; highest address in stack
+_STACKLOW   dd 0                ; lowest address in stack
+_STACKTOP   dd 0                ; highest address in stack
 __ASTACKSIZ dd 0                ; alternate stack size
 __ASTACKPTR dd 0                ; alternate stack pointer
-__curbrk   dd 0                 ; top of usable memory
-__cbyte    dd 0                 ; used by getch, getche
-__psp      dw 0                 ; program segment prefix
-__osmajor  db 4                 ; major DOS version number
-__osminor  db 0                 ; minor DOS version number
-__Extender db 0                 ; 10 => 386 windows
-__ExtenderSubtype db 0          ;
-__OS       db 0                 ; OS Identifier
+_curbrk     dd 0                ; top of usable memory
+__cbyte     dd 0                ; used by getch, getche
+_psp        dw 0                ; program segment prefix
+_osmajor    db 4                ; major DOS version number
+_osminor    db 0                ; minor DOS version number
+_Extender   db 0                ; 10 => 386 windows
+_ExtenderSubtype  db 0          ;
+__OS        db 0                ; OS Identifier
 
- __FPE_handler label dword
-___FPE_handler dd __null_FPE_rtn ; FPE handler
+__FPE_handler dd __null_FPE_rtn ; FPE handler
 
-        public  __LpCmdLine
-        public  __LpPgmName
-        public  __EnvPtr
+        public  "C",_LpCmdLine
+        public  "C",_LpPgmName
+        public  "C",_EnvPtr
         public  __BreakFlagPtr
         public  __Copyright
         public  "C",__IsDBCS
         public  _environ
         public  ___env_mask
-        public  __STACKLOW
-        public  __STACKTOP
+        public  "C",_STACKLOW
+        public  "C",_STACKTOP
         public  __ASTACKSIZ
         public  __ASTACKPTR
-        public  __curbrk
+        public  "C",_curbrk
         public  __cbyte
-        public  __psp
-        public  __osmajor
-        public  __osminor
-        public  __Extender
-        public  __ExtenderSubtype
+        public  "C",_psp
+        public  "C",_osmajor
+        public  "C",_osminor
+        public  "C",_Extender
+        public  "C",_ExtenderSubtype
         public  __OS
-        public   __FPE_handler
-        public  ___FPE_handler
+        public  "C",__FPE_handler
 
 _DATA   ends
 
@@ -179,12 +178,12 @@ __saved_DS dw 0
 public _cstart_
 _cstart_ proc  far
         mov     __OS,ah                 ; save OS ID
-        mov     __STACKTOP,esp          ; set stack top
-        mov     __STACKLOW,ecx          ; and stack low
+        mov     _STACKTOP,esp           ; set stack top
+        mov     _STACKLOW,ecx           ; and stack low
         mov     eax,[edi]               ; get program name
-        mov     __LpPgmName,eax         ; ...
+        mov     _LpPgmName,eax          ; ...
         mov     eax,4[edi]              ; get command line
-        mov     __LpCmdLine,eax         ; ...
+        mov     _LpCmdLine,eax          ; ...
         mov     word ptr __INT21ADDR+4,bx ; save far addr of __Int21 handler
         mov     dword ptr __INT21ADDR+0,edx     ; ...
 ;       mov     word ptr __INT10ADDR+4,bx ; save far addr of __Int10 handler
@@ -204,7 +203,7 @@ _cstart_ proc  far
         mov     __IsDBCS,eax            ; save it
 
         mov     esi,8[edi]              ; get environment pointer
-        mov     __EnvPtr,esi            ; save environment pointer
+        mov     _EnvPtr,esi             ; save environment pointer
         push    0                       ; NULL marks end of env array
         _loop                           ; loop
           push  esi                     ; - push ptr to next string
@@ -236,7 +235,7 @@ _cstart_ proc  far
         lea     edx,_end                ; start of free
         add     edx,3
         and     edx,not 3
-        mov     __curbrk,edx
+        mov     _curbrk,edx
 
         mov     eax,0ffh                ; run all initialiers
         call    __InitRtns              ; call initializer routines
@@ -259,11 +258,11 @@ public __exit_
         push    eax                     ; save return value
         push    edx                     ; save edx
         mov     eax,00h                 ; run finalizers
-        mov     edx,0fh                 ; less than exit
+        mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
         pop     eax                     ; restore return value
-        mov     esp,__STACKTOP          ; reset stack pointer
+        mov     esp,_STACKTOP           ; reset stack pointer
         ret
 __exit_ endp
 

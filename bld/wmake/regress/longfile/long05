@@ -1,0 +1,15 @@
+#
+#  LONGFILE TEST 05
+#  Test FOR-loop with long filenames and IF EXISTS command with long filenames.
+#  
+#
+
+OBJS = "Test Object1.obj" Test" "Object"2.obj"
+
+test: create clean
+
+create: .symbolic
+    @for %i in ($(OBJS)) do echo OK > %i
+    
+clean: .symbolic
+    @for %i in ($(OBJS)) do if exist %i rm %i 

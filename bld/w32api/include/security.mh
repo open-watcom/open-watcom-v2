@@ -1,0 +1,34 @@
+/*
+ *  security.h  Security definitions
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#include <sspi.h>
+#include <secext.h>
+
+:include cpluspro.sp
+
+/* Package names */
+#ifndef NTLMSP_NAME_A
+    #define NTLMSP_NAME_A   "NTLM"
+    #define NTLMSP_NAME     L"NTLM"
+#endif
+#ifndef MICROSOFT_KERBEROS_NAME_A
+    #define MICROSOFT_KERBEROS_NAME_A   "Kerberos"
+    #define MICROSOFT_KERBEROS_NAME_W   L"Kerberos"
+    #define MICROSOFT_KERBEROS_NAME     MICROSOFT_KERBEROS_NAME_W
+#endif
+#ifndef NEGOSSP_NAME
+    #define NEGOSSP_NAME_A      "Negotiate"
+    #define NEGOSSP_NAME_W      L"Negotiate"
+    #ifdef UNICODE
+        #define NEGOSSP_NAME    NEGOSSP_NAME_W
+    #else
+        #define NEGOSSP_NAME    NEGOSSP_NAME_A
+    #endif
+#endif
+
+:include cplusepi.sp

@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker pass 2 routines
 *
 ****************************************************************************/
 
-
-/*
- *  OBJPASS2  : pass 2 of WATFOR-77 8086 linker
- *
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -42,6 +36,7 @@
 #include "wlnkmsg.h"
 #include "virtmem.h"
 #include "obj2supp.h"
+#include "omfreloc.h"
 #include "dbgall.h"
 #include "mapio.h"
 #include "overlays.h"
@@ -55,18 +50,17 @@
 
 lobject_data            CurrRec;
 
-extern void ObjPass2( void )
+void ObjPass2( void )
 /**************************/
 /* Pass 2 of 8086 linker. */
 {
     DEBUG(( DBG_BASE, "ObjPass2()" ));
     IncP2Start();
-    DBIP2Start( Root );
-    DBIOvlPass2();
+    WalkAllSects( DBIP2Start );
     CurrSect = Root;/*  TAI */
     PModList( Root->mods );
     OvlPass2();
-    if( FmtData.type & MK_OVERLAYS && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         ProcDistMods();
     } else {
         CurrSect = Root;
@@ -76,11 +70,10 @@ extern void ObjPass2( void )
     if( FmtData.type & MK_OVERLAYS ) {
         SetOvlStartAddr();
     }
-    DBIFini( Root );
-    DBIOvlFini();
+    WalkAllSects( DBIFini );
 }
 
-extern void PModList( mod_entry *head )
+void PModList( mod_entry *head )
 /*************************************/
 {
     mod_entry           *obj;
@@ -90,24 +83,27 @@ extern void PModList( mod_entry *head )
     }
 }
 
-extern void PModule( mod_entry *obj )
+void PModule( mod_entry *obj )
 /***********************************/
 {
-    if( !(obj->modinfo & MOD_NEED_PASS_2) ) return;
+    if( !(obj->modinfo & MOD_NEED_PASS_2) )
+        return;
     DEBUG(( DBG_BASE, "2 : processing module %s", obj->name ));
     CurrMod = obj;
     IterateModRelocs( CurrMod->relocs, CurrMod->sizerelocs, IncExecRelocs );
+    DoBakPats();
     DBIGenModule();
     CheckStop();
 }
 
-extern bool LoadObj( segdata *seg )
+bool LoadObj( segdata *seg )
 /*********************************/
 {
     seg_leader *leader;
 
     leader = seg->u.leader;
-    if( leader == NULL || DBISkip( leader->dbgtype ) ) return FALSE;
+    if( ( leader == NULL ) || DBISkip( leader ) )
+        return( FALSE );
     CurrRec.seg = seg;
     if( leader->group == NULL ) {
         CurrRec.addr = leader->seg_addr;
@@ -116,9 +112,8 @@ extern bool LoadObj( segdata *seg )
 #endif
     } else {
         CurrRec.addr = leader->group->grp_addr;
-        CurrRec.addr.off += SUB_ADDR(leader->seg_addr, leader->group->grp_addr);
+        CurrRec.addr.off += SUB_ADDR( leader->seg_addr, leader->group->grp_addr );
     }
     CurrRec.addr.off += seg->a.delta;
-    return TRUE;
+    return( TRUE );
 }
-

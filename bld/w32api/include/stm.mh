@@ -1,0 +1,102 @@
+/*
+ *  stm.h       Service Table Manager definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __ROUTING_STM_H__
+#define __ROUTING_STM_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Supported functionality flags */
+#define SERVICES                0x00000002L
+#define DEMAND_UPDATE_SERVICES  0x00000008L
+
+/* Exclusion flags */
+#define STM_ONLY_THIS_INTERFACE 0x00000001L
+#define STM_ONLY_THIS_PROTOCOL  0x00000002L
+#define STM_ONLY_THIS_TYPE      0x00000004L
+#define STM_ONLY_THIS_NAME      0x00000008L
+
+/* Ordering methods */
+#define STM_ORDER_BY_TYPE_AND_NAME          0
+#define STM_ORDER_BY_INTERFACE_TYPE_NAME    1
+
+/* IPX server entry */
+typedef struct _IPX_SERVER_ENTRY {
+    USHORT  Type;
+    UCHAR   Name[48];
+    UCHAR   Network[4];
+    UCHAR   Node[6];
+    UCHAR   Socket[2];
+    USHORT  HopCount;
+} IPX_SERVER_ENTRY;
+typedef IPX_SERVER_ENTRY    *PIPX_SERVER_ENTRY;
+
+/* IPX service */
+typedef struct _IPX_SERVICE {
+    ULONG               InterfaceIndex;
+    ULONG               Protocol;
+    IPX_SERVER_ENTRY    Server;
+} IPX_SERVICE;
+typedef IPX_SERVICE *PIPX_SERVICE;
+
+/* STM callbacks */
+typedef BOOL (WINAPI *PIS_SERVICE)( USHORT, PUCHAR, PIPX_SERVICE );
+typedef HANDLE (WINAPI *PCREATE_SERVICE_ENUMERATION_HANDLE)( DWORD, PIPX_SERVICE );
+typedef DWORD (WINAPI *PENUMERATE_GET_NEXT_SERVICE)( HANDLE, PIPX_SERVICE );
+typedef DWORD (WINAPI *PCLOSE_SERVICE_ENUMERATION_HANDLE )( HANDLE );
+typedef ULONG (WINAPI *PGET_SERVICE_COUNT)( VOID );
+typedef DWORD (WINAPI *PCREATE_STATIC_SERVICE)( ULONG, PIPX_SERVER_ENTRY );
+typedef DWORD (WINAPI *PDELETE_STATIC_SERVICE)( ULONG, PIPX_SERVER_ENTRY );
+typedef DWORD (WINAPI *PBLOCK_CONVERT_SERVICES_TO_STATIC)( ULONG );
+typedef DWORD (WINAPI *PBLOCK_DELETE_STATIC_SERVICES)( ULONG );
+typedef DWORD (WINAPI *PGET_FIRST_ORDERED_SERVICE)( DWORD, DWORD, PIPX_SERVICE );
+typedef DWORD (WINAPI *PGET_NEXT_ORDERED_SERVICE)( DWORD, DWORD, PIPX_SERVICE );
+typedef DWORD (WINAPI *PDO_UPDATE_SERVICES)( ULONG );
+typedef BOOL (WINAPI *PGET_SERVICE_ID)( USHORT, PUCHAR, PULONG );
+typedef BOOL (WINAPI *PGET_SERVICE_FROM_ID)( ULONG, PIPX_SERVICE );
+typedef DWORD (WINAPI *PGET_NEXT_SERVICE_FROM_ID)( ULONG, PIPX_SERVICE, PULONG );
+
+/* MPR 4.0 service characteristics */
+typedef struct _MPR40_SERVICE_CHARACTERISTICS {
+    DWORD                               dwVersion;
+    DWORD                               dwProtocolId;
+    DWORD                               fSupportedFunctionality;
+    PIS_SERVICE                         pfnIsService;
+    PDO_UPDATE_SERVICES                 pfnUpdateServices;
+    PCREATE_SERVICE_ENUMERATION_HANDLE  pfnCreateServiceEnumerationHandle;
+    PENUMERATE_GET_NEXT_SERVICE         pfnEnumerateGetNextService;
+    PCLOSE_SERVICE_ENUMERATION_HANDLE   pfnCloseServiceEnumerationHandle;
+    PGET_SERVICE_COUNT                  pfnGetServiceCount;
+    PCREATE_STATIC_SERVICE              pfnCreateStaticService;
+    PDELETE_STATIC_SERVICE              pfnDeleteStaticService;
+    PBLOCK_CONVERT_SERVICES_TO_STATIC   pfnBlockConvertServicesToStatic;
+    PBLOCK_DELETE_STATIC_SERVICES       pfnBlockDeleteStaticServices;
+    PGET_FIRST_ORDERED_SERVICE          pfnGetFirstOrderedService;
+    PGET_NEXT_ORDERED_SERVICE           pfnGetNextOrderedService;
+} MPR40_SERVICE_CHARACTERISTICS;
+
+/* MPR 5.0 service characteristics */
+typedef struct _MPR50_SERVICE_CHARACTERISTICS {
+#ifdef __cplusplus
+    MPR40_SERVICE_CHARACTERISTICS   mscMpr40ServiceChars;
+#else
+    MPR40_SERVICE_CHARACTERISTICS;
+#endif
+} MPR50_SERVICE_CHARACTERISTICS;
+
+/* MPR service characteristics */
+#ifdef MPR50
+typedef MPR50_SERVICE_CHARACTERISTICS   MPR_SERVICE_CHARACTERISTICS;
+#else
+typedef MPR40_SERVICE_CHARACTERISTICS   MPR_SERVICE_CHARACTERISTICS;
+#endif
+typedef MPR_SERVICE_CHARACTERISTICS     *PMPR_SERVICE_CHARACTERISTICS;
+
+:include cplusepi.sp
+
+#endif /* __ROUTING_STM_H__ */

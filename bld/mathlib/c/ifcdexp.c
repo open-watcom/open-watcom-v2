@@ -33,9 +33,9 @@
 #include "variety.h"
 #include "cplx.h"
 
-_WMRTLINK dcomplex _IF_CDEXP( double rp, double ip ) {
-//===================================================
-
+_WMRTLINK dcomplex _IF_CDEXP( double rp, double ip )
+//==================================================
+{
 // Return the exponential of arg.
 // exp( x + iy ) = exp( x ) * cis( y )
 

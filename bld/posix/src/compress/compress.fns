@@ -70,8 +70,8 @@ extern  void writeerr(void);
 extern  void copystat(char *,char *);
 #ifndef NOSIGNAL
 extern  int foreground(void);
-extern  SIGTYPE onintr(void);
-extern  SIGTYPE oops(void);
+extern  SIGTYPE onintr(int);
+extern  SIGTYPE oops(int);
 #endif
 extern  void prratio(FILE *,long,long);
 extern  void version(void);

@@ -32,8 +32,9 @@
 
 MENU_ITEM( MENU_MAIN_HELP_CONTENTS,             XContents  )
 #if defined(__GUI__)
-MENU_ITEM( MENU_MAIN_HELP_ON_HELP,              XOn_Help  )
 MENU_ITEM( MENU_MAIN_HELP_SEARCH,               XSearch  )
+MENU_BAR
+MENU_ITEM( MENU_MAIN_HELP_ON_HELP,              XOn_Help  )
 #endif
 MENU_BAR
 MENU_ITEM( MENU_MAIN_FILE_ABOUT,                XAbout_  )

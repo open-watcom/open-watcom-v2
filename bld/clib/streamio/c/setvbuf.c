@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent setvbuf() implementation.
 *
 ****************************************************************************/
 
@@ -36,44 +35,42 @@
 #include <limits.h>
 #include "fileacc.h"
 #include "rtdata.h"
-
-
-extern  void    __chktty( FILE *fp );
-extern  void    __ioalloc( FILE * );
-extern  void    __full_io_exit();
+#include "streamio.h"
 
 
 _WCRTLINK int setvbuf( FILE *fp, char *buf, int mode, size_t size )
-    {
-        __stream_check( fp, 1 );
-        __null_check( buf, 2 );
-        if( size > INT_MAX ) {
-            /* filling the buffer code can't handle >32k (-ve size) */
-            return( -1 );
-        }
-        /* check for allowable values for mode */
-        switch( mode ) {
-        case _IOFBF:
-        case _IOLBF:
-        case _IONBF:
-            break;
-        default:
-            return( -1 );
-        }
-        if( buf != NULL && size == 0 ) {                /* JBS 27-aug-90 */
-            return( -1 );
-        }
-        _ValidFile( fp, -1 );
-        _AccessFile( fp );
-        __chktty( fp );                                 /* JBS 28-aug-90 */
-        if( size != 0 ) fp->_bufsize = size;            /* JBS 27-aug-90 */
-        _FP_BASE(fp) = buf;
-        fp->_ptr  = buf;
-        fp->_flag &= ~ (_IONBF | _IOLBF | _IOFBF);      /* FWC 14-jul-87 */
-        fp->_flag |= mode;
-        if( buf == NULL ) {                             /* FWC 16-mar-93 */
-            __ioalloc( fp );
-        }
-        _ReleaseFile( fp );
-        return( 0 );
+{
+    __stream_check( fp, 1 );
+    __null_check( buf, 2 );
+    if( size > INT_MAX ) {
+        /* 16-bit buffer filling code can't handle >32k (-ve size) */
+        return( -1 );
     }
+    /* check for allowable values for mode */
+    switch( mode ) {
+    case _IOFBF:
+    case _IOLBF:
+    case _IONBF:
+        break;
+    default:
+        return( -1 );
+    }
+    if( buf != NULL && size == 0 ) {                /* JBS 27-aug-90 */
+        return( -1 );
+    }
+    _ValidFile( fp, -1 );
+    _AccessFile( fp );
+    __chktty( fp );                                 /* JBS 28-aug-90 */
+    if( size != 0 ) {
+        fp->_bufsize = size;                        /* JBS 27-aug-90 */
+    }
+    _FP_BASE(fp) = (unsigned char *)buf;
+    fp->_ptr = (unsigned char *)buf;
+    fp->_flag &= ~(_IONBF | _IOLBF | _IOFBF);       /* FWC 14-jul-87 */
+    fp->_flag |= mode;
+    if( buf == NULL ) {                             /* FWC 16-mar-93 */
+        __ioalloc( fp );
+    }
+    _ReleaseFile( fp );
+    return( 0 );
+}

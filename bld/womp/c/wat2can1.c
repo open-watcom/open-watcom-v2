@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom format input routines.
 *
 ****************************************************************************/
 
@@ -108,6 +107,8 @@ enum {
 };
 #define splatRec( ch )  ( wat->ptr[-1] = (ch) )
 
+STATIC void parseType( void );
+
 /*
     Routines to move through types buffer
 */
@@ -181,7 +182,7 @@ STATIC name_handle hdlName( void ) {
     if( len > 0 ) {
         p = wat->ptr;
         wat->ptr += len;
-        return( NameAdd( p, len ) );
+        return( NameAdd( (char *)p, len ) );
     } else {
         return( NAME_NULL );
     }

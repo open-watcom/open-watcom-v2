@@ -47,11 +47,6 @@ WCommandList::WCommandList( WStatDialog* parent, unsigned control_id )
 
 }
 
-WCommandList::~WCommandList() {
-/*****************************/
-
-}
-
 
 WString& WCommandList::getCommand( WString& command ) {
 /*****************************************************/
@@ -63,4 +58,14 @@ WString& WCommandList::getCommand( WString& command ) {
         select( pos );
     }
     return command;
+}
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WCommandList::~WCommandList() {
+/*****************************/
+
 }

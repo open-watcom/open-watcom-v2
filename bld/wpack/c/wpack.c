@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Open Watcom file compression utility.
 *
 ****************************************************************************/
 
@@ -35,8 +34,6 @@
  * LZSS coded by Haruhiko OKUMURA
  * Adaptive Huffman Coding coded by Haruyasu YOSHIZAKI
  * Edited and translated to English by Kenji RIKITAKE
- *
- *  WPACK.C : WATCOM file compression utility.
  *
  */
 
@@ -49,8 +46,8 @@
 #include "wpack.h"
 //#include "rsr.h"
 #include "txttable.h"
-#ifdef UNIX
-#include <clibext.h>
+#ifndef __WATCOMC__
+#include "libext.h"
 #endif
 
 // external declarations
@@ -58,7 +55,6 @@ extern void             IndentLine( unsigned );
 extern void             WriteMsg( char * );
 extern void             WriteLen( char *, int );
 extern int              InitIO( void );
-extern void             Encode( void );
 extern file_info **     ReadHeader( arccmd *, arc_header * );
 extern void             QClose( int );
 extern int              QWrite( int, void *, int );
@@ -103,7 +99,7 @@ extern void Error(int code,char *message)
     PackExit();
 }
 
-extern void * MemAlloc( unsigned amount )
+extern void * WPMemAlloc( size_t amount )
 /***************************************/
 {
     void *  ret;
@@ -115,7 +111,7 @@ extern void * MemAlloc( unsigned amount )
     return( ret );
 }
 
-extern void MemFree( void *mem )
+extern void WPMemFree( void *mem )
 /******************************/
 {
     free( mem );
@@ -157,11 +153,11 @@ static void Usage( bool verbose )
 static void ProcPath( char **argv, arccmd *cmd )
 /**********************************************/
 {
-    int len;
+    size_t len;
 
     (*argv)++;
     len = strlen( *argv ) + 1;
-    cmd->u.path = MemAlloc( len );
+    cmd->u.path = WPMemAlloc( len );
     memcpy( cmd->u.path, *argv, len );
 }
 
@@ -181,7 +177,7 @@ static void SetCmdTime( arccmd *cmd )
     cmd->time = mktime( &timeval );
 }
 
-static wpackfile *AddFileName( wpackfile *list, char *fname, unsigned *listlen )
+static wpackfile *AddFileName( wpackfile *list, char *fname, size_t *listlen )
 /******************************************************************************/
 {
     char            *packname;
@@ -362,8 +358,8 @@ static void WriteNumber( unsigned long number, unsigned indent )
     WriteMsg( numstr );
 }
 
-extern void DisplayArchive( arccmd *cmd )
-/***************************************/
+extern int DisplayArchive( arccmd *cmd )
+/**************************************/
 {
     file_info **    filedata;
     file_info **    currfile;
@@ -403,17 +399,19 @@ extern void DisplayArchive( arccmd *cmd )
         WriteNumber( totaluncomp, 10 );
         WriteNumber( totalcomp, 11 );
     }
+    return( TRUE );
 }
 
-static void HandleError( arccmd *cmd )
-/************************************/
+static int HandleError( arccmd *cmd )
+/***********************************/
 {
     cmd = cmd;
     PackExit();
+    return( TRUE );
 }
 
-static void DeleteEntry( arccmd *cmd )
-/************************************/
+static int DeleteEntry( arccmd *cmd )
+/***********************************/
 {
     char            tempname[ L_tmpnam ];
     char            drive[_MAX_DRIVE];
@@ -433,7 +431,7 @@ static void DeleteEntry( arccmd *cmd )
     unsigned long   compressed;
     unsigned_16     num_left;
     unsigned        entrylen;
-    unsigned        namelen;
+    size_t          namelen;
 
     if( cmd->files == NULL  ||  cmd->files->filename ) {
         Error( -1, "No files to delete\n" );
@@ -523,9 +521,10 @@ static void DeleteEntry( arccmd *cmd )
         remove( cmd->arcname );
         rename( tmpfname, cmd->arcname );
     }
+    return( TRUE );
 }
 
-static void (*CmdJumpTable[])() = {
+static int (*CmdJumpTable[])(arccmd *) = {
     HandleError,
     Encode,
     Decode,

@@ -1,151 +1,192 @@
-//
-//  _comdef.h   Common Macro Definitions
-//
-:keep CPP_HDR
+/*
+ *  _comdef.h   Common Macro Definitions
+ *
 :include crwat.sp
-//
-#ifndef _COMDEF_H_INCLUDED
-#define _COMDEF_H_INCLUDED
+ */
+::
+:: IMPORTANT: The _W?RTLINK and _W?RTDATA macros are currently identical.
+:: Older versions used _W?RTLINK for both data and functions. However, it is
+:: thought that keeping data and functions separate is useful in case some
+:: target environment does, in fact, require different handling of public
+:: functions and data exported by the runtime. Same logic applies to separate
+:: _WCRT*/_WMRT*/_WPRT* (ie. C/math/C++) macros, which also currently expand
+:: to the same thing (in this header, but not C++ runtime internal headers).
+::
+::
+:: NB: When C compiler is uptodate, the _WRTLFCONV/_WRTLDCONV macros could
+:: be removed and replaced directly by __declspec. Note that it is possible
+:: to write __declspec(dllimport __watcall). On the other hand it might be
+:: useful to have _WRTLCONV and _WRTLEXIM macros to have access
+:: to calling conventions and export/import separately, for a few rare cases
+:: where special calling conventions are used.
+::
+::
+:: NB: bld/lib_misc/h/variety.h needs to be kept in sync with this file
+
+#ifndef __COMDEF_H_INCLUDED
+#define __COMDEF_H_INCLUDED
+
 :include readonly.sp
-  #ifdef _WCDATA
-    #error The macro _WCDATA is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCNEAR
-    #error The macro _WCNEAR is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCFAR
-    #error The macro _WCFAR is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCHUGE
-    #error The macro _WCHUGE is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCI86NEAR
-    #error The macro _WCI86NEAR is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCI86FAR
-    #error The macro _WCI86FAR is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCI86HUGE
-    #error The macro _WCI86HUGE is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCINTERRUPT
-    #error The macro _WCINTERRUPT is reserved for use by the runtime library.
-  #endif
-  #ifdef _WCUNALIGNED
-    #error The macro _WCUNALIGNED is reserved for use by the runtime library.
-  #endif
-  #if defined(_M_IX86)
-    #define _WCNEAR __near
-    #define _WCFAR __far
-    #define _WCHUGE __huge
-    #define _WCINTERRUPT __interrupt
-    #define _WCUNALIGNED
-    #if defined(__386__)
-      #define _WCI86NEAR
-      #define _WCI86FAR
-      #define _WCI86HUGE
-    #else
-      #define _WCI86NEAR __near
-      #define _WCI86FAR __far
-      #define _WCI86HUGE __huge
-    #endif
-:segment !QNX
-  #elif defined(__AXP__)
-    #define _WCNEAR
-    #define _WCFAR
-    #define _WCHUGE
-    #define _WCI86NEAR
-    #define _WCI86FAR
-    #define _WCI86HUGE
-    #define _WCINTERRUPT
-    #define _WCUNALIGNED __unaligned
-  #elif defined(__PPC__)
-    #define _WCNEAR
-    #define _WCFAR
-    #define _WCHUGE
-    #define _WCI86NEAR
-    #define _WCI86FAR
-    #define _WCI86HUGE
-    #define _WCINTERRUPT
-    #define _WCUNALIGNED __unaligned
+
+ #ifdef _WCDATA
+  #error The macro _WCDATA is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCNEAR
+  #error The macro _WCNEAR is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCFAR
+  #error The macro _WCFAR is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCHUGE
+  #error The macro _WCHUGE is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCI86NEAR
+  #error The macro _WCI86NEAR is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCI86FAR
+  #error The macro _WCI86FAR is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCI86HUGE
+  #error The macro _WCI86HUGE is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCINTERRUPT
+  #error The macro _WCINTERRUPT is reserved for use by the runtime library.
+ #endif
+ #ifdef _WCUNALIGNED
+  #error The macro _WCUNALIGNED is reserved for use by the runtime library.
+ #endif
+ #define _WRTLFCONV __declspec(__watcall)
+ #define _WRTLDCONV __declspec(__watcall)
+ #if defined(_M_IX86)
+  #define _WCNEAR __near
+  #define _WCFAR __far
+  #define _WCHUGE __huge
+  #define _WCINTERRUPT __interrupt
+  #define _WCUNALIGNED
+  #if defined(__386__)
+   #define _WCI86NEAR
+   #define _WCI86FAR
+   #define _WCI86HUGE
   #else
-    #define _WCNEAR
-    #define _WCFAR
-    #define _WCHUGE
-    #define _WCI86NEAR
-    #define _WCI86FAR
-    #define _WCI86HUGE
-    #define _WCINTERRUPT
-    #define _WCUNALIGNED
-:endsegment
+   #define _WCI86NEAR __near
+   #define _WCI86FAR __far
+   #define _WCI86HUGE __huge
   #endif
-  #if defined(M_I86MH)
-    #define _WCDATA _WCFAR
-  #elif defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
-    #define _WCDATA
-  #else
-    #define _WCDATA _WCNEAR
-  #endif
-:segment QNX
-  #define _WCRTLINK
-  #define _WCIRTLINK
-  #define _WMRTLINK
-  #define _WMIRTLINK
-  #define _WPRTLINK
-  #define _WPIRTLINK
+ #elif defined(__AXP__)
+  #define _WCNEAR
+  #define _WCFAR
+  #define _WCHUGE
+  #define _WCI86NEAR
+  #define _WCI86FAR
+  #define _WCI86HUGE
+  #define _WCINTERRUPT
+  #define _WCUNALIGNED __unaligned
+ #elif defined(__PPC__)
+  #define _WCNEAR
+  #define _WCFAR
+  #define _WCHUGE
+  #define _WCI86NEAR
+  #define _WCI86FAR
+  #define _WCI86HUGE
+  #define _WCINTERRUPT
+  #define _WCUNALIGNED __unaligned
+ #elif defined(__MIPS__)
+  #define _WCNEAR
+  #define _WCFAR
+  #define _WCHUGE
+  #define _WCI86NEAR
+  #define _WCI86FAR
+  #define _WCI86HUGE
+  #define _WCINTERRUPT
+  #define _WCUNALIGNED __unaligned
+ #else
+  #define _WCNEAR
+  #define _WCFAR
+  #define _WCHUGE
+  #define _WCI86NEAR
+  #define _WCI86FAR
+  #define _WCI86HUGE
+  #define _WCINTERRUPT
+  #define _WCUNALIGNED
+ #endif
+ #if defined(M_I86HM)
+  #define _WCDATA _WCFAR
+ #elif defined(__SW_ND) || defined(__FUNCTION_DATA_ACCESS)
+  #define _WCDATA
+ #else
+  #define _WCDATA _WCNEAR
+ #endif
+:segment QNX | LINUX
+ #define _WCRTLINK _WRTLFCONV
+ #define _WCRTDATA _WRTLDCONV
+ #define _WMRTLINK _WRTLFCONV
+ #define _WMRTDATA _WRTLDCONV
+ #define _WPRTLINK _WRTLFCONV
+ #define _WPRTDATA _WRTLDCONV
 :elsesegment
-  #if defined(__SW_BR)
-    #if defined(__NT__)
-      #define _WCRTLINK __declspec(dllimport)
-      #define _WMRTLINK __declspec(dllimport)
-      #define _WPRTLINK __declspec(dllimport)
-    #elif defined(__OS2__) && (defined(__386__) || defined(__PPC__))
-      #define _WCRTLINK
-      #define _WMRTLINK
-      #define _WPRTLINK
-    #else
-      #define _WCRTLINK
-      #define _WMRTLINK
-      #define _WPRTLINK
-    #endif
+ #if defined(__SW_BR)
+  #if defined(__NT__)
+   #define _WCRTLINK __declspec(dllimport) _WRTLFCONV
+   #define _WCRTDATA __declspec(dllimport) _WRTLDCONV
+   #define _WMRTLINK __declspec(dllimport) _WRTLFCONV
+   #define _WMRTDATA __declspec(dllimport) _WRTLDCONV
+   #define _WPRTLINK __declspec(dllimport) _WRTLFCONV
+   #define _WPRTDATA __declspec(dllimport) _WRTLDCONV
   #else
-    #ifndef _WCRTLINK
-      #define _WCRTLINK
-    #endif
-    #ifndef _WMRTLINK
-      #define _WMRTLINK
-    #endif
-    #ifndef _WPRTLINK
-      #define _WPRTLINK
-    #endif
+   #define _WCRTLINK _WRTLFCONV
+   #define _WCRTDATA _WRTLDCONV
+   #define _WMRTLINK _WRTLFCONV
+   #define _WMRTDATA _WRTLDCONV
+   #define _WPRTLINK _WRTLFCONV
+   #define _WPRTDATA _WRTLDCONV
   #endif
-  // control import modifier on intrinsic functions
-  #ifndef _WCIRTLINK
-    #if defined(__INLINE_FUNCTIONS__)
-      #define _WCIRTLINK
-    #else
-      #define _WCIRTLINK _WCRTLINK
-    #endif
+ #else
+  #ifndef _WCRTLINK
+   #define _WCRTLINK _WRTLFCONV
   #endif
-  #ifndef _WMIRTLINK
-    #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__)
-      #define _WMIRTLINK _WMRTLINK
-    #else
-      #define _WMIRTLINK
-    #endif
+  #ifndef _WCRTDATA
+   #define _WCRTDATA _WRTLDCONV
   #endif
-  #ifndef _WPIRTLINK
-    #define _WPIRTLINK _WPRTLINK
+  #ifndef _WMRTLINK
+   #define _WMRTLINK _WRTLFCONV
   #endif
+  #ifndef _WMRTDATA
+   #define _WMRTDATA _WRTLDCONV
+  #endif
+  #ifndef _WPRTLINK
+   #define _WPRTLINK _WRTLFCONV
+  #endif
+  #ifndef _WPRTDATA
+   #define _WPRTDATA _WRTLDCONV
+  #endif
+ #endif
 :endsegment
-  /* for MS compatibility */
-  #ifndef _CRTAPI1
-    #define _CRTAPI1
+ /* control import modifier on intrinsic functions */
+ #ifndef _WCIRTLINK
+  #if defined(__INLINE_FUNCTIONS__)
+   #define _WCIRTLINK _WRTLFCONV
+  #else
+   #define _WCIRTLINK _WCRTLINK
   #endif
-  #ifndef _CRTAPI2
-    #define _CRTAPI2
+ #endif
+ #ifndef _WMIRTLINK
+  #if defined(__NO_MATH_OPS) || defined(__AXP__) || defined(__PPC__)
+   #define _WMIRTLINK _WMRTLINK
+  #else
+   #define _WMIRTLINK _WRTLFCONV
   #endif
-  #ifndef _CRTIMP
-    #define _CRTIMP _WCRTLINK
-  #endif
+ #endif
+ #ifndef _WPIRTLINK
+  #define _WPIRTLINK _WPRTLINK
+ #endif
+ /* for MS compatibility */
+ #ifndef _CRTAPI1
+  #define _CRTAPI1
+ #endif
+ #ifndef _CRTAPI2
+  #define _CRTAPI2
+ #endif
+ #ifndef _CRTIMP
+  #define _CRTIMP _WCRTLINK
+ #endif
 #endif

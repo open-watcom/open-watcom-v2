@@ -1,0 +1,20 @@
+[ LOG wcrtl106.dat ]
+#-------- Header Information -----------------
+echo="% Saved by WATFILE/Plus V5.2a"
+echo="define type                 =  2   L"
+echo="define redist               =  1   L"
+echo="define directory            = 48   L"
+echo="define usr_file             = 18   L"
+echo="define rel_file             = 40   L"
+echo="define condition            = 88   L"
+echo="define pack_file            =  8   L"
+echo="define where                = 80   L"
+echo="define description          = 80   L"
+echo="define old_directory        = 48   L"
+echo="define patch_file           =  8   L"
+echo="bye"
+#-------- Header Information -----------------
+[ include clib.dat ]
+[ include cpplib.dat ]
+[ include mathlib.dat ]
+[ include watcomh.dat ]

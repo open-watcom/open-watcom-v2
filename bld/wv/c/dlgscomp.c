@@ -48,9 +48,9 @@ extern void     SymCompMatches( name_list *list, char *match, unsigned *pfirst, 
 static name_list *SortedNames;
 
 static DLGPICKTEXT SymGetName;
-static char *SymGetName( unsigned *first, int i )
+static char *SymGetName( void *first, int i )
 {
-    i += *first;
+    i += *(int *)first;
     if( i >= NameListNumRows( SortedNames ) ) return( NULL );
     NameListName( SortedNames, i, TxtBuff, SN_QUALIFIED );
     return( TxtBuff );

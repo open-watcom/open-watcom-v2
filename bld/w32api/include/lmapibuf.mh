@@ -1,0 +1,23 @@
+/*
+ *  lmapibuf.h  LAN Manager API buffer functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMAPIBUF_
+#define _LMAPIBUF_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Functions in NETAPI32.DLL */
+NET_API_STATUS NET_API_FUNCTION NetApiBufferAllocate( DWORD, LPVOID * );
+NET_API_STATUS NET_API_FUNCTION NetApiBufferFree( LPVOID );
+NET_API_STATUS NET_API_FUNCTION NetApiBufferReallocate( LPVOID, DWORD, LPVOID * );
+NET_API_STATUS NET_API_FUNCTION NetApiBufferSize( LPVOID, LPDWORD );
+NET_API_STATUS NET_API_FUNCTION NetapipBufferAllocate( DWORD, LPVOID * );
+
+:include cplusepi.sp
+
+#endif /* _LMAPIBUF_ */

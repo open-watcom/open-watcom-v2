@@ -33,14 +33,6 @@
 #include "dbgitem.h"
 #include "madtypes.h"
 
-/*
-    Some trickyness here. The symbol brk is defined as a function in the
-    QNX version of stdlib, but it's a type in the debugger. Sigh.
-*/
-#ifdef __QNX__
-    #define brk break_point
-#endif
-
 typedef struct
 {
     unsigned    active : 1;
@@ -69,7 +61,7 @@ typedef struct
 
 #define NullStatus( b ) memset( &((b)->status), 0, sizeof( (b)->status ) )
 
-typedef struct brk {
+typedef struct brkp {
         mappable_addr   loc;
         item_mach       item;   /* opcode in break points */
         mad_type_handle th;     /* how to format data item */
@@ -79,7 +71,7 @@ typedef struct brk {
         int             index;
         long            total_hits;
         long            countdown;
-        struct brk      *next;
+        struct brkp     *next;
         char            *condition;
         char            *error;
         char            *source_line;
@@ -92,4 +84,4 @@ typedef struct brk {
         char    *sym_name;
         long    cue_diff;
         long    addr_diff;
-} brk;
+} brkp;

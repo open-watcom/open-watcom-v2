@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NetBIOS remote trap file core.
 *
 ****************************************************************************/
 
@@ -36,22 +35,39 @@
 #if defined( __OS2__ )
 #define INCL_DOSMODULEMGR
 #include <os2.h>
+    #if defined( __386__ )
+    #define far
+    #endif
+#elif defined( __NT__ )
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    /* Don't actually include nb30.h because of conflicting definitions. */
+    #pragma library( "netapi32.lib" )
 #else
 #include "tinyio.h"
 #endif
-#include "netbios.h"
+#include "wnetbios.h"
 #include "trperr.h"
 #include "packet.h"
 
 #if defined( __OS2__ )
-
-int pascal (far *NetBiosSubmit)( int, int, NCB far * );
+    #if defined( __386__ )
+    unsigned short _System (*NetBiosSubmit)( unsigned short, unsigned short, NCB * );
+    #else
+        int pascal (far *NetBiosSubmit)( int, int, NCB far * );
+    #endif
 #define NetBIOS( x ) (NetBiosSubmit)( 0, 0, (x) )
 
 extern unsigned char pascal far NetBiosOpen( char far *, char far *,
                                              unsigned, int far *);
 
+#elif defined( __NT__ )
+
+UCHAR APIENTRY Netbios( NCB * );
+#define NetBIOS( x )    Netbios( (x) )
+
 #elif defined( __WINDOWS__ )
+
 #define NetBIOS( x ) NetBIOSCall( x )
 
 extern unsigned char far NetBIOSCall( NCB far * );
@@ -63,12 +79,47 @@ extern unsigned char far NetBIOSCall( NCB far * );
 extern unsigned char NetBIOS( NCB far * );
 #pragma aux NetBIOS = 0xcd NET_BIOS_INT parm [es bx] value [al];
 
+extern tiny_dos_version GetTrueDOSVersion( void );
+#pragma aux GetTrueDOSVersion = \
+    "mov    ax,3306h"               \
+    "int    21h"                    \
+    value [bx] modify exact [ax bx dx];
+
 #endif
 
-NCB         NetCtlBlk;
+NCB             NetCtlBlk;
+unsigned char   LanaNum;
+int             SkipEnum;
 
+/* On traditional NetBIOS 3.0 implementations, only lana numbers 0 and 1 are
+ * valid, and lana 0 is almost guaranteed to be the one we want. On Windows NT,
+ * things aren't so simple and there's a good chance lana number 0 cannot
+ * be used. NT provides an ENUM command which provides a list of the available
+ * lana numbers.
+ *
+ * Of course Microsoft had to go and make people's lives more complicated by
+ * requiring DOS applications to use lana enumeration when running under NT
+ * but having their own DOS client blow up when the ENUM NCB is submitted on
+ * plain DOS. Sigh. We detect running under NT and behave accordingly.
+ */
+unsigned char GetLanaNum( void )
+{
+    LANA_ENUM   l_enum;
 
-unsigned RemoteGet( void far *rec, unsigned len )
+    if( !SkipEnum ) {
+        memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
+        NetCtlBlk.buff = &l_enum;
+        NetCtlBlk.length = sizeof( l_enum );
+        NetCtlBlk.cmd = NET_ENUM;
+        NetBIOS( &NetCtlBlk );
+        if( (NetCtlBlk.ret_code == NET_RC_OK) && l_enum.length ) {
+            return( l_enum.lana[0] );
+        }
+    }
+    return( 0 );    /* Default if not running on NT. */
+}
+
+unsigned RemoteGet( char *rec, unsigned len )
 {
     NetCtlBlk.buff = rec;
     NetCtlBlk.length = len;
@@ -77,7 +128,7 @@ unsigned RemoteGet( void far *rec, unsigned len )
     return( NetCtlBlk.length );
 }
 
-unsigned RemotePut( void far *rec, unsigned len )
+unsigned RemotePut( char *rec, unsigned len )
 {
     NetCtlBlk.buff = rec;
     NetCtlBlk.length = len;
@@ -86,7 +137,7 @@ unsigned RemotePut( void far *rec, unsigned len )
     return( NetCtlBlk.length );
 }
 
-static char PostListen()
+static char PostListen( void )
 {
     NetCtlBlk.cmd = NET_LISTEN | NET_NOWAIT;
     return( NetBIOS( &NetCtlBlk ) == 0 );
@@ -96,13 +147,13 @@ char RemoteConnect( void )
 {
 #ifdef SERVER
     if( NetCtlBlk.cmd_cmplt != 0xff ) {
-        if( NetCtlBlk.ret_code == 0 ) return( 1 );
+        if( NetCtlBlk.ret_code == NET_RC_OK ) return( 1 );
         PostListen();
     }
 #else
     NetCtlBlk.cmd = NET_CALL;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code == 0 ) return( 1 );
+    if( NetCtlBlk.ret_code == NET_RC_OK ) return( 1 );
 #endif
     return( 0 );
 }
@@ -119,46 +170,86 @@ void RemoteDisco( void )
 char            DefLinkName[] = "NetLink";
 static char     NotThere[] = TRP_ERR_NetBIOS_is_not_running ;
 
-char *RemoteLink( char far *name, char server )
+char *RemoteLink( char *name, char server )
 {
     unsigned    i;
 
     server = server;
     if( name == NULL || *name == '\0' ) name = DefLinkName;
-    for( i = 1; i < MAX_NAME_LEN; ++i ) {
-        NetCtlBlk.name[i] = (*name != '\0') ? *name++ : ' ';
-    }
-    NetCtlBlk.name[0] = server ? 'S' : 'C';
-#ifdef __OS2__
-    {
-        HMODULE hmod;
+#if defined(__OS2__)
+    #if defined(__386__)
+        {
+            HMODULE hmod;
 
-        if( DosLoadModule( NULL, 0, "NETAPI", &hmod ) != 0 ) {
-            return( NotThere );
+            if( DosLoadModule( NULL, 0, "NETAPI32", &hmod ) != 0 ) {
+                return( NotThere );
+            }
+            if( DosQueryProcAddr( hmod, 0, "NetBios32Submit", (PFN*)&NetBiosSubmit ) != 0 ) {
+                return( NotThere );
+            }
         }
-        if( DosGetProcAddr( hmod, "NETBIOSSUBMIT", &NetBiosSubmit ) != 0 ) {
-            return( NotThere );
-        }
-    }
-#elif !defined( __WINDOWS__ )
-    {
-    unsigned    char far *net_bios;
+    #else
+        {
+            HMODULE hmod;
 
-        net_bios = (void far *)TinyGetVect( NET_BIOS_INT );
+            if( DosLoadModule( NULL, 0, "NETAPI", &hmod ) != 0 ) {
+                return( NotThere );
+            }
+            if( DosGetProcAddr( hmod, "NETBIOSSUBMIT", &NetBiosSubmit ) != 0 ) {
+                return( NotThere );
+            }
+        }
+    #endif
+#elif !defined( __WINDOWS__ ) && !defined( __NT__ )
+    {
+        unsigned    char    *net_bios;
+        tiny_dos_version    dos_ver;
+        int                 is_nt = 0;
+
+        net_bios = (void *)TinyGetVect( NET_BIOS_INT );
         if( net_bios == 0 || *net_bios == 0xcf ) {
             return( NotThere );
         }
+
+        /* Check if running under NT; based on MS KB 100290. */
+        dos_ver = GetTrueDOSVersion();
+        if( dos_ver.major == 5 && dos_ver.minor == 50 )
+            is_nt = 1;
+        if( !is_nt )
+            SkipEnum = 1;
     }
 #endif
     NetCtlBlk.cmd = NET_INVALID_CMD;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code == 0 ) {
+    if( NetCtlBlk.ret_code != NET_RC_ILLCMD ) {
         return( NotThere );
     }
-    NetCtlBlk.cmd = NET_ADD_NAME;
+
+    LanaNum = GetLanaNum();
+
+    /* NetBIOS reset is required on NT, but kills connections on DOS. */
+#ifdef __NT__
+    memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
+    NetCtlBlk.cmd = NET_RESET;
+    NetCtlBlk.lana_num = LanaNum;
     NetBIOS( &NetCtlBlk );
-    if( NetCtlBlk.ret_code != 0 ) {
+    if( NetCtlBlk.ret_code != NET_RC_OK ) {
+        return( NotThere );
+    }
+#endif
+
+    memset( &NetCtlBlk, 0, sizeof( NetCtlBlk ) );
+    for( i = 1; i < MAX_NAME_LEN; ++i ) {
+        NetCtlBlk.name[i] = (*name != '\0') ? *name++ : ' ';
+    }
+    NetCtlBlk.name[0] = server ? 'S' : 'C';
+    NetCtlBlk.cmd = NET_ADD_NAME;
+    NetCtlBlk.lana_num = LanaNum;
+    NetBIOS( &NetCtlBlk );
+    if( NetCtlBlk.ret_code == NET_RC_DUPNAME || NetCtlBlk.ret_code == NET_RC_INUSE ) {
         return( TRP_ERR_server_name_already_in_use );
+    } else if( NetCtlBlk.ret_code != NET_RC_OK ) {
+        return( TRP_ERR_NetBIOS_name_add_failed ); 
     }
     memcpy( NetCtlBlk.call_name, NetCtlBlk.name, MAX_NAME_LEN );
     NetCtlBlk.call_name[0] = !server ? 'S' : 'C';
@@ -176,7 +267,7 @@ void RemoteUnLink( void )
     if( NetCtlBlk.cmd_cmplt == 0xff ) {
         cancel.cmd = NET_CANCEL;
         cancel.buff = &NetCtlBlk;
-        cancel.lana_num = 0;
+        cancel.lana_num = LanaNum;
         cancel.post = 0;
         NetBIOS( &cancel );
     }

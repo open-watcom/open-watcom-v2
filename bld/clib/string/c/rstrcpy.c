@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strcpy() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -38,27 +37,27 @@
 CHAR_TYPE *__F_NAME(strcpy,wcscpy)( CHAR_TYPE *dest, const CHAR_TYPE *src )
 /*************************************************************************/
 {
-    CHAR_TYPE *         destStart = dest;
-    UINT *              dwSrc;
-    UINT *              dwDest;
+    CHAR_TYPE           *destStart = dest;
+    UINT                *dwSrc;
+    UINT                *dwDest;
     UINT                dword, tmpdword;
     CHAR_TYPE           ch;
     int                 shl, shr;
     int                 offset = OFFSET(dest);
 
-    #ifdef __WIDECHAR__
-        if( offset % 2  ||  OFFSET(src) % 2 ) {
-            return( __simple_wcscpy( dest, src ) );
-        }
-    #endif
+#ifdef __WIDECHAR__
+    if( offset % 2  ||  OFFSET(src) % 2 )
+        return( __simple_wcscpy( dest, src ) );
+#endif
 
     /*** Copy any unaligned bytes at the start (align dest pointer) ***/
     while( offset != 0 ) {
         ch = *src;
-        if( ch == NULLCHAR )  return( destStart );
+        if( ch == NULLCHAR )
+            return( destStart );
         *dest++ = ch;
         src++;
-        offset = MOD_BYTES_PER_WORD(offset+CHARSIZE); /* find new offset */
+        offset = MOD_BYTES_PER_WORD(offset + CHARSIZE); /* find new offset */
     }
 
     /*** Initialize locals ***/
@@ -90,31 +89,31 @@ CHAR_TYPE *__F_NAME(strcpy,wcscpy)( CHAR_TYPE *dest, const CHAR_TYPE *src )
     }
 
     /*** There's a null char somewhere in the last dword ***/
-    #ifdef __WIDECHAR__
-        if( !CHR1(tmpdword) ) {                 /* copy 1 char */
-            dword = *dwDest & ~(CHR1MASK);
-            tmpdword &= (CHR1MASK);
-            *dwDest = dword | tmpdword;
-        } else {                                /* copy 2 chars */
-            *dwDest = tmpdword;
-        }
-    #else
-        if( CHR1(tmpdword) == '\0' ) {          /* copy 1 byte */
-            dword = *dwDest & ~(BYTE1);
-            tmpdword &= (BYTE1);
-            *dwDest = dword | tmpdword;
-        } else if( CHR2(tmpdword) == '\0' ) {   /* copy 2 bytes */
-            dword = *dwDest & ~(BYTE1|BYTE2);
-            tmpdword &= (BYTE1|BYTE2);
-            *dwDest = dword | tmpdword;
-        } else if( CHR3(tmpdword) == '\0' ) {   /* copy 3 bytes */
-            dword = *dwDest & ~(BYTE1|BYTE2|BYTE3);
-            tmpdword &= (BYTE1|BYTE2|BYTE3);
-            *dwDest = dword | tmpdword;
-        } else {                                /* copy 4 bytes */
-            *dwDest = tmpdword;
-        }
-    #endif
+#ifdef __WIDECHAR__
+    if( !CHR1(tmpdword) ) {                 /* copy 1 char */
+        dword = *dwDest & ~(CHR1MASK);
+        tmpdword &= (CHR1MASK);
+        *dwDest = dword | tmpdword;
+    } else {                                /* copy 2 chars */
+        *dwDest = tmpdword;
+    }
+#else
+    if( CHR1(tmpdword) == '\0' ) {          /* copy 1 byte */
+        dword = *dwDest & ~(BYTE1);
+        tmpdword &= (BYTE1);
+        *dwDest = dword | tmpdword;
+    } else if( CHR2(tmpdword) == '\0' ) {   /* copy 2 bytes */
+        dword = *dwDest & ~(BYTE1|BYTE2);
+        tmpdword &= (BYTE1|BYTE2);
+        *dwDest = dword | tmpdword;
+    } else if( CHR3(tmpdword) == '\0' ) {   /* copy 3 bytes */
+        dword = *dwDest & ~(BYTE1|BYTE2|BYTE3);
+        tmpdword &= (BYTE1|BYTE2|BYTE3);
+        *dwDest = dword | tmpdword;
+    } else {                                /* copy 4 bytes */
+        *dwDest = tmpdword;
+    }
+#endif
 
     return( destStart );
 }

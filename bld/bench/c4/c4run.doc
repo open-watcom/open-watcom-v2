@@ -1,0 +1,85 @@
+	      PROGRAM: Fhourstones 1.0
+ 
+ MACHINE/SYSTEM/MODEL:
+		  CPU:
+CPU CLOCK SPEED (MHz):
+	OS/OS-VERSION:
+     COMPILER/VERSION:
+     COMPILER OPTIONS: 
+		    
+	     COMMENTS:
+
+		 NAME:
+		 DATE:
+	EMAIL ADDRESS:
+
+	      RESULTS:
+
+Fhourstones 1.0
+gcc 2.4.5, gcc -DUNIX -DSMALL -O
+options:   -DUNIX -DSMALL -O 
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 88.8 sec = 43.6 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765	376940	173046	174816	121323	 70603	 38079	 19252
+  9741	  4853	  2393	  1147	   537	   291	   116	    54
+    30	    16	     3	     2	     3	     1	     0	     0
+     0	     0	     0	     0	     0	     0	     0	     0
+
+
+Fhourstones 1.0
+gcc 2.4.5, gcc -DUNIX -DSMALL -O2
+options:    small ints
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 82.9 sec = 46.7 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765	376940	173046	174816	121323	 70603	 38079	 19252
+  9741	  4853	  2393	  1147	   537	   291	   116	    54
+    30	    16	     3	     2	     3	     1	     0	     0
+     0	     0	     0	     0	     0	     0	     0	     0
+
+
+Fhourstones 1.0
+gcc 2.4.5, gcc -DUNIX -DSMALL -O2 -fomit-frame-pointer
+options:    small ints
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 83.0 sec = 46.7 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765	376940	173046	174816	121323	 70603	 38079	 19252
+  9741	  4853	  2393	  1147	   537	   291	   116	    54
+    30	    16	     3	     2	     3	     1	     0	     0
+     0	     0	     0	     0	     0	     0	     0	     0
+
+
+Fhourstones 1.0
+gcc 2.4.5, gcc -DUNIX -DSMALL -O2 -finline-functions
+options:    small ints
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 83.2 sec = 46.6 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765	376940	173046	174816	121323	 70603	 38079	 19252
+  9741	  4853	  2393	  1147	   537	   291	   116	    54
+    30	    16	     3	     2	     3	     1	     0	     0
+     0	     0	     0	     0	     0	     0	     0	     0
+
+
+Fhourstones 1.0
+gcc 2.4.5, gcc -DUNIX -DSMALL -O2 -funroll-loops
+options:    small ints
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 82.3 sec = 47.0 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765	376940	173046	174816	121323	 70603	 38079	 19252
+  9741	  4853	  2393	  1147	   537	   291	   116	    54
+    30	    16	     3	     2	     3	     1	     0	     0
+     0	     0	     0	     0	     0	     0	     0	     0

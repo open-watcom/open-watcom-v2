@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate include file containing messages for GUI lib.
 *
 ****************************************************************************/
 
@@ -52,7 +51,7 @@ int main( int argc, char *argv[] )
     }
 
     #undef guipick
-    #define guipick( a,b,c ) printf( "#define GUI_LITERAL_%s %d\n", #a, GUI_LITERAL_##a + modifier );
+    #define guipick( a,b,c ) printf( "#define GUI_LITERAL_%s %ld\n", #a, GUI_LITERAL_##a + modifier );
     #include "gui.msg"
     return( 0 );
 }

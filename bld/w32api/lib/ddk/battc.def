@@ -1,0 +1,8 @@
+LIBRARY BATTC.SYS
+EXPORTS
+BatteryClassInitializeDevice@8
+BatteryClassIoctl@8
+BatteryClassQueryWmiDataBlock@28
+BatteryClassStatusNotify@4
+BatteryClassSystemControl@20
+BatteryClassUnload@4

@@ -42,7 +42,7 @@
         static char *nexttok = NULL;
         #define _NEXTTOK nexttok
     #endif
-#elif !defined(__PENPOINT__)
+#else
     static char *nexttok = NULL;
     #define _NEXTTOK nexttok
 #endif

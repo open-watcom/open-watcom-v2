@@ -1,0 +1,635 @@
+/*
+ *  ntddcdvd.h  DVD device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDDCDVD_
+#define _NTDDCDVD_
+
+:include readonly.sp
+
+#include <ntddstor.h>
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef ULONG       DVD_SESSION_ID;
+typedef ULONG       *PDVD_SESSION_ID;
+typedef ULONG       AACS_LAYER_NUMBER;
+typedef ULONG       *PAACS_LAYER_NUMBER;
+typedef const ULONG CAACS_LAYER_NUMBER;
+typedef const ULONG *PCAACS_LAYER_NUMBER;
+
+/* DVD device I/O control codes */
+#define IOCTL_DVD_BASE  FILE_DEVICE_DVD
+#define IOCTL_DVD_START_SESSION \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_READ_KEY \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_SEND_KEY \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0402, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_END_SESSION \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0403, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_SET_READ_AHEAD \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0404, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_GET_REGION \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0405, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_DVD_SEND_KEY2 \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0406, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_AACS_READ_MEDIA_KEY_BLOCK_SIZE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0430, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_READ_MEDIA_KEY_BLOCK \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0431, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_START_SESSION \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0432, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_END_SESSION \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0433, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_SEND_CERTIFICATE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0434, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_GET_CERTIFICATE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0435, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_GET_CHALLENGE_KEY \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0436, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_SEND_CHALLENGE_KEY \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0437, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_READ_VOLUME_ID \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0438, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_READ_SERIAL_NUMBER \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0439, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_READ_MEDIA_ID \
+    CTL_CODE( IOCTL_DVD_BASE, 0x043A, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_READ_BINDING_NONCE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x043B, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_AACS_GENERATE_BINDING_NONCE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x043C, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_DVD_READ_STRUCTURE \
+    CTL_CODE( IOCTL_DVD_BASE, 0x0450, METHOD_BUFFERED, FILE_READ_ACCESS )
+
+/* Storage device I/O control codes */
+#define IOCTL_STORAGE_SET_READ_AHEAD \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0100, METHOD_BUFFERED, FILE_READ_ACCESS )
+
+/* DVD session identifier special value */
+#define DVD_END_ALL_SESSIONS    ((DVD_SESSION_ID)0xFFFFFFFFL)
+
+/* DVD copy protection flags */
+#define DVD_CGMS_COPY_PROTECT_MASK  0x00000018L
+#define DVD_CGMS_COPY_PERMITTED     0x00000000L
+#define DVD_CGMS_COPY_ONCE          0x00000010L
+#define DVD_CGMS_NO_COPY            0x00000018L
+#define DVD_COPYRIGHT_MASK          0x00000040L
+#define DVD_NOT_COPYRIGHTED         0x00000000L
+#define DVD_COPYRIGHTED             0x00000040L
+#define DVD_SECTOR_PROTECT_MASK     0x00000020L
+#define DVD_SECTOR_NOT_PROTECTED    0x00000000L
+#define DVD_SECTOR_PROTECTED        0x00000020L
+
+/* DVD key types */
+typedef enum {
+    DvdChallengeKey     = 0x01,
+    DvdBusKey1          = 0x02,
+    DvdBusKey2          = 0x03,
+    DvdTitleKey         = 0x04,
+    DvdAsf              = 0x05,
+    DvdSetRpcKey        = 0x06,
+    DvdGetRpcKey        = 0x08,
+    DvdDiskKey          = 0x80,
+    DvdInvalidateAGID   = 0x3F
+} DVD_KEY_TYPE;
+
+/* The following structures get one-byte packing. */
+#include <pshpack1.h>
+
+/* DVD copy protect key */
+typedef struct _DVD_COPY_PROTECT_KEY {
+    ULONG           KeyLength;
+    DVD_SESSION_ID  SessionId;
+    DVD_KEY_TYPE    KeyType;
+    ULONG           KeyFlags;
+    union {
+        HANDLE          FileHandle;
+        LARGE_INTEGER   TitleOffset;
+    } Parameters;
+    UCHAR           KeyData[1];
+} DVD_COPY_PROTECT_KEY;
+typedef DVD_COPY_PROTECT_KEY    *PDVD_COPY_PROTECT_KEY;
+
+/* IOCTL_STORAGE_SET_READ_AHEAD parameters */
+typedef struct _STORAGE_SET_READ_AHEAD {
+    LARGE_INTEGER   TriggerAddress;
+    LARGE_INTEGER   TargetAddress;
+} STORAGE_SET_READ_AHEAD;
+typedef STORAGE_SET_READ_AHEAD  *PSTORAGE_SET_READ_AHEAD;
+
+/* DVD structure formats */
+typedef enum DVD_STRUCTURE_FORMAT {
+    DvdPhysicalDescriptor       = 0,
+    DvdCopyrightDescriptor      = 1,
+    DvdDiskKeyDescriptor        = 2,
+    DvdBCADescriptor            = 3,
+    DvdManufacturerDescriptor   = 4,
+    DvdMaxDescriptor            = 5
+} DVD_STRUCTURE_FORMAT;
+typedef DVD_STRUCTURE_FORMAT    *PDVD_STRUCTURE_FORMAT;
+
+/* DVD read structure */
+typedef struct DVD_READ_STRUCTURE {
+    LARGE_INTEGER           BlockByteOffset;
+    DVD_STRUCTURE_FORMAT    Format;
+    DVD_SESSION_ID          SessionId;
+    UCHAR                   LayerNumber;
+} DVD_READ_STRUCTURE;
+typedef DVD_READ_STRUCTURE  *PDVD_READ_STRUCTURE;
+
+/* DVD descriptor header */
+typedef struct _DVD_DESCRIPTOR_HEADER {
+    USHORT  Length;
+    UCHAR   Reserved[2];
+    UCHAR   Data[1];
+} DVD_DESCRIPTOR_HEADER;
+typedef DVD_DESCRIPTOR_HEADER   *PDVD_DESCRIPTOR_HEADER;
+
+/* DVD layer descriptor */
+typedef struct _DVD_LAYER_DESCRIPTOR {
+    UCHAR   BookVersion     : 4;
+    UCHAR   BookType        : 4;
+    UCHAR   MinimumRate     : 4;
+    UCHAR   DiskSize        : 4;
+    UCHAR   LayerType       : 4;
+    UCHAR   TrackPath       : 1;
+    UCHAR   NumberOfLayers  : 2;
+    UCHAR   Reserved1       : 1;
+    UCHAR   TrackDensity    : 4;
+    UCHAR   LinearDensity   : 4;
+    ULONG   StartingDataSector;
+    ULONG   EndDataSector;
+    ULONG   EndLayerZeroSector;
+    UCHAR   Reserved5       : 7;
+    UCHAR   BCAFlag         : 1;
+} DVD_LAYER_DESCRIPTOR;
+typedef DVD_LAYER_DESCRIPTOR    *PDVD_LAYER_DESCRIPTOR;
+
+/* DVD full layer descriptor */
+typedef struct _DVD_FULL_LAYER_DESCRIPTOR {
+    DVD_LAYER_DESCRIPTOR    commonHeader;
+    UCHAR                   MediaSpecific[2031];
+} DVD_FULL_LAYER_DESCRIPTOR;
+typedef DVD_FULL_LAYER_DESCRIPTOR   *PDVD_FULL_LAYER_DESCRIPTOR;
+
+/* DVD copyright descriptor */
+typedef struct _DVD_COPYRIGHT_DESCRIPTOR {
+    UCHAR   CopyrightProtectionType;
+    UCHAR   RegionManagementInformation;
+    USHORT  Reserved;
+} DVD_COPYRIGHT_DESCRIPTOR;
+typedef DVD_COPYRIGHT_DESCRIPTOR    *PDVD_COPYRIGHT_DESCRIPTOR;
+
+/* DVD disk key descriptor */
+typedef struct _DVD_DISK_KEY_DESCRIPTOR {
+    UCHAR   DiskKeyData[2048];
+} DVD_DISK_KEY_DESCRIPTOR;
+typedef DVD_DISK_KEY_DESCRIPTOR *PDVD_DISK_KEY_DESCRIPTOR;
+
+/* DVD BCA descriptor */
+typedef struct _DVD_BCA_DESCRIPTOR {
+    UCHAR   BCAInformation[1];
+} DVD_BCA_DESCRIPTOR;
+typedef DVD_BCA_DESCRIPTOR  *PDVD_BCA_DESCRIPTOR;
+
+/* DVD manufacturer descriptor */
+typedef struct _DVD_MANUFACTURER_DESCRIPTOR {
+    UCHAR   ManufacturingInformation[2048];
+} DVD_MANUFACTURER_DESCRIPTOR;
+typedef DVD_MANUFACTURER_DESCRIPTOR *PDVD_MANUFACTURER_DESCRIPTOR;
+
+/* DVD copyright management descriptor */
+typedef struct _DVD_COPYRIGHT_MANAGEMENT_DESCRIPTOR {
+    union {
+        struct {
+            UCHAR   CopyProtectionMode                  : 4;
+            UCHAR   ContentGenerationManagementSystem   : 2;
+            UCHAR   CopyProtectedSector                 : 1;
+            UCHAR   CopyProtectedMaterial               : 1;
+        } Dvdrom;
+        struct {
+            UCHAR   Reserved0001                        : 4;
+            UCHAR   ContentGenerationManagementSystem   : 2;
+            UCHAR   Reserved0002                        : 1;
+            UCHAR   CopyProtectedMaterial               : 1;
+        } DvdRecordable_Version1;
+        struct {
+            UCHAR   Reserved0003;
+        } Dvdram;
+        struct {
+            UCHAR   Reserved0004    : 2;
+            UCHAR   ADP_TY          : 2;
+            UCHAR   Reserved0005    : 4;
+        } DvdRecordable;
+        UCHAR   CPR_MAI;
+    };
+    UCHAR   Reserved0[3];
+} DVD_COPYRIGHT_MANAGEMENT_DESCRIPTOR;
+typedef DVD_COPYRIGHT_MANAGEMENT_DESCRIPTOR *PDVD_COPYRIGHT_MANAGEMENT_DESCRIPTOR;
+
+/* DVD-RAM medium status */
+typedef struct _DVD_RAM_MEDIUM_STATUS {
+    UCHAR   Reserved0                   : 1;
+    UCHAR   PersistentWriteProtect      : 1;
+    UCHAR   CartridgeWriteProtect       : 1;
+    UCHAR   MediaSpecificWriteInhibit   : 1;
+    UCHAR   Reserved1                   : 2;
+    UCHAR   CartridgeNotSealed          : 1;
+    UCHAR   MediaInCartridge            : 1;
+    UCHAR   DiscTypeIdentification;
+    UCHAR   Reserved2;
+    UCHAR   MediaSpecificWriteInhibitInformation;
+} DVD_RAM_MEDIUM_STATUS;
+typedef DVD_RAM_MEDIUM_STATUS   *PDVD_RAM_MEDIUM_STATUS;
+
+/* DVD-RAM spare area information */
+typedef struct _DVD_RAM_SPARE_AREA_INFORMATION {
+    UCHAR   FreePrimarySpareSectors[4];
+    UCHAR   FreeSupplementalSpareSectors[4];
+    UCHAR   AllocatedSupplementalSpareSectors[4];
+} DVD_RAM_SPARE_AREA_INFORMATION;
+typedef DVD_RAM_SPARE_AREA_INFORMATION  *PDVD_RAM_SPARE_AREA_INFORMATION;
+
+/* DVD-RAM recording types */
+typedef struct _DVD_RAM_RECORDING_TYPE {
+    UCHAR   Reserved0       : 4;
+    UCHAR   RealTimeData    : 1;
+    UCHAR   Reserved1       : 3;
+    UCHAR   Reserved2[3];
+} DVD_RAM_RECORDING_TYPE;
+typedef DVD_RAM_RECORDING_TYPE  *PDVD_RAM_RECORDING_TYPE;
+
+/* DVD recording management area data */
+typedef struct _DVD_RECORDING_MANAGEMENT_AREA_DATA {
+    UCHAR   LastRecordedRMASectorNumber[4];
+    UCHAR   RMDBytes[1];
+} DVD_RECORDING_MANAGEMENT_AREA_DATA;
+typedef DVD_RECORDING_MANAGEMENT_AREA_DATA  *PDVD_RECORDING_MANAGEMENT_AREA_DATA;
+
+/* DVD prerecorded information */
+typedef struct _DVD_PRERECORDED_INFORMATION {
+    UCHAR   FieldID_1;
+    UCHAR   DiscApplicationCode;
+    UCHAR   DiscPhysicalCode;
+    UCHAR   LastAddressOfDataRecordableArea[3];
+    UCHAR   ExtensionCode   : 4;
+    UCHAR   PartVers1on     : 4;
+    UCHAR   Reserved0;
+    UCHAR   FieldID_2;
+    UCHAR   OpcSuggestedCode;
+    UCHAR   WavelengthCode;
+    UCHAR   WriteStrategyCode[4];
+    UCHAR   Reserved2;
+    UCHAR   FieldID_3;
+    UCHAR   ManufacturerId_3[6];
+    UCHAR   Reserved3;
+    UCHAR   FieldID_4;
+    UCHAR   ManufacturerId_4[6];
+    UCHAR   Reserved4;
+    UCHAR   FieldID_5;
+    UCHAR   ManufacturerId_5[6];
+    UCHAR   Reserved5;
+    UCHAR   Reserved99[24];
+} DVD_PRERECORDED_INFORMATION;
+typedef DVD_PRERECORDED_INFORMATION *PDVD_PRERECORDED_INFORMATION;
+
+/* DVD unique disc identifier */
+typedef struct _DVD_UNIQUE_DISC_IDENTIFIER {
+    UCHAR   Reserved0[2];
+    UCHAR   RandomNumber[2];
+    UCHAR   Year[4];
+    UCHAR   Month[2];
+    UCHAR   Day[2];
+    UCHAR   Hour[2];
+    UCHAR   Minute[2];
+    UCHAR   Second[2];
+} DVD_UNIQUE_DISC_INFORMATION;
+typedef DVD_UNIQUE_DISC_INFORMATION *PDVD_UNIQUE_DISC_INFORMATION;
+
+/* HD DVD-R medium status */
+typedef struct _HD_DVD_R_MEDIUM_STATUS {
+    UCHAR   ExtendedTestZone    : 1;
+    UCHAR   Reserved1           : 7;
+    UCHAR   NumberOfRemainingRMDsInRDZ;
+    UCHAR   NumberOfRemainingRMDsInCurrentRMZ[2];
+} HD_DVD_R_MEDIUM_STATUS;
+typedef HD_DVD_R_MEDIUM_STATUS  *PHD_DVD_R_MEDIUM_STATUS;
+
+/* DVD dual layer recording information */
+typedef struct _DVD_DUAL_LAYER_RECORDING_INFORMATION {
+    UCHAR   Reserved0               : 7;
+    UCHAR   Layer0SectorsImmutable  : 1;
+    UCHAR   Reserved1[3];
+    UCHAR   Layer0Sectors[4];
+} DVD_DUAL_LAYER_RECORDING_INFORMATION;
+typedef DVD_DUAL_LAYER_RECORDING_INFORMATION    *PDVD_DUAL_LAYER_RECORDING_INFORMATION;
+
+/* DVD dual layer middle zone start address */
+typedef struct _DVD_DUAL_LAYER_MIDDLE_ZONE_START_ADDRESS {
+    UCHAR   Reserved0   : 7;
+    UCHAR   InitStatus  : 1;
+    UCHAR   Reserved1[3];
+    UCHAR   ShiftedMiddleAreaStartAddress[4];
+} DVD_DUAL_LAYER_MIDDLE_ZONE_START_ADDRESS;
+typedef DVD_DUAL_LAYER_MIDDLE_ZONE_START_ADDRESS    *PDVD_DUAL_LAYER_MIDDLE_ZONE_START_ADDRESS;
+
+/* DVD dual layer jump interval size */
+typedef struct _DVD_DUAL_LAYER_JUMP_INTERVAL_SIZE {
+    UCHAR   Reserved1[4];
+    UCHAR   JumpIntervalSize[4];
+} DVD_DUAL_LAYER_JUMP_INTERVAL_SIZE;
+typedef DVD_DUAL_LAYER_JUMP_INTERVAL_SIZE   *PDVD_DUAL_LAYER_JUMP_INTERVAL_SIZE;
+
+/* DVD dual layer manual layer jump */
+typedef struct _DVD_DUAL_LAYER_MANUAL_LAYER_JUMP {
+    UCHAR   Reserved1[4];
+    UCHAR   ManualJumpLayerAddress[4];
+} DVD_DUAL_LAYER_MANUAL_LAYER_JUMP;
+typedef DVD_DUAL_LAYER_MANUAL_LAYER_JUMP    *PDVD_DUAL_LAYER_MANUAL_LAYER_JUMP;
+
+/* DVD dual layer remapping information */
+typedef struct _DVD_DUAL_LAYER_REMAPPING_INFORMATION {
+    UCHAR   Reserved1[4];
+    UCHAR   RemappingAddress[4];
+} DVD_DUAL_LAYER_REMAPPING_INFORMATION;
+typedef DVD_DUAL_LAYER_REMAPPING_INFORMATION    *PDVD_DUAL_LAYER_REMAPPING_INFORMATION;
+
+/* DVD disc control block header */
+typedef struct _DVD_DISC_CONTROL_BLOCK_HEADER {
+    UCHAR   ContentDescriptor[4];
+    union {
+        struct {
+            UCHAR   ReservedDoNotUse_UseAsByteInstead_0[3];
+            UCHAR   RecordingWithinTheUserDataArea      : 1;
+            UCHAR   ReadingDiscControlBlocks            : 1;
+            UCHAR   FormattingTheMedium                 : 1;
+            UCHAR   ModificationOfThisDiscControlBlock  : 1;
+            UCHAR   ReservedDoNotUse_UseAsByteInstead_1 : 4;
+        };
+        UCHAR   AsByte[4];
+    } ProhibitedActions;
+    UCHAR   VendorId[32];
+} DVD_DISC_CONTROL_BLOCK_HEADER;
+typedef DVD_DISC_CONTROL_BLOCK_HEADER   *PDVD_DISC_CONTROL_BLOCK_HEADER;
+
+/* Disc control block types */
+typedef enum _DISC_CONTROL_BLOCK_TYPE {
+    FormattingDiscControlBlock      = 0x46444300,
+    WriteInhibitDiscControlBlock    = 0x57444300,
+    SessionInfoDiscControlBlock     = 0x53444300,
+    DiscControlBlockList            = 0xFFFFFFFF
+} DISC_CONTROL_BLOCK_TYPE;
+typedef DISC_CONTROL_BLOCK_TYPE *PDISC_CONTROL_BLOCK_TYPE;
+
+/* DVD disc control block write inhibit */
+typedef struct _DVD_DISC_CONTROL_BLOCK_WRITE_INHIBIT {
+    DVD_DISC_CONTROL_BLOCK_HEADER   header;
+    UCHAR                           UpdateCount[4];
+    union {
+        struct {
+            UCHAR   ReservedDoNotUse_UseAsByteInstead_0[3];
+            UCHAR   WriteProtectStatus                  : 2;
+            UCHAR   ReservedDoNotUse_UseAsByteInstead_1 : 5;
+            UCHAR   UpdateRequiresPassword              : 1;
+        };
+        UCHAR   AsByte[4];
+    } WriteProtectActions;
+    UCHAR                           Reserved0[16];
+    UCHAR                           UpdatePassword[32];
+    UCHAR                           Reserved1[32672];
+} DVD_DISC_CONTROL_BLOCK_WRITE_INHIBIT;
+typedef DVD_DISC_CONTROL_BLOCK_WRITE_INHIBIT    *PDVD_DISC_CONTROL_BLOCK_WRITE_INHIBIT;
+
+/* DVD disc control block session item */
+typedef struct _DVD_DISC_CONTROL_BLOCK_SESSION_ITEM {
+    UCHAR   AsByte[16];
+} DVD_DISC_CONTROL_BLOCK_SESSION_ITEM;
+typedef DVD_DISC_CONTROL_BLOCK_SESSION_ITEM *PDVD_DISC_CONTROL_BLOCK_SESSION_ITEM;
+
+/* DVD disc control block session */
+typedef struct _DVD_DISC_CONTROL_BLOCK_SESSION {
+    DVD_DISC_CONTROL_BLOCK_HEADER       header;
+    UCHAR                               SessionNumber[2];
+    UCHAR                               Reserved0[22];
+    UCHAR                               DiscID[32];
+    UCHAR                               Reserved1[32];
+    DVD_DISC_CONTROL_BLOCK_SESSION_ITEM SessionItem[504];
+    UCHAR                               Reserved2[24576];
+} DVD_DISC_CONTROL_BLOCK_SESSION;
+typedef DVD_DISC_CONTROL_BLOCK_SESSION  *PDVD_DISC_CONTROL_BLOCK_SESSION;
+
+/* DVD disc control block list */
+typedef struct _DVD_DISC_CONTROL_BLOCK_LIST_DCB {
+    UCHAR   DcbIdentifier[4];
+} DVD_DISC_CONTROL_BLOCK_LIST_DCB;
+typedef DVD_DISC_CONTROL_BLOCK_LIST_DCB *PDVD_DISC_CONTROL_BLOCK_LIST_DCB;
+typedef struct _DVD_DISC_CONTROL_BLOCK_LIST {
+    DVD_DISC_CONTROL_BLOCK_HEADER   header;
+    UCHAR                           Reserved0;
+    UCHAR                           ReadabldDCBs;
+    UCHAR                           Reserved1;
+    UCHAR                           WritableDCBs;
+    DVD_DISC_CONTROL_BLOCK_LIST_DCB Dcbs[1];
+} DVD_DISC_CONTROL_BLOCK_LIST;
+typedef DVD_DISC_CONTROL_BLOCK_LIST     *PDVD_DISC_CONTROL_BLOCK_LIST;
+
+/* DVD write protection status */
+typedef struct _DVD_WRITE_PROTECTION_STATUS {
+    UCHAR   SoftwareWriteProtectUntilPowerdown  : 1;
+    UCHAR   MediaPersistentWriteProtect         : 1;
+    UCHAR   CartridgeWriteProtect               : 1;
+    UCHAR   MediaSpecificWriteProtect           : 1;
+    UCHAR   Reserved0                           : 4;
+    UCHAR   Reserved1[3];
+} DVD_WRITE_PROTECTION_STATUS;
+typedef DVD_WRITE_PROTECTION_STATUS *PDVD_WRITE_PROTECTION_STATUS;
+
+/* DVD list of recognized format layers */
+typedef struct _DVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS_TYPE_CODE {
+    UCHAR   TypeCodeOfFormatLayer[2];
+} DVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS_TYPE_CODE;
+typedef DVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS_TYPE_CODE  *PDVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS_TYPE_CODE;
+typedef struct _DVD_LIST_OF_RECOGNZIED_FORMAT_LAYERS {
+    UCHAR   NumberOfRecognizedFormatLayers;
+    UCHAR   OnlineFormatlayer   : 2;
+    UCHAR   Reserved1           : 2;
+    UCHAR   DefaultFormatLayer  : 2;
+    UCHAR   Reserved2           : 2;
+} DVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS;
+typedef DVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS    *PDVD_LIST_OF_RECOGNIZED_FORMAT_LAYERS;
+
+/* DVD structure list entry */
+typedef struct _DVD_STRUCTURE_LIST_ENTRY {
+    UCHAR   FormatCode;
+    UCHAR   Reserved0   : 6;
+    UCHAR   Readable    : 1;
+    UCHAR   Sendable    : 1;
+    UCHAR   FormatLength[2];
+} DVD_STRUCTURE_LIST_ENTRY;
+typedef DVD_STRUCTURE_LIST_ENTRY    *PDVD_STRUCTURE_LIST_ENTRY;
+
+/* DVD BD spare area information */
+typedef struct _DVD_BD_SPARE_AREA_INFORMATION {
+    UCHAR   Reserved1[4];
+    UCHAR   NumberOfFreeSpareBlocks[4];
+    UCHAR   NumberOfAllocatedSpareBlocks[4];
+} DVD_BD_SPARE_AREA_INFORMATION;
+typedef DVD_BD_SPARE_AREA_INFORMATION   *PDVD_BD_SPARE_AREA_INFORMATION;
+
+/* BD physical access control header */
+typedef struct _BD_PAC_HEADER {
+    UCHAR   PACId[3];
+    UCHAR   PACFormatNumber;
+    UCHAR   PACUpdateCount[4];
+    UCHAR   UnknownPACRules[4];
+    UCHAR   UnkownPACEntireDiscFlags;
+    UCHAR   Reserved1[2];
+    UCHAR   NumberOfSegments;
+    UCHAR   Segments[8][32];
+    UCHAR   Reserved2[112];
+} BD_PAC_HEADER;
+typedef BD_PAC_HEADER   *PBD_PAC_HEADER;
+
+/* BD disc write protect physical access control */
+typedef struct _BD_DISC_WRITE_PROTECT_PAC {
+    BD_PAC_HEADER   Header;
+    UCHAR           KnownPACEntireDiscFlags;
+    UCHAR           Reserved1[3];
+    UCHAR           WriteProtectControlByte;
+    UCHAR           Reserved2[7];
+    UCHAR           WriteProtectPassword[32];
+} BD_DISC_WRITE_PROTECT_PAC;
+typedef BD_DISC_WRITE_PROTECT_PAC   *PBD_DISC_WRITE_PROTECT_PAC;
+
+/* DVD RPC key */
+typedef struct _DVD_RPC_KEY {
+    UCHAR   UserResetsAvailable         : 3;
+    UCHAR   ManufacturerResetsAvailable : 3;
+    UCHAR   TypeCode                    : 2;
+    UCHAR   RegionMask;
+    UCHAR   RpcScheme;
+    UCHAR   Reserved02;
+} DVD_RPC_KEY;
+typedef DVD_RPC_KEY *PDVD_RPC_KEY;
+
+/* DVD set RPC key */
+typedef struct _DVD_SET_RPC_KEY {
+    UCHAR   PreferredDriveRegionCode;
+    UCHAR   Reserved[3];
+} DVD_SET_RPC_KEY;
+typedef DVD_SET_RPC_KEY *PDVD_SET_RPC_KEY;
+
+/* DVD authentication success flag */
+typedef struct _DVD_ASF {
+    UCHAR   Reserved0[3];
+    UCHAR   SuccessFlag : 1;
+    UCHAR   Reserved1   : 7;
+} DVD_ASF;
+typedef DVD_ASF *PDVD_ASF;
+
+/* DVD region */
+typedef struct _DVD_REGION {
+    UCHAR   CopySystem;
+    UCHAR   RegionData;
+    UCHAR   SystemRegion;
+    UCHAR   ResetCount;
+} DVD_REGION;
+typedef DVD_REGION  *PDVD_REGION;
+
+/* Revert to default packing. */
+#include <poppack.h>
+
+/* AACS certificate */
+typedef struct _AACS_CERTIFICATE {
+    UCHAR   Nonce[20];
+    UCHAR   Certificate[92];
+} AACS_CERTIFICATE;
+typedef AACS_CERTIFICATE        *PAACS_CERTIFICATE;
+typedef const AACS_CERTIFICATE  CAACS_CERTIFICATE;
+typedef const AACS_CERTIFICATE  *PCAACS_CERTIFICATE;
+
+/* AACS challenge key */
+typedef struct _AACS_CHALLENGE_KEY {
+    UCHAR   EllipticCurvePoint[40];
+    UCHAR   Signature[40];
+} AACS_CHALLENGE_KEY;
+typedef AACS_CHALLENGE_KEY          *PAACS_CHALLENGE_KEY;
+typedef const AACS_CHALLENGE_KEY    CAACS_CHALLENGE_KEY;
+typedef const AACS_CHALLENGE_KEY    *PCAACS_CHALLENGE_KEY;
+
+/* AACS volume identifier */
+typedef struct _AACS_VOLUME_ID {
+    UCHAR   VolumeID[16];
+    UCHAR   MAC[16];
+} AACS_VOLUME_ID;
+typedef AACS_VOLUME_ID          *PAACS_VOLUME_ID;
+typedef const AACS_VOLUME_ID    CAACS_VOLUME_ID;
+typedef const AACS_VOLUME_ID    *PCAACS_VOLUME_ID;
+
+/* AACS serial number */
+typedef struct _AACS_SERIAL_NUMBER {
+    UCHAR   PrerecordedSerialNumber[16];
+    UCHAR   MAC[16];
+} AACS_SERIAL_NUMBER;
+typedef AACS_SERIAL_NUMBER          *PAACS_SERIAL_NUMBER;
+typedef const AACS_SERIAL_NUMBER    CAACS_SERIAL_NUMBER;
+typedef const AACS_SERIAL_NUMBER    *PCAACS_SERIAL_NUMBER;
+
+/* AACS media identifier */
+typedef struct _AACS_MEDIA_ID {
+    UCHAR   MediaID[16];
+    UCHAR   MAC[16];
+} AACS_MEDIA_ID;
+typedef AACS_MEDIA_ID       *PAACS_MEDIA_ID;
+typedef const AACS_MEDIA_ID CAACS_MEDIA_ID;
+typedef const AACS_MEDIA_ID *PCAACS_MEDIA_ID;
+
+/* AACS send certificate */
+typedef struct _AACS_SEND_CERTIFICATE {
+    DVD_SESSION_ID      SessionId;
+    AACS_CERTIFICATE    Certificate;
+} AACS_SEND_CERTIFICATE;
+typedef AACS_SEND_CERTIFICATE       *PAACS_SEND_CERTIFICATE;
+typedef const AACS_SEND_CERTIFICATE CAACS_SEND_CERTIFICATE;
+typedef const AACS_SEND_CERTIFICATE *PCAACS_SEND_CERTIFICATE;
+
+/* AACS send challenge key */
+typedef struct _AACS_SEND_CHALLENGE_KEY {
+    DVD_SESSION_ID      SessionId;
+    AACS_CHALLENGE_KEY  ChallengeKey;
+} AACS_SEND_CHALLENGE_KEY;
+typedef AACS_SEND_CHALLENGE_KEY         *PAACS_SEND_CHALLENGE_KEY;
+typedef const AACS_SEND_CHALLENGE_KEY   CAACS_SEND_CHALLENGE_KEY;
+typedef const AACS_SEND_CHALLENGE_KEY   *PCAACS_SEND_CHALLENGE_KEY;
+
+/* AACS binding nonce */
+typedef struct _AACS_BINDING_NONCE {
+    UCHAR   BindingNonce[16];
+    UCHAR   MAC[16];
+} AACS_BINDING_NONCE;
+typedef AACS_BINDING_NONCE          *PAACS_BINDING_NONCE;
+typedef const AACS_BINDING_NONCE    CAACS_BINDING_NONCE;
+typedef const AACS_BINDING_NONCE    *PCAACS_BINDING_NONCE;
+
+/* AACS read binding nonce */
+typedef struct _AACS_READ_BINDING_NONCE {
+    DVD_SESSION_ID  SessionId;
+    ULONG           NumberOfSectors;
+    ULONGLONG       StartLba;
+    union {
+        HANDLE      Handle;
+        ULONGLONG   ForceStructureLengthToMatch64Bit;
+    };
+} AACS_READ_BINDING_NONCE;
+typedef AACS_READ_BINDING_NONCE *PAACS_READ_BINDING_NONCE;
+
+:include cplusepi.sp
+
+#endif /* _NTDDCDVD_ */

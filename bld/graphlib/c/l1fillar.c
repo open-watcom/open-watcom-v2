@@ -129,7 +129,7 @@ static void CalcMinima( short n, struct xycoord _WCI86FAR *points )
 }
 
 
-static void OrderLines()
+static void OrderLines( void )
 //======================
 
 //  Order the line segments by x value.
@@ -312,7 +312,7 @@ static void PlotBetween( short y )
 }
 
 
-static void UpdateLines()
+static void UpdateLines( void )
 //=======================
 
 //  Delete lines with no upward extension. These lines were previously
@@ -353,7 +353,7 @@ static void UpdateLines()
 }
 
 
-static short InitLineList()
+static short InitLineList( void )
 //=========================
 
 {

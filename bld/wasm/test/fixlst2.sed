@@ -1,0 +1,14 @@
+/^$/d
+/EXTRN/d
+/SEGMENT/d
+/DGROUP/d
+/\.386/d
+/\.387/d
+/PUBLIC/d
+/ORG/d
+/LABEL/d
+/END/d
+/NAME/d
+/\.model/d
+s/FLAT://g
+s/_x/x/

@@ -55,6 +55,9 @@ enum out_file_type              // TYPES OF OUTPUT FILES
 #ifdef OPT_BR
 ,   OFT_BRI                     // - new browser: module information
 #endif
+,   OFT_DEP                     // make-style auto-depend filename
+,   OFT_TRG                     // target filename
+,   OFT_SRCDEP                  // name of first depend(source) in autodep file
 ,   OFT_MAX
 };
 
@@ -91,7 +94,7 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     unsigned size )             // - output buffer size
 ;
 boolean IoSuppOpenSrc(          // OPEN A SOURCE FILE (PRIMARY,HEADER)
-    char *file_name,            // - supplied file name
+    const char *file_name,      // - supplied file name
     enum file_type )            // - what type of file is it?
 ;
 char *IoSuppIncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST

@@ -40,7 +40,7 @@ extern "C" {
         #include <gui.h>
         #include <guikey.h>
 }
-
+/*
 #if defined( __NT__ )
  #if defined( __AXP__ )
   #pragma library (guintaxp)
@@ -55,5 +55,5 @@ extern "C" {
   #pragma library (guidosf)
   #pragma library (uilibf)
 #endif
-
+*/
 #endif

@@ -1,0 +1,7 @@
+LIBRARY PSHED.DLL
+EXPORTS
+PshedAllocateMemory@4
+PshedFreeMemory@4
+PshedIsSystemWheaEnabled@4
+PshedRegisterPlugin@4
+PshedSynchronizeExecution@12

@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "errdefns.h"
 #include "watcom.h"
 #include "memmgr.h"
@@ -145,6 +144,7 @@ PTREE PTreeAlloc( void )
     tree->id_cgop = CO_NOP;
     tree->flags = PTF_NULL;
     tree->type = NULL;
+    tree->sym_name = NULL;
     tree->locn.src_file = NULL;
     tree->locn.line = 0;
     tree->locn.column = 0;
@@ -935,9 +935,10 @@ msg_status_t PTreeErrorExpr(    // ISSUE ERROR MESSAGE FOR PTREE NODE
     unsigned err_code )         // - error code
 {
     msg_status_t status;
-
     PTreeSetErrLoc( expr );
     status = CErr1( err_code );
+    if( status & MS_PRINTED )       // don't issue a note if warning was suppressed
+        InfClassDecl( expr->type ); // issue the symbol name where we hit this error. (useful for template expansion errors)
     if(( status & MS_WARNING ) == 0 ) {
         PTreeErrorNode( expr );
     }
@@ -1033,7 +1034,7 @@ PTO_FLAG PTreeOpFlags(          // GET FLAGS FOR A PTREE NODE
 PTREE PTreeNonZeroConstantExpr( PTREE expr )
 /******************************************/
 {
-    if( ScopeType( CurrScope, SCOPE_TEMPLATE_DECL ) ) {
+    if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
         PTreeFreeSubtrees( expr );
         expr = PTreeIntConstant( 1, TYP_SINT );
     } else {
@@ -1130,7 +1131,7 @@ static PTREE makeDestructorId( SCOPE scope, PTREE id, TYPE class_type )
 PTREE MakeDestructorId( PTREE id )
 /********************************/
 {
-    return makeDestructorId( CurrScope, id, NULL );
+    return makeDestructorId( GetCurrScope(), id, NULL );
 }
 
 PTREE MakeDestructorIdFromType( DECL_SPEC *dspec )
@@ -1139,7 +1140,7 @@ PTREE MakeDestructorIdFromType( DECL_SPEC *dspec )
     PTREE id;
 
     id = MakeIdFromType( dspec );
-    return makeDestructorId( CurrScope, id, NULL );
+    return makeDestructorId( GetCurrScope(), id, NULL );
 }
 
 PTREE MakeOperatorId( CGOP op )
@@ -1262,12 +1263,6 @@ PTREE CutAwayQualification( PTREE scoped_id )
     return keepRightId( scoped_id );
 }
 
-PTREE MakeTemplateId( PTREE global_id )
-/*************************************/
-{
-    return keepRightId( global_id );
-}
-
 PTREE MakeGlobalOperatorId( PTREE global_operator, CGOP op )
 /**********************************************************/
 {
@@ -1334,16 +1329,27 @@ PTREE MakeScopedDestructorId( PTREE scoped_tilde, PTREE id )
     TYPE unbound_type;
     PTREE tree;
 
-    tree = useScopeIfPossible( scoped_tilde, NULL );
-    if( tree != NULL ) {
-        class_type = StructType( tree->u.subtree[0]->type );
-        unbound_type = NULL;
-        if( class_type->flag & TF1_UNBOUND ) {
-            unbound_type = class_type;
-        }
-        id = makeDestructorId( class_type->u.c.scope, id, unbound_type );
+    if( ( id->op == PT_ID ) && ( id->cgop == CO_NAME_NORMAL )
+     && ( id->type != NULL ) && ArithType( id->type ) ) {
+        id = makeDestructorId( NULL, id, id->type );
         id = PTreeCopySrcLocation( id, scoped_tilde );
-        id = PTreeReplaceRight( tree, id );
+        if( ! TypesIdentical( scoped_tilde->u.subtree[0]->u.subtree[1]->type,
+                              id->type ) ) {
+            CErr1( ERR_INVALID_SCALAR_DESTRUCTOR );
+            id = PTreeErrorNode( id );
+        }
+    } else {
+        tree = useScopeIfPossible( scoped_tilde, NULL );
+        if( tree != NULL ) {
+            class_type = StructType( tree->u.subtree[0]->type );
+            unbound_type = NULL;
+            if( class_type->flag & TF1_UNBOUND ) {
+                unbound_type = class_type;
+            }
+            id = makeDestructorId( class_type->u.c.scope, id, unbound_type );
+            id = PTreeCopySrcLocation( id, scoped_tilde );
+            id = PTreeReplaceRight( tree, id );
+        }
     }
     PTreeFreeSubtrees( scoped_tilde );
     return id;
@@ -1649,6 +1655,7 @@ PTREE PTreeDupExpr(             // MAKE DUPLICATE-EXPRESSION NODE
     dup->u.dup.subtree[0] = expr;
     dup->u.dup.node = NULL;
     dup->type = expr->type;
+    dup->sym_name = expr->sym_name;
     dup->flags = expr->flags;
     return PTreeCopySrcLocation( dup, expr );
 }
@@ -2057,7 +2064,7 @@ PTREE PTreeCopyPrefix(         // COPY A PTREE IN (SELF,LEFT,RIGHT) ORDER
             if( ( ptreePTSFlags[ tree->op ] & PTS_OPERATOR ) &&
                 ( tree->op != PT_DUP_EXPR ||
                   ( ((*curr_copy)->u.dup.subtree[0]->flags & PTF_DEFARG_COPY)
-                      == NULL  ) ) ) {
+                      == 0) ) ) {
                 if( tree->u.subtree[0] != NULL ) {
                     /* has a left subtree; store current parent */
                     temp = tree;

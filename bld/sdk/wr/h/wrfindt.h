@@ -38,11 +38,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int            WR_EXPORT WRDoesNameExist            ( WResDir dir, WResID *type, WResID *res );
-extern WResTypeNode * WR_EXPORT WRFindTypeNodeFromWResID   ( WResDir, WResID * );
-extern WResResNode  * WR_EXPORT WRFindResNodeFromWResID    ( WResTypeNode *, WResID * );
-extern WResTypeNode * WR_EXPORT WRFindTypeNode             ( WResDir, uint_16, char * );
-extern WResResNode  * WR_EXPORT WRFindResNode              ( WResTypeNode *, uint_16, char * );
-extern WResLangNode * WR_EXPORT WRFindLangNodeFromLangType ( WResResNode *, WResLangType * );
+extern int              WR_EXPORT WRDoesNameExist( WResDir dir, WResID *type, WResID *res );
+extern WResTypeNode *   WR_EXPORT WRFindTypeNodeFromWResID( WResDir, WResID * );
+extern WResResNode *    WR_EXPORT WRFindResNodeFromWResID( WResTypeNode *, WResID * );
+extern WResTypeNode *   WR_EXPORT WRFindTypeNode( WResDir, uint_16, char * );
+extern WResResNode *    WR_EXPORT WRFindResNode( WResTypeNode *, uint_16, char * );
+extern WResLangNode *   WR_EXPORT WRFindLangNodeFromLangType( WResResNode *, WResLangType * );
 
 #endif

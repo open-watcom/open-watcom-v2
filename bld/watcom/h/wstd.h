@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Compiler configuration macros.
 *
 ****************************************************************************/
 
@@ -87,6 +86,9 @@ typedef unsigned_8      sbit;
         #undef  OS_QNX_16
         #define OS_QNX_16       1
     #endif
+#elif defined( __LINUX__ )
+    #undef  OS_LINUX
+    #define OS_LINUX            1
 #elif defined( __OS2__ )
     #undef  OS_OS2
     #define OS_OS2              1
@@ -138,9 +140,6 @@ typedef unsigned_8      sbit;
     #elif
         #error OS_xxx macro not enabled.
     #endif
-#elif defined( LINUX )
-    #undef  OS_LINUX
-    #define OS_LINUX             1
 #else
     #error OS_xxx macro not enabled.
 #endif
@@ -154,6 +153,7 @@ typedef unsigned_8      sbit;
 #define PR_386                  0
 #define PR_486                  0
 #define PR_PENTIUM              0
+#define PR_PENTIUMPRO           0
 #define PR_AXP                  0
 #define PR_68000                0
 #define PR_370                  0
@@ -166,7 +166,7 @@ typedef unsigned_8      sbit;
 #define PR_SH4                  0
 #define PR_ARM                  0
 
-#if defined( M_I86 )
+#if defined( _M_I86 )
     #undef  PR_i86
     #define PR_i86              1
     #if defined( __SW_0 )
@@ -181,9 +181,9 @@ typedef unsigned_8      sbit;
     #else
         #undef  PR_8086
         #define PR_8086         1
-        // #error M_I86 defined, but no __SW_n macro defined.
+        // #error _M_I86 defined, but no __SW_n macro defined.
     #endif
-#elif defined( M_I386 )
+#elif defined( _M_I386 )
     #undef  PR_i86
     #define PR_i86              1
     #if defined( __SW_3 )
@@ -195,8 +195,11 @@ typedef unsigned_8      sbit;
     #elif defined( __SW_5 )
         #undef  PR_PENTIUM
         #define PR_PENTIUM      1
+    #elif defined( __SW_6 )
+        #undef  PR_PENTIUMPRO
+        #define PR_PENTIUMPRO   1
     #else
-        #error M_I386 defined, but no __SW_n macro defined.
+        #error _M_I386 defined, but no __SW_n macro defined.
     #endif
 #elif defined( __386__ )
     #undef  PR_i86

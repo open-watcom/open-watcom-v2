@@ -123,10 +123,10 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
     area.height = coord.y;
     if( AdjustRect( wnd, &area ) ) {
         if( fill ) {
-            uivfill( &wnd->screen, area, wnd->colours[ attr ], draw_char );
+            uivfill( &wnd->screen, area, wnd->colours[attr], draw_char );
         }
         if( outline ) {
-            uidrawbox( &wnd->screen, &area, wnd->colours[ attr ], NULL );
+            uidrawbox( &wnd->screen, &area, wnd->colours[attr], NULL );
         }
     }
     return( TRUE );
@@ -177,7 +177,7 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         }
     }
     if( AdjustRect( wnd, &area ) ) {
-        uivfill( &wnd->screen, area, wnd->colours[ attr ], to_use );
+        uivfill( &wnd->screen, area, wnd->colours[attr], to_use );
     }
     return( TRUE );
 }

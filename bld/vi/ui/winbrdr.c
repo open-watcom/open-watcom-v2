@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 
@@ -42,15 +39,15 @@
 void DrawBorder( window_id wn )
 {
     wind                *w;
-    int                 i,j,k,stc,etc,ctc;
-    int                 tl,bl,tr,br;
-    int                 xtl,xbl,xtr,xbr;
-    char                *over,c;
+    int                 i, j, k, stc, etc, ctc;
+    int                 tl, bl, tr, br;
+    int                 xtl, xbl, xtr, xbr;
+    char                *over, c;
     unsigned short      clr;
-    char_info           what,what2;
+    char_info           what, what2;
     char_info           _FAR *scr;
     char_info           *txt;
-    int                 topscol,topecol,topccol;
+    int                 topscol, topecol, topccol;
     char                *wb;
 
     if( EditFlags.Quiet ) {
@@ -74,27 +71,27 @@ void DrawBorder( window_id wn )
      * set up for border addendums (title and misc top data)
      */
     if( w->title != NULL ) {
-        stc = (w->width-strlen( w->title ))/2-1;
-        if( stc < 1) {
+        stc = (w->width - strlen( w->title )) / 2 - 1;
+        if( stc < 1 ) {
             stc = 1;
         }
-        etc = stc+strlen( w->title ) + 1;
+        etc = stc + strlen( w->title ) + 1;
         ctc = 0;
     }
     if( w->borderdata != NULL ) {
         topscol = w->bordercol;
-        topecol = topscol+strlen( w->borderdata )-1;
+        topecol = topscol + strlen( w->borderdata ) - 1;
         topccol = 0;
     }
 
-    tl = (w->x1) + (w->y1)*WindMaxWidth;
-    tr = (w->x2) + (w->y1)*WindMaxWidth;
-    bl = (w->x1) + (w->y2)*WindMaxWidth;
-    br = (w->x2) + (w->y2)*WindMaxWidth;
+    tl = (w->x1) + (w->y1) * WindMaxWidth;
+    tr = (w->x2) + (w->y1) * WindMaxWidth;
+    bl = (w->x1) + (w->y2) * WindMaxWidth;
+    br = (w->x2) + (w->y2) * WindMaxWidth;
     xtl = 0;
-    xtr = w->width-1;
-    xbl = (w->height-1)*w->width;
-    xbr = w->width-1 + (w->height-1)*w->width;
+    xtr = w->width - 1;
+    xbl = (w->height - 1) * w->width;
+    xbr = w->width - 1 + (w->height - 1) * w->width;
     clr = MAKE_ATTR( w, w->border_color1, w->border_color2 );
     what.attr = clr;
     what2.attr = clr;
@@ -127,14 +124,14 @@ void DrawBorder( window_id wn )
      * do the left side
      */
     what.ch = wb[WB_LEFTSIDE];
-    k = xtl+w->width;
-    j = tl+WindMaxWidth;
-    for( i=1;i<w->height-1;i++) {
+    k = xtl + w->width;
+    j = tl + WindMaxWidth;
+    for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
         if( over[k] == NO_CHAR ) {
-            WRITE_SCREEN( scr[j],what );
+            WRITE_SCREEN( scr[j], what );
 #ifdef __VIO__
-            MyVioShowBuf( sizeof( char_info ) *j, 1 );
+            MyVioShowBuf( sizeof( char_info ) * j, 1 );
 #endif
         }
         k += w->width;
@@ -147,12 +144,12 @@ void DrawBorder( window_id wn )
     what.ch = wb[WB_RIGHTSIDE];
     k = xtr + w->width;
     j = tr + WindMaxWidth;
-    for( i=1;i<w->height-1;i++) {
+    for( i = 1; i < w->height - 1; i++ ) {
         WRITE_SCREEN_DATA( txt[k], what );
         if( over[k] == NO_CHAR ) {
             WRITE_SCREEN( scr[j], what );
 #ifdef __VIO__
-            MyVioShowBuf( sizeof( char_info ) *j, 1 );
+            MyVioShowBuf( sizeof( char_info ) * j, 1 );
 #endif
         }
         k += w->width;
@@ -163,14 +160,14 @@ void DrawBorder( window_id wn )
      * now do bottom and top
      */
     what2.ch = wb[WB_TOPBOTTOM];
-    for( i=1;i<w->width-1;i++ ) {
+    for( i = 1; i < w->width - 1; i++ ) {
         k = xtl + i;
         c = wb[5];
         if( w->title != NULL ) {
             if( i >= stc && i <= etc ) {
-                if( i== stc) {
+                if( i == stc ) {
                     c = wb[WB_RIGHTT];
-                } else if( i==etc ) {
+                } else if( i == etc ) {
                     c = wb[WB_LEFTT];
                 } else {
                     c = w->title[ctc++];
@@ -185,13 +182,13 @@ void DrawBorder( window_id wn )
         what.ch = c;
         WRITE_SCREEN_DATA( txt[k], what );
         if( over[k] == NO_CHAR ) {
-            WRITE_SCREEN( scr[tl+i] , what );
+            WRITE_SCREEN( scr[tl + i] , what );
         }
 
         k = xbl + i;
         WRITE_SCREEN_DATA( txt[k], what2 );
         if( over[k] == NO_CHAR ) {
-            WRITE_SCREEN( scr[bl+i] , what2 );
+            WRITE_SCREEN( scr[bl + i] , what2 );
         }
     }
 
@@ -200,19 +197,19 @@ void DrawBorder( window_id wn )
      */
     if( w->has_gadgets || w->has_scroll_gadgets ) {
         what.ch = wb[WB_UPTRIANGLE];
-        WRITE_SCREEN_DATA( txt[xtr+w->width], what );
-        if( over[xtr+w->width] == NO_CHAR ) {
-            WRITE_SCREEN( scr[tr+WindMaxWidth], what );
+        WRITE_SCREEN_DATA( txt[xtr + w->width], what );
+        if( over[xtr + w->width] == NO_CHAR ) {
+            WRITE_SCREEN( scr[tr + WindMaxWidth], what );
 #ifdef __VIO__
-            MyVioShowBuf( sizeof( char_info ) *(tr+WindMaxWidth), 1 );
+            MyVioShowBuf( sizeof( char_info ) * (tr + WindMaxWidth), 1 );
 #endif
         }
-        what.ch = wb[ WB_DOWNTRIANGLE ];
-        WRITE_SCREEN_DATA( txt[xbr-w->width], what );
-        if( over[xbr-w->width] == NO_CHAR ) {
-            WRITE_SCREEN( scr[br-WindMaxWidth], what );
+        what.ch = wb[WB_DOWNTRIANGLE];
+        WRITE_SCREEN_DATA( txt[xbr - w->width], what );
+        if( over[xbr - w->width] == NO_CHAR ) {
+            WRITE_SCREEN( scr[br - WindMaxWidth], what );
 #ifdef __VIO__
-            MyVioShowBuf( sizeof( char_info ) * (br-WindMaxWidth), 1 );
+            MyVioShowBuf( sizeof( char_info ) * (br - WindMaxWidth), 1 );
 #endif
         }
     }
@@ -221,9 +218,10 @@ void DrawBorder( window_id wn )
     MyVioShowBuf( sizeof( char_info ) * bl, w->width );
 #endif
     if( w->has_gadgets ) {
-        DrawVerticalThumb( w, GadgetString[ WB_THUMB ] );
+        DrawVerticalThumb( w, GadgetString[WB_THUMB] );
     }
     ReleaseWindow( w );
+
 } /* DrawBorder */
 
 /*
@@ -249,7 +247,7 @@ void WindowBorderData( window_id wn, char *data, int col )
     }
 
     AddString2( &(w->borderdata), data );
-    w->bordercol=col;
+    w->bordercol = col;
 
 } /* WindowBorderData */
 

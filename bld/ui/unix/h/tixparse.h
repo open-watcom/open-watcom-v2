@@ -32,8 +32,8 @@
 
 // array of bits set for chars in alternate char-set
 extern unsigned char    _ti_alt_map[32];
-// array of char mappings
-extern char             ti_char_map[256];
+// array of char mappings (up to 3 UTF-8 characters followed by a 0)
+extern char             ti_char_map[256][4];
 
 // macros for getting/setting bits in alt-char map
 #define ti_alt_map( x ) ( _ti_alt_map[( x )/8]&&( _ti_alt_map[( x )/8]>>( ( x )%8 ) )&1 )

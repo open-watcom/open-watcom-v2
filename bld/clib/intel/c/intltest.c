@@ -24,34 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of x86 specific functions.
 *
 ****************************************************************************/
 
 
 /*
- *  INTLTEST.C
  *  Currently, this program only tests the sound() and nosound() functions.
- *  They now decide at run-time whether or not they're on an IBM or a NEC
- *  machine; this program is to ensure they still work.
- *
  */
 
+#include <stdlib.h>
 #include <conio.h>
+#ifdef __X86__
 #include <i86.h>
+#endif
 #include <stdio.h>
 #include <string.h>
+
+#ifdef __SW_BW
+    #include <wdefwin.h>
+#endif
 
 #if defined(__DOS__) || defined(__QNX__) || defined(__WINDOWS__)
     #define TEST_SOUND
 #endif
 
-extern int      __NonIBM;
 
-
-char ProgramName[128];                          /* executable filename */
-
+char    ProgramName[128];       /* executable filename */
+int     NumErrors;              /* number of errors */
+int     Interactive;            /* run tests requiring user input */
 
 #ifdef TEST_SOUND
 
@@ -67,10 +68,14 @@ void TestSound( void )
     };
     int                     i;
 
-    for( i=0; notes[i]; i++ ) {
+    for( i = 0; notes[i]; i++ ) {
         sound( 1193180 / (notes[i]/(1<<4)) );
-        printf( "%s: Now playing %s\n", ProgramName, notenames[i] );
-        fgetc( stdin );
+        if( Interactive ) {
+            printf( "%s: Now playing %s\n", ProgramName, notenames[i] );
+            fgetc( stdin );
+        } else {
+            delay( 100 );
+        }
         nosound();
     }
 }
@@ -78,19 +83,40 @@ void TestSound( void )
 #endif
 
 
-void main( int argc, char *argv[] )
-/*********************************/
+int main( int argc, char *argv[] )
+/********************************/
 {
+#ifdef __SW_BW
+    FILE    *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( EXIT_FAILURE );
+    }
+#endif
     strcpy( ProgramName, strlwr( argv[0] ) ); /* store executable filename */
 
-    printf( "%s: Machine type is %s.\n", ProgramName,
-            __NonIBM ? "NEC" : "IBM" );
+    if( argc == 2 && !strcmp( argv[1], "-i" ) )
+        Interactive = 1;
 
-    #ifdef TEST_SOUND
-        TestSound();
-    #else
-        printf( "%s: Skipping sound() and nosound() tests.\n", ProgramName );
-    #endif
+#ifdef TEST_SOUND
+    TestSound();
+#else
+    printf( "%s: Skipping sound() and nosound() tests.\n", ProgramName );
+#endif
 
-    printf( "%s: Done\n", ProgramName );
+    /*** Print a pass/fail message and quit ***/
+    if( NumErrors != 0 ) {
+        printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        return( EXIT_FAILURE );
+    }
+    printf( "Tests completed (%s).\n", ProgramName );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+
+    return( EXIT_SUCCESS );
 }

@@ -38,3 +38,70 @@ extern void DumpString( char * );
 #define MAX_LINE_LEN    512
 
 static char *symbolName( owl_symbol_handle sym ) {
+//************************************************
+
+    char                *name;
+
+    name = "UNNAMED";
+    if( sym->name != NULL ) {
+        name = &sym->name->text[ 0 ];
+    }
+    return( name );
+}
+
+static char *sectionName( owl_file_handle file, owl_symbol_handle sym ) {
+//***********************************************************************
+
+    char        *name = "UNDEFINED";
+
+    file = file;
+    if( sym->section != NULL ) {
+        name = &sym->section->name->text[ 0 ];
+    }
+    return( name );
+}
+
+static char *symbolType( owl_symbol_handle sym ) {
+//************************************************
+
+    static char *typeName[] = { "function", "object", "section", "file" };
+    return( typeName[ sym->type ] );
+}
+
+static char *symbolLinkage( owl_symbol_handle sym ) {
+//***************************************************
+
+    static char *linkageName[] = { "undefined", "function", "static", "global", "weak" };
+    return( linkageName[ sym->linkage ] );
+}
+
+static void dumpSym( owl_file_handle file, owl_symbol_handle sym ) {
+//******************************************************************
+
+    char        buffer[ MAX_LINE_LEN ];
+
+    sprintf( &buffer[ 0 ], "%s[%x]:\n", symbolName( sym ), sym );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\tsection\t\t%s[%x]\n", sectionName( file, sym ), sym->section );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\ttype\t\t%s[%x]\n", symbolType( sym ), sym->type );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\tlinkage\t\t%s[%x]\n", symbolLinkage( sym ), sym->linkage );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\trelocs\t\t%d\n", sym->num_relocs );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\toffset\t\t%x\n", sym->offset );
+    DumpString( &buffer[ 0 ] );
+    sprintf( &buffer[ 0 ], "\tflags\t\t%x\n", sym->flags );
+    DumpString( &buffer[ 0 ] );
+}
+
+void OWLENTRY OWLDumpSymTab( owl_file_handle file ) {
+//***************************************************
+
+    owl_symbol_handle   sym;
+
+    for( sym = file->symbol_table->head; sym != NULL; sym = sym->next ) {
+        dumpSym( file, sym );
+    }
+}

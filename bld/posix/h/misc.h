@@ -33,17 +33,17 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
-void Quit( const char *usage_msg[], const char *msg, ... );
-void Die( const char *str, ... );
+void    Quit( const char *usage_msg[], const char *msg, ... );
+void    Die( const char *str, ... );
 #ifndef __ALPHA__
 #pragma aux Quit aborts;
 #pragma aux Die aborts;
 #endif
 
-long GetClusterSize( unsigned drive );
+long    GetClusterSize( unsigned drive );
 
-void *MemAlloc( unsigned size );
-void *MemRealloc( void *orig, unsigned size );
-void MemFree( void *ptr );
+void    *MemAlloc( unsigned size );
+void    *MemRealloc( void *orig, unsigned size );
+void    MemFree( void *ptr );
 
 #endif

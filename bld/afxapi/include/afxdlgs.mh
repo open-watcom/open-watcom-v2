@@ -1,0 +1,469 @@
+/*
+ *  afxdlgs.h   Application Framework common dialog classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXDLGS_H__
+#define __AFXDLGS_H__
+
+:include readonly.sp
+
+#include <afxwin.h>
+#include <richedit.h>
+
+// Forward declarations
+class CTabCtrl;
+
+// The following structures are redeclared here to ensure that the amount of space
+// used in the classes remains the same, regardless of the Windows version.
+
+#include <pshpack1.h>
+struct AFX_OPENFILENAME {
+    DWORD           lStructSize;
+    HWND            hwndOwner;
+    HINSTANCE       hInstance;
+    LPCTSTR         lpstrFilter;
+    LPTSTR          lpstrCustomFilter;
+    DWORD           nMaxCustFilter;
+    DWORD           nFilterIndex;
+    LPTSTR          lpstrFile;
+    DWORD           nMaxFile;
+    LPTSTR          lpstrFileTitle;
+    DWORD           nMaxFileTitle;
+    LPCTSTR         lpstrInitialDir;
+    LPCTSTR         lpstrTitle;
+    DWORD           Flags;
+    WORD            nFileOffset;
+    WORD            nFileExtension;
+    LPCTSTR         lpstrDefExt;
+    LPARAM          lCustData;
+    LPOFNHOOKPROC   lpfnHook;
+    LPCTSTR         lpTemplateName;
+    void            *pvReserved;
+    DWORD           dwReserved;
+    DWORD           FlagsEx;
+};
+#include <poppack.h>
+
+struct AFX_PROPSHEETPAGE {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    HINSTANCE       hInstance;
+    union {
+        LPCTSTR                 pszTemplate;
+        PROPSHEETPAGE_RESOURCE  pResource;
+    };
+    union {
+        HICON   hIcon;
+        LPCTSTR pszIcon;
+    };
+    LPCTSTR         pszTitle;
+    DLGPROC         pfnDlgProc;
+    LPARAM          lParam;
+    LPFNPSPCALLBACK pfnCallback;
+    UINT            *pcRefParent;
+    LPCTSTR         pszHeaderTitle;
+    LPCTSTR         pszHeaderSubTitle;
+    HANDLE          hActCtx;
+    union {
+        HBITMAP hbmHeader;
+        LPCTSTR pszbmHeader;
+    };
+};
+
+struct AFX_PROPSHEETHEADER {
+    DWORD                   dwSize;
+    DWORD                   dwFlags;
+    HWND                    hwndParent;
+    HINSTANCE               hInstance;
+    union {
+        HICON   hIcon;
+        LPCTSTR pszIcon;
+    };
+    LPCTSTR                 pszCaption;
+    UINT                    nPages;
+    union {
+        UINT    nStartPage;
+        LPCTSTR pStartPage;
+    };
+    union {
+        LPCPROPSHEETPAGE    ppsp;
+        HPROPSHEETPAGE      *phpage;
+    };
+    PFNPROPSHEETCALLBACK    pfnCallback;
+    union {
+        HBITMAP hbmWatermark;
+        LPCTSTR pszbmWatermark;
+    };
+    HPALETTE                hplWatermark;
+    union {
+        HBITMAP hbmHeader;
+        LPCTSTR pszbmHeader;
+    };
+};
+
+class _AFXLINK CCommonDialog : public CDialog {
+    DECLARE_DYNAMIC( CCommonDialog )
+    
+public:
+    explicit CCommonDialog( CWnd *pParentWnd );
+    
+    virtual void    OnCancel();
+    virtual void    OnOK();
+};
+
+class _AFXLINK CFileDialog : public CCommonDialog {
+public:
+    union {
+        OPENFILENAME        m_ofn;
+        AFX_OPENFILENAME    m_ofn_alignment;
+    };
+protected:
+    BOOL            m_bOpenFileDialog;
+    TCHAR           m_szFileTitle[64];
+    TCHAR           m_szFileName[MAX_PATH];
+    
+    DECLARE_DYNAMIC( CFileDialog )
+    
+public:
+    explicit CFileDialog( BOOL bOpenFileDialog, LPCTSTR lpszDefExt = NULL, LPCTSTR lpszFileName = NULL, DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, LPCTSTR lpszFilter = NULL, CWnd *pParentWnd = NULL, DWORD dwSize = 0L );
+    
+    virtual void    OnFileNameChange();
+    virtual BOOL    OnFileNameOK();
+    virtual void    OnFolderChange();
+    virtual void    OnInitDone();
+    virtual void    OnLBSelChangedNotify( UINT nIDBox, UINT iCurSel, UINT nCode );
+    virtual UINT    OnShareViolation( LPCTSTR lpszPathName );
+    virtual void    OnTypeChange();
+    
+    virtual INT_PTR DoModal();
+    virtual BOOL    OnNotify( WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    CString             GetFileExt() const;
+    CString             GetFileName() const;
+    CString             GetFileTitle() const;
+    CString             GetFolderPath() const;
+    CString             GetNextPathName( POSITION &pos ) const;
+    const OPENFILENAME  &GetOFN() const;
+    OPENFILENAME        &GetOFN();
+    CString             GetPathName() const;
+    BOOL                GetReadOnlyPref() const;
+    POSITION            GetStartPosition() const;
+    void                HideControl( int nID );
+    void                SetControlText( int nID, LPCTSTR lpsz );
+    void                SetDefExt( LPCTSTR lpsz );
+    void                SetTemplate( UINT nWin3ID, UINT nWin4ID );
+    void                SetTemplate( LPCTSTR lpWin3ID, LPCTSTR lpWin4ID );
+};
+
+class _AFXLINK CColorDialog : public CCommonDialog {
+public:
+    CHOOSECOLOR m_cc;
+    
+    DECLARE_DYNAMIC( CColorDialog )
+    
+public:
+    CColorDialog( COLORREF clrInit = 0L, DWORD dwFlags = 0L, CWnd *pParentWnd = NULL );
+    
+    virtual BOOL    OnColorOK();
+    
+    virtual INT_PTR DoModal();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    COLORREF    GetColor() const;
+    void        SetCurrentColor( COLORREF clr );
+    
+    static COLORREF * PASCAL    GetSavedCustomColors();
+};
+
+class _AFXLINK CFontDialog : public CCommonDialog {
+public:
+    CHOOSEFONT  m_cf;
+protected:
+    LOGFONT     m_lf;
+    TCHAR       m_szStyleName[64];
+    
+    DECLARE_DYNAMIC( CFontDialog )
+    
+public:
+    CFontDialog( LPLOGFONT lplfInitial = NULL, DWORD dwFlags = CF_EFFECTS | CF_SCREENFONTS, CDC *pdcPrinter = NULL, CWnd *pParentWnd = NULL );
+    CFontDialog( const CHARFORMAT &charformat, DWORD dwFlags = CF_SCREENFONTS, CDC *pdcPrinter = NULL, CWnd *pParentWnd = NULL );
+    
+    virtual INT_PTR DoModal();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    void        GetCharFormat( CHARFORMAT &cf ) const;
+    COLORREF    GetColor() const;
+    void        GetCurrentFont( LPLOGFONT lplf );
+    CString     GetFaceName() const;
+    int         GetSize() const;
+    CString     GetStyleName() const;
+    int         GetWeight() const;
+    BOOL        IsBold() const;
+    BOOL        IsItalic() const;
+    BOOL        IsStrikeOut() const;
+    BOOL        IsUnderline() const;
+};
+
+class _AFXLINK CPrintDialog : public CCommonDialog {
+public:
+    PRINTDLG    m_pd;
+    
+    DECLARE_DYNAMIC( CPrintDialog )
+    
+public:
+    CPrintDialog( BOOL bPrintSetupOnly, DWORD dwFlags = PD_ALLPAGES | PD_USEDEVMODECOPIES | PD_NOPAGENUMS | PD_HIDEPRINTTOFILE | PD_NOSELECTION, CWnd *pParentWnd = NULL );
+    
+    virtual INT_PTR DoModal();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    HDC         CreatePrinterDC();
+    int         GetCopies() const;
+    BOOL        GetDefaults();
+    CString     GetDeviceName() const;
+    LPDEVMODE   GetDevMode() const;
+    CString     GetDriverName() const;
+    int         GetFromPage() const;
+    CString     GetPortName() const;
+    HDC         GetPrinterDC() const;
+    int         GetToPage() const;
+    BOOL        PrintAll() const;
+    BOOL        PrintCollate() const;
+    BOOL        PrintRange() const;
+    BOOL        PrintSelection() const;
+};
+
+#if (_WIN32_WINNT >= 0x0500)
+
+class _AFXLINK CPrintDialogEx : public CCommonDialog {
+public:
+    PRINTDLGEX  m_pdex;
+    
+protected:
+    BEGIN_INTERFACE_PART( PrintDialogCallback, IPrintDialogCallback )
+        STDMETHOD( InitDone )();
+        STDMETHOD( SelectionChange )();
+        STDMETHOD( HandleMessage )( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    END_INTERFACE_PART( PrintDialogCallback )
+    
+    DECLARE_DYNAMIC( CPrintDialogEx )
+    
+public:
+    CPrintDialogEx( DWORD dwFlags = PD_ALLPAGES | PD_USEDEVMODECOPIES | PD_NOPAGENUMS | PD_HIDEPRINTTOFILE | PD_NOSELECTION | PD_NOCURRENTPAGE, CWnd *pParentWnd = NULL );
+    
+    virtual LRESULT DefWindowProc( UINT message, WPARAM wParam, LPARAM lParam );
+    virtual INT_PTR DoModal();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    HDC         CreatePrinterDC();
+    int         GetCopies() const;
+    BOOL        GetDefaults();
+    CString     GetDeviceName() const;
+    LPDEVMODE   GetDevMode() const;
+    CString     GetDriverName() const;
+    CString     GetPortName() const;
+    HDC         GetPrinterDC() const;
+    BOOL        PrintAll() const;
+    BOOL        PrintCollate() const;
+    BOOL        PrintCurrentPage() const;
+    BOOL        PrintRange() const;
+    BOOL        PrintSelection() const;
+    
+    DECLARE_INTERFACE_MAP()
+};
+
+#endif // (_WIN32_WINNT >= 0x0500)
+
+class _AFXLINK CPageSetupDialog : public CCommonDialog {
+public:
+    PAGESETUPDLG    m_psd;
+    
+    DECLARE_DYNAMIC( CPageSetupDialog )
+    
+public:
+    CPageSetupDialog( DWORD dwFlags = PSD_MARGINS | PSD_INWININIINTLMEASURE, CWnd *pParentWnd = NULL );
+    virtual ~CPageSetupDialog();
+    
+    virtual UINT    OnDrawPage( CDC *pDC, UINT nMessage, LPRECT lpRect );
+    virtual UINT    PreDrawPage( WORD wPaper, WORD wFlags, LPPAGESETUPDLG pPSD );
+    
+    virtual INT_PTR DoModal();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    HDC         CreatePrinterDC();
+    CString     GetDeviceName() const;
+    LPDEVMODE   GetDevMode() const;
+    CString     GetDriverName() const;
+    void        GetMargins( LPRECT lpRectMargins, LPRECT lpRectMinMargins ) const;
+    CSize       GetPaperSize() const;
+    CString     GetPortName() const;
+};
+
+class _AFXLINK CFindReplaceDialog : public CCommonDialog {
+public:
+    FINDREPLACE m_fr;
+protected:
+    TCHAR       m_szFindWhat[128];
+    TCHAR       m_szReplaceWith[128];
+    
+    DECLARE_DYNAMIC( CFindReplaceDialog )
+    
+public:
+    CFindReplaceDialog();
+    
+    virtual BOOL    Create( BOOL bFindDialogOnly, LPCTSTR lpszFindWhat, LPCTSTR lpszReplaceWith = NULL, DWORD dwFlags = FR_DOWN, CWnd *pParentWnd = NULL );
+    
+    virtual void    PostNcDestroy();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    BOOL    FindNext() const;
+    CString GetFindString() const;
+    CString GetReplaceString() const;
+    BOOL    IsTerminating() const;
+    BOOL    MatchCase() const;
+    BOOL    MatchWholeWord() const;
+    BOOL    ReplaceAll() const;
+    BOOL    ReplaceCurrent() const;
+    BOOL    SearchDown() const;
+    
+    static CFindReplaceDialog * PASCAL  GetNotifier( LPARAM lParam );
+};
+
+class _AFXLINK CPropertyPage : public CDialog {
+public:
+    union {
+        PROPSHEETPAGE       m_psp;
+        AFX_PROPSHEETPAGE   m_psp_alignment;
+    };
+protected:
+    CString         m_strCaption;
+    BOOL            m_bFirstSetActive;
+    CString         m_strHeaderTitle;
+    CString         m_strHeaderSubTitle;
+    
+    DECLARE_DYNAMIC( CPropertyPage )
+    
+public:
+    CPropertyPage();
+    explicit CPropertyPage( UINT nIDTemplate, UINT nIDCaption = 0, DWORD dwSize = sizeof( PROPSHEETPAGE ) );
+    explicit CPropertyPage( LPCTSTR lpszTemplateName, UINT nIDCaption = 0, DWORD dwSize = sizeof( PROPSHEETPAGE ) );
+    CPropertyPage( UINT nIDTemplate, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle = 0, DWORD dwSize = sizeof( PROPSHEETPAGE ) );
+    CPropertyPage( LPCTSTR lpszTemplateName, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle = 0, DWORD dwSize = sizeof( PROPSHEETPAGE ) );
+    
+    virtual BOOL    OnApply();
+    virtual BOOL    OnKillActive();
+    virtual BOOL    OnQueryCancel();
+    virtual void    OnReset();
+    virtual BOOL    OnSetActive();
+    virtual LRESULT OnWizardBack();
+    virtual LRESULT OnWizardFinish();
+    virtual LRESULT OnWizardNext();
+    
+    virtual void    OnCancel();
+    virtual BOOL    OnNotify( WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    virtual void    OnOK();
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    void                CancelToClose();
+    void                Construct( UINT nIDTemplate, UINT nIDCaption = 0 );
+    void                Construct( LPCTSTR lpszTemplateName, UINT nIDCaption = 0 );
+    void                Construct( UINT nIDTemplate, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle = 0 );
+    void                Construct( LPCTSTR lpszTemplateName, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle = 0 );
+    const PROPSHEETPAGE &GetPSP() const;
+    PROPSHEETPAGE       &GetPSP();
+    LRESULT             QuerySiblings( WPARAM wParam, LPARAM lParam );
+    void                SetModified( BOOL bChanged = TRUE );
+};
+
+class _AFXLINK CPropertySheet : public CWnd {
+public:
+    union {
+        PROPSHEETHEADER     m_psh;
+        AFX_PROPSHEETHEADER m_psh_alignment;
+    };
+protected:
+    CPtrArray       m_pages;
+    CString         m_strCaption;
+    BOOL            m_bStacked;
+    BOOL            m_bModeless;
+    
+    DECLARE_DYNAMIC( CPropertySheet )
+    
+public:
+    CPropertySheet();
+    explicit CPropertySheet( UINT nIDCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0 );
+    explicit CPropertySheet( LPCTSTR lpszCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0 );
+    CPropertySheet( UINT nIDCaption, CWnd *pParentWnd, UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL );
+    CPropertySheet( LPCTSTR pszCaption, CWnd *pParentWnd, UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL );
+    virtual ~CPropertySheet();
+    
+    virtual BOOL    Create( CWnd *pParentWnd = NULL, DWORD dwStyle = 0xFFFFFFFFL, DWORD dwExStyle = 0L );
+    virtual INT_PTR DoModal();
+    virtual BOOL    OnInitDialog();
+    
+    virtual BOOL    PreTranslateMessage( MSG *pMsg );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    void            AddPage( CPropertyPage *pPage );
+    void            Construct( UINT nIDCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0 );
+    void            Construct( LPCTSTR pszCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0 );
+    void            Construct( UINT nIDCaption, CWnd *pParentWnd, UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL );
+    void            Construct( LPCTSTR pszCaption, CWnd *pParentWnd, UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL );
+    void            EnableStackedTabs( BOOL bStacked );
+    void            EndDialog( int nEndID );
+    int             GetActiveIndex() const;
+    CPropertyPage   *GetActivePage() const;
+    CPropertyPage   *GetPage( int nPage ) const;
+    int             GetPageCount() const;
+    int             GetPageIndex( CPropertyPage *pPage );
+    CTabCtrl        *GetTabControl() const;
+    void            MapDialogRect( LPRECT lpRect ) const;
+    void            PressButton( int nButton );
+    void            RemovePage( CPropertyPage *pPage );
+    void            RemovePage( int nPage );
+    BOOL            SetActivePage( int nPage );
+    BOOL            SetActivePage( CPropertyPage *pPage );
+    void            SetFinishText( LPCTSTR lpszText );
+    void            SetTitle( LPCTSTR lpszText, UINT nStyle = 0 );
+    void            SetWizardButtons( DWORD dwFlags );
+    void            SetWizardMode();
+    
+protected:
+    afx_msg LRESULT HandleInitDialog( WPARAM wParam, LPARAM );
+    DECLARE_MESSAGE_MAP()
+};
+
+#ifndef _DEBUG
+    #include <afxdlgs.inl>
+#endif
+
+#endif /* __AFXDLGS_H__ */

@@ -42,11 +42,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  int     WRLoadBitmapFile                ( WRInfo *info );
-extern  int     WRLoadIconFile                  ( WRInfo *info );
-extern  int     WRLoadCursorFile                ( WRInfo *info );
-extern  int     WRSaveBitmapResource            ( WRInfo *info, int backup );
-extern  int     WRSaveIconResource              ( WRInfo *info, int backup );
-extern  int     WRSaveCursorResource            ( WRInfo *info, int backup );
+extern int  WRLoadBitmapFile( WRInfo *info );
+extern int  WRLoadIconFile( WRInfo *info );
+extern int  WRLoadCursorFile( WRInfo *info );
+extern int  WRSaveBitmapResource( WRInfo *info, int backup );
+extern int  WRSaveIconResource( WRInfo *info, int backup );
+extern int  WRSaveCursorResource( WRInfo *info, int backup );
 
 #endif

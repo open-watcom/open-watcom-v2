@@ -13,50 +13,50 @@ librarian=wlib
 !   define STD_CC       *$(PLAT_CC) -zq
 !   define STD_LINK     wlink option quiet
 !   define STD_WRC      wrc -q
-!   define STD_LIB      *$(librarian) /q/n
+!   define STD_LIB      *$(librarian) -q -n
 !   define MKS_ECHO     %null
 
-!ifdef on_build_machine
-CMN_CFLAGS = -ox-s-w4-v-d1
-!else
+!ifeq release 0
 !ifndef %MAKE_DEBUG
 !ifdef codeview
 CMN_CFLAGS += -hc-d1-s
 !else
-CMN_CFLAGS = -ox-s-w4-v-d2
+CMN_CFLAGS = -ox-s-w8-v-d2
 !endif
 !else
-CMN_CFLAGS = -ox-s-w4-v -$(%MAKE_DEBUG)
+CMN_CFLAGS = -ox-s-w8-v -$(%MAKE_DEBUG)
 !endif
+!else
+CMN_CFLAGS = -ox-s-w8-v-d1
 !endif
 
 # makefiles can override this if they want
 CFLAGS = $(CMN_CFLAGS) $(PLAT_CFLAGS) $(EXTRA_CFLAGS)
 
 .before
-    @set INCLUDE=..\h;$(REG_INCLUDE)
+    @set include=../h;$(REG_INCLUDE)
 
 .error
     @cd $(MAIN_DIR)
 
-MAIN_DIR = $+ $(%__cwd__)\.. $-
-OBJ_DIR  = $(MAIN_DIR)\$(OBJ_NDIR)
-LIB_DIR = $(MAIN_DIR)\lib
-UPD_DIR = $(%LIBROOT)\wpi
+MAIN_DIR = $+ $(%__cwd__)/.. $-
+OBJ_DIR  = $(MAIN_DIR)/$(OBJ_NDIR)
+LIB_DIR = $(MAIN_DIR)/lib
+UPD_DIR = $(%LIBROOT)/wpi
 
 .obj: $(OBJ_DIR)
-.c: $(MAIN_DIR)\c
-.h: $(MAIN_DIR)\h
+.c: $(MAIN_DIR)/c
+.h: $(MAIN_DIR)/h
 
-$(LIB_DIR)\$(libname).lib: $(objs)
+$(LIB_DIR)/$(libname).lib: $(objs)
         cd $(OBJ_DIR)
-        rm -f $(LIB_DIR)\$(libname).lib
-        ls -1 $(OBJ_DIR)\*.obj > tmp.lbc
-        $(STD_LIB)  $(LIB_DIR)\$(libname) @tmp.lbc
+        rm -f $^@
+        ls -1 $(OBJ_DIR)/*.obj > tmp.lbc
+        $(STD_LIB)  $^@ @tmp.lbc
         rm tmp.lbc
         cd $(MAIN_DIR)
 
-lib :: $(LIB_DIR)\$(libname).lib .SYMBOLIC
+lib :: $(LIB_DIR)/$(libname).lib .SYMBOLIC
     %null
 
 .c.obj :
@@ -67,15 +67,15 @@ lib :: $(LIB_DIR)\$(libname).lib .SYMBOLIC
     @cd $(MAIN_DIR)
 
 clean : .SYMBOLIC
-        -rm -f $(OBJ_DIR)\*.obj
-        -rm -f $(LIB_DIR)\*.lib
+        -rm -f $(OBJ_DIR)/*.obj
+        -rm -f $(LIB_DIR)/*.lib
 
 update : .SYMBOLIC
-    #@copy $(MAIN_DIR)\read.me $(UPD_DIR)
-    @copy $(MAIN_DIR)\h\wpi.h $(UPD_DIR)\h
-    @copy $(MAIN_DIR)\h\wpi_win.h $(UPD_DIR)\h
-    @copy $(MAIN_DIR)\h\wpi_os2.h $(UPD_DIR)\h
-    @copy $(LIB_DIR)\$(libname).lib $(UPD_DIR)\lib
+    #@cp $(MAIN_DIR)/read.me $(UPD_DIR)
+    @cp $(MAIN_DIR)/h/wpi.h $(UPD_DIR)/h
+    @cp $(MAIN_DIR)/h/wpi_win.h $(UPD_DIR)/h
+    @cp $(MAIN_DIR)/h/wpi_os2.h $(UPD_DIR)/h
+    @cp $(LIB_DIR)/$(libname).lib $(UPD_DIR)/lib
 
 wpi_win.obj : wpi_win.c wpi_win.h wpitypes.h wpi.h
 wpi_os2.obj : wpi_os2.c wpi_os2.h wpitypes.h wpi.h

@@ -33,33 +33,34 @@
 #include "state.def"
 
 typedef struct state {
-    struct state * next;        /* pointer to next state                    */
-    HANDLE      appwnd;         /* window handle                            */
-    char        sizeinfo;       /* information about sizing direction       */
-    STATE_ID    currstate;      /* current state                            */
-    STATE_ID    basestate;      /* base state                               */
-    OBJPTR      currobj;        /* current object                           */
-    OBJPTR      selecteatom;    /* eatom used for banded select             */
-    OBJPTR      prevobject;     /* previous object                          */
-    POINT       prevmouse;      /* mouse posn at last significant operation */
-    OBJPTR      mainobject;     /* the main object                          */
-    OBJ_ID      objtype;        /* type of object to create                 */
-    unsigned    gridvinc;       /* grid vertical increment value            */
-    unsigned    gridhinc;       /* grid horizontal increment value          */
-    void *      objects;        /* pointer to object creation table         */
-    POINT       offset;         /* Scrolling offset from (0,0)              */
-    HANDLE      hEscAccel;      /* Handle to escape accelerator table       */
-    HANDLE      hAccel[ACCELS]; /* Handles to accelerator tables            */
-    RECT        scrollrect;     /* The rect than can be scrolled within     */
-    SCR_CONFIG  scrollconfig;   /* Scrolling attributes from application    */
-    WORD        keystate;       /* Was shift pressed on mouse down?         */
-    BOOL        showerror;      /* Show error message when we get it?       */
-    char *      error;          /* Pending error string                     */
-    FARPROC     mouseaction;    /* Rtn to call on significant mouse actions */
-    unsigned    vresizegrid;    /* vertical resize grid increment           */
-    unsigned    hresizegrid;    /* horizontal resize grid increment         */
-    BOOL        show_eatoms;    /* new eatoms will show their movement rect */
-    STATE_HDL   id;             /* state id                                 */
+    struct state    *next;          /* pointer to next state                    */
+    HANDLE          appwnd;         /* window handle                            */
+    unsigned char   sizeinfo;       /* information about sizing direction       */
+    STATE_ID        currstate;      /* current state                            */
+    STATE_ID        basestate;      /* base state                               */
+    OBJPTR          currobj;        /* current object                           */
+    OBJPTR          selecteatom;    /* eatom used for banded select             */
+    OBJPTR          prevobject;     /* previous object                          */
+    POINT           prevmouse;      /* mouse posn at last significant operation */
+    OBJPTR          mainobject;     /* the main object                          */
+    OBJ_ID          objtype;        /* type of object to create                 */
+    unsigned        gridvinc;       /* grid vertical increment value            */
+    unsigned        gridhinc;       /* grid horizontal increment value          */
+    void            *objects;       /* pointer to object creation table         */
+    POINT           offset;         /* Scrolling offset from (0,0)              */
+    HANDLE          hEscAccel;      /* Handle to escape accelerator table       */
+    HANDLE          hAccel[ACCELS]; /* Handles to accelerator tables            */
+    RECT            scrollrect;     /* The rect than can be scrolled within     */
+    SCR_CONFIG      scrollconfig;   /* Scrolling attributes from application    */
+    WORD            keystate;       /* Was shift pressed on mouse down?         */
+    BOOL            showerror;      /* Show error message when we get it?       */
+    char            *error;         /* Pending error string                     */
+    void            (FM_EXPORT *mouseaction)( HWND, RECT * );
+                                    /* Rtn to call on significant mouse actions */
+    unsigned        vresizegrid;    /* vertical resize grid increment           */
+    unsigned        hresizegrid;    /* horizontal resize grid increment         */
+    BOOL            show_eatoms;    /* new eatoms will show their movement rect */
+    STATE_HDL       id;             /* state id                                 */
 };
 
 #define STATE_INDEX 0

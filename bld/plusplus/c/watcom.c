@@ -24,23 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C++ compiler banner.
 *
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stdio.h>
 #include <banner.h>
-#include "plusplus.h"
+
 #include "errdefns.h"
 #include "fingprnt.h"
 
 #define __puts( x )     MsgDisplayBanner( x )
 
-#undef _BANEXTRA
-#define _BANEXTRA       " "
-
+#ifdef _BANEXTRA
+#undef  _BANEXTRA
+#define _BANEXTRA _BANEXSHORT
+#endif
 
 #if _CPU == 386
  #define __TARCH "32"
@@ -52,7 +54,7 @@
 
 #define _C      "C++"
 
-#define _COMPILER " Optimizing Compiler "
+#define _COMPILER " Optimizing Compiler"
 
 void CBanner( void )
 {
@@ -61,12 +63,7 @@ void CBanner( void )
     __puts( banner1w( _C __TARCH _COMPILER, _WPP_VERSION_ ) );
     __puts( banner2( "1989" ) );
     __puts( banner3 );
-  #if 0
-    __puts( "********* CONFIDENTIAL - Preliminary software **************" );
-  #endif
-  #if 0
-    __puts( "******** For internal use only by WATCOM Systems Inc. ********" );
-  #endif
+    __puts( banner3a );
     if( Token[0] != '$' ) {             /* if finger print present */
         __puts( Token );                /* - print it */
     }

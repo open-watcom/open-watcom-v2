@@ -51,11 +51,6 @@ NewDBRFile::NewDBRFile( WWindow * parent, const char * filter )
 {
 }
 
-NewDBRFile::~NewDBRFile()
-//-----------------------
-{
-}
-
 bool NewDBRFile::contextHelp( bool is_active_win )
 //------------------------------------------------
 {
@@ -68,6 +63,7 @@ bool NewDBRFile::contextHelp( bool is_active_win )
 void NewDBRFile::initialize()
 //--------------------------
 {
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();
@@ -133,4 +129,13 @@ void NewDBRFile::filesButton( WWindow * )
     if( result && *result ) {
         _fileEdit->setText( result );
     }
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+NewDBRFile::~NewDBRFile()
+//-----------------------
+{
 }

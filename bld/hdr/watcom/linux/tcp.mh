@@ -1,0 +1,33 @@
+/*
+ *  netinet/tcp.h      TCP Protocol
+ *
+:include crwat.sp
+ */
+#ifndef _NETINET_TCP_H_INCLUDED
+#define _NETINET_TCP_H_INCLUDED
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+:include lnxkpack.sp
+
+/* TCP socket options */
+#define TCP_NODELAY             1
+#define TCP_MAXSEG              2
+#define TCP_CORK                3
+#define TCP_KEEPIDLE            4
+#define TCP_KEEPINTVL           5
+#define TCP_KEEPCNT             6
+#define TCP_SYNCNT              7
+#define TCP_LINGER2             8
+#define TCP_DEFER_ACCEPT        9
+#define TCP_WINDOW_CLAMP        10
+#define TCP_INFO                11
+#define TCP_QUICKACK            12
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_NETINET_TCP_H_INCLUDED */

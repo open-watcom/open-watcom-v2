@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage type information.
 *
 ****************************************************************************/
 
@@ -95,10 +94,10 @@ dw_handle DWENTRY DWModifier(
     dw_handle                   hdl,
     uint                        modifiers )
 {
-    dw_handle                   new_hdl;
+    dw_handle                   new_hdl = 0;
     abbrev_code                 abbrev;
 
-    _Validate( hdl != NULL );
+    _Validate( hdl != 0 );
     while( modifiers != 0 ) {
         if( modifiers & DW_MOD_CONSTANT ) {
             abbrev = AB_CONST_TYPE;
@@ -169,7 +168,7 @@ dw_handle DWENTRY DWTypedef(
 
     start_scope = start_scope;
     _Validate( name != NULL );
-    _Validate( base_type != NULL );
+    _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_TYPEDEF_TYPE | AB_START_REF;
     emitCommonTypeInfo( cli, abbrev , name, flags );
@@ -213,7 +212,7 @@ dw_handle DWENTRY DWPointer(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    _Validate( base_type != NULL );
+    _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
     if( flags & DW_FLAG_REFERENCE ) abbrev = AB_REFERENCE_TYPE;
@@ -236,7 +235,7 @@ dw_handle DWENTRY DWBasedPointer(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    _Validate( base_type != NULL );
+    _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_POINTER_TYPE;
     if( seg ) abbrev |= AB_SEGMENT;
@@ -260,7 +259,7 @@ dw_handle DWENTRY DWSimpleArray(
     abbrev_code                 abbrev;
 
     new_hdl = GetHandle( cli );
-    _Validate( elt_type != NULL );
+    _Validate( elt_type != 0 );
     abbrev = AB_SIMPLE_ARRAY_TYPE;
     StartDIE( cli, abbrev );
     InfoULEB128( cli, elt_count );
@@ -282,7 +281,7 @@ dw_handle DWENTRY DWBeginArray(
 
     start_scope = start_scope;
     new_hdl = GetHandle( cli );
-    _Validate( elt_type != NULL );
+    _Validate( elt_type != 0 );
     abbrev = AB_SIBLING;
     if( stride_size != 0 ) {
         abbrev |= AB_ARRAY_TYPE_WITH_STRIDE;
@@ -308,11 +307,11 @@ void DWENTRY DWArrayDimension(
     abbrev_code abbrev;
 
     abbrev = AB_ARRAY_BOUND;
-    if( dim_info->index_type != NULL ) {
+    if( dim_info->index_type != 0 ) {
         abbrev |= AB_TYPE;
     }
     StartDIE( cli, abbrev );
-    if( dim_info->index_type != NULL ) {
+    if( dim_info->index_type != 0 ) {
         EmitTypeRef( cli, dim_info->index_type );
     }
     /* AT_lower_bound */
@@ -329,11 +328,11 @@ void DWENTRY DWArrayVarDim(
     abbrev_code abbrev;
 
     abbrev = AB_ARRAY_VARDIM;
-    if( dim_info->index_type != NULL ) {
+    if( dim_info->index_type != 0 ) {
         abbrev |= AB_TYPE;
     }
     StartDIE( cli, abbrev );
-    if( dim_info->index_type != NULL ) {
+    if( dim_info->index_type != 0 ) {
         EmitTypeRef( cli, dim_info->index_type );
     }
     /* AT_lower_bound */
@@ -594,7 +593,7 @@ dw_handle DWENTRY DWBeginSubroutineType(
     abbrev_code                 abbrev;
 
     start_scope = start_scope;
-    _Validate( return_type != NULL );
+    _Validate( return_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_SUBROUTINE_TYPE | AB_SIBLING;
     if( flags & DW_PTR_TYPE_MASK ) abbrev |= AB_ADDRESS_CLASS;
@@ -624,7 +623,7 @@ dw_handle DWENTRY DWAddParmToSubroutineType(
 //TODO: change interface
     loc = loc;
     seg = seg;
-    _Validate( parm_type !=NULL );
+    _Validate( parm_type != 0 );
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_FORMAL_PARM_TYPE;
     if( name ) abbrev |= AB_NAME;

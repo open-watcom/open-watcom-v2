@@ -3,11 +3,13 @@
 
 static int flag;
 
-void terminate() {
-    fail(__LINE__);
-}
-void unexpected() {
-    fail(__LINE__);
+namespace std {
+    void terminate() {
+        fail(__LINE__);
+    }
+    void unexpected() {
+        fail(__LINE__);
+    }
 }
 
 int main() {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Worker routines for various input dialogs.
 *
 ****************************************************************************/
 
@@ -42,20 +41,22 @@
 #include "spawn.h"
 #include "mad.h"
 
-extern char             *ReScan(char*);
-extern unsigned long    ReqLongExpr();
-extern void             ReqMemAddr(memory_expr , address *);
-extern void             ReqEOC();
-extern void             NormalExpr(void);
-extern void             ChkExpr(void);
-extern void             FreezeStack();
+
+extern char             *ReScan( char * );
+extern unsigned long    ReqLongExpr( void );
+extern void             ReqMemAddr( memory_expr, address * );
+extern void             ReqEOC( void );
+extern void             NormalExpr( void );
+extern void             ChkExpr( void );
+extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
-extern char             *ScanPos(void);
-extern unsigned int     ScanLen(void);
+extern char             *ScanPos( void );
+extern unsigned int     ScanLen( void );
 extern mod_handle       LookupModName( mod_handle, char *, unsigned );
-extern void             Scan(void);
+extern void             Scan( void );
 extern void             RawScanInit( void );
 extern bool             ScanItem( bool, char **, unsigned * );
+
 
 OVL_EXTERN void GetExprAny( void *value )
 {
@@ -64,9 +65,9 @@ OVL_EXTERN void GetExprAny( void *value )
     ReqEOC();
 }
 
-OVL_EXTERN void GetExprLong( long *value )
+OVL_EXTERN void GetExprLong( void *value )
 {
-    *value = ReqLongExpr();
+    *(long *)value = ReqLongExpr();
     ReqEOC();
 }
 
@@ -77,25 +78,25 @@ OVL_EXTERN void GetExprSyntax( void *value )
     ReqEOC();
 }
 
-OVL_EXTERN void GetExprCodeAddr( address *value )
+OVL_EXTERN void GetExprCodeAddr( void *value )
 {
     ReqMemAddr( EXPR_CODE, value );
     ReqEOC();
 }
 
-OVL_EXTERN void GetExprDataAddr( address *value )
+OVL_EXTERN void GetExprDataAddr( void *value )
 {
     ReqMemAddr( EXPR_DATA, value );
     ReqEOC();
 }
 
-OVL_EXTERN void GetExprGivenAddr( address *value )
+OVL_EXTERN void GetExprGivenAddr( void *value )
 {
     ReqMemAddr( EXPR_GIVEN, value );
     ReqEOC();
 }
 
-OVL_EXTERN void GetModName( mod_handle *value )
+OVL_EXTERN void GetModName( void *value )
 {
     mod_handle  mod;
     char        *start;
@@ -109,7 +110,7 @@ OVL_EXTERN void GetModName( mod_handle *value )
     }
     Scan();
     ReqEOC();
-    *value = mod;
+    *(mod_handle *)value = mod;
 }
 
 static bool DlgDoScan( char *str, void *value, void (*rtn)(void*) )
@@ -174,4 +175,3 @@ bool DlgScanModName( char *str, void *value )
 {
     return( DlgDoScan( str, value, GetModName ) );
 }
-

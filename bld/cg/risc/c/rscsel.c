@@ -34,14 +34,13 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "addrname.h"
 #include "tree.h"
 #include "seldef.h"
+#include "types.h"
+#include "makeins.h"
 
-extern  instruction     *NewIns( int );
 extern  void            AddIns( instruction * );
-extern  type_def        *TypeAddress( cg_type );
 
 extern  type_length     TypeClassLength[];
 
@@ -122,20 +121,20 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
 
     switch( node->tipe->length ) {
     case 1:
-        unsigned_t = T_UINT_1;
-        signed_t = T_INT_1;
+        unsigned_t = TY_UINT_1;
+        signed_t = TY_INT_1;
         break;
     case 2: /* no support in switch */
-        unsigned_t = T_UINT_2;
-        signed_t = T_INT_2;
+        unsigned_t = TY_UINT_2;
+        signed_t = TY_INT_2;
         break;
     case 4:
-        unsigned_t = T_UINT_4;
-        signed_t = T_INT_4;
+        unsigned_t = TY_UINT_4;
+        signed_t = TY_INT_4;
         break;
     default: /* an error */
-        unsigned_t = NULL;
-        signed_t =  NULL;
+        unsigned_t = 0;
+        signed_t   = 0;
         break;
     }
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );

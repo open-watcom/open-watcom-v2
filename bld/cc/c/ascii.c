@@ -24,113 +24,109 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ASCII character set - table of character types.
 *
 ****************************************************************************/
 
 
-/*
-%% CHRSET    : character set - table of character types
-*/
 #include "cvars.h"
 #include "scan.h"
 #include "weights.gh"
 
-#define C_XW    ( C_WS | C_EX )
+#define C_XW    (C_WS | C_EX)
 // C++ has TAB and CR set to C_XW
 
 /* The following table is ASCII dependent. */
 
-char CharSet[]  = {                              /* ASCII */
+charset_flags CharSet[]  = {                              /* ASCII */
 
-/*  00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL */
-     C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* NUL to BEL */
+/* 00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL */
+    C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* NUL to BEL */
 
-/*  08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI  */
-     C_BC,  C_WS,  C_EX,  C_WS,  C_WS,  C_WS,  C_BC,  C_BC, /* BS  to SI */
+/* 08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI  */
+    C_BC,  C_WS,  C_EX,  C_WS,  C_WS,  C_WS,  C_BC,  C_BC, /* BS  to SI */
 
-/*  10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB */
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* DLE to ETB */
+/* 10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB */
+    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* DLE to ETB */
 
-/*  18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1F US  */
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* CAN to US */
+/* 18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1F US  */
+    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* CAN to US */
 
-        C_WS,           /* 20 SP */
-        C_D2,           /* 21 !  */
-        C_D1,           /* 22 "  */
-        C_D2,           /* 23 #  */
-        C_BC,           /* 24 $  */
-        C_D2,           /* 25 %  */
-        C_D2,           /* 26 &  */
-        C_D1,           /* 27 '  */
+    C_WS,           /* 20 SP */
+    C_D2,           /* 21 !  */
+    C_D1,           /* 22 "  */
+    C_D2,           /* 23 #  */
+    C_BC,           /* 24 $  */
+    C_D2,           /* 25 %  */
+    C_D2,           /* 26 &  */
+    C_D1,           /* 27 '  */
 
 #if _CPU == 370
-        C_D2,           /* 28 (  */
+    C_D2,           /* 28 (  */
 #else
-        C_D1,           /* 28 (  */
+    C_D1,           /* 28 (  */
 #endif
-        C_D1,           /* 29 )  */
-        C_D2,           /* 2A *  */
-        C_D2,           /* 2B +  */
-        C_D1,           /* 2C ,  */
-        C_D2,           /* 2D -  */
-        C_D1,           /* 2E .  */
-        C_D2,           /* 2F /  */
+    C_D1,           /* 29 )  */
+    C_D2,           /* 2A *  */
+    C_D2,           /* 2B +  */
+    C_D1,           /* 2C ,  */
+    C_D2,           /* 2D -  */
+    C_D1,           /* 2E .  */
+    C_D2,           /* 2F /  */
 
-        C_DI,           /* 30 0  */
-        C_DI,           /* 31 1  */
-        C_DI,           /* 32 2  */
-        C_DI,           /* 33 3  */
-        C_DI,           /* 34 4  */
-        C_DI,           /* 35 5  */
-        C_DI,           /* 36 6  */
-        C_DI,           /* 37 7  */
+    C_DI,           /* 30 0  */
+    C_DI,           /* 31 1  */
+    C_DI,           /* 32 2  */
+    C_DI,           /* 33 3  */
+    C_DI,           /* 34 4  */
+    C_DI,           /* 35 5  */
+    C_DI,           /* 36 6  */
+    C_DI,           /* 37 7  */
 
-        C_DI,           /* 38 8  */
-        C_DI,           /* 39 9  */
-        C_D2,           /* 3A :  */
-        C_D1,           /* 3B ;  */
-        C_D2,           /* 3C <  */
-        C_D2,           /* 3D =  */
-        C_D2,           /* 3E >  */
-        C_D1 | C_EX,    /* 3F ?  */
+    C_DI,           /* 38 8  */
+    C_DI,           /* 39 9  */
+    C_D2,           /* 3A :  */
+    C_D1,           /* 3B ;  */
+    C_D2,           /* 3C <  */
+    C_D2,           /* 3D =  */
+    C_D2,           /* 3E >  */
+    C_D1 | C_EX,    /* 3F ?  */
 
-        C_BC,           /* 40 @  */
-        C_HX | C_AL,    /* 41 A  */
-        C_HX | C_AL,    /* 42 B  */
-        C_HX | C_AL,    /* 43 C  */
-        C_HX | C_AL,    /* 44 D  */
-        C_HX | C_AL,    /* 45 E  */
-        C_HX | C_AL,    /* 46 F  */
-        C_AL,           /* 47 G  */
+    C_BC,           /* 40 @  */
+    C_HX | C_AL,    /* 41 A  */
+    C_HX | C_AL,    /* 42 B  */
+    C_HX | C_AL,    /* 43 C  */
+    C_HX | C_AL,    /* 44 D  */
+    C_HX | C_AL,    /* 45 E  */
+    C_HX | C_AL,    /* 46 F  */
+    C_AL,           /* 47 G  */
 
-/*  48 H   49 I   4A J   4B K   4C L   4D M   4E N   4F O   */
-     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* H   to O */
+/* 48 H   49 I   4A J   4B K   4C L   4D M   4E N   4F O   */
+    C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* H   to O */
 
-/*  50 P   51 Q   52 R   53 S   54 T   55 U   56 V   57 W   */
-     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* P   to W */
+/* 50 P   51 Q   52 R   53 S   54 T   55 U   56 V   57 W   */
+    C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* P   to W */
 
-/*  58 X   59 Y   5A Z   5B [   5C \   5D ]   5E ^   5F _   */
-     C_AL,  C_AL,  C_AL,  C_D1,  C_EX,  C_D1,  C_D2,  C_AL, /* X   to _ */
+/* 58 X   59 Y   5A Z   5B [   5C \   5D ]   5E ^   5F _   */
+    C_AL,  C_AL,  C_AL,  C_D1,  C_EX,  C_D1,  C_D2,  C_AL, /* X   to _ */
 
-        C_BC,           /* 60 `  */
-        C_HX | C_AL,    /* 61 a  */
-        C_HX | C_AL,    /* 62 b  */
-        C_HX | C_AL,    /* 63 c  */
-        C_HX | C_AL,    /* 64 d  */
-        C_HX | C_AL,    /* 65 e  */
-        C_HX | C_AL,    /* 66 f  */
-        C_AL,           /* 67 g  */
+    C_BC,           /* 60 `  */
+    C_HX | C_AL,    /* 61 a  */
+    C_HX | C_AL,    /* 62 b  */
+    C_HX | C_AL,    /* 63 c  */
+    C_HX | C_AL,    /* 64 d  */
+    C_HX | C_AL,    /* 65 e  */
+    C_HX | C_AL,    /* 66 f  */
+    C_AL,           /* 67 g  */
 
-/*  68 h   69 i   6A j   6B k   6C l   6D m   6E n   6F o   */
-     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* h   to o */
+/* 68 h   69 i   6A j   6B k   6C l   6D m   6E n   6F o   */
+    C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* h   to o */
 
-/*  70 p   71 q   72 r   73 s   74 t   75 u   76 v   77 w   */
-     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* p   to w */
+/* 70 p   71 q   72 r   73 s   74 t   75 u   76 v   77 w   */
+    C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, /* p   to w */
 
-/*  78 x   79 y   7A z   7B {   7C |   7D }   7E ~   7F DEL */
-     C_AL,  C_AL,  C_AL, C_D1,  C_D2,  C_D1,  C_D1,  C_BC,  /* x   to DEL */
+/* 78 x   79 y   7A z   7B {   7C |   7D }   7E ~   7F DEL */
+    C_AL,  C_AL,  C_AL, C_D1,  C_D2,  C_D1,  C_D1,  C_BC,  /* x   to DEL */
 
 /*  80     81     82     83     84     85     86     87  */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $80 to $87 */
@@ -181,9 +177,12 @@ char CharSet[]  = {                              /* ASCII */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $F8 to $FF */
 
     0                   // EOF_CHAR
-  };
+};
 
-char TokValue[]  = {                             /* ASCII */
+unsigned char TokValue[]  = {            /* ASCII */
+
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1F */
 
         0,              /* 20 SP */
 EQ|     T_EXCLAMATION,  /* 21 !  */
@@ -287,10 +286,13 @@ EQ|DUP| T_OR,           /* 7C |  */
         T_RIGHT_BRACE,  /* 7D }  */
         T_TILDE,        /* 7E ~  */
         0,              /* 7F DEL*/
-        0, 0, 0, 0, 0, 0, 0, 0, /* 80-87 */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 88-8F */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 90-97 */
-        0, 0, 0, 0, 0, 0, 0, 0, /* 98-9F */
-        0, 0, 0, 0, 0, 0, 0, 0  /* A0-A7 */
-    };
 
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 80 - 8F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 90 - 9F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* A0 - AF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* B0 - BF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* C0 - CF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* D0 - DF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* E0 - EF */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  /* F0 - FF */
+};

@@ -1,2 +1,2 @@
-mkerr=..\cmds\mkerr
+mkerr=@false
 envarg=..\cmds\envarg

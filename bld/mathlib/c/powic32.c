@@ -34,16 +34,16 @@
 #include "cplx.h"
 #include "mathcode.h"
 
-_WMRTLINK xcomplex _IF_C32PowI( extended a, extended b, intstar4 i ) {
-//===================================================================
-
+_WMRTLINK xcomplex _IF_C32PowI( extended a, extended b, intstar4 i )
+//==================================================================
+{
 // Complex power to an integer exponent.
 
     dcomplex tmp = _IF_C16PowI(a, b, i);
     xcomplex res;
     res.realpart = tmp.realpart;
     res.imagpart = tmp.imagpart;
-    return res;
+    return( res );
 
 #ifdef blah // Get rid of this when 10-byte support is enabled
     extended    t;

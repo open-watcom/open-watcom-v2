@@ -1,0 +1,486 @@
+.387
+		PUBLIC	_cstart_
+		PUBLIC	_Not_Enough_Memory_
+		PUBLIC	__exit_
+		PUBLIC	__exit_with_msg_
+		PUBLIC	__GETDS
+		PUBLIC	__DOSseg__
+		PUBLIC	__first_data_16M
+		PUBLIC	d16_seginfo_struct
+		PUBLIC	__gdt
+		PUBLIC	__idt
+		PUBLIC	__rtcode
+		PUBLIC	__d16info
+		PUBLIC	__psp16M
+		PUBLIC	__env16M
+		PUBLIC	__mem16M
+		PUBLIC	__dummy16M
+		PUBLIC	__nullarea
+		PUBLIC	__main_data_16M
+		PUBLIC	__curbrk
+		PUBLIC	__psp
+		PUBLIC	__osmajor
+		PUBLIC	__osminor
+		PUBLIC	__osmode
+		PUBLIC	__HShift
+		PUBLIC	__STACKLOW
+		PUBLIC	__STACKTOP
+		PUBLIC	__cbyte
+		PUBLIC	__child
+		PUBLIC	__no87
+		PUBLIC	__get_ovl_stack
+		PUBLIC	__restore_ovl_stack
+		PUBLIC	__close_ovl_file
+		PUBLIC	___FPE_handler
+		PUBLIC	__FPE_handler
+		PUBLIC	__LpCmdLine
+		PUBLIC	__LpPgmName
+		PUBLIC	__ovlflag
+		PUBLIC	__intno
+		PUBLIC	__ovlvec
+		PUBLIC	__stack_16M
+		PUBLIC	__end_16M
+		EXTRN	stackavail_:BYTE
+		EXTRN	_end:BYTE
+		EXTRN	_edata:BYTE
+		EXTRN	__FInitRtns:BYTE
+		EXTRN	__CMain:BYTE
+		EXTRN	__FFiniRtns:BYTE
+		EXTRN	___d16_selectors:BYTE
+		EXTRN	__acrtused:BYTE
+DGROUP		GROUP	_NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,BCSD,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK,verylast
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_startup_:
+    DD	stackavail_
+_cstart_:
+    jmp         near ptr L$5 
+    DB	57H, 41H, 54H, 43H, 4fH, 4dH, 20H, 43H
+    DB	20H, 52H, 75H, 6eH, 2dH, 54H, 69H, 6dH
+    DB	65H, 20H, 73H, 79H, 73H, 74H, 65H, 6dH
+    DB	20H, 63H, 6fH, 64H, 65H, 20H, 69H, 73H
+    DB	20H, 70H, 72H, 6fH, 76H, 69H, 64H, 65H
+    DB	64H, 20H, 6fH, 6eH, 20H, 61H, 6eH, 20H
+    DB	22H, 61H, 73H, 20H, 69H, 73H, 22H, 20H
+    DB	62H, 61H, 73H, 69H, 73H, 20H, 61H, 6eH
+    DB	64H, 20H, 69H, 73H, 20H, 28H, 63H, 29H
+    DB	20H, 43H, 6fH, 70H, 79H, 72H, 69H, 67H
+    DB	68H, 74H, 20H, 62H, 79H, 20H, 57H, 41H
+    DB	54H, 43H, 4fH, 4dH, 20H, 49H, 6eH, 74H
+    DB	65H, 72H, 6eH, 61H, 74H, 69H, 6fH, 6eH
+    DB	61H, 6cH, 20H, 43H, 6fH, 72H, 70H, 2eH
+    DB	20H, 31H, 39H, 38H, 38H, 2dH, 31H, 39H
+    DB	39H, 33H, 2eH, 20H, 41H, 6cH, 6cH, 20H
+    DB	72H, 69H, 67H, 68H, 74H, 73H, 20H, 72H
+    DB	65H, 73H, 65H, 72H, 76H, 65H, 64H, 2eH
+L$1:
+    DB	0dH, 0aH, 2aH, 2aH, 2aH, 20H, 4eH, 55H
+    DB	4cH, 4cH, 20H, 61H, 73H, 73H, 69H, 67H
+    DB	6eH, 6dH, 65H, 6eH, 74H, 20H, 64H, 65H
+    DB	74H, 65H, 63H, 74H, 65H, 64H, 0dH, 0aH
+    DB	0
+L$2:
+    DB	4eH, 6fH, 74H, 20H, 65H, 6eH, 6fH, 75H
+    DB	67H, 68H, 20H, 6dH, 65H, 6dH, 6fH, 72H
+    DB	79H, 0dH, 0aH, 0
+L$3:
+    DB	63H, 6fH, 6eH, 0, 0, 0
+L$4:
+    DB	72H, 65H, 71H, 75H, 69H, 72H, 65H, 73H
+    DB	20H, 44H, 4fH, 53H, 2fH, 31H, 36H, 4dH
+    DB	0aH, 0dH, 24H
+_Not_Enough_Memory_:
+    mov         bx,1 
+    mov         ax,offset L$2 
+    mov         dx,cs 
+    jmp         near ptr __exit_with_msg_ 
+L$5:
+    mov         ax,0ff00H 
+    mov         dx,78H 
+    int         21H 
+    inc         ax 
+    je          L$6 
+    mov         ah,9 
+    mov         dx,offset L$4 
+    push        cs 
+    pop         ds 
+    int         21H 
+    mov         ax,4cffH 
+    int         21H 
+L$6:
+    sti         
+    mov         cx,DGROUP 
+    mov         es,cx 
+    mov         bx,offset DGROUP:_end 
+    add         bx,0fH 
+    and         bl,0f0H 
+    mov         word ptr es:__STACKLOW,bx 
+    mov         word ptr es:__psp,ds 
+    mov         bx,offset DGROUP:__end_16M 
+    add         bx,0fH 
+    and         bx,0fff0H 
+    jne         L$7 
+    mov         bx,0fffeH 
+L$7:
+    mov         word ptr es:__curbrk,bx 
+    mov         ss,cx 
+    mov         sp,bx 
+    mov         word ptr es:__STACKTOP,bx 
+    mov         di,ds 
+    mov         es,di 
+    mov         di,81H 
+    mov         cl,byte ptr -1[di] 
+    mov         ch,0 
+    cld         
+    mov         al,20H 
+    repe scasb  
+    lea         si,-1[di] 
+    mov         dx,DGROUP 
+    mov         es,dx 
+    mov         di,word ptr es:__STACKLOW 
+    mov         word ptr es:__LpCmdLine,di 
+    mov         word ptr es:L$24,es 
+    je          L$8 
+    inc         cx 
+    rep movsb   
+L$8:
+    sub         al,al 
+    stosb       
+    mov         al,0 
+    stosb       
+    dec         di 
+    mov         ah,30H 
+    int         21H 
+    mov         byte ptr es:__osmajor,al 
+    mov         byte ptr es:__osminor,ah 
+    mov         cx,di 
+    cmp         al,3 
+    jb          L$12 
+    mov         ax,word ptr ds:[2cH] 
+    mov         dx,word ptr es:__psp 
+    mov         ds,ax 
+    sub         si,si 
+    xor         bp,bp 
+L$9:
+    mov         ax,word ptr [si] 
+    or          ax,2020H 
+    cmp         ax,6f6eH 
+    jne         L$10 
+    mov         ax,word ptr 2[si] 
+    cmp         ax,3738H 
+    jne         L$10 
+    inc         bp 
+L$10:
+    cmp         byte ptr [si],0 
+    lodsb       
+    jne         L$10 
+    cmp         byte ptr [si],0 
+    jne         L$9 
+    lodsb       
+    inc         si 
+    inc         si 
+L$11:
+    cmp         byte ptr [si],0 
+    movsb       
+    jne         L$11 
+L$12:
+    mov         si,cx 
+    mov         word ptr es:__LpPgmName,si 
+    mov         word ptr es:L$25,es 
+    mov         dx,DGROUP 
+    mov         ds,dx 
+    mov         es,dx 
+    mov         word ptr DGROUP:__no87,bp 
+    mov         word ptr DGROUP:__STACKLOW,di 
+    mov         cx,offset DGROUP:_end 
+    mov         di,offset DGROUP:_edata 
+    sub         cx,di 
+    mov         al,0 
+    rep stosb   
+    cmp         word ptr DGROUP:__get_ovl_stack,0 
+    jne         L$13 
+    mov         ax,offset __null_ovl_rtn 
+    mov         word ptr DGROUP:__get_ovl_stack,ax 
+    mov         word ptr DGROUP:L$20,cs 
+    mov         word ptr DGROUP:__restore_ovl_stack,ax 
+    mov         word ptr DGROUP:L$21,cs 
+    mov         word ptr DGROUP:__close_ovl_file,ax 
+    mov         word ptr DGROUP:L$22,cs 
+L$13:
+    xor         bp,bp 
+    push        bp 
+    mov         bp,sp 
+    mov         ax,offset __null_FPE_rtn 
+    mov         word ptr DGROUP:___FPE_handler,ax 
+    mov         word ptr DGROUP:L$23,cs 
+    call        far ptr __FInitRtns 
+    call        far ptr __CMain 
+__exit_:
+    push        ax 
+    mov         dx,DGROUP 
+    mov         ds,dx 
+    cld         
+    lea         di,DGROUP:__nullarea 
+    mov         es,dx 
+    mov         cx,10H 
+    mov         ax,101H 
+    repe scasw  
+    pop         ax 
+    je          L$15 
+    mov         bx,ax 
+    mov         ax,offset L$1 
+    mov         dx,cs 
+__exit_with_msg_:
+    mov         sp,offset DGROUP:_end+80H 
+    push        bx 
+    push        ax 
+    push        dx 
+    mov         dx,_TEXT 
+    mov         ds,dx 
+    mov         dx,offset L$3 
+    mov         ax,3d01H 
+    int         21H 
+    mov         bx,ax 
+    pop         ds 
+    pop         dx 
+    mov         si,dx 
+    cld         
+L$14:
+    lodsb       
+    cmp         al,0 
+    jne         L$14 
+    mov         cx,si 
+    sub         cx,dx 
+    dec         cx 
+    mov         ah,40H 
+    int         21H 
+    pop         ax 
+L$15:
+    mov         dx,DGROUP 
+    mov         ds,dx 
+    cmp         byte ptr DGROUP:__ovlflag,0 
+    je          L$16 
+    push        ax 
+    mov         al,byte ptr DGROUP:__intno 
+    mov         ah,25H 
+    lds         dx,dword ptr DGROUP:__ovlvec 
+    int         21H 
+    pop         ax 
+L$16:
+    push        ax 
+    call        far ptr __FFiniRtns 
+    pop         ax 
+    mov         ah,4cH 
+    int         21H 
+__GETDS:
+    push        ss 
+    pop         ds 
+    ret         
+__null_FPE_rtn:
+    retf        
+__null_ovl_rtn:
+    retf        
+__DOSseg__:
+_TEXT		ENDS
+C_ETEXT		SEGMENT	PARA PUBLIC USE16 'ENDCODE'
+		ASSUME CS:C_ETEXT, DS:DGROUP, SS:DGROUP
+__first_data_16M:
+    DW	seg __first_data_16M
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+    add         byte ptr [bx+si],al 
+C_ETEXT		ENDS
+nullseg		SEGMENT	PARA PUBLIC USE16 'CODE'
+		ASSUME CS:nullseg, DS:DGROUP, SS:DGROUP
+    jmp         L$17 
+    nop         
+    nop         
+d16_seginfo_struct:
+    DB	44H, 4fH, 53H, 2fH, 31H, 36H, 4dH, 0
+    DB	3, 0
+    DW	offset _cstart_
+    DW	seg _startup_
+    DB	0, 0, 0, 0
+    DW	seg L$19
+    DW	seg _startup_
+    DW	seg __first_data_16M
+    DW	seg DGROUP:__nullarea
+    DW	seg DGROUP:__nullarea
+    DW	seg DGROUP:__end_16M
+    DW	seg __gdt
+    DW	seg __idt
+    DW	seg __d16info
+    DB	0, 0
+    DW	seg __rtcode
+    DW	seg __psp16M
+    DW	seg __env16M
+    DW	seg __mem16M
+    DW	seg __dummy16M
+L$17:
+    mov         dx,offset L$18 
+    mov         ax,cs 
+    mov         ds,ax 
+    mov         ah,9 
+    int         21H 
+    mov         ax,4cffH 
+    int         21H 
+L$18:
+    DB	2eH, 45H, 58H, 45H, 20H, 68H, 61H, 73H
+    DB	20H, 6eH, 6fH, 74H, 20H, 62H, 65H, 65H
+    DB	6eH, 20H, 70H, 72H, 6fH, 63H, 65H, 73H
+    DB	73H, 65H, 64H, 20H, 62H, 79H, 20H, 4dH
+    DB	41H, 4bH, 45H, 50H, 4dH, 0aH, 0dH, 24H
+nullseg		ENDS
+gdtseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__gdt:
+    DB	0, 0
+
+gdtseg		ENDS
+idtseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__idt:
+    DB	0, 0
+
+idtseg		ENDS
+rtcodeseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__rtcode:
+    DB	0, 0
+
+rtcodeseg		ENDS
+rtdataseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__d16info:
+    DB	0, 0
+
+rtdataseg		ENDS
+pspseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__psp16M:
+    DB	0, 0
+
+pspseg		ENDS
+envseg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__env16M:
+    DB	0, 0
+
+envseg		ENDS
+mem0seg		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__mem16M:
+    DB	0, 0
+
+mem0seg		ENDS
+dummy14		SEGMENT	PARA PUBLIC USE16 'FAR_DATA'
+__dummy16M:
+    DB	0, 0
+
+dummy14		ENDS
+ovi_data		SEGMENT	PARA PUBLIC USE16 'CODE'
+L$19:
+ovi_data		ENDS
+FAR_DATA		SEGMENT	BYTE PUBLIC USE16 'FAR_DATA'
+FAR_DATA		ENDS
+_NULL		SEGMENT	PARA PUBLIC USE16 'BEGDATA'
+__nullarea:
+__main_data_16M:
+    DB	1, 1, 1, 1, 1, 1, 1, 1
+    DB	1, 1, 1, 1, 1, 1, 1, 1
+    DB	1, 1, 1, 1, 1, 1, 1, 1
+    DB	1, 1, 1, 1, 1, 1, 1, 1
+
+_NULL		ENDS
+_AFTERNULL		SEGMENT	WORD PUBLIC USE16 'BEGDATA'
+    DB	0, 0
+
+_AFTERNULL		ENDS
+CONST		SEGMENT	WORD PUBLIC USE16 'DATA'
+CONST		ENDS
+STRINGS		SEGMENT	WORD PUBLIC USE16 'DATA'
+STRINGS		ENDS
+XIB		SEGMENT	WORD PUBLIC USE16 'DATA'
+XIB		ENDS
+XI		SEGMENT	WORD PUBLIC USE16 'DATA'
+XI		ENDS
+XIE		SEGMENT	WORD PUBLIC USE16 'DATA'
+XIE		ENDS
+YIB		SEGMENT	WORD PUBLIC USE16 'DATA'
+YIB		ENDS
+YI		SEGMENT	WORD PUBLIC USE16 'DATA'
+YI		ENDS
+YIE		SEGMENT	WORD PUBLIC USE16 'DATA'
+YIE		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+__curbrk:
+    DB	0, 0
+__psp:
+    DB	0, 0
+__osmajor:
+    DB	0
+__osminor:
+    DB	0
+__osmode:
+    DB	1
+__HShift:
+    DB	3
+__STACKLOW:
+    DB	0, 0
+__STACKTOP:
+    DB	0, 0
+__cbyte:
+    DB	0, 0
+__child:
+    DB	0, 0
+__no87:
+    DB	0, 0
+__get_ovl_stack:
+    DB	0, 0
+L$20:
+    DB	0, 0
+__restore_ovl_stack:
+    DB	0, 0
+L$21:
+    DB	0, 0
+__close_ovl_file:
+    DB	0, 0
+L$22:
+    DB	0, 0
+___FPE_handler:
+__FPE_handler:
+    DB	0, 0
+L$23:
+    DB	0, 0
+__LpCmdLine:
+    DB	0, 0
+L$24:
+    DB	0, 0
+__LpPgmName:
+    DB	0, 0
+L$25:
+    DB	0, 0
+__ovlflag:
+    DB	0
+__intno:
+    DB	0
+__ovlvec:
+    DB	0, 0, 0, 0
+
+_DATA		ENDS
+DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+DATA		ENDS
+BCSD		SEGMENT	WORD PUBLIC USE16 'DATA'
+BCSD		ENDS
+_BSS		SEGMENT	WORD PUBLIC USE16 'BSS'
+_BSS		ENDS
+
+STACK		SEGMENT	PARA STACK USE16 'STACK'
+    ORG 0
+__stack_16M    LABEL	BYTE
+    ORG 1000H
+STACK		ENDS
+
+verylast		SEGMENT	PARA PRIVATE USE16 'STACK'
+    ORG 0
+__end_16M    LABEL	BYTE
+verylast		ENDS
+
+		END

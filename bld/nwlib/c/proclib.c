@@ -24,39 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Process librarian commands.
 *
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
 
-extern void OMFLibWalk( libfile io, char *name, void *(rtn)( arch_header *arch, libfile io ) );
-extern void OMFSkipThisObject(arch_header *, libfile);
+static void SkipObject( libfile io )
+{
+    if( Options.libtype == WL_LTYPE_OMF ) {
+        OmfSkipObject( io );
+    }
+}
 
-static void ExtractObj(libfile io, char *name, file_offset size,
-                       arch_header *arch)
+static void CopyObj( libfile io, libfile out, arch_header *arch )
+{
+    if( Options.libtype == WL_LTYPE_OMF ) {
+        OmfExtract( io, out );
+    } else {
+        Copy( io, out, arch->size );
+    }
+}
+
+static void ExtractObj( libfile io, char *name, arch_header *arch, char *newname )
 {
     file_offset  pos;
     libfile      out;
     char        *obj_name;
 
-    /*
-     * If this is an OMF library then we don't have the right object size.
-     */
-    if (Options.libtype == WL_TYPE_OMF) {
-        pos = LibTell(io);
-        OMFSkipThisObject(arch, io);
-        size = LibTell(io) - pos;
-        LibSeek(io, pos, SEEK_SET);
-    }
-
-    obj_name = MakeObjOutputName( name );
-    unlink(obj_name);
+    obj_name = MakeObjOutputName( name, newname );
+    unlink( obj_name );
     out = LibOpen( obj_name, LIBOPEN_BINARY_WRITE );
     pos = LibTell( io );
-    Copy( io, out, size );
+    CopyObj( io, out, arch );
     LibSeek( io, pos, SEEK_SET );
     LibClose( out );
     if( Options.ar && Options.verbose ) {
@@ -70,19 +71,19 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     bool      deleted;
 
     if( Options.explode ) {
-        ExtractObj(io, arch->name, arch->size, arch);
+        ExtractObj( io, arch->name, arch, Options.explode_ext );
     }
     deleted = FALSE;
-    for (cmd = CmdList; cmd != NULL; cmd = cmd->next)
-    {
-        if (SameName( arch->name, cmd->name))
-        {
+    for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
+        if( SameName( arch->name, cmd->name ) ) {
 
-            if (!Options.explode)
-            {
-                if ((cmd->ops & OP_EXTRACT) && !(cmd->ops & OP_EXTRACTED))
-                {
-                    ExtractObj(io, cmd->name, arch->size, arch);
+            if( !Options.explode ) {
+                if( ( cmd->ops & OP_EXTRACT ) && !( cmd->ops & OP_EXTRACTED ) ) {
+                    if( cmd->fname != NULL ) {
+                        ExtractObj( io, cmd->name, arch, cmd->fname );
+                    } else {
+                        ExtractObj( io, cmd->name, arch, EXT_OBJ );
+                    }
                     cmd->ops |= OP_EXTRACTED;
                 }
             }
@@ -95,11 +96,8 @@ static void ProcessOneObject( arch_header *arch, libfile io )
         }
     }
 
-    if (deleted) {
-        if (Options.libtype == WL_TYPE_OMF) {
-            OMFSkipThisObject(arch, io);
-        }
-
+    if( deleted ) {
+        SkipObject( io );
         Options.modified = TRUE;
     } else {
         AddObjectSymbols( arch, io, LibTell( io ) );
@@ -114,6 +112,7 @@ static void AddOneObject( arch_header *arch, libfile io )
 static void DelOneObject( arch_header *arch, libfile io )
 {
     RemoveObjectSymbols( arch->name );
+    SkipObject( io );
 }
 
 typedef enum {
@@ -125,7 +124,7 @@ typedef enum {
 static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_header *arch, libfile io ) )
 {
     libfile     io;
-    char        buff[AR_IDENT_LEN];
+    unsigned char   buff[ AR_IDENT_LEN ];
     arch_header arch;
 
     NewArchHeader( &arch, name );
@@ -133,29 +132,29 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
     if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
         FatalError( ERR_CANT_READ, name, strerror( errno ) );
     }
-    if( strncmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
+    if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
         // AR format
         AddInputLib( io, name );
         LibWalk( io, name, process );
-        if( Options.libtype == 0 ) {
-            Options.libtype = WL_TYPE_AR;
+        if( Options.libtype == WL_LTYPE_NONE ) {
+            Options.libtype = WL_LTYPE_AR;
         }
-    } else if( strncmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
+    } else if( memcmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
         // MLIB format
         if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
             FatalError( ERR_CANT_READ, name, strerror( errno ) );
         }
-        if( strncmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
+        if( memcmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
             BadLibrary( name );
         }
         AddInputLib( io, name );
         LibWalk( io, name, process );
-        if( Options.libtype == 0 ) {
-            Options.libtype = WL_TYPE_MLIB;
+        if( Options.libtype == WL_LTYPE_NONE ) {
+            Options.libtype = WL_LTYPE_MLIB;
         }
     } else if( AddImport( &arch, io ) ) {
         LibClose( io );
-    } else if( buff[0] == LIB_HEADER_REC && buff[ 1 ] != 0x01 ) {
+    } else if( buff[ 0 ] == LIB_HEADER_REC && buff[ 1 ] != 0x01 ) {
         /*
           The buff[ 1 ] != 1 bit above is a bad hack to get around
           the fact that the coff cpu_type for PPC object files is
@@ -168,8 +167,8 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
         // OMF format
         AddInputLib( io, name );
         LibSeek( io, 0, SEEK_SET );
-        if (Options.libtype == 0) {
-            Options.libtype = WL_TYPE_OMF;
+        if( Options.libtype == WL_LTYPE_NONE ) {
+            Options.libtype = WL_LTYPE_OMF;
         }
         OMFLibWalk( io, name, process );
     } else if( obj == OBJ_PROCESS ) {
@@ -184,18 +183,19 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
     }
 }
 
-static void WalkInputLib()
+static void WalkInputLib( void )
 {
     ProcessLibOrObj( Options.input_name, OBJ_ERROR, ProcessOneObject );
 }
 
-static void AddModules()
+static void AddModules( void )
 {
     lib_cmd     *cmd;
-    char        buff[MAX_IMPORT_STRING];
+    char        buff[ MAX_IMPORT_STRING ];
 
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( !( cmd->ops & OP_ADD ) ) continue;
+        if( !( cmd->ops & OP_ADD ) )
+            continue;
         strcpy( buff, cmd->name );
         if( cmd->ops & OP_IMPORT ) {
             ProcessImport( buff );
@@ -215,28 +215,29 @@ static void AddModules()
 }
 
 
-static void DelModules()
+static void DelModules( void )
 {
     lib_cmd     *cmd;
-    char        buff[MAX_IMPORT_STRING];
+    char        buff[ MAX_IMPORT_STRING ];
 
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( !( cmd->ops & OP_DELETE ) ) continue;
+        if( !( cmd->ops & OP_DELETE ) )
+            continue;
         strcpy( buff, cmd->name );
         DefaultExtension( buff, EXT_OBJ );
-        if( IsExt( buff, EXT_LIB ) ){
+        if( IsExt( buff, EXT_LIB ) ) {
             ProcessLibOrObj( buff, OBJ_SKIP, DelOneObject );
             cmd->ops |= OP_DELETED;
         }
-        if( !( cmd->ops & OP_DELETED ) && !(cmd->ops & OP_ADD ) ) {
+        if( !( cmd->ops & OP_DELETED ) && !( cmd->ops & OP_ADD ) ) {
                 Warning( ERR_CANT_DELETE, cmd->name );
-        } else if ( ( cmd->ops & OP_DELETED ) && !( cmd->ops & OP_ADD ) && Options.ar && Options.verbose ) {
+        } else if( ( cmd->ops & OP_DELETED ) && !( cmd->ops & OP_ADD ) && Options.ar && Options.verbose ) {
             Message( "-d %s", cmd->name );
         }
     }
 }
 
-void EmitWarnings()
+static void EmitWarnings( void )
 {
     lib_cmd     *cmd;
 
@@ -254,19 +255,21 @@ void EmitWarnings()
 }
 
 
-void ProcessCommands()
+void ProcessCommands( void )
 {
+    InitOmfUtil();
     if( !Options.new_library ) {
         WalkInputLib();
     }
     DelModules();
     AddModules();
     CleanFileTab();
-    if( Options.modified ) {
+    if( Options.modified || Options.new_library ) {
         WriteNewLib();
     }
     if( Options.list_contents ) {
         ListContents();
     }
     EmitWarnings();
+    FiniOmfUtil();
 }

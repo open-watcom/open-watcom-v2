@@ -1,0 +1,18 @@
+
+imp_objs = &
+        hllmisc.obj &
+        hllld.obj &
+        hllmod.obj &
+        hlltype.obj &
+        hllsym.obj &
+        hllcue.obj &
+        hllvirt.obj &
+        hllloc.obj &
+        demangle.obj
+
+name = hllcv
+
+extra_incs = -I"$(lib_misc_dir)/h"
+extra_srcs = $(lib_misc_dir)/c
+
+!include ../../imp.mif

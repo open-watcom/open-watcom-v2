@@ -24,19 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  lexical token support functions
 *
 ****************************************************************************/
 
-
 #include <stdlib.h>
-#include <string.h>
 
 #include "make.h"
-#include "massert.h"
-#include "memory.h"
-#include "misc.h"
+#include "mmemory.h"
 #include "mlex.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
@@ -47,7 +42,7 @@
 
 union CurAttrUnion  CurAttr;    /* Attribute for last LexToken call */
 
-extern const char * const DotNames[] = {    /* must be in alpha order! */
+const char * const DotNames[] = {    /* must be in alpha order! */
     "AFTER",
     "ALWAYS",
     "AUTODEPEND",
@@ -57,32 +52,33 @@ extern const char * const DotNames[] = {    /* must be in alpha order! */
     "DEFAULT",
     "ERASE",
     "ERROR",
+    "EXISTSONLY",
     "EXPLICIT",
     "EXTENSIONS",
     "FUZZY",
     "HOLD",
     "IGNORE",
     "JUST_ENOUGH",
-    "KEEP_SPACES",
     "MULTIPLE",
     "NOCHECK",
     "OPTIMIZE",
     "PRECIOUS",
     "PROCEDURE",
+    "RECHECK",
     "SILENT",
     "SUFFIXES",
     "SYMBOLIC"
 };
 
 
-extern void LexFini( void )
+void LexFini( void )
 /*************************/
 {
     PreProcFini();
 }
 
 
-extern void LexInit( void )
+void LexInit( void )
 /*************************/
 {
     PreProcInit();
@@ -92,7 +88,7 @@ extern void LexInit( void )
 }
 
 
-extern TOKEN_T LexToken( enum LexMode mode )
+TOKEN_T LexToken( enum LexMode mode )
 /*******************************************
  * returns: next token of input
  */
@@ -113,7 +109,7 @@ extern TOKEN_T LexToken( enum LexMode mode )
 }
 
 
-extern void LexMaybeFree( TOKEN_T tok )
+void LexMaybeFree( TOKEN_T tok )
 /**************************************
  * remarks: Some tokens set CurAttr.ptr to a memory region.  This routine
  *          FreeSafes the region if tok is one of these token types.

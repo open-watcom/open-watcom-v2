@@ -44,6 +44,10 @@ typedef struct callgraph CALLGRAPH;
 typedef struct calledge  CALLEDGE;
 typedef struct callnode  CALLNODE;
 typedef struct inlinee   INLINEE;
+#ifndef CGFILE_DEFINED
+#define CGFILE_DEFINED
+typedef struct cgfile    CGFILE;
+#endif
 
 typedef enum                    // SCOPE_STATE
 {   STS_CALL        = 0x01      // - "can-throw" call
@@ -108,7 +112,7 @@ typedef struct unr_usage        UNR_USAGE;          // unresolved usage
 struct callnode                 // CALLNODE -- node in call graph
 {
     DIRGRAPH_NODE base;         // - node in directed graph
-    void*    cgfile;            // - CGFILE for node
+    CGFILE * cgfile;            // - CGFILE for node
     unsigned refs;              // - # references
     unsigned addrs;             // - number of times address taken
     unsigned depth;             // - minimum call depth when inline

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mhash.c interfaces
 *
 ****************************************************************************/
 
@@ -41,19 +40,19 @@ typedef struct HashTable    HASHTAB;
 
 struct HashTable {
     HASH_T      prime;
-    HASHNODE    *nodes[ 1 ];
+    HASHNODE    *nodes[1];
 };
 
-extern HASH_T Hash( const char *name, HASH_T prime );
+extern HASH_T   Hash( const char *name, HASH_T prime );
 
-extern HASHTAB *NewHashTab( HASH_T prime );
-extern void AddHashNode( HASHTAB *tab, HASHNODE *node );
-extern BOOLEAN WalkHashTab( HASHTAB *tab,
+extern HASHTAB  *NewHashTab( HASH_T prime );
+extern void     AddHashNode( HASHTAB *tab, HASHNODE *node );
+extern BOOLEAN  WalkHashTab( HASHTAB *tab,
     BOOLEAN (*func)( void *node, void *ptr ), void *ptr );
-extern void FreeHashTab( HASHTAB *tab );
+extern void     FreeHashTab( HASHTAB *tab );
 extern HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
-                               BOOLEAN caseSenstive);
+                               BOOLEAN caseSenstive );
 extern HASHNODE *RemHashNode( HASHTAB *tab, const char *name,
-                               BOOLEAN caseSenstive);
+                               BOOLEAN caseSenstive );
 
 #endif

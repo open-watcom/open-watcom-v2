@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source Browser mainline.
 *
 ****************************************************************************/
 
@@ -78,22 +77,20 @@ static MIMenuID BrowseMenus[] = {
     MIMenuID( MMHelp, HMAbout ),
 };
 
-#define _BrowseHelpFile "wbrw.hlp"
+#define _BrowseHelpFile     "wbrw.hlp"
+#define _BrowseHtmlHelpFile "wbrw.chm"
 
 #define NumBrowseMenus ( sizeof( BrowseMenus ) / sizeof( MIMenuID ) )
 
 #pragma warning 438 9
-static const char *BrowseTitle = { "WATCOM Source Browser" };
+static const char *BrowseTitle = { "About Open Watcom Source Browser" };
 static const char *SplashInfo[] = {
-                " ",
-                "Version " _WBRW_VERSION_,
-/* switch from banner2a to banner2 when we get to 1995
-                banner2( "1994" ),
-*/
-                banner2a(),
-                banner3,
-                " ",
-                NULL };
+    "",
+    banner1w( "Source Browser", _WBRW_VERSION_ ),
+    banner2( "1994" ),
+    banner3,
+    banner3a,
+    NULL };
 #pragma warning 438 1
 
 
@@ -129,7 +126,8 @@ Browse::Browse( char * cmdLine )
 
     browseTop = this;
     topWindow = browseTop;
-    _helpInfo = new WSystemHelp( this, BrowseTitle, _BrowseHelpFile );
+    _helpInfo = new WSystemHelp( this, BrowseTitle, _BrowseHelpFile,
+                                 _BrowseHtmlHelpFile );
 
     setIcon( WBRWIcon );
     setupMenus();
@@ -274,7 +272,7 @@ void Browse::setupMenus()
 void Browse::postTitle()
 //----------------------
 {
-    const char * titleText = "WATCOM Source Browser";
+    const char * titleText = "Open Watcom Source Browser";
     WString      title;
 
     title.printf( "%s -- (%s%s), (%s)", titleText,

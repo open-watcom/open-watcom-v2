@@ -1,0 +1,5 @@
+To build internal debugger documentation, run 'wmake hbook=wddoc' in the
+appropriate directory (docs/ps, docs/nt, etc.).
+
+Old, obsolete but potentially interesting versions of said documentation
+are stored in this directory as old_*.

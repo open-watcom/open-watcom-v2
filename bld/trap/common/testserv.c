@@ -24,39 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple server for testing remote communication transport.
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
-#include <conio.h>
+#if defined(__WATCOMC__)
+    #include <conio.h>
+#endif
 #include <stdio.h>
 #include "testlink.h"
 #include "packet.h"
+#ifdef __WINDOWS__
+#include "windows.h"
+
+extern HANDLE   *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
+#endif
 
 extern void     NothingToDo(void);
 
 char            RWBuff[256];
+full_block      Data;
 
 #ifdef __NETWARE__
 char MayRelinquishControl = 1;
 
-void TaskFini()
+void TrapFini( void )
 {
 }
 #endif
 
 #ifdef __WINDOWS__
-#include "windows.h"
 HANDLE  Instance;
 
 void SetLinkName( char *name )
 {
     name = name;
 }
-
 #endif
 
 void Output( char *p )
@@ -64,9 +69,13 @@ void Output( char *p )
     printf( "%s", p );
 }
 
-full_block      Data;
+void ServMessage( char *msg )
+{
+    Output( msg );
+    Output( "\n" );
+}
 
-void RunTime()
+void RunTime( void )
 {
     unsigned long   iter_count;
     unsigned        block_size;
@@ -83,39 +92,48 @@ void RunTime()
 
     test &= ~TEST_FULL;
     while( --iter_count != 0 ) {
-        if( test != TEST_CLIENT_GET ) RemoteGet( Data, block_size );
-        if( test != TEST_CLIENT_PUT ) RemotePut( Data, block_size );
+        if( test != TEST_CLIENT_GET )
+            RemoteGet( (char *)&Data, block_size );
+        if( test != TEST_CLIENT_PUT ) {
+            RemotePut( (char *)&Data, block_size );
+        }
     }
 }
 
-main( unsigned argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     char        *err;
     unsigned    len;
 
 #ifdef __WINDOWS__
-    {
-    extern HANDLE           *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
     Instance = *_MainWindowData;
-    }
 #endif
     err = RemoteLink( argc > 1 ? argv[1] : "", 1 );
     if( err != 0 ) {
         printf( "%s\n", err );
-        return;
+        return( 1 );
     }
     printf( "server running\n" );
     for( ;; ) {
         NothingToDo();
-        if( kbhit() && getch() == 'q' ) break;
+#if defined(__WATCOMC__)
+        // How to do the equivalent of kbhit()?
+        if( kbhit() && getch() == 'q' )
+            break;
+#endif
         if( RemoteConnect() ) {
             printf( "\nCONNECT\n" );
             for( ;; ) {
-                len = RemoteGet( &Data, sizeof( Data ) );
-                if( Data[0] == TEST_OVER ) break;
+                len = RemoteGet( (char *)&Data, sizeof( Data ) );
+                if( len == -1 ) {
+                    printf( "\nlink broken\n" );
+                    break;
+                }
+                if( Data[0] == TEST_OVER )
+                    break;
                 if( Data[0] == TEST_STRING ) {
                     printf( "'%s' - %d bytes\n", &Data[1], len );
-                    RemotePut( &Data, len );
+                    RemotePut( (char *)&Data, len );
                 } else {
                     RunTime();
                 }
@@ -125,4 +143,5 @@ main( unsigned argc, char *argv[] )
         }
     }
     RemoteUnLink();
+    return( 0 );
 }

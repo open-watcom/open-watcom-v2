@@ -24,34 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Directory caching routines.
 *
 ****************************************************************************/
 
 
-#if !defined(__QNX__)
- #include <direct.h>
- #include <dos.h>
+#if !defined( __UNIX__ )
+    #include <direct.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include "autodept.h"
+    #include "pathgrp.h"
 #endif
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#if defined( __UNIX__ )
+    #include <sys/stat.h>
+#endif
 #include <sys/types.h>
-#include <time.h>
 
 #include "make.h"
 #include "massert.h"
 #include "mhash.h"
-#include "memory.h"
-#include "misc.h"
-#include "mpathgrp.h"
+#include "mmemory.h"
+#if !defined( __UNIX__ )
+    #include "mmisc.h"
+#endif
 #include "mrcmsg.h"
 #include "msg.h"
 
 
-#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
+#if !defined( __UNIX__ )
 
 /*
  * Implement a directory cache in far memory for MSDOS machines.  The
@@ -61,34 +62,28 @@
  */
 
 
-#if 1 && defined(__NT__)
+#if defined( __NT__ )
 /*
     Windows NT makes us call an expensive convert GMT to local function
     for each time-stamp we want to look at!
 */
 static unsigned cacheDelay;
-#define CACHE_DELAY_CHECK       ((cacheDelay==0)||((--cacheDelay)==0))
-#define CACHE_DELAY_RELEASE     cacheDelay = 512
+#define CACHE_DELAY_CHECK()     ( cacheDelay == 0 || ( --cacheDelay == 0 ) )
+#define CACHE_DELAY_RELEASE()   ( cacheDelay = 512 )
 #else
-#define CACHE_DELAY_RELEASE
+#define CACHE_DELAY_RELEASE()
 #endif
 
-/*
- * info on packed DOS date/time
- */
-
-typedef UINT16  DOSDATE_T;
-
 
 /*
- * enum cacheRet are used internally to determine what the error return
+ * enum cacheRet values are used internally to determine what the error return
  * from a CacheDir was
  */
 enum cacheRet {
-    CACHE_OK,
-    CACHE_DIR_NOT_FOUND,
-    CACHE_NOT_ENUF_MEM,
-    CACHE_FILE_NOT_FOUND
+    CACHE_OK = 0,
+    // CACHE_DIR_NOT_FOUND = 1,
+    CACHE_NOT_ENUF_MEM = 2,
+    CACHE_FILE_NOT_FOUND = 3
 };
 
 
@@ -96,13 +91,11 @@ enum cacheRet {
  * struct cacheEntry is the detail we need on each file.  We copy these
  * values from the struct dirent for each file.
  */
-typedef struct cacheEntry FAR *CENTRYPTR;
-struct cacheEntry {
-    CENTRYPTR   ce_next;
-    char        ce_name[ NAME_MAX + 1 ];
-    DOSDATE_T   ce_date;
-    DOSDATE_T   ce_time;
-};
+typedef struct cacheEntry {
+    struct cacheEntry FAR   *ce_next;
+    char                    ce_name[NAME_MAX + 1];
+    time_t                  ce_tt;
+} FAR *CENTRYPTR;
 
 
 #define HASH_PRIME      97      /* for the hash function            */
@@ -111,34 +104,23 @@ struct cacheEntry {
 /*
  * struct directHead is the head for a linked list of CacheNodes
  */
-typedef struct directHead FAR *DHEADPTR;
-struct directHead {
-    DHEADPTR    dh_next;
-    char        dh_name[ _MAX_PATH ];
-    CENTRYPTR   dh_table[ HASH_PRIME ];
-};
+typedef struct directHead {
+    struct directHead FAR   *dh_next;
+    char                    dh_name[_MAX_PATH];
+    CENTRYPTR               dh_table[HASH_PRIME];
+} FAR *DHEADPTR;
 
 STATIC DHEADPTR cacheHead;
 
 #ifdef USE_FAR
-#   define  myMalloc(size)      FarMaybeMalloc(size)
-#   define  myFree(ptr)         FarFree(ptr)
-#   define  myCmp(f,n)          _fFNameCmp(f,n)
+#   define  myMalloc( size )    FarMaybeMalloc( size )
+#   define  myFree( ptr )       FarFree( ptr )
+#   define  myCmp( f, n )       _fFNameCmp( f, n )
 #else
-#   define  myMalloc(size)      MallocUnSafe(size)
-#   define  myFree(ptr)         FreeSafe(ptr)
-#   define  myCmp(f,n)          FNameCmp(f,n)
+#   define  myMalloc( size )    MallocUnSafe( size )
+#   define  myFree( ptr )       FreeSafe( ptr )
+#   define  myCmp( f, n )       FNameCmp( f, n )
 #endif
-
-
-/*
- * convert a Dos packed date/time to a time_t
- */
-STATIC time_t d2t( DOSDATE_T date, DOSDATE_T time )
-/*************************************************/
-{
-    return( SysDOSStampToTime( date, time ) );
-}
 
 
 STATIC void freeDirectList( DHEADPTR dhead )
@@ -156,7 +138,7 @@ STATIC void freeDirectList( DHEADPTR dhead )
         dcur = dhead;
         dhead = dhead->dh_next;
         for( h = 0; h < HASH_PRIME; h++ ) {
-            cwalk = dcur->dh_table[ h ];
+            cwalk = dcur->dh_table[h];
             while( cwalk != NULL ) {
                 ccur = cwalk;
                 cwalk = cwalk->ce_next;
@@ -173,42 +155,41 @@ STATIC void freeDirectList( DHEADPTR dhead )
     }
 #ifdef CACHE_STATS
     if( Glob.cachestat ) {
-        PrtMsg( INF| CACHE_FREED_BYTES, bytes );
+        PrtMsg( INF | CACHE_FREED_BYTES, bytes );
     }
 #endif
 }
 
 
-/*
+STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
+/************************************************************
  * Given a full pathname or just a path ending in \ cache all the files
  * in that directory.  Assumes that this directory is not already
  * cached.  Does not link into list off cacheHead.
  */
-STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
-/***********************************************************/
 {
     CENTRYPTR       cnew;       /* new cacheEntry struct */
     DIR             *parent;    /* parent directory entry */
     DIR             *entry;     /* current directory entry */
     HASH_T          h;          /* hash value */
     size_t          len;
-#   ifdef CACHE_STATS
-        UINT32          bytes = 0;  /* counter */
-        UINT32          files = 0;  /* counter */
-        UINT32          hits = 0;   /* counter */
+#ifdef CACHE_STATS
+    UINT32          bytes = 0;  /* counter */
+    UINT32          files = 0;  /* counter */
+    UINT32          hits = 0;   /* counter */
 
-        if( Glob.cachestat ) {
-            PrtMsg( INF| CACHING_DIRECTORY, path );
-        }
-#   endif
+    if( Glob.cachestat ) {
+        PrtMsg( INF | CACHING_DIRECTORY, path );
+    }
+#endif
 
     *pdhead = myMalloc( sizeof( **pdhead ) );
     if( *pdhead == NULL ) {
         return( CACHE_NOT_ENUF_MEM );
     }
-#   ifdef CACHE_STATS
-        bytes += sizeof( **pdhead );
-#   endif
+#ifdef CACHE_STATS
+    bytes += sizeof( **pdhead );
+#endif
 
                                     /* clear the memory */
     _fmemset( *pdhead, 0, sizeof( **pdhead ) );
@@ -219,77 +200,74 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
     strcpy( &path[len], "*.*" );
     parent = opendir( path );
     if( parent == NULL ) {
-#       ifdef CACHE_STATS
-            if( Glob.cachestat ) {
-                PrtMsg( INF|NEOL| CACHE_FILES_BYTES, files, bytes, hits );
-            }
-#       endif
+#ifdef CACHE_STATS
+        if( Glob.cachestat ) {
+            PrtMsg( INF | NEOL | CACHE_FILES_BYTES, files, bytes, hits );
+        }
+#endif
         return( CACHE_OK );     /* an empty, or nonexistent directory */
     }
 
     entry = readdir( parent );
     while( entry != NULL ) {
-        if( !( entry->d_attr & IGNORE_MASK ) ) {
+        if( !(entry->d_attr & IGNORE_MASK) ) {
                         /* we tromp on entry, and get hash value */
             h = Hash( FixName( entry->d_name ), HASH_PRIME );
             cnew = myMalloc( sizeof( *cnew ) );
             if( cnew == NULL ) {
                 freeDirectList( *pdhead );  /* roll back, and abort */
                 *pdhead = NULL;
-#           ifdef CACHE_STATS
+#ifdef CACHE_STATS
                 if( Glob.cachestat ) {
                     if( hits % 8 != 0 ) {
-                        PrtMsg( INF| NEWLINE );
+                        PrtMsg( INF | NEWLINE );
                     }
-                    PrtMsg( INF| CACHE_MEM );
+                    PrtMsg( INF | CACHE_MEM );
                 }
-#           endif
+#endif
                 return( CACHE_NOT_ENUF_MEM );
             }
-#           ifdef CACHE_STATS
-                bytes += sizeof( *cnew );
-                ++files;
-#           endif
+#ifdef CACHE_STATS
+            bytes += sizeof( *cnew );
+            ++files;
+#endif
 
-            cnew->ce_date = entry->d_date;
-            cnew->ce_time = entry->d_time;
+            cnew->ce_tt = _DOSStampToTime( entry->d_date, entry->d_time );
             ConstMemCpy( cnew->ce_name, entry->d_name, NAME_MAX + 1 );
 
-            cnew->ce_next = (*pdhead)->dh_table[ h ];
-            (*pdhead)->dh_table[ h ] = cnew;
-#           ifdef CACHE_STATS
-                if( Glob.cachestat && cnew->ce_next != NULL ) {
-                    ++hits;
-                    PrtMsg( INF|( ( hits % 8 == 0 ) ? 0 : NEOL )| HIT_ON_HASH,
-                                                            h );
-                }
-#           endif
+            cnew->ce_next = (*pdhead)->dh_table[h];
+            (*pdhead)->dh_table[h] = cnew;
+#ifdef CACHE_STATS
+            if( Glob.cachestat && cnew->ce_next != NULL ) {
+                ++hits;
+                PrtMsg( INF | ((hits % 8 == 0) ? 0 : NEOL) | HIT_ON_HASH, h );
+            }
+#endif
         }
         entry = readdir( parent );
     }
     closedir( parent );
 
-#   ifdef CACHE_STATS
-        if( Glob.cachestat ) {
-            if( hits % 8 != 0 ) {
-                PrtMsg( INF| NEWLINE );
-            }
-            PrtMsg( INF| CACHE_FILES_BYTES, files, bytes, hits );
+#ifdef CACHE_STATS
+    if( Glob.cachestat ) {
+        if( hits % 8 != 0 ) {
+            PrtMsg( INF | NEWLINE );
         }
-#   endif
+        PrtMsg( INF | CACHE_FILES_BYTES, files, bytes, hits );
+    }
+#endif
 
     return( CACHE_OK );
 }
 
 
-/*
+STATIC DHEADPTR findDir( const char *path )
+/******************************************
  * Walk the directory linked list, and find the directory with the name
  * path.  (Path must end in \ - ie: as returned by _splitpath() )
  * Returns NULL if not found, or if cacheHead == NULL.
  * Move the directory to the beginning of the list (adaptive search)
  */
-STATIC DHEADPTR findDir( const char *path )
-/*****************************************/
 {
     DHEADPTR    dcur;
     DHEADPTR    dlast;
@@ -298,8 +276,8 @@ STATIC DHEADPTR findDir( const char *path )
     dlast = NULL;
     dcur = cacheHead;
     first = path[0];
-    while( dcur != NULL && ( first != dcur->dh_name[0] ||
-                            myCmp( dcur->dh_name, path ) != 0 ) ) {
+    while( dcur != NULL && (first != dcur->dh_name[0] ||
+                            myCmp( dcur->dh_name, path ) != 0) ) {
         dlast = dcur;
         dcur = dcur->dh_next;
     }
@@ -314,19 +292,18 @@ STATIC DHEADPTR findDir( const char *path )
 }
 
 
-/*
+STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
+/**********************************************************
  * Given a directory, find a file within that directory.
  * Return NULL if file not found.
  */
-STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
-/*********************************************************/
 {
     CENTRYPTR   ccur;
     HASH_T      h;
 
     h = Hash( name, HASH_PRIME );
 
-    ccur = dir->dh_table[ h ];
+    ccur = dir->dh_table[h];
     while( ccur != NULL ) {
         if( myCmp( ccur->ce_name, name ) == 0 ) {
             return( ccur );
@@ -338,84 +315,13 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
 }
 
 
-/*
- * Given a directory, find an 8.3 file within that directory.
- * Return NULL if file not found.
- */
-STATIC CENTRYPTR findDOSFile( DHEADPTR dir, const char *name )
-/************************************************************/
-{
-#if _MAX_FNAME == ( 8 + 1 )
-    dir = dir;
-    name = name;
-    return( NULL );
-#else
-    size_t len;
-    char fname[_MAX_FNAME];
-    char ext[_MAX_EXT];
-    char DOSname[_MAX_PATH];
-
-    _splitpath( name, NULL, NULL, fname, ext );
-    len = strlen( fname );
-    if( len > 8 ) {
-        fname[8] = '\0';
-    }
-    _makepath( DOSname, NULL, NULL, fname, ext );
-    return( findFile( dir, DOSname ) );
-#endif
-}
-
-
-/*
- * Called at the beginning of the program
- */
-extern void CacheInit( void )
-/***************************/
-{
-}
-
-
-/*
- * Called at any time we want to invalidate the cache
- */
-extern void CacheRelease( void )
-/******************************/
-{
-#ifdef CACHE_STATS
-    if( Glob.cachestat ) {
-        PrtMsg( INF| CACHERELEASE );
-    }
-#endif
-
-    freeDirectList( cacheHead );
-    cacheHead = NULL;
-    MemShrink();
-    CACHE_DELAY_RELEASE;
-}
-
-
-/*
- * Called while the program is exiting
- */
-extern void CacheFini( void )
-/***************************/
-{
-#ifdef CACHE_STATS
-    Glob.cachestat = 0;
-#endif
-#ifndef NDEBUG
-    CacheRelease();
-#endif
-}
-
-
 STATIC RET_T regStat( const char *filename, time_t *ptime )
 /**********************************************************
  * not quite a regular stat(), but functional for what we need
  */
 {
-    DIR *parent;
-    DIR *entry;
+    DIR     *parent;
+    DIR     *entry;
 
     parent = opendir( filename );
     if( parent == NULL ) {
@@ -426,7 +332,7 @@ STATIC RET_T regStat( const char *filename, time_t *ptime )
 
     assert( entry != NULL );
 
-    *ptime = d2t( entry->d_date, entry->d_time );
+    *ptime = _DOSStampToTime( entry->d_date, entry->d_time );
 
     closedir( parent );
 
@@ -437,32 +343,33 @@ STATIC RET_T regStat( const char *filename, time_t *ptime )
 STATIC void splitFullPath( const char *fullpath, char *pathbuf, char *filebuf )
 /*****************************************************************************/
 {
-    PGROUP      *pg;
+    PGROUP      pg;
+    char const  *ext;
 
     assert( fullpath != NULL && pathbuf != NULL && filebuf != NULL );
 
-    pg = SplitPath( fullpath );
+    _splitpath2( fullpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    _makepath( pathbuf, pg->drive, pg->dir, NULL, NULL );
-    if( pg->ext[0] == '.' && pg->ext[1] == 0 ) {
-        _makepath( filebuf, NULL, NULL, pg->fname, NULL );
-    } else {
-        _makepath( filebuf, NULL, NULL, pg->fname, pg->ext );
+    _makepath( pathbuf, pg.drive, pg.dir, NULL, NULL );
+    ext = pg.ext;
+    if( ext[0] == '.' && ext[1] == 0 ) {
+        ext = NULL;
     }
-
-    DropPGroup( pg );
+    _makepath( filebuf, NULL, NULL, pg.fname, ext );
 }
 
 
+#ifdef __WATCOMC__
 #pragma on (check_stack);
+#endif
 STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
 /********************************************************************/
 {
-    char        path[ _MAX_PATH ];
-    char        name[ NAME_MAX + 1 ];
-    DHEADPTR    dcur;
-    CENTRYPTR   centry;
-    enum cacheRet ret;
+    char            path[_MAX_PATH];
+    char            name[NAME_MAX + 1];
+    DHEADPTR        dcur;
+    CENTRYPTR       centry;
+    enum cacheRet   ret;
 
     assert( fullpath != NULL );
 
@@ -485,10 +392,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
 
     centry = findFile( dcur, name );
     if( centry == NULL ) {
-        centry = findDOSFile( dcur, name );
-        if( centry == NULL ) {
-            return( CACHE_FILE_NOT_FOUND );
-        }
+        return( CACHE_FILE_NOT_FOUND );
     }
 
     if( pc != NULL ) {
@@ -497,51 +401,113 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
 
     return( CACHE_OK );
 }
+#ifdef __WATCOMC__
 #pragma off(check_stack);
+#endif
 
+#endif
 
 /*
+ * cache routines stubbed out for non ms-dos support
+ */
+
+void CacheInit( void )
+/****************************
+ * Called at the beginning of the program
+ */
+{
+}
+
+
+void CacheRelease( void )
+/*******************************
+ * Called at any time we want to invalidate the cache
+ */
+{
+#if !defined( __UNIX__ )
+#ifdef CACHE_STATS
+    if( Glob.cachestat ) {
+        PrtMsg( INF | CACHERELEASE );
+    }
+#endif
+
+    freeDirectList( cacheHead );
+    cacheHead = NULL;
+    MemShrink();
+    CACHE_DELAY_RELEASE();
+#endif
+}
+
+
+void CacheFini( void )
+/****************************
+ * Called while the program is exiting
+ */
+{
+#if !defined( __UNIX__ )
+#ifdef CACHE_STATS
+    Glob.cachestat = 0;
+#endif
+#ifndef NDEBUG
+    CacheRelease();
+#endif
+#endif
+}
+
+
+RET_T CacheTime( const char *fullpath, time_t *ptime )
+/************************************************************
  * Given a full path to a file, get the st_mtime for that file.  If there
  * are no errors, return 0, otherwise 1.  If the file is in directory not
  * cached yet, then cache it first.
  */
-extern RET_T CacheTime( const char *fullpath, time_t *ptime )
-/***********************************************************/
 {
-    CENTRYPTR   centry;
-
     assert( fullpath != NULL && ptime != NULL );
+    {
+#if !defined( __UNIX__ )
+        CENTRYPTR   centry;
 
 #ifdef CACHE_DELAY_CHECK
-    if( Glob.cachedir && CACHE_DELAY_CHECK ) {
+        if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
 #else
-    if( Glob.cachedir ) {
+        if( Glob.cachedir ) {
 #endif
-        switch( maybeCache( fullpath, &centry ) ) {
-        case CACHE_OK:
-            *ptime = d2t( centry->ce_date, centry->ce_time );
-            return( RET_SUCCESS );
-        case CACHE_NOT_ENUF_MEM:
-            break;
-        default:
-            return( RET_ERROR );
+            switch( maybeCache( fullpath, &centry ) ) {
+            case CACHE_OK:
+                *ptime = centry->ce_tt;
+                return( RET_SUCCESS );
+            case CACHE_NOT_ENUF_MEM:
+                break;
+            default:
+                return( RET_ERROR );
+            }
         }
-    }
 
-    return( regStat( fullpath, ptime ) );
+        return( regStat( fullpath, ptime ) );
+#else
+        struct stat buf;
+
+        if( stat( fullpath, &buf ) == 0 ) {
+            *ptime = buf.st_mtime;
+            return( RET_SUCCESS );
+        }
+
+        return( RET_ERROR );
+#endif
+    }
 }
 
 
-/*
+BOOLEAN CacheExists( const char *fullpath )
+/*************************************************
  * return TRUE if the file in fullpath exists, FALSE otherwise
  */
-extern BOOLEAN CacheExists( const char *fullpath )
-/************************************************/
 {
     assert( fullpath != NULL );
 
+#if !defined( __UNIX__ )
 #ifdef CACHE_DELAY_CHECK
-    if( Glob.cachedir && CACHE_DELAY_CHECK ) {
+    if( Glob.cachedir && CACHE_DELAY_CHECK() ) {
 #else
     if( Glob.cachedir ) {
 #endif
@@ -554,40 +520,7 @@ extern BOOLEAN CacheExists( const char *fullpath )
             return( FALSE );
         }
     }
+#endif
 
     return( access( fullpath, 0 ) == 0 );
 }
-
-#else
-
-/*
- * stubbed out cache routines for non ms-dos support
- */
-extern void CacheInit( void ) {}
-extern void CacheRelease( void ) {}
-extern void CacheFini( void ) {}
-
-
-extern RET_T CacheTime( const char *name, time_t *ptime )
-/*******************************************************/
-{
-    struct stat buf;
-
-    if( stat( name, &buf ) == 0 ) {
-        *ptime = buf.st_mtime;
-        return( RET_SUCCESS );
-    }
-
-    return( RET_ERROR );
-}
-
-
-extern BOOLEAN CacheExists( const char *name )
-/********************************************/
-{
-    if( access( name, 0 ) == 0 ) {
-        return( TRUE );
-    }
-    return( FALSE );
-}
-#endif

@@ -79,14 +79,14 @@ enum {
 /* % Type constants */
 /* % */
 
-#define TY_NAME                 0x10
+#define WT_NAME                 0x10
 #define NAME_SCALAR             0x00
 #define NAME_SCOPE              0x01
 #define NAME_NAME               0x02
 #define NAME_CUEINFO            0x03
 #define NAME_EOF                0x04
 
-#define TY_ARRAY                0x20
+#define WT_ARRAY                0x20
 #define ARRAY_BYTE              0x00
 #define ARRAY_WORD              0x01
 #define ARRAY_LONG              0x02
@@ -94,12 +94,12 @@ enum {
 #define FORTRAN_TYPE_286        0x04
 #define FORTRAN_TYPE_386        0x05
 
-#define TY_SUBRANGE             0x30
+#define WT_SUBRANGE             0x30
 #define RANGE_BYTE              0x00
 #define RANGE_WORD              0x01
 #define RANGE_LONG              0x02
 
-#define TY_POINTER              0x40
+#define WT_POINTER              0x40
 #define POINTER_NEAR_286        0x00
 #define POINTER_FAR_286         0x01
 #define POINTER_HUGE            0x02
@@ -111,13 +111,13 @@ enum {
 #define DEREF_NEAR_386          0x08
 #define DEREF_FAR_386           0x09
 
-#define TY_ENUMERATED           0x50
+#define WT_ENUMERATED           0x50
 #define ENUM_LIST               0x00
 #define ENUM_BYTE               0x01
 #define ENUM_WORD               0x02
 #define ENUM_LONG               0x03
 
-#define TY_STRUCTURE            0x60
+#define WT_STRUCTURE            0x60
 #define STRUCT_LIST             0x00
 #define STRUCT_F_BYTE           0x01
 #define STRUCT_F_WORD           0x02
@@ -139,14 +139,14 @@ enum {
 #define INHERIT_VBASE           0x02
 #define INHERIT_IVBASE          0x03
 
-#define TY_PROCEDURE            0x70
+#define WT_PROCEDURE            0x70
 #define PROC_NEAR_286           0x00
 #define PROC_FAR_286            0x01
 #define PROC_NEAR_386           0x02
 #define PROC_FAR_386            0x03
 #define PROC_EXT_PARM_LIST      0x04
 
-#define TY_CHAR_BLOCK           0x80
+#define WT_CHAR_BLOCK           0x80
 #define NAME_CHAR_BYTE          0x00
 #define NAME_CHAR_WORD          0x01
 #define NAME_CHAR_LONG          0x02

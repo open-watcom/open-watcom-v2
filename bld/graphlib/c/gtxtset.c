@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-struct textsettings _WCI86FAR * _WCI86FAR _CGRAPH _gettextsettings(
+_WCRTLINK struct textsettings _WCI86FAR * _WCI86FAR _CGRAPH _gettextsettings(
 /*=======================*/ struct textsettings _WCI86FAR *info )
 
 /* This routine returns the current graphics text settings. */

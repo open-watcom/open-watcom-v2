@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal interface for AUI library.
 *
 ****************************************************************************/
 
@@ -34,10 +33,10 @@
 #define _AUIPVT_H_INCLUDED
 
 #include "aui.h"
-#include "auistr.h"
+#include "auistr.gh"
 
-extern void             WndLitInit();
-extern void             WndLitFini();
+extern void             WndLitInit( void );
+extern void             WndLitFini( void );
 
 extern  void            WndCoordToGUIPoint(a_window*,wnd_coord*,gui_point*);
 
@@ -74,7 +73,7 @@ extern bool             WndKeyChoose(a_window *,unsigned int );
 extern void             WndSayMatchMode(a_window *);
 extern a_window         *WndNoOpen(void);
 extern void             WndReshow(void);
-extern  int             WndNextId();
+extern  int             WndNextId( void );
 extern  void            WndFreeId( int i );
 extern  bool            WndPieceIsHot( a_window *wnd, int row, int piece );
 extern  bool            WndPieceIsTab( a_window *wnd, int row, int piece );
@@ -103,15 +102,15 @@ extern void             WndChooseEvent( a_window *wnd, gui_event event, void *pa
 extern void             WndSelectEvent( a_window *wnd, gui_event event, void *parm );
 extern void             WndEndSelectEvent( a_window *wnd );
 extern void             WndSetCurrCol(a_window *wnd);
-extern void             WndFiniCacheLines();
+extern void             WndFiniCacheLines( void );
 extern void             WndKillCacheLines( a_window *wnd );
 extern void             WndKillCacheEntries( a_window *wnd, int row, int piece );
 extern void             WndCheckCurrentValid( a_window *wnd );
 extern bool             WndSetCache( a_window *wnd, bool on );
 extern void             WndAddPopupMenu( a_window *wnd );
 extern void             WndClick( a_window *wnd, unsigned id );
-extern void             WndSetPopup();
-extern bool             WndMouseButtonIsDown();
+extern void             WndSetPopup( unsigned id );
+extern bool             WndMouseButtonIsDown( void );
 extern bool             WndValid(a_window*);
 extern void             WndInvokePopUp( a_window *wnd, gui_point *point, gui_menu_struct *menu );
 extern char             *WndPrevChar( char *buff, char *curr );
@@ -128,8 +127,8 @@ extern int              WndNumMenus;
 
 extern bool             WndHaveUserStatusText;
 extern bool             WndInternalStatusText( char * );
-extern void             WndResetStatusText();
-extern void             WndFiniStatusText();
+extern void             WndResetStatusText( void );
+extern void             WndFiniStatusText( void );
 
 extern void             SetWndMenuRow( a_window *wnd );
 extern wnd_row          WndMenuRow;

@@ -1,34 +1,52 @@
-!include $(posix_dir)\mif\targos.mif
-!include $(posix_dir)\mif\commands.mif
-
-all : .symbolic lib $(commands)
-        @%null
-
-lib : .symbolic
-        cd $(posix_dir)\misc\$(targos)
-!ifeq targos dos
-        wmake -h model=c
-        wmake -h model=s
-!else ifeq targos dosos2
-        wmake -h model=c
-        wmake -h model=s
-!else
-        wmake -h
-!endif
-
-        cd $(posix_dir)\systems\$(targos)
-
-$(commands) : .symbolic
-        wmake -h -f $(posix_dir)\src\$^@\makefile targos=$(targos) make_all=1
-!ifdef install
-        wstrip $^@.exe $(install)\$^@.exe
-        wtouch -f $^@.exe $(install)\$^@.exe
-!endif
+!ifdef __LINUX__
+all : .symbolic
 
 clean : .symbolic
-        -del rm.ex?
-        rm -f *.?bj *.ex? *.map *.lst *.smp *.lnk *.lbc *.lib *.err
-        @for %i in ($(commands)) do -rm -r $(posix_dir)\src\%i\$(targos)
-        cd $(posix_dir)\misc\$(targos)
-        rm -f *.?bj *.ex? *.map *.lst *.smp *.lnk *.lbc *.lib *.err
-        cd $(posix_dir)\systems\$(targos)
+
+!else
+
+!include $(posix_dir)/mif/commands.mif
+!include $(posix_dir)/mif/targos.mif
+!include $(posix_dir)/mif/common.mif
+
+all : lib $(commands) .symbolic
+        @%null
+
+lib : .symbolic $(__MAKEFILES__)
+curr_dir_all=$+ $(%CWD) $-
+        @cd $(posixlibdir)
+        !@wmake -h release=$(release)
+!ifeq targos dos
+        @cd $(altposixlibdir)
+        !@wmake -h release=$(release)
+!else ifeq targos dosos2
+        @cd $(altposixlibdir)
+        !@wmake -h release=$(release)
+!endif
+        @cd $(curr_dir_all)
+
+$(commands) : .symbolic $(__MAKEFILES__)
+        !@wmake -h targos=$(targos) make_all=1 release=$(release) -f $(posix_dir)/src/$^@/makefile
+
+clean : .symbolic
+curr_dir_all=$+ $(%CWD) $-
+        @echo clean $(posixlibdir)
+        @cd $(posixlibdir)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!ifeq targos dos
+        @echo clean $(altposixlibdir)
+        @cd $(altposixlibdir)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!else ifeq targos dosos2
+        @echo clean $(altposixlibdir)
+        @cd $(altposixlibdir)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!endif
+        @cd $(curr_dir_all)
+!if defined(bootstrap) || defined(prebuild)
+        @for %i in ($(commands)) do rm -f $(%OWBINDIR)/%i.exe
+!else
+        @echo clean $(curr_dir_all)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!endif
+!endif

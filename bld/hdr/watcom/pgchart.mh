@@ -1,3 +1,9 @@
+::
+:: This file generates two headers.
+::
+::   pgchart.h  : public version.
+::   _pgchart.h : internal version used for build graphics library.
+::
 /*
  *  pgchart.h   Presentation Graphics functions
  *
@@ -5,12 +11,12 @@
  */
 #ifndef _PGCHART_H_INCLUDED
 #define _PGCHART_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include pshpackl.sp
 
@@ -150,35 +156,125 @@ typedef unsigned short  styleset[ _PG_PALETTELEN ];
 
 /* Display functions */
 
-short _WCI86FAR _pg_initchart( void );
-short _WCI86FAR _pg_defaultchart( chartenv _WCI86FAR *, short, short );
-short _WCI86FAR _pg_chart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_chartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_chartscatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_chartscatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_chartpie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_initchart( void );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_defaultchart( chartenv _WCI86FAR *, short, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_chart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_chartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_chartscatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_chartscatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_chartpie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
 
 /* Analyze functions */
 
-short _WCI86FAR _pg_analyzechart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_analyzechartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_analyzescatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_analyzescatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_analyzepie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_analyzechart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_analyzechartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_analyzescatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_analyzescatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_analyzepie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
 
 /* Utility functions */
 
-short _WCI86FAR _pg_hlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
-short _WCI86FAR _pg_vlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
-short _WCI86FAR _pg_getpalette( paletteentry _WCI86FAR * );
-short _WCI86FAR _pg_setpalette( paletteentry _WCI86FAR * );
-short _WCI86FAR _pg_resetpalette( void );
-void _WCI86FAR  _pg_getstyleset( unsigned short _WCI86FAR * );
-void _WCI86FAR  _pg_setstyleset( unsigned short _WCI86FAR * );
-void _WCI86FAR  _pg_resetstyleset( void );
-short _WCI86FAR _pg_getchardef( short, unsigned char _WCI86FAR * );
-short _WCI86FAR _pg_setchardef( short, unsigned char _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_hlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_vlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_getpalette( paletteentry _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_setpalette( paletteentry _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_resetpalette( void );
+_WCRTLINK void
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_getstyleset( unsigned short _WCI86FAR * );
+_WCRTLINK void
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_setstyleset( unsigned short _WCI86FAR * );
+_WCRTLINK void
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_resetstyleset( void );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_getchardef( short, unsigned char _WCI86FAR * );
+_WCRTLINK short
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _pg_setchardef( short, unsigned char _WCI86FAR * );
 
 :include poppack.sp
+
 :include cplusepi.sp
+
 #endif

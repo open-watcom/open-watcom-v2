@@ -24,39 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  command line parameter handling interfaces (OS/2)
 *
 ****************************************************************************/
-
 
 #ifndef PARAM_INCLUDED
 #define PARAM_INCLUDED
 
 #include <stdlib.h>
-#include "types.h"
-#ifdef UNIX
+#include "rctypes.h"
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
 #endif
+#ifndef _MAX_PATH
+#include <limits.h>
+#define _MAX_PATH PATH_MAX+1
+#endif
 
-#define DB_CHAR         1
+#define DB_CHAR                 1
 
-#define DB_NONE                 0
+#define MB_NONE                 0
 #define DB_KANJI                1
 #define DB_TRADITIONAL_CHINESE  2
 #define DB_WANSUNG_KOREAN       3
 #define DB_SIMPLIFIED_CHINESE   4
+#define MB_UTF8                 5
 
 typedef struct ExtraRes {
     struct ExtraRes     *next;
     char                 name[_MAX_PATH];
 }ExtraRes;
-
-typedef struct EnvVarInfo {
-    struct EnvVarInfo   *next;
-    char                **argv; /* points into buf */
-    char                buf[1]; /* dynamic array */
-} EnvVarInfo;
 
 typedef struct FRStrings {
     struct FRStrings    *next;
@@ -67,43 +64,42 @@ typedef struct FRStrings {
 
 struct RCParams {
 #ifdef SCANDEBUG
-    int     DebugScanner : 1;
+    unsigned    DebugScanner    : 1;
 #endif
 #ifdef YYDEBUG
-    int     DebugParser     : 1;
+    unsigned    DebugParser     : 1;
 #endif
-    int     PrintHelp       : 1;
-    int     Quiet           : 1;
-    int     Pass1Only       : 1;
-    int     Pass2Only       : 1;
-    int     NoResFile       : 1;    /* no RES file to merge in pass2 */
-    int     IgnoreINCLUDE   : 1;
-    int     IgnoreCWD       : 1;
-    int     MSResFormat     : 1;
-    int     PrivateDLL      : 1;    /* the next 5 option are use to set bits */
-    int     GlobalMemEMS    : 1;    /* in the os2_exe_header.info field */
-    int     EMSInstance     : 1;
-    int     EMSDirect       : 1;
-    int     ProtModeOnly    : 1;
-    int     PreprocessOnly  : 1;
-    int     WritableRes     : 1;
-    int     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
-    int     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
-    int     GenAutoDep      : 1;    /* generate autodependency info for wmake */
-    int     FindAndReplace;         /* a check to see whether for this option */
-    int     Prepend;
-    unsigned DBCharSupport  : 3;    /* which of the zk switches is set */
-    int     SegmentSorting;         /* which segment sorting method to use */
-    int     TargetOS;
-    char    InFileName[ _MAX_PATH ];
-    char    InExeFileName[ _MAX_PATH ];
-    char    OutResFileName[ _MAX_PATH ];
-    char    OutExeFileName[ _MAX_PATH ];
-    char    CodePageFile[ _MAX_PATH ];
-    char    PrependString[ _MAX_PATH ];
-    char ** CPPArgs;    /* temporary until preprocessing done inline */
-    int     VersionStamp;
-    EnvVarInfo  *EnvVariables;
+    unsigned    PrintHelp       : 1;
+    unsigned    Quiet           : 1;
+    unsigned    Pass1Only       : 1;
+    unsigned    Pass2Only       : 1;
+    unsigned    NoResFile       : 1;    /* no RES file to merge in pass2 */
+    unsigned    IgnoreINCLUDE   : 1;
+    unsigned    IgnoreCWD       : 1;
+    unsigned    MSResFormat     : 1;
+    unsigned    PrivateDLL      : 1;    /* the next 5 option are use to set bits */
+    unsigned    GlobalMemEMS    : 1;    /* in the os2_exe_header.info field */
+    unsigned    EMSInstance     : 1;
+    unsigned    EMSDirect       : 1;
+    unsigned    ProtModeOnly    : 1;
+    unsigned    PreprocessOnly  : 1;
+    unsigned    WritableRes     : 1;
+    unsigned    NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
+    unsigned    NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
+    unsigned    GenAutoDep      : 1;    /* generate autodependency info for wmake */
+    unsigned    FindAndReplace;         /* a check to see whether for this option */
+    unsigned    Prepend;
+    unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
+    unsigned    SegmentSorting;         /* which segment sorting method to use */
+    int         TargetOS;
+    char        InFileName[ _MAX_PATH ];
+    char        InExeFileName[ _MAX_PATH ];
+    char        OutResFileName[ _MAX_PATH ];
+    char        OutExeFileName[ _MAX_PATH ];
+    char        CodePageFile[ _MAX_PATH ];
+    char        PrependString[ _MAX_PATH ];
+    char        **CPPArgs;    /* temporary until preprocessing done inline */
+    int         VersionStamp;
     ExtraRes    *ExtraResFiles;
     FRStrings   *FindReplaceStrings;
 };
@@ -119,7 +115,8 @@ enum SegmentSortMethods {
 
 enum RCTargetOS {
     RC_TARGET_OS_WIN16,
-    RC_TARGET_OS_WIN32
+    RC_TARGET_OS_WIN32,
+    RC_TARGET_OS_OS2,
 };
 
 extern bool ScanParams( int argc, char * argv[] );
@@ -127,5 +124,6 @@ extern void RcAddCPPArg( char * newarg );
 extern void ScanParamShutdown( void );
 extern unsigned ParseEnvVar( const char *env, char **argv, char *buf );
 extern void AddNewIncludeDirs( const char * arg );
+extern void SetMBRange( unsigned from, unsigned to, char data );
 
 #endif

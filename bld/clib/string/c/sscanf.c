@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sscanf() - formatted input from string.
 *
 ****************************************************************************/
 
@@ -38,40 +37,40 @@
 
 
 static int cget_string( PTR_SCNF_SPECS specs )
-    {
-        int c;
+{
+    int         c;
 
-        if( (c = *(specs->ptr)) != NULLCHAR ) {
-            ++(specs->ptr);
-        } else {
-            c = EOF;
-            specs->eoinp = 1;
-        }
-        return( c );
+    if( (c = *(specs->ptr)) != NULLCHAR ) {
+        ++(specs->ptr);
+    } else {
+        c = EOF;
+        specs->eoinp = 1;
     }
+    return( c );
+}
 
 
 static void uncget_string( int c, PTR_SCNF_SPECS specs )
-    {
-        --specs->ptr;
-    }
+{
+    --specs->ptr;
+}
 
 
-_WCRTLINK int __F_NAME(vsscanf,vswscanf) ( const CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
-    {
-        auto SCNF_SPECS specs;
+_WCRTLINK int __F_NAME(vsscanf,vswscanf)( const CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
+{
+    SCNF_SPECS      specs;
 
-        specs.ptr = (CHAR_TYPE *)dest;
-        specs.cget_rtn = cget_string;
-        specs.uncget_rtn = uncget_string;
-        return( __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args ) );
-    }
+    specs.ptr = (CHAR_TYPE *)dest;
+    specs.cget_rtn = cget_string;
+    specs.uncget_rtn = uncget_string;
+    return( __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args ) );
+}
 
 
-_WCRTLINK int __F_NAME(sscanf,swscanf) ( const CHAR_TYPE *dest, const CHAR_TYPE *format, ... )
-    {
-        va_list args;
+_WCRTLINK int __F_NAME(sscanf,swscanf)( const CHAR_TYPE *dest, const CHAR_TYPE *format, ... )
+{
+    va_list     args;
 
-        va_start( args, format );
-        return( __F_NAME(vsscanf,vswscanf)( dest, format, args ) );
-    }
+    va_start( args, format );
+    return( __F_NAME(vsscanf,vswscanf)( dest, format, args ) );
+}

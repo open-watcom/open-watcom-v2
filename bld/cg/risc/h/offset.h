@@ -24,12 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Offset types.
 *
 ****************************************************************************/
 
 
+#ifndef _OFFSET_H
+#define _OFFSET_H
+
 typedef unsigned_16             short_offset;
 typedef unsigned_32             long_offset;
 typedef unsigned_32             offset;
+
+#endif

@@ -1,47 +1,41 @@
-.before:
-    @set include=
-!ifdef on_build_machine
-!ifeq profile 1
-    # This should be using $(%dwatcom) but those tools don't have the latest -etp support
-    # the rel2 tools do have the latest -etp support, so I am using them.
-    set watcom=$(%relroot)\$(%defrel)
-    set path=$(%watcom)\binnt;$(%watcom)\binw;$(%path)
-!endif
-!endif
-
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 
-$(libname).lib : $(objs) $(libs) .precious
+$(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
+    @rm -f tmp.def
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
-    vi -q -s $(lib_misc_dir)\vi\export.vi tmp.def
-    cat export.def tmp.def > tmp2.def
-    sort < tmp2.def > tmp3.def
-    -uniq < tmp3.def > export.def
-    @erase tmp.def
-    @erase tmp2.def
-    @erase tmp3.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
+    cat ../../../export.$(processor) tmp2.def > tmp3.def
+    sort < tmp3.def > tmp4.def
+    uniq tmp4.def > export.def
+    @rm -f tmp.def
+    @rm -f tmp2.def
+    @rm -f tmp3.def
+    @rm -f tmp4.def
 !endif
 !ifdef runtime_library_source
-    if exist 386sqrt.obj $(librarian) $(lib_flags) $^@ -+386sqrt.obj
-    if exist e86sqrt.obj $(librarian) $(lib_flags) $^@ -+e86sqrt.obj
+    if exist sqrt386.obj $(librarian) $(lib_flags) $^@ -+sqrt386.obj
+    if exist sqrt086.obj $(librarian) $(lib_flags) $^@ -+sqrt086.obj
 !endif
-    wtouch compile.tim
 
-.cpp.obj :
-    *$(cpp) $[@ $(include_c_path) $(build_target) $(cpp_flags)
+.c.obj : .autodepend
+!ifeq verbose 1
+    *$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
+!else
+    @echo mlib_cc $@
+    @*$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
+!endif
 
-.c.obj :
-    *$(cc) $[@ $(include_c_path) $(build_target) $($^&_flags) $(c_flags)
+.asm.obj : .autodepend
+!ifeq verbose 1
+    *$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
+!else
+    @echo mlib_as $@
+    @*$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
+!endif
 
-.asm.obj :
-    *$(as) $[@ $(include_a_path) $(build_target) $($^&_flags) $(a_flags)
+.c   : ../../../c
+.asm : ../../../a;$(emu286)/asm;$(emu386)/asm
 
-.c   : ..\..\..\c
-.cpp : ..\..\..\cpp
-.asm : ..\..\..\a;$(emu286);$(emu386)
-
-!include $(mathlib_dir)\clean.mif
-!include $(mathlib_dir)\updlib.mif
-!include $(mathlib_dir)\project.mif
+!include $(mathlib_dir)/clean.mif

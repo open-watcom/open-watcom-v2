@@ -1,0 +1,111 @@
+c$noreference
+
+c$ifdef INCL_WINWORKPLACE
+c$define INCL_WPCLASS
+c$endif
+
+c$ifdef INCL_WPCLASS
+
+        integer  CCHMAXCLASS
+        parameter (CCHMAXCLASS = 3)
+
+        integer  QC_First
+        parameter (QC_First = 0)
+        integer  QC_Next
+        parameter (QC_Next = 1)
+        integer  QC_Last
+        parameter (QC_Last = 2)
+
+        structure /OBJECTIMAGE/
+            integer*4 hptrObject
+        end structure
+
+        structure /OBJCLASS/
+            integer*4 pNext
+            integer*4 pszClassName
+            integer*4 pszModName
+        end structure
+
+        external WinRegisterObjectClass
+        integer*4 WinRegisterObjectClass
+
+        external WinDeregisterObjectClass
+        integer*4 WinDeregisterObjectClass
+
+        external WinReplaceObjectClass
+        integer*4 WinReplaceObjectClass
+
+        external WinEnumObjectClasses
+        integer*4 WinEnumObjectClasses
+
+        external WinCreateObject
+        integer*4 WinCreateObject
+
+c$endif
+
+c$define INCL_WPERRORS
+
+c$include pmwperr.fi
+
+        structure /PAGEINFO/
+            integer*4 cb
+            integer*4 hwndPage
+            integer*4 pfnwp
+            integer*4 resid
+            integer*4 pCreateParams
+            integer*2 dlgid
+            integer*2 usPageStyleFlags
+            integer*2 usPageInsertFlags
+            integer*2 usReserved
+            integer*4 pszName
+            integer*2 idDefaultHelpPanel
+            integer*2 usReserved2
+            integer*4 pszHelpLibraryName
+            integer*4 pHelpSubtable
+            integer*4 hmodHelpSubtable
+            integer*4 ulPageInsertId
+        end structure
+
+        structure /ICONPOS/
+            record /POINTL/ ptlIcon
+            integer*1 szIdentity(1)
+        end structure
+
+        structure /ICONINFO/
+            integer*4 cb
+            integer*4 fFormat
+            integer*4 pszFileName
+            integer*4 hmod
+            integer*4 resid
+            integer*4 cbIconData
+            integer*4 pIconData
+        end structure
+
+        integer  ICON_FILE
+        parameter (ICON_FILE = 1)
+        integer  ICON_RESOURCE
+        parameter (ICON_RESOURCE = 2)
+        integer  ICON_DATA
+        parameter (ICON_DATA = 3)
+        integer  ICON_CLEAR
+        parameter (ICON_CLEAR = 4)
+
+        external WinSetFileIcon
+        integer*4 WinSetFileIcon
+
+        external WinFreeFileIcon
+        integer*4 WinFreeFileIcon
+
+        external WinLoadFileIcon
+        integer*4 WinLoadFileIcon
+
+        external WinStoreWindowPos
+        integer*4 WinStoreWindowPos
+
+        external WinRestoreWindowPos
+        integer*4 WinRestoreWindowPos
+
+        external WinShutdownSystem
+        integer*4 WinShutdownSystem
+
+c$reference

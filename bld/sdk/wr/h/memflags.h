@@ -37,4 +37,3 @@
 #define IDM_MFPRE       305
 #define IDM_MFLOC       306
 #define IDM_MFHELP      307
-

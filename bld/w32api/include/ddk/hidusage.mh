@@ -1,0 +1,203 @@
+/*
+ *  hidusage.h  Human Interface Device (HID) usages
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __HIDUSAGE_H__
+#define __HIDUSAGE_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef USHORT  USAGE;
+typedef USHORT  *PUSAGE;
+
+/* HID usages */
+#define HID_USAGE_PAGE_UNDEFINED                0x0000
+#define HID_USAGE_PAGE_GENERIC                  0x0001
+#define HID_USAGE_PAGE_SIMULATION               0x0002
+#define HID_USAGE_PAGE_VR                       0x0003
+#define HID_USAGE_PAGE_SPORT                    0x0004
+#define HID_USAGE_PAGE_GAME                     0x0005
+#define HID_USAGE_PAGE_KEYBOARD                 0x0007
+#define HID_USAGE_PAGE_LED                      0x0008
+#define HID_USAGE_PAGE_BUTTON                   0x0009
+#define HID_USAGE_PAGE_ORDINAL                  0x000A
+#define HID_USAGE_PAGE_TELEPHONY                0x000B
+#define HID_USAGE_PAGE_CONSUMER                 0x000C
+#define HID_USAGE_PAGE_DIGITIZER                0x000D
+#define HID_USAGE_PAGE_UNICODE                  0x0010
+#define HID_USAGE_PAGE_ALPHANUMERIC             0x0014
+#define HID_USAGE_PAGE_MICROSOFT_BLUETOOTH_HANDSFREE    0xFFF3
+#define HID_USAGE_GENERIC_POINTER               0x0001
+#define HID_USAGE_GENERIC_MOUSE                 0x0002
+#define HID_USAGE_GENERIC_JOYSTICK              0x0004
+#define HID_USAGE_GENERIC_GAMEPAD               0x0005
+#define HID_USAGE_GENERIC_KEYBOARD              0x0006
+#define HID_USAGE_GENERIC_KEYPAD                0x0007
+#define HID_USAGE_GENERIC_SYSTEM_CTL            0x0080
+#define HID_USAGE_GENERIC_X                     0x0030
+#define HID_USAGE_GENERIC_Y                     0x0031
+#define HID_USAGE_GENERIC_Z                     0x0032
+#define HID_USAGE_GENERIC_RX                    0x0033
+#define HID_USAGE_GENERIC_RY                    0x0034
+#define HID_USAGE_GENERIC_RZ                    0x0035
+#define HID_USAGE_GENERIC_SLIDER                0x0036
+#define HID_USAGE_GENERIC_DIAL                  0x0037
+#define HID_USAGE_GENERIC_WHEEL                 0x0038
+#define HID_USAGE_GENERIC_HATSWITCH             0x0039
+#define HID_USAGE_GENERIC_COUNTED_BUFFER        0x003A
+#define HID_USAGE_GENERIC_BYTE_COUNT            0x003B
+#define HID_USAGE_GENERIC_MOTION_WAKEUP         0x003C
+#define HID_USAGE_GENERIC_VX                    0x0040
+#define HID_USAGE_GENERIC_VY                    0x0041
+#define HID_USAGE_GENERIC_VZ                    0x0042
+#define HID_USAGE_GENERIC_VBRX                  0x0043
+#define HID_USAGE_GENERIC_VBRY                  0x0044
+#define HID_USAGE_GENERIC_VBRZ                  0x0045
+#define HID_USAGE_GENERIC_VNO                   0x0046
+#define HID_USAGE_GENERIC_SYSCTL_POWER          0x0081
+#define HID_USAGE_GENERIC_SYSCTL_SLEEP          0x0082
+#define HID_USAGE_GENERIC_SYSCTL_WAKE           0x0083
+#define HID_USAGE_GENERIC_SYSCTL_CONTEXT_MENU   0x0084
+#define HID_USAGE_GENERIC_SYSCTL_MAIN_MENU      0x0085
+#define HID_USAGE_GENERIC_SYSCTL_APP_MENU       0x0086
+#define HID_USAGE_GENERIC_SYSCTL_HELP_MENU      0x0087
+#define HID_USAGE_GENERIC_SYSCTL_MENU_EXIT      0x0088
+#define HID_USAGE_GENERIC_SYSCTL_MENU_SELECT    0x0089
+#define HID_USAGE_GENERIC_SYSCTL_MENU_RIGHT     0x008A
+#define HID_USAGE_GENERIC_SYSCTL_MENU_LEFT      0x008B
+#define HID_USAGE_GENERIC_SYSCTL_MENU_UP        0x008C
+#define HID_USAGE_GENERIC_SYSCTL_MENU_DOWN      0x008D
+#define HID_USAGE_SIMULATION_RUDDER             0x00BA
+#define HID_USAGE_SIMULATION_THROTTLE           0x00BB
+#define HID_USAGE_KEYBOARD_NOEVENT              0x0000
+#define HID_USAGE_KEYBOARD_ROLLOVER             0x0001
+#define HID_USAGE_KEYBOARD_POSTFAIL             0x0002
+#define HID_USAGE_KEYBOARD_UNDEFINED            0x0003
+#define HID_USAGE_KEYBOARD_aA                   0x0004
+#define HID_USAGE_KEYBOARD_zZ                   0x001D
+#define HID_USAGE_KEYBOARD_ONE                  0x001E
+#define HID_USAGE_KEYBOARD_ZERO                 0x0027
+#define HID_USAGE_KEYBOARD_LCTRL                0x00E0
+#define HID_USAGE_KEYBOARD_LSHFT                0x00E1
+#define HID_USAGE_KEYBOARD_LALT                 0x00E2
+#define HID_USAGE_KEYBOARD_LGUI                 0x00E3
+#define HID_USAGE_KEYBOARD_RCTRL                0x00E4
+#define HID_USAGE_KEYBOARD_RSHFT                0x00E5
+#define HID_USAGE_KEYBOARD_RALT                 0x00E6
+#define HID_USAGE_KEYBOARD_RGUI                 0x00E7
+#define HID_USAGE_KEYBOARD_SCROLL_LOCK          0x0047
+#define HID_USAGE_KEYBOARD_NUM_LOCK             0x0053
+#define HID_USAGE_KEYBOARD_CAPS_LOCK            0x0039
+#define HID_USAGE_KEYBOARD_F1                   0x003A
+#define HID_USAGE_KEYBOARD_F12                  0x0045
+#define HID_USAGE_KEYBOARD_RETURN               0x0028
+#define HID_USAGE_KEYBOARD_ESCAPE               0x0029
+#define HID_USAGE_KEYBOARD_DELETE               0x002A
+#define HID_USAGE_KEYBOARD_PRINT_SCREEN         0x0046
+#define HID_USAGE_LED_NUM_LOCK                  0x0001
+#define HID_USAGE_LED_CAPS_LOCK                 0x0002
+#define HID_USAGE_LED_SCROLL_LOCK               0x0003
+#define HID_USAGE_LED_COMPOSE                   0x0004
+#define HID_USAGE_LED_KANA                      0x0005
+#define HID_USAGE_LED_POWER                     0x0006
+#define HID_USAGE_LED_SHIFT                     0x0007
+#define HID_USAGE_LED_DO_NOT_DISTURB            0x0008
+#define HID_USAGE_LED_MUTE                      0x0009
+#define HID_USAGE_LED_TONE_ENABLE               0x000A
+#define HID_USAGE_LED_HIGH_CUT_FILTER           0x000B
+#define HID_USAGE_LED_LOW_CUT_FILTER            0x000C
+#define HID_USAGE_LED_EQUALIZER_ENABLE          0x000D
+#define HID_USAGE_LED_SOUND_FIELD_ON            0x000E
+#define HID_USAGE_LED_SURROUND_FIELD_ON         0x000F
+#define HID_USAGE_LED_REPEAT                    0x0010
+#define HID_USAGE_LED_STEREO                    0x0011
+#define HID_USAGE_LED_SAMPLING_RATE_DETECT      0x0012
+#define HID_USAGE_LED_SPINNING                  0x0013
+#define HID_USAGE_LED_CAV                       0x0014
+#define HID_USAGE_LED_CLV                       0x0015
+#define HID_USAGE_LED_RECORDING_FORMAT_DET      0x0016
+#define HID_USAGE_LED_OFF_HOOK                  0x0017
+#define HID_USAGE_LED_RING                      0x0018
+#define HID_USAGE_LED_MESSAGE_WAITING           0x0019
+#define HID_USAGE_LED_DATA_MODE                 0x001A
+#define HID_USAGE_LED_BATTERY_OPERATION         0x001B
+#define HID_USAGE_LED_BATTERY_OK                0x001C
+#define HID_USAGE_LED_BATTERY_LOW               0x001D
+#define HID_USAGE_LED_SPEAKER                   0x001E
+#define HID_USAGE_LED_HEAD_SET                  0x001F
+#define HID_USAGE_LED_HOLD                      0x0020
+#define HID_USAGE_LED_MICROPHONE                0x0021
+#define HID_USAGE_LED_COVERAGE                  0x0022
+#define HID_USAGE_LED_NIGHT_MODE                0x0023
+#define HID_USAGE_LED_SEND_CALLS                0x0024
+#define HID_USAGE_LED_CALL_PICKUP               0x0025
+#define HID_USAGE_LED_CONFERENCE                0x0026
+#define HID_USAGE_LED_STAND_BY                  0x0027
+#define HID_USAGE_LED_CAMERA_ON                 0x0028
+#define HID_USAGE_LED_CAMERA_OFF                0x0029
+#define HID_USAGE_LED_ON_LINE                   0x002A
+#define HID_USAGE_LED_OFF_LINE                  0x002B
+#define HID_USAGE_LED_BUSY                      0x002C
+#define HID_USAGE_LED_READY                     0x002D
+#define HID_USAGE_LED_PAPER_OUT                 0x002E
+#define HID_USAGE_LED_PAPER_JAM                 0x002F
+#define HID_USAGE_LED_REMOTE                    0x0030
+#define HID_USAGE_LED_FORWARD                   0x0031
+#define HID_USAGE_LED_REVERSE                   0x0032
+#define HID_USAGE_LED_STOP                      0x0033
+#define HID_USAGE_LED_REWIND                    0x0034
+#define HID_USAGE_LED_FAST_FORWARD              0x0035
+#define HID_USAGE_LED_PLAY                      0x0036
+#define HID_USAGE_LED_PAUSE                     0x0037
+#define HID_USAGE_LED_RECORD                    0x0038
+#define HID_USAGE_LED_ERROR                     0x0039
+#define HID_USAGE_LED_SELECTED_INDICATOR        0x003A
+#define HID_USAGE_LED_IN_USE_INDICATOR          0x003B
+#define HID_USAGE_LED_MULTI_MODE_INDICATOR      0x003C
+#define HID_USAGE_LED_INDICATOR_ON              0x003D
+#define HID_USAGE_LED_INDICATOR_FLASH           0x003E
+#define HID_USAGE_LED_INDICATOR_SLOW_BLINK      0x003F
+#define HID_USAGE_LED_INDICATOR_FAST_BLINK      0x0040
+#define HID_USAGE_LED_INDICATOR_OFF             0x0041
+#define HID_USAGE_LED_FLASH_ON_TIME             0x0042
+#define HID_USAGE_LED_SHOW_BLINK_ON_TIME        0x0043
+#define HID_USAGE_LED_SHOW_BLINK_OFF_TIME       0x0044
+#define HID_USAGE_LED_FAST_BLINK_ON_TIME        0x0045
+#define HID_USAGE_LED_FAST_BLINK_OFF_TIME       0x0046
+#define HID_USAGE_LED_INDICATOR_COLOR           0x0047
+#define HID_USAGE_LED_RED                       0x0048
+#define HID_USAGE_LED_GREEN                     0x0049
+#define HID_USAGE_LED_AMBER                     0x004A
+#define HID_USAGE_LED_GENERIC_INDICATOR         0x004B
+#define HID_USAGE_TELEPHONY_PHONE               0x0001
+#define HID_USAGE_TELEPHONY_ANSWERING_MACHINE   0x0002
+#define HID_USAGE_TELEPHONY_MESSAGE_CONTROLS    0x0003
+#define HID_USAGE_TELEPHONY_HANDSET             0x0004
+#define HID_USAGE_TELEPHONY_HEADSET             0x0005
+#define HID_USAGE_TELEPHONY_KEYPAD              0x0006
+#define HID_USAGE_TELEPHONY_PROGRAMMABLE_BUTTON 0x0007
+#define HID_USAGE_TELEPHONY_REDIAL              0x0024
+#define HID_USAGE_TELEPHONY_TRANSFER            0x0025
+#define HID_USAGE_TELEPHONY_DROP                0x0026
+#define HID_USAGE_TELEPHONY_LINE                0x002A
+#define HID_USAGE_TELEPHONY_RING_ENABLE         0x002D
+#define HID_USAGE_TELEPHONY_SEND                0x0031
+#define HID_USAGE_TELEPHONY_KEYPAD_0            0x00B0
+#define HID_USAGE_TELEPHONY_KEYPAD_D            0x00BF
+#define HID_USAGE_TELEPHONY_HOST_AVAILABLE      0x00F1
+#define HID_USAGE_MS_BTH_HF_DIALNUMBER          0x0021
+#define HID_USAGE_MS_BTH_HF_DIALMEMORY          0x0022
+#define HID_USAGE_CONSUMERCTRL                  0x0001
+#define HID_USAGE_DIGITIZER_PEN                 0x0002
+#define HID_USAGE_DIGITIZER_IN_RANGE            0x0032
+#define HID_USAGE_DIGITIZER_TIP_SWITCH          0x0042
+#define HID_USAGE_DIGITIZER_BARREL_SWITCH       0x0044
+
+:include cplusepi.sp
+
+#endif /* __HIDUSAGE_H__ */

@@ -40,7 +40,7 @@
 #endif
 
 
-unsigned char _WCI86FAR * _WCI86FAR _CGRAPH _getfillmask( unsigned char _WCI86FAR *mask )
+_WCRTLINK unsigned char _WCI86FAR * _WCI86FAR _CGRAPH _getfillmask( unsigned char _WCI86FAR *mask )
 /*========================================================================
 
    This function qeuries the pattern for area filling. */
@@ -59,7 +59,7 @@ unsigned char _WCI86FAR * _WCI86FAR _CGRAPH _getfillmask( unsigned char _WCI86FA
 Entry( _GETFILLMASK, _getfillmask ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _setfillmask( unsigned char _WCI86FAR * mask )
+_WCRTLINK void _WCI86FAR _CGRAPH _setfillmask( unsigned char _WCI86FAR * mask )
 /*=========================================================
 
    This routine sets the pattern for area filling. */

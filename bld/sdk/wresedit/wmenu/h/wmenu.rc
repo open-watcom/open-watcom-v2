@@ -1,56 +1,44 @@
-/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
-   %       reserved. No part of this software may be reproduced      %
-   %       in any form or by any means - graphic, electronic or      %
-   %       mechanical, including photocopying, recording, taping     %
-   %       or information storage and retrieval systems - except     %
-   %       with the written permission of WATCOM Systems Inc.        %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-   Date         By              Reason
-   ----         --              ------
-   19 Jul 93    Wes Nelson      initial implementation
-*/
-
 #include <windows.h>
 #include "sys_rc.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
+#include "uistr.gh"
+#include "about.h"
 #include "banner.h"
 #include "w.rc"
 
-WMenuAccelTable ACCELERATORS
+"WMenuAccelTable" ACCELERATORS
 BEGIN
-    VK_DELETE,  IDM_MENU_DELETE,VIRTKEY
-    VK_F1,      IDM_HELP,       VIRTKEY
-    "X",        IDM_MENU_CUT,   CONTROL, VIRTKEY
-    "C",        IDM_MENU_COPY,  CONTROL, VIRTKEY
-    "V",        IDM_MENU_PASTE, CONTROL, VIRTKEY
+    VK_DELETE,  IDM_MENU_DELETE,    VIRTKEY
+    VK_F1,      IDM_HELP,           VIRTKEY
+    "X",        IDM_MENU_CUT,       CONTROL, VIRTKEY
+    "C",        IDM_MENU_COPY,      CONTROL, VIRTKEY
+    "V",        IDM_MENU_PASTE,     CONTROL, VIRTKEY
 END
 
 /* icons */
-WMainIcon      ICON wmenu.ico
+"APPLICON"      ICON "wmenu.ico"
 
-/* aboutbox bitmap */
-AboutLogo    BITMAP MOVEABLE DISCARDABLE logo.bmp
+/* about box bitmap */
+"AboutLogo"     BITMAP MOVEABLE DISCARDABLE "logo.bmp"
 
 /* ribbon bitmaps */
-Clear        BITMAP clear.bmp
-New          BITMAP new.bmp
-Open         BITMAP open.bmp
-Save         BITMAP save.bmp
+"Clear"         BITMAP "clear.bmp"
+"New"           BITMAP "new.bmp"
+"Open"          BITMAP "open.bmp"
+"Save"          BITMAP "save.bmp"
 
-Cut          BITMAP cut.bmp
-Copy         BITMAP copy.bmp
-Paste        BITMAP paste.bmp
+"Cut"           BITMAP "cut.bmp"
+"Copy"          BITMAP "copy.bmp"
+"Paste"         BITMAP "paste.bmp"
 
-InsertItem   BITMAP insitem.bmp
-InsertPopup  BITMAP inspopup.bmp
-InsertSep    BITMAP inssep.bmp
-DeleteItem   BITMAP delitem.bmp
-InsertAfter  BITMAP insafter.bmp
-InsertBefore BITMAP insbefor.bmp
-InsertSub    BITMAP inssub.bmp
-InsertNoSub  BITMAP insnosub.bmp
+"InsertItem"    BITMAP "insitem.bmp"
+"InsertPopup"   BITMAP "inspopup.bmp"
+"InsertSep"     BITMAP "inssep.bmp"
+"DeleteItem"    BITMAP "delitem.bmp"
+"InsertAfter"   BITMAP "insafter.bmp"
+"InsertBefore"  BITMAP "insbefor.bmp"
+"InsertSub"     BITMAP "inssub.bmp"
+"InsertNoSub"   BITMAP "insnosub.bmp"
 
 #undef pick
 #undef sp
@@ -59,11 +47,11 @@ InsertNoSub  BITMAP insnosub.bmp
 
 STRINGTABLE
 BEGIN
-    #include "master.msg"
+    #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 #include "wmenu.men"
 
-#include "menabout.dlg"
 #include "menedit.dlg"
-
+#include "about.dlg"

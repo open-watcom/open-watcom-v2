@@ -39,11 +39,11 @@
 #define ChildOff 25
 #define ChildH   10
 #define ChildW   10
-const sibSep = 10;
+const int sibSep = 10;
 
 const int POOLSIZE = 64;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool TreeRing::_pool( sizeof( TreeRing ), "TreeRing", POOLSIZE );
 #pragma warning 549 3
 
@@ -101,7 +101,9 @@ void TreeRing::operator delete( void * mem )
 void TreeRing::unWrap( void )
 //---------------------------
 {
-    for( int i = _children.count(); i > 0; i -= 1 )  {
+    int     i;
+
+    for( i = _children.count(); i > 0; i -= 1 )  {
         TreePtr * ptr = _children[ i - 1 ]->makeClone();
 
         for( int j = _parents.count(); j > 0; j -= 1 ) {
@@ -449,12 +451,14 @@ void TreeRing::joinRings( TreeRingList & list )
      * ring list.  We stop when we can't join any more rings.
      */
     do {
+        int     i;
+
         joinMore = FALSE;
 
         /*
          * Go through the list of rings, trying to join pairs of rings
          */
-        for( int i = list.count(); i > 0; i -= 1 ) {
+        for( i = list.count(); i > 0; i -= 1 ) {
             TreeRing * tryRing = list[ i - 1 ];
 
             if( tryRing != NULL ) {

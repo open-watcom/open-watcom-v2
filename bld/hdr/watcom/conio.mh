@@ -5,12 +5,12 @@
  */
 #ifndef _CONIO_H_INCLUDED
 #define _CONIO_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include valist.sp
 
@@ -23,6 +23,7 @@ _WCRTLINK extern int _getch(void);
 _WCRTLINK extern int getche(void);
 _WCRTLINK extern int _getche(void);
 _WCRTLINK extern int kbhit(void);
+_WCRTLINK extern int _kbhit(void);
 #if defined(_M_IX86)
  _WCIRTLINK extern unsigned inp(unsigned __port);
  _WCIRTLINK extern unsigned inpw(unsigned __port);
@@ -33,12 +34,10 @@ _WCRTLINK extern int kbhit(void);
   _WCIRTLINK extern unsigned outpd(unsigned __port, unsigned __value);
  #endif
 #endif
-:segment NOT_PENPOINT
 _WCRTLINK extern int putch(int __c);
 _WCRTLINK extern int ungetch(int __c);
 _WCRTLINK extern int vcprintf( const char *__format, __va_list __arg );
 _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
-:endsegment
 
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
  #pragma intrinsic(inp,inpw,outp,outpw)
@@ -47,5 +46,15 @@ _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
  #endif
 #endif
 
+#if defined(_M_IX86)
+ #define _inp   inp
+ #define _inpw  inpw
+ #define _inpd  inpd
+ #define _outp  outp
+ #define _outpw outpw
+ #define _outpd outpd
+#endif
+
 :include cplusepi.sp
+
 #endif

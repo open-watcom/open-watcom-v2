@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Global object dialogs.
 *
 ****************************************************************************/
 
@@ -43,17 +42,17 @@ static DWORD    AddTotal;
 
 void ShowSelector( HWND list ) {
 
-    DWORD       index;
+    LRESULT     index;
     char        buf[100];
     WORD        sel;
     char        *msgtitle;
 
     index = SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
-        msgtitle = AllocRCString( STR_GET_SELECTOR );
+        msgtitle = HWAllocRCString( STR_GET_SELECTOR );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                       msgtitle, MB_OK | MB_ICONEXCLAMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return;
     }
     sel = GlobalHandleToSel( HeapList[index]->info.ge.hBlock );
@@ -64,44 +63,44 @@ void ShowSelector( HWND list ) {
         RCsprintf( buf, STR_SELECTOR_FOR_HANDLE, sel,
                    HeapList[index]->info.ge.hBlock );
     }
-    msgtitle = AllocRCString( STR_GET_SELECTOR );
+    msgtitle = HWAllocRCString( STR_GET_SELECTOR );
     MessageBox( HeapWalkMainWindow, buf, msgtitle, MB_OK );
-    FreeRCString( msgtitle );
+    HWFreeRCString( msgtitle );
 }
 
 BOOL GlobDiscardObj( HWND list ) {
 
-    DWORD       index;
+    LRESULT     index;
     char        buf[100];
     char        *msgtitle;
 
     index = SendMessage( list, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
-        msgtitle = AllocRCString( STR_DISCARD );
+        msgtitle = HWAllocRCString( STR_DISCARD );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                       msgtitle, MB_OK | MB_ICONEXCLAMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return( FALSE );
     }
     if( GlobalDiscard( HeapList[index]->info.ge.hBlock ) == 0 ) {
-        msgtitle = AllocRCString( STR_DISCARD );
+        msgtitle = HWAllocRCString( STR_DISCARD );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_DISCARD_ITEM,
                     msgtitle, MB_OK | MB_ICONINFORMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return( FALSE );
     } else {
         RCsprintf( buf, STR_HDL_DISCARDED, HeapList[index]->info.ge.hBlock,
                  HeapList[index]->info.ge.dwBlockSize );
-        msgtitle = AllocRCString( STR_DISCARD );
+        msgtitle = HWAllocRCString( STR_DISCARD );
         MessageBox( HeapWalkMainWindow, buf, msgtitle, MB_OK );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
         return( TRUE );
     }
 }
 
 BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 
-    DWORD               index;
+    LRESULT             index;
     GLOBALENTRY         ge;
     GLOBALENTRY         *item;
     BOOL                is_newest;
@@ -163,13 +162,13 @@ BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam,
     case WM_INITDIALOG:
         SetStaticText( hwnd, ADD_CNT, "0" );
         SetStaticText( hwnd, ADD_TOTAL, "0" );
-        parent = GetWindowWord( hwnd, GWW_HWNDPARENT );
+        parent = (HWND)GetWindowWord( hwnd, GWW_HWNDPARENT );
         GetClientRect( parent, &area );
         SetWindowPos( hwnd, NULL, -area.left, -area.top, 0, 0,
                       SWP_NOSIZE | SWP_NOZORDER );
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         if( wparam == ADD_OK && HIWORD( lparam ) == BN_CLICKED ) {
@@ -234,9 +233,9 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
     AddCount = 0;
     AddTotal = 0;
-    DialProc = MakeProcInstance( AddDlgProc, Instance );
+    DialProc = MakeProcInstance( (FARPROC)AddDlgProc, Instance );
     if( DialProc != NULL ) {
-        dialog = JCreateDialog( Instance, "ADD_DLG", parent , DialProc );
+        dialog = JCreateDialog( Instance, "ADD_DLG", parent , (DLGPROC)DialProc );
         if( dialog != NULL ) {
             SetMenusForAdd( parent, TRUE );
             SetListBoxForAdd( info->box, TRUE );
@@ -248,7 +247,7 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
 void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     int         *items;
-    DWORD       cnt;
+    LRESULT     cnt;
     DWORD       total;
     DWORD       i;
     char        buf[100];
@@ -287,14 +286,14 @@ BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam,
     case WM_INITDIALOG:
         CenterDlg( hwnd );
         info = SetSwapAreaSize( 0 );
-        str = GetRCString( STR_VALUE_K );
+        str = HWGetRCString( STR_VALUE_K );
         sprintf( buf, str, LOWORD( info ) / 64 );
         SetStaticText( hwnd, CODE_CUR_SIZE, buf );
         sprintf( buf, str, HIWORD( info ) / 64 );
         SetStaticText( hwnd, CODE_MAX_SIZE, buf );
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         if( HIWORD( lparam ) == BN_CLICKED ) {

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
 
@@ -47,8 +45,8 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
     FetchFcb( CurrentFcb );
     wasnull = CurrentFcb->nullfcb;
     if( wasnull ) {
-        MemFree( CurrentFcb->line_head );
-        CurrentFcb->line_head = CurrentFcb->line_tail = NULL;
+        MemFree( CurrentFcb->lines.head );
+        CurrentFcb->lines.head = CurrentFcb->lines.tail = NULL;
         CurrentFcb->nullfcb = FALSE;
         CurrentFcb->byte_cnt = 0;
         CurrentFcb->end_line = 0;
@@ -57,20 +55,19 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
     /*
      * add the line
      */
-    InsertNewLine( CurrentLine, &(CurrentFcb->line_head),
-                    &(CurrentFcb->line_tail), data, copylen,dir );
-    CurrentFcb->byte_cnt += (copylen+1);
+    InsertNewLine( CurrentLine, &CurrentFcb->lines, data, copylen,dir );
+    CurrentFcb->byte_cnt += copylen + 1;
     CurrentFcb->end_line += 1;
 
     /*
      * update line info
      */
     if( wasnull ) {
-        CurrentLine = CurrentFcb->line_head;
+        CurrentLine = CurrentFcb->lines.head;
         SetCurrentLineNumber( 1 );
     } else {
         if( dir == INSERT_BEFORE ) {
-            SetCurrentLineNumber( CurrentLineNumber +1 );
+            SetCurrentLineNumber( CurrentPos.line + 1 );
         }
         UpdateLineNumbers( 1L, CurrentFcb->next );
     }
@@ -81,8 +78,8 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
 /*
  * InsertNewLine - do just that
  */
-void InsertNewLine( line *who, line **head, line **tail, char *data, int copylen,
-        insert_dir dir )
+void InsertNewLine( line *who, line_list *linelist, char *data, int copylen,
+                    insert_dir dir )
 {
     line        *cl;
 
@@ -91,13 +88,13 @@ void InsertNewLine( line *who, line **head, line **tail, char *data, int copylen
         copylen = 0;
     }
     cl = LineAlloc( data, copylen );
-    if( *head == NULL ) {
-        AddLLItemAtEnd( head, tail, cl );
+    if( linelist->head == NULL ) {
+        AddLLItemAtEnd( (ss **)&linelist->head, (ss **)&linelist->tail, (ss *)cl );
     } else {
         if( dir == INSERT_AFTER ) {
-            InsertLLItemAfter( tail, who, cl );
+            InsertLLItemAfter( (ss **)&linelist->tail, (ss *)who, (ss *)cl );
         } else {
-            InsertLLItemBefore( head, who, cl );
+            InsertLLItemBefore( (ss **)&linelist->head, (ss *)who, (ss *)cl );
         }
     }
 
@@ -110,7 +107,7 @@ line *LineAlloc( char *data, int len )
 {
     line        *tmp;
 
-    tmp = MemAlloc( LINE_SIZE + len );  /* Don't Need len+1 */
+    tmp = MemAlloc( sizeof( line ) + len );  /* Don't Need len+1 */
     if( data != NULL ) {
         memcpy( tmp->data, data, len );
     }
@@ -130,7 +127,7 @@ void CreateNullLine( fcb *cfcb )
 
     cline = LineAlloc( NULL, 0 );
     FetchFcb( cfcb );
-    AddLLItemAtEnd( &(cfcb->line_head), &(cfcb->line_tail), cline );
+    AddLLItemAtEnd( (ss **)&(cfcb->lines.head), (ss **)&(cfcb->lines.tail), (ss *)cline );
     cfcb->byte_cnt = 1;
     cfcb->start_line = cfcb->end_line = 1;
     cfcb->nullfcb = TRUE;

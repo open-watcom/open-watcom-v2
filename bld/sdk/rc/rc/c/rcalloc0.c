@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource compiler memory layer 0.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include "rcalloc0.h"
 #include "errors.h"
@@ -129,7 +128,7 @@ extern void *RCMemLayer0Malloc( HeapHandle *heap )
     debugmem->startbyte = RCMEM_STARTBYTE;
 
     freemem = (FreeListInfo *)((char *)freemem + sizeof( DebugMemInfo ) );
-    *( (char *)freemem + size ) = RCMEM_ENDBYTE;
+    *((unsigned char *)freemem + size ) = RCMEM_ENDBYTE;
 #endif
 
     return( freemem );
@@ -142,15 +141,15 @@ extern void RCMemLayer0Free( void *mem, HeapHandle *heap )
     DebugMemInfo        *debugmem;
 
     if( mem == NULL ) {
-        RcFprintf( stderr, NULL, "Free NULL pointer\n" );
+        RcMsgFprintf( stderr, NULL, "Free NULL pointer\n" );
     }
     debugmem = (DebugMemInfo *)( (char *)mem - sizeof( DebugMemInfo ) );
-    if( *((char*)mem + debugmem->size ) != RCMEM_ENDBYTE ) {
-        RcFprintf( stderr, NULL, "(%x) Memory Overrun\n", mem );
+    if( *((unsigned char*)mem + debugmem->size ) != RCMEM_ENDBYTE ) {
+        RcMsgFprintf( stderr, NULL, "(%x) Memory Overrun\n", mem );
     }
 
     debugmem->startbyte = !RCMEM_STARTBYTE;
-    mem = (char *)mem - sizeof( DebugMemInfo );
+    mem = (unsigned char *)mem - sizeof( DebugMemInfo );
 #endif
 
     *( (char **)mem ) = heap->freeList;
@@ -170,7 +169,7 @@ static void RCMemLayer0CheckUnfreed( HeapHandle *heap, char *freelist )
     for( i = 0; i < heap->blocksize; i++ ) {
         debugmem = (DebugMemInfo *)freelist;
         if( debugmem->startbyte == RCMEM_STARTBYTE ) {
-            RcFprintf( stderr, NULL,
+            RcMsgFprintf( stderr, NULL,
                         "Unfreed Memory Detected (0x%x bytes at 0x%x)\n",
                         debugmem->size, freelist + sizeof( DebugMemInfo ) );
             debugmem->startbyte = !RCMEM_STARTBYTE;
@@ -199,4 +198,3 @@ extern void RCMemLayer0ShutDown( HeapHandle *heap )
     }
     free( heap );
 }
-

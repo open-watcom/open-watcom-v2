@@ -6,27 +6,28 @@
 //
 #ifndef _WCLIST_H_INCLUDED
 #define _WCLIST_H_INCLUDED
+
 :include readonly.sp
 
-#pragma warning 621 9       // I want the behaviour this warning points to
+:include cpponly.sp
 
-#ifndef __cplusplus
-#error wclist.h is for use with C++
-#endif
+#pragma warning 621 9       // I want the behaviour this warning points to
 
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
+
 #ifndef _WCLCOM_H_INCLUDED
  #include <wclcom.h>
 #endif
+
 #ifndef _WCLBASE_H_INCLUDED
  #include <wclbase.h>
 #endif
-
 
 //
 //  This defines a single linked list of values of type <Type>

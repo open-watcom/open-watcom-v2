@@ -322,7 +322,7 @@ void RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist ) {
  */
 static void viewMem( MemWalkerInfo *info ) {
 
-    DWORD                       index;
+    LRESULT                     index;
     MEMORY_BASIC_INFORMATION    *mbi;
     char                        buf[100];
     BOOL                        ret;

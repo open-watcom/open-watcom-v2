@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for the 3D graphics library.
 *
 ****************************************************************************/
 
-
-// Definitions for the 3D graphics library
 
 typedef enum three_d_attr {
     THREE_D_HORZ_ANGLE,

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  New Program dialog processing.
 *
 ****************************************************************************/
 
@@ -42,13 +41,14 @@ extern char             *TxtBuff;
 
 extern unsigned         GetProgName( char *where, unsigned len );
 extern unsigned         GetProgArgs( char *where, unsigned len );
-extern void             DoInput(void);
+extern void             DoInput( void );
 
-extern void LoadNewProg( char *cmd, char *parms );
-extern bool ExeBrowse();
+extern void             LoadNewProg( char *cmd, char *parms );
+extern bool             ExeBrowse( void );
 
 static char     prog[UTIL_LEN];
 static char     args[UTIL_LEN];
+
 
 OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
 {
@@ -58,6 +58,8 @@ OVL_EXTERN bool ProgEvent( gui_window * gui, gui_event gui_ev, void * param )
     dlg = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
+        GUILimitEditText( gui, CTL_NEWP_PROG, UTIL_LEN - 1 );
+        GUILimitEditText( gui, CTL_NEWP_ARGS, UTIL_LEN - 1 );
         GUISetText( gui, CTL_NEWP_PROG, dlg->prog );
         GUISetText( gui, CTL_NEWP_ARGS, dlg->args );
         GUISetFocus( gui, CTL_NEWP_PROG );
@@ -99,7 +101,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     ResDlgOpen( &ProgEvent, pdlg, DIALOG_NEW_PROG );
 }
 
-extern  void    DlgNewProg()
+extern  void    DlgNewProg( void )
 {
     dlg_new_prog        dlg;
 

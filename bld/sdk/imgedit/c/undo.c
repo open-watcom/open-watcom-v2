@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "undo.h"
 #include "iemem.h"
@@ -38,44 +39,46 @@ static an_undo_stack    *firstStack;
 static an_undo_stack    *lastStack;
 
 /*
- * setBaseImage - Sets the base image (for when no undos are left)
+ * setBaseImage - set the base image (for when no undos are left)
  */
 static void setBaseImage( img_node *node, an_undo_stack *stack )
 {
     stack->firstxor = DuplicateBitmap( node->hxorbitmap );
     stack->firstand = DuplicateBitmap( node->handbitmap );
+
 } /* setBaseImage */
 
 /*
- * moveToUndo - moves the top of the redo stack to the top of the undo stack.
+ * moveToUndo - move the top of the redo stack to the top of the undo stack
  */
-void moveToUndo( an_undo_stack *stack )
+static void moveToUndo( an_undo_stack *stack )
 {
     an_undo_node        *new_redo_top;
 
-    if ( !(stack->top_redo) ) {
+    if( stack->top_redo == NULL ) {
         return;
     }
 
     new_redo_top = stack->top_redo->next;
-    if (new_redo_top) {
+    if( new_redo_top != NULL ) {
         new_redo_top->previous = NULL;
     }
     stack->top_redo->next = stack->top_undo;
 
-    if (stack->top_undo) {
+    if( stack->top_undo != NULL ) {
         stack->top_undo->previous = stack->top_redo;
     } else {
         stack->bottom_undo = stack->top_redo;
     }
     stack->top_undo = stack->top_redo;
     stack->top_redo = new_redo_top;
+
 } /* moveToUndo */
 
 /*
- * copyBitmaps - copy the xor and the and bitmaps
+ * copyBitmaps - copy the XOR and the AND bitmaps
  */
-void copyBitmaps( img_node *node, HBITMAP xorbitmap, HBITMAP andbitmap )
+static void copyBitmaps( img_node *node, HBITMAP xorbitmap, HBITMAP andbitmap )
 {
     WPI_PRES            pres;
     HDC                 destdc;
@@ -92,29 +95,28 @@ void copyBitmaps( img_node *node, HBITMAP xorbitmap, HBITMAP andbitmap )
 
     oldsrc = _wpi_selectbitmap( srcpres, xorbitmap );
     olddest = _wpi_selectbitmap( destpres, node->hxorbitmap );
-    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0,
-                                                                SRCCOPY );
+    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
     _wpi_getoldbitmap( srcpres, oldsrc );
     _wpi_getoldbitmap( destpres, olddest );
 
     oldsrc = _wpi_selectbitmap( srcpres, andbitmap );
     olddest = _wpi_selectbitmap( destpres, node->handbitmap );
-    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0,
-                                                                SRCCOPY );
+    _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
     _wpi_getoldbitmap( srcpres, oldsrc );
     _wpi_getoldbitmap( destpres, olddest );
     _wpi_deletecompatiblepres( srcpres, oldsrc );
     _wpi_deletecompatiblepres( destpres, olddest );
+
 } /* copyBitmaps */
 
 /*
- * deleteRedoStack - deletes the redo stack.
+ * deleteRedoStack - delete the redo stack
  */
 static void deleteRedoStack( an_undo_stack *stack )
 {
     an_undo_node        *new_top;
 
-    while( stack->top_redo ) {
+    while( stack->top_redo != NULL ) {
         new_top = stack->top_redo->next;
         stack->top_redo->next = NULL;
         _wpi_deletebitmap( stack->top_redo->xorbitmap );
@@ -123,15 +125,18 @@ static void deleteRedoStack( an_undo_stack *stack )
         stack->top_redo = new_top;
         stack->redocount = 0;
     }
+
 } /* deleteRedoStack */
 
 /*
- * addToRedo - adds a node to the redo stack
+ * addToRedo - add a node to the redo stack
  */
-void addToRedo( an_undo_stack *stack )
+static void addToRedo( an_undo_stack *stack )
 {
-    if (!stack) return;
-    if (stack->top_redo) {
+    if( stack == NULL ) {
+        return;
+    }
+    if( stack->top_redo != NULL ) {
         stack->top_undo->next = stack->top_redo;
         stack->top_redo->previous = stack->top_undo;
         stack->top_redo = stack->top_undo;
@@ -139,28 +144,30 @@ void addToRedo( an_undo_stack *stack )
         stack->top_redo = stack->top_undo;
         stack->top_redo->next = NULL;
     }
+
 } /* addToRedo */
 
 /*
- * getTopStack - retrieves the top stack (of potentially many icons) from
- *               the icon list.
+ * getTopStack - retrieve the top stack (of potentially many icons) from
+ *               the icon list
  */
 static an_undo_stack *getTopStack( HWND hwnd )
 {
     an_undo_stack       *stack;
 
     stack = firstStack;
-    while( stack ) {
-        if (stack->hwnd == hwnd) {
+    while( stack != NULL ) {
+        if( stack->hwnd == hwnd ) {
             return( stack );
         }
         stack = stack->next;
     }
     return( NULL );
+
 } /* getTopStack */
 
 /*
- * getStack - returns the stack corresponding to the window handle.
+ * getStack - return the stack corresponding to the window handle
  */
 static an_undo_stack *getStack( HWND hwnd )
 {
@@ -168,39 +175,42 @@ static an_undo_stack *getStack( HWND hwnd )
     int                 i;
 
     stack = getTopStack( hwnd );
-    if (!stack) {
-        return (NULL);
+    if( stack == NULL ) {
+        return( NULL );
     }
 
-    for (i=0; i < stack->current_icon; ++ i) {
-        if (!stack) {
+    for( i = 0; i < stack->current_icon; i++ ) {
+        if( stack == NULL ) {
             break;
         }
         stack = stack->nexticon;
     }
     return( stack );
+
 } /* getStack */
 
 /*
- * checkIfSaved - checks if the image is saved or not (by the number of
- *                undo's on the undo stack.
+ * checkIfSaved - check if the image is saved or not (by the number of
+ *                undo's on the undo stack).
  */
-void checkIfSaved( img_node *node )
+static void checkIfSaved( img_node *node )
 {
     BOOL                issaved_flag;
     an_undo_stack       *stack;
 
     stack = getTopStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
     /*
-     * if it is currently saved, and we undo an operation, then it becomes
-     * unsaved.  from then on, it can only become saved by explicitly saving
+     * If it is currently saved, and we undo an operation, then it becomes
+     * unsaved.  From then on, it can only become saved by explicitly saving
      * it.
      */
-    if (node->issaved) {
+    if( node->issaved ) {
         SetIsSaved( node->hwnd, FALSE );
-        while( stack ) {
+        while( stack != NULL ) {
             stack->modified = TRUE;
             stack = stack->nexticon;
         }
@@ -208,12 +218,12 @@ void checkIfSaved( img_node *node )
     }
 
     issaved_flag = TRUE;
-    while (stack) {
-        if ( (stack->opcount == 0) && !(stack->modified) ) {
+    while( stack != NULL ) {
+        if( stack->opcount == 0 && !stack->modified ) {
             issaved_flag = TRUE & issaved_flag;
         } else {
             issaved_flag = FALSE;
-            if (node->issaved) {
+            if( node->issaved ) {
                 SetIsSaved( node->hwnd, FALSE );
             }
             break;
@@ -221,18 +231,21 @@ void checkIfSaved( img_node *node )
         stack = stack->nexticon;
     }
     SetIsSaved( node->hwnd, issaved_flag );
+
 } /* checkIfSaved */
 
 /*
  * deleteFromBottom - delete an element from the bottom of the stack (since
- *                    the stack is a fixed size).
+ *                    the stack is a fixed size)
  */
 static void deleteFromBottom( an_undo_stack *stack )
 {
     an_undo_node        *temp;
 
-    if (!stack) return;
-    if (!(stack->bottom_undo)) {
+    if( stack == NULL ) {
+        return;
+    }
+    if( stack->bottom_undo == NULL ) {
         return;
     }
 
@@ -245,33 +258,34 @@ static void deleteFromBottom( an_undo_stack *stack )
     MemFree( stack->bottom_undo );
 
     stack->bottom_undo = temp;
-    if (temp) {
+    if( temp != NULL ) {
         stack->bottom_undo->next = NULL;
     }
+
 } /* deleteFromBottom */
 
 /*
  * moveFromTop - delete from the top of the stack (when undo is selected)
- *                 if this call is a result of an UndoOp, the xor and and
- *                 bitmaps are the new bitmaps for the active image so we
- *                 don't want to delete them.
+ *             - if this call is a result of an UndoOp, the XOR and AND
+ *               bitmaps are the new bitmaps for the active image, so we
+ *               don't want to delete them
  */
 static void moveFromTop( an_undo_stack *stack, BOOL add_to_redo )
 {
     an_undo_node        *new_undo;
 
-    if (!(stack->top_undo)) {
+    if( stack->top_undo == NULL ) {
         return;
     }
 
     new_undo = stack->top_undo->next;
-    if (new_undo) {
+    if( new_undo != NULL ) {
         new_undo->previous = NULL;
     } else {
         stack->bottom_undo = NULL;
     }
 
-    if (!add_to_redo) {
+    if( !add_to_redo ) {
         _wpi_deletebitmap( stack->top_undo->xorbitmap );
         _wpi_deletebitmap( stack->top_undo->andbitmap );
         stack->top_undo->next = NULL;
@@ -281,11 +295,12 @@ static void moveFromTop( an_undo_stack *stack, BOOL add_to_redo )
     }
 
     stack->top_undo = new_undo;
+
 } /* moveFromTop */
 
 /*
- * RecordImage - After something is drawn, the operation is recorded so
- *                   that it can be undone if desired.
+ * RecordImage - after something is drawn, the operation is recorded so
+ *               that it can be undone if desired
  */
 void RecordImage( HWND hwnd )
 {
@@ -297,7 +312,9 @@ void RecordImage( HWND hwnd )
     DWORD               space_needed;
 
     stack = getStack( hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
     deleteRedoStack( stack );
 
@@ -307,7 +324,9 @@ void RecordImage( HWND hwnd )
     free_space = 0;
 #endif
     image_node = SelectImage( hwnd );
-    if (!image_node) return;
+    if( image_node == NULL ) {
+        return;
+    }
 
     bytes = (image_node->width * image_node->bitcount + 31) / 32;
     bytes = bytes * 4 * image_node->height;
@@ -319,8 +338,8 @@ void RecordImage( HWND hwnd )
 
 #ifndef __OS2_PM__
 #ifndef __NT__
-    if (free_space < space_needed) {
-        if (!RelieveUndos()) {
+    if( free_space < space_needed ) {
+        if( !RelieveUndos() ) {
             /*
              * No image is recorded if undo's could not be relieved.
              */
@@ -330,17 +349,19 @@ void RecordImage( HWND hwnd )
 #endif
 #endif
 
-    undo_node = MemAlloc( sizeof(an_undo_node) );
-    if (!undo_node) {
+    undo_node = MemAlloc( sizeof( an_undo_node ) );
+    if( undo_node == NULL ) {
         RelieveUndos();
-        undo_node = MemAlloc( sizeof(an_undo_node) );
-        if (!undo_node) return;
+        undo_node = MemAlloc( sizeof( an_undo_node ) );
+        if( undo_node == NULL ) {
+            return;
+        }
     }
     undo_node->previous = NULL;
-    undo_node->xorbitmap = DuplicateBitmap(image_node->hxorbitmap);
-    undo_node->andbitmap = DuplicateBitmap(image_node->handbitmap);
+    undo_node->xorbitmap = DuplicateBitmap( image_node->hxorbitmap );
+    undo_node->andbitmap = DuplicateBitmap( image_node->handbitmap );
 
-    if (stack->opcount == 0) {
+    if( stack->opcount == 0 ) {
         undo_node->next = NULL;
         stack->top_undo = undo_node;
         stack->bottom_undo = undo_node;
@@ -350,15 +371,16 @@ void RecordImage( HWND hwnd )
         stack->top_undo = undo_node;
     }
 
-    ++(stack->opcount);
+    stack->opcount++;
 
-    if (image_node->issaved) {
+    if( image_node->issaved ) {
         SetIsSaved( image_node->hwnd, FALSE );
     }
+
 } /* RecordImage */
 
 /*
- * UndoOp - Undoes an operation.
+ * UndoOp - undo an operation
  */
 void UndoOp( void )
 {
@@ -367,84 +389,87 @@ void UndoOp( void )
 
     node = GetCurrentNode();
 
-    if (!node) {
+    if( node == NULL ) {
         return;
     }
 
     stack = getStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    if (stack->opcount <= 0) {
+    if( stack->opcount <= 0 ) {
         PrintHintTextByID( WIE_UNDOSTACKEMPTY, NULL );
         return;
     }
 
-    moveFromTop(stack, TRUE);
-    if ( !(stack->top_undo) ) {
+    moveFromTop( stack, TRUE );
+    if( stack->top_undo == NULL ) {
         copyBitmaps( node, stack->firstxor, stack->firstand );
     } else {
         copyBitmaps( node, stack->top_undo->xorbitmap, stack->top_undo->andbitmap );
     }
-    --(stack->opcount);
-    ++(stack->redocount);
+    stack->opcount--;
+    stack->redocount++;
 
     IEPrintAmtText( WIE_UNDOITEMSLEFT, stack->opcount );
 
     InvalidateRect( node->viewhwnd, NULL, TRUE );
-    BlowupImage(node->hwnd, NULL);
+    BlowupImage( node->hwnd, NULL );
 
     checkIfSaved( node );
+
 } /* UndoOp */
 
 /*
- * CheckForUndo - check if the undo menu options should be enabled or not.
+ * CheckForUndo - check if the undo menu options should be enabled or not
  */
 void CheckForUndo( img_node *node )
 {
     an_undo_stack       *stack;
     HMENU               hmenu;
 
-    if (HMainWindow) {
-        hmenu = _wpi_getmenu( _wpi_getframe(HMainWindow) );
+    if( HMainWindow != NULL ) {
+        hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
     } else {
         return;
     }
 
-    if (!node) {
-        _wpi_enablemenuitem(hmenu, IMGED_UNDO, FALSE, FALSE);
-        _wpi_enablemenuitem(hmenu, IMGED_REDO, FALSE, FALSE);
+    if( node == NULL ) {
+        _wpi_enablemenuitem( hmenu, IMGED_UNDO, FALSE, FALSE );
+        _wpi_enablemenuitem( hmenu, IMGED_REDO, FALSE, FALSE );
         return;
     }
 
     stack = getStack( node->hwnd );
-    if (!stack) {
-        _wpi_enablemenuitem(hmenu, IMGED_UNDO, FALSE, FALSE);
-        _wpi_enablemenuitem(hmenu, IMGED_REDO, FALSE, FALSE);
+    if( stack == NULL ) {
+        _wpi_enablemenuitem( hmenu, IMGED_UNDO, FALSE, FALSE );
+        _wpi_enablemenuitem( hmenu, IMGED_REDO, FALSE, FALSE );
         return;
     }
 
-    if (stack->opcount <= 0) {
-        _wpi_enablemenuitem(hmenu, IMGED_UNDO, FALSE, FALSE);
+    if( stack->opcount <= 0 ) {
+        _wpi_enablemenuitem( hmenu, IMGED_UNDO, FALSE, FALSE );
     } else {
-        _wpi_enablemenuitem(hmenu, IMGED_UNDO, TRUE, FALSE);
+        _wpi_enablemenuitem( hmenu, IMGED_UNDO, TRUE, FALSE );
     }
 
-    if (stack->top_redo) {
-        _wpi_enablemenuitem(hmenu, IMGED_REDO, TRUE, FALSE);
+    if( stack->top_redo != NULL ) {
+        _wpi_enablemenuitem( hmenu, IMGED_REDO, TRUE, FALSE );
     } else {
-        _wpi_enablemenuitem(hmenu, IMGED_REDO, FALSE, FALSE);
+        _wpi_enablemenuitem( hmenu, IMGED_REDO, FALSE, FALSE );
     }
 
-    if (stack->original_xor) {
-        _wpi_enablemenuitem(hmenu, IMGED_REST, TRUE, FALSE);
+    if( stack->original_xor != NULL ) {
+        _wpi_enablemenuitem( hmenu, IMGED_REST, TRUE, FALSE );
     } else {
-        _wpi_enablemenuitem(hmenu, IMGED_REST, FALSE, FALSE);
+        _wpi_enablemenuitem( hmenu, IMGED_REST, FALSE, FALSE );
     }
+
 } /* CheckForUndo */
 
 /*
- * CreateUndoStack - Creates a new undo stack (when a new image is opened
- *                   or begun.
+ * CreateUndoStack - create a new undo stack (when a new image is opened or begun)
  */
 void CreateUndoStack( img_node *node )
 {
@@ -455,7 +480,7 @@ void CreateUndoStack( img_node *node )
     int                 icon_count;
     int                 i;
 
-    new_stack = MemAlloc( sizeof(an_undo_stack) );
+    new_stack = MemAlloc( sizeof( an_undo_stack ) );
     new_stack->hwnd = node->hwnd;
     new_stack->opcount = 0;
     new_stack->redocount = 0;
@@ -468,9 +493,9 @@ void CreateUndoStack( img_node *node )
     new_stack->next = NULL;
     new_stack->previous = NULL;
 
-    if (node->issaved) {
-        new_stack->original_xor = DuplicateBitmap(node->hxorbitmap);
-        new_stack->original_and = DuplicateBitmap(node->handbitmap);
+    if( node->issaved ) {
+        new_stack->original_xor = DuplicateBitmap( node->hxorbitmap );
+        new_stack->original_and = DuplicateBitmap( node->handbitmap );
     } else {
         new_stack->original_xor = NULL;
         new_stack->original_and = NULL;
@@ -480,19 +505,19 @@ void CreateUndoStack( img_node *node )
     icon_count = node->num_of_images;
     nexticon = node->nexticon;
     prev_stack = new_stack;
-    for (i = 1; i < icon_count; ++i) {
-        if (!nexticon) {
+    for( i = 1; i < icon_count; i++ ) {
+        if( nexticon == NULL ) {
             break;
         }
-        next_stack = MemAlloc( sizeof(an_undo_stack) );
-        memcpy( next_stack, prev_stack, sizeof(an_undo_stack) );
+        next_stack = MemAlloc( sizeof( an_undo_stack ) );
+        memcpy( next_stack, prev_stack, sizeof( an_undo_stack ) );
         /*
          * If node->issaved is true then this was an opened image and we store
          * the original bitmaps.  Otherwise, the 'Restore' option is grayed.
          */
-        if (nexticon->issaved) {
-            next_stack->original_xor = DuplicateBitmap(nexticon->hxorbitmap);
-            next_stack->original_and = DuplicateBitmap(nexticon->handbitmap);
+        if( nexticon->issaved ) {
+            next_stack->original_xor = DuplicateBitmap( nexticon->hxorbitmap );
+            next_stack->original_and = DuplicateBitmap( nexticon->handbitmap );
         } else {
             next_stack->original_xor = NULL;
             next_stack->original_and = NULL;
@@ -504,7 +529,7 @@ void CreateUndoStack( img_node *node )
         prev_stack = next_stack;
     }
 
-    if (lastStack == NULL) {
+    if( lastStack == NULL ) {
         new_stack->next = NULL;
         new_stack->previous = NULL;
         firstStack = new_stack;
@@ -515,10 +540,11 @@ void CreateUndoStack( img_node *node )
         lastStack->next = new_stack;
         lastStack = new_stack;
     }
+
 } /* CreateUndoStack */
 
 /*
- * DeleteUndoStack - We delete an undo stack when we close an image.
+ * DeleteUndoStack - delete an undo stack when we close an image
  */
 void DeleteUndoStack( HWND hwnd )
 {
@@ -532,28 +558,30 @@ void DeleteUndoStack( HWND hwnd )
     int                 percent_complete;
 
     stack = getTopStack( hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    prevcursor = _wpi_setcursor( _wpi_getsyscursor(IDC_WAIT) );
+    prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
     previous_stack = stack->previous;
     next_stack = stack->next;
 
-    while(stack) {
+    while( stack != NULL ) {
         deleteRedoStack( stack );
 
         max_ops = stack->opcount;
         i = 0;
-        while (stack->top_undo) {
+        while( stack->top_undo != NULL ) {
             moveFromTop( stack, FALSE );
-            --(stack->opcount);
+            stack->opcount--;
             percent_complete = (i * 100) / max_ops;
             IEPrintAmtText( WIE_CLOSINGIMAGEPERCENT, percent_complete );
-            ++i;
+            i++;
         }
 
         _wpi_deletebitmap( stack->firstxor );
         _wpi_deletebitmap( stack->firstand );
-        if (stack->original_xor) {
+        if( stack->original_xor != NULL ) {
             _wpi_deletebitmap( stack->original_xor );
             _wpi_deletebitmap( stack->original_and );
         }
@@ -562,22 +590,23 @@ void DeleteUndoStack( HWND hwnd )
         stack = nexticon_stack;
     }
 
-    if (previous_stack) {
+    if( previous_stack != NULL ) {
         previous_stack->next = next_stack;
     } else {
         firstStack = next_stack;
     }
 
-    if (next_stack) {
+    if( next_stack != NULL ) {
         next_stack->previous = previous_stack;
     } else {
         lastStack = previous_stack;
     }
     _wpi_setcursor( prevcursor );
+
 } /* DeleteUndoStack */
 
 /*
- * RedoOp - Undoes an operation.
+ * RedoOp - redo an operation
  */
 void RedoOp( void )
 {
@@ -586,12 +615,16 @@ void RedoOp( void )
 
     node = GetCurrentNode();
 
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     stack = getStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    if (!(stack->top_redo)) {
+    if( stack->top_redo == NULL ) {
         PrintHintTextByID( WIE_REDOSTACKEMPTY, NULL );
         stack->redocount = 0;
         return;
@@ -599,17 +632,18 @@ void RedoOp( void )
 
     copyBitmaps( node, stack->top_redo->xorbitmap, stack->top_redo->andbitmap );
     moveToUndo( stack );
-    ++(stack->opcount);
-    --(stack->redocount);
+    stack->opcount++;
+    stack->redocount--;
 
     IEPrintAmtText( WIE_REDOITEMSLEFT, stack->redocount );
 
     InvalidateRect( node->viewhwnd, NULL, TRUE );
-    BlowupImage(node->hwnd, NULL);
+    BlowupImage( node->hwnd, NULL );
 
-    if ((stack->original_xor) && (node->issaved)) {
+    if( stack->original_xor != NULL && node->issaved ) {
         SetIsSaved( node->hwnd, FALSE );
     }
+
 } /* RedoOp */
 
 /*
@@ -623,21 +657,22 @@ void ResetUndoStack( img_node *node )
 
     deleteRedoStack( stack );
 
-    while (stack->top_undo) {
+    while( stack->top_undo != NULL ) {
         moveFromTop( stack, FALSE );
-        --(stack->opcount);
+        stack->opcount--;
     }
 
     _wpi_deletebitmap( stack->firstxor );
     _wpi_deletebitmap( stack->firstand );
 
-    stack->firstxor = DuplicateBitmap(node->hxorbitmap);
-    stack->firstand = DuplicateBitmap(node->handbitmap);
+    stack->firstxor = DuplicateBitmap( node->hxorbitmap );
+    stack->firstand = DuplicateBitmap( node->handbitmap );
+
 } /* ResetUndoStack */
 
 /*
- * RestoreImage - restores current image (sets to how it was when it was
- *                opened).  Not a valid operation for a new bitmap.
+ * RestoreImage - restore current image (set to how it was when it was opened)
+ *              - not a valid operation for a new bitmap
  */
 void RestoreImage( void )
 {
@@ -646,12 +681,16 @@ void RestoreImage( void )
 
     node = GetCurrentNode();
 
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     stack = getStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    if (!(stack->original_xor)) {
+    if( stack->original_xor == NULL ) {
         return;
     }
 
@@ -660,42 +699,47 @@ void RestoreImage( void )
     PrintHintTextByID( WIE_IMAGERESTORED, NULL );
 
     InvalidateRect( node->viewhwnd, NULL, TRUE );
-    BlowupImage(node->hwnd, NULL);
+    BlowupImage( node->hwnd, NULL );
 
     RecordImage( node->hwnd );
-    if ( (node->imgtype == BITMAP_IMG) || (node->imgtype == CURSOR_IMG) ) {
+    if( node->imgtype == BITMAP_IMG || node->imgtype == CURSOR_IMG ) {
         SetIsSaved( node->hwnd, TRUE );
     } else {
         checkIfSaved( node );
     }
+
 } /* RestoreImage */
 
 /*
- * AllowRestoreOption - If a file is originally new, then the user saves the
+ * AllowRestoreOption - if a file is originally new, then the user saves the
  *                      file, we now allow the user to select the restore
- *                      option if they want.
+ *                      option if they want
  */
 void AllowRestoreOption( img_node *node )
 {
     an_undo_stack       *stack;
 
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     stack = getStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    if (stack->original_xor) {
+    if( stack->original_xor != NULL ) {
         _wpi_deletebitmap( stack->original_xor );
         _wpi_deletebitmap( stack->original_and );
     }
     stack->original_xor = DuplicateBitmap( node->hxorbitmap );
     stack->original_and = DuplicateBitmap( node->handbitmap );
+
 } /* AllowRestoreOption */
 
 /*
- * SelIconUndoStack - selecting a new icon means we must change the undo
- *                    stack.  We do this by just setting the current_icon
- *                    field to the given index.
+ * SelIconUndoStack - selecting a new icon means we must change the undo stack
+ *                  - do this by just setting the current_icon field to the given index
  */
 void SelIconUndoStack( HWND hwnd, short index )
 {
@@ -703,16 +747,17 @@ void SelIconUndoStack( HWND hwnd, short index )
 
     stack = getTopStack( hwnd );
 
-    while ( stack ) {
+    while( stack != NULL ) {
         stack->current_icon = index;
         stack = stack->nexticon;
     }
+
 } /* SelIconUndoStack */
 
 /*
- * AddIconUndoStack - When we add an icon to the current icon image, we also
- *                    have to add an undo stack for that icon.  Sets the
- *                    is saved flag to false.
+ * AddIconUndoStack - when we add an icon to the current icon image, we also
+ *                    have to add an undo stack for that icon
+ *                  - set the issaved flag to false
  */
 void AddIconUndoStack( img_node *node )
 {
@@ -720,13 +765,15 @@ void AddIconUndoStack( img_node *node )
     an_undo_stack       *new_stack;
 
     stack = getTopStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
-    while (stack->nexticon) {
+    while( stack->nexticon != NULL ) {
         stack = stack->nexticon;
     }
 
-    new_stack = MemAlloc( sizeof(an_undo_stack) );
+    new_stack = MemAlloc( sizeof( an_undo_stack ) );
     new_stack->hwnd = node->hwnd;
     new_stack->opcount = 0;
     new_stack->redocount = 0;
@@ -748,21 +795,21 @@ void AddIconUndoStack( img_node *node )
     stack->nexticon = new_stack;
 
     /*
-     * we use the modified field to indicate when the image has FOR SURE
+     * We use the modified field to indicate when the image has FOR SURE
      * been modified.  Once this is set, the issaved flag cannot be set to
      * true. (as in the case when an icon is deleted from the current image)
      */
     SetIsSaved( node->hwnd, FALSE );
-    stack = getTopStack(node->hwnd);
-    while(stack) {
+    stack = getTopStack( node->hwnd );
+    while( stack != NULL ) {
         stack->modified = TRUE;
         stack = stack->nexticon;
     }
+
 } /* AddIconUndoStack */
 
 /*
- * DelIconUndoStack - deletes the undo stack associated with icon image being
- *                    deleted.
+ * DelIconUndoStack - delete the undo stack associated with icon image being deleted
  */
 void DelIconUndoStack( img_node *node, int index )
 {
@@ -774,7 +821,9 @@ void DelIconUndoStack( img_node *node, int index )
     int                 i;
 
     stack = getTopStack( node->hwnd );
-    if (!stack) return;
+    if( stack == NULL ) {
+        return;
+    }
 
     prev_stack = stack->previous;
     next_stack = stack->next;
@@ -782,8 +831,8 @@ void DelIconUndoStack( img_node *node, int index )
     prev_icon = NULL;
     next_icon = stack->nexticon;
 
-    for (i=0; i < index; ++i) {
-        if (!stack) {
+    for( i = 0; i < index; i++ ) {
+        if( stack == NULL ) {
             break;
         }
         prev_icon = stack;
@@ -791,11 +840,11 @@ void DelIconUndoStack( img_node *node, int index )
         next_icon = stack->nexticon;
     }
 
-    if (!prev_icon) {
-        if (prev_stack) {
+    if( prev_icon == NULL ) {
+        if( prev_stack != NULL ) {
             prev_stack->next = next_icon;
         }
-        if (next_icon) {
+        if( next_icon != NULL ) {
             next_icon->next = next_stack;
             next_icon->previous = prev_stack;
         }
@@ -808,38 +857,39 @@ void DelIconUndoStack( img_node *node, int index )
     stack->next = NULL;
     deleteRedoStack( stack );
 
-    while (stack->top_undo) {
+    while( stack->top_undo != NULL ) {
         moveFromTop( stack, FALSE );
-        --(stack->opcount);
+        stack->opcount--;
     }
 
     _wpi_deletebitmap( stack->firstxor );
     _wpi_deletebitmap( stack->firstand );
-    if (stack->original_xor) {
+    if( stack->original_xor != NULL ) {
         _wpi_deletebitmap( stack->original_xor );
         _wpi_deletebitmap( stack->original_and );
     }
     MemFree( stack );
 
     /*
-     * we use the modified field to indicate when the image has FOR SURE
+     * We use the modified field to indicate when the image has FOR SURE
      * been modified.  Once this is set, the issaved flag cannot be set to
-     * true. (as in the case when an icon is deleted from the current image)
+     * true (as in the case when an icon is deleted from the current image).
      */
     SetIsSaved( node->hwnd, FALSE );
-    stack = getTopStack(node->hwnd);
-    while(stack) {
+    stack = getTopStack( node->hwnd );
+    while( stack != NULL ) {
         stack->modified = TRUE;
         stack = stack->nexticon;
     }
+
 } /* DelIconUndoStack */
 
 /*
- * RelieveUndos - this routine is called when the main window (ie client
- *                window) gets the wm_compacting message, indicating that
- *                memory is getting low. We remove elements from the largest
- *                undo stack.  It's also called when the record image
- *                routine realizes that memory is getting low.
+ * RelieveUndos - called when the main window (i.e. client window) gets the
+ *                WM_COMPACTING message, indicating that memory is getting low
+ *              - remove elements from the largest undo stack
+ *              - also called when the record image routine realizes that memory
+ *                is getting low
  */
 BOOL RelieveUndos( void )
 {
@@ -851,12 +901,12 @@ BOOL RelieveUndos( void )
     int                 i;
 
     PrintHintTextByID( WIE_DISCARDINGUNDOS, NULL );
-    prevcursor = _wpi_setcursor( _wpi_getsyscursor(IDC_WAIT) );
+    prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
     stack = firstStack;
-    while( stack ) {
+    while( stack != NULL ) {
         iconstack = stack;
-        while (iconstack) {
-            if (iconstack->opcount > max_ops) {
+        while( iconstack != NULL ) {
+            if( iconstack->opcount > max_ops ) {
                 max_ops = iconstack->opcount;
                 delstack = iconstack;
             }
@@ -865,21 +915,21 @@ BOOL RelieveUndos( void )
         stack = stack->next;
     }
 
-    if (max_ops == 0) {
+    if( max_ops == 0 ) {
         PrintHintTextByID( WIE_NOUNDOSRECORDED, NULL );
         _wpi_setcursor( prevcursor );
         return( FALSE );
     }
-    if (max_ops > 5) {
-        for (i=0; i < 5; ++i) {
+    if( max_ops > 5 ) {
+        for( i = 0; i < 5; i++ ) {
             deleteFromBottom( delstack );
-            --(delstack->opcount);
+            delstack->opcount--;
         }
     } else {
         deleteFromBottom( delstack );
-        --(delstack->opcount);
+        delstack->opcount--;
     }
     _wpi_setcursor( prevcursor );
     return( TRUE );
-} /* RelieveUndos */
 
+} /* RelieveUndos */

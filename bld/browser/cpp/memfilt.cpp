@@ -52,11 +52,6 @@ MemberFilterDlg::MemberFilterDlg( WWindow * parent,
 {
 }
 
-MemberFilterDlg::~MemberFilterDlg()
-//---------------------------------
-{
-}
-
 bool MemberFilterDlg::contextHelp( bool is_active_win )
 //-----------------------------------------------------
 {
@@ -69,6 +64,7 @@ bool MemberFilterDlg::contextHelp( bool is_active_win )
 void MemberFilterDlg::initialize()
 //--------------------------------
 {
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();
@@ -207,3 +203,13 @@ void MemberFilterDlg::defaultButton( WWindow * )
 {
     setValues( _default );
 }
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+MemberFilterDlg::~MemberFilterDlg()
+//---------------------------------
+{
+}
+

@@ -33,10 +33,17 @@
                 name    TRAPSTRT
 
 
+if __LARGE__
+public          _big_code_
+_large_code_      equ 0
+
+dgroup group    _DATA,_BSS,CONST,STACK
+else
 public          _small_code_
 _small_code_      equ 0
 
 dgroup group    _TEXT,_DATA,_BSS,CONST,STACK
+endif
 
 _TEXT           segment byte public 'CODE'
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Invoke a debugger script.
 *
 ****************************************************************************/
 
@@ -47,31 +46,31 @@ extern unsigned         InvCount;
 extern char             *TxtBuff;
 
 
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern bool             ScanEOC(void);
-extern bool             SwitchOnOff();
-extern void             ShowSwitch(bool);
-extern handle           FullPathOpen( char *name, char *ext, char *result, unsigned max_result );
-extern void             PushInpStack(void *,bool (*)(),bool );
-extern void             TypeInpStack(input_type);
-extern char             *ReScan(char *);
-extern unsigned int     ScanCmd(char *);
-extern void             FreeRing(char_ring *);
-extern char             *CnvULongDec(unsigned long ,char *);
-extern void             LogStart(void);
-extern void             LogEnd(void);
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanEOC( void );
+extern bool             SwitchOnOff( void );
+extern void             ShowSwitch( bool );
+extern handle           LocalFullPathOpen( char *name, char *ext, char *result, unsigned max_result );
+extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             TypeInpStack( input_type );
+extern char             *ReScan( char * );
+extern unsigned int     ScanCmd( char * );
+extern void             FreeRing( char_ring * );
+extern char             *CnvULongDec( unsigned long, char * );
+extern void             LogStart( void );
+extern void             LogEnd( void );
 
 
 /*
  * ImplicitSet - set implicit/explicit invoke file processing
  */
 
-extern void ImplicitSet()
+extern void ImplicitSet( void )
 {
     _SwitchSet( SW_IMPLICIT, SwitchOnOff() );
 }
 
-extern void ImplicitConf()
+extern void ImplicitConf( void )
 {
     ShowSwitch( _IsOn( SW_IMPLICIT ) );
 }
@@ -211,6 +210,17 @@ static bool GetInvkCmd( invokes *inv )
 }
 
 
+static void Conclude( invokes *inv )
+{
+    if( inv->inv_input != NIL_HANDLE ) {
+        FileClose( inv->inv_input );
+    }
+    FreeRing( inv->prmlst );
+    _Free( inv->buff );
+    _Free( inv );
+}
+
+
 OVL_EXTERN bool DoneInvLine( invokes *inv, inp_rtn_action action )
 {
     switch( action ) {
@@ -268,7 +278,7 @@ void Invoke( char *invfile, int len, char_ring *parmlist )
     _AllocA( invname, len + 1 );
     memcpy( invname, invfile, len );
     invname[ len ] = '\0';
-    hndl = FullPathOpen( invname, "dbg", TxtBuff, TXT_LEN );
+    hndl = LocalFullPathOpen( invname, "dbg", TxtBuff, TXT_LEN );
     if( hndl == NIL_HANDLE ) {
         MakeFileName( TxtBuff, invname, "dbg", 0 );
         FreeRing( parmlist );
@@ -285,7 +295,7 @@ void Invoke( char *invfile, int len, char_ring *parmlist )
 void ProfileInvoke( char *name )
 {
     unsigned    len;
-#if defined(__QNX__)
+#if defined(__UNIX__)
     handle      hndl;
 #endif
 
@@ -297,13 +307,13 @@ void ProfileInvoke( char *name )
     /* default name search */
     len = strlen( EXENAME );
     _AllocA( name, len + 4 );
-#if defined(__QNX__)
-        /* under QNX, look for .wdrc first */
+#if defined(__UNIX__)
+        /* under QNX and Linux, look for .wdrc first */
         name[0] = '.';
         strcpy( &name[1], EXENAME );
         strcat( name, "rc" );
         strlwr( name );
-        hndl = FullPathOpen( name, LIT( Empty ), TxtBuff, TXT_LEN );
+        hndl = LocalFullPathOpen( name, LIT( Empty ), TxtBuff, TXT_LEN );
         if( hndl != NIL_HANDLE ) {
             DoInvoke( hndl, TxtBuff, NULL );
             return;
@@ -318,7 +328,7 @@ void ProfileInvoke( char *name )
  * ProcInvoke -- process invoke command
  */
 
-void ProcInvoke()
+void ProcInvoke( void )
 {
     char      *fstart;
     unsigned   flen;
@@ -345,17 +355,6 @@ void ProcInvoke()
         owner = &path->next;
     }
     Invoke( fstart, (int)flen, parmlist );
-}
-
-
-static void Conclude( invokes *inv )
-{
-    if( inv->inv_input != NIL_HANDLE ) {
-        FileClose( inv->inv_input );
-    }
-    FreeRing( inv->prmlst );
-    _Free( inv->buff );
-    _Free( inv );
 }
 
 

@@ -1,0 +1,13 @@
+c$noreference
+
+c$include os2def.fi
+
+c$ifndef INCL_NOBASEAPI
+c$include bse.fi
+c$endif
+
+c$ifndef INCL_NOPMAPI
+c$include pm.fi
+c$endif
+
+c$reference

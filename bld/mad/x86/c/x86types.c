@@ -45,6 +45,8 @@ static const mad_type_info_integer      U4 =
     { MTK_INTEGER, D, 32, 31, MNR_UNSIGNED,  ME_LITTLE };
 static const mad_type_info_integer      U8 =
     { MTK_INTEGER, D, 64, 63, MNR_UNSIGNED,  ME_LITTLE };
+static const mad_type_info_integer      U16 =
+    { MTK_INTEGER, D, 64, 63, MNR_UNSIGNED,  ME_LITTLE }; // FIXME !! missing 128-bit support
 static const mad_type_info_integer      I1 =
     { MTK_INTEGER, D,  8,  7, MNR_TWOS_COMP, ME_LITTLE };
 static const mad_type_info_integer      I2 =
@@ -73,8 +75,8 @@ static const mad_type_info_float F10 =
     { MTK_FLOAT, D, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, D, 15, 14, MNR_UNSIGNED, ME_LITTLE };
 static const mad_type_info_float F10EMPTY =
     { MTK_FLOAT, X86T_F10EMPTY, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, 15, 0, 14, MNR_UNSIGNED, ME_LITTLE };
-static const mad_type_info_float F10NAN =
-    { MTK_FLOAT, X86T_F10NAN, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, 15, 0, 14, MNR_UNSIGNED, ME_LITTLE };
+static const mad_type_info_float F10SPECIAL =
+    { MTK_FLOAT, X86T_F10SPECIAL, 80, 79, MNR_SIGN_MAG, ME_LITTLE, 16383, 64, 2, 0, MTK_INTEGER, 15, 0, 14, MNR_UNSIGNED, ME_LITTLE };
 
 static const mad_type_info_basic IRET16 =
     { MTK_CUSTOM, X86T_IRET16, 3*16 };
@@ -95,6 +97,9 @@ static const mad_type_info_basic FPPTR_32 =
     { MTK_CUSTOM, X86T_FPPTR_32, 64 };
 static const mad_type_info_basic MMX_TITLE =
     { MTK_CUSTOM, X86T_MMX_TITLE0, 8 };
+
+static const mad_type_info_basic XMM_TITLE =
+    { MTK_XMM, X86T_XMM_TITLE0, 8 };
 
 #undef D
 
@@ -125,7 +130,7 @@ walk_result     DIGENTRY MITypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
 
     iol = LN;
     meml = LN;
-    if( MCSystemConfig()->cpu < X86_386 ) {
+    if( ( MCSystemConfig()->cpu & X86_CPU_MASK ) < X86_386 ) {
         if( tk & MAS_IO ) iol = L1;
         if( tk & MAS_MEMORY ) meml = L1;
     } else {
@@ -157,7 +162,7 @@ unsigned        DIGENTRY MITypePreferredRadix( mad_type_handle th )
 void            DIGENTRY MITypeInfo( mad_type_handle th, mad_type_info *ti )
 {
     memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
-    if( TypeArray[th].u.b == &BIT.b || TypeArray[th].u.b == &MMX_TITLE ) {
+    if( TypeArray[th].u.b == &BIT.b || TypeArray[th].u.b == &MMX_TITLE || TypeArray[th].u.b == &XMM_TITLE ) {
         ti->b.handler_code = th;
     }
 }
@@ -181,7 +186,7 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     } else if( mr != NULL ) {
         big = BIG_SEG( GetRegIP( mr ) );
     } else {
-        big = (MCSystemConfig()->cpu >= X86_386);
+        big = ( ( MCSystemConfig()->cpu & X86_CPU_MASK ) >= X86_386);
     }
     switch( tk & MTK_ALL ) {
     case MTK_BASIC:
@@ -222,7 +227,7 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     case X86T_FPPTR_REAL:
     case X86T_FPPTR_16:
     case X86T_FPPTR_32:
-    case X86T_F10NAN:
+    case X86T_F10SPECIAL:
     case X86T_MMX_TITLE0:
     case X86T_MMX_TITLE1:
     case X86T_MMX_TITLE2:
@@ -231,6 +236,22 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     case X86T_MMX_TITLE5:
     case X86T_MMX_TITLE6:
     case X86T_MMX_TITLE7:
+    case X86T_XMM_TITLE0:
+    case X86T_XMM_TITLE1:
+    case X86T_XMM_TITLE2:
+    case X86T_XMM_TITLE3:
+    case X86T_XMM_TITLE4:
+    case X86T_XMM_TITLE5:
+    case X86T_XMM_TITLE6:
+    case X86T_XMM_TITLE7:
+    case X86T_XMM_TITLE8:
+    case X86T_XMM_TITLE9:
+    case X86T_XMM_TITLE10:
+    case X86T_XMM_TITLE11:
+    case X86T_XMM_TITLE12:
+    case X86T_XMM_TITLE13:
+    case X86T_XMM_TITLE14:
+    case X86T_XMM_TITLE15:
         *max = RegDispType( mti->b.handler_code, data, *max, buff );
         return( MS_OK );
     }

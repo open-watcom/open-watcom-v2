@@ -30,23 +30,20 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
 #include "vi.h"
+#include "walloca.h"
 #include "win.h"
 
 /*
  * ResetWindow - close a window an re-create it
  */
-int ResetWindow( window_id *wn )
+vi_rc ResetWindow( window_id *wn )
 {
     wind        *w;
     char        *tmp;
-    int         rc;
+    vi_rc       rc;
 
-    w = Windows[ *wn ];
+    w = Windows[*wn];
     if( w->title != NULL ) {
         tmp = alloca( strlen( w->title ) + 1 );
         strcpy( tmp, w->title );
@@ -55,7 +52,7 @@ int ResetWindow( window_id *wn )
     }
     CloseAWindow( *wn );
     rc = NewWindow2( wn, &editw_info );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     SetBorderGadgets( *wn, EditFlags.WindowGadgets );
@@ -70,20 +67,20 @@ int ResetWindow( window_id *wn )
 /*
  * Valid Dimension - see if a window has a valid dim or not
  */
-bool ValidDimension( int x1, int y1, int x2, int y2 , bool has_border )
+bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
 {
     int lb;
 
-    if( !has_border) {
+    if( !has_border ) {
         lb = 0;
     } else {
         lb = 2;
     }
 
-    if( x2-x1 < lb || x2 >= WindMaxWidth ) {
+    if( x2 - x1 < lb || x2 >= WindMaxWidth ) {
         return( FALSE );
     }
-    if( y2-y1 < lb || y2 >= WindMaxHeight ) {
+    if( y2 - y1 < lb || y2 >= WindMaxHeight ) {
         return( FALSE );
     }
     if( x1 < 0 || y1 < 0 ) {
@@ -100,7 +97,7 @@ window_id GimmeWindow( void )
 {
     window_id   i;
 
-    for( i=0; i<MAX_WINDS; i++ ) {
+    for( i = 0; i < MAX_WINDS; i++ ) {
         if( Windows[i] == NULL ) {
             return( i );
         }
@@ -113,20 +110,20 @@ window_id GimmeWindow( void )
  * AllocWindow - allocate a new window
  */
 wind *AllocWindow( int x1, int y1, int x2, int y2, bool has_border,
-                        int bc1, int bc2, int tc, int bgc )
+                   vi_color bc1, vi_color bc2, vi_color tc, vi_color bgc )
 {
     wind        *tmp;
-    int         width,height,size;
+    int         width, height, size;
 
-    width = x2-x1+1;
-    height = y2-y1+1;
-    size = width*height;
+    width = x2 - x1 + 1;
+    height = y2 - y1 + 1;
+    size = width * height;
 
     tmp = MemAlloc( WIND_SIZE + height );
 
-    tmp->text = MemAlloc(sizeof(char_info)*size);
-    tmp->overlap = MemAlloc(size);
-    tmp->whooverlapping = MemAlloc(size);
+    tmp->text = MemAlloc( sizeof( char_info ) * size );
+    tmp->overlap = MemAlloc( size );
+    tmp->whooverlapping = MemAlloc( size );
     tmp->x1 = x1;
     tmp->x2 = x2;
     tmp->y1 = y1;
@@ -152,8 +149,8 @@ wind *AllocWindow( int x1, int y1, int x2, int y2, bool has_border,
 /*
  * NewWindow - build a new window
  */
-int NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
-    int bc1, int bc2, type_style *s )
+vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
+               vi_color bc1, vi_color bc2, type_style *s )
 {
     wind        *w;
     window_id   i;
@@ -163,14 +160,14 @@ int NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
         return( ERR_WIND_INVALID );
     }
 
-    if( (i = GimmeWindow() ) < 0 ) {
+    if( (i = GimmeWindow()) < 0 ) {
         return( ERR_WIND_NO_MORE_WINDOWS );
     }
 
     has_mouse = DisplayMouse( FALSE );
 
-    w = AllocWindow( x1,  y1,  x2,  y2,  has_border,  bc1,  bc2,
-        s->foreground, s->background );
+    w = AllocWindow( x1, y1, x2, y2, has_border, bc1, bc2,
+                     s->foreground, s->background );
     w->id = i;
 
     Windows[i] = w;
@@ -192,7 +189,6 @@ int NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
  */
 void FreeWindow( wind *w )
 {
-
     MemFree( w->text );
     MemFree( w->overlap );
     MemFree( w->whooverlapping );
@@ -209,11 +205,11 @@ void CloseAWindow( window_id wn )
 {
     wind        *w;
 
-    w = Windows[ wn ];
+    w = Windows[wn];
 
     RestoreOverlap( wn, TRUE );
     if( w->min_slot ) {
-        MinSlots[ w->min_slot-1 ] = 0;
+        MinSlots[w->min_slot - 1] = 0;
     }
 
     FreeWindow( w );

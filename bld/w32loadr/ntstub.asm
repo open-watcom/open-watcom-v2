@@ -24,21 +24,17 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stub for 32-bit DOS programs.
 ;*
 ;*****************************************************************************
 
-
         name    ntstub
 
-        DOSSEG
-
-STACK   segment word stack 'STACK'
+STACK   segment use16 word stack 'STACK'
         db      128 dup(?)
 STACK   ends
 
-_TEXT   segment para public 'CODE'
+_TEXT   segment use16 para public 'CODE'
         assume  cs:_TEXT
 
 ntstub  proc    near

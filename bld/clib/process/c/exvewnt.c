@@ -38,8 +38,8 @@
 #include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
-
-extern void (*__int23_exit)(void);
+#include "_process.h"
+#include "_int23.h"
 
 _WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
 {

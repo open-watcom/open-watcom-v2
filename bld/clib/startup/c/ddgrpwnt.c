@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Single DGROUP in a DLL sanity check.
 *
 ****************************************************************************/
 
@@ -39,15 +38,16 @@
     "This Dynamic Link Library is already in use by:\n"
 
 #define message_suffix \
-    "\n\nThe Watcom WIN32 runtime library does not support "\
+    "\n\nThe Open Watcom Win32 runtime library does not support "\
     "attaching more than one process to a Dynamic Link Library "\
     "that does not have a separate data space for each attached process.\n"
 
-static char buf[sizeof(message_prefix)+_MAX_PATH+sizeof(message_suffix)];
+static char buf[sizeof( message_prefix ) + _MAX_PATH + sizeof( message_suffix )];
 static char dllname[_MAX_PATH];
 static char pgmname[_MAX_PATH];
 
-BOOL __disallow_single_dgroup( HANDLE hdll ) {
+BOOL __disallow_single_dgroup( HANDLE hdll )
+{
     GetModuleFileName( 0, pgmname, sizeof( pgmname ) );
     GetModuleFileName( hdll, dllname, sizeof( dllname ) );
     buf[0] = '\0';
@@ -55,5 +55,5 @@ BOOL __disallow_single_dgroup( HANDLE hdll ) {
     strcat( buf, pgmname );
     strcat( buf, message_suffix );
     MessageBox( NULL, buf, dllname, MB_OK );
-    return 1;
+    return( 1 );
 }

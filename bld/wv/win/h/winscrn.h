@@ -58,33 +58,35 @@ extern char _A000H[];
 #define VID_STATE       5
 
 enum {
-        BD_SEG          = 0x40,
-        BD_EQUIP_LIST   = 0x10,
-        BD_CURR_MODE    = 0x49,
-        BD_REGEN_LEN    = 0x4c,
-        BD_CURPOS       = 0x50,
-        BD_MODE_CTRL    = 0x65,
-        BD_VID_CTRL1    = 0x87,
+    BD_SEG          = 0x40,
+    BD_EQUIP_LIST   = 0x10,
+    BD_CURR_MODE    = 0x49,
+    BD_REGEN_LEN    = 0x4c,
+    BD_CURPOS       = 0x50,
+    BD_MODE_CTRL    = 0x65,
+    BD_VID_CTRL1    = 0x87,
 };
+
 #define GetBIOSData( offset, var ) \
     movedata( BD_SEG, offset, FP_SEG( &var ), FP_OFF( &var ), sizeof( var ) );
 #define SetBIOSData( offset, var ) \
     movedata( FP_SEG( &var ), FP_OFF( &var ), BD_SEG, offset, sizeof( var ) );
 
 typedef enum {
-        DISP_NONE,
-        DISP_MONOCHROME,
-        DISP_CGA,
-        DISP_RESERVED1,
-        DISP_EGA_COLOUR,
-        DISP_EGA_MONO,
-        DISP_PGA,
-        DISP_VGA_MONO,
-        DISP_VGA_COLOUR,
-        DISP_RESERVED2,
-        DISP_RESERVED3,
-        DISP_MODEL30_MONO,
-        DISP_MODEL30_COLOUR } hw_display_type;
+    DISP_NONE,
+    DISP_MONOCHROME,
+    DISP_CGA,
+    DISP_RESERVED1,
+    DISP_EGA_COLOUR,
+    DISP_EGA_MONO,
+    DISP_PGA,
+    DISP_VGA_MONO,
+    DISP_VGA_COLOUR,
+    DISP_RESERVED2,
+    DISP_RESERVED3,
+    DISP_MODEL30_MONO,
+    DISP_MODEL30_COLOUR
+} hw_display_type;
 
 
 typedef struct {
@@ -93,7 +95,7 @@ typedef struct {
 } display_configuration;
 
 
-extern display_configuration BIOSDevCombCode();
+extern display_configuration BIOSDevCombCode( void );
 #pragma aux BIOSDevCombCode =                                   \
 0X55            /* push   bp                            */      \
 0XB8 0X00 0X1A  /* mov    ax,1a00                       */      \
@@ -105,7 +107,7 @@ extern display_configuration BIOSDevCombCode();
                 value   [ bx ]                                  \
                 modify  [ ax ];
 
-extern char        BIOSGetMode();
+extern char        BIOSGetMode( void );
 #pragma aux BIOSGetMode =                                       \
 0X55            /* push   bp                            */      \
 0XB4 0X0F       /* mov    ah,f                          */      \
@@ -288,9 +290,9 @@ enum vid_state_info {
 };
 
 
-extern char        VIDGetRow();
-extern void        VIDSetRow();
-extern void        VIDWait();
+extern char        VIDGetRow( unsigned );
+extern void        VIDSetRow( unsigned, unsigned );
+extern void        VIDWait( void );
 
 #pragma aux VIDGetRow =                                         \
 0XB0 0X0F       /* mov    al,f                          */      \

@@ -1,0 +1,1158 @@
+                                                                               
+                           GML Reference Summary                               
+
+                     Department of Computing Services                          
+
+                          University of Waterloo                               
+                         Waterloo, Ontario, Canada                             
+
+
+                              August 11, 1989                                  
+
+                (c) Department of Computing Services, 1989                     
+
+
+                                                                               
+     |                                                               |         
+     |                  Generalized Markup Language                  |         
+     |                                                               |         
+     |  A generalized markup language (GML) provides a convenient    |         
+     |  way of annotating document source for computerized composi-  |         
+     |  tion.  With the GML, each component of the document is       |         
+     |  identified by a "tag".  For example, the :GDOC tag indi-     |         
+     |  cates the start of the document, and the :EGDOC tag indi-    |         
+     |  cates the end of the document.                               |         
+     |                                                               |         
+     |  Conventions Used in this Documentation                       |         
+     |                                                               |         
+     |  Uppercase characters represent things that you must specify  |         
+     |  exactly as documented, and lowercase characters represent    |         
+     |  items of your own choosing.                                  |         
+     |     Items documented as "<item>" represent optional specifi-  |         
+     |  cations; something appropriate will be assumed or will hap-  |         
+     |  pen if you do not specify the item.                          |         
+     |     The indentation used in describing various layouts and    |         
+     |  document components in this document is intended to clarify  |         
+     |  relationships.  It is not something you should attempt to    |         
+     |  do when creating input files using GML.                      |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                          The GML Tag                          |         
+     |                                                               |         
+     |     :tagname< attribute list><.tag text>                      |         
+     |  A tag can appear anywhere on a SCRIPT input line.  The tag-  |         
+     |  name may be specified in uppercase, lowercase, or a mix-     |         
+     |  ture.  With some tags, the "tag text" or the "attribute      |         
+     |  list" or both are optional.  The "." is not necessary        |         
+     |  unless "tag text" is being specified.  With the exception    |         
+     |  of tags that continue text (see below), blanks should never  |         
+     |  be specified between the "." and the first character of the  |         
+     |  tag text.                                                    |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+     GML Reference Summary                                           1         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                    Tags with Heading Text                     |         
+     |                                                               |         
+     |     :tagname.Heading Text                                     |         
+     |  Some of the GML tags treat the "tag text" as a heading (see  |         
+     |  :H1 and :FIGCAP, for example).  The first letter of each     |         
+     |  significant word in the heading text should be capitalized.  |         
+     |  The appearance of the heading in the resulting document is   |         
+     |  dependent on the layout you have selected.                   |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                 Tags that Start a Text Block                  |         
+     |                                                               |         
+     |     :tagname<.Start of text block ...>                        |         
+     |  The tag text represents the start of text for a block (see   |         
+     |  :P, for example).  It is not necessary that the tag be used  |         
+     |  with tag text; the same result can be achieved with          |         
+     |     :tagname                                                  |         
+     |     Start of text block ...                                   |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                    Tags that Continue Text                    |         
+     |                                                               |         
+     |     :tagname<.continued text>                                 |         
+     |  The first character of the tag text (if any is specified)    |         
+     |  will be placed immediately after the last character already  |         
+     |  on the output line, without any intervening blanks (see      |         
+     |  :eFN, for example).  Therefore, you should not specify tag   |         
+     |  text with such tags unless that is what you want to          |         
+     |  achieve.                                                     |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                        Tag Attributes                         |         
+     |                                                               |         
+     |  Attributes consist of an attribute name, an "=", and a val-  |         
+     |  ue, without intervening blanks.  For example,                |         
+     |     :tagname att1=value1 att2=value2<.tag text>               |         
+     |  If the value of an attribute contains imbedded blanks,       |         
+     |  periods, or other non-numeric characters, it must be delim-  |         
+     |  ited by apostrophes or quotes, such as                       |         
+     |     :tagname attribute='the value'                            |         
+     |     :tagname attribute="it's the value"                       |         
+     |     :tagname attribute='7.5'                                  |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+     2                                                 Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                      Document Structure                       |         
+     |                                                               |         
+     |  The structure of a SCRIPT file prepared using GML is as      |         
+     |  shown below.  The "GMLxxxxx" represents the layout that you  |         
+     |  have chosen.                                                 |         
+     |     <.im GMLxxxxx>                                            |         
+     |     <:SETs, if any>                                           |         
+     |     :GDOC< SEC='classification'>                              |         
+     |        document text and other GML tags                       |         
+     |     :eGDOC                                                    |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |              Standard-Layout Document Structure               |         
+     |                                                               |         
+     |  :GDOC                                                        |         
+     |     :FRONTM                                                   |         
+     |        front-matter components                                |         
+     |     :eFRONTM                                                  |         
+     |     :BODY                                                     |         
+     |        body components                                        |         
+     |     :eBODY                                                    |         
+     |     :APPENDIX                                                 |         
+     |        appendix components                                    |         
+     |     :eAPPENDIX                                                |         
+     |     :BACKM                                                    |         
+     |        back-matter components                                 |         
+     |     :eBACKM                                                   |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+     GML Reference Summary                                           3         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                    Front-Matter Components                    |         
+     |                                                               |         
+     |  :FRONTM                                                      |         
+     |     :TITLEP< ALIGN='value'>                                   |         
+     |        :TITLE< STITLE='text'>.Document Title                  |         
+     |        :AUTHOR.Author's Name                                  |         
+     |           :ADDRESS                                            |         
+     |              :ALINE.First Line of Address                     |         
+     |              (repeat as necessary)                            |         
+     |              :ALINE.Last Line of Address                      |         
+     |           :eADDRESS                                           |         
+     |        :DATE<.date>                                           |         
+     |        :COPYRIGHT< SYMBOL='symbol'><.Heading Text>            |         
+     |        :COPYNOTE<.Start of text>                              |         
+     |        :eCOPYNOTE                                             |         
+     |     :eTITLEP                                                  |         
+     |     :ABSTRACT< STITLE='text'><.Heading Text>                  |         
+     |        (:H2 through :H6, with basic document components)      |         
+     |     :eABSTRACT                                                |         
+     |     :PREFACE< STITLE='text'><.Heading Text>                   |         
+     |        (:H2 through :H6, with basic document components)      |         
+     |     :ePREFACE                                                 |         
+     |     :TOC<.Heading Text>                                       |         
+     |     :FIGLIST<.Heading Text>                                   |         
+     |     :TABLIST<.Heading Text>                                   |         
+     |  :eFRONTM                                                     |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                        Body Components                        |         
+     |                                                               |         
+     |  :BODY                                                        |         
+     |     :H0< STITLE='text'><.Heading Text>                        |         
+     |        basic document components                              |         
+     |        :H1< STITLE='text'>.Heading Text                       |         
+     |           :H1SUB.Heading Text                                 |         
+     |           basic document components                           |         
+     |           :H2< STITLE='text'>.Heading Text                    |         
+     |              basic document components                        |         
+     |              (:H3 through :H6, with basic document compo-     |         
+     |              nents)                                           |         
+     |  :eBODY                                                       |         
+     |                                                               |         
+     |                      Appendix Components                      |         
+     |                                                               |         
+     |  :APPENDIX                                                    |         
+     |     (:H1 through :H6, with basic document components)         |         
+     |  :eAPPENDIX                                                   |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+     4                                                 Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                    Back-Matter Components                     |         
+     |                                                               |         
+     |  :BACKM                                                       |         
+     |     :INDEX< IX=n COLUMNS=n><.Heading Text>                    |         
+     |     :H1.Heading Text                                          |         
+     |        (:H2 through :H6, with basic document components)      |         
+     |  :eBACKM                                                      |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+     GML Reference Summary                                           5         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |    Table 1:  Major Features of the Standard-Tagset Layouts    |         
+     |                                                               |         
+     |  With the exception of layouts bearing the name of a partic-  |         
+     |  ular publishing body, all of the basic document component    |         
+     |  tags result in the same style of output for all layouts.     |         
+     |                                                               |         
+     |  feature:                                                     |         
+     |  1=full or part title page (f,p)                              |         
+     |  2=creates tables of contents (y,n)                           |         
+     |  3=level to which body headings start at page top (n=none)    |         
+     |  4=level to which headings in body are numbered (n=none)      |         
+     |  5=single or double spaced text (s,d)                         |         
+     |  6=text columns per page                                      |         
+     |  7=title used as running heading/footing (y,n)                |         
+     |                                                               |         
+     |                                          1  2  3  4  5  6  7  |         
+     |                                                               |         
+     |  miscellaneous:                                               |         
+     |    GMLgdoc  . . . . . . . . . . . . . .  p  y  0  0  s  1  y  |         
+     |    GMLfoils . . . . . . . . . . . . . .  f  n  1  n  d  1  n  |         
+     |    GMLsdoc  . . . . . . . . . . . . . .  p  n  0  0  s  1  n  |         
+     |    GMLresum . . . . . . . . . . . . . .  p  n  n  n  s  1  y  |         
+     |                                                               |         
+     |  manuals and reports:                                         |         
+     |    GMLguide . . . . . . . . . . . . . .  f  y  0  0  s  1  y  |         
+     |    GMLman   . . . . . . . . . . . . . .  f  y  1  4  s  1  n  |         
+     |    GMLrefg  . . . . . . . . . . . . . .  f  y  1  6  s  1  y  |         
+     |    GMLss    . . . . . . . . . . . . . .  f  y  1  0  s  1  y  |         
+     |    GMLworkt . . . . . . . . . . . . . .  f  y  1  4  d  1  n  |         
+     |    GMLuwcpc . . . . . . . . . . . . . .  f  y  1  0  s  1  n  |         
+     |                                                               |         
+     |  papers:                                                      |         
+     |    GMLpaper . . . . . . . . . . . . . .  p  n  0  0  s  1  y  |         
+     |    GMLaipj  . . . . . . . . . . . . . .  p  n  0  4  d  1  n  |         
+     |    GMLapaj  . . . . . . . . . . . . . .  f  n  1  0  d  1  y  |         
+     |    GMLieee  . . . . . . . . . . . . . .  p  n  n  0  s  2  n  |         
+     |    GMLmwcs  . . . . . . . . . . . . . .  p  n  n  0  s  2  n  |         
+     |    GMLnhcrc . . . . . . . . . . . . . .  p  n  n  0  s  1  y  |         
+     |                                                               |         
+     |  theses:                                                      |         
+     |    GMLthesi . . . . . . . . . . . . . .  f  y  1  4  d  1  n  |         
+     |    GMLapa   . . . . . . . . . . . . . .  f  y  1  0  d  1  n  |         
+     |    GMLmla   . . . . . . . . . . . . . .  f  y  1  4  d  1  n  |         
+     |                                                               |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+     6                                                 Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |   Summary of Tags, Attributes, and Values for the Standard    |         
+     |                                                               |         
+     |                            Tagset                             |         
+     |                                                               |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+     The following is a reference summary of the tags supported by the         
+     "standard tag set" layouts, including their attributes and val-           
+     ues.  The information is organized in alphabetical order by tag-          
+     name.  Tags with corresponding end-of tags are shown as TAGNAME/          
+     eTAGNAME, and unless otherwise specified, the attributes pertain          
+     to the start-of tag.  If shown as TAGNAME/<eTAGNAME>, the end-of          
+     tag is optional.  Values that are described as "default" are the          
+     default values for the standard-tagset layouts that are of a              
+     general-purpose nature.  Layouts designed for particular publish-         
+     ing bodies will have defaults peculiar to those bodies' style             
+     requirements.                                                             
+
+     :ABSTRACT<.Heading Text>/<eABSTRACT>                                      
+        STITLE='Short Title'                                                   
+
+     :ADDRESS/eADDRESS                                                         
+
+     :ALINE.one line of author address                                         
+
+     :APPENDIX/<eAPPENDIX>                                                     
+
+     :AUTHOR.Author's Name                                                     
+        BYLINE='byline string'                                                 
+
+     :BACKM/<eBACKM>                                                           
+
+     :BIB                                                                      
+        ID=idname                                                              
+
+     :BIBID                                                                    
+        REFID=idname --  required                                              
+
+     :BIBREF                                                                   
+        REFID='idname(s)' --  required                                         
+        PP='page reference' --  do not use if REFID specifies a list           
+           or range                                                            
+
+     :BL/eBL  see OL                                                           
+
+     :BODY/<eBODY>                                                             
+
+     :BORROW  for thesis-category layouts only!                                
+
+     :BOX/eBOX                                                                 
+
+     :CIT<.text>/eCIT<.continued text>                                         
+
+     :COPYRIGHT<.text>                                                         
+
+
+                                                                               
+     GML Reference Summary                                           7         
+                                                                               
+        SYMBOL='string' --  characters to be used as the copyright             
+           symbol                                                              
+
+     :COPYNOTE<.text>/eCOPYNOTE                                                
+
+     :COURSE  for thesis-category layouts only!                                
+        DOC='type of document' --  default is 'report'                         
+
+     :DATE<.date substitute>                                                   
+
+     :DECLARE  for thesis-category layouts only!                               
+
+     :DF/eDF  display-mode formula                                             
+        ALIGN=                                                                 
+           LEFT --  (default) formula will be left-aligned on output           
+           BLOCK --  formatting mode for the document will also be             
+              used for the formula                                             
+           CENTER --  formula will be centered on output                       
+           LINE --  formula will left-aligned                                  
+           RIGHT --  formula will be right-aligned                             
+        FONT=fontid--  TEXT (default) or MONO; the font in which nor-          
+           mal text within the formula is to be printed; ignored for           
+           devices that do not support fonts                                   
+        FRAME=                                                                 
+           BOX --  formula will be enclosed in a box                           
+           NONE --  (default) no frame will be used                            
+           RULE --  a horizontal rule will be used both before and             
+              after                                                            
+           'string' --  the specified characters will be repeated              
+              across the top and bottom                                        
+        ID=idname--  if not specified, this formula will not be num-           
+           bered and cannot be referenced by DFREF                             
+        IN=n--  indentation from the left margin for the equation              
+        ITALIC,NOITALIC--  letters in the formula are set in italic by         
+           default; NOITALIC will use roman instead                            
+
+     :DFREF  reference to a display-mode formula                               
+        REFID=idname --  required                                              
+
+     :DL/eDL                                                                   
+        BREAK --  forces the definition description to start on the            
+           output line below the definition term (see also TSIZE               
+           below)                                                              
+        TERMHI=n --  (default 2) the highlighted-phrase level for the          
+           definition term                                                     
+        TSIZE=n --  (default 10) the number of character spaces to be          
+           reserved for definition-term text; if a term is longer, the         
+           description will start on the next output line                      
+        see also OL                                                            
+
+     :DOCNUM.document number                                                   
+
+     :DT.definition term                                                       
+
+     :DD.definition description                                                
+
+     :DTHD.definition term heading                                             
+
+
+     8                                                 Waterloo SCRIPT         
+                                                                               
+     :DDHD.definition description heading                                      
+
+     :EN<.text>/eEN<.continued text>                                           
+        ID=idname --  if not specified, this endnote cannot be refer-          
+           enced by ENREF                                                      
+
+     :ENDNOTES                                                                 
+
+     :ENREF                                                                    
+        REFID=idname --  required                                              
+
+     :F/eF  in-line formula                                                    
+
+     :FIG/eFIG                                                                 
+        ID=idname --  if not specified, the table or figure number             
+           will be generated without your having any way in which to           
+           reference it                                                        
+        DEPTH=n --  the number of blank lines to be left for the body          
+           of the table or figure; useful when the body is to be past-         
+           ed in                                                               
+        FONT=fontid --  MONO (default) or TEXT; the font in which the          
+           body of the table or figure is to be produced; ignored for          
+           devices that do not support fonts                                   
+        PLACE=                                                                 
+           FLOAT --  (default) if the table or figure will not fit in          
+              the current output column, it will appear at the top of          
+              the next column and the remainder of the current column          
+              will be filled with the text that follows the eFIG or            
+              eTAB tag                                                         
+           ANY --  no attempt will be made to ensure that the table or         
+              figure will fit in the current output column; if it does         
+              not, it will be split across a column or page boundary           
+           INLINE --  if the table or figure will not fit in the cur-          
+              rent output column, the rest of the column will be left          
+              blank and the table or figure will be positioned at the          
+              top of the next column                                           
+           PAGE --  enough blank lines will be added to the bottom of          
+              the table or figure (after the frame, if there is one)           
+              to ensure that it completely fills the output column             
+           TOP --  the remainder of the current column will be left            
+              blank and the table or figure will be positioned at the          
+              top of the next column                                           
+           The following is not yet implemented.  You can specify it,          
+           but you will get the result of FLOAT instead.                       
+           BOTTOM --  the table or figure will be floated to the bot-          
+              tom of the current output column if there is room for            
+              it, or to the top of the next output column if not; the          
+              remainder of the current output column will be filled            
+              with the text that follows the eFIG or eTAB tag                  
+        FRAME=                                                                 
+           BOX --  (default) figure or table will be enclosed in a box         
+           NONE --  no frame will be used                                      
+           RULE --  a horizontal rule will be used both before and             
+              after                                                            
+           'string' --  the specified characters will be repeated              
+              across the top and bottom                                        
+
+
+                                                                               
+     GML Reference Summary                                           9         
+                                                                               
+        CAP=                                                                   
+           LONG --  (default for figures) the figure caption will be           
+              block-indented to the right of the figure number; if             
+              specified for a table, the table number and table cap-           
+              tion will be centered on separate lines                          
+           SHORT --  (default for tables) the table number and caption         
+              will be centered if they both will fit on the same out-          
+              put line, otherwise they will be handled in the block-           
+              indented manner described above for figures; if speci-           
+              fied for figures, the figure number and caption will be          
+              centered on the same line                                        
+
+     :FIGCAP<.Heading Text>                                                    
+        STITLE='Heading Text' --  if specified, the STITLE heading             
+           text will be used in the FIGLIST instead of the FIGCAP              
+           heading text                                                        
+
+     :FIGDESC<.text>/<eFIGDESC>                                                
+
+     :FIGID                                                                    
+        REFID=idname --  required                                              
+
+     :FIGLIST<.Heading Text>  see TOC                                          
+
+     :FIGREF                                                                   
+        REFID=idname --  required                                              
+        PAGE= --  (see description under HDREF)                                
+
+     :FN<.text>/eFN<.continued text>                                           
+        ID=idname                                                              
+        FONT=fontid --  default is TEXT                                        
+        SYMBOL=                                                                
+           NONE --  this footnote will not have an annotation symbol           
+           'string' --  the specified character string will be used as         
+              the annotation symbol                                            
+           if not specified, the next number in the footnote sequence          
+           will be used as the annotation symbol                               
+
+     :FNREF                                                                    
+        REFID=idname --  required                                              
+
+     :FRONTM/<eFRONTM>                                                         
+
+     :GDOC/eGDOC  required                                                     
+        SEC='text' --  the document's security classification                  
+        HY= --  the text hyphenation mode to be used                           
+           ON --  an attempt will be made to hyphenate any word that           
+              is too long to fit in the space remaining on an output           
+              line                                                             
+           OFF --  no hyphenation will be performed                            
+           USER --  only words that contain hyphens will be candidates         
+              for hyphenation                                                  
+        JU=--  the text justification mode to be used                          
+           ON --  extra white space will be added between words so             
+              that all output lines will be completely filled (ignored         
+              for the last output line in a paragraph)                         
+
+
+                                                                               
+     10                                                Waterloo SCRIPT         
+                                                                               
+           HALF --  only half the effect of ON; produces semi-ragged           
+              line endings                                                     
+           OFF --  no extra white space will be added; produces                
+              extremely ragged line endings                                    
+
+     :GL/eGL  see OL                                                           
+
+     :GT.glossary term                                                         
+
+     :GD.glossary description                                                  
+
+     :H0,1,2,3,4,5,6                                                           
+        ID=idname --  heading-identifier name, for use by HDREF                
+        FNID=idname --  footnote-identifier name, H1 only, for use in          
+           subsequent FN tag                                                   
+        N='symbol' --  to specify heading number, H1 only, and ignored         
+           if the layout does not number them.  If the value is numer-         
+           ic, it will be used to number this level-one heading and            
+           subsequent level-one headings will continue in sequence             
+           (unless specified with another N=).  If the value is not            
+           numeric, it will be used to number this level-one heading,          
+           but subsequent level-one headings will continue from the            
+           numbering sequence of the previous level-one heading.               
+        STITLE='Short Title' --  (H0,1,2 only)                                 
+
+     :H1SUB  may only be used immediately after a H1 (or equivalent)           
+        or another H1SUB tag                                                   
+
+     :HDREF                                                                    
+        REFID=idname --  required; if the heading and the reference            
+           are on different pages, the reference will include the              
+           words "on page" and the number of the page on which the             
+           heading occurs                                                      
+        PAGE= --  NO prevents the generation of "on page" and the page         
+           number; YES causes them to be generated even if the heading         
+           and the reference are on the same page                              
+
+     :HP0,1,2,3<.text>/eHP0,1,2,3<.continued text>                             
+
+     :INCLUDE                                                                  
+        FILE=filename --  required                                             
+
+     :I1,2,3.text, :IH1,2,3.text  Any combination of ID, REFID, and IX         
+        can be specified together.  No more than one of PG, SEE, or            
+        SEEID may be specified together.  Several additional con-              
+        straints are defined below.                                            
+        PG= --  if not specified, the current page number will be used         
+           as the page-reference text                                          
+           MAJOR --  the current page number will be placed at the             
+              beginning of the list of page references, to indicate            
+              that this is the major reference for this index term             
+           START --  specifies that the current page number is the             
+              start of a range of pages within which this index term           
+              occurs                                                           
+           END --  specifies that the current page number is the end           
+              of a range of pages within which this index term occurs          
+
+
+                                                                               
+     GML Reference Summary                                          11         
+                                                                               
+           The intended function of START and END is to generate a             
+           page-range reference of the form "n-m" where n is the start         
+           of the range and m is the end.  As currently implemented,           
+           they have no effect other than to add the current page num-         
+           ber to the list of page references.                                 
+           'text' --  can be anything other than MAJOR, START, and             
+              END.  The text between the apostrophes will be used as           
+              the page reference, instead of the current page number.          
+              If the text is a single blank, the index term will be            
+              added to the index without a page reference.                     
+        SEE='text'--  the text to be used as a "see item" in the ref-          
+           erence list, instead of the current page number                     
+        ID=idname--  index-identifier name; may contain up to seven            
+           letters and/or digits, and cannot be specified as the ID            
+           attribute of any other index-related tag                            
+        REFID=idname--  must have already been defined as the ID value         
+           of a previous I1,2,3 or IH1,2,3 tag.  The index term will           
+           be added under the higher-level term(s) of the named index-         
+           id, instead of under the most recent higher-level index             
+           term(s).  REFID is invalid with the I1 tag.                         
+        SEEID=idname--  must have already been defined as the ID value         
+           of a previous I1,2,3 or IH1,2,3 tag.  The index term(s) of          
+           the specified index-identifier name will be used as the             
+           text of the "see" reference.                                        
+        IX=n--  an index number, from 1 to 9; if omitted, the index            
+           term will be added to index number 1                                
+
+     :INDEX<.Heading Text>                                                     
+        IX=n --  specifies which index is to be printed (a numeric             
+           value between 1 and 9); if omitted, index number 1 is               
+           printed                                                             
+        COLUMNS=n --  the number of columns in which the index is to           
+           be printed (a numeric value between 1 and 9).  With layouts         
+           that produce the document in multiple-columns mode, this            
+           attribute is ignored.  With layouts that produce the docu-          
+           ment in single-column mode, a value of 2 will be used if            
+           the attribute is omitted.                                           
+
+     :IREF                                                                     
+        REFID=idname --  required                                              
+
+     :LI<.text>  for ordered, unordered, and simple lists                      
+        ID=idname --  for use with LIREF (do not use with simple               
+           lists)                                                              
+
+     :LIHD.Heading Text  for ordered, unordered, and simple lists              
+        ID=idname --  for use with LIREF                                       
+
+     :LIREF  generates reference to list item (see HDREF tag for               
+        attributes)                                                            
+
+     :LP<.text>                                                                
+
+     :LQ<.text>/eLQ                                                            
+
+     :NOTE<.text>/<eNOTE>                                                      
+
+
+                                                                               
+     12                                                Waterloo SCRIPT         
+                                                                               
+        NAME='text' --  will be used instead of the word Note                  
+
+     :OL/eOL                                                                   
+        COMPACT<=n>                                                            
+           0 --  no compaction; there will be a blank line before the          
+              first list item, between each list item, and after the           
+              last list item                                                   
+           1 --  with a layout that produces its output in single-             
+              spaced mode, will eliminate the blank line between items         
+              within the list; with a layout that produces its output          
+              in double-spaced mode, causes the text of the list items         
+              to be produced in single-spaced mode, but with a blank           
+              line between each list item                                      
+           2 --  a single-spaced list with no blank lines before,              
+              between, or after list items                                     
+        JUSTIFY=--  ON, YES, OFF, NO, HALF; right-margin justification         
+           of list-item text                                                   
+
+     :P<.text>                                                                 
+
+     :PC<.text>  -- the "Paragraph Continue" tag is provided for com-          
+        patibility with other implementations of GML                           
+
+     :PREFACE<.Heading Text>/<ePREFACE>                                        
+        STITLE='Short Title'                                                   
+
+     :PSC/ePSC                                                                 
+        PROC='list of output devices' --  if the output device to              
+           which the document is being produced is not one of those            
+           specified in the list, or if no list is specified, the con-         
+           tents of the block will be ignored                                  
+
+     :Q<.text>/eQ<.continued text>                                             
+
+     :SL/eSL  see OL                                                           
+
+     :TAB/eTAB  for these and TABCAP, TABDESC/eTABDESC, TABID, and             
+        TABREF, see the corresponding tags for figures                         
+
+     :TABLIST<.Heading Text>  see TOC                                          
+
+     :THESIS  for thesis-category layouts only!                                
+        DOC='type of document' --  default is 'thesis'                         
+
+     :TITLE.Document Title                                                     
+        FNID=idname --  footnote-identifier name, for use in subse-            
+           quent FN tag                                                        
+        STITLE='Short Title'                                                   
+
+     :TITLEP/eTITLEP                                                           
+        ALIGN=                                                                 
+           CENTER --  (default for most layouts) the title-page                
+              material will be centered                                        
+           LEFT --  the title-page material will be left-aligned               
+           RIGHT --  the title-page material will be right-aligned             
+              (default for GMLss)                                              
+
+
+                                                                               
+     GML Reference Summary                                          13         
+                                                                               
+     :TOC<.Heading Text>                                                       
+        PLACE=                                                                 
+           TOP --  the resulting output will begin at the top of a             
+              page (default for TOC)                                           
+           INLINE --  the resulting output will start a few lines              
+              below the previous output (default for FIGLIST and               
+              TABLIST); if PLACE=INLINE is specified with TOC and the          
+              document is SCRIPTed in single-pass mode, PLACE=TOP will         
+              be assumed                                                       
+
+     :UL/eUL  see OL                                                           
+
+     :XMP/eXMP                                                                 
+        ALIGN=                                                                 
+           LEFT --  (default) each input line will be left-aligned on          
+              output; any line that is too long will be output as mul-         
+              tiple left-aligned lines                                         
+           BLOCK --  the formatting mode for the document will also be         
+              used for the lines of the example; the result will be            
+              block of text                                                    
+           CENTER --  each input line will be centered on output, and          
+              any line that is too long will be output as multiple             
+              centered lines                                                   
+           LINE --  each input line will be output exactly as it               
+              appeared in the input                                            
+           RIGHT --  each input line will be right-aligned on output,          
+              and any line that is too long will be output as multiple         
+              right-aligned lines                                              
+        DEPTH=n--  the number of blank lines to be left for the body           
+           of the example; useful when the body is to be pasted in             
+        FONT=fontid--  MONO (default) or TEXT; the font in which the           
+           body of the example is to be produced; ignored for devices          
+           that do not support fonts                                           
+        IN=n--  indentation value for the example block                        
+        PLACE=                                                                 
+           INLINE --  (default) the example block will be kept togeth-         
+              er; if it cannot fit in the current column, a new column         
+              will be started and the example block will appear at the         
+              top of this new column                                           
+           ANY --  the example block may be split across columns or            
+              pages                                                            
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+     14                                                Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                 Multiple-Font Output Devices                  |         
+     |                                                               |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+     For output devices including:  IP300, I3820, LASERJET, PHOTO,             
+     POSTS, QMSlaser and X2700, a default set of font families are             
+     defined by font identifiers HEAD, TEXT, and MONO.  You can over-          
+     ride the default definitions for one or more of these by placing          
+     the appropriate SCRIPT control words in a PSC/ePSC block prior to         
+     the GDOC tag.  The font family defined by the HEAD font identifi-         
+     er will be used for the tagtext of heading levels H0 through H6,          
+     for TITLE, and for ABSTRACT, PREFACE, and INDEX (which are treat-         
+     ed as level-one headings).  You can define your own font families         
+     for font identifiers HEAD0 through HEAD6, to override the use of          
+     the HEAD fonts; for example, if you define a HEAD1 font family,           
+     then those fonts will be used for TITLE and all level-one (or             
+     equivalent) heading tagtext, and the default HEAD fonts will be           
+     used for heading levels two through six.  You can also define a           
+     TITLE font family to be used for the title-page document title;           
+     the order of font-identifier selection for this tagtext is TITLE          
+     if it exists, else HEAD1 if it exists, else HEAD.                         
+
+
+                                                                               
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                         The :SET Tag                          |         
+     |                                                               |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+     :SET ITEM=COLS VALUE=n                                                    
+          number of text columns per page                                      
+
+     :SET ITEM=FTLEV VALUE=n                                                   
+          level to which headings force not-yet-printed figures and            
+          tables to be printed                                                 
+
+     :SET ITEM=HEADLEVEL VALUE=n                                               
+          number of levels of headings contained in the document               
+
+     :SET ITEM=HOR VALUE='width'                                               
+          width of output paper                                                
+
+     :SET ITEM=LEFT VALUE='width'                                              
+          width of left page margin                                            
+
+     :SET ITEM=LINE VALUE='width'                                              
+          width of formatted output line                                       
+
+     :SET ITEM=LS VALUE=n                                                      
+          number of blank lines between text in normal line-spacing            
+          mode                                                                 
+
+
+                                                                               
+     GML Reference Summary                                          15         
+                                                                               
+     :SET ITEM=NUMB VALUE='style'                                              
+          page-numbering style (ABSOLUTE, or RELATIVE to level-one             
+          headings)                                                            
+
+     :SET ITEM=PAGE VALUE=n                                                    
+          length of output paper, in lines                                     
+
+     :SET ITEM=SS VALUE=n                                                      
+          number of blank lines between text in single-spacing mode            
+
+     the following settings pertain to a specific tag                          
+
+     :SET TAG=BIB ITEM=STYLE VALUE='style'                                     
+          bibliography-item annotation style (NUMBER, LABEL, IEEE, or          
+          NONE)                                                                
+
+     :SET TAG=BODY ITEM=H0NUMBER|H1NUMBER VALUE=A|N|R                          
+          numbering style for level-zero and level-one headings in             
+          BODY (alphabetic, numeric, or roman)                                 
+
+     :SET TAG=APPENDIX ITEM=H1NUMBER VALUE=A|N|R                               
+          numbering style for level-one headings in APPENDIX                   
+
+     :SET TAG=DF ITEM=NUMBER VALUE=ALL                                         
+          all display-mode formulae are to be numbered                         
+
+     :SET TAG=FIG ITEM=FONT VALUE=fontid                                       
+          specify the fontid for the body of a figure, instead of TEXT         
+          (can also be done for :TAB and :XMP)                                 
+
+     :SET TAG=NOTE ITEM=NAME VALUE='Text'                                      
+          word to be generated instead of "Note"                               
+
+     :SET TAG=OL ITEM=STYLE VALUE='n. a. i. n) a) i)'                          
+          annotation styles for levels of ordered lists                        
+
+     :SET TAG=TOC ITEM=LEVEL VALUE=n                                           
+          level to which headings are to appear in the table of con-           
+          tents                                                                
+
+     :SET TAG=tagname ITEM=IN VALUE=n                                          
+          indentation value for basic document components                      
+
+     :SET TAG=tagname ITEM=NAME VALUE='name'                                   
+          name to be used for FIG, NOTE, H0, H1, TAB                           
+
+     :SET TAG=tagname ITEM=NUMB VALUE=ABSOLUTE|RELATIVE                        
+          controls how DF, FIG, FN, TAB are numbered                           
+
+     :SET TAG=tagname ITEM=SK VALUE=n                                          
+          vertical spacing for various document components                     
+
+
+                                                                               
+
+
+                                                                               
+
+
+     16                                                Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                     Non-Standard Layouts                      |         
+     |                                                               |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                           GMLagree                            |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :TITLE.Heading Text                                       |         
+     |     (repeat as necessary)                                     |         
+     |     :PARTY.Full Name of Party                                 |         
+     |        text qualifying this Party                             |         
+     |     :HEREIN< ID=party-id>.Short Name of Party                 |         
+     |     :BODY                                                     |         
+     |        (see GMLmins for contents of body)                     |         
+     |        :REF.REFID=party-id<.continued text>                   |         
+     |        may be used to refer to a party                        |         
+     |     :SIGNED< BY=n WITNESS=n DATE=0>                           |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                           GMLgroup                            |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :FRONTM                                                   |         
+     |        :TITLEP                                                |         
+     |           :TITLE.Heading Text                                 |         
+     |           other title-page tags                               |         
+     |        :eTITLEP                                               |         
+     |        :ABSTRACT<.Heading Text>                               |         
+     |           text of abstract                                    |         
+     |           :AUTHOR.author of abstract                          |         
+     |           (ADDRESS/ALINE/eADDRESS, if desired)                |         
+     |        :PREFACE<.Heading Text>                                |         
+     |           text of preface                                     |         
+     |           :AUTHOR.author of preface                           |         
+     |           (ADDRESS/ALINE/eADDRESS, if desired)                |         
+     |        :TOC                                                   |         
+     |     :BODYGROUP                                                |         
+     |        :INCLUDE FILE=document1                                |         
+     |        :INCLUDE FILE=document2                                |         
+     |        (etc)                                                  |         
+     |     :eBODYGROUP                                               |         
+     |     :APPENDIX                                                 |         
+     |     :BACKM                                                    |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+     GML Reference Summary                                          17         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                            GMLlet                             |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :FROM                                                     |         
+     |        first address line                                     |         
+     |        (etc)                                                  |         
+     |        last address line                                      |         
+     |     :DATE< ALIGN='value' DEPTH=n><.date>                      |         
+     |     :DOCNUM.document number                                   |         
+     |     :TO< DEPTH=n>.Name of Recipient (or Company Name)         |         
+     |        First Line of Recipient's Address                      |         
+     |        (etc)                                                  |         
+     |        Last Line of Recipient's Address                       |         
+     |     :ATTN< DEPTH=n>.Attention Name                            |         
+     |     :SUBJECT< DEPTH=n>.Heading Text                           |         
+     |     :OPEN< DEPTH=n>.Opening Salutation                        |         
+     |        basic document components                              |         
+     |     :CLOSE< DEPTH=n>.Closing salutation                       |         
+     |        Author's Name                                          |         
+     |        Author's title and/or                                  |         
+     |        Author's address, etc                                  |         
+     |     :eCLOSE<.ABC/xyz>                                         |         
+     |     :DISTRIB                                                  |         
+     |        :DIST.label                                            |         
+     |           names, one per line                                 |         
+     |     :eDISTRIB                                                 |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                            GMLmemo                            |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :DATE< ALIGN=margin><.date>                               |         
+     |     :DISTRIB< COLUMNS=n>                                      |         
+     |        :DIST< COLUMNS=n><.label>                              |         
+     |           list of names, one per line                         |         
+     |     :eDISTRIB                                                 |         
+     |     :SUBJECT< MODE=BLOCK><.Heading Text>                      |         
+     |        (additional subject text, if BLOCK mode)               |         
+     |     :eSUBJECT                                                 |         
+     |        basic document components                              |         
+     |     :CLOSE                                                    |         
+     |        name of author                                         |         
+     |        etc                                                    |         
+     |     :eCLOSE<.abc/xyz>                                         |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+
+     18                                                Waterloo SCRIPT         
+                                                                               
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                            GMLmins                            |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :TITLE.Name of Corporation                                |         
+     |     (repeat as necessary)                                     |         
+     |     :TITLE.Name of Group holding meeting                      |         
+     |     :DATE< TYPE=AGENDA><.date of meeting>                     |         
+     |     :DISTRIB< COLUMNS=n>                                      |         
+     |        :DIST< COLUMNS=n><.label>                              |         
+     |           names, one per line                                 |         
+     |     :eDISTRIB                                                 |         
+     |     :BODY                                                     |         
+     |        :OL                                                    |         
+     |           :LIHD.Heading Text (discussion item)                |         
+     |              Details of discussion, etc.                      |         
+     |        :eOL                                                   |         
+     |        The meeting adjourned at (time).                       |         
+     |     :CLOSE                                                    |         
+     |        :TYPIST.ABC/xyz                                        |         
+     |        :RECORDER.Name of Secretary                            |         
+     |           Secretary's Title                                   |         
+     |           (etc)                                               |         
+     |     :eCLOSE                                                   |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿         
+     |                                                               |         
+     |                             GMLpp                             |         
+     |                                                               |         
+     |  :GDOC< SEC='classification'>                                 |         
+     |     :TITLE.Heading Text (eg: Policy, Procedure)               |         
+     |     :DOCNUM.policy or procedure number                        |         
+     |     :DATE<.date effective>                                    |         
+     |     :REVISION.new, or replaces/cancels previous version       |         
+     |     :SUBJECT< MODE=BLOCK>.Subject Text                        |         
+     |     (additional subject text, if BLOCK mode)                  |         
+     |     :eSUBJECT                                                 |         
+     |        (see GMLmins for body of document)                     |         
+     |  :eGDOC                                                       |         
+     ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ         
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+
+
+                                                                               
+     GML Reference Summary                                          19         

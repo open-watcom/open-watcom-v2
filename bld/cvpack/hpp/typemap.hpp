@@ -48,7 +48,7 @@ class TypeIndexMap {
                      const type_index  startIndex = CV_FIRST_NONPRIM);
         ~TypeIndexMap() { }
 
-        Set (const type_index startIndex ) {
+        void Set (const type_index startIndex ) {
             _currentGlobalIndex = startIndex;
         }
 

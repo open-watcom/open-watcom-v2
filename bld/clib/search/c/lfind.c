@@ -36,26 +36,30 @@
 #include <stddef.h>
 #include <search.h>
 
-#if defined(__NETWARE__)
-#define _CONSTNW
-#else
-#define _CONSTNW const
-#endif
-
-typedef int lcomp( _CONSTNW void *, _CONSTNW void * );
+typedef int lcomp( const void *, const void * );
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) lcomp;
 #endif
 
-_WCRTLINK void *lfind( _CONSTNW void *key, _CONSTNW void *base, unsigned *num,
-    unsigned width, int (*compare)( _CONSTNW void *, _CONSTNW void * ) )
+_WCRTLINK void *lfind( 
+    const void *key, 
+    const void *base, 
+    unsigned *num,
+    unsigned width, 
+    int (*compare)( 
+        const void *, 
+        const void * 
+        )
+    )
 {
     lcomp *cmp = (lcomp *)compare;
     unsigned  n;
 
-    for( n = *num; n; --n ) {
-        if( cmp( key, base ) == 0 ) return( (void *)base );
-        base = ((_CONSTNW char *)base) + width;
+    for( n = *num; n; --n ) 
+    {
+        if( cmp( key, base ) == 0 ) 
+            return( (void *)base );
+        base = ((const char *)base) + width;
     }
     return( NULL );
 }

@@ -1,0 +1,2078 @@
+c$noreference
+
+c$ifdef INCL_GPI
+c$define INCL_GPICONTROL
+c$define INCL_GPICORRELATION
+c$define INCL_GPISEGMENTS
+c$define INCL_GPISEGEDITING
+c$define INCL_GPITRANSFORMS
+c$define INCL_GPIPATHS
+c$define INCL_GPIPOLYGON
+c$define INCL_GPILOGCOLORTABLE
+c$define INCL_GPIPRIMITIVES
+c$define INCL_GPILCIDS
+c$define INCL_GPIBITMAPS
+c$define INCL_GPIREGIONS
+c$define INCL_GPIMETAFILES
+c$define INCL_GPIDEFAULTS
+c$endif
+
+c$ifdef INCL_ERRORS
+c$define INCL_GPIERRORS
+c$endif
+
+c$ifdef INCL_DDIDEFS
+c$define INCL_GPITRANSFORMS
+c$define INCL_GPIPATHS
+c$define INCL_GPILOGCOLORTABLE
+c$define INCL_GPIPRIMITIVES
+c$define INCL_GPILCIDS
+c$define INCL_GPIBITMAPS
+c$define INCL_GPIREGIONS
+c$define INCL_GPIERRORS
+c$endif
+
+        integer  GPI_ERROR
+        parameter (GPI_ERROR = 0)
+        integer  GPI_OK
+        parameter (GPI_OK = 1)
+        integer  GPI_ALTERROR
+        parameter (GPI_ALTERROR = -1)
+
+        integer*4 MAKEFIXED
+        external MAKEFIXED
+
+        integer*2 FIXEDFRAC
+        external FIXEDFRAC
+
+        integer*2 FIXEDINT
+        external FIXEDINT
+
+        structure /SIZEL/
+            integer*4 cx
+            integer*4 cy
+        end structure
+
+        integer  CLR_NOINDEX
+        parameter (CLR_NOINDEX = -254)
+
+c$ifdef INCL_GPICONTROL
+
+        integer  PU_ARBITRARY
+        parameter (PU_ARBITRARY = '00000004'x)
+        integer  PU_PELS
+        parameter (PU_PELS = '00000008'x)
+        integer  PU_LOMETRIC
+        parameter (PU_LOMETRIC = '0000000C'x)
+        integer  PU_HIMETRIC
+        parameter (PU_HIMETRIC = '00000010'x)
+        integer  PU_LOENGLISH
+        parameter (PU_LOENGLISH = '00000014'x)
+        integer  PU_HIENGLISH
+        parameter (PU_HIENGLISH = '00000018'x)
+        integer  PU_TWIPS
+        parameter (PU_TWIPS = '0000001C'x)
+
+        integer  GPIF_DEFAULT
+        parameter (GPIF_DEFAULT = 0)
+        integer  GPIF_SHORT
+        parameter (GPIF_SHORT = '00000100'x)
+        integer  GPIF_LONG
+        parameter (GPIF_LONG = '00000200'x)
+
+
+        integer  GPIT_NORMAL
+        parameter (GPIT_NORMAL = 0)
+        integer  GPIT_MICRO
+        parameter (GPIT_MICRO = '00001000'x)
+
+        integer  GPIA_NOASSOC
+        parameter (GPIA_NOASSOC = 0)
+        integer  GPIA_ASSOC
+        parameter (GPIA_ASSOC = '00004000'x)
+
+        integer  HDC_ERROR
+        parameter (HDC_ERROR = -1)
+
+        external GpiCreatePS
+        integer*4 GpiCreatePS
+
+        external GpiDestroyPS
+        integer*4 GpiDestroyPS
+
+        external GpiAssociate
+        integer*4 GpiAssociate
+
+        external GpiRestorePS
+        integer*4 GpiRestorePS
+
+        external GpiSavePS
+        integer*4 GpiSavePS
+
+        external GpiErase
+        integer*4 GpiErase
+
+        external GpiQueryDevice
+        integer*4 GpiQueryDevice
+
+        integer  GRES_ATTRS
+        parameter (GRES_ATTRS = '00000001'x)
+        integer  GRES_SEGMENTS
+        parameter (GRES_SEGMENTS = '00000002'x)
+        integer  GRES_ALL
+        parameter (GRES_ALL = '00000004'x)
+
+        integer  PS_UNITS
+        parameter (PS_UNITS = '000000FC'x)
+        integer  PS_FORMAT
+        parameter (PS_FORMAT = '00000F00'x)
+        integer  PS_TYPE
+        parameter (PS_TYPE = '00001000'x)
+        integer  PS_MODE
+        parameter (PS_MODE = '00002000'x)
+        integer  PS_ASSOCIATE
+        parameter (PS_ASSOCIATE = '00004000'x)
+        integer  PS_NORESET
+        parameter (PS_NORESET = '00008000'x)
+
+        integer  GPIE_SEGMENT
+        parameter (GPIE_SEGMENT = 0)
+        integer  GPIE_ELEMENT
+        parameter (GPIE_ELEMENT = 1)
+        integer  GPIE_DATA
+        parameter (GPIE_DATA = 2)
+
+        integer  DCTL_ERASE
+        parameter (DCTL_ERASE = 1)
+        integer  DCTL_DISPLAY
+        parameter (DCTL_DISPLAY = 2)
+        integer  DCTL_BOUNDARY
+        parameter (DCTL_BOUNDARY = 3)
+        integer  DCTL_DYNAMIC
+        parameter (DCTL_DYNAMIC = 4)
+        integer  DCTL_CORRELATE
+        parameter (DCTL_CORRELATE = 5)
+
+        integer  DCTL_ERROR
+        parameter (DCTL_ERROR = -1)
+        integer  DCTL_OFF
+        parameter (DCTL_OFF = 0)
+        integer  DCTL_ON
+        parameter (DCTL_ON = 1)
+
+        integer  SDW_ERROR
+        parameter (SDW_ERROR = -1)
+        integer  SDW_OFF
+        parameter (SDW_OFF = 0)
+        integer  SDW_ON
+        parameter (SDW_ON = 1)
+
+        integer  DM_ERROR
+        parameter (DM_ERROR = 0)
+        integer  DM_DRAW
+        parameter (DM_DRAW = 1)
+        integer  DM_RETAIN
+        parameter (DM_RETAIN = 2)
+        integer  DM_DRAWANDRETAIN
+        parameter (DM_DRAWANDRETAIN = 3)
+
+        external GpiResetPS
+        integer*4 GpiResetPS
+
+        external GpiSetPS
+        integer*4 GpiSetPS
+
+        external GpiQueryPS
+        integer*4 GpiQueryPS
+
+        external GpiErrorSegmentData
+        integer*4 GpiErrorSegmentData
+
+        external GpiQueryDrawControl
+        integer*4 GpiQueryDrawControl
+
+        external GpiSetDrawControl
+        integer*4 GpiSetDrawControl
+
+        external GpiQueryDrawingMode
+        integer*4 GpiQueryDrawingMode
+
+        external GpiSetDrawingMode
+        integer*4 GpiSetDrawingMode
+
+        external GpiQueryStopDraw
+        integer*4 GpiQueryStopDraw
+
+        external GpiSetStopDraw
+        integer*4 GpiSetStopDraw
+
+c$endif
+
+c$ifdef INCL_GPICORRELATION
+
+        integer  PICKAP_DEFAULT
+        parameter (PICKAP_DEFAULT = 0)
+        integer  PICKAP_REC
+        parameter (PICKAP_REC = 2)
+
+        integer  PICKSEL_VISIBLE
+        parameter (PICKSEL_VISIBLE = 0)
+        integer  PICKSEL_ALL
+        parameter (PICKSEL_ALL = 1)
+
+        integer  GPI_HITS
+        parameter (GPI_HITS = 2)
+
+        external GpiCorrelateChain
+        integer*4 GpiCorrelateChain
+
+        external GpiQueryTag
+        integer*4 GpiQueryTag
+
+        external GpiSetTag
+        integer*4 GpiSetTag
+
+        external GpiQueryPickApertureSize
+        integer*4 GpiQueryPickApertureSize
+
+        external GpiSetPickApertureSize
+        integer*4 GpiSetPickApertureSize
+
+        external GpiQueryPickAperturePosition
+        integer*4 GpiQueryPickAperturePosition
+
+        external GpiSetPickAperturePosition
+        integer*4 GpiSetPickAperturePosition
+
+        external GpiQueryBoundaryData
+        integer*4 GpiQueryBoundaryData
+
+        external GpiResetBoundaryData
+        integer*4 GpiResetBoundaryData
+
+        external GpiCorrelateFrom
+        integer*4 GpiCorrelateFrom
+
+        external GpiCorrelateSegment
+        integer*4 GpiCorrelateSegment
+
+c$endif
+
+c$ifdef INCL_GPISEGMENTS
+
+        integer  DFORM_NOCONV
+        parameter (DFORM_NOCONV = 0)
+
+        integer  DFORM_S370SHORT
+        parameter (DFORM_S370SHORT = 1)
+        integer  DFORM_PCSHORT
+        parameter (DFORM_PCSHORT = 2)
+        integer  DFORM_PCLONG
+        parameter (DFORM_PCLONG = 4)
+
+        integer  ATTR_ERROR
+        parameter (ATTR_ERROR = -1)
+        integer  ATTR_DETECTABLE
+        parameter (ATTR_DETECTABLE = 1)
+        integer  ATTR_VISIBLE
+        parameter (ATTR_VISIBLE = 2)
+        integer  ATTR_CHAINED
+        parameter (ATTR_CHAINED = 6)
+
+        integer  ATTR_DYNAMIC
+        parameter (ATTR_DYNAMIC = 8)
+
+        integer  ATTR_FASTCHAIN
+        parameter (ATTR_FASTCHAIN = 9)
+        integer  ATTR_PROP_DETECTABLE
+        parameter (ATTR_PROP_DETECTABLE = 10)
+        integer  ATTR_PROP_VISIBLE
+        parameter (ATTR_PROP_VISIBLE = 11)
+
+        integer  ATTR_OFF
+        parameter (ATTR_OFF = 0)
+        integer  ATTR_ON
+        parameter (ATTR_ON = 1)
+
+        integer  LOWER_PRI
+        parameter (LOWER_PRI = -1)
+        integer  HIGHER_PRI
+        parameter (HIGHER_PRI = 1)
+
+        external GpiOpenSegment
+        integer*4 GpiOpenSegment
+
+        external GpiCloseSegment
+        integer*4 GpiCloseSegment
+
+        external GpiDeleteSegment
+        integer*4 GpiDeleteSegment
+
+        external GpiQueryInitialSegmentAttrs
+        integer*4 GpiQueryInitialSegmentAttrs
+
+        external GpiSetInitialSegmentAttrs
+        integer*4 GpiSetInitialSegmentAttrs
+
+        external GpiQuerySegmentAttrs
+        integer*4 GpiQuerySegmentAttrs
+
+        external GpiSetSegmentAttrs
+        integer*4 GpiSetSegmentAttrs
+
+        external GpiQuerySegmentPriority
+        integer*4 GpiQuerySegmentPriority
+
+        external GpiSetSegmentPriority
+        integer*4 GpiSetSegmentPriority
+
+        external GpiDeleteSegments
+        integer*4 GpiDeleteSegments
+
+        external GpiQuerySegmentNames
+        integer*4 GpiQuerySegmentNames
+
+        external GpiGetData
+        integer*4 GpiGetData
+
+        external GpiPutData
+        integer*4 GpiPutData
+
+        external GpiDrawChain
+        integer*4 GpiDrawChain
+
+        external GpiDrawFrom
+        integer*4 GpiDrawFrom
+
+        external GpiDrawSegment
+        integer*4 GpiDrawSegment
+
+        external GpiDrawDynamics
+        integer*4 GpiDrawDynamics
+
+        external GpiRemoveDynamics
+        integer*4 GpiRemoveDynamics
+
+c$endif
+
+c$ifdef INCL_GPISEGEDITING
+
+        integer  SEGEM_ERROR
+        parameter (SEGEM_ERROR = 0)
+        integer  SEGEM_INSERT
+        parameter (SEGEM_INSERT = 1)
+        integer  SEGEM_REPLACE
+        parameter (SEGEM_REPLACE = 2)
+
+        external GpiBeginElement
+        integer*4 GpiBeginElement
+
+        external GpiEndElement
+        integer*4 GpiEndElement
+
+        external GpiLabel
+        integer*4 GpiLabel
+
+        external GpiElement
+        integer*4 GpiElement
+
+        external GpiQueryElement
+        integer*4 GpiQueryElement
+
+        external GpiDeleteElement
+        integer*4 GpiDeleteElement
+
+        external GpiDeleteElementRange
+        integer*4 GpiDeleteElementRange
+
+        external GpiDeleteElementsBetweenLabels
+        integer*4 GpiDeleteElementsBetweenLabels
+
+        external GpiQueryEditMode
+        integer*4 GpiQueryEditMode
+
+        external GpiSetEditMode
+        integer*4 GpiSetEditMode
+
+        external GpiQueryElementPointer
+        integer*4 GpiQueryElementPointer
+
+        external GpiSetElementPointer
+        integer*4 GpiSetElementPointer
+
+        external GpiOffsetElementPointer
+        integer*4 GpiOffsetElementPointer
+
+        external GpiQueryElementType
+        integer*4 GpiQueryElementType
+
+        external GpiSetElementPointerAtLabel
+        integer*4 GpiSetElementPointerAtLabel
+
+c$endif
+
+c$ifdef INCL_GPITRANSFORMS
+
+        integer  CVTC_WORLD
+        parameter (CVTC_WORLD = 1)
+        integer  CVTC_MODEL
+        parameter (CVTC_MODEL = 2)
+        integer  CVTC_DEFAULTPAGE
+        parameter (CVTC_DEFAULTPAGE = 3)
+        integer  CVTC_PAGE
+        parameter (CVTC_PAGE = 4)
+        integer  CVTC_DEVICE
+        parameter (CVTC_DEVICE = 5)
+
+        integer  TRANSFORM_REPLACE
+        parameter (TRANSFORM_REPLACE = 0)
+        integer  TRANSFORM_ADD
+        parameter (TRANSFORM_ADD = 1)
+        integer  TRANSFORM_PREEMPT
+        parameter (TRANSFORM_PREEMPT = 2)
+
+        structure /MATRIXLF/
+            integer*4 fxM11
+            integer*4 fxM12
+            integer*4 lM13
+            integer*4 fxM21
+            integer*4 fxM22
+            integer*4 lM23
+            integer*4 lM31
+            integer*4 lM32
+            integer*4 lM33
+        end structure
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiQuerySegmentTransformMatrix
+        integer*4 GpiQuerySegmentTransformMatrix
+
+        external GpiSetSegmentTransformMatrix
+        integer*4 GpiSetSegmentTransformMatrix
+
+        external GpiConvert
+        integer*4 GpiConvert
+
+        external GpiConvertWithMatrix
+        integer*4 GpiConvertWithMatrix
+
+        external GpiQueryModelTransformMatrix
+        integer*4 GpiQueryModelTransformMatrix
+
+        external GpiSetModelTransformMatrix
+        integer*4 GpiSetModelTransformMatrix
+
+        external GpiCallSegmentMatrix
+        integer*4 GpiCallSegmentMatrix
+
+        external GpiQueryDefaultViewMatrix
+        integer*4 GpiQueryDefaultViewMatrix
+
+        external GpiSetDefaultViewMatrix
+        integer*4 GpiSetDefaultViewMatrix
+
+        external GpiQueryPageViewport
+        integer*4 GpiQueryPageViewport
+
+        external GpiSetPageViewport
+        integer*4 GpiSetPageViewport
+
+        external GpiQueryViewingTransformMatrix
+        integer*4 GpiQueryViewingTransformMatrix
+
+        external GpiSetViewingTransformMatrix
+        integer*4 GpiSetViewingTransformMatrix
+
+        external GpiTranslate
+        integer*4 GpiTranslate
+
+        external GpiScale
+        integer*4 GpiScale
+
+        external GpiRotate
+        integer*4 GpiRotate
+
+        external GpiSetGraphicsField
+        integer*4 GpiSetGraphicsField
+
+        external GpiQueryGraphicsField
+        integer*4 GpiQueryGraphicsField
+
+        external GpiSetViewingLimits
+        integer*4 GpiSetViewingLimits
+
+        external GpiQueryViewingLimits
+        integer*4 GpiQueryViewingLimits
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIPATHS
+
+        integer  MPATH_STROKE
+        parameter (MPATH_STROKE = 6)
+
+        integer  FPATH_ALTERNATE
+        parameter (FPATH_ALTERNATE = 0)
+        integer  FPATH_WINDING
+        parameter (FPATH_WINDING = 2)
+
+        integer  SCP_ALTERNATE
+        parameter (SCP_ALTERNATE = 0)
+        integer  SCP_WINDING
+        parameter (SCP_WINDING = 2)
+        integer  SCP_AND
+        parameter (SCP_AND = 4)
+        integer  SCP_RESET
+        parameter (SCP_RESET = 0)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiBeginPath
+        integer*4 GpiBeginPath
+
+        external GpiEndPath
+        integer*4 GpiEndPath
+
+        external GpiCloseFigure
+        integer*4 GpiCloseFigure
+
+        external GpiModifyPath
+        integer*4 GpiModifyPath
+
+        external GpiFillPath
+        integer*4 GpiFillPath
+
+        external GpiSetClipPath
+        integer*4 GpiSetClipPath
+
+        external GpiOutlinePath
+        integer*4 GpiOutlinePath
+
+        external GpiPathToRegion
+        integer*4 GpiPathToRegion
+
+        external GpiStrokePath
+        integer*4 GpiStrokePath
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPILOGCOLORTABLE
+
+c$define INCL_GPIBITMAPS
+
+        integer  LCOL_RESET
+        parameter (LCOL_RESET = '00000001'x)
+        integer  LCOL_REALIZABLE
+        parameter (LCOL_REALIZABLE = '00000002'x)
+        integer  LCOL_PURECOLOR
+        parameter (LCOL_PURECOLOR = '00000004'x)
+        integer  LCOL_OVERRIDE_DEFAULT_COLORS
+        parameter (LCOL_OVERRIDE_DEFAULT_COLORS = '00000008'x)
+        integer  LCOL_REALIZED
+        parameter (LCOL_REALIZED = '00000010'x)
+
+        integer  LCOLF_DEFAULT
+        parameter (LCOLF_DEFAULT = 0)
+        integer  LCOLF_INDRGB
+        parameter (LCOLF_INDRGB = 1)
+        integer  LCOLF_CONSECRGB
+        parameter (LCOLF_CONSECRGB = 2)
+        integer  LCOLF_RGB
+        parameter (LCOLF_RGB = 3)
+        integer  LCOLF_PALETTE
+        parameter (LCOLF_PALETTE = 4)
+
+        integer  LCOLOPT_REALIZED
+        parameter (LCOLOPT_REALIZED = '00000001'x)
+        integer  LCOLOPT_INDEX
+        parameter (LCOLOPT_INDEX = '00000002'x)
+
+        integer  QLCT_ERROR
+        parameter (QLCT_ERROR = -1)
+        integer  QLCT_RGB
+        parameter (QLCT_RGB = -2)
+
+        integer  QLCT_NOTLOADED
+        parameter (QLCT_NOTLOADED = -1)
+
+        integer  QCD_LCT_FORMAT
+        parameter (QCD_LCT_FORMAT = 0)
+        integer  QCD_LCT_LOINDEX
+        parameter (QCD_LCT_LOINDEX = 1)
+        integer  QCD_LCT_HIINDEX
+        parameter (QCD_LCT_HIINDEX = 2)
+        integer  QCD_LCT_OPTIONS
+        parameter (QCD_LCT_OPTIONS = 3)
+
+        integer  PAL_ERROR
+        parameter (PAL_ERROR = -1)
+
+        integer  PC_RESERVED
+        parameter (PC_RESERVED = '00000001'x)
+        integer  PC_EXPLICIT
+        parameter (PC_EXPLICIT = '00000002'x)
+        integer  PC_NOCOLLAPSE
+        parameter (PC_NOCOLLAPSE = '00000004'x)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiCreateLogColorTable
+        integer*4 GpiCreateLogColorTable
+
+        external GpiQueryColorData
+        integer*4 GpiQueryColorData
+
+        external GpiQueryLogColorTable
+        integer*4 GpiQueryLogColorTable
+
+        external GpiQueryRealColors
+        integer*4 GpiQueryRealColors
+
+        external GpiQueryNearestColor
+        integer*4 GpiQueryNearestColor
+
+        external GpiQueryColorIndex
+        integer*4 GpiQueryColorIndex
+
+        external GpiQueryRGBColor
+        integer*4 GpiQueryRGBColor
+
+        external GpiCreatePalette
+        integer*4 GpiCreatePalette
+
+        external GpiDeletePalette
+        integer*4 GpiDeletePalette
+
+        external GpiSelectPalette
+        integer*4 GpiSelectPalette
+
+        external GpiAnimatePalette
+        integer*4 GpiAnimatePalette
+
+        external GpiSetPaletteEntries
+        integer*4 GpiSetPaletteEntries
+
+        external GpiQueryPalette
+        integer*4 GpiQueryPalette
+
+        external GpiQueryPaletteInfo
+        integer*4 GpiQueryPaletteInfo
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIPRIMITIVES
+
+        integer  CLR_FALSE
+        parameter (CLR_FALSE = -5)
+        integer  CLR_TRUE
+        parameter (CLR_TRUE = -4)
+
+        integer  CLR_ERROR
+        parameter (CLR_ERROR = -255)
+        integer  CLR_DEFAULT
+        parameter (CLR_DEFAULT = -3)
+        integer  CLR_WHITE
+        parameter (CLR_WHITE = -2)
+        integer  CLR_BLACK
+        parameter (CLR_BLACK = -1)
+        integer  CLR_BACKGROUND
+        parameter (CLR_BACKGROUND = 0)
+        integer  CLR_BLUE
+        parameter (CLR_BLUE = 1)
+        integer  CLR_RED
+        parameter (CLR_RED = 2)
+        integer  CLR_PINK
+        parameter (CLR_PINK = 3)
+        integer  CLR_GREEN
+        parameter (CLR_GREEN = 4)
+        integer  CLR_CYAN
+        parameter (CLR_CYAN = 5)
+        integer  CLR_YELLOW
+        parameter (CLR_YELLOW = 6)
+        integer  CLR_NEUTRAL
+        parameter (CLR_NEUTRAL = 7)
+
+        integer  CLR_DARKGRAY
+        parameter (CLR_DARKGRAY = 8)
+        integer  CLR_DARKBLUE
+        parameter (CLR_DARKBLUE = 9)
+        integer  CLR_DARKRED
+        parameter (CLR_DARKRED = 10)
+        integer  CLR_DARKPINK
+        parameter (CLR_DARKPINK = 11)
+        integer  CLR_DARKGREEN
+        parameter (CLR_DARKGREEN = 12)
+        integer  CLR_DARKCYAN
+        parameter (CLR_DARKCYAN = 13)
+        integer  CLR_BROWN
+        parameter (CLR_BROWN = 14)
+        integer  CLR_PALEGRAY
+        parameter (CLR_PALEGRAY = 15)
+
+        integer  RGB_ERROR
+        parameter (RGB_ERROR = -255)
+        integer  RGB_BLACK
+        parameter (RGB_BLACK = '00000000'x)
+        integer  RGB_BLUE
+        parameter (RGB_BLUE = '000000FF'x)
+        integer  RGB_GREEN
+        parameter (RGB_GREEN = '0000FF00'x)
+        integer  RGB_CYAN
+        parameter (RGB_CYAN = '0000FFFF'x)
+        integer  RGB_RED
+        parameter (RGB_RED = '00FF0000'x)
+        integer  RGB_PINK
+        parameter (RGB_PINK = '00FF00FF'x)
+        integer  RGB_YELLOW
+        parameter (RGB_YELLOW = '00FFFF00'x)
+        integer  RGB_WHITE
+        parameter (RGB_WHITE = '00FFFFFF'x)
+
+        integer  BA_NOBOUNDARY
+        parameter (BA_NOBOUNDARY = 0)
+        integer  BA_BOUNDARY
+        parameter (BA_BOUNDARY = '00000001'x)
+
+        integer  BA_ALTERNATE
+        parameter (BA_ALTERNATE = 0)
+        integer  BA_WINDING
+        parameter (BA_WINDING = '00000002'x)
+
+        integer  DRO_FILL
+        parameter (DRO_FILL = 1)
+        integer  DRO_OUTLINE
+        parameter (DRO_OUTLINE = 2)
+        integer  DRO_OUTLINEFILL
+        parameter (DRO_OUTLINEFILL = 3)
+
+        integer  PATSYM_ERROR
+        parameter (PATSYM_ERROR = -1)
+        integer  PATSYM_DEFAULT
+        parameter (PATSYM_DEFAULT = 0)
+        integer  PATSYM_DENSE1
+        parameter (PATSYM_DENSE1 = 1)
+        integer  PATSYM_DENSE2
+        parameter (PATSYM_DENSE2 = 2)
+        integer  PATSYM_DENSE3
+        parameter (PATSYM_DENSE3 = 3)
+        integer  PATSYM_DENSE4
+        parameter (PATSYM_DENSE4 = 4)
+        integer  PATSYM_DENSE5
+        parameter (PATSYM_DENSE5 = 5)
+        integer  PATSYM_DENSE6
+        parameter (PATSYM_DENSE6 = 6)
+        integer  PATSYM_DENSE7
+        parameter (PATSYM_DENSE7 = 7)
+        integer  PATSYM_DENSE8
+        parameter (PATSYM_DENSE8 = 8)
+        integer  PATSYM_VERT
+        parameter (PATSYM_VERT = 9)
+        integer  PATSYM_HORIZ
+        parameter (PATSYM_HORIZ = 10)
+        integer  PATSYM_DIAG1
+        parameter (PATSYM_DIAG1 = 11)
+        integer  PATSYM_DIAG2
+        parameter (PATSYM_DIAG2 = 12)
+        integer  PATSYM_DIAG3
+        parameter (PATSYM_DIAG3 = 13)
+        integer  PATSYM_DIAG4
+        parameter (PATSYM_DIAG4 = 14)
+        integer  PATSYM_NOSHADE
+        parameter (PATSYM_NOSHADE = 15)
+        integer  PATSYM_SOLID
+        parameter (PATSYM_SOLID = 16)
+        integer  PATSYM_HALFTONE
+        parameter (PATSYM_HALFTONE = 17)
+        integer  PATSYM_HATCH
+        parameter (PATSYM_HATCH = 18)
+        integer  PATSYM_DIAGHATCH
+        parameter (PATSYM_DIAGHATCH = 19)
+        integer  PATSYM_BLANK
+        parameter (PATSYM_BLANK = 64)
+
+        integer  LCID_ERROR
+        parameter (LCID_ERROR = -1)
+        integer  LCID_DEFAULT
+        parameter (LCID_DEFAULT = 0)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiSetColor
+        integer*4 GpiSetColor
+
+        external GpiQueryColor
+        integer*4 GpiQueryColor
+
+        external GpiBox
+        integer*4 GpiBox
+
+        external GpiMove
+        integer*4 GpiMove
+
+        external GpiLine
+        integer*4 GpiLine
+
+        external GpiPolyLine
+        integer*4 GpiPolyLine
+
+        external GpiPolyLineDisjoint
+        integer*4 GpiPolyLineDisjoint
+
+        external GpiSetPattern
+        integer*4 GpiSetPattern
+
+        external GpiQueryPattern
+        integer*4 GpiQueryPattern
+
+        external GpiBeginArea
+        integer*4 GpiBeginArea
+
+        external GpiEndArea
+        integer*4 GpiEndArea
+
+        external GpiCharString
+        integer*4 GpiCharString
+
+        external GpiCharStringAt
+        integer*4 GpiCharStringAt
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIPRIMITIVES
+
+        integer  AM_ERROR
+        parameter (AM_ERROR = -1)
+        integer  AM_PRESERVE
+        parameter (AM_PRESERVE = 0)
+        integer  AM_NOPRESERVE
+        parameter (AM_NOPRESERVE = 1)
+
+        integer  FM_ERROR
+        parameter (FM_ERROR = -1)
+        integer  FM_DEFAULT
+        parameter (FM_DEFAULT = 0)
+        integer  FM_OR
+        parameter (FM_OR = 1)
+        integer  FM_OVERPAINT
+        parameter (FM_OVERPAINT = 2)
+        integer  FM_LEAVEALONE
+        parameter (FM_LEAVEALONE = 5)
+
+        integer  FM_XOR
+        parameter (FM_XOR = 4)
+        integer  FM_AND
+        parameter (FM_AND = 6)
+        integer  FM_SUBTRACT
+        parameter (FM_SUBTRACT = 7)
+        integer  FM_MASKSRCNOT
+        parameter (FM_MASKSRCNOT = 8)
+        integer  FM_ZERO
+        parameter (FM_ZERO = 9)
+        integer  FM_NOTMERGESRC
+        parameter (FM_NOTMERGESRC = 10)
+        integer  FM_NOTXORSRC
+        parameter (FM_NOTXORSRC = 11)
+        integer  FM_INVERT
+        parameter (FM_INVERT = 12)
+        integer  FM_MERGESRCNOT
+        parameter (FM_MERGESRCNOT = 13)
+        integer  FM_NOTCOPYSRC
+        parameter (FM_NOTCOPYSRC = 14)
+        integer  FM_MERGENOTSRC
+        parameter (FM_MERGENOTSRC = 15)
+        integer  FM_NOTMASKSRC
+        parameter (FM_NOTMASKSRC = 16)
+        integer  FM_ONE
+        parameter (FM_ONE = 17)
+
+        integer  BM_ERROR
+        parameter (BM_ERROR = -1)
+        integer  BM_DEFAULT
+        parameter (BM_DEFAULT = 0)
+        integer  BM_OR
+        parameter (BM_OR = 1)
+        integer  BM_OVERPAINT
+        parameter (BM_OVERPAINT = 2)
+        integer  BM_LEAVEALONE
+        parameter (BM_LEAVEALONE = 5)
+
+        integer  BM_XOR
+        parameter (BM_XOR = 4)
+        integer  BM_AND
+        parameter (BM_AND = 6)
+        integer  BM_SUBTRACT
+        parameter (BM_SUBTRACT = 7)
+        integer  BM_MASKSRCNOT
+        parameter (BM_MASKSRCNOT = 8)
+        integer  BM_ZERO
+        parameter (BM_ZERO = 9)
+        integer  BM_NOTMERGESRC
+        parameter (BM_NOTMERGESRC = 10)
+        integer  BM_NOTXORSRC
+        parameter (BM_NOTXORSRC = 11)
+        integer  BM_INVERT
+        parameter (BM_INVERT = 12)
+        integer  BM_MERGESRCNOT
+        parameter (BM_MERGESRCNOT = 13)
+        integer  BM_NOTCOPYSRC
+        parameter (BM_NOTCOPYSRC = 14)
+        integer  BM_MERGENOTSRC
+        parameter (BM_MERGENOTSRC = 15)
+        integer  BM_NOTMASKSRC
+        parameter (BM_NOTMASKSRC = 16)
+        integer  BM_ONE
+        parameter (BM_ONE = 17)
+
+        integer  LINETYPE_ERROR
+        parameter (LINETYPE_ERROR = -1)
+        integer  LINETYPE_DEFAULT
+        parameter (LINETYPE_DEFAULT = 0)
+        integer  LINETYPE_DOT
+        parameter (LINETYPE_DOT = 1)
+        integer  LINETYPE_SHORTDASH
+        parameter (LINETYPE_SHORTDASH = 2)
+        integer  LINETYPE_DASHDOT
+        parameter (LINETYPE_DASHDOT = 3)
+        integer  LINETYPE_DOUBLEDOT
+        parameter (LINETYPE_DOUBLEDOT = 4)
+        integer  LINETYPE_LONGDASH
+        parameter (LINETYPE_LONGDASH = 5)
+        integer  LINETYPE_DASHDOUBLEDOT
+        parameter (LINETYPE_DASHDOUBLEDOT = 6)
+        integer  LINETYPE_SOLID
+        parameter (LINETYPE_SOLID = 7)
+        integer  LINETYPE_INVISIBLE
+        parameter (LINETYPE_INVISIBLE = 8)
+        integer  LINETYPE_ALTERNATE
+        parameter (LINETYPE_ALTERNATE = 9)
+
+        integer  LINEWIDTH_ERROR
+        parameter (LINEWIDTH_ERROR = -1)
+        integer  LINEWIDTH_DEFAULT
+        parameter (LINEWIDTH_DEFAULT = 0)
+        integer  LINEWIDTH_NORMAL
+        parameter (LINEWIDTH_NORMAL = '00010000'x)
+        integer  LINEWIDTH_THICK
+        parameter (LINEWIDTH_THICK = '00020000'x)
+
+        integer  LINEWIDTHGEOM_ERROR
+        parameter (LINEWIDTHGEOM_ERROR = -1)
+
+        integer  LINEEND_ERROR
+        parameter (LINEEND_ERROR = -1)
+        integer  LINEEND_DEFAULT
+        parameter (LINEEND_DEFAULT = 0)
+        integer  LINEEND_FLAT
+        parameter (LINEEND_FLAT = 1)
+        integer  LINEEND_SQUARE
+        parameter (LINEEND_SQUARE = 2)
+        integer  LINEEND_ROUND
+        parameter (LINEEND_ROUND = 3)
+
+        integer  LINEJOIN_ERROR
+        parameter (LINEJOIN_ERROR = -1)
+        integer  LINEJOIN_DEFAULT
+        parameter (LINEJOIN_DEFAULT = 0)
+        integer  LINEJOIN_BEVEL
+        parameter (LINEJOIN_BEVEL = 1)
+        integer  LINEJOIN_ROUND
+        parameter (LINEJOIN_ROUND = 2)
+        integer  LINEJOIN_MITRE
+        parameter (LINEJOIN_MITRE = 3)
+
+        integer  CHDIRN_ERROR
+        parameter (CHDIRN_ERROR = -1)
+        integer  CHDIRN_DEFAULT
+        parameter (CHDIRN_DEFAULT = 0)
+        integer  CHDIRN_LEFTRIGHT
+        parameter (CHDIRN_LEFTRIGHT = 1)
+        integer  CHDIRN_TOPBOTTOM
+        parameter (CHDIRN_TOPBOTTOM = 2)
+        integer  CHDIRN_RIGHTLEFT
+        parameter (CHDIRN_RIGHTLEFT = 3)
+        integer  CHDIRN_BOTTOMTOP
+        parameter (CHDIRN_BOTTOMTOP = 4)
+
+        integer  TA_NORMAL_HORIZ
+        parameter (TA_NORMAL_HORIZ = '00000001'x)
+        integer  TA_LEFT
+        parameter (TA_LEFT = '00000002'x)
+        integer  TA_CENTER
+        parameter (TA_CENTER = '00000003'x)
+        integer  TA_RIGHT
+        parameter (TA_RIGHT = '00000004'x)
+        integer  TA_STANDARD_HORIZ
+        parameter (TA_STANDARD_HORIZ = '00000005'x)
+        integer  TA_NORMAL_VERT
+        parameter (TA_NORMAL_VERT = '00000100'x)
+        integer  TA_TOP
+        parameter (TA_TOP = '00000200'x)
+        integer  TA_HALF
+        parameter (TA_HALF = '00000300'x)
+        integer  TA_BASE
+        parameter (TA_BASE = '00000400'x)
+        integer  TA_BOTTOM
+        parameter (TA_BOTTOM = '00000500'x)
+        integer  TA_STANDARD_VERT
+        parameter (TA_STANDARD_VERT = '00000600'x)
+
+        integer  CM_ERROR
+        parameter (CM_ERROR = -1)
+        integer  CM_DEFAULT
+        parameter (CM_DEFAULT = 0)
+        integer  CM_MODE1
+        parameter (CM_MODE1 = 1)
+        integer  CM_MODE2
+        parameter (CM_MODE2 = 2)
+        integer  CM_MODE3
+        parameter (CM_MODE3 = 3)
+
+        integer  MARKSYM_ERROR
+        parameter (MARKSYM_ERROR = -1)
+        integer  MARKSYM_DEFAULT
+        parameter (MARKSYM_DEFAULT = 0)
+        integer  MARKSYM_CROSS
+        parameter (MARKSYM_CROSS = 1)
+        integer  MARKSYM_PLUS
+        parameter (MARKSYM_PLUS = 2)
+        integer  MARKSYM_DIAMOND
+        parameter (MARKSYM_DIAMOND = 3)
+        integer  MARKSYM_SQUARE
+        parameter (MARKSYM_SQUARE = 4)
+        integer  MARKSYM_SIXPOINTSTAR
+        parameter (MARKSYM_SIXPOINTSTAR = 5)
+        integer  MARKSYM_EIGHTPOINTSTAR
+        parameter (MARKSYM_EIGHTPOINTSTAR = 6)
+        integer  MARKSYM_SOLIDDIAMOND
+        parameter (MARKSYM_SOLIDDIAMOND = 7)
+        integer  MARKSYM_SOLIDSQUARE
+        parameter (MARKSYM_SOLIDSQUARE = 8)
+        integer  MARKSYM_DOT
+        parameter (MARKSYM_DOT = 9)
+        integer  MARKSYM_SMALLCIRCLE
+        parameter (MARKSYM_SMALLCIRCLE = 10)
+        integer  MARKSYM_BLANK
+        parameter (MARKSYM_BLANK = 64)
+
+        integer  CHS_OPAQUE
+        parameter (CHS_OPAQUE = '00000001'x)
+        integer  CHS_VECTOR
+        parameter (CHS_VECTOR = '00000002'x)
+        integer  CHS_LEAVEPOS
+        parameter (CHS_LEAVEPOS = '00000008'x)
+        integer  CHS_CLIP
+        parameter (CHS_CLIP = '00000010'x)
+        integer  CHS_UNDERSCORE
+        parameter (CHS_UNDERSCORE = '00000200'x)
+        integer  CHS_STRIKEOUT
+        parameter (CHS_STRIKEOUT = '00000400'x)
+
+        integer  PRIM_LINE
+        parameter (PRIM_LINE = 1)
+        integer  PRIM_CHAR
+        parameter (PRIM_CHAR = 2)
+        integer  PRIM_MARKER
+        parameter (PRIM_MARKER = 3)
+        integer  PRIM_AREA
+        parameter (PRIM_AREA = 4)
+        integer  PRIM_IMAGE
+        parameter (PRIM_IMAGE = 5)
+
+        integer  LBB_COLOR
+        parameter (LBB_COLOR = '00000001'x)
+        integer  LBB_BACK_COLOR
+        parameter (LBB_BACK_COLOR = '00000002'x)
+        integer  LBB_MIX_MODE
+        parameter (LBB_MIX_MODE = '00000004'x)
+        integer  LBB_BACK_MIX_MODE
+        parameter (LBB_BACK_MIX_MODE = '00000008'x)
+        integer  LBB_WIDTH
+        parameter (LBB_WIDTH = '00000010'x)
+        integer  LBB_GEOM_WIDTH
+        parameter (LBB_GEOM_WIDTH = '00000020'x)
+        integer  LBB_TYPE
+        parameter (LBB_TYPE = '00000040'x)
+        integer  LBB_END
+        parameter (LBB_END = '00000080'x)
+        integer  LBB_JOIN
+        parameter (LBB_JOIN = '00000100'x)
+
+        integer  CBB_COLOR
+        parameter (CBB_COLOR = '00000001'x)
+        integer  CBB_BACK_COLOR
+        parameter (CBB_BACK_COLOR = '00000002'x)
+        integer  CBB_MIX_MODE
+        parameter (CBB_MIX_MODE = '00000004'x)
+        integer  CBB_BACK_MIX_MODE
+        parameter (CBB_BACK_MIX_MODE = '00000008'x)
+        integer  CBB_SET
+        parameter (CBB_SET = '00000010'x)
+        integer  CBB_MODE
+        parameter (CBB_MODE = '00000020'x)
+        integer  CBB_BOX
+        parameter (CBB_BOX = '00000040'x)
+        integer  CBB_ANGLE
+        parameter (CBB_ANGLE = '00000080'x)
+        integer  CBB_SHEAR
+        parameter (CBB_SHEAR = '00000100'x)
+        integer  CBB_DIRECTION
+        parameter (CBB_DIRECTION = '00000200'x)
+        integer  CBB_TEXT_ALIGN
+        parameter (CBB_TEXT_ALIGN = '00000400'x)
+        integer  CBB_EXTRA
+        parameter (CBB_EXTRA = '00000800'x)
+        integer  CBB_BREAK_EXTRA
+        parameter (CBB_BREAK_EXTRA = '00001000'x)
+
+        integer  MBB_COLOR
+        parameter (MBB_COLOR = '00000001'x)
+        integer  MBB_BACK_COLOR
+        parameter (MBB_BACK_COLOR = '00000002'x)
+        integer  MBB_MIX_MODE
+        parameter (MBB_MIX_MODE = '00000004'x)
+        integer  MBB_BACK_MIX_MODE
+        parameter (MBB_BACK_MIX_MODE = '00000008'x)
+        integer  MBB_SET
+        parameter (MBB_SET = '00000010'x)
+        integer  MBB_SYMBOL
+        parameter (MBB_SYMBOL = '00000020'x)
+        integer  MBB_BOX
+        parameter (MBB_BOX = '00000040'x)
+
+        integer  ABB_COLOR
+        parameter (ABB_COLOR = '00000001'x)
+        integer  ABB_BACK_COLOR
+        parameter (ABB_BACK_COLOR = '00000002'x)
+        integer  ABB_MIX_MODE
+        parameter (ABB_MIX_MODE = '00000004'x)
+        integer  ABB_BACK_MIX_MODE
+        parameter (ABB_BACK_MIX_MODE = '00000008'x)
+        integer  ABB_SET
+        parameter (ABB_SET = '00000010'x)
+        integer  ABB_SYMBOL
+        parameter (ABB_SYMBOL = '00000020'x)
+        integer  ABB_REF_POINT
+        parameter (ABB_REF_POINT = '00000040'x)
+
+        integer  IBB_COLOR
+        parameter (IBB_COLOR = '00000001'x)
+        integer  IBB_BACK_COLOR
+        parameter (IBB_BACK_COLOR = '00000002'x)
+        integer  IBB_MIX_MODE
+        parameter (IBB_MIX_MODE = '00000004'x)
+        integer  IBB_BACK_MIX_MODE
+        parameter (IBB_BACK_MIX_MODE = '00000008'x)
+
+        structure /ARCPARAMS/
+            integer*4 lP
+            integer*4 lQ
+            integer*4 lR
+            integer*4 lS
+        end structure
+
+        structure /SIZEF/
+            integer*4 cx
+            integer*4 cy
+        end structure
+
+        structure /GRADIENTL/
+            integer*4 x
+            integer*4 y
+        end structure
+
+        structure /LINEBUNDLE/
+            integer*4 lColor
+            integer*4 lBackColor
+            integer*2 usMixMode
+            integer*2 usBackMixMode
+            integer*4 fxWidth
+            integer*4 lGeomWidth
+            integer*2 usType
+            integer*2 usEnd
+            integer*2 usJoin
+            integer*2 usReserved
+        end structure
+
+        structure /CHARBUNDLE/
+            integer*4 lColor
+            integer*4 lBackColor
+            integer*2 usMixMode
+            integer*2 usBackMixMode
+            integer*2 usSet
+            integer*2 usPrecision
+            record /SIZEF/ sizfxCell
+            record /POINTL/ ptlAngle
+            record /POINTL/ ptlShear
+            integer*2 usDirection
+            integer*2 usTextAlign
+            integer*4 fxExtra
+            integer*4 fxBreakExtra
+        end structure
+
+        structure /MARKERBUNDLE/
+            integer*4 lColor
+            integer*4 lBackColor
+            integer*2 usMixMode
+            integer*2 usBackMixMode
+            integer*2 usSet
+            integer*2 usSymbol
+            record /SIZEF/ sizfxCell
+        end structure
+
+        structure /AREABUNDLE/
+            integer*4 lColor
+            integer*4 lBackColor
+            integer*2 usMixMode
+            integer*2 usBackMixMode
+            integer*2 usSet
+            integer*2 usSymbol
+            record /POINTL/ ptlRefPoint
+        end structure
+
+        structure /IMAGEBUNDLE/
+            integer*4 lColor
+            integer*4 lBackColor
+            integer*2 usMixMode
+            integer*2 usBackMixMode
+        end structure
+
+        integer  TXTBOX_TOPLEFT
+        parameter (TXTBOX_TOPLEFT = 0)
+        integer  TXTBOX_BOTTOMLEFT
+        parameter (TXTBOX_BOTTOMLEFT = 1)
+        integer  TXTBOX_TOPRIGHT
+        parameter (TXTBOX_TOPRIGHT = 2)
+        integer  TXTBOX_BOTTOMRIGHT
+        parameter (TXTBOX_BOTTOMRIGHT = 3)
+        integer  TXTBOX_CONCAT
+        parameter (TXTBOX_CONCAT = 4)
+        integer  TXTBOX_COUNT
+        parameter (TXTBOX_COUNT = 5)
+
+        integer  PVIS_ERROR
+        parameter (PVIS_ERROR = 0)
+        integer  PVIS_INVISIBLE
+        parameter (PVIS_INVISIBLE = 1)
+        integer  PVIS_VISIBLE
+        parameter (PVIS_VISIBLE = 2)
+
+        integer  RVIS_ERROR
+        parameter (RVIS_ERROR = 0)
+        integer  RVIS_INVISIBLE
+        parameter (RVIS_INVISIBLE = 1)
+        integer  RVIS_PARTIAL
+        parameter (RVIS_PARTIAL = 2)
+        integer  RVIS_VISIBLE
+        parameter (RVIS_VISIBLE = 3)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiSetAttrMode
+        integer*4 GpiSetAttrMode
+
+        external GpiQueryAttrMode
+        integer*4 GpiQueryAttrMode
+
+        external GpiSetAttrs
+        integer*4 GpiSetAttrs
+
+        external GpiQueryAttrs
+        integer*4 GpiQueryAttrs
+
+        external GpiSetBackColor
+        integer*4 GpiSetBackColor
+
+        external GpiQueryBackColor
+        integer*4 GpiQueryBackColor
+
+        external GpiSetMix
+        integer*4 GpiSetMix
+
+        external GpiQueryMix
+        integer*4 GpiQueryMix
+
+        external GpiSetBackMix
+        integer*4 GpiSetBackMix
+
+        external GpiQueryBackMix
+        integer*4 GpiQueryBackMix
+
+        external GpiSetLineType
+        integer*4 GpiSetLineType
+
+        external GpiQueryLineType
+        integer*4 GpiQueryLineType
+
+        external GpiSetLineWidth
+        integer*4 GpiSetLineWidth
+
+        external GpiQueryLineWidth
+        integer*4 GpiQueryLineWidth
+
+        external GpiSetLineWidthGeom
+        integer*4 GpiSetLineWidthGeom
+
+        external GpiQueryLineWidthGeom
+        integer*4 GpiQueryLineWidthGeom
+
+        external GpiSetLineEnd
+        integer*4 GpiSetLineEnd
+
+        external GpiQueryLineEnd
+        integer*4 GpiQueryLineEnd
+
+        external GpiSetLineJoin
+        integer*4 GpiSetLineJoin
+
+        external GpiQueryLineJoin
+        integer*4 GpiQueryLineJoin
+
+        external GpiSetCurrentPosition
+        integer*4 GpiSetCurrentPosition
+
+        external GpiQueryCurrentPosition
+        integer*4 GpiQueryCurrentPosition
+
+        external GpiSetArcParams
+        integer*4 GpiSetArcParams
+
+        external GpiQueryArcParams
+        integer*4 GpiQueryArcParams
+
+        external GpiPointArc
+        integer*4 GpiPointArc
+
+        external GpiFullArc
+        integer*4 GpiFullArc
+
+        external GpiPartialArc
+        integer*4 GpiPartialArc
+
+        external GpiPolyFillet
+        integer*4 GpiPolyFillet
+
+        external GpiPolySpline
+        integer*4 GpiPolySpline
+
+        external GpiPolyFilletSharp
+        integer*4 GpiPolyFilletSharp
+
+        external GpiSetPatternSet
+        integer*4 GpiSetPatternSet
+
+        external GpiQueryPatternSet
+        integer*4 GpiQueryPatternSet
+
+        external GpiSetPatternRefPoint
+        integer*4 GpiSetPatternRefPoint
+
+        external GpiQueryPatternRefPoint
+        integer*4 GpiQueryPatternRefPoint
+
+        external GpiQueryCharStringPos
+        integer*4 GpiQueryCharStringPos
+
+        external GpiQueryCharStringPosAt
+        integer*4 GpiQueryCharStringPosAt
+
+        external GpiQueryTextBox
+        integer*4 GpiQueryTextBox
+
+        external GpiQueryDefCharBox
+        integer*4 GpiQueryDefCharBox
+
+        external GpiSetCharSet
+        integer*4 GpiSetCharSet
+
+        external GpiQueryCharSet
+        integer*4 GpiQueryCharSet
+
+        external GpiSetCharBox
+        integer*4 GpiSetCharBox
+
+        external GpiQueryCharBox
+        integer*4 GpiQueryCharBox
+
+        external GpiSetCharAngle
+        integer*4 GpiSetCharAngle
+
+        external GpiQueryCharAngle
+        integer*4 GpiQueryCharAngle
+
+        external GpiSetCharShear
+        integer*4 GpiSetCharShear
+
+        external GpiQueryCharShear
+        integer*4 GpiQueryCharShear
+
+        external GpiSetCharDirection
+        integer*4 GpiSetCharDirection
+
+        external GpiQueryCharDirection
+        integer*4 GpiQueryCharDirection
+
+        external GpiSetCharMode
+        integer*4 GpiSetCharMode
+
+        external GpiQueryCharMode
+        integer*4 GpiQueryCharMode
+
+        external GpiCharStringPos
+        integer*4 GpiCharStringPos
+
+        external GpiCharStringPosAt
+        integer*4 GpiCharStringPosAt
+
+        external GpiSetCharExtra
+        integer*4 GpiSetCharExtra
+
+        external GpiSetCharBreakExtra
+        integer*4 GpiSetCharBreakExtra
+
+        external GpiQueryCharExtra
+        integer*4 GpiQueryCharExtra
+
+        external GpiQueryCharBreakExtra
+        integer*4 GpiQueryCharBreakExtra
+
+        external GpiMarker
+        integer*4 GpiMarker
+
+        external GpiPolyMarker
+        integer*4 GpiPolyMarker
+
+        external GpiSetMarker
+        integer*4 GpiSetMarker
+
+        external GpiSetMarkerBox
+        integer*4 GpiSetMarkerBox
+
+        external GpiSetMarkerSet
+        integer*4 GpiSetMarkerSet
+
+        external GpiQueryMarker
+        integer*4 GpiQueryMarker
+
+        external GpiQueryMarkerBox
+        integer*4 GpiQueryMarkerBox
+
+        external GpiQueryMarkerSet
+        integer*4 GpiQueryMarkerSet
+
+        external GpiImage
+        integer*4 GpiImage
+
+        external GpiPop
+        integer*4 GpiPop
+
+        external GpiPtVisible
+        integer*4 GpiPtVisible
+
+        external GpiRectVisible
+        integer*4 GpiRectVisible
+
+        external GpiComment
+        integer*4 GpiComment
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPILCIDS
+
+        integer  FONT_DEFAULT
+        parameter (FONT_DEFAULT = 1)
+        integer  FONT_MATCH
+        parameter (FONT_MATCH = 2)
+
+        integer  LCIDT_FONT
+        parameter (LCIDT_FONT = 6)
+
+        integer  LCIDT_BITMAP
+        parameter (LCIDT_BITMAP = 7)
+
+        integer  LCID_ALL
+        parameter (LCID_ALL = -1)
+
+        structure /KERNINGPAIRS/
+            integer*2 sFirstChar
+            integer*2 sSecondChar
+            integer*4 lKerningAmount
+        end structure
+
+        structure /FACENAMEDESC/
+            integer*2 usSize
+            integer*2 usWeightClass
+            integer*2 usWidthClass
+            integer*2 usReserved
+            integer*4 flOptions
+        end structure
+
+        integer  FWEIGHT_DONT_CARE
+        parameter (FWEIGHT_DONT_CARE = 0)
+        integer  FWEIGHT_ULTRA_LIGHT
+        parameter (FWEIGHT_ULTRA_LIGHT = 1)
+        integer  FWEIGHT_EXTRA_LIGHT
+        parameter (FWEIGHT_EXTRA_LIGHT = 2)
+        integer  FWEIGHT_LIGHT
+        parameter (FWEIGHT_LIGHT = 3)
+        integer  FWEIGHT_SEMI_LIGHT
+        parameter (FWEIGHT_SEMI_LIGHT = 4)
+        integer  FWEIGHT_NORMAL
+        parameter (FWEIGHT_NORMAL = 5)
+        integer  FWEIGHT_SEMI_BOLD
+        parameter (FWEIGHT_SEMI_BOLD = 6)
+        integer  FWEIGHT_BOLD
+        parameter (FWEIGHT_BOLD = 7)
+        integer  FWEIGHT_EXTRA_BOLD
+        parameter (FWEIGHT_EXTRA_BOLD = 8)
+        integer  FWEIGHT_ULTRA_BOLD
+        parameter (FWEIGHT_ULTRA_BOLD = 9)
+
+        integer  FWIDTH_DONT_CARE
+        parameter (FWIDTH_DONT_CARE = 0)
+        integer  FWIDTH_ULTRA_CONDENSED
+        parameter (FWIDTH_ULTRA_CONDENSED = 1)
+        integer  FWIDTH_EXTRA_CONDENSED
+        parameter (FWIDTH_EXTRA_CONDENSED = 2)
+        integer  FWIDTH_CONDENSED
+        parameter (FWIDTH_CONDENSED = 3)
+        integer  FWIDTH_SEMI_CONDENSED
+        parameter (FWIDTH_SEMI_CONDENSED = 4)
+        integer  FWIDTH_NORMAL
+        parameter (FWIDTH_NORMAL = 5)
+        integer  FWIDTH_SEMI_EXPANDED
+        parameter (FWIDTH_SEMI_EXPANDED = 6)
+        integer  FWIDTH_EXPANDED
+        parameter (FWIDTH_EXPANDED = 7)
+        integer  FWIDTH_EXTRA_EXPANDED
+        parameter (FWIDTH_EXTRA_EXPANDED = 8)
+        integer  FWIDTH_ULTRA_EXPANDED
+        parameter (FWIDTH_ULTRA_EXPANDED = 9)
+
+        integer  FTYPE_ITALIC
+        parameter (FTYPE_ITALIC = '00000001'x)
+        integer  FTYPE_ITALIC_DONT_CARE
+        parameter (FTYPE_ITALIC_DONT_CARE = '00000002'x)
+        integer  FTYPE_OBLIQUE
+        parameter (FTYPE_OBLIQUE = '00000004'x)
+        integer  FTYPE_OBLIQUE_DONT_CARE
+        parameter (FTYPE_OBLIQUE_DONT_CARE = '00000008'x)
+        integer  FTYPE_ROUNDED
+        parameter (FTYPE_ROUNDED = '00000010'x)
+        integer  FTYPE_ROUNDED_DONT_CARE
+        parameter (FTYPE_ROUNDED_DONT_CARE = '00000020'x)
+
+        integer  QFA_PUBLIC
+        parameter (QFA_PUBLIC = 1)
+        integer  QFA_PRIVATE
+        parameter (QFA_PRIVATE = 2)
+        integer  QFA_ERROR
+        parameter (QFA_ERROR = GPI_ALTERROR)
+
+        integer  QF_PUBLIC
+        parameter (QF_PUBLIC = '00000001'x)
+        integer  QF_PRIVATE
+        parameter (QF_PRIVATE = '00000002'x)
+        integer  QF_NO_GENERIC
+        parameter (QF_NO_GENERIC = '00000004'x)
+        integer  QF_NO_DEVICE
+        parameter (QF_NO_DEVICE = '00000008'x)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiCreateLogFont
+        integer*4 GpiCreateLogFont
+
+        external GpiDeleteSetId
+        integer*4 GpiDeleteSetId
+
+        external GpiLoadFonts
+        integer*4 GpiLoadFonts
+
+        external GpiUnloadFonts
+        integer*4 GpiUnloadFonts
+
+        external GpiQueryFonts
+        integer*4 GpiQueryFonts
+
+        external GpiQueryFontMetrics
+        integer*4 GpiQueryFontMetrics
+
+        external GpiQueryKerningPairs
+        integer*4 GpiQueryKerningPairs
+
+        external GpiQueryWidthTable
+        integer*4 GpiQueryWidthTable
+
+        external GpiQueryNumberSetIds
+        integer*4 GpiQueryNumberSetIds
+
+        external GpiQuerySetIds
+        integer*4 GpiQuerySetIds
+
+        external GpiQueryFaceString
+        integer*4 GpiQueryFaceString
+
+        external GpiQueryLogicalFont
+        integer*4 GpiQueryLogicalFont
+
+        external GpiQueryFontAction
+        integer*4 GpiQueryFontAction
+
+        external GpiLoadPublicFonts
+        integer*4 GpiLoadPublicFonts
+
+        external GpiUnloadPublicFonts
+        integer*4 GpiUnloadPublicFonts
+
+        external GpiSetCp
+        integer*4 GpiSetCp
+
+        external GpiQueryCp
+        integer*4 GpiQueryCp
+
+        external GpiQueryFontFileDescriptions
+        integer*4 GpiQueryFontFileDescriptions
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIBITMAPS
+
+        integer  ROP_SRCCOPY
+        parameter (ROP_SRCCOPY = '000000CC'x)
+        integer  ROP_SRCPAINT
+        parameter (ROP_SRCPAINT = '000000EE'x)
+        integer  ROP_SRCAND
+        parameter (ROP_SRCAND = '00000088'x)
+        integer  ROP_SRCINVERT
+        parameter (ROP_SRCINVERT = '00000066'x)
+        integer  ROP_SRCERASE
+        parameter (ROP_SRCERASE = '00000044'x)
+        integer  ROP_NOTSRCCOPY
+        parameter (ROP_NOTSRCCOPY = '00000033'x)
+        integer  ROP_NOTSRCERASE
+        parameter (ROP_NOTSRCERASE = '00000011'x)
+        integer  ROP_MERGECOPY
+        parameter (ROP_MERGECOPY = '000000C0'x)
+        integer  ROP_MERGEPAINT
+        parameter (ROP_MERGEPAINT = '000000BB'x)
+        integer  ROP_PATCOPY
+        parameter (ROP_PATCOPY = '000000F0'x)
+        integer  ROP_PATPAINT
+        parameter (ROP_PATPAINT = '000000FB'x)
+        integer  ROP_PATINVERT
+        parameter (ROP_PATINVERT = '0000005A'x)
+        integer  ROP_DSTINVERT
+        parameter (ROP_DSTINVERT = '00000055'x)
+        integer  ROP_ZERO
+        parameter (ROP_ZERO = '00000000'x)
+        integer  ROP_ONE
+        parameter (ROP_ONE = '000000FF'x)
+
+        integer  BBO_OR
+        parameter (BBO_OR = 0)
+        integer  BBO_AND
+        parameter (BBO_AND = 1)
+        integer  BBO_IGNORE
+        parameter (BBO_IGNORE = 2)
+
+        integer  FF_BOUNDARY
+        parameter (FF_BOUNDARY = 0)
+        integer  FF_SURFACE
+        parameter (FF_SURFACE = 1)
+
+        integer  HBM_ERROR
+        parameter (HBM_ERROR = -1)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiBitBlt
+        integer*4 GpiBitBlt
+
+        external GpiDeleteBitmap
+        integer*4 GpiDeleteBitmap
+
+        external GpiLoadBitmap
+        integer*4 GpiLoadBitmap
+
+        external GpiSetBitmap
+        integer*4 GpiSetBitmap
+
+        external GpiWCBitBlt
+        integer*4 GpiWCBitBlt
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIBITMAPS
+
+c$include pmbitmap.fi
+
+        integer  CBM_INIT
+        parameter (CBM_INIT = '00000004'x)
+
+        integer  BMB_ERROR
+        parameter (BMB_ERROR = -1)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiCreateBitmap
+        integer*4 GpiCreateBitmap
+
+        external GpiSetBitmapBits
+        integer*4 GpiSetBitmapBits
+
+        external GpiSetBitmapDimension
+        integer*4 GpiSetBitmapDimension
+
+        external GpiSetBitmapId
+        integer*4 GpiSetBitmapId
+
+        external GpiQueryBitmapBits
+        integer*4 GpiQueryBitmapBits
+
+        external GpiQueryBitmapDimension
+        integer*4 GpiQueryBitmapDimension
+
+        external GpiQueryBitmapHandle
+        integer*4 GpiQueryBitmapHandle
+
+        external GpiQueryBitmapParameters
+        integer*4 GpiQueryBitmapParameters
+
+        external GpiQueryBitmapInfoHeader
+        integer*4 GpiQueryBitmapInfoHeader
+
+        external GpiQueryDeviceBitmapFormats
+        integer*4 GpiQueryDeviceBitmapFormats
+
+        external GpiSetPel
+        integer*4 GpiSetPel
+
+        external GpiQueryPel
+        integer*4 GpiQueryPel
+
+        external GpiFloodFill
+        integer*4 GpiFloodFill
+
+        external GpiDrawBits
+        integer*4 GpiDrawBits
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIREGIONS
+
+        integer  CRGN_OR
+        parameter (CRGN_OR = 1)
+        integer  CRGN_COPY
+        parameter (CRGN_COPY = 2)
+        integer  CRGN_XOR
+        parameter (CRGN_XOR = 4)
+        integer  CRGN_AND
+        parameter (CRGN_AND = 6)
+        integer  CRGN_DIFF
+        parameter (CRGN_DIFF = 7)
+
+        integer  RECTDIR_LFRT_TOPBOT
+        parameter (RECTDIR_LFRT_TOPBOT = 1)
+        integer  RECTDIR_RTLF_TOPBOT
+        parameter (RECTDIR_RTLF_TOPBOT = 2)
+        integer  RECTDIR_LFRT_BOTTOP
+        parameter (RECTDIR_LFRT_BOTTOP = 3)
+        integer  RECTDIR_RTLF_BOTTOP
+        parameter (RECTDIR_RTLF_BOTTOP = 4)
+
+        structure /RGNRECT/
+            integer*4 ircStart
+            integer*4 crc
+            integer*4 crcReturned
+            integer*4 ulDirection
+        end structure
+
+        integer  RGN_ERROR
+        parameter (RGN_ERROR = 0)
+        integer  RGN_NULL
+        parameter (RGN_NULL = 1)
+        integer  RGN_RECT
+        parameter (RGN_RECT = 2)
+        integer  RGN_COMPLEX
+        parameter (RGN_COMPLEX = 3)
+
+        integer  PRGN_ERROR
+        parameter (PRGN_ERROR = 0)
+        integer  PRGN_OUTSIDE
+        parameter (PRGN_OUTSIDE = 1)
+        integer  PRGN_INSIDE
+        parameter (PRGN_INSIDE = 2)
+
+        integer  RRGN_ERROR
+        parameter (RRGN_ERROR = 0)
+        integer  RRGN_OUTSIDE
+        parameter (RRGN_OUTSIDE = 1)
+        integer  RRGN_PARTIAL
+        parameter (RRGN_PARTIAL = 2)
+        integer  RRGN_INSIDE
+        parameter (RRGN_INSIDE = 3)
+
+        integer  EQRGN_ERROR
+        parameter (EQRGN_ERROR = 0)
+        integer  EQRGN_NOTEQUAL
+        parameter (EQRGN_NOTEQUAL = 1)
+        integer  EQRGN_EQUAL
+        parameter (EQRGN_EQUAL = 2)
+
+        integer  HRGN_ERROR
+        parameter (HRGN_ERROR = -1)
+
+c$ifndef INCL_DDIDEFS
+
+        external GpiCombineRegion
+        integer*4 GpiCombineRegion
+
+        external GpiCreateRegion
+        integer*4 GpiCreateRegion
+
+        external GpiDestroyRegion
+        integer*4 GpiDestroyRegion
+
+        external GpiEqualRegion
+        integer*4 GpiEqualRegion
+
+        external GpiOffsetRegion
+        integer*4 GpiOffsetRegion
+
+        external GpiPaintRegion
+        integer*4 GpiPaintRegion
+
+        external GpiFrameRegion
+        integer*4 GpiFrameRegion
+
+        external GpiPtInRegion
+        integer*4 GpiPtInRegion
+
+        external GpiQueryRegionBox
+        integer*4 GpiQueryRegionBox
+
+        external GpiQueryRegionRects
+        integer*4 GpiQueryRegionRects
+
+        external GpiRectInRegion
+        integer*4 GpiRectInRegion
+
+        external GpiSetRegion
+        integer*4 GpiSetRegion
+
+        external GpiSetClipRegion
+        integer*4 GpiSetClipRegion
+
+        external GpiQueryClipRegion
+        integer*4 GpiQueryClipRegion
+
+        external GpiQueryClipBox
+        integer*4 GpiQueryClipBox
+
+        external GpiExcludeClipRectangle
+        integer*4 GpiExcludeClipRectangle
+
+        external GpiIntersectClipRectangle
+        integer*4 GpiIntersectClipRectangle
+
+        external GpiOffsetClipRegion
+        integer*4 GpiOffsetClipRegion
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIMETAFILES
+
+c$ifndef INCL_DDIDEFS
+
+        integer  PMF_SEGBASE
+        parameter (PMF_SEGBASE = 0)
+        integer  PMF_LOADTYPE
+        parameter (PMF_LOADTYPE = 1)
+        integer  PMF_RESOLVE
+        parameter (PMF_RESOLVE = 2)
+        integer  PMF_LCIDS
+        parameter (PMF_LCIDS = 3)
+        integer  PMF_RESET
+        parameter (PMF_RESET = 4)
+        integer  PMF_SUPPRESS
+        parameter (PMF_SUPPRESS = 5)
+        integer  PMF_COLORTABLES
+        parameter (PMF_COLORTABLES = 6)
+        integer  PMF_COLORREALIZABLE
+        parameter (PMF_COLORREALIZABLE = 7)
+        integer  PMF_DEFAULTS
+        parameter (PMF_DEFAULTS = 8)
+        integer  PMF_DELETEOBJECTS
+        parameter (PMF_DELETEOBJECTS = 9)
+
+        integer  RS_DEFAULT
+        parameter (RS_DEFAULT = 0)
+        integer  RS_NODISCARD
+        parameter (RS_NODISCARD = 1)
+        integer  LC_DEFAULT
+        parameter (LC_DEFAULT = 0)
+        integer  LC_NOLOAD
+        parameter (LC_NOLOAD = 1)
+        integer  LC_LOADDISC
+        parameter (LC_LOADDISC = 3)
+        integer  LT_DEFAULT
+        parameter (LT_DEFAULT = 0)
+        integer  LT_NOMODIFY
+        parameter (LT_NOMODIFY = 1)
+        integer  LT_ORIGINALVIEW
+        parameter (LT_ORIGINALVIEW = 4)
+        integer  RES_DEFAULT
+        parameter (RES_DEFAULT = 0)
+        integer  RES_NORESET
+        parameter (RES_NORESET = 1)
+        integer  RES_RESET
+        parameter (RES_RESET = 2)
+        integer  SUP_DEFAULT
+        parameter (SUP_DEFAULT = 0)
+        integer  SUP_NOSUPPRESS
+        parameter (SUP_NOSUPPRESS = 1)
+        integer  SUP_SUPPRESS
+        parameter (SUP_SUPPRESS = 2)
+        integer  CTAB_DEFAULT
+        parameter (CTAB_DEFAULT = 0)
+        integer  CTAB_NOMODIFY
+        parameter (CTAB_NOMODIFY = 1)
+        integer  CTAB_REPLACE
+        parameter (CTAB_REPLACE = 3)
+        integer  CTAB_REPLACEPALETTE
+        parameter (CTAB_REPLACEPALETTE = 4)
+        integer  CREA_DEFAULT
+        parameter (CREA_DEFAULT = 0)
+        integer  CREA_REALIZE
+        parameter (CREA_REALIZE = 1)
+        integer  CREA_NOREALIZE
+        parameter (CREA_NOREALIZE = 2)
+        integer  CREA_DOREALIZE
+        parameter (CREA_DOREALIZE = 3)
+
+        integer  DDEF_DEFAULT
+        parameter (DDEF_DEFAULT = 0)
+        integer  DDEF_IGNORE
+        parameter (DDEF_IGNORE = 1)
+        integer  DDEF_LOADDISC
+        parameter (DDEF_LOADDISC = 3)
+        integer  DOBJ_DEFAULT
+        parameter (DOBJ_DEFAULT = 0)
+        integer  DOBJ_NODELETE
+        parameter (DOBJ_NODELETE = 1)
+        integer  DOBJ_DELETE
+        parameter (DOBJ_DELETE = 2)
+        integer  RSP_DEFAULT
+        parameter (RSP_DEFAULT = 0)
+        integer  RSP_NODISCARD
+        parameter (RSP_NODISCARD = 1)
+
+        external GpiCopyMetaFile
+        integer*4 GpiCopyMetaFile
+
+        external GpiDeleteMetaFile
+        integer*4 GpiDeleteMetaFile
+
+        external GpiLoadMetaFile
+        integer*4 GpiLoadMetaFile
+
+        external GpiPlayMetaFile
+        integer*4 GpiPlayMetaFile
+
+        external GpiQueryMetaFileBits
+        integer*4 GpiQueryMetaFileBits
+
+        external GpiQueryMetaFileLength
+        integer*4 GpiQueryMetaFileLength
+
+        external GpiSaveMetaFile
+        integer*4 GpiSaveMetaFile
+
+        external GpiSetMetaFileBits
+        integer*4 GpiSetMetaFileBits
+
+c$endif
+
+c$endif
+
+c$ifdef INCL_GPIDEFAULTS
+
+        external GpiQueryDefArcParams
+        integer*4 GpiQueryDefArcParams
+
+        external GpiQueryDefAttrs
+        integer*4 GpiQueryDefAttrs
+
+        external GpiQueryDefTag
+        integer*4 GpiQueryDefTag
+
+        external GpiQueryDefViewingLimits
+        integer*4 GpiQueryDefViewingLimits
+
+        external GpiSetDefArcParams
+        integer*4 GpiSetDefArcParams
+
+        external GpiSetDefAttrs
+        integer*4 GpiSetDefAttrs
+
+        external GpiSetDefTag
+        integer*4 GpiSetDefTag
+
+        external GpiSetDefViewingLimits
+        integer*4 GpiSetDefViewingLimits
+
+c$endif
+
+c$ifdef INCL_GPIPOLYGON
+
+        structure /POLYGON/
+            integer*4           ulPoints
+            record /POINTL/     aPointl
+        end structure
+
+        structure /POLYSET/
+            integer*4           ulPolys
+            record /POLYGON/    aPolygon(1)
+        end structure
+
+        integer POLYGON_NOBOUNDARY
+        parameter (POLYGON_NOBOUNDARY='00000000'x)
+        integer POLYGON_BOUNDARY
+        parameter (POLYGON_BOUNDARY='00000001'x)
+
+        integer POLYGON_ALTERNATE
+        parameter (POLYGON_ALTERNATE='00000000'x)
+        integer POLYGON_WINDING
+        parameter (POLYGON_WINDING='00000002'x)
+
+        integer POLYGON_INCL
+        parameter (POLYGON_INCL='00000000'x)
+        integer POLYGON_EXCL
+        parameter (POLYGON_EXCL='00000008'x)
+
+c$endif
+
+c$ifdef INCL_GPIERRORS
+c$include pmgpierr.fi
+c$endif
+
+c$reference

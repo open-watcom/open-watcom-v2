@@ -1,0 +1,65 @@
+:Base cbooks.hlp>main
+:Title C/C++ Bookshelf
+:Index Watcom Accelerator Editor Help=resacc.hlp
+:Index Watcom C Diagnostic Messages Help=wccerrs.hlp
+:Index Watcom C Language Reference Help=clr.hlp
+:Index Watcom C Library Reference Help=clib.hlp
+:Index Watcom C/C++ Getting Started Help=c_readme.hlp
+:Index Watcom C/C++ Programmer's Guide Help=pguide.hlp
+:Index Watcom C/C++ Tools Guide Help=tools.hlp
+:Index Watcom C/C++ User's Guide Help=cguide.hlp
+:Index Watcom C++ Class Library Reference Help=cpplib.hlp
+:Index Watcom C++ Diagnostic Messages Help=wpperrs.hlp
+:Index Watcom DDE Spy Help=ddespy.hlp
+:Index Watcom Debugger Guide Help=wd.hlp
+:Index Watcom Dialog Editor Help=resdlg.hlp
+:Index Watcom Editor Help=editor.hlp
+:Index Watcom Vi Editor Help=vi.hlp
+:Index Watcom Heap Walker Help=heapwalk.hlp
+:Index Watcom IDE Help=ide.hlp
+:Index Watcom Image Editor Help=resimg.hlp
+:Index Watcom Linker Guide Help=lguide.hlp
+:Index Watcom Menu Editor Help=resmnu.hlp
+:Index Watcom Profiler Help=wprof.hlp
+:Index Watcom Resource Compiler Help=rescomp.hlp
+:Index Watcom Resource Editor Help=resedt.hlp
+:Index Watcom Source Browser Help=wbrw.hlp
+:Index Watcom Spy Help=spy.hlp
+:Index Watcom String Table Editor Help=resstr.hlp
+:Index Watcom Zoom Help=zoom.hlp
+:Index Dr. Watcom Help=drwatcom.hlp
+:Index Dr. Watcom NT Help=drnt.hlp
+
+1 About Watcom C/C++ On-line Documentation=About_Watcom_CDCPP_OnMline_Documentation
+:include c_readme.cnt
+:include cguide.cnt
+:include wccerrs.cnt
+:include wpperrs.cnt
+:include clr.cnt
+:include pguide.cnt
+:include clib.cnt
+:include cpplib.cnt
+:include tools.cnt
+
+1 Watcom Graphical Tools Guide
+:include ide.cnt
+:include wbrw.cnt
+:include wprof.cnt
+:include editor.cnt
+:include vi.cnt
+:include resedt.cnt
+:include resacc.cnt
+:include resdlg.cnt
+:include resimg.cnt
+:include resmnu.cnt
+:include resstr.cnt
+:include rescomp.cnt
+:include zoom.cnt
+:include heapwalk.cnt
+:include spy.cnt
+:include ddespy.cnt
+:include drwatcom.cnt
+:include drnt.cnt
+
+:include lguide.cnt
+:include wd.cnt

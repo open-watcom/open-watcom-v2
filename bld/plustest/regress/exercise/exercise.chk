@@ -1,0 +1,155 @@
+CHKCL -- passed all tests
+
+  1 -- NullClass CTOR
+  2 -- NullClass CTOR
+  3 -- NullClass CTOR
+  4 -- NullClass CTOR
+  5 -- NullClass CTOR
+  6 -- ElemClass CTOR
+  7 -- ElemClass CTOR
+  8 -- ElemClass CTOR
+  9 -- ElemClass CTOR
+ 10 -- ElemClass CTOR
+ 11 -- ElemClass CTOR
+  0 -- ArrayClass CTOR
+ 13 -- NullClass CTOR
+ 14 -- NullClass CTOR
+ 15 -- NullClass CTOR
+ 16 -- NullClass CTOR
+ 17 -- NullClass CTOR
+ 18 -- ElemClass CTOR
+ 19 -- ElemClass CTOR
+ 20 -- ElemClass CTOR
+ 21 -- ElemClass CTOR
+ 22 -- ElemClass CTOR
+ 23 -- ElemClass CTOR
+ 12 -- ArrayClass CTOR
+ 25 -- NullClass CTOR
+ 26 -- NullClass CTOR
+ 27 -- NullClass CTOR
+ 28 -- NullClass CTOR
+ 29 -- NullClass CTOR
+ 30 -- ElemClass CTOR
+ 31 -- ElemClass CTOR
+ 32 -- ElemClass CTOR
+ 33 -- ElemClass CTOR
+ 34 -- ElemClass CTOR
+ 35 -- ElemClass CTOR
+ 24 -- ArrayClass CTOR
+ 12 -- ArrayClass DTOR
+ 23 -- ElemClass DTOR
+ 22 -- ElemClass DTOR
+ 21 -- ElemClass DTOR
+ 20 -- ElemClass DTOR
+ 19 -- ElemClass DTOR
+ 18 -- ElemClass DTOR
+ 17 -- NullClass DTOR
+ 16 -- NullClass DTOR
+ 15 -- NullClass DTOR
+ 14 -- NullClass DTOR
+ 13 -- NullClass DTOR
+ 24 -- ArrayClass DTOR
+ 35 -- ElemClass DTOR
+ 34 -- ElemClass DTOR
+ 33 -- ElemClass DTOR
+ 32 -- ElemClass DTOR
+ 31 -- ElemClass DTOR
+ 30 -- ElemClass DTOR
+ 29 -- NullClass DTOR
+ 28 -- NullClass DTOR
+ 27 -- NullClass DTOR
+ 26 -- NullClass DTOR
+ 25 -- NullClass DTOR
+  0 -- ArrayClass DTOR
+ 11 -- ElemClass DTOR
+ 10 -- ElemClass DTOR
+  9 -- ElemClass DTOR
+  8 -- ElemClass DTOR
+  7 -- ElemClass DTOR
+  6 -- ElemClass DTOR
+  5 -- NullClass DTOR
+  4 -- NullClass DTOR
+  3 -- NullClass DTOR
+  2 -- NullClass DTOR
+  1 -- NullClass DTOR
+
+Safe
+****
+ 82 - a a b 1 1 1 3 3 a -
+ 84 - a a b 1 1 1 3 3 a -
+ 86 - a a a 1 1 1 3 3 a -
+ 88 - a a a a 1 1 3 3 a -
+ 90 - a a a a a 1 3 3 a -
+ 92 - a a a a a a 3 3 a -
+ 94 - a a a a a a a 3 a -
+
+Unsafe
+******
+100 - a a a a a a a 3 a -
+102 - a a a a a a a 3 a -
+104 - a a a a a a a 3 a -
+106 - a a a a a a a 3 a -
+108 - a a a a a a a 3 a -
+110 - a a a a a a a 3 a -
+112 - a a a a a a 3 3 a -
+114 - a a a a 3 a 3 3 a -
+ 1.operator + ( 100 )
+100  1.operator + ()
+ 1.operator - ( 101 )
+101  1.operator - ()
+ 1.operator * ( 102 )
+102  1.operator * ()
+ 1.operator / ( 103 )
+ 1.operator ( 104 )
+ 1.operator ^ ( 105 )
+ 1.operator & ( 106 )
+106  1.operator & ( )
+ 1.operator | ( 107 )
+108  1.operator ~ ()
+110  1.operator ! ()
+ 1.operator = ( 111 )
+ 1.operator > ( 112 )
+ 1.operator < ( 113 )
+ 1.operator += ( 114 )
+ 1.operator -= ( 115 )
+ 1.operator *= ( 116 )
+ 1.operator /= ( 117 )
+ 1.operator = ( 118 )
+ 1.operator ^= ( 120 )
+ 1.operator &= ( 121 )
+ 1.operator |= ( 122 )
+ 1.operator >> ( 123 )
+ 1.operator << ( 124 )
+ 1.operator >>= ( 125 )
+ 1.operator <<= ( 126 )
+ 1.operator == ( 127 )
+ 1.operator != ( 128 )
+ 1.operator <= ( 130 )
+ 1.operator >= ( 131 )
+ 1.operator && ( 132 )
+ 1.operator || ( 133 )
+134  1.operator ++ ()
+134  1.operator ++ ( 0 )
+135  1.operator -- ()
+135  1.operator -- ( 0 )
+ 1.operator ->* ( 136 )
+ 1.operator , ( 138 )
+ 1.operator & ( )
+139 1.operator->
+ 1.operator [] ( 140 )
+141  1.operator () ( )
+S DTOR'd
+foo1 return -- a=1 b=4
+foo1 return -- a=2 b=12
+foo1 return -- a=3 b=9
+S DTOR'd
+foo2 return -- a=1 b=4
+foo2 return -- a=2 b=12
+foo2 return -- a=3 b=9
+Miller Time: 0
+Miller Time: 1 1
+Miller Time: 2 2 DTOR naked
+Miller Time: 3 3 DTOR naked
+Miller Time: 4 4: 4
+Miller Time: 5 1 4: 4
+S DTOR'd

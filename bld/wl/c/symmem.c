@@ -24,19 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol table extra memory routines.
 *
 ****************************************************************************/
 
 
-/*
-   SYMMEM  : symbol table extra memory routines
-
-*/
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <limits.h>
 #include "linkstd.h"
 #include "pcobj.h"
@@ -85,6 +79,7 @@ void MakePass1Blocks( void )
 static bool ShrinkBlock( block_data *block )
 /******************************************/
 {
+#ifdef __WATCOMC__
     sym_block   *new;
 
     if( block->list == NULL ) return( FALSE );
@@ -98,6 +93,10 @@ static bool ShrinkBlock( block_data *block )
     }
 #endif
     return( TRUE );
+#else
+    /* There is no guarantee realloc() won't move memory - just don't do it */
+    return( FALSE );
+#endif
 }
 
 bool PermShrink( void )
@@ -113,14 +112,14 @@ bool PermShrink( void )
     return( ret );
 }
 
-void * Pass1Alloc( unsigned size )
-/********************************/
+void *Pass1Alloc( size_t size )
+/*****************************/
 {
     return( AllocBlock( size, &Pass1Blocks ) );
 }
 
-void *PermAlloc( unsigned size )
-/******************************/
+void *PermAlloc( size_t size )
+/****************************/
 /* allocate a hunk of permanently allocated memory */
 {
     return( AllocBlock( size, &PermBlocks ) );
@@ -182,7 +181,7 @@ static void * AllocBlock( unsigned size, block_data *block )
     return( ptr );
 }
 
-extern void BasicInitSym( symbol *sym )
+void BasicInitSym( symbol *sym )
 /*************************************/
 {
     sym->hash = NULL;
@@ -195,9 +194,10 @@ extern void BasicInitSym( symbol *sym )
     sym->info = SYM_REGULAR | SYM_IN_CURRENT;
     sym->u.altdefs = NULL;      // this sets all union members to zero.
     sym->e.def = NULL;          // ditto
+    sym->prefix = NULL;
 }
 
-extern symbol * AddSym( void )
+symbol * AddSym( void )
 /****************************/
 /* allocate and initialize a new symbol */
 {
@@ -211,7 +211,7 @@ extern symbol * AddSym( void )
     return( sym );
 }
 
-extern void ReleasePass1( void )
+void ReleasePass1( void )
 /******************************/
 /* free pass1 block allocations */
 {
@@ -219,7 +219,7 @@ extern void ReleasePass1( void )
     Pass1Blocks.list = NULL;
 }
 
-extern void RelSymBlock( void )
+void RelSymBlock( void )
 /*****************************/
 /* free memory used for symbol table allocation and code */
 {

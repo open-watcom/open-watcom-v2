@@ -24,31 +24,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File selection dialog (open/save).
 *
 ****************************************************************************/
 
 
-#include <string.h>
-//#define INCLUDE_COMMDLG_H
-#include "winvi.h"
+#include "vi.h"
 #include <commdlg.h>
 #include <dlgs.h>
 #include <cderr.h>
+#include <assert.h>
 
-static char *filterList = "C Files (*.c;*.h)\0*.c;*.h\0"
-                          "C++ Files (*.cpp;*.hpp)\0*.cpp;*.hpp\0"
-                          "Fortran Files (*.for;*.fi)\0*.for;*.fi\0"
-                          "Asm Files (*.asm)\0*.asm\0"
+static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
+                          "C Files (*.c;*.h)\0*.c;*.h\0"
+                          "C++ Files (*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
+                          "Fortran Files (*.for;*.fi;*.f;*.inc)\0*.for;*.fi;*.f;*.inc\0"
+                          "Java(Script) Files (*.java;*.js)\0*.java;*.js\0"
+                          "SQL Files (*.sql)\0*.sql\0"
+                          "Batch Files (*.bat;*.cmd)\0*.bat;*.cmd\0"
+                          "Basic (*.bas;*.frm;*.cls)\0*.bas;*.frm;*.cls\0"
+                          "Perl Files (*.pl;*.cgi)\0*.pl;*.cgi\0"
+                          "HTML Files (*.htm;*.html;*.xhtml)\0*.htm;*.html;*.xhtml\0"
+                          "WML Files (*.wml)\0*.wml\0"
+                          "GML Files (*.gml)\0*.gml\0"
+                          "DBTest (*.tst)\0*.tst\0"
+                          "Makefiles (makefile;*.mk;*.mif;*.mak)\0makefile;*.mk;*.mif;*.mak\0"
+                          "Assembly Files (*.asm;*.inc)\0*.asm;*.inc\0"
+                          "Resource Files (*.rc;*.rh;*.dlg)\0*.rc;*.rh;*.dlg\0"
+                          "AWK Files (*.awk)\0*.awk\0"
                           "All Files (*.*)\0*.*\0"
                           "\0";
 static char *FileNameList;
 
-BOOL WINEXP OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
+typedef UINT (WINEXP * OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
+
+
+BOOL WINEXP OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    int len;
-    static OPENFILENAME *of;
+    int                         len;
+    static OPENFILENAME __FAR__ *of;
 
     wparam = wparam;
     lparam = lparam;
@@ -57,7 +71,7 @@ BOOL WINEXP OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         /* danger - not sure that lparam is guaranteed to be the of. struct */
-        of = (OPENFILENAME *)lparam;
+        of = (OPENFILENAME __FAR__ *)MAKEPTR( (LPVOID)lparam );
         // return( FALSE );
         return( TRUE );
     case WM_COMMAND:
@@ -66,7 +80,8 @@ BOOL WINEXP OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
             len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXTLENGTH, 0, 0 );
             if( len >= of->nMaxFile ) {
                 FileNameList = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len+1, (LPARAM)FileNameList );
+                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1,
+                                          (LPARAM)FileNameList );
             }
         }
         break;
@@ -77,28 +92,25 @@ BOOL WINEXP OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
 /*
  * SelectFileOpen - use common dialog file open to pick a file to edit
  */
-int SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs  )
+vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
 {
     OPENFILENAME        of;
     BOOL                rc;
     static long         filemask = 1;
+    bool                is_chicago = FALSE;
 
-    #ifdef __NT__
+#ifdef __NT__
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
-    DWORD ver;
-    bool is_chicago = FALSE;
-
-    ver = GetVersion();
-    if( !( ver < 0x80000000 ) && !( LOBYTE( LOWORD( ver ) ) < 4 ) ) {
+    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
         is_chicago = TRUE;
     }
     /* -------------------------------------------------------- */
-    #endif
+#endif
 
     mask = mask;
     want_all_dirs = want_all_dirs;
-    *result[ 0 ] = 0;
+    *result[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = Root;
@@ -106,45 +118,30 @@ int SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs  )
     of.lpstrDefExt = NULL;
     of.nFilterIndex = filemask;
     of.lpstrFile = *result;
-    of.nMaxFile = _MAX_PATH;
+    of.nMaxFile = FILENAME_MAX;
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = dir;
-    #ifdef __NT__
     if( is_chicago ) {
-        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY;
+        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY |
+                   OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
-    #endif
-        of.Flags = OFN_PATHMUSTEXIST | OFN_ENABLEHOOK |
-                   OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY;
-        of.lpfnHook = (LPVOID) MakeProcInstance( (LPVOID) OpenHook,
-                                                 InstanceHandle );
-    #ifdef __NT__
+        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY |
+                   OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
+        of.lpfnHook = (LPOFNHOOKPROC) MakeProcInstance( (FARPROC) OpenHook,
+                                                        InstanceHandle );
     }
-    #endif
     rc = GetOpenFileName( &of );
     filemask = of.nFilterIndex;
-    #ifdef __NT__
-    if( is_chicago ) {
-    #endif
-    #ifndef __NT__
-        FreeProcInstance( (LPVOID) of.lpfnHook );
-    #endif
-    #ifdef __NT__
-    }
-    #endif
+    (void)FreeProcInstance( (FARPROC) of.lpfnHook );
     if( rc == FALSE && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
-        #ifdef __NT__
         if( !is_chicago ) {
-        #endif
             MemFree( (char*)(of.lpstrFile) );
             *result = FileNameList;
-        #ifdef __NT__
         }
-        #endif
-        #if 0
+#if 0
         MyBeep();
         Message1( "Please open files in smaller groups" );
-        #endif
+#endif
     }
     UpdateCurrentDirectory();
     return( ERR_NO_ERR );
@@ -154,10 +151,11 @@ int SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs  )
 /*
  * SelectFileSave - use common dialog file open to pickname to save under
  */
-int SelectFileSave( char *result )
+vi_rc SelectFileSave( char *result )
 {
     OPENFILENAME        of;
-    int doit;
+    int                 doit;
+    bool                is_chicago = FALSE;
 
     assert( CurrentFile != NULL );
 
@@ -169,16 +167,24 @@ int SelectFileSave( char *result )
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;
     of.lpstrFile = result;
-    of.nMaxFile = _MAX_PATH;
+    of.nMaxFile = FILENAME_MAX;
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = CurrentFile->home;
-    of.Flags = OFN_PATHMUSTEXIST | OFN_ENABLEHOOK | OFN_OVERWRITEPROMPT |
-               OFN_HIDEREADONLY | OFN_NOREADONLYRETURN;
-    of.lpfnHook = (LPVOID) MakeProcInstance( (LPVOID) OpenHook, InstanceHandle );
+#ifdef __NT__
+    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 )
+        is_chicago = TRUE;
+#endif
+    if( is_chicago ) {
+        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
+                   OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
+    } else {
+        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
+                   OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
+    }
+    of.lpfnHook = (LPOFNHOOKPROC) MakeProcInstance( (FARPROC) OpenHook,
+                                                    InstanceHandle );
     doit = GetSaveFileName( &of );
-    #ifndef __NT__
-    FreeProcInstance( (LPVOID) of.lpfnHook );
-    #endif
+    (void)FreeProcInstance( (FARPROC) of.lpfnHook );
 
     if( doit != 0 ) {
         UpdateCurrentDirectory();
@@ -194,9 +200,9 @@ int SelectFileSave( char *result )
  */
 char *GetInitialFileName( void )
 {
-    char        *path = MemAlloc( _MAX_PATH );
+    char        *path = MemAlloc( FILENAME_MAX );
     char        *ptr;
-    int         rc;
+    vi_rc       rc;
 
     CloseStartupDialog();
     path[0] = 0;
@@ -212,8 +218,8 @@ char *GetInitialFileName( void )
 
 } /* GetInitialFileName */
 
-int SelectLineInFile( selflinedata *sfd )
+vi_rc SelectLineInFile( selflinedata *sfd )
 {
     sfd = sfd;
-    return( 1 );
+    return( ERR_NO_ERR );
 }

@@ -237,7 +237,8 @@ void test4() {
     if( vect.occurrencesOf( &c ) != 2 ) cout << "0 occurred != 2 time\n";
 
 
-    for( int k = 0; k < vect.entries(); k++ ){
+    int k;
+    for( k = 0; k < vect.entries(); k++ ){
 	cout << *vect[ k ] << ' ';
     }
     cout << "\n";

@@ -37,16 +37,12 @@
 
 _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attribute )
 {
-
     HANDLE              h;
     WIN32_FIND_DATA     ffb;
-    int                 error;
 
     h = FindFirstFile( (LPTSTR)path, &ffb );
     if( h == (HANDLE)-1 ) {
-        error = GetLastError();
-        __set_errno_dos( error );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     *attribute = ffb.dwFileAttributes;
     FindClose( h );

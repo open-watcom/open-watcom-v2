@@ -55,11 +55,6 @@
 #endif
 
 
-extern char             *RemoteLink(char *, char);
-extern char             RemoteConnect(void);
-extern void             RemoteDisco(void);
-extern void             RemoteUnLink(void);
-
 static trap_version     TrapVer;
 
 char    RWBuff[ 0x400 ];
@@ -75,17 +70,17 @@ static mx_entry     Out[1];
 static void AccTrap( bool want_return )
 {
     if( want_return ) {
-        PutBuffPacket( TrapRequest( 1, &In, 1, &Out ), (void *)RWBuff );
+        PutBuffPacket( TrapRequest( 1, &In, 1, &Out ), RWBuff );
     } else {
         TrapRequest( 1, &In, 0, NULL );
     }
 }
 
 
-static bool Session()
+static bool Session( void )
 {
     unsigned    req;
-    bool    want_return;
+    bool        want_return;
 
     for( ;; ) {
         In[0].len = GetPacket();
@@ -120,7 +115,7 @@ void Initialize( void )
 
     RWBuff[0] = '\0';
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( (char *)RWBuff, 1 );
+    err = RemoteLink( RWBuff, 1 );
     _DBG(( "Back from PM remote link\n" ));
     if( err ) {
         _DBG(( "ERROR! '%s'\n", err ));
@@ -140,13 +135,13 @@ void Initialize( void )
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
     Out[0].len = sizeof( RWBuff );
-    Out[0].ptr = (void *)RWBuff;
+    Out[0].ptr = RWBuff;
 }
 
 
 #if defined(ACAD)
 
-main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     _DBG( ( "Calling ads_init()\r\n" ) );
     ads_init( argc, argv );
@@ -154,7 +149,7 @@ main( int argc, char **argv )
 
 #else
 
-main()
+int main( void )
 {
 
 #endif
@@ -172,7 +167,8 @@ main()
     _DBG(("Calling RemoteUnLink\n"));
     RemoteUnLink();
     _DBG(("After calling RemoteUnLink\n"));
-    #ifdef ACAD
-        LetACADDie();
-    #endif
+#ifdef ACAD
+    LetACADDie();
+#endif
+    return( 0 );
 }

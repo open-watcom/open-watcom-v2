@@ -33,23 +33,11 @@
 #ifndef RCS_CLIENT_DEFINED
 #define RCS_CLIENT_DEFINED
 
-#include "api.h"
+#include "rcscli.h"
 #include "wfilenam.hpp"
 #ifdef __WINDOWS__
 #include "system.hpp"
 #endif
-
-typedef int RCSAPI(*RCSGetVerFn)( void );
-typedef rcsdata RCSAPI (*RCSInitFn)( unsigned long, char *cfg_dir );
-typedef int RCSAPI (*RCSCheckoutFn)( rcsdata, rcsstring, rcsstring, rcsstring );
-typedef int RCSAPI (*RCSCheckinFn)( rcsdata, rcsstring, rcsstring, rcsstring );
-typedef int RCSAPI (*RCSHasShellFn)( rcsdata );
-typedef int RCSAPI (*RCSRunShellFn)( rcsdata );
-typedef int RCSAPI (*RCSSetSystemFn)( rcsdata, int );
-typedef int RCSAPI (*RCSQuerySystemFn)( rcsdata );
-typedef int RCSAPI (*RCSRegBatchCbFn)( rcsdata, BatchCallbackFP, void * );
-typedef int RCSAPI (*RCSRegMsgBoxCbFn)( rcsdata, MessageBoxCallbackFP, void * );
-typedef void RCSAPI (*RCSFiniFn)( rcsdata );
 
 WCLASS VRcsClient : public WObject {
     public:
@@ -72,17 +60,17 @@ WCLASS VRcsClient : public WObject {
         FARPROC         _msgcb;
 #endif
         // function pointers
-        RCSGetVerFn             _getver;
-        RCSInitFn               _init;
-        RCSCheckoutFn           _checkout;
-        RCSCheckinFn            _checkin;
-        RCSHasShellFn           _hasshell;
-        RCSRunShellFn           _runshell;
-        RCSSetSystemFn          _setsystem;
-        RCSQuerySystemFn        _querysystem;
-        RCSRegBatchCbFn         _regbatchcb;
-        RCSRegMsgBoxCbFn        _regmsgboxcb;
-        RCSFiniFn               _fini;
+        RCSGetVersionFn         *_getver;
+        RCSInitFn               *_init;
+        RCSCheckoutFn           *_checkout;
+        RCSCheckinFn            *_checkin;
+        RCSHasShellFn           *_hasshell;
+        RCSRunShellFn           *_runshell;
+        RCSSetSystemFn          *_setsystem;
+        RCSQuerySystemFn        *_querysystem;
+        RCSRegBatchCbFn         *_regbatchcb;
+        RCSRegMsgBoxCbFn        *_regmsgboxcb;
+        RCSFiniFn               *_fini;
 };
 
 #endif

@@ -39,8 +39,8 @@
 class MergeNameKey {
 public:
         MergeNameKey();
-        MergeNameKey( uint_32 tag, bool ext, const MergeStringHdl& name, uint_16 unique );
-        MergeNameKey( uint_32 tag, bool ext, const char * name, uint_16 unique );
+        MergeNameKey( uint_32 tag, bool ext, const MergeStringHdl& name, uint_32 unique );
+        MergeNameKey( uint_32 tag, bool ext, const char * name, uint_32 unique );
         MergeNameKey( const MergeNameKey& other );
 
 inline  bool            operator< ( const MergeNameKey& other ) const;
@@ -54,7 +54,7 @@ inline  MergeNameKey&   operator= ( const MergeNameKey& other );
         uint_32         _tag;
         bool            _extern;
         MergeStringHdl  _name;
-        uint_16         _unique;    // this makes the key unique for collisions
+        uint_32         _unique;    // this makes the key unique for collisions
 };
 
 bool MergeNameKey::operator< ( const MergeNameKey& other ) const

@@ -55,11 +55,11 @@ int _MessageLoop( BOOL doexit )
     MSG         msg;
     WORD        rc=1;
 
-    while( PeekMessage( &msg, NULL, NULL, NULL, PM_NOYIELD | PM_NOREMOVE ) ) {
-        rc = GetMessage( &msg, NULL, NULL, NULL );
+    while( PeekMessage( &msg, (HWND)NULL, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
+        rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
         if( !rc ) {
             if( doexit ) {
-                _WindowExitRtn = NULL;
+                _WindowsExitRtn = NULL;
                 exit( msg.wParam );
             }
             break;
@@ -85,10 +85,10 @@ int _BlockingMessageLoop( BOOL doexit )
     MSG         msg;
     WORD        rc=1;
 
-    rc = GetMessage( &msg, NULL, NULL, NULL );
+    rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
     if( !rc ) {
         if( doexit ) {
-            _WindowExitRtn = NULL;
+            _WindowsExitRtn = NULL;
             exit( msg.wParam );
         }
     } else {
@@ -104,7 +104,7 @@ int _BlockingMessageLoop( BOOL doexit )
  */
 void _OutOfMemory( void )
 {
-    MessageBox( NULL,"Out Of Memory!","SYSTEM ERROR", MB_OK );
+    MessageBox( (HWND)NULL, "Out Of Memory!", "SYSTEM ERROR", MB_OK );
 
 } /* _OutOfMemory */
 
@@ -166,11 +166,11 @@ void _NewCursor( LPWDATA w, cursors type )
     w->CaretType = type;
     switch( type ) {
     case SMALL_CURSOR:
-        CreateCaret( w->hwnd, NULL, 0, w->ychar );
+        CreateCaret( w->hwnd, (HBITMAP)NULL, 0, w->ychar );
         w->hascursor = TRUE;
         break;
     case FAT_CURSOR:
-        CreateCaret( w->hwnd, NULL, 4, w->ychar );
+        CreateCaret( w->hwnd, (HBITMAP)NULL, 4, w->ychar );
         w->hascursor = TRUE;
         break;
     case ORIGINAL_CURSOR:

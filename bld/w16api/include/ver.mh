@@ -1,0 +1,194 @@
+/*
+ *  ver.h       Version information functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_VER
+#define _INC_VER
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#ifdef LIB
+
+#ifndef WINAPI
+#define WINAPI                  __far __pascal
+#define NEAR                    __near
+#define FAR                     __far
+#define PASCAL                  __pascal
+typedef int                     BOOL;
+#define TRUE                    1
+#define FALSE                   0
+typedef unsigned char           BYTE;
+typedef unsigned short          WORD;
+typedef unsigned int            UINT;
+typedef signed long             LONG;
+typedef unsigned long           DWORD;
+typedef char far                *LPSTR;
+typedef const char far          *LPCSTR;
+typedef int                     HFILE;
+#define OFSTRUCT                void
+#define LOWORD( l )             ((WORD)(l))
+#define HIWORD( l )             ((WORD)(((DWORD)(l) >> 16) & 0xFFFF))
+#define MAKEINTRESOURCE( i )    (LPSTR)((DWORD)((WORD)(i)))
+#endif
+
+#else
+
+#ifndef _INC_WINDOWS
+    #define UINT        WORD
+    #define LPCSTR      LPSTR
+    #define HFILE       int
+#endif
+
+#endif
+
+#ifdef RC_INVOKED
+    #define ID( id )    id
+#else
+    #define ID( id )    MAKEINTRESOURCE( id )
+#endif
+
+/* Version information resource type */
+#define VS_FILE_INFO        ID( 16 )
+
+/* Version information resource identifiers */
+#define VS_VERSION_INFO     ID( 1 )
+#define VS_USER_DEFINED     ID( 100 )
+
+/* VS_FIXEDFILEINFO signature */
+#define VS_FFI_SIGNATURE        0xFEEF04BDL
+
+/* VS_FIXEDFILEINFO structure version */
+#define VS_FFI_STRUCVERSION     0x00010000L
+
+/* File flags mask value */
+#define VS_FFI_FILEFLAGSMASK    0x0000003FL
+
+/* File flags */
+#define VS_FF_DEBUG         0x00000001L
+#define VS_FF_PRERELEASE    0x00000002L
+#define VS_FF_PATCHED       0x00000004L
+#define VS_FF_PRIVATEBUILD  0x00000008L
+#define VS_FF_INFOINFERRED  0x00000010L
+#define VS_FF_SPECIALBUILD  0x00000020L
+
+/* File operating systems */
+#define VOS_UNKNOWN         0x00000000L
+#define VOS_DOS             0x00010000L
+#define VOS_OS216           0x00020000L
+#define VOS_OS232           0x00030000L
+#define VOS_NT              0x00040000L
+#define VOS__BASE           0x00000000L
+#define VOS__WINDOWS16      0x00000001L
+#define VOS__PM16           0x00000002L
+#define VOS__PM32           0x00000003L
+#define VOS__WINDOWS32      0x00000004L
+#define VOS_DOS_WINDOWS16   0x00010001L
+#define VOS_DOS_WINDOWS32   0x00010004L
+#define VOS_OS216_PM16      0x00020002L
+#define VOS_OS232_PM32      0x00030003L
+#define VOS_NT_WINDOWS32    0x00040004L
+
+/* File types */
+#define VFT_UNKNOWN     0x00000000L
+#define VFT_APP         0x00000001L
+#define VFT_DLL         0x00000002L
+#define VFT_DRV         0x00000003L
+#define VFT_FONT        0x00000004L
+#define VFT_VXD         0x00000005L
+#define VFT_STATIC_LIB  0x00000007L
+
+/* File subtypes */
+#define VFT2_UNKNOWN            0x00000000L
+#define VFT2_DRV_PRINTER        0x00000001L
+#define VFT2_DRV_KEYBOARD       0x00000002L
+#define VFT2_DRV_LANGUAGE       0x00000003L
+#define VFT2_DRV_DISPLAY        0x00000004L
+#define VFT2_DRV_MOUSE          0x00000005L
+#define VFT2_DRV_NETWORK        0x00000006L
+#define VFT2_DRV_SYSTEM         0x00000007L
+#define VFT2_DRV_INSTALLABLE    0x00000008L
+#define VFT2_DRV_SOUND          0x00000009L
+#define VFT2_DRV_COMM           0x0000000AL
+#define VFT2_FONT_RASTER        0x00000001L
+#define VFT2_FONT_VECTOR        0x00000002L
+#define VFT2_FONT_TRUETYPE      0x00000003L
+
+/* VerFindFile() flags */
+#define VFFF_ISSHAREDFILE   0x0001
+
+/* VerFindFile() return flags */
+#define VFF_CURNEDEST       0x0001
+#define VFF_FILEINUSE       0x0002
+#define VFF_BUFFTOOSMALL    0x0004
+
+/* VerInstallFile() flags */
+#define VIFF_FORCEINSTALL   0x0001
+#define VIFF_DONTDELETEOLD  0x0002
+
+/* VerInstallFile() return flags */
+#define VIF_TEMPFILE            0x00000001L
+#define VIF_MISMATCH            0x00000002L
+#define VIF_SRCOLD              0x00000004L
+#define VIF_DIFFLANG            0x00000008L
+#define VIF_DIFFCODEPG          0x00000010L
+#define VIF_DIFFTYPE            0x00000020L
+#define VIF_WRITEPROT           0x00000040L
+#define VIF_FILEINUSE           0x00000080L
+#define VIF_OUTOFSPACE          0x00000100L
+#define VIF_ACCESSVIOLATION     0x00000200L
+#define VIF_SHARINGVIOLATION    0x00000400L
+#define VIF_CANNOTCREATE        0x00000800L
+#define VIF_CANNOTDELETE        0x00001000L
+#define VIF_CANNOTRENAME        0x00002000L
+#define VIF_CANNOTDELETECUR     0x00004000L
+#define VIF_OUTOFMEMORY         0x00008000L
+#define VIF_CANNOTREADSRC       0x00010000L
+#define VIF_CANNOTREADDST       0x00020000L
+#define VIF_BUFFTOOSMALL        0x00040000L
+
+#ifndef RC_INVOKED
+
+#pragma pack( push, 1 )
+
+typedef signed short int SHORT;
+
+/* Fixed file information */
+typedef struct tagVS_FIXEDFILEINFO {
+    DWORD   dwSignature;
+    DWORD   dwStrucVersion;
+    DWORD   dwFileVersionMS;
+    DWORD   dwFileVersionLS;
+    DWORD   dwProductVersionMS;
+    DWORD   dwProductVersionLS;
+    DWORD   dwFileFlagsMask;
+    DWORD   dwFileFlags;
+    DWORD   dwFileOS;
+    DWORD   dwFileType;
+    DWORD   dwFileSubtype;
+    DWORD   dwFileDateMS;
+    DWORD   dwFileDateLS;
+} VS_FIXEDFILEINFO;
+
+/* Functions in VER.DLL */
+BOOL WINAPI     GetFileResource( LPCSTR, LPCSTR, LPCSTR, DWORD, DWORD, void FAR * );
+DWORD WINAPI    GetFileResourceSize( LPCSTR, LPCSTR, LPCSTR, DWORD FAR * );
+BOOL WINAPI     GetFileVersionInfo( LPCSTR, DWORD, DWORD, void FAR * );
+DWORD WINAPI    GetFileVersionInfoSize( LPCSTR, DWORD FAR * );
+UINT WINAPI     GetSystemDir( LPCSTR, LPSTR, int );
+UINT WINAPI     GetWindowsDir( LPCSTR, LPSTR, int );
+UINT WINAPI     VerFindFile( UINT, LPCSTR, LPCSTR, LPCSTR, LPSTR, UINT FAR *, LPSTR, UINT FAR * );
+DWORD WINAPI    VerInstallFile( UINT, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPSTR, UINT FAR * );
+UINT WINAPI     VerLanguageName( UINT, LPSTR, UINT );
+BOOL WINAPI     VerQueryValue( const void FAR *, LPCSTR, void FAR * FAR *, UINT FAR * );
+
+#pragma pack( pop )
+
+#endif
+
+:include cplusepi.sp
+
+#endif /* _INC_VER */

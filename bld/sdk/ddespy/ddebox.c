@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include <stdio.h>
 #include "wddespy.h"
 
@@ -42,29 +43,52 @@
  */
 void CreateListBox( HWND parent, ListBoxInfo *info )
 {
-    info->box = CreateWindow(
-        "LISTBOX",                      /* Window class name */
-        "Messages",                     /* Window caption */
-        WS_CHILD | LBS_NOTIFY |
-        WS_VSCROLL | WS_HSCROLL |
-        LBS_NOINTEGRALHEIGHT|
-        WS_BORDER,                      /* Window style */
-        SPY_X,                          /* Initial X position */
-        info->ypos,                     /* Initial Y position */
-        0,                              /* Initial X size */
-        0,                              /* Initial Y size */
-        parent,                         /* Parent window handle */
-        NULL,                           /* Window menu handle */
-        Instance,                       /* Program instance handle */
-        NULL);                          /* Create parameters */
+#if defined( __NT__ )
+    if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+        info->box = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "LISTBOX",                      /* Window class name */
+            "Messages",                     /* Window caption */
+            WS_CHILD | LBS_NOTIFY |
+            WS_VSCROLL | WS_HSCROLL |
+            LBS_NOINTEGRALHEIGHT,
+            SPY_X,                          /* Initial X position */
+            info->ypos,                     /* Initial Y position */
+            0,                              /* Initial X size */
+            0,                              /* Initial Y size */
+            parent,                         /* Parent window handle */
+            NULL,                           /* Window menu handle */
+            Instance,                       /* Program instance handle */
+            NULL );                         /* Create parameters */
+    } else {
+#endif
+        info->box = CreateWindow(
+            "LISTBOX",                      /* Window class name */
+            "Messages",                     /* Window caption */
+            WS_CHILD | LBS_NOTIFY |
+            WS_VSCROLL | WS_HSCROLL |
+            LBS_NOINTEGRALHEIGHT|
+            WS_BORDER,                      /* Window style */
+            SPY_X,                          /* Initial X position */
+            info->ypos,                     /* Initial Y position */
+            0,                              /* Initial X size */
+            0,                              /* Initial Y size */
+            parent,                         /* Parent window handle */
+            NULL,                           /* Window menu handle */
+            Instance,                       /* Program instance handle */
+            NULL );                         /* Create parameters */
+#if defined( __NT__ )
+    }
+#endif
     ShowWindow( info->box, SW_NORMAL );
     UpdateWindow( info->box );
     SendMessage( info->box, WM_SETFONT, (WPARAM)GetMonoFont(), 0L );
+
 } /* CreateListBox */
 
 /*
  * ResizeListBox - make list box new size, based on height/width of parent
- *                client area.
+ *                 client area
  */
 void ResizeListBox( WORD width, WORD height, ListBoxInfo *info )
 {
@@ -72,20 +96,27 @@ void ResizeListBox( WORD width, WORD height, ListBoxInfo *info )
     int         nwidth;
 
     nheight = height - info->ypos - info->hinthite;
-    if( nheight < 0 ) nheight = 0;
+    if( nheight < 0 ) {
+        nheight = 0;
+    }
 
     nwidth = width - SPY_X;
-    if( nwidth < SPY_X ) nwidth = SPY_X;
+    if( nwidth < SPY_X ) {
+        nwidth = SPY_X;
+    }
 
     MoveWindow( info->box, SPY_X, info->ypos, nwidth, nheight, TRUE );
-    /* this is a kludge to force window the refresh the window properly
-     * when it is scrolled horizontally */
+    /*
+     * This is a kludge to force the window to refresh properly
+     * when it is scrolled horizontally.
+     */
     if( info->old_area.right - info->old_area.left < width ) {
-        InvalidateRect( info->box, &( info->old_area ), TRUE );
+        InvalidateRect( info->box, &info->old_area, TRUE );
         UpdateWindow( info->box );
     }
     info->old_area.top = 0;
     info->old_area.left = 0;
     info->old_area.right = nwidth;
     info->old_area.bottom = nheight;
+
 } /* ResizeListBox */

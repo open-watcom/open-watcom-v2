@@ -33,6 +33,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "error.h"
 #include "file.h"
 #include "memory.h"
@@ -63,6 +64,77 @@ static int              allowRES = 0;
 static int              allowRBJ = 0;
 static int              allowRS = 0;
 static int              allowEXP = 0;
+
+static int              languageToForce = FORCE_NONE;
+
+/*
+ * Examine a file's extension to determine what type of file it is.  If the
+ * file has no extension, a warning is issued and TYPE_ASSUME_FILE is assumed.
+ */
+static int file_type( const char *filename )
+/******************************************/
+{
+    char *              newfilename;
+    char *              tempfilename;
+    char                ext[_MAX_EXT];
+    int                 type;
+
+    /*** Strip quotes from filename ***/
+    newfilename = DupStrMem( filename );
+    if( *newfilename == '"' ) {
+        tempfilename = newfilename + 1;                 /* skip leading " */
+        tempfilename[ strlen(tempfilename)-1 ] = '\0';  /* smite trailing " */
+    } else {
+        tempfilename = newfilename;
+    }
+
+    _splitpath( tempfilename, NULL, NULL, NULL, ext );
+    if( allowC  &&  !stricmp( ext, ".c" ) ) {
+        type = TYPE_C_FILE;
+    } else if( allowCPP  &&  !stricmp( ext, ".cc" ) ) {
+        type = TYPE_CPP_FILE;
+    } else if( allowCPP  &&  !stricmp( ext, ".cpp" ) ) {
+        type = TYPE_CPP_FILE;
+    } else if( allowCPP  &&  !stricmp( ext, ".cxx" ) ) {
+        type = TYPE_CPP_FILE;
+    } else if( allowCPP  &&  !stricmp( ext, ".odl" ) ) {
+        type = TYPE_CPP_FILE;
+    } else if( allowCPP  &&  !stricmp( ext, ".idl" ) ) {
+        type = TYPE_CPP_FILE;
+    } else if( allowDEF  &&  !stricmp( ext, ".def" ) ) {
+        type = TYPE_DEF_FILE;
+    } else if( allowOBJ  &&  !stricmp( ext, ".obj" ) ) {
+        type = TYPE_OBJ_FILE;
+    } else if( allowLIB  &&  !stricmp( ext, ".lib" ) ) {
+        type = TYPE_LIB_FILE;
+    } else if( allowRC  &&  !stricmp( ext, ".rc" ) ) {
+        type = TYPE_RC_FILE;
+    } else if( allowRES  &&  !stricmp( ext, ".res" ) ) {
+        type = TYPE_RES_FILE;
+    } else if( allowRBJ  &&  !stricmp( ext, ".rbj" ) ) {
+        type = TYPE_RBJ_FILE;
+    } else if( allowRS  &&  !stricmp( ext, ".rs" ) ) {
+        type = TYPE_RS_FILE;
+    } else if( allowEXP  &&  !stricmp( ext, ".exp" ) ) {
+        type = TYPE_EXP_FILE;
+    } else {
+        if( defaultType == TYPE_INVALID_FILE ) {
+            Zoinks();
+        }
+        if( languageToForce == FORCE_NONE ) {
+            Warning( "Unrecognized file type '%s' -- %s file assumed",
+                     filename, defaultName );
+        }
+        type = defaultType;
+    }
+    if( type == TYPE_C_FILE && languageToForce == FORCE_CPP_COMPILE ) {
+        type = TYPE_CPP_FILE;
+    } else if( type == TYPE_CPP_FILE && languageToForce == FORCE_C_COMPILE ) {
+        type = TYPE_C_FILE;
+    }
+    FreeMem( newfilename );
+    return( type );
+}
 
 
 /*
@@ -242,61 +314,14 @@ void AllowTypeFile( int type, ... )
 
 
 /*
- * Examine a file's extension to determine what type of file it is.  If the
- * file has no extension, a warning is issued and TYPE_ASSUME_FILE is assumed.
+ * Force compilation using the specified language.
  */
-static int file_type( const char *filename )
-/******************************************/
+void ForceLanguage( int language )
 {
-    char *              newfilename;
-    char *              tempfilename;
-    char                ext[_MAX_EXT];
-    int                 type;
-
-    /*** Strip quotes from filename ***/
-    newfilename = DupStrMem( filename );
-    if( *newfilename == '"' ) {
-        tempfilename = newfilename + 1;                 /* skip leading " */
-        tempfilename[ strlen(tempfilename)-1 ] = '\0';  /* smite trailing " */
-    } else {
-        tempfilename = newfilename;
+    languageToForce = language;
+    if( language == FORCE_C_COMPILE ) {
+        defaultType = TYPE_C_FILE;
+    } else if( language == FORCE_CPP_COMPILE ) {
+        defaultType = TYPE_CPP_FILE;
     }
-
-    _splitpath( tempfilename, NULL, NULL, NULL, ext );
-    if( allowC  &&  !stricmp( ext, ".c" ) ) {
-        type = TYPE_C_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cc" ) ) {
-        type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cpp" ) ) {
-        type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cxx" ) ) {
-        type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".odl" ) ) {
-        type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".idl" ) ) {
-        type = TYPE_CPP_FILE;
-    } else if( allowDEF  &&  !stricmp( ext, ".def" ) ) {
-        type = TYPE_DEF_FILE;
-    } else if( allowOBJ  &&  !stricmp( ext, ".obj" ) ) {
-        type = TYPE_OBJ_FILE;
-    } else if( allowLIB  &&  !stricmp( ext, ".lib" ) ) {
-        type = TYPE_LIB_FILE;
-    } else if( allowRC  &&  !stricmp( ext, ".rc" ) ) {
-        type = TYPE_RC_FILE;
-    } else if( allowRES  &&  !stricmp( ext, ".res" ) ) {
-        type = TYPE_RES_FILE;
-    } else if( allowRBJ  &&  !stricmp( ext, ".rbj" ) ) {
-        type = TYPE_RBJ_FILE;
-    } else if( allowRS  &&  !stricmp( ext, ".rs" ) ) {
-        type = TYPE_RS_FILE;
-    } else if( allowEXP  &&  !stricmp( ext, ".exp" ) ) {
-        type = TYPE_EXP_FILE;
-    } else {
-        if( defaultType == TYPE_INVALID_FILE )  Zoinks();
-        Warning( "Unrecognized file type '%s' -- %s file assumed",
-                 filename, defaultName );
-        type = defaultType;
-    }
-    FreeMem( newfilename );
-    return( type );
 }

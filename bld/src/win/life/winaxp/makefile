@@ -1,9 +1,10 @@
+platform = Win32
 CC = wccaxp
 CFLAGS = -bt=nt
 res1_flags = -bt=nt
 
-!include ..\life.mif
-!include ..\..\master.mif
+!include ../life.mif
+!include ../../master.mif
 
 linkit : .PROCEDURE
     @%append $(LNK) system ntaxp_win

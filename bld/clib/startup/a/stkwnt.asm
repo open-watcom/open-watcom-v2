@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Stack checking for Win32.
 ;*
 ;*****************************************************************************
 
@@ -43,7 +42,7 @@ ifdef __MT__
 else
         extrn   "C",_STACKLOW : dword
 endif
-msg     db      "Stack Overflow!", 0dh, 0ah, 0
+msg     db      "Stack Overflow!", 0
         enddata
 
         xinit   _init_stk,DEF_PRIORITY
@@ -89,11 +88,7 @@ endif
         _endguess                       ; endguess
 
 __STKOVERFLOW:
-        if __WASM__ ge 100
-            xdefp  "C",__STKOVERFLOW
-        else
-            xdefp  <"C",__STKOVERFLOW>
-        endif
+        xdefp   "C",__STKOVERFLOW
         pop     eax                     ; pop the stack
 ifdef __STACK__
         push    1                       ; ...

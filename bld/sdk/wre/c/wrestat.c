@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <mbstring.h>
 #include <stdlib.h>
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "statwnd.h"
 #include "wreribbn.h"
 #include "wrestat.h"
@@ -57,41 +57,42 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WREStatusWndProc ( HWND, unsigned, UINT, LONG );
+extern BOOL WREStatusWndProc( HWND, unsigned, UINT, LONG );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool        WREDisplayStatusText     ( char * );
+static Bool WREDisplayStatusText( char * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
+static void      *WREStatusBar = NULL;
 static HWND      WREStatusWindow = NULL;
-static HFONT     WREStatusFont   = NULL;
-static char      WREStatusText[2*MAX_STATUS_TEXT+2] = { 0 };
-static char      WREClearStatusText[7] =
-{
+static HFONT     WREStatusFont = NULL;
+static char      WREStatusText[2 * MAX_STATUS_TEXT + 2] = { 0 };
+static char      WREClearStatusText[7] = {
     ' ', STATUS_ESC_CHAR, STATUS_NEXT_BLOCK,
     ' ', STATUS_ESC_CHAR, STATUS_NEXT_BLOCK,
     0
 };
 static int       WREStatusDepth = 0;
 
-int WREGetStatusDepth ( void )
+int WREGetStatusDepth( void )
 {
-    return ( WREStatusDepth );
+    return( WREStatusDepth );
 }
 
-void WREDestroyStatusLine ( void )
+void WREDestroyStatusLine( void )
 {
-    if ( WREStatusWindow != NULL ) {
-        DestroyWindow ( WREStatusWindow );
-        StatusWndFini ();
+    if( WREStatusWindow != NULL ) {
+        DestroyWindow( WREStatusWindow );
+        StatusWndDestroy( WREStatusBar );
+        StatusWndFini();
     }
 
-    if ( WREStatusFont != NULL ) {
-        DeleteObject ( WREStatusFont );
+    if( WREStatusFont != NULL ) {
+        DeleteObject( WREStatusFont );
     }
 }
 
@@ -108,15 +109,15 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     int                 point_size;
     Bool                use_default;
 
-    memset( &lf, 0, sizeof(LOGFONT) );
+    memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
     lf.lfWeight = FW_BOLD;
     use_default = TRUE;
 
     status_font = WREAllocRCString( WRE_STATUSFONT );
-    if( status_font ) {
-        cp = _mbschr( status_font, '.' );
-        if( cp ) {
+    if( status_font != NULL ) {
+        cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
+        if( cp != NULL ) {
             *cp = '\0';
             strcpy( lf.lfFaceName, status_font );
             cp++;
@@ -144,15 +145,16 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     rect.top = rect.bottom - WREStatusDepth;
 
     StatusWndInit( inst, WREStatusWndProc, 0, (HCURSOR)NULL );
+    WREStatusBar = StatusWndStart();
 
     sbd.separator_width = STATUS_LINE_PAD;
-    sbd.width           = STATUS1_WIDTH;
-    sbd.width_is_percent= FALSE;
+    sbd.width = STATUS1_WIDTH;
+    sbd.width_is_percent = FALSE;
     sbd.width_is_pixels = TRUE;
 
-    StatusWndSetSeparators( 1, &sbd );
+    StatusWndSetSeparators( WREStatusBar, 1, &sbd );
 
-    WREStatusWindow = StatusWndCreate( main, &rect, inst, NULL );
+    WREStatusWindow = StatusWndCreate( WREStatusBar, main, &rect, inst, NULL );
 
     if( WREStatusWindow == NULL ) {
         WREDisplayErrorMsg( WRE_NOCREATESTATUS );
@@ -160,7 +162,10 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     }
 
     /* set the text in the status window */
-    WRESetStatusReadyText( );
+    WRESetStatusReadyText();
+
+    GetWindowRect( WREStatusWindow, &rect );
+    WREStatusDepth = rect.bottom - rect.top;
 
     return( TRUE );
 }
@@ -169,11 +174,10 @@ void WREResizeStatusWindows( RECT *rect )
 {
     int         y;
 
-    if( WREStatusWindow ) {
+    if( WREStatusWindow != NULL ) {
         y = WREGetRibbonHeight();
         y = max( y, (rect->bottom - rect->top) - WREStatusDepth );
-        MoveWindow( WREStatusWindow, 0, y,
-                    (rect->right - rect->left), WREStatusDepth, TRUE );
+        MoveWindow( WREStatusWindow, 0, y, rect->right - rect->left, WREStatusDepth, TRUE );
     }
 }
 
@@ -203,34 +207,33 @@ Bool WRESetStatusByID( DWORD id1, DWORD id2 )
 
     ret = WRESetStatusText( str1, str2, TRUE );
 
-    if( str1 ) {
+    if( str1 != NULL ) {
         WREFreeRCString( str1 );
     }
 
-    if( str2 ) {
+    if( str2 != NULL ) {
         WREFreeRCString( str2 );
     }
 
     return( ret );
 }
 
-Bool WRESetStatusText ( const char *status1, const char *status2,
-                        int redisplay )
+Bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
 {
-    int   len;
-    int   pos;
+    int len;
+    int pos;
 
     /* touch unused vars to get rid of warning */
-    _wre_touch(redisplay);
+    _wre_touch( redisplay );
 
-    if ( WREStatusWindow == NULL ) {
-        return ( TRUE );
+    if( WREStatusWindow == NULL ) {
+        return( TRUE );
     }
 
-    if ( status1 ) {
-        len = min ( strlen (status1), MAX_STATUS_TEXT );
-        if ( len ) {
-            memcpy ( WREStatusText, status1, len );
+    if( status1 != NULL ) {
+        len = min( strlen( status1 ), MAX_STATUS_TEXT );
+        if( len != 0 ) {
+            memcpy( WREStatusText, status1, len );
             pos = len;
         } else {
             WREStatusText[0] = ' ';
@@ -240,13 +243,13 @@ Bool WRESetStatusText ( const char *status1, const char *status2,
         pos = 0;
     }
 
-    if ( status2 ) {
+    if( status2 != NULL ) {
         WREStatusText[pos++] = STATUS_ESC_CHAR;
         WREStatusText[pos++] = STATUS_NEXT_BLOCK;
-        len = min ( strlen (status2), MAX_STATUS_TEXT );
-        if ( len ) {
-            memcpy ( WREStatusText+pos, status2, len );
-            WREStatusText[pos+len] = '\0';
+        len = min( strlen( status2 ), MAX_STATUS_TEXT );
+        if( len != 0 ) {
+            memcpy ( WREStatusText + pos, status2, len );
+            WREStatusText[pos + len] = '\0';
         } else {
             WREStatusText[pos++] = ' ';
             WREStatusText[pos]   = '\0';
@@ -255,43 +258,43 @@ Bool WRESetStatusText ( const char *status1, const char *status2,
         WREStatusText[pos++] = '\0';
     }
 
-    if ( status1 || status2 ) {
-        return ( WREDisplayStatusText ( WREStatusText ) );
+    if( status1 != NULL || status2 != NULL ) {
+        return( WREDisplayStatusText( WREStatusText ) );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WREDisplayStatusText ( char *str )
+Bool WREDisplayStatusText( char *str )
 {
-    HDC    hdc;
+    HDC hdc;
 
-    if ( WREStatusWindow ) {
-        hdc = GetDC ( WREStatusWindow );
-        if ( hdc != (HDC)NULL ) {
-            if ( str ) {
-                StatusWndDrawLine ( hdc, WREStatusFont, str, -1 );
+    if( WREStatusWindow != NULL ) {
+        hdc = GetDC( WREStatusWindow );
+        if( hdc != (HDC)NULL ) {
+            if( str != NULL ) {
+                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont, str, -1 );
             } else {
-                StatusWndDrawLine ( hdc, WREStatusFont, WREClearStatusText, -1 );
+                StatusWndDrawLine( WREStatusBar, hdc, WREStatusFont,
+                                   WREClearStatusText, -1 );
             }
-            ReleaseDC ( WREStatusWindow, hdc );
+            ReleaseDC( WREStatusWindow, hdc );
         }
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WREStatusWndProc ( HWND hWnd, unsigned msg, UINT wParam, LONG lParam )
+BOOL WREStatusWndProc( HWND hWnd, unsigned msg, UINT wParam, LONG lParam )
 {
     /* touch unused vars to get rid of warning */
-    _wre_touch(hWnd);
-    _wre_touch(wParam);
-    _wre_touch(lParam);
+    _wre_touch( hWnd );
+    _wre_touch( wParam );
+    _wre_touch( lParam );
 
-    if ( msg == WM_DESTROY ) {
+    if( msg == WM_DESTROY ) {
         WREStatusWindow = NULL;
     }
 
     return( FALSE );
 }
-

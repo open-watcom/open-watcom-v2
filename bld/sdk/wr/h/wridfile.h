@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int              WR_EXPORT WRIs32Bit     ( WRFileType );
-extern WRFileType       WR_EXPORT WRIdentifyFile( const char * );
+extern int          WR_EXPORT WRIs32Bit( WRFileType );
+extern WRFileType   WR_EXPORT WRIdentifyFile( const char * );
 
 #endif

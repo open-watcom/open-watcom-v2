@@ -1,0 +1,11 @@
+dirs=              &
+        src/os2    &
+        src/win    &
+        src/win32  &
+        src/win386
+
+$(dirs) : .SYMBOLIC
+        rm -f $^@/*.obj $^@/*.mk $^@/*.mk1 $^@/*.lk1
+	rm -f $^@/*.ilk $^@/*.map $^@/*.err
+
+

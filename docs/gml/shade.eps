@@ -1,0 +1,45 @@
+/jgr .96 def
+%
+%
+/amyax 0 def
+/amlmar 15000 def
+/amlrov 16000 def
+/jgy 0 def
+/jslim 0 def
+/chklmar { dup amyax sub abs 3 gt {/jyax 1 def} {/jyax 0 def}ifelse
+dup /amyax exch def
+exch dup /amx exch def amx amlmar lt {/amlmar amx def
+/amlrov amx def} if amx amlrov lt {amx 200 add amlmar gt jgr 1 ne and
+{/amlmar amx def} if
+} if /amlrov amx def exch } def
+%
+%
+/shadeprol {save jgr setgray /gx currentpoint /gy exch def def
+jgy gy ne jgr 1 ne or {(X) true charpath flattenpath pathbbox
+exch pop exch sub exch pop /jgryh exch def} if
+jgryh dup} def
+%
+%
+/shadefig {shadeprol
+/dxd exch def .60 mul /dg2
+exch def newpath jgr 1 ne {1200 gy dxd add dg2 add dup /ngy exch def moveto 7000
+ngy lineto} {7000 gy dg2 2 mul sub dup /ngy exch def moveto} ifelse 7000 0
+lineto 1200 0 lineto 0 ngy dg2 sub rlineto jgr 1 ne {} {7000 0 rlineto} ifelse
+fill jgryh exch gy exch restore /jgy exch def /jgryh exch def
+jgr 1 eq {/jgr .95 def} {/jgr 1 def}ifelse } bind def
+%
+%
+/shadepara {shadeprol
+jslim 1 eq {pop pop /dgc 0 def /dgy 0 def}
+{/dgc exch def .4 mul /dgy exch def} ifelse
+gx .5 add cvi
+amlmar eq jyax 1 eq or jgr 1 eq and {/ngy gy dgy sub def newpath gx ngy
+  moveto} {/ngy gy dgc add dgy add def newpath gx gy moveto 0 dgc dgy add
+	  rlineto}ifelse
+7000 ngy lineto 7000 0 lineto amlmar 0 lineto 0 gy dgy sub rlineto
+gx gy dgy sub lineto gx gy lineto fill jgryh exch gy exch restore
+/jgy exch def /jgryh exch def jgr 1 eq {/jgr .95 def} {/jgr 1
+def}ifelse /jslim 0 def } bind def
+%
+%
+/shadeslim {/jslim 1 def shadepara} def

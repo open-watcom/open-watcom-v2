@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrspnp() - far strspnp().
 *
 ****************************************************************************/
 
@@ -39,8 +38,8 @@ _WCRTLINK char _WCFAR *_fstrspnp( const char _WCFAR *p1, const char _WCFAR *p2 )
     size_t              index;
 
     index = _fstrspn( p1, p2 );
-    if( *(p1+index) != '\0' ) {
-        return( (char _WCFAR*)(p1+index) );
+    if( *(p1 + index) != '\0' ) {
+        return( (char _WCFAR*)(p1 + index) );
     } else {
         return( NULL );
     }

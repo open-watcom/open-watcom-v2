@@ -30,24 +30,22 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
-#include "keys.h"
 
 
 /*
  * DoGenericFilter - filter some crap
  */
-int DoGenericFilter( linenum s, linenum e, char *cmd )
+vi_rc DoGenericFilter( linenum s, linenum e, char *cmd )
 {
-    fcb         *cfcb,*s1fcb,*e1fcb,*tfcb;
+    fcb         *cfcb, *tfcb;
     line        *cline;
     FILE        *f;
-    int         rc;
+    vi_rc       rc;
     char        realcmd[MAX_STR];
     char        filtin[L_tmpnam], filtout[L_tmpnam];
+    fcb_list    fcblist;
 
     rc = ModificationTest();
     if( rc != ERR_NO_ERR ) {
@@ -60,15 +58,15 @@ int DoGenericFilter( linenum s, linenum e, char *cmd )
     tmpnam( filtin );
     tmpnam( filtout );
     f = fopen( filtin, "w" );
-    if( f==NULL ) {
+    if( f == NULL ) {
         return( ERR_FILE_OPEN );
     }
 
     /*
      * filter on a line
      */
-    rc = GetCopyOfLineRange( s,e, &s1fcb, &e1fcb );
-    if( rc ) {
+    rc = GetCopyOfLineRange( s, e, &fcblist );
+    if( rc != ERR_NO_ERR ) {
         fclose( f );
         return( rc );
     }
@@ -76,17 +74,13 @@ int DoGenericFilter( linenum s, linenum e, char *cmd )
     /*
      * now, dump this crap to a tmp file
      */
-    cfcb = s1fcb;
-    while( cfcb != NULL ) {
+    for( cfcb = fcblist.head; cfcb != NULL; cfcb = tfcb ) {
         FetchFcb( cfcb );
-        cline = cfcb->line_head;
-        while( cline != NULL ) {
+        for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
             MyFprintf( f, "%s\n", cline->data );
-            cline = cline->next;
         }
-        tfcb = cfcb;
-        cfcb = cfcb->next;
-        FcbFree( tfcb );
+        tfcb = cfcb->next;
+        FcbFree( cfcb );
     }
     fclose( f );
 
@@ -96,10 +90,10 @@ int DoGenericFilter( linenum s, linenum e, char *cmd )
     rc = ExecCmd( filtin, filtout, cmd );
     StartUndoGroup( UndoStack );
     rc = DeleteLineRange( s, e, 0 );
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         strcpy( realcmd, filtout );
-        ReadAFile( s-1, realcmd );
-        Message1( "%l lines filtered through %s",e-s+1, cmd );
+        ReadAFile( s - 1, realcmd );
+        Message1( "%l lines filtered through %s", e - s + 1, cmd );
     }
     EndUndoGroup( UndoStack );
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Runtime debug support - error reporting.
 *
 ****************************************************************************/
 
@@ -46,11 +45,7 @@
     #include <os2.h>
 #endif
 #ifndef __NT__
-    #ifdef __QNX__
-        #include <unistd.h>
-    #else
-        #include <io.h>
-    #endif
+    #include <unistd.h>
 #endif
 #include "dbgdata.h"
 #include "enterdb.h"
@@ -60,7 +55,7 @@
 #define TOO_LONG_MSG            "_CrtDbgReport: Message too long"
 #define ASSERT_PREFIX1          "Assertion failed!"
 #define ASSERT_PREFIX2          "Assertion failed: "
-#define WINTITLE                "WATCOM C/C++ Debug Library"
+#define WINTITLE                "Open Watcom C/C++ Debug Library"
 
 
 
@@ -140,7 +135,7 @@ static int window_report( int reporttype, const char *filename,
         #ifdef __NT__
             flags |= MB_SETFOREGROUND;
         #endif
-        osrc = MessageBox( NULL, outmsg, WINTITLE, flags );
+        osrc = MessageBox( (HWND)NULL, outmsg, WINTITLE, flags );
         switch( osrc ) {
             case 0:
                 retval = -1;

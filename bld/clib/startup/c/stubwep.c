@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default _WEP function for Windows apps.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-
-// default _WEP function for windows apps
 
 int _WCFAR __pascal _WEP( int arg )
 {

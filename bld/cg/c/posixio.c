@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Buffered POSIX style I/O.
 *
 ****************************************************************************/
 
@@ -36,9 +35,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "standard.h"
-#include "sysmacro.h"
+#include "cgdefs.h"
+#include "cgmem.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
@@ -49,26 +49,25 @@
 #include "banner.h"
 #include "feprotos.h"
 
-
-/*
- *
- * START KLUDGE TO GET QNX WORKING FOR NOW.
- *
- */
-
-#ifdef __QNX__
-
-    #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
-
-#else
-
-    #define PMODE       S_IRWXU
-
+#ifndef O_BINARY
+#define O_BINARY 0
 #endif
 
 /*
  *
- * END KLUDGE TO GET QNX WORKING FOR NOW
+ * START KLUDGE TO GET UNIX WORKING FOR NOW.
+ *
+ */
+
+#if defined(__UNIX__)
+    #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
+#else
+    #define PMODE       S_IRWXU
+#endif
+
+/*
+ *
+ * END KLUDGE TO GET UNIX WORKING FOR NOW
  *
  */
 
@@ -83,8 +82,8 @@ extern  void            FatalError(char *);
 static  unsigned_32     ObjOffset;
 static  handle          ObjFile;
 static  bool            NeedSeek;
-static  char            ObjName[_MAX_PATH2];
-static  bool            AbortObj;
+static  char            ObjName[PATH_MAX+1];
+static  bool            EraseObj;
 
 
 #define BOUNDARY 64
@@ -103,12 +102,14 @@ struct buf {
 static  struct buf      *BufList;       // start of list of buffers
 static  struct buf      *CurBuf;        // current buffer
 
-static struct buf *NewBuffer()
+
+static struct buf *NewBuffer( void )
+/**********************************/
 {
     struct buf  *newbuf;
 
-    _Alloc( newbuf, sizeof(struct buf) );
-    _Alloc( newbuf->buf, IOBUFSIZE );
+    newbuf = CGAlloc( sizeof(struct buf) );
+    newbuf->buf = CGAlloc( IOBUFSIZE );
     newbuf->bufptr = newbuf->buf;
     newbuf->bytes_left = IOBUFSIZE;
     newbuf->bytes_written = 0;
@@ -116,9 +117,55 @@ static struct buf *NewBuffer()
     return( newbuf );
 }
 
-extern  bool    CGOpenf() {
-/*************************/
 
+static  void    CloseStream( handle h )
+/*************************************/
+{
+    close( h );
+}
+
+
+static  void    EraseStream( char *name )
+/***************************************/
+{
+    remove( name );
+}
+
+
+static void cleanupLastBuffer( struct buf *pbuf )
+{
+    uint amt_used;
+
+    amt_used = IOBUFSIZE - pbuf->bytes_left;
+    if( pbuf->bytes_written < amt_used ) {
+        pbuf->bytes_written = amt_used;
+    }
+}
+
+
+static  void    ObjError( int    errcode )
+/****************************************/
+{
+    FatalError( strerror(  errcode ) );
+}
+
+
+static  handle  CreateStream( char *name )
+/****************************************/
+{
+    int         retc;
+
+    retc = open( name, O_CREAT+O_TRUNC+O_RDWR+O_BINARY, PMODE );
+    if( retc == -1 ) {
+        ObjError( errno );
+    }
+    return( retc );
+}
+
+
+extern  bool    CGOpenf( void )
+/*****************************/
+{
     CopyStr( FEAuxInfo( NULL, OBJECT_FILE_NAME ), ObjName );
     ObjFile = -1;
     ObjFile = CreateStream( ObjName );
@@ -129,19 +176,18 @@ extern  bool    CGOpenf() {
 }
 
 
-extern  void    OpenObj() {
-/*************************/
-
+extern  void    OpenObj( void )
+/*****************************/
+{
     ObjOffset = 0;
     NeedSeek = FALSE;
-    AbortObj = FALSE;
+    EraseObj = FALSE;
 }
 
 
-static  byte    DoSum( byte *buff, int len ) {
-/********************************************/
-
-
+static  byte    DoSum( byte *buff, int len )
+/******************************************/
+{
     byte        sum;
 
     sum = 0;
@@ -151,16 +197,16 @@ static  byte    DoSum( byte *buff, int len ) {
     return( sum );
 }
 
-static  unsigned_32     Byte( objhandle i ) {
-/*******************************************/
-
+static  unsigned_32     Byte( objhandle i )
+/*****************************************/
+{
     return( i );
 }
 
 
-static  objhandle       Offset( unsigned_32 i ) {
-/***********************************************/
-
+static  objhandle       Offset( unsigned_32 i )
+/*********************************************/
+{
     if( i > BIGGEST ) {
         FatalError( "Object file too large" );
         return( 0 );
@@ -170,15 +216,134 @@ static  objhandle       Offset( unsigned_32 i ) {
 }
 
 
-extern  objhandle       AskObjHandle() {
-/**************************************/
+static  void    PutStream( handle h, byte *b, uint len )
+/******************************************************/
+{
+#if 0
+    int         retc;
 
+    retc = write( h, b, len );
+    if( retc == -1 ) {
+        ObjError( errno );
+    }
+    if( (unsigned_16)retc != len ) {
+        FatalError( "Error writing object file - disk is full" );
+    }
+#else
+    uint        n;
+
+    h = h;
+    for( ;; ) {
+        n = len;
+        if( n > CurBuf->bytes_left ) {
+            n = CurBuf->bytes_left;
+        }
+        memcpy( CurBuf->bufptr, b, n );
+        b += n;
+        CurBuf->bufptr += n;
+        CurBuf->bytes_left -= n;
+        if( CurBuf->nextbuf == NULL ) {         // if this is last buffer
+            cleanupLastBuffer( CurBuf );
+        }
+        len -= n;
+        if( len == 0 ) break;
+        if( CurBuf->nextbuf == NULL ) {
+            CurBuf->nextbuf = NewBuffer();
+            CurBuf = CurBuf->nextbuf;
+        } else {
+            CurBuf = CurBuf->nextbuf;
+            CurBuf->bufptr = CurBuf->buf;
+            CurBuf->bytes_left = IOBUFSIZE;
+        }
+    }
+#endif
+}
+
+
+static  void    GetStream( handle h, byte *b, uint len )
+/******************************************************/
+{
+#if 0
+    int         retc;
+
+    retc = read( h, b, len );
+    if( retc == -1 ) {
+        ObjError( errno );
+    }
+    if( (unsigned_16)retc != len ) {
+        _Zoiks( ZOIKS_006 );
+    }
+#else
+    uint        n;
+
+    h = h;
+    for( ;; ) {
+        n = len;
+        if( n > CurBuf->bytes_left ) {
+            n = CurBuf->bytes_left;
+        }
+        memcpy( b, CurBuf->bufptr, n );
+        b += n;
+        CurBuf->bufptr += n;
+        CurBuf->bytes_left -= n;
+        len -= n;
+        if( len == 0 ) break;
+        CurBuf = CurBuf->nextbuf;
+        if( CurBuf == NULL ) {
+            _Zoiks( ZOIKS_006 );
+        }
+        CurBuf->bufptr = CurBuf->buf;
+        CurBuf->bytes_left = IOBUFSIZE;
+    }
+#endif
+}
+
+
+static  void    SeekStream( handle h, unsigned_32 offset )
+/********************************************************/
+{
+#if 0
+    offset = lseek( h, offset, 0 );
+    if( offset == -1 ) {
+        ObjError( errno );
+    }
+#else
+    struct buf  *pbuf;
+    unsigned_32 n;
+
+    h = h;
+    pbuf = BufList;
+    n = 0;
+    for( ;; ) {
+        n += IOBUFSIZE;
+        if( n > offset ) break;
+        if( pbuf->nextbuf == NULL ) {
+            // seeking past the end of the file (extend file)
+            pbuf->bytes_written = IOBUFSIZE;
+            pbuf->nextbuf = NewBuffer();
+        }
+        pbuf = pbuf->nextbuf;
+    }
+    n = offset - (n - IOBUFSIZE);
+    pbuf->bufptr = pbuf->buf + n;
+    pbuf->bytes_left = IOBUFSIZE - n;
+    if( pbuf->nextbuf == NULL ) {               // if this is last buffer
+        cleanupLastBuffer( pbuf );
+    }
+    CurBuf = pbuf;
+#endif
+}
+
+
+extern  objhandle       AskObjHandle( void )
+/******************************************/
+{
     return( Offset( ObjOffset ) );
 }
 
-extern  void    PutObjBytes( byte *buff, uint len ) {
-/***************************************************/
-
+extern  void    PutObjBytes( byte *buff, uint len )
+/*************************************************/
+{
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
         NeedSeek = FALSE;
@@ -187,9 +352,9 @@ extern  void    PutObjBytes( byte *buff, uint len ) {
     ObjOffset += len;
 }
 
-extern  void    PutObjRec( byte class, byte *buff, uint len ) {
-/*************************************************************/
-
+extern  void    PutObjRec( byte class, byte *buff, uint len )
+/***********************************************************/
+{
 #include "cgnoalgn.h"
     static struct {
         byte            class;
@@ -221,9 +386,9 @@ extern  void    PutObjRec( byte class, byte *buff, uint len ) {
 }
 
 
-extern  void    PatchObj( objhandle rec, uint offset, byte *buff, int len ) {
-/***************************************************************************/
-
+extern  void    PatchObj( objhandle rec, uint offset, byte *buff, int len )
+/*************************************************************************/
+{
     unsigned_32         recoffset;
     byte                cksum;
     unsigned_16         reclen;
@@ -253,27 +418,29 @@ extern  void    PatchObj( objhandle rec, uint offset, byte *buff, int len ) {
 }
 
 
-extern  void    GetFromObj( objhandle rec, uint offset, byte *buff, int len ) {
-/*****************************************************************************/
-
+extern  void    GetFromObj( objhandle rec, uint offset, byte *buff, int len )
+/***************************************************************************/
+{
     SeekStream( ObjFile, Byte( rec ) + offset + 3 );
     GetStream( ObjFile, buff, len );
     NeedSeek = TRUE;
 }
 
 
-extern  void    ScratchObj() {
-/****************************/
-
-    AbortObj = TRUE;
+extern  void    AbortObj( void )
+/******************************/
+{
+    EraseObj = TRUE;
 }
 
+
 static void FlushBuffers( handle h )
+/**********************************/
 {
     struct buf  *pbuf;
     int         retc;
 
-    for(;;) {
+    for( ;; ) {
         pbuf = BufList;
         if( pbuf == NULL ) break;
         retc = write( h, pbuf->buf, pbuf->bytes_written );
@@ -281,20 +448,20 @@ static void FlushBuffers( handle h )
             FatalError( "Error writing object file" );
         }
         BufList = pbuf->nextbuf;
-        _Free( pbuf->buf, IOBUFSIZE );
-        _Free( pbuf, sizeof(struct buf) );
+        CGFree( pbuf->buf );
+        CGFree( pbuf );
     }
     CurBuf = NULL;
 }
 
-extern  void    CloseObj() {
-/**************************/
 
-
+extern  void    CloseObj( void )
+/******************************/
+{
     if( ObjFile != -1 ) {
         FlushBuffers( ObjFile );
         CloseStream( ObjFile );
-        if( AbortObj ) {
+        if( EraseObj ) {
             EraseStream( ObjName );
         }
         ObjFile = -1;
@@ -302,163 +469,16 @@ extern  void    CloseObj() {
 }
 
 
-static  handle  CreateStream( char *name ) {
-/******************************************/
-
-    int         retc;
-
-    retc = open( name, O_CREAT+O_TRUNC+O_RDWR+O_BINARY, PMODE );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    return( retc );
-}
-
-static  void    CloseStream( handle h ) {
-/***************************************/
-
-    close( h );
-}
-
-static  void    EraseStream( char *name ) {
-/*****************************************/
-
-    remove( name );
-}
-
-static void cleanupLastBuffer( struct buf *pbuf )
+extern  void    ScratchObj( void )
+/********************************/
 {
-    uint amt_used;
-
-    amt_used = IOBUFSIZE - pbuf->bytes_left;
-    if( pbuf->bytes_written < amt_used ) {
-        pbuf->bytes_written = amt_used;
-    }
+    EraseObj = TRUE;
+    CloseObj();
 }
 
-static  void    PutStream( handle h, byte *b, uint len ) {
-/*******************************************************/
-#if 0
-    int         retc;
-
-    retc = write( h, b, len );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    if( (unsigned_16)retc != len ) {
-        FatalError( "Error writing object file - disk is full" );
-    }
-#else
-    uint        n;
-
-    h = h;
-    for(;;) {
-        n = len;
-        if( n > CurBuf->bytes_left ) {
-            n = CurBuf->bytes_left;
-        }
-        memcpy( CurBuf->bufptr, b, n );
-        b += n;
-        CurBuf->bufptr += n;
-        CurBuf->bytes_left -= n;
-        if( CurBuf->nextbuf == NULL ) {         // if this is last buffer
-            cleanupLastBuffer( CurBuf );
-        }
-        len -= n;
-        if( len == 0 ) break;
-        if( CurBuf->nextbuf == NULL ) {
-            CurBuf->nextbuf = NewBuffer();
-            CurBuf = CurBuf->nextbuf;
-        } else {
-            CurBuf = CurBuf->nextbuf;
-            CurBuf->bufptr = CurBuf->buf;
-            CurBuf->bytes_left = IOBUFSIZE;
-        }
-    }
-#endif
-}
-
-static  void    GetStream( handle h, byte *b, uint len ) {
-/********************************************************/
-#if 0
-    int         retc;
-
-    retc = read( h, b, len );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    if( (unsigned_16)retc != len ) {
-        _Zoiks( ZOIKS_006 );
-    }
-#else
-    uint        n;
-
-    h = h;
-    for(;;) {
-        n = len;
-        if( n > CurBuf->bytes_left ) {
-            n = CurBuf->bytes_left;
-        }
-        memcpy( b, CurBuf->bufptr, n );
-        b += n;
-        CurBuf->bufptr += n;
-        CurBuf->bytes_left -= n;
-        len -= n;
-        if( len == 0 ) break;
-        CurBuf = CurBuf->nextbuf;
-        if( CurBuf == NULL ) {
-            _Zoiks( ZOIKS_006 );
-        }
-        CurBuf->bufptr = CurBuf->buf;
-        CurBuf->bytes_left = IOBUFSIZE;
-    }
-#endif
-}
-
-static  void    SeekStream( handle h, unsigned_32 offset ) {
-/**********************************************************/
-#if 0
-    offset = lseek( h, offset, 0 );
-    if( offset == -1 ) {
-        ObjError( errno );
-    }
-#else
-    struct buf  *pbuf;
-    unsigned_32 n;
-
-    h = h;
-    pbuf = BufList;
-    n = 0;
-    for(;;) {
-        n += IOBUFSIZE;
-        if( n > offset ) break;
-        if( pbuf->nextbuf == NULL ) {
-            // seeking past the end of the file (extend file)
-            pbuf->bytes_written = IOBUFSIZE;
-            pbuf->nextbuf = NewBuffer();
-        }
-        pbuf = pbuf->nextbuf;
-    }
-    n = offset - (n - IOBUFSIZE);
-    pbuf->bufptr = pbuf->buf + n;
-    pbuf->bytes_left = IOBUFSIZE - n;
-    if( pbuf->nextbuf == NULL ) {               // if this is last buffer
-        cleanupLastBuffer( pbuf );
-    }
-    CurBuf = pbuf;
-#endif
-}
-
-
-static  void    ObjError( int    errcode ) {
-/***************************************/
-
-    FatalError( strerror(  errcode ) );
-}
-
-extern  void    PutError( char *str ) {
-/*************************************/
-
+extern  void    PutError( char *str )
+/***********************************/
+{
     while( *str != '\0' ) {
         write( HStdErr, str, 1 );
         ++str;
@@ -466,14 +486,15 @@ extern  void    PutError( char *str ) {
 }
 
 
-extern  void    CopyRite() {
-/**************************/
-
+extern  void    CopyRite( void )
+/******************************/
+{
     PutError( banner1w( "80x86 Code Generator", _I86WCGL_VERSION_ ) );
     PutError( "\r\n" );
     PutError( banner2( "1984" ) );
     PutError( "\r\n" );
     PutError( banner3 );
     PutError( "\r\n" );
+    PutError( banner3a );
+    PutError( "\r\n" );
 }
-

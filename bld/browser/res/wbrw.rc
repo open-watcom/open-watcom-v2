@@ -1,5 +1,10 @@
+#include <windows.h>
 #include "../h/icons.h"
 #include "../h/hotspots.h"
+
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "../res/appmanif.xml"
+#endif
 
 WBRWIcon        ICON "../res/ico/wbr.ico"
 GBList          ICON "../res/ico/gblist.ico"

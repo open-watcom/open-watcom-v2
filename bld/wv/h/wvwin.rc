@@ -2,6 +2,10 @@
 #include "wv.rc"
 ApplIcon icon "../zapant.ico"
 
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
+
 BITMAP_SPLASH BITMAP "../splash.bmp"
 BITMAP_READ1 BITMAP "../read1.bmp"
 BITMAP_READ2 BITMAP "../read2.bmp"

@@ -41,16 +41,16 @@ void WR_EXPORT WRCleanDir( WResDir dir )
     WResResNode         *rnode;
     WResLangNode        *lnode;
 
-    if( !dir ) {
+    if( dir == NULL ) {
         return;
     }
 
     tnode = dir->Head;
-    while ( tnode ) {
+    while( tnode != NULL ) {
         rnode = tnode->Head;
-        while ( rnode ) {
+        while( rnode != NULL ) {
             lnode = rnode->Head;
-            while ( lnode ) {
+            while( lnode != NULL ) {
                 lnode->data = NULL;
                 lnode = lnode->Next;
             }
@@ -59,4 +59,3 @@ void WR_EXPORT WRCleanDir( WResDir dir )
         tnode = tnode->Next;
     }
 }
-

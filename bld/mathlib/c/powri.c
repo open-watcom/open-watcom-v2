@@ -39,30 +39,24 @@
 #include "cplx.h"
 #include "mathcode.h"
 
-_WMRTLINK extern double _IF_dpowi( double, long );
-
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_dpowi "IF@DPOWI";
-  #pragma aux (if_rtn) _IF_powi "IF@POWI";
-#endif
 
 _WMRTLINK float _IF_powi( float base, long power )
-/***********************************************/
+/************************************************/
 {
     return( _IF_dpowi( base, power ) );
 }
 
 _WMRTLINK double _IF_dpowi( double base, long power )
-/**************************************************/
+/***************************************************/
 {
     double    result;
 
-    #if defined(_M_IX86)
-        if( _RWD_real87 ) return( pow( base, power ) );
-    #endif
+#if defined(_M_IX86)
+    if( _RWD_real87 )
+        return( pow( base, power ) );
+#endif
     if( base == 0.0 ) {
         if( power <= 0 ) {
-//          result = _matherr( DOMAIN, "dpowi", NULL, NULL, 0.0 );
             result = power;
             result = __math2err( FUNC_DPOWI | M_DOMAIN | V_ZERO,
                                      &base, &result  );
@@ -88,8 +82,8 @@ _WMRTLINK double _IF_dpowi( double base, long power )
     return( result );
 }
 
-_WMRTLINK double        _IF_PowRI( double base, intstar4 power )
-/******************************************************/
-    {
-        return( _IF_dpowi( base, power ) );
-    }
+_WMRTLINK double _IF_PowRI( double base, intstar4 power )
+/*******************************************************/
+{
+    return( _IF_dpowi( base, power ) );
+}

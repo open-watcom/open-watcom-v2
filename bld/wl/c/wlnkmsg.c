@@ -24,21 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker message output and message resource low-level functions.
 *
 ****************************************************************************/
 
 
-/*
- * MSG : linker message output
- *
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#ifdef __WATCOMC__
 #include <process.h>
+#endif
+#include <unistd.h>
 
 #include "linkstd.h"
 #include "dbginfo.h"
@@ -47,31 +46,69 @@
 #include "mapio.h"
 #include "msg.h"
 #include "fileio.h"
-
+#include "ideentry.h"
+#include "loadfile.h"
 #include "wressetr.h"
 #include "wreslang.h"
-
-#if _LINKER != _WATFOR77
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-static  int             Res_Flag;
-#endif
-
-extern char *   _LpDllName;
-int WLinkItself;   // file handle
+#include "clibint.h"
 
 #define NO_RES_MESSAGE "could not open message resource file"
 
-extern int InitMsg( void )
+static  HANDLE_INFO     hInstance = { 0 };
+static  unsigned        MsgShift;
+static  int             Res_Flag;
+
+static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
+
+
+static ssize_t ResWrite( int dummy, const void *buff, size_t size )
+/*****************************************************************/
+/* redirect wres write to writeload */
 {
-#if _LINKER == _WATFOR77
-    BannerPrinted = FALSE;
-    return( EXIT_SUCCESS );
-#else
+    dummy = dummy;
+    DbgAssert( dummy == Root->outfile->handle );
+    WriteLoad( (void *) buff, size );
+    return( size );
+}
+
+static off_t ResSeek( int handle, off_t position, int where )
+/***********************************************************/
+/* Workaround wres bug */
+{
+    if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
+        return( QLSeek( handle, position + FileShift, where, NULL ) - FileShift );
+    } else {
+        return( QLSeek( handle, position, where, NULL ) );
+    }
+}
+
+static int ResClose( int handle )
+/*******************************/
+{
+    return( close( handle ) );
+}
+
+static ssize_t ResRead( int handle, void *buffer, size_t len )
+/************************************************************/
+{
+    return( QRead( handle, buffer, len, NULL ) );
+}
+
+static off_t ResPos( int handle )
+/*******************************/
+{
+    return( QPos( handle ) );
+}
+
+WResSetRtns( ResOpen, ResClose, ResRead, ResWrite, ResSeek, ResPos, ChkLAlloc, LFree );
+
+
+int InitMsg( void )
+{
     char        buff[_MAX_PATH];
     int         initerror;
-#if _LINKER == _DLLHOST
-    char *      fname;
+#if !defined( IDE_PGM )
+    char        *fname;
 
     fname = _LpDllName;
     initerror = fname == NULL;
@@ -85,7 +122,6 @@ extern int InitMsg( void )
     if( !initerror ) {
         hInstance.filename = fname;
         OpenResFile( &hInstance );
-        WLinkItself = hInstance.handle;
         if( hInstance.handle == NIL_HANDLE ) {
             initerror = TRUE;
         } else {
@@ -105,12 +141,10 @@ extern int InitMsg( void )
     } else {
         Res_Flag = EXIT_SUCCESS;
     }
-    return Res_Flag;
-#endif
+    return( Res_Flag );
 }
 
-#if _LINKER != _WATFOR77
-extern int Msg_Get( int resourceid, char *buffer )
+int Msg_Get( int resourceid, char *buffer )
 {
     if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift,
                 (LPSTR) buffer, RESOURCE_MAX_SIZE ) != 0 ) {
@@ -119,22 +153,8 @@ extern int Msg_Get( int resourceid, char *buffer )
     }
     return( 1 );
 }
-#else
-// value of F77_MSG_BASE must correspond to value of MSG_BASE in "errmsg.rc"
-#define F77_MSG_BASE    20000
-extern  int     LoadMsg(int,char *,int);
 
-extern int Msg_Get( int resourceid, char *buffer )
-{
-    if( !LoadMsg( F77_MSG_BASE + resourceid, buffer, RESOURCE_MAX_SIZE ) ) {
-        buffer[0] = '\0';
-        return( 0 );
-    }
-    return( 1 );
-}
-#endif
-
-extern void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
+void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
                         char *types, ... )
 {
     va_list     args;
@@ -144,42 +164,46 @@ extern void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
     va_end( args );
 }
 
-extern void Msg_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types,
-                        va_list *args )
+// Write arguments to put into a message and make it printf-like
+void Msg_Put_Args(
+    char                message[],      // Contains %s, etc. or %digit specifiers
+    MSG_ARG_LIST        *arg_info,      // Arguments found
+    char                *types,         // message conversion specifier types
+                                        // NULL or strlen <= 3 ( arg_info->arg elements)
+    va_list             *args )         // Initialized va_list
 {
-    int         argnum = 0;
-    int         j;
-    int         order[3];
-    char        *findpct;
-    char        types_buff[4];
-    char        ch;
+    int         argnum = 0;             // Index of argument found
+    int         j;                      // General purpose loop index
+    int         order[3];               // Mapping of args to arg_info->arg
+    char        *percent;               // Position of '%' in message
+    char        types_buff[1 + 3];      // readwrite copy of types
+    char        specifier;              // Character following '%'
 
     if( types != NULL ) {
         strcpy( types_buff, types );
-    }
-    findpct = strchr( rc_buff, '%' );
-    while( findpct != NULL ) {
-        ch = *( findpct + 1 );
-        for( j = 0; types_buff[j] != '\0'; j++ ) {
-            if( types_buff[j] == ch ) {
-                order[j] = argnum;
-                argnum++;
-                if( isdigit( types_buff[j] ) ) {
-                    *( findpct + 1 ) = 's';
-                    types_buff[j] = 's';
+                                        // conversions set order[]; digits->s
+        percent = message - 2;          // So strchr below can work
+        while( ( percent = strchr( percent + 2, '%' ) ) != NULL ) {
+            specifier = percent[1];
+            for( j = 0; types_buff[j] != '\0'; j++ ) {  // Match with types
+                if( types_buff[j] == specifier ) {
+                    order[j] = argnum;
+                    argnum++;
+                    if( isdigit( specifier ) )          // Digit becomes s
+                        types_buff[j] = percent[1] = 's';
+                    break;
                 }
-                break;
             }
         }
-        findpct = strchr( findpct + 2, '%' );
+                                        // Re-order sequential arguments
+        for( j = 0; j < argnum; j++ ) {
+            Msg_Add_Arg( arg_info->arg + order[j], types_buff[j], args );
+        }
     }
-    for( j = 0; j < argnum; j++ ) {
-        Msg_Add_Args( &(arg_info->arg[order[j]]), types_buff[j], args );
-        arg_info->index = 0;
-    }
+    arg_info->index = 0;
 }
 
-static void Msg_Add_Args( MSG_ARG *arginfo, char typech, va_list *args )
+static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
 {
     switch( typech ) {
         case 's':
@@ -187,11 +211,12 @@ static void Msg_Add_Args( MSG_ARG *arginfo, char typech, va_list *args )
             break;
         case 'x':
         case 'd':
-            arginfo->int_16 = va_arg( *args, unsigned_16 );
+            arginfo->int_16 = va_arg( *args, unsigned int );
             break;
         case 'l':
-            arginfo->int_32 = va_arg( *args, unsigned_32 );
+            arginfo->int_32 = va_arg( *args, unsigned long );
             break;
+        case 'A':
         case 'a':
             arginfo->address = va_arg( *args, targ_addr * );
             break;
@@ -201,7 +226,7 @@ static void Msg_Add_Args( MSG_ARG *arginfo, char typech, va_list *args )
     }
 }
 
-extern void Msg_Write_Map( int resourceid, ... )
+void Msg_Write_Map( int resourceid, ... )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
     va_list     arglist;
@@ -212,18 +237,16 @@ extern void Msg_Write_Map( int resourceid, ... )
     va_end( arglist );
 }
 
-extern int FiniMsg()
+int FiniMsg( void )
 {
     int     retcode = EXIT_SUCCESS;
 
-#if _LINKER != _WATFOR77
     if( Res_Flag == EXIT_SUCCESS ) {
-        if ( CloseResFile( &hInstance ) != -1 ) {
+        if( CloseResFile( &hInstance ) != -1 ) {
             Res_Flag = EXIT_FAILURE;
         } else {
             retcode = EXIT_FAILURE;
         }
     }
-#endif
-    return retcode;
+    return( retcode );
 }

@@ -32,14 +32,28 @@
 
 #ifndef NDEBUG
 
+#undef __OBSCURE_STREAM_INTERNALS  // kludge! we need manipulate with FILE structure
+
 #include "cpplib.h"
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "rtexcept.h"
 #include "exc_pr.h"
 
+extern "C" _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
+
+#define MX_FSTK         10
+#define default_file    "_CPPDBG_."
+
+#define STDOUT_FILENO 1
+
+static FILE* fstk[ MX_FSTK ];   // suspended files
+static unsigned index;          // top of files stack
+static int logging;             // true ==> logging at level 0
 
 static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
 
@@ -303,7 +317,7 @@ static void dump(               // FORMATTED DUMP
             break;
           case FT_END :
             printf( "\n" );
-            fflush( stdout );
+            fflush( __get_std_stream( STDOUT_FILENO ) );
             done = TRUE;
             break;
         }
@@ -697,7 +711,7 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
     }
 #endif
     printf( "\n" );
-    fflush( stdout );
+    fflush( __get_std_stream( STDOUT_FILENO ) );
 }
 
 
@@ -715,10 +729,8 @@ void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
 #endif
     dumpExcs();
     printf( "\n" );
-    fflush( stdout );
+    fflush( __get_std_stream( STDOUT_FILENO ) );
 }
-
-#endif
 
 
 #ifdef PD_REGISTRATION
@@ -747,12 +759,107 @@ void __DumpPdata()
         printf( "\n" );
         l = p;
     }
-    fflush( stdout );
+    fflush( __get_std_stream( STDOUT_FILENO ) );
 }
 #endif
 
-extern "C" {
+static void reDirSwitch         // SWITCH TWO FILE AREAS
+    ( void )
+{
+    FILE temp;                  // - temporary area
+    FILE* fp;                   // - file
 
-    #include "..\..\..\c\dbgio.c"
+    fflush( __get_std_stream( STDOUT_FILENO ) );
+    temp = *__get_std_stream( STDOUT_FILENO );
+    fp = fstk[ index ];
+    *__get_std_stream( STDOUT_FILENO ) = *fp;
+    *fp = temp;
+}
 
-};
+static void reDirBeg            // START REDIRECTION FOR A FILE
+    ( void )
+{
+    if( index >= MX_FSTK ) {
+        puts( "DBGIO -- too many log files active" );
+        fflush( __get_std_stream( STDOUT_FILENO ) );
+    } else {
+        char fname[32];
+        FILE* fp;
+        strcpy( fname, default_file );
+        itoa( index, &fname[ sizeof( default_file ) - 1 ], 10 );
+        fp =  fopen( fname, "wt" );
+        if( NULL == fp ) {
+            puts( "DBGIO -- failure to open file" );
+            puts( fname );
+            fstk[ index ] = 0;
+        } else {
+            fstk[ index ] = fp;
+            reDirSwitch();
+        }
+    }
+    ++ index;
+}
+
+static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
+    ( void )
+{
+    if( index == 0 ) {
+        puts( "DBGIO -- too many files closed" );
+    } else {
+        -- index;
+        if( index < MX_FSTK ) {
+            FILE* fp = fstk[ index ];
+            if( fp != 0 ) {
+                reDirSwitch();
+                fclose( fstk[ index ] );
+            }
+        }
+    }
+}
+
+extern "C"
+void DbgRedirectBeg             // START REDIRECTION
+    ( void )
+{
+    if( index == 0 ) {
+        reDirBeg();
+        logging = 0;
+    }
+}
+
+extern "C"
+int DbgRedirectEnd              // COMPLETE REDIRECTION
+    ( void )
+{
+    int retn;                   // - # of file to view
+
+    retn = index - 1;
+    if( index > 1 || logging ) {
+        fflush( __get_std_stream( STDOUT_FILENO ) );
+    } else {
+        reDirEnd();
+    }
+    return retn;
+}
+
+extern "C"
+void DbgLogBeg                  // START LOGGING
+    ( void )
+{
+    if( index == 0 ) {
+        logging = 1;
+    }
+    reDirBeg();
+}
+
+extern "C"
+int DbgLogEnd                   // END LOGGING
+    ( void )
+{
+    if( index > 0 ) {
+        reDirEnd();
+    }
+    return index;
+}
+
+#endif

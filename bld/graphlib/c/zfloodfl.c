@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _floodfill_w( double x, double y, short stop_color )
+_WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w( double x, double y, short stop_color )
 /*=====================================================================
 
    This function fills an area starting at ( x, y ), in window coordinates,
@@ -54,7 +54,7 @@ short _WCI86FAR _CGRAPH _floodfill_w( double x, double y, short stop_color )
 Entry( _FLOODFILL_W, _floodfill_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _floodfill_w_87( double x, double y, short stop_color )
+_WCRTLINK short _WCI86FAR _CGRAPH _floodfill_w_87( double x, double y, short stop_color )
 /*======================================================================*/
 
 {

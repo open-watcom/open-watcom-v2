@@ -46,9 +46,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool   WRECtl3DInit          ( HINSTANCE );
-extern void   WRECtl3DFini          ( HINSTANCE );
-extern void   WRECtl3dColorChange   ( void );
-extern void   WRECtl3dSubclassDlg   ( HWND, WORD );
+extern Bool WRECtl3DInit( HINSTANCE );
+extern void WRECtl3DFini( HINSTANCE );
+extern void WRECtl3dColorChange( void );
+extern void WRECtl3dSubclassDlg( HWND, WORD );
 
 #endif

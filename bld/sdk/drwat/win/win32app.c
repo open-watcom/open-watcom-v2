@@ -58,12 +58,12 @@ BOOL CheckIsWin32App( HANDLE htask )
  */
 BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem )
 {
-    if( hmem == Win32CS ) {
+    if( (WORD)hmem == Win32CS ) {
         ge->hBlock = hmem;
         ge->hOwner = DTTaskEntry.hModule;
         ge->wData = 1;
         return( 1 );
-    } else if( hmem == Win32DS ) {
+    } else if( (WORD)hmem == Win32DS ) {
         ge->hBlock = hmem;
         ge->hOwner = DTTaskEntry.hModule;
         ge->wData = 2;
@@ -78,16 +78,16 @@ BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem )
 /*
  * DoGlobalEntryModule
  */
-BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HANDLE hmod, WORD seg )
+BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg )
 {
     if( hmod == DTTaskEntry.hModule && IsWin32App ) {
         if( seg == 1 ) {
-            ge->hBlock = Win32CS;
+            ge->hBlock = (HGLOBAL)Win32CS;
             ge->dwSize = 1;
             ge->dwBlockSize = GetASelectorLimit( Win32CS );
             return( 1 );
         } else if( seg == 2 ) {
-            ge->hBlock = Win32DS;
+            ge->hBlock = (HGLOBAL)Win32DS;
             ge->dwSize = 1;
             ge->dwBlockSize = GetASelectorLimit( Win32DS );
             return( 1 );

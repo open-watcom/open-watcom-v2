@@ -60,23 +60,20 @@ extern void WdeUntouchHashTable( WdeHashTable *table );
 extern void WdeTouchHashTable( WdeHashTable *table );
 extern Bool WdeIsValidSymbol( char *symbol );
 
-extern uint_32       WdeNumInHashTable      ( WdeHashTable * );
-extern void          WdeMakeHashTableClean  ( WdeHashTable * );
-extern Bool          WdeIsHashTableDirty    ( WdeHashTable * );
-extern WdeHashTable *WdeInitHashTable       ( void );
-extern void          WdeFreeHashTable       ( WdeHashTable *);
-extern Bool          WdeRemoveName          ( WdeHashTable *, char *);
-extern WdeHashEntry *WdeDefAddHashEntry     ( WdeHashTable *table, char *name, Bool *dup );
-extern WdeHashEntry *WdeAddHashEntry        ( WdeHashTable *, char *,
-                                              WdeHashValue, Bool * );
-extern WdeHashValue  WdeLookupName          ( WdeHashTable *, char *, Bool *);
-extern char         *WdeResolveValue        ( WdeHashTable *, WdeHashValue );
-extern void          WdeAddSymbolsToListBox ( WdeHashTable *, HWND, int );
-extern void          WdeAddSymbolsToComboBox( WdeHashTable *, HWND, int );
-extern Bool          WdeWriteSymbolsToFile  ( WdeHashTable *, char * );
-extern Bool          WdeMergeHashTable      ( WdeHashTable **,
-                                              WdeHashTable * );
-extern Bool          WdeCopyHashTable       ( WdeHashTable **,
-                                              WdeHashTable * );
+extern uint_32      WdeNumInHashTable( WdeHashTable * );
+extern void         WdeMakeHashTableClean( WdeHashTable * );
+extern Bool         WdeIsHashTableDirty( WdeHashTable * );
+extern WdeHashTable *WdeInitHashTable( void );
+extern void         WdeFreeHashTable( WdeHashTable * );
+extern Bool         WdeRemoveName( WdeHashTable *, char * );
+extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup );
+extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, char *, WdeHashValue, Bool * );
+extern WdeHashValue WdeLookupName( WdeHashTable *, char *, Bool * );
+extern char         *WdeResolveValue( WdeHashTable *, WdeHashValue );
+extern void         WdeAddSymbolsToListBox( WdeHashTable *, HWND, int );
+extern void         WdeAddSymbolsToComboBox( WdeHashTable *, HWND, int );
+extern Bool         WdeWriteSymbolsToFile( WdeHashTable *, char * );
+extern Bool         WdeMergeHashTable( WdeHashTable **, WdeHashTable * );
+extern Bool         WdeCopyHashTable( WdeHashTable **, WdeHashTable * );
 
 #endif

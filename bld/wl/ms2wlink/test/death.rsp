@@ -4,5 +4,5 @@ the translator) /align /co /cparmax:1234
 /dosseg /dsa /e /f /high
 /map:245
 joe /nodef fred /inf /line+
-/dynamic:35 /nopackf /oldoverlay /onerr:noexe /r
+/dynamic:35 /nopackf /oldoverlay /onerr:noexe
 /nofar /nogr /noig /nopackcode /overlay:3;

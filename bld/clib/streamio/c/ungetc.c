@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ungetc() - push character back on stream.
 *
 ****************************************************************************/
 
@@ -39,123 +38,101 @@
 #include "exitwmsg.h"
 #include "liballoc.h"
 #include "seterrno.h"
+#include "orient.h"
 #ifdef __WIDECHAR__
     #include <mbstring.h>
     #include <string.h>
     #include <wchar.h>
 #endif
+#include "streamio.h"
 
-extern void __ioalloc( FILE * );
 
-
-#ifndef __WIDECHAR__
-    _WCRTLINK int    (ungetc)( int c, FILE *fp ) /* push one character back onto file fp */
-#else
-    _WCRTLINK wint_t (ungetwc)( wint_t c, FILE *fp )
-#endif
-    {
-        if( c == __F_NAME(EOF,WEOF) ) {   /* cannot push EOF */
-            return( c );
-        }
-        _ValidFile( fp, __F_NAME(EOF,WEOF) );
-        _AccessFile( fp );
-
-        /*** Deal with stream orientation ***/
-        #ifndef __NETWARE__
-            #ifdef __WIDECHAR__
-                if( _FP_ORIENTATION(fp) != _WIDE_ORIENTED ) {
-                    if( _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
-                        _FP_ORIENTATION(fp) = _WIDE_ORIENTED;
-                    } else {
-                        _ReleaseFile( fp );
-                        return( WEOF );
-                    }
-                }
-            #else
-                if( _FP_ORIENTATION(fp) != _BYTE_ORIENTED ) {
-                    if( _FP_ORIENTATION(fp) == _NOT_ORIENTED ) {
-                        _FP_ORIENTATION(fp) = _BYTE_ORIENTED;
-                    } else {
-                        _ReleaseFile( fp );
-                        return( EOF );
-                    }
-                }
-            #endif
-        #endif
-
-        if( fp->_flag & _DIRTY ) {        /* cannot unget after a put */
-            _ReleaseFile( fp );
-            return( __F_NAME(EOF,WEOF) );
-        }
-        if(( fp->_flag & _READ ) == 0 ) { /* not open for input */
-            _ReleaseFile( fp );
-            return( __F_NAME(EOF,WEOF) );
-        }
-        if( _FP_BASE(fp) == NULL ) {      /* no buffer allocated */
-            __ioalloc( fp );
-        }
-        #ifdef __WIDECHAR__
-            if( fp->_flag & _BINARY ) {
-                /*** Leave the character in wide form ***/
-                if( fp->_cnt == 0 ) {           /* read buffer is empty */
-                    fp->_cnt = sizeof(wchar_t);
-                    fp->_ptr = _FP_BASE(fp) + fp->_bufsize - sizeof(wchar_t);
-                    fp->_flag |= _UNGET;                    /* 10-mar-90 */
-                    memcpy( fp->_ptr, &c, sizeof(wchar_t) );
-                } else if( fp->_ptr != _FP_BASE(fp) ) {
-                    fp->_cnt += sizeof(wchar_t);
-                    fp->_ptr -= sizeof(wchar_t);
-                    fp->_flag |= _UNGET;
-                    memcpy( fp->_ptr, &c, sizeof(wchar_t) );
-                } else {                        /* read buffer is full */
-                    _ReleaseFile( fp );
-                    return( WEOF );
-                }
-            } else {
-                char    mbc[MB_CUR_MAX];
-                int     mbcLen;
-
-                /*** Convert the character to multibyte form ***/
-                if( wctomb( mbc, c ) == -1 ) {
-                    __set_errno( EILSEQ );
-                    return( WEOF );
-                }
-                mbcLen = _mbclen( mbc );
-
-                /*** Store the converted character ***/
-                if( fp->_cnt == 0 ) {           /* read buffer is empty */
-                    fp->_cnt = mbcLen;
-                    fp->_ptr = _FP_BASE(fp) + fp->_bufsize - mbcLen;
-                    fp->_flag |= _UNGET;                    /* 10-mar-90 */
-                    _mbccpy( fp->_ptr, mbc );
-                } else if( fp->_ptr != _FP_BASE(fp) ) {
-                    fp->_cnt += mbcLen;
-                    fp->_ptr -= mbcLen;
-                    fp->_flag |= _UNGET;
-                    _mbccpy( fp->_ptr, mbc );
-                } else {                        /* read buffer is full */
-                    _ReleaseFile( fp );
-                    return( WEOF );
-                }
-            }
-        #else
-            if( fp->_cnt == 0 ) {               /* read buffer is empty */
-                fp->_cnt = CHARSIZE;
-                fp->_ptr = _FP_BASE(fp) + fp->_bufsize - CHARSIZE;
-                fp->_flag |= _UNGET;                                 /* 10-mar-90 */
-                *(CHAR_TYPE*)(fp->_ptr) = c;
-            } else if( fp->_ptr != _FP_BASE(fp) ) {
-                fp->_cnt += CHARSIZE;
-                fp->_ptr -= CHARSIZE;
-                if( *(CHAR_TYPE*)(fp->_ptr) != c )  fp->_flag |= _UNGET; /* 10-mar-90 */
-                *(CHAR_TYPE*)(fp->_ptr) = c;
-            } else {                            /* read buffer is full */
-                _ReleaseFile( fp );
-                return( EOF );
-            }
-        #endif
-        fp->_flag &= ~ _EOF;
-
-        _ReleaseFile( fp );
-        return( (UCHAR_TYPE) c );
+_WCRTLINK INTCHAR_TYPE __F_NAME(ungetc,ungetwc)( INTCHAR_TYPE c, FILE *fp )
+{
+    if( c == __F_NAME(EOF,WEOF) ) {   /* cannot push EOF */
+        return( c );
     }
+    _ValidFile( fp, __F_NAME(EOF,WEOF) );
+    _AccessFile( fp );
+
+    /*** Deal with stream orientation ***/
+    ORIENT_STREAM(fp,__F_NAME(EOF,WEOF));
+
+    if( fp->_flag & _DIRTY ) {        /* cannot unget after a put */
+        _ReleaseFile( fp );
+        return( __F_NAME(EOF,WEOF) );
+    }
+    if(( fp->_flag & _READ ) == 0 ) { /* not open for input */
+        _ReleaseFile( fp );
+        return( __F_NAME(EOF,WEOF) );
+    }
+    if( _FP_BASE(fp) == NULL ) {      /* no buffer allocated */
+        __ioalloc( fp );
+    }
+#ifdef __WIDECHAR__
+    if( fp->_flag & _BINARY ) {
+        /*** Leave the character in wide form ***/
+        if( fp->_cnt == 0 ) {           /* read buffer is empty */
+            fp->_cnt = sizeof( wchar_t );
+            fp->_ptr = _FP_BASE(fp) + fp->_bufsize - sizeof( wchar_t );
+            fp->_flag |= _UNGET;                    /* 10-mar-90 */
+            memcpy( fp->_ptr, &c, sizeof( wchar_t ) );
+        } else if( fp->_ptr != _FP_BASE(fp) ) {
+            fp->_cnt += sizeof( wchar_t );
+            fp->_ptr -= sizeof( wchar_t );
+            fp->_flag |= _UNGET;
+            memcpy( fp->_ptr, &c, sizeof( wchar_t ) );
+        } else {                        /* read buffer is full */
+            _ReleaseFile( fp );
+            return( WEOF );
+        }
+    } else {
+        unsigned char   mbc[MB_CUR_MAX];
+        int             mbcLen;
+
+        /*** Convert the character to multibyte form ***/
+        if( wctomb( (char *)mbc, c ) == -1 ) {
+            __set_errno( EILSEQ );
+            return( WEOF );
+        }
+        mbcLen = _mbclen( mbc );
+
+        /*** Store the converted character ***/
+        if( fp->_cnt == 0 ) {           /* read buffer is empty */
+            fp->_cnt = mbcLen;
+            fp->_ptr = _FP_BASE(fp) + fp->_bufsize - mbcLen;
+            fp->_flag |= _UNGET;                            /* 10-mar-90 */
+            _mbccpy( fp->_ptr, mbc );
+        } else if( fp->_ptr != _FP_BASE(fp) ) {
+            fp->_cnt += mbcLen;
+            fp->_ptr -= mbcLen;
+            fp->_flag |= _UNGET;
+            _mbccpy( fp->_ptr, mbc );
+        } else {                        /* read buffer is full */
+            _ReleaseFile( fp );
+            return( WEOF );
+        }
+    }
+#else
+    if( fp->_cnt == 0 ) {               /* read buffer is empty */
+        fp->_cnt = 1;
+        fp->_ptr = _FP_BASE(fp) + fp->_bufsize - 1;
+        fp->_flag |= _UNGET;                                /* 10-mar-90 */
+        *fp->_ptr = c;
+    } else if( fp->_ptr != _FP_BASE(fp) ) {
+        fp->_cnt++;
+        fp->_ptr--;
+        if( *fp->_ptr != c ) {
+            fp->_flag |= _UNGET;                            /* 10-mar-90 */
+        }
+        *fp->_ptr = c;
+    } else {                            /* read buffer is full */
+        _ReleaseFile( fp );
+        return( EOF );
+    }
+#endif
+    fp->_flag &= ~ _EOF;
+
+    _ReleaseFile( fp );
+    return( (UCHAR_TYPE)c );
+}

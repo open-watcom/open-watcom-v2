@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <process.h>
 
-#include "plusplus.h"
 #include "name.h"
 #include "cgfront.h"
 #include "initdefs.h"
@@ -125,7 +126,7 @@ static void insertOperand       // INSERT FOR OPERAND, IF POSSIBLE
                       case CO_NAME_DTOR :
                         break;
                       default :
-                        result = ScopeFindNaked( CurrScope, node->u.id.name );
+                        result = ScopeFindNaked( GetCurrScope(), node->u.id.name );
                         if( NULL == result ) break;
                         sym = result->sym_name->name_syms;
                         if( NULL == sym ) break;

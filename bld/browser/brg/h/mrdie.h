@@ -132,7 +132,7 @@ private:
         } _flags;
     };
     DIELen_T            _length;        // length of die in bytes
-    uint_16             _occurs;        // num with same name
+    uint_32             _occurs;        // num with same name
 
     static MemoryPool   _pool;
 };

@@ -24,16 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Calling convention for dot function.
 *
 ****************************************************************************/
 
 
-#define DOT_FUNC pascal
-
 #if defined ( __386__ )
-    #pragma aux pascal "*" parm caller [es edi] [eax] [ecx];
+    #pragma aux DOT_FUNC "*" parm caller [es edi] [eax] [ecx];
 #else
-    #pragma aux pascal "*" far parm caller [es di] [ax] [cx];
+    #pragma aux DOT_FUNC "*" far parm caller [es di] [ax] [cx];
 #endif
+
+typedef short get_dot_fn( char far *, int, int );
+typedef void  put_dot_fn( char far *, int, int );
+
+#pragma aux (DOT_FUNC) get_dot_fn;
+#pragma aux (DOT_FUNC) put_dot_fn;

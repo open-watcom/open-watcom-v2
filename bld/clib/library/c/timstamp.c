@@ -24,12 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Library build timestamp.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 
-_WCRTLINK char *__lmt = __DATE__ " " __TIME__;
+_WCRTDATA char  *__lmt = __DATE__ " " __TIME__;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Codegen switches specific to PowerPC.
 *
 ****************************************************************************/
 
@@ -42,7 +41,7 @@
 #define I_MATH_INLINE           0x00000020L
 #define NO_CALL_RET_TRANSFORM   0x00000040L
 #define CHEAP_POINTER           0x00000080L
-#define INIT_LOCALS             0x00000100L
+#define STACK_INIT              0x00000100L
 #define EXCEPT_FILTER_USED      0x00000200L
 #define STACK_CHECK             0x00000400L
 #define CG_OS2_CC               0x00000800L

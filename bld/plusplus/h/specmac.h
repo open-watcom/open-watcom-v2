@@ -24,17 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Special macros that can't be undefined or redefined.
 *
 ****************************************************************************/
 
 
-// macros that cannot be undef'd or redefined
-pick( "__LINE__",       MACRO_LINE )
-pick( "__FILE__",       MACRO_FILE )
-pick( "__DATE__",       MACRO_DATE )
-pick( "__TIME__",       MACRO_TIME )
-pick( "__cplusplus",    MACRO_CPLUSPLUS )
-pick( "__FUNCTION__",   MACRO_FUNCTION )
+pick( "__LINE__",       MACRO_LINE,        MFLAG_NONE )
+pick( "__FILE__",       MACRO_FILE,        MFLAG_NONE )
+pick( "__DATE__",       MACRO_DATE,        MFLAG_NONE )
+pick( "__TIME__",       MACRO_TIME,        MFLAG_NONE )
+pick( "__cplusplus",    MACRO_CPLUSPLUS,   MFLAG_NONE )
+pick( "__FUNCTION__",   MACRO_FUNCTION,    MFLAG_CAN_BE_REDEFINED )
+
+// __func__ shouldn't be a macro, define it special for now
+pick( "__func__",       MACRO_FUNC,        MFLAG_CAN_BE_REDEFINED | MFLAG_SPECIAL )
+
+// alternative tokens for C++
+pick( NULL,             MACRO_ALT_MARKER,  MFLAG_NONE )
+pick( "and",            MACRO_ALT_AND,     MFLAG_SPECIAL )
+pick( "bitand",         MACRO_ALT_BITAND,  MFLAG_SPECIAL )
+pick( "and_eq",         MACRO_ALT_AND_EQ,  MFLAG_SPECIAL )
+pick( "or",             MACRO_ALT_OR,      MFLAG_SPECIAL )
+pick( "bitor",          MACRO_ALT_BITOR,   MFLAG_SPECIAL )
+pick( "or_eq",          MACRO_ALT_OR_EQ,   MFLAG_SPECIAL )
+pick( "xor",            MACRO_ALT_XOR,     MFLAG_SPECIAL )
+pick( "xor_eq",         MACRO_ALT_XOR_EQ,  MFLAG_SPECIAL )
+pick( "not",            MACRO_ALT_NOT,     MFLAG_SPECIAL )
+pick( "not_eq",         MACRO_ALT_NOT_EQ,  MFLAG_SPECIAL )
+pick( "compl",          MACRO_ALT_COMPL,   MFLAG_SPECIAL )
 #undef pick

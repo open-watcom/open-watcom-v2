@@ -33,8 +33,8 @@
 #include "cover.h"
 
 HWND PASCAL _Cover_CreateDialog( HANDLE inst, LPSTR temp, HWND wnd,
-                                 FARPROC p )
+                                 DLGPROC p )
 {
-    return( CreateDialog( inst, temp, wnd, SetProc( p, GETPROC_CALLBACK ) ) );
+    return( CreateDialog( inst, temp, wnd, SetProc( (FARPROC)p, GETPROC_CALLBACK ) ) );
 }
 

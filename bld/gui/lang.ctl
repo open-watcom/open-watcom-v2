@@ -3,40 +3,27 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    cdsay ui\obj
-    wmake /h /i
-    cdsay ..\objw
-    wmake /h /i
-    cdsay ..\objq
-    wmake /h /i
-    cdsay ..\obj32q
-    wmake /h /i
-    cdsay ..\obj2
-    wmake /h /i
-    cdsay ..\objf
-    wmake /h /i
-    cdsay ..\objnt
-    wmake /h /i
-    cdsay ..\..\win\obj
-    wmake /h /i
-    cdsay ..\objpmf
-    wmake /h /i
-    cdsay ..\objpm
-    wmake /h /i
-    cdsay ..\objnt
-    wmake /h /i
-    cd <PROJDIR>
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
 
 [ BLOCK <1> clean ]
 #==================
-    sweep killobjs
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

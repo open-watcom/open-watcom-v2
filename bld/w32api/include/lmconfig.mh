@@ -1,0 +1,29 @@
+/*
+ *  lmconfig.h  LAN Manager configuration functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMCONFIG_
+#define _LMCONFIG_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Configuration information (level 0) */
+typedef struct _CONFIG_INFO_0 {
+    LPWSTR  cfgi0_key;
+    LPWSTR  cfgi0_data;
+} CONFIG_INFO_0;
+typedef CONFIG_INFO_0   *PCONFIG_INFO_0;
+typedef CONFIG_INFO_0   *LPCONFIG_INFO_0;
+
+/* Functions in NETAPI32.DLL */
+NET_API_STATUS NET_API_FUNCTION NetConfigGet( LPCWSTR, LPCWSTR, LPCWSTR, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetConfigGetAll( LPCWSTR, LPCWSTR, LPBYTE * );
+NET_API_STATUS NET_API_FUNCTION NetConfigSet( LPCWSTR, LPCWSTR, LPCWSTR, DWORD, DWORD, LPBYTE, DWORD );
+
+:include cplusepi.sp
+
+#endif /* _LMCONFIG_ */

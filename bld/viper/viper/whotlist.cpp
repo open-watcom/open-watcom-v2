@@ -36,8 +36,8 @@
 
 
 WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, WHotSpots* hs,
-                            WStyle wstyle )
-    : WWindow( prt, r, text, wstyle )
+                            WStyle wstyle, WExStyle wexstyle )
+    : WWindow( prt, r, text, wstyle, wexstyle )
     , _topIndex( 0 )
     , _selected( -1 )
     , _leftDown( FALSE )
@@ -52,11 +52,7 @@ WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, W
     , _hs( hs )
 //--------------------------------------------------------------
 {
-}
-
-WHotSpotList::~WHotSpotList()
-//-------------------------
-{
+    changeBackground( WPaintAttrControlBackground );
 }
 
 bool WHotSpotList::gettingFocus( WWindow* )
@@ -100,6 +96,8 @@ bool WHotSpotList::paint()
     int extent;
     WRect r;
 
+    getClientRect( r );
+
     for( int i = _topIndex + firstDirtyRow(); i < maxRows && i < numElem; i += 1 ) {
         const char * str = getString( i );
 
@@ -118,14 +116,13 @@ bool WHotSpotList::paint()
         } else {
             offset = 0;
         }
-        getRectangle( r );
         extent = r.w();
         if( width() > extent ) extent = width();
         if( i == _selected ) {
             drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive,
                             extent );
         } else {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrBackground,
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground,
                             extent );
         }
     }
@@ -488,3 +485,14 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
     }
     return FALSE;
 }
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WHotSpotList::~WHotSpotList()
+//-------------------------
+{
+}
+

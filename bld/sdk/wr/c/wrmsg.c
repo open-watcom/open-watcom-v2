@@ -33,7 +33,6 @@
 #include <windows.h>
 #include "ldstr.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 
 /* routine to create a message box */
 void WRDisplayMsg( const char *msg )
@@ -42,12 +41,11 @@ void WRDisplayMsg( const char *msg )
 
     title = WRAllocRCString( WR_ERRMSG );
 
-    if( !MessageBox( (HWND) NULL, msg, title,
-                     MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+    if( !MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 }
@@ -78,12 +76,12 @@ void WRDisplayErrorMsg( DWORD msg )
 
     title = WRAllocRCString( WR_ERRMSG );
 
-    if( !RCMessageBox( (HWND)NULL , msg, title,
+    if( !RCMessageBox( (HWND)NULL, msg, title,
                        MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 }
@@ -99,7 +97,4 @@ void WRPrintErrorMsg( DWORD msg, ... )
     vsprintf( buf, str, al );
     WRDisplayMsg( buf );
     va_end( al );
-
-    return;
 }
-

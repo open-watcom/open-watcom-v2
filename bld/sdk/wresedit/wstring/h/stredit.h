@@ -38,4 +38,3 @@
 #define IDM_STREDINSERT         205
 #define IDM_STREDCHANGE         206
 #define IDM_STREDRESET          207
-

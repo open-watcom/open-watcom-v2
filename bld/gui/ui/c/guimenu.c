@@ -70,7 +70,7 @@ static bool IsChecked( MENUITEM *menu )
  *                and if checked or not
  */
 
-static bool MenuConvert( char *text, unsigned short *flags, char **new,
+static bool MenuConvert( const char *text, unsigned short *flags, char **new,
                          bool checked )
 {
     char        *end;
@@ -103,7 +103,7 @@ static bool MenuConvert( char *text, unsigned short *flags, char **new,
     if( end == NULL ) {
         length ++; /* no & so need room for NULL as it doesn't replace & */
     }
-    new_str = (char * )GUIAlloc( length );
+    new_str = (char * )GUIMemAlloc( length );
     *new = new_str;
     if( new_str == NULL ) {
         return( FALSE );
@@ -132,19 +132,19 @@ void GUIFreeMenuItems( MENUITEM *menus )
 
     if( menus == NULL ) return;
     for( j = 0; !MENUENDMARKER( menus[j] ); j++ ) {
-        GUIFree( menus[j].name );
+        GUIMemFree( menus[j].name );
         if( menus[j].popup != NULL ) {
             GUIFreeMenuItems( menus[j].popup );
         }
     }
-    GUIFree( menus );
+    GUIMemFree( menus );
 }
 
 MENUITEM *GUIAllocMenuItems( int num_menus )
 {
     MENUITEM *menu;
 
-    menu = (MENUITEM *)GUIAlloc( sizeof( MENUITEM ) * ( num_menus + 1 ) );
+    menu = (MENUITEM *)GUIMemAlloc( sizeof( MENUITEM ) * ( num_menus + 1 ) );
     if( menu != NULL ) {
         memset( menu, 0, sizeof( MENUITEM ) * ( num_menus + 1 ) );
     }
@@ -300,7 +300,7 @@ bool GUIEnableMenuItem( gui_window *wnd, int id, bool enable, bool floating )
     return( TRUE );
 }
 
-bool GUISetMenuText( gui_window *wnd, int id, char *text, bool floating )
+bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating )
 {
     MENUITEM    *menu;
     bool        vbar;
@@ -315,7 +315,7 @@ bool GUISetMenuText( gui_window *wnd, int id, char *text, bool floating )
     if( !MenuConvert( text, &menu->flags, &new, checked ) ) {
         return( FALSE );
     }
-    GUIFree( menu->name );
+    GUIMemFree( menu->name );
     menu->name = new;
     if( vbar ) {
         /* if the menu item changed was in the top bar of menus,
@@ -450,7 +450,7 @@ bool GUIAllocVBarMenu( VBARMENU **pmenu )
     if( pmenu == NULL ) {
         return( FALSE );
     }
-    menu = (VBARMENU *)GUIAlloc( sizeof( VBARMENU ) );
+    menu = (VBARMENU *)GUIMemAlloc( sizeof( VBARMENU ) );
     if( menu == NULL ) {
         return( FALSE );
     }
@@ -499,7 +499,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
     if( ( num_menus < offset ) || ( offset == -1 ) ) {
         offset = num_menus;
     }
-    new_menu = (MENUITEM *)GUIAlloc( sizeof( MENUITEM ) * ( num_menus + 2 ) );
+    new_menu = (MENUITEM *)GUIMemAlloc( sizeof( MENUITEM ) * ( num_menus + 2 ) );
     if( new_menu == NULL ) {
         return( FALSE );
     }
@@ -512,14 +512,14 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
     }
     memset( &new_menu[offset], 0, sizeof( MENUITEM ) );
     if( !GUISetMenuItems( 1, &new_menu[offset], info ) ) {
-        GUIFree( new_menu );
+        GUIMemFree( new_menu );
         return( FALSE );
     }
     if( !GUICreateMenuItems( info->num_child_menus, info->child,
                              &new_menu[offset].popup ) ) {
         return( FALSE );
     }
-    GUIFree( menu );
+    GUIMemFree( menu );
     *pmenu = new_menu;
     GUIMDIResetMenus( wnd, wnd->parent, 1, info );
     if( append_hint ) {
@@ -603,7 +603,7 @@ void GUIFreeVBarMenu( VBARMENU *menu )
         if( menu->titles != NULL ) {
             GUIFreeMenuItems( menu->titles );
         }
-        GUIFree( menu );
+        GUIMemFree( menu );
     }
 }
 
@@ -658,7 +658,7 @@ static bool DeleteMenu( gui_window *wnd, unsigned id, MENUITEM **pmenu,
     if( prev_num == 1 ) {
         new_menu = NULL;
     } else {
-        new_menu = (MENUITEM *)GUIAlloc( sizeof( MENUITEM ) * prev_num );
+        new_menu = (MENUITEM *)GUIMemAlloc( sizeof( MENUITEM ) * prev_num );
         if( new_menu == NULL ) {
             return( FALSE );
         }
@@ -669,8 +669,8 @@ static bool DeleteMenu( gui_window *wnd, unsigned id, MENUITEM **pmenu,
     if( sub[index].popup != NULL ) {
         GUIFreeMenuItems( sub[index].popup );
     }
-    GUIFree( sub[index].name );
-    GUIFree( sub );
+    GUIMemFree( sub[index].name );
+    GUIMemFree( sub );
     *pmenu = new_menu;
     GUIDeleteHintText( wnd, id );
     GUIMDIDeleteMenuItem( id );

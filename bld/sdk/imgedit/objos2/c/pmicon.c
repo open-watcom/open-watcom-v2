@@ -42,9 +42,9 @@
 #include <os2.h>
 
 #include "wpi.h"
-#include "..\h\pmicon.h"
-#include "..\h\wbitmap.h"
-#include "..\..\..\misc\mem.h"
+#include "pmicon.h"
+#include "wbitmap.h"
+#include "mem.h"
 
 /*
  * convertToBmp2 - converts an old form BITMAPINFO structure to a

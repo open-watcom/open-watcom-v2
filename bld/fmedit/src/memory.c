@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory routines for the report editor.
 *
 ****************************************************************************/
 
-
-/* MEMORY.C - memory routines for the report editor */
 
 #include <malloc.h>
 #include <string.h>
@@ -42,41 +39,37 @@ int     FilePtr;
 
 extern void * EdAlloc( int size )
 /*******************************/
-
-/* prints out amount of memory being allocated using LocalAlloc, then
- * calls LocalAlloc to allocate the memory
- */
-
-  {
-    void * hMem;
+{
+    /* prints out amount of memory being allocated using LocalAlloc, then
+     * calls LocalAlloc to allocate the memory
+     */
+    void    *hMem;
 #ifdef DEBUG_ON
     char    buffer[BUFFERLENGTH];
 #endif
 
-    hMem =  malloc( size );
+    hMem = malloc( size );
     memset( hMem, 0, size );
 #ifdef DEBUG_ON
     memset( buffer, 0, BUFFERLENGTH );
-    sprintf( buffer, "LocalAlloc %d\r\n",  LocalSize( hMem ) );
-    _lwrite( FilePtr, buffer, strlen(buffer));
+    sprintf( buffer, "LocalAlloc %d\r\n", LocalSize( hMem ) );
+    _lwrite( FilePtr, buffer, strlen( buffer ) );
 #endif
     return( hMem );
-  }
+}
 
-extern void EdFree( void * hMem )
-/*******************************/
-
-/* prints out amount of memory being freed using LocalFree, then
- * calls LocalFree to free the memory
- */
-
-  {
+extern void EdFree( void *hMem )
+/******************************/
+{
+    /* prints out amount of memory being freed using LocalFree, then
+     * calls LocalFree to free the memory
+     */
 #ifdef DEBUG_ON
     char    buffer[BUFFERLENGTH];
 
     memset( buffer, 0, BUFFERLENGTH );
     sprintf( buffer, "LocalFree %d\r\n", LocalSize( hMem ) );
-    _lwrite( FilePtr, buffer, strlen(buffer));
+    _lwrite( FilePtr, buffer, strlen( buffer ) );
 #endif
     free( hMem );
-  }
+}

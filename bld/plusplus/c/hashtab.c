@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <limits.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <limits.h>
+
 #include "errdefns.h"
 #include "carve.h"
 #include "name.h"
@@ -446,7 +446,7 @@ void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, char *name )
     }
 }
 
-void HashWalk( HASHTAB hash, void (*do_it)( void * ) )
+void HashWalk( HASHTAB hash, void (*do_it)( SYMBOL_NAME ) )
 /*****************************************************/
 {
     unsigned i;
@@ -466,7 +466,7 @@ void HashWalk( HASHTAB hash, void (*do_it)( void * ) )
     }
 }
 
-void HashWalkData( HASHTAB hash, void (*do_it)( void *, void * ), void *data )
+void HashWalkData( HASHTAB hash, void (*do_it)( SYMBOL_NAME, void * ), void *data )
 /*****************************************************************************/
 {
     unsigned i;

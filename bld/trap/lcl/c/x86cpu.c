@@ -24,18 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Detect x86 CPU type.
 *
 ****************************************************************************/
 
 
 #include "mad.h"
 #include "madx86.h"
+#include "x86cpu.h"
+
+#ifdef __WATCOMC__
 
 #if !defined(__386__)
     #define     Is8086()        (!IsNot8086())
-    extern unsigned short IsNot8086();
+    extern unsigned short IsNot8086( void );
     /* shr ax,33 will produce 0 on 8086, 0xefff on everything else */
     #pragma aux IsNot8086 =     \
             "mov        ax,0xffff"      \
@@ -43,7 +45,7 @@
             "shr        ax,cl"          \
             value [ax] modify [cl]
 
-    extern unsigned short Is186();
+    extern unsigned short Is186( void );
     /* push sp on a 86/186 pushes value after increment */
     #pragma aux Is186 =         \
             "push       sp"             \
@@ -52,7 +54,7 @@
             value [ax]
 
     #define     Is286()         (!IsNot286())
-    extern unsigned short IsNot286();
+    extern unsigned short IsNot286( void );
     /* 286 won't let you turn on top bits in flags regs */
     /* NOTE: this doesn't work in protect mode */
     #pragma aux IsNot286 =              \
@@ -79,7 +81,7 @@
     #define DX  dx
 #endif
 
-extern unsigned Is386();
+extern unsigned Is386( void );
 /* Try and flip the AC bit in EFlags */
 #pragma aux Is386 =             \
         ".586"                  \
@@ -100,7 +102,7 @@ extern unsigned Is386();
         "mov    sp,dx"          \
         value [AX] modify [BX DX]
 
-extern unsigned Is486();
+extern unsigned Is486( void );
 /* Try and flip the ID bit in EFlags */
 #pragma aux Is486 =             \
         ".586"                  \
@@ -118,16 +120,42 @@ extern unsigned Is486();
         "and    eax,1"          \
         value [AX] modify [BX]
 
-extern unsigned CPUId();
+//
+// Intel
+// CPUID EDX bit 23 - MMX instructions -> MMX registers
+// CPUID EDX bit 25 - SSE instructions -> XMM registers
+//
+// AMD CPUID Enhanced function
+// CPUID EDX bit 31 - 3DNow! instructions -> MMX registers
+extern unsigned CPUId( void );
 #pragma aux CPUId =             \
         ".586"                  \
         "mov    eax,1"          \
         "cpuid"                 \
         "shr    eax,8"          \
         "and    eax,0xf"        \
+        "shr    edx,16"         \
+        "shr    dh,1"           \
+        "shr    edx,3"          \
+        "and    edx,0x30"       \
+        "or     eax,edx"        \
+        "push   eax"            \
+        "mov    eax,0x80000000" \
+        "cpuid"                 \
+        "cmp    eax,0x80000000" \
+        "jbe    no_amd_3dnow"   \
+        "mov    eax,0x80000001" \
+        "cpuid"                 \
+        "and    edx,0x80000000" \
+        "rol    edx,5"          \
+        "pop    eax"            \
+        "or     eax,edx"        \
+        "push   eax"            \
+"no_amd_3dnow:"                 \
+        "pop    eax"            \
         value [AX] modify [BX CX DX]
 
-unsigned X86CPUType()
+unsigned_8 X86CPUType( void )
 {
     #if !defined(__386__)
         if( Is8086() ) return( X86_86 );
@@ -140,8 +168,18 @@ unsigned X86CPUType()
 }
 
 #ifdef TEST
-main()
+main( void )
 {
     printf( "CPUType => %d\n", X86CPUType() );
 }
+#endif
+
+#else
+
+// Just say it's a 386 and be done with it
+unsigned_8 X86CPUType( void )
+{
+    return( X86_386 );
+}
+
 #endif

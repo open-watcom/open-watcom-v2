@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,14 +63,14 @@ typedef struct WResRenameInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WINEXPORT WResRenameProc ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WINEXPORT WResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WSetWinInfo   ( HWND, WResRenameInfo * );
-static void         WGetWinInfo   ( HWND, WResRenameInfo * );
-static Bool         WGetNewName   ( HWND, WResRenameInfo * );
+static void WSetWinInfo( HWND, WResRenameInfo * );
+static void WGetWinInfo( HWND, WResRenameInfo * );
+static Bool WGetNewName( HWND, WResRenameInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -78,110 +78,106 @@ static Bool         WGetNewName   ( HWND, WResRenameInfo * );
 
 Bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
 {
-    WResRenameInfo   info;
-    Bool               ok;
+    WResRenameInfo  info;
+    Bool            ok;
 
     info.old_name = NULL;
     info.new_name = NULL;
 
-    ok = ( name != NULL );
+    ok = (name != NULL);
 
-    if ( ok )  {
+    if( ok )  {
         ok = FALSE;
         info.hcb = hcb;
         info.old_name = *name;
-        if ( WGetNewName ( parent, &info ) && info.new_name ) {
-            if ( *name ) {
-                WMemFree ( *name );
+        if( WGetNewName( parent, &info ) && info.new_name != NULL ) {
+            if( *name != NULL ) {
+                WMemFree( *name );
             }
             *name = info.new_name;
             ok = TRUE;
         }
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WGetNewName ( HWND parent, WResRenameInfo *info )
+Bool WGetNewName( HWND parent, WResRenameInfo *info )
 {
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
     Bool        modified;
 
-    app_inst      = WGetEditInstance();
+    app_inst = WGetEditInstance();
 
-    proc_inst = (DLGPROC)
-        MakeProcInstance ( (FARPROC) WResRenameProc, app_inst );
+    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WResRenameProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WRenameResource", parent,
-                                proc_inst, (LPARAM) info );
+                                proc_inst, (LPARAM)info );
 
-    FreeProcInstance ( (FARPROC) proc_inst );
+    FreeProcInstance( (FARPROC)proc_inst );
 
-    return  ( ( modified != -1 ) && ( modified == IDOK ) );
+    return( modified != -1 && modified == IDOK );
 }
 
-void WSetWinInfo ( HWND hDlg, WResRenameInfo *info )
+void WSetWinInfo( HWND hDlg, WResRenameInfo *info )
 {
-    if ( info && info->old_name ) {
-        WSetEditWithWResID ( GetDlgItem ( hDlg, IDM_RENOLD), info->old_name );
-        WSetEditWithWResID ( GetDlgItem ( hDlg, IDM_RENNEW), info->old_name );
+    if( info != NULL && info->old_name != NULL ) {
+        WSetEditWithWResID( GetDlgItem( hDlg, IDM_RENOLD ), info->old_name );
+        WSetEditWithWResID( GetDlgItem( hDlg, IDM_RENNEW ), info->old_name );
     }
 }
 
-void WGetWinInfo ( HWND hDlg, WResRenameInfo *info )
+void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
 {
     Bool mod;
 
-    if ( info ) {
-        info->new_name =
-            WGetWResIDFromEdit ( GetDlgItem ( hDlg,IDM_RENNEW ), &mod );
+    if( info != NULL ) {
+        info->new_name = WGetWResIDFromEdit( GetDlgItem( hDlg, IDM_RENNEW ), &mod );
     }
 }
 
-BOOL WINEXPORT WResRenameProc ( HWND hDlg, UINT message,
-                                WPARAM wParam, LPARAM lParam )
+BOOL WINEXPORT WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WResRenameInfo *info;
-    BOOL   ret;
+    WResRenameInfo  *info;
+    BOOL            ret;
 
     ret = FALSE;
 
     switch( message ) {
+    case WM_SYSCOLORCHANGE:
+        WCtl3dColorChange();
+        break;
 
-        case WM_SYSCOLORCHANGE:
-            WCtl3dColorChange();
+    case WM_INITDIALOG:
+        info = (WResRenameInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WSetWinInfo( hDlg, info );
+        ret = TRUE;
+        break;
+
+    case WM_COMMAND:
+        info = (WResRenameInfo *)GetWindowLong( hDlg, DWL_USER );
+        switch( LOWORD( wParam ) ) {
+        case IDM_HELP:
+            if( info != NULL && info->hcb != NULL ) {
+                (*info->hcb)();
+            }
             break;
 
-        case WM_INITDIALOG:
-            info = (WResRenameInfo *) lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG) info );
-            WSetWinInfo( hDlg, info );
+        case IDOK:
+            WGetWinInfo( hDlg, info );
+            EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
 
-        case WM_COMMAND:
-            info = (WResRenameInfo *) GetWindowLong( hDlg, DWL_USER );
-            switch( LOWORD(wParam) ) {
-                case IDM_HELP:
-                    if( info && info->hcb ) {
-                        (*info->hcb)();
-                    }
-                    break;
-
-                case IDOK:
-                    WGetWinInfo( hDlg, info );
-                    EndDialog( hDlg, TRUE );
-                    ret  = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, FALSE );
-                    ret  = TRUE;
-                    break;
-            }
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
+            break;
+        }
+        break;
     }
 
     return( ret );
 }
-

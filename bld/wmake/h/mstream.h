@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mstream.c interfaces
 *
 ****************************************************************************/
 
@@ -43,27 +42,27 @@ typedef INT16   STRM_T;
 /*
  * special stream 'characters'
  */
-#define STRM_MAGIC  (-2)    /* this value is never placed in the stream by
-                             * the stream routines - someone must do an
-                             * UnGetCH( STRM_MAGIC )
-                             */
-#define STRM_END    (-1)    /* no more data in waiting */
-#define TMP_EOL     (-3)    /* temporary place holder for microsoft eol */
-                            /* to see whether or not we should check for */
-                            /* bang                                      */
-#define TMP_LEX_START (-4)   /*  temporary place holder for lexParser*/
-
+#define STRM_MAGIC      (-2)    /* this value is never placed in the stream by
+                                 * the stream routines - someone must do an
+                                 * UnGetCH( STRM_MAGIC )
+                                 */
+#define STRM_END        (-1)    /* no more data in waiting */
+#define TMP_EOL         (-3)    /* temporary place holder for microsoft eol */
+                                /* to see whether or not we should check for */
+                                /* bang                                      */
+#define TMP_LEX_START   (-4)    /*  temporary place holder for lexParser*/
 
 /*
  * prototypes
  */
-extern RET_T InsFile( const char *namem, BOOLEAN envsearch );
-extern void InsOpenFile( int fh );
-extern void InsString( const char *str, BOOLEAN weFree );
-extern void UnGetCH( STRM_T c );
-extern STRM_T GetCHR( void );
-extern void StreamInit( void );
-extern void StreamFini( void );
-extern RET_T GetFileLine( const char **pname, UINT16 *pline );
+extern RET_T    InsFile( const char *namem, BOOLEAN envsearch );
+extern void     InsOpenFile( int fh );
+extern void     InsString( const char *str, BOOLEAN weFree );
+extern void     UnGetCH( STRM_T c );
+extern STRM_T   GetCHR( void );
+extern void     StreamInit( void );
+extern void     StreamFini( void );
+extern RET_T    GetFileLine( const char **pname, UINT16 *pline );
+extern int      IsStreamEOF( void );
 
 #endif /* !_MSTREAM_H */

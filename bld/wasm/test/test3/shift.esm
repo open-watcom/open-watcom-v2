@@ -1,0 +1,66 @@
+.387
+.386p
+		PUBLIC	__sqrtd
+		PUBLIC	__sqrt
+		PUBLIC	__FDLD
+		PUBLIC	__LDFD
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+__sqrtd:
+    push        ebx
+    sub         esp,0cH
+    mov         ebx,esp
+    call        near ptr __FDLD
+    mov         eax,esp
+    call        near ptr __sqrt
+    mov         eax,esp
+    call        near ptr __LDFD
+    add         esp,0cH
+    pop         ebx
+    ret         
+__Exception_HNDLR:
+    ret         
+__sqrt:
+    add         cx,cx
+    add         cx,cx
+    shr         cx,1
+    add         edx,edx
+    sar         cx,1
+    shr         edx,1
+    rcr         ebx,1
+    rcr         edi,1
+    rcr         esi,1
+    rcr         esi,1
+    rcr         esi,1
+    rcr         eax,1
+    ret         
+__FDLD:
+    shld        edx,eax,0bH
+    shl         eax,0bH
+    sar         ecx,14H
+    add         eax,eax
+    adc         edx,edx
+    add         ecx,ecx
+    rcr         cx,1
+    ret         
+__LDFD:
+    shl         ebx,16H
+    shrd        eax,edx,0cH
+    add         edx,edx
+    shr         edx,0cH
+    shrd        eax,edx,0bH
+    add         edx,edx
+    shrd        edx,ecx,0bH
+    add         bx,bx
+    rcr         edx,1
+    shrd        esi,eax,cl
+    shrd        eax,edx,cl
+    shr         edx,cl
+    shrd        eax,edx,0bH
+    add         edx,edx
+    shr         edx,0bH
+    add         bx,bx
+    rcr         edx,1
+    ret         
+_TEXT		ENDS
+		END

@@ -1,0 +1,216 @@
+/*
+ *  mmstream.h  Multimedia streaming interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __mmstream_h__
+#define __mmstream_h__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IMediaStream  IMediaStream;
+typedef interface IStreamSample IStreamSample;
+
+/* Stream time data type */
+typedef LONGLONG    STREAM_TIME;
+
+/* Media stream identifier data type */
+typedef GUID    MSPID;
+typedef REFGUID REFMSPID;
+
+/* Macros to manipulate multimedia streaming error codes */
+#define MS_ERROR_CODE( x )      MAKE_HRESULT( 1, FACILITY_ITF, (x) + 0x0400 )
+#define MS_SUCCESS_CODE( x )    MAKE_HRESULT( 0, FACILITY_ITF, x )
+
+/* Multimedia streaming success codes */
+#define MS_S_PENDING        MS_SUCCESS_CODE( 1 )
+#define MS_S_NOUPDATE       MS_SUCCESS_CODE( 2 )
+#define MS_S_ENDOFSTREAM    MS_SUCCESS_CODE( 3 )
+
+/* Multimedia streaming error codes */
+#define MS_E_SAMPLEALLOC            MS_ERROR_CODE( 1 )
+#define MS_E_PURPOSEID              MS_ERROR_CODE( 2 )
+#define MS_E_NOSTREAM               MS_ERROR_CODE( 3 )
+#define MS_E_NOSEEKING              MS_ERROR_CODE( 4 )
+#define MS_E_INCOMPATIBLE           MS_ERROR_CODE( 5 )
+#define MS_E_BUSY                   MS_ERROR_CODE( 6 )
+#define MS_E_NOTINIT                MS_ERROR_CODE( 7 )
+#define MS_E_SOURCEALREADYDEFINED   MS_ERROR_CODE( 8 )
+#define MS_E_INVALIDSTREAMTYPE      MS_ERROR_CODE( 9 )
+#define MS_E_NOTRUNNING             MS_ERROR_CODE( 10 )
+
+/* Stream types */
+typedef enum {
+    STREAMTYPE_READ         = 0,
+    STREAMTYPE_WRITE        = 1,
+    STREAMTYPE_TRANSFORM    = 2
+} STREAM_TYPE;
+
+/* Stream states */
+typedef enum {
+    STREAMSTATE_STOP    = 0,
+    STREAMSTATE_RUN     = 1
+} STREAM_STATE;
+
+/* Completion status flags */
+typedef enum {
+    COMPSTAT_NOUPDATEOK = 0x00000001,
+    COMPSTAT_WAIT       = 0x00000002,
+    COMPSTAT_ABORT      = 0x00000004
+} COMPLETION_STATUS_FLAGS;
+
+/* GetInformation() flags */
+enum {
+    MMSSF_HASCLOCK      = 0x00000001,
+    MMSSF_SUPPORTSEEK   = 0x00000002,
+    MMSSF_ASYNCHRONOUS  = 0x00000004
+};
+
+/* Update() flags */
+enum {
+    SSUPDATE_ASYNC      = 0x00000001,
+    SSUPDATE_CONTINUOUS = 0x00000002
+};
+
+/* Asynchronous procedure call function */
+#if (_WIN32_WINNT < 0x0400)
+typedef void (__stdcall *PAPCFUNC)( DWORD_PTR );
+#endif
+
+/* GUIDs */
+EXTERN_C const IID  IID_IMultiMediaStream;
+EXTERN_C const IID  IID_IMediaStream;
+EXTERN_C const IID  IID_IStreamSample;
+
+/* IMultiMediaStream interface */
+#undef INTERFACE
+#define INTERFACE   IMultiMediaStream
+DECLARE_INTERFACE_( IMultiMediaStream, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IMultiMediaStream interface */
+    STDMETHOD( GetInformation )( THIS_ DWORD *, STREAM_TYPE * ) PURE;
+    STDMETHOD( GetMediaStream )( THIS_ REFMSPID, IMediaStream ** ) PURE;
+    STDMETHOD( EnumMediaStream )( THIS_ long, IMediaStream ** ) PURE;
+    STDMETHOD( GetState )( THIS_ STREAM_STATE * ) PURE;
+    STDMETHOD( SetState )( THIS_ STREAM_STATE ) PURE;
+    STDMETHOD( GetTime )( THIS_ STREAM_TIME * ) PURE;
+    STDMETHOD( GetDuration )( THIS_ STREAM_TIME * ) PURE;
+    STDMETHOD( Seek )( THIS_ STREAM_TIME ) PURE;
+    STDMETHOD( GetEndOfStreamEventHandle )( THIS_ HANDLE * ) PURE;
+};
+
+/* IMediaStream interface */
+#undef INTERFACE
+#define INTERFACE   IMediaStream
+DECLARE_INTERFACE_( IMediaStream, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IMediaStream methods */
+    STDMETHOD( GetMultiMediaStream )( THIS_ IMultiMediaStream ** ) PURE;
+    STDMETHOD( GetInformation )( THIS_ MSPID *, STREAM_TYPE * ) PURE;
+    STDMETHOD( SetSameFormat )( THIS_ IMediaStream *, DWORD ) PURE;
+    STDMETHOD( AllocateSample )( THIS_ DWORD, IStreamSample ** ) PURE;
+    STDMETHOD( CreateSharedSample )( THIS_ IStreamSample *, DWORD, IStreamSample ** ) PURE;
+    STDMETHOD( SendEndOfStream )( THIS_ DWORD ) PURE;
+};
+
+/* IStreamSample interface */
+#undef INTERFACE
+#define INTERFACE   IStreamSample
+DECLARE_INTERFACE_( IStreamSample, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IStreamSample methods */
+    STDMETHOD( GetMediaStream )( THIS_ IMediaStream ** ) PURE;
+    STDMETHOD( GetSampleTimes )( THIS_ STREAM_TIME *, STREAM_TIME *, STREAM_TIME * ) PURE;
+    STDMETHOD( SetSampleTimes )( THIS_ const STREAM_TIME *, const STREAM_TIME * ) PURE;
+    STDMETHOD( Update )( THIS_ DWORD, HANDLE, PAPCFUNC, DWORD_PTR ) PURE;
+    STDMETHOD( CompletionStatus )( DWORD, DWORD ) PURE;
+};
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IMultiMediaStream_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMultiMediaStream_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMultiMediaStream_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMultiMediaStream_GetInformation( x, p1, p2 ) \
+        (x)->lpVtbl->GetInformation( x, p1, p2 )
+    #define IMultiMediaStream_GetMediaStream( x, p1, p2 ) \
+        (x)->lpVtbl->GetMediaStream( x, p1, p2 )
+    #define IMultiMediaStream_EnumMediaStream( x, p1, p2 ) \
+        (x)->lpVtbl->EnumMediaStream( x, p1, p2 )
+    #define IMultiMediaStream_GetState( x, p ) \
+        (x)->lpVtbl->GetState( x, p )
+    #define IMultiMediaStream_SetState( x, p ) \
+        (x)->lpVtbl->SetState( x, p )
+    #define IMultiMediaStream_GetTime( x, p ) \
+        (x)->lpVtbl->GetTime( x, p )
+    #define IMultiMediaStream_GetDuration( x, p ) \
+        (x)->lpVtbl->GetDuration( x, p )
+    #define IMultiMediaStream_Seek( x, p ) \
+        (x)->lpVtbl->Seek( x, p )
+    #define IMultiMediaStream_GetEndOfStreamEventHandle( x, p ) \
+        (x)->lpVtbl->GetEndOfStreamEventHandle( x, p )
+    #define IMediaStream_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IMediaStream_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IMediaStream_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IMediaStream_GetMultiMediaStream( x, p ) \
+        (x)->lpVtbl->GetMultiMediaStream( x, p )
+    #define IMediaStream_GetInformation( x, p1, p2 ) \
+        (x)->lpVtbl->GetInformation( x, p1, p2 )
+    #define IMediaStream_SetSameFormat( x, p1, p2 ) \
+        (x)->lpVtbl->SetSameFormat( x, p1, p2 )
+    #define IMediaStream_AllocateSample( x, p1, p2 ) \
+        (x)->lpVtbl->AllocateSample( x, p1, p2 )
+    #define IMediaStream_CreateSharedSample( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSharedSample( x, p1, p2, p3 )
+    #define IMediaStream_SendEndOfStream( x, p ) \
+        (x)->lpVtbl->SendEndOfStream( x, p )
+    #define IStreamSample_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IStreamSample_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IStreamSample_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IStreamSample_GetMediaStream( x, p ) \
+        (x)->lpVtbl->GetMediaStream( x, p )
+    #define IStreamSample_GetSampleTimes( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetSampleTimes( x, p1, p2, p3 )
+    #define IStreamSample_SetSampleTimes( x, p1, p2 ) \
+        (x)->lpVtbl->SetSampleTimes( x, p1, p2 ) \
+    #define IStreamSample_Update( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Update( x, p1, p2, p3, p4 )
+    #define IStreamSample_CompletionStatus( x, p1, p2 ) \
+        (x)->lpVtbl->CompletionStatus( x, p1, p2 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __mmstream_h__ */

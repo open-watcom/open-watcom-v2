@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Banner configuration.
 *
 ****************************************************************************/
 
 
-// this file has been forced out on the 10.8 build machine (HIGH_NOON)
-#define _BANVER 1100
-//#define _BETAVER 2
-//#define _BANEXTRA " Limited Availability"
+#define _BANVER     2000
+#define _BETAVER    1
+#define _BANEXTRA   " Limited Availability"
+#define _BANEXSHORT " LA"

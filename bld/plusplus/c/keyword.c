@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "initdefs.h"
 #include "stats.h"
 #include "preproc.h"
 #include "scan.h"
 #include "name.h"
+
+#include "kwhash.h"
 
 ExtraRptCtr( ctr_calls );
 ExtraRptCtr( ctr_ids );
@@ -56,36 +56,14 @@ int KwLookup(           // TRANSFORM TO T_ID OR KEYWORD TOKEN
 
 #ifdef XTRA_RPT
     ExtraRptIncrementCtr( ctr_calls );
-    if( len < LEN_MIN ) ExtraRptIncrementCtr( ctr_len_min );
-    if( len > LEN_MAX ) {
+    if( len < LEN_MIN )
+        ExtraRptIncrementCtr( ctr_len_min );
+    if( len > LEN_MAX )
         ExtraRptIncrementCtr( ctr_len_max );
-    }
-    if(( (1<<len) & LEN_MASK ) == 0 ) ExtraRptIncrementCtr( ctr_len_mask );
+    if(( (1<<len) & LEN_MASK ) == 0 )
+        ExtraRptIncrementCtr( ctr_len_mask );
 #endif
-    hash = len + TokValue[ Buffer[ FIRST_INDEX ] - ' ' ] * FIRST_SCALE;
-#if LAST_INDEX > 0
-#if 0
-    if( len >= LAST_INDEX+1 ) {
-        hash += TokValue[ Buffer[len-(LAST_INDEX+1)] - ' ' ] * LAST_SCALE;
-    }
-#else
-    // will access Buffer[-1] if len == 1
-    hash += TokValue[ Buffer[len-(LAST_INDEX+1)] - ' ' ] * LAST_SCALE;
-#endif
-#else
-    hash += TokValue[ Buffer[len-(LAST_INDEX+1)] - ' ' ] * LAST_SCALE;
-#endif
-#ifdef KEYWORD_HASH_MASK
-    hash &= KEYWORD_HASH_MASK;
-#ifdef KEYWORD_HASH_EXTRA
-    if( hash >= KEYWORD_HASH ) {
-        hash -= KEYWORD_HASH;
-    }
-#endif
-#else
-    hash %= KEYWORD_HASH;
-#endif
-    hash += FIRST_KEYWORD;
+    hash = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;
     /* hash is now a token number */
     ++len;
     s1 = (unsigned*) Tokens[ hash ];

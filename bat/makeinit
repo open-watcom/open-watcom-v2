@@ -1,0 +1,14 @@
+bld_ver      = $(%BLD_VER)
+patch_level  = 0
+lang_root    = $(%WATCOM)
+dev_dir      = $(%DEVDIR)
+!ifdef __UNIX__
+contrib_dir  = $(%OWROOT)/contrib
+!else
+contrib_dir  = $(%OWROOT)\contrib
+!endif
+mif_path     = $(dev_dir)/build/local;$(dev_dir)/build/mif
+
+.mif: $(mif_path)
+!include cdirs.mif
+!include $(%OWROOT)/bat/makecomm

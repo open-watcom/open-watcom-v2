@@ -29,17 +29,25 @@
 *
 ****************************************************************************/
 
-
+#ifdef __OS2__
+#define INCL_DOS
+#include <os2.h>
+#else
 #include <windows.h>
 // this is defined by windows.h - MS are such idiots
 #undef IGNORE
-#define BY_CLI
+#endif
+
+#undef BY_CG
+
 #include "standard.h"
 #include "coderep.h"
 #include "targsys.h"
 #include "cgdefs.h"
 #include "model.h"
-#include "cgdll.h"
+#include "cgmisc.h"
+#include "cgdllcli.h"
+
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -58,6 +66,8 @@ char *defaultDLLName =
 "cgaxp.dll"
 #elif _TARGET & _TARG_PPC
 "cgppc.dll"
+#elif _TARGET & _TARG_MIPS
+"cgmps.dll"
 #else
 #error Unknown target.
 #endif
@@ -65,20 +75,40 @@ char *defaultDLLName =
 
 cg_interface *CGFuncTable;
 
+#ifdef __OS2__
+static HMODULE  dllHandle;
+#else
 static HANDLE   dllHandle;
+#endif
 
-int BEDLLLoad( char *dll_name ) {
-/*******************************/
+int _CGAPI BEDLLLoad( char *dll_name )
+/************************************/
+{
+#ifdef __OS2__
+#define SIZE 32
+    unsigned char badfile[SIZE];
+#endif
+    int retval;
 
     if( dll_name == NULL ) {
         dll_name = defaultDLLName;
     }
     CGFuncTable = NULL;
+#ifdef __OS2__
+    retval = DosLoadModule( (PSZ)badfile, SIZE, (PSZ)dll_name, &dllHandle );
+#else
     dllHandle = LoadLibrary( dll_name );
-    if( dllHandle != 0 ) {
+    retval = ( dllHandle == 0 );
+#endif
+    if( retval == 0 ) {
         cg_interface * _CGDLLEXPORT (*func_ptr)( fe_interface * );
+#ifdef __OS2__
+        retval = DosQueryProcAddr( dllHandle, 0, (PSZ)"BEDLLInit", (PFN*)&func_ptr );
+#else
         func_ptr = (cg_interface * _CGDLLEXPORT(*)( fe_interface * ))GetProcAddress( dllHandle, "_BEDLLInit@4" );
-        if( func_ptr != 0 ) {
+        retval = ( func_ptr == 0 );
+#endif
+        if( retval == 0 ) {
             CGFuncTable = func_ptr( &FERtnTable );
             return( TRUE );
         }
@@ -86,13 +116,24 @@ int BEDLLLoad( char *dll_name ) {
     return( FALSE );
 }
 
-void BEDLLUnload() {
-/******************/
-
+void _CGAPI BEDLLUnload( void )
+/*****************************/
+{
+#ifdef __OS2__
+    DosFreeModule( dllHandle );
+#else
     FreeLibrary( dllHandle );
+#endif
 }
 
-bool TBreak() {
-
+bool _CGAPI TBreak( void )
+/************************/
+{
     return( FALSE );
 }
+
+void _CGAPI CauseTBreak( void )
+/*****************************/
+{
+}
+

@@ -1,37 +1,46 @@
 # libname_(model)
-libname_ms =clibs
-libname_mm =clibm
-libname_mc =clibc
-libname_ml =clibl
-libname_mh =clibh
-libname_mf =clibf
-libname_   =clib
-libname =$(libname_$(model))
+libname_086_ms =s
+libname_286_ms =s
+libname_086_mm =m
+libname_286_mm =m
+libname_086_mc =c
+libname_286_mc =c
+libname_086_ml =l
+libname_286_ml =l
+libname_086_mh =h
+libname_286_mh =h
+libname_register =3r
+libname_stack    =3s
+libname_386_ms =$(libname_$(convention))
+libname_386_mf =$(libname_$(convention))
+libname_386_mc =$(libname_$(convention))
+libname_387_ms =$(libname_$(convention))
+libname_387_mf =$(libname_$(convention))
+libname_387_mc =$(libname_$(convention))
+libname_ =
 
-lib_flags     =/b /c /q
-!ifdef on_build_machine
-!ifeq processor axp
+!ifdef base_libname
+libname = $(base_libname)$(libname_$(processor)_$(model))
 !else
-lib_flags    +=/s /t
+libname = clib$(libname_$(processor)_$(model))
 !endif
+
+lib_flags  = -b-c-n-pa$(extra_libflags)
+!ifeq release 1
+lib_flags += -s-t-zld
 !endif
-!ifdef profile
-lib_flags    +=/p=32
-!else
-lib_flags    +=/p=16
-!endif
-lib_flags_new =/n
 
 !ifeq processor axp
 lib_linkage_flags_static=
 lib_linkage_flags_dynamic=
-!else
-!ifeq processor ppc
+!else ifeq processor ppc
+lib_linkage_flags_static=
+lib_linkage_flags_dynamic=
+!else ifeq processor mps
 lib_linkage_flags_static=
 lib_linkage_flags_dynamic=
 !else
-lib_linkage_flags_static=/z
-lib_linkage_flags_dynamic=/z=export.def
-!endif
+lib_linkage_flags_static=-z
+lib_linkage_flags_dynamic=-z=export.def
 !endif
 lib_flags_linkage=$(lib_linkage_flags_$(linkage))

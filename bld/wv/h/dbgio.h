@@ -24,23 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger file I/O layer interface.
 *
 ****************************************************************************/
 
 
-typedef unsigned long   sys_handle;
-typedef unsigned long   sys_error;
-
-#define NIL_SYS_HANDLE  ((sys_handle)-1)
-#define SYS_ERR_OK      ((sys_error)0)
+#include "sysdef.h"
 
 typedef         unsigned handle;
 typedef unsigned_8 seek_method; enum {
-    SEEK_ORG,
-    SEEK_CUR,
-    SEEK_END
+    DIO_SEEK_ORG,
+    DIO_SEEK_CUR,
+    DIO_SEEK_END
 };
 typedef unsigned_8 open_access; enum {
     OP_READ         = 0x01,
@@ -48,6 +43,7 @@ typedef unsigned_8 open_access; enum {
     OP_CREATE       = 0x04,
     OP_TRUNC        = 0x08,
     OP_APPEND       = 0x10,
+    OP_EXEC         = 0x10, // only valid with OP_CREATE - ran out of bits
     OP_REMOTE       = 0x20,
     OP_LOCAL        = 0x40,
     OP_SEARCH       = 0x80

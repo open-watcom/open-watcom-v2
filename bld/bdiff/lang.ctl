@@ -3,21 +3,39 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    wmake /h /i bpatch.exe
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
     # Make BPATCH.QNX for Database guys. Easier than getting them set up
-    wmake /h bpatch.qnx
+#    wmake -h bpatch.qnx
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <devdir>\bdiff\bpatch.exe <relroot>\rel2\binw\bpatch.exe
+  [ IFDEF (os_dos "") <2*> ]
+    <CPCMD> <DEVDIR>/bdiff/dos386/bdiff.exe     <RELROOT>/binw/bdiff.exe
+    <CPCMD> <DEVDIR>/bdiff/dos386/bpatch.exe    <RELROOT>/binw/bpatch.exe
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> <DEVDIR>/bdiff/os2386/bdiff.exe     <RELROOT>/binp/bdiff.exe
+    <CPCMD> <DEVDIR>/bdiff/os2386/bpatch.exe    <RELROOT>/binp/bpatch.exe
+  [ IFDEF (os_nt "") <2*> ]
+    <CPCMD> <DEVDIR>/bdiff/nt386/bdiff.exe      <RELROOT>/binnt/bdiff.exe
+    <CPCMD> <DEVDIR>/bdiff/nt386/bpatch.exe     <RELROOT>/binnt/bpatch.exe
 
 [ BLOCK <1> clean ]
 #==================
-    wmake /h clean
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

@@ -24,14 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS 16-bit tiny model startup code.
 ;*
 ;*****************************************************************************
 
 
 ; this file should remain an indirected file
 ; it is done this way to support the reuse of the source file
-__TINY__=1
 include cstrt086.asm
-        end

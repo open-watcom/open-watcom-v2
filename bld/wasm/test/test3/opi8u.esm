@@ -1,0 +1,45 @@
+.387
+.386p
+_TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+    in          al,0ffH 
+    in          ax,0ffH 
+    in          eax,0ffH 
+    in          al,7fH 
+    in          ax,7fH 
+    in          eax,7fH 
+    out         0ffH,al 
+    out         0ffH,ax 
+    out         0ffH,eax 
+    out         7fH,al 
+    out         7fH,ax 
+    out         7fH,eax 
+    int         0ffH 
+    int         7fH 
+    shl         ax,0ffH 
+    shl         ax,7fH 
+    shl         eax,0ffH 
+    shl         eax,7fH 
+_TEXT16		ENDS
+_TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
+    in          al,0ffH 
+    in          ax,0ffH 
+    in          eax,0ffH 
+    in          al,7fH 
+    in          ax,7fH 
+    in          eax,7fH 
+    out         0ffH,al 
+    out         0ffH,ax 
+    out         0ffH,eax 
+    out         7fH,al 
+    out         7fH,ax 
+    out         7fH,eax 
+    int         0ffH 
+    int         7fH 
+    shl         ax,0ffH 
+    shl         ax,7fH 
+    shl         eax,0ffH 
+    shl         eax,7fH 
+_TEXT32		ENDS
+		END

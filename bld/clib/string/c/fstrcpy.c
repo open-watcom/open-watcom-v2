@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrcpy() - far strcpy().
 *
 ****************************************************************************/
 
@@ -37,13 +36,14 @@
          /* copy string t to string s */
 
 _WCRTLINK char _WCFAR *_fstrcpy( char _WCFAR *s, const char _WCFAR *t )
-    {
+{
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fstrcpy( s, t ) );
+    return( _inline__fstrcpy( s, t ) );
 #else
-        char _WCFAR *dst;
-        dst = s;
-        while( *dst++ = *t++ );
-        return( s );
+    char _WCFAR     *dst;
+    dst = s;
+    while( *dst++ = *t++ )
+        ;
+    return( s );
 #endif
-    }
+}

@@ -1,0 +1,23 @@
+/showobj save def
+%% normally xo=8.5 and yo=11
+/xo 7.0 def                   % width of original page
+/yo 9 def                     % height of original page
+/sx 5.4 xo div def	      % x scale factor to fit two on a page with 0.2" separation 
+/sy 8.5 yo div def            % y scale factor to fit two on a page
+/xoff 1.75 xo 8.5 div mul def % xoff = (xo / 8.5) *  1.75
+/yoff 2 yo 11 div mul def     % yoff = (yo / 11) * 2
+/oshow {showpage} bind def
+/showflag 1 def
+/xyit {8.75 72 mul .5 72 mul translate % move origin to (8.75", 0.5")
+90 rotate                              % rotate the coordinate system by 90 deg.
+sx sy scale                            % scale the coordinates
+xoff neg 72 mul yoff neg 72 mul translate} bind def 
+                                       % move origin by (-xoff", -yoff")
+xyit
+/showpage { showflag 1 eq
+  { xo xoff add -.5 add 72 mul yoff 72 mul moveto
+    0 yo 72 mul rlineto closepath stroke      %draws dividing line beteen pages
+    xo 72 mul 0 translate /showflag 2 def }
+  { oshow xyit /showflag 1 def } ifelse
+  } def
+/showfinish { showflag 2 eq {oshow} if } def

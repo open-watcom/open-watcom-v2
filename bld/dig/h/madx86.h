@@ -40,7 +40,11 @@ enum x86_cputypes {
         X86_386,
         X86_486,
         X86_586,
-        X86_686
+        X86_686,
+        X86_P4 = 0x0f,
+        X86_CPU_MASK = 0x0f,
+        X86_MMX = 0x10,
+        X86_XMM = 0x20
 };
 
 enum x86_fputypes {
@@ -51,6 +55,7 @@ enum x86_fputypes {
         X86_487,
         X86_587,
         X86_687,
+        X86_P47 = 0x0f,
         X86_EMU = (unsigned_8)-1
 };
 
@@ -114,16 +119,31 @@ struct x86_fpu {
 
 typedef struct {
     union {
-        unsigned_32             ud[2];
-        unsigned_16             uw[4];
-        unsigned_8              ub[8];
+        unsigned_64     uq[1];
+        unsigned_32     ud[2];
+        unsigned_16     uw[4];
+        unsigned_8      ub[8];
     };
-    unsigned_16                 _spacer;
+    unsigned_16         _spacer;
 } mmx_reg;
 
 struct x86_mmx {
     unsigned_32         _spacer[7];
     mmx_reg             mm[8];
+};
+
+typedef struct {
+    union {
+        unsigned_64     uq[2];
+        unsigned_32     ud[4];
+        unsigned_16     uw[8];
+        unsigned_8      ub[16];
+    };
+} xmm_reg;
+
+struct x86_xmm {
+    xmm_reg             xmm[8];
+    unsigned_32         mxcsr;
 };
 
 struct x86_mad_registers {
@@ -132,9 +152,11 @@ struct x86_mad_registers {
         struct x86_fpu  fpu;
         struct x86_mmx  mmx;
     };
+    struct x86_xmm      xmm;
 };
 
 #define BIT( name, shift, len ) SHIFT_##name = shift, LEN_##name = len
+#define BIT_MXCSR( name, shift, len ) SHIFT_mxcsr_##name = shift, LEN_mxcsr_##name = len
 enum {
     /* [E]FL flag bit definitions */
     BIT( c,     0,  1 ),
@@ -187,7 +209,24 @@ enum {
     BIT( iem,   7,  1 ),
     BIT( pc,    8,  2 ),
     BIT( rc,    10, 2 ),
-    BIT( ic,    12, 1 )
+    BIT( ic,    12, 1 ),
+
+    /* MXCSR flag bit definitions */
+    BIT_MXCSR( ie,    0,  1 ),
+    BIT_MXCSR( de,    1,  1 ),
+    BIT_MXCSR( ze,    2,  1 ),
+    BIT_MXCSR( oe,    3,  1 ),
+    BIT_MXCSR( ue,    4,  1 ),
+    BIT_MXCSR( pe,    5,  1 ),
+    BIT_MXCSR( daz,   6,  1 ),
+    BIT_MXCSR( im,    7,  1 ),
+    BIT_MXCSR( dm,    8,  1 ),
+    BIT_MXCSR( zm,    9,  1 ),
+    BIT_MXCSR( om,    10, 1 ),
+    BIT_MXCSR( um,    11, 1 ),
+    BIT_MXCSR( pm,    12, 1 ),
+    BIT_MXCSR( rc,    13, 2 ),
+    BIT_MXCSR( fz,    15, 1 )
 };
 
 enum {  TAG_VALID       = 0x0,

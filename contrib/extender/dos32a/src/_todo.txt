@@ -1,0 +1,7 @@
+- PCTest detects 8.00 as 7.1
+
+- Write the press release of 7.20, send to freedos, openwatcom, ...
+
+- Port the ASM modules from TASM to WASM
+
+	

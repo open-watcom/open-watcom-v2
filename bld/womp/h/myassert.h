@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal error handling macros.
 *
 ****************************************************************************/
 
 
 #ifndef MYASSERT_H
-#ifndef __AXP__
+#if defined( __WATCOMC__ )
 #pragma aux InternalError aborts;
 #endif
 extern int InternalError( const char *file, unsigned line );

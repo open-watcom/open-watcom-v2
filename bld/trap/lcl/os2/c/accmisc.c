@@ -64,16 +64,16 @@ scrtype         Screen;
 
 extern  __GINFOSEG  *GblInfo;
 
-extern  void    DebugSession();
-extern  void    AppSession();
+extern  void    DebugSession( void );
+extern  void    AppSession( void );
 
 
-unsigned ReqRead_io()
+unsigned ReqRead_io( void )
 {
     return( 0 );
 }
 
-unsigned ReqWrite_io()
+unsigned ReqWrite_io( void )
 {
     write_io_ret        *ret;
 
@@ -82,7 +82,7 @@ unsigned ReqWrite_io()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_get_config()
+unsigned ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -131,7 +131,7 @@ long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-unsigned ReqFile_open()
+unsigned ReqFile_open( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -159,7 +159,7 @@ unsigned ReqFile_open()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek()
+unsigned ReqFile_seek( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -171,7 +171,7 @@ unsigned ReqFile_seek()
 }
 
 
-unsigned ReqFile_read()
+unsigned ReqFile_read( void )
 {
     USHORT       read_len;
     file_read_req       *acc;
@@ -185,7 +185,7 @@ unsigned ReqFile_read()
     return( sizeof( *ret ) + read_len );
 }
 
-unsigned ReqFile_write()
+unsigned ReqFile_write( void )
 {
     USHORT       len;
     USHORT       written_len;
@@ -202,7 +202,7 @@ unsigned ReqFile_write()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close()
+unsigned ReqFile_close( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -213,7 +213,7 @@ unsigned ReqFile_close()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase()
+unsigned ReqFile_erase( void )
 {
     file_erase_ret      *ret;
 
@@ -222,7 +222,7 @@ unsigned ReqFile_erase()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_get_extra()
+unsigned ReqThread_get_extra( void )
 {
     char *ch;
 
@@ -231,14 +231,14 @@ unsigned ReqThread_get_extra()
     return( 1 );
 }
 
-unsigned ReqSet_user_screen()
+unsigned ReqSet_user_screen( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+unsigned ReqSet_debug_screen( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -254,7 +254,7 @@ void RestoreScreen( void )
     }
 }
 
-unsigned ReqRead_user_keyboard()
+unsigned ReqRead_user_keyboard( void )
 {
     HMONITOR    mon;
     struct {
@@ -319,7 +319,7 @@ unsigned ReqRead_user_keyboard()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_err_text()
+unsigned ReqGet_err_text( void )
 {
     static const char * const DosErrMsgs[] = {
         "",
@@ -438,12 +438,12 @@ static unsigned Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdin()
+unsigned ReqRedirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-unsigned ReqRedirect_stdout()
+unsigned ReqRedirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -474,7 +474,7 @@ char *StrCopy( char *src, char *dst )
     return( strlen( dst ) + dst );
 }
 
-unsigned ReqFile_run_cmd()
+unsigned ReqFile_run_cmd( void )
 {
     char *dst;
     char *src;
@@ -620,7 +620,7 @@ long FindFilePath( char *pgm, char *buffer, char *ext_list )
 
 extern char    OS2ExtList[];
 
-unsigned ReqFile_string_to_fullpath()
+unsigned ReqFile_string_to_fullpath( void )
 {
     char               *ext_list;
     char               *name;
@@ -644,7 +644,7 @@ unsigned ReqFile_string_to_fullpath()
     return( sizeof( *ret ) + strlen( fullname )  + 1 );
 }
 
-unsigned ReqSplit_cmd()
+unsigned ReqSplit_cmd( void )
 {
     char             *cmd;
     char             *start;

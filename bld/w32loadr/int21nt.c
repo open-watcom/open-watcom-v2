@@ -62,6 +62,9 @@ extern  BOOL    __NTFindNextFileWithAttr( HANDLE h, DWORD attr,
                                           LPWIN32_FIND_DATA ffb );
 extern  void    PrintMsg( char *fmt,... );
 
+void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
+void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
+
 
 BOOL __open_file( union REGS *r,
                   DWORD access,

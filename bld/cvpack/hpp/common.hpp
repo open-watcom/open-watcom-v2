@@ -40,11 +40,11 @@
 #include <iostream.h>
 #include <string.h>
 
-static const DEF_ARRAY_SIZE = 100;
+static const int DEF_ARRAY_SIZE = 100;
 
-static const LONG_WORD = 4;
-static const WORD      = 2;
-static const BYTE      = 1;
+static const int LONG_WORD = 4;
+static const int WORD      = 2;
+static const int BYTE      = 1;
 
 //
 // First user-defined type index.
@@ -52,8 +52,8 @@ static const BYTE      = 1;
 typedef unsigned int uint;
 typedef unsigned_16  type_index;
 
-static const CV_FIRST_NONPRIM   = 0x1000;
-static const CV4_HEADER = 0x1L;
+static const int CV_FIRST_NONPRIM   = 0x1000;
+static const int CV4_HEADER = 0x1L;
 
 // pragma away the compiler warning for overflow.  If the type index exceed
 // or equal 0xffff, cvpack will give a fatal error.
@@ -81,7 +81,9 @@ class VariantString {
         }
 
         ~VariantString() {
-            delete [] _string;
+            if (_string) {
+                delete [] _string;
+            }
         }
 
         bool operator == ( const VariantString& target ) const {

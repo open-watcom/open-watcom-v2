@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line arguments scanning routines.
 *
 ****************************************************************************/
 
@@ -273,7 +272,7 @@ size_t CmdScanId(               // SCAN AN IDENTIFIER
     p = CmdScanUngetChar();
     *option = p;
     str_beg = p;
-    while( __iscsym( *p ) ) {
+    while( isalnum( *p ) || *p == '_' ) {
         ++p;
     }
     cmd_scanner = p;
@@ -296,7 +295,10 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
                 ++p;
                 break;
             }
-            if( p[0] == '\\' && p[1] == '"' ) {
+            // '"\\"' means '\', not '\"'
+            if( p[0] == '\\' && p[1] == '\\' ) {
+                ++p;
+            } else if( p[0] == '\\' && p[1] == '"' ) {
                 ++p;
             }
         }

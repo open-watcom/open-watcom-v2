@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#ifndef OFFSET_H
+#define OFFSET_H
 typedef unsigned_16             short_offset;
 typedef unsigned_32             long_offset;
 typedef unsigned_16             offset;
+#endif

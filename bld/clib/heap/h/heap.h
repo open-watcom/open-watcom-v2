@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap library configuration for various platforms.
 *
 ****************************************************************************/
 
@@ -33,11 +32,7 @@
 #include "variety.h"
 
 #if defined(_M_IX86)
-#include <i86.h>
-#endif
-
-#if (__WATCOMC__ < 900)
- #define __segment      unsigned short
+    #include <i86.h>
 #endif
 
 #if !defined(__DOS_EXT__)
@@ -47,7 +42,8 @@
    !defined(__OS2__) &&                 \
    !defined(__NT__) &&                  \
    !defined(__OSI__) &&                 \
-   !defined(__QNX__)
+   !defined(__UNIX__) &&                \
+   !defined(__RDOS__)
 #define __DOS_EXT__
 #endif
 #endif
@@ -128,9 +124,7 @@ struct dpmi_hdr {
 #endif
 
 extern unsigned                         _curbrk;
-extern unsigned char                    __nheap_clean;
 extern mheapptr _WCNEAR                 __nheapbeg;
-extern unsigned char                    __fheap_clean;
 #if defined(_M_IX86)
 extern __segment                        __fheap;
 extern __segment                        __bheap;
@@ -154,12 +148,23 @@ extern int __HeapMin( __segment seg, unsigned one_seg );
 extern int __HeapSet( __segment seg, unsigned fill );
 #endif
 
+#if defined(__DOS_EXT__)
+extern void __FreeDPMIBlocks( void );
+extern void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
+extern void *__ExpandDPMIBlock( frlptr, unsigned );
+#endif
+
+extern int __HeapManager_expand( __segment seg, unsigned offset,
+                            size_t req_size, size_t *growth_size );
+
+extern void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+
 _WCRTLINK extern void _WCNEAR *__brk( unsigned );
 
-#if defined(__AXP__) || defined(__PPC__)
- #define _DGroup()      0
-#else
+#if defined(_M_IX86)
  #define _DGroup()      FP_SEG((&__nheapbeg))
+#else
+ #define _DGroup()      0
 #endif
 // __IsCtsNHeap() is used to determine whether the operating system provides
 // a continuous near heap block. __ExpandDGroup should slice for more near
@@ -167,7 +172,8 @@ _WCRTLINK extern void _WCNEAR *__brk( unsigned );
 #if defined(__WARP__) ||        \
     defined(__NT__) ||          \
     defined(__WINDOWS_386__) || \
-    defined(__WINDOWS_286__)
+    defined(__WINDOWS_286__) || \
+    defined(__RDOS__)
  #define __IsCtsNHeap() 0
 #elif defined(__DOS_EXT__)
  #define __IsCtsNHeap() ((_IsRationalZeroBase() || _IsCodeBuilder()) ? 0 : 1)
@@ -175,32 +181,29 @@ _WCRTLINK extern void _WCNEAR *__brk( unsigned );
  #define __IsCtsNHeap() 1
 #endif
 
-extern  unsigned __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off);
+extern  unsigned __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off );
 extern  void     __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
-#if defined(__AXP__) || defined(__PPC__)
- // not needed for alpha
-#elif defined(__386__)
- #pragma aux __MemAllocator "*" parm [eax] [edx] [ebx];
- #pragma aux __MemFree      "*" parm [eax] [edx] [ebx];
-#else
- #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
- #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
+#if defined(_M_IX86)
+ #if defined(__386__)
+  #pragma aux __MemAllocator "*" parm [eax] [edx] [ebx];
+  #pragma aux __MemFree      "*" parm [eax] [edx] [ebx];
+ #else
+  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
+  #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
+ #endif
 #endif
 
 #define PARAS_IN_64K    (0x1000)
 #define END_TAG         (~0)
 
 #define TAG_SIZE        (sizeof(tag))
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
-    #define ROUND_SIZE  (TAG_SIZE+TAG_SIZE-1)
-#elif defined(M_I86)
+#if defined( _M_I86 )
     #define ROUND_SIZE  (TAG_SIZE-1)
 #else
-    #error platform not supported
+    #define ROUND_SIZE  (TAG_SIZE+TAG_SIZE-1)
 #endif
 #define FRL_SIZE        ((sizeof(frl)+ROUND_SIZE)&~ROUND_SIZE)
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1
 #define __HM_TRYGROW    2
-

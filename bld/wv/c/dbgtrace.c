@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  User program step and trace support.
 *
 ****************************************************************************/
 
@@ -43,6 +42,7 @@
 #include "dbgmem.h"
 #include "trpcore.h"
 #include "mad.h"
+
 
 enum {
     TS_NONE,
@@ -89,8 +89,8 @@ typedef struct {
 
 static trace_state      TraceState;
 
-extern brk              UserTmpBrk;
-extern brk              DbgTmpBrk;
+extern brkp             UserTmpBrk;
+extern brkp             DbgTmpBrk;
 extern debug_level      DbgLevel;
 extern debug_level      ActiveWindowLevel;
 extern machine_state    *DbgRegs;
@@ -103,31 +103,31 @@ extern system_config    SysConfig;
 extern address          NilAddr;
 
 
-extern void             FDoneSource(void *);
+extern void             FDoneSource( void * );
 extern void             *OpenSrcFile( cue_handle *ch );
 extern cue_file_id      CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern void             OptMemAddr(memory_expr ,address *);
-extern int_16           GetDataWord(void);
-extern long             GetDataLong(void);
-extern void             Scan(void);
-extern unsigned int     ScanCmd(char *);
-extern void             ReqEOC(void);
-extern int              AddrComp(address ,address );
-extern unsigned         Execute(bool ,bool );
-extern void             GetCurrOpcode(void);
-extern void             Warn(char *);
-extern char             *GetCmdEntry(char *,int ,char *);
+extern void             OptMemAddr( memory_expr, address * );
+extern int_16           GetDataWord( void );
+extern long             GetDataLong( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
+extern void             ReqEOC( void );
+extern int              AddrComp( address, address );
+extern unsigned         Execute( bool, bool );
+extern void             GetCurrOpcode( void );
+extern void             Warn( char * );
+extern char             *GetCmdEntry( char *, int, char * );
 extern char             *GetCmdName( int );
-extern void             ConfigLine(char *);
-extern bool             SimIntr(char ,unsigned int );
-extern void             WndPmtNormal(void);
-extern address          GetRegIP(void);
-extern void             SetRegIP(address );
-extern address          GetRegSP(void);
-extern bool             RemoteOvlTransAddr(address *);
-extern bool             TransOvlRetAddr(address *,unsigned int );
+extern void             ConfigLine( char * );
+extern bool             SimIntr( char, unsigned int );
+extern void             WndPmtNormal( void );
+extern address          GetRegIP( void );
+extern void             SetRegIP( address );
+extern address          GetRegSP( void );
+extern bool             RemoteOvlTransAddr( address * );
+extern bool             TransOvlRetAddr( address *, unsigned int );
 extern void             PushInpStack( void *, bool (*)(), bool );
 extern char             *ReScan( char * );
 extern void             TypeInpStack( input_type );
@@ -140,10 +140,10 @@ extern void             AddrSection( address *, unsigned );
 extern bool             IsSupportRoutine( sym_handle * );
 extern char             *Format( char *buff, char *fmt, ... );
 extern void             RecordEvent( char *p );
-extern void             CheckEventRecorded();
-extern dtid_t           RemoteSetThread(dtid_t);
-extern void             ReadDbgRegs();
-extern void             WriteDbgRegs();
+extern void             CheckEventRecorded( void );
+extern dtid_t           RemoteSetThread( dtid_t );
+extern void             ReadDbgRegs( void );
+extern void             WriteDbgRegs( void );
 extern void             ReportMADFailure( mad_status );
 
 static char LevelTab[] = {
@@ -157,7 +157,7 @@ static char TraceTab2[] = {
 };
 
 
-void            ResizeTraceData(void)
+void            ResizeTraceData( void )
 {
     void        *new;
     unsigned    size;
@@ -186,7 +186,7 @@ void            ResizeTraceData(void)
     }
 }
 
-static void TraceGetData()
+static void TraceGetData( void )
 {
     address     addr;
 
@@ -207,7 +207,7 @@ bool TraceStart( bool tracing )
 
 mad_trace_how TraceHow( bool force_into )
 {
-    static const mad_trace_kind MTKind[] = { MTK_INTO, MTK_OVER, MTK_NEXT };
+    static const mad_trace_kind MTRKind[] = { MTRK_INTO, MTRK_OVER, MTRK_NEXT };
     mad_trace_kind      kind;
     mad_trace_how       how;
 
@@ -224,27 +224,27 @@ mad_trace_how TraceHow( bool force_into )
     if( TraceState.give_it_up ) {
         DbgTmpBrk.status.b.active = FALSE;
         TraceState.give_it_up = FALSE;
-        how = MTH_BREAK;
+        how = MTRH_BREAK;
         return( how );
     } else if( force_into ) {
-        kind = MTK_INTO;
+        kind = MTRK_INTO;
     } else if( TraceState.trace_out ) {
         TraceState.trace_out = FALSE;
         TraceState.in_dll_thunk = FALSE;
-        kind = MTK_OUT;
+        kind = MTRK_OUT;
     } else {
-        kind = MTKind[ TraceState.type ];
+        kind = MTRKind[ TraceState.type ];
     }
     if( !force_into && DbgTmpBrk.status.b.active ) {
-        how = MTH_BREAK;
+        how = MTRH_BREAK;
         _SwitchOn( SW_EXECUTE_LONG );
     } else {
         how = MADTraceOne( TraceState.td, TraceState.dd, kind,
                                     &DbgRegs->mr, &DbgTmpBrk.loc.addr );
     }
     switch( how ) {
-    case MTH_BREAK:
-    case MTH_STEPBREAK:
+    case MTRH_BREAK:
+    case MTRH_STEPBREAK:
         DbgTmpBrk.status.b.active = TRUE;
     }
     if( DbgTmpBrk.status.b.active ) {
@@ -255,7 +255,7 @@ mad_trace_how TraceHow( bool force_into )
     return( how );
 }
 
-bool TraceSimulate()
+bool TraceSimulate( void )
 {
     mad_status  ms;
 
@@ -270,9 +270,9 @@ bool TraceSimulate()
 bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
 {
     switch( TraceState.how ) {
-    case MTH_SIMULATE:
-    case MTH_STEP:
-    case MTH_STEPBREAK:
+    case MTRH_SIMULATE:
+    case MTRH_STEP:
+    case MTRH_STEPBREAK:
         if( MADDisasmInsUndoable( TraceState.dd ) != MS_OK ) return( FALSE );
         if( MADDisasmMemRefWalk( TraceState.dd, wk, &DbgRegs->mr, d ) == WR_CONTINUE ) {
             return( TRUE );
@@ -287,12 +287,12 @@ void TraceStop( bool tracing )
     MADTraceFini( TraceState.td );
 }
 
-void TraceKill()
+void TraceKill( void )
 {
     TraceState.state = TS_NONE;
 }
 
-static void TracePostponed()
+static void TracePostponed( void )
 {
     switch( TraceState.state ) {
     case TS_ACTIVE:
@@ -302,7 +302,7 @@ static void TracePostponed()
     }
 }
 
-bool SourceStep()
+bool SourceStep( void )
 {
     return( TraceState.cur_level == SOURCE );
 }
@@ -380,8 +380,8 @@ static bool CheckTraceSourceStop( bool *have_source )
     return( FALSE );
 }
 
-bool CheckForDLLThunk()
-/*********************/
+bool CheckForDLLThunk( void )
+/***************************/
 {
     address     next_ins;
     DIPHDL( cue, line );
@@ -531,7 +531,7 @@ static char DoTrace( debug_level curr_level )
     return( KEEPGOING );
 }
 
-static void PerformTrace()
+void PerformTrace( void )
 {
     char        ret;
     char        level[20];
@@ -604,7 +604,7 @@ OVL_EXTERN bool DoneTraceCmd( char *cmds, inp_rtn_action action )
  * PushTraceCmd
  */
 
-static void PushTraceCmd()
+static void PushTraceCmd( void )
 {
     PushInpStack( "\0", &DoneTraceCmd, TRUE );
     TypeInpStack( INP_HOLD );
@@ -654,7 +654,7 @@ void ExecTrace( trace_cmd_type type, debug_level level )
 }
 
 
-void ProcTrace()
+void ProcTrace( void )
 {
     int                 level_index;
     int                 type_index;
@@ -691,7 +691,7 @@ void ProcTrace()
 }
 
 
-void FiniTrace()
+void FiniTrace( void )
 {
     _Free( TraceState.td );
     TraceState.td = NULL;
@@ -706,7 +706,7 @@ void FiniTrace()
  * LevelSet -- process set/level command
  */
 
-void LevelSet()
+void LevelSet( void )
 {
     int trace_level;
 
@@ -716,7 +716,7 @@ void LevelSet()
     DbgLevel = trace_level - 1;
 }
 
-void LevelConf()
+void LevelConf( void )
 {
     GetCmdEntry( LevelTab, DbgLevel + 1, TxtBuff );
     ConfigLine( TxtBuff );

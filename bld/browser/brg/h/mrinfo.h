@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF information merger class declaration.
 *
 ****************************************************************************/
 
 
-#ifndef __MRINFO_H__
-#define __MRINFO_H__
+#ifndef MRINFO_H_INCLUDED
+#define MRINFO_H_INCLUDED
 
 #include "brmerge.h"
 #include "mroffset.h"
@@ -74,7 +73,7 @@ public:
 
 private:
     void            relocPass( MergeInfoPP & pp );
-    void            readDIE( MergeFile * file, MergeOffset& startOff,
+    void            readDIE( MergeFile * file, MergeOffset startOff,
                            MergeDIE * prt, MergeOffset& moff, uint_32 abbCode );
     void            readCompUnitHdr( MergeFile * file, MergeOffset& moff );
     int             getFileLenDelta( MergeFile * file, MergeOffset& moff,
@@ -91,4 +90,4 @@ private:
 };
 
 
-#endif // __MRINFO_H__
+#endif // MRINFO_H_INCLUDED

@@ -33,9 +33,9 @@
 #include "variety.h"
 #include "cplx.h"
 
-_WMRTLINK dcomplex _IF_CDLOG( double rp, double ip ) {
-//===================================================
-
+_WMRTLINK dcomplex _IF_CDLOG( double rp, double ip )
+//==================================================
+{
 // Return the logarithm (base e) of arg.
 // ln(x + iy) = u + iv  =>  x + iy = exp(u) * cis(v)
 // Thus x*x + y*y = exp(2u) or u = 0.5 ln(x*x + y*y)

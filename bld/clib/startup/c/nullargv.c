@@ -31,12 +31,11 @@
 
 
 #include <stdlib.h>
-extern  int main(void);
+extern  int main( void );
 
-void __Null_Argv()
-    {
-        #ifndef __NETWARE__
-            exit( main() );
-        #endif
-    }
-
+void __Null_Argv( void )
+{
+#ifndef __NETWARE__
+    exit( main() );
+#endif
+}

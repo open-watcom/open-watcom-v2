@@ -1,0 +1,242 @@
+#
+# special options
+#
+
+#
+# architecture specific options
+#
+!ifeq arch axp
+# AXP specific
+!else ifeq arch 386
+# 386 specific
+!else ifeq arch i86
+# i86 specific
+!endif
+
+all_exes = &
+obj11.exe &
+obj21.exe &
+obj31.exe &
+obj41.exe &
+obj51.exe &
+obj61.exe &
+obj71.exe &
+obj81.exe &
+obj91.exe &
+obj12.exe &
+obj22.exe &
+obj32.exe &
+obj42.exe &
+obj52.exe &
+obj62.exe &
+obj72.exe &
+obj82.exe &
+obj92.exe &
+obj13.exe &
+obj23.exe &
+obj33.exe &
+obj43.exe &
+obj53.exe &
+obj63.exe &
+obj73.exe &
+obj83.exe &
+obj93.exe &
+obj14.exe &
+obj24.exe &
+obj34.exe &
+obj44.exe &
+obj54.exe &
+obj64.exe &
+obj74.exe &
+obj84.exe &
+obj94.exe &
+!ifeq arch 386
+obj1s1.exe &
+obj2s1.exe &
+obj3s1.exe &
+obj4s1.exe &
+obj5s1.exe &
+obj6s1.exe &
+obj7s1.exe &
+obj8s1.exe &
+obj9s1.exe &
+obj1s2.exe &
+obj2s2.exe &
+obj3s2.exe &
+obj4s2.exe &
+obj5s2.exe &
+obj6s2.exe &
+obj7s2.exe &
+obj8s2.exe &
+obj9s2.exe &
+obj1s3.exe &
+obj2s3.exe &
+obj3s3.exe &
+obj4s3.exe &
+obj5s3.exe &
+obj6s3.exe &
+obj7s3.exe &
+obj8s3.exe &
+obj9s3.exe &
+obj1s4.exe &
+obj2s4.exe &
+obj3s4.exe &
+obj4s4.exe &
+obj5s4.exe &
+obj6s4.exe &
+obj7s4.exe &
+obj8s4.exe &
+obj9s4.exe &
+!endif
+
+all_objs = &
+obj11.obj &
+obj21.obj &
+obj31.obj &
+obj41.obj &
+obj51.obj &
+obj61.obj &
+obj71.obj &
+obj81.obj &
+obj91.obj &
+obj12.obj &
+obj22.obj &
+obj32.obj &
+obj42.obj &
+obj52.obj &
+obj62.obj &
+obj72.obj &
+obj82.obj &
+obj92.obj &
+obj13.obj &
+obj23.obj &
+obj33.obj &
+obj43.obj &
+obj53.obj &
+obj63.obj &
+obj73.obj &
+obj83.obj &
+obj93.obj &
+obj14.obj &
+obj24.obj &
+obj34.obj &
+obj44.obj &
+obj54.obj &
+obj64.obj &
+obj74.obj &
+obj84.obj &
+obj94.obj &
+!ifeq arch 386
+obj1s1.obj &
+obj2s1.obj &
+obj3s1.obj &
+obj4s1.obj &
+obj5s1.obj &
+obj6s1.obj &
+obj7s1.obj &
+obj8s1.obj &
+obj9s1.obj &
+obj1s2.obj &
+obj2s2.obj &
+obj3s2.obj &
+obj4s2.obj &
+obj5s2.obj &
+obj6s2.obj &
+obj7s2.obj &
+obj8s2.obj &
+obj9s2.obj &
+obj1s3.obj &
+obj2s3.obj &
+obj3s3.obj &
+obj4s3.obj &
+obj5s3.obj &
+obj6s3.obj &
+obj7s3.obj &
+obj8s3.obj &
+obj9s3.obj &
+obj1s4.obj &
+obj2s4.obj &
+obj3s4.obj &
+obj4s4.obj &
+obj5s4.obj &
+obj6s4.obj &
+obj7s4.obj &
+obj8s4.obj &
+obj9s4.obj &
+!endif
+
+opt_obj11 = -ecc -fpc
+opt_obj21 = -ecd -fpc
+opt_obj31 = -ecf -fpc
+opt_obj41 = -eco -fpc
+opt_obj51 = -ecp -fpc
+opt_obj61 = -ecs -fpc
+opt_obj71 = -ecr -fpc
+opt_obj81 = -ecw -fpc
+opt_obj91 = -fpc
+opt_obj12 = -ecc -fpi87
+opt_obj22 = -ecd -fpi87
+opt_obj32 = -ecf -fpi87
+opt_obj42 = -eco -fpi87
+opt_obj52 = -ecp -fpi87
+opt_obj62 = -ecs -fpi87
+opt_obj72 = -ecr -fpi87
+opt_obj82 = -ecw -fpi87
+opt_obj92 = -fpi87
+opt_obj13 = -ecc -ox-fpc
+opt_obj23 = -ecd -ox-fpc
+opt_obj33 = -ecf -ox-fpc
+opt_obj43 = -eco -ox-fpc
+opt_obj53 = -ecp -ox-fpc
+opt_obj63 = -ecs -ox-fpc
+opt_obj73 = -ecr -ox-fpc
+opt_obj83 = -ecw -ox-fpc
+opt_obj93 = -ox-fpc
+opt_obj14 = -ecc -ox-fpi87
+opt_obj24 = -ecd -ox-fpi87
+opt_obj34 = -ecf -ox-fpi87
+opt_obj44 = -eco -ox-fpi87
+opt_obj54 = -ecp -ox-fpi87
+opt_obj64 = -ecs -ox-fpi87
+opt_obj74 = -ecr -ox-fpi87
+opt_obj84 = -ecw -ox-fpi87
+opt_obj94 = -ox-fpi87
+opt_obj1s1 = -3s-ecc -fpc
+opt_obj2s1 = -3s-ecd -fpc
+opt_obj3s1 = -3s-ecf -fpc
+opt_obj4s1 = -3s-eco -fpc
+opt_obj5s1 = -3s-ecp -fpc
+opt_obj6s1 = -3s-ecs -fpc
+opt_obj7s1 = -3s-ecr -fpc
+opt_obj8s1 = -3s-ecw -fpc
+opt_obj9s1 = -3s -fpc
+opt_obj1s2 = -3s-ecc -fpi87
+opt_obj2s2 = -3s-ecd -fpi87
+opt_obj3s2 = -3s-ecf -fpi87
+opt_obj4s2 = -3s-eco -fpi87
+opt_obj5s2 = -3s-ecp -fpi87
+opt_obj6s2 = -3s-ecs -fpi87
+opt_obj7s2 = -3s-ecr -fpi87
+opt_obj8s2 = -3s-ecw -fpi87
+opt_obj9s2 = -3s -fpi87
+opt_obj1s3 = -3s-ecc -ox-fpc
+opt_obj2s3 = -3s-ecd -ox-fpc
+opt_obj3s3 = -3s-ecf -ox-fpc
+opt_obj4s3 = -3s-eco -ox-fpc
+opt_obj5s3 = -3s-ecp -ox-fpc
+opt_obj6s3 = -3s-ecs -ox-fpc
+opt_obj7s3 = -3s-ecr -ox-fpc
+opt_obj8s3 = -3s-ecw -ox-fpc
+opt_obj9s3 = -3s -ox-fpc
+opt_obj1s4 = -3s-ecc -ox-fpi87
+opt_obj2s4 = -3s-ecd -ox-fpi87
+opt_obj3s4 = -3s-ecf -ox-fpi87
+opt_obj4s4 = -3s-eco -ox-fpi87
+opt_obj5s4 = -3s-ecp -ox-fpi87
+opt_obj6s4 = -3s-ecs -ox-fpi87
+opt_obj7s4 = -3s-ecr -ox-fpi87
+opt_obj8s4 = -3s-ecw -ox-fpi87
+opt_obj9s4 = -3s -ox-fpi87
+
+callconv_exes = $+ $(all_exes) $-
+callconv_objs = $+ $(all_objs) $-

@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File completion window.
 *
 ****************************************************************************/
 
 
-#include <assert.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
@@ -59,12 +57,12 @@ static BOOL Init( window *w, void *parm )
     w = w;
     parm = parm;
     wc.style = CS_DBLCLKS;
-    wc.lpfnWndProc = (LPVOID) FileCompleteWindowProc;
+    wc.lpfnWndProc = (WNDPROC)FileCompleteWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LPVOID );
     wc.hInstance = InstanceHandle;
-    wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+    wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
@@ -85,7 +83,7 @@ LONG WINEXP FileCompleteWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
         if( CommandId != NO_WINDOW ) {
             SetFocus( CommandId );
             SendMessage( CommandId, msg, w, l );
-            return( TRUE );
+            return( 0 );
         }
         break;
     case WM_ERASEBKGND:
@@ -120,10 +118,10 @@ window_id NewFileCompleteWindow( void )
     p.y = size->top;
     ClientToScreen( Root, &p );
     dir = CreateWindow( ClassName, "File Complete",
-        WS_POPUPWINDOW | WS_CLIPSIBLINGS | WS_BORDER,
-        p.x, p.y,
-        size->right - size->left, size->bottom - size->top, Root,
-        (HMENU)NULL, InstanceHandle, NULL );
+                        WS_POPUPWINDOW | WS_CLIPSIBLINGS | WS_BORDER,
+                        p.x, p.y,
+                        size->right - size->left, size->bottom - size->top, Root,
+                        (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( dir, SW_SHOWNORMAL );
     UpdateWindow( dir );
     return( dir );

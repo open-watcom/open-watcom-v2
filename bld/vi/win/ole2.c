@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
+#include "vi.h"
 #ifdef __386__
 bool OLE2Init( void ) { return( FALSE ); }
-void OLE2Fini( void ) {};
+void OLE2Fini( void ) {}
 #else
 #define DO_DEFINE_OLEGUID
 #include "ole2def.h"

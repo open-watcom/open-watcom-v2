@@ -1,0 +1,116 @@
+# Known bugs: if you build a dos386 version, it will build fine but complain
+#             about not being able to find the message file.
+
+proj_name = bdiff
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include wres.mif
+
+.c : ../c
+
+inc_dirs = -I"../h"
+
+extra_l_flags = name $^@ op map
+
+.ERASE
+
+all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe
+
+#
+# WCPATCH. Create patch.
+#
+WBJS = dopatchw.obj msg.obj myio.obj wcptchio.obj wcpatch.obj bdiffmem.obj wbdiff.obj
+
+wcpatch.exe : $(WBJS) $(wres_lib) $(__MAKEFILES__)
+        @%create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(WBJS)) do @%append $^&.lnk file %i
+        $(linker) @$^&.lnk
+
+#
+# WPATCH. Apply patch.
+#
+YBJS = dopatchp.obj msg.obj myio.obj oldfile.obj wpatchio.obj wpatch.obj bdiffmem.obj bpatch.obj
+
+wpatch.exe : $(YBJS) $(wres_lib) $(__MAKEFILES__)
+        @%create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(YBJS)) do @%append $^&.lnk file %i
+        $(linker) @$^&.lnk
+
+#
+# BPATCH.
+#
+OBJ = bpatch.obj dopatchp.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+
+bpatch.exe : bpatch.res $(OBJ) $(wres_lib) $(__MAKEFILES__)
+        @%create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(OBJ)) do @%append $^&.lnk file %i
+        $(linker) @$^&.lnk
+        wstrip -q -a -r $^@ . bpatch.res
+
+#
+# BDUMP.
+#
+XBJ = bdump.obj dopatchx.obj msg.obj myio.obj oldfile.obj patchio.obj patmain.obj bdiffmem.obj
+
+bdump.exe : bpatch.res $(XBJ) $(wres_lib) $(__MAKEFILES__)
+        @%create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(XBJ)) do @%append $^&.lnk file %i
+        $(linker) @$^&.lnk
+        wstrip -q -a -r $^@ . bpatch.res
+
+#
+# BDIFF.
+#
+DBJ = bdiff.obj bdiffmem.obj dopatchd.obj msg.obj myio.obj
+
+bdiff.exe : $(DBJ) bdiff.res $(wres_lib) $(__MAKEFILES__)
+        @%create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(DBJ)) do @%append $^&.lnk file %i
+        $(linker) @$^&.lnk
+        wstrip -q -a -r $^@ . bdiff.res
+
+#
+# BCMT
+#
+bpcmt_objs = bpcmt.obj bdiffmem.obj
+
+bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
+        $(linker) $(lflags) file { $(bpcmt_objs) }
+
+#
+# BLEVEL
+#
+bplevel_objs = bplevel.obj
+
+bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
+        $(linker) $(lflags) file { $(bplevel_objs) }
+
+# resources
+############
+pusage.rc : ../usage.sp
+        wsplice -kBPATCH -kENGLISH -t8 -f "%+MSG_USE_E_BASE-1+%$#, \"%s\"" $[@ $^@
+
+pusagej.rc : ../usage.sp
+        wsplice -kBPATCH -kJAPANESE -t8 -f "%+MSG_USE_J_BASE-1+%$#, \"%s\"" $[@ $^@
+
+dusage.rc : ../usage.sp
+        wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "%+MSG_USAGE_LN_%$#, \"%s\"" $[@ $^@
+
+bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.rc pusagej.rc
+        $(rc_aui) -I.. -DBPATCH $[@ -fo=$^@
+
+bdiff.res : ../bpatch.rc dusage.rc ../h/bpatch.h
+        $(rc_aui) -I.. -DBDIFF $[@ -fo=$^@

@@ -30,18 +30,14 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
 #include "vi.h"
 #include "winaux.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "winvi.h"
     #include "font.h"
     #include "color.h"
 #endif
+#include <assert.h>
 
 static void initDCLine( dc dc )
 {
@@ -52,7 +48,7 @@ static void initDCLine( dc dc )
     dc->ss = SSNewBlock();
 }
 
-static deinitDCLine( dc dc )
+static void deinitDCLine( dc dc )
 {
     if( dc->text ) {
         MemFree( dc->text );
@@ -131,7 +127,7 @@ void DCScroll( int nlines )
     // 'wrap' pointers so don't need to free/allocate ss blocks, etc.
     dc_temp = MemAlloc( CurrentInfo->dc_size * sizeof( dc_line ) );
     bit = abs( nlines ) * sizeof( dc_line );
-    rest = ( CurrentInfo->dc_size - abs( nlines ) ) * sizeof( dc_line );
+    rest = (CurrentInfo->dc_size - abs( nlines )) * sizeof( dc_line );
     if( nlines > 0 ) {
         memmove( dc_temp, dc + CurrentInfo->dc_size - nlines, bit );
         memmove( dc + nlines, dc, rest );
@@ -173,27 +169,27 @@ void DCDestroy( void )
     CurrentInfo->dc_size = 0;
 }
 
-int DCUpdate( void )
+vi_rc DCUpdate( void )
 {
-    int         rc;
-    int         i, nlines;
-    fcb         *fcb;
-    line        *line;
-    dc          dc;
-    bool        firstLine, firstTilde;
-    linenum     line_no;
-    int         displayOffset;
-    char        *displayText;
+    vi_rc           rc;
+    int             i, nlines;
+    fcb             *fcb;
+    line            *line;
+    dc              dc;
+    bool            firstLine, firstTilde;
+    linenum         line_no;
+    int             displayOffset;
+    char            *displayText;
 #ifdef __WIN__
-    HDC         hdc_wnd;
-    #ifdef BITBLT_BUFFER_DISPLAY
-        HDC             hdc_mem;
-        HBITMAP hbitmap;
-        type_style      *ws;
-    #endif
+    HDC             hdc_wnd;
+#ifdef BITBLT_BUFFER_DISPLAY
+    HDC             hdc_mem;
+    HBITMAP         hbitmap;
+    type_style      *ws;
+#endif
 #else
-    bool        hasMouse;
-    unsigned int hdc_wnd = 0;
+    bool            hasMouse;
+    unsigned int    hdc_wnd = 0;
 #endif
 
     if( EditFlags.Quiet || CurrentInfo == NULL ) {
@@ -203,21 +199,21 @@ int DCUpdate( void )
 #ifdef __WIN__
     MyHideCaret( CurrentWindow );
     hdc_wnd = GetDC( CurrentWindow );
-    #ifdef BITBLT_BUFFER_DISPLAY
-        hdc_mem = CreateCompatibleDC( hdc_wnd );
-        ws = &( SEType[ SE_WHITESPACE ] );
-        hbitmap = CreateCompatibleBitmap( hdc_wnd,
-                        WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ),
-                        FontHeight( ws->font ) );
-        SelectObject( hdc_mem, hbitmap );
-        SelectObject( hdc_mem, ColorBrush( ws->background ) );
-    #endif
+#ifdef BITBLT_BUFFER_DISPLAY
+    hdc_mem = CreateCompatibleDC( hdc_wnd );
+    ws = &(SEType[SE_WHITESPACE]);
+    hbitmap = CreateCompatibleBitmap( hdc_wnd,
+                    WindowAuxInfo( CurrentWindow, WIND_INFO_WIDTH ),
+                    FontHeight( ws->font ) );
+    SelectObject( hdc_mem, hbitmap );
+    SelectObject( hdc_mem, ColorBrush( ws->background ) );
+#endif
 #else
     hasMouse = DisplayMouse( FALSE );
 #endif
 
-    rc = CGimmeLinePtr( TopOfPage, &fcb, &line );
-    if( rc ) {
+    rc = CGimmeLinePtr( LeftTopPos.line, &fcb, &line );
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 
@@ -225,13 +221,13 @@ int DCUpdate( void )
     dc = CurrentInfo->dc;
     firstLine = TRUE;
     firstTilde = TRUE;
-    for( i = 0, line_no = TopOfPage; i < nlines; i++, line_no++ ) {
+    for( i = 0, line_no = LeftTopPos.line; i < nlines; i++, line_no++ ) {
         if( dc->display ) {
             if( line ) {
                 if( firstLine ) {
                     if( dc->valid ) {
                          // major speedup
-                         SSInitLanguageFlagsGivenValues( &( dc->flags ) );
+                         SSInitLanguageFlagsGivenValues( &(dc->flags) );
                     } else {
                         SSInitLanguageFlags( line_no );
                     }
@@ -246,9 +242,9 @@ int DCUpdate( void )
                         displayText = "*** ERR NULL DATA ***";
                     }
                 }
-                displayOffset = RealLineLen( displayText );
-                if( displayOffset > LeftColumn ) {
-                    displayOffset = LeftColumn;
+                displayOffset = VirtualLineLen( displayText );
+                if( displayOffset > LeftTopPos.column ) {
+                    displayOffset = LeftTopPos.column;
                 }
             } else {
                 if( EditFlags.DrawTildes ) {
@@ -262,16 +258,16 @@ int DCUpdate( void )
                 }
                 displayOffset = 0;
             }
-            #ifdef BITBLT_BUFFER_DISPLAY
-                DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
-                                    line, line_no, displayText, displayOffset,
-                                    hdc_wnd,
-                                    hdc_mem );
-            #else
-                DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
-                                    line, line_no, displayText, displayOffset,
-                                    hdc_wnd );
-            #endif
+#ifdef BITBLT_BUFFER_DISPLAY
+            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+                                line, line_no, displayText, displayOffset,
+                                hdc_wnd,
+                                hdc_mem );
+#else
+            DisplayLineInWindowWithSyntaxStyle( CurrentWindow, i + 1,
+                                line, line_no, displayText, displayOffset,
+                                hdc_wnd );
+#endif
             dc->display = FALSE;
         } else {
             // just in case displaying 2+ blocks in one update
@@ -280,16 +276,16 @@ int DCUpdate( void )
         if( line ) {
             rc = CGimmeNextLinePtr( &fcb, &line );
         }
-        if( rc && rc != ERR_NO_MORE_LINES ) {
+        if( rc != ERR_NO_ERR && rc != ERR_NO_MORE_LINES ) {
             return( rc );
         }
         dc++;
     }
 #ifdef __WIN__
-    #ifdef BITBLT_BUFFER_DISPLAY
-        DeleteDC( hdc_mem );
-        DeleteObject( hbitmap );
-    #endif
+#ifdef BITBLT_BUFFER_DISPLAY
+    DeleteDC( hdc_mem );
+    DeleteObject( hbitmap );
+#endif
     ReleaseDC( CurrentWindow, hdc_wnd );
     MyShowCaret( CurrentWindow );
 #else
@@ -356,7 +352,7 @@ void DCDisplaySomeLines( int start, int end )
     linenum     line_no;
     line        *line;
     fcb         *cfcb;
-    int         rc;
+    vi_rc       rc;
 
     if( EditFlags.DisplayHold || CurrentFile == NULL || CurrentInfo == NULL ) {
         return;
@@ -364,19 +360,17 @@ void DCDisplaySomeLines( int start, int end )
 
     assert( CurrentInfo );
 
-    CurrentFile->needs_display = TRUE;
     if( CurrentInfo->dc_size == 0 ) {
         return;
     }
+    CurrentFile->needs_display = TRUE;
     shaveRange( &start, &end );
 
     cfcb = CurrentFcb;
-    line_no = TopOfPage + start;
+    line_no = LeftTopPos.line + start;
     rc = CGimmeLinePtr( line_no, &cfcb, &line );
-    if( rc ) {
-        if( rc != ERR_NO_SUCH_LINE ) {
-            return;
-        }
+    if( rc != ERR_NO_ERR && rc != ERR_NO_SUCH_LINE ) {
+        return;
     }
     CTurnOffFileDisplayBits();
     cfcb->on_display = TRUE;
@@ -394,7 +388,6 @@ void DCDisplayAllLines( void )
     if( CurrentInfo == NULL ) return;
     DCDisplaySomeLines( 0, CurrentInfo->dc_size - 1 );
 }
-
 
 void DCInvalidateSomeLines( int start, int end )
 {
@@ -433,9 +426,10 @@ dc DCFindLine( int c_line_no, window_id id )
     info    *info;
     dc      dc;
 
-    info = InfoHead;
-    while( info && info->CurrentWindow != id ) {
-        info = info->next;
+    for( info = InfoHead; info != NULL; info = info->next ) {
+        if( info->CurrentWindow == id ) {
+            break;
+        }
     }
     assert( info );
     assert( c_line_no >= 0 && c_line_no < info->dc_size );

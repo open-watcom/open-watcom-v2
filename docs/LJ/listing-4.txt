@@ -1,0 +1,11 @@
+# Top level of the installation directory.
+export WATCOM=/opt/OW
+
+# Set up other environment variables.
+export EDPATH=$WATCOM/eddat
+export FINCLUDE=$WATCOM/src/fortran
+export INCLUDE=$WATCOM/lh
+PATH=$WATCOM/binl:$PATH
+
+Caption: Environment variables for using Open Watcom
+

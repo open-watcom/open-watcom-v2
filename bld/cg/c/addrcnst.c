@@ -33,17 +33,18 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
+#include "addrcnst.h"
+#include "makeins.h"
 
 extern    block         *HeadBlock;
 
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 
 
-extern  void    MakeMovAddrConsts() {
-/***********************************/
+extern  void    MakeMovAddrConsts( void ) {
+/*****************************************/
 
     block       *blk;
     instruction *ins;
@@ -69,8 +70,8 @@ extern  void    MakeMovAddrConsts() {
 }
 
 
-extern  void    KillMovAddrConsts() {
-/***********************************/
+extern  void    KillMovAddrConsts( void ) {
+/*****************************************/
 
     block               *blk;
     instruction         *ins;

@@ -37,7 +37,6 @@
 #include "libwin32.h"
 #include "osver.h"
 
-
 BOOL __lib_DeleteFileW( LPCWSTR lpFileName )
 /******************************************/
 {

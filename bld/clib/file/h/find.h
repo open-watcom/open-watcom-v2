@@ -33,29 +33,19 @@
 #ifndef _FINDdotH
 #define _FINDdotH
 
-#include <io.h>
-#ifdef __NT__
+#if defined( __NT__ )
     #include <windows.h>
+#elif defined( __OS2__ )
+#elif defined( __RDOS__ )
+    #include <rdos.h>
 #else
     #include <dos.h>
 #endif
 
 
-#define FIND_ATTR       (_A_NORMAL | _A_SUBDIR | _A_ARCH | _A_HIDDEN |  \
-                         _A_RDONLY | _A_SYSTEM )
+#define FIND_ATTR (_A_NORMAL | _A_SUBDIR | _A_ARCH | _A_HIDDEN | _A_RDONLY | _A_SYSTEM)
 
-// prototypes here since not in 10.x headers
-
-_WCRTLINK extern long _findfirst( const char *__filespec,
-                                  struct _finddata_t *__fileinfo );
-_WCRTLINK extern long _wfindfirst( const wchar_t *__filespec,
-                                   struct _wfinddata_t *__fileinfo );
-_WCRTLINK extern long _findfirsti64( const char *__filespec,
-                                   struct _finddatai64_t *__fileinfo );
-_WCRTLINK extern long _wfindfirsti64( const wchar_t *__filespec,
-                                    struct _wfinddatai64_t *__fileinfo );
-
-#ifdef __NT__
+#if defined( __NT__ )
 
     extern void     __nt_finddata_cvt( WIN32_FIND_DATA *ffb,
                                        struct _finddata_t *fileinfo );
@@ -65,9 +55,45 @@ _WCRTLINK extern long _wfindfirsti64( const wchar_t *__filespec,
                                           struct _finddatai64_t *fileinfo );
     extern void     __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffb,
                                            struct _wfinddatai64_t *fileinfo );
-    extern time_t   __nt_filetime_cvt( FILETIME *ft );
 
-#else
+#elif defined( __OS2__ )
+
+    #if defined( _M_I86 )
+        #define FF_LEVEL        0
+        #define FF_BUFFER       FILEFINDBUF
+    #elif defined( __INT64__ )
+        #define FF_LEVEL        (_FILEAPI64() ? FIL_STANDARDL : FIL_STANDARD)
+        #define FF_BUFFER       FILEFINDBUF3L
+        #define FF_BUFFER_32    FILEFINDBUF3
+    #else
+        #define FF_LEVEL        FIL_STANDARD
+        #define FF_BUFFER       FILEFINDBUF3
+    #endif
+
+    extern void     __os2_finddata_cvt( FF_BUFFER *ffb,
+                                       struct _finddata_t *fileinfo );
+    extern void     __os2_wfinddata_cvt( FF_BUFFER *ffb,
+                                        struct _wfinddata_t *fileinfo );
+    extern void     __os2_finddatai64_cvt( FF_BUFFER *ffb,
+                                          struct _finddatai64_t *fileinfo );
+    extern void     __os2_wfinddatai64_cvt( FF_BUFFER *ffb,
+                                           struct _wfinddatai64_t *fileinfo );
+#elif defined( __RDOS__ )
+
+    struct _rdos_find_t {
+        int handle;
+        int entry;
+    };
+
+    #define RDOSFINDTYPE        struct _rdos_find_t
+
+    extern time_t   __rdos_filetime_cvt( unsigned long msb,
+                                         unsigned long lsb );
+
+    extern int      __rdos_finddata_get( RDOSFINDTYPE *findbuf,
+                                         struct _finddata_t *fileinfo );
+
+#else   /* DOS */
 
     #ifdef __WIDECHAR__
         #define DOSFINDTYPE     struct _wfind_t
@@ -83,8 +109,6 @@ _WCRTLINK extern long _wfindfirsti64( const wchar_t *__filespec,
                                            struct _finddatai64_t *fileinfo );
     extern void     __dos_wfinddatai64_cvt( struct _wfind_t *findbuf,
                                             struct _wfinddatai64_t *fileinfo );
-    extern time_t   __dos_filetime_cvt( unsigned short ftime,
-                                        unsigned short fdate );
 
 #endif
 

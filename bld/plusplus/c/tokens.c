@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <limits.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 #include "scan.h"
 
@@ -46,6 +47,10 @@
     #define TC_A1 "\x00"
     #define TC_A2 "\x00\x00"
     #define TC_A3 "\x00\x00\x00"
+#endif
+
+#ifdef pick
+#undef pick
 #endif
 
 char *Tokens[] = {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI lib color handling.
 *
 ****************************************************************************/
 
@@ -41,47 +40,69 @@
 
 extern  WPI_INST        GUIMainHInst;
 
+static int init_rgb = 0;
+
 WPI_COLOUR GUIColours[] = {
 #ifdef __OS2_PM__
 //      R G B
-    0x00000000, /* GUI_BLACK          */
-    0x00000080, /* GUI_BLUE           */
-    0x00008000, /* GUI_GREEN          */
-    0x00008080, /* GUI_CYAN           */
-    0x00C00000, /* GUI_RED            */
-    0x00800080, /* GUI_MAGENTA        */
-    0x00808000, /* GUI_BROWN          */
-    0x00cccccc, /* GUI_WHITE          */
-    0x00808080, /* GUI_GREY           */
-    0x000000ff, /* GUI_BRIGHT_BLUE    */
-    0x0000ff00, /* GUI_BRIGHT_GREEN   */
-    0x0000ffff, /* GUI_BRIGHT_CYAN    */
-    0x00ff0000, /* GUI_BRIGHT_RED     */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA */
-    0x00ffff00, /* GUI_BRIGHT_YELLOW  */
-    0x00ffffff  /* GUI_BRIGHT_WHITE   */
+    0x00000000, /* GUI_BLACK           */
+    0x00000080, /* GUI_BLUE            */
+    0x00008000, /* GUI_GREEN           */
+    0x00008080, /* GUI_CYAN            */
+    0x00C00000, /* GUI_RED             */
+    0x00800080, /* GUI_MAGENTA         */
+    0x00808000, /* GUI_BROWN           */
+    0x00cccccc, /* GUI_WHITE           */
+    0x00808080, /* GUI_GREY            */
+    0x000000ff, /* GUI_BRIGHT_BLUE     */
+    0x0000ff00, /* GUI_BRIGHT_GREEN    */
+    0x0000ffff, /* GUI_BRIGHT_CYAN     */
+    0x00ff0000, /* GUI_BRIGHT_RED      */
+    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
+    0x00ffff00, /* GUI_BRIGHT_YELLOW   */
+    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x00808080, /* GUIEX_DLG_BKGRND    */
+    0x00FFFFFF, /* GUIEX_WND_BKGRND    */
+    0x00000080, /* GUIEX_HIGHLIGHT     */
+    0x00FFFFFF  /* GUIEX_HIGHLIGHTTEXT */
 #else
 //      B G R
-    0x00000000, /* GUI_BLACK          */
-    0x00800000, /* GUI_BLUE           */
-    0x00008000, /* GUI_GREEN          */
-    0x00808000, /* GUI_CYAN           */
-    0x00000080, /* GUI_RED            */
-    0x00800080, /* GUI_MAGENTA        */
-    0x00008080, /* GUI_BROWN          */
-    0x00c0c0c0, /* GUI_WHITE          */
-    0x00808080, /* GUI_GREY           */
-    0x00ff0000, /* GUI_BRIGHT_BLUE    */
-    0x0000ff00, /* GUI_BRIGHT_GREEN   */
-    0x00ffff00, /* GUI_BRIGHT_CYAN    */
-    0x000000ff, /* GUI_BRIGHT_RED     */
-    0x00ff00ff, /* GUI_BRIGHT_MAGENTA */
-    0x0000ffff, /* GUI_BRIGHT_YELLOW  */
-    0x00ffffff  /* GUI_BRIGHT_WHITE   */
+    0x00000000, /* GUI_BLACK           */
+    0x00800000, /* GUI_BLUE            */
+    0x00008000, /* GUI_GREEN           */
+    0x00808000, /* GUI_CYAN            */
+    0x000000C0, /* GUI_RED             */
+    0x00800080, /* GUI_MAGENTA         */
+    0x00008080, /* GUI_BROWN           */
+    0x00c0c0c0, /* GUI_WHITE           */
+    0x00808080, /* GUI_GREY            */
+    0x00ff0000, /* GUI_BRIGHT_BLUE     */
+    0x0000ff00, /* GUI_BRIGHT_GREEN    */
+    0x00ffff00, /* GUI_BRIGHT_CYAN     */
+    0x000000ff, /* GUI_BRIGHT_RED      */
+    0x00ff00ff, /* GUI_BRIGHT_MAGENTA  */
+    0x0000ffff, /* GUI_BRIGHT_YELLOW   */
+    0x00ffffff, /* GUI_BRIGHT_WHITE    */
+    0x00808080, /* GUIEX_DLG_BKGRND    */
+    0x00FFFFFF, /* GUIEX_WND_BKGRND    */
+    0x00800000, /* GUIEX_HIGHLIGHT     */
+    0x00FFFFFF  /* GUIEX_HIGHLIGHTTEXT */
 #endif
 };
 
 #define NUM_COLOURS ( sizeof( GUIColours ) / sizeof( WPI_COLOUR ) )
+
+void InitSystemRGB( void )
+{
+#ifndef __OS2_PM__
+    // All other colours are hardcoded.
+    GUIColours[GUIEX_DLG_BKGRND] = GetSysColor( COLOR_BTNFACE );
+    GUIColours[GUIEX_WND_BKGRND] = GetSysColor( COLOR_WINDOW );
+    GUIColours[GUIEX_HIGHLIGHT] = GetSysColor( COLOR_HIGHLIGHT );
+    GUIColours[GUIEX_HIGHLIGHTTEXT] = GetSysColor( COLOR_HIGHLIGHTTEXT );
+#endif
+}
+
 
 bool GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
@@ -128,6 +149,11 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 void SetBKBrush( gui_window *wnd )
 {
+    if (!init_rgb){
+        InitSystemRGB();
+        init_rgb = 1;
+    }
+
     GUIGetRGB( wnd->colours[GUI_BACKGROUND].back, &wnd->bk_rgb );
     wnd->bk_brush = _wpi_createsolidbrush(GUIGetBack( wnd, GUI_BACKGROUND ));
 }
@@ -185,7 +211,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     WPI_PROC    func;
     bool        ret;
 #if !(defined(__NT__) || defined(WILLOWS))
-    HANDLE      h;
+    HINSTANCE   h;
 #endif
 #ifdef __WINDOWS_386__
     HINDIR      hIndir;
@@ -209,7 +235,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     func = ChooseColor;
 #else
     h = LoadLibrary( "COMMDLG.DLL" );
-    if( h < 32 ) {
+    if( (UINT)h < 32 ) {
         return( FALSE );
     }
     func = GetProcAddress( h, "ChooseColor" );
@@ -227,7 +253,8 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
         FreeAlias16( guiColoursAlias );
     }
 #else
-    ret = func( &choose );
+    /* was missing WINAPI */
+    ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose );
 #endif
 #if !(defined(__NT__) || defined(WILLOWS))
     FreeLibrary( h );
@@ -254,7 +281,7 @@ bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
 
     if( colours != NULL ) {
         size = sizeof( gui_colour_set ) * wnd->num_attrs;
-        wnd->colours = ( gui_colour_set * )GUIAlloc( size );
+        wnd->colours = ( gui_colour_set * )GUIMemAlloc( size );
         if( wnd->colours == NULL ) {
             return( FALSE );
         }
@@ -282,10 +309,10 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
             brush = SET_HBRBACKGROUND( wnd->hwnd, NULL );
         }
 #else
-        brush = NULL;
+        brush = NULLHANDLE;
 #endif
         _wpi_deletebrush( wnd->bk_brush );
-        wnd->bk_brush = NULL;
+        wnd->bk_brush = NULLHANDLE;
     }
     return( brush );
 }

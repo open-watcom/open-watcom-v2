@@ -1,0 +1,6 @@
+echo OK > "Test Object1.obj"
+echo OK > Test" "Object"2.obj"
+if exist "Test Object1.obj" rm "Test Object1.obj"
+rm "Test Object1.obj"
+if exist Test" "Object"2.obj" rm Test" "Object"2.obj"
+rm Test" "Object"2.obj"

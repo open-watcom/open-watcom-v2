@@ -1,136 +1,82 @@
 #
 # Master makefile for WIC
 #
-
 ##############################################################################
 
-!ifdef _OS
-!   ifeq        _OS DOS
-!   else ifeq   _OS OS2
-!   else ifeq   _OS OS2V2
-!   else ifeq   _OS QNX
-!   else ifeq   _OS NT
-!   else ifeq   _OS PLS
-!   else ifeq   _OS OSI
-!   else
-!       error $(_OS) is not a supported operating system
-!   endif
-!else
-!   error Must define _OS macro for operating system
-!endif
-
-!ifndef LANGUAGE
-LANGUAGE  = ENGLISH
-!endif
-
-!ifeq        LANGUAGE ENGLISH
-lang_prefix = e
-!else ifeq   LANGUAGE JAPANESE
-lang_prefix = j
-!else
-!error Invalid language specified: $(LANGUAGE)!
-!endif
-
-##############################################################################
-
-!ifndef opts_cc
-opts_cc=
-!endif
-!ifndef def_cc
-def_cc =
-!endif
-!ifdef on_build_machine
-!define ndebug
-!endif
-!ifdef ndebug
-def_cc += -dNDEBUG
-!endif
-
-def_cc += -d$(LANGUAGE)
-
-opts_link = debug all
-
-#  Indicate debug level
-!ifdef on_build_machine
-debug_level = -d1
-!else
-debug_level = -d2
-!endif
-
-cflags = $(opts_cc) $(def_cc) $(debug_level) -i..\h -fpc -zq -w3
-
-!include ..\mif\objsdef.mif                #   get objs macro
-
-##############################################################################
-
+proj_name = wic
 name = wic
-lnk = $(name).lnk
 
-!ifeq _OS OSI
-extra_stuff = $(tools_root)\os2ldr.exe
-!endif
+wic_trmem = 1
 
-$(name).exe : $(objs) $(lnk) $(extra_stuff) wic.res
-    $(linker) @$(lnk)
-!ifeq _OS OSI
-        w32bind $(name).rex $(name).exe $(tools_root)\os2ldr.exe
-        erase $(name).rex
-!endif
-    wstrip -a -r -q $(name).exe . wic.res
-
-$(lnk) : $(__MAKEFILES__)
-        %create $(lnk)
-        @%append $(lnk) $(opts_lnk)
-        @%append $(lnk) option map, quiet
-        @%append $(lnk) debug all
-!ifdef on_build_machine
-        @%append $(lnk) option symfile
-!endif
-        @%append $(lnk) name $(name)
-        @%append $(lnk) lib $(watcom_dir)\lib\wres$(mem_model_prefix)
-        @for %i in ($(objs)) do @@%append $(lnk) file %i
-
-##############################################################################
-
-#.CONTINUE
 .ERASE
 
-.extensions:
-.extensions: . .exe .obj .res .c .h .rc
+.extensions: .rc
 
-.h      : ..\h;$(%include)
-.c      : ..\c
-.rc     : ..\rc
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
-.c.obj:
-    $(cc) $[* $(cflags)
+!include trmem.mif
 
-##############################################################################
+!include ../mif/objsdef.mif                #   get objs macro
 
-yacc = ..\c\yaccpre
-
-..\c\preparse.c: ..\c\preparse.y
-    $(YACC) pre ..\c\preparse
-
-..\c\cparse.c: ..\c\cparse.y
-    $(YACC) c ..\c\cparse
-
+!include wres.mif
 
 ##############################################################################
 
-wic.res: ..\rc\usage$(lang_prefix).rc ..\rc\messages.rc ..\rc\wic.rc
-    wrc ..\rc\wic.rc $(def_cc) -r -fo=wic.res
+OBJS += $(trmem_objs)
 
-..\rc\usage$(lang_prefix).rc:  ..\rc\usage.sp ..\h\msg.h
-    wsplice -k $(LANGUAGE)  ..\rc\usage.sp ..\rc\usage$(lang_prefix).rc
-    vi ..\rc\usage$(lang_prefix).rc -q -s ..\rc\usage.vi
+extra_c_flags = -zp1 -s
 
-clean : .symbolic
-    rm -f *.obj *.lnk
+extra_c_flags_trmem = $(trmem_cflags)
+extra_c_flags_wicgener = $(trmem_cover_cflags)
 
-superclean : .symbolic
-    rm -f *.obj *.lnk *.exe *.res
-    rm -f *.map
-    rm -f *.err
-    rm -f ..\c\cparse.c ..\c\preparse.c
-    rm -f ..\rc\usage?.rc
+##############################################################################
+
+
+.h      : ../h
+.c      : ../c;$(trmem_dir)
+.rc     : ../rc
+
+inc_dirs = -I"../h"
+
+##############################################################################
+
+!ifeq host_os osi
+extra_stuff = $(os2ldr)
+!endif
+
+##############################################################################
+
+$(name).exe : $(objs) $(extra_stuff) wic.res $(wres_lib)
+        %create $^&.lnk
+        @%append $^&.lnk option map, quiet
+        @%append $^&.lnk debug all
+!ifeq release 1
+        @%append $^&.lnk option symfile
+!endif
+        @%append $^&.lnk lib $(wres_lib)
+        @for %i in ($(objs)) do @@%append $^&.lnk file %i
+!ifeq host_os osi
+        @%append $^&.lnk name $^&.rex
+        $(linker) $(lflags) @$^&.lnk
+        $(w32bind) $^&.rex $@ $(os2ldr)
+        @rm -f $^&.rex
+!else	
+        @%append $^&.lnk name $@
+        $(linker) $(lflags) @$^&.lnk
+!endif
+        wstrip -a -r -q $@ . wic.res
+
+##############################################################################
+
+wic.res: ../rc/wic.rc usagee.rc usagej.rc #../rc/messages.rc
+    $(rc_aui) $[@ -fo=$^@
+
+usagee.rc:  ../rc/usage.sp
+    @%write usagee.tmp -kENGLISH -t8 -f "%+(USAGEE_MSG_BASE+%$#-1), \"%s\"" $< $^@
+    wsplice @usagee.tmp
+
+usagej.rc:  ../rc/usage.sp
+    @%write usagej.tmp -kJAPANESE -t8 -f "%+(USAGEJ_MSG_BASE+%$#-1), \"%s\"" $< $^@
+    wsplice @usagej.tmp

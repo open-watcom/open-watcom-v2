@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\heapsort
+.h: $(bench_dir)\heapsort
+
+extra_cflags = -I$(bench_dir)\heapsort -I$(bench_dir)\support
+
+obj_files = heapsort.obj
+
+run: heapsort.exe .SYMBOLIC
+	heapsort
+    
+build: heapsort.exe .SYMBOLIC
+
+heapsort.exe : $(obj_files)
+	$(deflink)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run a debugger command.
 *
 ****************************************************************************/
 
@@ -43,10 +42,11 @@
 #include "dui.h"
 #include <string.h>
 
-extern char             *ReScan();
-extern void             PushInpStack(void *,bool (*)(),bool );
-extern void             TypeInpStack(input_type);
-extern bool             TBreak();
+
+extern char             *ReScan( char * );
+extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             TypeInpStack( input_type );
+extern bool             TBreak( void );
 
 static bool DoneCmd( char *buff, inp_rtn_action action )
 {
@@ -64,8 +64,10 @@ static bool DoneCmd( char *buff, inp_rtn_action action )
 }
 
 
-static void DoOneCmd( char *cmd )
+static void DoOneCmd( void *_cmd )
 {
+    char        *cmd = _cmd;
+
     if( cmd[0] == NULLCHAR ) {
         DUIDlgTxt( LIT( Empty ) );
     } else {

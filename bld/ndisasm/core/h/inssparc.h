@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Table of SPARC opcodes and corresponding decode routines.
 *
 ****************************************************************************/
 
@@ -34,14 +33,60 @@
 #define op2(a,b)        (op1(a)+((b##ul)<<22))
 #define op3(a,b)        (op1(a)+((b##ul)<<19))
 #define opb(a,b,c)      (op1(a)+((b##ul)<<25)+((c##ul)<<22))
+#define opf(a,b,c)      (op1(a)+((b##ul)<<19)+((c##ul)<<5))
 #define OP0             (op1(0x3))
 #define OP2             (op2(0x3,0x7))
 #define OP3             (op3(0x3,0x3f))
 #define OPB             (opb(0x3,0x0f,0x07))
+#define OPF             (opf(0x3,0x3f,0x1ff))
 
 /*
       Idx,              Name,           Opcode,         Mask,           Handler
 */
+inspick( fitos,         "fitos",        opf(2,0x34,0xc4), OPF,         SPARCFPop2 )
+inspick( fdtos,         "fdtos",        opf(2,0x34,0xc6), OPF,         SPARCFPop2 )
+inspick( fqtos,         "fqtos",        opf(2,0x34,0xc7), OPF,         SPARCFPop2 )
+inspick( fitod,         "fitod",        opf(2,0x34,0xc8), OPF,         SPARCFPop2 )
+inspick( fstod,         "fstod",        opf(2,0x34,0xc9), OPF,         SPARCFPop2 )
+inspick( fqtod,         "fqtod",        opf(2,0x34,0xcb), OPF,         SPARCFPop2 )
+inspick( fitoq,         "fitoq",        opf(2,0x34,0xcc), OPF,         SPARCFPop2 )
+inspick( fstoq,         "fstoq",        opf(2,0x34,0xcd), OPF,         SPARCFPop2 )
+inspick( fdtoq,         "fdtoq",        opf(2,0x34,0xce), OPF,         SPARCFPop2 )
+inspick( fstoi,         "fstoi",        opf(2,0x34,0xd1), OPF,         SPARCFPop2 )
+inspick( fdtoi,         "fdtoi",        opf(2,0x34,0xd2), OPF,         SPARCFPop2 )
+inspick( fqtoi,         "fqtoi",        opf(2,0x34,0xd3), OPF,         SPARCFPop2 )
+
+inspick( fmovs,         "fmovs",        opf(2,0x34,0x01), OPF,         SPARCFPop2 )
+inspick( fnegs,         "fnegs",        opf(2,0x34,0x05), OPF,         SPARCFPop2 )
+inspick( fabss,         "fabss",        opf(2,0x34,0x09), OPF,         SPARCFPop2 )
+
+inspick( fsqrts,        "fsqrts",       opf(2,0x34,0x29), OPF,         SPARCFPop2 )
+inspick( fsqrtd,        "fsqrtd",       opf(2,0x34,0x2a), OPF,         SPARCFPop2 )
+inspick( fsqrtq,        "fsqrtq",       opf(2,0x34,0x2b), OPF,         SPARCFPop2 )
+
+inspick( fcmps,         "fcmps",        opf(2,0x35,0x51), OPF,         SPARCFPop2 )
+inspick( fcmpd,         "fcmpd",        opf(2,0x35,0x52), OPF,         SPARCFPop2 )
+inspick( fcmpq,         "fcmpq",        opf(2,0x35,0x53), OPF,         SPARCFPop2 )
+inspick( fcmpes,        "fcmpes",       opf(2,0x35,0x55), OPF,         SPARCFPop2 )
+inspick( fcmped,        "fcmped",       opf(2,0x35,0x56), OPF,         SPARCFPop2 )
+inspick( fcmpeq,        "fcmpeq",       opf(2,0x35,0x57), OPF,         SPARCFPop2 )
+
+inspick( fadds,         "fadds",        opf(2,0x34,0x41), OPF,         SPARCFPop3 )
+inspick( faddd,         "faddd",        opf(2,0x34,0x42), OPF,         SPARCFPop3 )
+inspick( faddq,         "faddq",        opf(2,0x34,0x43), OPF,         SPARCFPop3 )
+inspick( fsubs,         "fsubs",        opf(2,0x34,0x45), OPF,         SPARCFPop3 )
+inspick( fsubd,         "fsubd",        opf(2,0x34,0x46), OPF,         SPARCFPop3 )
+inspick( fsubq,         "fsubq",        opf(2,0x34,0x47), OPF,         SPARCFPop3 )
+inspick( fmuls,         "fmuls",        opf(2,0x34,0x49), OPF,         SPARCFPop3 )
+inspick( fmuld,         "fmuld",        opf(2,0x34,0x4a), OPF,         SPARCFPop3 )
+inspick( fmulq,         "fmulq",        opf(2,0x34,0x4b), OPF,         SPARCFPop3 )
+inspick( fdivs,         "fdivs",        opf(2,0x34,0x4d), OPF,         SPARCFPop3 )
+inspick( fdivd,         "fdivd",        opf(2,0x34,0x4e), OPF,         SPARCFPop3 )
+inspick( fdivq,         "fdivq",        opf(2,0x34,0x4f), OPF,         SPARCFPop3 )
+inspick( fsmuld,        "fsmuld",       opf(2,0x34,0x69), OPF,         SPARCFPop3 )
+inspick( fdmulq,        "fdmulq",       opf(2,0x34,0x6e), OPF,         SPARCFPop3 )
+
+
 inspick( ldsb,          "ldsb",         op3(3,0x09),    OP3,            SPARCMem )
 inspick( ldsh,          "ldsh",         op3(3,0x0a),    OP3,            SPARCMem )
 inspick( ldub,          "ldub",         op3(3,0x01),    OP3,            SPARCMem )

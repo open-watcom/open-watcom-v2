@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Take the instruction stream from the code generator and
+*               writes the instructions into the object file.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "pattern.h"
@@ -53,6 +54,8 @@
 #include "feprotos.h"
 #include "p5prof.h"
 #include "procdef.h"
+#include "addrname.h"
+#include "display.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -69,8 +72,6 @@ extern  void            GenRJmp(instruction*);
 extern  void            GenICall(instruction*);
 extern  void            GenRCall(instruction*);
 extern  void            GenCall(instruction*);
-extern  abspatch_handle *NextFramePatch();
-extern  bool            AskIsFrameIndex(name*);
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            InputOC(any_oc*);
@@ -94,32 +95,62 @@ extern  void            GenUnkLea(pointer);
 extern  name            *IntEquivalent(name*);
 extern  void            LookupRoutine(instruction*);
 extern  void            AdjustStackDepth(instruction*);
+extern  void            AdjustStackDepthDirect(int adjust);
+
 extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            BaseIsSP(name*);
 extern  type_length     TmpLoc(name*,name*);
 extern  name            *DeAlias(name*);
-extern  seg_id          AskBackSeg();
-extern  seg_id          AskCodeSeg();
-extern  void            DoLblRef(label_handle,seg_id,offset,byte);
+extern  seg_id          AskBackSeg( void );
+extern  seg_id          AskCodeSeg( void );
+extern  void            DoLblRef(label_handle,seg_id,offset,escape_class);
 extern  void            AddWData(signed_32,type_class_def );
-extern  label_handle    AskForNewLabel();
+extern  label_handle    AskForNewLabel( void );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
 extern  void            CodeLabel(label_handle, unsigned);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern  void            DoFESymRef(sym_handle,cg_class,offset,int);
 extern  void            GenJumpLabel( label_handle );
 extern  void            GenKillLabel( label_handle );
 extern  segment_id      GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack );
-extern  void            EndBlockProfiling();
+extern  void            EndBlockProfiling( void );
+extern  void            LayOpbyte( opcode op );
+extern  void            LayOpword( opcode op );
+extern  void            LayW( type_class_def class );
+extern  void            GenSeg( hw_reg_set regs );
+extern  void            GenLoadDS(void);
+extern  void            LayRMRegOp( name *r );
+extern  void            AddWCons( name *op, type_class_def kind );
+extern  void            LayReg( hw_reg_set r );
+extern  void            GCondFwait(void);
+extern  void            GFldz(void);
+extern  void            AddSData( signed_32 value, type_class_def kind );
+extern  void            GFwait(void);
+extern  void            GCondFwait(void);
+extern  void            GFldM( pointer what );
 
+static  void            AddSWCons( opcode_defs op, name *opnd, type_class_def class );
+static  void            TransferIns(void);
+static  void            LayST( name *op );
+static  void            LayMF( name *op );
+static  void            AddSCons( name *op, type_class_def kind );
+static  void            LayACRegOp( name *r );
+static  void            LayRegOp( name *r );
+static  void            LaySROp( name *r );
+static  void            SetCC(void);
+static  void            CallMathFunc( instruction *ins );
+static  void            MathFunc( instruction *ins );
+static  void            PopSeg( hw_reg_set reg );
+static  void            PushSeg( hw_reg_set reg );
+static  void            GFld1(void);
+static  int             FPRegTrans( hw_reg_set reg );
 
 
 extern    pccode_def            PCCodeTable[];
 extern    name                  *FPStatWord;
 extern    byte                  OptForSize;
 extern    bool                  Used87;
-extern  proc_def        *CurrProc;
+extern    proc_def              *CurrProc;
 
           template              Temp;   /* template for oc_entries*/
           byte                  Inst[INSSIZE];  /* template for instructions*/
@@ -152,7 +183,7 @@ static  fp_patches SegPatchTab[] = {
         FPP_SS,         FPP_DS,
         FPP_FS,         FPP_GS };
 
-extern  hw_reg_set FPRegs[] = {
+        hw_reg_set FPRegs[] = {
         HW_D( HW_ST0 ),
         HW_D( HW_ST1 ),
         HW_D( HW_ST2 ),
@@ -193,11 +224,10 @@ extern  void    AddByte( byte b ) {
     Add a byte to Inst[]
 */
 
-    b &= 0xff;
     if( b == ESC ) {
-        Inst[  ICur++  ] = ESC;
+        Inst[ICur++] = b;
     }
-    Inst[  ICur++  ] = b;
+    Inst[ICur++] = b;
     ILen++;
 }
 
@@ -207,9 +237,9 @@ extern  void    AddToTemp( byte b ) {
 */
 
     if( b == ESC ) {
-        Temp.data[  Temp.oc.reclen++ - sizeof( oc_header )  ] = ESC;
+        Temp.data[Temp.oc.reclen++ - sizeof( oc_header )] = b;
     }
-    Temp.data[  Temp.oc.reclen++ - sizeof( oc_header )  ] = b;
+    Temp.data[Temp.oc.reclen++ - sizeof( oc_header )] = b;
     Temp.oc.objlen++;
 }
 
@@ -223,14 +253,14 @@ extern  void    InsertByte( byte b ) {
     byte        *dst;
 
     i = Temp.oc.reclen - sizeof( oc_header );
-    dst = &Temp.data[  i  ];
-    src = &Temp.data[  i - 1  ];
+    dst = &Temp.data[i];
+    src = &Temp.data[i - 1];
     while( --i >= 0 ) {
         *dst = *src;
         --dst;
         --src;
     }
-    Temp.data[ 0 ] = b;
+    Temp.data[0] = b;
     Temp.oc.reclen++;
 }
 
@@ -240,7 +270,7 @@ extern  void    EmitByte( byte b ) {
     Plop a byte into Inst[]
 */
 
-    Inst[  ICur++  ] = b;
+    Inst[ICur++] = b;
 }
 
 extern  void    EmitPtr( pointer p ) {
@@ -248,7 +278,7 @@ extern  void    EmitPtr( pointer p ) {
     Plop a pointer into Inst[]
 */
 
-    *(pointer *)(Inst+ICur) = p;
+    *(pointer *)(Inst + ICur) = p;
     ICur += sizeof( pointer );
 }
 
@@ -257,7 +287,7 @@ extern  void    EmitSegId( seg_id seg ) {
     Plop a seg_id into Inst[]
 */
 
-    *(seg_id *)(Inst+ICur) = seg;
+    *(seg_id *)(Inst + ICur) = seg;
     ICur += sizeof( seg_id );
 }
 
@@ -266,12 +296,12 @@ extern  void    EmitOffset( offset i ) {
     Plop an "offset" int Inst[] (a machine word)
 */
 
-    *(offset *)(Inst+ICur) = i;
+    *(offset *)(Inst + ICur) = i;
     ICur += sizeof( offset );
 }
 
-extern  void    EjectInst() {
-/****************************
+extern  void    EjectInst( void ) {
+/**********************************
     Dump the current instruction into the peephole optimizer
 */
 
@@ -281,8 +311,8 @@ extern  void    EjectInst() {
     IEsc = 0;
 }
 
-static  void    TransferIns() {
-/******************************
+static  void    TransferIns( void ) {
+/************************************
     Transfer an instruction from Inst[] to Temp
 */
 
@@ -292,19 +322,19 @@ static  void    TransferIns() {
     i = 0;
     j = Temp.oc.reclen - sizeof( oc_header );
     while( i < IEsc ) {
-        if( Inst[  i  ] == ESC ) {
-            Temp.data[  j++  ] = ESC;
+        if( Inst[i] == ESC ) {
+            Temp.data[j++] = ESC;
             Temp.oc.reclen++;
         }
-        Temp.data[  j++  ] = Inst[  i++  ];
+        Temp.data[j++] = Inst[i++];
     }
-    Copy( &Inst[  i  ], &Temp.data[  j  ], ICur - i );
+    Copy( &Inst[i], &Temp.data[j], ICur - i );
     Temp.oc.reclen += ICur;
     Temp.oc.objlen += ILen;
 }
 
-extern  void    Finalize() {
-/***************************
+extern  void    Finalize( void ) {
+/*********************************
     Invoked by macro _Emit. Spits Temp into the peephole optimizer
 */
 
@@ -314,7 +344,7 @@ extern  void    Finalize() {
         FPPatchType = FPP_NONE;
     }
     if( Temp.oc.objlen != 0 ) {
-        InputOC( &Temp.oc );
+        InputOC( (any_oc *)&Temp.oc );
     }
 }
 
@@ -329,36 +359,40 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
     int         index;
     pccode_def  *table;
 
-    table = &PCCodeTable;
+    table = PCCodeTable;
     for(;;) {
-        if( gen < table->low_gen ) break;
-        if( table->width == 0 ) return;
+        if( gen < table->low_gen )
+            break;
+        if( table->width == 0 )
+            return;
         ++ table;
     }
     -- table;
     index = 0;
     for(;;) {
-        if( table->opcode_list[  index  ] == ins->head.opcode ) break;
-        if( table->opcode_list[  index  ] == OP_NOP ) break;
+        if( table->opcode_list[index] == ins->head.opcode )
+            break;
+        if( table->opcode_list[index] == OP_NOP )
+            break;
         ++ index;
     }
     index = index * table->width + gen - table->low_gen;
     if( table->flags & NEED_WAIT ) {
         Used87 = TRUE;
-        #if !( _TARGET & _TARG_80386 )
-            if( gen == G_FINIT || !_CPULevel( CPU_286 ) || _IsEmulation() ) {
-                if( _IsEmulation() ) {
-                    FPPatchType = FPP_NORMAL;
-                }
-                LayOpbyte( 0x9b );
-                _Next;
+#if !( _TARGET & _TARG_80386 )
+        if( gen == G_FINIT || !_CPULevel( CPU_286 ) || _IsEmulation() ) {
+            if( _IsEmulation() ) {
+                FPPatchType = FPP_NORMAL;
             }
-        #endif
+            LayOpbyte( 0x9b );
+            _Next;
+        }
+#endif
     }
     if( table->flags & BYTE_OPCODE ) {
-        LayOpbyte( table->opcode_table[  index  ] );
+        LayOpbyte( table->opcode_table[index] );
     } else {
-        LayOpword( table->opcode_table[  index  ] );
+        LayOpword( table->opcode_table[index] );
     }
     if( table->flags & BYTE_WORD ) {
         LayW( ins->type_class );
@@ -368,9 +402,9 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
          || ins->type_class == I2
          || ins->type_class == I4 ) {
             if( ins->head.opcode >= OP_MUL && ins->head.opcode <= OP_MOD ) {
-                Inst[ RMR ] |= B_RMR_MUL_SGN;
+                Inst[RMR] |= B_RMR_MUL_SGN;
             } else if( ins->head.opcode == OP_RSHIFT ) {
-                Inst[ RMR ] |= B_RMR_SHR_SAR;
+                Inst[RMR] |= B_RMR_SHR_SAR;
             }
         }
     }
@@ -386,7 +420,8 @@ static  byte    SegTrans( hw_reg_set regs ) {
     HW_COnlyOn( regs, HW_SEGS );
     i = 0;
     while( i < SEGS ) {
-        if( HW_Equal( regs, SegTab[  i  ] ) ) break;
+        if( HW_Equal( regs, SegTab[i] ) )
+            break;
         i++;
     }
     if( i >= SEGS ) {
@@ -405,7 +440,8 @@ static  byte    RegTrans( hw_reg_set regs ) {
     HW_CTurnOff( regs, HW_SEGS );
     i = 0;
     while( i < REGS ) {
-        if( HW_Equal( regs, RegTab[  i  ] ) ) break;
+        if( HW_Equal( regs, RegTab[i] ) )
+            break;
         i++;
     }
     if( i >= REGS ) {
@@ -430,24 +466,32 @@ static  bool    NeedOpndSize( instruction *ins ) {
     case OP_DIV:
     case OP_RSHIFT:
         return( TRUE );
+    default:
+        break;
     }
-    if( _OpIsCondition( ins->head.opcode ) ) return( TRUE );
-    if( ins->ins_flags & INS_CC_USED ) return( TRUE );
-    if( ins->result == NULL ) return( TRUE );
+    if( _OpIsCondition( ins->head.opcode ) )
+        return( TRUE );
+    if( ins->ins_flags & INS_CC_USED )
+        return( TRUE );
+    if( ins->result == NULL )
+        return( TRUE );
     switch( ins->result->n.class ) {
     case N_TEMP:
         /* it's OK to store a DWORD into a WORD temp because there's always
            two bytes of slack on the stack */
-        if( ins->result->t.alias != ins->result ) return( TRUE );
+        if( ins->result->t.alias != ins->result )
+            return( TRUE );
         break;
     case N_REGISTER:
         /* check that it's OK to trash high word of register */
         next = ins->head.next;
-        if( next == NULL ) return( TRUE );
+        if( next == NULL )
+            return( TRUE );
         result_reg = ins->result->r.reg;
         full_reg = FullReg( result_reg );
         HW_TurnOff( full_reg, result_reg );
-        if( HW_Ovlap( full_reg, next->head.live.regs ) ) return( TRUE );
+        if( HW_Ovlap( full_reg, next->head.live.regs ) )
+            return( TRUE );
         break;
     default:
         return( TRUE );
@@ -498,6 +542,8 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
         case G_POW2DIV:
         case G_DIV2:
             return( FALSE );
+        default:
+            break;
         }
         if( _IsTargetModel( USE_32 ) ) {
             if( ins->type_class == U2 || ins->type_class == I2 ) {
@@ -562,8 +608,8 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     temp.op.reclen = sizeof( oc_jcond );
     temp.cond = 4;
     temp.handle = lbl;
-    InputOC( &temp );
-    i = FPRegTrans( ins->operands[ 0 ]->r.reg );
+    InputOC( (any_oc *)&temp );
+    i = FPRegTrans( ins->operands[0]->r.reg );
     reverse = FALSE;
     pop = FALSE;
     dest = FALSE;
@@ -600,11 +646,11 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     _Next;
     // mov #cons -> [e]ax
     LayOpbyte( 0xb8 );
-    #if _TARGET & _TARG_80386
-        AddWData( ins_key, U4 );
-    #else
-        AddWData( ins_key, U2 );
-    #endif
+#if _TARGET & _TARG_80386
+    AddWData( ins_key, U4 );
+#else
+    AddWData( ins_key, U2 );
+#endif
     _Emit;
     // call __fdiv_fpr
     RTCall( RT_FDIV_FPREG, 0 );
@@ -617,7 +663,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     _Code;
     LayInitial( ins, ins->u.gen_table->generate );
     LayOpndSize( ins, ins->u.gen_table->generate );
-    LayST( ins->operands[ 0 ] );
+    LayST( ins->operands[0] );
     _Emit;
     CodeLabel( lbl_2, 0 );
     GenKillLabel( lbl );
@@ -637,12 +683,12 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     label_handle        lbl_2;
     name                *high;
     name                *low;
+#if !(_TARGET & _TARG_80386)
     name                *h;
     name                *l;
+#endif
     name                *seg;
 
-    h = h;
-    l = l;
     lbl = AskForNewLabel();
     lbl_2 = AskForNewLabel();
 
@@ -652,31 +698,34 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     temp.op.reclen = sizeof( oc_jcond );
     temp.cond = 4;
     temp.handle = lbl;
-    InputOC( &temp );
+    InputOC( (any_oc *)&temp );
 
     seg = NULL;
     if( ins->num_operands > NumOperands( ins ) ) {
-        seg = ins->operands[ ins->num_operands - 1 ];
+        seg = ins->operands[ins->num_operands - 1];
     }
 
     _Code;
-    switch( ins->operands[ 0 ]->n.name_class ) {
+    switch( ins->operands[0]->n.name_class ) {
     case FS:
-    #if _TARGET & _TARG_80386
-        if( seg != NULL ) GenSeg( seg->r.reg );
+#if _TARGET & _TARG_80386
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
-        LayModRM( ins->operands[ 0 ] );
-    #else
-        high = HighPart( ins->operands[ 0 ], U2 );
-        low = LowPart( ins->operands[ 0 ], U2 );
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        LayModRM( ins->operands[0] );
+#else
+        high = HighPart( ins->operands[0], U2 );
+        low = LowPart( ins->operands[0], U2 );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( high );
         _Next;
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( low );
-    #endif
+#endif
         if( ins->u.gen_table->generate == G_MRFBIN ) {
             rtindex = RT_FDIV_MEM32R;
         } else {
@@ -684,40 +733,46 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
         }
         break;
     case FD:
-        high = HighPart( ins->operands[ 0 ], U4 );
-        low = LowPart( ins->operands[ 0 ], U4 );
-    #if _TARGET & _TARG_80386
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        high = HighPart( ins->operands[0], U4 );
+        low = LowPart( ins->operands[0], U4 );
+#if _TARGET & _TARG_80386
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( high );
         _Next;
         StackDepth += WORD_SIZE;
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( low );
         StackDepth -= WORD_SIZE;
-    #else
+#else
         h = HighPart( high, U2 );
         l = LowPart( high, U2 );
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( h );
         _Next;
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( l );
         _Next;
         h = HighPart( low, U2 );
         l = LowPart( low, U2 );
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( h );
         _Next;
-        if( seg != NULL ) GenSeg( seg->r.reg );
+        if( seg != NULL )
+            GenSeg( seg->r.reg );
         LayOpword( 0x30ff );
         LayModRM( l );
         _Next;
-    #endif
+#endif
         if( ins->u.gen_table->generate == G_MRFBIN ) {
             rtindex = RT_FDIV_MEM64R;
         } else {
@@ -738,8 +793,8 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     }
     LayInitial( ins, ins->u.gen_table->generate );
     LayOpndSize( ins, ins->u.gen_table->generate );
-    LayMF( ins->operands[ 0 ] );
-    LayModRM( ins->operands[ 0 ] );
+    LayMF( ins->operands[0] );
+    LayModRM( ins->operands[0] );
     _Emit;
     CodeLabel( lbl_2, 0 );
     GenKillLabel( lbl );
@@ -773,13 +828,13 @@ static  void    DoP5Divide( instruction *ins ) {
             AddToTemp( 0x36 );
         }
     }
-    #if ( _TARGET & _TARG_80386 )
-        LayOpword( 0x05f6 );
-    #else
-        LayOpword( 0x06f6 );
-    #endif
+#if ( _TARGET & _TARG_80386 )
+    LayOpword( 0x05f6 );        // test byte ptr L1,1
+#else
+    LayOpword( 0x06f6 );        // test byte ptr L1,1
+#endif
     ILen += WORD_SIZE;
-    DoLblRef( RTLabel( RT_BUGLIST - BEG_RTNS ), AskBackSeg(), 0, F_OFFSET );
+    DoLblRef( RTLabel( RT_BUGLIST - BEG_RTNS ), AskBackSeg(), 0, OFST );
     AddWData( 1, U1 );
     _Emit;
     if( used_ds ) {
@@ -814,7 +869,6 @@ static  void    DoP5Divide( instruction *ins ) {
 }
 #endif
 
-
 extern  void    GenObjCode( instruction *ins ) {
 /***********************************************
     Generate object code for the instruction "ins" based on gen_table->generate
@@ -822,14 +876,14 @@ extern  void    GenObjCode( instruction *ins ) {
 
     gentype     gen;
     name        *result;
-    name        *left;
-    name        *right;
+    name        *left = NULL;
+    name        *right = NULL;
     int         i;
     bool        opnd_size;
 
     gen = ins->u.gen_table->generate;
     if( gen != G_NO ) {
-    #if 1
+#if 1
         // fixme - should be _IsTargetModel
         if( _IsTargetModel( P5_DIVIDE_CHECK ) ) {
             if( ins->head.opcode == OP_DIV && _IsFloating( ins->type_class ) ) {
@@ -837,21 +891,52 @@ extern  void    GenObjCode( instruction *ins ) {
                 return;
             }
         }
-    #endif
+#endif
         result = ins->result;
         if( ins->num_operands != 0 ) {
-            left = ins->operands[ 0 ];
+            left = ins->operands[0];
             if( ins->num_operands != 1 ) {
-                right = ins->operands[ 1 ];
+                right = ins->operands[1];
             }
         }
+
+        if (gen == G_MFSTRND)
+        {
+            /*
+            68 3F 0C 00 00            push        0x00000c3f
+            D9 7C 24 02               fnstcw      word ptr 0x2[esp]
+            D9 2C 24                  fldcw       word ptr [esp]
+            */
+
+            _Code;
+            AddByte(0x68);
+            AddByte(0x3f);
+            AddByte(0x0c);
+            AddByte(0x00);
+            AddByte(0x00);
+            _Emit;
+
+            _Code;
+            AddByte(0xd9);
+            AddByte(0x7c);
+            AddByte(0x24);
+            AddByte(0x02);
+            _Emit;
+
+            _Code;
+            AddByte(0xd9);
+            AddByte(0x2c);
+            AddByte(0x24);
+            _Emit;
+        }
+
         _Code;
         LayInitial( ins, gen );
         i = ins->num_operands;
         --i;
         if( i >= NumOperands( ins ) ) {
-            if( ins->operands[ i ]->n.class == N_REGISTER ) {
-                GenSeg( ins->operands[ i ]->r.reg );
+            if( ins->operands[i]->n.class == N_REGISTER ) {
+                GenSeg( ins->operands[i]->r.reg );
             } else {
                 _Zoiks( ZOIKS_027 );
             }
@@ -909,14 +994,18 @@ extern  void    GenObjCode( instruction *ins ) {
             if( NumOperands( ins ) != 1 && right->c.int_value == 2 ) {
                 /* never address*/
                 TransferIns();
-                if( opnd_size ) AddToTemp( M_OPND_SIZE );
+                if( opnd_size ) {
+                    AddToTemp( M_OPND_SIZE );
+                }
             }
             break;
         case G_R1:
             LayRMRegOp( left );
             if( ins->num_operands != 1 && right->c.int_value == 2 ) {
                 TransferIns();
-                if( opnd_size ) AddToTemp( M_OPND_SIZE );
+                if( opnd_size ) {
+                    AddToTemp( M_OPND_SIZE );
+                }
             }
             break;
         case G_R1SHIFT:
@@ -966,11 +1055,11 @@ extern  void    GenObjCode( instruction *ins ) {
             LayRegOp( result );
             LayModRM( left );
             if( HW_COvlap( result->r.reg, HW_FS_GS ) ) {
-                Inst[ KEY ] -= B_KEY_FS;      /* load ES or FS */
+                Inst[KEY] -= B_KEY_FS;      /* load ES or FS */
                 AddToTemp( M_SECONDARY );
             }
             if( HW_COvlap( result->r.reg, HW_DS_GS ) ) {
-                Inst[ KEY ] |= B_KEY_DS;      /* indicate load to DS GS*/
+                Inst[KEY] |= B_KEY_DS;      /* indicate load to DS GS*/
             }
             break;
         case G_MS1:
@@ -1019,11 +1108,11 @@ extern  void    GenObjCode( instruction *ins ) {
                 }
                 if( reg_index > 3 ) {
                     ins_loc += 1;
-                    Inst[ KEY ] = 0x0f;
+                    Inst[KEY] = 0x0f;
                     AddByte( 0x80 );
                 }
-                Inst[ ins_loc ] |= extra_bits;
-                Inst[ ins_loc ] |= reg_index << S_KEY_SR;
+                Inst[ins_loc] |= extra_bits;
+                Inst[ins_loc] |= reg_index << S_KEY_SR;
             }
             break;
         case G_MOVAM:
@@ -1038,7 +1127,7 @@ extern  void    GenObjCode( instruction *ins ) {
             if( ins->type_class == U2 || ins->type_class == I2
              || ins->type_class == U4 || ins->type_class == I4
              || ins->type_class == FS ) {
-                Inst[ KEY ] |= B_KEY_AW;
+                Inst[KEY] |= B_KEY_AW;
             }
             LayACRegOp( result );
             AddWCons( left, ins->type_class );
@@ -1105,12 +1194,12 @@ extern  void    GenObjCode( instruction *ins ) {
                 _Code;
                 LayOpword( 0xc4f7 ); // test esp, offset L1
                 ILen += WORD_SIZE;
-                DoLblRef( lbl, seg, 0, F_OFFSET );
+                DoLblRef( lbl, seg, 0, OFST );
                 _Emit;
             }
             return;
         case G_ICALL:
-            if( ins->operands[ CALL_OP_ADDR ]->n.class == N_REGISTER ) {
+            if( ins->operands[CALL_OP_ADDR]->n.class == N_REGISTER ) {
                 GenRCall( ins );
             } else {
                 GenICall( ins );
@@ -1126,11 +1215,11 @@ extern  void    GenObjCode( instruction *ins ) {
                 GenP5ProfileData( "", &junk, &CurrProc->targ.routine_profile_data );
                 c[0] = PROFILE_FLAG_END_GROUP;
                 c[1] = 0;
-                GenP5ProfileData( &c, &junk, &CurrProc->targ.routine_profile_data );
+                GenP5ProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
                 _Code;
                 LayOpword( 0xc5f7 ); // test ebp, offset L1
                 ILen += WORD_SIZE;
-                DoLblRef( lbl, seg, 0, F_OFFSET );
+                DoLblRef( lbl, seg, 0, OFST );
                 _Emit;
             }
             return;
@@ -1147,38 +1236,45 @@ extern  void    GenObjCode( instruction *ins ) {
             case U8:
             case I8:
                 LayOpbyte( M_CWD );
-                if( _IsntTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+                if( _IsntTargetModel( USE_32 ) )
+                    AddToTemp( M_OPND_SIZE );
                 break;
 #endif
             case U4:
             case I4:
-                #if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
+                LayOpbyte( M_CWD );
+#elif _TARGET & _TARG_80386
+                switch( ins->base_type_class ) {
+                case U1:
+                case I1:
+                    if( _IsTargetModel( USE_32 ) )
+                        AddToTemp( M_OPND_SIZE );
+                    AddToTemp( M_CBW );
+                    break;
+                default:
+                    break;
+                }
+                if( HW_CEqual( ins->result->r.reg, HW_DX_AX ) ) {
                     LayOpbyte( M_CWD );
-                #elif _TARGET & _TARG_80386
-                    switch( ins->base_type_class ) {
-                    case U1:
-                    case I1:
-                        if( _IsTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
-                        AddToTemp( M_CBW );
-                        break;
+                    if( _IsTargetModel( USE_32 ) ) {
+                        AddToTemp( M_OPND_SIZE );
                     }
-                    if( HW_CEqual( ins->result->r.reg, HW_DX_AX ) ) {
-                        LayOpbyte( M_CWD );
-                        if( _IsTargetModel( USE_32 ) ) {
-                            AddToTemp( M_OPND_SIZE );
-                        }
-                    } else {
-                        LayOpbyte( M_CBW );
-                        if( _IsntTargetModel( USE_32 ) ) {
-                            AddToTemp( M_OPND_SIZE );/*CWDE*/
-                        }
+                } else {
+                    LayOpbyte( M_CBW );
+                    if( _IsntTargetModel( USE_32 ) ) {
+                        AddToTemp( M_OPND_SIZE );/*CWDE*/
                     }
-                #endif
+                }
+#endif
                 break;
             case U2:
             case I2:
                 LayOpbyte( M_CBW );
-                if( _IsTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+                if( _IsTargetModel( USE_32 ) )
+                    AddToTemp( M_OPND_SIZE );
+                break;
+            default:
                 break;
             }
             break;
@@ -1221,6 +1317,34 @@ extern  void    GenObjCode( instruction *ins ) {
             LayMF( result );
             LayModRM( result );
             break;
+
+        case G_MFSTRND:
+            /* store with rounding */
+
+            AdjustStackDepthDirect( WORD_SIZE );
+            LayMF( result );
+            LayModRM( result );
+            AdjustStackDepthDirect( -WORD_SIZE );
+            _Emit;
+
+            /*
+            D9 6C 24 02               fldcw       word ptr 0x2[esp]
+            8D 64 24 04               lea         esp,0x4[esp]
+            */
+            _Code;
+            AddByte(0xd9);
+            AddByte(0x6c);
+            AddByte(0x24);
+            AddByte(0x02);
+            _Emit;
+
+            _Code;
+            AddByte(0x8d);
+            AddByte(0x64);
+            AddByte(0x24);
+            AddByte(0x04);
+            break;
+
         case G_FCHS:
         case G_FLD1:
         case G_FLDZ:
@@ -1288,7 +1412,6 @@ extern  void    GenObjCode( instruction *ins ) {
             Pow2Div286( ins );
             break;
 #endif
-#if _TARGET & _TARG_80386
         case G_MOVSX:
         case G_MOVZX:
             if( gen == G_MOVSX ) {
@@ -1296,25 +1419,30 @@ extern  void    GenObjCode( instruction *ins ) {
             } else {
                 LayOpword( M_MOVZX );
             }
-            if( ins->operands[ 0 ]->n.size == 2 ) {
-                Inst[ KEY ] |= B_KEY_W;
+#if _TARGET & _TARG_80386
+            if( ins->operands[0]->n.size == 2 ) {
+                Inst[KEY] |= B_KEY_W;
             } else { /* base is byte */
                 switch( ins->type_class ) {
                 case U2:
                 case I2:
-                    if( _IsTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+                    if( _IsTargetModel( USE_32 ) )
+                        AddToTemp( M_OPND_SIZE );
                     break;
                 case U4:
                 case I4:
-                    if( _IsntTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+                    if( _IsntTargetModel( USE_32 ) )
+                        AddToTemp( M_OPND_SIZE );
+                    break;
+                default:
                     break;
                 }
             }
+#endif
             LayModRM( left );
             LayRegOp( result );
             AddToTemp( M_SECONDARY );
             break;
-#endif
         default:
             _Zoiks( ZOIKS_028 );
             break;
@@ -1329,8 +1457,8 @@ extern  void    GenObjCode( instruction *ins ) {
 }
 
 
-static  void    SetCC() {
-/************************
+static  void    SetCC(void) {
+/******************************
     Generate code to set the condition codes based on an 8087 FCMP instruction
 */
 
@@ -1381,7 +1509,7 @@ extern  void    LayOpbyte( opcode op ) {
     Add a one byte opcode to Inst[]
 */
 
-    Inst[ KEY ] = op & 0xff;
+    Inst[KEY] = op & 0xff;
     ICur = 1;
     ILen = 1;
     IEsc = 1;
@@ -1392,8 +1520,8 @@ extern  void    LayOpword( opcode op ) {
     Add a 2 byte opcode to Inst[]
 */
 
-    Inst[ KEY ] = op & 0xff;
-    Inst[ RMR ] = (op >> 8) & 0xff;
+    Inst[KEY] = op & 0xff;
+    Inst[RMR] = (op >> 8) & 0xff;
     ICur = 2;
     ILen = 2;
     IEsc = 2;
@@ -1404,7 +1532,9 @@ extern  void    LayW( type_class_def class ) {
 
     switch( class ) {
     case U2: case I2: case U4: case I4: case FS:
-        Inst[ KEY ] |= B_KEY_W;       /* turn on the W bit*/
+        Inst[KEY] |= B_KEY_W;       /* turn on the W bit*/
+        break;
+    default:
         break;
     }
 }
@@ -1414,7 +1544,7 @@ static  void    LayRegOp( name *r ) {
     Add the register op to the instruction
 */
 
-    Inst[ RMR ] |= RegTrans( r->r.reg ) << S_RMR_REG;
+    Inst[RMR] |= RegTrans( r->r.reg ) << S_RMR_REG;
 }
 
 extern  void    LayReg( hw_reg_set r ) {
@@ -1422,7 +1552,7 @@ extern  void    LayReg( hw_reg_set r ) {
     Add the register op to the instruction
 */
 
-    Inst[ RMR ] |= RegTrans( r ) << S_RMR_REG;
+    Inst[RMR] |= RegTrans( r ) << S_RMR_REG;
 }
 
 extern  void    LayRMRegOp( name *r ) {
@@ -1430,7 +1560,7 @@ extern  void    LayRMRegOp( name *r ) {
     Add the register op to a MOD/RM instruction
 */
 
-    Inst[ RMR ] |= ( RegTrans( r->r.reg ) << S_RMR_RM ) + RMR_MOD_REG;
+    Inst[RMR] |= ( RegTrans( r->r.reg ) << S_RMR_RM ) + RMR_MOD_REG;
 }
 
 extern  void    LayRegRM( hw_reg_set r ) {
@@ -1438,7 +1568,7 @@ extern  void    LayRegRM( hw_reg_set r ) {
     Add the register op to a MOD/RM instruction
 */
 
-    Inst[ RMR ] |= ( RegTrans( r ) << S_RMR_RM ) + RMR_MOD_REG;
+    Inst[RMR] |= ( RegTrans( r ) << S_RMR_RM ) + RMR_MOD_REG;
 }
 
 static  void    LayACRegOp( name *r ) {
@@ -1446,7 +1576,7 @@ static  void    LayACRegOp( name *r ) {
     Add the other register op to a REG/AX (Accumulator) operation
 */
 
-    Inst[ KEY ] |= RegTrans( r->r.reg ) << S_KEY_REG;
+    Inst[KEY] |= RegTrans( r->r.reg ) << S_KEY_REG;
 }
 
 extern  void    LayRegAC( hw_reg_set r ) {
@@ -1454,7 +1584,7 @@ extern  void    LayRegAC( hw_reg_set r ) {
     Add the other register op to a REG/AX (Accumulator) operation
 */
 
-    Inst[ KEY ] |= RegTrans( r ) << S_KEY_REG;
+    Inst[KEY] |= RegTrans( r ) << S_KEY_REG;
 }
 
 static  void    LaySROp( name *r ) {
@@ -1462,7 +1592,7 @@ static  void    LaySROp( name *r ) {
     Add a segment register op
 */
 
-    Inst[ RMR ] |= SegTrans( r->r.reg ) << S_RMR_SR;
+    Inst[RMR] |= SegTrans( r->r.reg ) << S_RMR_SR;
 }
 
 static  int     FPRegTrans( hw_reg_set reg ) {
@@ -1485,7 +1615,7 @@ static  void    LayST( name *op ) {
     add the ST(i) operand to a floating point instruction
 */
 
-    Inst[ RMR ] |= FPRegTrans( op->r.reg );
+    Inst[RMR] |= FPRegTrans( op->r.reg );
 }
 
 
@@ -1497,24 +1627,28 @@ static  void    LayMF( name *op ) {
     if( op->n.class != N_CONSTANT ) {
         switch( op->n.name_class ) {
         case FS:
-            Inst[ KEY ] |= MF_FS;
+            Inst[KEY] |= MF_FS;
             break;
         case FD:
-            Inst[ KEY ] |= MF_FD;
+            Inst[KEY] |= MF_FD;
+            break;
+        case FL:
+            Inst[KEY] |= MF_FL;
+            Inst[RMR] |= B_RMR_FMT_FL;
             break;
         case U2:
         case I2:
-            Inst[ KEY ] |= MF_I2;
+            Inst[KEY] |= MF_I2;
             break;
         case U4:
         case I4:
-            Inst[ KEY ] |= MF_I4;
+            Inst[KEY] |= MF_I4;
             break;
         case U8:
         case I8:
         case XX:
-            Inst[ KEY ] |= MF_I8;
-            Inst[ RMR ] |= B_RMR_FMT_I8;
+            Inst[KEY] |= MF_I8;
+            Inst[RMR] |= B_RMR_FMT_I8;
             break;
         default:
             _Zoiks( ZOIKS_029 );
@@ -1534,13 +1668,19 @@ extern  void    GenSeg( hw_reg_set regs ) {
 
     segreg = regs;
     HW_COnlyOn( segreg, HW_SEGS );
-    if( HW_CEqual( segreg, HW_EMPTY ) ) return;
+    if( HW_CEqual( segreg, HW_EMPTY ) )
+        return;
     if( HW_COvlap( regs, HW_BP ) ) {
-        if( HW_CEqual( segreg, HW_SS ) ) return;
+        if( HW_CEqual( segreg, HW_SS ) )
+            return;
         if( HW_CEqual( segreg, HW_DS )
-         && _IsntTargetModel(FLOATING_DS|FLOATING_SS) ) return;
+         && _IsntTargetModel(FLOATING_DS|FLOATING_SS) ) {
+            return;
+        }
     } else {
-        if( HW_CEqual( segreg, HW_DS ) ) return;
+        if( HW_CEqual( segreg, HW_DS ) ) {
+            return;
+        }
     }
     /* produce segment override prefix*/
     if( HW_COvlap( regs, HW_FS ) ) {
@@ -1553,11 +1693,12 @@ extern  void    GenSeg( hw_reg_set regs ) {
     if( _IsEmulation() ) {
         i = 0;
         while( i < SEGS ) {
-            if( HW_Equal( segreg, SegTab[  i  ] ) ) break;
+            if( HW_Equal( segreg, SegTab[i] ) )
+                break;
             i++;
         }
         if( FPPatchType != FPP_NONE ) {
-            FPPatchType = SegPatchTab[  i  ];
+            FPPatchType = SegPatchTab[i];
         }
     }
 }
@@ -1568,17 +1709,21 @@ extern  type_class_def  OpndSize( hw_reg_set reg ) {
     type_class of the register "reg"
 */
 
-    if( HW_COvlap( reg, HW_SEGS ) ) return( U2 );
+    if( HW_COvlap( reg, HW_SEGS ) )
+        return( U2 );
 #if _TARGET & _TARG_80386
     if( HW_COvlap( reg, HW_32_BP_SP ) ) {
-        if( _IsntTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+        if( _IsntTargetModel( USE_32 ) )
+            AddToTemp( M_OPND_SIZE );
         return( U4 );
     } else {
-        if( _IsTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+        if( _IsTargetModel( USE_32 ) )
+            AddToTemp( M_OPND_SIZE );
         return( U2 );
     }
 #else
-    if( _IsTargetModel( USE_32 ) ) AddToTemp( M_OPND_SIZE );
+    if( _IsTargetModel( USE_32 ) )
+        AddToTemp( M_OPND_SIZE );
     return( U2 );
 #endif
 }
@@ -1709,10 +1854,12 @@ extern  void    AddWData( signed_32 value, type_class_def kind ) {
 /****************************************************************/
 
     AddByte( value );
-    if( kind == U1 || kind == I1 ) return;
+    if( kind == U1 || kind == I1 )
+        return;
     value >>= 8;
     AddByte( value );
-    if( kind == U2 || kind == I2 ) return;
+    if( kind == U2 || kind == I2 )
+        return;
     value >>= 8;
     AddByte( value );
     value >>= 8;
@@ -1749,12 +1896,12 @@ extern  void    AddSData( signed_32 value, type_class_def kind ) {
     if( ( kind == U2 || kind == I2 )
         && ( ( value & 0xff80 ) == 0xff80
           || ( value & 0xff80 ) == 0 ) ) {
-        Inst[ KEY ] |= B_KEY_S;
+        Inst[KEY] |= B_KEY_S;
         AddByte( _IntToByte( value ) );
     } else if( ( kind == U4 || kind == I4 )
         && ( ( value & 0xffffff80 ) == 0xffffff80
           || ( value & 0xffffff80 ) == 0 ) ) {
-        Inst[ KEY ] |= B_KEY_S;
+        Inst[KEY] |= B_KEY_S;
         AddByte( _IntToByte( value ) );
     } else {
         AddWData( value, kind );
@@ -1784,8 +1931,8 @@ static  void    AddSCons( name *op, type_class_def kind ) {
 }
 
 
-static  void    GenRegOp( hw_reg_set dst, type_length value, int op ) {
-/*********************************************************************/
+static  void    GenRegOp( hw_reg_set dst, type_length value, unsigned op ) {
+/**************************************************************************/
 
     type_class_def      kind;
 
@@ -1872,7 +2019,7 @@ extern  void    GFstp( int i ) {
 
     GCondFwait();
     LayOpword( 0xd8dd );
-    Inst[ RMR ] |= i;
+    Inst[RMR] |= i;
     _Emit;
 }
 
@@ -1884,13 +2031,13 @@ extern  void    GFxch( int i ) {
 
     GCondFwait();
     LayOpword( 0xc8d9 );
-    Inst[ RMR ] |= i;
+    Inst[RMR] |= i;
     _Emit;
 }
 
 
-extern  void    GFldz() {
-/************************
+extern  void    GFldz( void ) {
+/******************************
     FLDZ
 */
 
@@ -1900,8 +2047,8 @@ extern  void    GFldz() {
 }
 
 
-static  void    GFld1() {
-/************************
+static  void    GFld1( void ) {
+/******************************
     FLD1
 */
 
@@ -1918,36 +2065,37 @@ extern  void    GFld( int i ) {
 
     GCondFwait();
     LayOpword( 0xc0d9 );
-    Inst[ RMR ] |= i;
+    Inst[RMR] |= i;
     _Emit;
 }
 
 
-extern  void    GCondFwait() {
-/*****************************
+extern  void    GCondFwait( void ) {
+/***********************************
     FWAIT, but only if we need one
 */
 
     _Code;
     Used87 = TRUE;
-    #if !( _TARGET & _TARG_80386 )
-        if( !_CPULevel( CPU_286 ) || _IsEmulation() ) {
-            if( _IsEmulation() ) {
-                FPPatchType = FPP_NORMAL;
-            }
-            LayOpbyte( 0x9b );
-            _Next;
+#if !( _TARGET & _TARG_80386 )
+    if( !_CPULevel( CPU_286 ) || _IsEmulation() ) {
+        if( _IsEmulation() ) {
+            FPPatchType = FPP_NORMAL;
         }
-    #endif
+        LayOpbyte( 0x9b );
+        _Next;
+    }
+#endif
 }
 
 
-extern  void    GFwait() {
-/*************************
+extern  void    GFwait( void ) {
+/*******************************
     FWAIT
 */
 
-    if( _CPULevel( CPU_386 ) ) return;
+    if( _CPULevel( CPU_386 ) )
+        return;
     _Code;
     Used87 = TRUE;
     if( _IsEmulation() ) {
@@ -1959,8 +2107,8 @@ extern  void    GFwait() {
    _Emit;
 }
 
-extern  void    Gpusha() {
-/*************************
+extern  void    Gpusha( void ) {
+/*******************************
     PUSHA{d}
 */
 
@@ -1969,8 +2117,8 @@ extern  void    Gpusha() {
    _Emit;
 }
 
-extern  void    Gpopa() {
-/************************
+extern  void    Gpopa( void ) {
+/******************************
     POPA{d}
 */
 
@@ -1979,8 +2127,8 @@ extern  void    Gpopa() {
    _Emit;
 }
 
-extern  void    Gcld() {
-/***********************
+extern  void    Gcld( void ) {
+/*****************************
     CLD
 */
 
@@ -1989,8 +2137,8 @@ extern  void    Gcld() {
    _Emit;
 }
 
-extern  void    GenLeave() {
-/***************************
+extern  void    GenLeave( void ) {
+/*********************************
     LEAVE
 */
 
@@ -2006,20 +2154,20 @@ extern  void    GenTouchStack( bool sp_might_point_at_something ) {
     MOV         [esp],eax
 */
 
-    #if _TARGET & _TARG_80386
-        if( sp_might_point_at_something || OptForSize == 100 ) {
-            QuickSave( HW_EAX, OP_PUSH );
-            QuickSave( HW_EAX, OP_POP );
-        } else {
-            _Code;
-            LayOpword( 0x0489 );
-            OpndSize( HW_SP );
-            AddByte( 0x24 );
-            _Emit;
-        }
-    #else
-        sp_might_point_at_something=sp_might_point_at_something;
-    #endif
+#if _TARGET & _TARG_80386
+    if( sp_might_point_at_something || OptForSize == 100 ) {
+        QuickSave( HW_EAX, OP_PUSH );
+        QuickSave( HW_EAX, OP_POP );
+    } else {
+        _Code;
+        LayOpword( 0x0489 );
+        OpndSize( HW_SP );
+        AddByte( 0x24 );
+        _Emit;
+    }
+#else
+    sp_might_point_at_something=sp_might_point_at_something;
+#endif
 }
 
 
@@ -2120,8 +2268,8 @@ extern  void    GenUnkEnter( pointer value, int level ) {
     _Emit;
 }
 
-extern  void    GenWindowsProlog() {
-/**********************************/
+extern  void    GenWindowsProlog( void ) {
+/****************************************/
 
     _Code;
     if( _IsTargetModel( SMART_WINDOWS ) ) {
@@ -2141,8 +2289,8 @@ extern  void    GenWindowsProlog() {
     _Emit;
 }
 
-extern  void    GenCypWindowsProlog() {
-/**************************************
+extern  void    GenCypWindowsProlog( void ) {
+/********************************************
     Generate a "cheap" windows prolog
 */
 
@@ -2155,8 +2303,8 @@ extern  void    GenCypWindowsProlog() {
     _Emit;
 }
 
-extern  void    GenWindowsEpilog() {
-/**********************************/
+extern  void    GenWindowsEpilog( void ) {
+/****************************************/
 
     _Code;
     LayOpbyte( 0x1f );                  /*      pop     ds      */
@@ -2167,8 +2315,8 @@ extern  void    GenWindowsEpilog() {
     _Emit;
 }
 
-extern  void    GenCypWindowsEpilog() {
-/**************************************
+extern  void    GenCypWindowsEpilog( void ) {
+/********************************************
     Generate a "cheap" windows epilog
 */
 
@@ -2181,8 +2329,61 @@ extern  void    GenCypWindowsEpilog() {
 }
 
 
-extern  void    GenLoadDS()
-/*************************/
+extern  void    GenRdosdevProlog( void ) {
+/****************************************/
+
+    _Code;
+    LayOpbyte( 0x1e );             /*      push    ds        */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x6 );              /*      push    es        */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      push    fs        */
+    AddByte( 0xa0 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      push    gs        */
+    AddByte( 0xa8 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x68 );             /*      push    DGROUP    */
+    ILen += WORD_SIZE;
+    DoSegRef( AskBackSeg() );
+    AddByte( 0x0 );
+    AddByte( 0x0 );
+    AddByte( 0x1F );               /*      pop     ds        */
+    _Emit;
+}
+
+extern  void    GenRdosdevEpilog( void ) {
+/****************************************/
+
+    _Code;
+    LayOpbyte( 0xf );              /*      pop     gs      */
+    AddByte( 0xa9 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      pop     fs      */
+    AddByte( 0xa1 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x7 );              /*      pop     es      */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x1f );             /*      pop     ds      */
+    _Emit;
+}
+
+extern  void    GenLoadDS( void )
+/*******************************/
 {
     _Code;
     LayOpbyte( 0xb8 );                  /*      mov     ax,DGROUP */
@@ -2248,6 +2449,8 @@ static  void    MathFunc( instruction *ins ) {
         break;
     case OP_FABS:
         OutputFP( 0xE1D9 );             /*   FABS    */
+        break;
+    default:
         break;
     }
 }

@@ -1,1 +1,1 @@
-qsort.obj    : ..\..\..\c\qsort.c    ..\..\..\c\qsortrtn.c
+qsort.obj    : ../../../c/qsort.c    ../../../c/qsortrtn.c

@@ -34,7 +34,7 @@
 #include "uimouse.h"
 
 
-global  void (intern *DrawCursor)(void) = NULL;
+global  void (intern *DrawCursor)( void ) = NULL;
 global  void (intern *EraseCursor)(void) = NULL;
 
 
@@ -69,8 +69,8 @@ static char __FAR *RegenPos( unsigned row, unsigned col )
     return( pos );
 }
 
-static void uisetmouseoff()
-/*************************/
+static void uisetmouseoff( void )
+/*******************************/
 {
     char                __FAR *old;
     SAREA               area;
@@ -105,16 +105,14 @@ static void FlipAttr( char __FAR *p )
     }
 }
 
-static void uisetmouseon( row, col )
-/********************************/
-    register MOUSEORD        row;
-    register MOUSEORD        col;
+static void uisetmouseon( MOUSEORD row, MOUSEORD col )
+/****************************************************/
 {
     char                __FAR *new;
     SAREA               area;
 
     if( MouseOn ){
-        if( DrawCursor==NULL ) {
+        if( DrawCursor == NULL ) {
             new = RegenPos( row, col );
             if( uicharlen( *new ) == 2 ) {
                 FlipAttr( new+3 );
@@ -134,16 +132,14 @@ static void uisetmouseon( row, col )
     }
 }
 
-int global uimousealign()
-/***********************/
+int global uimousealign( void )
+/*****************************/
 {
     return( ColAdjust );
 }
 
-void global uisetmouse( row, col )
-/********************************/
-    register MOUSEORD        row;
-    register MOUSEORD        col;
+void global uisetmouse( MOUSEORD row, MOUSEORD col )
+/**************************************************/
 {
     if( OldMouseRow == row && OldMouseCol == col ) return;
     uisetmouseoff();
@@ -151,8 +147,8 @@ void global uisetmouse( row, col )
 }
 
 
-void global uimouse( func )
-/*************************/
+void global uimouse( int func )
+/*****************************/
 {
     if( func == MOUSE_ON ) {
         MouseOn = TRUE;

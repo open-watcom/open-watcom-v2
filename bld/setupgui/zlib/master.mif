@@ -1,0 +1,34 @@
+proj_name       = zlib
+zlib_autodepends = .autodepend
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: $(zlib_dir)
+.h: $(zlib_dir)
+
+inc_dirs = -I"$(zlib_dir)"
+
+# Stupid zlib has conditionals that are constant at compile time and
+# trigger unreachable code warnings, and I don't want to modify the source
+# if it can be avoided.
+extra_c_flags = -wcd=201
+
+objs = adler32.obj  &
+       compress.obj &
+       crc32.obj    &
+       deflate.obj  &
+       gzio.obj     &
+       infback.obj  &
+       inffast.obj  &
+       inflate.obj  &
+       inftrees.obj &
+       trees.obj    &
+       uncompr.obj  &
+       zutil.obj 
+
+$(proj_name).lib : $(objs)
+        @%create $^&.lbc
+        @for %i in ($(objs)) do @%append $^&.lbc +%i
+        $(librarian) $(libflags) @$^&.lbc

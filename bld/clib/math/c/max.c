@@ -24,17 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of max().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#undef max
 
-_WCRTLINK int max( a, b )
-    int a;
-    int b;
+
+_WCRTLINK int max( int a, int b )
+/*******************************/
 {
     return( ( a > b ) ? a : b );
 }

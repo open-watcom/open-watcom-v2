@@ -1,0 +1,41 @@
+/*
+ *  errors.h    ActiveMovie error handling functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __ERRORS__
+#define __ERRORS__
+
+:include readonly.sp
+
+#include <vfwmsgs.h>
+
+:include cpluspro.sp
+
+/* Macro to specify ActiveMovie functions */
+#define AMOVIEAPI   DECLSPEC_IMPORT
+
+/* ActiveMovie error callback */
+typedef BOOL (WINAPI *AMGETERRORTEXTPROCA)( HRESULT, char *, DWORD );
+typedef BOOL (WINAPI *AMGETERRORTEXTPROCW)( HRESULT, WCHAR *, DWORD );
+#ifdef UNICODE
+    #define AMGETERRORTEXTPROC  AMGETERRORTEXTPROCW
+#else
+    #define AMGETERRORTEXTPROC  AMGETERRORTEXTPROCA
+#endif
+
+/* Functions in QUARTZ.DLL */
+AMOVIEAPI DWORD WINAPI  AMGetErrorTextA( HRESULT, LPSTR, DWORD );
+AMOVIEAPI DWORD WINAPI  AMGetErrorTextW( HRESULT, LPWSTR, DWORD );
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define AMGetErrorText  AMGetErrorTextW
+#else
+    #define AMGetErrorText  AMGetErrorTextA
+#endif
+
+:include cplusepi.sp
+
+#endif /* __ERRORS__ */

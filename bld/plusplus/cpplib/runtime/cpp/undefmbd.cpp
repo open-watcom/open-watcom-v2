@@ -34,7 +34,7 @@
 
 extern "C" {
 
-#ifdef M_PC_INTEL
+#ifdef _M_IX86
     int CPPDATA_LIB( undefined_member_data );
 #else
     int CPPDATA( undefined_member_data );

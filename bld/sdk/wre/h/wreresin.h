@@ -50,15 +50,14 @@ typedef struct WREResInfoStruct {
     Bool        is32bit;
     Bool        modified;
     Bool        active;
-    int         window_num;
 } WREResInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void              WREFreeResInfo       ( WREResInfo *);
-extern WREResInfo       *WREAllocResInfo      ( void );
-extern Bool              WREIsResModified     ( WREResInfo * );
-extern void              WRESetResModified    ( WREResInfo *, Bool );
+extern void         WREFreeResInfo( WREResInfo * );
+extern WREResInfo   *WREAllocResInfo( void );
+extern Bool         WREIsResModified( WREResInfo * );
+extern void         WRESetResModified( WREResInfo *, Bool );
 
 #endif

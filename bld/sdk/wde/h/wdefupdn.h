@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeUpDnCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeUpDnInit        ( Bool );
-extern void              WdeUpDnFini        ( void );
+extern OBJPTR WINEXPORT  WdeUpDnCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeUpDnInit( Bool );
+extern void              WdeUpDnFini( void );
 
 #endif

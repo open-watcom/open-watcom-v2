@@ -33,6 +33,6 @@
 #ifndef _HOTKEY_INCLUDED
 #define _HOTKEY_INCLUDED
 
-long WINEXP HotkeyProc( HWND, UINT, UINT, LONG );
+long WINEXP HotkeyProc( HWND, UINT, WPARAM, LPARAM );
 
 #endif

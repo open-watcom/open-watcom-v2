@@ -1,0 +1,8 @@
+.387
+foo		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:foo, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	0, 0
+    mov         ax,word ptr ss:L$1
+foo		ENDS
+		END

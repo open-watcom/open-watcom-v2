@@ -1,0 +1,28 @@
+proj_name = wasppc
+
+!ifndef wasppc_autodepends
+wasppc_autodepends = .AUTODEPEND
+!endif
+
+splice_opts = -kAS_PPC
+
+as_extra_defines = -DAS_PPC
+
+as_cdir = $(as_dir)/ppc/c;$(as_dir)/c
+as_hdir = $(as_dir)/ppc/h;$(as_dir)/h
+as_ydir = $(as_dir)/ppc/y;$(as_dir)/y
+as_incs = -I"$(as_dir)/ppc/h" -I"$(as_dir)/h"
+
+target_as_comm_objs = &
+    ppcfmt.obj &
+    ppcins.obj
+
+!ifdef bootstrap
+asi_dir = $(as_dir)/ppc/inline/$(%OBJDIR)
+!else ifdef __UNIX__
+asi_dir = $(as_dir)/ppc/inline/osi$(host_cpu)
+!else
+asi_dir = $(as_dir)\ppc\inline\osi$(host_cpu)
+!endif
+
+!include $(as_dir)/mif/master.mif

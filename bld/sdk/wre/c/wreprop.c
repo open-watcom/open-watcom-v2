@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wreresin.h"
@@ -89,9 +89,8 @@ static Bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
         entry = WRFindHashEntryFromName( info->symbol_table, name );
     }
 
-    if( entry ) {
+    if( entry != NULL ) {
         info->new_symbol = WREStrDup( entry->name );
-    } else {
     }
 
     if( name != NULL ) {
@@ -106,7 +105,6 @@ static void WRESetPropName( HWND hDlg, WREProperyInfo *info )
     if( info == NULL ) {
         return;
     }
-
 }
 
 static void WRESetPropMemoryFlags( HWND hDlg, uint_16 mflags )
@@ -136,8 +134,7 @@ static void WREGetPropMemoryFlags( HWND hDlg, uint_16 *mflags )
         return;
     }
 
-    *mflags &= ~( MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE |
-                  MEMFLAG_PURE | MEMFLAG_PRELOAD );
+    *mflags &= ~(MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_PRELOAD);
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_MV ) ) {
         *mflags |= MEMFLAG_MOVEABLE;
@@ -156,8 +153,7 @@ static void WREGetPropMemoryFlags( HWND hDlg, uint_16 *mflags )
     }
 }
 
-BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message,
-                                WPARAM wParam, LPARAM lParam )
+BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREProperyInfo      *info;
     BOOL                ret;
@@ -165,37 +161,37 @@ BOOL WINEXPORT WREPropertyProc( HWND hDlg, UINT message,
     ret = FALSE;
 
     switch( message ) {
-        case WM_INITDIALOG:
-            info = (WREProperyInfo *)lParam;
-            SetWindowLong( hDlg, DWL_USER, (LONG)info );
-            WRESetPropMemoryFlags( hDlg, info->mflags )
+    case WM_INITDIALOG:
+        info = (WREProperyInfo *)lParam;
+        SetWindowLong( hDlg, DWL_USER, (LONG)info );
+        WRESetPropMemoryFlags( hDlg, info->mflags )
+        ret = TRUE;
+        break;
+
+    case WM_SYSCOLORCHANGE:
+        WRECtl3dColorChange();
+        break;
+
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDM_PROP_HELP:
+            WREHelpRoutine();
+            break;
+
+        case IDOK:
+            info = (WREProperyInfo *)GetWindowLong( hDlg, DWL_USER );
+            WREGetPropMemoryFlags( hDlg, info->new_mflags );
+            EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
 
-        case WM_SYSCOLORCHANGE:
-            WRECtl3dColorChange();
+        case IDCANCEL:
+            EndDialog( hDlg, FALSE );
+            ret = TRUE;
             break;
-
-        case WM_COMMAND:
-            switch( LOWORD(wParam) ) {
-                case IDM_PROP_HELP:
-                    WREHelpRoutine();
-                    break;
-
-                case IDOK:
-                    info = (WREProperyInfo *)GetWindowLong(hDlg, DWL_USER);
-                    WREGetPropMemoryFlags( hDlg, info->new_mflags );
-                    EndDialog( hDlg, TRUE );
-                    ret = TRUE;
-                    break;
-
-                case IDCANCEL:
-                    EndDialog( hDlg, FALSE );
-                    ret = TRUE;
-                    break;
-            }
+        }
+        break;
     }
 
     return( ret );
 }
-

@@ -1,0 +1,23 @@
+mips_objs = &
+        mpscall.obj  &
+        mpsconv.obj  &
+        mpsdfsup.obj &
+        mpsenc.obj   &
+        mpsenc2.obj  &
+        mpsfunit.obj &
+        mpsoptab.obj &
+        mpsproc.obj  &
+        mpsptype.obj &
+        mpsreg.obj   &
+        mpsrgtbl.obj &
+        mpsrtrtn.obj &
+        mpssetc.obj  &
+        mpssplit.obj &
+        mpsstub.obj  &
+        mpstable.obj &
+        mpsparm.obj  &
+        rscconst.obj
+
+src_path        = $(cg_dir)/risc/mps/c
+include_path    = $(cg_dir)/risc/mps/h
+inc_dirs_targ   = -I"$(cg_dir)/risc/mps/h"

@@ -41,20 +41,19 @@ typedef enum {
         LBL,
         ABS,
         FUN,
-        NOC
+        NOC,
+        /*  bit flags */
+        OFST = 0x10,
+        BASE = 0x20,
+        LDOF = 0x40,
+        SELF = 0x80
 } escape_class;
-
-/*  bit flags */
-#define OFST    0x10
-#define BASE    0x20
-#define LDOF    0x40
-#define SELF    0x80
 
 #define MASK    (OFST|BASE|LDOF|SELF)
 
 
-enum fe_fixup_types {
+typedef enum {
         FE_FIX_BASE,
         FE_FIX_OFF,
         FE_FIX_SELF
-};
+} fe_fixup_types;

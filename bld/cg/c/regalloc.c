@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Register allocator.
 *
 ****************************************************************************/
 
@@ -40,6 +39,8 @@
 #include "hostsys.h"
 #include "zoiks.h"
 #include "model.h"
+#include "makeins.h"
+#include "foldins.h"
 
 enum allocation_state {
     ALLOC_DONE,
@@ -51,29 +52,28 @@ extern  bool            SideEffect(instruction*);
 extern  void            NowDead(name*,conflict_node*,name_set*,block*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            BurnRegTree(reg_tree*);
-extern  void            IMBlip();
+extern  void            IMBlip(void);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            BuildNameTree(conflict_node*);
-extern  void            AxeDeadCode();
+extern  void            AxeDeadCode(void);
 extern  void            BurnNameTree(reg_tree*);
 extern  bool            WorthProlog(conflict_node*,hw_reg_set);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  void            DoNothing(instruction*);
 extern  int             ExpandOps(bool);
-extern  void            FindReferences();
+extern  void            FindReferences(void);
 extern  void            NowAlive(name*,conflict_node*,name_set*,block*);
 extern  name            *DeAlias(name*);
 extern  void            BuildRegTree(conflict_node*);
 extern  void            FreeAConflict(conflict_node*);
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
-extern  void            LiveInfoUpdate();
-extern  void            MakeLiveInfo();
-extern  void            FreeConflicts();
-extern  reg_set_index   SegIndex();
+extern  void            LiveInfoUpdate(void);
+extern  void            MakeLiveInfo(void);
+extern  void            FreeConflicts(void);
+extern  reg_set_index   SegIndex(void);
 extern  void            DelSegOp(instruction*,int);
-extern  void            FixChoices();
+extern  void            FixChoices(void);
 extern  void            DelSegRes(instruction*);
-extern  void            MakeConflicts();
+extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
@@ -82,22 +82,22 @@ extern  int             NumOperands(instruction*);
 extern  void            CalcSavings(conflict_node*);
 extern  hw_reg_set      LowOffsetReg(hw_reg_set);
 extern  name            *AllocRegName(hw_reg_set);
-extern  bool            PropagateMoves();
-extern  bool            PropRegsOne();
+extern  bool            PropagateMoves(void);
+extern  bool            PropRegsOne(void);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  hw_reg_set      HighOffsetReg(hw_reg_set);
-extern  void            DeadInstructions();
-extern  void            GRBlip();
+extern  void            DeadInstructions(void);
+extern  void            GRBlip(void);
 extern  bool            IsSegReg(hw_reg_set);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
-extern  bool            MoreConflicts();
+extern  bool            MoreConflicts(void);
 extern  void            DBAllocReg(name*,name*);
 extern  void            MemConstTemp(conflict_node*);
-extern  void            ConstSavings();
+extern  void            ConstSavings(void);
 extern  void            RegInsDead(void);
-extern  instruction     *FoldIns( instruction * );
 extern  bool            IsUncacheableMemory( name * );
-extern  hw_reg_set      MustSaveRegs();
+extern  hw_reg_set      MustSaveRegs(void);
+extern  void            FreePossibleForAlias( conflict_node * );
 
 extern  proc_def         *CurrProc;
 extern  conflict_node    *ConfList;
@@ -177,14 +177,14 @@ static  name    *ReplIndex( instruction *ins,
 }
 
 
-static  void    AssignMoreBits() {
-/*********************************
+static  void    AssignMoreBits( void )
+/*************************************
     Run through the list of conflicts and turn off the CONFLICT_ON_HOLD
     bit.  This is on for conflicts that needed an id bit but didn't get
     one.  MoreConflicts will assign a bit to any of these that weren't
     allocated the first time around.
 */
-
+{
     conflict_node       *conf;
 
     conf = ConfList;
@@ -201,6 +201,7 @@ static  void    AssignMoreBits() {
 }
 
 
+#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
 static  void    InitAChoice( name *temp ) {
 /*****************************************/
 
@@ -214,27 +215,36 @@ static  void    InitAChoice( name *temp ) {
         alias = alias->t.alias;
     } while( alias != temp );
 }
+#endif
 
 
-static  void    InitChoices() {
-/******************************
+static  void    InitChoices( void )
+/**********************************
     Set the possible register choices of all conflicts/temps to be
     RL_NUMBER_OF_SETS meaning there are no restrictions as yet.  This
     choice gets more restricted as each instruction involving the
     conflict is expanded.
-*/
 
+    For aliased temp vars, just free list of choices (without entry,
+    other code will return RL_NUMBER_OF_SETS meaning there are no
+    restrictions as yet).
+*/
+{
     conflict_node       *conf;
+#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     name                *opnd;
     block               *blk;
     instruction         *ins;
     int                 i;
+#endif
 
     conf = ConfList;
     while( conf != NULL ) {
         conf->possible = RL_NUMBER_OF_SETS;
+        FreePossibleForAlias( conf );  /* 2007-07-10 RomanT */
         conf = conf->next_conflict;
     }
+#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     if( BlockByBlock ) {
         /* this is WAY faster for BlockByBlock */
         blk = HeadBlock;
@@ -259,11 +269,59 @@ static  void    InitChoices() {
             opnd = opnd->n.next_name;
         }
     }
+#endif
 }
 
 
-static  bool    SplitConflicts() {
-/*********************************
+static  void    ReAlias( reg_tree *tree ) {
+/******************************************
+    Given a name tree, turn all temporaries into MASTER (not ALIAS)
+    temporaries if their ancestor in the tree has no restrictions on
+    which register it can have.  This effectively detaches the hi and lo
+    part of a temporary so they may be treated separately during
+    register allocation.
+*/
+
+    name        *curr;
+    name        *new_ring;
+    name        **owner;
+    type_length endpoint;
+    type_length begpoint;
+
+    if( tree != NULL ) {
+        if( tree->idx == RL_NUMBER_OF_SETS ) {
+            ReAlias( tree->lo );
+            ReAlias( tree->hi );
+        } else {
+            begpoint = tree->offset;
+            endpoint = tree->size + begpoint;
+            owner = &tree->temp->t.alias;
+            new_ring = NULL;
+            for(;;) {
+                curr = *owner;
+                if( curr->v.offset < begpoint
+                 || curr->v.offset + curr->n.size > endpoint ) {
+                    owner = &curr->t.alias;
+                } else {
+                    *owner = curr->t.alias;
+                    if( new_ring == NULL ) {
+                        new_ring = curr;
+                        new_ring->t.alias = new_ring;
+                    } else {
+                        curr->t.alias = new_ring->t.alias;
+                        new_ring->t.alias = curr;
+                    }
+                }
+                if( curr == tree->temp ) break;
+            }
+            curr->t.temp_flags &= ~ALIAS;
+        }
+    }
+}
+
+
+static  bool    SplitConflicts( void )
+/*************************************
     Build a name tree for each conflict, and then if the top of the tree
     has no restrictions on which registers it can have, its name mustn't
     be referenced by any instructions, so we call ReAlias to split make
@@ -272,7 +330,7 @@ static  bool    SplitConflicts() {
     trees.
 
 */
-
+{
     conflict_node       *conf;
     bool                change;
 
@@ -323,53 +381,6 @@ extern  void    NullConflicts( var_usage off ) {
         }
         temp->v.block_usage = EMPTY;
         temp = temp->n.next_name;
-    }
-}
-
-
-static  void    ReAlias( reg_tree *tree ) {
-/******************************************
-    Given a name tree, turn all temporaries into MASTER (not ALIAS)
-    temporaries if their ancestor in the tree has no restrictions on
-    which register it can have.  This effectively detaches the hi and lo
-    part of a temporary so they may be treated separately during
-    register allocation.
-*/
-
-    name        *curr;
-    name        *new_ring;
-    name        **owner;
-    type_length endpoint;
-    type_length begpoint;
-
-    if( tree != NULL ) {
-        if( tree->idx == RL_NUMBER_OF_SETS ) {
-            ReAlias( tree->lo );
-            ReAlias( tree->hi );
-        } else {
-            begpoint = tree->offset;
-            endpoint = tree->size + begpoint;
-            owner = &tree->temp->t.alias;
-            new_ring = NULL;
-            for(;;) {
-                curr = *owner;
-                if( curr->v.offset < begpoint
-                 || curr->v.offset + curr->n.size > endpoint ) {
-                    owner = &curr->t.alias;
-                } else {
-                    *owner = curr->t.alias;
-                    if( new_ring == NULL ) {
-                        new_ring = curr;
-                        new_ring->t.alias = new_ring;
-                    } else {
-                        curr->t.alias = new_ring->t.alias;
-                        new_ring->t.alias = curr;
-                    }
-                }
-                if( curr == tree->temp ) break;
-            }
-            curr->t.temp_flags &= ~ALIAS;
-        }
     }
 }
 
@@ -471,14 +482,15 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     int                 half;
     name                *reg_name;
     name                *op1;
+#if _TARGET & (_TARG_80386|_TARG_IAPX86|_TARG_370)
     name                *op2;
+#endif
     name                *res;
     bool                idx;
     conflict_node       *other_conf;
     name                *other_opnd;
 
-    op2 = op2;
-    levels = levels; other_conf = other_conf;
+    levels = levels;
     if( tree == NULL ) return( 0 );
     reg_name = AllocRegName( reg );
     count = 0;
@@ -520,9 +532,17 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                         count += half;
                     }
                 } else if( res == tree->temp || res == tree->alt ) {
-                   if( op1 == reg_name || op2 == reg_name ) {
+                    if( op1 == reg_name || op2 == reg_name ) {
                         count += half;
-                   }
+                    } else if( op1 && ( op1->n.class == N_REGISTER )
+                        && HW_Ovlap( reg, op1->r.reg ) ) {
+                        /* 
+                           If we're operating on an overlapping register,
+                           (conversions) give preference. E.g.:
+                              CNV I1 DL   ==> t1
+                         */
+                        count += half;  /* Or just a quarter? */
+                    }
                 }
 /* 88-Dec-23*/
             #endif
@@ -542,6 +562,14 @@ static  signed_32     CountRegMoves( conflict_node *conf,
                          MOV U2 [DI] ==> t1
                          MOV U1 t1   ==> CL
                     */
+                    count += half;
+                } else if( ( op1->n.class == N_REGISTER )
+                        && HW_Ovlap( reg, op1->r.reg ) ) {
+                    /*
+                       Similarly when we're moving from an overlapping
+                       register (conversions), prefer that one. E.g.:
+                         MOV I1 DL   ==> t1
+                     */
                     count += half;
                 }
             }
@@ -699,7 +727,7 @@ static  bool    StealsIdx( instruction *ins,
 }
 
 
-static  bool            CheckIndecies( instruction *ins,
+extern  bool            CheckIndecies( instruction *ins,
                                        hw_reg_set reg, hw_reg_set except,
                                        name *op ) {
 /***************************************************************************
@@ -778,6 +806,167 @@ static  bool            TooGreedy( conflict_node *conf,
         if( rc != FALSE ) break;
     }
     return( rc );
+}
+
+
+static  void    CheckIndexZap( conflict_node *conf, block *blk, instruction *ins ) {
+/***********************************************************************************
+    If the given instruction uses the name for conf as an index in the result,
+    then mark the conflict as conflicting with anything in the instructions
+    zap set, as the zap will take place before the result is written.
+*/
+
+    name        *dst;
+
+    dst = ins->result;
+    if( dst != NULL && dst->n.class == N_INDEXED ) {
+        if( FindConflictNode( dst->i.index, blk, ins ) == conf ) {
+            HW_TurnOn( conf->with.regs, ins->zap->reg );
+        }
+    }
+}
+
+
+static  void    NeighboursUse( conflict_node *conf ) {
+/*****************************************************
+    Calculate which conflicts "conf" could not share the same register
+    with by running through the live range of the conflict and checking
+    what other conflicts are live and what registers are live or
+    modified at a point where "conf" is also live.
+*/
+
+    block               *blk;
+    instruction         *ins;
+    name                *dst;
+    name                *definition;
+    name_set            no_conflict;
+    hw_reg_set          tmp;
+    instruction         *last;
+    global_bit_set      gbit;
+    local_bit_set       lbit;
+
+    blk = conf->start_block;
+    ins = conf->ins_range.first;
+    last = conf->ins_range.last;
+    if( ins->head.opcode == OP_MOV && ins->result == conf->name ) {
+        definition = ins->operands[0];
+    } else {
+        definition = NULL;
+    }
+    HW_CAsgn( conf->with.regs, HW_EMPTY );
+    _GBitInit( conf->with.out_of_block, EMPTY );
+    _LBitInit( conf->with.within_block, EMPTY );
+    _INS_NOT_BLOCK ( last );
+    if( ins != last ) {
+        _NameSetInit( no_conflict );
+        for(;;) {
+            ins = ins->head.next;
+            if( ins->head.opcode != OP_BLOCK ) {
+
+                /*   The no_conflict set indicates names which do not conflict*/
+                /*   with conf->name due to OP_MOV instructions*/
+
+                dst = ins->result;
+                if( dst != NULL ) {
+                    NowDead( dst, FindConflictNode( dst, blk, ins ),
+                                &no_conflict, blk );
+                }
+                if( ins->head.opcode != OP_MOV ) {
+                    if( dst == conf->name ) {
+                        _NameSetInit( no_conflict );
+                    }
+                } else if( ins->operands[ 0 ] == conf->name ) {
+                    NowAlive( dst, FindConflictNode( dst, blk, ins ),
+                                    &no_conflict, blk );
+                } else if( dst == conf->name ) {
+                    _NameSetInit( no_conflict );
+                    definition = ins->operands[ 0 ];
+                    NowAlive( definition,
+                              FindConflictNode( definition, blk, ins ),
+                              &no_conflict, blk );
+                }
+                /* it only conflicts if temp is live across result/zap*/
+                if( ins != last ) {
+                    if( ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) )
+                     || ( _LBitEmpty( conf->id.within_block )
+                       && _GBitEmpty( conf->id.out_of_block ) )
+                     || ( _LBitOverlap( conf->id.within_block,
+                          ins->head.next->head.live.within_block ) )
+                     || ( _GBitOverlap( conf->id.out_of_block,
+                          ins->head.next->head.live.out_of_block ) ) ) {
+                        HW_TurnOn( conf->with.regs, ins->zap->reg );
+                        if( dst != NULL && dst->n.class == N_REGISTER ) {
+                            HW_TurnOn( conf->with.regs, dst->r.reg );
+                        }
+                    } else {
+                        // know that conf is not live after this instruction
+                        // if it was live before, must mark it as conflicting
+                        // with anything in the zap set         BBB - Nov, 1994
+                        if( ( _LBitOverlap( conf->id.within_block,
+                                ins->head.live.within_block ) )
+                         || ( _GBitOverlap( conf->id.out_of_block,
+                                ins->head.live.out_of_block ) ) ) {
+                            CheckIndexZap( conf, blk, ins );
+                        }
+                    }
+                } else {
+                    CheckIndexZap( conf, blk, ins );
+                }
+            }
+            if( _GBitOverlap( ins->head.live.out_of_block,
+                              conf->id.out_of_block )
+             || _LBitOverlap( ins->head.live.within_block,
+                              conf->id.within_block )
+             || ( _LBitEmpty( conf->id.within_block )
+               && _GBitEmpty( conf->id.out_of_block ) ) ) {
+                tmp = ins->head.live.regs;
+                HW_TurnOff( tmp, no_conflict.regs );
+                HW_TurnOn( conf->with.regs, tmp );
+                _GBitAssign( gbit, ins->head.live.out_of_block );
+                _GBitTurnOff( gbit, no_conflict.out_of_block );
+                _GBitTurnOn( conf->with.out_of_block, gbit );
+                _LBitAssign( lbit, ins->head.live.within_block );
+                _LBitTurnOff( lbit, no_conflict.within_block );
+                _LBitTurnOn( conf->with.within_block, lbit );
+            }
+            if( ins->head.opcode == OP_CALL
+                        || ins->head.opcode == OP_CALL_INDIRECT ) {
+                _NameSetInit( no_conflict );
+            } else if( ins->head.opcode == OP_BLOCK ) {
+                _LBitInit( conf->with.within_block, EMPTY );
+                if( blk->next_block == NULL ) {
+                    Zoiks( ZOIKS_141 );
+                    break;
+                }
+                blk = blk->next_block;
+                ins = (instruction *)&blk->ins;
+                _NameSetInit( no_conflict );
+            }
+            if( ins->id == last->id ) break;
+        }
+    }
+    /*
+        Here's the deal with the following: we are assuming that a register
+        being used to initialize a const temp must be the allocated register
+        of another const temp - ie we cannot allow reductions which will turn
+        something like "mov K -> t1" into "mov K -> R1, mov R1 -> t1" - any
+        constant loading reduction which can generate a move from a register
+        into a const temp must wait until the const temp has been allocated a
+        register or dissolved back into a constant before happening.
+
+        The reason we need to do this is because const temps percolating down
+        from parent-loops will be marked as being live all throughout the loop,
+        which means they would conflict with this const temp and so could not
+        normally share a register.
+
+        BBB - July 22, 1995
+     */
+    if( _ConstTemp( conf->name ) ) {
+        if( definition != NULL && definition->n.class == N_REGISTER ) {
+            HW_TurnOff( conf->with.regs, definition->r.reg );
+            conf->savings = MAX_SAVE;
+        }
+    }
 }
 
 
@@ -941,11 +1130,16 @@ static  void    PutInMemory( conflict_node *conf ) {
     ins = conf->ins_range.first;
     if( blk != NULL ) {
         for(;;) {
-            if( ins->head.state == OPERANDS_NEED_WORK ) {
+            if( ins->head.opcode != OP_BLOCK &&
+                ins->head.state == OPERANDS_NEED_WORK ) {
                 ins->head.state = INS_NEEDS_WORK;
             }
-            if( ins == conf->ins_range.last ) break;
+            if( ins->id == conf->ins_range.last->id ) break;
             if( ins->head.opcode == OP_BLOCK ) {
+                if( blk->next_block == NULL ) {
+                    Zoiks( ZOIKS_141 );
+                    break;
+                }
                 blk = blk->next_block;
                 ins = (instruction *)&blk->ins;
             }
@@ -1048,14 +1242,34 @@ extern  conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
     return( next_valid );
 }
 
-static  enum allocation_state    AssignConflicts() {
-/***************************************************
+
+static  bool            ConfBefore( void *c1, void *c2 ) {
+/*********************************************************
+    used by SortConflicts
+*/
+
+    return( ((conflict_node *)c1)->savings > ((conflict_node *)c2)->savings );
+}
+
+
+static  void    SortConflicts( void )
+/************************************
+    Sort the conflicts in order of descending savings.
+*/
+{
+    ConfList = SortList( ConfList, offsetof( conflict_node, next_conflict ),
+                         ConfBefore );
+}
+
+
+static  enum allocation_state    AssignConflicts( void )
+/*******************************************************
     Run through the conflict list and calculate the savings associated
     with giving a register to each one.  Sort the list in order of
     descending savings and then give a register (or memory location) to
     each conflict in the list that is not ON_HOLD.
 */
-
+{
     conflict_node               *conf;
     conflict_node               *next;
     enum allocation_state       state;
@@ -1119,186 +1333,14 @@ static  enum allocation_state    AssignConflicts() {
 }
 
 
-static  bool            ConfBefore( conflict_node *c1, conflict_node *c2 ) {
-/***************************************************************************
-    used by SortConflicts
-*/
-
-    return( c1->savings > c2->savings );
-}
-
-
-static  void    SortConflicts() {
-/********************************
-    Sort the conflicts in order of descending savings.
-*/
-
-    ConfList = SortList( ConfList, offsetof( conflict_node, next_conflict ),
-                         ConfBefore );
-}
-
-static  void    CheckIndexZap( conflict_node *conf, block *blk, instruction *ins ) {
-/***********************************************************************************
-    If the given instruction uses the name for conf as an index in the result,
-    then mark the conflict as conflicting with anything in the instructions
-    zap set, as the zap will take place before the result is written.
-*/
-
-    name        *dst;
-
-    dst = ins->result;
-    if( dst != NULL && dst->n.class == N_INDEXED ) {
-        if( FindConflictNode( dst->i.index, blk, ins ) == conf ) {
-            HW_TurnOn( conf->with.regs, ins->zap->reg );
-        }
-    }
-}
-
-static  void    NeighboursUse( conflict_node *conf ) {
-/*****************************************************
-    Calculate which conflicts "conf" could not share the same register
-    with by running through the live range of the conflict and checking
-    what other conflicts are live and what registers are live or
-    modified at a point where "conf" is also live.
-*/
-
-    block               *blk;
-    instruction         *ins;
-    name                *dst;
-    name                *definition;
-    name_set            no_conflict;
-    hw_reg_set          tmp;
-    instruction         *last;
-    global_bit_set      gbit;
-    local_bit_set       lbit;
-
-    blk = conf->start_block;
-    ins = conf->ins_range.first;
-    last = conf->ins_range.last;
-    if( ins->head.opcode == OP_MOV && ins->result == conf->name ) {
-        definition = ins->operands[0];
-    } else {
-        definition = NULL;
-    }
-    HW_CAsgn( conf->with.regs, HW_EMPTY );
-    _GBitInit( conf->with.out_of_block, EMPTY );
-    _LBitInit( conf->with.within_block, EMPTY );
-    if( ins != last ) {
-        _NameSetInit( no_conflict );
-        for(;;) {
-            ins = ins->head.next;
-            if( ins->head.opcode != OP_BLOCK ) {
-
-                /*   The no_conflict set indicates names which do not conflict*/
-                /*   with conf->name due to OP_MOV instructions*/
-
-                dst = ins->result;
-                if( dst != NULL ) {
-                    NowDead( dst, FindConflictNode( dst, blk, ins ),
-                                &no_conflict, blk );
-                }
-                if( ins->head.opcode != OP_MOV ) {
-                    if( dst == conf->name ) {
-                        _NameSetInit( no_conflict );
-                    }
-                } else if( ins->operands[ 0 ] == conf->name ) {
-                    NowAlive( dst, FindConflictNode( dst, blk, ins ),
-                                    &no_conflict, blk );
-                } else if( dst == conf->name ) {
-                    _NameSetInit( no_conflict );
-                    definition = ins->operands[ 0 ];
-                    NowAlive( definition,
-                              FindConflictNode( definition, blk, ins ),
-                              &no_conflict, blk );
-                }
-                /* it only conflicts if temp is live across result/zap*/
-                if( ins != last ) {
-                    if( ( conf->name->v.usage & ( NEEDS_MEMORY | USE_ADDRESS ) )
-                     || ( _LBitEmpty( conf->id.within_block )
-                       && _GBitEmpty( conf->id.out_of_block ) )
-                     || ( _LBitOverlap( conf->id.within_block,
-                          ins->head.next->head.live.within_block ) )
-                     || ( _GBitOverlap( conf->id.out_of_block,
-                          ins->head.next->head.live.out_of_block ) ) ) {
-                        HW_TurnOn( conf->with.regs, ins->zap->reg );
-                        if( dst != NULL && dst->n.class == N_REGISTER ) {
-                            HW_TurnOn( conf->with.regs, dst->r.reg );
-                        }
-                    } else {
-                        // know that conf is not live after this instruction
-                        // if it was live before, must mark it as conflicting
-                        // with anything in the zap set         BBB - Nov, 1994
-                        if( ( _LBitOverlap( conf->id.within_block,
-                                ins->head.live.within_block ) )
-                         || ( _GBitOverlap( conf->id.out_of_block,
-                                ins->head.live.out_of_block ) ) ) {
-                            CheckIndexZap( conf, blk, ins );
-                        }
-                    }
-                } else {
-                    CheckIndexZap( conf, blk, ins );
-                }
-            }
-            if( _GBitOverlap( ins->head.live.out_of_block,
-                              conf->id.out_of_block )
-             || _LBitOverlap( ins->head.live.within_block,
-                              conf->id.within_block )
-             || ( _LBitEmpty( conf->id.within_block )
-               && _GBitEmpty( conf->id.out_of_block ) ) ) {
-                tmp = ins->head.live.regs;
-                HW_TurnOff( tmp, no_conflict.regs );
-                HW_TurnOn( conf->with.regs, tmp );
-                _GBitAssign( gbit, ins->head.live.out_of_block );
-                _GBitTurnOff( gbit, no_conflict.out_of_block );
-                _GBitTurnOn( conf->with.out_of_block, gbit );
-                _LBitAssign( lbit, ins->head.live.within_block );
-                _LBitTurnOff( lbit, no_conflict.within_block );
-                _LBitTurnOn( conf->with.within_block, lbit );
-            }
-            if( ins->head.opcode == OP_CALL
-                        || ins->head.opcode == OP_CALL_INDIRECT ) {
-                _NameSetInit( no_conflict );
-            } else if( ins->head.opcode == OP_BLOCK ) {
-                _LBitInit( conf->with.within_block, EMPTY );
-                blk = blk->next_block;
-                ins = (instruction *)&blk->ins;
-                _NameSetInit( no_conflict );
-            }
-            if( ins == last ) break;
-        }
-    }
-    /*
-        Here's the deal with the following: we are assuming that a register
-        being used to initialize a const temp must be the allocated register
-        of another const temp - ie we cannot allow reductions which will turn
-        something like "mov K -> t1" into "mov K -> R1, mov R1 -> t1" - any
-        constant loading reduction which can generate a move from a register
-        into a const temp must wait until the const temp has been allocated a
-        register or dissolved back into a constant before happening.
-
-        The reason we need to do this is because const temps percolating down
-        from parent-loops will be marked as being live all throughout the loop,
-        which means they would conflict with this const temp and so could not
-        normally share a register.
-
-        BBB - July 22, 1995
-     */
-    if( _ConstTemp( conf->name ) ) {
-        if( definition != NULL && definition->n.class == N_REGISTER ) {
-            HW_TurnOff( conf->with.regs, definition->r.reg );
-            conf->savings = MAX_SAVE;
-        }
-    }
-}
-
-extern  void    ReConstFold() {
-/******************************
+extern  void    ReConstFold( void )
+/**********************************
     Call FoldIns on each instruction in case we propagated a constant
     into an instruction leaving something which looks like C op C -> T,
     which none of the regalloc tables can handle. Can't just call
     ConstFold because it works on a stupid partition.
 */
-
+{
     instruction                 *ins;
     instruction                 *next;
     block                       *blk;
@@ -1310,6 +1352,7 @@ extern  void    ReConstFold() {
         }
     }
 }
+
 
 extern  bool    RegAlloc( bool keep_on_truckin ) {
 /*************************************************

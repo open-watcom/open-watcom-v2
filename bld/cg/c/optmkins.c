@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction creation and deletion.
 *
 ****************************************************************************/
 
@@ -33,20 +32,17 @@
 #include "optwif.h"
 #include "freelist.h"
 
-extern    ins_entry     *FirstIns;
-extern    pointer       *InstrFrl;
-
-extern  void            AddInstr(ins_entry*,ins_entry*);
-extern  label_handle    AskForNewLabel();
-extern  ins_entry       *NextIns(ins_entry*);
-extern  oc_class        NextClass(ins_entry*);
-extern  pointer         Copy(pointer,pointer,uint);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  void            AddInstr( ins_entry *, ins_entry * );
+extern  label_handle    AskForNewLabel( void );
+extern  ins_entry       *NextIns( ins_entry * );
+extern  oc_class        NextClass( ins_entry * );
+extern  pointer         Copy( pointer, pointer, uint );
+extern  int             OptInsSize( oc_class, oc_dest_attr );
 
 
-extern  ins_entry       *NewInstr( any_oc *oc ) {
-/*************************************************/
-
+extern  ins_entry       *NewInstr( any_oc *oc )
+/*********************************************/
+{
     ins_entry   *instr;
     oc_length   len;
 
@@ -55,7 +51,7 @@ extern  ins_entry       *NewInstr( any_oc *oc ) {
     if( len <= INSTR_FRLSIZE ) {
         instr = AllocFrl( &InstrFrl, INSTR_FRLSIZE );
     } else {
-        _Alloc( instr, oc->oc_entry.reclen + sizeof( ins_link ) );
+        instr = CGAlloc( oc->oc_entry.reclen + sizeof( ins_link ) );
     }
     instr->ins.prev = NULL;
     instr->ins.next = NULL;
@@ -64,36 +60,38 @@ extern  ins_entry       *NewInstr( any_oc *oc ) {
 }
 
 
-extern  void    FreeInstr( ins_entry *instr ) {
-/*********************************************/
-
+extern  void    FreeInstr( ins_entry *instr )
+/*******************************************/
+{
     oc_length   len;
 
     len = instr->oc.oc_entry.reclen + sizeof( ins_link );
     if( len <= INSTR_FRLSIZE ) {
         FrlFreeSize( &InstrFrl, (pointer *)instr, INSTR_FRLSIZE );
     } else {
-        _Free( instr, len );
+        CGFree( instr );
     }
 }
 
 
-extern  bool    InstrFrlFree() {
-/******************************/
-
+extern  bool    InstrFrlFree( void )
+/**********************************/
+{
     return( FrlFreeAll( &InstrFrl, INSTR_FRLSIZE ) );
 }
 
 
-extern  code_lbl        *AddNewLabel( ins_entry *new, int align ) {
-/*****************************************************************/
-
+extern  code_lbl        *AddNewLabel( ins_entry *new, int align )
+/***************************************************************/
+{
     code_lbl    *lbl;
     any_oc      lbl_oc;
 
   optbegin
-    if( NextClass( new ) == OC_LABEL ) optreturn( _Label( NextIns( new ) ) );
-    if( new != NULL && _Class( new ) == OC_LABEL ) optreturn( _Label( new ) );
+    if( NextClass( new ) == OC_LABEL )
+        optreturn( _Label( NextIns( new ) ) );
+    if( new != NULL && _Class( new ) == OC_LABEL )
+        optreturn( _Label( new ) );
     lbl_oc.oc_entry.class = OC_LABEL;
     lbl_oc.oc_entry.objlen = align;
     lbl_oc.oc_entry.reclen = sizeof( oc_handle );
@@ -108,9 +106,9 @@ extern  code_lbl        *AddNewLabel( ins_entry *new, int align ) {
 }
 
 
-extern  void    AddNewJump( ins_entry *new, code_lbl *lbl ) {
-/***********************************************************/
-
+extern  void    AddNewJump( ins_entry *new, code_lbl *lbl )
+/*********************************************************/
+{
     any_oc     jmp_oc;
 
   optbegin
@@ -118,5 +116,6 @@ extern  void    AddNewJump( ins_entry *new, code_lbl *lbl ) {
     jmp_oc.oc_header.objlen = OptInsSize( OC_JMP, OC_DEST_NEAR );
     jmp_oc.oc_header.reclen = sizeof( oc_handle );
     jmp_oc.oc_handle.handle = lbl;
-    AddInstr( NewInstr( &jmp_oc.oc_entry ), new );
+    AddInstr( NewInstr( &jmp_oc ), new );
   optend
+}

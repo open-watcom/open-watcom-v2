@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
 /*==================================*/ double x2, double y2,
                                        double x3, double y3,
                                        double x4, double y4 )
@@ -59,7 +59,7 @@ short _WCI86FAR _CGRAPH _pie_w( short fill, double x1, double y1,
 Entry( _PIE_W, _pie_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pie_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK short _WCI86FAR _CGRAPH _pie_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
 /*====================================*/ struct _wxycoord _WCI86FAR * p2,
                                          struct _wxycoord _WCI86FAR * p3,
                                          struct _wxycoord _WCI86FAR * p4 )
@@ -72,7 +72,7 @@ short _WCI86FAR _CGRAPH _pie_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
 Entry( _PIE_WXY, _pie_wxy ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pie_w_87( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _pie_w_87( short fill, double x1, double y1,
 /*=====================================*/ double x2, double y2,
                                           double x3, double y3,
                                           double x4, double y4 )

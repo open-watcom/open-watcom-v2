@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX cmp utility
+*               Compares files
 *
 ****************************************************************************/
 
@@ -40,7 +40,7 @@
 #include "misc.h"
 #include "argvenv.h"
 
-char *usageTxt[] = {
+static const char *usageTxt[] = {
     "Usage:\tcmp [-?lsx] [@env] file1 file2 [seek1 [seek2]]",
     "\tenv         : environment variable to expand",
     "\tfile1 file2 : files to compare. One of the files may be `-' for",

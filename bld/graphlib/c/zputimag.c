@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _putimage_w( double x, double y, char _WCI86HUGE *image,
+_WCRTLINK void _WCI86FAR _CGRAPH _putimage_w( double x, double y, char _WCI86HUGE *image,
 /*==========================*/ short dispmode )
 
 /* This routine retrieves an picture stored at image and places it on the
@@ -50,7 +50,7 @@ void _WCI86FAR _CGRAPH _putimage_w( double x, double y, char _WCI86HUGE *image,
 Entry( _PUTIMAGE_W, _putimage_w ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _putimage_w_87( double x, double y, char _WCI86HUGE *image,
+_WCRTLINK void _WCI86FAR _CGRAPH _putimage_w_87( double x, double y, char _WCI86HUGE *image,
 /*=============================*/ short dispmode )
 
 {

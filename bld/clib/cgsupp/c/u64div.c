@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  64-bit integer division/modulo operation.
 *
 ****************************************************************************/
 
@@ -41,43 +40,6 @@
 _WCRTLINK void __U64Div( const UINT64_TYPE *a, const UINT64_TYPE *b,
                 UINT64_TYPE *div, UINT64_TYPE *rem )
 {
-    UINT64_TYPE tmp_a;
-    UINT64_TYPE tmp_b;
-    int         count;
-    unsigned_32 tmp;
-
-    if( a->u._32[I64HI32] == 0 && b->u._32[I64HI32] == 0 ) {
-        /* both fit in 32-bit, use hardware divide */
-        tmp = a->u._32[I64LO32] / b->u._32[I64LO32];
-        if( rem != NULL ) {
-            rem->u._32[I64LO32] = a->u._32[I64LO32] % b->u._32[I64LO32];
-            rem->u._32[I64HI32] = 0;
-        }
-        div->u._32[I64LO32] = tmp;
-        div->u._32[I64HI32] = 0;
-    } else {
-        tmp_a = *a;
-        tmp_b = *b;
-        div->u._32[I64LO32] = 0;
-        div->u._32[I64HI32] = 0;
-        count = 0;
-        for( ;; ) {
-            if( tmp_b.u.sign.v ) break;
-            if( _clib_U64Cmp( tmp_a, tmp_b ) <= 0 ) break;
-            __U64Shift( &tmp_b, -1, &tmp_b );
-            ++count;
-        }
-        while( count >= 0 ) {
-            __U64Shift( div, -1, div );
-            if( _clib_U64Cmp( tmp_a, tmp_b ) >= 0 ) {
-                UINT64_TYPE     tmp_s;
-                div->u._32[I64LO32] |= 1;
-                _clib_U64Neg( tmp_b, tmp_s );
-                __U64Add( &tmp_a, &tmp_s, &tmp_a );
-            }
-            __U64Shift( &tmp_b, 1, &tmp_b );
-            --count;
-        }
-        if( rem != NULL ) *rem = tmp_a;
-    }
+    *div = *a / *b;
+    *rem = *a % *b;
 }

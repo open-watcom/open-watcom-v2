@@ -1,0 +1,35 @@
+
+!ifeq target_cpu i86
+intel_cpu = 1
+!else ifeq target_cpu 386
+intel_cpu = 1
+!endif
+
+!ifdef intel_cpu
+asminline_c = $(wasm_dir)/c
+asminline_h = $(wasm_dir)/h
+asminline_inc_dirs = -I"$(wasm_dir)/h"
+asminline_objs = &
+    asmins.obj &
+    asmscan.obj &
+    asmline.obj &
+    asmsym.obj &
+    tbyte.obj &
+    asmlabel.obj &
+    asmfixup.obj &
+    asmmatch.obj &
+    asmdata.obj &
+    asmjump.obj &
+    asmexpnd.obj &
+    asmeval.obj
+
+!ifeq proj_name wfc
+asminline_deps = asmops.gh asmopsd.gh msg.gh
+!else ifeq proj_name F03
+asminline_deps = asmops.gh asmopsd.gh msg.gh
+!else
+asminline_deps = asmops.gh asmopsd.gh
+!endif
+
+asminline_lib =
+!endif

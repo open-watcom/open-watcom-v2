@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\dhrystone
+.h: $(bench_dir)\dhrystone
+
+extra_cflags = -I$(bench_dir)\dhrystone -I$(bench_dir)\support
+
+obj_files = dhry_1.obj dhry_2.obj
+
+run: dhry.exe .SYMBOLIC
+	dhry
+    
+build: dhry.exe .SYMBOLIC
+
+dhry.exe : $(obj_files)
+	$(deflink)

@@ -1,0 +1,14 @@
+/*
+ *  ole2ver.h   Object Linking and Embedding (OLE) 2.0 version numbers
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+/* OLE 2.0 version numbers */
+#define rmj         0
+#define rmm         23
+#define rup         700
+#define szVerName   ""
+#define szVerUser   "Y-OLEBLD"

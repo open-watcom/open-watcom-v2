@@ -1,16 +1,15 @@
 libobjs = &
-    alloc.$(model)bj &
-    argvenv.$(model)bj &
-    argvrx.$(model)bj &
-    console.$(model)bj &
-    die.$(model)bj &
-    filerx.$(model)bj &
-    fnlower.$(model)bj &
-    fncomp.$(model)bj &
-    getclsz.$(model)bj &
-    getopt.$(model)bj &
-    isdotdot.$(model)bj &
-    lineprt.$(model)bj &
-    quit.$(model)bj &
-    setftime.$(model)bj &
-    regexp.$(model)bj
+    alloc.obj &
+    argvenv.obj &
+    argvrx.obj &
+    console.obj &
+    die.obj &
+    filerx.obj &
+    fnlower.obj &
+    fncomp.obj &
+    getclsz.obj &
+    getopt.obj &
+    isdotdot.obj &
+    lineprt.obj &
+    quit.obj &
+    regexp.obj

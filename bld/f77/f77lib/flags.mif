@@ -1,0 +1,289 @@
+sw_c_common = -we-w8-zl-d__RT__
+#sw_c_common = -wx-w8 -wce=307 -wce=308 -wce=309 -zl-d__RT__
+sw_a_common = -we
+!ifdef __UNIX__
+sw_c_common += -fo=.obj
+sw_a_common += -fo=.obj
+!endif
+
+# Include system headers in dependency lists
+sw_c_common += -D_ENABLE_AUTODEPEND
+
+sw_l_common = option quiet,impfile reference __DLLstart_ disable 121
+!ifeq release 0
+sw_l_common += option map,mangle,artificial,verbose
+!endif
+
+# sw_c_(linkage)
+sw_c_static  =
+sw_c_dynamic = -d__DLL__
+
+# sw_c_(processor)_(model)
+sw_c_intel    = -of
+sw_c_register = -5r
+sw_c_stack    = -5s
+sw_c_bigcode  =
+sw_c_bigdata  = -zu
+
+sw_c_086 = $(sw_c_intel)-0-fpc
+sw_c_087 = $(sw_c_intel)-0-fpi
+sw_c_286 = $(sw_c_intel)-2-fpc
+sw_c_287 = $(sw_c_intel)-2-fpi
+sw_c_386 = $(sw_c_intel)-fpc-zc
+sw_c_387 = $(sw_c_intel)-fpi-zc
+sw_c_axp =
+sw_c_ppc =
+
+sw_c_086_ms = -ms
+sw_c_087_ms = -ms
+sw_c_286_ms = -ms
+sw_c_287_ms = -ms
+sw_c_086_mm = -mm$(sw_c_bigcode)
+sw_c_087_mm = -mm$(sw_c_bigcode)
+sw_c_286_mm = -mm$(sw_c_bigcode)
+sw_c_287_mm = -mm$(sw_c_bigcode)
+sw_c_086_mc = -mc$(sw_c_bigdata)
+sw_c_087_mc = -mc$(sw_c_bigdata)
+sw_c_286_mc = -mc$(sw_c_bigdata)
+sw_c_287_mc = -mc$(sw_c_bigdata)
+sw_c_086_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_087_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_286_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_287_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_086_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_087_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_287_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_386_ms = -ms$(sw_c_$(convention))
+sw_c_387_ms = -ms$(sw_c_$(convention))
+sw_c_386_mf = -mf$(sw_c_$(convention))
+sw_c_387_mf = -mf$(sw_c_$(convention))
+sw_c_axp_   =
+sw_c_ppc_   =
+
+# sw_a_(linkage)
+sw_a_static  =
+sw_a_dynamic = -d__DLL__
+
+# sw_a_(processor)_(model)
+sw_a_register = -5r
+sw_a_stack    = -5s
+
+sw_a_086 = -0-fpc -w8
+sw_a_087 = -0-fpi -w8
+sw_a_286 = -2-fpc -w8
+sw_a_287 = -2-fpi -w8
+sw_a_386 = -fpc -w8
+sw_a_387 = -fpi -w8
+sw_a_axp =
+sw_a_ppc =
+
+sw_a_086_ms = -ms
+sw_a_087_ms = -ms
+sw_a_286_ms = -ms
+sw_a_287_ms = -ms
+sw_a_086_mm = -mm
+sw_a_087_mm = -mm
+sw_a_286_mm = -mm
+sw_a_287_mm = -mm
+sw_a_086_mc = -mc
+sw_a_087_mc = -mc
+sw_a_286_mc = -mc
+sw_a_287_mc = -mc
+sw_a_086_ml = -ml
+sw_a_087_ml = -ml
+sw_a_286_ml = -ml
+sw_a_287_ml = -ml
+sw_a_086_mh = -mh
+sw_a_087_mh = -mh
+sw_a_286_mh = -mh
+sw_a_287_mh = -mh
+sw_a_386_ms = -ms$(sw_a_$(convention))
+sw_a_387_ms = -ms$(sw_a_$(convention))
+sw_a_386_mf = -mf$(sw_a_$(convention))
+sw_a_387_mf = -mf$(sw_a_$(convention))
+sw_a_386_   =
+sw_a_387_   =
+sw_a_axp_   =
+sw_a_ppc_   =
+
+# sw_c_(system)_(processor)
+sw_c_msdos_086    = -oax
+sw_c_msdos_087    = -oax
+sw_c_msdos_286    = -oax
+sw_c_msdos_287    = -oax
+sw_c_msdos_386    = -oaxt
+sw_c_msdos_387    = -oaxt
+sw_c_netware_386  = -oaxt-d__MT__ #-bm
+sw_c_netware_387  = -oaxt-d__MT__ #-bm
+sw_c_os2_286      = -oax
+sw_c_os2_287      = -oax
+sw_c_os2_386      = -oaxt-d__MT__ #-bm
+sw_c_os2_387      = -oaxt-d__MT__ #-bm
+sw_c_os2_ppc      = -oaxt-d__MT__ #-bm
+sw_c_qnx_286      = -oax
+sw_c_qnx_287      = -oax
+sw_c_qnx_386      = -oaxt-d__MT__ #-bm
+sw_c_qnx_387      = -oaxt-d__MT__ #-bm
+sw_c_windows_086  = -oax
+sw_c_windows_087  = -oax
+sw_c_windows_386  = -oaxt-d__CALL21__
+sw_c_windows_387  = -oaxt-d__CALL21__
+sw_c_winnt_386    = -oaxt-d__MT__ #-bm
+sw_c_winnt_387    = -oaxt-d__MT__ #-bm
+sw_c_winnt_axp    = -oaxt-d__MT__-dWIN32-d_WIN32 #-bm
+sw_c_winnt_ppc    = -oaxt-d__MT__-dWIN32-d_WIN32 #-bm
+sw_c_linux_386    = -oaxt #-d__MT__
+sw_c_linux_387    = -oaxt #-d__MT__
+
+# sw_a_(system)_(processor)
+sw_a_msdos_086    =
+sw_a_msdos_087    =
+sw_a_msdos_286    =
+sw_a_msdos_287    =
+sw_a_msdos_386    =
+sw_a_msdos_387    =
+sw_a_netware_386  = -d__MT__
+sw_a_netware_387  = -d__MT__
+sw_a_os2_286      =
+sw_a_os2_287      =
+sw_a_os2_386      = -d__MT__
+sw_a_os2_387      = -d__MT__
+sw_a_os2_ppc      = -d__MT__
+sw_a_qnx_286      =
+sw_a_qnx_287      =
+sw_a_qnx_386      = -d__MT__
+sw_a_qnx_387      = -d__MT__
+sw_a_windows_086  =
+sw_a_windows_087  =
+sw_a_windows_386  =
+sw_a_windows_387  =
+sw_a_winnt_386    = -d__MT__
+sw_a_winnt_387    = -d__MT__
+sw_a_winnt_axp    = -d__MT__ #-dWIN32 -d_WIN32
+sw_a_winnt_ppc    = -oc -d__MT__ #-dWIN32 -d_WIN32
+sw_a_linux_386    = #-d__MT__
+sw_a_linux_387    = #-d__MT__
+
+# sw_l_(system)_(processor)
+sw_l_msdos_086    =
+sw_l_msdos_087    =
+sw_l_msdos_286    =
+sw_l_msdos_287    =
+sw_l_msdos_386    =
+sw_l_msdos_387    =
+sw_l_netware_386  =
+sw_l_netware_387  =
+sw_l_os2_286      =
+sw_l_os2_287      =
+sw_l_os2_386      = sys os2v2 dll initinstance terminstance op manyautodata
+sw_l_os2_387      = sys os2v2 dll initinstance terminstance op manyautodata
+sw_l_os2_ppc      = sys os2ppc dll initinstance terminstance op manyautodata
+sw_l_qnx_286      =
+sw_l_qnx_287      =
+sw_l_qnx_386      =
+sw_l_qnx_387      =
+sw_l_windows_086  =
+sw_l_windows_087  =
+sw_l_windows_386  =
+sw_l_windows_387  =
+sw_l_winnt_386    = sys nt_dll initinstance terminstance
+sw_l_winnt_387    = sys nt_dll initinstance terminstance
+sw_l_winnt_axp    = sys ntaxp_dll initinstance terminstance
+sw_l_winnt_ppc    = sys ntppc_dll initinstance terminstance
+sw_l_linux_386    =
+sw_l_linux_387    =
+
+#make bug
+!ifndef extra_c_flags
+extra_c_flags =
+!endif
+!ifndef extra_a_flags
+extra_a_flags =
+!endif
+
+c_flags =$(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model))
+c_flags += $(sw_c_$(processor)) $(sw_c_$(system)_$(processor))
+c_flags += $(extra_c_flags)
+a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
+a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
+a_flags += $(extra_a_flags)
+l_flags =$(sw_l_common) $(sw_l_$(system)_$(processor))
+
+# special case switches
+!ifdef overlay
+c_flags += -of
+!endif
+!ifdef dll16
+c_flags += -d__MT__ -bd #-bm
+a_flags += -d__MT__
+!endif
+!ifdef share
+c_flags += -d__SHARE__ -dIN_SLIB -d_NO_SLIB
+!endif
+!ifdef debug
+c_flags += -en
+!endif
+!ifdef threading16
+c_flags += -d__MT__ #-bm
+a_flags += -d__MT__
+!endif
+
+# debug flags need to be last to override optimization flags
+!ifeq release 0
+c_dbg_flags = -d2
+a_dbg_flags = -d1
+!else
+c_dbg_flags = -DNDEBUG
+a_dbg_flags = -DNDEBUG
+!endif
+
+# bt_(system)
+bt_msdos      =-bt=dos
+bt_netware    =-bt=netware
+bt_os2        =-bt=os2
+bt_qnx        =-bt=qnx
+bt_windows_086=
+bt_windows_386=-d__WIN386__
+bt_windows    =$(bt_windows_$(processor)) -bt=windows -dSTRICT
+bt_winnt      =-bt=nt
+bt_linux      =-bt=linux
+
+build_target = $(bt_$(system))
+
+# libname_(model)
+libname_086_ms  =s
+libname_087_ms  =7s
+libname_286_ms  =s
+libname_287_ms  =7s
+libname_086_mm  =m
+libname_087_mm  =7m
+libname_286_mm  =m
+libname_287_mm  =7m
+libname_086_mc  =c
+libname_087_mc  =7c
+libname_286_mc  =c
+libname_287_mc  =7c
+libname_086_ml  =l
+libname_087_ml  =7l
+libname_286_ml  =l
+libname_287_ml  =7l
+libname_086_mh  =h
+libname_087_mh  =7h
+libname_286_mh  =h
+libname_287_mh  =7h
+libname_register=
+libname_stack   =s
+libname_386_ms  =$(libname_$(convention))
+libname_387_ms  =7$(libname_$(convention))
+libname_386_mf  =$(libname_$(convention))
+libname_387_mf  =7$(libname_$(convention))
+libname_        =
+libname =flib$(libname_$(processor)_$(model))
+
+lib_flags = -b-c-n-pa
+!ifeq release 1
+lib_flags += -s-t-zld
+!endif
+
+!include ../../include.mif

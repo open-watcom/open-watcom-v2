@@ -24,16 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP (Debugging Information Processor) type definitions.
 *
 ****************************************************************************/
 
 
-#ifndef DIPTYPES_H
-#include "digpck.h"
+#ifndef DIPTYPES_H_INCLUDED
+#define DIPTYPES_H_INCLUDED
 
 #include "digtypes.h"
+#include "digpck.h"
 
 struct process_info;
 struct image_handle;
@@ -227,8 +227,6 @@ typedef struct {
 //temp: for ease of transition
 #define DIPENTRY        DIGENTRY
 //#define DIPCLIENT     DIGCLIENT
-
-#define DIPTYPES_H
 
 #include "digunpck.h"
 #endif

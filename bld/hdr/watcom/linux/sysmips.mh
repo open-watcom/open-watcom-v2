@@ -1,0 +1,35 @@
+/*
+ *  sys/sysmips.h   MIPS architecture specific kernel call
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_SYSMIPS_H_INCLUDED
+#define _SYS_SYSMIPS_H_INCLUDED
+
+:include readonly.sp
+
+#if !defined(__MIPS__)
+ #error sysmips.h is only supported on MIPS architecture
+#endif
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+/*
+ * Commands for the sysmips(2) call
+ *
+ * sysmips(2) is deprecated - though some existing software uses it.
+ * We only support the following commands.
+ */
+#define SETNAME                    1    /* set hostname                  */
+#define FLUSH_CACHE                3    /* writeback and invalidate caches */
+#define MIPS_FIXADE                7    /* control address error fixing  */
+#define MIPS_RDNVRAM              10    /* read NVRAM */
+#define MIPS_ATOMIC_SET         2001    /* atomically set variable       */
+
+_WCRTLINK extern int sysmips( const int __cmd, const int __arg1, const int __arg2, const int __arg3 );
+
+:include cplusepi.sp
+
+#endif /* !_SYS_SYSMIPS_H_INCLUDED */

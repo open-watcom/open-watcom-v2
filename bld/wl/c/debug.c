@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Support routines for debug build of linker.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@
 #include <string.h>
 #include "linkstd.h"
 #include "msg.h"
-#include "fileio.h"
+#include "ideentry.h"
 #include "alloc.h"
 
 #ifdef _INT_DEBUG
@@ -89,7 +88,7 @@ void LPrint( char *str, ... ) {
 
 extern int Debug;
 
-extern void _Debug( unsigned int mask, char *str, ... )
+void _Debug( unsigned int mask, char *str, ... )
 {
     va_list     arglist;
     char        buff[128];
@@ -114,14 +113,16 @@ static void TrecFailCondition(void) {
     // set TrecHit here if failure detected:
     // Here you may put any condition you like
 
+#ifdef TRMEM
     if( !ValidateMem() ) {
         TrecHit = 1;
     }
+#endif
 }
 
 void Trec(char *str, ...) {
     enum { max=10 };
-    static currBuff;
+    static int  currBuff;
     static char buff[max][128];
     va_list     arglist;
 
@@ -215,9 +216,9 @@ void PrintMemDump(void *p, unsigned long size, DbgDumpType type) {
         void (*OneLineDump)(void*, int);
         int max;
     } MemDump[DUMP_MAX] = {
-        { OneLineDumpByte,  16 },     // DUMP_BYTE
-        {  OneLineDumpByte, 16 },     // DUMP_WORD: NYI
-        {  OneLineDumpDWord, 4*4 }    // DUMP_DWORD
+        { (void(*)(void*,int))OneLineDumpByte,  16 },     // DUMP_BYTE
+        { (void(*)(void*,int))OneLineDumpByte, 16 },     // DUMP_WORD: NYI
+        { (void(*)(void*,int))OneLineDumpDWord, 4*4 }    // DUMP_DWORD
     };
     int max = MemDump[type].max;
 

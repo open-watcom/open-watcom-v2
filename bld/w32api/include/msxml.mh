@@ -1,0 +1,3287 @@
+/*
+ *  msxml.h     Extensible Markup Language (XML) interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
+#ifndef __msxml_h__
+#define __msxml_h__
+
+:include readonly.sp
+
+#include <oaidl.h>
+
+:include cpluspro.sp
+
+/* Forward declarations */
+typedef interface IXMLDOMAttribute              IXMLDOMAttribute;
+typedef interface IXMLDOMCDATASection           IXMLDOMCDATASection;
+typedef interface IXMLDOMComment                IXMLDOMComment;
+typedef interface IXMLDOMDocument               IXMLDOMDocument;
+typedef interface IXMLDOMDocumentFragment       IXMLDOMDocumentFragment;
+typedef interface IXMLDOMDocumentType           IXMLDOMDocumentType;
+typedef interface IXMLDOMElement                IXMLDOMElement;
+typedef interface IXMLDOMEntityReference        IXMLDOMEntityReference;
+typedef interface IXMLDOMImplementation         IXMLDOMImplementation;
+typedef interface IXMLDOMNamedNodeMap           IXMLDOMNamedNodeMap;
+typedef interface IXMLDOMNodeList               IXMLDOMNodeList;
+typedef interface IXMLDOMParseError             IXMLDOMParseError;
+typedef interface IXMLDOMProcessingInstruction  IXMLDOMProcessingInstruction;
+typedef interface IXMLDOMText                   IXMLDOMText;
+typedef interface IXMLElement                   IXMLElement;
+typedef interface IXMLElement2                  IXMLElement2;
+
+/* XML error */
+typedef struct _xml_error {
+    unsigned    _nLine;
+    BSTR        _pchBuf;
+    unsigned    _cchBuf;
+    unsigned    _ich;
+    BSTR        _pszFound;
+    BSTR        _pszExpected;
+    DWORD       _reserved1;
+    DWORD       _reserved2;
+} XML_ERROR;
+
+/* XML DOM node types */
+typedef enum tagDOMNodeType {
+    NODE_INVALID                = 0,
+    NODE_ELEMENT                = 1,
+    NODE_ATTRIBUTE              = 2,
+    NODE_TEXT                   = 3,
+    NODE_CDATA_SECTION          = 4,
+    NODE_ENTITY_REFERENCE       = 5,
+    NODE_ENTITY                 = 6,
+    NODE_PROCESSING_INSTRUCTION = 7,
+    NODE_COMMENT                = 8,
+    NODE_DOCUMENT               = 9,
+    NODE_DOCUMENT_TYPE          = 10,
+    NODE_DOCUMENT_FRAGMENT      = 11,
+    NODE_NOTATION               = 12
+} DOMNodeType;
+
+/* XML element types */
+typedef enum tagXMLELEM_TYPE {
+    XMLELEMTYPE_ELEMENT     = 0,
+    XMLELEMTYPE_TEXT        = 1,
+    XMLELEMTYPE_COMMENT     = 2,
+    XMLELEMTYPE_DOCUMENT    = 3,
+    XMLELEMTYPE_DTD         = 4,
+    XMLELEMTYPE_PI          = 5,
+    XMLELEMTYPE_OTHER       = 6
+} XMLELEM_TYPE;
+
+/* GUIDs */
+EXTERN_C const IID      LIBID_MSXML;
+EXTERN_C const IID      IID_IXMLDOMNode;
+EXTERN_C const IID      IID_IXMLDOMDocument;
+EXTERN_C const IID      IID_IXMLDOMNodeList;
+EXTERN_C const IID      IID_IXMLDOMNamedNodeMap;
+EXTERN_C const IID      IID_IXMLDOMDocumentFragment;
+EXTERN_C const IID      IID_IXMLDOMCharacterData;
+EXTERN_C const IID      IID_IXMLDOMAttribute;
+EXTERN_C const IID      IID_IXMLDOMElement;
+EXTERN_C const IID      IID_IXMLDOMText;
+EXTERN_C const IID      IID_IXMLDOMComment;
+EXTERN_C const IID      IID_IXMLDOMProcessingInstruction;
+EXTERN_C const IID      IID_IXMLDOMCDATASection;
+EXTERN_C const IID      IID_IXMLDOMDocumentType;
+EXTERN_C const IID      IID_IXMLDOMNotation;
+EXTERN_C const IID      IID_IXMLDOMEntity;
+EXTERN_C const IID      IID_IXMLDOMEntityReference;
+EXTERN_C const IID      IID_IXMLDOMImplementation;
+EXTERN_C const IID      IID_IXTLRuntime;
+EXTERN_C const IID      IID_IXMLDOMParseError;
+EXTERN_C const IID      DIID_XMLDOMDocumentEvents;
+EXTERN_C const CLSID    CLSID_DOMDocument;
+EXTERN_C const CLSID    CLSID_DOMFreeThreadedDocument;
+EXTERN_C const IID      IID_IXMLHttpRequest;
+EXTERN_C const CLSID    CLSID_XMLHTTPRequest;
+EXTERN_C const IID      IID_IXMLDSOControl;
+EXTERN_C const CLSID    CLSID_XMLDSOControl;
+EXTERN_C const IID      IID_IXMLElementCollection;
+EXTERN_C const IID      IID_IXMLDocument;
+EXTERN_C const IID      IID_IXMLDocument2;
+EXTERN_C const IID      IID_IXMLElement;
+EXTERN_C const IID      IID_IXMLElement2;
+EXTERN_C const IID      IID_IXMLAttribute;
+EXTERN_C const IID      IID_IXMLError;
+EXTERN_C const CLSID    CLSID_XMLDocument;
+
+/* IXMLDOMNode interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMNode
+DECLARE_INTERFACE_( IXMLDOMNode, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+};
+
+/* IXMLDOMDocument interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMDocument
+DECLARE_INTERFACE_( IXMLDOMDocument, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+    
+    /* IXMLDOMDocument methods */
+    STDMETHOD( get_doctype )( THIS_ IXMLDOMDocumentType ** ) PURE;
+    STDMETHOD( get_implementation )( THIS_ IXMLDOMImplementation ** ) PURE;
+    STDMETHOD( get_documentElement )( THIS_ IXMLDOMElement ** ) PURE;
+    STDMETHOD( putref_documentElement )( THIS_ IXMLDOMElement * ) PURE;
+    STDMETHOD( createElement )( THIS_ BSTR, IXMLDOMElement ** ) PURE;
+    STDMETHOD( createDocumentFragment )( THIS_ IXMLDOMDocumentFragment ** ) PURE;
+    STDMETHOD( createTextNode )( THIS_ BSTR, IXMLDOMText ** ) PURE;
+    STDMETHOD( createComment )( THIS_ BSTR, IXMLDOMComment ** ) PURE;
+    STDMETHOD( createCDATASection )( THIS_ BSTR, IXMLDOMCDATASection ** ) PURE;
+    STDMETHOD( createProcessingInstruction )( THIS_ BSTR, BSTR, IXMLDOMProcessingInstruction ** ) PURE;
+    STDMETHOD( createAttribute )( THIS_ BSTR, IXMLDOMAttribute ** ) PURE;
+    STDMETHOD( createEntityReference )( THIS_ BSTR, IXMLDOMEntityReference ** ) PURE;
+    STDMETHOD( getElementsByTagName )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( createNode )( THIS_ VARIANT, BSTR, BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( nodeFromID )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( load )( THIS_ VARIANT, VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_readyState )( THIS_ long * ) PURE;
+    STDMETHOD( get_parseError )( THIS_ IXMLDOMParseError ** ) PURE;
+    STDMETHOD( get_url )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_async )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( put_async )( THIS_ VARIANT_BOOL ) PURE;
+    STDMETHOD( abort )( THIS ) PURE;
+    STDMETHOD( loadXML )( THIS_ BSTR, VARIANT_BOOL * ) PURE;
+    STDMETHOD( save )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_validateOnParse )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( put_validateOnParse )( THIS_ VARIANT_BOOL ) PURE;
+    STDMETHOD( get_resolveExternals )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( put_resolveExternals )( THIS_ VARIANT_BOOL ) PURE;
+    STDMETHOD( get_preserveWhiteSpace )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( put_preserveWhiteSpace )( THIS_ VARIANT_BOOL ) PURE;
+    STDMETHOD( put_onreadystatechange )( THIS_ VARIANT ) PURE;
+    STDMETHOD( put_ondataavailable )( THIS_ VARIANT ) PURE;
+    STDMETHOD( put_ontransformnode )( THIS_ VARIANT ) PURE;
+};
+
+/* IXMLDOMNodeList interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMNodeList
+DECLARE_INTERFACE_( IXMLDOMNodeList, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNodeList methods */
+    STDMETHOD( get_item )( THIS_ long, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( nextNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( reset )( THIS ) PURE;
+    STDMETHOD( get__newenum )( THIS_ IUnknown ** ) PURE;
+};
+
+/* IXMLDOMNamedNodeMap interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMNamedNodeMap
+DECLARE_INTERFACE_( IXMLDOMNamedNodeMap, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNamedNodeMap methods */
+    STDMETHOD( getNamedItem )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( setNamedItem )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeNamedItem )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_item )( THIS_ long, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( getQualifiedItem )( THIS_ BSTR, BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeQualifiedItem )( THIS_ BSTR, BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( nextNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( reset )( THIS ) PURE;
+    STDMETHOD( get__newEnum )( THIS_ IUnknown ** ) PURE;
+};
+
+/* IXMLDOMDocumentFragment interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMDocumentFragment
+DECLARE_INTERFACE_( IXMLDOMDocumentFragment, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+};
+
+/* IXMLDOMCharacterData interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMCharacterData
+DECLARE_INTERFACE_( IXMLDOMCharacterData, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMCharacterData methods */
+    STDMETHOD( get_data )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_data )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( substringData )( THIS_ long, long, BSTR * ) PURE;
+    STDMETHOD( appendData )( THIS_ BSTR ) PURE;
+    STDMETHOD( insertData )( THIS_ long, BSTR ) PURE;
+    STDMETHOD( deleteData )( THIS_ long, long ) PURE;
+    STDMETHOD( replaceData )( THIS_ long, long, BSTR ) PURE;
+};
+
+/* IXMLDOMAttribute interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMAttribute
+DECLARE_INTERFACE_( IXMLDOMAttribute, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMAttribute methods */
+    STDMETHOD( get_name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_value )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_value )( THIS_ VARIANT ) PURE;
+};
+
+/* IXMLDOMElement interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMElement
+DECLARE_INTERFACE_( IXMLDOMElement, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+    
+    /* IXMLDOMElement methods */
+    STDMETHOD( get_tagName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( getAttribute )( THIS_ BSTR, VARIANT * ) PURE;
+    STDMETHOD( setAttribute )( THIS_ BSTR, VARIANT ) PURE;
+    STDMETHOD( removeAttribute )( THIS_ BSTR ) PURE;
+    STDMETHOD( getAttributeNode )( THIS_ BSTR, IXMLDOMAttribute ** ) PURE;
+    STDMETHOD( setAttributeNode )( THIS_ IXMLDOMAttribute *, IXMLDOMAttribute ** ) PURE;
+    STDMETHOD( removeAttributeNode )( THIS_ IXMLDOMAttribute *, IXMLDOMAttribute ** ) PURE;
+    STDMETHOD( getElementsByTagName )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( normalize )( THIS ) PURE;
+};
+
+/* IXMLDOMText interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMText
+DECLARE_INTERFACE_( IXMLDOMText, IXMLDOMCharacterData ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMCharacterData methods */
+    STDMETHOD( get_data )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_data )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( substringData )( THIS_ long, long, BSTR * ) PURE;
+    STDMETHOD( appendData )( THIS_ BSTR ) PURE;
+    STDMETHOD( insertData )( THIS_ long, BSTR ) PURE;
+    STDMETHOD( deleteData )( THIS_ long, long ) PURE;
+    STDMETHOD( replaceData )( THIS_ long, long, BSTR ) PURE;
+    
+    /* IXMLDOMText methods */
+    STDMETHOD( splitText )( THIS_ long, IXMLDOMText ** ) PURE;
+};
+
+/* IXMLDOMComment interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMComment
+DECLARE_INTERFACE_( IXMLDOMComment, IXMLDOMCharacterData ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMCharacterData methods */
+    STDMETHOD( get_data )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_data )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( substringData )( THIS_ long, long, BSTR * ) PURE;
+    STDMETHOD( appendData )( THIS_ BSTR ) PURE;
+    STDMETHOD( insertData )( THIS_ long, BSTR ) PURE;
+    STDMETHOD( deleteData )( THIS_ long, long ) PURE;
+    STDMETHOD( replaceData )( THIS_ long, long, BSTR ) PURE;
+};
+
+/* IXMLDOMProcessingInstruction interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMProcessingInstruction
+DECLARE_INTERFACE_( IXMLDOMProcessingInstruction, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMProcessingInstruction methods */
+    STDMETHOD( get_target )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_data )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_data )( THIS_ BSTR ) PURE;
+};
+
+/* IXMLDOMCDATASection interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMCDATASection
+DECLARE_INTERFACE_( IXMLDOMCDATASection, IXMLDOMText ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMCharacterData methods */
+    STDMETHOD( get_data )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_data )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( substringData )( THIS_ long, long, BSTR * ) PURE;
+    STDMETHOD( appendData )( THIS_ BSTR ) PURE;
+    STDMETHOD( insertData )( THIS_ long, BSTR ) PURE;
+    STDMETHOD( deleteData )( THIS_ long, long ) PURE;
+    STDMETHOD( replaceData )( THIS_ long, long, BSTR ) PURE;
+    
+    /* IXMLDOMText methods */
+    STDMETHOD( splitText )( THIS_ long, IXMLDOMText ** ) PURE;
+};
+
+/* IXMLDOMDocumentType interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMDocumentType
+DECLARE_INTERFACE_( IXMLDOMDocumentType, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMDocumentType methods */
+    STDMETHOD( get_name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_entities )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( get_notations )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+};
+
+/* IXMLDOMNotation interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMNotation
+DECLARE_INTERFACE_( IXMLDOMNotation, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMNotation methods */
+    STDMETHOD( get_publicId )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( get_systemID )( THIS_ VARIANT * ) PURE;
+};
+
+/* IXMLDOMEntity interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMEntity
+DECLARE_INTERFACE_( IXMLDOMEntity, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXMLDOMEntity methods */
+    STDMETHOD( get_publicId )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( get_systemId )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( get_notationName )( THIS_ BSTR * ) PURE;
+};
+
+/* IXMLDOMEntityReference interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMEntityReference
+DECLARE_INTERFACE_( IXMLDOMEntityReference, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+};
+
+/* IXMLDOMImplementation interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMImplementation
+DECLARE_INTERFACE_( IXMLDOMImplementation, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLDOMImplementation methods */
+    STDMETHOD( hasFeature )( THIS_ BSTR, BSTR, VARIANT_BOOL * ) PURE;
+};
+
+/* IXTLRuntime interface */
+#undef INTERFACE
+#define INTERFACE   IXTLRuntime
+DECLARE_INTERFACE_( IXTLRuntime, IXMLDOMNode ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+    
+    /* IXMLDOMNode methods */
+    STDMETHOD( get_nodeName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_nodeValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_nodeType )( THIS_ DOMNodeType * ) PURE;
+    STDMETHOD( get_parentNode )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_childNodes )( THIS_ IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( get_firstChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_lastChild )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_previousSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nextSibling )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLDOMNamedNodeMap ** ) PURE;
+    STDMETHOD( insertBefore )( THIS_ IXMLDOMNode *, VARIANT, IXMLDOMNode ** ) PURE;
+    STDMETHOD( replaceChild )( THIS_ IXMLDOMNode *, IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( appendChild )( THIS_ IXMLDOMNode *, IXMLDOMNode ** ) PURE;
+    STDMETHOD( hasChildNodes )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_ownerDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( cleanNode )( THIS_ VARIANT_BOOL, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypeString )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_specified )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_definition )( THIS_ IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_nodeTypedValue )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_nodeTypedValue )( THIS_ VARIANT ) PURE;
+    STDMETHOD( get_dataType )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( put_dataType )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_xml )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNode )( THIS_ IXMLDOMNode *, BSTR * ) PURE;
+    STDMETHOD( selectNodes )( THIS_ BSTR, IXMLDOMNodeList ** ) PURE;
+    STDMETHOD( selectSingleNode )( THIS_ BSTR, IXMLDOMNode ** ) PURE;
+    STDMETHOD( get_parsed )( THIS_ VARIANT_BOOL * ) PURE;
+    STDMETHOD( get_namespaceURI )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_prefix )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_baseName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( transformNodeToObject )( THIS_ IXMLDOMNode *, VARIANT ) PURE;
+
+    /* IXTLRuntime methods */
+    STDMETHOD( uniqueID )( THIS_ IXMLDOMNode *, long * ) PURE;
+    STDMETHOD( depth )( THIS_ IXMLDOMNode *, long * ) PURE;
+    STDMETHOD( childNumber )( THIS_ IXMLDOMNode *, long * ) PURE;
+    STDMETHOD( ancestorChildNumber )( THIS_ BSTR, IXMLDOMNode *, long * ) PURE;
+    STDMETHOD( absoluteChildNumber )( THIS_ IXMLDOMNode *, long * ) PURE;
+    STDMETHOD( formatIndex )( THIS_ long, BSTR, BSTR * ) PURE;
+    STDMETHOD( formatNumber )( THIS_ double, BSTR, BSTR * ) PURE;
+    STDMETHOD( formatDate )( THIS_ VARIANT, BSTR, VARIANT, BSTR * ) PURE;
+    STDMETHOD( formatTime )( THIS_ VARIANT, BSTR, VARIANT, BSTR * ) PURE;
+};
+
+/* IXMLDOMParseError interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDOMParseError
+DECLARE_INTERFACE_( IXMLDOMParseError, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLDOMParseError methods */
+    STDMETHOD( get_errorCode )( THIS_ long * ) PURE;
+    STDMETHOD( get_url )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_reason )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_srcText )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_line )( THIS_ long * ) PURE;
+    STDMETHOD( get_linepos )( THIS_ long * ) PURE;
+    STDMETHOD( get_filepos )( THIS_ long * ) PURE;
+};
+
+/* XMLDOMDocumentEvents dispatch interface */
+#undef INTERFACE
+#define INTERFACE   XMLDOMDocumentEvents
+DECLARE_INTERFACE_( XMLDOMDocumentEvents, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+};
+
+/* IXMLHttpRequest interface */
+#undef INTERFACE
+#define INTERFACE   IXMLHttpRequest
+DECLARE_INTERFACE_( IXMLHttpRequest, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLHttpRequest methods */
+    STDMETHOD( open )( THIS_ BSTR, BSTR, VARIANT, VARIANT, VARIANT ) PURE;
+    STDMETHOD( setRequestHeader )( THIS_ BSTR, BSTR ) PURE;
+    STDMETHOD( getResponseHeader )( THIS_ BSTR, BSTR * ) PURE;
+    STDMETHOD( getAllResponseHeaders )( THIS_ BSTR * ) PURE;
+    STDMETHOD( send )( THIS_ VARIANT ) PURE;
+    STDMETHOD( abort )( THIS ) PURE;
+    STDMETHOD( get_status )( THIS_ long * ) PURE;
+    STDMETHOD( get_statusText )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_responseXML )( THIS_ IDispatch ** ) PURE;
+    STDMETHOD( get_responseText )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_responseBody )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( get_responseStream )( THIS_ VARIANT * ) PURE;
+    STDMETHOD( get_readyState )( THIS_ long * ) PURE;
+    STDMETHOD( put_onreadystatechange )( THIS_ IDispatch * ) PURE;
+};
+
+/* IXMLDSOControl interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDSOControl
+DECLARE_INTERFACE_( IXMLDSOControl, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLDSOControl methods */
+    STDMETHOD( get_XMLDocument )( THIS_ IXMLDOMDocument ** ) PURE;
+    STDMETHOD( put_XMLDocument )( THIS_ IXMLDOMDocument * ) PURE;
+    STDMETHOD( get_JavaDSOCompatible )( THIS_ BOOL * ) PURE;
+    STDMETHOD( put_JavaDSOCompatible )( THIS_ BOOL ) PURE;
+    STDMETHOD( get_readyState )( THIS_ long * ) PURE;
+};
+
+/* IXMLElementCollection interface */
+#undef INTERFACE
+#define INTERFACE   IXMLElementCollection
+DECLARE_INTERFACE_( IXMLElementCollection, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLElementCollection methods */
+    STDMETHOD( put_length )( THIS_ long ) PURE;
+    STDMETHOD( get_length )( THIS_ long * ) PURE;
+    STDMETHOD( get__newEnum )( THIS_ IUnknown ** ) PURE;
+    STDMETHOD( item )( THIS_ VARIANT, VARIANT, IDispatch ** ) PURE;
+};
+
+/* IXMLDocument interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDocument
+DECLARE_INTERFACE_( IXMLDocument, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLDocument methods */
+    STDMETHOD( get_root )( THIS_ IXMLElement ** ) PURE;
+    STDMETHOD( get_fileSize )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_fileModifiedDate )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_fileUpdatedDate )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_URL )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_URL )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_mimeType )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_readyState )( THIS_ long * ) PURE;
+    STDMETHOD( get_charset )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_charset )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_version )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_doctype )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_dtdURL )( THIS_ BSTR * ) PURE;
+    STDMETHOD( createElement )( THIS_ VARIANT, VARIANT, IXMLElement ** ) PURE;
+};
+
+/* IXMLDocument2 interface */
+#undef INTERFACE
+#define INTERFACE   IXMLDocument2
+DECLARE_INTERFACE_( IXMLDocument2, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLDocument methods */
+    STDMETHOD( get_root )( THIS_ IXMLElement2 ** ) PURE;
+    STDMETHOD( get_fileSize )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_fileModifiedDate )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_fileUpdatedDate )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_URL )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_URL )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_mimeType )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_readyState )( THIS_ long * ) PURE;
+    STDMETHOD( get_charset )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_charset )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_version )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_doctype )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_dtdURL )( THIS_ BSTR * ) PURE;
+    STDMETHOD( createElement )( THIS_ VARIANT, VARIANT, IXMLElement2 ** ) PURE;
+};
+
+/* IXMLElement interface */
+#undef INTERFACE
+#define INTERFACE   IXMLElement
+DECLARE_INTERFACE_( IXMLElement, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLElement methods */
+    STDMETHOD( get_tagName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_tagName )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_parent )( THIS_ IXMLElement ** ) PURE;
+    STDMETHOD( setAttribute )( THIS_ BSTR, VARIANT ) PURE;
+    STDMETHOD( getAttribute )( THIS_ BSTR, VARIANT * ) PURE;
+    STDMETHOD( removeAttribute )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_children )( THIS_ IXMLElementCollection ** ) PURE;
+    STDMETHOD( get_type )( THIS_ long * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( addChild )( THIS_ IXMLElement *, long, long ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLElement * ) PURE;
+};
+
+/* IXMLElement2 interface */
+#undef INTERFACE
+#define INTERFACE   IXMLElement2
+DECLARE_INTERFACE_( IXMLElement2, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLElement methods */
+    STDMETHOD( get_tagName )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_tagName )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_parent )( THIS_ IXMLElement2 ** ) PURE;
+    STDMETHOD( setAttribute )( THIS_ BSTR, VARIANT ) PURE;
+    STDMETHOD( getAttribute )( THIS_ BSTR, VARIANT * ) PURE;
+    STDMETHOD( removeAttribute )( THIS_ BSTR ) PURE;
+    STDMETHOD( get_children )( THIS_ IXMLElementCollection ** ) PURE;
+    STDMETHOD( get_type )( THIS_ long * ) PURE;
+    STDMETHOD( get_text )( THIS_ BSTR * ) PURE;
+    STDMETHOD( put_text )( THIS_ BSTR ) PURE;
+    STDMETHOD( addChild )( THIS_ IXMLElement2 *, long, long ) PURE;
+    STDMETHOD( removeChild )( THIS_ IXMLElement2 * ) PURE;
+    STDMETHOD( get_attributes )( THIS_ IXMLElementCollection ** ) PURE;
+};
+
+/* IXMLAttribute interface */
+#undef INTERFACE
+#define INTERFACE   IXMLAttribute
+DECLARE_INTERFACE_( IXMLAttribute, IDispatch ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IDispatch methods */
+    STDMETHOD( GetTypeInfoCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetTypeInfo )( THIS_ UINT, LCID, ITypeInfo ** ) PURE;
+    STDMETHOD( GetIDsOfNames )( THIS_ REFIID, LPOLESTR *, UINT, LCID, DISPID * ) PURE;
+    STDMETHOD( Invoke )( THIS_ DISPID, REFIID, LCID, WORD, DISPPARAMS *, VARIANT *, EXCEPINFO *, UINT * ) PURE;
+
+    /* IXMLAttribute methods */
+    STDMETHOD( get_name )( THIS_ BSTR * ) PURE;
+    STDMETHOD( get_value )( THIS_ BSTR * ) PURE;
+};
+
+/* IXMLError interface */
+#undef INTERFACE
+#define INTERFACE   IXMLError
+DECLARE_INTERFACE_( IXMLError, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IXMLError methods */
+    STDMETHOD( GetErrorInfo )( THIS_ XML_ERROR * ) PURE;
+};
+
+/* C object macros */
+#if (!defined( __cplusplus ) || defined( CINTERFACE )) && defined( COBJMACROS )
+    #define IXMLDOMNode_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMNode_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMNode_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMNode_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMNode_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMNode_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMNode_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMNode_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMNode_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMNode_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMNode_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMNode_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMNode_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMNode_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMNode_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMNode_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMNode_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMNode_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMNode_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMNode_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMNode_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMNode_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMNode_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMNode_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMNode_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMNode_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMNode_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMNode_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMNode_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMNode_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMNode_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMNode_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMNode_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMNode_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMNode_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMNode_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMNode_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMNode_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMNode_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMNode_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMNode_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMNode_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMNode_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMDocument_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMDocument_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMDocument_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMDocument_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMDocument_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMDocument_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMDocument_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMDocument_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMDocument_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMDocument_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMDocument_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMDocument_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMDocument_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMDocument_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMDocument_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMDocument_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMDocument_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMDocument_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMDocument_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMDocument_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMDocument_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMDocument_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMDocument_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMDocument_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMDocument_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMDocument_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMDocument_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMDocument_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMDocument_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMDocument_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMDocument_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMDocument_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMDocument_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMDocument_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMDocument_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMDocument_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMDocument_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMDocument_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMDocument_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMDocument_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMDocument_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMDocument_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMDocument_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMDocument_get_doctype( x, p ) \
+        (x)->lpVtbl->get_doctype( x, p )
+    #define IXMLDOMDocument_get_implementation( x, p ) \
+        (x)->lpVtbl->get_implementation( x, p )
+    #define IXMLDOMDocument_get_documentElement( x, p ) \
+        (x)->lpVtbl->get_documentElement( x, p )
+    #define IXMLDOMDocument_putref_documentElement( x, p ) \
+        (x)->lpVtbl->putref_documentElement( x, p )
+    #define IXMLDOMDocument_createElement( x, p1, p2 ) \
+        (x)->lpVtbl->createElement( x, p1, p2 )
+    #define IXMLDOMDocument_createDocumentFragment( x, p ) \
+        (x)->lpVtbl->createDocumentFragment( x, p )
+    #define IXMLDOMDocument_createTextNode( x, p1, p2 ) \
+        (x)->lpVtbl->createTextNode( x, p1, p2 )
+    #define IXMLDOMDocument_createComment( x, p1, p2 ) \
+        (x)->lpVtbl->createComment( x, p1, p2 )
+    #define IXMLDOMDocument_createCDATASection( x, p1, p2 ) \
+        (x)->lpVtbl->createCDATASection( x, p1, p2 )
+    #define IXMLDOMDocument_createProcessingInstruction( x, p1, p2, p3 ) \
+        (x)->lpVtbl->createProcessingInstruction( x, p1, p2, p3 )
+    #define IXMLDOMDocument_createAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->createAttribute( x, p1, p2 )
+    #define IXMLDOMDocument_createEntityReference( x, p1, p2 ) \
+        (x)->lpVtbl->createEntityReference( x, p1, p2 )
+    #define IXMLDOMDocument_getElementsByTagName( x, p1, p2 ) \
+        (x)->lpVtbl->getElementsByTagName( x, p1, p2 )
+    #define IXMLDOMDocument_createNode( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->createNode( x, p1, p2, p3, p4 )
+    #define IXMLDOMDocument_nodeFromID( x, p1, p2 ) \
+        (x)->lpVtbl->nodeFromID( x, p1, p2 )
+    #define IXMLDOMDocument_load( x, p1, p2 ) \
+        (x)->lpVtbl->load( x, p1, p2 )
+    #define IXMLDOMDocument_get_readyState( x, p ) \
+        (x)->lpVtbl->get_readyState( x, p )
+    #define IXMLDOMDocument_get_parseError( x, p ) \
+        (x)->lpVtbl->get_parseError( x, p )
+    #define IXMLDOMDocument_get_url( x, p ) \
+        (x)->lpVtbl->get_url( x, p )
+    #define IXMLDOMDocument_get_async( x, p ) \
+        (x)->lpVtbl->get_async( x, p )
+    #define IXMLDOMDocument_put_async( x, p ) \
+        (x)->lpVtbl->put_async( x, p )
+    #define IXMLDOMDocument_async( x ) \
+        (x)->lpVtbl->async( x )
+    #define IXMLDOMDocument_loadXML( x, p1, p2 ) \
+        (x)->lpVtbl->loadXML( x, p1, p2 )
+    #define IXMLDOMDocument_save( x, p ) \
+        (x)->lpVtbl->save( x, p )
+    #define IXMLDOMDocument_get_validateOnParse( x, p ) \
+        (x)->lpVtbl->get_validateOnParse( x, p )
+    #define IXMLDOMDocument_put_validateOnParse( x, p ) \
+        (x)->lpVtbl->put_validateOnParse( x, p )
+    #define IXMLDOMDocument_get_resolveExternals( x, p ) \
+        (x)->lpVtbl->get_resolveExternals( x, p )
+    #define IXMLDOMDocument_put_resolveExternals( x, p ) \
+        (x)->lpVtbl->put_resolveExternals( x, p )
+    #define IXMLDOMDocument_get_preserveWhiteSpace( x, p ) \
+        (x)->lpVtbl->get_preserveWhiteSpace( x, p )
+    #define IXMLDOMDocument_put_preserveWhiteSpace( x, p ) \
+        (x)->lpVtbl->put_preserveWhiteSpace( x, p )
+    #define IXMLDOMDocument_put_onreadystatechange( x, p ) \
+        (x)->lpVtbl->put_onreadystatechange( x, p )
+    #define IXMLDOMDocument_put_ondataavailable( x, p ) \
+        (x)->lpVtbl->put_ondataavailable( x, p )
+    #define IXMLDOMDocument_put_ontransformnode( x, p ) \
+        (x)->lpVtbl->put_ontransformnode( x, p )
+    #define IXMLDOMNodeList_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMNodeList_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMNodeList_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMNodeList_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMNodeList_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMNodeList_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMNodeList_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMNodeList_get_item( x, p1, p2 ) \
+        (x)->lpVtbl->get_item( x, p1, p2 )
+    #define IXMLDOMNodeList_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMNodeList_nextNode( x, p ) \
+        (x)->lpVtbl->nextNode( x, p )
+    #define IXMLDOMNodeList_reset( x ) \
+        (x)->lpVtbl->reset( x )
+    #define IXMLDOMNodeList_get__newEnum( x, p ) \
+        (x)->lpVtbl->get__newEnum( x, p )
+    #define IXMLDOMNamedNodeMap_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMNamedNodeMap_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMNamedNodeMap_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMNamedNodeMap_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMNamedNodeMap_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMNamedNodeMap_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMNamedNodeMap_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMNamedNodeMap_getNamedItem( x, p1, p2 ) \
+        (x)->lpVtbl->getNamedItem( x, p1, p2 )
+    #define IXMLDOMNamedNodeMap_setNamedItem( x, p1, p2 ) \
+        (x)->lpVtbl->setNamedItem( x, p1, p2 )
+    #define IXMLDOMNamedNodeMap_removeNamedItem( x, p1, p2 ) \
+        (x)->lpVtbl->removeNamedItem( x, p1, p2 )
+    #define IXMLDOMNamedNodeMap_get_item( x, p1, p2 ) \
+        (x)->lpVtbl->get_item( x, p1, p2 )
+    #define IXMLDOMNamedNodeMap_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMNamedNodeMap_getQualifiedItem( x, p1, p2, p3 ) \
+        (x)->lpVtbl->getQualifiedItem( x, p1, p2, p3 )
+    #define IXMLDOMNamedNodeMap_removeQualifiedItem( x, p1, p2, p3 ) \
+        (x)->lpVtbl->removeQualifiedItem( x, p1, p2, p3 )
+    #define IXMLDOMNamedNodeMap_nextNode( x, p ) \
+        (x)->lpVtbl->nextNode( x, p )
+    #define IXMLDOMNamedNodeMap_reset( x ) \
+        (x)->lpVtbl->reset( x )
+    #define IXMLDOMNamedNodeMap_get__newEnum( x, p ) \
+        (x)->lpVtbl->get__newEnum( x, p )
+    #define IXMLDOMDocumentFragment_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMDocumentFragment_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMDocumentFragment_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMDocumentFragment_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMDocumentFragment_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMDocumentFragment_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMDocumentFragment_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMDocumentFragment_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMDocumentFragment_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMDocumentFragment_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMDocumentFragment_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMDocumentFragment_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMDocumentFragment_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMDocumentFragment_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMDocumentFragment_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMDocumentFragment_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMDocumentFragment_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMDocumentFragment_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMDocumentFragment_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMDocumentFragment_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMDocumentFragment_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMDocumentFragment_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMDocumentFragment_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMDocumentFragment_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMDocumentFragment_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMDocumentFragment_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMDocumentFragment_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMDocumentFragment_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMDocumentFragment_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMDocumentFragment_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMDocumentFragment_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMDocumentFragment_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMDocumentFragment_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMDocumentFragment_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMDocumentFragment_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMDocumentFragment_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMDocumentFragment_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMCharacterData_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMCharacterData_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMCharacterData_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMCharacterData_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMCharacterData_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMCharacterData_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMCharacterData_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMCharacterData_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMCharacterData_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMCharacterData_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMCharacterData_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMCharacterData_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMCharacterData_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMCharacterData_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMCharacterData_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMCharacterData_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMCharacterData_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMCharacterData_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMCharacterData_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMCharacterData_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMCharacterData_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMCharacterData_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMCharacterData_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMCharacterData_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMCharacterData_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMCharacterData_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMCharacterData_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMCharacterData_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMCharacterData_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMCharacterData_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMCharacterData_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMCharacterData_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMCharacterData_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMCharacterData_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMCharacterData_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMCharacterData_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMCharacterData_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMCharacterData_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMCharacterData_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMCharacterData_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMCharacterData_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMCharacterData_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMCharacterData_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMCharacterData_get_data( x, p ) \
+        (x)->lpVtbl->get_data( x, p )
+    #define IXMLDOMCharacterData_put_data( x, p ) \
+        (x)->lpVtbl->put_data( x, p )
+    #define IXMLDOMCharacterData_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMCharacterData_substringData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->substringData( x, p1, p2, p3 )
+    #define IXMLDOMCharacterData_appendData( x, p ) \
+        (x)->lpVtbl->appendData( x, p )
+    #define IXMLDOMCharacterData_insertData( x, p1, p2 ) \
+        (x)->lpVtbl->insertData( x, p1, p2 )
+    #define IXMLDOMCharacterData_deleteData( x, p1, p2 ) \
+        (x)->lpVtbl->deleteData( x, p1, p2 )
+    #define IXMLDOMCharacterData_replaceData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceData( x, p1, p2, p3 )
+    #define IXMLDOMAttribute_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMAttribute_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMAttribute_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMAtribute_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMAttribute_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMAttribute_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMAttribute_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMAttribute_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMAttribute_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMAttribute_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMAttribute_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMAttribute_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMAtribute_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMAttribute_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMAttribute_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMAttribute_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMAttribute_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMAttribute_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMAttribute_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMAttribute_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMAttribute_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMAttribute_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMAttribute_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMAttribute_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMAttribute_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMAttribute_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMAttribute_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMAttribute_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMAttribute_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMAttribute_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMAttribute_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMAttribute_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMAttribute_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMAttribute_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMAttribute_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMAttribute_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMAttribute_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMAttribute_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMAttribute_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMAttribute_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMAttribute_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMAttribute_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMAttribute_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMAttribute_get_name( x, p ) \
+        (x)->lpVtbl->get_name( x, p )
+    #define IXMLDOMAttribute_get_value( x, p ) \
+        (x)->lpVtbl->get_value( x, p )
+    #define IXMLDOMAttribute_put_value( x, p ) \
+        (x)->lpVtbl->put_value( x, p )
+    #define IXMLDOMElement_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMElement_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMElement_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMElement_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMElement_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMElement_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMElement_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMElement_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMElement_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMElement_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMElement_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMElement_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMElement_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMElement_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMElement_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMElement_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMElement_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMElement_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMElement_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMElement_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMElement_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMElement_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMElement_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMElement_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMElement_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMElement_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMElement_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMElement_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMElement_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMElement_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMElement_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMElement_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMElement_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMElement_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMElement_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMElement_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMElement_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMElement_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMElement_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMElement_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMElement_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMElement_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMElement_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMElement_get_tagName( x, p ) \
+        (x)->lpVtbl->get_tagName( x, p )
+    #define IXMLDOMElement_getAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->getAttribute( x, p1, p2 )
+    #define IXMLDOMElement_setAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->setAttribute( x, p1, p2 )
+    #define IXMLDOMElement_removeAttribute( x, p ) \
+        (x)->lpVtbl->removeAttribute( x, p )
+    #define IXMLDOMElement_getAttributeNode( x, p1, p2 ) \
+        (x)->lpVtbl->getAttributeNode( x, p1, p2 )
+    #define IXMLDOMElement_setAttributeNode( x, p1, p2 ) \
+        (x)->lpVtbl->setAttributeNode( x, p1, p2 )
+    #define IXMLDOMElement_removeAttributeNode( x, p1, p2 ) \
+        (x)->lpVtbl->removeAttributeNode( x, p1, p2 )
+    #define IXMLDOMElement_getElementsByTagName( x, p1, p2 ) \
+        (x)->lpVtbl->getElementsByTagName( x, p1, p2 )
+    #define IXMLDOMElement_normalize( x ) \
+        (x)->lpVtbl->normalize( x )
+    #define IXMLDOMText_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMText_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMText_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMText_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMText_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMText_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMText_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMText_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMText_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMText_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMText_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMText_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMText_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMText_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMText_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMText_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMText_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMText_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMText_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMText_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMText_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMText_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMText_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMText_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMText_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMText_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMText_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMText_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMText_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMText_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMText_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMText_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMText_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMText_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMText_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMText_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMText_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMText_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMText_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMText_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMText_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMText_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMText_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMText_get_data( x, p ) \
+        (x)->lpVtbl->get_data( x, p )
+    #define IXMLDOMText_put_data( x, p ) \
+        (x)->lpVtbl->put_data( x, p )
+    #define IXMLDOMText_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMText_substringData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->substringData( x, p1, p2, p3 )
+    #define IXMLDOMText_appendData( x, p ) \
+        (x)->lpVtbl->appendData( x, p )
+    #define IXMLDOMText_insertData( x, p1, p2 ) \
+        (x)->lpVtbl->insertData( x, p1, p2 )
+    #define IXMLDOMText_deleteData( x, p1, p2 ) \
+        (x)->lpVtbl->deleteData( x, p1, p2 )
+    #define IXMLDOMText_replaceData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceData( x, p1, p2, p3 )
+    #define IXMLDOMText_splitText( x, p1, p2 ) \
+        (x)->lpVtbl->splitText( x, p1, p2 )
+    #define IXMLDOMComment_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMComment_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMComment_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMComment_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMComment_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMComment_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMComment_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMComment_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMComment_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMComment_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMComment_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMComment_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMComment_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMComment_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMComment_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMComment_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMComment_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMComment_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMComment_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMComment_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMComment_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMComment_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMComment_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMComment_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMComment_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMComment_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMComment_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMComment_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMComment_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMComment_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMComment_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMComment_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMComment_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMComment_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMComment_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMComment_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMComment_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMComment_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMComment_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMComment_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMComment_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMComment_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMComment_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMComment_get_data( x, p ) \
+        (x)->lpVtbl->get_data( x, p )
+    #define IXMLDOMComment_put_data( x, p ) \
+        (x)->lpVtbl->put_data( x, p )
+    #define IXMLDOMComment_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMComment_substringData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->substringData( x, p1, p2, p3 )
+    #define IXMLDOMComment_appendData( x, p ) \
+        (x)->lpVtbl->appendData( x, p )
+    #define IXMLDOMComment_insertData( x, p1, p2 ) \
+        (x)->lpVtbl->insertData( x, p1, p2 )
+    #define IXMLDOMComment_deleteData( x, p1, p2 ) \
+        (x)->lpVtbl->deleteData( x, p1, p2 )
+    #define IXMLDOMComment_replaceData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceData( x, p1, p2, p3 )
+    #define IXMLDOMProcessingInstruction_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMProcessingInstruction_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMProcessingInstruction_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMProcessingInstruction_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMProcessingInstruction_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMProcessingInstruction_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMProcessingInstruction_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMProcessingInstruction_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMProcessingInstruction_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMProcessingInstruction_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMProcessingInstruction_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMProcessingInstruction_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMProcessingInstruction_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMProcessingInstruction_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMProcessingInstruction_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMProcessingInstruction_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMProcessingInstruction_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMProcessingInstruction_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMProcessingInstruction_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMProcessingInstruction_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMProcessingInstruction_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMProcessingInstruction_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMProcessingInstruction_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMProcessingInstruction_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMProcessingInstruction_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMProcessingInstruction_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMProcessingInstruction_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMProcessingInstruction_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMProcessingInstruction_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMProcessingInstruction_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMProcessingInstruction_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMProcessingInstruction_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMProcessingInstruction_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMProcessingInstruction_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMProcessingInstruction_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMProcessingInstruction_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMProcessingInstruction_get_target( x, p ) \
+        (x)->lpVtbl->get_target( x, p )
+    #define IXMLDOMProcessingInstruction_get_data( x, p ) \
+        (x)->lpVtbl->get_data( x, p )
+    #define IXMLDOMProcessingInstruction_put_data( x, p ) \
+        (x)->lpVtbl->put_data( x, p )
+    #define IXMLDOMCDATASection_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMCDATASection_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMCDATASection_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMCDATASection_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMCDATASection_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMCDATASection_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMCDATASection_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMCDATASection_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMCDATASection_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMCDATASection_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMCDATASection_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMCDATASection_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMCDATASection_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMCDATASection_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMCDATASection_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMCDATASection_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMCDATASection_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMCDATASection_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMCDATASection_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMCDATASection_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMCDATASection_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMCDATASection_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMCDATASection_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMCDATASection_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMCDATASection_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMCDATASection_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMCDATASection_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMCDATASection_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMCDATASection_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMCDATASection_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMCDATASection_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMCDATASection_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMCDATASection_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMCDATASection_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMCDATASection_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMCDATASection_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMCDATASection_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMCDATASection_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMCDATASection_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMCDATASection_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMCDATASection_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMCDATASection_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMCDATASection_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMCDATASection_get_data( x, p ) \
+        (x)->lpVtbl->get_data( x, p )
+    #define IXMLDOMCDATASection_put_data( x, p ) \
+        (x)->lpVtbl->put_data( x, p )
+    #define IXMLDOMCDATASection_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLDOMCDATASection_substringData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->substringData( x, p1, p2, p3 )
+    #define IXMLDOMCDATASection_appendData( x, p ) \
+        (x)->lpVtbl->appendData( x, p )
+    #define IXMLDOMCDATASection_insertData( x, p1, p2 ) \
+        (x)->lpVtbl->insertData( x, p1, p2 )
+    #define IXMLDOMCDATASection_deleteData( x, p1, p2 ) \
+        (x)->lpVtbl->deleteData( x, p1, p2 )
+    #define IXMLDOMCDATASection_replaceData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceData( x, p1, p2, p3 )
+    #define IXMLDOMCDATASection_splitText( x, p1, p2 ) \
+        (x)->lpVtbl->splitText( x, p1, p2 )
+    #define IXMLDOMDocumentType_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMDocumentType_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMDocumentType_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMDocumentType_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMDocumentType_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMDocumentType_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMDocumentType_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMDocumentType_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMDocumentType_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMDocumentType_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMDocumentType_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMDocumentType_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMDocumentType_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMDocumentType_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMDocumentType_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMDocumentType_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMDocumentType_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMDocumentType_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMDocumentType_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMDocumentType_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMDocumentType_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMDocumentType_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMDocumentType_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMDocumentType_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMDocumentType_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMDocumentType_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMDocumentType_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMDocumentType_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMDocumentType_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMDocumentType_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMDocumentType_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMDocumentType_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMDocumentType_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMDocumentType_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMDocumentType_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMDocumentType_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMDocumentType_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMDocumentType_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMDocumentType_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMDocumentType_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMDocumentType_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMDocumentType_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMDocumentType_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMDocumentType_get_name( x, p ) \
+        (x)->lpVtbl->get_name( x, p )
+    #define IXMLDOMDocumentType_get_entities( x, p ) \
+        (x)->lpVtbl->get_entities( x, p )
+    #define IXMLDOMDocumentType_get_notations( x, p ) \
+        (x)->lpVtbl->get_notations( x, p )
+    #define IXMLDOMNotation_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMNotation_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMNotation_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMNotation_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMNotation_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMNotation_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMNotation_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMNotation_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMNotation_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMNotation_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMNotation_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMNotation_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMNotation_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMNotation_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMNotation_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMNotation_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMNotation_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMNotation_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMNotation_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMNotation_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMNotation_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMNotation_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMNotation_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMNotation_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMNotation_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMNotation_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMNotation_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMNotation_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMNotation_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMNotation_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMNotation_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMNotation_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMNotation_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMNotation_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMNotation_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMNotation_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMNotation_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMNotation_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMNotation_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMNotation_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMNotation_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMNotation_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMNotation_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMNotation_get_publicId( x, p ) \
+        (x)->lpVtbl->get_publicId( x, p )
+    #define IXMLDOMNotation_get_systemId( x, p ) \
+        (x)->lpVtbl->get_systemId( x, p )
+    #define IXMLDOMEntity_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMEntity_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMEntity_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMEntity_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMEntity_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMEntity_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMEntity_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMEntity_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMEntity_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMEntity_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMEntity_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMEntity_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMEntity_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMEntity_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMEntity_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMEntity_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMEntity_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMEntity_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMEntity_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMEntity_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMEntity_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMEntity_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMEntity_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMEntity_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMEntity_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMEntity_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMEntity_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMEntity_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMEntity_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMEntity_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMEntity_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMEntity_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMEntity_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMEntity_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMEntity_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMEntity_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMEntity_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMEntity_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMEntity_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMEntity_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMEntity_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMEntity_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMEntity_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMEntity_get_publicId( x, p ) \
+        (x)->lpVtbl->get_publicId( x, p )
+    #define IXMLDOMEntity_get_systemId( x, p ) \
+        (x)->lpVtbl->get_systemId( x, p )
+    #define IXMLDOMEntity_get_notationName( x, p ) \
+        (x)->lpVtbl->get_notationName( x, p )
+    #define IXMLDOMEntityReference_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMEntityReference_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMEntityReference_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMEntityReference_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMEntityReference_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMEntityReference_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMEntityReference_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMEntityReference_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXMLDOMEntityReference_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXMLDOMEntityReference_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXMLDOMEntityReference_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXMLDOMEntityReference_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXMLDOMEntityReference_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXMLDOMEntityReference_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXMLDOMEntityReference_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXMLDOMEntityReference_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXMLDOMEntityReference_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXMLDOMEntityReference_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLDOMEntityReference_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXMLDOMEntityReference_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXMLDOMEntityReference_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXMLDOMEntityReference_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXMLDOMEntityReference_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXMLDOMEntityReference_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXMLDOMEntityReference_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXMLDOMEntityReference_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXMLDOMEntityReference_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLDOMEntityReference_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLDOMEntityReference_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXMLDOMEntityReference_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXMLDOMEntityReference_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXMLDOMEntityReference_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXMLDOMEntityReference_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXMLDOMEntityReference_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXMLDOMEntityReference_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXMLDOMEntityReference_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXMLDOMEntityReference_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXMLDOMEntityReference_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXMLDOMEntityReference_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXMLDOMEntityReference_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXMLDOMEntityReference_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXMLDOMEntityReference_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXMLDOMEntityReference_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXMLDOMImplementation_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMImplementation_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMImplementation_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMImplementation_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMImplementation_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMImplementation_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMImplementation_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMImplementation_hasFeature( x, p1, p2, p3 ) \
+        (x)->lpVtbl->hasFeature( x, p1, p2, p3 )
+    #define IXTLRuntime_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXTLRuntime_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXTLRuntime_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXTLRuntime_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXTLRuntime_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXTLRuntime_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXTLRuntime_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXTLRuntime_get_nodeName( x, p ) \
+        (x)->lpVtbl->get_nodeName( x, p )
+    #define IXTLRuntime_get_nodeValue( x, p ) \
+        (x)->lpVtbl->get_nodeValue( x, p )
+    #define IXTLRuntime_put_nodeValue( x, p ) \
+        (x)->lpVtbl->put_nodeValue( x, p )
+    #define IXTLRuntime_get_nodeType( x, p ) \
+        (x)->lpVtbl->get_nodeType( x, p )
+    #define IXTLRuntime_get_parentNode( x, p ) \
+        (x)->lpVtbl->get_parentNode( x, p )
+    #define IXTLRuntime_get_childNodes( x, p ) \
+        (x)->lpVtbl->get_childNodes( x, p )
+    #define IXTLRuntime_get_firstChild( x, p ) \
+        (x)->lpVtbl->get_firstChild( x, p )
+    #define IXTLRuntime_get_lastChild( x, p ) \
+        (x)->lpVtbl->get_lastChild( x, p )
+    #define IXTLRuntime_get_previousSibling( x, p ) \
+        (x)->lpVtbl->get_previousSibling( x, p )
+    #define IXTLRuntime_get_nextSibling( x, p ) \
+        (x)->lpVtbl->get_nextSibling( x, p )
+    #define IXTLRuntime_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXTLRuntime_insertBefore( x, p1, p2, p3 ) \
+        (x)->lpVtbl->insertBefore( x, p1, p2, p3 )
+    #define IXTLRuntime_replaceChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->replaceChild( x, p1, p2, p3 )
+    #define IXTLRuntime_removeChild( x, p1, p2 ) \
+        (x)->lpVtbl->removeChild( x, p1, p2 )
+    #define IXTLRuntime_appendChild( x, p1, p2 ) \
+        (x)->lpVtbl->appendChild( x, p1, p2 )
+    #define IXTLRuntime_hasChildNodes( x, p ) \
+        (x)->lpVtbl->hasChildNodes( x, p )
+    #define IXTLRuntime_get_ownerDocument( x, p ) \
+        (x)->lpVtbl->get_ownerDocument( x, p )
+    #define IXTLRuntime_cloneNode( x, p1, p2 ) \
+        (x)->lpVtbl->cloneNode( x, p1, p2 )
+    #define IXTLRuntime_get_nodeTypeString( x, p ) \
+        (x)->lpVtbl->get_nodeTypeString( x, p )
+    #define IXTLRuntime_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXTLRuntime_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXTLRuntime_get_specified( x, p ) \
+        (x)->lpVtbl->get_specified( x, p )
+    #define IXTLRuntime_get_definition( x, p ) \
+        (x)->lpVtbl->get_definition( x, p )
+    #define IXTLRuntime_get_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->get_nodeTypedValue( x, p )
+    #define IXTLRuntime_put_nodeTypedValue( x, p ) \
+        (x)->lpVtbl->put_nodeTypedValue( x, p )
+    #define IXTLRuntime_get_dataType( x, p ) \
+        (x)->lpVtbl->get_dataType( x, p )
+    #define IXTLRuntime_put_dataType( x, p ) \
+        (x)->lpVtbl->put_dataType( x, p )
+    #define IXTLRuntime_get_xml( x, p ) \
+        (x)->lpVtbl->get_xml( x, p )
+    #define IXTLRuntime_transformNode( x, p1, p2 ) \
+        (x)->lpVtbl->transformNode( x, p1, p2 )
+    #define IXTLRuntime_selectNodes( x, p1, p2 ) \
+        (x)->lpVtbl->selectNodes( x, p1, p2 )
+    #define IXTLRuntime_selectSingleNode( x, p1, p2 ) \
+        (x)->lpVtbl->selectSingleNode( x, p1, p2 )
+    #define IXTLRuntime_get_parsed( x, p ) \
+        (x)->lpVtbl->get_parsed( x, p )
+    #define IXTLRuntime_get_namespaceURI( x, p ) \
+        (x)->lpVtbl->get_namespaceURI( x, p )
+    #define IXTLRuntime_get_prefix( x, p ) \
+        (x)->lpVtbl->get_prefix( x, p )
+    #define IXTLRuntime_get_baseName( x, p ) \
+        (x)->lpVtbl->get_baseName( x, p )
+    #define IXTLRuntime_transformNodeToObject( x, p1, p2 ) \
+        (x)->lpVtbl->transformNodeToObject( x, p1, p2 )
+    #define IXTLRuntime_uniqueID( x, p1, p2 ) \
+        (x)->lpVtbl->uniqueID( x, p1, p2 )
+    #define IXTLRuntime_depth( x, p1, p2 ) \
+        (x)->lpVtbl->depth( x, p1, p2 )
+    #define IXTLRuntime_childNumber( x, p1, p2 ) \
+        (x)->lpVtbl->childNumber( x, p1, p2 )
+    #define IXTLRuntime_ancesterChildNumber( x, p1, p2, p3 ) \
+        (x)->lpVtbl->ancestorChildNumber( x, p1, p2, p3 )
+    #define IXTLRuntime_absoluteChildNumber( x, p1, p2, p3 ) \
+        (x)->lpVtbl->absoluteChildNumber( x, p1, p2, p3 )
+    #define IXTLRuntime_formatIndex( x, p1, p2, p3 ) \
+        (x)->lpVtbl->formatIndex( x, p1, p2, p3 )
+    #define IXTLRuntime_formatNumber( x, p1, p2, p3 ) \
+        (x)->lpVtbl->formatNumber( x, p1, p2, p3 )
+    #define IXTLRuntime_formatDate( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->formatDate( x, p1, p2, p3, p4 )
+    #define IXTLRuntime_formatTime( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->formatTime( x, p1, p2, p3, p4 )
+    #define IXMLDOMParseError_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDOMParseError_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDOMParseError_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDOMParseError_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDOMParseError_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDOMParseError_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDOMParseError_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDOMParseError_get_errorCode( x, p ) \
+        (x)->lpVtbl->get_errorCode( x, p )
+    #define IXMLDOMParseError_get_url( x, p ) \
+        (x)->lpVtbl->get_url( x, p )
+    #define IXMLDOMParseError_get_reason( x, p ) \
+        (x)->lpVtbl->get_reason( x, p )
+    #define IXMLDOMParseError_get_srcText( x, p ) \
+        (x)->lpVtbl->get_srcText( x, p )
+    #define IXMLDOMParseError_get_line( x, p ) \
+        (x)->lpVtbl->get_line( x, p )
+    #define IXMLDOMParseError_get_linepos( x, p ) \
+        (x)->lpVtbl->get_linepos( x, p )
+    #define IXMLDOMParseError_get_filepos( x, p ) \
+        (x)->lpVtbl->get_filepos( x, p )
+    #define XMLDOMDocumentEvents_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define XMLDOMDocumentEvents_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define XMLDOMDocumentEvents_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define XMLDOMDocumentEvents_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define XMLDOMDocumentEvents_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define XMLDOMDocumentEvents_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define XMLDOMDocumentEvents_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLHttpRequest_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLHttpRequest_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLHttpRequest_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLHttpRequest_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLHttpRequest_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLHttpRequest_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLHttpRequest_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLHttpRequest_open( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->open( x, p1, p2, p3, p4, p5 )
+    #define IXMLHttpRequest_setRequestHeader( x, p1, p2 ) \
+        (x)->lpVtbl->setRequestHeader( x, p1, p2 )
+    #define IXMLHttpRequest_getResponseHeader( x, p1, p2 ) \
+        (x)->lpVtbl->getResponseHeader( x, p1, p2 )
+    #define IXMLHttpRequest_getAllResponseHeaders( x, p ) \
+        (x)->lpVtbl->getAllResponseHeaders( x, p )
+    #define IXMLHttpRequest_send( x, p ) \
+        (x)->lpVtbl->send( x, p )
+    #define IXMLHttpRequest_abort( x ) \
+        (x)->lpVtbl->abort( x )
+    #define IXMLHttpRequest_get_status( x, p ) \
+        (x)->lpVtbl->get_status( x, p )
+    #define IXMLHttpRequest_get_statusText( x, p ) \
+        (x)->lpVtbl->get_statusText( x, p )
+    #define IXMLHttpRequest_get_responseXML( x, p ) \
+        (x)->lpVtbl->get_responseXML( x, p )
+    #define IXMLHttpRequest_get_responseText( x, p ) \
+        (x)->lpVtbl->get_responseText( x, p )
+    #define IXMLHttpRequest_get_responseBody( x, p ) \
+        (x)->lpVtbl->get_responseBody( x, p )
+    #define IXMLHttpRequest_get_responseStream( x, p ) \
+        (x)->lpVtbl->get_responseStream( x, p )
+    #define IXMLHttpRequest_get_readyState( x, p ) \
+        (x)->lpVtbl->get_readyState( x, p )
+    #define IXMLHttpRequest_put_onreadystatechange( x, p ) \
+        (x)->lpVtbl->put_onreadystatechange( x, p )
+    #define IXMLDSOControl_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDSOControl_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDSOControl_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDSOControl_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDSOControl_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDSOControl_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDSOControl_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDSOControl_get_XMLDocument( x, p ) \
+        (x)->lpVtbl->get_XMLDocument( x, p )
+    #define IXMLDSOControl_put_XMLDocument( x, p ) \
+        (x)->lpVtbl->put_XMLDocument( x, p )
+    #define IXMLDSOControl_get_JavaDSOCompatible( x, p ) \
+        (x)->lpVtbl->get_JavaDSOCompatible( x, p )
+    #define IXMLDSOControl_put_JavaDSOCompatible( x, p ) \
+        (x)->lpVtbl->put_JavaDSOCompatible( x, p )
+    #define IXMLDSOControl_get_readyState( x, p ) \
+        (x)->lpVtbl->get_readyState( x, p )
+    #define IXMLElementCollection_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLElementCollection_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLElementCollection_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLElementCollection_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLElementCollection_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLElementCollection_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLElementCollection_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLElementCollection_put_length( x, p ) \
+        (x)->lpVtbl->put_length( x, p )
+    #define IXMLElementCollection_get_length( x, p ) \
+        (x)->lpVtbl->get_length( x, p )
+    #define IXMLElementCollection_get__newEnum( x, p ) \
+        (x)->lpVtbl->get__newEnum( x, p )
+    #define IXMLElementCollection_item( x, p1, p2, p3 ) \
+        (x)->lpVtbl->item( x, p1, p2, p3 )
+    #define IXMLDocument_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDocument_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDocument_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDocument_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDocument_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDocument_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDocument_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDocument_get_root( x, p ) \
+        (x)->lpVtbl->get_root( x, p )
+    #define IXMLDocument_get_fileSize( x, p ) \
+        (x)->lpVtbl->get_fileSize( x, p )
+    #define IXMLDocument_get_fileModifiedDate( x, p ) \
+        (x)->lpVtbl->get_fileModifiedDate( x, p )
+    #define IXMLDocument_get_fileUpdatedDate( x, p ) \
+        (x)->lpVtbl->get_fileUpdatedDate( x, p )
+    #define IXMLDocument_get_URL( x, p ) \
+        (x)->lpVtbl->get_URL( x, p )
+    #define IXMLDocument_put_URL( x, p ) \
+        (x)->lpVtbl->put_URL( x, p )
+    #define IXMLDocument_get_mimeType( x, p ) \
+        (x)->lpVtbl->get_mimeType( x, p )
+    #define IXMLDocument_get_readyState( x, p ) \
+        (x)->lpVtbl->get_readyState( x, p )
+    #define IXMLDocument_get_charset( x, p ) \
+        (x)->lpVtbl->get_charset( x, p )
+    #define IXMLDocument_put_charset( x, p ) \
+        (x)->lpVtbl->put_charset( x, p )
+    #define IXMLDocument_get_version( x, p ) \
+        (x)->lpVtbl->get_version( x, p )
+    #define IXMLDocument_get_doctype( x, p ) \
+        (x)->lpVtbl->get_doctype( x, p )
+    #define IXMLDocument_get_dtdURL( x, p ) \
+        (x)->lpVtbl->get_dtdURL( x, p )
+    #define IXMLDocument_createElement( x, p1, p2, p3 ) \
+        (x)->lpVtbl->createElement( x, p1, p2, p3 )
+    #define IXMLDocument2_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLDocument2_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLDocument2_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLDocument2_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLDocument2_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLDocument2_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLDocument2_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLDocument2_get_root( x, p ) \
+        (x)->lpVtbl->get_root( x, p )
+    #define IXMLDocument2_get_fileSize( x, p ) \
+        (x)->lpVtbl->get_fileSize( x, p )
+    #define IXMLDocument2_get_fileModifiedDate( x, p ) \
+        (x)->lpVtbl->get_fileModifiedDate( x, p )
+    #define IXMLDocument2_get_fileUpdatedDate( x, p ) \
+        (x)->lpVtbl->get_fileUpdatedDate( x, p )
+    #define IXMLDocument2_get_URL( x, p ) \
+        (x)->lpVtbl->get_URL( x, p )
+    #define IXMLDocument2_put_URL( x, p ) \
+        (x)->lpVtbl->put_URL( x, p )
+    #define IXMLDocument2_get_mimeType( x, p ) \
+        (x)->lpVtbl->get_mimeType( x, p )
+    #define IXMLDocument2_get_readyState( x, p ) \
+        (x)->lpVtbl->get_readyState( x, p )
+    #define IXMLDocument2_get_charset( x, p ) \
+        (x)->lpVtbl->get_charset( x, p )
+    #define IXMLDocument2_put_charset( x, p ) \
+        (x)->lpVtbl->put_charset( x, p )
+    #define IXMLDocument2_get_version( x, p ) \
+        (x)->lpVtbl->get_version( x, p )
+    #define IXMLDocument2_get_doctype( x, p ) \
+        (x)->lpVtbl->get_doctype( x, p )
+    #define IXMLDocument2_get_dtdURL( x, p ) \
+        (x)->lpVtbl->get_dtdURL( x, p )
+    #define IXMLDocument2_createElement( x, p1, p2, p3 ) \
+        (x)->lpVtbl->createElement( x, p1, p2, p3 )
+    #define IXMLElement_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLElement_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLElement_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLElement_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLElement_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLElement_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLElement_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLElement_get_tagName( x, p ) \
+        (x)->lpVtbl->get_tagName( x, p )
+    #define IXMLElement_put_tagName( x, p ) \
+        (x)->lpVtbl->put_tagName( x, p )
+    #define IXMLElement_get_parent( x, p ) \
+        (x)->lpVtbl->get_parent( x, p )
+    #define IXMLElement_setAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->setAttribute( x, p1, p2 )
+    #define IXMLElement_getAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->getAttribute( x, p1, p2 )
+    #define IXMLElement_removeAttribute( x, p ) \
+        (x)->lpVtbl->removeAttribute( x, p )
+    #define IXMLElement_get_children( x, p ) \
+        (x)->lpVtbl->get_children( x, p )
+    #define IXMLElement_get_type( x, p ) \
+        (x)->lpVtbl->get_type( x, p )
+    #define IXMLElement_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLElement_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLElement_addChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->addChild( x, p1, p2, p3 )
+    #define IXMLElement_removeChild( x, p ) \
+        (x)->lpVtbl->removeChild( x, p )
+    #define IXMLElement2_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLElement2_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLElement2_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLElement2_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLElement2_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLElement2_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLElement2_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLElement2_get_tagName( x, p ) \
+        (x)->lpVtbl->get_tagName( x, p )
+    #define IXMLElement2_put_tagName( x, p ) \
+        (x)->lpVtbl->put_tagName( x, p )
+    #define IXMLElement2_get_parent( x, p ) \
+        (x)->lpVtbl->get_parent( x, p )
+    #define IXMLElement2_setAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->setAttribute( x, p1, p2 )
+    #define IXMLElement2_getAttribute( x, p1, p2 ) \
+        (x)->lpVtbl->getAttribute( x, p1, p2 )
+    #define IXMLElement2_removeAttribute( x, p ) \
+        (x)->lpVtbl->removeAttribute( x, p )
+    #define IXMLElement2_get_children( x, p ) \
+        (x)->lpVtbl->get_children( x, p )
+    #define IXMLElement2_get_type( x, p ) \
+        (x)->lpVtbl->get_type( x, p )
+    #define IXMLElement2_get_text( x, p ) \
+        (x)->lpVtbl->get_text( x, p )
+    #define IXMLElement2_put_text( x, p ) \
+        (x)->lpVtbl->put_text( x, p )
+    #define IXMLElement2_addChild( x, p1, p2, p3 ) \
+        (x)->lpVtbl->addChild( x, p1, p2, p3 )
+    #define IXMLElement2_removeChild( x, p ) \
+        (x)->lpVtbl->removeChild( x, p )
+    #define IXMLElement2_get_attributes( x, p ) \
+        (x)->lpVtbl->get_attributes( x, p )
+    #define IXMLAttribute_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLAttribute_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLAttribute_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLAttribute_GetTypeInfoCount( x, p ) \
+        (x)->lpVtbl->GetTypeInfoCount( x, p )
+    #define IXMLAttribute_GetTypeInfo( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetTypeInfo( x, p1, p2, p3 )
+    #define IXMLAttribute_GetIDsOfNames( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->GetIDsOfNames( x, p1, p2, p3, p4, p5 )
+    #define IXMLAttribute_Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 ) \
+        (x)->lpVtbl->Invoke( x, p1, p2, p3, p4, p5, p6, p7, p8 )
+    #define IXMLAttribute_get_name( x, p ) \
+        (x)->lpVtbl->get_name( x, p )
+    #define IXMLAttribute_get_value( x, p ) \
+        (x)->lpVtbl->get_value( x, p )
+    #define IXMLError_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IXMLError_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IXMLError_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IXMLError_GetErrorInfo( x, p ) \
+        (x)->lpVtbl->GetErrorInfo( x, p )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __msxml_h__ */

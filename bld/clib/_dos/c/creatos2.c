@@ -44,11 +44,12 @@
 
 _WCRTLINK unsigned _dos_creat( const char *name, unsigned attribute, int *handle )
 {
-    OS_UINT error, actiontaken;
+    APIRET  rc;
+    OS_UINT actiontaken;
     HFILE   fhandle;
 
     while( *name == ' ' ) ++name;
-    error = DosOpen( (PSZ)name,
+    rc = DosOpen( (PSZ)name,
                      &fhandle,
                      &actiontaken,
                      0ul,
@@ -57,9 +58,8 @@ _WCRTLINK unsigned _dos_creat( const char *name, unsigned attribute, int *handle
                      OPENFLAG_CREATE_IF_NOT_EXISTS,
                      OPENMODE_ACCESS_RDWR | OPENMODE_DENY_NONE,
                      0ul );
-    if( error ) {
-        __set_errno_dos( error );
-        return( error );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
     *handle = fhandle;
     __SetIOMode( fhandle, _READ | _WRITE );

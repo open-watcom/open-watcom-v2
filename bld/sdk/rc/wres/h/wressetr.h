@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Client routines setup for wres library.
 *
 ****************************************************************************/
 
@@ -45,8 +44,8 @@ struct WResRoutines {                                       /* defaults */
     /* I/O routines */
     WResFileID (*   open) (const char *, int, ...);         /* open */
     int (*          close) (WResFileID);                    /* close */
-    int (*          write) (WResFileID, const void *, size_t); /* write */
-    int (*          read) (WResFileID, void *, size_t);     /* read */
+    ssize_t (*      write) (WResFileID, const void *, size_t); /* write */
+    ssize_t (*      read) (WResFileID, void *, size_t);     /* read */
     off_t (*        seek) (WResFileID, off_t, int );        /* lseek */
     off_t (*        tell) (WResFileID);                     /* tell */
     /* memory routines */

@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD string picker.
 *
 ****************************************************************************/
 
 
-#ifndef _MADSTR_H_INCLUDED
-#define _MADSTR_H_INCLUDED
+#ifndef MADSTR_H_INCLUDED
+#define MADSTR_H_INCLUDED
+
 #undef wdpick
 #define wdpick( r, e, j ) r,
 enum {
@@ -39,4 +39,5 @@ enum {
 MSTR_LAST_ONE
 };
 #undef wdpick
+
 #endif

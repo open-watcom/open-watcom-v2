@@ -21,6 +21,7 @@ BEGIN
         MENUITEM "&PVCS",               IDM_SET_PVCS
         MENUITEM "&WPROJ",              IDM_SET_WPROJ
         MENUITEM "&Generic",            IDM_SET_GENERIC
+        MENUITEM "Per&force",           IDM_SET_PERFORCE
     END
 END
 

@@ -43,19 +43,19 @@
 /* type definitions                                                         */
 /****************************************************************************/
 enum {
-    VIEW_HASH
-,   LOAD_HASH
-,   WRITE_HASH
+    VIEW_HASH,
+    LOAD_HASH,
+    WRITE_HASH
 };
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeResourceHashTableAction ( WdeResInfo *, int );
-extern Bool WdeFindAndLoadSymbols      ( WdeResInfo * );
-extern Bool WdeWriteSymbols            ( WdeHashTable *, char **, Bool );
-extern Bool WdeDeleteDLGInclude        ( WdeResInfo *rinfo );
-extern Bool WdeCreateDLGInclude        ( WdeResInfo *rinfo, char *include );
-extern char *WdeCreateSymName          ( char *fname );
+extern Bool WdeResourceHashTableAction( WdeResInfo *, int );
+extern Bool WdeFindAndLoadSymbols( WdeResInfo * );
+extern Bool WdeWriteSymbols( WdeHashTable *, char **, Bool );
+extern Bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
+extern Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
+extern char *WdeCreateSymName( char *fname );
 
 #endif

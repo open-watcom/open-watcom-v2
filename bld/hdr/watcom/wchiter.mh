@@ -6,22 +6,24 @@
 //
 #ifndef _WCHITER_H_INCLUDED
 #define _WCHITER_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wchiter.h is for use with C++
-#endif
+:include cpponly.sp
+
+:include owrtlink.sp
 
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
+
 #ifndef _WCHASH_H_INCLUDED
  #include <wchash.h>
 #endif
-
 
 //
 // The WCHashIterBase is the base class for all hash iterator classes

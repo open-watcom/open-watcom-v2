@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\fft
+.h: $(bench_dir)\fft
+
+extra_cflags = -I$(bench_dir)\fft -I$(bench_dir)\support
+
+obj_files = fft.obj
+
+run: fft.exe .SYMBOLIC
+	fft
+	
+build: fft.exe   
+
+fft.exe : $(obj_files)
+	$(deflink)

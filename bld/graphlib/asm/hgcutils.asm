@@ -32,7 +32,7 @@
 
 include graph.inc
 
-        modstart hgcutils
+        modstart hgcutils,WORD
 
         xdefp   _HercMoveUp_
         xdefp   _HercMoveDown_

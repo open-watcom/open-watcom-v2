@@ -1,0 +1,80 @@
+.387
+.386p
+		EXTRN	a:BYTE
+		EXTRN	b:BYTE
+		EXTRN	cc:BYTE
+		EXTRN	d:BYTE
+		EXTRN	e:BYTE
+		EXTRN	ar:BYTE
+		EXTRN	br:BYTE
+		EXTRN	ccr:BYTE
+		EXTRN	dr:BYTE
+		EXTRN	er:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    lea         bx,DGROUP:a
+    lea         bx,DGROUP:b
+    lea         bx,DGROUP:cc
+    lea         cx,DGROUP:d
+    lea         cx,DGROUP:e
+    lea         ebx,DGROUP:a
+    lea         ebx,DGROUP:b
+    lea         ebx,DGROUP:cc
+    lea         ecx,DGROUP:d
+    lea         ecx,DGROUP:e
+    lea         bx,DGROUP:ar
+    lea         bx,DGROUP:br
+    lea         bx,DGROUP:ccr
+    lea         cx,DGROUP:dr
+    lea         cx,DGROUP:er
+    lea         ebx,DGROUP:ar
+    lea         ebx,DGROUP:br
+    lea         ebx,DGROUP:ccr
+    lea         ecx,DGROUP:dr
+    lea         ecx,DGROUP:er
+    lea         bx,DGROUP:L$2
+    lea         bx,DGROUP:L$3
+    lea         bx,DGROUP:L$4
+    lea         cx,DGROUP:L$5
+    lea         cx,DGROUP:L$6
+    lea         ebx,DGROUP:L$2
+    lea         ebx,DGROUP:L$3
+    lea         ebx,DGROUP:L$4
+    lea         ecx,DGROUP:L$5
+    lea         ecx,DGROUP:L$6
+    lea         ecx,L$1
+    lea         dx,[bx]
+    lea         dx,[ebx]
+    lea         dx,4[bx]
+    lea         dx,4[ebx]
+    lea         dx,4[bx]
+    lea         dx,4[ebx]
+    lea         dx,4[bx]
+    lea         dx,4[ebx]
+    lea         dx,4[bx]
+    lea         dx,4[ebx]
+    lea         edx,4[bx]
+    lea         edx,4[ebx]
+    lea         edx,4[bx]
+    lea         edx,4[ebx]
+    lea         edx,4[bx]
+    lea         edx,4[ebx]
+    ret         
+L$1:
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+L$2:
+    DB	0, 0, 0, 0, 0, 0
+L$3:
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+L$4:
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0
+L$5:
+    DB	0, 0, 0, 0
+L$6:
+    DB	0
+
+_DATA		ENDS
+		END

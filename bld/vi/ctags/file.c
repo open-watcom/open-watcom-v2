@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include "ctags.h"
-#include "misc.h"
+//#include "misc.h"
 
 #define VBUFF_SIZE      4096
 
@@ -41,7 +41,7 @@ static long     currentLineNumber;
 static long     currentLinePos;
 static FILE     *inputFile;
 static char     *fileName;
-static char     lineBuffer[MAX_LINE+2];
+static char     lineBuffer[MAX_LINE + 2];
 
 /*
  * StartFile - start a new file
@@ -50,7 +50,7 @@ void StartFile( char *fname )
 {
     inputFile = fopen( fname, "r" );
     if( inputFile == NULL ) {
-        Die( "Could not open file %s\n", fname );
+        ErrorMsgExit( "Could not open file %s\n", fname );
     }
     setvbuf( inputFile, vBuff, _IOFBF, VBUFF_SIZE );
     currentLineNumber = 1L;
@@ -82,6 +82,7 @@ void NewFileLine( void )
 } /* NewFileLine */
 
 static char prevChar;
+
 /*
  * GetChar - get a char from the input file
  */
@@ -114,7 +115,7 @@ void RecordCurrentLineData( void )
     long        curr_pos;
     char        *ptr;
     int         cnt;
-    bool        done=FALSE;
+    bool        done = FALSE;
     int         ch;
 
     curr_pos = ftell( inputFile );
@@ -130,7 +131,7 @@ void RecordCurrentLineData( void )
             done = TRUE;
             break;
         case '/':
-            if( cnt == MAX_LINE-2 ) {
+            if( cnt == MAX_LINE - 2 ) {
                 done = TRUE;
                 break;
             }
@@ -139,7 +140,7 @@ void RecordCurrentLineData( void )
             cnt++;
             break;
         case '\\':
-            if( cnt == MAX_LINE-2 ) {
+            if( cnt == MAX_LINE - 2 ) {
                 done = TRUE;
                 break;
             }
@@ -155,7 +156,7 @@ void RecordCurrentLineData( void )
             *ptr++ = ch;
         }
         cnt++;
-        if( cnt >= MAX_LINE-1 ) {
+        if( cnt >= MAX_LINE - 1 ) {
             done = TRUE;
         }
     }
@@ -187,7 +188,6 @@ char *GetCurrentFileName( void )
  */
 bool GetString( char *buff, int maxbuff )
 {
-
     currentLineNumber++;
     currentLinePos = ftell( inputFile );
     if( fgets( buff, maxbuff, inputFile ) == NULL ) {

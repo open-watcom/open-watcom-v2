@@ -11,21 +11,21 @@
 char     FrameClass[32]="FrameClass";
 char     IconClass[32]="IconClass";
 
-LONG _EXPORT FAR PASCAL FrameProc( HWND, unsigned, UINT, LONG );
-LONG _EXPORT FAR PASCAL MdiIconProc( HWND, unsigned, UINT, LONG );
-static BOOL InitApplication( HANDLE );
+LONG _EXPORT FAR PASCAL FrameProc( HWND, UINT, WPARAM, LPARAM );
+LONG _EXPORT FAR PASCAL MdiIconProc( HWND, UINT, WPARAM, LPARAM );
+static BOOL InitApplication( HINSTANCE );
 static BOOL InitInstance( int );
 static void DoCmdLine( LPSTR cmdline );
 
 HWND            FrameWindow;    /* The classic MDI frame window     */
 HWND            ClientWindow;   /* And the client window attached   */
-HANDLE          Instance;       /* Convenient to have handy         */
+HINSTANCE       Instance;       /* Convenient to have handy         */
 
 /*
  * WinMain - initialization, parsing of the command line, message loop
  */
 
-int PASCAL WinMain( HANDLE hinst, HANDLE prev_inst, LPSTR cmdline, int cmdshow )
+int PASCAL WinMain( HINSTANCE hinst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
 
@@ -43,7 +43,7 @@ int PASCAL WinMain( HANDLE hinst, HANDLE prev_inst, LPSTR cmdline, int cmdshow )
 
     DoCmdLine( cmdline );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, (HWND)0, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
@@ -69,7 +69,11 @@ static void DoCmdLine( LPSTR cmdline )
     HWND        hwnd;
     FILE        *fp;
 
+#ifdef _M_I86
     _fstrcpy( command, cmdline );
+#else
+    strcpy( command, cmdline );
+#endif
     for( p = command; *p; p++ ) {
         if( !isspace( *p ) ) {
             if( *p == '-' || *p == '/' ) {
@@ -115,7 +119,7 @@ static void DoCmdLine( LPSTR cmdline )
  * InitApplication - register the frame and mdi child window classes
  */
 
-static BOOL InitApplication( HANDLE inst )
+static BOOL InitApplication( HINSTANCE inst )
 {
     WNDCLASS    wc;
     BOOL        ret_code;
@@ -130,7 +134,7 @@ static BOOL InitApplication( HANDLE inst )
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
     wc.hIcon = LoadIcon( inst, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hCursor = LoadCursor( (HINSTANCE)0, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) ( COLOR_APPWORKSPACE + 1 );
     wc.lpszMenuName = "IconMenu";
     wc.lpszClassName = FrameClass;
@@ -164,14 +168,14 @@ static BOOL InitInstance( int cmdshow )
      */
     FrameWindow = CreateWindow(
         FrameClass,             /* class */
-        "WATCOM Icon Viewer",   /* caption */
+        "Open Watcom Icon Viewer",   /* caption */
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
         CW_USEDEFAULT,          /* init. x size */
         CW_USEDEFAULT,          /* init. y size */
-        NULL,                   /* parent window */
-        NULL,                   /* menu handle */
+        (HWND)0,                /* parent window */
+        (HMENU)0,               /* menu handle */
         Instance,               /* program handle */
         NULL                    /* create parms */
         );
@@ -192,7 +196,7 @@ static BOOL InitInstance( int cmdshow )
  * AboutProc - processes messages for the about dialogue.
  */
 BOOL _EXPORT FAR PASCAL AboutProc( HWND hwnd, UINT msg,
-                                                UINT wparam, LONG lparam )
+                                                WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;                    /* turn off warning */
 
@@ -218,7 +222,7 @@ BOOL _EXPORT FAR PASCAL AboutProc( HWND hwnd, UINT msg,
  */
 
 LONG _EXPORT FAR PASCAL FrameProc( HWND hwnd, UINT msg,
-                                    UINT wparam, LONG lparam )
+                                    WPARAM wparam, LPARAM lparam )
 {
     CLIENTCREATESTRUCT      ccs;
     FARPROC                 proc;
@@ -256,8 +260,8 @@ LONG _EXPORT FAR PASCAL FrameProc( HWND hwnd, UINT msg,
             DestroyWindow( hwnd );
             break;
         case IDM_ABOUT:
-            proc = MakeProcInstance( AboutProc, Instance );
-            DialogBox( Instance, "AboutBox", hwnd, proc );
+            proc = MakeProcInstance( (FARPROC)AboutProc, Instance );
+            DialogBox( Instance, "AboutBox", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         case IDM_TILE:

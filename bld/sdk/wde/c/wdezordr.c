@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "fmedit.def"
 
@@ -57,14 +57,14 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WdeReorderObjectWindows  ( LIST * );
-static Bool     WdeFindObjectsInRect     ( RECT *, LIST **, LIST *);
+static Bool     WdeReorderObjectWindows( LIST * );
+static Bool     WdeFindObjectsInRect( RECT *, LIST **, LIST * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-void WdeSOP ( OBJPTR obj, OBJPTR parent )
+void WdeSOP( OBJPTR obj, OBJPTR parent )
 {
     LIST       *ilist, *tlist, *clist;
     WdeResInfo *info;
@@ -74,87 +74,86 @@ void WdeSOP ( OBJPTR obj, OBJPTR parent )
     Bool        clear;
     POINT       origin;
 
-    info = WdeGetCurrentRes ();
-    if ( !info ) {
+    info = WdeGetCurrentRes();
+    if( info == NULL ) {
         return;
     }
-    GetClientRect ( info->edit_win, &orect );
+    GetClientRect( info->edit_win, &orect );
 
-    GetOffset ( &origin );
-    OffsetRect ( &orect, origin.x, origin.y );
+    GetOffset( &origin );
+    OffsetRect( &orect, origin.x, origin.y );
 
-    if ( !parent ) {
-        GetObjectParent ( obj, &parent );
-        if ( !parent ) {
+    if( parent == NULL ) {
+        GetObjectParent( obj, &parent );
+        if( parent == NULL ) {
             return;
         }
     }
 
-    Forward ( parent, GET_SUBOBJ_LIST, &tlist, NULL );
+    Forward( parent, GET_SUBOBJ_LIST, &tlist, NULL );
 
-    if ( tlist && WdeFindObjectsInRect ( &orect, &ilist, tlist ) && ilist ) {
+    if( tlist != NULL && WdeFindObjectsInRect( &orect, &ilist, tlist ) && ilist != NULL ) {
         clist = NULL;
         tlist = NULL;
-        for ( ; ilist; ilist = ListConsume ( ilist ) ) {
-            sib = ListElement ( ilist );
-            if ( ( Forward ( sib, IS_OBJECT_CLEAR, &clear, NULL ) && clear ) ||
-                 ( Forward ( sib, IDENTIFY, &id, NULL ) &&
-                   ( id == DIALOG_OBJ ) ) ) {
-                WdeInsertObject ( &clist, sib );
+        for( ; ilist != NULL; ilist = ListConsume( ilist ) ) {
+            sib = ListElement( ilist );
+            if( (Forward( sib, IS_OBJECT_CLEAR, &clear, NULL ) && clear) ||
+                (Forward( sib, IDENTIFY, &id, NULL ) && id == DIALOG_OBJ) ) {
+                WdeInsertObject( &clist, sib );
             } else {
-                WdeInsertObject ( &tlist, sib );
+                WdeInsertObject( &tlist, sib );
             }
         }
-        if ( clist ) {
-            WdeListConcat ( &tlist, clist, 0 );
-            ListFree ( clist );
+        if( clist != NULL ) {
+            WdeListConcat( &tlist, clist, 0 );
+            ListFree( clist );
         }
-        if ( tlist ) {
-            WdeReorderObjectWindows ( tlist );
-            ListFree ( tlist );
+        if( tlist != NULL ) {
+            WdeReorderObjectWindows( tlist );
+            ListFree( tlist );
         }
     }
 }
 
-Bool WdeReorderObjectWindows ( LIST *l )
+Bool WdeReorderObjectWindows( LIST *l )
 {
-    LIST   *o;
+    LIST    *o;
     OBJPTR  child;
     HWND    win;
     HWND    last_win;
     HDWP    h;
     int     count;
 
-    if ( !l ) {
-        return ( FALSE );
+    if( l == NULL ) {
+        return( FALSE );
     }
 
-    count = ListCount ( l );
+    count = ListCount( l );
 
-    h = BeginDeferWindowPos ( count );
+    h = BeginDeferWindowPos( count );
 
-    if ( h == NULL ) {
-        return ( FALSE );
+    if( h == NULL ) {
+        return( FALSE );
     }
 
     last_win = HWND_TOP;
-    for ( o=l; o; o=ListNext(o) ) {
-        child = ListElement (o);
-        Forward ( child, GET_WINDOW_HANDLE, &win, NULL );
-        if ( win != NULL ) {
-            h = DeferWindowPos ( h, win, last_win, 0,0,0,0,
-                                 SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE );
-            if ( h == NULL ) {
-                return ( FALSE );
+    for( o = l; o != NULL; o = ListNext( o ) ) {
+        child = ListElement( o );
+        Forward( child, GET_WINDOW_HANDLE, &win, NULL );
+        if( win != NULL ) {
+            h = DeferWindowPos( h, win, last_win, 0, 0, 0, 0,
+                                SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE );
+            if( h == NULL ) {
+                return( FALSE );
             }
             last_win = win;
         }
     }
 
-    return ( EndDeferWindowPos ( h ) );
+    return( EndDeferWindowPos( h ) );
 }
 
-Bool WdeFindObjectsInRect ( RECT *r, LIST **obj_list, LIST *olist)
+Bool WdeFindObjectsInRect( RECT *r, LIST **obj_list, LIST *olist )
 {
     OBJPTR   child;
     RECT     child_rect;
@@ -170,6 +169,5 @@ Bool WdeFindObjectsInRect ( RECT *r, LIST **obj_list, LIST *olist)
         }
     }
 
-    return (*obj_list != NULL);
+    return( *obj_list != NULL );
 }
-

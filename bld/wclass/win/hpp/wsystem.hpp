@@ -39,7 +39,7 @@
 #include "wsyshelp.hpp"
 #include "wstates.hpp"
 
-typedef HANDLE  WModuleHandle;
+typedef HINSTANCE  WModuleHandle;
 typedef FARPROC WProcAddr;
 
 WCLASS WSystemService : public WSystemHelp {

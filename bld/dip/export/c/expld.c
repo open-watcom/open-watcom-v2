@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Export DIP Loading/unloading of symbolic information.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "exp.h"
 #include "exedos.h"
 #include "exeos2.h"
@@ -42,9 +41,13 @@
 #include "exenov.h"
 #include "exeelf.h"
 
-/*
-        Loading/unloading symbolic information.
-*/
+#if defined( __WATCOMC__ ) && defined( __386__ )
+
+/* WD looks for this symbol to determine module bitness */
+int __nullarea;
+#pragma aux __nullarea "*";
+
+#endif
 
 typedef union {
         dos_exe_header  mz;
@@ -58,7 +61,7 @@ static struct {
     unsigned long       fpos;
     unsigned            len;
     unsigned            off;
-    unsigned_8          data[128];
+    unsigned_8          data[256];
 } Buff;
 
 unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
@@ -93,7 +96,7 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
     unsigned    want;
 
     if( s > sizeof( Buff.data ) ) {
-        Buff.fpos = DCSeek( h, (int)Buff.off - (int)Buff.len, DIG_CUR );
+        Buff.fpos = DCSeek( h, (int)Buff.fpos + (int)Buff.off - (int)Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
         if( Buff.fpos == -1UL ) return( 0 );
@@ -511,7 +514,7 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
         /* Assuming a single name is < NAME_CACHE_SIZE */
         off = 0;
     }
-    return( &exp->name_cache[ off ] );
+    return( (char *)&exp->name_cache[ off ] );
 }
 
 static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp,
@@ -771,6 +774,45 @@ static dip_status TryNLM( dig_fhandle h, imp_image_handle *ii )
 }
 
 
+static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
+{
+    if( byteswap ) {
+        SWAP_32( elf_sec->sh_name );
+        SWAP_32( elf_sec->sh_type );
+        SWAP_32( elf_sec->sh_flags );
+        SWAP_32( elf_sec->sh_addr );
+        SWAP_32( elf_sec->sh_offset );
+        SWAP_32( elf_sec->sh_size );
+        SWAP_32( elf_sec->sh_link );
+        SWAP_32( elf_sec->sh_info );
+        SWAP_32( elf_sec->sh_addralign );
+        SWAP_32( elf_sec->sh_entsize );
+    }
+}
+
+static void ByteSwapPhdr( Elf32_Phdr *elf_ph, int byteswap )
+{
+    if( byteswap ) {
+        SWAP_32( elf_ph->p_type );
+        SWAP_32( elf_ph->p_offset );
+        SWAP_32( elf_ph->p_vaddr );
+        SWAP_32( elf_ph->p_paddr );
+        SWAP_32( elf_ph->p_filesz );
+        SWAP_32( elf_ph->p_memsz );
+        SWAP_32( elf_ph->p_flags );
+        SWAP_32( elf_ph->p_align );
+    }
+}
+
+static void ByteSwapSym( Elf32_Sym *elf_sym, int byteswap ){
+    if( byteswap ) {
+        SWAP_32( elf_sym->st_name );
+        SWAP_32( elf_sym->st_value );
+        SWAP_32( elf_sym->st_size );
+        SWAP_32( elf_sym->st_shndx );
+    }
+}
+
 static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
 {
     Elf32_Ehdr          head;
@@ -789,6 +831,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     Elf32_Shdr          *strtab;
     Elf32_Sym           sym;
     unsigned            tab_type;
+    int                 byte_swap;
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
     case (unsigned)-1:
@@ -801,6 +844,33 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     if( memcmp(head.e_ident,ELF_SIGNATURE,ELF_SIGNATURE_LEN) != 0 ) {
         return( DS_FAIL );
     }
+    if( head.e_ident[EI_CLASS] == ELFCLASS64 ) {
+        // no support yet
+        return( DS_FAIL );
+    }
+
+    byte_swap = 0;
+#ifdef __BIG_ENDIAN__
+    if( head.e_ident[EI_DATA] == ELFDATA2LSB ) {
+#else
+    if( head.e_ident[EI_DATA] == ELFDATA2MSB ) {
+#endif
+        byte_swap = 1;
+        SWAP_16( head.e_type );
+        SWAP_16( head.e_machine );
+        SWAP_32( head.e_version );
+        SWAP_32( head.e_entry );
+        SWAP_32( head.e_phoff );
+        SWAP_32( head.e_shoff );
+        SWAP_32( head.e_flags );
+        SWAP_16( head.e_ehsize );
+        SWAP_16( head.e_phentsize );
+        SWAP_16( head.e_phnum );
+        SWAP_16( head.e_shentsize );
+        SWAP_16( head.e_shnum );
+        SWAP_16( head.e_shstrndx );
+    }
+
     if( head.e_phoff == 0 || head.e_shoff == 0 ) {
         return( DS_FAIL );
     }
@@ -814,6 +884,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
         if( BRead( h, &phe, sizeof( phe ) ) != sizeof( phe ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
+        ByteSwapPhdr( &phe, byte_swap );
         if( phe.p_type == PT_LOAD ) {
             if( phe.p_flags & PF_X ) {
                 code = 1;
@@ -837,6 +908,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
         if( BRead( h, &sect[i], sizeof( sect[i] ) ) != sizeof( sect[i] ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
+        ByteSwapShdr( &sect[i], byte_swap );
         off += head.e_shentsize;
     }
 
@@ -890,6 +962,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
                     DCFree( strings );
                     return( DS_ERR|DS_FREAD_FAILED );
                 }
+                ByteSwapSym( &sym, byte_swap );
                 name = &strings[sym.st_name];
                 len = strlen( name );
                 ds = DS_OK;
@@ -902,13 +975,13 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
                     break;
                 case STT_NOTYPE:
                 case STT_OBJECT:
-                    if( sym.st_shndx > SHN_UNDEF && sym.st_shndx < head.e_shnum ) {
+                    if( sym.st_shndx < head.e_shnum ) {
                         ds = AddSymbol( ii, MAP_FLAT_DATA_SELECTOR, sym.st_value,
                                             len, name );
                     }
                     break;
                 case STT_FUNC:
-                    if( sym.st_shndx > SHN_UNDEF && sym.st_shndx < head.e_shnum ) {
+                    if( sym.st_shndx < head.e_shnum ) {
                         ds = AddSymbol( ii, MAP_FLAT_CODE_SELECTOR, sym.st_value,
                                             len, name );
                     }
@@ -935,8 +1008,8 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
 
         ds = AddName( ii, sizeof( unknown ) - 1, unknown );
         if( ds != DS_OK ) return( ds );
-        name = &unknown[sizeof( unknown )-1];
-        while( ++*name <= '9' ) {
+        name = &unknown[sizeof( unknown ) - 2];
+        while( ++*name == ('9' + 1) ) {
             *name = '0';
             --name;
         }

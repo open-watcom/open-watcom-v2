@@ -9,7 +9,7 @@
 profile_etp = 1
 extra_c_flags_nt = -etp
 !define $(proj_name)_nosymfile 1
-profile_etp_libs_nt =  $(lang_root)\lib386\nt\clbrpdll,
-profile_etp_libs_nt += $(lang_root)\lib386\nt\mthrpdll,
-profile_etp_libs_nt += $(lang_root)\lib386\nt\plbrpdll
+profile_etp_libs_nt =  $(lang_root)\lib386\nt\clbrdllp,
+profile_etp_libs_nt += $(lang_root)\lib386\nt\mthrdllp,
+profile_etp_libs_nt += $(lang_root)\lib386\nt\plbrdllp
 !endif

@@ -51,7 +51,7 @@ typedef struct WStringBlock {
     uint_16             blocknum;
     uint_16             MemFlags;
     StringTableBlock    block;
-    char                *symbol[ STRTABLE_STRS_PER_BLOCK ];
+    char                *symbol[STRTABLE_STRS_PER_BLOCK];
     struct WStringBlock *next;
     struct WStringBlock *prev;
 } WStringBlock;
@@ -70,7 +70,7 @@ typedef struct WStringEditInfo {
     int                 current_pos;
     HWND                win;
     HWND                edit_dlg;
-    wstatbar            *wsb;
+    WStatBar            *wsb;
     WToolBar            *ribbon;
     Bool                show_ribbon;
     char                *file_name;
@@ -81,22 +81,23 @@ typedef struct WStringEditInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  WStringEditInfo *WAllocStringEInfo      ( void );
-extern  void            WFreeStringEInfo        ( WStringEditInfo *einfo );
-extern  WStringTable    *WMakeStringTableFromInfo( WStringInfo *info );
-extern  void            WFreeStringNodes        ( WStringInfo *info );
-extern  WStringNode     *WMakeStringNodes       ( WStringTable *tbl );
-extern  Bool            WGetFirstStringInBlock  ( WStringBlock *block, uint_16 * );
-extern  WStringBlock    *WGetOrMakeStringBlock  ( WStringTable *tbl, uint_16 blocknum );
-extern  WStringBlock    *WFindStringBlock       ( WStringTable *tbl, uint_16 blocknum );
-extern  Bool            WIsBlockEmpty           ( WStringBlock *block );
-extern  Bool            WRemoveStringBlock      ( WStringTable *tbl, WStringBlock *block );
-extern  int             WFindStringPos          ( WStringTable *tbl, uint_16 string_id );
-extern  void            WFreeStringTableBlocks  ( WStringBlock *block );
-extern  uint_16         WFindLargestStringID    ( WStringTable *tbl );
+extern WStringEditInfo  *WAllocStringEInfo( void );
+extern void             WFreeStringEInfo( WStringEditInfo *einfo );
+extern WStringTable     *WMakeStringTableFromInfo( WStringInfo *info );
+extern void             WFreeStringNodes( WStringInfo *info );
+extern WStringNode      *WMakeStringNodes( WStringTable *tbl );
+extern Bool             WGetFirstStringInBlock( WStringBlock *block, uint_16 * );
+extern WStringBlock     *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 blocknum );
+extern WStringBlock     *WFindStringBlock( WStringTable *tbl, uint_16 blocknum );
+extern Bool             WIsBlockEmpty( WStringBlock *block );
+extern Bool             WRemoveStringBlock( WStringTable *tbl, WStringBlock *block );
+extern int              WFindStringPos( WStringTable *tbl, uint_16 string_id );
+extern void             WFreeStringTableBlocks( WStringBlock *block );
+extern uint_16          WFindLargestStringID( WStringTable *tbl );
 
 extern Bool WResolveStringTable( WStringEditInfo *einfo );
 extern Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table );
 
 extern Bool WResolveStringTableSymIDs( WStringEditInfo *einfo );
+
 #endif

@@ -1,0 +1,95 @@
+*$noreference
+
+! Error Functions:
+! ----------------
+
+      external FlashWindow
+      external MessageBeep
+      external MessageBox
+
+      integer*2 FlashWindow
+      integer*2 MessageBox
+
+! MessageBox() Flags
+
+      integer MB_OK
+      integer MB_OKCANCEL
+      integer MB_ABORTRETRYIGNORE
+      integer MB_YESNOCANCEL
+      integer MB_YESNO
+      integer MB_RETRYCANCEL
+
+      integer MB_ICONHAND
+      integer MB_ICONQUESTION
+      integer MB_ICONEXCLAMATION
+      integer MB_ICONASTERISK
+
+      integer MB_ICONINFORMATION
+      integer MB_ICONSTOP
+
+      integer MB_DEFBUTTON1
+      integer MB_DEFBUTTON2
+      integer MB_DEFBUTTON3
+
+      integer MB_APPLMODAL
+      integer MB_SYSTEMMODAL
+      integer MB_TASKMODAL
+
+      integer MB_NOFOCUS
+
+      integer MB_TYPEMASK
+      integer MB_ICONMASK
+      integer MB_DEFMASK
+      integer MB_MODEMASK
+      integer MB_MISCMASK
+
+      parameter ( MB_OK               = '0000'x )
+      parameter ( MB_OKCANCEL         = '0001'x )
+      parameter ( MB_ABORTRETRYIGNORE = '0002'x )
+      parameter ( MB_YESNOCANCEL      = '0003'x )
+      parameter ( MB_YESNO            = '0004'x )
+      parameter ( MB_RETRYCANCEL      = '0005'x )
+
+      parameter ( MB_ICONHAND         = '0010'x )
+      parameter ( MB_ICONQUESTION     = '0020'x )
+      parameter ( MB_ICONEXCLAMATION  = '0030'x )
+      parameter ( MB_ICONASTERISK     = '0040'x )
+
+      parameter ( MB_ICONINFORMATION  = MB_ICONASTERISK )
+      parameter ( MB_ICONSTOP         = MB_ICONHAND )
+
+      parameter ( MB_DEFBUTTON1       = '0000'x )
+      parameter ( MB_DEFBUTTON2       = '0100'x )
+      parameter ( MB_DEFBUTTON3       = '0200'x )
+
+      parameter ( MB_APPLMODAL        = '0000'x )
+      parameter ( MB_SYSTEMMODAL      = '1000'x )
+      parameter ( MB_TASKMODAL        = '2000'x )
+
+      parameter ( MB_NOFOCUS          = '8000'x )
+
+      parameter ( MB_TYPEMASK         = '000F'x )
+      parameter ( MB_ICONMASK         = '00F0'x )
+      parameter ( MB_DEFMASK          = '0F00'x )
+      parameter ( MB_MODEMASK         = '3000'x )
+      parameter ( MB_MISCMASK         = 'C000'x )
+
+! MessageBox() return codes
+
+      integer IDOK
+      integer IDCANCEL
+      integer IDABORT
+      integer IDRETRY
+      integer IDIGNORE
+      integer IDYES
+      integer IDNO
+
+      parameter ( IDOK                = 1 ) ! OK button pressed
+      parameter ( IDCANCEL            = 2 ) ! Cancel button pressed
+      parameter ( IDABORT             = 3 ) ! Abort button pressed
+      parameter ( IDRETRY             = 4 ) ! Retry button pressed
+      parameter ( IDIGNORE            = 5 ) ! Ignore button pressed
+      parameter ( IDYES               = 6 ) ! Yes button pressed
+      parameter ( IDNO                = 7 ) ! No button pressed
+
+*$reference

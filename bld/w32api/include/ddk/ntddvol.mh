@@ -1,0 +1,284 @@
+/*
+ *  ntddvol.h   Volume device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDDVOL_
+#define _NTDDVOL_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#ifndef IOCTL_VOLUME_BASE
+
+/* Volume device I/O control codes */
+#define IOCTL_VOLUME_BASE   0x00000056L
+#if (NTDDI_VERSION >= 0x05000000)
+    #define IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS \
+        CTL_CODE( IOCTL_VOLUME_BASE, 0, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_ONLINE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 2, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_VOLUME_OFFLINE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 3, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    #define IOCTL_VOLUME_IS_CLUSTERED \
+        CTL_CODE( IOCTL_VOLUME_BASE, 12, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_GET_GPT_ATTRIBUTES \
+        CTL_CODE( IOCTL_VOLUME_BASE, 14, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#endif
+
+/* Disk extent */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _DISK_EXTENT {
+    ULONG           DiskNumber;
+    LARGE_INTEGER   StartingOffset;
+    LARGE_INTEGER   ExtentLength;
+} DISK_EXTENT;
+typedef DISK_EXTENT *PDISK_EXTENT;
+#endif
+
+/* Volume disk extents */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_DISK_EXTENTS {
+    ULONG       NumberOfDiskExtents;
+    DISK_EXTENT Extents[ANYSIZE_ARRAY];
+} VOLUME_DISK_EXTENTS;
+typedef VOLUME_DISK_EXTENTS *PVOLUME_DISK_EXTENTS;
+#endif
+
+/* Volume get GPT attributes information */
+#if (NTDDI_VERSION >= 0x05010000)
+typedef struct _VOLUME_GET_GPT_ATTRIBUTES_INFORMATION {
+    ULONGLONG   GptAttributes;
+} VOLUME_GET_GPT_ATTRIBUTES_INFORMATION;
+typedef VOLUME_GET_GPT_ATTRIBUTES_INFORMATION   *PVOLUME_GET_GPT_ATTRIBUTES_INFORMATION;
+#endif
+
+#endif /* IOCTL_VOLUME_BASE */
+
+/* Volume device I/O control codes */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define IOCTL_VOLUME_SUPPORTS_ONLINE_OFFLINE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 1, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_IS_OFFLINE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 4, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_IS_IO_CAPABLE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 5, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_QUERY_FAILOVER_SET \
+        CTL_CODE( IOCTL_VOLUME_BASE, 6, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_QUERY_VOLUME_NUMBER \
+        CTL_CODE( IOCTL_VOLUME_BASE, 7, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_LOGICAL_TO_PHYSICAL \
+        CTL_CODE( IOCTL_VOLUME_BASE, 8, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_PHYSICAL_TO_LOGICAL \
+        CTL_CODE( IOCTL_VOLUME_BASE, 9, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    #define IOCTL_VOLUME_IS_PARTITION \
+        CTL_CODE( IOCTL_VOLUME_BASE, 10, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_READ_PLEX \
+        CTL_CODE( IOCTL_VOLUME_BASE, 11, METHOD_OUT_DIRECT, FILE_READ_ACCESS )
+    #define IOCTL_VOLUME_SET_GPT_ATTRIBUTES \
+        CTL_CODE( IOCTL_VOLUME_BASE, 13, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define IOCTL_VOLUME_GET_BC_PROPERTIES \
+        CTL_CODE( IOCTL_VOLUME_BASE, 15, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_VOLUME_ALLOCATE_BC_STREAM \
+        CTL_CODE( IOCTL_VOLUME_BASE, 16, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_VOLUME_FREE_BC_STREAM \
+        CTL_CODE( IOCTL_VOLUME_BASE, 17, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_VOLUME_IS_DYNAMIC \
+        CTL_CODE( IOCTL_VOLUME_BASE, 18, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_PREPARE_FOR_CRITICAL_IO \
+        CTL_CODE( IOCTL_VOLUME_BASE, 19, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+    #define IOCTL_VOLUME_QUERY_ALLOCATION_HINT \
+        CTL_CODE( IOCTL_VOLUME_BASE, 20, METHOD_OUT_DIRECT, FILE_READ_ACCESS )
+    #define IOCTL_VOLUME_UPDATE_PROPERTIES \
+        CTL_CODE( IOCTL_VOLUME_BASE, 21, METHOD_BUFFERED, FILE_ANY_ACCESS )
+    #define IOCTL_VOLUME_QUERY_MINIMUM_SHRINK_SIZE \
+        CTL_CODE( IOCTL_VOLUME_BASE, 22, METHOD_BUFFERED, FILE_READ_ACCESS )
+    #define IOCTL_VOLUME_PREPARE_FOR_SHRINK \
+        CTL_CODE( IOCTL_VOLUME_BASE, 23, METHOD_BUFFERED, FILE_READ_ACCESS | \
+        FILE_WRITE_ACCESS )
+#endif
+
+/* Volume BC version number */
+#if (NTDDI_VERSION >= 0x06000000)
+    #define IOCTL_VOLUME_BC_VERSION 1
+#endif
+
+/* Volume failover set */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_FAILOVER_SET {
+    ULONG   NumberOfDisks;
+    ULONG   DiskNumbers[ANYSIZE_ARRAY];
+} VOLUME_FAILOVER_SET;
+typedef VOLUME_FAILOVER_SET *PVOLUME_FAILOVER_SET;
+#endif
+
+/* Volume number */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_NUMBER {
+    ULONG   VolumeNumber;
+    WCHAR   VolumeManagerName[8];
+} VOLUME_NUMBER;
+typedef VOLUME_NUMBER   *PVOLUME_NUMBER;
+#endif
+
+/* Volume logical offset */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_LOGICAL_OFFSET {
+    LONGLONG    LogicalOffset;
+} VOLUME_LOGICAL_OFFSET;
+typedef VOLUME_LOGICAL_OFFSET   *PVOLUME_LOGICAL_OFFSET;
+#endif
+
+/* Volume physical offset */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_PHYSICAL_OFFSET {
+    ULONG       DiskNumber;
+    LONGLONG    Offset;
+} VOLUME_PHYSICAL_OFFSET;
+typedef VOLUME_PHYSICAL_OFFSET  *PVOLUME_PHYSICAL_OFFSET;
+#endif
+
+/* Volume physical offsets */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _VOLUME_PHYSICAL_OFFSETS {
+    ULONG                   NumberOfPhysicalOffsets;
+    VOLUME_PHYSICAL_OFFSET  PhysicalOffset[ANYSIZE_ARRAY];
+} VOLUME_PHYSICAL_OFFSETS;
+typedef VOLUME_PHYSICAL_OFFSETS *PVOLUME_PHYSICAL_OFFSETS;
+#endif
+
+/* Volume read plex input */
+#if (NTDDI_VERSION >= 0x05010000)
+typedef struct _VOLUME_READ_PLEX_INPUT {
+    LARGE_INTEGER   ByteOffset;
+    ULONG           Length;
+    ULONG           PlexNumber;
+} VOLUME_READ_PLEX_INPUT;
+typedef VOLUME_READ_PLEX_INPUT  *PVOLUME_READ_PLEX_INPUT;
+#endif
+
+/* Volume set GPT attributes information */
+#if (NTDDI_VERSION >= 0x05010000)
+typedef struct _VOLUME_SET_GPT_ATTRIBUTES_INFORMATION {
+    ULONGLONG   GptAttributes;
+    BOOLEAN     RevertOnClose;
+    BOOLEAN     ApplyToAllConnectedVolumes;
+    USHORT      Reserved1;
+    ULONG       Reserved2;
+} VOLUME_SET_GPT_ATTRIBUTES_INFORMATION;
+typedef VOLUME_SET_GPT_ATTRIBUTES_INFORMATION   *PVOLUME_SET_GPT_ATTRIBUTES_INFORMATION;
+#endif
+
+/* Volume get BC properties input */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_GET_BC_PROPERTIES_INPUT {
+    ULONG       Version;
+    ULONG       Reserved1;
+    ULONGLONG   LowestByteOffset;
+    ULONGLONG   HighestByteOffset;
+    ULONG       AccessType;
+    ULONG       AccessMode;
+} VOLUME_GET_BC_PROPERTIES_INPUT;
+typedef VOLUME_GET_BC_PROPERTIES_INPUT  *PVOLUME_GET_BC_PROPERTIES_INPUT;
+#endif
+
+/* Volume get BC properties output */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_GET_BC_PROPERTIES_OUTPUT {
+    ULONG       MaximumRequestsPerPeriod;
+    ULONG       MinimumPeriod;
+    ULONGLONG   MaximumRequestSize;
+    ULONG       EstimatedTimePerRequest;
+    ULONG       NumOutStandingRequests;
+    ULONGLONG   RequestSize;
+} VOLUME_GET_BC_PROPERTIES_OUTPUT;
+typedef VOLUME_GET_BC_PROPERTIES_OUTPUT *PVOLUME_GET_BC_PROPERTIES_OUTPUT;
+#endif
+
+/* Volume allocate BC stream input */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_ALLOCATE_BC_STREAM_INPUT {
+    ULONG       Version;
+    ULONG       RequestsPerPeriod;
+    ULONG       Period;
+    BOOLEAN     RetryFailures;
+    BOOLEAN     Discardable;
+    BOOLEAN     Reserved1[2];
+    ULONGLONG   LowestByteOffset;
+    ULONGLONG   HighestByteOffset;
+    ULONG       AccessType;
+    ULONG       AccessMode;
+} VOLUME_ALLOCATE_BC_STREAM_INPUT;
+typedef VOLUME_ALLOCATE_BC_STREAM_INPUT *PVOLUME_ALLOCATE_BC_STREAM_INPUT;
+#endif
+
+/* Volume allocate BC stream output */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_ALLOCATE_BC_STREAM_OUTPUT {
+    ULONGLONG   RequestSize;
+    ULONG       NumOutStandingRequests;
+} VOLUME_ALLOCATE_BC_STREAM_OUTPUT;
+typedef VOLUME_ALLOCATE_BC_STREAM_OUTPUT    *PVOLUME_ALLOCATE_BC_STREAM_OUTPUT;
+#endif
+
+/* File extent */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _FILE_EXTENT {
+    ULONGLONG   VolumeOffset;
+    ULONGLONG   ExtentLength;
+} FILE_EXTENT;
+typedef FILE_EXTENT *PFILE_EXTENT;
+#endif
+
+/* Volume critical I/O */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_CRITICAL_IO {
+    ULONG       AccessType;
+    ULONG       ExtentsCount;
+    FILE_EXTENT Extents[ANYSIZE_ARRAY];
+} VOLUME_CRITICAL_IO;
+typedef VOLUME_CRITICAL_IO  *PVOLUME_CRITICAL_IO;
+#endif
+
+/* Volume allocation hint input */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_ALLOCATION_HINT_INPUT {
+    ULONG       ClusterSize;
+    ULONG       NumberOfClusters;
+    LONGLONG    StartingClusterNumber;
+} VOLUME_ALLOCATION_HINT_INPUT;
+typedef VOLUME_ALLOCATION_HINT_INPUT    *PVOLUME_ALLOCATION_HINT_INPUT;
+#endif
+
+/* Volume allocation hint output */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_ALLOCATION_HINT_OUTPUT {
+    ULONG   Bitmap[ANYSIZE_ARRAY];
+} VOLUME_ALLOCATION_HINT_OUTPUT;
+typedef VOLUME_ALLOCATION_HINT_OUTPUT   *PVOLUME_ALLOCATION_HINT_OUTPUT;
+#endif
+
+/* Volume shrink information */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct _VOLUME_SHRINK_INFO {
+    ULONGLONG   VolumeSize;
+} VOLUME_SHRINK_INFO;
+typedef VOLUME_SHRINK_INFO  *PVOLUME_SHRINK_INFO;
+#endif
+
+:include cplusepi.sp
+
+#endif /* _NTDDVOL_ */

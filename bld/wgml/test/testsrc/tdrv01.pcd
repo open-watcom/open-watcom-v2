@@ -1,0 +1,90 @@
+:CMT. This device definition is used solely for determining the format
+:CMT. of the resulting .COP file.
+
+
+:CMT. Definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. TDRV01                          testdrv01
+
+:CMT. Corresponding device
+:CMT. definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. TEST01                          test01
+:CMT.
+
+:DRIVER
+   member_name  = 'tdrv01'
+   fill_char    = '.'
+   defined_name = 'testdrv01'
+   rec_spec     = '(t:80)'
+
+:INCLUDE file='drv01.inc'
+
+:FINISH
+   place=end
+   :value
+      %recordbreak()
+      %image("*END FINISH VALUE block*")
+      %recordbreak()
+      %image("Font Number: ") %image(%decimal(%font_number()))
+      %image(" Instance: ") %image(%decimal(%getnumsymbol("fontcount")))
+      %recordbreak()
+      %image("Pages: ") %image(%decimal(%pages()))
+      %image(" Location: ") %image(%decimal(%x_address())) %image(",") %image(%decimal(%y_address())) 
+      %recordbreak()
+   :evalue
+:eFINISH
+
+:NEWLINE
+   advance = 0
+   :value
+      %recordbreak()
+      %image("*NEWLINE block ADVANCE 0*")
+      %recordbreak()
+      %image("Font Number: ") %image(%decimal(%font_number()))
+      %image(" Instance: ") %image(%decimal(%getnumsymbol("fontcount")))
+      %recordbreak()
+      %image("Pages: ") %image(%decimal(%pages())) 
+      %image(" Location: ") %image(%decimal(%x_address())) %image(",") %image(%decimal(%y_address())) 
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+:NEWLINE
+   advance = 1
+   :value
+      %recordbreak()
+      %image("*NEWLINE block ADVANCE 1*")
+      %recordbreak()
+      %image("Font Number: ") %image(%decimal(%font_number()))
+      %image(" Instance: ") %image(%decimal(%getnumsymbol("fontcount")))
+      %image(" Line height: ") %image(%decimal(%line_height())) 
+      %recordbreak()
+      %image("Pages: ") %image(%decimal(%pages())) 
+      %image(" Location: ") %image(%decimal(%x_address())) %image(",") %image(%decimal(%y_address())) 
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+:NEWLINE
+   advance = 2
+   :value
+      %recordbreak()
+      %image("*NEWLINE block ADVANCE 2*")
+      %recordbreak()
+      %image("Font Number: ") %image(%decimal(%font_number()))
+      %image(" Instance: ") %image(%decimal(%getnumsymbol("fontcount")))
+      %image(" Line height: ") %image(%decimal(%line_height())) 
+      %recordbreak()
+      %image("Pages: ") %image(%decimal(%pages())) 
+      %image(" Location: ") %image(%decimal(%x_address())) %image(",") %image(%decimal(%y_address())) 
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+:INCLUDE file='drv02.inc'
+
+:INCLUDE file='drv03.inc'
+
+:eDRIVER.
+

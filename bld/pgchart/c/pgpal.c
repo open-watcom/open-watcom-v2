@@ -34,7 +34,7 @@
 #include "pgvars.h"
 
 
-static char             _DefaultFill[ 16 ][ 8 ] = {
+static unsigned char    _DefaultFill[ 16 ][ 8 ] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa,
@@ -61,7 +61,7 @@ static char             _DefaultPlotchar[ 16 ] = {
 };
 
 
-short _WCI86FAR _CGRAPH _pg_resetpalette( void )
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_resetpalette( void )
 //=========================================
 
 /*  Initializes the global palettetype variable to default values.  */
@@ -106,7 +106,7 @@ short _WCI86FAR _CGRAPH _pg_resetpalette( void )
 Entry( _PG_RESETPALETTE, _pg_resetpalette ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pg_getpalette( paletteentry _WCI86FAR *palette )
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_getpalette( paletteentry _WCI86FAR *palette )
 //=============================================================
 
 /*  Gets the contents of the global palettetype variable "_PGPalette"
@@ -120,7 +120,7 @@ short _WCI86FAR _CGRAPH _pg_getpalette( paletteentry _WCI86FAR *palette )
 Entry( _PG_GETPALETTE, _pg_getpalette ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _pg_setpalette( paletteentry _WCI86FAR *palette )
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_setpalette( paletteentry _WCI86FAR *palette )
 //=============================================================
 
 /*  Sets the contents of the global palettetype variable "_PGPalette"

@@ -42,11 +42,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WMenuHandle    WRegisterEditSession   ( WMenuEditInfo * );
-extern int            WUnRegisterEditSession ( WMenuHandle );
-extern WMenuEditInfo *WGetEditSessionInfo    ( WMenuHandle );
-extern WMenuHandle    WGetEditSessionHandle  ( WMenuEditInfo *info );
-extern int            WIsValidHandle         ( WMenuHandle );
-extern int            WIsMenuDialogMessage   ( MSG *msg, HACCEL acel_table );
+extern WMenuHandle      WRegisterEditSession( WMenuEditInfo * );
+extern int              WUnRegisterEditSession( WMenuHandle );
+extern WMenuEditInfo    *WGetEditSessionInfo( WMenuHandle );
+extern WMenuHandle      WGetEditSessionHandle( WMenuEditInfo *info );
+extern int              WIsValidHandle( WMenuHandle );
+extern int              WIsMenuDialogMessage( MSG *msg, HACCEL acel_table );
 
 #endif

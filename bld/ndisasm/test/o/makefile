@@ -1,1 +1,4 @@
-!include ..\mif\master.mif
+
+target_cpu = test
+
+!include ../mif/master.mif

@@ -60,7 +60,7 @@ class ODirectory {
                      const unsigned_32,
                      const unsigned_32 );
 
-        void Put( ExeMaker& ) const;
+        void Put( ExeMaker& );
 
     private :
 

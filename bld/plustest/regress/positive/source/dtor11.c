@@ -20,7 +20,8 @@ struct CD {
 	CD **head = &ctored;
 	--active;
 	if( active < 0 ) fail(__LINE__);
-	for( CD *p = *head; p != NULL; p = p->next ) {
+        CD *p;
+	for( p = *head; p != NULL; p = p->next ) {
 	    if( p == this ) {
 		*head = p->next;
 		break;

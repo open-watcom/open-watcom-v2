@@ -1,0 +1,380 @@
+*$noreference
+
+*$ifndef __386__
+*$pragma library commdlg
+*$endif
+
+      STRUCTURE /OPENFILENAME/
+          INTEGER   lStructSize
+          INTEGER*2 hwndOwner
+          INTEGER*2 hInstance
+          INTEGER   lpstrFilter
+          INTEGER   lpstrCustomFilter
+          INTEGER   nMaxCustFilter
+          INTEGER   nFilterIndex
+          INTEGER   lpstrFile
+          INTEGER   nMaxFile
+          INTEGER   lpstrFileTitle
+          INTEGER   nMaxFileTitle
+          INTEGER   lpstrInitialDir
+          INTEGER   lpstrTitle
+          INTEGER   Flags
+          INTEGER*2 nFileOffset
+          INTEGER*2 nFileExtension
+          INTEGER   lpstrDefExt
+          INTEGER   lCustData
+          INTEGER   lpfnHook
+          INTEGER   lpTemplateName
+      END STRUCTURE
+
+      EXTERNAL GetOpenFileName
+      EXTERNAL GetSaveFileName
+      EXTERNAL GetFileTitle
+      INTEGER*2 GetOpenFileName
+      INTEGER*2 GetSaveFileName
+      INTEGER*2 GetFileTitle
+
+      INTEGER    OFN_READONLY
+      PARAMETER (OFN_READONLY=                 '1'x)
+      INTEGER    OFN_OVERWRITEPROMPT
+      PARAMETER (OFN_OVERWRITEPROMPT=          '2'x)
+      INTEGER    OFN_HIDEREADONLY
+      PARAMETER (OFN_HIDEREADONLY=             '4'x)
+      INTEGER    OFN_NOCHANGEDIR
+      PARAMETER (OFN_NOCHANGEDIR=              '8'x)
+      INTEGER    OFN_SHOWHELP
+      PARAMETER (OFN_SHOWHELP=                 '10'x)
+      INTEGER    OFN_ENABLEHOOK
+      PARAMETER (OFN_ENABLEHOOK=               '20'x)
+      INTEGER    OFN_ENABLETEMPLATE
+      PARAMETER (OFN_ENABLETEMPLATE=           '40'x)
+      INTEGER    OFN_ENABLETEMPLATEHANDLE
+      PARAMETER (OFN_ENABLETEMPLATEHANDLE=     '80'x)
+      INTEGER    OFN_NOVALIDATE
+      PARAMETER (OFN_NOVALIDATE=               '100'x)
+      INTEGER    OFN_ALLOWMULTISELECT
+      PARAMETER (OFN_ALLOWMULTISELECT=         '200'x)
+      INTEGER    OFN_EXTENSIONDIFFERENT
+      PARAMETER (OFN_EXTENSIONDIFFERENT=       '400'x)
+      INTEGER    OFN_PATHMUSTEXIST
+      PARAMETER (OFN_PATHMUSTEXIST=            '800'x)
+      INTEGER    OFN_FILEMUSTEXIST
+      PARAMETER (OFN_FILEMUSTEXIST=            '1000'x)
+      INTEGER    OFN_CREATEPROMPT
+      PARAMETER (OFN_CREATEPROMPT=             '2000'x)
+      INTEGER    OFN_SHAREAWARE
+      PARAMETER (OFN_SHAREAWARE=               '4000'x)
+      INTEGER    OFN_NOREADONLYRETURN
+      PARAMETER (OFN_NOREADONLYRETURN=         '8000'x)
+      INTEGER    OFN_NOTESTFILECREATE
+      PARAMETER (OFN_NOTESTFILECREATE=         '10000'x)
+
+! Return values for the registered message sent to the hook function
+! when a sharing violation occurs.  OFN_SHAREFALLTHROUGH allows the
+! filename to be accepted, OFN_SHARENOWARN rejects the name but puts
+! up no warning (returned when the app has already put up a warning
+! message), and OFN_SHAREWARN puts up the default warning message
+! for sharing violations.
+!
+! Note:  Undefined return values map to OFN_SHAREWARN, but are
+!        reserved for future use.
+!
+
+      INTEGER    OFN_SHAREFALLTHROUGH
+      PARAMETER (OFN_SHAREFALLTHROUGH=     2)
+      INTEGER    OFN_SHARENOWARN
+      PARAMETER (OFN_SHARENOWARN=          1)
+      INTEGER    OFN_SHAREWARN
+      PARAMETER (OFN_SHAREWARN=            0)
+
+      STRUCTURE /CHOOSECOLOR/
+          INTEGER   lStructSize
+          INTEGER*2 hwndOwner
+          INTEGER*2 hInstance
+          INTEGER   rgbResult
+          INTEGER   lpCustColors
+          INTEGER   Flags
+          INTEGER   lCustData
+          INTEGER   lpfnHook
+          INTEGER   lpTemplateName
+      END STRUCTURE
+
+      EXTERNAL ChooseColor
+      INTEGER*2 ChooseColor
+
+      INTEGER    CC_RGBINIT
+      PARAMETER (CC_RGBINIT=               '1'x)
+      INTEGER    CC_FULLOPEN
+      PARAMETER (CC_FULLOPEN=              '2'x)
+      INTEGER    CC_PREVENTFULLOPEN
+      PARAMETER (CC_PREVENTFULLOPEN=       '4'x)
+      INTEGER    CC_SHOWHELP
+      PARAMETER (CC_SHOWHELP=              '8'x)
+      INTEGER    CC_ENABLEHOOK
+      PARAMETER (CC_ENABLEHOOK=            '10'x)
+      INTEGER    CC_ENABLETEMPLATE
+      PARAMETER (CC_ENABLETEMPLATE=        '20'x)
+      INTEGER    CC_ENABLETEMPLATEHANDLE
+      PARAMETER (CC_ENABLETEMPLATEHANDLE=  '40'x)
+
+      STRUCTURE /FINDREPLACE/
+          INTEGER   lStructSize          ! size of this struct 0x20
+          INTEGER*2 hwndOwner            ! handle to owner's window
+          INTEGER*2 hInstance            ! instance handle of.EXE that
+                                         ! contains cust. dlg. template
+          INTEGER   Flags                ! one or more of the FR_??
+          INTEGER   lpstrFindWhat        ! ptr. to search string
+          INTEGER   lpstrReplaceWith     ! ptr. to replace string
+          INTEGER*2 wFindWhatLen         ! size of find buffer
+          INTEGER*2 wReplaceWithLen      ! size of replace buffer
+          INTEGER   lCustData            ! data passed to hook fn.
+          INTEGER   lpfnHook             ! ptr. to hook fn. or NULL
+          INTEGER   lpTemplateName       ! custom template name
+      END STRUCTURE
+
+      INTEGER    FR_DOWN
+      PARAMETER (FR_DOWN=                          '1'x)
+      INTEGER    FR_WHOLEWORD
+      PARAMETER (FR_WHOLEWORD=                     '2'x)
+      INTEGER    FR_MATCHCASE
+      PARAMETER (FR_MATCHCASE=                     '4'x)
+      INTEGER    FR_FINDNEXT
+      PARAMETER (FR_FINDNEXT=                      '8'x)
+      INTEGER    FR_REPLACE
+      PARAMETER (FR_REPLACE=                       '10'x)
+      INTEGER    FR_REPLACEALL
+      PARAMETER (FR_REPLACEALL=                    '20'x)
+      INTEGER    FR_DIALOGTERM
+      PARAMETER (FR_DIALOGTERM=                    '40'x)
+      INTEGER    FR_SHOWHELP
+      PARAMETER (FR_SHOWHELP=                      '80'x)
+      INTEGER    FR_ENABLEHOOK
+      PARAMETER (FR_ENABLEHOOK=                    '100'x)
+      INTEGER    FR_ENABLETEMPLATE
+      PARAMETER (FR_ENABLETEMPLATE=                '200'x)
+      INTEGER    FR_NOUPDOWN
+      PARAMETER (FR_NOUPDOWN=                      '400'x)
+      INTEGER    FR_NOMATCHCASE
+      PARAMETER (FR_NOMATCHCASE=                   '800'x)
+      INTEGER    FR_NOWHOLEWORD
+      PARAMETER (FR_NOWHOLEWORD=                   '1000'x)
+      INTEGER    FR_ENABLETEMPLATEHANDLE
+      PARAMETER (FR_ENABLETEMPLATEHANDLE=          '2000'x)
+      INTEGER    FR_HIDEUPDOWN
+      PARAMETER (FR_HIDEUPDOWN=                    '4000'x)
+      INTEGER    FR_HIDEMATCHCASE
+      PARAMETER (FR_HIDEMATCHCASE=                 '8000'x)
+      INTEGER    FR_HIDEWHOLEWORD
+      PARAMETER (FR_HIDEWHOLEWORD=                 '10000'x)
+
+      integer*2 FindText
+      integer*2 ReplaceText
+
+      STRUCTURE /CHOOSEFONT/
+          INTEGER   lStructSize        !
+          INTEGER*2 hwndOwner          ! caller's window handle
+          INTEGER*2 hDC                ! printer DC/IC or NULL
+          INTEGER   lpLogFont          ! ptr. to a LOGFONT struct
+          INTEGER*2 iPointSize         ! 10 * size in points of selected font
+          INTEGER   Flags              ! enum. type flags
+          INTEGER   rgbColors          ! returned text color
+          INTEGER   lCustData          ! data passed to hook fn.
+          INTEGER   lpfnHook           ! ptr. to hook function
+          INTEGER   lpTemplateName     ! custom template name
+          INTEGER*2 hInstance          ! instance handle of.EXE that contains
+                                       ! cust. dlg. template
+          INTEGER   lpszStyle          ! return the style field here must be
+                                       ! LF_FACESIZE or bigger
+          INTEGER*2 nFontType          ! same value reported to the EnumFonts
+                                       ! call back with the extra FONTTYPE_
+                                       ! bits added
+          INTEGER*2 nSizeMin           ! minimum pt size allowed &
+          INTEGER*2 nSizeMax           ! max pt size allowed if
+                                       ! CF_LIMITSIZE is used
+      END STRUCTURE
+
+      EXTERNAL ChooseFont
+      INTEGER*2 ChooseFont
+
+      INTEGER    CF_SCREENFONTS
+      PARAMETER (CF_SCREENFONTS=                '1'x)
+      INTEGER    CF_PRINTERFONTS
+      PARAMETER (CF_PRINTERFONTS=               '2'x)
+      INTEGER    CF_BOTH
+      PARAMETER (CF_BOTH= (CF_SCREENFONTS .OR. CF_PRINTERFONTS))
+      INTEGER    CF_SHOWHELP
+      PARAMETER (CF_SHOWHELP=                   '4'x)
+      INTEGER    CF_ENABLEHOOK
+      PARAMETER (CF_ENABLEHOOK=                 '8'x)
+      INTEGER    CF_ENABLETEMPLATE
+      PARAMETER (CF_ENABLETEMPLATE=             '10'x)
+      INTEGER    CF_ENABLETEMPLATEHANDLE
+      PARAMETER (CF_ENABLETEMPLATEHANDLE=       '20'x)
+      INTEGER    CF_INITTOLOGFONTSTRUCT
+      PARAMETER (CF_INITTOLOGFONTSTRUCT=        '40'x)
+      INTEGER    CF_USESTYLE
+      PARAMETER (CF_USESTYLE=                   '80'x)
+      INTEGER    CF_EFFECTS
+      PARAMETER (CF_EFFECTS=                    '100'x)
+      INTEGER    CF_APPLY
+      PARAMETER (CF_APPLY=                      '200'x)
+      INTEGER    CF_ANSIONLY
+      PARAMETER (CF_ANSIONLY=                   '400'x)
+      INTEGER    CF_NOVECTORFONTS
+      PARAMETER (CF_NOVECTORFONTS=              '800'x)
+      INTEGER    CF_NOOEMFONTS
+      PARAMETER (CF_NOOEMFONTS=                 CF_NOVECTORFONTS)
+      INTEGER    CF_NOSIMULATIONS
+      PARAMETER (CF_NOSIMULATIONS=              '1000'x)
+      INTEGER    CF_LIMITSIZE
+      PARAMETER (CF_LIMITSIZE=                  '2000'x)
+      INTEGER    CF_FIXEDPITCHONLY
+      PARAMETER (CF_FIXEDPITCHONLY=             '4000'x)
+      INTEGER    CF_WYSIWYG ! must also have CF_SCREENFONTS & CF_PRINTERFONTS
+      PARAMETER (CF_WYSIWYG=                    '8000'x)
+      INTEGER    CF_FORCEFONTEXIST
+      PARAMETER (CF_FORCEFONTEXIST=             '10000'x)
+      INTEGER    CF_SCALABLEONLY
+      PARAMETER (CF_SCALABLEONLY=               '20000'x)
+      INTEGER    CF_TTONLY
+      PARAMETER (CF_TTONLY=                     '40000'x)
+      INTEGER    CF_NOFACESEL
+      PARAMETER (CF_NOFACESEL=                  '80000'x)
+      INTEGER    CF_NOSTYLESEL
+      PARAMETER (CF_NOSTYLESEL=                 '100000'x)
+      INTEGER    CF_NOSIZESEL
+      PARAMETER (CF_NOSIZESEL=                  '200000'x)
+
+! these are extra nFontType bits that are added to what is returned to the
+! EnumFonts callback routine
+
+      INTEGER    SIMULATED_FONTTYPE
+      PARAMETER (SIMULATED_FONTTYPE=            '8000'x)
+      INTEGER    PRINTER_FONTTYPE
+      PARAMETER (PRINTER_FONTTYPE=              '4000'x)
+      INTEGER    SCREEN_FONTTYPE
+      PARAMETER (SCREEN_FONTTYPE=               '2000'x)
+      INTEGER    BOLD_FONTTYPE
+      PARAMETER (BOLD_FONTTYPE=                 '100'x)
+      INTEGER    ITALIC_FONTTYPE
+      PARAMETER (ITALIC_FONTTYPE=               '200'x)
+      INTEGER    REGULAR_FONTTYPE
+      PARAMETER (REGULAR_FONTTYPE=              '400'x)
+
+      INTEGER    WM_CHOOSEFONT_GETLOGFONT
+      PARAMETER (WM_CHOOSEFONT_GETLOGFONT=      (WM_USER + 1))
+
+! strings used to obtain unique window message for communication
+! between dialog and caller.
+
+      CHARACTER*27      LBSELCHSTRING
+      PARAMETER         (LBSELCHSTRING='commdlg_LBSelChangedNotify'c)
+      CHARACTER*23      SHAREVISTRING
+      PARAMETER         (SHAREVISTRING='commdlg_ShareViolation'c)
+      CHARACTER*19      FILEOKSTRING
+      PARAMETER         (FILEOKSTRING='commdlg_FileNameOK'c)
+      CHARACTER*15      COLOROKSTRING
+      PARAMETER         (COLOROKSTRING='commdlg_ColorOK'c)
+      CHARACTER*20      SETRGBSTRING
+      PARAMETER         (SETRGBSTRING='commdlg_SetRGBColor'c)
+      CHARACTER*20      FINDMSGSTRING
+      PARAMETER         (FINDMSGSTRING='commdlg_FindReplace'c)
+      CHARACTER*13      HELPMSGSTRING
+      PARAMETER         (HELPMSGSTRING='commdlg_help'c)
+
+! HIWORD values for lParam of commdlg_LBSelChangeNotify message
+      INTEGER    CD_LBSELNOITEMS
+      PARAMETER (CD_LBSELNOITEMS= -1)
+      INTEGER    CD_LBSELCHANGE
+      PARAMETER (CD_LBSELCHANGE=   0)
+      INTEGER    CD_LBSELSUB
+      PARAMETER (CD_LBSELSUB=      1)
+      INTEGER    CD_LBSELADD
+      PARAMETER (CD_LBSELADD=      2)
+
+      STRUCTURE /PRINTDLG/
+          INTEGER   lStructSize
+          INTEGER*2 hwndOwner
+          INTEGER*2 hDevMode
+          INTEGER*2 hDevNames
+          INTEGER*2 hDC
+          INTEGER   Flags
+          INTEGER*2 nFromPage
+          INTEGER*2 nToPage
+          INTEGER*2 nMinPage
+          INTEGER*2 nMaxPage
+          INTEGER*2 nCopies
+          INTEGER*2 hInstance
+          INTEGER   lCustData
+          INTEGER   lpfnPrintHook
+          INTEGER   lpfnSetupHook
+          INTEGER   lpPrintTemplateName
+          INTEGER   lpSetupTemplateName
+          INTEGER*2 hPrintTemplate
+          INTEGER*2 hSetupTemplate
+      END STRUCTURE
+
+
+      EXTERNAL PrintDlg
+      INTEGER PrintDlg
+
+      INTEGER    PD_ALLPAGES
+      PARAMETER (PD_ALLPAGES=                  '0'x)
+      INTEGER    PD_SELECTION
+      PARAMETER (PD_SELECTION=                 '1'x)
+      INTEGER    PD_PAGENUMS
+      PARAMETER (PD_PAGENUMS=                  '2'x)
+      INTEGER    PD_NOSELECTION
+      PARAMETER (PD_NOSELECTION=               '4'x)
+      INTEGER    PD_NOPAGENUMS
+      PARAMETER (PD_NOPAGENUMS=                '8'x)
+      INTEGER    PD_COLLATE
+      PARAMETER (PD_COLLATE=                   '10'x)
+      INTEGER    PD_PRINTTOFILE
+      PARAMETER (PD_PRINTTOFILE=               '20'x)
+      INTEGER    PD_PRINTSETUP
+      PARAMETER (PD_PRINTSETUP=                '40'x)
+      INTEGER    PD_NOWARNING
+      PARAMETER (PD_NOWARNING=                 '80'x)
+      INTEGER    PD_RETURNDC
+      PARAMETER (PD_RETURNDC=                  '100'x)
+      INTEGER    PD_RETURNIC
+      PARAMETER (PD_RETURNIC=                  '200'x)
+      INTEGER    PD_RETURNDEFAULT
+      PARAMETER (PD_RETURNDEFAULT=             '400'x)
+      INTEGER    PD_SHOWHELP
+      PARAMETER (PD_SHOWHELP=                  '800'x)
+      INTEGER    PD_ENABLEPRINTHOOK
+      PARAMETER (PD_ENABLEPRINTHOOK=           '1000'x)
+      INTEGER    PD_ENABLESETUPHOOK
+      PARAMETER (PD_ENABLESETUPHOOK=           '2000'x)
+      INTEGER    PD_ENABLEPRINTTEMPLATE
+      PARAMETER (PD_ENABLEPRINTTEMPLATE=       '4000'x)
+      INTEGER    PD_ENABLESETUPTEMPLATE
+      PARAMETER (PD_ENABLESETUPTEMPLATE=       '8000'x)
+      INTEGER    PD_ENABLEPRINTTEMPLATEHANDLE
+      PARAMETER (PD_ENABLEPRINTTEMPLATEHANDLE= '10000'x)
+      INTEGER    PD_ENABLESETUPTEMPLATEHANDLE
+      PARAMETER (PD_ENABLESETUPTEMPLATEHANDLE= '20000'x)
+      INTEGER    PD_USEDEVMODECOPIES
+      PARAMETER (PD_USEDEVMODECOPIES=          '40000'x)
+      INTEGER    PD_DISABLEPRINTTOFILE
+      PARAMETER (PD_DISABLEPRINTTOFILE=        '80000'x)
+      INTEGER    PD_HIDEPRINTTOFILE
+      PARAMETER (PD_HIDEPRINTTOFILE=           '100000'x)
+
+      STRUCTURE /DEVNAMES/
+          INTEGER*2 wDriverOffset
+          INTEGER*2 wDeviceOffset
+          INTEGER*2 wOutputOffset
+          INTEGER*2 wDefault
+      END STRUCTURE
+
+
+      INTEGER    DN_DEFAULTPRN
+      PARAMETER (DN_DEFAULTPRN=      '1'x)
+
+      EXTERNAL CommDlgExtendedError
+      INTEGER CommDlgExtendedError
+
+*$reference

@@ -47,6 +47,7 @@
 #endif
 #include "tar.h"
 
+#if 0
 static int      saveuid = -993;
 static char     saveuname[TUNMLEN];
 static int      my_uid = -993;
@@ -54,6 +55,7 @@ static int      my_uid = -993;
 static int      savegid = -993;
 static char     savegname[TGNMLEN];
 static int      my_gid = -993;
+#endif
 
 #define myuid   ( my_uid < 0? my_uid = getuid(): my_uid )
 #define mygid   ( my_gid < 0? my_gid = getgid(): my_gid )
@@ -68,14 +70,9 @@ static int      my_gid = -993;
  * This is ifdef'd because on Suns, it drags in about 38K of "yellow
  * pages" code, roughly doubling the program size.  Thanks guys.
  */
-void
-finduname(uname, uid)
-char            uname[TUNMLEN];
-int             uid;
-
+void finduname( char uname[TUNMLEN], int uid )
 {
         struct passwd  *pw;
-        extern struct passwd *getpwuid();
 
         if (uid != saveuid)
         {
@@ -88,13 +85,9 @@ int             uid;
         strncpy(uname, saveuname, TUNMLEN);
 }
 
-int
-finduid(uname)
-char            uname[TUNMLEN];
-
+int finduid( char uname[TUNMLEN] )
 {
         struct passwd  *pw;
-        extern struct passwd *getpwnam();
 
         if (uname[0] != saveuname[0]/* Quick test w/o proc call */
                 || 0 != strncmp(uname, saveuname, TUNMLEN))
@@ -114,14 +107,9 @@ char            uname[TUNMLEN];
 }
 
 
-void
-findgname(gname, gid)
-char            gname[TGNMLEN];
-int             gid;
-
+void findgname( char gname[TGNMLEN], int gid )
 {
         struct group   *gr;
-        extern struct group *getgrgid();
 
         if (gid != savegid)
         {
@@ -136,13 +124,9 @@ int             gid;
 }
 
 
-int
-findgid(gname)
-char            gname[TUNMLEN];
-
+int findgid( char gname[TUNMLEN] )
 {
         struct group   *gr;
-        extern struct group *getgrnam();
 
         if (gname[0] != savegname[0]/* Quick test w/o proc call */
                 || 0 != strncmp(gname, savegname, TUNMLEN))

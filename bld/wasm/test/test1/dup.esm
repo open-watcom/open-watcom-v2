@@ -1,0 +1,17 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	1, 2, 1, 2, 1, 2, 1, 2
+    DB	1, 2, 1, 2, 1, 2, 1, 2
+    DB	1, 2, 1, 2, 1, 2, 1, 2
+    DB	1, 2, 1, 2, 1, 2, 4, 5
+    DB	4, 5, 1, 2, 1, 2, 1, 2
+    DB	4, 5, 4, 5, 1, 2, 1, 2
+    DB	1, 2, 4, 5, 4, 5, 1, 2
+    DB	1, 2, 1, 2, 4, 5, 4, 5
+
+_DATA		ENDS
+		END

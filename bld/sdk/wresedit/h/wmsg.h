@@ -36,11 +36,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WDisplayMsg             ( const char * );
-extern void     WInitDisplayError       ( HINSTANCE inst );
-extern void     WDisplayErrorMsg        ( DWORD msg );
-extern char     *WAllocRCString         ( DWORD id );
-extern void     WFreeRCString           ( char *str );
-extern DWORD    WCopyRCString           ( DWORD id, char *buf, DWORD bufsize );
+extern void     WDisplayMsg( const char * );
+extern void     WInitDisplayError( HINSTANCE inst );
+extern void     WDisplayErrorMsg( DWORD msg );
+extern char     *WAllocRCString( DWORD id );
+extern void     WFreeRCString( char *str );
+extern DWORD    WCopyRCString( DWORD id, char *buf, DWORD bufsize );
 
 #endif

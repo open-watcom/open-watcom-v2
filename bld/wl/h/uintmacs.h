@@ -56,3 +56,6 @@
 #define PUT_U16_UN( P, V )      (GET_U16_UN( P ) = V )
 #define PUT_U32_UN( P, V )      (GET_U32_UN( P ) = V )
 
+#define _ReadBigEndian32UN( P )     GET_BE_32( *(unsigned_32 UNALIGN *)(P) )
+#define _ReadLittleEndian32UN( P )  GET_LE_32( *(unsigned_32 UNALIGN *)(P) )
+#define _ReadLittleEndian16UN( P )  GET_LE_16( *(unsigned_16 UNALIGN *)(P) )

@@ -38,3 +38,72 @@
  */
 
 static void outLineNum( owl_func_handle func, owl_line_num line, owl_offset addr ) {
+//**********************************************************************************
+// NB: want line numbers relative to the start of the function
+
+    coff_line_num       rec;
+
+    assert( func->section->linenum_buffer != NULL );
+    rec.ir.RVA = addr;
+    rec.line_number = ( ( line == 0 ) ? 0 : ( line - func->x.func->first_line ) );
+    OWLBufferWrite( func->section->linenum_buffer, (const char *)&rec, sizeof( coff_line_num ) );
+    func->section->num_linenums += 1;
+}
+
+owl_func_handle OWLENTRY OWLDebugFuncBegin( owl_section_handle section, owl_symbol_handle func, owl_line_num first, owl_offset start ) {
+//**************************************************************************************************************************************
+
+    owl_func_info      *info;
+
+    assert( func != NULL );
+    if( section->linenum_buffer == NULL ) {
+        section->linenum_buffer = OWLBufferInit( section->file );
+    }
+    info = _ClientAlloc( section->file, sizeof( owl_func_info ) );
+    func->x.func = info;
+    info->start = start;
+    info->end = 0;
+    info->first_line = first;
+    info->last_line = 0;
+    info->linenum_offset = OWLBufferTell( section->linenum_buffer );
+    info->num_lines = 1; // first entry
+    info->head = NULL;
+    info->lnk = &info->head;
+    outLineNum( func, 0, 0 );
+    _Log((section->file, "OWLDebugFuncBegin( %x, %x, %d, %x ) -> %x\n", section, func, first, start ));
+    return( func );
+}
+
+void OWLENTRY OWLDebugFuncLine( owl_func_handle func, owl_line_num line, owl_offset addr ) {
+//******************************************************************************************
+
+    _Log((func->section->file, "OWLDebugFuncLine( %x, %d, %x )\n", func, line, addr ));
+    outLineNum( func, line, addr );
+    func->x.func->num_lines += 1;
+}
+
+void OWLENTRY OWLDebugFuncFile( owl_func_handle func, char const *name  ) {
+//*************************************************************************
+    owl_func_info     *info;
+    owl_func_file     *new;
+    int                size;
+
+    info = func->x.func;
+    _Log((func->section->file, "OWLDebugFuncFile( %x, %s )\n", func, name ));
+    size = strlen( name );
+    new = _ClientAlloc( func->section->file, sizeof( owl_func_file )+size );
+    strcpy( new->name, name );
+    new->num_lines = info->num_lines; // save prev
+    info->num_lines = 0;
+    new->next = NULL;
+    *info->lnk = new;
+    info->lnk = &new->next;
+}
+
+void OWLENTRY OWLDebugFuncEnd( owl_func_handle func, owl_line_num last, owl_offset end ) {
+//****************************************************************************************
+
+    _Log((func->section->file, "OWLDebugFuncEnd( %x, %d, %x )\n", func, last, end ));
+    func->x.func->end = end;
+    func->x.func->last_line = last;
+}

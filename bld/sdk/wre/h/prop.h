@@ -37,4 +37,3 @@
 #define IDM_PROP_PRE    305
 #define IDM_PROP_LOC    306
 #define IDM_PROP_HELP   307
-

@@ -47,7 +47,7 @@
 const int PTRPOOLSIZE = 128;
 const int NODEPOOLSIZE = 64;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool TreeClassPtr::_pool( sizeof( TreeClassPtr ), "TreeClassPtr",
                                     PTRPOOLSIZE );
 MemoryPool TreeClassNode::_pool( sizeof( TreeClassNode ), "TreeClassNode",
@@ -144,8 +144,8 @@ PaintInfo * TreeClassNode::getPaintInfo( void )
     return new PaintInfo( clr, thk, stl );
 }
 
-virtual bool TreeClassNode::isRelated( TreeNode * node )
-//------------------------------------------------------
+bool TreeClassNode::isRelated( TreeNode * node )
+//----------------------------------------------
 {
     bool ret = (findClass( *_flatClasses,
                        (ClassLattice *)(TreeClassNode *) node ) >= 0);
@@ -163,9 +163,9 @@ ClassLattice *  TreeClassNode::newLattice(  dr_handle hdl, Module *mod,
                                                 v, lvl );
 }
 
-virtual  DerivationPtr * TreeClassNode::newPtr( ClassLattice * cls,
+DerivationPtr * TreeClassNode::newPtr( ClassLattice * cls,
                             dr_access acc, dr_virtuality virt )
-//-----------------------------------------------------------------
+//-------------------------------------------------------------
 {
     return new TreeClassPtr( (TreeClassWindow *)_parent, this,
                              (TreeClassNode *) cls, acc, virt );
@@ -181,9 +181,10 @@ bool TreeClassNode::doParents( WVList& world, TreeClassList & roots,
     for( int i = _bases.count(); i > 0; i -= 1 ) {
         TreeClassNode * baseNode = (TreeClassNode*)_bases[ i - 1 ]->_class;
         bool            thisNodeJoinable = FALSE;
+        int             j;
 
         // remove a base from the world -- should be done for all bases
-        for( int j = world.count(); j > 0; j -= 1 ) {
+        for( j = world.count(); j > 0; j -= 1 ) {
             if( ((Symbol *)world[ j - 1 ])->getHandle() ==
                 baseNode->getHandle() ) {
                 delete world.removeAt( j - 1 );
@@ -390,12 +391,6 @@ TreeClassWindow::TreeClassWindow( char * title )
     _findFilter->setSymType( KSTClasses );
 }
 
-
-TreeClassWindow::~TreeClassWindow()
-//---------------------------------
-{
-}
-
 bool TreeClassWindow::contextHelp( bool is_active_window )
 //--------------------------------------------------------
 {
@@ -479,4 +474,13 @@ void TreeClassWindow::fillRoots( void )
             }
         }
     }
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+TreeClassWindow::~TreeClassWindow()
+//---------------------------------
+{
 }

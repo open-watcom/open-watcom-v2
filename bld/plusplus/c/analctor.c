@@ -136,11 +136,12 @@ FNOV_LIST *CtorFindList( TYPE src, TYPE tgt )
     SYMBOL              sym;            // current symbol in list
     FNOV_LIST           *list;          // FNOV_LIST of ctors found
 
+    InitArgList( &alist );
+    alist.num_args = 1;
+    alist.type_list[0] = src;
+
     search_result = ctorResult( NULL, NULL, tgt );
     if( search_result == NULL ) {
-        InitArgList( &alist );
-        alist.num_args = 1;
-        alist.type_list[0] = src;
         if( ctorDefineDefaultCnv( tgt, &alist ) ) {
             search_result = ctorResult( NULL, NULL, tgt );
         }
@@ -148,7 +149,7 @@ FNOV_LIST *CtorFindList( TYPE src, TYPE tgt )
     list = NULL;
     if( search_result != NULL ) {
         RingIterBeg( search_result->sym_name->name_syms, sym ) {
-            BuildUdcList( &list, sym );
+            BuildCtorList( &list, sym, &alist );
         } RingIterEnd( sym )
         ScopeFreeResult( search_result );
     }
@@ -179,6 +180,7 @@ static FNOV_RESULT ctorExplicitDiag(// FIND CONSTRUCTOR FOR ARGUMENT LIST
                                        , alist
                                        , ptlist
                                        , FNC_RANKING_CTORS
+                                       , NULL
                                        , fnov_diag );
         if( ovret == FNOV_NONAMBIGUOUS ) {
             if( ScopeCheckSymbol( result, *ctor ) ) {

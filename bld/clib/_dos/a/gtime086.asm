@@ -38,11 +38,7 @@ include struct.inc
         modstart dosgtime
 
         defp    _dos_getdate
-        if __WASM__ ge 100
-            xdefp   "C",_dos_getdate
-        else
-            xdefp   <"C",_dos_getdate>
-        endif
+        xdefp   "C",_dos_getdate
 ;
 ;       void _dos_getdate( struct dosdate_t *date );
 ;       struct dosdate_t {
@@ -75,12 +71,9 @@ endif
         pop     DX              ; restore DX
         ret                     ; return to caller
         endproc _dos_getdate
+
         defp    _dos_gettime
-        if __WASM__ ge 100
-            xdefp   "C",_dos_gettime
-        else
-            xdefp   <"C",_dos_gettime>
-        endif
+        xdefp   "C",_dos_gettime
 ;
 ;       void _dos_gettime( struct dostime_t *time );
 ;       struct dostime_t {

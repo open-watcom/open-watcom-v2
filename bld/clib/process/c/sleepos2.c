@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sleep() for OS/2.
 *
 ****************************************************************************/
 
@@ -36,7 +35,8 @@
 #include <wos2.h>
 
 
-_WCRTLINK void sleep( unsigned seconds )
-    {
-        DosSleep( seconds * 1000L );
-    }
+_WCRTLINK unsigned sleep( unsigned seconds )
+{
+    DosSleep( seconds * 1000L );
+    return( 0 );
+}

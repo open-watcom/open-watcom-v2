@@ -24,30 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point modulo routine.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <math.h>
+#include "mathlib.h"
 
-extern  void    _ModF( double _WCNEAR *x, double _WCNEAR *ipart);
-#if defined(__386__)
-  #pragma aux     _ModF "_*" parm caller [eax] [edx];
-#elif defined(M_I86)
-  #pragma aux     _ModF "_*" parm caller [ax] [dx];
-#endif
 
 _WMRTLINK double modf( double x, double *iptr )
-/***********************************/
-    {
-        auto    double value;
-        auto    double ipart;
+/*********************************************/
+{
+    double  value;
+    double  ipart;
 
-        value = x;
-        _ModF( (double _WCNEAR *)&value, (double _WCNEAR *)&ipart );
-        *iptr = ipart;
-        return( value );
-    }
+    value = x;
+    _ModF( &value, &ipart );
+    *iptr = ipart;
+    return( value );
+}

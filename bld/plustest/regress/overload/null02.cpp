@@ -6,9 +6,7 @@ void f( ... ) BAD;
 
 void g( void )
 {
-    enum { a=0 };
-
-    f( (int)0, (unsigned)0, a );
+  f( (int)0, (unsigned)0, (long)0 );
 }
 int main( void ) {
     g();

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Get BIOS equipment list.
 *
 ****************************************************************************/
 
@@ -33,40 +32,9 @@
 #include "variety.h"
 #include <bios.h>
 #include "necibm.h"
-#include "nonibm.h"
-
-struct EquipBits {
-    unsigned bootsFromDisk      : 1;
-    unsigned hasCoPro           : 1;
-    unsigned ramSize            : 2;
-    unsigned initialVideoMode   : 2;
-    unsigned numDisketteDrives  : 2;
-    unsigned noDma              : 1;
-    unsigned numSerialPorts     : 3;
-    unsigned hasGamePort        : 1;
-    unsigned hasSerialPrinter   : 1;
-    unsigned numParPrinters     : 2;
-};
 
 
 _WCRTLINK unsigned short _bios_equiplist( void )
 {
-    unsigned short          necRc;
-    union {
-        struct EquipBits    bits;
-        unsigned short      val;
-    } equip;
-
-    if( !__NonIBM ) {
-        return( __ibm_bios_equiplist() );
-    } else {
-        /*** Obtain as much information as we can from NEC98 info ***/
-        necRc = __nec98_bios_equiplist();
-        equip.val = 0;
-        equip.bits.hasCoPro = necRc&0x0002 ? 1 : 0;
-        equip.bits.numDisketteDrives = (necRc>>3) & 0x0003;
-        equip.bits.numParPrinters = necRc&0x4000 ? 1 : 0;
-        equip.bits.numSerialPorts = (necRc>>9);
-        return( equip.val );
-    }
+    return( __ibm_bios_equiplist() );
 }

@@ -5,12 +5,12 @@
  */
 #ifndef _MALLOC_H_INCLUDED
 #define _MALLOC_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include pshpackl.sp
 
@@ -20,7 +20,6 @@
 
 :include alloca.sp
 
-:segment !PENPOINT
 #define _HEAPOK         0
 #define _HEAPEMPTY      1       /* heap isn't initialized */
 #define _HEAPBADBEGIN   2       /* heap header is corrupted */
@@ -40,48 +39,39 @@ typedef struct _heapinfo {
 _WCRTLINK extern int _heapenable( int __enabled );
 _WCRTLINK extern int _heapchk( void );
 _WCRTLINK extern int _nheapchk( void );
-_WCRTLINK extern int _fheapchk( void );
 _WCRTLINK extern int _heapset( unsigned int __fill );
 _WCRTLINK extern int _nheapset( unsigned int __fill );
-_WCRTLINK extern int _fheapset( unsigned int __fill );
 _WCRTLINK extern int _heapwalk( struct _heapinfo *__entry );
 _WCRTLINK extern int _nheapwalk( struct _heapinfo *__entry );
-_WCRTLINK extern int _fheapwalk( struct _heapinfo *__entry );
 
 _WCRTLINK extern void _heapgrow( void );
 _WCRTLINK extern void _nheapgrow( void );
-_WCRTLINK extern void _fheapgrow( void );
 _WCRTLINK extern int _heapmin( void );
 _WCRTLINK extern int _nheapmin( void );
-_WCRTLINK extern int _fheapmin( void );
 _WCRTLINK extern int _heapshrink( void );
 _WCRTLINK extern int _nheapshrink( void );
+
+:segment DOS | QNX
+#if defined(_M_I86)
+_WCRTLINK extern int _fheapchk( void );
+_WCRTLINK extern int _fheapset( unsigned int __fill );
+_WCRTLINK extern int _fheapwalk( struct _heapinfo *__entry );
+
+_WCRTLINK extern void _fheapgrow( void );
+_WCRTLINK extern int _fheapmin( void );
 _WCRTLINK extern int _fheapshrink( void );
+#endif
+:endsegment
 
 _WCRTLINK extern int __nmemneed( size_t );
-_WCRTLINK extern int __fmemneed( size_t );
-#if !defined(_fcalloc) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR *_fcalloc( size_t __n, size_t __size );
-#endif
 #if !defined(_ncalloc) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern void _WCNEAR *_ncalloc( size_t __n, size_t __size );
 #endif
-_WCRTLINK extern void * _expand( void *__ptr, size_t __size );
-#if !defined(_fexpand) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR *_fexpand( void _WCFAR *__ptr, size_t __size );
-#endif
+_WCRTLINK extern void *_expand( void *__ptr, size_t __size );
 #if !defined(_nexpand) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern void _WCNEAR *_nexpand( void _WCNEAR *__ptr, size_t __size );
 #endif
-#if !defined(_ffree) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _ffree( void _WCFAR *__ptr );
-#endif
-#if !defined(_fmalloc) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR * _fmalloc( size_t __size );
-#endif
 _WCRTLINK extern unsigned int _freect( size_t __size );
-_WCRTLINK extern void _WCHUGE *halloc( long __n, size_t __size );
-_WCRTLINK extern void hfree( void _WCHUGE * );
 #if !defined(_nfree) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern void _nfree( void _WCNEAR *__ptr );
 #endif
@@ -91,28 +81,56 @@ _WCRTLINK extern void _WCNEAR *_nmalloc( size_t __size );
 #if !defined(_nrealloc) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern void _WCNEAR *_nrealloc( void _WCNEAR *__ptr, size_t __size );
 #endif
-#if !defined(_frealloc) || !defined(_INC_WINDOWSX)
-_WCRTLINK extern void _WCFAR *_frealloc( void _WCFAR *__ptr, size_t __size );
-#endif
 _WCRTLINK extern size_t _msize( void *__ptr );
 #if !defined(_nmsize) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern size_t _nmsize( void _WCNEAR *__ptr );
 #endif
+
+:segment DOS | QNX
+#if defined(_M_I86)
+_WCRTLINK extern int __fmemneed( size_t );
+#if !defined(_fcalloc) || !defined(_INC_WINDOWSX)
+_WCRTLINK extern void _WCFAR *_fcalloc( size_t __n, size_t __size );
+#endif
+#if !defined(_fexpand) || !defined(_INC_WINDOWSX)
+_WCRTLINK extern void _WCFAR *_fexpand( void _WCFAR *__ptr, size_t __size );
+#endif
+#if !defined(_ffree) || !defined(_INC_WINDOWSX)
+_WCRTLINK extern void _ffree( void _WCFAR *__ptr );
+#endif
+#if !defined(_fmalloc) || !defined(_INC_WINDOWSX)
+_WCRTLINK extern void _WCFAR *_fmalloc( size_t __size );
+#endif
+_WCRTLINK extern void _WCHUGE *halloc( long __n, size_t __size );
+_WCRTLINK extern void hfree( void _WCHUGE * );
+#if !defined(_frealloc) || !defined(_INC_WINDOWSX)
+_WCRTLINK extern void _WCFAR *_frealloc( void _WCFAR *__ptr, size_t __size );
+#endif
 #if !defined(_fmsize) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern size_t _fmsize( void _WCFAR *__ptr );
 #endif
+#endif
+:endsegment
+
 _WCRTLINK extern size_t _memavl( void );
 _WCRTLINK extern size_t _memmax( void );
-:endsegment
-_WCRTLINK extern void * calloc( size_t __n, size_t __size );
+#ifdef __cplusplus
+namespace std {
+#endif
+_WCRTLINK extern void *calloc( size_t __n, size_t __size );
 _WCRTLINK extern void free( void *__ptr );
-_WCRTLINK extern void * malloc( size_t __size );
-_WCRTLINK extern void * realloc( void *__ptr, size_t __size );
-:segment PENPOINT
-_WCRTLINK extern void * _smalloc( size_t __size );
-:elsesegment
+_WCRTLINK extern void *malloc( size_t __size );
+_WCRTLINK extern void *realloc( void *__ptr, size_t __size );
+#ifdef __cplusplus
+}
+using std::calloc;
+using std::free;
+using std::malloc;
+using std::realloc;
+#endif
 
-#if defined(_M_IX86)
+:segment DOS | QNX
+#if defined(_M_I86)
 /* based heap function prototypes */
 
 #define _NULLSEG ((__segment)0)
@@ -132,7 +150,10 @@ _WCRTLINK extern void __based(void) *_bmalloc( __segment __seg, size_t __size );
 _WCRTLINK extern size_t _bmsize( __segment __seg, void __based(void) *__mem );
 _WCRTLINK extern void __based(void) *_brealloc( __segment __seg, void __based(void) *__mem, size_t __size );
 #endif
+
 :endsegment
 :include poppack.sp
+
 :include cplusepi.sp
+
 #endif

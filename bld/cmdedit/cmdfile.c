@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command matching, file management.
 *
 ****************************************************************************/
 
@@ -34,24 +33,45 @@
 #include <ctype.h>
 #include "cmdedit.h"
 
-extern void     PutNL();
+extern void     PutNL( void );
 extern void     PutPad( char far * str, int len );
 extern void     RestorePrompt( char PASPTR *line );
-extern int      ExpandDirCommand();
+extern int      ExpandDirCommand( void );
 extern int      ReplaceAlias( char far * alias, char * word, char * endword );
 extern void     ZapLower( char far *str );
 extern void     SavePrompt( char PASPTR *line );
 extern char     far *GetEnv( char far *name, int len );
 extern int      Equal( char far * str1, char far * str2, int len );
 
-void MatchACommand( int (*advance)(char *), int (*retreat)(char *) ) {
-/********************************************************************/
 
+void SaveLine( void )
+/*******************/
+{
+    LineSaved = TRUE;
+    memcpy( OldLine, Line, LINE_WIDTH );
+    OldMaxCursor = MaxCursor;
+    OldCursor = Cursor;
+}
+
+
+void RestoreLine( void )
+/**********************/
+{
+    memcpy( Line, OldLine, LINE_WIDTH );
+    Cursor = OldCursor;
+    MaxCursor = OldMaxCursor;
+    HaveDirent = FALSE;
+}
+
+
+void MatchACommand( int (*advance)(char *), int (*retreat)(char *) )
+/******************************************************************/
+{
     int advanced;
 
     SaveLine();
     advanced = 0;
-    for(;;) {
+    for( ;; ) {
         ++advanced;
         MaxCursor = advance( Line );
         if( MaxCursor == 0 ) {
@@ -71,54 +91,18 @@ void MatchACommand( int (*advance)(char *), int (*retreat)(char *) ) {
 }
 
 
-void FiniFile() {
-/*************/
-
+void FiniFile( void )
+/*******************/
+{
     HaveDirent = FALSE;
     NextFileCalls = 0;
     PathCurr = 0;
 }
 
 
-void PrevFile() {
-/***************/
-
-    int         nexts;
-
-    if( NextFileCalls ) {
-        RestoreLine();
-        nexts = NextFileCalls - 1;
-        FiniFile();
-        while( NextFileCalls != nexts ) {
-            NextFile();
-        }
-        Draw = TRUE;
-    }
-}
-
-void SaveLine() {
-/***************/
-
-    LineSaved = TRUE;
-    memcpy( OldLine, Line, LINE_WIDTH );
-    OldMaxCursor = MaxCursor;
-    OldCursor = Cursor;
-}
-
-
-void RestoreLine() {
-/*****************/
-
-    memcpy( Line, OldLine, LINE_WIDTH );
-    Cursor = OldCursor;
-    MaxCursor = OldMaxCursor;
-    HaveDirent = FALSE;
-}
-
-
-int     NonFileChar( char ch ) {
-/******************************/
-
+int     NonFileChar( char ch )
+/****************************/
+{
     switch( ch ) {
     case '<':
     case '>':
@@ -135,9 +119,9 @@ int     NonFileChar( char ch ) {
 }
 
 
-int FileIgnore( DIRINFO *dir, int attr ) {
-/****************************************/
-
+int FileIgnore( DIRINFO *dir, int attr )
+/**************************************/
+{
     int         ignore_matches;
     char        *p;
     int         len;
@@ -172,8 +156,8 @@ int FileIgnore( DIRINFO *dir, int attr ) {
 #endif
     len = 0;
     for( p = name; !_null( *p ); ++p ) ++len;
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             if( *envname == '.' ) break;
             if( _null( *envname ) ) return( !ignore_matches );
             ++envname;
@@ -194,9 +178,9 @@ int FileIgnore( DIRINFO *dir, int attr ) {
 }
 
 
-int FindNext( DIRINFO *dir, int attr ) {
-/**************************************/
-
+int FindNext( DIRINFO *dir, int attr )
+/************************************/
+{
     int tmp;
     int cnt;
 
@@ -210,9 +194,9 @@ int FindNext( DIRINFO *dir, int attr ) {
 }
 
 
-void NextFile() {
-/***************/
-
+void NextFile( void )
+/*******************/
+{
 #ifdef DOS
     int                 dot;
 #endif
@@ -247,7 +231,7 @@ recurse:
             dot = FALSE;
 #endif
             in_quote = FALSE;
-            for(;;) {
+            for( ;; ) {
                 if( Line[ i ] == '/' || Line[ i ] == '\\' ) path = 1;
 #ifdef DOS
                 if( path == 0 && Line[ i ] == '.' ) dot = TRUE;
@@ -356,7 +340,7 @@ done:
                     PutNL();
                     i = 1;
                 }
-                for(;;) {
+                for( ;; ) {
                     if( PrintAllFiles ) {
                         if( --i == 0 ) {
                             PutNL();
@@ -389,7 +373,7 @@ done:
                 --i;
             }
             in_quote = FALSE;
-            for(;;) {
+            for( ;; ) {
                 if( Line[ i ] == '"' ) in_quote = !in_quote;
                 if( Line[ i ] == '\\' ) break;
                 if( Line[ i ] == '/' ) break;
@@ -420,4 +404,21 @@ done:
     }
     Draw = TRUE;
     PrintAllFiles = FALSE;
+}
+
+
+void PrevFile( void )
+/*******************/
+{
+    int         nexts;
+
+    if( NextFileCalls ) {
+        RestoreLine();
+        nexts = NextFileCalls - 1;
+        FiniFile();
+        while( NextFileCalls != nexts ) {
+            NextFile();
+        }
+        Draw = TRUE;
+    }
 }

@@ -5,18 +5,20 @@
  */
 #ifndef _JTIME_H_INCLUDED
 #define _JTIME_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include owrtlink.sp
+
 #ifndef _TIME_H_INCLUDED
  #include <time.h>
 #endif
 
 :include cpluspro.sp
+
 _WCRTLINK extern unsigned char   *jasctime( const struct tm *__timeptr );
 _WCRTLINK extern unsigned char   *jctime( const time_t *__timer );
+
 :include cplusepi.sp
 
 #endif

@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump instruction.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "pattern.h"
 #include "opcodes.h"
@@ -72,6 +72,7 @@ static  void    DoOffset( char *str, unsigned_32 o ) {
     DumpNL();
 }
 
+
 extern  void    DumpInsOffsets() {
 /********************************/
 
@@ -82,9 +83,9 @@ extern  void    DumpInsOffsets() {
     DoOffset( "head.opcode", offsetof( instruction, head.opcode ) );
     DoOffset( "head.state", offsetof( instruction, head.state ) );
     DoOffset( "table\t", offsetof( instruction, table ) );
-    DoOffset( "u.cse_link", offsetof( instruction, u.cse_link ) );
     DoOffset( "u.gen_table", offsetof( instruction, u.gen_table ) );
-    DoOffset( "u.parm_list", offsetof( instruction, u.parm_list ) );
+    DoOffset( "u2.cse_link", offsetof( instruction, u2.cse_link ) );
+    DoOffset( "u2.parm_list", offsetof( instruction, u2.parm_list ) );
     DoOffset( "zap\t", offsetof( instruction, zap ) );
     DoOffset( "result\t", offsetof( instruction, result ) );
     DoOffset( "id\t", offsetof( instruction, id ) );
@@ -103,23 +104,6 @@ extern  void    DumpInsOffsets() {
     DoOffset( "stk_exit", offsetof( instruction, stk_exit ) );
     DoOffset( "s.stk_extra", offsetof( instruction, s.stk_extra ) );
     DoOffset( "operands[ 0 ]", offsetof( instruction, operands[ 0 ] ) );
-}
-
-extern  void    DumpInsList( block *blk ) {
-/*****************************************/
-
-    instruction *ins;
-
-    ins = blk->ins.hd.next;
-    for(;;) {
-        DumpInOut( ins );
-        if( ins->head.opcode == OP_BLOCK ) break;
-        DumpInsNoNL( ins );
-        DumpLiteral( " " );
-        DumpCond( ins, blk );
-        DumpNL();
-        ins = ins->head.next;
-    }
 }
 
 
@@ -146,331 +130,33 @@ extern  void    DumpITab( instruction *ins ) {
 }
 
 
-extern  void    DumpIns( instruction *ins ) {
-/*******************************************/
-
-   DumpInsNoNL( ins );
-   DumpNL();
-}
-
-
-extern void DumpInstrsOnly( block *blk ) {
-/****************************************/
-
-    instruction *ins;
-
-    ins = blk->ins.hd.next;
-    while( ins->head.opcode != OP_BLOCK ) {
-        DumpIns( ins );
-        ins = ins->head.next;
-    }
-}
-
-
-extern  void DoDumpIInfo( instruction *ins, bool fp ) {
-/*****************************************************/
-
-    if( ins->ins_flags & INS_DEMOTED ) {
-        DumpLiteral( "d" );
-    } else {
-        DumpLiteral( " " );
-    }
-    if( ins->ins_flags & INS_PROMOTED ) {
-        DumpLiteral( "p" );
-    } else {
-        DumpLiteral( " " );
-    }
-    if( _OpIsIFunc( ins->head.opcode ) || _OpIsCall( ins->head.opcode ) || fp ) {
-        DumpByte( ins->sequence );
-        DumpChar( ' ' );
-        DumpChar( ins->stk_entry + '0' );
-        DumpChar( ins->stk_exit + '0' );
-        DumpChar( ins->s.stk_depth + '0' );
-    } else {
-        DumpLiteral( "     " );
-    }
-    if( ins->ins_flags & INS_CC_USED ) {
-        DumpLiteral( "c" );
-    } else {
-        DumpLiteral( " " );
-    }
-    if( ins->head.opcode == OP_CALL ) {
-        DumpLiteral( " " );
-        DumpOperand( ins->operands[ CALL_OP_ADDR ] );
-    }
-    DumpClass( ins->type_class );
-    if( ins->head.opcode == OP_CONVERT ) {
-        DumpClass( ins->base_type_class );
-    }
-    if( _OpIsCondition( ins->head.opcode ) ) {
-        if( _TrueIndex( ins ) == 0 ) {
-            DumpLiteral( "T=0 " );
-        } else {
-            DumpLiteral( "T=1 " );
-        }
-    }
-}
-
-
-extern  void DumpFPInfo( instruction *ins ) {
-/*******************************************/
-
-    DoDumpIInfo( ins, TRUE );
-}
-
-
-extern  void DumpIInfo( instruction *ins ) {
-/*******************************************/
-
-    DoDumpIInfo( ins, FALSE );
-}
-
-
-extern void DumpInsOnly( instruction *ins ) {
-/*******************************************/
-
-    int i;
-
-    DumpOpcodeName( ins->head.opcode );
-    DumpIInfo( ins );
-    if( ins->num_operands != 0 ) {
-        DumpOperand( ins->operands[ 0 ] );
-        i = 0;
-        while( ++i < ins->num_operands ) {
-            DumpLiteral( ", " );
-            DumpOperand( ins->operands[ i ] );
-        }
-    }
-    if( ins->result != NULL ) {
-        DumpLiteral( " ==> " );
-        DumpOperand( ins->result );
-    }
-}
-
-extern  void    DumpLineNum( instruction *ins ) {
-/***********************************************/
-
-    if( ins->head.line_num != 0 ) {
-        DumpLiteral( "    Line number=" );
-        DumpInt( ins->head.line_num );
-        DumpNL();
-    }
-}
-
-extern  void    DumpInsNoNL( instruction *ins ) {
-/*******************************************/
-
-    DumpLineNum( ins );
-    DumpPtr( ins );
-    DumpLiteral( " " );
-    if( ins->head.opcode == OP_BLOCK ) {
-        DumpId( 9999 );
-        DumpLiteral( ":  " );
-        DumpLiteral( "BLOCK" );
-    } else {
-        DumpId( ins->id );
-        DumpLiteral( ":  " );
-        #if _TARGET & (_TARG_80386|_TARG_IAPX86)
-            if( DumpFPUIns( ins ) ) return;
-        #endif
-        DumpInsOnly( ins );
-        if( !HW_CEqual( ins->zap->reg, HW_EMPTY ) ) {
-            DumpLiteral( "           zaps " );
-            DumpRegName( ins->zap->reg );
-        }
-    }
-}
-
-extern  void    DumpCond( instruction *ins, block *blk ) {
-/********************************************************/
-
-    int         i;
-
-    if( !_OpIsCondition( ins->head.opcode ) ) return;
-    if( ins->result == NULL ) {
-        i = _TrueIndex( ins );
-        if( i != NO_JUMP ) {
-            DumpLiteral( " then " );
-            DumpBlkId( blk->edge[  i  ].destination );
-        }
-        i = _FalseIndex( ins );
-        if( i != NO_JUMP ) {
-            DumpLiteral( " else " );
-            DumpBlkId( blk->edge[  i  ].destination );
-        }
-    }
-}
-
-extern  void    DumpTempWId( int id ) {
-/************************************/
-
-    name        *sym;
-
-    DumpNL();
-    sym = Names[ N_TEMP ];
-    while( sym != NULL ) {
-        if( sym->t.v.id == id ) DumpSym( sym );
-        sym = sym->n.next_name;
-    }
-}
-
-
-extern  void    DumpSymList( name *sym ) {
-/****************************************/
-
-    DumpNL();
-    while( sym != NULL ) {
-        DumpSym( sym );
-        sym = sym->n.next_name;
-    }
-}
-
-extern  void    DumpNTemp() {
-/***************************/
-
-    DumpSymList( Names[ N_TEMP ] );
-}
-
-extern  void    DumpNMemory() {
-/*****************************/
-
-    DumpSymList( Names[ N_MEMORY ] );
-}
-
-extern  void    DumpNIndexed() {
-/******************************/
-
-    DumpSymList( Names[ N_INDEXED ] );
-}
-
-extern  void    DumpNConst() {
-/****************************/
-
-    DumpSymList( Names[ N_CONSTANT ] );
-}
-
-extern  void    DumpNRegister() {
-/*******************************/
-
-    DumpSymList( Names[ N_REGISTER ] );
-}
-
-extern  void    DumpSym( name *sym ) {
-/************************************/
-
-    DumpPtr( sym );
-    DumpLiteral( " " );
-    DumpOperand( sym );
-    DumpClass( sym->n.name_class );
-    if( sym->n.name_class == XX ) {
-        DumpLong( sym->n.size );
-    }
-    if( sym->n.class == N_MEMORY || sym->n.class == N_TEMP ) {
-        DumpNL();
-        DumpVUsage( sym );
-        DumpLiteral( "  offset " );
-        DumpLong( sym->v.offset );
-        if( sym->n.class == N_TEMP ) {
-            DumpLiteral( "  location " );
-            DumpLong( sym->t.location );
-            DumpLiteral( "  block id " );
-            DumpInt( sym->t.u.block_id );
-            DumpPossible( sym->t.possible );
-            if( sym->t.temp_flags & ALIAS ) {
-                DumpLiteral( " ALIAS " );
-                sym = DeAlias( sym );
-                DumpPtr( sym );
-            } else if( !( sym->t.temp_flags & ALIAS ) ) {
-                DumpLiteral( " MASTER" );
-            }
-            if( sym->t.temp_flags & VISITED ) {
-                DumpLiteral( " VISITED" );
-            }
-            if( sym->t.temp_flags & INDEXED ) {
-                DumpLiteral( " INDEXED" );
-            }
-            if( sym->t.temp_flags & CAN_STACK ) {
-                DumpLiteral( " CAN_STACK" );
-            }
-            if( sym->t.temp_flags & PUSH_LOCAL ) {
-                DumpLiteral( " PUSH_LOCAL" );
-            }
-            if( sym->t.temp_flags & HAD_CONFLICT ) {
-                DumpLiteral( " HAD_CONFLICT" );
-            }
-            if( sym->t.temp_flags & STACK_PARM ) {
-                DumpLiteral( " STACK_PARM" );
-            }
-            if( sym->t.temp_flags & CROSSES_BLOCKS ) {
-                DumpLiteral( " CROSSES_BLOCKS" );
-            }
-        } else {
-            DumpLiteral( "  alignment " );
-            DumpLong( sym->m.alignment );
-        }
-    } else if( sym->n.class == N_INDEXED ) {
-        if( sym->i.index_flags & X_SEGMENTED ) {
-            DumpLiteral( " X_SEGMENTED" );
-        }
-        if( sym->i.index_flags & X_VOLATILE ) {
-            DumpLiteral( " X_VOLATILE" );
-        }
-        if( sym->i.index_flags & X_ALIGNED_1 ) {
-            DumpLiteral( " X_UNALIGNED" );
-        }
-        if( sym->i.index_flags & X_ALIGNED_2 ) {
-            DumpLiteral( " X_ALIGNED_2" );
-        }
-        if( sym->i.index_flags & X_ALIGNED_4 ) {
-            DumpLiteral( " X_ALIGNED_4" );
-        }
-        if( sym->i.index_flags & X_ALIGNED_8 ) {
-            DumpLiteral( " X_ALIGNED_8" );
-        }
-    }
-    DumpNL();
-}
-
-static char * Usage[] = {
+static char * Types[] = {
 /***********************/
 
-    "USE_IN_BLOCK, ",
-    "USE_IN_OTHER, ",
-    "DEF_IN_BLOCK, ",
-    "USE_ADDRESS , ",
-    "USE_MEMORY  , ",
-    "VAR_VOLATILE, ",
-    "HAS_MEMORY  , ",
-    "NEEDS_MEMORY, ",
+    " U1 ",
+    " I1 ",
+    " U2 ",
+    " I2 ",
+    " U4 ",
+    " I4 ",
+    " U8 ",
+    " I8 ",
+    " CP ",
+    " PT ",
+    " FS ",
+    " FD ",
+    " FL ",
+    " XX ",
     ""
 };
 
-extern  void    DumpVUsage( name *v ) {
-/*************************************/
 
-    var_usage   u;
-    int         i;
-    int         j;
+extern  void    DumpClass( type_class_def tipe ) {
+/***********************************************/
 
-    u = v->v.usage;
-    DumpLiteral( "  Usage " );
-    i = 0;
-    j = 0;
-    for(;;) {
-        if( u & 1 ) {
-            j += 14;
-            if( j > 71 ) {
-                DumpNL();
-                j = 0;
-            }
-            DumpString( Usage[ i ] );
-        }
-        u >>= 1;
-        ++ i;
-        if( u == 0 ) break;
-    }
-    DumpNL();
+    DumpString( Types[ tipe ] );
 }
+
 
 extern  void    DumpOperand( name *operand ) {
 /********************************************/
@@ -549,6 +235,9 @@ extern  void    DumpOperand( name *operand ) {
     } else if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
             if( operand->c.int_value != 0 ) {
+                if( operand->c.int_value_2 != 0
+                && operand->c.int_value_2 != -1 )
+                    Dump8h( operand->c.int_value_2 );
                 Dump8h( operand->c.int_value );
             } else {
                 CFCnvFS( operand->c.value, buffer, 20 );
@@ -626,28 +315,363 @@ extern  void    DumpOperand( name *operand ) {
     }
 }
 
-static char * Types[] = {
+
+extern  void DoDumpIInfo( instruction *ins, bool fp ) {
+/*****************************************************/
+
+    if( ins->ins_flags & INS_DEMOTED ) {
+        DumpLiteral( "d" );
+    } else {
+        DumpLiteral( " " );
+    }
+    if( ins->ins_flags & INS_PROMOTED ) {
+        DumpLiteral( "p" );
+    } else {
+        DumpLiteral( " " );
+    }
+    if( ins->ins_flags & INS_RISCIFIED ) {
+        DumpLiteral( "r" );
+    } else {
+        DumpLiteral( " " );
+    }
+    if( _OpIsIFunc( ins->head.opcode ) || _OpIsCall( ins->head.opcode ) || fp ) {
+        DumpByte( ins->sequence );
+        DumpChar( ' ' );
+        DumpChar( ins->stk_entry + '0' );
+        DumpChar( ins->stk_exit + '0' );
+        DumpChar( ins->s.stk_depth + '0' );
+    } else {
+        DumpLiteral( "     " );
+    }
+    if( ins->ins_flags & INS_CC_USED ) {
+        DumpLiteral( "c" );
+    } else {
+        DumpLiteral( " " );
+    }
+    if( ins->head.opcode == OP_CALL ) {
+        DumpLiteral( " " );
+        DumpOperand( ins->operands[ CALL_OP_ADDR ] );
+    }
+    DumpClass( ins->type_class );
+    if( ins->head.opcode == OP_CONVERT ) {
+        DumpClass( ins->base_type_class );
+    }
+    if( _OpIsCondition( ins->head.opcode ) ) {
+        if( _TrueIndex( ins ) == 0 ) {
+            DumpLiteral( "T=0 " );
+        } else {
+            DumpLiteral( "T=1 " );
+        }
+    }
+}
+
+
+extern  void DumpFPInfo( instruction *ins ) {
+/*******************************************/
+
+    DoDumpIInfo( ins, TRUE );
+}
+
+
+extern  void DumpIInfo( instruction *ins ) {
+/*******************************************/
+
+    DoDumpIInfo( ins, FALSE );
+}
+
+
+extern void DumpInsOnly( instruction *ins ) {
+/*******************************************/
+
+    int i;
+
+    DumpOpcodeName( ins->head.opcode );
+    DumpIInfo( ins );
+    if( ins->num_operands != 0 ) {
+        DumpOperand( ins->operands[ 0 ] );
+        i = 0;
+        while( ++i < ins->num_operands ) {
+            DumpLiteral( ", " );
+            DumpOperand( ins->operands[ i ] );
+        }
+    }
+    if( ins->result != NULL ) {
+        DumpLiteral( " ==> " );
+        DumpOperand( ins->result );
+    }
+}
+
+
+extern  void    DumpLineNum( instruction *ins ) {
+/***********************************************/
+
+    if( ins->head.line_num != 0 ) {
+        DumpLiteral( "    Line number=" );
+        DumpInt( ins->head.line_num );
+        DumpNL();
+    }
+}
+
+
+extern  void    DumpInsNoNL( instruction *ins ) {
+/*******************************************/
+
+    DumpLineNum( ins );
+    DumpPtr( ins );
+    DumpLiteral( " " );
+    if( ins->head.opcode == OP_BLOCK ) {
+        DumpId( 9999 );
+        DumpLiteral( ":  " );
+        DumpLiteral( "BLOCK" );
+    } else {
+        DumpId( ins->id );
+        DumpLiteral( ":  " );
+        #if _TARGET & (_TARG_80386|_TARG_IAPX86)
+            if( DumpFPUIns( ins ) ) return;
+        #endif
+        DumpInsOnly( ins );
+        if( !HW_CEqual( ins->zap->reg, HW_EMPTY ) ) {
+            DumpLiteral( "           zaps " );
+            DumpRegName( ins->zap->reg );
+        }
+    }
+}
+
+
+extern  void    DumpIns( instruction *ins ) {
+/*******************************************/
+
+   DumpInsNoNL( ins );
+   DumpNL();
+}
+
+
+extern void DumpInstrsOnly( block *blk ) {
+/****************************************/
+
+    instruction *ins;
+
+    ins = blk->ins.hd.next;
+    while( ins->head.opcode != OP_BLOCK ) {
+        DumpIns( ins );
+        ins = ins->head.next;
+    }
+}
+
+
+extern  void    DumpCond( instruction *ins, block *blk ) {
+/********************************************************/
+
+    int         i;
+
+    if( !_OpIsCondition( ins->head.opcode ) ) return;
+    if( ins->result == NULL ) {
+        i = _TrueIndex( ins );
+        if( i != NO_JUMP ) {
+            DumpLiteral( " then " );
+            DumpBlkId( blk->edge[  i  ].destination );
+        }
+        i = _FalseIndex( ins );
+        if( i != NO_JUMP ) {
+            DumpLiteral( " else " );
+            DumpBlkId( blk->edge[  i  ].destination );
+        }
+    }
+}
+
+
+static char * Usage[] = {
 /***********************/
 
-    " U1 ",
-    " I1 ",
-    " U2 ",
-    " I2 ",
-    " U4 ",
-    " I4 ",
-    " U8 ",
-    " I8 ",
-    " CP ",
-    " PT ",
-    " FS ",
-    " FD ",
-    " FL ",
-    " XX ",
+    "USE_IN_BLOCK, ",
+    "USE_IN_OTHER, ",
+    "DEF_IN_BLOCK, ",
+    "USE_ADDRESS , ",
+    "USE_MEMORY  , ",
+    "VAR_VOLATILE, ",
+    "HAS_MEMORY  , ",
+    "NEEDS_MEMORY, ",
     ""
 };
 
-extern  void    DumpClass( type_class_def tipe ) {
-/***********************************************/
 
-    DumpString( Types[ tipe ] );
+extern  void    DumpVUsage( name *v ) {
+/*************************************/
+
+    var_usage   u;
+    int         i;
+    int         j;
+
+    u = v->v.usage;
+    DumpLiteral( "  Usage " );
+    i = 0;
+    j = 0;
+    for(;;) {
+        if( u & 1 ) {
+            j += 14;
+            if( j > 71 ) {
+                DumpNL();
+                j = 0;
+            }
+            DumpString( Usage[ i ] );
+        }
+        u >>= 1;
+        ++ i;
+        if( u == 0 ) break;
+    }
+    DumpNL();
+}
+
+
+extern  void    DumpSym( name *sym ) {
+/************************************/
+
+    DumpPtr( sym );
+    DumpLiteral( " " );
+    DumpOperand( sym );
+    DumpClass( sym->n.name_class );
+    if( sym->n.name_class == XX ) {
+        DumpLong( sym->n.size );
+    }
+    if( sym->n.class == N_MEMORY || sym->n.class == N_TEMP ) {
+        DumpNL();
+        DumpVUsage( sym );
+        DumpLiteral( "  offset " );
+        DumpLong( sym->v.offset );
+        if( sym->n.class == N_TEMP ) {
+            DumpLiteral( "  location " );
+            DumpLong( sym->t.location );
+            DumpLiteral( "  block id " );
+            DumpInt( sym->t.u.block_id );
+            // DumpPossible( sym->t.possible );
+            if( sym->t.temp_flags & ALIAS ) {
+                DumpLiteral( " ALIAS " );
+                sym = DeAlias( sym );
+                DumpPtr( sym );
+            } else if( !( sym->t.temp_flags & ALIAS ) ) {
+                DumpLiteral( " MASTER" );
+            }
+            if( sym->t.temp_flags & VISITED ) {
+                DumpLiteral( " VISITED" );
+            }
+            if( sym->t.temp_flags & INDEXED ) {
+                DumpLiteral( " INDEXED" );
+            }
+            if( sym->t.temp_flags & CAN_STACK ) {
+                DumpLiteral( " CAN_STACK" );
+            }
+            if( sym->t.temp_flags & PUSH_LOCAL ) {
+                DumpLiteral( " PUSH_LOCAL" );
+            }
+            if( sym->t.temp_flags & HAD_CONFLICT ) {
+                DumpLiteral( " HAD_CONFLICT" );
+            }
+            if( sym->t.temp_flags & STACK_PARM ) {
+                DumpLiteral( " STACK_PARM" );
+            }
+            if( sym->t.temp_flags & CROSSES_BLOCKS ) {
+                DumpLiteral( " CROSSES_BLOCKS" );
+            }
+        } else {
+            DumpLiteral( "  alignment " );
+            DumpLong( sym->m.alignment );
+        }
+    } else if( sym->n.class == N_INDEXED ) {
+        if( sym->i.index_flags & X_SEGMENTED ) {
+            DumpLiteral( " X_SEGMENTED" );
+        }
+        if( sym->i.index_flags & X_VOLATILE ) {
+            DumpLiteral( " X_VOLATILE" );
+        }
+        if( sym->i.index_flags & X_ALIGNED_1 ) {
+            DumpLiteral( " X_UNALIGNED" );
+        }
+        if( sym->i.index_flags & X_ALIGNED_2 ) {
+            DumpLiteral( " X_ALIGNED_2" );
+        }
+        if( sym->i.index_flags & X_ALIGNED_4 ) {
+            DumpLiteral( " X_ALIGNED_4" );
+        }
+        if( sym->i.index_flags & X_ALIGNED_8 ) {
+            DumpLiteral( " X_ALIGNED_8" );
+        }
+    }
+    DumpNL();
+}
+
+extern  void    DumpTempWId( int id ) {
+/************************************/
+
+    name        *sym;
+
+    DumpNL();
+    sym = Names[ N_TEMP ];
+    while( sym != NULL ) {
+        if( sym->t.v.id == id ) DumpSym( sym );
+        sym = sym->n.next_name;
+    }
+}
+
+
+extern  void    DumpSymList( name *sym ) {
+/****************************************/
+
+    DumpNL();
+    while( sym != NULL ) {
+        DumpSym( sym );
+        sym = sym->n.next_name;
+    }
+}
+
+
+extern  void    DumpNTemp() {
+/***************************/
+
+    DumpSymList( Names[ N_TEMP ] );
+}
+
+
+extern  void    DumpNMemory() {
+/*****************************/
+
+    DumpSymList( Names[ N_MEMORY ] );
+}
+
+
+extern  void    DumpNIndexed() {
+/******************************/
+
+    DumpSymList( Names[ N_INDEXED ] );
+}
+
+
+extern  void    DumpNConst() {
+/****************************/
+
+    DumpSymList( Names[ N_CONSTANT ] );
+}
+
+
+extern  void    DumpNRegister() {
+/*******************************/
+
+    DumpSymList( Names[ N_REGISTER ] );
+}
+
+
+extern  void    DumpInsList( block *blk ) {
+/*****************************************/
+
+    instruction *ins;
+
+    ins = blk->ins.hd.next;
+    for(;;) {
+        DumpInOut( ins );
+        if( ins->head.opcode == OP_BLOCK ) break;
+        DumpInsNoNL( ins );
+        DumpLiteral( " " );
+        DumpCond( ins, blk );
+        DumpNL();
+        ins = ins->head.next;
+    }
 }

@@ -1,0 +1,20 @@
+//DLGINCLUDE RCDATA DISCARDABLE
+//BEGIN
+//    "getnum.h\0"
+//END
+
+GET_NUM_DLG DIALOG 6, 18, 160, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog Title"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK", IDOK, 110, 78, 40, 14
+    LTEXT           "Enter the type of resource to search for", TYPE_TEXT,
+                    15, 7, 126, 17
+    EDITTEXT        GET_NUM_PROMPT, 5, 33, 148, 12, ES_AUTOHSCROLL
+    CONTROL         "Type is numeric", TYPE_IS_NUMERIC, "Button",
+                    BS_AUTORADIOBUTTON, 10, 64, 78, 10
+    CONTROL         "Type is a name", TYPE_IS_NAME, "Button",
+                    BS_AUTORADIOBUTTON, 10, 75, 75, 10
+    GROUPBOX        "", 106, 3, 52, 91, 41
+END

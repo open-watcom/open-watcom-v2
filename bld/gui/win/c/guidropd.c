@@ -35,12 +35,12 @@
 
 bool GUIDropDown( gui_window *wnd, unsigned id, bool drop )
 {
-    gui_control_class class;
+    gui_control_class control_class;
 
-    if( !GUIGetControlClass( wnd, id, &class ) ) {
+    if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( FALSE );
     }
-    switch( class ) {
+    switch( control_class ) {
     case GUI_COMBOBOX :
     case GUI_EDIT_COMBOBOX :
         if( !GUISetFocus( wnd, id ) ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Clear sample data.
 *
 ****************************************************************************/
 
@@ -40,10 +39,7 @@
 #include "wpsrcfil.h"
 #include "wpasmfil.h"
 
-//#include "memutil.def"
-//#include "wpsrcfil.def"
-//#include "wpasmfil.def"
-//#include "dipinter.def"
+
 extern void WPSourceClose(wp_srcfile *wpsrc_file);
 extern void WPDipDestroyProc(process_info *dip_proc);
 extern void WPAsmClose(wp_asmfile *wpasm_file);
@@ -53,12 +49,96 @@ extern sio_data *       SIOData;
 
 
 
-extern void ClearAllSamples()
-/***************************/
+extern void ClearMassaged( sio_data * curr_sio )
+/**********************************************/
 {
-    while( SIOData != NULL ) {
-        ClearSample( SIOData->next );
+    unsigned            index;
+    unsigned            buckets;
+
+
+    if( curr_sio->massaged_sample != NULL ) {
+        buckets = MSG_BUCKET_IDX( curr_sio->number_massaged ) + 1;
+        for( index = 0; index < buckets; ++index ) {
+            ProfFree( curr_sio->massaged_sample[index] );
+        }
+        ProfFree( curr_sio->massaged_sample );
+        curr_sio->massaged_sample = NULL;
     }
+    curr_sio->number_massaged = 0;
+    curr_sio->massaged_mapped = P_FALSE;
+}
+
+
+
+extern void ClearRoutineInfo( file_info * curr_file )
+/***************************************************/
+{
+    rtn_info *      curr_rtn;
+    int             count;
+
+    if( curr_file->routine == NULL ) {
+        return;
+    }
+    count = 0;
+    while( count < curr_file->rtn_count ) {
+        curr_rtn = curr_file->routine[count];
+        if( curr_rtn != NULL ) {
+            if( curr_rtn->sh != NULL ) {
+                ProfFree( curr_rtn->sh );
+            }
+            ProfFree( curr_rtn );
+        }
+        count++;
+    }
+    ProfFree( curr_file->routine );
+    curr_file->routine = NULL;
+    curr_file->rtn_count = 0;
+}
+
+
+
+extern void ClearFileInfo( mod_info * curr_mod )
+/**********************************************/
+{
+    int             count;
+
+    if( curr_mod->mod_file == NULL ) {
+        return;
+    }
+    count = 0;
+    while( count < curr_mod->file_count ) {
+        if( curr_mod->mod_file[count] != NULL ) {
+            ClearRoutineInfo( curr_mod->mod_file[count] );
+            ProfFree( curr_mod->mod_file[count] );
+        }
+        count++;
+    }
+    ProfFree( curr_mod->mod_file );
+    curr_mod->mod_file = NULL;
+    curr_mod->file_count = 0;
+}
+
+
+
+extern void ClearModuleInfo( image_info * curr_image )
+/****************************************************/
+{
+    int             count;
+
+    if( curr_image->module == NULL ) {
+        return;
+    }
+    count = 0;
+    while( count < curr_image->mod_count ) {
+        if( curr_image->module[count] != NULL ) {
+            ClearFileInfo( curr_image->module[count] );
+            ProfFree( curr_image->module[count] );
+        }
+        count++;
+    }
+    ProfFree( curr_image->module );
+    curr_image->module = NULL;
+    curr_image->mod_count = 0;
 }
 
 
@@ -170,94 +250,10 @@ extern void ClearSample( sio_data * curr_sio )
 
 
 
-extern void ClearMassaged( sio_data * curr_sio )
-/**********************************************/
+extern void ClearAllSamples( void )
+/*********************************/
 {
-    unsigned            index;
-    unsigned            buckets;
-
-
-    if( curr_sio->massaged_sample != NULL ) {
-        buckets = MSG_BUCKET_IDX( curr_sio->number_massaged ) + 1;
-        for( index = 0; index < buckets; ++index ) {
-            ProfFree( curr_sio->massaged_sample[index] );
-        }
-        ProfFree( curr_sio->massaged_sample );
-        curr_sio->massaged_sample = NULL;
+    while( SIOData != NULL ) {
+        ClearSample( SIOData->next );
     }
-    curr_sio->number_massaged = 0;
-    curr_sio->massaged_mapped = B_FALSE;
-}
-
-
-
-extern void ClearModuleInfo( image_info * curr_image )
-/****************************************************/
-{
-    int             count;
-
-    if( curr_image->module == NULL ) {
-        return;
-    }
-    count = 0;
-    while( count < curr_image->mod_count ) {
-        if( curr_image->module[count] != NULL ) {
-            ClearFileInfo( curr_image->module[count] );
-            ProfFree( curr_image->module[count] );
-        }
-        count++;
-    }
-    ProfFree( curr_image->module );
-    curr_image->module = NULL;
-    curr_image->mod_count = 0;
-}
-
-
-
-extern void ClearFileInfo( mod_info * curr_mod )
-/**********************************************/
-{
-    int             count;
-
-    if( curr_mod->mod_file == NULL ) {
-        return;
-    }
-    count = 0;
-    while( count < curr_mod->file_count ) {
-        if( curr_mod->mod_file[count] != NULL ) {
-            ClearRoutineInfo( curr_mod->mod_file[count] );
-            ProfFree( curr_mod->mod_file[count] );
-        }
-        count++;
-    }
-    ProfFree( curr_mod->mod_file );
-    curr_mod->mod_file = NULL;
-    curr_mod->file_count = 0;
-}
-
-
-
-extern void ClearRoutineInfo( file_info * curr_file )
-/***************************************************/
-{
-    rtn_info *      curr_rtn;
-    int             count;
-
-    if( curr_file->routine == NULL ) {
-        return;
-    }
-    count = 0;
-    while( count < curr_file->rtn_count ) {
-        curr_rtn = curr_file->routine[count];
-        if( curr_rtn != NULL ) {
-            if( curr_rtn->sh != NULL ) {
-                ProfFree( curr_rtn->sh );
-            }
-            ProfFree( curr_rtn );
-        }
-        count++;
-    }
-    ProfFree( curr_file->routine );
-    curr_file->routine = NULL;
-    curr_file->rtn_count = 0;
 }

@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default implementation of __dll_terminate().
 *
 ****************************************************************************/
 
 
 #pragma off (unreferenced)
 
-unsigned        __dll_terminate() {
-/*****************************/
-
+unsigned __dll_terminate( void )
+/******************************/
+{
     return( 1 );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Search DWARF debug information (useful for source browser).
 *
 ****************************************************************************/
 
@@ -37,23 +36,22 @@
 
 typedef struct {
     int         (*callback)( dr_sym_context *, void * );
-    regexp *    name;
-    void *      data;
+    regexp      *name;
+    void        *data;
     dr_search   searchtype;
 } sym_search_data;
 
-static bool DRSearchMacro( regexp *, void *,
-                int (*cb)(dr_sym_context *, void *) );
+static bool DRSearchMacro( regexp *, void *, int (*cb)(dr_sym_context *, void *) );
 
 static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo,
                                                          void *data )
 /****************************************************************************/
 {
     int                 index;
-    sym_search_data *   sinfo;
+    sym_search_data     *sinfo;
     dr_sym_context      symctxt;
 
-    sinfo = (sym_search_data *) data;
+    sinfo = (sym_search_data *)data;
 
     symctxt.handle = minfo->handle;
     symctxt.context = minfo->context;
@@ -61,10 +59,10 @@ static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo,
     symctxt.name = NULL;
     if( sinfo->name != NULL ) {
         symctxt.name = DWRGetName( abbrev, mod );
-        if( symctxt.name == NULL ) return TRUE;
+        if( symctxt.name == NULL ) return( TRUE );
         if( !RegExec( sinfo->name, symctxt.name, TRUE ) ) {
             DWRFREE( symctxt.name );
-            return TRUE;
+            return( TRUE );
         }
     }
 
@@ -76,19 +74,20 @@ static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo,
         }
     }
 
-    return sinfo->callback( &symctxt, sinfo->data );
+    return( sinfo->callback( &symctxt, sinfo->data ) );
 }
 
-extern bool DRSymSearch( dr_search search, dr_depth depth, regexp * name,
-                         void * data,
-                int (*callback)(dr_sym_context *, void *) )
-/******************************************************************************/
+extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
+                         void *data,
+                         int (*callback)(dr_sym_context *, void *) )
+/**********************************************************************/
 // search the debugging information for interesting symbols (of type dr_search)
 // optionally search inside lexical blocks or classes (dr_depth)
 // optionally look for a particular name.
 {
     sym_search_data info;
     bool            done = FALSE;
+    regexp          *name = _name;
 
     if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
         done |= DRSearchMacro( name, data, callback );
@@ -103,18 +102,19 @@ extern bool DRSymSearch( dr_search search, dr_depth depth, regexp * name,
                                         SearchTypes[search], depth, &info );
     }
 
-    return done;
+    return( done );
 }
 
-extern bool DRResumeSymSearch( dr_search_context * ctxt, dr_search search,
-                               dr_depth depth, regexp * name,
-                               void * data,
+extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
+                               dr_depth depth, void *_name,
+                               void *data,
                                int (*callback)(dr_sym_context *, void *) )
-/******************************************************************************/
+/************************************************************************/
 // resume a search from context information in ctxt
 {
     sym_search_data info;
     bool            done = FALSE;
+    regexp          *name = _name;
 
     if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
         done |= DRSearchMacro( name, data, callback );
@@ -129,26 +129,26 @@ extern bool DRResumeSymSearch( dr_search_context * ctxt, dr_search search,
                                         SearchTypes[search], depth, &info );
     }
 
-    return done;
+    return( done );
 }
 
 static bool DRSearchMacro( regexp *name, void * data,
                 int (*callback)( dr_sym_context *, void *) )
-/******************************************************************************/
+/**********************************************************/
 {
-    name = name;                // just to avoid warnings.
+    name = name;            // just to avoid warnings.
     data = data;
     callback = callback;
     // NYI
 
-    return FALSE;    // more info, in case anyone checks
+    return( FALSE );        // more info, in case anyone checks
 }
 
-extern dr_search_context * DRDuplicateSearchContext( dr_search_context * cxt )
-/****************************************************************************/
+extern dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
+/***************************************************************************/
 {
     int                 i;
-    dr_search_context * newCtxt;
+    dr_search_context   *newCtxt;
 
     newCtxt = DWRALLOC( sizeof( dr_search_context ) );
     *newCtxt = *cxt; /* structure copy */
@@ -161,11 +161,11 @@ extern dr_search_context * DRDuplicateSearchContext( dr_search_context * cxt )
         newCtxt->stack.stack[ i ] = cxt->stack.stack[ i ];
     }
 
-    return newCtxt;
+    return( newCtxt );
 }
 
-extern void DRFreeSearchContext( dr_search_context * ctxt )
-/*********************************************************/
+extern void DRFreeSearchContext( dr_search_context *ctxt )
+/********************************************************/
 {
     DWRFREE( ctxt->stack.stack );
     DWRFREE( ctxt );

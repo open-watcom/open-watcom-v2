@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
 #include "memmgr.h"
 #include "stringl.h"
@@ -132,14 +129,15 @@ static STRING_CONSTANT findLiteral( unsigned len )
     return( initLiteral( literal ) );
 }
 
-static unsigned compressLiteral( char *tgt, char *str, unsigned len )
+static unsigned compressLiteral( char *tgt, char *s, unsigned len )
 /********************************************************************/
 {
-    unsigned chr;               // - current character
-    char     chr_1;             // - one char ahead of current char
-    char     classification;    // - escape classification
-    int      max_digs;          // - max digits remaining
-    unsigned new_len;           // - length after escapes processed
+    unsigned char   *str = (unsigned char *)s;
+    int             chr;               // - current character
+    int             chr_1;             // - one char ahead of current char
+    int             classification;    // - escape classification
+    int             max_digs;          // - max digits remaining
+    unsigned        new_len;           // - length after escapes processed
     struct {
         unsigned wide_string : 1;
     } flags;

@@ -49,24 +49,20 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned mode, int *posix_ha
     DWORD       attr;
     int         hid;
     unsigned    iomode_flags;
-    int         error;
 
     // First try to get the required slot.
     // No point in creating a file only to not use it.  JBS 99/11/01
     hid = __allocPOSIXHandle( DUMMY_HANDLE );
     if( hid == -1 ) {
-        __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
-        return( ERROR_NOT_ENOUGH_MEMORY );
+        return( __set_errno_dos_reterr( ERROR_NOT_ENOUGH_MEMORY ) );
     }
 
     __GetNTCreateAttr( mode, &desired_access, &attr );
     handle = CreateFile( (LPTSTR) name, desired_access, 0, 0, CREATE_NEW,
                     attr, NULL );
     if( handle == (HANDLE)-1 ) {
-        error = GetLastError();
-        __set_errno_dos( error );
         __freePOSIXHandle( hid );
-        return( error );
+        return( __set_errno_nt_reterr() );
     }
     // Now use the slot we got.
     __setOSHandle( hid, handle );   // JBS 99/11/01

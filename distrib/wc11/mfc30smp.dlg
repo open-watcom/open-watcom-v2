@@ -1,0 +1,52 @@
+name=dMFC30SMP
+any_check=mfc30smp
+static_text=\
+        //1"Select MFC 3.0 Samples:"\
+        //2"MFC 3.0 サンプルを選択してください:"\
+        //0
+static_text=
+check_box=         mfc30bin,,\
+        //1"&Include sample program executables"\
+        //2"サンプル・プログラムの実行可能ファイルを含めます (&I)"\
+        //0
+check_box         =mfc30smp_autoclik,,"autoclik"
+check_box_continue=mfc30smp_calcdriv,,"calcdriv"
+check_box_continue=mfc30smp_catalog,,"catalog"
+check_box_continue=mfc30smp_chkbook,,"chkbook"
+check_box         =mfc30smp_clipart,,"clipart"
+check_box_continue=mfc30smp_collect,,"collect"
+check_box_continue=mfc30smp_contain,,"contain"
+check_box_continue=mfc30smp_ctrlbars,,"ctrlbars"
+check_box         =mfc30smp_ctrltest,,"ctrltest"
+check_box_continue=mfc30smp_diblook,,"diblook"
+check_box_continue=mfc30smp_dllhusk,,"dllhusk"
+check_box_continue=mfc30smp_dlltrace,,"dlltrace"
+check_box         =mfc30smp_docktool,,"docktool"
+check_box_continue=mfc30smp_drawcli,,"drawcli"
+check_box_continue=mfc30smp_dynabind,,"dynabind"
+check_box_continue=mfc30smp_dynamenu,,"dynamenu"
+check_box         =mfc30smp_enroll,,"enroll"
+check_box_continue=mfc30smp_hello,,"hello"
+check_box_continue=mfc30smp_helloapp,,"helloapp"
+check_box_continue=mfc30smp_hiersvr,,"hiersvr"
+check_box         =mfc30smp_makehm,,"makehm"
+check_box_continue=mfc30smp_mdi,,"mdi"
+check_box_continue=mfc30smp_mfcans32,,"mfcans32"
+check_box_continue=mfc30smp_mfcuix32,,"mfcuix32"
+check_box         =mfc30smp_mtmdi,,"mtmdi"
+check_box_continue=mfc30smp_mtrecalc,,"mtrecalc"
+check_box_continue=mfc30smp_multipad,,"multipad"
+check_box_continue=mfc30smp_oclient,,"oclient"
+check_box         =mfc30smp_propdlg,,"propdlg"
+check_box_continue=mfc30smp_scribble,,"scribble"
+check_box_continue=mfc30smp_speakn,,"speakn"
+check_box_continue=mfc30smp_stdreg,,"stdreg"
+check_box         =mfc30smp_superpad,,"superpad"
+check_box_continue=mfc30smp_templdef,,"templdef"
+check_box_continue=mfc30smp_tracer,,"tracer"
+check_box_continue=mfc30smp_tracker,,"tracker"
+check_box         =mfc30smp_viewex,,"viewex"
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

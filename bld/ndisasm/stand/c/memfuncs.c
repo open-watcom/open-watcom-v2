@@ -24,43 +24,89 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  memory tracking cover functions
 *
 ****************************************************************************/
 
-
-#include "trmemcvr.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include "trmem.h"
 #include "memfuncs.h"
+
+#ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+static int          TRFileHandle;   /* stream to put output on */
+static void MemPrintLine( int *, const char * buff, size_t len );
+#endif
+
+#if defined( NLM ) || !defined( __WATCOMC__ )
+    /* There is no equivalent expand function in NetWare or non-Watcom libs. */
+    #define _expand NULL
+#else
+    #include <malloc.h>
+#endif
 
 void MemOpen( void )
 {
-    TRMemOpen();
+#ifdef TRMEM
+    #ifdef NLM
+        TRFileHandle = STDERR_HANDLE;
+    #else
+        TRFileHandle = STDERR_FILENO;
+    #endif
+    TRMemHandle = _trmem_open( malloc, free, realloc, _expand,
+            &TRFileHandle, MemPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
 }
 
 void *MemAlloc( size_t size )
 {
-    return( TRMemAlloc( size ) );
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
 }
 
 void *MemRealloc( void *ptr, size_t size )
 {
-    return( TRMemRealloc( ptr, size ) );
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
 }
 
 void MemFree( void *ptr )
 {
-    TRMemFree( ptr );
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( ptr );
+#endif
 }
 
 void MemPrtList( void )
 {
 #ifdef TRMEM
-    TRMemPrtList();
+    _trmem_prt_list( TRMemHandle );
 #endif
 }
 
 void MemClose( void )
 {
-    TRMemClose();
+#ifdef TRMEM
+    _trmem_close( TRMemHandle );
+#endif
 }
+
+#ifdef TRMEM
+/* extern to avoid problems with taking address and overlays */
+extern void MemPrintLine( int * handle, const char * buff, size_t len )
+/********************************************************************/
+{
+    write( *handle, buff, len );
+}
+#endif

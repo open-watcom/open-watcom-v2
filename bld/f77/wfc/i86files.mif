@@ -1,0 +1,8 @@
+i86root =
+
+i86ovl1 = &
+    i4mul.obj
+
+i86ovl2 =
+
+i86files = $(i86root) $(i86ovl1) $(i86ovl2)

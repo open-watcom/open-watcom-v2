@@ -1,0 +1,915 @@
+/*
+ * afx.inl      Inline implementation of functions declared in afx.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE int CString::Collate( PCTSTR psz ) const
+/*************************************************/
+{
+    return( _tcscoll( m_psz, psz ) );
+}
+
+AFX_INLINE int CString::CollateNoCase( PCTSTR psz ) const
+/*******************************************************/
+{
+    return( _tcsicoll( m_psz, psz ) );
+}
+
+AFX_INLINE int CString::Compare( PCTSTR psz ) const
+/*************************************************/
+{
+    return( _tcscmp( m_psz, psz ) );
+}
+
+AFX_INLINE int CString::CompareNoCase( PCTSTR psz ) const
+/*******************************************************/
+{
+    return( _tcsicmp( m_psz, psz ) );
+}
+
+AFX_INLINE void CString::Empty()
+/******************************/
+{
+    m_nDataLength = 0;
+    m_psz[0] = _T('\0');
+}
+
+AFX_INLINE int CString::GetAllocLength() const
+/********************************************/
+{
+    return( m_nAllocLength );
+}
+
+AFX_INLINE PTSTR CString::GetBuffer()
+/***********************************/
+{
+    return( m_psz );
+}
+
+AFX_INLINE PTSTR CString::GetBufferSetLength( int nLength )
+/*********************************************************/
+{
+    Preallocate( nLength );
+    return( m_psz );
+}
+
+AFX_INLINE int CString::GetLength() const
+/***************************************/
+{
+    return( m_nDataLength );
+}
+
+AFX_INLINE PCTSTR CString::GetString() const
+/******************************************/
+{
+    return( m_psz );
+}
+
+AFX_INLINE BOOL CString::IsEmpty() const
+/**************************************/
+{
+    return( m_nDataLength == 0 );
+}
+
+AFX_INLINE CString &CString::MakeLower()
+/**************************************/
+{
+    _tcslwr( m_psz );
+    return( *this );
+}
+
+AFX_INLINE CString &CString::MakeReverse()
+/****************************************/
+{
+    _tcsrev( m_psz );
+    return( *this );
+}
+
+AFX_INLINE CString &CString::MakeUpper()
+/**************************************/
+{
+    _tcsupr( m_psz );
+    return( *this );
+}
+
+AFX_INLINE CString &CString::operator+=( const CString &strSrc )
+/**************************************************************/
+{
+    Append( strSrc );
+    return( *this );
+}
+
+AFX_INLINE CString &CString::operator=( const CString &strSrc )
+/*************************************************************/
+{
+    SetString( strSrc.m_psz );
+    return( *this );
+}
+
+AFX_INLINE TCHAR CString::operator[]( int iChar ) const
+/*****************************************************/
+{
+    return( GetAt( iChar ) );
+}
+
+AFX_INLINE CString::operator PCTSTR() const
+/*****************************************/
+{
+    return( m_psz );
+}
+
+AFX_INLINE CString operator+( const CString &str1, const CString &str2 )
+/**********************************************************************/
+{
+    CString str( str1 );
+    str += str2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( const CString &str1, PCTSTR psz2 )
+/**************************************************************/
+{
+    CString str( str1 );
+    str += psz2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( PCTSTR psz1, const CString &str2 )
+/**************************************************************/
+{
+    CString str( psz1 );
+    str += str2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( char ch1, const CString &str2 )
+/***********************************************************/
+{
+    CString str( ch1 );
+    str += str2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( const CString &str1, char ch2 )
+/***********************************************************/
+{
+    CString str( str1 );
+    str += ch2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( wchar_t ch1, const CString &str2 )
+/**************************************************************/
+{
+    CString str( ch1 );
+    str += str2;
+    return( str );
+}
+
+AFX_INLINE CString operator+( const CString &str1, wchar_t ch2 )
+/**************************************************************/
+{
+    CString str( str1 );
+    str += ch2;
+    return( str );
+}
+
+AFX_INLINE BOOL operator==( const CString &str1, const CString &str2 )
+/********************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) == 0 );
+}
+
+AFX_INLINE BOOL operator==( const CString &str1, PCTSTR psz2 )
+/************************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) == 0 );
+}
+
+AFX_INLINE BOOL operator==( const CString &str1, TCHAR ch2 )
+/**********************************************************/
+{
+    return( str1.m_nDataLength == 1 && str1.m_psz[0] == ch2 );
+}
+
+AFX_INLINE BOOL operator==( PCTSTR psz1, const CString &str2 )
+/************************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) == 0 );
+}
+
+AFX_INLINE BOOL operator==( TCHAR ch1, const CString &str2 )
+/**********************************************************/
+{
+    return( str2.m_nDataLength == 1 && str2.m_psz[0] == ch1 );
+}
+
+AFX_INLINE BOOL operator!=( const CString &str1, const CString &str2 )
+/********************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) != 0 );
+}
+
+AFX_INLINE BOOL operator!=( const CString &str1, PCTSTR psz2 )
+/************************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) != 0 );
+}
+
+AFX_INLINE BOOL operator!=( const CString &str1, TCHAR ch2 )
+/**********************************************************/
+{
+    return( str1.m_nDataLength != 1 || str1.m_psz[0] != ch2 );
+}
+
+AFX_INLINE BOOL operator!=( PCTSTR psz1, const CString &str2 )
+/************************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) != 0 );
+}
+
+AFX_INLINE BOOL operator!=( TCHAR ch1, const CString &str2 )
+/**********************************************************/
+{
+    return( str2.m_nDataLength != 1 || str2.m_psz[0] != ch1 );
+}
+
+AFX_INLINE BOOL operator<( const CString &str1, const CString &str2 )
+/*******************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) < 0 );
+}
+
+AFX_INLINE BOOL operator<( const CString &str1, PCTSTR psz2 )
+/***********************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) < 0 );
+}
+
+AFX_INLINE BOOL operator<( PCTSTR psz1, const CString &str2 )
+/***********************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) < 0 );
+}
+
+AFX_INLINE BOOL operator>( const CString &str1, const CString &str2 )
+/*******************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) > 0 );
+}
+
+AFX_INLINE BOOL operator>( const CString &str1, PCTSTR psz2 )
+/***********************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) > 0 );
+}
+
+AFX_INLINE BOOL operator>( PCTSTR psz1, const CString &str2 )
+/***********************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) > 0 );
+}
+
+AFX_INLINE BOOL operator<=( const CString &str1, const CString &str2 )
+/********************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) <= 0 );
+}
+
+AFX_INLINE BOOL operator<=( const CString &str1, PCTSTR psz2 )
+/************************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) <= 0 );
+}
+
+AFX_INLINE BOOL operator<=( PCTSTR psz1, const CString &str2 )
+/************************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) <= 0 );
+}
+
+AFX_INLINE BOOL operator>=( const CString &str1, const CString &str2 )
+/********************************************************************/
+{
+    return( _tcscmp( str1.m_psz, str2.m_psz ) >= 0 );
+}
+
+AFX_INLINE BOOL operator>=( const CString &str1, PCTSTR psz2 )
+/************************************************************/
+{
+    return( _tcscmp( str1.m_psz, psz2 ) >= 0 );
+}
+
+AFX_INLINE BOOL operator>=( PCTSTR psz1, const CString &str2 )
+/************************************************************/
+{
+    return( _tcscmp( psz1, str2.m_psz ) >= 0 );
+}
+
+AFX_INLINE AFX_CLASSINIT::AFX_CLASSINIT( CRuntimeClass *pNewClass )
+/*****************************************************************/
+{
+    AfxClassInit( pNewClass );
+}
+
+AFX_INLINE CObject::CObject( const CObject & )
+/********************************************/
+{
+}
+
+AFX_INLINE CString CFile::GetFilePath() const
+/*******************************************/
+{
+    return( m_strFileName );
+}
+
+AFX_INLINE void CFile::SeekToBegin()
+/**********************************/
+{
+    Seek( 0LL, begin );
+}
+
+AFX_INLINE ULONGLONG CFile::SeekToEnd()
+/*************************************/
+{
+    return( Seek( 0LL, end ) );
+}
+
+AFX_INLINE void CFile::SetFilePath( LPCTSTR lpszNewName )
+/*******************************************************/
+{
+    m_strFileName = lpszNewName;
+}
+
+AFX_INLINE CFile::operator HANDLE() const
+/***************************************/
+{
+    return( m_hFile );
+}
+
+AFX_INLINE CFile *CArchive::GetFile() const
+/*****************************************/
+{
+    return( m_pFile );
+}
+
+AFX_INLINE UINT CArchive::GetObjectSchema()
+/*****************************************/
+{
+    return( m_nObjectSchema );
+}
+
+AFX_INLINE BOOL CArchive::IsBufferEmpty() const
+/*********************************************/
+{
+    return( m_lpBufStart == m_lpBufCur );
+}
+
+AFX_INLINE BOOL CArchive::IsLoading() const
+/*****************************************/
+{
+    return( (m_nMode & (store | load)) == load );
+}
+
+AFX_INLINE BOOL CArchive::IsStoring() const
+/*****************************************/
+{
+    return( (m_nMode & (store | load)) == store );
+}
+
+AFX_INLINE void CArchive::SetObjectSchema( UINT nSchema )
+/*******************************************************/
+{
+    m_nObjectSchema = nSchema;
+}
+
+AFX_INLINE void CArchive::WriteString( LPCTSTR lpsz )
+/***************************************************/
+{
+    Write( lpsz, _tcslen( lpsz ) * sizeof( TCHAR ) );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( const CObject *pOb )
+/*************************************************************/
+{
+    WriteObject( pOb );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( BYTE by )
+/**************************************************/
+{
+    Write( (const void *)&by, sizeof( BYTE ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( WORD w )
+/*************************************************/
+{
+    Write( (const void *)&w, sizeof( WORD ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( LONG l )
+/*************************************************/
+{
+    Write( (const void *)&l, sizeof( LONG ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( DWORD dw )
+/***************************************************/
+{
+    Write( (const void *)&dw, sizeof( DWORD ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( float f )
+/**************************************************/
+{
+    Write( (const void *)&f, sizeof( float ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( double d )
+/***************************************************/
+{
+    Write( (const void *)&d, sizeof( double ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( int i )
+/************************************************/
+{
+    Write( (const void *)&i, sizeof( int ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( short w )
+/**************************************************/
+{
+    Write( (const void *)&w, sizeof( short ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( char ch )
+/**************************************************/
+{
+    Write( (const void *)&ch, sizeof( char ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( wchar_t ch )
+/*****************************************************/
+{
+    Write( (const void *)&ch, sizeof( wchar_t ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( unsigned u )
+/*****************************************************/
+{
+    Write( (const void *)&u, sizeof( unsigned ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( bool b )
+/*************************************************/
+{
+    Write( (const void *)&b, sizeof( bool ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( ULONGLONG dwdw )
+/*********************************************************/
+{
+    Write( (const void *)&dwdw, sizeof( ULONGLONG ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator<<( LONGLONG dwdw )
+/********************************************************/
+{
+    Write( (const void *)&dwdw, sizeof( LONGLONG ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( const CObject *&pOb )
+/**************************************************************/
+{
+    pOb = ReadObject( NULL );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( CObject *&pOb )
+/********************************************************/
+{
+    pOb = ReadObject( NULL );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( BYTE &by )
+/***************************************************/
+{
+    Read( (void *)&by, sizeof( BYTE ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( WORD &w )
+/**************************************************/
+{
+    Read( (void *)&w, sizeof( WORD ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( int &i )
+/*************************************************/
+{
+    Read( (void *)&i, sizeof( int ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( LONG &l )
+/**************************************************/
+{
+    Read( (void *)&l, sizeof( LONG ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( DWORD &dw )
+/****************************************************/
+{
+    Read( (void *)&dw, sizeof( DWORD ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( float &f )
+/***************************************************/
+{
+    Read( (void *)&f, sizeof( float ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( double &d )
+/****************************************************/
+{
+    Read( (void *)&d, sizeof( double ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( short &w )
+/***************************************************/
+{
+    Read( (void *)&w, sizeof( short ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( char &ch )
+/***************************************************/
+{
+    Read( (void *)&ch, sizeof( char ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( wchar_t &ch )
+/******************************************************/
+{
+    Read( (void *)&ch, sizeof( wchar_t ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( unsigned &u )
+/******************************************************/
+{
+    Read( (void *)&u, sizeof( unsigned ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( bool &b )
+/**************************************************/
+{
+    Read( (void *)&b, sizeof( bool ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( ULONGLONG &dwdw )
+/**********************************************************/
+{
+    Read( (void *)&dwdw, sizeof( ULONGLONG ) );
+    return( *this );
+}
+
+AFX_INLINE CArchive &CArchive::operator>>( LONGLONG &dwdw )
+/*********************************************************/
+{
+    Read( (void *)&dwdw, sizeof( LONGLONG ) );
+    return( *this );
+}
+
+AFX_INLINE CTimeSpan::CTimeSpan()
+/*******************************/
+{
+}
+
+AFX_INLINE CTimeSpan::CTimeSpan( const CTimeSpan &timeSpanSrc )
+/*************************************************************/
+{
+    m_timeSpan = timeSpanSrc.m_timeSpan;
+}
+
+AFX_INLINE CTimeSpan::CTimeSpan( time_t time )
+/********************************************/
+{
+    m_timeSpan = time;
+}
+
+AFX_INLINE CTimeSpan::CTimeSpan( LONG lDays, int nHours, int nMins, int nSecs )
+/*****************************************************************************/
+{
+    m_timeSpan = nSecs + 60 * (nMins + 60 * (nHours + 24 * lDays));
+}
+
+AFX_INLINE LONGLONG CTimeSpan::GetDays() const
+/********************************************/
+{
+    return( m_timeSpan / (60 * 60 * 24) );
+}
+
+AFX_INLINE LONG CTimeSpan::GetHours() const
+/*****************************************/
+{
+    return( (LONG)(GetTotalHours() - (GetDays() * 24)) );
+}
+
+AFX_INLINE LONG CTimeSpan::GetMinutes() const
+/*******************************************/
+{
+    return( (LONG)(GetTotalMinutes() - (GetTotalHours() * 60)) );
+}
+
+AFX_INLINE LONG CTimeSpan::GetSeconds() const
+/*******************************************/
+{
+    return( (LONG)(GetTotalSeconds() - (GetTotalMinutes() * 60)) );
+}
+
+AFX_INLINE time_t CTimeSpan::GetTimeSpan() const
+/**********************************************/
+{
+    return( m_timeSpan );
+}
+
+AFX_INLINE LONGLONG CTimeSpan::GetTotalHours() const
+/**************************************************/
+{
+    return( m_timeSpan / (60 * 60) );
+}
+
+AFX_INLINE LONGLONG CTimeSpan::GetTotalMinutes() const
+/****************************************************/
+{
+    return( m_timeSpan / 60 );
+}
+
+AFX_INLINE LONGLONG CTimeSpan::GetTotalSeconds() const
+/****************************************************/
+{
+    return( m_timeSpan );
+}
+
+AFX_INLINE CTimeSpan CTimeSpan::operator+( CTimeSpan span ) const
+/***************************************************************/
+{
+    return( CTimeSpan( m_timeSpan + span.m_timeSpan ) );
+}
+
+AFX_INLINE CTimeSpan CTimeSpan::operator-( CTimeSpan span ) const
+/***************************************************************/
+{
+    return( CTimeSpan( m_timeSpan - span.m_timeSpan ) );
+}
+
+AFX_INLINE CTimeSpan CTimeSpan::operator+=( CTimeSpan span )
+/**********************************************************/
+{
+    m_timeSpan += span.m_timeSpan;
+    return( *this );
+}
+
+AFX_INLINE CTimeSpan CTimeSpan::operator-=( CTimeSpan span )
+/**********************************************************/
+{
+    m_timeSpan -= span.m_timeSpan;
+    return( *this );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator==( CTimeSpan span ) const
+/***********************************************************/
+{
+    return( m_timeSpan == span.m_timeSpan );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator!=( CTimeSpan span ) const
+/***********************************************************/
+{
+    return( m_timeSpan != span.m_timeSpan );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator<( CTimeSpan span ) const
+/**********************************************************/
+{
+    return( m_timeSpan < span.m_timeSpan );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator>( CTimeSpan span ) const
+/**********************************************************/
+{
+    return( m_timeSpan > span.m_timeSpan );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator<=( CTimeSpan span ) const
+/***********************************************************/
+{
+    return( m_timeSpan <= span.m_timeSpan );
+}
+
+AFX_INLINE BOOL CTimeSpan::operator>=( CTimeSpan span ) const
+/***********************************************************/
+{
+    return( m_timeSpan >= span.m_timeSpan );
+}
+
+AFX_INLINE CTime::CTime()
+/***********************/
+{
+}
+
+AFX_INLINE CTime::CTime( const CTime& timeSrc )
+/*********************************************/
+{
+    m_time = timeSrc.m_time;
+}
+
+AFX_INLINE CTime::CTime( time_t time )
+/************************************/
+{
+    m_time = time;
+}
+
+AFX_INLINE time_t CTime::GetTime() const
+/**************************************/
+{
+    return( m_time );
+}
+
+AFX_INLINE CTime &CTime::operator=( time_t time )
+/***********************************************/
+{
+    m_time = time;
+    return( *this );
+}
+
+AFX_INLINE CTime CTime::operator+( CTimeSpan timeSpan ) const
+/***********************************************************/
+{
+    return( CTime( m_time + timeSpan.GetTimeSpan() ) );
+}
+
+AFX_INLINE CTime CTime::operator-( CTimeSpan timeSpan ) const
+/***********************************************************/
+{
+    return( CTime( m_time - timeSpan.GetTimeSpan() ) );
+}
+
+AFX_INLINE CTimeSpan CTime::operator-( CTime time ) const
+/*******************************************************/
+{
+    return( CTimeSpan( m_time - time.m_time ) );
+}
+
+AFX_INLINE CTime &CTime::operator+=( CTimeSpan span )
+/***************************************************/
+{
+    m_time += span.GetTimeSpan();
+    return( *this );
+}
+
+AFX_INLINE CTime &CTime::operator-=( CTimeSpan span )
+/***************************************************/
+{
+    m_time -= span.GetTimeSpan();
+    return( *this );
+}
+
+AFX_INLINE BOOL CTime::operator==( CTime time ) const
+/***************************************************/
+{
+    return( m_time == time.m_time );
+}
+
+AFX_INLINE BOOL CTime::operator!=( CTime time ) const
+/***************************************************/
+{
+    return( m_time != time.m_time );
+}
+
+AFX_INLINE BOOL CTime::operator<( CTime time ) const
+/**************************************************/
+{
+    return( m_time < time.m_time );
+}
+
+AFX_INLINE BOOL CTime::operator>( CTime time ) const
+/**************************************************/
+{
+    return( m_time > time.m_time );
+}
+
+AFX_INLINE BOOL CTime::operator<=( CTime time ) const
+/***************************************************/
+{
+    return( m_time <= time.m_time );
+}
+
+AFX_INLINE BOOL CTime::operator>=( CTime time ) const
+/***************************************************/
+{
+    return( m_time >= time.m_time );
+}
+
+AFX_INLINE BOOL CFileFind::IsArchived() const
+/*******************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_ARCHIVE ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsCompressed() const
+/*********************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_COMPRESSED ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsDirectory() const
+/********************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_DIRECTORY ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsHidden() const
+/*****************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_HIDDEN ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsNormal() const
+/*****************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_NORMAL ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsReadOnly() const
+/*******************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_READONLY ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsSystem() const
+/*****************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_SYSTEM ) );
+}
+
+AFX_INLINE BOOL CFileFind::IsTemporary() const
+/********************************************/
+{
+    return( MatchesMask( FILE_ATTRIBUTE_TEMPORARY ) );
+}
+
+AFX_INLINE int CDumpContext::GetDepth() const
+/*******************************************/
+{
+    return( m_nDepth );
+}
+
+AFX_INLINE void CDumpContext::SetDepth( int nNewDepth )
+/*****************************************************/
+{
+    m_nDepth = nNewDepth;
+}
+
+AFX_INLINE void AFXAPI AfxAbort()
+/*******************************/
+{
+    abort();
+}
+
+#ifdef _DEBUG
+
+AFX_INLINE void AfxDump( const CObject *pOb )
+/*******************************************/
+{
+    afxDump << pOb;
+}
+
+#endif

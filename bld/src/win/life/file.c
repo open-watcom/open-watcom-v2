@@ -27,7 +27,7 @@ BOOL GetFileName( char *name, BOOL save, char *ext,
     *ptr = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
-    of.hwndOwner = NULL;
+    of.hwndOwner = (HWND)0;
     of.lpstrFilter = (LPSTR) filter;
     of.lpstrDefExt = "";
     of.nFilterIndex = 1L;

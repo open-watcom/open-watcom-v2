@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeCBoxCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeCBoxInit        ( Bool );
-extern void              WdeCBoxFini        ( void );
+extern OBJPTR WINEXPORT  WdeCBoxCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeCBoxInit( Bool );
+extern void              WdeCBoxFini( void );
 
 #endif

@@ -46,14 +46,14 @@
 #include "cmdos2.h"
 
 
-extern bool ProcPharLap( void )
+bool ProcPharLap( void )
 /*****************************/
 {
     ProcOne( PharModels, SEP_NO, FALSE );
     return( TRUE );
 }
 
-extern void SetPharFmt( void )
+void SetPharFmt( void )
 /****************************/
 {
     Extension = E_PROTECT;
@@ -77,7 +77,7 @@ extern void SetPharFmt( void )
     ChkBase(4*1024);
 }
 
-extern void FreePharFmt( void )
+void FreePharFmt( void )
 /*****************************/
 {
     _LnkFree( FmtData.u.phar.breaksym );
@@ -85,13 +85,13 @@ extern void FreePharFmt( void )
     _LnkFree( FmtData.u.phar.stub );
 }
 
-extern bool ProcPharFlat( void )
+bool ProcPharFlat( void )
 /******************************/
 {
     return( TRUE );
 }
 
-extern bool ProcRex( void )
+bool ProcRex( void )
 /*************************/
 {
     Extension = E_REX;
@@ -99,7 +99,7 @@ extern bool ProcRex( void )
     return( TRUE );
 }
 
-extern bool ProcPharSegmented( void )
+bool ProcPharSegmented( void )
 /***********************************/
 {
     LinkState |= MAKE_RELOCS;       // make relocations;
@@ -109,7 +109,7 @@ extern bool ProcPharSegmented( void )
 #if 0
  .exp packing executables implemented yet.
 
-extern bool ProcPackExp( void )
+bool ProcPackExp( void )
 /*****************************/
 {
     FmtData.u.phar.pack = TRUE;
@@ -117,32 +117,32 @@ extern bool ProcPackExp( void )
 }
 #endif
 
-extern bool ProcMinData( void )
+bool ProcMinData( void )
 /*****************************/
 {
     return( GetLong( &FmtData.u.phar.mindata ) );
 }
 
-extern bool ProcMaxData( void )
+bool ProcMaxData( void )
 /*****************************/
 {
     return( GetLong( &FmtData.u.phar.maxdata ) );
 }
 
-extern bool ProcUnpriv( void )
+bool ProcUnpriv( void )
 /****************************/
 {
     FmtData.u.phar.params->unpriv = 1;
     return( TRUE );
 }
 
-extern bool ProcPriv( void )
+bool ProcPriv( void )
 /**************************/
 {
     return( TRUE );
 }
 
-extern bool ProcFlags( void )
+bool ProcFlags( void )
 /****************************/
 {
     bool    ret;
@@ -153,7 +153,7 @@ extern bool ProcFlags( void )
     return( ret );
 }
 
-extern bool ProcMinReal( void )
+bool ProcMinReal( void )
 /*****************************/
 {
     unsigned_32 value;
@@ -161,7 +161,7 @@ extern bool ProcMinReal( void )
 
     ret = GetLong( &value );
     if( ret ) {
-        value >>= 4;       // value specified in paragraphs
+        value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "minreal" );
         } else {
@@ -171,7 +171,7 @@ extern bool ProcMinReal( void )
     return( ret );
 }
 
-extern bool ProcMaxReal( void )
+bool ProcMaxReal( void )
 /*****************************/
 {
     unsigned_32 value;
@@ -179,7 +179,7 @@ extern bool ProcMaxReal( void )
 
     ret = GetLong( &value );
     if( ret ) {
-        value >>= 4;       // value specified in paragraphs
+        value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "maxreal" );
         } else {
@@ -189,7 +189,7 @@ extern bool ProcMaxReal( void )
     return( ret );
 }
 
-extern bool ProcRealBreak( void )
+bool ProcRealBreak( void )
 /*******************************/
 {
     unsigned_32     value;
@@ -210,7 +210,7 @@ extern bool ProcRealBreak( void )
     return( TRUE );
 }
 
-extern bool ProcCallBufs( void )
+bool ProcCallBufs( void )
 /******************************/
 {
     unsigned_32 value;
@@ -228,7 +228,7 @@ extern bool ProcCallBufs( void )
     return( ret );
 }
 
-extern bool ProcMiniBuf( void )
+bool ProcMiniBuf( void )
 /*****************************/
 {
     unsigned_32 value;
@@ -246,7 +246,7 @@ extern bool ProcMiniBuf( void )
     return( ret );
 }
 
-extern bool ProcMaxiBuf( void )
+bool ProcMaxiBuf( void )
 /*****************************/
 {
     unsigned_32 value;
@@ -264,7 +264,7 @@ extern bool ProcMaxiBuf( void )
     return( ret );
 }
 
-extern bool ProcNIStack( void )
+bool ProcNIStack( void )
 /*****************************/
 {
     unsigned_32 value;
@@ -281,7 +281,7 @@ extern bool ProcNIStack( void )
     return( ret );
 }
 
-extern bool ProcIStkSize( void )
+bool ProcIStkSize( void )
 /******************************/
 {
     unsigned_32 value;

@@ -133,7 +133,7 @@ void WFlashPage::flashTimer( WTimer*, DWORD )
     delete this;
 }
 
-void WFlashPage::okButton( WButton* )
+void WFlashPage::okButton( WWindow* )
 {
     delete this;
 }

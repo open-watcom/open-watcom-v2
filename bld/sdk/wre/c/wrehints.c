@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
 #include <string.h>
-#include <win1632.h>
+#include "win1632.h"
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wrestat.h"
@@ -42,7 +42,7 @@
 #include "wrelist.h"
 #include "wrehints.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -115,6 +115,8 @@ static WREHintItem WREHints[] =
 ,   { IDM_MDI_ARRANGE           , WRE_HINT_MDI_ARRANGE          }
 ,   { IDM_ABOUT                 , WRE_HINT_ABOUT                }
 ,   { IDM_HELP                  , WRE_HINT_HELP                 }
+,   { IDM_HELP_SEARCH           , WRE_HINT_HELP_SEARCH          }
+,   { IDM_HELP_ON_HELP          , WRE_HINT_HELP_ON_HELP         }
 ,   { IDM_DELETE                , WRE_HINT_DELETE               }
 ,   { IDM_CUT                   , WRE_HINT_CUT                  }
 ,   { IDM_PASTE                 , WRE_HINT_PASTE                }
@@ -122,7 +124,7 @@ static WREHintItem WREHints[] =
 ,   { IDM_LOAD_SYMBOLS          , WRE_HINT_LOAD_SYMBOLS         }
 ,   { IDM_EDIT_SYMBOLS          , WRE_HINT_VIEW_SYMBOLS         }
 ,   { IDM_SAVE_SYMBOLS          , WRE_HINT_WRITE_SYMBOLS        }
-,   { -1                        , NULL                          }
+,   { -1                        , 0                             }
 };
 
 static WREPopupHintItem WREPopupHints[] =

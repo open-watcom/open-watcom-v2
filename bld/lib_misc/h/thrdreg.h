@@ -24,41 +24,59 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal per-thread data registration interface.
 *
 ****************************************************************************/
 
 
 #ifndef _THRDREG_H_INCLUDED
+#define _THRDREG_H_INCLUDED
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
+
+#if defined(_M_IX86)
     #include "extfunc.h"
-    typedef void thread_fn( void * );
-    #if defined(_M_IX86)
-        #pragma aux (__outside_CLIB) thread_fn;
+    #pragma aux (__outside_CLIB) thread_fn;
+#endif
+
+#if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
+    #if defined(__RDOS__)
+        typedef int     beginner( thread_fn *start_addr, const char *thread_name,
+                                  unsigned stack_size, void *arglist );
+    #elif defined(__RDOSDEV__)
+        typedef int     beginner( thread_fn *start_addr, int prio, const char *thread_name,
+                                  unsigned stack_size, void *arglist );
+    #else                                
+        typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
+                                  unsigned stack_size, void *arglist );
     #endif
-    typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
-                                unsigned stack_size, void *arglist );
     typedef void    ender( void );
     typedef int     initializer( void *p );
 
     #ifdef __NT__
-        typedef void __stdcall thread_fnex( void * );
+        typedef unsigned __stdcall thread_fnex( void * );
         typedef unsigned long beginnerex( void *security,
-            unsigned stack_size, thread_fnex start_address, void *arglist,
+            unsigned stack_size, thread_fnex *start_address, void *arglist,
             unsigned initflag, unsigned *thrdaddr );
         typedef void enderex( unsigned retval );
     #endif
 
-    _WCRTLINK extern  void    __RegisterThreadData( beginner **begin,
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    _WCRTLINK extern  void      __RegisterThreadData( beginner **begin,
                                                  ender **end,
                                                  initializer **init );
 
-    _WCRTLINK extern unsigned __RegisterThreadDataSize( unsigned size );
-    _WCRTLINK extern void *(*__GetThreadPtr)();
-    _WCRTLINK extern unsigned   __ThreadDataSize;
+    _WCRTLINK extern unsigned   __RegisterThreadDataSize( unsigned size );
+    _WCRTDATA extern struct thread_data *(*__GetThreadPtr)( void );
+    _WCRTDATA extern unsigned   __ThreadDataSize;
+
+#ifdef __cplusplus
+}
 #endif
 
-#define _THRDREG_H_INCLUDED
+#endif
+
 #endif

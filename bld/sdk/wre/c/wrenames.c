@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
 #include <string.h>
 #include "wrdll.h"
@@ -41,7 +41,7 @@
 #include "wremain.h"
 #include "wremem.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wrehints.h"
 #include "wreseted.h"
 #include "wrestat.h"
@@ -62,25 +62,24 @@
 /* type definition                                                          */
 /****************************************************************************/
 
-WRETypeName WRETypeNames[] =
-{
-    { 12 /* RT_GROUP_CURSOR */  , WRE_CURSORGROUPNAME   , FALSE }
-,   { 14 /* RT_GROUP_ICON */    , WRE_ICONGROUPNAME     , FALSE }
-,   { (uint_16)RT_BITMAP        , WRE_BITMAPNAME        , FALSE }
-,   { (uint_16)RT_MENU          , WRE_MENUNAME          , FALSE }
-,   { (uint_16)RT_DIALOG        , WRE_DIALOGNAME        , FALSE }
-,   { (uint_16)RT_STRING        , WRE_STRINGNAME        , FALSE }
-,   { (uint_16)RT_FONT          , WRE_FONTNAME          , FALSE }
-,   { (uint_16)RT_ACCELERATOR   , WRE_ACCELNAME         , FALSE }
-,   { (uint_16)RT_RCDATA        , WRE_USERDATANAME      , FALSE }
-,   { (uint_16)RT_FONTDIR       , WRE_FONTDIRNAME       , FALSE }
-,   { (uint_16)RT_CURSOR        , WRE_CURSORNAME        , TRUE  }
-,   { (uint_16)RT_ICON          , WRE_ICONNAME          , TRUE  }
-,   { (uint_16)RT_FONTDIR       , WRE_FONTDIRNAME       , FALSE }
-,   { (uint_16)RT_MESSAGETABLE  , WRE_MESSAGETABLENAME  , FALSE }
-,   { (uint_16)RT_VERSION       , WRE_VERSIONNAME       , FALSE }
-,   { (uint_16)RT_DLGINCLUDE    , WRE_DLGINCLUDENAME    , FALSE }
-,   { 0                         , 0                     , FALSE }
+WRETypeName WRETypeNames[] = {
+    { (uint_16)RT_GROUP_CURSOR, WRE_CURSORGROUPNAME,    FALSE },
+    { (uint_16)RT_GROUP_ICON,   WRE_ICONGROUPNAME,      FALSE },
+    { (uint_16)RT_BITMAP,       WRE_BITMAPNAME,         FALSE },
+    { (uint_16)RT_MENU,         WRE_MENUNAME,           FALSE },
+    { (uint_16)RT_DIALOG,       WRE_DIALOGNAME,         FALSE },
+    { (uint_16)RT_STRING,       WRE_STRINGNAME,         FALSE },
+    { (uint_16)RT_FONT,         WRE_FONTNAME,           FALSE },
+    { (uint_16)RT_ACCELERATOR,  WRE_ACCELNAME,          FALSE },
+    { (uint_16)RT_RCDATA,       WRE_USERDATANAME,       FALSE },
+    { (uint_16)RT_FONTDIR,      WRE_FONTDIRNAME,        FALSE },
+    { (uint_16)RT_CURSOR,       WRE_CURSORNAME,         TRUE  },
+    { (uint_16)RT_ICON,         WRE_ICONNAME,           TRUE  },
+    { (uint_16)RT_FONTDIR,      WRE_FONTDIRNAME,        FALSE },
+    { (uint_16)RT_MESSAGETABLE, WRE_MESSAGETABLENAME,   FALSE },
+    { (uint_16)RT_VERSION,      WRE_VERSIONNAME,        FALSE },
+    { (uint_16)RT_DLGINCLUDE,   WRE_DLGINCLUDENAME,     FALSE },
+    { 0,                        0,                      FALSE }
 };
 
 static Bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
@@ -95,23 +94,22 @@ static void WREResetListbox( HWND lbox )
     }
 }
 
-static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type,
-                                 WResTypeNode **typeNode )
+static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNode )
 {
     WResTypeNode        *tnode;
-    int                 count;
+    LRESULT             count;
     int                 i;
     Bool                ok;
 
-    ok = ( lbox != (HWND)NULL );
+    ok = (lbox != (HWND)NULL);
 
     if( ok ) {
-        count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-        ok = ( count != LB_ERR );
+        count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+        ok = (count != LB_ERR);
     }
 
     if( ok ) {
-        for( i = 0; i<count; i++ ) {
+        for( i = 0; i < count; i++ ) {
             tnode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)i, 0 );
             if( tnode != NULL ) {
                 if( (uint_16)tnode->Info.TypeName.ID.Num == type ) {
@@ -140,25 +138,25 @@ Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 
     text = NULL;
 
-    ok = ( tnode && lbox != (HWND)NULL );
+    ok = (tnode != NULL && lbox != (HWND)NULL);
 
     if( ok ) {
         if( tnode->Info.TypeName.IsName ) {
-            text = WResIDToStr( &(tnode->Info.TypeName) );
+            text = WResIDToStr( &tnode->Info.TypeName );
         } else {
             tn = WREGetTypeNameFromRT( (uint_16)tnode->Info.TypeName.ID.Num );
-            if( tn && ( tn->name != -1 ) && !tn->exclude ) {
+            if( tn != NULL && tn->name != -1 && !tn->exclude ) {
                 text = tn->typeName;
             }
         }
-        ok = ( text != NULL );
+        ok = (text != NULL);
     }
 
     if( ok ) {
         ok = WRESetLBoxWithStr( lbox, text, tnode );
     }
 
-    if( text && tnode->Info.TypeName.IsName ) {
+    if( text != NULL && tnode->Info.TypeName.IsName ) {
         WREMemFree( text );
     }
 
@@ -195,14 +193,14 @@ static Bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 
     ok = TRUE;
     count = 0;
-    for( tnode = dir->Head; tnode && ok; tnode = tnode->Next ) {
+    for( tnode = dir->Head; tnode != NULL && ok; tnode = tnode->Next ) {
         if( !tnode->Info.TypeName.IsName ) {
             WREAddToTypeListBox( lbox, tnode );
-            ++count;
+            count++;
         }
     }
 
-    ok = ( count != 0 );
+    ok = (count != 0);
 
     return( ok );
 }
@@ -211,7 +209,7 @@ Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
 {
     Bool           ok;
 
-    ok = ( info != NULL && info->info != NULL );
+    ok = (info != NULL && info->info != NULL);
 
     if( ok ) {
         ok = WREInitTypeListBox( info->info_win, info->info->dir );
@@ -221,7 +219,7 @@ Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
         ok = WRESetResNamesFromType( info, type, FALSE, NULL, 0 );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
@@ -231,22 +229,22 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     HWND                typeLbox;
     int                 typeIndex;
     WResTypeNode        *tnode;
-    int                 max_index;
+    LRESULT             max_index;
     char                *str;
     Bool                ok;
 
     tnode = NULL;
 
-    ok = ( info != NULL );
+    ok = (info != NULL);
 
-    if( ok && type && ( info->current_type == type ) && !force ) {
+    if( ok && type != 0 && info->current_type == type && !force ) {
         return( TRUE );
     }
 
     if( ok ) {
-        resLbox  = GetDlgItem( info->info_win, IDM_RNRES );
+        resLbox = GetDlgItem( info->info_win, IDM_RNRES );
         typeLbox = GetDlgItem( info->info_win, IDM_RNTYPE );
-        ok = ( ( resLbox != (HWND)NULL ) && ( typeLbox != (HWND)NULL ) );
+        ok = (resLbox != (HWND)NULL && typeLbox != (HWND)NULL);
     }
 
     if( ok ) {
@@ -255,12 +253,11 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
         if( type != 0 ) {
             typeIndex = WREFindTypeLBoxIndex( typeLbox, type, &tnode );
         } else {
-            int count;
+            LRESULT count;
             count = SendMessage( typeLbox, LB_GETCOUNT, 0, 0 );
             if( count != 0 && count != LB_ERR ) {
-                tnode = (WResTypeNode *)
-                    SendMessage( typeLbox, LB_GETITEMDATA,
-                                 (WPARAM)typeIndex, 0 );
+                tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA,
+                                                     (WPARAM)typeIndex, 0 );
             }
         }
         if( typeIndex == -1 ) {
@@ -280,23 +277,22 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     }
 
     if( ok ) {
-        if( name ) {
+        if( name != NULL ) {
             index = LB_ERR;
             str = WResIDToStr( name );
-            if( str ) {
-                index = (int)
-                    SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM) str );
+            if( str != NULL ) {
+                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
                 WREMemFree( str );
             }
             if( index == LB_ERR ) {
                 index = 0;
             }
         }
-        max_index = (int) SendMessage( resLbox, LB_GETCOUNT, 0, 0 );
+        max_index = SendMessage( resLbox, LB_GETCOUNT, 0, 0 );
         if( max_index == LB_ERR ) {
             max_index = 0;
         }
-        index = min( index, max_index-1 );
+        index = min( index, max_index - 1 );
         SendMessage( resLbox, LB_SETCURSEL, (WPARAM)index, 0 );
         WRESetTotalText( info );
         if( GetActiveWindow() == WREGetMainWindowHandle() ) {
@@ -313,31 +309,30 @@ Bool WREAddResNames( WREResInfo *info )
     HWND                typeLbox;
     WResTypeNode        *tnode;
     Bool                redrawOff;
-    int                 index;
+    LRESULT             index;
     Bool                ok;
 
     redrawOff = FALSE;
 
-    ok = ( info != NULL );
+    ok = (info != NULL);
 
     if( ok ) {
         typeLbox = GetDlgItem( info->info_win, IDM_RNTYPE );
         resLbox = GetDlgItem( info->info_win, IDM_RNRES );
-        ok = ( ( typeLbox != (HWND)NULL ) && ( resLbox != (HWND)NULL ) );
+        ok = (typeLbox != (HWND)NULL && resLbox != (HWND)NULL);
     }
 
     if( ok ) {
         SendMessage( resLbox, WM_SETREDRAW, FALSE, 0 );
         redrawOff = TRUE;
         WREResetListbox( resLbox );
-        index = (int)SendMessage( typeLbox, LB_GETCURSEL, 0, 0 );
-        ok = ( index != LB_ERR );
+        index = SendMessage( typeLbox, LB_GETCURSEL, 0, 0 );
+        ok = (index != LB_ERR);
     }
 
     if( ok ) {
-        tnode = (WResTypeNode *)
-            SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)index, 0 );
-        ok = ( tnode != NULL );
+        tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
@@ -379,7 +374,7 @@ Bool WREInitTotalText( void )
     WRETotalText = WREAllocRCString( WRE_TOTALTEXT );
     WRETotalTextOne = WREAllocRCString( WRE_TOTALTEXT_ONE );
     WRETotalTextNone = WREAllocRCString( WRE_TOTALTEXT_NONE );
-    if( !WRETotalText || !WRETotalTextOne || !WRETotalTextNone ) {
+    if( WRETotalText == NULL || WRETotalTextOne == NULL || WRETotalTextNone == NULL ) {
         return( FALSE );
     }
     return( TRUE );
@@ -389,20 +384,21 @@ void WRESetTotalText( WREResInfo *info )
 {
     HWND        total;
     HWND        lbox;
-    int         count;
+    LRESULT     count;
     char        *buf;
 
-    if( !info || !WRETotalText || !WRETotalTextOne || !WRETotalTextNone ) {
+    if( info == NULL || WRETotalText == NULL || WRETotalTextOne == NULL ||
+        WRETotalTextNone == NULL ) {
         return;
     }
 
     lbox = GetDlgItem( info->info_win, IDM_RNRES );
     total = GetDlgItem( info->info_win, IDM_RNTOTALTEXT );
-    if( ( lbox == (HWND)NULL ) || ( total == (HWND)NULL ) ) {
+    if( lbox == (HWND)NULL || total == (HWND)NULL ) {
         return;
     }
 
-    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     if( count == LB_ERR ) {
         count = 0;
     }
@@ -413,33 +409,31 @@ void WRESetTotalText( WREResInfo *info )
         SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextOne );
     } else {
         buf = WREMemAlloc( strlen( WRETotalText ) + 20 + 1 );
-        if( buf ) {
+        if( buf != NULL ) {
             sprintf( buf, WRETotalText, count );
             SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
             WREMemFree( buf );
         }
     }
-
-    return;
 }
 
 WRETypeName *WREGetTypeNameFromRT( uint_16 type )
 {
     int i;
 
-    for ( i = 0; WRETypeNames[i].name; i++ ) {
+    for( i = 0; WRETypeNames[i].name != 0; i++ ) {
         if( WRETypeNames[i].type == type ) {
-            return ( &WRETypeNames[i] );
+            return( &WRETypeNames[i] );
         }
     }
-    return ( FALSE );
+    return( FALSE );
 }
 
 void WREInitTypeNames( void )
 {
     int i;
 
-    for( i = 0; WRETypeNames[i].name; i++ ) {
+    for( i = 0; WRETypeNames[i].name != 0; i++ ) {
         WRETypeNames[i].typeName = WREAllocRCString( WRETypeNames[i].name );
     }
 }
@@ -448,10 +442,9 @@ void WREFiniTypeNames( void )
 {
     int i;
 
-    for( i = 0; WRETypeNames[i].name; i++ ) {
+    for( i = 0; WRETypeNames[i].name != 0; i++ ) {
         if( WRETypeNames[i].typeName != NULL ) {
             WREFreeRCString( WRETypeNames[i].typeName );
         }
     }
 }
-

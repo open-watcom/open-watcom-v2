@@ -24,16 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Builder utility functions.
 *
 ****************************************************************************/
-
 
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <time.h>
+#ifndef __UNIX__
 #include <share.h>
+#endif
+#include "watcom.h"
 #include "builder.h"
 
 void Fatal( const char *str, ... )
@@ -41,7 +43,7 @@ void Fatal( const char *str, ... )
     va_list     arg;
 
     va_start( arg, str );
-        vfprintf( stderr, str, arg );
+    vfprintf( stderr, str, arg );
     va_end( arg );
     if( LogFile != NULL ) {
         va_start( arg, str );
@@ -58,8 +60,8 @@ void Log( bool quiet, const char *str, ... )
 
     va_start( arg, str );
 
-        if (!quiet)
-                vfprintf( stderr, str, arg );
+    if( !quiet )
+        vfprintf( stderr, str, arg );
     va_end( arg );
     if( LogFile != NULL ) {
         va_start( arg, str );
@@ -68,19 +70,33 @@ void Log( bool quiet, const char *str, ... )
     }
 }
 
-void LogFlush()
+void LogFlush( void )
 {
-        fflush( stderr );
-    if( LogFile != NULL ) fflush( LogFile );
+    fflush( stderr );
+    if( LogFile != NULL )
+        fflush( LogFile );
 }
 
 void OpenLog( const char *name )
 {
-   LogFile = _fsopen( name, "w", SH_DENYWR );
-   if( LogFile == NULL ) {
-       Fatal( "Can not open '%s': %s\n", name, strerror( errno ) );
-   }
-   setvbuf( LogFile, NULL, _IOLBF, BUFSIZ );
+#ifdef __UNIX__
+    LogFile = fopen( name, "w" );
+#else
+    LogFile = _fsopen( name, "w", SH_DENYWR );
+#endif
+    if( LogFile == NULL ) {
+        Fatal( "Can not open '%s': %s\n", name, strerror( errno ) );
+    }
+    setvbuf( LogFile, NULL, _IOLBF, BUFSIZ );
+}
+
+void CloseLog( void )
+{
+    LogFlush();
+    if( LogFile != NULL ) {
+        fclose( LogFile );
+        LogFile = NULL;
+    }
 }
 
 void *Alloc( unsigned size )
@@ -96,14 +112,8 @@ void *Alloc( unsigned size )
 
 char *SkipBlanks( const char *p )
 {
-    for( ;; ) {
-        switch( *p ) {
-        case ' ':
-        case '\t':
-            break;
-        default:
-            return( (char*)p );
-        }
+    while( ( *p == ' ' ) || ( *p == '\t' ) ) {
         ++p;
     }
+    return( ( char* ) p );
 }

@@ -1,0 +1,40 @@
+*$noreference
+
+! Input Functions:
+! ----------------
+
+      external EnableWindow
+      external GetActiveWindow
+      external GetCapture
+      external GetCurrentTime
+      external GetDoubleClickTime
+      external GetFocus
+      external GetTickCount
+      external IsWindowEnabled
+      external KillTimer
+      external ReleaseCapture
+      external SetActiveWindow
+      external SetCapture
+      external SetDoubleClickTime
+      external SetFocus
+      external SetSysModalWindow
+      external SetTimer
+      external SwapMouseButton
+
+      integer*2 EnableWindow
+      integer*2 GetActiveWindow
+      integer*2 GetCapture
+      integer*4 GetCurrentTime
+      integer*2 GetDoubleClickTime
+      integer*2 GetFocus
+      integer*4 GetTickCount
+      integer*2 IsWindowEnabled
+      integer*2 KillTimer
+      integer*2 SetActiveWindow
+      integer*2 SetCapture
+      integer*2 SetFocus
+      integer*2 SetSysModalWindow
+      integer*2 SetTimer
+      integer*2 SwapMouseButton
+
+*$reference

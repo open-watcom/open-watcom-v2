@@ -31,8 +31,9 @@
 
 
 #include "gdefn.h"
+#include "grfuncs.h"
 
-short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2, short y2,
+_WCRTLINK short _WCI86FAR _CGRAPH _pie( short fill, short x1, short y1, short x2, short y2,
 /*====================*/ short x3, short y3, short x4, short y4 )
 
 {

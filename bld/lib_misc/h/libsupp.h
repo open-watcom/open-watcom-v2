@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C runtime library internal functions that are needed
+*               in other libraries.
 *
 ****************************************************************************/
 
@@ -33,14 +33,11 @@
 #ifndef _LIBSUPP_H_INCLUDED
 #define _LIBSUPP_H_INCLUDED
 
-// these are C runtime library internal functions that are needed in
-// other libraries
-
 #include "variety.h"
 #include <stdio.h>
 
-_WCRTLINK extern void __set_EDOM();
-_WCRTLINK extern void __set_ERANGE();
+_WCRTLINK extern void __set_EDOM( void );
+_WCRTLINK extern void __set_ERANGE( void );
 _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
 
 #endif

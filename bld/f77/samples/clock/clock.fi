@@ -1,0 +1,121 @@
+c$noreference
+
+        include 'windefn.fi'
+
+        integer BUFLEN
+        parameter ( BUFLEN = 30 ) ! name buffer length
+
+        integer MAXDOTWIDTH
+        integer MINDOTWIDTH
+        integer MINDOTHEIGHT
+
+        parameter ( MAXDOTWIDTH         = 25 ) ! maximum hour-marking dot width
+        parameter ( MINDOTWIDTH         = 2 )  ! minimum hour-marking dot width
+        parameter ( MINDOTHEIGHT        = 1 )  ! minimum hour-marking dot height
+
+! Defines for menu items
+
+        integer IDM_ABOUT
+        integer IDS_ABOUTMENU
+        integer IDS_APPNAME
+        integer IDS_DATA
+        integer IDS_TOOMANY
+
+        parameter ( IDM_ABOUT           = 1001 )
+        parameter ( IDS_ABOUTMENU       = 1 )
+        parameter ( IDS_APPNAME         = 2 )
+        parameter ( IDS_DATA            = 3 )
+        parameter ( IDS_TOOMANY         = 4 )
+
+! hand and paint flags
+
+        logical HHAND
+        logical MHAND
+        integer PAINTALL
+        integer HANDPAINT
+
+        parameter ( HHAND       = .TRUE. )
+        parameter ( MHAND       = .FALSE. )
+        parameter ( PAINTALL    = 0 )
+        parameter ( HANDPAINT   = 1 )
+
+! timer interval when the clock window is ...
+
+        integer OPEN_TLEN
+        integer ICON_TLEN
+
+        parameter ( OPEN_TLEN   = 450 )   ! ... open   (every second)
+        parameter ( ICON_TLEN   = 59000 ) ! ... iconic (every minute)
+
+! distance from the center of the clock to ...
+
+        integer HOURSIDE
+        integer MINUTESIDE
+        integer HOURTIP
+        integer MINUTETIP
+        integer SECONDTIP
+        integer HOURTAIL
+        integer MINUTETAIL
+
+        parameter ( HOURSIDE    = 7 )   ! ... either side of the hour hand
+        parameter ( MINUTESIDE  = 5 )   ! ... either side of the minute hand
+        parameter ( HOURTIP     = 65 )  ! ... the tip of the hour hand
+        parameter ( MINUTETIP   = 80 )  ! ... the tip of the minute hand
+        parameter ( SECONDTIP   = 80 )  ! ... the tip of the second hand
+        parameter ( HOURTAIL    = 15 )  ! ... the tail of the hour hand
+        parameter ( MINUTETAIL  = 20 )  ! ... the tail of the minute hand
+
+! conversion factors
+
+        integer CIRTABSCALE
+        integer MMPERDM
+
+        parameter ( CIRTABSCALE = 8000 ) ! circle table values scale down value
+        parameter ( MMPERDM     = 100 )  ! millimeters per decimeter
+
+! number of hand positions on ...
+
+        integer HANDPOSITIONS
+        integer SIDESHIFT
+        integer TAILSHIFT
+
+        parameter ( HANDPOSITIONS = 60 )              ! ... entire clock
+        parameter ( SIDESHIFT   = HANDPOSITIONS / 4 ) ! ...  90 degrees of clock
+        parameter ( TAILSHIFT   = HANDPOSITIONS / 2 ) ! ... 180 degrees of clock
+
+! Structure for holding time (in hours, minutes, and seconds)
+
+        structure /time/
+            integer*2   hour
+            integer*2   minute
+            integer*2   second
+        end structure
+
+        integer*2 hbrForegnd ! foreground brush - system window text color
+        integer*2 hbrBackgnd ! background brush - system window backbround color
+        integer*2 hpenForegnd ! foreground pen - system window text color
+        integer*2 hpenBackgnd ! background pen - system window background color
+        integer*2 hInst     ! instance of the CLOCK program being executed
+        logical   bFirst    ! TRUE if this is the 1st instance; FALSE otherwise
+        integer*2 hCirTab   ! Circle table for the circular clock face positions
+        integer TimerID     ! number used for timer-id
+        character*(BUFLEN) szBuffer ! buffer for stringtable data
+        record /RECT/   ClockRect ! rectangle that EXACTLY bounds the clock face
+        integer*4 ClockRadius      ! clock face radius
+        record /POINT/ ClockCenter ! clock face center
+        logical bIconic   ! TRUE if clock is currently iconic; FALSE otherwise
+        integer _HorzRes   ! width of the display (in pixels)
+        integer _VertRes   ! height of the display (in raster lines)
+        integer*4 AspectH ! number of pixels per decimeter on the display
+        integer*4 AspectV ! number of raster lines per decimeter on the display
+        record /TIME/ oTime ! the time currently displayed on the clock          */
+        character*64 _class ! class name
+        integer*4 CirTab
+
+        common /time_data/ hbrForegnd, hbrBackgnd, hpenForegnd,
+     &                     hpenBackgnd, hInst, bFirst, hCirTab, CirTab,
+     &                     TimerID, szBuffer, ClockRect, ClockRadius,
+     &                     ClockCenter, bIconic, _HorzRes, _VertRes,
+     &                     AspectH, AspectV, oTime, _class
+
+c$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _CMain() for 16-bit x86 platforms.
 *
 ****************************************************************************/
 
@@ -33,6 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include "widechar.h"
+#include "initarg.h"
 
 #pragma aux     _CMain  "_*";
 
@@ -40,23 +41,19 @@
         ___Argc, ___Argv will be filled in by an initializer routine
         if main is defined with parameters.
 */
-_WCRTLINK extern        int     ___Argc;        /* argument count */
-_WCRTLINK extern        char ** ___Argv;        /* argument vector */
-
 
 #if defined(__SW_BD)
- extern unsigned __dll_initialize();
- int _CMain()
-    {
-        _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
-        return( __dll_initialize() );
-    }
+extern unsigned __dll_initialize( void );
+int _CMain( void )
+{
+    _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
+    return( __dll_initialize() );
+}
 #else
- extern int     main( int, char ** );
- void _CMain()
-    {
-        _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
-        exit( main( ___Argc, ___Argv ) );
-    }
+extern int     main( int, char ** );
+void _CMain( void )
+{
+    _amblksiz = 8 * 1024;   /* set minimum memory block allocation */
+    exit( main( ___Argc, ___Argv ) );
+}
 #endif
-

@@ -51,65 +51,69 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-char *WRStrDup ( const char *src )
+char *WRStrDup( const char *src )
 {
     char *dest;
 
-    if ( src ) {
-        if ( dest = WRMemAlloc ( strlen ( src ) + 1 ) ) {
-            strcpy ( dest, src );
+    if( src != NULL ) {
+        if( (dest = WRMemAlloc( strlen( src ) + 1 )) != NULL ) {
+            strcpy( dest, src );
         }
     } else {
-        return ( NULL );
+        return( NULL );
     }
 
-    return ( dest );
+    return( dest );
 }
 
 char *WRCopyString( char *mem, char *str, int len )
 {
     memcpy( mem, str, len );
-    return( mem+len );
+    return( mem + len );
 }
 
-BOOL WRIsStrSpace( char *s )
+BOOL WRIsStrSpace( char *_s )
 {
-    if( s ) {
-        for( ; *s; s=_mbsinc(s) ) {
-            if( _mbclen( s ) != 1 || ( _mbclen( s ) == 1 && !isspace( *s ) ) ) {
+    unsigned char   *s = (unsigned char *)_s;
+
+    if( s != NULL ) {
+        for( ; *s != '\0'; s = _mbsinc( s ) ) {
+            if( _mbclen( s ) != 1 || (_mbclen( s ) == 1 && !isspace( *s )) ) {
                 return( FALSE );
             }
         }
     }
-
     return( TRUE );
 }
 
-BOOL WRStrHasSpace( char *s )
+BOOL WRStrHasSpace( char *_s )
 {
-    if( s ) {
-        for( ; *s; s=_mbsinc(s) ) {
-            if( ( _mbclen( s ) == 1 ) && isspace( *s ) ) {
+    unsigned char   *s = (unsigned char *)_s;
+
+    if( s != NULL ) {
+        for( ; *s != '\0'; s = _mbsinc( s ) ) {
+            if( _mbclen( s ) == 1 && isspace( *s ) ) {
                 return( TRUE );
             }
         }
     }
-
     return( FALSE );
 }
 
-void WRStripStr( char *s )
+void WRStripStr( char *_s )
 {
-    char        *last_space;
-    char        *last_nonspace;
-    char        *p;
+    unsigned char   *last_space;
+    unsigned char   *last_nonspace;
+    unsigned char   *p;
+    unsigned char   *s = (unsigned char *)_s;
 
-    if( s ) {
+    if( s != NULL ) {
         last_space = NULL;
         last_nonspace = NULL;
-        for( p=s; *p; p=_mbsinc(p) ) {
-            if( ( _mbclen( p ) == 1 ) && isspace( *p ) ) {
-                if( !last_space || ( last_nonspace && ( last_nonspace > last_space ) ) ) {
+        for( p = s; *p != '\0'; p = _mbsinc( p ) ) {
+            if( _mbclen( p ) == 1 && isspace( *p ) ) {
+                if( last_space == NULL ||
+                    (last_nonspace != NULL && (last_nonspace > last_space) ) ) {
                     last_space = p;
                 }
             } else {
@@ -133,14 +137,13 @@ void WRStripStr( char *s )
         }
 
         // find first non-whitespace char
-        for( p=s; *p; p=_mbsinc(p) ) {
-            if( _mbclen( p ) != 1 || ( _mbclen( p ) == 1 && !isspace( *p ) ) ) {
+        for( p = s; *p != '\0'; p = _mbsinc( p ) ) {
+            if( _mbclen( p ) != 1 || (_mbclen( p ) == 1 && !isspace( *p )) ) {
                 break;
             }
         }
-        if( *p && p != s ) {
-            memmove( s, p, strlen(p) + 1 );
+        if( *p != '\0' && p != s ) {
+            memmove( s, p, strlen( (char *)p ) + 1 );
         }
     }
 }
-

@@ -35,9 +35,6 @@
 #include "guistr.h"
 #include <stdlib.h>
 #include <string.h>
-#ifdef UNIX
-    #include "clibext.h"
-#endif
 
 /* buttons and icons that can be in the dialog */
 typedef enum {
@@ -204,7 +201,7 @@ bool GUIStrnDup( char * text, char ** new, int length )
         if( str_len < length ) {
             length = str_len;
         }
-        *new = (char *)GUIAlloc( length + 1 );
+        *new = (char *)GUIMemAlloc( length + 1 );
         if( *new == NULL ) {
             return( FALSE );
         }
@@ -227,12 +224,12 @@ char *TabFilter( char *message )
 #define TAB_SIZE 4
                                 /* allocate another chunk of memory since */
                                 /* reallocating space for string literals is a no no */
-    new_message = ( char *)GUIAlloc( strlen(message)+1 );
+    new_message = ( char *)GUIMemAlloc( strlen(message)+1 );
     strcpy( new_message, message );
     for( ; ; ){
         tab_pos = strcspn(new_message, "\t");
         if( tab_pos == strlen(new_message) ) break;   /* no more tabs */
-        new_message = ( char *)GUIRealloc(new_message, strlen(new_message)+TAB_SIZE+1 );
+        new_message = ( char *)GUIMemRealloc(new_message, strlen(new_message)+TAB_SIZE+1 );
         start = new_message + tab_pos;                /* don't forget the NULL */
         memmove(start+TAB_SIZE, start+1, strlen( start+1 )+1 );
         strnset( start, ' ', TAB_SIZE);
@@ -303,7 +300,7 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
             }
         }                                  /* add new line to error box */
         (*num_controls)+=1;
-        *info = ( string_info * )GUIRealloc( *info, sizeof( string_info ) *
+        *info = ( string_info * )GUIMemRealloc( *info, sizeof( string_info ) *
                                             (*num_controls) );
         if( *info == NULL ) return( FALSE );
         (*info)[*num_controls - 1].length = len;
@@ -312,7 +309,7 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
         }
     } /* for */
 
-    GUIFree( new_message );     /* allocated in TabFilter routine */
+    GUIMemFree( new_message );     /* allocated in TabFilter routine */
     return( TRUE );
 }
 
@@ -453,7 +450,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     }
 
     num_controls += num_string_controls;
-    control_info = (gui_control_info *)GUIAlloc( sizeof( gui_control_info ) *
+    control_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) *
                                                  num_controls );
     if( control_info == NULL ) {
         return( GUI_RET_CANCEL );
@@ -489,9 +486,9 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     GUIDlgOpen( caption, rows, cols, control_info, num_controls,
                 &DisplayMessage, &ret );
     for( i = 0; i < num_string_controls; i++ ) {
-        GUIFree( strings[i].text );
+        GUIMemFree( strings[i].text );
     }
-    GUIFree( strings );
-    GUIFree( control_info );
+    GUIMemFree( strings );
+    GUIMemFree( control_info );
     return( ret );
 }

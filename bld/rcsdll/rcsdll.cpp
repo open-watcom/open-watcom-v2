@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  SCM interface library implementation.
 *
 ****************************************************************************/
 
@@ -50,10 +49,27 @@
 #include "rcsdll.hpp"
 #include "inifile.hpp"
 
-mksRcsSystem MksRcs;
-pvcsSystem Pvcs;
-genericRcs Generic;
-wprojRcs Wproj;
+mksRcsSystem    MksRcs;
+pvcsSystem      Pvcs;
+genericRcs      Generic;
+p4System        Perforce;
+wprojRcs        Wproj;
+
+extern "C" {
+/* common functions */
+extern RCSGetVersionFn  RCSGetVersion;
+extern RCSSetSystemFn   RCSSetSystem;
+extern RCSQuerySystemFn RCSQuerySystem;
+extern RCSRegBatchCbFn  RCSRegisterBatchCallback;
+extern RCSRegMsgBoxCbFn RCSRegisterMessageBoxCallback;
+/* system specific functions -- mapped to function for appropriate system */
+extern RCSInitFn        RCSInit;
+extern RCSCheckoutFn    RCSCheckout;
+extern RCSCheckinFn     RCSCheckin;
+extern RCSHasShellFn    RCSHasShell;
+extern RCSRunShellFn    RCSRunShell;
+extern RCSFiniFn        RCSFini;
+extern RCSSetPauseFn    RCSSetPause;
 
 static char *rcs_type_strings[] = {
     "no_rcs",
@@ -62,6 +78,7 @@ static char *rcs_type_strings[] = {
     "pvcs",
     "generic",
     "o_cycle",
+    "perforce",
     "wproj" // hidden
 };
 
@@ -74,18 +91,19 @@ static char *pause_strings[] = {
 static rcsSystem *rcs_systems[] = {
     NULL,
     &MksRcs,
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
+#if defined( __WINDOWS__ ) || defined( __NT__ )
     &MksSI,
-    #else
+#else
     NULL,
-    #endif
+#endif
     &Pvcs,
     &Generic,
-    #if defined( __NT__ ) && !defined( __AXP__ )
+#if defined( __NT__ ) && !defined( __AXP__ )
     &ObjCycle,
-    #else
+#else
     NULL,
-    #endif
+#endif
+    &Perforce,
     &Wproj // hidden
 };
 
@@ -155,18 +173,6 @@ int RCSAPI RCSSetSystem( rcsdata data, int rcs_type )
 
 }
 
-int userData::setSystem( int rcs_type )
-{
-    if( currentSystem != NULL ) {
-        currentSystem->fini();
-    }
-    currentSystem = rcs_systems[rcs_type];
-    if( currentSystem != NULL ) {
-        if( !currentSystem->init( this ) ) return( FALSE );
-    }
-    return( TRUE );
-}
-
 int RCSAPI RCSQuerySystem( rcsdata data )
 {
     char buffer[MAX_RCS_STRING_LEN];
@@ -200,7 +206,8 @@ int RCSAPI RCSRegisterMessageBoxCallback( rcsdata data,
 }
 
 #ifdef __NT__
-int FAR PASCAL LibMain( HANDLE hDll, DWORD reason, LPVOID res )
+
+int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
@@ -208,9 +215,10 @@ int FAR PASCAL LibMain( HANDLE hDll, DWORD reason, LPVOID res )
     hInstance = hDll;
     return( 1 );
 }
-#else
-#ifdef __WINDOWS__
-int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
+
+#elif defined( __WINDOWS__ )
+
+int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
                         LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
@@ -222,26 +230,42 @@ int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
     return( 1 );
 }
 
-int WEP( int q ){
-    q=q;
+int CALLBACK WEP( int q )
+{
+    q = q;
     return( 1);
 }
-#else   // OS/2
+
+#elif defined( __OS2__ )
+
 int     __dll_initialize( void )
 {
     return( 1 );
 }
 
-
 int     __dll_terminate( void )
 {
     return( 1 );
 }
-#endif
+
 #endif
 
-virtual int rcsSystem::checkout( userData *d, rcsstring name,
-                                rcsstring pj, rcsstring tgt )
+}  // extern "C"
+
+int userData::setSystem( int rcs_type )
+{
+    if( currentSystem != NULL ) {
+        currentSystem->fini();
+    }
+    currentSystem = rcs_systems[rcs_type];
+    if( currentSystem != NULL ) {
+        if( !currentSystem->init( this ) ) return( FALSE );
+    }
+    return( TRUE );
+}
+
+int rcsSystem::checkout( userData *d, rcsstring name,
+                         rcsstring pj, rcsstring tgt )
 {
     char Buffer[BUFLEN];
     if( d == NULL ) return( 0 );
@@ -253,10 +277,11 @@ virtual int rcsSystem::checkout( userData *d, rcsstring name,
     }
     return( 1 );
 }
-virtual int rcsSystem::checkin( userData *d, rcsstring name,
-                                rcsstring pj, rcsstring tgt )
+
+int rcsSystem::checkin( userData *d, rcsstring name,
+                        rcsstring pj, rcsstring tgt )
 {
-    char MsgBuf[BUFLEN] = "\0";
+    char MsgBuf[BUFLEN];
     char Buffer[BUFLEN];
     char path[_MAX_PATH];
     char drive[_MAX_DRIVE];
@@ -264,6 +289,7 @@ virtual int rcsSystem::checkin( userData *d, rcsstring name,
     int i=0;
     FILE *fp;
 
+    *MsgBuf = '\0';
     if( d == NULL ) return( 0 );
     if( d->msgBox ) {
         sprintf( Buffer, "Checkin %s", name );

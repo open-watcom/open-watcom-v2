@@ -1,0 +1,7 @@
+c$pragma aux BYTE_ORDER parm( value )
+
+c$pragma aux SHORT_ORDER parm( value )
+
+c$pragma aux LONG_ORDER parm( value )
+
+c$pragma aux VLONG_ORDER parm( value )

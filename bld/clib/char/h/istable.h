@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  _IsTable accessors (with x86 optimized versions).
 *
 ****************************************************************************/
 
@@ -38,7 +37,18 @@ extern int IsWhat( int );
 #pragma aux IsWhat = \
         "and eax,0xff" \
         "mov al,_IsTable+0x1[eax]" \
-        parm [eax]
+        parm loadds [eax]
+#elif defined(M_I86HM)
+extern int IsWhat( int );
+#pragma aux IsWhat = \
+        "push bx" \
+        "mov bx,seg _IsTable" \
+        "mov ds,bx" \
+        "and ax,0xff" \
+        "mov bx,ax" \
+        "mov al,_IsTable+0x1[bx]" \
+        "pop bx" \
+        parm [ax] modify [ds]
 #elif defined(__I86__)
 extern int IsWhat( int );
 #pragma aux IsWhat = \
@@ -47,7 +57,7 @@ extern int IsWhat( int );
         "mov bx,ax" \
         "mov al,_IsTable+0x1[bx]" \
         "pop bx" \
-        parm [ax]
+        parm loadds [ax]
 #else
 static int IsWhat( int c )
 {

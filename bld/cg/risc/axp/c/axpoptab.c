@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction opcode/type matrix to select generate tables.
 *
 ****************************************************************************/
 
@@ -41,7 +40,7 @@
 table_def OpTable[] = {
 /**********************
     for each opcode/type, indicate which generate table to use.
-    See 386TABLE.C
+    See axptable.c
 */
 /*U1   I1    U2    I2    U4    I4    U8    I8    CP    PT    FS    FD    FL    XX*/
 _____,_____,_____,_____,_____,_____,_____,_____,_____,__X__,_____,_____,_____,_____,/*OP_NOP*/
@@ -79,7 +78,7 @@ _NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,UFUNS,UFUND,UFUNL,_N
 _NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,UFUNS,UFUND,UFUNL,_NYI_,/*OP_SINH */
 _NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,UFUNS,UFUND,UFUNL,_NYI_,/*OP_TANH*/
 _NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,/*OP_PTR_TO_NATIVE */
-_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,/*OP_PTR_TO_FORIEGN */
+_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,/*OP_PTR_TO_FOREIGN */
 _NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,_NYI_,/*OP_SLACK*/
 CONV ,CONV ,CONV ,CONV ,CONV ,CONV ,CONV ,CONV ,CONV ,CONV ,FCONV,FCONV,FCONV,FCONV,/*OP_CONVERT*/
 _NYI_,_NYI_,LA2  ,LA2  ,LA4  ,LA4  ,LA8  ,LA8  ,LA4  ,LA4  ,_NYI_,_NYI_,_NYI_,_NYI_,/*OP_LA*/

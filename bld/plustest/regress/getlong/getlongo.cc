@@ -1,7 +1,7 @@
 /* $Id: GETLONGO.CC 1.1 94/12/13 17:45:48 Anthony_Scian Exp $ */
 /* S Manoharan. Advanced Computer Research Institute. Lyon. France */
 
-#include "GetLongOpt.h"
+#include "getlongopt.h"
 
 GetLongOpt::GetLongOpt(const char optmark)
 {
@@ -31,6 +31,7 @@ GetLongOpt::basename(char * const pname) const
    size_t len;
 
    s = strrchr(pname, '\\');
+   if ( s == 0 ) s = strrchr(pname, '/');
    if ( s == 0 ) s = pname;
    else ++s;
    len = strlen( s );

@@ -104,8 +104,6 @@ struct srch_window {
 
 #define WndSrch( wnd ) ( (srch_window*)WndExtra( wnd ) )
 
-a_window *DoWndSrchOpen( char *expr, SRCH_WALKER *walk, void *cookie );
-
 static WNDNUMROWS SrchNumRows;
 static int SrchNumRows( a_window *wnd )
 {
@@ -175,9 +173,9 @@ OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
 }
 
 
-static int CueCompare( a_cue **pa, a_cue **pb )
+static int CueCompare( void *pa, void *pb )
 {
-    return( strcmp( (*pa)->name, (*pb)->name ) );
+    return( strcmp( (*(a_cue **)pa)->name, (*(a_cue **)pb)->name ) );
 }
 
 OVL_EXTERN void GlobalModWalker( srch_window *srch )
@@ -205,9 +203,9 @@ OVL_EXTERN void NoModWalker( srch_window *srch )
 }
 
 
-OVL_EXTERN int FoundCompare( found_item const *a, found_item const *b )
+OVL_EXTERN int FoundCompare( const void *a, const void *b )
 {
-    return( ModCompare( &a->mod, &b->mod ) );
+    return( ModCompare( &((found_item const *)a)->mod, &((found_item const *)b)->mod ) );
 }
 
 static  void    SrchFreeFound( srch_window *srch )
@@ -228,9 +226,9 @@ static void     SrchInit( a_window *wnd )
 
     SrchFreeFound( srch );
     srch->max_mod_name = 0;
-    srch->ignore_case = SrchIgnoreCase;
-    srch->use_rx = SrchRX;
-    strcpy( srch->magic_str, SrchMagicChars );
+    srch->ignore_case = WndGetSrchIgnoreCase();
+    srch->use_rx = WndGetSrchRX();
+    strcpy( srch->magic_str, WndGetSrchMagicChars() );
     srch->walk( srch );
     if( srch->num_rows != 0 ) {
         qsort( srch->found, srch->num_rows, sizeof( found_item ), FoundCompare );
@@ -254,7 +252,7 @@ static void     SrchMenuItem( a_window *wnd, unsigned id, int row, int piece )
     case MENU_SEARCH_SOURCE:
         new = WndModInspect( srch->found[ row ].mod );
         if( new == NULL ) break;
-        SrchIgnoreCase = srch->ignore_case;
+        WndSetSrchIgnoreCase( srch->ignore_case );
         WndSetMagicStr( srch->use_rx ? srch->magic_str : LIT( Empty ) );
         WndSetSrchItem( new, srch->expr );
         WndSearch( new, TRUE, 1 );

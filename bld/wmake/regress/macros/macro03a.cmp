@@ -1,2 +1,3 @@
 Error(F10): Macros nested too deep
+Warning(W79): Makefile may be Microsoft; try /ms switch
 Error(E02): Make execution terminated

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stubs for routines not needed by the S/370.
 *
 ****************************************************************************/
 
@@ -36,6 +35,7 @@
 #include "regset.h"
 #include "addrname.h"
 #include "ptrint.h"
+#include "x87.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -218,7 +218,7 @@ extern  cg_type PtrType( name *name ) {
 /*************************************/
 
     name=name;
-    return( T_NEAR_POINTER );
+    return( TY_NEAR_POINTER );
 }
 
 

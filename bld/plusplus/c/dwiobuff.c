@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys\stat.h>
-#include <sys\types.h>
-
 #include "plusplus.h"
+
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "memmgr.h"
 #include "errdefns.h"
 #include "iosupp.h"

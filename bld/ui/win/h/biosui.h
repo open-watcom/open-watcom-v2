@@ -116,7 +116,7 @@ struct ega_info {
     unsigned char   adapter_bits;
 };
 
-extern struct ega_info BIOSEGAInfo();
+extern struct ega_info BIOSEGAInfo( void );
 
 
 

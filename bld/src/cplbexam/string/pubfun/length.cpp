@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String    s ("Watcom C++");
+    String    s ("Open Watcom C++");
 
     cout << "The length of the string \"" << s << "\" = "
          << s.length() << endl;

@@ -24,20 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines for creating ELF executable images.
 *
 ****************************************************************************/
 
 
 /*
-    LOADELF : routines for creating ELF load files.
+-----------
+Historical note - the ELF output support in wlink was initially developed
+for IBM's OS/2 for PowerPC which used ELF, hence references to OS/2.
+-----------
 
-*/
-
-
-
-/* Layout of OS/2 ELF Executable:
+Layout of OS/2 ELF Executable:
 
 ----------------------------------------------------------------------------
 Elf header
@@ -59,7 +57,8 @@ String table for sections
 ----------------------------------------------------------------------------
 */
 
-#include <malloc.h>
+#include <string.h>
+#include "walloca.h"
 #include "linkstd.h"
 #include "exeelf.h"
 #include "loadelf.h"
@@ -74,10 +73,10 @@ String table for sections
 #include "msg.h"
 #include "virtmem.h"
 #include "fileio.h"
+#include "dbgcomm.h"
 #include "dbgall.h"
 #include "dbgdwarf.h"
 #include "objcalc.h"
-#include <string.h>
 
 static stringtable      SymStrTab;
 static ElfSymTable *    ElfSymTab;
@@ -90,7 +89,8 @@ static ElfSymTable *    ElfSymTab;
 static void AddSecIdxName( ElfHdr *hdr, int idx, char *name )
 /***********************************************************/
 {
-    if( idx == 0 ) return;
+    if( idx == 0 )
+        return;
     AddSecName( hdr, hdr->sh+idx, name );
 }
 
@@ -142,12 +142,20 @@ static void SetHeaders( ElfHdr *hdr )
 {
     memcpy( hdr->eh.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN );
     hdr->eh.e_ident[EI_CLASS] = ELFCLASS32;
+#ifdef __BIG_ENDIAN__
+    hdr->eh.e_ident[EI_DATA] = ELFDATA2MSB;
+#else
     hdr->eh.e_ident[EI_DATA] = ELFDATA2LSB;
+#endif
     hdr->eh.e_ident[EI_VERSION] = EV_CURRENT;
+    hdr->eh.e_ident[EI_OSABI] = FmtData.u.elf.abitype;
+    hdr->eh.e_ident[EI_ABIVERSION] = FmtData.u.elf.abiversion;
     memset( &hdr->eh.e_ident[EI_PAD], 0, EI_NIDENT - EI_PAD );
     hdr->eh.e_type = ET_EXEC;
     if( LinkState & HAVE_PPC_CODE ) {
         hdr->eh.e_machine = EM_PPC;
+    } else if( LinkState & HAVE_MIPS_CODE ) {
+        hdr->eh.e_machine = EM_MIPS;
     } else {
         hdr->eh.e_machine = EM_386;
     }
@@ -174,14 +182,14 @@ static void SetHeaders( ElfHdr *hdr )
     hdr->ph->p_flags = PF_R | PF_X;
     hdr->ph->p_align = 0;
     InitStringTable( &hdr->secstrtab, FALSE );
-    AddStringTable( &hdr->secstrtab, "", 1 );
+    AddCharStringTable( &hdr->secstrtab, '\0' );
     InitSections( hdr );
     hdr->curr_off = hdr->eh.e_ehsize + hdr->ph_size;
     hdr->curr_off = ROUND_UP( hdr->curr_off, 0x100 );
     SeekLoad( hdr->curr_off );
 }
 
-extern unsigned GetElfHeaderSize( void )
+unsigned GetElfHeaderSize( void )
 /**************************************/
 {
     unsigned    size;
@@ -190,11 +198,11 @@ extern unsigned GetElfHeaderSize( void )
     return ROUND_UP( size, 0x100 );
 }
 
-extern void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
+void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
 /***************************************************************/
 {
     sh->sh_name = GetStringTableSize( &hdr->secstrtab );
-    AddStringTable( &hdr->secstrtab, name, strlen(name)+1 );
+    AddStringStringTable( &hdr->secstrtab, name );
 }
 
 
@@ -231,7 +239,7 @@ static void SetGroupHeaders( group_entry *group, offset off, Elf32_Phdr *ph,
     ph->p_type = PT_LOAD;
     ph->p_filesz = sh->sh_size = group->size;
     ph->p_memsz = group->totalsize;
-    if( group == DataGroup ) {
+    if( group == DataGroup && StackSegPtr != NULL ) {
         ph->p_memsz -= StackSize;
     }
     sh->sh_link = SHN_UNDEF;
@@ -280,6 +288,7 @@ static void WriteELFGroups( ElfHdr *hdr )
     ph = hdr->ph + 1;
     off = hdr->curr_off;
     for( group = Groups; group != NULL; group = group->next_group ) {
+        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
         SetGroupHeaders( group, off, ph, sh );
         WriteGroupLoad( group );
         off = OffsetAlign( off + group->size, FmtData.objalign );
@@ -304,21 +313,33 @@ static void WriteELFGroups( ElfHdr *hdr )
 
 #define RELA_NAME_SIZE sizeof(RelASecName)
 
+static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, char *secname )
+/************************************************************************/
+{
+    size_t      len;
+    char        *name;
+
+    len = strlen( secname );
+    name = alloca( RELA_NAME_SIZE + len );
+    memcpy( name, RelASecName, RELA_NAME_SIZE - 1 );
+    memcpy( name + RELA_NAME_SIZE - 1, secname, len + 1 );
+    AddSecName( hdr, sh, name );
+}
+
+
 static void WriteRelocsSections( ElfHdr *hdr )
 /********************************************/
 {
     group_entry *group;
     int         currgrp;
-    Elf32_Shdr *sh;
-    void *      relocs;
-    char *      secname;
-    char *      name;
-    unsigned    namelen;
+    Elf32_Shdr  *sh;
+    void        *relocs;
+    char        *secname;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
     for( group = Groups; group != NULL; group = group->next_group ) {
-        relocs = group->g.grp_relocs;
+	relocs = group->g.grp_relocs;
         if( relocs != NULL ) {
             sh->sh_offset = hdr->curr_off;
             sh->sh_entsize = sizeof(elf_reloc_item);
@@ -330,11 +351,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
             sh->sh_addralign = 4;
             sh->sh_size = RelocSize( relocs );
             secname = GroupSecName( group );
-            namelen = strlen(secname);
-            name = alloca( RELA_NAME_SIZE + namelen );
-            memcpy( name, RelASecName, RELA_NAME_SIZE - 1 );
-            memcpy( name + RELA_NAME_SIZE - 1, secname, namelen + 1 );
-            AddSecName( hdr, sh, name );
+            SetRelocSectName( hdr, sh, secname );
             DumpRelocList( relocs );
             hdr->curr_off += sh->sh_size;
             sh++;
@@ -343,7 +360,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
     }
 }
 
-extern void FiniELFLoadFile( void )
+void FiniELFLoadFile( void )
 /*********************************/
 {
     ElfHdr      hdr;
@@ -359,7 +376,7 @@ extern void FiniELFLoadFile( void )
     WriteELFGroups( &hdr ); // Write out all groups
     WriteRelocsSections( &hdr );        // Relocations
     if( INJECT_DEBUG ) {                // Debug info
-        hdr.curr_off = DwarfElfWriteDBI( hdr.curr_off, &hdr.secstrtab,
+        hdr.curr_off = DwarfWriteElf( hdr.curr_off, &hdr.secstrtab,
                                 hdr.sh+hdr.i.dbgbegin );
     }
     if( ElfSymTab != NULL ) {           // Symbol tables
@@ -374,10 +391,8 @@ extern void FiniELFLoadFile( void )
     hdr.eh.e_shoff = hdr.curr_off;
     WriteLoad( hdr.sh, hdr.sh_size );
     hdr.curr_off += hdr.sh_size;
-    if( INJECT_DEBUG ) {                // Trailer for debug info
-        DwarfWriteTrailer(hdr.curr_off);
-    } else {
-        WriteDBI();
+    if( !INJECT_DEBUG ) {
+        DBIWrite();
     }
     SeekLoad( 0 );
     WriteLoad( &hdr.eh, sizeof(Elf32_Ehdr) );
@@ -389,7 +404,7 @@ extern void FiniELFLoadFile( void )
     SeekLoad( hdr.curr_off );
 }
 
-extern void ChkElfData( void )
+void ChkElfData( void )
 /****************************/
 {
     group_entry *group;
@@ -407,11 +422,13 @@ extern void ChkElfData( void )
         }
     }
     InitStringTable( &SymStrTab, FALSE );
-    AddStringTable( &SymStrTab, "", 1 );
+    AddCharStringTable( &SymStrTab, '\0' );
     ElfSymTab = CreateElfSymTable( NumImports + NumExports + NumGroups,
                                    &SymStrTab);
     for( group = Groups; group != NULL; group = group->next_group ) {
-        AddSymElfSymTable( ElfSymTab, group->sym );
+        if( group->totalsize != 0 ) {
+            AddSymElfSymTable( ElfSymTab, group->sym );
+        }
     }
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         if( IsSymElfImpExp(sym) ) {
@@ -421,7 +438,7 @@ extern void ChkElfData( void )
 
 }
 
-extern int FindElfSymIdx( symbol *sym )
+int FindElfSymIdx( symbol *sym )
 /*************************************/
 {
     return FindSymIdxElfSymTable( ElfSymTab, sym );

@@ -30,45 +30,71 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <conio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <process.h>
+#include "asmglob.h"
+
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "asmerr.h"
-#include "asmglob.h"
+#ifdef __WATCOMC__
+  #include <conio.h>
+  #include <process.h>
+#endif
+
+
+#if defined( USE_TEXT_MSGS )
+
+typedef struct msgtxt {
+    int     num;
+    char    *text;
+} msgtxt;
+
+msgtxt txtmsgs[] = {
+#define pick(num,etext,jtext) {num,etext},
+#include "../h/asmshare.msg"
+#undef pick
+#define pick(num,etext,jtext) {num,etext},
+#include "../h/womp.msg"
+#undef pick
+#define pick(num,etext,jtext) {num,etext},
+#include "../h/wasm.msg"
+#undef pick
+#define pick(num,text) {num,text},
+#include "usage.msg"
+#undef pick
+};
+
+#define MSG_NUM sizeof( txtmsgs ) / sizeof( txtmsgs[0] )
+#define MSG_SIZE sizeof( txtmsgs[0] )
+
+#else
+
 #include "wressetr.h"
 #include "wreslang.h"
-
 
 #define NIL_HANDLE      ((int)-1)
 #define STDOUT_HANDLE   ((int)1)
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-extern  long            FileShift;
-
-extern  int             trademark( void );
-#ifdef __OSI__
- extern char            *_Copyright;
-#endif
-
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
+extern  long            FileShift;
+
+static  HANDLE_INFO     hInstance = { 0 };
+static  unsigned        MsgShift;
+
+#endif
+
+extern  int             trademark( void );
+#ifdef __OSI__
+extern char             *_Copyright;
+#endif
+
+#ifndef __UNIX__
 static const unsigned char PressReturn[] = {
 "    (Press return to continue)"
 };
 
-static void output( const unsigned char *text )
+static void con_output( const unsigned char *text )
 {
     char c;
 
@@ -80,7 +106,80 @@ static void output( const unsigned char *text )
     putchar( '\n' );
 }
 
-static long res_seek( int handle, long position, int where )
+static void Wait_for_return( void )
+{
+    if( isatty( fileno(stdout) ) ) {
+        con_output( PressReturn );
+        fflush( stdout );
+        getch();
+    }
+}
+#endif
+
+void MsgPrintf( int resourceid )
+{
+    char        msgbuf[128];
+
+    if( !Options.banner_printed ) {
+        Options.banner_printed = TRUE;
+        trademark();
+    }
+    MsgGet( resourceid, msgbuf );
+    printf( msgbuf );
+}
+
+void MsgPrintf1( int resourceid, char *token )
+{
+    char        msgbuf[128];
+
+    if( !Options.banner_printed ) {
+        Options.banner_printed = TRUE;
+        trademark();
+    }
+    MsgGet( resourceid, msgbuf );
+    printf( msgbuf, token );
+}
+
+void PrintfUsage( int first_ln )
+{
+    char        msg_buff[128];
+    unsigned    count;
+
+    count = trademark();
+#ifdef __OSI__
+    if( _Copyright != NULL ) {
+        puts( _Copyright );
+        count += 1;
+    }
+#endif
+    for( ;; first_ln++ ) {
+#ifndef __UNIX__
+        if( ++count >= 23 ) {
+            Wait_for_return();
+            count = 0;
+        }
+#endif
+        MsgGet( first_ln, msg_buff );
+        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
+            break;
+        puts( msg_buff );
+    }
+}
+
+#if defined( USE_TEXT_MSGS )
+
+static int msg_cmp( const void *p1, const void *p2 )
+{
+    if( ((msgtxt *)p1)->num == ((msgtxt *)p2)->num )
+        return( 0 );
+    if( ((msgtxt *)p1)->num > ((msgtxt *)p2)->num )
+        return( 1 );
+    return( -1 );
+}
+
+#else
+
+static off_t res_seek( int handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -93,8 +192,11 @@ static long res_seek( int handle, long position, int where )
 
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int MsgInit()
+#endif
+
+int MsgInit( void )
 {
+#if !defined( USE_TEXT_MSGS )
     int         initerror;
     char        name[_MAX_PATH];
 
@@ -122,90 +224,37 @@ int MsgInit()
         MsgFini();
         return( 0 );
     }
+#endif
     return( 1 );
 }
 
-int MsgGet( int resourceid, char *buffer )
+void MsgFini( void )
 {
-    if( LoadString( &hInstance, resourceid+MsgShift, (LPSTR) buffer, 128 ) != 0 ) {
-        buffer[0] = '\0';
-        return( 0 );
-    }
-    return( 1 );
-}
-
-void MsgPrintf( int resourceid )
-{
-    char        msgbuf[128];
-
-    if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
-        trademark();
-    }
-    MsgGet( resourceid, msgbuf );
-    printf( msgbuf );
-}
-
-void MsgPrintf1( int resourceid, char *token )
-{
-    char        msgbuf[128];
-
-    if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
-        trademark();
-    }
-    MsgGet( resourceid, msgbuf );
-    printf( msgbuf, token );
-}
-
-static void Wait_for_return()
-{
-    if( isatty( fileno(stdout) ) ) {
-        output( PressReturn );
-        fflush( stdout );
-        getch();
-    }
-}
-
-void PrintfUsage( int first_ln )
-{
-    char        msg_buff[128];
-    unsigned    count;
-
-    count = trademark();
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {
-            puts( _Copyright );
-            count += 1;
-        }
-    #endif
-    for( ;; first_ln++ ) {
-        if( ++count > 23 ) {
-            Wait_for_return();
-            count = 0;
-        }
-        MsgGet( first_ln, msg_buff );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) ) break;
-        puts( msg_buff );
-    }
-}
-/* {
-    char        msgbuf[128];
-
-    for( ; first_ln <= last_ln; first_ln++ ) {
-        MsgGet( first_ln, msgbuf );
-        if( msgbuf[ 0 ] == '\0' ) {
-            break;
-        };
-        strcat( msgbuf, "\n" );
-        printf( msgbuf );
-    }
-} */
-
-void MsgFini()
-{
+#if !defined( USE_TEXT_MSGS )
     if( hInstance.handle != NIL_HANDLE ) {
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
+#endif
+}
+
+int MsgGet( int id, char *buffer )
+{
+#if defined( USE_TEXT_MSGS )
+    msgtxt  keyx;
+    msgtxt  *result;
+
+    keyx.num = id;
+    result = bsearch( &keyx, txtmsgs, MSG_NUM, MSG_SIZE, msg_cmp );
+    if( result != NULL ) {
+        strcpy( buffer, result->text );
+        return( 1 );
+    }
+#else
+    if( LoadString( &hInstance, id+MsgShift, (LPSTR) buffer, 128 ) == 0 ) {
+        return( 1 );
+    }
+#endif
+    buffer[0] = '\0';
+    return( 0 );
 }

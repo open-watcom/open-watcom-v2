@@ -72,6 +72,7 @@ int QueryFilter::editFilter( KeySymbol * filter )
 void QueryFilter::initialize()
 //----------------------------
 {
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();

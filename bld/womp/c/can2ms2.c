@@ -135,7 +135,7 @@ STATIC void setupObjIO( void ) {
     doneFixups = NULL;
     waitFixups = NULL;
     offsetFixup = NULL;
-    mySegdef = Can2MsSegdef( MS_DDSYMBOLS MS_DEBSYM,
+    mySegdef = Can2MsSegdef( (uint_8 *)MS_DDSYMBOLS MS_DEBSYM,
         MS_DDSYMBOLS_LEN + MS_DEBSYM_LEN );
 }
 
@@ -664,8 +664,8 @@ STATIC void putInitialRecs( void ) {
     newfix->loc_method = FIX_BASE;
     newfix->self_relative = 0;
     newfix->loader_resolved = 0;
-    newfix->lr.frame = F_TARG;
-    newfix->lr.target = T_GRP;
+    newfix->lr.frame = FRAME_TARG;
+    newfix->lr.target = TARGET_GRP;
     newfix->lr.frame_datum = 0;
     newfix->lr.target_datum = ObjDGROUPIndex;
     newfix->lr.is_secondary = 1;

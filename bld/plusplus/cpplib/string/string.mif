@@ -71,9 +71,14 @@ objs_cpp +=     allocrep.$(obj_ext) &
 
 objs_c += strsrch.$(obj_ext)
 
-!include $(plusplus_cpplib_dir)\plibname.mif
+pch_flags = -fh=pch01.pch
+pch_flags_x = -fh=pch02.pch
+extra_cpp_flags_strsrch = -fh=pch03.pch
+extra_cpp_flags_x_strsrch = -fh=pch04.pch
+
+!include $(cpplib_dir)/plibname.mif
 
 prefix = $(strg_n)
 prefix_x = $(strg_x)
 
-!include $(plusplus_dir)\mklibtgt.mif
+!include $(cpplib_dir)/mklibtgt.mif

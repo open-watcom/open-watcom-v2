@@ -1,0 +1,679 @@
+/*
+ * afxmsg_.h    Application Framework message map definitions
+ *
+:include crwatcnt.sp
+ */
+
+// Message handler signature codes
+enum AfxSig {
+    AfxSig_end = 0,
+    AfxSig_b_D_v,
+    AfxSig_b_b_v,
+    AfxSig_b_u_v,
+    AfxSig_b_h_v,
+    AfxSig_b_W_uu,
+    AfxSig_b_W_COPYDATASTRUCT,
+    AfxSig_b_v_HELPINFO,
+    AfxSig_CTLCOLOR,
+    AfxSig_CTLCOLOR_REFLECT,
+    AfxSig_i_u_W_u,
+    AfxSig_i_uu_v,
+    AfxSig_i_W_uu,
+    AfxSig_i_v_s,
+    AfxSig_l_w_l,
+    AfxSig_l_uu_M,
+    AfxSig_v_b_h,
+    AfxSig_v_h_v,
+    AfxSig_v_h_h,
+    AfxSig_v_v_v,
+    AfxSig_v_u_v,
+    AfxSig_v_u_u,
+    AfxSig_v_uu_v,
+    AfxSig_v_v_ii,
+    AfxSig_v_u_uu,
+    AfxSig_v_u_ii,
+    AfxSig_v_u_W,
+    AfxSig_i_u_v,
+    AfxSig_u_u_v,
+    AfxSig_b_v_v,
+    AfxSig_v_w_l,
+    AfxSig_MDIACTIVATE,
+    AfxSig_v_D_v,
+    AfxSig_v_M_v,
+    AfxSig_v_M_ub,
+    AfxSig_v_W_v,
+    AfxSig_v_v_W,
+    AfxSig_v_W_uu,
+    AfxSig_v_W_p,
+    AfxSig_v_W_h,
+    AfxSig_C_v_v,
+    AfxSig_ACTIVATE,
+    AfxSig_SCROLL,
+    AfxSig_SCROLL_REFLECT,
+    AfxSig_v_v_s,
+    AfxSig_v_u_cs,
+    AfxSig_OWNERDRAW,
+    AfxSig_i_i_s,
+    AfxSig_u_v_p,
+    AfxSig_u_v_v,
+    AfxSig_v_b_NCCALCSIZEPARAMS,
+    AfxSig_v_v_WINDOWPOS,
+    AfxSig_v_uu_M,
+    AfxSig_v_u_p,
+    AfxSig_SIZING,
+    AfxSig_MOUSEWHEEL,
+    AfxSig_MOUSEHWHEEL,
+    AfxSigCmd_v,
+    AfxSigCmd_b,
+    AfxSigCmd_RANGE,
+    AfxSigCmd_EX,
+    AfxSigNotify_v,
+    AfxSigNotify_b,
+    AfxSigNotify_RANGE,
+    AfxSigNotify_EX,
+    AfxSigCmdUI,
+    AfxSigCmdUI_RANGE,
+    AfxSigCmd_v_pv,
+    AfxSigCmd_b_pv,
+    AfxSig_l,
+    AfxSig_l_p,
+    AfxSig_u_W_u,
+    AfxSig_v_u_M,
+    AfxSig_u_u_M,
+    AfxSig_u_v_MENUGETOBJECTINFO,
+    AfxSig_v_M_u,
+    AfxSig_v_u_LPMDINEXTMENU,
+    AfxSig_APPCOMMAND,
+    AfxSig_RAWINPUT,
+    AfxSig_u_u_u,
+    AfxSig_MOUSE_XBUTTON,
+    AfxSig_MOUSE_NCXBUTTON,
+    AfxSig_INPUTLANGCHANGE,
+    AfxSig_v_u_hkl,
+    AfxSig_INPUTDEVICECHANGE
+};
+
+// Command notification codes
+#define CN_COMMAND              0x00000000
+#define CN_UPDATE_COMMAND_UI    0xFFFFFFFF
+#define CN_EVENT                0xFFFFFFFE
+#define CN_OLECOMMAND           0xFFFFFFFD
+#define CN_OLE_UNREGISTER       0xFFFFFFFC
+
+// Base offset for reflected messages
+#define WM_REFLECT_BASE 0xBC00
+
+// Command handling macros
+#define ON_COMMAND( id, memberFxn ) \
+    { WM_COMMAND, CN_COMMAND, id, id, AfxSigCmd_v, (AFX_PMSG)memberFxn },
+#define ON_COMMAND_EX( id, memberFxn ) \
+    { WM_COMMAND, CN_COMMAND, id, id, AfxSigCmd_EX, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)( UINT ))memberFxn },
+#define ON_COMMAND_RANGE( id1, id2, memberFxn ) \
+    { WM_COMMAND, CN_COMMAND, id1, id2, AfxSigCmd_RANGE, \
+      (AFX_PMSG)(void (CCmdTarget::*)( UINT ))memberFxn },
+#define ON_COMMAND_EX_RANGE( id1, id2, memberFxn ) \
+    { WM_COMMAND, CN_COMMAND, id1, id2, AfxSigCmd_EX, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)( UINT ))memberFxn },
+#define ON_UPDATE_COMMAND_UI( id, memberFxn ) \
+    { WM_COMMAND, CN_UPDATE_COMMAND_UI, id, id, AfxSigCmdUI, \
+      (AFX_PMSG)(void (CCmdTarget::*)( CCmdUI * ))memberFxn },
+#define ON_UPDATE_COMMAND_UI_RANGE( id1, id2, memberFxn ) \
+    { WM_COMMAND, CN_UPDATE_COMMAND_UI, id1, id2, AfxSigCmdUI, \
+      (AFX_PMSG)(void (CCmdTarget::*)( CCmdUI * ))memberFxn },
+#define ON_UPDATE_COMMAND_UI_REFLECT( memberFxn ) \
+    { WM_COMMAND + WM_REFLECT_BASE, (WORD)CN_UPDATE_COMMAND_UI, 0, AfxSigCmdUI, \
+      (AFX_PMSG)(void (CCmdTarget::*)( CCmdUI * ))memberFxn },
+
+// Control notification handling macros
+#define ON_CONTROL( wNotifyCode, id, memberFxn ) \
+    { WM_COMMAND, wNotifyCode, id, id, AfxSigCmd_v, (AFX_PMSG)memberFxn },
+#define ON_CONTROL_RANGE( wNotifyCode, id1, id2, memberFxn ) \
+    { WM_COMMAND, wNotifyCode, id1, id2, AfxSigCmd_RANGE, \
+      (AFX_PMSG)(void (CCmdTarget::*)( UINT ))memberFxn },
+#define ON_CONTROL_REFLECT( wNotifyCode, memberFxn ) \
+    { WM_COMMAND + WM_REFLECT_BASE, (WORD)wNotifyCode, 0, 0, AfxSigCmd_v, \
+      (AFX_PMSG)memberFxn },
+#define ON_CONTROL_REFLECT_EX( wNotifyCode, memberFxn ) \
+    { WM_COMMAND + WM_REFLECT_BASE, (WORD)wNotifyCode, 0, 0, AfxSigCmd_b, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)())memberFxn },
+
+// Notification handling macros
+#define ON_NOTIFY( wNotifyCode, id, memberFxn ) \
+    { WM_NOTIFY, wNotifyCode, id, id, AfxSigNotify_v, \
+      (AFX_PMSG)(void (CCmdTarget::*)( NMHDR *, LRESULT * ))memberFxn },
+#define ON_NOTIFY_EX( wNotifyCode, id, memberFxn ) \
+    { WM_NOTIFY, wNotifyCode, id, id, AfxSigNotify_EX, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)( UINT, NMHDR *, LRESULT * ))memberFxn },
+#define ON_NOTIFY_EX_RANGE( wNotifyCode, id1, id2, memberFxn ) \
+    { WM_NOTIFY, wNotifyCode, id1, id2, AfxSigNotify_EX, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)( UINT, NMHDR *, LRESULT * ))memberFxn },
+#define ON_NOTIFY_RANGE( wNotifyCode, id1, id2, memberFxn ) \
+    { WM_NOTIFY, wNotifyCode, id1, id2, AfxSigNotify_RANGE, \
+      (AFX_PMSG)(void (CCmdTarget::*)( UINT, NMHDR *, LRESULT * ))memberFxn },
+#define ON_NOTIFY_REFLECT( wNotifyCode, memberFxn ) \
+    { WM_NOTIFY + WM_REFLECT_BASE, (WORD)wNotifyCode, 0, 0, AfxSigNotify_v, \
+      (AFX_PMSG)(void (CCmdTarget::*)( NMHDR *, LRESULT * ))memberFxn },
+#define ON_NOTIFY_REFLECT_EX( wNotifyCode, memberFxn ) \
+    { WM_NOTIFY + WM_REFLECT_BASE, (WORD)wNotifyCode, 0, 0, AfxSigNotify_b, \
+      (AFX_PMSG)(BOOL (CCmdTarget::*)( NMHDR *, LRESULT * ))memberFxn },
+
+// Message handling macros
+#define ON_MESSAGE( message, memberFxn ) \
+    { message, 0, 0, 0, AfxSig_l_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(LRESULT (CWnd::*)( WPARAM, LPARAM ))memberFxn },
+#define ON_REGISTERED_MESSAGE( nMessageVariable, memberFxn ) \
+    { 0xC000, 0, 0, 0, (UINT)&nMessageVariable, \
+      (AFX_PMSG)(AFX_PMSGW)(LRESULT (CWnd::*)( WPARAM, LPARAM ))memberFxn },
+
+// Specific message handling macros
+#define ON_WM_ACTIVATE() \
+    { WM_ACTIVATE, 0, 0, 0, AfxSig_ACTIVATE, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CWnd *, BOOL ))OnActivate },
+#define ON_WM_ACTIVATEAPP() \
+    { WM_ACTIVATEAPP, 0, 0, 0, AfxSig_v_u_u, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL, DWORD ))OnActivateApp },
+#define ON_WM_ASKCBFORMATNAME() \
+    { WM_ASKCBFORMATNAME, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPSTR ))OnAskCbFormatName },
+#define ON_WM_CANCELMODE() \
+    { WM_CANCELMODE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnCancelMode },
+#define ON_WM_CAPTURECHANGED() \
+    { WM_CAPTURECHANGED, 0, 0, 0, AfxSig_v_v_W, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd * ))OnCaptureChanged },
+#define ON_WM_CHANGECBCHAIN() \
+    { WM_CHANGECBCHAIN, 0, 0, 0, AfxSig_v_h_h, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( HWND, HWND ))OnChangeCbChain },
+#define ON_WM_CHAR() \
+    { WM_CHAR, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnChar },
+#define ON_WM_CHARTOITEM() \
+    { WM_CHARTOITEM, 0, 0, 0, AfxSig_i_u_W_u, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( UINT, CListBox *, UINT ))OnCharToItem },
+#define ON_WM_CHARTOITEM_REFLECT() \
+    { WM_CHARTOITEM, 0, 0, 0, AfxSig_i_uu_v, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( UINT, UINT ))CharToItem },
+#define ON_WM_CHILDACTIVATE() \
+    { WM_CHILDACTIVATE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnChildActivate },
+#define ON_WM_CLOSE() \
+    { WM_CLOSE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnClose },
+#define ON_WM_COMPACTING() \
+    { WM_COMPACTING, 0, 0, 0, AfxSig_v_u_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT ))OnCompacting },
+#define ON_WM_COMPAREITEM() \
+    { WM_COMPAREITEM, 0, 0, 0, AfxSig_i_i_s, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( int, LPCOMPAREITEMSTRUCT ))OnCompareItem },
+#define ON_WM_COMPAREITEM_REFLECT() \
+    { WM_COMPAREITEM + WM_REFLECT_BASE, 0, 0, 0, AfxSig_i_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( LPCOMPAREITEMSTRUCT ))CompareItem },
+#define ON_WM_CONTEXTMENU() \
+    { WM_CONTEXTMENU, 0, 0, 0, AfxSig_v_W_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd *, CPoint ))OnContextMenu },
+#define ON_WM_COPYDATA() \
+    { WM_COPYDATA, 0, 0, 0, AfxSig_b_W_COPYDATASTRUCT, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( CWnd *, COPYDATASTRUCT * ))OnCopyData },
+#define ON_WM_CREATE() \
+    { WM_CREATE, 0, 0, 0, AfxSig_i_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( LPCREATESTRUCT ))OnCreate },
+#define ON_WM_CTLCOLOR() \
+    { WM_CTLCOLOR, 0, 0, 0, AfxSig_CTLCOLOR, \
+      (AFX_PMSG)(AFX_PMSGW)(HBRUSH (CWnd::*)( CDC *, CWnd *, UINT ))OnCtlColor },
+#define ON_WM_CTLCOLOR_RELFECT() \
+    { WM_CTLCOLOR + WM_REFLECT_BASE, 0, 0, 0, AfxSig_CTLCOLOR_REFLECT, \
+      (AFX_PMSG)(AFX_PMSGW)(HBRUSH (CWnd::*)( CDC *, UINT ))CtlColor },
+#define ON_WM_DEADCHAR() \
+    { WM_DEADCHAR, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnDeadChar },
+#define ON_WM_DELETEITEM() \
+    { WM_DELETEITEM, 0, 0, 0, AfxSig_OWNERDRAW, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPDELETEITEMSTRUCT ))OnDeleteItem },
+#define ON_WM_DELETEITEM_REFLECT() \
+    { WM_DELETEITEM + WM_REFLECT_BASE, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( LPDELETEITEMSTRUCT ))DeleteItem },
+#define ON_WM_DESTROY() \
+    { WM_DESTROY, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnDestroy },
+#define ON_WM_DESTROYCLIPBOARD() \
+    { WM_DESTROYCLIPBOARD, 0, 0, 0, AfxSig_v_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)OnDestroyClipboard },
+#define ON_WM_DEVICECHANGE() \
+    { WM_DEVICECHANGE, 0, 0, 0, AfxSig_l_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( UINT, DWORD_PTR ))OnDeviceChange },
+#define ON_WM_DEVMODECHANGE() \
+    { WM_DEVMODECHANGE, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( LPTSTR ))OnDevModeChange },
+#define ON_WM_DRAWCLIPBOARD() \
+    { WM_DRAWCLIPBOARD, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnDrawClipboard },
+#define ON_WM_DRAWITEM() \
+    { WM_DRAWITEM, 0, 0, 0, AfxSig_OWNERDRAW, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPDRAWITEMSTRUCT ))OnDrawItem },
+#define ON_WM_DRAWITEM_REFLECT() \
+    { WM_DRAWITEM + WM_REFLECT_BASE, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( LPDRAWITEMSTRUCT ))DrawItem },
+#define ON_WM_DROPFILES() \
+    { WM_DROPFILES, 0, 0, 0, AfxSig_v_h_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( HDROP ))OnDropFiles },
+#define ON_WM_ENABLE() \
+    { WM_ENABLE, 0, 0, 0, AfxSig_v_u_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL ))OnEnable },
+#define ON_WM_ENDSESSION() \
+    { WM_ENDSESSION, 0, 0, 0, AfxSig_v_u_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL ))OnEndSession },
+#define ON_WM_ENTERIDLE() \
+    { WM_ENTERIDLE, 0, 0, 0, AfxSig_v_u_W, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CWnd * ))OnEnterIdle },
+#define ON_WM_ERASEBKGND() \
+    { WM_ERASEBKGND, 0, 0, 0, AfxSig_b_D_v, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( CDC * ))OnEraseBkgnd },
+#define ON_WM_FONTCHANGE() \
+    { WM_FONTCHANGE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnFontChange },
+#define ON_WM_GETDLGCODE() \
+    { WM_GETDLGCODE, 0, 0, 0, AfxSig_u_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)(UINT (CWnd::*)())OnGetDlgCode },
+#define ON_WM_GETMINMAXINFO() \
+    { WM_GETMINMAXINFO, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( MINMAXINFO * ))OnGetMinMaxInfo },
+#define ON_WM_HSCROLL() \
+    { WM_HSCROLL, 0, 0, 0, AfxSig_SCROLL, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, CScrollBar * ))OnHScroll },
+#define ON_WM_HSCROLL_REFLECT() \
+    { WM_HSCROLL + WM_REFLECT_BASE, 0, 0, 0, AfxSig_SCROLL_REFLECT, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))HScroll },
+#define ON_WM_HSCROLLCLIPBOARD() \
+    { WM_HSCROLLCLIPBOARD, 0, 0, 0, AfxSig_v_W_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd *, UINT, UINT ))OnHScrollClipboard },
+#define ON_WM_ICONERASEBKGND() \
+    { WM_ICONERASEBKGND, 0, 0, 0, AfxSig_v_D_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CDC * ))OnIconEraseBkgnd },
+#define ON_WM_INITMENU() \
+    { WM_INITMENU, 0, 0, 0, AfxSig_v_M_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CMenu * ))OnInitMenu },
+#define ON_WM_INITMENUPOPUP() \
+    { WM_INITMENUPOPUP, 0, 0, 0, AfxSig_v_M_ub, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CMenu *, UINT, BOOL ))OnInitMenuPopup },
+#define ON_WM_KEYDOWN() \
+    { WM_KEYDOWN, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnKeyDown },
+#define ON_WM_KEYUP() \
+    { WM_KEYUP, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnKeyUp },
+#define ON_WM_KILLFOCUS() \
+    { WM_KILLFOCUS, 0, 0, 0, AfxSig_v_W_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd * ))OnKillFocus },
+#define ON_WM_LBUTTONDBLCLK() \
+    { WM_LBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnLButtonDblClk },
+#define ON_WM_LBUTTONDOWN() \
+    { WM_LBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnLButtonDown },
+#define ON_WM_LBUTTONUP() \
+    { WM_LBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnLButtonUp },
+#define ON_WM_MBUTTONDBLCLK() \
+    { WM_MBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnMButtonDblClk },
+#define ON_WM_MBUTTONDOWN() \
+    { WM_MBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnMButtonDown },
+#define ON_WM_MBUTTONUP() \
+    { WM_MBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnMButtonUp },
+#define ON_WM_MDIACTIVATE() \
+    { WM_MDIACTIVATE, 0, 0, 0, AfxSig_MDIACTIVATE, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL, CWnd *, CWnd * ))OnMDIActivate },
+#define ON_WM_MEASUREITEM() \
+    { WM_MEASUREITEM, 0, 0, 0, AfxSig_OWNERDRAW, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPMEASUREITEMSTRUCT ))OnMeasureItem },
+#define ON_WM_MEASUREITEM_REFLECT() \
+    { WM_MEASUREITEM + WM_REFLECT_BASE, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( LPMEASUREITEMSTRUCT ))MeasureItem },
+#define ON_WM_MENUCHAR() \
+    { WM_MENUCHAR, 0, 0, 0, AfxSig_l_uu_M, \
+      (AFX_PMSG)(AFX_PMSGW)(LONG (CWnd::*)( UINT, UINT, CMenu * ))OnMenuChar },
+#define ON_WM_MENUSELECT() \
+    { WM_MENUSELECT, 0, 0, 0, AfxSig_v_uu_M, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, HMENU ))OnMenuSelect },
+#define ON_WM_MOUSEACTIVATE() \
+    { WM_MOUSEACTIVATE, 0, 0, 0, AfxSig_i_W_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( CWnd *, UINT, UINT ))OnMouseActivate },
+#define ON_WM_MOUSEMOVE() \
+    { WM_MOUSEMOVE, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnMouseMove },
+#define ON_WM_MOVE() \
+    { WM_MOVE, 0, 0, 0, AfxSig_v_v_ii, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnMove },
+#define ON_WM_MOVING() \
+    { WM_MOVING, 0, 0, 0, AfxSig_SIZING, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPRECT ))OnMoving },
+#define ON_WM_NCACTIVATE() \
+    { WM_NCACTIVATE, 0, 0, 0, AfxSig_b_b_v, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( BOOL ))OnNcActivate },
+#define ON_WM_NCCALCSIZE() \
+    { WM_NCCALCSIZE, 0, 0, 0, AfxSig_v_b_NCCALCSIZEPARAMS, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL, NCCALCSIZE_PARAMS * ))OnNcCalcSize },
+#define ON_WM_NCCREATE() \
+    { WM_NCCREATE, 0, 0, 0, AfxSig_i_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( LPCREATESTRUCT ))OnNcCreate },
+#define ON_WM_NCDESTROY() \
+    { WM_NCDESTROY, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnNcDestroy },
+#define ON_WM_NCHITTEST() \
+    { WM_NCHITTEST, 0, 0, 0, AfxSig_l_p, \
+      (AFX_PMSG)(AFX_PMSGW)(LRESULT (CWnd::*)( CPoint ))OnNcHitTest },
+#define ON_WM_NCLBUTTONDBLCLK() \
+    { WM_NCLBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcLButtonDblClk },
+#define ON_WM_NCLBUTTONDOWN() \
+    { WM_NCLBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcLButtonDown },
+#define ON_WM_NCLBUTTONUP() \
+    { WM_NCLBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcLButtonUp },
+#define ON_WM_NCMBUTTONDBLCLK() \
+    { WM_NCMBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcMButtonDblClk },
+#define ON_WM_NCMBUTTONDOWN() \
+    { WM_NCMBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcMButtonDown },
+#define ON_WM_NCMBUTTONUP() \
+    { WM_NCMBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcMButtonUp },
+#define ON_WM_NCMOUSEMOVE() \
+    { WM_NCMOUSEMOVE, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcMouseMove },
+#define ON_WM_NCPAINT() \
+    { WM_NCPAINT, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnNcPaint },
+#define ON_WM_NCRBUTTONDBLCLK() \
+    { WM_NCRBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcRButtonDblClk },
+#define ON_WM_NCRBUTTONDOWN() \
+    { WM_NCRBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcRButtonDown },
+#define ON_WM_NCRBUTTONUP() \
+    { WM_NCRBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnNcRButtonUp },
+#define ON_WM_PAINT() \
+    { WM_PAINT, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnPaint },
+#define ON_WM_PAINTCLIPBOARD() \
+    { WM_PAINTCLIPBOARD, 0, 0, 0, AfxSig_v_W_h, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd *, HGLOBAL ))OnPaintClipboard },
+#define ON_WM_PALETTECHANGED() \
+    { WM_PALETTECHANGED, 0, 0, 0, AfxSig_v_W_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd * ))OnPaletteChanged },
+#define ON_WM_PALETTEISCHANGING() \
+    { WM_PALETTEISCHANGING, 0, 0, 0, AfxSig_v_W_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd * ))OnPaletteIsChanging },
+#define ON_WM_PARENTNOTIFY() \
+    { WM_PARENTNOTIFY, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPARAM ))OnParentNotify },
+#define ON_WM_PARENTNOTIFY_REFLECT() \
+    { WM_PARENTNOTIFY + WM_REFLECT_BASE, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPARAM ))ParentNotify },
+#define ON_WM_QUERYDRAGICON() \
+    { WM_QUERYDRAGICON, 0, 0, 0, AfxSig_C_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)(HCURSOR (CWnd::*)())OnQueryDragIcon },
+#define ON_WM_QUERYENDSESSION() \
+    { WM_QUERYENDSESSION, 0, 0, 0, AfxSig_u_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)())OnQueryEndSession },
+#define ON_WM_QUERYNEWPALETTE() \
+    { WM_QUERYNEWPALETTE, 0, 0, 0, AfxSig_u_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)())OnQueryNewPalette },
+#define ON_WM_QUERYOPEN() \
+    { WM_QUERYOPEN, 0, 0, 0, AfxSig_u_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)())OnQueryOpen },
+#define ON_WM_RBUTTONDBLCLK() \
+    { WM_RBUTTONDBLCLK, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnRButtonDblClk },
+#define ON_WM_RBUTTONDOWN() \
+    { WM_RBUTTONDOWN, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnRButtonDown },
+#define ON_WM_RBUTTONUP() \
+    { WM_RBUTTONUP, 0, 0, 0, AfxSig_v_u_p, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnRButtonUp },
+#define ON_WM_RENDERALLFORMATS() \
+    { WM_RENDERALLFORMATS, 0, 0, 0, AfxSig_v_v_v, \
+      (AFX_PMSG)(AFX_PMSGW)OnRenderAllFormats },
+#define ON_WM_RENDERFORMAT() \
+    { WM_RENDERFORMAT, 0, 0, 0, AfxSig_v_u_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT ))OnRenderFormat },
+#define ON_WM_SETCURSOR() \
+    { WM_SETCURSOR, 0, 0, 0, AfxSig_b_W_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( CWnd *, UINT, UINT ))OnSetCursor },
+#define ON_WM_SETFOCUS() \
+    { WM_SETFOCUS, 0, 0, 0, AfxSig_v_W_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd * ))OnSetFocus },
+#define ON_WM_SETTINGCHANGE() \
+    { WM_SETTINGCHANGE, 0, 0, 0, AfxSig_v_u_cs, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPCTSTR ))OnSettingChange },
+#define ON_WM_SHOWWINDOW() \
+    { WM_SHOWWINDOW, 0, 0, 0, AfxSig_v_u_u, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL, UINT ))OnShowWindow },
+#define ON_WM_SIZE() \
+    { WM_SIZE, 0, 0, 0, AfxSig_v_u_ii, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, int, int ))OnSize },
+#define ON_WM_SIZECLIPBOARD() \
+    { WM_SIZECLIPBOARD, 0, 0, 0, AfxSig_v_W_h, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd *, HANDLE ))OnSizeClipboard },
+#define ON_WM_SIZING() \
+    { WM_SIZING, 0, 0, 0, AfxSig_SIZING, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LPCTSTR ))OnSizing },
+#define ON_WM_SPOOLERSTATUS() \
+    { WM_SPOOLERSTATUS, 0, 0, 0, AfxSig_v_u_u, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnSpoolerStatus },
+#define ON_WM_STYLECHANGED() \
+    { WM_STYLECHANGED, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( int, LPSTYLESTRUCT ))OnStyleChanged },
+#define ON_WM_STYLECHANGING() \
+    { WM_STYLECHANGING, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( int, LPSTYLESTRUCT ))OnStyleChanging },
+#define ON_WM_SYSCHAR() \
+    { WM_SYSCHAR, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnSysChar },
+#define ON_WM_SYSCOLORCHANGE() \
+    { WM_SYSCOLORCHANGE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnSysColorChange },
+#define ON_WM_SYSCOMMAND() \
+    { WM_SYSCOMMAND, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, LONG ))OnSysCommand },
+#define ON_WM_SYSDEADCHAR() \
+    { WM_SYSDEADCHAR, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnSysDeadChar },
+#define ON_WM_SYSKEYDOWN() \
+    { WM_SYSKEYDOWN, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnSysKeyDown },
+#define ON_WM_SYSKEYUP() \
+    { WM_SYSKEYUP, 0, 0, 0, AfxSig_v_u_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnSysKeyUp },
+#define ON_WM_TCARD() \
+    { WM_TCARD, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, DWORD ))OnTCard },
+#define ON_WM_TIMECHANGE() \
+    { WM_TIMECHANGE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnTimeChange },
+#define ON_WM_TIMER() \
+    { WM_TIMER, 0, 0, 0, AfxSig_v_u_v, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT_PTR ))OnTimer },
+#define ON_WM_USERCHANGED() \
+    { WM_USERCHANGED, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnUserChanged },
+#define ON_WM_VKEYTOITEM() \
+    { WM_VKEYTOITEM, 0, 0, 0, AfxSig_i_u_W_u, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( UINT, CWnd *, UINT ))OnVKeyToItem },
+#define ON_WM_VKEYTOITEM_REFLECT() \
+    { WM_VKEYTOITEM_REFLECT, 0, 0, 0, AfxSig_i_uu_v, \
+      (AFX_PMSG)(AFX_PMSGW)(int (CWnd::*)( UINT, UINT ))VKeyToItem },
+#define ON_WM_VSCROLL() \
+    { WM_VSCROLL, 0, 0, 0, AfxSig_SCROLL, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, CScrollBar * ))OnVScroll },
+#define ON_WM_VSCROLL_REFLECT() \
+    { WM_VSCROLL + WM_REFLECT_BASE, 0, 0, 0, AfxSig_SCROLL_REFLECT, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))VScroll },
+#define ON_WM_VSCROLLCLIPBOARD() \
+    { WM_VSCROLLCLIPBOARD, 0, 0, 0, AfxSig_v_W_uu, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CWnd *, UINT, UINT ))OnVScrollClipboard },
+#define ON_WM_WINDOWPOSCHANGED() \
+    { WM_WINDOWPOSCHANGED, 0, 0, 0, AfxSig_v_v_WINDOWPOS, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( WINDOWPOS * ))OnWindowPosChanged },
+#define ON_WM_WINDOWPOSCHANGING() \
+    { WM_WINDOWPOSCHANGING, 0, 0, 0, AfxSig_v_v_WINDOWPOS, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( WINDOWPOS * ))OnWindowPosChanging },
+#define ON_WM_WININICHANGE() \
+    { WM_WININICHANGE, 0, 0, 0, AfxSig_v_v_s, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( LPTSTR ))OnWinIniChange },
+#define ON_WM_WTSSESSION_CHANGE() \
+    { WM_WTSSESSION_CHANGE, 0, 0, 0, AfxSig_v_u_u, \
+      (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnSessionChange },
+#if (WINVER >= 0x0500)
+    #define ON_WM_MENUDRAG() \
+        { WM_MENUDRAG, 0, 0, 0, AfxSig_u_u_M, \
+          (AFX_PMSG)(AFX_PMSGW)(UINT (CWnd::*)( UINT, CMenu * ))OnMenuDrag },
+    #define ON_WM_MENUGETOBJECT() \
+        { WM_MENUGETOBJECT, 0, 0, 0, AfxSig_u_v_MENUGETOBJECTINFO, \
+          (AFX_PMSG)(AFX_PMSGW)(UINT (CWnd::*)( MENUGETOBJECTINFO *))OnMenuGetObject },
+    #define ON_WM_MENURBUTTONUP() \
+        { WM_MENURBUTTONUP, 0, 0, 0, AfxSig_v_u_M, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CMenu * ))OnMenuRButtonUp },
+    #define ON_WM_UNINITMENUPOPUP() \
+        { WM_UNINITMENUPOPUP, 0, 0, 0, AfxSig_v_M_u, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( CMenu *, UINT ))OnUnInitMenuPopup },
+#endif
+#if (WINVER >= 0x0500) || (_WIN32_WINNT >= 0x0400)
+    #define ON_WM_MOUSEWHEEL() \
+        { WM_MOUSEWHEEL, 0, 0, 0, AfxSig_MOUSEWHEEL, \
+          (AFX_PMSG)(AFX_PMSGW)(BOOL (CWnd::*)( UINT, short, CPoint ))OnMouseWheel },
+#endif
+#if (WINVER >= 0x0500) || (_WIN32_WINNT >= 0x0400) || (_WIN32_IE >= 0x0300)
+    #define ON_WM_MOUSEHOVER() \
+        { WM_MOUSEHOVER, 0, 0, 0, AfxSig_v_u_p, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, CPoint ))OnMouseHover },
+    #define ON_WM_MOUSELEAVE() \
+        { WM_MOUSELEAVE, 0, 0, 0, AfxSig_v_v_v, (AFX_PMSG)(AFX_PMSGW)OnMouseLeave },
+#endif
+#if (_WIN32_WINNT >= 0x0500)
+    #define ON_WM_CHANGEUISTATE() \
+        { WM_CHANGEUISTATE, 0, 0, 0, AfxSig_v_uu_v, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnChangeUIState },
+    #define ON_WM_NCXBUTTONDBLCLK() \
+        { WM_NCXBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( short, UINT, CPoint ))OnNcXButtonDblClk },
+    #define ON_WM_NCXBUTTONDOWN() \
+        { WM_NCXBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( short, UINT, CPoint ))OnNcXButtonDown },
+    #define ON_WM_NCXBUTTONUP() \
+        { WM_NCXBUTTONUP, 0, 0, 0, AfxSig_MOUSE_NCXBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( short, UINT, CPoint ))OnNcXButtonUp },
+    #define ON_WM_QUERYUISTATE() \
+        { WM_QUERYUISTATE, 0, 0, 0, AfxSig_u_v_v, \
+          (AFX_PMSG)(AFX_PMSGW)(UINT (CWnd::*)())OnQueryUIState },
+    #define ON_WM_UPDATEUISTATE() \
+        { WM_UPDATEUISTATE, 0, 0, 0, AfxSig_v_uu_v, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnUpdateUIState },
+    #define ON_WM_XBUTTONDBLCLK() \
+        { WM_XBUTTONDBLCLK, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, CPoint ))OnXButtonDblClk },
+    #define ON_WM_XBUTTONDOWN() \
+        { WM_XBUTTONDOWN, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, CPoint ))OnXButtonDown },
+    #define ON_WM_XBUTTONUP() \
+        { WM_XBUTTONUP, 0, 0, 0, AfxSig_MOUSE_XBUTTON, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, CPoint ))OnXButtonUp },
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    #define ON_WM_INPUT() \
+        { WM_INPUT, 0, 0, 0, AfxSig_RAWINPUT, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, HRAWINPUT ))OnRawInput },
+    #define ON_WM_UNICHAR() \
+        { WM_UNICHAR, 0, 0, 0, AfxSig_v_u_uu, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT, UINT ))OnUniChar },
+    #define ON_WM_WTSSESSION_CHANGE() \
+        { WM_WTSSESSION_CHANGE, 0, 0, 0, AfxSig_v_u_u, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, UINT ))OnSessionChange },
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    #define ON_WM_DWMCOLORIZATIONCOLORCHANGED() \
+        { WM_DWMCOLORIZATIONCOLORCHANGED, 0, 0, 0, AfxSig_v_u_u, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( DWORD, BOOL ))OnColorizationColorChanged },
+    #define ON_WM_DWMNCRENDERINGCHANGED() \
+        { WM_DWMNCRENDERINGCHANGED, 0, 0, 0, AfxSig_v_u_v, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL ))OnNcRenderingChanged },
+    #define ON_WM_DWMWINDOWMAXIMIZEDCHANGE() \
+        { WM_DWMWINDOWMAXIMIZEDCHANGE, 0, 0, 0, AfxSig_v_u_v, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( BOOL ))OnWindowMaximizedChanged },
+    #define ON_WM_INPUT_DEVICE_CHANGE() \
+        { WM_INPUT_DEVICE_CHANGE, 0, 0, 0, AfxSig_INPUTDEVICECHANGE, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( unsigned short ))OnInputDeviceChange },
+    #define ON_WM_MOUSEHWHEEL() \
+        { WM_MOUSEHWHEEL, 0, 0, 0, AfxSig_MOUSEHWHEEL, \
+          (AFX_PMSG)(AFX_PMSGW)(void (CWnd::*)( UINT, short, CPoint ))OnMouseHWheel },
+#endif
+
+// Button notification handling macros
+#define ON_BN_CLICKED( id, memberFxn ) \
+    ON_CONTROL( BN_CLICKED, id, memberFxn )
+#define ON_BN_DISABLE( id, memberFxn ) \
+    ON_CONTROL( BN_DISABLE, id, memberFxn )
+#define ON_BN_DOUBLECLICKED( id, memberFxn ) \
+    ON_CONTROL( BN_DOUBLECLICKED, id, memberFxn )
+#define ON_BN_HILITE( id, memberFxn ) \
+    ON_CONTROL( BN_HILITE, id, memberFxn )
+#define ON_BN_PAINT( id, memberFxn ) \
+    ON_CONTROL( BN_PAINT, id, memberFxn )
+#define ON_BN_UNHILITE( id, memberFxn ) \
+    ON_CONTROL( BN_UNHILITE, id, memberFxn )
+
+// Combo box notification handling macros
+#define ON_CBN_CLOSEUP( id, memberFxn ) \
+    ON_CONTROL( CBN_CLOSEUP, id, memberFxn )
+#define ON_CBN_DBLCLK( id, memberFxn ) \
+    ON_CONTROL( CBN_DBLCLK, id, memberFxn )
+#define ON_CBN_DROPDOWN( id, memberFxn ) \
+    ON_CONTROL( CBN_DROPDOWN, id, memberFxn )
+#define ON_CBN_EDITCHANGE( id, memberFxn ) \
+    ON_CONTROL( CBN_EDITCHANGE, id, memberFxn )
+#define ON_CBN_EDITUPDATE( id, memberFxn ) \
+    ON_CONTROL( CBN_EDITUPDATE, id, memberFxn )
+#define ON_CBN_ERRSPACE( id, memberFxn ) \
+    ON_CONTROL( CBN_ERRSPACE, id, memberFxn )
+#define ON_CBN_KILLFOCUS( id, memberFxn ) \
+    ON_CONTROL( CBN_KILLFOCUS, id, memberFxn )
+#define ON_CBN_SELCHANGE( id, memberFxn ) \
+    ON_CONTROL( CBN_SELCHANGE, id, memberFxn )
+#define ON_CBN_SELENDCANCEL( id, memberFxn ) \
+    ON_CONTROL( CBN_SELENDCANCEL, id, memberFxn )
+#define ON_CBN_SELENDOK( id, memberFxn ) \
+    ON_CONTROL( CBN_SELENDOK, id, memberFxn )
+#define ON_CBN_SETFOCUS( id, memberFxn ) \
+    ON_CONTROL( CBN_SETFOCUS, id, memberFxn )
+
+// Edit control notification handling macros
+#define ON_EN_CHANGE( id, memberFxn ) \
+    ON_CONTROL( EN_CHANGE, id, memberFxn )
+#define ON_EN_ERRSPACE( id, memberFxn ) \
+    ON_CONTROL( EN_ERRSPACE, id, memberFxn )
+#define ON_EN_HSCROLL( id, memberFxn ) \
+    ON_CONTROL( EN_HSCROLL, id, memberFxn )
+#define ON_EN_KILLFOCUS( id, memberFxn ) \
+    ON_CONTROL( EN_KILLFOCUS, id, memberFxn )
+#define ON_EN_MAXTEXT( id, memberFxn ) \
+    ON_CONTROL( EN_MAXTEXT, id, memberFxn )
+#define ON_EN_SETFOCUS( id, memberFxn ) \
+    ON_CONTROL( EN_SETFOCUS, id, memberFxn )
+#define ON_EN_UPDATE( id, memberFxn ) \
+    ON_CONTROL( EN_UPDATE, id, memberFxn )
+#define ON_EN_VSCROLL( id, memberFxn ) \
+    ON_CONTROL( EN_VSCROLL, id, memberFxn )
+
+// List box notification handling macros
+#define ON_LBN_DBLCLK( id, memberFxn ) \
+    ON_CONTROL( LBN_DBLCLK, id, memberFxn )
+#define ON_LBN_ERRSPACE( id, memberFxn ) \
+    ON_CONTROL( LBN_ERRSPACE, id, memberFxn )
+#define ON_LBN_KILLFOCUS( id, memberFxn ) \
+    ON_CONTROL( LBN_KILLFOCUS, id, memberFxn )
+#define ON_LBN_SELCHANGE( id, memberFxn ) \
+    ON_CONTROL( LBN_SELCHANGE, id, memberFxn )
+#define ON_LBN_SETFOCUS( id, memberFxn ) \
+    ON_CONTROL( LBN_SETFOCUS, id, memberFxn )
+
+// Thread message handling macros
+#define ON_THREAD_MESSAGE( message, memberFxn ) \
+    { message, 0, 0, 0, AfxSig_v_w_l, \
+      (AFX_PMSG)(AFX_PMSGT)(void (CWinThread::*)( WPARAM, LPARAM ))memberFxn },
+#define ON_REGISTERED_THREAD_MESSAGE( nMessageVariable, memberFxn ) \
+    { 0xC000, 0, 0, 0, (UINT)&nMessageVariable, \
+      (AFX_PMSG)(AFX_PMSGT)(void (CWinThread::*)( WPARAM, LPARAM ))memberFxn },

@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include "precomp.h"
 #include "imgedit.h"
+#include <stdio.h>
 #include "wrutil.h"
 
 char            const PaletteClass[]    = "PalletClass";
@@ -43,9 +44,9 @@ char            const BitmapPickClass[] = "ImgedPickClass";
 WPI_FONT        SmallFont;
 HWND            HMainWindow;
 HWND            ClientWindow;
-HWND            HColourPalette;
+HWND            HColorPalette;
 WPI_INST        Instance;
-int             ColourPlanes;
+int             ColorPlanes;
 int             BitsPerPixel;
 config_info     ImgedConfigInfo;
 BOOL            ImgedIsDDE = FALSE;
@@ -58,11 +59,18 @@ char            *IEOpenImageTitle       = NULL;
 char            *IESavePaletteTitle     = NULL;
 char            *IEOpenPaletteTitle     = NULL;
 
+/*
+ * IEMassageFilter
+ */
 static void IEMassageFilter( char *filter )
 {
     WRMassageFilter( filter );
-}
 
+} /* IEMassageFilter */
+
+/*
+ * IEFiniGlobalStrings
+ */
 void IEFiniGlobalStrings( void )
 {
     if( IEAppTitle != NULL ) {
@@ -89,18 +97,22 @@ void IEFiniGlobalStrings( void )
     if( IEOpenPaletteTitle != NULL ) {
         IEFreeRCString( IEOpenPaletteTitle );
     }
-}
 
+} /* IEFiniGlobalStrings */
+
+/*
+ * IEInitGlobalStrings
+ */
 BOOL IEInitGlobalStrings( void )
 {
     BOOL        ok;
 
     IEAppTitle = IEAllocRCString( WIE_APPNAME );
-    ok = ( IEAppTitle != NULL );
+    ok = (IEAppTitle != NULL);
 
     if( ok ) {
         IEImageFilter = IEAllocRCString( WIE_IMAGEFILTER );
-        ok = ( IEImageFilter != NULL );
+        ok = (IEImageFilter != NULL);
         if( ok ) {
             IEMassageFilter( IEImageFilter );
         }
@@ -108,7 +120,7 @@ BOOL IEInitGlobalStrings( void )
 
     if( ok ) {
         IEPaletteFilter = IEAllocRCString( WIE_PALETTEFILTER );
-        ok = ( IEPaletteFilter != NULL );
+        ok = (IEPaletteFilter != NULL);
         if( ok ) {
             IEMassageFilter( IEPaletteFilter );
         }
@@ -116,27 +128,27 @@ BOOL IEInitGlobalStrings( void )
 
     if( ok ) {
         IEImageUntitled = IEAllocRCString( WIE_IMAGEUNTITLED );
-        ok = ( IEImageUntitled != NULL );
+        ok = (IEImageUntitled != NULL);
     }
 
     if( ok ) {
         IESaveImageTitle = IEAllocRCString( WIE_SAVEIMAGETITLE );
-        ok = ( IESaveImageTitle != NULL );
+        ok = (IESaveImageTitle != NULL);
     }
 
     if( ok ) {
         IEOpenImageTitle = IEAllocRCString( WIE_OPENIMAGETITLE );
-        ok = ( IEOpenImageTitle != NULL );
+        ok = (IEOpenImageTitle != NULL);
     }
 
     if( ok ) {
         IESavePaletteTitle = IEAllocRCString( WIE_SAVEPALETTETITLE );
-        ok = ( IESavePaletteTitle != NULL );
+        ok = (IESavePaletteTitle != NULL);
     }
 
     if( ok ) {
         IEOpenPaletteTitle = IEAllocRCString( WIE_OPENPALETTETITLE );
-        ok = ( IEOpenPaletteTitle != NULL );
+        ok = (IEOpenPaletteTitle != NULL);
     }
 
     if( !ok ) {
@@ -144,5 +156,5 @@ BOOL IEInitGlobalStrings( void )
     }
 
     return( ok );
-}
 
+} /* IEInitGlobalStrings */

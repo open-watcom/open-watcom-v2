@@ -13,7 +13,7 @@ void fooE() {
 }
 
 int main() {
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
     int count = 0;
 
     try {

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX uuencode utility
+*               Converts files to 7-bit encoding
 *
 ****************************************************************************/
 
@@ -69,12 +69,9 @@
  * while keeping the redirection and piping capability.
  */
 
-#if !defined( lint ) && !defined( __WATCOMC__ )
-static char sccsid[] = "@(#)uuencode.c  5.6 (Berkeley) 7/6/88";
-#endif /* not lint */
-
 #ifdef __WATCOMC__
 #define __MSDOS__
+#include <string.h>
 #endif
 #ifdef __MSDOS__
 #ifndef MSDOS
@@ -100,7 +97,7 @@ static char sccsid[] = "@(#)uuencode.c  5.6 (Berkeley) 7/6/88";
 #  define NUM_ARGS 2
 #  define USAGE "Usage: uuencode [infile] remotefile\n"
 #ifdef __WATCOMC__
-static char * usage_data[] = {
+static const char * usage_data[] = {
     "Usage: uuencode [-h|?] [infile] remotefile [outfile]\n\n",
     "          remotefile - the name of the file when the\n",
     "                       file is later uudecoded\n",
@@ -136,150 +133,151 @@ static char * usage_data[] = {
 /* ENC is the basic 1-character encoding function to make a char printing */
 #define ENC(c) ((c) ? ((c) & 077) + ' ': '`')
 
-main(argc, argv)
-char **argv;
-{
+/* Forward declarations */
+void encode( FILE *in, FILE *out );
+void outdec( char *p, FILE *f );
+
+
+int main( int argc, char **argv ) {
 #if defined( VMS ) || defined( __WATCOMC__ )
-        FILE        *out;
+    FILE        *out;
 #endif
-        FILE        *in;
-        int     mode;
-        int     cnt;
-        char *  file_name;
-        char    fname[_MAX_FNAME];
-        char    full_name[_MAX_PATH];
-        struct stat sbuf;
+    FILE        *in;
+    int     mode;
+    int     cnt;
+    char *  file_name;
+    char    fname[_MAX_FNAME];
+    char    full_name[_MAX_PATH];
+    struct stat sbuf;
 
 #ifdef __WATCOMC__
-        argc--;
-        if( argc > 3 || argc == 0 || argv[1] == '?'
-         || argv[1] == '-?' || argv[1] == '-h' ) {
-            cnt = 0;
-            for(;;) {
-                if( usage_data[cnt] == NULL ) break;
-                fprintf(stderr, usage_data[cnt++] );
-            }
-            exit(2);
+    argc--;
+    if( argc > 3 || argc == 0 || !strcmp(argv[1], "?")
+         || !strcmp(argv[1], "-?") || !strcmp(argv[1], "-h") ) {
+        cnt = 0;
+        for(;;) {
+            if( usage_data[cnt] == NULL )
+                break;
+            fprintf(stderr, usage_data[cnt++] );
         }
+        exit(2);
+    }
 
-        if( !isatty(fileno(stdin)) ) {
-            in = stdin;
-            if( argc == 3 ) {
-                argv++;
-                argc--;
-            }
+    if( !isatty(fileno(stdin)) ) {
+        in = stdin;
+        if( argc == 3 ) {
+            argv++;
+            argc--;
+        }
+    } else {
+        in = fopen( argv[1], "r" );
+        if( in == NULL ) {
+            perror(argv[1]);
+            exit(1);
+        }
+        if( argc > 1 ) {
+            argv++;
+            argc--;
+        }
+    }
+
+    if( !isatty(fileno(stdout)) ) {
+        out = stdout;
+    } else {
+        if( argc == 2 ) {
+            file_name = argv[2];
         } else {
-            in = fopen( argv[1], "r" );
-            if( in == NULL ) {
+            _splitpath( argv[1], NULL, NULL, fname, NULL );
+            _makepath( full_name, NULL, NULL, fname, "uu" );
+            file_name = full_name;
+        }
+        out = fopen( file_name, "w" );
+        if( out == NULL ) {
+            perror(file_name);
+            exit(4);
+        }
+    }
+#else
+    /* optional 1st argument */
+    if (argc > NUM_ARGS) {
+        if ((in = fopen(argv[1], "r")) == NULL) {
                 perror(argv[1]);
                 exit(1);
-            }
-            if( argc > 1 ) {
-                argv++;
-                argc--;
-            }
         }
-
-        if( !isatty(fileno(stdout)) ) {
-            out = stdout;
-        } else {
-            if( argc == 2 ) {
-                file_name = argv[2];
-            } else {
-                _splitpath( argv[1], NULL, NULL, fname, NULL );
-                _makepath( full_name, NULL, NULL, fname, "uu" );
-                file_name = full_name;
-            }
-            out = fopen( file_name, "w" );
-            if( out == NULL ) {
-                perror(file_name);
-                exit(4);
-            }
-        }
-#else
-        /* optional 1st argument */
-        if (argc > NUM_ARGS) {
-                if ((in = fopen(argv[1], "r")) == NULL) {
-                        perror(argv[1]);
-                        exit(1);
-                }
-                argv++; argc--;
-        } else {
-                in = stdin;
-        }
+        argv++;
+        argc--;
+    } else {
+        in = stdin;
+    }
 #endif
 
 #ifdef MSDOS
-        /* set input file mode to binary for MSDOS systems */
-        setmode(fileno(in), O_BINARY);
+    /* set input file mode to binary for MSDOS systems */
+    setmode(fileno(in), O_BINARY);
 #endif
 
 #ifndef __WATCOMC__
-        if (argc != NUM_ARGS) {
-                fprintf(stderr, USAGE);
-                exit(2);
-        }
+    if (argc != NUM_ARGS) {
+        fprintf(stderr, USAGE);
+        exit(2);
+    }
 #endif
 
 #ifdef VMS   /* mandatory 3rd argument is name of uuencoded file */
-        if ((out = fopen(argv[2], "w")) == NULL) {
-                perror(argv[2]);
-                exit(4);
-        }
+    if ((out = fopen(argv[2], "w")) == NULL) {
+        perror(argv[2]);
+        exit(4);
+    }
 #endif
 
-        /* figure out the input file mode */
-        if (fstat(fileno(in), &sbuf) < 0 || !isatty(fileno(in)))
-                mode = 0666 & ~umask(0666);
-        else
-                mode = sbuf.st_mode & 0777;
-        fprintf(OUT, "begin %o %s\n", mode, argv[1]);
+    /* figure out the input file mode */
+    if( fstat(fileno(in), &sbuf) < 0 || !isatty(fileno(in)) ) {
+        mode = 0666 & ~umask(0666);
+    } else {
+        mode = sbuf.st_mode & 0777;
+    }
+    fprintf(OUT, "begin %o %s\n", mode, argv[1]);
 
-        encode(in, OUT);
+    encode(in, OUT);
 
-        fprintf(OUT, "end\n");
-        exit(0);
+    fprintf(OUT, "end\n");
+    return( 0 );
 }
 
 /*
  * copy from in to out, encoding as you go along.
  */
-encode(in, out)
-register FILE *in;
-register FILE *out;
-{
-        char buf[80];
-        register int i, n;
+void encode( FILE *in, FILE *out ) {
+    char buf[80];
+    int i, n;
 
-        for (;;) {
-                /* 1 (up to) 45 character line */
-                n = fread(buf, 1, 45, in);
-                putc(ENC(n), out);
+    for(;;) {
+        /* 1 (up to) 45 character line */
+        n = fread(buf, 1, 45, in);
+        putc(ENC(n), out);
 
-                for (i=0; i<n; i += 3)
-                        outdec(&buf[i], out);
-
-                putc('\n', out);
-                if (n <= 0)
-                        break;
+        for(i=0; i<n; i += 3) {
+            outdec(&buf[i], out);
         }
+
+        putc('\n', out);
+        if (n <= 0)
+            break;
+    }
 }
 
 /*
  * output one group of 3 bytes, pointed at by p, on file f.
  */
-outdec(p, f)
-register char *p;
-register FILE *f;
-{
-        register int c1, c2, c3, c4;
+void outdec( char *p, FILE *f ) {
+    int c1, c2, c3, c4;
 
-        c1 = *p >> 2;
-        c2 = (*p << 4) & 060 | (p[1] >> 4) & 017;
-        c3 = (p[1] << 2) & 074 | (p[2] >> 6) & 03;
-        c4 = p[2] & 077;
-        putc(ENC(c1), f);
-        putc(ENC(c2), f);
-        putc(ENC(c3), f);
-        putc(ENC(c4), f);
+    c1 = *p >> 2;
+    c2 = (*p << 4) & 060 | (p[1] >> 4) & 017;
+    c3 = (p[1] << 2) & 074 | (p[2] >> 6) & 03;
+    c4 = p[2] & 077;
+    putc(ENC(c1), f);
+    putc(ENC(c2), f);
+    putc(ENC(c3), f);
+    putc(ENC(c4), f);
 }

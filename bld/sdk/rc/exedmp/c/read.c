@@ -341,6 +341,8 @@ bool loadAllResources( ExeFile *exeFile )
     }
 }
 
+void freeTableContents( ResTableEntry *table );
+
 void freeDirContents( ResDirEntry *dir )
 /***************************************/
 {

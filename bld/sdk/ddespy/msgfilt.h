@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Constants for the message filter dialog box.
 *
 ****************************************************************************/
 
 
-/* constants for message filter dialog
- *
+/*
  * When future messages are to be added their constants should be the
  * next avalable integer and MFILTER_LAST_MSG must be updated.  The fact
  * that the constants are consecutive is used in accessing the message
- * filter data structure
+ * filter data structure.
  */
 
 #define MFILTER_FIRST_MSG       MFILTER_ACK

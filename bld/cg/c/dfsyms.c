@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit DWARF symbol information.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -45,6 +44,7 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -55,13 +55,11 @@
 #include "dwarf.h"
 #include "dfdbg.h"
 #include "dbcue.h"
-#define BY_CG
 #include "cgprotos.h"
 #include "feprotos.h"
 
 extern  void            FEPtr(sym_handle,type_def *,offset);
 extern  void            FEPtrBase(sym_handle);
-extern  type_def        *TypeAddress(cg_type);
 extern  seg_id          AskOP(void);
 extern  void            BackPtr( bck_info*, seg_id, offset, type_def* );
 extern  void            BackBigOffset( bck_info *, seg_id, offset );
@@ -70,17 +68,17 @@ extern  void            OutLabel(label_handle);
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  name            *DeAlias(name*);
 extern  seg_id          SetOP(seg_id);
-extern  seg_id          AskCodeSeg();
+extern  seg_id          AskCodeSeg(void);
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  sym_handle      AskForLblSym(label_handle);
-extern  offset          AskLocation();
+extern  offset          AskLocation(void);
 extern  void            SetLocation(offset);
-extern  offset          AskMaxSize();
+extern  offset          AskMaxSize(void);
 extern  void            SetBigLocation( long_offset loc );
-extern  long_offset     AskBigLocation();
-extern  long_offset     AskBigMaxSize();
+extern  long_offset     AskBigLocation(void);
+extern  long_offset     AskBigMaxSize(void);
 extern  offset          AskAddress(label_handle);
-extern  bool            NeedBaseSet();
+extern  bool            NeedBaseSet(void);
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  void            DataBytes(unsigned_32,byte*);
@@ -91,9 +89,9 @@ extern  void            DoBigBckPtr(back_handle,offset);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern uint             DFStkReg( void );
+extern uint             DFDisplayReg( void );
 extern void             DFFEPtrRef( sym_handle sym );
 extern char             GetMemModel( void );
-extern  bool            NeedBaseSet();
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
@@ -101,6 +99,9 @@ extern  type_length     NewBase(name*);
 extern    source_line_number    SrcLine;
 extern    proc_def              *CurrProc;
 extern    struct opcode_entry   DbgInfo[];
+
+extern  void            DFBlkBeg( dbg_block *blk, offset lc );
+static  void            DumpLocals( dbg_local *local );
 
 #define CurrProc_debug ((dbg_rtn *)CurrProc->targ.debug)
 
@@ -170,7 +171,7 @@ static void DoReloc( dw_sym_handle sym, dw_addr_offset disp ){
 /**********************************/
     type_def            *ptr_type;
 
-    ptr_type = TypeAddress( T_NEAR_POINTER );
+    ptr_type = TypeAddress( TY_NEAR_POINTER );
     FEPtr( (sym_handle) sym, ptr_type, disp );
 }
 
@@ -187,7 +188,7 @@ static void DoLblReloc( bck_info *bck, long disp ){
     seg_id              id;
 
     id = AskSegID( bck, CG_BACK );
-    ptr_type = TypeAddress( T_NEAR_POINTER );
+    ptr_type = TypeAddress( TY_NEAR_POINTER );
     BackPtr( bck, id, disp, ptr_type );
 }
 
@@ -291,7 +292,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
     case DW_W_UNIT_SIZE:
         UnitSize->segment = curr->seg;
         UnitSize->offset =  AskBigLocation();
-        DataBytes( sizeof( uint_32 ), (char *)&zero );
+        DataBytes( sizeof( uint_32 ), (byte *)&zero );
         break;
     case DW_W_SECTION_POS:
         section = va_arg( args, uint );
@@ -326,7 +327,7 @@ static void *CLIAlloc( size_t size ) {
 
 static void CLIFree( void *p ) {
 
-    CGFreeSize( p, 0 );
+    CGFree( p );
 }
 
 static bck_info  *MakeLabel( void ){
@@ -423,6 +424,13 @@ static  void    FiniLineSegBck( void ){
 
 extern  void    DFSymRange( sym_handle sym, offset size ){
 /*********************************************************/
+    // I don't see what this is good for. The aranges for any
+    // comdat symbols will be taken care of by DFSegRange().
+    // Running this code may produce overlapping aranges that
+    // confuse the hell out of the debugger. However, not running
+    // this may cause debug information to be missing... call it
+    // a FIXME
+
     bck_info    *bck;
 
     if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
@@ -476,7 +484,14 @@ extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
             OutLabel( bck->lbl );
             Pc_Low = bck;
             Pc_High = MakeLabel();
-            cu.flags = TRUE;
+            // Emitting DW_AT_low_pc and DW_AT_high_pc is valid *only* if the
+            // compilation unit's code is in a single contiguous block (see
+            // DWARF 2, section 3.1).
+            // I don't know how to find out at the time of this call if there's
+            // only one code segment or not, hence these attributes are always
+            // disabled. The low/high pc attribs should probably be handled by
+            // the linker.
+            cu.flags = FALSE;
             cu.segment_size = 0;
         }else{
             cu.flags = FALSE;
@@ -494,7 +509,7 @@ extern  void    DFBegCCU( seg_id code, dw_sym_handle dbg_pch ){
 #endif
         SetOP( old );
         Comp_High = Pc_High;
-        tipe_addr = TypeAddress( T_NEAR_POINTER );
+        tipe_addr = TypeAddress( TY_NEAR_POINTER );
         cu.offset_size = tipe_addr->length;
         switch( GetMemModel() ){
             case 'h':
@@ -543,7 +558,7 @@ extern  void    DFObjInitInfo( void ) {
     }
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
-    info.abbrev_sym = NULL;
+    info.abbrev_sym = 0;
     info.producer_name = "WATCOM";
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
@@ -609,7 +624,7 @@ extern  void    DFObjLineInitInfo( void ) {
 
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
-    info.abbrev_sym = NULL;
+    info.abbrev_sym = 0;
     info.producer_name = "WATCOM";
     info.language = SetLang();
     if( setjmp( info.exception_handler ) == 0 ) {
@@ -621,7 +636,7 @@ extern  void    DFObjLineInitInfo( void ) {
         }
         cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
         cu.directory = "";
-        cu.dbg_pch   = NULL;
+        cu.dbg_pch   = 0;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
@@ -636,7 +651,7 @@ extern  void    DFObjLineInitInfo( void ) {
         cu.flags = TRUE;
         cu.segment_size = 0;
 #endif
-        tipe_addr = TypeAddress( T_NEAR_POINTER );
+        tipe_addr = TypeAddress( TY_NEAR_POINTER );
         cu.offset_size = tipe_addr->length;
         switch( GetMemModel() ){
             case 'h':
@@ -667,10 +682,10 @@ extern pointer _CGAPI DFClient( void ) {
     return( Client );
 }
 //TODO: maybe this should be some sort of call back
-extern void DFDwarfLocal( dw_client client, dw_loc_id locid, sym_handle sym ){
-/*** add to location expr where local sym is *************************/
+extern void _CGAPI DFDwarfLocal( pointer client, pointer locid, sym_handle sym ){
+/*** add to location expr where local sym is ***********************************/
     name        *tmp;
-    type_length     offset;
+    type_length offset;
 
     tmp = DeAlias( AllocUserTemp( sym, XX ) );
     offset = NewBase( tmp );
@@ -787,7 +802,7 @@ extern  void    DFGenStatic( sym_handle sym, dbg_loc loc ) {
     dbtype = FEDbgType( sym ); /* causes name side effects */
     dw_loc = DBGLoc2DF( loc );
     obj = DWVariable( Client, dbtype, dw_loc,
-                NULL, dw_segloc, name, NULL, flags );
+                0, dw_segloc, name, 0, flags );
     if( attr &  FE_GLOBAL ){
         name = FEName( sym );
         DWPubname( Client, obj, name );
@@ -812,7 +827,7 @@ static  void    GenRetSym( dbg_loc loc, dbg_type tipe ) {
     dw_loc = DBGLoc2DF( loc );
     if( dw_loc != NULL ){
         DWVariable( Client, tipe, dw_loc,
-                   NULL, NULL, ".return", NULL, DW_FLAG_ARTIFICIAL );
+                   0, NULL, ".return", 0, DW_FLAG_ARTIFICIAL );
         DWLocTrash( Client, dw_loc );
     }
 }
@@ -843,6 +858,19 @@ static dw_loc_handle  RetLoc( uint_32 ret_offset ){
 
     locid = DWLocInit( Client );
     DWLocOp( Client, locid, DW_LOC_fbreg, ret_offset );
+    df_loc = DWLocFini( Client, locid );
+    return( df_loc );
+}
+
+static dw_loc_handle  FrameLoc( void ){
+/**** make a loc for frame  address *************/
+    uint            dsp;
+    dw_loc_id       locid;
+    dw_loc_handle   df_loc;
+
+    locid = DWLocInit( Client );
+    dsp = DFDisplayReg();
+    DWLocReg( Client, locid, dsp );
     df_loc = DWLocFini( Client, locid );
     return( df_loc );
 }
@@ -905,7 +933,7 @@ static  void GenParmLoc( dbg_local   *parm,
         }
         dw_loc = DBGLoc2DF( alt->loc );
         DBLocFini( alt->loc );
-        _Free( alt, sizeof( dbg_local ) );
+        CGFree( alt );
     }else{
         dw_loc = DBGLoc2DF( NULL );
     }
@@ -916,11 +944,9 @@ static  void GenParmLoc( dbg_local   *parm,
 }
 
 #if _TARGET & _TARG_IAPX86
-    DW_PTR_TYPE_NEAR = DW_PTR_TYPE_NEAR16;
-    DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
+static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
 #elif _TARGET & _TARG_80386
-    DW_PTR_TYPE_NEAR = DW_PTR_TYPE_NEAR32;
-    DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
+static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
 #endif
 
 extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
@@ -932,6 +958,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     call_class          *class_ptr;
     uint                flags;
     dw_loc_handle       dw_retloc;
+    dw_loc_handle       dw_frameloc;
     dw_loc_handle       dw_segloc;
     dbg_local           *parm;
     dbg_local           *junk;
@@ -973,6 +1000,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     DBLocFini( rtn->obj_loc );
 #if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
     dw_retloc = RetLoc( rtn->ret_offset );
+    dw_frameloc = FrameLoc();
     if( _IsTargetModel( FLAT_MODEL ) ) {
         dw_segloc = NULL;
     }else{
@@ -980,6 +1008,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     }
 #else
     dw_retloc = NULL;
+    dw_frameloc = NULL;
     dw_segloc = NULL;
 #endif
     bck = FEBack( sym );
@@ -987,7 +1016,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     Pc_Low  = bck;
     Pc_High = rtn->end_lbl;
     obj = DWBeginSubroutine( Client, 0, tipe, dw_retloc,
-                     NULL, NULL, rtn->obj_type,
+                     dw_frameloc, NULL, rtn->obj_type,
                      dw_segloc, name, rtn->pro_size, flags );
     if( attr &  FE_GLOBAL ){
         if( rtn->obj_type != DBG_NIL_TYPE ) {
@@ -1000,6 +1029,9 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     if( dw_retloc != NULL ){
         DWLocTrash( Client, dw_retloc );
     }
+    if( dw_frameloc != NULL ){
+        DWLocTrash( Client, dw_frameloc );
+    }
     if( dw_segloc != NULL ){
         DWLocTrash( Client, dw_segloc );
     }
@@ -1011,7 +1043,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
         DBLocFini( parm->loc );
         junk = parm;
         parm = parm->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
     if( rtn->reeturn != NULL ){
         GenRetSym( rtn->reeturn, tipe );
@@ -1086,7 +1118,7 @@ static  void    DumpLocals( dbg_local *local ) {
         }
         junk = local;
         local = local->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
 }
 

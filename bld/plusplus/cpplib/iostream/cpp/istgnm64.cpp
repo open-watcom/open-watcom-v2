@@ -29,55 +29,27 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/04    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/15    Greg Bentz      fix uninitialized state variables.
-//  93/07/29    Greg Bentz      - change istream::op>>(streambuf &) to
-//                                istream::op>>( streambuf * )
-//                              - fix istream::getline() to not set failbit
-//                                if no input stored in user buffer
-//  93/09/15    Greg Bentz      change getline() back to set ios::failbit
-//                              if not input stored in user buffer
-//  93/10/21    Greg Bentz      change get() and getline() to not set failbit
-//                              if the delim character has been seen
-//  93/10/28    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  96/07/23    Greg Bentz      __int64 support
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <ctype.h>
 #include <limits.h>
-#include <iostream.h>
-#include <streambu.h>
+#include <iostream>
+#include <streambu>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 #include "isthdr.h"
 
-// Used by getnumber.
-// Multiplication by  8 is done using a left-shift of three bits.
-// Multiplication by 16 is done using a left-shift of four bits.
-// Multiplication by 10 is done using a left-shift of three bits plus
-// a left-shift of one bit.
-// This table is used to determine if a shift will overflow. The number of
-// bits to shift is used to index into the table. The table entry is anded
-// with the unsigned long number and if any bits are on, then the shift
-// will overflow.
+// Used by getnumber. Multiplication by 8 is done using a left-shift of
+// three bits. Multiplication by 16 is done using a left-shift of four
+// bits. Multiplication by 10 is done using a left-shift of three bits
+// plus a left-shift of one bit. This table is used to determine if a
+// shift will overflow. The number of bits to shift is used to index
+// into the table. The table entry is anded with the unsigned long
+// number and if any bits are on, then the shift will overflow.
+
 static unsigned __int64 const overFlowMasks[] = {
     0x0000000000000000,
     0x8000000000000000,
@@ -86,16 +58,18 @@ static unsigned __int64 const overFlowMasks[] = {
     0xF000000000000000
 };
 
-ios::iostate __getnumberint64( streambuf *sb, unsigned __int64 &number,
-/*********************************************************************/
-    int base, int &offset ) {
-// Extract digits from the stream.
-// Stop when a non-digit is found, leaving the non-digit in the stream.
-// As digits are read, convert to an "unsigned __int64".
+// Extract digits from the stream. Stop when a non-digit is found,
+// leaving the non-digit in the stream. As digits are read, convert to
+// an "unsigned __int64".
+
+std::ios::iostate __getnumberint64( std::streambuf *sb,
+                                    unsigned __int64 &number,
+                                    int base,
+                                    int &offset ) {
 
     unsigned __int64  result;
     unsigned __int64  overflow;
-    ios::iostate   state;
+    std::ios::iostate state;
     int            ch;
     int            is_digit;
     int            digit_value;
@@ -112,7 +86,7 @@ ios::iostate __getnumberint64( streambuf *sb, unsigned __int64 &number,
         shift1 = 3;     // *8
         shift2 = 1;     // *2
     }
-    state    = ios::goodbit;
+    state    = std::ios::goodbit;
     result   = 0;
     overflow = 0;
     is_digit = TRUE;
@@ -121,7 +95,7 @@ ios::iostate __getnumberint64( streambuf *sb, unsigned __int64 &number,
         ch = sb->speekc();
         if( ch == EOF ) {
             if( offset == 0 ) {
-                state |= ios::eofbit;
+                state |= std::ios::eofbit;
             }
         }
         digit_value = ch - '0';
@@ -154,7 +128,7 @@ ios::iostate __getnumberint64( streambuf *sb, unsigned __int64 &number,
         }
     }
     if( overflow != 0 ) {
-        state |= ios::failbit;
+        state |= std::ios::failbit;
     }
     number = result;
     return( state );

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 /*
@@ -39,7 +37,7 @@
  */
 static void duplicateFcb( fcb *cfcb, fcb **dfcb )
 {
-    line        *cline,*nline;
+    line        *cline, *nline;
 
     /*
      * get fcb and create a new one
@@ -50,16 +48,15 @@ static void duplicateFcb( fcb *cfcb, fcb **dfcb )
     (*dfcb)->start_line = cfcb->start_line;
     (*dfcb)->end_line = cfcb->end_line;
     (*dfcb)->byte_cnt = cfcb->byte_cnt;
-    (*dfcb)->line_head = (*dfcb)->line_tail = NULL;
+    (*dfcb)->lines.head = (*dfcb)->lines.tail = NULL;
 
     /*
      * copy all lines
      */
-    cline = cfcb->line_head;
-    while( cline != NULL ) {
+    for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
         nline = LineAlloc( cline->data, cline->len );
-        AddLLItemAtEnd( &((*dfcb)->line_head), &((*dfcb)->line_tail),nline );
-        cline = cline->next;
+        AddLLItemAtEnd( (ss **)&((*dfcb)->lines.head), (ss **)&((*dfcb)->lines.tail),
+            (ss *)nline );
     }
 
     cfcb->non_swappable = FALSE;
@@ -70,15 +67,13 @@ static void duplicateFcb( fcb *cfcb, fcb **dfcb )
 /*
  * CreateDuplicateFcbList - duplicate a list of fcb's
  */
-void CreateDuplicateFcbList( fcb *sfcb, fcb **head, fcb **tail )
+void CreateDuplicateFcbList( fcb *cfcb, fcb_list *fcblist )
 {
-    fcb *cfcb,*xfcb;
+    fcb     *xfcb;
 
-    cfcb = sfcb;
-    while( cfcb != NULL ) {
+    for( ; cfcb != NULL; cfcb = cfcb->next ) {
         duplicateFcb( cfcb, &xfcb );
-        AddLLItemAtEnd( head, tail, xfcb );
-        cfcb = cfcb->next;
+        AddLLItemAtEnd( (ss **)&fcblist->head, (ss **)&fcblist->tail, (ss *)xfcb );
     }
 
 } /* CreateDuplicateFcbList */

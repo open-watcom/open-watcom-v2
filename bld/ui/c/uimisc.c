@@ -130,7 +130,7 @@ void uicntrtext( VSCREEN        *vs,
                  SAREA          *area,
                  ATTR           attr,
                  unsigned       length,
-                 char           *text )
+                 const char     *text )
 /*************************************/
 {
     ORD                 col;

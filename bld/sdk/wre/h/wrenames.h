@@ -49,11 +49,10 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool         WREInitResourceWindow      ( WREResInfo *, uint_16 );
-extern Bool         WRESetResNamesFromType     ( WREResInfo *, uint_16, Bool,
-                                                 WResID *, int );
-extern WRETypeName *WREGetTypeNameFromRT       ( uint_16 );
-extern char        *WREGetResName              ( WResResNode *, uint_16 );
+extern Bool         WREInitResourceWindow( WREResInfo *, uint_16 );
+extern Bool         WRESetResNamesFromType( WREResInfo *, uint_16, Bool, WResID *, int );
+extern WRETypeName  *WREGetTypeNameFromRT( uint_16 );
+extern char         *WREGetResName( WResResNode *, uint_16 );
 
 extern Bool WREAddResNames( WREResInfo *info );
 
@@ -64,4 +63,5 @@ extern void WREFiniTypeNames( void );
 
 extern void WREFiniTotalText( void );
 extern Bool WREInitTotalText( void );
+
 #endif

@@ -161,7 +161,7 @@ void uiupdatelistbox( a_list *list )
     uipaintlistbox( list );
 }
 
-void uiboxpushlist( )
+void uiboxpushlist( void )
 {
     static EVENT    listboxevents[] = {
         'a',            'z',
@@ -179,7 +179,7 @@ void uiboxpushlist( )
     uipushlist( listboxevents );
 }
 
-void uiboxpoplist( )
+void uiboxpoplist( void )
 {
     uipoplist();
 }

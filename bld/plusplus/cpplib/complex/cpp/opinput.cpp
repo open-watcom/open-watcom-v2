@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <complex>
+#include <complex.h>
 
 _WPRTLINK istream &operator >> ( istream &strm, Complex &z ) {
 /***********************************************************/

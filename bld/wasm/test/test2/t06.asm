@@ -7,7 +7,9 @@ pat ends
 text segment para 'code'
 mov ax,don
 jmp don
-jmp abc
+ifdef errors
+  jmp abc
+endif
 text ends
 
 end

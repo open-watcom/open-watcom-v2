@@ -24,9 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
+* Description:  Identify ORL section type.
+*               
 ****************************************************************************/
 
 
@@ -48,6 +47,8 @@ section_type IdentifySec( orl_sec_handle shnd )
     switch( type ) {
         case ORL_SEC_TYPE_SYM_TABLE:
             return( SECTION_TYPE_SYM_TABLE );
+        case ORL_SEC_TYPE_DYN_SYM_TABLE:
+            return( SECTION_TYPE_DYN_SYM_TABLE );
         case ORL_SEC_TYPE_NO_BITS:
             return( SECTION_TYPE_BSS );
         case ORL_SEC_TYPE_PROG_BITS:

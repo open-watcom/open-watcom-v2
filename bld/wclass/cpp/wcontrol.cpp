@@ -43,7 +43,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
 
     gui_control_info    control_info;
     WRect               rr;
-    unsigned            gui_style;
+    unsigned long       gui_style;
 
     if( parent == NULL ) return;
     setAutosize( r );
@@ -111,7 +111,7 @@ void WEXPORT WControl::getText( char* buff, unsigned len ) {
         if( text_len > len - 1 ) text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = NULLCHAR;
-        GUIFree( text );
+        GUIMemFree( text );
     }
 }
 
@@ -121,7 +121,7 @@ void WEXPORT WControl::getText( WString& str ) {
 
     char *text = GUIGetText( parent()->handle(), controlId() );
     WString t( text );
-    GUIFree( text );
+    GUIMemFree( text );
     str = t;
 }
 
@@ -132,7 +132,7 @@ int WEXPORT WControl::getTextLength() {
     char *text = GUIGetText( parent()->handle(), controlId() );
     if( text == NULL ) return( 0 );
     int len = strlen( text );
-    GUIFree( text );
+    GUIMemFree( text );
     return( len );
 }
 

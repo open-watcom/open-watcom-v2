@@ -34,7 +34,7 @@
 #include <i86.h>
 
 
-extern  void            __int386x();
+extern  void            __int386x( int, void _WCNEAR *, void _WCNEAR *, void _WCNEAR * );
 #pragma aux             __int386x "*_" \
         parm caller     [esi] [edi] [edx] [ebx] \
         modify          [ebx ecx edx esi edi];
@@ -42,7 +42,7 @@ extern  void            __int386x();
 
 _WCRTLINK int int386x( int intno, union REGS *inregs, union REGS *outregs,
         struct SREGS *segregs )
-    {
-        __int386x( intno, inregs, outregs, segregs );
-        return( outregs->x.eax );
-    }
+{
+    __int386x( intno, inregs, outregs, segregs );
+    return( outregs->x.eax );
+}

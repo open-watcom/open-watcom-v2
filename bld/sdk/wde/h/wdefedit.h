@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeEditCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeEditInit        ( Bool );
-extern void              WdeEditFini        ( void );
+extern OBJPTR WINEXPORT  WdeEditCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeEditInit( Bool );
+extern void              WdeEditFini( void );
 
 #endif

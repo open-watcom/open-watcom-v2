@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom debugging information type support.
 *
 ****************************************************************************/
 
@@ -33,7 +32,8 @@
 #include "dipwat.h"
 #include "wattype.h"
 #include <string.h>
-#include <malloc.h>
+#include "walloca.h"
+
 
 extern void             *InfoLoad(imp_image_handle *, imp_mod_handle, unsigned, unsigned, void (*)() );
 extern void             InfoSpecUnlock( void * );
@@ -71,7 +71,7 @@ static void PushLoad( typeinfo *new )
     Type = new;
 }
 
-static void FreeLoad()
+static void FreeLoad( void )
 {
     if( Type->start != NULL ) {
         InfoSpecUnlock( Type->start );
@@ -79,13 +79,13 @@ static void FreeLoad()
     }
 }
 
-static void PopLoad()
+static void PopLoad( void )
 {
     FreeLoad();
     Type = Type->prev;
 }
 
-void KillTypeLoadStack()
+void KillTypeLoadStack( void )
 {
     Type = NULL;
 }
@@ -389,7 +389,7 @@ static dip_status FindRawTypeHandle( imp_image_handle *ii, imp_mod_handle im,
     return( DS_FAIL );
 }
 
-static int CharName( char *name, unsigned len )
+static int CharName( byte *name, unsigned len )
 {
     if( len > 4 ) {
         name += len - 5;
@@ -499,12 +499,12 @@ static void InitNameState( struct name_state *state )
     memset( state, 0, sizeof( *state ) );
 }
 
-static byte *FindAName( struct name_state *state, char *p,
+static byte *FindAName( struct name_state *state, byte *p,
                         type_or_enum which, lookup_item *li )
 {
     byte        *name;
     unsigned    len;
-    int         (*comp)();
+    int         (*comp)(void const*,void const*,unsigned);
     unsigned    index;
     unsigned    i;
     unsigned    type;
@@ -1620,7 +1620,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     struct anc_graph    *pending, *new;
     imp_type_handle     new_it;
     unsigned            index;
-    int                 (*comp)();
+    int                 (*comp)(void const*,void const*,unsigned);
     imp_sym_handle      *is;
     byte                *name;
     unsigned            len;

@@ -284,6 +284,58 @@ HWND CreateRegList( CreateRegListData *data )
     return ( list );
 }
 
+static void MakeStringCurrent(HWND list, HWND string, RegListData *data ){
+    RECT    string_rect;
+    RECT    list_rect;
+    int     dx;
+    int     dy;
+    int     pos;
+
+    if ( data->curr_reg != string ){
+        SendMessage( data->curr_reg, REG_STRING_DESELECTED, 0, 0 );
+        data->curr_reg = string;
+    }
+
+    GetWindowRect( list, &list_rect );
+    GetClientRect( list, &string_rect );
+    list_rect.right = list_rect.left + string_rect.right;
+    list_rect.bottom = list_rect.top + string_rect.bottom;
+    GetWindowRect( string, &string_rect);
+
+    if( string_rect.left < list_rect.left ) {
+        dx = list_rect.left - string_rect.left;
+    } else {
+        if( string_rect.right > list_rect.right ) {
+            dx = list_rect.right - string_rect.right;
+        } else {
+            dx = 0;
+        }
+    }
+
+    if( string_rect.top < list_rect.top ) {
+        dy = list_rect.top - string_rect.top;
+    } else {
+        if( string_rect.bottom > list_rect.bottom ) {
+            dy = list_rect.bottom - string_rect.bottom;
+        } else {
+            dy = 0;
+        }
+    }
+
+    if( dx || dy ) {
+        ScrollWindow( list, dx, dy, NULL, NULL );
+        if( dx ) {
+            pos = GetScrollPos( list, SB_HORZ );
+            SetScrollPos( list, SB_HORZ, pos - dx, TRUE );
+        }
+        if( dy ) {
+            pos = GetScrollPos( list, SB_VERT );
+            SetScrollPos( list, SB_VERT, pos - dy, TRUE );
+        }
+    }
+    SendMessage( string, REG_STRING_SELECTED, 0, 0 );
+}
+
 static void UpdateRegList(HWND list, RegListData *list_data)
 {
     int                 i;
@@ -375,58 +427,6 @@ static void UpdateRegList(HWND list, RegListData *list_data)
     }
 
     FreeRegStringCreate( reg_create, num_regs );
-}
-
-static void MakeStringCurrent(HWND list, HWND string, RegListData *data ){
-    RECT    string_rect;
-    RECT    list_rect;
-    int     dx;
-    int     dy;
-    int     pos;
-
-    if ( data->curr_reg != string ){
-        SendMessage( data->curr_reg, REG_STRING_DESELECTED, 0, 0 );
-        data->curr_reg = string;
-    }
-
-    GetWindowRect( list, &list_rect );
-    GetClientRect( list, &string_rect );
-    list_rect.right = list_rect.left + string_rect.right;
-    list_rect.bottom = list_rect.top + string_rect.bottom;
-    GetWindowRect( string, &string_rect);
-
-    if( string_rect.left < list_rect.left ) {
-        dx = list_rect.left - string_rect.left;
-    } else {
-        if( string_rect.right > list_rect.right ) {
-            dx = list_rect.right - string_rect.right;
-        } else {
-            dx = 0;
-        }
-    }
-
-    if( string_rect.top < list_rect.top ) {
-        dy = list_rect.top - string_rect.top;
-    } else {
-        if( string_rect.bottom > list_rect.bottom ) {
-            dy = list_rect.bottom - string_rect.bottom;
-        } else {
-            dy = 0;
-        }
-    }
-
-    if( dx || dy ) {
-        ScrollWindow( list, dx, dy, NULL, NULL );
-        if( dx ) {
-            pos = GetScrollPos( list, SB_HORZ );
-            SetScrollPos( list, SB_HORZ, pos - dx, TRUE );
-        }
-        if( dy ) {
-            pos = GetScrollPos( list, SB_VERT );
-            SetScrollPos( list, SB_VERT, pos - dy, TRUE );
-        }
-    }
-    SendMessage( string, REG_STRING_SELECTED, 0, 0 );
 }
 
 static void ShowRegListMenu(HWND list, int x, int y, RegListData *data )

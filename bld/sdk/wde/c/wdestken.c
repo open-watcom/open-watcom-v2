@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,7 +46,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WdeStackEnvType {
-    struct WdeStackEnvType *next;
+    struct WdeStackEnvType  *next;
     jmp_buf                 e;
 } WdeStackEnvType;
 
@@ -63,46 +63,45 @@ typedef struct WdeStackEnvType {
 /****************************************************************************/
 static WdeStackEnvType *WdeTop = NULL;
 
-Bool WdePushEnv ( jmp_buf *e )
+Bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    s = (WdeStackEnvType *) WdeMemAlloc ( sizeof (WdeStackEnvType) );
-    if ( !s ) {
-        return ( FALSE );
+    s = (WdeStackEnvType *)WdeMemAlloc( sizeof( WdeStackEnvType ) );
+    if( s == NULL ) {
+        return( FALSE );
     }
 
-    memcpy ( &s->e, e, sizeof(jmp_buf) );
+    memcpy( &s->e, e, sizeof( jmp_buf ) );
     s->next = WdeTop;
-    WdeTop  = s;
+    WdeTop = s;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WdePopEnv ( jmp_buf *e )
+Bool WdePopEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    if ( WdeTop ) {
+    if( WdeTop != NULL ) {
         s = WdeTop;
         WdeTop = s->next;
-        memcpy ( e, &s->e, sizeof(jmp_buf) );
-        WdeMemFree ( s );
+        memcpy( e, &s->e, sizeof( jmp_buf ) );
+        WdeMemFree( s );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WdeTopEnv ( jmp_buf *e )
+Bool WdeTopEnv( jmp_buf *e )
 {
-    if ( WdeTop ) {
-        memcpy ( e, &WdeTop->e, sizeof(jmp_buf) );
+    if( WdeTop != NULL ) {
+        memcpy( e, &WdeTop->e, sizeof( jmp_buf ) );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
-

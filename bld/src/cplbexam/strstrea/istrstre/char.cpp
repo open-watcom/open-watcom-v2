@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    char     *pch = "Watcom C++", s[20];
+    char     *pch = "Open Watcom C++", s[20];
 
     istrstream     input ( pch );
     input >> s;

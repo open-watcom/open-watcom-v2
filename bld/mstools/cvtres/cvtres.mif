@@ -1,35 +1,21 @@
-!include ..\..\..\master.mif
+name = cvtres
 
+done: cvtres.exe
+
+!include ../../master.mif
 
 common_objs = parse.obj $(mstools_objs)
 cvtres_objs = cvtres.obj message.obj $(common_objs)
-cvtres_hdrs = optdata.h
+cvtres_hdrs = optparsh.gh
 
-!ifeq host_CPU axp
-targdef=-d__TARGET_AXP__
-!else ifeq host_CPU ppc
-targdef=-d__TARGET_PPC__
-!else
-targdef=-d__TARGET_$(host_CPU)__
-!endif
+extra_c_flags_message = $(targdef)
 
 #
 # Instructions for building the executable.
 #
-cvtres.exe :  $(cvtres_objs)
+
+cvtres.exe :  $(cvtres_hdrs) $(cvtres_objs) $(version_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(cvtres_objs)}
-
-
-.c :    ..\..\..\c;..\..\c
-.h :    ..\..\..\h;..\..\h
-.gml :  ..\..\gml
-
-cvtres.obj :    cvtres.c $(cvtres_hdrs)
-message.obj :   message.c $(cvtres_hdrs)
-parse.obj :     parse.c optparse.c $(cvtres_hdrs)
-
-optparse.c optdata.h:  optencod.exe ms.gml
-        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.h ..\..\c\optparse.c ..\..\h\usagemsg.h i86
-
-
-!include ..\..\..\build.mif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif

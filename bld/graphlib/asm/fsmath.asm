@@ -49,7 +49,7 @@ include struct.inc
         xref    F4DivZero       ; Fstatus
         xref    F4OverFlow      ; Fstatus
         xref    F4UnderFlow     ; Fstatus
-        modstart        grmath
+        modstart        grmath,WORD
 
 
         xdefp   __FSA        ; add real*4 to real*4

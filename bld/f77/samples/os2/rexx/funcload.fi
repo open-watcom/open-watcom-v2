@@ -1,0 +1,8 @@
+        integer ENTRIES
+        parameter (ENTRIES = 5)
+        structure /fncEntry/
+            character*32        rxName
+            character*32        cName
+        endstructure
+        record /fncEntry/ RxFncTable(ENTRIES)
+        common /RxFncTable/ RxFncTable

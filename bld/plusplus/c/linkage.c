@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "errdefns.h"
 #include "memmgr.h"
 #include "carve.h"
@@ -43,7 +43,7 @@
 
 struct linkage_name {
     LINKAGE                     next;
-    void                        *pragma;
+    AUX_INFO                    *pragma;
     char                        name[1];
 };
 
@@ -78,8 +78,8 @@ static LINKAGE findLinkage( char *name )
     return( NULL );
 }
 
-LINKAGE LinkageAdd( char *name, void *defn )
-/******************************************/
+LINKAGE LinkageAdd( char *name, AUX_INFO *defn )
+/**********************************************/
 {
     LINKAGE p;
     size_t len;
@@ -240,6 +240,8 @@ void LinkageSet( SYMBOL sym, char *language )
     case SC_DEFAULT:
         return;
     case SC_FUNCTION_TEMPLATE:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
+    case SC_STATIC_FUNCTION_TEMPLATE:
         linkage = CppLinkage;
         break;
     default:

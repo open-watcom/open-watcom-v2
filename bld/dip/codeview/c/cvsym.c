@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CodeView symbol processing.
 *
 ****************************************************************************/
 
@@ -33,13 +32,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "demangle.h"
 #include "cvinfo.h"
 
-/*
-    Stuff dealing with symbol handles.
-*/
 
 #define SCOPE_CLASS_FLAG        0x80000000UL
 #define SCOPE_UNIQUE_MASK       (~SCOPE_CLASS_FLAG)
@@ -56,6 +52,10 @@ dip_status SymFillIn( imp_image_handle *ii, imp_sym_handle *is,
     is->mfunc_idx = 0;
     ref = VMBlock( ii, h, sizeof( ref->procref ) );
     if( ref == NULL ) return( DS_ERR|DS_FAIL );
+    if( ref->common.code == S_ALIGN ) {
+        h += ref->common.length + sizeof( ref->common.length );
+        ref = VMBlock( ii, h, sizeof( ref->procref ) );
+    }
     switch( ref->common.code ) {
     case S_PROCREF:
     case S_DATAREF:
@@ -96,7 +96,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
         skip = sizeof( s_register );
         break;
     case S_CONSTANT:
-        name = (unsigned_8 *)p + sizeof( s_constant );
+        name = (char *)p + sizeof( s_constant );
         skip = (unsigned_8 *)GetNumLeaf( name, &val ) - (unsigned_8 *)p;
         break;
     case S_UDT:
@@ -157,8 +157,8 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
     default:
         Confused();
     }
-    name = (unsigned_8 *)p + skip;
-    *lenp = name[0];
+    name = (char *)p + skip;
+    *lenp = *(unsigned_8 *)name;
     *namep = &name[1];
     return( DS_OK );
 }

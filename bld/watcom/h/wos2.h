@@ -24,16 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macros to mask differences between various flavours of OS/2.
 *
 ****************************************************************************/
 
 
-/*
-   Define constants so that OS/2-specific source files can be used for both
-   OS/2 1.x and OS/2 2.x and OS/2 for PPC
-*/
 #ifndef WOS2_H_INCLUDED
 #define WOS2_H_INCLUDED
 

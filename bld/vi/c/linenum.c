@@ -30,28 +30,27 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
 
 /*
  * LineNumbersSetup - set up line number window
  */
-int LineNumbersSetup( void )
+vi_rc LineNumbersSetup( void )
 {
-    int         i,j;
-    int         x1,x2;
+    int         j;
+    int         x1, x2;
     window_info wi;
+    vi_rc       rc;
 
     if( EditFlags.LineNumbers ) {
         if( editw_info.x2 - editw_info.x1 < LineNumWinWidth ) {
             return( ERR_CANNOT_OPEN_LINENUM_WIND );
         }
         if( !linenumw_info.has_border ) {
-            j=1;
+            j = 1;
         } else {
-            j =0;
+            j = 0;
         }
         memcpy( &wi, &linenumw_info, sizeof( window_info ) );
         x1 = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 );
@@ -59,30 +58,30 @@ int LineNumbersSetup( void )
         wi.y1 = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 );
         wi.y2 = WindowAuxInfo( CurrentWindow, WIND_INFO_Y2 );
         if( !EditFlags.LineNumsOnRight ) {
-            i = ResizeWindowRelative( CurrentWindow,LineNumWinWidth,0,0,0,FALSE );
-            if( i ) {
-                return( i );
+            rc = ResizeWindowRelative( CurrentWindow, LineNumWinWidth, 0, 0, 0, FALSE );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
             wi.x1 = x1;
-            wi.x2 = x1+LineNumWinWidth-1-j;
+            wi.x2 = x1 + LineNumWinWidth - 1 - j;
         } else {
-            i = ResizeWindowRelative( CurrentWindow,0,0,-LineNumWinWidth,0,FALSE );
-            if( i ) {
-                return( i );
+            rc = ResizeWindowRelative( CurrentWindow, 0, 0, -LineNumWinWidth, 0, FALSE );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
-            wi.x1 = x2-LineNumWinWidth+1;
-            wi.x2 = x2-j;
+            wi.x1 = x2 - LineNumWinWidth + 1;
+            wi.x2 = x2 - j;
         }
-        i = NewWindow2( &CurrNumWindow, &wi );
-        if( i ) {
-            return( i );
+        rc = NewWindow2( &CurrNumWindow, &wi );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     } else {
         CloseAWindow( CurrNumWindow );
-        i = ResizeWindow( CurrentWindow, editw_info.x1, editw_info.y1,
-                        editw_info.x2, editw_info.y2, FALSE );
-        if( i ) {
-            return( i );
+        rc = ResizeWindow( CurrentWindow, editw_info.x1, editw_info.y1,
+                          editw_info.x2, editw_info.y2, FALSE );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
     SetWindowCursor();

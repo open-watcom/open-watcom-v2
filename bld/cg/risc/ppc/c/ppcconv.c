@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC type conversions.
 *
 ****************************************************************************/
 
@@ -42,14 +41,11 @@
 #include "model.h"
 #include "rttable.h"
 #include "rtclass.h"
+#include "makeins.h"
 
-extern  name    *       AllocS32Const( signed_32 );
-extern  name    *       AllocTemp(type_class_def);
-extern  instruction*    MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction*    MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction*    MakeConvert(name*,name*,type_class_def,type_class_def);
+extern  name            *AllocS32Const( signed_32 );
+extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction*    MakeMove(name*,name*,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  opcode_entry    *OpcodeTable( table_def );
 extern  void            UpdateLive(instruction*,instruction*);
@@ -145,21 +141,43 @@ CONVERT_ROUTINE( Z1TO4, G_ZERO, BD );
 CONVERT_ROUTINE( Z1TO8, G_ZERO, BQ );
 CONVERT_ROUTINE( Z2TO4, G_ZERO, WD );
 CONVERT_ROUTINE( Z2TO8, G_ZERO, WQ );
-CONVERT_ROUTINE( Z4TO8, G_ZERO, DQ );
 
 CONVERT_ROUTINE( S1TO2, G_SIGN, BW );
 CONVERT_ROUTINE( S1TO4, G_SIGN, BD );
 CONVERT_ROUTINE( S1TO8, G_SIGN, BQ );
 CONVERT_ROUTINE( S2TO4, G_SIGN, WD );
 CONVERT_ROUTINE( S2TO8, G_SIGN, WQ );
-CONVERT_ROUTINE( S4TO8, G_SIGN, DQ );
 
-CONVERT_ROUTINE( C8TO4, G_MOVE, QD );
 CONVERT_ROUTINE( C8TO2, G_MOVE, QW );
 CONVERT_ROUTINE( C8TO1, G_MOVE, QB );
 CONVERT_ROUTINE( C4TO2, G_MOVE, DW );
 CONVERT_ROUTINE( C4TO1, G_MOVE, DB );
 CONVERT_ROUTINE( C2TO1, G_MOVE, WB );
+
+static opcode_entry ctable_C8TO4[] = {
+/************************************/
+/*      from    to      eq              verify          gen             reg       fu */
+_Un(    ANY,    ANY,    NONE ),         V_NO,           R_MOVELOW,      RG_,      FU_NO,
+};
+
+static instruction *cC8TO4( instruction *ins ) { ins->table = ctable_C8TO4; return( ins ); }
+
+static opcode_entry ctable_S4TO8[] = {
+/************************************/
+/*      from    to      eq              verify          gen             reg       fu */
+_Un(    ANY,    ANY,    NONE ),         V_NO,           R_SEX_4TO8,     RG_,      FU_NO,
+};
+
+static instruction *cS4TO8( instruction *ins ) { ins->table = ctable_S4TO8; return( ins ); }
+
+static opcode_entry ctable_Z4TO8[] = {
+/************************************/
+/*      from    to      eq              verify          gen             reg       fu */
+_Un(    ANY,    ANY,    NONE ),         V_NO,           R_CLRHI_4,      RG_,      FU_NO,
+};
+
+static instruction *cZ4TO8( instruction *ins ) { ins->table = ctable_Z4TO8; return( ins ); }
+
 
 static convert_rtn ConvertRoutines[] = {
     #define _C_( a )    c##a,
@@ -169,15 +187,15 @@ static convert_rtn ConvertRoutines[] = {
 
 static  conv_method         CvtTable[] = {
 /*                               from*/
-/*U1    I1     U2     I2     U4     I4     U8     I8     CP    PT    FS     FD    FL         to*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1, C4TO1,C4TO1,U4,    U4,   U4,      /* U1*/
-OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, C8TO1, C8TO1, C4TO1,C4TO1,I4,    I4,   I4,      /* I1*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, C4TO2,C4TO2,U4,    U4,   U4,      /* U2*/
-Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, C8TO2, C8TO2, C4TO2,C4TO2,I4,    I4,   I4,      /* I2*/
+/*U1   I1     U2     I2     U4     I4     U8     I8     CP    PT    FS     FD    FL          to*/
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, U4,    I4,    C4TO1,C4TO1,U4,    U4,   U4,      /* U1*/
+OK,    OK,    C2TO1, C2TO1, C4TO1, C4TO1, U4,    I4,    C4TO1,C4TO1,I4,    I4,   I4,      /* I1*/
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, U4,    I4,    C4TO2,C4TO2,U4,    U4,   U4,      /* U2*/
+Z1TO2, S1TO2, OK,    OK,    C4TO2, C4TO2, U4,    I4,    C4TO2,C4TO2,I4,    I4,   I4,      /* I2*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,   OK,   FD,    DTOU4,DTOU4,   /* U4*/
 Z1TO4, S1TO4, Z2TO4, S2TO4, OK,    OK,    C8TO4, C8TO4, OK,   OK,   FD,    DTOI4,DTOI4,   /* I4*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,NA,    NA,   NA,      /* U8*/
-Z1TO8, S1TO8, Z2TO8, S2TO8, Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,FD,    NA,   NA,      /* I8*/
+U4,    U4,    U4,    U4,    Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,NA,    NA,   NA,      /* U8*/
+U4,    I4,    U4,    I4,    Z4TO8, S4TO8, OK,    OK,    S4TO8,S4TO8,FD,    NA,   NA,      /* I8*/
 NA,    NA,    NA,    NA,    OK,    OK,    NA,    NA,    OK,   OK,   NA,    NA,   NA,      /* CP*/
 NA,    NA,    NA,    NA,    OK,    OK,    NA,    NA,    OK,   OK,   NA,    NA,   NA,      /* PT*/
 I4,    I4,    I4,    I4,    I4,    FD,    FD,    FD,    NA,   NA,   OK,    FSTOD,FSTOD,   /* FS*/

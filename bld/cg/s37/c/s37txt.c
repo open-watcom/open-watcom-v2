@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include "standard.h"
-#include "sysmacro.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"

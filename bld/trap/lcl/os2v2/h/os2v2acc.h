@@ -24,51 +24,41 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 2.x trap file internal declarations.
 *
 ****************************************************************************/
 
 
-void   WriteRegs(dos_debug *);
-void   ReadRegs(dos_debug *);
-void   RecordModHandle(ULONG value);
-void   WriteLinear(char *data, ULONG lin, USHORT size);
-void   ReadLinear(char *data, ULONG lin, USHORT size);
-USHORT WriteBuffer(char *data, USHORT segv, ULONG offv, USHORT size);
-char   *GetExceptionText(void);
-ULONG  MakeItFlatNumberOne(USHORT seg, ULONG offset);
-ULONG  MakeItSegmentedNumberOne(USHORT seg, ULONG offset);
-ULONG  MakeSegmentedPointer(ULONG val);
-int    GetDos32Debug(char *err);
-void   SetTaskDirectories(void);
-bool   DebugExecute(dos_debug *buff, ULONG cmd, bool);
-int    IsUnknownGDTSeg(USHORT seg);
+void   WriteRegs( uDB_t * );
+void   ReadRegs( uDB_t * );
+void   WriteLinear( void *data, ULONG lin, USHORT size );
+void   ReadLinear( void *data, ULONG lin, USHORT size );
+USHORT WriteBuffer( void *data, USHORT segv, ULONG offv, USHORT size );
+char   *GetExceptionText( void );
+ULONG  MakeItFlatNumberOne( USHORT seg, ULONG offset );
+ULONG  MakeItSegmentedNumberOne( USHORT seg, ULONG offset );
+ULONG  MakeSegmentedPointer( ULONG val );
+int    GetDos32Debug( char *err );
+void   SetTaskDirectories( void );
+bool   DebugExecute( uDB_t *buff, ULONG cmd, bool );
+int    IsUnknownGDTSeg( USHORT seg );
 
-extern  void    LoadThisDLL();
-extern  void    EndLoadThisDLL();
-extern  char    NPXType();
-extern  char    CPUType();
+extern  void    LoadHelperDLL( void );
+extern  void    EndLoadHelperDLL( void );
 
-extern  void    BreakPoint(ULONG);
+extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [eax] aborts;
-extern void     bp(void);
+extern void     bp( void );
 #pragma aux     bp = 0xCC;
-extern  void    *Automagic(unsigned short);
-#pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
-                            0x89 0xe0 /* mov ax,sp */\
-                            0x8c 0xd2 /* mov dx,ss */\
-                            parm caller [ax] \
-                            value [ax dx] \
-                            modify [sp];
 
+/* Stack layout for calling Dos32LoadModule */
 typedef struct {
-        USHORT  phmod[2];               /* offset-segment */
-        USHORT  mod_name[2];            /* offset-segment */
-        USHORT  fail_len;
-        PSZ     fail_name;              /* offset-segment */
-        USHORT  hmod;
-        BYTE    load_name[2];
+    PSZ        fail_name;           /* 32-bit flat address */
+    ULONG      fail_len;
+    PSZ        mod_name;            /* 32-bit flat address */
+    PHMODULE   phmod;               /* 32-bit flat address */
+    HMODULE    hmod;
+    BYTE       load_name[2];
 } loadstack_t;
 
 #pragma aux intrface modify [];
@@ -100,12 +90,12 @@ extern USHORT           NumModHandles;
 extern int              CurrModHandle;
 extern ULONG            ExceptNum;
 extern HMODULE          ThisDLLModHandle;
-//extern dos_debug      Buff;
+//extern uDB_t          Buff;
 //extern watch          WatchPoints[MAX_WP];
 //extern short          WatchCount;
 extern USHORT           FlatCS,FlatDS;
 
-#define _RetCodes(retblk, rc, value) \
+#define _RetCodes( retblk, rc, value ) \
     { \
         USHORT return_code; \
         return_code = rc; \
@@ -116,7 +106,7 @@ extern USHORT           FlatCS,FlatDS;
         } \
     }
 
-#define _RetCodesNoReturn(retblk, rc) \
+#define _RetCodesNoReturn( retblk, rc ) \
     { \
         USHORT return_code; \
         return_code = rc; \
@@ -127,26 +117,20 @@ extern USHORT           FlatCS,FlatDS;
         } \
     }
 
-bool CausePgmToLoadThisDLL(ULONG startLinear);
-long TaskExecute(long (*rtn)());
-//#pragma aux DoOpen parm [eax] [ebx] [ecx];
-void DoOpen(char *name, int mode, int flags);
-//#pragma aux DoClose parm [eax];
-static void DoClose(HFILE hdl);
-//#pragma aux DoDupFile parm [eax] [ebx];
-void DoDupFile(HFILE old, HFILE new);
-//#pragma aux DoWritePgmScrn parm [eax] [ebx];
-void DoWritePgmScrn(char *buff, USHORT len);
-bool TaskReadWord(USHORT seg, ULONG off, USHORT *data);
-bool TaskWriteWord(USHORT seg, ULONG off, USHORT data);
-void TaskPrint(char *data, unsigned len);
+bool CausePgmToLoadHelperDLL( ULONG startLinear );
+long TaskExecute( void (*rtn)() );
+bool TaskReadWord( USHORT seg, ULONG off, USHORT *data );
+bool TaskWriteWord( USHORT seg, ULONG off, USHORT data );
+void TaskPrint( char *data, unsigned len );
+void TaskReadXMMRegs( struct x86_xmm *xmm_regs );
+void TaskWriteXMMRegs( struct x86_xmm *xmm_regs );
 
 //#define DEBUG_OUT
 
 #ifdef DEBUG_OUT
-void Out(char *str);
-void OutNum(ULONG i);
+void Out( char *str );
+void OutNum( ULONG i );
 #else
-#define Out(a)
-#define OutNum(a)
+#define Out( a )
+#define OutNum( a )
 #endif

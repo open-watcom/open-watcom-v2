@@ -24,45 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows editor global include.
 *
 ****************************************************************************/
 
 
 #ifndef WINVI_INCLUDED
 #define WINVI_INCLUDED
+
 #include "winhdr.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "vi.h"
 #include "winrtns.h"
 
-#if defined(__WINDOWS_386__)
-    #define WATCOM_ABOUT_EDITOR "WATCOM Editor for Windows (32-bit)"
-    #define WINEXP FAR PASCAL
-    #define MAKEPTR( a ) ((void far *)MK_FP32( (void *) a ))
-    #define __FAR__     __far
-    #define MEMCPY _fmemcpy
-#elif defined(__WINDOWS__)
-    #define WATCOM_ABOUT_EDITOR "WATCOM Editor for Windows"
-    #define WINEXP __export FAR PASCAL
-    #define MAKEPTR( a ) ((LPVOID) a)
+#if defined( __WINDOWS_386__ )
+    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows (32-bit)"
+    #define WINEXP              FAR PASCAL
+    #define MAKEPTR( a )        ((void far *)MK_FP32( (void *) a ))
+    #define __FAR__             __far
+    #define MEMCPY              _fmemcpy
+    #define NULLHANDLE          ((HANDLE)0)
+#elif defined( __WINDOWS__ )
+    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
+    #define WINEXP              __export FAR PASCAL
+    #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
-    #define MEMCPY memcpy
-#elif defined(__NT__)
-    #define WATCOM_ABOUT_EDITOR "WATCOM Editor for Windows NT"
-    #define WINEXP __export __stdcall
-    #define MAKEPTR( a ) ((LPVOID) a)
+    #define MEMCPY              memcpy
+    #define NULLHANDLE          ((HANDLE)0)
+#elif defined( __NT__ )
+    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
+    #define WINEXP              __export __stdcall
+    #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
-    #define MEMCPY memcpy
-#elif defined(__OS2__)
-    #define WATCOM_ABOUT_EDITOR "WATCOM Editor for OS/2 PM"
-    #define WINEXP __export _System
-    #define MAKEPTR( a ) ((LPVOID) a)
+    #define MEMCPY              memcpy
+    #define NULLHANDLE          ((HANDLE)0)
+#elif defined( __OS2__ )
+    #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for OS/2 PM"
+    #define WINEXP              __export _System
+    #define MAKEPTR( a )        ((LPVOID) a)
     #define __FAR__
-    #define MEMCPY memcpy
+    #define MEMCPY              memcpy
 #endif
 
 typedef LPVOID  *LPLPVOID;
@@ -77,7 +76,7 @@ typedef struct colour {
     long        rgb;
 } colour;
 
-typedef void (*win_func)( struct window *, void * );
+typedef BOOL (*win_func)( struct window *, void * );
 
 /*
  * This structure is mostly an artifact without any real use now...
@@ -103,17 +102,17 @@ typedef enum window_extra {
 #define MAGIC_SIZE      4       // we will always be using SetWindowLong
 
 #ifdef DBG
-#define BAD_ID( id )        ( (id) == NULL || (id) == (window_id)-1 || !IsWindow( id ) )
+    #define BAD_ID( id )    ((id) == NULL || (id) == (window_id)-1 || !IsWindow( id ))
 #else
-#define BAD_ID( id )        ( (id) == (window_id)-1 )
+    #define BAD_ID( id )    ((id) == (window_id)-1)
 #endif
-#define WINDOW_FROM_ID( x ) ( (window *)GetWindowLong( x, WIN_WINDOW * MAGIC_SIZE ) )
-#define DATA_FROM_ID( x )   ( (window_data *)GetWindowLong( x, WIN_DATA * MAGIC_SIZE ) )
-#define WIN_STYLE( w )      ( &((w)->info->text) )
-#define WIN_HILIGHT( w )    ( &((w)->info->hilight) )
-#define WIN_FONT( w )       ( (w)->info->text.font )
-#define WIN_TEXTCOLOR( w )  ( (w)->info->text.foreground )
-#define WIN_BACKCOLOR( w )  ( (w)->info->text.background )
+#define WINDOW_FROM_ID( x ) ((window *)GetWindowLong( x, WIN_WINDOW * MAGIC_SIZE ))
+#define DATA_FROM_ID( x )   ((window_data *)GetWindowLong( x, WIN_DATA * MAGIC_SIZE ))
+#define WIN_STYLE( w )      (&((w)->info->text))
+#define WIN_HILIGHT( w )    (&((w)->info->hilight))
+#define WIN_FONT( w )       ((w)->info->text.font)
+#define WIN_TEXTCOLOR( w )  ((w)->info->text.foreground)
+#define WIN_BACKCOLOR( w )  ((w)->info->text.background)
 
 extern window_id        EditContainer;
 extern window_id        Root;
@@ -130,4 +129,5 @@ extern RECT             RootRect;
 extern int              RootState;
 extern char             near EditorName[];
 extern window_id        CommandId;
+
 #endif

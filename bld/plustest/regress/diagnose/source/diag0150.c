@@ -24,3 +24,9 @@ void foo()
 
     ack(x);
 }
+
+template class S<int *>;
+template class S<char *>;
+template class S<char>;
+template class S<int>;
+template class S<double *>;

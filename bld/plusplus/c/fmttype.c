@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 #include "plusplus.h"
 #include "stringl.h"
 #include "stack.h"
@@ -44,6 +42,8 @@
 #include "fmttype.h"
 #include "name.h"
 #include "initdefs.h"
+#include "ringfns.h"
+#include "template.h"
 
 typedef enum {
     LEFT, RIGHT
@@ -184,17 +184,14 @@ static void fmtTypeArray( TYPE type, VBUF *pvbuf )
 /************************************************/
 {
     VBUF    working;
-    char    sbuf[ 1 + sizeof( long ) * 2 + 1 ];
 
     VbufInit( &working );
-    VStrNull( &working );
-    VStrConcStr( &working, openSquareParen );
+    VbufConcStr( &working, openSquareParen );
     if( type->u.a.array_size > 0 ) {
-        ultoa( type->u.a.array_size, sbuf, 10 );
-        VStrConcStr( &working, sbuf );
+        VbufConcDecimal( &working, type->u.a.array_size );
     }
-    VStrConcStr( &working, closeSquareParen );
-    VStrPrepStr( pvbuf, working.buf );
+    VbufConcStr( &working, closeSquareParen );
+    VbufPrepVbuf( pvbuf, &working );
     VbufFree( &working );
 }
 
@@ -214,37 +211,37 @@ static void fmtTypeBased( TYPE type, VBUF *pvbuf )
         return;
     }
     flags = type->flag & TF1_BASED;
-    VStrConcStr( pvbuf, openBased );
+    VbufConcStr( pvbuf, openBased );
     switch( flags ) {
     case TF1_BASED_STRING:
-        VStrConcStr( pvbuf, openSegname );
-        VStrConcStr( pvbuf, ((STRING_CONSTANT)(type->u.m.base))->string );
-        VStrConcStr( pvbuf, closeSegname );
+        VbufConcStr( pvbuf, openSegname );
+        VbufConcStr( pvbuf, ((STRING_CONSTANT)(type->u.m.base))->string );
+        VbufConcStr( pvbuf, closeSegname );
         break;
     case TF1_BASED_VOID:
-        VStrConcStr( pvbuf, basedVoid );
+        VbufConcStr( pvbuf, basedVoid );
         break;
     case TF1_BASED_SELF:
-        VStrConcStr( pvbuf, basedSelf );
+        VbufConcStr( pvbuf, basedSelf );
         break;
     case TF1_BASED_FETCH:
         FormatSym( (SYMBOL)type->u.m.base, &working );
-        VStrConcStr( pvbuf, working.buf );
-        VStrConcStr( pvbuf, whiteSpace );
+        VbufConcVbuf( pvbuf, &working );
+        VbufConcStr( pvbuf, whiteSpace );
         VbufFree( &working );
         break;
     case TF1_BASED_ADD:
         FormatSym( (SYMBOL)type->u.m.base, &working );
-        VStrConcStr( pvbuf, working.buf );
-        VStrConcStr( pvbuf, whiteSpace );
+        VbufConcVbuf( pvbuf, &working );
+        VbufConcStr( pvbuf, whiteSpace );
         VbufFree( &working );
         break;
     }
-    VStrConcStr( pvbuf, closeBased );
+    VbufConcStr( pvbuf, closeBased );
 }
 
-static void fmtNicePragma( void *pragma, VBUF *pvbuf )
-/****************************************************/
+static void fmtNicePragma( AUX_INFO *pragma, VBUF *pvbuf )
+/********************************************************/
 {
     char *id;
 
@@ -253,14 +250,14 @@ static void fmtNicePragma( void *pragma, VBUF *pvbuf )
     }
     if( PragmaName( pragma, &id ) ) {
         if( id != NULL ) {
-            VStrConcStr( pvbuf, id );
-            VStrConcStr( pvbuf, whiteSpace );
+            VbufConcStr( pvbuf, id );
+            VbufConcStr( pvbuf, whiteSpace );
         }
     } else {
         if( id != NULL ) {
-            VStrConcStr( pvbuf, openPragma );
-            VStrConcStr( pvbuf, id );
-            VStrConcStr( pvbuf, closePragma );
+            VbufConcStr( pvbuf, openPragma );
+            VbufConcStr( pvbuf, id );
+            VbufConcStr( pvbuf, closePragma );
         }
     }
 }
@@ -268,7 +265,7 @@ static void fmtNicePragma( void *pragma, VBUF *pvbuf )
 static void fmtTypePragma( TYPE type, VBUF *pvbuf )
 /*************************************************/
 {
-    void *pragma;
+    AUX_INFO *pragma;
 
     if( type->id == TYP_MODIFIER ) {
         pragma = type->u.m.pragma;
@@ -282,15 +279,12 @@ static void fmtTypeBitfield( TYPE type, VBUF *pvbuf )
 /***************************************************/
 {
     VBUF    working;
-    char    sbuf[ 1 + sizeof( long ) * 2 + 1 ];
 
     VbufInit( &working );
-    VStrNull( &working );
-    VStrConcStr( &working, bitfieldSep );
-    ultoa( type->u.b.field_width, sbuf, 10 );
-    VStrConcStr( &working, sbuf );
-    VStrConcStr( &working, whiteSpace );
-    VStrPrepStr( pvbuf, working.buf );
+    VbufConcStr( &working, bitfieldSep );
+    VbufConcDecimal( &working, type->u.b.field_width );
+    VbufConcStr( &working, whiteSpace );
+    VbufPrepVbuf( pvbuf, &working );
     VbufFree( &working );
 }
 
@@ -320,20 +314,31 @@ static void fmtTypeArgument( TYPE arg_type, unsigned arg_index, VBUF *pvbuf, FMT
     arg_control = FormatTypeDefault | control;
     arg_control &= ~FF_ARG_NAMES;
     FormatFunctionType( arg_type, &arg_prefix, &arg_suffix, 0, arg_control );
-    if( arg_prefix.buf != NULL ) {
-        VStrConcStr( pvbuf, arg_prefix.buf );
-    }
+    VbufConcVbuf( pvbuf, &arg_prefix );
     if( control & FF_ARG_NAMES ) {
         name = getArgName( arg_index );
         if( name != NULL ) {
-            VStrConcStr( pvbuf, name );
+            VbufConcStr( pvbuf, name );
         }
     }
-    if( arg_suffix.buf != NULL ) {
-        VStrConcStr( pvbuf, arg_suffix.buf );
-    }
+    VbufConcVbuf( pvbuf, &arg_suffix );
     VbufFree( &arg_prefix );
     VbufFree( &arg_suffix );
+}
+
+static void fmtTypeFlag( type_flag flag, VBUF *pvbuf,
+/***************************************************/
+    FMT_FLAG_INFO *flag_info )
+{
+    unsigned    i;
+    type_flag   mask;
+
+    for( i = 0 ; flag_info[i].name != NULL ; i++ ) {
+        mask = flag_info[i].mask;
+        if( (flag & mask) == mask ) {
+            VbufConcStr( pvbuf, flag_info[i].name );
+        }
+    }
 }
 
 static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, int num_def,
@@ -346,41 +351,40 @@ static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, int num_def,
     VBUF        working;
 
     VbufInit( &working );
-    VStrNull( &working );
-    VStrConcStr( &working, openFunction );
+    VbufConcStr( &working, openFunction );
     num_args = alist->num_args;
     num_def = num_args - num_def;
     if( num_args == 0 ) {
         if( control & FF_USE_VOID ) {
-            VStrConcStr( &working, typeName[TYP_VOID] );
+            VbufConcStr( &working, typeName[TYP_VOID] );
         } else {
-            VStrTruncWhite( &working );
+            VbufTruncWhite( &working );
         }
     } else {
         // only keep whether we want typedef names
         arg_control = control & ( FF_TYPEDEF_STOP | FF_ARG_NAMES );
         for( i = 0 ; i < num_def ; i++ ) {
             if( i > 0 ) {
-                VStrTruncWhite( &working );
-                VStrConcStr( &working, parameterSep );
+                VbufTruncWhite( &working );
+                VbufConcStr( &working, parameterSep );
             }
             fmtTypeArgument( alist->type_list[i], i, &working, arg_control );
         }
         if( num_args > num_def ) {
-            VStrConcStr( &working, openSquareParen );
+            VbufConcStr( &working, openSquareParen );
             for( ; i < num_args ; i++ ) {
                 if( i > 0 ) {
-                    VStrTruncWhite( &working );
-                    VStrConcStr( &working, parameterSep );
+                    VbufTruncWhite( &working );
+                    VbufConcStr( &working, parameterSep );
                 }
                 fmtTypeArgument( alist->type_list[i], i, &working, arg_control );
             }
-            VStrConcStr( &working, closeSquareParen );
+            VbufConcStr( &working, closeSquareParen );
         }
     }
-    VStrConcStr( &working, closeFunction );
+    VbufConcStr( &working, closeFunction );
     fmtTypeFlag( alist->qualifier, &working, modifierFlags );
-    VStrPrepStr( pvbuf, working.buf );
+    VbufPrepVbuf( pvbuf, &working );
     VbufFree( &working );
 }
 
@@ -395,7 +399,7 @@ static void fmtModifierTypeFlag( TYPE type, type_flag flag, VBUF *pvbuf )
         if( (flag & mask) == mask ) {
             if( ( ( mask & TF1_MEM_MODEL ) == 0 ) ||
                   ( ( DefaultMemoryFlag( type ) & mask ) != mask ) ) {
-                VStrConcStr( pvbuf, modifierFlags[i].name );
+                VbufConcStr( pvbuf, modifierFlags[i].name );
             }
         }
     }
@@ -418,28 +422,14 @@ static boolean willPrintModifier( TYPE type, type_flag flag )
     }
     return FALSE;
 }
-static void fmtTypeFlag( type_flag flag, VBUF *pvbuf,
-/***************************************************/
-    FMT_FLAG_INFO *flag_info )
-{
-    unsigned    i;
-    type_flag   mask;
-
-    for( i = 0 ; flag_info[i].name != NULL ; i++ ) {
-        mask = flag_info[i].mask;
-        if( (flag & mask) == mask ) {
-            VStrConcStr( pvbuf, flag_info[i].name );
-        }
-    }
-}
 
 static void fmtTypeChangeState( FMT_LR *curr, FMT_LR new,
 /*******************************************************/
     VBUF *pprefix, VBUF *psuffix )
 {
     if( new == RIGHT && *curr == LEFT ) {
-        VStrConcStr( pprefix, openParen );
-        VStrPrepStr( psuffix, closeParen );
+        VbufConcStr( pprefix, openParen );
+        VbufPrepStr( psuffix, closeParen );
     }
     *curr = new;
 }
@@ -450,9 +440,7 @@ static void fmtTypeScope( SCOPE scope, VBUF *pprefix )
     VBUF name_scope;
 
     FormatScope( scope, &name_scope, FALSE );
-    if( name_scope.buf != NULL ) {
-        VStrConcStr( pprefix, name_scope.buf );
-    }
+    VbufConcVbuf( pprefix, &name_scope );
     VbufFree( &name_scope );
 }
 
@@ -462,7 +450,7 @@ static void fmtTemplateParms( TYPE class_type, VBUF *pprefix )
     VBUF parms;
 
     FormatTemplateParms( &parms, class_type );
-    VStrConcStr( pprefix, parms.buf );
+    VbufConcVbuf( pprefix, &parms );
     VbufFree( &parms );
 }
 
@@ -471,7 +459,7 @@ static void fmtUnboundTemplateParms( VBUF *pprefix, TYPE type )
     VBUF parms;
 
     FormatUnboundTemplateParms( &parms, type );
-    VStrConcStr( pprefix, parms.buf );
+    VbufConcVbuf( pprefix, &parms );
     VbufFree( &parms );
 }
 
@@ -523,16 +511,14 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
     FMT_INFO    *top;
     type_flag   flags;
     char        *name;
-    void        *pragma;
+    AUX_INFO    *pragma;
     int         use_def;
     FMT_CONTROL fn_control;
 
     VbufInit( pprefix );
-    VStrNull( pprefix );
     VbufInit( psuffix );
-    VStrNull( psuffix );
     if( type == NULL ) {
-        VStrConcStr( pprefix, nullType );
+        VbufConcStr( pprefix, nullType );
     } else {
         lr_state = RIGHT;
         StackFMT = NULL;
@@ -542,7 +528,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             top_type = top->type;
             switch( top_type->id ) {
             case TYP_ERROR:
-                VStrConcStr( pprefix, FormatErrorType( top_type ) );
+                VbufConcStr( pprefix, FormatErrorType( top_type ) );
                 break;
             case TYP_BOOL:
             case TYP_CHAR:
@@ -561,15 +547,19 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             case TYP_LONG_DOUBLE:
             case TYP_DOT_DOT_DOT:
             case TYP_VOID:
+                VbufConcStr( pprefix, typeName[top->type->id] );
+                break;
             case TYP_GENERIC:
-                VStrConcStr( pprefix, typeName[top->type->id] );
+                VbufConcChr( pprefix, '?' );
+                VbufConcDecimal( pprefix, top->type->u.g.index );
+                VbufConcChr( pprefix, ' ' );
                 break;
             case TYP_USHORT:
                 flags = top->type->flag;
                 if( flags != TF1_NULL ) {
                     fmtTypeFlag( flags, pprefix, ushortFlags );
                 } else {
-                    VStrConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, typeName[top->type->id] );
                 }
                 break;
             case TYP_POINTER:
@@ -578,7 +568,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 if( flags != TF1_NULL ) {
                     fmtTypeFlag( flags, pprefix, pointerFlags );
                 } else {
-                    VStrConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, typeName[top->type->id] );
                 }
                 break;
             case TYP_MEMBER_POINTER:
@@ -589,14 +579,14 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                                   pprefix );
                     name = SimpleTypeName( class_type );
                     if( name != NULL ) {
-                        VStrConcStr( pprefix, name );
+                        VbufConcStr( pprefix, name );
                     } else {
-                        VStrConcStr( pprefix, memberPointer );
+                        VbufConcStr( pprefix, memberPointer );
                     }
                 } else {
-                    VStrConcStr( pprefix, memberPointer );
+                    VbufConcStr( pprefix, memberPointer );
                 }
-                VStrConcStr( pprefix, typeName[top->type->id] );
+                VbufConcStr( pprefix, typeName[top->type->id] );
                 break;
             case TYP_TYPEDEF:
                 if( !(control & FF_TYPEDEF_STOP) ) break;
@@ -605,10 +595,10 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                 fmtTypeScope( top->type->u.t.scope, pprefix );
                 name = SimpleTypeName( top->type );
                 if( name == NULL ) {
-                    VStrConcStr( pprefix, typeName[top->type->id] );
+                    VbufConcStr( pprefix, typeName[top->type->id] );
                 } else {
-                    VStrConcStr( pprefix, name );
-                    VStrConcStr( pprefix, whiteSpace );
+                    VbufConcStr( pprefix, name );
+                    VbufConcStr( pprefix, whiteSpace );
                 }
                 break;
             case TYP_CLASS:
@@ -619,16 +609,16 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
                     if( flags != TF1_NULL ) {
                         fmtTypeFlag( flags, pprefix, classFlags );
                     } else {
-                        VStrConcStr( pprefix, typeName[top->type->id] );
+                        VbufConcStr( pprefix, typeName[top->type->id] );
                     }
                 } else {
-                    VStrConcStr( pprefix, name );
+                    VbufConcStr( pprefix, name );
                     if( flags & TF1_INSTANTIATION ) {
                         fmtTemplateParms( top->type, pprefix );
                     } else if( flags & TF1_UNBOUND ) {
                         fmtUnboundTemplateParms( pprefix, top->type );
                     }
-                    VStrConcStr( pprefix, whiteSpace );
+                    VbufConcStr( pprefix, whiteSpace );
                 }
                 break;
             case TYP_BITFIELD:
@@ -680,7 +670,7 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             CarveFree( carveFMT, top );
             top = StackPop( &StackFMT );
         }
-        VStrTruncWhite( psuffix );
+        VbufTruncWhite( psuffix );
     }
 }
 
@@ -695,6 +685,133 @@ void FormatTypeModFlags( type_flag flags, VBUF *pvbuf )
 /*****************************************************/
 {
     VbufInit( pvbuf );
-    VStrNull( pvbuf );
     fmtTypeFlag( flags, pvbuf, modifierFlags );
+}
+
+void FormatPTreeList( PTREE p, VBUF *pvbuf )
+/******************************************/
+{
+    VbufInit( pvbuf );
+
+    while( ( p != NULL ) && ( p->u.subtree[1] != NULL ) ) {
+        PTREE right;
+
+        DbgAssert( ( p->op == PT_BINARY ) && ( p->cgop == CO_LIST ) );
+        right = p->u.subtree[1];
+
+        switch( right->op ) {
+        case PT_TYPE:
+        {
+            VBUF prefix, suffix;
+            FormatType( right->type, &prefix, &suffix );
+            VbufConcVbuf( pvbuf, &prefix );
+            VbufConcVbuf( pvbuf, &suffix );
+            VbufFree( &prefix );
+            VbufFree( &suffix );
+        }
+        break;
+
+        case PT_INT_CONSTANT:
+            VbufConcInteger( pvbuf, right->u.int_constant );
+            break;
+
+        case PT_SYMBOL:
+        {
+            VBUF prefix, suffix;
+            FormatType( right->u.symcg.symbol->sym_type, &prefix, &suffix );
+            VbufConcVbuf( pvbuf, &prefix );
+            VbufConcVbuf( pvbuf, &suffix );
+            VbufFree( &prefix );
+            VbufFree( &suffix );
+        }
+        break;
+
+        default:
+            DbgAssert( 0 );
+        }
+
+        VbufConcStr( pvbuf, ", " );
+        p = p->u.subtree[0];
+    }
+
+    if( VbufLen( pvbuf ) >= 2 ) {
+        VbufSetPosBack( pvbuf, 2 );
+        VbufConcStr( pvbuf, "" );
+    }
+}
+
+static VBUF *vbuf_FormatPTreeId;
+static PTREE traverse_FormatPTreeId( PTREE curr )
+{
+    if( curr->op == PT_BINARY ) {
+        if( curr->cgop == CO_COLON_COLON ) {
+            VbufConcStr( vbuf_FormatPTreeId, "::" );
+        }
+    } else if( curr->op == PT_ID ) {
+        if( curr->u.id.name != NULL ) {
+            VbufConcStr( vbuf_FormatPTreeId, curr->u.id.name );
+        }
+    }
+
+    return curr;
+}
+
+void FormatPTreeId( PTREE p, VBUF *pvbuf )
+/******************************************/
+{
+    VbufInit( pvbuf );
+    vbuf_FormatPTreeId = pvbuf;
+
+    PTreeTraversePostfix( p, traverse_FormatPTreeId );
+}
+
+void FormatTemplateInfo( TEMPLATE_INFO *tinfo, VBUF *pvbuf )
+/**********************************************************/
+{
+    TEMPLATE_SPECIALIZATION * const tprimary =
+        RingFirst( tinfo->specializations );
+    unsigned int i;
+
+    VbufInit( pvbuf );
+
+    VbufConcStr( pvbuf, tinfo->sym->name->name );
+    VbufConcStr( pvbuf, "<" );
+    for( i = 0; i < tprimary->num_args; i++ ) {
+        VBUF prefix, suffix;
+
+        FormatType( tprimary->type_list[i], &prefix, &suffix );
+        VbufConcVbuf( pvbuf, &prefix );
+        VbufConcVbuf( pvbuf, &suffix );
+        VbufFree( &prefix );
+        VbufFree( &suffix );
+        VbufConcStr( pvbuf, ", " );
+    }
+
+    if( tprimary->num_args > 0 ) {
+        VbufSetPosBack( pvbuf, 2 );
+        VbufConcStr( pvbuf, "" );
+    }
+
+    VbufConcStr( pvbuf, ">" );
+}
+
+void FormatTemplateSpecialization( TEMPLATE_SPECIALIZATION *tspec, VBUF *pvbuf)
+/*****************************************************************************/
+{
+    if( tspec->spec_args != NULL ) {
+        VBUF prefix;
+
+        VbufInit( pvbuf );
+
+        VbufConcStr( pvbuf, tspec->tinfo->sym->name->name );
+        VbufConcStr( pvbuf, "<" );
+
+        FormatPTreeList( tspec->spec_args, &prefix );
+        VbufConcVbuf( pvbuf, &prefix );
+        VbufFree( &prefix );
+
+        VbufConcStr( pvbuf, ">" );
+    } else {
+        FormatTemplateInfo( tspec->tinfo, pvbuf );
+    }
 }

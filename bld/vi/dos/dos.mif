@@ -1,19 +1,16 @@
 objdostimeroot = &
-        int.ubj int24.obj
+        int.obj
 
 objdossizeroot = &
-        dosmain.ybj
+        dosmain.obj
 
 objdossize = &
-        doscmds.ybj &
-        dosmouse.ybj &
-        dossys.ybj &
-        dosdir.ybj &
-        time.ybj  &
-        spawn.ybj
+        doscmds.obj &
+        dosmouse.obj &
+        dossys.obj &
+        dosdir.obj &
+        time.obj  &
+        spawn.obj
 
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)
-
-int24.obj : ..\dos\int24.asm
-        $(as_i86) $[@

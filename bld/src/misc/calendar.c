@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
+#include <string.h>
 #include <time.h>
 #ifdef __OS2__
  #define INCL_SUB
@@ -24,8 +24,8 @@ static char  *WideTitle =       { "Sun Mon Tue Wed Thu Fri Sat" };
 static char  *NarrowTitle =     { "Su Mo Tu We Th Fr Sa" };
 
 
-int main()
-/********/
+int main( void )
+/**************/
 
 {
     time_t                      curr_time;
@@ -85,7 +85,7 @@ void Calendar( month, year, row, col, width, title )
     Box( row, col, box_width, 8 );
     str = MonthName[ month ];
     PosCursor( row - 1, col + 1 + ( box_width - strlen( str ) - 5 ) / 2 );
-    printf( "%s 19%d\n", str, year );
+    printf( "%s %d\n", str, 1900 + year );
     fflush( stdout );
     PosCursor( row + 1, col + 1 );
     printf( title );
@@ -183,8 +183,8 @@ void PosCursor( row, col )
 }
 
 
-void ClearScreen()
-/****************/
+void ClearScreen( void )
+/**********************/
 
 {
 #ifdef __OS2__

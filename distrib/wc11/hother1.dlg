@@ -1,0 +1,53 @@
+static_text=\
+        //1"Select other options you want to install.  They are:"\
+        //2"インストールしたいその他のオプションを選択してください:"\
+        //0
+static_text=
+static_text=\
+        //1"C++ compiler components"\
+        //2"C++ コンパイラ・コンポーネント"\
+        //0
+static_text=\
+        //1"	- choose whether you want to program in C++ versus C"\
+        //2"	- C ではなく､ C++でプログラムするかどうかを選択してください"\
+        //0
+static_text=\
+        //1"Sample Programs"\
+        //2"サンプル・プログラム"\
+        //0
+static_text=\
+        //1"	- example programs for various operating systems"\
+        //2"	- 各OS用のサンプルプログラム"\
+        //0
+static_text=\
+        //1"Run-time Startup Source Code"\
+        //2"ランタイム・スタートアップ・ソースコード"\
+        //0
+static_text=\
+        //1"	- startup code for the run-time library"\
+        //2"	- ランタイム・ライブラリ用のスタートアップ・コード"\
+        //0
+static_text=\
+        //1"SOMobjects Toolkit for OS/2 2.x"\
+        //2"SOMobjects Toolkit for OS/2 2.x"\
+        //0,IsFortranInstall !
+static_text=\
+        //1"	- allows you to create OS/2 2.x SOM applications"\
+        //2"	- OS/2 2.x SOM アプリケーションを作成できます"\
+        //0,IsFortranInstall !
+static_text=\
+        //1"WorkFrame/2 Support"\
+        //2"WorkFrame/2 サポート"\
+        //0
+static_text=\
+        //1"	- allows the compiler to work with WorkFrame/2 development environment"\
+        //2"	- コンパイラを WorkFrame/2 開発環境で使用できます"\
+        //0
+static_text=\
+        //1"OS/2 2.x Toolkit"\
+        //2"OS/2 2.x Toolkit"\
+        //0
+static_text=\
+        //1"	- allows creation of OS/2 applications"\
+        //2"	- OS/2 アプリケーションを作成できます"\
+        //0

@@ -1,16 +1,9 @@
-.ERASE
+#pmake: cpu_386
+host_cpu = 386
 
-!ifdef on_build_machine
-debug_info =
-!else
-debug_info = debug line
-!endif
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
-.BEFORE:
-    @set include=$(%include);$(watcom_dir)\h;$(watcom_dir)\os21x_h;$(dig_dir)\h
-
-.c.obj:
-    $(comp386) $[@ -mf -d1 -ox -w4
-
-smpdump.exe : smpdump.obj
-    wlink NAME $^@ $(debug_info) FILE $[@
+smpdump.exe : smpdump.c
+    $(bld_cl) $[@ $(wcl_util_opts) -i"$(dig_dir)/h"

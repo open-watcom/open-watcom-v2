@@ -206,9 +206,7 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
         }
         break;
       case 1 :
-        if( SymIsFunctionTemplateModel( orig ) ) {
-            PTreeErrorExprSym( expr, ERR_TEMPLATE_FN_MISMATCH, orig );
-        } else {
+        if( ! SymIsFunctionTemplateModel( orig ) ) {
             bad_parm = FnovRejectParm( fnov_diag );
             if( bad_parm == -1 ) {
                 diag.bad_parm = 0;
@@ -220,8 +218,9 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
                 buildDiagInfo( &diag, arg, bad_parm, orig );
             }
             displayDiagInfo( &diag, msg_one, expr, orig );
+            break;
         }
-        break;
+        // fall through
       default :
         CallDiagnoseRejects( expr, msg_many, fnov_diag );
         break;

@@ -44,7 +44,7 @@ struct S
 int S::memb( void )
 #endif
 {
-    static ctr = 0;
+    static int ctr = 0;
 
     ++ctr;
     return ctr;

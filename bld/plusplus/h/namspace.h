@@ -40,5 +40,6 @@ extern void NameSpaceUsingDirective( PTREE );
 extern void NameSpaceClose( void );
 extern void NameSpaceUsingDeclId( PTREE );
 extern void NameSpaceUsingDeclType( DECL_SPEC * );
+extern void NameSpaceUsingDeclTemplateName( PTREE tid );
 
 #endif

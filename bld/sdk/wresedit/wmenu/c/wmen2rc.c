@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -48,15 +48,15 @@ typedef struct {
 
 static FlagItem FlagItems[] =
 {
-    { MENU_GRAYED,      "GRAYED"        }
-,   { MENU_INACTIVE,    "INACTIVE"      }
-,   { MENU_BITMAP,      "BITMAP"        }
-,   { MENU_CHECKED,     "CHECKED"       }
-,   { MENU_MENUBARBREAK,"MENUBARBREAK"  }
-,   { MENU_MENUBREAK,   "MENUBREAK"     }
-//,   { MENU_OWNERDRAWN,        "OWNERDRAWN"    }
-,   { MENU_HELP,        "HELP"          }
-,   { 0,                NULL            }
+    { MENU_GRAYED,          "GRAYED"        },
+    { MENU_INACTIVE,        "INACTIVE"      },
+    { MENU_BITMAP,          "BITMAP"        },
+    { MENU_CHECKED,         "CHECKED"       },
+    { MENU_MENUBARBREAK,    "MENUBARBREAK"  },
+    { MENU_MENUBREAK,       "MENUBREAK"     },
+//  { MENU_OWNERDRAWN,      "OWNERDRAWN"    },
+    { MENU_HELP,            "HELP"          },
+    { 0,                    NULL            }
 };
 
 static Bool WSetFlagsText( uint_16 flags, char **text )
@@ -71,7 +71,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
     tlen = 0;
     *text = NULL;
 
-    for( i=0; FlagItems[i].flagtext != NULL ; i++ ) {
+    for( i = 0; FlagItems[i].flagtext != NULL; i++ ) {
         if( FlagItems[i].flag & flags ) {
             tlen += strlen( FlagItems[i].flagtext ) + 2;
         }
@@ -88,7 +88,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
         return( TRUE );
     }
 
-    for( i=0; FlagItems[i].flagtext != NULL ; i++ ) {
+    for( i = 0; FlagItems[i].flagtext != NULL; i++ ) {
         if( FlagItems[i].flag & flags ) {
             strcat( *text, ", " );
             strcat( *text, FlagItems[i].flagtext );
@@ -109,26 +109,26 @@ static Bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     flagtext = NULL;
     itemname = NULL;
 
-    ok = ( entry && fp );
+    ok = (entry != NULL && fp != NULL);
 
     if( ok ) {
         depth++;
-        fprintf( fp, "%*s", DEPTH_MULT*depth, "" );
+        fprintf( fp, "%*s", DEPTH_MULT * depth, "" );
     }
 
     if( ok ) {
-        if( !( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) ) {
+        if( !(entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) ) {
             ok = FALSE;
-            itemname = WGETMENUITEMTEXT(entry->item);
+            itemname = WGETMENUITEMTEXT( entry->item );
             if( itemname != NULL ) {
                 text = WConvertStringFrom( itemname, "\t\x8\"\\", "ta\"\\" );
-                ok = ( text != NULL );
+                ok = (text != NULL);
             }
         }
     }
 
     if( ok ) {
-        if( !( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) ) {
+        if( !(entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) ) {
             ok = WSetFlagsText( entry->item->Item.Normal.ItemFlags, &flagtext );
         }
     }
@@ -139,9 +139,8 @@ static Bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
         } else if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
             fprintf( fp, "MENUITEM SEPARATOR\n" );
         } else {
-            if( entry->symbol ) {
-                fprintf( fp, "MENUITEM \"%s\"\t%s%s\n", text, entry->symbol,
-                         flagtext );
+            if( entry->symbol != NULL ) {
+                fprintf( fp, "MENUITEM \"%s\"\t%s%s\n", text, entry->symbol, flagtext );
             } else {
                 fprintf( fp, "MENUITEM \"%s\"\t%u%s\n", text,
                          entry->item->Item.Normal.ItemID, flagtext );
@@ -167,15 +166,15 @@ static Bool WWriteDummyItem( FILE *fp, int depth )
     }
 
     if( depth != 0 ) {
-        fprintf( fp, "%*s", DEPTH_MULT*depth, "" );
+        fprintf( fp, "%*s", DEPTH_MULT * depth, "" );
     }
-    fwrite( "BEGIN\n", sizeof(char), 6, fp );
+    fwrite( "BEGIN\n", sizeof( char ), 6, fp );
     fprintf( fp, "%*sMENUITEM SEPARATOR\t/* dummy menu entry */\n",
-             DEPTH_MULT*(depth+1), "" );
+             DEPTH_MULT * (depth + 1), "" );
     if( depth != 0 ) {
-        fprintf( fp, "%*s", DEPTH_MULT*depth, "" );
+        fprintf( fp, "%*s", DEPTH_MULT * depth, "" );
     }
-    fwrite( "END\n", sizeof(char), 4, fp );
+    fwrite( "END\n", sizeof( char ), 4, fp );
 
     return( TRUE );
 }
@@ -185,28 +184,28 @@ static Bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
     Bool        ok;
     int         depth;
 
-    ok = ( entry && fp );
+    ok = (entry != NULL && fp != NULL);
 
     if( ok ) {
         depth = WGetMenuEntryDepth( entry );
-        ok = ( depth != -1 );
+        ok = (depth != -1);
     }
 
     if( ok ) {
         if( depth != 0 ) {
-            fprintf( fp, "%*s", DEPTH_MULT*depth, "" );
+            fprintf( fp, "%*s", DEPTH_MULT * depth, "" );
         }
-        fwrite( "BEGIN\n", sizeof(char), 6, fp );
+        fwrite( "BEGIN\n", sizeof( char ), 6, fp );
     }
 
     if( ok ) {
-        while( entry && ok ) {
+        while( entry != NULL && ok ) {
             ok = WWriteMenuEntryItem( entry, fp, depth );
             if( ok && entry->item->IsPopup ) {
-                if( entry->child ) {
+                if( entry->child != NULL ) {
                     ok = WWriteMenuPopupItem( entry->child, fp );
                 } else {
-                    ok = WWriteDummyItem( fp, depth+1 );
+                    ok = WWriteDummyItem( fp, depth + 1 );
                 }
             }
             entry = entry->next;
@@ -215,9 +214,9 @@ static Bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
 
     if( ok ) {
         if( depth != 0 ) {
-            fprintf( fp, "%*s", DEPTH_MULT*depth, "" );
+            fprintf( fp, "%*s", DEPTH_MULT * depth, "" );
         }
-        fwrite( "END\n", sizeof(char), 4, fp );
+        fwrite( "END\n", sizeof( char ), 4, fp );
     }
 
     return( ok );
@@ -231,7 +230,7 @@ Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
 
     rname = NULL;
 
-    ok = ( einfo && einfo->menu );
+    ok = (einfo != NULL && einfo->menu != NULL);
 
     if( ok ) {
         if( append ) {
@@ -239,11 +238,11 @@ Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
         } else {
             fp = fopen( file, "wt" );
         }
-        ok = ( fp != NULL );
+        ok = (fp != NULL);
     }
 
     if( ok ) {
-        ok = ( ( rname = WResIDToStr( einfo->info->res_name ) ) != NULL );
+        ok = ((rname = WResIDToStr( einfo->info->res_name )) != NULL);
     }
 
     if( ok ) {
@@ -254,14 +253,13 @@ Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
         ok = WWriteMenuPopupItem( einfo->menu->first_entry, fp );
     }
 
-    if( rname ) {
+    if( rname != NULL ) {
         WMemFree( rname );
     }
 
-    if( fp ) {
+    if( fp != NULL ) {
         fclose( fp );
     }
 
     return( ok );
 }
-

@@ -30,19 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
-#ifdef __WIN__
-#include "winvi.h"
-#endif
 
 /*
  * ReDisplayScreen - reset all windows, redraw lines (used by ^L)
  */
-int ReDisplayScreen( void )
+vi_rc ReDisplayScreen( void )
 {
     if( EditFlags.Menus ) {
         MoveWindowToFrontDammit( MenuWindow, TRUE );
@@ -77,23 +71,22 @@ int ReDisplayScreen( void )
 /*
  * ReDisplayBuffers - redraw all buffer windows
  */
-int ReDisplayBuffers( bool runFts )
+vi_rc ReDisplayBuffers( bool runFts )
 {
     info        *cinfo;
     info        *ocurrinfo;
 
     SaveCurrentInfo();
     ocurrinfo = CurrentInfo;
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( cinfo != ocurrinfo ) {
             if( WindowIsVisible( cinfo->CurrentWindow ) ) {
                 BringUpFile( cinfo, runFts );
             }
         }
-        cinfo = cinfo->next;
     }
     BringUpFile( ocurrinfo, runFts );
 
     return( ERR_NO_ERR );
-}
+
+} /* ReDisplayBuffers */

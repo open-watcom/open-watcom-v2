@@ -1,9 +1,9 @@
 #include <math.h>
-#include "doubMat.h"
+#include "doubmat.h"
 
 #define DIM 3
 
-void main()
+int main()
 {
     int i,j;
     doubleMatrix identity(DIM,DIM,0.0);
@@ -11,6 +11,13 @@ void main()
     doubleMatrix inverse(DIM,DIM,0.0);
     doubleMatrix m1(DIM,DIM,0.0);
     doubleMatrix m2(DIM,DIM,0.0);
+
+    /*
+    //  The use of rand(), below, depends on the primary value of 
+    //  thread_data->__randnext being initialized to 1. This caused
+    //  test failures on Windows NT with OW 1.2 as the thread data
+    //  was not being initialized with __InitThreadData()
+    */
 
     for(i=0;i<DIM;++i) {
 	for(j=0;j<DIM;++j) {

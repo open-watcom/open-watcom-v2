@@ -1,0 +1,14 @@
+( device tasa
+( layout gmlieee
+( pass 2
+( index
+( font 0 mono01
+( font 1 mono01 uline
+( font 2 mono01 bold
+( font 3 mono01 ulbold
+( font 4 mono01 bold
+( font 5 mono01 uline
+( font 6 mono01 bold
+( font 7 mono01 ulbold
+( font 8 mono01
+( font 9 mono01

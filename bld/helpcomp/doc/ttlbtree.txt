@@ -1,0 +1,18 @@
+THE WINHELP |TTLBTREE INTERNAL FILE
+===================================
+
+The |TTLBTREE file serves as a lookup table, to obtain the title of a
+topic from its offset within the |TOPIC file.  See b_tree.txt for a
+general description of b-trees.  This file is used primarily by the
+Search dialog box of the WinHelp program, although it is present in
+help files which do not use keyword searching.  (The "History" window
+seems to get its titles directly from the help text.)
+
+The index pages use as their key values four-byte offsets within the |TOPIC
+file.  These offsets are in the form of "Character" offsets; see the section
+on offsets in topic.txt.
+
+The leaf pages contain variable-length records, which consist of a four-byte
+"Character" offset followed by a zero-terminated ASCII string containing the
+title of the corresponding topic.  The records are sorted in numerical order
+by their offset values.  Every topic has a record in the TTLBTREE file.

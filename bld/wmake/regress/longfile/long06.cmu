@@ -1,0 +1,96 @@
+Creating "Long Filename.o1"
+Creating "Long Filename.out"
+Creating "Long Filename.out1"
+Creating "Long Filename.t1"
+Creating "Long Filename.txt"
+Creating "Long Filename.txt1"
+for %i in (L*e.*) do @echo %i
+Long Filename.o1
+Long Filename.out
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt
+Long Filename.txt1
+for %i in (l*e.*) do @echo %i
+l*e.*
+for %i in (*F*e.*) do @echo %i
+Long Filename.o1
+Long Filename.out
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt
+Long Filename.txt1
+for %i in (*f*e.*) do @echo %i
+*f*e.*
+for %i in (*e.*) do @echo %i
+Long Filename.o1
+Long Filename.out
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt
+Long Filename.txt1
+for %i in (*a??.*) do @echo %i
+Long Filename.o1
+Long Filename.out
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt
+Long Filename.txt1
+for %i in (*a*.*) do @echo %i
+Long Filename.o1
+Long Filename.out
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt
+Long Filename.txt1
+for %i in (*.???) do @echo %i
+Long Filename.out
+Long Filename.txt
+for %i in (*.????) do @echo %i
+Long Filename.out1
+Long Filename.txt1
+for %i in (*.?????) do @echo %i
+*.?????
+for %i in (*.???1) do @echo %i
+Long Filename.out1
+Long Filename.txt1
+for %i in (*.*1) do @echo %i
+Long Filename.o1
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt1
+for %i in (*1) do @echo %i
+Long Filename.o1
+Long Filename.out1
+Long Filename.t1
+Long Filename.txt1
+rm *.?1
+for %i in (*) do @echo %i
+.
+..
+Long Filename.out
+Long Filename.out1
+Long Filename.txt
+Long Filename.txt1
+rm *.txt
+for %i in (*) do @echo %i
+.
+..
+Long Filename.out
+Long Filename.out1
+Long Filename.txt1
+rm *.txt1
+for %i in (*) do @echo %i
+.
+..
+Long Filename.out
+Long Filename.out1
+rm *.out
+for %i in (*) do @echo %i
+.
+..
+Long Filename.out1
+rm *.out1
+for %i in (*) do @echo %i
+.
+..

@@ -27,7 +27,7 @@
 
 extern HWND            FrameWindow;    /* The classic MDI frame window     */
 extern HWND            ClientWindow;   /* And the client window attached   */
-extern HANDLE          Instance;       /* Convenient to have handy         */
+extern HINSTANCE       Instance;       /* Convenient to have handy         */
 
 #ifdef __WINDOWS_386__
 #define _EXPORT

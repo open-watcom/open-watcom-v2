@@ -1,0 +1,21 @@
+os      = dos
+srv     = lcl
+cpu     = x86
+which = TRAP
+
+std_objs = &
+        $(dos_objs) &
+        dosexc.obj &
+        dosredir.obj &
+        dosovl.obj &
+        dosacc.obj &
+        dbgtrap.obj &
+        x86cpu.obj &
+        misc7086.obj
+
+extra_a_flags = -DREAL_MODE
+
+extra_objs  = $(std_objs) realtrap.obj
+extra_dobjs = $(std_objs) dumtrap.obj
+
+!include $(trap_dir)/lcl/dos/dos.mif

@@ -1,0 +1,167 @@
+#include <afxres.h>
+#include "resource.h"
+
+IDR_MAINFRAME   ICON DISCARDABLE explore.ico
+IDI_TREEITEM    ICON DISCARDABLE treeitem.ico
+IDI_LISTITEM    ICON DISCARDABLE listitem.ico
+
+IDR_MAINFRAME BITMAP DISCARDABLE toolbar.bmp
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE 22, 18
+BEGIN
+    BUTTON ID_FILE_NEW
+    BUTTON ID_FILE_OPEN
+    BUTTON ID_FILE_SAVE
+    SEPARATOR
+    BUTTON ID_EDIT_CUT
+    BUTTON ID_EDIT_COPY
+    BUTTON ID_EDIT_PASTE
+END
+
+IDR_MAINFRAME MENU DISCARDABLE
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N", ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O", ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S", ID_FILE_SAVE
+        MENUITEM "Save &As...", ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File", ID_FILE_MRU_FILE1
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit", ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo\tCtrl+Z", ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t\tCtrl+X", ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C", ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V", ID_EDIT_PASTE
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar", ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar", ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "Lar&ge Icons", ID_VIEW_LARGEICON
+        MENUITEM "S&mall Icons", ID_VIEW_SMALLICON
+        MENUITEM "&List", ID_VIEW_LIST
+        MENUITEM "&Details", ID_VIEW_DETAILS
+    END
+    POPUP "&Insert"
+    BEGIN
+        MENUITEM "&Tree Item...", ID_INSERT_TREE_ITEM
+        MENUITEM "&List Item...", ID_INSERT_LIST_ITEM
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About...", ID_APP_ABOUT
+    END
+END
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE
+BEGIN
+    "N",        ID_FILE_NEW,        VIRTKEY, CONTROL
+    "O",        ID_FILE_OPEN,       VIRTKEY, CONTROL
+    "S",        ID_FILE_SAVE,       VIRTKEY, CONTROL
+    "Z",        ID_EDIT_UNDO,       VIRTKEY, CONTROL
+    "X",        ID_EDIT_CUT,        VIRTKEY, CONTROL
+    "C",        ID_EDIT_COPY,       VIRTKEY, CONTROL
+    "V",        ID_EDIT_PASTE,      VIRTKEY, CONTROL
+    VK_BACK,    ID_EDIT_UNDO,       VIRTKEY, ALT
+    VK_DELETE,  ID_EDIT_CUT,        VIRTKEY, SHIFT
+    VK_INSERT,  ID_EDIT_COPY,       VIRTKEY, CONTROL
+    VK_INSERT,  ID_EDIT_PASTE,      VIRTKEY, SHIFT
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE 20, 40, 220, 80
+STYLE DS_MODALFRAME | WS_OVERLAPPED | WS_CAPTION | WS_VISIBLE | WS_SYSMENU
+CAPTION "About"
+FONT 8, "Helv"
+BEGIN
+    CONTROL     IDR_MAINFRAME, IDC_STATIC, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE,
+                12, 12, 20, 20
+    CONTROL     "Open Watcom Explorer Sample", IDC_STATIC, "STATIC",
+                SS_LEFT | WS_CHILD | WS_VISIBLE, 40, 12, 170, 8
+    CONTROL     "Copyright (c) 2010 The Open Watcom Contributors.  All rights reserved.",
+                IDC_STATIC, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 40, 28, 170, 16
+    CONTROL     "OK", IDOK, "BUTTON",
+                BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 85, 60, 50, 15
+END
+
+IDD_INSERTITEM DIALOG DISCARDABLE 20, 40, 140, 70
+STYLE DS_MODALFRAME | WS_OVERLAPPED | WS_CAPTION | WS_VISIBLE | WS_SYSMENU
+CAPTION "Insert Item"
+FONT 8, "Helv"
+BEGIN
+    CONTROL     "&Name:", IDC_STATIC, "STATIC", WS_CHILD | WS_VISIBLE, 10, 10, 120, 8
+    CONTROL     "", IDC_NAME, "EDIT", ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE |
+                WS_BORDER | WS_TABSTOP, 10, 20, 120, 12
+    CONTROL     "OK", IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE |
+                WS_TABSTOP, 10, 45, 50, 15
+    CONTROL     "Cancel", IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE |
+                WS_TABSTOP, 80, 45, 50, 15
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "Explore"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_CAPS       "CAPS"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_FILE_NEW             "Create a new document.\nNew"
+    ID_FILE_OPEN            "Open an existing document.\nOpen"
+    ID_FILE_SAVE            "Save the current document.\nSave"
+    ID_FILE_SAVE_AS         "Save the current document with a new name.\nSave As"
+    ID_FILE_MRU_FILE1       "Open this document."
+    ID_FILE_MRU_FILE2       "Open this document."
+    ID_FILE_MRU_FILE3       "Open this document."
+    ID_FILE_MRU_FILE4       "Open this document."
+    ID_APP_EXIT             "Close the application.\nExit"
+    ID_EDIT_UNDO            "Undo the last action.\nUndo"
+    ID_EDIT_CUT             "Remove the selection and place it on the clipboard.\nCut"
+    ID_EDIT_COPY            "Place a copy of the selection on the clipboard.\nCopy"
+    ID_EDIT_PASTE           "Insert the contents of the clipboard.\nPaste"
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar.\nToolbar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar.\nStatus Bar"
+    ID_APP_ABOUT            "Display program information and copyright notice.\nAbout"
+    IDR_MAINFRAME           "Explore\nDocument\nDocument\nExplore Files (*.owe)\n.owe\nOWExplore.Document\nOpen Watcom Explore Document"
+    IDS_NAME                "Name"
+END
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 1, 0, 0, 0
+PRODUCTVERSION 1, 0, 0, 0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "openwatcom.org"
+            VALUE "FileDescription", "Open Watcom Explorer Sample"
+            VALUE "FileVersion", "1.0"
+            VALUE "InternalName", "explore"
+            VALUE "LegalCopyright", "Copyright (c) 2010 The Open Watcom Contributors.  All rights reserved."
+            VALUE "OriginalFilename", "explore.exe"
+            VALUE "ProductName", "Open Watcom Explorer Sample"
+            VALUE "ProductVersion", "1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1252
+    END
+END
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST DISCARDABLE appmanif.xml
+
+#ifndef _AFXDLL
+    #include <afxres.rc>
+#endif

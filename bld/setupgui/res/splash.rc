@@ -1,0 +1,17 @@
+#if defined( __OS2__ )
+#define BITMAPX(x) BITMAP BITMAP_SPLASH x
+#else
+#define BITMAPX(x) BITMAP_SPLASH BITMAP x
+#endif
+
+#if defined( CSETUP )
+BITMAPX( "../res/wcc.bmp" )
+#elif defined( JCSETUP )
+BITMAPX( "../res/wcc.bmp" )
+#elif defined( F77SETUP )
+BITMAPX( "../res/f77.bmp" )
+#elif defined( JFSETUP )
+BITMAPX( "../res/f77.bmp" )
+#else
+BITMAPX( "../res/generic.bmp" )
+#endif

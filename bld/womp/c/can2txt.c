@@ -60,13 +60,13 @@ STATIC const char *locMethods[] = {
 };
 
 STATIC const char *frameMethods[] = {
-/*F_SEG,    T_SEGWD */  "SI",
-/*F_GRP,    T_GRPWD */  "GI",
-/*F_EXT,    T_EXTWD */  "EI",
-/*F_ABS,    T_ABSWD */  "",
-/*F_LOC             */  "LOCATION",
-/*F_TARG            */  "TARGET",
-/*F_NONE            */  "NONE"
+/*FRAME_SEG, TARGET_SEGWD */  "SI",
+/*FRAME_GRP, TARGET_GRPWD */  "GI",
+/*FRAME_EXT, TARGET_EXTWD */  "EI",
+/*FRAME_ABS, TARGET_ABSWD */  "",
+/*FRAME_LOC               */  "LOCATION",
+/*FRAME_TARG              */  "TARGET",
+/*FRAME_NONE              */  "NONE"
 };
 
 STATIC void printAddrHdl( const char *prefix, addr_handle hdl ) {
@@ -96,8 +96,8 @@ STATIC void printAddrHdl( const char *prefix, addr_handle hdl ) {
             fix->loader_resolved ? "LR" : empty,
             locMethods[ fix->loc_method ],
             frameMethods[ fix->lr.frame ] );
-/**/    myassert( fix->lr.frame <= F_NONE && fix->lr.target <= T_ABSWD );
-        if( fix->lr.frame < F_LOC ) {
+/**/    myassert( fix->lr.frame <= FRAME_NONE && fix->lr.target <= TARGET_ABSWD );
+        if( fix->lr.frame < FRAME_LOC ) {
             PrtFmt( "(%x)", fix->lr.frame_datum );
         }
         PrtFmt( "  Target: %s(%x)",
@@ -142,8 +142,9 @@ STATIC const char *scopeTxt[] = {
 #define INDENT  "    "
 #define END "\n"
 
-STATIC int doPrintType( cantype *type, void *parm ) {
+STATIC int doPrintType( void *_type, void *parm ) {
 
+    cantype        *type = _type;
     uint            tmp;
 
     parm = parm;

@@ -74,29 +74,29 @@ static          EVENT                   EventsRelease[] = {
                 EV_INSERT_RELEASE
 };
 
-unsigned int extern uiextkeyboard()
-/*********************************/
+unsigned int extern uiextkeyboard( void )
+/***************************************/
 {
     return( ReadReq != NRM_KEY_READ );
 }
 
 
-unsigned int intern getkey()
-/**************************/
+unsigned int intern getkey( void )
+/********************************/
 {
     return( BIOSGetKeyboard( ReadReq ) );
 }
 
 
-int intern checkkey()
-/*******************/
+int intern checkkey( void )
+/*************************/
 {
     return( BIOSKeyboardHit( ReadReq + 1 ) );
 }
 
 
-void intern flushkey()
-/********************/
+void intern flushkey( void )
+/**************************/
 {
     while( checkkey() ) {
         getkey();
@@ -104,15 +104,15 @@ void intern flushkey()
 }
 
 
-unsigned char intern checkshift()
-/*******************************/
+unsigned char intern checkshift( void )
+/*************************************/
 {
     return( BIOSGetKeyboard( ReadReq + 2 ) );
 }
 
 
-unsigned char global uicheckshift()
-/**********************************/
+unsigned char global uicheckshift( void )
+/***************************************/
 
 {
     return( checkshift() );
@@ -128,8 +128,8 @@ unsigned char global uicheckshift()
 #define RCT(x)  ( ( ( x ) & 0x0400 ) != 0 )
 #define RAL(x)  ( ( ( x ) & 0x0800 ) != 0 )
 
-bool intern initkeyboard()
-/************************/
+bool intern initkeyboard( void )
+/******************************/
 {
     unsigned x;
 
@@ -143,8 +143,8 @@ bool intern initkeyboard()
 }
 
 
-EVENT intern keyboardevent()
-/**************************/
+EVENT intern keyboardevent( void )
+/********************************/
 {
     register    unsigned int            key;
     register    unsigned int            scan;
@@ -218,8 +218,8 @@ EVENT intern keyboardevent()
     return( ev );
 }
 
-EVENT global uikeyboardevent()
-/****************************/
+EVENT global uikeyboardevent( void )
+/**********************************/
 {
     return( keyboardevent() );
 }

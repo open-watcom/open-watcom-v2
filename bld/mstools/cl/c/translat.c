@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate MS options to Watcom options.
 *
 ****************************************************************************/
 
@@ -43,15 +42,11 @@
 
 #define UNSUPPORTED_STR_SIZE    512
 
-#define FORCE_C_COMPILE         1
-#define FORCE_CPP_COMPILE       2
-
 
 /*
  * Various flags to keep in mind while translating options.
  */
 static struct XlatStatus {
-    int     forcedLanguage;             /* can force C or C++ compile */
     int     debugLevel;                 /* value for -d<num> switch */
     int     warnLevel;                  /* value for -w<num> switch */
     int     charTypeUnsigned    : 1;    /* char = signed char by default */
@@ -82,56 +77,17 @@ static struct XlatStatus {
 
 
 /*
- * Translate scanned MS options to Watcom options.
+ * Add one more unsupported option to optStr.
  */
-void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *compCmdLine,
-                       CmdLine *linkCmdLine )
-/****************************************************************/
+static void append_unsupported( char *optStr, char *opt )
+/*******************************************************/
 {
-    /*** Parse the /nologo switch now so we can print the banner ***/
-    init_status( &status );
-    if( cmdOpts->nologo ) {
-        QuietModeMessage();
+    if( optStr[0] != '\0' ) {
+        strcat( optStr, " /" );
     } else {
-        BannerMessage();
+        strcat( optStr, "/" );
     }
-
-    /*** Parse everything ***/
-    unsupported_opts( cmdOpts );
-    default_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
-    compiler_opts( &status, cmdOpts, compCmdLine );
-    linker_opts( &status, cmdOpts, linkCmdLine );
-    merge_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
-}
-
-
-/*
- * This function is for options which affect all source files differently.
- * Given the filename, it updates the given command line appropriately.  Any
- * CmdLine pointer which is NULL is ignored.
- */
-void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
-                          CmdLine *linkCmdLine )
-/*******************************************************************/
-{
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-    char                fullPath[_MAX_PATH];
-    char *              newpath;
-
-    linkCmdLine = linkCmdLine;
-
-    /*** Handle the /P switch ***/
-    if( status.preprocessToFile ) {
-        if( compCmdLine != NULL ) {
-            _splitpath( filename, drive, dir, fname, NULL );
-            _makepath( fullPath, drive, dir, fname, ".i" );
-            newpath = PathConvert( fullPath, '"' );
-            AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fo=%s",
-                              newpath );
-        }
-    }
+    strcat( optStr, opt );
 }
 
 
@@ -145,6 +101,13 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
+    if( cmdOpts->EHa  )  append_unsupported( opts, "EHa"  );
+    if( cmdOpts->EHac )  append_unsupported( opts, "EHac" );
+    if( cmdOpts->EHc  )  append_unsupported( opts, "EHc"  );
+    if( cmdOpts->EHca )  append_unsupported( opts, "EHca" );
+    if( cmdOpts->EHcs )  append_unsupported( opts, "EHcs" );
+    if( cmdOpts->EHs  )  append_unsupported( opts, "EHs"  );
+    if( cmdOpts->EHsc )  append_unsupported( opts, "EHsc" );
     if( cmdOpts->Fa   )  append_unsupported( opts, "Fa"   );
     if( cmdOpts->FA   )  append_unsupported( opts, "FA"   );
     if( cmdOpts->FAc  )  append_unsupported( opts, "FAc"  );
@@ -188,21 +151,6 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add one more unsupported option to optStr.
- */
-static void append_unsupported( char *optStr, char *opt )
-/*******************************************************/
-{
-    if( optStr[0] != '\0' ) {
-        strcat( optStr, " /" );
-    } else {
-        strcat( optStr, "/" );
-    }
-    strcat( optStr, opt );
-}
-
-
-/*
  * Initialize a struct XlatStatus.
  */
 static void init_status( struct XlatStatus *status )
@@ -220,23 +168,15 @@ static void init_status( struct XlatStatus *status )
 
 
 /*
- * Parse compiler options.
+ * Translate options related to C++ and not to C.
  */
-static void compiler_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
-                           CmdLine *compCmdLine )
-/*************************************************************************/
+static void c_plus_plus_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
+                              CmdLine *compCmdLine )
+/**************************************************************************/
 {
-    preprocessor_opts( status, cmdOpts, compCmdLine );  /* should be first */
-    precomp_header_opts( status, cmdOpts, compCmdLine );
-    if( !status->disable_c ) {
-        optimization_opts( status, cmdOpts, compCmdLine );  /* before object_opts */
-        object_opts( status, cmdOpts, compCmdLine );
-        c_plus_plus_opts( status, cmdOpts, compCmdLine );
-    }
-    misc_opts( status, cmdOpts, compCmdLine );
-
-    if( status->disable_c ) {
-        cmdOpts->c = 1;         /* tell mainline to skip link phase */
+    AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-xs" );
+    if( cmdOpts->_10x ) {
+        AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-zo" );
     }
 }
 
@@ -256,8 +196,8 @@ static void preprocessor_opts( struct XlatStatus *status,
 
     optStr = cmdOpts->I_value;
     while( optStr != NULL ) {
-        AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-i%s",
-                          optStr->data );
+        newpath = PathConvert( optStr->data, '"' );
+        AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-i=%s", newpath );
         optStr = optStr->next;
     }
 
@@ -356,13 +296,6 @@ static void misc_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 {
     if( cmdOpts->J ) {
         status->charTypeUnsigned = 1;
-    }
-
-    if( cmdOpts->Tc ) {
-        status->forcedLanguage = FORCE_C_COMPILE;
-    }
-    if( cmdOpts->Tp ) {
-        status->forcedLanguage = FORCE_CPP_COMPILE;
     }
 
     switch( cmdOpts->warn_level ) {
@@ -647,15 +580,23 @@ static void optimization_opts( struct XlatStatus *status,
 
 
 /*
- * Translate options related to C++ and not to C.
+ * Parse compiler options.
  */
-static void c_plus_plus_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
-                              CmdLine *compCmdLine )
-/**************************************************************************/
+static void compiler_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
+                           CmdLine *compCmdLine )
+/*************************************************************************/
 {
-    AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-xs" );
-    if( cmdOpts->_10x ) {
-        AppendCmdLine( compCmdLine, CL_C_CPP_OPTS_SECTION, "-zo" );
+    preprocessor_opts( status, cmdOpts, compCmdLine );  /* should be first */
+    precomp_header_opts( status, cmdOpts, compCmdLine );
+    if( !status->disable_c ) {
+        optimization_opts( status, cmdOpts, compCmdLine );  /* before object_opts */
+        object_opts( status, cmdOpts, compCmdLine );
+        c_plus_plus_opts( status, cmdOpts, compCmdLine );
+    }
+    misc_opts( status, cmdOpts, compCmdLine );
+
+    if( status->disable_c ) {
+        cmdOpts->c = 1;         /* tell mainline to skip link phase */
     }
 }
 
@@ -668,6 +609,7 @@ static void linker_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 /***********************************************************************/
 {
     OPT_STRING *        optStr;
+    char *              newpath;
 
     if( cmdOpts->F ) {
         AppendFmtCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/STACK:%s",
@@ -677,6 +619,13 @@ static void linker_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     if( cmdOpts->Fe ) {
         AppendFmtCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/OUT:%s",
                           cmdOpts->Fe_value->data );
+    }
+
+    optStr = cmdOpts->o_value;
+    if( cmdOpts->o_value != NULL ) {
+        newpath = PathConvert( optStr->data, '"' );
+        AppendFmtCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/OUT:%s",
+        newpath );
     }
 
     if( cmdOpts->Fm ) {
@@ -835,4 +784,58 @@ static void merge_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
     if( cmdOpts->nowopts ) {
         AppendCmdLine( linkCmdLine, CL_L_OPTS_SECTION, "/nowopts" );
     }
+}
+
+
+/*
+ * This function is for options which affect all source files differently.
+ * Given the filename, it updates the given command line appropriately.  Any
+ * CmdLine pointer which is NULL is ignored.
+ */
+void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
+                          CmdLine *linkCmdLine )
+/*******************************************************************/
+{
+    char                drive[_MAX_DRIVE];
+    char                dir[_MAX_DIR];
+    char                fname[_MAX_FNAME];
+    char                fullPath[_MAX_PATH];
+    char *              newpath;
+
+    linkCmdLine = linkCmdLine;
+
+    /*** Handle the /P switch ***/
+    if( status.preprocessToFile ) {
+        if( compCmdLine != NULL ) {
+            _splitpath( filename, drive, dir, fname, NULL );
+            _makepath( fullPath, NULL, NULL, fname, ".i" );
+            newpath = PathConvert( fullPath, '"' );
+            AppendFmtCmdLine( compCmdLine, CL_C_OPTS_SECTION, "-fo=%s",
+                              newpath );
+        }
+    }
+}
+
+
+/*
+ * Translate scanned MS options to Watcom options.
+ */
+void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *compCmdLine,
+                       CmdLine *linkCmdLine )
+/****************************************************************/
+{
+    /*** Parse the /nologo switch now so we can print the banner ***/
+    init_status( &status );
+    if( cmdOpts->nologo ) {
+        QuietModeMessage();
+    } else {
+        BannerMessage();
+    }
+
+    /*** Parse everything ***/
+    unsupported_opts( cmdOpts );
+    default_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
+    compiler_opts( &status, cmdOpts, compCmdLine );
+    linker_opts( &status, cmdOpts, linkCmdLine );
+    merge_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
 }

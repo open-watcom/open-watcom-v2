@@ -1,0 +1,229 @@
+/*
+ *  rtutils.h   Router utility functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __ROUTING_RTUTILS_H__
+#define __ROUTING_RTUTILS_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* TraceRegisterEx() flags */
+#define TRACE_USE_FILE      0x00000001L
+#define TRACE_USE_CONSOLE   0x00000002L
+#define TRACE_NO_SYNCH      0x00000004L
+
+/* TracePrintfEx() flags
+#define TRACE_NO_STDINFO    0x00000001L
+#define TRACE_USE_MASK      0x00000002L
+#define TRACE_USE_MSEC      0x00000004L
+#define TRACE_USE_DATE      0x00000008L
+
+/* Trace identifier special value */
+#define INVALID_TRACEID 0xFFFFFFFFL
+
+/* Maximum string lengths */
+#define RTUTILS_MAX_PROTOCOL_NAME_LEN   40
+#define RTUTILS_MAX_PROTOCOL_DLL_LEN    48
+
+/* Worker function */
+typedef VOID (APIENTRY *WORKERFUNCTION)( PVOID );
+
+/* MPR protocol (level 0) */
+typedef struct _MPR_PROTOCOL_0 {
+    DWORD   dwProtocolId;
+    WCHAR   wszProtocol[RTUTILS_MAX_PROTOCOL_NAME_LEN + 1];
+    WCHAR   wszDLLName[RTUTILS_MAX_PROTOCOL_DLL_LEN + 1];
+} MPR_PROTOCOL_0;
+
+/* Functions in RTUTILS.DLL */
+VOID APIENTRY   LogErrorA( DWORD, DWORD, LPSTR *, DWORD );
+VOID APIENTRY   LogErrorW( DWORD, DWORD, LPWSTR *, DWORD );
+VOID APIENTRY   LogEventA( DWORD, DWORD, DWORD, LPSTR * );
+VOID APIENTRY   LogEventW( DWORD, DWORD, DWORD, LPWSTR * );
+DWORD APIENTRY  MprSetupProtocolEnum( DWORD, LPBYTE *, LPDWORD );
+DWORD APIENTRY  MprSetupProtocolFree( LPVOID );
+VOID APIENTRY   RouterAssert( PSTR, PSTR, DWORD, PSTR );
+DWORD APIENTRY  RouterGetErrorStringA( DWORD, LPSTR * );
+DWORD APIENTRY  RouterGetErrorStringW( DWORD, LPWSTR * );
+VOID APIENTRY   RouterLogDeregisterA( HANDLE );
+VOID APIENTRY   RouterLogDeregisterW( HANDLE );
+VOID APIENTRY   RouterLogEventA( HANDLE, DWORD, DWORD, DWORD, LPSTR *, DWORD );
+VOID APIENTRY   RouterLogEventDataA( HANDLE, DWORD, DWORD, DWORD, LPSTR *, DWORD, LPBYTE );
+VOID APIENTRY   RouterLogEventDataW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD, LPBYTE );
+VOID __cdecl    RouterLogEventExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, ... );
+VOID __cdecl    RouterLogEventExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, ... );
+VOID APIENTRY   RouterLogEventStringA( HANDLE, DWORD, DWORD, DWORD, LPSTR *, DWORD, DWORD );
+VOID APIENTRY   RouterLogEventStringW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD, DWORD );
+VOID APIENTRY   RouterLogEventValistExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, void * );
+VOID APIENTRY   RouterLogEventValistExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, void * );
+VOID APIENTRY   RouterLogEventW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD );
+HANDLE APIENTRY RouterLogRegisterA( LPCSTR );
+HANDLE APIENTRY RouterLogRegisterW( LPCWSTR );
+DWORD APIENTRY  TraceDeregisterA( DWORD );
+DWORD APIENTRY  TraceDeregisterExA( DWORD, DWORD );
+DWORD APIENTRY  TraceDeregisterExW( DWORD, DWORD );
+DWORD APIENTRY  TraceDeregisterW( DWORD );
+DWORD APIENTRY  TraceDumpExA( DWORD, DWORD, LPBYTE, DWORD, DWORD, BOOL, LPCSTR );
+DWORD APIENTRY  TraceDumpExW( DWORD, DWORD, LPBYTE, DWORD, DWORD, BOOL, LPCWSTR );
+DWORD APIENTRY  TraceGetConsoleA( DWORD, LPHANDLE );
+DWORD APIENTRY  TraceGetConsoleW( DWORD, LPHANDLE );
+DWORD __cdecl   TracePrintfA( DWORD, LPCSTR, ... );
+DWORD __cdecl   TracePrintfExA( DWORD, DWORD, LPCSTR, ... );
+DWORD __cdecl   TracePrintfExW( DWORD, DWORD, LPCWSTR, ... );
+DWORD __cdecl   TracePrintfW( DWORD, LPCWSTR, ... );
+DWORD APIENTRY  TracePutsExA( DWORD, DWORD, LPCSTR );
+DWORD APIENTRY  TracePutsExW( DWORD, DWORD, LPCWSTR );
+DWORD APIENTRY  TraceRegisterExA( LPCSTR, DWORD );
+DWORD APIENTRY  TraceRegisterExW( LPCWSTR, DWORD );
+DWORD APIENTRY  TraceVprintfExA( DWORD, DWORD, LPCSTR, void * );
+DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, void * );
+
+/* Functions implemented as macros */
+#define RouterLogErrorA( p1, p2, p3, p4, p5 ) \
+    RouterLogEventA( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5 )
+#define RouterLogErrorDataA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataA( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogErrorDataW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataW( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogErrorStringA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringA( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogErrorStringW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringW( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogErrorW( p1, p2, p3, p4, p5 ) \
+    RouterLogEventW( p1, EVENTLOG_ERROR_TYPE, p2, p3, p4, p5 )
+#define RouterLogInformationA( p1, p2, p3, p4, p5 ) \
+    RouterLogEventA( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5 )
+#define RouterLogInformationDataA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataA( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogInformationDataW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataW( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogInformationStringA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringA( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogInformationStringW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringW( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogInformationW( p1, p2, p3, p4, p5 ) \
+    RouterLogEventW( p1, EVENTLOG_INFORMATION_TYPE, p2, p3, p4, p5 )
+#define RouterLogWarningA( p1, p2, p3, p4, p5 ) \
+    RouterLogEventA( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5 )
+#define RouterLogWarningDataA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataA( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogWarningDataW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventDataW( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogWarningStringA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringA( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogWarningStringW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventStringW( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5, p6 )
+#define RouterLogWarningW( p1, p2, p3, p4, p5 ) \
+    RouterLogEventW( p1, EVENTLOG_WARNING_TYPE, p2, p3, p4, p5 )
+#define TraceDumpA( p1, p2, p3, p4, p5 )    TraceDumpExA( p1, 0, p2, p3, p4, p5 )
+#define TraceDumpW( p1, p2, p3, p4, p5 )    TraceDumpExW( p1, 0, p2, p3, p4, p5 )
+#define TracePutsA( p1, p2 )                TracePutsExA( p1, 0, p2 )
+#define TracePutsW( p1, p2 )                TracePutsExW( p1, 0, p2 )
+#define TraceRegisterA( x )                 TraceRegisterExA( x, 0 )
+#define TraceRegisterW( x )                 TraceRegisterExW( x, 0 )
+#define TraceVprintfA( p1, p2, p3 )         TraceVprintfExA( p1, 0, p2, p3 )
+#define TraceVprintfW( p1, p2, p3 )         TraceVprintfExW( p1, 0, p2, p3 )
+
+/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
+ * before being passed to any Win32 API functions.
+ */
+#define RouterLogEventValistExA( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventValistExA( p1, p2, p3, p4, p5, (p6)[0] )
+#define RouterLogEventValistExW( p1, p2, p3, p4, p5, p6 ) \
+    RouterLogEventValistExW( p1, p2, p3, p4, p5, (p6)[0] )
+#define TraceVprintfExA( p1, p2, p3, p4 ) \
+    TraceVprintfExA( p1, p2, p3, (p4)[0] )
+#define TraceVprintfExW( p1, p2, p3, p4 ) \
+    TraceVprintfExW( p1, p2, p3, (p4)[0] )
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define LogError                    LogErrorW
+    #define LogEvent                    LogEventW
+    #define RouterGetErrorString        RouterGetErrorStringW
+    #define RouterLogDeregister         RouterLogDeregisterW
+    #define RouterLogError              RouterLogErrorW
+    #define RouterLogErrorData          RouterLogErrorDataW
+    #define RouterLogErrorString        RouterLogErrorStringW
+    #define RouterLogEvent              RouterLogEventW
+    #define RouterLogEventData          RouterLogEventDataW
+    #define RouterLogEventEx            RouterLogEventExW
+    #define RouterLogEventString        RouterLogEventStringW
+    #define RouterLogEventValistEx      RouterLogEventValistExW
+    #define RouterLogInformation        RouterLogInformationW
+    #define RouterLogInformationData    RouterLogInformationDataW
+    #define RouterLogInformationString  RouterLogInformationStringW
+    #define RouterLogRegister           RouterLogRegisterW
+    #define RouterLogWarning            RouterLogWarningW
+    #define RouterLogWarningData        RouterLogWarningDataW
+    #define RouterLogWarningString      RouterLogWarningStringW
+    #define TraceDeregister             TraceDeregisterW
+    #define TraceDeregisterEx           TraceDeregisterExW
+    #define TraceDump                   TraceDumpW
+    #define TraceDumpEx                 TraceDumpExW
+    #define TraceGetConsole             TraceGetConsoleW
+    #define TracePrintf                 TracePrintfW
+    #define TracePrintfEx               TracePrintfExW
+    #define TracePuts                   TracePutsW
+    #define TracePutsEx                 TracePutsExW
+    #define TraceRegister               TraceRegisterW
+    #define TraceRegisterEx             TraceRegisterExW
+    #define TraceVprintf                TraceVprintfW
+    #define TraceVprintfEx              TraceVprintfExW
+#else
+    #define LogError                    LogErrorA
+    #define LogEvent                    LogEventA
+    #define RouterGetErrorString        RouterGetErrorStringA
+    #define RouterLogDeregister         RouterLogDeregisterA
+    #define RouterLogError              RouterLogErrorA
+    #define RouterLogErrorData          RouterLogErrorDataA
+    #define RouterLogErrorString        RouterLogErrorStringA
+    #define RouterLogEvent              RouterLogEventA
+    #define RouterLogEventData          RouterLogEventDataA
+    #define RouterLogEventEx            RouterLogEventExA
+    #define RouterLogEventString        RouterLogEventStringA
+    #define RouterLogEventValistEx      RouterLogEventValistExA
+    #define RouterLogInformation        RouterLogInformationA
+    #define RouterLogInformationData    RouterLogInformationDataA
+    #define RouterLogInformationString  RouterLogInformationStringA
+    #define RouterLogRegister           RouterLogRegisterA
+    #define RouterLogWarning            RouterLogWarningA
+    #define RouterLogWarningData        RouterLogWarningDataA
+    #define RouterLogWarningString      RouterLogWarningStringA
+    #define TraceDeregister             TraceDeregisterA
+    #define TraceDeregisterEx           TraceDeregisterExA
+    #define TraceDump                   TraceDumpA
+    #define TraceDumpEx                 TraceDumpExA
+    #define TraceGetConsole             TraceGetConsoleA
+    #define TracePrintf                 TracePrintfA
+    #define TracePrintfEx               TracePrintfExA
+    #define TracePuts                   TracePutsA
+    #define TracePutsEx                 TracePutsExA
+    #define TraceRegister               TraceRegisterA
+    #define TraceRegisterEx             TraceRegisterExA
+    #define TraceVprintf                TraceVprintfA
+    #define TraceVprintfEx              TraceVprintfExA
+#endif
+
+/* Router assertion macros */
+#ifdef DBG
+    #define RTASSERT( x ) \
+        if( !(x) ) { \
+            RouterAssert( #x, __FILE__, __LINE__, NULL ); \
+        }
+    #define RTASSERTMSG( p1, p2 ) \
+        if( !(x) ) { \
+            RouterAssert( #x, __FILE__, __LINE__, p2 ); \
+        }
+#else
+    #define RTASSERT( x )
+    #define RTASSERTMSG( p1, p2 )
+#endif
+
+:include cplusepi.sp
+
+#endif /* __ROUTING_RTUTILS_H__ */

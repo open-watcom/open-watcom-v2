@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  mautodep.c interfaces
 *
 ****************************************************************************/
 
 
-typedef void *handle;
-typedef void *dep_handle;
+typedef void    *handle;
+typedef void    *dep_handle;
 
-typedef struct auto_dep_info {
+typedef struct  auto_dep_info {
     void        (*init)( void );
     handle      (*init_file)( const char *name );
     dep_handle  (*first_dep)( handle );
@@ -43,6 +42,6 @@ typedef struct auto_dep_info {
     void        (*fini)( void );
 } auto_dep_info;
 
-extern void AutoDepInit( void );
-extern BOOLEAN AutoDepCheck( char *name, time_t stamp, BOOLEAN (*chk)( time_t, time_t ), time_t *pmax );
-extern void AutoDepFini( void );
+extern void     AutoDepInit( void );
+extern BOOLEAN  AutoDepCheck( char *name, time_t stamp, BOOLEAN (*chk)( time_t, time_t ), time_t *pmax );
+extern void     AutoDepFini( void );

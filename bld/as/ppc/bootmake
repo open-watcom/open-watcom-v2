@@ -1,0 +1,10 @@
+#pmake: bootstrap
+
+bootstrap = 1
+
+host_os  = $(%BOOTSTRAP_OS)
+host_cpu = $(%BOOTSTRAP_CPU)
+
+target_cpu = ppc
+
+!include ../ppc.mif

@@ -1,0 +1,1 @@
+This is the OpenWatcom project's OS/2 help compiler, wipfc. It accepts .ipf input files and produces .inf or .hlp output files.

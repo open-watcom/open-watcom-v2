@@ -1,0 +1,26 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+#
+# Note: Since there is no 16-bit target for Linux, we simply
+# make the default 16-bit compiler produce 16-bit DOS apps.
+system begin osi
+    option osname='OS Independent'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/osi
+    format pharlap rex ^
+end
+system begin 286
+    libpath %WATCOM%/lib286
+    libpath %WATCOM%/lib286/dos
+    format dos
+end
+system begin 386
+    option osname='Linux x86'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/linux
+    format elf
+    runtime linux
+    op exportall
+    op norelocs
+end
+@%WATCOM%/binw/wlsystem.lnk

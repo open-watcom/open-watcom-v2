@@ -1,0 +1,32 @@
+c$ifdef __386__
+c$ifdef __stack_conventions__
+c$pragma aux setjmp "_!" parm caller [eax] modify [8087]
+c$else
+c$pragma aux setjmp "_!_" parm caller [eax] modify [8087]
+c$endif
+c$else
+c$pragma aux setjmp "_!_" modify [8087]
+c$endif
+
+c$ifdef __stack_conventions__
+c$pragma aux longjmp "!" parm( reference, value ) aborts
+c$else
+c$pragma aux longjmp "!_" parm( reference, value ) aborts
+c$endif
+
+        structure /jmp_buf/
+c$ifdef __386__
+            integer*4 jmp_buf(13)
+c$else
+            integer*2 jmp_buf(13)
+c$endif
+        end structure
+
+c$ifdef __386__
+        integer setjmp
+c$else
+        integer*2 setjmp
+c$endif
+        external setjmp
+
+        external longjmp

@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP instruction encoding.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "pattern.h"
@@ -60,6 +60,7 @@ extern void DumpInt( int );
 extern void DumpNL(void);
 extern void DumpGen(struct opcode_entry*);
 extern void DumpPtr( void *ptr );
+extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
@@ -79,6 +80,8 @@ extern  void            InputOC( any_oc * );
 extern  opcode_defs     FlipOpcode( opcode_defs );
 extern  void            FactorInt32( signed_32 val, signed_16 *, signed_16 *, signed_16 * );
 extern  label_handle    RTLabel( int );
+
+extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 
 extern type_class_def   Unsigned[];
 extern type_length      TypeClassSize[];
@@ -221,7 +224,7 @@ extern  void EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type ) {
     oc.opcode = ins;
     oc.sym = sym;
     oc.reloc = type;
-    InputOC( &oc );
+    InputOC( (any_oc *)&oc );
 }
 
 static  void EmitIns( axp_ins ins ) {
@@ -394,16 +397,16 @@ extern  void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set sr
     GenMEMINS( 0x27, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
-extern  void    GenRET() {
-/************************/
-
+extern  void    GenRET( void )
+/****************************/
+{
     oc_ret      oc;
 
     oc.op.class = OC_RET;
     oc.op.reclen = sizeof( oc_ret );
     oc.op.objlen = 4;
     oc.pops = FALSE;            /* not used */
-    InputOC( &oc );
+    InputOC( (any_oc *)&oc );
 }
 
 static  pointer symLabel( name *mem ) {

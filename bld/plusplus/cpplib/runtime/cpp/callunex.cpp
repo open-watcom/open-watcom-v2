@@ -37,6 +37,6 @@ extern "C"
 void CPPLIB( call_unexpected )( // CALL "unexpected" SET BY "set_unexpected"
     void )
 {
-    unexpected();
+  std::unexpected();
 }
 

@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions for SSL-driven grammars.
 *
 ****************************************************************************/
 
 
 #include <string.h>
+#include <stdio.h>
 #include <limits.h>
 #include "dbglit.h"
 #include "dbgdefn.h"
@@ -44,6 +44,7 @@
 #include "dip.h"
 #include "i64.h"
 
+
 #define         SSL_VERSION_MAJOR_CURR  0x0100
 #define         SSL_VERSION_MINOR_CURR  0x0000
 
@@ -56,79 +57,79 @@
 #define         TI_CREATE( tk, tm, ts ) (((tk) << 12) | ((tm) << 8) | (ts))
 
 enum {
-        SEM_MISC        = 0x00,
-        SEM_DO          = 0x20,
-        SEM_PUSH_N_POP  = 0x40,
-        SEM_STACK       = 0x60,
-        SEM_NUM         = 0x80,
-        SEM_BITS        = 0xa0,
-        SEM_GET         = 0xc0,
-        SEM_SELECTOR    = 0x1f,
-        SEM_MECHANISM   = 0xe0,
+    SEM_MISC        = 0x00,
+    SEM_DO          = 0x20,
+    SEM_PUSH_N_POP  = 0x40,
+    SEM_STACK       = 0x60,
+    SEM_NUM         = 0x80,
+    SEM_BITS        = 0xa0,
+    SEM_GET         = 0xc0,
+    SEM_SELECTOR    = 0x1f,
+    SEM_MECHANISM   = 0xe0,
 };
 
-extern void             DoPlus(void);
-extern void             DoMinus(void);
-extern void             DoMul(void);
-extern void             DoDiv(void);
-extern void             DoMod(void);
-extern void             DoAnd(void);
-extern void             DoOr(void);
-extern void             DoXor(void);
-extern void             DoShift(void);
-extern void             DoAddr(void);
-extern void             DoFAddr(void);
+extern void             DoPlus( void );
+extern void             DoMinus( void );
+extern void             DoMul( void );
+extern void             DoDiv( void );
+extern void             DoMod( void );
+extern void             DoAnd( void );
+extern void             DoOr( void );
+extern void             DoXor( void );
+extern void             DoShift( void );
+extern void             DoAddr( void );
+extern void             DoFAddr( void );
 extern void             DoPoints( type_kind );
-extern void             DoConvert(void);
-extern void             DoLConvert(void);
-extern void             DoMakeComplex(void);
-extern void             DoStringConcat(void);
-extern void             DoField(void);
-extern void             DoScope(void);
-extern void             DoAssign(void);
-extern void             DoCall(unsigned int, bool );
-extern void             DupStack(void);
-extern void             SwapStack(int );
-extern unsigned         TstEQ(unsigned int );
-extern unsigned         TstLT(unsigned int );
-extern unsigned         TstTrue(unsigned int );
-extern unsigned         TstExist(unsigned int );
+extern void             DoConvert( void );
+extern void             DoLConvert( void );
+extern void             DoMakeComplex( void );
+extern void             DoStringConcat( void );
+extern void             DoField( void );
+extern void             DoScope( void );
+extern void             DoAssign( void );
+extern void             DoCall( unsigned int, bool );
+extern void             DupStack( void );
+extern void             SwapStack( int );
+extern unsigned         TstEQ( unsigned int );
+extern unsigned         TstLT( unsigned int );
+extern unsigned         TstTrue( unsigned int );
+extern unsigned         TstExist( unsigned int );
 extern void             PushName( lookup_item * );
-extern void             PushNum(long );
+extern void             PushNum( long );
 extern void             PushNum64( unsigned_64 );
-extern void             PushRealNum(xreal);
-extern void             PushAddr(address );
+extern void             PushRealNum( xreal );
+extern void             PushAddr( address );
 extern void             PushLocation( location_list *, type_info * );
-extern void             PushString(void);
-extern void             PushType(type_handle *);
-extern void             PushInt(int );
-extern void             PopEntry(void);
-extern void             MakeAddr(void);
-extern void             ExprValue(stack_entry *);
+extern void             PushString( void );
+extern void             PushType( type_handle * );
+extern void             PushInt( int );
+extern void             PopEntry( void );
+extern void             MakeAddr( void );
+extern void             ExprValue( stack_entry * );
 extern bool             NameResolve( stack_entry *, bool );
-extern void             LValue(stack_entry *);
-extern void             RValue(stack_entry *);
-extern void             LRValue(stack_entry *);
+extern void             LValue( stack_entry * );
+extern void             RValue( stack_entry * );
+extern void             LRValue( stack_entry * );
 extern void             ParseRegSet( bool, location_list *, type_info * );
-extern void             Recog(unsigned int );
+extern void             Recog( unsigned int );
 extern bool             ScanQuote( char **, unsigned * );
-extern void             Scan(void);
-extern char             *ScanPos(void);
-extern unsigned         ScanLen(void);
-extern char             *NamePos(void);
-extern unsigned         NameLen(void);
-extern unsigned_64      IntNumVal(void);
-extern xreal            RealNumVal(void);
-extern void             MoveSP(int );
-extern stack_entry      *StkEntry(int );
-extern char             *ReScan(char *);
-extern mod_handle       LookupModName(mod_handle, char *,int );
-extern unsigned         SetCurrRadix(unsigned int );
-extern void             AddChar(void);
-extern void             AddCEscapeChar(void);
-extern void             AddActualChar(char );
-extern void             ConvertTo(stack_entry *,type_kind,type_modifier,unsigned );
-extern void             FreePgmStack(bool );
+extern void             Scan( void );
+extern char             *ScanPos( void );
+extern unsigned         ScanLen( void );
+extern char             *NamePos( void );
+extern unsigned         NameLen( void );
+extern unsigned_64      IntNumVal( void );
+extern xreal            RealNumVal( void );
+extern void             MoveSP( int );
+extern stack_entry      *StkEntry( int );
+extern char             *ReScan( char * );
+extern mod_handle       LookupModName( mod_handle, char *, int );
+extern unsigned         SetCurrRadix( unsigned int );
+extern void             AddChar( void );
+extern void             AddCEscapeChar( void );
+extern void             AddActualChar( char );
+extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
+extern void             FreePgmStack( bool );
 extern void             MarkArrayOrder( bool );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
@@ -140,8 +141,8 @@ extern void             LocationAdd( location_list *, long );
 extern bool             IsInternalMod( mod_handle );
 extern sym_list         *Disambiguate( sym_list * );
 extern void             FreeSymHandle( sym_list * );
-extern image_entry      *ImagePrimary(void);
-extern mod_handle       LookupImageName(char *, unsigned );
+extern image_entry      *ImagePrimary( void );
+extern mod_handle       LookupImageName( char *, unsigned );
 extern void             GetMADTypeDefault( mad_type_kind, mad_type_info * );
 
 
@@ -206,6 +207,7 @@ typedef enum {
                                 addresses (286 / 386)
                             */
 } stack_class;
+
 static stack_class TypeInfoToClass( type_info *ti )
 {
     stack_class         c;
@@ -237,6 +239,7 @@ static stack_class TypeInfoToClass( type_info *ti )
     }
     return( c );
 }
+
 static void ClassToTypeInfo( stack_class c, type_info *ti )
 {
     switch( c ) {
@@ -535,7 +538,7 @@ static bool UserType( type_handle *th )
     return( TRUE );
 }
 
-static void PushBaseSize()
+static void PushBaseSize( void )
 {
     DIPHDL( type, th );
     type_info   ti;
@@ -545,7 +548,7 @@ static void PushBaseSize()
     PushNum( ti.size );
 }
 
-static void ScaleInt()
+static void ScaleInt( void )
 {
     MoveSP( 1 );
     PushBaseSize();
@@ -553,7 +556,7 @@ static void ScaleInt()
     DoMul();
 }
 
-static void DoPlusScaled()
+static void DoPlusScaled( void )
 {
     stack_entry         *left;
 
@@ -575,7 +578,7 @@ static void DoPlusScaled()
     DoPlus();
 }
 
-static void DoMinusScaled()
+static void DoMinusScaled( void )
 {
     stack_entry *left;
 
@@ -1002,7 +1005,7 @@ typedef struct cue_find {
 static walk_result FindCue( cue_handle *ch, void *d )
 {
     cue_find    *cd = d;
-    char        file[256];
+    char        file[FILENAME_MAX];
     unsigned    len;
     unsigned    match;
 

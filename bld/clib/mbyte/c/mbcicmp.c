@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: Compare two characters without case-sensitivity
 *
 ****************************************************************************/
 
@@ -37,25 +36,20 @@
 
 
 
-/****
-***** Compare two characters, without case-sensitivity.
-****/
-
 _WCRTLINK int _NEARFAR((_mbcicmp),(_fmbcicmp))( const unsigned char _FFAR *c1, const unsigned char _FFAR *c2 )
 {
-    unsigned char       s1[MB_LEN_MAX+1];
-    unsigned char       s2[MB_LEN_MAX+1];
+    int                 retval;
+    unsigned int        ch1, ch2;
+    unsigned char       ch1hi, ch2hi;
 
-//    if( !__IsDBCS )  return( toupper(*c1) - toupper(*c2) );
+    ch1 = _mbctoupper( _NEARFAR(_mbsnextc,_fmbsnextc)(c1) );
+    ch2 = _mbctoupper( _NEARFAR(_mbsnextc,_fmbsnextc)(c2) );
 
-    /*** Initialize 's1' and 's2' ***/
-    _NEARFAR(_mbccpy,_fmbccpy)( s1, c1 );
-    s1[_NEARFAR(_mbclen,_fmbclen)(c1)] = '\0';
-    _NEARFAR(_mbccpy,_fmbccpy)( s2, c2 );
-    s2[_NEARFAR(_mbclen,_fmbclen)(c2)] = '\0';
+    ch1hi = (unsigned char)(ch1 >> 8);
+    ch2hi = (unsigned char)(ch2 >> 8);
 
-    /*** Compare characters without case-sensitivity ***/
-    _NEARFAR(_mbsupr,_fmbsupr)( s1 );
-    _NEARFAR(_mbsupr,_fmbsupr)( s2 );
-    return( _NEARFAR(_mbccmp,_fmbccmp)(s1,s2) );
+    retval = ch1hi - ch2hi;
+    if( retval == 0 )
+        retval = (unsigned char)ch1 - (unsigned char)ch2;
+    return retval;
 }

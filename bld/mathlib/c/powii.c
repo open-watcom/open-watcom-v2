@@ -38,60 +38,57 @@
 #include "cplx.h"
 #include "mathcode.h"
 
-#if defined(__386__)
-  #pragma aux (if_rtn) _IF_ipow "IF@IPOW" value [EAX];
-#elif defined(M_I86)
-  #pragma aux (if_rtn) _IF_ipow "IF@IPOW";
-#endif
 
 _WMRTLINK long _IF_ipow( long base, long power )
 /**********************************************/
-    {
+{
 
-        long  result;
+    long    result;
 
-        if( base == 0 ) {
-            if( power <= 0 ) {
-                double  dummy;
-                dummy = 0.0;
+    if( base == 0 ) {
+        if( power <= 0 ) {
+            double  dummy;
+
+            dummy = 0.0;
 //              used to be like this:
 //              result = _matherr( DOMAIN, "ipow", NULL, NULL, 1.0 );
 //              now it is like this:
-                result = __math1err( FUNC_IPOW | M_DOMAIN | V_ONE, &dummy );
+            result = __math1err( FUNC_IPOW | M_DOMAIN | V_ONE, &dummy );
 //              should be more like this:
 //              result = __imath2err( FUNC_POW | M_DOMAIN | V_ZERO, &base, &power );
+        } else {
+            result = 0;
+        }
+    } else if( power < 0 ) {
+        if( base == 1 ) {
+            result = 1;
+        } else if( base == -1 ) {
+            if( power & 1 ) {
+                result = -1;
             } else {
-                result = 0;
-            }
-        } else if( power < 0 ) {
-            if( base == 1 ) {
                 result = 1;
-            } else if( base == -1 ) {
-                if( power & 1 ) {
-                    result = -1;
-                } else {
-                    result = 1;
-                }
-            } else {
-                result = 0;
             }
         } else {
-            result = 1;
-            while( power > 0 ) {
-                if( power & 1 ) {
-                    result *= base;
-                    --power;
-                } else {
-                    base *= base;
-                    power /= 2;
-                }
+            result = 0;
+        }
+    } else {
+        result = 1;
+        while( power > 0 ) {
+            if( power & 1 ) {
+                result *= base;
+                --power;
+            } else {
+                base *= base;
+                power /= 2;
             }
         }
-        return( result );
     }
+    return( result );
+}
+
 
 _WMRTLINK intstar4 _IF_powii( intstar4 base, intstar4 power )
-/**********************************************************/
-    {
-        return( _IF_ipow( base, power ) );
-    }
+/***********************************************************/
+{
+    return( _IF_ipow( base, power ) );
+}

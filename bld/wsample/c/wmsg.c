@@ -24,19 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message/resources support for the Execution Sampler.
 *
 ****************************************************************************/
 
 
-/*
-  Modified:     By:             Reason:
-  ---------     ---             -------
-  01-oct-92     S.B.Feyler      Initial Implementation
-  13-0ct-92     S.B.Feyler      fixes to resource file support
-  16-mar-93     J.B.Schueler    support RUN386 WSAMPPLS (when no explicit path)
-*/
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +39,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <process.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#else
+    #include "clibext.h"
+#endif
+
+#if defined (__NETWARE__)
+/*
+// process.h exists for netware !!!
+*/
+_WCRTLINK extern char *_cmdname( char *__name );
+#endif
 
 #include "wmsg.h"
 #include "wreslang.h"
@@ -85,13 +88,13 @@ static long res_seek( int handle, long position, int where )
     }
 }
 
-#ifndef NETWARE
+#ifndef __NETWARE__
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 #else
-WResSetRtns( open, close, ( int (*)( WResFileID, void *, int)) read, ( int (*)( WResFileID, const void *, int)) write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, ( int (*)( WResFileID, void *, size_t)) read, ( int (*)( WResFileID, const void *, size_t)) write, res_seek, tell, malloc, free );
 #endif
 
-int MsgInit()
+int MsgInit( void )
 {
     int         initerror;
     int         i;
@@ -139,10 +142,10 @@ int MsgInit()
                 MsgArray[i-ERR_FIRST_MESSAGE] = alloc( strlen( buffer ) + 1 );
 
                 if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL ) break;
-#if defined(__386__) || defined(__ALPHA__)
-                strcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
-#else
+#if defined( __I86__ )
                 _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+#else
+                strcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
 #endif
             }
             CloseResFile( &hInstance );
@@ -180,7 +183,7 @@ int MsgInit( HANDLE inst )
 }
 #endif
 
-void MsgFini()
+void MsgFini( void )
 {
     int          i;
 

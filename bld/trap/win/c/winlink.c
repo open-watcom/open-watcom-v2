@@ -59,13 +59,13 @@ int c;
 }
 #endif
 
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 {
 unsigned long rc;
 
 #ifdef __WINDOWS__
     while( 1 ) {
-        rc = ConvGet( _id,rec, len, NO_BLOCK );
+        rc = ConvGet( _id, rec, len, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) SetExecutionFocus( _id );
         else break;
     }
@@ -73,7 +73,7 @@ unsigned long rc;
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'G' );
 #endif
-    rc = ConvGet( _id,rec, len, BLOCK );
+    rc = ConvGet( _id, rec, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'g' );
 #endif
@@ -81,12 +81,12 @@ unsigned long rc;
     return( rc >> 16 );
 }
 
-unsigned RemotePut( void *rec, unsigned len )
+unsigned RemotePut( char *rec, unsigned len )
 {
 #ifdef __WINDOWS__
 int rc;
     while( 1 ) {
-        rc = ConvPut( _id,rec, len, NO_BLOCK );
+        rc = ConvPut( _id, rec, len, NO_BLOCK );
         if( rc == BLOCK ) SetExecutionFocus( _id );
         else break;
     }
@@ -94,7 +94,7 @@ int rc;
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 'T' );
 #endif
-    ConvPut( _id,rec, len, BLOCK );
+    ConvPut( _id, rec, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 't' );
 #endif

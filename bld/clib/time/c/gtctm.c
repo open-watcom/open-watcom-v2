@@ -39,26 +39,24 @@
 #endif
 #include "timedata.h"
 
-
 #ifdef __NETWARE__
 
 #define BUFF_SIZE       8
 
 extern void             GetFileServerDateAndTime( void * );
 
-
 int __getctime( struct tm *ti )
 {
-    char        buff[ BUFF_SIZE ];
+    char        buff[BUFF_SIZE];
 
     GetFileServerDateAndTime( buff );
-    ti->tm_year = buff[ 0 ];
-    ti->tm_mon = buff[ 1 ];
-    ti->tm_mday = buff[ 2 ];
-    ti->tm_hour = buff[ 3 ];
-    ti->tm_min  = buff[ 4 ];
-    ti->tm_sec  = buff[ 5 ];
-    ti->tm_wday = buff[ 6 ];
+    ti->tm_year  = buff[0];
+    ti->tm_mon   = buff[1];
+    ti->tm_mday  = buff[2];
+    ti->tm_hour  = buff[3];
+    ti->tm_min   = buff[4];
+    ti->tm_sec   = buff[5];
+    ti->tm_wday  = buff[6];
     ti->tm_isdst = -1;
     return( 0 );
 }
@@ -66,30 +64,30 @@ int __getctime( struct tm *ti )
 #else
 
 int __getctime( struct tm *ti )
-    {
-        int  milliseconds;
-        tiny_date_t d,tmp;
-        tiny_time_t t;
+{
+    int         milliseconds;
+    tiny_date_t d, tmp;
+    tiny_time_t t;
 
-        d = TinyGetDate();
-        ti->tm_year = d.year;
-        ti->tm_mon  = d.month - 1;
-        ti->tm_mday = d.day_of_month;
-        t = TinyGetTime();
-        ti->tm_hour = t.hour;
-        ti->tm_min  = t.minutes;
-        ti->tm_sec  = t.seconds;
-        milliseconds = t.hundredths * 10;    /* 19-dec-90 */
+    d = TinyGetDate();
+    ti->tm_year  = d.year;
+    ti->tm_mon   = d.month - 1;
+    ti->tm_mday  = d.day_of_month;
+    t = TinyGetTime();
+    ti->tm_hour  = t.hour;
+    ti->tm_min   = t.minutes;
+    ti->tm_sec   = t.seconds;
+    milliseconds = t.hundredths * 10;    /* 19-dec-90 */
 
-        tmp = TinyGetDate();
-        /* check for midnight rollover */
-        if( tmp.day_of_month != d.day_of_month && ti->tm_hour != 23 ) {
-            ti->tm_year = tmp.year;
-            ti->tm_mon  = tmp.month - 1;
-            ti->tm_mday = tmp.day_of_month;
-        }
-        ti->tm_isdst = -1;
-        return( milliseconds );
+    tmp = TinyGetDate();
+    /* check for midnight rollover */
+    if( tmp.day_of_month != d.day_of_month && ti->tm_hour != 23 ) {
+        ti->tm_year = tmp.year;
+        ti->tm_mon  = tmp.month - 1;
+        ti->tm_mday = tmp.day_of_month;
     }
+    ti->tm_isdst = -1;
+    return( milliseconds );
+}
 
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of rewind().
 *
 ****************************************************************************/
 
@@ -36,8 +35,7 @@
 
 _WCRTLINK void rewind( FILE *fp )
 {
-        __stream_check( fp, 0 );
-        clearerr( fp );
-        fseek( fp, 0L, SEEK_SET );
+    __stream_check( fp, 0 );
+    clearerr( fp );
+    fseek( fp, 0, SEEK_SET );
 }
-

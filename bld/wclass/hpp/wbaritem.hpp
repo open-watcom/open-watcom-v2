@@ -45,7 +45,8 @@ typedef void (WObject::*cbtbi)( WToolBarItem *m );
 WCLASS WToolBarItem : public WObject {
     public:
         WEXPORT WToolBarItem( const char *text, WResource tool, WObject *client,
-                              cbtbi pick, const char *htext=NULL );
+                              cbtbi pick, const char *htext = NULL,
+                              const char *tip = NULL );
         WEXPORT ~WToolBarItem();
 
         void WEXPORT setParent( WToolBar *parent ) { _parent = parent; }

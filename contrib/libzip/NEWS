@@ -1,0 +1,11 @@
+0.6.1 [2005/07/14]
+
+* various bug fixes
+
+0.6 [2005/06/09]
+
+* first standalone release
+* changed license to three-clause BSD
+* overhauled API
+* added man pages
+* install zipcmp and zipmerge

@@ -30,19 +30,17 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
+#include "rtns.h"
 #include "source.h"
 
 /*
  * SrcNextWord - get next word in a variable, putting result into another
  *               variable
  */
-int SrcNextWord( char *data, vlist *vl )
+vi_rc SrcNextWord( char *data, vlist *vl )
 {
-    char        v1[MAX_SRC_LINE],v2[MAX_SRC_LINE],str[MAX_STR];
+    char        v1[MAX_SRC_LINE], v2[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
 
     /*
@@ -62,8 +60,14 @@ int SrcNextWord( char *data, vlist *vl )
         return( ERR_SRC_INVALID_NEXTWORD );
     }
     v = VarFind( v1, vl );
-    NextWord1( v->value, str );
-    VarAdd( v2, str, vl );
+    RemoveLeadingSpaces( v->value );
+    if( v->value[0] == '"' ) {
+        NextWord( v->value, str, "\"" );
+        EliminateFirstN( v->value, 1 );
+    } else {
+        NextWord1( v->value, str );
+    }
+    VarAddStr( v2, str, vl );
     return( ERR_NO_ERR );
 
 } /* SrcNextWord */

@@ -94,7 +94,7 @@ BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data )
         MyModuleFindHandle( &ptr->me, ptr->startdll.hModule );
         break;
     case NFY_DELMODULE:
-        MyModuleFindHandle( &ptr->me, data );
+        MyModuleFindHandle( &ptr->me, (HMODULE)data );
         break;
     case NFY_RIP:
         memcpy( &ptr->rip, (LPVOID) data, sizeof( NFYRIP ) );
@@ -141,38 +141,33 @@ void HandleNotify( WORD wparam, DWORD lparam )
         break;
 
     case NFY_STARTTASK:
-        LBPrintf( ListBox, STR_TASK_START, ptr->task, ptr->data );
-        LBPrintf( ListBox, STR_TASK_START_2,
-                  ptr->me.szModule, ptr->me.szExePath );
+        LBPrintf( ListBox, STR_TASK_START, (WORD)ptr->task, (DWORD)ptr->data );
+        LBPrintf( ListBox, STR_TASK_START_2, ptr->me.szModule, ptr->me.szExePath );
         if( DumpDialogHwnd != NULL ) {
             PostMessage( DumpDialogHwnd, WM_COMMAND, TASKCTL_REDRAW, 0L );
         }
         break;
 
     case NFY_EXITTASK:
-        LBPrintf( ListBox, STR_TASK_EXIT, ptr->task,
-                        (WORD) ptr->data );
+        LBPrintf( ListBox, STR_TASK_EXIT, (WORD)ptr->task, (WORD)ptr->data );
         if( DumpDialogHwnd != NULL ) {
             PostMessage( DumpDialogHwnd, WM_COMMAND, TASKCTL_REDRAW, 0L );
         }
         break;
 
     case NFY_STARTDLL:
-        LBPrintf( ListBox, STR_DLL_LOAD,
-                  (WORD) ptr->startdll.hModule,
-                  (WORD) ptr->startdll.wCS, (WORD) ptr->startdll.wIP );
-        LBPrintf( ListBox, STR_DLL_LOAD_2,
-                  ptr->me.szModule, ptr->me.szExePath );
+        LBPrintf( ListBox, STR_DLL_LOAD, (WORD)ptr->startdll.hModule,
+                  ptr->startdll.wCS, ptr->startdll.wIP );
+        LBPrintf( ListBox, STR_DLL_LOAD_2, ptr->me.szModule, ptr->me.szExePath );
         break;
 
     case NFY_DELMODULE:
-        LBPrintf( ListBox, STR_MODULE_DEL, (WORD) ptr->data,
+        LBPrintf( ListBox, STR_MODULE_DEL, (WORD)ptr->data,
                   ptr->me.szModule, ptr->me.szExePath );
         break;
 
     case NFY_RIP:
-        LBPrintf( ListBox, STR_RIP,
-                  ptr->task, ptr->me.szModule,
+        LBPrintf( ListBox, STR_RIP, (WORD)ptr->task, ptr->me.szModule,
                   ptr->rip.wExitCode, ptr->rip.wCS, ptr->rip.wIP );
         Alert();
         break;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows default windowing main driver and window procedure.
 *
 ****************************************************************************/
 
@@ -37,9 +36,9 @@
 #include <stdio.h>
 #include <signal.h>
 
-static char  DefaultAboutMsg[] = "   WATCOM Default Window System\n\n                Version 10.0\n\n \251 1991-1994 WATCOM Systems, Inc.";
+static char  DefaultAboutMsg[] = "   Open Watcom Default Window System\n\n                Version 1.0\n\n Portions Copyright (c) 1991-2002 Sybase, Inc.";
 static char  _WCI86FAR *AboutMsg = DefaultAboutMsg;
-static char  DefaultAboutTitle[] = "About WATCOM Default Windowing System";
+static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
 static char  _WCI86FAR *AboutTitle = DefaultAboutTitle;
 static long  shiftState = 0;
 
@@ -51,23 +50,25 @@ static long  shiftState = 0;
 int     _SetAboutDlg( char *title, char *text ) {
 //===============================================
 
-        if( title ) {
-            if( DefaultAboutTitle != AboutTitle ) {
-                _MemFree( AboutTitle );
-            }
-            AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
-            if( !AboutTitle ) return( 0 );
-            FARstrcpy( AboutTitle, title );
+    if( title ) {
+        if( DefaultAboutTitle != AboutTitle ) {
+            _MemFree( AboutTitle );
         }
-        if( text ) {
-            if( DefaultAboutMsg != AboutMsg ) {
-                _MemFree( AboutMsg );
-            }
-            AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
-            if( !AboutMsg ) return( 0 );
-            FARstrcpy( AboutMsg, text );
+        AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
+        if( !AboutTitle )
+            return( 0 );
+        FARstrcpy( AboutTitle, title );
+    }
+    if( text ) {
+        if( DefaultAboutMsg != AboutMsg ) {
+            _MemFree( AboutMsg );
         }
-        return( 1 );
+        AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
+        if( !AboutMsg )
+            return( 0 );
+        FARstrcpy( AboutMsg, text );
+    }
+    return( 1 );
 }
 
 /*
@@ -113,7 +114,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
             if( _AutoClearLines != old ) {
                 sprintf( tmp,"Buffers will be cleared after %ld lines",
                     _AutoClearLines );
-                MessageBox( NULL,tmp,"Amount Set", MB_OK );
+                MessageBox( (HWND)NULL, tmp, "Amount Set", MB_OK );
             }
             break;
         case MSG_COPY:
@@ -150,7 +151,8 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
         break;
     case WM_KEYDOWN:
         w = _GetActiveWindowData();
-        if( w == NULL )  break;
+        if( w == NULL )
+            break;
         if( wparam == VK_CONTROL ) {
             shiftState |= SS_CTRL;
         } else if( wparam == VK_CANCEL ) {
@@ -214,7 +216,7 @@ static long MainWindowProc( HWND hwnd, UINT message, UINT wparam,
     default:
         return( DefWindowProc( hwnd, message, wparam, lparam ) );
     }
-    return( NULL );
+    return( 0 );
 } /* MainWindowProc */
 
 /*
@@ -254,7 +256,7 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
         return( DefWindowProc( hwnd, message, wparam, lparam ) );
 
     case WM_COMPACTING:
-        rc = MessageBox( NULL,
+        rc = MessageBox( (HWND)NULL,
             "System has indicated low memory, Clear Lines?",
             "System Request",
             MB_OKCANCEL | MB_TASKMODAL | MB_ICONEXCLAMATION );
@@ -282,20 +284,20 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
         height = HIWORD( lparam );
         width = LOWORD( lparam );
         dc = GetDC( hwnd );
-        #ifndef __NT__
-            UnrealizeObject( w->brush );
-        #endif
+#ifndef __NT__
+        UnrealizeObject( w->brush );
+#endif
         oldbrush = SelectObject( dc, w->brush );
-        #ifdef __NT__
-            SetBrushOrgEx( dc, 0, 0, NULL  );
-        #endif
+#ifdef __NT__
+        SetBrushOrgEx( dc, 0, 0, NULL  );
+#endif
         GetClientRect( hwnd, &rect );
         FillRect( dc, &rect, w->brush );
         SelectObject( dc, oldbrush );
         ReleaseDC( hwnd, dc );
         _ResizeWin( w, rect.left, rect.top, rect.left+width, rect.top+height );
         _DisplayAllLines( w, FALSE );
-        return( NULL );
+        return( 0 );
 
     case WM_VSCROLL:
         ShowCursor( FALSE );
@@ -322,6 +324,6 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, UINT wparam, LONG lparam )
     default:
         return( DefWindowProc( hwnd, message, wparam, lparam ) );
     }
-    return (NULL);
+    return( 0 );
 
 } /* _MainDriver */

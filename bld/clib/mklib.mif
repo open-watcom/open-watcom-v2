@@ -1,35 +1,36 @@
-.before
-    @set include=
-!ifdef on_build_machine
-!ifeq profile 1
-!ifeq $(%bld_ver) 110
-    # This should be using $(%dwatcom) but those tools don't have the latest -etp support
-    # the rel2 tools do have the latest -etp support, so I am using them.
-    set watcom=$(%relroot)\$(%defrel)
-    set path=$(%watcom)\binnt;$(%watcom)\binw;$(%path)
-!endif
-!endif
-!endif
-
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 
-$(libname).lib : $(objs) .precious
+$(libname).lib : $(objs)
     $(librarian) $(lib_flags) $^@ $(objs)
-    wtouch compile.tim
 
-.cpp.obj :
-    *$(cpp) $[@ $(include_c_path) $(build_target) $($[&_opts) $(cpp_flags) $($[&_postopts)
+.c.obj : .autodepend
+!ifeq verbose 1
+    $(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
+!else
+    @echo clib_cc $@
+    @$(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
+!endif
 
-.c.obj :
-    *$(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts)
+.asm.obj : .autodepend
+!ifeq verbose 1
+    $(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
+!else
+    @echo clib_as $@
+    @$(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
+!endif
 
-.asm.obj :
-    *$(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts)
+# KB: I changed this below so that if you specify 'source_root' on the wmake command
+# line, it will pull source code from that directory as a complete path rather than
+# a relative path. I use this so that when I build from within SlickEdit, it will
+# properly process errors etc ;-)
 
-.c   : ..\..\..\c
-.cpp : ..\..\..\cpp
-.asm : ..\..\..\a
+!ifndef source_root
+.c   : ../../../c
+.asm : ../../../a
+!else
+.c   : $(source_root)/c
+.asm : $(source_root)/a
+!endif
 
-!include $(clib_dir)\clean.mif
-!include $(clib_dir)\project.mif
+!include $(clib_dir)/clean.mif

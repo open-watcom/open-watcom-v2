@@ -1,0 +1,80 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference [Int21h Overview]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">3.0 - Extended DOS functions
+- Overview<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender
+extends most of DOS functions that are used in WATCOM C/C++ libraries. Since
+real mode DOS does not use 32-bit pointers and has no knowledge of protected
+mode selectors and descriptors, the DOS Extender has to convert protected
+mode values to real mode values and vice-versa. Furthermore the real mode
+DOS is capable of accessing data under 1MB limit only, so the DOS Extender
+has to transfer required data from protected mode to a real mode buffer
+(DOS Transfer Buffer) where it can be reached by the 16-bit DOS.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The following is a list
+of all DOS functions that have been extended and made available to your
+program when calling them from protected mode. Most of them require a pointer
+that is to be converted to real mode values and passed down to real mode
+DOS. The extended DOS functions are available through software interrupt
+21h (INT 21h). The function number is placed in register AH. If the function
+was successful, carry flag on return will be cleared, otherwise the carry
+flag will be set, and an error code will be placed in the EAX register.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced will strictly
+follow the following rules when returning data in registers in protected
+mode:</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- if the real mode DOS
+function returns value in a 16-bit register, the high word of that 32-bit
+register will be set to zero.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- if the real mode DOS
+function returns value in an 8-bit register, the rest of that 32-bit register
+will be unmodified.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">- if the real mode DOS
+function returns a pointer, the high word of the 32-bit register that contains
+the selector value will be unmodified, and the offset will be returned as
+a 32-bit value in a 32-bit register.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">In addition to the standard
+DOS functions, DOS/32 Advanced will provide some special functions that
+among other things will return the information about DOS Extender's configuration
+and introduce a 32-bit versions of DPMI functions that will make it easier
+to allocate extended memory and selectors. To call these functions you need
+to place the 0FFh value in register AH and a function number in register
+AL. Remember that these functions are supported by DOS/32 Advanced DOS Extender
+only, and are not available neither in other DOS Extenders, nor in real
+mode DOS.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note that most
+of real mode DOS functions that do not require pointer translation or real
+mode segment values placed in segment registers will work in protected mode
+as well. </font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -1,24 +1,19 @@
 proj_name = wclass
 name = wclass
 
-.mif : $(mif_path)
-.cpp : ..\cpp;..\..\cpp
+wclass_autodepends = .autodepend
 
 !include cproj.mif
 !include deftarg.mif
+!include defrule.mif
 
-inc_dirs = ..\hpp;..\..\hpp;$(gui_dir)\h
+.cpp : ../cpp;../../cpp
 
-.before:
-        set INCLUDE=$(inc_path)
+inc_dirs = -I"../hpp" -I"../../hpp" -I"$(gui_dir)/h"
 
-extra_c_flags_386       = -fpc
-extra_c_flags_i86_dos   = -fpc
-extra_c_flags_i86_win   = -fpc-zm-zc
-extra_c_flags_i86       = $+$(extra_c_flags_$(host_CPU))$-
+extra_c_flags = -s
 
-#too many warnings...
-cflags_all      = -zq -w4
+extra_c_flags_i86 = -zc -zm
 
 WCLASS_OBJS = &
         wabout.obj &
@@ -92,16 +87,13 @@ win_objs = &
         wflashp.obj &
         wtimer.obj &
 
-extra_objlib_nt_386     = $(win_objs) $(ndos_objs) $(gui_dir)\win\guintf.lib
-extra_objlib_nt_axp     = $(win_objs) $(ndos_objs) $(gui_dir)\win\guintaxp.lib
-extra_objlib_win_i86    = $(win_objs) $(ndos_objs) $(gui_dir)\win\guiwinl.lib
-extra_objlib_dos_386    = $(ndos_objs) $(gui_dir)\win\guiwinl.lib
-extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj $(gui_dir)\win\guipmf.lib
+extra_objlib_nt_386     = $(win_objs) $(ndos_objs)
+extra_objlib_nt_axp     = $(win_objs) $(ndos_objs)
+extra_objlib_win_i86    = $(win_objs) $(ndos_objs)
+extra_objlib_dos_386    = $(ndos_objs)
+extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
 
 extra_objlib = $(extra_objlib_$(host_OS)_$(host_CPU))
 
 $(name).lib : $(WCLASS_OBJS) $(extra_objlib)
-        $(librarian) -b -c -n -p=512 $^@ $(WCLASS_OBJS) $(extra_objlib)
-
-.cpp.obj :
-        $(cpp) $(cflags) $[@ -fo=$^@
+        $(librarian) $(libflags) $<

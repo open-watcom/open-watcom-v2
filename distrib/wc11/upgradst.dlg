@@ -1,0 +1,8 @@
+name=UpgradeStart
+dynamic_text=ust_1,"This is an upgrade version of %AppName%"
+static_text=
+dynamic_text=ust_2,"@ will now search your computer for a previous version of %AppName%"
+static_text="or competitive product from the following list:"
+include=upgrlist.dlg
+static_text=
+include=ok.dlg

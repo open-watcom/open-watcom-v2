@@ -1,0 +1,25 @@
+/*
+ *  bse.h       OS/2 Base include file for 16-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#define INCL_BASEINCLUDED
+
+#ifdef INCL_BASE
+  #define INCL_DOS
+  #define INCL_SUB
+  #define INCL_DOSERRORS
+  #define INCL_DOSDEVICES
+  #define INCL_DOSDEVIOCTL
+#endif
+
+#include <bsedos.h>
+#include <bsesub.h>
+#include <bseerr.h>
+
+#if (defined(INCL_DOSDEVICES) || defined(INCL_DOSDEVIOCTL))
+  #include <bsedev.h>
+#endif

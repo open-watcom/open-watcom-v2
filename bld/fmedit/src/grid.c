@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to support creation of object on a specified grid.
 *
 ****************************************************************************/
 
-
-/* GRID.C - routines to support creation of object on a specified grid */
 
 #include <windows.h>
 #include "global.h"
@@ -38,14 +35,12 @@
 #include "state.def"
 #include "fmdlgs.h"
 
-extern BOOL SnapRectToGrid( RECT * rec )
-/**************************************/
-
-/*  Make sure the passed rectangle aligns with the user-specified
- *  resize grid.
- */
-
-  {
+extern BOOL SnapRectToGrid( RECT *rec )
+/*************************************/
+{
+    /*  Make sure the passed rectangle aligns with the user-specified
+     *  resize grid.
+     */
     int     inc;
     int     rnd;
     int     size;
@@ -54,7 +49,7 @@ extern BOOL SnapRectToGrid( RECT * rec )
 
     changed = FALSE;
     inc = GetResizeVInc();
-    rnd = inc-1;
+    rnd = inc - 1;
     size = rec->bottom - rec->top - 1;    /* exclude borders */
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
@@ -62,7 +57,7 @@ extern BOOL SnapRectToGrid( RECT * rec )
         rec->bottom = rec->top + new;
     }
     inc = GetResizeHInc();
-    rnd = inc-1;
+    rnd = inc - 1;
     size = rec->right - rec->left - 1;
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
@@ -70,44 +65,37 @@ extern BOOL SnapRectToGrid( RECT * rec )
         rec->right = rec->left + new;
     }
     return( changed );
-  }
+}
 
 
-extern void SnapPointToGrid( POINT * pt )
-/***************************************/
+static void DoPointSnap( POINT *pt, unsigned vinc, unsigned hinc )
+/****************************************************************/
+{
+    pt->y = ((pt->y + (vinc >> 1)) / vinc) * vinc;
+    pt->x = ((pt->x + (hinc >> 1)) / hinc) * hinc;
+}
 
-/* snap the given point to the current grid */
 
-  {
+extern void SnapPointToGrid( POINT *pt )
+/**************************************/
+{
+    /* snap the given point to the current grid */
     DoPointSnap( pt, GetVerticalInc(), GetHorizontalInc() );
-  }
+}
 
-static void DoPointSnap( POINT * pt, unsigned vinc, unsigned hinc )
-/*****************************************************************/
-
-  {
-    pt->y = ((pt->y + (vinc>>1)) / vinc) * vinc;
-    pt->x = ((pt->x + (hinc>>1)) / hinc ) * hinc;
-  }
-
-
-extern void SnapPointToResizeGrid( POINT * pt )
-/*********************************************/
-
-/* snap the given point to the current grid */
-
-  {
+extern void SnapPointToResizeGrid( POINT *pt )
+/********************************************/
+{
+    /* snap the given point to the current grid */
     DoPointSnap( pt, GetResizeVInc(), GetResizeHInc() );
-  }
+}
 
 
 BOOL WINIEXP FMGrid( HWND hdlg, unsigned message,
-                                  WPARAM wParam, LPARAM lParam )
-/************************************************************/
-
-/* Processes messages for "Grid" dialog box */
-
-  {
+                     WPARAM wParam, LPARAM lParam )
+/*************************************************/
+{
+    /* Processes messages for "Grid" dialog box */
     RECT        rect;
     HANDLE      appwnd;
     unsigned    inc;
@@ -115,25 +103,24 @@ BOOL WINIEXP FMGrid( HWND hdlg, unsigned message,
 
     lParam = lParam;                 /* reference to avoid warning */
     switch( message ) {
-    case WM_INITDIALOG :
+    case WM_INITDIALOG:
         InheritState( hdlg );
         SetDlgItemInt( hdlg, ID_VPREC, GetVerticalInc(), FALSE );
         SetDlgItemInt( hdlg, ID_HPREC, GetHorizontalInc(), FALSE );
         return( TRUE );
-        break;
-    case WM_COMMAND :
+    case WM_COMMAND:
         InitState( hdlg );
-        switch( LOWORD(wParam) ) {
-        case IDOK :
+        switch( LOWORD( wParam ) ) {
+        case IDOK:
             inc = GetDlgItemInt( hdlg, ID_VPREC, &ret, FALSE );
             if( ret && inc >= 1 && inc <= 100 ) {
                 SetVerticalInc( inc );
             } else {
                 MessageBox( hdlg,
-                    "The vertical precision must be an integer "
-                                "between 1 and 100",
-                    NULL,
-                    MB_ICONEXCLAMATION | MB_OK );
+                            "The vertical precision must be an integer "
+                               "between 1 and 100",
+                            NULL,
+                            MB_ICONEXCLAMATION | MB_OK );
                 SetFocus( GetDlgItem( hdlg, ID_VPREC ) );
                 return( TRUE );
             }
@@ -142,29 +129,27 @@ BOOL WINIEXP FMGrid( HWND hdlg, unsigned message,
                 SetHorizontalInc( inc );
             } else {
                 MessageBox( hdlg,
-                    "The horizontal precision must be an integer "
+                            "The horizontal precision must be an integer "
                                 "between 1 and 100",
-                    NULL,
-                    MB_ICONEXCLAMATION | MB_OK );
+                            NULL,
+                            MB_ICONEXCLAMATION | MB_OK );
                 SetFocus( GetDlgItem( hdlg, ID_HPREC ) );
                 return( TRUE );
             }
             EndDialog( hdlg, TRUE );
             return( TRUE );
-            break;
-        case IDCANCEL :
+        case IDCANCEL:
             EndDialog( hdlg, FALSE );
             return( TRUE );
-            break;
         }
         break;
-    case WM_MOVE :
+    case WM_MOVE:
         InitState( hdlg );
         appwnd = GetAppWnd();
-        GetWindowRect( hdlg, ( LPRECT ) &rect );
-        InvalidateRect( appwnd, ( LPRECT ) &rect, TRUE );
+        GetWindowRect( hdlg, &rect );
+        InvalidateRect( appwnd, &rect, TRUE );
         UpdateWindow( appwnd );
         break;
     }
     return( FALSE );
-  }
+}

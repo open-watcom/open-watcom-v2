@@ -38,4 +38,3 @@
 #define IDB_INFO_NAMETEXT  116
 #define IDB_INFO_SET       117
 #define IDB_INFO_RESET     118
-

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -59,7 +59,7 @@
 #include "wsvobj.h"
 #include "wsetedit.h"
 #include "wmain.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 #include "wstr2rc.h"
 #include "weditsym.h"
 #include "wstrdup.h"
@@ -68,6 +68,10 @@
 
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "watini.h"
+#include "inipath.h"
+#include "aboutdlg.h"
+#include "ldstr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -81,37 +85,35 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WMainWndProc ( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WAbout       ( HWND, WORD, WPARAM, LPARAM );
+extern LRESULT WINEXPORT WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool         WInit               ( HINSTANCE );
-static void         WFini               ( void );
-static WStringInfo  *WStringGetEInfo    ( WStringHandle, Bool );
-static Bool         WRegisterMainClass  ( HINSTANCE );
-static Bool         WCreateEditWindow   ( HINSTANCE, WStringEditInfo * );
-static void         WHandleMemFlags     ( WStringEditInfo *einfo );
-static void         WUpdateScreenPosOpt ( HWND );
-static void         WDisplayAboutBox    ( HINSTANCE, HWND, UINT );
-static Bool         WCleanup            ( WStringEditInfo * );
-static Bool         WQuerySave          ( WStringEditInfo *, Bool );
-static Bool         WQuerySaveRes       ( WStringEditInfo *, Bool );
-static Bool         WQuerySaveSym       ( WStringEditInfo *, Bool );
-static Bool         WHandleWM_CLOSE     ( WStringEditInfo *, Bool );
-static void         WHandleClear        ( WStringEditInfo * );
+static Bool         WInit( HINSTANCE );
+static void         WFini( void );
+static WStringInfo  *WStringGetEInfo( WStringHandle, Bool );
+static Bool         WRegisterMainClass( HINSTANCE );
+static Bool         WCreateEditWindow( HINSTANCE, WStringEditInfo * );
+static void         WHandleMemFlags( WStringEditInfo *einfo );
+static void         WUpdateScreenPosOpt( HWND );
+static Bool         WCleanup( WStringEditInfo * );
+static Bool         WQuerySave( WStringEditInfo *, Bool );
+static Bool         WQuerySaveRes( WStringEditInfo *, Bool );
+static Bool         WQuerySaveSym( WStringEditInfo *, Bool );
+static Bool         WHandleWM_CLOSE( WStringEditInfo *, Bool );
+static void         WHandleClear( WStringEditInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static WStringEditInfo *WCurrEditInfo    = NULL;
-static char            WMainClass[]      = "WStrMainClass";
-static char            WMainMenuName[]   = "WMainMenu";
+static WStringEditInfo *WCurrEditInfo = NULL;
+static char            WMainClass[] = "WStrMainClass";
+static char            WMainMenuName[] = "WMainMenu";
 static char            WMainSOMenuName[] = "WSOMenu";
-static char            WProfileName[]    = "watcom.ini";
-static char            WSectionName[]    = "wstring";
-static char            WItemClipbdFmt[]  = "WSTRING_ITEM_CLIPFMT";
+static char            WProfileName[_MAX_PATH] = WATCOM_INI;
+static char            WSectionName[] = "wstring";
+static char            WItemClipbdFmt[] = "WSTRING_ITEM_CLIPFMT";
 
 static int      ref_count = 0;
 static HACCEL   AccelTable = NULL;
@@ -123,67 +125,67 @@ extern int appWidth;
 extern int appHeight;
 
 /* set the WRES library to use compatible functions */
-WResSetRtns(open,close,read,write,lseek,tell,WMemAlloc,WMemFree);
+WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
 
 #ifdef __NT__
-int WINEXPORT LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+
+int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
 {
     int ret;
 
-    _wtouch(lpReserved);
+    _wtouch( lpReserved );
 
     ret = TRUE;
 
-    switch ( dwReason ) {
-        case DLL_PROCESS_ATTACH:
-            ref_count = 0;
-            WSetEditInstance( inst );
-            break;
-        case DLL_PROCESS_DETACH:
-            break;
-        case DLL_THREAD_ATTACH:
-        case DLL_THREAD_DETACH:
+    switch( dwReason ) {
+    case DLL_PROCESS_ATTACH:
+        ref_count = 0;
+        WSetEditInstance( inst );
+        break;
+    case DLL_PROCESS_DETACH:
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
         /* do nothing here */
-            break;
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
 
 #else
 
-int WINEXPORT WEP ( int parm )
+int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
 {
-    _wtouch(parm);
+    _wtouch( dataseg );
+    _wtouch( heapsize );
+    _wtouch( cmdline );
+
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+    ref_count = 0;
+    WSetEditInstance( inst );
 
     return( TRUE );
 }
 
-int WINEXPORT LibMain ( HANDLE inst, WORD dataseg,
-                        WORD heapsize, LPSTR cmdline )
+int WINAPI WEP( int parm )
 {
-    _wtouch(dataseg);
-    _wtouch(heapsize);
-    _wtouch(cmdline);
+    _wtouch( parm );
 
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    ref_count           = 0;
-    WSetEditInstance( inst );
-
-    return ( TRUE );
+    return( TRUE );
 }
 #endif
 
-void WINEXPORT WStringInit ( void )
+void WINEXPORT WStringInit( void )
 {
     HINSTANCE   inst;
 
     inst = WGetEditInstance();
     if( AccelTable == (HACCEL)NULL ) {
-        AccelTable = LoadAccelerators( inst, "WStringAccelTable");
+        AccelTable = LoadAccelerators( inst, "WStringAccelTable" );
     }
-    if( !ref_count ) {
+    if( ref_count == 0 ) {
         WRInit();
         WInitDisplayError( inst );
         WInit( inst );
@@ -194,7 +196,7 @@ void WINEXPORT WStringInit ( void )
 void WINEXPORT WStringFini( void )
 {
     ref_count--;
-    if( !ref_count ) {
+    if( ref_count == 0 ) {
         WFini();
         WRFini();
     }
@@ -207,60 +209,60 @@ WStringHandle WINEXPORT WRStringStartEdit( WStringInfo *info )
 
     einfo = NULL;
 
-    ok = ( info && info->parent && info->inst );
+    ok = (info != NULL && info->parent != NULL && info->inst != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         if( appWidth == -1 ) {
             WInitEditDlg( WGetEditInstance(), info->parent );
         }
-        ok = ( ( einfo = WAllocStringEInfo( ) ) != NULL );
-    }
-
-    if ( ok ) {
-        einfo->info = info;
-        einfo->tbl  = WMakeStringTableFromInfo( info );
-        ok = ( einfo->tbl != NULL );
+        ok = ((einfo = WAllocStringEInfo()) != NULL);
     }
 
     if( ok ) {
-        if( einfo->info->file_name ) {
+        einfo->info = info;
+        einfo->tbl = WMakeStringTableFromInfo( info );
+        ok = (einfo->tbl != NULL);
+    }
+
+    if( ok ) {
+        if( einfo->info->file_name != NULL ) {
             einfo->file_name = WStrDup( einfo->info->file_name );
-            ok = ( einfo->file_name != NULL );
+            ok = (einfo->file_name != NULL);
             if( ok ) {
                 einfo->file_type = WRIdentifyFile( einfo->file_name );
-                ok = ( einfo->file_type != WR_DONT_KNOW );
+                ok = (einfo->file_type != WR_DONT_KNOW);
             }
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         ok = WResolveStringTable( einfo );
     }
 
-    if ( ok ) {
+    if( ok ) {
         ok = WCreateEditWindow( WGetEditInstance(), einfo );
     }
 
-    if ( ok ) {
-        einfo->hndl = WRegisterEditSession ( einfo );
-        ok = ( einfo->hndl != 0 );
+    if( ok ) {
+        einfo->hndl = WRegisterEditSession( einfo );
+        ok = (einfo->hndl != 0);
     }
 
-    if ( !ok ) {
-        if ( einfo ) {
-            WFreeStringEInfo ( einfo );
+    if( !ok ) {
+        if( einfo != NULL ) {
+            WFreeStringEInfo( einfo );
         }
-        return ( 0 );
+        return( 0 );
     }
 
-    return ( einfo->hndl );
+    return( einfo->hndl );
 }
 
 int WINEXPORT WStringIsModified( WStringHandle hndl )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *) WGetEditSessionInfo( hndl );
+    einfo = (WStringEditInfo *)WGetEditSessionInfo( hndl );
 
     return( einfo->info->modified );
 }
@@ -269,9 +271,9 @@ void WINEXPORT WStringShowWindow( WStringHandle hndl, int show )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *) WGetEditSessionInfo ( hndl );
+    einfo = (WStringEditInfo *)WGetEditSessionInfo( hndl );
 
-    if( einfo && einfo->win != (HWND)NULL ) {
+    if( einfo != NULL && einfo->win != (HWND)NULL ) {
         if( show ) {
             ShowWindow( einfo->win, SW_SHOWNA );
         } else {
@@ -284,9 +286,9 @@ void WINEXPORT WStringBringToFront( WStringHandle hndl )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *) WGetEditSessionInfo ( hndl );
+    einfo = (WStringEditInfo *)WGetEditSessionInfo( hndl );
 
-    if( einfo && einfo->win != (HWND)NULL ) {
+    if( einfo != NULL && einfo->win != (HWND)NULL ) {
         ShowWindow( einfo->win, SW_RESTORE );
         BringWindowToTop( einfo->win );
     }
@@ -297,23 +299,23 @@ int WINEXPORT WStringIsDlgMsg( MSG *msg )
     return( WIsStringDialogMessage( msg, AccelTable ) );
 }
 
-WStringInfo * WINEXPORT WStringEndEdit ( WStringHandle hndl )
+WStringInfo * WINEXPORT WStringEndEdit( WStringHandle hndl )
 {
-    return ( WStringGetEInfo ( hndl, FALSE ) );
+    return( WStringGetEInfo( hndl, FALSE ) );
 }
 
-WStringInfo * WINEXPORT WStringGetEditInfo ( WStringHandle hndl )
+WStringInfo * WINEXPORT WStringGetEditInfo( WStringHandle hndl )
 {
-    return ( WStringGetEInfo ( hndl, TRUE ) );
+    return( WStringGetEInfo( hndl, TRUE ) );
 }
 
 int WINEXPORT WStringCloseSession( WStringHandle hndl, int force_exit )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *) WGetEditSessionInfo ( hndl );
+    einfo = (WStringEditInfo *)WGetEditSessionInfo( hndl );
 
-    if( ( einfo != NULL ) && ( einfo->info != NULL ) ) {
+    if( einfo != NULL && einfo->info != NULL ) {
         if( SendMessage( einfo->win, WM_CLOSE, (WPARAM)force_exit, 0 ) != 0 ) {
             return( FALSE );
         }
@@ -322,7 +324,7 @@ int WINEXPORT WStringCloseSession( WStringHandle hndl, int force_exit )
     return( TRUE );
 }
 
-WStringInfo *WStringGetEInfo ( WStringHandle hndl, Bool keep )
+WStringInfo *WStringGetEInfo( WStringHandle hndl, Bool keep )
 {
     WStringEditInfo     *einfo;
     WStringInfo         *info;
@@ -330,59 +332,61 @@ WStringInfo *WStringGetEInfo ( WStringHandle hndl, Bool keep )
 
     info = NULL;
 
-    einfo = (WStringEditInfo *) WGetEditSessionInfo ( hndl );
+    einfo = (WStringEditInfo *)WGetEditSessionInfo( hndl );
 
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         info = einfo->info;
-        ok = ( info != NULL );
+        ok = (info != NULL);
     }
 
-    if ( ok ) {
-        if ( einfo->info->modified ) {
+    if( ok ) {
+        if( einfo->info->modified ) {
             WFreeStringNodes( info );
             info->tables = WMakeStringNodes( einfo->tbl );
         }
-        if ( !keep ) {
-            WUnRegisterEditSession ( hndl );
-            WFreeStringEInfo ( einfo );
+        if( !keep ) {
+            WUnRegisterEditSession( hndl );
+            WFreeStringEInfo( einfo );
         }
     }
 
-    return ( info );
+    return( info );
 }
 
 Bool WInit( HINSTANCE inst )
 {
     Bool ok;
 
-    ok = ( inst != (HINSTANCE) NULL );
+    ok = (inst != (HINSTANCE)NULL);
 
     if( ok ) {
-        WCtl3DInit ( inst );
+        WCtl3DInit( inst );
         ok = JDialogInit();
     }
 
     if( ok ) {
-        ok = WRegisterMainClass ( inst );
+        ok = WRegisterMainClass( inst );
     }
 
     if( ok ) {
-        ok = WInitStatusLines ( inst );
+        ok = WInitStatusLines( inst );
     }
 
     if( ok ) {
         WClipbdFormat = RegisterClipboardFormat( WR_CLIPBD_STRING );
-        ok = ( WClipbdFormat != 0 );
+        ok = (WClipbdFormat != 0);
     }
 
     if( ok ) {
         WItemClipbdFormat = RegisterClipboardFormat( WItemClipbdFmt );
-        ok = ( WItemClipbdFormat != 0 );
+        ok = (WItemClipbdFormat != 0);
     }
 
     if( ok ) {
+        GetConfigFilePath( WProfileName, sizeof( WProfileName ) );
+        strcat( WProfileName, "\\" WATCOM_INI );
         WInitOpts( WProfileName, WSectionName );
         WInitEditWindows( inst );
         ok = WInitRibbons( inst );
@@ -391,39 +395,39 @@ Bool WInit( HINSTANCE inst )
     return( ok );
 }
 
-void WFini ( void )
+void WFini( void )
 {
     HINSTANCE inst;
 
     inst = WGetEditInstance();
 
-    WFiniStatusLines ();
-    WOptsShutdown ();
-    WShutdownRibbons ();
-    WShutdownToolBars ();
-    WFiniEditWindows ();
-    WCtl3DFini ( inst );
-    UnregisterClass ( WMainClass, inst );
+    WFiniStatusLines();
+    WOptsShutdown();
+    WShutdownRibbons();
+    WShutdownToolBars();
+    WFiniEditWindows();
+    WCtl3DFini( inst );
+    UnregisterClass( WMainClass, inst );
     JDialogFini();
 }
 
-Bool WRegisterMainClass ( HINSTANCE inst )
+Bool WRegisterMainClass( HINSTANCE inst )
 {
     WNDCLASS wc;
 
-    /* fill in the WINDOW CLASS structure for the main window */
-    wc.style         = CS_DBLCLKS | CS_GLOBALCLASS;
-    wc.lpfnWndProc   = WMainWndProc;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = sizeof(WStringEditInfo *);
-    wc.hInstance     = inst;
-    wc.hIcon         = LoadIcon ( inst, "WMainIcon" );
-    wc.hCursor       = LoadCursor ( (HINSTANCE) NULL, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-    wc.lpszMenuName  = WMainMenuName;
+    /* fill in the window class structure for the main window */
+    wc.style = CS_DBLCLKS | CS_GLOBALCLASS;
+    wc.lpfnWndProc = WMainWndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = sizeof( WStringEditInfo * );
+    wc.hInstance = inst;
+    wc.hIcon = LoadIcon( inst, "APPLICON" );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = WMainMenuName;
     wc.lpszClassName = WMainClass;
 
-    return ( RegisterClass ( &wc ) );
+    return( RegisterClass( &wc ) );
 }
 
 char *WCreateEditTitle( WStringEditInfo *einfo )
@@ -436,11 +440,11 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
     title = NULL;
     fname = NULL;
 
-    if( !einfo ) {
+    if( einfo == NULL ) {
         return( NULL );
     }
 
-    if( !einfo->file_name ) {
+    if( einfo->file_name == NULL ) {
         fname = einfo->info->file_name;
     } else {
         fname = einfo->file_name;
@@ -448,29 +452,29 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
 
     text = WAllocRCString( W_STRINGAPPTITLE );
 
-    if( !fname || !text ) {
+    if( fname == NULL || text == NULL ) {
         return( NULL );
     }
 
     offset = WRFindFnOffset( fname );
-    fname  = &fname[offset];
-    len    = strlen( fname ) + strlen( text ) + 6;
-    title  = (char *) WMemAlloc( len );
-    if( title ) {
+    fname = &fname[offset];
+    len = strlen( fname ) + strlen( text ) + 6;
+    title = (char *)WMemAlloc( len );
+    if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
         strcat( title, fname );
         strcat( title, "]" );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WFreeRCString( text );
     }
 
     return( title );
 }
 
-void WSetEditTitle ( WStringEditInfo *einfo )
+void WSetEditTitle( WStringEditInfo *einfo )
 {
     char        *title;
     Bool        is_rc;
@@ -478,13 +482,13 @@ void WSetEditTitle ( WStringEditInfo *einfo )
     title = WCreateEditTitle( einfo );
     is_rc = FALSE;
 
-    if( !title ) {
+    if( title == NULL ) {
         title = WAllocRCString( W_STRINGAPPTITLE );
         is_rc = TRUE;
     }
 
-    if( title ) {
-        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM) title );
+    if( title != NULL ) {
+        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
         if( is_rc ) {
             WFreeRCString( title );
         } else {
@@ -493,7 +497,7 @@ void WSetEditTitle ( WStringEditInfo *einfo )
     }
 }
 
-Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
+Bool WCreateEditWindow( HINSTANCE inst, WStringEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
@@ -502,13 +506,13 @@ Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
     Bool        is_rc;
     RECT        rect;
 
-    if( !einfo ) {
-        return ( FALSE );
+    if( einfo == NULL ) {
+        return( FALSE );
     }
 
-    x      = CW_USEDEFAULT;
-    y      = CW_USEDEFAULT;
-    width  = appWidth;
+    x = CW_USEDEFAULT;
+    y = CW_USEDEFAULT;
+    width = appWidth;
     height = appHeight;
 
     if( einfo->info->stand_alone ) {
@@ -523,7 +527,7 @@ Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
 
     is_rc = FALSE;
     title = WCreateEditTitle( einfo );
-    if( !title ) {
+    if( title == NULL ) {
         title = WAllocRCString( W_STRINGAPPTITLE );
         is_rc = TRUE;
     }
@@ -537,7 +541,7 @@ Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
                                x, y, width, height, einfo->info->parent,
                                menu, inst, einfo );
 
-    if( title ) {
+    if( title != NULL ) {
         if( is_rc ) {
             WFreeRCString( title );
         } else {
@@ -554,7 +558,7 @@ Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
     }
 
     einfo->wsb = WCreateStatusLine( einfo->win, inst );
-    if( !einfo->wsb ) {
+    if( einfo->wsb == NULL ) {
         return( FALSE );
     }
 
@@ -582,27 +586,27 @@ Bool WCreateEditWindow ( HINSTANCE inst, WStringEditInfo *einfo )
     return( TRUE );
 }
 
-WStringEditInfo *WGetCurrentEditInfo ( void )
+WStringEditInfo *WGetCurrentEditInfo( void )
 {
-    return ( WCurrEditInfo );
+    return( WCurrEditInfo );
 }
 
-void WSetCurrentEditInfo ( WStringEditInfo *einfo )
+void WSetCurrentEditInfo( WStringEditInfo *einfo )
 {
     WCurrEditInfo = einfo;
 }
 
-HMENU WGetMenuHandle ( WStringEditInfo *einfo )
+HMENU WGetMenuHandle( WStringEditInfo *einfo )
 {
-    if ( !einfo ) {
-        einfo = WGetCurrentEditInfo ();
+    if( einfo == NULL ) {
+        einfo = WGetCurrentEditInfo();
     }
 
-    if ( einfo && einfo->win ) {
-        return ( GetMenu ( einfo->win ) );
+    if( einfo != NULL && einfo->win != NULL ) {
+        return( GetMenu( einfo->win ) );
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
 static void handleSymbols( WStringEditInfo *einfo )
@@ -629,7 +633,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
         return;
     }
 
-    if( einfo->info->symbol_file ) {
+    if( einfo->info->symbol_file != NULL ) {
         WMemFree( einfo->info->symbol_file );
     }
     einfo->info->symbol_file = file;
@@ -658,8 +662,8 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
 
-LRESULT WINEXPORT WMainWndProc ( HWND hWnd, UINT message,
-                                 WPARAM wParam, volatile LPARAM lParam )
+LRESULT WINEXPORT WMainWndProc( HWND hWnd, UINT message,
+                                WPARAM wParam, volatile LPARAM lParam )
 {
     HMENU           menu;
 #if 0
@@ -669,213 +673,229 @@ LRESULT WINEXPORT WMainWndProc ( HWND hWnd, UINT message,
     Bool            pass_to_def;
     WStringEditInfo *einfo;
     WORD            wp;
-    MINMAXINFO     *minmax;
+    MINMAXINFO      *minmax;
+    about_info      ai;
 
     pass_to_def = TRUE;
-    ret         = FALSE;
-    einfo       = (WStringEditInfo *) GetWindowLong ( hWnd, 0 );
-    WSetCurrentEditInfo ( einfo );
+    ret = FALSE;
+    einfo = (WStringEditInfo *)GetWindowLong( hWnd, 0 );
+    WSetCurrentEditInfo( einfo );
 
-    switch ( message ) {
+    switch( message ) {
+    case WM_ACTIVATE:
+        if( GET_WM_ACTIVATE_FACTIVE( wParam, lParam ) &&
+            !GET_WM_ACTIVATE_FMINIMIZED( wParam, lParam ) &&
+            einfo != NULL && einfo->edit_dlg != (HWND)NULL ) {
+            SetFocus( einfo->edit_dlg );
+            pass_to_def = FALSE;
+        }
+        break;
 
-        case WM_ACTIVATE:
-            if( GET_WM_ACTIVATE_FACTIVE(wParam, lParam) &&
-                !GET_WM_ACTIVATE_FMINIMIZED(wParam, lParam) &&
-                einfo && einfo->edit_dlg != (HWND)NULL ) {
-                SetFocus( einfo->edit_dlg );
-                pass_to_def = FALSE;
+    case WM_INITMENU:
+        if( wParam == (WPARAM)GetMenu( hWnd ) ) {
+            // set the cut and copy menu items
+            ret = SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST, LB_GETCURSEL, 0, 0 );
+            if( ret != LB_ERR ) {
+                EnableMenuItem( (HMENU)wParam, IDM_STR_CUT, MF_ENABLED );
+                EnableMenuItem( (HMENU)wParam, IDM_STR_COPY, MF_ENABLED );
+                EnableMenuItem( (HMENU)wParam, IDM_STR_MEM_FLAGS, MF_ENABLED );
+            } else {
+                EnableMenuItem( (HMENU)wParam, IDM_STR_CUT, MF_GRAYED );
+                EnableMenuItem( (HMENU)wParam, IDM_STR_COPY, MF_GRAYED );
+                EnableMenuItem( (HMENU)wParam, IDM_STR_MEM_FLAGS, MF_GRAYED );
             }
-            break;
-
-        case WM_INITMENU:
-            if( wParam == (WPARAM) GetMenu(hWnd) ) {
-                // set the cut and copy menu items
-                ret = SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST,
-                                          LB_GETCURSEL, 0, 0 );
-                if( ret != LB_ERR ) {
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_CUT, MF_ENABLED );
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_COPY, MF_ENABLED );
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_MEM_FLAGS, MF_ENABLED );
+            // set the paste menu item
+            if( OpenClipboard( hWnd ) ) {
+                if( //IsClipboardFormatAvailable( WClipbdFormat ) ||
+                    IsClipboardFormatAvailable( CF_TEXT ) ) {
+                    EnableMenuItem( (HMENU)wParam, IDM_STR_PASTE, MF_ENABLED );
                 } else {
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_CUT, MF_GRAYED );
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_COPY, MF_GRAYED );
-                    EnableMenuItem( (HMENU)wParam, IDM_STR_MEM_FLAGS, MF_GRAYED );
+                    EnableMenuItem( (HMENU)wParam, IDM_STR_PASTE, MF_GRAYED );
                 }
-                // set the paste menu item
-                if( OpenClipboard( hWnd ) ) {
-                    if( //IsClipboardFormatAvailable( WClipbdFormat ) ||
-                        IsClipboardFormatAvailable( CF_TEXT ) ) {
-                        EnableMenuItem( (HMENU)wParam, IDM_STR_PASTE, MF_ENABLED );
-                    } else {
-                        EnableMenuItem( (HMENU)wParam, IDM_STR_PASTE, MF_GRAYED );
-                    }
-                    CloseClipboard();
+                CloseClipboard();
+            }
+            ret = FALSE;
+        }
+        break;
+
+    case WM_CREATE:
+        einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
+        SetWindowLong( hWnd, 0, (LONG)einfo );
+        break;
+
+    case WM_MENUSELECT:
+        if( einfo != NULL ) {
+            menu = WGetMenuHandle( einfo );
+            WHandleMenuSelect( einfo->wsb, menu, wParam, lParam );
+        }
+        break;
+
+    case WM_GETMINMAXINFO:
+        minmax = (MINMAXINFO *)lParam;
+        minmax->ptMinTrackSize.x = appWidth;
+        minmax->ptMinTrackSize.y = appHeight;
+        break;
+
+    case WM_MOVE:
+        if( einfo != NULL ) {
+            if( IsZoomed( hWnd ) ) {
+                WSetOption( WOptScreenMax, TRUE );
+            } else if( !IsIconic( hWnd ) ) {
+                WUpdateScreenPosOpt( hWnd );
+                WSetOption( WOptScreenMax, FALSE );
+            }
+        }
+        break;
+
+    case WM_SIZE:
+        if( einfo != NULL ) {
+            if( wParam == SIZE_MAXIMIZED ) {
+                WSetOption( WOptScreenMax, TRUE );
+            } else if( wParam != SIZE_MINIMIZED ) {
+                WUpdateScreenPosOpt( hWnd );
+                WSetOption( WOptScreenMax, FALSE );
+            }
+            WResizeWindows( einfo );
+        }
+        break;
+
+    case WM_COMMAND:
+        wp = LOWORD(wParam);
+        switch( wp ) {
+        case IDM_STR_CLEAR:
+            WHandleClear( einfo );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_UPDATE:
+            SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
+                         (LPARAM)einfo->hndl );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_OPEN:
+            pass_to_def = FALSE;
+            if( einfo->info->modified ) {
+                ret = WQuerySave( einfo, FALSE );
+                if( !ret ) {
+                    break;
                 }
-                ret = FALSE;
             }
+            ret = SendMessage( einfo->info->parent, STRING_PLEASE_OPENME, 0,
+                               (LPARAM)einfo->hndl );
+            ret = FALSE;
             break;
 
-        case WM_CREATE:
-            einfo = ((CREATESTRUCT *)lParam)->lpCreateParams;
-            SetWindowLong ( hWnd, 0, (LONG)einfo );
+        case IDM_STR_SAVE:
+            WSaveObject( einfo, FALSE, FALSE );
+            pass_to_def = FALSE;
             break;
 
-        case WM_MENUSELECT:
-            if ( einfo ) {
-                menu = WGetMenuHandle ( einfo );
-                WHandleMenuSelect ( einfo->wsb, menu, wParam, lParam );
-            }
+        case IDM_STR_SAVEAS:
+            WSaveObject( einfo, TRUE, FALSE );
+            pass_to_def = FALSE;
             break;
 
-        case WM_GETMINMAXINFO:
-            minmax = (MINMAXINFO *) lParam;
-            minmax->ptMinTrackSize.x = appWidth;
-            minmax->ptMinTrackSize.y = appHeight;
+        case IDM_STR_SAVEINTO:
+            WSaveObject( einfo, TRUE, TRUE );
+            pass_to_def = FALSE;
             break;
 
-        case WM_MOVE:
-            if ( einfo ) {
-                if ( IsZoomed ( hWnd ) ) {
-                    WSetOption ( WOptScreenMax, TRUE );
-                } else if ( !IsIconic ( hWnd ) ) {
-                    WUpdateScreenPosOpt ( hWnd );
-                    WSetOption ( WOptScreenMax, FALSE );
-                }
-            }
+        case IDM_STR_EXIT:
+            /* clean up before we exit */
+            PostMessage( einfo->win, WM_CLOSE, 0, 0 );
             break;
 
-        case WM_SIZE:
-            if ( einfo ) {
-                if ( wParam == SIZE_MAXIMIZED ) {
-                    WSetOption ( WOptScreenMax, TRUE );
-                } else if ( wParam != SIZE_MINIMIZED ) {
-                    WUpdateScreenPosOpt ( hWnd );
-                    WSetOption ( WOptScreenMax, FALSE );
-                }
-                WResizeWindows ( einfo );
-            }
+        case IDM_STR_PASTE:
+            WPasteStringItem( einfo );
+            pass_to_def = FALSE;
             break;
 
-        case WM_COMMAND:
-            wp = LOWORD(wParam);
-            switch ( wp ) {
-
-                case IDM_STR_CLEAR:
-                    WHandleClear( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_UPDATE:
-                    SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                                 (LPARAM)einfo->hndl );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_OPEN:
-                    pass_to_def = FALSE;
-                    if( einfo->info->modified ) {
-                        ret = WQuerySave( einfo, FALSE );
-                        if( !ret ) {
-                            break;
-                        }
-                    }
-                    ret = SendMessage( einfo->info->parent,
-                                       STRING_PLEASE_OPENME, 0,
-                                       (LPARAM)einfo->hndl );
-                    ret = FALSE;
-                    break;
-
-                case IDM_STR_SAVE:
-                    WSaveObject( einfo, FALSE, FALSE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_SAVEAS:
-                    WSaveObject( einfo, TRUE, FALSE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_SAVEINTO:
-                    WSaveObject( einfo, TRUE, TRUE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_EXIT:
-                    /* clean up before we exit */
-                    PostMessage( einfo->win, WM_CLOSE, 0, 0 );
-                    break;
-
-                case IDM_STR_PASTE:
-                    WPasteStringItem( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_CUT:
-                case IDM_STR_COPY:
-                    WClipStringItem( einfo, ( wp == IDM_STR_CUT ) );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_DELETE:
-                    WDeleteStringEntry ( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_NEWITEM:
-                    WInsertStringEntry ( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_SYMBOLS:
-                    handleSymbols( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_LOAD_SYMBOLS:
-                    handleLoadSymbols( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_SHOWRIBBON:
-                    menu = WGetMenuHandle ( einfo );
-                    WShowRibbon ( einfo, menu );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_MEM_FLAGS:
-                    WHandleMemFlags( einfo );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_HELP:
-                    WStrHelpRoutine();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_STR_ABOUT:
-                    WDisplayAboutBox ( WGetEditInstance(), einfo->win, 0 );
-                    pass_to_def = FALSE;
-                    break;
-            }
+        case IDM_STR_CUT:
+        case IDM_STR_COPY:
+            WClipStringItem( einfo, wp == IDM_STR_CUT );
+            pass_to_def = FALSE;
             break;
 
-        case WM_DESTROY:
-            WWinHelp( hWnd, "resstr.hlp", HELP_QUIT, 0 );
-            WCleanup( einfo );
+        case IDM_STR_DELETE:
+            WDeleteStringEntry( einfo );
+            pass_to_def = FALSE;
             break;
 
-        case WM_CLOSE:
-            ret = TRUE;
-            pass_to_def = WHandleWM_CLOSE( einfo, (Bool)wParam );
-            wParam = 0;
+        case IDM_STR_NEWITEM:
+            WInsertStringEntry( einfo );
+            pass_to_def = FALSE;
             break;
+
+        case IDM_STR_SYMBOLS:
+            handleSymbols( einfo );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_LOAD_SYMBOLS:
+            handleLoadSymbols( einfo );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_SHOWRIBBON:
+            menu = WGetMenuHandle( einfo );
+            WShowRibbon( einfo, menu );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_MEM_FLAGS:
+            WHandleMemFlags( einfo );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_HELP:
+            WStrHelpRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_HELP_SEARCH:
+            WStrHelpSearchRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_HELP_ON_HELP:
+            WStrHelpOnHelpRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_STR_ABOUT:
+            ai.owner = hWnd;
+            ai.inst = WGetEditInstance();
+            ai.name = AllocRCString( W_ABOUT_NAME );
+            ai.version = banner1p2( _RESEDIT_VERSION_ );
+            ai.first_cr_year = AllocRCString( W_ABOUT_COPYRIGHT_YEAR );
+            ai.title = AllocRCString( W_ABOUT_TITLE );
+            DoAbout( &ai );
+            FreeRCString( ai.name );
+            FreeRCString( ai.first_cr_year );
+            FreeRCString( ai.title );
+            pass_to_def = FALSE;
+            break;
+        }
+        break;
+
+    case WM_DESTROY:
+        WWinHelp( hWnd, "resstr.hlp", HELP_QUIT, 0 );
+        WCleanup( einfo );
+        break;
+
+    case WM_CLOSE:
+        ret = TRUE;
+        pass_to_def = WHandleWM_CLOSE( einfo, (Bool)wParam );
+        wParam = 0;
+        break;
     }
 
-    if ( pass_to_def ) {
+    if( pass_to_def ) {
         ret = DefWindowProc( hWnd, message, wParam, lParam );
     }
 
-    return ( ret );
+    return( ret );
 }
 
 Bool WQuerySave( WStringEditInfo *einfo, Bool force_exit )
@@ -894,7 +914,7 @@ Bool WQuerySaveRes( WStringEditInfo *einfo, Bool force_exit )
 
     ret = TRUE;
 
-    if( einfo && einfo->info->modified ) {
+    if( einfo != NULL && einfo->info->modified ) {
         msg_ret = IDYES;
         if( einfo->info->stand_alone ) {
             if( force_exit ) {
@@ -905,10 +925,10 @@ Bool WQuerySaveRes( WStringEditInfo *einfo, Bool force_exit )
             title = WCreateEditTitle( einfo );
             text = WAllocRCString( W_UPDATEMODIFIEDSTRING );
             msg_ret = MessageBox( einfo->edit_dlg, text, title, style );
-            if( text ) {
+            if( text != NULL ) {
                 WFreeRCString( text );
             }
-            if( title ) {
+            if( title != NULL ) {
                 WMemFree( title );
             }
         }
@@ -917,7 +937,7 @@ Bool WQuerySaveRes( WStringEditInfo *einfo, Bool force_exit )
                 ret = WSaveObject( einfo, FALSE, FALSE );
             } else {
                 SendMessage( einfo->info->parent, STRING_PLEASE_SAVEME, 0,
-                             (LPARAM) einfo->hndl );
+                             (LPARAM)einfo->hndl );
             }
         } else if( msg_ret == IDCANCEL ) {
             ret = FALSE;
@@ -934,7 +954,7 @@ Bool WQuerySaveSym( WStringEditInfo *einfo, Bool force_exit )
     char        *title;
     char        *text;
 
-    if( !einfo || !einfo->info->stand_alone ) {
+    if( einfo == NULL || !einfo->info->stand_alone ) {
         return( TRUE );
     }
 
@@ -951,17 +971,17 @@ Bool WQuerySaveSym( WStringEditInfo *einfo, Bool force_exit )
     title = WCreateEditTitle( einfo );
     text = WAllocRCString( W_UPDATEMODIFIEDSYM );
     ret = MessageBox( einfo->edit_dlg, text, title, style );
-    if( text ) {
+    if( text != NULL ) {
         WFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         WMemFree( title );
     }
 
     if( ret == IDYES ) {
         if( einfo->info->symbol_file == NULL ) {
             char        *fname;
-            if( !einfo->file_name ) {
+            if( einfo->file_name == NULL ) {
                 fname = einfo->info->file_name;
             } else {
                 fname = einfo->file_name;
@@ -983,14 +1003,12 @@ Bool WHandleWM_CLOSE( WStringEditInfo *einfo, Bool force_exit )
 
     ret = TRUE;
 
-    if( einfo ) {
-        if( einfo->info->modified ||
-            WRIsHashTableDirty( einfo->info->symbol_table ) ) {
+    if( einfo != NULL ) {
+        if( einfo->info->modified || WRIsHashTableDirty( einfo->info->symbol_table ) ) {
             ret = WQuerySave( einfo, force_exit );
         }
         if( ret ) {
-            SendMessage( einfo->info->parent, STRING_I_HAVE_CLOSED, 0,
-                         (LPARAM) einfo->hndl );
+            SendMessage( einfo->info->parent, STRING_I_HAVE_CLOSED, 0, (LPARAM)einfo->hndl );
             WUnRegisterEditSession( WGetEditSessionHandle( einfo ) );
         }
     }
@@ -1005,21 +1023,21 @@ void WHandleMemFlags( WStringEditInfo *einfo )
     WResID      *rname;
 
     ntext = WAllocRCString( W_STRINGNAMES );
-    if( einfo && einfo->current_block && ntext ) {
+    if( einfo != NULL && einfo->current_block != NULL && ntext != NULL ) {
         WSetStatusByID( einfo->wsb, W_CHANGESTRINGMEMFLAGS, -1 );
-        // alloc space for ntext and two 16 bit ints
-        rtext = (char *)WMemAlloc( strlen(ntext) + 20 );
-        if( rtext ) {
+        // alloc space for ntext and two 16-bit ints
+        rtext = (char *)WMemAlloc( strlen( ntext ) + 20 );
+        if( rtext != NULL ) {
             sprintf( rtext, ntext, einfo->current_block->blocknum & 0xfff0,
-                     ( einfo->current_block->blocknum  & 0xfff0 ) + 16 - 1 );
+                     (einfo->current_block->blocknum & 0xfff0) + 16 - 1 );
         }
         rname = WResIDFromStr( rtext );
         if( rname != NULL ) {
-            einfo->info->modified |=
-                WChangeMemFlags( einfo->win, &einfo->current_block->MemFlags,
-                                 rname, WGetEditInstance(),
-                                 WStrHelpRoutine );
-             WMemFree( rname );
+            einfo->info->modified |= WChangeMemFlags( einfo->win,
+                                                      &einfo->current_block->MemFlags,
+                                                      rname, WGetEditInstance(),
+                                                      WStrHelpRoutine );
+            WMemFree( rname );
         }
         WFreeRCString( ntext );
         WSetStatusReadyText( einfo->wsb );
@@ -1033,15 +1051,15 @@ Bool WQueryClearRes( WStringEditInfo *einfo )
     char        *title;
     char        *text;
 
-    if( einfo ) {
+    if( einfo != NULL ) {
         style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
         text = WAllocRCString( W_STRINGCLEARWARNING );
         title = WAllocRCString( W_STRINGCLEARTITLE );
         ret = MessageBox( einfo->edit_dlg, text, title, style );
-        if( text ) {
+        if( text != NULL ) {
             WFreeRCString( text );
         }
-        if( title ) {
+        if( title != NULL ) {
             WFreeRCString( title );
         }
         if( ret == IDYES ) {
@@ -1054,11 +1072,10 @@ Bool WQueryClearRes( WStringEditInfo *einfo )
 
 void WHandleClear( WStringEditInfo *einfo )
 {
-    if( einfo->tbl && einfo->tbl->first_block ) {
+    if( einfo->tbl != NULL && einfo->tbl->first_block != NULL ) {
         if( WQueryClearRes( einfo ) ) {
             WResetEditWindow( einfo );
-            SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST,
-                                LB_RESETCONTENT, 0, 0 );
+            SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST, LB_RESETCONTENT, 0, 0 );
             WFreeStringTableBlocks( einfo->tbl->first_block );
             einfo->tbl->first_block = NULL;
             einfo->current_block = NULL;
@@ -1070,7 +1087,7 @@ void WHandleClear( WStringEditInfo *einfo )
                     einfo->file_name = NULL;
                     WSetEditTitle( einfo );
                 }
-                if( einfo->info->symbol_table ) {
+                if( einfo->info->symbol_table != NULL ) {
                     WRFreeHashTable( einfo->info->symbol_table );
                     einfo->info->symbol_table = WRInitHashTable();
                 }
@@ -1082,191 +1099,51 @@ void WHandleClear( WStringEditInfo *einfo )
     }
 }
 
-void WUpdateScreenPosOpt ( HWND win )
+void WUpdateScreenPosOpt( HWND win )
 {
-    RECT        rect;
+    RECT    rect;
 
-    GetWindowRect ( win, &rect );
+    GetWindowRect( win, &rect );
 
-    WSetScreenPosOption ( &rect );
+    WSetScreenPosOption( &rect );
 }
 
-void WResizeWindows ( WStringEditInfo *einfo )
+void WResizeWindows( WStringEditInfo *einfo )
 {
-    RECT  rect;
+    RECT    rect;
 
-    if ( !einfo ) {
-        einfo = WGetCurrentEditInfo ();
+    if( einfo == NULL ) {
+        einfo = WGetCurrentEditInfo();
     }
 
-    if ( einfo && einfo->win ) {
-        GetClientRect ( einfo->win, &rect );
-        WResizeStringEditWindow ( einfo, &rect );
-        WResizeStatusWindows ( einfo->wsb, &rect );
-        WResizeRibbon ( einfo, &rect );
+    if( einfo != NULL && einfo->win != NULL ) {
+        GetClientRect( einfo->win, &rect );
+        WResizeStringEditWindow( einfo, &rect );
+        WResizeStatusWindows( einfo->wsb, &rect );
+        WResizeRibbon( einfo, &rect );
     }
 }
 
-void WDisplayAboutBox ( HINSTANCE inst, HWND parent, UINT msecs )
-{
-    FARPROC     lpProcAbout;
-
-    lpProcAbout = MakeProcInstance ( (FARPROC) WAbout, inst );
-    JDialogBoxParam( inst, "WAboutBox", parent, (DLGPROC) lpProcAbout,
-                     (LPARAM) &msecs  );
-    FreeProcInstance ( lpProcAbout );
-}
-
-Bool WINEXPORT WAbout( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
-{
-    UINT        msecs, timer, start;
-    HDC         dc, tdc;
-    HBITMAP     old;
-    HWND        w666;
-    RECT        rect, arect;
-    PAINTSTRUCT ps;
-    WORD        w;
-    char        *title;
-
-    static BITMAP    bm;
-    static HBITMAP   logo;
-    static HBRUSH    brush;
-    static COLORREF  color;
-
-    switch( message ) {
-
-        case WM_SYSCOLORCHANGE:
-            WCtl3dColorChange ();
-            break;
-
-        case WM_DESTROY:
-            if( logo ) {
-                DeleteObject( logo );
-            }
-            if( brush ) {
-                DeleteObject( brush );
-            }
-            break;
-
-        case WM_INITDIALOG:
-            msecs = *((UINT *)lParam);
-            if( msecs ) {
-                timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
-                if( timer ) {
-                    SetWindowLong( hDlg, DWL_USER, (LONG)timer );
-                    ShowWindow( GetDlgItem( hDlg, IDOK ), SW_HIDE );
-                    title = WAllocRCString( W_STRINGAPPTITLE );
-                    SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)title );
-                    if( title ) {
-                        WFreeRCString( title );
-                    }
-                }
-            }
-
-            logo = LoadBitmap ( WGetEditInstance(), "AboutLogo" );
-
-            //color = RGB(128,128,128);
-            color = GetSysColor ( COLOR_BTNFACE );
-            brush = CreateSolidBrush ( color );
-
-            GetObject ( logo, sizeof(BITMAP), &bm );
-            return ( TRUE );
-
-#if 0
-#ifdef __NT__
-        case WM_CTLCOLORSTATIC:
-            if ( brush ) {
-                dc = (HDC) wParam;
-                SetBkColor ( dc, color );
-                return ( (LRESULT) brush );
-            }
-            break;
-#else
-        case WM_CTLCOLOR:
-            if ( brush ) {
-                dc = (HDC) wParam;
-                if ( HIWORD(lParam) == CTLCOLOR_STATIC ) {
-                    SetBkColor ( dc, color );
-                }
-                return ( (LRESULT) brush );
-            }
-            break;
-#endif
-
-        case WM_ERASEBKGND:
-            if ( brush ) {
-                GetClientRect( hDlg, &rect );
-                UnrealizeObject( brush );
-                FillRect( (HDC)wParam, &rect, brush );
-                return ( TRUE );
-            }
-            break;
-#endif
-
-        case WM_PAINT:
-            dc = BeginPaint ( hDlg, &ps );
-            if ( dc ) {
-                w666 = GetDlgItem ( hDlg, 666 );
-                GetClientRect ( w666, &rect );
-                GetClientRect ( hDlg, &arect );
-                start = ( arect.right - arect.left - bm.bmWidth ) / 2;
-                MapWindowPoints ( w666, hDlg, (POINT *) &rect, 2 );
-                tdc = CreateCompatibleDC ( dc );
-                old = SelectObject ( tdc, logo );
-                BitBlt ( dc, start, rect.top + 20, bm.bmWidth, bm.bmHeight,
-                         tdc, 0, 0, SRCCOPY );
-                SelectObject ( tdc, old );
-                DeleteDC ( tdc );
-                EndPaint ( hDlg, &ps );
-            }
-            break;
-
-        case WM_TIMER:
-            timer = (UINT) GetWindowLong ( hDlg, DWL_USER );
-            if ( timer ) {
-                KillTimer ( hDlg, timer );
-            }
-            EndDialog ( hDlg, TRUE );
-            return ( TRUE );
-            break;
-
-        case WM_COMMAND:
-            w = LOWORD(wParam);
-            if ( ( w == IDOK ) || ( w == IDCANCEL ) ) {
-                timer = (UINT) GetWindowLong ( hDlg, DWL_USER );
-                if ( timer ) {
-                    KillTimer ( hDlg, timer );
-                }
-                EndDialog(hDlg, TRUE);
-                return ( TRUE );
-            }
-            break;
-
-    }
-
-    return ( FALSE );
-}
-
-Bool WCleanup ( WStringEditInfo *einfo )
+Bool WCleanup( WStringEditInfo *einfo )
 {
     HWND        owner;
     Bool        ok;
 
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         owner = (HWND)NULL;
         if( !einfo->info->stand_alone ) {
             owner = GetWindow( einfo->win, GW_OWNER );
         }
         einfo->win = (HWND)NULL;
-        WFreeStringEInfo ( einfo );
+        WFreeStringEInfo( einfo );
         if( owner != (HWND)NULL ) {
             BringWindowToTop( owner );
         }
     }
 
-    return ( ok );
+    return( ok );
 }
 
 void CALLBACK WStrHelpRoutine( void )
@@ -1274,8 +1151,31 @@ void CALLBACK WStrHelpRoutine( void )
     WStringEditInfo     *einfo;
 
     einfo = WGetCurrentEditInfo();
-    if( einfo ) {
-        WWinHelp( einfo->win, "resstr.hlp", HELP_CONTENTS, 0 );
+    if( einfo != NULL ) {
+        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_CONTENTS, 0 ) ) {
+            WWinHelp( einfo->win, "resstr.hlp", HELP_CONTENTS, 0 );
+        }
     }
 }
 
+void CALLBACK WStrHelpSearchRoutine( void )
+{
+    WStringEditInfo     *einfo;
+
+    einfo = WGetCurrentEditInfo();
+    if( einfo != NULL ) {
+        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
+            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (DWORD)"" );
+        }
+    }
+}
+
+void CALLBACK WStrHelpOnHelpRoutine( void )
+{
+    WStringEditInfo     *einfo;
+
+    einfo = WGetCurrentEditInfo();
+    if( einfo != NULL ) {
+        WWinHelp( einfo->win, "winhelp.hlp", HELP_HELPONHELP, 0 );
+    }
+}

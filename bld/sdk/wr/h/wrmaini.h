@@ -40,7 +40,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  HINSTANCE       WRGetInstance   ( void );
+extern HINSTANCE    WRGetInstance( void );
 
 #endif
-

@@ -41,23 +41,21 @@
 
 /* colour constants */
 
-#define DARKGRAY 0x00808080
-#define LIGHTGRAY 0x00FFFFFF
+#define DARKGRAY    0x00808080
+#define LIGHTGRAY   0x00FFFFFF
 
 extern void DrawTempRect( LPRECT rect )
 /*************************************/
-
-/* draws the shadow of an object being drawn for the first time, moved or
- * sized
- */
-
-  {
+{
+    /* draws the shadow of an object being drawn for the first time, moved or
+     * sized
+     */
     HANDLE wnd;
     POINT  offset;
     HDC    hdc;
 
     wnd = GetAppWnd();
-    hdc  = GetDC( wnd ) ;
+    hdc = GetDC( wnd ) ;
     GetOffset( &offset );
 #ifdef __NT__
     SetWindowOrgEx( hdc, offset.x, offset.y, NULL );
@@ -66,86 +64,75 @@ extern void DrawTempRect( LPRECT rect )
 #endif
     DrawFocusRect( hdc, rect );
     ReleaseDC( wnd, hdc );
-  }
+}
 
 
 static void OutlineRect( LPRECT rect, BOOL dbl, HDC hdc )
 /*******************************************************/
-
-/* draws a rectangle at the indicated location */
-
-  {
+{
+    /* draws a rectangle at the indicated location */
     RECT    temprect;
 
     temprect = *rect;
-    FrameRect( hdc, rect, ( HBRUSH ) GetStockObject( BLACK_BRUSH ) );
+    FrameRect( hdc, rect, (HBRUSH) GetStockObject( BLACK_BRUSH ) );
     if( dbl ) {
         temprect = *rect;
-        InflateRect( ( LPRECT ) &temprect, -1, -1 );
-        FrameRect( hdc, ( LPRECT ) &temprect,
-                        ( HBRUSH ) GetStockObject( BLACK_BRUSH ) );
+        InflateRect( &temprect, -1, -1 );
+        FrameRect( hdc, &temprect, (HBRUSH) GetStockObject( BLACK_BRUSH ) );
     }
-  }
+}
 
 
 void WINEXP OutlineDoubleRect( LPRECT rect, HDC hdc )
 /***************************************************/
-
-/* draw a double outline around the passed rect */
-
-  {
+{
+    /* draw a double outline around the passed rect */
     OutlineRect( rect, TRUE, hdc );
-  }
+}
 
 
 void WINEXP OutlineSingleRect( LPRECT rect, HDC hdc )
 /***************************************************/
-
-/* draw a double outline around the passed rect */
-
-  {
+{
+    /* draw a double outline around the passed rect */
     OutlineRect( rect, FALSE, hdc );
-  }
+}
 
 void WINEXP DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
 /***********************************************************/
-
-/* draw a framed grey rectangle with the given label */
-
-  {
+{
+    /* draw a framed grey rectangle with the given label */
     DWORD savebg;
 
     savebg = SetBkColor( hdc, DARKGRAY );
-    FillRect( hdc, rect, ( HBRUSH ) GetStockObject( GRAY_BRUSH ) );
+    FillRect( hdc, rect, (HBRUSH) GetStockObject( GRAY_BRUSH ) );
     if( label != NULL ) {
         DrawText( hdc, label, -1, rect, DT_WORDBREAK );
     }
     SetBkColor( hdc, savebg );
     OutlineRect( rect, FALSE, hdc );
-  }
+}
 
 
 void WINEXP DrawConstText( LPRECT rect, LPSTR value, HDC hdc )
 /************************************************************/
-
-/*  draw a constant text value. Adjust the size of the rect
- *  so that no partial text lines appear.
- */
-
-  {
+{
+    /*  draw a constant text value. Adjust the size of the rect
+     *  so that no partial text lines appear.
+     */
     if( value == NULL ) {
         return;
     }
     DrawText( hdc, value, -1, rect, DT_WORDBREAK );
-  }
+}
 
+
+#define CTL3D_BORDER        2
 
 void WINEXP MarkInvalid( LPRECT rect )
 /************************************/
-
-/* mark a rectangular region invalid */
-
-  {
+{
+    /* mark a rectangular region invalid */
     POINT   offset;
     RECT    temprect;
     HWND    wnd;
@@ -156,41 +143,37 @@ void WINEXP MarkInvalid( LPRECT rect )
     }
     temprect = *rect;
     GetOffset( &offset );
-    #define CTL3D_BORDER        2
     InflateRect( &temprect, CTL3D_BORDER, CTL3D_BORDER );
     OffsetRect( &temprect, -offset.x, -offset.y );
     InvalidateRect( wnd, &temprect, TRUE );
-  }
+}
 
-static void DrawCurr( STATE_ID st, RECT * rect, HDC * hdc )
-/*********************************************************/
-
-  {
+static void DrawCurr( STATE_ID st, RECT *rect, HDC *hdc )
+/*******************************************************/
+{
     OBJPTR eatom;
 
     switch( st ) {
-        case MOVING :
-        case CREATING :
-        case SIZING :
-        case PASTEING :
-            ExecuteCurrObject( DRAW, rect, hdc );
-            break;
-        case SELECTING :
-            eatom = GetSelectEatom();
-            if( eatom != NULL ) {
-                Draw( eatom, rect, *hdc );
-            }
-            break;
+    case MOVING:
+    case CREATING:
+    case SIZING:
+    case PASTEING:
+        ExecuteCurrObject( DRAW, rect, hdc );
+        break;
+    case SELECTING:
+        eatom = GetSelectEatom();
+        if( eatom != NULL ) {
+            Draw( eatom, rect, *hdc );
+        }
+        break;
     }
-  }
+}
 
 
-extern BOOL DoPainting()
-/**********************/
-
-/* repaint the areas of the screen which require updating */
-
-  {
+extern BOOL DoPainting( void )
+/****************************/
+{
+    /* repaint the areas of the screen which require updating */
     PAINTSTRUCT ps;
     HANDLE      wnd;
     POINT       offset;
@@ -200,9 +183,9 @@ extern BOOL DoPainting()
     BOOL        ret;
 
     wnd = GetAppWnd();
-    BeginPaint( wnd, ( LPPAINTSTRUCT ) &ps );
+    BeginPaint( wnd, &ps );
     st = GetState();
-    if( !IsRectEmpty( ( LPRECT ) &ps.rcPaint ) ) {
+    if( !IsRectEmpty( &ps.rcPaint ) ) {
         GetOffset( &offset );
         hdc = ps.hdc;
 #ifdef __NT__
@@ -213,8 +196,7 @@ extern BOOL DoPainting()
         OffsetRect( &ps.rcPaint, offset.x, offset.y );
         DrawCurr( st, &ps.rcPaint, &hdc );
 #if 0
-        FillRect( hdc, ( LPRECT ) &ps.rcPaint,
-                       ( HBRUSH ) GetStockObject( WHITE_BRUSH ) );
+        FillRect( hdc, &ps.rcPaint, (HBRUSH) GetStockObject( WHITE_BRUSH ) );
 #endif
         obj = GetMainObject();
         if( obj != NULL ) {
@@ -225,6 +207,6 @@ extern BOOL DoPainting()
     } else {
         ret = FALSE;
     }
-    EndPaint( wnd, ( LPPAINTSTRUCT ) &ps );
+    EndPaint( wnd, &ps );
     return( ret );
-  }
+}

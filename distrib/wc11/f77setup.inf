@@ -1,0 +1,5411 @@
+[Application]
+IsFortranInstall=1
+AppName=Watcom FORTRAN
+DefPMGroup=wf7732.grp, Watcom FORTRAN, %DstDir%\watcom.ico
+NoDiskImages=1
+SrcIsCD=1
+DstDir=C:\WATCOM
+winsys=%winsystemdir%
+axpsys=%winsystemdir%
+CDDir=%SrcDir2%
+WDir=%MinimalInstall?CDDir:DstDir%
+HDir=%helpfiles?WDir:CDDir%
+DoCreateIcons=1
+DoCreateHelpIcons=1
+DoModifyAuto=1
+DoCopyFiles=1
+ToolHelp=%CDDir%\binw\toolhelp.dll
+dialogorder=DstDir,GetDiskSizesHere,MakeDisks,NewInstall,Maintain,Options,OptionsMakeDisks,Win32s,VisualProgrammer,Final,MaintainFinal,UnInstallFinal,MakeDisksFullFinal,MakeDisksSelFinal
+DisketteSize=1453568
+
+[Targets]
+DstDir
+windir,supplimental
+winsys,supplimental
+
+[Dirs]
+.,1,-1
+h,1,1
+h\win,1,2
+binw,1,1
+binnt,1,1
+binb,1,1
+binp,1,1
+binp\dll,1,7
+eddat,1,1
+src,1,1
+lib286,1,1
+lib286\win,1,11
+.,2,-1
+bin,1,1
+h\nt,1,2
+src\inc,1,10
+nlm,1,1
+src\editdll,1,10
+lib386,1,1
+lib386\dos,1,19
+lib386\netware,1,19
+lib386\os2,1,19
+lib386\win,1,19
+lib386\nt,1,19
+lib286\dos,1,11
+lib286\os2,1,11
+samples,1,1
+samples\ide,1,27
+samples\ide\fortran,1,28
+samples\ide\fortran\win,1,29
+samples\ide\fortran\win386,1,29
+samples\ide\fortran\win32,1,29
+samples\ide\fortran\nt,1,29
+samples\ide\fortran\os2,1,29
+binp\help,1,7
+samples\goodies,1,27
+src\startup,1,10
+src\startup\386,1,37
+src\startup\ads,1,37
+src\startup\dos,1,37
+src\startup\os2,1,37
+src\startup\win,1,37
+src\cpplib,1,10
+src\cpplib\contain,1,43
+sdk,1,1
+sdk\doc,1,45
+sdk\doc\filefrmt,1,46
+sdk\doc\jpn,1,46
+sdk\doc\jpn\filefrmt,1,48
+sdk\doc\jpn\misc,1,48
+sdk\doc\misc,1,46
+sdk\license,1,45
+binnt\jpn,1,5
+bin95,1,1
+sdk\help,1,45
+sdk\icmp,1,45
+sdk\icmp\i386,1,56
+h\win\fareast,1,3
+h\nt\fareast,1,15
+h\nt\gl,1,15
+lib386\nt\fareast,1,24
+sdk\mapi,1,45
+sdk\mapi\bin16,1,62
+sdk\mapi\cfg,1,62
+sdk\mapi\i386,1,62
+sdk\mapi\i386\checked,1,65
+sdk\mapi\win16,1,62
+sdk\mapi\win16\debug,1,67
+sdk\mapi\win16\nodebug,1,67
+sdk\mapi\win95,1,62
+sdk\mapi\win95\debug,1,70
+sdk\mapi\win95\debug\usa,1,71
+sdk\mapi\win95\nodebug,1,70
+sdk\mapi\win95\nodebug\usa,1,73
+sdk\opengl95,1,45
+sdk\opengl95\dll,1,75
+sdk\posix,1,45
+sdk\posix\h,1,77
+sdk\posix\h\sys,1,78
+sdk\rpc_rt16,1,45
+sdk\rpc_rt16\disk1,1,80
+sdk\rpc_sdk,1,45
+sdk\rpc_sdk\disk1,1,82
+sdk\rpc_sdk\samples,1,82
+sdk\rpc_sdk\samples\client,1,84
+sdk\rpc_sdk\samples\server,1,84
+sdk\snmpapi,1,45
+sdk\snmpapi\i386,1,87
+sdk\snmpapi\i386\debug,1,88
+sdk\snmpapi\i386\retail,1,88
+sdk\win32s,1,45
+sdk\win32s\BIN,1,91
+sdk\win32s\DEBUG,1,91
+sdk\win32s\DISKS,1,91
+sdk\win32s\DISKS\DISK1,1,94
+sdk\win32s\DISKS\DISK2,1,94
+sdk\win32s\DISKS\DISK3,1,94
+sdk\win32s\HELP,1,91
+sdk\win32s\HELP\DAN,1,98
+sdk\win32s\HELP\DEU,1,98
+sdk\win32s\HELP\ESP,1,98
+sdk\win32s\HELP\FIN,1,98
+sdk\win32s\HELP\FRA,1,98
+sdk\win32s\HELP\ITA,1,98
+sdk\win32s\HELP\NLD,1,98
+sdk\win32s\HELP\NOR,1,98
+sdk\win32s\HELP\SVE,1,98
+sdk\win32s\HELP\USA,1,98
+sdk\win32s\NLS,1,91
+sdk\win32s\NODEBUG,1,91
+sdk\win32s\PROFILE,1,91
+sdk\win32s\SETUP,1,91
+sdk\win32s\SETUP\BLDCUI,1,112
+sdk\win32s\SETUP\INIUPD,1,112
+sdk\win32s\UT,1,91
+sdk\win32s\UT\SAMPLES,1,115
+sdk\win32s\UT\SAMPLES\UTSAMPLE,1,116
+sdk\win32s\UT\SAMPLES\UT_DEF,1,116
+novi,1,1
+src\fortran,1,10
+src\fortran\ADS,1,120
+src\fortran\ADS\REL12,1,121
+src\fortran\DOS,1,120
+src\fortran\OS2,1,120
+src\fortran\WIN,1,120
+samples\fortran,1,27
+samples\fortran\win,1,126
+samples\fortran\win\dll,1,127
+samples\fortran\win32,1,126
+samples\fortran\win32\dll,1,129
+samples\fortran\os2,1,126
+samples\fortran\os2\dll,1,131
+samples\fortran\os2\rexx,1,131
+toolkt2x,1,1
+h\os2,1,2
+toolkt2x\icon,1,134
+toolkt2x\ipfc,1,134
+h\os21x,1,2
+.,3,-1
+WIN32S,3,139
+
+[Files]
+pck00001,9,\
+errno.h!5!!,\
+env.h!3!!,\
+eh.h!1!!,\
+ctype.h!8!!,\
+crtdbg.h!8!!,\
+conio.h!5!!,\
+assert.h!3!!,\
+_comdef.h!8!!,\
+mmintrin.h!s!!,\
+2,-1,2,.,.
+pck00002,1z,\
+iso646.h!1!!,\
+exstring.h!2!!,\
+exceptio.h!5!!,\
+common.cnv!1!!,\
+wdefwin.h!3!!,\
+wcvector.h!l!!,\
+wcvbase.h!1e!!,\
+wcstack.h!4!!,\
+wcskipit.h!e!!,\
+wcsibase.h!6!!,\
+wcskip.h!z!!,\
+wcsbase.h!x!!,\
+wcqueue.h!4!!,\
+wclistit.h!l!!,\
+wclist.h!h!!,\
+unistd.h!2!!,\
+jtime.h!2!!,\
+jstring.h!e!!,\
+jctype.h!5!!,\
+graph98.h!t!!,\
+dos.h!g!!,\
+bios98.h!e!!,\
+bios.h!8!!,\
+io.h!d!!,\
+mem.h!1!!,\
+dosfunc.h!3!!,\
+direct.h!9!!,\
+wclibase.h!i!!,\
+wclcom.h!5!!,\
+wclbase.h!18!!,\
+wchiter.h!i!!,\
+wchbase.h!a!!,\
+wchash.h!1n!!,\
+wcexcept.h!d!!,\
+wcdefs.h!2!!,\
+strstrea.h!b!!,\
+string.hpp!m!!,\
+streambu.h!g!!,\
+stdiobuf.h!3!!,\
+share.h!2!!,\
+process.h!e!!,\
+new.h!4!!,\
+locale.h!4!!,\
+pgchart.h!f!!,\
+graph.h!u!!,\
+generic.h!3!!,\
+fstream.h!c!!,\
+iostream.h!18!!,\
+iomanip.h!9!!,\
+except.h!3!!,\
+complex.h!k!!,\
+varargs.h!3!!,\
+time.h!8!!,\
+tchar.h!1i!!,\
+mbstring.h!s!!,\
+mbctype.h!a!!,\
+memory.h!1!!,\
+string.h!n!!,\
+stdlib.h!u!!,\
+stdio.h!q!!,\
+stddef.h!4!!,\
+stdarg.h!7!!,\
+signal.h!3!!,\
+setjmp.h!2!!,\
+search.h!2!!,\
+math.h!8!!,\
+malloc.h!f!!,\
+limits.h!8!!,\
+i86.h!d!!,\
+float.h!d!!,\
+fcntl.h!5!!,\
+2,-1,2,.,.
+pck00004,3,\
+wchar.h!e!!,\
+typeinfo.h!3!!,\
+stdexcep.h!6!!,\
+2,-1,2,.,.
+pck00006,4,\
+win386.h!1!!,\
+windows.h!1!!,\
+win16.h!89!!,\
+_win386.h!29!!,\
+3,-1,2,.,wintarg
+pck00007,1,wrc.exe!a6!!,4,-1,2,.,wnttarg wintarg | winhost os2host | doshost | &
+pck00008,1,wrc.exe!ac!!,5,-1,2,.,wnttarg wintarg | wnthost
+pck00010,1,mkcdpg.exe!1g!!,5,-1,2,.,wnthost
+pck00012,1,wddespy.exe!56!!,4,-1,2,.,winhost
+pck00013,1,wddespy.exe!5s!!,5,-1,2,.,wnthost
+pck00015,3,\
+wspyhk.dll!3!!,\
+wspy.exe!5g!!,\
+wheapwlk.exe!6p!!,\
+4,-1,2,.,winhost
+pck00016,2,\
+ntspyhk.dll!x!!,\
+wspy.exe!6z!!,\
+5,-1,2,.,wnthost
+pck00018,1,drwatcom.exe!7c!!,4,-1,2,.,winhost
+pck00019,2,\
+_drwin95.exe!97!!,\
+drwatcom.exe!9w!!,\
+5,-1,2,.,wnthost
+pck00021,1,wzoom.exe!19!!,4,-1,2,.,winhost
+pck00022,1,wzoom.exe!1w!!,5,-1,2,.,wnthost
+pck00024,1,wimgedit.exe!dn!!,4,-1,2,.,winhost
+pck00025,1,wimgedit.exe!e7!!,5,-1,2,.,wnthost
+pck00027,1,wr.dll!c0!!,4,-1,2,.,winhost
+pck00028,1,wr.dll!af!!,5,-1,2,.,wnthost
+pck00030,1,wre.exe!9v!!,4,-1,2,.,winhost
+pck00031,1,wre.exe!9i!!,5,-1,2,.,wnthost
+pck00033,1,wde.exe!lt!!,4,-1,2,.,winhost
+pck00034,1,wde.exe!kj!!,5,-1,2,.,wnthost
+pck00036,1,wacc.dll!7k!!,4,-1,2,.,winhost
+pck00037,1,wacc.dll!7i!!,5,-1,2,.,wnthost
+pck00039,1,wmenu.dll!8b!!,4,-1,2,.,winhost
+pck00040,1,wmenu.dll!81!!,5,-1,2,.,wnthost
+pck00042,1,wstring.dll!7g!!,4,-1,2,.,winhost
+pck00043,1,wstring.dll!7c!!,5,-1,2,.,wnthost
+pck00045,1,fmedit.dll!2f!!,4,-1,2,.,winhost
+pck00046,1,fmedit.dll!2v!!,5,-1,2,.,wnthost
+pck00048,2,\
+1252.uni!2!!,\
+kanji.uni!1q!!,\
+4,6,2,.,.
+pck00049,1,wasm.exe!aq!!,4,-1,2,.,doshost winhost |
+pck00050,1,wasm.exe!a7!!,7,-1,2,.,os2host
+pck00051,1,wasm.exe!ax!!,5,-1,2,.,wnthost
+pck00057,1,rcsdll.dll!2i!!,4,-1,2,.,doshost winhost |
+pck00058,1,rcsdll.dll!31!!,8,-1,2,.,os2host
+pck00059,1,rcsdll.dll!7e!!,5,-1,2,.,wnthost
+pck00061,6,\
+pvcs_ci.bat!1!!,\
+pvcs_co.bat!1!!,\
+mks_ci.bat!1!!,\
+mks_co.bat!1!!,\
+gen_ci.bat!1!!,\
+gen_co.bat!2!!,\
+4,-1,2,.,doshost winhost wnthost alphahost | | |
+pck00062,6,\
+pvcs_ci.cmd!1!!,\
+pvcs_co.cmd!1!!,\
+mks_ci.cmd!1!!,\
+mks_co.cmd!1!!,\
+gen_ci.cmd!1!!,\
+gen_co.cmd!2!!,\
+7,-1,2,.,os2host
+pck00063,1,ochook.dll!4t!!,5,-1,2,.,wnthost
+pck00064,2,\
+viw.exe!k4!!,\
+vi.exe!fn!!,\
+5,-1,2,.,wnthost
+pck00065,1,vi.exe!pd!!,4,-1,2,.,doshost winhost |
+pck00066,1,viw.exe!le!!,4,-1,2,.,winhost
+pck00069,2,\
+ctags.exe!1v!!,\
+vi.exe!ei!!,\
+7,-1,2,.,os2host
+pck00070,1,ctags.exe!2u!!,4,-1,2,.,doshost winhost |
+pck00071,1,ctags.exe!2b!!,5,-1,2,.,wnthost
+pck00073,1,edbind.exe!1o!!,4,-1,2,.,.
+pck00074,y,\
+ed.cfg!l!!,\
+writewin.vi!1!!,\
+writeall.vi!1!!,\
+user.vi!1!!,\
+rdmewin.vi!1!!,\
+ddecb.vi!5!!,\
+menuwin.vi!2!!,\
+wqh2.vi!1!!,\
+wqh.vi!1!!,\
+mlsel.vi!1!!,\
+rdme.vi!4!!,\
+menu.vi!1!!,\
+dde.vi!1!!,\
+untitled.vi!1!!,\
+mcsel.vi!1!!,\
+mlselw.vi!1!!,\
+mcselw.vi!2!!,\
+ideact.vi!1!!,\
+ddesinit.vi!1!!,\
+tryme.vi!3!!,\
+qh2.vi!1!!,\
+qh.vi!3!!,\
+lnum.vi!1!!,\
+fin.vi!1!!,\
+toggle.vi!1!!,\
+proc.vi!1!!,\
+chkout.vi!1!!,\
+unlock.vi!1!!,\
+cmdme.vi!3!!,\
+forceout.vi!1!!,\
+wrme.vi!1!!,\
+err.vi!1!!,\
+rcs.vi!1!!,\
+qall.vi!1!!,\
+9,-1,2,.,.
+pck00075,1,weditor.ini!q!!,9,-1,2,.,winhost wnthost alphahost | |
+pck00076,k,\
+clibhelp.vi!4!!,\
+bindvi.cmd!1!!,\
+bindvi.bat!1!!,\
+regexp.hlp!b!!,\
+script.hlp!p!!,\
+key.hlp!r!!,\
+set.hlp!k!!,\
+cmd.hlp!17!!,\
+start.hlp!6!!,\
+fortran.dat!2!!,\
+cpp.dat!2!!,\
+skel.dat!1!!,\
+edbind.dat!1!!,\
+winkeys.dat!4!!,\
+c.dat!1!!,\
+errmsg.dat!7!!,\
+winbind.dat!1!!,\
+keys.dat!4!!,\
+error.dat!8!!,\
+debug.cfg!g!!,\
+9,-1,2,.,.
+pck00078,1,fhelp.vi!1!!,9,-1,2,.,.
+pck00079,1,wdis.exe!bs!!,4,-1,2,.,doshost winhost |
+pck00080,1,wdis.exe!ba!!,7,-1,2,.,os2host
+pck00081,1,wdis.exe!c1!!,5,-1,2,.,wnthost
+pck00083,2,\
+wstubq.exe!q!!,\
+wstub.exe!p!!,\
+4,6,2,.,dostarg
+pck00084,1,wstub.c!4!!,a,-1,2,.,samples
+pck00085,1,bpatch.exe!2w!!,4,6,2,.,.
+pck00086,b,\
+compobj.lib!18!e4u9t0!!x,\
+toolhelp.lib!7!e4u9sm!!x,\
+stress.lib!4!e4u9sm!!x,\
+shell.lib!4!e4u9sm!!x,\
+olesvr.lib!4!e4u9sk!!x,\
+olecli.lib!c!e4u9sk!!x,\
+mmsystem.lib!p!e4u9sk!!x,\
+ddeml.lib!6!e4u9sk!!x,\
+commdlg.lib!4!e4u9sk!!x,\
+windows.lib!44!ed6mbs!!x,\
+ctl3d.lib!5!ed6mbs!!x,\
+c,-1,2,.,tools16 wintarg
+pck00087,1,mfcoleui.lib!1b!e4u9t0!!x,c,-1,2,.,wintarg mfc252 mfc252lib & tools16 |
+pck00088,9,\
+verl.lib!o!edbxh4!!x,\
+verm.lib!n!edbxh4!!x,\
+verc.lib!n!edbxh4!!x,\
+vers.lib!n!edbxh4!!x,\
+ver.lib!4!edbxh4!!x,\
+storage.lib!5!e4u9t0!!x,\
+ole2disp.lib!s!e4u9t0!!x,\
+ole2.lib!2b!e4u9t0!!x,\
+odbc.lib!a!e4u9t0!!x,\
+c,-1,2,.,tools16 wintarg
+pck00089,g,\
+commdlg.fin!4v!e4u9so!!x,\
+commdlg.dut!4v!e4u9so!!x,\
+commdlg.dan!4u!e4u9so!!x,\
+commdlg.spa!4x!e4u9sq!!x,\
+vtd.386!e!e4u9sq!!x,\
+ver.dll!i!e4u9sq!!x,\
+toolhelp.dll!s!e4u9sq!!x,\
+stress.dll!2r!e4u9sq!!x,\
+shell.dll!2a!e4u9sq!!x,\
+olesvr.dll!1b!e4u9sq!!x,\
+olecli.dll!4j!e4u9sq!!x,\
+lzexpand.dll!k!e4u9sq!!x,\
+ddeml.dll!20!e4u9sq!!x,\
+penwin.dll!74!e4u9sq!!x,\
+winmem32.dll!9!e4u9sq!!x,\
+ctl3d.dll!16!ed6mbs!!x,\
+4,-1,2,.,winhost wintarg |
+pck00090,6,\
+commdlg.swe!4v!e4u9sq!!x,\
+commdlg.por!4w!e4u9sq!!x,\
+commdlg.nor!4u!e4u9sq!!x,\
+commdlg.itn!4v!e4u9sq!!x,\
+commdlg.ger!4x!e4u9so!!x,\
+commdlg.frn!4w!e4u9so!!x,\
+4,-1,2,.,winhost wintarg |
+pck00091,1,winhelp.exe!dx!e4u9ss!!x,4,-1,2,.,winhost wnthost |
+pck00092,1,winhelp.hlp!1q!e4u9ss!!x,4,-1,2,.,winhost helpfiles
+pck00093,2,\
+dib.drv!1m!e4u9ss!!x,\
+regload.exe!x!e4u9ss!!x,\
+4,-1,2,.,winhost
+pck00094,3,\
+mcistrwh.hlp!8c!e4u9sy!!x,\
+penapiwh.hlp!ba!e4u9sw!!x,\
+win31mwh.hlp!iw!e4u9sw!!x,\
+4,-1,2,.,winhost wnthost | helpfiles
+pck00095,1,shed.exe!59!e4u9sy!!x,4,-1,2,.,winhost
+pck00096,1,shed.hlp!4n!e4u9sy!!x,4,-1,2,.,winhost helpfiles
+pck00097,6,\
+heditde.dll!i!e4u9sy!!x,\
+beditde.dll!h!e4u9sy!!x,\
+yesmouse.drv!1!e4u9sy!!x,\
+vgap.drv!3y!e4u9sy!!x,\
+penwin.ini!1!e4u9sy!!x,\
+msmouse.drv!e!e4u9sy!!x,\
+4,-1,2,.,winhost
+pck00098,7,\
+ole2prox.dll!31!e4u9t2!!x,\
+ole2nls.dll!5e!e4u9t2!!x,\
+ole2disp.dll!4x!e4u9t2!!x,\
+ole2conv.dll!34!e4u9t0!!x,\
+ole2.dll!h0!e4u9t0!!x,\
+mfcoleui.dll!80!e4u9t0!!x,\
+compobj.dll!5k!e4u9t0!!x,\
+4,-1,2,.,mfc25 winhost |
+pck00099,2,\
+typelib.dll!7q!e4u9t2!!x,\
+storage.dll!8j!e4u9t2!!x,\
+4,-1,2,.,mfc25 winhost |
+pck00100,1,win31wh.hlp!53y!e4u9su!!x,4,-1,2,.,winhost wnthost | wintarg helpfiles
+pck00101,1,ctl3dv2.dll!17!e4u9t0!!x,d,-1,2,.,winhost wnthost | IsWin IsWin32 | &
+pck00103,5,\
+hc31.err!f!!,\
+hc31.exe!9h!!,\
+hc30.exe!7a!!,\
+hc.bat!1!!,\
+mrbc.exe!2o!!,\
+4,6,2,.,winhost wnthost |
+pck00104,1,markmidi.exe!h!!,4,e,2,.,winhost
+pck00105,1b,\
+variant.h!j!e4u9t4!!x,\
+storage.h!s!e4u9t2!!x,\
+sqlext.h!1h!e4u9t2!!x,\
+sql.h!f!e4u9t2!!x,\
+scode.h!m!e4u9t2!!x,\
+olestd.h!1m!e4u9t2!!x,\
+olenls.h!17!e4u9t2!!x,\
+oleguid.h!8!e4u9t2!!x,\
+ole2ver.h!1!e4u9t2!!x,\
+ole2ui.h!1x!e4u9t2!!x,\
+ole2dbg.h!2!e4u9t2!!x,\
+ole2.h!2i!e4u9t2!!x,\
+ole1cls.h!d!e4u9t2!!x,\
+moniker.h!j!e4u9t2!!x,\
+initguid.h!3!e4u9t2!!x,\
+dvobj.h!w!e4u9t2!!x,\
+dispatch.h!25!e4u9t2!!x,\
+compobj.h!1y!e4u9t2!!x,\
+coguid.h!7!e4u9t2!!x,\
+cobjps.h!5!e4u9t2!!x,\
+winmem32.h!2!e4u9so!!x,\
+windowsx.h!3h!e4u9so!!x,\
+wfext.h!6!e4u9so!!x,\
+ver.h!j!e4u9so!!x,\
+toolhelp.h!t!e4u9so!!x,\
+subinapi.h!4!e4u9so!!x,\
+stress.h!4!e4u9so!!x,\
+skbapi.h!5!e6vwla!!x,\
+shellapi.h!6!e4u9sm!!x,\
+scrnsave.h!e!e4u9sm!!x,\
+print.h!l!e4u9sm!!x,\
+penwoem.h!6!e4u9sm!!x,\
+penwin.h!5s!e6vwla!!x,\
+ole.h!1f!e4u9sm!!x,\
+mmsystem.h!4d!e4u9sm!!x,\
+mmnecdef.h!4!e4u9sm!!x,\
+lzexpand.h!8!e4u9sm!!x,\
+lzdos.h!1!e4u9sm!!x,\
+drivinit.h!1!e4u9sm!!x,\
+dlgs.h!c!e4u9sm!!x,\
+ddeml.h!v!e4u9sm!!x,\
+dde.h!a!e4u9sm!!x,\
+custcntl.h!8!e4u9sm!!x,\
+cpl.h!c!e4u9sm!!x,\
+commdlg.h!o!e4u9sm!!x,\
+colordlg.h!4!e4u9sm!!x,\
+cderr.h!5!e4u9sm!!x,\
+3,-1,2,.,wintarg
+pck00106,2,\
+sqlext.h!1h!e4u9t4!!x,\
+sql.h!f!e4u9t4!!x,\
+f,-1,2,.,wnttarg
+pck00107,4,\
+windows.inc!3k!e4u9so!!x,\
+toolhelp.inc!i!e4u9so!!x,\
+mmsystem.inc!3a!e4u9so!!x,\
+cmacros.inc!12!e4u9so!!x,\
+g,-1,2,.,wintarg
+pck00108,1,whelp.exe!eb!!,4,e,2,.,doshost
+pck00109,1,wlib.exe!7i!!,4,-1,2,.,doshost winhost |
+pck00110,1,wlib.exe!v!!,7,-1,2,.,os2host
+pck00111,1,wlibd.dll!7w!!,8,-1,2,.,os2host
+pck00112,2,\
+wlibd.dll!7l!!,\
+wlib.exe!18!!,\
+5,-1,2,.,wnthost
+pck00161,1,pls.trp!z!!,4,e,2,.,dostarg
+pck00162,1,ads.trp!y!!,4,e,2,.,adstarg
+pck00163,2,\
+std.trp!10!!,\
+rsi.trp!y!!,\
+4,e,2,.,dostarg
+pck00164,1,net.trp!6!!,4,e,2,.,doshost
+pck00165,1,nmp.trp!9!!,4,e,2,.,doshost os2host |
+pck00166,3,\
+ser.trp!f!!,\
+par.trp!d!!,\
+nov.trp!i!!,\
+4,e,2,.,doshost dostarg |
+pck00167,1,win.trp!6!!,4,e,2,.,doshost dostarg wintarg | |
+pck00168,1,netserv.exe!m!!,4,e,2,.,dostarg doshost winhost | |
+pck00169,1,nmpserv.exe!n!!,4,e,2,.,doshost dostarg os2host | |
+pck00170,3,\
+serserv.exe!v!!,\
+parserv.exe!s!!,\
+novserv.exe!s!!,\
+4,e,2,.,dostarg
+pck00171,1,vdmserv.exe!m!!,4,e,2,.,dostarg os2host wnthost | |
+pck00172,4,\
+rsihelp.exp!1n!!,\
+pedhelp.exp!5y!!,\
+plshelp.exp!54!!,\
+winserv.exe!l!!,\
+4,e,2,.,dostarg
+pck00173,1,adshelp.exp!3b!!,4,e,2,.,adstarg
+pck00174,1,std.dll!1m!!,4,-1,2,.,wintarg
+pck00175,1,net.dll!6!!,4,-1,2,.,winhost
+pck00176,1,nmp.dll!7!!,4,-1,2,.,winhost os2host &
+pck00177,3,\
+tcp.dll!7!!,\
+par.dll!b!!,\
+nov.dll!c!!,\
+4,-1,2,.,winhost
+pck00178,6,\
+tcpservw.exe!j!!,\
+parservw.exe!q!!,\
+netservw.exe!i!!,\
+winservw.exe!q!!,\
+novservw.exe!p!!,\
+wint32.dll!4!!,\
+4,-1,2,.,wintarg
+pck00179,2,\
+nmpservw.exe!j!!,\
+vdmservw.exe!i!!,\
+4,-1,2,.,wintarg os2host &
+pck00180,6,\
+tcp.dll!6!!,\
+ser.dll!f!!,\
+par.dll!f!!,\
+nov.dll!9!!,\
+nmp.dll!7!!,\
+net.dll!5!!,\
+8,-1,2,.,os2host
+pck00181,1,vdm.dll!6!!,8,-1,2,.,os2host dostarg &
+pck00182,4,\
+wdpmhook.dll!2!!,\
+os2v2hlp.exe!2!!,\
+std32.dll!1m!!,\
+std16.dll!12!!,\
+8,-1,2,.,os2host os2targ |
+pck00183,6,\
+tcpserv.exe!n!!,\
+serserv.exe!u!!,\
+parserv.exe!u!!,\
+novserv.exe!r!!,\
+nmpserv.exe!m!!,\
+netserv.exe!l!!,\
+7,-1,2,.,os2host
+pck00184,1,wdpmhelp.exe!i!!,7,-1,2,.,os2host os2targ |
+pck00185,1,nmpbind.exe!m!!,7,-1,2,.,winhost IsOS2DosBox & os2host | MinimalInstall |
+pck00196,6,\
+tcpserv.exe!1e!!,\
+novserv.exe!1h!!,\
+vdm.dll!d!!,\
+tcp.dll!d!!,\
+nov.dll!g!!,\
+std.dll!31!!,\
+5,-1,2,.,wnthost wnttarg |
+pck00198,6,\
+novserv4.nlm!33!!,\
+novserv3.nlm!31!!,\
+serserv4.nlm!2w!!,\
+serserv3.nlm!2v!!,\
+parserv4.nlm!2u!!,\
+parserv3.nlm!2s!!,\
+h,-1,2,.,nlmtarg
+pck00199,4,\
+watcom.dll!39!!,\
+export.dll!n!!,\
+codeview.dll!31!!,\
+dwarf.dll!67!!,\
+8,-1,2,.,os2host
+pck00200,4,\
+watcom.dll!3i!!,\
+export.dll!w!!,\
+codeview.dll!3g!!,\
+dwarf.dll!6y!!,\
+4,-1,2,.,winhost wintarg |
+pck00201,4,\
+watcom.dip!2t!!,\
+export.dip!j!!,\
+codeview.dip!2o!!,\
+dwarf.dip!4t!!,\
+4,-1,2,.,winhost doshost | dostarg |
+pck00202,4,\
+watcom.dll!31!!,\
+export.dll!m!!,\
+codeview.dll!2q!!,\
+dwarf.dll!4s!!,\
+5,-1,2,.,wnthost wnttarg |
+pck00205,1,madx86.mad!2u!!,4,-1,2,.,doshost dostarg |
+pck00207,1,madx86.dll!39!!,4,-1,2,.,winhost wintarg |
+pck00209,1,madx86.dll!35!!,8,-1,2,.,os2host os2targ |
+pck00212,1,madx86.dll!2r!!,5,-1,2,.,wnthost wnttarg |
+pck00213,1,wd.exe!16b!!,4,e,2,.,doshost dostarg |
+pck00214,2,\
+wdw.exe!10g!!,\
+wdc.exe!zw!!,\
+4,-1,2,.,wintarg winhost |
+pck00217,2,\
+wdw.exe!138!!,\
+wd.exe!y8!!,\
+7,-1,2,.,os2host os2targ |
+pck00218,2,\
+wdw.exe!td!!,\
+wd.exe!s8!!,\
+5,-1,2,.,wnthost wnttarg |
+pck00221,1,ads.dbg!2!!,4,6,2,.,adstarg
+pck00222,r,\
+vikeys.dbg!1!!,\
+addsrc.dbg!1!!,\
+nwvkeys.dbg!2!!,\
+tdemu.dbg!3!!,\
+tdkeys.dbg!1!!,\
+wd.dbg!1!!,\
+bp.dbg!1!!,\
+owvkeys.dbg!2!!,\
+default.dbg!6!!,\
+mono.dbg!3!!,\
+vr.dbg!1!!,\
+setup.dbg!1!!,\
+slow.dbg!1!!,\
+save.dbg!1!!,\
+return.dbg!1!!,\
+resize.dbg!1!!,\
+restart.dbg!1!!,\
+fill.dbg!1!!,\
+colour.dbg!4!!,\
+vc.dbg!1!!,\
+wdkeys.dbg!1!!,\
+cvkeys.dbg!5!!,\
+cntbrks.dbg!1!!,\
+fox.dbg!2!!,\
+bif.dbg!1!!,\
+bcnt.dbg!1!!,\
+animate.dbg!1!!,\
+4,6,2,.,.
+pck00223,1,fortran.prs!6!!,4,6,2,.,.
+pck00224,2,\
+c.prs!7!!,\
+cpp.prs!7!!,\
+4,6,2,.,.
+pck00225,3,\
+wsamppls.exp!6c!!,\
+wsamprsi.exe!3l!!,\
+wsample.exe!1w!!,\
+4,-1,2,.,dostarg
+pck00227,1,wsamplew.exe!28!!,4,-1,2,.,wintarg
+pck00228,2,\
+wsmpos22.exe!24!!,\
+wsampos2.exe!2b!!,\
+7,-1,2,.,os2targ
+pck00229,1,wsample.nlm!20!!,h,-1,2,.,nlmtarg
+pck00230,1,wsample.exe!2n!!,5,-1,2,.,wnthost
+pck00232,1,wprof.exe!qv!!,4,-1,2,.,doshost
+pck00234,1,wprof.exe!h3!!,7,-1,2,.,os2host
+pck00235,1,wprofw.exe!el!!,4,-1,2,.,winhost
+pck00236,1,wprof.exe!cg!!,5,-1,2,.,wnthost
+pck00238,1,wmake.exe!6i!!,4,-1,2,.,doshost winhost |
+pck00240,1,wmake.exe!8i!!,7,-1,2,.,os2host
+pck00241,1,wmake.exe!80!!,5,-1,2,.,wnthost
+pck00243,1,wtouch.exe!1o!!,4,-1,2,.,doshost winhost |
+pck00244,1,wtouch.exe!37!!,7,-1,2,.,os2host
+pck00245,1,wtouch.exe!2m!!,5,-1,2,.,wnthost
+pck00247,1,wstrip.exe!45!!,4,6,2,.,.
+pck00248,1,wstrip.exe!2h!!,5,-1,2,.,wnthost
+pck00250,3,\
+wlsystem.lnk!c!!,\
+fcenable.exe!2s!!,\
+ms2wlink.exe!2w!!,\
+4,6,2,.,.
+pck00251,1,wlink.lnk!1!!,4,e,2,.,doshost winhost |
+pck00252,1,wlink.lnk!1!!,7,-1,2,.,os2host
+pck00253,1,wlink.lnk!1!!,5,-1,2,.,wnthost
+pck00255,1,wlink.exe!jz!!,4,e,2,.,doshost winhost |
+pck00256,1,wlink.exe!12!!,7,-1,2,.,os2host
+pck00257,1,wlink.dll!ja!!,8,-1,2,.,os2host
+pck00258,2,\
+wlink.dll!hl!!,\
+wlink.exe!1e!!,\
+5,-1,2,.,wnthost
+pck00260,1,weditviw.dll!d!!,4,-1,2,.,doshost winhost |
+pck00261,1,weditviw.dll!16!!,5,-1,2,.,wnthost
+pck00263,1,weditcw.dll!e!!,4,-1,2,.,doshost winhost |
+pck00264,1,weditcw.dll!1p!!,5,-1,2,.,wnthost
+pck00265,1,epmlink.dll!16!!,8,-1,2,.,os2host
+pck00266,7,\
+weditcw.h!2!!,\
+weditcwn.lnk!1!!,\
+weditcw.lnk!1!!,\
+makefile!1!!,\
+wedit.h!4!!,\
+wedit.doc!7!!,\
+weditcw.c!h!!,\
+i,-1,2,.,samples
+pck00273,2,\
+batchbox.pif!2!!,\
+dosserv.exe!m!!,\
+4,-1,2,.,doshost winhost |
+pck00274,1,batserv.exe!x!!,7,-1,2,.,os2host
+pck00275,1,batserv.exe!1e!!,5,-1,2,.,wnthost
+pck00277,1,ide.exe!vs!!,4,-1,2,.,winhost
+pck00278,1,ide.exe!kd!!,7,-1,2,.,os2host
+pck00279,1,ide.exe!o5!!,5,-1,2,.,wnthost
+pck00281,1,idex.cfg!2!!,4,-1,2,.,winhost
+pck00282,1,idex.cfg!2!!,7,-1,2,.,os2host
+pck00283,1,idex.cfg!2!!,5,-1,2,.,wnthost
+pck00285,2,\
+idedos32.cfg!1!!,\
+idedos.cfg!1!!,\
+4,-1,2,.,winhost wnthost os2host alphahost | | | dostarg
+pck00286,1,idewin.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | wintarg
+pck00287,2,\
+ideos232.cfg!1!!,\
+ideos2.cfg!1!!,\
+4,-1,2,.,winhost wnthost os2host alphahost | | | os2targ
+pck00288,1,ideads.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | adstarg
+pck00289,1,idenlm.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | nlmtarg
+pck00290,1,idemfc16.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | wintarg mfc252
+pck00291,2,\
+wd.pif!2!!,\
+wsrv.pif!2!!,\
+4,-1,2,.,winhost wnthost os2host alphahost | | |
+pck00292,1,ide.cfg!3y!!,4,-1,2,.,winhost wnthost os2host alphahost | | |
+pck00293,1,idew32.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | wnttarg
+pck00294,1,idew386.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | wintarg
+pck00295,1,idemfc32.cfg!1!!,4,-1,2,.,winhost wnthost os2host alphahost | | | wnttarg mfc41
+pck00298,1,vpdll.dll!11!!,4,-1,2,.,winhost wnthost |
+pck00299,1,vpdll.dll!1q!!,5,-1,2,.,wnthost
+pck00300,1,emu387.lib!1a!!,k,-1,2,.,dostarg
+pck00301,1,emu387.lib!4!!,l,-1,2,.,nlmtarg
+pck00302,1,emu387.lib!4!!,m,-1,2,.,os2targ
+pck00303,1,emu387.lib!4!!,n,-1,2,.,wintarg
+pck00304,1,emu387.lib!4!!,o,-1,2,.,wnttarg
+pck00305,1,noemu387.lib!4!!,j,-1,2,.,.
+pck00306,1,emu87.lib!12!!,p,-1,2,.,dostarg
+pck00307,1,emu87.lib!10!!,q,-1,2,.,os2targ
+pck00308,1,emu87.lib!5!!,c,-1,2,.,wintarg
+pck00309,1,noemu87.lib!4!!,b,-1,2,.,.
+pck00312,1,clibl.lib!qt!!,p,-1,2,.,tools16 dostarg ml
+pck00313,1,dos16m.obj!6!!,p,-1,2,.,tools16 dostarg
+pck00314,1,clibol.lib!qt!!,p,-1,2,.,tools16 dostarg ml
+pck00315,2,\
+clibom.lib!p5!!,\
+clibm.lib!p5!!,\
+p,-1,2,.,tools16 dostarg mm
+pck00317,1,cstart_t.obj!3!!,p,-1,2,.,tools16 dostarg ms
+pck00318,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+p,-1,2,.,tools16 dostarg
+pck00321,1,dospml.lib!j!!,q,-1,2,.,tools16 os2targ ml
+pck00322,1,dospmm.lib!i!!,q,-1,2,.,tools16 os2targ mm
+pck00324,1,clib3r.lib!q2!!,k,-1,2,.,dostarg 3r
+pck00325,1,clib3s.lib!qm!!,k,-1,2,.,dostarg 3s
+pck00326,1,cstrtx3r.obj!5!!,k,-1,2,.,dostarg 3r
+pck00327,1,cstrtx3s.obj!5!!,k,-1,2,.,dostarg 3s
+pck00328,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+k,-1,2,.,dostarg 3r 3s |
+pck00329,3,\
+adifstrt.obj!4!!,\
+adiestrt.obj!4!!,\
+adsstart.obj!4!!,\
+k,-1,2,.,adstarg
+pck00330,2,\
+binmode.obj!1!!,\
+clib3s.lib!91!!,\
+l,-1,2,.,nlmtarg
+pck00333,2,\
+clibdll.lib!rw!!,\
+clibl.lib!qm!!,\
+q,-1,2,.,tools16 os2targ ml
+pck00334,1,clibmtl.lib!r3!!,q,-1,2,.,tools16 os2targ ml
+pck00335,1,clibm.lib!p0!!,q,-1,2,.,tools16 os2targ mm
+pck00337,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+q,-1,2,.,tools16 os2targ
+pck00338,1,clib3r.lib!sw!!,m,-1,2,.,os2targ 3r
+pck00339,1,clib3s.lib!tk!!,m,-1,2,.,os2targ 3s
+pck00340,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+m,-1,2,.,os2targ 3r 3s |
+pck00342,1,clibl.lib!ri!!,c,-1,2,.,tools16 wintarg ml
+pck00343,1,libentry.obj!3!!,c,-1,2,.,tools16 wintarg
+pck00344,1,clibm.lib!q3!!,c,-1,2,.,tools16 wintarg mm
+pck00346,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+c,-1,3,.,tools16 wintarg
+pck00347,1,clib3r.lib!sg!!,n,-1,3,.,wintarg 3r
+pck00348,1,clib3s.lib!sw!!,n,-1,3,.,wintarg 3s
+pck00349,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+n,-1,3,.,wintarg 3r 3s |
+pck00350,1,clib3r.lib!vp!!,o,-1,3,.,wnttarg 3r
+pck00351,1,clib3s.lib!w6!!,o,-1,3,.,wnttarg 3s
+pck00352,2,\
+commode.obj!1!!,\
+binmode.obj!1!!,\
+o,-1,3,.,wnttarg
+pck00356,1,mathl.lib!42!!,b,-1,3,.,tools16 ml &
+pck00357,1,mathm.lib!3w!!,b,-1,3,.,tools16 mm &
+pck00361,1,math87l.lib!3d!!,b,-1,3,.,tools16 ml &
+pck00362,1,math87m.lib!39!!,b,-1,3,.,tools16 mm &
+pck00364,1,math3r.lib!3m!!,j,-1,3,.,3r
+pck00365,1,math3s.lib!3o!!,j,-1,3,.,3s
+pck00366,1,math387r.lib!2w!!,j,-1,3,.,3r
+pck00367,1,math387s.lib!2z!!,j,-1,3,.,3s
+pck00370,1,mathl.lib!3z!!,c,-1,3,.,tools16 wintarg ml
+pck00372,1,math87l.lib!3b!!,c,-1,3,.,tools16 wintarg ml
+pck00376,1,plibl.lib!is!!,b,-1,3,.,tools16 ml cplusplus
+pck00410,1,plib3r.lib!i1!!,o,-1,3,.,wnttarg 3r cplusplus
+pck00422,1,plib3r.lib!i3!!,j,-1,3,.,dostarg nlmtarg | wintarg | 3r cplusplus
+pck00430,1,plib3r.lib!i1!!,m,-1,3,.,os2targ 3r cplusplus
+pck00443,p,\
+drawos2.rc!3!!,\
+draw.rc!3!!,\
+furnitu.hpp!4!!,\
+box.hpp!8!!,\
+drawroom.cpp!b!!,\
+furnitu.cpp!b!!,\
+box.cpp!b!!,\
+button.h!3!!,\
+room.h!3!!,\
+win1632.h!b!!,\
+drawmenu.h!4!!,\
+threed.h!5!!,\
+btnos2.c!f!!,\
+btnwin.c!b!!,\
+drawos2.c!u!!,\
+drawwin.c!u!!,\
+draw.ico!2!!,\
+forward.bmp!1!!,\
+back.bmp!1!!,\
+darker.bmp!1!!,\
+brighter.bmp!1!!,\
+down.bmp!1!!,\
+up.bmp!1!!,\
+right.bmp!1!!,\
+left.bmp!1!!,\
+s,-1,3,.,samples
+pck00449,k,\
+os2_3d.dll!61!!,\
+win386.wpj!1!!,\
+win32.wpj!1!!,\
+win.wpj!1!!,\
+threed.fi!7!!,\
+room.fi!3!!,\
+os2.wpj!1!!,\
+ntdefs.fi!h!!,\
+drawwin.for!x!!,\
+drawwin.fi!2!!,\
+drawos2.rc!3!!,\
+drawos2.for!w!!,\
+drawos2.fi!2!!,\
+drawnt.for!l!!,\
+drawnt.fi!1!!,\
+drawmenu.fi!6!!,\
+button.fi!4!!,\
+btnwin.for!c!!,\
+btnos2.for!h!!,\
+btnnt.for!c!!,\
+t,-1,3,.,samples
+pck00450,6,\
+win_3d.dll!6h!!,\
+furnitu.obj!d!!,\
+drawroom.obj!f!!,\
+draw16.tgt!5!!,\
+button.tgt!2!!,\
+box.obj!e!!,\
+u,-1,3,.,samples
+pck00451,6,\
+win_3d.dll!6h!!,\
+furnitu.obj!b!!,\
+drawroom.obj!d!!,\
+draw.tgt!6!!,\
+button.tgt!2!!,\
+box.obj!a!!,\
+v,-1,3,.,samples
+pck00452,6,\
+nt_3d.dll!5p!!,\
+furnitu.obj!b!!,\
+drawroom.obj!d!!,\
+draw32.tgt!5!!,\
+button.tgt!2!!,\
+box.obj!a!!,\
+w,x,3,.,samples
+pck00453,6,\
+os2_3d.dll!61!!,\
+furnitu.obj!b!!,\
+drawroom.obj!d!!,\
+drawos2.tgt!5!!,\
+button.tgt!2!!,\
+box.obj!a!!,\
+y,-1,3,.,samples
+pck00454,1,winhlp16.cfg!1!!,4,-1,3,.,win16_helpfiles
+pck00457,1,isvfor.hlp!13i!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00459,1,clib.hlp!3kp!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00462,4,\
+editor.hlp!ck!!,\
+drwatcom.hlp!9f!!,\
+drnt.hlp!6b!!,\
+ddespy.hlp!7m!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00463,1,f_readme.hlp!n5!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00464,2,\
+f77lr.hlp!nr!!,\
+f77graph.hlp!1mu!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00465,3,\
+ftools.hlp!ay!!,\
+fpguide.hlp!su!!,\
+fmix.hlp!1il!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00466,1,fuguide.hlp!l3!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00467,2,\
+ide.hlp!145!!,\
+heapwalk.hlp!90!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00468,1,lguide.hlp!he!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00470,5,\
+resimg.hlp!8g!!,\
+resedt.hlp!8e!!,\
+resdlg.hlp!hs!!,\
+rescomp.hlp!46!!,\
+resacc.hlp!cf!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00471,3,\
+spy.hlp!8n!!,\
+resstr.hlp!99!!,\
+resmnu.hlp!9v!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00473,1,wd.hlp!y5!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00474,1,wfcerrs.hlp!d9!!,4,-1,3,.,win16_helpfiles helpfiles
+pck00476,2,\
+zoom.hlp!1r!!,\
+wprof.hlp!9r!!,\
+4,-1,3,.,win16_helpfiles helpfiles
+pck00498,1,winhlp32.cfg!1!!,5,-1,3,.,win32_helpfiles
+pck00501,2,\
+isvfor.hlp!wz!!,\
+isvfor.cnt!5!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00505,1,clib.cnt!17!!,5,-1,3,.,win32_helpfiles helpfiles
+pck00506,1,clib.hlp!236!!,5,-1,3,.,win32_helpfiles helpfiles
+pck00509,8,\
+editor.hlp!5v!!,\
+editor.cnt!6!!,\
+drwatcom.hlp!56!!,\
+drwatcom.cnt!5!!,\
+drnt.hlp!3z!!,\
+drnt.cnt!7!!,\
+ddespy.hlp!44!!,\
+ddespy.cnt!4!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00510,5,\
+f77lr.cnt!13!!,\
+f77graph.hlp!f2!!,\
+f77graph.cnt!9!!,\
+f_readme.hlp!bs!!,\
+f_readme.cnt!a!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00511,8,\
+fuguide.cnt!s!!,\
+ftools.hlp!9e!!,\
+ftools.cnt!d!!,\
+fpguide.hlp!ky!!,\
+fpguide.cnt!12!!,\
+fbooks.hlp!6k!!,\
+fbooks.cnt!2!!,\
+f77lr.hlp!ke!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00512,1,fuguide.hlp!h6!!,5,-1,3,.,win32_helpfiles helpfiles
+pck00513,6,\
+lguide.hlp!f0!!,\
+lguide.cnt!1c!!,\
+ide.hlp!fl!!,\
+ide.cnt!9!!,\
+heapwalk.hlp!5f!!,\
+heapwalk.cnt!7!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00515,g,\
+spy.hlp!52!!,\
+spy.cnt!7!!,\
+resstr.hlp!3v!!,\
+resstr.cnt!4!!,\
+resmnu.hlp!4q!!,\
+resmnu.cnt!4!!,\
+resimg.hlp!3v!!,\
+resimg.cnt!3!!,\
+resedt.hlp!3z!!,\
+resedt.cnt!4!!,\
+resdlg.hlp!6j!!,\
+resdlg.cnt!4!!,\
+rescomp.hlp!3h!!,\
+rescomp.cnt!h!!,\
+resacc.hlp!55!!,\
+resacc.cnt!5!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00517,2,\
+wd.hlp!lv!!,\
+wd.cnt!m!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00518,2,\
+wfcerrs.hlp!9q!!,\
+wfcerrs.cnt!1!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00520,4,\
+zoom.hlp!18!!,\
+zoom.cnt!2!!,\
+wprof.hlp!4h!!,\
+wprof.cnt!4!!,\
+5,-1,3,.,win32_helpfiles helpfiles
+pck00541,3,\
+wd.ihp!my!!,\
+wprof.ihp!2v!!,\
+rescomp.ihp!5u!!,\
+4,-1,3,.,whelp_helpfiles helpfiles
+pck00542,1,clib.ihp!2x0!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00545,1,lguide.ihp!r3!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00547,2,\
+fuguide.ihp!yb!!,\
+f77graph.ihp!ek!!,\
+4,-1,3,.,whelp_helpfiles helpfiles
+pck00548,2,\
+ftools.ihp!fk!!,\
+fpguide.ihp!12o!!,\
+4,-1,3,.,whelp_helpfiles helpfiles
+pck00549,1,f77lr.ihp!zr!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00551,1,isvfor.ihp!33!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00553,1,f_readme.ihp!6n!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00555,1,fmix.ihp!3oi!!,4,-1,3,.,whelp_helpfiles helpfiles
+pck00556,1,wfcerrs.hlp!98!!,z,-1,3,.,os2host
+pck00560,3,\
+wd.hlp!md!!,\
+ide.hlp!hb!!,\
+wprof.hlp!4s!!,\
+z,-1,3,.,os2_helpfiles helpfiles
+pck00564,1,f_readme.inf!d4!!,z,-1,3,.,os2_helpfiles helpfiles
+pck00566,3,\
+wd.inf!m1!!,\
+ide.inf!h7!!,\
+wprof.inf!4q!!,\
+z,-1,3,.,os2_helpfiles helpfiles
+pck00567,1,clib.inf!25b!!,z,-1,3,.,os2_helpfiles helpfiles
+pck00569,1,lguide.inf!dk!!,z,-1,3,.,os2_helpfiles helpfiles
+pck00572,3,\
+fuguide.inf!jy!!,\
+f77graph.inf!gt!!,\
+fmix.inf!1uz!!,\
+z,-1,3,.,os2_helpfiles helpfiles
+pck00573,3,\
+f77lr.inf!mh!!,\
+ftools.inf!a0!!,\
+fpguide.inf!p6!!,\
+z,-1,3,.,os2_helpfiles helpfiles
+pck00574,1,rescomp.inf!2n!!,z,-1,3,.,os2_helpfiles helpfiles
+pck00577,1,isvfor.inf!w1!!,z,-1,3,.,os2_helpfiles helpfiles
+pck00599,14,\
+spwnrpls.c!2!!,\
+spwnrd4g.c!2!!,\
+spwndpls.c!1!!,\
+spwndd4g.c!1!!,\
+simulate.c!4!!,\
+screenpl.c!2!!,\
+screen.c!2!!,\
+mouse.c!c!!,\
+mix6.for!1!!,\
+mix5f.for!1!!,\
+mix5c.c!1!!,\
+mix4f.for!1!!,\
+mix4c.c!1!!,\
+mix3f.for!1!!,\
+mix3c.c!1!!,\
+mix2f.for!1!!,\
+mix2c.c!1!!,\
+mix1f.for!1!!,\
+mix1c.c!1!!,\
+memwin.c!5!!,\
+mempls40.c!2!!,\
+memory.c!4!!,\
+mathdemo.for!9!!,\
+makefile.for!5!!,\
+makefile.c!5!!,\
+makefile!a!!,\
+keystat.c!2!!,\
+keystapl.c!2!!,\
+handles.c!2!!,\
+fscreen.for!2!!,\
+fmemory.for!5!!,\
+fileio.c!4!!,\
+fhandles.for!3!!,\
+dta.for!4!!,\
+cw87.for!4!!,\
+bindata.for!2!!,\
+bindata.fil!1!!,\
+bimodal.c!h!!,\
+bimo.asm!b!!,\
+_matherr.for!b!!,\
+10,-1,3,.,samples
+pck00645,2,\
+8087cw.c!2!!,\
+wildargv.c!d!!,\
+11,-1,3,.,rtsource
+pck00646,h,\
+wmainwnt.c!6!!,\
+main2wnt.c!6!!,\
+main2o32.c!7!!,\
+dmainwnt.c!8!!,\
+dmaino32.c!c!!,\
+lmn2wnt.c!3!!,\
+lmainwnt.c!2!!,\
+libmno32.c!2!!,\
+dstrt386.asm!3!!,\
+cstrtwwt.asm!3!!,\
+cstrtwnt.asm!3!!,\
+cstrto32.asm!3!!,\
+initfini.h!5!!,\
+cmain386.c!5!!,\
+cstrtx32.asm!r!!,\
+cstrtw32.asm!i!!,\
+cstrt386.asm!q!!,\
+12,-1,3,.,rtsource
+pck00647,1,adstart.asm!x!!,13,-1,3,.,rtsource
+pck00648,5,\
+mdef.inc!4!!,\
+hpgrw086.c!3!!,\
+cmain086.c!a!!,\
+dos16m.asm!v!!,\
+cstrt086.asm!q!!,\
+14,-1,3,.,rtsource
+pck00649,9,\
+mdef.inc!4!!,\
+initfini.h!5!!,\
+wos2.h!2!!,\
+exitwmsg.h!1!!,\
+dmaino16.c!2!!,\
+cstrto16.asm!8!!,\
+libmno16.c!2!!,\
+maino16.c!b!!,\
+cmain086.c!a!!,\
+15,-1,3,.,rtsource
+pck00650,3,\
+mdef.inc!4!!,\
+libentry.asm!e!!,\
+cstrtw16.asm!f!!,\
+16,-1,3,.,rtsource
+pck00653,4,\
+wcexcept.cpp!7!!,\
+wcskip.cpp!o!!,\
+wclist.cpp!o!!,\
+wchash.cpp!i!!,\
+18,-1,3,.,rtsource
+pck00654,2,\
+win32sdk.cnt!yj!e6w5ys!!x,\
+win32sdk.hlp!u6w!e6vwn2!!x,\
+5,-1,3,.,wnttarg win32sdk
+pck00655,3,\
+resfmt.txt!2j!e6vwmu!!x,\
+enhmeta.hlp!2s!e6vwmu!!x,\
+custcntl.txt!x!e6vwmu!!x,\
+1b,-1,3,.,wnttarg win32sdk
+pck00656,3,\
+resfmt.txt!2i!e6w1ii!!x,\
+enhmeta.hlp!24!e6w1ii!!x,\
+custcntl.txt!x!e6w1ii!!x,\
+1d,-1,3,.,wnttarg win32sdk
+pck00657,2,\
+vdmdbg.hlp!1l!e6w1ii!!x,\
+great.wri!1c!e6w1ii!!x,\
+1e,-1,3,.,wnttarg win32sdk
+pck00658,2,\
+great.wri!q!e6vwn2!!x,\
+genthunk.txt!2!e6vwn2!!x,\
+1f,-1,3,.,wnttarg win32sdk
+pck00659,7,\
+vdmdbg.hlp!2e!e6vwn4!!x,\
+unwind.txt!4!e6vwn4!!x,\
+sfmwshat.wri!5f!e6vwn4!!x,\
+progref.rtf!6o!e6vwn4!!x,\
+pcd.hlp!4j!e6vwn4!!x,\
+multcast.txt!c!e6vwn4!!x,\
+msosi.doc!2q6!e6vwn4!!x,\
+1f,-1,3,.,wnttarg win32sdk
+pck00660,1,redist.txt!s!e6vwmu!!x,1g,-1,3,.,wnttarg win32sdk
+pck00661,1,readme.txt!3g!e6vwms!!x,19,-1,3,.,wnttarg win32sdk
+pck00662,8,\
+disp200.dll!r!e6vwjk!!x,\
+autoload.mak!1!e6vwjk!!x,\
+atrm1111.fnt!d!e6vwjk!!x,\
+apimon.hlp!1j!e6vwjk!!x,\
+apimon.cnt!3!e6vwji!!x,\
+apfcvt.txt!a!e6vwji!!x,\
+apfcvt.exe!6q!e6vwji!!x,\
+tools.ini!1!e6w01s!!x,\
+5,-1,3,.,wnttarg
+pck00663,5,\
+hcw.cnt!11!e6vwjk!!x,\
+fontedit.hlp!w!e6vwjk!!x,\
+edithlp.hlp!19!e6vwjk!!x,\
+dlgedit.hlp!9x!e6vwjk!!x,\
+disptest.exe!1b5!e6vwjk!!x,\
+5,-1,3,.,wnttarg
+pck00664,i,\
+win16.ini!3c!e6vwju!!x,\
+uconvert.hlp!q!e6vwjq!!x,\
+sr32test.reg!a!e6vwjq!!x,\
+shed.hlp!4n!e6vwjq!!x,\
+sdkdoc.ico!2!e6vwjo!!x,\
+repeater.hlp!u!e6vwjo!!x,\
+repeater.cnt!2!e6vwjo!!x,\
+rc.hlp!7e!e6vwjo!!x,\
+porttool.txt!2!e6vwjo!!x,\
+port.ini!m!e6vwjo!!x,\
+oletools.hlp!v!e6vwjo!!x,\
+msolevbx.dll!7v!e6vwjo!!x,\
+msole2.vbx!l!e6vwjo!!x,\
+msole2.bas!a!e6vwjm!!x,\
+mrbc.exe!2o!e6vwjm!!x,\
+mc.hlp!18!e6vwjm!!x,\
+imagedit.hlp!4h!e6vwjm!!x,\
+hcw.hlp!y1!e6vwjm!!x,\
+5,-1,3,.,wnttarg
+pck00665,6,\
+apf32dmp.exe!1k!e6vwky!!x,\
+apf32cvt.exe!29!e6vwjw!!x,\
+abview32.exe!ch!e6vwjw!!x,\
+winnt.ini!3k!e6vwju!!x,\
+windiff.hlp!y!e6vwju!!x,\
+windbg.hlp!bp!e6vwju!!x,\
+5,-1,3,.,wnttarg
+pck00666,9,\
+dmkdalp.dll!4f!e6vwk0!!x,\
+dm.dll!4o!e6vwk0!!x,\
+dfview.exe!1c!e6vwk0!!x,\
+dflaydll.exe!c5!e6vwk0!!x,\
+compress.exe!4x!e6vwjy!!x,\
+ccdist35.exe!5t!e6vwjy!!x,\
+ccdist.exe!6q!e6vwjy!!x,\
+bind.exe!20!e6vwjy!!x,\
+autorun.exe!yn!e6vwjy!!x,\
+5,-1,3,.,wnttarg
+pck00667,9,\
+eecxxppc.dll!84!e6vwk2!!x,\
+eecxxmip.dll!84!e6vwk2!!x,\
+eecxxalp.dll!83!e6vwk0!!x,\
+dumpref.exe!1s!e6vwk0!!x,\
+dumpchk.exe!25!e6vwk0!!x,\
+dobjview.exe!2l!e6vwk0!!x,\
+dmkdx86.dll!5f!e6vwk0!!x,\
+dmkdppc.dll!4i!e6vwk0!!x,\
+dmkdmip.dll!4h!e6vwk0!!x,\
+5,-1,3,.,wnttarg
+pck00668,b,\
+hcrtf.exe!fh!e6vwk2!!x,\
+gutils.dll!3p!e6vwk2!!x,\
+fontedit.exe!5a!e6vwk2!!x,\
+filter.dll!j!e6vwk2!!x,\
+fastimer.dll!i!e6vwk2!!x,\
+exp.exe!30!e6vwk2!!x,\
+emx86.dll!4e!e6vwk2!!x,\
+emppc.dll!31!e6vwk2!!x,\
+emmip.dll!2w!e6vwk2!!x,\
+emalp.dll!3c!e6vwk2!!x,\
+eecxxx86.dll!86!e6vwk2!!x,\
+5,-1,3,.,wnttarg
+pck00669,9,\
+kdextmip.dll!91!e6vwk4!!x,\
+kdextalp.dll!9g!e6vwk4!!x,\
+justify.dll!j!e6vwk4!!x,\
+iviewers.dll!7w!e6vwk4!!x,\
+irotview.exe!2m!e6vwk4!!x,\
+imagedit.exe!79!e6vwk4!!x,\
+hwdll.dll!2w!e6vwk4!!x,\
+hook.dll!g!e6vwk4!!x,\
+hcw.exe!ia!e6vwk4!!x,\
+5,-1,3,.,wnttarg
+pck00670,7,\
+mhelp.dll!13!e6vwk8!!x,\
+mergeini.exe!n!e6vwk6!!x,\
+mdbvu32.exe!kq!e6vwk6!!x,\
+mc.exe!1l!e6vwk6!!x,\
+mapsym.exe!25!e6vwk6!!x,\
+kdextx86.dll!9n!e6vwk6!!x,\
+kdextppc.dll!91!e6vwk6!!x,\
+5,-1,3,.,wnttarg
+pck00671,a,\
+porttool.exe!3j!e6vwka!!x,\
+port.dll!13!e6vwka!!x,\
+pmatch.dll!h!e6vwka!!x,\
+pdkin32.exe!1l!e6vwka!!x,\
+oleview.exe!8z!e6vwka!!x,\
+olemess.bat!3!e6vwka!!x,\
+mspdb41.dll!ey!e6vwka!!x,\
+mshelp.dll!w!e6vwka!!x,\
+mktyplib.exe!4o!e6vwka!!x,\
+midl.exe!14q!e6vwka!!x,\
+5,-1,3,.,wnttarg
+pck00672,b,\
+spy.exe!3b!e6vwkc!!x,\
+shcv.dll!35!e6vwkc!!x,\
+send32.exe!ai!e6vwkc!!x,\
+sdkdlg.dll!3d!e6vwkc!!x,\
+sab32.exe!1r!e6vwkc!!x,\
+regsvr32.exe!1o!e6vwkc!!x,\
+rebase.exe!33!e6vwkc!!x,\
+rcdll.dll!66!e6vwkc!!x,\
+rc.exe!2g!edduns!!x,\
+qgrep.exe!3c!e6vwka!!x,\
+propvu32.dll!dl!e6vwka!!x,\
+5,-1,3,.,wnttarg
+pck00673,d,\
+vidcap32.exe!5u!e6vwkg!!x,\
+uuidgen.exe!1x!e6vwke!!x,\
+undname.exe!1u!e6vwke!!x,\
+undel.exe!34!e6vwke!!x,\
+ulcase.dll!f!e6vwke!!x,\
+tlser.dll!v!e6vwke!!x,\
+tlpipe.dll!14!e6vwke!!x,\
+tlloc.dll!i!e6vwke!!x,\
+thunk.exe!c8!e6vwke!!x,\
+tglcase.dll!f!e6vwke!!x,\
+tblvu32.dll!br!e6vwke!!x,\
+symcvt.dll!t!e6vwke!!x,\
+statvu32.dll!a4!e6vwkc!!x,\
+5,-1,3,.,wnttarg
+pck00674,5,\
+zoomin.exe!1p!e6vwki!!x,\
+xvport.dll!1z!e6vwki!!x,\
+windiff.exe!81!e6vwkg!!x,\
+windbg.exe!ue!e6vwkg!!x,\
+where.exe!2r!e6vwkg!!x,\
+5,-1,3,.,wnttarg
+pck00675,a,\
+uconvert.hlp!p!e6w01u!!x,\
+shed.hlp!3a!e6w01u!!x,\
+port.ini!r!e6w01u!!x,\
+mc.hlp!1b!e6w01u!!x,\
+imagedit.hlp!50!e6w01u!!x,\
+fontedit.hlp!12!e6w01u!!x,\
+edithlp.hlp!1a!e6w01u!!x,\
+dlgedit.hlp!ez!e6w01u!!x,\
+capview.hlp!4u!e6w01u!!x,\
+apfcvt.txt!b!e6w01u!!x,\
+1h,-1,3,.,wnttarg
+pck00676,4,\
+compress.exe!5e!e6w01w!!x,\
+cl32test.exe!zv!e6w01u!!x,\
+windiff.hlp!12!e6w01u!!x,\
+windbg.hlp!cl!e6w01u!!x,\
+1h,-1,3,.,wnttarg
+pck00677,8,\
+eecxxmip.dll!84!e6w01w!!x,\
+eecxxalp.dll!84!e6w01w!!x,\
+dobjview.exe!2o!e6w01w!!x,\
+dmkdx86.dll!5f!e6w01w!!x,\
+dmkdppc.dll!4i!e6w01w!!x,\
+dmkdmip.dll!4h!e6w01w!!x,\
+dmkdalp.dll!4f!e6w01w!!x,\
+dm.dll!4o!e6w01w!!x,\
+1h,-1,3,.,wnttarg
+pck00678,b,\
+tlser.dll!v!e6w01y!!x,\
+tlpipe.dll!14!e6w01y!!x,\
+tlloc.dll!i!e6w01y!!x,\
+symcvt.dll!t!e6w01y!!x,\
+shcv.dll!35!e6w01y!!x,\
+emx86.dll!4g!e6w01w!!x,\
+emppc.dll!32!e6w01w!!x,\
+emmip.dll!2x!e6w01w!!x,\
+emalp.dll!3e!e6w01w!!x,\
+eecxxx86.dll!86!e6w01w!!x,\
+eecxxppc.dll!85!e6w01w!!x,\
+1h,-1,3,.,wnttarg
+pck00679,2,\
+windbgrm.exe!1l!e6w01y!!x,\
+windbg.exe!v1!e6w01y!!x,\
+1h,-1,3,.,wnttarg
+pck00680,6,\
+cfmo30.dll!5q!e6vwkk!!x,\
+cfm30.dll!f2!e6vwki!!x,\
+cfgmgr32.dll!1a!e6vwki!!x,\
+capscrn.hlp!1f!e6vwki!!x,\
+capscrn.exe!2z!e6vwki!!x,\
+aviedit.exe!2h!e6vwki!!x,\
+1i,-1,3,.,wnttarg
+pck00681,e,\
+hw32.exe!36!e6vwko!!x,\
+hw32.cnt!1!e6vwkm!!x,\
+heapwalk.exe!2k!e6vwkm!!x,\
+extidgen.exe!5i!e6vwkm!!x,\
+expand.exe!y!e6vwkm!!x,\
+espexe.exe!b!e6vwkm!!x,\
+esp.tsp!4q!e6vwkm!!x,\
+dlgedit.exe!7f!e6vwkk!!x,\
+ddtest32.exe!6s!e6vwkk!!x,\
+ddtest.exe!6y!e6vwkk!!x,\
+ddespy.exe!1k!e6vwkk!!x,\
+dbwin.exe!w!e6vwkk!!x,\
+dbwin.dll!y!e6vwkk!!x,\
+cl32test.exe!qt!e6vwkk!!x,\
+1i,-1,3,.,wnttarg
+pck00682,4,\
+msvcrt.dll!ej!e6vwko!!x,\
+imagehlp.dll!5o!e6vwko!!x,\
+idfedit.exe!2g!e6vwko!!x,\
+hw32.hlp!25!e6vwko!!x,\
+1i,-1,3,.,wnttarg
+pck00683,c,\
+setupapi.dll!hr!e6vwks!!x,\
+scrncap.drv!x!e6vwkq!!x,\
+riffwalk.exe!28!e6vwkq!!x,\
+riffadd.txt!5!e6vwkq!!x,\
+riffadd.exe!1g!e6vwkq!!x,\
+repsetup.exe!t!e6vwkq!!x,\
+repeater.tsp!28!e6vwkq!!x,\
+repapp.exe!4l!e6vwkq!!x,\
+pview95.exe!2f!e6vwkq!!x,\
+pen2ctl.vbx!2t!e6vwkq!!x,\
+olepro32.dll!3z!e6vwkq!!x,\
+oleaut32.dll!pq!e6vwko!!x,\
+1i,-1,3,.,wnttarg
+pck00684,b,\
+tb13.exe!a8!e6vwku!!x,\
+switch.pif!4!e6vwku!!x,\
+switch.bat!2!e6vwku!!x,\
+stresslg.dll!m!e6vwku!!x,\
+stresshk.dll!8!e6vwks!!x,\
+stress.hlp!18!e6vwks!!x,\
+stress.exe!3a!e6vwks!!x,\
+stress.dll!3e!e6vwks!!x,\
+stdole2.tlb!x!e6vwks!!x,\
+sr32test.exe!kw!e6vwks!!x,\
+setupdll.dll!6e!e6vwks!!x,\
+1i,-1,3,.,wnttarg
+pck00685,7,\
+windebug.386!b!e6vwku!!x,\
+wdeb386.hlp!56!e6vwku!!x,\
+wdeb386.exe!cb!e6vwku!!x,\
+wdeb386.cnt!7!e6vwku!!x,\
+vidcap.hlp!4c!e6vwku!!x,\
+vidcap.exe!5t!e6vwku!!x,\
+tb14.exe!dv!e6vwku!!x,\
+1i,-1,3,.,wnttarg
+pck00686,n,\
+apf32dmp.exe!1k!e6vwky!!x,\
+alphakd.exe!7e!e6vwky!!x,\
+wst.txt!1!e6vwkw!!x,\
+wst.ini!1!e6vwkw!!x,\
+wins.mib!1f!e6vwkw!!x,\
+wap.txt!1!e6vwkw!!x,\
+toaster.mib!7!e6vwkw!!x,\
+sol.end!8e!e6vwkw!!x,\
+snmp.txt!6!e6vwkw!!x,\
+smi.mib!9!e6vwkw!!x,\
+shed.exe!59!e6vwkw!!x,\
+rlman.hlp!2d!e6vwkw!!x,\
+mib_ii.mib!5v!e6vwkw!!x,\
+lmmib2.mib!1f!e6vwkw!!x,\
+inetsrv.mib!2!e6vwkw!!x,\
+http.mib!h!e6vwkw!!x,\
+gopherd.mib!e!e6vwkw!!x,\
+ftp.mib!d!e6vwku!!x,\
+dhcp.mib!9!e6vwku!!x,\
+capview.hlp!4z!e6vwku!!x,\
+capstats.txt!c!e6vwku!!x,\
+cap.txt!2!e6vwku!!x,\
+cap.ini!3!e6vwku!!x,\
+5,-1,3,.,wnttarg
+pck00687,8,\
+cdb.exe!69!e6vwl0!!x,\
+capview.exe!9e!e6vwl0!!x,\
+capstats.exe!8a!e6vwl0!!x,\
+capsetup.exe!1m!e6vwky!!x,\
+capdump.exe!1y!e6vwky!!x,\
+cap.dll!3j!e6vwky!!x,\
+apimon.exe!a0!e6vwky!!x,\
+apidll.dll!57!e6vwky!!x,\
+5,-1,3,.,wnttarg
+pck00688,c,\
+fernel32.dll!3r!e6vwl0!!x,\
+exctrlst.exe!1t!e6vwl0!!x,\
+espui.dll!m!e6vwl0!!x,\
+espexe.exe!20!e6vwl0!!x,\
+esp32.tsp!43!e6vwl0!!x,\
+dlgedit.exe!d8!e6vwl0!!x,\
+dflayout.exe!1y!e6vwl0!!x,\
+ddespy.exe!31!e6vwl0!!x,\
+dbmon.exe!j!e6vwl0!!x,\
+cpustres.exe!1r!e6vwl0!!x,\
+comperf.exe!58!e6vwl0!!x,\
+cl32test.exe!tf!e6vwl0!!x,\
+5,-1,3,.,wnttarg
+pck00689,f,\
+psapi.dll!10!e6vwl2!!x,\
+profile.exe!1u!e6vwl2!!x,\
+probe.dll!b!e6vwl2!!x,\
+ppckd.exe!84!e6vwl2!!x,\
+pfmon.exe!2q!e6vwl2!!x,\
+perfmtr.exe!20!e6vwl2!!x,\
+pefile.dll!e!e6vwl2!!x,\
+pdh.dll!39!e6vwl2!!x,\
+ntsdexts.dll!3y!e6vwl2!!x,\
+ntsd.exe!69!e6vwl2!!x,\
+mipskd.exe!75!e6vwl2!!x,\
+mibcc.exe!1i!e6vwl2!!x,\
+mib.bin!w!e6vwl2!!x,\
+memsnap.exe!1u!e6vwl2!!x,\
+i386kd.exe!79!e6vwl2!!x,\
+5,-1,3,.,wnttarg
+pck00690,b,\
+sporder.exe!28!e6vwl4!!x,\
+sporder.dll!m!e6vwl4!!x,\
+sc.exe!2y!e6vwl4!!x,\
+rlman.exe!8a!e6vwl4!!x,\
+repsetup.exe!t!e6vwl4!!x,\
+repeater.tsp!1r!e6vwl4!!x,\
+repapp.exe!4l!e6vwl4!!x,\
+pwalk.exe!3p!e6vwl4!!x,\
+pview.exe!2z!e6vwl4!!x,\
+pstat.exe!2e!e6vwl4!!x,\
+psperf.dll!1y!e6vwl4!!x,\
+5,-1,3,.,wnttarg
+pck00691,c,\
+wstune.exe!3x!e6vwl8!!x,\
+wstdump.exe!20!e6vwl8!!x,\
+wstcat.exe!2k!e6vwl6!!x,\
+wst.dll!1j!e6vwl6!!x,\
+wperf.exe!23!e6vwl6!!x,\
+winobj.exe!aj!e6vwl6!!x,\
+windbgrm.exe!1l!e6vwl6!!x,\
+vadump.exe!3b!e6vwl6!!x,\
+uconvert.exe!2t!e6vwl6!!x,\
+top.exe!1t!e6vwl6!!x,\
+tb20.exe!8l!e6vwl6!!x,\
+sr32test.exe!od!e6vwl4!!x,\
+5,-1,3,.,wnttarg
+pck00692,3,\
+snmp.txt!6!e6w01y!!x,\
+shed.exe!5g!e6w01y!!x,\
+c_932.nls!8v!e6w01y!!x,\
+1h,-1,3,.,wnttarg
+pck00693,6,\
+thunk.exe!c8!e6vwjw!!x,\
+rcpp.exe!5f!e6vwjw!!x,\
+rcpp.err!t!e6vwjw!!x,\
+rcdump.exe!h!e6vwjw!!x,\
+rc.exe!2k!e6vwjw!!x,\
+mktyplib.exe!31!e6vwju!!x,\
+4,-1,3,.,wnttarg win32sdk
+pck00694,3,\
+uiguide.cnt!15!e6vwne!!x,\
+penvbx.hlp!a7!e6vwna!!x,\
+penvbx.cnt!9!e6vwna!!x,\
+1j,-1,3,.,wnttarg win32sdk
+pck00695,1,uiguide.hlp!258!e6vwne!!x,1j,-1,3,.,wnttarg win32sdk
+pck00696,3,\
+readme.txt!2!e6vwou!!x,\
+ipexport.h!b!e6vwos!!x,\
+icmpapi.h!7!e6vwos!!x,\
+1k,-1,3,.,wnttarg win32sdk
+pck00697,1,icmp.lib!e!e6vwpc!!x,1l,-1,3,.,wnttarg win32sdk
+pck00698,4,\
+tspi.h!1h!e6vwla!!x,\
+tapi.h!3q!e6vwla!!x,\
+skbapi.h!5!e6vwla!!x,\
+penwin.h!5s!e6vwla!!x,\
+3,-1,3,.,wnttarg win32sdk
+pck00699,1,penwin.h!60!e6w1ii!!x,1m,-1,3,.,wnttarg win32sdk
+pck00700,19,\
+mapitags.h!3q!e6vwli!!x,\
+mapispi.h!2l!e6vwlg!!x,\
+mapioid.h!6!e6vwlg!!x,\
+mapihook.h!6!e6vwlg!!x,\
+mapiguid.h!n!e6vwlg!!x,\
+mapiform.h!1j!e6vwlg!!x,\
+mapidbg.h!1d!e6vwlg!!x,\
+mapicode.h!l!e6vwlg!!x,\
+lzexpand.h!4!e6vwlg!!x,\
+loadperf.h!3!e6vwlg!!x,\
+initoid.h!3!e6vwlg!!x,\
+imm.h!15!e6vwlg!!x,\
+imessage.h!h!e6vwlg!!x,\
+ime.h!e!e6vwlg!!x,\
+imagehlp.h!1a!e6vwlg!!x,\
+ftsiface.h!e!e6vwlg!!x,\
+font.dlg!e!e6vwlg!!x,\
+findtext.dlg!7!e6vwle!!x,\
+fileopen.dlg!b!e6vwle!!x,\
+exchform.h!4!e6vwle!!x,\
+exchext.h!1o!e6vwle!!x,\
+error.h!t!e6vwle!!x,\
+dvobj.h!1!e6vwle!!x,\
+dsound.h!r!e6vwle!!x,\
+dplay.h!m!e6vwle!!x,\
+dlgs.h!c!e6vwle!!x,\
+dispatch.h!1!e6vwle!!x,\
+digitalv.h!22!e6vwle!!x,\
+ddraw.h!5k!e6vwle!!x,\
+ddeml.h!z!e6vwle!!x,\
+dde.h!a!e6vwle!!x,\
+d3dtypes.h!1r!e6vwle!!x,\
+d3drmwin.h!3!e6vwle!!x,\
+d3drmdef.h!s!e6vwle!!x,\
+d3drm.h!b!e6vwle!!x,\
+d3dcaps.h!r!e6vwlc!!x,\
+d3d.h!10!e6vwlc!!x,\
+custcntl.h!h!e6vwlc!!x,\
+cpl.h!h!e6vwlc!!x,\
+compobj.h!1!e6vwlc!!x,\
+commdlg.h!1k!e6vwlc!!x,\
+commctrl.h!4e!e6vwlc!!x,\
+color.dlg!6!e6vwlc!!x,\
+cderr.h!5!e6vwlc!!x,\
+basetyps.h!i!efwges!!x,\
+f,-1,3,.,wnttarg
+pck00701,16,\
+rpc.h!4!e6vwlo!!x,\
+richole.h!d!e6vwlo!!x,\
+regstr.h!3a!e6vwlo!!x,\
+reconcil.h!b!e6vwlo!!x,\
+recguids.h!2!e6vwlo!!x,\
+raserror.h!10!e6vwlo!!x,\
+ras.h!1s!e6vwlo!!x,\
+pshpack8.h!2!e6vwlo!!x,\
+pshpack4.h!2!e6vwlo!!x,\
+pshpack2.h!2!e6vwlo!!x,\
+pshpack1.h!2!e6vwlo!!x,\
+prnsetup.dlg!c!e6vwlo!!x,\
+poppack.h!2!e6vwlo!!x,\
+oleidl.idl!1j!e6vwlo!!x,\
+olectlid.h!2!e6vwlm!!x,\
+olectl.h!14!e6vwlm!!x,\
+ole2ver.h!2!e6vwlm!!x,\
+ole2.h!p!e6vwlm!!x,\
+ole.h!1f!e6vwlm!!x,\
+ocidl.idl!21!e6vwlm!!x,\
+objidl.idl!3o!e6vwlm!!x,\
+objerror.h!1!e6vwlk!!x,\
+oaidl.idl!2w!e6vwlk!!x,\
+ntwin32.mak!1!e6vwlk!!x,\
+nb30.h!p!e6vwlk!!x,\
+mswsock.h!9!e6vwlk!!x,\
+mspst.h!a!e6vwlk!!x,\
+mspab.h!5!e6vwlk!!x,\
+msfs.h!y!e6vwlk!!x,\
+msacmdlg.h!3!e6vwli!!x,\
+msacmdlg.dlg!6!e6vwli!!x,\
+msacm.h!37!e6vwli!!x,\
+moniker.h!1!e6vwli!!x,\
+mmsystem.h!8e!e6vwli!!x,\
+mmreg.h!3s!e6vwli!!x,\
+midles.h!c!e6vwli!!x,\
+mcx.h!8!e6vwli!!x,\
+mciavi.h!6!e6vwli!!x,\
+mapix.h!1k!e6vwli!!x,\
+mapiwz.h!4!e6vwli!!x,\
+mapiwin.h!v!e6vwli!!x,\
+mapival.h!4w!e6vwli!!x,\
+f,-1,3,.,wnttarg
+pck00702,p,\
+wdbgexts.h!q!e6vwls!!x,\
+w32chico.mk!1!e6vwls!!x,\
+vfw.h!7l!e6vwls!!x,\
+variant.h!1!e6vwls!!x,\
+unknwn.idl!4!e6vwls!!x,\
+tspi.h!2a!e6vwls!!x,\
+tnef.h!s!e6vwls!!x,\
+tapi.h!86!e6vwls!!x,\
+storage.h!1!e6vwlq!!x,\
+snmp.h!y!e6vwlq!!x,\
+smpxp.h!8!e6vwlq!!x,\
+smpms.h!4!e6vwlq!!x,\
+smpab.h!3!e6vwlq!!x,\
+shlobj.h!56!e6vwlq!!x,\
+shlguid.h!a!e6vwlq!!x,\
+shellapi.h!x!e6vwlq!!x,\
+setupapi.h!5k!e6vwlq!!x,\
+sehmap.h!2!e6vwlq!!x,\
+scrnsave.h!h!e6vwlq!!x,\
+scode.h!1!e6vwlq!!x,\
+rpcnterr.h!4!e6vwlq!!x,\
+rpcnsip.h!3!e6vwlq!!x,\
+rpcnsi.h!t!e6vwlq!!x,\
+rpcdcep.h!j!e6vwlq!!x,\
+rpcdce.h!2b!e6vwlo!!x,\
+f,-1,3,.,wnttarg
+pck00703,g,\
+winver.h!j!e6vwlw!!x,\
+wintrust.h!m!e6vwlw!!x,\
+winspool.h!2v!e6vwlw!!x,\
+winsock2.h!54!e6vwlw!!x,\
+winsock.h!1u!e6vwlw!!x,\
+winresrc.h!2x!e6vwlu!!x,\
+winreg.h!s!e6vwlu!!x,\
+winnls32.h!5!e6vwlu!!x,\
+winnls.h!26!e6vwlu!!x,\
+winnetwk.h!19!e6vwlu!!x,\
+wingdi.h!81!e6vwlu!!x,\
+winerror.h!b1!e6vwlu!!x,\
+windowsx.h!40!e6vwlu!!x,\
+windef.h!e!e6vwls!!x,\
+wincrypt.h!q!e6vwls!!x,\
+winbase.h!8e!e6vwls!!x,\
+f,-1,3,.,wnttarg
+pck00704,h,\
+objbase.h!1n!e6vwlk!!x,\
+oaidl.h!aq!e6vwlk!!x,\
+mapiutil.h!1o!e6vwli!!x,\
+mapinls.h!e!e6vwlg!!x,\
+mapidefs.h!5n!e6vwlg!!x,\
+mapi.h!o!e6vwlg!!x,\
+initguid.h!3!e6vwlg!!x,\
+cguid.h!8!e6vwlc!!x,\
+xcmcmsxt.h!4!e6vwly!!x,\
+xcmcmsx2.h!3!e6vwly!!x,\
+xcmcext.h!6!e6vwly!!x,\
+xcmc.h!s!e6vwly!!x,\
+wtypes.idl!23!e6vwly!!x,\
+wsvns.h!3!e6vwly!!x,\
+wsipx.h!4!e6vwlw!!x,\
+ws2spi.h!11!e6vwlw!!x,\
+winwlx.h!17!e6vwlw!!x,\
+f,-1,3,.,wnttarg
+pck00705,d,\
+windows.h!a!e6vwls!!x,\
+wincon.h!t!e6vwls!!x,\
+win32.mak!t!e6vwls!!x,\
+unknwn.h!j!e6vwls!!x,\
+rpcproxy.h!y!e6vwlq!!x,\
+rpcndr.h!46!e6vwlq!!x,\
+richedit.h!1n!e6vwlo!!x,\
+prsht.h!p!e6vwlo!!x,\
+oleidl.h!8p!e6vwlo!!x,\
+oledlg.h!42!e6vwlm!!x,\
+oleauto.h!1t!e6vwlm!!x,\
+ocidl.h!db!e6vwlm!!x,\
+objidl.h!hz!e6vwlk!!x,\
+f,-1,3,.,wnttarg
+pck00706,6,\
+winnt.h!9u!e6vwlu!!x,\
+wtypes.h!1n!e6vwly!!x,\
+excpt.h!4!e6vwle!!x,\
+d3drmobj.h!1s!e6vwle!!x,\
+wsnwlink.h!j!e6vwly!!x,\
+winuser.h!ai!e6vwlw!!x,\
+f,-1,3,.,wnttarg
+pck00707,2,\
+winuser.h!ah!e6w022!!x,\
+wingdi.h!89!e6w022!!x,\
+1n,-1,3,.,wnttarg
+pck00708,3,\
+glu.h!10!e6vwm0!!x,\
+glaux.h!o!e6vwly!!x,\
+gl.h!3q!e6vwly!!x,\
+1o,-1,3,.,wnttarg
+pck00709,c,\
+wsvv.h!4!e6vwm0!!x,\
+vcr.h!14!e6vwm0!!x,\
+tlhelp32.h!c!e6vwm0!!x,\
+svrapi.h!2k!e6vwm0!!x,\
+penwin.h!5s!e6vwm0!!x,\
+pcrt32.h!3!e6vwm0!!x,\
+pbt.h!3!e6vwm0!!x,\
+idf.h!p!e6vwm0!!x,\
+dispdib.h!m!e6vwm0!!x,\
+dbt.h!l!e6vwm0!!x,\
+cplext.h!5!e6vwm0!!x,\
+callconv.inc!e!e6vwm0!!x,\
+f,-1,3,.,wnttarg
+pck00710,1,penwin.h!60!e6w022!!x,1n,-1,3,.,wnttarg
+pck00711,1j,\
+wsnetbs.h!5!e6vwm6!!x,\
+wshisotp.h!7!e6vwm6!!x,\
+ws2tcpip.h!6!e6vwm6!!x,\
+ws2atm.h!x!e6vwm6!!x,\
+wownt32.h!k!e6vwm6!!x,\
+wownt16.h!9!e6vwm6!!x,\
+winsvc.h!12!e6vwm6!!x,\
+winperf.h!1k!e6vwm6!!x,\
+winioctl.h!1o!e6vwm6!!x,\
+wfext.h!d!e6vwm4!!x,\
+vdmdbg.h!r!e6vwm4!!x,\
+svcguid.h!w!e6vwm4!!x,\
+sporder.h!4!e6vwm4!!x,\
+rasshost.h!a!e6vwm4!!x,\
+rassapi.h!l!e6vwm4!!x,\
+rasdlg.h!d!e6vwm4!!x,\
+pdhmsg.h!h!e6vwm4!!x,\
+pdh.h!w!e6vwm4!!x,\
+ntsdexts.h!3!e6vwm4!!x,\
+nspapi.h!12!e6vwm4!!x,\
+nddesec.h!7!e6vwm4!!x,\
+nddeapi.h!t!e6vwm4!!x,\
+mgmtapi.h!b!e6vwm4!!x,\
+lsapi.h!n!e6vwm4!!x,\
+lmwksta.h!x!e6vwm4!!x,\
+lmuseflg.h!2!e6vwm4!!x,\
+lmuse.h!8!e6vwm4!!x,\
+lmsvc.h!r!e6vwm4!!x,\
+lmstats.h!b!e6vwm4!!x,\
+lmsname.h!6!e6vwm4!!x,\
+lmshare.h!l!e6vwm4!!x,\
+lmserver.h!2m!e6vwm2!!x,\
+lmrepl.h!e!e6vwm2!!x,\
+lmremutl.h!6!e6vwm2!!x,\
+lmmsg.h!5!e6vwm2!!x,\
+lmerrlog.h!24!e6vwm2!!x,\
+lmerr.h!20!e6vwm2!!x,\
+lmcons.h!f!e6vwm2!!x,\
+lmconfig.h!4!e6vwm2!!x,\
+lmchdev.h!b!e6vwm2!!x,\
+lmbrowsr.h!c!e6vwm2!!x,\
+lmaudit.h!m!e6vwm2!!x,\
+lmat.h!7!e6vwm2!!x,\
+lmapibuf.h!3!e6vwm2!!x,\
+lmalert.h!8!e6vwm2!!x,\
+lmaccess.h!28!e6vwm2!!x,\
+lm.h!3!e6vwm2!!x,\
+httpfilt.h!q!e6vwm2!!x,\
+httpext.h!g!e6vwm2!!x,\
+dlcapi.h!1v!e6vwm2!!x,\
+colordlg.h!3!e6vwm2!!x,\
+atalkwsh.h!9!e6vwm0!!x,\
+alphaops.h!2d!e6vwm0!!x,\
+aclapi.h!s!e6vwm0!!x,\
+accctrl.h!i!e6vwm0!!x,\
+f,-1,3,.,wnttarg
+pck00712,1,winioctl.h!1p!e6w022!!x,1n,-1,3,.,wnttarg
+pck00713,2,\
+user32.lib!sm!e6w024!!x,\
+gdi32.lib!h4!e6w024!!x,\
+1p,-1,3,.,wnttarg
+pck00714,b,\
+imm32.lib!3u!e6vwm8!!x,\
+imagehlp.lib!39!e6vwm8!!x,\
+gdi32.lib!gp!e6vwm8!!x,\
+fdi.lib!4m!e6vwm8!!x,\
+dsound.lib!9!e6vwm8!!x,\
+dplay.lib!7!e6vwm8!!x,\
+ddraw.lib!12!e6vwm8!!x,\
+d3drm.lib!17!e6vwm8!!x,\
+comdlg32.lib!1a!e6vwm8!!x,\
+comctl32.lib!6g!e6vwm8!!x,\
+advapi32.lib!kq!e6vwm8!!x,\
+o,-1,3,.,wnttarg
+pck00715,9,\
+oleaut32.lib!ck!e6vwma!!x,\
+ole32.lib!d7!e6vwma!!x,\
+mswsock.lib!1e!e6vwma!!x,\
+msacm32.lib!2c!e6vwma!!x,\
+mpr.lib!41!e6vwma!!x,\
+mapi32.lib!6l!e6vwma!!x,\
+mapi.lib!x!e6vwmm!!x,\
+lz32.lib!o!e6vwma!!x,\
+kernel32.lib!yi!e6vwm8!!x,\
+o,-1,3,.,wnttarg
+pck00716,6,\
+rpcrt4.lib!m7!e6vwmc!!x,\
+rpcns4.lib!35!e6vwmc!!x,\
+rpcndr.lib!16!e6vwmc!!x,\
+rasapi32.lib!3x!e6vwmc!!x,\
+olepro32.lib!b!e6vwma!!x,\
+oledlg.lib!17!e6vwma!!x,\
+o,-1,3,.,wnttarg
+pck00717,1,setupapi.lib!ds!e6vwmc!!x,o,-1,3,.,wnttarg
+pck00718,3,\
+thunk32.lib!2f!e6vwme!!x,\
+tapi32.lib!g0!e6vwme!!x,\
+shell32.lib!19g!e6vwme!!x,\
+o,-1,3,.,wnttarg
+pck00719,8,\
+wintrust.lib!9!e6vwmi!!x,\
+winstrm.lib!g!e6vwmi!!x,\
+winspool.lib!76!e6vwmi!!x,\
+winmm.lib!9y!e6vwmi!!x,\
+vfw32.lib!6o!e6vwmg!!x,\
+version.lib!u!e6vwmg!!x,\
+uuid.lib!cg!e6vwmg!!x,\
+user32.lib!s2!e6vwme!!x,\
+o,-1,3,.,wnttarg
+pck00720,9,\
+wow32.lib!q!e6vwmi!!x,\
+th32.lib!j!e6vwmi!!x,\
+svrapi.lib!u!e6vwmi!!x,\
+pkpd32.lib!16!e6vwmi!!x,\
+penwin32.lib!36!e6vwmi!!x,\
+mfcuia32.lib!g!e6vwmi!!x,\
+mapi.lib!x!e6vwmm!!x,\
+wsock32.lib!3c!e6vwmi!!x,\
+ws2_32.lib!53!e6vwmi!!x,\
+o,-1,3,.,wnttarg
+pck00721,2,\
+pkpd32.lib!16!e6w024!!x,\
+penwin32.lib!3b!e6w024!!x,\
+1p,-1,3,.,wnttarg
+pck00722,5,\
+dlcapi.lib!9!e6vwmk!!x,\
+dflayout.lib!6!e6vwmk!!x,\
+cap.lib!a!e6vwmi!!x,\
+commode.obj!1!ed7tv0!!x,\
+chkstk.obj!3!e6vwmk!!x,\
+o,-1,3,.,wnttarg
+pck00723,b,\
+rassapi.lib!r!e6vwmo!!x,\
+rasdlg.lib!m!e6vwmo!!x,\
+penter.lib!8!e6vwmo!!x,\
+pdh.lib!2j!e6vwmo!!x,\
+opengl32.lib!i9!e6vwmo!!x,\
+netapi32.lib!e7!e6vwmm!!x,\
+nddeapi.lib!1d!e6vwmm!!x,\
+mgmtapi.lib!k!e6vwmm!!x,\
+loadperf.lib!e!e6vwmm!!x,\
+glu32.lib!2p!e6vwmm!!x,\
+glaux.lib!os!efon40!!x,\
+o,-1,3,.,wnttarg
+pck00724,6,\
+wst.lib!5!e6vwmo!!x,\
+win32spl.lib!9!e6vwmo!!x,\
+vdmdbg.lib!12!e6vwmo!!x,\
+sporder.lib!5!e6vwmo!!x,\
+snmpapi.lib!22!e6vwmo!!x,\
+scrnsave.lib!1u!e6vwmo!!x,\
+o,-1,3,.,wnttarg
+pck00725,2,\
+pdk95.inf!3!e6vwow!!x,\
+mapi95.bat!1!e6vwow!!x,\
+1q,-1,3,.,sdk_mapi win32sdk
+pck00726,7,\
+smpab.dll!39!e6vwpg!!x,\
+send.exe!6h!e6vwpg!!x,\
+route.exe!2o!e6vwpg!!x,\
+propvu.dll!al!e6vwpg!!x,\
+mdbvu.exe!fr!e6vwpe!!x,\
+cmccli.exe!2m!e6vwpe!!x,\
+abview.exe!85!e6vwpe!!x,\
+1r,-1,3,.,sdk_mapi win32sdk
+pck00727,7,\
+xvport.dll!17!e6vwpi!!x,\
+wcheck.exe!33!e6vwpi!!x,\
+tblvu.dll!8s!e6vwpg!!x,\
+statvu.dll!76!e6vwpg!!x,\
+smpxp.dll!3o!e6vwpg!!x,\
+smpms.dll!55!e6vwpg!!x,\
+smpcli.exe!1w!e6vwpg!!x,\
+1r,-1,3,.,sdk_mapi win32sdk
+pck00728,p,\
+wchecks.ico!2!e6vwpk!!x,\
+wcheck.ico!2!e6vwpk!!x,\
+mdisp32.reg!6!e6vwpk!!x,\
+mdisp.reg!6!e6vwpk!!x,\
+mapirpc.reg!o!e6vwpk!!x,\
+mapif5s.ico!2!e6vwpk!!x,\
+mapif5l.ico!2!e6vwpk!!x,\
+mapif5.cfg!2!e6vwpk!!x,\
+mapif4s.ico!2!e6vwpk!!x,\
+mapif4l.ico!2!e6vwpk!!x,\
+mapif4.cfg!2!e6vwpk!!x,\
+mapif3s.ico!2!e6vwpk!!x,\
+mapif3l.ico!2!e6vwpi!!x,\
+mapif3.cfg!2!e6vwpi!!x,\
+mapif2s.ico!2!e6vwpi!!x,\
+mapif2l.ico!2!e6vwpi!!x,\
+mapif2.cfg!8!e6vwpi!!x,\
+mapif1s.ico!2!e6vwpi!!x,\
+mapif1l.ico!2!e6vwpi!!x,\
+mapif1.cfg!2!e6vwpi!!x,\
+mapif0s.ico!2!e6vwpi!!x,\
+mapif0l.ico!2!e6vwpi!!x,\
+mapif0.cfg!2!e6vwpi!!x,\
+mapif.reg!8!e6vwpi!!x,\
+chkrform.cfg!4!e6vwpi!!x,\
+1s,-1,3,.,sdk_mapi win32sdk
+pck00729,3,\
+exchng32.exe!4k!e6vwpo!!x,\
+exchng.hlp!za!e6vwpm!!x,\
+default.prf!u!e6vwpm!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00730,6,\
+mdisp.tlb!10!e6vwpq!!x,\
+mapisrvr.exe!27!e6vwpq!!x,\
+mapisp32.exe!1d!e6vwpq!!x,\
+mapipdk.inf!7!e6vwpq!!x,\
+mapi32.dll!zg!e6vwpq!!x,\
+mapi.dll!qp!e6vwpo!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00731,6,\
+msfs.hlp!25!e6vwps!!x,\
+mmfmig32.dll!ex!e6vwps!!x,\
+mlcfg32.cpl!2i!e6vwps!!x,\
+mergeini.exe!n!e6vwps!!x,\
+mdisp32.tlb!10!e6vwps!!x,\
+mdisp32.exe!59!e6vwpq!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00732,2,\
+mspst32.dll!rd!e6vwpu!!x,\
+msfs32.dll!qn!e6vwps!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00733,c,\
+setup.mst!s!e6vwpw!!x,\
+setup.lst!2!e6vwpw!!x,\
+setup.ini!1!e6vwpw!!x,\
+setup.inf!7!e6vwpw!!x,\
+setup.exe!1d!e6vwpw!!x,\
+scanpst.hlp!k!e6vwpw!!x,\
+scanpst.exe!g2!e6vwpw!!x,\
+riched32.dll!9k!e6vwpw!!x,\
+readme.wri!1k!e6vwpw!!x,\
+newprof.exe!2b!e6vwpu!!x,\
+netsetup.lst!2!e6vwpu!!x,\
+msvcrt40.dll!gz!e6vwpu!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00734,1,wmsfr32.dll!cv!e6vwpw!!x,1t,-1,3,.,sdk_mapi win32sdk
+pck00735,g,\
+ver.dll!i!e6vwpw!!x,\
+setupapi.ini!32!e6vwpw!!x,\
+msuilstf.dll!c!e6vwpu!!x,\
+msshlstf.dll!u!e6vwpu!!x,\
+msshared.ini!8!e6vwpu!!x,\
+msregdb.ini!9!e6vwpu!!x,\
+msinsstf.dll!3k!e6vwpu!!x,\
+msdetstf.dll!1c!e6vwps!!x,\
+msdetect.ini!18!e6vwps!!x,\
+mscuistf.dll!1r!e6vwps!!x,\
+mscpydis.ini!f!e6vwps!!x,\
+mscpydis.dll!n!e6vwps!!x,\
+mscomstf.dll!42!e6vwps!!x,\
+_mstest.exe!4v!e6vwpy!!x,\
+_mssetup.exe!k!e6vwpy!!x,\
+wmsui32.dll!1jr!e6vwpy!!x,\
+1t,-1,3,.,sdk_mapi win32sdk
+pck00736,1,mapi.dll!3yw!e6vwqc!!x,1u,-1,3,.,sdk_mapi win32sdk
+pck00737,6,\
+mdisp32.tlb!10!e6vwqi!!x,\
+mdisp32.exe!aw!e6vwqi!!x,\
+mdisp.tlb!10!e6vwqi!!x,\
+mapisrvr.exe!5y!e6vwqg!!x,\
+mapisp32.exe!3q!e6vwqg!!x,\
+mapi32.dll!2dw!e6vwqg!!x,\
+1u,-1,3,.,sdk_mapi win32sdk
+pck00738,1,mspst32.dll!20b!e6vwqk!!x,1u,-1,3,.,sdk_mapi win32sdk
+pck00739,6,\
+exchng.exe!4h!e6vwpy!!x,\
+excfg.exe!d!e6vwpy!!x,\
+default.prf!u!e6vwpy!!x,\
+ctl3dv2.dll!1i!e6vwpy!!x,\
+compobj.dll!5x!e6vwpy!!x,\
+cmc.dll!d!e6vwpy!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00740,1,exchng.hlp!114!e6vwq0!!x,1v,-1,3,.,sdk_mapi win32sdk
+pck00741,a,\
+mmfmig.dll!5l!e6vwq0!!x,\
+mlctrl.dll!6f!e6vwq0!!x,\
+mlcfg.cpl!3k!e6vwq0!!x,\
+mergeini.exe!n!e6vwq0!!x,\
+mdisp.tlb!10!e6vwq0!!x,\
+mdisp.exe!5i!e6vwq0!!x,\
+mapix.dll!9!e6vwq0!!x,\
+mapiu.dll!b!e6vwq0!!x,\
+mapisp.exe!d!e6vwq0!!x,\
+mapi.dll!1cc!e6vwq0!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00742,4,\
+netsetup.lst!2!e6vwq4!!x,\
+mspst.dll!12w!e6vwq4!!x,\
+msfs.hlp!2g!e6vwq2!!x,\
+msfs.dll!11a!e6vwq2!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00743,8,\
+pdkin.exe!h!e6vwq6!!x,\
+ole2prox.dll!2t!e6vwq6!!x,\
+ole2nls.dll!8b!e6vwq6!!x,\
+ole2disp.dll!8z!e6vwq4!!x,\
+ole2conv.dll!34!e6vwq4!!x,\
+ole2.reg!1h!e6vwq4!!x,\
+ole2.dll!gj!e6vwq4!!x,\
+newprof.exe!1d!e6vwq4!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00744,a,\
+stdole.tlb!b!e6vwq8!!x,\
+setup.mst!s!e6vwq8!!x,\
+setup.lst!2!e6vwq6!!x,\
+setup.ini!1!e6vwq6!!x,\
+setup.inf!a!e6vwq6!!x,\
+setup.exe!1d!e6vwq6!!x,\
+scanpst.hlp!n!e6vwq6!!x,\
+scanpst.exe!me!e6vwq6!!x,\
+riched.dll!d3!e6vwq6!!x,\
+readme.wri!1k!e6vwq6!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00745,3,\
+wmsfr.dll!hm!e6vwq8!!x,\
+typelib.dll!9o!e6vwq8!!x,\
+storage.dll!8k!e6vwq8!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00746,g,\
+ver.dll!i!e6vwq8!!x,\
+setupapi.ini!32!e6vwq8!!x,\
+msuilstf.dll!c!e6vwq4!!x,\
+msshlstf.dll!u!e6vwq4!!x,\
+msshared.ini!8!e6vwq4!!x,\
+msregdb.ini!9!e6vwq4!!x,\
+msinsstf.dll!3k!e6vwq2!!x,\
+msdetstf.dll!1c!e6vwq2!!x,\
+msdetect.ini!18!e6vwq2!!x,\
+mscuistf.dll!1r!e6vwq2!!x,\
+mscpydis.ini!f!e6vwq2!!x,\
+mscpydis.dll!n!e6vwq2!!x,\
+mscomstf.dll!42!e6vwq2!!x,\
+_mstest.exe!4v!e6vwqa!!x,\
+_mssetup.exe!k!e6vwqa!!x,\
+wmsui.dll!1se!e6vwq8!!x,\
+1v,-1,3,.,sdk_mapi win32sdk
+pck00747,4,\
+mdisp.tlb!10!e6vwqs!!x,\
+mdisp.exe!x9!e6vwqs!!x,\
+mapisp.exe!2r!e6vwqs!!x,\
+mapi.dll!6hg!e6vwqs!!x,\
+1w,-1,3,.,sdk_mapi win32sdk
+pck00748,1,mspst.dll!5nx!e6vwr0!!x,1w,-1,3,.,sdk_mapi win32sdk
+pck00749,4,\
+mdisp.tlb!10!e6vwr2!!x,\
+mdisp.exe!5i!e6vwr2!!x,\
+mapisp.exe!d!e6vwr0!!x,\
+mapi.dll!1cc!e6vwr0!!x,\
+1x,-1,3,.,sdk_mapi win32sdk
+pck00750,1,mspst.dll!12w!e6vwr2!!x,1x,-1,3,.,sdk_mapi win32sdk
+pck00751,1,dmdisp.tlb!x!e6vwr2!!x,20,-1,3,.,sdk_mapi win32sdk
+pck00752,1,mapi.dll!3pr!e6vwr4!!x,20,-1,3,.,sdk_mapi win32sdk
+pck00753,3,\
+mapisrvr.exe!hm!e6vwr6!!x,\
+mapisp32.exe!b1!e6vwr6!!x,\
+mapi32.dll!651!e6vwr6!!x,\
+20,-1,3,.,sdk_mapi win32sdk
+pck00754,2,\
+mdisp32.tlb!y!e6vwr8!!x,\
+mdisp32.exe!1dd!e6vwr8!!x,\
+20,-1,3,.,sdk_mapi win32sdk
+pck00755,1,mspst32.dll!4v5!e6vwra!!x,20,-1,3,.,sdk_mapi win32sdk
+pck00756,1,wmsui32.dll!7t8!e6vwre!!x,20,-1,3,.,sdk_mapi win32sdk
+pck00757,7,\
+mdisp32.tlb!y!e6vwrg!!x,\
+mdisp32.exe!4h!e6vwrg!!x,\
+mdisp.tlb!x!e6vwrg!!x,\
+mapisrvr.exe!1c!e6vwre!!x,\
+mapisp32.exe!f!e6vwre!!x,\
+mapi32.dll!wp!e6vwre!!x,\
+mapi.dll!nz!e6vwre!!x,\
+22,-1,3,.,sdk_mapi win32sdk
+pck00758,1,mspst32.dll!l2!e6vwrg!!x,22,-1,3,.,sdk_mapi win32sdk
+pck00759,1,wmsui32.dll!1at!e6vwrg!!x,22,-1,3,.,sdk_mapi win32sdk
+pck00760,1,readme.txt!5!e6vwoy!!x,23,-1,3,.,wnttarg win32sdk
+pck00761,2,\
+opengl32.dll!13t!e6vwri!!x,\
+glu32.dll!7l!e6vwri!!x,\
+24,-1,3,.,wnttarg win32sdk
+pck00762,1,setnvpsx.bat!1!e6vwoy!!x,25,-1,3,.,wnttarg win32sdk
+pck00763,c,\
+utime.h!1!e6vwrk!!x,\
+unistd.h!8!e6vwrk!!x,\
+types.h!1!e6vwrk!!x,\
+termios.h!a!e6vwrk!!x,\
+tar.h!3!e6vwrk!!x,\
+signal.h!4!e6vwrk!!x,\
+setjmp.h!c!e6vwrk!!x,\
+pwd.h!2!e6vwrk!!x,\
+grp.h!2!e6vwrk!!x,\
+fcntl.h!4!e6vwri!!x,\
+errno.h!1!e6vwri!!x,\
+dirent.h!2!e6vwri!!x,\
+26,-1,3,.,wnttarg win32sdk
+pck00764,6,\
+wait.h!4!e6vwrk!!x,\
+utsname.h!2!e6vwrk!!x,\
+types.h!5!e6vwrk!!x,\
+times.h!2!e6vwrk!!x,\
+stat.h!4!e6vwrk!!x,\
+errno.h!6!e6vwrk!!x,\
+27,-1,3,.,wnttarg win32sdk
+pck00765,3,\
+psxrtl.lib!k!e6vwms!!x,\
+psxdll.lib!5p!e6vwms!!x,\
+libcpsx.lib!2aq!e6vwms!!x,\
+o,-1,3,.,wnttarg win32sdk
+pck00766,12,\
+_mstest.ex_!31!e6vxko!!x,\
+toolhelp.dl_!l!e6vxko!!x,\
+setupapi.in_!r!e6vxko!!x,\
+setup.lst!2!e6vxko!!x,\
+setup.exe!1d!e6vxko!!x,\
+security.rp_!k!e6vxko!!x,\
+security.dl_!r!e6vxko!!x,\
+rpcrun.mst!1l!e6vxko!!x,\
+rpcrun.in_!3!e6vxko!!x,\
+rpcrt1.dl_!6g!e6vxko!!x,\
+rpcnsmgm.rp_!i!e6vxko!!x,\
+rpcnslm.rp_!o!e6vxko!!x,\
+rpcns1.dl_!n!e6vxko!!x,\
+rpcns.rp_!d!e6vxkm!!x,\
+rpc16dg6.rp_!d!e6vxkm!!x,\
+rpc16dg6.dl_!h!e6vxkm!!x,\
+rpc16dg3.rp_!d!e6vxkm!!x,\
+rpc16dg3.dl_!8!e6vxkm!!x,\
+rpc16c6.rp_!d!e6vxkm!!x,\
+rpc16c6.dl_!h!e6vxkm!!x,\
+rpc16c5.rp_!9!e6vxkm!!x,\
+rpc16c5.dl_!c!e6vxkm!!x,\
+rpc16c4.rp_!a!e6vxkm!!x,\
+rpc16c4.dl_!g!e6vxkm!!x,\
+rpc16c3x.dl_!9!e6vxkm!!x,\
+rpc16c3.rp_!d!e6vxkm!!x,\
+rpc16c3.dl_!f!e6vxkm!!x,\
+rpc16c1.rp_!5!e6vxkk!!x,\
+rpc16c1.dl_!6!e6vxkk!!x,\
+readme.tx_!1!e6vxkk!!x,\
+msuilstf.dl_!8!e6vxkk!!x,\
+msshlstf.dl_!j!e6vxkk!!x,\
+msinsstf.dl_!28!e6vxkk!!x,\
+msdetstf.dl_!u!e6vxkk!!x,\
+msdetect.in_!a!e6vxkk!!x,\
+mscuistf.dl_!w!e6vxkk!!x,\
+mscomstf.dl_!29!e6vxkk!!x,\
+aver.dl_!d!e6vxkk!!x,\
+29,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00767,1,readme.txt!1!e6vwp0!!x,2a,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00768,t,\
+setuprun.lst!2!e6vwro!!x,\
+setupapi.inc!31!e6vwro!!x,\
+setup.lst!2!e6vwro!!x,\
+setup.exe!1d!e6vwro!!x,\
+rpcx86.h_!2!e6vwro!!x,\
+rpcsdk.mst!13!e6vwro!!x,\
+rpcsdk.in_!2!e6vwro!!x,\
+rpcnsip.h_!2!e6vwro!!x,\
+rpcnsi.h_!6!e6vwro!!x,\
+rpcndr.h_!12!e6vwro!!x,\
+rpcmac.h_!2!e6vwro!!x,\
+rpcerr.h_!5!e6vwro!!x,\
+rpcdcep.h_!7!e6vwro!!x,\
+rpcdce.h_!i!e6vwrm!!x,\
+readme.txt!1!e6vwrm!!x,\
+msuilstf.dll!c!e6vwrm!!x,\
+msshlstf.dll!u!e6vwrm!!x,\
+msinsstf.dll!3k!e6vwrm!!x,\
+msdetstf.dll!1c!e6vwrm!!x,\
+msdetect.inc!18!e6vwrm!!x,\
+mscuistf.dl_!1a!e6vwrm!!x,\
+mscomstf.dll!42!e6vwrm!!x,\
+mrpc.li_!7w!e6vwrm!!x,\
+mrpc.h_!2!e6vwrm!!x,\
+midles.h_!4!e6vwrm!!x,\
+drpcndr.li_!2!e6vwrm!!x,\
+drpc.li_!9f!e6vwrk!!x,\
+drpc.h_!2!e6vwrk!!x,\
+dnetapi.dl_!2!e6vwrk!!x,\
+2b,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00769,5,\
+_mstest.exe!4v!e6vwrq!!x,\
+wrpcndr.li_!2!e6vwrq!!x,\
+wrpc.li_!t!e6vwrq!!x,\
+wrpc.h_!2!e6vwrq!!x,\
+uuidgen.ex_!5m!e6vwro!!x,\
+2b,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00770,a,\
+wgen.r!4!e6vwrq!!x,\
+readme.txt!4!e6vwrq!!x,\
+makefile!2!e6vwrq!!x,\
+hellos.c!a!e6vwrq!!x,\
+hellores.h!2!e6vwrq!!x,\
+hellop.c!4!e6vwrq!!x,\
+helloc.c!s!e6vwrq!!x,\
+hello.rc!8!e6vwrq!!x,\
+hello.idl!1!e6vwrq!!x,\
+hello.acf!1!e6vwrq!!x,\
+2c,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00771,1,makefile!5!e6vwrq!!x,2d,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00772,1,makefile!2!e6vwrs!!x,2e,-1,3,.,wnttarg win32sdk sdk_rpc
+pck00773,1,readme.txt!2!e6vwp2!!x,2f,-1,3,.,wnttarg win32sdk
+pck00774,1,snmpapi.dll!2d!e6vxk8!!x,2h,-1,3,.,wnttarg win32sdk
+pck00775,1,snmpapi.dll!1k!e6vxk8!!x,2i,-1,3,.,wnttarg win32sdk
+pck01446,2,\
+README.TXT!2!e0ex3o!!x,\
+INSTALL.BAT!7!e0ex3o!!x,\
+2j,-1,3,.,sdk_win32s win32sdk
+pck01447,7,\
+WIN32SDB.EXE!10!e0et6s!!x,\
+WIN32S.DAT!1p!e0et6s!!x,\
+WDEB386.EXE!5r!e0et6s!!x,\
+SWITCH.BAT!a!e0et6s!!x,\
+MKNTMSG.EXE!2s!e0et6q!!x,\
+MAPSYMPE.EXE!3e!e0et6q!!x,\
+CPPACK.EXE!1x!e0et6q!!x,\
+2k,-1,3,.,sdk_win32s win32sdk
+pck01448,5,\
+COMPOBJ.DLL!z5!e0et6s!!x,\
+COMDLG32.SYM!2!e0et6s!!x,\
+COMDLG32.DLL!36!e0et6s!!x,\
+COMCTL32.SYM!1q!e0et6s!!x,\
+COMCTL32.DLL!g8!e0et6s!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01449,4,\
+DBUGIT32.DLL!ka!e0et6u!!x,\
+CRTDLL.SYM!1e!e0et6u!!x,\
+CRTDLL.DLL!b4!e0et6s!!x,\
+COMPOBJ.SYM!a!e0et6s!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01450,7,\
+NTMSG.DLL!39!e0et6u!!x,\
+NETAPI32.SYM!e!e0et6u!!x,\
+NETAPI32.DLL!12!e0et6u!!x,\
+LZ32.SYM!1!e0et6u!!x,\
+LZ32.DLL!a!e0et6u!!x,\
+FTSRCH.SYM!42!e0et6u!!x,\
+FTSRCH.DLL!lu!e0et6u!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01451,5,\
+OLE2CONV.SYM!g!e0et6w!!x,\
+OLE2CONV.DLL!34!e0et6w!!x,\
+OLE2.SYM!9!e0et6w!!x,\
+OLE2.REG!1j!e0et6w!!x,\
+OLE2.DLL!269!e0et6w!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01452,4,\
+OLE2NLS.SYM!g!e0et6w!!x,\
+OLE2NLS.DLL!uz!e0et6w!!x,\
+OLE2DISP.SYM!2n!e0et6w!!x,\
+OLE2DISP.DLL!1ge!e0et6w!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01453,3,\
+OLE2THK.DLL!2r!e0et6y!!x,\
+OLE2PROX.SYM!1!e0et6y!!x,\
+OLE2PROX.DLL!od!e0et6y!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01454,4,\
+OLEAUT32.SYM!5o!e0et6y!!x,\
+OLEAUT32.DLL!nz!e0et6y!!x,\
+OLE32.SYM!ak!e0et6y!!x,\
+OLE32.DLL!197!e0et6y!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01455,7,\
+OLESVR32.SYM!1!e0et70!!x,\
+OLESVR32.DLL!o!e0et70!!x,\
+OLEDLG.SYM!v!e0et70!!x,\
+OLEDLG.DLL!w4!e0et70!!x,\
+OLECLI32.SYM!3!e0et70!!x,\
+OLECLI32.DLL!16!e0et70!!x,\
+OLECLI.DLL!4i!e0et6y!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01456,6,\
+STDOLE32.TLB!e!e0et72!!x,\
+STDOLE.TLB!b!e0et70!!x,\
+SHELL32.SYM!7!e0et70!!x,\
+SHELL32.DLL!l!e0et70!!x,\
+SCK16THK.DLL!u!e0et70!!x,\
+RICHED32.DLL!ik!e0et70!!x,\
+2l,-1,3,.,sdk_win32s win32sdk
+pck01457,1,STORAGE.DLL!1on!e0et72!!x,2l,-1,3,.,sdk_win32s win32sdk
+pck01458,a,\
+WIN32S.EXE!2!e0et74!!x,\
+W32SYS.DLL!z!e0et74!!x,\
+W32SKRNL.DLL!54!e0et74!!x,\
+W32SCOMB.SYM!2k!e0et74!!x,\
+W32SCOMB.DLL!ga!e0et74!!x,\
+W32S.386!3q!e0et72!!x,\
+VERSION.SYM!1!e0et72!!x,\
+VERSION.DLL!9!e0et72!!x,\
+TYPELIB.SYM!3n!e0et72!!x,\
+TYPELIB.DLL!1oq!e0et72!!x,\
+2l,-1,4,.,sdk_win32s win32sdk
+pck01459,9,\
+WSOCK32.SYM!4!e0et74!!x,\
+WSOCK32.DLL!v!e0et74!!x,\
+WINSPOOL.SYM!7!e0et74!!x,\
+WINSPOOL.DRV!x!e0et74!!x,\
+WINMM16.DLL!2j!e0et74!!x,\
+WINMM.DLL!4t!e0et74!!x,\
+WINHLP32.SYM!2m!e0et74!!x,\
+WINHLP32.EXE!uc!e0et74!!x,\
+WIN32S16.DLL!cu!e0et74!!x,\
+2l,-1,4,.,sdk_win32s win32sdk
+pck01460,i,\
+OLE2THK.DL_!o!e0et86!!x,\
+OLE2PROX.DL_!1c!e0et86!!x,\
+OLE2NLS.DL_!5d!e0et86!!x,\
+OLE2DISP.DL_!4t!e0et86!!x,\
+OLE2CONV.DL_!1y!e0et86!!x,\
+OLE2.RE_!c!e0et86!!x,\
+OLE2.DL_!9a!e0et86!!x,\
+MSUILSTF.DL_!8!e0et86!!x,\
+MSSHLSTF.DL_!j!e0et86!!x,\
+MSINSSTF.DL_!28!e0et86!!x,\
+MSDETSTF.DL_!u!e0et84!!x,\
+MSDETECT.IN_!a!e0et84!!x,\
+MSCUISTF.DL_!q!e0et84!!x,\
+MSCOMSTF.DL_!29!e0et84!!x,\
+INIUPD.DL_!g!e0et84!!x,\
+COMPOBJ.DL_!3d!e0et84!!x,\
+32SINST.MS_!h!e0et84!!x,\
+32SINST.IN_!6!e0et84!!x,\
+2n,-1,4,.,sdk_win32s win32sdk
+pck01461,c,\
+_MSTEST.EX_!31!e0et88!!x,\
+_MSSETUP.EX_!f!e0et88!!x,\
+TYPELIB.DL_!5x!e0et88!!x,\
+STORAGE.DL_!4v!e0et88!!x,\
+STDOLE32.TL_!7!e0et88!!x,\
+STDOLE.TL_!6!e0et88!!x,\
+SETUPAPI.IN_!r!e0et88!!x,\
+SETUP.LST!2!e0et88!!x,\
+SETUP.EXE!1d!e0et88!!x,\
+OLEDLG.DL_!35!e0et88!!x,\
+OLEAUT32.DL_!8h!e0et88!!x,\
+OLE32.DL_!c3!e0et86!!x,\
+2n,-1,4,.,sdk_win32s win32sdk
+pck01462,19,\
+P_950.NL_!5f!e0et8g!!x,\
+P_949.NL_!2n!e0et8g!!x,\
+P_936.NL_!2t!e0et8e!!x,\
+P_932.NL_!2t!e0et8e!!x,\
+P_875.NL_!3!e0et8e!!x,\
+P_869.NL_!4!e0et8e!!x,\
+P_866.NL_!4!e0et8e!!x,\
+P_865.NL_!5!e0et8e!!x,\
+P_863.NL_!5!e0et8e!!x,\
+P_861.NL_!5!e0et8e!!x,\
+P_860.NL_!5!e0et8e!!x,\
+P_857.NL_!5!e0et8e!!x,\
+P_855.NL_!4!e0et8e!!x,\
+P_852.NL_!5!e0et8e!!x,\
+P_850.NL_!5!e0et8e!!x,\
+P_737.NL_!3!e0et8e!!x,\
+P_500.NL_!3!e0et8c!!x,\
+P_437.NL_!5!e0et8c!!x,\
+P_1254.NL_!4!e0et8c!!x,\
+P_1253.NL_!4!e0et8c!!x,\
+P_1252.NL_!4!e0et8c!!x,\
+P_1251.NL_!4!e0et8c!!x,\
+P_1250.NL_!4!e0et8c!!x,\
+P_1026.NL_!3!e0et8c!!x,\
+P_10081.NL_!3!e0et8c!!x,\
+P_10079.NL_!3!e0et8c!!x,\
+P_10029.NL_!3!e0et8c!!x,\
+P_10007.NL_!3!e0et8c!!x,\
+P_10006.NL_!3!e0et8c!!x,\
+P_10001.NL_!2t!e0et8c!!x,\
+P_10000.NL_!3!e0et8c!!x,\
+P_037.NL_!3!e0et8a!!x,\
+OLESVR32.DL_!9!e0et8a!!x,\
+OLECLI32.DL_!f!e0et8a!!x,\
+NTMSG.DL_!19!e0et8a!!x,\
+NETAPI32.DL_!b!e0et8a!!x,\
+L_TRK.NL_!3!e0et8a!!x,\
+L_INTL.NL_!3!e0et8a!!x,\
+LZ32.DL_!5!e0et8a!!x,\
+LOCALE.NL_!10!e0et8a!!x,\
+FTSRCH.DL_!82!e0et8a!!x,\
+CTYPE.NL_!6!e0et8a!!x,\
+CRTDLL.DL_!5s!e0et8a!!x,\
+COMDLG32.DL_!1i!e0et8a!!x,\
+COMCTL32.DL_!7e!e0et88!!x,\
+2o,-1,4,.,sdk_win32s win32sdk
+pck01463,e,\
+WSOCK32.DL_!c!e0et8i!!x,\
+WINSPOOL.DR_!8!e0et8i!!x,\
+WINMM.DL_!1k!e0et8i!!x,\
+WIN32S.EX_!2!e0et8g!!x,\
+W32SKRNL.DL_!2j!e0et8g!!x,\
+W32SCOMB.DL_!7b!e0et8g!!x,\
+W32S.38_!17!e0et8g!!x,\
+VERSION.DL_!4!e0et8g!!x,\
+UNICODE.NL_!j!e0et8g!!x,\
+SORTTBLS.NL_!5!e0et8g!!x,\
+SORTKEY.NL_!8f!e0et8g!!x,\
+SHELL32.DL_!8!e0et8g!!x,\
+SCK16THK.DL_!a!e0et8g!!x,\
+RICHED32.DL_!68!e0et8g!!x,\
+2o,-1,4,.,sdk_win32s win32sdk
+pck01464,b,\
+WINMM16.DL_!o!e0et8k!!x,\
+WINHLP32.HL_!v!e0et8k!!x,\
+WINHLP32.EX_!b7!e0et8i!!x,\
+WINHLP32.CN_!2!e0et8i!!x,\
+WINDOWS.HL_!r!e0et8i!!x,\
+WIN32S16.DL_!4e!e0et8i!!x,\
+W32SYS.DL_!h!e0et8i!!x,\
+OLECLI.DL_!2h!e0et8i!!x,\
+FREECELL.HL_!q!e0et8i!!x,\
+FREECELL.EX_!1c!e0et8i!!x,\
+CARDS.DL_!2g!e0et8i!!x,\
+2p,-1,4,.,sdk_win32s win32sdk
+pck01465,3,\
+WINHLP32.HLP!1k!e0et9u!!x,\
+WINHLP32.CNT!3!e0et9u!!x,\
+WINDOWS.HLP!15!e0et9u!!x,\
+2r,-1,4,.,sdk_win32s win32sdk
+pck01466,3,\
+WINHLP32.HLP!1m!e0et9w!!x,\
+WINHLP32.CNT!3!e0et9w!!x,\
+WINDOWS.HLP!16!e0et9u!!x,\
+2s,-1,4,.,sdk_win32s win32sdk
+pck01467,3,\
+WINHLP32.HLP!1l!e0et9w!!x,\
+WINHLP32.CNT!3!e0et9w!!x,\
+WINDOWS.HLP!17!e0et9w!!x,\
+2t,-1,4,.,sdk_win32s win32sdk
+pck01468,3,\
+WINHLP32.HLP!1l!e0et9w!!x,\
+WINHLP32.CNT!2!e0et9w!!x,\
+WINDOWS.HLP!17!e0et9w!!x,\
+2u,-1,4,.,sdk_win32s win32sdk
+pck01469,3,\
+WINHLP32.HLP!1q!e0et9w!!x,\
+WINHLP32.CNT!3!e0et9w!!x,\
+WINDOWS.HLP!17!e0et9w!!x,\
+2v,-1,4,.,sdk_win32s win32sdk
+pck01470,3,\
+WINHLP32.HLP!1k!e0et9w!!x,\
+WINHLP32.CNT!3!e0et9w!!x,\
+WINDOWS.HLP!17!e0et9w!!x,\
+2w,-1,4,.,sdk_win32s win32sdk
+pck01471,3,\
+WINHLP32.HLP!1k!e0et9w!!x,\
+WINHLP32.CNT!2!e0et9w!!x,\
+WINDOWS.HLP!16!e0et9w!!x,\
+2x,-1,4,.,sdk_win32s win32sdk
+pck01472,3,\
+WINHLP32.HLP!1j!e0et9y!!x,\
+WINHLP32.CNT!3!e0et9w!!x,\
+WINDOWS.HLP!15!e0et9w!!x,\
+2y,-1,4,.,sdk_win32s win32sdk
+pck01473,3,\
+WINHLP32.HLP!1j!e0et9y!!x,\
+WINHLP32.CNT!2!e0et9y!!x,\
+WINDOWS.HLP!15!e0et9y!!x,\
+2z,-1,4,.,sdk_win32s win32sdk
+pck01474,3,\
+WINHLP32.HLP!1q!e0et9y!!x,\
+WINHLP32.CNT!2!e0et9y!!x,\
+WINDOWS.HLP!16!e0et9y!!x,\
+30,-1,4,.,sdk_win32s win32sdk
+pck01475,3,\
+COMCTL32.ESP!fg!e0et76!!x,\
+COMCTL32.DEU!fg!e0et76!!x,\
+COMCTL32.DAN!fg!e0et76!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01476,3,\
+COMCTL32.ITA!fg!e0et76!!x,\
+COMCTL32.FRA!fh!e0et76!!x,\
+COMCTL32.FIN!fg!e0et76!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01477,6,\
+COMDLG32.ESP!38!e0et78!!x,\
+COMDLG32.DEU!38!e0et78!!x,\
+COMDLG32.DAN!37!e0et78!!x,\
+COMCTL32.SVE!fg!e0et78!!x,\
+COMCTL32.NOR!fg!e0et76!!x,\
+COMCTL32.NLD!fh!e0et76!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01478,8,\
+FTSRCH.DAN!ds!e0et78!!x,\
+CTYPE.NLS!e!e0et78!!x,\
+COMDLG32.SVE!36!e0et78!!x,\
+COMDLG32.NOR!36!e0et78!!x,\
+COMDLG32.NLD!38!e0et78!!x,\
+COMDLG32.ITA!38!e0et78!!x,\
+COMDLG32.FRA!39!e0et78!!x,\
+COMDLG32.FIN!36!e0et78!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01479,4,\
+FTSRCH.FRA!du!e0et7a!!x,\
+FTSRCH.FIN!ds!e0et7a!!x,\
+FTSRCH.ESP!dt!e0et7a!!x,\
+FTSRCH.DEU!du!e0et7a!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01480,4,\
+FTSRCH.SVE!ds!e0et7c!!x,\
+FTSRCH.NOR!ds!e0et7c!!x,\
+FTSRCH.NLD!dt!e0et7c!!x,\
+FTSRCH.ITA!dt!e0et7a!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01481,9,\
+OLEDLG.ITA!67!e0et7e!!x,\
+OLEDLG.FRA!68!e0et7c!!x,\
+OLEDLG.FIN!63!e0et7c!!x,\
+OLEDLG.ESP!66!e0et7c!!x,\
+OLEDLG.DEU!68!e0et7c!!x,\
+OLEDLG.DAN!63!e0et7c!!x,\
+L_TRK.NLS!e!e0et7c!!x,\
+L_INTL.NLS!e!e0et7c!!x,\
+LOCALE.NLS!31!e0et7c!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01482,y,\
+P_949.NLS!5q!e0et7i!!x,\
+P_936.NLS!5p!e0et7i!!x,\
+P_932.NLS!4t!e0et7i!!x,\
+P_875.NLS!6!e0et7i!!x,\
+P_869.NLS!9!e0et7g!!x,\
+P_866.NLS!9!e0et7g!!x,\
+P_865.NLS!c!e0et7g!!x,\
+P_863.NLS!c!e0et7g!!x,\
+P_861.NLS!c!e0et7g!!x,\
+P_860.NLS!c!e0et7g!!x,\
+P_857.NLS!d!e0et7g!!x,\
+P_855.NLS!9!e0et7g!!x,\
+P_852.NLS!c!e0et7g!!x,\
+P_850.NLS!c!e0et7g!!x,\
+P_737.NLS!9!e0et7g!!x,\
+P_500.NLS!5!e0et7g!!x,\
+P_437.NLS!c!e0et7g!!x,\
+P_1254.NLS!b!e0et7g!!x,\
+P_1253.NLS!9!e0et7g!!x,\
+P_1252.NLS!b!e0et7g!!x,\
+P_1251.NLS!8!e0et7g!!x,\
+P_1250.NLS!b!e0et7g!!x,\
+P_1026.NLS!5!e0et7g!!x,\
+P_10081.NLS!8!e0et7e!!x,\
+P_10079.NLS!8!e0et7e!!x,\
+P_10029.NLS!7!e0et7e!!x,\
+P_10007.NLS!7!e0et7e!!x,\
+P_10006.NLS!7!e0et7e!!x,\
+P_10001.NLS!4s!e0et7e!!x,\
+P_10000.NLS!9!e0et7e!!x,\
+P_037.NLS!5!e0et7e!!x,\
+OLEDLG.SVE!64!e0et7e!!x,\
+OLEDLG.NOR!64!e0et7e!!x,\
+OLEDLG.NLD!67!e0et7e!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01483,5,\
+RICHED32.FIN!8u!e0et7i!!x,\
+RICHED32.ESP!8u!e0et7i!!x,\
+RICHED32.DEU!8u!e0et7i!!x,\
+RICHED32.DAN!8u!e0et7i!!x,\
+P_950.NLS!74!e0et7i!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01484,5,\
+RICHED32.SVE!8u!e0et7k!!x,\
+RICHED32.NOR!8u!e0et7k!!x,\
+RICHED32.NLD!8u!e0et7k!!x,\
+RICHED32.ITA!8u!e0et7i!!x,\
+RICHED32.FRA!8u!e0et7i!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01485,l,\
+W32SYS.SVE!p!e0et7m!!x,\
+W32SYS.NOR!p!e0et7m!!x,\
+W32SYS.NLD!p!e0et7m!!x,\
+W32SYS.ITA!p!e0et7m!!x,\
+W32SYS.FRA!p!e0et7m!!x,\
+W32SYS.FIN!p!e0et7m!!x,\
+W32SYS.ESP!p!e0et7m!!x,\
+W32SYS.DEU!p!e0et7m!!x,\
+W32SYS.DAN!p!e0et7m!!x,\
+W32S.SVE!20!e0et7m!!x,\
+W32S.NOR!20!e0et7k!!x,\
+W32S.NLD!20!e0et7k!!x,\
+W32S.ITA!20!e0et7k!!x,\
+W32S.FRA!20!e0et7k!!x,\
+W32S.FIN!20!e0et7k!!x,\
+W32S.ESP!20!e0et7k!!x,\
+W32S.DEU!20!e0et7k!!x,\
+W32S.DAN!20!e0et7k!!x,\
+UNICODE.NLS!1v!e0et7k!!x,\
+SORTTBLS.NLS!7!e0et7k!!x,\
+SORTKEY.NLS!e9!e0et7k!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01486,3,\
+WINHLP32.ESP!ii!e0et7m!!x,\
+WINHLP32.DEU!ii!e0et7m!!x,\
+WINHLP32.DAN!ib!e0et7m!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01487,3,\
+WINHLP32.ITA!ig!e0et7o!!x,\
+WINHLP32.FRA!ik!e0et7o!!x,\
+WINHLP32.FIN!ib!e0et7o!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01488,3,\
+WINHLP32.SVE!ib!e0et7o!!x,\
+WINHLP32.NOR!ib!e0et7o!!x,\
+WINHLP32.NLD!ig!e0et7o!!x,\
+31,-1,4,.,sdk_win32s win32sdk
+pck01489,a,\
+FREECELL.HLP!11!e0et7q!!x,\
+FREECELL.EXE!2p!e0et7q!!x,\
+CRTDLL.SYM!1e!e0et7q!!x,\
+CRTDLL.DLL!b4!e0et7q!!x,\
+COMPOBJ.SYM!9!e0et7q!!x,\
+COMPOBJ.DLL!5x!e0et7q!!x,\
+COMDLG32.SYM!2!e0et7q!!x,\
+COMDLG32.DLL!2z!e0et7q!!x,\
+COMCTL32.DLL!fg!e0et7q!!x,\
+CARDS.DLL!8l!e0et7o!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01490,e,\
+OLE2DISP.SYM!2f!e0et7s!!x,\
+OLE2DISP.DLL!8z!e0et7s!!x,\
+OLE2CONV.SYM!g!e0et7s!!x,\
+OLE2CONV.DLL!34!e0et7s!!x,\
+OLE2.SYM!8!e0et7s!!x,\
+OLE2.REG!1j!e0et7s!!x,\
+OLE2.DLL!gj!e0et7s!!x,\
+NTMSG.DLL!39!e0et7s!!x,\
+NETAPI32.SYM!e!e0et7s!!x,\
+NETAPI32.DLL!n!e0et7s!!x,\
+LZ32.SYM!1!e0et7s!!x,\
+LZ32.DLL!a!e0et7q!!x,\
+FTSRCH.SYM!33!e0et7q!!x,\
+FTSRCH.DLL!ds!e0et7q!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01491,8,\
+OLEAUT32.SYM!3y!e0et7u!!x,\
+OLEAUT32.DLL!cn!e0et7u!!x,\
+OLE32.DLL!jv!e0et7u!!x,\
+OLE2THK.DLL!1d!e0et7u!!x,\
+OLE2PROX.SYM!1!e0et7u!!x,\
+OLE2PROX.DLL!2t!e0et7u!!x,\
+OLE2NLS.SYM!f!e0et7s!!x,\
+OLE2NLS.DLL!8b!e0et7s!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01492,i,\
+W32S.386!20!e0et7w!!x,\
+VERSION.SYM!1!e0et7w!!x,\
+VERSION.DLL!9!e0et7w!!x,\
+TYPELIB.SYM!2h!e0et7w!!x,\
+TYPELIB.DLL!9o!e0et7w!!x,\
+STORAGE.DLL!8k!e0et7w!!x,\
+STDOLE32.TLB!e!e0et7w!!x,\
+STDOLE.TLB!b!e0et7w!!x,\
+SHELL32.SYM!7!e0et7w!!x,\
+SHELL32.DLL!f!e0et7w!!x,\
+SCK16THK.DLL!i!e0et7w!!x,\
+RICHED32.DLL!8u!e0et7w!!x,\
+OLESVR32.SYM!1!e0et7w!!x,\
+OLESVR32.DLL!l!e0et7u!!x,\
+OLEDLG.DLL!63!e0et7u!!x,\
+OLECLI32.SYM!3!e0et7u!!x,\
+OLECLI32.DLL!13!e0et7u!!x,\
+OLECLI.DLL!4i!e0et7u!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01493,9,\
+WINMM.DLL!3l!e0et7y!!x,\
+WINHLP32.SYM!2y!e0et7y!!x,\
+WINHLP32.EXE!ia!e0et7y!!x,\
+WIN32S16.DLL!93!e0et7y!!x,\
+WIN32S.EXE!2!e0et7y!!x,\
+W32SYS.DLL!p!e0et7y!!x,\
+W32SKRNL.DLL!4i!e0et7y!!x,\
+W32SCOMB.SYM!2k!e0et7y!!x,\
+W32SCOMB.DLL!cu!e0et7y!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01494,5,\
+WSOCK32.SYM!4!e0et80!!x,\
+WSOCK32.DLL!r!e0et80!!x,\
+WINSPOOL.SYM!7!e0et7y!!x,\
+WINSPOOL.DRV!i!e0et7y!!x,\
+WINMM16.DLL!1l!e0et7y!!x,\
+32,-1,4,.,sdk_win32s win32sdk
+pck01495,6,\
+ZRTDLL.DLL!9d!e0et80!!x,\
+ZLE32.DLL!57!e0et80!!x,\
+ZERNEL32.DLL!7e!e0et80!!x,\
+ZDVAPI32.DLL!7l!e0et80!!x,\
+ZDI32.DLL!8b!e0et80!!x,\
+FASTIMER.DLL!d!e0et80!!x,\
+33,-1,4,.,sdk_win32s win32sdk
+pck01496,1,ZSER32.DLL!c4!e0et80!!x,33,-1,4,.,sdk_win32s win32sdk
+pck01497,g,\
+_MSTEST.EXE!4v!e0et84!!x,\
+_MSSETUP.EXE!k!e0et82!!x,\
+W32S.LYT!10!e0et82!!x,\
+SETUPAPI.INC!31!e0et82!!x,\
+SETUP.LST!2!e0et82!!x,\
+SETUP.EXE!1d!e0et82!!x,\
+MSUILSTF.DLL!c!e0et82!!x,\
+MSSHLSTF.DLL!u!e0et82!!x,\
+MSINSSTF.DLL!3k!e0et82!!x,\
+MSDETSTF.DLL!1c!e0et82!!x,\
+MSDETECT.INC!18!e0et82!!x,\
+MSCUISTF.DLL!1d!e0et82!!x,\
+MSCOMSTF.DLL!42!e0et82!!x,\
+INIUPD.DLL!r!e0et82!!x,\
+BUILD.BAT!1!e0et82!!x,\
+32SINST.MST!1f!e0et80!!x,\
+34,-1,4,.,sdk_win32s win32sdk
+pck01498,f,\
+SETUP.ICO!4!e0eta0!!x,\
+MSUILSTF.LIB!4!e0eta0!!x,\
+MSSHLSTF.LIB!4!e0eta0!!x,\
+MSCUISTF.DEF!2!e0et9y!!x,\
+MSCOMSTF.LIB!s!e0et9y!!x,\
+MAKEFILE!2!e0et9y!!x,\
+DLGPROCS.C!2l!e0et9y!!x,\
+DIALOGS.RC!2!e0et9y!!x,\
+DIALOGS.H!9!e0et9y!!x,\
+DIALOGS.DLG!z!e0et9y!!x,\
+CUISTFD.LNK!1!e0et9y!!x,\
+CUISTF.LNK!1!e0et9y!!x,\
+CUI.H!3!e0et9y!!x,\
+BLDVER.H!3!e0et9y!!x,\
+BITMAP.DIB!5!e0et9y!!x,\
+35,-1,4,.,sdk_win32s win32sdk
+pck01499,5,\
+W32SGRA.OBJ!1!e0eta0!!x,\
+MAKEFILE!4!e0eta0!!x,\
+INIUPD.H!1!e0eta0!!x,\
+INIUPD.DEF!1!e0eta0!!x,\
+INIUPD.C!p!e0eta0!!x,\
+36,-1,4,.,sdk_win32s win32sdk
+pck01500,3,\
+W32SUT32.LIB!7!e0et84!!x,\
+W32SUT16.LIB!3!e0et84!!x,\
+W32SUT.H!4!e0et84!!x,\
+37,-1,4,.,sdk_win32s win32sdk
+pck01501,c,\
+UTSAMP32.DEF!1!e0eta2!!x,\
+UTSAMP32.C!r!e0eta2!!x,\
+UTSAMP16.DEF!2!e0eta2!!x,\
+UTSAMP16.C!f!e0eta2!!x,\
+UTSAMP.RC!2!e0eta2!!x,\
+UTSAMP.ICO!2!e0eta2!!x,\
+UTSAMP.H!3!e0eta0!!x,\
+UTSAMP.DLG!2!e0eta0!!x,\
+UTSAMP.C!h!e0eta0!!x,\
+README.TXT!3!e0eta0!!x,\
+MAKEFILE.16!2!e0eta0!!x,\
+MAKEFILE!3!e0eta0!!x,\
+39,-1,4,.,sdk_win32s win32sdk
+pck01502,3,\
+DB32.C!8!e0eta2!!x,\
+DB16.C!3!e0eta2!!x,\
+DB.H!2!e0eta2!!x,\
+3a,-1,4,.,sdk_win32s win32sdk
+pck02691,1,cvpack.exe!eq!!,4,e,4,.,doshost os2host winhost | |
+pck02692,1,cvpack.exe!al!!,7,-1,4,.,os2host
+pck02693,1,cvpack.exe!bt!!,5,-1,4,.,wnthost
+pck02695,2,\
+mfc.cnt!g2!e5992m!!x,\
+mfc.hlp!e6p!e5992m!!x,\
+5,-1,4,.,wnthost win32s |
+pck02700,a,\
+clib.imp!11!!,\
+nwsnut.imp!6!!,\
+socklib.imp!2!!,\
+bsd.imp!2!!,\
+aio.imp!2!!,\
+tli.imp!1!!,\
+streams.imp!4!!,\
+appletlk.imp!3!!,\
+mathlib.imp!1!!,\
+dsapi.imp!4!!,\
+3b,-1,4,.,nlmtarg
+pck02701,4,\
+tntrun.exe!b1!!,\
+d4grun.exe!a1!!,\
+x32run.exe!16!!,\
+w32run.exe!16!!,\
+4,e,4,.,doshost winhost |
+pck02702,1,w32run.exe!i!!,5,e,4,.,wnthost
+pck02703,2,\
+wfl.exe!2k!!,\
+wfc.exe!12w!!,\
+4,6,4,.,doshost winhost | tools16
+pck02704,2,\
+wfl386.exe!2k!!,\
+wfc386.exe!12y!!,\
+4,6,4,.,doshost winhost |
+pck02705,2,\
+wfl.exe!2y!!,\
+wfc.exe!136!!,\
+5,-1,4,.,wnthost tools16
+pck02706,2,\
+wfl386.exe!2x!!,\
+wfc386.exe!138!!,\
+5,-1,4,.,wnthost
+pck02707,2,\
+wfl.exe!2g!!,\
+wfc.exe!11d!!,\
+7,-1,4,.,os2host tools16
+pck02708,2,\
+wfl386.exe!2g!!,\
+wfc386.exe!11f!!,\
+7,-1,4,.,os2host
+pck02709,2,\
+flib7.lib!fu!!,\
+flib.lib!gd!!,\
+k,-1,4,.,dostarg 3r
+pck02710,2,\
+flib7s.lib!ft!!,\
+flibs.lib!ga!!,\
+k,-1,4,.,dostarg 3s
+pck02711,2,\
+flib7s.lib!gf!!,\
+flibs.lib!gx!!,\
+l,-1,4,.,nlmtarg
+pck02712,2,\
+flib7.lib!gu!!,\
+flib.lib!he!!,\
+o,-1,4,.,wnttarg 3r
+pck02713,2,\
+flib7s.lib!gr!!,\
+flibs.lib!hc!!,\
+o,-1,4,.,wnttarg 3s
+pck02714,2,\
+flib7.lib!gp!!,\
+flib.lib!h9!!,\
+m,-1,4,.,os2targ 3r
+pck02715,2,\
+flib7s.lib!gm!!,\
+flibs.lib!h7!!,\
+m,-1,4,.,os2targ 3s
+pck02716,2,\
+flib7.lib!fu!!,\
+flib.lib!gh!!,\
+n,-1,4,.,wintarg 3r
+pck02717,2,\
+flib7s.lib!fs!!,\
+flibs.lib!ge!!,\
+n,-1,4,.,wintarg 3s
+pck02718,2,\
+flib7l.lib!hg!!,\
+flibl.lib!hc!!,\
+p,-1,4,.,tools16 dostarg ml
+pck02719,2,\
+flib7m.lib!gd!!,\
+flibm.lib!ga!!,\
+p,-1,4,.,tools16 dostarg mm
+pck02720,2,\
+flib7l.lib!hd!!,\
+flibl.lib!h9!!,\
+q,-1,4,.,tools16 os2targ ml
+pck02721,2,\
+flib7m.lib!gb!!,\
+flibm.lib!g8!!,\
+q,-1,4,.,tools16 os2targ mm
+pck02722,2,\
+flib7l.lib!hi!!,\
+flibl.lib!hc!!,\
+c,-1,4,.,tools16 wintarg ml
+pck02723,2,\
+flib7m.lib!gj!!,\
+flibm.lib!gh!!,\
+c,-1,4,.,tools16 wintarg mm
+pck02724,f,\
+_MATHERR.FOR!a!!,\
+_MARK_.FI!2!!,\
+WC.FI!1!!,\
+THREAD.FI!1!!,\
+SIEVE.FOR!2!!,\
+SETJMP.FOR!1!!,\
+SETJMP.FI!2!!,\
+MATHCODE.FI!4!!,\
+MARKSTUB.FI!1!!,\
+KNIGHT.JPN!8!!,\
+KNIGHT.FOR!8!!,\
+FSUBLIB.FI!4!!,\
+FSIGNAL.FI!c!!,\
+BLACKJAC.JPN!j!!,\
+BLACKJAC.FOR!j!!,\
+3c,-1,4,.,.
+pck02725,6,\
+OL_ERRNO.FI!c!!,\
+FACT.FOR!g!!,\
+ADSLIB.FI!1!!,\
+ADSCODES.FI!8!!,\
+ADSAPI.FI!e!!,\
+ADS.FI!j!!,\
+3d,-1,4,.,adstarg
+pck02726,d,\
+STRING.FI!1!!,\
+STDLIB.FI!1!!,\
+OL_ERRNO.FI!h!!,\
+MALLOC.FI!1!!,\
+FACT.FOR!g!!,\
+DLGTEST.FOR!t!!,\
+CAL.FI!1!!,\
+ADSLIB.FI!1!!,\
+ADSDLGAP.FI!5!!,\
+ADSDLG.FI!5!!,\
+ADSCODES.FI!8!!,\
+ADSAPI.FI!j!!,\
+ADS.FI!m!!,\
+3e,-1,4,.,adstarg
+pck02727,c,\
+PGDEMO.FOR!e!!,\
+PGDEMO.FI!2!!,\
+PGAPI.FI!a!!,\
+PG.FI!i!!,\
+GRDEMO2.FOR!f!!,\
+GRDEMO1.FOR!c!!,\
+GRAPHAPI.FI!n!!,\
+GRAPH98.FI!o!!,\
+GRAPH.FI!v!!,\
+DOS.FI!2!!,\
+CALENDAR.FOR!b!!,\
+ANSI.FOR!8!!,\
+3f,-1,4,.,dostarg
+pck02728,1l,\
+PMTYPES.FI!s!!,\
+PMSTDDLG.FI!2z!!,\
+PMSTDDLG.FAP!8!!,\
+PMSPLERR.FI!l!!,\
+PMSPL.FI!x!!,\
+PMSPL.FAP!b!!,\
+PMSHLERR.FI!v!!,\
+PMSHL.FI!e!!,\
+PMSHL.FAP!7!!,\
+PMSEI.FI!2!!,\
+PMSEI.FAP!1!!,\
+PMPICERR.FI!2!!,\
+PMPIC.FI!1!!,\
+PMPIC.FAP!1!!,\
+PMORD.FOR!2!!,\
+PMORD.FI!x!!,\
+PMORD.FAP!1!!,\
+PMOCODES.FI!g!!,\
+PMMLE.FI!f!!,\
+PMHELP.FI!p!!,\
+PMHELP.FAP!4!!,\
+PMGPIERR.FI!1c!!,\
+pmgpi.fi!2o!!,\
+PMGPI.FAP!1g!!,\
+PMFONT.FI!b!!,\
+PMDEV.FI!k!!,\
+PMDEV.FAP!3!!,\
+PMDDIM.FOR!2e!!,\
+PMDDIM.FI!1w!!,\
+PMDDIM.FAP!10!!,\
+PMBITMAP.FI!8!!,\
+PM.FI!2!!,\
+PM.FAP!1!!,\
+OS2NLS.FI!k!!,\
+OS2NLS.FAP!2!!,\
+OS2DEF.FI!e!!,\
+OS2DEF.FAP!2!!,\
+OS2.FI!1!!,\
+OS2.FAP!1!!,\
+MI.FI!r!!,\
+HMTAILOR.FI!4!!,\
+CNRTREE.FI!8!!,\
+CNRTREE.FAP!1!!,\
+BSEXCPT.FI!c!!,\
+BSETIB.FI!2!!,\
+BSESUB.FI!17!!,\
+BSESUB.FAP!j!!,\
+BSEORD.FI!71!!,\
+BSEMEMF.FI!4!!,\
+BSEERR.FI!2q!!,\
+BSEDOS.FI!27!!,\
+BSEDOS.FAP!t!!,\
+BSEDEV.FI!14!!,\
+BSE.FI!1!!,\
+BSE.FAP!1!!,\
+BASEMID.FI!2w!!,\
+BASEDEF.FI!2!!,\
+3g,-1,4,.,os2targ
+pck02729,b,\
+RXSTRING.FI!1!!,\
+REXXSAA.FOR!2!!,\
+REXXSAA.FI!n!!,\
+REXXSAA.FAP!6!!,\
+PMWPERR.FI!4!!,\
+PMWP.FI!5!!,\
+PMWP.FAP!3!!,\
+PMWINERR.FI!b!!,\
+PMWIN.FOR!9!!,\
+PMWIN.FI!5r!!,\
+PMWIN.FAP!1k!!,\
+3g,-1,4,.,os2targ
+pck02730,1t,\
+WINUTIL.FI!2!!,\
+WINTEXT.FI!6!!,\
+WINTASK.FI!2!!,\
+WINSYSM.FI!a!!,\
+WINSTR.FI!2!!,\
+WINSSI.FI!1!!,\
+WINSOUND.FI!8!!,\
+WINSEG.FI!2!!,\
+WINSCROL.FI!2!!,\
+WINRGN.FI!3!!,\
+WINRESRC.FI!7!!,\
+WINRECT.FI!2!!,\
+WINPROP.FI!1!!,\
+WINPALET.FI!4!!,\
+WINPAINT.FI!5!!,\
+WINOPT.FI!1!!,\
+WINOEM.FI!3!!,\
+WINMSGS.FI!1k!!,\
+WINMSG.FI!4!!,\
+WINMODUL.FI!2!!,\
+WINMGR.FI!1!!,\
+WINMETA.FI!g!!,\
+WINMENU.FI!8!!,\
+WINMEM.FI!d!!,\
+WINMAP.FI!4!!,\
+WINLINE.FI!1!!,\
+WINKANJI.FI!a!!,\
+WININPUT.FI!3!!,\
+WININI.FI!2!!,\
+WININFO.FI!4!!,\
+WINHOOK.FI!6!!,\
+WINHDWR.FI!c!!,\
+WINGDI.FI!1!!,\
+WINFONT.FI!b!!,\
+WINFILE.FI!5!!,\
+WINEXEC.FI!3!!,\
+WINESC.FI!d!!,\
+WINERROR.FI!6!!,\
+WINENV.FI!1!!,\
+WINELLPS.FI!1!!,\
+WINDTOOL.FI!9!!,\
+WINDRVR.FI!i!!,\
+WINDRAW.FI!5!!,\
+WINDOWS.FI!1!!,\
+WINDLG.FI!4!!,\
+WINDISP.FI!7!!,\
+WINDEV.FI!j!!,\
+WINDEFN.FI!2!!,\
+WINDEBUG.FI!1!!,\
+WINDDE.FI!8!!,\
+WINDC.FI!1!!,\
+WINDATTR.FI!6!!,\
+WINCURS.FI!5!!,\
+WINCREAT.FI!u!!,\
+WINCOORD.FI!1!!,\
+WINCOMM.FI!k!!,\
+WINCLPBD.FI!6!!,\
+WINCLIP.FI!2!!,\
+WINCARET.FI!1!!,\
+WINBMAP.FI!g!!,\
+WINATOM.FI!2!!,\
+WINAPI.FI!34!!,\
+WIN3API.FI!3l!!,\
+WIN386.FI!8!!,\
+COMMDLG.FI!u!!,\
+3h,-1,4,.,wintarg
+pck02731,3,\
+fwcopy.fi!1!!,\
+fwcopy.for!e!!,\
+ellipse.for!a!!,\
+3j,-1,4,.,wintarg
+pck02732,9,\
+cover16.obj!6!!,\
+cover16.c!2!!,\
+vbdll32.for!3!!,\
+windllv.for!4!!,\
+windll.for!5!!,\
+gen32v.for!3!!,\
+gen32.for!4!!,\
+gen16v.for!3!!,\
+gen16.for!4!!,\
+3k,-1,4,.,samples
+pck02733,1,mthread.for!5!!,3l,-1,4,.,samples
+pck02734,3,\
+dllinit.for!2!!,\
+dlltest.for!1!!,\
+dllsamp.for!1!!,\
+3m,-1,4,.,samples
+pck02735,5,\
+fshapes.for!9!!,\
+fshapes.fi!4!!,\
+comm.for!4!!,\
+calendar.for!9!!,\
+mthread.for!3!!,\
+3n,-1,4,.,samples
+pck02736,3,\
+dllinit.for!2!!,\
+dlltest.for!1!!,\
+dllsamp.for!1!!,\
+3o,-1,4,.,samples
+pck02737,7,\
+testdll.cmd!1!!,\
+rxsutils.fi!1!!,\
+rxsutils.for!4!!,\
+funcload.fi!1!!,\
+funcload.for!5!!,\
+func2.for!3!!,\
+func1.for!4!!,\
+3p,-1,4,.,samples
+pck02738,1,MAKEFILE!3!!,3n,-1,4,.,samples
+pck02739,1,MAKEFILE!3!!,3o,-1,4,.,samples
+pck02740,1,MAKEFILE!2!!,3p,-1,4,.,samples
+pck02741,1,MAKEFILE!3!!,3j,-1,4,.,samples
+pck02742,1,MAKEFILE!7!!,3k,-1,4,.,samples
+pck02743,1,make.bat!1!!,3l,-1,4,.,samples
+pck02744,1,MAKEFILE!3!!,3m,-1,4,.,samples
+pck02745,1,read.me!20!e02g7y!!x,3q,-1,4,.,toolkt2x
+pck02746,1i,\
+vpic.inc!3!e02g82!!x,\
+vlpt.inc!1!e02g82!!x,\
+vkbd.inc!5!e02g82!!x,\
+vdos.inc!2!e02g82!!x,\
+vdmprop.inc!e!e02g82!!x,\
+vdmm.inc!1x!e02g82!!x,\
+vdmbios.inc!15!e02g82!!x,\
+vdma.inc!2!e02g82!!x,\
+v8086.inc!m!e02g82!!x,\
+rexxsaa.inc!w!e02g82!!x,\
+pmwp.inc!3!e02g82!!x,\
+pmwin.inc!2e!e02g82!!x,\
+pmtypes.inc!c!e02g82!!x,\
+pmstddlg.inc!1j!e02g82!!x,\
+pmspl.inc!f!e02g82!!x,\
+pmshl.inc!7!e02g82!!x,\
+pmsei.inc!1!e02g82!!x,\
+pmpic.inc!1!e02g82!!x,\
+pmord.inc!t!e02g82!!x,\
+pmmle.inc!7!e02g82!!x,\
+pmhelp.inc!b!e02g82!!x,\
+pmgpi.inc!w!e02g82!!x,\
+pmfont.inc!8!e02g82!!x,\
+pmerr.inc!1h!e02g80!!x,\
+pmdev.inc!a!e02g80!!x,\
+pmddim.inc!k!e02g80!!x,\
+pmddi.inc!l!e02g80!!x,\
+pmbitmap.inc!6!e02g80!!x,\
+pmavio.inc!1!e02g80!!x,\
+pm.inc!2!e02g80!!x,\
+os2nls.inc!9!e02g80!!x,\
+os2def.inc!a!e02g80!!x,\
+os2.inc!1!e02g80!!x,\
+mvdm.inc!d!e02g80!!x,\
+mi.inc!i!e02g80!!x,\
+infoseg.inc!5!e02g80!!x,\
+gas.inc!m!e02g80!!x,\
+devsym.inc!s!e02g80!!x,\
+devhlp.inc!p!e02g80!!x,\
+devhdr.inc!3!e02g80!!x,\
+devcmd.inc!3!e02g80!!x,\
+cmacros.inc!1d!e02g80!!x,\
+bsexcpt.inc!m!e02g80!!x,\
+bsetib.inc!3!e02g80!!x,\
+bsesub.inc!t!e02g80!!x,\
+bseord.inc!2z!e02g80!!x,\
+bsememf.inc!3!e02g80!!x,\
+bseerr.inc!1e!e02g80!!x,\
+bsedos.inc!16!e02g80!!x,\
+bsedev.inc!j!e02g80!!x,\
+bse.inc!1!e02g80!!x,\
+basemid.inc!25!e02g80!!x,\
+basemaca.inc!68!e02g80!!x,\
+basedef.inc!b!e02g80!!x,\
+3r,-1,4,.,toolkt2x
+pck02750,1,epmkwhlp.ndx!5!e02g84!!x,z,-1,4,.,toolkt2x helpfiles
+pck02751,4,\
+pcmciarm.txt!2i!e02g84!!x,\
+ipfcexmp.inf!70!e02g84!!x,\
+ipfc20.inf!p2!e02g84!!x,\
+guiref20.inf!1tz!e02g84!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02752,1,pmfun.inf!xk!e02g84!!x,z,-1,4,.,toolkt2x helpfiles
+pck02753,2,\
+pmhok.inf!am!e02g86!!x,\
+pmgpi.inf!1fa!e02g86!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02754,2,\
+pmrel.inf!gn!e02g88!!x,\
+pmmsg.inf!1ws!e02g86!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02755,4,\
+rexxapi.inf!65!e02g88!!x,\
+pwrmanrm.txt!4b!e02g88!!x,\
+pmwkp.inf!t3!e02g88!!x,\
+pmwin.inf!1dv!e02g88!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02756,2,\
+toolinfo.inf!nl!e02g88!!x,\
+som.inf!8d!e02g88!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02757,x,\
+pmspl.h!1u!e02g8c!!x,\
+pmshl.h!z!e02g8c!!x,\
+pmsei.h!6!e02g8c!!x,\
+pmpic.h!4!e02g8c!!x,\
+pmord.h!1j!e02g8c!!x,\
+pmmle.h!n!e02g8a!!x,\
+pmhelp.h!1c!e02g8a!!x,\
+pmgpi.h!4e!e02g8a!!x,\
+pmfont.h!e!e02g8a!!x,\
+pmerr.h!2j!e02g8a!!x,\
+pmdev.h!r!e02g8a!!x,\
+pmddim.h!2b!e02g8a!!x,\
+pmddi.h!1c!e02g8a!!x,\
+pmbitmap.h!j!e02g8a!!x,\
+pmavio.h!b!e02g8a!!x,\
+pm.h!7!e02g8a!!x,\
+os2nls.h!o!e02g8a!!x,\
+os2def.h!w!e02g8a!!x,\
+os2.h!3!e02g8a!!x,\
+newexe.h!15!e02g8a!!x,\
+hmtailor.h!5!e02g8a!!x,\
+exe386.h!1f!e02g8a!!x,\
+exe.h!7!e02g8a!!x,\
+bsexcpt.h!n!e02g8a!!x,\
+bsetib.h!6!e02g8a!!x,\
+bsesub.h!25!e02g8a!!x,\
+bseord.h!4j!e02g8a!!x,\
+bsememf.h!a!e02g8a!!x,\
+bseerr.h!30!e02g8a!!x,\
+bsedos.h!4f!e02g8a!!x,\
+bsedev.h!12!e02g8a!!x,\
+bse.h!4!e02g8a!!x,\
+bdcalls.h!g!e02g8a!!x,\
+3r,-1,4,.,os2targ
+pck02758,5,\
+rexxsaa.h!1o!e02g8c!!x,\
+pmwp.h!d!e02g8c!!x,\
+pmwin.h!8a!e02g8c!!x,\
+pmtypes.h!m!e02g8c!!x,\
+pmstddlg.h!5a!e02g8c!!x,\
+3r,-1,4,.,os2targ
+pck02759,2d,\
+wpqdr.h!d!e02g8i!!x,\
+wpptr.xh!8!e02g8i!!x,\
+wpptr.h!a!e02g8i!!x,\
+wpprint.xh!g!e02g8i!!x,\
+wpprint.h!u!e02g8i!!x,\
+wppower.xh!g!e02g8i!!x,\
+wpport.xh!8!e02g8i!!x,\
+wpport.h!e!e02g8i!!x,\
+wppif.xh!7!e02g8i!!x,\
+wppgmgrp.xh!b!e02g8i!!x,\
+wppgmf.xh!o!e02g8i!!x,\
+wppgmf.h!y!e02g8i!!x,\
+wppgm.xh!o!e02g8i!!x,\
+wppgm.h!y!e02g8g!!x,\
+wppdrv.xh!8!e02g8g!!x,\
+wppdr.xh!8!e02g8g!!x,\
+wppdr.h!d!e02g8g!!x,\
+wppalet.xh!l!e02g8g!!x,\
+wppalet.h!t!e02g8g!!x,\
+wpobject.xh!3l!e02g8g!!x,\
+wpobject.h!52!e02g8g!!x,\
+wpnetwrk.xh!8!e02g8g!!x,\
+wpnetlnk.xh!9!e02g8g!!x,\
+wpnetgrp.xh!9!e02g8g!!x,\
+wpmwv.xh!b!e02g8g!!x,\
+wpmouse.xh!a!e02g8g!!x,\
+wpmouse.h!e!e02g8g!!x,\
+wpminwin.xh!a!e02g8g!!x,\
+wpmet.xh!7!e02g8g!!x,\
+wpkeybd.xh!a!e02g8g!!x,\
+wpkeybd.h!f!e02g8g!!x,\
+wpjob.xh!b!e02g8g!!x,\
+wpjob.h!j!e02g8g!!x,\
+wpicon.xh!8!e02g8g!!x,\
+wpicon.h!9!e02g8g!!x,\
+wpfsys.xh!v!e02g8e!!x,\
+wpfsys.h!1k!e02g8e!!x,\
+wpfolder.xh!12!e02g8e!!x,\
+wpfolder.h!1p!e02g8e!!x,\
+wpfntpal.xh!9!e02g8e!!x,\
+wpfntpal.h!d!e02g8e!!x,\
+wpfndfdr.xh!8!e02g8e!!x,\
+wpfldrcv.xh!4!e02g8e!!x,\
+wpfinder.xh!h!e02g8e!!x,\
+wpfilter.xh!h!e02g8e!!x,\
+wpdrives.xh!8!e02g8e!!x,\
+wpdrives.h!b!e02g8e!!x,\
+wpdiskcv.xh!4!e02g8e!!x,\
+wpdisk.xh!c!e02g8e!!x,\
+wpdisk.h!l!e02g8e!!x,\
+wpdesk.xh!b!e02g8e!!x,\
+wpdesk.h!g!e02g8e!!x,\
+wpdataf.xh!d!e02g8e!!x,\
+wpdataf.h!n!e02g8e!!x,\
+wpctry.xh!b!e02g8e!!x,\
+wpctry.h!f!e02g8e!!x,\
+wpcnrvw.xh!c!e02g8e!!x,\
+wpcmdf.xh!8!e02g8e!!x,\
+wpcmdf.h!a!e02g8e!!x,\
+wpclsmgr.xh!6!e02g8e!!x,\
+wpclsmgr.h!8!e02g8e!!x,\
+wpclrpal.xh!9!e02g8e!!x,\
+wpclrpal.h!d!e02g8e!!x,\
+wpclock.xh!a!e02g8e!!x,\
+wpclock.h!h!e02g8e!!x,\
+wpbitmap.xh!8!e02g8c!!x,\
+wpbitmap.h!a!e02g8c!!x,\
+wpabs.xh!8!e02g8c!!x,\
+wpabs.h!c!e02g8c!!x,\
+wincfg.xh!a!e02g8c!!x,\
+somtypes.xh!5!e02g8c!!x,\
+somtypes.h!8!e02g8c!!x,\
+somobj.xh!x!e02g8c!!x,\
+somobj.h!l!e02g8c!!x,\
+somnames.h!5!e02g8c!!x,\
+somerr.h!7!e02g8c!!x,\
+somcm.xh!k!e02g8c!!x,\
+somcm.h!i!e02g8c!!x,\
+somcls.xh!16!e02g8c!!x,\
+somcls.h!11!e02g8c!!x,\
+somcls.api!c!e02g8c!!x,\
+somcdev.h!c!e02g8c!!x,\
+sombtype.h!3!e02g8c!!x,\
+som.xh!i!e02g8c!!x,\
+som.h!o!e02g8c!!x,\
+3r,-1,4,.,toolkt2x
+pck02760,v,\
+scsi.h!z!e02g8k!!x,\
+scb.h!x!e02g8k!!x,\
+misc.h!6!e02g8k!!x,\
+iorb.h!1p!e02g8k!!x,\
+abios.h!2t!e02g8k!!x,\
+wptrans.xh!8!e02g8k!!x,\
+wptrans.h!9!e02g8k!!x,\
+wptemps.xh!8!e02g8k!!x,\
+wptemps.h!a!e02g8k!!x,\
+wpsystem.xh!d!e02g8k!!x,\
+wpsystem.h!k!e02g8k!!x,\
+wpstart.xh!8!e02g8k!!x,\
+wpstart.h!a!e02g8i!!x,\
+wpspool.xh!8!e02g8i!!x,\
+wpspool.h!e!e02g8i!!x,\
+wpspneed.xh!8!e02g8i!!x,\
+wpspneed.h!a!e02g8i!!x,\
+wpsound.xh!8!e02g8i!!x,\
+wpsound.h!c!e02g8i!!x,\
+wpshred.xh!8!e02g8i!!x,\
+wpshred.h!b!e02g8i!!x,\
+wpshdir.xh!9!e02g8i!!x,\
+wpshadow.xh!9!e02g8i!!x,\
+wpshadow.h!j!e02g8i!!x,\
+wpserver.xh!9!e02g8i!!x,\
+wpscheme.xh!b!e02g8i!!x,\
+wpscheme.h!f!e02g8i!!x,\
+wprprint.xh!9!e02g8i!!x,\
+wprootf.xh!8!e02g8i!!x,\
+wprootf.h!c!e02g8i!!x,\
+wpqdr.xh!8!e02g8i!!x,\
+3r,-1,4,.,toolkt2x
+pck02795,1,kiutil.dll!j!e02g9e!!x,8,-1,4,.,toolkt2x
+pck02796,4,\
+utils.ico!7!e02g9e!!x,\
+ostutor.ico!7!e02g9e!!x,\
+iconinfo.ico!7!e02g9e!!x,\
+fxicon.ico!7!e02g9e!!x,\
+3s,-1,4,.,toolkt2x
+pck02797,o,\
+ipfund.nls!1!e02g9g!!x,\
+ipfsve.nls!2!e02g9g!!x,\
+ipfrdc.nls!1!e02g9g!!x,\
+ipfptg.nls!2!e02g9g!!x,\
+ipfnor.nls!2!e02g9g!!x,\
+ipfnld.nls!2!e02g9g!!x,\
+ipfkor.nls!1!e02g9g!!x,\
+ipfjpn.nls!1!e02g9g!!x,\
+ipfita.nls!2!e02g9g!!x,\
+ipffrc.nls!2!e02g9g!!x,\
+ipffra.nls!2!e02g9g!!x,\
+ipffin.nls!2!e02g9g!!x,\
+ipfesp.nls!2!e02g9e!!x,\
+ipfenu.nls!1!e02g9e!!x,\
+ipfeng.nls!1!e02g9e!!x,\
+ipfdeu.nls!2!e02g9e!!x,\
+ipfdan.nls!2!e02g9e!!x,\
+ipfcht.nls!1!e02g9e!!x,\
+hmtailor.rc!8!e02g9e!!x,\
+bmtag.tag!6!e02g9e!!x,\
+apsymbol.aps!4!e02g9e!!x,\
+apsym938.aps!4!e02g9e!!x,\
+apsym934.aps!4!e02g9e!!x,\
+apsym932.aps!4!e02g9e!!x,\
+3t,-1,4,.,toolkt2x
+pck02798,b,\
+fontedit.exe!67!e02g9g!!x,\
+exehdr.exe!2p!e02g9g!!x,\
+emitsc.exe!17!e02g9g!!x,\
+emitpsc.exe!46!e02g9g!!x,\
+emitph.exe!48!e02g9g!!x,\
+emitih.exe!5q!e02g9g!!x,\
+emith.exe!4f!e02g9g!!x,\
+emitdef.exe!43!e02g9g!!x,\
+emitcsc.exe!48!e02g9g!!x,\
+emitc.exe!4o!e02g9g!!x,\
+dlgedit.exe!9j!e02g9g!!x,\
+7,-1,4,.,toolkt2x
+pck02799,f,\
+rcpp.err!u!e02g9i!!x,\
+rc.exe!50!e02g9i!!x,\
+pack.exe!36!e02g9i!!x,\
+os2stub.exe!2!e02g9i!!x,\
+msgbind.exe!30!e02g9i!!x,\
+mkmsgf.exe!3k!e02g9i!!x,\
+markexe.exe!1h!e02g9i!!x,\
+mapsym.exe!2a!e02g9i!!x,\
+kwikinf.exe!q!e02g9i!!x,\
+kiiface.exe!1f!e02g9i!!x,\
+kifsmon.exe!o!e02g9i!!x,\
+ipfc.exe!7p!e02g9i!!x,\
+implib.exe!23!e02g9i!!x,\
+iconedit.exe!8n!e02g9i!!x,\
+fwdstamp.exe!1o!e02g9i!!x,\
+7,-1,4,.,toolkt2x
+pck02800,7,\
+toolkt20.ini!4!e02g9i!!x,\
+syslevel.tlk!1!e02g9i!!x,\
+spp2.exe!49!e02g9i!!x,\
+spp.exe!47!e02g9i!!x,\
+spc.exe!6g!e02g9i!!x,\
+sc.exe!4g!e02g9i!!x,\
+rcpp.exe!3d!e02g9i!!x,\
+7,-1,4,.,toolkt2x
+pck02801,6,\
+wpkhlp.hlp!c!e02g9k!!x,\
+kwikinf.hlp!k!e02g9k!!x,\
+iconedit.hlp!24!e02g9k!!x,\
+fontedit.hlp!1h!e02g9k!!x,\
+dlgedit.hlp!3x!e02g9k!!x,\
+car.hlp!4!e02g9k!!x,\
+z,-1,4,.,toolkt2x helpfiles
+pck02802,2,\
+os2386.lib!zt!e4ui4i!!x,\
+os2286.lib!pk!e02g9k!!x,\
+m,-1,4,.,os2targ
+pck02803,3,\
+vdh.lib!16!e02g9k!!x,\
+som.lib!b!e02g9k!!x,\
+rexx.lib!i!e02g9k!!x,\
+m,-1,4,.,toolkt2x
+pck02804,14,\
+wptrans.sc!2!e02g9s!!x,\
+wptemps.sc!2!e02g9s!!x,\
+wpsystem.sc!5!e02g9s!!x,\
+wpstart.sc!3!e02g9s!!x,\
+wpspool.sc!4!e02g9s!!x,\
+wpspneed.sc!2!e02g9s!!x,\
+wpsound.sc!3!e02g9s!!x,\
+wpshred.sc!3!e02g9s!!x,\
+wpshadow.sc!5!e02g9q!!x,\
+wpscheme.sc!6!e02g9q!!x,\
+wprootf.sc!3!e02g9q!!x,\
+wpqdr.sc!4!e02g9q!!x,\
+wpptr.sc!2!e02g9q!!x,\
+wpprint.sc!9!e02g9q!!x,\
+wpport.sc!4!e02g9q!!x,\
+wppgmf.sc!6!e02g9q!!x,\
+wppgm.sc!6!e02g9q!!x,\
+wppdr.sc!4!e02g9q!!x,\
+wppalet.sc!c!e02g9q!!x,\
+wpobject.sc!1u!e02g9q!!x,\
+wpmouse.sc!3!e02g9q!!x,\
+wpkeybd.sc!3!e02g9q!!x,\
+wpjob.sc!5!e02g9q!!x,\
+wpicon.sc!2!e02g9q!!x,\
+wpfsys.sc!e!e02g9q!!x,\
+wpfolder.sc!i!e02g9q!!x,\
+wpfntpal.sc!4!e02g9q!!x,\
+wpdrives.sc!3!e02g9q!!x,\
+wpdisk.sc!5!e02g9q!!x,\
+wpdesk.sc!4!e02g9q!!x,\
+wpdataf.sc!6!e02g9q!!x,\
+wpctry.sc!3!e02g9q!!x,\
+wpcmdf.sc!2!e02g9q!!x,\
+wpclrpal.sc!4!e02g9q!!x,\
+wpclock.sc!4!e02g9q!!x,\
+wpbitmap.sc!2!e02g9q!!x,\
+wpabs.sc!3!e02g9q!!x,\
+somobj.sc!l!e02g9q!!x,\
+somcm.sc!b!e02g9o!!x,\
+somcls.sc!p!e02g9o!!x,\
+3r,-1,4,.,toolkt2x
+pck02868,10,\
+pmtypes.h!o!e02ga2!!x,\
+pmsei.h!5!e02ga2!!x,\
+pmpic.h!2!e02ga2!!x,\
+pmerr.h!20!e02ga2!!x,\
+pm.h!5!e02ga0!!x,\
+pmavio.h!4!e02ga0!!x,\
+pmbitmap.h!4!e02ga0!!x,\
+pmddi.h!13!e02ga0!!x,\
+pmdev.h!l!e02ga2!!x,\
+pmfont.h!8!e02ga2!!x,\
+pmgpi.h!2v!e02ga2!!x,\
+pmord.h!1e!e02ga2!!x,\
+pmshl.h!x!e02ga2!!x,\
+pmspl.h!w!e02ga2!!x,\
+pmmle.h!m!e02ga2!!x,\
+pmwin.h!5j!e02ga2!!x,\
+isperror.h!1j!e02ga0!!x,\
+ispuser.h!l!e02ga0!!x,\
+pmstddlg.h!11!e02ga2!!x,\
+pmddim.h!1q!e02ga2!!x,\
+os2def.h!n!e02ga0!!x,\
+saapi.h!2!e02ga2!!x,\
+ispcast.h!5!e02ga0!!x,\
+ordinals.h!8!e02ga0!!x,\
+bsesub.h!2l!e02ga0!!x,\
+bseerr.h!19!e02ga0!!x,\
+bsedos.h!6l!e02ga0!!x,\
+subcalls.h!1h!e02ga2!!x,\
+error2.h!1a!e02ga0!!x,\
+error.h!k!e02ga0!!x,\
+bse.h!3!e02ga0!!x,\
+doscalls.h!y!e02ga0!!x,\
+doscall.h!1!e02ga0!!x,\
+hmtailor.h!4!e02ga0!!x,\
+pmhelp.h!s!e02ga2!!x,\
+os2.h!2!e02ga0!!x,\
+3u,-1,4,.,os2targ tools16 &
+pck02869,1,os2.lib!7u!e02ga2!!x,q,-1,4,.,os2targ tools16 &
+pck02870,2,\
+prcp.inf!w4!e02ga2!!x,\
+printro.inf!s!e02ga4!!x,\
+z,-1,4,.,os2targ tools16 helpfiles & &
+pck02871,2,\
+prgpifn.inf!xk!e02ga4!!x,\
+prdata.inf!ex!e02ga4!!x,\
+z,-1,4,.,os2targ tools16 helpfiles & &
+pck02872,1,prwinfn.inf!1pn!e02ga4!!x,z,-1,4,.,os2targ tools16 helpfiles & &
+pck02912,4,\
+wbind.exe!2k!!,\
+wemu387.386!1m!!,\
+w386dll.ext!2f!!,\
+win386.ext!2c!!,\
+4,-1,4,.,wintarg
+pck02913,1,wdebug.386!1m!!,4,-1,4,.,winhost wintarg | MinimalInstall |
+pck02914,1,wbind.exe!1y!!,5,-1,4,.,wnthost wintarg
+pck02915,1,win386.lib!ih!!,n,-1,4,.,wintarg
+pck02916,1,watcom.ico!a!!,1,-1,4,.,os2host
+pck02917,1,dos4gw.doc!17!!,1,-1,4,.,dostarg
+pck02919,1,dbglib.rex!2v!!,4,e,4,.,doshost winhost |
+pck02921,1,techinfo.exe!2s!!,4,6,4,.,.
+pck02922,1,nt.lib!r5!!,o,-1,4,.,wnttarg
+pck02923,3,\
+mvapi.dll!a!ed6lj2!!x,\
+ftengine.dll!2d!ed6lj2!!x,\
+ftui.dll!3p!ed6lj2!!x,\
+4,-1,4,.,winhost wnthost |
+pck02924,2,\
+wresfs.lib!8r!!,\
+wresf.lib!8o!!,\
+j,-1,4,.,.
+pck02925,1,dos4gw.exe!ef!!,4,e,4,.,dostarg
+pck02926,4,\
+privatxm.exe!3!!,\
+pminfo.exe!5f!!,\
+rminfo.exe!3i!!,\
+cfig386.exe!4e!!,\
+4,e,4,.,doshost winhost |
+pck02929,1,cmdedit.exe!q!!,4,e,4,.,doshost winhost |
+pck02930,1,cmdedit.txt!l!!,4,6,4,.,.
+pck02931,1,os2edit.exe!7!!,7,-1,4,.,os2host
+pck02932,1,os2edit.dll!k!!,8,-1,4,.,os2host
+pck02933,1,os22edit.exe!k!!,7,-1,4,.,os2host
+pck02934,1,wf77386.prf!1!!,1,-1,4,.,wkframe
+pck02937,1,wfcopts.hlp!1c!!,z,-1,4,.,wkframe
+pck02939,3,\
+wlopts.hlp!v!!,\
+wmakopts.hlp!j!!,\
+wvidopts.hlp!b!!,\
+z,-1,4,.,wkframe
+pck02940,1,wfcopts.dll!2r!!,8,-1,4,.,wkframe
+pck02943,3,\
+wlopts.dll!76!!,\
+wmakopts.dll!1u!!,\
+wvidopts.dll!1n!!,\
+8,-1,4,.,wkframe
+pck02944,1,graph.lib!aq!!,p,-1,4,.,tools16 dostarg
+pck02945,1,graph.lib!k6!!,k,-1,4,.,dostarg
+pck02948,1,graphp.obj!2!!,q,-1,4,.,tools16 os2targ
+pck02981,8,\
+STDOLE.TLB!b!e27rsa!!x,\
+OLE2PROX.DLL!2t!e27rsa!!x,\
+OLE2NLS.DLL!8b!e27rsa!!x,\
+OLE2DISP.DLL!8z!e27rsa!!x,\
+OLE2CONV.DLL!34!e27rsa!!x,\
+OLE2.REG!1j!e27rsa!!x,\
+OLE2.DLL!gj!e27rsa!!x,\
+COMPOBJ.DLL!5x!e27rsa!!x,\
+3v,-1,4,.,win32s IsWin
+pck02982,a,\
+WINMM16.DLL!1l!e27rsa!!x,\
+WINHLP32.HLP!1q!e27rsa!!x,\
+WINHLP32.EXE!ia!e27rsa!!x,\
+WINHLP32.CNT!2!e27rsa!!x,\
+WINDOWS.HLP!16!e27rsa!!x,\
+WIN32S16.DLL!93!e27rsa!!x,\
+WIN32S.INI!1!e27rsa!!x,\
+W32SYS.DLL!p!e27rsa!!x,\
+TYPELIB.DLL!9o!e27rsa!!x,\
+STORAGE.DLL!8k!e27rsa!!x,\
+3v,-1,4,.,win32s IsWin
+pck02983,c,\
+OLE2THK.DLL!1d!e27rsc!!x,\
+NTMSG.DLL!39!e27rsc!!x,\
+NETAPI32.DLL!n!e27rsc!!x,\
+L_TRK.NLS!e!e27rsc!!x,\
+L_INTL.NLS!e!e27rsc!!x,\
+LZ32.DLL!a!e27rsc!!x,\
+LOCALE.NLS!31!e27rsc!!x,\
+FTSRCH.DLL!ds!e27rsc!!x,\
+CTYPE.NLS!e!e27rsc!!x,\
+CRTDLL.DLL!b4!e27rsc!!x,\
+COMDLG32.DLL!2z!e27rsa!!x,\
+COMCTL32.DLL!fg!e27rsa!!x,\
+3w,-1,4,.,win32s IsWin
+pck02984,z,\
+P_936.NLS!5p!e27rsg!!x,\
+P_932.NLS!4t!e27rsg!!x,\
+P_875.NLS!6!e27rsg!!x,\
+P_869.NLS!9!e27rsg!!x,\
+P_866.NLS!9!e27rsg!!x,\
+P_865.NLS!c!e27rsg!!x,\
+P_863.NLS!c!e27rsg!!x,\
+P_861.NLS!c!e27rse!!x,\
+P_860.NLS!c!e27rse!!x,\
+P_857.NLS!d!e27rse!!x,\
+P_855.NLS!9!e27rse!!x,\
+P_852.NLS!c!e27rse!!x,\
+P_850.NLS!c!e27rse!!x,\
+P_737.NLS!9!e27rse!!x,\
+P_500.NLS!5!e27rse!!x,\
+P_437.NLS!c!e27rse!!x,\
+P_1254.NLS!b!e27rse!!x,\
+P_1253.NLS!9!e27rse!!x,\
+P_1252.NLS!b!e27rse!!x,\
+P_1251.NLS!8!e27rse!!x,\
+P_1250.NLS!b!e27rse!!x,\
+P_1026.NLS!5!e27rse!!x,\
+P_10081.NLS!8!e27rse!!x,\
+P_10079.NLS!8!e27rse!!x,\
+P_10029.NLS!7!e27rse!!x,\
+P_10007.NLS!7!e27rse!!x,\
+P_10006.NLS!7!e27rse!!x,\
+P_10001.NLS!4s!e27rsc!!x,\
+P_10000.NLS!9!e27rsc!!x,\
+P_037.NLS!5!e27rsc!!x,\
+OLESVR32.DLL!l!e27rsc!!x,\
+OLEDLG.DLL!63!e27rsc!!x,\
+OLECLI32.DLL!13!e27rsc!!x,\
+OLEAUT32.DLL!cn!e27rsc!!x,\
+OLE32.DLL!jv!e27rsc!!x,\
+3w,-1,4,.,win32s IsWin
+pck02985,b,\
+W32S.386!20!e27rsg!!x,\
+VERSION.DLL!9!e27rsg!!x,\
+UNICODE.NLS!1v!e27rsg!!x,\
+STDOLE32.TLB!e!e27rsg!!x,\
+SORTTBLS.NLS!7!e27rsg!!x,\
+SORTKEY.NLS!e9!e27rsg!!x,\
+SHELL32.DLL!f!e27rsg!!x,\
+SCK16THK.DLL!i!e27rsg!!x,\
+RICHED32.DLL!8u!e27rsg!!x,\
+P_950.NLS!74!e27rsg!!x,\
+P_949.NLS!5q!e27rsg!!x,\
+3w,-1,4,.,win32s IsWin
+pck02986,6,\
+WSOCK32.DLL!r!e27rsi!!x,\
+WINSPOOL.DRV!i!e27rsi!!x,\
+WINMM.DLL!3l!e27rsi!!x,\
+WIN32S.EXE!2!e27rsi!!x,\
+W32SKRNL.DLL!4i!e27rsi!!x,\
+W32SCOMB.DLL!cu!e27rsi!!x,\
+3w,-1,4,.,win32s IsWin
+pck02987,3,\
+freecell.hlp!11!e27rt4!!x,\
+freecell.exe!2p!e27rt4!!x,\
+cards.dll!8l!e27rt4!!x,\
+4,-1,4,.,win32s IsWin
+pck02989,1,freadme.txt!p!!,1,-1,4,.,.
+
+[Disks]
+Disk 1
+Disk 2
+Disk 3
+Disk 4
+
+[PM Info]
+view.exe, c_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall !
+view.exe, f_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall
+e.exe, %CDDir%\readme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese !
+e.exe, %CDDir%\jreadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese
+e.exe, %CDDir%\freadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall IsJapanese !
+e.exe, %CDDir%\jfreadme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall IsJapanese
+%WDir%\binp\ide.exe,, IDE,,, IsOS2 DoCreateIcons ?%WDir%\binp\ide.exe
+%WDir%\binp\wbrw.exe,, Source Browser,,, IsOS2 DoCreateIcons ?%WDir%\binp\wbrw.exe IsFortranInstall !
+%WDir%\binp\wprof.exe,, Profiler,,, IsOS2 DoCreateIcons ?%WDir%\binp\wprof.exe
+%WDir%\binp\wdw.exe,, Windowed Debugger,,, IsOS2 DoCreateIcons ?%WDir%\binp\wdw.exe
+%WDir%\binp\wd.exe,, Debugger,,, IsOS2 DoCreateIcons ?%WDir%\binp\wd.exe
+%WDir%\binp\dlgedit.exe,, Dialog Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\dlgedit.exe
+%WDir%\binp\fontedit.exe,, Font Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\fontedit.exe
+%WDir%\binp\iconedit.exe,, Icon Editor,,, IsOS2 DoCreateIcons ?%WDir%\binp\iconedit.exe
+%CDDir%\vp\disk1\setup.exe,, Install Visual Programmer,,, SrcIsCD IsWin32 IsFortranInstall !
+%HDir%\binw\c_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\c_readme.hlp IsFortranInstall !
+%HDir%\binw\c_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\c_readme.hlp IsFortranInstall !
+%HDir%\binw\f_readme.hlp,, Getting Started,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\f_readme.hlp IsFortranInstall
+notepad.exe, %CDDir%\readme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall ! IsJapanese !
+notepad.exe, %CDDir%\jreadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall ! IsJapanese
+notepad.exe, %CDDir%\freadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall IsJapanese !
+notepad.exe, %CDDir%\jfreadme.txt, Read Me,,, DoCreateHelpIcons IsWin IsWin32 | IsFortranInstall IsJapanese
+%WDir%\binw\ide.exe,, IDE,,, IsWin DoCreateIcons ?%WDir%\binw\ide.exe
+%WDir%\binw\wbrw.exe,, Source Browser,,, IsWin DoCreateIcons ?%WDir%\binw\wbrw.exe IsFortranInstall !
+%WDir%\binw\wbrw.exe,path %WDir%\h\nt;%WDir%\src\mfc\v32 database %WDir%\src\mfc\v32\mfc41.dbr, Browse MFC 3.2,,, IsWin32 DoCreateIcons ?%WDir%\binw\wbrw.exe ?%WDir%\src\mfc\v32\mfc41.dbr IsFortranInstall !
+%WDir%\binw\wprofw.exe,, Profiler,,, IsWin DoCreateIcons ?%WDir%\binw\wprofw.exe
+%WDir%\binw\wdw.exe,, Windowed Debugger,,, IsWin DoCreateIcons ?%WDir%\binw\wdw.exe
+%WDir%\binw\wd.exe,, Debugger,,, IsWin DoCreateIcons ?%WDir%\binw\wd.exe
+%WDir%\binw\drwatcom.exe,, Doctor WATCOM,,, IsWin DoCreateIcons ?%WDir%\binw\drwatcom.exe
+%WDir%\binw\wddespy.exe,, DDE Spy,,, IsWin DoCreateIcons ?%WDir%\binw\wddespy.exe
+%WDir%\binw\wspy.exe,, Spy,,, IsWin DoCreateIcons ?%WDir%\binw\wspy.exe
+%WDir%\binw\wheapwlk.exe,, Heap Walker,,, IsWin DoCreateIcons ?%WDir%\binw\wheapwlk.exe
+%WDir%\binw\winservw.exe,, Windows Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\winservw.exe
+%WDir%\binw\netservw.exe,, NetBIOS Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\netservw.exe
+%WDir%\binw\parservw.exe,, Parallel Port Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\parservw.exe IsNec !
+%WDir%\binw\novservw.exe,, Novell Remote Link,,, IsWin DoCreateIcons ?%WDir%\binw\novservw.exe
+%WDir%\binw\vdmservw.exe,, OS/2 VDM Remote Link,,, IsOS2 DoCreateIcons ?%WDir%\binw\vdmservw.exe
+%WDir%\binw\nmpservw.exe,, Named Pipe Remote Link,,, IsOS2 DoCreateIcons ?%WDir%\binw\nmpservw.exe
+%WDir%\binw\wre.exe,, Resource Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wre.exe
+%WDir%\binw\wde.exe,, Dialog Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wde.exe
+%WDir%\binw\wimgedit.exe,, Image Editor,,, IsWin DoCreateIcons ?%WDir%\binw\wimgedit.exe
+%WDir%\binw\wzoom.exe,, Zoom,,, IsWin DoCreateIcons ?%WDir%\binw\wzoom.exe
+%WDir%\binw\viw.exe,, Text Editor,,, IsWin DoCreateIcons ?%WDir%\binw\viw.exe
+%WDir%\binw\freecell.exe,, Win32s demo,,, IsWin DoCreateIcons win32s ?%WDir%\binw\freecell.exe
+%WDir%\binnt\ide.exe,, IDE,,, IsWin32 DoCreateIcons ?%WDir%\binnt\ide.exe
+%WDir%\binnt\wbrw.exe,, Source Browser,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wbrw.exe IsFortranInstall !
+%WDir%\binnt\wbrw.exe,path %WDir%\h\nt;%WDir%\src\mfc\v32 database %WDir%\src\mfc\v32\mfc41.dbr, Browse MFC 3.2,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wbrw.exe ?%WDir%\src\mfc\v32\mfc41.dbr IsFortranInstall !
+%WDir%\binnt\wprof.exe,, Profiler,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wprof.exe
+%WDir%\binnt\wdw.exe,, Windowed Debugger,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wdw.exe
+%WDir%\binnt\wd.exe,, Debugger,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wd.exe
+%WDir%\binnt\drwatcom.exe,,Doctor WATCOM,,, IsWin32 DoCreateIcons ?%WDir%\binnt\drwatcom.exe
+%WDir%\binnt\wddespy.exe,, DDE Spy,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wddespy.exe
+%WDir%\binnt\wspy.exe,, Spy,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wspy.exe
+%WDir%\binnt\wre.exe,, Resource Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wre.exe
+%WDir%\binnt\wde.exe,, Dialog Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wde.exe
+%WDir%\binnt\wimgedit.exe,,Image Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wimgedit.exe
+%WDir%\binnt\wzoom.exe,, Zoom,,, IsWin32 DoCreateIcons ?%WDir%\binnt\wzoom.exe
+%WDir%\binnt\viw.exe,, Text Editor,,, IsWin32 DoCreateIcons ?%WDir%\binnt\viw.exe
+GROUP, wpp32hlp.grp, Watcom C_C++ Tools Help,,, DoCreateHelpIcons IsFortranInstall !
+GROUP, wf77hlp.grp, Watcom FORTRAN Tools Help,,, DoCreateHelpIcons IsFortranInstall
+%HDir%\binnt\cbooks.hlp,, C_C++ Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\cbooks.hlp IsFortranInstall !
+%HDir%\binnt\cbooksj.hlp,, C_C++ Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\cbooksj.hlp IsFortranInstall !
+%HDir%\binnt\fbooks.hlp,, Fortran Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\fbooks.hlp IsFortranInstall
+%HDir%\binnt\fbooksj.hlp,, Fortran Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\fbooksj.hlp IsFortranInstall
+%HDir%\binw\cmix.hlp,, C_C++ Master Index,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cmix.hlp IsFortranInstall !
+%HDir%\binw\fmix.hlp,, Fortran Master Index,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fmix.hlp IsFortranInstall
+%HDir%\binw\bkmfc.hlp,, Visual Programmer MFC Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binw\bkmfc.hlp IsFortranInstall !
+%HDir%\binw\bkwvp.hlp,, Visual Programmer Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binw\bkwvp.hlp IsFortranInstall !
+%HDir%\binw\ide.hlp,, IDE Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ide.hlp
+%HDir%\binw\idej.hlp,, IDE Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\idej.hlp
+%HDir%\binw\wbrw.hlp,, Source Browser Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wbrw.hlp IsFortranInstall !
+%HDir%\binw\wbrwj.hlp,, Source Browser Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wbrwj.hlp IsFortranInstall !
+%HDir%\binw\wprof.hlp,, Profiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wprof.hlp
+%HDir%\binw\wprofj.hlp,, Profiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wprofj.hlp
+%HDir%\binw\editor.hlp,, Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\editor.hlp
+%HDir%\binw\resedt.hlp,, Resource Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resedt.hlp
+%HDir%\binw\resedtj.hlp,, Resource Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resedtj.hlp
+%HDir%\binw\resacc.hlp,, Accelerator Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resacc.hlp
+%HDir%\binw\resaccj.hlp,, Accelerator Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resaccj.hlp
+%HDir%\binw\resdlg.hlp,, Dialog Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resdlg.hlp
+%HDir%\binw\resdlgj.hlp,, Dialog Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resdlgj.hlp
+%HDir%\binw\resimg.hlp,, Image Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resimg.hlp
+%HDir%\binw\resimgj.hlp,, Image Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resimgj.hlp
+%HDir%\binw\resstr.hlp,, String Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resstr.hlp
+%HDir%\binw\resstrj.hlp,, String Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resstrj.hlp
+%HDir%\binw\rescomp.hlp,, Resource Compiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\rescomp.hlp
+%HDir%\binw\rescompj.hlp,, Resource Compiler Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\rescompj.hlp
+%HDir%\binw\zoom.hlp,, Zoom Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\zoom.hlp
+%HDir%\binw\zoomj.hlp,, Zoom Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\zoomj.hlp
+%HDir%\binw\heapwalk.hlp,, Heap Walker Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\heapwalk.hlp
+%HDir%\binw\heapwalj.hlp,, Heap Walker Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\heapwalj.hlp
+%HDir%\binw\spy.hlp,, Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\spy.hlp
+%HDir%\binw\spyj.hlp,, Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\spyj.hlp
+%HDir%\binw\ddespy.hlp,, DDE Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ddespy.hlp
+%HDir%\binw\ddespyj.hlp,, DDE Spy Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ddespyj.hlp
+%HDir%\binw\drwatcom.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drwatcom.hlp
+%HDir%\binw\drwatcoj.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drwatcoj.hlp
+%HDir%\binw\drnt.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin32 win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drnt.hlp
+%HDir%\binw\drntj.hlp,, Doctor WATCOM Help,,, DoCreateHelpIcons IsWin32 win16_helpfiles win32_helpfiles ! & MinimalInstall IsWin & | ?%HDir%\binw\drntj.hlp
+%HDir%\binw\resmnu.hlp,, Menu Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resmnu.hlp
+%HDir%\binw\resmnuj.hlp,, Menu Editor Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\resmnuj.hlp
+%HDir%\binw\wd.hlp,, Debugger Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wd.hlp
+%HDir%\binw\wdj.hlp,, Debugger Help,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wdj.hlp
+%HDir%\binw\clib.hlp,, C Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clib.hlp
+%HDir%\binw\clibj.hlp,, C Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clibj.hlp
+%HDir%\binw\cpplib.hlp,, C++ Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cpplib.hlp IsFortranInstall !
+%HDir%\binw\cpplibj.hlp,, C++ Library Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cpplibj.hlp IsFortranInstall !
+%HDir%\binw\clr.hlp,, C Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clr.hlp IsFortranInstall !
+%HDir%\binw\clrj.hlp,, C Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\clrj.hlp IsFortranInstall !
+%HDir%\binw\cguide.hlp,, User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cguide.hlp IsFortranInstall !
+%HDir%\binw\cguidej.hlp,, User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\cguidej.hlp IsFortranInstall !
+%HDir%\binw\pguide.hlp,, Programmer's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\pguide.hlp IsFortranInstall !
+%HDir%\binw\pguidej.hlp,, Programmer's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\pguidej.hlp IsFortranInstall !
+%HDir%\binw\wccerrs.hlp,, C Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wccerrs.hlp IsFortranInstall !
+%HDir%\binw\wfcerrs.hlp,, Fortran Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wfcerrs.hlp IsFortranInstall
+%HDir%\binw\wccerrsj.hlp,, C Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wccerrsj.hlp IsFortranInstall !
+%HDir%\binw\wpperrs.hlp,, C++ Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wpperrs.hlp IsFortranInstall !
+%HDir%\binw\wpperrsj.hlp,, C++ Error Messages,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\wpperrsj.hlp IsFortranInstall !
+%HDir%\binw\fuguide.hlp,, F77 User's Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fuguide.hlp IsFortranInstall
+%HDir%\binw\fpguide.hlp,, F77 Programmer's Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\fpguide.hlp IsFortranInstall
+%HDir%\binw\ftools.hlp,, F77 Tools Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\ftools.hlp IsFortranInstall
+%HDir%\binw\f77graph.hlp,, F77 Graphics Library,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\f77graph.hlp IsFortranInstall
+%HDir%\binw\f77lr.hlp,, F77 Language Reference,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\f77lr.hlp IsFortranInstall
+%HDir%\binw\lguide.hlp,, Linker Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\lguide.hlp
+%HDir%\binw\lguidej.hlp,, Linker Guide,,,  DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\lguidej.hlp
+%HDir%\binw\tools.hlp,, Tools Guide,,, DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\tools.hlp
+%HDir%\binw\toolsj.hlp,, Tools Guide,,,  DoCreateHelpIcons IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\toolsj.hlp
+view.exe, wbrw.inf, Source Browser Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wbrw.inf IsFortranInstall !
+view.exe, wprof.inf, Profiler Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wprof.inf
+view.exe, ide.inf, IDE Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\ide.inf
+view.exe, wd.inf, Debugger Help,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\wd.inf
+view.exe, clib.inf, C Library Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\clib.inf
+view.exe, cpplib.inf, C++ Library Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cpplib.inf IsFortranInstall !
+view.exe, clr.inf, C Language Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\clr.inf IsFortranInstall !
+view.exe, fuguide.inf, F77 User's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\fuguide.inf IsFortranInstall
+view.exe, fpguide.inf, F77 Programmer's Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\fpguide.inf IsFortranInstall
+view.exe, ftools.inf, F77 Tools Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\ftools.inf IsFortranInstall
+view.exe, f77graph.inf, F77 Graphics Library,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77graph.inf IsFortranInstall
+view.exe, f77lr.inf, F77 Language Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77lr.inf IsFortranInstall
+view.exe, cguide.inf, User's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cguide.inf IsFortranInstall !
+view.exe, pguide.inf, Programmer's Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\pguide.inf IsFortranInstall !
+view.exe, cmix.inf, C_C++ Master Index,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\cmix.inf IsFortranInstall !
+view.exe, wccerrs.inf, C Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wccerrs.inf IsFortranInstall !
+view.exe, wpperrs.inf, C++ Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wpperrs.inf IsFortranInstall !
+view.exe, wfcerrs.inf, Fortran Error Messages,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\wfcerrs.inf IsFortranInstall
+view.exe, lguide.inf, Linker Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\lguide.inf
+view.exe, tools.inf, Tools Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\tools.inf
+GROUP, wpp32sdk.grp, Watcom C_C++ Additional Help,,, DoCreateHelpIcons IsFortranInstall !
+GROUP, wf77sdk.grp, Watcom FORTRAN Additional Help,,, DoCreateHelpIcons IsFortranInstall
+%HDir%\binw\mcistrwh.hlp,, MCI Command Strings,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mcistrwh.hlp
+%HDir%\binw\penapiwh.hlp,, Pen API Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\penapiwh.hlp
+%HDir%\binw\win31mwh.hlp,, Multimedia Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31mwh.hlp
+%HDir%\binw\win31wh.hlp,, Windows API Reference,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31wh.hlp
+%HDir%\binw\win31whj.hlp,, Japanese Windows API Reference ,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\win31whj.hlp
+%HDir%\binw\isvcpp.hlp,, Add-In Tools Guide,,, DoCreateHelpIcons  IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\isvcpp.hlp  IsFortranInstall !
+%HDir%\binw\isvfor.hlp,, Add-In Tools Guide,,, DoCreateHelpIcons  IsWin win16_helpfiles & IsWin32 win16_helpfiles & win32_helpfiles ! & MinimalInstall IsWin & | | ?%HDir%\binw\isvfor.hlp  IsFortranInstall
+%HDir%\binw\shed.hlp,, Hotspot Editor Help,,, DoCreateHelpIcons IsWin ?%HDir%\binw\shed.hlp
+%HDir%\binnt\shed.hlp,, Hotspot Editor Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\shed.hlp
+%HDir%\binnt\mfc.hlp,, MFC 4.1 Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\mfc.hlp
+%HDir%\binnt\api32wh.hlp,, Japanese Win32 API Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\api32wh.hlp
+%HDir%\binnt\ime32wh.hlp,, Japanese IME API Help,,, DoCreateHelpIcons IsWin32 ?%HDir%\binnt\ime32wh.hlp
+%HDir%\binnt\win32sdk.hlp,, Win32 API Help,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\win32sdk.hlp
+%HDir%\binw\mfc.hlp,, MFC 2.5 Library Help,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfc.hlp
+%HDir%\binw\mfcnotes.hlp,, MFC 2.5 Technical Notes,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfcnotes.hlp
+%HDir%\binw\mfcsamp.hlp,, MFC 2.5 Sample Program Help,,, DoCreateHelpIcons IsWin IsWin32 | ?%HDir%\binw\mfcsamp.hlp
+view.exe, rexxapi.inf, REXX Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\rexxapi.inf
+view.exe, ipfc20.inf, IPFC Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\ipfc20.inf
+view.exe, som.inf, SOM Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\som.inf
+view.exe, toolinfo.inf, Tools Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\toolinfo.inf
+view.exe, PMREF, PM Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\pmfun.inf
+view.exe, PROGREF20, CP Reference,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\guiref20.inf
+view.exe, isvcpp.inf, Add-In Tools Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\isvcpp.inf
+view.exe, isvfor.inf, Add-In Tools Guide,,, IsOS2 DoCreateHelpIcons os2_helpfiles ?%HDir%\binp\help\isvfor.inf
+
+[Profile]
+386Enh, *device, %DstDir%\binw\wdebug.386, system.ini, , IsWin IsWin95 | ?%DstDir%\binw\wdebug.386
+386Enh, *device, %winsys%\win32s\w32s.386, system.ini, , IsWin UnInstall ! ?%winsys%\win32s\w32s.386 
+boot, +drivers, winmm16.dll, system.ini, , IsWin UnInstall ! win32s
+Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
+Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\MFC 3.0 Help,current_user,IsWin32 UnInstall !
+Help,LocalHelp1,%HDir%\binnt,Software\Microsoft\Win32SDK,current_user,IsWin32 UnInstall !
+
+[Autoexec]
++PATH=%DstDir%\BINNT,                      IsWin95
++PATH=%CDDir%\BINNT,                       IsWin95 MinimalInstall
++PATH=%DstDir%\N98BW,                      IsDOS IsWin IsWin95 | | nechost IsNEC
++DOS16M=1,                                 IsDOS nechost IsNEC
++PATH=%DstDir%\BINW,                       IsDOS IsWin IsWin95 | |
++PATH=%CDDir%\N98BW,                       IsDOS IsWin IsWin95 | | nechost MinimalInstall IsNEC
++PATH=%CDDir%\BINW,                        IsDOS IsWin IsWin95 | | MinimalInstall
++PATH=%DstDir%\BIN,                        false
++PATH=%DstDir%\BINB,                       false
++INCLUDE=%DstDir%\H,                       IsDOS IsWin IsWin95 | |
++INCLUDE=%CDDir%\H,                        IsDOS IsWin IsWin95 | | MinimalInstall
++INCLUDE=%DstDir%\H\WIN,                   IsWin
++INCLUDE=%CDDir%\H\WIN,                    IsWin MinimalInstall 
++INCLUDE=%DstDir%\MFC\INCLUDE,             IsWin95 MFC41
++INCLUDE=%CDDir%\MFC\INCLUDE,              IsWin95 MFC41 MinimalInstall
++INCLUDE=%DstDir%\H\NT,                    IsWin95
++INCLUDE=%CDDir%\H\NT,                     IsWin95 MinimalInstall
++FINCLUDE=%DstDir%\SRC\FORTRAN,            IsDOS IsWin IsWin95 | | ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN,             IsDOS IsWin IsWin95 | | MinimalInstall ?%CDDir%\binw\wfc386.exe
++FINCLUDE=%DstDir%\SRC\FORTRAN\WIN,        IsWin IsWin95 | ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN\WIN,         IsWin IsWin95 | MinimalInstall ?%CDDir%\binw\wfc386.exe
++FINCLUDE=%DstDir%\SRC\FORTRAN\DOS,        IsDOS ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN\DOS,         IsDOS MinimalInstall ?%CDDir%\binw\wfc386.exe
+WATCOM=%WDir%,                             IsDOS IsWin IsWin95 | |
+EDPATH=%WDir%\EDDAT,                       IsDOS IsWin IsWin95 | |
+WWINHELP=%HDir%\BINW,                      IsDOS IsWin IsWin95 | | MinimalInstall helpfiles ! SrcIsCD & |
+
+[Config]
++PATH=%DstDir%\BINP,          		IsOS2 IsOS2DosBox |
++PATH=%DstDir%\N98BW,          		IsOS2 IsOS2DosBox | nechost IsNEC
++PATH=%DstDir%\BINW,          		IsOS2 IsOS2DosBox |
++PATH=%CDDir%\BINP,            		IsOS2 IsOS2DosBox | MinimalInstall
++PATH=%CDDir%\N98BW,            		IsOS2 IsOS2DosBox | nechost IsNEC MinimalInstall
++PATH=%CDDir%\BINW,            		IsOS2 IsOS2DosBox | MinimalInstall
++PATH=%DstDir%\SOM\BIN,                     IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++PATH=%CDDir%\SOM\BIN,                      IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
++LIBPATH=%DstDir%\BINP\DLL,                 IsOS2 IsOS2DosBox |
++LIBPATH=%CDDir%\BINP\DLL,                  IsOS2 IsOS2DosBox | MinimalInstall
++LIBPATH=%DstDir%\SOM\LIB,                  IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++LIBPATH=%CDDir%\SOM\LIB,                   IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
++INCLUDE=%DstDir%\H\OS2;%DstDir%\H,         IsOS2 IsOS2DosBox |
++INCLUDE=%CDDir%\H\OS2;%CDDir%\H,           IsOS2 IsOS2DosBox | MinimalInstall
++FINCLUDE=%DstDir%\SRC\FORTRAN,             IsOS2 IsOS2DosBox | ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%DstDir%\SRC\FORTRAN\OS2,         IsOS2 IsOS2DosBox | ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN,              IsOS2 IsOS2DosBox | MinimalInstall ?%CDDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN\OS2,          IsOS2 IsOS2DosBox | MinimalInstall ?%CDDir%\binw\wfc386.exe
++INCLUDE=.;%DstDir%\SOM\INCLUDE,            IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++INCLUDE=.;%CDDir%\SOM\INCLUDE,             IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
++HELP=%DstDir%\BINP\HELP,                   IsOS2 IsOS2DosBox |
++HELP=%CDDir%\BINP\HELP,                    IsOS2 IsOS2DosBox | MinimalInstall helpfiles ! SrcIsCD & |
++BOOKSHELF=%DstDir%\BINP\HELP,              IsOS2 IsOS2DosBox |
++BOOKSHELF=%CDDir%\BINP\HELP,               IsOS2 IsOS2DosBox | MinimalInstall helpfiles ! SrcIsCD & |
++IPFC=%DstDir%\TOOLKT2X\IPFC,               IsOS2 IsOS2DosBox |
++IPFC=%CDDir%\TOOLKT2X\IPFC,                IsOS2 IsOS2DosBox | MinimalInstall
++LIB=%DstDir%\SOM\LIB,                      IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++LIB=%CDDir%\SOM\LIB,                       IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
++DPATH=%DstDir%\SOM\MSG,                    IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++DPATH=%CDDir%\SOM\MSG,                     IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
++SMINCLUDE=.,                               IsOS2 IsOS2DosBox |
++SMINCLUDE=%DstDir%\SOM\INCLUDE,            IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
++SMINCLUDE=.;%CDDir%\SOM\INCLUDE,           IsOS2 IsOS2DosBox | ?%CDDir%\som\readme MinimalInstall
+PROGREF20=GUIREF20.INF,                     IsOS2 IsOS2DosBox |
+WATCOM=%WDir%,                              IsOS2 IsOS2DosBox |
+EDPATH=%WDir%\EDDAT,                        IsOS2 IsOS2DosBox |
+SOMBASE=%WDir%\SOM,                         IsOS2 IsOS2DosBox | ?%DstDir%\som\readme
+SOMIR=%WDir%\SOM\ETC\SOM.IR;SOM.IR,         IsOS2 IsOS2DosBox | ?%WDir%\som\readme
+RUN=%DstDir%\BINP\BATSERV.EXE,              IsOS2 IsOS2DosBox | ?%DstDir%\binp\batserv.exe
+RUN=%DstDir%\BINP\NMPBIND.EXE,              IsOS2 IsOS2DosBox | ?%DstDir%\binp\nmpbind.exe
+PMREF=PMFUN.INF+PMGPI.INF+PMHOK.INF+PMMSG.INF+PMREL.INF+PMWIN.INF+PMWKP.INF, IsOS2 IsOS2DosBox |
+FILES=20,                                   IsDOS IsWin |
+
+[AutoSet]
+ms=true
+mm=true
+mc=true
+ml=true
+mh=false
+doshost=IsDOS 
+os2host=IsOS2 
+dostarg=IsDOS 
+os2targ=IsOS2 
+nlmtarg=false
+nechost=IsNEC
+nectarg=IsNEC
+tools16=IsDos IsOS2 IsWin | | 
+samples=true
+toolkt2x=IsOS2 
+wkframe=false
+winhost=IsWin 
+wnthost=IsWin32
+wintarg=IsWin 
+wnttarg=IsWin32
+helpfiles=true
+win16_helpfiles=helpfiles winhost
+win32_helpfiles=helpfiles wnthost
+whelp_helpfiles=helpfiles doshost
+os2_helpfiles=helpfiles os2host
+adstarg=false
+rtsource=false
+somos2=false
+mfc252=IsWin
+mfc252lib=true
+mfc252src=false
+mfc252bin=false
+mfc252libdll=true
+mfc252libste=true
+mfc252libstd=true
+mfc252libstr=false
+mfc252libdbg=true
+mfc252samp=false
+mfc252samp_apstudio=true
+mfc252samp_autoclik=true
+mfc252samp_calcdriv=true
+mfc252samp_catalog=true
+mfc252samp_chatter=true
+mfc252samp_chatsrvr=true
+mfc252samp_chkbook=true
+mfc252samp_contain=true
+mfc252samp_ctrlbars=true
+mfc252samp_ctrltest=true
+mfc252samp_diblook=true
+mfc252samp_dllhusk=true
+mfc252samp_dlltrace=true
+mfc252samp_drawcli=true
+mfc252samp_dynabind=true
+mfc252samp_enroll=true
+mfc252samp_hello=true
+mfc252samp_helloapp=true
+mfc252samp_hiersvr=true
+mfc252samp_inproc=true
+mfc252samp_ipdrive=true
+mfc252samp_makehm=true
+mfc252samp_mdi=true
+mfc252samp_multipad=true
+mfc252samp_oclient=true
+mfc252samp_propdlg=true
+mfc252samp_scribble=true
+mfc252samp_speakn=true
+mfc252samp_superpad=true
+mfc252samp_templdef=true
+mfc252samp_tracer=true
+mfc252samp_tracker=true
+mfc252samp_viewex=true
+mfc41=IsWin32
+mfc41samp=false
+mfc41lib=true
+mfc41src=false
+mfc41bin=false
+mfc41libdbg=true
+mfc41libuni=false
+mfc41libdll=true
+mfc41libste=true
+mfc41libstd=true
+mfc41libisa=true
+mfc41samp_advanced=true
+mfc41samp_appwiz=true
+mfc41samp_controls=true
+mfc41samp_database=true
+mfc41samp_general=true
+mfc41samp_internet=true
+mfc41samp_ole=true
+mfc41samp_tutorial=true
+mfc41samp_utility=true
+win32sdk=IsWin32
+win32s=false
+sdk_samp=true
+sdk_samp_directx=true
+sdk_samp_fareast=true
+sdk_samp_frmwork=true
+sdk_samp_mapi=true
+sdk_samp_mm=true
+sdk_samp_ole=true
+sdk_samp_opengl=true
+sdk_samp_rpc=true
+sdk_samp_sdktools=true
+sdk_samp_tp4=true
+sdk_samp_win32=true
+sdk_samp_win16=true
+sdk_mapi=true
+sdk_rpc=true
+sdk_win32s=false
+3r=true
+3s=true
+cplusplus=true
+pbcb=false
+
+[Spawn]
+before=%CDDir%\binp\nmpbind.exe q, SrcIsCD IsOS2 
+before=%CDDir%\binp\batserv.exe q, SrcIsCD IsOS2 
+after=cmd.exe /c detach %CDDir%\binp\nmpbind.exe, SrcIsCD IsOS2
+after=cmd.exe /c detach %CDDir%\binp\batserv.exe, SrcIsCD IsOS2
+
+[Environment]
++PATH=%DstDir%\BINNT,                       IsWinNT
++PATH=%DstDir%\N98BW,                       IsWinNT nechost IsNEC
++PATH=%DstDir%\BINW,                        IsWinNT
++PATH=%DstDir%\BINB,                        false
++PATH=%CDDir%\BINNT,                        IsWinNT MinimalInstall
++PATH=%CDDir%\N98BW,                        IsWinNT nechost IsNEC MinimalInstall
++PATH=%CDDir%\BINW,                         IsWinNT MinimalInstall
++INCLUDE=%DstDir%\H,                        IsWinNT
++INCLUDE=%DstDir%\MFC\INCLUDE,              IsWinNT MFC41
++INCLUDE=%DstDir%\H\NT,                     IsWinNT
++INCLUDE=%CDDir%\H,                         IsWinNT MinimalInstall
++INCLUDE=%CDDir%\MFC\INCLUDE,               IsWinNT MinimalInstall MFC41
++INCLUDE=%CDDir%\H\NT,                      IsWinNT MinimalInstall
++FINCLUDE=%DstDir%\SRC\FORTRAN\WIN,         IsWinNT ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%DstDir%\SRC\FORTRAN,             IsWinNT ?%DstDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN\WIN,          IsWinNT MinimalInstall ?%CDDir%\binw\wfc386.exe
++FINCLUDE=%CDDir%\SRC\FORTRAN,              IsWinNT MinimalInstall ?%CDDir%\binw\wfc386.exe
+WATCOM=%WDir%,                              IsWinNT
+EDPATH=%WDir%\EDDAT,                        IsWinNT
+WWINHELP=%HDir%\BINW,                       IsWinNT MinimalInstall helpfiles ! SrcIsCD & |
+
+[Dialog]
+name=InsertDisk
+static_text="@ needs the following diskette:"
+dynamic_text=DiskDesc,""
+static_text=
+static_text="Please insert or specify new path"
+edit_control=SrcDir,,"Source Directory:"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=InsertFormattedDisk
+static_text=
+dynamic_text=FormattedDiskInfo,""
+dynamic_text=ifd_1,"Please insert a diskette into '%MakeDiskDrive%'."
+static_text=
+dynamic_text=ifd_2,"Label the diskette as '%DiskDesc%'."
+static_text="All existing data on the diskette will be destroyed."
+static_text=
+static_text="If you have already made this diskette, press 'Skip'"
+static_text=
+push_button=+"&OK"
+push_button=>"&Skip"
+push_button=^"&Cancel"
+
+[Dialog]
+name=InsertDisk1
+static_text=
+dynamic_text=FormattedDiskInfo,""
+static_text=
+static_text="@ must write configuration information to the install diskette"
+static_text="ディスケットに書かなければなりません",IsJapanese
+dynamic_text=id1_1,"Please insert DISK01 into '%MakeDiskDrive%'."
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Modify
+static_text=
+dynamic_text=AutoText,""
+static_text=
+static_text="@ can:"
+radio_button=ModNow,1,"&Make all the modifications for you"
+radio_button=ModLater,0,"&Let you make the modifications later"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=ModifyEnvironment
+static_text=
+static_text="@ needs to modify environment variables in the registry."
+static_text=
+static_text=="@ can:"
+radio_button=ModUser,0,="Modify current &user environment variables"
+radio_button=ModMachine,1,="Modify local &machine environment variables"
+radio_button=ModLater,0,="&Let you make the modifications later"
+static_text=
+push_button=+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Help_ModifyEnvironment
+static_text=
+static_text="Components of this application can be run as an NT service. If you wish to run this application as a service, or you are not sure, choose the 'modify local machine' option."
+static_text=
+push_button=+"&OK"
+
+[Dialog]
+name=DLLInstall
+static_text="@ attempted to install the file:"
+dynamic_text=FileDesc,"    "
+static_text="in this directory:"
+dynamic_text=DLLDir,"    "
+static_text="but, it currently exists in"
+dynamic_text=OtherDLLDir,"    "
+static_text=
+radio_button=DLL_Delete_Old,,"Install the new file and &delete the existing file"
+radio_button=DLL_Keep_Both,,"Install the new file and &keep the existing file"
+radio_button=DLL_Replace_Old,,"&Replace the existing file with the new file"
+radio_button=DLL_Dont_Install,,"Do &not install the new file"
+static_text=
+check_box=DLL_Skip_Dialog,0,"&Use the current choice for all subsequent DLLs"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=ReadOnlyFile
+static_text="@ attempted to install the file:"
+dynamic_text=FileDesc,"    "
+static_text="but found it marked read-only"
+static_text=
+radio_button=RO_Replace_Old,,"&Install the file anyway"
+radio_button=RO_Dont_Install,,"&Do not install this file"
+static_text=
+check_box=RO_Skip_Dialog,0,"&Use the current choice for all read-only files"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=DeleteReadOnlyFile
+static_text="@ attempted to remove the file:"
+dynamic_text=FileDesc,"    "
+static_text="but found it marked read-only"
+static_text=
+radio_button=RO_Remove_Old,,"&Remove the file anyway"
+radio_button=RO_Dont_Remove,,"&Do not remove this file"
+static_text=
+check_box=RO_Skip_Remove,0,"&Use the current choice for all read-only files"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=CantOpen
+static_text=
+dynamic_text=OpenError,"                                                                 "
+static_text=
+static_text="@ will now stop."
+push_button=*"&OK"
+
+
+[Dialog]
+name=NewerFile
+static_text="@ attempted to install the file:"
+dynamic_text=FileDesc,"    "
+static_text="but found a newer version already existed"
+static_text=
+radio_button=Newer_Replace_Old,,"&Install the file anyway"
+radio_button=Newer_Dont_Install,,"&Do not install this file"
+static_text=
+check_box=Newer_Skip_Dialog,0,"&Use the current choice for all newer files"
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=License
+static_text="Please fill in the following License information:"
+static_text=
+edit_control=LicenseName,,"   Name:"
+static_text=
+edit_control=LicenseCompanyName,,"Company:"
+static_text=
+dynamic_text=LicenseMessage,""
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=LocCfg
+static_text="@ Can not find the following file:"
+
+dynamic_text=FileToFind,""
+static_text=
+check_box=CfgFileCreate,1,"&Create the file"
+static_text=
+static_text="Otherwise, specify a new drive:"
+edit_control=CfgDir,,"Drive Letter:"
+
+static_text=
+push_button=+"&OK"
+push_button=^"&Cancel"
+
+[ErrorMessage]
+IDS_ERROR="%s"
+IDS_NODISKFOROPTION="This diskette set does not contain the requried option."
+IDS_BADCRC="Internal error unpacking: '%s' - bad CRC."
+IDS_NOMEMORY="Insufficient memory to run @.&\n Close an application and try again."
+IDS_NOSETUPINFOFILE="The %s file cannot be found.\nPlease verify the distribution diskette."
+ID_NOTEMPSPACE="A drive could not be found with at least %ldK free to write a temporary file needed by @."
+IDS_NODISKSPACE="Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"
+IDS_NODISKSPACE_UNC="'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"
+IDS_UNCPATH_NOTEXIST="Error: Drive '%s' does not exist.\nTry another drive."
+IDS_UNCPATH_NOTWRITABLE="Error: Drive '%s' is not writable.\nTry another drive."
+IDS_ASSUME_ENOUGHSPACE="Cannot determine how much free disk space is on '%s'.\nAssume there is enough space and continue?"
+IDS_CANTMAKEDIR="The %s directory cannot be created.&\nEnter another directory or try another drive."
+IDS_QUERYABORT="@ has not completed installing the software.\nAre you sure you want to stop installation?"
+IDS_SETUPNOGOOD="The software has not been successfully installed!\nYou must run @ again before using the software."
+IDS_UNSETUPNOGOOD="The software has not been successfully uninstalled!\nYou must run @ again to completely remove the software."
+IDS_PMADDNOGOOD="@ could not add the application(s) to the Program Manager.&\nDo you wish to ignore this problem and continue?"
+IDS_PMREMNOGOOD="@ could not remove application(s) from the Program Manager.&\nDo you wish to ignore this problem and continue?"
+IDS_UNSETUPCOMPLETE="@ has completed successfully."
+IDS_COMPLETE="@ has completed successfully."
+IDS_NOMEMORYCOPY="Insufficient memory to copy file.&\nTry again or cancel @."
+IDS_CANTOPENDST="Cannot create destination file:\n %s.&\nTry again or cancel @."
+IDS_CANTOPENDST_NONAME="Cannot create destination file.&\nTry again or cancel @."
+IDS_CANTFINDAUTOEXEC="@ cannot find the original AUTOEXEC.BAT file"
+IDS_CANTFINDCONFIGSYS="@ cannot find the original CONFIG.SYS file"
+IDS_COPYAUTOEXEC="@ will place the contents of your original\nAUTOEXEC.BAT and CONFIG.SYS files\n in the following backup files:\n\n    %s\n    %s"
+IDS_COPYCONFIGSYS="@ will place the contents of your original CONFIG.SYS file in the following backup file: \n\n    %s\n"
+IDS_NEWAUTOEXEC="@ will save the changes it would make to\nyour AUTOEXEC.BAT and CONFIG.SYS files\nin the following backup files:\n\n    %s\n    %s"
+IDS_NEWCONFIGSYS="@ will save the changes it would make to your CONFIG.SYS file in the following backup file:\n\n    %s\n"
+IDS_ERRORBACKAUTO="An error occurred trying to create the backup\ncopy of your AUTOEXEC.BAT file"
+IDS_ERRORBACKCONFIG="An error occurred trying to create the backup\ncopy of your CONFIG.SYS file"
+IDS_CHANGES="@ will save the changes it would make to\nyour Environment in the following file:\n\n    %s"
+IDS_OS2CONFIGSYS="The changes to the CONFIG.SYS file are required to run the software.  Please shutdown your system and restart to allow the changes to take effect.\n"
+IDS_NT_REBOOT="@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your system setup\nwill take effect."
+IDS_OS2_REBOOT="@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your CONFIG.SYS\nwill take effect."
+IDS_WINDOWS_REBOOT="@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT,\nCONFIG.SYS and Windows .INI files will take effect."
+IDS_DOS_REBOOT="@ has completed installing the software.&\n\nYou should reboot your computer so\nthat the changes to your AUTOEXEC.BAT\nand CONFIG.SYS will take effect."
+IDS_ERROR_WRITING="An I/O error occurred while writing to the file '%s'"
+IDS_ERROR_OPENING="An I/O error occurred while opening the file '%s'"
+IDS_ERROR_CLOSING="An I/O error occurred while closing the file '%s'"
+IDS_FIRST="%s"
+IDS_UNKNOWNERROR="Unknown error"
+IDS_RENAMEERROR="Cannot rename to %s.&\nContinue with PATCH process?"
+IDS_PATCHFILEERROR="Cannot apply patch file %s.&\nContinue with PATCH process?"
+IDS_COPYFILEERROR ="Cannot copy file %s.&\nContinue with PATCH process?"
+IDS_DELETEFILEERROR ="Cannot delete file %s.&\nContinue with PATCH Process?"
+IDS_CREATEDIRERROR="Cannot create directory %s.&\nContinue with PATCH Process?"
+IDS_NOTPATCHFILE="%s is not a patch file."
+IDS_CANTFINDOUTPUT="Cannot find output file (to be patched) %s."
+IDS_NOATTRIBUTES="Cannot find file attributes of %s."
+IDS_CANTWRITE="Cannot write to file %s."
+IDS_BADLENGTH="File length Error"
+IDS_WRONGCHECKSUM="Invalid Checksum Error"
+IDS_CANTCREATEEFILE="Cannot create file %s."
+IDS_CANTDELETEFILE="Cannot delete file %s."
+IDS_CANTOPENSRC="Cannot open source file:\n%s."
+IDS_CANTRENAME="Cannot rename %s to %s."
+IDS_PATCHABORT="Patch Process Aborted."
+IDS_ENV_CHANGES="Required changes to environment:"
+IDS_ADD_TO_VAR="add the following to the '%s' variable"
+IDS_SET_VAR_TO="set variable '%s' to"
+IDS_DISKETTES_NEEDED="You will need %d diskettes"
+IDS_DRIVE_SPEC="Drive %c: "
+IDS_DRIVE_SPEC_UNC="Drive '%s' "
+IDS_DRIVE_FREED=" will be freed."
+IDS_DRIVE_REQUIRED=" required,  "
+IDS_DRIVE_AVAILABLE=" available."
+IDS_MODIFY_AUTOEXEC="@ needs to modify AUTOEXEC.BAT and CONFIG.SYS."
+IDS_MODIFY_CONFIG="@ needs to modify CONFIG.SYS."
+IDS_MODIFY_ENVIRONMENT="@ needs to modify environment variables in the registry."
+IDS_INCONSISTENT="@ has determined that you are installing over a previous version of the software, or have manually added or removed files.  Do you wish to install all missing files?"
+IDS_NO_FILES_PATCHED="No files were patched"
+IDS_REMOVE_ODBC="@ has determined that after this uninstall, the ODBC core components will no longer be used. Should these files be deleted?"
+IDS_REMOVE_DLL="@ has determined that after this uninstall, the file %s will no longer be used. Should this file be deleted?"
+
+IDS_ERASE_OK="All files on drive '%c' will be erased.\nProceed anyway?"
+
+IDS_FORMAT_OK="This disk in drive '%c' will be formatted, destroying ALL files.\nProceed anyway?"
+IDS_ERASE_ARE_YOU_SURE="Are you sure you want to erase all files on drive '%c'?"
+IDS_FORMAT_ARE_YOU_SURE="Are you sure you want format drive '%c' destroying all existing files?"
+IDS_INVALID_DISKETTE_SPEC="'%s' is not a valid diskette drive name.\n"
+IDS_LOGFILE_EXISTS="Requested log file: %s exists already.&\nReplace it?\n(If you choose 'NO', this program will abort.)"
+IDS_CANT_OPEN_LOGFILE="Requested log file: %s could not be opened."
+IDS_CANT_WRITE_LOGFILE="%s could not be written."
+IDS_UNPACKING="Unpacking %s... "
+IDS_DELETING="Deleting %s... "
+IDS_CREATINGDIR="Creating directory %s... "
+IDS_SUCCESS="Successful"
+IDS_FAILED_UNPACKING="Failed unpacking"
+IDS_INVALID_EXE="Existing executable is invalid"
+IDS_FAILED_PATCHING="Failed patching new file"
+IDS_FAILED_DELETING="Failed deleting."
+IDS_FAILED_CREATINGDIR="Failed creating directory"
+IDS_CANTREPLACE="Cannot replace the file %s.&\nContinue with the install?"
+IDS_NOSPACE_AFTER_DELETING="The package will require about %ldK of space in the path '%s', yet even after the current contents of this path are deleted, only %ldK will be free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"
+IDS_NOTENOUGHSPACE="The package will require about %ldK of space in the path '%s', yet %ldK is free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"
+IDS_BAD_PATH="The path: '%s' that you entered is either inaccessible, not valid, or cannot be made.\nCheck the path and run this program again."
+IDS_EMPTY_DIR="WARNING: Before copying files, this program will attempt to delete the contents of the existing directory: '%s'.\nAre you sure you wish to proceed?\n"
+IDS_FAILED_COPYING="Error: The package could not be successfully copied to the directory: '%s'."
+IDS_PDF_FAILED="Error: Failed to create the .pdf file for this package successfully."
+IDS_NO_LICENSEINFO="Could not apply the license because a user name and company were not found in c:\sms.ini."
+IDS_PACKAGE_CREATED="A package for Microsoft BackOffice has been successfully created in the directory: '%s'.\nThe package definition file: '%s' can also be found in the same directory."
+IDS_CANTOPENFILE="Cannot open file '%s'."
+IDS_CANTALLOCATEMEMORY="Could not allocate memory."
+IDS_ERROREDITING="Error editing the file '%s'."
+IDS_REGERROR="An error occurred while attempting to modify the registry."
+IDS_REG_ODBC_ERROR="Information about ODBC was expected in the registry, but not found."	
+IDS_FAILED_MODIFYING_FILE="Could not modify the configuration file:\n%s&\nDo you wish to continue?"
+IDS_HELP_BUTTON="?&Help"
+IDS_CANCEL_BUTTON="^&Cancel"
+IDS_OK_BUTTON=".+&OK"
+IDS_FAILEDBACKUP="The file '%s' could not be copied to '%s'.&\n\nDo you wish to continue without a backup?"
+IDS_INVALID_DIR="'%s' is not a valid directory."
+IDS_NODIR="The directory '%s' does not exist.&  Do you want to create it?\n\n(Choose YES to create the directory, or NO to enter a different directory.)"
+IDS_ALIAS_EXISTS="The alias '%s' exists already.&  Do you wish to enter a different alias?\n\n(Choose YES to go back and enter a different alias, or NO to overwrite the the existing alias.)"
+IDS_NODESTINFO="Disk space information from the destination path: '%s' could not be found.  An estimate is that about %ldK of space is needed.&\n\nDo you wish to continue anyway?"
+IDS_NOSRCINFO="Disk space information for the source path: '%s' could not be found.&\n\nDo you wish to continue anyway?"
+IDS_NOFREESPACEINFO="The amount of free space on '%s' cannot be determined.  About %ldK free space is needed.&\n\nDo you wish to continue anyway?"
+IDS_NSCONFIG_1="Netscape Server was found in:"
+IDS_NSCONFIG_2="This dialog lets you choose how to configure Netscape Server for NetImpact Dynamo."
+IDS_NSCONFIG_3="Select where to place the NetImpact Dynamo NSAPI DLLs for use by Netscape Server:"
+IDS_NSCONFIG_4="Use the path: %s (&recommended)"
+IDS_NSCONFIG_5="Use the &path: %s"
+IDS_NSCONFIG_6="&Enter a path."
+IDS_NSCONFIG_7="NSAPI DLL path:"
+IDS_NSCONFIG_8="@ can modify the '%s' file for each Web server under this install of Netscape Server that you want to work with NetImpact Dynamo."
+IDS_NSCONFIG_9="&List selected file(s)..."
+IDS_NSCONFIG_10="Modify the '%s' file(s)."
+IDS_NSCONFIG_11="Below is a list of the %s file(s) for Netscape Web Servers found under this install of Netscape Server.  Select the %s file(s) you want @ to configure for NetImpact Dynamo:"
+IDS_NSCONFIG_12="Before modifying the %s file(s) do you want to copy the original to a backup with the extension %s in the same directory?"
+IDS_NSCONFIG_13="Yes, backup the %s file(s)."
+IDS_IISCONFIG_1="'%s' was found on this machine."
+IDS_IISCONFIG_2="Location: %s"
+IDS_IISCONFIG_3="This dialog lets you choose how to configure the Web server for NetImpact Dynamo."
+IDS_IISCONFIG_4="Select where to place the NetImpact Dynamo ISAPI DLLs for use by the Web server:"
+IDS_IISCONFIG_5="Use the path: %s (&recommended)"
+IDS_IISCONFIG_6="Use the &path: %s"
+IDS_IISCONFIG_7="&Enter a path."
+IDS_IISCONFIG_8="ISAPI DLL path:"
+IDS_IISCONFIG_9="You must enter a virtual alias for this path (e.g. '/Sybase' )."
+IDS_IISCONFIG_10="Virtual alias:"
+IDS_NID_NS="Netscape Server"
+IDS_NID_IIS="Microsoft Web servers"
+IDS_NID_CGI="CGI"
+IDS_NID_WINCGI="Win-CGI"
+IDS_NID_IS_CGI_PRESENT="Do you have a CGI / Win-CGI Web Server on this machine?"
+IDS_NID_LOOKFORSERVERS="@ will attempt to detect Microsoft and/or Netscape Web servers on this machine.\n\nIf a Web server is found, @ will offer to do some of the configuration needed for the Web server work with NetImpact Dynamo.\n\nNote that NetImpact Dynamo must already be installed, and your Web server(s) should not be currently running for this to work."
+IDS_NID_QUERY_LOOKFORSERVERS="Do you want @ to attempt to detect Microsoft and/or Netscape Web servers on this machine?\n\n(If a Web server is found, @ will offer to do some of the configuration needed for the Web Server to work with NetImpact Dynamo.  Note that your Web server(s) should not be currently running for this to work.)"
+IDS_NID_NOSERVERSFOUND="@ could not detect Microsoft or Netscape Web servers on this machine.  If a web server is installed but was not detected, consult the NetImpact Dynamo documentation to set up your web server manually."
+IDS_NID_CANTSETUPSERVERS="Note: @ will not try to detect %s on your machine because one or more of the following NetImpact Dynamo files used by this Web server was not found:\n\n%s&\nReinstall NetImpact Dynamo if you want to detect and configure this Web server."
+IDS_NID_CANTSETUPCGI="Note: One or more of the following files that make up the NetImpact Dynamo Application Server for %s Web servers was not found:\n\n%s\nReinstall NetImpact Dynamo if you want to use these files."
+IDS_NID_OPTIMAFILESMISSING="@ cannot set up the Web server(s) on this machine because one or more of the following NetImpact Dynamo files was not found in '%s' as expected:\n\n%s&\nTry reinstalling NetImpact Dynamo."
+IDS_NID_SUCCESS="Web server configuration completed successfully."
+IDS_NID_FAILED="Web server configuration was aborted or did not complete successfully."
+IDS_NID_ACCESSDENIED="The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."
+
+[SetupErrorMessage]
+IDS_WRITEERROR="Error writing to destination file"
+IDS_NULLSTRING="NULL String"
+IDS_HEAPOK="Heap OK"
+IDS_HEAPEND="End of Heap"
+IDS_HEAPEMPTY="Heap is Empty"
+IDS_HEAPDAMAGE="Head is Damaged"
+IDS_CONTROLERROR="Error creating control"
+IDS_CONTROLCLASSERROR="Invalid control class"
+IDS_QUERYFSERROR="DosQueryFSInfo error: return code = %ld"
+IDS_FORMATTING_FAILED="Formatting Failed!"
+
+[StatusLineMessage]
+IDS_DISKING=" - Creating Diskettes"
+
+IDS_CHECKING="Checking directory for existing components ..."
+IDS_CREATEPROGRAMFOLDER="Creating Program Folder"
+IDS_CREATEDIRECTORY="Creating Directories..."
+IDS_CREATING_DISKS="Creating Diskettes..."
+IDS_ERASING_DISKETTE="Erasing Diskette Contents..."
+IDS_RELOCATING="Relocating Files..."
+IDS_COPYFILE="Installing Files..."
+IDS_COPYINGFILE="Copying Files..."
+IDS_REMOVING="Removing Files..."
+IDS_FORMATTING_DISK="Formatting Diskette..."
+IDS_CREATEFILE="Copying New File"
+IDS_DELETEFILE="Deleting File"
+IDS_PATCHFILE="Applying Patch File"
+IDS_DISK_NOT_WRITEABLE="Diskette cannot be written!"
+IDS_DISK_NOT_ENOUGH_FREE="Diskette does not have enough free space!"
+IDS_CREATESERVICE="Creating Windows NT Service..."
+IDS_CREATING_FILE="Creating File..."
+IDS_DELETEFILES="Deleting Files..."
+IDS_CHECKINGPATH="Checking destination path..."
+IDS_EMBEDDED="Renaming files for embedded application..."
+
+[LicenseMessage]
+IDS_LICENSEMESSAGE="Name and Company name must be filled in"
+IDS_APPLYLICENSE="Applying License..."
+
+[Application]
+DLL_Delete_Old=0
+DLL_Keep_Both=1
+DLL_Replace_Old=0
+DLL_Dont_Install=0
+RO_Replace_Old=0
+RO_Dont_Install=1
+RO_Remove_Old=0
+RO_Dont_Remove=1
+Newer_Replace_Old=0
+Newer_Dont_Install=1
+
+[Dialog]
+name=GetDiskSizesHere
+condition=MakeDisks !
+
+[Dialog]
+name=Other
+static_text="Select other options:"
+static_text=
+check_box=cplusplus,,"&Include C++ compiler components",IsFortranInstall !
+check_box=samples,,"Sample &programs"
+check_box=rtsource,,"&Run-time startup source code"
+detail_check=dwin32sdk,"&Win32 SDK...",win32sdk,,"32-&bit Windows SDK"
+check_box=wkframe,,"Work&Frame/2 support"
+check_box=somos2,,"&SOMobjects toolkit for OS/2 2.x",IsFortranInstall !
+check_box=toolkt2x,,"OS/2 2.x &toolkit"
+other_button="&Helpfiles...",Helpfile,"Helpfiles to Install:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=OtherMakeDisks
+static_text="Select other options:"
+static_text=
+check_box=cplusplus,,"&Include C++ compiler components",IsFortranInstall !
+check_box=samples,,"Sample &programs"
+check_box=rtsource,,"&Run-time startup source code"
+detail_check=dwin32sdk,"&Win32 SDK...",win32sdk,,"32-&bit Windows SDK"
+check_box=wkframe,,"Work&Frame/2 support"
+check_box=somos2,,"&SOMobjects toolkit for OS/2 2.x",IsFortranInstall !
+check_box=toolkt2x,,"OS/2 2.x &toolkit"
+other_button="&Helpfiles...",Helpfile,"Helpfiles to Install:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Helpfile
+static_text="Select the types of online help files:"
+static_text=
+check_box=win16_helpfiles,,"&Windows 3.X Hosted Help Files"
+check_box=win32_helpfiles,,"Windows 95 / Windows &NT Hosted Help files"
+check_box=os2_helpfiles,,"&OS/2 Hosted Help Files"
+check_box=whelp_helpfiles,,"&Dos Hosted Help Files"
+static_text=
+static_text=,SrcIsCD
+radio_button=helpfiles,,"Copy on-line help files to hard &disk",SrcIsCD
+radio_button=other_dummy_1,helpfiles !,"&Leave on-line help files on CD-ROM",SrcIsCD
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Help_Other
+static_text="Select other options you want to install.  They are:"
+static_text=
+static_text="C++ compiler components"
+static_text="	- choose whether you want to program in C++ versus C"
+static_text="Sample Programs"
+static_text="	- example programs for various operating systems"
+static_text="Run-time Startup Source Code"
+static_text="	- startup code for the run-time library"
+static_text="SOMobjects Toolkit for OS/2 2.x",IsFortranInstall !
+static_text="	- allows you to create OS/2 2.x SOM applications",IsFortranInstall !
+static_text="WorkFrame/2 Support"
+static_text="	- allows the compiler to work with WorkFrame/2 development environment"
+static_text="OS/2 2.x Toolkit"
+static_text="	- allows creation of OS/2 applications"
+static_text="Copy on-line help files to hard disk",SrcIsCD
+static_text="	- copies help files to the hard disk.",SrcIsCD
+static_text="	- if you do not choose this option, help will be loaded from the CD-ROM",SrcIsCD
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_OtherMakeDisks
+static_text="Select other options you want to install.  They are:"
+static_text=
+static_text="C++ compiler components"
+static_text="	- choose whether you want to program in C++ versus C"
+static_text="Sample Programs"
+static_text="	- example programs for various operating systems"
+static_text="Run-time Startup Source Code"
+static_text="	- startup code for the run-time library"
+static_text="SOMobjects Toolkit for OS/2 2.x",IsFortranInstall !
+static_text="	- allows you to create OS/2 2.x SOM applications",IsFortranInstall !
+static_text="WorkFrame/2 Support"
+static_text="	- allows the compiler to work with WorkFrame/2 development environment"
+static_text="OS/2 2.x Toolkit"
+static_text="	- allows creation of OS/2 applications"
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=MakeDisksFullFinal
+condition=MakeDisks FullInstall
+static_text="@ will now make the diskette set."
+dynamic_text=mdff_1,"You will need %NumDisksNeeded% diskettes."
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=MakeDisksSelFinal
+condition=MakeDisks FullInstall !
+static_text="@ will now make the diskette set."
+dynamic_text=mdff_1,"You will need %NumDisksNeeded% diskettes."
+static_text=
+static_text="You will be creating a partial installation diskette set."
+static_text="When installing from this diskette set, do not"
+static_text="attempt to select any options that you did not"
+static_text="select during this installation, or you will be"
+static_text="prompted for a diskette that you do not have."
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Options
+condition=SelectiveInstall MakeDisks !
+static_text="Select components to install:"
+static_text="(Un-selected components will be removed)"
+detail_check=16Bit,"16-&Bit...",tools16,,"I&nclude 16-bit compilers:"
+static_text=
+other_button="32-B&it...",32Bit,"32-bit compiler options:"
+static_text=
+other_button="&Target...",Target,"Target operating systems:"
+static_text=
+other_button="Ho&st...",Host,"Host operating systems:"
+static_text=
+other_button="Oth&er...",Other,"Toolkits and other components:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=AlphaOptions
+condition=SelectiveInstall MakeDisks ! IsALphaInstall
+static_text="Select components to install:"
+static_text="(Un-selected components will be removed)"
+static_text=
+check_box=cplusplus,,"Include &C++ compiler components",IsFortranInstall !
+check_box=samples,,"Sample &programs"
+static_text=
+other_button="32-B&it...",32Bit,"32-bit compiler options:"
+static_text=
+other_button="&Target...",axp_targ,"Target operating systems:"
+static_text=
+other_button="Ho&st...",axp_host,"Host operating systems:"
+static_text=
+detail_check=dwin32sdk,"&Win32 SDK...",win32sdk,,"32-&bit Windows SDK",IsFortranInstall !
+static_text=
+static_text=,SrcIsCD
+radio_button=helpfiles,,"Copy on-line help files to hard &disk",SrcIsCD
+radio_button=other_dummy_1,helpfiles !,"&Leave on-line help files on CD-ROM",SrcIsCD
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=OptionsMakeDisks
+condition=SelectiveInstall MakeDisks
+static_text="Select components to install:"
+static_text="(Un-selected components will be removed)"
+detail_check=16Bit,"16-&Bit...",tools16,,"I&nclude 16-bit compilers:"
+static_text=
+other_button="32-B&it...",32Bit,"32-bit compiler options:"
+static_text=
+other_button="&Target...",Target,"Target operating systems:"
+static_text=
+other_button="Ho&st...",Host,"Host operating systems:"
+static_text=
+other_button="Othe&r...",OtherMakeDisks,"Toolkits and other components:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Help_Options
+static_text="Check 'Include 16-bit compilers' to create 16-bit programs."
+static_text=
+static_text="Click on the Target, Host, 16-bit, 32-bit and Other buttons"
+static_text="to select other options to be installed."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_OptionsMakeDisks
+static_text="Check 'Include 16-bit compilers' to create 16-bit programs."
+static_text=
+static_text="Click on the Target, Host, 16-bit, 32-bit and Other buttons"
+static_text="to select other options to be installed."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=DstDir
+condition=MakeDisks !
+static_text=
+dynamic_text=dstdir_1,"%AppName% のインストール先を指定して下さい:",IsJapanese
+edit_control=DstDir,@watcom,"Install %AppName% in:"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=MakeDisks
+condition=MakeDisks
+static_text="You have chosen to create installation diskettes."
+static_text="You will need pre-formatted diskettes.",IsWin
+static_text="If you wish to use un-formatted diskettes, please",IsWin
+static_text="use the OS/2, DOS or Windows NT setup program",IsWin
+static_text="The diskettes do not need to be blank or pre-formatted.",IsWin !
+static_text=
+edit_control=MakeDiskDrive,a:\,"Use diskette drive:"
+static_text=
+radio_button=FullInstall,true,"C&reate full installation set"
+radio_button=SelectiveInstall,false,"&Select components to put on diskettes"
+static_text=,IsWin !
+check_box=FormatDisks,false,"&Format diskettes before copying files",IsWin !
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=axp_host
+static_text="Select the target operating systems:"
+static_text=
+static_text="Windows &NT/Windows 95/Win32s on:"
+static_text=
+check_box=wnthost,,"&Intel Host"
+check_box=alphahost,,"Dec &Alpha Host"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=axp_targ
+static_text="Select the target operating systems:"
+static_text=
+static_text="Windows &NT/Windows 95/Win32s on:"
+static_text=
+check_box=wnttarget,,"&Intel Target"
+check_box=alphatarget,,"Dec &Alpha Target"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Host
+static_text="Select the host operating systems:"
+static_text=
+check_box=doshost,,"&DOS"
+check_box=winhost,,"&Windows 3.1"
+check_box=os2host,,"O&S/2"
+check_box=wnthost,,"Windows &NT/Windows 95"
+check_box=nechost,,"N&EC-98",IsJapanese
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Target
+static_text="Select the target operating systems:"
+static_text=
+check_box=dostarg,,"&DOS"
+check_box=wintarg,,"&Windows"
+check_box=os2targ,,"O&S/2"
+check_box=wnttarg,,"Windows &NT/Windows 95/Win32s"
+check_box=nectarg,,"N&EC-98",IsJapanese
+static_text=
+check_box=nlmtarg,,"Netware"
+check_box=adstarg,,"AutoCAD ADS"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=32Bit
+detail_check=dMFC41,"&MFC Support...",mfc41,,"32-&bit MFC 4.1 support:",IsFortranInstall !
+static_text=,IsFortranInstall !
+static_text="Select the 32-bit calling conventions you wish to use:"
+static_text=
+check_box=3r,,"&Register based calling"
+check_box=3s,,"&Stack based calling"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=16Bit
+any_check=tools16
+detail_check=dMFC252,"M&FC Support...",mfc252,,"16-&bit MFC 2.52 support:",IsFortranInstall !
+static_text=,IsFortranInstall !
+static_text="Select the 16-bit memory models you wish to use:"
+static_text=
+check_box=ms,,"&Small",IsFortranInstall !
+check_box_continue=mm,,"&Medium",IsFortranInstall !
+check_box=mc,,"C&ompact",IsFortranInstall !
+check_box_continue=ml,,"&Large",IsFortranInstall !
+check_box=mh,,"H&uge",IsFortranInstall !
+check_box=mm,,"&Medium",IsFortranInstall
+check_box=ml,,"&Large",IsFortranInstall
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dMFC252
+any_check=mfc252
+static_text="Select MFC 2.52 Options:"
+static_text=
+detail_check=dMFC252LIB,"&Libraries...",mfc252lib,,"Libraries:"
+static_text=
+detail_check=dMFC252SAMP,"&Samples...",mfc252samp,,"Sample Program Source:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dMFC252SAMP
+any_check=mfc252samp
+static_text="Select MFC 2.52 Samples:"
+static_text=
+check_box=         mfc252bin,,"&Include sample program executables"
+check_box         =mfc252samp_apstudio,,"apstudio"
+check_box_continue=mfc252samp_autoclik,,"autoclik"
+check_box_continue=mfc252samp_calcdriv,,"calcdriv"
+check_box_continue=mfc252samp_catalog,,"catalog"
+check_box         =mfc252samp_chkbook,,"chkbook"
+check_box_continue=mfc252samp_chatter,,"chatter"
+check_box_continue=mfc252samp_chatsrvr,,"chatsrvr"
+check_box_continue=mfc252samp_contain,,"contain"
+check_box          =mfc252samp_ctrlbars,,"ctrlbars"
+check_box_continue=mfc252samp_ctrltest,,"ctrltest"
+check_box_continue=mfc252samp_diblook,,"diblook"
+check_box_continue=mfc252samp_dllhusk,,"dllhusk"
+check_box          =mfc252samp_dlltrace,,"dlltrace"
+check_box_continue=mfc252samp_drawcli,,"drawcli"
+check_box_continue=mfc252samp_dynabind,,"dynabind"
+check_box_continue=mfc252samp_enroll,,"enroll"
+check_box          =mfc252samp_hello,,"hello"
+check_box_continue=mfc252samp_helloapp,,"helloapp"
+check_box_continue=mfc252samp_hiersvr,,"hiersvr"
+check_box_continue=mfc252samp_makehm,,"makehm"
+check_box          =mfc252samp_mdi,,"mdi"
+check_box_continue=mfc252samp_multipad,,"multipad"
+check_box_continue=mfc252samp_oclient,,"oclient"
+check_box_continue=mfc252samp_scribble,,"scribble"
+check_box          =mfc252samp_speakn,,"speakn"
+check_box_continue=mfc252samp_superpad,,"superpad"
+check_box_continue=mfc252samp_templdef,,"templdef"
+check_box_continue=mfc252samp_tracer,,"tracer"
+check_box          =mfc252samp_tracker,,"tracker"
+check_box_continue=mfc252samp_viewex,,"viewex"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dMFC252LIB
+any_check=mfc252lib
+static_text="Select MFC 2.52 Library Options:"
+static_text=
+check_box=mfc252src,,"&Include source code and makefiles"
+check_box=mfc252libdbg,,"Include debug &versions"
+static_text=
+check_box=mfc252libdll,,"D&ynamic link libraries for Windows"
+check_box=mfc252libste,,"Static link libraries for Windows &EXE files"
+check_box=mfc252libstd,,"Static link libraries for Windows &DLL files"
+check_box=mfc252libstr,,"&Static link libraries for DOS"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dMFC41
+any_check=mfc41
+static_text="Select MFC 4.1 Options:"
+static_text=
+detail_check=dMFC41LIB,"&Libraries...",mfc41lib,,"Libraries:"
+static_text=
+detail_check=dMFC41SMP,"&Samples...",mfc41samp,,"Sample Program Source:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dmfc41SMP
+any_check=mfc41samp
+static_text="Select MFC 4.1 Samples:"
+static_text=
+check_box=         mfc41bin,,"&Include sample program executables"
+check_box=mfc41samp_advanced,,"advanced"
+check_box=mfc41samp_appwiz,,"appwiz"
+check_box=mfc41samp_controls,,"controls"
+check_box=mfc41samp_database,,"database"
+check_box=mfc41samp_general,,"general"
+check_box=mfc41samp_internet,,"internet"
+check_box=mfc41samp_ole,,"ole"
+check_box=mfc41samp_tutorial,,"tutorial"
+check_box=mfc41samp_utility,,"utility"
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dMFC41LIB
+any_check=mfc41lib
+static_text="Select MFC 4.1 Library Options:"
+static_text=
+check_box=mfc41src,,"&Include source code and makefiles"
+check_box=mfc41libdbg,,"Include debug &versions"
+check_box=mfc41libuni,,"Include &Unicode version"
+static_text=
+check_box=mfc41libdll,,"D&ynamic link libraries for Windows"
+check_box=mfc41libste,,"Static link libraries for Windows &EXE files"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dwin32sdk
+any_check=win32sdk
+static_text="Select Win32 SDK Options:"
+static_text=
+check_box=sdk_mapi,,"&Mapi"
+check_box=sdk_rpc,,"&RPC"
+check_box=sdk_win32s,,"&Win32s"
+detail_check=dsdk_samp,"&Samples...",sdk_samp,,"Sample Program Source:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=dsdk_samp
+any_check=sdk_samp
+static_text="Select NT 4.0 SDK Samples"
+check_box=sdk_samp_directx,,"DirectX"
+check_box=sdk_samp_fareast,,"FarEast"
+check_box=sdk_samp_frmwork,,"frmwork"
+check_box=sdk_samp_mapi,,"mapi"
+check_box=sdk_samp_mm,,"Multi Media(mm)"
+check_box=sdk_samp_ole,,"OLE"
+check_box=sdk_samp_opengl,,"opengl"
+check_box=sdk_samp_rpc,,"rpc"
+check_box=sdk_samp_sdktools,,"sdktools"
+check_box=sdk_samp_tp4,,"tp4"
+check_box=sdk_samp_win32,,"win32"
+check_box=sdk_samp_win16,,"win16"
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=NewInstall
+condition=PreviousInstall ! MakeDisks !
+dynamic_text=targ_1,"%AppName% will be installed in '%DstDir%'"
+static_text=
+radio_button=FullInstall,false,"&Full installation"
+radio_button=FullCDInstall,false,"F&ull installation leaving help files on CD-ROM",SrcIsCD
+radio_button=SelectiveInstall,true,"&Selective installation"
+radio_button=MinimalInstall,false,"&Minimal CD-ROM installation",SrcIsCD
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Maintain
+condition=PreviousInstall MakeDisks !
+dynamic_text=maint_1,"%AppName% was found in '%DstDir%'"
+static_text=
+radio_button=FullInstall,false,"&Full installation"
+radio_button=FullCDInstall,false,"F&ull installation leaving help files on CD-ROM",SrcIsCD
+radio_button=SelectiveInstall,true,"&Selective installation"
+radio_button=MinimalInstall,false,"&Minimal CD-ROM installation",SrcIsCD
+radio_button=UnInstall,false,"&Un-install all components"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Win32s
+condition=IsWin IsOS2DosBox ! ?%winsystemdir%\win32s\win32s.ini ! UnInstall ! MakeDisks ! MinimalInstall !
+check_box=win32s,,"&Install Microsoft Win32s"
+static_text=
+edit_control=winsys,%winsystemdir,"Windows system directory:"
+static_text=
+dynamic_text=df_1,"%DriveFree1%"
+dynamic_text=df_2,"%DriveFree2%"
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=?"&Help"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Final
+condition=PreviousInstall ! MakeDisks !
+static_text="@ will now copy any selected files"
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=MaintainFinal
+condition=PreviousInstall UnInstall ! MakeDisks !
+static_text="@ will now copy all selected components"
+static_text="and remove any un-selected components."
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=UnInstallFinal
+condition=PreviousInstall UnInstall MakeDisks !
+static_text="@ will now remove all components"
+static_text=
+push_button=-"&Previous..."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[Dialog]
+name=Help_MakeDisks
+static_text="Enter the drive letter of the drive that you"
+static_text="wish to use to make your diskette set."
+static_text=
+static_text="Choose whether you want to make a full set of installation"
+static_text="diskettes or a partial set.  If you make a partial set, you"
+static_text="will not be able to choose un-selected options when installing"
+static_text="from the diskette set."
+static_text=,IsWin !
+static_text="Choose 'Format diskettes before copying files' if you want",IsWin !
+static_text="to use unformatted diskettes for your diskette set.",IsWin !
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_16Bit
+static_text="Check 16-bit MFC 2.5 support if you want to install MFC support."
+static_text="Press 'MFC Support...' if you want to choose in more detail."
+static_text=
+static_text="You can also select which memory models you want to use. They are:"
+static_text=
+static_text="Small   - 64k code, 64k data",IsFortranInstall !
+static_text="Medium  - unlimited code, 64k data"
+static_text="Compact - 64k code, unlimited data",IsFortranInstall !
+static_text="Large   - unlimited code, unlimited data"
+static_text="Huge    - Large, with data objects > 64k allowed",IsFortranInstall !
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_32Bit
+static_text="Check 32-bit MFC 3.0 support if you want to install MFC support."
+static_text="Press 'MFC Support...' if you want to choose in more detail."
+static_text=
+static_text="You can also select which memory models you want to use. They are:"
+static_text=
+static_text="Register - some parameters are passed in registers"
+static_text="Stack    - all parameters are passed on the stack"
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_HiThere
+static_text="Choose whether you want to create installation diskettes"
+dynamic_text=hhi_1,"or install %AppName% on a hard disk."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_DstDir
+dynamic_text=hdd_1,"Choose the directory you want to install %AppName% in."
+dynamic_text=hdd_2,"If you have previously installed %AppName%,"
+static_text="@ will use the WATCOM environment variable to decide"
+static_text="where to install the compiler.  If you do not"
+static_text="want to upgrade a previous installation, choose"
+static_text="a different directory."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_Host
+static_text="Target operating systems are the systems for which you want"
+static_text="to generate applications. Host operating systems"
+static_text="are the systems on which you want to run the compiler."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_Maintain
+dynamic_text=hmaint_1,"%AppName% has been found in %DstDir%."
+static_text="Files will be upgraded to the latest version."
+static_text=
+static_text="You may choose the following options:"
+static_text=
+static_text="Full Installation"
+static_text="	- All components will be copied to the hard disk."
+static_text="Full Installation leaving help files on CD-ROM",SrcIsCD
+static_text="	- like full install with help icons pointing to the CD-ROM",SrcIsCD
+static_text="Selective Installation"
+static_text="	- You will be prompted to choose which components to copy."
+static_text="	- Any component you do not choose will be removed."
+static_text="Minimal CD-ROM Installation",SrcIsCD
+static_text="	- Only boot files will be copied to the hard disk.",SrcIsCD
+static_text="	- All other executables will run from the CD-ROM",SrcIsCD
+static_text="Un-Install All Components"
+static_text="   - All components will be removed from the hard disk."
+dynamic_text=hmaint_2,"   - %AppName% will be removed from all configuration files."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_NewInstall
+dynamic_text=hnewinst_1,"A new version of %AppName% will be installed in %DstDir%"
+static_text=
+static_text="You may choose the following options:"
+static_text=
+static_text="Full Installation"
+static_text="	- All components will be copied to the hard disk."
+static_text="Full Installation leaving help files on CD-ROM",SrcIsCD
+static_text="	- like full install with help icons pointing to the CD-ROM",SrcIsCD
+static_text="Selective Installation"
+static_text="	- You will be prompted to choose which components to copy."
+static_text="Minimal CD-ROM Installation",SrcIsCD
+static_text="	- Only boot files will be copied to the hard disk.",SrcIsCD
+static_text="	- All other executables will run from the CD-ROM",SrcIsCD
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_Target
+static_text="Target operating systems are the systems for which you want"
+static_text="to generate applications. Host operating systems"
+static_text="are the systems on which you want to run the compiler."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=Help_Win32s
+static_text="@ will allow you to install Microsoft Win32s."
+static_text="This will allow you to run Win32s application under Windows 3.1."
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=UpgradeStart
+dynamic_text=ust_1,"This is an upgrade version of %AppName%"
+static_text=
+dynamic_text=ust_2,"@ will now search your computer for a previous version of %AppName%"
+static_text="or competitive product from the following list:"
+static_text=
+static_text="- Microsoft Visual C++ 1.5 and later"
+static_text="- Borland C++ 4.0 and later (excluding Turbo C++)"
+static_text="- Borland C++ for OS/2 1.0 and later"
+static_text="- Symantec C++ Professional 6.0 and later"
+static_text="- IBM C/Set++ 1.0 and later"
+static_text=
+static_text=
+push_button=.+"&OK"
+
+[Dialog]
+name=UpgradeNotQualified
+dynamic_text=unc_1,"@ cannot confirm that you are a licensee of %AppName%"
+static_text="or a qualifying competitive product:"
+static_text=
+static_text="- Microsoft Visual C++ 1.5 and later"
+static_text="- Borland C++ 4.0 and later (excluding Turbo C++)"
+static_text="- Borland C++ for OS/2 1.0 and later"
+static_text="- Symantec C++ Professional 6.0 and later"
+static_text="- IBM C/Set++ 1.0 and later"
+static_text=
+static_text="If you are not qualified to obtain this product upgrade,"
+dynamic_text=unc_2,"Watcom grants you no rights to use it, and the %AppName%"
+static_text="Licence Agreement included in this package is null and void."
+static_text="If you have any questions, contact your reseller.  If you"
+dynamic_text=unc_3,"do own %AppName%, or one of the qualifying products in the"
+static_text="above list, you are qualified to obtain this upgrade."
+static_text=
+static_text="Press OK to continue installation, Cancel to abort."
+push_button=.+"&OK"
+push_button=^"&Cancel"
+
+[End]

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Configuration for clib builds.
 *
 ****************************************************************************/
 
@@ -38,7 +37,12 @@
 //       included before any of the runtime header files.
 //
 
-#ifndef _COMDEF_H_INCLUDED
+#ifndef __WATCOMC__
+    // when building with other tools, only include clibext.h
+    #include "clibext.h"
+#else
+
+#ifndef __COMDEF_H_INCLUDED
      #include <_comdef.h>
 #endif
 
@@ -64,7 +68,7 @@
 #elif defined(__HUGE__)
     #define __BIG_DATA__
     #define __BIG_CODE__
-#elif defined(__AXP__) || defined(__PPC__)
+#elif defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     // these effectively use near data references
     #define __SMALL_DATA__
     #define __SMALL_CODE__
@@ -77,14 +81,14 @@
     #if defined(__386__)
         #define __PROTECT_MODE__
         #define __GENERIC_386__
-    #elif defined(M_I86)
+    #elif defined( _M_I86 )
         #define __REAL_MODE__
         #define __GENERIC_086__
     #else
         #error unrecognized processor for GENERIC
     #endif
 #elif defined(__OS2__)
-    #if defined(M_I86)
+    #if defined( _M_I86 )
         #define __REAL_MODE__
         #define __OS2_286__
     #elif defined(__386__)
@@ -116,14 +120,8 @@
     #define __PROTECT_MODE__
     #if defined(__386__)
         #define __WINDOWS__
-        #if defined(__NEC98__)
-            #define __NECWIN_386__
-        #endif
-    #elif defined(M_I86)
+    #elif defined( _M_I86 )
         #define __WINDOWS_286__
-        #if defined(__NEC98__)
-            #define __NECWIN_286__
-        #endif
     #else
         #error unrecognized processor for WINDOWS
     #endif
@@ -131,15 +129,9 @@
     #if defined(__386__)
         #define __PROTECT_MODE__
         #define __DOS_386__
-        #if defined(__NEC98__)
-            #define __NECDOS_386__
-        #endif
-    #elif defined(M_I86)
+    #elif defined( _M_I86 )
         #define __REAL_MODE__
         #define __DOS_086__
-        #if defined(__NEC98__)
-            #define __NECDOS_086__
-        #endif
     #else
         #error unrecognized processor for DOS
     #endif
@@ -152,12 +144,25 @@
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__
+    #define __UNIX__
     #if defined(__386__)
         #define __QNX_386__
-    #elif defined(M_I86)
+    #elif defined( _M_I86 )
         #define __QNX_286__
     #else
         #error unrecognized processor for QNX
+    #endif
+#elif defined(__LINUX__)
+    #define __PROTECT_MODE__
+    #define __UNIX__
+    #if defined(__386__)
+        #define __LINUX_386__
+    #elif defined(__PPC__)
+        #define __LINUX_PPC__
+    #elif defined(__MIPS__)
+        #define __LINUX_MIPS__
+    #else
+        #error unrecognized processor for Linux
     #endif
 #elif defined(__NETWARE__)
     #define __PROTECT_MODE__
@@ -166,6 +171,10 @@
     #else
         #error unrecognized processor for NETWARE
     #endif
+#elif defined(__RDOS__)
+    #define __PROTECT_MODE__
+#elif defined(__RDOSDEV__)
+    #define __PROTECT_MODE__
 #else
     #error unable to configure operating system and processor
 #endif
@@ -175,70 +184,97 @@
     #if defined(__MAKE_DLL_CLIB)
         #undef _WCRTLINK
         #undef _WCIRTLINK
+        #undef _WCRTDATA
         #undef _WMRTLINK
         #undef _WMIRTLINK
+        #undef _WMRTDATA
         #undef _WPRTLINK
         #undef _WPIRTLINK
+        #undef _WPRTDATA
         #if defined(__NT__)
-            #define _WCRTLINK __declspec(dllexport)
-            #define _WCIRTLINK __declspec(dllexport)
-            #define _WMRTLINK __declspec(dllimport)
-            #define _WMIRTLINK __declspec(dllimport)
-            #define _WPRTLINK __declspec(dllimport)
-            #define _WPIRTLINK __declspec(dllimport)
+            #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WMRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WMIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WMRTDATA  __declspec(dllimport) _WRTLDCONV
+            #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
         #elif defined(__WARP__)
-            #define _WCRTLINK __declspec(dllexport)
-            #define _WCIRTLINK __declspec(dllexport)
-            #define _WMRTLINK
-            #define _WMIRTLINK
-            #define _WPRTLINK
-            #define _WPIRTLINK
+            #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WMRTLINK  _WRTLFCONV
+            #define _WMIRTLINK _WRTLFCONV
+            #define _WMRTDATA  _WRTLDCONV
+            #define _WPRTLINK  _WRTLFCONV
+            #define _WPIRTLINK _WRTLFCONV
+            #define _WPRTDATA  _WRTLDCONV
         #endif
     #elif defined(__MAKE_DLL_MATHLIB)
         #define _RTDLL
         #undef _WCRTLINK
         #undef _WCIRTLINK
+        #undef _WCRTDATA
         #undef _WMRTLINK
         #undef _WMIRTLINK
+        #undef _WMRTDATA
         #undef _WPRTLINK
         #undef _WPIRTLINK
+        #undef _WPRTDATA
         #if defined(__NT__)
-            #define _WCRTLINK __declspec(dllimport)
-            #define _WCIRTLINK __declspec(dllimport)
-            #define _WMRTLINK __declspec(dllexport)
-            #define _WMIRTLINK __declspec(dllexport)
-            #define _WPRTLINK __declspec(dllimport)
-            #define _WPIRTLINK __declspec(dllimport)
+            #define _WCRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllimport) _WRTLDCONV
+            #define _WMRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WMIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WMRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
         #elif defined(__WARP__)
-            #define _WCRTLINK
-            #define _WCIRTLINK
-            #define _WMRTLINK __declspec(dllexport)
-            #define _WMIRTLINK __declspec(dllexport)
-            #define _WPRTLINK
-            #define _WPIRTLINK
+            #define _WCRTLINK  _WRTLFCONV
+            #define _WCIRTLINK _WRTLFCONV
+            #define _WCRTDATA  _WRTLDCONV
+            #define _WMRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WMIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WMRTDATA  __declspec(dllexport) _WRTLDCONV
+            #define _WPRTLINK  _WRTLFCONV
+            #define _WPIRTLINK _WRTLFCONV
+            #define _WPRTDATA  _WRTLDCONV
         #endif
     #elif defined(__MAKE_DLL_CPPLIB)
         #define _RTDLL
         #undef _WCRTLINK
         #undef _WCIRTLINK
+        #undef _WCRTDATA
         #undef _WMRTLINK
         #undef _WMIRTLINK
+        #undef _WMRTDATA
         #undef _WPRTLINK
         #undef _WPIRTLINK
+        #undef _WPRTDATA
         #if defined(__NT__)
-            #define _WCRTLINK __declspec(dllimport)
-            #define _WCIRTLINK __declspec(dllimport)
-            #define _WMRTLINK __declspec(dllimport)
-            #define _WMIRTLINK __declspec(dllimport)
-            #define _WPRTLINK __declspec(dllexport)
-            #define _WPIRTLINK __declspec(dllexport)
+            #define _WCRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WCIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WCRTDATA  __declspec(dllimport) _WRTLDCONV
+            #define _WMRTLINK  __declspec(dllimport) _WRTLFCONV
+            #define _WMIRTLINK __declspec(dllimport) _WRTLFCONV
+            #define _WMRTDATA  __declspec(dllimport) _WRTLDCONV
+            #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
         #elif defined(__WARP__)
-            #define _WCRTLINK
-            #define _WCIRTLINK
-            #define _WMRTLINK
-            #define _WMIRTLINK
-            #define _WPRTLINK __declspec(dllexport)
-            #define _WPIRTLINK __declspec(dllexport)
+            #define _WCRTLINK  _WRTLFCONV
+            #define _WCIRTLINK _WRTLFCONV
+            #define _WCRTDATA  _WRTLDCONV
+            #define _WMRTLINK  _WRTLFCONV
+            #define _WMIRTLINK _WRTLFCONV
+            #define _WMRTDATA  _WRTLDCONV
+            #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
+            #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
+            #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
         #endif
     #endif
 #endif
@@ -252,7 +288,7 @@
 /// This doesn't work for far pointer's
 ///
 ///#define __ROUND_UP_PTR( __x, __amt )  ((void *)__ROUND_UP_SIZE((unsigned)(__x),__amt))
-#if defined(M_I86)
+#if defined( _M_I86 )
     #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 2 )
 //    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 2 )
 #elif defined(__386__)
@@ -261,6 +297,8 @@
 #else
     #define __ALIGN_SIZE( __x ) __ROUND_UP_SIZE( __x, 8 )
 //    #define __ALIGN_PTR( __x )  __ROUND_UP_PTR( __x, 8 )
+#endif
+
 #endif
 
 #endif

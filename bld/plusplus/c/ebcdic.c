@@ -37,7 +37,7 @@
 
 /* The following table is EBCDIC dependent. */
 
-char CharSet[LCHR_MAX]  = {                              /* EBCDIC */
+unsigned char CharSet[LCHR_MAX]  = {                        /* EBCDIC */
 
 /*  00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 HT  06 ACK 07 BEL */
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_WS,  C_BC,  C_BC, /* NUL to BEL */
@@ -156,7 +156,12 @@ char CharSet[LCHR_MAX]  = {                              /* EBCDIC */
     C___
   };
 
-char TokValue[]  = {                             /* EBCDIC */
+unsigned char TokValue[]  = {            /* EBCDIC */
+
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 20 - 2F */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 30 - 3F */
 
         0,              /* 40 SP */
         0,              /* 41   */

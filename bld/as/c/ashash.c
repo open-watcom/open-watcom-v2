@@ -33,3 +33,19 @@
 #include "as.h"
 
 extern uint_32 AsHashVal( const char *string, uint_32 size ) {
+//************************************************************
+// Standard hashPJW from the Dragon Book
+
+    const char          *p;
+    unsigned long       g, h;
+
+    h = 0;
+    for( p = string; *p; p++ ) {
+        h = ( h << 4 ) + *p;
+        if( g = h & 0xf0000000 ) {
+            h = h ^ ( g >> 24 );
+            h = h ^ g;
+        }
+    }
+    return( h % size );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 kbhit() implementation.
 *
 ****************************************************************************/
 
@@ -38,6 +37,8 @@
 #include "rtdata.h"
 #include "fileacc.h"
 #include "defwin.h"
+#include <unistd.h>
+#include <conio.h>
 
 _WCRTLINK int kbhit( void )
 {
@@ -45,11 +46,13 @@ _WCRTLINK int kbhit( void )
     HANDLE h;
     INPUT_RECORD r;
 
+#ifdef DEFAULT_WINDOWING
     if( _WindowsKbhit != 0 ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
         return( _WindowsKbhit( res ) );
     }
+#endif
     _AccessFileH( STDIN_FILENO );
     h = __NTConsoleInput();
     for(;;) {

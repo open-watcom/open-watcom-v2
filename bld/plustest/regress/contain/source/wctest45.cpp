@@ -22,7 +22,7 @@ static void dealloc_fn( void *old, size_t size ){
     unsigned *mem = (unsigned *)old - 1;
     if( *mem != '@' ){
 	cout << "We never allocated the chunk of memory we are freeing!!\n";
-	delete old;
+	delete (char *) old;
     }else{
 	*mem = '#';
 	cout << "OK, we're freeing a chunk we allocated\n";

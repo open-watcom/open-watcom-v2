@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-struct _wxycoord _WCI86FAR _CGRAPH _moveto_w( double x, double y )
+_WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _moveto_w( double x, double y )
 /*===========================================================
 
    This routine moves the current output position to the logical
@@ -54,7 +54,7 @@ struct _wxycoord _WCI86FAR _CGRAPH _moveto_w( double x, double y )
 Entry( _MOVETO_W, _moveto_w ) // alternate entry-point
 
 
-struct _wxycoord _WCI86FAR _CGRAPH _moveto_w_87( double x, double y )
+_WCRTLINK struct _wxycoord _WCI86FAR _CGRAPH _moveto_w_87( double x, double y )
 /*============================================================*/
 
 {

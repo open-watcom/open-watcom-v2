@@ -36,9 +36,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  void    WRDialogMsgInit         ( void );
-extern  void    WRDialogMsgFini         ( void );
-extern  void    WRRegisterDialog        ( HWND hdlg );
-extern  void    WRUnregisterDialog      ( HWND hdlg );
+extern void WRDialogMsgInit( void );
+extern void WRDialogMsgFini( void );
+extern void WRRegisterDialog( HWND hdlg );
+extern void WRUnregisterDialog( HWND hdlg );
 
 #endif

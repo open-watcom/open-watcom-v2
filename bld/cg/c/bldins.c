@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Turn expression tree into pseudo-assembly instructions.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "model.h"
 #include "coderep.h"
 #include "procdef.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "opcodes.h"
 #include "addrname.h"
 #include "memcheck.h"
@@ -44,62 +43,50 @@
 #include "rttable.h"
 #include "rtclass.h"
 #include "feprotos.h"
+#include "types.h"
+#include "makeins.h"
+#include "addrfold.h"
+#include "display.h"
+#include "bldins.h"
 
-extern  void            FPNotStack(name*);
+
 extern  an              MakeConst(pointer,type_def*);
 extern  uint            Length(char*);
 extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  an              MakeTypeTempAddr(name*,type_def*);
 extern  void            GenKillLabel(pointer);
-extern  void            GenBlock(int,int);
+extern  void            GenBlock( block_class, int );
 extern  void            AddTarget(label_handle,bool);
 extern  void            Generate(bool);
 extern  void            EnLink(label_handle,bool);
-extern  label_handle    AskForNewLabel();
+extern  label_handle    AskForNewLabel( void );
 extern  void            AddIns(instruction*);
-extern  instruction     *MakeNop();
-extern  void            BigLabel();
-extern  void            BigGoto(int);
-extern  bool            TGIsAddress();
-extern  bool            CypAddrPlus(an,an,type_def*);
-extern  an              AddrPlus(an,an,type_def*);
-extern  bool            CypAddrShift(an,an,type_def*);
-extern  an              AddrShift(an,an,type_def*);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
+extern  bool            TGIsAddress( void );
 extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
 extern  an              InsName(instruction*,type_def*);
 extern  an              MakePoints(an,type_def*);
-extern  an              AddrName(name*,type_def*);
 extern  void            FixCodePtr(an);
-extern  void            NamesCrossBlocks();
-extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
+extern  void            NamesCrossBlocks( void );
 extern  an              MakeGets(an,an,type_def*);
 extern  an              AddrDuplicate(an);
 extern  an              AddrCopy(an);
 extern  void            AddrFree(an);
 extern  an              AddrSave(an);
 extern  void            AddrDemote(an);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *AllocS64Const( unsigned_32 low, unsigned_32 high );
 extern  name            *AllocU64Const( unsigned_32 low, unsigned_32 high );
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
-extern  instruction     *MakeNary(opcode_defs,name*,name*,name*,type_class_def,type_class_def,int);
-extern  instruction     *NewIns(int);
 extern  name            *AllocTemp(type_class_def);
-extern  bool            BlkTooBig();
+extern  bool            BlkTooBig( void );
 extern  bool            NeedPtrConvert(an,type_def*);
-extern  void            DoNothing(instruction*);
-extern  type_def        *TypeAddress(cg_type );
 extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
-extern  hw_reg_set      ReturnAddrReg();
-extern  hw_reg_set      ScratchReg();
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      VarargsHomePtr();
+extern  hw_reg_set      ReturnAddrReg( void );
+extern  hw_reg_set      ScratchReg( void );
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      VarargsHomePtr( void );
 extern  an              RegName( hw_reg_set, type_def *);
 extern  label_handle    RTLabel( int );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
@@ -111,6 +98,8 @@ extern    proc_def      *CurrProc;
 extern    type_def      *TypeInteger;
 extern    type_def      *TypeNone;
 extern    bool          HaveCurrBlock;
+
+static  void    BoolFree( bn b );
 
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;
@@ -236,7 +225,7 @@ static  cg_name Unary( cg_op op, an left, type_def *tipe ) {
     instruction *ins;
     an          res;
 
-    ins = MakeNary( op, GenIns( left ), NULL, NULL,
+    ins = MakeNary( (opcode_defs)op, GenIns( left ), NULL, NULL,
                     TypeClass( tipe ), TypeClass( left->tipe ), 1 );
     res = InsName( ins, tipe );
     AddIns( ins );
@@ -258,8 +247,8 @@ static  an      CnvRnd( an name, type_def *tipe, cg_op op ) {
 }
 
 
-extern  temp_name       *BGNewTemp( type_def *tipe ) {
-/*************************************************/
+extern  name        *BGNewTemp( type_def *tipe ) {
+/************************************************/
 
     name        *temp;
 
@@ -278,7 +267,7 @@ extern  temp_name       *BGGlobalTemp( type_def *tipe ) {
 
     temp = BGNewTemp( tipe );
     temp->v.usage |= USE_IN_ANOTHER_BLOCK;
-    return( temp );
+    return( &(temp->t) );
 }
 
 
@@ -337,10 +326,10 @@ extern  bn      BGCompare( cg_op op, an left, an rite,
     BGDone( left );
     BGDone( rite );
     NamesCrossBlocks();
-    ins = MakeCondition( op, newleft, newrite, 0, 1, TypeClass( tipe ) );
+    ins = MakeCondition( (opcode_defs)op, newleft, newrite, 0, 1, TypeClass( tipe ) );
     AddIns( ins );
     GenBlock( CONDITIONAL, 2 );
-    _Alloc( new, sizeof( bool_node ) );
+    new = CGAlloc( sizeof( bool_node ) );
     AddTarget( NULL, FALSE );
     AddTarget( NULL, FALSE );
     new->format = NF_BOOL;
@@ -364,7 +353,7 @@ extern  bn      Boolean( an node, label_handle entry ) {
 }
 
 
-extern  label_handle    BGGetEntry() {
+extern  label_handle    BGGetEntry( void ) {
 /************************************/
 
     return( CurrBlock->label );
@@ -492,6 +481,8 @@ extern  void    BGGenCtrl( cg_op op, bn expr, label_handle lbl, bool gen ) {
             Generate( FALSE );
         }
         break;
+    default:
+        break;
     }
 }
 
@@ -563,15 +554,17 @@ extern  an      BGUnary( cg_op op, an left, type_def *tipe ) {
         break;
 #endif
 #if 0
-    case O_PTR_TO_FORIEGN:
+    case O_PTR_TO_FOREIGN:
     case O_PTR_TO_NATIVE:
         // no large model runtime libraries
         if( left->tipe->length != WORD_SIZE ) {
             FEMessage( MSG_ERROR,
                 "runtime call cannot be made when DS not pegged" );
-            left = Unary( O_CONVERT, left, TypeAddress( T_NEAR_POINTER ) );
+            left = Unary( O_CONVERT, left, TypeAddress( TY_NEAR_POINTER ) );
         }
 #endif
+    default:
+        break;
     }
     if( new == NULL ) {
         new = Unary( op, left, tipe );
@@ -621,10 +614,12 @@ extern  an      BGBinary( cg_op op, an left,
             }
         }
         break;
+    default:
+        break;
     }
     if( result == NULL ) {
         left = CheckType( left, tipe );
-        ins = MakeBinary( op, GenIns( left ), GenIns( rite ),
+        ins = MakeBinary( (opcode_defs)op, GenIns( left ), GenIns( rite ),
                            NULL, TypeClass( tipe ) );
         result = InsName( ins, tipe );
         AddIns( ins );
@@ -636,13 +631,14 @@ extern  an      BGBinary( cg_op op, an left,
 }
 
 
+
 extern  an      BGOpGets( cg_op op, an left, an rite,
                           type_def *tipe, type_def *optipe ) {
 /************************************************************/
 
     an                  result;
     an                  leftp;
-    name_def            *temp;
+    name                *temp;
     type_class_def      opclass;
     type_class_def      class;
     name                *left_name;
@@ -656,11 +652,11 @@ extern  an      BGOpGets( cg_op op, an left, an rite,
         temp = AllocTemp( opclass );
         ins = MakeConvert( left_name, temp, opclass, class );
         AddIns( ins );
-        AddIns( MakeBinary( op, temp, GenIns( rite ), temp, opclass ) );
+        AddIns( MakeBinary( (opcode_defs)op, temp, GenIns( rite ), temp, opclass ) );
         ins = MakeConvert( temp, left_name, class, opclass );
         AddIns( ins );
     } else {
-        ins = MakeBinary( op, left_name, GenIns( rite ), left_name, opclass );
+        ins = MakeBinary( (opcode_defs)op, left_name, GenIns( rite ), left_name, opclass );
         if( tipe != optipe ) {
             ins->ins_flags |= INS_DEMOTED; /* its not quite the right type */
         }
@@ -725,6 +721,8 @@ extern  bn      BGFlow( cg_op op, bn left, bn rite ) {
             BoolFree( rite );
             EnLink( AskForNewLabel(), TRUE );
             break;
+        default:
+            break;
         }
     }
     return( new );
@@ -777,7 +775,7 @@ extern  void    BGTrash( an node ) {
 static  void    BoolFree( bn b ) {
 /********************************/
 
-    _Free( b, sizeof( bool_node ) );
+    CGFree( b );
 }
 
 
@@ -793,8 +791,8 @@ extern  void    FlowOff( bn name ) {
 
 
 
-extern  void    BGStartBlock() {
-/******************************/
+extern  void    BGStartBlock( void ) {
+/************************************/
 
     label_handle        lbl;
 

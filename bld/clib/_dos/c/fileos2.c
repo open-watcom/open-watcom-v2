@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 specific implementation of _dos file functions.
 *
 ****************************************************************************/
 
@@ -36,24 +35,25 @@
 #include <errno.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <share.h>
 #include <direct.h>
 #include "fileacc.h"
 #include <wos2.h>
+#include <dos.h>
 #include "openmode.h"
 #include "iomode.h"
 #include "rtdata.h"
 #include "seterrno.h"
 
 
-
 _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
 {
-    OS_UINT rwmode, error, actiontaken, openmode;
-    HFILE fhandle;
-    int   share;
-    unsigned iomode_flags;
+    APIRET      rc;
+    OS_UINT     rwmode, actiontaken, openmode;
+    HFILE       fhandle;
+    int         share;
+    unsigned    iomode_flags;
 
     while( *name == ' ' ) ++name;
     rwmode = mode & OPENMODE_ACCESS_MASK;
@@ -70,11 +70,10 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
         share = SH_DENYNO;
     }
     openmode = share+rwmode;
-    error = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,
+    rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,
         _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS, openmode, 0ul );
-    if( error ) {
-        __set_errno_dos( error );
-        return( error );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
     *handle = fhandle;
     if( rwmode == O_RDWR ) iomode_flags = _READ | _WRITE;
@@ -86,17 +85,23 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
 
 unsigned _dos_close( int handle )
 {
-    close( handle );
-    return( _doserrno );
+    APIRET  rc;
+
+    __SetIOMode_nogrow( handle, 0 );
+    rc = DosClose( handle );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
+    }
+    return( 0 );
 }
 
 unsigned _dos_commit( int handle )
 {
-    OS_UINT error;
-    error = DosBufReset( handle );
-    if( error ) {
-        __set_errno_dos( error );
-        return( error );
+    APIRET  rc;
+
+    rc = DosBufReset( handle );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
     }
     return( 0 );
 }

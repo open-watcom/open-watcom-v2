@@ -1,0 +1,46 @@
+/*
+ *  pfhook.h    Packet filter hook definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _PF_EXTEND_DEFS_H_
+#define _PF_EXTEND_DEFS_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Packet filter hook constants */
+#define INVALID_PF_IF_INDEX 0xFFFFFFFFL
+#define ZERO_PF_IP_ADDR     0
+
+/* IP filter driver device name */
+#define DD_IPFLTRDRVR_DEVICE_NAME   L"\\Device\\IPFILTERDEVICE"
+
+/* IP filter driver device I/O control codes */
+#define FSCTL_IPFLTRDRVR_BASE               FILE_DEVICE_NETWORK
+#define _IPFLTRDRVR_CTL_CODE( p1, p2, p3 )  CTL_CODE( FSCTL_IPFLTRDRVR_BASE, p1, p2, p3 )
+#define IOCTL_PF_SET_EXTENSION_POINTER \
+    _IPFLTRDRVR_CTL_CODE( 22, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+
+/* Packet filter forward actions */
+typedef enum _PF_FORWARD_ACTION {
+    PF_FORWARD      = 0,
+    PF_DROP         = 1,
+    PF_PASS         = 2,
+    PF_ICMP_ON_DROP = 3
+} PF_FORWARD_ACTION;
+
+/* Filter routine callout */
+typedef PF_FORWARD_ACTION (NTAPI *PacketFilterExtensionPtr)( unsigned char *, unsigned char *, unsigned int, unsigned int, unsigned int, IPAddr, IPAddr );
+
+/* Packet filter set extension hook information */
+typedef struct _PF_SET_EXTENSION_HOOK_INFO {
+    PacketFilterExtensionPtr    ExtensionPointer;
+} PF_SET_EXTENSION_HOOK_INFO;
+typedef PF_SET_EXTENSION_HOOK_INFO  *PPF_SET_EXTENSION_HOOK_INFO;
+
+:include cplusepi.sp
+
+#endif /* _PF_EXTEND_DEFS_H_ */

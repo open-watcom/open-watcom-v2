@@ -85,7 +85,7 @@ int     directories_only;
 int     files_only;
 int     separate_read_only;
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: lc [-?dfr] [files]",
     "\tfiles       : directories to list",
     "\tOptions: -? : display this message",
@@ -95,10 +95,15 @@ static char *usageMsg[] = {
     NULL
 };
 
+/* Forward declarations */
+void DoLC( char *dir );
+void PrintFile( struct dirent *file );
+
+
 /*
  * start of mainline
  */
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     int i,ch;
 
@@ -139,8 +144,7 @@ main( int argc, char *argv[] )
             DoLC( argv[i] );
         }
     }
-    exit( 0 );
-
+    return( 0 );
 } /* main */
 
 int Compare( struct dirent **p1, struct dirent **p2 )
@@ -151,7 +155,7 @@ int Compare( struct dirent **p1, struct dirent **p2 )
 /*
  * DoLC - perform LC on a specified directory
  */
-DoLC( char *dir )
+void DoLC( char *dir )
 {
     int                 i;
     DIR                 *d;
@@ -242,9 +246,9 @@ DoLC( char *dir )
     }
 
     /*
-     * sort the data
+     * sort the data. need to cast Compare as it's prototype is wrong. (marginally) better than casting the params to Compare
      */
-    qsort( files, filecnt, sizeof(struct dirent *), Compare );
+    qsort( files, filecnt, sizeof(struct dirent *), (int (*)(const void *, const void * ))Compare );
 
     /*
      * determine if there are files and/or directories

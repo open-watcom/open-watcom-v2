@@ -3,17 +3,17 @@
 #include <malloc.h>
 #include "generic.h"
 
-HANDLE          MyInstance;
+HINSTANCE          MyInstance;
 static char     GenericClass[32]="GenericClass";
 
-static BOOL FirstInstance( HANDLE );
-static BOOL AnyInstance( HANDLE, int, LPSTR );
+static BOOL FirstInstance( HINSTANCE );
+static BOOL AnyInstance( HINSTANCE, int, LPSTR );
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
                     int cmdshow )
 {
     MSG         msg;
@@ -43,7 +43,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 {
     WNDCLASS    wc;
     BOOL        rc;
@@ -70,7 +70,7 @@ static BOOL FirstInstance( HANDLE this_inst )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
     HWND        hwnd;
     extra_data  *edata_ptr;
@@ -80,7 +80,7 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
      */
     hwnd = CreateWindow(
         GenericClass,           /* class */
-        "WATCOM Generic Kind Of Application",   /* caption */
+        "Open WATCOM Generic Kind Of Application",   /* caption */
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
@@ -149,8 +149,8 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
-            proc = MakeProcInstance( AboutDlgProc, MyInstance );
-            DialogBox( MyInstance,"AboutBox", hwnd, proc );
+            proc = MakeProcInstance( (FARPROC)AboutDlgProc, MyInstance );
+            DialogBox( MyInstance,"AboutBox", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
 

@@ -1,0 +1,20 @@
+/*
+ *  afxdisp.inl Inline implementation of functions declared in afxdisp.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE void COleDispatchDriver::GetProperty( DISPID dwDispID, VARTYPE vtProp,
+                                                 void *pvProp ) const
+/*******************************************************************/
+{
+    // The cast is necessary in order to call InvokeHelper, which is not const.
+    COleDispatchDriver *pDriver = (COleDispatchDriver *)this;
+    pDriver->InvokeHelper( dwDispID, DISPATCH_PROPERTYGET, vtProp, pvProp, (BYTE *)"" );
+}
+
+AFX_INLINE void AFXAPI AfxThrowOleException( HRESULT hr )
+/*******************************************************/
+{
+    AfxThrowOleException( (SCODE)hr );
+}

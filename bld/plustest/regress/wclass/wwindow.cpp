@@ -33,7 +33,7 @@ bool WWindow::processMsg( UINT msg, UINT wparm, LONG lparm )
 		if( LOWORD( lparm ) == 0 ) {
 			if( HIWORD( lparm ) == 0 ) {
 				//message is from a menu
-				WMenuItem* itm = (WMenuItem*)WWindow::_objMap.findThis( wparm );
+				WMenuItem* itm = (WMenuItem*)WWindow::_objMap.findThis( (HANDLE)wparm );
 				ifptr( itm ) {
 					itm->picked();
 					return TRUE;
@@ -43,7 +43,7 @@ bool WWindow::processMsg( UINT msg, UINT wparm, LONG lparm )
 			}
 		} else {
 			//message is from a control
-			WWindow* ctl = (WWindow*)WWindow::_objMap.findThis( LOWORD( lparm ) );
+			WWindow* ctl = (WWindow*)WWindow::_objMap.findThis( (HANDLE)LOWORD( lparm ) );
 			ifptr( ctl ) {
 				if( ctl->processCmd( wparm, HIWORD( lparm ) ) ) {
 					return TRUE;
@@ -61,51 +61,51 @@ bool WWindow::processCmd( WORD /*id*/, WORD /*code*/ )
 
 extern "C" long _export _far _pascal WinProc( HWND hwin, UINT msg, UINT wparm, LONG lparm )
 {
-		WWindow* win = (WWindow*)WWindow::_objMap.findThis( hwin );
-		ifptr( win ) {
-			if( win->processMsg( msg, wparm, lparm ) ) {
-				return 0;
-			}
+	WWindow* win = (WWindow*)WWindow::_objMap.findThis( (HANDLE)hwin );
+	ifptr( win ) {
+		if( win->processMsg( msg, wparm, lparm ) ) {
+			return 0;
 		}
-		return DefWindowProc( hwin, msg, wparm, lparm );
+	}
+	return DefWindowProc( hwin, msg, wparm, lparm );
 }
 
 bool WEXPORT WWindow::registerClass()
 {
-		_appName = "WWindow";
-		ifptr( !_appPrev ) {
-				WNDCLASS    wc;
-				wc.style = CS_DBLCLKS;
+	_appName = "WWindow";
+	ifptr( !_appPrev ) {
+		WNDCLASS    wc;
+		wc.style = CS_DBLCLKS;
 #ifdef __WATCOM_CPLUSPLUS__
-				wc.lpfnWndProc = (WNDPROC)WinProc;
+		wc.lpfnWndProc = (WNDPROC)WinProc;
 #else
-				wc.lpfnWndProc = WinProc;
+		wc.lpfnWndProc = WinProc;
 #endif
-				wc.cbClsExtra = 0;
+		wc.cbClsExtra = 0;
                 wc.cbWndExtra = 0;
-				wc.hInstance = _appInst;
-				wc.hIcon = LoadIcon( _appInst, IDI_APPLICATION );
+		wc.hInstance = _appInst;
+		wc.hIcon = LoadIcon( _appInst, IDI_APPLICATION );
                 wc.hCursor = LoadCursor( NIL, IDC_ARROW );
-				wc.hbrBackground = GetStockObject( WHITE_BRUSH );
-				wc.lpszMenuName = NIL;
-				wc.lpszClassName = _appName;
+		wc.hbrBackground = (HBRUSH)GetStockObject( WHITE_BRUSH );
+		wc.lpszMenuName = NIL;
+		wc.lpszClassName = _appName;
                 return RegisterClass( &wc );
         }
-		return TRUE;
+	return TRUE;
 }
 
 void WWindow::makeWindow( char* className, char* text, WStyle wstyle )
 {
-		HWND hparent = NIL;
-		ifptr( _parent ) hparent = _parent->_handle;
-		_objMap.currThis( this );
-		_handle= CreateWindow( className, text, wstyle
-						, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT
-						, hparent, NIL, _appInst, NIL );
-		ifptr( _handle ) {
-				_objMap.setThis( this, _handle );
-//				ShowWindow( _handle, _appShow );
-		}
+	HWND hparent = NIL;
+	ifptr( _parent ) hparent = _parent->_handle;
+	_objMap.currThis( this );
+	_handle= CreateWindow( className, text, wstyle
+		, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT
+		, hparent, NIL, _appInst, NIL );
+	ifptr( _handle ) {
+		_objMap.setThis( this, (HANDLE)_handle );
+//		ShowWindow( _handle, _appShow );
+	}
 }
 
 WEXPORT WWindow::WWindow()
@@ -139,18 +139,18 @@ WEXPORT WWindow::WWindow( WWindow* parent, char* className, const WRect& r, char
 		, _parent( parent )
 		, _menu( NIL )
 {
-		HWND hparent = NIL;
-		ifptr( _parent ) hparent = _parent->_handle;
-		_objMap.currThis( this );
-		_handle = CreateWindow( className, text, wstyle
-						, r.x(), r.y(), r.w(), r.h()
-						, hparent, _childId++, _appInst, NIL );
-		if( _handle ) {
-				_objMap.setThis( this, _handle );
-		}
-		ifptr( _parent ) {
-				_parent->addChild( this );
-		}
+	HWND hparent = NIL;
+	ifptr( _parent ) hparent = _parent->_handle;
+	_objMap.currThis( this );
+	_handle = CreateWindow( className, text, wstyle
+				, r.x(), r.y(), r.w(), r.h()
+				, hparent, (HMENU)_childId++, _appInst, NIL );
+	if( _handle ) {
+		_objMap.setThis( this, (HANDLE)_handle );
+	}
+	ifptr( _parent ) {
+		_parent->addChild( this );
+	}
 }
 
 WEXPORT WWindow::~WWindow()

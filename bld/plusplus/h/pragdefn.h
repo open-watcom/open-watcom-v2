@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for #pragma aux processing.
 *
 ****************************************************************************/
 
@@ -33,43 +32,25 @@
 #ifndef __PRAGDEFN_H_
 #define __PRAGDEFN_H_
 
-#define BY_C_FRONT_END
+#define BY_CPP_FRONT_END
 #include "cgaux.h"
 
 typedef struct aux_entry AUX_ENTRY;
 typedef struct aux_info AUX_INFO;
 
-#pragma pack( push, 1 );
+#include <pushpck1.h>
 struct aux_entry {
     AUX_ENTRY       *next;
     AUX_INFO        *info;
     char            name[1];
 };
-#pragma pack( pop );
+#include <poppck.h>
 
 typedef char aux_flags;
 #define AUX_FLAG_FAR16  0x01
 
-#if _INTEL_CPU
-typedef byte_seq        syscode_seq;
-#else
-typedef risc_byte_seq   syscode_seq;
-#endif
-
-struct aux_info {
-    AUX_INFO        *next;
-    unsigned        use;
-    unsigned        index;
-    syscode_seq     *code;
-    char            *objname;
-    hw_reg_set      *parms;
-    hw_reg_set      returns;
-    hw_reg_set      streturn;
-    hw_reg_set      save;
-    aux_flags       flags;
-    call_class      _class;     // 'class' is a C++ keyword
-    int             : 0;
-};
+#include "memmgr.h"
+#include "callinfo.h"
 
 struct inline_funcs {
     char            *name;      /* func name */
@@ -83,20 +64,7 @@ global AUX_ENTRY        *AuxList;
 global AUX_ENTRY        *CurrEntry;
 global AUX_INFO         *CurrAlias;
 global AUX_INFO         *CurrInfo;
-
-global AUX_INFO         DefaultInfo;
-global AUX_INFO         CdeclInfo;
-global AUX_INFO         PascalInfo;
-global AUX_INFO         FortranInfo;
-global AUX_INFO         SyscallInfo;
-global AUX_INFO         OptlinkInfo;
-global AUX_INFO         StdcallInfo;
-#ifdef __OLD_STDCALL
-global AUX_INFO         OldStdcallInfo;
-#endif
-global AUX_INFO         Far16CdeclInfo;
-global AUX_INFO         Far16PascalInfo;
-
+global AUX_INFO         *DftCallConv;
 
 struct pragma_dbg_toggles  {
 #define toggle_pick( id )       unsigned id : 1;
@@ -105,7 +73,7 @@ struct pragma_dbg_toggles  {
 global struct pragma_dbg_toggles  PragDbgToggle;
 
 
-#define MAX_POSSIBLE_REG   8
+#define MAX_POSSIBLE_REG        8
 
 #define MAXIMUM_PARMSETS        32
 
@@ -117,18 +85,14 @@ hw_reg_set *AuxParmDup(         // DUPLICATE AUX PARMS
 char *AuxObjnameDup(            // DUPLICATE AUX OBJNAME
     char *objname )
 ;
-syscode_seq *AuxCodeDup(        // DUPLICATE AUX CODE
-    syscode_seq *code )
-;
-void AuxCopy(                   // COPY AUX STRUCTURE
-    AUX_INFO *to,               // - destination
-    AUX_INFO *from )            // - source
+void freeAuxInfo(               // FREE ALL AUX INFO MEM
+    AUX_INFO *i )
 ;
 struct aux_entry *AuxLookup(    // LOOK UP AUX ENTRY
     char *name )
 ;
 char *AuxRetrieve(              // RETRIEVE NAME OF AUX ENTRY
-    void *pragma )
+    AUX_INFO *pragma )
 ;
 void CgInfoAddPragmaExtref(     // ADD EXTREF FOR PRAGMA'D NAME
     SYMBOL sym )
@@ -173,18 +137,18 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 ;
 boolean PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
-    struct aux_info *oldp,      // - pragma, old
-    struct aux_info *newp )     // - pragma, new
+    AUX_INFO *oldp,             // - pragma, old
+    AUX_INFO *newp )            // - pragma, new
 ;
 boolean PragmasTypeEquivalent(  // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
-    struct aux_info *inf1,      // - pragma [1]
-    struct aux_info *inf2 )     // - pragma [2]
+    AUX_INFO *inf1,             // - pragma [1]
+    AUX_INFO *inf2 )            // - pragma [2]
 ;
 boolean PragmaOKForVariables(   // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
-    struct aux_info *datap )    // - pragma
+    AUX_INFO *datap )           // - pragma
 ;
 boolean PragmaOKForInlines(     // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
-    struct aux_info *fnp )      // - pragma
+    AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
     boolean set_flag )          // - TRUE ==> set flag
@@ -208,7 +172,7 @@ int PragSet(                    // GET ENDING PRAGMA DELIMITER
     void )
 ;
 boolean ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
-    void * pragma )             // - pragma
+    AUX_INFO * pragma )         // - pragma
 ;
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
     void )

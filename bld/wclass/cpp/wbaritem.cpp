@@ -37,7 +37,7 @@
 
 WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
                                     WObject *client, cbtbi pick,
-                                    const char *htext )
+                                    const char *htext, const char *tip )
     : _parent( NULL )
     , _client( client )
     , _pick( pick ) {
@@ -46,6 +46,7 @@ WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
     _toolbar.label = (char *)text;
     _toolbar.bitmap = tool;
     _toolbar.hinttext = (char *)htext;
+    _toolbar.tip = (char *)tip;
     _toolbar.id = WWindow::_idMaster++;
     WWindow::_toolBarIdMap.setThis( this, (WHANDLE)(unsigned)_toolbar.id );
 }

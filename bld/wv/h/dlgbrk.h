@@ -32,8 +32,8 @@
 
 #ifndef RC
     typedef struct {
-        brk             *bp;
-        brk             tmpbp;
+        brkp            *bp;
+        brkp            tmpbp;
         unsigned        last_edit;
         unsigned        brand_new       : 1;
         unsigned        cancel          : 1;
@@ -51,6 +51,7 @@
 #define CTL_BRK_BYTE 114
 #define CTL_BRK_WORD 115
 #define CTL_BRK_DWORD 116
+#define CTL_BRK_QWORD 118
 #define CTL_BRK_COUNTDOWN 106
 #define CTL_BRK_TOTAL 107
 #define CTL_BRK_RESET 103

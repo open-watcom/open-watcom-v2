@@ -1,0 +1,3996 @@
+.387
+		PUBLIC	do_init_stuff_
+		PUBLIC	main_
+		PUBLIC	trademark_
+		PUBLIC	AsmQueryExternal_
+		PUBLIC	AsmQueryType_
+		PUBLIC	_Options
+		PUBLIC	_AsmFiles
+		PUBLIC	_pobjState
+		EXTRN	__STK:BYTE
+		EXTRN	__IsTable:BYTE
+		EXTRN	tolower_:BYTE
+		EXTRN	strlen_:BYTE
+		EXTRN	stackavail_:BYTE
+		EXTRN	strcpy_:BYTE
+		EXTRN	strcat_:BYTE
+		EXTRN	getenv_:BYTE
+		EXTRN	AddStringToIncludePath_:BYTE
+		EXTRN	MsgInit_:BYTE
+		EXTRN	exit_:BYTE
+		EXTRN	AsmInit_:BYTE
+		EXTRN	PushLineQueue_:BYTE
+		EXTRN	WriteObjModule_:BYTE
+		EXTRN	PrintStats_:BYTE
+		EXTRN	MsgFini_:BYTE
+		EXTRN	PrintfUsage_:BYTE
+		EXTRN	printf_:BYTE
+		EXTRN	AsmFree_:BYTE
+		EXTRN	MemInit_:BYTE
+		EXTRN	ObjRecInit_:BYTE
+		EXTRN	GenMSOmfInit_:BYTE
+		EXTRN	GenMSOmfFini_:BYTE
+		EXTRN	AsmShutDown_:BYTE
+		EXTRN	MemFini_:BYTE
+		EXTRN	fopen_:BYTE
+		EXTRN	Fatal_:BYTE
+		EXTRN	ObjWriteOpen_:BYTE
+		EXTRN	DelErrFile_:BYTE
+		EXTRN	MsgGet_:BYTE
+		EXTRN	_splitpath2_:BYTE
+		EXTRN	_makepath_:BYTE
+		EXTRN	AsmAlloc_:BYTE
+		EXTRN	strchr_:BYTE
+		EXTRN	AsmError_:BYTE
+		EXTRN	StoreConstant_:BYTE
+		EXTRN	MsgPrintf1_:BYTE
+		EXTRN	_Code:BYTE
+		EXTRN	cpu_directive_:BYTE
+		EXTRN	__osmode:BYTE
+		EXTRN	strupr_:BYTE
+		EXTRN	stricmp_:BYTE
+		EXTRN	AsmWarn_:BYTE
+		EXTRN	InputQueueLine_:BYTE
+		EXTRN	atoi_:BYTE
+		EXTRN	DoDebugMsg_:BYTE
+		EXTRN	InputQueueFile_:BYTE
+		EXTRN	_cstart_:BYTE
+		EXTRN	_big_code_:BYTE
+		EXTRN	__argc:BYTE
+DGROUP		GROUP	CONST,CONST2,_DATA,_BSS
+main_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:main_TEXT, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	57H, 41H, 54H, 43H, 4fH, 4dH, 20H, 69H
+    DB	73H, 20H, 61H, 20H, 74H, 72H, 61H, 64H
+    DB	65H, 6dH, 61H, 72H, 6bH, 20H, 6fH, 66H
+    DB	20H, 57H, 41H, 54H, 43H, 4fH, 4dH, 20H
+    DB	49H, 6eH, 74H, 65H, 72H, 6eH, 61H, 74H
+    DB	69H, 6fH, 6eH, 61H, 6cH, 20H, 43H, 6fH
+    DB	72H, 70H, 2eH, 0
+L$2:
+    DB	43H, 6fH, 70H, 79H, 72H, 69H, 67H, 68H
+    DB	74H, 20H, 62H, 79H, 20H, 57H, 41H, 54H
+    DB	43H, 4fH, 4dH, 20H, 49H, 6eH, 74H, 65H
+    DB	72H, 6eH, 61H, 74H, 69H, 6fH, 6eH, 61H
+    DB	6cH, 20H, 43H, 6fH, 72H, 70H, 2eH, 20H
+    DB	31H, 39H, 39H, 32H, 2cH, 20H, 31H, 39H
+    DB	39H, 33H, 2eH, 20H, 41H, 6cH, 6cH, 20H
+    DB	72H, 69H, 67H, 68H, 74H, 73H, 20H, 72H
+    DB	65H, 73H, 65H, 72H, 76H, 65H, 64H, 2eH
+    DB	0
+L$3:
+    DB	57H, 41H, 54H, 43H, 4fH, 4dH, 20H, 41H
+    DB	73H, 73H, 65H, 6dH, 62H, 6cH, 65H, 72H
+    DB	20H, 56H, 65H, 72H, 73H, 69H, 6fH, 6eH
+    DB	20H, 30H, 2eH, 39H, 0
+L$4:
+    DB	64H, 65H, 62H, 75H, 67H, 67H, 69H, 6eH
+    DB	67H, 20H, 6fH, 75H, 74H, 70H, 75H, 74H
+    DB	20H, 6fH, 6eH, 20H, 0aH, 0
+L$5:
+    DB	5fH, 5fH, 57H, 49H, 4eH, 44H, 4fH, 57H
+    DB	53H, 5fH, 33H, 38H, 36H, 5fH, 5fH, 0
+L$6:
+    DB	5fH, 5fH, 4eH, 45H, 54H, 57H, 41H, 52H
+    DB	45H, 5fH, 33H, 38H, 36H, 5fH, 5fH, 0
+L$7:
+    DB	5fH, 5fH, 52H, 45H, 47H, 49H, 53H, 54H
+    DB	45H, 52H, 5fH, 5fH, 0
+L$8:
+    DB	5fH, 5fH, 46H, 50H, 49H, 38H, 37H, 5fH
+    DB	5fH, 0
+L$9:
+    DB	5fH, 5fH, 4dH, 53H, 44H, 4fH, 53H, 5fH
+    DB	5fH, 0
+L$10:
+    DB	5fH, 5fH, 53H, 54H, 41H, 43H, 4bH, 5fH
+    DB	5fH, 0
+L$11:
+    DB	50H, 45H, 4eH, 50H, 4fH, 49H, 4eH, 54H
+    DB	0
+L$12:
+    DB	5fH, 5fH, 57H, 41H, 53H, 4dH, 5fH, 5fH
+    DB	0
+L$13:
+    DB	5fH, 49H, 4eH, 43H, 4cH, 55H, 44H, 45H
+    DB	0
+L$14:
+    DB	5fH, 5fH, 46H, 50H, 43H, 5fH, 5fH, 0
+L$15:
+    DB	5fH, 5fH, 46H, 50H, 49H, 5fH, 5fH, 0
+L$16:
+    DB	2eH, 4dH, 4fH, 44H, 45H, 4cH, 20H, 0
+L$17:
+    DB	43H, 4fH, 4dH, 50H, 41H, 43H, 54H, 0
+L$18:
+    DB	57H, 49H, 4eH, 44H, 4fH, 57H, 53H, 0
+L$19:
+    DB	4eH, 45H, 54H, 57H, 41H, 52H, 45H, 0
+L$20:
+    DB	49H, 4eH, 43H, 4cH, 55H, 44H, 45H, 0
+L$21:
+    DB	4dH, 45H, 44H, 49H, 55H, 4dH, 0
+L$22:
+    DB	66H, 70H, 69H, 38H, 37H, 0
+L$23:
+    DB	53H, 4dH, 41H, 4cH, 4cH, 0
+L$24:
+    DB	4cH, 41H, 52H, 47H, 45H, 0
+L$25:
+    DB	54H, 49H, 4eH, 59H, 0
+L$26:
+    DB	48H, 55H, 47H, 45H, 0
+L$27:
+    DB	46H, 4cH, 41H, 54H, 0
+L$28:
+    DB	57H, 41H, 53H, 4dH, 0
+L$29:
+    DB	66H, 70H, 63H, 0
+L$30:
+    DB	66H, 70H, 69H, 0
+L$31:
+    DB	51H, 4eH, 58H, 0
+L$32:
+    DB	4fH, 53H
+L$33:
+    DB	32H, 0
+L$34:
+    DB	44H, 4fH
+L$35:
+    DB	53H, 0
+L$36:
+    DB	65H, 72H, 72H, 0
+L$37:
+    DB	6fH, 62H, 6aH, 0
+L$38:
+    DB	61H, 73H, 6dH, 0
+L$39:
+    DB	25H, 73H, 0aH, 0
+L$40:
+    DB	2fH, 6dH, 0
+L$41:
+    DB	4eH, 54H, 0
+L$42:
+    DB	5fH, 5fH, 0
+L$43:
+    DB	37H, 0
+L$44:
+    DB	31H, 0
+L$45:
+    DB	72H, 0
+L$46:
+    DB	20H, 0
+L$47:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,18H 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,0cH 
+    mov         word ptr -14H[bp],ax 
+    mov         word ptr -12H[bp],dx 
+    lds         bx,dword ptr -14H[bp] 
+    mov         bl,byte ptr [bx] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],20H 
+    je          L$48 
+    mov         word ptr -0cH[bp],0ffffH 
+    jmp         near ptr L$66 
+L$48:
+    mov         bx,word ptr -14H[bp] 
+    mov         word ptr -10H[bp],bx 
+    mov         bx,word ptr -12H[bp] 
+    mov         word ptr -0eH[bp],bx 
+L$49:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$51 
+    jmp         near ptr L$65 
+L$50:
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,word ptr -0eH[bp] 
+    inc         word ptr -10H[bp] 
+    jmp         L$49 
+L$51:
+    lds         bx,dword ptr -10H[bp] 
+    mov         al,byte ptr [bx] 
+    xor         ah,ah 
+    call        far ptr tolower_ 
+    mov         byte ptr -0aH[bp],al 
+    cmp         byte ptr -0aH[bp],5fH 
+    je          L$52 
+    cmp         byte ptr -0aH[bp],2eH 
+    jne         L$53 
+L$52:
+    jmp         L$54 
+L$53:
+    cmp         byte ptr -0aH[bp],24H 
+    jne         L$55 
+L$54:
+    jmp         L$56 
+L$55:
+    cmp         byte ptr -0aH[bp],40H 
+    jne         L$57 
+L$56:
+    jmp         L$58 
+L$57:
+    cmp         byte ptr -0aH[bp],3fH 
+    jne         L$59 
+L$58:
+    jmp         L$60 
+L$59:
+    mov         bl,byte ptr -0aH[bp] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],20H 
+    je          L$61 
+L$60:
+    jmp         L$62 
+L$61:
+    mov         bl,byte ptr -0aH[bp] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],80H 
+    je          L$63 
+L$62:
+    jmp         L$64 
+L$63:
+    mov         word ptr -0cH[bp],0ffffH 
+    jmp         L$66 
+L$64:
+    jmp         L$50 
+L$65:
+    mov         word ptr -0cH[bp],1 
+L$66:
+    mov         ax,word ptr -0cH[bp] 
+    lea         sp,-8[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$67:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,1aH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0cH 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    add         ax,0bH 
+    and         al,0feH 
+    mov         dx,ax 
+    call        far ptr stackavail_ 
+    cmp         dx,ax 
+    jae         L$68 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    add         ax,0bH 
+    and         al,0feH 
+    sub         sp,ax 
+    mov         ax,sp 
+    mov         dx,ss 
+    mov         bx,dx 
+    mov         word ptr -16H[bp],ax 
+    mov         word ptr -14H[bp],bx 
+    jmp         L$69 
+L$68:
+    mov         word ptr -16H[bp],0 
+    mov         word ptr -14H[bp],0 
+L$69:
+    mov         ax,word ptr -16H[bp] 
+    mov         word ptr -12H[bp],ax 
+    mov         ax,word ptr -14H[bp] 
+    mov         word ptr -10H[bp],ax 
+    mov         si,word ptr ss:L$334 
+    mov         cx,word ptr ss:L$335 
+    mov         bx,word ptr -12H[bp] 
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+    mov         cx,cs 
+    mov         ax,offset L$13 
+    mov         si,ax 
+    mov         bx,word ptr -12H[bp] 
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcat_ 
+    mov         bx,word ptr -12H[bp] 
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,bx 
+    call        far ptr getenv_ 
+    mov         bx,ax 
+    mov         ax,dx 
+    mov         word ptr -0eH[bp],bx 
+    mov         word ptr -0cH[bp],ax 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    xor         cx,cx 
+    xor         bx,bx 
+    cmp         ax,bx 
+    jne         L$70 
+    cmp         dx,cx 
+    je          L$71 
+L$70:
+    mov         bx,word ptr -0eH[bp] 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,bx 
+    call        far ptr AddStringToIncludePath_ 
+L$71:
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+do_init_stuff_:
+    inc         bp 
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,16H 
+    call        far ptr __STK 
+    pop         ax 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0aH 
+    mov         word ptr -8[bp],ax 
+    mov         word ptr -10H[bp],bx 
+    mov         word ptr -0eH[bp],cx 
+    lds         bx,dword ptr -10H[bp] 
+    mov         bx,word ptr [bx] 
+    lds         si,dword ptr -10H[bp] 
+    mov         dx,word ptr 2[si] 
+    mov         ax,bx 
+    call        far ptr MsgInit_ 
+    test        ax,ax 
+    je          L$72 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$72:
+    mov         bx,0ffffH 
+    mov         dx,0ffffH 
+    mov         ax,0ffffH 
+    call        far ptr AsmInit_ 
+    mov         dx,cs 
+    mov         ax,offset L$12 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    xor         cx,cx 
+    mov         dx,cs 
+    mov         ax,offset L$28 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$118 
+    mov         dx,word ptr -10H[bp] 
+    mov         cx,word ptr -0eH[bp] 
+    mov         ax,word ptr -8[bp] 
+    mov         bx,dx 
+    call        near ptr L$317 
+    call        near ptr L$196 
+    call        near ptr L$67 
+    mov         dx,cs 
+    mov         ax,offset L$20 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        far ptr getenv_ 
+    mov         bx,ax 
+    mov         ax,dx 
+    mov         word ptr -0cH[bp],bx 
+    mov         word ptr -0aH[bp],ax 
+    mov         cx,word ptr -0cH[bp] 
+    mov         bx,word ptr -0aH[bp] 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$73 
+    cmp         cx,dx 
+    je          L$74 
+L$73:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        far ptr AddStringToIncludePath_ 
+L$74:
+    cmp         byte ptr ss:L$325,0 
+    jne         L$75 
+    cmp         byte ptr ss:L$326,0 
+    je          L$76 
+L$75:
+    jmp         L$77 
+L$76:
+    mov         byte ptr ss:L$326,1 
+    push        cs 
+    call        near ptr trademark_ 
+L$77:
+    call        near ptr L$101 
+    call        far ptr PushLineQueue_ 
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         bp 
+    dec         bp 
+    retf        
+main_:
+    inc         bp 
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,14H 
+    call        far ptr __STK 
+    pop         ax 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,8 
+    mov         word ptr -0aH[bp],ax 
+    mov         word ptr -0eH[bp],bx 
+    mov         word ptr -0cH[bp],cx 
+    call        near ptr L$95 
+    mov         dx,word ptr -0eH[bp] 
+    mov         cx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    mov         bx,dx 
+    push        cs 
+    call        near ptr do_init_stuff_ 
+    call        far ptr WriteObjModule_ 
+    cmp         byte ptr ss:L$325,0 
+    jne         L$78 
+    call        far ptr PrintStats_ 
+L$78:
+    call        far ptr MsgFini_ 
+    call        near ptr L$100 
+    mov         al,byte ptr ss:L$330 
+    xor         ah,ah 
+    mov         word ptr -8[bp],ax 
+    mov         ax,word ptr -8[bp] 
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         bp 
+    dec         bp 
+    retf        
+L$79:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,0eH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0 
+    mov         ax,7d0H 
+    call        far ptr PrintfUsage_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+trademark_:
+    inc         bp 
+    push        bp 
+    mov         bp,sp 
+    mov         ax,1aH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,2 
+    mov         word ptr -0cH[bp],0 
+    cmp         byte ptr ss:L$325,0 
+    jne         L$82 
+L$80:
+    mov         bx,word ptr -0cH[bp] 
+    shl         bx,1 
+    shl         bx,1 
+    mov         cx,word ptr ss:L$345[bx] 
+    mov         bx,word ptr ss:L$346[bx] 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$81 
+    cmp         cx,dx 
+    je          L$82 
+L$81:
+    mov         bx,word ptr -0cH[bp] 
+    inc         word ptr -0cH[bp] 
+    shl         bx,1 
+    shl         bx,1 
+    push        word ptr ss:L$346[bx] 
+    push        word ptr ss:L$345[bx] 
+    mov         ax,cs 
+    mov         dx,offset L$39 
+    push        ax 
+    push        dx 
+    call        far ptr printf_ 
+    add         sp,8 
+    jmp         L$80 
+L$82:
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    dec         bp 
+    retf        
+L$83:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,0eH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0 
+    mov         cx,word ptr ss:L$334 
+    mov         bx,word ptr ss:L$335 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$84 
+    cmp         cx,dx 
+    je          L$85 
+L$84:
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$85:
+    mov         cx,word ptr ss:L$336 
+    mov         bx,word ptr ss:L$337 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$86 
+    cmp         cx,dx 
+    je          L$87 
+L$86:
+    mov         bx,word ptr ss:L$336 
+    mov         dx,word ptr ss:L$337 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$87:
+    mov         cx,word ptr ss:L$338 
+    mov         bx,word ptr ss:L$339 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$88 
+    cmp         cx,dx 
+    je          L$89 
+L$88:
+    mov         bx,word ptr ss:L$338 
+    mov         dx,word ptr ss:L$339 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$89:
+    mov         cx,word ptr ss:L$342 
+    mov         bx,word ptr ss:L$343 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$90 
+    cmp         cx,dx 
+    je          L$91 
+L$90:
+    mov         bx,word ptr ss:L$342 
+    mov         dx,word ptr ss:L$343 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$91:
+    mov         cx,word ptr ss:L$340 
+    mov         bx,word ptr ss:L$341 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$92 
+    cmp         cx,dx 
+    je          L$93 
+L$92:
+    mov         bx,word ptr ss:L$340 
+    mov         dx,word ptr ss:L$341 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$93:
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$94:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,0eH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0 
+    mov         bx,word ptr ss:L$348 
+    mov         dx,word ptr ss:L$349 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+    mov         bx,word ptr ss:L$350 
+    mov         dx,word ptr ss:L$351 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+    mov         bx,word ptr ss:L$352 
+    mov         dx,word ptr ss:L$353 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$95:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,10H 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,2 
+    call        far ptr MemInit_ 
+    mov         word ptr -0cH[bp],0 
+L$96:
+    cmp         word ptr -0cH[bp],2 
+    jle         L$98 
+    jmp         L$99 
+L$97:
+    mov         ax,word ptr -0cH[bp] 
+    inc         word ptr -0cH[bp] 
+    jmp         L$96 
+L$98:
+    mov         bx,word ptr -0cH[bp] 
+    shl         bx,1 
+    shl         bx,1 
+    mov         word ptr ss:_AsmFiles[bx],0 
+    mov         word ptr ss:L$347[bx],0 
+    mov         bx,word ptr -0cH[bp] 
+    shl         bx,1 
+    shl         bx,1 
+    mov         word ptr ss:L$348[bx],0 
+    mov         word ptr ss:L$349[bx],0 
+    jmp         L$97 
+L$99:
+    call        far ptr ObjRecInit_ 
+    call        far ptr GenMSOmfInit_ 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$100:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,0eH 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0 
+    call        near ptr L$94 
+    call        near ptr L$83 
+    call        far ptr GenMSOmfFini_ 
+    call        far ptr AsmShutDown_ 
+    call        far ptr MemFini_ 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$101:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,14H 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0 
+    mov         cx,cs 
+    mov         dx,offset L$45 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$348 
+    mov         dx,word ptr ss:L$349 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr fopen_ 
+    mov         cx,ax 
+    mov         bx,dx 
+    mov         word ptr ss:_AsmFiles,cx 
+    mov         word ptr ss:L$347,bx 
+    mov         bx,word ptr ss:_AsmFiles 
+    mov         dx,word ptr ss:L$347 
+    xor         si,si 
+    xor         cx,cx 
+    cmp         dx,cx 
+    jne         L$102 
+    cmp         bx,si 
+    jne         L$102 
+    push        word ptr ss:L$349 
+    push        word ptr ss:L$348 
+    mov         ax,1 
+    push        ax 
+    call        far ptr Fatal_ 
+    add         sp,6 
+L$102:
+    mov         bx,word ptr ss:L$352 
+    mov         dx,word ptr ss:L$353 
+    mov         ax,bx 
+    call        far ptr ObjWriteOpen_ 
+    mov         bx,dx 
+    mov         word ptr ss:L$354,ax 
+    mov         word ptr ss:L$355,bx 
+    mov         cx,word ptr ss:L$354 
+    mov         bx,word ptr ss:L$355 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$103 
+    cmp         cx,dx 
+    jne         L$103 
+    push        word ptr ss:L$353 
+    push        word ptr ss:L$352 
+    mov         ax,1 
+    push        ax 
+    call        far ptr Fatal_ 
+    add         sp,6 
+L$103:
+    mov         byte ptr ss:_pobjState,2 
+    call        far ptr DelErrFile_ 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$104:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,3a8H 
+    call        far ptr __STK 
+    pop         ax 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,38eH 
+    mov         word ptr -2cH[bp],ax 
+    mov         word ptr -2aH[bp],dx 
+    mov         word ptr -8[bp],bx 
+    cmp         word ptr -8[bp],0 
+    je          L$105 
+    jmp         near ptr L$112 
+L$105:
+    mov         cx,word ptr -2cH[bp] 
+    mov         bx,word ptr -2aH[bp] 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$106 
+    cmp         cx,dx 
+    jne         L$106 
+    mov         cx,ss 
+    lea         ax,-7cH[bp] 
+    mov         dx,ax 
+    mov         ax,43fH 
+    mov         bx,dx 
+    call        far ptr MsgGet_ 
+    mov         dx,ss 
+    lea         cx,-7cH[bp] 
+    push        dx 
+    push        cx 
+    mov         ax,1 
+    push        ax 
+    call        far ptr Fatal_ 
+    add         sp,6 
+L$106:
+    mov         cx,word ptr ss:L$348 
+    mov         bx,word ptr ss:L$349 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$107 
+    cmp         cx,dx 
+    je          L$108 
+L$107:
+    mov         ax,5 
+    push        ax 
+    call        far ptr Fatal_ 
+    add         sp,2 
+L$108:
+    mov         dx,ss 
+    lea         bx,-24H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-20H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-28H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-18H[bp] 
+    push        dx 
+    push        bx 
+    mov         cx,ss 
+    lea         dx,-288H[bp] 
+    mov         si,dx 
+    mov         bx,word ptr -2cH[bp] 
+    mov         dx,word ptr -2aH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _splitpath2_ 
+    lds         bx,dword ptr -24H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$109 
+    mov         word ptr -22H[bp],cs 
+    mov         word ptr -24H[bp],offset L$38 
+L$109:
+    mov         dx,word ptr -24H[bp] 
+    mov         ax,word ptr -22H[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -20H[bp] 
+    mov         ax,word ptr -1eH[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -28H[bp] 
+    mov         ax,word ptr -26H[bp] 
+    push        ax 
+    push        dx 
+    mov         si,word ptr -18H[bp] 
+    mov         cx,word ptr -16H[bp] 
+    mov         dx,ss 
+    lea         ax,-180H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _makepath_ 
+    mov         dx,ss 
+    lea         bx,-180H[bp] 
+    mov         cx,bx 
+    mov         ax,cx 
+    call        far ptr strlen_ 
+    inc         ax 
+    call        far ptr AsmAlloc_ 
+    mov         si,ax 
+    mov         cx,dx 
+    mov         word ptr ss:L$348,si 
+    mov         word ptr ss:L$349,cx 
+    mov         cx,ss 
+    lea         dx,-180H[bp] 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$348 
+    mov         dx,word ptr ss:L$349 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+    mov         dx,word ptr ss:L$352 
+    mov         ax,word ptr ss:L$353 
+    xor         cx,cx 
+    xor         bx,bx 
+    cmp         ax,bx 
+    jne         L$110 
+    cmp         dx,cx 
+    jne         L$110 
+    mov         word ptr -22H[bp],cs 
+    mov         word ptr -24H[bp],offset L$37 
+    mov         dx,word ptr -24H[bp] 
+    mov         ax,word ptr -22H[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -20H[bp] 
+    mov         ax,word ptr -1eH[bp] 
+    push        ax 
+    push        dx 
+    xor         ax,ax 
+    push        ax 
+    xor         ax,ax 
+    push        ax 
+    xor         si,si 
+    xor         cx,cx 
+    mov         dx,ss 
+    lea         ax,-180H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _makepath_ 
+    mov         dx,ss 
+    lea         cx,-180H[bp] 
+    mov         bx,cx 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    inc         ax 
+    call        far ptr AsmAlloc_ 
+    mov         cx,ax 
+    mov         bx,dx 
+    mov         word ptr ss:L$352,cx 
+    mov         word ptr ss:L$353,bx 
+    mov         cx,ss 
+    lea         dx,-180H[bp] 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$352 
+    mov         dx,word ptr ss:L$353 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+L$110:
+    mov         cx,word ptr ss:L$350 
+    mov         bx,word ptr ss:L$351 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$111 
+    cmp         cx,dx 
+    jne         L$111 
+    mov         word ptr -22H[bp],cs 
+    mov         word ptr -24H[bp],offset L$36 
+    mov         dx,word ptr -24H[bp] 
+    mov         ax,word ptr -22H[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -20H[bp] 
+    mov         ax,word ptr -1eH[bp] 
+    push        ax 
+    push        dx 
+    xor         ax,ax 
+    push        ax 
+    xor         ax,ax 
+    push        ax 
+    xor         si,si 
+    xor         cx,cx 
+    mov         dx,ss 
+    lea         ax,-180H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _makepath_ 
+    mov         dx,ss 
+    lea         cx,-180H[bp] 
+    mov         bx,cx 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    inc         ax 
+    call        far ptr AsmAlloc_ 
+    mov         cx,ax 
+    mov         bx,dx 
+    mov         word ptr ss:L$350,cx 
+    mov         word ptr ss:L$351,bx 
+    mov         cx,ss 
+    lea         dx,-180H[bp] 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$350 
+    mov         dx,word ptr ss:L$351 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+L$111:
+    jmp         near ptr L$117 
+L$112:
+    mov         dx,ss 
+    lea         bx,-24H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-20H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-28H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-18H[bp] 
+    push        dx 
+    push        bx 
+    mov         cx,ss 
+    lea         dx,-288H[bp] 
+    mov         si,dx 
+    mov         bx,word ptr -2cH[bp] 
+    mov         dx,word ptr -2aH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _splitpath2_ 
+    mov         dx,ss 
+    lea         bx,-14H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-10H[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-1cH[bp] 
+    push        dx 
+    push        bx 
+    mov         dx,ss 
+    lea         bx,-0cH[bp] 
+    push        dx 
+    push        bx 
+    mov         si,ss 
+    lea         dx,-390H[bp] 
+    mov         di,dx 
+    mov         cx,word ptr ss:L$348 
+    mov         dx,word ptr ss:L$349 
+    mov         ax,cx 
+    mov         bx,di 
+    mov         cx,si 
+    call        far ptr _splitpath2_ 
+    lds         bx,dword ptr -24H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$115 
+    cmp         word ptr -8[bp],1 
+    jne         L$113 
+    mov         word ptr -392H[bp],cs 
+    mov         word ptr -394H[bp],offset L$36 
+    jmp         L$114 
+L$113:
+    mov         word ptr -392H[bp],cs 
+    mov         word ptr -394H[bp],offset L$37 
+L$114:
+    mov         bx,word ptr -394H[bp] 
+    mov         word ptr -24H[bp],bx 
+    mov         bx,word ptr -392H[bp] 
+    mov         word ptr -22H[bp],bx 
+L$115:
+    lds         bx,dword ptr -20H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$116 
+    mov         bx,word ptr -10H[bp] 
+    mov         word ptr -20H[bp],bx 
+    mov         bx,word ptr -0eH[bp] 
+    mov         word ptr -1eH[bp],bx 
+L$116:
+    mov         dx,word ptr -24H[bp] 
+    mov         ax,word ptr -22H[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -20H[bp] 
+    mov         ax,word ptr -1eH[bp] 
+    push        ax 
+    push        dx 
+    mov         dx,word ptr -28H[bp] 
+    mov         ax,word ptr -26H[bp] 
+    push        ax 
+    push        dx 
+    mov         si,word ptr -18H[bp] 
+    mov         cx,word ptr -16H[bp] 
+    mov         dx,ss 
+    lea         ax,-180H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr _makepath_ 
+    mov         dx,ss 
+    lea         bx,-180H[bp] 
+    mov         cx,bx 
+    mov         ax,cx 
+    call        far ptr strlen_ 
+    inc         ax 
+    call        far ptr AsmAlloc_ 
+    mov         si,ax 
+    mov         cx,dx 
+    mov         bx,word ptr -8[bp] 
+    shl         bx,1 
+    shl         bx,1 
+    mov         word ptr ss:L$348[bx],si 
+    mov         word ptr ss:L$349[bx],cx 
+    mov         cx,ss 
+    lea         ax,-180H[bp] 
+    mov         si,ax 
+    mov         di,word ptr -8[bp] 
+    shl         di,1 
+    shl         di,1 
+    mov         bx,word ptr ss:L$348[di] 
+    mov         dx,word ptr ss:L$349[di] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+L$117:
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bp 
+    ret         
+L$118:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,1cH 
+    call        far ptr __STK 
+    pop         ax 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,12H 
+    mov         word ptr -18H[bp],ax 
+    mov         word ptr -16H[bp],dx 
+    mov         word ptr -8[bp],bx 
+    cmp         word ptr -8[bp],0aH 
+    jl          L$119 
+    jmp         near ptr L$136 
+L$119:
+    mov         bx,word ptr -18H[bp] 
+    mov         dx,word ptr -16H[bp] 
+    mov         ax,bx 
+    call        far ptr getenv_ 
+    mov         bx,dx 
+    mov         word ptr -0cH[bp],ax 
+    mov         word ptr -0aH[bp],bx 
+    mov         cx,word ptr -0cH[bp] 
+    mov         bx,word ptr -0aH[bp] 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$120 
+    cmp         cx,dx 
+    jne         L$120 
+    jmp         near ptr L$136 
+L$120:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],20H 
+    je          L$121 
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr [bx] 
+    xor         ah,ah 
+    cmp         ax,2f74H 
+    jne         L$122 
+L$121:
+    jmp         L$123 
+L$122:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$124 
+L$123:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+    jmp         L$120 
+L$124:
+    mov         bx,word ptr -0cH[bp] 
+    mov         word ptr -14H[bp],bx 
+    mov         bx,word ptr -0aH[bp] 
+    mov         word ptr -12H[bp],bx 
+    mov         bx,word ptr -0cH[bp] 
+    mov         word ptr -10H[bp],bx 
+    mov         bx,word ptr -0aH[bp] 
+    mov         word ptr -0eH[bp],bx 
+L$125:
+    lds         bx,dword ptr -14H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$126 
+    jmp         near ptr L$136 
+L$126:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],20H 
+    je          L$127 
+    lds         bx,dword ptr -10H[bp] 
+    mov         al,byte ptr [bx] 
+    xor         ah,ah 
+    cmp         ax,2f74H 
+    jne         L$128 
+L$127:
+    jmp         L$129 
+L$128:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$130 
+L$129:
+    jmp         L$131 
+L$130:
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,word ptr -0eH[bp] 
+    inc         word ptr -10H[bp] 
+    jmp         L$126 
+L$131:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],0 
+    jne         L$132 
+    mov         cx,word ptr -8[bp] 
+    inc         cx 
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$233 
+    jmp         L$136 
+L$132:
+    lds         bx,dword ptr -10H[bp] 
+    mov         byte ptr [bx],0 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    inc         word ptr -10H[bp] 
+    mov         cx,word ptr -8[bp] 
+    inc         cx 
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$233 
+L$133:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],20H 
+    je          L$134 
+    lds         bx,dword ptr -10H[bp] 
+    mov         al,byte ptr [bx] 
+    xor         ah,ah 
+    cmp         ax,2f74H 
+    jne         L$135 
+L$134:
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,word ptr -0eH[bp] 
+    inc         word ptr -10H[bp] 
+    jmp         L$133 
+L$135:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],0 
+    je          L$136 
+    mov         bx,word ptr -10H[bp] 
+    mov         word ptr -14H[bp],bx 
+    mov         bx,word ptr -0eH[bp] 
+    mov         word ptr -12H[bp],bx 
+    jmp         near ptr L$125 
+L$136:
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bp 
+    ret         
+L$137:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,1aH 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,0cH 
+    mov         word ptr -14H[bp],ax 
+    mov         word ptr -12H[bp],dx 
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$44 
+    mov         cx,3dH 
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        far ptr strchr_ 
+    mov         bx,dx 
+    mov         word ptr -0cH[bp],ax 
+    mov         word ptr -0aH[bp],bx 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    xor         cx,cx 
+    xor         bx,bx 
+    cmp         ax,bx 
+    jne         L$140 
+    cmp         dx,cx 
+    jne         L$140 
+    mov         cx,23H 
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        far ptr strchr_ 
+    mov         bx,dx 
+    mov         word ptr -0cH[bp],ax 
+    mov         word ptr -0aH[bp],bx 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    xor         cx,cx 
+    xor         bx,bx 
+    cmp         ax,bx 
+    jne         L$138 
+    cmp         dx,cx 
+    jne         L$138 
+    mov         ax,word ptr -10H[bp] 
+    mov         word ptr -0cH[bp],ax 
+    mov         ax,word ptr -0eH[bp] 
+    mov         word ptr -0aH[bp],ax 
+    jmp         L$139 
+L$138:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         byte ptr [bx],0 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$139:
+    jmp         L$141 
+L$140:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         byte ptr [bx],0 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$141:
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    call        near ptr L$47 
+    cmp         ax,0ffffH 
+    jne         L$142 
+    mov         ax,33H 
+    call        far ptr AsmError_ 
+    jmp         L$143 
+L$142:
+    xor         dx,dx 
+    push        dx 
+    mov         si,word ptr -0cH[bp] 
+    mov         cx,word ptr -0aH[bp] 
+    mov         bx,word ptr -14H[bp] 
+    mov         dx,word ptr -12H[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr StoreConstant_ 
+L$143:
+    lea         sp,-8[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$144:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,26H 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,1aH 
+    mov         word ptr -14H[bp],ax 
+    mov         word ptr -12H[bp],dx 
+    mov         byte ptr -0aH[bp],0 
+    mov         ax,word ptr -12H[bp] 
+    mov         word ptr -0eH[bp],ax 
+    mov         ax,word ptr -14H[bp] 
+    inc         ax 
+    mov         word ptr -10H[bp],ax 
+    mov         ax,word ptr -12H[bp] 
+    mov         word ptr -0eH[bp],ax 
+    mov         ax,word ptr -14H[bp] 
+    inc         ax 
+    mov         word ptr -10H[bp],ax 
+L$145:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],0 
+    je          L$146 
+    lds         bx,dword ptr -10H[bp] 
+    mov         bl,byte ptr [bx] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],2 
+    je          L$148 
+L$146:
+    jmp         near ptr L$157 
+L$147:
+    mov         dx,word ptr -10H[bp] 
+    mov         ax,word ptr -0eH[bp] 
+    inc         word ptr -10H[bp] 
+    jmp         L$145 
+L$148:
+    lds         bx,dword ptr -14H[bp] 
+    cmp         byte ptr [bx],66H 
+    jne         L$149 
+    jmp         near ptr L$157 
+L$149:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],72H 
+    jne         L$150 
+    mov         byte ptr ss:L$328,1 
+    mov         dx,cs 
+    mov         ax,offset L$7 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    jmp         L$156 
+L$150:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],73H 
+    jne         L$151 
+    mov         dx,cs 
+    mov         ax,offset L$10 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    mov         byte ptr ss:L$328,0 
+    jmp         L$156 
+L$151:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],5fH 
+    jne         L$154 
+    cmp         byte ptr ss:L$328,0 
+    jne         L$152 
+    mov         byte ptr ss:L$328,2 
+    jmp         L$153 
+L$152:
+    mov         byte ptr ss:L$328,0 
+L$153:
+    jmp         L$156 
+L$154:
+    lds         bx,dword ptr -10H[bp] 
+    cmp         byte ptr [bx],70H 
+    jne         L$155 
+    mov         byte ptr -0aH[bp],1 
+    jmp         L$156 
+L$155:
+    mov         dx,word ptr -14H[bp] 
+    mov         cx,word ptr -12H[bp] 
+    mov         ax,44eH 
+    mov         bx,dx 
+    call        far ptr MsgPrintf1_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$156:
+    jmp         near ptr L$147 
+L$157:
+    lds         bx,dword ptr -14H[bp] 
+    mov         al,byte ptr [bx] 
+    mov         byte ptr -16H[bp],al 
+    cmp         byte ptr -16H[bp],33H 
+    jb          L$164 
+    cmp         byte ptr -16H[bp],33H 
+    ja          L$158 
+    jmp         near ptr L$171 
+L$158:
+    cmp         byte ptr -16H[bp],35H 
+    jb          L$163 
+    cmp         byte ptr -16H[bp],35H 
+    ja          L$159 
+    jmp         near ptr L$177 
+L$159:
+    cmp         byte ptr -16H[bp],37H 
+    jb          L$162 
+    cmp         byte ptr -16H[bp],37H 
+    ja          L$160 
+    jmp         near ptr L$180 
+L$160:
+    cmp         byte ptr -16H[bp],66H 
+    jne         L$161 
+    jmp         near ptr L$187 
+L$161:
+    jmp         near ptr L$195 
+L$162:
+    jmp         near ptr L$195 
+L$163:
+    jmp         L$174 
+L$164:
+    cmp         byte ptr -16H[bp],31H 
+    jb          L$165 
+    cmp         byte ptr -16H[bp],31H 
+    jbe         L$167 
+    jmp         L$168 
+L$165:
+    cmp         byte ptr -16H[bp],30H 
+    je          L$166 
+    jmp         near ptr L$195 
+L$166:
+    mov         word ptr -0cH[bp],0cH 
+    jmp         near ptr L$195 
+L$167:
+    mov         word ptr -0cH[bp],0 
+    jmp         near ptr L$195 
+L$168:
+    cmp         byte ptr -0aH[bp],0 
+    je          L$169 
+    mov         word ptr -18H[bp],3 
+    jmp         L$170 
+L$169:
+    mov         word ptr -18H[bp],1 
+L$170:
+    mov         ax,word ptr -18H[bp] 
+    mov         word ptr -0cH[bp],ax 
+    jmp         near ptr L$195 
+L$171:
+    cmp         byte ptr -0aH[bp],0 
+    je          L$172 
+    mov         word ptr -1aH[bp],6 
+    jmp         L$173 
+L$172:
+    mov         word ptr -1aH[bp],5 
+L$173:
+    mov         ax,word ptr -1aH[bp] 
+    mov         word ptr -0cH[bp],ax 
+    jmp         near ptr L$195 
+L$174:
+    cmp         byte ptr -0aH[bp],0 
+    je          L$175 
+    mov         word ptr -1cH[bp],9 
+    jmp         L$176 
+L$175:
+    mov         word ptr -1cH[bp],8 
+L$176:
+    mov         ax,word ptr -1cH[bp] 
+    mov         word ptr -0cH[bp],ax 
+    jmp         near ptr L$195 
+L$177:
+    cmp         byte ptr -0aH[bp],0 
+    je          L$178 
+    mov         word ptr -1eH[bp],0bH 
+    jmp         L$179 
+L$178:
+    mov         word ptr -1eH[bp],0aH 
+L$179:
+    mov         ax,word ptr -1eH[bp] 
+    mov         word ptr -0cH[bp],ax 
+    jmp         near ptr L$195 
+L$180:
+    lds         bx,dword ptr ss:_Code 
+    mov         bl,byte ptr 0eH[bx] 
+    and         bl,0f0H 
+    mov         byte ptr -20H[bp],bl 
+    cmp         byte ptr -20H[bp],20H 
+    jb          L$182 
+    cmp         byte ptr -20H[bp],20H 
+    jbe         L$183 
+    cmp         byte ptr -20H[bp],40H 
+    jb          L$181 
+    cmp         byte ptr -20H[bp],40H 
+    jbe         L$184 
+    cmp         byte ptr -20H[bp],50H 
+    je          L$184 
+    jmp         L$185 
+L$181:
+    cmp         byte ptr -20H[bp],30H 
+    je          L$184 
+    jmp         L$185 
+L$182:
+    cmp         byte ptr -20H[bp],0 
+    jbe         L$185 
+    cmp         byte ptr -20H[bp],10H 
+    je          L$185 
+    jmp         L$185 
+    jmp         L$185 
+L$183:
+    mov         word ptr -0cH[bp],4 
+    jmp         L$186 
+L$184:
+    mov         word ptr -0cH[bp],7 
+    jmp         L$186 
+L$185:
+    mov         word ptr -0cH[bp],0dH 
+L$186:
+    jmp         L$195 
+L$187:
+    lds         bx,dword ptr -14H[bp] 
+    mov         al,byte ptr 2[bx] 
+    mov         byte ptr -22H[bp],al 
+    cmp         byte ptr -22H[bp],33H 
+    jb          L$189 
+    cmp         byte ptr -22H[bp],33H 
+    jbe         L$194 
+    cmp         byte ptr -22H[bp],35H 
+    jb          L$188 
+    cmp         byte ptr -22H[bp],35H 
+    jbe         L$194 
+    cmp         byte ptr -22H[bp],63H 
+    je          L$191 
+    jmp         L$195 
+L$188:
+    jmp         L$195 
+L$189:
+    cmp         byte ptr -22H[bp],30H 
+    jb          L$190 
+    cmp         byte ptr -22H[bp],30H 
+    jbe         L$192 
+    cmp         byte ptr -22H[bp],32H 
+    je          L$193 
+    jmp         L$195 
+L$190:
+    jmp         L$195 
+L$191:
+    mov         word ptr -0cH[bp],18fH 
+    jmp         L$195 
+L$192:
+    mov         word ptr -0cH[bp],0dH 
+    jmp         L$195 
+L$193:
+    mov         word ptr -0cH[bp],4 
+    jmp         L$195 
+L$194:
+    mov         word ptr -0cH[bp],7 
+L$195:
+    mov         ax,word ptr -0cH[bp] 
+    call        far ptr cpu_directive_ 
+    lea         sp,-8[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$196:
+    push        bp 
+    mov         bp,sp 
+    mov         ax,22H 
+    call        far ptr __STK 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,10H 
+    mov         word ptr -12H[bp],cs 
+    mov         word ptr -14H[bp],offset L$42 
+    mov         cx,word ptr ss:L$334 
+    mov         bx,word ptr ss:L$335 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$199 
+    cmp         cx,dx 
+    jne         L$199 
+    mov         ax,4 
+    call        far ptr AsmAlloc_ 
+    mov         bx,ax 
+    mov         ax,dx 
+    mov         word ptr ss:L$334,bx 
+    mov         word ptr ss:L$335,ax 
+    mov         al,byte ptr ss:__osmode 
+    mov         byte ptr -16H[bp],al 
+    cmp         byte ptr -16H[bp],0 
+    jbe         L$197 
+    cmp         byte ptr -16H[bp],1 
+    je          L$198 
+    jmp         L$199 
+    jmp         L$199 
+L$197:
+    lds         bx,dword ptr ss:L$334 
+    mov         dx,word ptr cs:L$34 
+    mov         ax,word ptr cs:L$35 
+    mov         word ptr [bx],dx 
+    mov         word ptr 2[bx],ax 
+    jmp         L$199 
+L$198:
+    lds         bx,dword ptr ss:L$334 
+    mov         dx,word ptr cs:L$32 
+    mov         ax,word ptr cs:L$33 
+    mov         word ptr [bx],dx 
+    mov         word ptr 2[bx],ax 
+L$199:
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    add         ax,6 
+    and         al,0feH 
+    mov         dx,ax 
+    call        far ptr stackavail_ 
+    cmp         dx,ax 
+    jae         L$200 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    add         ax,6 
+    and         al,0feH 
+    sub         sp,ax 
+    mov         ax,sp 
+    mov         dx,ss 
+    mov         bx,dx 
+    mov         word ptr -1aH[bp],ax 
+    mov         word ptr -18H[bp],bx 
+    jmp         L$201 
+L$200:
+    mov         word ptr -1aH[bp],0 
+    mov         word ptr -18H[bp],0 
+L$201:
+    mov         ax,word ptr -1aH[bp] 
+    mov         word ptr -10H[bp],ax 
+    mov         ax,word ptr -18H[bp] 
+    mov         word ptr -0eH[bp],ax 
+    mov         si,word ptr -14H[bp] 
+    mov         cx,word ptr -12H[bp] 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+    mov         si,word ptr ss:L$334 
+    mov         cx,word ptr ss:L$335 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcat_ 
+    mov         si,word ptr -14H[bp] 
+    mov         cx,word ptr -12H[bp] 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcat_ 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,bx 
+    call        far ptr strupr_ 
+    mov         bx,word ptr -10H[bp] 
+    mov         dx,word ptr -0eH[bp] 
+    mov         ax,bx 
+    call        near ptr L$137 
+    mov         cx,cs 
+    mov         ax,offset L$34 
+    mov         si,ax 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$202 
+    mov         dx,cs 
+    mov         ax,offset L$9 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    jmp         near ptr L$211 
+L$202:
+    mov         cx,cs 
+    mov         dx,offset L$31 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$203 
+    jmp         near ptr L$211 
+L$203:
+    mov         cx,cs 
+    mov         dx,offset L$32 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$204 
+    jmp         near ptr L$211 
+L$204:
+    mov         cx,cs 
+    mov         dx,offset L$41 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$205 
+    jmp         near ptr L$211 
+L$205:
+    mov         cx,cs 
+    mov         dx,offset L$11 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$206 
+    jmp         near ptr L$211 
+L$206:
+    mov         cx,cs 
+    mov         dx,offset L$19 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$208 
+    lds         bx,dword ptr ss:_Code 
+    test        byte ptr 0eH[bx],70H 
+    je          L$207 
+    mov         dx,cs 
+    mov         ax,offset L$6 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+L$207:
+    jmp         L$211 
+L$208:
+    mov         cx,cs 
+    mov         dx,offset L$18 
+    mov         si,dx 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$210 
+    lds         bx,dword ptr ss:_Code 
+    test        byte ptr 0eH[bx],70H 
+    je          L$209 
+    mov         dx,cs 
+    mov         ax,offset L$5 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+L$209:
+    jmp         L$211 
+L$210:
+    mov         ax,45eH 
+    push        ax 
+    mov         ax,2 
+    push        ax 
+    call        far ptr AsmWarn_ 
+    add         sp,4 
+L$211:
+    mov         word ptr -0cH[bp],1 
+    mov         ax,word ptr -0cH[bp] 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$212:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,2aH 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,1cH 
+    mov         byte ptr -0cH[bp],al 
+    jmp         L$214 
+L$213:
+    DW	offset L$215
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$216
+    DW	offset L$222
+    DW	offset L$217
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$218
+    DW	offset L$219
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$222
+    DW	offset L$220
+    DW	offset L$221
+L$214:
+    mov         al,byte ptr -0cH[bp] 
+    sub         al,63H 
+    mov         byte ptr -26H[bp],al 
+    cmp         byte ptr -26H[bp],11H 
+    ja          L$222 
+    mov         al,byte ptr -26H[bp] 
+    xor         ah,ah 
+    shl         ax,1 
+    mov         bx,ax 
+    jmp         word ptr cs:L$213[bx] 
+L$215:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$17 
+    jmp         near ptr L$223 
+L$216:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$27 
+    jmp         L$223 
+L$217:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$26 
+    jmp         L$223 
+L$218:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$24 
+    jmp         L$223 
+L$219:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$21 
+    jmp         L$223 
+L$220:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$23 
+    jmp         L$223 
+L$221:
+    mov         word ptr -0eH[bp],cs 
+    mov         word ptr -10H[bp],offset L$25 
+    jmp         L$223 
+L$222:
+    mov         ax,ss 
+    mov         es,ax 
+    lea         di,-24H[bp] 
+    mov         ax,cs 
+    mov         ds,ax 
+    mov         si,offset L$40 
+    movsw       
+    movsb       
+    mov         cx,ss 
+    lea         ax,-0cH[bp] 
+    mov         si,ax 
+    mov         dx,ss 
+    lea         ax,-24H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcat_ 
+    mov         cx,ss 
+    lea         ax,-24H[bp] 
+    mov         dx,ax 
+    mov         ax,44eH 
+    mov         bx,dx 
+    call        far ptr MsgPrintf1_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$223:
+    mov         ax,ss 
+    mov         es,ax 
+    lea         di,-24H[bp] 
+    mov         ax,cs 
+    mov         ds,ax 
+    mov         si,offset L$16 
+    movsw       
+    movsw       
+    movsw       
+    movsw       
+    mov         si,word ptr -10H[bp] 
+    mov         cx,word ptr -0eH[bp] 
+    mov         dx,ss 
+    lea         ax,-24H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcat_ 
+    mov         dx,ss 
+    lea         ax,-24H[bp] 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        far ptr InputQueueLine_ 
+    lea         sp,-0aH[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    ret         
+L$224:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,18H 
+    call        far ptr __STK 
+    pop         ax 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,0eH 
+    mov         byte ptr -8[bp],al 
+    mov         word ptr -0eH[bp],bx 
+    mov         word ptr -0cH[bp],cx 
+    mov         bx,word ptr -0eH[bp] 
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    inc         ax 
+    mov         word ptr -0aH[bp],ax 
+    mov         al,byte ptr -8[bp] 
+    mov         byte ptr -14H[bp],al 
+    cmp         byte ptr -14H[bp],64H 
+    jb          L$226 
+    cmp         byte ptr -14H[bp],64H 
+    jbe         L$227 
+    cmp         byte ptr -14H[bp],6dH 
+    jb          L$225 
+    cmp         byte ptr -14H[bp],6dH 
+    jbe         L$228 
+    cmp         byte ptr -14H[bp],74H 
+    je          L$229 
+    jmp         L$230 
+L$225:
+    jmp         L$230 
+L$226:
+    cmp         byte ptr -14H[bp],63H 
+    jne         L$230 
+    mov         word ptr -10H[bp],ss 
+    mov         word ptr -12H[bp],offset DGROUP:L$336 
+    jmp         L$231 
+L$227:
+    mov         word ptr -10H[bp],ss 
+    mov         word ptr -12H[bp],offset DGROUP:L$338 
+    jmp         L$231 
+L$228:
+    mov         word ptr -10H[bp],ss 
+    mov         word ptr -12H[bp],offset DGROUP:L$342 
+    jmp         L$231 
+L$229:
+    mov         word ptr -10H[bp],ss 
+    mov         word ptr -12H[bp],offset DGROUP:L$340 
+    jmp         L$231 
+L$230:
+    jmp         L$232 
+L$231:
+    mov         ax,word ptr -0aH[bp] 
+    call        far ptr AsmAlloc_ 
+    mov         cx,ax 
+    mov         bx,dx 
+    lds         si,dword ptr -12H[bp] 
+    mov         word ptr [si],cx 
+    lds         si,dword ptr -12H[bp] 
+    mov         word ptr 2[si],bx 
+    mov         si,word ptr -0eH[bp] 
+    mov         cx,word ptr -0cH[bp] 
+    lds         bx,dword ptr -12H[bp] 
+    mov         bx,word ptr [bx] 
+    lds         di,dword ptr -12H[bp] 
+    mov         dx,word ptr 2[di] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+L$232:
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         bp 
+    ret         
+L$233:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,20H 
+    call        far ptr __STK 
+    pop         ax 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,12H 
+    mov         word ptr -0cH[bp],ax 
+    mov         word ptr -0aH[bp],dx 
+    mov         word ptr -8[bp],bx 
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr [bx] 
+    mov         byte ptr -0eH[bp],al 
+    cmp         byte ptr -0eH[bp],2fH 
+    jb          L$236 
+    cmp         byte ptr -0eH[bp],2fH 
+    jbe         L$240 
+    cmp         byte ptr -0eH[bp],3fH 
+    jb          L$235 
+    cmp         byte ptr -0eH[bp],3fH 
+    jbe         L$238 
+    cmp         byte ptr -0eH[bp],40H 
+    jne         L$234 
+    jmp         near ptr L$314 
+L$234:
+    jmp         near ptr L$315 
+L$235:
+    cmp         byte ptr -0eH[bp],3dH 
+    je          L$239 
+    jmp         near ptr L$315 
+L$236:
+    cmp         byte ptr -0eH[bp],23H 
+    jb          L$237 
+    cmp         byte ptr -0eH[bp],23H 
+    jbe         L$239 
+    cmp         byte ptr -0eH[bp],2dH 
+    je          L$240 
+    jmp         near ptr L$315 
+L$237:
+    jmp         near ptr L$315 
+L$238:
+    call        near ptr L$79 
+    jmp         near ptr L$316 
+L$239:
+    mov         ax,43dH 
+    call        far ptr AsmError_ 
+L$240:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr [bx] 
+    xor         ah,ah 
+    call        far ptr tolower_ 
+    mov         word ptr -10H[bp],ax 
+    cmp         word ptr -10H[bp],68H 
+    jb          L$253 
+    cmp         word ptr -10H[bp],68H 
+    ja          L$241 
+    jmp         near ptr L$275 
+L$241:
+    cmp         word ptr -10H[bp],6eH 
+    jb          L$249 
+    cmp         word ptr -10H[bp],6eH 
+    ja          L$242 
+    jmp         near ptr L$271 
+L$242:
+    cmp         word ptr -10H[bp],73H 
+    jb          L$247 
+    cmp         word ptr -10H[bp],73H 
+    ja          L$243 
+    jmp         near ptr L$285 
+L$243:
+    cmp         word ptr -10H[bp],77H 
+    jb          L$246 
+    cmp         word ptr -10H[bp],77H 
+    ja          L$244 
+    jmp         near ptr L$282 
+L$244:
+    cmp         word ptr -10H[bp],7aH 
+    jne         L$245 
+    jmp         near ptr L$311 
+L$245:
+    jmp         near ptr L$312 
+L$246:
+    jmp         near ptr L$312 
+L$247:
+    cmp         word ptr -10H[bp],71H 
+    jne         L$248 
+    jmp         near ptr L$310 
+L$248:
+    jmp         near ptr L$312 
+L$249:
+    cmp         word ptr -10H[bp],6aH 
+    jb          L$252 
+    cmp         word ptr -10H[bp],6aH 
+    ja          L$250 
+    jmp         near ptr L$285 
+L$250:
+    cmp         word ptr -10H[bp],6dH 
+    jne         L$251 
+    jmp         near ptr L$270 
+L$251:
+    jmp         near ptr L$312 
+L$252:
+    jmp         near ptr L$276 
+L$253:
+    cmp         word ptr -10H[bp],62H 
+    jb          L$258 
+    cmp         word ptr -10H[bp],62H 
+    jbe         L$263 
+    cmp         word ptr -10H[bp],65H 
+    jb          L$256 
+    cmp         word ptr -10H[bp],65H 
+    ja          L$254 
+    jmp         near ptr L$279 
+L$254:
+    cmp         word ptr -10H[bp],66H 
+    jne         L$255 
+    jmp         near ptr L$292 
+L$255:
+    jmp         near ptr L$312 
+L$256:
+    cmp         word ptr -10H[bp],64H 
+    jne         L$257 
+    jmp         near ptr L$286 
+L$257:
+    jmp         near ptr L$312 
+L$258:
+    cmp         word ptr -10H[bp],37H 
+    jb          L$260 
+    cmp         word ptr -10H[bp],37H 
+    jbe         L$262 
+    cmp         word ptr -10H[bp],3fH 
+    jne         L$259 
+    jmp         near ptr L$275 
+L$259:
+    jmp         near ptr L$312 
+L$260:
+    cmp         word ptr -10H[bp],30H 
+    jb          L$261 
+    cmp         word ptr -10H[bp],35H 
+    jbe         L$262 
+    jmp         near ptr L$312 
+L$261:
+    jmp         near ptr L$312 
+L$262:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        near ptr L$144 
+    jmp         near ptr L$313 
+L$263:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr 1[bx],74H 
+    je          L$264 
+    jmp         near ptr L$269 
+L$264:
+    add         word ptr -0cH[bp],2 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],3dH 
+    je          L$265 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],23H 
+    jne         L$266 
+L$265:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$266:
+    mov         cx,word ptr ss:L$334 
+    mov         bx,word ptr ss:L$335 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$267 
+    cmp         cx,dx 
+    je          L$268 
+L$267:
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    call        far ptr AsmFree_ 
+L$268:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        far ptr strlen_ 
+    inc         ax 
+    call        far ptr AsmAlloc_ 
+    mov         bx,dx 
+    mov         word ptr ss:L$334,ax 
+    mov         word ptr ss:L$335,bx 
+    mov         si,word ptr -0cH[bp] 
+    mov         cx,word ptr -0aH[bp] 
+    mov         bx,word ptr ss:L$334 
+    mov         dx,word ptr ss:L$335 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr strcpy_ 
+    jmp         near ptr L$313 
+L$269:
+    mov         dx,word ptr -0cH[bp] 
+    mov         cx,word ptr -0aH[bp] 
+    mov         ax,44eH 
+    mov         bx,dx 
+    call        far ptr MsgPrintf1_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$270:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr 1[bx] 
+    xor         ah,ah 
+    call        near ptr L$212 
+    jmp         near ptr L$313 
+L$271:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr 2[bx],3dH 
+    je          L$272 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr 2[bx],23H 
+    jne         L$273 
+L$272:
+    mov         cx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    add         ax,3 
+    mov         dx,ax 
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr 1[bx] 
+    xor         ah,ah 
+    mov         bx,dx 
+    call        near ptr L$224 
+    jmp         L$274 
+L$273:
+    mov         cx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    add         ax,2 
+    mov         dx,ax 
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr 1[bx] 
+    xor         ah,ah 
+    mov         bx,dx 
+    call        near ptr L$224 
+L$274:
+    jmp         near ptr L$313 
+L$275:
+    call        near ptr L$79 
+    jmp         near ptr L$313 
+L$276:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],3dH 
+    je          L$277 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],23H 
+    jne         L$278 
+L$277:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$278:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        far ptr AddStringToIncludePath_ 
+    jmp         near ptr L$313 
+L$279:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         bl,byte ptr 1[bx] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],20H 
+    je          L$280 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    inc         ax 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        far ptr atoi_ 
+    mov         byte ptr ss:L$331,al 
+    jmp         L$281 
+L$280:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr 1[bx],0 
+    jne         L$281 
+    mov         byte ptr ss:L$324,1 
+L$281:
+    jmp         near ptr L$313 
+L$282:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         bl,byte ptr 1[bx] 
+    inc         bl 
+    xor         bh,bh 
+    test        byte ptr ss:__IsTable[bx],20H 
+    je          L$283 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    inc         ax 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        far ptr atoi_ 
+    mov         byte ptr ss:L$332,al 
+    jmp         L$284 
+L$283:
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr 1[bx],65H 
+    jne         L$284 
+    mov         byte ptr ss:L$333,1 
+L$284:
+    jmp         near ptr L$313 
+L$285:
+    mov         byte ptr ss:_Options,1 
+    jmp         near ptr L$313 
+L$286:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr 1[bx] 
+    mov         byte ptr -12H[bp],al 
+    cmp         byte ptr -12H[bp],31H 
+    jb          L$287 
+    cmp         byte ptr -12H[bp],32H 
+    jbe         L$288 
+    cmp         byte ptr -12H[bp],36H 
+    je          L$289 
+    jmp         L$290 
+L$287:
+    jmp         L$290 
+L$288:
+    mov         byte ptr ss:L$327,1 
+    jmp         near ptr L$316 
+L$289:
+    mov         byte ptr ss:L$344,1 
+    mov         ax,cs 
+    mov         dx,offset L$4 
+    push        ax 
+    push        dx 
+    call        far ptr DoDebugMsg_ 
+    add         sp,4 
+    jmp         near ptr L$316 
+L$290:
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    inc         ax 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    jmp         near ptr L$313 
+    cld         
+L$291:
+    DW	offset L$300
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$294
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$309
+    DW	offset L$297
+    DW	offset L$303
+L$292:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         bl,byte ptr 1[bx] 
+    sub         bl,65H 
+    mov         byte ptr -14H[bp],bl 
+    cmp         byte ptr -14H[bp],0bH 
+    jbe         L$293 
+    jmp         near ptr L$309 
+L$293:
+    mov         al,byte ptr -14H[bp] 
+    xor         ah,ah 
+    shl         ax,1 
+    mov         bx,ax 
+    jmp         word ptr cs:L$291[bx] 
+L$294:
+    add         word ptr -0cH[bp],2 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],3dH 
+    je          L$295 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],23H 
+    jne         L$296 
+L$295:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$296:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        far ptr InputQueueFile_ 
+    jmp         near ptr L$316 
+L$297:
+    add         word ptr -0cH[bp],2 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],3dH 
+    je          L$298 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],23H 
+    jne         L$299 
+L$298:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$299:
+    mov         cx,2 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$104 
+    jmp         near ptr L$316 
+L$300:
+    add         word ptr -0cH[bp],2 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],3dH 
+    je          L$301 
+    lds         bx,dword ptr -0cH[bp] 
+    cmp         byte ptr [bx],23H 
+    jne         L$302 
+L$301:
+    mov         dx,word ptr -0cH[bp] 
+    mov         ax,word ptr -0aH[bp] 
+    inc         word ptr -0cH[bp] 
+L$302:
+    mov         cx,1 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$104 
+    jmp         near ptr L$316 
+L$303:
+    mov         cx,cs 
+    mov         dx,offset L$30 
+    mov         si,dx 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$304 
+    mov         byte ptr ss:L$329,0 
+    mov         dx,cs 
+    mov         ax,offset L$15 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    mov         dx,cs 
+    mov         ax,offset L$43 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$144 
+    jmp         near ptr L$316 
+L$304:
+    mov         cx,cs 
+    mov         dx,offset L$22 
+    mov         si,dx 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$305 
+    mov         byte ptr ss:L$329,1 
+    mov         dx,cs 
+    mov         ax,offset L$8 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    mov         dx,cs 
+    mov         ax,offset L$43 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$144 
+    jmp         near ptr L$316 
+L$305:
+    mov         cx,cs 
+    mov         dx,offset L$29 
+    mov         si,dx 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,si 
+    call        far ptr stricmp_ 
+    test        ax,ax 
+    jne         L$307 
+    mov         byte ptr ss:L$329,2 
+    mov         dx,cs 
+    mov         ax,offset L$14 
+    mov         bx,ax 
+    mov         ax,bx 
+    call        near ptr L$137 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        near ptr L$144 
+    jmp         near ptr L$316 
+L$306:
+    DW	offset L$308
+    DW	offset L$309
+    DW	offset L$308
+    DW	offset L$308
+    DW	offset L$309
+    DW	offset L$308
+L$307:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         bl,byte ptr 2[bx] 
+    sub         bl,30H 
+    mov         byte ptr -16H[bp],bl 
+    cmp         byte ptr -16H[bp],5 
+    ja          L$309 
+    mov         al,byte ptr -16H[bp] 
+    xor         ah,ah 
+    shl         ax,1 
+    mov         bx,ax 
+    jmp         word ptr cs:L$306[bx] 
+L$308:
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    call        near ptr L$144 
+    jmp         L$316 
+L$309:
+    mov         dx,word ptr -0cH[bp] 
+    mov         cx,word ptr -0aH[bp] 
+    mov         ax,44eH 
+    mov         bx,dx 
+    call        far ptr MsgPrintf1_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$310:
+    mov         byte ptr ss:L$325,1 
+    jmp         L$313 
+L$311:
+    lds         bx,dword ptr -0cH[bp] 
+    mov         al,byte ptr 1[bx] 
+    mov         byte ptr -18H[bp],al 
+    cmp         byte ptr -18H[bp],71H 
+    jne         L$312 
+    mov         byte ptr ss:L$325,1 
+    jmp         L$316 
+L$312:
+    mov         dx,word ptr -0cH[bp] 
+    mov         cx,word ptr -0aH[bp] 
+    mov         ax,44eH 
+    mov         bx,dx 
+    call        far ptr MsgPrintf1_ 
+    mov         ax,1 
+    jmp         far ptr exit_ 
+L$313:
+    jmp         L$316 
+L$314:
+    mov         cx,word ptr -8[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,word ptr -0cH[bp] 
+    inc         ax 
+    mov         bx,ax 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$118 
+    jmp         L$316 
+L$315:
+    xor         cx,cx 
+    mov         bx,word ptr -0cH[bp] 
+    mov         dx,word ptr -0aH[bp] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$104 
+L$316:
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bp 
+    ret         
+L$317:
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,68H 
+    call        far ptr __STK 
+    pop         ax 
+    push        dx 
+    push        si 
+    push        di 
+    sub         sp,58H 
+    mov         word ptr -0aH[bp],ax 
+    mov         word ptr -0eH[bp],bx 
+    mov         word ptr -0cH[bp],cx 
+    cmp         word ptr -0aH[bp],1 
+    jne         L$318 
+    call        near ptr L$79 
+L$318:
+    mov         word ptr -8[bp],1 
+L$319:
+    mov         ax,word ptr -8[bp] 
+    cmp         ax,word ptr -0aH[bp] 
+    jl          L$321 
+    jmp         L$322 
+L$320:
+    mov         ax,word ptr -8[bp] 
+    inc         word ptr -8[bp] 
+    jmp         L$319 
+L$321:
+    xor         cx,cx 
+    mov         si,word ptr -8[bp] 
+    shl         si,1 
+    shl         si,1 
+    mov         ds,word ptr -0cH[bp] 
+    add         si,word ptr -0eH[bp] 
+    mov         bx,word ptr [si] 
+    mov         dx,word ptr 2[si] 
+    mov         ax,bx 
+    mov         bx,cx 
+    call        near ptr L$233 
+    jmp         L$320 
+L$322:
+    mov         cx,word ptr ss:L$348 
+    mov         bx,word ptr ss:L$349 
+    xor         dx,dx 
+    xor         ax,ax 
+    cmp         bx,ax 
+    jne         L$323 
+    cmp         cx,dx 
+    jne         L$323 
+    mov         cx,ss 
+    lea         ax,-5eH[bp] 
+    mov         dx,ax 
+    mov         ax,440H 
+    mov         bx,dx 
+    call        far ptr MsgGet_ 
+    mov         dx,ss 
+    lea         cx,-5eH[bp] 
+    push        dx 
+    push        cx 
+    mov         ax,1 
+    push        ax 
+    call        far ptr Fatal_ 
+    add         sp,6 
+L$323:
+    lea         sp,-6[bp] 
+    pop         di 
+    pop         si 
+    pop         dx 
+    pop         bp 
+    ret         
+AsmQueryExternal_:
+    inc         bp 
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,14H 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,6 
+    mov         word ptr -0eH[bp],ax 
+    mov         word ptr -0cH[bp],dx 
+    mov         byte ptr -0aH[bp],0 
+    mov         al,byte ptr -0aH[bp] 
+    lea         sp,-8[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    dec         bp 
+    retf        
+AsmQueryType_:
+    inc         bp 
+    push        bp 
+    mov         bp,sp 
+    push        ax 
+    mov         ax,14H 
+    call        far ptr __STK 
+    pop         ax 
+    push        bx 
+    push        cx 
+    push        si 
+    push        di 
+    sub         sp,6 
+    mov         word ptr -0eH[bp],ax 
+    mov         word ptr -0cH[bp],dx 
+    mov         byte ptr -0aH[bp],0 
+    mov         al,byte ptr -0aH[bp] 
+    lea         sp,-8[bp] 
+    pop         di 
+    pop         si 
+    pop         cx 
+    pop         bx 
+    pop         bp 
+    dec         bp 
+    retf        
+main_TEXT		ENDS
+CONST		SEGMENT	WORD PUBLIC USE16 'DATA'
+CONST		ENDS
+CONST2		SEGMENT	WORD PUBLIC USE16 'DATA'
+CONST2		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_Options:
+    DB	0
+L$324:
+    DB	0
+L$325:
+    DB	0
+L$326:
+    DB	0
+L$327:
+    DB	0
+L$328:
+    DB	0
+L$329:
+    DB	2
+L$330:
+    DB	0, 0
+L$331:
+    DB	14H
+L$332:
+    DB	2
+L$333:
+    DB	0
+L$334:
+    DB	0, 0
+L$335:
+    DB	0, 0
+L$336:
+    DB	0, 0
+L$337:
+    DB	0, 0
+L$338:
+    DB	0, 0
+L$339:
+    DB	0, 0
+L$340:
+    DB	0, 0
+L$341:
+    DB	0, 0
+L$342:
+    DB	0, 0
+L$343:
+    DB	0, 0
+L$344:
+    DB	0
+L$345:
+    DD	L$3
+L$346 equ $-2
+    DD	L$2
+    DD	L$1
+    DD	L$46
+    DB	0, 0, 0, 0
+
+_DATA		ENDS
+_BSS		SEGMENT	WORD PUBLIC USE16 'BSS'
+    ORG 0
+_AsmFiles    LABEL	BYTE
+    ORG 2
+L$347    LABEL	BYTE
+    ORG 0cH
+L$348    LABEL	BYTE
+    ORG 0eH
+L$349    LABEL	BYTE
+    ORG 10H
+L$350    LABEL	BYTE
+    ORG 12H
+L$351    LABEL	BYTE
+    ORG 14H
+L$352    LABEL	BYTE
+    ORG 16H
+L$353    LABEL	BYTE
+    ORG 18H
+_pobjState    LABEL	BYTE
+    ORG 19H
+L$354    LABEL	BYTE
+    ORG 1bH
+L$355    LABEL	BYTE
+    ORG 1dH
+_BSS		ENDS
+
+$$SYMBOLS		SEGMENT	BYTE PRIVATE USE16 'DEBSYM'
+    DB	0fH, 10H
+    DD	DGROUP:_AsmFiles
+    DB	32H, 41H, 73H, 6dH, 46H, 69H, 6cH, 65H
+    DB	73H, 10H, 10H
+    DD	DGROUP:_pobjState
+    DB	38H, 70H, 6fH, 62H, 6aH, 53H, 74H, 61H
+    DB	74H, 65H, 0eH, 10H
+    DD	DGROUP:_Options
+    DB	3dH, 4fH, 70H, 74H, 69H, 6fH, 6eH, 73H
+    DB	6, 31H
+    DD	L$47
+    DB	1eH, 21H, 0, 0, 0c7H, 0, 0, 0
+    DB	15H, 9, 2, 0, 3eH, 48H, 1, 31H
+    DB	8, 0bH, 69H, 73H, 76H, 61H, 6cH, 69H
+    DB	64H, 69H, 64H, 65H, 6eH, 74H, 6, 11H
+    DB	10H, 0f0H, 11H, 73H, 0dH, 11H, 10H, 0f6H
+    DB	8, 6cH, 77H, 72H, 5fH, 63H, 68H, 61H
+    DB	72H, 7, 11H, 10H, 0ecH, 11H, 69H, 64H
+    DB	1dH, 21H, 0c7H, 0, 0e0H, 0, 0, 0
+    DB	14H, 0aH, 2, 0, 3fH, 0, 0, 67H
+    DB	65H, 74H, 5fH, 6fH, 73H, 5fH, 69H, 6eH
+    DB	63H, 6cH, 75H, 64H, 65H, 8, 11H, 10H
+    DB	0f2H, 11H, 65H, 6eH, 76H, 8, 11H, 10H
+    DB	0eeH, 11H, 74H, 6dH, 70H, 20H, 22H, 0a7H
+    DB	1, 0deH, 0, 0, 0, 15H, 9, 2
+    DB	0, 41H, 0, 2, 48H, 31H, 9, 0aH
+    DB	64H, 6fH, 5fH, 69H, 6eH, 69H, 74H, 5fH
+    DB	73H, 74H, 75H, 66H, 66H, 8, 11H, 10H
+    DB	0f4H, 11H, 65H, 6eH, 76H, 9, 11H, 10H
+    DB	0f0H, 40H, 61H, 72H, 67H, 76H, 9, 11H
+    DB	10H, 0f8H, 6, 61H, 72H, 67H, 63H, 17H
+    DB	22H, 85H, 2, 5fH, 0, 0, 0, 15H
+    DB	9, 2, 0, 42H, 48H, 2, 48H, 31H
+    DB	9, 0aH, 6dH, 61H, 69H, 6eH, 9, 11H
+    DB	10H, 0f2H, 40H, 61H, 72H, 67H, 76H, 9
+    DB	11H, 10H, 0f6H, 6, 61H, 72H, 67H, 63H
+    DB	18H, 21H, 0e4H, 2, 24H, 0, 0, 0
+    DB	14H, 0, 2, 0, 3fH, 0, 0, 75H
+    DB	73H, 61H, 67H, 65H, 5fH, 6dH, 73H, 67H
+    DB	18H, 22H, 8, 3, 6fH, 0, 0, 0
+    DB	15H, 0bH, 2, 0, 43H, 0, 0, 74H
+    DB	72H, 61H, 64H, 65H, 6dH, 61H, 72H, 6bH
+    DB	0bH, 11H, 20H
+    DD	DGROUP:L$345
+    DB	44H, 6dH, 73H, 67H, 0aH, 11H, 10H, 0f4H
+    DB	6, 63H, 6fH, 75H, 6eH, 74H, 19H, 21H
+    DB	77H, 3, 0e1H, 0, 0, 0, 14H, 0aH
+    DB	2, 0, 3fH, 0, 0, 66H, 72H, 65H
+    DB	65H, 5fH, 6eH, 61H, 6dH, 65H, 73H, 18H
+    DB	21H, 58H, 4, 51H, 0, 0, 0, 14H
+    DB	0aH, 2, 0, 3fH, 0, 0, 66H, 72H
+    DB	65H, 65H, 5fH, 66H, 69H, 6cH, 65H, 18H
+    DB	21H, 0a9H, 4, 6eH, 0, 0, 0, 14H
+    DB	0aH, 2, 0, 3fH, 0, 0, 6dH, 61H
+    DB	69H, 6eH, 5fH, 69H, 6eH, 69H, 74H, 6
+    DB	11H, 10H, 0f4H, 6, 69H, 18H, 21H, 17H
+    DB	5, 33H, 0, 0, 0, 14H, 0aH, 2
+    DB	0, 3fH, 0, 0, 6dH, 61H, 69H, 6eH
+    DB	5fH, 66H, 69H, 6eH, 69H, 19H, 21H, 4aH
+    DB	5, 0c5H, 0, 0, 0, 14H, 0aH, 2
+    DB	0, 3fH, 0, 0, 6fH, 70H, 65H, 6eH
+    DB	5fH, 66H, 69H, 6cH, 65H, 73H, 1cH, 21H
+    DB	0fH, 6, 73H, 3, 0, 0, 14H, 8
+    DB	2, 0, 45H, 0, 2, 31H, 8, 0bH
+    DB	49H, 67H, 65H, 74H, 5fH, 66H, 6eH, 61H
+    DB	6dH, 65H, 0eH, 11H, 10H, 0f4H, 11H, 64H
+    DB	65H, 66H, 5fH, 64H, 72H, 69H, 76H, 65H
+    DB	0cH, 11H, 10H, 0e4H, 11H, 64H, 65H, 66H
+    DB	5fH, 64H, 69H, 72H, 0eH, 11H, 10H, 0f0H
+    DB	11H, 64H, 65H, 66H, 5fH, 66H, 6eH, 61H
+    DB	6dH, 65H, 0cH, 11H, 10H, 0ecH, 11H, 64H
+    DB	65H, 66H, 5fH, 65H, 78H, 74H, 0aH, 11H
+    DB	10H, 0e8H, 11H, 64H, 72H, 69H, 76H, 65H
+    DB	8, 11H, 10H, 0d8H, 11H, 64H, 69H, 72H
+    DB	0aH, 11H, 10H, 0e0H, 11H, 66H, 6eH, 61H
+    DB	6dH, 65H, 8, 11H, 10H, 0dcH, 11H, 65H
+    DB	78H, 74H, 0cH, 11H, 11H, 78H, 0fdH, 46H
+    DB	62H, 75H, 66H, 66H, 65H, 72H, 0dH, 11H
+    DB	11H, 70H, 0fcH, 47H, 62H, 75H, 66H, 66H
+    DB	65H, 72H, 32H, 0aH, 11H, 11H, 80H, 0feH
+    DB	48H, 6eH, 61H, 6dH, 65H, 0bH, 11H, 10H
+    DB	84H, 49H, 6dH, 73H, 67H, 62H, 75H, 66H
+    DB	9, 11H, 10H, 0f8H, 6, 74H, 79H, 70H
+    DB	65H, 0aH, 11H, 10H, 0d4H, 11H, 74H, 6fH
+    DB	6bH, 65H, 6eH, 24H, 21H, 82H, 9, 40H
+    DB	1, 0, 0, 14H, 8, 2, 0, 45H
+    DB	0, 2, 31H, 8, 0bH, 49H, 64H, 6fH
+    DB	5fH, 65H, 6eH, 76H, 76H, 61H, 72H, 5fH
+    DB	63H, 6dH, 64H, 6cH, 69H, 6eH, 65H, 0cH
+    DB	11H, 10H, 0f4H, 11H, 63H, 6dH, 64H, 6cH
+    DB	69H, 6eH, 65H, 0aH, 11H, 10H, 0ecH, 11H
+    DB	74H, 6fH, 6bH, 65H, 6eH, 9, 11H, 10H
+    DB	0f0H, 11H, 6eH, 65H, 78H, 74H, 0aH, 11H
+    DB	10H, 0f8H, 6, 6cH, 65H, 76H, 65H, 6cH
+    DB	0bH, 11H, 10H, 0e8H, 11H, 65H, 6eH, 76H
+    DB	76H, 61H, 72H, 1eH, 21H, 0c2H, 0aH, 0e4H
+    DB	0, 0, 0, 15H, 9, 2, 0, 4aH
+    DB	0, 1, 31H, 8, 0bH, 61H, 64H, 64H
+    DB	5fH, 63H, 6fH, 6eH, 73H, 74H, 61H, 6eH
+    DB	74H, 8, 11H, 10H, 0f4H, 11H, 74H, 6dH
+    DB	70H, 8, 11H, 10H, 0f0H, 11H, 6fH, 6eH
+    DB	65H, 0bH, 11H, 10H, 0ecH, 11H, 73H, 74H
+    DB	72H, 69H, 6eH, 67H, 24H, 21H, 0a6H, 0bH
+    DB	8cH, 2, 0, 0, 15H, 9, 2, 0
+    DB	4aH, 0, 1, 31H, 8, 0bH, 73H, 65H
+    DB	74H, 5fH, 70H, 72H, 6fH, 63H, 65H, 73H
+    DB	73H, 6fH, 72H, 5fH, 74H, 79H, 70H, 65H
+    DB	0aH, 11H, 10H, 0f4H, 4bH, 74H, 6fH, 6bH
+    DB	65H, 6eH, 0cH, 11H, 10H, 0f6H, 8, 70H
+    DB	72H, 6fH, 74H, 65H, 63H, 74H, 8, 11H
+    DB	10H, 0f0H, 11H, 74H, 6dH, 70H, 0aH, 11H
+    DB	10H, 0ecH, 11H, 69H, 6eH, 70H, 75H, 74H
+    DB	1fH, 21H, 32H, 0eH, 7fH, 2, 0, 0
+    DB	14H, 0aH, 2, 0, 4dH, 48H, 0, 73H
+    DB	65H, 74H, 5fH, 62H, 75H, 69H, 6cH, 64H
+    DB	5fH, 74H, 61H, 72H, 67H, 65H, 74H, 8
+    DB	11H, 10H, 0f0H, 11H, 74H, 6dH, 70H, 0cH
+    DB	11H, 10H, 0ecH, 11H, 75H, 73H, 63H, 6fH
+    DB	72H, 65H, 73H, 1cH, 21H, 0b1H, 10H, 22H
+    DB	1, 0, 0, 16H, 0aH, 2, 0, 4eH
+    DB	0, 1, 48H, 73H, 65H, 74H, 5fH, 6dH
+    DB	65H, 6dH, 5fH, 74H, 79H, 70H, 65H, 0bH
+    DB	11H, 10H, 0dcH, 4fH, 62H, 75H, 66H, 66H
+    DB	65H, 72H, 0aH, 11H, 10H, 0f0H, 11H, 6dH
+    DB	6fH, 64H, 65H, 6cH, 0dH, 11H, 10H, 0f4H
+    DB	8, 6dH, 65H, 6dH, 5fH, 74H, 79H, 70H
+    DB	65H, 26H, 21H, 0d3H, 11H, 0bfH, 0, 0
+    DB	0, 14H, 8, 2, 0, 50H, 0, 2
+    DB	48H, 31H, 9, 0aH, 73H, 65H, 74H, 5fH
+    DB	73H, 6fH, 6dH, 65H, 5fH, 6bH, 69H, 6eH
+    DB	64H, 61H, 5fH, 6eH, 61H, 6dH, 65H, 8
+    DB	11H, 10H, 0f6H, 6, 6cH, 65H, 6eH, 8
+    DB	11H, 10H, 0eeH, 40H, 74H, 6dH, 70H, 9
+    DB	11H, 10H, 0f2H, 11H, 6eH, 61H, 6dH, 65H
+    DB	0aH, 11H, 10H, 0f8H, 8, 74H, 6fH, 6bH
+    DB	65H, 6eH, 1eH, 21H, 92H, 12H, 9cH, 5
+    DB	0, 0, 14H, 8, 2, 0, 45H, 0
+    DB	2, 31H, 8, 0bH, 49H, 70H, 61H, 72H
+    DB	73H, 65H, 5fH, 74H, 6fH, 6bH, 65H, 6eH
+    DB	12H, 11H, 10H, 0f8H, 6, 6eH, 65H, 73H
+    DB	74H, 69H, 6eH, 67H, 5fH, 6cH, 65H, 76H
+    DB	65H, 6cH, 0aH, 11H, 10H, 0f4H, 11H, 74H
+    DB	6fH, 6bH, 65H, 6eH, 20H, 21H, 2eH, 18H
+    DB	9cH, 0, 0, 0, 14H, 8, 2, 0
+    DB	51H, 0, 2, 48H, 31H, 9, 0aH, 70H
+    DB	61H, 72H, 73H, 65H, 5fH, 63H, 6dH, 64H
+    DB	6cH, 69H, 6eH, 65H, 6, 11H, 10H, 0f8H
+    DB	6, 69H, 0bH, 11H, 10H, 0a2H, 52H, 6dH
+    DB	73H, 67H, 62H, 75H, 66H, 9, 11H, 10H
+    DB	0f2H, 40H, 61H, 72H, 67H, 76H, 9, 11H
+    DB	10H, 0f6H, 6, 61H, 72H, 67H, 63H, 22H
+    DB	22H, 0caH, 18H, 2dH, 0, 0, 0, 16H
+    DB	0aH, 2, 0, 55H, 40H, 1, 31H, 8
+    DB	0bH, 41H, 73H, 6dH, 51H, 75H, 65H, 72H
+    DB	79H, 45H, 78H, 74H, 65H, 72H, 6eH, 61H
+    DB	6cH, 9, 11H, 10H, 0f2H, 11H, 6eH, 61H
+    DB	6dH, 65H, 1eH, 22H, 0f7H, 18H, 2dH, 0
+    DB	0, 0, 16H, 0aH, 2, 0, 58H, 40H
+    DB	1, 31H, 8, 0bH, 41H, 73H, 6dH, 51H
+    DB	75H, 65H, 72H, 79H, 54H, 79H, 70H, 65H
+    DB	9, 11H, 10H, 0f2H, 11H, 6eH, 61H, 6dH
+    DB	65H
+
+$$SYMBOLS		ENDS
+$$TYPES		SEGMENT	BYTE PRIVATE USE16 'DEBTYP'
+    DB	8, 11H, 73H, 74H, 72H, 75H, 63H, 74H
+    DB	7, 11H, 75H, 6eH, 69H, 6fH, 6eH, 6
+    DB	11H, 65H, 6eH, 75H, 6dH, 3, 10H, 0
+    DB	3, 10H, 10H, 3, 10H, 1, 3, 10H
+    DB	11H, 8, 12H, 0, 5, 63H, 68H, 61H
+    DB	72H, 8, 12H, 0, 5, 63H, 68H, 61H
+    DB	72H, 0aH, 12H, 0, 7, 73H, 69H, 7aH
+    DB	65H, 5fH, 74H, 0bH, 12H, 0, 7, 77H
+    DB	63H, 68H, 61H, 72H, 5fH, 74H, 0bH, 12H
+    DB	0, 7, 77H, 63H, 68H, 61H, 72H, 5fH
+    DB	74H, 3, 10H, 30H, 4, 71H, 0dH, 0
+    DB	3, 41H, 0eH, 0cH, 12H, 0, 0fH, 6fH
+    DB	6eH, 65H, 78H, 69H, 74H, 5fH, 74H, 3
+    DB	41H, 8, 4, 20H, 0, 11H, 0dH, 12H
+    DB	0, 12H, 5fH, 5fH, 76H, 61H, 5fH, 6cH
+    DB	69H, 73H, 74H, 3, 10H, 3, 0aH, 12H
+    DB	0, 14H, 66H, 70H, 6fH, 73H, 5fH, 74H
+    DB	0aH, 12H, 0, 14H, 66H, 70H, 6fH, 73H
+    DB	5fH, 74H, 8, 12H, 0, 7, 75H, 69H
+    DB	6eH, 74H, 0aH, 12H, 0, 5, 75H, 69H
+    DB	6eH, 74H, 5fH, 38H, 0bH, 12H, 0, 7
+    DB	75H, 69H, 6eH, 74H, 5fH, 31H, 36H, 3
+    DB	10H, 13H, 0bH, 12H, 0, 1aH, 75H, 69H
+    DB	6eH, 74H, 5fH, 33H, 32H, 0eH, 12H, 0
+    DB	5, 75H, 6eH, 73H, 69H, 67H, 6eH, 65H
+    DB	64H, 5fH, 38H, 0fH, 12H, 0, 7, 75H
+    DB	6eH, 73H, 69H, 67H, 6eH, 65H, 64H, 5fH
+    DB	31H, 36H, 0fH, 12H, 0, 1aH, 75H, 6eH
+    DB	73H, 69H, 67H, 6eH, 65H, 64H, 5fH, 33H
+    DB	32H, 9, 12H, 0, 4, 69H, 6eH, 74H
+    DB	5fH, 38H, 0aH, 12H, 0, 6, 69H, 6eH
+    DB	74H, 5fH, 31H, 36H, 0aH, 12H, 0, 14H
+    DB	69H, 6eH, 74H, 5fH, 33H, 32H, 0cH, 12H
+    DB	0, 4, 73H, 69H, 67H, 6eH, 65H, 64H
+    DB	5fH, 38H, 0dH, 12H, 0, 6, 73H, 69H
+    DB	67H, 6eH, 65H, 64H, 5fH, 31H, 36H, 0dH
+    DB	12H, 0, 14H, 73H, 69H, 67H, 6eH, 65H
+    DB	64H, 5fH, 33H, 32H, 8, 12H, 0, 8
+    DB	62H, 6fH, 6fH, 6cH, 0dH, 12H, 0, 6
+    DB	70H, 74H, 72H, 64H, 69H, 66H, 66H, 5fH
+    DB	74H, 0fH, 12H, 0, 19H, 6eH, 61H, 6dH
+    DB	65H, 5fH, 68H, 61H, 6eH, 64H, 6cH, 65H
+    DB	0aH, 12H, 0, 5, 75H, 69H, 6eH, 74H
+    DB	5fH, 38H, 0eH, 12H, 0, 6, 64H, 69H
+    DB	72H, 65H, 63H, 74H, 5fH, 69H, 64H, 78H
+    DB	3, 41H, 5, 8, 60H, 8, 0, 12H
+    DB	0, 0, 0, 0dH, 61H, 11H, 5, 5fH
+    DB	74H, 6dH, 70H, 66H, 63H, 68H, 61H, 72H
+    DB	0dH, 61H, 10H, 5, 5fH, 75H, 6eH, 67H
+    DB	6fH, 74H, 74H, 65H, 6eH, 0cH, 61H, 0eH
+    DB	7, 5fH, 62H, 75H, 66H, 73H, 69H, 7aH
+    DB	65H, 0bH, 61H, 0cH, 6, 5fH, 68H, 61H
+    DB	6eH, 64H, 6cH, 65H, 9, 61H, 0aH, 7
+    DB	5fH, 66H, 6cH, 61H, 67H, 9, 61H, 6
+    DB	2aH, 5fH, 62H, 61H, 73H, 65H, 8, 61H
+    DB	4, 6, 5fH, 63H, 6eH, 74H, 8, 61H
+    DB	0, 2aH, 5fH, 70H, 74H, 72H, 0bH, 12H
+    DB	1, 2bH, 5fH, 5fH, 69H, 6fH, 62H, 75H
+    DB	66H, 8, 12H, 0, 2cH, 46H, 49H, 4cH
+    DB	45H, 3, 41H, 2dH, 4, 20H, 2, 2eH
+    DB	4, 20H, 2, 11H, 8, 60H, 2, 0
+    DB	18H, 0, 0, 0, 9, 61H, 0cH, 30H
+    DB	66H, 6eH, 61H, 6dH, 65H, 8, 61H, 0
+    DB	2fH, 66H, 69H, 6cH, 65H, 0dH, 12H, 0
+    DB	31H, 46H, 69H, 6cH, 65H, 5fH, 49H, 6eH
+    DB	66H, 6fH, 4, 20H, 0, 8, 8, 60H
+    DB	6, 0, 9, 0, 0, 0, 0aH, 61H
+    DB	8, 33H, 62H, 75H, 66H, 66H, 65H, 72H
+    DB	0cH, 64H, 7, 0, 1, 5, 69H, 6eH
+    DB	5fH, 72H, 65H, 63H, 0cH, 61H, 6, 18H
+    DB	63H, 68H, 65H, 63H, 6bH, 73H, 75H, 6dH
+    DB	0aH, 61H, 4, 0aH, 69H, 6eH, 5fH, 62H
+    DB	75H, 66H, 0aH, 61H, 2, 19H, 6cH, 65H
+    DB	6eH, 67H, 74H, 68H, 6, 61H, 0, 6
+    DB	66H, 68H, 0dH, 12H, 0, 34H, 4fH, 42H
+    DB	4aH, 5fH, 57H, 46H, 49H, 4cH, 45H, 3
+    DB	41H, 35H, 8, 60H, 2, 0, 5, 0
+    DB	0, 0, 0cH, 61H, 1, 36H, 66H, 69H
+    DB	6cH, 65H, 5fH, 6fH, 75H, 74H, 8, 61H
+    DB	0, 18H, 70H, 61H, 73H, 73H, 0eH, 12H
+    DB	0, 37H, 70H, 6fH, 62H, 6aH, 5fH, 73H
+    DB	74H, 61H, 74H, 65H, 5, 50H, 3, 0
+    DB	10H, 10H, 51H, 2, 4eH, 4fH, 5fH, 46H
+    DB	50H, 5fH, 41H, 4cH, 4cH, 4fH, 57H, 45H
+    DB	44H, 12H, 51H, 1, 4eH, 4fH, 5fH, 46H
+    DB	50H, 5fH, 45H, 4dH, 55H, 4cH, 41H, 54H
+    DB	49H, 4fH, 4eH, 12H, 51H, 0, 44H, 4fH
+    DB	5fH, 46H, 50H, 5fH, 45H, 4dH, 55H, 4cH
+    DB	41H, 54H, 49H, 4fH, 4eH, 7, 12H, 3
+    DB	39H, 66H, 70H, 65H, 8, 60H, 12H, 0
+    DB	21H, 0, 0, 0, 9, 61H, 20H, 8
+    DB	64H, 65H, 62H, 75H, 67H, 0fH, 61H, 1cH
+    DB	11H, 6dH, 6fH, 64H, 75H, 6cH, 65H, 5fH
+    DB	6eH, 61H, 6dH, 65H, 0cH, 61H, 18H, 11H
+    DB	74H, 65H, 78H, 74H, 5fH, 73H, 65H, 67H
+    DB	0cH, 61H, 14H, 11H, 64H, 61H, 74H, 61H
+    DB	5fH, 73H, 65H, 67H, 0eH, 61H, 10H, 11H
+    DB	63H, 6fH, 64H, 65H, 5fH, 63H, 6cH, 61H
+    DB	73H, 73H, 10H, 61H, 0cH, 11H, 62H, 75H
+    DB	69H, 6cH, 64H, 5fH, 74H, 61H, 72H, 67H
+    DB	65H, 74H, 11H, 61H, 0bH, 8, 77H, 61H
+    DB	72H, 6eH, 69H, 6eH, 67H, 5fH, 65H, 72H
+    DB	72H, 6fH, 72H, 11H, 61H, 0aH, 8, 77H
+    DB	61H, 72H, 6eH, 69H, 6eH, 67H, 5fH, 6cH
+    DB	65H, 76H, 65H, 6cH, 0fH, 61H, 9, 8
+    DB	65H, 72H, 72H, 6fH, 72H, 5fH, 6cH, 69H
+    DB	6dH, 69H, 74H, 11H, 61H, 8, 8, 77H
+    DB	61H, 72H, 6eH, 69H, 6eH, 67H, 5fH, 63H
+    DB	6fH, 75H, 6eH, 74H, 0fH, 61H, 7, 8
+    DB	65H, 72H, 72H, 6fH, 72H, 5fH, 63H, 6fH
+    DB	75H, 6eH, 74H, 12H, 61H, 6, 39H, 66H
+    DB	6cH, 6fH, 61H, 74H, 69H, 6eH, 67H, 5fH
+    DB	70H, 6fH, 69H, 6eH, 74H, 15H, 61H, 5
+    DB	8, 6eH, 61H, 6dH, 69H, 6eH, 67H, 5fH
+    DB	63H, 6fH, 6eH, 76H, 65H, 6eH, 74H, 69H
+    DB	6fH, 6eH, 0eH, 61H, 4, 8, 64H, 65H
+    DB	62H, 75H, 67H, 5fH, 66H, 6cH, 61H, 67H
+    DB	12H, 61H, 3, 8, 62H, 61H, 6eH, 6eH
+    DB	65H, 72H, 5fH, 70H, 72H, 69H, 6eH, 74H
+    DB	65H, 64H, 9, 61H, 2, 8, 71H, 75H
+    DB	69H, 65H, 74H, 0fH, 61H, 1, 8, 73H
+    DB	74H, 6fH, 70H, 5fH, 61H, 74H, 5fH, 65H
+    DB	6eH, 64H, 0eH, 61H, 0, 1fH, 73H, 69H
+    DB	67H, 6eH, 5fH, 76H, 61H, 6cH, 75H, 65H
+    DB	12H, 12H, 1, 3bH, 67H, 6cH, 6fH, 62H
+    DB	61H, 6cH, 5fH, 6fH, 70H, 74H, 69H, 6fH
+    DB	6eH, 73H, 12H, 12H, 0, 3cH, 67H, 6cH
+    DB	6fH, 62H, 61H, 6cH, 5fH, 6fH, 70H, 74H
+    DB	69H, 6fH, 6eH, 73H, 5, 70H, 6, 1
+    DB	11H, 5, 70H, 0dH, 1, 0dH, 3, 41H
+    DB	11H, 6, 71H, 0dH, 2, 6, 40H, 6
+    DB	71H, 6, 2, 6, 40H, 5, 71H, 0dH
+    DB	1, 0dH, 4, 20H, 4, 11H, 6, 70H
+    DB	0dH, 2, 11H, 6, 5, 21H, 6, 1
+    DB	8, 5, 21H, 6, 1, 8, 5, 21H
+    DB	3, 1, 8, 4, 20H, 4fH, 8, 5
+    DB	70H, 0dH, 1, 11H, 5, 50H, 30H, 2
+    DB	11H, 0aH, 52H, 2fH, 2, 54H, 5fH, 4eH
+    DB	55H, 4cH, 4cH, 9, 52H, 2eH, 2, 54H
+    DB	5fH, 58H, 4fH, 52H, 0bH, 52H, 2dH, 2
+    DB	54H, 5fH, 58H, 4cH, 41H, 54H, 42H, 0aH
+    DB	52H, 2cH, 2, 54H, 5fH, 58H, 4cH, 41H
+    DB	54H, 0aH, 52H, 2bH, 2, 54H, 5fH, 58H
+    DB	43H, 48H, 47H, 0aH, 52H, 2aH, 2, 54H
+    DB	5fH, 58H, 41H, 44H, 44H, 0bH, 52H, 29H
+    DB	2, 54H, 5fH, 57H, 52H, 4dH, 53H, 52H
+    DB	0aH, 52H, 28H, 2, 54H, 5fH, 57H, 4fH
+    DB	52H, 44H, 0bH, 52H, 27H, 2, 54H, 5fH
+    DB	57H, 49H, 44H, 54H, 48H, 0cH, 52H, 26H
+    DB	2, 54H, 5fH, 57H, 42H, 49H, 4eH, 56H
+    DB	44H, 0eH, 52H, 25H, 2, 54H, 5fH, 57H
+    DB	41H, 54H, 43H, 4fH, 4dH, 5fH, 43H, 0aH
+    DB	52H, 24H, 2, 54H, 5fH, 57H, 41H, 49H
+    DB	54H, 0aH, 52H, 23H, 2, 54H, 5fH, 56H
+    DB	45H, 52H, 57H, 0aH, 52H, 22H, 2, 54H
+    DB	5fH, 56H, 45H, 52H, 52H, 0cH, 52H, 21H
+    DB	2, 54H, 5fH, 56H, 41H, 52H, 41H, 52H
+    DB	47H, 0aH, 52H, 20H, 2, 54H, 5fH, 55H
+    DB	53H, 45H, 53H, 0bH, 52H, 1fH, 2, 54H
+    DB	5fH, 55H, 53H, 45H, 33H, 32H, 0bH, 52H
+    DB	1eH, 2, 54H, 5fH, 55H, 53H, 45H, 31H
+    DB	36H, 0bH, 52H, 1dH, 2, 54H, 5fH, 55H
+    DB	4eH, 49H, 4fH, 4eH, 0dH, 52H, 1cH, 2
+    DB	54H, 5fH, 54H, 59H, 50H, 45H, 44H, 45H
+    DB	46H, 9, 52H, 1bH, 2, 54H, 5fH, 54H
+    DB	52H, 37H, 9, 52H, 1aH, 2, 54H, 5fH
+    DB	54H, 52H, 36H, 9, 52H, 19H, 2, 54H
+    DB	5fH, 54H, 52H, 35H, 9, 52H, 18H, 2
+    DB	54H, 5fH, 54H, 52H, 34H, 9, 52H, 17H
+    DB	2, 54H, 5fH, 54H, 52H, 33H, 0bH, 52H
+    DB	16H, 2, 54H, 5fH, 54H, 49H, 54H, 4cH
+    DB	45H, 0aH, 52H, 15H, 2, 54H, 5fH, 54H
+    DB	49H, 4eH, 59H, 0aH, 52H, 14H, 2, 54H
+    DB	5fH, 54H, 48H, 49H, 53H, 0dH, 52H, 13H
+    DB	2, 54H, 5fH, 54H, 45H, 58H, 54H, 45H
+    DB	51H, 55H, 0aH, 52H, 12H, 2, 54H, 5fH
+    DB	54H, 45H, 53H, 54H, 0bH, 52H, 11H, 2
+    DB	54H, 5fH, 54H, 42H, 59H, 54H, 45H, 0dH
+    DB	52H, 10H, 2, 54H, 5fH, 53H, 59H, 53H
+    DB	43H, 41H, 4cH, 4cH, 0bH, 52H, 0fH, 2
+    DB	54H, 5fH, 53H, 57H, 4fH, 52H, 44H, 0cH
+    DB	52H, 0eH, 2, 54H, 5fH, 53H, 55H, 42H
+    DB	54H, 54H, 4cH, 0eH, 52H, 0dH, 2, 54H
+    DB	5fH, 53H, 55H, 42H, 54H, 49H, 54H, 4cH
+    DB	45H, 9, 52H, 0cH, 2, 54H, 5fH, 53H
+    DB	55H, 42H, 0cH, 52H, 0bH, 2, 54H, 5fH
+    DB	53H, 54H, 52H, 55H, 43H, 54H, 0bH, 52H
+    DB	0aH, 2, 54H, 5fH, 53H, 54H, 52H, 55H
+    DB	43H, 9, 52H, 9, 2, 54H, 5fH, 53H
+    DB	54H, 52H, 0bH, 52H, 8, 2, 54H, 5fH
+    DB	53H, 54H, 4fH, 53H, 57H, 0bH, 52H, 7
+    DB	2, 54H, 5fH, 53H, 54H, 4fH, 53H, 44H
+    DB	0bH, 52H, 6, 2, 54H, 5fH, 53H, 54H
+    DB	4fH, 53H, 42H, 0aH, 52H, 5, 2, 54H
+    DB	5fH, 53H, 54H, 4fH, 53H, 9, 52H, 4
+    DB	2, 54H, 5fH, 53H, 54H, 49H, 0dH, 52H
+    DB	3, 2, 54H, 5fH, 53H, 54H, 44H, 43H
+    DB	41H, 4cH, 4cH, 9, 52H, 2, 2, 54H
+    DB	5fH, 53H, 54H, 44H, 9, 52H, 1, 2
+    DB	54H, 5fH, 53H, 54H, 43H, 8, 52H, 0
+    DB	2, 54H, 5fH, 53H, 54H, 8, 52H, 0ffH
+    DB	1, 54H, 5fH, 53H, 53H, 8, 52H, 0feH
+    DB	1, 54H, 5fH, 53H, 50H, 0aH, 52H, 0fdH
+    DB	1, 54H, 5fH, 53H, 4dH, 53H, 57H, 0bH
+    DB	52H, 0fcH, 1, 54H, 5fH, 53H, 4dH, 41H
+    DB	4cH, 4cH, 0aH, 52H, 0fbH, 1, 54H, 5fH
+    DB	53H, 4cH, 44H, 54H, 0cH, 52H, 0faH, 1
+    DB	54H, 5fH, 53H, 49H, 5aH, 45H, 4fH, 46H
+    DB	0aH, 52H, 0f9H, 1, 54H, 5fH, 53H, 49H
+    DB	5aH, 45H, 0aH, 52H, 0f8H, 1, 54H, 5fH
+    DB	53H, 49H, 44H, 54H, 8, 52H, 0f7H, 1
+    DB	54H, 5fH, 53H, 49H, 0aH, 52H, 0f6H, 1
+    DB	54H, 5fH, 53H, 48H, 52H, 44H, 9, 52H
+    DB	0f5H, 1, 54H, 5fH, 53H, 48H, 52H, 0bH
+    DB	52H, 0f4H, 1, 54H, 5fH, 53H, 48H, 4fH
+    DB	52H, 54H, 0aH, 52H, 0f3H, 1, 54H, 5fH
+    DB	53H, 48H, 4cH, 44H, 9, 52H, 0f2H, 1
+    DB	54H, 5fH, 53H, 48H, 4cH, 0aH, 52H, 0f1H
+    DB	1, 54H, 5fH, 53H, 47H, 44H, 54H, 0aH
+    DB	52H, 0f0H, 1, 54H, 5fH, 53H, 45H, 54H
+    DB	5aH, 0aH, 52H, 0efH, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 53H, 0bH, 52H, 0eeH, 1, 54H
+    DB	5fH, 53H, 45H, 54H, 50H, 4fH, 0bH, 52H
+    DB	0edH, 1, 54H, 5fH, 53H, 45H, 54H, 50H
+    DB	45H, 0aH, 52H, 0ecH, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 50H, 0aH, 52H, 0ebH, 1, 54H
+    DB	5fH, 53H, 45H, 54H, 4fH, 0bH, 52H, 0eaH
+    DB	1, 54H, 5fH, 53H, 45H, 54H, 4eH, 5aH
+    DB	0bH, 52H, 0e9H, 1, 54H, 5fH, 53H, 45H
+    DB	54H, 4eH, 53H, 0bH, 52H, 0e8H, 1, 54H
+    DB	5fH, 53H, 45H, 54H, 4eH, 50H, 0bH, 52H
+    DB	0e7H, 1, 54H, 5fH, 53H, 45H, 54H, 4eH
+    DB	4fH, 0cH, 52H, 0e6H, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 4eH, 4cH, 45H, 0bH, 52H, 0e5H
+    DB	1, 54H, 5fH, 53H, 45H, 54H, 4eH, 4cH
+    DB	0cH, 52H, 0e4H, 1, 54H, 5fH, 53H, 45H
+    DB	54H, 4eH, 47H, 45H, 0bH, 52H, 0e3H, 1
+    DB	54H, 5fH, 53H, 45H, 54H, 4eH, 47H, 0bH
+    DB	52H, 0e2H, 1, 54H, 5fH, 53H, 45H, 54H
+    DB	4eH, 45H, 0bH, 52H, 0e1H, 1, 54H, 5fH
+    DB	53H, 45H, 54H, 4eH, 43H, 0cH, 52H, 0e0H
+    DB	1, 54H, 5fH, 53H, 45H, 54H, 4eH, 42H
+    DB	45H, 0bH, 52H, 0dfH, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 4eH, 42H, 0cH, 52H, 0deH, 1
+    DB	54H, 5fH, 53H, 45H, 54H, 4eH, 41H, 45H
+    DB	0bH, 52H, 0ddH, 1, 54H, 5fH, 53H, 45H
+    DB	54H, 4eH, 41H, 0bH, 52H, 0dcH, 1, 54H
+    DB	5fH, 53H, 45H, 54H, 4cH, 45H, 0aH, 52H
+    DB	0dbH, 1, 54H, 5fH, 53H, 45H, 54H, 4cH
+    DB	0bH, 52H, 0daH, 1, 54H, 5fH, 53H, 45H
+    DB	54H, 47H, 45H, 0aH, 52H, 0d9H, 1, 54H
+    DB	5fH, 53H, 45H, 54H, 47H, 0aH, 52H, 0d8H
+    DB	1, 54H, 5fH, 53H, 45H, 54H, 45H, 0aH
+    DB	52H, 0d7H, 1, 54H, 5fH, 53H, 45H, 54H
+    DB	43H, 0bH, 52H, 0d6H, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 42H, 45H, 0aH, 52H, 0d5H, 1
+    DB	54H, 5fH, 53H, 45H, 54H, 42H, 0bH, 52H
+    DB	0d4H, 1, 54H, 5fH, 53H, 45H, 54H, 41H
+    DB	45H, 0aH, 52H, 0d3H, 1, 54H, 5fH, 53H
+    DB	45H, 54H, 41H, 0dH, 52H, 0d2H, 1, 54H
+    DB	5fH, 53H, 45H, 47H, 4dH, 45H, 4eH, 54H
+    DB	0aH, 52H, 0d1H, 1, 54H, 5fH, 53H, 45H
+    DB	47H, 32H, 0cH, 52H, 0d0H, 1, 54H, 5fH
+    DB	53H, 44H, 57H, 4fH, 52H, 44H, 0bH, 52H
+    DB	0cfH, 1, 54H, 5fH, 53H, 43H, 41H, 53H
+    DB	57H, 0bH, 52H, 0ceH, 1, 54H, 5fH, 53H
+    DB	43H, 41H, 53H, 44H, 0bH, 52H, 0cdH, 1
+    DB	54H, 5fH, 53H, 43H, 41H, 53H, 42H, 0aH
+    DB	52H, 0ccH, 1, 54H, 5fH, 53H, 43H, 41H
+    DB	53H, 0bH, 52H, 0cbH, 1, 54H, 5fH, 53H
+    DB	42H, 59H, 54H, 45H, 9, 52H, 0caH, 1
+    DB	54H, 5fH, 53H, 42H, 42H, 9, 52H, 0c9H
+    DB	1, 54H, 5fH, 53H, 41H, 52H, 9, 52H
+    DB	0c8H, 1, 54H, 5fH, 53H, 41H, 4cH, 0aH
+    DB	52H, 0c7H, 1, 54H, 5fH, 53H, 41H, 48H
+    DB	46H, 9, 52H, 0c6H, 1, 54H, 5fH, 52H
+    DB	53H, 4dH, 9, 52H, 0c5H, 1, 54H, 5fH
+    DB	52H, 4fH, 52H, 9, 52H, 0c4H, 1, 54H
+    DB	5fH, 52H, 4fH, 4cH, 0aH, 52H, 0c3H, 1
+    DB	54H, 5fH, 52H, 45H, 54H, 4eH, 0aH, 52H
+    DB	0c2H, 1, 54H, 5fH, 52H, 45H, 54H, 46H
+    DB	9, 52H, 0c1H, 1, 54H, 5fH, 52H, 45H
+    DB	54H, 0aH, 52H, 0c0H, 1, 54H, 5fH, 52H
+    DB	45H, 50H, 5aH, 0bH, 52H, 0bfH, 1, 54H
+    DB	5fH, 52H, 45H, 50H, 4eH, 5aH, 0bH, 52H
+    DB	0beH, 1, 54H, 5fH, 52H, 45H, 50H, 4eH
+    DB	45H, 0aH, 52H, 0bdH, 1, 54H, 5fH, 52H
+    DB	45H, 50H, 45H, 9, 52H, 0bcH, 1, 54H
+    DB	5fH, 52H, 45H, 50H, 0cH, 52H, 0bbH, 1
+    DB	54H, 5fH, 52H, 45H, 43H, 4fH, 52H, 44H
+    DB	0eH, 52H, 0baH, 1, 54H, 5fH, 52H, 45H
+    DB	41H, 44H, 4fH, 4eH, 4cH, 59H, 0bH, 52H
+    DB	0b9H, 1, 54H, 5fH, 52H, 44H, 54H, 53H
+    DB	43H, 0bH, 52H, 0b8H, 1, 54H, 5fH, 52H
+    DB	44H, 4dH, 53H, 52H, 9, 52H, 0b7H, 1
+    DB	54H, 5fH, 52H, 43H, 52H, 9, 52H, 0b6H
+    DB	1, 54H, 5fH, 52H, 43H, 4cH, 0bH, 52H
+    DB	0b5H, 1, 54H, 5fH, 51H, 57H, 4fH, 52H
+    DB	44H, 0bH, 52H, 0b4H, 1, 54H, 5fH, 50H
+    DB	57H, 4fH, 52H, 44H, 0cH, 52H, 0b3H, 1
+    DB	54H, 5fH, 50H, 55H, 53H, 48H, 46H, 44H
+    DB	0bH, 52H, 0b2H, 1, 54H, 5fH, 50H, 55H
+    DB	53H, 48H, 46H, 11H, 52H, 0b1H, 1, 54H
+    DB	5fH, 50H, 55H, 53H, 48H, 43H, 4fH, 4eH
+    DB	54H, 45H, 58H, 54H, 0cH, 52H, 0b0H, 1
+    DB	54H, 5fH, 50H, 55H, 53H, 48H, 41H, 44H
+    DB	0bH, 52H, 0afH, 1, 54H, 5fH, 50H, 55H
+    DB	53H, 48H, 41H, 0aH, 52H, 0aeH, 1, 54H
+    DB	5fH, 50H, 55H, 53H, 48H, 0bH, 52H, 0adH
+    DB	1, 54H, 5fH, 50H, 55H, 52H, 47H, 45H
+    DB	0cH, 52H, 0acH, 1, 54H, 5fH, 50H, 55H
+    DB	42H, 4cH, 49H, 43H, 9, 52H, 0abH, 1
+    DB	54H, 5fH, 50H, 54H, 52H, 0bH, 52H, 0aaH
+    DB	1, 54H, 5fH, 50H, 52H, 4fH, 54H, 4fH
+    DB	0aH, 52H, 0a9H, 1, 54H, 5fH, 50H, 52H
+    DB	4fH, 43H, 0dH, 52H, 0a8H, 1, 54H, 5fH
+    DB	50H, 52H, 49H, 56H, 41H, 54H, 45H, 0bH
+    DB	52H, 0a7H, 1, 54H, 5fH, 50H, 4fH, 50H
+    DB	46H, 44H, 0aH, 52H, 0a6H, 1, 54H, 5fH
+    DB	50H, 4fH, 50H, 46H, 10H, 52H, 0a5H, 1
+    DB	54H, 5fH, 50H, 4fH, 50H, 43H, 4fH, 4eH
+    DB	54H, 45H, 58H, 54H, 0bH, 52H, 0a4H, 1
+    DB	54H, 5fH, 50H, 4fH, 50H, 41H, 44H, 0aH
+    DB	52H, 0a3H, 1, 54H, 5fH, 50H, 4fH, 50H
+    DB	41H, 9, 52H, 0a2H, 1, 54H, 5fH, 50H
+    DB	4fH, 50H, 0cH, 52H, 0a1H, 1, 54H, 5fH
+    DB	50H, 41H, 53H, 43H, 41H, 4cH, 0aH, 52H
+    DB	0a0H, 1, 54H, 5fH, 50H, 41H, 52H, 41H
+    DB	0aH, 52H, 9fH, 1, 54H, 5fH, 50H, 41H
+    DB	47H, 45H, 0bH, 52H, 9eH, 1, 54H, 5fH
+    DB	4fH, 55H, 54H, 53H, 57H, 0bH, 52H, 9dH
+    DB	1, 54H, 5fH, 4fH, 55H, 54H, 53H, 44H
+    DB	0bH, 52H, 9cH, 1, 54H, 5fH, 4fH, 55H
+    DB	54H, 53H, 42H, 0aH, 52H, 9bH, 1, 54H
+    DB	5fH, 4fH, 55H, 54H, 53H, 9, 52H, 9aH
+    DB	1, 54H, 5fH, 4fH, 55H, 54H, 0cH, 52H
+    DB	99H, 1, 54H, 5fH, 4fH, 53H, 5fH, 4fH
+    DB	53H, 32H, 0cH, 52H, 98H, 1, 54H, 5fH
+    DB	4fH, 53H, 5fH, 44H, 4fH, 53H, 9, 52H
+    DB	97H, 1, 54H, 5fH, 4fH, 52H, 47H, 8
+    DB	52H, 96H, 1, 54H, 5fH, 4fH, 52H, 0cH
+    DB	52H, 95H, 1, 54H, 5fH, 4fH, 50H, 54H
+    DB	49H, 4fH, 4eH, 0cH, 52H, 94H, 1, 54H
+    DB	5fH, 4fH, 50H, 41H, 54H, 54H, 52H, 0cH
+    DB	52H, 93H, 1, 54H, 5fH, 4fH, 46H, 46H
+    DB	53H, 45H, 54H, 0dH, 52H, 92H, 1, 54H
+    DB	5fH, 4eH, 4fH, 54H, 48H, 49H, 4eH, 47H
+    DB	9, 52H, 91H, 1, 54H, 5fH, 4eH, 4fH
+    DB	54H, 9, 52H, 90H, 1, 54H, 5fH, 4eH
+    DB	4fH, 50H, 0aH, 52H, 8fH, 1, 54H, 5fH
+    DB	4eH, 4fH, 38H, 37H, 9, 52H, 8eH, 1
+    DB	54H, 5fH, 4eH, 45H, 47H, 0fH, 52H, 8dH
+    DB	1, 54H, 5fH, 4eH, 45H, 41H, 52H, 53H
+    DB	54H, 41H, 43H, 4bH, 0aH, 52H, 8cH, 1
+    DB	54H, 5fH, 4eH, 45H, 41H, 52H, 8, 52H
+    DB	8bH, 1, 54H, 5fH, 4eH, 45H, 0aH, 52H
+    DB	8aH, 1, 54H, 5fH, 4eH, 41H, 4dH, 45H
+    DB	9, 52H, 89H, 1, 54H, 5fH, 4dH, 55H
+    DB	4cH, 0bH, 52H, 88H, 1, 54H, 5fH, 4dH
+    DB	4fH, 56H, 5aH, 58H, 0bH, 52H, 87H, 1
+    DB	54H, 5fH, 4dH, 4fH, 56H, 53H, 58H, 0bH
+    DB	52H, 86H, 1, 54H, 5fH, 4dH, 4fH, 56H
+    DB	53H, 57H, 0bH, 52H, 85H, 1, 54H, 5fH
+    DB	4dH, 4fH, 56H, 53H, 44H, 0bH, 52H, 84H
+    DB	1, 54H, 5fH, 4dH, 4fH, 56H, 53H, 42H
+    DB	0aH, 52H, 83H, 1, 54H, 5fH, 4dH, 4fH
+    DB	56H, 53H, 9, 52H, 82H, 1, 54H, 5fH
+    DB	4dH, 4fH, 56H, 9, 52H, 81H, 1, 54H
+    DB	5fH, 4dH, 4fH, 44H, 0cH, 52H, 80H, 1
+    DB	54H, 5fH, 4dH, 45H, 4dH, 4fH, 52H, 59H
+    DB	0cH, 52H, 7fH, 1, 54H, 5fH, 4dH, 45H
+    DB	44H, 49H, 55H, 4dH, 0aH, 52H, 7eH, 1
+    DB	54H, 5fH, 4dH, 41H, 53H, 4bH, 0bH, 52H
+    DB	7dH, 1, 54H, 5fH, 4dH, 41H, 43H, 52H
+    DB	4fH, 9, 52H, 7cH, 1, 54H, 5fH, 4cH
+    DB	54H, 52H, 8, 52H, 7bH, 1, 54H, 5fH
+    DB	4cH, 54H, 9, 52H, 7aH, 1, 54H, 5fH
+    DB	4cH, 53H, 53H, 9, 52H, 79H, 1, 54H
+    DB	5fH, 4cH, 53H, 4cH, 0eH, 52H, 78H, 1
+    DB	54H, 5fH, 4cH, 52H, 4fH, 46H, 46H, 53H
+    DB	45H, 54H, 0dH, 52H, 77H, 1, 54H, 5fH
+    DB	4cH, 4fH, 57H, 57H, 4fH, 52H, 44H, 9
+    DB	52H, 76H, 1, 54H, 5fH, 4cH, 4fH, 57H
+    DB	0bH, 52H, 75H, 1, 54H, 5fH, 4cH, 4fH
+    DB	4fH, 50H, 5aH, 0cH, 52H, 74H, 1, 54H
+    DB	5fH, 4cH, 4fH, 4fH, 50H, 4eH, 5aH, 0cH
+    DB	52H, 73H, 1, 54H, 5fH, 4cH, 4fH, 4fH
+    DB	50H, 4eH, 45H, 0bH, 52H, 72H, 1, 54H
+    DB	5fH, 4cH, 4fH, 4fH, 50H, 45H, 0aH, 52H
+    DB	71H, 1, 54H, 5fH, 4cH, 4fH, 4fH, 50H
+    DB	0bH, 52H, 70H, 1, 54H, 5fH, 4cH, 4fH
+    DB	44H, 53H, 57H, 0bH, 52H, 6fH, 1, 54H
+    DB	5fH, 4cH, 4fH, 44H, 53H, 44H, 0bH, 52H
+    DB	6eH, 1, 54H, 5fH, 4cH, 4fH, 44H, 53H
+    DB	42H, 0aH, 52H, 6dH, 1, 54H, 5fH, 4cH
+    DB	4fH, 44H, 53H, 0aH, 52H, 6cH, 1, 54H
+    DB	5fH, 4cH, 4fH, 43H, 4bH, 0bH, 52H, 6bH
+    DB	1, 54H, 5fH, 4cH, 4fH, 43H, 41H, 4cH
+    DB	0aH, 52H, 6aH, 1, 54H, 5fH, 4cH, 4dH
+    DB	53H, 57H, 0aH, 52H, 69H, 1, 54H, 5fH
+    DB	4cH, 4cH, 44H, 54H, 0aH, 52H, 68H, 1
+    DB	54H, 5fH, 4cH, 49H, 44H, 54H, 9, 52H
+    DB	67H, 1, 54H, 5fH, 4cH, 47H, 53H, 0aH
+    DB	52H, 66H, 1, 54H, 5fH, 4cH, 47H, 44H
+    DB	54H, 9, 52H, 65H, 1, 54H, 5fH, 4cH
+    DB	46H, 53H, 9, 52H, 64H, 1, 54H, 5fH
+    DB	4cH, 45H, 53H, 0eH, 52H, 63H, 1, 54H
+    DB	5fH, 4cH, 45H, 4eH, 47H, 54H, 48H, 4fH
+    DB	46H, 0cH, 52H, 62H, 1, 54H, 5fH, 4cH
+    DB	45H, 4eH, 47H, 54H, 48H, 0bH, 52H, 61H
+    DB	1, 54H, 5fH, 4cH, 45H, 41H, 56H, 45H
+    DB	9, 52H, 60H, 1, 54H, 5fH, 4cH, 45H
+    DB	41H, 8, 52H, 5fH, 1, 54H, 5fH, 4cH
+    DB	45H, 9, 52H, 5eH, 1, 54H, 5fH, 4cH
+    DB	44H, 53H, 0bH, 52H, 5dH, 1, 54H, 5fH
+    DB	4cH, 41H, 52H, 47H, 45H, 9, 52H, 5cH
+    DB	1, 54H, 5fH, 4cH, 41H, 52H, 0aH, 52H
+    DB	5bH, 1, 54H, 5fH, 4cH, 41H, 48H, 46H
+    DB	0bH, 52H, 5aH, 1, 54H, 5fH, 4cH, 41H
+    DB	42H, 45H, 4cH, 8, 52H, 59H, 1, 54H
+    DB	5fH, 4aH, 5aH, 8, 52H, 58H, 1, 54H
+    DB	5fH, 4aH, 53H, 9, 52H, 57H, 1, 54H
+    DB	5fH, 4aH, 50H, 4fH, 9, 52H, 56H, 1
+    DB	54H, 5fH, 4aH, 50H, 45H, 8, 52H, 55H
+    DB	1, 54H, 5fH, 4aH, 50H, 8, 52H, 54H
+    DB	1, 54H, 5fH, 4aH, 4fH, 9, 52H, 53H
+    DB	1, 54H, 5fH, 4aH, 4eH, 5aH, 9, 52H
+    DB	52H, 1, 54H, 5fH, 4aH, 4eH, 53H, 9
+    DB	52H, 51H, 1, 54H, 5fH, 4aH, 4eH, 50H
+    DB	9, 52H, 50H, 1, 54H, 5fH, 4aH, 4eH
+    DB	4fH, 0aH, 52H, 4fH, 1, 54H, 5fH, 4aH
+    DB	4eH, 4cH, 45H, 9, 52H, 4eH, 1, 54H
+    DB	5fH, 4aH, 4eH, 4cH, 0aH, 52H, 4dH, 1
+    DB	54H, 5fH, 4aH, 4eH, 47H, 45H, 9, 52H
+    DB	4cH, 1, 54H, 5fH, 4aH, 4eH, 47H, 9
+    DB	52H, 4bH, 1, 54H, 5fH, 4aH, 4eH, 45H
+    DB	9, 52H, 4aH, 1, 54H, 5fH, 4aH, 4eH
+    DB	43H, 0aH, 52H, 49H, 1, 54H, 5fH, 4aH
+    DB	4eH, 42H, 45H, 9, 52H, 48H, 1, 54H
+    DB	5fH, 4aH, 4eH, 42H, 0aH, 52H, 47H, 1
+    DB	54H, 5fH, 4aH, 4eH, 41H, 45H, 9, 52H
+    DB	46H, 1, 54H, 5fH, 4aH, 4eH, 41H, 0aH
+    DB	52H, 45H, 1, 54H, 5fH, 4aH, 4dH, 50H
+    DB	46H, 9, 52H, 44H, 1, 54H, 5fH, 4aH
+    DB	4dH, 50H, 9, 52H, 43H, 1, 54H, 5fH
+    DB	4aH, 4cH, 45H, 8, 52H, 42H, 1, 54H
+    DB	5fH, 4aH, 4cH, 9, 52H, 41H, 1, 54H
+    DB	5fH, 4aH, 47H, 45H, 8, 52H, 40H, 1
+    DB	54H, 5fH, 4aH, 47H, 0bH, 52H, 3fH, 1
+    DB	54H, 5fH, 4aH, 45H, 43H, 58H, 5aH, 8
+    DB	52H, 3eH, 1, 54H, 5fH, 4aH, 45H, 0aH
+    DB	52H, 3dH, 1, 54H, 5fH, 4aH, 43H, 58H
+    DB	5aH, 8, 52H, 3cH, 1, 54H, 5fH, 4aH
+    DB	43H, 9, 52H, 3bH, 1, 54H, 5fH, 4aH
+    DB	42H, 45H, 8, 52H, 3aH, 1, 54H, 5fH
+    DB	4aH, 42H, 9, 52H, 39H, 1, 54H, 5fH
+    DB	4aH, 41H, 45H, 8, 52H, 38H, 1, 54H
+    DB	5fH, 4aH, 41H, 9, 52H, 37H, 1, 54H
+    DB	5fH, 49H, 52H, 50H, 0bH, 52H, 36H, 1
+    DB	54H, 5fH, 49H, 52H, 45H, 54H, 44H, 0aH
+    DB	52H, 35H, 1, 54H, 5fH, 49H, 52H, 45H
+    DB	54H, 0cH, 52H, 34H, 1, 54H, 5fH, 49H
+    DB	4eH, 56H, 4fH, 4bH, 45H, 0cH, 52H, 33H
+    DB	1, 54H, 5fH, 49H, 4eH, 56H, 4cH, 50H
+    DB	47H, 0aH, 52H, 32H, 1, 54H, 5fH, 49H
+    DB	4eH, 56H, 44H, 0aH, 52H, 31H, 1, 54H
+    DB	5fH, 49H, 4eH, 54H, 4fH, 9, 52H, 30H
+    DB	1, 54H, 5fH, 49H, 4eH, 54H, 0aH, 52H
+    DB	2fH, 1, 54H, 5fH, 49H, 4eH, 53H, 57H
+    DB	0aH, 52H, 2eH, 1, 54H, 5fH, 49H, 4eH
+    DB	53H, 44H, 0aH, 52H, 2dH, 1, 54H, 5fH
+    DB	49H, 4eH, 53H, 42H, 0aH, 52H, 2cH, 1
+    DB	54H, 5fH, 49H, 4eH, 53H, 32H, 10H, 52H
+    DB	2bH, 1, 54H, 5fH, 49H, 4eH, 43H, 4cH
+    DB	55H, 44H, 45H, 4cH, 49H, 42H, 0dH, 52H
+    DB	2aH, 1, 54H, 5fH, 49H, 4eH, 43H, 4cH
+    DB	55H, 44H, 45H, 9, 52H, 29H, 1, 54H
+    DB	5fH, 49H, 4eH, 43H, 8, 52H, 28H, 1
+    DB	54H, 5fH, 49H, 4eH, 0aH, 52H, 27H, 1
+    DB	54H, 5fH, 49H, 4dH, 55H, 4cH, 0cH, 52H
+    DB	26H, 1, 54H, 5fH, 49H, 47H, 4eH, 4fH
+    DB	52H, 45H, 0cH, 52H, 25H, 1, 54H, 5fH
+    DB	49H, 46H, 4eH, 44H, 45H, 46H, 0aH, 52H
+    DB	24H, 1, 54H, 5fH, 49H, 46H, 4eH, 42H
+    DB	0cH, 52H, 23H, 1, 54H, 5fH, 49H, 46H
+    DB	49H, 44H, 4eH, 49H, 0bH, 52H, 22H, 1
+    DB	54H, 5fH, 49H, 46H, 49H, 44H, 4eH, 9
+    DB	52H, 21H, 1, 54H, 5fH, 49H, 46H, 45H
+    DB	0cH, 52H, 20H, 1, 54H, 5fH, 49H, 46H
+    DB	44H, 49H, 46H, 49H, 0bH, 52H, 1fH, 1
+    DB	54H, 5fH, 49H, 46H, 44H, 49H, 46H, 0bH
+    DB	52H, 1eH, 1, 54H, 5fH, 49H, 46H, 44H
+    DB	45H, 46H, 9, 52H, 1dH, 1, 54H, 5fH
+    DB	49H, 46H, 42H, 8, 52H, 1cH, 1, 54H
+    DB	5fH, 49H, 46H, 0aH, 52H, 1bH, 1, 54H
+    DB	5fH, 49H, 44H, 49H, 56H, 0aH, 52H, 1aH
+    DB	1, 54H, 5fH, 48H, 55H, 47H, 45H, 9
+    DB	52H, 19H, 1, 54H, 5fH, 48H, 4cH, 54H
+    DB	0eH, 52H, 18H, 1, 54H, 5fH, 48H, 49H
+    DB	47H, 48H, 57H, 4fH, 52H, 44H, 0aH, 52H
+    DB	17H, 1, 54H, 5fH, 48H, 49H, 47H, 48H
+    DB	8, 52H, 16H, 1, 54H, 5fH, 47H, 54H
+    DB	8, 52H, 15H, 1, 54H, 5fH, 47H, 53H
+    DB	0bH, 52H, 14H, 1, 54H, 5fH, 47H, 52H
+    DB	4fH, 55H, 50H, 0cH, 52H, 13H, 1, 54H
+    DB	5fH, 47H, 4cH, 4fH, 42H, 41H, 4cH, 8
+    DB	52H, 12H, 1, 54H, 5fH, 47H, 45H, 0dH
+    DB	52H, 11H, 1, 54H, 5fH, 46H, 59H, 4cH
+    DB	32H, 58H, 50H, 31H, 0bH, 52H, 10H, 1
+    DB	54H, 5fH, 46H, 59H, 4cH, 32H, 58H, 0dH
+    DB	52H, 0fH, 1, 54H, 5fH, 46H, 58H, 54H
+    DB	52H, 41H, 43H, 54H, 0aH, 52H, 0eH, 1
+    DB	54H, 5fH, 46H, 58H, 43H, 48H, 0aH, 52H
+    DB	0dH, 1, 54H, 5fH, 46H, 58H, 41H, 4dH
+    DB	0bH, 52H, 0cH, 1, 54H, 5fH, 46H, 57H
+    DB	4fH, 52H, 44H, 0bH, 52H, 0bH, 1, 54H
+    DB	5fH, 46H, 57H, 41H, 49H, 54H, 0dH, 52H
+    DB	0aH, 1, 54H, 5fH, 46H, 55H, 43H, 4fH
+    DB	4dH, 50H, 50H, 0cH, 52H, 9, 1, 54H
+    DB	5fH, 46H, 55H, 43H, 4fH, 4dH, 50H, 0bH
+    DB	52H, 8, 1, 54H, 5fH, 46H, 55H, 43H
+    DB	4fH, 4dH, 0aH, 52H, 7, 1, 54H, 5fH
+    DB	46H, 54H, 53H, 54H, 0cH, 52H, 6, 1
+    DB	54H, 5fH, 46H, 53H, 55H, 42H, 52H, 50H
+    DB	0bH, 52H, 5, 1, 54H, 5fH, 46H, 53H
+    DB	55H, 42H, 52H, 0bH, 52H, 4, 1, 54H
+    DB	5fH, 46H, 53H, 55H, 42H, 50H, 0aH, 52H
+    DB	3, 1, 54H, 5fH, 46H, 53H, 55H, 42H
+    DB	0bH, 52H, 2, 1, 54H, 5fH, 46H, 53H
+    DB	54H, 53H, 57H, 0aH, 52H, 1, 1, 54H
+    DB	5fH, 46H, 53H, 54H, 50H, 0dH, 52H, 0
+    DB	1, 54H, 5fH, 46H, 53H, 54H, 45H, 4eH
+    DB	56H, 57H, 0dH, 52H, 0ffH, 0, 54H, 5fH
+    DB	46H, 53H, 54H, 45H, 4eH, 56H, 44H, 0cH
+    DB	52H, 0feH, 0, 54H, 5fH, 46H, 53H, 54H
+    DB	45H, 4eH, 56H, 0bH, 52H, 0fdH, 0, 54H
+    DB	5fH, 46H, 53H, 54H, 43H, 57H, 9, 52H
+    DB	0fcH, 0, 54H, 5fH, 46H, 53H, 54H, 0bH
+    DB	52H, 0fbH, 0, 54H, 5fH, 46H, 53H, 51H
+    DB	52H, 54H, 0dH, 52H, 0faH, 0, 54H, 5fH
+    DB	46H, 53H, 49H, 4eH, 43H, 4fH, 53H, 0aH
+    DB	52H, 0f9H, 0, 54H, 5fH, 46H, 53H, 49H
+    DB	4eH, 0cH, 52H, 0f8H, 0, 54H, 5fH, 46H
+    DB	53H, 45H, 54H, 50H, 4dH, 0cH, 52H, 0f7H
+    DB	0, 54H, 5fH, 46H, 53H, 43H, 41H, 4cH
+    DB	45H, 0cH, 52H, 0f6H, 0, 54H, 5fH, 46H
+    DB	53H, 41H, 56H, 45H, 57H, 0cH, 52H, 0f5H
+    DB	0, 54H, 5fH, 46H, 53H, 41H, 56H, 45H
+    DB	44H, 0bH, 52H, 0f4H, 0, 54H, 5fH, 46H
+    DB	53H, 41H, 56H, 45H, 8, 52H, 0f3H, 0
+    DB	54H, 5fH, 46H, 53H, 0dH, 52H, 0f2H, 0
+    DB	54H, 5fH, 46H, 52H, 53H, 54H, 4fH, 52H
+    DB	57H, 0dH, 52H, 0f1H, 0, 54H, 5fH, 46H
+    DB	52H, 53H, 54H, 4fH, 52H, 44H, 0cH, 52H
+    DB	0f0H, 0, 54H, 5fH, 46H, 52H, 53H, 54H
+    DB	4fH, 52H, 0dH, 52H, 0efH, 0, 54H, 5fH
+    DB	46H, 52H, 4eH, 44H, 49H, 4eH, 54H, 0bH
+    DB	52H, 0eeH, 0, 54H, 5fH, 46H, 50H, 54H
+    DB	41H, 4eH, 0cH, 52H, 0edH, 0, 54H, 5fH
+    DB	46H, 50H, 52H, 45H, 4dH, 31H, 0bH, 52H
+    DB	0ecH, 0, 54H, 5fH, 46H, 50H, 52H, 45H
+    DB	4dH, 0cH, 52H, 0ebH, 0, 54H, 5fH, 46H
+    DB	50H, 41H, 54H, 41H, 4eH, 0dH, 52H, 0eaH
+    DB	0, 54H, 5fH, 46H, 4fH, 52H, 54H, 52H
+    DB	41H, 4eH, 0aH, 52H, 0e9H, 0, 54H, 5fH
+    DB	46H, 4fH, 52H, 43H, 9, 52H, 0e8H, 0
+    DB	54H, 5fH, 46H, 4fH, 52H, 0cH, 52H, 0e7H
+    DB	0, 54H, 5fH, 46H, 4eH, 53H, 54H, 53H
+    DB	57H, 0eH, 52H, 0e6H, 0, 54H, 5fH, 46H
+    DB	4eH, 53H, 54H, 45H, 4eH, 56H, 57H, 0eH
+    DB	52H, 0e5H, 0, 54H, 5fH, 46H, 4eH, 53H
+    DB	54H, 45H, 4eH, 56H, 44H, 0dH, 52H, 0e4H
+    DB	0, 54H, 5fH, 46H, 4eH, 53H, 54H, 45H
+    DB	4eH, 56H, 0cH, 52H, 0e3H, 0, 54H, 5fH
+    DB	46H, 4eH, 53H, 54H, 43H, 57H, 0dH, 52H
+    DB	0e2H, 0, 54H, 5fH, 46H, 4eH, 53H, 41H
+    DB	56H, 45H, 57H, 0dH, 52H, 0e1H, 0, 54H
+    DB	5fH, 46H, 4eH, 53H, 41H, 56H, 45H, 44H
+    DB	0cH, 52H, 0e0H, 0, 54H, 5fH, 46H, 4eH
+    DB	53H, 41H, 56H, 45H, 0aH, 52H, 0dfH, 0
+    DB	54H, 5fH, 46H, 4eH, 4fH, 50H, 0cH, 52H
+    DB	0deH, 0, 54H, 5fH, 46H, 4eH, 49H, 4eH
+    DB	49H, 54H, 0bH, 52H, 0ddH, 0, 54H, 5fH
+    DB	46H, 4eH, 45H, 4eH, 49H, 0cH, 52H, 0dcH
+    DB	0, 54H, 5fH, 46H, 4eH, 44H, 49H, 53H
+    DB	49H, 0cH, 52H, 0dbH, 0, 54H, 5fH, 46H
+    DB	4eH, 43H, 4cH, 45H, 58H, 0bH, 52H, 0daH
+    DB	0, 54H, 5fH, 46H, 4dH, 55H, 4cH, 50H
+    DB	0aH, 52H, 0d9H, 0, 54H, 5fH, 46H, 4dH
+    DB	55H, 4cH, 0aH, 52H, 0d8H, 0, 54H, 5fH
+    DB	46H, 4cH, 44H, 5aH, 0bH, 52H, 0d7H, 0
+    DB	54H, 5fH, 46H, 4cH, 44H, 50H, 49H, 0cH
+    DB	52H, 0d6H, 0, 54H, 5fH, 46H, 4cH, 44H
+    DB	4cH, 4eH, 32H, 0cH, 52H, 0d5H, 0, 54H
+    DB	5fH, 46H, 4cH, 44H, 4cH, 47H, 32H, 0cH
+    DB	52H, 0d4H, 0, 54H, 5fH, 46H, 4cH, 44H
+    DB	4cH, 32H, 54H, 0cH, 52H, 0d3H, 0, 54H
+    DB	5fH, 46H, 4cH, 44H, 4cH, 32H, 45H, 0dH
+    DB	52H, 0d2H, 0, 54H, 5fH, 46H, 4cH, 44H
+    DB	45H, 4eH, 56H, 57H, 0dH, 52H, 0d1H, 0
+    DB	54H, 5fH, 46H, 4cH, 44H, 45H, 4eH, 56H
+    DB	44H, 0cH, 52H, 0d0H, 0, 54H, 5fH, 46H
+    DB	4cH, 44H, 45H, 4eH, 56H, 0bH, 52H, 0cfH
+    DB	0, 54H, 5fH, 46H, 4cH, 44H, 43H, 57H
+    DB	0aH, 52H, 0ceH, 0, 54H, 5fH, 46H, 4cH
+    DB	44H, 31H, 9, 52H, 0cdH, 0, 54H, 5fH
+    DB	46H, 4cH, 44H, 0aH, 52H, 0ccH, 0, 54H
+    DB	5fH, 46H, 4cH, 41H, 54H, 0cH, 52H, 0cbH
+    DB	0, 54H, 5fH, 46H, 49H, 53H, 55H, 42H
+    DB	52H, 0bH, 52H, 0caH, 0, 54H, 5fH, 46H
+    DB	49H, 53H, 55H, 42H, 0bH, 52H, 0c9H, 0
+    DB	54H, 5fH, 46H, 49H, 53H, 54H, 50H, 0aH
+    DB	52H, 0c8H, 0, 54H, 5fH, 46H, 49H, 53H
+    DB	54H, 0bH, 52H, 0c7H, 0, 54H, 5fH, 46H
+    DB	49H, 4eH, 49H, 54H, 0dH, 52H, 0c6H, 0
+    DB	54H, 5fH, 46H, 49H, 4eH, 43H, 53H, 54H
+    DB	50H, 0bH, 52H, 0c5H, 0, 54H, 5fH, 46H
+    DB	49H, 4dH, 55H, 4cH, 0aH, 52H, 0c4H, 0
+    DB	54H, 5fH, 46H, 49H, 4cH, 44H, 0cH, 52H
+    DB	0c3H, 0, 54H, 5fH, 46H, 49H, 44H, 49H
+    DB	56H, 52H, 0bH, 52H, 0c2H, 0, 54H, 5fH
+    DB	46H, 49H, 44H, 49H, 56H, 0cH, 52H, 0c1H
+    DB	0, 54H, 5fH, 46H, 49H, 43H, 4fH, 4dH
+    DB	50H, 0bH, 52H, 0c0H, 0, 54H, 5fH, 46H
+    DB	49H, 43H, 4fH, 4dH, 0bH, 52H, 0bfH, 0
+    DB	54H, 5fH, 46H, 49H, 41H, 44H, 44H, 0bH
+    DB	52H, 0beH, 0, 54H, 5fH, 46H, 46H, 52H
+    DB	45H, 45H, 0aH, 52H, 0bdH, 0, 54H, 5fH
+    DB	46H, 45H, 4eH, 49H, 0cH, 52H, 0bcH, 0
+    DB	54H, 5fH, 46H, 44H, 49H, 56H, 52H, 50H
+    DB	0bH, 52H, 0bbH, 0, 54H, 5fH, 46H, 44H
+    DB	49H, 56H, 52H, 0bH, 52H, 0baH, 0, 54H
+    DB	5fH, 46H, 44H, 49H, 56H, 50H, 0aH, 52H
+    DB	0b9H, 0, 54H, 5fH, 46H, 44H, 49H, 56H
+    DB	0bH, 52H, 0b8H, 0, 54H, 5fH, 46H, 44H
+    DB	49H, 53H, 49H, 0dH, 52H, 0b7H, 0, 54H
+    DB	5fH, 46H, 44H, 45H, 43H, 53H, 54H, 50H
+    DB	0aH, 52H, 0b6H, 0, 54H, 5fH, 46H, 43H
+    DB	4fH, 53H, 0cH, 52H, 0b5H, 0, 54H, 5fH
+    DB	46H, 43H, 4fH, 4dH, 50H, 50H, 0bH, 52H
+    DB	0b4H, 0, 54H, 5fH, 46H, 43H, 4fH, 4dH
+    DB	50H, 0aH, 52H, 0b3H, 0, 54H, 5fH, 46H
+    DB	43H, 4fH, 4dH, 0bH, 52H, 0b2H, 0, 54H
+    DB	5fH, 46H, 43H, 4cH, 45H, 58H, 0aH, 52H
+    DB	0b1H, 0, 54H, 5fH, 46H, 43H, 48H, 53H
+    DB	0bH, 52H, 0b0H, 0, 54H, 5fH, 46H, 42H
+    DB	53H, 54H, 50H, 0aH, 52H, 0afH, 0, 54H
+    DB	5fH, 46H, 42H, 4cH, 44H, 0eH, 52H, 0aeH
+    DB	0, 54H, 5fH, 46H, 41H, 52H, 53H, 54H
+    DB	41H, 43H, 4bH, 9, 52H, 0adH, 0, 54H
+    DB	5fH, 46H, 41H, 52H, 0bH, 52H, 0acH, 0
+    DB	54H, 5fH, 46H, 41H, 44H, 44H, 50H, 0aH
+    DB	52H, 0abH, 0, 54H, 5fH, 46H, 41H, 44H
+    DB	44H, 0aH, 52H, 0aaH, 0, 54H, 5fH, 46H
+    DB	41H, 42H, 53H, 0bH, 52H, 0a9H, 0, 54H
+    DB	5fH, 46H, 32H, 58H, 4dH, 31H, 0bH, 52H
+    DB	0a8H, 0, 54H, 5fH, 45H, 58H, 54H, 52H
+    DB	4eH, 0fH, 52H, 0a7H, 0, 54H, 5fH, 45H
+    DB	58H, 54H, 45H, 52H, 4eH, 44H, 45H, 46H
+    DB	0cH, 52H, 0a6H, 0, 54H, 5fH, 45H, 58H
+    DB	54H, 45H, 52H, 4eH, 0cH, 52H, 0a5H, 0
+    DB	54H, 5fH, 45H, 58H, 50H, 4fH, 52H, 54H
+    DB	0aH, 52H, 0a4H, 0, 54H, 5fH, 45H, 56H
+    DB	45H, 4eH, 9, 52H, 0a3H, 0, 54H, 5fH
+    DB	45H, 53H, 50H, 9, 52H, 0a2H, 0, 54H
+    DB	5fH, 45H, 53H, 49H, 8, 52H, 0a1H, 0
+    DB	54H, 5fH, 45H, 53H, 0bH, 52H, 0a0H, 0
+    DB	54H, 5fH, 45H, 52H, 52H, 4fH, 52H, 0aH
+    DB	52H, 9fH, 0, 54H, 5fH, 45H, 51H, 55H
+    DB	32H, 9, 52H, 9eH, 0, 54H, 5fH, 45H
+    DB	51H, 55H, 8, 52H, 9dH, 0, 54H, 5fH
+    DB	45H, 51H, 0bH, 52H, 9cH, 0, 54H, 5fH
+    DB	45H, 4eH, 54H, 45H, 52H, 0aH, 52H, 9bH
+    DB	0, 54H, 5fH, 45H, 4eH, 44H, 53H, 0aH
+    DB	52H, 9aH, 0, 54H, 5fH, 45H, 4eH, 44H
+    DB	50H, 0bH, 52H, 99H, 0, 54H, 5fH, 45H
+    DB	4eH, 44H, 49H, 46H, 9, 52H, 98H, 0
+    DB	54H, 5fH, 45H, 4eH, 44H, 0cH, 52H, 97H
+    DB	0, 54H, 5fH, 45H, 4cH, 53H, 45H, 49H
+    DB	46H, 0aH, 52H, 96H, 0, 54H, 5fH, 45H
+    DB	4cH, 53H, 45H, 9, 52H, 95H, 0, 54H
+    DB	5fH, 45H, 44H, 58H, 9, 52H, 94H, 0
+    DB	54H, 5fH, 45H, 44H, 49H, 9, 52H, 93H
+    DB	0, 54H, 5fH, 45H, 43H, 58H, 0aH, 52H
+    DB	92H, 0, 54H, 5fH, 45H, 43H, 48H, 4fH
+    DB	9, 52H, 91H, 0, 54H, 5fH, 45H, 42H
+    DB	58H, 9, 52H, 90H, 0, 54H, 5fH, 45H
+    DB	42H, 50H, 9, 52H, 8fH, 0, 54H, 5fH
+    DB	45H, 41H, 58H, 8, 52H, 8eH, 0, 54H
+    DB	5fH, 44H, 58H, 0bH, 52H, 8dH, 0, 54H
+    DB	5fH, 44H, 57H, 4fH, 52H, 44H, 8, 52H
+    DB	8cH, 0, 54H, 5fH, 44H, 57H, 9, 52H
+    DB	8bH, 0, 54H, 5fH, 44H, 55H, 50H, 8
+    DB	52H, 8aH, 0, 54H, 5fH, 44H, 54H, 8
+    DB	52H, 89H, 0, 54H, 5fH, 44H, 53H, 9
+    DB	52H, 88H, 0, 54H, 5fH, 44H, 52H, 37H
+    DB	9, 52H, 87H, 0, 54H, 5fH, 44H, 52H
+    DB	36H, 9, 52H, 86H, 0, 54H, 5fH, 44H
+    DB	52H, 33H, 9, 52H, 85H, 0, 54H, 5fH
+    DB	44H, 52H, 32H, 9, 52H, 84H, 0, 54H
+    DB	5fH, 44H, 52H, 31H, 9, 52H, 83H, 0
+    DB	54H, 5fH, 44H, 52H, 30H, 8, 52H, 82H
+    DB	0, 54H, 5fH, 44H, 51H, 8, 52H, 81H
+    DB	0, 54H, 5fH, 44H, 50H, 8, 52H, 80H
+    DB	0, 54H, 5fH, 44H, 4cH, 8, 51H, 7fH
+    DB	54H, 5fH, 44H, 49H, 56H, 7, 51H, 7eH
+    DB	54H, 5fH, 44H, 49H, 7, 51H, 7dH, 54H
+    DB	5fH, 44H, 48H, 7, 51H, 7cH, 54H, 5fH
+    DB	44H, 46H, 8, 51H, 7bH, 54H, 5fH, 44H
+    DB	45H, 43H, 7, 51H, 7aH, 54H, 5fH, 44H
+    DB	44H, 7, 51H, 79H, 54H, 5fH, 44H, 42H
+    DB	8, 51H, 78H, 54H, 5fH, 44H, 41H, 53H
+    DB	8, 51H, 77H, 54H, 5fH, 44H, 41H, 41H
+    DB	7, 51H, 76H, 54H, 5fH, 43H, 58H, 9
+    DB	51H, 75H, 54H, 5fH, 43H, 57H, 44H, 45H
+    DB	8, 51H, 74H, 54H, 5fH, 43H, 57H, 44H
+    DB	7, 51H, 73H, 54H, 5fH, 43H, 53H, 8
+    DB	51H, 72H, 54H, 5fH, 43H, 52H, 34H, 8
+    DB	51H, 71H, 54H, 5fH, 43H, 52H, 33H, 8
+    DB	51H, 70H, 54H, 5fH, 43H, 52H, 32H, 8
+    DB	51H, 6fH, 54H, 5fH, 43H, 52H, 30H, 0aH
+    DB	51H, 6eH, 54H, 5fH, 43H, 50H, 55H, 49H
+    DB	44H, 0cH, 51H, 6dH, 54H, 5fH, 43H, 4fH
+    DB	4dH, 50H, 41H, 43H, 54H, 0bH, 51H, 6cH
+    DB	54H, 5fH, 43H, 4fH, 4dH, 4dH, 4fH, 4eH
+    DB	0cH, 51H, 6bH, 54H, 5fH, 43H, 4fH, 4dH
+    DB	4dH, 45H, 4eH, 54H, 9, 51H, 6aH, 54H
+    DB	5fH, 43H, 4fH, 4dH, 4dH, 0eH, 51H, 69H
+    DB	54H, 5fH, 43H, 4dH, 50H, 58H, 43H, 48H
+    DB	47H, 38H, 42H, 0cH, 51H, 68H, 54H, 5fH
+    DB	43H, 4dH, 50H, 58H, 43H, 48H, 47H, 0aH
+    DB	51H, 67H, 54H, 5fH, 43H, 4dH, 50H, 53H
+    DB	57H, 0aH, 51H, 66H, 54H, 5fH, 43H, 4dH
+    DB	50H, 53H, 44H, 0aH, 51H, 65H, 54H, 5fH
+    DB	43H, 4dH, 50H, 53H, 42H, 9, 51H, 64H
+    DB	54H, 5fH, 43H, 4dH, 50H, 53H, 8, 51H
+    DB	63H, 54H, 5fH, 43H, 4dH, 50H, 8, 51H
+    DB	62H, 54H, 5fH, 43H, 4dH, 43H, 9, 51H
+    DB	61H, 54H, 5fH, 43H, 4cH, 54H, 53H, 8
+    DB	51H, 60H, 54H, 5fH, 43H, 4cH, 49H, 8
+    DB	51H, 5fH, 54H, 5fH, 43H, 4cH, 44H, 8
+    DB	51H, 5eH, 54H, 5fH, 43H, 4cH, 43H, 7
+    DB	51H, 5dH, 54H, 5fH, 43H, 4cH, 7, 51H
+    DB	5cH, 54H, 5fH, 43H, 48H, 8, 51H, 5bH
+    DB	54H, 5fH, 43H, 44H, 51H, 8, 51H, 5aH
+    DB	54H, 5fH, 43H, 42H, 57H, 0bH, 51H, 59H
+    DB	54H, 5fH, 43H, 41H, 54H, 53H, 54H, 52H
+    DB	0cH, 51H, 58H, 54H, 5fH, 43H, 41H, 53H
+    DB	45H, 4dH, 41H, 50H, 0aH, 51H, 57H, 54H
+    DB	5fH, 43H, 41H, 4cH, 4cH, 46H, 9, 51H
+    DB	56H, 54H, 5fH, 43H, 41H, 4cH, 4cH, 6
+    DB	51H, 55H, 54H, 5fH, 43H, 9, 51H, 54H
+    DB	54H, 5fH, 42H, 59H, 54H, 45H, 7, 51H
+    DB	53H, 54H, 5fH, 42H, 58H, 8, 51H, 52H
+    DB	54H, 5fH, 42H, 54H, 53H, 8, 51H, 51H
+    DB	54H, 5fH, 42H, 54H, 52H, 8, 51H, 50H
+    DB	54H, 5fH, 42H, 54H, 43H, 7, 51H, 4fH
+    DB	54H, 5fH, 42H, 54H, 0aH, 51H, 4eH, 54H
+    DB	5fH, 42H, 53H, 57H, 41H, 50H, 8, 51H
+    DB	4dH, 54H, 5fH, 42H, 53H, 52H, 8, 51H
+    DB	4cH, 54H, 5fH, 42H, 53H, 46H, 7, 51H
+    DB	4bH, 54H, 5fH, 42H, 50H, 0aH, 51H, 4aH
+    DB	54H, 5fH, 42H, 4fH, 55H, 4eH, 44H, 7
+    DB	51H, 49H, 54H, 5fH, 42H, 4cH, 7, 51H
+    DB	48H, 54H, 5fH, 42H, 48H, 0aH, 51H, 47H
+    DB	54H, 5fH, 42H, 41H, 53H, 49H, 43H, 7
+    DB	51H, 46H, 54H, 5fH, 41H, 58H, 7, 51H
+    DB	45H, 54H, 5fH, 41H, 54H, 0bH, 51H, 44H
+    DB	54H, 5fH, 41H, 53H, 53H, 55H, 4dH, 45H
+    DB	9, 51H, 43H, 54H, 5fH, 41H, 52H, 50H
+    DB	4cH, 8, 51H, 42H, 54H, 5fH, 41H, 4eH
+    DB	44H, 0aH, 51H, 41H, 54H, 5fH, 41H, 4cH
+    DB	49H, 47H, 4eH, 0aH, 51H, 40H, 54H, 5fH
+    DB	41H, 4cH, 49H, 41H, 53H, 7, 51H, 3fH
+    DB	54H, 5fH, 41H, 4cH, 7, 51H, 3eH, 54H
+    DB	5fH, 41H, 48H, 9, 51H, 3dH, 54H, 5fH
+    DB	41H, 44H, 44H, 52H, 8, 51H, 3cH, 54H
+    DB	5fH, 41H, 44H, 44H, 8, 51H, 3bH, 54H
+    DB	5fH, 41H, 44H, 43H, 9, 51H, 3aH, 54H
+    DB	5fH, 41H, 42H, 53H, 32H, 8, 51H, 39H
+    DB	54H, 5fH, 41H, 41H, 53H, 8, 51H, 38H
+    DB	54H, 5fH, 41H, 41H, 4dH, 8, 51H, 37H
+    DB	54H, 5fH, 41H, 41H, 44H, 8, 51H, 36H
+    DB	54H, 5fH, 41H, 41H, 41H, 0aH, 51H, 35H
+    DB	54H, 5fH, 57H, 48H, 49H, 4cH, 45H, 0aH
+    DB	51H, 34H, 54H, 5fH, 55H, 4eH, 54H, 49H
+    DB	4cH, 0bH, 51H, 33H, 54H, 5fH, 54H, 46H
+    DB	43H, 4fH, 4eH, 44H, 0cH, 51H, 32H, 54H
+    DB	5fH, 53H, 54H, 41H, 52H, 54H, 55H, 50H
+    DB	0aH, 51H, 31H, 54H, 5fH, 53H, 54H, 41H
+    DB	43H, 4bH, 8, 51H, 30H, 54H, 5fH, 53H
+    DB	45H, 51H, 0bH, 51H, 2fH, 54H, 5fH, 52H
+    DB	45H, 50H, 45H, 41H, 54H, 0aH, 51H, 2eH
+    DB	54H, 5fH, 52H, 41H, 44H, 49H, 58H, 0bH
+    DB	51H, 2dH, 54H, 5fH, 4eH, 4fH, 4cH, 49H
+    DB	53H, 54H, 0bH, 51H, 2cH, 54H, 5fH, 4eH
+    DB	4fH, 43H, 52H, 45H, 46H, 0aH, 51H, 2bH
+    DB	54H, 5fH, 4dH, 4fH, 44H, 45H, 4cH, 11H
+    DB	51H, 2aH, 54H, 5fH, 4cH, 49H, 53H, 54H
+    DB	4dH, 41H, 43H, 52H, 4fH, 41H, 4cH, 4cH
+    DB	0eH, 51H, 29H, 54H, 5fH, 4cH, 49H, 53H
+    DB	54H, 4dH, 41H, 43H, 52H, 4fH, 0bH, 51H
+    DB	28H, 54H, 5fH, 4cH, 49H, 53H, 54H, 49H
+    DB	46H, 0cH, 51H, 27H, 54H, 5fH, 4cH, 49H
+    DB	53H, 54H, 41H, 4cH, 4cH, 9, 51H, 26H
+    DB	54H, 5fH, 4cH, 49H, 53H, 54H, 0fH, 51H
+    DB	25H, 54H, 5fH, 46H, 41H, 52H, 44H, 41H
+    DB	54H, 41H, 5fH, 55H, 4eH, 0cH, 51H, 24H
+    DB	54H, 5fH, 46H, 41H, 52H, 44H, 41H, 54H
+    DB	41H, 9, 51H, 23H, 54H, 5fH, 45H, 58H
+    DB	49H, 54H, 0aH, 51H, 22H, 54H, 5fH, 45H
+    DB	52H, 52H, 4eH, 5aH, 0cH, 51H, 21H, 54H
+    DB	5fH, 45H, 52H, 52H, 4eH, 44H, 45H, 46H
+    DB	0aH, 51H, 20H, 54H, 5fH, 45H, 52H, 52H
+    DB	4eH, 42H, 0cH, 51H, 1fH, 54H, 5fH, 45H
+    DB	52H, 52H, 49H, 44H, 4eH, 49H, 0bH, 51H
+    DB	1eH, 54H, 5fH, 45H, 52H, 52H, 49H, 44H
+    DB	4eH, 9, 51H, 1dH, 54H, 5fH, 45H, 52H
+    DB	52H, 45H, 0cH, 51H, 1cH, 54H, 5fH, 45H
+    DB	52H, 52H, 44H, 49H, 46H, 49H, 0bH, 51H
+    DB	1bH, 54H, 5fH, 45H, 52H, 52H, 44H, 49H
+    DB	46H, 0bH, 51H, 1aH, 54H, 5fH, 45H, 52H
+    DB	52H, 44H, 45H, 46H, 9, 51H, 19H, 54H
+    DB	5fH, 45H, 52H, 52H, 42H, 8, 51H, 18H
+    DB	54H, 5fH, 45H, 52H, 52H, 9, 51H, 17H
+    DB	54H, 5fH, 45H, 4eH, 44H, 57H, 0bH, 51H
+    DB	16H, 54H, 5fH, 44H, 4fH, 53H, 53H, 45H
+    DB	47H, 0cH, 51H, 15H, 54H, 5fH, 44H, 41H
+    DB	54H, 41H, 5fH, 55H, 4eH, 9, 51H, 14H
+    DB	54H, 5fH, 44H, 41H, 54H, 41H, 9, 51H
+    DB	13H, 54H, 5fH, 43H, 52H, 45H, 46H, 0dH
+    DB	51H, 12H, 54H, 5fH, 43H, 4fH, 4eH, 54H
+    DB	49H, 4eH, 55H, 45H, 0aH, 51H, 11H, 54H
+    DB	5fH, 43H, 4fH, 4eH, 53H, 54H, 9, 51H
+    DB	10H, 54H, 5fH, 43H, 4fH, 44H, 45H, 0aH
+    DB	51H, 0fH, 54H, 5fH, 42H, 52H, 45H, 41H
+    DB	4bH, 0aH, 51H, 0eH, 54H, 5fH, 41H, 4cH
+    DB	50H, 48H, 41H, 9, 51H, 0dH, 54H, 5fH
+    DB	38H, 30H, 38H, 37H, 9, 51H, 0cH, 54H
+    DB	5fH, 38H, 30H, 38H, 36H, 9, 51H, 0bH
+    DB	54H, 5fH, 35H, 38H, 36H, 50H, 8, 51H
+    DB	0aH, 54H, 5fH, 35H, 38H, 36H, 9, 51H
+    DB	9, 54H, 5fH, 34H, 38H, 36H, 50H, 8
+    DB	51H, 8, 54H, 5fH, 34H, 38H, 36H, 8
+    DB	51H, 7, 54H, 5fH, 33H, 38H, 37H, 9
+    DB	51H, 6, 54H, 5fH, 33H, 38H, 36H, 50H
+    DB	8, 51H, 5, 54H, 5fH, 33H, 38H, 36H
+    DB	8, 51H, 4, 54H, 5fH, 32H, 38H, 37H
+    DB	9, 51H, 3, 54H, 5fH, 32H, 38H, 36H
+    DB	50H, 9, 51H, 2, 54H, 5fH, 32H, 38H
+    DB	36H, 43H, 8, 51H, 1, 54H, 5fH, 32H
+    DB	38H, 36H, 8, 51H, 0, 54H, 5fH, 31H
+    DB	38H, 36H, 0dH, 12H, 3, 4bH, 61H, 73H
+    DB	6dH, 5fH, 74H, 6fH, 6bH, 65H, 6eH, 5
+    DB	70H, 6, 1, 0dH, 5, 70H, 0dH, 1
+    DB	8, 4, 20H, 13H, 8, 6, 70H, 0dH
+    DB	2, 8, 11H, 6, 70H, 0dH, 2, 6
+    DB	40H, 4, 20H, 4fH, 8, 5, 50H, 0fH
+    DB	0, 10H, 0dH, 51H, 0eH, 53H, 59H, 4dH
+    DB	5fH, 53H, 54H, 52H, 55H, 43H, 54H, 13H
+    DB	51H, 0dH, 53H, 59H, 4dH, 5fH, 53H, 54H
+    DB	52H, 55H, 43H, 54H, 5fH, 46H, 49H, 45H
+    DB	4cH, 44H, 12H, 51H, 0cH, 53H, 59H, 4dH
+    DB	5fH, 43H, 4cH, 41H, 53H, 53H, 5fH, 4cH
+    DB	4eH, 41H, 4dH, 45H, 0cH, 51H, 0bH, 53H
+    DB	59H, 4dH, 5fH, 4cH, 4eH, 41H, 4dH, 45H
+    DB	0aH, 51H, 0aH, 53H, 59H, 4dH, 5fH, 45H
+    DB	58H, 54H, 0aH, 51H, 9, 53H, 59H, 4dH
+    DB	5fH, 4cH, 49H, 42H, 0cH, 51H, 8, 53H
+    DB	59H, 4dH, 5fH, 43H, 4fH, 4eH, 53H, 54H
+    DB	0cH, 51H, 7, 53H, 59H, 4dH, 5fH, 4dH
+    DB	41H, 43H, 52H, 4fH, 0bH, 51H, 6, 53H
+    DB	59H, 4dH, 5fH, 50H, 52H, 4fH, 43H, 0aH
+    DB	51H, 5, 53H, 59H, 4dH, 5fH, 47H, 52H
+    DB	50H, 0aH, 51H, 4, 53H, 59H, 4dH, 5fH
+    DB	53H, 45H, 47H, 0cH, 51H, 3, 53H, 59H
+    DB	4dH, 5fH, 53H, 54H, 41H, 43H, 4bH, 0fH
+    DB	51H, 2, 53H, 59H, 4dH, 5fH, 45H, 58H
+    DB	54H, 45H, 52H, 4eH, 41H, 4cH, 0fH, 51H
+    DB	1, 53H, 59H, 4dH, 5fH, 49H, 4eH, 54H
+    DB	45H, 52H, 4eH, 41H, 4cH, 10H, 51H, 0
+    DB	53H, 59H, 4dH, 5fH, 55H, 4eH, 44H, 45H
+    DB	46H, 49H, 4eH, 45H, 44H, 0dH, 12H, 3
+    DB	53H, 73H, 79H, 6dH, 5fH, 73H, 74H, 61H
+    DB	74H, 65H, 5, 71H, 53H, 1, 11H, 5
+    DB	50H, 0bH, 0, 10H, 0bH, 51H, 0aH, 53H
+    DB	59H, 4dH, 5fH, 46H, 41H, 52H, 34H, 0bH
+    DB	51H, 9, 53H, 59H, 4dH, 5fH, 46H, 41H
+    DB	52H, 32H, 0cH, 51H, 8, 53H, 59H, 4dH
+    DB	5fH, 4eH, 45H, 41H, 52H, 34H, 0cH, 51H
+    DB	7, 53H, 59H, 4dH, 5fH, 4eH, 45H, 41H
+    DB	52H, 32H, 0eH, 51H, 6, 53H, 59H, 4dH
+    DB	5fH, 46H, 4cH, 4fH, 41H, 54H, 31H, 30H
+    DB	0dH, 51H, 5, 53H, 59H, 4dH, 5fH, 46H
+    DB	4cH, 4fH, 41H, 54H, 38H, 0dH, 51H, 4
+    DB	53H, 59H, 4dH, 5fH, 46H, 4cH, 4fH, 41H
+    DB	54H, 34H, 0bH, 51H, 3, 53H, 59H, 4dH
+    DB	5fH, 49H, 4eH, 54H, 36H, 0bH, 51H, 2
+    DB	53H, 59H, 4dH, 5fH, 49H, 4eH, 54H, 34H
+    DB	0bH, 51H, 1, 53H, 59H, 4dH, 5fH, 49H
+    DB	4eH, 54H, 32H, 0bH, 51H, 0, 53H, 59H
+    DB	4dH, 5fH, 49H, 4eH, 54H, 31H, 0cH, 12H
+    DB	3, 56H, 73H, 79H, 6dH, 5fH, 74H, 79H
+    DB	70H, 65H, 5, 71H, 56H, 1, 11H
+
+$$TYPES		ENDS
+		END

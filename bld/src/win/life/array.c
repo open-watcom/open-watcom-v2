@@ -4,8 +4,9 @@
 #include <malloc.h>
 #include "life.h"
 
-extern void Clear()
-/******************
+
+extern void Clear( void )
+/************************
 
     Kill all cells in the Selected Region, and update the screen
 */
@@ -29,8 +30,8 @@ extern void Clear()
     SetCaption();
 }
 
-extern void Randomize()
-/**********************
+extern void Randomize( void )
+/****************************
 
     Randomize cells in the Selected Region, and update the screen
 */
@@ -100,8 +101,8 @@ static int SumNeighbours( pixels x, pixels y )
 }
 
 
-extern void NextGeneration()
-/***************************
+extern void NextGeneration( void )
+/*********************************
 
     Calculate the next generation of cells and update the screen.
 */
@@ -169,7 +170,7 @@ extern void FreeArray( cell_array junk )
 
 
 extern BOOL ReSizeArray( pixels width, pixels height, WORD type )
-/**********************************************************
+/****************************************************************
 
     Record the new size of the window and redraw the screen accordingly.
     Allocate a new cell array, and copy as much of the old array into

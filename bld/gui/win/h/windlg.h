@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dynamic dialog internals for Windows.
 *
 ****************************************************************************/
 
@@ -35,84 +34,87 @@
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
 #if defined(__NT__) && !defined( TWIN )
-#define ADJUST_ITEMLEN( a ) a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a ) a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a ) (((a)+1) & ~1)
-#define _ISFAR
-#define _FARmemcpy      memcpy
+
+#define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
+#define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
+#define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
+#define _FARmemcpy              memcpy
 #ifndef MK_FP32
-    #define MK_FP32( a )        ( a )
+#define MK_FP32( a )            a
 #endif
-//#define SLEN( a ) (strlen((a))*2+2)
+#define _ISFAR
+//#define SLEN( a )               (strlen((a))*2+2)
 // fixed to handle DBCS strings properly - rnk 3/1/96
-#define SLEN( a )       (2*MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
+#define SLEN( a )               (2*MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
 typedef WORD INFOTYPE;
+
 #else
-#define SLEN( a ) (strlen((a))+1)
+
+#define SLEN( a )               (strlen((a))+1)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a ) a
-#define _ISFAR  __far
-#define _FARmemcpy      _fmemcpy
+#define ROUND_CLASSLEN( a )     a
+#define _ISFAR                  __far
+#define _FARmemcpy              _fmemcpy
 typedef BYTE INFOTYPE;
+
 #endif
 
-#if defined(__NT__)
-    #pragma pack(2);
+#ifdef __NT__
+    #pragma pack( push, 2 )
 #else
-    // Added by Graeme Perrow June 3, 1998
-    #pragma pack(push,1)
+    #pragma pack( push, 1 )
 #endif
+
 typedef struct {
-long    dtStyle;
+    DWORD   dtStyle;
 #if defined(__NT__) || defined(WILLOWS)
-DWORD   dtExtendedStyle;
-WORD    dtItemCount;
+    DWORD   dtExtendedStyle;
+    WORD    dtItemCount;
 #else
-BYTE    dtItemCount;
+    BYTE    dtItemCount;
 #endif
-short   dtX;
-short   dtY;
-short   dtCX;
-short   dtCY;
-//char  dtMenuName[];
-//char  dtClassName[];
-//char  dtCaptionText[];
+    WORD    dtX;
+    WORD    dtY;
+    WORD    dtCX;
+    WORD    dtCY;
+//  char    dtMenuName[];
+//  char    dtClassName[];
+//  char    dtCaptionText[];
 } _DLGTEMPLATE;
 
-#if !defined(__NT__)
-    // Added by Graeme Perrow June 3, 1998
-    #pragma pack(pop)
-#endif
-
 typedef struct {
-short   PointSize;
-//char  szTypeFace[];
+    WORD    PointSize;
+//  char    szTypeFace[];
 } FONTINFO;
 
 typedef struct {
 #if defined(__NT__) || defined(WILLOWS)
-long    dtilStyle;
-DWORD   dtExtendedStyle;
+    DWORD   dtilStyle;
+    DWORD   dtExtendedStyle;
 #endif
-short   dtilX;
-short   dtilY;
-short   dtilCX;
-short   dtilCY;
-short   dtilID;
-#if defined(__NT__)
-unsigned short  crap;
+    WORD    dtilX;
+    WORD    dtilY;
+    WORD    dtilCX;
+    WORD    dtilCY;
+    WORD    dtilID;
+#ifdef __NT__
+    WORD    crap;
 #elif !defined(WILLOWS)
-long    dtilStyle;
+    DWORD   dtilStyle;
 #endif
-//char  dtilClass[];
-//char  dtilText[];
-//BYTE  dtilInfo;
-//BYTE  dtilData;
+//  char    dtilClass[];
+//  char    dtilText[];
+//  BYTE    dtilInfo;
+//  BYTE    dtilData;
 } _DLGITEMTEMPLATE;
-#if defined(__NT__)
-#pragma pack(1);
+
+#ifdef __NT__
+    #pragma pack( pop )
+#else
+    #pragma pack( pop )
 #endif
+
 
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
                                        int dtcx, int dtcy, char *menuname,

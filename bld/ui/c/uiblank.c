@@ -34,14 +34,11 @@
 #include "uidef.h"
 
 
-static void blankarea( area, attr )
-/*********************************/
-
-register        SAREA                   area;
-register        ATTR                    attr;
+static void blankarea( SAREA area, ATTR attr )
+/********************************************/
 {
-    register    ORD                     row;
-                SAREA                   up_area;
+    ORD         row;
+    SAREA       up_area;
 
     for( row = area.row; row < area.row + area.height; ++row ) {
         bfill( &UIData->screen, row, area.col, attr, ' ', area.width );
@@ -54,26 +51,22 @@ register        ATTR                    attr;
 }
 
 
-void global uiblankattr( attr )
-/*****************************/
-
-                ATTR            attr;
+void global uiblankattr( ATTR attr )
+/**********************************/
 {
     blankarea( UIData->blank.area, attr );
 }
 
 
-void global uiblankarea( area )
-/*****************************/
-
-register        SAREA           area;
+void global uiblankarea( SAREA area )
+/***********************************/
 {
     blankarea( area, UIData->attrs[ ATTR_NORMAL ] );
 }
 
 
-void global uiblankscreen()
-/*************************/
+void global uiblankscreen( void )
+/*******************************/
 {
     blankarea( UIData->blank.area, 0x07 );
 }

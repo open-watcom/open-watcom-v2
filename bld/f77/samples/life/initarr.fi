@@ -1,0 +1,2 @@
+        record /cell_type/ CellArray(:,:)
+        allocate( CellArray( -1:ArraySizeX, -1:ArraySizeY ), location=ArrayMem )

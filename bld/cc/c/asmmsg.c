@@ -24,35 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message output routines called by inline assembler.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include "target.h"
-#include "cerrs.h"
+#include "cvars.h"
 
-extern void CErr2p(int,char*);
-#if _MACHINE == _PC
+//extern void CErr2p(int,char*);
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
+
 #define asmerr(code,msg)   msg
 #include "asmerr.h"
 #include "target.h"
 
-
 void AsmError( int msg_number )
 {
-    char msgbuf[80];
+    char    msgbuf[80];
 
     strcpy( msgbuf, AsmErrMsgs[ msg_number ] );
     CErr2p( ERR_ASSEMBLER_ERROR, msgbuf );
 }
+
 #else
+
 void AsmError( char *msg )
 {
     CErr2p( ERR_ASSEMBLER_ERROR, msg );
 }
+
 #endif

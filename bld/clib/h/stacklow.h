@@ -36,7 +36,7 @@
 #define __Align4K( x ) (((x)+0xfffL) & ~0xfffL )
 
 #if defined(_M_IX86)
-    extern  unsigned    _SP();
+    extern  unsigned    _SP( void );
     #if defined(__386__)
         #pragma aux _SP = "mov eax,esp" value [eax];
     #else
@@ -45,7 +45,7 @@
 #endif
 
 #if defined(__NT__)
-    void __init_stack_limits( unsigned *stacklow, unsigned *stacktop );
+    extern void         __init_stack_limits( unsigned *stacklow, unsigned *stacktop );
 #endif
 
 #if defined(__SW_BM)
@@ -56,3 +56,4 @@
 #endif
 
 #endif
+

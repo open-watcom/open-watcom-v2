@@ -1,0 +1,4 @@
+Cc = gcc
+cC = c89
+dummy:
+	@echo CC=$(CC) Cc=$(Cc) cC=$(cC) cc=$(cc)

@@ -1,0 +1,28 @@
+name=Help_16Bit
+static_text=\
+        //1"You can select which memory models you want to use. They are:"\
+        //2"使用したいメモリモデルの選択もできます. 以下のいずれかです:"\
+        //0
+static_text=
+static_text=\
+        //1"Small   - 64K code, 64K data"\
+        //2"スモール   - 64K コード, 64K データ"\
+        //0,IsFortranInstall !
+static_text=\
+        //1"Medium  - unlimited code, 64K data"\
+        //2"ミディアム - コード制限なし, 64K データ"\
+        //0
+static_text=\
+        //1"Compact - 64K code, unlimited data"\
+        //2"コンパクト - 64K コード, データ制限なし"\
+        //0,IsFortranInstall !
+static_text=\
+        //1"Large   - unlimited code, unlimited data"\
+        //2"ラージ     - コード制限なし, データ制限なし"\
+        //0
+static_text=\
+        //1"Huge    - Large, with data objects > 64K allowed"\
+        //2"ヒュージ   - ラージ, 64K 以上のデータオブジェクトが可能"\
+        //0,IsFortranInstall !
+static_text=
+include=ok.dlg

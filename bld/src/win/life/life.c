@@ -5,27 +5,28 @@
 #include "life.h"
 
 static char LifeClass[32]="LifeClass";
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow );
-static BOOL FirstInstance( HANDLE this_inst );
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow );
+static BOOL FirstInstance( HINSTANCE this_inst );
+static void RePaint( void );
 
 extern void Error( char *str )
 /*****************************
     Pop up an error message box
 */
 {
-    MessageBox( NULL, str, Buffer, MB_ICONHAND+MB_OK+MB_SYSTEMMODAL );
+    MessageBox( (HWND)0, str, Buffer, MB_ICONHAND+MB_OK+MB_SYSTEMMODAL );
 }
 
 
-extern BOOL NoMemory()
-/********************/
+extern BOOL NoMemory( void )
+/**************************/
 {
     Error( "Out of memory" );
     return( FALSE );
 }
 
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -45,7 +46,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
     }
     if( !AnyInstance( this_inst, cmdshow ) ) return( FALSE );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, (HWND)0, 0, 0 ) ) {
 
         TranslateMessage( &msg );
         DispatchMessage( &msg );
@@ -59,7 +60,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
 
 extern long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 /********************************************
 
     Register window class for the application,
@@ -75,7 +76,7 @@ static BOOL FirstInstance( HANDLE this_inst )
     wc.cbWndExtra = 0;
     wc.hInstance = this_inst;
     wc.hIcon = 0;
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hCursor = LoadCursor( (HINSTANCE)0, IDC_ARROW );
     wc.hbrBackground = GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName = "LifeMenu";
     wc.lpszClassName = LifeClass;
@@ -84,7 +85,7 @@ static BOOL FirstInstance( HANDLE this_inst )
 
 }
 
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow )
 /*******************************************************
 
     Do work required for every instance of the application:
@@ -112,8 +113,8 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
         screen_y / 8,           /* init. y pos */
         3 * screen_x / 4,       /* init. x size */
         3 * screen_y / 4,       /* init. y size */
-        NULL,                   /* parent window */
-        NULL,                   /* menu handle */
+        (HWND)0,                /* parent window */
+        (HMENU)0,               /* menu handle */
         this_inst,              /* program handle */
         NULL                    /* create parms */
         );
@@ -237,8 +238,8 @@ BOOL _EXPORT FAR PASCAL Rules( HWND win_handle, unsigned msg,
 
 
 
-extern void FlushMouse()
-/***********************
+extern void FlushMouse( void )
+/*****************************
 
     Flush out any pending mouse events.
 */
@@ -257,18 +258,18 @@ static void DisplayDialog( char *name, BOOL _EXPORT FAR PASCAL rtn() )
 {
     FARPROC     proc;
 
-    proc = MakeProcInstance( rtn, ThisInst );
-    DialogBox( ThisInst, name, WinHandle, proc );
+    proc = MakeProcInstance( (FARPROC)rtn, ThisInst );
+    DialogBox( ThisInst, name, WinHandle, (DLGPROC)proc );
     FreeProcInstance( proc );
 }
 
 
-static void ToPauseMode()
+static void ToPauseMode( void )
 {
     Mode = MENU_PAUSE;
 }
 
-static void ToResumeMode()
+static void ToResumeMode( void )
 {
     Mode = MENU_RESUME;
     SelectOff();
@@ -276,20 +277,20 @@ static void ToResumeMode()
 }
 
 
-static void ToSelectMode()
+static void ToSelectMode( void )
 {
     MouseMode = MENU_SELECT;
     Mode = MENU_PAUSE;
 }
 
-static void ToPatternFlipMode()
+static void ToPatternFlipMode( void )
 {
     SelectOff();
     MouseMode = MENU_FLIP_PATTERNS;
 }
 
 
-static void ToSingleStepMode()
+static void ToSingleStepMode( void )
 {
     SelectOff();
     MouseMode = Mode = MENU_SINGLE_STEP;
@@ -417,8 +418,8 @@ static void InitMenu( HMENU mh )
     }
 }
 
-static BOOL SingleStep()
-/***********************
+static BOOL SingleStep( void )
+/*****************************
 
     Process a single step request
 */
@@ -429,8 +430,8 @@ static BOOL SingleStep()
 }
 
 
-extern void SetCaption()
-/***********************
+extern void SetCaption( void )
+/*****************************
 
     Set the caption to indicate generation number, etc.
 */
@@ -451,8 +452,8 @@ extern void SetCaption()
 }
 
 
-static void Cleanup()
-/********************
+static void Cleanup( void )
+/**************************
 
     Free up all our memory, etc
 */
@@ -579,8 +580,8 @@ extern BOOL TurnOffCell( HDC dc, cell_ptr cell, pixels x, pixels y )
 }
 
 
-static void RePaint()
-/********************
+static void RePaint( void )
+/**************************
 
     Re-draw the entire screen. It's been trashed.
 */

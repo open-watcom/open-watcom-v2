@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -106,8 +106,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
     return( TRUE );
 }
 
-static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry,
-                             FILE *fp )
+static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp )
 {
     char        *keytext;
     char        *flagtext;
@@ -116,20 +115,20 @@ static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry,
 
     flagtext = NULL;
 
-    ok = ( einfo && entry );
+    ok = (einfo != NULL && entry != NULL);
 
     if( ok ) {
         if( entry->is32bit ) {
-            key   = entry->entry32.Ascii;
+            key = entry->entry32.Ascii;
             flags = entry->entry32.Flags;
-            id    = entry->entry32.Id;
+            id = entry->entry32.Id;
         } else {
-            key   = entry->entry.Ascii;
+            key = entry->entry.Ascii;
             flags = entry->entry.Flags;
-            id    = (uint_16)entry->entry.Id;
+            id = (uint_16)entry->entry.Id;
         }
         keytext = WGetKeyText( key, flags );
-        ok = ( keytext != NULL );
+        ok = (keytext != NULL);
     }
 
     if( ok ) {
@@ -146,7 +145,7 @@ static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry,
         if( flagtext != NULL ) {
             fprintf( fp, "%s\n", flagtext );
         } else {
-            fwrite( "\n", sizeof(char), 1, fp );
+            fwrite( "\n", sizeof( char ), 1, fp );
         }
     }
 
@@ -166,7 +165,8 @@ Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
 
     rname = NULL;
 
-    ok = ( einfo && einfo->tbl && einfo->info->res_name && file );
+    ok = (einfo != NULL && einfo->tbl != NULL && einfo->info->res_name != NULL &&
+          file != NULL);
 
     if( ok ) {
         if( append ) {
@@ -174,28 +174,28 @@ Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
         } else {
             fp = fopen( file, "wt" );
         }
-        ok = ( fp != NULL );
+        ok = (fp != NULL);
     }
 
     if( ok ) {
-        ok = ( ( rname = WResIDToStr( einfo->info->res_name ) ) != NULL );
+        ok = ((rname = WResIDToStr( einfo->info->res_name )) != NULL);
     }
 
     if( ok ) {
         fprintf( fp, "%s ACCELERATORS\n", rname );
-        fwrite( "BEGIN\n", sizeof(char), 6, fp );
+        fwrite( "BEGIN\n", sizeof( char ), 6, fp );
     }
 
     if( ok ) {
         entry = einfo->tbl->first_entry;
-        while( entry && ok ) {
+        while( entry != NULL && ok ) {
             ok = WWriteEntryToRC( einfo, entry, fp );
             entry = entry->next;
         }
     }
 
     if( ok ) {
-        fwrite( "END\n\n", sizeof(char), 5, fp );
+        fwrite( "END\n\n", sizeof( char ), 5, fp );
     }
 
     if( rname ) {
@@ -208,4 +208,3 @@ Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
 
     return( ok );
 }
-

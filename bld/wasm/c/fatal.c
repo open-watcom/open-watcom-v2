@@ -24,35 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal errors processing
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include "asmglob.h"
-#include "womp.h"
+#include <stdarg.h>
+
 #include "objprs.h"
 #include "asmalloc.h"
-
-#ifdef TRMEM
-#include "memutil.h"
-#endif
-
+#include "womputil.h"
 #include "fatal.h"
-#undef FATAL_H
-#define _ASM_FATAL_FIX_
-#include "fatal.h"
+
+typedef void (*err_act)( void );
+
+typedef struct {
+    int       num;            // index
+    int       message;        // message displayed
+    err_act   action;         // function to call, if any
+    int       ret;            // exit code
+} Msg_Struct;
+
+static const Msg_Struct Fatal_Msg[] = {
+#undef pick
+#define pick( cmd, number, msg, act, ret )    { number, msg, act, ret }
+#include "fatald.h"
+};
 
 extern void             ObjRecFini( void );
 extern void             MsgPrintf( int resourceid );
 
-extern File_Info        AsmFiles;
-extern pobj_state       pobjState;
 extern char             write_to_file;  // write if there is no error
 
 void AsmShutDown( void )
@@ -74,10 +76,9 @@ void AsmShutDown( void )
     }
     AsmFree( AsmFiles.fname[ASM] );
     AsmFree( AsmFiles.fname[ERR] );
+    AsmFree( AsmFiles.fname[LST] );
     AsmFree( AsmFiles.fname[OBJ] );
-#ifdef TRMEM
     MemFini();
-#endif
 }
 
 void Fatal( unsigned msg, ... )
@@ -101,4 +102,3 @@ void Fatal( unsigned msg, ... )
     }
     exit( Fatal_Msg[msg].ret );
 }
-

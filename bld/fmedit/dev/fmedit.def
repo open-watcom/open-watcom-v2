@@ -1,8 +1,7 @@
 /* available FMEDIT DLL routines */
 
 #ifndef _FMEDIT_INCLUDE
-
-#define _FMEDIT_INCLUDE 
+#define _FMEDIT_INCLUDE
 
 #define FM_EXPORT   __export PASCAL
 
@@ -11,25 +10,26 @@ typedef int ACTION;
 typedef int NOTE_ID;
 
 typedef enum {
-   SCROLL_NONE 
-,  SCROLL_HORZ
-,  SCROLL_VERT
-,  SCROLL_BOTH
+   SCROLL_NONE,
+   SCROLL_HORZ,
+   SCROLL_VERT,
+   SCROLL_BOTH
 } SCR_CONFIG;
 
-typedef void              *   OBJPTR;
-typedef union object_defn *   OBJHANDLE;
-typedef union object_defn         OBJECT_DEFN;
+typedef void                *OBJPTR;
+typedef union object_defn   *OBJHANDLE;
+typedef union object_defn   OBJECT_DEFN;
 typedef OBJPTR (PASCAL *CREATE_RTN)( OBJPTR, RECT *, OBJPTR );
-typedef CREATE_RTN CREATE_TABLE[];
-typedef unsigned                  STATE_HDL;
+typedef CREATE_RTN          CREATE_TABLE[];
+typedef unsigned            STATE_HDL;
+typedef BOOL (PASCAL *OBJECT)( ACTION, OBJPTR, void *, void * );
 
 #include "constant.def"
 #include "list.def"
 #include "actions.def"
 #include <subreq.def>
 
-extern unsigned	    fmedit_version_check( void );
+extern unsigned     fmedit_version_check( void );
 
 extern void   FM_EXPORT OpenFormEdit( HWND, CREATE_TABLE, int, SCR_CONFIG );
 extern void   FM_EXPORT CloseFormEdit( HWND );
@@ -52,65 +52,65 @@ extern void FM_EXPORT DrawConstText( LPRECT, LPSTR, HDC );
 /* object.def exports */
 
 extern OBJPTR FM_EXPORT Create( OBJ_ID, OBJPTR, RECT *, OBJPTR );
-extern BOOL   FM_EXPORT Register( OBJPTR );
-extern BOOL   FM_EXPORT Move( OBJPTR, POINT *, BOOL );
-extern BOOL   FM_EXPORT Resize( OBJPTR, RECT *, BOOL );
-extern BOOL   FM_EXPORT Location( OBJPTR, RECT * );
-extern BOOL   FM_EXPORT FindObjList( OBJPTR, SUBOBJ_REQUEST *, LIST ** );
-extern BOOL   FM_EXPORT Draw( OBJPTR, RECT *, HDC );
-extern BOOL   FM_EXPORT Destroy( OBJPTR, BOOL );
-extern BOOL   FM_EXPORT Define( OBJPTR, POINT *, void * );
-extern BOOL   FM_EXPORT Notify( OBJPTR, NOTE_ID, void * );
-extern BOOL   FM_EXPORT Forward( OBJPTR, ACTION, void *, void * );
-extern BOOL   FM_EXPORT ValidateAction( OBJPTR, ACTION, void * );
+extern BOOL   FM_EXPORT Register( OBJECT * );
+extern BOOL   FM_EXPORT Move( OBJECT *, POINT *, BOOL );
+extern BOOL   FM_EXPORT Resize( OBJECT *, RECT *, BOOL );
+extern BOOL   FM_EXPORT Location( OBJECT *, RECT * );
+extern BOOL   FM_EXPORT FindObjList( OBJECT *, SUBOBJ_REQUEST *, LIST ** );
+extern BOOL   FM_EXPORT Draw( OBJECT *, RECT *, HDC );
+extern BOOL   FM_EXPORT Destroy( OBJECT *, BOOL );
+extern BOOL   FM_EXPORT Define( OBJECT *, POINT *, void * );
+extern BOOL   FM_EXPORT Notify( OBJECT *, NOTE_ID, void * );
+extern BOOL   FM_EXPORT Forward( OBJECT *, ACTION, void *, void * );
+extern BOOL   FM_EXPORT ValidateAction( OBJECT *, ACTION, void * );
 extern OBJPTR FM_EXPORT FindObject( SUBOBJ_REQUEST * );
 extern BOOL   FM_EXPORT FindObjectsPt( POINT, LIST ** );
 extern OBJPTR FM_EXPORT FindOneObjPt( POINT pt );
 extern BOOL   FM_EXPORT AddObject( OBJPTR, OBJPTR );
 extern BOOL   FM_EXPORT RemoveObject( OBJPTR, OBJPTR );
 extern BOOL   FM_EXPORT ExecuteCurrObject( ACTION, void *, void * );
-extern BOOL   FM_EXPORT GetResizeInfo( OBJPTR, RESIZE_ID * );
-extern BOOL   FM_EXPORT CutObject( OBJPTR, OBJPTR * );
-extern BOOL   FM_EXPORT CopyObject( OBJPTR, OBJPTR *, OBJPTR );
-extern BOOL   FM_EXPORT PasteObject( OBJPTR, OBJPTR, POINT );
-extern BOOL   FM_EXPORT GetObjectParent( OBJPTR, OBJPTR * );
-extern BOOL   FM_EXPORT GetPriority( OBJPTR, int * );
+extern BOOL   FM_EXPORT GetResizeInfo( OBJECT *, RESIZE_ID * );
+extern BOOL   FM_EXPORT CutObject( OBJECT *, OBJPTR * );
+extern BOOL   FM_EXPORT CopyObject( OBJECT *, OBJPTR *, OBJPTR );
+extern BOOL   FM_EXPORT PasteObject( OBJECT *, OBJPTR, POINT );
+extern BOOL   FM_EXPORT GetObjectParent( OBJECT *, OBJPTR * );
+extern BOOL   FM_EXPORT GetPriority( OBJECT *, int * );
 extern void   FM_EXPORT MakeObjectCurrent( OBJPTR );
 extern void   FM_EXPORT AddCurrentObject( OBJPTR );
 extern void   FM_EXPORT ResetCurrObject( BOOL );
-extern BOOL   FM_EXPORT ResizeIncrements( OBJPTR, POINT * );
+extern BOOL   FM_EXPORT ResizeIncrements( OBJECT *, POINT * );
 extern void   FM_EXPORT NewOffset( POINT );
 
 /* state.def exports */
 
-extern OBJ_ID     FM_EXPORT GetBaseObjType();
+extern OBJ_ID     FM_EXPORT GetBaseObjType( void );
 extern void       FM_EXPORT SetBaseObjType( OBJ_ID );
 extern BOOL       FM_EXPORT InitState( HWND );
-extern OBJPTR     FM_EXPORT GetMainObject();
-extern OBJPTR     FM_EXPORT GetCurrObject();
-extern LIST *     FM_EXPORT GetCurrObjectList();
+extern OBJPTR     FM_EXPORT GetMainObject( void );
+extern OBJPTR     FM_EXPORT GetCurrObject( void );
+extern LIST *     FM_EXPORT GetCurrObjectList( void );
 extern void       FM_EXPORT GetOffset( POINT * );
 extern void       FM_EXPORT SetHorizontalInc( unsigned );
 extern void       FM_EXPORT SetVerticalInc( unsigned );
-extern unsigned   FM_EXPORT GetHorizontalInc();
-extern unsigned   FM_EXPORT GetVerticalInc();
+extern unsigned   FM_EXPORT GetHorizontalInc( void );
+extern unsigned   FM_EXPORT GetVerticalInc( void );
 extern BOOL       FM_EXPORT FMClipObjExists( OBJPTR );
 extern void       FM_EXPORT FMAddClipboard( OBJPTR, OBJPTR );
-extern BOOL       FM_EXPORT FMPasteValid();
-extern void       FM_EXPORT FMResetClipboard();
-extern void       FM_EXPORT FMNewClipboard();
+extern BOOL       FM_EXPORT FMPasteValid( void );
+extern void       FM_EXPORT FMResetClipboard( void );
+extern void       FM_EXPORT FMNewClipboard( void );
 extern void       FM_EXPORT DisplayError( char * );
 extern BOOL       FM_EXPORT IsEditting( HWND );
 extern void       FM_EXPORT SetShowError( BOOL );
-extern void       FM_EXPORT ClearError();
+extern void       FM_EXPORT ClearError( void );
 extern void       FM_EXPORT SetMouseRtn( HWND, void (FM_EXPORT *)( HWND, RECT * ));
-extern STATE_HDL  FM_EXPORT GetCurrFormID( void ); 
+extern STATE_HDL  FM_EXPORT GetCurrFormID( void );
 extern BOOL       FM_EXPORT InitStateFormID( STATE_HDL );
-extern void	  FM_EXPORT HideSelectBoxes( void );
-extern void	  FM_EXPORT ShowSelectBoxes( void );
+extern void       FM_EXPORT HideSelectBoxes( void );
+extern void       FM_EXPORT ShowSelectBoxes( void );
 
 /* scroll.def exports */
-extern void	  FM_EXPORT UpdateScroll( void );
+extern void FM_EXPORT UpdateScroll( void );
 
 /* application input functions */
 

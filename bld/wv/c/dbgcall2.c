@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execute a user routine.
 *
 ****************************************************************************/
 
@@ -42,30 +41,30 @@
 
 
 extern machine_state    *DbgRegs;
-extern brk              DbgTmpBrk;
+extern brkp             DbgTmpBrk;
 extern stack_entry      *ExprSP;
 
 
-extern unsigned         ExecProg(bool, bool ,bool );
-extern void             DbgUpdate(update_list );
-extern bool             ReportTrap(unsigned ,bool );
-extern void             DoAssign(void);
-extern stack_entry      *StkEntry(int );
-extern void             SwapStack(int );
-extern void             PopEntry(void);
-extern void             SetRegIP(address );
-extern void             SetRegSP(address );
-extern address          GetRegSP(void);
-extern machine_state    *AllocMachState(void);
-extern void             CopyMachState(machine_state *,machine_state *);
-extern void             FreeMachState(machine_state *);
+extern unsigned         ExecProg( bool, bool, bool );
+extern void             DbgUpdate( update_list );
+extern bool             ReportTrap( unsigned, bool );
+extern void             DoAssign( void );
+extern stack_entry      *StkEntry( int );
+extern void             SwapStack( int );
+extern void             PopEntry( void );
+extern void             SetRegIP( address );
+extern void             SetRegSP( address );
+extern address          GetRegSP( void );
+extern machine_state    *AllocMachState( void );
+extern void             CopyMachState( machine_state *, machine_state * );
+extern void             FreeMachState( machine_state *);
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
 
 extern mod_handle       ContextMod;
 
-static machine_state            *FreezeRegSet;
+static machine_state            *FreezeRegSet = NULL;
 static struct location_context  FreezeContext;
 static mod_handle               FreezeContextMod;
 
@@ -73,7 +72,7 @@ static mod_handle               FreezeContextMod;
  * FreezeRegs -- freeze a copy of the register values
  */
 
-void FreezeRegs()
+void FreezeRegs( void )
 {
     FreezeContextMod = ContextMod;
     FreezeContext = Context;
@@ -85,7 +84,7 @@ void FreezeRegs()
  * UnFreezeRegs -- restore a frozen register set
  */
 
-void UnFreezeRegs()
+void UnFreezeRegs( void )
 {
     if( FreezeRegSet != NULL ) {
         CopyMachState( FreezeRegSet, DbgRegs );
@@ -101,7 +100,7 @@ void UnFreezeRegs()
  * CallRoutine -- execute the user routine
  */
 
-static bool CallRoutine()
+static bool CallRoutine( void )
 {
     unsigned    trap;
     address     sp;

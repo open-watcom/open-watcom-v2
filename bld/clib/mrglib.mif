@@ -18,26 +18,23 @@ make_flags += convention=$(convention)
 make_flags += linkage=$(linkage)
 !endif
 
-$(libname).lib : $(libs)
-    @%write tmp.mak !include ..\..\objects.mif
-    @wmake -f tmp.mak $(make_flags)
-    @del tmp.mak
-    %create tmp.lbc
-    @for %i in ($(libs)) do @%append tmp.lbc +%i
-!ifeq linkage dynamic
-    if exist export.def erase export.def
-!endif
-    $(librarian) $(lib_flags) $(lib_flags_new) $(lib_flags_linkage) $^@ @tmp.lbc +timstamp.obj
-!ifeq linkage dynamic
-    vi -q -s $(lib_misc_dir)\vi\export.vi export.def
-!endif
-    @del tmp.lbc
-    @del timstamp.obj
-    wtouch compile.tim
-
 all : $(libname).lib .symbolic
     @%null
 
-!include $(clib_dir)\clean.mif
-!include $(clib_dir)\updlib.mif
-!include $(clib_dir)\project.mif
+$(libname).lib : $(libs)
+    @%write tmp.mak !include ../../objects.mif
+    @wmake -f tmp.mak $(make_flags)
+    @rm -f tmp.mak
+    %create tmp.lbc
+    @for %i in ($(libs)) do @%append tmp.lbc +%i
+    @rm -f export.def
+    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @tmp.lbc +timstamp.obj
+!ifeq linkage dynamic
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.def > tmp.def
+    @cp tmp.def export.def
+    @rm tmp.def
+!endif
+    @rm -f tmp.lbc
+    @rm -f timstamp.obj
+
+!include $(clib_dir)/clean.mif

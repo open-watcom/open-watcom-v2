@@ -1,0 +1,1565 @@
+/*
+ *  mmsystem.h  Multimedia functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_MMSYSTEM
+#define _INC_MMSYSTEM
+
+:include readonly.sp
+
+#ifndef _INC_WINDOWS
+    #include <windows.h>
+#endif
+
+#if (WINVER < 0x30A)
+    #error Multimedia APIs require Windows 3.1
+#endif
+
+:include cpluspro.sp
+
+#pragma pack( push, 1 )
+
+/* Multimedia primitive data types */
+#ifndef RC_INVOKED
+typedef WORD        VERSION;
+typedef DWORD       FOURCC;
+typedef char _huge  *HPSTR;
+#endif
+
+/* Multimedia handle data types */
+#ifndef RC_INVOKED
+DECLARE_HANDLE( HWAVE );
+DECLARE_HANDLE( HWAVEIN );
+DECLARE_HANDLE( HWAVEOUT );
+DECLARE_HANDLE( HMIDI );
+DECLARE_HANDLE( HMIDIIN );
+DECLARE_HANDLE( HMIDIOUT );
+DECLARE_HANDLE( HMMIO );
+#endif
+
+/* Pointers to handles */
+#ifndef RC_INVOKED
+typedef HWAVEIN FAR     *LPHWAVEIN;
+typedef HWAVEOUT FAR    *LPHWAVEOUT;
+typedef HMIDIIN FAR     *LPHMIDIIN;
+typedef HMIDIOUT FAR    *LPHMIDIOUT;
+#endif
+
+/* String lengths */
+#define MAXPNAMELEN     32
+#define MAXERRORLENGTH  128
+
+/* Multimedia time types */
+#define TIME_MS         0x0001
+#define TIME_SAMPLES    0x0002
+#define TIME_BYTES      0x0004
+#define TIME_SMPTE      0x0008
+#define TIME_MIDI       0x0010
+
+/* Multimedia window messages */
+#define MM_JOY1MOVE         0x03A0
+#define MM_JOY2MOVE         0x03A1
+#define MM_JOY1ZMOVE        0x03A2
+#define MM_JOY2ZMOVE        0x03A3
+#define MM_JOY1BUTTONDOWN   0x03B5
+#define MM_JOY2BUTTONDOWN   0x03B6
+#define MM_JOY1BUTTONUP     0x03B7
+#define MM_JOY2BUTTONUP     0x03B8
+#define MM_MCINOTIFY        0x03B9
+#define MM_WOM_OPEN         0x03BB
+#define MM_WOM_CLOSE        0x03BC
+#define MM_WOM_DONE         0x03BD
+#define MM_WIM_OPEN         0x03BE
+#define MM_WIM_CLOSE        0x03BF
+#define MM_WIM_DATA         0x03C0
+#define MM_MIM_OPEN         0x03C1
+#define MM_MIM_CLOSE        0x03C2
+#define MM_MIM_DATA         0x03C3
+#define MM_MIM_LONGDATA     0x03C4
+#define MM_MIM_ERROR        0x03C5
+#define MM_MIM_LONGERROR    0x03C6
+#define MM_MOM_OPEN         0x03C7
+#define MM_MOM_CLOSE        0x03C8
+#define MM_MOM_DONE         0x03C9
+
+/* Error code bases */
+#define MMSYSERR_BASE   0
+#define WAVERR_BASE     32
+#define MIDIERR_BASE    64
+#define TIMERR_BASE     96
+#define JOYERR_BASE     160
+#define MCIERR_BASE     256
+
+/* MCI offsets */
+#define MCI_STRING_OFFSET   512
+#define MCI_VD_OFFSET       1024
+#define MCI_CD_OFFSET       1088
+#define MCI_WAVE_OFFSET     1152
+#define MCI_SEQ_OFFSET      1216
+
+/* General multimedia error codes */
+#define MMSYSERR_NOERROR        0
+#define MMSYSERR_ERROR          (MMSYSERR_BASE + 1)
+#define MMSYSERR_BADDEVICEID    (MMSYSERR_BASE + 2)
+#define MMSYSERR_NOTENABLED     (MMSYSERR_BASE + 3)
+#define MMSYSERR_ALLOCATED      (MMSYSERR_BASE + 4)
+#define MMSYSERR_INVALHANDLE    (MMSYSERR_BASE + 5)
+#define MMSYSERR_NODRIVER       (MMSYSERR_BASE + 6)
+#define MMSYSERR_NOMEM          (MMSYSERR_BASE + 7)
+#define MMSYSERR_NOTSUPPORTED   (MMSYSERR_BASE + 8)
+#define MMSYSERR_BADERRNUM      (MMSYSERR_BASE + 9)
+#define MMSYSERR_INVALFLAG      (MMSYSERR_BASE + 10)
+#define MMSYSERR_INVALPARAM     (MMSYSERR_BASE + 11)
+#define MMSYSERR_LASTERROR      (MMSYSERR_BASE + 11)
+
+/* Driver messages */
+#if (WINVER < 0x030A)
+    #define DRV_LOAD            0x0001
+    #define DRV_ENABLE          0x0002
+    #define DRV_OPEN            0x0003
+    #define DRV_CLOSE           0x0004
+    #define DRV_DISABLE         0x0005
+    #define DRV_FREE            0x0006
+    #define DRV_CONFIGURE       0x0007
+    #define DRV_QUERYCONFIGURE  0x0008
+    #define DRV_INSTALL         0x0009
+    #define DRV_REMOVE          0x000A
+    #define DRV_EXITSESSION     0x000B
+    #define DRV_EXITAPPLICATION 0x000C
+    #define DRV_POWER           0x000F
+    #define DRV_RESERVED        0x0800
+    #define DRV_USER            0x4000
+#endif
+
+/* Driver procedure return values */
+#if (WINVER >= 0x030A)
+    #define DRV_CANCEL  DRVCNF_CANCEL
+    #define DRV_OK      DRVCNF_OK
+    #define DRV_RESTART DRVCNF_RESTART
+#endif
+
+/* MCI driver message range */
+#define DRV_MCI_FIRST   DRV_RESERVED
+#define DRV_MCI_LAST    (DRV_RESERVED + 0x0FFF)
+
+/* Callback flags */
+#define CALLBACK_TYPEMASK   0x00070000L
+#define CALLBACK_NULL       0x00000000L
+#define CALLBACK_WINDOW     0x00010000L
+#define CALLBACK_TASK       0x00020000L
+#define CALLBACK_FUNCTION   0x00030000L
+
+/* sndPlaySound() flags */
+#define SND_SYNC        0x0000
+#define SND_ASYNC       0x0001
+#define SND_NODEFAULT   0x0002
+#define SND_MEMORY      0x0004
+#define SND_LOOP        0x0008
+#define SND_NOSTOP      0x0010
+
+/* Multimedia manufacturers */
+#define MM_MICROSOFT        1
+#define MM_MIDI_MAPPER      1
+#define MM_WAVE_MAPPER      2
+#define MM_SNDBLST_MIDIOUT  3
+#define MM_SNDBLST_MIDIIN   4
+#define MM_SNDBLST_SYNTH    5
+#define MM_SNDBLST_WAVEOUT  6
+#define MM_SNDBLST_WAVEIN   7
+#define MM_ADLIB            9
+#define MM_MPU401_MIDIOUT   10
+#define MM_MPU401_MIDIIN    11
+#define MM_PC_JOYSTICK      12
+
+/* Wave error codes */
+#define WAVERR_BADFORMAT    (WAVERR_BASE + 0)
+#define WAVERR_STILLPLAYING (WAVERR_BASE + 1)
+#define WAVERR_UNPREPARED   (WAVERR_BASE + 2)
+#define WAVERR_SYNC         (WAVERR_BASE + 3)
+#define WAVERR_LASTERROR    (WAVERR_BASE + 3)
+
+/* Wave output messages */
+#define WOM_OPEN    MM_WOM_OPEN
+#define WOM_CLOSE   MM_WOM_CLOSE
+#define WOM_DONE    MM_WOM_DONE
+
+/* Wave input messages */
+#define WIM_OPEN    MM_WIM_OPEN
+#define WIM_CLOSE   MM_WIM_CLOSE
+#define WIM_DATA    MM_WIM_DATA
+
+/* Wave mapper device identifier */
+#define WAVE_MAPPER     (-1)
+
+/* waveOutOpen() and waveInOpen() flags */
+#define WAVE_FORMAT_QUERY   1
+#define WAVE_ALLOWSYNC      2
+
+/* Wave header flags */
+#define WHDR_DONE       0x0001
+#define WHDR_PREPARED   0x0002
+#define WHDR_BEGINLOOP  0x0004
+#define WHDR_ENDLOOP    0x0008
+#define WHDR_INQUEUE    0x0010
+
+/* Wave capability flags */
+#define WAVECAPS_PITCH          0x0001
+#define WAVECAPS_PLAYBACKRATE   0x0002
+#define WAVECAPS_VOLUME         0x0004
+#define WAVECAPS_LRVOLUME       0x0008
+#define WAVECAPS_SYNC           0x0010
+
+/* Wave format flags */
+#define WAVE_INVALIDFORMAT      0x0000
+#define WAVE_FORMAT_1M08        0x0001
+#define WAVE_FORMAT_1S08        0x0002
+#define WAVE_FORMAT_1M16        0x0004
+#define WAVE_FORMAT_1S16        0x0008
+#define WAVE_FORMAT_2M08        0x0010
+#define WAVE_FORMAT_2S08        0x0020
+#define WAVE_FORMAT_2M16        0x0040
+#define WAVE_FORMAT_2S16        0x0080
+#define WAVE_FORMAT_4M08        0x0100
+#define WAVE_FORMAT_4S08        0x0200
+#define WAVE_FORMAT_4M16        0x0400
+#define WAVE_FORMAT_4S16        0x0800
+
+/* Wave format tag */
+#define WAVE_FORMAT_PCM 1
+
+/* MIDI error codes */
+#define MIDIERR_UNPREPARED      (MIDIERR_BASE + 0)
+#define MIDIERR_STILLPLAYING    (MIDIERR_BASE + 1)
+#define MIDIERR_NOMAP           (MIDIERR_BASE + 2)
+#define MIDIERR_NOTREADY        (MIDIERR_BASE + 3)
+#define MIDIERR_NODEVICE        (MIDIERR_BASE + 4)
+#define MIDIERR_INVALIDSETUP    (MIDIERR_BASE + 5)
+#define MIDIERR_LASTERROR       (MIDIERR_BASE + 5)
+
+/* MIDI patch size */
+#define MIDIPATCHSIZE   128
+
+/* MIDI input messages */
+#define MIM_OPEN        MM_MIM_OPEN
+#define MIM_CLOSE       MM_MIM_CLOSE
+#define MIM_DATA        MM_MIM_DATA
+#define MIM_LONGDATA    MM_MIM_LONGDATA
+#define MIM_ERROR       MM_MIM_ERROR
+#define MIM_LONGERROR   MM_MIM_LONGERROR
+
+/* MIDI output messages */
+#define MOM_OPEN        MM_MOM_OPEN
+#define MOM_CLOSE       MM_MOM_CLOSE
+#define MOM_DONE        MM_MOM_DONE
+
+/* MIDI mapper device identifier */
+#define MIDIMAPPER  (-1)
+#define MIDI_MAPPER (-1)
+
+/* midiOutCachePatches() and midiOutCacheDrumPatches() flags */
+#define MIDI_CACHE_ALL      1
+#define MIDI_CACHE_BESTFIT  2
+#define MIDI_CACHE_QUERY    3
+#define MIDI_UNCACHE        4
+
+/* MIDI output technologies */
+#define MOD_MIDIPORT    1
+#define MOD_SYNTH       2
+#define MOD_SQSYNTH     3
+#define MOD_FMSYNTH     4
+#define MOD_MAPPER      5
+
+/* MIDI output capability flags */
+#define MIDICAPS_VOLUME     1
+#define MIDICAPS_LRVOLUME   2
+#define MIDICAPS_CACHE      4
+
+/* MIDI header flags */
+#define MHDR_DONE       1
+#define MHDR_PREPARED   2
+#define MHDR_INQUEUE    4
+
+/* Auxiliary mapper device identifier */
+#define AUX_MAPPER      (-1)
+
+/* Auxiliary technologies */
+#define AUXCAPS_CDAUDIO 1
+#define AUXCAPS_AUXIN   2
+
+/* Auxiliary capability flags */
+#define AUXCAPS_VOLUME      1
+#define AUXCAPS_LRVOLUME    2
+
+/* Timer error codes */
+#define TIMERR_NOERROR  0
+#define TIMERR_NOCANDO  (TIMERR_BASE + 1)
+#define TIMERR_STRUCT   (TIMERR_BASE + 33)
+
+/* timeSetEvent() flags */
+#define TIME_ONESHOT    0
+#define TIME_PERIODIC   1
+
+/* Joystick error codes */
+#define JOYERR_NOERROR      0
+#define JOYERR_PARMS        (JOYERR_BASE + 5)
+#define JOYERR_NOCANDO      (JOYERR_BASE + 6)
+#define JOYERR_UNPLUGGED    (JOYERR_BASE + 7)
+
+/* Joystick button flags */
+#define JOY_BUTTON1     0x0001
+#define JOY_BUTTON2     0x0002
+#define JOY_BUTTON3     0x0004
+#define JOY_BUTTON4     0x0008
+#define JOY_BUTTON1CHG  0x0100
+#define JOY_BUTTON2CHG  0x0200
+#define JOY_BUTTON3CHG  0x0400
+#define JOY_BUTTON4CHG  0x0800
+
+/* Joystick identifiers */
+#define JOYSTICKID1     0
+#define JOYSTICKID2     1
+
+/* Multimedia I/O error codes */
+#define MMIOERR_BASE            256
+#define MMIOERR_FILENOTFOUND    (MMIOERR_BASE + 1)
+#define MMIOERR_OUTOFMEMORY     (MMIOERR_BASE + 2)
+#define MMIOERR_CANNOTOPEN      (MMIOERR_BASE + 3)
+#define MMIOERR_CANNOTCLOSE     (MMIOERR_BASE + 4)
+#define MMIOERR_CANNOTREAD      (MMIOERR_BASE + 5)
+#define MMIOERR_CANNOTWRITE     (MMIOERR_BASE + 6)
+#define MMIOERR_CANNOTSEEK      (MMIOERR_BASE + 7)
+#define MMIOERR_CANNOTEXPAND    (MMIOERR_BASE + 8)
+#define MMIOERR_CHUNKNOTFOUND   (MMIOERR_BASE + 9)
+#define MMIOERR_UNBUFFERED      (MMIOERR_BASE + 10)
+
+/* Separator character */
+#define CFSEPCHAR       '+'
+
+/* Multimedia I/O flags */
+#define MMIO_RWMODE         0x00000003L
+#define MMIO_SHAREMODE      0x00000070L
+#define MMIO_CREATE         0x00001000L
+#define MMIO_PARSE          0x00000100L
+#define MMIO_DELETE         0x00000200L
+#define MMIO_EXIST          0x00004000L
+#define MMIO_ALLOCBUF       0x00010000L
+#define MMIO_GETTEMP        0x00020000L
+#define MMIO_DIRTY          0x10000000L
+#define MMIO_READ           0x00000000L
+#define MMIO_WRITE          0x00000001L
+#define MMIO_READWRITE      0x00000002L
+#define MMIO_COMPAT         0x00000000L
+#define MMIO_EXCLUSIVE      0x00000010L
+#define MMIO_DENYWRITE      0x00000020L
+#define MMIO_DENYREAD       0x00000030L
+#define MMIO_DENYNONE       0x00000040L
+#define MMIO_FHOPEN         0x00000010L
+#define MMIO_EMPTYBUF       0x00000010L
+#define MMIO_TOUPPER        0x00000010L
+#define MMIO_INSTALLPROC    0x00010000L
+#define MMIO_GLOBALPROC     0x10000000L
+#define MMIO_REMOVEPROC     0x00020000L
+#define MMIO_FINDPROC       0x00040000L
+#define MMIO_FINDCHUNK      0x00000010L
+#define MMIO_FINDRIFF       0x00000020L
+#define MMIO_FINDLIST       0x00000040L
+#define MMIO_CREATERIFF     0x00000020L
+#define MMIO_CREATELIST     0x00000040L
+
+/* Multimedia I/O messages */
+#define MMIOM_READ          MMIO_READ
+#define MMIOM_WRITE         MMIO_WRITE
+#define MMIOM_SEEK          2
+#define MMIOM_OPEN          3
+#define MMIOM_CLOSE         4
+#define MMIOM_WRITEFLUSH    5
+#if (WINVER >= 0x030A)
+    #define MMIOM_RENAME    6
+#endif
+#define MMIOM_USER          0x8000
+
+/* Macro to make a FOURCC value */
+#define mmioFOURCC( c0, c1, c2, c3 ) \
+    ((DWORD)(BYTE)(c0) | ((DWORD)(BYTE)(c1) << 8) | ((DWORD)(BYTE)(c2) << 16) | \
+    ((DWORD)(BYTE)(c3) << 24))
+
+/* FOURCC values */
+#define FOURCC_RIFF     mmioFOURCC( 'R', 'I', 'F', 'F' )
+#define FOURCC_LIST     mmioFOURCC( 'L', 'I', 'S', 'T' )
+#define FOURCC_DOS      mmioFOURCC( 'D', 'O', 'S', ' ' )
+#define FOURCC_MEM      mmioFOURCC( 'M', 'E', 'M', ' ' )
+
+/* mmioSeek() flags */
+#ifndef SEEK_SET
+    #define SEEK_SET        0
+    #define SEEK_CUR        1
+    #define SEEK_END        2
+#endif
+
+/* Multimedia I/O default buffer size */
+#define MMIO_DEFAULTBUFFER  8192
+
+/* MCI error codes */
+#define MCIERR_INVALID_DEVICE_ID        (MCIERR_BASE + 1)
+#define MCIERR_UNRECOGNIZED_KEYWORD     (MCIERR_BASE + 3)
+#define MCIERR_UNRECOGNIZED_COMMAND     (MCIERR_BASE + 5)
+#define MCIERR_HARDWARE                 (MCIERR_BASE + 6)
+#define MCIERR_INVALID_DEVICE_NAME      (MCIERR_BASE + 7)
+#define MCIERR_OUT_OF_MEMORY            (MCIERR_BASE + 8)
+#define MCIERR_DEVICE_OPEN              (MCIERR_BASE + 9)
+#define MCIERR_CANNOT_LOAD_DRIVER       (MCIERR_BASE + 10)
+#define MCIERR_MISSING_COMMAND_STRING   (MCIERR_BASE + 11)
+#define MCIERR_PARAM_OVERFLOW           (MCIERR_BASE + 12)
+#define MCIERR_MISSING_STRING_ARGUMENT  (MCIERR_BASE + 13)
+#define MCIERR_BAD_INTEGER              (MCIERR_BASE + 14)
+#define MCIERR_PARSER_INTERNAL          (MCIERR_BASE + 15)
+#define MCIERR_DRIVER_INTERNAL          (MCIERR_BASE + 16)
+#define MCIERR_MISSING_PARAMETER        (MCIERR_BASE + 17)
+#define MCIERR_UNSUPPORTED_FUNCTION     (MCIERR_BASE + 18)
+#define MCIERR_FILE_NOT_FOUND           (MCIERR_BASE + 19)
+#define MCIERR_DEVICE_NOT_READY         (MCIERR_BASE + 20)
+#define MCIERR_INTERNAL                 (MCIERR_BASE + 21)
+#define MCIERR_DRIVER                   (MCIERR_BASE + 22)
+#define MCIERR_CANNOT_USE_ALL           (MCIERR_BASE + 23)
+#define MCIERR_MULTIPLE                 (MCIERR_BASE + 24)
+#define MCIERR_EXTENSION_NOT_FOUND      (MCIERR_BASE + 25)
+#define MCIERR_OUTOFRANGE               (MCIERR_BASE + 26)
+#define MCIERR_FLAGS_NOT_COMPATIBLE     (MCIERR_BASE + 28)
+#define MCIERR_FILE_NOT_SAVED           (MCIERR_BASE + 30)
+#define MCIERR_DEVICE_TYPE_REQUIRED     (MCIERR_BASE + 31)
+#define MCIERR_DEVICE_LOCKED            (MCIERR_BASE + 32)
+#define MCIERR_DUPLICATE_ALIAS          (MCIERR_BASE + 33)
+#define MCIERR_BAD_CONSTANT             (MCIERR_BASE + 34)
+#define MCIERR_MUST_USE_SHAREABLE       (MCIERR_BASE + 35)
+#define MCIERR_MISSING_DEVICE_NAME      (MCIERR_BASE + 36)
+#define MCIERR_BAD_TIME_FORMAT          (MCIERR_BASE + 37)
+#define MCIERR_NO_CLOSING_QUOTE         (MCIERR_BASE + 38)
+#define MCIERR_DUPLICATE_FLAGS          (MCIERR_BASE + 39)
+#define MCIERR_INVALID_FILE             (MCIERR_BASE + 40)
+#define MCIERR_NULL_PARAMETER_BLOCK     (MCIERR_BASE + 41)
+#define MCIERR_UNNAMED_RESOURCE         (MCIERR_BASE + 42)
+#define MCIERR_NEW_REQUIRES_ALIAS       (MCIERR_BASE + 43)
+#define MCIERR_NOTIFY_ON_AUTO_OPEN      (MCIERR_BASE + 44)
+#define MCIERR_NO_ELEMENT_ALLOWED       (MCIERR_BASE + 45)
+#define MCIERR_NONAPPLICABLE_FUNCTION   (MCIERR_BASE + 46)
+#define MCIERR_ILLEGAL_FOR_AUTO_OPEN    (MCIERR_BASE + 47)
+#define MCIERR_FILENAME_REQUIRED        (MCIERR_BASE + 48)
+#define MCIERR_EXTRA_CHARACTERS         (MCIERR_BASE + 49)
+#define MCIERR_DEVICE_NOT_INSTALLED     (MCIERR_BASE + 50)
+#define MCIERR_GET_CD                   (MCIERR_BASE + 51)
+#define MCIERR_SET_CD                   (MCIERR_BASE + 52)
+#define MCIERR_SET_DRIVE                (MCIERR_BASE + 53)
+#define MCIERR_DEVICE_LENGTH            (MCIERR_BASE + 54)
+#define MCIERR_DEVICE_ORD_LENGTH        (MCIERR_BASE + 55)
+#define MCIERR_NO_INTEGER               (MCIERR_BASE + 56)
+#define MCIERR_WAVE_OUTPUTSINUSE        (MCIERR_BASE + 64)
+#define MCIERR_WAVE_SETOUTPUTINUSE      (MCIERR_BASE + 65)
+#define MCIERR_WAVE_INPUTSINUSE         (MCIERR_BASE + 66)
+#define MCIERR_WAVE_SETINPUTINUSE       (MCIERR_BASE + 67)
+#define MCIERR_WAVE_OUTPUTUNSPECIFIED   (MCIERR_BASE + 68)
+#define MCIERR_WAVE_INPUTUNSPECIFIED    (MCIERR_BASE + 69)
+#define MCIERR_WAVE_OUTPUTSUNSUITABLE   (MCIERR_BASE + 70)
+#define MCIERR_WAVE_SETOUTPUTUNSUITABLE (MCIERR_BASE + 71)
+#define MCIERR_WAVE_INPUTSUNSUITABLE    (MCIERR_BASE + 72)
+#define MCIERR_WAVE_SETINPUTUNSUITABLE  (MCIERR_BASE + 73)
+#define MCIERR_SEQ_DIV_INCOMPATIBLE     (MCIERR_BASE + 80)
+#define MCIERR_SEQ_PORT_INUSE           (MCIERR_BASE + 81)
+#define MCIERR_SEQ_PORT_NONEXISTENT     (MCIERR_BASE + 82)
+#define MCIERR_SEQ_PORT_MAPNODEVICE     (MCIERR_BASE + 83)
+#define MCIERR_SEQ_PORT_MISCERROR       (MCIERR_BASE + 84)
+#define MCIERR_SEQ_TIMER                (MCIERR_BASE + 85)
+#define MCIERR_SEQ_PORTUNSPECIFIED      (MCIERR_BASE + 86)
+#define MCIERR_SEQ_NOMIDIPRESENT        (MCIERR_BASE + 87)
+#define MCIERR_NO_WINDOW                (MCIERR_BASE + 90)
+#define MCIERR_CREATEWINDOW             (MCIERR_BASE + 91)
+#define MCIERR_FILE_READ                (MCIERR_BASE + 92)
+#define MCIERR_FILE_WRITE               (MCIERR_BASE + 93)
+#define MCIERR_CUSTOM_DRIVER_BASE       (MCIERR_BASE + 256)
+
+/* MCI driver messages */
+#define MCI_OPEN            0x0803
+#define MCI_CLOSE           0x0804
+#define MCI_ESCAPE          0x0805
+#define MCI_PLAY            0x0806
+#define MCI_SEEK            0x0807
+#define MCI_STOP            0x0808
+#define MCI_PAUSE           0x0809
+#define MCI_INFO            0x080A
+#define MCI_GETDEVCAPS      0x080B
+#define MCI_SPIN            0x080C
+#define MCI_SET             0x080D
+#define MCI_STEP            0x080E
+#define MCI_RECORD          0x080F
+#define MCI_SYSINFO         0x0810
+#define MCI_BREAK           0x0811
+#define MCI_SOUND           0x0812
+#define MCI_SAVE            0x0813
+#define MCI_STATUS          0x0814
+#define MCI_CUE             0x0830
+#define MCI_REALIZE         0x0840
+#define MCI_WINDOW          0x0841
+#define MCI_PUT             0x0842
+#define MCI_WHERE           0x0843
+#define MCI_FREEZE          0x0844
+#define MCI_UNFREEZE        0x0845
+#define MCI_LOAD            0x0850
+#define MCI_CUT             0x0851
+#define MCI_COPY            0x0852
+#define MCI_PASTE           0x0853
+#define MCI_UPDATE          0x0854
+#define MCI_RESUME          0x0855
+#define MCI_DELETE          0x0856
+#define MCI_USER_MESSAGES   (DRV_MCI_FIRST + 0x0400)
+
+/* MCI device identifier for all devices */
+#define MCI_ALL_DEVICE_ID   0xFFFF
+
+/* Predefined MCI device types */
+#define MCI_DEVTYPE_VCR             (MCI_STRING_OFFSET + 1)
+#define MCI_DEVTYPE_VIDEODISC       (MCI_STRING_OFFSET + 2)
+#define MCI_DEVTYPE_OVERLAY         (MCI_STRING_OFFSET + 3)
+#define MCI_DEVTYPE_CD_AUDIO        (MCI_STRING_OFFSET + 4)
+#define MCI_DEVTYPE_DAT             (MCI_STRING_OFFSET + 5)
+#define MCI_DEVTYPE_SCANNER         (MCI_STRING_OFFSET + 6)
+#define MCI_DEVTYPE_ANIMATION       (MCI_STRING_OFFSET + 7)
+#define MCI_DEVTYPE_DIGITAL_VIDEO   (MCI_STRING_OFFSET + 8)
+#define MCI_DEVTYPE_OTHER           (MCI_STRING_OFFSET + 9)
+#define MCI_DEVTYPE_WAVEFORM_AUDIO  (MCI_STRING_OFFSET + 10)
+#define MCI_DEVTYPE_SEQUENCER       (MCI_STRING_OFFSET + 11)
+#define MCI_DEVTYPE_FIRST           MCI_DEVTYPE_VCR
+#define MCI_DEVTYPE_LAST            MCI_DEVTYPE_SEQUENCER
+
+/* MCI status modes */
+#define MCI_MODE_NOT_READY  (MCI_STRING_OFFSET + 12)
+#define MCI_MODE_STOP       (MCI_STRING_OFFSET + 13)
+#define MCI_MODE_PLAY       (MCI_STRING_OFFSET + 14)
+#define MCI_MODE_RECORD     (MCI_STRING_OFFSET + 15)
+#define MCI_MODE_SEEK       (MCI_STRING_OFFSET + 16)
+#define MCI_MODE_PAUSE      (MCI_STRING_OFFSET + 17)
+#define MCI_MODE_OPEN       (MCI_STRING_OFFSET + 18)
+
+/* MCI time formats */
+#define MCI_FORMAT_MILLISECONDS 0
+#define MCI_FORMAT_HMS          1
+#define MCI_FORMAT_MSF          2
+#define MCI_FORMAT_FRAMES       3
+#define MCI_FORMAT_SMPTE_24     4
+#define MCI_FORMAT_SMPTE_25     5
+#define MCI_FORMAT_SMPTE_30     6
+#define MCI_FORMAT_SMPTE_30DROP 7
+#define MCI_FORMAT_BYTES        8
+#define MCI_FORMAT_SAMPLES      9
+#define MCI_FORMAT_TMSF         10
+
+/* Macros to manipulate time values */
+#define MCI_MSF_MINUTE( t )     ((BYTE)(t))
+#define MCI_MSF_SECOND( t )     ((BYTE)(((WORD)(t)) >> 8))
+#define MCI_MSF_FRAME( t )      ((BYTE)((t) >> 16))
+#define MCI_MAKE_MSF( m, s, f ) \
+    ((DWORD)(((BYTE)(m) | ((WORD)(s) << 8)) | (((DWORD)(BYTE)(f)) << 16)))
+#define MCI_TMSF_TRACK( t )     ((BYTE)(t))
+#define MCI_TMSF_MINUTE( t )    ((BYTE)(((WORD)(t)) >> 8))
+#define MCI_TMSF_SECOND( t )    ((BYTE)((t) >> 16))
+#define MCI_TMSF_FRAME( t )     ((BYTE)((t) >> 24))
+#define MCI_MAKE_TMSF( t, m, s, f ) \
+    ((DWORD)(((BYTE)(t) | ((WORD)(m) << 8)) | \
+    (((DWORD)(BYTE)(s) | ((WORD)(f) << 8)) << 16)))
+#define MCI_HMS_HOUR( t )       ((BYTE)(t))
+#define MCI_HMS_MINUTE( t )     ((BYTE)(((WORD)(t)) >> 8))
+#define MCI_HMS_SECOND( t )     ((BYTE)((t) >> 16))
+#define MCI_MAKE_HMS( h, m, s ) \
+    ((DWORD)(((BYTE)(h) | ((WORD)(m) << 8)) | (((DWORD)(BYTE)(s)) << 16)))
+
+/* MM_MCINOTIFY flags */
+#define MCI_NOTIFY_SUCCESSFUL   1
+#define MCI_NOTIFY_SUPERSEDED   2
+#define MCI_NOTIFY_ABORTED      4
+#define MCI_NOTIFY_FAILURE      8
+
+/* MCI command message flags */
+#define MCI_NOTIFY  0x00000001L
+#define MCI_WAIT    0x00000002L
+#define MCI_FROM    0x00000004L
+#define MCI_TO      0x00000008L
+#define MCI_TRACK   0x00000010L
+
+/* MCI_OPEN flags */
+#define MCI_OPEN_SHAREABLE  0x00000100L
+#define MCI_OPEN_ELEMENT    0x00000200L
+#define MCI_OPEN_ALIAS      0x00000400L
+#define MCI_OPEN_ELEMENT_ID 0x00000800L
+#define MCI_OPEN_TYPE_ID    0x00001000L
+#define MCI_OPEN_TYPE       0x00002000L
+
+/* MCI_SEEK flags */
+#define MCI_SEEK_TO_START   0x00000100L
+#define MCI_SEEK_TO_END     0x00000200L
+
+/* MCI_STATUS flags */
+#define MCI_STATUS_ITEM     0x00000100L
+#define MCI_STATUS_START    0x00000200L
+
+/* MCI_STATUS items */
+#define MCI_STATUS_LENGTH           1L
+#define MCI_STATUS_POSITION         2L
+#define MCI_STATUS_NUMBER_OF_TRACKS 3L
+#define MCI_STATUS_MODE             4L
+#define MCI_STATUS_MEDIA_PRESENT    5L
+#define MCI_STATUS_TIME_FORMAT      6L
+#define MCI_STATUS_READY            7L
+#define MCI_STATUS_CURRENT_TRACK    8L
+
+/* MCI_INFO flags */
+#define MCI_INFO_PRODUCT    0x00000100L
+#define MCI_INFO_FILE       0x00000200L
+
+/* MCI_GETDEVCAPS flags */
+#define MCI_GETDEVCAPS_ITEM 0x00000100L
+
+/* MCI_GETDEVCAPS items */
+#define MCI_GETDEVCAPS_CAN_RECORD       1L
+#define MCI_GETDEVCAPS_HAS_AUDIO        2L
+#define MCI_GETDEVCAPS_HAS_VIDEO        3L
+#define MCI_GETDEVCAPS_DEVICE_TYPE      4L
+#define MCI_GETDEVCAPS_USES_FILES       5L
+#define MCI_GETDEVCAPS_COMPOUND_DEVICE  6L
+#define MCI_GETDEVCAPS_CAN_EJECT        7L
+#define MCI_GETDEVCAPS_CAN_PLAY         8L
+#define MCI_GETDEVCAPS_CAN_SAVE         9L
+
+/* MCI_SYSINFO flags */
+#define MCI_SYSINFO_QUANTITY    0x00000100L
+#define MCI_SYSINFO_OPEN        0x00000200L
+#define MCI_SYSINFO_NAME        0x00000400L
+#define MCI_SYSINFO_INSTALLNAME 0x00000800L
+
+/* MCI_SET flags */
+#define MCI_SET_DOOR_OPEN   0x00000100L
+#define MCI_SET_DOOR_CLOSED 0x00000200L
+#define MCI_SET_TIME_FORMAT 0x00000400L
+#define MCI_SET_AUDIO       0x00000800L
+#define MCI_SET_VIDEO       0x00001000L
+#define MCI_SET_ON          0x00002000L
+#define MCI_SET_OFF         0x00004000L
+
+/* MCI_SET audio channels */
+#define MCI_SET_AUDIO_ALL       0L
+#define MCI_SET_AUDIO_LEFT      1L
+#define MCI_SET_AUDIO_RIGHT     2L
+
+/* MCI_BREAK flags */
+#define MCI_BREAK_KEY   0x00000100L
+#define MCI_BREAK_HWND  0x00000200L
+#define MCI_BREAK_OFF   0x00000400L
+
+/* MCI_RECORD flags */
+#define MCI_RECORD_INSERT       0x00000100L
+#define MCI_RECORD_OVERWRITE    0x00000200L
+
+/* MCI_SOUND flags */
+#define MCI_SOUND_NAME  0x00000100L
+
+/* MCI_SAVE flags */
+#define MCI_SAVE_FILE   0x00000100L
+
+/* MCI_LOAD flags */
+#define MCI_LOAD_FILE   0x0x000100L
+
+/* MCI videodisc constants */
+#define MCI_VD_MODE_PARK        (MCI_VD_OFFSET + 1)
+#define MCI_VD_MEDIA_CLV        (MCI_VD_OFFSET + 2)
+#define MCI_VD_MEDIA_CAV        (MCI_VD_OFFSET + 3)
+#define MCI_VD_MEDIA_OTHER      (MCI_VD_OFFSET + 4)
+#define MCI_VD_FORMAT_TRACK     0x4001
+
+/* MCI_PLAY flags for videodiscs */
+#define MCI_VD_PLAY_REVERSE     0x00010000L
+#define MCI_VD_PLAY_FAST        0x00020000L
+#define MCI_VD_PLAY_SPEED       0x00040000L
+#define MCI_VD_PLAY_SCAN        0x00080000L
+#define MCI_VD_PLAY_SLOW        0x00100000L
+
+/* MCI_SEEK flags for videodiscs */
+#define MCI_VD_SEEK_REVERSE     0x00010000L
+
+/* MCI_SEEK items for videodiscs */
+#define MCI_VD_STATUS_SPEED         0x00004002L
+#define MCI_VD_STATUS_FORWARD       0x00004003L
+#define MCI_VD_STATUS_MEDIA_TYPE    0x00004004L
+#define MCI_VD_STATUS_SIDE          0x00004005L
+#define MCI_VD_STATUS_DISC_SIZE     0x00004006L
+
+/* MCI_GETDEVCAPS flags for videodiscs */
+#define MCI_VD_GETDEVCAPS_CLV   0x00010000L
+#define MCI_VD_GETDEVCAPS_CAV   0x00020000L
+
+/* MCI_SPIN flags for videodiscs */
+#define MCI_VD_SPIN_UP      0x00010000L
+#define MCI_VD_SPIN_DOWN    0x00020000L
+
+/* MCI_GETDEVCAPS items for videodiscs */
+#define MCI_VD_GETDEVCAPS_CAN_REVERSE   0x00004002L
+#define MCI_VD_GETDEVCAPS_FAST_RATE     0x00004003L
+#define MCI_VD_GETDEVCAPS_SLOW_RATE     0x00004004L
+#define MCI_VD_GETDEVCAPS_NORMAL_RATE   0x00004005L
+
+/* MCI_SETP flags for videodiscs */
+#define MCI_VD_STEP_FRAMES      0x00010000L
+#define MCI_VD_STEP_REVERSE     0x00020000L
+
+/* MCI_ESCAPE flags for videodiscs */
+#define MCI_VD_ESCAPE_STRING    0x00000100L
+
+/* MCI_OPEN flags for wave audio */
+#define MCI_WAVE_OPEN_BUFFER    0x00010000L
+
+/* MCI_SET flags for wave audio */
+#define MCI_WAVE_SET_FORMATTAG          0x00010000L
+#define MCI_WAVE_SET_CHANNELS           0x00020000L
+#define MCI_WAVE_SET_SAMPLESPERSEC      0x00040000L
+#define MCI_WAVE_SET_AVGBYTESPERSEC     0x00080000L
+#define MCI_WAVE_SET_BLOCKALIGN         0x00100000L
+#define MCI_WAVE_SET_BITSPERSAMPLE      0x00200000L
+
+/* MCI_STATUS and MCI_SET flags for wave audio */
+#define MCI_WAVE_INPUT  0x00400000L
+#define MCI_WAVE_OUTPUT 0x00800000L
+
+/* MCI_STATUS items for wave audio */
+#define MCI_WAVE_STATUS_FORMATTAG       0x00004001L
+#define MCI_WAVE_STATUS_CHANNELS        0x00004002L
+#define MCI_WAVE_STATUS_SAMPLESPERSEC   0x00004003L
+#define MCI_WAVE_STATUS_AVGBYTESPERSEC  0x00004004L
+#define MCI_WAVE_STATUS_BLOCKALIGN      0x00004005L
+#define MCI_WAVE_STATUS_BITSPERSAMPLE   0x00004006L
+#define MCI_WAVE_STATUS_LEVEL           0x00004007L
+
+/* MCI_SET flags for wave audio */
+#define MCI_WAVE_SET_ANYINPUT   0x04000000L
+#define MCI_WAVE_SET_ANYOUTPUT  0x08000000L
+
+/* MCI_GETDEVCAPS items for wave audio */
+#define MCI_WAVE_GETDEVCAPS_INPUTS  0x00004001L
+#define MCI_WAVE_GETDEVCAPS_OUTPUTS 0x00004002L
+
+/* MCI_STATUS return values for MIDI sequencer */
+#define MCI_SEQ_DIV_PPQN            (MCI_SEQ_OFFSET + 0)
+#define MCI_SEQ_DIV_SMPTE_24        (MCI_SEQ_OFFSET + 1)
+#define MCI_SEQ_DIV_SMPTE_25        (MCI_SEQ_OFFSET + 2)
+#define MCI_SEQ_DIV_SMPTE_30DROP    (MCI_SEQ_OFFSET + 3)
+#define MCI_SEQ_DIV_SMPTE_30        (MCI_SEQ_OFFSET + 4)
+
+/* Master synchronization types for MIDI sequencer */
+#define MCI_SEQ_FORMAT_SONGPTR  0x00004001L
+#define MCI_SEQ_FILE            0x00004002L
+#define MCI_SEQ_MIDI            0x00004003L
+#define MCI_SEQ_SMPTE           0x00004004L
+#define MCI_SEQ_NONE            65533L
+
+/* MCI_STATUS items for MIDI sequencer */
+#define MCI_SEQ_STATUS_TEMPO    0x00004002L
+#define MCI_SEQ_STATUS_PORT     0x00004003L
+#define MCI_SEQ_STATUS_SLAVE    0x00004007L
+#define MCI_SEQ_STATUS_MASTER   0x00004008L
+#define MCI_SEQ_STATUS_OFFSET   0x00004009L
+#define MCI_SEQ_STATUS_DIVTYPE  0x0000400AL
+
+/* MCI_SET flags for MIDI sequencer */
+#define MCI_SEQ_SET_TEMPO       0x00010000L
+#define MCI_SEQ_SET_PORT        0x00020000L
+#define MCI_SEQ_SET_SLAVE       0x00040000L
+#define MCI_SEQ_SET_MASTER      0x00080000L
+#define MCI_SEQ_SET_OFFSET      0x01000000L
+
+/* MCI_OPEN flags for animation */
+#define MCI_ANIM_OPEN_WS        0x00010000L
+#define MCI_ANIM_OPEN_PARENT    0x00020000L
+#define MCI_ANIM_OPEN_NOSTATIC  0x00040000L
+
+/* MCI_PLAY flags for animation */
+#define MCI_ANIM_PLAY_SPEED     0x00010000L
+#define MCI_ANIM_PLAY_REVERSE   0x00020000L
+#define MCI_ANIM_PLAY_FAST      0x00040000L
+#define MCI_ANIM_PLAY_SLOW      0x00080000L
+#define MCI_ANIM_PLAY_SCAN      0x00100000L
+
+/* MCI_STEP flags for animation */
+#define MCI_ANIM_STEP_REVERSE   0x00010000L
+#define MCI_ANIM_STEP_FRAMES    0x00020000L
+
+/* MCI_STATUS items for animation */
+#define MCI_ANIM_STATUS_SPEED   0x00004001L
+#define MCI_ANIM_STATUS_FORWARD 0x00004002L
+#define MCI_ANIM_STATUS_HWND    0x00004003L
+#define MCI_ANIM_STATUS_HPAL    0x00004004L
+#define MCI_ANIM_STATUS_STRETCH 0x00004005L
+
+/* MCI_INFO flags for animation */
+#define MCI_ANIM_INFO_TEXT  0x00010000L
+
+/* MCI_GETDEVCAPS items for animation */
+#define MCI_ANIM_GETDEVCAPS_CAN_REVERSE 0x00004001L
+#define MCI_ANIM_GETDEVCAPS_FAST_RATE   0x00004002L
+#define MCI_ANIM_GETDEVCAPS_SLOW_RATE   0x00004003L
+#define MCI_ANIM_GETDEVCAPS_NORMAL_RATE 0x00004004L
+#define MCI_ANIM_GETDEVCAPS_PALETTES    0x00004006L
+#define MCI_ANIM_GETDEVCAPS_CAN_STRETCH 0x00004007L
+#define MCI_ANIM_GETDEVCAPS_MAX_WINDOWS 0x00004008L
+
+/* MCI_REALIZE flags for animation */
+#define MCI_ANIM_REALIZE_NORM   0x00010000L
+#define MCI_ANIM_REALIZE_BKGD   0x00020000L
+
+/* MCI_WINDOW flags for animation */
+#define MCI_ANIM_WINDOW_HWND            0x00010000L
+#define MCI_ANIM_WINDOW_STATE           0x00040000L
+#define MCI_ANIM_WINDOW_TEXT            0x00080000L
+#define MCI_ANIM_WINDOW_ENABLE_STRETCH  0x00100000L
+#define MCI_ANIM_WINDOW_DISABLE_STRETCH 0x00200000L
+
+/* MCI_WINDOW special window handle value for animation */
+#define MCI_ANIM_WINDOW_DEFAULT 0
+
+/* MCI_PUT flags for animation */
+#define MCI_ANIM_RECT               0x00010000L
+#define MCI_ANIM_PUT_SOURCE         0x00020000L
+#define MCI_ANIM_PUT_DESTINATION    0x00040000L
+
+/* MCI_WHERE flags for animation */
+#define MCI_ANIM_WHERE_SOURCE       0x00020000L
+#define MCI_ANIM_WHERE_DESTINATION  0x00040000L
+
+/* MCI_UPDATE flags for animation */
+#define MCI_ANIM_UPDATE_HDC 0x00020000L
+
+/* MCI_OPEN flags for video overlay */
+#define MCI_OVLY_OPEN_WS        0x00010000L
+#define MCI_OVLY_OPEN_PARENT    0x00020000L
+
+/* MCI_STATUS flags for video overlay */
+#define MCI_OVLY_STATUS_HWND    0x00004001L
+#define MCI_OVLY_STATUS_STRETCH 0x00004002L
+
+/* MCI_INFO flags for video overlay */
+#define MCI_OVLY_INFO_TEXT  0x00010000L
+
+/* MCI_GETDEVCAPS items for video overlay */
+#define MCI_OVLY_GETDEVCAPS_CAN_STRETCH 0x00004001L
+#define MCI_OVLY_GETDEVCAPS_CAN_FREEZE  0x00004002L
+#define MCI_OVLY_GETDEVCAPS_MAX_WINDOWS 0x00004003L
+
+/* MCI_WINDOW flags for video overlay */
+#define MCI_OVLY_WINDOW_HWND            0x00010000L
+#define MCI_OVLY_WINDOW_STATE           0x00040000L
+#define MCI_OVLY_WINDOW_TEXT            0x00080000L
+#define MCI_OVLY_WINDOW_ENABLE_STRETCH  0x00100000L
+#define MCI_OVLY_WINDOW_DISABLE_STRETCH 0x00200000L
+
+/* MCI_WINDOW special window handle value for video overlay */
+#define MCI_OVLY_WINDOW_DEFAULT 0
+
+/* MCI_PUT flags for video overlay */
+#define MCI_OVLY_RECT               0x00010000L
+#define MCI_OVLY_PUT_SOURCE         0x00020000L
+#define MCI_OVLY_PUT_DESTINATION    0x00040000L
+#define MCI_OVLY_PUT_FRAME          0x00080000L
+#define MCI_OVLY_PUT_VIDEO          0x00100000L
+
+/* MCI_WHERE flags for video overlay */
+#define MCI_OVLY_WHERE_SOURCE       0x00020000L
+#define MCI_OVLY_WHERE_DESTINATION  0x00040000L
+#define MCI_OVLY_WHERE_FRAME        0x00080000L
+#define MCI_OVLY_WHERE_VIDEO        0x00100000L
+
+/* Extra constants for use with GDI */
+#ifndef C1_TRANSPARENT
+    #define CAPS1           94
+    #define C1_TRANSPARENT  1
+    #define NEWTRANSPARENT  3
+    #define QUERYROPSUPPORT 40
+#endif
+
+/* Escape for the DIB driver */
+#define SELECTDIB   41
+
+/* Macro to generate a DIB color table index */
+#define DIBINDEX( n )   MAKELONG( (n), 0x10FF )
+
+/* System command used to signal that a screensaver is about to be invoked */
+#ifndef SC_SCREENSAVE
+    #define SC_SCREENSAVE   0xF140
+#endif
+
+#ifndef RC_INVOKED
+
+/* Multimedia time */
+typedef struct mmtime_tag {
+    UINT    wType;
+    union {
+        DWORD   ms;
+        DWORD   sample;
+        DWORD   cb;
+        struct {
+            BYTE    hour;
+            BYTE    min;
+            BYTE    sec;
+            BYTE    frame;
+            BYTE    fps;
+            BYTE    dummy;
+        } smpte;
+        struct {
+            DWORD   songptrpos;
+        } midi;
+    } u;
+} MMTIME;
+typedef MMTIME      *PMMTIME;
+typedef MMTIME NEAR *NPMMTIME;
+typedef MMTIME FAR  *LPMMTIME;
+
+/* Driver callback */
+typedef void (CALLBACK DRVCALLBACK)( HDRVR, UINT, DWORD, DWORD, DWORD );
+typedef DRVCALLBACK FAR     *LPDRVCALLBACK;
+typedef DRVCALLBACK         WAVECALLBACK;
+typedef WAVECALLBACK FAR    *LPWAVECALLBACK;
+typedef DRVCALLBACK         MIDICALLBACK;
+typedef MIDICALLBACK FAR    *LPMIDICALLBACK;
+
+/* Wave header */
+typedef struct wavehdr_tag {
+    LPSTR                   lpData;
+    DWORD                   dwBufferLength;
+    DWORD                   dwBytesRecorded;
+    DWORD                   dwUser;
+    DWORD                   dwFlags;
+    DWORD                   dwLoops;
+    struct wavehdr_tag FAR  *lpNext;
+    DWORD                   reserved;
+} WAVEHDR;
+typedef WAVEHDR         *PWAVEHDR;
+typedef WAVEHDR NEAR    *NPWAVEHDR;
+typedef WAVEHDR FAR     *LPWAVEHDR;
+
+/* Wave output capabilities */
+typedef struct waveoutcaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    VERSION vDriverVersion;
+    char    szPname[MAXPNAMELEN];
+    DWORD   dwFormats;
+    UINT    wChannels;
+    DWORD   dwSupport;
+} WAVEOUTCAPS;
+typedef WAVEOUTCAPS         *PWAVEOUTCAPS;
+typedef WAVEOUTCAPS NEAR    *NPWAVEOUTCAPS;
+typedef WAVEOUTCAPS FAR     *LPWAVEOUTCAPS;
+
+/* Wave input capabilities */
+typedef struct waveincaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    VERSION vDriverVersion;
+    char    szPname[MAXPNAMELEN];
+    DWORD   dwFormats;
+    UINT    wChannels;
+} WAVEINCAPS;
+typedef WAVEINCAPS      *PWAVEINCAPS;
+typedef WAVEINCAPS NEAR *NPWAVEINCAPS;
+typedef WAVEINCAPS FAR  *LPWAVEINCAPS;
+
+/* Wave format */
+typedef struct waveformat_tag {
+    WORD    wFormatTag;
+    WORD    nChannels;
+    DWORD   nSamplesPerSec;
+    DWORD   nAvgBytesPerSec;
+    WORD    nBlockAlign;
+} WAVEFORMAT;
+typedef WAVEFORMAT      *PWAVEFORMAT;
+typedef WAVEFORMAT NEAR *NPWAVEFORMAT;
+typedef WAVEFORMAT FAR  *LPWAVEFORMAT;
+
+/* PCM wave format */
+typedef struct pcmwaveformat_tag {
+    WAVEFORMAT  wf;
+    WORD        wBitsPerSample;
+} PCMWAVEFORMAT;
+typedef PCMWAVEFORMAT       *PPCMWAVEFORMAT;
+typedef PCMWAVEFORMAT NEAR  *NPPCMWAVEFORMAT;
+typedef PCMWAVEFORMAT FAR   *LPPCMWAVEFORMAT;
+
+/* Arrays used with MIDI audio */
+typedef WORD        PATCHARRAY[MIDIPATCHSIZE];
+typedef WORD FAR    *LPPATCHARRAY;
+typedef WORD        KEYARRAY[MIDIPATCHSIZE];
+typedef WORD FAR    *LPKEYARRAY;
+
+/* MIDI output capabilities */
+typedef struct midioutcaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    VERSION vDriverVersion;
+    char    szPname[MAXPNAMELEN];
+    UINT    wTechnology;
+    UINT    wVoices;
+    UINT    wNotes;
+    UINT    wChannelMask;
+    DWORD   dwSupport;
+} MIDIOUTCAPS;
+typedef MIDIOUTCAPS         *PMIDIOUTCAPS;
+typedef MIDIOUTCAPS NEAR    *NPMIDIOUTCAPS;
+typedef MIDIOUTCAPS FAR     *LPMIDIOUTCAPS;
+
+/* MIDI input capabilities */
+typedef struct midiincaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    VERSION vDriverVersion;
+    char    szPname[MAXPNAMELEN];
+} MIDIINCAPS;
+typedef MIDIINCAPS      *PMIDIINCAPS;
+typedef MIDIINCAPS NEAR *NPMIDIINCAPS;
+typedef MIDIINCAPS FAR  *LPMIDIINCAPS;
+
+/* MIDI header */
+typedef struct midihdr_tag {
+    LPSTR                   lpData;
+    DWORD                   dwBufferLength;
+    DWORD                   dwBytesRecorded;
+    DWORD                   dwUser;
+    DWORD                   dwFlags;
+    struct midihdr_tag FAR  *lpNext;
+    DWORD                   reserved;
+} MIDIHDR;
+typedef MIDIHDR         *PMIDIHDR;
+typedef MIDIHDR NEAR    *NPMIDIHDR;
+typedef MIDIHDR FAR     *LPMIDIHDR;
+
+/* Auxiliary capabilities */
+typedef struct auxcaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    VERSION vDriverVersion;
+    char    szPname[MAXPNAMELEN];
+    UINT    wTechnology;
+    DWORD   dwSupport;
+} AUXCAPS;
+typedef AUXCAPS         *PAUXCAPS;
+typedef AUXCAPS NEAR    *NPAUXCAPS;
+typedef AUXCAPS FAR     *LPAUXCAPS;
+
+/* Time callback */
+typedef void (CALLBACK TIMECALLBACK)( UINT, UINT, DWORD, DWORD, DWORD );
+typedef TIMECALLBACK FAR    *LPTIMECALLBACK;
+
+/* Time capabilities */
+typedef struct timecaps_tag {
+    UINT    wPeriodMin;
+    UINT    wPeriodMax;
+} TIMECAPS;
+typedef TIMECAPS        *PTIMECAPS;
+typedef TIMECAPS NEAR   *NPTIMECAPS;
+typedef TIMECAPS FAR    *LPTIMECAPS;
+
+/* Joystick capabilities */
+typedef struct joycaps_tag {
+    UINT    wMid;
+    UINT    wPid;
+    char    szPname[MAXPNAMELEN];
+    UINT    wXmin;
+    UINT    wXmax;
+    UINT    wYmin;
+    UINT    wYmax;
+    UINT    wZmin;
+    UINT    wZmax;
+    UINT    wNumButtons;
+    UINT    wPeriodMin;
+    UINT    wPeriodMax;
+} JOYCAPS;
+typedef JOYCAPS         *PJOYCAPS;
+typedef JOYCAPS NEAR    *NPJOYCAPS;
+typedef JOYCAPS FAR     *LPJOYCAPS;
+
+/* Joystick information */
+typedef struct joyinfo_tag {
+    UINT    wXpos;
+    UINT    wYpos;
+    UINT    wZpos;
+    UINT    wButtons;
+} JOYINFO;
+typedef JOYINFO         *PJOYINFO;
+typedef JOYINFO NEAR    *NPJOYINFO;
+typedef JOYINFO FAR     *LPJOYINFO;
+
+/* Multimedia I/O callback */
+typedef LRESULT (CALLBACK MMIOPROC)( LPSTR, UINT, LPARAM, LPARAM );
+typedef MMIOPROC FAR    *LPMMIOPROC;
+
+/* Multimedia I/O information */
+typedef struct _MMIOINFO {
+    DWORD       dwFlags;
+    FOURCC      fccIOProc;
+    LPMMIOPROC  pIOProc;
+    UINT        wErrorRet;
+    HTASK       htask;
+    LONG        cchBuffer;
+    HPSTR       pchBuffer;
+    HPSTR       pchNext;
+    HPSTR       pchEndRead;
+    HPSTR       pchEndWrite;
+    LONG        lBufOffset;
+    LONG        lDiskOffset;
+    DWORD       adwInfo[3];
+    DWORD       dwReserved1;
+    DWORD       dwReserved2;
+    HMMIO       hmmio;
+} MMIOINFO;
+typedef MMIOINFO        *PMMIOINFO;
+typedef MMIOINFO NEAR   *NPMMIOINFO;
+typedef MMIOINFO FAR    *LPMMIOINFO;
+
+/* Multimedia chunk information */
+typedef struct _MMCKINFO {
+    FOURCC  ckid;
+    DWORD   cksize;
+    FOURCC  fccType;
+    DWORD   dwDataOffset;
+    DWORD   dwFlags;
+} MMCKINFO;
+typedef MMCKINFO        *PMMCKINFO;
+typedef MMCKINFO NEAR   *NPMMCKINFO;
+typedef MMCKINFO FAR    *LPMMCKINFO;
+
+/* MCI yield procedure */
+typedef UINT (CALLBACK *YIELDPROC)( UINT, DWORD );
+
+/* MCI generic parameters */
+typedef struct tagMCI_GENERIC_PARMS {
+    DWORD   dwCallback;
+} MCI_GENERIC_PARMS;
+typedef MCI_GENERIC_PARMS FAR   *LPMCI_GENERIC_PARMS;
+
+/* MCI_OPEN parameters */
+typedef struct tagMCI_OPEN_PARMS {
+    DWORD   dwCallback;
+    UINT    wDeviceID;
+    UINT    wReserved0;
+    LPCSTR  lpstrDeviceType;
+    LPCSTR  lpstrElementName;
+    LPCSTR  lpstrAlias;
+} MCI_OPEN_PARMS;
+typedef MCI_OPEN_PARMS FAR  *LPMCI_OPEN_PARMS;
+
+/* MCI_PLAY parameters */
+typedef struct tagMCI_PLAY_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrom;
+    DWORD   dwTo;
+} MCI_PLAY_PARMS;
+typedef MCI_PLAY_PARMS FAR  *LPMCI_PLAY_PARMS;
+
+/* MCI_SEEK parameters */
+typedef struct tagMCI_SEEK_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwTo;
+} MCI_SEEK_PARMS;
+typedef MCI_SEEK_PARMS FAR  *LPMCI_SEEK_PARMS;
+
+/* MCI_STATUS parameters */
+typedef struct tagMCI_STATUS_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwReturn;
+    DWORD   dwItem;
+    DWORD   dwTrack;
+} MCI_STATUS_PARMS;
+typedef MCI_STATUS_PARMS FAR    *LPMCI_STATUS_PARMS;
+
+/* MCI_INFO parameters */
+typedef struct tagMCI_INFO_PARMS {
+    DWORD   dwCallback;
+    LPSTR   lpstrReturn;
+    DWORD   dwRetSize;
+} MCI_INFO_PARMS;
+typedef MCI_INFO_PARMS FAR  *LPMCI_INFO_PARMS;
+
+/* MCI_GETDEVCAPS parameters */
+typedef struct tagMCI_GETDEVCAPS_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwReturn;
+    DWORD   dwItem;
+} MCI_GETDEVCAPS_PARMS;
+typedef MCI_GETDEVCAPS_PARMS FAR    *LPMCI_GETDEVCAPS_PARMS;
+
+/* MCI_SYSINFO parameters */
+typedef struct tagMCI_SYSINFO_PARMS {
+    DWORD   dwCallback;
+    LPSTR   lpstrReturn;
+    DWORD   dwRetSize;
+    DWORD   dwNumber;
+    UINT    wDeviceType;
+    UINT    wReserved0;
+} MCI_SYSINFO_PARMS;
+typedef MCI_SYSINFO_PARMS FAR   *LPMCI_SYSINFO_PARMS;
+
+/* MCI_SET parameters */
+typedef struct tagMCI_SET_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwTimeFormat;
+    DWORD   dwAudio;
+} MCI_SET_PARMS;
+typedef MCI_SET_PARMS FAR   *LPMCI_SET_PARMS;
+
+/* MCI_BREAK parameters */
+typedef struct tagMCI_BREAK_PARMS {
+    DWORD   dwCallback;
+    int     nVirtKey;
+    UINT    wReserved0;
+    HWND    hwndBreak;
+    UINT    wReserved1;
+} MCI_BREAK_PARMS;
+typedef MCI_BREAK_PARMS FAR *LPMCI_BREAK_PARMS;
+
+/* MCI_SOUND parameters */
+typedef struct tagMCI_SOUND_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpstrSoundName;
+} MCI_SOUND_PARMS;
+typedef MCI_SOUND_PARMS FAR *LPMCI_SOUND_PARMS;
+
+/* MCI_SAVE parameters */
+typedef struct tagMCI_SAVE_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpfilename;
+} MCI_SAVE_PARMS;
+typedef MCI_SAVE_PARMS FAR  *LPMCI_SAVE_PARMS;
+
+/* MCI_LOAD parameters */
+typedef struct tagMCI_LOAD_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpfilename;
+} MCI_LOAD_PARMS;
+typedef MCI_LOAD_PARMS FAR  *LPMCI_LOAD_PARMS;
+
+/* MCI_RECORD parameters */
+typedef struct tagMCI_RECORD_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrom;
+    DWORD   dwTo;
+} MCI_RECORD_PARMS;
+typedef MCI_RECORD_PARMS FAR    *LPMCI_RECORD_PARMS;
+
+/* MCI_PLAY parameters for videodiscs */
+typedef struct tagMCI_VD_PLAY_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrom;
+    DWORD   dwTo;
+    DWORD   dwSpeed;
+} MCI_VD_PLAY_PARMS;
+typedef MCI_VD_PLAY_PARMS FAR   *LPMCI_VD_PLAY_PARMS;
+
+/* MCI_STEP parameters for videodiscs */
+typedef struct tagMCI_VD_STEP_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrames;
+} MCI_VD_STEP_PARMS;
+typedef MCI_VD_STEP_PARMS FAR   *LPMCI_VD_STEP_PARMS;
+
+/* MCI_ESCAPE parameters for videodiscs */
+typedef struct tagMCI_VD_ESCAPE_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpstrCommand;
+} MCI_VD_ESCAPE_PARMS;
+typedef MCI_VD_ESCAPE_PARMS FAR *LPMCI_VD_ESCAPE_PARMS;
+
+/* MCI_OPEN parameters for wave audio */
+typedef struct tagMCI_WAVE_OPEN_PARMS {
+    DWORD   dwCallback;
+    UINT    wDeviceID;
+    UINT    wReserved0;
+    LPCSTR  lpstrDeviceType;
+    LPCSTR  lpstrElementName;
+    LPCSTR  lpstrAlias;
+    DWORD   dwBufferSeconds;
+} MCI_WAVE_OPEN_PARMS;
+typedef MCI_WAVE_OPEN_PARMS FAR *LPMCI_WAVE_OPEN_PARMS;
+
+/* MCI_DELETE parameters for wave audio */
+typedef struct tagMCI_WAVE_DELETE_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrom;
+    DWORD   dwTo;
+} MCI_WAVE_DELETE_PARMS;
+typedef MCI_WAVE_DELETE_PARMS FAR   *LPMCI_WAVE_DELETE_PARMS;
+
+/* MCI_SET parameters for wave audio */
+typedef struct tagMCI_WAVE_SET_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwTimeFormat;
+    DWORD   dwAudio;
+    UINT    wInput;
+    UINT    wReserved0;
+    UINT    wOutput;
+    UINT    wReserved1;
+    UINT    wFormatTag;
+    UINT    wReserved2;
+    UINT    nChannels;
+    UINT    wReserved3;
+    DWORD   nSamplesPerSec;
+    DWORD   nAvgBytesPerSec;
+    UINT    nBlockAlign;
+    UINT    wReserved4;
+    UINT    wBitsPerSample;
+    UINT    wReserved5;
+} MCI_WAVE_SET_PARMS;
+typedef MCI_WAVE_SET_PARMS FAR  *LPMCI_WAVE_SET_PARMS;
+
+/* MCI_SET parameters for MIDI sequencer */
+typedef struct tagMCI_SEQ_SET_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwTimeFormat;
+    DWORD   dwAudio;
+    DWORD   dwTempo;
+    DWORD   dwPort;
+    DWORD   dwSlave;
+    DWORD   dwMaster;
+    DWORD   dwOffset;
+} MCI_SEQ_SET_PARMS;
+typedef MCI_SEQ_SET_PARMS FAR   *LPMCI_SEQ_SET_PARMS;
+
+/* MCI_OPEN parameters for animation */
+typedef struct tagMCI_ANIM_OPEN_PARMS {
+    DWORD   dwCallback;
+    UINT    wDeviceID;
+    UINT    wReserved0;
+    LPCSTR  lpstrDeviceType;
+    LPCSTR  lpstrElementName;
+    LPCSTR  lpstrAlias;
+    DWORD   dwStyle;
+    HWND    hWndParent;
+    UINT    wReserved1;
+} MCI_ANIM_OPEN_PARMS;
+typedef MCI_ANIM_OPEN_PARMS FAR *LPMCI_ANIM_OPEN_PARMS;
+
+/* MCI_PLAY parameters for animation */
+typedef struct tagMCI_ANIM_PLAY_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrom;
+    DWORD   dwTo;
+    DWORD   dwSpeed;
+} MCI_ANIM_PLAY_PARMS;
+typedef MCI_ANIM_PLAY_PARMS FAR *LPMCI_ANIM_PLAY_PARMS;
+
+/* MCI_STEP parameters for animation */
+typedef struct tagMCI_ANIM_STEP_PARMS {
+    DWORD   dwCallback;
+    DWORD   dwFrames;
+} MCI_ANIM_STEP_PARMS;
+typedef MCI_ANIM_STEP_PARMS FAR *LPMCI_ANIM_STEP_PARMS;
+
+/* MCI_WINDOW parameters for animation */
+typedef struct tagMCI_ANIM_WINDOW_PARMS {
+    DWORD   dwCallback;
+    HWND    hWnd;
+    UINT    wReserved1;
+    UINT    nCmdShow;
+    UINT    wReserved2;
+    LPCSTR  lpstrText;
+} MCI_ANIM_WINDOW_PARMS;
+typedef MCI_ANIM_WINDOW_PARMS FAR   *LPMCI_ANIM_WINDOW_PARMS;
+
+/* MCI_PUT/MCI_UPDATE/MCI_WHERE parameters for animation */
+typedef struct tagMCI_ANIM_RECT_PARMS {
+    DWORD   dwCallback;
+#ifdef MCI_USE_OFFEXT
+    POINT   ptOffset;
+    POINT   ptExtent;
+#else
+    RECT    rc;
+#endif
+} MCI_ANIM_RECT_PARMS;
+typedef MCI_ANIM_RECT_PARMS FAR *LPMCI_ANIM_RECT_PARMS;
+
+/* MCI_UPDATE parameters for animation */
+typedef struct tagMCI_ANIM_UPDATE_PARMS {
+    DWORD   dwCallback;
+    RECT    rc;
+    HDC     hDC;
+} MCI_ANIM_UPDATE_PARMS;
+typedef MCI_ANIM_UPDATE_PARMS FAR   *LPMCI_ANIM_UPDATE_PARMS;
+
+/* MCI_OPEN parameters for video overlay */
+typedef struct tagMCI_OVLY_OPEN_PARMS {
+    DWORD   dwCallback;
+    UINT    wDeviceID;
+    UINT    wReserved0;
+    LPCSTR  lpstrDeviceType;
+    LPCSTR  lpstrElementName;
+    LPCSTR  lpstrAlias;
+    DWORD   dwStyle;
+    HWND    hWndParent;
+    UINT    wReserved1;
+} MCI_OVLY_OPEN_PARMS;
+typedef MCI_OVLY_OPEN_PARMS FAR *LPMCI_OVLY_OPEN_PARMS;
+
+/* MCI_WINDOW parameters for video overlay */
+typedef struct tagMCI_OVLY_WINDOW_PARMS {
+    DWORD   dwCallback;
+    HWND    hWnd;
+    UINT    wReserved1;
+    UINT    nCmdShow;
+    UINT    wReserved2;
+    LPCSTR  lpstrText;
+} MCI_OVLY_WINDOW_PARMS;
+typedef MCI_OVLY_WINDOW_PARMS FAR   *LPMCI_OVLY_WINDOW_PARMS;
+
+/* MCI_PUT/MCI_UPDATE/MCI_WHERE parameters for video overlay */
+typedef struct tagMCI_OVLY_RECT_PARMS {
+    DWORD   dwCallback;
+#ifdef MCI_USE_OFFEXT
+    POINT   ptOffset;
+    POINT   ptExtent;
+#else
+    RECT    rc;
+#endif
+} MCI_OVLY_RECT_PARMS;
+typedef MCI_OVLY_RECT_PARMS FAR *LPMCI_OVLY_RECT_PARMS;
+
+/* MCI_SAVE parameters for video overlay */
+typedef struct tagMCI_OVLY_SAVE_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpfilename;
+    RECT    rc;
+} MCI_OVLY_SAVE_PARMS;
+typedef MCI_OVLY_SAVE_PARMS FAR *LPMCI_OVLY_SAVE_PARMS;
+
+/* MCI_LOAD parameters for video overlay */
+typedef struct tagMCI_OVLY_LOAD_PARMS {
+    DWORD   dwCallback;
+    LPCSTR  lpfilename;
+    RECT    rc;
+} MCI_OVLY_LOAD_PARMS;
+typedef MCI_OVLY_LOAD_PARMS FAR *LPMCI_OVLY_LOAD_PARMS;
+
+/* Functions in MMSYSTEM.DLL */
+void WINAPI     OutputDebugStr( LPCSTR );
+UINT WINAPI     auxGetDevCaps( UINT, AUXCAPS FAR *, UINT );
+UINT WINAPI     auxGetNumDevs( void );
+UINT WINAPI     auxGetVolume( UINT, DWORD FAR * );
+UINT WINAPI     auxSetVolume( UINT, DWORD );
+UINT WINAPI     joyGetDevCaps( UINT, JOYCAPS FAR *, UINT );
+UINT WINAPI     joyGetNumDevs( void );
+UINT WINAPI     joyGetPos( UINT, JOYINFO FAR * );
+UINT WINAPI     joyGetThreshold( UINT, UINT FAR * );
+UINT WINAPI     joyReleaseCapture( UINT );
+UINT WINAPI     joySetCapture( HWND, UINT, UINT, BOOL );
+UINT WINAPI     joySetThreshold( UINT, UINT );
+UINT WINAPI     mciGetDeviceID( LPCSTR );
+UINT WINAPI     mciGetDeviceIDFromElementID( DWORD, LPCSTR );
+BOOL WINAPI     mciGetErrorString( DWORD, LPSTR, UINT );
+DWORD WINAPI    mciSendCommand( UINT, UINT, DWORD, DWORD );
+DWORD WINAPI    mciSendString( LPCSTR, LPSTR, UINT, HWND );
+BOOL WINAPI     mciSetYieldProc( UINT, YIELDPROC, DWORD );
+UINT WINAPI     midiInAddBuffer( HMIDIIN, MIDIHDR FAR *, UINT );
+UINT WINAPI     midiInClose( HMIDIIN );
+UINT WINAPI     midiInGetDevCaps( UINT, LPMIDIINCAPS, UINT );
+UINT WINAPI     midiInGetErrorText( UINT, LPSTR, UINT );
+UINT WINAPI     midiInGetID( HMIDIIN, UINT FAR * );
+UINT WINAPI     midiInGetNumDevs( void );
+UINT WINAPI     midiInOpen( HMIDIIN FAR *, UINT, DWORD, DWORD, DWORD );
+UINT WINAPI     midiInPrepareHeader( HMIDIIN, MIDIHDR FAR *, UINT );
+UINT WINAPI     midiInReset( HMIDIIN );
+UINT WINAPI     midiInStart( HMIDIIN );
+UINT WINAPI     midiInStop( HMIDIIN );
+UINT WINAPI     midiInUnprepareHeader( HMIDIIN, MIDIHDR FAR *, UINT );
+UINT WINAPI     midiOutCacheDrumPatches( HMIDIOUT, UINT, WORD FAR *, UINT );
+UINT WINAPI     midiOutCachePatches( HMIDIOUT, UINT, WORD FAR *, UINT );
+UINT WINAPI     midiOutClose( HMIDIOUT );
+UINT WINAPI     midiOutGetDevCaps( UINT, MIDIOUTCAPS FAR *, UINT );
+UINT WINAPI     midiOutGetErrorText( UINT, LPSTR, UINT );
+UINT WINAPI     midiOutGetID( HMIDIOUT, UINT FAR * );
+UINT WINAPI     midiOutGetNumDevs( void );
+UINT WINAPI     midiOutGetVolume( UINT, DWORD FAR * );
+UINT WINAPI     midiOutLongMsg( HMIDIOUT, MIDIHDR FAR *, UINT );
+UINT WINAPI     midiOutOpen( HMIDIOUT FAR *, UINT, DWORD, DWORD, DWORD );
+UINT WINAPI     midiOutPrepareHeader( HMIDIOUT, MIDIHDR FAR *, UINT );
+UINT WINAPI     midiOutReset( HMIDIOUT );
+UINT WINAPI     midiOutSetVolume( UINT, DWORD );
+UINT WINAPI     midiOutShortMsg( HMIDIOUT, DWORD );
+UINT WINAPI     midiOutUnprepareHeader( HMIDIOUT, MIDIHDR FAR *, UINT );
+UINT WINAPI     mmioAdvance( HMMIO, MMIOINFO FAR *, UINT );
+UINT WINAPI     mmioAscend( HMMIO, MMCKINFO FAR *, UINT );
+UINT WINAPI     mmioClose( HMMIO, UINT );
+UINT WINAPI     mmioCreateChunk( HMMIO, MMCKINFO FAR *, UINT );
+UINT WINAPI     mmioDescend( HMMIO, MMCKINFO FAR *, const MMCKINFO FAR *, UINT );
+UINT WINAPI     mmioFlush( HMMIO, UINT );
+UINT WINAPI     mmioGetInfo( HMMIO, MMIOINFO FAR *, UINT );
+LPMMIOPROC WINAPI   mmioInstallIOProc( FOURCC, LPMMIOPROC, DWORD );
+HMMIO WINAPI    mmioOpen( LPSTR, MMIOINFO FAR *, DWORD );
+LONG WINAPI     mmioRead( HMMIO, HPSTR, LONG );
+LONG WINAPI     mmioSeek( HMMIO, LONG, int );
+LRESULT WINAPI  mmioSendMessage( HMMIO, UINT, LPARAM, LPARAM );
+UINT WINAPI     mmioSetBuffer( HMMIO, LPSTR, LONG, UINT );
+UINT WINAPI     mmioSetInfo( HMMIO, const MMIOINFO FAR *, UINT );
+FOURCC WINAPI   mmioStringToFOURCC( LPCSTR, UINT );
+LONG WINAPI     mmioWrite( HMMIO, const char _huge *, LONG );
+WORD WINAPI     mmsystemGetVersion( void );
+BOOL WINAPI     sndPlaySound( LPCSTR, UINT );
+UINT WINAPI     timeBeginPeriod( UINT );
+UINT WINAPI     timeEndPeriod( UINT );
+UINT WINAPI     timeGetDevCaps( TIMECAPS FAR *, UINT );
+UINT WINAPI     timeGetSystemTime( MMTIME FAR *, UINT );
+DWORD WINAPI    timeGetTime( void );
+UINT WINAPI     timeKillEvent( UINT );
+UINT WINAPI     timeSetEvent( UINT, UINT, LPTIMECALLBACK, DWORD, UINT );
+UINT WINAPI     waveInAddBuffer( HWAVEIN, WAVEHDR FAR *, UINT );
+UINT WINAPI     waveInClose( HWAVEIN );
+UINT WINAPI     waveInGetDevCaps( UINT, WAVEINCAPS FAR *, UINT );
+UINT WINAPI     waveInGetErrorText( UINT, LPSTR, UINT );
+UINT WINAPI     waveInGetID( HWAVEIN, UINT FAR * );
+UINT WINAPI     waveInGetNumDevs( void );
+UINT WINAPI     waveInGetPosition( HWAVEIN, MMTIME FAR *, UINT );
+UINT WINAPI     waveInOpen( HWAVEIN FAR *, UINT, const WAVEFORMAT FAR *, DWORD, DWORD, DWORD );
+UINT WINAPI     waveInPrepareHeader( HWAVEIN, WAVEHDR FAR *, UINT );
+UINT WINAPI     waveInReset( HWAVEIN );
+UINT WINAPI     waveInStart( HWAVEIN );
+UINT WINAPI     waveInStop( HWAVEIN );
+UINT WINAPI     waveInUnprepareHeader( HWAVEIN, WAVEHDR FAR *, UINT );
+UINT WINAPI     waveOutBreakLoop( HWAVEOUT );
+UINT WINAPI     waveOutClose( HWAVEOUT );
+UINT WINAPI     waveOutGetDevCaps( UINT, WAVEOUTCAPS FAR *, UINT );
+UINT WINAPI     waveOutGetErrorText( UINT, LPSTR, UINT );
+UINT WINAPI     waveOutGetNumDevs( void );
+UINT WINAPI     waveOutGetID( HWAVEOUT, UINT FAR * );
+UINT WINAPI     waveOutGetPitch( HWAVEOUT, DWORD FAR * );
+UINT WINAPI     waveOutGetPlaybackRate( HWAVEOUT, DWORD FAR * );
+UINT WINAPI     waveOutGetPosition( HWAVEOUT, MMTIME FAR *, UINT );
+UINT WINAPI     waveOutGetVolume( UINT, DWORD FAR * );
+UINT WINAPI     waveOutOpen( HWAVEOUT FAR *, UINT, const WAVEFORMAT FAR *, DWORD, DWORD, DWORD );
+UINT WINAPI     waveOutPause( HWAVEOUT );
+UINT WINAPI     waveOutPrepareHeader( HWAVEOUT, WAVEHDR FAR *, UINT );
+UINT WINAPI     waveOutReset( HWAVEOUT );
+UINT WINAPI     waveOutRestart( HWAVEOUT );
+UINT WINAPI     waveOutSetPitch( HWAVEOUT, DWORD );
+UINT WINAPI     waveOutSetPlaybackRate( HWAVEOUT, DWORD );
+UINT WINAPI     waveOutSetVolume( UINT, DWORD );
+UINT WINAPI     waveOutUnprepareHeader( HWAVEOUT, WAVEHDR FAR *, UINT );
+UINT WINAPI     waveOutWrite( HWAVEOUT, WAVEHDR FAR *, UINT );
+#if (WINVER >= 0x30A)
+DWORD WINAPI    auxOutMessage( UINT, UINT, DWORD, DWORD );
+HTASK WINAPI    mciGetCreatorTask( UINT );
+YIELDPROC WINAPI    mciGetYieldProc( UINT, DWORD FAR * );
+DWORD WINAPI    midiInMessage( HMIDIIN, UINT, DWORD, DWORD );
+DWORD WINAPI    midiOutMessage( HMIDIOUT, UINT, DWORD, DWORD );
+UINT WINAPI     mmioRename( LPCSTR, LPCSTR, MMIOINFO FAR *, DWORD );
+DWORD WINAPI    waveInMessage( HWAVEIN, UINT, DWORD, DWORD );
+DWORD WINAPI    waveOutMessage( HWAVEOUT, UINT, DWORD, DWORD );
+#endif
+
+#endif /* RC_INVOKED */
+
+#pragma pack( pop )
+
+:include cplusepi.sp
+
+#endif /* _INC_MMSYSTEM */

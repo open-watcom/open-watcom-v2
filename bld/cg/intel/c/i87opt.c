@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Optimize x87 FPU instruction sequences. 
 *
 ****************************************************************************/
 
@@ -39,10 +38,13 @@
 #include "procdef.h"
 #include "addrname.h"
 #include "model.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "regset.h"
 #include "zoiks.h"
 #include "funits.h"
+#include "x87.h"
+#include "makeins.h"
+
 
 extern  block           *HeadBlock;
 extern  block           *CurrBlock;
@@ -58,12 +60,9 @@ extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  void            BGDone(an);
-extern  bool            FPIsStack(name*);
 extern  bool            ReDefinedBy(instruction*,name*);
-extern  instruction     *MakeNary(opcode_defs,name*,name*,name*,type_class_def,type_class_def,int);
 extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  type_class_def  TypeClass(type_def*);
 extern  bool            DoesSomething(instruction*);
 extern  void            ToRFld(instruction*);
@@ -85,17 +84,20 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefFXCH(instruction*,int);
-extern  void            Wait8087();
-extern  void            FreeIns(instruction*);
+extern  void            Wait8087( void );
 extern  void            ReverseFPGen(instruction*);
 extern  bool            InsOrderDependant(instruction*,instruction*);
 extern  int             FPStkReq(instruction*);
 extern  bool            FPResultNotNeeded(instruction*);
 extern  void            ReserveStack( call_state *, instruction *, type_length );
 
+/* forward declarations */
+static  void            MoveThrough( name *from, name *to, instruction *from_ins,
+                                     instruction *to_ins, name *reg,
+                                     type_class_def class );
+extern  void            Opt8087( void );
 
-
-extern  void    FPParms() {
+extern  void    FPParms( void ) {
 /**************************
     Find sequences like
              PARM_DEF         => ST(0),
@@ -235,7 +237,7 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     BGDone( addr );
 #if _TARGET & _TARG_80386
     if( state->attr & ROUTINE_STACK_RESERVE ) {
-        ReserveStack( state, ins, 8 );
+        ReserveStack( state, ins, addr->tipe->length );
     }
 #else
     state = state;
@@ -260,7 +262,7 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
     while( --i >= 0 ) {
         if( FPIsStack( ins->operands[ i ] ) ) {
             parm->ins = PushDelayed( ins, addr, state );
-            // _Free( parm, sizeof( parm_node ) );
+            // CGFree( parm );
             return( TRUE );
         }
     }
@@ -286,7 +288,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
             while( --i >= 0 ) {
                 if( ReDefinedBy( next, ins->operands[ i ] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
-                    // _Free( parm, sizeof( parm_node ) );
+                    // CGFree( parm );
                     return( TRUE );
                 }
             }
@@ -313,6 +315,8 @@ static  void    UseInOther( name *op )
     case N_INDEXED:
         UseInOther( op->i.index );
         UseInOther( op->i.base );
+        break;
+    default:
         break;
     }
 }
@@ -359,7 +363,7 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
             AddIns( new_ins );
 #if _TARGET & _TARG_80386
             if( state->attr & ROUTINE_STACK_RESERVE ) {
-                ReserveStack( state, new_ins, 8 );
+                ReserveStack( state, new_ins, addr->tipe->length );
             }
 #endif
             BGDone( addr ); /* so ins DOES get freed*/
@@ -401,7 +405,7 @@ extern  void    FPPushParms( pn parm, call_state *state ) {
 
 
 
-extern  void    FPOptimize() {
+extern  void    FPOptimize( void ) {
 /*****************************
 
     Fix up the 8087 instructions.  The instructions so far
@@ -838,7 +842,7 @@ extern  bool    DivIsADog( type_class_def class )
     return( _FPULevel( FPU_87 ) && _IsFloating( class ) );
 }
 
-extern  void    Opt8087() {
+extern  void    Opt8087( void ) {
 /**************************
     Look for silly 8087 sequences and change them into better ones.
 */

@@ -1,0 +1,13 @@
+verify turned on by default
+GetLongOpt::retrieve - unenrolled option -foo
+usage: opt [options and args]
+	-help (print this option summary)
+	-version (print the version)
+	-output <$val> (print output in file $val)
+	-verify (verify if ambiguities are resolved as they should be)
+opt: unrecognized option -hopeless
+a.out version 1.0 dated 21.01.1993
+verify turned off
+GetLongOpt::retrieve - unenrolled option -foo
+opt: mandatory value for -output not specified
+opt: unsolicited value for flag -verify

@@ -1,42 +1,53 @@
 plustest_name = bits64
-!include ..\environ.mif
+!include ../environ.mif
 
 !ifdef test1
-cflags_386 = -d2-3r
-cflags_i86 = -d2
-cflags_axp = -d2
+test_cflags_386 = -d2-3r
+test_cflags_i86 = -d2
+test_cflags_axp = -d2
+alt_error=01
 !else
-cflags_386 = -ox-d1-3s
-cflags_i86 = -ox-d1
-cflags_axp = -ox-d1
+test_cflags_386 = -ox-d1-3s
+test_cflags_i86 = -ox-d1
+test_cflags_axp = -ox-d1
+alt_error=00
 !endif
 
-cflags_386 += -zq-mf
-cflags_i86 += -zq-ml
-cflags_axp += -zq
+test_cflags_386 += -zq-mf
+test_cflags_i86 += -zq-ml
+test_cflags_axp += -zq
 
-.cpp: ..\bits
+stack_386=opt stack=8k
+stack_i86=opt stack=4k
+stack_axp=opt stack=8k
+
+.cpp: ../bits
 .cpp.obj:
-    $(wpp_$(arch)) $[@ $(cflags_$(arch)) -d_USE_INT64
+    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -d_USE_INT64 -fo=.obj
 
 objs = tbits.obj
     
-test : .symbolic tbits.$(exe)
-    $(run) tbits >tbits.out
-    diff tbits.out ..\bits\tbits.chk
-    %make global
+test : .symbolic start_test tbits.$(exe)
+    diff tbits.out ../bits/tbits.chk
+    @%make global
     %append $(log_file) PASS $(%__CWD__)
 
 tbits.$(exe) : $(objs) tbits.lnk
-    $(linker) @$]@
+    $(linker) @$]@ name $@ file {$(objs)}
+    $(run) $(exec_prefix)$@ >>tbits.out
+
+start_test : .symbolic
+    %create tbits.out
+    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
 
 tbits.lnk : makefile
     %create $^@
-    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION map, caseexact, stack=8k, quiet
-    @for %i in ( $(objs) ) do @%append $^@ FILE %i
+    @%append $^@ $(stack_$(arch))
     
-global : .SYMBOLIC
+save : .symbolic
+    @if exist tbits.out cp tbits.out s$(arch)_$(alt_error).sav
+
+global : .procedure
     @%make common_clean

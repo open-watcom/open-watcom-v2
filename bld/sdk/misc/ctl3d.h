@@ -24,104 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Constants for 3D controls.
 *
 ****************************************************************************/
 
 
-/*-----------------------------------------------------------------------
-|       CTL3D.DLL
-|
-|       Adds 3d effects to Windows controls
-|
-|       See ctl3d.doc for info
-|
------------------------------------------------------------------------*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* This header is included to provide definitions of these constants for building
+ * the source tree with OW 1.8 and earlier, which do not include a standard
+ * implementation of ctl3d.h in w32api.
+ */
 
-#if defined( __WINDOWS_386__ )
-
-BOOL Init32Ctl3d( void );
-void Fini32Ctl3d( void );
-extern HINDIR DLL32Ctl3dAutoSubclass;
-extern HINDIR DLL32Ctl3dSubclassDlg;
-extern HINDIR DLL32Ctl3dRegister;
-extern HINDIR DLL32Ctl3dUnregister;
-extern HINDIR DLL32Ctl3dColorChange;
-extern HINDIR DLL32Ctl3dSubclassCtl;
-extern HINDIR DLL32Ctl3dCtlColorEx;
-#define Ctl3dAutoSubclass( a ) InvokeIndirectFunction( DLL32Ctl3dAutoSubclass, a )
-#define Ctl3dSubclassDlg( a, b ) InvokeIndirectFunction( DLL32Ctl3dSubclassDlg, a, b )
-#define Ctl3dRegister( a ) InvokeIndirectFunction( DLL32Ctl3dRegister, a )
-#define Ctl3dUnregister( a ) InvokeIndirectFunction( DLL32Ctl3dUnregister, a )
-#define Ctl3dColorChange( ) InvokeIndirectFunction( DLL32Ctl3dColorChange )
-#define Ctl3dSubclassCtl( a ) InvokeIndirectFunction( DLL32Ctl3dSubclassCtl, a )
-#define Ctl3dCtlColorEx( a, b, c ) InvokeIndirectFunction( DLL32Ctl3dCtlColorEx, a, b, c )
-
-#elif defined( __WINDOWS__ ) || defined( __NT__ )
-
-BOOL WINAPI Ctl3dSubclassDlg(HWND, WORD);
-BOOL WINAPI Ctl3dSubclassDlgEx(HWND, DWORD);
-WORD WINAPI Ctl3dGetVer(void);
-BOOL WINAPI Ctl3dEnabled(void);
-HBRUSH WINAPI Ctl3dCtlColor(HDC, LONG); // ARCHAIC, use Ctl3dCtlColorEx
-HBRUSH WINAPI Ctl3dCtlColorEx(UINT wm, WPARAM wParam, LPARAM lParam);
-BOOL WINAPI Ctl3dColorChange(void);
-BOOL WINAPI Ctl3dSubclassCtl(HWND);
-LONG WINAPI Ctl3dDlgFramePaint(HWND, UINT, WPARAM, LPARAM);
-
-BOOL WINAPI Ctl3dAutoSubclass(HANDLE);
-
-BOOL WINAPI Ctl3dRegister(HANDLE);
-BOOL WINAPI Ctl3dUnregister(HANDLE);
-
-//begin DBCS: far east short cut key support
-VOID WINAPI Ctl3dWinIniChange(void);
-//end DBCS
-
-#else
-#define Ctl3dSubclassDlg(a, b)
-#define Ctl3dSubclassDlgEx(a, b)
-#define Ctl3dGetVer()
-#define Ctl3dEnabled()
-#define Ctl3dCtlColor( a, b )
-#define Ctl3dCtlColorEx( a, b, c )
-#define Ctl3dColorChange()
-#define Ctl3dSubclassCtl( a )
-#define Ctl3dAutoSubclass( a )
-#define Ctl3dRegister( a )
-#define Ctl3dUnregister( a )
-#endif
-
-/* Ctl3dSubclassDlg3d flags */
+/* Ctl3dSubclassDlg() flags */
 #define CTL3D_BUTTONS           0x0001
 #define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS                     0x0004
-#define CTL3D_COMBOS                    0x0008
+#define CTL3D_EDITS             0x0004
+#define CTL3D_COMBOS            0x0008
 #define CTL3D_STATICTEXTS       0x0010
 #define CTL3D_STATICFRAMES      0x0020
+#define CTL3D_ALL               0xffff
 
+/* Ctl3dSubclassDlgEx() flags */
 #define CTL3D_NODLGWINDOW       0x00010000
-#define CTL3D_ALL                               0xffff
 
-#define WM_DLGBORDER (WM_USER+3567)
-/* WM_DLGBORDER *(int FAR *)lParam return codes */
-#define CTL3D_NOBORDER          0
-#define CTL3D_BORDER                    1
+/* 3D control messages */
+#define WM_DLGBORDER    (WM_USER + 3567)
+#define WM_DLGSUBCLASS  (WM_USER + 3568)
 
-#define WM_DLGSUBCLASS (WM_USER+3568)
-/* WM_DLGSUBCLASS *(int FAR *)lParam return codes */
-#define CTL3D_NOSUBCLASS        0
-#define CTL3D_SUBCLASS          1
+/* WM_DLGBORDER return codes */
+#define CTL3D_NOBORDER  0
+#define CTL3D_BORDER    1
 
-/* Resource ID for 3dcheck.bmp (for .lib version of ctl3d) */
-#define CTL3D_3DCHECK 26567
-
-
-#ifdef __cplusplus
-}
-#endif
-
+/* WM_DLGSUBCLASS return codes */
+#define CTL3D_NOSUBCLASS    0
+#define CTL3D_SUBCLASS      1

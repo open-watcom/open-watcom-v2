@@ -1,15 +1,15 @@
 /*================================================================\
 |                                                                 |
 |      OS/2 Physical Device Driver Demonstration Code             |
-|                  for Watcom C/C++ 10.x                          |
+|                  for Open Watcom C/C++                          |
 |                                                                 |
 |  HRTEST.C                                                       |
 |                                                                 |
-|  This program is a WATCOM C skeleton for using HRTIMER.SYS,     |
-|  the high-resolution timer Physical Device Driver (PDD) for     |
-|  OS/2                                                           |
+|  This program is an Open Watcom C skeleton for using            |
+|  HRTIMER.SYS, the high-resolution timer Physical Device Driver  |
+|  (PDD) for OS/2                                                 |
 |                                                                 |
-|  Adapted for Watcom C/C++ 10.x by WATCOM International Corp.    |
+|  Adapted for Open Watcom C/C++                                  |
 |  Original Author: Rick Fishman                                  |
 |                   Code Blazers, Inc.                            |
 |                   4113 Apricot                                  |
@@ -138,6 +138,7 @@ BOOL Initialize( int argc, char *argv[] )
                     FILE_NORMAL, FILE_OPEN, OPEN_SHARE_DENYNONE, NULL );
     if( ulRC )
     {
+        printf( "\nFailed to open WTIMER$" );
         printf( "\nDosOpen got a retcode of %u", ulRC );
         return FALSE;
     }

@@ -106,8 +106,8 @@ void PstkPush( PSTK_CTL *h, void const *e )
     *top = e;
 }
 
-void **PstkPop( PSTK_CTL *h )
-/***************************/
+void *PstkPop( PSTK_CTL *h )
+/**************************/
 {
     PSTK_BLK *top_block;
     void const **top;
@@ -123,7 +123,7 @@ void **PstkPop( PSTK_CTL *h )
         }
         h->top_item = top;
     }
-    return( (void**) return_top );
+    return( return_top );
 }
 
 void* PstkPopElement( PSTK_CTL *h )

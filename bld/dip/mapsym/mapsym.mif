@@ -1,0 +1,21 @@
+#
+# Mapsym DIP makefile
+#
+
+imp_objs = &
+        msymmisc.obj &
+        msymld.obj &
+        msymmod.obj &
+        msymtype.obj &
+        msymsym.obj &
+        msymcue.obj
+
+name = mapsym
+
+# Set the extra_incs and extra_srcs to any other directories that include
+# additional includes or source files. Delete the definitions if you don't
+# have any.
+#extra_incs = $(lib_misc_dir)/h
+#extra_srcs = $(lib_misc_dir)/c
+
+!include ../../imp.mif

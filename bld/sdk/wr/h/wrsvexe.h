@@ -46,8 +46,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WRInitRcGlobal           ( HINSTANCE );
-extern int   WRSaveResourceToWin16EXE ( WRInfo *, int );
-extern int   WRSaveResourceToWinNTEXE ( WRInfo *, int );
+extern void WRInitRcGlobal( HINSTANCE );
+extern int  WRSaveResourceToWin16EXE( WRInfo *, int );
+extern int  WRSaveResourceToWinNTEXE( WRInfo *, int );
 
 #endif

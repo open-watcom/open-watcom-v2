@@ -2,7 +2,7 @@
 
 #ifdef __WATCOM_RTTI__
 
-#include <typeinfo>
+#include <typeinfo.h>
 class D {};
 D d1;
 const D d2;

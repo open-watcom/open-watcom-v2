@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Process macro definitions.
 *
 ****************************************************************************/
 
@@ -54,10 +53,10 @@ struct dw_macro {
 void DWENTRY DWMacStartFile(
     dw_client                   cli,
     dw_linenum                  line,
-    const char *                name )
+    const char                  *name )
 {
-    char                buf[ 1 + 2*MAX_LEB128 ];
-    char *              end;
+    uint_8              buf[ 1 + 2*MAX_LEB128 ];
+    uint_8              *end;
 
     buf[0] = DW_MACINFO_start_file;
     end = ULEB128( buf + 1, line );
@@ -78,7 +77,7 @@ void DWENTRY DWMacEndFile(
 dw_macro DWENTRY DWMacDef(
     dw_client                   cli,
     dw_linenum                  line,
-    const char *                name )
+    const char                  *name )
 {
     dw_macro                    mac;
     size_t                      len;
@@ -117,11 +116,11 @@ void DWENTRY DWMacParam(
 void DWENTRY DWMacFini(
     dw_client                   cli,
     dw_macro                    mac,
-    const char *                def )
+    const char                  *def )
 {
-    char                        buf[ 1 + MAX_LEB128 ];
-    char *                      end;
-    struct parm *               parm;
+    uint_8                      buf[ 1 + MAX_LEB128 ];
+    uint_8                      *end;
+    struct parm                 *parm;
 
     _Validate( mac != NULL );
 
@@ -157,10 +156,10 @@ void DWENTRY DWMacFini(
 void DWENTRY DWMacUnDef(
     dw_client                   cli,
     dw_linenum                  line,
-    const char *                name )
+    const char                  *name )
 {
-    char                        buf[ 1 + MAX_LEB128 ];
-    char *                      end;
+    uint_8                      buf[ 1 + MAX_LEB128 ];
+    uint_8                      *end;
 
     _Validate( name != NULL );
 
@@ -174,10 +173,10 @@ void DWENTRY DWMacUnDef(
 void DWENTRY DWMacUse(
     dw_client                   cli,
     dw_linenum                  line,
-    const char *                name )
+    const char                  *name )
 {
-    char                        buf[ 2 + MAX_LEB128 ];
-    char *                      end;
+    uint_8                      buf[ 2 + MAX_LEB128 ];
+    uint_8                      *end;
 
     _Validate( name != NULL );
 

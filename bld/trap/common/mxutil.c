@@ -69,7 +69,7 @@ void *GetOutPtr( unsigned pos )  /* Absolute position */
     return( (unsigned_8 *)entry->ptr + pos );
 }
 
-unsigned GetTotalSize()
+unsigned GetTotalSize( void )
 {
     unsigned            i;
     unsigned            len = 0;

@@ -4,8 +4,8 @@ c$pragma aux define_room "*_"
 c$pragma aux draw_room "*_"
 c$pragma aux finish_room "*_"
 
-    external define_room
-    external draw_room
-    external finish_room
+        external define_room
+        external draw_room
+        external finish_room
 
 c$reference

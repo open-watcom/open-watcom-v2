@@ -1,0 +1,12 @@
+name=Help_Other
+include=hother1.dlg
+static_text=\
+        //1"Click on the Helpfiles button to select options related"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします"\
+        //0,SrcIsCD
+static_text=\
+        //1"to installation of online help files."\
+        //2"	- ヘルプファイルをハードディスクにコピーします."\
+        //0,SrcIsCD
+static_text=
+include=ok.dlg

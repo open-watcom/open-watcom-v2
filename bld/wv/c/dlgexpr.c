@@ -41,8 +41,9 @@
 #include "dbgstk.h"
 #include "mad.h"
 
-extern void             DlgNewWithMod(char*,char*,int);
-extern void             DlgNewWithSym(char*,char*,int);
+/* to be moved to header files ! */
+extern bool             DlgNewWithMod(char*,char*,int);
+extern bool             DlgNewWithSym(char*,char*,int);
 extern char             *ReScan(char*);
 extern void             ChkExpr(void);
 extern void             ReqMemAddr(memory_expr , address *);
@@ -70,10 +71,10 @@ extern stack_entry      *ExprSP;
 #define EXPR_LEN        128
 
 extern bool DlgScanModName( char *str, void *value );
-extern bool DlgScanLong( char *str, long *value );
-extern bool DlgScanCodeAddr( char *str, address *value );
-extern bool DlgScanDataAddr( char *str, address *value );
-extern bool DlgScanGivenAddr( char *str, address *value );
+extern bool DlgScanLong( char *str, void *value );
+extern bool DlgScanCodeAddr( char *str, void *value );
+extern bool DlgScanDataAddr( char *str, void *value );
+extern bool DlgScanGivenAddr( char *str, void *value );
 extern bool DlgScanAny( char *str, void *value );
 extern bool DlgScanString( char *str, void *value );
 
@@ -88,7 +89,7 @@ static bool DoDlgGet( gui_window *gui, unsigned id, void *value, bool (*rtn)(cha
         ok = rtn( LIT( Empty ), value );
     } else {
         ok = rtn( str, value );
-        WndFree( str );
+        GUIMemFree( str );
     }
     return( ok );
 }
@@ -117,7 +118,7 @@ extern void DlgSetLong( gui_window *gui, unsigned id, long value )
 
 static bool     DlgGetItemWithRtn( char *new, unsigned max_len, char *title,
                                    void *value, bool (*rtn)(char*,void*),
-                                   void (*dlg)(char*,char*,int) )
+                                   bool (*dlg)(char*,char*,int) )
 {
     bool        rc;
 

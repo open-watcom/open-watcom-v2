@@ -172,10 +172,10 @@ extern char uihotspot( struct vscreen *, char *str, SAREA *parea, unsigned short
 extern char uidrawhottext( struct vscreen *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
 extern unsigned int ui_split_line(char **,char *,unsigned int );
-extern void *uiinitdialog(char *,int ,char **,unsigned int ,int ,int ,int );
+extern void *uiinitdialog(char *, ATTR, char **, unsigned int, int, int, int );
 extern void uifinidialog(void *);
 
-extern void *uibegdialog(char *,struct vfield *,int ,int ,int ,int );
+extern void *uibegdialog(char *, VFIELD *, ORD, ORD, int, int );
 extern bool uigetdialogarea( struct a_dialog *dialog, SAREA *area );
 extern EVENT uiprocessdialogevent( EVENT, struct a_dialog* );
 extern void uireinitdialog( struct a_dialog *, struct vfield *);
@@ -194,8 +194,8 @@ extern void uidialogchangefield( struct a_dialog * );
 extern bool uiisdefaulthotspot( void *, EVENT );
 extern int uilistbox( int , struct a_list *, bool );
 extern void uiupdateedit( struct a_dialog *, struct vfield * );
-extern void uiboxpushlist( );
-extern void uiboxpoplist( );
+extern void uiboxpushlist( void );
+extern void uiboxpoplist( void );
 extern void uimovelistbox( struct a_list *, int row_diff, int col_diff );
 extern unsigned uiendlistbox( struct a_list * );
 extern void uipaintlistbox( struct a_list * );

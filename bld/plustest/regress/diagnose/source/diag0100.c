@@ -71,3 +71,5 @@ void foo()
 {
     d.foo(1);
 }
+
+template class OVER<int,int *>;

@@ -1,0 +1,19 @@
+File: source\diag0077.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0080.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0105.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0153.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0166.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0168.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0173.c
+(2,6): Error! E080: system dependent test for 386
+File: source\diag0261.c
+(2,6): Error! E080: system dependent test for 386
+(32,2): Error! E080: at least one error
+File: source\diag0274.c
+(2,6): Error! E080: system dependent test for 386

@@ -1,0 +1,14 @@
+.387
+flora		GROUP	abcd,pat
+pat		SEGMENT	PARA PRIVATE USE16 'data'
+L$1:
+    DB	1, 0
+
+pat		ENDS
+abcd		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov         ax,0ff9fH
+    mov         ax,ax
+    mov         ax,word ptr ss:L$1
+abcd		ENDS
+		END

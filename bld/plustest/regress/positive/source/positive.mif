@@ -1,17 +1,16 @@
 #
 # awaiting bug fixes
 #
-# bf04.$(ext) & 	# bitfield in static anonymous union
-# ctor36.$(ext) &	# state table generation problem (very complex example)
-# init26.$(ext) &	# init anon struct with bitfields in anon union
-# link9.$(ext) &	# double init of a static member of a class template
-# ns20.$(ext) & 	# -d2 dwarf infinite loop
-# ns24.$(ext) & 	# need full class using-decl support
-# quest04.$(ext) &	# reference binding with ?: operands
-# opt19.$(ext) &	# codegen 8086 -1 optimization bug test5= arch=i86
-# opt28.$(ext) &	# loop optimization bug
-# opt38.$(ext) &	# codegen -2-ml-ox-d1 (load 'ds' too early)
-# opt43.$(ext) &	# wcl -d2 bug with post increment
+# bf04.$(ext) &     # bitfield in static anonymous union
+# ctor36.$(ext) &   # state table generation problem (very complex example)
+# dtor10.$(ext) &   # problem on OS/2 in -xs mode (see comments in source)
+# init26.$(ext) &   # init anon struct with bitfields in anon union
+# link9.$(ext) &    # double init of a static member of a class template
+# ns20.$(ext) &     # -d2 dwarf infinite loop
+# ns24.$(ext) &     # need full class using-decl support
+# quest04.$(ext) &  # reference binding with ?: operands
+# opt38.$(ext) &    # codegen -2-ml-ox-d1 (load 'ds' too early)
+# opt43.$(ext) &    # wcl -d2 bug with post increment
 
 #
 # requires EH?
@@ -74,6 +73,7 @@ EH_except42 = yes
 EH_exc01a = yes
 EH_exc01b = yes
 EH_gpf01 = yes
+EH_init28 = yes
 EH_link6a = yes
 EH_link6b = yes
 EH_link8a = yes
@@ -101,15 +101,18 @@ no_br_except30 = no
 #
 # special options
 #
+opt_assert1 = -za0x
 opt_cdisp13 = -xr
-opt_cmdln01 = /d+XXX=0+1
-opt_cmdln02 = /d+ /dXXX=0+1
-opt_cmdln03 = /dX /DXX /uXX /DXXX /uXXX /UXXX /dXXX /DXXXX /uXXXX /DXXXX /uXXXX
-opt_cmdln04 = /dCMDMAC -DCMD1= /DCMD2$#
+opt_cltemp17 = -za0x
+opt_cmdln01 = -d+XXX=0+1
+opt_cmdln02 = -d+ -dXXX=0+1
+opt_cmdln03 = -dX -DXX -uXX -DXXX -uXXX -UXXX -dXXX -DXXXX -uXXXX -DXXXX -uXXXX
+opt_cmdln04 = -dCMDMAC -DCMD1= -DCMD2$#
 !ifndef %plustest_old_compiler
 opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
 !endif
 opt_dyn01 = -xr
+opt_friend5 = -za
 opt_opt09 = -za
 opt_opt44 = -os
 opt_pack6 = -ot -zp8
@@ -127,9 +130,9 @@ opt_pch10 = -fhq
 opt_pch11 = -fhq
 opt_pch12 = -fhq
 # pch13,14,15 are same test
-opt_pch13 =		# (1) no PCH
-opt_pch14 = -fhq	# (2) write PCH
-opt_pch15 = -fhq	# (3) read PCH
+opt_pch13 =     # (1) no PCH
+opt_pch14 = -fhq    # (2) write PCH
+opt_pch15 = -fhq    # (3) read PCH
 opt_pch16 = -fhq
 opt_pch17 = -fhq
 opt_pch18 = -fhq -dAFS_CM
@@ -137,6 +140,8 @@ opt_pch19 = -fhq -dAFS_CM
 opt_pch20 = -fhq -dAFS_CM
 opt_pch21 = -fhq -dAFS_CM
 opt_pp08 = -w0
+opt_prag02 = -fhq
+opt_prag03 = -fhq
 opt_rtti02 = -xr
 opt_rtti03 = -xr
 opt_rtti04 = -xr
@@ -151,26 +156,23 @@ opt_vf18 = -za
 opt_link_opt32 = option stack=128k
 !endif
 
+#
+# architecture specific options
+#
 !ifeq arch axp
 # AXP specific
-!endif
-
-!ifeq arch 386
+!else ifeq arch 386
 # 386 specific
 opt_init12 = -mf
 opt_opt13 = -fpd
 opt_vf17 = -zv
-
 opt_link_vf17 = option vfremoval
-!endif
-
-!ifeq arch i86
+!else ifeq arch i86
 # i86 specific
 opt_opt13 = -fpd
-opt_opt29 = -zff
-opt_opt31 = -zff
+opt_opt29 = -3 -zff
+opt_opt31 = -3 -zff
 opt_vf17 = -zv
-
 opt_link_vf17 = option vfremoval
 !endif
 
@@ -185,11 +187,18 @@ positive_tests = &
     addr01.$(ext) &
     ambig01.$(ext) &
     ambig02.$(ext) &
+    array1.$(ext) &
     asm01.$(ext) &
     asm02.$(ext) &
     asm03.$(ext) &
     asm04.$(ext) &
     asm05.$(ext) &
+    asm06.$(ext) &
+    asm07.$(ext) &
+    asm08.$(ext) &
+    asm09.$(ext) &
+    assert1.$(ext) &
+    alttok1.$(ext) &
     based01.$(ext) &
     based02.$(ext) &
     based03.$(ext) &
@@ -199,6 +208,9 @@ positive_tests = &
     bf05.$(ext) &
     bool01.$(ext) &
     bool02.$(ext) &
+    bool03.$(ext) &
+    bool04.$(ext) &
+    bool05.$(ext) &
     cdisp1.$(ext) &
     cdisp2.$(ext) &
     cdisp3.$(ext) &
@@ -219,10 +231,37 @@ positive_tests = &
     cltemp05.$(ext) &
     cltemp06.$(ext) &
     cltemp07.$(ext) &
+    cltemp08.$(ext) &
+    cltemp09.$(ext) &
+    cltemp10.$(ext) &
+    cltemp11.$(ext) &
+    cltemp12.$(ext) &
+    cltemp13.$(ext) &
+    cltemp14.$(ext) &
+    cltemp15.$(ext) &
+    cltemp16.$(ext) &
+    cltemp17.$(ext) &
+    cltemp18.$(ext) &
+    cltemp19.$(ext) &
+    cltemp20.$(ext) &
+    cltemp21.$(ext) &
+    cltemp22.$(ext) &
+    cltemp23.$(ext) &
+    cltemp24.$(ext) &
+    cltemp25.$(ext) &
+    cltemp26.$(ext) &
+    cltemp27.$(ext) &
+    cltemp28.$(ext) &
+    cltemp29.$(ext) &
+    cltemp30.$(ext) &
+    cltemp31.$(ext) &
+    cltemp32.$(ext) &
+    cltemp33.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
     cmdln04.$(ext) &
+    cond1.$(ext) &
     conv01.$(ext) &
     conv02.$(ext) &
     conv03.$(ext) &
@@ -271,11 +310,21 @@ positive_tests = &
     cv02.$(ext) &
     decl01.$(ext) &
     decl02.$(ext) &
+    decl03.$(ext) &
     defarg01.$(ext) &
     defarg02.$(ext) &
     defarg03.$(ext) &
     defarg04.$(ext) &
     defarg05.$(ext) &
+    defarg06.$(ext) &
+    defarg07.$(ext) &
+    dftemp01.$(ext) &
+    dftemp02.$(ext) &
+    dftemp03.$(ext) &
+    dftemp04.$(ext) &
+    dftemp05.$(ext) &
+    dftemp06.$(ext) &
+    digraph1.$(ext) &
     dtor01.$(ext) &
     dtor02.$(ext) &
     dtor03.$(ext) &
@@ -308,6 +357,7 @@ positive_tests = &
     dtor30.$(ext) &
     dtor31.$(ext) &
     dtor32.$(ext) &
+    dtor33.$(ext) &
     dwarf01.$(ext) &
     dwarf02.$(ext) &
     dwarf03.$(ext) &
@@ -315,6 +365,8 @@ positive_tests = &
     enum02.$(ext) &
     enum03.$(ext) &
     enum04.$(ext) &
+    enum05.$(ext) &
+    enum06.$(ext) &
     exc01.$(ext) &
     except01.$(ext) &
     except02.$(ext) &
@@ -381,10 +433,28 @@ positive_tests = &
     fntemp13.$(ext) &
     fntemp14.$(ext) &
     fntemp15.$(ext) &
+    fntemp16.$(ext) &
+    fntemp17.$(ext) &
+    fntemp18.$(ext) &
+    fntemp19.$(ext) &
+    fntemp20.$(ext) &
+    fntemp21.$(ext) &
+    fntemp22.$(ext) &
+#    fntemp23.$(ext) &
+    fntemp24.$(ext) &
+    fntemp25.$(ext) &
+    fntemp26.$(ext) &
+    fntemp27.$(ext) &
+    fntemp28.$(ext) &
     fold01.$(ext) &
     fold02.$(ext) &
+    for01.$(ext) &
     friend1.$(ext) &
     friend2.$(ext) &
+    friend3.$(ext) &
+    friend4.$(ext) &
+    friend5.$(ext) &
+    friend6.$(ext) &
     gpf01.$(ext) &
     hier01.$(ext) &
     hier02.$(ext) &
@@ -428,11 +498,16 @@ positive_tests = &
     init23.$(ext) &
     init24.$(ext) &
     init25.$(ext) &
+    init27.$(ext) &
+    init28.$(ext) &
+    init29.$(ext) &
     inline01.$(ext) &
     inline02.$(ext) &
     inline03.$(ext) &
     inline04.$(ext) &
     inline05.$(ext) &
+    inline06.$(ext) &
+    int01.$(ext) &
     intel01.$(ext) &
     io01.$(ext) &
     io02.$(ext) &
@@ -459,6 +534,10 @@ positive_tests = &
     link13.$(ext) &
     link14.$(ext) &
     link15.$(ext) &
+    main1.$(ext) &
+    memtmp01.$(ext) &
+    memtmp02.$(ext) &
+    memtmp03.$(ext) &
     mp01.$(ext) &
     mp02.$(ext) &
     mp03.$(ext) &
@@ -527,6 +606,19 @@ positive_tests = &
     ns30.$(ext) &
     ns31.$(ext) &
     ns32.$(ext) &
+    ns33.$(ext) &
+    ns34.$(ext) &
+    ns35.$(ext) &
+    ns36.$(ext) &
+    ns37.$(ext) &
+    ns38.$(ext) &
+    ns39.$(ext) &
+    ns40.$(ext) &
+    ns41.$(ext) &
+    ns42.$(ext) &
+    ns43.$(ext) &
+    ns44.$(ext) &
+    ns45.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &
@@ -566,6 +658,7 @@ positive_tests = &
     opt16.$(ext) &
     opt17.$(ext) &
     opt18.$(ext) &
+    opt19.$(ext) &
     opt20.$(ext) &
     opt21.$(ext) &
     opt22.$(ext) &
@@ -574,6 +667,7 @@ positive_tests = &
     opt25.$(ext) &
     opt26.$(ext) &
     opt27.$(ext) &
+    opt28.$(ext) &
     opt29.$(ext) &
     opt30.$(ext) &
     opt31.$(ext) &
@@ -602,6 +696,8 @@ positive_tests = &
     over11.$(ext) &
     over12.$(ext) &
     over13.$(ext) &
+    over14.$(ext) &
+    over15.$(ext) &
     pack1.$(ext) &
     pack2.$(ext) &
     pack3.$(ext) &
@@ -620,6 +716,7 @@ positive_tests = &
     parm09.$(ext) &
     parm10.$(ext) &
     parm11.$(ext) &
+    parm12.$(ext) &
     parse01.$(ext) &
     pch01.$(ext) &
     pch02.$(ext) &
@@ -673,7 +770,13 @@ positive_tests = &
     pp33.$(ext) &
     pp34.$(ext) &
     pp35.$(ext) &
+    pp36.$(ext) &
+    pp37.$(ext) &
+    pp38.$(ext) &
     prag01.$(ext) &
+    prag02.$(ext) &
+    prag03.$(ext) &
+    prag04.$(ext) &
     quest01.$(ext) &
     quest02.$(ext) &
     quest03.$(ext) &
@@ -705,6 +808,7 @@ positive_tests = &
     ret09.$(ext) &
     ret10.$(ext) &
     ret11.$(ext) &
+    ret12.$(ext) &
     risc01.$(ext) &
     rtti01.$(ext) &
     rtti02.$(ext) &
@@ -722,6 +826,7 @@ positive_tests = &
     sizeof03.$(ext) &
     src01.$(ext) &
     stat01.$(ext) &
+    stat02.$(ext) &
     str01.$(ext) &
     str02.$(ext) &
     str03.$(ext) &
@@ -757,6 +862,7 @@ positive_tests = &
     vf18.$(ext) &
     vf19.$(ext) &
     vf20.$(ext) &
+    vf21.$(ext) &
 
 
 

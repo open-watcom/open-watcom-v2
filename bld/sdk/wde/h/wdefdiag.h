@@ -39,23 +39,23 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #ifdef __NT__
-#define WDE_DIALOG_MAX_CONTROLS 65535
+    #define WDE_DIALOG_MAX_CONTROLS 65535
 #else
-#define WDE_DIALOG_MAX_CONTROLS 255
+    #define WDE_DIALOG_MAX_CONTROLS 255
 #endif
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeDialogBoxInfo *WdeDBIFromObject ( void * );
-extern OBJPTR WdeCreateNewDialog          ( WResID *, Bool is32bit );
-extern OBJPTR WdeCreateDialogFromRes      ( WdeResInfo *, WdeResDlgItem *);
-extern OBJPTR WINEXPORT  WdeDialogCreate  ( OBJPTR, RECT *, OBJPTR );
-extern Bool   WdeDialogInit               ( Bool );
-extern void   WdeDialogFini               ( void );
-extern Bool   WdeIsDialogRestorable       ( void * );
-extern Bool   WdePreserveDialogWithDBI    ( void * );
-extern void   WdeDialogModified           ( void * );
-extern RECT  *WdeGetDefaultDialogNCSize   ( void );
+extern WdeDialogBoxInfo *WdeDBIFromObject( void * );
+extern OBJPTR           WdeCreateNewDialog( WResID *, Bool is32bit );
+extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
+extern OBJPTR WINEXPORT WdeDialogCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool             WdeDialogInit( Bool );
+extern void             WdeDialogFini( void );
+extern Bool             WdeIsDialogRestorable( void * );
+extern Bool             WdePreserveDialogWithDBI( void * );
+extern void             WdeDialogModified( void * );
+extern RECT             *WdeGetDefaultDialogNCSize( void );
 
 #endif

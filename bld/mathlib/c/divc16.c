@@ -34,9 +34,9 @@
 #include "cplx.h"
 #include "pdiv.h"
 
-_WMRTLINK dcomplex _IF_C16Div( double a, double b, double c, double d ) {
-//======================================================================
-
+_WMRTLINK dcomplex _IF_C16Div( double a, double b, double c, double d )
+//=====================================================================
+{
 // Divide two double precision complex numbers and return the
 // imaginary part of the result.
 // ( a, b )/( c, d ) = (( a, b )/( d + c*c/d )) * ( c/d, -1 )

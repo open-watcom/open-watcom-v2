@@ -1,0 +1,37 @@
+/*
+ *  pmbitmap.h  OS/2 Presentation Manager bitmap include file
+ *              for 16-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#define BFT_ICON          0x4349
+#define BFT_BMAP          0x4d42
+#define BFT_POINTER       0x5450
+#define BFT_COLORICON     0x4943
+#define BFT_COLORPOINTER  0x5043
+#define BFT_BITMAPARRAY   0x4142
+
+typedef struct _BITMAPFILEHEADER {
+    USHORT usType;
+    ULONG  cbSize;
+    SHORT  xHotspot;
+    SHORT  yHotspot;
+    ULONG  offBits;
+    BITMAPINFOHEADER bmp;
+} BITMAPFILEHEADER, FAR *PBITMAPFILEHEADER;
+
+typedef struct _BITMAPARRAYFILEHEADER {
+    USHORT usType;
+    ULONG  cbSize;
+    ULONG  offNext;
+    USHORT cxDisplay;
+    USHORT cyDisplay;
+    BITMAPFILEHEADER bfh;
+} BITMAPARRAYFILEHEADER, FAR *PBITMAPARRAYFILEHEADER;
+
+:include cplusepi.sp

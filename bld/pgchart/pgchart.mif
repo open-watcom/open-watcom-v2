@@ -1,61 +1,72 @@
 #
 # WATCOM Presentation Graphics (PGCHART.LIB)
 #
+proj_name = pgchart
+
+pgchart_autodepends = .AUTODEPEND
+pgchart_distrib_lib = 1
+
+suppress_zc = 1
+
+suffix_register = r
+suffix_stack = s
+
+memory_model_i86 = s
+memory_model_386 = s
+!ifeq host_os os2
+memory_model_386 = f
+!else ifeq host_os win
+memory_model_i86 = l
+!endif
+
+fpu_flags_dos_i86 = -fpc
+fpu_flags_dos_386 = -fpc
+fpu_flags_os2_i86 = -fpc
+fpu_flags_os2_386 = -fpc
+fpu_flags_win_i86 = -fpc
 
 objs = &
-        PGANCOM.OBJ &
-        PGANMS.OBJ &
-        PGANPIE.OBJ &
-        PGANSCMS.OBJ &
-        PGAXIS.OBJ &
-        PGCHART.OBJ &
-        PGCHRDEF.OBJ &
-        PGCHRTPI.OBJ &
-        PGDFAULT.OBJ &
-        PGHLABEL.OBJ &
-        PGINIT.OBJ &
-        PGLEGEND.OBJ &
-        PGMISC.OBJ &
-        PGPAL.OBJ &
-        PGSCALE.OBJ &
-        PGSCTTER.OBJ &
-        PGSTYLE.OBJ &
-        PGTITLE.OBJ &
-        PGVARS.OBJ &
-        PGVLABEL.OBJ
+        pgancom.obj &
+        pganms.obj &
+        pganpie.obj &
+        pganscms.obj &
+        pgaxis.obj &
+        pgchart.obj &
+        pgchrdef.obj &
+        pgchrtpi.obj &
+        pgdfault.obj &
+        pghlabel.obj &
+        pginit.obj &
+        pglegend.obj &
+        pgmisc.obj &
+        pgpal.obj &
+        pgscale.obj &
+        pgsctter.obj &
+        pgstyle.obj &
+        pgtitle.obj &
+        pgvars.obj &
+        pgvlabel.obj
 
-!ifeq _386 386
-text_seg_name = _TEXT
-.before
-        @set inc386=..\h;$(build_root)\graphlib\h;$(build_root)\watcom\h;$(build_root)\hdr\dos;$(%include)
-        @set wcc386=/osax /w3 /zq /zl /fpc /d1 $(model)
-!else
-text_seg_name = GRAPH_TEXT
-.before
-        @set include=..\h;$(build_root)\graphlib\h;$(build_root)\watcom\h;$(build_root)\hdr\dos;$(%include)
-        @set wcc=/osax /w3 /zq /zl /fpc /d1 $(model)
-!endif
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
 
-cflags = /nt=$(text_seg_name) /d_CGRAPH=$(cdecl) /d_FARD=$(fard) /nm=$(module) /fo=$[&.obj
+inc_dirs = -I"../h" -I"$(dev_dir)/graphlib/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
 
-.c: $(build_root)\pgchart\c
+.c: ../c
 
-$(libname).lib : $(objs) ..\pgchart.lbc
-        wlib /b /n /q $(libname).lib @..\pgchart.lbc
+extra_c_flags = -os -s -zl -d_FARD= -D_ENABLE_AUTODEPEND -nm=$[&$(suffix_$(convention)) -fo=$@
 
-.c.obj:
-!ifeq _386 386
-        $(libcomp386) $(cflags) $(extra_c_flags) $[*
-!else
-        $(libcomp286) $(cflags) $(extra_c_flags) $[*
-!endif
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s -d__STACK
+extra_c_flags_386 = $(extra_c_flags_386_$(convention)) -d_CGRAPH=
+extra_c_flags_i86 = -nt=GRAPH_TEXT -d_CGRAPH=_loadds
 
-..\pgchart.lbc : ..\pgchart.mif
-        %create ..\pgchart.lbc
-        for %i in ($(objs)) do %append ..\pgchart.lbc -+%i
+extra_c_flags_win = -zW
 
-clean: .symbolic
-        @if exist *.obj @del *.obj
-        @if exist *.lib @del *.lib
-        @if exist ..\*.lbc @del ..\*.lbc
-        @if exist *.tmp @del *.tmp
+$(libname).lib : pgchart.lbc
+        $(librarian) $(libflags) @$<
+
+pgchart.lbc : $(objs)
+        %create $@
+        @for %i in ($<) do @%append $@ +%i

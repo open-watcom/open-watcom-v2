@@ -1,4 +1,5 @@
 #include "windows.h"
+#include "iconids.h"
 #include "filelist.h"
 #include "asavedlg.h"
 #include "finddlg.h"
@@ -16,13 +17,31 @@
 #include "ftbar.h"
 #include "ssbar.h"
 #include "repdlg.h"
-#include "rcstr.h"
-#include "..\ctl\setfs.h"
-#include "..\ctl\setscr.h"
-#include "..\ctl\setgen.h"
+#include "rcstr.gh"
+#include "uistr.gh"
+#include "../ctl/setfs.h"
+#include "../ctl/setscr.h"
+#include "../ctl/setgen.h"
+
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
 
 APPLICON        ICON    viw.ico
 WATCOMICON      ICON    watcom.ico
+IDI_CFILE       ICON    cfile.ico
+IDI_CPPFILE     ICON    cppfile.ico
+IDI_HFILE       ICON    hfile.ico
+IDI_HPPFILE     ICON    hppfile.ico
+IDI_FORFILE     ICON    forfile.ico
+IDI_FIFILE      ICON    fifile.ico
+IDI_MAKFILE     ICON    makfile.ico
+IDI_TXTFILE     ICON    txtfile.ico
+IDI_OBJFILE     ICON    objfile.ico
+IDI_RCFILE      ICON    rcfile.ico
+IDI_RHFILE      ICON    rhfile.ico
+IDI_LIBFILE     ICON    libfile.ico
+IDI_AWKFILE     ICON    awkfile.ico
 BUTTONPATTERN   BITMAP  button.bmp
 SAVE            BITMAP  save.bmp
 COPY            BITMAP  copy.bmp
@@ -50,7 +69,8 @@ DROPSS          CURSOR  dropss.cur
 #define pick( a, b, c )  a b
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
-    #include "rcstr.msg"
+    #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 #include "filelist.dlg"
@@ -69,6 +89,6 @@ END
 #include "ssbar.dlg"
 #include "repdlg.dlg"
 #include "snoop.dlg"
-#include "..\ctl\setfs.dlg"
-#include "..\ctl\setscr.dlg"
-#include "..\ctl\setgen.dlg"
+#include "../ctl/setfs.dlg"
+#include "../ctl/setscr.dlg"
+#include "../ctl/setgen.dlg"

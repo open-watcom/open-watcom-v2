@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display an icon resource.
 *
 ****************************************************************************/
 
@@ -54,14 +53,15 @@ BOOL CALLBACK GetIconNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
     return( TRUE );
 }
 
-void DisplayIcon( HWND hwnd ) {
+void DisplayIcon( HWND hwnd )
+{
     FARPROC     fp;
     HICON       oldicon;
     HICON       newicon;
     char        buf[256];
 
-    fp = MakeProcInstance( GetIconNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetIconNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     newicon = LoadIcon( Instance, iconName );
     if( newicon == NULL ) {
@@ -70,9 +70,9 @@ void DisplayIcon( HWND hwnd ) {
         return;
     }
 #ifdef __NT__
-    oldicon = SetClassLong( hwnd, GCL_HICON, (DWORD)newicon );
+    oldicon = (HICON)SetClassLong( hwnd, GCL_HICON, (LONG)newicon );
 #else
-    oldicon = SetClassWord( hwnd, GCW_HICON, (WORD)newicon );
+    oldicon = (HICON)SetClassWord( hwnd, GCW_HICON, (WORD)newicon );
 #endif
     ShowWindow( hwnd, SW_MINIMIZE );
     MessageBox( NULL, "The Icon is displayed", "ICON", MB_OK );
@@ -82,5 +82,4 @@ void DisplayIcon( HWND hwnd ) {
 #else
     SetClassWord( hwnd, GCW_HICON, (WORD)oldicon );
 #endif
-
 }

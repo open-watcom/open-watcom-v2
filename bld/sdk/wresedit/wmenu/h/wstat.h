@@ -34,7 +34,7 @@
 #define WSTAT_INCLUDED
 
 #include <stdlib.h>
-#include "mstatwnd.h"
+#include "statwnd.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -44,22 +44,23 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef struct wstatbar {
-    statwnd  *stat;
-    char      text[2*MAX_STATUS_TEXT+2];
-} wstatbar;
+typedef struct WStatBar {
+    void    *stat;
+    char    text[2 * MAX_STATUS_TEXT + 2];
+    HWND    win;
+} WStatBar;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool      WInitStatusLines     ( HINSTANCE );
-extern void      WFiniStatusLines     ( void );
-extern int       WGetStatusDepth      ( void );
-extern void      WResizeStatusWindows ( wstatbar *, RECT * );
-extern void      WDestroyStatusLine   ( wstatbar * );
-extern wstatbar *WCreateStatusLine    ( HWND, HINSTANCE );
-extern Bool      WSetStatusText       ( wstatbar *, const char *, const char * );
-extern Bool      WSetStatusReadyText  ( wstatbar *wsb );
-extern Bool      WSetStatusByID       ( wstatbar *wsb, DWORD id1, DWORD id2 );
+extern Bool     WInitStatusLines( HINSTANCE );
+extern void     WFiniStatusLines( void );
+extern int      WGetStatusDepth( void );
+extern void     WResizeStatusWindows( WStatBar *, RECT * );
+extern void     WDestroyStatusLine( WStatBar * );
+extern WStatBar *WCreateStatusLine( HWND, HINSTANCE );
+extern Bool     WSetStatusText( WStatBar *, const char *, const char * );
+extern Bool     WSetStatusReadyText( WStatBar *wsb );
+extern Bool     WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 );
 
 #endif

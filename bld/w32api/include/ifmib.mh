@@ -1,0 +1,67 @@
+/*
+ *  ifmib.h     Interface Management Information Base (MIB) definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _IFMIB_
+#define _IFMIB_
+
+:include readonly.sp
+
+#include <ifdef.h>
+
+:include cpluspro.sp
+
+:include anysize.sp
+
+/* Maximum lengths */
+#define MAXLEN_PHYSADDR         8
+#define MAXLEN_IFDESCR          256
+#define MAX_INTERFACE_NAME_LEN  256
+
+/* MIB interface number */
+typedef struct _MIB_IFNUMBER {
+    DWORD   dwValue;
+} MIB_IFNUMBER;
+typedef MIB_IFNUMBER    *PMIB_IFNUMBER;
+
+/* MIB interface row */
+typedef struct _MIB_IFROW {
+    WCHAR                   wszName[MAX_INTERFACE_NAME_LEN];
+    IF_INDEX                dwIndex;
+    IFTYPE                  dwType;
+    DWORD                   dwMtu;
+    DWORD                   dwSpeed;
+    DWORD                   dwPhysAddrLen;
+    UCHAR                   bPhysAddr[MAXLEN_PHYSADDR];
+    DWORD                   dwAdminStatus;
+    INTERNAL_IF_OPER_STATUS dwOperStatus;
+    DWORD                   dwLastChange;
+    DWORD                   dwInOctets;
+    DWORD                   dwInUcastPkts;
+    DWORD                   dwInNUcastPkts;
+    DWORD                   dwInDiscards;
+    DWORD                   dwInErrors;
+    DWORD                   dwInUnknownProtos;
+    DWORD                   dwOutOctets;
+    DWORD                   dwOutUcastPkts;
+    DWORD                   dwOutNUcastPkts;
+    DWORD                   dwOutDiscards;
+    DWORD                   dwOutErrors;
+    DWORD                   dwOutQLen;
+    DWORD                   dwDescrLen;
+    UCHAR                   bDescr[MAXLEN_IFDESCR];
+} MIB_IFROW;
+typedef MIB_IFROW   *PMIB_IFROW;
+
+/* MIB interface table */
+typedef struct _MIB_IFTABLE {
+    DWORD       dwNumEntries;
+    MIB_IFROW   table[ANY_SIZE];
+} MIB_IFTABLE;
+typedef MIB_IFTABLE *PMIB_IFTABLE;
+
+:include cplusepi.sp
+
+#endif /* _IFMIB_ */

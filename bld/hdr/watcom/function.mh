@@ -1,0 +1,570 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: functional (Functional templates)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines a number of functional-like templates and 
+//              associated binders and adaptors.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _FUNCTIONAL_INCLUDED
+#define _FUNCTIONAL_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
+#endif
+
+namespace std {
+
+    template< class Arg1, class Result >
+    struct unary_function {
+        typedef Arg1   argument_type;
+        typedef Result result_type;
+    };
+
+
+    template< class Arg1, class Arg2, class Result >
+    struct binary_function {
+        typedef Arg1   first_argument_type;
+        typedef Arg2   second_argument_type;
+        typedef Result result_type;
+    };
+
+
+    template< class Type >
+    struct plus : binary_function< Type, Type, Type > {
+        Type operator( )( const Type &x, const Type &y ) const
+            { return( x + y ); }
+    };
+
+
+    template< class Type >
+    struct minus : binary_function< Type, Type, Type > {
+        Type operator( )( const Type &x, const Type &y ) const
+            { return( x - y ); }
+    };
+
+
+    template< class Type >
+    struct multiplies : binary_function< Type, Type, Type > {
+        Type operator( )( const Type &x, const Type &y ) const
+            { return( x * y ); }
+    };
+
+
+    template< class Type >
+    struct divides : binary_function< Type, Type, Type > {
+        Type operator( )( const Type &x, const Type &y ) const
+            { return( x / y ); }
+    };
+
+
+    template< class Type >
+    struct modulus : binary_function< Type, Type, Type > {
+        Type operator( )( const Type &x, const Type &y ) const
+            { return( x % y ); }
+    };
+
+
+    template< class Type >
+    struct negate : unary_function< Type, Type > {
+        Type operator( )( const Type &x ) const
+            { return( -x ); }
+    };
+
+
+    template< class Type >
+    struct equal_to : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x == y ); }
+    };
+
+
+    template< class Type >
+    struct not_equal_to : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x != y ); }
+    };
+
+
+    template< class Type >
+    struct greater : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x > y ); }
+    };
+
+
+    template< class Type >
+    struct less : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x < y ); }
+    };
+
+
+    template< class Type >
+    struct greater_equal : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x >= y ); }
+    };
+
+
+    template< class Type >
+    struct less_equal : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x <= y ); }
+    };
+
+
+    template< class Type >
+    struct logical_and : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x && y ); }
+    };
+
+
+    template< class Type >
+    struct logical_or : binary_function< Type, Type, bool > {
+        bool operator( )( const Type &x, const Type &y ) const
+            { return( x || y ); }
+    };
+
+
+    template< class Type >
+    struct logical_not : unary_function< Type, bool > {
+        bool operator( )( const Type &x ) const
+            { return( !x ); }
+    };
+
+
+    template< class Predicate >
+    class unary_negate : public
+        unary_function< typename Predicate::argument_type, bool > {
+        const Predicate &pred;
+    public:
+        explicit unary_negate( const Predicate &p ) : pred( p ) { }
+        bool operator( )( const typename Predicate::argument_type &x ) const
+            { return( !pred( x ) ); }
+    };
+
+
+    template< class Predicate >
+    inline unary_negate< Predicate > not1( const Predicate &p )
+        { return( unary_negate< Predicate >( p ) ); }
+
+
+    template< class Predicate >
+    class binary_negate : public
+        binary_function< typename Predicate::first_argument_type,
+                         typename Predicate::second_argument_type, 
+                         bool > {
+        const Predicate &pred;
+    public:
+        explicit binary_negate( const Predicate &p ) : pred( p ) { }
+        bool operator( )( const typename Predicate::first_argument_type  &x,
+                          const typename Predicate::second_argument_type &y ) const
+            { return( !pred( x, y ) ); }
+    };
+
+
+    template< class Predicate >
+    inline binary_negate< Predicate > not2( const Predicate &p )
+        { return( binary_negate< Predicate >( p ) ); }
+
+
+    template< class Operation >
+    class binder1st : public
+        unary_function< typename Operation::second_argument_type,
+                        typename Operation::result_type > {
+    protected:
+        Operation op;
+        typename Operation::first_argument_type value;
+    public:
+        binder1st( const Operation &x,
+                   const typename Operation::first_argument_type &y ) 
+            : op( x ), value( y ) { }
+        typename Operation::result_type
+        operator( )( const typename Operation::second_argument_type &x ) const
+            { return( op( value, x ) ); }
+    };
+
+
+    template< class Operation, class Type >
+    inline binder1st< Operation > bind1st( const Operation &x, const Type &y )
+    {
+        return( binder1st< Operation >(
+            x, typename Operation::first_argument_type( y ) ) );
+    }
+
+
+    template< class Operation >
+    class binder2nd : public
+        unary_function< typename Operation::first_argument_type,
+                        typename Operation::result_type > {
+    protected:
+        Operation op;
+        typename Operation::second_argument_type value;
+    public:
+        binder2nd( const Operation &x,
+                   const typename Operation::second_argument_type &y ) 
+            : op( x ), value( y ) { }
+        typename Operation::result_type
+        operator( )( const typename Operation::first_argument_type &x ) const
+            { return( op( x, value ) ); }
+    };
+
+
+    template< class Operation, class Type >
+    inline binder2nd< Operation > bind2nd( const Operation &x, const Type &y )
+    {
+        return( binder2nd< Operation >(
+            x, typename Operation::second_argument_type( y ) ) );
+    }
+
+
+    template< class Arg1, class Result >
+    class pointer_to_unary_function : public
+        unary_function< Arg1, Result > {
+        Result ( *p )( Arg1 );
+    public:
+        explicit pointer_to_unary_function( Result ( *f )( Arg1 ) )
+            : p( f ) { }
+        Result operator( )( Arg1 x ) const
+            { return( p( x ) ); }
+    };
+
+
+    template< class Arg1, class Arg2, class Result >
+    class pointer_to_binary_function : public
+        binary_function< Arg1, Arg2, Result > {
+        Result ( *p )( Arg1, Arg2 );
+    public:
+        explicit pointer_to_binary_function( Result ( *f )( Arg1, Arg2 ) )
+            : p( f ) { }
+        Result operator( )( Arg1 x, Arg2 y ) const
+            { return( p( x, y ) ); }
+    };
+
+
+    template< class Arg1, class Result >
+    inline pointer_to_unary_function< Arg1, Result >
+    ptr_fun( Result ( *f )( Arg1 ) )
+        { return( pointer_to_unary_function< Arg1, Result >( f ) ); }
+
+
+    template< class Arg1, class Arg2, class Result >
+    inline pointer_to_binary_function< Arg1, Arg2, Result >
+    ptr_fun( Result ( *f )( Arg1, Arg2 ) )
+        { return( pointer_to_binary_function< Arg1, Arg2, Result >( f ) ); }
+
+
+    template< class Result, class Klass >
+    class mem_fun_t : public unary_function< Klass*, Result > {
+        Result ( Klass::*p )( );
+    public:
+        explicit mem_fun_t( Result ( Klass::*f )( ) ) : p( f ) { }
+        Result operator( )( Klass *x ) const
+            { return( ( x->*p )( ) ); }
+    };
+
+
+    template< class Result, class Klass, class Arg >
+    class mem_fun1_t : public binary_function< Klass*, Arg, Result > {
+        Result ( Klass::*p )( Arg );
+    public:
+        explicit mem_fun1_t( Result ( Klass::*f )( Arg ) ) : p( f ) { }
+        Result operator( )( Klass *x, Arg y ) const
+            { return( ( x->*p )( y ) ); }
+    };
+
+
+    template< class Result, class Klass >
+    inline mem_fun_t< Result, Klass > mem_fun( Result ( Klass::*f )( ) )
+        { return( mem_fun_t< Result, Klass >( f ) ); }
+
+
+    template< class Result, class Klass, class Arg >
+    inline mem_fun1_t< Result, Klass, Arg >
+    mem_fun( Result ( Klass::*f )( Arg ) )
+        { return( mem_fun1_t< Result, Klass, Arg >( f ) ); }
+
+
+    template< class Result, class Klass >
+    class mem_fun_ref_t : public unary_function< Klass, Result > {
+        Result ( Klass::*p )( );
+    public:
+        explicit mem_fun_ref_t( Result ( Klass::*f )( ) ) : p( f ) { }
+        Result operator( )( Klass &x ) const
+            { return( ( x.*p )( ) ); }
+    };
+
+
+    template< class Result, class Klass, class Arg >
+    class mem_fun1_ref_t : public binary_function< Klass, Arg, Result > {
+        Result ( Klass::*p )( Arg );
+    public:
+        explicit mem_fun1_ref_t( Result ( Klass::*f )( Arg ) ) : p( f ) { }
+        Result operator( )( Klass &x, Arg y ) const
+            { return( ( x.*p )( y ) ); }
+    };
+
+
+    template< class Result, class Klass >
+    inline mem_fun_ref_t< Result, Klass >
+    mem_fun_ref( Result ( Klass::*f )( ) )
+        { return( mem_fun_ref_t< Result, Klass >( f ) ); }
+
+
+    template< class Result, class Klass, class Arg >
+    inline mem_fun1_ref_t< Result, Klass, Arg >
+    mem_fun_ref( Result ( Klass::*f )( Arg ) )
+        { return( mem_fun1_ref_t< Result, Klass, Arg >( f ) ); }
+
+
+    template< class Result, class Klass >
+    class const_mem_fun_t : public unary_function< const Klass*, Result > {
+        Result ( Klass::*p )( ) const;
+    public:
+        explicit const_mem_fun_t( Result ( Klass::*f )( ) const ) : p( f ) { }
+        Result operator( )( const Klass *x ) const
+            { return( ( x->*p )( ) ); }
+    };
+
+
+    template< class Result, class Klass, class Arg >
+    class const_mem_fun1_t :
+        public binary_function< const Klass*, Arg, Result > {
+        Result ( Klass::*p )( Arg ) const;
+    public:
+        explicit const_mem_fun1_t( Result ( Klass::*f )( Arg ) const ) : p( f ) { }
+        Result operator( )( const Klass *x, Arg y ) const
+            { return( ( x->*p )( y ) ); }
+    };
+
+
+    template< class Result, class Klass >
+    inline const_mem_fun_t< Result, Klass >
+    mem_fun( Result ( Klass::*f )( ) const )
+        { return( const_mem_fun_t< Result, Klass >( f ) ); }
+
+
+    template< class Result, class Klass, class Arg >
+    inline const_mem_fun1_t< Result, Klass, Arg >
+    mem_fun( Result ( Klass::*f )( Arg ) const )
+        { return( const_mem_fun1_t< Result, Klass, Arg >( f ) ); }
+
+
+    template< class Result, class Klass >
+    class const_mem_fun_ref_t : public unary_function< Klass, Result > {
+        Result ( Klass::*p )( ) const;
+    public:
+        explicit const_mem_fun_ref_t( Result ( Klass::*f )( ) const ) : p( f ) { }
+        Result operator( )( const Klass &x ) const
+            { return( ( x.*p )( ) ); }
+    };
+
+
+    template< class Result, class Klass, class Arg >
+    class const_mem_fun1_ref_t : public binary_function< Klass, Arg, Result > {
+        Result ( Klass::*p )( Arg ) const;
+    public:
+        explicit const_mem_fun1_ref_t( Result ( Klass::*f )( Arg ) const )
+            : p( f ) { }
+        Result operator( )( const Klass &x, Arg y ) const
+            { return( ( x.*p )( y ) ); }
+    };
+
+
+    template< class Result, class Klass >
+    inline const_mem_fun_ref_t< Result, Klass >
+    mem_fun_ref( Result ( Klass::*f )( ) const )
+        { return( const_mem_fun_ref_t< Result, Klass >( f ) ); }
+
+
+    template< class Result, class Klass, class Arg >
+    inline const_mem_fun1_ref_t< Result, Klass, Arg >
+    mem_fun_ref( Result ( Klass::*f )( Arg ) const )
+        { return( const_mem_fun1_ref_t< Result, Klass, Arg >( f ) ); }
+
+
+    // ================================
+    // struct hash with specializations
+    // ================================
+
+    template< class Type >
+    struct hash : public unary_function< Type, size_t >
+    {
+        size_t operator( )( Type value ) const;
+    };
+
+    template< >
+    struct hash< bool > : public unary_function< bool, size_t >
+    {
+        size_t operator( )( bool value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< char > : public unary_function< char, size_t >
+    {
+        size_t operator( )( char value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< signed char > : public unary_function< signed char, size_t >
+    {
+        size_t operator( )( signed char value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< unsigned char > : public unary_function< unsigned char, size_t >
+    {
+        size_t operator( )( unsigned char value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    // Assume wchar_t is not more than 16 bits.
+    template< >
+    struct hash< wchar_t > : public unary_function< wchar_t, size_t >
+    {
+        size_t operator( )( wchar_t value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< short > : public unary_function< short, size_t >
+    {
+        size_t operator( )( short value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< unsigned short > : public unary_function< unsigned short, size_t >
+    {
+        size_t operator( )( unsigned short value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    // Assume size_t is always at least as wide as int.
+    template< >
+    struct hash< int > : public unary_function< int, size_t >
+    {
+        size_t operator( )( int value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    // Assume size_t is always at least as wide as unsigned int.
+    template< >
+    struct hash< unsigned > : public unary_function< unsigned, size_t >
+    {
+        size_t operator( )( unsigned value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+#if defined(_M_I86)
+
+    template< >
+    struct hash< long > : public unary_function< long, size_t >
+    {
+        size_t operator( )( long value ) const
+        {
+            long result = value;
+            result ^= (value & 0xFFFF0000UL) >> 16;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+    template< >
+    struct hash< unsigned long > : public unary_function< unsigned long, size_t >
+    {
+        size_t operator( )( unsigned long value ) const
+        {
+            unsigned long result = value;
+            result ^= (value & 0xFFFF0000UL) >> 16;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+    template< >
+    struct hash< long long > : public unary_function< long long, size_t >
+    {
+        size_t operator( )( long long value ) const
+        {
+            long long result = value;
+            result ^= (value & 0x00000000FFFF0000ULL) >> 16;
+            result ^= (value & 0x0000FFFF00000000ULL) >> 32;
+            result ^= (value & 0xFFFF000000000000ULL) >> 48;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+    template< >
+    struct hash< unsigned long long > : public unary_function< unsigned long long, size_t >
+    {
+        size_t operator( )( unsigned long long value ) const
+        {
+            unsigned long long result = value;
+            result ^= (value & 0x00000000FFFF0000ULL) >> 16;
+            result ^= (value & 0x0000FFFF00000000ULL) >> 32;
+            result ^= (value & 0xFFFF000000000000ULL) >> 48;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+#else  // 32 bit
+
+    template< >
+    struct hash< long > : public unary_function< long, size_t >
+    {
+        size_t operator( )( long value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< unsigned long > : public unary_function< unsigned long, size_t >
+    {
+        size_t operator( )( unsigned long value ) const
+            { return( static_cast< size_t >( value ) ); }
+    };
+
+    template< >
+    struct hash< long long > : public unary_function< long long, size_t >
+    {
+        size_t operator( )( long long value ) const
+        {
+            long long result = value;
+            result ^= (value & 0xFFFFFFFF00000000ULL) >> 32;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+    template< >
+    struct hash< unsigned long long > : public unary_function< unsigned long long, size_t >
+    {
+        size_t operator( )( unsigned long long value ) const
+        {
+            unsigned long long result = value;
+            result ^= (value & 0xFFFFFFFF00000000ULL) >> 32;
+            return( static_cast< size_t >( result ) );
+        }
+    };
+
+#endif
+
+:: Not really what one would want for far pointers.
+    template< class Type >
+    struct hash< Type * > : public unary_function< Type *, size_t >
+    {
+        size_t operator( )( Type *p ) const
+            { return( static_cast< size_t >( p ) ); }
+    };
+
+} // namespace std
+
+#endif

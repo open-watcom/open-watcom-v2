@@ -1,0 +1,8 @@
+THE WINHELP |KWDATA INTERNAL FILE
+=================================
+
+The |KWDATA file stores the topics to which various keywords 'point'.
+The file is just a list of four-byte "Character" offsets into the |TOPIC
+file; see topic.txt for a discussion of offsets.  To determine which
+offsets correspond to which keywords, the |KWBTREE file is required; see
+kwbtree.txt.

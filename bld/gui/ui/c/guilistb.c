@@ -41,7 +41,7 @@
 static bool FillInEmptyList( a_list *list )
 {
     list->choice = 0;
-    list->data = (char ** )GUIAlloc( sizeof( char * ) );
+    list->data = (char ** )GUIMemAlloc( sizeof( char * ) );
     if( list->data == NULL ) {
         return( FALSE );
     }
@@ -70,7 +70,7 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
         return( FALSE );
     }
     data = (char **)list->data;
-    list->data = (char ** )GUIAlloc( sizeof( char * ) * size );
+    list->data = (char ** )GUIMemAlloc( sizeof( char * ) * size );
     if( list->data == NULL ) {
         list->data = data;
         return( FALSE );
@@ -78,11 +78,11 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
     for( i = 0; i < choice; i++ ) {
         ((char**)list->data)[i] = data[i];
     }
-    GUIFree( data[choice] );
+    GUIMemFree( data[choice] );
     for( i = choice; i < size; i++ ) {
         ((char **)list->data)[i] = data[i+1];
     }
-    GUIFree( data );
+    GUIMemFree( data );
     if( choice >= GUIListSize( list )  ) {
         list->choice = 0;
     }
@@ -103,13 +103,13 @@ void GUIFreeList( a_list *list, bool free_list )
     num = GUIListSize( list );
     data = (char **)list->data;
     for( i = 0; i < num; i++ ) {
-        GUIFree( data[i] );
+        GUIMemFree( data[i] );
     }
-    GUIFree( data );
+    GUIMemFree( data );
     list->choice = 0;
     list->data = NULL;
     if( free_list ) {
-        GUIFree( list );
+        GUIMemFree( list );
     }
 }
 
@@ -125,12 +125,12 @@ a_list *GUICreateListBox( void )
 {
     a_list      *list;
 
-    list = (a_list * )GUIAlloc( sizeof( a_list ) );
+    list = (a_list * )GUIMemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
     if( !GUIFillInListBox( list ) ) {
-        GUIFree( list );
+        GUIMemFree( list );
         list = NULL;
     }
     return( list );
@@ -145,12 +145,12 @@ a_list *GUICreateEditMLE( char * text )
     char        *absolute_end;
     #define     MLE_NEWLINE     "\r\n"
 
-    list = (a_list * )GUIAlloc( sizeof( a_list ) );
+    list = (a_list * )GUIMemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
     if( !GUIFillInListBox( list ) ) {
-        GUIFree( list );
+        GUIMemFree( list );
         list = NULL;
     } else {
         GUIStrDup( text, &text_copy );
@@ -169,7 +169,7 @@ a_list *GUICreateEditMLE( char * text )
             }
         }
         GUIListBoxAddText( list, line, -1 );
-        GUIFree( text_copy );
+        GUIMemFree( text_copy );
     }
     return( list );
 }
@@ -190,7 +190,7 @@ static char **ResizeList( a_list *list, unsigned num_to_add, int *choice )
                         uigetlistelement;
     }
     num = GUIListSize( list );
-    data = (char **)GUIAlloc( ( num + num_to_add + 1 ) * sizeof( char * ) );
+    data = (char **)GUIMemAlloc( ( num + num_to_add + 1 ) * sizeof( char * ) );
     if( data == NULL ) {
         return( NULL );
     }
@@ -214,16 +214,16 @@ static bool AddString( char **data, char *text, int choice )
 
     if( text != NULL ) {
         length = strlen( text );
-        data[choice] = (char *)GUIAlloc( length + 1 );
+        data[choice] = (char *)GUIMemAlloc( length + 1 );
         if( data[choice] == NULL ) {
-            GUIFree( data );
+            GUIMemFree( data );
             return( FALSE );
         }
         strcpy( data[choice], text );
     } else {
-        data[choice] = (char *)GUIAlloc( sizeof( char ) );
+        data[choice] = (char *)GUIMemAlloc( sizeof( char ) );
         if( data[choice] == NULL ) {
-            GUIFree( data );
+            GUIMemFree( data );
             return( FALSE );
         }
         data[choice][0] = NULLCHAR;
@@ -244,7 +244,7 @@ bool GUIListBoxAddText( a_list *list, char *text, int choice )
     if( !AddString( data, text, choice ) ) {
         return( FALSE );
     }
-    GUIFree( old_data );
+    GUIMemFree( old_data );
     list->data = (void *)data;
     uiupdatelistbox( list );
     return( TRUE );
@@ -271,7 +271,7 @@ bool GUIListBoxAddTextList( a_list *list, unsigned items, void *handle,
             return( FALSE );
         }
     }
-    GUIFree( old_data );
+    GUIMemFree( old_data );
     list->data = (void *)data;
     uiupdatelistbox( list );
     return( TRUE );

@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
-void prep_line_for_conditional_assembly( char *line );
-int conditional_assembly_directive( int i );
-int conditional_error_directive( int i );
+extern void IfCondInit( void );
+extern void IfCondFini( void );
+extern void prep_line_for_conditional_assembly( char * );
+extern int  conditional_assembly_directive( int );
+extern int  conditional_error_directive( int );

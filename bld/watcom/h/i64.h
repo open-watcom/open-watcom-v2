@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Support for 64-bit integers (no native 64-bit type required).
 *
 ****************************************************************************/
 
@@ -133,15 +132,39 @@ int  U64Cnv16( unsigned_64 *res, char c );
 
 #define U64Clear( x )   ((x).u._32[0]=0,(x).u._32[1]=0)
 
+/* The FetchTrunc macros grab an 8/16/32-bit value from memory assuming
+ * that the value is stored as a 64-bit integer. This is required for
+ * big endian systems where the value is at different memory address
+ * depending on its size.
+ */
 #define U32Fetch( x )           (assert((x).u._32[I64HI32]==0),(x).u._32[I64LO32])
 #define U32FetchTrunc( x )      ((x).u._32[I64LO32])
 #define I32FetchTrunc( x )      ((signed_32)(x).u._32[I64LO32])
+#define U16FetchTrunc( x )      ((x).u._16[I64LO16])
+#define I16FetchTrunc( x )      ((signed_16)(x).u._16[I64LO16])
+#define U8FetchTrunc( x )       ((x).u._8[I64LO8])
+#define I8FetchTrunc( x )       ((signed_8)(x).u._8[I64LO8])
 
-#if defined( WATCOM_BIG_ENDIAN )
-#   define I64Val(h,l) { h, l }
+/* Note about the FetchNative macros: These assume that the value is stored
+ * in memory as a non-64bit type, starting at the lowest address. That is,
+ * it must be accessed as the first entry of the appropriate array (u._16
+ * array for 16-bit value etc.) *regardless* of host endianness.
+ */
+#define U32FetchNative( x )     ((x).u._32[0])
+#define I32FetchNative( x )     ((signed_32)(x).u._32[0])
+#define U16FetchNative( x )     ((x).u._16[0])
+#define I16FetchNative( x )     ((signed_16)(x).u._16[0])
+#define U8FetchNative( x )      ((x).u._8[0])
+#define I8FetchNative( x )      ((signed_8)(x).u._8[0])
+
+#if defined( __BIG_ENDIAN__ )
+#   define I64Val( h, l ) { h, l }
 #else
-#   define I64Val(h,l) { l, h }
+#   define I64Val( h, l ) { l, h }
 #endif
+
+// set U64 from low, high part
+#define U64Set( x, l, h )	((x)->u._32[I64LO32] = (l), (x)->u._32[I64HI32] = (h))
 
 // is the U64 a valid U32?
 #define U64IsU32( x )   ((x).u._32[I64HI32]==0)
@@ -149,5 +172,8 @@ int  U64Cnv16( unsigned_64 *res, char c );
 #define U64IsI32( x )   (((x).u._32[I64HI32]==0)&&((int_32)((x).u._32[I64LO32]))>=0)
 // is the U64 a positive I64?
 #define U64IsI64( x )   (((int_32)((x).u._32[I64HI32]))>=0)
+// is the I64 a I32?
+#define I64IsI32(x) (((x).u._32[I64HI32]==0)&&(((int_32)((x).u._32[I64LO32]))>=0) \
+                   ||((x).u._32[I64HI32]==-1)&&(((int_32)((x).u._32[I64LO32]))<0))
 
 #endif

@@ -116,7 +116,7 @@ static HMENU GetPopupHMENU( gui_window *wnd, HMENU hmenu, unsigned id,
     popup_info  *info;
 
     if( parent ) {
-        *parent = NULL;
+        *parent = NULLHANDLE;
     }
     if( offset ) {
         *offset = 0;
@@ -223,7 +223,7 @@ static bool InsertPopup( gui_window *wnd, unsigned id, HMENU popup,
 
     hmenu = GetPopupHMENU( wnd, GUIGetHMENU( wnd ), id, NULL, NULL, type );
     if( hmenu != popup ) {
-        info = (popup_info *)GUIAlloc( sizeof( popup_info ) );
+        info = (popup_info *)GUIMemAlloc( sizeof( popup_info ) );
         if( info != NULL ) {
             info->next = wnd->popup;
             wnd->popup = info;
@@ -253,7 +253,7 @@ static void DeletePopup( gui_window *wnd, unsigned id )
         } else {
             wnd->popup = curr->next;
         }
-        GUIFree( curr );
+        GUIMemFree( curr );
     }
 }
 
@@ -272,7 +272,7 @@ void GUIDeleteFloatingPopups( gui_window *wnd )
                 wnd->popup = curr->next;
             }
             tmp = curr->next;
-            GUIFree( curr );
+            GUIMemFree( curr );
             curr = tmp;
         } else {
             prev = curr;
@@ -288,14 +288,14 @@ void GUIFreePopupList( gui_window *wnd )
 
     for( curr = wnd->popup; curr != NULL; curr = next ) {
         next = curr->next;
-        GUIFree( curr );
+        GUIMemFree( curr );
     }
     wnd->popup = NULLHANDLE;
 }
 
 void GUISetGUIHint( gui_window *wnd )
 {
-    GUIInitHint( wnd, NUM_GUI_HINT, &GUIHint, GUI_HINT );
+    GUIInitHint( wnd, NUM_GUI_HINT, GUIHint, GUI_HINT );
 }
 
 HMENU   GUIHFloatingPopup       = NULLHANDLE;
@@ -531,7 +531,7 @@ bool GUIEnableMenuItem( gui_window *wnd, int id, bool enable, bool floating )
  * GUISetMenuText -- change the text of a menu item
  */
 
-extern bool GUISetMenuText( gui_window *wnd, int id, char *text, bool floating )
+extern bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating )
 {
     HMENU       hmenu, popup, parent;
     int         offset;
@@ -687,14 +687,14 @@ bool GUIAddToSystemMenu( gui_window *wnd, HWND hwnd, int num_menus,
         _wpi_enablemenuitem( system, SC_CLOSE, FALSE, FALSE );
     }
     if( style & GUI_CHANGEABLE_FONT ) {
-        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULL, NULL ) ) {
+        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
             _wpi_appendmenu( system, MF_STRING, MF_ENABLED,
-                             GUIHint[GUI_MENU_FONT].id, NULL,
+                             GUIHint[GUI_MENU_FONT].id, NULLHANDLE,
                              GUIHint[GUI_MENU_FONT].label );
         }
     }
     if( num_menus > 0 ) {
-        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULL, NULL ) ) {
+        if( _wpi_appendmenu( system, MF_SEPARATOR, 0, 0, NULLHANDLE, NULL ) ) {
             return( AppendMenus( wnd, system, num_menus, menu ) );
         }
     }

@@ -1,0 +1,12 @@
+#include "owobjrc.h"
+
+#ifndef OS2_INCLUDED
+   #include <os2.h>
+#endif
+
+ICON IDRES_ICON owobject.ico
+
+RESOURCE RT_USER_DATAFILE IDRES_TEXT_WELCOME welcome.txt
+
+rcinclude owobject.dlg
+

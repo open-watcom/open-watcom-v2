@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "preproc.h"
 #include "name.h"
@@ -43,10 +41,6 @@
 #include "ptree.h"
 #include "scan.h"
 #include "asmstmt.h"
-
-#if _CPU == 8086 || _CPU == 80386
-#include "asmsym.h"
-#endif
 
 #ifdef DISABLE_ASM_STMT
 
@@ -61,26 +55,27 @@ static void ensureBufferReflectsCurToken( void )
 {
     if( TokenUsesBuffer( CurToken ) ) {
         if( CurToken == T_CONSTANT ) {
-            // kludge to handle the fact that rewrites don't store
-            // the text for integral constants
             switch( ConstType ) {
-            case TYP_FLOAT:
-            case TYP_DOUBLE:
-            case TYP_LONG_DOUBLE:
-                // OK, Buffer is set
-                break;
             case TYP_UCHAR:
             case TYP_UINT:
             case TYP_ULONG:
                 ultoa( U32Fetch( Constant64 ), Buffer, 10 );
                 break;
-            default:
+            case TYP_SCHAR:
+            case TYP_SINT:
+            case TYP_SLONG:
                 ltoa( U32Fetch( Constant64 ), Buffer, 10 );
+                break;
+            case TYP_ULONG64:
+            case TYP_SLONG64:
+                sti64cpy( Buffer, Constant64 );
+                break;
             }
         }
     } else {
         strcpy( Buffer, Tokens[ CurToken ] );
     }
+
 }
 
 static PTREE genFnCall( char *name )
@@ -94,24 +89,9 @@ static boolean endOfAsmStmt( void )
     if( CurToken == T_NULL ) return( TRUE );
     if( CurToken == T___ASM ) return( TRUE );
     if( CurToken == T_RIGHT_BRACE ) return( TRUE );
+    if( CurToken == T_ALT_RIGHT_BRACE ) return( TRUE );
     if( CurToken == T_SEMI_COLON ) return( TRUE );
     return( FALSE );
-}
-
-static void absorbASMConstant( char *buff, unsigned size )
-{
-    // 0a0b3h is a valid .ASM constant
-    for(;;) {
-        NextToken();
-        if( endOfAsmStmt() ) {
-            return;
-        }
-        ensureBufferReflectsCurToken();
-        if(( CharSet[ Buffer[0] ] & (C_AL|C_DI) ) == 0 ) {
-            return;
-        }
-        strncat( buff, Buffer, size );
-    }
 }
 
 static boolean isId( unsigned token )
@@ -129,9 +109,11 @@ static void getAsmLine( VBUF *buff )
 {
     char line[256];
 
+    if( endOfAsmStmt() )
+        return;
     /* reserve at least MAX_INSTR_SIZE bytes in the buffer */
-    VbufReqd( buff, (( AsmSysAddress()+MAX_INSTR_SIZE) + (MAX_INSTR_SIZE-1) ) & ~(MAX_INSTR_SIZE-1) );
-    AsmSysSetCodeBuffer( buff->buf );
+    VbufReqd( buff, ((AsmCodeAddress+MAX_INSTR_SIZE) + (MAX_INSTR_SIZE-1)) & ~(MAX_INSTR_SIZE-1) );
+    AsmCodeBuffer = VbufBuffer( buff );
     ensureBufferReflectsCurToken();
     if( isId( CurToken ) && strcmp( Buffer, "__emit" ) == 0 ) {
         strcpy( line, AsmSysDefineByte() );
@@ -144,25 +126,25 @@ static void getAsmLine( VBUF *buff )
     for(;;) {
         if( endOfAsmStmt() ) break;
         strncat( line, Buffer, sizeof(line)-1 );
-        if( CurToken == T_CONSTANT ) {
-            absorbASMConstant( line, sizeof(line)-1 );
+        switch( CurToken ) {
+        case T_ALT_XOR:
+        case T_ALT_EXCLAMATION:
+        case T_ALT_AND_AND:
+        case T_ALT_OR_OR:
             strncat( line, " ", sizeof(line)-1 );
-        } else {
-            if( isId( CurToken ) ) {
-                NextToken();
-                if( CurToken != T_XOR ) {
-                    strncat( line, " ", sizeof(line)-1 );
-                }
-            } else {
-                NextToken();
-            }
-            ensureBufferReflectsCurToken();
+            break;
+        default:
+            if( isId( CurToken ) )
+                strncat( line, " ", sizeof(line)-1 );
+            break;
         }
+        NextToken();
+        ensureBufferReflectsCurToken();
     }
     if( line[0] != '\0' ) {
-        AsmSysParseLine( line );
+        AsmSysLine( line );
     }
-    VbufUsed( buff, AsmSysAddress() );
+    VbufSetLen( buff, AsmCodeAddress );
     if( CurToken == T_SEMI_COLON ) {
         // ; .ASM comment
         for(;;) {
@@ -173,56 +155,57 @@ static void getAsmLine( VBUF *buff )
     }
 }
 
-static void advancePastT_NULL( void )
+int NextTokenSkipEOL( void )
+/**************************/
 {
-    // won't advance past EOL unless we do this
     PPState = PPS_NORMAL;
     NextToken();
     PPState = PPS_EOL;
+    return( CurToken );
 }
 
 PTREE AsmStmt( void )
 /*******************/
 {
-    boolean uses_auto;
-    void *aux_info;
-    unsigned skip_token;
-    PTREE expr;
-    TYPE fn_type;
-    TYPE ret_type;
-    SYMBOL sym;
-    char *fn_name;
-    auto VBUF code_buffer;
+    boolean     uses_auto;
+    AUX_INFO    *aux_info;
+    unsigned    skip_token;
+    unsigned    skip_alt_token;
+    PTREE       expr;
+    TYPE        fn_type;
+    TYPE        ret_type;
+    SYMBOL      sym;
+    char        *fn_name;
+    auto VBUF   code_buffer;
+    ppstate_t   save_ppstate;
 
+    save_ppstate = PPState;
     PPState = PPS_EOL;
+    PPStateAsm = TRUE;
     VbufInit( &code_buffer );
-    NextToken();
-    while( CurToken == T_NULL ) {
-        advancePastT_NULL();
-    }
+    NextTokenSkipEOL();
     AsmSysInit();
-    if( CurToken == T_LEFT_BRACE ) {
-        NextToken();
+    if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
+        NextTokenSkipEOL();
         for(;;) {
             getAsmLine( &code_buffer );
             if( CurToken == T_RIGHT_BRACE ) break;
+            if( CurToken == T_ALT_RIGHT_BRACE ) break;
             if( CurToken == T_EOF ) break;
-            if( CurToken == T_NULL ) {
-                advancePastT_NULL();
-            } else {
-                NextToken();
-            }
+            NextTokenSkipEOL();
         }
         skip_token = T_RIGHT_BRACE;
+        skip_alt_token = T_ALT_RIGHT_BRACE;
     } else {
         getAsmLine( &code_buffer );
-        skip_token = T_NULL;
+        skip_token = skip_alt_token = T_NULL;
     }
-    PPState = PPS_NORMAL;
-    if( CurToken == skip_token ) {
+    PPStateAsm = FALSE;
+    PPState = save_ppstate;
+    if( ( CurToken == skip_token ) || ( CurToken == skip_alt_token ) ) {
         NextToken();
     }
-    if( AsmSysAddress() != 0 ) {
+    if( AsmCodeAddress != 0 ) {
         fn_name = NameDummy();
         aux_info = AsmSysCreateAux( fn_name );
         uses_auto = AsmSysInsertFixups( &code_buffer );
@@ -240,6 +223,7 @@ PTREE AsmStmt( void )
     } else {
         expr = NULL;
     }
+    AsmSysFini();
     VbufFree( &code_buffer );
     return( expr );
 }

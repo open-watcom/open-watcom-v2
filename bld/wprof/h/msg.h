@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution profiler messages.
 *
 ****************************************************************************/
 
 
-#ifndef __ALPHA__
+#ifdef __WATCOMC__
 #pragma aux fatal aborts;
 #endif
 
@@ -38,10 +37,10 @@
 #ifdef DEFINE_STRINGS
 #define LITSTR( sym, val ) const char _Literal_##sym[] = val;
 #else
-#if defined( __386__ ) || defined( __ALPHA__ )
-    #define MAKEFAR
-#else
+#if defined( __I86__ )
     #define MAKEFAR far
+#else
+    #define MAKEFAR
 #endif
 #define LITSTR( sym, val ) extern char MAKEFAR _Literal_##sym[sizeof( val )];
 #endif
@@ -78,7 +77,7 @@ LITSTR( Empty_Str,                  "" )
 LITSTR( File_Does_Not_Exist,        "File '%s' does not exist" )
 LITSTR( Bad_System_Load,            "Could not start the command processor" )
 LITSTR( About_WPROF,                "About WPROF" )
-LITSTR( WPROF_TITLE,                "WATCOM Profiler" )
+LITSTR( WPROF_TITLE,                "Open Watcom Profiler" )
 LITSTR( Enter_Sample,               "Enter Sample File Name" )
 LITSTR( OK_Str,                     "OK" )
 LITSTR( Cancel_Str,                 "Cancel" )
@@ -117,10 +116,10 @@ LITSTR( Unable_To_Open_Help,        "Unable to open help file '%s'" )
 LITSTR( Convert_Data,               "Convert Data to a File" )
 LITSTR( Convert_File_Name,          "Enter Convert File Name" )
 LITSTR( Mad_Init_Failed,            "Cannot initialize the machine specific interface" )
-LITSTR( LDS_FSEEK_FAILED,       "File seek failed" )
-LITSTR( LDS_FREAD_FAILED,       "File read failed" )
-LITSTR( LDS_FOPEN_FAILED,       "File open failed" )
-LITSTR( LMS_INVALID_MAD_VERSION,"Invalid machine architecture version" )
-LITSTR( LMS_INVALID_MAD,        "Invalid machine architecture file" )
-LITSTR( LMS_UNREGISTERED_MAD,   "Unknown machine architecture" )
-LITSTR( LMS_RECURSIVE_MAD_FAILURE, "Can not recover from machine architecture file failures" )
+LITSTR( LDS_FSEEK_FAILED,           "File seek failed" )
+LITSTR( LDS_FREAD_FAILED,           "File read failed" )
+LITSTR( LDS_FOPEN_FAILED,           "File open failed" )
+LITSTR( LMS_INVALID_MAD_VERSION,    "Invalid machine architecture version" )
+LITSTR( LMS_INVALID_MAD,            "Invalid machine architecture file" )
+LITSTR( LMS_UNREGISTERED_MAD,       "Unknown machine architecture" )
+LITSTR( LMS_RECURSIVE_MAD_FAILURE,  "Can not recover from machine architecture file failures" )

@@ -42,21 +42,21 @@
 /****************************************************************************/
 typedef enum
 {
-  DialogService
-, BitmapService
-, CursorService
-, IconService
-, NoServicePending
+    DialogService,
+    BitmapService,
+    CursorService,
+    IconService,
+    NoServicePending
 } WRESPT;
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern WRESPT   WREGetPendingService    ( void );
-extern void     WRESetPendingService    ( WRESPT s );
-extern Bool     WREHData2Mem            ( HDDEDATA, void **, uint_32 * );
-extern Bool     WREDDEStart             ( HINSTANCE inst );
-extern void     WREDDEEnd               ( void );
-extern Bool     WREPokeData             ( HCONV conv, void *data, int size, Bool );
+extern WRESPT   WREGetPendingService( void );
+extern void     WRESetPendingService( WRESPT s );
+extern Bool     WREHData2Mem( HDDEDATA, void **, uint_32 * );
+extern Bool     WREDDEStart( HINSTANCE inst );
+extern void     WREDDEEnd( void );
+extern Bool     WREPokeData( HCONV conv, void *data, int size, Bool );
 
 #endif

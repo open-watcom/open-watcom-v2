@@ -1,6 +1,0 @@
-include watcom.mk
-
-include ../master.mk
-
-install	:
-	cp diff /usr/local/bin/diffu

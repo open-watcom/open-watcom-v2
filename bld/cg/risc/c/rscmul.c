@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RISC mul/add/sub/shift instruction costs (made up).
 *
 ****************************************************************************/
 
@@ -44,20 +43,20 @@ extern  int     MulCost( unsigned_32 num )
     return( 5 );
 }
 
-extern  int     AddCost()
-/***********************/
+extern  int     AddCost( void )
+/*****************************/
 {
     return( 1 );
 }
 
-extern  int     SubCost()
-/***********************/
+extern  int     SubCost( void )
+/*****************************/
 {
     return( AddCost() );
 }
 
-extern  int     ShiftCost()
-/*************************/
+extern  int     ShiftCost( int count )
+/************************************/
 {
     return( 1 );
 }

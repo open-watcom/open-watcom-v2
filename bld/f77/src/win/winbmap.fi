@@ -1,0 +1,252 @@
+*$noreference
+
+! Bitmap Functions:
+! -----------------
+
+      external BitBlt
+      external CreateBitmap
+      external CreateBitmapIndirect
+      external CreateCompatibleBitmap
+      external CreateDiscardableBitmap
+      external ExtFloodFill
+      external FloodFill
+      external GetBitmapBits
+      external GetBitmapDimension
+      external GetPixel
+      external LoadBitmap
+      external PatBlt
+      external SetBitmapBits
+      external SetBitmapDimension
+      external SetPixel
+      external StretchBlt
+
+      integer*2 BitBlt
+      integer*2 CreateBitmap
+      integer*2 CreateBitmapIndirect
+      integer*2 CreateCompatibleBitmap
+      integer*2 CreateDiscardableBitmap
+      integer*2 ExtFloodFill
+      integer*2 FloodFill
+      integer*4 GetBitmapBits
+      integer*4 GetBitmapDimension
+      integer*4 GetPixel
+      integer*2 LoadBitmap
+      integer*2 PatBlt
+      integer*4 SetBitmapBits
+      integer*4 SetBitmapDimension
+      integer*4 SetPixel
+      integer*2 StretchBlt
+
+! Device-Independent Bitmap Functions:
+! ------------------------------------
+
+      external CreateDIBitmap
+      external GetDIBits
+      external SetDIBits
+      external SetDIBitsToDevice
+      external StretchDIBits
+
+      integer*2 CreateDIBitmap
+      integer*2 GetDIBits
+      integer*2 SetDIBits
+      integer*2 SetDIBitsToDevice
+      integer*2 StretchDIBits
+
+! Ternary raster operations
+
+      integer SRCCOPY
+      integer SRCPAINT
+      integer SRCAND
+      integer SRCINVERT
+      integer SRCERASE
+      integer NOTSRCCOPY
+      integer NOTSRCERASE
+      integer MERGECOPY
+      integer MERGEPAINT
+      integer PATCOPY
+      integer PATPAINT
+      integer PATINVERT
+      integer DSTINVERT
+      integer BLACKNESS
+      integer WHITENESS
+
+      parameter ( SRCCOPY     = '00CC0020'x ) ! dst = src
+      parameter ( SRCPAINT    = '00EE0086'x ) ! dst = src OR dst
+      parameter ( SRCAND      = '008800C6'x ) ! dst = src AND dst
+      parameter ( SRCINVERT   = '00660046'x ) ! dst = src XOR dst
+      parameter ( SRCERASE    = '00440328'x ) ! dst = src AND (NOT dst)
+      parameter ( NOTSRCCOPY  = '00330008'x ) ! dst = (NOT src)
+      parameter ( NOTSRCERASE = '001100A6'x ) ! dst = (NOT src) AND (NOT dst)
+      parameter ( MERGECOPY   = '00C000CA'x ) ! dst = (src AND pattern)
+      parameter ( MERGEPAINT  = '00BB0226'x ) ! dst = (NOT src) OR dst
+      parameter ( PATCOPY     = '00F00021'x ) ! dst = pattern
+      parameter ( PATPAINT    = '00FB0A09'x ) ! dst = DPSnoo
+      parameter ( PATINVERT   = '005A0049'x ) ! dst = pattern XOR dst
+      parameter ( DSTINVERT   = '00550009'x ) ! dst = (NOT dst)
+      parameter ( BLACKNESS   = '00000042'x ) ! dst = BLACK
+      parameter ( WHITENESS   = '00FF0062'x ) ! dst = WHITE
+
+! DIB color table identifiers
+
+      integer DIB_RGB_COLORS
+      integer DIB_PAL_COLORS
+
+      parameter ( DIB_RGB_COLORS  = 0 )       ! color table in RGBTriples
+      parameter ( DIB_PAL_COLORS  = 1 )       ! color table in palette indices
+
+! ExtFloodFill style flags
+
+      integer  FLOODFILLBORDER
+      integer  FLOODFILLSURFACE
+
+      parameter (  FLOODFILLBORDER   = 0 )
+      parameter (  FLOODFILLSURFACE  = 1 )
+
+! Predefined Bitmaps
+
+      integer OBM_CLOSE
+      integer OBM_UPARROW
+      integer OBM_DNARROW
+      integer OBM_RGARROW
+      integer OBM_LFARROW
+      integer OBM_REDUCE
+      integer OBM_ZOOM
+      integer OBM_RESTORE
+      integer OBM_REDUCED
+      integer OBM_ZOOMD
+      integer OBM_RESTORED
+      integer OBM_UPARROWD
+      integer OBM_DNARROWD
+      integer OBM_RGARROWD
+      integer OBM_LFARROWD
+      integer OBM_MNARROW
+      integer OBM_COMBO
+      integer OBM_OLD_CLOSE
+      integer OBM_SIZE
+      integer OBM_OLD_UPARROW
+      integer OBM_OLD_DNARROW
+      integer OBM_OLD_RGARROW
+      integer OBM_OLD_LFARROW
+      integer OBM_BTSIZE
+      integer OBM_CHECK
+      integer OBM_CHECKBOXES
+      integer OBM_BTNCORNERS
+      integer OBM_OLD_REDUCE
+      integer OBM_OLD_ZOOM
+      integer OBM_OLD_RESTORE
+
+      parameter ( OBM_CLOSE           = 32754 )
+      parameter ( OBM_UPARROW         = 32753 )
+      parameter ( OBM_DNARROW         = 32752 )
+      parameter ( OBM_RGARROW         = 32751 )
+      parameter ( OBM_LFARROW         = 32750 )
+      parameter ( OBM_REDUCE          = 32749 )
+      parameter ( OBM_ZOOM            = 32748 )
+      parameter ( OBM_RESTORE         = 32747 )
+      parameter ( OBM_REDUCED         = 32746 )
+      parameter ( OBM_ZOOMD           = 32745 )
+      parameter ( OBM_RESTORED        = 32744 )
+      parameter ( OBM_UPARROWD        = 32743 )
+      parameter ( OBM_DNARROWD        = 32742 )
+      parameter ( OBM_RGARROWD        = 32741 )
+      parameter ( OBM_LFARROWD        = 32740 )
+      parameter ( OBM_MNARROW         = 32739 )
+      parameter ( OBM_COMBO           = 32738 )
+      parameter ( OBM_OLD_CLOSE       = 32767 )
+      parameter ( OBM_SIZE            = 32766 )
+      parameter ( OBM_OLD_UPARROW     = 32765 )
+      parameter ( OBM_OLD_DNARROW     = 32764 )
+      parameter ( OBM_OLD_RGARROW     = 32763 )
+      parameter ( OBM_OLD_LFARROW     = 32762 )
+      parameter ( OBM_BTSIZE          = 32761 )
+      parameter ( OBM_CHECK           = 32760 )
+      parameter ( OBM_CHECKBOXES      = 32759 )
+      parameter ( OBM_BTNCORNERS      = 32758 )
+      parameter ( OBM_OLD_REDUCE      = 32757 )
+      parameter ( OBM_OLD_ZOOM        = 32756 )
+      parameter ( OBM_OLD_RESTORE     = 32755 )
+
+! Constants for CreateDIBitmap()
+
+      integer CBM_INIT
+
+      parameter ( CBM_INIT        = '04'x )   ! initialize bitmap
+
+! Bitmap Data Structure
+
+      structure /BITMAP/
+          integer*2           bmType
+          integer*2           bmWidth
+          integer*2           bmHeight
+          integer*2           bmWidthBytes
+          integer*1           bmPlanes
+          integer*1           bmBitsPixel
+          integer*4           bmBits
+      end structure
+
+! Structures for defining Device-Independent Bitmaps (DIBs)
+
+      structure /BITMAPCOREHEADER/
+          integer*4           bcSize  ! used to get to color table
+          integer*2           bcWidth
+          integer*2           bcHeight
+          integer*2           bcPlanes
+          integer*2           bcBitCount
+      end structure
+
+      structure /RGBQUAD/
+          integer*1           rgbBlue
+          integer*1           rgbGreen
+          integer*1           rgbRed
+          integer*1           rgbReserved
+      end structure
+
+      structure /BITMAPINFO/
+          record /BITMAPINFOHEADER/   bmiHeader
+          record /RGBQUAD/            bmiColors(1)
+      end structure
+
+      structure /RGBTRIPLE/
+          integer*1           rgbtBlue
+          integer*1           rgbtGreen
+          integer*1           rgbtRed
+      end structure
+
+      structure /BITMAPCOREINFO/
+          record /BITMAPCOREHEADER/   bmciHeader
+          record /RGBTRIPLE/          bmciColors(1)
+      end structure
+
+      structure /BITMAPFILEHEADER/
+          integer*2           bfType
+          integer*4           bfSize
+          integer*2           bfReserved1
+          integer*2           bfReserved2
+          integer*4           bfOffBits
+      end structure
+
+      structure /BITMAPINFOHEADER/
+          integer*4           biSize
+          integer*4           biWidth
+          integer*4           biHeight
+          integer*2           biPlanes
+          integer*2           biBitCount
+          integer*4           biCompression
+          integer*4           biSizeImage
+          integer*4           biXPelsPerMeter
+          integer*4           biYPelsPerMeter
+          integer*4           biClrUsed
+          integer*4           biClrImportant
+      end structure
+
+! constants for the biCompression field
+
+      integer BI_RGB
+      integer BI_RLE8
+      integer BI_RLE4
+
+      parameter ( BI_RGB      = 0 )
+      parameter ( BI_RLE8     = 1 )
+      parameter ( BI_RLE4     = 2 )
+
+*$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate Microsoft LINK to Watcom options.
 *
 ****************************************************************************/
 
@@ -81,35 +80,27 @@ static struct XlatStatus {
 
 
 /*
- * Translate scanned MS options to Watcom options.
- */
-void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
-/*************************************************************/
-{
-    /*** Parse the /nologo switch now so we can print the banner ***/
-    init_status( &status );
-    if( cmdOpts->nologo ) {
-        QuietModeMessage();
-    } else {
-        BannerMessage();
-    }
-
-    /*** Parse everything ***/
-    unsupported_opts( cmdOpts );
-    default_opts( &status, cmdOpts, cmdLine );
-    def_file_opts( cmdOpts );
-    linker_opts( &status, cmdOpts, cmdLine );
-    merge_opts( &status, cmdOpts, cmdLine );
-}
-
-
-/*
  * Initialize a struct XlatStatus.
  */
 static void init_status( struct XlatStatus *status )
 /**************************************************/
 {
     memset( status, 0, sizeof(struct XlatStatus) );
+}
+
+
+/*
+ * Add one more unsupported option to optStr.
+ */
+static void append_unsupported( char *optStr, char *opt )
+/*******************************************************/
+{
+    if( optStr[0] != '\0' ) {
+        strcat( optStr, " /" );
+    } else {
+        strcat( optStr, "/" );
+    }
+    strcat( optStr, opt );
 }
 
 
@@ -131,7 +122,6 @@ static void unsupported_opts( const OPT_STORAGE *cmdOpts )
     if( cmdOpts->order       )  append_unsupported( opts, "ORDER"       );
     if( cmdOpts->pdb         )  append_unsupported( opts, "PDB"         );
     if( cmdOpts->profile     )  append_unsupported( opts, "PROFILE"     );
-    if( cmdOpts->release     )  append_unsupported( opts, "RELEASE"     );
     if( cmdOpts->section     )  append_unsupported( opts, "SECTION"     );
     if( cmdOpts->verbose     )  append_unsupported( opts, "VERBOSE"     );
     if( cmdOpts->vxd         )  append_unsupported( opts, "VXD"         );
@@ -145,17 +135,27 @@ static void unsupported_opts( const OPT_STORAGE *cmdOpts )
 
 
 /*
- * Add one more unsupported option to optStr.
+ * Add another string to an OPT_STRING.
  */
-static void append_unsupported( char *optStr, char *opt )
-/*******************************************************/
+static void add_string( OPT_STRING **p, char *str )
+/*************************************************/
 {
-    if( optStr[0] != '\0' ) {
-        strcat( optStr, " /" );
+    OPT_STRING *        buf;
+    OPT_STRING *        curElem;
+
+    /*** Make a new list item ***/
+    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
+    strcpy( buf->data, str );
+    buf->next = NULL;
+
+    /*** Put it at the end of the list ***/
+    if( *p == NULL ) {
+        *p = buf;
     } else {
-        strcat( optStr, "/" );
+        curElem = *p;
+        while( curElem->next != NULL )  curElem = curElem->next;
+        curElem->next = buf;
     }
-    strcat( optStr, opt );
 }
 
 
@@ -477,6 +477,46 @@ static void init_fuzzy( OPT_STRING *objs, OPT_STRING *libs,
 
 
 /*
+ * Determine the name of the executable, and place it in the given buffer.
+ */
+static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
+                                 char *executable )
+/**************************************************************************/
+{
+    char                drive[_MAX_DRIVE];
+    char                dir[_MAX_DIR];
+    char                fname[_MAX_FNAME];
+
+    if( cmdOpts->out ) {
+        strcpy( executable, cmdOpts->out_value->data );
+    } else {
+        _splitpath( firstObj, drive, dir, fname, NULL );
+        if( !cmdOpts->dll ) {
+            _makepath( executable, drive, dir, fname, ".exe" );
+        } else {
+            _makepath( executable, drive, dir, fname, ".dll" );
+        }
+    }
+}
+
+
+/*
+ * Destroy an OPT_STRING.
+ */
+static void del_string( OPT_STRING **p )
+/**************************************/
+{
+    OPT_STRING *        s;
+
+    while( *p != NULL ) {
+        s = *p;
+        *p = s->next;
+        FreeMem( s );
+    }
+}
+
+
+/*
  * Parse linker options.
  */
 static void linker_opts( struct XlatStatus *status,
@@ -548,13 +588,18 @@ static void linker_opts( struct XlatStatus *status,
     /*** Process the LIB environment variable ***/
     envvar = getenv( "LIB" );
     if( envvar != NULL ) {
-        AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "LIBPATH %s", envvar );
+        newstr = PathConvert( envvar, '\'' );
+        AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "LIBPATH %s", newstr );
     }
 
     if( cmdOpts->incremental ) {
         if( !stricmp( cmdOpts->incremental_value->data, "yes" ) ) {
-            if( !cmdOpts->_10x ) {
-                AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION incremental" );
+            if( cmdOpts->release ) {
+                Warning( "Ignoring /INCREMENTAL due to /RELEASE" );
+            } else {
+                if( !cmdOpts->_10x ) {
+                    AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION incremental" );
+                }
             }
         }
     }
@@ -714,6 +759,10 @@ static void linker_opts( struct XlatStatus *status,
         AppendFmtCmdLine( cmdLine, LINK_OPTS_SECTION, "NAME %s", newstr );
     }
 
+    if( cmdOpts->release ) {
+        AppendCmdLine( cmdLine, LINK_OPTS_SECTION, "OPTION checksum" );
+    }
+
     if( cmdOpts->stack ) {
         p = strchr( cmdOpts->stack_value->data, ',' );
         if( p == NULL ) {               /* /STACK:reserve */
@@ -781,7 +830,6 @@ static void merge_opts( struct XlatStatus *status, const OPT_STORAGE *cmdOpts,
     OPT_STRING *curr;
     char       *p;
     char       *system = SYS_NT_CHARMODE;
-    char       *start = NULL;
 
     if( cmdOpts->subsystem ) {
         p = strchr( cmdOpts->subsystem_value->data, ',' );
@@ -805,41 +853,6 @@ static void merge_opts( struct XlatStatus *status, const OPT_STORAGE *cmdOpts,
         AppendFmtCmdLine( cmdLine, LINK_SYSTEM_SECTION, "SYSTEM %s", system );
     }
 
-    /*** If needed, reference the appropriate default startup symbol ***/
-
-    if (!cmdOpts->entry && !cmdOpts->nowopts && !cmdOpts->nowref)
-    {
-        start = NULL;
-
-        if (!cmdOpts->dll)
-        {
-            if (!stricmp("nt", system))
-                start = "_cstart_";
-            else if (!stricmp("nt_win", system))
-                start = "_wstart_";
-            else if (!stricmp("ntaxp", system))
-                start = "mainCRTStartup";
-            else if (!stricmp("ntaxp_win", system))
-                start = "WinMainCRTStartup";
-        } else {
-            if (!stricmp("nt", system) || !stricmp("nt_win", system)) {
-                start = "__DLLstartw_";
-            } else if (!stricmp("ntaxp", system)
-                                    || !stricmp("ntaxp_win", system)) {
-                start = "DllMainCRTStartup";
-            }
-        }
-
-        if (start)
-        {
-#ifdef __TARGET_386__
-            AppendFmtCmdLine(cmdLine, LINK_OPTS_SECTION, "REFERENCE %s OPTION START=%s", start, start);
-#else
-            AppendFmtCmdLine(cmdLine, LINK_OPTS_SECTION, "REFERENCE %s", start);
-#endif
-        }
-    } /* if */
-
     /*** Add any options meant for the Watcom tools ***/
     if (cmdOpts->passwopts)
     {
@@ -852,64 +865,23 @@ static void merge_opts( struct XlatStatus *status, const OPT_STORAGE *cmdOpts,
 
 
 /*
- * Add another string to an OPT_STRING.
+ * Translate scanned MS options to Watcom options.
  */
-static void add_string( OPT_STRING **p, char *str )
-/*************************************************/
+void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
+/*************************************************************/
 {
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + strlen(str) );
-    strcpy( buf->data, str );
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
+    /*** Parse the /nologo switch now so we can print the banner ***/
+    init_status( &status );
+    if( cmdOpts->nologo ) {
+        QuietModeMessage();
     } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
+        BannerMessage();
     }
-}
 
-/*
- * Determine the name of the executable, and place it in the given buffer.
- */
-static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
-                                 char *executable )
-/**************************************************************************/
-{
-    char                drive[_MAX_DRIVE];
-    char                dir[_MAX_DIR];
-    char                fname[_MAX_FNAME];
-
-    if( cmdOpts->out ) {
-        strcpy( executable, cmdOpts->out_value->data );
-    } else {
-        _splitpath( firstObj, drive, dir, fname, NULL );
-        if( !cmdOpts->dll ) {
-            _makepath( executable, drive, dir, fname, ".exe" );
-        } else {
-            _makepath( executable, drive, dir, fname, ".dll" );
-        }
-    }
-}
-
-
-/*
- * Destroy an OPT_STRING.
- */
-static void del_string( OPT_STRING **p )
-/********************************************/
-{
-    OPT_STRING *        s;
-
-    while( *p != NULL ) {
-        s = *p;
-        *p = s->next;
-        FreeMem( s );
-    }
+    /*** Parse everything ***/
+    unsupported_opts( cmdOpts );
+    default_opts( &status, cmdOpts, cmdLine );
+    def_file_opts( cmdOpts );
+    linker_opts( &status, cmdOpts, cmdLine );
+    merge_opts( &status, cmdOpts, cmdLine );
 }

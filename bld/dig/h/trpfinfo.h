@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote file info supplementary trap requests.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define FILE_INFO_SUPP_NAME     "FileInfo"
 
@@ -71,7 +70,7 @@ typedef struct {
     trap_error          err;
 } file_info_set_date_ret;
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 #define TRPFINFO_H
 

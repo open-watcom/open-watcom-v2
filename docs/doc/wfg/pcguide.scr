@@ -1,0 +1,99 @@
+.ty WATCOM Systems: WATFOR-77 User's Guide
+.ty         for the IBM Personal Computer
+.ty         avec DOS
+.*
+..im fplayout
+..im gvarsdos
+..im fmacs
+.sepbook &prodname
+.sepsect User's Guide for the
+.sepsect IBM PC with DOS
+.septoc User's Guide for the IBM PC
+.sk 10
+.tb set ›
+.sr c0=&syscl/2
+.tb &c0-5 &c0
+.us ›Project Members:
+.sk
+››G. Coschi
+››F. Crigger
+››T. Galvin
+››A. Kasapi
+››J. Schueler
+››T. Skomorowski
+››B. Stecher
+.sk 3
+.us ›Documentation Prepared By:
+.sk
+››G. Coschi
+››J. B. Schueler
+.sk 3
+.us ›Fifth Edition
+.**
+.newpage 2
+..pn roman lower
+..im copyrite
+..im disclaim
+.endfmt
+.**
+..pn roman lower
+..bt //%//
+..im fdospref
+..im fw4story
+.endfmt
+.**
+.newpage
+..im newslett
+.endfmt
+.**
+.newpage odd
+..sr tcpage=&SYSPAGE
+.endfmt
+.**
+..bt ////
+..pn arabic
+.newpage 1
+.chapnum PC.1
+.chap Introduction to &prodname
+.im fdosintr
+.chapnum PC.2
+.chap Using &prodname on the IBM PC
+.im fdosguid
+.chapnum PC.3
+.chap Using the &prodname Editor
+.im fdosedit
+.chapnum PC.4
+.chap Compiler Options
+.im fcpopts
+.chapnum PC.5
+.chap The &prodname Debugger
+.im fdebug
+.chapnum PC.6
+.chap Files on IBM PC DOS
+.im wdosfile
+.chapnum PC.7
+.chap Data Structures
+.im fpcdata
+.chapnum PC.8
+.chap Subprogram Libraries on IBM PC DOS
+.im fdoslib
+.chapnum PC.9
+.chap Using WATCOM GKS with &prodname
+.im fgkslib
+.chapnum PC.10
+.chap Generating Executable Files
+.im fdosexe
+.chapnum PC.11
+.chap Configuring &prodname
+.im fconfig
+.chapnum A
+.app &prodname Diagnostic Messages
+.im ferrmsg
+.im ferror
+.chapnum B
+.app Differences Between WATFIV and &prodname
+.im fw5diff
+.chapnum C
+.app Software Problem Reporting
+.im pcbugfrm
+..sr doindex=1

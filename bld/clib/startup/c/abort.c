@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent abort() implementation.
 *
 ****************************************************************************/
 
@@ -36,15 +35,13 @@
 #include "rtdata.h"
 #include "exitwmsg.h"
 #include <signal.h>
-#if defined(__QNX__)
 #include <unistd.h>
-#endif
 
-void __terminate();
 
-#if !defined(__PENPOINT__)
-void    (*_RWD_abort)() = __terminate;
-#endif
+void    (*_RWD_abort)( void ) = __terminate;
+
+
+// TODO: Use the QNX code once we get signal handling working properly
 
 #if defined(__QNX__)
 /*
@@ -52,35 +49,37 @@ void    (*_RWD_abort)() = __terminate;
  */
 #include "initfini.h"
 
-_WCRTLINK void abort(void)
+_WCRTLINK void abort( void )
 {
     struct sigaction    oact;
     sigset_t            mask;
 
-    sigaction(SIGABRT,NULL,&oact);
+    sigaction( SIGABRT, NULL, &oact );
     if( oact.sa_handler == SIG_DFL ) {
                                 /* '0' is not the right value here */
         __FiniRtns( 0, 255 );   /* get the I/O system shut down */
     }
-    sigfillset(&mask);
-    sigdelset(&mask,SIGABRT);
-    sigprocmask(SIG_SETMASK,&mask,(sigset_t *)NULL);
-    raise(SIGABRT);
-    signal(SIGABRT,SIG_DFL);
-    raise(SIGABRT);
+    sigfillset( &mask );
+    sigdelset( &mask, SIGABRT );
+    sigprocmask( SIG_SETMASK, &mask, (sigset_t *)NULL );
+    raise( SIGABRT );
+    signal( SIGABRT,SIG_DFL );
+    raise( SIGABRT );
     __terminate();
 }
 #else
 
-_WCRTLINK void abort()
+_WCRTLINK void abort( void )
 {
-    (*_RWD_abort)();
+    if( _RWD_abort != __terminate ) {
+        (*_RWD_abort)();
+    }
     __terminate();                          /* 23-may-90 */
 }
 
 #endif
 
-void __terminate()
+void __terminate( void )
 {
-    __fatal_runtime_error( "ABNORMAL TERMINATION\r\n", EXIT_FAILURE );
+    __fatal_runtime_error( "ABNORMAL TERMINATION", EXIT_FAILURE );
 }

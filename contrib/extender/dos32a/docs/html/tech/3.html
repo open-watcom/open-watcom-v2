@@ -1,0 +1,196 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [The Loader]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">3.0 - DOS/32 Advanced -
+The Loader<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The Loader is currently
+capable of loading the "LE", "LX" and "LC"(*) formats of 32-bit protected mode
+programs. The Objects can be loaded into both conventional (DOS) and extended
+(High) memories, but by default the loader will load all Objects into extended
+memory to emulate DOS/4GW DOS Extender.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">An Object is a part of
+your protected mode program, that can be either 16-bit or 32-bit and have
+attributes of CODE or DATA. The Objects can be seen as segments you declare
+in the program when you create your protected mode application. To be more
+exact, segments which have the same Class, or which are grouped into the
+same Group, will be put into one and the same Object. A typical WATCOM program
+will have two Objects: one 32-bit CODE Object containing BEGTEXT and TEXT
+segments (both have the same Class: CODE) and one 32-bit DATA Object containing
+the rest of declared segments, including the STACK (grouped into DGROUP
+group).</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced allows
+you to separate the 16-bit Objects and 32-bit Objects (place them in different
+memories, conventional and extended). The 16-bit Objects can be loaded into
+DOS memory directly, while the 32-bit Objects are still loaded into High
+memory.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">For each loaded Object,
+the Loader will allocate a protected mode selector that will be set to 16-bit
+if the Object was declared as a 16-bit Object and to 32-bit if the Object
+was declared as a 32-bit Object. Please note that the 32-bit Objects which have
+the same attributes will share one and the same selector. That is, if the
+Loader is loading an Object with attributes of DATA/32-bit, and there is
+already a selector allocated for an Object loaded previously, that had the
+same attributes, the both Objects will share the same selector. This will
+not be the case for the 16-bit Objects which will have different selectors
+each.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">For 32-bit Objects the
+DOS Extender will set the allocated selector's base to 0, and
+the limit to -1 (4GB). The 16-bit Objects' bases will be set to the
+base memory addresses, at which they were loaded, and the limits to the
+sizes of the Objects.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The loader is capable
+of loading the maximum of 64 Objects per application. If you have more than
+64 Objects in your application, you must rebuild it, or the DOS Extender
+will report an error &quot;too many objects...&quot;.</font></p>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When all the Objects are
+loaded into memory, they will be relocated. The relocation is a process,
+when the Loader reads fixups and applies them to the loaded Object data.
+When you linking your program, the linker, as it has no knowledge of what
+addresses the Objects will be loaded at later, will place a fixup for each
+CPU command (instruction) that uses a linear (not absolute) address. Consider
+the following example in the assembly language:</font></p>
+
+<blockquote>
+  <p>
+  <font size=-1 face="Verdana, Arial, Helvetica">
+  <i>
+  mov esi,0A0000h<br>
+  mov edi,offset _buffer_addr<br>
+  mov ecx,0800h<br>
+  rep movsd
+  </i>
+  </font>
+  </p>
+</blockquote>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The first instruction,
+contains an absolute address, 0A0000h, and thus no fixup will be generated
+by the linker for it. But the second instruction uses a linear address of
+variable <i>_buffer_addr</i> which is declared somewhere else in the
+program. The linker will therefore know only the linear address of variable
+<i>_buffer_addr</i> (the address relative to the beginning of the segment
+in which the variable is declared) and will place a fixup (this linear address)
+into fixup table in your protected mode application. When the Loader relocates
+a program, it reads the fixup (linear address), adds it to the base memory
+address, at which the Object was loaded, and patches the instruction that
+needs to be patched. This process is repeated for each Object until all
+instructions in all Objects are relocated. The fewer relocations a program
+has, the faster it is relocated, and therefore the faster it is loaded.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">What is an &quot;unrelocated
+address&quot;, you may ask. Look at the text just above. The unrelocated
+address is simply the linear address that was generated by the linker and
+put as a fixup into the fixup table. That is the linear address of a variable
+relative to the beginning of the segment, in which the variable was declared.
+When DOS/32 Advanced reports an error on exception occurred in your program,
+it will, if it can, always report the unrelocated address of the faulting
+instruction, along with the absolute (often =physical) address.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The Loader in DOS/32 Advanced
+can not load all types "LX" or "LE" applications, which depends on the factum
+that not all of fixup types are supported. Please note that all the programs
+created for DOS/4GW will be loaded by DOS/32 Advanced without any problems.
+Though, if you attempt to load a Windows VxD (which also use the "LE" file format)
+with DOS/32 Advanced Loader, you will probably get an error &quot;unsupported
+fixup...&quot;.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The supported fixup types
+are listed below:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">
+  <li>Byte fixups<br>
+  <li>16-bit Selector fixups<br>
+  <li>16:16-bit Pointer fixups<br>
+  <li>16-bit Offset fixups<br>
+  <li>16:32-bit Pointer fixups<br>
+  <li>32-bit Offset fixups<br>
+  <li>32-bit Self-Relative Offset fixups</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When your protected mode
+application is loaded and relocated, DOS/32 Advanced will setup a protected
+mode stack and segment registers for it and jump to the program's entry
+point. Note that your program may have an entry point in a 16-bit Object
+as well as in 32-bit.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When protected mode program
+is executed, the general and segment<br>
+registers of the CPU will be in the following state:</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">EAX = 0<br>
+  EBX = 0<br>
+  ECX = 0<br>
+  EDX = 0<br>
+  ESI = 0<br>
+  EDI = 0<br>
+  EBP = 0<br>
+  ESP = points to the top of protected mode stack</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">
+  CS = 32-bit code selector with base=0 and limit=4GB<br>
+  DS = 32-bit data selector with base=0 and limit=4GB<br>
+  ES = 32-bit data selector with base=PSP and limit=256 bytes<br>
+  SS = 32-bit data selector with base=0 and limit=4GB<br>
+  FS = 32-bit data selector with base=0 and limit=4GB<br>
+  GS = NULL selector (0000h)</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">
+  interrupts enabled, direction flag clear, and DS=SS
+  </font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">
+  the FS register will contain a selector internal to
+  DOS/32 Advanced DOS Extender, which should
+  not be modified or freed by your program.</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><font size=-2 face="Verdana, Arial, Helvetica">(*) <b>Note:</b><br>
+The Linear Compressed file format, also refered to as &quot;LC&quot;
+file format, is a modified version of "LE"/"LX"-style executables
+developed in conjuction to support protected mode executable compression.
+Although the primary goal of the LC file format is to allow compression
+of 16-bit and 32-bit protected mode executables, its
+intention is also to provide certain level of security for protected mode
+programmers and prevent unwanted intrusion into the application's code.
+The LC compressed executables, once compressed, cannot be decompressed,
+debugged or reverse-engineered, which ensures the authors of the original
+code in that the developed application will not be modified, and the users
+of the application in its genuinity.
+</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -497,8 +497,8 @@ HANDLE rgn_end(
         hld = GlobalAlloc( GMEM_MOVEABLE, size );
 
         /* copy the pieces */
-        if( hld != NULL ) {
-            ptr = GlobalLock( hld );
+        if( hld ) {
+            ptr = (char far *)GlobalLock( hld );
             tag = (rgn_tag_def *) ptr;
             ptr += sizeof(rgn_tag_def);
             tag->set_coll_offset = _get_offset( tag, ptr );
@@ -1267,7 +1267,7 @@ static HANDLE mark_rect(
     int             left, right, top, bottom;
 
     _wpi_getintrectvalues( *rect, &left, &top, &right, &bottom );
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = 4;
         mark_point( dc, left, top, &(bmps->mark[start]) );
@@ -1301,7 +1301,7 @@ static HANDLE mark_ellipse(
     x = (left + right) / 2;
     y = (top + bottom) / 2;
 
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = 4;
         mark_point( dc, x, top, &(bmps->mark[start]) );
@@ -1329,7 +1329,7 @@ static HANDLE mark_line(
 ) {
     rgn_mark_def   *bmps;
 
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = 2;
         mark_point( dc, p1.x, p1.y, &(bmps->mark[start]) );
@@ -1354,7 +1354,7 @@ static HANDLE mark_poly(
     rgn_mark_def       *bmps;
     short               count;
 
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = num_pts;
         for (count = 0; count < num_pts; count++ ) {
@@ -1488,7 +1488,7 @@ static HANDLE mark_pie(
     get_mid_pt( pts, pie, &mid_pt );
     get_pie_pt( &mid_pt, a_sqr, b_sqr, &pts[0], &pts[3] );
 
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = 4;
         for (count = 0; count < 4; count++) {
@@ -1523,7 +1523,7 @@ static HANDLE mark_set(
     }
 
     list = (rgn_set_list_def *) set->list;
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         bmps->num_bmps = set->info.num_used;
         for( curr_pt = 0; curr_pt < set->info.num_used; curr_pt++ ) {
@@ -1631,7 +1631,7 @@ static HANDLE mark_group(
         }
     }
 
-    if (bmps_hld != NULL) {
+    if( bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         if (bmps != NULL) {
             bmps->num_bmps = num_bmps;
@@ -1676,7 +1676,7 @@ void rgn_unmark(
 
     rgn = rgn_ptr;
 
-    if ((rgn != NULL) && (bmps_hld != NULL)) {
+    if( (rgn != NULL) && bmps_hld ) {
         bmps = (rgn_mark_def *)LocalLock( bmps_hld );
         for (count = (bmps->num_bmps - 1); count >=0; count--) {
             remove_mark( dc, &(bmps->mark[count]) );

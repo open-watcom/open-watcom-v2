@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PC Object Module Format, also known as OMF.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #ifndef PCOBJ_H
 #include <watcom.h>
 
-#pragma pack(1);
+#include "pushpck1.h"
 /*
  * Library stuff
  */
@@ -116,26 +115,28 @@ enum {
  *  INTEL Frame Specifiers
  */
 
-    F_SEG               = 0,        /* segment index                    */
-    F_GRP               = 1,        /* group index                      */
-    F_EXT               = 2,        /* external index                   */
-    F_ABS               = 3,        /* absolute frame number            */
-    F_LOC               = 4,        /* frame containing location        */
-    F_TARG              = 5,        /* frame same as target             */
-    F_NONE              = 6,        /* no frame                         */
+    FRAME_SEG           = 0,        /* segment index                    */
+    FRAME_GRP           = 1,        /* group index                      */
+    FRAME_EXT           = 2,        /* external index                   */
+    FRAME_ABS           = 3,        /* absolute frame number            */
+    FRAME_LOC           = 4,        /* frame containing location        */
+    FRAME_TARG          = 5,        /* frame same as target             */
+    FRAME_NONE          = 6,        /* no frame                         */
 
 /*
  *  INTEL Target Specifiers
  */
 
-    T_SEGWD             = 0,        /* segment index with displacement  */
-    T_GRPWD             = 1,        /* group index with displacement    */
-    T_EXTWD             = 2,        /* external index with displacement */
-    T_ABSWD             = 3,        /* abs frame num with displacement  */
-    T_SEG               = 4,        /* segment index, no displacement   */
-    T_GRP               = 5,        /* group index, no displacement     */
-    T_EXT               = 6,        /* external index, no displacement  */
-    T_ABS               = 7,        /* abs frame num, no displacement   */
+    TARGET_SEGWD        = 0,        /* segment index with displacement  */
+    TARGET_GRPWD        = 1,        /* group index with displacement    */
+    TARGET_EXTWD        = 2,        /* external index with displacement */
+    TARGET_ABSWD        = 3,        /* abs frame num with displacement  */
+    TARGET_SEG          = 4,        /* segment index, no displacement   */
+    TARGET_GRP          = 5,        /* group index, no displacement     */
+    TARGET_EXT          = 6,        /* external index, no displacement  */
+    TARGET_ABS          = 7,        /* abs frame num, no displacement   */
+
+    TARGET_WITH_DISPL   = ~4,       /* frame with displacement          */
 
 /*
  *  INTEL Group Specifiers
@@ -303,8 +304,11 @@ enum {
  * Comment Class Subtype
  */
 enum {
-    DLL_IMPDEF      = 0x01, /* Subtype IMPDEF of comment class DLL  */
-    DLL_EXPDEF      = 0x02, /* Subtype EXPDEF of comment class DLL  */
+    DLL_IMPDEF      = 0x01, /* Subtype IMPDEF of OMF extension class    */
+    DLL_EXPDEF      = 0x02, /* Subtype EXPDEF of OMF extension class    */
+    DLL_INCDEF      = 0x03, /* Subtype INCDEF of OMF extension class    */
+    DLL_PROTLIB     = 0x04, /* Protected Memory Library (OMF extension) */
+    DLL_LNKDIR      = 0x05, /* Subtype LNKDIR of OMF extension class    */
 };
 
 #define EASY_OMF_SIGNATURE  "80386"
@@ -425,7 +429,8 @@ enum {
     EASY_EXEC_READ      = 0x02, /* exec-read                            */
     EASY_READ_WRITE     = 0x03  /* read-write                           */
 };
-#pragma pack();
+
+#include "poppck.h"
 
 #define PCOBJ_H 1
 #endif

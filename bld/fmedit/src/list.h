@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-typedef struct list{
+typedef struct list {
     OBJPTR          elt;
-    struct list *   next;
-    struct list *   prev;
+    struct list     *next;
+    struct list     *prev;
 };

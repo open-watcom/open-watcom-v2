@@ -24,16 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Keep track of Table of Contents (TOC) for NT PPC or of the
+*               Global Offset Table (GOT) for OS/2 PPC.
 *
 ****************************************************************************/
 
-
-/*
- *  toc.c:  Keep track of table of contents for NT PPC or of
-            global offset table (GOT) for OS/2 PPC
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -65,8 +60,8 @@ typedef struct {
                        // else use off and sdata->addr get address
     union {
         offset off;  // relative to sdata->addr
-        symbol * sym;
-    };
+        symbol *sym;
+    } u;
 } TocEntryId;
 
 typedef struct {
@@ -75,7 +70,7 @@ typedef struct {
 } TocEntry;
 
 
-extern void ResetToc( void )
+void ResetToc( void )
 /**************************/
 {
     Toc = NULL;
@@ -84,25 +79,28 @@ extern void ResetToc( void )
     TocSym = NULL;
 }
 
-extern void CleanToc( void )
+void CleanToc( void )
 /**************************/
 {
-    ZapHTable(Toc, LFree);
+    ZapHTable( Toc, LFree );
 }
 
-static unsigned TocEntryHashFunc( TocEntry *e, unsigned size )
-/************************************************************/
+static unsigned TocEntryHashFunc( void *_e, unsigned size )
+/*********************************************************/
 {
-    return DataHashFunc(&e->e, sizeof e->e, size);
+    TocEntry *e = _e;
+    return( DataHashFunc( &e->e, sizeof( e->e ), size ) );
 }
 
-static int TocEntryCmp( const TocEntry *e1, const TocEntry *e2 )
-/**************************************************************/
+static int TocEntryCmp( const void *_e1, const void *_e2 )
+/********************************************************/
 {
-    return memcmp(&e1->e, &e2->e, sizeof e1->e);
+    const TocEntry *e1 = _e1;
+    const TocEntry *e2 = _e2;
+    return( memcmp( &e1->e, &e2->e, sizeof( e1->e ) ) );
 }
 
-extern void InitToc(void)
+void InitToc( void )
 /***********************/
 {
     Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, ChkLAlloc, LFree );
@@ -117,20 +115,20 @@ extern void InitToc(void)
     }
 }
 
-extern void CheckIfTocSym( symbol *sym )
+void CheckIfTocSym( symbol *sym )
 /**************************************/
 {
     if( TocName != NULL && TocSym == NULL ) {
-        if( strcmp(sym->name, TocName) == 0 ) {
+        if( strcmp( sym->name, TocName ) == 0 ) {
             TocSym = sym;
         }
     }
 }
 
-extern bool IsTocSym( symbol *sym )
+bool IsTocSym( symbol *sym )
 /*********************************/
 {
-    return TocSym == sym;
+    return( TocSym == sym );
 }
 
 static void AddToToc( TocEntryId *e )
@@ -141,34 +139,34 @@ static void AddToToc( TocEntryId *e )
 
     searchEntry.e = *e;
 
-    if( FindHTableElem(Toc, &searchEntry) == NULL ) {
-        entry = ChkLAlloc(sizeof *entry);
+    if( FindHTableElem( Toc, &searchEntry ) == NULL ) {
+        entry = ChkLAlloc( sizeof( *entry ) );
         entry->e = *e;
         entry->pos = TocSize;
-        TocSize += sizeof(offset);
-        AddHTableElem(Toc, entry);
+        TocSize += sizeof( offset );
+        AddHTableElem( Toc, entry );
     }
 }
 
-extern void AddSymToToc( symbol *sym )
+void AddSymToToc( symbol *sym )
 /************************************/
 {
     TocEntryId e;
 
     e.sdata = NULL;
-    e.sym = sym;
-    AddToToc(&e);
+    e.u.sym = sym;
+    AddToToc( &e );
 }
 
-extern void AddSdataOffToToc( segdata *sdata, offset off )
+void AddSdataOffToToc( segdata *sdata, offset off )
 /********************************************************/
 {
     TocEntryId e;
 
     DbgAssert( sdata != NULL );
     e.sdata = sdata;
-    e.off = off;
-    AddToToc(&e);
+    e.u.off = off;
+    AddToToc( &e );
 }
 
 
@@ -178,33 +176,33 @@ static void ConvertTocEntryId( TocEntryId *e )
     if( e->sdata != NULL ) {
         // do nothing: already in sdata/offset form
     } else {
-        symbol *sym = e->sym;
+        symbol *sym = e->u.sym;
         segdata *seg = sym->p.seg;
 
-        if( IS_SYM_IMPORTED(sym) || seg == NULL ) {
+        if( IS_SYM_IMPORTED( sym ) || seg == NULL ) {
             // do not convert; keep symbol around
         } else {
             e->sdata = seg;
-            e->off = sym->addr.off - seg->a.delta -
-                     seg->u.leader->seg_addr.off;
+            e->u.off = sym->addr.off - seg->a.delta -
+                       seg->u.leader->seg_addr.off;
         }
     }
     return;
 }
 
-static void ConvertTocEntry( TocEntry *e)
-/***************************************/
+static void ConvertTocEntry( void *e )
+/************************************/
 {
-    ConvertTocEntryId(&e->e);
+    ConvertTocEntryId( &((TocEntry *)e)->e );
 }
 
-#define GOT_RESERVED_NEG_SIZE (2* sizeof(long))
-#define GOT_RESERVED_POS0_SIZE (3* sizeof(long))
-#define GOT_RESERVED_SIZE (GOT_RESERVED_NEG_SIZE+GOT_RESERVED_POS0_SIZE)
+#define GOT_RESERVED_NEG_SIZE (2 * sizeof( long ))
+#define GOT_RESERVED_POS0_SIZE (3 * sizeof( long ))
+#define GOT_RESERVED_SIZE (GOT_RESERVED_NEG_SIZE + GOT_RESERVED_POS0_SIZE)
 
 #if 0 // OS/2 PPC development temporarly on hold
-static void AdjustGotEntry( TocEntry *e, offset *middle) {
-    if( e->pos < *middle) {
+static void AdjustGotEntry( TocEntry *e, offset *middle ) {
+    if( e->pos < *middle ) {
         e->pos -= GOT_RESERVED_NEG_SIZE;
     } else {
         e->pos += GOT_RESERVED_POS0_SIZE;
@@ -212,23 +210,24 @@ static void AdjustGotEntry( TocEntry *e, offset *middle) {
 }
 #endif
 
-extern void PrepareToc( void )
+void PrepareToc( void )
 /****************************/
 {
-    if( Toc == NULL ) return;
-    WalkHTable(Toc, ConvertTocEntry);
-    RehashHTable(Toc);
+    if( Toc == NULL )
+        return;
+    WalkHTable( Toc, ConvertTocEntry );
+    RehashHTable( Toc );
     if( IS_PPC_OS2 ) {
         // Development temporarly on hold
         #if 0
-        offset middle = (TocSize/2) & ~0x3;
-        WalkHTableCookie(Toc, AdjustGotEntry, &middle);
-        TocShift = middle+GOT_RESERVED_NEG_SIZE;
+        offset middle = ( TocSize / 2 ) & ~0x3;
+        WalkHTableCookie( Toc, AdjustGotEntry, &middle );
+        TocShift = middle + GOT_RESERVED_NEG_SIZE;
         TocSize += GOT_RESERVED_SIZE;
         #endif
     }
-    if( TocSym != NULL)  {
-        TocSym->info |= SYM_DCE_REF|SYM_DEFINED;
+    if( TocSym != NULL )  {
+        TocSym->info |= SYM_DCE_REF | SYM_DEFINED;
         SetAddPubSym( TocSym, SYM_REGULAR, FakeModule, 0, 0 );
         if( LinkFlags & STRIP_CODE ) {
             CleanStripInfo( TocSym );
@@ -236,66 +235,68 @@ extern void PrepareToc( void )
     }
 }
 
-extern void SetTocAddr( offset off, group_entry *group )
+void SetTocAddr( offset off, group_entry *group )
 /******************************************************/
 {
-    if( Toc == NULL || TocSym == NULL ) return;
+    if( Toc == NULL || TocSym == NULL )
+        return;
     XDefSymAddr( TocSym, off + TocShift, group->grp_addr.seg );
 }
 
-static signed_32 OffFromToc( offset off )
+static offset OffFromToc( offset off )
 /***************************************/
 {
     offset toff;
 
     toff = off - TocShift;
-    if( ((signed_16) toff) != (signed_32) toff ) {
+    if( (signed_16)toff != (signed_32)toff ) {
         LnkMsg( ERR+MSG_TOC_TOO_BIG, NULL );
     }
-    return toff;
+    return( toff );
 }
 
-extern signed_32 FindEntryPosInToc( TocEntryId *e )
+offset FindEntryPosInToc( TocEntryId *e )
 /*************************************************/
 {
     TocEntry    searchEntry;
-    TocEntry *  entry;
+    TocEntry    *entry;
 
     searchEntry.e = *e;
-    entry = FindHTableElem(Toc, &searchEntry);
-    if (entry != NULL) {
-        return OffFromToc(entry->pos);
+    entry = FindHTableElem( Toc, &searchEntry );
+    if( entry != NULL ) {
+        return( OffFromToc( entry->pos ) );
     } else {
-        return BOGUS; // return bogus position; likely to cause alignment exception
+        return( BOGUS ); // return bogus position; likely to cause alignment exception
     }
 
 }
 
-extern signed_32 FindSdataOffPosInToc( segdata *sdata, offset off )
+offset FindSdataOffPosInToc( segdata *sdata, offset off )
 /*****************************************************************/
 {
     TocEntryId e;
 
     DbgAssert( sdata != NULL );
     e.sdata = sdata;
-    e.off = off;
-    return FindEntryPosInToc(&e);
+    e.u.off = off;
+    return( FindEntryPosInToc( &e ) );
 }
 
-extern signed_32 FindSymPosInToc( symbol * sym )
+offset FindSymPosInToc( symbol * sym )
 /**********************************************/
 {
     TocEntryId e;
 
     e.sdata = NULL;
-    e.sym = sym;
-    ConvertTocEntryId(&e);
-    return FindEntryPosInToc(&e);
+    e.u.sym = sym;
+    ConvertTocEntryId( &e );
+    return( FindEntryPosInToc( &e ) );
 }
 
-static void WriteOutTokElem( TocEntry *elem, virt_mem *buf )
-/**********************************************************/
+static void WriteOutTokElem( void *_elem, void *buf )
+/***************************************************/
 {
+    TocEntry   *elem = _elem;
     offset      addr;
     segdata *   sdata;
     seg_leader *leader;
@@ -303,32 +304,33 @@ static void WriteOutTokElem( TocEntry *elem, virt_mem *buf )
     if( elem->e.sdata ) {
         sdata = elem->e.sdata;
         leader = sdata->u.leader;
-        addr = elem->e.off + sdata->a.delta + leader->group->linear
+        addr = elem->e.u.off + sdata->a.delta + leader->group->linear
                         + leader->seg_addr.off +  FmtData.base;
     } else {
-        addr = SymbolAbsAddr(elem->e.sym);
+        addr = SymbolAbsAddr( elem->e.u.sym );
     }
-    DbgAssert(elem->pos >= 0);
-    PutInfo((*buf) + elem->pos, &(addr), sizeof addr);
+    DbgAssert( elem->pos >= 0 );
+    PutInfo( (*((virt_mem *)buf)) + elem->pos, &addr, sizeof( addr ) );
 }
 
-extern void WriteToc( virt_mem buf )
+void WriteToc( virt_mem buf )
 /**********************************/
 {
-    if( Toc == NULL ) return;
+    if( Toc == NULL )
+        return;
     WalkHTableCookie( Toc, WriteOutTokElem, &buf );
     if( IS_PPC_OS2 ) {
         // Development temporarly on hold
         #if 0
-        offset res[GOT_RESERVED_SIZE/sizeof(offset)] = { 0 };
-        enum { zero = GOT_RESERVED_NEG_SIZE/sizeof(offset) };
+        offset res[GOT_RESERVED_SIZE / sizeof( offset )] = { 0 };
+        enum { zero = GOT_RESERVED_NEG_SIZE / sizeof( offset ) };
         enum { blrl_opcode = 0x4E800021 };
 
-        DbgAssert(TocShift >= GOT_RESERVED_NEG_SIZE);
+        DbgAssert( TocShift >= GOT_RESERVED_NEG_SIZE );
 
-        res[zero-1] = blrl_opcode;
+        res[zero - 1] = blrl_opcode;
         res[zero] = IDataGroup->linear + FmtData.base;
-        PutInfo(buf+TocShift-GOT_RESERVED_NEG_SIZE, res, GOT_RESERVED_SIZE);
+        PutInfo( buf + TocShift - GOT_RESERVED_NEG_SIZE, res, GOT_RESERVED_SIZE );
         #endif
     }
 }

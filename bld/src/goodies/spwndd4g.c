@@ -1,7 +1,7 @@
 /*
-    SPWNDD4G.C - Will be spawned by the SPWNRD4G program.
+    spwndd4g.c - Will be spawned by the spwnrd4g program.
 
-    Compile & Link: wcl386 /l=dos4g spwndd4g
+    Compile & Link: wcl386 -l=dos4g spwndd4g.c
  */
 #include <stdio.h>
 #include <stdlib.h>

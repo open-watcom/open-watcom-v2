@@ -17,3 +17,4 @@ A *p1 = new A;
 A **p2 = new A *;
 A *p3 = new A[10][10];
 
+template class S<int>;

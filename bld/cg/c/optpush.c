@@ -32,9 +32,6 @@
 
 #include "optwif.h"
 
-extern    ins_entry     *LastIns;
-extern    bool          InsDelete;
-
 extern  ins_entry       *IsolatedCode(ins_entry*);
 extern  void            AddInstr(ins_entry*,ins_entry*);
 extern  ins_entry       *NewInstr(any_oc*);
@@ -44,50 +41,6 @@ extern  ins_entry       *PrevIns(ins_entry*);
 extern  oc_class        PrevClass(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-
-
-extern  bool    RetAftrLbl( ins_entry *ret ) {
-/********************************************/
-
-    ins_entry   *ref;
-    code_lbl    *lbl;
-    ins_entry   *instr;
-    bool        change;
-
-  optbegin
-    change = FALSE;
-    if( PrevClass( ret ) == OC_LABEL ) {
-        lbl = _Label( PrevIns( ret ) );
-        ref = lbl->refs;
-        while( ref != NULL ) {
-            instr = ref;
-            ref = _LblRef( ref );
-            if( _Class( instr ) == OC_JMP ) {
-                JmpToRet( instr, ret );
-                change = TRUE;
-            } else if( _Class( instr ) == OC_CALL ) {
-                if( (_Attr( ret ) & ATTR_POP) == 0 ) {
-                    _Savings( OPT_CALLTORET, _ObjLen( instr ) );
-                    DelInstr( instr );
-                    change = TRUE;
-                }
-            }
-        }
-    }
-    optreturn( change );
-}
-
-
-extern  void    JmpToRet( ins_entry *instr, ins_entry *ret ) {
-/************************************************************/
-
-  optbegin
-    ret = NewInstr( &ret->oc );
-    AddInstr( ret, instr );
-    _Savings( OPT_JMPTORET, _ObjLen( instr ) - _ObjLen( ret ) );
-    DelInstr( instr );
-    RetAftrCall( ret );
-  optend
 
 
 extern  void    RetAftrCall( ins_entry *ret_instr ) {
@@ -126,6 +79,52 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
     IsolatedCode( call_instr );
     Untangle( PrevIns( call_instr ) );
   optend
+}
+
+
+extern  void    JmpToRet( ins_entry *instr, ins_entry *ret ) {
+/************************************************************/
+
+  optbegin
+    ret = NewInstr( &ret->oc );
+    AddInstr( ret, instr );
+    _Savings( OPT_JMPTORET, _ObjLen( instr ) - _ObjLen( ret ) );
+    DelInstr( instr );
+    RetAftrCall( ret );
+  optend
+}
+
+
+extern  bool    RetAftrLbl( ins_entry *ret ) {
+/********************************************/
+
+    ins_entry   *ref;
+    code_lbl    *lbl;
+    ins_entry   *instr;
+    bool        change;
+
+  optbegin
+    change = FALSE;
+    if( PrevClass( ret ) == OC_LABEL ) {
+        lbl = _Label( PrevIns( ret ) );
+        ref = lbl->refs;
+        while( ref != NULL ) {
+            instr = ref;
+            ref = _LblRef( ref );
+            if( _Class( instr ) == OC_JMP ) {
+                JmpToRet( instr, ret );
+                change = TRUE;
+            } else if( _Class( instr ) == OC_CALL ) {
+                if( (_Attr( ret ) & ATTR_POP) == 0 ) {
+                    _Savings( OPT_CALLTORET, _ObjLen( instr ) );
+                    DelInstr( instr );
+                    change = TRUE;
+                }
+            }
+        }
+    }
+    optreturn( change );
+}
 
 
 extern  void    MultiLineNums( ins_entry *ins ) {
@@ -150,3 +149,4 @@ extern  void    MultiLineNums( ins_entry *ins ) {
         }
     }
   optend
+}

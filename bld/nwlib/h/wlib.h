@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Master include for librarian.
 *
 ****************************************************************************/
 
@@ -35,18 +34,20 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdarg.h>
-#include <process.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 #include <limits.h>
 #include <errno.h>
-#include <conio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <sys/stat.h>
+#ifdef __WATCOMC__
+#include <process.h>
+#include <conio.h>
+#endif
 
-#include "trmemcvr.h"
+#include "watcom.h"
 #include "orl.h"
 #include "ar.h"
 #include "lib.h"
@@ -56,7 +57,7 @@
 #include "wreslang.h"
 #include "demangle.h"
 
-#include "libio.h"
+#include "wlibio.h"
 #include "types.h"
 #include "optdef.h"
 #include "ops.h"
@@ -66,13 +67,13 @@
 
 #include "exeelf.h"
 #include "convert.h"
-#include "util.h"
+#include "wlibutil.h"
 #include "libwalk.h"
 #include "liblist.h"
 #include "cmdline.h"
 #include "orlrtns.h"
 #include "error.h"
-#include "msg.gh"
+#include "errnum.h"
 #include "ext.h"
 #include "proclib.h"
 #include "filetab.h"
@@ -82,12 +83,12 @@
 #include "coff.h"
 #include "coffwrt.h"
 #include "pcobj.h"
-#include "banner.h"
 #include "omfutil.h"
+#include "omfproc.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"
 #include "exepe.h"
 #include "exenov.h"
 #include "main.h"
-#include "idedll.h"
+#include "wresset2.h"

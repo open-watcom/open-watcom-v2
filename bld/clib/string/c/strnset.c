@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strnset() and _wcsnset().
 *
 ****************************************************************************/
 
@@ -41,12 +40,13 @@
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strnset,_wcsnset)( CHAR_TYPE *str, int c, size_t len )
 #endif
-    {
-        CHAR_TYPE *p;
+{
+    CHAR_TYPE   *p;
 
-        for( p = str; len; --len ) {
-            if( *p == NULLCHAR ) break;
-            *p++ = c;
-        }
-        return( str );
+    for( p = str; len; --len ) {
+        if( *p == NULLCHAR )
+            break;
+        *p++ = c;
     }
+    return( str );
+}

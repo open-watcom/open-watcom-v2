@@ -1,5 +1,8 @@
-#pmake: os_nt cpu_axp 386
-host_CPU = axp
-host_OS = nt
-target_CPU = 386
-!include ..\master.mif
+#pmake: build os_nt cpu_386 axp alpha nt target_axp
+
+host_os    = nt
+host_cpu   = 386
+
+cc_dll     = 1
+
+!include ../targ_axp.mif

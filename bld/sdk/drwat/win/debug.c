@@ -39,12 +39,12 @@
 /*
  * NumToAddr - convert a segment number to an address
  */
-WORD NumToAddr( HANDLE modhandle, WORD num )
+WORD NumToAddr( HMODULE modhandle, WORD num )
 {
     GLOBALENTRY ge;
 
     if( !DoGlobalEntryModule( &ge, modhandle, num ) ) {
-        return( NULL );
+        return( 0 );
     }
     return( GlobalHandleToSel( ge.hBlock ) );
 

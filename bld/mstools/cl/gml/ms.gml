@@ -1,21 +1,3 @@
-:cmt **********************************************************************
-:cmt *       Copyright by WATCOM International Corporation, 1987, 1992.   *
-:cmt *       All rights reserved. No part of this software may be         *
-:cmt *       reproduced in any form or by any means - graphic, electronic,*
-:cmt *       mechanical or otherwise, including, without limitation,      *
-:cmt *       photocopying, recording, taping or information storage and   *
-:cmt *       retrieval systems - except with the written permission of    *
-:cmt *       WATCOM International Corporation.                            *
-:cmt **********************************************************************
-:cmt
-:cmt    Modified    By              Reason
-:cmt    --------    --              ------
-:cmt    21-nov-95   M. Hildebrand   Initial implementation.
-:cmt    14-feb-96   T. Schiller     Added /nowopts and /passwopts options.
-:cmt    27-feb-96   Greg Bentz      Added /nowwarn option.
-:cmt    29-feb-96   A. Kucharczyk   Added /lesswd option.
-:cmt	16-may-96   Greg Bentz	    Chain F, G and O options.
-:cmt	10-jul-96   Greg Bentz	    Added /noinvoke option.
 :cmt
 :cmt GML Macros used:
 :cmt
@@ -63,185 +45,220 @@
 :chain. O optimization options
 :chain. Z language options
 
-:option. 10x_
+:option. \1\0\x_
 :target. any
 :internal.
 :usage. use 10.x options
 
-:option. C
+:option. \C
 :target. any
 :usage. preserve comments
 
-:option. c
+:option. \c
 :target. any
 :usage. compile only
 
-:option. D
+:option. \D
 :target. any
 :special. parse_D <macro>[=<value>]
 :usage. same as #define <macro>[=<value>] before compilation
 
-:option. E
+:option. \E
 :target. any
 :usage. preprocess and insert #line directives to stdout
 
-:option. EP
+:option. \E\H\a
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\H\a\c
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\H\c
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\H\c\a
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\H\c\s
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\H\s
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option \E\H\s\c
+:target. any
+:internal.
+:usage. specify exception handling
+
+:option. \E\P
 :target. any
 :usage. preprocess without #line directives to stdout
 
-:option. F
+:option. \F
 :target. any
 :special. parse_F <size>
 :immediate. handle_F
 :usage. set stack size
 
-:option. Fa
+:option. \F\a
 :target. any
 :path.
 :internal.
 :usage. specify listing output file
 
-:option. FA
+:option. \F\A
 :target. any
 :internal.
 :usage. generate assembly listing
 
-:option. FAc
+:option. \F\A\c
 :target. any
 :internal.
 :usage. generate assembly and machine code listing
 
-:option. FAcs
+:option. \F\A\c\s
 :target. any
 :internal.
 :usage. generate assembly, source, and machine code listing
 
-:option. FAs
+:option. \F\A\s
 :target. any
 :internal.
 :usage. generate assembly and source listing
 
-:option. Fd
+:option. \F\d
 :target. any
 :file.
 :internal.
 :usage. specify PDB filename
 
-:option. Fe
+:option. \F\e
 :target. any
 :immediate. handle_Fe
 :file.
 :usage. set executable or DLL file name
 
-:option. FI
+:option. \F\I
 :target. any
 :special. parse_FI <file>
 :usage. force <file> to be included
 
-:option. Fm
+:option. \F\m
 :target. any
 :special. parse_Fm [<file>]
 :usage. set map file name
 
-:option. Fo
+:option. \F\o
 :target. any
 :file.
 :usage. set object output file name
 
-:option. Fp
+:option. \F\p
 :target. any
 :immediate. handle_Fp
 :file.
 :usage. set precompiled header data file name
 
-:option. FR
+:option. \F\R
 :target. any
 :immediate. handle_FR
 :file.
 :usage. generate browsing information
 
-:option. Fr
+:option. \F\r
 :target. any
 :internal.
 :usage. generate SBR file without local variables
 
-:option. G3
+:option. \G\3
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions
 
-:option. G4
+:option. \G\4
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
 
-:option. G5
+:option. \G\5
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for Pentium
 
-:option. GB
+:option. \G\B
 :target. i86
 :immediate. handle_arch_i86
 :enumerate. arch_i86
 :usage. 386 instructions, optimize for 486
 
-:option. Gd
+:option. \G\d
 :target. any
 :enumerate. calling_convention
 :internal.
 :usage. use __cdecl (stack-based) calling convention
 
-:option. Ge
+:option. \G\e
 :target. any
 :enumerate. stack_probes
 :immediate. handle_stack_probes
 :usage. activate stack probes for all functions
 
-:option. Gf
+:option. \G\f
 :target. any
 :usage. merge duplicate strings
 
-:option. GF
+:option. \G\F
 :target. any
 :usage. merge duplicate read-only strings
 
-:option. Gh
+:option. \G\h
 :target. any
 :usage. call __penter at the start of each function
 
-:option. Gr
+:option. \G\r
 :target. any
 :enumerate. calling_convention
 :internal.
 :usage. use __fastcall (register-based) calling convention
 
-:option. Gs
+:option. \G\s
 :target. any
 :enumerate. stack_probes
 :immediate. handle_stack_probes
 :special. parse_Gs <distance>
 :usage. set stack probe distance
 
-:option. GX
+:option. \G\X
 :target. any
 :immediate. handle_GX
 :usage. destruct static objects during stack unwinding
 
-:option. Gy
+:option. \G\y
 :target. any
 :usage. store each function in its own COMDAT
 
-:option. Gz
+:option. \G\z
 :target. any
 :enumerate. calling_convention
 :internal.
 :usage. use __stdcall (register-based) calling convention
 
-:option. H
+:option. \H
 :target. any
 :number.
 :internal.
@@ -251,249 +268,269 @@
 :target. any
 :usage. get help
 
-:option. I
+:option. \I
 :target. any
 :special. parse_I <path>
 :usage. add another include path
 
-:option. J
+:option. \J
 :target. any
 :usage. change char default from signed to unsigned
 
-:option. link
+:option. \l\i\n\k
 :target. any
 :special. parse_link
 :usage. specify linker options
 
-:option. LD
+:option. \L\D
 :target. any
 :usage. create DLL
 
-:option. MD
+:option. \M\D
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use multithreaded DLL version of C library
 
-:option. MDd
+:option. \M\D\d
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use multithreaded debug DLL version of C library
 
-:option. ML
+:option. \M\L
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use single-thread statically linked version of C library
 
-:option. MLd
+:option. \M\L\d
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use single-thread debug static link version of C library
 
-:option. MT
+:option. \M\T
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use multithreaded static version of C library
 
-:option. MTd
+:option. \M\T\d
 :target. any
 :immediate. handle_threads_linking
 :enumerate. threads_linking
 :usage. use multithreaded debug static version of C library
 
-:option. nologo
+:option. \n\o\l\o\g\o
 :target. any
 :usage. operate quietly
 
-:option. O1
+:option. \O\1
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
 :usage. minimize size
 
-:option. O2
+:option. \O\2
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
 :usage. maximize speed
 
-:option. Oa
+:option. \O\a
 :target. any
 :usage. assume no aliasing
 
-:option. Ob
+:option. \O\b
 :target. any
 :immediate. handle_inlining_level
 :number. check_inlining_level
 :usage. control function inlining
 
-:option. Od
+:option. \O\d
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
 :usage. disable all optimizations
 
-:option. Og
+:option. \O\g
 :target. any
 :usage. enable global optimizations
 
-:option. Oi
+:option. \O\i
 :target. any
 :usage. expand intrinsic functions inline
 
-:option. Op
+:option. \O\p
 :target. any
 :immediate. handle_Op
 :timestamp.
 :usage. generate consistent floating-point results
 
-:option. Os
+:option. \O\s
 :target. any
 :immediate. handle_opt_size_time
 :enumerate. opt_size_time
 :usage. favor code size over execution time in optimizations
 
-:option. Ot
+:option. \O\t
 :target. any
 :immediate. handle_opt_size_time
 :enumerate. opt_size_time
 :usage. favor execution time over code size in optimizations
 
-:option. Ow
+:option. \O\w
 :target. any
 :internal.
 :usage. assume aliasing across function calls
 
-:option. Ox
+:option. \O\x
 :target. any
 :immediate. handle_opt_level
 :enumerate. opt_level
 :usage. equivalent to /Ob1 /Og /Oi /Ot /Oy /Gs
 
-:option. Oy
+:option. \O\y
 :target. any
 :immediate. handle_Oy
 :usage. disable stack frames
 
-:option. P
+:option. \o
+:target. any
+:special. parse_o <file>
+:usage. set executable or DLL file name
+
+:option. \P
 :target. any
 :usage. preprocess to a file
 
-:option. showwopts
+:option. \Q\I\f\d\i\v
+:target. i86
+:immediate. handle_QIfdiv
+:usage. enable Pentium FDIV fix
+
+:option. \s\h\o\w\w\o\p\t\s
 :target. any
 :usage. show translated options
 
-:option. passwopts
+:option. \p\a\s\s\w\o\p\t\s
 :target. any
 :special. parse_passwopts :<options>
 :usage. pass <options> directly to the Watcom tools
 
-:option. noinvoke
+:option. \n\o\i\n\v\o\k\e
 :target. any
 :usage. don't invoke the Watcom tool
 
-:option. nowopts
+:option. \n\o\w\o\p\t\s
 :target. any
 :usage. disable default options
 
-:option. nowwarn
+:option. \n\o\w\w\a\r\n
 :target. any
 :immediate. handle_nowwarn
 :usage. disable warning messages for ignored options
 
-:option. lesswd
+:option. \l\e\s\s\w\d
 :target. any
 :internal.
 :usage. change debug info from -d2 to -d1
 
-:option. Tc
+:option. \T\C
+:target. any
+:immediate. handle_TC
+:usage. force compilation of all files as C
+
+:option. \T\c
 :target. any
 :special. parse_Tc <file>
 :usage. force compilation of <file> as C
 
-:option. Tp
+:option. \T\P
+:target. any
+:immediate. handle_TP
+:usage. force compilation of all files as C++
+
+:option. \T\p
 :target. any
 :special. parse_Tp <file>
 :usage. force compilation of <file> as C++
 
-:option. U
+:option. \U
 :target. any
 :special. parse_U <macro>
 :usage. undefine macro name
 
-:option. u
+:option. \u
 :target. any
 :internal.
 :usage. undefine all predefined macros
 
-:option. vd0
+:option. \v\d\0
 :target. any
 :internal.
 :usage. disable constructor/destructor displacements
 
-:option. vd1
+:option. \v\d\1
 :target. any
 :internal.
 :usage. enable vtordisp constructor/destructor displacements
 
-:option. vmb
+:option. \v\m\b
 :target. any
 :internal.
 :usage. use best case always pointer representation
 
-:option. vmg
+:option. \v\m\g
 :target. any
 :internal.
 :usage. use general purpose always pointer representation
 
-:option. vmm
+:option. \v\m\m
 :target. any
 :internal.
 :usage. general-purpose pointers to single- and multiple-inheritance classes
 
-:option. vms
+:option. \v\m\s
 :target. any
 :internal.
 :usage. general-purpose pointers to single-inheritance classes
 
-:option. vmv
+:option. \v\m\v
 :target. any
 :internal.
 :usage. general-purpose pointers to any classes
 
-:option. V
+:option. \V
 :target. any
 :special. parse_V
 :internal.
 :usage. embed string in object file
 
-:option. W
+:option. \W
 :target. any
 :immediate. handle_warn_level
 :enumerate. warn_level
 :number. check_warn_level
 :usage. set warning level number
 
-:option. w
+:option. \w
 :target. any
 :immediate. handle_warn_level
 :enumerate. warn_level
 :usage. disable all warning messages
 
-:option. WX
+:option. \W\X
 :target. any
 :usage. treat all warnings as errors
 
-:option. X
+:option. \X
 :target. any
 :internal.
 :usage. ignore standard include paths
 
-:option. Yc
+:option. \Y\c
 :target. any
 :enumerate. precomp_headers
 :immediate. handle_precomp_headers
@@ -501,11 +538,11 @@
 :optional.
 :usage. create pre-compiled header file
 
-:option. Yd
+:option. \Y\d
 :target. any
 :usage. full debug info from pre-compiled headers
 
-:option. Yu
+:option. \Y\u
 :target. any
 :enumerate. precomp_headers
 :immediate. handle_precomp_headers
@@ -513,7 +550,7 @@
 :optional.
 :usage. use pre-compiled header file
 
-:option. YX
+:option. \Y\X
 :target. any
 :enumerate. precomp_headers
 :immediate. handle_precomp_headers
@@ -521,54 +558,59 @@
 :optional.
 :usage. use pre-compiled header file
 
-:option. Z7
+:option. \Z\7
 :target. any
 :immediate. handle_debug_info
 :enumerate. debug_info
 :usage. generate Codeview debugging information
 
-:option. Za
+:option. \Z\a
 :target. any
 :enumerate. iso
 :timestamp.
 :usage. disable extensions (i.e., accept only ISO/ANSI C++)
 
-:option. Zd
+:option. \Z\d
 :target. any
 :immediate. handle_debug_info
 :enumerate. debug_info
 :usage. line number debugging information
 
-:option. Ze
+:option. \Z\e
 :target. any
 :enumerate. iso
 :usage. enable extensions (e.g., near, far, export, etc.)
 
-:option. Zg
+:option. \Z\g
 :target. any
 :usage. output function declarations to stdout
 
-:option. Zi
+:option. \Z\i
 :target. any
 :immediate. handle_debug_info
 :enumerate. debug_info
 :internal.
 :usage. full symbolic debugging information
 
-:option. Zl
+:option. \Z\l
 :target. any
 :usage. remove default library information
 
-:option. Zn
+:option. \Z\m
+:target. any
+:number. check_maxmem
+:usage. maximum memory allocation in % of default (ignored)
+
+:option. \Z\n
 :target. any
 :internal.
 :usage. disable SBR file packing
 
-:option. Zp
+:option. \Z\p
 :target. any
 :number. check_packing 1
 :usage. pack structure members with alignment {1,2,4,8,16}
 
-:option. Zs
+:option. \Z\s
 :target. any
 :usage. syntax check only

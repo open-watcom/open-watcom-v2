@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS mouse input handling.
 *
 ****************************************************************************/
 
@@ -36,14 +35,15 @@
 #include "biosui.h"
 #include "charmap.h"
 
-extern  void    (intern *DrawCursor)(void);
+extern  void    (intern *DrawCursor)( void );
         unsigned short  Points;                 /* Number of lines / char  */
-extern int uimousealign();
+extern int uimousealign( void );
 
 struct mouse_data {
     unsigned short    bx,cx,dx;
 };
 
+typedef struct mouse_data __based( __segname( "_STACK" ) ) *md_stk_ptr;
 #pragma aux MouseInt2 = 0xcd BIOS_MOUSE parm [ax] [cx] [dx] [si] [di];
 extern void MouseInt2( unsigned short, unsigned short,
                        unsigned short, unsigned short, unsigned short );
@@ -55,7 +55,7 @@ extern void MouseInt2( unsigned short, unsigned short,
                         0x36 0x89 0x4c 0x02 \
                         0x36 0x89 0x54 0x04 \
                         parm [ax] [si] modify [bx cx dx];
-extern MouseState( unsigned, struct mouse_data near * );
+extern void MouseState( unsigned, md_stk_ptr );
 
 #else
 
@@ -64,7 +64,7 @@ extern MouseState( unsigned, struct mouse_data near * );
                         0x36 0x66 0x89 0x4e 0x02 \
                         0x36 0x66 0x89 0x56 0x04 \
                         parm [ax] [esi] modify [bx cx dx];
-extern MouseState( unsigned short, struct mouse_data near * );
+extern void MouseState( unsigned short, md_stk_ptr );
 
 #endif
 
@@ -86,19 +86,15 @@ extern          unsigned long           MouseTime       = 0L;
 extern          unsigned short          MouseStatus;
 extern          bool                    MouseInstalled;
 
-void intern checkmouse( status, row, col, time )
-/**********************************************/
-
-register        unsigned short*         status;
-register        MOUSEORD*               row;
-register        MOUSEORD*               col;
-register        unsigned long*          time;
+void intern checkmouse( unsigned short *status, MOUSEORD *row,
+                          MOUSEORD *col, unsigned long *time )
+/************************************************************/
 {
     struct  mouse_data state;
     char    change;
 
     change = change;
-    MouseState( 3, (void near *)&state );
+    MouseState( 3, (md_stk_ptr)&state );
 
     *status = state.bx;
 
@@ -106,7 +102,7 @@ register        unsigned long*          time;
         *col = state.cx/MOUSE_SCALE;
         *row = state.dx/MOUSE_SCALE;
     } else {
-        MouseState( 0x0B, (void near *)&state );
+        MouseState( 0x0B, (md_stk_ptr)&state );
         MickeyCol += (short int ) state.cx; /* delta of mickeys */
         MickeyRow += (short int ) state.dx; /* delta of mickeys */
         if( MickeyRow < 0 ) {
@@ -152,7 +148,7 @@ void uimousespeed( unsigned speed )
 /* set speed of mouse. 0 is fastest; the higher the number the slower
    it goes */
 {
-    if( speed <= 0 ) {
+    if( (int)speed <= 0 ) {
         speed = 1;
     }
 
@@ -187,10 +183,8 @@ void intern setupmouse( void )
     uimousespeed( UIData->mouse_speed );
 }
 
-bool global initmouse( install )
-/******************************/
-
-register        int                     install;
+bool global initmouse( int install )
+/**********************************/
 {
     MouseInstalled = FALSE;
     if( install > 0 && installed( BIOS_MOUSE ) ) {
@@ -209,8 +203,8 @@ register        int                     install;
 }
 
 
-void global finimouse()
-/*********************/
+void global finimouse( void )
+/***************************/
 {
     if( MouseInstalled ) {
         uioffmouse();

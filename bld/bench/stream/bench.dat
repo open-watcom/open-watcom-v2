@@ -1,0 +1,4 @@
+all - all bench marks
+    or one of
+bmark, c4, clinpack, dhrystone, fft, flops, hanoi, heapsort, livermore, mm
+nsieve, oopack, queens, sim

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor function for _fmode variable.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 #include <stdio.h>
 #include "rtdata.h"
 
-_WCRTLINK int (*__get_fmode_ptr()) {
-    return &_fmode;
+_WCRTLINK int (*__get_fmode_ptr( void ))
+{
+    return( &_fmode );
 }

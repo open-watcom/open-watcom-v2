@@ -1,0 +1,60 @@
+*$noreference
+
+! Information Functions:
+! ----------------------
+
+      external AnyPopup
+      external ChildWindowFromPoint
+      external EnumChildWindows
+      external EnumTaskWindows
+      external EnumWindows
+      external FindWindow
+      external GetDesktopHwnd
+      external GetDesktopWindow
+      external GetNextWindow
+      external GetParent
+      external GetSysModalWindow
+      external GetTopWindow
+      external GetWindow
+      external GetWindowTask
+      external IsChild
+      external IsWindow
+      external SetParent
+      external WindowFromPoint
+
+      integer*2 AnyPopup
+      integer*2 ChildWindowFromPoint
+      integer*2 EnumChildWindows
+      integer*2 EnumTaskWindows
+      integer*2 EnumWindows
+      integer*2 FindWindow
+      integer*2 GetDesktopHwnd
+      integer*2 GetDesktopWindow
+      integer*2 GetNextWindow
+      integer*2 GetParent
+      integer*2 GetSysModalWindow
+      integer*2 GetTopWindow
+      integer*2 GetWindow
+      integer*2 GetWindowTask
+      integer*2 IsChild
+      integer*2 IsWindow
+      integer*2 SetParent
+      integer*2 WindowFromPoint
+
+! GetWindow() Constants
+
+      integer GW_HWNDFIRST
+      integer GW_HWNDLAST
+      integer GW_HWNDNEXT
+      integer GW_HWNDPREV
+      integer GW_OWNER
+      integer GW_CHILD
+
+      parameter ( GW_HWNDFIRST        = 0 )
+      parameter ( GW_HWNDLAST         = 1 )
+      parameter ( GW_HWNDNEXT         = 2 )
+      parameter ( GW_HWNDPREV         = 3 )
+      parameter ( GW_OWNER            = 4 )
+      parameter ( GW_CHILD            = 5 )
+
+*$reference

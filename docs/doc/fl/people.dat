@@ -1,0 +1,17 @@
+ &PERSON
+      NAME='John Doe'
+      STREET='22 Main St.' CITY='Smallville'
+      STATE='Texas'        COUNTRY='U.S.A.'
+      ZIP_CODE='78910-1203'
+      AGE=23
+ &END
+ &PERSON
+      NAME='Mary Doe' STREET='22 Main St.' CITY='Smallville' STATE='Texas'
+      COUNTRY='U.S.A.' ZIP_CODE='78910-1203' AGE=21
+ &END
+ &PERSON
+      NAME='James Doe'
+      STREET='11 Main St.' CITY='Bigville' STATE='Texas' COUNTRY='U.S.A.'
+      ZIP_CODE='78910-1443'
+      AGE=26
+ &END

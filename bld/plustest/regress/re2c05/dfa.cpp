@@ -136,7 +136,8 @@ DFA::DFA(Ins *ins, uint ni, uint lb, uint ub, Char *rep)
 	    }
 	}
 
-	for(uint j = 0; j < nGoTos; ++j){
+        uint j;
+	for(j = 0; j < nGoTos; ++j){
 	    GoTo *go = &goTo[goTo[j].ch - lb];
 	    i = (Ins*) go->to;
 	    for(cP = work; i; i = (Ins*) i->c.link)
@@ -199,7 +200,8 @@ State *DFA::findState(Ins **kernel, uint kCount){
     kCount = cP - kernel;
     kernel[kCount] = NULL;
 
-    for(State *s = head; s; s = s->next){
+    State *s;
+    for(s = head; s; s = s->next){
 	 if(s->kCount == kCount){
 	     for(iP = s->kernel; i = *iP; ++iP)
 		 if(!isMarked(i))

@@ -38,18 +38,13 @@
 
 mksSISystem MksSI;
 
-#ifdef __WINDOWS__
-        #define FNTYPE __pascal
-#else
-        #define FNTYPE __stdcall
-#endif
-typedef int FNTYPE (*WSICHECKIN)(HWND main_window_handle,
+typedef int WINAPI (*WSICHECKIN)(HWND main_window_handle,
                           int files, char const FAR * FAR flist[] );
-typedef int FNTYPE (*WSICHECKOUT)(HWND main_window_handle,
+typedef int WINAPI (*WSICHECKOUT)(HWND main_window_handle,
                           int files, char const FAR * FAR flist[] );
-typedef int FNTYPE (*WSILAUNCH)(LPSTR filelist);
-typedef int FNTYPE (*WSIINIT)(void);
-typedef int FNTYPE (*WSICLEANUP)(void);
+typedef int WINAPI (*WSILAUNCH)(LPSTR filelist);
+typedef int WINAPI (*WSIINIT)(void);
+typedef int WINAPI (*WSICLEANUP)(void);
 
 static WSICHECKIN       ci_fp = NULL;
 static WSICHECKOUT      co_fp = NULL;
@@ -59,22 +54,26 @@ static WSICLEANUP       cl_fp = NULL;
 
 int mksSISystem::init( userData * )
 {
-    dllId = (long)LoadLibrary( "WSIHOOK.DLL" );
-    if( dllId < HINSTANCE_ERROR ) return( FALSE );
+    HINSTANCE dll;
+
+    dll = LoadLibrary( "WSIHOOK.DLL" );
 
 #ifdef __WINDOWS__
-    ci_fp = (WSICHECKIN)GetProcAddress( (HINSTANCE)dllId, "WSICHECKIN" );
-    co_fp = (WSICHECKOUT)GetProcAddress( (HINSTANCE)dllId, "WSICHECKOUT" );
-    rs_fp = (WSILAUNCH)GetProcAddress( (HINSTANCE)dllId, "WSILAUNCH" );
-    in_fp = (WSIINIT)GetProcAddress( (HINSTANCE)dllId, "WSIINIT" );
-    cl_fp = (WSICLEANUP)GetProcAddress( (HINSTANCE)dllId, "WSICLEANUP" );
+    if( (UINT)dll < 32 ) return( FALSE );
+    ci_fp = (WSICHECKIN)GetProcAddress( dll, "WSICHECKIN" );
+    co_fp = (WSICHECKOUT)GetProcAddress( dll, "WSICHECKOUT" );
+    rs_fp = (WSILAUNCH)GetProcAddress( dll, "WSILAUNCH" );
+    in_fp = (WSIINIT)GetProcAddress( dll, "WSIINIT" );
+    cl_fp = (WSICLEANUP)GetProcAddress( dll, "WSICLEANUP" );
 #else
-    ci_fp = (WSICHECKIN)GetProcAddress( (HINSTANCE)dllId, "wsiCheckIn" );
-    co_fp = (WSICHECKOUT)GetProcAddress( (HINSTANCE)dllId, "wsiCheckOut" );
-    rs_fp = (WSILAUNCH)GetProcAddress( (HINSTANCE)dllId, "wsiLaunch" );
-    in_fp = (WSIINIT)GetProcAddress( (HINSTANCE)dllId, "wsiInit" );
-    cl_fp = (WSICLEANUP)GetProcAddress( (HINSTANCE)dllId, "wsiCleanup" );
+    if( dll == NULL ) return( FALSE );
+    ci_fp = (WSICHECKIN)GetProcAddress( dll, "wsiCheckIn" );
+    co_fp = (WSICHECKOUT)GetProcAddress( dll, "wsiCheckOut" );
+    rs_fp = (WSILAUNCH)GetProcAddress( dll, "wsiLaunch" );
+    in_fp = (WSIINIT)GetProcAddress( dll, "wsiInit" );
+    cl_fp = (WSICLEANUP)GetProcAddress( dll, "wsiCleanup" );
 #endif
+    dllId = (long)dll;
 
     if( in_fp == NULL ) return( FALSE );
     in_fp();
@@ -87,8 +86,6 @@ int mksSISystem::fini()
     FreeLibrary( (HINSTANCE)dllId );
     return( TRUE );
 };
-
-mksSISystem::~mksSISystem() {};
 
 int mksSISystem::checkout( userData *d, rcsstring name,
                             rcsstring pj, rcsstring tgt )
@@ -112,3 +109,12 @@ int mksSISystem::runShell()
     if( rs_fp == NULL ) return( FALSE );
     return( (*rs_fp)( NULL ) );
 };
+
+
+// Complain about defining trivial constructor inside class
+// definition only for warning levels above 8 
+#pragma warning 657 9
+
+mksSISystem::~mksSISystem() {
+};
+

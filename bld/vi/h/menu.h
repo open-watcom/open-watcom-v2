@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Menu processing related prototypes.
 *
 ****************************************************************************/
 
@@ -36,24 +35,24 @@
 #define MAX_FLOAT_MENUS 4
 
 /* menu.c */
-void BarfMenuData( void *f );
-int StartMenu( char *data );
-int EndMenu( void );
-int MenuItem( char *data );
-int MenuItemFileList( void );
-int MenuItemLastFiles( void );
-int AddMenuItem( char *data );
-int DoItemDelete( char *data );
-int DoMenuDelete( char *data );
-int InitMenu( void );
-void FiniMenu( void );
-int DoMenu( void );
-int GetMenuIdFromCoord( int x );
-int GetCurrentMenuId( void );
-int SetToMenuId( int id );
-int DoFloatMenu( int id, int slen, int x1, int y1 );
-int ActivateFloatMenu( char * );
-int DoWindowGadgetMenu( void );
-int IsMenuHotKey( int );
+extern void     BarfMenuData( FILE *f );
+extern vi_rc    StartMenu( char *data );
+extern vi_rc    ViEndMenu( void );
+extern vi_rc    MenuItem( char *data );
+extern vi_rc    MenuItemFileList( void );
+extern vi_rc    MenuItemLastFiles( void );
+extern vi_rc    AddMenuItem( char *data );
+extern vi_rc    DoItemDelete( char *data );
+extern vi_rc    DoMenuDelete( char *data );
+extern vi_rc    InitMenu( void );
+extern void     FiniMenu( void );
+extern vi_rc    DoMenu( void );
+extern int      GetMenuIdFromCoord( int x );
+extern int      GetCurrentMenuId( void );
+extern vi_rc    SetToMenuId( int id );
+extern vi_rc    DoFloatMenu( int id, int slen, int x1, int y1 );
+extern vi_rc    ActivateFloatMenu( char * );
+extern vi_rc    DoWindowGadgetMenu( void );
+extern bool     IsMenuHotKey( vi_key );
 
 #endif

@@ -45,29 +45,29 @@
 typedef void *toolbar;
 
 typedef struct {
-    TOOLDISPLAYINFO    dinfo;
-    TOOLITEMINFO      *items;
-    int                num_items;
+    TOOLDISPLAYINFO dinfo;
+    TOOLITEMINFO    *items;
+    int             num_items;
 } WREToolBarInfo;
 
 typedef struct {
-    toolbar            tbar;
-    WREToolBarInfo    *info;
-    HWND               parent;
-    HWND               win;
-    RECT               last_pos;
+    toolbar         tbar;
+    WREToolBarInfo  *info;
+    HWND            parent;
+    HWND            win;
+    RECT            last_pos;
 } WREToolBar;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WREToolBar     *WRECreateToolBar       ( WREToolBarInfo *, HWND );
-extern void            WREDestroyToolBar      ( WREToolBar * );
-extern void            WREShutdownToolBars    ( void );
-extern void            WREFreeToolBarInfo     ( WREToolBarInfo * );
-extern WREToolBarInfo *WREAllocToolBarInfo    ( int );
-extern void            WRESetToolBarItemState ( WREToolBar *, UINT, UINT );
-extern Bool            WRECloseToolBar        ( WREToolBar * );
-extern void            WREFreeToolBar         ( WREToolBar * );
+extern WREToolBar       *WRECreateToolBar( WREToolBarInfo *, HWND );
+extern void             WREDestroyToolBar( WREToolBar * );
+extern void             WREShutdownToolBars( void );
+extern void             WREFreeToolBarInfo( WREToolBarInfo * );
+extern WREToolBarInfo   *WREAllocToolBarInfo( int );
+extern void             WRESetToolBarItemState( WREToolBar *, UINT, UINT );
+extern Bool             WRECloseToolBar( WREToolBar * );
+extern void             WREFreeToolBar( WREToolBar * );
 
 #endif

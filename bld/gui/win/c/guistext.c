@@ -38,7 +38,7 @@
  * GUISetWindowText - set the title text of a window
  */
 
-bool GUISetWindowText( gui_window *wnd, char *data )
+bool GUISetWindowText( gui_window *wnd, const char *data )
 {
      _wpi_setwindowtext( GUIGetParentFrameHWND( wnd ), data );
      GUIChangeMDITitle( wnd );

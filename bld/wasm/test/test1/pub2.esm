@@ -1,0 +1,33 @@
+.387
+		PUBLIC	foo
+		PUBLIC	kyb
+		PUBLIC	hi
+		PUBLIC	fubar2
+		PUBLIC	bunk2
+		PUBLIC	sam2
+		PUBLIC	bye
+		EXTRN	fubar:BYTE
+		EXTRN	bunk:BYTE
+_TEXT		SEGMENT	PARA PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+foo:
+    retf      
+bar:
+    ret       
+kyb:
+    xor       ax,ax
+_TEXT		ENDS
+_DATA		SEGMENT	PARA PUBLIC USE16 'DATA'
+hi:
+    DB	0cH
+fubar2:
+    DB	0cH
+bunk2:
+    DB	0cH
+sam2:
+    DB	0cH
+bye:
+    DB	0cH
+
+_DATA		ENDS
+		END

@@ -1,7 +1,7 @@
 #include "fail.h"
 #include <stdlib.h>
 
-#if __WATCOM_REVISION >= 8
+#if __WATCOM_REVISION__ >= 8
 
 struct S : _CD {
     static int d;

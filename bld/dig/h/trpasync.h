@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Asynchronous debugging supplementary trap requests.
 *
 ****************************************************************************/
 
@@ -36,81 +35,46 @@
 #include "trptypes.h"
 #include <time.h>
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define ASYNC_SUPP_NAME "Asynch"
 
 enum {
     REQ_ASYNC_GO,               /* 00 */
-    REQ_ASYNC_INTERRUPT,        /* 01 */
-    REQ_ASYNC_STOP,             /* 02 */
-    REQ_ASYNC_POLL,             /* 03 */
-    REQ_ASYNC_CHECK,            /* 04 */
+    REQ_ASYNC_STEP,             /* 01 */
+    REQ_ASYNC_POLL,             /* 02 */
+    REQ_ASYNC_STOP,             /* 03 */
 };
 
 
-//======================= REQ_ASYNC_GO
+/*=================== REQ_ASYNC_GO ===================*/
 
 typedef struct {
     supp_prefix         supp;
     access_req          req;
-    unsigned_8          step;
-    unsigned_8          source;
-    unsigned_8          over;
 } async_go_req;
-
-typedef struct {
-    trap_error          err;
-} async_go_ret;
-
-//======================= REQ_ASYNC_INTERRUPT
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} async_interrupt_req;
-
-typedef struct {
-    trap_error          err;
-} async_interrupt_ret;
-
-//======================= REQ_ASYNC_CHECK
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} async_check_req;
-
-typedef struct {
-    trap_error          err;
-} async_check_ret;
-
-//======================= REQ_ASYNC_STOP
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} async_stop_req;
-
-typedef struct {
-    trap_error          err;
-} async_stop_ret;
-
-//======================= REQ_ASYNC_POLL
-
-typedef struct {
-    supp_prefix         supp;
-    access_req          req;
-} async_poll_req;
 
 typedef struct {
     addr48_ptr          stack_pointer;
     addr48_ptr          program_counter;
     unsigned_16         conditions;
-    trap_error          err;
-    unsigned_8          running;
-} _WCUNALIGNED async_poll_ret;
+} _WCUNALIGNED async_go_ret;
 
-#pragma pack(pop);
+/*=================== REQ_ASYNC_STEP ===================*/
+
+typedef async_go_req     async_step_req;
+typedef async_go_ret     async_step_ret;
+
+/*=================== REQ_ASYNC_POLL ===================*/
+
+typedef async_go_req     async_poll_req;
+typedef async_go_ret     async_poll_ret;
+
+/*=================== REQ_ASYNC_STOP ===================*/
+
+typedef async_go_req     async_stop_req;
+typedef async_go_ret     async_stop_ret;
+
+#pragma pack( pop )
 
 #endif

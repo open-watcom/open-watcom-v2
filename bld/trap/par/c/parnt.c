@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Parallel port debugging support for Win32.
 *
 ****************************************************************************/
 
@@ -48,13 +47,16 @@ static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
 static unsigned short PortAddress[NUM_ELTS( PortTest )];
 static unsigned PortsFound = 0;
 
+/* Forward declarations */
+void FiniSys( void );
+
 bool Terminate( void )
 {
         FiniSys();
         return( TRUE );
 }
 
-int NumPrinters()
+int NumPrinters( void )
 {
     return( PortsFound );
 }
@@ -85,7 +87,7 @@ static int CheckForPort( int i, char value )
         return( inp( PortTest[ i ] ) == value );
 }
 
-char *InitSys()
+char *InitSys( void )
 {
         static char name[] = "\\\\.\\DBGPORT1";
         int         i;
@@ -111,7 +113,7 @@ char *InitSys()
         return( NULL );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
         if( PortHdl != INVALID_HANDLE_VALUE ) {
         CloseHandle( PortHdl );
@@ -119,7 +121,7 @@ void FiniSys()
     }
 }
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
     return( GetTickCount() / 100 );
 }

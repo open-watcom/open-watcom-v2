@@ -8,7 +8,13 @@
 #if _M_IX86 < 300
 
 #if __WATCOMC__ > 1060
-#define N 4096
+
+// Under DOS, we shouldn't count on having more then 400K or so available
+#ifdef __DOS__
+  #define N 3072
+#else
+  #define N 4096
+#endif
 
 typedef struct temp {
     short a[32];
@@ -41,22 +47,25 @@ int main()
     temp localvar;
 
     HugeMem = (temp huge *) halloc( N, sizeof(temp) );
-    if( HugeMem == NULL ) fail(__LINE__);
+    if( HugeMem == NULL ) {
+        main_terminated = 1;    // need to exit right now!
+        fail(__LINE__);
+    }
     for( i = 0; i < 32; ++i ) {
         localvar.a[i]  = 99;
     }
     localvar.a[0] = 1;
 
-    for( i = 0; i < N; ++i ){
+    for( i = 0; i < N; ++i ) {
         localvar.a[1] = i;
         HugeArr[i]=localvar;
         HugeMem[i]=localvar;
-	check( i );
-	if( errors > 16 ) break;
+        check( i );
+        if( errors > 16 ) break;
     }
-    for( i = 0; i < N; i += 16 ){
-	check( i );
-	if( errors > 16 ) break;
+    for( i = 0; i < N; i += 16 ) {
+        check( i );
+        if( errors > 16 ) break;
     }
     _PASS;
 }

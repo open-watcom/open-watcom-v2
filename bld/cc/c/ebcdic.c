@@ -39,7 +39,7 @@
 
 /* The following table is EBCDIC dependent. */
 
-char CharSet[]  = {                              /* EBCDIC */
+charset_flags CharSet[]  = {                              /* EBCDIC */
 
 /*  00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 HT  06 ACK 07 BEL */
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_WS,  C_BC,  C_BC, /* NUL to BEL */
@@ -157,6 +157,11 @@ char CharSet[]  = {                              /* EBCDIC */
   };
 
 char TokValue[]  = {                             /* EBCDIC */
+
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0f */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1f */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 20 - 2f */
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 30 - 3f */
 
         0,              /* 40 SP */
         0,              /* 41   */

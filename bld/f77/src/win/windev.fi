@@ -1,0 +1,232 @@
+*$noreference
+
+! Device-Specific Functions:
+! --------------------------
+
+      external GetDeviceCaps
+
+      integer*2 GetDeviceCaps
+
+! Device Parameters for GetDeviceCaps()
+
+      integer DRIVERVERSION
+      integer TECHNOLOGY
+      integer HORZSIZE
+      integer VERTSIZE
+      integer HORZRES
+      integer VERTRES
+      integer BITSPIXEL
+      integer PLANES
+      integer NUMBRUSHES
+      integer NUMPENS
+      integer NUMMARKERS
+      integer NUMFONTS
+      integer NUMCOLORS
+      integer PDEVICESIZE
+      integer CURVECAPS
+      integer LINECAPS
+      integer POLYGONALCAPS
+      integer TEXTCAPS
+      integer CLIPCAPS
+      integer RASTERCAPS
+      integer ASPECTX
+      integer ASPECTY
+      integer ASPECTXY
+
+      integer LOGPIXELSX
+      integer LOGPIXELSY
+
+      integer SIZEPALETTE
+      integer NUMRESERVED
+      integer COLORRES
+
+      parameter ( DRIVERVERSION = 0 )   ! Device driver version
+      parameter ( TECHNOLOGY    = 2 )   ! Device classification
+      parameter ( HORZSIZE      = 4 )   ! Horizontal size in millimeters
+      parameter ( VERTSIZE      = 6 )   ! Vertical size in millimeters
+      parameter ( HORZRES       = 8 )   ! Horizontal width in pixels
+      parameter ( VERTRES       = 10 )  ! Vertical width in pixels
+      parameter ( BITSPIXEL     = 12 )  ! Number of bits per pixel
+      parameter ( PLANES        = 14 )  ! Number of planes
+      parameter ( NUMBRUSHES    = 16 )  ! Number of brushes the device has
+      parameter ( NUMPENS       = 18 )  ! Number of pens the device has
+      parameter ( NUMMARKERS    = 20 )  ! Number of markers the device has
+      parameter ( NUMFONTS      = 22 )  ! Number of fonts the device has
+      parameter ( NUMCOLORS     = 24 )  ! Number of colors the device supports
+      parameter ( PDEVICESIZE   = 26 )  ! Size required for device descriptor
+      parameter ( CURVECAPS     = 28 )  ! Curve capabilities
+      parameter ( LINECAPS      = 30 )  ! Line capabilities
+      parameter ( POLYGONALCAPS = 32 )  ! Polygonal capabilities
+      parameter ( TEXTCAPS      = 34 )  ! Text capabilities
+      parameter ( CLIPCAPS      = 36 )  ! Clipping capabilities
+      parameter ( RASTERCAPS    = 38 )  ! Bitblt capabilities
+      parameter ( ASPECTX       = 40 )  ! Length of the X leg
+      parameter ( ASPECTY       = 42 )  ! Length of the Y leg
+      parameter ( ASPECTXY      = 44 )  ! Length of the hypotenuse
+
+      parameter ( LOGPIXELSX    = 88 )  ! Logical pixels/inch in X
+      parameter ( LOGPIXELSY    = 90 )  ! Logical pixels/inch in Y
+
+      parameter ( SIZEPALETTE   = 104 ) ! Number of entries in physical palette
+      parameter ( NUMRESERVED   = 106 ) ! Number of reserved entries in palette
+      parameter ( COLORRES      = 108 ) ! Actual color resolution
+
+! Device Capability Masks:
+
+! Device Technologies
+
+      integer DT_PLOTTER
+      integer DT_RASDISPLAY
+      integer DT_RASPRINTER
+      integer DT_RASCAMERA
+      integer DT_CHARSTREAM
+      integer DT_METAFILE
+      integer DT_DISPFILE
+
+      parameter ( DT_PLOTTER          = 0 )   ! Vector plotter
+      parameter ( DT_RASDISPLAY       = 1 )   ! Raster display
+      parameter ( DT_RASPRINTER       = 2 )   ! Raster printer
+      parameter ( DT_RASCAMERA        = 3 )   ! Raster camera
+      parameter ( DT_CHARSTREAM       = 4 )   ! Character-stream, PLP
+      parameter ( DT_METAFILE         = 5 )   ! Metafile, VDM
+      parameter ( DT_DISPFILE         = 6 )   ! Display-file
+
+! Curve Capabilities
+
+      integer CC_NONE
+      integer CC_CIRCLES
+      integer CC_PIE
+      integer CC_CHORD
+      integer CC_ELLIPSES
+      integer CC_WIDE
+      integer CC_STYLED
+      integer CC_WIDESTYLED
+      integer CC_INTERIORS
+
+      parameter ( CC_NONE             = 0 )   ! Curves not supported
+      parameter ( CC_CIRCLES          = 1 )   ! Can do circles
+      parameter ( CC_PIE              = 2 )   ! Can do pie wedges
+      parameter ( CC_CHORD            = 4 )   ! Can do chord arcs
+      parameter ( CC_ELLIPSES         = 8 )   ! Can do ellipese
+      parameter ( CC_WIDE             = 16 )  ! Can do wide lines
+      parameter ( CC_STYLED           = 32 )  ! Can do styled lines
+      parameter ( CC_WIDESTYLED       = 64 )  ! Can do wide styled lines
+      parameter ( CC_INTERIORS        = 128 ) ! Can do interiors
+
+! Line Capabilities
+
+      integer LC_NONE
+      integer LC_POLYLINE
+      integer LC_MARKER
+      integer LC_POLYMARKER
+      integer LC_WIDE
+      integer LC_STYLED
+      integer LC_WIDESTYLED
+      integer LC_INTERIORS
+
+      parameter ( LC_NONE             = 0 )   ! Lines not supported
+      parameter ( LC_POLYLINE         = 2 )   ! Can do polylines
+      parameter ( LC_MARKER           = 4 )   ! Can do markers
+      parameter ( LC_POLYMARKER       = 8 )   ! Can do polymarkers
+      parameter ( LC_WIDE             = 16 )  ! Can do wide lines
+      parameter ( LC_STYLED           = 32 )  ! Can do styled lines
+      parameter ( LC_WIDESTYLED       = 64 )  ! Can do wide styled lines
+      parameter ( LC_INTERIORS        = 128 ) ! Can do interiors
+
+! Polygonal Capabilities
+
+      integer PC_NONE
+      integer PC_POLYGON
+      integer PC_RECTANGLE
+      integer PC_WINDPOLYGON
+      integer PC_TRAPEZOID
+      integer PC_SCANLINE
+      integer PC_WIDE
+      integer PC_STYLED
+      integer PC_WIDESTYLED
+      integer PC_INTERIORS
+
+      parameter ( PC_NONE             = 0 )   ! Polygonals not supported
+      parameter ( PC_POLYGON          = 1 )   ! Can do polygons
+      parameter ( PC_RECTANGLE        = 2 )   ! Can do rectangles
+      parameter ( PC_WINDPOLYGON      = 4 )   ! Can do winding polygons
+      parameter ( PC_TRAPEZOID        = 4 )   ! Can do trapezoids
+      parameter ( PC_SCANLINE         = 8 )   ! Can do scanlines
+      parameter ( PC_WIDE             = 16 )  ! Can do wide borders
+      parameter ( PC_STYLED           = 32 )  ! Can do styled borders
+      parameter ( PC_WIDESTYLED       = 64 )  ! Can do wide styled borders
+      parameter ( PC_INTERIORS        = 128 ) ! Can do interiors
+
+! Polygonal Capabilities
+
+      integer CP_NONE
+      integer CP_RECTANGLE
+
+      parameter ( CP_NONE             = 0 )   ! No clipping of output
+      parameter ( CP_RECTANGLE        = 1 )   ! Output clipped to rects
+
+! Text Capabilities
+
+      integer TC_OP_CHARACTER
+      integer TC_OP_STROKE
+      integer TC_CP_STROKE
+      integer TC_CR_90
+      integer TC_CR_ANY
+      integer TC_SF_X_YINDEP
+      integer TC_SA_DOUBLE
+      integer TC_SA_INTEGER
+      integer TC_SA_CONTIN
+      integer TC_EA_DOUBLE
+      integer TC_IA_ABLE
+      integer TC_UA_ABLE
+      integer TC_SO_ABLE
+      integer TC_RA_ABLE
+      integer TC_VA_ABLE
+      integer TC_RESERVED
+
+      parameter ( TC_OP_CHARACTER = '0001'x ) ! OutputPrecision  CHARACTER
+      parameter ( TC_OP_STROKE    = '0002'x ) ! OutputPrecision  STROKE
+      parameter ( TC_CP_STROKE    = '0004'x ) ! ClipPrecision    STROKE
+      parameter ( TC_CR_90        = '0008'x ) ! CharRotAbility   90
+      parameter ( TC_CR_ANY       = '0010'x ) ! CharRotAbility   ANY
+      parameter ( TC_SF_X_YINDEP  = '0020'x ) ! ScaleFreedom     X_YINDEPENDENT
+      parameter ( TC_SA_DOUBLE    = '0040'x ) ! ScaleAbility     DOUBLE
+      parameter ( TC_SA_INTEGER   = '0080'x ) ! ScaleAbility     INTEGER
+      parameter ( TC_SA_CONTIN    = '0100'x ) ! ScaleAbility     CONTINUOUS
+      parameter ( TC_EA_DOUBLE    = '0200'x ) ! EmboldenAbility  DOUBLE
+      parameter ( TC_IA_ABLE      = '0400'x ) ! ItalisizeAbility ABLE
+      parameter ( TC_UA_ABLE      = '0800'x ) ! UnderlineAbility ABLE
+      parameter ( TC_SO_ABLE      = '1000'x ) ! StrikeOutAbility ABLE
+      parameter ( TC_RA_ABLE      = '2000'x ) ! RasterFontAble   ABLE
+      parameter ( TC_VA_ABLE      = '4000'x ) ! VectorFontAble   ABLE
+      parameter ( TC_RESERVED     = '8000'x )
+
+! Raster Capabilities
+
+      integer RC_BITBLT
+      integer RC_BANDING
+      integer RC_SCALING
+      integer RC_BITMAP64
+      integer RC_GDI20_OUTPUT
+      integer RC_DI_BITMAP
+      integer RC_PALETTE
+      integer RC_DIBTODEV
+      integer RC_BIGFONT
+      integer RC_STRETCHBLT
+      integer RC_FLOODFILL
+      integer RC_STRETCHDIB
+
+      parameter ( RC_BITBLT       = 1 )       ! Can do standard BLT.
+      parameter ( RC_BANDING      = 2 )       ! Device requires banding support
+      parameter ( RC_SCALING      = 4 )       ! Device requires scaling support
+      parameter ( RC_BITMAP64     = 8 )       ! Device can support >64K bitmap
+      parameter ( RC_GDI20_OUTPUT = '0010'x ) ! has 2.0 output calls
+      parameter ( RC_DI_BITMAP    = '0080'x ) ! supports DIB to memory
+      parameter ( RC_PALETTE      = '0100'x ) ! supports a palette
+      parameter ( RC_DIBTODEV     = '0200'x ) ! supports DIBitsToDevice
+      parameter ( RC_BIGFONT      = '0400'x ) ! supports >64K fonts
+      parameter ( RC_STRETCHBLT   = '0800'x ) ! supports StretchBlt
+      parameter ( RC_FLOODFILL    = '1000'x ) ! supports FloodFill
+      parameter ( RC_STRETCHDIB   = '2000'x ) ! supports StretchDIBits
+
+*$reference

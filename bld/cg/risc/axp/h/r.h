@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Reductions used by the AXP cg (see axptable.c).
 *
 ****************************************************************************/
 
@@ -44,7 +43,7 @@ _R_( R_FORCEOP1MEM,     rOP1MEM ),
 _R_( R_FORCEOP2MEM,     rOP2MEM ),
 _R_( R_CONSTLOAD,       rCONSTLOAD ),
 _R_( R_SWAPCMP,         rSWAPCMP ),
-_R_( R_SPLITCMP,        rSPLITCMP ),
+_R_( R_SIMPCMP,         rSIMPCMP ),
 _R_( R_DOSET,           rDOSET ),
 _R_( R_FORCEOP1CMEM,    rOP1CMEM ),
 _R_( R_FORCEOP2CMEM,    rOP2CMEM ),

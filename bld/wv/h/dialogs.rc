@@ -8,6 +8,7 @@
 #include "dlgvarx.h"
 #include "dlgwind.h"
 #include "dlgstk.h"
+#include "dlgasync.h"
 #ifdef JAPANESE_MESSAGES
     #include "japayn.dlg"
     #include "japbrk.dlg"
@@ -32,4 +33,5 @@
     #include "dlgwind.dlg"
     #include "dlgstk.dlg"
     #include "dlghis.dlg"
+    #include "dlgasync.dlg"
 #endif

@@ -1,31 +1,47 @@
 proj_name = editdll
-name = weditviw
+name = wedit
 
+editdll_autodepends = .AUTODEPEND
+editdll_distrib_lib = 1
 sys_dll = 1
 
-.mif : $(mif_path)
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
 .c: ..
 
-inc_dirs = ..;..\..
+inc_dirs = -I.. -I"../.."
 
-.before:
-        set INCLUDE=$(inc_path)
-
-extra_c_flags_386 = /bd
-extra_c_flags_axp = /bd
-extra_c_flags_win = /zc /zw
-
-lflags_nt_axp += initinstance terminstance
-lflags_nt_386 += initinstance terminstance
-lflags_win_i86 += initinstance memory
+extra_c_flags_win = -zc -zw -zu
 
 extra_l_flags = op map, verbose, static, heapsize=8k
-extra_l_flags_win = op stack=20k lib windows, ddeml libfile libentry
-extra_l_flags_nt = op stack=40k
+extra_l_flags_win = initinstance memory op stack=20k, rwr lib ddeml export WEP RESIDENT
+extra_l_flags_nt = initinstance terminstance op stack=40k
 
-$(name).dll : $(name).obj
-        $(linker) $(lflags) name $(name) file $(name)
+# systems where version resources must be added to .DLL
+version_res_nt_386 = version.res
+
+all: weditviw.dll wedit.lib .SYMBOLIC
+
+wedit.dll : weditviw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+        $(linker) name $^@ @dll.lnk file $[@
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+
+wedit.lib : wedit.dll
+        $(librarian) $(libflags) +$[@
+
+weditviw.dll : weditviw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+        $(linker) name $^@ @dll.lnk file $[@
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+	
+dll.lnk : $(__MAKEFILES__)
+        @%write $@ $(lflags)
+	@%append $@ option description 'Open Watcom Editor DLL for VIW'
+
+verrc_dll = weditviw
+!include verrc.mif

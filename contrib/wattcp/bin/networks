@@ -1,0 +1,9 @@
+#
+# File of networks and domains
+#
+# name    number   [alias(es).. ]
+
+loopback  127
+arpanet   10        arpa
+mcast.net 224       multicast
+ampr.org  198.126   packet

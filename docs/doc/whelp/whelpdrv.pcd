@@ -1,0 +1,309 @@
+:CMT. ========================================================
+:CMT. This driver definition is used for generating WATCOM
+:CMT. Help format (WHP). This is a system independent format
+:CMT. which can be used to generate RTF, IPF, or DOS InfoBench
+:CMT. style help.
+:CMT. ========================================================
+
+:DRIVER
+   defined_name = 'whelpdrv'
+   member_name  = 'WHELPDRV'
+   rec_spec = '(t:2000)'
+   fill_char    = ' '
+
+:CMT.The last line is forced to the output device.
+:FINISH
+   place=end
+   :value
+      %recordbreak()
+   :evalue
+:eFINISH
+
+:CMT.To start a new single spaced line, the last line is forced
+:CMT.to the output device, and the single space control code is put out
+:CMT.for the next line.
+:NEWLINE
+   advance = 1
+   :value
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+:NEWLINE
+   advance = 0
+   :value
+      %recordbreak()
+   :evalue
+:eNEWLINE
+
+
+:CMT.To start a new page, the last line is forced to the output
+:CMT.device, and the new page control code is put out.
+:NEWPAGE
+   :value
+      %recordbreak()
+   :evalue
+:eNEWPAGE
+
+:CMT. The binary codes below represent the WHP help file format.
+:CMT. codes 239 and 240 are used to change font styling, while
+:CMT. code 157 is used to change font types.
+
+:FONTSTYLE
+    type='bold'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'b' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='italic'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'i' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='ulbold'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'ub' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='usbold'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'sb' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='uline'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'u' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='uscore'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 's' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='ibold'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'ib' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='index'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 239 )%text( 'b' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='head5'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '12' )%binary( 157 )
+        %binary( 239 )%text( 'b' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='head6'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+        %binary( 239 )%text( 'b' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='xmp'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'courier' )%binary( 157 )%text( '12' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='symbol'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'symbol' )%binary( 157 )%text( '10' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='mono'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'courier' )%binary( 157 )%text( '10' )%binary( 157 )
+        %binary( 239 )%text( 'b' )%binary( 239 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 240 )
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='size12'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '12' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='size14'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '14' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='size16'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '16' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='size18'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '18' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+
+:FONTSTYLE
+    type='size20'
+    :lineproc
+    pass=1
+    :startvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '20' )%binary( 157 )
+        %textpass()
+    :estartvalue.
+    :endvalue.
+        %binary( 157 )%text( 'helv' )%binary( 157 )%text( '10' )%binary( 157 )
+    :eendvalue.
+    :elineproc.
+:eFONTSTYLE.
+:eDRIVER.

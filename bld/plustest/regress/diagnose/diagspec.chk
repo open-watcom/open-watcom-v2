@@ -1,0 +1,17 @@
+File: source\diag0001.c
+(13,17): Error! E048: bit-field width must be positive
+(16,18): Error! E046: bit-field width is too large
+(20,18): Error! E046: bit-field width is too large
+(22,17): Error! E048: bit-field width must be positive
+(25,19): Error! E046: bit-field width is too large
+(29,19): Error! E046: bit-field width is too large
+(31,17): Error! E048: bit-field width must be positive
+(34,19): Error! E046: bit-field width is too large
+(38,19): Error! E046: bit-field width is too large
+(42,12): Error! E141: bit-field declaration must have a base type specified
+(44,18): Error! E142: illegal qualification of a bit-field declaration
+(45,19): Error! E142: illegal qualification of a bit-field declaration
+(46,18): Error! E142: illegal qualification of a bit-field declaration
+(52,15): Error! E140: bit-field declaration cannot have a storage class specifier
+(54,14): Error! E049: bit-field base type must be an integral type
+(55,15): Error! E047: width of a named bit-field must not be zero

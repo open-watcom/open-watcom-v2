@@ -1,0 +1,17 @@
+name=Target
+static_text=\
+        //1"Select the target operating systems:"\
+        //2"ターゲットOSを選択してください:"\
+        //0
+static_text=
+check_box=dostarg,,"&DOS"
+check_box=wintarg,,"W&indows 3.x"
+check_box=os2targ,,"O&S/2"
+check_box=wnttarg,,"&Windows NT/Windows 9x/Win32s"
+check_box=lnxtarg,,"&Linux (experimental)"
+check_box=nlmtarg,,"&Novell Netware (experimental, legacy)"
+check_box=rdostarg,,"&RDOS (experimental)"
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

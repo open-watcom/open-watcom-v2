@@ -34,7 +34,7 @@
 #include <assert.h>
 
 #include "standard.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "ptrint.h"
 
 extern    pointer_int   FrlSize;
@@ -53,7 +53,7 @@ extern  pointer AllocFrl( pointer **head, int size ) {
     pointer     new;
 
     if( *head == NULL ) {
-        _Alloc( new, size );
+        new = CGAlloc( size );
    } else {
         new = *head;
         *head = **head;
@@ -88,7 +88,7 @@ extern  bool    FrlFreeAll( pointer **head, int size ) {
     while( *head != NULL ) {
         junk = *head;
         *head = **head;
-        _Free( junk, size );
+        CGFree( junk );
         FrlSize -= size;
     }
     return( junk != NULL );

@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include "uidef.h"
 
-extern          cdecl intern    farfill( LPPIXEL, PIXEL, int, int );
+extern  void    cdecl intern    farfill( LPPIXEL, PIXEL, int, int );
 
 
 void intern bfill( register BUFFER      *bptr,

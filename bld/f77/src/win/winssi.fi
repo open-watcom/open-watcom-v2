@@ -1,0 +1,16 @@
+*$include winmodul.fi
+*$include winmem.fi
+*$include winseg.fi
+*$include wintask.fi
+*$include winresrc.fi
+*$include winstr.fi
+*$include winatom.fi
+*$include winini.fi
+*$include wincomm.fi
+*$include winsound.fi
+*$include winutil.fi
+*$include winfile.fi
+*$include windebug.fi
+*$include winopt.fi
+*$include winexec.fi
+*$include winoem.fi

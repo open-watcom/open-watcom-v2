@@ -30,36 +30,35 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
 #ifdef __WIN__
-#include "winvi.h"
-#include "utils.h"
+    #include "utils.h"
 #endif
 
 /*
  * ReadAFile - read a file into text
  */
-int ReadAFile( linenum afterwhich, char *name )
+vi_rc ReadAFile( linenum afterwhich, char *name )
 {
     file        *cfile;
     char        *dir;
-    int         i;
-    long        bytecnt=0;
-    linenum     lnecnt=0;
-    int         lastst;
-    char        *fn = MemAlloc(_MAX_PATH);
+    int         len;
+    long        bytecnt = 0;
+    linenum     lnecnt = 0;
+    status_type lastst;
+    char        *fn = MemAlloc( FILENAME_MAX );
+    vi_rc       rc;
 
     /*
      * get file name
      */
-    if( i = ModificationTest() ) {
-        return( i );
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    if( NextWord1( name, fn ) <=0 || IsDirectory( fn ) ) {
-        if( i > 0 ) {
+    len = NextWord1( name, fn );
+    if( len <= 0 || IsDirectory( fn ) ) {
+        if( len > 0 ) {
             dir = fn;
         } else {
             dir = CurrentDirectory;
@@ -67,10 +66,10 @@ int ReadAFile( linenum afterwhich, char *name )
         if( EditFlags.ExMode ) {
             return( ERR_INVALID_IN_EX_MODE );
         }
-        i = SelectFileOpen( dir, &fn, "*", FALSE );
-        if( i ) {
+        rc = SelectFileOpen( dir, &fn, "*", FALSE );
+        if( rc != ERR_NO_ERR ) {
             MemFree( fn );
-            return( i );
+            return( rc );
         }
         if( fn[0] == 0 ) {
             MemFree( fn );
@@ -95,24 +94,24 @@ int ReadAFile( linenum afterwhich, char *name )
          * read all fcbs
          */
         lastst = UpdateCurrentStatus( CSTATUS_READING );
-        #ifdef __WIN__
-            ToggleHourglass( TRUE );
-        #endif
+#ifdef __WIN__
+        ToggleHourglass( TRUE );
+#endif
         while( TRUE ) {
-            i = ReadFcbData( cfile );
-            lnecnt += cfile->fcb_tail->end_line - cfile->fcb_tail->start_line + 1L;
-            bytecnt += (long) cfile->fcb_tail->byte_cnt;
-            if( i ) {
+            rc = ReadFcbData( cfile );
+            lnecnt += cfile->fcbs.tail->end_line - cfile->fcbs.tail->start_line + 1L;
+            bytecnt += (long) cfile->fcbs.tail->byte_cnt;
+            if( rc != ERR_NO_ERR ) {
                 break;
             }
         }
-        #ifdef __WIN__
-            ToggleHourglass( FALSE );
-        #endif
+#ifdef __WIN__
+        ToggleHourglass( FALSE );
+#endif
         UpdateCurrentStatus( lastst );
-        if( i && i != END_OF_FILE ) {
+        if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
             MemFree( fn );
-            return( i );
+            return( rc );
         }
         bytecnt += lnecnt;
 
@@ -121,11 +120,11 @@ int ReadAFile( linenum afterwhich, char *name )
     /*
      * add lines to current file
      */
-    i = InsertLines( afterwhich, cfile->fcb_head, cfile->fcb_tail, UndoStack );
+    rc = InsertLines( afterwhich, &cfile->fcbs, UndoStack );
     FileFree( cfile );
-    if( i ) {
+    if( rc != ERR_NO_ERR ) {
         MemFree( fn );
-        return( i );
+        return( rc );
     }
 
     DCDisplayAllLines();

@@ -7,9 +7,9 @@ BEGIN
         CONTROL "&WATCOM",                              IDB_OPT_WRES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 25, 15, 55, 10
         CONTROL "&Microsoft",                           IDB_OPT_MRES, "BUTTON", BS_AUTORADIOBUTTON | WS_CHILD | WS_VISIBLE, 105, 15, 55, 10
         CONTROL "&Grid",                                IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 37, 175, 34
-        CONTROL "&Horizontal:",                         IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 10, 50, 35, 8
+        CONTROL "&Horizontal:",                         IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 10, 52, 35, 8
         CONTROL "",                                     IDB_OPT_HINC, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_TABSTOP, 50, 50, 30, 12
-        CONTROL "&Vertical:",                           IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 85, 50, 35, 8
+        CONTROL "&Vertical:",                           IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 85, 52, 35, 8
         CONTROL "",                                     IDB_OPT_VINC, "EDIT", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, 125, 50, 30, 12
         CONTROL "&Load Symbols Options",                IDB_NOINPUT, "BUTTON", BS_GROUPBOX | WS_CHILD | WS_VISIBLE | WS_GROUP, 5, 78, 175, 55
         CONTROL "&Ignore INCLUDE environment variable", IDB_OPT_IGNOREINC, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 10, 88, 140, 12

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "errdefns.h"
 #include "memmgr.h"
 #include "preproc.h"
@@ -239,7 +239,7 @@ static void putSrcFile( REWRITE *r, TOKEN_LOCN *locn )
     locn->column = 0;
 }
 
-static putSrcLocn( REWRITE *r, TOKEN_LOCN *locn )
+static void putSrcLocn( REWRITE *r, TOKEN_LOCN *locn )
 {
     SRCFILE currfile;
     uint_32 absolute;
@@ -452,34 +452,40 @@ REWRITE *RewritePackageFunction( PTREE multi )
     asm_depth = 0;
     depth = 1;          /* we've seen one '{' */
     for(;;) {
-        if( CurToken == T_EOF ) break;
+        if( CurToken == T_EOF )
+            break;
         DbgAssert( depth != 0 );
         switch( CurToken ) {
-#ifndef NDEBUG
         case T_NULL:
+#ifndef NDEBUG
             DbgAssert( asm_depth != 0 );
-            break;
 #endif
+            PPState = save_pp;
+            if( depth == asm_depth ) {
+                asm_depth = 0;
+                PPStateAsm = FALSE;
+            }
+            break;
         case T___ASM:
             if( asm_depth == 0 ) {
                 PPState = PPS_EOL;
                 asm_depth = depth;
+                PPStateAsm = TRUE;
             }
             break;
         case T_SEMI_COLON:
-            if( depth == asm_depth ) {
-                PPState = save_pp;
-                asm_depth = 0;
-            }
             break;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             ++depth;
             break;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             --depth;
             if( depth == asm_depth ) {
                 PPState = save_pp;
                 asm_depth = 0;
+                PPStateAsm = FALSE;
             }
             break;
         }
@@ -487,14 +493,11 @@ REWRITE *RewritePackageFunction( PTREE multi )
             saveToken( r, plocn );
         }
         skip_first = FALSE;
-        if( depth == 0 ) break;
-        if( CurToken == T_NULL ) {
-            // won't advance past EOL unless we do this
-            PPState = save_pp;
-            NextToken();
+        if( depth == 0 )
+            break;
+        NextToken();
+        if( PPStateAsm ) {
             PPState = PPS_EOL;
-        } else {
-            NextToken();
         }
     }
     PPState = save_pp;
@@ -540,12 +543,14 @@ REWRITE *RewritePackageMemInit( PTREE multi )
             --paren_depth;
             break;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( brace_depth == 0 ) {
                 return( memInitError( r, &start_locn ) );
             }
             --brace_depth;
             break;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             if( paren_depth == 0 ) {
                 return( r );
             }
@@ -591,12 +596,14 @@ REWRITE *RewritePackageDefArg( PTREE multi )
             ++paren_depth;
             break;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( brace_depth == 0 ) {
                 return( defArgError( r, &start_locn ) );
             }
             --brace_depth;
             break;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             if( paren_depth == 0 ) {
                 return( defArgError( r, &start_locn ) );
             }
@@ -617,6 +624,176 @@ REWRITE *RewritePackageDefArg( PTREE multi )
             if( brace_depth == 0 && paren_depth == 0 ) {
                 UndoNextToken();
                 return( r );
+            }
+            break;
+        }
+        saveToken( r, &locn );
+        NextToken();
+    }
+    return( NULL );
+}
+
+REWRITE *RewritePackageTemplateArgument( void )
+/******************************************/
+{
+    REWRITE *r;
+    unsigned angle_depth;
+    unsigned brace_depth;
+    unsigned bracket_depth;
+    unsigned paren_depth;
+    TOKEN_LOCN locn;
+    auto TOKEN_LOCN start_locn;
+
+    SrcFileGetTokenLocn( &start_locn );
+    r = newREWRITE( T_DEFARG_END, &locn );
+    angle_depth = brace_depth = bracket_depth = paren_depth = 0;
+    for(;;) {
+        if( CurToken == T_EOF ) {
+            defArgError( r, &start_locn );
+            break;
+        }
+        switch( CurToken ) {
+        case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
+            ++brace_depth;
+            break;
+        case T_LEFT_BRACKET:
+        case T_ALT_LEFT_BRACKET:
+            ++bracket_depth;
+            break;
+        case T_LEFT_PAREN:
+            ++paren_depth;
+            break;
+        case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
+            if( brace_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --brace_depth;
+            break;
+        case T_RIGHT_BRACKET:
+        case T_ALT_RIGHT_BRACKET:
+            if( bracket_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --bracket_depth;
+            break;
+        case T_RIGHT_PAREN:
+            if( paren_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --paren_depth;
+            break;
+        case T_LT:
+            /* for non-type template arguments this should always be
+             * parsed as less-than */
+            if( ( brace_depth == 0 ) && ( bracket_depth == 0 )
+             && ( paren_depth == 0 ) ) {
+                ++angle_depth;
+            }
+            break;
+        case T_COMMA:
+        case T_GT:
+            if( ( brace_depth == 0 ) && ( bracket_depth == 0 )
+             && ( paren_depth == 0 ) ) {
+                if( angle_depth == 0 ) {
+                    return( r );
+                }
+                else if( CurToken == T_GT ) {
+                    --angle_depth;
+                }
+            }
+            break;
+        case T_RSHIFT:
+            // see Right Angle Brackets (N1757/05-0017)
+            if( CompFlags.enable_std0x
+             && ( brace_depth == 0 ) && ( bracket_depth == 0 )
+             && ( paren_depth == 0 ) ) {
+                if( angle_depth == 1 ) {
+                    CurToken = T_GT;
+                    saveToken( r, &locn );
+                    return( r );
+                } else if( angle_depth == 0 ) {
+                    return( r );
+                } else {
+                    angle_depth -= 2;
+                }
+            }
+            break;
+        }
+        saveToken( r, &locn );
+        NextToken();
+    }
+    return( NULL );
+}
+
+REWRITE *RewritePackageTemplateDefArg( void )
+/******************************************/
+{
+    REWRITE *r;
+
+    if( CurToken != T_EQUAL ) {
+        return( NULL );
+    }
+    NextToken();
+    r = RewritePackageTemplateArgument();
+    UndoNextToken();
+    return( r );
+}
+
+REWRITE *RewritePackagePassThrough( REWRITE *r )
+/****************************************/
+{
+    REWRITE *dummy;
+    unsigned paren_depth;
+    unsigned brace_depth;
+    TOKEN_LOCN locn;
+    auto TOKEN_LOCN start_locn;
+
+    DbgAssert( CurToken == T_EQUAL );
+    NextToken();
+    SrcFileGetTokenLocn( &start_locn );
+    dummy = newREWRITE( T_DEFARG_END, &locn );
+    brace_depth = 0;
+    paren_depth = 0;
+    for(;;) {
+        if( CurToken == T_EOF ) {
+            defArgError( r, &start_locn );
+            break;
+        }
+        switch( CurToken ) {
+        case T_LEFT_PAREN:
+            ++paren_depth;
+            break;
+        case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
+            if( brace_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --brace_depth;
+            break;
+        case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
+            if( paren_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            ++brace_depth;
+            break;
+        case T_RIGHT_PAREN :
+            if( paren_depth == 0 ) {
+                if( brace_depth != 0 ) {
+                    return( defArgError( r, &start_locn ) );
+                }
+                UndoNextToken();
+                return( dummy );
+            }
+            --paren_depth;
+            break;
+        case T_COMMA :
+        case T_DOT_DOT_DOT:
+            if( brace_depth == 0 && paren_depth == 0 ) {
+                UndoNextToken();
+                return( dummy );
             }
             break;
         }
@@ -656,6 +833,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
         first_time = FALSE;
         switch( CurToken ) {
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( brace_depth == 0 ) {
                 return( templateError( r, &start_locn ) );
             }
@@ -670,6 +848,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
             }
             break;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             ++brace_depth;
             break;
         }
@@ -700,6 +879,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
         first_time = FALSE;
         switch( CurToken ) {
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( brace_depth == 0 ) {
                 return( templateError( r, &start_locn ) );
             }
@@ -714,6 +894,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
             }
             break;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             ++brace_depth;
             break;
         case T_SEMI_COLON:

@@ -1,6 +1,5 @@
-#pmake:build dos
-path=..;..\ms;..\watcom
-options=-kUNICODE
-system=DOS
+#pmake: build os_dos os_os2 os_win os_nt os_linux os_rdos
 
-!include ..\master.mif
+system = dos
+
+!include ../master.mif

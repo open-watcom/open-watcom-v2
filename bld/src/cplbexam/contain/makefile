@@ -1,10 +1,9 @@
 
-
 .extensions:
 .extensions: .exe .cpp
 
-exes = ALLOCTOR.EXE WCLDINTR.EXE WCLDPTR.EXE WCLDVAL.EXE WCQUEUE.EXE &
-WCSTACK.EXE WCVDLI.EXE
+exes = alloctor.exe wcldintr.exe wcldptr.exe wcldval.exe wcqueue.exe &
+wcstack.exe wcvdli.exe
 
 all : $(exes) .symbolic
 

@@ -99,6 +99,10 @@ static int fileStackLevel = -1;
 
 TargetLangOpt g_tlang;
 
+/* Forward declarations */
+int popPrintStack(PrintStackType *type, PrintType *listType, void **data, void**param, int *fileNum);
+
+
 static pOUnit _createOUnit(OUnitType type, pTokPos pos, char *string) {
     pOUnit newUnit = wicMalloc(sizeof *newUnit);
     newUnit->type = type;
@@ -1030,7 +1034,8 @@ char *getTokListString(pSLList context) {
 
 //=====================================================================
 
-void expandPushTree(int fileNum, pCTree tree) {
+void expandPushTree(int fileNum, void *_tree) {
+    pCTree tree = _tree;
     pLabel label;
     int constrType;
     int pushType;
@@ -1304,7 +1309,7 @@ int paramListNotVoid(pDeclList list) {
     return 1;
 }
 
-static int _findMinOUnit() {
+static int _findMinOUnit(void) {
     int minPrintType = 0;
     int i;
 

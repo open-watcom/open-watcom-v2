@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Near heap set routines.
 *
 ****************************************************************************/
 
@@ -41,45 +40,40 @@
 
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapset( unsigned int fill )
-    {
-        return( _nheapset( fill ) );
-    }
+{
+    return( _nheapset( fill ) );
+}
 #endif
 
 #if defined(_M_IX86)
- #if __WATCOMC__ < 950
-  #define _fmemset(p,c,n)       _inline__fmemset(p,c,n)
-  extern void _WCFAR *_fmemset( void _WCFAR *, int, size_t );
- #else
-  #pragma intrinsic(_fmemset)
- #endif
+    #pragma intrinsic(_fmemset)
 #endif
 
 _WCRTLINK int _nheapset( unsigned int fill )
-    {
-        mheapptr mhp;
-        frlptr  curr;
-        int test_heap;
+{
+    mheapptr mhp;
+    frlptr  curr;
+    int test_heap;
 
-        test_heap = _heapchk();
-        if( test_heap != _HEAPOK ) {
-            return( test_heap );
-        }
-        fill |= fill << 8;
-        _AccessNHeap();
-
-        for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            curr = mhp->freehead.next;
-            for(;;) {
-                if( curr == (frlptr) &mhp->freehead ) break;
-                #if defined(_M_IX86)
-                    _fmemset( (void _WCFAR *)(curr + 1), fill, curr->len - sizeof(frl) );
-                #else
-                    memset( (void *)(curr + 1), fill, curr->len - sizeof(frl) );
-                #endif
-                curr = curr->next;
-            }
-        }
-        _ReleaseNHeap();
-        return( _HEAPOK );
+    test_heap = _heapchk();
+    if( test_heap != _HEAPOK ) {
+        return( test_heap );
     }
+    fill |= fill << 8;
+    _AccessNHeap();
+
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
+        curr = mhp->freehead.next;
+        for( ;; ) {
+            if( curr == (frlptr) &mhp->freehead ) break;
+#if defined(_M_IX86)
+            _fmemset( (void _WCFAR *)(curr + 1), fill, curr->len - sizeof(frl) );
+#else
+            memset( (void *)(curr + 1), fill, curr->len - sizeof(frl) );
+#endif
+            curr = curr->next;
+        }
+    }
+    _ReleaseNHeap();
+    return( _HEAPOK );
+}

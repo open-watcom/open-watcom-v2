@@ -121,7 +121,7 @@ struct references_private {
     dw_column           column;
 };
 
-#pragma pack( 4 );
+#pragma pack( 4 )
 struct dw_client {
     jmp_buf             exception_handler;
     dw_funcs            funcs;
@@ -143,7 +143,7 @@ struct dw_client {
     dw_sym_handle               abbrev_sym;
     dw_sym_handle               dbg_pch;
 };
-#pragma pack();
+#pragma pack()
 
 
 #endif

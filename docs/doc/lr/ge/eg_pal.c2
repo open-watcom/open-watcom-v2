@@ -1,0 +1,25 @@
+void new_palette()
+{
+    palettetype pal;
+    char fill1[ 8 ] = {0x88,0x44,0x22,0x11,0x88,0x44,0x22,0x11}; // narrow //
+    char fill2[ 8 ] = {0x11,0x22,0x44,0x88,0x11,0x22,0x44,0x88}; // narrow \\
+    char fill3[ 8 ] = {0x88,0x55,0x22,0x55,0x88,0x55,0x22,0x55}; // narrow cross
+    char fill4[ 8 ] = {0x80,0x40,0x20,0x10,0x08,0x04,0x02,0x01}; // wide //
+    char fill5[ 8 ] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80}; // wide \\
+    char fill6[ 8 ] = {0x80,0x41,0x22,0x14,0x08,0x14,0x22,0x41}; // wide cross
+
+    _pg_getpalette( &pal );
+    memcpy( pal[ 1 ].fill, fill1, 8 );
+    memcpy( pal[ 2 ].fill, fill2, 8 );
+    memcpy( pal[ 3 ].fill, fill3, 8 );
+    memcpy( pal[ 4 ].fill, fill4, 8 );
+    memcpy( pal[ 5 ].fill, fill5, 8 );
+    memcpy( pal[ 6 ].fill, fill6, 8 );
+    pal[ 1 ].color = 15;
+    pal[ 2 ].color = 15;
+    pal[ 3 ].color = 15;
+    pal[ 4 ].color = 15;
+    pal[ 5 ].color = 15;
+    pal[ 6 ].color = 15;
+    _pg_setpalette( &pal );
+}

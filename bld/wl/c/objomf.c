@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object file processing routines specific to OMF.
 *
 ****************************************************************************/
 
-
-/*
- *  OBJOMF:  object file processing routines specific to OMF
- *
-*/
 
 #include <string.h>
 #include "linkstd.h"
@@ -46,7 +40,7 @@
 #include "objcalc.h"
 #include "objio.h"
 #include "objcache.h"
-#include "comdef.h"
+#include "wcomdef.h"
 #include "cmdline.h"
 #include "loadfile.h"
 #include "dbgall.h"
@@ -62,7 +56,23 @@
 
 /* forward declarations */
 
-static void             Pass1Cmd( byte );
+static void     Pass1Cmd( byte );
+static void     ProcTHEADR( void );
+static void     Comment( void );
+static void     AddNames( void );
+static void     ProcSegDef( void );
+static void     ProcPubdef( bool static_sym );
+static void     UseSymbols( bool static_sym, bool iscextdef );
+static void     DefineGroup( void );
+static void     ProcLinnum( void );
+static void     ProcLxdata( bool islidata );
+static void     ProcLxdata( bool islidata );
+static void     ProcModuleEnd( void );
+static void     ProcAlias( void );
+static void     DoLazyExtdef( bool isweak );
+static void     ProcVFTableRecord( bool ispure );
+static void     ProcVFReference( void );
+static void     GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata );
 
 byte            OMFAlignTab[] = {0,0,1,4,8,2,12};
 
@@ -76,12 +86,12 @@ void ResetObjOMF( void )
     EOObjRec = NULL;
 }
 
-static unsigned long ProcObj( file_list * file, unsigned long loc,
-                              bool (*procrtn)( byte ) )
+static unsigned long ProcObj( file_list *file, unsigned long loc,
+                              void (*procrtn)( byte ) )
 /****************************************************************/
 /* Process an object file. */
 {
-    obj_record *        rec;
+    obj_record          *rec;
     byte                cmd;
     unsigned_16         len;
 
@@ -115,20 +125,22 @@ static unsigned long ProcObj( file_list * file, unsigned long loc,
     return( loc );
 }
 
-static void CheckUninit( segnode *seg, void *dummy )
-/**************************************************/
+static void CheckUninit( void *_seg, void *dummy )
+/************************************************/
 {
+    segnode *seg = _seg;
+
     dummy = dummy;
     if( !(seg->info & SEG_LXDATA_SEEN) ) {
         seg->entry->isuninit = TRUE;
-        if( seg->entry->data != NULL ) {
+        if( seg->entry->data ) {
             ReleaseInfo( seg->entry->data );
-            seg->entry->data = NULL;
+            seg->entry->data = 0;
         }
     }
 }
 
-extern unsigned long OMFPass1( void )
+unsigned long OMFPass1( void )
 /***********************************/
 // do pass 1 for OMF object files
 {
@@ -140,10 +152,11 @@ extern unsigned long OMFPass1( void )
     } else {
         LinkState |= HAVE_I86_CODE;
     }
+    CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
     retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
     IterateNodelist( SegNodes, CheckUninit, NULL );
     ResolveComdats();
-    return retval;
+    return( retval );
 }
 
 static void Pass1Cmd( byte cmd )
@@ -197,7 +210,8 @@ static void Pass1Cmd( byte cmd )
     case CMD_LINN32:
         ObjFormat |= FMT_MS_386;
     case CMD_LINNUM:
-        ProcLinnum();
+        if (CurrMod->omfdbg == OMF_DBG_CODEVIEW)
+            ProcLinnum();
         break;
     case CMD_LINS32:
         ObjFormat |= FMT_MS_386;
@@ -241,12 +255,20 @@ static void Pass1Cmd( byte cmd )
     case CMD_ALIAS:
         ProcAlias();
         break;
+    case CMD_BAKP32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_BAKPAT:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcBakpat();
+        break;
+    case CMD_NBKP32:
+        ObjFormat |= FMT_MS_386;
+    case CMD_NBKPAT:
+        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        ProcNbkpat();
+        break;
     case CMD_VERNUM:
     case CMD_VENDEXT:
-    case CMD_BAKPAT:
-    case CMD_BAKP32:
-    case CMD_NBKPAT:
-    case CMD_NBKP32:    /* ignore bakpats in pass 1 */
     case CMD_LOCSYM:
     case CMD_TYPDEF:
     case CMD_DEBSYM:
@@ -278,38 +300,36 @@ static void Pass1Cmd( byte cmd )
     }
 }
 
-extern bool IsOMF( file_list * list, unsigned long loc )
+bool IsOMF( file_list *list, unsigned long loc )
 /******************************************************/
 {
-    byte *      rec;
+    byte        *rec;
 
     rec = CacheRead( list, loc, sizeof(unsigned_8) );
-    return rec != NULL && *rec == CMD_THEADR;
+    return( rec != NULL && *rec == CMD_THEADR );
 }
 
-extern char * GetOMFName( file_list *list, unsigned long * loc )
+char *GetOMFName( file_list *list, unsigned long *loc )
 /**************************************************************/
 {
-    obj_record *rec;
-    char *      name;
-    char *      newname;
+    obj_record  *rec;
+    char        *name;
     unsigned    len;
 
     rec = CacheRead( list, *loc, sizeof(obj_record) );
-    if( rec == NULL ) return NULL;
+    if( rec == NULL )
+        return( NULL );
     *loc += sizeof( obj_record );
     len = rec->length;
     name = CacheRead( list, *loc, rec->length );
     *loc += len;
-    if( name == NULL ) return NULL;
-    len = *name;        // get actual name length
-    _ChkAlloc( newname, len + 1 );
-    memcpy( newname, name + 1, len );
-    *(newname + len) = '\0';
-    return newname;
+    if( name == NULL )
+        return( NULL );
+    len = *(unsigned char *)name;        // get actual name length
+    return( ChkToString( name + 1, len ) );
 }
 
-extern void OMFSkipObj( file_list *list, unsigned long *loc )
+void OMFSkipObj( file_list *list, unsigned long *loc )
 /***********************************************************/
 {
     *loc = ProcObj( list, *loc, NULL );
@@ -318,23 +338,36 @@ extern void OMFSkipObj( file_list *list, unsigned long *loc )
 static void ProcTHEADR( void )
 /****************************/
 {
+    char    name[256];
+    char    *sym_name;
+    int     sym_len;
+
+    if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
+        sym_name = ( (obj_name UNALIGN *) ObjBuff )->name;
+        sym_len = ( (obj_name UNALIGN *) ObjBuff )->len;
+        if( sym_len == 0 ) {
+            BadObject();
+        }
+        memcpy( name, sym_name, sym_len );
+        name[sym_len] = '\0';
+    }
 }
 
 static void LinkDirective( void )
 /*******************************/
 {
     char            directive;
-    unsigned char   priority;
-    segnode *       seg;
+    lib_priority    priority;
+    segnode         *seg;
 
     directive = *(char *)ObjBuff;
     ObjBuff++;
     switch( directive ) {
     case LDIR_DEFAULT_LIBRARY:
         if( ObjBuff + 1 < EOObjRec ) {
-            priority = *( char * )ObjBuff;
+            priority = *ObjBuff;
             ObjBuff++;
-            AddCommentLib( ObjBuff, EOObjRec - ObjBuff, priority );
+            AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, priority );
         }
         break;
     case LDIR_SOURCE_LANGUAGE:
@@ -358,6 +391,7 @@ static void LinkDirective( void )
     case LDIR_OPT_FAR_CALLS:
         seg = (segnode *)FindNode( SegNodes, GetIdx() );
         seg->entry->canfarcall = TRUE;
+        seg->entry->iscode = TRUE;
         break;
     case LDIR_FLAT_ADDRS:
         CurrMod->modinfo |= MOD_FLATTEN_DBI;
@@ -371,9 +405,9 @@ static void LinkDirective( void )
 static void ReadName( length_name *ln_name )
 /******************************************/
 {
-    ln_name->len = *(unsigned char *)ObjBuff;
-    ObjBuff += sizeof( unsigned char );
-    ln_name->name = ObjBuff;
+    ln_name->len = *(unsigned_8 *)ObjBuff;
+    ObjBuff += sizeof( unsigned_8 );
+    ln_name->name = (char *)ObjBuff;
     ObjBuff += ln_name->len;
 }
 
@@ -421,6 +455,30 @@ static void ProcImportKeyword( void )
     }
 }
 
+
+static void DoMSOMF( void )
+/***********************************/
+/* Figure out debug info type and handle it accordingly later. */
+{
+    if( ObjBuff == EOObjRec )
+        CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
+    else {
+        unsigned_8  version;
+        char        *dbgtype;
+
+        version = *ObjBuff++;
+        dbgtype = (char *)ObjBuff;
+        ObjBuff += 2;
+        if( strncmp( dbgtype, "CV", 2 ) == 0 ) {
+            CurrMod->omfdbg = OMF_DBG_CODEVIEW;
+        } else if( strncmp( dbgtype, "HL", 2 ) == 0 ) {
+            CurrMod->omfdbg = OMF_DBG_HLL;
+        } else {
+            CurrMod->omfdbg = OMF_DBG_UNKNOWN;
+        }
+    }
+}
+
 static void Comment( void )
 /*************************/
 /* Process a comment record. */
@@ -442,11 +500,12 @@ static void Comment( void )
         switch( which ) {
         case MOMF_IMPDEF:
         case MOMF_EXPDEF:
-            SeenDLLRecord();
-            if( which == MOMF_EXPDEF ) {
-                ProcExportKeyword();
-            } else {
-                ProcImportKeyword();
+            if( SeenDLLRecord() ) {
+                if( which == MOMF_EXPDEF ) {
+                    ProcExportKeyword();
+                } else {
+                    ProcImportKeyword();
+                }
             }
             break;
         case MOMF_PROT_LIB:
@@ -459,13 +518,14 @@ static void Comment( void )
     case CMT_WAT_PROC_MODEL:
     case CMT_MS_PROC_MODEL:
         proc = GET_U8_UN( ObjBuff ) - '0';
-        if( proc > FmtData.cpu_type ) FmtData.cpu_type = proc;
+        if( proc > FmtData.cpu_type )
+            FmtData.cpu_type = proc;
         break;
     case CMT_DOSSEG:
         LinkState |= DOSSEG_FLAG;
         break;
     case CMT_DEFAULT_LIBRARY:
-        AddCommentLib( ObjBuff, EOObjRec - ObjBuff, 0xfe );
+        AddCommentLib( (char *)ObjBuff, EOObjRec - ObjBuff, LIB_PRIORITY_MAX - 1 );
         break;
     case CMT_LINKER_DIRECTIVE:
         LinkDirective();
@@ -484,6 +544,9 @@ static void Comment( void )
     case CMT_SOURCE_NAME:
         DBIComment();
         break;
+    case CMT_MS_OMF:
+        DoMSOMF();
+        break;
     case 0x80:      /* Code Gen used to put bytes out in wrong order */
         if( attribute == CMT_SOURCE_NAME ) {    /* no longer generated */
             DBIComment();
@@ -498,25 +561,21 @@ static void ProcAlias( void )
 /***************************/
 /* process a symbol alias directive */
 {
-    char *      alias;
-    int         aliaslen;
-    char *      target;
-    int         targetlen;
-    symbol *    sym;
+    char        *alias;
+    unsigned    aliaslen;
+    unsigned    targetlen;
+    symbol      *sym;
 
     while( ObjBuff < EOObjRec ) {
         aliaslen = *ObjBuff;
         ObjBuff++;
-        alias = ObjBuff;
+        alias = (char *)ObjBuff;
         ObjBuff += aliaslen;
         targetlen = *ObjBuff;
         ObjBuff++;
-        sym = SymXOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
-        if( !(sym->info & SYM_DEFINED) ) {
-            _ChkAlloc( target, targetlen + 1 );
-            memcpy( target, ObjBuff, targetlen );
-            target[targetlen] = '\0';
-            MakeSymAlias( alias, aliaslen, target, targetlen );
+        sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
+        if( !sym || !(sym->info & SYM_DEFINED) ) {
+            MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
         }
         ObjBuff += targetlen;
     }
@@ -528,14 +587,16 @@ static void ProcModuleEnd( void )
     byte        frame;
     byte        target;
     unsigned    targetidx;
-    segnode *   seg;
-    extnode *   ext;
+    segnode     *seg;
+    extnode     *ext;
     bool        hasdisp;
 
-    if( StartInfo.user_specd ) return;
+    if( StartInfo.user_specd )
+        return;
     if( *ObjBuff & 0x40 ) {
         ObjBuff++;
-        if( ObjBuff == EOObjRec ) return;       /* CSet/2 stupidity */
+        if( ObjBuff == EOObjRec )               /* CSet/2 stupidity */
+            return;
         frame = (*ObjBuff >> 4) & 0x7;
         target = *ObjBuff & 0x3;
         hasdisp = (*ObjBuff & 0x4) == 0;
@@ -545,7 +606,7 @@ static void ProcModuleEnd( void )
         }
         targetidx = GetIdx();
         switch( target ) {
-        case T_SEGWD:
+        case TARGET_SEGWD:
             if( StartInfo.type != START_UNDEFED ) {
                 LnkMsg( LOC+ERR+MSG_MULT_START_ADDRS, NULL );
                 return;                 // <-------- NOTE: premature return
@@ -558,12 +619,12 @@ static void ProcModuleEnd( void )
             }
             StartInfo.mod = CurrMod;
             break;
-        case T_EXTWD:
+        case TARGET_EXTWD:
             ext = (extnode *) FindNode( ExtNodes, targetidx );
             SetStartSym( ext->entry->name );
             break;
-        case T_ABSWD:
-        case T_GRPWD:
+        case TARGET_ABSWD:
+        case TARGET_GRPWD:
             BadObject();        // no one does these, right???
             break;
         }
@@ -582,7 +643,7 @@ static void AddNames( void )
 /* Process NAMES record */
 {
     int                 name_len;
-    list_of_names **    entry;
+    list_of_names       **entry;
 
     DEBUG(( DBG_OLD, "AddNames()" ));
     while( ObjBuff < EOObjRec ) {
@@ -597,10 +658,10 @@ static void ProcSegDef( void )
 /****************************/
 /* process a segdef record */
 {
-    segdata *           sdata;
-    segnode *           snode;
-    list_of_names *     clname;
-    list_of_names *     name;
+    segdata             *sdata;
+    segnode             *snode;
+    list_of_names       *clname;
+    list_of_names       *name;
     byte                acbp;
     unsigned            comb;
 
@@ -624,14 +685,15 @@ static void ProcSegDef( void )
     }
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
-        _TargU16toHost( _GetU16UN( ObjBuff ), sdata->a.frame );
+        _TargU16toHost( _GetU16UN( ObjBuff ), sdata->frame );
         sdata->isabs = TRUE;
         ObjBuff += sizeof( unsigned_16 );
         ObjBuff += sizeof( byte );
         break;
     case ALIGN_LTRELOC:
 // in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
-        if( ObjFormat & FMT_32BIT_REC ) break;
+        if( ( ObjFormat & FMT_32BIT_REC ) || ( FmtData.type & MK_RAW ) )
+            break;
         sdata->align = OMFAlignTab[ALIGN_PARA];
         ObjBuff += 5;   /*  step over ltldat, max_seg_len, grp_offs fields */
         break;
@@ -673,18 +735,19 @@ static void DefineGroup( void )
 /* Define a group. */
 {
     int                 num_segs;
-    byte *              anchor;
-    segnode *           seg;
-    list_of_names *     grp_name;
-    grpnode *           newnode;
-    group_entry *       group;
+    byte                *anchor;
+    segnode             *seg;
+    list_of_names       *grp_name;
+    grpnode             *newnode;
+    group_entry         *group;
 
     grp_name = FindName( GetIdx() );
     DEBUG(( DBG_OLD, "DefineGroup() - %s", grp_name->name ));
     anchor = ObjBuff;
     num_segs = 0;
-    for(;;) {
-        if( ObjBuff >= EOObjRec ) break;
+    for( ;; ) {
+        if( ObjBuff >= EOObjRec )
+            break;
         if( *ObjBuff != GRP_SEGIDX ) {
             BadObject();
             return;
@@ -704,12 +767,12 @@ static void DefineGroup( void )
     }
     newnode->entry = group;
     ObjBuff = anchor;
-    for(;;) {
-        if( ObjBuff >= EOObjRec ) break;
+    for( ;; ) {
+        if( ObjBuff >= EOObjRec )
+            break;
         ++ObjBuff;
         seg = (segnode *)FindNode( SegNodes, GetIdx() );
         AddToGroup( group, seg->entry->u.leader );
-        --num_segs;
     }
 }
 
@@ -717,11 +780,11 @@ static void ProcPubdef( bool static_sym )
 /***************************************/
 /* Define symbols. */
 {
-    symbol *        sym;
-    byte *          sym_name;
-    segnode *       seg;
+    symbol          *sym;
+    char            *sym_name;
+    segnode         *seg;
     offset          off;
-    int             sym_len;
+    unsigned        sym_len;
     unsigned_16     frame;
     unsigned_16     segidx;
 
@@ -751,9 +814,9 @@ static void ProcPubdef( bool static_sym )
             ObjBuff += sizeof( unsigned_16 );
         }
         if( static_sym ) {
-            sym = SymXOp( ST_DEFINE_SYM | ST_STATIC, sym_name, sym_len );
+            sym = SymOp( ST_DEFINE_SYM | ST_STATIC, sym_name, sym_len );
         } else {
-            sym = SymXOp( ST_DEFINE_SYM, sym_name, sym_len );
+            sym = SymOp( ST_DEFINE_SYM, sym_name, sym_len );
         }
         DefineSymbol( sym, seg, off, frame );
         SkipIdx();   /* skip type index */
@@ -764,8 +827,8 @@ static void DoLazyExtdef( bool isweak )
 /*************************************/
 /* handle the lazy and weak extdef comments */
 {
-    extnode *   ext;
-    symbol *    sym;
+    extnode     *ext;
+    symbol      *sym;
     unsigned    idx;
 
     while( ObjBuff < EOObjRec ) {
@@ -778,13 +841,13 @@ static void DoLazyExtdef( bool isweak )
     }
 }
 
-static void * GetVFListStart( void )
+static void *GetVFListStart( void )
 /**********************************/
 {
-    return ObjBuff;
+    return( ObjBuff );
 }
 
-static void SetVFListStart( void * start )
+static void SetVFListStart( void *start )
 /****************************************/
 {
     ObjBuff = start;
@@ -793,27 +856,28 @@ static void SetVFListStart( void * start )
 static bool EndOfVFList( void )
 /*****************************/
 {
-    return ObjBuff >= EOObjRec;
+    return( ObjBuff >= EOObjRec );
 }
 
-static char * GetVFListName( void )
+static char *GetVFListName( void )
 /*********************************/
 {
-    list_of_names *     lname;
+    list_of_names       *lname;
 
     lname = FindName( GetIdx() );
-    return lname->name;
+    return( lname->name );
 }
 
 static void ProcVFTableRecord( bool ispure )
 /******************************************/
 // process the watcom virtual function table information extension
 {
-    extnode *   ext;
-    symbol *    sym;
+    extnode     *ext;
+    symbol      *sym;
     vflistrtns  rtns;
 
-    if( !(LinkFlags & VF_REMOVAL) ) return;
+    if( !(LinkFlags & VF_REMOVAL) )
+        return;
     ext = (extnode *) FindNode( ExtNodes, GetIdx() );
     sym = ext->entry;
     ext->isweak = TRUE;
@@ -829,13 +893,14 @@ static void ProcVFReference( void )
 /*********************************/
 /* process a vftable reference record */
 {
-    extnode *           ext;
-    segnode *           seg;
-    symbol *            sym;
-    list_of_names *     lname;
+    extnode             *ext;
+    segnode             *seg;
+    symbol              *sym;
+    list_of_names       *lname;
     unsigned            index;
 
-    if( !(LinkFlags & VF_REMOVAL) ) return;
+    if( !(LinkFlags & VF_REMOVAL) )
+        return;
     index = GetIdx();
     if( index == 0 ) {
         LnkMsg( WRN+LOC+MSG_NOT_COMPILED_VF_ELIM, NULL );
@@ -865,15 +930,15 @@ static void UseSymbols( bool static_sym, bool iscextdef )
 /*******************************************************/
 /* Define all external references. */
 {
-    list_of_names *     lnptr;
-    char *              sym_name;
-    int                 sym_len;
-    extnode *           newnode;
-    symbol *            sym;
+    list_of_names       *lnptr;
+    char                *sym_name;
+    unsigned            sym_len;
+    extnode             *newnode;
+    symbol              *sym;
     sym_flags           flags;
 
     DEBUG(( DBG_OLD, "UseSymbols()" ));
-    flags = ST_REFERENCE | ST_CREATE;
+    flags = ST_CREATE | ST_REFERENCE;
     if( static_sym ) {
         flags |= ST_STATIC;
     }
@@ -888,7 +953,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
                 BadObject();
             }
             ObjBuff += sym_len + sizeof( byte );
-            sym = SymXOp( flags, sym_name, sym_len );
+            sym = SymOp( flags, sym_name, sym_len );
         }
         newnode = AllocNode( ExtNodes );
         newnode->entry = sym;
@@ -898,7 +963,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
     }
 }
 
-extern void SkipIdx( void )
+void SkipIdx( void )
 /*************************/
 /* skip the index */
 {
@@ -907,7 +972,7 @@ extern void SkipIdx( void )
     }
 }
 
-extern unsigned_16 GetIdx( void )
+unsigned_16 GetIdx( void )
 /*******************************/
 /* Get an index. */
 {
@@ -918,21 +983,21 @@ extern unsigned_16 GetIdx( void )
         index = (index & 0x7f) * 256 + *ObjBuff;
         ++ObjBuff;
     }
-    return index;
+    return( index );
 }
 
-extern list_of_names * FindName( unsigned_16 index )
+list_of_names *FindName( unsigned_16 index )
 /**************************************************/
 /* Find name of specified index. */
 {
-    return *((list_of_names **)FindNode( NameNodes, index ) );
+    return( *((list_of_names **)FindNode( NameNodes, index ) ) );
 }
 
 static void ProcLxdata( bool islidata )
 /*************************************/
 /* process ledata and lidata records */
 {
-    segnode *   seg;
+    segnode     *seg;
     unsigned_32 obj_offset;
 
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
@@ -957,22 +1022,23 @@ static void ProcLinnum( void )
 /****************************/
 /* do some processing for the linnum record */
 {
-    segnode *   seg;
+    segnode     *seg;
     bool        is32bit;
 
     SkipIdx();          /* don't need the group idx */
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEG_DEAD ) return;          /* ignore dead segments */
+    if( seg->info & SEG_DEAD )                  /* ignore dead segments */
+        return;
     is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
     DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 
-static char * ProcIDBlock( virt_mem *dest, char *buffer, unsigned_32 iterate )
-/****************************************************************************/
+static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
+/***************************************************************************/
 /* Process logically iterated data blocks. */
 {
     byte            len;
-    char *          anchor;
+    byte            *anchor;
     unsigned_16     count;
     unsigned_16     inner;
     unsigned_32     rep;
@@ -1017,12 +1083,12 @@ static char * ProcIDBlock( virt_mem *dest, char *buffer, unsigned_32 iterate )
     return( buffer );
 }
 
-static void DoLIData( virt_mem start, char *data, unsigned size )
+static void DoLIData( virt_mem start, byte *data, unsigned size )
 /***************************************************************/
 /* Expand logically iterated data. */
 {
     unsigned_32 rep;
-    byte *      end_data;
+    byte        *end_data;
 
     end_data = data + size;
     while( data < end_data ) {
@@ -1037,19 +1103,18 @@ static void DoLIData( virt_mem start, char *data, unsigned size )
     }
 }
 
-static void GetObject( segdata * seg, unsigned_32 obj_offset, bool lidata )
+static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
 /*************************************************************************/
 /* Load object code. */
 {
     unsigned    size;
     virt_mem    start;
 
-    if( seg->isdead ) {                 /* ignore dead segments */
+    if( seg->isdead || seg->isabs ) {   /* ignore dead or abs segments */
         ObjFormat |= FMT_IGNORE_FIXUPP; /* and any corresponding fixupps */
         return;
     }
     ObjFormat &= ~(FMT_IGNORE_FIXUPP|FMT_IS_LIDATA);
-    if( seg->isabs ) return;
     if( lidata ) {
         ObjFormat |= FMT_IS_LIDATA;
     }

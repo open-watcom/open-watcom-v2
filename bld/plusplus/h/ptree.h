@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Parse tree structures, definitions, and prototypes.
 *
 ****************************************************************************/
 
@@ -102,6 +101,8 @@ typedef enum                            // operator attributes
 , PtfFlag( TYPES_DIAGED    , 0x00400000 ) /* - PT_ERROR: types have been diag'ed    */ \
 , PtfFlag( DEFARG_COPY     , 0x00800000 ) /* - ptree is copy of a defarg ptree      */ \
 , PtfFlag( KEEP_MPTR_SIMPLE, 0x01000000 ) /* - if RHS ends up a member-ptr const, leave it alone! */ \
+, PtfFlag( ALREADY_ANALYSED, 0x02000000 ) /* - ptree already analysed               */ \
+, PtfFlag( TYPENAME,         0x04000000 ) /* - typename                             */ \
 , PtfFlag( TRAVERSE_LEFT   , 0x80000000 ) /* - traversing left tree                 */ \
 
 typedef enum                            // operand definitions
@@ -171,11 +172,12 @@ ptree_op_t;
 
 typedef struct parse_tree_node {
     PTF_FLAG            flags;
-    uint_8              op;
+    ptree_op_t          op;
     CGOP                cgop;
     CGOP                id_cgop;
     uint_8              filler;
     TYPE                type;
+    SYMBOL_NAME         sym_name;
     PTD                 *decor;                 // decoration for node
     TOKEN_LOCN          locn;
     union {
@@ -396,7 +398,6 @@ extern PTREE PTreeExtractLocn( PTREE, TOKEN_LOCN * );
 extern void PTreeDeleteSizeExpr( PTREE );
 extern PTREE PTreeStringLiteralConcat( PTREE, PTREE );
 extern PTREE CutAwayQualification( PTREE );
-extern PTREE MakeTemplateId( PTREE );
 extern PTREE MakeBuiltinIsFloat( PTREE );
 extern PTREE PTreeOffsetof( PTREE, PTREE );
 extern PTREE PTreeCheckFloatRepresentation( PTREE tree );

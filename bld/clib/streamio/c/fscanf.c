@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fscanf() - formatted stream input.
 *
 ****************************************************************************/
 
@@ -37,67 +36,49 @@
 #include "rtdata.h"
 #include "scanf.h"
 #include "fileacc.h"
+#include "orient.h"
 
 
 static int cget_file( PTR_SCNF_SPECS specs )
-    {
-        int c;
+{
+    int     c;
 
-        if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == __F_NAME(EOF,WEOF) ) {
-            specs->eoinp = 1;
-        }
-        return( c );
+    if( (c = __F_NAME(getc,getwc)( (FILE *)specs->ptr )) == __F_NAME(EOF,WEOF) ) {
+        specs->eoinp = 1;
     }
+    return( c );
+}
 
 
 static void uncget_file( int c, PTR_SCNF_SPECS specs )
-    {
-        __F_NAME(ungetc,ungetwc)( c, (FILE *)specs->ptr );
-    }
+{
+    __F_NAME(ungetc,ungetwc)( c, (FILE *)specs->ptr );
+}
 
 
 _WCRTLINK int __F_NAME(vfscanf,vfwscanf)( FILE *io, const CHAR_TYPE *format, va_list args )
-    {
-        int rc;
-        auto SCNF_SPECS specs;
+{
+    int         rc;
+    SCNF_SPECS  specs;
 
-        _AccessFile( io );
-        /*** Deal with stream orientation ***/
-        #ifndef __NETWARE__
-            #ifdef __WIDECHAR__
-                if( _FP_ORIENTATION(io) != _WIDE_ORIENTED ) {
-                    if( _FP_ORIENTATION(io) == _NOT_ORIENTED ) {
-                        _FP_ORIENTATION(io) = _WIDE_ORIENTED;
-                    } else {
-                        _ReleaseFile( io );
-                        return( 0 );    /* closest we have to error return */
-                    }
-                }
-            #else
-                if( _FP_ORIENTATION(io) != _BYTE_ORIENTED ) {
-                    if( _FP_ORIENTATION(io) == _NOT_ORIENTED ) {
-                        _FP_ORIENTATION(io) = _BYTE_ORIENTED;
-                    } else {
-                        _ReleaseFile( io );
-                        return( 0 );    /* closest we have to error return */
-                    }
-                }
-            #endif
-        #endif
+    _AccessFile( io );
 
-        specs.ptr = (CHAR_TYPE *) io;
-        specs.cget_rtn = cget_file;
-        specs.uncget_rtn = uncget_file;
-        rc = __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args );
-        _ReleaseFile( io );
-        return( rc );
-    }
+    /*** Deal with stream orientation ***/
+    ORIENT_STREAM(io,0);
+
+    specs.ptr = (CHAR_TYPE *)io;
+    specs.cget_rtn = cget_file;
+    specs.uncget_rtn = uncget_file;
+    rc = __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args );
+    _ReleaseFile( io );
+    return( rc );
+}
 
 
 _WCRTLINK int __F_NAME(fscanf,fwscanf)( FILE *io, const CHAR_TYPE *format, ... )
-    {
-        auto va_list args;
+{
+    va_list     args;
 
-        va_start( args, format );
-        return( __F_NAME(vfscanf,vfwscanf)( io, format, args ) );
-    }
+    va_start( args, format );
+    return( __F_NAME(vfscanf,vfwscanf)( io, format, args ) );
+}

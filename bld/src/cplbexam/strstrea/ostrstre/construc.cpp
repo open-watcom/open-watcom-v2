@@ -5,7 +5,7 @@ void main( void ) {
     char    s[20];
 
     ostrstream    output;                  // initialized an ostrstream object
-    output << "Watcom C++ ";               // write string into the object
+    output << "Open Watcom C++ ";               // write string into the object
 
     istrstream    input ( output.str() );  // return the pointer of the buffer
     input >> s;

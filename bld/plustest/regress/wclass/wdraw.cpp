@@ -8,6 +8,6 @@ WEXPORT WDraw::WDraw()
 WEXPORT WDraw::~WDraw()
 {
 	if( _handle ) {
-		DeleteObject( _handle );
+		DeleteObject( (HGDIOBJ)_handle );
 	}
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Screen access segment initialization.
 *
 ****************************************************************************/
 
@@ -45,94 +44,7 @@
 //  be modified or replaced.
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#if defined( _NEC_PC )
-
-
-#if defined( __386__ )
-extern int              PharlapAlloc( int, int );
-#pragma aux             PharlapAlloc = \
-                        "    int     21h      ", \
-                        "    jnc     l1       ", \
-                        "    sub     eax,eax  ", \
-                        "l1:                  ", \
-                        parm caller [eax] [ebx] \
-                        modify [eax ebx] value [eax];
-
-extern int              DPMIAlloc( int, int );
-#pragma aux             DPMIAlloc = \
-                        "    int     31h      ", \
-                        "    jnc     l1       ", \
-                        "    sub     eax,eax  ", \
-                        "l1:                  ", \
-                        parm caller [eax] [ebx] \
-                        modify [eax ebx] value [eax];
-#endif
-
-
-void _InitSegments()
-//==================
-
-{
-    unsigned short      seg;
-    unsigned char far   *hires_mode_flag;
-
-    _StackSeg = FP_SEG( &seg );         // point to stack segment
-#if defined( __386__ )
-    if( _IsRational() ) {
-        seg = FP_SEG( &_BiosSeg );
-        _BiosSeg = seg;
-        _NecSeg  = seg;
-        _TextSeg = seg;
-        _AttrSeg = seg;
-        _KanjiBuf.seg = DPMIAlloc( 0x0100, 5 );
-        _KanjiBuf.buf = MK_FP( seg, _KanjiBuf.seg << 4 );
-    } else {    // Pharlap
-        _BiosSeg = 0x34;
-        _NecSeg  = 0x34;
-        _TextSeg = 0x34;
-        _AttrSeg = 0x34;
-        _KanjiBuf.seg = PharlapAlloc( 0x2537, 5 );
-        _KanjiBuf.buf = MK_FP( 0x34, _KanjiBuf.seg << 4 );
-    }
-    if( _KanjiBuf.seg == 0 ) {
-        _ErrorStatus = _GRERROR;
-    }
-
-    _BiosOff = 0x00000400;
-    hires_mode_flag = (char far *) _BIOS_data( HIRES_FLAG );
-    if( *hires_mode_flag & 0x08 ) {
-        // Set Offsets for hires mode (1120x750x16 colour)
-        _NecOff  = 0x000C0000;
-        _TextOff = 0x000E0000;
-        _AttrOff = 0x000E2000;
-        _GRCGPort = 0xA4;
-    } else {
-        // Offsets for standard modes
-        _NecOff  = 0x000A8000;
-        _TextOff = 0x000A0000;
-        _AttrOff = 0x000A2000;
-        _GRCGPort = 0x7C;
-    }
-
-#else // adjust for hires in 286 mode
-    hires_mode_flag = (char far *) _BIOS_data( HIRES_FLAG );
-    if( *hires_mode_flag & 0x08 ) {
-        // Set Segments for hires mode (1120x750x16 colour)
-        // Segments default to standard mode values in global.c
-        _NecSeg  = 0xC000;
-        _TextSeg = 0xE000;
-        _AttrSeg = 0xE200;
-        _GRCGPort = 0xA4;
-    } else {
-        _GRCGPort = 0x7C;
-    }
-#endif
-}
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-#elif defined( __QNX__ )        // 16 and 32 bit QNX
+#if defined( __QNX__ )        // 16 and 32 bit QNX
 
 #include <stdio.h>
 #include <i86.h>
@@ -161,8 +73,8 @@ static char __far *qnx_mmap_physical( long addr, unsigned long len, unsigned per
 }
 
 
-void _InitSegments()
-//==================
+void _InitSegments( void )
+//========================
 
 {
     char __far          *adr;
@@ -209,7 +121,16 @@ void _InitSegments()
 #elif defined( DOSX286 )        // 286 DOS-Extender
 
 
+#if 0
 #include "phapi.h"
+#else
+typedef unsigned short USHORT;
+typedef unsigned long ULONG;
+typedef unsigned short far * PSEL;
+extern void far pascal DosMapRealSeg( USHORT, ULONG, PSEL );
+extern void far pascal DosGetBIOSSeg( PSEL );
+extern void far pascal DosCreateCSAlias( USHORT, PSEL );
+#endif
 
 #define NUM_SELECTORS   4
 
@@ -227,8 +148,8 @@ static struct seg_table _SegTable[ NUM_SELECTORS ] = {
 };
 
 
-void _InitSegments()
-//==================
+void _InitSegments( void )
+//========================
 
 {
     int                 i;
@@ -248,43 +169,6 @@ void _InitSegments()
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #else           // normal 16 and 32 bit DOS
-
-#define is_date_char( c )       (( c >= '0' && c <= '9' ) || c == '/' )
-#define BIOS_DATE_LEN           (2+1+2+1+2) /* yy-mm-dd */
-
-#define CHECK_IT                                                \
-    {                                                           \
-        int i;                                                  \
-        unsigned num_ok;                                        \
-                                                                \
-        /* check for IBM BIOS revsion date in ROM */            \
-        num_ok = 0;                                             \
-        for( i = 0; i < BIOS_DATE_LEN; ++i ) {                  \
-            if( is_date_char( p[i] ) ) {                        \
-                ++num_ok;                                       \
-            }                                                   \
-        }                                                       \
-        /* wishy-washy test for BIOS dates that */              \
-        /* contain some garbage chars. */                       \
-        /* Commodore PC60-40 has BIOS date "02/0(/88"). */      \
-        return( num_ok < (BIOS_DATE_LEN / 2) );                 \
-    }
-
-
-static int __gfxnonIBM( void )
-{
-    char _WCFAR *p;
-
-#if defined(__386__)
-    if (_ExtenderRealModeSelector == 0)
-        return 0;
-
-    p = MK_FP(_ExtenderRealModeSelector, 0xffff5);
-#else
-    p = MK_FP( 0xf000, 0xfff5 );
-#endif
-    CHECK_IT
-}
 
 
 #if !defined( __386__ )
@@ -314,8 +198,8 @@ extern dbcs_pair far *  dbcs_vector_table( void );
 #endif
 
 
-void _InitSegments()
-//==================
+void _InitSegments( void )
+//========================
 
 {
     unsigned short      seg;
@@ -373,8 +257,6 @@ void _InitSegments()
         if( _DBCSPairs[ 0 ].start_range != 0 ) {
             _IsDBCS = TRUE;
         }
-    } else if (__gfxnonIBM()) {     // when DOS ver < 5
-        _IsDBCS = TRUE;             // a NEC PC98 satisfies this condition
     }
 }
 

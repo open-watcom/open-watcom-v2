@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getchar() - read character from stdin.
 *
 ****************************************************************************/
 
@@ -37,15 +36,11 @@
 #undef getchar
 
 
-#ifndef __WIDECHAR__
-    _WCRTLINK int    (getchar)( void )
-#else
-    _WCRTLINK wint_t (getwchar)( void )
-#endif
-    {
+_WCRTLINK INTCHAR_TYPE __F_NAME(getchar,getwchar)( void )
+{
 #ifdef getc
-        return( __F_NAME(getc,getwc)(stdin) );
+    return( __F_NAME(getc,getwc)( stdin ) );
 #else
-        return( __F_NAME(fgetc,fgetwc)(stdin) );
+    return( __F_NAME(fgetc,fgetwc)( stdin ) );
 #endif
-    }
+}

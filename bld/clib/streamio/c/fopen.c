@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent fopen() implementation.
 *
 ****************************************************************************/
 
@@ -33,13 +32,12 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include <ctype.h>
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include "fileacc.h"
 #include "fmode.h"
@@ -47,44 +45,16 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
+#include "streamio.h"
 
-#if defined(__PENPOINT__)  ||  defined(__QNX__)
- #define PMODE ( S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH )
+#ifdef __UNIX__
+    #define PMODE   (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 #else
- #define PMODE ( S_IREAD | S_IWRITE )
-#endif
-
-#ifdef __NETWARE__
- extern unsigned                __NFiles;
+    #define PMODE   (S_IREAD | S_IWRITE)
 #endif
 
 
-#if defined(__PENPOINT__)
-static int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *path, int oflag,
-                                    int share, ... )
-{
-    va_list  ap;
-    int      mode;
-
-    va_start( ap, share );
-    mode = va_arg( ap, int );
-    va_end( ap );
-    return( open( path, oflag, mode ) );
-}
-#endif
-
-extern  FILE    *__allocfp( int handle );
-extern  void    __freefp(FILE *);
-extern  void    __chktty( FILE *fp );
-extern  int     __doclose( FILE *fp, int );
-
-
-#ifdef __NETWARE__
-    int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr )
-#else
-    int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr,
-                                              int *extflags )
-#endif
+int __F_NAME(__open_flags,__wopen_flags)( const CHAR_TYPE *modestr, int *extflags )
 {
     int                 flags;
     int                 alive = 1;
@@ -95,32 +65,34 @@ extern  int     __doclose( FILE *fp, int );
 #endif
 
     flags = 0;
-    #ifndef __NETWARE__
-        if( extflags != NULL ) {
-            if( _commode == _COMMIT ) {
-                *extflags = _COMMIT;
-            } else {
-                *extflags = 0;
-            }
+    if( extflags != NULL ) {
+#ifdef __NETWARE__
+        *extflags = 0;
+#else
+        if( _commode == _COMMIT ) {
+            *extflags = _COMMIT;
+        } else {
+            *extflags = 0;
         }
-    #endif
+#endif
+    }
 
     /*
      * The first character in modestr must be 'r', 'w', or 'a'.
      */
     switch( *modestr ) {
-        case 'r':
-            flags |= _READ;
-            break;
-        case 'w':
-            flags |= _WRITE;
-            break;
-        case 'a':
-            flags |= _WRITE | _APPEND;
-            break;
-        default:
-            __set_errno( EINVAL );
-            return( 0 );
+    case 'r':
+        flags |= _READ;
+        break;
+    case 'w':
+        flags |= _WRITE;
+        break;
+    case 'a':
+        flags |= _WRITE | _APPEND;
+        break;
+    default:
+        __set_errno( EINVAL );
+        return( 0 );
     }
     modestr++;
 
@@ -135,53 +107,53 @@ extern  int     __doclose( FILE *fp, int );
      * a text, not binary, stream.  Also for MS compatability, scanning
      * stops at any unrecognized character, without causing failure.
      */
-    while( *modestr != NULLCHAR  &&  alive ) {
+    while( (*modestr != NULLCHAR) && alive ) {
         switch( *modestr ) {
-            case '+':
-                if( gotplus ) {
-                    alive = 0;
-                } else {
-                    flags |= _READ | _WRITE;
-                    gotplus = 1;
-                }
-                break;
-            case 't':
-                if( gottextbin ) {
-                    alive = 0;
-                } else {
-                    gottextbin = 1;
-                }
-                break;
-            case 'b':
-                if( gottextbin ) {
-                    alive = 0;
-                } else {
-                    #if !defined(__PENPOINT__) && !defined(__QNX__)
-                        flags |= _BINARY;
-                    #endif
-                    gottextbin = 1;
-                }
-                break;
-#ifndef __NETWARE__
-            case 'c':
-                if( gotcommit ) {
-                    alive = 0;
-                } else {
-                    *extflags |= _COMMIT;
-                    gotcommit = 1;
-                }
-                break;
-            case 'n':
-                if( gotcommit ) {
-                    alive = 0;
-                } else {
-                    *extflags &= ~_COMMIT;
-                    gotcommit = 1;
-                }
-                break;
+        case '+':
+            if( gotplus ) {
+                alive = 0;
+            } else {
+                flags |= _READ | _WRITE;
+                gotplus = 1;
+            }
+            break;
+        case 't':
+            if( gottextbin ) {
+                alive = 0;
+            } else {
+                gottextbin = 1;
+            }
+            break;
+        case 'b':
+            if( gottextbin ) {
+                alive = 0;
+            } else {
+#ifndef __UNIX__
+                flags |= _BINARY;
 #endif
-            default:
-                break;
+                gottextbin = 1;
+            }
+            break;
+#ifndef __NETWARE__
+        case 'c':
+            if( gotcommit ) {
+                alive = 0;
+            } else {
+                *extflags |= _COMMIT;
+                gotcommit = 1;
+            }
+            break;
+        case 'n':
+            if( gotcommit ) {
+                alive = 0;
+            } else {
+                *extflags &= ~_COMMIT;
+                gotcommit = 1;
+            }
+            break;
+#endif
+        default:
+            break;
         }
         modestr++;
     }
@@ -189,7 +161,7 @@ extern  int     __doclose( FILE *fp, int );
     /*
      * Handle defaults for any unspecified options.
      */
-#if !defined(__PENPOINT__) && !defined(__QNX__)
+#ifndef __UNIX__
     if( !gottextbin ) {
         if( _RWD_fmode == O_BINARY )  flags |= _BINARY;
     }
@@ -202,9 +174,7 @@ extern  int     __doclose( FILE *fp, int );
 static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
                        CHAR_TYPE    mode,
                        int          file_flags,
-#ifndef __NETWARE__
                        int          extflags,
-#endif
                        int          shflag,     /* sharing flag */
                        FILE *       fp )
 {
@@ -223,17 +193,16 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
         if( file_flags & _WRITE ) {         /* if "r+" mode */
             open_mode = O_RDWR;
         }
-        #if defined(__NETWARE__)
+#if defined( __NETWARE__ )
+        open_mode |= O_BINARY;
+#elif defined( __UNIX__ )
+#else
+        if( file_flags & _BINARY ) {
             open_mode |= O_BINARY;
-        #elif defined(__PENPOINT__)
-        #elif defined(__QNX__)
-        #else
-            if( file_flags & _BINARY ) {
-                open_mode |= O_BINARY;
-            } else {
-                open_mode |= O_TEXT;
-            }
-        #endif
+        } else {
+            open_mode |= O_TEXT;
+        }
+#endif
         p_mode = 0;
     } else {        /* mode == 'w' || mode == 'a' */
         if( file_flags & _READ ) {          /* if "a+" or "w+" mode */
@@ -246,17 +215,16 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
         } else {                    /* mode == 'w' */
             open_mode |= O_TRUNC;
         }
-        #if defined(__NETWARE__)
+#if defined( __NETWARE__ )
+        open_mode |= O_BINARY;
+#elif defined( __UNIX__ )
+#else
+        if( file_flags & _BINARY ) {
             open_mode |= O_BINARY;
-        #elif defined(__PENPOINT__)
-        #elif defined(__QNX__)
-        #else
-            if( file_flags & _BINARY ) {
-                open_mode |= O_BINARY;
-            } else {
-                open_mode |= O_TEXT;
-            }
-        #endif
+        } else {
+            open_mode |= O_TEXT;
+        }
+#endif
         p_mode = PMODE;
     }
     fp->_handle = __F_NAME(sopen,_wsopen)( name, open_mode, shflag, p_mode );
@@ -267,13 +235,13 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
     }
     fp->_cnt = 0;
     fp->_bufsize = 0;                       /* was BUFSIZ JBS 31-may-91 */
-    #if !defined(__NETWARE__)
-        _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
-        _FP_EXTFLAGS(fp) = extflags;
-    #endif
-    #if defined(__NT__) || defined(__OS2__)
-        _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
-    #endif
+#ifndef __NETWARE__
+    _FP_ORIENTATION(fp) = _NOT_ORIENTED; /* initial orientation */
+    _FP_EXTFLAGS(fp) = extflags;
+#endif
+#if defined( __NT__ ) || defined( __OS2__ )
+    _FP_PIPEDATA(fp).isPipe = 0;        /* not a pipe */
+#endif
     _FP_BASE(fp) = NULL;
     if( file_flags & _APPEND ) {
         fseek( fp, 0L, SEEK_END );
@@ -288,17 +256,10 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
 {
     FILE *          fp;
     int             file_flags;
-#ifndef __NETWARE__
     int             extflags;
-#endif
 
     /* validate access_mode */
-    #ifdef __NETWARE__
-        file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode );
-    #else
-        file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode,
-                                                           &extflags );
-    #endif
+    file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );
     if( file_flags == 0 ) {
         return( NULL );
     }
@@ -306,14 +267,9 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
     /* specify dummy handle 0 */
     fp = __allocfp( 0 );                    /* JBS 30-aug-91 */
     if( fp != NULL ) {
-        #ifdef __NETWARE__
-            fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                               file_flags, shflag, fp );
-        #else
-            fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                               file_flags, extflags,
-                                               shflag, fp );
-        #endif
+        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
+                                           file_flags, extflags,
+                                           shflag, fp );
     }
     return( fp );
 }
@@ -321,8 +277,7 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
 
 _WCRTLINK FILE *__F_NAME(fopen,_wfopen)( const CHAR_TYPE *name, const CHAR_TYPE *access_mode )
 {
-    return( __F_NAME(_fsopen,_wfsopen)( name, access_mode,
-                                        OPENMODE_DENY_COMPAT ) );
+    return( __F_NAME(_fsopen,_wfsopen)( name, access_mode, OPENMODE_DENY_COMPAT ) );
 }
 
 static FILE *close_file( FILE *fp )
@@ -331,9 +286,7 @@ static FILE *close_file( FILE *fp )
     __stream_link **owner;
 
     _AccessIOB();
-    /*
-        See if the file pointer is a currently open file.
-    */
+    /* See if the file pointer is a currently open file. */
     link = _RWD_ostream;
     for( ;; ) {
         if( link == NULL ) break;
@@ -364,9 +317,7 @@ static FILE *close_file( FILE *fp )
         }
         owner = &link->next;
     }
-    /*
-        We ain't seen that file pointer ever. Leave things be.
-    */
+    /* We ain't seen that file pointer ever. Leave things be. */
     __set_errno( EBADF );
     _ReleaseIOB();
     return( NULL );
@@ -378,19 +329,12 @@ _WCRTLINK FILE *__F_NAME(freopen,_wfreopen)( const CHAR_TYPE *name,
 {
     int             hdl;
     int             file_flags;
-#ifndef __NETWARE__
     int             extflags;
-#endif
 
     _ValidFile( fp, 0 );
 
     /* validate access_mode */
-    #ifdef __NETWARE__
-        file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode );
-    #else
-        file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode,
-                                                           &extflags );
-    #endif
+    file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );
     if( file_flags == 0 ) {
         return( NULL );
     }
@@ -398,22 +342,17 @@ _WCRTLINK FILE *__F_NAME(freopen,_wfreopen)( const CHAR_TYPE *name,
     hdl = fileno( fp );
     _AccessFileH( hdl );
 
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsRemoveWindowedHandle != 0 ) {
-            _WindowsRemoveWindowedHandle( hdl );
-        }
-    #endif
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsRemoveWindowedHandle != 0 ) {
+        _WindowsRemoveWindowedHandle( hdl );
+    }
+#endif
     fp = close_file( fp );
     if( fp != NULL ) {
         fp->_flag &= _DYNAMIC;                      /* 24-jul-92 */
-        #ifdef __NETWARE__
-            fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                               file_flags, 0, fp );
-        #else
-            fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
-                                               file_flags, extflags,
-                                               0, fp );
-        #endif
+        fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
+                                           file_flags, extflags,
+                                           0, fp );
     }
     _ReleaseFileH( hdl );
     return( fp );

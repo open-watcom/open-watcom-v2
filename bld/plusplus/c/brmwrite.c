@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-
 #include "plusplus.h"
+
+#include <stdio.h>
+#include <errno.h>
 
 #ifdef OPT_BR
 
@@ -403,14 +402,16 @@ static void writeClassFriends   // WRITE BROWSE DEFN FOR FRIENDS
 
     inf = cltype->u.c.info;
     RingIterBeg( inf->friends, friend ) {
-        sym = friend->sym;
-        if( bri_handle != NULL ) {
-            BRIAddReference( bri_handle
-                           , BRI_NO_CHANGE
-                           , BRI_NO_CHANGE
-                           , BRI_NO_CHANGE
-                           , (BRI_SymbolID) SymbolGetIndex( sym )
-                           , BRI_RT_Friend );
+        if( FriendIsSymbol( friend ) ) {
+            sym = FriendGetSymbol( friend );
+            if( bri_handle != NULL ) {
+                BRIAddReference( bri_handle
+                                 , BRI_NO_CHANGE
+                                 , BRI_NO_CHANGE
+                                 , BRI_NO_CHANGE
+                                 , (BRI_SymbolID) SymbolGetIndex( sym )
+                                 , BRI_RT_Friend );
+            }
         }
     } RingIterEnd( friend );
 }
@@ -572,7 +573,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                     case SCOPE_FUNCTION:
                         flags = BRI_ST_Function;
                         owner = (uint_32) scope->owner.sym;
-                        DbgAssert( owner != NULL );
+                        DbgAssert( owner != 0 );
                     break;
 
                     case SCOPE_BLOCK:
@@ -592,7 +593,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
 
                     case SCOPE_TEMPLATE_PARM:
                         flags = BRI_ST_TemplateParm;
-                        if( scope->fn_template ) {
+                        if( scope->s.fn_template ) {
                             template_sym = scope->owner.defn->sym;
                         } else {
                             template_sym = scope->owner.tinfo->sym;

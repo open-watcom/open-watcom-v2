@@ -1,0 +1,41 @@
+/*
+ *  lzexpand.h  Lempel-Ziv compression functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_LZEXPAND
+#define _INC_LZEXPAND
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Macros to specify LZ functions */
+#define LZAPI   FAR PASCAL
+
+/* LZ error codes */
+#define LZERROR_BADINHANDLE     (-1)
+#define LZERROR_BADOUTHANDLE    (-2)
+#define LZERROR_READ            (-3)
+#define LZERROR_WRITE           (-4)
+#define LZERROR_GLOBALLOC       (-5)
+#define LZERROR_GLOBLOCK        (-6)
+#define LZERROR_BADVALUE        (-7)
+#define LZERROR_UNKNOWNALG      (-8)
+
+/* Functions in LZEXPAND.DLL */
+LONG LZAPI  CopyLZFile( HFILE, HFILE );
+int LZAPI   GetExpandedName( LPCSTR, LPSTR );
+void LZAPI  LZClose( HFILE );
+LONG LZAPI  LZCopy( HFILE, HFILE );
+void LZAPI  LZDone( void );
+HFILE LZAPI LZInit( HFILE );
+HFILE LZAPI LZOpenFile( LPCSTR, OFSTRUCT FAR *, UINT );
+int LZAPI   LZRead( HFILE, void FAR *, int );
+LONG LZAPI  LZSeek( HFILE, LONG, int );
+int LZAPI   LZStart( void );
+
+:include cplusepi.sp
+
+#endif /* _INC_LZEXPAND */

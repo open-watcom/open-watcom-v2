@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Raw data semantic actions.
 *
 ****************************************************************************/
 
 
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <errno.h>
@@ -46,34 +45,50 @@
 #include "depend.h"
 #include "iortns.h"
 
+
 extern void SemWriteRawDataItem( RawDataItem item )
 /*************************************************/
 {
-    uint_16   num;
+    uint_16     num16;
+    uint_32     num32;
+    int         rc;
 
-    if( item.IsString) {
-        if( ResWriteStringLen( item.Item.String, item.LongString,
-                               CurrResFile.handle, item.StrLen ) ) {
+    if( item.IsString ) {
+        int     len = item.StrLen;
+
+        if( item.WriteNull ) {
+            ++len;
+        }
+        if( ResWriteStringLen( item.Item.String, item.LongItem,
+                               CurrResFile.handle, len ) ) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                      LastWresErrStr() );
             ErrorHasOccured = TRUE;
         }
-        if( item.TmpStr ) RcMemFree( item.Item.String );
+        if( item.TmpStr ) {
+            RcMemFree( item.Item.String );
+        }
     } else {
-        if( (int_32)item.Item.Num < 0 ) {
-            if( (int_32)item.Item.Num < SHRT_MIN ) {
-                RcError( ERR_RAW_DATA_TOO_SMALL, item.Item.Num, SHRT_MIN );
-                ErrorHasOccured = TRUE;
-            }
-        } else {
-            if( item.Item.Num > USHRT_MAX ) {
-                RcError( ERR_RAW_DATA_TOO_BIG, item.Item.Num, USHRT_MAX );
-                ErrorHasOccured = TRUE;
+        if( !item.LongItem ) {
+            if( (int_32)item.Item.Num < 0 ) {
+                if( (int_32)item.Item.Num < SHRT_MIN ) {
+                    RcWarning( ERR_RAW_DATA_TOO_SMALL, item.Item.Num, SHRT_MIN );
+                }
+            } else {
+                if( item.Item.Num > USHRT_MAX ) {
+                    RcWarning( ERR_RAW_DATA_TOO_BIG, item.Item.Num, USHRT_MAX );
+                }
             }
         }
         if( !ErrorHasOccured ) {
-            num = item.Item.Num;
-            if( ResWriteUint16( &(num), CurrResFile.handle ) ) {
+            if( !item.LongItem ) {
+                num16 = item.Item.Num;
+                rc = ResWriteUint16( &(num16), CurrResFile.handle );
+            } else {
+                num32 = item.Item.Num;
+                rc = ResWriteUint32( &(num32), CurrResFile.handle );
+            }
+            if( rc ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                          LastWresErrStr() );
                 ErrorHasOccured = TRUE;
@@ -83,7 +98,7 @@ extern void SemWriteRawDataItem( RawDataItem item )
 
 }
 
-extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void * buff,
+extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
                 int buffsize, int *err_code )
 /****************************************************************/
 {
@@ -116,12 +131,12 @@ extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void * buff,
 
 #define BUFFER_SIZE   0x200
 
-extern ResLocation SemCopyRawFile( char * filename )
-/**************************************************/
+extern ResLocation SemCopyRawFile( char *filename )
+/*************************************************/
 {
     int         handle;
     RcStatus    error;
-    char *      buffer;
+    char        *buffer;
     char        full_filename[ _MAX_PATH ];
     ResLocation loc;
     int         err_code;
@@ -181,7 +196,7 @@ HANDLE_ERROR:
 extern DataElemList *SemNewDataElemList( RawDataItem node )
 /**********************************************************/
 {
-    DataElemList  *head;
+    DataElemList    *head;
 
     head = RcMemMalloc( sizeof( DataElemList ) );
     head->data[ 0 ] = node;
@@ -214,15 +229,18 @@ extern DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node )
 extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend )
 /*****************************************************************************/
 {
-    DataElemList      *curnode;
-    DataElemList      *nextnode;
-    ResLocation        resLoc;
-    int                i;
+    DataElemList    *curnode;
+    DataElemList    *nextnode;
+    ResLocation     resLoc;
+    int             i;
 
     curnode = head;
     nextnode = head;
+    resLoc.len = 0;
     if( call_startend ) {
         resLoc.start = SemStartResource();
+    } else {
+        resLoc.start = 0;
     }
     while( nextnode != NULL ) {
         nextnode = curnode->next;
@@ -233,6 +251,10 @@ extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend 
         curnode = nextnode;
     }
     if( call_startend ) {
+        if( CmdLineParms.MSResFormat
+         && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+            ResPadDWord( CurrResFile.handle );
+        }
        resLoc.len = SemEndResource( resLoc.start );
     }
 
@@ -244,7 +266,7 @@ extern void SemFreeDataElemList( DataElemList *head )
 {
     DataElemList    *curnode;
     DataElemList    *nextnode;
-    int              i;
+    int             i;
 
     curnode = head;
     nextnode = head;

@@ -36,13 +36,11 @@
 #include "trpimp.h"
 #include "trperr.h"
 #include "winserv.h"
+#include "packet.h"
 
 extern void OpeningStatement( void );
 extern void KillTrap( void );
 extern int Initialize( char * );
-extern char RemoteConnect( void );
-extern char *RemoteLink(char far *, char);
-extern void RemoteUnLink(void);
 
 int RemoteLinkObtained = FALSE;
 int SessionStarted = FALSE;

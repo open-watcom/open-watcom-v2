@@ -116,6 +116,7 @@ struct MemStack
     };
 
     MemFrame* area;
+    MemFrame* initial_area;
     unsigned allocs;
 };
 
@@ -124,11 +125,12 @@ MemStack::MemStack( size_t initial )
     , allocs( 0 )
 {
     area->size = initial - sizeof( MemFrame );
+    initial_area = area;
 }
 
 MemStack::~MemStack()
 {
-    ::operator delete( area );
+    ::operator delete( initial_area );
 }
 
 void* MemStack::alloc( size_t size )
@@ -182,11 +184,11 @@ void* N::operator new[]( size_t size ) {
     int* ip = (int*)( (char*)p + size );
     *ip = 763;
     return p;
-}    
+}
 
 void* N::operator new( size_t size, MemStack& mem ) {
     return mem.alloc( size );
-}    
+}
 
 void N::operator delete[]( void* p, size_t size )
 {
@@ -368,7 +370,7 @@ int main()
 
     if( error_count == 0 ) {
         printf( "\n**** completed ok ****\n" );
-	return( 0 );
+    return( 0 );
     }
     printf( "\N**** %d errors detected ****\n", error_count );
     return( 1 );

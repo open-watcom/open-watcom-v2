@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stack helper functions.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include "drpriv.h"
 
 extern void DWRStackCreate(                 // INITIALIZE A STACK
-    dr_stack * stk,                         // -- stack to initialize
+    dr_stack *stk,                          // -- stack to initialize
     uint start_size )                       // -- initial size guess
 /*************************/
 {
@@ -46,8 +45,8 @@ extern void DWRStackCreate(                 // INITIALIZE A STACK
 }
 
 extern void DWRStackCopy(                   // COPY A STACK FROM ANOTHER
-    dr_stack * dest,                        // -- destination of copy
-    const dr_stack * src )                  // -- source of copy
+    dr_stack *dest,                         // -- destination of copy
+    const dr_stack *src )                   // -- source of copy
 /************************/
 {
     dest->free = src->free;
@@ -57,7 +56,7 @@ extern void DWRStackCopy(                   // COPY A STACK FROM ANOTHER
 }
 
 extern void DWRStackFree(                   // DESTRUCT A STACK
-    dr_stack * stk )                        // -- stack to trash
+    dr_stack *stk )                         // -- stack to trash
 /***********************/
 {
     DWRFREE( stk->stack );
@@ -67,7 +66,7 @@ extern void DWRStackFree(                   // DESTRUCT A STACK
 }
 
 extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
-    dr_stack * stk,                         // -- stack to push on
+    dr_stack *stk,                          // -- stack to push on
     uint_32 val )                           // -- value to push
 /***********************/
 {
@@ -81,10 +80,10 @@ extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
 }
 
 extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
-    dr_stack * stk )                        // -- stack to pop off of
+    dr_stack *stk )                         // -- stack to pop off of
 /*************************/
 {
-    if( stk->free <= 0 ) {
+    if( stk->free == 0 ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
@@ -93,7 +92,7 @@ extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
 }
 
 extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
-    dr_stack * stk )                        // -- stack to use
+    dr_stack *stk )                         // -- stack to use
 /*************************/
 {
     if( stk->free == 0 ) {
@@ -104,7 +103,7 @@ extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
 }
 
 extern bool DWRStackEmpty(                  // IS A STACK EMPTY?
-    dr_stack * stk )                        // -- stack to check
+    dr_stack *stk )                         // -- stack to check
 /*************************/
 {
     return( stk->free == 0 );

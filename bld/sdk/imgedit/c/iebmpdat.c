@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "bitmap.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
 
 /*
- * Creates a device independant bitmap from the data <data> and
- * returns a handle to a newly created BITMAP.
+ * BitmapFromData - create a device independant bitmap from the data <data> and
+ *                  return a handle to a newly created bitmap
  */
-
 HBITMAP BitmapFromData( void *data, bitmap_info *info )
 {
     HBITMAP             bitmap_handle;
@@ -47,4 +46,5 @@ HBITMAP BitmapFromData( void *data, bitmap_info *info )
     bitmap_handle = WRBitmapFromData( data, info );
 
     return( bitmap_handle );
+
 } /* BitmapFromData */

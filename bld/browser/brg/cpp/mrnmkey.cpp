@@ -42,7 +42,7 @@ MergeNameKey::MergeNameKey()
 }
 
 MergeNameKey::MergeNameKey( uint_32 tag, bool ext,
-                            const MergeStringHdl& name, uint_16 unique )
+                            const MergeStringHdl& name, uint_32 unique )
                 : _tag( tag )
                 , _extern( ext )
                 , _name( name )
@@ -52,7 +52,7 @@ MergeNameKey::MergeNameKey( uint_32 tag, bool ext,
 }
 
 MergeNameKey::MergeNameKey( uint_32 tag, bool ext,
-                            const char * name, uint_16 unique )
+                            const char * name, uint_32 unique )
                 : _tag( tag )
                 , _extern( ext )
                 , _name( name )
@@ -71,13 +71,13 @@ MergeNameKey::MergeNameKey( const MergeNameKey& other )
 const char * MergeNameKey::getString() const
 //------------------------------------------
 {
-    const           BufSize = 512;
+    const   int     BufSize = 512 * 4;  //Must be larger than mrfile.h's MERGEFILESTRBUF
     static  char    buffer[ BufSize ];
     const char *    nm;
 
     nm = _name.getString();
 
-    sprintf( buffer, "<%#x,%s,\"%s\",%u>", _tag, (_extern) ? "extern" : "static",
+    sprintf( buffer, "<Tag: %#x, %s, Name: \"%s\", %lu>", _tag, (_extern) ? "extern" : "static",
                 (nm == NULL) ? "<NULL>" : nm, _unique );
     return buffer;
 }

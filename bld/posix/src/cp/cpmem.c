@@ -24,24 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  cp memory handler.
 *
 ****************************************************************************/
 
 
-/*
-   CPMEM.C - cp memory handler
-
-   Date         By              Reason
-   ====         ==              ======
-   17-aug-90    Craig Eisler    defined
-   19-oct-91    Craig Eisler    more work
-   08-nov-91    Craig Eisler    cleaned up
-   25-mar-92    Craig Eisler    NT port
-   15-jun-92    Craig Eisler    more cleanup
-   18-jun-92    Greg Bentz      OS/2 2.0 port
- */
 #include <stdio.h>
 #include <stddef.h>
 #include <malloc.h>
@@ -55,7 +42,7 @@ long near_allocs,far_allocs;
  */
 void MemInit( void )
 {
-#if !defined(__OS_nt__) && !defined(__OS_os2v2__) && !defined(__OS_pharlap__) && !defined(__OS_alpha__)
+#if !defined(__OS_nt386__) && !defined(__OS_os2386__) && !defined(__OS_pharlap__) && !defined(__OS_ntaxp__)
     _nheapgrow();
 #endif
     near_allocs=0L;
@@ -78,7 +65,7 @@ void MemFini( void )
 
 } /* MemFini */
 
-#if defined(__OS_nt__) || defined(__OS_os2v2__) || defined(__OS_pharlap__) || defined(__OS_alpha__)
+#if defined(__OS_nt386__) || defined(__OS_os2386__) || defined(__OS_pharlap__) || defined(__OS_ntaxp__)
 /*
  * FarAlloc - allocate from far heap
  */

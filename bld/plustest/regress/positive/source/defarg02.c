@@ -63,7 +63,7 @@ struct T {
     void * operator new [] (size_t s);
 };
 
-foo( T *t = new T(1) ) {}
+void foo( T *t = new T(1) ) {}
 
 int main()
 {

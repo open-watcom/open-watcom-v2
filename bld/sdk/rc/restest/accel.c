@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display accelerator resource.
 *
 ****************************************************************************/
 
@@ -54,12 +53,13 @@ BOOL CALLBACK GetAccelNameDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lpara
     return( TRUE );
 }
 
-void DisplayAccel( void ) {
+void DisplayAccel( void )
+{
     FARPROC     fp;
     char        buf[256];
 
-    fp = MakeProcInstance( GetAccelNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetAccelNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     Accel = LoadAccelerators( Instance, accelName );
     if( Accel == NULL ) {

@@ -1,0 +1,213 @@
+!   ADSAPI.FI  - Definitions of the AutoCAD functions for Applications
+!                This takes the place of xlacad.h (from LISP) and contains
+!                the changes to the function definitions to make them
+!                compatible with the application interface.
+
+c$pragma aux ads "!"
+
+! External function definitions accessable from applications
+
+! Application initialization  function
+c$pragma aux (ads) ads_init parm( value*4, value )
+
+! General failure (prints message) mechanism
+c$pragma aux (ads) ads_fail parm( value )
+
+! General abort mechanism.  Return RSABORT to Lisp.
+c$pragma aux (ads) ads_abort parm( value )
+
+! ADS exit() function used for transparent exit of programs
+c$pragma aux (ads) ads_exit parm( value*4 )
+
+! Register an ADS function handler
+c$pragma aux (ads) ads_regfunc parm( reference, value*4 )
+
+! Link back to host with request code
+c$pragma aux (ads) ads_link parm( value*4 )
+
+! Get a new result buffer
+c$pragma aux (ads) ads_newrb parm( value*4 )
+
+! Release a result buffer as well as those linked to it
+c$pragma aux (ads) ads_relrb parm( value )
+
+! Check for a console break
+c$pragma aux (ads) ads_usrbrk parm()
+
+
+! Define an external subroutine in AutoLISP
+c$pragma aux (ads) ads_defun parm( value, value*2 )
+
+! Undefine an external subroutine in AutoLISP
+c$pragma aux (ads) ads_undef parm( value, value*2 )
+
+! Unitilies for external subroutine interface
+c$pragma aux (ads) ads_getfuncode parm()
+c$pragma aux (ads) ads_getargs parm()
+
+! Return the specified type as a result of external subroutine
+c$pragma aux (ads) ads_retlist parm( reference )
+c$pragma aux (ads) ads_retval parm( reference )
+c$pragma aux (ads) ads_retpoint parm( reference )
+c$pragma aux (ads) ads_retstr parm( value )
+c$pragma aux (ads) ads_retname parm( reference, value*4 )
+c$pragma aux (ads) ads_retint parm( value*4 )
+c$pragma aux (ads) ads_retreal parm( value*8 )
+c$pragma aux (ads) ads_rett parm()
+c$pragma aux (ads) ads_retnil parm()
+c$pragma aux (ads) ads_retvoid parm()
+
+
+! AutoCAD Entity access routines
+
+c$pragma aux (ads) ads_entdel parm( reference )
+c$pragma aux (ads) ads_entgetx parm( reference, reference )
+c$pragma aux (ads) ads_entget parm( reference )
+c$pragma aux (ads) ads_entlast parm( reference )
+c$pragma aux (ads) ads_entnext parm( reference, reference )
+c$pragma aux (ads) ads_entupd parm( reference )
+c$pragma aux (ads) ads_entmod parm( reference )
+c$pragma aux (ads) ads_entmake parm( reference )
+c$pragma aux (ads) ads_entsel parm( value, reference, reference )
+c$pragma aux (ads) ads_nentsel parm( value, reference, reference, reference, \
+c                                    value )
+c$pragma aux (ads) ads_nentselp parm( value, reference, reference, value, \
+c                                     reference, value )
+c$pragma aux (ads) ads_ssget parm( value, reference, reference, reference, \
+c                                  reference )
+c$pragma aux (ads) ads_ssfree parm( reference )
+c$pragma aux (ads) ads_sslength parm( reference, reference )
+c$pragma aux (ads) ads_ssadd parm( reference, reference, reference )
+c$pragma aux (ads) ads_ssdel parm( reference, reference )
+c$pragma aux (ads) ads_ssmemb parm( reference, reference )
+c$pragma aux (ads) ads_ssname parm( reference, value*4, reference )
+
+! Extended Entity data utilities
+c$pragma aux (ads) ads_xdroom parm( reference, reference )
+c$pragma aux (ads) ads_xdsize parm( reference, reference )
+
+! AutoCAD table access routines
+c$pragma aux (ads) ads_tblnext parm( value, value*4 )
+c$pragma aux (ads) ads_tblsearch parm( value, value, value*4 )
+
+! Drawing database utilities
+c$pragma aux (ads) ads_handent parm( value, reference )
+c$pragma aux (ads) ads_trans parm( reference, reference, reference, value*4, \
+c                                  reference )
+
+! General AutoCAD utility routines
+c$pragma aux (ads) ads_angtos parm( value*8, value*4, value*4, value )
+c$pragma aux (ads) ads_cvunit parm( value*8, value, value, reference )
+c$pragma aux (ads) ads_wcmatch parm( value, value )
+c$pragma aux (ads) ads_rtos parm( value*8, value*4, value*4, value )
+c$pragma aux (ads) ads_angtof parm( value, value*4, reference )
+c$pragma aux (ads) ads_distof parm( value, value*4, reference )
+c$pragma aux (ads) ads_setvar parm( value, reference )
+c$pragma aux (ads) ads_initget parm( value*4, value )
+c$pragma aux (ads) ads_getsym parm( value, reference )
+c$pragma aux (ads) ads_putsym parm( value, reference )
+c$pragma aux (ads) ads_loaded parm()
+c$pragma aux (ads) ads_xload parm( value )
+c$pragma aux (ads) ads_xunload parm( value )
+
+c$pragma aux (ads) ads_command parm( value*4 ) []
+c$pragma aux (ads) ads_buildlist parm( value*4 ) []
+c$pragma aux (ads) ads_printf parm( value ) []
+c$pragma aux (ads) ads_cmd parm( reference )
+c$pragma aux (ads) ads_invoke parm( reference, reference )
+c$pragma aux (ads) ads_inters parm( reference, reference, reference, \
+c                                   reference, value*4, reference )
+
+! Functions that get system variables
+c$pragma aux (ads) ads_getvar parm( value, reference )
+c$pragma aux (ads) ads_findfile parm( value, value )
+
+! Function that gets a string
+c$pragma aux (ads) ads_getstring parm( value*4, value, value )
+
+! Functions that pass AutoCAD a single string
+c$pragma aux (ads) ads_menucmd parm( value )
+c$pragma aux (ads) ads_prompt parm( value )
+c$pragma aux (ads) ads_alert parm( value )
+
+! Function to register an application with AutoCAD
+c$pragma aux (ads) ads_regapp parm( value )
+
+! Functions used to get user input
+c$pragma aux (ads) ads_getangle parm( reference, value, reference )
+c$pragma aux (ads) ads_getcorner parm( reference, value, reference )
+c$pragma aux (ads) ads_getdist parm( reference, value, reference )
+c$pragma aux (ads) ads_getorient parm( reference, value, reference )
+c$pragma aux (ads) ads_getpoint parm( reference, value, reference )
+c$pragma aux (ads) ads_getint parm( value, reference )
+c$pragma aux (ads) ads_getkword parm( value, value )
+c$pragma aux (ads) ads_getreal parm( value, reference )
+c$pragma aux (ads) ads_getinput parm( value )
+c$pragma aux (ads) ads_vports parm( reference )
+
+! Functions for screen flipping
+c$pragma aux (ads) ads_textscr parm()
+c$pragma aux (ads) ads_graphscr parm()
+c$pragma aux (ads) ads_textpage parm()
+
+! Graphics related functions
+c$pragma aux (ads) ads_grclear parm()
+c$pragma aux (ads) ads_redraw parm( reference, value*4 )
+c$pragma aux (ads) ads_osnap parm( reference, value, reference )
+c$pragma aux (ads) ads_grread parm( value*4, reference, reference )
+c$pragma aux (ads) ads_grtext parm( value*4, value, value )
+c$pragma aux (ads) ads_grdraw parm( reference, reference, value*4, value*4 )
+c$pragma aux (ads) ads_grvecs parm( reference, reference )
+c$pragma aux (ads) ads_xformss parm( reference, reference )
+c$pragma aux (ads) ads_draggen parm( reference, value, value*4, reference, \
+c                                    reference )
+
+! Geometry utilities
+c$pragma aux (ads) ads_angle parm( reference, reference )
+c$pragma aux (ads) ads_distance parm( reference, reference )
+c$pragma aux (ads) ads_polar parm( reference, value*8, value*8, reference )
+
+! Functions that put up standard dialogs for user input
+c$pragma aux (ads) ads_getfiled parm( value, value, value, value*4, \
+c                                     reference )
+c$pragma aux (ads) ads_textbox parm( reference, reference, reference )
+
+!  Function to retrieve or establish AutoCAD's tablet transformation:
+c$pragma aux (ads) ads_tablet parm( reference, reference )
+
+! Functions to support ADS / ADI communications
+c$pragma aux (ads) ads_recfgport parm( reference, value, value, value, \
+c                                      value, value, value, value )
+c$pragma aux (ads) ads_adiinfo parm( reference )
+c$pragma aux (ads) ads_dscfg parm( reference )
+c$pragma aux (ads) ads_dsxqt parm( reference )
+c$pragma aux (ads) ads_dispt parm( reference )
+c$pragma aux (ads) ads_adistart parm( reference )
+c$pragma aux (ads) ads_adiend parm( reference )
+
+c$ifdef WIN
+! Call before termination to clean up Windows, DDE, memory, etc
+c$pragma aux (ads) adsi_machexit parm( value )
+c$endif
+
+! Functions for character handling
+c$pragma aux (ads) ads_isalpha parm( value*4 )
+c$pragma aux (ads) ads_isupper parm( value*4 )
+c$pragma aux (ads) ads_islower parm( value*4 )
+c$pragma aux (ads) ads_isdigit parm( value*4 )
+c$pragma aux (ads) ads_isxdigit parm( value*4 )
+c$pragma aux (ads) ads_isspace parm( value*4 )
+c$pragma aux (ads) ads_ispunct parm( value*4 )
+c$pragma aux (ads) ads_isalnum parm( value*4 )
+c$pragma aux (ads) ads_isprint parm( value*4 )
+c$pragma aux (ads) ads_isgraph parm( value*4 )
+c$pragma aux (ads) ads_iscntrl parm( value*4 )
+c$pragma aux (ads) ads_toupper parm( value*4)
+c$pragma aux (ads) ads_tolower parm( value*4 )
+
+! Useful pragmas
+c$pragma aux call_handler = "push eax" \ stack calling convention assumed
+c                           "call edx" \
+c                           parm( value, reference ) [edx] [eax] \
+c                           value [eax] \
+c                           modify exact [eax]

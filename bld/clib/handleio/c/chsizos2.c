@@ -39,6 +39,7 @@
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "lseek.h"
 
 
 _WCRTLINK int chsize( int handle, long size )
@@ -53,12 +54,12 @@ _WCRTLINK int chsize( int handle, long size )
 
     /*** Prepare to change the size ***/
     _AccessFileH( handle );
-    curOffset = lseek( handle, 0L, SEEK_CUR );  /* get current offset */
+    curOffset = __lseek( handle, 0L, SEEK_CUR );  /* get current offset */
     if( curOffset == -1 ) {
         _ReleaseFileH( handle );
         return( -1 );
     }
-    endOffset = lseek( handle, 0L, SEEK_END );  /* get file size */
+    endOffset = __lseek( handle, 0L, SEEK_END );  /* get file size */
     if( endOffset == -1 ) {
         _ReleaseFileH( handle );
         return( -1 );
@@ -94,7 +95,7 @@ _WCRTLINK int chsize( int handle, long size )
     }
 
     /*** Clean up and go home ***/
-    curOffset = lseek( handle, curOffset, SEEK_SET );
+    curOffset = __lseek( handle, curOffset, SEEK_SET );
     if( curOffset == -1 ) retCode = -1;
     _ReleaseFileH( handle );
     return( retCode );

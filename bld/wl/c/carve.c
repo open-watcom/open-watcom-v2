@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Carving memory manager for linker.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 
 #include "linkstd.h"
 #include "msg.h"
-#include "fileio.h"
+#include "ideentry.h"
 #include "alloc.h"
 #include "carve.h"
 
@@ -43,6 +42,7 @@ struct blk {
     blk_t *     next;
     unsigned    index;
     unsigned    modified : 1;
+    unsigned    : 15;
     char        data[1];
 };
 
@@ -314,7 +314,7 @@ void *CarveGetIndex( carve_t cv, void *elm )
     }
     block_index = cv->blk_count;
     block = cv->blk_list;
-    while( elm < block ) {
+    while( elm < (void *)block ) {
         --block_index;
         block = block->next;
     }
@@ -410,7 +410,7 @@ void CarveWalkAll( carve_t cv, void (*rtn)( void *, void * ), void *data )
     }
 }
 
-extern void CarveRestart( carve_t cv, unsigned num )
+void CarveRestart( carve_t cv, unsigned num )
 /**************************************************/
 {
     unsigned    numblks;
@@ -436,14 +436,14 @@ extern void CarveRestart( carve_t cv, unsigned num )
     cv->insert = NULL;
 }
 
-static void CarveZapBlock( carve_t cv, blk_t *blk, void *dummy )
-/**************************************************************/
+static void CarveZapBlock( carve_t cv, void *blk, void *dummy )
+/*************************************************************/
 {
     dummy = dummy;
     MakeFreeList( cv, blk, 0 );
 }
 
-extern void CarvePurge( carve_t cv )
+void CarvePurge( carve_t cv )
 /**********************************/
 /* clean out a carve block that had been prepared for incremental linking */
 {

@@ -31,7 +31,7 @@
 
 
 .386p
-.387
+
                 name            phartrap
 
 extrn           dbg_rdides      : near
@@ -90,7 +90,7 @@ restintr        macro   num,reg
             endif
                 mov     es,cs:dataseg           ; get addressability
                 mov     ax,2504H                ; set pm interrupt
-                lds     edx,pword ptr es:i&num&off
+                lds     edx,fword ptr es:i&num&off
                 cmp     word ptr es:i&num&seg,0
                 je      no&num
                 int     21h
@@ -123,24 +123,23 @@ extrn           _AtEnd          : byte
 extrn           _FakeBreak      : byte
 extrn           _InitialSS      : word
 extrn           _InitialCS      : word
-extrn           _Meg1           : word
 sysregs dd      14 dup(0)       ; only need 12, but just in case
 _data ends
 
 
 dgroup group _data
 
-assume  ds:flat,cs:flat
+assume  ds:DGROUP
 
 _text segment byte public 'code'
 
-int5          proc    near
+int05H          proc    near
                 push    ds                      ; save ds
                 mov     ds,cs:dataseg           ; set it up
                 mov     ds:break_hit,1          ; break hit!
                 pop     ds                      ; restore ds
                 iretd
-int5          endp
+int05H          endp
 
 public          intKB
 intKB           proc    near
@@ -166,11 +165,11 @@ intKB           proc    near
                 push    cs                      ; ...
                 push    offset return           ; ...
                 jmp     chip_bug_1              ; bug in the chip
-chip_bug_1:     jmp     pword ptr cs:iKBoff     ; ...
+chip_bug_1:     jmp     fword ptr cs:iKBoff     ; ...
 ver2:
                 pushfd                          ; push flags
                 jmp     chip_bug_2              ; BUG IN THE CHIP!!! (don't ask)
-chip_bug_2:     call    pword ptr cs:kbloffs    ; chain to old handler
+chip_bug_2:     call    fword ptr cs:kbloffs    ; chain to old handler
 
 return:         mov     esp,cs:saveesp          ; old handler might not pop FL!
                 push    ds                      ; save regs again
@@ -210,19 +209,17 @@ chip_bug_3:     iretd                           ; return to caller
 intKB           endp
 
 public          int20H
-int32          proc    near                    ; terminate request
-int20H:
+int20H          proc    near                    ; terminate request
                 push    ds                      ; save ds
                 mov     ds,cs:dataseg           ; set it up
                 dec     byte ptr spawned        ; if no spawned subprocess
                 pop     ds                      ; restore ds
                 js      fakebreak               ; - fake up a break point
-                jmp     pword ptr cs:i32off    ; chain to old handler
-int32          endp
+                jmp     fword ptr cs:i20Hoff    ; chain to old handler
+int20H          endp
 
 public          int21H
-int33          proc    near                    ; interrupt 21 handler
-int21H:
+int21H          proc    near                    ; interrupt 21 handler
                 cmp     ah,4cH                  ; if terminate request
                 je      terminate               ; - then
                 cmp     ah,0                    ; if terminate
@@ -235,25 +232,24 @@ spawn:          push    ds                      ; save ds
                 mov     ds,cs:dataseg           ; set it up
                 inc     byte ptr spawned        ; - keep track of it
                 pop     ds                      ; restore ds
-chain21:        jmp     pword ptr cs:i33off    ; chain to old handler
+chain21:        jmp     fword ptr cs:i21Hoff    ; chain to old handler
 terminate:      push    ds                      ; save ds
                 mov     ds,cs:dataseg           ; set it up
                 dec     byte ptr spawned        ; - if no spawned a subprocess
                 pop     ds                      ; restore ds
                 js      fakebreak               ; - - fake a break point
                 jmp     short chain21           ; chain to old handler
-int33          endp                            ; whew!
+int21H          endp                            ; whew!
 
 public          int27H
-int39          proc    near                    ; terminate request
-int27H:
+int27H          proc    near                    ; terminate request
                 push    ds                      ; save ds
                 mov     ds,cs:dataseg           ; set it up
                 dec     byte ptr spawned        ; if no spawned subprocess
                 pop     ds                      ; restore ds
                 js      fakebreak               ; - fake up a break point
-                jmp     pword ptr cs:i39off    ; chain to old handler
-int39          endp
+                jmp     fword ptr cs:i27Hoff    ; chain to old handler
+int27H          endp
 
 public          fakebreak
 fakebreak       proc    near
@@ -443,63 +439,6 @@ fixed_idt:                                      ; endif
                 ret                             ; return to caller
 ReleVects_      endp
 
-public          GetDosLong_
-GetDosLong_     proc near
-                push    fs
-                mov     fs,_Meg1
-                mov     eax,dword ptr fs:[eax]
-                pop     fs
-                ret
-GetDosLong_     endp
-
-public          GetDosByte_
-GetDosByte_     proc near
-                push    fs
-                mov     fs,_Meg1
-                movzx   eax,byte ptr fs:[eax]
-                pop     fs
-                ret
-GetDosByte_     endp
-
-public          PutDosByte_
-PutDosByte_     proc near
-                push    fs
-                mov     fs,_Meg1
-                mov     byte ptr fs:[eax],dl
-                pop     fs
-                ret
-PutDosByte_     endp
-
-public          PutDosLong_
-PutDosLong_     proc near
-                push    fs
-                mov     fs,_Meg1
-                mov     fs:[eax],edx
-                pop     fs
-                ret
-PutDosLong_     endp
-
-public          CallRealMode_
-CallRealMode_   proc near
-                push    ebx
-                push    ecx
-                push    edx
-                push    esi
-                push    edi
-                push    ebp
-                mov     ebx,eax
-                xor     ecx,ecx
-                mov     ax,250eH
-                int     21H
-                pop     ebp
-                pop     edi
-                pop     esi
-                pop     edx
-                pop     ecx
-                pop     ebx
-                ret
-CallRealMode_   endp
-
 public          SetPSP_
 SetPSP_         proc near
                 push    ebx
@@ -527,54 +466,8 @@ GetCS_          proc    near
 GetCS_          endp
 
 
-public          Read387_
-Read387_        proc    near
-                fsave   [eax]
-                frstor  [eax]
-                fwait
-                nop
-                int     3
-Read387_        endp
-
-public          Write387_
-Write387_       proc    near
-                frstor  [eax]
-                fwait
-                nop
-                int     3
-Write387_       endp
-
-        public  NPXType_
-NPXType_ proc    near
-        sub     eax,eax                 ; set initial control word to 0
-        push    eax                     ; push it on stack
-;
-        fninit                          ; initialize math coprocessor
-        fnstcw  [esp]                   ; store control word in memory
-        mov     al,0                    ; assume no coprocessor present
-        mov     ah,1[esp]               ; upper byte is 03h if
-        cmp     ah,03h                  ;   coprocessor is present
-        jne     exit                    ; exit if no coprocessor present
-        finit                           ; use default infinity mode
-        fld1                            ; generate infinity by
-        fldz                            ;   dividing 1 by 0
-        fdiv                            ; ...
-        fld     st                      ; form negative infinity
-        fchs                            ; ...
-        fcompp                          ; compare +/- infinity
-        fstsw   [esp]                   ; equal for 87/287
-        fwait                           ; wait fstsw to complete
-        mov     ax,[esp]                ; get NDP control word
-        mov     al,2                    ; assume 80287
-        sahf                            ; store condition bits in flags
-        jz      exit                    ; it's 287 if infinities equal
-        mov     al,3                    ; indicate 80387
-exit:   add     esp,4                   ; clear the stack
-        ret                             ; return
-NPXType_ endp
-
-public          SetCR0_
-SetCR0_         proc near
+public          SetMSW_
+SetMSW_         proc near
                 push    edx             ; save regs
                 push    ecx             ; ...
                 push    ebx             ; ...
@@ -604,15 +497,7 @@ ring_0:
                 or      ecx,eax         ; merge two CR0's together
                 mov     cr0,ecx         ; retore EM, MP bits to original
                 jmp     short done
-SetCR0_         endp
-
-public          GetCR0_
-GetCR0_         proc near
-                xor     eax,eax
-                smsw    ax
-                ; only really interested in EM, MP bits
-                ret
-GetCR0_         endp
+SetMSW_         endp
 
 _text           ends
 

@@ -24,31 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This file defines the data control library.
+*               Note: support for user controls has been removed in
+*                     the hacked re-implementation of ctl.lib.
 *
 ****************************************************************************/
 
+// Everything unknown is marked with MISSING!!!
 
 #ifndef CTLTYPE_H
 #define CTLTYPE_H
-/*
- *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- *%       copyright 1987, 1991 by WATCOM Systems Inc.               %
- *%                                                                 %
- *%                                                                 %
- *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Description:
- ============
-    This file defines the data control library.
-
-
-  Modified:     By:             Reason:
-  ---------     ---             -------
-  June 21 91    djp             created.
-
-*/
 #include <wpitypes.h>
 
 /****************************************************************
@@ -86,6 +72,9 @@
 ***************************************************************/
 #define CTL_USER        50      // first user field #
 
+/////////////////////////////////////////////////////////////////////////////////
+// Control element type
+
 typedef enum {
     CTL_CHECK = 1,      // standard check field
     CTL_RADIO,          // standard set of independent radio buttons
@@ -96,24 +85,55 @@ typedef enum {
     CTL_FLOAT,          // basic float field (with type checking)
     CTL_RINT,           // int field with range (with error checking)
     CTL_RFLOAT,         // float field with range (with error checking)
-    CTL_ESCOMBO,        // editable string combo box (drop down)
-    CTL_DHCOMBO,        // dynamic combo box, with HWND parm
+    CTL_ESCOMBO,        // editable string combo box (drop down) (implementation MISSING!!!)
+    CTL_DHCOMBO         // dynamic combo box, with HWND parm (implementation MISSING!!!)
 };
 typedef signed char ctl_type;
 
-BOOL ctl_dlg_init( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr);
-BOOL ctl_dlg_reset( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL);
-BOOL ctl_dlg_init_no_proc( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr);
-BOOL ctl_dlg_reset_no_proc( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL);
-BOOL ctl_dlg_done( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr);
-BOOL ctl_dlg_validate( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL);
+///////////////////////////////////////////////////////////////////////////////
+// The ctl_dlg_ functions
+
+// Initialize a dialog by the control
+BOOL ctl_dlg_init( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr );
+
+// Reset a dialog by the control
+BOOL ctl_dlg_reset( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL );
+
+// (MISSING!!!)
+BOOL ctl_dlg_init_no_proc( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr );
+
+// (MISSING!!!)
+BOOL ctl_dlg_reset_no_proc( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL );
+
+// Get the data ...
+BOOL ctl_dlg_done( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr );
+
+// (MISSING!!!)
+BOOL ctl_dlg_validate( WPI_INST, HWND dlg, void *ptr, void *ctl_ptr, BOOL );
+
+// (MISSING!!!)
 BOOL ctl_dlg_check( WPI_INST, HWND dlg, void * ptr, void * ctl_ptr );
+
+// (MISSING!!!)
 void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+
+// (MISSING!!!)
 BOOL ctl_dlg_enable( void *ctl_ptr, int ctl_id );
+
+// (MISSING!!!)
 BOOL ctl_dlg_disable( void *ctl_ptr, int ctl_id );
+
+// (MISSING!!!)
 void ctl_dlg_free( void *ctl_ptr );
+
+// (MISSING!!!)
 void * ctl_dlg_copy( void *ctl_ptr );
+
+// (MISSING!!!)
 BOOL ctl_dlg_modified( void *ctl_ptr );
+
+///////////////////////////////////////////////////////////////////////////////
+// The specific control element's data structs
 
 /* RADIO BUTTON: - 'data_offset' points to int: 1 origin (0 means none).
                  - 'control' is first control in group */
@@ -139,12 +159,12 @@ typedef struct {
                         set 'done' to TRUE when 'one past end' elt is
                         asked for */
 typedef struct {
-    signed              char    origin;         // special meaning: see above
+    signed char         origin;         // special meaning: see above
     char                *(*fetch)( int elt );
 } ctl_dcombo;
 
 typedef struct {
-    signed              char    origin;         // special meaning: see above
+    signed char         origin;         // special meaning: see above
     char                *(*fetch)( HWND dlg, int elt );
 } ctl_dhcombo;
 
@@ -190,11 +210,19 @@ typedef struct {
     ctl_info            info;
 } ctl_elt;
 
+// The control definition
 typedef struct {
     int                 num_ctls;
     ctl_elt             elts[1];        // 'num_ctls' elts
+                        // The array of control datas is stored in a continuous
+                        // block of memory.
 } clt_def;
 
+
+/////////////////////////////////////////////////////////////////////////////////
+// Definitions of the action table (only needed for the implementation)
+
+// no idea where this is needed (MISSING!!!)
 enum {
     FINISH_DONE = 0,
     FINISH_VALIDATE,
@@ -204,14 +232,15 @@ typedef int finish_type;
 
 typedef struct {
     BOOL                (*setup)( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-    BOOL                (*finish)( ctl_elt *, WPI_INST, HWND, void *,finish_type);
+    BOOL                (*finish)( ctl_elt *, WPI_INST, HWND, void *, finish_type );
     BOOL                (*modified)( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 } ctl_action;
 
-#define _value_bool( ptr, elt ) *((BOOL*)((char *)(ptr) + elt->data_offset))
-#define _value_int( ptr, elt ) *((int*)((char *)(ptr) + elt->data_offset))
-#define _value_float( ptr, elt ) *((float*)((char *)(ptr) + elt->data_offset))
-#define _str_ptr( ptr, elt ) (char *)((char *)(ptr) + elt->data_offset)
-#define _str_ptr_ptr( ptr, elt ) (char **)((char *)(ptr) + elt->data_offset)
+// extract information
+#define _value_bool( ptr, elt )     *((BOOL *)((char *)(ptr) + elt->data_offset))
+#define _value_int( ptr, elt )      *((int *)((char *)(ptr) + elt->data_offset))
+#define _value_float( ptr, elt )    *((float *)((char *)(ptr) + elt->data_offset))
+#define _str_ptr( ptr, elt )        (char *)((char *)(ptr) + elt->data_offset)
+#define _str_ptr_ptr( ptr, elt )    (char **)((char *)(ptr) + elt->data_offset)
 
 #endif

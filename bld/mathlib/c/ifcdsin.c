@@ -33,9 +33,9 @@
 #include "variety.h"
 #include "cplx.h"
 
-_WMRTLINK dcomplex _IF_CDSIN( double rp, double ip ) {
-//===================================================
-
+_WMRTLINK dcomplex _IF_CDSIN( double rp, double ip )
+//==================================================
+{
 // Return the sine of arg.
 // sin(x + iy) = ( exp(ix - y) - exp(-ix + y) ) / ( 2i )
 //             = cis(x) exp(-y) /2i - cis(-x) exp(y) /2i

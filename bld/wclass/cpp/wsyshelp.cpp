@@ -34,9 +34,10 @@
 
 
 WEXPORT WSystemHelp::WSystemHelp( WWindow *win, const char *title,
-                                  const char *hlib )
+                                  const char *hlib, const char *chmfile )
     : _title( title )
     , _library( hlib )
+    , _chmfile( chmfile )
     , _helpWindow( win )
     , _helpInstance( NULL ) {
 /***************************/
@@ -59,7 +60,13 @@ WEXPORT WSystemHelp::~WSystemHelp() {
 bool WEXPORT WSystemHelp::sysHelpContent( void ) {
 /************************************************/
 
-    if( !_helpInstance ) return( FALSE );
+    if( !_helpInstance ) {
+        return( FALSE );
+    }
+    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                         GUI_HELP_CONTENTS, (char *)_chmfile, NULL ) ) {
+        return( TRUE );
+    }
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_CONTENTS, (char *)_library, NULL ) );
 }
@@ -68,7 +75,9 @@ bool WEXPORT WSystemHelp::sysHelpContent( void ) {
 bool WEXPORT WSystemHelp::sysHelpOnHelp( void ) {
 /***********************************************/
 
-    if( !_helpInstance ) return( FALSE );
+    if( !_helpInstance ) {
+        return( FALSE );
+    }
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_ON_HELP, (char *)_library, NULL ) );
 }
@@ -77,7 +86,9 @@ bool WEXPORT WSystemHelp::sysHelpOnHelp( void ) {
 bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic ) {
 /************************************************************/
 
-    if( !_helpInstance ) return( FALSE );
+    if( !_helpInstance ) {
+        return( FALSE );
+    }
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_SEARCH, (char *)_library, (char *)topic ) );
 }
@@ -86,7 +97,13 @@ bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic ) {
 bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic ) {
 /***********************************************************/
 
-    if( !_helpInstance ) return( FALSE );
+    if( !_helpInstance ) {
+        return( FALSE );
+    }
+    if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
+                         GUI_HELP_KEY, (char *)_chmfile, (char *)topic ) ) {
+        return( TRUE );
+    }
     return( GUIShowHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_KEY, (char *)_library, (char *)topic ) );
 }

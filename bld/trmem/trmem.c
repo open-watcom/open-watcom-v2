@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory tracker library.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(__386__) || defined(M_I86)
+#if defined( _M_IX86 )
 #include <i86.h>
 #endif
 
@@ -98,8 +97,9 @@ msg(PRT_LIST_3,         "%C %D %U %L %X" );
 
 #undef msg
 
-#define ALLOC_BYTE      0xA5
-#define FREED_BYTE      0xBD
+#define ALLOC_BYTE      0xCC    /* Filler for memory allocated by user. */
+#define MARKER_BYTE     0xA5    /* End-of-block marker to detect overruns. */
+#define FREED_BYTE      0xBD    /* Filler for freed memory. */
 
 /*
    SIZE_DELTA is the maximum allowed difference between the requested size
@@ -129,8 +129,8 @@ struct _trmem_internal {
     void        (*free)( void * );
     void *      (*realloc)( void *, size_t );
     void *      (*expand)( void *, size_t );
-    void *      prt_parm;
-    void        (*prt_line)( void *, const char *, size_t );
+    int *       prt_parm;
+    void        (*prt_line)( int *, const char *, size_t );
     uint        flags;
     size_t      min_alloc;
 #ifdef __WINDOWS__
@@ -374,8 +374,8 @@ _trmem_hdl _trmem_open(
     void ( *free )( void * ),
     void *( *realloc )( void *, size_t ),
     void *( *expand )( void *, size_t ),
-    void *prt_parm,
-    void ( *prt_line )( void *, const char *, size_t ),
+    int  *prt_parm,
+    void ( *prt_line )( int *, const char *, size_t ),
     unsigned flags )
 /*****************************************************/
 {
@@ -474,7 +474,8 @@ void *_trmem_alloc( size_t size, _trmem_who who, _trmem_hdl hdl )
     }
     mem = hdl->alloc( size + 1 );
     if( mem != NULL ) {
-        MEMSET( mem, ALLOC_BYTE, size + 1 );
+        MEMSET( mem, ALLOC_BYTE, size );
+        *(unsigned char *)_PtrAdd( mem, size ) = MARKER_BYTE;
         tr = allocEntry( hdl );
         if( tr != NULL ) {
             tr->mem = mem;
@@ -514,7 +515,7 @@ static int isValidChunk( entry_ptr tr, const char *rtn,
     }
 #endif
 #endif
-    if( *(char *)_PtrAdd( mem, size ) != ALLOC_BYTE ) {
+    if( *(unsigned char *)_PtrAdd( mem, size ) != MARKER_BYTE ) {
         trPrt( hdl, MSG_OVERRUN_ALLOCATION, rtn, who, mem, tr->who, size );
         return( 0 );
     }
@@ -606,7 +607,8 @@ static void * ChangeAlloc( void *old, size_t size, _trmem_who who,
         }
         new_block = fn( NULL, size + 1 );
         if( new_block != NULL ) {
-            MEMSET( new_block, ALLOC_BYTE, size + 1 );
+            MEMSET( new_block, ALLOC_BYTE, size );
+            *(unsigned char *)_PtrAdd( new_block, size ) = MARKER_BYTE;
             tr = allocEntry( hdl );
             if( tr != NULL ) {
                 tr->mem = new_block;
@@ -638,10 +640,9 @@ static void * ChangeAlloc( void *old, size_t size, _trmem_who who,
     }
     old_size = getSize( tr );
     if( size > old_size ) {
-        MEMSET(_PtrAdd( new_block, old_size ), ALLOC_BYTE, size + 1 - old_size);
-    } else {
-        *(char *)_PtrAdd( new_block, size ) = ALLOC_BYTE;
+        MEMSET(_PtrAdd( new_block, old_size ), ALLOC_BYTE, size - old_size);
     }
+    *(unsigned char *)_PtrAdd( new_block, size ) = MARKER_BYTE;
     hdl->mem_used -= old_size;
     hdl->mem_used += size;
     if( hdl->mem_used > hdl->max_mem ) {
@@ -664,6 +665,19 @@ void *_trmem_expand( void *old, size_t size, _trmem_who who, _trmem_hdl hdl )
 /***************************************************************************/
 {
     return( ChangeAlloc( old, size, who, hdl, hdl->expand, "Expand" ) );
+}
+
+char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
+/********************************************************************/
+{
+    char    *mem;
+    size_t  len;
+
+    len = strlen( str ) + 1;
+    mem = _trmem_alloc( len, who, hdl );
+    if( mem )
+        memcpy( mem, str, len );
+    return( mem );
 }
 
 int _trmem_chk_range( void *start, size_t len,
@@ -716,7 +730,7 @@ unsigned _trmem_prt_list( _trmem_hdl hdl )
     chunks = 0;
     do {
         size = getSize( tr );
-        if( chunks < 5 ) {
+        if( chunks < 20 ) {
             trPrt( hdl
                  , MSG_PRT_LIST_3
                  , tr->who
@@ -747,7 +761,7 @@ unsigned long _trmem_get_peak_usage( _trmem_hdl hdl ) {
     return hdl->max_mem;
 }
 
-#ifdef __AXP__
+#ifndef _M_IX86
 _trmem_who  _trmem_guess_who( void )
 /**********************************/
 /* NYI: stubbed for now */

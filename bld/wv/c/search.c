@@ -112,9 +112,9 @@ int FSearch( unsigned handle, char *str, char *buff_start,
     str_len = strlen( str );
     match_pos = -1;
     offset = 0;
-    for( size = SeekStream( handle, 0L, SEEK_END ) >> 1; size > 0; size >>= 1 ) {
+    for( size = SeekStream( handle, 0L, DIO_SEEK_END ) >> 1; size > 0; size >>= 1 ) {
         FilePos = offset + size;
-        SeekStream( handle, FilePos, SEEK_ORG );
+        SeekStream( handle, FilePos, DIO_SEEK_ORG );
         buff.end = buff.start;
         buff.ptr = buff.end;
         stat = FindTag( handle, &buff, str, str_len, prefix_len );
@@ -128,6 +128,6 @@ int FSearch( unsigned handle, char *str, char *buff_start,
         }
     }
     if( match_pos == -1 ) return( 0 );
-    SeekStream( handle, match_pos, SEEK_ORG );
+    SeekStream( handle, match_pos, DIO_SEEK_ORG );
     return( 1 );
 }

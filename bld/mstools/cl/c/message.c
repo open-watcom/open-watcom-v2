@@ -40,11 +40,11 @@
 
 static char *           usageMsg[] = {
     #if defined(__TARGET_386__)
-        #include "usagemsg.386"
+        #include "usage386.gh"
     #elif defined(__TARGET_AXP__)
-        #include "usagemsg.axp"
+        #include "usageaxp.gh"
     #elif defined(__TARGET_PPC__)
-        #include "usagemsg.ppc"
+        #include "usageppc.gh"
     #else
         #error Unrecognized CPU type
     #endif
@@ -65,12 +65,30 @@ void BannerMessage( void )
         banner1w( "C/C++ CL Clone for " CPU_NAME " ", _CL_CLONE_VERSION_ ) "\n"
         banner2( "1995" ) "\n"
         banner3 "\n"
+        banner3a "\n"
+        "Compatible with CL Version " _MS_CL_VERSION_ "\n"
     };
 
     if( !alreadyPrinted && !quietMode ) {
-        fprintf( stderr, helpMsg );
+        printf( helpMsg );
         alreadyPrinted = 1;
     }
+}
+
+
+/*
+ * Read a key from the console.
+ */
+static int get_key( void )
+/************************/
+{
+    int                 ch;
+
+    ch = getch();
+    if( ch == 0 ) {                     /* handle extended keys */
+        ch = getch();
+    }
+    return( ch );
 }
 
 
@@ -85,7 +103,6 @@ void PrintHelpMessage( void )
     int                 num;
     int                 ch;
 
-    BannerMessage();
     for( count=0,num=0; usageMsg[count]!=NULL; count++,num++ ) {
         if( num == lineCount ) {
             printf( "\t(Press return to continue)" );
@@ -118,20 +135,4 @@ void QuietModeMessage( void )
 /***************************/
 {
     quietMode = 1;
-}
-
-
-/*
- * Read a key from the console.
- */
-static int get_key( void )
-/************************/
-{
-    int                 ch;
-
-    ch = getch();
-    if( ch == 0 ) {                     /* handle extended keys */
-        ch = getch();
-    }
-    return( ch );
 }

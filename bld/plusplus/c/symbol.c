@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "cgfront.h"
 #include "errdefns.h"
 #include "ptree.h"
@@ -92,6 +92,14 @@ TYPE SymClass(                  // GET TYPE FOR CLASS CONTAINING A SYMBOL
     SYMBOL sym )                // - the symbol
 {
     SCOPE scope;                // - SCOPE for "sym"
+    SYMBOL templ_sym;
+
+    sym = SymDefaultBase( SymDeAlias( sym ) );
+
+    templ_sym = SymIsFunctionTemplateInst( sym );
+    if( templ_sym != NULL ) {
+        sym = templ_sym;
+    }
 
     symGetScope( sym, scope );
     if( scope == NULL ) {
@@ -105,12 +113,18 @@ static SCOPE symClassScope(     // GET SCOPE FOR CLASS CONTAINING SYMBOL
     SYMBOL sym )
 {
     SCOPE scope;                // - SCOPE for "sym"
+    SYMBOL templ_sym;
+
+    sym = SymDefaultBase( SymDeAlias( sym ) );
+
+    templ_sym = SymIsFunctionTemplateInst( sym );
+    if( templ_sym != NULL ) {
+        sym = templ_sym;
+    }
 
     symGetScope( sym, scope );
-    if( scope != NULL ) {
-        if( ScopeId( scope ) == SCOPE_CLASS ) {
-            return( scope );
-        }
+    if( scope && ScopeType( scope, SCOPE_CLASS ) ) {
+        return( scope );
     }
     return( NULL );
 }
@@ -171,7 +185,7 @@ boolean SymIsNameSpaceMember(    // TEST IF SYMBOL IS MEMBER OF NAMESPACE
         NAME_SPACE *ns;
 
         ns = scope->owner.ns;
-        if( !ns->global_fs  ){
+        if( !ns->s.global_fs  ){
             ret = TRUE;
         }
     }
@@ -281,7 +295,10 @@ SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
 boolean SymIsStatic(     // DETERMINE IF SYMBOL IS STATIC
     SYMBOL sym )                // - the symbol
 {
-    return SC_STATIC == SymDefaultBase( sym )->id;
+    symbol_class id;
+
+    id = SymDefaultBase( sym )->id;
+    return ( SC_STATIC == id ) || ( SC_STATIC_FUNCTION_TEMPLATE == id );
 }
 
 
@@ -535,7 +552,7 @@ SYMBOL SymFunctionReturn(       // GET SYMBOL FOR RETURN
     SEARCH_RESULT *result;      // - search result
     SCOPE fun_scope;            // - scope for current function
 
-    result = ScopeFindNaked( CurrScope
+    result = ScopeFindNaked( GetCurrScope()
                            , CppSpecialName( SPECIAL_RETURN_VALUE ) );
     if( result == NULL ) {
         retn = NULL;
@@ -726,7 +743,7 @@ boolean SymIsComdatData(        // TEST IF DATA SYMBOL IS COMDAT
     SYMBOL fn_sym;
 
     symGetScope( sym, scope );
-    if( ScopeEnclosedInUnnamedNameSpace( scope ) ) {
+    if( !scope || ScopeEnclosedInUnnamedNameSpace( scope ) ) {
         return( FALSE );
     }
     var_type = TypeModFlags( sym->sym_type, &flag );
@@ -775,12 +792,13 @@ boolean SymIsModuleDtorable(    // TEST IF SYMBOL IS MODULE-DTORABLE
     /*
         three cases:
 
-            (1) file scope variables
+            (1) file scope variables (but not temporaries)
             (2) class static members
             (3) function static variables
     */
     symGetScope( sym, scope );
-    if( ScopeId( scope ) == SCOPE_FILE ) {
+    if( ( sym->name->name[0] != NAME_DUMMY_PREFIX_0 )
+     && ( ScopeId( scope ) == SCOPE_FILE ) ) {
         retn = TRUE;
     } else {
         retn = ( sym->id == SC_STATIC );
@@ -924,7 +942,8 @@ SYMBOL SymIsFunctionTemplateInst(// TEST IF SYMBOL WAS GENERATED FROM A FUNCTION
 
     if( SymIsFnTemplateMatchable( sym ) ) {
         symGetScope( sym, scope );
-        if( ScopeId( scope ) == SCOPE_FILE ) {
+        if( ScopeType( scope, SCOPE_FILE )
+         || ScopeType( scope, SCOPE_TEMPLATE_INST ) ) {
             /* get function template sym */
             sym = sym->u.alias;
             if( sym != NULL ) {
@@ -1177,7 +1196,7 @@ SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     char* name )                // - symbol name
 {
-    return SymCreate( type, id, flags, name, CurrScope );
+    return SymCreate( type, id, flags, name, GetCurrScope() );
 }
 
 
@@ -1187,7 +1206,7 @@ SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     symbol_flag flags,          // - symbol flags
     char* name )                // - symbol name
 {
-    return SymCreate( type, id, flags, name, FileScope );
+    return SymCreate( type, id, flags, name, GetFileScope() );
 }
 
 
@@ -1317,7 +1336,7 @@ SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
     sym->flag |= SF_ALIAS;
     sym->u.alias = aliasee;
     SymbolLocnDefine( locn, sym );
-    check = ScopeInsert( CurrScope, sym, aliasee->name->name );
+    check = ScopeInsert( GetCurrScope(), sym, aliasee->name->name );
     if( check != sym ) {
         check = NULL;
     }
@@ -1334,7 +1353,7 @@ boolean SymIsBrowsable          // TEST IF SYMBOL CAN BE BROWSED
     return ! SymIsTemporary( sym )
         && ! SymIsThunk( sym )
         && ! SymIsVft( sym )
-        && InternalScope != scope
+        && GetInternalScope() != scope
         ;
 }
 #endif
@@ -1368,5 +1387,16 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
     } else {
         Int64From32( sym->sym_type, sym->u.sval, &pval->value );
     }
+    return sym;
+}
+
+SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
+    SYMBOL sym )                    // - the symbol
+{
+    sym = sym;
+    while( SymIsDefArg( sym ) ) {
+        sym = sym->thread;
+    }
+
     return sym;
 }

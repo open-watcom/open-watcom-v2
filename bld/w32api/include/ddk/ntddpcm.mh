@@ -1,0 +1,163 @@
+/*
+ *  ntddpcm.h   PCMCIA device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTDDPCMH_
+#define _NTDDPCMH_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Primitive data types */
+#ifdef _NTDDK_
+typedef ULONG   MEMORY_SPACE;
+#endif
+
+/* PCMCIA device name */
+#define DD_PCMCIA_DEVICE_NAME   "\\\\.\\Pcmcia"
+
+/* PCMCIA device I/O control codes */
+#define IOCTL_PCMCIA_BASE   FILE_DEVICE_CONTROLLER
+#define IOCTL_GET_TUPLE_DATA \
+    CTL_CODE( IOCTL_PCMCIA_BASE, 3000, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_SOCKET_INFORMATION \
+    CTL_CODE( IOCTL_PCMCIA_BASE, 3004, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_PCMCIA_HIDE_DEVICE \
+    CTL_CODE( IOCTL_PCMCIA_BASE, 3010, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+#define IOCTL_PCMCIA_REVEAL_DEVICE \
+    CTL_CODE( IOCTL_PCMCIA_BASE, 3011, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+
+/* Name lengths */
+#define MANUFACTURER_NAME_LENGTH    64
+#define DEVICE_IDENTIFIER_LENGTH    64
+#define DRIVER_NAME_LENGTH          32
+
+/* PCMCIA controller type special value */
+#define PcmciaInvalidControllerType 0xFFFFFFFFL
+
+/* PCMCIA memory access types */
+#ifdef _NTDDK_
+    #define PCMCIA_MEMORY_8BIT_ACCESS   0
+    #define PCMCIA_MEMORY_16BIT_ACCESS  1
+#endif
+
+/* PCMCIA VPP levels */
+#ifdef _NTDDK_
+    #define PCMCIA_VPP_0V       0
+    #define PCMCIA_VPP_12V      1
+    #define PCMCIA_VPP_IS_VCC   2
+#endif
+
+/* PCMCIA memory spaces */
+#ifdef _NTDDK_
+    #define PCCARD_PCI_CONFIGURATION_SPACE      0L
+    #define PCCARD_ATTRIBUTE_MEMORY             1L
+    #define PCCARD_COMMON_MEMORY                2L
+    #define PCCARD_ATTRIBUTE_MEMORY_INDIRECT    3L
+    #define PCCARD_COMMON_MEMORY_INDIRECT       4L
+    #define PCMCIA_CONFIG_SPACE                 PCCARD_ATTRIBUTE_MEMORY
+#endif
+
+/* PCMCIA socket request */
+typedef struct _PCMCIA_SOCKET_REQUEST {
+    USHORT  Socket;
+} PCMCIA_SOCKET_REQUEST;
+typedef PCMCIA_SOCKET_REQUEST   *PPCMCIA_SOCKET_REQUEST;
+
+/* Tuple request */
+typedef struct _TUPLE_REQUEST {
+    USHORT  Socket;
+} TUPLE_REQUEST;
+typedef TUPLE_REQUEST   *PTUPLE_REQUEST;
+
+/* PCMCIA controller classes */
+typedef enum _PCMCIA_CONTROLLER_CLASS {
+    PcmciaInvalidControllerClass    = -1,
+    PcmciaIntelCompatible           = 0,
+    PcmciaCardBusCompatible         = 1,
+    PcmciaElcController             = 2,
+    PcmciaDatabook                  = 3,
+    PcmciaPciPcmciaBridge           = 4,
+    PcmciaCirrusLogic               = 5,
+    PcmciaTI                        = 6,
+    PcmciaTopic                     = 7,
+    PcmciaRicoh                     = 8,
+    PcmciaDatabookCB                = 9,
+    PcmciaOpti                      = 10,
+    PcmciaTrid                      = 11,
+    PcmciaO2Micro                   = 12,
+    PcmciaNEC                       = 13,
+    PcmciaNEC_98                    = 14
+} PCMCIA_CONTROLLER_CLASS;
+typedef PCMCIA_CONTROLLER_CLASS *PPCMCIA_CONTROLLER_CLASS;
+
+/* PCMCIA socket information */
+typedef struct _PCMCIA_SOCKET_INFORMATION {
+    USHORT  Socket;
+    USHORT  TupleCrc;
+    UCHAR   Manufacturer[MANUFACTURER_NAME_LENGTH];
+    UCHAR   Identifier[DEVICE_IDENTIFIER_LENGTH];
+    UCHAR   DriverName[DRIVER_NAME_LENGTH];
+    UCHAR   DeviceFunctionId;
+    UCHAR   Reserved;
+    UCHAR   CardInSocket;
+    UCHAR   CardEnabled;
+    ULONG   ControllerType;
+} PCMCIA_SOCKET_INFORMATION;
+typedef PCMCIA_SOCKET_INFORMATION   *PPCMCIA_SOCKET_INFORMATION;
+
+/* PCMCIA callbacks */
+#ifdef _NTDDK_
+typedef BOOLEAN (NTAPI PCMCIA_MODIFY_MEMORY_WINDOW)( PVOID, ULONGLONG, ULONGLONG, BOOLEAN, ULONG, UCHAR, UCHAR, BOOLEAN );
+typedef BOOLEAN (NTAPI PCMCIA_SET_VPP)( PVOID, UCHAR );
+typedef BOOLEAN (NTAPI PCMCIA_IS_WRITE_PROTECTED)( PVOID );
+typedef ULONG (NTAPI PCMCIA_READ_CONFIG)( PVOID, ULONG, PUCHAR, ULONG, ULONG );
+typedef ULONG (NTAPI PCMCIA_WRITE_CONFIG)( PVOID, ULONG, PUCHAR, ULONG, ULONG );
+typedef PCMCIA_MODIFY_MEMORY_WINDOW *PPCMCIA_MODIFY_MEMORY_WINDOW;
+typedef PCMCIA_SET_VPP              *PPCMCIA_SET_VPP;
+typedef PCMCIA_IS_WRITE_PROTECTED   *PPCMCIA_IS_WRITE_PROTECTED;
+typedef PCMCIA_READ_CONFIG          *PPCMCIA_READ_CONFIG;
+typedef PCMCIA_WRITE_CONFIG         *PPCMCIA_WRITE_CONFIG;
+#endif
+
+/* PCMCIA interface standard */
+#ifdef _NTDDK_
+typedef struct _PCMCIA_INTERFACE_STANDARD {
+    USHORT                          Size;
+    USHORT                          Version;
+    PINTERFACE_REFERENCE            InterfaceReference;
+    PINTERFACE_DEREFERENCE          InterfaceDereference;
+    PVOID                           Context;
+    PPCMCIA_MODIFY_MEMORY_WINDOW    ModifyMemoryWindow;
+    PPCMCIA_SET_VPP                 SetVpp;
+    PPCMCIA_IS_WRITE_PROTECTED      IsWriteProtected;
+} PCMCIA_INTERFACE_STANDARD;
+typedef PCMCIA_INTERFACE_STANDARD   *PPCMCIA_INTERFACE_STANDARD;
+#endif
+
+/* PCMCIA bus interface standard */
+#ifdef _NTDDK_
+typedef struct _PCMCIA_BUS_INTERFACE_STANDARD {
+    USHORT                  Size;
+    USHORT                  Version;
+    PVOID                   Context;
+    PINTERFACE_REFERENCE    InterfaceReference;
+    PINTERFACE_DEREFERENCE  InterfaceDereference;
+    PPCMCIA_READ_CONFIG     ReadConfig;
+    PPCMCIA_WRITE_CONFIG    WriteConfig;
+} PCMCIA_BUS_INTERFACE_STANDARD;
+typedef PCMCIA_BUS_INTERFACE_STANDARD   *PPCMCIA_BUS_INTERFACE_STANDARD;
+#endif
+
+/* Functions implemented as macros */
+#define PcmciaClassFromControllerType( x ) \
+    ((PCMCIA_CONTROLLER_CLASS)((x) & 0x000000FFL))
+#define PcmciaModelFromControllerType( x )      (((x) >> 8) & 0x0003FFFFL)
+#define PcmciaRevisionFromControllerType( x )   ((x) >> 26)
+
+:include cplusepi.sp
+
+#endif /* _NTDDPCMH_ */

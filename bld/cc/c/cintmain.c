@@ -24,46 +24,54 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler mainline (monolithic version).
 *
 ****************************************************************************/
 
 
+#include "cvars.h"
 #include <unistd.h>
 #include <limits.h>
-#include <process.h>
-#include "cvars.h"
-#if _OS == _DOS || _OS == _OS2 || _OS == _NT
-    #include <process.h>
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+  #include <process.h>
 #endif
+#include "errout.h"
+#ifdef __OSI__
+  #include "ostype.h"
+#endif
+#include "cgdefs.h"
+#include "feprotos.h"
 
-void ResetHandlers()
+void ResetHandlers( void )
 {
     CloseFiles();                       /* 09-may-89 */
 }
 
-#if _OS == _DOS || _OS == _OS2 || _OS == _NT
-int main()
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+int main( void )
     {
         char       *argv[2];
+        int        ret;
         char       *buffer;
         int        len;
-        int        ret;
 #else
 int main( int argc, char **argv )
     {
         int        ret;
         argc = argc; /* shut the compiler up */
+#if !defined( __WATCOMC__ )
+        _argv = argv;
+        _argc = argc;
+#endif
 #endif
         FrontEndInit( FALSE );
         atexit( ResetHandlers );
-#if _OS == _CMS
+#if defined( __CMS__ )
         /* skip command name at the start */
         argv[0] = strchr( argv[0], ' ' );
         ret = FrontEnd( &argv[0] );
-#elif _OS == _DOS || _OS == _OS2  || _OS == _NT
-  #if  __OS != OS_NT
+#elif defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+  #ifdef __DOS__
         fclose( stdaux );                   /* 15-dec-92 */
         fclose( stdprn );
   #endif
@@ -80,7 +88,7 @@ int main( int argc, char **argv )
         }
 #else
     #ifdef __OSI__
-        if( __OS != OS_NT ) {
+        if( __OS == OS_DOS ) {
             fclose( stdaux );                       /* 15-dec-92 */
             fclose( stdprn );
         }
@@ -100,6 +108,13 @@ extern void ConsErrMsg( cmsg_info  *info ){
     FmtCMsg( pre, info );
     fputs( pre, errout );
     fputs( info->msgtxt, errout );
+    fputc( '\n', errout );
+    fflush( errout );
+}
+
+extern void ConsErrMsgVerbatim( char const  *line ){
+// C compiler call back to do a print to stderr
+    fputs( line, errout );
     fputc( '\n', errout );
     fflush( errout );
 }
@@ -154,14 +169,14 @@ extern char *FEGetEnv( char const *name ){
 extern void FESetCurInc( void ){
 }
 
-extern void MyExit( rc )
+extern void MyExit( int rc )
 {
         exit( rc );
 } /* myexit */
 
 #if 0
 
-void FECompile()
+void FECompile( void )
 {
     DoCompile();
 }

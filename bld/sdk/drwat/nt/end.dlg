@@ -5,16 +5,16 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LISTBOX         END_LIST, 12, 30, 131, 54, LBS_SORT | WS_VSCROLL |
                     WS_TABSTOP
-    CTEXT           "Dr WATCOM is still ", END_TEXT1, 11, 6, 132, 8
+    CTEXT           "Dr. Open Watcom is still ", END_TEXT1, 11, 6, 132, 8
     CTEXT           "attatched to the following processes:", -1, 11, 14, 132,
                     8
-    CTEXT           "If Dr WATCOM is terminated all these", END_TEXT2, 11,
+    CTEXT           "If Dr. Open Watcom is terminated all these", END_TEXT2, 11,
                     87, 132, 8
     CTEXT           "processes will also be terminated and", -1, 11, 96, 132,
                     8
     CTEXT           "any unsaved data will be lost.", -1, 11, 105, 132, 8
     CTEXT           "Are you sure you want ", -1, 11, 114, 132, 8
-    CTEXT           "terminate Dr WATCOM?", END_TEXT3, 11, 123, 132, 8
+    CTEXT           "terminate Dr. Open Watcom ?", END_TEXT3, 11, 123, 132, 8
     PUSHBUTTON      "YES", END_YES, 30, 144, 40, 14
     DEFPUSHBUTTON   "NO", END_NO, 86, 144, 40, 14
 END

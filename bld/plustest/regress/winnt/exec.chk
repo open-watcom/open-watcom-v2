@@ -1,0 +1,17 @@
+tomexe: >start
+In __dll_initialize
+In Constructor
+This is the first string
+In Constructor
+This is the second string
+no errors
+tomexe: LoadLibrary
+no errors
+tomexe: GetProcAddress
+hi from entry
+tomexe: <done
+In destructor
+This is the second string
+In destructor
+This is the first string
+In __dll_terminate

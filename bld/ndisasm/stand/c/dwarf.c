@@ -49,38 +49,9 @@ extern hash_table               HandleToRefListTable;
 
 extern orl_sec_handle           debugHnd;
 
-extern orl_table_index GetDwarfLines( section_ptr sec )
-{
-    uint                size;
-    uint                limit;
-    char *              contents;
-    char *              relocContents;
-    orl_table_index     numlines;
+static int ConvertLines( const uint_8 * input, uint length, uint limit );
 
-    if( lines ) {
-        MemFree( lines );
-        lines = NULL;
-    }
-    currlinesize = 0;
-    if( debugHnd ) {
-        ORLSecGetContents( debugHnd, &contents );
-        size = ORLSecGetSize( debugHnd );
-        limit = ORLSecGetSize( sec->shnd );
-        relocContents = MemAlloc( size );
-        memcpy( relocContents, contents, size );
-
-        fixupLines( relocContents, debugHnd );
-
-        numlines = ConvertLines( relocContents, size, limit );
-
-        MemFree( relocContents );
-        return numlines;
-    } else {
-        return 0;
-    }
-}
-
-static void fixupLines( char *relocContents, orl_sec_handle sec )
+static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
 {
     hash_data *                 data_ptr;
     ref_list                    sec_ref_list;
@@ -106,11 +77,47 @@ static void fixupLines( char *relocContents, orl_sec_handle sec )
                     for( i=0; i<3; i++ ) {
                         relocContents[i+r_entry->offset] = 0;
                     }
+// Whatever this was supposed to do, it's killing the -s option for object files
+#if 0
                     relocContents[3+r_entry->offset] = 0x80;
+#else
+                    relocContents[3+r_entry->offset] = 0;
+#endif
                 }
                 break;
         }
         r_entry = r_entry->next;
+    }
+}
+
+extern orl_table_index GetDwarfLines( section_ptr sec )
+{
+    uint                size;
+    uint                limit;
+    unsigned_8          *contents;
+    unsigned_8          *relocContents;
+    orl_table_index     numlines;
+
+    if( lines ) {
+        MemFree( lines );
+        lines = NULL;
+    }
+    currlinesize = 0;
+    if( debugHnd ) {
+        ORLSecGetContents( debugHnd, &contents );
+        size = ORLSecGetSize( debugHnd );
+        limit = ORLSecGetSize( sec->shnd );
+        relocContents = MemAlloc( size );
+        memcpy( relocContents, contents, size );
+
+        fixupLines( relocContents, debugHnd );
+
+        numlines = ConvertLines( relocContents, size, limit );
+
+        MemFree( relocContents );
+        return numlines;
+    } else {
+        return 0;
     }
 }
 
@@ -201,7 +208,7 @@ static void dump_state( state_info *state, int *numlines, uint limit )
     }
 }
 
-static int ConvertLines( const char * input, uint length, uint limit )
+static int ConvertLines( const uint_8 * input, uint length, uint limit )
 /********************************************************/
 {
     const uint_8 *              p;
@@ -210,7 +217,7 @@ static int ConvertLines( const char * input, uint length, uint limit )
     uint *                      opcode_lengths;
     uint                        u;
     uint                        file_index;
-    const uint_8 *              name;
+    const char *                name;
     uint_32                     mod_time;
     uint_32                     file_length;
     uint_32                     directory;
@@ -266,21 +273,21 @@ static int ConvertLines( const char * input, uint length, uint limit )
         file_index = 0;
         while( *p != 0 ) {
             ++file_index;
-            name = p;
-            p += strlen( p ) + 1;
+            name = (char *)p;
+            p += strlen( (char *)p ) + 1;
             if( p - input >= length ) return 0;
         }
         p++;
         file_index = 0;
         while( *p != 0 ) {
             ++file_index;
-            name = p;
-            p += strlen( p ) + 1;
+            name = (char *)p;
+            p += strlen( (char *)p ) + 1;
             p = DecodeULEB128( p, &directory );
             p = DecodeULEB128( p, &mod_time );
             p = DecodeULEB128( p, &file_length );
             if( !SourceFileInDwarf ) {
-                SourceFileInDwarf = MemAlloc( strlen( (char *)name ) + 1 );
+                SourceFileInDwarf = MemAlloc( strlen( name ) + 1 );
                 strcpy( SourceFileInDwarf, name );
             }
             if( p - input >= length ) return 0;
@@ -327,15 +334,15 @@ static int ConvertLines( const char * input, uint length, uint limit )
                     break;
                 case DW_LNE_define_file:
                     ++file_index;
-                    name = p;
-                    p += strlen( p ) + 1;
+                    name = (char *)p;
+                    p += strlen( (char *)p ) + 1;
                     p = DecodeULEB128( p, &directory );
                     p = DecodeULEB128( p, &mod_time );
                     p = DecodeULEB128( p, &file_length );
                     if( SourceFileInDwarf ) {
                         MemFree( SourceFileInDwarf );
                     }
-                    SourceFileInDwarf = MemAlloc( strlen( (char *)name) + 1 );
+                    SourceFileInDwarf = MemAlloc( strlen( name) + 1 );
                     strcpy( SourceFileInDwarf, name );
                     break;
                 default:

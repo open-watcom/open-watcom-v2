@@ -41,19 +41,13 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
-#ifdef UNIX
-    #include "clibext.h"
-#endif
-
-#ifdef __WINDOWS__
-#define WINAPI _far _pascal
-#endif
 
 #include "wressetr.h"
+#include "wresset2.h"
 
 #define NIL_HANDLE      ((int)-1)
 
-#if defined( __QNX__ ) || defined( UNIX )
+#if defined( __QNX__ ) || defined( __UNIX__ )
     #define _newline "\n"
 #else
     #define _newline "\r\n"
@@ -73,7 +67,7 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  bool            GUIMsgInitFlag = FALSE;
 extern  long            FileShift;
 
-static long GUIResSeek( int handle, long position, int where )
+static off_t GUIResSeek( int handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -84,15 +78,15 @@ static long GUIResSeek( int handle, long position, int where )
     }
 }
 
-#if !defined( UNIX )
+#ifdef __WATCOMC__
 WResSetRtns( open,
              close,
              read,
              write,
              GUIResSeek,
              tell,
-             GUIAlloc,
-             GUIFree );
+             GUIMemAlloc,
+             GUIMemFree );
 #else
 WResSetRtns( open,
              close,
@@ -100,8 +94,8 @@ WResSetRtns( open,
              ( int (*) (WResFileID, const void *, int) )write,
              GUIResSeek,
              tell,
-             ( void* (*)(unsigned long) )GUIAlloc,
-             GUIFree );
+             ( void* (*)(unsigned long) )GUIMemAlloc,
+             GUIMemFree );
 #endif
 
 bool GUIIsLoadStrInitialized( void )

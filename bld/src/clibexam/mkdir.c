@@ -1,5 +1,5 @@
 
-#include <sys\types.h>
+#include <sys/types.h>
 #include <direct.h>
 
 void main()

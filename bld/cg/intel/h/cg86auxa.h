@@ -30,31 +30,32 @@
 ****************************************************************************/
 
 
-#define CALLER_POPS                    ( 0x00000001L << _TARG_AUX_SHIFT )
-#define DLL_EXPORT                     ( 0x00000002L << _TARG_AUX_SHIFT )
-#define SPECIAL_RETURN                 ( 0x00000004L << _TARG_AUX_SHIFT )
-#define SPECIAL_STRUCT_RETURN          ( 0x00000008L << _TARG_AUX_SHIFT )
-#define FAR                            ( 0x00000010L << _TARG_AUX_SHIFT )
-#define INTERRUPT                      ( 0x00000020L << _TARG_AUX_SHIFT )
-#define LOAD_DS_ON_CALL                ( 0x00000040L << _TARG_AUX_SHIFT )
-#define LOAD_DS_ON_ENTRY               ( 0x00000080L << _TARG_AUX_SHIFT )
-#define MODIFY_EXACT                   ( 0x00000100L << _TARG_AUX_SHIFT )
-#define NO_8087_RETURNS                ( 0x00000200L << _TARG_AUX_SHIFT )
-#define NO_FLOAT_REG_RETURNS           ( 0x00000400L << _TARG_AUX_SHIFT )
-#define NO_MEMORY_CHANGED              ( 0x00000800L << _TARG_AUX_SHIFT )
-#define NO_MEMORY_READ                 ( 0x00001000L << _TARG_AUX_SHIFT )
-#define NO_STRUCT_REG_RETURNS          ( 0x00002000L << _TARG_AUX_SHIFT )
-#define ROUTINE_RETURN                 ( 0x00004000L << _TARG_AUX_SHIFT )
-#define FAT_WINDOWS_PROLOG             ( 0x00008000L << _TARG_AUX_SHIFT )
-#define GENERATE_STACK_FRAME           ( 0x00010000L << _TARG_AUX_SHIFT )
-#define EMIT_FUNCTION_NAME             ( 0x00020000L << _TARG_AUX_SHIFT )
-#define GROW_STACK                     ( 0x00040000L << _TARG_AUX_SHIFT )
-#define PROLOG_HOOKS                   ( 0x00080000L << _TARG_AUX_SHIFT )
-#define THUNK_PROLOG                   ( 0x00100000L << _TARG_AUX_SHIFT )
-#define EPILOG_HOOKS                   ( 0x00200000L << _TARG_AUX_SHIFT )
-#define FAR16_CALL                     ( 0x00400000L << _TARG_AUX_SHIFT )
-#define TOUCH_STACK                    ( 0x00800000L << _TARG_AUX_SHIFT )
-#define LAST_TARG_AUX_ATTRIBUTE        ( 0x00800000L << _TARG_AUX_SHIFT )
+#define CALLER_POPS                    ( 0x00000001LL << _TARG_AUX_SHIFT )
+#define DLL_EXPORT                     ( 0x00000002LL << _TARG_AUX_SHIFT )
+#define SPECIAL_RETURN                 ( 0x00000004LL << _TARG_AUX_SHIFT )
+#define SPECIAL_STRUCT_RETURN          ( 0x00000008LL << _TARG_AUX_SHIFT )
+#define FAR                            ( 0x00000010LL << _TARG_AUX_SHIFT )
+#define INTERRUPT                      ( 0x00000020LL << _TARG_AUX_SHIFT )
+#define LOAD_DS_ON_CALL                ( 0x00000040LL << _TARG_AUX_SHIFT )
+#define LOAD_DS_ON_ENTRY               ( 0x00000080LL << _TARG_AUX_SHIFT )
+#define MODIFY_EXACT                   ( 0x00000100LL << _TARG_AUX_SHIFT )
+#define NO_8087_RETURNS                ( 0x00000200LL << _TARG_AUX_SHIFT )
+#define NO_FLOAT_REG_RETURNS           ( 0x00000400LL << _TARG_AUX_SHIFT )
+#define NO_MEMORY_CHANGED              ( 0x00000800LL << _TARG_AUX_SHIFT )
+#define NO_MEMORY_READ                 ( 0x00001000LL << _TARG_AUX_SHIFT )
+#define NO_STRUCT_REG_RETURNS          ( 0x00002000LL << _TARG_AUX_SHIFT )
+#define ROUTINE_RETURN                 ( 0x00004000LL << _TARG_AUX_SHIFT )
+#define FAT_WINDOWS_PROLOG             ( 0x00008000LL << _TARG_AUX_SHIFT )
+#define GENERATE_STACK_FRAME           ( 0x00010000LL << _TARG_AUX_SHIFT )
+#define EMIT_FUNCTION_NAME             ( 0x00020000LL << _TARG_AUX_SHIFT )
+#define GROW_STACK                     ( 0x00040000LL << _TARG_AUX_SHIFT )
+#define PROLOG_HOOKS                   ( 0x00080000LL << _TARG_AUX_SHIFT )
+#define THUNK_PROLOG                   ( 0x00100000LL << _TARG_AUX_SHIFT )
+#define EPILOG_HOOKS                   ( 0x00200000LL << _TARG_AUX_SHIFT )
+#define FAR16_CALL                     ( 0x00400000LL << _TARG_AUX_SHIFT )
+#define TOUCH_STACK                    ( 0x00800000LL << _TARG_AUX_SHIFT )
+#define LOAD_RDOSDEV_ON_ENTRY          ( 0x01000000LL << _TARG_AUX_SHIFT )
+#define LAST_TARG_AUX_ATTRIBUTE        ( 0x01000000LL << _TARG_AUX_SHIFT )
 
 #if LAST_TARG_AUX_ATTRIBUTE == 0
     #error Overflowed a long
@@ -65,6 +66,12 @@
 
 #define DO_SYM_FIXUPS           DO_FLOATING_FIXUPS      /* must be the same */
 #define SYM_FIXUP_BYTE          FLOATING_FIXUP_BYTE     /* must be the same */
-#define FIX_SYM_OFFSET          0x00    /* followed by a long */
-#define FIX_SYM_SEGMENT         0x01    /* .. */
-#define FIX_SYM_RELOFF          0x02    /* .. */
+
+typedef enum {
+#define pick_fp(enum,name,alt_name) FIX_ ## enum,
+#include "fppatche.h"
+#undef pick_fp
+    FIX_SYM_OFFSET,     /* followed by a long */
+    FIX_SYM_SEGMENT,    /* .. */
+    FIX_SYM_RELOFF      /* .. */
+} cg_fixups;

@@ -1,0 +1,20 @@
+proj_name = hcdos
+hcdos_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h" -I"$(help_dir)/h" -I"$(ui_dir)/h"
+
+.c: ../c;$(help_dir)/c
+
+objs =                  &
+        sorthelp.obj    &
+        index.obj       &
+	helpscan.obj    &
+	helpmem.obj
+
+# Note: dmp.c can be built into a separate utility.
+
+!include exetarg.mif

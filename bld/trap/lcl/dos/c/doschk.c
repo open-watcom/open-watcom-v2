@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Check DOS memory blocks for consistency.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include "tinyio.h"
 #include "trpimp.h"
 
-typedef struct {
+typedef _Packed struct {
     char        chain;  /* 'M' memory block, 'Z' is last in chain */
     unsigned_16 owner;  /* 0x0000 ==> free, otherwise psp address */
     unsigned_16 size;   /* in paragraphs, not including header  */
@@ -49,7 +48,7 @@ typedef struct {
 
 static      char *ChkFile;
 
-static void Cleanup()
+static void Cleanup( void )
 {
     TinyDelete( ChkFile );
 }
@@ -61,7 +60,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
     dos_mem_block   *end;
     dos_mem_block   *next;
     dos_mem_block   *chk;
-    tiny_ret_t      ret;
+    tiny_ret_t      rc;
     tiny_handle_t   hdl;
     unsigned        size;
     unsigned        bytes;
@@ -91,8 +90,9 @@ bool CheckPointMem( unsigned max, char *f_buff )
     *f_buff++ = TinyGetCurrDrive() + 'A';
     *f_buff++ = ':';
     *f_buff++ = '\\';
-    ret = TinyFarGetCWDir( (char far *)f_buff, 0 );
-    if( ret < 0 ) return( FALSE );
+    rc = TinyFarGetCWDir( (char far *)f_buff, 0 );
+    if( TINY_ERROR( rc ) )
+        return( FALSE );
     while( *f_buff != 0 ) ++f_buff;
     if( f_buff[-1] == '\\' ) {
         --f_buff;
@@ -100,9 +100,10 @@ bool CheckPointMem( unsigned max, char *f_buff )
         *f_buff++ = '\\';
     }
     for( p = CHECK_FILE; *f_buff = *p; ++p, ++f_buff ) {}
-    ret = TinyCreate( ChkFile, TIO_NORMAL );
-    if( ret < 0 ) return( FALSE );
-    hdl = ret;
+    rc = TinyCreate( ChkFile, TIO_NORMAL );
+    if( TINY_ERROR( rc ) )
+        return( FALSE );
+    hdl = TINY_INFO( rc );
     if( size > max ) size = max;
     chk = MK_FP( FP_SEG( end ) - size - 1, 0 );
     mem = start;
@@ -122,7 +123,7 @@ bool CheckPointMem( unsigned max, char *f_buff )
         size = FP_SEG( end ) - FP_SEG( next );
         if( size >= 0x1000 ) size = 0x0800;
         bytes = size << 4;
-        if( TinyWrite( hdl, next, bytes) != bytes) {
+        if( TinyWrite( hdl, next, bytes ) != bytes ) {
             TinyClose( hdl );
             Cleanup();
             return( FALSE );
@@ -138,15 +139,16 @@ bool CheckPointMem( unsigned max, char *f_buff )
     return( TRUE );
 }
 
-void CheckPointRestore()
+void CheckPointRestore( void )
 {
     dos_mem_block   *chk;
-    tiny_ret_t      ret;
+    tiny_ret_t      rc;
     tiny_handle_t   hdl;
 
-    ret = TinyOpen( ChkFile, TIO_READ );
-    if( ret < 0 ) return;
-    hdl = ret;
+    rc = TinyOpen( ChkFile, TIO_READ );
+    if( TINY_ERROR( rc ) )
+        return;
+    hdl = TINY_INFO( rc );
 
     TinyRead( hdl, &chk, sizeof( chk ) );
     TinyRead( hdl, chk, sizeof( *chk ) );

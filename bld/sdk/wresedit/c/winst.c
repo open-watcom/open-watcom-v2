@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -53,13 +53,12 @@
 /****************************************************************************/
 static HINSTANCE       WEditInst        = NULL;
 
-HINSTANCE WGetEditInstance ( void )
+HINSTANCE WGetEditInstance( void )
 {
-    return ( WEditInst );
+    return( WEditInst );
 }
 
-void WSetEditInstance ( HINSTANCE inst )
+void WSetEditInstance( HINSTANCE inst )
 {
     WEditInst = inst;
 }
-

@@ -1,4 +1,0 @@
-//#line "..\c\wpstart.c" 129
-extern void WPInit(void);
-//#line "..\c\wpstart.c" 163
-extern void WPFini(void);

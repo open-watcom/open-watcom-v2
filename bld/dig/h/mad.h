@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD (Machine Architecture Description) interface.
 *
 ****************************************************************************/
 
 
-#ifndef MAD_H
-#define MAD_H
-#include "digpck.h"
+#ifndef MAD_H_INCLUDED
+#define MAD_H_INCLUDED
+
 #include "madtypes.h"
 
 /*
@@ -176,6 +175,4 @@ void            MADTraceFini( mad_trace_data * );
 
 mad_status      MADUnexpectedBreak( mad_registers *, unsigned *max, char *buff );
 
-
-#include "digunpck.h"
 #endif

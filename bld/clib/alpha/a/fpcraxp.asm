@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Get/set Alpha FP control register.
 ;*
 ;*****************************************************************************
 
@@ -41,7 +40,7 @@ _GetFPCR:
     mf_fpcr $f0                 // Load the FPCR contents into F0
     excb                        // Wait until we've completed
     stt     $f0, ($sp)          // Write them out to the stack
-    ldl     $v0, 0x04($sp)          // Load the high dword into V0 (all we need)
+    ldl     $v0, 0x04($sp)      // Load the high dword into V0 (all we need)
     lda     $sp, 0x10($sp)      // Restore the stack
     ret                         // Return
 

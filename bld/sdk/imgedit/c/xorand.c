@@ -30,15 +30,16 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "imgedit.h"
 
 static img_node         *activeImage = NULL;
 
 /*
- * MakeBitmap - Makes the bitmap
+ * MakeBitmap - make the bitmap
  */
 void MakeBitmap( img_node *node, BOOL isnew )
 {
@@ -47,17 +48,17 @@ void MakeBitmap( img_node *node, BOOL isnew )
     WPI_PRES            mempres;
     HBITMAP             oldbitmap;
 
-    if (isnew) {
+    if( isnew ) {
         InitXorAndBitmaps( node );
     } else {
         /*
          * The AND bitmap won't really get used, but it should be around
-         * since some functions are generic (ie for all image types) and
+         * since some functions are generic (i.e. for all image types) and
          * hence assume an AND bitmap exists.
          */
         pres = _wpi_getpres( HWND_DESKTOP );
         mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
-        node->handbitmap = _wpi_createbitmap(node->width, node->height, 1, 1, NULL );
+        node->handbitmap = _wpi_createbitmap( node->width, node->height, 1, 1, NULL );
         _wpi_releasepres( HWND_DESKTOP, pres );
 
         _wpi_torgbmode( mempres );
@@ -69,14 +70,15 @@ void MakeBitmap( img_node *node, BOOL isnew )
     }
 
     DisplayImageText( node );
+
 } /* MakeBitmap */
 
 /*
- * MakeIcon - Creates the AND and XOR bitmaps and draws the icon (or cursor).
+ * MakeIcon - create the AND and XOR bitmaps and draw the icon (or cursor)
  */
 void MakeIcon( img_node *node, BOOL isnew )
 {
-    if (!isnew) {
+    if( !isnew ) {
         activeImage = node;
     } else {
         InitXorAndBitmaps( node );
@@ -86,10 +88,10 @@ void MakeIcon( img_node *node, BOOL isnew )
 } /* MakeIcon */
 
 /*
- * LineXorAnd - Draws the line on the Xor and the AND bitmaps.
+ * LineXorAnd - draw the line on the XOR and the AND bitmaps
  */
-void LineXorAnd( COLORREF xorcolour, COLORREF andcolour, WPI_POINT *startpt,
-                                                        WPI_POINT *endpt )
+void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
+                 WPI_POINT *startpt, WPI_POINT *endpt )
 {
     HPEN        oldpen;
     HPEN        hpen;
@@ -105,13 +107,13 @@ void LineXorAnd( COLORREF xorcolour, COLORREF andcolour, WPI_POINT *startpt,
     _wpi_releasepres( HWND_DESKTOP, pres );
 
     _wpi_torgbmode( mempres );
-    hpen = _wpi_createpen( PS_SOLID, 0, xorcolour );
+    hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
     oldpen = _wpi_selectobject( mempres, hpen );
     oldbitmap = _wpi_selectobject( mempres, activeImage->hxorbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
-    _wpi_setpixel( mempres, endpt->x, endpt->y, xorcolour );
+    _wpi_setpixel( mempres, endpt->x, endpt->y, xorcolor );
 
     _wpi_selectobject( mempres, oldpen );
     _wpi_deleteobject( hpen );
@@ -122,26 +124,27 @@ void LineXorAnd( COLORREF xorcolour, COLORREF andcolour, WPI_POINT *startpt,
         return;
     }
 
-    hpen = _wpi_createpen( PS_SOLID, 0, andcolour );
+    hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
     oldpen = _wpi_selectobject( mempres, hpen );
     oldbitmap = _wpi_selectobject( mempres, activeImage->handbitmap );
 
     _wpi_movetoex( mempres, startpt, NULL );
     _wpi_lineto( mempres, endpt );
-    _wpi_setpixel( mempres, endpt->x, endpt->y, andcolour );
+    _wpi_setpixel( mempres, endpt->x, endpt->y, andcolor );
 
     _wpi_selectobject( mempres, oldpen );
     _wpi_deleteobject( hpen );
     _wpi_selectobject( mempres, oldbitmap );
     _wpi_deletecompatiblepres( mempres, anddc );
+
 } /* LineXorAnd */
 
 /*
- * RegionXorAnd - Draws a filled or framed region (ellipse or rectangle) in
- *               the View window.
+ * RegionXorAnd - draw a filled or framed region (ellipse or rectangle) in
+ *                the view window
  */
-void RegionXorAnd( COLORREF xorcolour, COLORREF andcolour, BOOL fFillRgn,
-                                                WPI_RECT *r, BOOL is_rect )
+void RegionXorAnd( COLORREF xorcolor, COLORREF andcolor,
+                   BOOL fFillRgn, WPI_RECT *r, BOOL is_rect )
 {
     HBRUSH      oldbrush;
     HBRUSH      hbrush;
@@ -162,19 +165,19 @@ void RegionXorAnd( COLORREF xorcolour, COLORREF andcolour, BOOL fFillRgn,
 
     _wpi_torgbmode( mempres );
 
-    hpen = _wpi_createpen( PS_SOLID, 0, xorcolour );
+    hpen = _wpi_createpen( PS_SOLID, 0, xorcolor );
     oldpen = _wpi_selectobject( mempres, hpen );
     oldbitmap = _wpi_selectobject( mempres, activeImage->hxorbitmap );
 
-    if ( fFillRgn ) {
-        hbrush = _wpi_createsolidbrush( xorcolour );
+    if( fFillRgn ) {
+        hbrush = _wpi_createsolidbrush( xorcolor );
     } else {
         hbrush = _wpi_createnullbrush();
     }
 
     oldbrush = _wpi_selectobject( mempres, hbrush );
     _wpi_getintrectvalues( *r, &left, &top, &right, &bottom );
-    if (is_rect) {
+    if( is_rect ) {
         _wpi_rectangle( mempres, left, top, right, bottom );
     } else {
         _wpi_ellipse( mempres, left, top, right, bottom );
@@ -184,7 +187,7 @@ void RegionXorAnd( COLORREF xorcolour, COLORREF andcolour, BOOL fFillRgn,
     _wpi_deletepen( hpen );
     _wpi_selectobject( mempres, oldbrush );
     _wpi_selectobject( mempres, oldbitmap );
-    if (fFillRgn) {
+    if( fFillRgn ) {
         _wpi_deleteobject( hbrush );
     } else {
         _wpi_deletenullbrush( hbrush );
@@ -195,18 +198,18 @@ void RegionXorAnd( COLORREF xorcolour, COLORREF andcolour, BOOL fFillRgn,
         return;
     }
 
-    hpen = _wpi_createpen( PS_SOLID, 0, andcolour );
+    hpen = _wpi_createpen( PS_SOLID, 0, andcolor );
     oldpen = _wpi_selectobject( mempres, hpen );
     oldbitmap = _wpi_selectobject( mempres, activeImage->handbitmap );
 
-    if ( fFillRgn ) {
-        hbrush = _wpi_createsolidbrush( andcolour );
+    if( fFillRgn ) {
+        hbrush = _wpi_createsolidbrush( andcolor );
     } else {
         hbrush = _wpi_createnullbrush();
     }
     oldbrush = _wpi_selectobject( mempres, hbrush );
 
-    if (is_rect) {
+    if( is_rect ) {
         _wpi_rectangle( mempres, left, top, right, bottom );
     } else {
         _wpi_ellipse( mempres, left, top, right, bottom );
@@ -215,64 +218,66 @@ void RegionXorAnd( COLORREF xorcolour, COLORREF andcolour, BOOL fFillRgn,
     _wpi_deletepen( hpen );
     _wpi_selectobject( mempres, oldbrush );
     _wpi_selectobject( mempres, oldbitmap );
-    if (fFillRgn) {
+    if( fFillRgn ) {
         _wpi_deleteobject( hbrush );
     } else {
         _wpi_deletenullbrush( hbrush );
     }
 
     _wpi_deletecompatiblepres( mempres, memdc );
+
 } /* RegionXorAnd */
 
 /*
- * FillXorAnd - Fills the area in the Xor and the AND bitmaps (with a call
- *              to Fill).
+ * FillXorAnd - fill the area in the XOR and the AND bitmaps (with a call to fill)
  */
-void FillXorAnd( COLORREF brushcolour, WPI_POINT *pt, int colourtype )
+void FillXorAnd( COLORREF brushcolor, WPI_POINT *pt, wie_clrtype colortype )
 {
     fill_info_struct    fillinfo;
 
     fillinfo.img_type = activeImage->imgtype;
-    fillinfo.colourtype = colourtype;
+    fillinfo.colortype = colortype;
     fillinfo.pt = *pt;
 
-    if (colourtype == SCREEN_CLR) {
-        fillinfo.xorcolour = BLACK;
-        fillinfo.andcolour = WHITE;
-    } else if (colourtype == INVERSE_CLR) {
-        fillinfo.xorcolour = WHITE;
-        fillinfo.andcolour = WHITE;
+    if( colortype == SCREEN_CLR ) {
+        fillinfo.xorcolor = BLACK;
+        fillinfo.andcolor = WHITE;
+    } else if( colortype == INVERSE_CLR ) {
+        fillinfo.xorcolor = WHITE;
+        fillinfo.andcolor = WHITE;
     } else {
-        fillinfo.xorcolour = brushcolour;
-        fillinfo.andcolour = BLACK;
+        fillinfo.xorcolor = brushcolor;
+        fillinfo.andcolor = BLACK;
     }
     Fill( &fillinfo, activeImage );
+
 } /* FillXorAnd */
 
 /*
- * SetNewHotSpot - set the value of the hot spot for the cursor.
+ * SetNewHotSpot - set the value of the hot spot for the cursor
  */
 void SetNewHotSpot( WPI_POINT *pt )
 {
     activeImage->hotspot = *pt;
-    SetHotSpot(activeImage);
+    SetHotSpot( activeImage );
+
 } /* SetNewHotSpot */
 
 /*
- * FocusOnImage - Selects one of the mdi children.
+ * FocusOnImage - select one of the MDI children
  */
 void FocusOnImage( HWND hwnd )
 {
-    char        current_file[ _MAX_PATH ];
+    char        current_file[_MAX_PATH];
     char        *text;
 
-    if (activeImage) {
-        RedrawPrevClip(activeImage->hwnd);
+    if( activeImage != NULL  ) {
+        RedrawPrevClip( activeImage->hwnd );
         SetRectExists( FALSE );
     }
 
     activeImage = SelectImage( hwnd );
-    if (!activeImage) {
+    if( activeImage == NULL ) {
         WImgEditError( WIE_ERR_BAD_HWND, WIE_INTERNAL_001 );
         return;
     }
@@ -280,7 +285,7 @@ void FocusOnImage( HWND hwnd )
     CreateDrawnImage( activeImage );
 
     SetMenus( activeImage );
-    SetNumColours( 1<<(activeImage->bitcount) );
+    SetNumColors( 1 << activeImage->bitcount );
 
     SetHotSpot( activeImage );
     DisplayImageText( activeImage );
@@ -288,49 +293,50 @@ void FocusOnImage( HWND hwnd )
 
     GetFnameFromPath( activeImage->fname, current_file );
 
-    text = (char *)
-        MemAlloc( strlen( IEAppTitle ) + strlen( current_file ) + 3 + 1 );
-    if( text ) {
+    text = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( current_file ) + 3 + 1 );
+    if( text != NULL ) {
         strcpy( text, IEAppTitle );
         strcat( text, " - " );
         strcat( text, current_file );
-        _wpi_setwindowtext( _wpi_getframe(HMainWindow), text );
+        _wpi_setwindowtext( _wpi_getframe( HMainWindow ), text );
         MemFree( text );
     }
 
 #ifndef __OS2_PM__
     RedrawWindow( hwnd, NULL, NULL, RDW_UPDATENOW );
 #endif
+
 } /* FocusOnImage */
 
 /*
- * GetCurrentNode - returns the current image node being edited.
+ * GetCurrentNode - return the current image node being edited
  */
 img_node *GetCurrentNode( void )
 {
-    return(activeImage);
+    return( activeImage );
+
 } /* GetCurrentNode */
 
 /*
- * SelectIcon - Sets the current icon
+ * SelectIcon - set the current icon
  */
 void SelectIcon( short index )
 {
     img_node    *node;
 
-    if (activeImage->imgtype != ICON_IMG) {
+    if( activeImage->imgtype != ICON_IMG ) {
         WImgEditError( WIE_ERR_BAD_IMAGE_TYPE, NULL );
         return;
     }
 
     node = GetNthIcon( activeImage->hwnd, index );
 
-    if (node) {
+    if( node != NULL ) {
         SelIconUndoStack( activeImage->hwnd, index );
         ResetDrawArea( node );
         RePositionViewWnd( node );
 
-        SetNumColours( 1<<(node->bitcount) );
+        SetNumColors( 1 << node->bitcount );
         SetMenus( node );
     } else {
         WImgEditError( WIE_ERR_BAD_SELECTION, NULL );
@@ -339,14 +345,15 @@ void SelectIcon( short index )
 
     activeImage = node;
     DisplayImageText( activeImage );
+
 } /* SelectIcon */
 
 /*
- * DeleteActiveImage - sets the active image to null.
+ * DeleteActiveImage - set the active image to null
  */
 void DeleteActiveImage( void )
 {
     activeImage = NULL;
-    _wpi_setwindowtext( _wpi_getframe(HMainWindow), IEAppTitle );
-} /* DeleteActiveImage */
+    _wpi_setwindowtext( _wpi_getframe( HMainWindow ), IEAppTitle );
 
+} /* DeleteActiveImage */

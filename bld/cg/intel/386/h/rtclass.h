@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Runtime support routines list for 386. 
 *
 ****************************************************************************/
 
@@ -66,8 +65,10 @@ typedef enum {
         Z4TO8,
         EXT_PT,
         CHP_PT,
+	PTTOI8,
+	I8TOPT,
 
-        LAST_CONV_TABLE = CHP_PT,
+        LAST_CONV_TABLE = I8TOPT,
 
 /*  beginning of runtime routine */
 

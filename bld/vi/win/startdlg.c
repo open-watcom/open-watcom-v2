@@ -24,49 +24,52 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Startup splash screen.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "startup.h"
+#include "banner.h"
 
 /*
  * StartupProc - callback routine for startup modeless dialog
  */
 BOOL WINEXP StartupProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    RECT    r;
-    int     maxx,maxy;
-    int     width;
-    int     height;
-    int     newx,newy;
-
     lparam = lparam;
     wparam = wparam;
     hwnd = hwnd;
     switch( msg ) {
+    // Allow Easy Flash Screen suppression. W.Briscoe 20041112
+#if 1
+        RECT        r;
+        int         maxx, maxy;
+        int         width;
+        int         height;
+        int         newx, newy;
+        static char vers[] = banner1p2( _VI_VERSION_ );
+
     case WM_INITDIALOG:
-    GetWindowRect( hwnd, &r );
-    maxx = GetSystemMetrics( SM_CXSCREEN );
-    maxy = GetSystemMetrics( SM_CYSCREEN );
-    width = r.right - r.left;
-    height = r.bottom - r.top;
-    newx = (maxx - width)/2;
-    newy = (maxy - height)/2;
-    SetWindowPos( hwnd, HWND_TOPMOST,newx,newy,0,0,
-                SWP_NOSIZE );
+        GetWindowRect( hwnd, &r );
+        maxx = GetSystemMetrics( SM_CXSCREEN );
+        maxy = GetSystemMetrics( SM_CYSCREEN );
+        width = r.right - r.left;
+        height = r.bottom - r.top;
+        newx = (maxx - width) / 2;
+        newy = (maxy - height) / 2;
+        SetWindowPos( hwnd, HWND_TOPMOST, newx, newy, 0, 0, SWP_NOSIZE );
+        SetDlgItemText( hwnd, STARTUP_VERSION, vers );
         SetDlgItemText( hwnd, STARTUP_EDITORNAME, WATCOM_ABOUT_EDITOR );
-    return( TRUE );
+#endif
+        return( TRUE );
     }
     return( FALSE );
 
 } /* StartupProc */
 
-static HWND startDlgWindow;
+static HWND     startDlgWindow;
 static FARPROC  startDlgProc;
 
 /*
@@ -75,8 +78,8 @@ static FARPROC  startDlgProc;
 void ShowStartupDialog( void )
 {
     startDlgProc = MakeProcInstance( (FARPROC) StartupProc, InstanceHandle );
-    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND) NULL,
-                (DLGPROC) startDlgProc );
+    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE,
+                                   (DLGPROC) startDlgProc );
 
 } /* ShowStartupDialog */
 
@@ -87,10 +90,12 @@ void ShowStartupDialog( void )
 void CloseStartupDialog( void )
 {
     if( startDlgWindow == NULL ) {
-    return;
+        return;
     }
     DestroyWindow( startDlgWindow );
-    startDlgWindow = NULL;
+    startDlgWindow = (HWND)NULLHANDLE;
+#ifndef __NT__
     (void)FreeProcInstance( (FARPROC) startDlgProc );
+#endif
 
 } /* CloseStartupDialog */

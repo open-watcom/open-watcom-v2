@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Techincal Reference [DPMI 0A00h]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">10.0 - DOS/32 Advanced
+- Values returned by DPMI function 0A00h<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Value returned by ADPMI
+function 0A00h, Vendor-Specific DPMI API Extensions in BL register, is DOS/32
+Advanced built-in DPMI configuration. The format of the returned configuration
+is described below:</font></p>
+
+<blockquote>
+  <p><tt>bit 0: 0=test DPMI/VCPI, 1=VCPI/DPMI /1=default<br>
+  bit 1: 0=internal exception control off, 1=on /1=default<br>
+  bit 2: 0=VCPI smartpage alloc mode off, 1=on /1=default<br>
+  bit 3: 0=VCPI+XMS alloc scheme off, 1=on /1=default<br>
+  bit 4: 0=trap emulated IRQs off, 1=on /1=default<br>
+  bit 5: 0=extended memory blocks checking off, 1=on /1=default<br>
+  bit 6: reserved<br>
+  bit 7: 0=ignore DOS/4G API calls off, 1=on /0=default</tt></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note that some
+of these settings may be altered by the user at run-time.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

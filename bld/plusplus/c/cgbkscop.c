@@ -235,7 +235,7 @@ static void _printFunction( SYMBOL fun, char const * msg )
     }
 }
 
-static void _printCallNode
+static boolean _printCallNode
     ( CALLGRAPH* ctl
     , CALLNODE* node )
 {
@@ -250,6 +250,7 @@ static void _printCallNode
             _printUnrUsage( fu, "" );
         } RingIterEnd( fu );
     }
+    return FALSE;
 }
 
 #else
@@ -396,7 +397,7 @@ static CALLNODE* makeNonThrowFun// FUNCTION BECOMES A NON-THROWING FUNCTION
     fun = owner->base.object;
     fun = symDefaultBase( fun );
     DbgVerify( ! ( fun->flag & SF_LONGJUMP )
-             , "makeThrowFun -- has SF_LONGJUMP" );
+             , "makeNonThrowFun -- has SF_LONGJUMP" );
     if( ! ( fun->flag & SF_NO_LONGJUMP ) ) {
         fun->flag |= SF_NO_LONGJUMP;
         res = pushActionCaller( owner, RES_FN_NT );
@@ -421,7 +422,7 @@ static SCOPE_RES* markScopeGen  // MARK SCOPE AS GENERATED
         }
 #endif
         if( enc->scope != NULL ) {
-            enc->scope->cg_stab = TRUE;
+            enc->scope->s.cg_stab = TRUE;
             break;
         }
     }

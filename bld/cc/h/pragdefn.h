@@ -36,7 +36,7 @@
 struct aux_entry {
     union {
         struct aux_info *info;
-        int             aux_info_index;         // for pre-compiled header
+        unsigned        aux_info_index;         // for pre-compiled header
     };
     struct aux_entry    *next;
 #if _CPU == 370
@@ -48,39 +48,9 @@ struct aux_entry {
 typedef int     aux_flags;
 #define AUX_FLAG_FAR16  1
 
-struct aux_info {
-        call_class      class;
-        union {
-#if _MACHINE == _ALPHA || _MACHINE == _PPC
-            risc_byte_seq *code;
-#else
-            byte_seq    *code;
-#endif
-            int         code_size;      // for pre-compiled header
-        };
-        union {
-            hw_reg_set  *parms;
-            int         parms_size;     // for pre-compiled header
-        };
-#if _CPU == 370
-        linkage_regs    *linkage;
-#endif
-#if _MACHINE == _ALPHA
-#endif
-        hw_reg_set      returns;
-        hw_reg_set      streturn;
-        hw_reg_set      save;
-        union {
-            char        *objname;
-            int         objname_size;   // for pre-compiled header
-        };
-        int             use;            // use count
-        aux_flags       flags;
-        int             aux_info_index;
-#if _MACHINE == _ALPHA
-        char           *except_rtn;
-#endif
-};
+#include "cmemmgr.h"
+#include "strsave.h"
+#include "callinfo.h"
 
 struct  inline_funcs {
         char       *name;       /* func name */
@@ -99,23 +69,14 @@ global struct aux_entry         *AuxList;
 global struct aux_info          *CurrAlias;
 global struct aux_entry         *CurrEntry;
 global struct aux_info          *CurrInfo;
+global struct aux_info          *DftCallConv;
 
-global struct aux_info          DefaultInfo;
-global struct aux_info          CdeclInfo;
-global struct aux_info          PascalInfo;
-global struct aux_info          FortranInfo;
-global struct aux_info          SyscallInfo;            /* 04-jul-91 */
-global struct aux_info          OptlinkInfo;            /* 04-jul-91 */
-global struct aux_info          StdcallInfo;            /* 08-oct-92 */
-global struct aux_info          FastCallInfo;
 #if _CPU == 386
-global struct aux_info          Far16CdeclInfo;
-global struct aux_info          Far16PascalInfo;
 global struct aux_info          STOSBInfo;
 #endif
 global call_class               CallClass;
 
-#define MAX_POSSIBLE_REG   8
+#define MAX_POSSIBLE_REG        8
 
 #define MAXIMUM_BYTESEQ         4096
 #define MAXIMUM_PARMSETS        32

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler directive processing.
 *
 ****************************************************************************/
 
@@ -40,15 +39,17 @@ static bool         autoAlignment;
 static bool         getDirOpLine = FALSE; // decides if we'll grab the line
 static directive_t  *lastDirective = NULL;
 
-static bool dirHasOperand( directive_t *dir ) {
-//*********************************************
 
+static bool dirHasOperand( directive_t *dir )
+//*******************************************
+{
     return( dir->num_operands > 0 );
 }
 
-static bool dirNumOperandsVerify( dir_opcount actual, dir_opcount wanted ) {
-//**************************************************************************
 
+static bool dirNumOperandsVerify( dir_opcount actual, dir_opcount wanted )
+//************************************************************************
+{
     if( actual < wanted ) {
         Error( DIROP_ERR_MISSING, actual );
         return( FALSE );
@@ -60,18 +61,20 @@ static bool dirNumOperandsVerify( dir_opcount actual, dir_opcount wanted ) {
     return( TRUE );
 }
 
-#if 0
-static bool dirFuncNYI( directive_t *dir, dir_table_enum parm ) {
-//***************************************************************
 
+#if 0
+static bool dirFuncNYI( directive_t *dir, dir_table_enum parm )
+//*************************************************************
+{
     printf( "Directive '%s' is not yet implemented.\n", dir->dir_sym->name );
     return( TRUE );
 }
 #endif
 
-static bool dirFuncAlign ( directive_t *dir, dir_table_enum parm ) {
-//******************************************************************
 
+static bool dirFuncAlign ( directive_t *dir, dir_table_enum parm )
+//****************************************************************
+{
     int_32      val;
 
     parm = parm;
@@ -89,20 +92,22 @@ static bool dirFuncAlign ( directive_t *dir, dir_table_enum parm ) {
     return( TRUE );
 }
 
+
 #ifdef _STANDALONE_
-static bool dirFuncBSS( directive_t *dir, dir_table_enum parm ) {
-//***************************************************************
+static bool dirFuncSwitchSection( directive_t *, dir_table_enum );
+static bool dirFuncStorageAlloc( directive_t *, dir_table_enum );
 
-    static bool dirFuncSwitchSection( directive_t *, dir_table_enum );
-    static bool dirFuncStorageAlloc( directive_t *, dir_table_enum );
-
+static bool dirFuncBSS( directive_t *dir, dir_table_enum parm )
+//*************************************************************
+{
     if( !dirHasOperand( dir ) ) return( dirFuncSwitchSection( dir, parm ) );
     return( dirFuncStorageAlloc( dir, parm ) ); // ".bss tag, bytes"
 }
 
-static bool dirFuncErr( directive_t *dir, dir_table_enum parm ) {
-//***************************************************************
 
+static bool dirFuncErr( directive_t *dir, dir_table_enum parm )
+//*************************************************************
+{
     char    *str;
 
     if( dirHasOperand( dir ) ) {
@@ -115,37 +120,39 @@ static bool dirFuncErr( directive_t *dir, dir_table_enum parm ) {
 }
 #endif
 
-static bool dirFuncIgnore( directive_t *dir, dir_table_enum parm ) {
-//******************************************************************
-// Silently ignore this directive...
 
+static bool dirFuncIgnore( directive_t *dir, dir_table_enum parm )
+//****************************************************************
+// Silently ignore this directive...
+{
     dir = dir;
     parm = parm;
     return( TRUE );
 }
 
-static bool dirFuncNop( directive_t *dir, dir_table_enum parm ) {
-//***************************************************************
 
+static bool dirFuncNop( directive_t *dir, dir_table_enum parm )
+//*************************************************************
+{
     uint_32     opcode = INS_NOP;
 
     dir = dir;
     if( parm == DT_NOP_NOP ) {
-        #ifdef _STANDALONE_
+#ifdef _STANDALONE_
         ObjEmitData( CurrentSection, (char *)&opcode, sizeof( opcode ), TRUE );
-        #else
+#else
         ObjEmitData( (char *)&opcode, sizeof( opcode ), TRUE );
-        #endif
+#endif
         return( TRUE );
     }
 #ifdef AS_ALPHA
     assert( parm == DT_NOP_FNOP );
     opcode = INS_FNOP;
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     ObjEmitData( CurrentSection, (char *)&opcode, sizeof( opcode ), TRUE );
-    #else
+#else
     ObjEmitData( (char *)&opcode, sizeof( opcode ), TRUE );
-    #endif
+#endif
     return( TRUE );
 #else
     assert( FALSE );
@@ -153,10 +160,11 @@ static bool dirFuncNop( directive_t *dir, dir_table_enum parm ) {
 #endif
 }
 
-#ifdef _STANDALONE_
-static bool dirFuncSetLinkage( directive_t *dir, dir_table_enum parm ) {
-//**********************************************************************
 
+#ifdef _STANDALONE_
+static bool dirFuncSetLinkage( directive_t *dir, dir_table_enum parm )
+//********************************************************************
+{
     sym_handle  sym;
 
     if( !dirNumOperandsVerify( dir->num_operands, 1 ) ) {
@@ -181,9 +189,10 @@ static bool dirFuncSetLinkage( directive_t *dir, dir_table_enum parm ) {
 }
 #endif
 
-static bool optionString( const char *str, const char *option ) {
-//***************************************************************
 
+static bool optionString( const char *str, const char *option )
+//*************************************************************
+{
     const char  *s;
     size_t      n;
     char        c;
@@ -200,9 +209,10 @@ static bool optionString( const char *str, const char *option ) {
     return( TRUE );
 }
 
-static bool dirFuncSetOption( directive_t *dir, dir_table_enum parm ) {
-//*********************************************************************
 
+static bool dirFuncSetOption( directive_t *dir, dir_table_enum parm )
+//*******************************************************************
+{
     char    *str;
 
     parm = parm;
@@ -219,11 +229,9 @@ static bool dirFuncSetOption( directive_t *dir, dir_table_enum parm ) {
         } else if( optionString( str, "nomacro" ) ) {
             _DirUnSet( MACRO );
         } else if( optionString( str, "reorder" ) ) {
-            // ignore this for now
-            // _DirSet( REORDER );
+            _DirSet( REORDER );
         } else if( optionString( str, "noreorder" ) ) {
-            // ignore this for now
-            // _DirUnSet( REORDER );
+            _DirUnSet( REORDER );
         } else if( optionString( str, "volatile" ) ) {
             // ignore this for now
             // _DirSet( VOLATILE );
@@ -243,9 +251,10 @@ static bool dirFuncSetOption( directive_t *dir, dir_table_enum parm ) {
     return( TRUE );
 }
 
-static bool dirFuncSpace( directive_t *dir, dir_table_enum parm ) {
-//*****************************************************************
 
+static bool dirFuncSpace( directive_t *dir, dir_table_enum parm )
+//***************************************************************
+{
     dir_operand                 *dirop;
     int_32                      count;
 
@@ -260,20 +269,21 @@ static bool dirFuncSpace( directive_t *dir, dir_table_enum parm ) {
         Error( OP_OUT_OF_RANGE, 0 );
         return( TRUE );
     }
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     ObjNullPad( CurrentSection, (uint_8)count );
-    #else
+#else
     ObjNullPad( (uint_8)count );
-    #endif
+#endif
     return( TRUE );
 }
 
+
 #ifdef _STANDALONE_
-static bool dirFuncStorageAlloc( directive_t *dir, dir_table_enum parm ) {
-//************************************************************************
+static bool dirFuncStorageAlloc( directive_t *dir, dir_table_enum parm )
+//**********************************************************************
 // e.g.) .comm name, expr
 // Emit a label name, then emit expr bytes of data
-
+{
     dir_operand                 *dirop;
     sym_handle                  sym;
     int_32                      expr;
@@ -337,11 +347,11 @@ static bool dirFuncStorageAlloc( directive_t *dir, dir_table_enum parm ) {
 #define ESCAPE_T        0x09
 #define ESCAPE_V        0x0B
 
-static char *getESCChar( char * const byte, char *ptr ) {
-//*******************************************************
+static char *getESCChar( char * const byte, char *ptr )
+//*****************************************************
 // Interpret the escape sequence, store the value in *byte,
 // returns the pointer to the last character in the sequence.
-
+{
     unsigned long int   num = 0;
     uint_8              ctr = 0;
     char                *buffer, *endptr;
@@ -395,9 +405,10 @@ static char *getESCChar( char * const byte, char *ptr ) {
     return( ptr );
 }
 
-static bool dirFuncString( directive_t *dir, dir_table_enum parm ) {
-//******************************************************************
 
+static bool dirFuncString( directive_t *dir, dir_table_enum parm )
+//****************************************************************
+{
     char        *str, *ptr, *byte;
     dir_operand *dirop;
     int         opnum;
@@ -408,7 +419,7 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm ) {
     while( dirop ) {
         assert( dirop->type == DIROP_STRING );
         str = byte = MemAlloc( strlen( STRING_CONTENT( dirop ) ) + 1 );
-        for( ptr = STRING_CONTENT( dirop ); *ptr != NULL; ptr++ ) {
+        for( ptr = STRING_CONTENT( dirop ); *ptr != '\0'; ptr++ ) {
             if( *ptr == ESCAPE_CHAR ) {
                 ptr = getESCChar( byte, ptr );
             } else {
@@ -417,13 +428,13 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm ) {
             byte++;
         }
         if( parm == DT_STR_NULL ) {
-            *byte++ = NULL;
+            *byte++ = '\0';
         }
-        #ifdef _STANDALONE_
+#ifdef _STANDALONE_
         ObjEmitData( CurrentSection, str, byte - str, ( opnum == 0 ) );
-        #else
+#else
         ObjEmitData( str, byte - str, ( opnum == 0 ) );
-        #endif
+#endif
         MemFree( str );
         opnum++;
         dirop = dirop->next;
@@ -431,10 +442,11 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm ) {
     return( TRUE );
 }
 
-#ifdef _STANDALONE_
-static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm ) {
-//*************************************************************************
 
+#ifdef _STANDALONE_
+static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm )
+//***********************************************************************
+{
     switch( parm ) {
     /* The ones that need autoAlignment are here. */
     case DT_SEC_TEXT:
@@ -449,10 +461,10 @@ static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm ) {
     case DT_SEC_RDATA:
     case DT_SEC_XDATA:
     case DT_SEC_YDATA:
-    #ifdef AS_PPC
+#ifdef AS_PPC
     case DT_SEC_RELDATA:
     case DT_SEC_TOCD:
-    #endif
+#endif
         // these enum values should correspond to reserved_section enums
         ObjSwitchSection( parm );
         break;
@@ -464,18 +476,21 @@ static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm ) {
 }
 #endif
 
-#ifdef AS_PPC
-static bool dirFuncUnsupported( directive_t *dir, dir_table_enum parm ) {
-//***********************************************************************
 
+#ifdef AS_PPC
+static bool dirFuncUnsupported( directive_t *dir, dir_table_enum parm )
+//*********************************************************************
+{
     Error( DIRECTIVE_NOT_SUPPORTED, SymName( dir->dir_sym ) );
     return( TRUE );
 }
 #endif
 
+
 #ifdef _STANDALONE_
-static bool dirFuncUserSection( directive_t *dir, dir_table_enum parm ) {
-//***********************************************************************
+static bool dirFuncUserSection( directive_t *dir, dir_table_enum parm )
+//*********************************************************************
+{
     dir_operand                 *dirop;
     sym_handle                  sym;
     char                        *str, *s;
@@ -560,13 +575,15 @@ static bool dirFuncUserSection( directive_t *dir, dir_table_enum parm ) {
 }
 #endif
 
-static bool assignRelocType( owl_reloc_type *owlrtype, asm_reloc_type artype, dir_table_enum parm ) {
-//***************************************************************************************************
 
+static bool assignRelocType( owl_reloc_type *owlrtype, asm_reloc_type artype, dir_table_enum parm )
+//*************************************************************************************************
+{
     owl_reloc_type reloc_translate[] = {
         OWL_RELOC_ABSOLUTE,         // ASM_RELOC_UNSPECIFIED
         OWL_RELOC_WORD,
         OWL_RELOC_HALF_HI,
+        OWL_RELOC_HALF_HA,
         OWL_RELOC_HALF_LO,
     };
 
@@ -575,6 +592,7 @@ static bool assignRelocType( owl_reloc_type *owlrtype, asm_reloc_type artype, di
         reloc_translate[ ASM_RELOC_UNSPECIFIED ] = OWL_RELOC_HALF_LO; //default
         switch( artype ) {
         case ASM_RELOC_HALF_HI:
+        case ASM_RELOC_HALF_HA:
         case ASM_RELOC_HALF_LO:
         case ASM_RELOC_UNSPECIFIED:
             *owlrtype = reloc_translate[ artype ];
@@ -596,13 +614,15 @@ static bool assignRelocType( owl_reloc_type *owlrtype, asm_reloc_type artype, di
     return( TRUE );
 }
 
-static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
-//******************************************************************
 
+static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
+//****************************************************************
+{
     dir_operand         *dirop;
     static int_8        byte;
     static int_16       half;
     static int_32       word;
+    static signed_64    quad;
     static float        flt;
     static double       dbl;
     int_32              rep;
@@ -617,15 +637,16 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
         { 4, &flt,      2 },    // DT_VAL_FLOAT
         { 2, &half,     1 },    // DT_VAL_INT16
         { 4, &word,     2 },    // DT_VAL_INT32
+        { 8, &quad,     3 },    // DT_VAL_INT64
     };
-    #define TABLE_IDX( x )      ( ( x ) - DT_VAL_FIRST )
+#define TABLE_IDX( x )      ( ( x ) - DT_VAL_FIRST )
 
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     if( OWLTellSectionType( CurrentSection ) & OWL_SEC_ATTR_BSS ) {
         Error( INVALID_BSS_DIRECTIVE, SymName( dir->dir_sym ) );
         return( TRUE );
     }
-    #endif
+#endif
     if( autoAlignment ) {
         prev_alignment = CurrAlignment;
         CurrAlignment = data_table[TABLE_IDX(parm)].alignment;
@@ -642,6 +663,15 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
             } else { // repeat
                 rep = REPEAT_COUNT( dirop );
                 byte = (int_8)REPEAT_INTEGER( dirop );
+            }
+            break;
+        case DT_VAL_INT64:
+            assert( dirop->type == DIROP_INTEGER || dirop->type == DIROP_REP_INT );
+            if( dirop->type == DIROP_INTEGER ) {
+                quad.u._32[I64LO32] = NUMBER_INTEGER( dirop );
+            } else { // repeat
+                rep = REPEAT_COUNT( dirop );
+                quad.u._32[I64LO32] = REPEAT_INTEGER( dirop );
             }
             break;
         case DT_VAL_DOUBLE:
@@ -711,31 +741,31 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
             return( FALSE );
         }
         if( target != NULL ) {
-            assert( ( parm == DT_VAL_INT32 || parm == DT_VAL_INT16 ) && rep == 1 );
-            #ifdef _STANDALONE_
+            assert( (parm == DT_VAL_INT32 || parm == DT_VAL_INT16) && rep == 1 );
+#ifdef _STANDALONE_
             ObjEmitReloc( CurrentSection, target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL) ); // align with data
-            #else
+#else
             ObjEmitReloc( target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL ) ); // align with data
-            #endif
+#endif
             target = NULL;
         }
-        #ifdef _STANDALONE_
+#ifdef _STANDALONE_
         ObjEmitData( CurrentSection,
-        #else
+#else
         ObjEmitData(
-        #endif
+#endif
                      data_table[TABLE_IDX(parm)].ptr,
                      data_table[TABLE_IDX(parm)].size,
                      ( opnum == 0 ) );  // only align for the first data operand
         for( rep--; rep > 0; rep-- ) {
-            #ifdef _STANDALONE_
+#ifdef _STANDALONE_
             OWLEmitData( CurrentSection,
-            #else
+#else
             ObjDirectEmitData(
-            #endif
+#endif
                          data_table[TABLE_IDX(parm)].ptr,
                          data_table[TABLE_IDX(parm)].size );
-            #if 0
+#if 0
             printf( "Size=%d\n", data_table[TABLE_IDX(parm)].size );
             switch( parm ) {
             case DT_VAL_INT8:
@@ -753,10 +783,13 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
             case DT_VAL_INT32:
                 printf( "Out->%d\n", *(int_32 *)(data_table[TABLE_IDX(parm)].ptr) );
                 break;
+            case DT_VAL_INT64:
+                printf( "Out->%d\n", ((signed_64 *)(data_table[TABLE_IDX(parm)].ptr))->_32[0] );
+                break;
             default:
                 assert( FALSE );
             }
-            #endif
+#endif
         }
         opnum++;
         dirop = dirop->next;
@@ -766,6 +799,7 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
     }
     return( TRUE );
 }
+
 
 #define INT     DOF_INT
 #define FLT     DOF_FLT
@@ -777,6 +811,7 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm ) {
 #define RFLT    DOF_REP_FLT
 #define REP     ( DOF_REP_INT | DOF_REP_FLT )
 #define NONE    DOF_NONE
+
 static dir_table asm_directives[] = {
 //  { name,         func,                   parm,           flags }
     { ".address",   dirFuncValues,          DT_VAL_INT32,   INT | SYM },
@@ -784,79 +819,84 @@ static dir_table asm_directives[] = {
     { ".ascii",     dirFuncString,          DT_STR_NONULL,  STR },
     { ".asciz",     dirFuncString,          DT_STR_NULL,    STR },
     { ".asciiz",    dirFuncString,          DT_STR_NULL,    STR },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".bss",       dirFuncBSS,             DT_SEC_BSS,     INT | SYM | NONE },
-    #endif
+#endif
     { ".byte",      dirFuncValues,          DT_VAL_INT8,    INT | RINT },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".comm",      dirFuncStorageAlloc,    DT_SEC_DATA,    INT | SYM },
     { ".data",      dirFuncSwitchSection,   DT_SEC_DATA,    NONE },
     { ".debug$P",   dirFuncSwitchSection,   DT_SEC_DEBUG_P, NONE },
     { ".debug$S",   dirFuncSwitchSection,   DT_SEC_DEBUG_S, NONE },
     { ".debug$T",   dirFuncSwitchSection,   DT_SEC_DEBUG_T, NONE },
-    #endif
+#endif
     { ".double",    dirFuncValues,          DT_VAL_DOUBLE,  FLT | RFLT },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".err",       dirFuncErr,             DT_NOPARM,      LINE },
-    #endif
+#endif
     { ".even",      dirFuncIgnore,          DT_NOPARM,      NONE },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".extern",    dirFuncSetLinkage,      DT_LNK_GLOBAL,  SYM },
-    #endif
+#endif
     { ".float",     dirFuncValues,          DT_VAL_FLOAT,   FLT | RFLT },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".globl",     dirFuncSetLinkage,      DT_LNK_GLOBAL,  SYM },
-    #endif
+#endif
     { ".half",      dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".ident",     dirFuncIgnore,          DT_NOPARM,      LINE },
     { ".lcomm",     dirFuncStorageAlloc,    DT_SEC_BSS,     INT | SYM },
-    #endif
+#endif
     { ".long",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".new_section", dirFuncUserSection,   DT_USERSEC_NEW, SYM | STR },
-    #endif
+#endif
     { "nop",        dirFuncNop,             DT_NOP_NOP,     NONE },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".pdata",     dirFuncSwitchSection,   DT_SEC_PDATA,   NONE },
     { ".rdata",     dirFuncSwitchSection,   DT_SEC_RDATA,   NONE },
     { ".xdata",     dirFuncSwitchSection,   DT_SEC_XDATA,   NONE },
     { ".ydata",     dirFuncSwitchSection,   DT_SEC_YDATA,   NONE },
-    #ifdef AS_PPC
+#ifdef AS_PPC
     { ".reldata",   dirFuncSwitchSection,   DT_SEC_RELDATA, NONE },
     { ".tocd",      dirFuncSwitchSection,   DT_SEC_TOCD,    NONE },
-    #endif
+#endif
     { ".section",   dirFuncUserSection,     DT_NOPARM,      SYM | STR },
-    #endif
+#endif
     { ".set",       dirFuncSetOption,       DT_NOPARM,      LINE },
     { ".short",     dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
     { ".space",     dirFuncSpace,           DT_NOPARM,      INT },
     { ".string",    dirFuncString,          DT_STR_NULL,    STR },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".text",      dirFuncSwitchSection,   DT_SEC_TEXT,    NONE },
-    #endif
+#endif
     { ".value",     dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     { ".version",   dirFuncIgnore,          DT_NOPARM,      LINE },
-    #endif
-    #ifdef AS_ALPHA
+#endif
+#if defined( AS_ALPHA )
     { "unop",       dirFuncNop,             DT_NOP_NOP,     NONE },
     { "fnop",       dirFuncNop,             DT_NOP_FNOP,    NONE },
+// The .quad directive is disabled because 64-bit integers are not parsed
+// properly
+//    { ".quad",      dirFuncValues,          DT_VAL_INT64,   INT | RINT },
     { ".s_floating",dirFuncValues,          DT_VAL_FLOAT,   FLT | RFLT },
     { ".t_floating",dirFuncValues,          DT_VAL_DOUBLE,  FLT | RFLT },
     { ".word",      dirFuncValues,          DT_VAL_INT16,   INT | RINT | SYM },
-    #else // AS_PPC
+#elif defined( AS_PPC )
     { ".word",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
     { ".little_endian", dirFuncIgnore,      DT_NOPARM,      LINE },
     { ".big_endian",    dirFuncUnsupported, DT_NOPARM,      LINE },
-    #endif
+#elif defined( AS_MIPS )
+    { ".word",      dirFuncValues,          DT_VAL_INT32,   INT | RINT | SYM },
+#endif
 };
 
 
-static bool dirValidate( directive_t *dir, dir_table *table_entry ) {
-//*******************************************************************
+static bool dirValidate( directive_t *dir, dir_table *table_entry )
+//*****************************************************************
 // Check if the operands types are as expected
-
+{
     static const dirop_flags flags[] = {    // corresponds to dirop_type
         DOF_INT,
         DOF_FLT,
@@ -890,21 +930,24 @@ static bool dirValidate( directive_t *dir, dir_table *table_entry ) {
     return( TRUE );
 }
 
-static directive_t *dirAlloc( void ) {
-//************************************
 
+static directive_t *dirAlloc( void )
+//**********************************
+{
     return( MemAlloc( sizeof( directive_t ) ) );
 }
 
-static void dirFree( directive_t *directive ) {
-//*********************************************
 
+static void dirFree( directive_t *directive )
+//*******************************************
+{
     MemFree( directive );
 }
 
-extern void DirInit( void ) {
-//***************************
 
+extern void DirInit( void )
+//*************************
+{
     dir_table   *curr;
     sym_handle  sym;
     int         i, n;
@@ -919,13 +962,15 @@ extern void DirInit( void ) {
     AsDirSetOptions = NONE;
     _DirSet( AT );
     _DirSet( MACRO );
+    _DirSet( REORDER );
 }
 
-extern void DirSetNextScanState( sym_handle sym ) {
+
+extern void DirSetNextScanState( sym_handle sym )
 //*************************************************
 // Call this to set up what to scan for the next token.
 // Necessary because some directives take the whole line as a token.
-
+{
     dir_table   *table_entry;
 
     table_entry = SymGetLink( sym );
@@ -934,12 +979,13 @@ extern void DirSetNextScanState( sym_handle sym ) {
     }
 }
 
-extern bool DirGetNextScanState( void ) {
-//***************************************
+
+extern bool DirGetNextScanState( void )
+//*************************************
 // Call this to check what to scan for the next token.
 // Returns TRUE if we want the whole line as a token next.
 // Necessary because some directives take the whole line as a token.
-
+{
     if ( getDirOpLine ) {
         getDirOpLine = FALSE;
         return( TRUE );
@@ -947,9 +993,10 @@ extern bool DirGetNextScanState( void ) {
     return( getDirOpLine );
 }
 
-extern directive_t *DirCreate( sym_handle sym ) {
-//***********************************************
 
+extern directive_t *DirCreate( sym_handle sym )
+//*********************************************
+{
     lastDirective = dirAlloc();
     lastDirective->dir_sym = sym;
     lastDirective->num_operands = 0;
@@ -958,9 +1005,10 @@ extern directive_t *DirCreate( sym_handle sym ) {
     return( lastDirective );
 }
 
-extern void DirAddOperand( directive_t *dir, dir_operand *dirop ) {
-//*****************************************************************
 
+extern void DirAddOperand( directive_t *dir, dir_operand *dirop )
+//***************************************************************
+{
     if( dirop == NULL ) return;
     dir->num_operands++;
     if( dir->operand_tail ) {
@@ -971,9 +1019,10 @@ extern void DirAddOperand( directive_t *dir, dir_operand *dirop ) {
     }
 }
 
-extern void DirDestroy( directive_t *directive ) {
-//************************************************
 
+extern void DirDestroy( directive_t *directive )
+//**********************************************
+{
     dir_operand *dirop, *dirop_next;
 
     if( !directive ) return;
@@ -987,9 +1036,10 @@ extern void DirDestroy( directive_t *directive ) {
     lastDirective = NULL;
 }
 
-extern bool DirParse( directive_t *directive ) {
-//**********************************************
 
+extern bool DirParse( directive_t *directive )
+//********************************************
+{
     dir_table   *table_entry;
 
     table_entry = SymGetLink( directive->dir_sym );
@@ -1001,8 +1051,9 @@ extern bool DirParse( directive_t *directive ) {
     return( TRUE );
 }
 
-extern void DirFini( void ) {
-//***************************
 
+extern void DirFini( void )
+//*************************
+{
     DirDestroy( lastDirective );
 }

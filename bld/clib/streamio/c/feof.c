@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of feof() - check for stream end-of-file.
 *
 ****************************************************************************/
 
@@ -33,10 +32,10 @@
 #include "variety.h"
 #include <stdio.h>
 #include "fileacc.h"
-#undef  feof
 
-_WCRTLINK int feof( FILE *fp )
-    {
-        _ValidFile( fp, 0 );
-        return( fp->_flag & _EOF );
-    }
+
+_WCRTLINK int (feof)( FILE *fp )
+{
+    _ValidFile( fp, 0 );
+    return( fp->_flag & _EOF );
+}

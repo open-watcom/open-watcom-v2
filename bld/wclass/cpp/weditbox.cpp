@@ -52,12 +52,6 @@ WEXPORT WEditBox::WEditBox( WStatDialog *p, unsigned id,
 }
 
 
-WEXPORT WEditBox::~WEditBox() {
-/*****************************/
-
-}
-
-
 //      Define Multiline Edit Box
 //      =========================
 
@@ -76,12 +70,6 @@ WEXPORT WMultiLineEditBox::WMultiLineEditBox( WStatDialog *p, unsigned id,
         : WEdit( p, id,
                  wstyle | _ControlStyleToWStyle( GUI_CONTROL_WANTRETURN ) ) {
 /***************************************************************************/
-
-}
-
-
-WEXPORT WMultiLineEditBox::~WMultiLineEditBox() {
-/***********************************************/
 
 }
 
@@ -105,12 +93,6 @@ WEXPORT WEdit::WEdit( WStatDialog *parent, unsigned id,
 }
 
 
-WEXPORT WEdit::~WEdit() {
-/***********************/
-
-}
-
-
 void WEXPORT WEdit::select( int first, int last ) {
 /*************************************************/
 
@@ -123,4 +105,25 @@ int WEXPORT WEdit::getSelectBounds( int *first, int *last ) {
 
     GUIGetEditSelect( parent()->handle(), controlId(), first, last );
     return( *last - *first );
+}
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+#pragma warning 657 9
+
+WEXPORT WEditBox::~WEditBox() {
+/*****************************/
+
+}
+
+WEXPORT WEdit::~WEdit() {
+/***********************/
+
+}
+
+WEXPORT WMultiLineEditBox::~WMultiLineEditBox() {
+/***********************************************/
+
 }

@@ -47,13 +47,13 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WRESaveSymbols          ( WRHashTable *table, char **file_name, Bool prompt );
-extern Bool     WREEditResourceSymbols  ( WREResInfo *info );
-extern Bool     WRELoadResourceSymbols  ( WREResInfo *info );
-extern Bool     WREResourceSaveSymbols  ( WREResInfo *info );
-extern Bool     WREDeleteDLGInclude     ( WResDir dir );
-extern Bool     WRECreateDLGInclude     ( WResDir *dir, char *include );
-extern Bool     WREFindAndLoadSymbols   ( WREResInfo *rinfo );
-extern char     *WRECreateSymName       ( char *fname );
+extern Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt );
+extern Bool WREEditResourceSymbols( WREResInfo *info );
+extern Bool WRELoadResourceSymbols( WREResInfo *info );
+extern Bool WREResourceSaveSymbols( WREResInfo *info );
+extern Bool WREDeleteDLGInclude( WResDir dir );
+extern Bool WRECreateDLGInclude( WResDir *dir, char *include );
+extern Bool WREFindAndLoadSymbols( WREResInfo *rinfo );
+extern char *WRECreateSymName( char *fname );
 
 #endif

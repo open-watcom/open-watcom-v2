@@ -42,7 +42,10 @@
  * @(#)list.c 1.18 9/23/86 Public Domain - gnu
  */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifndef MSDOS
@@ -53,103 +56,23 @@
 #include <fcntl.h>
 #endif
 
-char           *ctime();                /* From libc.a */
-
 #define isodigit(c)     ( ((c) >= '0') && ((c) <= '7') )
 
 #include "tar.h"
-
-long            from_oct();             /* Decode octal number */
-void            demode();               /* Print file mode */
+#include "buffer.h"
+#include "list.h"
 
 union record   *head;                   /* Points to current archive header */
 struct stat     hstat[1];               /* Stat struct corresponding */
 struct stat    *phstat = hstat;         /* to overcome construct ACK C can't handle */
 
-void            print_header();
-void            skip_file();
-
-
-/*
- * Main loop for reading an archive.
- */
-void
-read_and(do_something)
-void            (*do_something) ();
-
-{
-        int             status = 1;
-        int             prev_status;
-        char           *xname;
-        char           *fixname();
-
-        name_gather();                          /* Gather all the names */
-        open_archive(1);                        /* Open for reading */
-
-        for (;;)
-        {
-                prev_status = status;
-                status = read_header();
-                switch (status)
-                {
-
-                case 1:                         /* Valid header */
-                        /* We should decode next field (mode) first... */
-                        /* Ensure incoming names are null terminated. */
-                        head->header.name[NAMSIZ - 1] = '\0';
-                        /* make a valid filename for this OS */
-                        xname = fixname(head->header.name);
-
-                        if (!name_match(head->header.name))
-                        {
-                                /* Skip past it in the archive */
-                                userec(head);
-                                /* Skip to the next header on the archive */
-                                if (head->header.linkflag != LF_BLK &&
-                                    head->header.linkflag != LF_CHR)
-                                        skip_file((long) phstat->st_size);
-                                continue;
-                        }
-
-                        (*do_something) (xname);
-                        continue;
-
-                        /*
-                         * If the previous header was good, tell them that we are
-                         * skipping bad ones.
-                         */
-                case 0:                         /* Invalid header */
-        case0:
-                        userec(head);
-                        if (prev_status == 1)
-                        {
-                                annorec(stderr, tar);
-                                fprintf(stderr,
-                                        "Skipping to next file header...\n");
-                        }
-                        continue;
-
-                case 2:                         /* Block of zeroes */
-                        if (f_ignorez)
-                                goto case0;             /* Just skip if asked */
-                        /* FALL THRU */
-                case EOF:                               /* End of archive */
-                        break;
-                }
-                break;
-        };
-
-        close_archive();
-        names_notfound();                       /* Print names not found */
-}
-
+/* Forward declarations */
+void demode( unsigned int mode, char *string );
 
 /*
  * Print a header record, based on tar options.
  */
-void
-list_archive(xname)
-char           *xname;
+void list_archive( char *xname )
 {
 
         /* Save the record */
@@ -180,13 +103,12 @@ char           *xname;
  * You must always userec(head) to skip past the header which this
  * routine reads.
  */
-int
-read_header()
+int read_header( void )
 {
-        register int    i;
-        register long   sum, recsum;
-        register char  *p;
-        register union record *header;
+        int    i;
+        long   sum, recsum;
+        char  *p;
+        union record *header;
 
         header = findrec();
         head = header;                          /* This is our current header */
@@ -248,11 +170,8 @@ read_header()
  * If wantug != 0, we want the uid/group info decoded from Unix Standard
  * tapes (for extraction).  If == 0, we are just printing anyway, so save time.
  */
-decode_header(header, st, stdp, wantug)
-register union record *header;
-register struct stat *st;
-int            *stdp;
-int             wantug;
+void decode_header( union record *header, struct stat *st, 
+                     int *stdp, int wantug)
 {
         st->st_mode = from_oct(8, header->header.mode);
         st->st_mtime = from_oct(1 + 12, header->header.mtime);
@@ -304,12 +223,9 @@ int             wantug;
  *
  * Result is -1 if the field is invalid (all blank, or nonoctal).
  */
-long
-from_oct(digs, where)
-register int    digs;
-register char  *where;
+long from_oct( int digs, char * where)
 {
-        register long   value;
+        long   value;
 
         while (isspace(*where))
         {                                                       /* Skip spaces */
@@ -338,21 +254,19 @@ register char  *where;
 #define DATEWIDTH       19                      /* Last mod date */
 static int      ugswidth = UGSWIDTH;    /* Max width encountered so far */
 
-void
-print_header(xname)
-char           *xname;
+void print_header(char * xname)
 {
-        char            modes[11];
-        char           *timestamp;
-        char            uform[11], gform[11];           /* These hold formatted ints */
-        char           *user, *group;
-        char            size[24];       /* Holds a formatted long or maj, min */
-        long            longie;         /* To make ctime() call portable */
-        int             pad;
-        int             header_std;     /* Is header standard or not? */
-        register int    i;
+        char    modes[11];
+        char    *timestamp;
+        char    uform[11], gform[11];           /* These hold formatted ints */
+        char    *user, *group;
+        char    size[24];       /* Holds a formatted long or maj, min */
+        long    longie;         /* To make ctime() call portable */
+        int     pad;
+        int     header_std;     /* Is header standard or not? */
+        int     i;
 #ifdef MSDOS
-        char            blanks[26];
+        char    blanks[26];
 #endif
 
         annofile(stdout, (char *) NULL);
@@ -402,15 +316,14 @@ char           *xname;
                 longie = phstat->st_mtime;
 #ifdef MSDOS
                 /* following is due to a bug in MSDOS's ctime() */
-                if (longie < 0x10000000L)
-                {
-                        memset(blanks, ' ', sizeof(blanks)-1);
-                        blanks[sizeof(blanks)-1] = '\0';
-                        timestamp = blanks;
+                if (longie < 0x10000000L) {
+                    memset(blanks, ' ', sizeof(blanks)-1);
+                    blanks[sizeof(blanks)-1] = '\0';
+                    timestamp = blanks;
                 }
                 else
 #endif
-                        timestamp = ctime(&longie);
+                    timestamp = ctime((unsigned long*)(&longie));
                 timestamp[16] = '\0';
                 timestamp[24] = '\0';
 
@@ -511,11 +424,7 @@ char           *xname;
 /*
  * Print a similar line when we make a directory automatically.
  */
-void
-pr_mkdir(pathname, length, mode)
-char           *pathname;
-int             length;
-int             mode;
+void pr_mkdir( char *pathname, int length, int mode )
 {
         char            modes[11];
 
@@ -539,9 +448,7 @@ int             mode;
 /*
  * Skip over <size> bytes of data in records in the archive.
  */
-void
-skip_file(size)
-register long   size;
+void skip_file( long   size )
 {
         union record   *x;
 
@@ -564,13 +471,10 @@ register long   size;
  * Decode the mode string from a stat entry into a 9-char string and a null.
  * This is good, portable coding, John!
  */
-void
-demode(mode, string)
-register unsigned mode;
-register char  *string;
+void demode( unsigned int mode, char *string )
 {
-        register unsigned mask;
-        register char  *rwx = "rwxrwxrwx";
+        unsigned int    mask;
+        char             *rwx = "rwxrwxrwx";
 
         for (mask = 0400; mask != 0; mask >>= 1)
         {
@@ -605,4 +509,73 @@ register char  *string;
                         string[-1] = 'T';
 #endif
         *string = '\0';
+}
+
+/*
+ * Main loop for reading an archive.
+ */
+void read_and( void (*do_something)( char *dummy ) )
+{
+        int             status = 1;
+        int             prev_status;
+        char           *xname;
+
+        name_gather();                          /* Gather all the names */
+        open_archive(1);                        /* Open for reading */
+
+        for (;;)
+        {
+                prev_status = status;
+                status = read_header();
+                switch (status)
+                {
+
+                case 1:                         /* Valid header */
+                        /* We should decode next field (mode) first... */
+                        /* Ensure incoming names are null terminated. */
+                        head->header.name[NAMSIZ - 1] = '\0';
+                        /* make a valid filename for this OS */
+                        xname = fixname(head->header.name);
+
+                        if (!name_match(head->header.name))
+                        {
+                                /* Skip past it in the archive */
+                                userec(head);
+                                /* Skip to the next header on the archive */
+                                if (head->header.linkflag != LF_BLK &&
+                                    head->header.linkflag != LF_CHR)
+                                        skip_file((long) phstat->st_size);
+                                continue;
+                        }
+
+                        (*do_something) (xname);
+                        continue;
+
+                        /*
+                         * If the previous header was good, tell them that we are
+                         * skipping bad ones.
+                         */
+                case 0:                         /* Invalid header */
+        case0:
+                        userec(head);
+                        if (prev_status == 1)
+                        {
+                                annorec(stderr, tar);
+                                fprintf(stderr,
+                                        "Skipping to next file header...\n");
+                        }
+                        continue;
+
+                case 2:                         /* Block of zeroes */
+                        if (f_ignorez)
+                                goto case0;             /* Just skip if asked */
+                        /* FALL THRU */
+                case EOF:                               /* End of archive */
+                        break;
+                }
+                break;
+        };
+
+        close_archive();
+        names_notfound();                       /* Print names not found */
 }

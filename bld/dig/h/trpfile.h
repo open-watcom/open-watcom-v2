@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  File I/O supplementary requests.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack(push,1);
+#pragma pack(push, 1)
 
 #define FILE_SUPP_NAME          "Files"
 
@@ -74,7 +73,8 @@ typedef struct {
 enum {
     TF_READ     = 0x1,
     TF_WRITE    = 0x2,
-    TF_CREATE   = 0x4
+    TF_CREATE   = 0x4,
+    TF_EXEC     = 0x8
 };
 
 typedef struct {
@@ -190,7 +190,7 @@ typedef struct {
     trap_error          err;
 } file_run_cmd_ret;
 
-#pragma pack(pop);
+#pragma pack(pop)
 
 #define TRPFILE_H
 

@@ -36,15 +36,15 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void    WRMemOpen         ( void );
-extern void    WRMemClose        ( void );
-extern void   *WRWResMemAlloc    ( unsigned );
-extern void    WRWResMemFree     ( void * );
+extern void WRMemOpen( void );
+extern void WRMemClose( void );
+extern void *WRWResMemAlloc( unsigned );
+extern void WRWResMemFree( void * );
 
-/* functions to replace those in mem.c in SDK/MISC */
-extern void     MemFree         ( void *ptr );
-extern void     *MemAlloc       ( unsigned size );
-extern void     *MemReAlloc     ( void *ptr, unsigned size );
-extern void     MemStart        ( void );
+/* functions to replace those in mem.c in commonui */
+extern void MemFree( void *ptr );
+extern void *MemAlloc( unsigned size );
+extern void *MemReAlloc( void *ptr, unsigned size );
+extern void MemStart( void );
 
 #endif

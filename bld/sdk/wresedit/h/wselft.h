@@ -36,7 +36,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WRFileType WSelectFileType( HWND, char *, Bool, Bool, HINSTANCE,
-                                   HELP_CALLBACK );
+extern WRFileType WSelectFileType( HWND, char *, Bool, Bool, HINSTANCE, HELP_CALLBACK );
 
 #endif

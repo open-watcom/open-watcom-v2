@@ -3,7 +3,7 @@
 
 void main( void ) {
 
-    istrstream    input ( "Watcom C++");
+    istrstream    input ( "Open Watcom C++");
     String        s;
 
     input >> s;

@@ -37,7 +37,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <io.h>
-#include <sys\stat.h>
+#include <ctype.h>
+#include <sys/stat.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "intdlg.h"
@@ -134,12 +135,12 @@ static BOOL startLogFile( void )
 /*
  * finishLogFile - close up log file
  */
-static finishLogFile( void )
+static void finishLogFile( void )
 {
     fclose( logFileHdl );
 }
 
-static logPrintf( DWORD id, ... ) {
+static void logPrintf( DWORD id, ... ) {
 
     va_list     al;
 
@@ -148,7 +149,7 @@ static logPrintf( DWORD id, ... ) {
     va_end( al );
 }
 
-static logStrPrintf( char *str, ... ) {
+static void logStrPrintf( char *str, ... ) {
 
     va_list     al;
 
@@ -299,8 +300,9 @@ static void logStack( ExceptDlgInfo *info ) {
 
 
 #define PAGE_WIDTH 75
-static walk_result logRegisterSet( const mad_reg_set_data *reg_set, mad_registers *regs)
+static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
 {
+    mad_registers          *regs = _regs;
     int                     i;
     int                     j;
     int                     num_columns;
@@ -342,6 +344,48 @@ static walk_result logRegisterSet( const mad_reg_set_data *reg_set, mad_register
 static void logRegisters( ExceptDlgInfo *info ) {
     logPrintf( STR_REGISTER_CONTENTS );
     MADRegSetWalk( MTK_ALL, logRegisterSet, info->regs );
+}
+
+
+static void logModules( DWORD pid, WORD indent ) {
+
+    char        **modules;
+    char        end[10];
+    DWORD       cnt;
+    DWORD       i;
+    ProcNode    *pnode;
+    ModuleNode  *mnode;
+    char        *name;
+
+    pnode = FindProcess( pid );
+    if( pnode != NULL ) {
+        mnode = GetFirstModule( pnode );
+        while( mnode != NULL ) {
+            if( mnode->size == -1 ) {
+                strcpy( end, "????????" );
+            } else {
+                sprintf( end, "%08lX", mnode->base + mnode->size );
+            }
+            if( mnode->name == NULL ) {
+                name = "???";
+            } else {
+                name = mnode->name;
+            }
+            logPrintf( STR_MODULE_WITH_ADDR,
+                        indent, "", mnode->base, end, name );
+            mnode = GetNextModule( mnode );
+        }
+    } else {
+        modules = GetModuleList( pid, &cnt );
+        if( modules == NULL ) {
+            logPrintf( STR_MODULE_LST_UNAVAILABLE );
+        } else {
+            for( i=0; i < cnt; i++ ) {
+                logPrintf( STR_MODULE, indent, "", modules[i] );
+            }
+        }
+        FreeModuleList( modules, cnt );
+    }
 }
 
 
@@ -474,14 +518,14 @@ static void logDumpMemItem( HANDLE prochdl, MEMORY_BASIC_INFORMATION *mbi ) {
     }
 }
 
-BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                        buf[150];
     SelMemDlgInfo               *info;
-    DWORD                       selcnt;
+    LRESULT                     selcnt;
     int                         *selitems;
     DWORD                       i;
-    DWORD                       index;
+    LRESULT                     index;
     HWND                        lb;
     MEMORY_BASIC_INFORMATION    *mbi;
 
@@ -637,47 +681,6 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
 #endif
     if( LogData.log_mem_dmp ) {
         logMemDmp( info );
-    }
-}
-
-static logModules( DWORD pid, WORD indent ) {
-
-    char        **modules;
-    char        end[10];
-    DWORD       cnt;
-    DWORD       i;
-    ProcNode    *pnode;
-    ModuleNode  *mnode;
-    char        *name;
-
-    pnode = FindProcess( pid );
-    if( pnode != NULL ) {
-        mnode = GetFirstModule( pnode );
-        while( mnode != NULL ) {
-            if( mnode->size == -1 ) {
-                strcpy( end, "????????" );
-            } else {
-                sprintf( end, "%08lX", mnode->base + mnode->size );
-            }
-            if( mnode->name == NULL ) {
-                name = "???";
-            } else {
-                name = mnode->name;
-            }
-            logPrintf( STR_MODULE_WITH_ADDR,
-                        indent, "", mnode->base, end, name );
-            mnode = GetNextModule( mnode );
-        }
-    } else {
-        modules = GetModuleList( pid, &cnt );
-        if( modules == NULL ) {
-            logPrintf( STR_MODULE_LST_UNAVAILABLE );
-        } else {
-            for( i=0; i < cnt; i++ ) {
-                logPrintf( STR_MODULE, indent, "", modules[i] );
-            }
-        }
-        FreeModuleList( modules, cnt );
     }
 }
 
@@ -910,7 +913,7 @@ static BOOL getNewLogName( HWND parent, char *buf, char *title, BOOL outfile ) {
 /*
  * LogOptsDlgProc
  */
-BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     char                buf[BUF_SIZE];

@@ -204,12 +204,12 @@ static void throwBaseCnv(       // CONVERSION TO A BASE CLASS
 
     ctl = dat;
     if( validateBase( base, ctl ) ) {
-        SCOPE curr_scope = CurrScope;
+        SCOPE curr_scope = GetCurrScope();
         if( base->owner.type != ctl->src_type ) {
-            CurrScope = base;
+            SetCurrScope(base);
         }
         makeThrowCnv( ctl, ScopeClass( base ), ctl->offset );
-        CurrScope = curr_scope;
+        SetCurrScope(curr_scope);
     }
 }
 

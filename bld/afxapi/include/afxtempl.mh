@@ -1,0 +1,1558 @@
+/*
+ *  afxtempl.h  Application Framework template classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXTEMPL_H__
+#define __AFXTEMPL_H__
+
+:include readonly.sp
+
+template< class TYPE, class ARG_TYPE = const TYPE & >
+class CArray : public CObject {
+private:
+    TYPE    *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+    
+public:
+    CArray();
+    virtual ~CArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    INT_PTR     Add( ARG_TYPE newElement );
+    INT_PTR     Append( const CArray &src );
+    void        Copy( const CArray &src );
+    TYPE        &ElementAt( INT_PTR nIndex );
+    const TYPE  &ElementAt( INT_PTR nIndex ) const;
+    void        FreeExtra();
+    TYPE        &GetAt( INT_PTR nIndex );
+    const TYPE  &GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const TYPE  *GetData() const;
+    TYPE        *GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, ARG_TYPE newElement, INT_PTR nCount = 1 );
+    void        InsertAt( INT_PTR nIndex, CArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, ARG_TYPE newElement );
+    void        SetAtGrow( INT_PTR nIndex, ARG_TYPE newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    TYPE        &operator[]( INT_PTR nIndex );
+    const TYPE  &operator[]( INT_PTR nIndex ) const;
+};
+
+template< class TYPE, class ARG_TYPE = const TYPE & >
+class CList : public CObject {
+private:
+    struct CNode {
+        CNode   *pNext;
+        CNode   *pPrev;
+        TYPE    data;
+    };
+    
+    CNode   *m_pNodeHead;
+    CNode   *m_pNodeTail;
+    INT_PTR m_nCount;
+    
+public:
+    CList();
+    virtual ~CList();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    POSITION    AddHead( ARG_TYPE newElement );
+    void        AddHead( CList *pNewList );
+    POSITION    AddTail( ARG_TYPE newElement );
+    void        AddTail( CList *pNewList );
+    POSITION    Find( ARG_TYPE searchValue, POSITION startAfter = NULL ) const;
+    POSITION    FindIndex( INT_PTR nIndex ) const;
+    TYPE        &GetAt( POSITION position );
+    const TYPE  &GetAt( POSITION position ) const;
+    INT_PTR     GetCount() const;
+    const TYPE  &GetHead() const;
+    TYPE        &GetHead();
+    POSITION    GetHeadPosition() const;
+    TYPE        &GetNext( POSITION &rPosition );
+    const TYPE  &GetNext( POSITION &rPosition ) const;
+    TYPE        &GetPrev( POSITION &rPosition );
+    const TYPE  &GetPrev( POSITION &rPosition ) const;
+    INT_PTR     GetSize() const;
+    TYPE        &GetTail();
+    const TYPE  &GetTail() const;
+    POSITION    GetTailPosition() const;
+    POSITION    InsertAfter( POSITION position, ARG_TYPE newElement );
+    POSITION    InsertBefore( POSITION position, ARG_TYPE newElement );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( POSITION position );
+    TYPE        RemoveHead();
+    TYPE        RemoveTail();
+    void        SetAt( POSITION pos, ARG_TYPE newElement );
+};
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+class CMap : public CObject {
+private:
+    struct CAssoc {
+        KEY     key;
+        VALUE   value;
+        CAssoc  *pNext;
+    };
+    
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+    
+public:
+    struct CPair {
+        KEY     key;
+        VALUE   value;
+    };
+    
+    CMap();
+    virtual ~CMap();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, KEY &rKey, VALUE &rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( ARG_KEY key, VALUE &rValue ) const;
+    const CPair *PGetFirstAssoc() const;
+    CPair       *PGetFirstAssoc();
+    const CPair *PGetNextAssoc( const CPair *pAssocRet ) const;
+    CPair       *PGetNextAssoc( const CPair *pAssocRet );
+    const CPair *PLookup( ARG_KEY key ) const;
+    CPair       *PLookup( ARG_KEY key );
+    void        RemoveAll();
+    BOOL        RemoveKey( ARG_KEY key );
+    void        SetAt( ARG_KEY key, ARG_VALUE newValue );
+    
+    VALUE   &operator[]( ARG_KEY key );
+};
+
+template< class BASE_CLASS, class TYPE >
+class CTypedPtrArray : public BASE_CLASS {
+public:
+    INT_PTR Add( TYPE newElement )
+        { return( BASE_CLASS::Add( newElement ) ); }
+    INT_PTR Append( const CTypedPtrArray &src )
+        { return( BASE_CLASS::Append( src ) ); }
+    void    Copy( const CTypedPtrArray &src )
+        { return( BASE_CLASS::Copy( src ) ); }
+    TYPE    &ElementAt( INT_PTR nIndex )
+        { return( (TYPE &)BASE_CLASS::ElementAt( nIndex ) ); }
+    TYPE    GetAt( INT_PTR nIndex ) const
+        { return( (TYPE)BASE_CLASS::GetAt( nIndex ) ); }
+    void    InsertAt( INT_PTR nIndex, TYPE newElement, INT_PTR nCount = 1 )
+        { BASE_CLASS::InsertAt( nIndex, newElement, nCount ); }
+    void    InsertAt( INT_PTR nStartIndex, CTypedPtrArray *pNewArray )
+        { BASE_CLASS::InsertAt( nStartIndex, pNewArray ); }
+    void    SetAt( INT_PTR nIndex, TYPE ptr )
+        { BASE_CLASS::SetAt( nIndex, ptr ); }
+    void    SetAtGrow( INT_PTR nIndex, TYPE newElement )
+        { BASE_CLASS::SetAtGrow( nIndex, newElement ); }
+    
+    TYPE    &operator[]( INT_PTR nIndex )
+        { return( (TYPE &)BASE_CLASS::operator[]( nIndex ) ); }
+    TYPE    operator[]( INT_PTR nIndex ) const
+        { return( (TYPE)BASE_CLASS::operator[]( nIndex ) ); }
+};
+
+template< class BASE_CLASS, class TYPE >
+class CTypedPtrList : public BASE_CLASS {
+public:
+    POSITION    AddHead( TYPE newElement )
+        { return( BASE_CLASS::AddHead( newElement ) ); }
+    void        AddHead( CTypedPtrList *pNewList )
+        { BASE_CLASS::AddHead( pNewList ); }
+    POSITION    AddTail( TYPE newElement )
+        { return( BASE_CLASS::AddTail( newElement ) ); }
+    void        AddTail( CTypedPtrList *pNewList )
+        { BASE_CLASS::AddTail( pNewList ); }
+    TYPE        &GetAt( POSITION position )
+        { return( (TYPE &)BASE_CLASS::GetAt( position ) ); }
+    TYPE        GetAt( POSITION position ) const
+        { return( (TYPE)BASE_CLASS::GetAt( position ) ); }
+    TYPE        &GetHead()
+        { return( (TYPE &)BASE_CLASS::GetHead() ); }
+    TYPE        GetHead() const
+        { return( (TYPE)BASE_CLASS::GetHead() ); }
+    TYPE        &GetNext( POSITION &rPosition )
+        { return( (TYPE &)BASE_CLASS::GetNext( rPosition ) ); }
+    TYPE        GetNext( POSITION &rPosition ) const
+        { return( (TYPE)BASE_CLASS::GetNext( rPosition ) ); }
+    TYPE        &GetPrev( POSITION &rPosition )
+        { return( (TYPE &)BASE_CLASS::GetPrev( rPosition ) ); }
+    TYPE        GetPrev( POSITION &rPosition ) const
+        { return( (TYPE)BASE_CLASS::GetPrev( rPosition ) ); }
+    TYPE        &GetTail()
+        { return( (TYPE &)BASE_CLASS::GetTail() ); }
+    TYPE        GetTail() const
+        { return( (TYPE)BASE_CLASS::GetTail() ); }
+    TYPE        RemoveHead()
+        { return( (TYPE)BASE_CLASS::RemoveHead() ); }
+    TYPE        RemoveTail()
+        { return( (TYPE)BASE_CLASS::RemoveTail() ); }
+    void        SetAt( POSITION pos, TYPE newElement )
+        { BASE_CLASS::SetAt( pos, newElement ); }
+};
+
+template< class BASE_CLASS, class KEY, class VALUE >
+class CTypedPtrMap : public BASE_CLASS {
+public:
+    void    GetNextAssoc( POSITION &rPosition, KEY &rKey, VALUE &rValue ) const
+        { BASE_CLASS::GetNextAssoc( rPosition, (BASE_CLASS::BASE_KEY &)rKey,
+                                    (BASE_CLASS::BASE_VALUE &)rValue ); }
+    BOOL    Lookup( BASE_CLASS::BASE_ARG_KEY key, VALUE &rValue ) const
+        { return( BASE_CLASS::Lookup( key, (BASE_CLASS::BASE_VALUE &)rValue ) ); }
+    BOOL    RemoveKey( KEY key )
+        { return( BASE_CLASS::RemoveKey( key ) ); }
+    void    SetAt( KEY key, VALUE newValue )
+        { BASE_CLASS::SetAt( key, newValue ); }
+    
+    VALUE   &operator[]( BASE_CLASS::BASE_ARG_KEY key )
+        { return( (VALUE &)BASE_CLASS::operator[]( key ) ); }
+};
+
+template< class TYPE, class ARG_TYPE >
+BOOL AFXAPI CompareElements( const TYPE *pElement1, const ARG_TYPE *pElement2 );
+template< class TYPE >
+void AFXAPI CopyElements( TYPE *pDest, const TYPE *pSrc, INT_PTR nCount );
+template< class ARG_KEY >
+UINT AFXAPI HashKey( ARG_KEY key );
+template< class TYPE >
+void AFXAPI SerializeElements( CArchive &ar, TYPE *pElements, INT_PTR nCount );
+
+template<>
+_AFXLINK UINT AFXAPI HashKey( LPCTSTR key );
+template<>
+_AFXLINK void AFXAPI SerializeElements( CArchive &ar, CString *pElements, INT_PTR nCount );
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CArray< TYPE, ARG_TYPE >::ElementAt( INT_PTR nIndex )
+/********************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CArray< TYPE, ARG_TYPE >::ElementAt( INT_PTR nIndex ) const
+/********************************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CArray< TYPE, ARG_TYPE >::GetAt( INT_PTR nIndex )
+/****************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CArray< TYPE, ARG_TYPE >::GetAt( INT_PTR nIndex ) const
+/****************************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE INT_PTR CArray< TYPE, ARG_TYPE >::GetCount() const
+/***********************************************************/
+{
+    return( m_nSize );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE *CArray< TYPE, ARG_TYPE >::GetData() const
+/**************************************************************/
+{
+    return( m_pData );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE *CArray< TYPE, ARG_TYPE >::GetData()
+/**************************************************/
+{
+    return( m_pData );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE INT_PTR CArray< TYPE, ARG_TYPE >::GetSize() const
+/**********************************************************/
+{
+    return( m_nSize );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE INT_PTR CArray< TYPE, ARG_TYPE >::GetUpperBound() const
+/****************************************************************/
+{
+    return( m_nSize - 1 );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE BOOL CArray< TYPE, ARG_TYPE >::IsEmpty() const
+/*******************************************************/
+{
+    return( m_nSize == 0 );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE void CArray< TYPE, ARG_TYPE >::SetAt( INT_PTR nIndex, ARG_TYPE newElement )
+/************************************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    m_pData[nIndex] = newElement;
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CArray< TYPE, ARG_TYPE >::operator[]( INT_PTR nIndex )
+/*********************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CArray< TYPE, ARG_TYPE >::operator[]( INT_PTR nIndex ) const
+/*********************************************************************************/
+{
+    ASSERT( nIndex < m_nSize );
+    return( m_pData[nIndex] );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CList< TYPE, ARG_TYPE >::GetAt( POSITION position ) const
+/******************************************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CList< TYPE, ARG_TYPE >::GetAt( POSITION position )
+/******************************************************************/
+{
+    ASSERT( position != NULL );
+    return( ((CNode *)position)->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE INT_PTR CList< TYPE, ARG_TYPE >::GetCount() const
+/**********************************************************/
+{
+    return( m_nCount );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CList< TYPE, ARG_TYPE >::GetHead() const
+/*************************************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CList< TYPE, ARG_TYPE >::GetHead()
+/*************************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    return( m_pNodeHead->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE POSITION CList< TYPE, ARG_TYPE >::GetHeadPosition() const
+/******************************************************************/
+{
+    return( (POSITION)m_pNodeHead );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CList< TYPE, ARG_TYPE >::GetNext( POSITION &rPosition ) const
+/**********************************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CList< TYPE, ARG_TYPE >::GetNext( POSITION &rPosition )
+/**********************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pNext;
+    return( pNode->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CList< TYPE, ARG_TYPE >::GetPrev( POSITION &rPosition ) const
+/**********************************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CList< TYPE, ARG_TYPE >::GetPrev( POSITION &rPosition )
+/**********************************************************************/
+{
+    ASSERT( rPosition != NULL );
+    CNode *pNode = (CNode *)rPosition;
+    rPosition = (POSITION)pNode->pPrev;
+    return( pNode->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE INT_PTR CList< TYPE, ARG_TYPE >::GetSize() const
+/*********************************************************/
+{
+    return( m_nCount );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE const TYPE &CList< TYPE, ARG_TYPE >::GetTail() const
+/*************************************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE TYPE &CList< TYPE, ARG_TYPE >::GetTail()
+/*************************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    return( m_pNodeTail->data );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE POSITION CList< TYPE, ARG_TYPE >::GetTailPosition() const
+/******************************************************************/
+{
+    return( (POSITION)m_pNodeTail );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE BOOL CList< TYPE, ARG_TYPE >::IsEmpty() const
+/******************************************************/
+{
+    return( m_pNodeHead != NULL );
+}
+
+template< class TYPE, class ARG_TYPE >
+AFX_INLINE void CList< TYPE, ARG_TYPE >::SetAt( POSITION position, ARG_TYPE newElement )
+/**************************************************************************************/
+{
+    ASSERT( position != NULL );
+    ((CNode *)position)->data = newElement;
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+AFX_INLINE INT_PTR CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::GetCount() const
+/*************************************************************************/
+{
+    return( m_nCount );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+AFX_INLINE UINT CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::GetHashTableSize() const
+/******************************************************************************/
+{
+    return( m_nHashTableSize );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+AFX_INLINE INT_PTR CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::GetSize() const
+/************************************************************************/
+{
+    return( m_nCount );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+AFX_INLINE BOOL CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::IsEmpty() const
+/*********************************************************************/
+{
+    return( m_nCount == 0 );
+}
+
+template< class TYPE, class ARG_TYPE >
+CArray< TYPE, ARG_TYPE >::CArray()
+/********************************/
+{
+    m_pData = NULL;
+    m_nSize = 0;
+    m_nMaxSize = 0;
+    m_nGrowBy = 1;
+}
+
+template< class TYPE, class ARG_TYPE >
+CArray< TYPE, ARG_TYPE >::~CArray()
+/*********************************/
+{
+    RemoveAll();
+    FreeExtra();
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::Serialize( CArchive &ar )
+/******************************************************/
+{
+    CObject::Serialize( ar );
+    
+    if( ar.IsStoring() ) {
+        ar.WriteCount( m_nSize );
+    } else {
+        int nSize = ar.ReadCount();
+        SetSize( nSize );
+    }
+    SerializeElements( ar, m_pData, m_nSize );
+}
+
+#ifdef _DEBUG
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::AssertValid() const
+/************************************************/
+{
+    CObject::AssertValid();
+    
+    ASSERT( m_nSize >= 0 );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::Dump( CDumpContext &dc ) const
+/***********************************************************/
+{
+    CObject::Dump( dc );
+    
+    dc << "m_pData = " << m_pData << "\n";
+    dc << "m_nSize = " << m_nSize << "\n";
+    dc << "m_nMaxSize = " << m_nMaxSize << "\n";
+    dc << "m_nGrowBy = " << m_nGrowBy << "\n";
+}
+
+#endif // _DEBUG
+
+template< class TYPE, class ARG_TYPE >
+INT_PTR CArray< TYPE, ARG_TYPE >::Add( ARG_TYPE newElement )
+/**********************************************************/
+{
+    if( m_nSize == m_nMaxSize ) {
+        m_nMaxSize += m_nGrowBy;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        if( m_nGrowBy > 1 ) {
+            memset( pNewData + m_nSize, 0, m_nGrowBy * sizeof( TYPE ) );
+        }
+        m_pData = pNewData;
+    }
+    new( m_pData + m_nSize ) TYPE;
+    m_pData[m_nSize] = newElement;
+    int nIndex = m_nSize;
+    m_nSize++;
+    return( nIndex );
+}
+
+template< class TYPE, class ARG_TYPE >
+INT_PTR CArray< TYPE, ARG_TYPE >::Append( const CArray &src )
+/***********************************************************/
+{
+    int nNewMaxSize = m_nSize + src.m_nSize;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        ASSERT( m_nMaxSize > m_nSize );
+        memset( pNewData + m_nSize, 0, (m_nMaxSize - m_nSize) * sizeof( TYPE ) );
+        m_pData = pNewData;
+    }
+    for( int i = 0; i < src.m_nSize; i++ ) {
+        new( m_pData + m_nSize + i ) TYPE;
+    }
+    CopyElements( m_pData + m_nSize, src.m_pData, src.m_nSize );
+    int nIndex = m_nSize;
+    m_nSize += src.m_nSize;
+    return( nIndex );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::Copy( const CArray &src )
+/******************************************************/
+{
+    if( m_pData != NULL ) {
+        for( int i = 0; i < m_nSize; i++ ) {
+            m_pData[i].~TYPE();
+        }
+    }
+
+    int nNewMaxSize = src.m_nSize;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        if( m_pData != NULL ) {
+            free( m_pData );
+        }
+        m_pData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+    }
+    memset( m_pData, 0, sizeof( TYPE ) * m_nMaxSize );
+    for( int i = m_nSize; i < src.m_nSize; i++ ) {
+        new( m_pData + i ) TYPE;
+    }
+    CopyElements( m_pData, src.m_pData, src.m_nSize );
+    m_nSize = src.m_nSize;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::FreeExtra()
+/****************************************/
+{
+    if( m_nMaxSize > m_nSize && m_pData != NULL ) {
+        if( m_nSize > 0 ) {
+            TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nSize );
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+            m_pData = pNewData;
+        } else {
+            free( m_pData );
+            m_pData = NULL;
+        }
+        m_nMaxSize = m_nSize;
+    }
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::InsertAt( INT_PTR nIndex, ARG_TYPE newElement,
+                                         INT_PTR nCount )
+/*******************************************************/
+{
+    ASSERT( nIndex >= 0 );
+    ASSERT( nCount >= 1 );
+    int nNewMaxSize = m_nSize + nCount;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_nSize + nCount < m_nMaxSize ) {
+            memset( pNewData + m_nSize + nCount, 0,
+                    (m_nMaxSize - (m_nSize + nCount)) * sizeof( TYPE ) );
+        }
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        m_pData = pNewData;
+    }
+    memmove( m_pData + nIndex + nCount, m_pData + nIndex,
+             (m_nSize - nIndex) * sizeof( TYPE ) );
+    memset( m_pData + nIndex, 0, nCount * sizeof( TYPE ) );
+    for( int i = 0; i < nCount; i++ ) {
+        new( m_pData + nIndex + i ) TYPE;
+        CopyElements( m_pData + nIndex + i, &newElement, 1 );
+    }
+    m_nSize += nCount;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::InsertAt( INT_PTR nStartIndex, CArray *pNewArray )
+/*******************************************************************************/
+{
+    ASSERT( nStartIndex >= 0 );
+    int nNewMaxSize = m_nSize + pNewArray->m_nSize;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        if( m_nSize + pNewArray->m_nSize < m_nMaxSize ) {
+            memset( pNewData + m_nSize + pNewArray->m_nSize, 0,
+                    (m_nMaxSize - (m_nSize + pNewArray->m_nSize)) * sizeof( TYPE ) );
+        }
+        m_pData = pNewData;
+    }
+    memmove( m_pData + nStartIndex + pNewArray->m_nSize, m_pData + nStartIndex,
+             (m_nSize - nStartIndex) * sizeof( TYPE ) );
+    memset( m_pData + nStartIndex, 0, pNewArray->m_nSize * sizeof( TYPE ) );
+    for( int i = 0; i < pNewArray->m_nSize; i++ ) {
+        new( m_pData + nStartIndex + i ) TYPE;
+    }
+    CopyElements( m_pData + nStartIndex, pNewArray->m_pData, pNewArray->m_nSize );
+    m_nSize += pNewArray->m_nSize;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::RemoveAll()
+/****************************************/
+{
+    for( int i = 0; i < m_nSize; i++ ) {
+        m_pData[i].~TYPE();
+    }
+    memset( m_pData, 0, m_nSize * sizeof( TYPE ) );
+    m_nSize = 0;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::RemoveAt( INT_PTR nIndex, INT_PTR nCount )
+/***********************************************************************/
+{
+    ASSERT( nCount >= 1 );
+    ASSERT( nIndex + nCount <= m_nSize );
+    for( int i = 0; i < nCount; i++ ) {
+        m_pData[nIndex + i].~TYPE();
+    }
+    if( nIndex + nCount < m_nSize ) {
+        memmove( m_pData + nIndex, m_pData + nIndex + nCount,
+                 (m_nSize - (nIndex + nCount)) * sizeof( TYPE ) );
+    }
+    m_nSize -= nCount;
+    memset( m_pData + m_nSize, 0, nCount * sizeof( TYPE ) );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::SetAtGrow( INT_PTR nIndex, ARG_TYPE newElement )
+/*****************************************************************************/
+{
+    ASSERT( nIndex >= 0 );
+    int nNewMaxSize = nIndex + 1;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        ASSERT( m_nSize < m_nMaxSize );
+        memset( pNewData + m_nSize, 0, (m_nMaxSize - m_nSize) * sizeof( TYPE ) );
+        m_pData = pNewData;
+    }
+    if( nIndex >= m_nSize ) {
+        for( int i = m_nSize; i <= nIndex; i++ ) {
+            new( m_pData + i ) TYPE;
+        }
+        m_nSize = nIndex + 1;
+    }
+    m_pData[nIndex] = newElement;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CArray< TYPE, ARG_TYPE >::SetSize( INT_PTR nNewSize, INT_PTR nGrowBy )
+/*************************************************************************/
+{
+    ASSERT( nNewSize >= 0 );
+    if( nGrowBy > 0 ) {
+        m_nGrowBy = nGrowBy;
+    }
+    int nNewMaxSize = nNewSize;
+    if( nNewMaxSize > m_nMaxSize ) {
+        if( nNewMaxSize % m_nGrowBy != 0 ) {
+            nNewMaxSize -= nNewMaxSize % m_nGrowBy;
+            nNewMaxSize += m_nGrowBy;
+        }
+        m_nMaxSize = nNewMaxSize;
+        TYPE *pNewData = (TYPE *)malloc( sizeof( TYPE ) * m_nMaxSize );
+        if( m_pData != NULL ) {
+            memcpy( pNewData, m_pData, m_nSize * sizeof( TYPE ) );
+            free( m_pData );
+        }
+        if( m_nSize < m_nMaxSize ) {
+            memset( pNewData + m_nSize, 0, (m_nMaxSize - m_nSize) * sizeof( TYPE ) );
+        }
+        m_pData = pNewData;
+    }
+    if( m_nSize > nNewSize ) {
+        for( int i = nNewSize; i < m_nSize; i++ ) {
+            m_pData[i].~TYPE();
+        }
+        memset( m_pData + nNewSize, 0, (m_nSize - nNewSize) * sizeof( TYPE ) );
+    } else {
+        for( int i = m_nSize; i < nNewSize; i++ ) {
+            new( m_pData + i ) TYPE;
+        }
+    }
+    m_nSize = nNewSize;
+    FreeExtra();
+}
+
+template< class TYPE, class ARG_TYPE >
+CList< TYPE, ARG_TYPE >::CList()
+/******************************/
+{
+    m_pNodeHead = NULL;
+    m_pNodeTail = NULL;
+    m_nCount = 0;
+}
+
+template< class TYPE, class ARG_TYPE >
+CList< TYPE, ARG_TYPE >::~CList()
+/*******************************/
+{
+    RemoveAll();
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::Serialize( CArchive &ar )
+/*****************************************************/
+{
+    if( ar.IsStoring() ) {
+        ar.WriteCount( m_nCount );
+        CNode *pNode = m_pNodeHead;
+        for( int i = 0; i < m_nCount; i++ ) {
+            ASSERT( pNode != NULL );
+            SerializeElements( ar, &pNode->data, 1 );
+            pNode = pNode->pNext;
+        }
+    } else {
+        RemoveAll();
+        int nCount = ar.ReadCount();
+        TYPE newElement;
+        for( int i = 0; i < nCount; i++ ) {
+            SerializeElements( ar, &newElement, 1 );
+            AddTail( newElement );
+        }
+    }
+}
+
+#ifdef _DEBUG
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::AssertValid() const
+/***********************************************/
+{
+    CObject::AssertValid();
+    
+    ASSERT( m_nCount >= 0 );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::Dump( CDumpContext &dc ) const
+/**********************************************************/
+{
+    CObject::Dump( dc );
+    
+    dc << "m_pNodeHead = " << m_pNodeHead << "\n";
+    dc << "m_pNodeTail = " << m_pNodeTail << "\n";
+    dc << "m_nCount = " << m_nCount << "\n";
+}
+
+#endif // _DEBUG
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::AddHead( ARG_TYPE newElement )
+/**************************************************************/
+{
+    CNode *pNewNode = new CNode;
+    pNewNode->pNext = m_pNodeHead;
+    pNewNode->pPrev = NULL;
+    pNewNode->data = newElement;
+    if( m_pNodeHead != NULL ) {
+        m_pNodeHead->pPrev = pNewNode;
+    }
+    m_pNodeHead = pNewNode;
+    if( m_pNodeTail == NULL ) {
+        m_pNodeTail = pNewNode;
+    }
+    m_nCount++;
+    return( (POSITION)pNewNode );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::AddHead( CList *pNewList )
+/******************************************************/
+{
+    if( pNewList->m_pNodeHead != NULL ) {
+        CNode *pNodeFirst = NULL;
+        CNode *pNodeCur = NULL;
+        CNode *pOtherNode = pNewList->m_pNodeHead;
+        while( pOtherNode != NULL ) {
+            if( pNodeCur == NULL ) {
+                pNodeCur = new CNode;
+                pNodeFirst = pNodeCur;
+                pNodeCur->pPrev = NULL;
+            } else {
+                pNodeCur->pNext = new CNode;
+                pNodeCur->pNext->pPrev = pNodeCur;
+                pNodeCur = pNodeCur->pNext;
+            }
+            pNodeCur->pNext = NULL;
+            pNodeCur->data = pOtherNode->data;
+            pOtherNode = pOtherNode->pNext;
+        }
+        pNodeCur->pNext = m_pNodeHead;
+        m_pNodeHead->pPrev = pNodeCur;
+        m_pNodeHead = pNodeFirst;
+        m_nCount += pNewList->m_nCount;
+    }
+}
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::AddTail( ARG_TYPE newElement )
+/**************************************************************/
+{
+    CNode *pNewNode = new CNode;
+    pNewNode->pNext = NULL;
+    pNewNode->pPrev = m_pNodeTail;
+    pNewNode->data = newElement;
+    if( m_pNodeTail != NULL ) {
+        m_pNodeTail->pNext = pNewNode;
+    }
+    m_pNodeTail = pNewNode;
+    if( m_pNodeHead == NULL ) {
+        m_pNodeHead = pNewNode;
+    }
+    m_nCount++;
+    return( (POSITION)pNewNode );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::AddTail( CList *pNewList )
+/******************************************************/
+{
+    if( pNewList->m_pNodeHead != NULL ) {
+        CNode *pNodeFirst = NULL;
+        CNode *pNodeCur = NULL;
+        CNode *pOtherNode = pNewList->m_pNodeHead;
+        while( pOtherNode != NULL ) {
+            if( pNodeCur == NULL ) {
+                pNodeCur = new CNode;
+                pNodeFirst = pNodeCur;
+                pNodeCur->pPrev = NULL;
+            } else {
+                pNodeCur->pNext = new CNode;
+                pNodeCur->pNext->pPrev = pNodeCur;
+                pNodeCur = pNodeCur->pNext;
+            }
+            pNodeCur->pNext = NULL;
+            pNodeCur->data = pOtherNode->data;
+            pOtherNode = pOtherNode->pNext;
+        }
+        pNodeFirst->pPrev = m_pNodeTail;
+        m_pNodeTail->pNext = pNodeFirst;
+        m_pNodeTail = pNodeCur;
+        m_nCount += pNewList->m_nCount;
+    }
+}
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::Find( ARG_TYPE searchValue, POSITION startAfter ) const
+/***************************************************************************************/
+{
+    CNode *pNode = (startAfter != NULL) ? (CNode *)startAfter : m_pNodeHead;
+    while( pNode != NULL ) {
+        if( CompareElements( &pNode->data, &searchValue ) ) {
+            return( (POSITION)pNode );
+        }
+        pNode = pNode->pNext;
+    }
+    return( NULL );
+}
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::FindIndex( INT_PTR nIndex ) const
+/*****************************************************************/
+{
+    ASSERT( nIndex >= 0 );
+    CNode *pNode = m_pNodeHead;
+    while( nIndex > 0 ) {
+        pNode = pNode->pNext;
+        if( pNode == NULL ) {
+            return( NULL );
+        }
+        nIndex--;
+    }
+    return( (POSITION)pNode );
+}
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::InsertAfter( POSITION position, ARG_TYPE newElement )
+/*************************************************************************************/
+{
+    ASSERT( position != NULL );
+    CNode *pNode = new CNode;
+    pNode->pPrev = (CNode *)position;
+    pNode->pNext = pNode->pPrev->pNext;
+    pNode->data = newElement;
+    pNode->pPrev->pNext = pNode;
+    if( pNode->pNext != NULL ) {
+        pNode->pNext->pPrev = pNode;
+    } else {
+        ASSERT( m_pNodeTail == (CNode *)position );
+        m_pNodeTail = pNode;
+    }
+    m_nCount++;
+    return( (POSITION)pNode );
+}
+
+template< class TYPE, class ARG_TYPE >
+POSITION CList< TYPE, ARG_TYPE >::InsertBefore( POSITION position, ARG_TYPE newElement )
+/**************************************************************************************/
+{
+    ASSERT( position != NULL );
+    CNode *pNode = new CNode;
+    pNode->pNext = (CNode *)position;
+    pNode->pPrev = pNode->pNext->pPrev;
+    pNode->data = newElement;
+    pNode->pNext->pPrev = pNode;
+    if( pNode->pPrev != NULL ) {
+        pNode->pPrev->pNext = pNode;
+    } else {
+        ASSERT( m_pNodeHead == (CNode *)position );
+        m_pNodeHead = pNode;
+    }
+    m_nCount++;
+    return( (POSITION)pNode );
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::RemoveAll()
+/***************************************/
+{
+    CNode *pNode = m_pNodeHead;
+    CNode *pNextNode;
+    while( pNode != NULL ) {
+        pNextNode = pNode->pNext;
+        delete pNode;
+        pNode = pNextNode;
+    }
+    m_pNodeHead = NULL;
+    m_pNodeTail = NULL;
+    m_nCount = 0;
+}
+
+template< class TYPE, class ARG_TYPE >
+void CList< TYPE, ARG_TYPE >::RemoveAt( POSITION position )
+/*********************************************************/
+{
+    CNode *pNode = (CNode *)position;
+    if( pNode->pNext != NULL ) {
+        pNode->pNext->pPrev = pNode->pPrev;
+    } else {
+        ASSERT( m_pNodeTail == pNode );
+        m_pNodeTail = pNode->pPrev;
+    }
+    if( pNode->pPrev != NULL ) {
+        pNode->pPrev->pNext = pNode->pNext;
+    } else {
+        ASSERT( m_pNodeHead == pNode );
+        m_pNodeHead = pNode->pNext;
+    }
+    delete pNode;
+    m_nCount--;
+}
+
+template< class TYPE, class ARG_TYPE >
+TYPE CList< TYPE, ARG_TYPE >::RemoveHead()
+/****************************************/
+{
+    ASSERT( m_pNodeHead != NULL );
+    CNode *pOldHead = m_pNodeHead;
+    m_pNodeHead = m_pNodeHead->pNext;
+    if( m_pNodeHead == NULL ) {
+        ASSERT( m_pNodeTail == pOldHead );
+        m_pNodeTail = NULL;
+    } else {
+        m_pNodeHead->pPrev = NULL;
+    }
+    TYPE oldData = pOldHead->data;
+    delete pOldHead;
+    m_nCount--;
+    return( oldData );
+}
+
+template< class TYPE, class ARG_TYPE >
+TYPE CList< TYPE, ARG_TYPE >::RemoveTail()
+/****************************************/
+{
+    ASSERT( m_pNodeTail != NULL );
+    CNode *pOldTail = m_pNodeTail;
+    m_pNodeTail = m_pNodeTail->pPrev;
+    if( m_pNodeTail == NULL ) {
+        ASSERT( m_pNodeHead == pOldTail );
+        m_pNodeHead = NULL;
+    } else {
+        m_pNodeTail->pNext = NULL;
+    }
+    TYPE oldData = pOldTail->data;
+    delete pOldTail;
+    m_nCount--;
+    return( oldData );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CMap()
+/********************************************/
+{
+    m_pHashTable = NULL;
+    m_nHashTableSize = 17;
+    m_nCount = 0;
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::~CMap()
+/*********************************************/
+{
+    CAssoc  *pAssoc;
+    CAssoc  *pNextAssoc;
+    if( m_pHashTable != NULL ) {
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            pAssoc = m_pHashTable[i];
+            while( pAssoc != NULL ) {
+                pNextAssoc = pAssoc->pNext;
+                delete pAssoc;
+                pAssoc = pNextAssoc;
+            }
+        }
+        delete [] m_pHashTable;
+    }
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::Serialize( CArchive &ar )
+/********************************************************************/
+{
+    CObject::Serialize( ar );
+    
+    KEY     key;
+    VALUE   value;
+    if( ar.IsStoring() ) {
+        ar.WriteCount( m_nCount );
+        POSITION position = GetStartPosition();
+        while( position != NULL ) {
+            GetNextAssoc( position, key, value );
+            SerializeElements( ar, &key, 1 );
+            SerializeElements( ar, &value, 1 );
+        }
+    } else {
+        UINT nCount = ar.ReadCount();
+        for( int i = 0; i < nCount; i++ ) {
+            SerializeElements( ar, &key, 1 );
+            SerializeElements( ar, &value, 1 );
+            SetAt( key, value );
+        }
+    }
+}
+
+#ifdef _DEBUG
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::AssertValid() const
+/**************************************************************/
+{
+    CObject::AssertValid();
+    
+    ASSERT( m_nCount != 0 );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::Dump( CDumpContext &dc ) const
+/*************************************************************************/
+{
+    CObject::Dump( dc );
+    
+    dc << "m_pHashTable = " << m_pHashTable << "\n";
+    dc << "m_nHashTableSize = " << m_nHashTableSize << "\n";
+    dc << "m_nCount = " << m_nCount << "\n";
+}
+
+#endif // _DEBUG
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::GetNextAssoc( POSITION &rNextPosition,
+                                                           KEY &rKey,
+                                                           VALUE &rValue ) const
+/******************************************************************************/
+{
+    ASSERT( rNextPosition != NULL );
+    CAssoc *pAssoc = (CAssoc *)rNextPosition;
+    rKey = pAssoc->key;
+    rValue = pAssoc->value;
+    if( pAssoc->pNext != NULL ) {
+        rNextPosition = (POSITION)pAssoc->pNext;
+    } else {
+        UINT nHashKey = HashKey( pAssoc->key ) % m_nHashTableSize;
+        for( int i = nHashKey + 1; i < m_nHashTableSize; i++ ) {
+            if( m_pHashTable[i] != NULL ) {
+                rNextPosition = (POSITION)m_pHashTable[i];
+                return;
+            }
+        }
+        rNextPosition = NULL;
+    }
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+POSITION CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::GetStartPosition() const
+/***********************************************************************/
+{
+    if( m_pHashTable == NULL ) {
+        return( NULL );
+    }
+    for( int i = 0; i < m_nHashTableSize; i++ ) {
+        if( m_pHashTable[i] != NULL ) {
+            return( (POSITION)m_pHashTable[i] );
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::InitHashTable( UINT hashSize,
+                                                            BOOL bAllocNow )
+/**************************************************************************/
+{
+    CAssoc  *pAssoc;
+    CAssoc  *pNextAssoc;
+    if( m_pHashTable != NULL ) {
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            pAssoc = m_pHashTable[i];
+            while( pAssoc != NULL ) {
+                pNextAssoc = pAssoc->pNext;
+                delete pAssoc;
+                pAssoc = pNextAssoc;
+            }
+        }
+        delete [] m_pHashTable;
+    }
+    m_nHashTableSize = hashSize;
+    m_nCount = 0;
+    if( bAllocNow ) {
+        m_pHashTable = new CAssoc *[hashSize];
+        for( int i = 0; i < hashSize; i++ ) {
+            m_pHashTable[i] = NULL;
+        }
+    } else {
+        m_pHashTable = NULL;
+    }
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+BOOL CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::Lookup( ARG_KEY key, VALUE &rValue ) const
+/*************************************************************************************/
+{
+    if( m_pHashTable == NULL ) {
+        return( FALSE );
+    }
+    int     nHashKey = HashKey( key ) % m_nHashTableSize;
+    CAssoc  *pAssoc = m_pHashTable[nHashKey];
+    while( pAssoc != NULL ) {
+        if( pAssoc->key == key ) {
+            rValue = pAssoc->value;
+            return( TRUE );
+        }
+        pAssoc = pAssoc->pNext;
+    }
+    return( FALSE );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+const CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PGetFirstAssoc() const
+/****************************************************************/
+{
+    if( m_pHashTable != NULL ) {
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            if( m_pHashTable[i] != NULL ) {
+                return( (const CPair *)m_pHashTable[i] );
+            }
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PGetFirstAssoc()
+/**********************************************************/
+{
+    if( m_pHashTable != NULL ) {
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            if( m_pHashTable[i] != NULL ) {
+                return( (CPair *)m_pHashTable[i] );
+            }
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+const CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PGetNextAssoc( const CPair *pAssocRet ) const
+/***************************************************************************************/
+{
+    const CAssoc *pAssoc = (const CAssoc *)pAssocRet;
+    ASSERT( pAssoc != NULL );
+    if( pAssoc->pNext != NULL ) {
+        return( (const CPair *)pAssoc->pNext );
+    }
+    UINT nHashKey = HashKey( pAssoc->key ) % m_nHashTableSize;
+    for( int i = nHashKey + 1; i < m_nHashTableSize; i++ ) {
+        if( m_pHashTable[i] != NULL ) {
+            return( (const CPair *)m_pHashTable[i] );
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PGetNextAssoc( const CPair *pAssocRet )
+/*********************************************************************************/
+{
+    CAssoc *pAssoc = (CAssoc *)pAssocRet;
+    ASSERT( pAssoc != NULL );
+    if( pAssoc->pNext != NULL ) {
+        return( (CPair *)pAssoc->pNext );
+    }
+    UINT nHashKey = HashKey( pAssoc->key ) % m_nHashTableSize;
+    for( int i = nHashKey + 1; i < m_nHashTableSize; i++ ) {
+        if( m_pHashTable[i] != NULL ) {
+            return( (CPair *)m_pHashTable[i] );
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+const CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PLookup( ARG_KEY key ) const
+/**********************************************************************/
+{
+    if( m_pHashTable != NULL ) {
+        UINT    nHashKey = HashKey( key ) % m_nHashTableSize;
+        CAssoc  *pAssoc = m_pHashTable[nHashKey];
+        while( pAssoc != NULL ) {
+            if( pAssoc->key == key ) {
+                return( (const CPair *)pAssoc );
+            }
+            pAssoc = pAssoc->pNext;
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::CPair *
+    CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::PLookup( ARG_KEY key )
+/****************************************************************/
+{
+    if( m_pHashTable != NULL ) {
+        UINT    nHashKey = HashKey( key ) % m_nHashTableSize;
+        CAssoc  *pAssoc = m_pHashTable[nHashKey];
+        while( pAssoc != NULL ) {
+            if( pAssoc->key == key ) {
+                return( (CPair *)pAssoc );
+            }
+            pAssoc = pAssoc->pNext;
+        }
+    }
+    return( NULL );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::RemoveAll()
+/******************************************************/
+{
+    CAssoc  *pAssoc;
+    CAssoc  *pNextAssoc;
+    if( m_pHashTable != NULL ) {
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            pAssoc = m_pHashTable[i];
+            while( pAssoc != NULL ) {
+                pNextAssoc = pAssoc->pNext;
+                delete pAssoc;
+                pAssoc = pNextAssoc;
+            }
+            m_pHashTable[i] = NULL;
+        }
+        m_nCount = 0;
+    }
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+BOOL CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::RemoveKey( ARG_KEY key )
+/*******************************************************************/
+{
+    if( m_pHashTable == NULL ) {
+        return( FALSE );
+    }
+    UINT nHashKey = HashKey( key ) % m_nHashTableSize;
+    if( m_pHashTable[nHashKey] == NULL ) {
+        return( FALSE );
+    }
+    if( m_pHashTable[nHashKey]->key == key ) {
+        CAssoc *pOldAssoc = m_pHashTable[nHashKey];
+        m_pHashTable[nHashKey] = pOldAssoc->pNext;
+        delete pOldAssoc;
+        m_nCount--;
+        return( TRUE );
+    }
+    CAssoc *pAssoc = m_pHashTable[nHashKey];
+    while( pAssoc->pNext != NULL ) {
+        if( pAssoc->pNext->key == key ) {
+            CAssoc *pOldAssoc = pAssoc->pNext;
+            pAssoc->pNext = pOldAssoc->pNext;
+            delete pOldAssoc;
+            m_nCount--;
+            return( TRUE );
+        }
+        pAssoc = pAssoc->pNext;
+    }
+    return( FALSE );
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+void CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::SetAt( ARG_KEY key, ARG_VALUE newValue )
+/***********************************************************************************/
+{
+    if( m_pHashTable == NULL ) {
+        m_pHashTable = new CAssoc *[m_nHashTableSize];
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            m_pHashTable[i] = NULL;
+        }
+    }
+    UINT nHashKey = HashKey( key ) % m_nHashTableSize;
+    CAssoc *pAssoc = m_pHashTable[nHashKey];
+    while( pAssoc != NULL ) {
+        if( pAssoc->key == key ) {
+            pAssoc->value = newValue;
+            return;
+        }
+        pAssoc = pAssoc->pNext;
+    }
+    pAssoc = new CAssoc;
+    pAssoc->key = key;
+    pAssoc->value = newValue;
+    pAssoc->pNext = m_pHashTable[nHashKey];
+    m_pHashTable[nHashKey] = pAssoc;
+    m_nCount++;
+}
+
+template< class KEY, class ARG_KEY, class VALUE, class ARG_VALUE >
+VALUE &CMap< KEY, ARG_KEY, VALUE, ARG_VALUE >::operator[]( ARG_KEY key )
+/**********************************************************************/
+{
+    if( m_pHashTable == NULL ) {
+        m_pHashTable = new CAssoc *[m_nHashTableSize];
+        for( int i = 0; i < m_nHashTableSize; i++ ) {
+            m_pHashTable[i] = NULL;
+        }
+    }
+    UINT nHashKey = HashKey( key ) % m_nHashTableSize;
+    CAssoc *pAssoc = m_pHashTable[nHashKey];
+    while( pAssoc != NULL ) {
+        if( pAssoc->key == key ) {
+            return( pAssoc->value );
+        }
+        pAssoc = pAssoc->pNext;
+    }
+    pAssoc = new CAssoc;
+    pAssoc->key = key;
+    pAssoc->pNext = m_pHashTable[nHashKey];
+    m_pHashTable[nHashKey] = pAssoc;
+    m_nCount++;
+    return( pAssoc->value );
+}
+
+template< class TYPE, class ARG_TYPE >
+BOOL AFXAPI CompareElements( const TYPE *pElement1, const ARG_TYPE *pElement2 )
+/*****************************************************************************/
+{
+    ASSERT( pElement1 != NULL );
+    ASSERT( pElement2 != NULL );
+    return( *pElement1 == *pElement2 );
+}
+
+template< class TYPE >
+void AFXAPI CopyElements( TYPE *pDest, const TYPE *pSrc, INT_PTR nCount )
+/***********************************************************************/
+{
+    ASSERT( pDest != NULL );
+    ASSERT( pSrc != NULL );
+    ASSERT( nCount >= 0 );
+    for( int i = 0; i < nCount; i++ ) {
+        pDest[i] = pSrc[i];
+    }
+}
+
+template< class ARG_KEY >
+UINT AFXAPI HashKey( ARG_KEY key )
+/********************************/
+{
+    return( (UINT)key >> 4 );
+}
+
+template< class TYPE >
+void AFXAPI SerializeElements( CArchive &ar, TYPE *pElements, INT_PTR nCount )
+/****************************************************************************/
+{
+    ASSERT( pElements != NULL );
+    ASSERT( nCount >= 0 );
+    for( int i = 0; i < nCount; i++ ) {
+        if( ar.IsStoring() ) {
+            ar.Write( &pElements[i], sizeof( TYPE ) );
+        } else {
+            ar.Read( &pElements[i], sizeof( TYPE ) );
+        }
+    }
+}
+
+#endif /* __AFXTEMPL_H__ */

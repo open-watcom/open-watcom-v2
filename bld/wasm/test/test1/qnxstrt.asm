@@ -63,7 +63,7 @@ Initialize      proc    far
                 pop     ds
                 mov     sp,bp
                 pop     bp
-                ret     10
+                ret     2*5H
 Initialize      endp
 
 
@@ -85,7 +85,7 @@ Request         proc    far
                 pop     ds
                 mov     sp,bp           ; epilogue
                 pop     bp              ; ...
-                ret     4               ; clear parms
+                ret     03+1            ; clear parms
 Request         endp
 
 Finalize        proc    far

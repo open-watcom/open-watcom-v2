@@ -24,25 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Performs enhanced Unix cp file I/O.
 *
 ****************************************************************************/
 
 
-/*
-   CPIO.C - perform enhanced unix cp file io
-
-   Date         By              Reason
-   ====         ==              ======
-   17-aug-90    Craig Eisler    defined
-   19-oct-91    Craig Eisler    more work
-   08-nov-91    Craig Eisler    cleaned up
-   28-jan-92    Craig Eisler    display time
-   25-mar-92    Craig Eisler    NT port
-   15-jun-92    Craig Eisler    more cleanup
-   22-jun-92    Craig Eisler    use NearAlloc
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -51,10 +37,10 @@
 #include <fcntl.h>
 #include <io.h>
 #include <time.h>
-#include <sys\stat.h>
-#include <sys\utime.h>
+#include <sys/stat.h>
+#include <sys/utime.h>
 #include <dos.h>
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
 #define  INCL_DOSFILEMGR
 #define  INCL_DOSERRORS
 #define  INCL_DOSMISC
@@ -62,12 +48,17 @@
 #endif
 #include "cp.h"
 
+/* forward declarations */
+static int readABuffer( void );
+static void freeCB( ctrl_block *cb, int freecb );
+
+
 /*
  * GrabFile - read in a specified file, dump it to destination
  */
 int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
 {
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
     int                 result;
 #else
     ctrl_block          *cb;
@@ -75,7 +66,11 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
     int                 handle;
     int                 okay=TRUE;
     timedate            td;
+#if __WATCOMC__ >= 1280
+    unsigned            t,d;
+#else
     unsigned short      t,d;
+#endif
 
     /*
      * file handle
@@ -100,7 +95,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
             /*
              * see if this file passes the date checks
              */
-            if( tflag ) {
+            if( tflag2 ) {
                 if( td.hr <= after_t_d.hr ) {
                     if( td.hr < after_t_d.hr ) {
                         return( FALSE );
@@ -115,7 +110,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
                     }
                 }
             }
-            if( Tflag ) {
+            if( Tflag1 ) {
                 if( td.hr >= before_t_d.hr ) {
                     if( td.hr > before_t_d.hr ) {
                         return( FALSE );
@@ -130,7 +125,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
                     }
                 }
             }
-            if( dflag ) {
+            if( dflag2 ) {
                 if( td.yy <= after_t_d.yy ) {
                     if( td.yy < after_t_d.yy ) {
                         return( FALSE );
@@ -145,7 +140,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
                     }
                 }
             }
-            if( Dflag ) {
+            if( Dflag1 ) {
                 if( td.yy >= before_t_d.yy ) {
                     if( td.yy > before_t_d.yy ) {
                         return( FALSE );
@@ -163,7 +158,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
         }
     }
 
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
     if( !sflag ) {
         PrintALineThenDrop( "Copying file %s to %s", src, dest );
     }
@@ -253,7 +248,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
 
 } /* GrabFile */
 
-#if !defined(__OS_os2v2__)
+#if !defined(__OS_os2386__)
 /*
  * readABuffer - read a data buffer
  */

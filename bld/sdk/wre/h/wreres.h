@@ -46,17 +46,17 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int         WREGetNumRes               ( void );
-extern WREResInfo *WREGetCurrentRes           ( void );
-extern WREResInfo *WREResInfoFromWin          ( HWND );
-extern Bool        WRERegisterResClass        ( HINSTANCE );
-extern WREResInfo *WRECreateNewResource       ( char * );
-extern Bool        WREOpenResource            ( char * );
-extern Bool        WRESaveResource            ( WREResInfo *, Bool );
-extern Bool        WREQueryKillApp            ( Bool );
-extern void        WREFreeResList             ( void );
-extern Bool        WREInitResources           ( HINSTANCE );
-extern void        WREFiniResources           ( void );
-extern char       *WREGetQueryName            ( WREResInfo * );
+extern int          WREGetNumRes( void );
+extern WREResInfo   *WREGetCurrentRes( void );
+extern WREResInfo   *WREResInfoFromWin( HWND );
+extern Bool         WRERegisterResClass( HINSTANCE );
+extern WREResInfo   *WRECreateNewResource( char * );
+extern Bool         WREOpenResource( char * );
+extern Bool         WRESaveResource( WREResInfo *, Bool );
+extern Bool         WREQueryKillApp( Bool );
+extern void         WREFreeResList( void );
+extern Bool         WREInitResources( HINSTANCE );
+extern void         WREFiniResources( void );
+extern char         *WREGetQueryName( WREResInfo * );
 
 #endif

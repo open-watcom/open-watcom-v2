@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -45,8 +44,7 @@ void *MemAlloc( unsigned size )
     }
     memset( tmp, 0, size );
     return( tmp );
-
-} /* MemAlloc */
+}
 
 void *MemRealloc( void *orig, unsigned size )
 {
@@ -57,12 +55,10 @@ void *MemRealloc( void *orig, unsigned size )
         Die( "Out of memory!\n" );
     }
     return( tmp );
-
-} /* MemRealloc */
+}
 
 
 void MemFree( void *ptr )
 {
     free( ptr );
-
-} /* MemFree */
+}

@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Argument vector and count.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include "widechar.h"
+#include "initarg.h"
 
-_WCRTLINK unsigned      __F_NAME(___Argc,___wArgc); /* argument count */
-_WCRTLINK CHAR_TYPE**   __F_NAME(___Argv,___wArgv); /* argument vector */
+_WCRTDATA int           __F_NAME(___Argc,___wArgc); /* argument count */
+_WCRTDATA CHAR_TYPE**   __F_NAME(___Argv,___wArgv); /* argument vector */

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger literal initialization and termination.
 *
 ****************************************************************************/
 
@@ -33,16 +32,16 @@
 #include "dbgdefn.h"
 #include "dui.h"
 
-extern void InitEngineLiterals();
-extern void FiniEngineLiterals();
+extern void InitEngineLiterals( void );
+extern void FiniEngineLiterals( void );
 
-void InitLiterals()
+void InitLiterals( void )
 {
     InitEngineLiterals();
     DUIInitLiterals();
 }
 
-void FiniLiterals()
+void FiniLiterals( void )
 {
     DUIFiniLiterals();
     FiniEngineLiterals();

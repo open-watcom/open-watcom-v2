@@ -13,7 +13,11 @@ struct B {
 
 struct F {
     operator int() { return 1; }
+
+#if 0
+    // ambiguous
     operator B() { return 0; }
+#endif
 };
 
 struct Q {

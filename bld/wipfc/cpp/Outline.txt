@@ -1,0 +1,23 @@
+Document
+    Header stuff (everything before H1)
+    GlobalDictionary
+    NameIts
+    Entities (part of Nls)
+    Index
+    TOC
+    SearchTable
+    getPageById()
+    Page
+        Elements {Text, Tag, Command}
+            Previous
+            Next
+            Children
+            Attribute
+            
+            
+parseDocument (builds global dictionary)
+buildTOC
+buildImageCollection
+buildIndex
+buildFTS
+buildCells

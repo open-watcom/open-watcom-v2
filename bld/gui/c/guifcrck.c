@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "gui.h"
+#include "guiwind.h"
 
 bool GUIFirstCrack( void )
 {

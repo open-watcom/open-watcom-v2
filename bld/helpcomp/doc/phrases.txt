@@ -1,0 +1,50 @@
+THE WINHELP |Phrases INTERNAL FILE
+==================================
+
+If present, the |Phrases internal file stores a list of commonly used
+strings from the help text in the |TOPIC file.  The file consists of
+a short header, a list of offsets, and the phrases themselves.  If LZ77
+compression is in use, the phrase text, and the phrase text ONLY, will be
+compressed.
+
+IMPORTANT!!!
+
+The header and the offsets are NEVER compressed.  To decompress
+the |Phrases file, use the standard decompression algorithm beginning
+at the point in the |Phrases file where the actual text begins, and then
+append the results to the header and the offsets.
+
+The |Phrases header
+-------------------
+
+The standard Phrases header is a 4-byte record:
+	Bytes		Meaning
+	-----------------------
+	0-1		Number of phrases in the file
+	2-3		Constant Value:	0x0100
+	
+However, if LZ77 compression is in use the header grows by an additional
+four bytes:
+	Bytes		Meaning
+	-----------------------
+	4-7		Total size of uncompressed phrases
+	
+|Phrases offset list
+--------------------
+
+Immediately following the header is a list of (num_phrases+1) 2-byte values.
+These values are the offsets of each phrase within the |Phrases file.  If
+compression is in effect, these values refer to the uncompressed file.  The
+last offset value 'points' to just past the end of the |Phrases file, so that
+the length of the last phrase can be calculated.  Note that the size of these
+offsets puts another, admittedly weak, restriction on the number of phrases
+in the file.
+
+phrase text
+-----------
+
+The phrases are stored as consecutive ASCII strings, *without* terminating
+zero bytes (hence, the need for the offset values).  As stated previously,
+if compression is in use, the |Phrases file will be compressed starting at
+the beginning of the text section.  The phrases are generally stored
+alphabetically, but there's no real reason for that.

@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 #include "wdeglbl.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wdemem.h"
 #include "wdei2mem.h"
 #include "wdewait.h"
@@ -53,10 +53,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeSaveObjectAs   ( WdeResInfo *, WdeDialogBoxInfo *, char **,
-                                WResID *, void *, int, WResLangType *, Bool );
-static Bool WdeSaveObjectInto ( WdeResInfo *, WdeDialogBoxInfo *, WResID *,
-                                void *, int, WResLangType * );
+static Bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, int, WResLangType *, Bool );
+static Bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, int, WResLangType * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -82,18 +80,18 @@ Bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     WResLangType        lang;
 
 
-    WdeSetWaitCursor ( TRUE );
+    WdeSetWaitCursor( TRUE );
 
-    ok = ( rinfo && dbi );
+    ok = (rinfo != NULL && dbi != NULL);
 
     if( ok ) {
-        if( langtype ) {
+        if( langtype != NULL ) {
             lang = *langtype;
         } else {
-            lang.lang    = DEF_LANG;
+            lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
         }
-        ok = WdeDBI2Mem( dbi, &rdata, &size );
+        ok = WdeDBI2Mem( dbi, (unsigned_8 **)&rdata, &size );
     }
 
     if( ok ) {
@@ -105,7 +103,7 @@ Bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         }
     }
 
-    if( rdata ) {
+    if( rdata != NULL ) {
         WdeMemFree( rdata );
     }
 
@@ -129,35 +127,36 @@ Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     fname = NULL;
     idata.type = NULL;
 
-    ok = ( rinfo && dbi && file_name && name && rdata );
+    ok = (rinfo != NULL && dbi != NULL && file_name != NULL &&
+          name != NULL && rdata != NULL);
 
     if( ok ) {
-        if( get_name || !*file_name ) {
+        if( get_name || *file_name == NULL ) {
             gf.file_name = *file_name;
-            gf.title     = WdeDlgSaveTitle;
+            gf.title = WdeDlgSaveTitle;
             if( get_name ) {
-                gf.title     = WdeDlgSaveAsTitle;
+                gf.title = WdeDlgSaveAsTitle;
             }
-            gf.filter    = WdeResSaveFilter;
-            fname        = WdeGetSaveFileName ( &gf );
+            gf.filter = WdeResSaveFilter;
+            fname = WdeGetSaveFileName( &gf );
         } else {
-            fname        = WdeStrDup ( *file_name );
+            fname = WdeStrDup( *file_name );
         }
-        ok = ( fname && *fname );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
         ftype = WdeSelectFileType( fname, rinfo->is32bit );
-        ok = ( ftype != WR_DONT_KNOW );
+        ok = (ftype != WR_DONT_KNOW);
     }
 
     if( ok ) {
         is_rc = WdeIsFileAnRCFile( fname );
-        ok = ( (idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL );
+        ok = ((idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL);
     }
 
     if( ok ) {
-        memset( &ditem, 0, sizeof(WdeResDlgItem) );
+        memset( &ditem, 0, sizeof( WdeResDlgItem ) );
         ditem.dialog_info = dbi;
         ditem.dialog_name = name;
         if( is_rc ) {
@@ -167,10 +166,8 @@ Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
     // if we are saving a .RES file then auto create a dlg script
     if( ok ) {
-        if( ( ftype == WR_WIN16M_RES ) ||
-            ( ftype == WR_WIN16W_RES ) ||
-            ( ftype == WR_WINNTM_RES ) ||
-            ( ftype == WR_WINNTW_RES ) ) {
+        if( ftype == WR_WIN16M_RES || ftype == WR_WIN16W_RES ||
+            ftype == WR_WINNTM_RES || ftype == WR_WINNTW_RES ) {
             char        dlgName[_MAX_PATH];
             if( WdeCreateDLGName( fname, dlgName ) ) {
                 ok = WdeSaveObjectToRC( dlgName, rinfo, &ditem, FALSE );
@@ -185,22 +182,22 @@ Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         idata.lang = *lang;
         idata.size = size;
         idata.MemFlags = dbi->MemoryFlags;
-        ok = WRSaveObjectAs ( fname, ftype, &idata );
+        ok = WRSaveObjectAs( fname, ftype, &idata );
     }
 
-    if( idata.type ) {
+    if( idata.type != NULL ) {
         WResIDFree( idata.type );
     }
 
     if( ok ) {
-        if( fname ) {
-            if( *file_name ) {
+        if( fname != NULL ) {
+            if( *file_name != NULL ) {
                 WdeMemFree( *file_name );
             }
             *file_name = fname;
         }
     } else {
-        if( fname ) {
+        if( fname != NULL ) {
             WdeMemFree( fname );
         }
     }
@@ -222,28 +219,28 @@ Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
     idata.type = NULL;
     fname = NULL;
-    dup   = FALSE;
+    dup = FALSE;
 
-    ok = ( rinfo && dbi && name && data );
+    ok = (rinfo != NULL && dbi != NULL && name != NULL && data != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WdeDlgSaveIntoTitle;
-        gf.filter    = WdeResSaveFilter;
-        fname        = WdeGetOpenFileName ( &gf );
-        ok = ( fname && *fname );
+        gf.title = WdeDlgSaveIntoTitle;
+        gf.filter = WdeResSaveFilter;
+        fname = WdeGetOpenFileName( &gf );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
         is_rc = WdeIsFileAnRCFile( fname );
         if( !is_rc ) {
-            ok = ( (idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL );
+            ok = ((idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL);
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         if( is_rc ) {
-            memset( &ditem, 0, sizeof(WdeResDlgItem) );
+            memset( &ditem, 0, sizeof( WdeResDlgItem ) );
             ditem.dialog_info = dbi;
             ditem.dialog_name = name;
             ok = WdeSaveObjectToRC( fname, rinfo, &ditem, TRUE );
@@ -254,7 +251,7 @@ Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             idata.lang = *lang;
             idata.size = size;
             idata.MemFlags = dbi->MemoryFlags;
-            ok = WRSaveObjectInto ( fname, &idata, &dup ) && !dup;
+            ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
         }
     }
 
@@ -262,14 +259,13 @@ Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         WdeDisplayErrorMsg( WDE_DUPRESNAMEINFILE );
     }
 
-    if ( fname ) {
-        WdeMemFree ( fname );
+    if( fname != NULL ) {
+        WdeMemFree( fname );
     }
 
-    if( idata.type ) {
+    if( idata.type != NULL ) {
         WResIDFree( idata.type );
     }
 
-    return ( ok );
+    return( ok );
 }
-

@@ -1,5 +1,5 @@
-extern void InitClipboard();
-extern void * NextClipList( void * );
-extern void * GetClipList();
-extern OBJPTR GetClipObject( void * );
-extern BOOL GetClipContents(); 
+extern void     InitClipboard( void );
+extern void     *NextClipList( void * );
+extern void     *GetClipList( void );
+extern OBJPTR   GetClipObject( void * );
+extern BOOL     GetClipContents( void );

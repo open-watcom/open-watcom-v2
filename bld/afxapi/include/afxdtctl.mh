@@ -1,0 +1,114 @@
+/*
+ *  afxdtctl.h  Application Framework date/time control classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXDTCTL_H__
+#define __AFXDTCTL_H__
+
+:include readonly.sp
+
+// All classes in this file require Internet Explorer 3.0 or later.
+#if (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CMonthCalCtrl : public CWnd {
+    DECLARE_DYNAMIC( CMonthCalCtrl )
+    
+public:
+    CMonthCalCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    Create( DWORD dwStyle, const POINT &pt, CWnd *pParentWnd, UINT nID );
+
+    COLORREF    GetColor( int nRegion ) const;
+    BOOL        GetCurSel( CTime &refDateTime ) const;
+    BOOL        GetCurSel( LPSYSTEMTIME pDateTime ) const;
+    int         GetFirstDayOfWeek( BOOL *pbLocal = NULL ) const;
+    int         GetMaxSelCount() const;
+    DWORD       GetMaxTodayWidth() const;
+    BOOL        GetMinReqRect( RECT *pRect ) const;
+    int         GetMonthDelta() const;
+    int         GetMonthRange( CTime &refMinRange, CTime &refMaxRange, DWORD dwFlags ) const;
+    int         GetMonthRange( LPSYSTEMTIME pMinRange, LPSYSTEMTIME pMaxRange, DWORD dwFlags ) const;
+    DWORD       GetRange( CTime *pMinRange, CTime *pMaxRange ) const;
+    DWORD       GetRange( LPSYSTEMTIME pMinRange, LPSYSTEMTIME pMaxRange ) const;
+    BOOL        GetSelRange( CTime &refMinRange, CTime &refMaxRange ) const;
+    BOOL        GetSelRange( LPSYSTEMTIME pMinRange, LPSYSTEMTIME pMaxRange ) const;
+    BOOL        GetToday( CTime &refDateTime ) const;
+    BOOL        GetToday( LPSYSTEMTIME pDateTime ) const;
+    DWORD       HitTest( PMCHITTESTINFO pMCHitTest );
+    COLORREF    SetColor( int nRegion, COLORREF ref );
+    BOOL        SetCurSel( const CTime &refDateTime );
+    BOOL        SetCurSel( LPSYSTEMTIME pDateTime );
+    BOOL        SetDayState( int nMonths, LPMONTHDAYSTATE pStates );
+    BOOL        SetFirstDayOfWeek( int iDay, int *lpnOld = NULL );
+    BOOL        SetMaxSelCount( int nMax );
+    int         SetMonthDelta( int iDelta );
+    BOOL        SetRange( const CTime *pMinRange, const CTime *pMaxRange );
+    BOOL        SetRange( LPSYSTEMTIME pMinRange, LPSYSTEMTIME pMaxRange );
+    BOOL        SetSelRange( const CTime &pMinRange, const CTime &pMaxRange );
+    BOOL        SetSelRange( LPSYSTEMTIME pMinRange, LPSYSTEMTIME pMaxRange );
+    void        SetToday( const CTime *pDateTime );
+    void        SetToday( LPSYSTEMTIME pDateTime );
+    BOOL        SizeMinReq( BOOL bRepaint = TRUE );
+#if (_WIN32_WINNT >= 0x0600)
+    CALID       GetCalID() const;
+    int         GetCalendarBorder() const;
+    int         GetCalendarCount() const;
+    BOOL        GetCalendarGridInfo( PMCGRIDINFO pmcGridInfo ) const;
+    DWORD       GetCurrentView() const;
+    BOOL        IsCenturyView() const;
+    BOOL        IsDecadeView() const;
+    BOOL        IsMonthView() const;
+    BOOL        IsYearView() const;
+    BOOL        SetCalID( CALID calid );
+    void        SetCalendarBorder( int cxyBorder );
+    void        SetCalendarBorderDefault();
+    BOOL        SetCenturyView();
+    BOOL        SetCurrentView( DWORD dwNewView );
+    BOOL        SetDecadeView();
+    BOOL        SetMonthView();
+    BOOL        SetYearView();
+    void        SizeRectToMin( LPRECT lpRect );
+#endif
+};
+
+class _AFXLINK CDateTimeCtrl : public CWnd {
+    DECLARE_DYNAMIC( CDateTimeCtrl )
+    
+public:
+    CDateTimeCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    COLORREF        GetMonthCalColor( int iColor ) const;
+    CMonthCalCtrl   *GetMonthCalCtrl() const;
+    DWORD           GetRange( CTime *pMinRange, CTime *pMaxRange ) const;
+    DWORD           GetTime( CTime &timeDest ) const;
+    DWORD           GetTime( LPSYSTEMTIME pTimeDest ) const;
+    BOOL            SetFormat( LPCTSTR pstrFormat );
+    COLORREF        SetMonthCalColor( int iColor, COLORREF ref );
+    BOOL            SetRange( const CTime *pMinRange, const CTime *pMaxRange );
+    BOOL            SetTime( const CTime *pTimeNew );
+    BOOL            SetTime( LPSYSTEMTIME pTimeNew = NULL );
+#if (_WIN32_IE >= 0x0400)
+    CFont           *GetMonthCalFont() const;
+    void            SetMonthCalFont( HFONT hFont, BOOL bRedraw = TRUE );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    void            CloseMonthCal() const;
+    BOOL            GetDateTimePickerInfo( LPDATETIMEPICKERINFO pDateTimePickerInfo ) const;
+    BOOL            GetIdealSize( LPSIZE pSize ) const;
+    DWORD           GetMonthCalStyle() const;
+    DWORD           SetMonthCalStyle( DWORD dwStyle );
+#endif
+};
+
+#ifndef _DEBUG
+    #include <afxdtctl.inl>
+#endif
+
+#endif // (_WIN32_IE >= 0x0300)
+
+#endif /* __AFXDTCTL_H__ */

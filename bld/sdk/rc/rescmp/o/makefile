@@ -29,11 +29,11 @@ TRMEM = -dTRMEM -of+
 .h : ..\h;$(TRMEM_DIR)
 
 OBJS = bincmp.obj cmpcont.obj cmpfiles.obj cmpres.obj global.obj &
-       layer0.obj param.obj rescmp.obj swchar.obj &
+       layer0.obj param.obj rescmp.obj &
        trmem.obj trmemcvr.obj
 
 .BEFORE
-        set INCLUDE=$(TRMEM_DIR);$(wresdir)h;$(watcom_h);$(%include);
+        set include=$(TRMEM_DIR);$(wresdir)h;$(watcom_h);$(%include);
 
 # explicit rules
 
@@ -42,7 +42,7 @@ $(NAME).exe : $(OBJS) $(wresdir)lib\wres$(MODEL).lib $(LNK)
 
 $(LNK): makefile
         @%write $(LNK) option quiet
-!ifndef on_build_machine
+!ifeq release 0
         @%append $(LNK) debug all
 !endif
         @%append $(LNK) sys dos

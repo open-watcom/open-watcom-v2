@@ -39,15 +39,15 @@
 
 bool GUISetFocus( gui_window *wnd, unsigned id )
 {
-    gui_control_class   class;
+    gui_control_class   control_class;
     control_item        *info;
     HWND                hwnd;
 
-    if( !GUIGetControlClass( wnd, id, &class ) ) {
+    if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( FALSE );
     }
 
-    if( class != GUI_EDIT_MLE ) {
+    if( control_class != GUI_EDIT_MLE ) {
         GUISelectAll( wnd, id, TRUE );
     }
 

@@ -34,16 +34,13 @@
 #include "guiscale.h"
 #include "guix.h"
 #include <string.h>
-#include <malloc.h>
-#ifdef UNIX
-    #include <alloca.h>
-#endif
+#include "walloca.h"
 
 /*
  * GUIXDrawText -- draw text
  */
 
-void GUIXDrawText( gui_window *wnd, char *text, int length, gui_coord *in_pos,
+void GUIXDrawText( gui_window *wnd, const char *text, int length, gui_coord *in_pos,
                   gui_attr attr, gui_ord extentx, bool draw_extent )
 {
     int         vscroll;        /* vertical scroll adjust amount */
@@ -128,16 +125,17 @@ void GUIXDrawText( gui_window *wnd, char *text, int length, gui_coord *in_pos,
                 length = wnd->dirty.col + wnd->dirty.width - pos;
             }
             if( length > 0 ) {
-                char    *p;
+                char        *p;
+                const char  *cp;
 
-                for( p = text; p < text+col; p += GUICharLen( *p ) ) ;
-                if( p != text+col ) {
+                for( cp = text; cp < text+col; cp += GUICharLen( *cp ) ) ;
+                if( cp != text + col ) {
                     p = alloca( length );
-                    memcpy( p, text+col, length );
+                    cp = memcpy( p, text+col, length );
                     p[0] = ' ';
                 }
                 uivtextput( &wnd->screen, my_pos.y - vscroll + frame_adjust,
-                            pos, wnd->colours[attr], p, length );
+                            pos, wnd->colours[attr], cp, length );
             } else {
                 length = 0;
             }

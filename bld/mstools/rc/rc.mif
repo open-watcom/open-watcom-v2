@@ -1,35 +1,22 @@
-!include ..\..\..\master.mif
+name = rc
 
+done: rc.exe
+
+!include ../../master.mif
 
 common_objs = parse.obj translat.obj $(mstools_objs)
 rc_objs     = rc.obj message.obj $(common_objs)
-rc_hdrs     = optdata.h
+rc_hdrs     = optparsh.gh
 
-!ifeq host_CPU axp
-targdef=-d__TARGET_AXP__
-!else ifeq host_CPU ppc
-targdef=-d__TARGET_PPC__
-!else
-targdef=-d__TARGET_$(host_CPU)__
-!endif
+extra_c_flags_message = $(targdef)
+extra_c_flags_rc = $(targdef)
 
 #
 # Instructions for building the executable.
 #
-rc.exe :  $(rc_objs)
+
+rc.exe :  $(rc_hdrs) $(rc_objs) $(version_res_$(host_os)_$(host_cpu))
         $(linker) $(lflags) name $^@ file {$(rc_objs)}
-
-
-.c :  ..\..\..\c;..\..\c
-.h :  ..\..\..\h;..\..\h
-.gml : ..\..\gml
-
-rc.obj :  rc.c $(rc_hdrs)
-message.obj :  message.c $(rc_hdrs)
-parse.obj :  parse.c optparse.c $(rc_hdrs)
-
-optparse.c optdata.h:  optencod.exe ms.gml
-        optencod.exe ..\..\gml\ms.gml ..\..\h\optdata.h ..\..\c\optparse.c ..\..\h\usagemsg.h i86
-
-
-!include ..\..\..\build.mif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif

@@ -30,21 +30,21 @@
 ****************************************************************************/
 
 
-extern char * WR_EXPORT WRConvertStringFrom( char *str, char *from, char *to );
-extern char * WR_EXPORT WRConvertFrom( char *str, char from, char to );
-extern char * WR_EXPORT WRConvertTo( char *str, char to, char from );
-extern char * WR_EXPORT WRConvertStringTo( char *str, char *to, char *from );
+extern char *   WR_EXPORT WRConvertStringFrom( char *str, char *from, char *to );
+extern char *   WR_EXPORT WRConvertFrom( char *str, char from, char to );
+extern char *   WR_EXPORT WRConvertTo( char *str, char to, char from );
+extern char *   WR_EXPORT WRConvertStringTo( char *str, char *to, char *from );
 
-extern void WR_EXPORT WRMassageFilter( char *filter );
+extern void     WR_EXPORT WRMassageFilter( char *filter );
 
-extern int WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len );
-extern int WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len );
-extern int WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len );
-extern int WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len );
+extern int      WR_EXPORT WRmbcs2unicode( char *src, char **dest, int *len );
+extern int      WR_EXPORT WRmbcs2unicodeBuf( char *src, char *dest, int len );
+extern int      WR_EXPORT WRunicode2mbcs( char *src, char **dest, int *len );
+extern int      WR_EXPORT WRunicode2mbcsBuf( char *src, char *dest, int len );
 
-extern int WR_EXPORT WRStrlen( char *str, int is32Bit );
-extern int WR_EXPORT WRStrlen32( char *str );
+extern int      WR_EXPORT WRStrlen( char *str, int is32Bit );
+extern int      WR_EXPORT WRStrlen32( char *str );
 
-extern char * WR_EXPORT WRWResIDNameToStr( WResIDName *name );
+extern char *   WR_EXPORT WRWResIDNameToStr( WResIDName *name );
 
-extern int WR_EXPORT WRFindFnOffset( char *name );
+extern int      WR_EXPORT WRFindFnOffset( char *name );

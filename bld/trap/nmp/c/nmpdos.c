@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <tinyio.h>
+#include "tinyio.h"
 #include "nmp.h"
 
 int myopen( char *name )

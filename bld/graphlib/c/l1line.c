@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  High level line drawing routines.
 *
 ****************************************************************************/
 
 
 #include "gdefn.h"
 #include "rotate.h"
+#include "dotfunc.h"
 
 
 static void         _L0Line( short, short, short, short, short, unsigned short );
@@ -132,7 +132,7 @@ static void _L0Line( short x1, short y1, short x2, short y2,
     gr_device _FARD     *dev_ptr;
     void pascal         (near *x_func)();
     void pascal         (near *y_func)();
-    void pascal         (near *plot)();
+    put_dot_fn near     *plot;
 
     _StartDevice();
     dev_ptr = _CurrState->deviceptr;

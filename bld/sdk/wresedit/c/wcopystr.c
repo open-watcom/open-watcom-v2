@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wcopystr.h"
 
 char *WCopyString( char *mem, char *str, int len )
 {
     memcpy( mem, str, len );
-    return( mem+len );
+    return( mem + len );
 }
-

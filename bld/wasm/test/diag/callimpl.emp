@@ -1,0 +1,24 @@
+
+FIXUPP(9c) len:0011h, chksum:90h(90)
+    000eh Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0013h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0019h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    001ch Seg   POINTER      Frame: TARGET    Target: SI(2)
+
+FIXUPP(9c) len:0011h, chksum:96h(96)
+    0005h Seg   POINTER      Frame: TARGET    Target: SI(1)
+    0013h Seg   OFFSET       Frame: TARGET    Target: SI(2)
+    0018h Seg   OFFSET       Frame: TARGET    Target: SI(2)
+    001eh Seg   OFFSET       Frame: TARGET    Target: SI(2)
+
+FIXUPP386(9d) len:0011h, chksum:e9h(e9)
+    0013h Seg   OFFSET386    Frame: TARGET    Target: SI(3)
+    001ah Seg   OFFSET386    Frame: TARGET    Target: SI(3)
+    0021h Seg   OFFSET386    Frame: TARGET    Target: SI(3)
+    0026h Seg   POINTER386   Frame: TARGET    Target: SI(4)
+
+FIXUPP386(9d) len:0011h, chksum:f3h(f3)
+    0005h Seg   POINTER386   Frame: TARGET    Target: SI(3)
+    001ah Seg   OFFSET386    Frame: TARGET    Target: SI(4)
+    0021h Seg   OFFSET386    Frame: TARGET    Target: SI(4)
+    0028h Seg   OFFSET386    Frame: TARGET    Target: SI(4)

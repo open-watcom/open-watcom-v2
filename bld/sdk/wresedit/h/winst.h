@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern HINSTANCE        WGetEditInstance        ( void );
-extern void             WSetEditInstance        ( HINSTANCE inst );
+extern HINSTANCE    WGetEditInstance( void );
+extern void         WSetEditInstance( HINSTANCE inst );
 
 #endif

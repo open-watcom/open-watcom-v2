@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  386 SIB (Scale Index Base) byte encoding.
 *
 ****************************************************************************/
 
@@ -33,17 +32,17 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "model.h"
+#include "makeins.h"
 
-extern  instruction     *SIBPossibleIndex(instruction*,name*,name**,bool*,hw_reg_set,hw_reg_set,bool*,bool*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *AllocIntConst(int);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      Low64Reg(hw_reg_set);
-extern  void            FreeIns(instruction*);
-extern  void            ReplaceOperand(instruction*,name*,name*);
-extern  byte            *Copy(byte*,byte*,uint);
+extern  instruction     *SIBPossibleIndex( instruction *, name *, name **, bool *, hw_reg_set, hw_reg_set, bool *, bool * );
+extern  name            *AllocRegName( hw_reg_set );
+extern  name            *AllocIntConst( int );
+extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
+extern  hw_reg_set      Low64Reg( hw_reg_set );
+extern  void            ReplaceOperand( instruction *, name *, name * );
+extern  byte            *Copy( byte *, byte *, uint );
 
 extern  block           *HeadBlock;
 extern  type_length     TypeClassSize[];
@@ -58,9 +57,10 @@ typedef struct sib_info {
     signed_32           offset;
 } sib_info;
 
-extern bool FoldIntoIndex( instruction * ins ) {
-/**********************************************/
 
+extern bool FoldIntoIndex( instruction *ins )
+/*******************************************/
+{
     name        *cons;
     bool        is_base;
     name        *new_x;
@@ -199,7 +199,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
             sib.reg = AllocRegName( tmp );
             sib.flags |= X_HIGH_BASE;
         }
-        _Alloc( curr_sib, sizeof( sib_info ) );
+        curr_sib = CGAlloc( sizeof( sib_info ) );
         Copy( (byte *)&sib, (byte *)curr_sib, sizeof( sib_info ) );
         curr_sib->next = sib_head;
         sib_head = curr_sib;
@@ -222,7 +222,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
     while( sib_head != NULL ) {
         curr_sib = sib_head;
         sib_head = sib_head->next;
-        _Free( curr_sib, sizeof( sib_info ) );
+        CGFree( curr_sib );
     }
     return( dies );
 }

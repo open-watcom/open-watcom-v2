@@ -1,0 +1,135 @@
+*$noreference
+
+! System Functions:
+! -----------------
+
+      external GetSysColor
+      external GetSystemMetrics
+      external SetSysColors
+
+      integer*4 GetSysColor
+      integer*2 GetSystemMetrics
+
+! System Metric Indices for GetSystemMetrics()
+
+      integer SM_CXSCREEN
+      integer SM_CYSCREEN
+      integer SM_CXVSCROLL
+      integer SM_CYHSCROLL
+      integer SM_CYCAPTION
+      integer SM_CXBORDER
+      integer SM_CYBORDER
+      integer SM_CXDLGFRAME
+      integer SM_CYDLGFRAME
+      integer SM_CYVTHUMB
+      integer SM_CXHTHUMB
+      integer SM_CXICON
+      integer SM_CYICON
+      integer SM_CXCURSOR
+      integer SM_CYCURSOR
+      integer SM_CYMENU
+      integer SM_CXFULLSCREEN
+      integer SM_CYFULLSCREEN
+      integer SM_CYKANJIWINDOW
+      integer SM_MOUSEPRESENT
+      integer SM_CYVSCROLL
+      integer SM_CXHSCROLL
+      integer SM_DEBUG
+      integer SM_SWAPBUTTON
+      integer SM_RESERVED1
+      integer SM_RESERVED2
+      integer SM_RESERVED3
+      integer SM_RESERVED4
+      integer SM_CXMIN
+      integer SM_CYMIN
+      integer SM_CXSIZE
+      integer SM_CYSIZE
+      integer SM_CXFRAME
+      integer SM_CYFRAME
+      integer SM_CXMINTRACK
+      integer SM_CYMINTRACK
+      integer SM_CMETRICS
+
+      parameter ( SM_CXSCREEN         = 0 )
+      parameter ( SM_CYSCREEN         = 1 )
+      parameter ( SM_CXVSCROLL        = 2 )
+      parameter ( SM_CYHSCROLL        = 3 )
+      parameter ( SM_CYCAPTION        = 4 )
+      parameter ( SM_CXBORDER         = 5 )
+      parameter ( SM_CYBORDER         = 6 )
+      parameter ( SM_CXDLGFRAME       = 7 )
+      parameter ( SM_CYDLGFRAME       = 8 )
+      parameter ( SM_CYVTHUMB         = 9 )
+      parameter ( SM_CXHTHUMB         = 10 )
+      parameter ( SM_CXICON           = 11 )
+      parameter ( SM_CYICON           = 12 )
+      parameter ( SM_CXCURSOR         = 13 )
+      parameter ( SM_CYCURSOR         = 14 )
+      parameter ( SM_CYMENU           = 15 )
+      parameter ( SM_CXFULLSCREEN     = 16 )
+      parameter ( SM_CYFULLSCREEN     = 17 )
+      parameter ( SM_CYKANJIWINDOW    = 18 )
+      parameter ( SM_MOUSEPRESENT     = 19 )
+      parameter ( SM_CYVSCROLL        = 20 )
+      parameter ( SM_CXHSCROLL        = 21 )
+      parameter ( SM_DEBUG            = 22 )
+      parameter ( SM_SWAPBUTTON       = 23 )
+      parameter ( SM_RESERVED1        = 24 )
+      parameter ( SM_RESERVED2        = 25 )
+      parameter ( SM_RESERVED3        = 26 )
+      parameter ( SM_RESERVED4        = 27 )
+      parameter ( SM_CXMIN            = 28 )
+      parameter ( SM_CYMIN            = 29 )
+      parameter ( SM_CXSIZE           = 30 )
+      parameter ( SM_CYSIZE           = 31 )
+      parameter ( SM_CXFRAME          = 32 )
+      parameter ( SM_CYFRAME          = 33 )
+      parameter ( SM_CXMINTRACK       = 34 )
+      parameter ( SM_CYMINTRACK       = 35 )
+      parameter ( SM_CMETRICS         = 36 )
+
+! System Color Indices
+
+      integer COLOR_SCROLLBAR
+      integer COLOR_BACKGROUND
+      integer COLOR_ACTIVECAPTION
+      integer COLOR_INACTIVECAPTION
+      integer COLOR_MENU
+      integer COLOR_WINDOW
+      integer COLOR_WINDOWFRAME
+      integer COLOR_MENUTEXT
+      integer COLOR_WINDOWTEXT
+      integer COLOR_CAPTIONTEXT
+      integer COLOR_ACTIVEBORDER
+      integer COLOR_INACTIVEBORDER
+      integer COLOR_APPWORKSPACE
+      integer COLOR_HIGHLIGHT
+      integer COLOR_HIGHLIGHTTEXT
+      integer COLOR_BTNFACE
+      integer COLOR_BTNSHADOW
+      integer COLOR_GRAYTEXT
+      integer COLOR_BTNTEXT
+      integer COLOR_ENDCOLORS
+
+      parameter ( COLOR_SCROLLBAR         = 0 )
+      parameter ( COLOR_BACKGROUND        = 1 )
+      parameter ( COLOR_ACTIVECAPTION     = 2 )
+      parameter ( COLOR_INACTIVECAPTION   = 3 )
+      parameter ( COLOR_MENU              = 4 )
+      parameter ( COLOR_WINDOW            = 5 )
+      parameter ( COLOR_WINDOWFRAME       = 6 )
+      parameter ( COLOR_MENUTEXT          = 7 )
+      parameter ( COLOR_WINDOWTEXT        = 8 )
+      parameter ( COLOR_CAPTIONTEXT       = 9 )
+      parameter ( COLOR_ACTIVEBORDER      = 10 )
+      parameter ( COLOR_INACTIVEBORDER    = 11 )
+      parameter ( COLOR_APPWORKSPACE      = 12 )
+      parameter ( COLOR_HIGHLIGHT         = 13 )
+      parameter ( COLOR_HIGHLIGHTTEXT     = 14 )
+      parameter ( COLOR_BTNFACE           = 15 )
+      parameter ( COLOR_BTNSHADOW         = 16 )
+      parameter ( COLOR_GRAYTEXT          = 17 )
+      parameter ( COLOR_BTNTEXT           = 18 )
+      parameter ( COLOR_ENDCOLORS         = COLOR_BTNTEXT )
+
+*$reference

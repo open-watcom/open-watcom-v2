@@ -6,8 +6,8 @@
 #include <sys/stat.h>
 #include "life.h"
 
-static HBITMAP          MenuBitMap = NULL;
-static HMENU            PatternMenu = NULL;
+static HBITMAP          MenuBitMap;
+static HMENU            PatternMenu;
 static HDC              MenuDC;
 static BITMAP           MenuBitInfo;
 static HBITMAP          *MenuPatterns;
@@ -71,8 +71,8 @@ extern BOOL ReadAPatternFile( char *name, int i )
 }
 
 
-extern BOOL ReadPatterns()
-/*************************
+extern BOOL ReadPatterns( void )
+/*******************************
 
     Read in all the pattern files from disk.
     (*.LIF in the same directory LIFE.EXE)
@@ -109,15 +109,16 @@ extern BOOL ReadPatterns()
 }
 
 
-extern void FreePatterns()
-/*************************
+extern void FreePatterns( void )
+/*******************************
 
     Free up the patterns array, and corresponding bit maps
 */
 {
     int         i;
 
-    if( MenuBitMap != NULL ) DeleteObject( MenuBitMap );
+    if( MenuBitMap != (HBITMAP)0 )
+        DeleteObject( MenuBitMap );
     for( i = 1; i < NumberPatterns; ++i ) {
         free( Patterns[i] );
     }
@@ -191,8 +192,8 @@ extern void TransformPatterns( void (*rtn)(char *) )
 }
 
 
-static void LoadPatternFile()
-/****************************
+static void LoadPatternFile( void )
+/**********************************
 
     Load the pattern file named in "Buffer" into our pattern menu.
 */
@@ -204,8 +205,8 @@ static void LoadPatternFile()
 }
 
 
-extern void WritePatternFile()
-/*****************************
+extern void WritePatternFile( void )
+/***********************************
 
     Write the selected region to a pattern file (Prompt for name)
 */
@@ -223,7 +224,7 @@ extern void WritePatternFile()
         char            buf[ _MAX_PATH + 100 ];
 
         sprintf( buf, "Overwrite file %s?", Buffer );
-        rc = MessageBox( NULL, buf, "Save A Pattern File",
+        rc = MessageBox( (HWND)0, buf, "Save A Pattern File",
                          MB_YESNO | MB_ICONEXCLAMATION );
         if( rc != IDYES ) return;
     }
@@ -246,8 +247,8 @@ extern void WritePatternFile()
 }
 
 
-extern void LoadNewPattern()
-/***************************
+extern void LoadNewPattern( void )
+/*********************************
 
     Load a new pattern file into the menu (Prompt for name)
 */
@@ -310,8 +311,8 @@ static HBITMAP CreateAMenuBitMap( char *pattern, pixels *total_height )
 
 
 
-extern void CreatePatternMenu()
-/****************************
+extern void CreatePatternMenu( void )
+/************************************
 
     Create the "&Pattern" menu, based upon MenuPatterns[]
 */
@@ -321,7 +322,7 @@ extern void CreatePatternMenu()
     HMENU       menu;
     pixels      menu_height;
 
-    if( MenuBitMap == NULL ) {
+    if( MenuBitMap == (HBITMAP)0 ) {
         MenuBitMap = LoadBitmap( ThisInst, "MenuBitMap" );
         dc = GetDC( WinHandle );
         MenuDC = CreateCompatibleDC( dc );
@@ -330,7 +331,7 @@ extern void CreatePatternMenu()
         GetObject( MenuBitMap, sizeof( BITMAP ), (LPSTR)&MenuBitInfo );
     }
     menu = CreateMenu();
-    if( menu == NULL ) {
+    if( menu == (HMENU)0 ) {
         Error( "No room to create a new menu\n" );
         return;
     }

@@ -1,0 +1,35 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    nop       
+    jmp       L$1
+    nop       
+L$1:
+    mov       ax,0
+    nop       
+    jmp       L$1
+    nop       
+    nop       
+    jmp       L$2
+    nop       
+L$2:
+    mov       ax,1
+    nop       
+    jmp       L$2
+    nop       
+    nop       
+    jmp       L$3
+    jmp       L$2
+    jmp       L$3
+    jmp       L$2
+    nop       
+L$3:
+    mov       ax,2
+    nop       
+    jmp       L$3
+    nop       
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

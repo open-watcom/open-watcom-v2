@@ -1,0 +1,674 @@
+CAUSEWAY DOS EXTENDER SOURCE FILE DOCUMENTATION
+
+
+GENERAL AND LEGAL NOTES
+
+As of January 9, 2000, Michael Devore surrendered all his
+copyrights for CauseWay for Watcom C/C++ & Assembly Language and
+released it to the public domain. Runtime libraries for CauseWay
+for Clipper 5, CauseWay for Clarion 2.1, and the trap file
+source for Watcom retain their separate third party copyrights
+or are covered by nondisclosure agreements and are not part of
+the release of the CauseWay software to public domain.
+
+There is no support or warranty whatsoever for the released
+files.  Under no conditions will Michael Devore be held liable
+for damages arising out of use of, or inability to use, the
+CauseWay files. You may send Devore Software & Consulting e-mail
+to freesource@devoresoftware.com with any questions, but those
+questions will, of necessity, have lower priority than paid
+customer/client inquiries and development works in progress.
+Such questions may be answered only after a long delay or not at
+all. But, depending on workload, the nature and framing of the
+request, and ineffable intangibles, it is within the realm of
+possibility that they will be answered immediately.  The small
+minority of individuals who may feel that they deserve priority
+attention by calling, faxing, or sending questions to other
+e-mail addresses will probably be disappointed in the results,
+at best.
+
+This is a true public domain release.  It is not Yet Another
+Open Source licensing arrangement.  You as an individual or as a
+business entity may use the binary and source files in whatever
+manner you desire, INCLUDING for commercial purposes, without
+explicit credit or compensation to Michael Devore or Devore
+Software & Consulting.  If you make a million off the code, toss
+a few thousand at a deserving charity.  Or don't, it's your
+choice.
+
+And yes, this permission extends to any 386 DOS extender
+developer who has previously claimed the title "fastest" or
+"best" or "hot-damndest" (actually I've never heard that one)
+extender by virtue of a mix of carefully chosen benchmarks,
+feature sets, or chutzpah.  It even includes 286 DOS extender
+developers who may have enjoyed having their products grossly
+hyped to live a lifespan far past normal for their technical
+obsolescence.  If any vendor can use any of the released code
+here to help their customers or others, please have at it.
+
+
+COMMENTS ON THE SOURCE CODE
+
+The code for what was to become CauseWay had begun being written
+before 1993 and remained under development through the end of
+1999.  CauseWay had two main programmers and several others were
+peripherally involved.  Obviously, the operating system and
+programming landscape changed greatly in that time.  Some
+now-common specifications were still in flux or difficult to
+acquire when the project began.  Given the longer than
+seven-year timespan over which the DOS extender was developed,
+the programming team's learning curves, the what had been
+cutting-edge technology, and the substantial codebase involved,
+there doubtless remain a few generally minor operational errors
+and numerous examples of what is now considered poor code or
+technique.  On the other hand, CauseWay-extended applications
+have been and remain in use by millions of machines error-free,
+so things have worked out pretty well.  However, please keep the
+historic perspective in mind if you choose to use or study the
+source code.
+
+The source code for the WL32 linker is in a separate
+distribution. Look for WL32SRC.ZIP.
+
+The source contains a few scattered swear words about
+programming conditions as well as mild insults about drivers or
+software that really annoyed us when changes were being made
+(because they required us to make the changes).  I think most
+people should be able to handle the four "shit"'s, the two
+"stupid"'s, and the one "silly" found during preparation for
+release.  Should take two minutes to edit them out if they
+really bother you.
+
+Read the READ.ME plus the Web FAQ, study well, and think hard
+before assuming direct contact is vital.  For those who wish to
+modify or re-use the source code, please remember that messing
+about with externally created source to a commercial DOS
+extender and linker is not for the faint-hearted nor for those
+not extremely well-versed in the arts of assembly language and
+protected mode.
+
+The copious misspellings in source code comments aren't Michael
+Devore's.  I had to say that.
+
+If you wish to rebuild the source files, rather than use the
+current binary release (found in CW349BIN.ZIP), you may use the
+MAKEFILE's and batch files include in the distribution.
+
+The original files were assembled with MASM 6.12 or TASM 2.5.
+Linkers used are either Microsoft's Link (5.x version), WL32, or
+CWL (internal CauseWay linker).
+
+
+DISTRIBUTION FILES
+
+Following is the full directory file list of the CauseWay DOS
+extender.
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL
+
+Makefiles for various CauseWay settings, e.g. NOVMMAK will make
+a CauseWay with NOVM (no virtual memory) permanently burned-in
+instead of requiring SET CAUSEWAY=NOVM.  Fairly
+self-explanatory.
+
+09/10/99  08:33A                   309 BGNOVMAK
+10/29/99  03:43A                   319 BNVMXMAK
+09/21/98  05:02A                   297 DEBUGMAK
+06/09/97  11:54A                   306 MAKEFILE
+01/17/96  04:57P                   266 NOCOMP
+09/27/98  10:28P                   298 NOEXMAK
+10/28/98  12:53P                   311 NOEXVMMK
+07/15/98  11:20P                   298 NOVMMAK
+
+The main CauseWay DOS extender source files:
+
+11/02/99  03:20A               170,538 API.ASM
+12/30/99  11:29P                99,424 CW32.ASM
+03/25/97  01:25A                 7,492 DECODE_C.ASM
+02/13/99  07:12A                45,746 EXCEPTN.ASM
+05/04/97  05:49A                16,287 INT10H.ASM
+05/20/98  04:08P                42,941 INT21H.ASM
+01/24/96  01:44A                13,621 INT33H.ASM
+04/05/99  09:34P                35,756 INTERRUP.ASM
+06/13/95  08:43P                 8,652 LDT.ASM
+06/13/96  03:13A                50,855 MEMORY.ASM
+11/15/99  01:27P               105,742 RAW&VCPI.ASM
+
+Batch files which drive the MAKEFILE process.  E.BAT, for
+example is standard build, which D.BAT builds DEBUG version, and
+BIG1NOVM.BAT builds a version with BIG1 and NOVM settings
+permanently set.
+
+03/27/94  09:55A                    15 A.BAT
+09/21/98  03:29A                    65 B.BAT
+09/10/99  02:40P                    73 BIG1NOVM.BAT
+10/29/99  03:42A                    73 BIGNOVMX.BAT
+06/11/98  10:50P                    67 D.BAT
+12/24/99  06:33A                    50 E.BAT
+01/17/96  04:57P                    24 F.BAT
+09/27/98  10:26P                    68 NOEX.BAT
+10/28/98  09:03P                   111 NOEXVM.BAT
+07/15/98  11:18P                    68 NOVM.BAT
+
+Definitions files.  Actually, don't remember if these are still
+used somewhere.
+
+03/04/95  04:33P                   348 CW32.DEF
+03/06/95  06:55P                   319 CW32EXP.DEF
+
+Various executables.  CW349 it a utility to update executables
+to latest extender or otherwise change CauseWay settings.  CWC
+is the compression, CWD is the CauseWay debugger stub.
+CWSTUB.EXE is used by Watcom for CauseWay extender.  EXESPLIT
+splits off the extender image from the extended application
+image into FILE1.DSK (extender) and FILE2.DSK (application).
+You can then use DOS command COPY /B to copy a different
+extender image onto the application image.  LE23P is the Watcom
+LE to 3P format converter.
+
+12/30/99  11:30P                58,241 CW349.EXE
+01/05/00  05:11P                55,625 CWC.EXE
+01/17/96  05:19P                 2,399 CWD.EXE
+12/30/99  11:30P                47,088 CWSTUB.EXE
+12/27/93  12:36P                35,307 EXESPLIT.EXE
+01/05/00  05:56P                55,915 LE23P.EXE
+
+Assembly Language include files:
+
+03/04/95  09:00P                30,753 CW.INC
+03/04/95  04:36P                   175 CW32.INC
+12/04/93  12:32A                   918 GENERAL.INC
+09/21/98  03:29A                 9,955 STRUCS.INC
+
+LIB file use for DLLs:
+
+03/06/95  06:55P                 2,065 CW32.LIB
+
+This documentation file:
+
+01/09/00  xx:xxx                xx,xxx READ.ME
+
+Main CauseWay debugger binary file, launched by CWD.EXE.  The
+debugger is probably the crudest of all CauseWay utilities.  It
+was written quickly to get a decent testing and debugging
+platform and was never really spiffed up after things got
+running reasonably well.
+
+12/24/99  06:50A               215,948 CWD.OVL
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CW
+
+Assembly Language source used to build CW[349].EXE which can
+update CauseWay DOS extender, along with build file support:
+
+07/06/93  07:34A                 4,461 COMMAND.ASM
+06/11/96  03:21A                92,342 CW.ASM
+01/27/96  09:49A                 6,563 CWMAKE.ASM
+09/15/93  11:39P                 7,542 FILES.ASM
+06/14/94  06:27P                   460 PRINT.ASM
+08/04/93  12:24P                    14 A.BAT
+06/11/98  12:35A                   288 D.BAT
+02/27/96  04:20P                   197 E.BAT
+09/01/93  10:13P                 1,530 CW.CFG
+01/27/96  09:49A                 1,336 CWMAKE.EXE
+08/24/93  04:36P                 4,471 GENERAL.INC
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CWC
+
+CWC CauseWay compressor utility source and support files:
+
+10/09/95  10:00P                   219 MAKEFILE
+03/29/96  08:17A                 1,461 COPYSTUB.ASM
+06/03/97  03:13P                52,986 CWC.ASM
+03/29/96  07:22A                 4,756 DECSTUB.ASM
+11/18/95  04:33A                    20 A.BAT
+03/29/96  08:19A                 1,167 COPYSTUB.COM
+03/29/96  08:19A                   461 DECSTUB.COM
+11/17/95  05:59A                 3,131 MAKEASM.COM
+06/03/97  02:41P                 1,679 COPYSTUB.EXE
+06/04/97  03:39P                55,312 CWC.EXE
+06/03/97  02:41P                   973 DECSTUB.EXE
+06/03/97  02:41P                 2,856 COPYSTUB.INC
+03/04/95  09:00P                30,753 CW.INC
+11/10/94  10:10P                71,275 CWLIB.INC
+06/03/97  02:41P                 1,731 DECSTUB.INC
+03/29/96  07:23A                 9,553 STRUCS.INC
+03/30/95  04:15P               159,367 CW.LIB
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CWD
+
+CWD CauseWay debugger utility source and support files.  As
+noted previously, the debugger is probably the crudest of all
+CauseWay utilities.  It was written quickly to get a decent
+testing and debugging platform and was never really spiffed up
+after things got running reasonably well.
+
+11/19/96  01:28A                   370 MAKEFILE
+07/08/97  01:12A                   372 WL
+01/17/96  05:19P                11,174 CWD.ASM
+05/20/98  04:10P               240,058 CWD-OVL.ASM
+07/08/97  09:44P               157,249 DISAS.ASM
+07/10/95  03:50P                 1,573 EQUATES.ASM
+07/10/95  03:53P                26,394 EVALUATE.ASM
+07/10/95  03:54P                 7,394 FILES.ASM
+11/20/96  06:33A                13,518 FPU.ASM
+11/30/95  03:53P                24,306 GENERR.ASM
+07/10/95  03:58P                   469 GETKEYS.ASM
+11/16/96  02:56A                   453 ISFPU.ASM
+05/14/93  02:00P                 2,615 MACROS.ASM
+11/18/96  01:43A                   446 PRINT.ASM
+11/30/95  03:23P                84,365 WIN.ASM
+08/04/93  12:24P                    14 A.BAT
+07/08/97  01:11A                    20 W.BAT
+11/02/94  12:03A                   916 CWD.CFG
+01/17/96  05:19P                 2,399 CWD.EXE
+11/08/95  04:56A                78,088 CWL.EXE
+07/10/95  03:50P                 1,750 DISAS.INC
+01/30/94  04:16P                 1,110 MACROS.INC
+05/20/98  04:11P               215,724 CWD.OVL
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CWL
+
+CWL, CauseWay linker source and support files.  Very basic
+linker, only used internally to bootstrap and test the CauseWay
+system while the WL32 linker was being built.
+
+03/07/95  07:46P               199,976 CWL.ASM
+10/09/95  10:08P                    50 A.BAT
+03/28/95  10:58P                 6,142 CWL.DOC
+11/08/95  04:56A                78,088 CWL.EXE
+03/07/95  07:09P                 5,909 CWL.INC
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CWLIB
+
+Binary and include file of utility library, used for a couple of
+CauseWay utilities.
+
+11/10/94  10:10P                71,275 CWLIB.INC
+03/30/95  04:15P               159,367 CW.LIB
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\CWLIB\CW.ASM
+
+Source and support files for the utility library.  This was a
+general utility library written for other projects, so many of
+the modules listed here aren't used by CauseWay at all.  No
+support at all on this one, it's strictly an at own risk
+collection of old source code.
+
+11/10/94  09:23P                 2,371 MAKEFILE
+01/31/94  07:55P                   487 _APNDSTR.ASM
+01/31/94  07:55P                   343 _BEEP.ASM
+01/31/94  07:55P                   529 _BIN2DEC.ASM
+02/28/94  11:26A                   604 _BIN2HEX.ASM
+01/31/94  08:06P                   446 _BORD.ASM
+01/31/94  07:55P                 1,472 _BUFFILE.ASM
+01/31/94  07:55P                   369 _CLOSEF.ASM
+01/31/94  08:07P                   528 _CLOSEW.ASM
+01/31/94  07:55P                 1,100 _COMMAND.ASM
+01/31/94  07:55P                   481 _COPYSTR.ASM
+02/01/94  11:27A                   657 _CRBTMP.ASM
+01/31/94  07:56P                   483 _CREATEF.ASM
+01/31/94  07:56P                   356 _DELAY.ASM
+01/31/94  07:56P                   502 _DELETEF.ASM
+02/07/94  09:53P                   814 _DLGBTWN.ASM
+01/31/94  09:43P                   623 _DLGDRAW.ASM
+01/31/94  09:52P                   582 _DLGGTBD.ASM
+01/31/94  10:01P                   580 _DLGGTBW.ASM
+01/31/94  10:06P                   587 _DLGGTBX.ASM
+01/31/94  10:17P                   582 _DLGGTBY.ASM
+01/31/94  10:23P                   496 _DLGGTD.ASM
+01/31/94  10:30P                   576 _DLGGTST.ASM
+01/31/94  10:36P                   494 _DLGGTW.ASM
+01/31/94  10:42P                   631 _DLGSTST.ASM
+01/31/94  10:52P                   871 _DLGWHCH.ASM
+02/07/94  09:37P                 2,084 _FILESEL.ASM
+01/31/94  07:56P                   915 _FLMKNM.ASM
+01/31/94  07:56P                   369 _FREE.ASM
+01/31/94  07:56P                   339 _GETDRV.ASM
+01/31/94  07:56P                   642 _GETDRVS.ASM
+01/31/94  07:56P                   411 _GETKEY.ASM
+01/31/94  07:56P                   423 _GETPATH.ASM
+01/31/94  10:58P                   598 _LDFONT.ASM
+02/01/94  12:12P                   722 _LDGIF.ASM
+02/01/94  11:41A                   721 _LDIFF.ASM
+02/01/94  10:51A                   707 _LDIMAGE.ASM
+02/01/94  12:37P                   722 _LDTGA.ASM
+02/07/94  12:30P                   488 _LNSTR.ASM
+01/31/94  07:56P                 1,642 _MAKFLST.ASM
+01/31/94  07:56P                   517 _MALLOC.ASM
+01/31/94  08:07P                   544 _MESSW.ASM
+01/31/94  08:07P                   551 _MGETPOS.ASM
+01/31/94  08:07P                   547 _MSETYPE.ASM
+01/31/94  07:56P                   443 _OPENF.ASM
+01/31/94  07:56P                   380 _PRNTSTR.ASM
+01/31/94  07:56P                   555 _READF.ASM
+01/31/94  08:08P                   612 _REGSBIT.ASM
+01/31/94  08:08P                   690 _REGUPW.ASM
+01/31/94  08:08P                   619 _RELSBIT.ASM
+01/31/94  07:57P                   560 _REMALLO.ASM
+01/31/94  08:08P                   536 _REMSBIT.ASM
+05/04/94  11:01P                   517 _RENFILE.ASM
+01/31/94  08:09P                   451 _RMSBITS.ASM
+01/31/94  08:09P                   599 _SETDACS.ASM
+01/31/94  07:57P                   414 _SETDRV.ASM
+01/31/94  08:09P                   471 _SETMODE.ASM
+01/31/94  08:09P                   712 _SETPAL.ASM
+01/31/94  07:57P                   428 _SETPATH.ASM
+03/02/94  10:01A                   765 _SETPIX.ASM
+01/31/94  07:57P                   785 _SETPOSF.ASM
+01/31/94  08:10P                   546 _SRCHRGB.ASM
+01/31/94  07:57P                   585 _SRTFLST.ASM
+02/01/94  10:17A                   577 _STRLNPX.ASM
+03/16/94  01:10P                   739 _SVGIF.ASM
+03/16/94  01:10P                   782 _SVIFF.ASM
+03/16/94  01:20P                   823 _SVIMAGE.ASM
+03/16/94  01:11P                   756 _SVTGA.ASM
+01/31/94  08:10P                   480 _SYS2HRD.ASM
+01/31/94  07:57P                   793 _ULFLIST.ASM
+02/01/94  10:41A                   492 _UPCHR.ASM
+01/31/94  07:57P                   363 _UPPRSTR.ASM
+01/31/94  08:10P                   996 _VESA.ASM
+01/31/94  08:10P                 1,019 _VIDEO.ASM
+01/31/94  07:57P                   322 _WAITKEY.ASM
+01/31/94  08:11P                   763 _WHICHW.ASM
+01/31/94  07:57P                   574 _WRITEF.ASM
+01/31/94  07:57P                   541 APNDSTR.ASM
+10/01/94  08:08P                 3,331 BDRWLIN.ASM
+01/31/94  07:57P                   369 BEEP.ASM
+01/31/94  07:57P                   865 BIN2DEC.ASM
+07/12/94  09:43P                   667 BIN2HEX.ASM
+03/02/94  12:06P                 3,560 BITFREC.ASM
+03/22/94  11:03A                34,637 BITMAPS.ASM
+11/11/94  06:17P                57,620 BLITBIT.ASM
+10/01/94  08:09P                 2,576 BLITW.ASM
+03/17/94  11:44A                 1,172 BMXFLP.ASM
+03/17/94  11:32A                   961 BMYFLP.ASM
+01/31/94  08:12P                   488 BORD.ASM
+03/02/94  12:06P                   595 BSETPIX.ASM
+09/06/94  12:39A                 2,668 BUFFILE.ASM
+10/01/94  08:09P                 4,458 CALSPLTS.ASM
+01/31/94  07:57P                   277 CLOSEF.ASM
+10/01/94  08:09P                 1,376 CLOSEW.ASM
+02/22/94  11:19P                 3,991 COMMAND.ASM
+01/31/94  07:58P                   549 COPYSTR.ASM
+04/21/94  08:14A                 1,337 CRBTMP.ASM
+01/31/94  07:58P                   475 CREATEF.ASM
+05/20/94  09:40A                   450 DELAY.ASM
+01/31/94  07:58P                   357 DELETEF.ASM
+07/25/94  11:26A                 4,310 DLG_OC.ASM
+02/07/94  09:25A                 7,276 DLGBTWN.ASM
+02/07/94  09:34A                 2,937 DLGDRAW.ASM
+02/13/94  05:03P                   553 DLGGTBD.ASM
+02/07/94  09:57A                   549 DLGGTBW.ASM
+02/07/94  09:57A                   559 DLGGTBX.ASM
+02/13/94  05:04P                   555 DLGGTBY.ASM
+01/31/94  11:12P                   436 DLGGTD.ASM
+02/07/94  11:37A                   510 DLGGTST.ASM
+01/31/94  11:12P                   432 DLGGTW.ASM
+02/07/94  11:37A                   520 DLGSTST.ASM
+03/14/94  01:04P                 1,049 DLGWHCH.ASM
+03/02/94  10:35A                 3,430 DRWLIN.ASM
+09/14/94  10:29A                46,668 FILESEL.ASM
+11/03/94  08:34A                 8,813 FILLRCT.ASM
+02/07/94  09:50P                 2,173 FILLW.ASM
+02/10/94  11:26A                 1,020 FLMKNM.ASM
+03/07/94  05:02P                   414 FREE.ASM
+01/31/94  07:58P                   322 GETDRV.ASM
+02/07/94  11:05A                   970 GETDRVS.ASM
+01/31/94  07:58P                   593 GETKEY.ASM
+01/31/94  07:58P                   612 GETPATH.ASM
+03/30/95  04:15P                 2,031 LDBM.ASM
+02/13/94  04:26P                 2,020 LDFONT.ASM
+03/15/94  12:43P                13,056 LDGIF.ASM
+01/16/95  09:23A                11,723 LDIFF.ASM
+11/11/94  06:35P                 2,116 LDIMAGE.ASM
+10/26/94  11:45P                 6,752 LDPCX.ASM
+06/07/94  07:30P                 7,052 LDTGA.ASM
+02/27/94  05:59P                   511 LNSTR.ASM
+11/21/94  02:49P                 4,363 MAKFLST.ASM
+03/07/94  05:22P                   533 MALLOC.ASM
+03/10/94  03:43P                 2,376 MDELST.ASM
+01/31/94  08:13P                   414 MESSW.ASM
+10/06/94  11:18A                19,417 MOUSE.ASM
+01/31/94  07:58P                   248 NULL.ASM
+01/31/94  07:58P                   444 OPENF.ASM
+10/01/94  08:05P                 1,515 OPENW.ASM
+03/08/94  12:42P                 1,812 PRINTW.ASM
+09/06/94  08:14A                   407 PRNTSTR.ASM
+01/31/94  07:58P                   897 READF.ASM
+02/07/94  12:09P                 1,862 REGCLIPW.ASM
+04/14/94  10:14A                 1,293 REGSBIT.ASM
+02/07/94  10:53P                 1,272 REGUPW.ASM
+04/14/94  10:14A                   504 RELSBIT.ASM
+03/07/94  05:02P                   584 REMALLO.ASM
+04/14/94  10:14A                   676 REMSBIT.ASM
+05/04/94  11:00P                   379 RENFILE.ASM
+04/14/94  10:14A                 1,054 RMSBITS.ASM
+01/31/94  08:15P                   532 SETDACS.ASM
+01/31/94  07:59P                   361 SETDRV.ASM
+10/05/94  07:02P                 3,343 SETMODE.ASM
+01/31/94  08:16P                 1,991 SETPAL.ASM
+01/31/94  07:59P                   565 SETPATH.ASM
+03/02/94  10:01A                   562 SETPIX.ASM
+01/31/94  07:59P                   658 SETPOSF.ASM
+07/27/94  07:03P                 1,428 SRCHRGB.ASM
+02/14/94  08:58P                 1,257 SRTFLST.ASM
+07/17/94  01:34A                 3,424 STARTUP.ASM
+02/01/94  10:17A                   593 STRLNPX.ASM
+11/10/94  10:17P                 1,554 SVBM.ASM
+03/16/94  01:09P                 8,464 SVGIF.ASM
+06/23/94  09:23A                12,406 SVIFF.ASM
+11/11/94  06:34P                 1,808 SVIMAGE.ASM
+10/22/94  08:41P                11,369 SVTGA.ASM
+03/11/94  04:15P                   415 SYS2HRD.ASM
+01/31/94  07:59P                 1,089 ULFLIST.ASM
+02/01/94  10:41A                   448 UPCHR.ASM
+01/31/94  07:59P                   496 UPPRSTR.ASM
+09/18/94  01:15A                12,853 VESA.ASM
+07/29/94  03:53P                 4,056 VIDEO.ASM
+01/31/94  07:59P                   317 WAITKEY.ASM
+09/28/94  01:11P                 3,316 WDRWLIN.ASM
+02/07/94  10:56P                 1,307 WHICHW.ASM
+03/08/94  10:01A                 1,122 WINDOWS.ASM
+03/18/94  09:14A                   869 WRITEF.ASM
+03/03/94  09:30A                   585 WSETPIX.ASM
+01/24/94  12:14P                    11 A.BAT
+01/10/94  02:03P                   501 ARROW.GSC
+01/10/94  02:04P                13,478 TIMER.GSC
+01/06/94  03:49P                 2,352 PALETTE.INC
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\LOADLE
+
+Source to the Watcom-specific code to load LE-format files:
+
+09/21/98  05:09A                45,240 LOADLE.ASM
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\WATCOM
+
+Source and support to Watcom-specific code:
+
+10/09/95  10:14P                 2,323 MAKEFILE
+02/17/95  08:41P                   229 CWDSTUB.ASM
+06/12/95  05:15P                 5,618 DLLFUNC.ASM
+07/19/95  10:27P                14,039 VESA.ASM
+06/08/95  10:05P                    11 A.BAT
+12/21/95  11:36P                   108 DODLL.BAT
+08/07/96  03:55P                   312 H.BAT
+06/08/95  09:42P                   411 DLL.C
+04/13/95  06:21P                   678 CWHELP.CFG
+01/25/99  04:19P                25,501 CWHELP.CW
+08/15/96  01:48A                15,587 OLDCWHLP.CW
+01/25/99  04:19P                26,069 CWHELP.EXE
+08/15/96  01:48A                15,587 OLDCWHLP.EXE
+06/07/95  10:37P                 2,429 DLLFUNC.H
+08/06/96  11:52P                 5,088 C.INC
+03/04/95  09:00P                30,753 CW.INC
+03/27/95  04:31P                13,112 EQUMAC.INC
+01/23/96  01:51A                28,458 SYSTEM.INC
+12/06/95  10:25A                40,729 SYSTEM.LIB
+06/08/95  10:37P                   612 CWSYSTEM.LNK
+08/07/96  02:02P                   388 C2ASM.OBJ
+01/23/99  11:05P                   189 CWDSTUB.OBJ
+12/21/95  11:39P                 1,883 DLLR105A.OBJ
+12/21/95  11:39P                 1,872 DLLS105A.OBJ
+07/21/95  01:30A                16,369 CW.TRP
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\WATCOM\KBHIT
+
+Source and support for Watcom's kbhit() replacement:
+
+10/09/95  10:12P                   258 MAKEFILE
+06/09/95  01:52A                   868 KBHIT.ASM
+06/09/95  01:07A                    11 A.BAT
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\LE23P
+
+Source and support files for LE23P utility used with Watcom to
+convert LE-format to 3P-format executables:
+
+02/22/94  11:19P                 3,991 COMMAND.ASM
+04/22/96  06:34P                 2,853 CWC2ASM.ASM
+04/23/96  04:37P                25,921 CWFILEIO.ASM
+04/23/96  04:15P                 1,667 CWMALLOC.ASM
+04/23/96  03:00P                 4,048 CWSTK2RE.ASM
+09/21/98  04:47A                26,429 LE23P.ASM
+03/07/94  05:22P                   533 MALLOC.ASM
+01/31/94  07:58P                   444 OPENF.ASM
+09/06/94  08:14A                   407 PRNTSTR.ASM
+07/17/94  01:34A                 3,424 STARTUP.ASM
+04/23/96  04:38P                    74 A.BAT
+09/21/98  05:39A                   158 D.BAT
+09/21/98  04:38A                   221 E.BAT
+09/21/98  05:31A                64,878 LE23P.EXE
+09/21/98  05:39A                86,488 NT_LE23P.EXE
+06/11/95  09:57P                 5,066 C.INC
+03/04/95  09:00P                30,753 CW.INC
+03/27/95  04:31P                13,112 EQUMAC.INC
+01/03/96  12:11A                 9,571 STRUCS.INC
+01/23/96  01:51A                28,458 SYSTEM.INC
+12/06/95  10:25A                40,729 SYSTEM.LIB
+04/23/96  04:37P                38,681 SYSTEM2.LIB
+04/23/96  04:18P                   112 LE23P.LNK
+04/25/96  01:02A                   101 NT_LE23P.LNK
+06/11/95  10:15P                   724 C2ASM.OBJ
+04/23/96  04:37P                 2,472 CWFILEIO.OBJ
+04/23/96  04:37P                   219 CWMALLOC.OBJ
+04/23/96  03:52P                 4,435 FILEIO.OBJ
+06/13/98  08:52P                10,079 LE23P.OBJ
+02/27/96  03:40P                   335 MALLOC.OBJ
+04/23/96  03:50P                   485 MALLOCD.OBJ
+09/21/98  05:39A                10,081 NT_LE23P.OBJ
+04/23/96  02:59P                   971 STK2REG.OBJ
+
+
+ DIRECTORY OF \CAUSEWAY\SOURCE\ALL\3PLIB
+
+Internal source and support files for CauseWay 3P-format library
+utility.  Never released to public:
+
+11/13/95  08:01A                33,591 3PLIB.ASM
+11/16/95  01:50A                58,824 3PLIB.EXE
+03/28/95  10:49P                 5,211 3PLIB.TXT
+
+
+ DIRECTORY OF \CAUSEWAY\MISC
+
+Miscellaneous test and support files.  They aren't all
+guaranteed to work, one or two were interrupted works in
+process.  STRESS?.ASM files were used to stress-test CauseWay
+prior to release -- they do all sorts of different boundary
+allocations and releases.
+
+06/01/94  04:50P                 2,282 CRITICAL.ASM
+05/22/98  01:14P                74,798 CWSWAPR.ASM
+05/22/98  05:44P                75,144 CWSWAPS.ASM
+11/22/96  03:32A                 3,007 RING0_16.ASM
+11/11/98  12:41A                 3,337 RING0_32.ASM
+04/08/95  08:54A                 9,523 STRESS2.ASM
+08/22/97  05:39P                 9,547 STRESS3.ASM
+09/21/97  12:56A                 1,213 VERFLAT.ASM
+01/25/99  01:26P                 3,099 WMAPCWD.C
+11/17/95  05:59A                 3,131 MAKEASM.COM
+01/25/99  01:26P                95,987 WMAPCWD.EXE
+02/23/96  01:20P                   146 WMAPCWD.LNK
+10/30/95  02:49A                 4,448 IMPEXP.TXT
+12/15/95  08:47P                   991 WMAPCWD.TXT
+10/30/95  02:50A                 7,680 LINEAR.ZIP
+
+ DIRECTORY OF \CAUSEWAY\BIN
+
+Full and most recent CauseWay for Watcom C/C++ & Assembly
+Language binary file set used to create CauseWay-extended
+applications:
+
+06/17/96  08:17A                   332 MAKEFILE
+06/17/96  08:17A                 2,726 ALIASSEL.ASM
+06/17/96  08:17A                 4,339 CALLBACK.ASM
+06/17/96  08:17A                   596 DOSSHELL.ASM
+06/17/96  08:17A                 2,304 INTASM.ASM
+06/17/96  08:17A                 2,330 MULTFLAT.ASM
+06/17/96  08:17A                 6,788 MULTNEAR.ASM
+06/17/96  08:17A                 2,781 SCREEN32.ASM
+06/17/96  08:17A                   975 SHOWEVAR.ASM
+06/17/96  08:17A                 2,765 TIMER.ASM
+06/17/96  08:17A                 1,213 VERSION.ASM
+06/17/96  08:17A                14,733 VESA.ASM
+06/17/96  08:17A                 2,491 _MAYDAY.C
+06/17/96  08:17A                   757 CROAK1.C
+06/17/96  08:17A                   741 CROAK2.C
+06/17/96  08:17A                   936 CROAK3.C
+06/17/96  08:17A                   411 DLL.C
+06/17/96  08:17A                 1,046 DLLTEST.C
+06/17/96  08:17A                 2,074 INTC.C
+06/17/96  08:17A                 1,910 TESTTERM.C
+06/17/96  08:17A                 3,023 WMAPCWD.C
+06/17/96  08:17A                   959 CWD.CFG
+06/17/96  08:17A                   678 CWHELP.CFG
+06/17/96  08:17A                   136 MSLINK.DEF
+06/17/96  08:17A                   295 RTLINK.DEF
+06/17/96  08:17A                   256 WARPLINK.DEF
+06/17/96  08:17A                 1,120 WARPWRAP.DEF
+01/06/00  01:16P                55,625 CWC.EXE
+06/17/96  08:17A                 2,399 CWD.EXE
+06/17/96  08:17A                   568 CWDSTUB.EXE
+01/25/99  04:19P                26,069 CWHELP.EXE
+12/30/99  11:30P                47,088 CWSTUB.EXE
+01/06/00  01:16P                55,915 LE23P.EXE
+01/06/00  01:16P                91,584 WL32.EXE
+09/03/97  12:28A                95,981 WMAPCWD.EXE
+06/17/96  08:17A                24,197 WW.EXE
+06/17/96  08:17A                 2,429 DLLFUNC.H
+06/17/96  08:17A                30,829 CW.INC
+06/17/96  08:17A                   612 CWSYSTEM.LNK
+06/17/96  08:17A                    37 DLLR.LNK
+06/17/96  08:17A                    37 DLLS.LNK
+06/17/96  08:17A                    80 DLLTEST.LNK
+01/08/00  09:49P                12,721 READ.ME
+06/17/96  08:17A                   749 CWAPI.OBJ
+05/28/98  07:29P                 5,242 CWSWAPR.OBJ
+05/28/98  07:29P                 5,245 CWSWAPS.OBJ
+06/17/96  08:17A                   942 DLLFUNC.OBJ
+06/17/96  08:17A                 1,883 DLLR105A.OBJ
+06/17/96  08:17A                 1,872 DLLS105A.OBJ
+06/17/96  08:17A                 1,850 DLLSTRTR.OBJ
+06/17/96  08:17A                 1,841 DLLSTRTS.OBJ
+06/17/96  08:17A                   236 KBHITR.OBJ
+06/17/96  08:17A                   234 KBHITS.OBJ
+06/17/96  08:17A                   307 SHOWEVAR.OBJ
+06/17/96  08:17A                 1,684 VESA.OBJ
+01/06/00  01:16P               215,964 CWD.OVL
+02/24/98  11:00A                17,353 CW.TRP
+06/17/96  08:17A                 1,029 VESA.TXT
+06/17/96  08:17A                 1,044 WMAPCWD.TXT
+06/17/96  08:17A                 1,739 DEXDLL.ZIP
+06/17/96  08:17A                 9,981 WATSWAP.ZIP

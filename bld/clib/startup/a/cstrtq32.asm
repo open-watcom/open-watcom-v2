@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  QNX 32-bit startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++32 under QNX
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm cstrtq32 -bt=QNX -ms -3r
 ;               wasm cstrtq32 -bt=QNX -ms -3s
@@ -43,11 +39,12 @@
 .386p
 .387
 
+include exitwmsg.inc
+
         assume  nothing
 
         extrn   __CMain                     : near
         extrn   "C",__qnx_exit              : near
-        extrn   "C",__fatal_runtime_error   : near
         extrn   __QNXseg__                  : near
 
         extrn   "C",_STACKTOP               : dword
@@ -96,7 +93,7 @@ end_null dw      0                       ; nullchar for string at address 0
 _AFTERNULL ends
 
 CONST   segment word public 'DATA'
-NullAssign      db      0ah,'*** NULL assignment detected',0ah,0
+NullAssign      db      '*** NULL assignment detected',0
 CONST   ends
 
 XIB     segment word public 'DATA'
@@ -180,9 +177,9 @@ endif
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1989-2000."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
         dd      ___begtext      ; make sure dead code elimination
                                 ; doesn't kill BEGTEXT segment
 

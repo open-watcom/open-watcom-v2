@@ -1,27 +1,19 @@
 # driver for dll
 
-dlldrv_objs =
-dlldrv_objs += idedrv.rbj
-dlldrv_objs += idemsgfm.rbj
-# dlldrv_objs += idemsgpr.rbj
-dlldrv_objs += wppdlldr.rbj
+drv_objs =
+drv_objs += idedrv.obj
+drv_objs += idemsgfm.obj
+drv_objs += maindrv.obj
 
 # stand-alone executable
 
 exe_objs =
 exe_objs += idedrv.obj
-exe_objs += idemsgfm.obj
-exe_objs += idemsgpr.obj
-exe_objs += wppdlldr.obj
-exe_objs += idedll.obj
+exe_objs += maindrv.obj
 
 # DLL stuff
 
 dll_objs =
-dll_objs += idedll.lbj
-dll_objs += idemsgfm.lbj
-dll_objs += idemsgpr.lbj
-#dll_objs += wppdlldr.lbj
 
 
 # C Files
@@ -44,8 +36,9 @@ common_objs += analyse.obj
 common_objs += arglist.obj
 common_objs += ascii.obj
 common_objs += asmstmt.obj
+common_objs += autodep.obj
 
-!ifndef plusplus_release
+!ifeq release 0
 common_objs += b_write.obj
 common_objs += brinfdep.obj
 common_objs += brinfmac.obj
@@ -107,7 +100,6 @@ common_objs += cmac1.obj
 common_objs += cmac2.obj
 common_objs += cmacsupp.obj
 common_objs += cmacadd.obj
-common_objs += cmatherr.obj
 common_objs += cmdln.obj
 common_objs += cmdlnany.obj
 common_objs += cmdlnbat.obj
@@ -154,7 +146,11 @@ common_objs += gstack.obj
 common_objs += hfile.obj
 common_objs += hashtab.obj
 common_objs += i64supp.obj
+common_objs += ialias.obj
 common_objs += icemit.obj
+common_objs += ideentry.obj
+common_objs += idemsgfm.obj
+common_objs += idemsgpr.obj
 common_objs += initfini.obj
 common_objs += initref.obj
 common_objs += iosupp.obj
@@ -195,7 +191,6 @@ common_objs += specfuns.obj
 common_objs += stack.obj
 common_objs += stats.obj
 common_objs += stringl.obj
-common_objs += swchar.obj
 common_objs += symbol.obj
 common_objs += symdbg.obj
 common_objs += symlocn.obj
@@ -215,21 +210,19 @@ common_objs += vstk.obj
 common_objs += watcom.obj
 common_objs += ytab.obj
 
+!ifndef bootstrap
+# assumes Watcom math library
+common_objs += cmatherr.obj
+!endif
+
+# watcom files
+common_objs += autodept.obj
+
 # fe_misc files
 common_objs += intlload.obj
 
-# obsolete 9.5 files
-
-# common_objs += cgback.obj
-
-
-# measurement
-!ifdef proepitm
-common_objs += proepitm.obj
-!endif
-
 # debugging objects
-!ifndef plusplus_release
+!ifeq release 0
 common_objs += dbg.obj
 common_objs += dbgcomma.obj
 common_objs += dbgheap.obj
@@ -239,43 +232,17 @@ common_objs += dbgzap.obj
 common_objs += fnovprt.obj
 !endif
 
-# system-dependent objects
+# in-line assembler files
+common_objs += $(asminline_objs)
+common_objs += asmalloc.obj
+common_objs += asmmsg.obj
 
-!include sysobjs.mif
+# target processor-dependent objects
 
-#
-# object file macros are of the form <compiler_OS><target>_objs
-#
-# where:
-#       <compiler_OS>   is one of dos, os2, nt, osi, qnx, or cms
-#       <target>        is one of i86, 386, axp, ppc or 370
-#
-dosi86_objs = $(common_objs)
-dos386_objs = $(common_objs)
-dos370_objs = $(common_objs)
-dosaxp_objs = $(common_objs)
+cpp_objs_i86 = cmdlnx86.obj cpragx86.obj pragi86.obj
+cpp_objs_386 = cmdlnx86.obj cpragx86.obj prag386.obj
+cpp_objs_axp = cmdlnaxp.obj cpragaxp.obj pragaxp.obj
+#cpp_objs_ppc = cmdlnppc.obj cpragppc.obj pragppc.obj
+#cpp_objs_mps = cmdlnmps.obj cpragmps.obj pragmps.obj
 
-os2i86_objs = $(common_objs)
-os2386_objs = $(common_objs)
-os2370_objs = $(common_objs)
-os2axp_objs = $(common_objs)
-
-nti86_objs = $(common_objs)
-nt386_objs = $(common_objs)
-nt370_objs = $(common_objs)
-ntaxp_objs = $(common_objs)
-
-qnxi86_objs = $(common_objs)
-qnx386_objs = $(common_objs)
-qnx370_objs = $(common_objs)
-qnxaxp_objs = $(common_objs)
-
-cmsi86_objs = $(common_objs)
-cms386_objs = $(common_objs)
-cms370_objs = $(common_objs)
-cmsaxp_objs = $(common_objs)
-
-osii86_objs = $(common_objs)
-osi386_objs = $(common_objs)
-osiaxp_objs = $(common_objs)
-
+common_objs += $(cpp_objs_$(target_cpu))

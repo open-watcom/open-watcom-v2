@@ -48,6 +48,7 @@
 #include "windows.h"
 #include "win1632.h"
 #include "dbgmem.h"
+#include "autoenv.h"
 
 extern int _8087;
 
@@ -69,7 +70,7 @@ bool                    ToldWinHandle = FALSE;
 extern HWND     MainHwnd = NULL;
 
 #ifndef __NT__
-extern void  (__pascal *InfoFunction)(int);
+extern void  (WINAPI *InfoFunction)(HWND);
 #endif
 
 void TellWinHandle()
@@ -83,6 +84,9 @@ void TellWinHandle()
 void GUImain( void )
 {
     char buff[256];
+
+    // fix up env vars if necessary
+    watcom_setup_env();
 
     SetErrorMode( SEM_FAILCRITICALERRORS );
     SetHandleCount( 60 );
@@ -161,12 +165,12 @@ bool TBreak()
     return( ret );
 }
 
+#if 0
 void __assert( int value, char *expr, char *fn, int line_num )
 {
     value=value;expr=expr;fn=fn;line_num=line_num;
 }
 
-#if 0
 void exit( int code )
 {
     KillDebugger( code );

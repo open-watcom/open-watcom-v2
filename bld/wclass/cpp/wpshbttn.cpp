@@ -57,12 +57,6 @@ WEXPORT WPushButton::WPushButton( WStatDialog* parent, unsigned id,
 }
 
 
-WEXPORT WPushButton::~WPushButton() {
-/***********************************/
-
-}
-
-
 WEXPORT WDefPushButton::WDefPushButton( WWindow* parent, const WRect& r,
                                         const char *text, WStyle style )
         : WButton( parent, GUI_DEFPUSH_BUTTON, r, text, style ) {
@@ -79,7 +73,17 @@ WEXPORT WDefPushButton::WDefPushButton( WStatDialog* parent, unsigned id,
 }
 
 
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
 WEXPORT WDefPushButton::~WDefPushButton() {
 /*****************************************/
+
+}
+
+
+WEXPORT WPushButton::~WPushButton() {
+/***********************************/
 
 }

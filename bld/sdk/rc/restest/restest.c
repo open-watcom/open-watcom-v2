@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource test for Win16 and Win32.
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #endif
 #include "restest.h"
 
-HANDLE          Instance;
+HINSTANCE       Instance;
 HWND            MainHwnd;
 HWND            AccelHwnd;
 HACCEL          Accel;
@@ -45,7 +44,7 @@ HACCEL          Accel;
  * FirstInstInit - register classes and do other initializiation that
  *                 is only done by the first instance of the spy
  */
-static BOOL FirstInstInit()
+static BOOL FirstInstInit( void )
 {
     WNDCLASS    wc;
 
@@ -90,7 +89,7 @@ static BOOL EveryInstInit( int cmdshow ) {
     return( TRUE );
 }
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     MSG         msg;
 

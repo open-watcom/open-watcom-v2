@@ -24,17 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 address conversion and other support routines.
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <i86.h>
-#include <env.h>
 #define INCL_BASE
 #define INCL_DOSDEVICES
 #define INCL_DOSFILEMGR
@@ -49,108 +43,74 @@
 #include "os2trap.h"
 #include "bsexcpt.h"
 
-extern dos_debug        Buff;
+extern uDB_t            Buff;
 
 extern USHORT           TaskFS;
-USHORT FlatCS = 0x5b, FlatDS = 0x53;
+
+/* Hardcoded selector values - extremely unlikely to change. */
+USHORT FlatCS = 0x5B, FlatDS = 0x53;
 
 extern ULONG            ExceptNum;
 
-extern void bp(void);
-#pragma aux bp = 0xcc;
-
-/*
- * MakeSegmentedPointer - create a 16:16 ptr from a 0:32 ptr
- */
-ULONG MakeSegmentedPointer(ULONG val)
-{
-    dos_debug   buff;
-
-    buff.Pid = Buff.Pid;
-    buff.Cmd = DBG_C_LinToSel;
-    buff.Addr = val;
-    CallDosDebug(&buff);
-    return ((USHORT)buff.Value << 16) + (USHORT)buff.Index;
-
-} /* MakeSegmentedPointer */
 
 /*
  * IsFlatSeg - check for flat segment
  */
-int IsFlatSeg(USHORT seg)
+int IsFlatSeg( USHORT seg )
 {
-    if (seg == FlatCS || seg == FlatDS)
-        return TRUE;
-    return FALSE;
-
+    if( seg == FlatCS || seg == FlatDS )
+        return( TRUE );
+    return( FALSE );
 } /* IsFlatSeg */
 
 
 /*
- * IsUnknownGDTSeg - tell if someone is NOT a flat segment but IS a GDT seg
+ * IsUnknownGDTSeg - tell if someone is NOT a flat segment but IS a GDT seg.
+ * This is useful for FS segment access.
  */
-int IsUnknownGDTSeg(USHORT seg)
+int IsUnknownGDTSeg( USHORT seg )
 {
-    if (seg == FlatCS || seg == FlatDS) {
-        return FALSE;
+    if( seg == FlatCS || seg == FlatDS ) {
+        return( FALSE );
     }
-    #if 0
-        if( !(seg & 0x04) ) {
-            return(TRUE);
-        }
-    #else
-        if (seg == TaskFS) {
-            return FALSE; //TRUE;
-        }
-    #endif
-    return FALSE;
-
+    if( seg == TaskFS ) {
+        return( TRUE );
+    }
+    return( FALSE );
 } /* IsUnknownGDTSeg */
 
 
 /*
  * MakeItFlatNumberOne - make a (sel,offset) into a flat pointer
  */
-ULONG MakeItFlatNumberOne(USHORT seg, ULONG offset)
+ULONG MakeItFlatNumberOne( USHORT seg, ULONG offset )
 {
-    dos_debug   buff;
+    uDB_t       buff;
 
-    if (IsFlatSeg(seg))
-        return offset;
+    if( IsFlatSeg( seg ) )
+        return( offset );
     buff.Pid = Buff.Pid;
     buff.Cmd = DBG_C_SelToLin;
     buff.Value = seg;
     buff.Index = offset;
-    CallDosDebug(&buff);
-    return buff.Addr;
-
+    CallDosDebug( &buff );
+    return( buff.Addr );
 } /* MakeItFlatNumberOne */
-
-/*
- * MakeItSegmentedNumberOne - make a (sel,offset) into a 16:16 pointer
- */
-ULONG MakeItSegmentedNumberOne(USHORT seg, ULONG offset)
-{
-    if (!IsFlatSeg(seg))
-        return ((USHORT)seg << 16) + (USHORT)offset;
-
-    return MakeSegmentedPointer(offset);
-} /* MakeItSegmentedNumberOne */
 
 
 /*
  * GetExceptionText - return text for last exception
  */
-char *GetExceptionText(void)
+char *GetExceptionText( void )
 {
     char       *str;
 
-    switch (ExceptNum) {
+    switch( ExceptNum ) {
         case XCPT_DATATYPE_MISALIGNMENT:
             str = TRP_EXC_data_type_misalignment;
             break;
         case XCPT_ACCESS_VIOLATION:
-            str = TRP_EXC_general_protection_fault;
+            str = TRP_EXC_access_violation;
             break;
         case XCPT_ILLEGAL_INSTRUCTION:
             str = TRP_EXC_illegal_instruction;
@@ -185,9 +145,18 @@ char *GetExceptionText(void)
         case XCPT_FLOAT_UNDERFLOW:
             str = TRP_EXC_floating_point_underflow;
             break;
+        case XCPT_PROCESS_TERMINATE:
+            str = TRP_EXC_process_terminate;
+            break;
+        case XCPT_ASYNC_PROCESS_TERMINATE:
+            str = TRP_EXC_async_process_terminate;
+            break;
+        case XCPT_SIGNAL:
+            str = TRP_EXC_signal;
+            break;
         default:
             str = TRP_EXC_unknown;
             break;
     }
-    return str;
+    return( str );
 } /* GetExceptionText */

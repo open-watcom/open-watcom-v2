@@ -1,99 +1,75 @@
 proj_name = merge
 name = wbrg
-
-.mif : $(mif_path)
+merge_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-
-.c: ..\cpp;$(trmem_dir)
-.cpp: ..\cpp;$(browse_dir)\cpp
-
-ext = obj
+.c: ../cpp;$(trmem_dir)
+.cpp: ../cpp;$(browse_dir)/cpp;$(trmem_dir)
 
 OBJECTS = &
-	blip.$(ext)	&
-	dietree.$(ext)	&
-	dwmerger.$(ext) &
-	main.$(ext)	&
-	mrabbrev.$(ext) &
-	mrdeath.$(ext)	&
-	mrdie.$(ext)	&
-	mrfile.$(ext)	&
-	mrinfo.$(ext)	&
-	mrinfpp.$(ext)	&
-	mrline.$(ext)	&
-	mrnmkey.$(ext)	&
-	mroffset.$(ext) &
-	mrref.$(ext)	&
-	mrreloc.$(ext)	&
-	mrstrhdl.$(ext) &
-	mrtmchk.$(ext)  &
-	patricia.$(ext) &
-	strpool.$(ext)	&
-	chfile.$(ext)	&
-	chbffile.$(ext) &
-	cmdparse.$(ext) &
-	elffile.$(ext)	&
-	mempool.$(ext)	&
-	util.$(ext)	&
-	wtime.$(ext)
+    blip.obj     &
+    dietree.obj  &
+    dwmerger.obj &
+    main.obj     &
+    mrabbrev.obj &
+    mrdeath.obj  &
+    mrdie.obj    &
+    mrfile.obj   &
+    mrinfo.obj   &
+    mrinfpp.obj  &
+    mrline.obj   &
+    mrnmkey.obj  &
+    mroffset.obj &
+    mrref.obj    &
+    mrreloc.obj  &
+    mrstrhdl.obj &
+    mrtmchk.obj  &
+    patricia.obj &
+    strpool.obj  &
+    chfile.obj   &
+    chbffile.obj &
+    cmdparse.obj &
+    elffile.obj  &
+    mempool.obj  &
+    util.obj     &
+    wtime.obj
+
 !ifeq browse_trmem 1
-OBJECTS	+= dmem.$(ext) trmem.$(ext)
+OBJECTS += dmem.obj trmem.obj trmemcpp.obj
 !else
-OBJECTS += mem.$(ext)
+OBJECTS += mem.obj
 !endif
 
-inc_dirs = ..\h;$(browse_dir)\h;$(browse_dir)\contain\h;$(dwarf_dir)\dr\h;$(posix_dir)\h;
-.before
-	SET INCLUDE=$(inc_path)
+inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarf_dir)/dr/h" -I"$(posix_dir)/h"
 
-!ifdef DBG
-extra_cpp_flags	= -xs-ew-dSTANDALONE_MERGER -dDEBUG=0 -dINSTRUMENTS=1
-extra_cpp_flags_dwmerger = -xs-ew-dSTANDALONE_MERGER -dINSTRUMENTS=1 -dDEBUG=1 -dMINALLOC=0
-!else
-extra_cpp_flags	= -xs-ew-dSTANDALONE_MERGER -dDEBUG=0 -dINSTRUMENTS=0
-!endif
-extra_c_flags	= -dSTANDALONE_RX=1
-extra_c_flags_trmem	= /i=$(trmem_dir)
-
-!ifneq host_CPU axp
+!ifneq host_cpu axp
 mem_flags = -of+
 !endif
-	
-# linker
-extra_l_flags	= op stack=16k, map
-extra_l_flags_nt_axp	= op undefsok
-
-exe_ext_osi = rex
-!ifdef exe_ext_$(host_OS)
-exe_ext = $(exe_ext_$(host_OS))
+    
+!ifdef DBG
+extra_cpp_flags     = -xs-ew-DSTANDALONE_MERGER -DDEBUG=1 -DINSTRUMENTS=1
+extra_c_flags_dwmerger = -xs-ew-DSTANDALONE_MERGER -DINSTRUMENTS=1 -DDEBUG=1 -DMINALLOC=0
+OBJECTS += debuglog.obj
 !else
-exe_ext = exe
+extra_cpp_flags     = -xs-ew-DSTANDALONE_MERGER -DDEBUG=0 -DINSTRUMENTS=0
 !endif
+extra_c_flags          = -DSTANDALONE_RX=1
+extra_c_flags_trmem    = -I"$(trmem_dir)"
+extra_c_flags_trmemcpp = -I"$(trmem_dir)" -DTRACKER $(mem_flags)
+extra_c_flags_dmem     = $(mem_flags) -I"$(trmem_dir)"
+
+# linker
+extra_l_flags        = op stack=16k, map
+extra_l_flags_nt_axp = op undefsok
 
 $(name).exe : $(OBJECTS)
-	$(linker) $(lflags) name $(name).$(exe_ext) file {$(OBJECTS)}
-!ifeq host_OS osi
-	w32bind $^&.rex $^&.exe $(tools_root)\os2ldr.exe
-	@erase $^&.rex
+!ifeq host_os osi
+    $(linker) $(lflags) name $^&.rex file {$(OBJECTS)}
+    $(w32bind) $^&.rex $@ $(os2ldr)
+    @rm -f $^&.rex
+!else    
+    $(linker) $(lflags) name $@ file {$(OBJECTS)}
 !endif
-
-# compiling
-
-cppflags	= $(cflags) $(extra_cpp_flags)
-
-.cpp.obj:
-	@set include=$(inc_path)
-	$(cpp) $(cppflags) $(extra_c_flags_$[&) $[@
-	
-dmem.obj : mem.cpp
-        $(cpp) $(cppflags) -dTRACKER -fo=dmem.obj $(mem_flags) -i=$(trmem_dir) $[@
-	
-!ifdef DBG
-dwmerger.obj: dwmerger.cpp .AUTODEPEND
-	$(cpp) $(cflags) $(extra_cpp_flags_dwmerger) $[@
-!endif
-

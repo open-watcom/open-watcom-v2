@@ -1,0 +1,77 @@
+;
+; INF file for the VirtualBox PCI system device sample driver
+;
+
+[Version]
+Signature = "$WINDOWS NT$"
+Class     = System
+ClassGuid = {4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider  = %MFR%
+DriverVer = 07/16/2010,5.0.0
+
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+
+[ControlFlags]
+ExcludeFromSelect = *
+
+
+[Manufacturer]
+%MFR% = MFR, NTx86, NTia64, NTamd64
+
+; General format:
+; DisplayName       Section           DeviceId
+; -----------       -------           --------
+
+; For Windows 2000
+[MFR]
+%BoxDev.DrvDesc% = BoxDev_Inst, PCI\VEN_80EE&DEV_CAFE
+
+; For Windows XP and later
+[MFR.NTx86]
+%BoxDev.DrvDesc% = BoxDev_Inst, PCI\VEN_80EE&DEV_CAFE
+
+[MFR.NTamd64]
+%BoxDev.DrvDesc% = BoxDev_Inst, PCI\VEN_80EE&DEV_CAFE
+
+
+[BoxDev_Inst.NT]
+CopyFiles = BoxDev.CopyFiles
+
+
+[BoxDev.CopyFiles]
+boxdev.sys
+
+
+[SourceDisksFiles]
+boxdev.sys = 1
+
+
+[SourceDisksNames.x86]
+1 = %DISK_NAME%,,,
+
+
+[SourceDisksNames.amd64]
+1 = %DISK_NAME%,,,\amd64
+
+
+[BoxDev_Inst.NT.Services]
+AddService = BoxDev, 0x00000002, BoxDev_Service 
+
+
+[BoxDev_Service]
+DisplayName    = %BoxDev.SvcDesc%                            
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\boxdev.sys                            
+
+
+[Strings]
+MFR            = "Open Watcom"
+ClassName      = "Sample Driver"
+BoxDev.SvcDesc = "Service for the VirtualBox System Device"
+BoxDev.DrvDesc = "VirtualBox System Device"
+DISK_NAME      = "BoxDev Sample Install Disk"

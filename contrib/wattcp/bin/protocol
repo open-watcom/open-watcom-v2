@@ -1,0 +1,65 @@
+#
+#  IP protocol numbers and names
+#
+
+0    reserved           # IPv4, pseudo protocol number
+1    icmp               # internet control message
+2    igmp               # internet group management
+3    ggp                # gateway-gateway protocol
+5    ST                 # stream
+6    tcp                # transmission control protocol
+8    egp                # exterior gateway protocol
+9    igp                # any interior gateway protocol
+10   bbn-rcc-mon        # BBN RCC Monitoring
+11   nvp-ii             # Network Voice Protocol
+12   pup
+13   argus
+14   emcon
+15   xnet               # Cross Net Debugger
+16   chaos
+17   udp                # User datagram protocol
+18   multiplexing
+19   dcn-meas
+20   hmp                # host monitoring protocol
+21   prm                # packet radio measurement
+22   xns-idp
+23   trunk-1
+24   trunk-2
+25   leaf-1
+26   leaf-2
+27   rdp                # reliable data protocol
+28   irtp               # internet reliable transaction
+29   iso-tp4
+30   netblt             # bulk data transfer
+31   mfe-nsp
+32   merit-inp
+33   sep                # sequential exchange protocol
+34   3pc
+41   ipv6               # Internet Protocol, version 6
+50   esp                # IPSEC esp
+51   ah                 # IPSEC ah
+58   icmpv6             # Internet Control Message Protocol version 6
+62   cftp
+64   sat-expak          # SATNET and backroom EXPAK
+66   rvd                # MIT remote virtual disk
+67   ippc               # internet pluribus packet core
+69   sat-mon            # SATNET monitoring
+70   visa
+71   ipcv               # internet packet core
+76   br-sta-mon
+77   sun
+78   wb-mon             # wideband monitoring
+79   wb-expak           # wideband expak
+80   iso-ip
+81   vmtp
+82   secure-vmtp
+83   vines
+84   ttp
+85   NSFNET igp
+86   dgp                # dissimilar gateway protocol
+87   tcf
+88   igrp
+89   ospfigp
+90   sprite-rpc
+91   larp               # locus arp
+98   encap              # RFC1241 encapsulation

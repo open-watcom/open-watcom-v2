@@ -78,6 +78,9 @@ EVENT GUIMapKeys( EVENT ev )
     case EV_RUB_OUT :
         key = GUI_KEY_BACKSPACE;
         break;
+    case EV_CTRL_BACKSPACE :
+        key = GUI_KEY_CTRL_BACKSPACE;
+        break;
     case EV_ESCAPE :
         key = GUI_KEY_ESCAPE;
         break;

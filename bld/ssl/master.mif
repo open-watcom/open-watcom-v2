@@ -1,0 +1,23 @@
+proj_name = ssl
+ssl_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h" -I$(cpp_dir)
+
+.c: ../c;$(cpp_dir)
+
+objs =                  &
+        ssl.obj         &
+        ssldecl.obj     &
+        sslrule.obj     &
+        sslsym.obj      &
+        sslgen.obj      &
+        preproc.obj     &
+        ppexpr.obj      &
+        ppmacro.obj     &
+        ppmem.obj
+
+!include exetarg.mif

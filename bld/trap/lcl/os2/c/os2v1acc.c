@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 1.x debug core.
 *
 ****************************************************************************/
 
@@ -43,14 +42,12 @@
 #include "trperr.h"
 #include "os2trap.h"
 #include "madregs.h"
+#include "x86cpu.h"
+#include "misc7086.h"
 
-extern  void    FPUContract( void * );
-extern  void    FPUExpand( void * );
-extern  char    NPXType();
-extern  unsigned X86CPUType();
 extern  void    BreakPoint( ULONG );
 #pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
-extern  void far *Automagic( unsigned short );
+extern  void    far *Automagic( unsigned short );
 #pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
                             0x89 0xe0 /* mov ax,sp */\
                             0x8c 0xd2 /* mov dx,ss */\
@@ -60,8 +57,8 @@ extern  void far *Automagic( unsigned short );
 
 
 
-extern  void    LoadThisDLL();
-extern  void    EndLoadThisDLL();
+extern  void    LoadThisDLL( void );
+extern  void    EndLoadThisDLL( void );
 
 extern PID              Pid;
 extern bool             AtEnd;
@@ -71,7 +68,7 @@ extern char             UtilBuff[BUFF_SIZE];
 extern HFILE            SaveStdIn;
 extern HFILE            SaveStdOut;
 extern bool             CanExecTask;
-extern USHORT far       *ModHandles;
+extern USHORT           far *ModHandles;
 extern USHORT           NumModHandles;
 extern int              CurrModHandle;
 extern int              ExceptNum;
@@ -80,7 +77,7 @@ extern scrtype          Screen;
 
 static TRACEBUF         Buff;
 static USHORT           SessionType;
-__GINFOSEG          far *GblInfo;
+__GINFOSEG              far *GblInfo;
 char                    OS2ExtList[] = { ".exe\0" };
 
 
@@ -285,9 +282,6 @@ static void DoWritePgmScrn( char far *buff, USHORT len )
     BreakPoint( 0 );
 }
 
-#pragma aux GetMSW = 0x0f 0x01 0xe0 value [ax];
-extern unsigned short GetMSW( void );
-
 static void DoGetMSW( void )
 {
     BreakPoint( GetMSW() );
@@ -296,7 +290,7 @@ static void DoGetMSW( void )
 
 static char stack[1024];
 
-static long TaskExecute( long (*rtn)() )
+static long TaskExecute( void (*rtn)() )
 {
     TRACEBUF    buff;
 
@@ -359,8 +353,8 @@ unsigned ReqGet_sys_config()
     ret->sys.cpu = X86CPUType();
     DosDevConfig( &npx, 3, 0 );
     if( npx ) {
-        if( ret->sys.cpu >= 4 ) {
-            ret->sys.fpu = ret->sys.cpu;
+        if( ret->sys.cpu >= X86_486 ) {
+            ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
         } else {
             ret->sys.fpu = NPXType();
         }

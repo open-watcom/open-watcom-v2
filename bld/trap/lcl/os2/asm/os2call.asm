@@ -38,6 +38,8 @@ make32  macro   hi,lo,elo
         rol     elo,16          ; swap lo/hi
         endm
 
+DGROUP group _DATA
+
                 assume  cs:_TEXT, ds:DGROUP
 
 extrn _FlatCS: word
@@ -51,8 +53,6 @@ s_offset        dd      0
 s_seg           dw      0
                 dw      0
 _DATA ends
-
-DGROUP group _DATA
 
 public  DoCall_
 public  DoReadWord_

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrncat() - far strncat().
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include <string.h>
 
-#ifdef M_I86
+#ifdef _M_I86
 
 extern char _WCFAR *_fast_strncat( char _WCFAR *, const char _WCFAR *, size_t );
 
@@ -63,24 +62,25 @@ extern char _WCFAR *_fast_strncat( char _WCFAR *, const char _WCFAR *, size_t );
 /* concatenate t to the end of dst */
 
 _WCRTLINK char _WCFAR *_fstrncat( char _WCFAR *dst, const char _WCFAR *t, size_t n )
-    {
-#ifdef M_I86
-        if( n ) {
-            return( _fast_strncat( dst, t, n ) );
-        }
-        return( dst );
-#else
-        char _WCFAR *s;
-
-        s = _fmemchr( dst, '\0', ~0 );
-        while( n != 0 ) {
-            *s = *t;
-            if( *s == '\0' ) break;
-            ++s;
-            ++t;
-            --n;
-        }
-        *s = '\0';
-        return( dst );
-#endif
+{
+#ifdef _M_I86
+    if( n ) {
+        return( _fast_strncat( dst, t, n ) );
     }
+    return( dst );
+#else
+    char _WCFAR     *s;
+
+    s = _fmemchr( dst, '\0', ~0 );
+    while( n != 0 ) {
+        *s = *t;
+        if( *s == '\0' )
+            break;
+        ++s;
+        ++t;
+        --n;
+    }
+    *s = '\0';
+    return( dst );
+#endif
+}

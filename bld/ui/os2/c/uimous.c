@@ -83,7 +83,7 @@ extern void MouseInt2( unsigned, unsigned, unsigned, unsigned, unsigned );
                         0x36 0x89 0x4c 0x02 \
                         0x36 0x89 0x54 0x04 \
                         parm [ax] [si] modify [bx cx dx];
-extern MouseState( unsigned, struct mouse_data near * );
+extern void MouseState( unsigned, struct mouse_data near * );
 
 extern unsigned long uiclock( void );
 
@@ -104,19 +104,19 @@ static          unsigned short          Status;
 
 
 
-void intern mousespawnstart()
-/***************************/
+void intern mousespawnstart( void )
+/*********************************/
 {
     uihidemouse();
 }
 
-void intern mousespawnend()
-/*************************/
+void intern mousespawnend( void )
+/*******************************/
 {
 }
 
-static void GetMouseInfo()
-/************************/
+static void GetMouseInfo( void )
+/******************************/
 {
     struct      _MOUEVENTINFO   mouinfo;
     USHORT                      readtype = 0;
@@ -138,13 +138,9 @@ static void GetMouseInfo()
     Col  = mouinfo.col;
 }
 
-void intern checkmouse( pstatus, prow, pcol, ptime )
-/**************************************************/
-
-register        unsigned short*         pstatus;
-register        MOUSEORD*               prow;
-register        MOUSEORD*               pcol;
-register        unsigned long*          ptime;
+void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
+                          MOUSEORD *pcol, unsigned long *ptime )
+/**************************************************************/
 {
     if( _osmode == DOS_MODE ) {
         struct  mouse_data state;
@@ -169,7 +165,7 @@ void uimousespeed( unsigned speed )
 /* set speed of mouse. 0 is fastest; the higher the number the slower
    it goes */
 {
-    if( speed <= 0 ) {
+    if( (int)speed <= 0 ) {
         speed = 1;
     }
 
@@ -182,7 +178,7 @@ void uimousespeed( unsigned speed )
 
 #define         IRET                    (char) 0xcf
 
-static bool mouse_installed()
+static bool mouse_installed( void )
 {
     unsigned short far          *vector;
     char far                    *intrtn;
@@ -194,8 +190,8 @@ static bool mouse_installed()
     return( ( intrtn != NULL ) && ( *intrtn != IRET ) );
 }
 
-static void DOS_initmouse( bool install )
-/***************************************/
+static void DOS_initmouse( int install )
+/**************************************/
 {
     int             cx,dx;
     unsigned long   time;
@@ -229,8 +225,8 @@ static void DOS_initmouse( bool install )
     }
 }
 
-static void OS2_initmouse( bool install )
-/***************************************/
+static void OS2_initmouse( int install )
+/**************************************/
 {
     USHORT          mouevents;
     USHORT          num_buttons;
@@ -276,11 +272,8 @@ static void OS2_initmouse( bool install )
 }
 
 
-bool global initmouse( install )
-/******************************/
-
-bool                    install;
-
+bool global initmouse( int install )
+/**********************************/
 {
     MouseInstalled = FALSE;
     if( _osmode == DOS_MODE ) {
@@ -292,8 +285,8 @@ bool                    install;
 }
 
 
-void extern finimouse()
-/*********************/
+void extern finimouse( void )
+/***************************/
 {
     if( MouseInstalled ) {
         uioffmouse();

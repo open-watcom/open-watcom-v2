@@ -70,14 +70,6 @@ typedef struct {
     byte        actual_locn[VIRTUAL_NONE];
 } st_seq;
 
-GLOBAL st_seq   *STLocations;
-GLOBAL int      MaxSeq;
-GLOBAL byte *SeqMaxDepth;
-GLOBAL byte *SeqCurDepth;
-
-#define RegLoc( seq, vir ) ( STLocations + (seq) )->actual_locn[ vir ]
-#define InsLoc( ins, vir ) RegLoc( (ins)->sequence, vir )
-
 typedef struct temp_entry {
     struct temp_entry   *next;
     name                *op;
@@ -95,4 +87,11 @@ typedef struct temp_entry {
     unsigned            whole_block : 1;
 } temp_entry;
 
-GLOBAL temp_entry       *TempList;
+extern st_seq           *STLocations;
+extern int              MaxSeq;
+extern byte             *SeqMaxDepth;
+extern byte             *SeqCurDepth;
+extern temp_entry       *TempList;
+
+#define RegLoc( seq, vir ) ( STLocations + (seq) )->actual_locn[ vir ]
+#define InsLoc( ins, vir ) RegLoc( (ins)->sequence, vir )

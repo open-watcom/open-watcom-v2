@@ -34,7 +34,8 @@ void test1() {
     int temp;
     int temp2;
 
-    for( int i = 0; i < 50; i++ ) {
+    int i;
+    for( i = 0; i < 50; i++ ) {
 	temp = i;
 	hash.insert( temp );
     };
@@ -51,7 +52,8 @@ void test2() {
     WCPtrHashTable<int> hash( hash_fn, 5 );
     int array[ 50 ];
 
-    for( int i = 0; i < 50; i++ ) {
+    int i;
+    for( i = 0; i < 50; i++ ) {
 	array[ i ] = i;
 	hash.insert( &array[ i ] );
     };
@@ -69,7 +71,8 @@ void test3() {
     int temp2;
 
     cout << "test3\n";
-    for( int i = 0; i < 50; i++ ) {
+    int i;
+    for( i = 0; i < 50; i++ ) {
 	temp = i;
 	hash.insert( temp );
     };
@@ -86,7 +89,8 @@ void test4() {
     WCPtrHashSet<int> hash( hash_fn, 5 );
     int array[ 50 ];
 
-    for( int i = 0; i < 50; i++ ) {
+    int i;
+    for( i = 0; i < 50; i++ ) {
 	array[ i ] = i;
 	hash.insert( &array[ i ] );
     };

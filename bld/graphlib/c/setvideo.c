@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Video mode set processing.
 *
 ****************************************************************************/
 
@@ -100,18 +99,12 @@ static void HScrollRestore()
 
 #else
 
-  #if defined( _NEC_PC )
-extern gr_device _FARD  _GrNEC_TEXT, _GrNEC_GRAPH8,
-                        _GrNEC_GRAPH16, _GrNEC_GRAPH1120;
-  #else
 extern gr_device _FARD  _TextDevice, _GrCGA_4, _GrCGA_6, _GrHGC_11,
                         _GrEGA_13, _GrEGA_14, _GrEGA_15, _GrEGA_16,
                         _GrVGA_17, _GrVGA_18, _GrVGA_19;
-    #if defined( _SUPERVGA )
+  #if defined( _SUPERVGA )
 extern gr_device _FARD  _GrSVGA_100, _GrSVGA_102, _GrSVGA_103,
                         _GrSVGA_104, _GrSVGA_105;
-    #endif
-
   #endif
 
 
@@ -122,17 +115,6 @@ typedef struct supported_video_mode {
 
 
 static SUPP_MODE        VideoModes[] = {
-  #if defined( _NEC_PC )
-    _98TEXT80,          &_GrNEC_TEXT,
-    _98RESSCOLOR,       &_GrNEC_GRAPH8,
-    _98RESS8COLOR,      &_GrNEC_GRAPH8,
-    _98RESS16COLOR,     &_GrNEC_GRAPH16,
-    _98RESCOLOR,        &_GrNEC_GRAPH8,
-    _98RES8COLOR,       &_GrNEC_GRAPH8,
-    _98RES16COLOR,      &_GrNEC_GRAPH16,
-    _98HIRES16COLOR,    &_GrNEC_GRAPH1120,
-    _98HIRESS16COLOR,   &_GrNEC_GRAPH1120,
-  #else
     _TEXTBW40,          &_TextDevice,
     _TEXTC40,           &_TextDevice,
     _TEXTBW80,          &_TextDevice,
@@ -149,14 +131,13 @@ static SUPP_MODE        VideoModes[] = {
     _VRES2COLOR,        &_GrVGA_17,
     _VRES16COLOR,       &_GrVGA_18,
     _MRES256COLOR,      &_GrVGA_19,
-    #if defined( _SUPERVGA )
+  #if defined( _SUPERVGA )
     0x100,              &_GrSVGA_100,
     0x101,              &_GrSVGA_100,
     0x102,              &_GrSVGA_102,
     0x103,              &_GrSVGA_103,
     0x104,              &_GrSVGA_104,
     0x105,              &_GrSVGA_105,
-    #endif
   #endif
     -1,                 NULL
 };
@@ -166,7 +147,88 @@ static short            SelectMode( short );
 #endif
 
 
-short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
+static void SetTextInfo( void )
+/*=======================
+
+   This routine initializes the graphics text defaults. */
+
+{
+    short               height;
+    short               width;
+
+    /* Make the graphics text look the same on all devices. Take the
+       width to height visual ratio to be 5:8 and assume that the
+       width to height ratio of the physical dimensions of the screen
+       is 4 : 3. The size is about 1.5 the size of BIOS text.   */
+
+    height = ( _CurrState->vc.numypixels * 3 ) /
+                                ( _CurrState->vc.numtextrows * 2 );
+    width = ( (long) height * _CurrState->vc.numxpixels * 15 ) /    // 3 * 5
+                ( (long) _CurrState->vc.numypixels * 32 );          // 4 * 8
+    _setcharsize( height, width );
+    _settextorient( 1, 0 );
+    _settextpath( _PATH_RIGHT );
+    _setcharspacing( 0 );
+    _settextalign( _NORMAL, _NORMAL );
+}
+
+
+static void _InitVariables( void )
+/*================================
+
+   This routine initializes all of the global variables used by the
+   graphics functions. */
+
+{
+    _CurrPos.xcoord = 0;                        /* initial position */
+    _CurrPos.ycoord = 0;
+    _LogOrg.xcoord = _CurrPos.xcoord;
+    _LogOrg.ycoord = _CurrPos.ycoord;
+    _CurrPos_w.wx = 0.0;
+    _CurrPos_w.wy = 0.0;
+
+    _Window.invert = TRUE;          /* window coordinates defaults  */
+    _Window.xleft = 0.0;
+    _Window.ybottom = 0.0;
+    _Window.xright = 1.0;
+    _Window.ytop = 1.0;
+
+    _CurrState->clip_def.xmin = 0;               /* graphics window */
+    _CurrState->clip_def.xmax = _CurrState->vc.numxpixels - 1;
+    _CurrState->clip_def.ymin = 0;
+    _CurrState->clip_def.ymax = _CurrState->vc.numypixels - 1;
+    _setclip( _GCLIPON );
+
+    _TextPos.row = 0;                   /* BIOS text cursor position    */
+    _TextPos.col = 0;
+    _Tx_Row_Min = 0;                            /* text window */
+    _Tx_Row_Max = _CurrState->vc.numtextrows - 1;
+    _Tx_Col_Min = 0;
+    _Tx_Col_Max = _CurrState->vc.numtextcols - 1;
+    if( _GrMode ) {
+        SetTextInfo();
+    }
+
+    memcpy( _FillMask, _DefMask, MASK_LEN );    /* solid fill */
+    _HaveMask = 0;                              /* no fill mask set */
+    _PaRf_x = 0;                                /* fill pattern    */
+    _PaRf_y = 0;                                /* reference point */
+
+    _CharAttr = _DEFAULT_ATTR;
+    _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
+    _CurrBkColor = 0;
+    _CurrActivePage = _CurrVisualPage = 0;
+    _CurrState->screen_seg = _CurrState->screen_seg_base;/* pg 0 scrn segment */
+    _CurrState->screen_off = _CurrState->screen_off_base;/* pg 0 scrn offset */
+    _LineStyle = SOLID_LINE;                    /* solid line */
+    _StyleWrap = 0;                             /* line style continuation  */
+    _PlotAct = 0;                               /* replace mode */
+    _Transparent = 1;                           /* transparent mode */
+    _Wrap = 1;                                  /* wrapping on */
+}
+
+
+_WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 /*================================================
 
    This routine sets the video mode if it is supported by the current
@@ -190,7 +252,7 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     short               clipy1, clipy2;
     WPI_RECTDIM         right, bottom, height;
   #if defined( __OS2__ )
-    ULONG               style;
+    ULONG               winstyle;
     HWND                frame;
     MENUITEM            gphmenu;
   #endif
@@ -255,11 +317,11 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     _GetWindowNameAndCoords( name, dest, &x1, &x2, &y1, &y2 );
 
   #if defined( __OS2__ )
-    style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
+    winstyle = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
             FCF_VERTSCROLL | FCF_HORZSCROLL;
     frame = WinCreateStdWindow( _MainWindow,
                 WS_VISIBLE | WS_CLIPSIBLINGS,
-                &style, "GraphWndClass", dest, 0, NULL, 0, &Win );
+                &winstyle, "GraphWndClass", dest, 0, NULL, 0, &Win );
     if( frame == 0 ) return( FALSE );
     WinSetOwner( Win, _MainWindow );
     _OldFrameProc = WinSubclassWindow( frame, GraphFrameProc );
@@ -381,7 +443,7 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     gphmenu.id = DID_WIND_STDIO + w->handles[0];
     gphmenu.hwndSubMenu = NULL;
     gphmenu.hItem = 0;
-    if ( MIT_ERROR == WinSendMsg( menu, ( ULONG )MM_INSERTITEM, MPFROMP( &gphmenu ), MPFROMP( dest ) ) ) abort();
+    if ( (MRESULT)MIT_ERROR == WinSendMsg( menu, ( ULONG )MM_INSERTITEM, MPFROMP( &gphmenu ), MPFROMP( dest ) ) ) abort();
 
   #else
     AppendMenu( menu, MF_ENABLED, MSG_WINDOWS+w->handles[0], dest );
@@ -399,7 +461,7 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         _ErrorStatus = _GRERROR;
         return( 0 );
     }
-    for( tab = &VideoModes; ; ++tab ) {
+    for( tab = VideoModes; ; ++tab ) {
         if( tab->mode == -1 ) {
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( 0 );
@@ -438,11 +500,9 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
             _SetRows( _DefTextRows );
         }
         _InitVariables();               /* initialize globals       */
-    #if !defined( _NEC_PC )
         if( req_mode != _DEFAULTMODE ) {
             _PaletteInit();             // don't init palette if _DEFAULTMODE
         }
-    #endif
     }
 #endif
 
@@ -463,33 +523,7 @@ short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 Entry( _SETVIDEOMODE, _setvideomode ) // alternate entry-point
 
 
-#if defined( _NEC_PC )
-
-static short SelectMode( short req_mode )
-/*=======================================
-
-    Return the actual mode based on the value of req_mode. */
-
-{
-    short               mode;
-
-    if( req_mode == _MAXRESMODE || req_mode == _MAXCOLORMODE ) {
-        if( _GRCGPort == 0xA4 ) {       // if hires mode
-            mode = _98HIRES16COLOR;
-        } else if( ( inp( 0x42 ) & 0x08 ) != 0 ) {
-            mode = _98RES8COLOR;
-        } else {
-            mode = _98RES16COLOR;
-        }
-    } else if( req_mode == _DEFAULTMODE ) {
-        mode = _DefMode;
-    } else {
-        mode = req_mode;
-    }
-    return( mode );
-}
-
-#elif !defined( _DEFAULT_WINDOWS )
+#if !defined( _DEFAULT_WINDOWS )
 
 static short SelectMode( short req_mode )
 /*=======================================
@@ -577,87 +611,6 @@ static short SelectMode( short req_mode )
 }
 
 #endif
-
-
-static void SetTextInfo()
-/*=======================
-
-   This routine initializes the graphics text defaults. */
-
-{
-    short               height;
-    short               width;
-
-    /* Make the graphics text look the same on all devices. Take the
-       width to height visual ratio to be 5:8 and assume that the
-       width to height ratio of the physical dimensions of the screen
-       is 4 : 3. The size is about 1.5 the size of BIOS text.   */
-
-    height = ( _CurrState->vc.numypixels * 3 ) /
-                                ( _CurrState->vc.numtextrows * 2 );
-    width = ( (long) height * _CurrState->vc.numxpixels * 15 ) /    // 3 * 5
-                ( (long) _CurrState->vc.numypixels * 32 );          // 4 * 8
-    _setcharsize( height, width );
-    _settextorient( 1, 0 );
-    _settextpath( _PATH_RIGHT );
-    _setcharspacing( 0 );
-    _settextalign( _NORMAL, _NORMAL );
-}
-
-
-static void _InitVariables( void )
-/*================================
-
-   This routine initializes all of the global variables used by the
-   graphics functions. */
-
-{
-    _CurrPos.xcoord = 0;                        /* initial position */
-    _CurrPos.ycoord = 0;
-    _LogOrg.xcoord = _CurrPos.xcoord;
-    _LogOrg.ycoord = _CurrPos.ycoord;
-    _CurrPos_w.wx = 0.0;
-    _CurrPos_w.wy = 0.0;
-
-    _Window.invert = TRUE;          /* window coordinates defaults  */
-    _Window.xleft = 0.0;
-    _Window.ybottom = 0.0;
-    _Window.xright = 1.0;
-    _Window.ytop = 1.0;
-
-    _CurrState->clip_def.xmin = 0;               /* graphics window */
-    _CurrState->clip_def.xmax = _CurrState->vc.numxpixels - 1;
-    _CurrState->clip_def.ymin = 0;
-    _CurrState->clip_def.ymax = _CurrState->vc.numypixels - 1;
-    _setclip( _GCLIPON );
-
-    _TextPos.row = 0;                   /* BIOS text cursor position    */
-    _TextPos.col = 0;
-    _Tx_Row_Min = 0;                            /* text window */
-    _Tx_Row_Max = _CurrState->vc.numtextrows - 1;
-    _Tx_Col_Min = 0;
-    _Tx_Col_Max = _CurrState->vc.numtextcols - 1;
-    if( _GrMode ) {
-        SetTextInfo();
-    }
-
-    memcpy( _FillMask, _DefMask, MASK_LEN );    /* solid fill */
-    _HaveMask = 0;                              /* no fill mask set */
-    _PaRf_x = 0;                                /* fill pattern    */
-    _PaRf_y = 0;                                /* reference point */
-
-    _CharAttr = _DEFAULT_ATTR;
-    _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
-    _CurrBkColor = 0;
-    _CurrActivePage = _CurrVisualPage = 0;
-    _CurrState->screen_seg = _CurrState->screen_seg_base;/* pg 0 scrn segment */
-    _CurrState->screen_off = _CurrState->screen_off_base;/* pg 0 scrn offset */
-    _LineStyle = 0xFFFF;                        /* solid line */
-    _StyleWrap = 0;                             /* line style continuation  */
-    _PlotAct = 0;                               /* replace mode */
-    _Transparent = 1;                           /* transparent mode */
-    _Wrap = 1;                                  /* wrapping on */
-}
 
 
 #if defined( _DEFAULT_WINDOWS )
@@ -874,7 +827,7 @@ static short _registergphclass( WPI_INST inst )
 }
 
 
-#elif !defined( _NEC_PC )
+#else
 
 void _PaletteInit( void )
 //=======================

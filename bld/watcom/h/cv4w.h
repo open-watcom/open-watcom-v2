@@ -35,7 +35,7 @@
 /* include fixed field defn */
 #include "cv4f.h"
 
-#pragma pack( 1 );         /* written out directly so we need packing */
+#include "pushpck1.h"
 
 typedef struct lf_common {
     u2          code;
@@ -529,6 +529,11 @@ typedef struct {
     s_common    common;
 } s_align;
 
+typedef struct {
+    s_common     common;
+    cs_pub32_new f;
+} s_pub32_new;
+
 typedef union {
     s_common            common;
     s_compile           compile;
@@ -576,6 +581,7 @@ typedef union {
     s_gthread32         gthread32;
     s_return            return_;
     s_entrythis         entrythis;
+    s_pub32_new         pub32_new;
 } s_all;
 
-#pragma pack();
+#include "poppck.h"

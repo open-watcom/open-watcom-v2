@@ -29,10 +29,16 @@
 *
 ****************************************************************************/
 
+#ifndef _ASMDEFS_H_INCLUDED
+#define _ASMDEFS_H_INCLUDED
 
 #define IS_CALL( inst )     ( inst == T_CALL || inst == T_CALLF )
 #define IS_JMP( inst )      ( inst >= T_JA && inst <= T_JZ )
 #define IS_BRANCH( inst )   ( IS_JMP( inst ) || IS_CALL( inst ) )
+#define IS_JMPCALLF( inst )  ( inst == T_CALLF || inst == T_JMPF )
+#define IS_JMPCALLN( inst )  ( inst == T_CALL || inst == T_JMP )
+#define IS_ANY_BRANCH( inst )    \
+            ( IS_BRANCH( inst ) || ( ( inst >= T_LOOP ) && ( inst <= T_LOOPZW ) ) )
 
 #define MOD_00          0x00
 #define MOD_01          0x40
@@ -44,6 +50,7 @@
 
 #define OPND1           0
 #define OPND2           1
+#define OPND3           2
 
 #define ADRSIZ          0x67
 #define OPSIZ           0x66
@@ -72,44 +79,51 @@
 #define FPE_MIN         0xD8
 #define FPE_MAX         0xDF
 
-#define addr_32( code )     ( code->use32 ? ( code->adrsiz == EMPTY ) : ( code->adrsiz == NOT_EMPTY ) )
+#define SET_ADRSIZ( s, x ) ( s->prefix.adrsiz = (( x ) ^ ( s->use32 )) ? TRUE : FALSE )
+#define SET_ADRSIZ_32( s ) ( s->prefix.adrsiz = ( s->use32 ) ? FALSE : TRUE )
+#define SET_ADRSIZ_16( s ) ( s->prefix.adrsiz = ( s->use32 ) ? TRUE : FALSE )
+#define SET_ADRSIZ_NO( s ) ( s->prefix.adrsiz = FALSE )
+#define SET_OPSIZ( s, x ) ( s->prefix.opsiz = (( x ) ^ ( s->use32 )) ? TRUE : FALSE )
+#define SET_OPSIZ_32( s ) ( s->prefix.opsiz = ( s->use32 ) ? FALSE : TRUE )
+#define SET_OPSIZ_16( s ) ( s->prefix.opsiz = ( s->use32 ) ? TRUE : FALSE )
+#define SET_OPSIZ_NO( s ) ( s->prefix.opsiz = FALSE )
 
-#ifdef _WASM_
-    #define     Address         ( GetCurrAddr() )
-    #define MEM_TYPE( op, typ ) ( (op) == T_##typ || (op) == T_S##typ )
+#define addr_32( s )     ( s->use32 ? ( s->prefix.adrsiz == FALSE ) : ( s->prefix.adrsiz == TRUE ))
+#define oper_32( s )     ( s->use32 ? ( s->prefix.opsiz == FALSE ) : ( s->prefix.opsiz == TRUE ))
+
+#if defined( _STANDALONE_ )
+
+#define MEM_TYPE( op, typ ) ( (op) == MT_##typ || (op) == MT_S##typ )
+
 #else
-    extern uint_32              Address;
-    #define MEM_TYPE( op, typ ) ( (op) == T_##typ )
+
+#define MEM_TYPE( op, typ ) ( (op) == MT_##typ )
+
 #endif
 
 /* global variables */
-extern char             *CodeBuffer;
-extern struct asm_tok   *AsmBuffer[];
-extern struct AsmCodeName AsmOpcode[];
-extern struct asmfixup  *InsFixups[3];
-extern struct asmfixup  *FixupHead;
+extern asm_tok          *AsmBuffer[];
 extern struct asm_code  *Code;
-extern int_8            Frame;
-extern uint_8           Frame_Datum;
+extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing
 extern unsigned char    Opnd_Count;
 extern char             Modend;         // end of module is reached
 extern int_8            Use32;          // if 32-bit code is use
-extern uint             LineNumber;
+extern int              Token_Count;    // number of tokens on line
 
-extern void             add_frame( void );
-extern struct asmfixup  *AddFixup( struct asm_sym *sym, int fixup_type );
-extern int              BackPatch( struct asm_sym *sym );
-extern void             mark_fixupp( unsigned long determinant, int index );
-extern struct fixup     *CreateFixupRec( int index );
-extern int              store_fixup( int index );
-extern int              MakeFpFixup( struct asm_sym *sym );
-extern int              match_phase_1( void );
-extern void             AsmByte( char );
-#ifdef _WASM_
-    extern void         AsmCodeByte( char );
-    extern void         AsmDataByte( char );
+extern void             AsmByte( unsigned char );
+extern int              AsmScan( char * );
+
+#if defined( _STANDALONE_ )
+
+extern void             AsmCodeByte( unsigned char );
+extern void             AsmDataByte( unsigned char );
+
 #else
-    #define AsmCodeByte( c )        AsmByte( c )
-    #define AsmDataByte( c )        AsmByte( c )
+
+#define AsmCodeByte( c )    AsmByte( c )
+#define AsmDataByte( c )    AsmByte( c )
+
+#endif
+
 #endif

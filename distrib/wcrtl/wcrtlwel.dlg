@@ -1,0 +1,15 @@
+name=welcome
+static_text="The installation program will install the software"
+static_text="into the following directory."
+static_text=
+static_text="If you want to install the software in a different"
+static_text="directory, specify the new location below:"
+static_text=
+edit_control=DstDir,c:\wcrtl,"Copy files to:"
+static_text=
+check_box=clib,1,"C Library Source"
+check_box=cpplib,1,"C++ Library Source"
+check_box=mathlib,1,"Math Library Source"
+static_text=
+push_button=.+Install
+push_button=^Cancel

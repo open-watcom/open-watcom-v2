@@ -1,16 +1,3 @@
-:cmt **********************************************************************
-:cmt *       Copyright by WATCOM International Corporation, 1987, 1992.   *
-:cmt *       All rights reserved. No part of this software may be         *
-:cmt *       reproduced in any form or by any means - graphic, electronic,*
-:cmt *       mechanical or otherwise, including, without limitation,      *
-:cmt *       photocopying, recording, taping or information storage and   *
-:cmt *       retrieval systems - except with the written permission of    *
-:cmt *       WATCOM International Corporation.                            *
-:cmt **********************************************************************
-:cmt
-:cmt Modified        By                 Reason
-:cmt --------        --                 ------
-:cmt 95/04/02        A.F.Scian          defined during AXP port
 :cmt
 :cmt GML Macros used:
 :cmt
@@ -38,16 +25,17 @@
 :cmt    :jusage. <text>                         Japanese usage text
 :cmt    :title.                                 English title usage text
 :cmt    :jtitle.                                Japanese title usage text
-:cmt	:page.					text for paging usage message
+:cmt    :page.                                  text for paging usage message
+:cmt    :nochain.                               option isn't chained with other options
 :cmt    :timestamp.                             kludge to record "when" an option
 :cmt                                            is set so that dependencies
 :cmt                                            between options can be simulated
 
 :cmt    where:
-:cmt        <arch>:     i86, 386, axp, any, dbg, qnx
+:cmt        <arch>:     i86, 386, axp, any, dbg, qnx, ppc, linux, sparc
 
-:cmt	Translations are required for the :jtitle. and :jusage. tags
-:cmt	if there is no text associated with the tag.
+:cmt    Translations are required for the :jtitle. and :jusage. tags
+:cmt    if there is no text associated with the tag.
 
 :title. Usage: wpp [options] file [options]
 :jtitle. 使用方法: wpp [options] file [options]
@@ -67,7 +55,7 @@
 :title. \t    ( /option is also accepted )
 :jtitle. \t    ( /optionも使用できます )
 :target. i86 386 axp ppc
-:ntarget. qnx
+:ntarget. qnx linux
 :title. \t    ( '=' is always optional, i.e., -w4 -zp4 )
 :jtitle. \t    ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any
@@ -293,6 +281,55 @@
 :usage. same as #define name [text] before compilation
 :jusage. コンパイル前の #define name [text] と同じ
 
+:option. ecc
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __cdecl
+:jusage.
+
+:option. ecd
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __stdcall
+:jusage.
+
+:option. ecf
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __fastcall
+:jusage.
+
+:option. eco
+:target. i86 386
+:enumerate. intel_call_conv
+:internal.
+:usage. set default calling convention to _Optlink
+:jusage.
+
+:option. ecp
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __pascal
+:jusage.
+
+:option. ecr
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __fortran
+:jusage.
+
+:option. ecs
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __syscall
+:jusage.
+
+:option. ecw
+:target. i86 386
+:enumerate. intel_call_conv
+:usage. set default calling convention to __watcall (default)
+:jusage.
+
 :option. ee
 :target. any
 :usage. call epilogue hook routine
@@ -471,6 +508,16 @@
 :usage. do not check for truncated versions of file names
 :jusage. 切り詰めたファイル名をチェックしません
 
+:option. fzh
+:target. any
+:usage. do not automatically postfix include file names
+:jusage. do not automatically postfix include file names
+
+:option. fzs
+:target. any
+:usage. do not automatically postfix source file names
+:jusage. do not automatically postfix source file names
+
 :option. 87d
 :target. i86 386
 :number. CmdX86CheckStack87 0
@@ -638,6 +685,11 @@
 :usage. small memory model (small code/small data)
 :jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
 
+:option. na
+:target. any
+:usage. disable automatic inclusion of _ialias.h
+:jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
+
 :option. nc
 :target. i86 386
 :id.
@@ -702,7 +754,7 @@
 
 :option. oh
 :target. any
-:usage. enable repeated optimizations (longer compiles)
+:usage. enable expensive optimizations (longer compiles)
 :jusage. 最適化を繰り返します(コンパイルが長くなります)
 
 :option. oi
@@ -717,7 +769,7 @@
 
 :option. ok
 :target. any
-:usage. enable control flow prologues and epilogues
+:usage. include prologue/epilogue in flow graph
 :jusage. プロローグとエピローグをフロー制御可能にします
 
 :option. ol
@@ -758,12 +810,14 @@
 :option. os
 :target. any
 :enumerate. opt_size_time
+:timestamp.
 :usage. favor code size over execution time in optimizations
 :jusage. 実行時間よりコードサイズの最適化を優先します
 
 :option. ot
 :target. any
 :enumerate. opt_size_time
+:timestamp.
 :usage. favor execution time over code size in optimizations
 :jusage. コードサイズより実行時間の最適化を優先します
 
@@ -776,13 +830,57 @@
 :target. any
 :enumerate. opt_level
 :timestamp.
-:usage. equivalent to -obmilr -s
-:jusage. -obmilr -sと同等
+:usage. equivalent to -obmiler -s
+:jusage. -obmiler -sと同等
 
 :option. oz
 :target. any
 :usage. NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
+
+:option. ad
+:target. any
+:file.
+:optional.
+:usage. generate make style automatic dependency file
+:jusage. generate make style automatic dependency file
+
+:option. adbs
+:target. any
+:usage. force path separators to '\\' in auto-depend file
+:jusage. force path separators to '\\' in auto-depend file
+
+:option. adfs
+:target. any
+:usage. force path separators to '/' in auto-depend file
+:jusage. force path separators to '/' in auto-depend file
+
+:option. add
+:target. any
+:file.
+:optional.
+:usage. specify first dependency in make style auto-depend file
+:jusage. specify first dependency in make style auto-depend file
+
+:option. adhp
+:target. any
+:file.
+:optional.
+:usage. specify default path for headers without one
+:jusage. specify default path for headers without one
+
+:option. adt
+:target. any
+:file.
+:optional.
+:usage. specify target in make style auto-depend file
+:jusage. specify target in make style auto-depend file
+
+:option. pil
+:target. any
+:nochain.
+:usage. preprocessor ignores #line directives
+:jusage. preprocessor ignores #line directives
 
 :option. p
 :target. any
@@ -823,6 +921,11 @@
 :usage. set preprocessor delimiter to something other than '#'
 :jusage. プリプロセッサの区切り記号を'#'以外の何かに設定します
 
+:option. q
+:target. any
+:usage. operate quietly (display only error messages)
+:jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
+
 :option. r
 :target. i86 386
 :usage. save/restore segment registers across calls
@@ -836,7 +939,7 @@
 
 :option. ri
 :target. i86 386
-:usage. promote to int all function arguments and returns
+:usage. return chars and shorts as ints
 :jusage. 全ての関数の引数と戻り値をint型に変換します
 
 :option. rod
@@ -925,6 +1028,11 @@
 :enumerate. warn_level
 :usage. set warning level to maximum setting
 :jusage. 警告レベルを最大設定にします
+
+:option. x
+:target. any
+:usage. ignore INCLUDE environment variable
+:jusage. ignore INCLUDE environment variable
 
 :option. xbnm
 :target. any
@@ -1021,6 +1129,16 @@
 :usage. disable extensions (i.e., accept only ISO/ANSI C++)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI C++のみ受け付けます)
 
+:option. za0x
+:target. any
+:usage. enable some features of the upcoming ISO C++0x standard
+:jusage.
+
+:option. zat
+:target. any
+:usage. disable alternative tokens (e.g. and, or, not)
+:jusage.
+
 :option. zc
 :target. i86 386
 :usage. place const data into the code segment
@@ -1048,6 +1166,21 @@
 :enumerate. iso
 :usage. enable extensions (i.e., near, far, export, etc.)
 :jusage. 拡張機能を使用可能にします(つまり, near, far, export, 等.)
+
+:option. zf
+:target. any
+:usage. scope of for loop initializer extends beyond loop
+:jusage. FIX ME
+
+:option. zfw
+:target. i86
+:usage. generate FWAIT instructions on 386 and later
+:jusage.
+
+:option. zfw
+:target. 386
+:usage. generate FWAIT instructions
+:jusage.
 
 :option. zff
 :target. i86 386
@@ -1134,7 +1267,11 @@
 :target. any
 :usage. always generate default library information
 :jusage. デフォルト･ライブラリ情報を常に生成します
-:internal.
+
+:option. zls
+:target. any
+:usage. remove automatically inserted symbols
+:jusage. remove automatically inserted symbols
 
 :option. zm
 :target. i86 386
@@ -1171,6 +1308,16 @@
 :target. any
 :usage. operate quietly (display only error messages)
 :jusage. 無メッセージモードで動作します(エラーメッセージのみ表示されます)
+
+:option. zro
+:target. any
+:usage. omit floating point rounding calls (non ANSI)
+:jusage. omit floating point rounding calls (non ANSI)
+
+:option. zri
+:target. 386
+:usage. inline floating point rounding calls
+:jusage. inline floating point rounding calls
 
 :option. zs
 :target. any

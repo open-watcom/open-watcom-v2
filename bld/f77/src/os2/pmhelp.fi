@@ -1,0 +1,402 @@
+c$noreference
+
+        structure /HELPTABLE/
+            integer*2 idAppWindow
+            integer*4 phstHelpSubTable
+            integer*2 idExtPanel
+        end structure
+
+        structure /HELPINIT/
+            integer*4 cb
+            integer*4 ulReturnCode
+            integer*4 pszTutorialName
+            integer*4 phtHelpTable
+            integer*4 hmodHelpTableModule
+            integer*4 hmodAccelActionBarModule
+            integer*4 idAccelTable
+            integer*4 idActionBar
+            integer*4 pszHelpWindowTitle
+            integer*4 fShowPanelId
+            integer*4 pszHelpLibraryName
+        end structure
+
+        integer HWND_PARENT
+        parameter (HWND_PARENT = 0)
+
+        integer  HM_RESOURCEID
+        parameter (HM_RESOURCEID = 0)
+        integer  HM_PANELNAME
+        parameter (HM_PANELNAME = 1)
+
+        integer  HMPANELTYPE_NUMBER
+        parameter (HMPANELTYPE_NUMBER = 0)
+        integer  HMPANELTYPE_NAME
+        parameter (HMPANELTYPE_NAME = 1)
+
+        integer  CMIC_HIDE_PANEL_ID
+        parameter (CMIC_HIDE_PANEL_ID = '00000000'x)
+        integer  CMIC_SHOW_PANEL_ID
+        parameter (CMIC_SHOW_PANEL_ID = '00000001'x)
+        integer  CMIC_TOGGLE_PANEL_ID
+        parameter (CMIC_TOGGLE_PANEL_ID = '00000002'x)
+
+        external WinDestroyHelpInstance
+        integer*4 WinDestroyHelpInstance
+
+        external WinCreateHelpInstance
+        integer*4 WinCreateHelpInstance
+
+        external WinAssociateHelpInstance
+        integer*4 WinAssociateHelpInstance
+
+        external WinQueryHelpInstance
+        integer*4 WinQueryHelpInstance
+
+        external WinLoadHelpTable
+        integer*4 WinLoadHelpTable
+
+        external WinCreateHelpTable
+        integer*4 WinCreateHelpTable
+
+        integer  HM_MSG_BASE
+        parameter (HM_MSG_BASE = '00000220'x)
+
+        integer  HM_DISMISS_WINDOW
+        parameter (HM_DISMISS_WINDOW = HM_MSG_BASE + '00000001'x)
+        integer  HM_DISPLAY_HELP
+        parameter (HM_DISPLAY_HELP = HM_MSG_BASE + '00000002'x)
+        integer  HM_EXT_HELP
+        parameter (HM_EXT_HELP = HM_MSG_BASE + '00000003'x)
+        integer  HM_GENERAL_HELP
+        parameter (HM_GENERAL_HELP = HM_EXT_HELP)
+        integer  HM_SET_ACTIVE_WINDOW
+        parameter (HM_SET_ACTIVE_WINDOW = HM_MSG_BASE + '00000004'x)
+        integer  HM_LOAD_HELP_TABLE
+        parameter (HM_LOAD_HELP_TABLE = HM_MSG_BASE + '00000005'x)
+        integer  HM_CREATE_HELP_TABLE
+        parameter (HM_CREATE_HELP_TABLE = HM_MSG_BASE + '00000006'x)
+        integer  HM_SET_HELP_WINDOW_TITLE
+        parameter (HM_SET_HELP_WINDOW_TITLE = HM_MSG_BASE + '00000007'x)
+        integer  HM_SET_SHOW_PANEL_ID
+        parameter (HM_SET_SHOW_PANEL_ID = HM_MSG_BASE + '00000008'x)
+        integer  HM_REPLACE_HELP_FOR_HELP
+        parameter (HM_REPLACE_HELP_FOR_HELP = HM_MSG_BASE + '00000009'x)
+        integer  HM_REPLACE_USING_HELP
+        parameter (HM_REPLACE_USING_HELP = HM_REPLACE_HELP_FOR_HELP)
+        integer  HM_HELP_INDEX
+        parameter (HM_HELP_INDEX = HM_MSG_BASE + '0000000a'x)
+        integer  HM_HELP_CONTENTS
+        parameter (HM_HELP_CONTENTS = HM_MSG_BASE + '0000000b'x)
+        integer  HM_KEYS_HELP
+        parameter (HM_KEYS_HELP = HM_MSG_BASE + '0000000c'x)
+        integer  HM_SET_HELP_LIBRARY_NAME
+        parameter (HM_SET_HELP_LIBRARY_NAME = HM_MSG_BASE + '0000000d'x)
+
+        integer  HM_SET_OBJCOM_WINDOW
+        parameter (HM_SET_OBJCOM_WINDOW = HM_MSG_BASE + '00000018'x)
+        integer  HM_UPDATE_OBJCOM_WINDOW_CHAIN
+        parameter (HM_UPDATE_OBJCOM_WINDOW_CHAIN = HM_MSG_BASE +
+     +             '00000019'x)
+        integer  HM_QUERY_DDF_DATA
+        parameter (HM_QUERY_DDF_DATA = HM_MSG_BASE + '0000001a'x)
+        integer  HM_INVALIDATE_DDF_DATA
+        parameter (HM_INVALIDATE_DDF_DATA = HM_MSG_BASE + '0000001b'x)
+        integer  HM_QUERY
+        parameter (HM_QUERY = HM_MSG_BASE + '0000001c'x)
+        integer  HM_SET_COVERPAGE_SIZE
+        parameter (HM_SET_COVERPAGE_SIZE = HM_MSG_BASE + '0000001d'x)
+
+        integer  HMQW_COVERPAGE
+        parameter (HMQW_COVERPAGE = '00000001'x)
+        integer  HMQW_INDEX
+        parameter (HMQW_INDEX = '00000002'x)
+        integer  HMQW_TOC
+        parameter (HMQW_TOC = '00000003'x)
+        integer  HMQW_SEARCH
+        parameter (HMQW_SEARCH = '00000004'x)
+        integer  HMQW_VIEWPAGES
+        parameter (HMQW_VIEWPAGES = '00000005'x)
+        integer  HMQW_LIBRARY
+        parameter (HMQW_LIBRARY = '00000006'x)
+        integer  HMQW_VIEWPORT
+        parameter (HMQW_VIEWPORT = '00000007'x)
+        integer  HMQW_OBJCOM_WINDOW
+        parameter (HMQW_OBJCOM_WINDOW = '00000008'x)
+        integer  HMQW_INSTANCE
+        parameter (HMQW_INSTANCE = '00000009'x)
+        integer  HMQW_ACTIVEVIEWPORT
+        parameter (HMQW_ACTIVEVIEWPORT = '0000000a'x)
+        integer  CONTROL_SELECTED
+        parameter (CONTROL_SELECTED = '0000000b'x)
+
+        integer  HMQW_GROUP_VIEWPORT
+        parameter (HMQW_GROUP_VIEWPORT = '000000f1'x)
+        integer  HMQW_RES_VIEWPORT
+        parameter (HMQW_RES_VIEWPORT = '000000f2'x)
+        integer  USERDATA
+        parameter (USERDATA = '000000f3'x)
+
+        integer  HMQVP_NUMBER
+        parameter (HMQVP_NUMBER = '00000001'x)
+        integer  HMQVP_NAME
+        parameter (HMQVP_NAME = '00000002'x)
+        integer  HMQVP_GROUP
+        parameter (HMQVP_GROUP = '00000003'x)
+
+        integer  CTRL_PREVIOUS_ID
+        parameter (CTRL_PREVIOUS_ID = '00000001'x)
+        integer  CTRL_SEARCH_ID
+        parameter (CTRL_SEARCH_ID = '00000002'x)
+        integer  CTRL_PRINT_ID
+        parameter (CTRL_PRINT_ID = '00000003'x)
+        integer  CTRL_INDEX_ID
+        parameter (CTRL_INDEX_ID = '00000004'x)
+        integer  CTRL_CONTENTS_ID
+        parameter (CTRL_CONTENTS_ID = '00000005'x)
+        integer  CTRL_BACK_ID
+        parameter (CTRL_BACK_ID = '00000006'x)
+        integer  CTRL_FORWARD_ID
+        parameter (CTRL_FORWARD_ID = '00000007'x)
+        integer  CTRL_TUTORIAL_ID
+        parameter (CTRL_TUTORIAL_ID = '000000FF'x)
+
+        integer  CTRL_USER_ID_BASE
+        parameter (CTRL_USER_ID_BASE = 257)
+
+        integer  HM_ERROR
+        parameter (HM_ERROR = HM_MSG_BASE + '0000000e'x)
+        integer  HM_HELPSUBITEM_NOT_FOUND
+        parameter (HM_HELPSUBITEM_NOT_FOUND = HM_MSG_BASE + '0000000f'x)
+        integer  HM_QUERY_KEYS_HELP
+        parameter (HM_QUERY_KEYS_HELP = HM_MSG_BASE + '00000010'x)
+        integer  HM_TUTORIAL
+        parameter (HM_TUTORIAL = HM_MSG_BASE + '00000011'x)
+        integer  HM_EXT_HELP_UNDEFINED
+        parameter (HM_EXT_HELP_UNDEFINED = HM_MSG_BASE + '00000012'x)
+        integer  HM_GENERAL_HELP_UNDEFINED
+        parameter (HM_GENERAL_HELP_UNDEFINED = HM_EXT_HELP_UNDEFINED)
+        integer  HM_ACTIONBAR_COMMAND
+        parameter (HM_ACTIONBAR_COMMAND = HM_MSG_BASE + '00000013'x)
+        integer  HM_INFORM
+        parameter (HM_INFORM = HM_MSG_BASE + '00000014'x)
+        integer  HM_NOTIFY
+        parameter (HM_NOTIFY = HM_MSG_BASE + '00000022'x)
+        integer  HM_SET_USERDATA
+        parameter (HM_SET_USERDATA = HM_MSG_BASE + '00000023'x)
+        integer  HM_CONTROL
+        parameter (HM_CONTROL = HM_MSG_BASE + '00000024'x)
+
+        integer  OPEN_COVERPAGE
+        parameter (OPEN_COVERPAGE = '00000001'x)
+        integer  OPEN_PAGE
+        parameter (OPEN_PAGE = '00000002'x)
+        integer  SWAP_PAGE
+        parameter (SWAP_PAGE = '00000003'x)
+        integer  OPEN_TOC
+        parameter (OPEN_TOC = '00000004'x)
+        integer  OPEN_INDEX
+        parameter (OPEN_INDEX = '00000005'x)
+        integer  OPEN_HISTORY
+        parameter (OPEN_HISTORY = '00000006'x)
+        integer  OPEN_SEARCH_HIT_LIST
+        parameter (OPEN_SEARCH_HIT_LIST = '00000007'x)
+        integer  OPEN_LIBRARY
+        parameter (OPEN_LIBRARY = '00000008'x)
+
+        integer  HMERR_NO_FRAME_WND_IN_CHAIN
+        parameter (HMERR_NO_FRAME_WND_IN_CHAIN = '00001001'x)
+
+        integer  HMERR_INVALID_ASSOC_APP_WND
+        parameter (HMERR_INVALID_ASSOC_APP_WND = '00001002'x)
+
+        integer  HMERR_INVALID_ASSOC_HELP_INST
+        parameter (HMERR_INVALID_ASSOC_HELP_INST = '00001003'x)
+
+        integer  HMERR_INVALID_DESTROY_HELP_INST
+        parameter (HMERR_INVALID_DESTROY_HELP_INST = '00001004'x)
+
+        integer  HMERR_NO_HELP_INST_IN_CHAIN
+        parameter (HMERR_NO_HELP_INST_IN_CHAIN = '00001005'x)
+
+        integer  HMERR_INVALID_HELP_INSTANCE_HDL
+        parameter (HMERR_INVALID_HELP_INSTANCE_HDL = '00001006'x)
+
+        integer  HMERR_INVALID_QUERY_APP_WND
+        parameter (HMERR_INVALID_QUERY_APP_WND = '00001007'x)
+
+        integer  HMERR_HELP_INST_CALLED_INVALID
+        parameter (HMERR_HELP_INST_CALLED_INVALID = '00001008'x)
+
+        integer  HMERR_HELPTABLE_UNDEFINE
+        parameter (HMERR_HELPTABLE_UNDEFINE = '00001009'x)
+        integer  HMERR_HELP_INSTANCE_UNDEFINE
+        parameter (HMERR_HELP_INSTANCE_UNDEFINE = '0000100a'x)
+        integer  HMERR_HELPITEM_NOT_FOUND
+        parameter (HMERR_HELPITEM_NOT_FOUND = '0000100b'x)
+        integer  HMERR_INVALID_HELPSUBITEM_SIZE
+        parameter (HMERR_INVALID_HELPSUBITEM_SIZE = '0000100c'x)
+        integer  HMERR_HELPSUBITEM_NOT_FOUND
+        parameter (HMERR_HELPSUBITEM_NOT_FOUND = '0000100d'x)
+
+        integer  HMERR_INDEX_NOT_FOUND
+        parameter (HMERR_INDEX_NOT_FOUND = '00002001'x)
+
+        integer  HMERR_CONTENT_NOT_FOUND
+        parameter (HMERR_CONTENT_NOT_FOUND = '00002002'x)
+
+        integer  HMERR_OPEN_LIB_FILE
+        parameter (HMERR_OPEN_LIB_FILE = '00002003'x)
+
+        integer  HMERR_READ_LIB_FILE
+        parameter (HMERR_READ_LIB_FILE = '00002004'x)
+
+        integer  HMERR_CLOSE_LIB_FILE
+        parameter (HMERR_CLOSE_LIB_FILE = '00002005'x)
+
+        integer  HMERR_INVALID_LIB_FILE
+        parameter (HMERR_INVALID_LIB_FILE = '00002006'x)
+
+        integer  HMERR_NO_MEMORY
+        parameter (HMERR_NO_MEMORY = '00002007'x)
+
+        integer  HMERR_ALLOCATE_SEGMENT
+        parameter (HMERR_ALLOCATE_SEGMENT = '00002008'x)
+
+        integer  HMERR_FREE_MEMORY
+        parameter (HMERR_FREE_MEMORY = '00002009'x)
+
+        integer  HMERR_PANEL_NOT_FOUND
+        parameter (HMERR_PANEL_NOT_FOUND = '00002010'x)
+
+        integer  HMERR_DATABASE_NOT_OPEN
+        parameter (HMERR_DATABASE_NOT_OPEN = '00002011'x)
+
+        integer  HMERR_LOAD_DLL
+        parameter (HMERR_LOAD_DLL = '00002013'x)
+
+        structure /ACVP/
+            integer*4 cb
+            integer*4 hAB
+            integer*4 hmq
+            integer*4 ObjectID
+            integer*4 hWndParent
+            integer*4 hWndOwner
+            integer*4 hWndACVP
+        end structure
+
+c$ifdef INCL_DDF
+
+        integer  REFERENCE_BY_ID
+        parameter (REFERENCE_BY_ID = 0)
+        integer  REFERENCE_BY_RES
+        parameter (REFERENCE_BY_RES = 1)
+
+        integer  HMBT_NONE
+        parameter (HMBT_NONE = 1)
+        integer  HMBT_ALL
+        parameter (HMBT_ALL = 2)
+        integer  HMBT_FIT
+        parameter (HMBT_FIT = 3)
+
+        integer  HMLS_SINGLELINE
+        parameter (HMLS_SINGLELINE = 1)
+        integer  HMLS_DOUBLELINE
+        parameter (HMLS_DOUBLELINE = 2)
+
+        integer  ART_RUNIN
+        parameter (ART_RUNIN = '00000010'x)
+        integer  ART_LEFT
+        parameter (ART_LEFT = '00000001'x)
+        integer  ART_RIGHT
+        parameter (ART_RIGHT = '00000002'x)
+        integer  ART_CENTER
+        parameter (ART_CENTER = '00000004'x)
+
+        integer  CLR_UNCHANGED
+        parameter (CLR_UNCHANGED = -6)
+
+        external DdfInitialize
+        integer*4 DdfInitialize
+
+        external DdfPara
+        integer*4 DdfPara
+
+        external DdfSetFormat
+        integer*4 DdfSetFormat
+
+        external DdfSetTextAlign
+        integer*4 DdfSetTextAlign
+
+        external DdfSetColor
+        integer*4 DdfSetColor
+
+        external DdfInform
+        integer*4 DdfInform
+
+        external DdfSetFontStyle
+        integer*4 DdfSetFontStyle
+
+        external DdfHyperText
+        integer*4 DdfHyperText
+
+        external DdfBeginList
+        integer*4 DdfBeginList
+
+        external DdfListItem
+        integer*4 DdfListItem
+
+        external DdfEndList
+        integer*4 DdfEndList
+
+        external DdfMetafile
+        integer*4 DdfMetafile
+
+        external DdfText
+        integer*4 DdfText
+
+        external DdfSetFont
+        integer*4 DdfSetFont
+
+        external DdfBitmap
+        integer*4 DdfBitmap
+
+        integer  HMERR_DDF_MEMORY
+        parameter (HMERR_DDF_MEMORY = '00003001'x)
+        integer  HMERR_DDF_ALIGN_TYPE
+        parameter (HMERR_DDF_ALIGN_TYPE = '00003002'x)
+        integer  HMERR_DDF_BACKCOLOR
+        parameter (HMERR_DDF_BACKCOLOR = '00003003'x)
+        integer  HMERR_DDF_FORECOLOR
+        parameter (HMERR_DDF_FORECOLOR = '00003004'x)
+        integer  HMERR_DDF_FONTSTYLE
+        parameter (HMERR_DDF_FONTSTYLE = '00003005'x)
+        integer  HMERR_DDF_REFTYPE
+        parameter (HMERR_DDF_REFTYPE = '00003006'x)
+        integer  HMERR_DDF_LIST_UNCLOSED
+        parameter (HMERR_DDF_LIST_UNCLOSED = '00003007'x)
+        integer  HMERR_DDF_LIST_UNINITIALIZED
+        parameter (HMERR_DDF_LIST_UNINITIALIZED = '00003008'x)
+        integer  HMERR_DDF_LIST_BREAKTYPE
+        parameter (HMERR_DDF_LIST_BREAKTYPE = '00003009'x)
+        integer  HMERR_DDF_LIST_SPACING
+        parameter (HMERR_DDF_LIST_SPACING = '0000300A'x)
+        integer  HMERR_DDF_HINSTANCE
+        parameter (HMERR_DDF_HINSTANCE = '0000300B'x)
+        integer  HMERR_DDF_EXCEED_MAX_LENGTH
+        parameter (HMERR_DDF_EXCEED_MAX_LENGTH = '0000300C'x)
+        integer  HMERR_DDF_EXCEED_MAX_INC
+        parameter (HMERR_DDF_EXCEED_MAX_INC = '0000300D'x)
+        integer  HMERR_DDF_INVALID_DDF
+        parameter (HMERR_DDF_INVALID_DDF = '0000300E'x)
+        integer  HMERR_DDF_FORMAT_TYPE
+        parameter (HMERR_DDF_FORMAT_TYPE = '0000300F'x)
+        integer  HMERR_DDF_INVALID_PARM
+        parameter (HMERR_DDF_INVALID_PARM = '00003010'x)
+        integer  HMERR_DDF_INVALID_FONT
+        parameter (HMERR_DDF_INVALID_FONT = '00003011'x)
+        integer  HMERR_DDF_SEVERE
+        parameter (HMERR_DDF_SEVERE = '00003012'x)
+
+c$endif
+
+c$reference

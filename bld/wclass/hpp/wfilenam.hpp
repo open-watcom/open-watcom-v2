@@ -35,10 +35,8 @@
 
 #include "wstring.hpp"
 
-extern "C" {
-        #include <stdlib.h>
-        #include <time.h>
-};
+#include <stdlib.h>
+#include <time.h>
 
 WCLASS WFileName : public WString {
     Declare( WFileName )
@@ -66,10 +64,9 @@ WCLASS WFileName : public WString {
         void WEXPORT setExt( const char* ext );
         const char* WEXPORT ext() const;
         bool WEXPORT legal() const;
-        bool WEXPORT needQuotes() const;
-        void WEXPORT addQuotes();
-        void WEXPORT addSQuotes();
-        void WEXPORT removeQuotes();
+        bool WEXPORT needQuotes( char ch='\"' ) const;
+        void WEXPORT addQuotes( char ch='\"' );
+        void WEXPORT removeQuotes( char ch='\"' );
         #define matchDrive 0x01
         #define matchDir   0x02
         #define matchFName 0x04

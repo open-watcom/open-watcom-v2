@@ -37,7 +37,9 @@
 #include "memfuncs.h"
 #include "print.h"
 
-static int ref_compare( const ref_entry *entry1, const ref_entry *entry2 ) {
+static int ref_compare( const void *_entry1, const void *_entry2 ) {
+    const ref_entry *entry1 = _entry1;
+    const ref_entry *entry2 = _entry2;
     int         ret_val;
 
     ret_val = stricmp( (*entry1)->label->label.name, (*entry2)->label->label.name );

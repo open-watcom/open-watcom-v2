@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display a string resource.
 *
 ****************************************************************************/
 
@@ -34,7 +33,8 @@
 #include "restest.h"
 #include "verinfo.h"
 
-void DisplayStrings( HWND hwnd ) {
+void DisplayStrings( HWND hwnd )
+{
     UINT        i;
     char        buf[256];
     HWND        lb;
@@ -43,7 +43,7 @@ void DisplayStrings( HWND hwnd ) {
     lb = GetDlgItem( hwnd, LBOX );
     for( i=0; i < 1000; i++ ) {
 #ifdef __NT__
-        ret = LoadStringW( Instance, i, buf, sizeof( buf ) );
+        ret = LoadStringW( Instance, i, (LPWSTR)buf, sizeof( buf ) );
 #else
         ret = LoadString( Instance, i, buf, sizeof( buf ) );
 #endif
@@ -76,10 +76,11 @@ BOOL CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     return( TRUE );
 }
 
-void DisplayStringTable( void ) {
+void DisplayStringTable( void )
+{
     FARPROC     fp;
 
-    fp = MakeProcInstance( StrTableDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)StrTableDlgProc, Instance );
+    DialogBox( Instance, "VERINFODLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
 }

@@ -35,28 +35,22 @@
 static          EVENTLIST               EventList       = { 0 };
 
 
-EVENTLIST* global uigetlist()
-/***************************/
-
+EVENTLIST* global uigetlist( void )
+/*********************************/
 {
     return( UIData->events );
 }
 
 
-void global uiputlist( eventlist )
-/********************************/
-
-register        EVENTLIST*              eventlist;
-
+void global uiputlist( EVENTLIST *eventlist )
+/*******************************************/
 {
     UIData->events = eventlist;
 }
 
 
-void global uipushlist( list )
-/****************************/
-
-register        EVENT*                  list;
+void global uipushlist( EVENT *list )
+/***********************************/
 {
     if( UIData->events == NULL ) {
         UIData->events = &EventList;
@@ -67,11 +61,8 @@ register        EVENT*                  list;
 }
 
 
-bool global uichecklist( ev, eptr )
-/*********************************/
-
-register        EVENT                   ev;
-register        EVENT*                  eptr;
+bool global uichecklist( EVENT ev, EVENT *eptr )
+/**********************************************/
 {
     while( *eptr != EV_NO_EVENT ) {
         if( ( ev >= *eptr ) && ( ev <= *( eptr+1 ) ) ) {
@@ -90,8 +81,8 @@ register        EVENT*                  eptr;
 }
 
 
-EVENT *global uipoplist()
-/*********************/
+EVENT *global uipoplist( void )
+/*****************************/
 {
     register EVENT      *list;
 
@@ -102,10 +93,8 @@ EVENT *global uipoplist()
 }
 
 
-bool global uiinlist( ev )
-/************************/
-
-register        EVENT                   ev;
+bool global uiinlist( EVENT ev )
+/******************************/
 {
     register    int                     index;
     register    bool                    found;
@@ -126,10 +115,8 @@ register        EVENT                   ev;
 }
 
 
-bool global uiintoplist( ev )
-/***************************/
-
-register        EVENT                   ev;
+bool global uiintoplist( EVENT ev )
+/*********************************/
 {
     return( uichecklist( ev, UIData->events->events[ UIData->events->num_lists - 1 ] ) );
 }

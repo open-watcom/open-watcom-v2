@@ -34,6 +34,18 @@
 #include "guixhot.h"
 #include "guixdraw.h"
 
+#ifdef __NT__
+// For TransparentBlt function
+// #include "wptoolbr.h"
+// #include <windows.h>
+static HBITMAP      bitmap2 = NULL;
+static HINSTANCE    hInstUser = NULL;
+
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+
+static PFNLI    pfnLoadImage;
+#endif
+
 extern  WPI_INST        GUIMainHInst;
 extern  WPI_INST        GUIResHInst;
 
@@ -45,8 +57,23 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
     int         i;
 
     for( i = 0; i < num_hot_spots; i++ ) {
-        GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst,
+#ifdef __NT__
+        if( hInstUser == NULL ) {
+            hInstUser = GetModuleHandle( "USER32.DLL" );
+            pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+        }
+        if( pfnLoadImage != NULL ) {
+            GUIHotSpots[i].bitmap = pfnLoadImage( GUIResHInst,
+                                                  MAKEINTRESOURCE( hot[i].res ),
+                                                  IMAGE_BITMAP, 0, 0,
+                                                  LR_LOADMAP3DCOLORS );
+        } else {
+#endif
+            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst,
                                         _wpi_makeintresource( hot[i].res ) );
+#ifdef __NT__
+        }
+#endif
         _wpi_getbitmapdim( GUIHotSpots[i].bitmap, &GUIHotSpots[i].size.x,
                            &GUIHotSpots[i].size.y );
     }
@@ -60,6 +87,10 @@ void GUIXCleanupHotSpots( void )
     for( i = 0; i < GUINumHotSpots; i++ ) {
         _wpi_deletebitmap( GUIHotSpots[i].bitmap );
     }
+#ifdef __NT__
+    if( bitmap2 != NULL )
+        _wpi_deletebitmap( GUIHotSpots[i].bitmap );
+#endif
 }
 
 void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
@@ -79,7 +110,9 @@ void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
     }
 }
 
-void GUIDrawBitmap( int hot_spot, WPI_PRES hdc, int nDrawX, int nDrawY )
+void GUIDrawBitmap( int hot_spot, WPI_PRES hdc,
+                    int nDrawX, int nDrawY,
+                    WPI_COLOUR bkcolour)
 {
     WPI_POINT   src_org;
     WPI_POINT   dst_org;
@@ -88,6 +121,12 @@ void GUIDrawBitmap( int hot_spot, WPI_PRES hdc, int nDrawX, int nDrawY )
     HBITMAP     old_bmp;
     HBITMAP     bitmap;
     HDC         new_hdc;
+#ifdef __NT__
+    HDC         new_hdc2;
+    HBITMAP     oldbmp2;
+    HDC         mem2;
+    COLORREF    cr;
+#endif
 
     bitmap = GUIHotSpots[hot_spot - 1].bitmap;
     size.x = GUIHotSpots[hot_spot - 1].size.x;
@@ -105,11 +144,45 @@ void GUIDrawBitmap( int hot_spot, WPI_PRES hdc, int nDrawX, int nDrawY )
     memDC = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc );
     old_bmp = _wpi_selectbitmap( memDC, bitmap );
 
+#ifdef __NT__
+    /* Skip transparency for huge bitmaps, only splashes and such... */
+    if( size.x < 50 && size.y < 50) {
+        /* New, on WIN32 platforms, use TB_TransparentBlt() */
+        mem2 = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc2 );
+        if( bitmap2 == NULL)
+           bitmap2 = CreateCompatibleBitmap( hdc, 50, 50 );
+        oldbmp2 = _wpi_selectbitmap( mem2, bitmap2 );
+        /* Get background color of bitmap */
+        /* Expects 0,0 pos in original to be in background/transp. color */
+        cr = GetPixel(memDC, 0, 0);
+        /* IMPORTANT: must set required new background color for dest bmp */
+        // SetBkColor( mem2, GetSysColor(COLOR_BTNFACE) );
+        SetBkColor( mem2, bkcolour );
+
+        TB_TransparentBlt( mem2, src_org.x, src_org.y, size.x, size.y, memDC, cr );
+
+        _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, mem2,
+                     src_org.x, src_org.y, SRCCOPY );
+
+        /* Clean up */
+        _wpi_selectbitmap( mem2, oldbmp2 );
+        _wpi_deletecompatiblepres( mem2, hdc );
+    } else {
+        // Normal for large bitmaps...
+        _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, memDC,
+                     src_org.x, src_org.y, SRCCOPY );
+    }
+
+#else
+
     _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, memDC,
                  src_org.x, src_org.y, SRCCOPY );
+
+#endif
 
     if( old_bmp != NULLHANDLE ) {
         _wpi_getoldbitmap( memDC, old_bmp );
     }
     _wpi_deletecompatiblepres( memDC, new_hdc );
 }
+

@@ -52,12 +52,14 @@ typedef unsigned WToolBarState;
 
 #define WToolFlagsFixed         1
 #define WToolFlagsUseRect       2
+#define WToolFlagsUseTips       4
 
 typedef bool (WObject::*cbtb)( WToolBar *, WToolBarState );
 
 WCLASS WToolBar : public WObject {
     public:
         WEXPORT WToolBar( bool fixed );
+        WEXPORT WToolBar( bool fixed, bool use_tips );
         WEXPORT WToolBar( WRect );
         WEXPORT ~WToolBar();
 

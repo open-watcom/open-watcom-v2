@@ -1,7 +1,15 @@
 #include "aui.rc"
 #include "dlgoptn.h"
+#if defined( __WINDOWS__ ) || defined( __NT__ )
 #ifdef JAPANESE_MESSAGES
 #include "japoptn.dlg"
 #else
 #include "dlgoptn.dlg"
+#endif
+#else
+#ifdef JAPANESE_MESSAGES
+#include "japoptn2.dlg"
+#else
+#include "dlgoptn2.dlg"
+#endif
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sort table by specified column.
 *
 ****************************************************************************/
 
@@ -100,10 +99,10 @@ static int SortBySize( heap_list **p1, heap_list **p2 )
 
 static int SortByHandle( heap_list **p1, heap_list **p2 )
 {
-    WORD        h1,h2;
+    WORD       h1,h2;
     if( !ListingDPMI ) {
-        h1 = (*p1)->info.ge.hBlock;
-        h2 = (*p2)->info.ge.hBlock;
+        h1 = (WORD)((*p1)->info.ge.hBlock);
+        h2 = (WORD)((*p2)->info.ge.hBlock);
     } else {
         h1 = (*p1)->info.mem.sel;
         h2 = (*p2)->info.mem.sel;
@@ -147,7 +146,7 @@ BOOL __export FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam,
     case WM_INITDIALOG:
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         break;

@@ -32,10 +32,8 @@
 
 #include "uidef.h"
 
-unsigned global uivhide( vptr )
-/*****************************/
-
-VSCREEN *vptr;
+unsigned global uivhide( VSCREEN *vptr )
+/**************************************/
 {
     if( vptr->open && !(vptr->flags & V_HIDDEN) ) {
         closewindow( &(vptr->window) );
@@ -46,10 +44,8 @@ VSCREEN *vptr;
 }
 
 
-unsigned global uivshow( vptr )
-/*****************************/
-
-VSCREEN *vptr;
+unsigned global uivshow( VSCREEN *vptr )
+/**************************************/
 {
     if( vptr->flags & V_HIDDEN ) {
         openwindow( &(vptr->window) );

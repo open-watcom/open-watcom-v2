@@ -24,54 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/01/30    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/07/29    Greg Bentz      Change ostream::op<<(streambuf &) to
-//                              ostream::op<<( streambuf * )
-//  93/10/26    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "osthdr.h"
 
-void __AddPrefix( char iszero, char *buffer, int &size, int base,
-/********************************************************************/
-    long format_flags ) {
-// Add a prefix to an output integer representing the base used.
-// Add 0 for octal numbers, except for zero.
-// Add 0x or 0X for hex numbers.
-// Add nothing for decimal numbers.
+// Add a prefix to an output integer representing the base used. Add 0
+// for octal numbers, except for zero. Add 0x or 0X for hex numbers. Add
+// nothing for decimal numbers.
 
-    if( format_flags & ios::showbase ) {
+void __AddPrefix( char iszero,
+                  char *buffer,
+                  int &size,
+                  int base,
+                  long format_flags ) {
+
+    if( format_flags & std::ios::showbase ) {
         if( base == 8 ) {
             if( !iszero ) {
                 buffer[size++] = '0';
             }
         } else if( base == 16 ) {
             buffer[size++] = '0';
-            buffer[size++] = (char)((format_flags & ios::uppercase) ? 'X' : 'x');
+            buffer[size++] = (char)((format_flags & std::ios::uppercase) ? 'X' : 'x');
         }
     }
 }

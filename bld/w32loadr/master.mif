@@ -1,0 +1,101 @@
+proj_name = w32loadr
+
+w32loadr_autodepends = .autodepend
+
+additional_cleanup = mkdginfo.bat
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.asm: ..
+.c: ..
+.h: ..
+
+!ifdef prebuild
+
+all : w32bind.exe
+
+extra_c_flags_loader = -D__OS2 -D__CALL21__
+	
+w32bind.exe : w32bind.c
+  $(bld_cl) $(wcl_util_opts) $<
+
+os2ldr.exe : cstrtos2.obj loader.obj int21.obj int21os2.obj tnk.obj os2stub.exe
+  $(linker) system os2v2 pmc name os2ldr file cstrtos2.obj,loader.obj,int21.obj,int21os2.obj,tnk.obj lib os2386 opt map,stack=32k,stub=os2stub.exe
+
+os2stub.exe : loader16.obj dpmildr.obj int21win.obj
+  $(linker) system dos name os2stub file loader16.obj,dpmildr.obj,int21win.obj option map
+
+!else ifeq host_os dos
+
+extra_c_flags_tntrun = -D__DOS -D__CALL21__ -D__TNT -fo=$@
+extra_c_flags_x32run = -D__DOS -D__CALL21__ -D__X32 -fo=$@
+extra_c_flags_d4grun = -D__DOS -D__CALL21__ -D__DOS4G -fo=$@
+extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -fo=$@
+	
+all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
+
+dpmi_ldr.exe : loader16.obj dpmi_ldr.obj int21win.obj
+  $(linker) system dos name dpmi_ldr file loader16.obj,dpmi_ldr.obj,int21win.obj option map
+
+# we don't need to link w386run with wstub.exe
+# this will make it about 14k smaller
+# NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
+d4grun.exe : d4grun.obj cmain32.obj int21dos.obj
+   $(linker) system dos4g name w386run file d4grun.obj,cmain32.obj,int21dos.obj option stack=32k,map #export DOS4GOPTIONS=_DOS4GOPTIONS
+   $(rsi_root)\bin\4gbind $(rsi_root)\bin\dos4g.exe w386run.exe d4grun.exe -V
+
+dbgrun.exe : d4grun.obj cmain32.obj int21dos.obj
+   $(linker) d a system dos4g name dbgrun file d4grun.obj,cmain32.obj,int21dos.obj option stack=32k,map
+
+cwsrun.exe : cwsrun.obj cmain32.obj int21dos.obj
+   $(linker) system causeway name cwsrun file cwsrun.obj,cmain32.obj,int21dos.obj option stack=32k,map,stub=$(cw_dir)/cw32/dosi86/cwstub.exe
+
+tntrun.exe : tntrun.obj cmain32.obj int21pl.obj
+   $(linker) system pharlap ext name tntrun file tntrun.obj,cmain32.obj,int21pl.obj option stack=32k,map
+   $(%tntdir)\bin\rebind $(%tntdir)\bin\rtk\tntb.exe tntrun.exp -exe tntrun.exe
+
+x32run.exe : x32run.obj cmain32.obj x32start.obj
+   $(linker) format os2 lx name x32run file x32start.obj,x32run.obj,cmain32.obj lib x32b option map,dosseg,internalrelocs,stack=4k libpath $(lang_root)/lib386/dos;$(lang_root)/lib386
+   x32fix x32run.exe
+   
+# Probably should use default build rules?
+tntrun.obj : loader.c loader.h
+        $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+x32run.obj : loader.c loader.h
+        $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+d4grun.obj : loader.c loader.h dginfo.gh
+        $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+cwsrun.obj : loader.c loader.h
+        $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+	
+dginfo.gh : $(rsi_root)/bin/dos4g.exe
+        @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
+        -mkdginfo
+
+dpmi.exe : dpmi.obj loader16.obj int21win.obj
+        $(linker) system dos file dpmi.obj,loader16.obj,int21win.obj option map,stack=8k
+
+!else ifeq host_os nt
+
+extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
+extra_c_flags_int21nt = -s
+
+all : w32run.exe
+
+w32run.exe : loader.obj cstrtwnt.obj int21.obj int21nt.obj ntstub.exe
+  %create $^&.lnk
+  @%append $^&.lnk $(lflags)
+  @%append $^&.lnk file cstrtwnt.obj, loader.obj,int21.obj,int21nt.obj
+  @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe
+  $(linker) name $@ @$^&.lnk
+  
+ntstub.exe : ntstub.obj
+  $(linker) system dos file ntstub.obj option map
+
+!else ifeq host_os os2
+
+all: .symbolic
+
+!endif

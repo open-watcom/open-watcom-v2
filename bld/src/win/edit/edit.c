@@ -3,18 +3,18 @@
 #include "edit.h"
 #include "win1632.h"
 
-char            EditTitle[] = "WATCOM Edit Example";
+char            EditTitle[] = "Open Watcom Edit Example";
 psupp           PrinterSupport;
 static char     EditClass[32]="EditClass";
 
-static BOOL FirstInstance( HANDLE );
-static BOOL AnyInstance( HANDLE, int );
+static BOOL FirstInstance( HINSTANCE );
+static BOOL AnyInstance( HINSTANCE, int );
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HANDLE inst, HANDLE previnst, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmdline,
                     int cmdshow )
 {
     MSG         msg;
@@ -45,7 +45,7 @@ int PASCAL WinMain( HANDLE inst, HANDLE previnst, LPSTR cmdline,
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HANDLE inst )
+static BOOL FirstInstance( HINSTANCE inst )
 {
     WNDCLASS    wc;
     BOOL        rc;
@@ -72,7 +72,7 @@ static BOOL FirstInstance( HANDLE inst )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HANDLE inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE inst, int cmdshow )
 {
     RECT        rect;
     HWND        hwnd;
@@ -266,7 +266,7 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
             EnableMenuItem( (HMENU)wparam, MENU_PRINT_SETUP, state );
 
         }
-        return( NULL );
+        return( 0L );
 
     case WM_QUERYENDSESSION:
         /*
@@ -303,8 +303,8 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
             break;
         case MENU_ABOUT:
             hinst = GET_HINST( hwnd );
-            proc = MakeProcInstance( AboutDlgProc, hinst );
-            DialogBox( hinst,"AboutBox", hwnd, proc );
+            proc = MakeProcInstance( (FARPROC)AboutDlgProc, hinst );
+            DialogBox( hinst,"AboutBox", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         case MENU_CLEAR:

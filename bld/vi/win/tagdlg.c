@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <assert.h>
-#include "winvi.h"
+#include "vi.h"
 #include "tagdlg.h"
 
 static int      tagCnt;
@@ -49,7 +47,7 @@ BOOL WINEXP TagListProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
         SetDlgItemText( hwnd, TAGS_TAGNAME, (LPSTR) lparam );
-        for( i=0;i<tagCnt;i++ ) {
+        for( i = 0; i < tagCnt; i++ ) {
             SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_ADDSTRING, 0,
                                 (LONG) (LPSTR) tagList[i] );
         }
@@ -64,7 +62,7 @@ BOOL WINEXP TagListProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             i = SendDlgItemMessage( hwnd, TAGS_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( i == LB_ERR ) {
                 MessageBox( hwnd, "No selection", EditorName,
-                                MB_ICONEXCLAMATION | MB_OK );
+                            MB_ICONEXCLAMATION | MB_OK );
             } else {
                 EndDialog( hwnd, i );
             }
@@ -99,4 +97,5 @@ int PickATag( int clist, char **list, char *tagname )
     rc = DialogBoxParam( InstanceHandle, "TAGS", Root, proc, (LONG) (LPSTR) tagname );
     FreeProcInstance( (FARPROC) proc );
     return( rc );
+
 } /* PickATag */

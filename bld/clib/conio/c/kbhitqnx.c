@@ -36,10 +36,9 @@
 #include <sys/dev_msg.h>
 #include <sys/kernel.h>
 #include <termios.h>
+#include "rtdata.h"
 
-extern  unsigned    _cbyte;
-
-_WCRTLINK int (kbhit)()
+_WCRTLINK int (kbhit)( void )
 {
     union {
         struct _dev_waiting         s;
@@ -48,7 +47,8 @@ _WCRTLINK int (kbhit)()
     struct termios  old, new;
     int     error;
 
-    if( _cbyte != 0 ) return( 1 );
+    if( _RDW_cbyte != 0 )
+        return( 1 );
     tcgetattr( STDIN_FILENO, &old );
     new = old;
     new.c_iflag &= ~(IXOFF | IXON);
@@ -62,7 +62,9 @@ _WCRTLINK int (kbhit)()
     msg.s.fd = STDIN_FILENO;
     error = Sendfd( msg.s.fd, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
     tcsetattr( STDIN_FILENO, TCSADRAIN, &old );
-    if( error == -1 ) return( 0 );
-    if( msg.r.status != EOK || msg.r.nbytes == 0 ) return( 0 );
+    if( error == -1 )
+        return( 0 );
+    if( msg.r.status != EOK || msg.r.nbytes == 0 )
+        return( 0 );
     return( 1 );
 }

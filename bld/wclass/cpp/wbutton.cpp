@@ -49,7 +49,7 @@ WEXPORT WButton::WButton( WWindow *parent, gui_control_class control_class,
             if( text[i] == '&' ) {
                 int key = text[i+1];
                 if( key != '\0' ) {
-                    parent->addAccelKey( key, this, (bcbi)&WButton::hotKey );
+                    parent->addAccelKey( key, this, (bcbk)&WButton::hotKey );
                 }
             }
         }
@@ -72,7 +72,7 @@ WEXPORT WButton::WButton( WStatDialog *parent, unsigned id, WStyle wstyle )
             if( text[i] == '&' ) {
                 int key = text[i+1];
                 if( key != '\0' ) {
-                    parent->addAccelKey( key, this, (bcbi)&WButton::hotKey );
+                    parent->addAccelKey( key, this, (bcbk)&WButton::hotKey );
                 }
             }
         }
@@ -80,11 +80,6 @@ WEXPORT WButton::WButton( WStatDialog *parent, unsigned id, WStyle wstyle )
 #endif
 }
 
-
-WEXPORT WButton::~WButton() {
-/***************************/
-
-}
 
 
 void WEXPORT WButton::onClick( WObject *client, cbw click ) {
@@ -132,4 +127,14 @@ bool WButton::processMsg( gui_event msg ) {
         break;
     }
     return( FALSE );
+}
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WButton::~WButton() {
+/***************************/
+
 }

@@ -1,0 +1,3587 @@
+c$noreference
+
+        integer  ORD_ANSIINJECT
+        parameter (ORD_ANSIINJECT = 1)
+        integer  ORD_ANSIKEYDEF
+        parameter (ORD_ANSIKEYDEF = 2)
+        integer  ORD_ANSIINTERP
+        parameter (ORD_ANSIINTERP = 3)
+
+        integer  ORD_NLSCONVERTBIDINUMERICS
+        parameter (ORD_NLSCONVERTBIDINUMERICS = 1)
+        integer  ORD_NLSCONVERTBIDISTRING
+        parameter (ORD_NLSCONVERTBIDISTRING = 2)
+        integer  ORD_NLSSETBIDIATT
+        parameter (ORD_NLSSETBIDIATT = 5)
+        integer  ORD_NLSQUERYBIDIATT
+        parameter (ORD_NLSQUERYBIDIATT = 6)
+        integer  ORD_NLSINVERSESTRING
+        parameter (ORD_NLSINVERSESTRING = 7)
+        integer  ORD_NLSSETBIDIPRINT
+        parameter (ORD_NLSSETBIDIPRINT = 8)
+        integer  ORD_NLSEDITSHAPE
+        parameter (ORD_NLSEDITSHAPE = 9)
+        integer  ORD_NLSSHAPEBIDISTRING
+        parameter (ORD_NLSSHAPEBIDISTRING = 10)
+        integer  ORD_NLSINTSETBIDIATT
+        parameter (ORD_NLSINTSETBIDIATT = 3)
+        integer  ORD_NLSINTQUERYBIDIATT
+        parameter (ORD_NLSINTQUERYBIDIATT = 4)
+        integer  ORD_NLPOPUP
+        parameter (ORD_NLPOPUP = 11)
+
+        integer  ORD_BKSMAIN
+        parameter (ORD_BKSMAIN = 1)
+
+        integer  ORD_DRGACCESSDRAGINFO
+        parameter (ORD_DRGACCESSDRAGINFO = 1)
+        integer  ORD_DRGADDSTRHANDLE
+        parameter (ORD_DRGADDSTRHANDLE = 2)
+        integer  ORD_DRGALLOCDRAGINFO
+        parameter (ORD_DRGALLOCDRAGINFO = 3)
+        integer  ORD_DRGALLOCDRAGTRANSFER
+        parameter (ORD_DRGALLOCDRAGTRANSFER = 4)
+        integer  ORD_DRGDELETEDRAGINFOSTRHANDLES
+        parameter (ORD_DRGDELETEDRAGINFOSTRHANDLES = 5)
+        integer  ORD_DRGDELETESTRHANDLE
+        parameter (ORD_DRGDELETESTRHANDLE = 6)
+        integer  ORD_DRGDRAG
+        parameter (ORD_DRGDRAG = 7)
+        integer  ORD_DRGFREEDRAGINFO
+        parameter (ORD_DRGFREEDRAGINFO = 8)
+        integer  ORD_DRGFREEDRAGTRANSFER
+        parameter (ORD_DRGFREEDRAGTRANSFER = 9)
+        integer  ORD_DRGGETPS
+        parameter (ORD_DRGGETPS = 10)
+        integer  ORD_DRGPOSTTRANSFERMSG
+        parameter (ORD_DRGPOSTTRANSFERMSG = 11)
+        integer  ORD_DRGPUSHDRAGINFO
+        parameter (ORD_DRGPUSHDRAGINFO = 12)
+        integer  ORD_DRGQUERYDRAGITEM
+        parameter (ORD_DRGQUERYDRAGITEM = 13)
+        integer  ORD_DRGQUERYDRAGITEMCOUNT
+        parameter (ORD_DRGQUERYDRAGITEMCOUNT = 14)
+        integer  ORD_DRGQUERYDRAGITEMPTR
+        parameter (ORD_DRGQUERYDRAGITEMPTR = 15)
+        integer  ORD_DRGQUERYNATIVERMF
+        parameter (ORD_DRGQUERYNATIVERMF = 16)
+        integer  ORD_DRGQUERYNATIVERMFLEN
+        parameter (ORD_DRGQUERYNATIVERMFLEN = 17)
+        integer  ORD_DRGQUERYSTRNAME
+        parameter (ORD_DRGQUERYSTRNAME = 18)
+        integer  ORD_DRGQUERYSTRNAMELEN
+        parameter (ORD_DRGQUERYSTRNAMELEN = 19)
+        integer  ORD_DRGQUERYTRUETYPE
+        parameter (ORD_DRGQUERYTRUETYPE = 20)
+        integer  ORD_DRGQUERYTRUETYPELEN
+        parameter (ORD_DRGQUERYTRUETYPELEN = 21)
+        integer  ORD_DRGRELEASEPS
+        parameter (ORD_DRGRELEASEPS = 22)
+        integer  ORD_DRGSENDTRANSFERMSG
+        parameter (ORD_DRGSENDTRANSFERMSG = 23)
+        integer  ORD_DRGSETDRAGPOINTER
+        parameter (ORD_DRGSETDRAGPOINTER = 24)
+        integer  ORD_DRGSETDRAGIMAGE
+        parameter (ORD_DRGSETDRAGIMAGE = 25)
+        integer  ORD_DRGSETDRAGITEM
+        parameter (ORD_DRGSETDRAGITEM = 26)
+        integer  ORD_DRGVERIFYNATIVERMF
+        parameter (ORD_DRGVERIFYNATIVERMF = 27)
+        integer  ORD_DRGVERIFYRMF
+        parameter (ORD_DRGVERIFYRMF = 28)
+        integer  ORD_DRGVERIFYTRUETYPE
+        parameter (ORD_DRGVERIFYTRUETYPE = 29)
+        integer  ORD_DRGVERIFYTYPE
+        parameter (ORD_DRGVERIFYTYPE = 30)
+        integer  ORD_DRGVERIFYTYPESET
+        parameter (ORD_DRGVERIFYTYPESET = 31)
+        integer  ORD_DRG32ACCESSDRAGINFO
+        parameter (ORD_DRG32ACCESSDRAGINFO = 32)
+        integer  ORD_DRG32ADDSTRHANDLE
+        parameter (ORD_DRG32ADDSTRHANDLE = 33)
+        integer  ORD_DRG32ALLOCDRAGINFO
+        parameter (ORD_DRG32ALLOCDRAGINFO = 34)
+        integer  ORD_DRG32ALLOCDRAGTRANSFER
+        parameter (ORD_DRG32ALLOCDRAGTRANSFER = 35)
+        integer  ORD_DRG32DELETEDRAGINFOSTRHANDLES
+        parameter (ORD_DRG32DELETEDRAGINFOSTRHANDLES = 36)
+        integer  ORD_DRG32DELETESTRHANDLE
+        parameter (ORD_DRG32DELETESTRHANDLE = 37)
+        integer  ORD_DRG32DRAG
+        parameter (ORD_DRG32DRAG = 38)
+        integer  ORD_DRG32FREEDRAGINFO
+        parameter (ORD_DRG32FREEDRAGINFO = 39)
+        integer  ORD_DRG32FREEDRAGTRANSFER
+        parameter (ORD_DRG32FREEDRAGTRANSFER = 40)
+        integer  ORD_DRG32GETPS
+        parameter (ORD_DRG32GETPS = 41)
+        integer  ORD_DRG32POSTTRANSFERMSG
+        parameter (ORD_DRG32POSTTRANSFERMSG = 42)
+        integer  ORD_DRG32PUSHDRAGINFO
+        parameter (ORD_DRG32PUSHDRAGINFO = 43)
+        integer  ORD_DRG32QUERYDRAGITEM
+        parameter (ORD_DRG32QUERYDRAGITEM = 44)
+        integer  ORD_DRG32QUERYDRAGITEMCOUNT
+        parameter (ORD_DRG32QUERYDRAGITEMCOUNT = 45)
+        integer  ORD_DRG32QUERYDRAGITEMPTR
+        parameter (ORD_DRG32QUERYDRAGITEMPTR = 46)
+        integer  ORD_DRG32QUERYNATIVERMF
+        parameter (ORD_DRG32QUERYNATIVERMF = 47)
+        integer  ORD_DRG32QUERYNATIVERMFLEN
+        parameter (ORD_DRG32QUERYNATIVERMFLEN = 48)
+        integer  ORD_DRG32QUERYSTRNAME
+        parameter (ORD_DRG32QUERYSTRNAME = 49)
+        integer  ORD_DRG32QUERYSTRNAMELEN
+        parameter (ORD_DRG32QUERYSTRNAMELEN = 50)
+        integer  ORD_DRG32QUERYTRUETYPE
+        parameter (ORD_DRG32QUERYTRUETYPE = 51)
+        integer  ORD_DRG32QUERYTRUETYPELEN
+        parameter (ORD_DRG32QUERYTRUETYPELEN = 52)
+        integer  ORD_DRG32RELEASEPS
+        parameter (ORD_DRG32RELEASEPS = 53)
+        integer  ORD_DRG32SENDTRANSFERMSG
+        parameter (ORD_DRG32SENDTRANSFERMSG = 54)
+        integer  ORD_DRG32SETDRAGPOINTER
+        parameter (ORD_DRG32SETDRAGPOINTER = 55)
+        integer  ORD_DRG32SETDRAGIMAGE
+        parameter (ORD_DRG32SETDRAGIMAGE = 56)
+        integer  ORD_DRG32SETDRAGITEM
+        parameter (ORD_DRG32SETDRAGITEM = 57)
+        integer  ORD_DRG32VERIFYNATIVERMF
+        parameter (ORD_DRG32VERIFYNATIVERMF = 58)
+        integer  ORD_DRG32VERIFYRMF
+        parameter (ORD_DRG32VERIFYRMF = 59)
+        integer  ORD_DRG32VERIFYTRUETYPE
+        parameter (ORD_DRG32VERIFYTRUETYPE = 60)
+        integer  ORD_DRG32VERIFYTYPE
+        parameter (ORD_DRG32VERIFYTYPE = 61)
+        integer  ORD_DRG32VERIFYTYPESET
+        parameter (ORD_DRG32VERIFYTYPESET = 62)
+        integer  ORD_DRGDRAGFILES
+        parameter (ORD_DRGDRAGFILES = 63)
+        integer  ORD_DRGACCEPTDROPPEDFILES
+        parameter (ORD_DRGACCEPTDROPPEDFILES = 64)
+        integer  ORD_DRG32DRAGFILES
+        parameter (ORD_DRG32DRAGFILES = 65)
+        integer  ORD_DRG32ACCEPTDROPPEDFILES
+        parameter (ORD_DRG32ACCEPTDROPPEDFILES = 66)
+        integer  ORD_FKAINIT
+        parameter (ORD_FKAINIT = 64)
+        integer  ORD_QUERYFKADISPLAYDETAILS
+        parameter (ORD_QUERYFKADISPLAYDETAILS = 65)
+        integer  ORD_WINFKAWNDPROC
+        parameter (ORD_WINFKAWNDPROC = 66)
+        integer  ORD_WINLOADFKA
+        parameter (ORD_WINLOADFKA = 67)
+        integer  ORD_WINCREATEFKA
+        parameter (ORD_WINCREATEFKA = 68)
+        integer  ORD_WINSETFKAFORM
+        parameter (ORD_WINSETFKAFORM = 69)
+        integer  ORD_WINQUERYFKAFORM
+        parameter (ORD_WINQUERYFKAFORM = 70)
+        integer  ORD_WINGOTOFKA
+        parameter (ORD_WINGOTOFKA = 71)
+        integer  ORD_WINGOFROMFKA
+        parameter (ORD_WINGOFROMFKA = 72)
+
+        integer  ORD_WIN16CREATEHELPINSTANCE
+        parameter (ORD_WIN16CREATEHELPINSTANCE = 1)
+        integer  ORD_WIN16DESTROYHELPINSTANCE
+        parameter (ORD_WIN16DESTROYHELPINSTANCE = 2)
+        integer  ORD_WIN16QUERYHELPINSTANCE
+        parameter (ORD_WIN16QUERYHELPINSTANCE = 3)
+        integer  ORD_WIN16ASSOCIATEHELPINSTANCE
+        parameter (ORD_WIN16ASSOCIATEHELPINSTANCE = 4)
+        integer  ORD_WIN16LOADHELPTABLE
+        parameter (ORD_WIN16LOADHELPTABLE = 5)
+        integer  ORD_WIN16CREATEHELPTABLE
+        parameter (ORD_WIN16CREATEHELPTABLE = 6)
+        integer  ORD_WINCREATEHELPINSTANCE
+        parameter (ORD_WINCREATEHELPINSTANCE = 51)
+        integer  ORD_WINDESTROYHELPINSTANCE
+        parameter (ORD_WINDESTROYHELPINSTANCE = 52)
+        integer  ORD_WINQUERYHELPINSTANCE
+        parameter (ORD_WINQUERYHELPINSTANCE = 53)
+        integer  ORD_WINASSOCIATEHELPINSTANCE
+        parameter (ORD_WINASSOCIATEHELPINSTANCE = 54)
+        integer  ORD_WINLOADHELPTABLE
+        parameter (ORD_WINLOADHELPTABLE = 55)
+        integer  ORD_WINCREATEHELPTABLE
+        parameter (ORD_WINCREATEHELPTABLE = 56)
+        integer  ORD_DDF16INITIALIZE
+        parameter (ORD_DDF16INITIALIZE = 59)
+        integer  ORD_DDF16PARA
+        parameter (ORD_DDF16PARA = 60)
+        integer  ORD_DDF16SETFORMAT
+        parameter (ORD_DDF16SETFORMAT = 61)
+        integer  ORD_DDF16SETTEXTALIGN
+        parameter (ORD_DDF16SETTEXTALIGN = 62)
+        integer  ORD_DDF16SETCOLOR
+        parameter (ORD_DDF16SETCOLOR = 63)
+        integer  ORD_DDF16INFORM
+        parameter (ORD_DDF16INFORM = 64)
+        integer  ORD_DDF16SETFONTSTYLE
+        parameter (ORD_DDF16SETFONTSTYLE = 65)
+        integer  ORD_DDF16HYPERTEXT
+        parameter (ORD_DDF16HYPERTEXT = 66)
+        integer  ORD_DDF16BEGINLIST
+        parameter (ORD_DDF16BEGINLIST = 67)
+        integer  ORD_DDF16LISTITEM
+        parameter (ORD_DDF16LISTITEM = 68)
+        integer  ORD_DDF16ENDLIST
+        parameter (ORD_DDF16ENDLIST = 69)
+        integer  ORD_DDF16TEXT
+        parameter (ORD_DDF16TEXT = 70)
+        integer  ORD_DDF16METAFILE
+        parameter (ORD_DDF16METAFILE = 71)
+        integer  ORD_DDF16SETFONT
+        parameter (ORD_DDF16SETFONT = 72)
+        integer  ORD_DDF16BITMAP
+        parameter (ORD_DDF16BITMAP = 73)
+        integer  ORD_DDFINITIALIZE
+        parameter (ORD_DDFINITIALIZE = 74)
+        integer  ORD_DDFPARA
+        parameter (ORD_DDFPARA = 75)
+        integer  ORD_DDFSETFORMAT
+        parameter (ORD_DDFSETFORMAT = 76)
+        integer  ORD_DDFSETTEXTALIGN
+        parameter (ORD_DDFSETTEXTALIGN = 77)
+        integer  ORD_DDFSETCOLOR
+        parameter (ORD_DDFSETCOLOR = 78)
+        integer  ORD_DDFINFORM
+        parameter (ORD_DDFINFORM = 79)
+        integer  ORD_DDFSETFONTSTYLE
+        parameter (ORD_DDFSETFONTSTYLE = 80)
+        integer  ORD_DDFHYPERTEXT
+        parameter (ORD_DDFHYPERTEXT = 81)
+        integer  ORD_DDFBEGINLIST
+        parameter (ORD_DDFBEGINLIST = 82)
+        integer  ORD_DDFLISTITEM
+        parameter (ORD_DDFLISTITEM = 83)
+        integer  ORD_DDFENDLIST
+        parameter (ORD_DDFENDLIST = 84)
+        integer  ORD_DDFTEXT
+        parameter (ORD_DDFTEXT = 85)
+        integer  ORD_DDFMETAFILE
+        parameter (ORD_DDFMETAFILE = 86)
+        integer  ORD_DDFSETFONT
+        parameter (ORD_DDFSETFONT = 87)
+        integer  ORD_DDFBITMAP
+        parameter (ORD_DDFBITMAP = 88)
+
+        integer  ORD_KBDSETCUSTXT
+        parameter (ORD_KBDSETCUSTXT = 1)
+        integer  ORD_KBDGETCP
+        parameter (ORD_KBDGETCP = 3)
+        integer  ORD_KBDCHARIN
+        parameter (ORD_KBDCHARIN = 4)
+        integer  ORD_KBDSETCP
+        parameter (ORD_KBDSETCP = 5)
+        integer  ORD_KBDSYNCH
+        parameter (ORD_KBDSYNCH = 7)
+        integer  ORD_KBDREGISTER
+        parameter (ORD_KBDREGISTER = 8)
+        integer  ORD_KBDSTRINGIN
+        parameter (ORD_KBDSTRINGIN = 9)
+        integer  ORD_KBDGETSTATUS
+        parameter (ORD_KBDGETSTATUS = 10)
+        integer  ORD_KBDSETSTATUS
+        parameter (ORD_KBDSETSTATUS = 11)
+        integer  ORD_KBDGETFOCUS
+        parameter (ORD_KBDGETFOCUS = 12)
+        integer  ORD_KBDFLUSHBUFFER
+        parameter (ORD_KBDFLUSHBUFFER = 13)
+        integer  ORD_KBDXLATE
+        parameter (ORD_KBDXLATE = 14)
+        integer  ORD_KBDCLOSE
+        parameter (ORD_KBDCLOSE = 17)
+        integer  ORD_KBDFREEFOCUS
+        parameter (ORD_KBDFREEFOCUS = 18)
+        integer  ORD_KBDDEREGISTER
+        parameter (ORD_KBDDEREGISTER = 20)
+        integer  ORD_KBDSETFGND
+        parameter (ORD_KBDSETFGND = 21)
+        integer  ORD_KBDPEEK
+        parameter (ORD_KBDPEEK = 22)
+        integer  ORD_KBDOPEN
+        parameter (ORD_KBDOPEN = 23)
+        integer  ORD_KBDGETHWID
+        parameter (ORD_KBDGETHWID = 24)
+        integer  ORD_KBDSETHWID
+        parameter (ORD_KBDSETHWID = 25)
+
+        integer  ORD_DOSMONOPEN
+        parameter (ORD_DOSMONOPEN = 4)
+        integer  ORD_DOSMONCLOSE
+        parameter (ORD_DOSMONCLOSE = 3)
+        integer  ORD_DOSMONREAD
+        parameter (ORD_DOSMONREAD = 2)
+        integer  ORD_DOSMONWRITE
+        parameter (ORD_DOSMONWRITE = 1)
+        integer  ORD_DOSMONREG
+        parameter (ORD_DOSMONREG = 5)
+
+        integer  ORD_MOUGETPTRSHAPE
+        parameter (ORD_MOUGETPTRSHAPE = 1)
+        integer  ORD_MOUSETPTRSHAPE
+        parameter (ORD_MOUSETPTRSHAPE = 2)
+        integer  ORD_MOUGETNUMMICKEYS
+        parameter (ORD_MOUGETNUMMICKEYS = 3)
+        integer  ORD_MOUGETTHRESHOLD
+        parameter (ORD_MOUGETTHRESHOLD = 4)
+        integer  ORD_MOUGETSCALEFACT
+        parameter (ORD_MOUGETSCALEFACT = 6)
+        integer  ORD_MOUFLUSHQUE
+        parameter (ORD_MOUFLUSHQUE = 7)
+        integer  ORD_MOUGETNUMBUTTONS
+        parameter (ORD_MOUGETNUMBUTTONS = 8)
+        integer  ORD_MOUCLOSE
+        parameter (ORD_MOUCLOSE = 9)
+        integer  ORD_MOUSETTHRESHOLD
+        parameter (ORD_MOUSETTHRESHOLD = 10)
+        integer  ORD_MOUSETSCALEFACT
+        parameter (ORD_MOUSETSCALEFACT = 11)
+        integer  ORD_MOUGETNUMQUEEL
+        parameter (ORD_MOUGETNUMQUEEL = 13)
+        integer  ORD_MOUDEREGISTER
+        parameter (ORD_MOUDEREGISTER = 14)
+        integer  ORD_MOUGETEVENTMASK
+        parameter (ORD_MOUGETEVENTMASK = 15)
+        integer  ORD_MOUSETEVENTMASK
+        parameter (ORD_MOUSETEVENTMASK = 16)
+        integer  ORD_MOUOPEN
+        parameter (ORD_MOUOPEN = 17)
+        integer  ORD_MOUREMOVEPTR
+        parameter (ORD_MOUREMOVEPTR = 18)
+        integer  ORD_MOUGETPTRPOS
+        parameter (ORD_MOUGETPTRPOS = 19)
+        integer  ORD_MOUREADEVENTQUE
+        parameter (ORD_MOUREADEVENTQUE = 20)
+        integer  ORD_MOUSETPTRPOS
+        parameter (ORD_MOUSETPTRPOS = 21)
+        integer  ORD_MOUGETDEVSTATUS
+        parameter (ORD_MOUGETDEVSTATUS = 22)
+        integer  ORD_MOUSYNCH
+        parameter (ORD_MOUSYNCH = 23)
+        integer  ORD_MOUREGISTER
+        parameter (ORD_MOUREGISTER = 24)
+        integer  ORD_MOUSETDEVSTATUS
+        parameter (ORD_MOUSETDEVSTATUS = 25)
+        integer  ORD_MOUDRAWPTR
+        parameter (ORD_MOUDRAWPTR = 26)
+        integer  ORD_MOUINITREAL
+        parameter (ORD_MOUINITREAL = 27)
+
+        integer  ORD_DOSPUTMESSAGE
+        parameter (ORD_DOSPUTMESSAGE = 1)
+        integer  ORD_DOSTRUEGETMESSAGE
+        parameter (ORD_DOSTRUEGETMESSAGE = 2)
+        integer  ORD_DOSINSMESSAGE
+        parameter (ORD_DOSINSMESSAGE = 3)
+        integer  ORD_DOS32INSERTMESSAGE
+        parameter (ORD_DOS32INSERTMESSAGE = 4)
+        integer  ORD_DOS32PUTMESSAGE
+        parameter (ORD_DOS32PUTMESSAGE = 5)
+        integer  ORD_DOS32TRUEGETMESSAGE
+        parameter (ORD_DOS32TRUEGETMESSAGE = 6)
+        integer  ORD_DOSIQUERYMESSAGECP
+        parameter (ORD_DOSIQUERYMESSAGECP = 7)
+        integer  ORD_DOS32IQUERYMESSAGECP
+        parameter (ORD_DOS32IQUERYMESSAGECP = 8)
+
+        integer  ORD_DOSCASEMAP
+        parameter (ORD_DOSCASEMAP = 1)
+        integer  ORD_DOSGETCOLLATE
+        parameter (ORD_DOSGETCOLLATE = 2)
+        integer  ORD_DOSGETCTRYINFO
+        parameter (ORD_DOSGETCTRYINFO = 3)
+        integer  ORD_DOSGETDBCSEV
+        parameter (ORD_DOSGETDBCSEV = 4)
+        integer  ORD_DOS32QUERYCTRYINFO
+        parameter (ORD_DOS32QUERYCTRYINFO = 5)
+        integer  ORD_DOS32QUERYDBCSENV
+        parameter (ORD_DOS32QUERYDBCSENV = 6)
+        integer  ORD_DOS32MAPCASE
+        parameter (ORD_DOS32MAPCASE = 7)
+        integer  ORD_DOS32QUERYCOLLATE
+        parameter (ORD_DOS32QUERYCOLLATE = 8)
+
+        integer  ORD_DOSMAKENMPIPE
+        parameter (ORD_DOSMAKENMPIPE = 1)
+        integer  ORD_DOSQNMPIPEINFO
+        parameter (ORD_DOSQNMPIPEINFO = 2)
+        integer  ORD_DOSCONNECTNMPIPE
+        parameter (ORD_DOSCONNECTNMPIPE = 3)
+        integer  ORD_DOSDISCONNECTNMPIPE
+        parameter (ORD_DOSDISCONNECTNMPIPE = 4)
+        integer  ORD_DOSQNMPHANDSTATE
+        parameter (ORD_DOSQNMPHANDSTATE = 5)
+        integer  ORD_DOSSETNMPHANDSTATE
+        parameter (ORD_DOSSETNMPHANDSTATE = 6)
+        integer  ORD_DOSPEEKNMPIPE
+        parameter (ORD_DOSPEEKNMPIPE = 7)
+        integer  ORD_DOSWAITNMPIPE
+        parameter (ORD_DOSWAITNMPIPE = 8)
+        integer  ORD_DOSTRANSACTNMPIPE
+        parameter (ORD_DOSTRANSACTNMPIPE = 9)
+        integer  ORD_DOSCALLNMPIPE
+        parameter (ORD_DOSCALLNMPIPE = 10)
+        integer  ORD_DOSRAWREADNMPIPE
+        parameter (ORD_DOSRAWREADNMPIPE = 11)
+        integer  ORD_DOSRAWWRITENMPIPE
+        parameter (ORD_DOSRAWWRITENMPIPE = 12)
+        integer  ORD_DOSSETNMPIPESEM
+        parameter (ORD_DOSSETNMPIPESEM = 13)
+        integer  ORD_DOSQNMPIPESEMSTATE
+        parameter (ORD_DOSQNMPIPESEMSTATE = 14)
+
+        integer  ORD_DOSCWAIT
+        parameter (ORD_DOSCWAIT = 2)
+        integer  ORD_DOSENTERCRITSEC
+        parameter (ORD_DOSENTERCRITSEC = 3)
+        integer  ORD_DOSEXIT
+        parameter (ORD_DOSEXIT = 5)
+        integer  ORD_DOSEXITCRITSEC
+        parameter (ORD_DOSEXITCRITSEC = 6)
+        integer  ORD_DOSEXITLIST
+        parameter (ORD_DOSEXITLIST = 7)
+        integer  ORD_DOSGETINFOSEG
+        parameter (ORD_DOSGETINFOSEG = 8)
+        integer  ORD_DOSGETPRTY
+        parameter (ORD_DOSGETPRTY = 9)
+        integer  ORD_DOSKILLPROCESS
+        parameter (ORD_DOSKILLPROCESS = 10)
+        integer  ORD_DOSSETPRTY
+        parameter (ORD_DOSSETPRTY = 11)
+        integer  ORD_DOSPTRACE
+        parameter (ORD_DOSPTRACE = 12)
+        integer  ORD_DOSHOLDSIGNAL
+        parameter (ORD_DOSHOLDSIGNAL = 13)
+        integer  ORD_DOSSETSIGHANDLER
+        parameter (ORD_DOSSETSIGHANDLER = 14)
+        integer  ORD_DOSFLAGPROCESS
+        parameter (ORD_DOSFLAGPROCESS = 15)
+        integer  ORD_DOSMAKEPIPE
+        parameter (ORD_DOSMAKEPIPE = 16)
+        integer  ORD_DOSSEMSETWAIT
+        parameter (ORD_DOSSEMSETWAIT = 20)
+        integer  ORD_DOSMUXSEMWAIT
+        parameter (ORD_DOSMUXSEMWAIT = 22)
+        integer  ORD_DOSCLOSESEM
+        parameter (ORD_DOSCLOSESEM = 23)
+        integer  ORD_DOSCREATESEM
+        parameter (ORD_DOSCREATESEM = 24)
+        integer  ORD_DOSOPENSEM
+        parameter (ORD_DOSOPENSEM = 25)
+        integer  ORD_DOSRESUMETHREAD
+        parameter (ORD_DOSRESUMETHREAD = 26)
+        integer  ORD_DOSSUSPENDTHREAD
+        parameter (ORD_DOSSUSPENDTHREAD = 27)
+        integer  ORD_DOSSETDATETIME
+        parameter (ORD_DOSSETDATETIME = 28)
+        integer  ORD_DOSTIMERASYNC
+        parameter (ORD_DOSTIMERASYNC = 29)
+        integer  ORD_DOSTIMERSTART
+        parameter (ORD_DOSTIMERSTART = 30)
+        integer  ORD_DOSTIMERSTOP
+        parameter (ORD_DOSTIMERSTOP = 31)
+        integer  ORD_DOSSLEEP
+        parameter (ORD_DOSSLEEP = 32)
+        integer  ORD_DOSGETDATETIME
+        parameter (ORD_DOSGETDATETIME = 33)
+        integer  ORD_DOSALLOCSEG
+        parameter (ORD_DOSALLOCSEG = 34)
+        integer  ORD_DOSALLOCSHRSEG
+        parameter (ORD_DOSALLOCSHRSEG = 35)
+        integer  ORD_DOSGETSHRSEG
+        parameter (ORD_DOSGETSHRSEG = 36)
+        integer  ORD_DOSGIVESEG
+        parameter (ORD_DOSGIVESEG = 37)
+        integer  ORD_DOSREALLOCSEG
+        parameter (ORD_DOSREALLOCSEG = 38)
+        integer  ORD_DOSFREESEG
+        parameter (ORD_DOSFREESEG = 39)
+        integer  ORD_DOSALLOCHUGE
+        parameter (ORD_DOSALLOCHUGE = 40)
+        integer  ORD_DOSGETHUGESHIFT
+        parameter (ORD_DOSGETHUGESHIFT = 41)
+        integer  ORD_DOSREALLOCHUGE
+        parameter (ORD_DOSREALLOCHUGE = 42)
+        integer  ORD_DOSCREATECSALIAS
+        parameter (ORD_DOSCREATECSALIAS = 43)
+        integer  ORD_DOSLOADMODULE
+        parameter (ORD_DOSLOADMODULE = 44)
+        integer  ORD_DOSGETPROCADDR
+        parameter (ORD_DOSGETPROCADDR = 45)
+        integer  ORD_DOSFREEMODULE
+        parameter (ORD_DOSFREEMODULE = 46)
+        integer  ORD_DOSGETMODHANDLE
+        parameter (ORD_DOSGETMODHANDLE = 47)
+        integer  ORD_DOSGETMODNAME
+        parameter (ORD_DOSGETMODNAME = 48)
+        integer  ORD_DOSGETMACHINEMODE
+        parameter (ORD_DOSGETMACHINEMODE = 49)
+        integer  ORD_DOSBEEP
+        parameter (ORD_DOSBEEP = 50)
+        integer  ORD_DOSCLIACCESS
+        parameter (ORD_DOSCLIACCESS = 51)
+        integer  ORD_DOSDEVCONFIG
+        parameter (ORD_DOSDEVCONFIG = 52)
+        integer  ORD_DOSDEVIOCTL
+        parameter (ORD_DOSDEVIOCTL = 53)
+        integer  ORD_DOSBUFRESET
+        parameter (ORD_DOSBUFRESET = 56)
+        integer  ORD_DOSCHDIR
+        parameter (ORD_DOSCHDIR = 57)
+        integer  ORD_DOSCHGFILEPTR
+        parameter (ORD_DOSCHGFILEPTR = 58)
+        integer  ORD_DOSCLOSE
+        parameter (ORD_DOSCLOSE = 59)
+        integer  ORD_DOSDELETE
+        parameter (ORD_DOSDELETE = 60)
+        integer  ORD_DOSDUPHANDLE
+        parameter (ORD_DOSDUPHANDLE = 61)
+        integer  ORD_DOSFILELOCKS
+        parameter (ORD_DOSFILELOCKS = 62)
+        integer  ORD_DOSFINDCLOSE
+        parameter (ORD_DOSFINDCLOSE = 63)
+        integer  ORD_DOSFINDFIRST
+        parameter (ORD_DOSFINDFIRST = 64)
+        integer  ORD_DOSFINDNEXT
+        parameter (ORD_DOSFINDNEXT = 65)
+        integer  ORD_DOSMKDIR
+        parameter (ORD_DOSMKDIR = 66)
+        integer  ORD_DOSMOVE
+        parameter (ORD_DOSMOVE = 67)
+        integer  ORD_DOSNEWSIZE
+        parameter (ORD_DOSNEWSIZE = 68)
+        integer  ORD_DOSPORTACCESS
+        parameter (ORD_DOSPORTACCESS = 69)
+        integer  ORD_DOSOPEN
+        parameter (ORD_DOSOPEN = 70)
+        integer  ORD_DOSQCURDIR
+        parameter (ORD_DOSQCURDIR = 71)
+        integer  ORD_DOSQCURDISK
+        parameter (ORD_DOSQCURDISK = 72)
+        integer  ORD_DOSQFHANDSTATE
+        parameter (ORD_DOSQFHANDSTATE = 73)
+        integer  ORD_DOSQFILEINFO
+        parameter (ORD_DOSQFILEINFO = 74)
+        integer  ORD_DOSQFILEMODE
+        parameter (ORD_DOSQFILEMODE = 75)
+        integer  ORD_DOSQFSINFO
+        parameter (ORD_DOSQFSINFO = 76)
+        integer  ORD_DOSQHANDTYPE
+        parameter (ORD_DOSQHANDTYPE = 77)
+        integer  ORD_DOSQVERIFY
+        parameter (ORD_DOSQVERIFY = 78)
+        integer  ORD_DOSRMDIR
+        parameter (ORD_DOSRMDIR = 80)
+        integer  ORD_DOSSELECTDISK
+        parameter (ORD_DOSSELECTDISK = 81)
+        integer  ORD_DOSSETFHANDSTATE
+        parameter (ORD_DOSSETFHANDSTATE = 82)
+        integer  ORD_DOSSETFILEINFO
+        parameter (ORD_DOSSETFILEINFO = 83)
+        integer  ORD_DOSSETFILEMODE
+        parameter (ORD_DOSSETFILEMODE = 84)
+        integer  ORD_DOSSETMAXFH
+        parameter (ORD_DOSSETMAXFH = 85)
+        integer  ORD_DOSSETVERIFY
+        parameter (ORD_DOSSETVERIFY = 86)
+        integer  ORD_DOSSYSTEMSERVICE
+        parameter (ORD_DOSSYSTEMSERVICE = 88)
+        integer  ORD_DOSSETVEC
+        parameter (ORD_DOSSETVEC = 89)
+        integer  ORD_DOSSYSTRACE
+        parameter (ORD_DOSSYSTRACE = 90)
+        integer  ORD_DOSGETENV
+        parameter (ORD_DOSGETENV = 91)
+        integer  ORD_DOSGETVERSION
+        parameter (ORD_DOSGETVERSION = 92)
+        integer  ORD_DOSGETPID
+        parameter (ORD_DOSGETPID = 94)
+        integer  ORD_DOSOPEN2
+        parameter (ORD_DOSOPEN2 = 95)
+        integer  ORD_DOSLIBINIT
+        parameter (ORD_DOSLIBINIT = 96)
+        integer  ORD_DOSSETFSINFO
+        parameter (ORD_DOSSETFSINFO = 97)
+        integer  ORD_DOSQPATHINFO
+        parameter (ORD_DOSQPATHINFO = 98)
+        integer  ORD_DOSDEVIOCTL2
+        parameter (ORD_DOSDEVIOCTL2 = 99)
+        integer  ORD_DOSSETPATHINFO
+        parameter (ORD_DOSSETPATHINFO = 104)
+        integer  ORD_DOSISETRELMAXFH
+        parameter (ORD_DOSISETRELMAXFH = 108)
+        integer  ORD_DOSIDEVIOCTL
+        parameter (ORD_DOSIDEVIOCTL = 109)
+        integer  ORD_DOSERROR
+        parameter (ORD_DOSERROR = 120)
+        integer  ORD_DOSGETSEG
+        parameter (ORD_DOSGETSEG = 121)
+        integer  ORD_DOSLOCKSEG
+        parameter (ORD_DOSLOCKSEG = 122)
+        integer  ORD_DOSUNLOCKSEG
+        parameter (ORD_DOSUNLOCKSEG = 123)
+        integer  ORD_DOSSIZESEG
+        parameter (ORD_DOSSIZESEG = 126)
+        integer  ORD_DOSMEMAVAIL
+        parameter (ORD_DOSMEMAVAIL = 127)
+        integer  ORD_DOSPHYSICALDISK
+        parameter (ORD_DOSPHYSICALDISK = 129)
+        integer  ORD_DOSGETCP
+        parameter (ORD_DOSGETCP = 130)
+        integer  ORD_DOSSENDSIGNAL
+        parameter (ORD_DOSSENDSIGNAL = 134)
+        integer  ORD_DOSHUGESHIFT
+        parameter (ORD_DOSHUGESHIFT = 135)
+        integer  ORD_DOSHUGEINCR
+        parameter (ORD_DOSHUGEINCR = 136)
+        integer  ORD_DOSREAD
+        parameter (ORD_DOSREAD = 137)
+        integer  ORD_DOSWRITE
+        parameter (ORD_DOSWRITE = 138)
+        integer  ORD_DOSERRCLASS
+        parameter (ORD_DOSERRCLASS = 139)
+        integer  ORD_DOSSEMREQUEST
+        parameter (ORD_DOSSEMREQUEST = 140)
+        integer  ORD_DOSSEMCLEAR
+        parameter (ORD_DOSSEMCLEAR = 141)
+        integer  ORD_DOSSEMWAIT
+        parameter (ORD_DOSSEMWAIT = 142)
+        integer  ORD_DOSSEMSET
+        parameter (ORD_DOSSEMSET = 143)
+        integer  ORD_DOSEXECPGM
+        parameter (ORD_DOSEXECPGM = 144)
+        integer  ORD_DOSCREATETHREAD
+        parameter (ORD_DOSCREATETHREAD = 145)
+        integer  ORD_DOSSUBSET
+        parameter (ORD_DOSSUBSET = 146)
+        integer  ORD_DOSSUBALLOC
+        parameter (ORD_DOSSUBALLOC = 147)
+        integer  ORD_DOSSUBFREE
+        parameter (ORD_DOSSUBFREE = 148)
+        integer  ORD_DOSREADASYNC
+        parameter (ORD_DOSREADASYNC = 149)
+        integer  ORD_DOSWRITEASYNC
+        parameter (ORD_DOSWRITEASYNC = 150)
+        integer  ORD_DOSSEARCHPATH
+        parameter (ORD_DOSSEARCHPATH = 151)
+        integer  ORD_DOSSCANENV
+        parameter (ORD_DOSSCANENV = 152)
+        integer  ORD_DOSSETCP
+        parameter (ORD_DOSSETCP = 153)
+        integer  ORD_DOSGETRESOURCE
+        parameter (ORD_DOSGETRESOURCE = 155)
+        integer  ORD_DOSGETPPID
+        parameter (ORD_DOSGETPPID = 156)
+        integer  ORD_DOSCALLBACK
+        parameter (ORD_DOSCALLBACK = 157)
+        integer  ORD_DOSR2STACKREALLOC
+        parameter (ORD_DOSR2STACKREALLOC = 160)
+        integer  ORD_DOSFSRAMSEMREQUEST
+        parameter (ORD_DOSFSRAMSEMREQUEST = 161)
+        integer  ORD_DOSFSRAMSEMCLEAR
+        parameter (ORD_DOSFSRAMSEMCLEAR = 162)
+        integer  ORD_DOSQAPPTYPE
+        parameter (ORD_DOSQAPPTYPE = 163)
+        integer  ORD_DOSSETPROCCP
+        parameter (ORD_DOSSETPROCCP = 164)
+        integer  ORD_DOSDYNAMICTRACE
+        parameter (ORD_DOSDYNAMICTRACE = 165)
+        integer  ORD_DOSQSYSINFO
+        parameter (ORD_DOSQSYSINFO = 166)
+        integer  ORD_DOSFSATTACH
+        parameter (ORD_DOSFSATTACH = 181)
+        integer  ORD_DOSQFSATTACH
+        parameter (ORD_DOSQFSATTACH = 182)
+        integer  ORD_DOSFSCTL
+        parameter (ORD_DOSFSCTL = 183)
+        integer  ORD_DOSFINDFIRST2
+        parameter (ORD_DOSFINDFIRST2 = 184)
+        integer  ORD_DOSMKDIR2
+        parameter (ORD_DOSMKDIR2 = 185)
+        integer  ORD_DOSFILEIO
+        parameter (ORD_DOSFILEIO = 186)
+        integer  ORD_DOSFINDNOTIFYCLOSE
+        parameter (ORD_DOSFINDNOTIFYCLOSE = 187)
+        integer  ORD_DOSFINDNOTIFYFIRST
+        parameter (ORD_DOSFINDNOTIFYFIRST = 188)
+        integer  ORD_DOSFINDNOTIFYNEXT
+        parameter (ORD_DOSFINDNOTIFYNEXT = 189)
+        integer  ORD_DOSEDITNAME
+        parameter (ORD_DOSEDITNAME = 191)
+        integer  ORD_DOSCOPY
+        parameter (ORD_DOSCOPY = 201)
+        integer  ORD_DOSENUMATTRIBUTE
+        parameter (ORD_DOSENUMATTRIBUTE = 204)
+        integer  ORD_DOSSHUTDOWN
+        parameter (ORD_DOSSHUTDOWN = 206)
+        integer  ORD_DOSGETRESOURCE2
+        parameter (ORD_DOSGETRESOURCE2 = 207)
+        integer  ORD_DOSFREERESOURCE
+        parameter (ORD_DOSFREERESOURCE = 208)
+        integer  ORD_DOS32SETMAXFH
+        parameter (ORD_DOS32SETMAXFH = 209)
+        integer  ORD_DOS32SETVERIFY
+        parameter (ORD_DOS32SETVERIFY = 210)
+        integer  ORD_DOS32ERRCLASS
+        parameter (ORD_DOS32ERRCLASS = 211)
+        integer  ORD_DOS32ERROR
+        parameter (ORD_DOS32ERROR = 212)
+        integer  ORD_DOSMAXPATHLEN
+        parameter (ORD_DOSMAXPATHLEN = 214)
+        integer  ORD_DOSPAGESIZE
+        parameter (ORD_DOSPAGESIZE = 215)
+        integer  ORD_DOSLOCALINFO
+        parameter (ORD_DOSLOCALINFO = 216)
+        integer  ORD_DOSGLOBALINFO
+        parameter (ORD_DOSGLOBALINFO = 217)
+        integer  ORD_DOS32SETFILEINFO
+        parameter (ORD_DOS32SETFILEINFO = 218)
+        integer  ORD_DOS32SETPATHINFO
+        parameter (ORD_DOS32SETPATHINFO = 219)
+        integer  ORD_DOS32SETDEFAULTDISK
+        parameter (ORD_DOS32SETDEFAULTDISK = 220)
+        integer  ORD_DOS32SETFHSTATE
+        parameter (ORD_DOS32SETFHSTATE = 221)
+        integer  ORD_DOS32SETFSINFO
+        parameter (ORD_DOS32SETFSINFO = 222)
+        integer  ORD_DOS32QUERYPATHINFO
+        parameter (ORD_DOS32QUERYPATHINFO = 223)
+        integer  ORD_DOS32QUERYHTYPE
+        parameter (ORD_DOS32QUERYHTYPE = 224)
+        integer  ORD_DOS32QUERYVERIFY
+        parameter (ORD_DOS32QUERYVERIFY = 225)
+        integer  ORD_DOS32DELETEDIR
+        parameter (ORD_DOS32DELETEDIR = 226)
+        integer  ORD_DOS32SCANENV
+        parameter (ORD_DOS32SCANENV = 227)
+        integer  ORD_DOS32SEARCHPATH
+        parameter (ORD_DOS32SEARCHPATH = 228)
+        integer  ORD_DOS32SLEEP
+        parameter (ORD_DOS32SLEEP = 229)
+        integer  ORD_DOS32GETDATETIME
+        parameter (ORD_DOS32GETDATETIME = 230)
+        integer  ORD_DOS32DEVCONFIG
+        parameter (ORD_DOS32DEVCONFIG = 231)
+        integer  ORD_DOS32ENTERCRITSEC
+        parameter (ORD_DOS32ENTERCRITSEC = 232)
+        integer  ORD_DOS32EXITCRITSEC
+        parameter (ORD_DOS32EXITCRITSEC = 233)
+        integer  ORD_DOS32EXIT
+        parameter (ORD_DOS32EXIT = 234)
+        integer  ORD_DOS32KILLPROCESS
+        parameter (ORD_DOS32KILLPROCESS = 235)
+        integer  ORD_DOS32SETPRIORITY
+        parameter (ORD_DOS32SETPRIORITY = 236)
+        integer  ORD_DOS32RESUMETHREAD
+        parameter (ORD_DOS32RESUMETHREAD = 237)
+        integer  ORD_DOS32SUSPENDTHREAD
+        parameter (ORD_DOS32SUSPENDTHREAD = 238)
+        integer  ORD_DOS32CREATEPIPE
+        parameter (ORD_DOS32CREATEPIPE = 239)
+        integer  ORD_DOS32CALLNPIPE
+        parameter (ORD_DOS32CALLNPIPE = 240)
+        integer  ORD_DOS32CONNECTNPIPE
+        parameter (ORD_DOS32CONNECTNPIPE = 241)
+        integer  ORD_DOS32DISCONNECTNPIPE
+        parameter (ORD_DOS32DISCONNECTNPIPE = 242)
+        integer  ORD_DOS32CREATENPIPE
+        parameter (ORD_DOS32CREATENPIPE = 243)
+        integer  ORD_DOS32PEEKNPIPE
+        parameter (ORD_DOS32PEEKNPIPE = 244)
+        integer  ORD_DOS32QUERYNPHSTATE
+        parameter (ORD_DOS32QUERYNPHSTATE = 245)
+        integer  ORD_DOS32RAWREADNPIPE
+        parameter (ORD_DOS32RAWREADNPIPE = 246)
+        integer  ORD_DOS32RAWWRITENPIPE
+        parameter (ORD_DOS32RAWWRITENPIPE = 247)
+        integer  ORD_DOS32QUERYNPIPEINFO
+        parameter (ORD_DOS32QUERYNPIPEINFO = 248)
+        integer  ORD_DOS32QUERYNPIPESEMSTATE
+        parameter (ORD_DOS32QUERYNPIPESEMSTATE = 249)
+        integer  ORD_DOS32SETNPHSTATE
+        parameter (ORD_DOS32SETNPHSTATE = 250)
+        integer  ORD_DOS32SETNPIPESEM
+        parameter (ORD_DOS32SETNPIPESEM = 251)
+        integer  ORD_DOS32TRANSACTNPIPE
+        parameter (ORD_DOS32TRANSACTNPIPE = 252)
+        integer  ORD_DOS32WAITNPIPE
+        parameter (ORD_DOS32WAITNPIPE = 253)
+        integer  ORD_DOS32RESETBUFFER
+        parameter (ORD_DOS32RESETBUFFER = 254)
+        integer  ORD_DOS32SETCURRENTDIR
+        parameter (ORD_DOS32SETCURRENTDIR = 255)
+        integer  ORD_DOS32SETFILEPTR
+        parameter (ORD_DOS32SETFILEPTR = 256)
+        integer  ORD_DOS32CLOSE
+        parameter (ORD_DOS32CLOSE = 257)
+        integer  ORD_DOS32COPY
+        parameter (ORD_DOS32COPY = 258)
+        integer  ORD_DOS32DELETE
+        parameter (ORD_DOS32DELETE = 259)
+        integer  ORD_DOS32DUPHANDLE
+        parameter (ORD_DOS32DUPHANDLE = 260)
+        integer  ORD_DOS32EDITNAME
+        parameter (ORD_DOS32EDITNAME = 261)
+        integer  ORD_DOS32FINDCLOSE
+        parameter (ORD_DOS32FINDCLOSE = 263)
+        integer  ORD_DOS32FINDFIRST
+        parameter (ORD_DOS32FINDFIRST = 264)
+        integer  ORD_DOS32FINDNEXT
+        parameter (ORD_DOS32FINDNEXT = 265)
+        integer  ORD_DOSOPENVDD
+        parameter (ORD_DOSOPENVDD = 266)
+        integer  ORD_DOSREQUESTVDD
+        parameter (ORD_DOSREQUESTVDD = 267)
+        integer  ORD_DOSCLOSEVDD
+        parameter (ORD_DOSCLOSEVDD = 268)
+        integer  ORD_DOS32FSATTACH
+        parameter (ORD_DOS32FSATTACH = 269)
+        integer  ORD_DOS32CREATEDIR
+        parameter (ORD_DOS32CREATEDIR = 270)
+        integer  ORD_DOS32MOVE
+        parameter (ORD_DOS32MOVE = 271)
+        integer  ORD_DOS32SETFILESIZE
+        parameter (ORD_DOS32SETFILESIZE = 272)
+        integer  ORD_DOS32OPEN
+        parameter (ORD_DOS32OPEN = 273)
+        integer  ORD_DOS32QUERYCURRENTDIR
+        parameter (ORD_DOS32QUERYCURRENTDIR = 274)
+        integer  ORD_DOS32QUERYCURRENTDISK
+        parameter (ORD_DOS32QUERYCURRENTDISK = 275)
+        integer  ORD_DOS32QUERYFHSTATE
+        parameter (ORD_DOS32QUERYFHSTATE = 276)
+        integer  ORD_DOS32QUERYFSATTACH
+        parameter (ORD_DOS32QUERYFSATTACH = 277)
+        integer  ORD_DOS32QUERYFSINFO
+        parameter (ORD_DOS32QUERYFSINFO = 278)
+        integer  ORD_DOS32QUERYFILEINFO
+        parameter (ORD_DOS32QUERYFILEINFO = 279)
+        integer  ORD_DOS32WAITCHILD
+        parameter (ORD_DOS32WAITCHILD = 280)
+        integer  ORD_DOS32READ
+        parameter (ORD_DOS32READ = 281)
+        integer  ORD_DOS32WRITE
+        parameter (ORD_DOS32WRITE = 282)
+        integer  ORD_DOS32EXECPGM
+        parameter (ORD_DOS32EXECPGM = 283)
+        integer  ORD_DOS32DEVIOCTL
+        parameter (ORD_DOS32DEVIOCTL = 284)
+        integer  ORD_DOS32FSCTL
+        parameter (ORD_DOS32FSCTL = 285)
+        integer  ORD_DOS32BEEP
+        parameter (ORD_DOS32BEEP = 286)
+        integer  ORD_DOS32PHYSICALDISK
+        parameter (ORD_DOS32PHYSICALDISK = 287)
+        integer  ORD_DOS32SETCP
+        parameter (ORD_DOS32SETCP = 288)
+        integer  ORD_DOS32SETPROCESSCP
+        parameter (ORD_DOS32SETPROCESSCP = 289)
+        integer  ORD_DOS32STOPTIMER
+        parameter (ORD_DOS32STOPTIMER = 290)
+        integer  ORD_DOS32QUERYCP
+        parameter (ORD_DOS32QUERYCP = 291)
+        integer  ORD_DOS32SETDATETIME
+        parameter (ORD_DOS32SETDATETIME = 292)
+        integer  ORD_DOS32EXITLIST
+        parameter (ORD_DOS32EXITLIST = 296)
+        integer  ORD_DOS32ALLOCMEM
+        parameter (ORD_DOS32ALLOCMEM = 299)
+        integer  ORD_DOS32ALLOCSHAREDMEM
+        parameter (ORD_DOS32ALLOCSHAREDMEM = 300)
+        integer  ORD_DOS32GETNAMEDSHAREDMEM
+        parameter (ORD_DOS32GETNAMEDSHAREDMEM = 301)
+        integer  ORD_DOS32GETSHAREDMEM
+        parameter (ORD_DOS32GETSHAREDMEM = 302)
+        integer  ORD_DOS32GIVESHAREDMEM
+        parameter (ORD_DOS32GIVESHAREDMEM = 303)
+        integer  ORD_DOS32FREEMEM
+        parameter (ORD_DOS32FREEMEM = 304)
+        integer  ORD_DOS32SETMEM
+        parameter (ORD_DOS32SETMEM = 305)
+        integer  ORD_DOS32QUERYMEM
+        parameter (ORD_DOS32QUERYMEM = 306)
+        integer  ORD_DOS32OPENVDD
+        parameter (ORD_DOS32OPENVDD = 308)
+        integer  ORD_DOS32REQUESTVDD
+        parameter (ORD_DOS32REQUESTVDD = 309)
+        integer  ORD_DOS32CLOSEVDD
+        parameter (ORD_DOS32CLOSEVDD = 310)
+        integer  ORD_DOS32CREATETHREAD
+        parameter (ORD_DOS32CREATETHREAD = 311)
+        integer  ORD_DOS32GETINFOBLOCKS
+        parameter (ORD_DOS32GETINFOBLOCKS = 312)
+        integer  ORD_DOS32DYNAMICTRACE
+        parameter (ORD_DOS32DYNAMICTRACE = 316)
+        integer  ORD_DOS32DEBUG
+        parameter (ORD_DOS32DEBUG = 317)
+        integer  ORD_DOS32LOADMODULE
+        parameter (ORD_DOS32LOADMODULE = 318)
+        integer  ORD_DOS32QUERYMODULEHANDLE
+        parameter (ORD_DOS32QUERYMODULEHANDLE = 319)
+        integer  ORD_DOS32QUERYMODULENAME
+        parameter (ORD_DOS32QUERYMODULENAME = 320)
+        integer  ORD_DOS32QUERYPROCADDR
+        parameter (ORD_DOS32QUERYPROCADDR = 321)
+        integer  ORD_DOS32FREEMODULE
+        parameter (ORD_DOS32FREEMODULE = 322)
+        integer  ORD_DOS32QUERYAPPTYPE
+        parameter (ORD_DOS32QUERYAPPTYPE = 323)
+        integer  ORD_DOS32CREATEEVENTSEM
+        parameter (ORD_DOS32CREATEEVENTSEM = 324)
+        integer  ORD_DOS32OPENEVENTSEM
+        parameter (ORD_DOS32OPENEVENTSEM = 325)
+        integer  ORD_DOS32CLOSEEVENTSEM
+        parameter (ORD_DOS32CLOSEEVENTSEM = 326)
+        integer  ORD_DOS32RESETEVENTSEM
+        parameter (ORD_DOS32RESETEVENTSEM = 327)
+        integer  ORD_DOS32POSTEVENTSEM
+        parameter (ORD_DOS32POSTEVENTSEM = 328)
+        integer  ORD_DOS32WAITEVENTSEM
+        parameter (ORD_DOS32WAITEVENTSEM = 329)
+        integer  ORD_DOS32QUERYEVENTSEM
+        parameter (ORD_DOS32QUERYEVENTSEM = 330)
+        integer  ORD_DOS32CREATEMUTEXSEM
+        parameter (ORD_DOS32CREATEMUTEXSEM = 331)
+        integer  ORD_DOS32OPENMUTEXSEM
+        parameter (ORD_DOS32OPENMUTEXSEM = 332)
+        integer  ORD_DOS32CLOSEMUTEXSEM
+        parameter (ORD_DOS32CLOSEMUTEXSEM = 333)
+        integer  ORD_DOS32REQUESTMUTEXSEM
+        parameter (ORD_DOS32REQUESTMUTEXSEM = 334)
+        integer  ORD_DOS32RELEASEMUTEXSEM
+        parameter (ORD_DOS32RELEASEMUTEXSEM = 335)
+        integer  ORD_DOS32QUERYMUTEXSEM
+        parameter (ORD_DOS32QUERYMUTEXSEM = 336)
+        integer  ORD_DOS32CREATEMUXWAITSEM
+        parameter (ORD_DOS32CREATEMUXWAITSEM = 337)
+        integer  ORD_DOS32OPENMUXWAITSEM
+        parameter (ORD_DOS32OPENMUXWAITSEM = 338)
+        integer  ORD_DOS32CLOSEMUXWAITSEM
+        parameter (ORD_DOS32CLOSEMUXWAITSEM = 339)
+        integer  ORD_DOS32WAITMUXWAITSEM
+        parameter (ORD_DOS32WAITMUXWAITSEM = 340)
+        integer  ORD_DOS32ADDMUXWAITSEM
+        parameter (ORD_DOS32ADDMUXWAITSEM = 341)
+        integer  ORD_DOS32DELETEMUXWAITSEM
+        parameter (ORD_DOS32DELETEMUXWAITSEM = 342)
+        integer  ORD_DOS32QUERYMUXWAITSEM
+        parameter (ORD_DOS32QUERYMUXWAITSEM = 343)
+        integer  ORD_DOS32SUBSETMEM
+        parameter (ORD_DOS32SUBSETMEM = 344)
+        integer  ORD_DOS32SUBALLOCMEM
+        parameter (ORD_DOS32SUBALLOCMEM = 345)
+        integer  ORD_DOS32SUBFREEMEM
+        parameter (ORD_DOS32SUBFREEMEM = 346)
+        integer  ORD_DOS32SUBUNSETMEM
+        parameter (ORD_DOS32SUBUNSETMEM = 347)
+        integer  ORD_DOS32QUERYSYSINFO
+        parameter (ORD_DOS32QUERYSYSINFO = 348)
+        integer  ORD_DOS32WAITTHREAD
+        parameter (ORD_DOS32WAITTHREAD = 349)
+        integer  ORD_DOS32ASYNCTIMER
+        parameter (ORD_DOS32ASYNCTIMER = 350)
+        integer  ORD_DOS32STARTTIMER
+        parameter (ORD_DOS32STARTTIMER = 351)
+        integer  ORD_DOS32GETRESOURCE
+        parameter (ORD_DOS32GETRESOURCE = 352)
+        integer  ORD_DOS32FREERESOURCE
+        parameter (ORD_DOS32FREERESOURCE = 353)
+        integer  ORD_DOS32SETEXCEPTIONHANDLER
+        parameter (ORD_DOS32SETEXCEPTIONHANDLER = 354)
+        integer  ORD_DOS32UNSETEXCEPTIONHANDLER
+        parameter (ORD_DOS32UNSETEXCEPTIONHANDLER = 355)
+        integer  ORD_DOS32RAISEEXCEPTION
+        parameter (ORD_DOS32RAISEEXCEPTION = 356)
+        integer  ORD_DOS32UNWINDEXCEPTION
+        parameter (ORD_DOS32UNWINDEXCEPTION = 357)
+        integer  ORD_DOS32TMRQUERYFREQ
+        parameter (ORD_DOS32TMRQUERYFREQ = 362)
+        integer  ORD_DOS32TMRQUERYTIME
+        parameter (ORD_DOS32TMRQUERYTIME = 363)
+        integer  ORD_DOS32REGISTERPERFCTRS
+        parameter (ORD_DOS32REGISTERPERFCTRS = 367)
+        integer  ORD_DOS32ENUMATTRIBUTE
+        parameter (ORD_DOS32ENUMATTRIBUTE = 372)
+        integer  ORD_DOS32QUERYDOSPROPERTY
+        parameter (ORD_DOS32QUERYDOSPROPERTY = 373)
+        integer  ORD_DOS32SETDOSPROPERTY
+        parameter (ORD_DOS32SETDOSPROPERTY = 374)
+        integer  ORD_DOSQUERYDOSPROPERTY
+        parameter (ORD_DOSQUERYDOSPROPERTY = 375)
+        integer  ORD_DOSSETDOSPROPERTY
+        parameter (ORD_DOSSETDOSPROPERTY = 376)
+        integer  ORD_DOS32PROFILE
+        parameter (ORD_DOS32PROFILE = 377)
+        integer  ORD_DOS32SETSIGNALEXCEPTIONFOC
+        parameter (ORD_DOS32SETSIGNALEXCEPTIONFOC = 378)
+        integer  ORD_DOS32SENDSIGNALEXCEPTION
+        parameter (ORD_DOS32SENDSIGNALEXCEPTION = 379)
+        integer  ORD_DOS32ENTERMUSTCOMPLETE
+        parameter (ORD_DOS32ENTERMUSTCOMPLETE = 380)
+        integer  ORD_DOS32EXITMUSTCOMPLETE
+        parameter (ORD_DOS32EXITMUSTCOMPLETE = 381)
+        integer  ORD_DOS32SETRELMAXFH
+        parameter (ORD_DOS32SETRELMAXFH = 382)
+        integer  ORD_DOS32SHUTDOWN
+        parameter (ORD_DOS32SHUTDOWN = 415)
+        integer  ORD_DOS32REPLACEMODULE
+        parameter (ORD_DOS32REPLACEMODULE = 417)
+        integer  ORD_DOS32ACKNOWLEDGESIGNALEXC
+        parameter (ORD_DOS32ACKNOWLEDGESIGNALEXC = 418)
+        integer  ORD_DOS32TIB
+        parameter (ORD_DOS32TIB = 419)
+        integer  ORD_DOSTMRQUERYFREQ
+        parameter (ORD_DOSTMRQUERYFREQ = 420)
+        integer  ORD_DOSTMRQUERYTIME
+        parameter (ORD_DOSTMRQUERYTIME = 421)
+        integer  ORD_DOSREGISTERPERFCTRS
+        parameter (ORD_DOSREGISTERPERFCTRS = 422)
+        integer  ORD_DOSFLATTOSEL
+        parameter (ORD_DOSFLATTOSEL = 423)
+        integer  ORD_DOSSELTOFLAT
+        parameter (ORD_DOSSELTOFLAT = 424)
+        integer  ORD_DOS32FLATTOSEL
+        parameter (ORD_DOS32FLATTOSEL = 425)
+        integer  ORD_DOS32SELTOFLAT
+        parameter (ORD_DOS32SELTOFLAT = 426)
+        integer  ORD_DOS32SETFILELOCKS
+        parameter (ORD_DOS32SETFILELOCKS = 428)
+        integer  ORD_DOS32CANCELLOCKREQUEST
+        parameter (ORD_DOS32CANCELLOCKREQUEST = 429)
+        integer  ORD_DOS32QUERYRESOURCESIZE
+        parameter (ORD_DOS32QUERYRESOURCESIZE = 572)
+        integer  ORD_DOSQUERYRESOURCESIZE
+        parameter (ORD_DOSQUERYRESOURCESIZE = 573)
+        integer  ORD_DOS32INITIALIZEPORTHOLE
+        parameter (ORD_DOS32INITIALIZEPORTHOLE = 580)
+        integer  ORD_DOS32QUERYHEADERINFO
+        parameter (ORD_DOS32QUERYHEADERINFO = 582)
+        integer  ORD_DOSINITIALIZEPORTHOLE
+        parameter (ORD_DOSINITIALIZEPORTHOLE = 583)
+        integer  ORD_DOSQUERYHEADERINFO
+        parameter (ORD_DOSQUERYHEADERINFO = 584)
+        integer  ORD_DOS32QUERYPROCTYPE
+        parameter (ORD_DOS32QUERYPROCTYPE = 586)
+        integer  ORD_DOSQUERYPROCTYPE
+        parameter (ORD_DOSQUERYPROCTYPE = 587)
+
+        integer  ORD_DEVOPENDC
+        parameter (ORD_DEVOPENDC = 1)
+        integer  ORD_DEVCLOSEDC
+        parameter (ORD_DEVCLOSEDC = 2)
+        integer  ORD_DEVPOSTDEVICEMODES
+        parameter (ORD_DEVPOSTDEVICEMODES = 3)
+        integer  ORD_DEVESCAPE
+        parameter (ORD_DEVESCAPE = 4)
+        integer  ORD_DEVQUERYHARDCOPYCAPS
+        parameter (ORD_DEVQUERYHARDCOPYCAPS = 5)
+        integer  ORD_DEVQUERYCAPS
+        parameter (ORD_DEVQUERYCAPS = 6)
+        integer  ORD_GPICREATEPS
+        parameter (ORD_GPICREATEPS = 7)
+        integer  ORD_GPIQUERYPS
+        parameter (ORD_GPIQUERYPS = 9)
+        integer  ORD_GPIDESTROYPS
+        parameter (ORD_GPIDESTROYPS = 10)
+        integer  ORD_GPIRESETPS
+        parameter (ORD_GPIRESETPS = 11)
+        integer  ORD_GPISAVEPS
+        parameter (ORD_GPISAVEPS = 12)
+        integer  ORD_GPIRESTOREPS
+        parameter (ORD_GPIRESTOREPS = 13)
+        integer  ORD_GPIASSOCIATE
+        parameter (ORD_GPIASSOCIATE = 14)
+        integer  ORD_GPIERRORSEGMENTDATA
+        parameter (ORD_GPIERRORSEGMENTDATA = 15)
+        integer  ORD_GPIERASE
+        parameter (ORD_GPIERASE = 16)
+        integer  ORD_GPISETDRAWCONTROL
+        parameter (ORD_GPISETDRAWCONTROL = 17)
+        integer  ORD_GPIQUERYDRAWCONTROL
+        parameter (ORD_GPIQUERYDRAWCONTROL = 18)
+        integer  ORD_GPIDRAWCHAIN
+        parameter (ORD_GPIDRAWCHAIN = 19)
+        integer  ORD_GPIDRAWFROM
+        parameter (ORD_GPIDRAWFROM = 20)
+        integer  ORD_GPIDRAWSEGMENT
+        parameter (ORD_GPIDRAWSEGMENT = 21)
+        integer  ORD_GPISETSTOPDRAW
+        parameter (ORD_GPISETSTOPDRAW = 22)
+        integer  ORD_GPIQUERYSTOPDRAW
+        parameter (ORD_GPIQUERYSTOPDRAW = 23)
+        integer  ORD_GPIREMOVEDYNAMICS
+        parameter (ORD_GPIREMOVEDYNAMICS = 24)
+        integer  ORD_GPIDRAWDYNAMICS
+        parameter (ORD_GPIDRAWDYNAMICS = 25)
+        integer  ORD_GPISETDRAWINGMODE
+        parameter (ORD_GPISETDRAWINGMODE = 26)
+        integer  ORD_GPIQUERYDRAWINGMODE
+        parameter (ORD_GPIQUERYDRAWINGMODE = 27)
+        integer  ORD_GPIGETDATA
+        parameter (ORD_GPIGETDATA = 28)
+        integer  ORD_GPIPUTDATA
+        parameter (ORD_GPIPUTDATA = 29)
+        integer  ORD_GPISETPICKAPERTURESIZE
+        parameter (ORD_GPISETPICKAPERTURESIZE = 30)
+        integer  ORD_GPIQUERYPICKAPERTURESIZE
+        parameter (ORD_GPIQUERYPICKAPERTURESIZE = 31)
+        integer  ORD_GPISETPICKAPERTUREPOSITION
+        parameter (ORD_GPISETPICKAPERTUREPOSITION = 32)
+        integer  ORD_GPIQUERYPICKAPERTUREPOSITION
+        parameter (ORD_GPIQUERYPICKAPERTUREPOSITION = 33)
+        integer  ORD_GPISETTAG
+        parameter (ORD_GPISETTAG = 34)
+        integer  ORD_GPIQUERYTAG
+        parameter (ORD_GPIQUERYTAG = 35)
+        integer  ORD_GPICORRELATECHAIN
+        parameter (ORD_GPICORRELATECHAIN = 36)
+        integer  ORD_GPICORRELATEFROM
+        parameter (ORD_GPICORRELATEFROM = 37)
+        integer  ORD_GPICORRELATESEGMENT
+        parameter (ORD_GPICORRELATESEGMENT = 38)
+        integer  ORD_GPIRESETBOUNDARYDATA
+        parameter (ORD_GPIRESETBOUNDARYDATA = 42)
+        integer  ORD_GPIQUERYBOUNDARYDATA
+        parameter (ORD_GPIQUERYBOUNDARYDATA = 43)
+        integer  ORD_GPIOPENSEGMENT
+        parameter (ORD_GPIOPENSEGMENT = 44)
+        integer  ORD_GPICLOSESEGMENT
+        parameter (ORD_GPICLOSESEGMENT = 46)
+        integer  ORD_GPIDELETESEGMENT
+        parameter (ORD_GPIDELETESEGMENT = 47)
+        integer  ORD_GPIDELETESEGMENTS
+        parameter (ORD_GPIDELETESEGMENTS = 48)
+        integer  ORD_GPIQUERYSEGMENTNAMES
+        parameter (ORD_GPIQUERYSEGMENTNAMES = 49)
+        integer  ORD_GPISETINITIALSEGMENTATTRS
+        parameter (ORD_GPISETINITIALSEGMENTATTRS = 51)
+        integer  ORD_GPIQUERYINITIALSEGMENTATTRS
+        parameter (ORD_GPIQUERYINITIALSEGMENTATTRS = 52)
+        integer  ORD_GPISETSEGMENTATTRS
+        parameter (ORD_GPISETSEGMENTATTRS = 53)
+        integer  ORD_GPIQUERYSEGMENTATTRS
+        parameter (ORD_GPIQUERYSEGMENTATTRS = 54)
+        integer  ORD_GPISETSEGMENTPRIORITY
+        parameter (ORD_GPISETSEGMENTPRIORITY = 55)
+        integer  ORD_GPIQUERYSEGMENTPRIORITY
+        parameter (ORD_GPIQUERYSEGMENTPRIORITY = 56)
+        integer  ORD_GPISETEDITMODE
+        parameter (ORD_GPISETEDITMODE = 57)
+        integer  ORD_GPIQUERYEDITMODE
+        parameter (ORD_GPIQUERYEDITMODE = 58)
+        integer  ORD_GPISETELEMENTPOINTER
+        parameter (ORD_GPISETELEMENTPOINTER = 59)
+        integer  ORD_GPIQUERYELEMENTPOINTER
+        parameter (ORD_GPIQUERYELEMENTPOINTER = 60)
+        integer  ORD_GPIOFFSETELEMENTPOINTER
+        parameter (ORD_GPIOFFSETELEMENTPOINTER = 61)
+        integer  ORD_GPIDELETEELEMENT
+        parameter (ORD_GPIDELETEELEMENT = 62)
+        integer  ORD_GPIDELETEELEMENTRANGE
+        parameter (ORD_GPIDELETEELEMENTRANGE = 63)
+        integer  ORD_GPILABEL
+        parameter (ORD_GPILABEL = 64)
+        integer  ORD_GPISETELEMENTPOINTERATLABEL
+        parameter (ORD_GPISETELEMENTPOINTERATLABEL = 65)
+        integer  ORD_GPIDELETEELEMENTSBETWEENLABELS
+        parameter (ORD_GPIDELETEELEMENTSBETWEENLABELS = 66)
+        integer  ORD_GPIQUERYELEMENTTYPE
+        parameter (ORD_GPIQUERYELEMENTTYPE = 67)
+        integer  ORD_GPIQUERYELEMENT
+        parameter (ORD_GPIQUERYELEMENT = 68)
+        integer  ORD_GPIELEMENT
+        parameter (ORD_GPIELEMENT = 69)
+        integer  ORD_GPIBEGINELEMENT
+        parameter (ORD_GPIBEGINELEMENT = 70)
+        integer  ORD_GPIENDELEMENT
+        parameter (ORD_GPIENDELEMENT = 71)
+        integer  ORD_GPISETSEGMENTTRANSFORMMATRIX
+        parameter (ORD_GPISETSEGMENTTRANSFORMMATRIX = 78)
+        integer  ORD_GPIQUERYSEGMENTTRANSFORMMATRIX
+        parameter (ORD_GPIQUERYSEGMENTTRANSFORMMATRIX = 79)
+        integer  ORD_GPISETMODELTRANSFORMMATRIX
+        parameter (ORD_GPISETMODELTRANSFORMMATRIX = 80)
+        integer  ORD_GPIQUERYMODELTRANSFORMMATRIX
+        parameter (ORD_GPIQUERYMODELTRANSFORMMATRIX = 81)
+        integer  ORD_GPICALLSEGMENTMATRIX
+        parameter (ORD_GPICALLSEGMENTMATRIX = 82)
+        integer  ORD_GPISETDEFAULTVIEWMATRIX
+        parameter (ORD_GPISETDEFAULTVIEWMATRIX = 83)
+        integer  ORD_GPIQUERYDEFAULTVIEWMATRIX
+        parameter (ORD_GPIQUERYDEFAULTVIEWMATRIX = 84)
+        integer  ORD_GPISETPAGEVIEWPORT
+        parameter (ORD_GPISETPAGEVIEWPORT = 85)
+        integer  ORD_GPIQUERYPAGEVIEWPORT
+        parameter (ORD_GPIQUERYPAGEVIEWPORT = 86)
+        integer  ORD_GPISETVIEWINGTRANSFORMMATRIX
+        parameter (ORD_GPISETVIEWINGTRANSFORMMATRIX = 87)
+        integer  ORD_GPIQUERYVIEWINGTRANSFORMMATRIX
+        parameter (ORD_GPIQUERYVIEWINGTRANSFORMMATRIX = 88)
+        integer  ORD_GPISETGRAPHICSFIELD
+        parameter (ORD_GPISETGRAPHICSFIELD = 89)
+        integer  ORD_GPIQUERYGRAPHICSFIELD
+        parameter (ORD_GPIQUERYGRAPHICSFIELD = 90)
+        integer  ORD_GPISETVIEWINGLIMITS
+        parameter (ORD_GPISETVIEWINGLIMITS = 91)
+        integer  ORD_GPIQUERYVIEWINGLIMITS
+        parameter (ORD_GPIQUERYVIEWINGLIMITS = 92)
+        integer  ORD_GPICONVERT
+        parameter (ORD_GPICONVERT = 93)
+        integer  ORD_GPISETATTRMODE
+        parameter (ORD_GPISETATTRMODE = 94)
+        integer  ORD_GPIQUERYATTRMODE
+        parameter (ORD_GPIQUERYATTRMODE = 95)
+        integer  ORD_GPIPOP
+        parameter (ORD_GPIPOP = 96)
+        integer  ORD_GPISETATTRS
+        parameter (ORD_GPISETATTRS = 97)
+        integer  ORD_GPIQUERYATTRS
+        parameter (ORD_GPIQUERYATTRS = 98)
+        integer  ORD_GPICREATELOGCOLORTABLE
+        parameter (ORD_GPICREATELOGCOLORTABLE = 99)
+        integer  ORD_GPIREALIZECOLORTABLE
+        parameter (ORD_GPIREALIZECOLORTABLE = 100)
+        integer  ORD_GPIUNREALIZECOLORTABLE
+        parameter (ORD_GPIUNREALIZECOLORTABLE = 101)
+        integer  ORD_GPIQUERYCOLORDATA
+        parameter (ORD_GPIQUERYCOLORDATA = 102)
+        integer  ORD_GPIQUERYLOGCOLORTABLE
+        parameter (ORD_GPIQUERYLOGCOLORTABLE = 103)
+        integer  ORD_GPIQUERYREALCOLORS
+        parameter (ORD_GPIQUERYREALCOLORS = 104)
+        integer  ORD_GPIQUERYNEARESTCOLOR
+        parameter (ORD_GPIQUERYNEARESTCOLOR = 105)
+        integer  ORD_GPIQUERYCOLORINDEX
+        parameter (ORD_GPIQUERYCOLORINDEX = 106)
+        integer  ORD_GPIQUERYRGBCOLOR
+        parameter (ORD_GPIQUERYRGBCOLOR = 107)
+        integer  ORD_GPISETCOLOR
+        parameter (ORD_GPISETCOLOR = 108)
+        integer  ORD_GPIQUERYCOLOR
+        parameter (ORD_GPIQUERYCOLOR = 109)
+        integer  ORD_GPISETBACKCOLOR
+        parameter (ORD_GPISETBACKCOLOR = 110)
+        integer  ORD_GPIQUERYBACKCOLOR
+        parameter (ORD_GPIQUERYBACKCOLOR = 111)
+        integer  ORD_GPISETMIX
+        parameter (ORD_GPISETMIX = 112)
+        integer  ORD_GPIQUERYMIX
+        parameter (ORD_GPIQUERYMIX = 113)
+        integer  ORD_GPISETBACKMIX
+        parameter (ORD_GPISETBACKMIX = 114)
+        integer  ORD_GPIQUERYBACKMIX
+        parameter (ORD_GPIQUERYBACKMIX = 115)
+        integer  ORD_GPISETLINETYPE
+        parameter (ORD_GPISETLINETYPE = 116)
+        integer  ORD_GPIQUERYLINETYPE
+        parameter (ORD_GPIQUERYLINETYPE = 117)
+        integer  ORD_GPISETLINEWIDTH
+        parameter (ORD_GPISETLINEWIDTH = 118)
+        integer  ORD_GPIQUERYLINEWIDTH
+        parameter (ORD_GPIQUERYLINEWIDTH = 119)
+        integer  ORD_GPISETLINEWIDTHGEOM
+        parameter (ORD_GPISETLINEWIDTHGEOM = 120)
+        integer  ORD_GPIQUERYLINEWIDTHGEOM
+        parameter (ORD_GPIQUERYLINEWIDTHGEOM = 121)
+        integer  ORD_GPISETLINEEND
+        parameter (ORD_GPISETLINEEND = 122)
+        integer  ORD_GPIQUERYLINEEND
+        parameter (ORD_GPIQUERYLINEEND = 123)
+        integer  ORD_GPISETLINEJOIN
+        parameter (ORD_GPISETLINEJOIN = 124)
+        integer  ORD_GPIQUERYLINEJOIN
+        parameter (ORD_GPIQUERYLINEJOIN = 125)
+        integer  ORD_GPISETCURRENTPOSITION
+        parameter (ORD_GPISETCURRENTPOSITION = 126)
+        integer  ORD_GPIQUERYCURRENTPOSITION
+        parameter (ORD_GPIQUERYCURRENTPOSITION = 127)
+        integer  ORD_GPIMOVE
+        parameter (ORD_GPIMOVE = 128)
+        integer  ORD_GPILINE
+        parameter (ORD_GPILINE = 129)
+        integer  ORD_GPIPOLYLINE
+        parameter (ORD_GPIPOLYLINE = 130)
+        integer  ORD_GPIBOX
+        parameter (ORD_GPIBOX = 131)
+        integer  ORD_GPIPTVISIBLE
+        parameter (ORD_GPIPTVISIBLE = 132)
+        integer  ORD_GPIRECTVISIBLE
+        parameter (ORD_GPIRECTVISIBLE = 133)
+        integer  ORD_GPISETARCPARAMS
+        parameter (ORD_GPISETARCPARAMS = 134)
+        integer  ORD_GPIQUERYARCPARAMS
+        parameter (ORD_GPIQUERYARCPARAMS = 135)
+        integer  ORD_GPIPOINTARC
+        parameter (ORD_GPIPOINTARC = 136)
+        integer  ORD_GPIFULLARC
+        parameter (ORD_GPIFULLARC = 137)
+        integer  ORD_GPIPARTIALARC
+        parameter (ORD_GPIPARTIALARC = 138)
+        integer  ORD_GPIPOLYFILLET
+        parameter (ORD_GPIPOLYFILLET = 139)
+        integer  ORD_GPIPOLYFILLETSHARP
+        parameter (ORD_GPIPOLYFILLETSHARP = 140)
+        integer  ORD_GPIPOLYSPLINE
+        parameter (ORD_GPIPOLYSPLINE = 141)
+        integer  ORD_GPISETBITMAPID
+        parameter (ORD_GPISETBITMAPID = 142)
+        integer  ORD_GPIQUERYBITMAPHANDLE
+        parameter (ORD_GPIQUERYBITMAPHANDLE = 143)
+        integer  ORD_GPISETPATTERNSET
+        parameter (ORD_GPISETPATTERNSET = 144)
+        integer  ORD_GPIQUERYPATTERNSET
+        parameter (ORD_GPIQUERYPATTERNSET = 145)
+        integer  ORD_GPISETPATTERN
+        parameter (ORD_GPISETPATTERN = 146)
+        integer  ORD_GPIQUERYPATTERN
+        parameter (ORD_GPIQUERYPATTERN = 147)
+        integer  ORD_GPISETPATTERNREFPOINT
+        parameter (ORD_GPISETPATTERNREFPOINT = 148)
+        integer  ORD_GPIQUERYPATTERNREFPOINT
+        parameter (ORD_GPIQUERYPATTERNREFPOINT = 149)
+        integer  ORD_GPIBEGINAREA
+        parameter (ORD_GPIBEGINAREA = 150)
+        integer  ORD_GPIENDAREA
+        parameter (ORD_GPIENDAREA = 151)
+        integer  ORD_GPILOADFONTS
+        parameter (ORD_GPILOADFONTS = 152)
+        integer  ORD_GPIUNLOADFONTS
+        parameter (ORD_GPIUNLOADFONTS = 153)
+        integer  ORD_GPICREATELOGFONT
+        parameter (ORD_GPICREATELOGFONT = 154)
+        integer  ORD_GPIDELETESETID
+        parameter (ORD_GPIDELETESETID = 155)
+        integer  ORD_GPIQUERYNUMBERSETIDS
+        parameter (ORD_GPIQUERYNUMBERSETIDS = 156)
+        integer  ORD_GPIQUERYSETIDS
+        parameter (ORD_GPIQUERYSETIDS = 157)
+        integer  ORD_GPIQUERYFONTS
+        parameter (ORD_GPIQUERYFONTS = 158)
+        integer  ORD_GPIQUERYFONTMETRICS
+        parameter (ORD_GPIQUERYFONTMETRICS = 159)
+        integer  ORD_GPIQUERYKERNINGPAIRS
+        parameter (ORD_GPIQUERYKERNINGPAIRS = 160)
+        integer  ORD_GPIQUERYWIDTHTABLE
+        parameter (ORD_GPIQUERYWIDTHTABLE = 161)
+        integer  ORD_GPISETCP
+        parameter (ORD_GPISETCP = 162)
+        integer  ORD_GPIQUERYCP
+        parameter (ORD_GPIQUERYCP = 163)
+        integer  ORD_GPIQUERYTEXTBOX
+        parameter (ORD_GPIQUERYTEXTBOX = 164)
+        integer  ORD_DEVQUERYDEVICENAMES
+        parameter (ORD_DEVQUERYDEVICENAMES = 165)
+        integer  ORD_GPIQUERYDEFCHARBOX
+        parameter (ORD_GPIQUERYDEFCHARBOX = 166)
+        integer  ORD_GPIQUERYFONTFILEDESCRIPTIONS
+        parameter (ORD_GPIQUERYFONTFILEDESCRIPTIONS = 167)
+        integer  ORD_GPISETCHARSET
+        parameter (ORD_GPISETCHARSET = 168)
+        integer  ORD_GPIQUERYCHARSET
+        parameter (ORD_GPIQUERYCHARSET = 169)
+        integer  ORD_GPISETCHARBOX
+        parameter (ORD_GPISETCHARBOX = 170)
+        integer  ORD_GPIQUERYCHARBOX
+        parameter (ORD_GPIQUERYCHARBOX = 171)
+        integer  ORD_GPISETCHARANGLE
+        parameter (ORD_GPISETCHARANGLE = 172)
+        integer  ORD_GPIQUERYCHARANGLE
+        parameter (ORD_GPIQUERYCHARANGLE = 173)
+        integer  ORD_GPISETCHARSHEAR
+        parameter (ORD_GPISETCHARSHEAR = 174)
+        integer  ORD_GPIQUERYCHARSHEAR
+        parameter (ORD_GPIQUERYCHARSHEAR = 175)
+        integer  ORD_GPISETCHARDIRECTION
+        parameter (ORD_GPISETCHARDIRECTION = 176)
+        integer  ORD_GPIQUERYCHARDIRECTION
+        parameter (ORD_GPIQUERYCHARDIRECTION = 177)
+        integer  ORD_GPISETCHARMODE
+        parameter (ORD_GPISETCHARMODE = 178)
+        integer  ORD_GPIQUERYCHARMODE
+        parameter (ORD_GPIQUERYCHARMODE = 179)
+        integer  ORD_GPICHARSTRING
+        parameter (ORD_GPICHARSTRING = 180)
+        integer  ORD_GPICHARSTRINGAT
+        parameter (ORD_GPICHARSTRINGAT = 181)
+        integer  ORD_GPICHARSTRINGPOS
+        parameter (ORD_GPICHARSTRINGPOS = 182)
+        integer  ORD_GPICHARSTRINGPOSAT
+        parameter (ORD_GPICHARSTRINGPOSAT = 183)
+        integer  ORD_GPISETMARKERSET
+        parameter (ORD_GPISETMARKERSET = 184)
+        integer  ORD_GPIQUERYMARKERSET
+        parameter (ORD_GPIQUERYMARKERSET = 185)
+        integer  ORD_GPISETMARKER
+        parameter (ORD_GPISETMARKER = 186)
+        integer  ORD_GPIQUERYMARKER
+        parameter (ORD_GPIQUERYMARKER = 187)
+        integer  ORD_GPISETMARKERBOX
+        parameter (ORD_GPISETMARKERBOX = 188)
+        integer  ORD_GPIQUERYMARKERBOX
+        parameter (ORD_GPIQUERYMARKERBOX = 189)
+        integer  ORD_GPIMARKER
+        parameter (ORD_GPIMARKER = 190)
+        integer  ORD_GPIPOLYMARKER
+        parameter (ORD_GPIPOLYMARKER = 191)
+        integer  ORD_GPIIMAGE
+        parameter (ORD_GPIIMAGE = 192)
+        integer  ORD_GPICREATEBITMAP
+        parameter (ORD_GPICREATEBITMAP = 196)
+        integer  ORD_GPIDELETEBITMAP
+        parameter (ORD_GPIDELETEBITMAP = 197)
+        integer  ORD_GPISETBITMAP
+        parameter (ORD_GPISETBITMAP = 198)
+        integer  ORD_GPISETBITMAPDIMENSION
+        parameter (ORD_GPISETBITMAPDIMENSION = 199)
+        integer  ORD_GPIQUERYBITMAPDIMENSION
+        parameter (ORD_GPIQUERYBITMAPDIMENSION = 200)
+        integer  ORD_GPIQUERYDEVICEBITMAPFORMATS
+        parameter (ORD_GPIQUERYDEVICEBITMAPFORMATS = 201)
+        integer  ORD_GPIQUERYBITMAPPARAMETERS
+        parameter (ORD_GPIQUERYBITMAPPARAMETERS = 202)
+        integer  ORD_GPISETBITMAPBITS
+        parameter (ORD_GPISETBITMAPBITS = 203)
+        integer  ORD_GPIQUERYBITMAPBITS
+        parameter (ORD_GPIQUERYBITMAPBITS = 204)
+        integer  ORD_GPIBITBLT
+        parameter (ORD_GPIBITBLT = 205)
+        integer  ORD_GPISETPEL
+        parameter (ORD_GPISETPEL = 206)
+        integer  ORD_GPIQUERYPEL
+        parameter (ORD_GPIQUERYPEL = 207)
+        integer  ORD_GPICREATEREGION
+        parameter (ORD_GPICREATEREGION = 208)
+        integer  ORD_GPISETREGION
+        parameter (ORD_GPISETREGION = 209)
+        integer  ORD_GPIDESTROYREGION
+        parameter (ORD_GPIDESTROYREGION = 210)
+        integer  ORD_GPICOMBINEREGION
+        parameter (ORD_GPICOMBINEREGION = 211)
+        integer  ORD_GPIEQUALREGION
+        parameter (ORD_GPIEQUALREGION = 212)
+        integer  ORD_GPIOFFSETREGION
+        parameter (ORD_GPIOFFSETREGION = 213)
+        integer  ORD_GPIPTINREGION
+        parameter (ORD_GPIPTINREGION = 214)
+        integer  ORD_GPIRECTINREGION
+        parameter (ORD_GPIRECTINREGION = 215)
+        integer  ORD_GPIQUERYREGIONBOX
+        parameter (ORD_GPIQUERYREGIONBOX = 216)
+        integer  ORD_GPIQUERYREGIONRECTS
+        parameter (ORD_GPIQUERYREGIONRECTS = 217)
+        integer  ORD_GPISETCLIPREGION
+        parameter (ORD_GPISETCLIPREGION = 218)
+        integer  ORD_GPIQUERYCLIPREGION
+        parameter (ORD_GPIQUERYCLIPREGION = 219)
+        integer  ORD_GPIQUERYCLIPBOX
+        parameter (ORD_GPIQUERYCLIPBOX = 220)
+        integer  ORD_GPIINTERSECTCLIPRECTANGLE
+        parameter (ORD_GPIINTERSECTCLIPRECTANGLE = 221)
+        integer  ORD_GPIEXCLUDECLIPRECTANGLE
+        parameter (ORD_GPIEXCLUDECLIPRECTANGLE = 222)
+        integer  ORD_GPIOFFSETCLIPREGION
+        parameter (ORD_GPIOFFSETCLIPREGION = 223)
+        integer  ORD_GPIPAINTREGION
+        parameter (ORD_GPIPAINTREGION = 224)
+        integer  ORD_GPILOADMETAFILE
+        parameter (ORD_GPILOADMETAFILE = 225)
+        integer  ORD_GPICOPYMETAFILE
+        parameter (ORD_GPICOPYMETAFILE = 226)
+        integer  ORD_GPIPLAYMETAFILE
+        parameter (ORD_GPIPLAYMETAFILE = 227)
+        integer  ORD_GPISAVEMETAFILE
+        parameter (ORD_GPISAVEMETAFILE = 228)
+        integer  ORD_GPIDELETEMETAFILE
+        parameter (ORD_GPIDELETEMETAFILE = 229)
+        integer  ORD_GPIQUERYMETAFILEBITS
+        parameter (ORD_GPIQUERYMETAFILEBITS = 230)
+        integer  ORD_GPISETMETAFILEBITS
+        parameter (ORD_GPISETMETAFILEBITS = 231)
+        integer  ORD_GPIQUERYMETAFILELENGTH
+        parameter (ORD_GPIQUERYMETAFILELENGTH = 232)
+        integer  ORD_GPISETCLIPPATH
+        parameter (ORD_GPISETCLIPPATH = 233)
+        integer  ORD_GPIBEGINPATH
+        parameter (ORD_GPIBEGINPATH = 234)
+        integer  ORD_GPIENDPATH
+        parameter (ORD_GPIENDPATH = 235)
+        integer  ORD_GPICLOSEFIGURE
+        parameter (ORD_GPICLOSEFIGURE = 236)
+        integer  ORD_GPIMODIFYPATH
+        parameter (ORD_GPIMODIFYPATH = 237)
+        integer  ORD_GPIFILLPATH
+        parameter (ORD_GPIFILLPATH = 238)
+        integer  ORD_GPISTARTREQUEST
+        parameter (ORD_GPISTARTREQUEST = 239)
+        integer  ORD_GPIQUERYDEVICE
+        parameter (ORD_GPIQUERYDEVICE = 240)
+        integer  ORD_DEVSTDOPEN
+        parameter (ORD_DEVSTDOPEN = 244)
+        integer  ORD_GPIQUERYCHARSTRINGPOS
+        parameter (ORD_GPIQUERYCHARSTRINGPOS = 245)
+        integer  ORD_GPIQUERYCHARSTRINGPOSAT
+        parameter (ORD_GPIQUERYCHARSTRINGPOSAT = 246)
+        integer  ORD_GPISETPS
+        parameter (ORD_GPISETPS = 248)
+        integer  ORD_SEGSGWOPENSEGMENTWINDOW
+        parameter (ORD_SEGSGWOPENSEGMENTWINDOW = 249)
+        integer  ORD_MTENDREADREQUEST
+        parameter (ORD_MTENDREADREQUEST = 250)
+        integer  ORD_MTGETDESCRIPTION
+        parameter (ORD_MTGETDESCRIPTION = 251)
+        integer  ORD_FMTORDERTABLE
+        parameter (ORD_FMTORDERTABLE = 252)
+        integer  ORD_MTGETCODEPAGE
+        parameter (ORD_MTGETCODEPAGE = 253)
+        integer  ORD_MTGETLCT
+        parameter (ORD_MTGETLCT = 254)
+        integer  ORD_MTGETGDDINFO
+        parameter (ORD_MTGETGDDINFO = 255)
+        integer  ORD_FMTCONVERTGOCAPOLY
+        parameter (ORD_FMTCONVERTGOCAPOLY = 256)
+        integer  ORD_MTGETFIRSTFONT
+        parameter (ORD_MTGETFIRSTFONT = 257)
+        integer  ORD_SEGSGWNEWPARTDATA
+        parameter (ORD_SEGSGWNEWPARTDATA = 258)
+        integer  ORD_MTSTARTREADREQUEST
+        parameter (ORD_MTSTARTREADREQUEST = 259)
+        integer  ORD_MTGETFIRSTGRAPHICSDATA
+        parameter (ORD_MTGETFIRSTGRAPHICSDATA = 260)
+        integer  ORD_MTGETNEXTFONT
+        parameter (ORD_MTGETNEXTFONT = 261)
+        integer  ORD_MTGETNEXTGRAPHICSDATA
+        parameter (ORD_MTGETNEXTGRAPHICSDATA = 262)
+        integer  ORD_GPILOADPUBLICFONTS
+        parameter (ORD_GPILOADPUBLICFONTS = 263)
+        integer  ORD_GPIUNLOADPUBLICFONTS
+        parameter (ORD_GPIUNLOADPUBLICFONTS = 264)
+        integer  ORD_GPICOMMENT
+        parameter (ORD_GPICOMMENT = 268)
+        integer  ORD_GPIWCBITBLT
+        parameter (ORD_GPIWCBITBLT = 269)
+        integer  ORD_GPISTROKEPATH
+        parameter (ORD_GPISTROKEPATH = 270)
+        integer  ORD_SEGSGWNEXTORDERF
+        parameter (ORD_SEGSGWNEXTORDERF = 271)
+        integer  ORD_GPIOUTLINEPATH
+        parameter (ORD_GPIOUTLINEPATH = 274)
+        integer  ORD_GPISETDEFTAG
+        parameter (ORD_GPISETDEFTAG = 275)
+        integer  ORD_GPIQUERYDEFTAG
+        parameter (ORD_GPIQUERYDEFTAG = 276)
+        integer  ORD_GPISETDEFATTRS
+        parameter (ORD_GPISETDEFATTRS = 277)
+        integer  ORD_GPIQUERYDEFATTRS
+        parameter (ORD_GPIQUERYDEFATTRS = 278)
+        integer  ORD_GPISETDEFVIEWINGLIMITS
+        parameter (ORD_GPISETDEFVIEWINGLIMITS = 279)
+        integer  ORD_GPIQUERYDEFVIEWINGLIMITS
+        parameter (ORD_GPIQUERYDEFVIEWINGLIMITS = 280)
+        integer  ORD_GPISETDEFARCPARAMS
+        parameter (ORD_GPISETDEFARCPARAMS = 281)
+        integer  ORD_GPIQUERYDEFARCPARAMS
+        parameter (ORD_GPIQUERYDEFARCPARAMS = 282)
+        integer  ORD_GPITRANSLATE
+        parameter (ORD_GPITRANSLATE = 283)
+        integer  ORD_GPISCALE
+        parameter (ORD_GPISCALE = 284)
+        integer  ORD_GPIROTATE
+        parameter (ORD_GPIROTATE = 285)
+        integer  ORD_GPIPOLYLINEDISJOINT
+        parameter (ORD_GPIPOLYLINEDISJOINT = 286)
+        integer  ORD_GPIPATHTOREGION
+        parameter (ORD_GPIPATHTOREGION = 287)
+        integer  ORD_GPIFLOODFILL
+        parameter (ORD_GPIFLOODFILL = 289)
+        integer  ORD_GPIDRAWBITS
+        parameter (ORD_GPIDRAWBITS = 290)
+        integer  ORD_GPIQUERYBITMAPINFOHEADER
+        parameter (ORD_GPIQUERYBITMAPINFOHEADER = 291)
+        integer  ORD_GPIQUERYLOGICALFONT
+        parameter (ORD_GPIQUERYLOGICALFONT = 292)
+        integer  ORD_GPIQUERYFACESTRING
+        parameter (ORD_GPIQUERYFACESTRING = 293)
+        integer  ORD_GPIQUERYFONTACTION
+        parameter (ORD_GPIQUERYFONTACTION = 294)
+        integer  ORD_GPICREATEPALETTE
+        parameter (ORD_GPICREATEPALETTE = 295)
+        integer  ORD_GPIDELETEPALETTE
+        parameter (ORD_GPIDELETEPALETTE = 296)
+        integer  ORD_GPISELECTPALETTE
+        parameter (ORD_GPISELECTPALETTE = 297)
+        integer  ORD_GPIANIMATEPALETTE
+        parameter (ORD_GPIANIMATEPALETTE = 298)
+        integer  ORD_GPISETPALETTEENTRIES
+        parameter (ORD_GPISETPALETTEENTRIES = 299)
+        integer  ORD_GPIQUERYPALETTE
+        parameter (ORD_GPIQUERYPALETTE = 300)
+        integer  ORD_GPIQUERYPALETTEINFO
+        parameter (ORD_GPIQUERYPALETTEINFO = 301)
+        integer  ORD_GPIQUERYCHAREXTRA
+        parameter (ORD_GPIQUERYCHAREXTRA = 302)
+        integer  ORD_GPISETCHAREXTRA
+        parameter (ORD_GPISETCHAREXTRA = 303)
+        integer  ORD_GPIQUERYCHARBREAKEXTRA
+        parameter (ORD_GPIQUERYCHARBREAKEXTRA = 304)
+        integer  ORD_GPISETCHARBREAKEXTRA
+        parameter (ORD_GPISETCHARBREAKEXTRA = 305)
+        integer  ORD_GPIFRAMEREGION
+        parameter (ORD_GPIFRAMEREGION = 306)
+        integer  ORD_GPICONVERTWITHMATRIX
+        parameter (ORD_GPICONVERTWITHMATRIX = 307)
+        integer  ORD_GPIQUERYDEFAULTPALETTEINFO
+        parameter (ORD_GPIQUERYDEFAULTPALETTEINFO = 311)
+        integer  ORD_GPIRESIZEPALETTE
+        parameter (ORD_GPIRESIZEPALETTE = 312)
+        integer  ORD_GPIUPDATECOLORS
+        parameter (ORD_GPIUPDATECOLORS = 313)
+        integer  ORD_GPI32ASSOCIATE
+        parameter (ORD_GPI32ASSOCIATE = 351)
+        integer  ORD_GPI32BEGINAREA
+        parameter (ORD_GPI32BEGINAREA = 352)
+        integer  ORD_GPI32BEGINELEMENT
+        parameter (ORD_GPI32BEGINELEMENT = 353)
+        integer  ORD_GPI32BEGINPATH
+        parameter (ORD_GPI32BEGINPATH = 354)
+        integer  ORD_GPI32BITBLT
+        parameter (ORD_GPI32BITBLT = 355)
+        integer  ORD_GPI32BOX
+        parameter (ORD_GPI32BOX = 356)
+        integer  ORD_GPI32CALLSEGMENTMATRIX
+        parameter (ORD_GPI32CALLSEGMENTMATRIX = 357)
+        integer  ORD_GPI32CHARSTRING
+        parameter (ORD_GPI32CHARSTRING = 358)
+        integer  ORD_GPI32CHARSTRINGAT
+        parameter (ORD_GPI32CHARSTRINGAT = 359)
+        integer  ORD_GPI32CLOSEFIGURE
+        parameter (ORD_GPI32CLOSEFIGURE = 360)
+        integer  ORD_GPI32CLOSESEGMENT
+        parameter (ORD_GPI32CLOSESEGMENT = 361)
+        integer  ORD_GPI32COMBINEREGION
+        parameter (ORD_GPI32COMBINEREGION = 362)
+        integer  ORD_GPI32COMMENT
+        parameter (ORD_GPI32COMMENT = 363)
+        integer  ORD_GPI32CONVERT
+        parameter (ORD_GPI32CONVERT = 364)
+        integer  ORD_GPI32COPYMETAFILE
+        parameter (ORD_GPI32COPYMETAFILE = 365)
+        integer  ORD_GPI32CORRELATECHAIN
+        parameter (ORD_GPI32CORRELATECHAIN = 366)
+        integer  ORD_GPI32CORRELATEFROM
+        parameter (ORD_GPI32CORRELATEFROM = 367)
+        integer  ORD_GPI32CREATELOGFONT
+        parameter (ORD_GPI32CREATELOGFONT = 368)
+        integer  ORD_GPI32CREATEPS
+        parameter (ORD_GPI32CREATEPS = 369)
+        integer  ORD_GPI32CREATEREGION
+        parameter (ORD_GPI32CREATEREGION = 370)
+        integer  ORD_GPI32DELETEBITMAP
+        parameter (ORD_GPI32DELETEBITMAP = 371)
+        integer  ORD_GPI32DELETEELEMENT
+        parameter (ORD_GPI32DELETEELEMENT = 372)
+        integer  ORD_GPI32DELETEELEMENTRANGE
+        parameter (ORD_GPI32DELETEELEMENTRANGE = 373)
+        integer  ORD_GPI32DELETEELEMENTSBETWEENLABE
+        parameter (ORD_GPI32DELETEELEMENTSBETWEENLABE = 374)
+        integer  ORD_GPI32DELETEMETAFILE
+        parameter (ORD_GPI32DELETEMETAFILE = 375)
+        integer  ORD_GPI32DELETESEGMENT
+        parameter (ORD_GPI32DELETESEGMENT = 376)
+        integer  ORD_GPI32DELETESEGMENTS
+        parameter (ORD_GPI32DELETESEGMENTS = 377)
+        integer  ORD_GPI32DELETESETID
+        parameter (ORD_GPI32DELETESETID = 378)
+        integer  ORD_GPI32DESTROYPS
+        parameter (ORD_GPI32DESTROYPS = 379)
+        integer  ORD_GPI32DRAWCHAIN
+        parameter (ORD_GPI32DRAWCHAIN = 380)
+        integer  ORD_GPI32DRAWDYNAMICS
+        parameter (ORD_GPI32DRAWDYNAMICS = 381)
+        integer  ORD_GPI32DRAWFROM
+        parameter (ORD_GPI32DRAWFROM = 382)
+        integer  ORD_GPI32DRAWSEGMENT
+        parameter (ORD_GPI32DRAWSEGMENT = 383)
+        integer  ORD_GPI32ELEMENT
+        parameter (ORD_GPI32ELEMENT = 384)
+        integer  ORD_GPI32ENDAREA
+        parameter (ORD_GPI32ENDAREA = 385)
+        integer  ORD_GPI32ENDELEMENT
+        parameter (ORD_GPI32ENDELEMENT = 386)
+        integer  ORD_GPI32ENDPATH
+        parameter (ORD_GPI32ENDPATH = 387)
+        integer  ORD_GPI32EQUALREGION
+        parameter (ORD_GPI32EQUALREGION = 388)
+        integer  ORD_GPI32ERASE
+        parameter (ORD_GPI32ERASE = 389)
+        integer  ORD_GPI32ERRORSEGMENTDATA
+        parameter (ORD_GPI32ERRORSEGMENTDATA = 390)
+        integer  ORD_GPI32EXCLUDECLIPRECTANGLE
+        parameter (ORD_GPI32EXCLUDECLIPRECTANGLE = 391)
+        integer  ORD_GPI32FILLPATH
+        parameter (ORD_GPI32FILLPATH = 392)
+        integer  ORD_GPI32FULLARC
+        parameter (ORD_GPI32FULLARC = 393)
+        integer  ORD_GPI32GETDATA
+        parameter (ORD_GPI32GETDATA = 394)
+        integer  ORD_GPI32IMAGE
+        parameter (ORD_GPI32IMAGE = 395)
+        integer  ORD_GPI32INTERSECTCLIPRECTANGLE
+        parameter (ORD_GPI32INTERSECTCLIPRECTANGLE = 396)
+        integer  ORD_GPI32LABEL
+        parameter (ORD_GPI32LABEL = 397)
+        integer  ORD_GPI32LINE
+        parameter (ORD_GPI32LINE = 398)
+        integer  ORD_GPI32LOADBITMAP
+        parameter (ORD_GPI32LOADBITMAP = 399)
+        integer  ORD_GPI32LOADFONTS
+        parameter (ORD_GPI32LOADFONTS = 400)
+        integer  ORD_GPI32LOADMETAFILE
+        parameter (ORD_GPI32LOADMETAFILE = 401)
+        integer  ORD_GPI32MARKER
+        parameter (ORD_GPI32MARKER = 402)
+        integer  ORD_GPI32MODIFYPATH
+        parameter (ORD_GPI32MODIFYPATH = 403)
+        integer  ORD_GPI32MOVE
+        parameter (ORD_GPI32MOVE = 404)
+        integer  ORD_GPI32OFFSETCLIPREGION
+        parameter (ORD_GPI32OFFSETCLIPREGION = 405)
+        integer  ORD_GPI32OFFSETELEMENTPOINTER
+        parameter (ORD_GPI32OFFSETELEMENTPOINTER = 406)
+        integer  ORD_GPI32OFFSETREGION
+        parameter (ORD_GPI32OFFSETREGION = 407)
+        integer  ORD_GPI32OPENSEGMENT
+        parameter (ORD_GPI32OPENSEGMENT = 408)
+        integer  ORD_GPI32PAINTREGION
+        parameter (ORD_GPI32PAINTREGION = 409)
+        integer  ORD_GPI32PLAYMETAFILE
+        parameter (ORD_GPI32PLAYMETAFILE = 411)
+        integer  ORD_GPI32POINTARC
+        parameter (ORD_GPI32POINTARC = 412)
+        integer  ORD_GPI32POLYFILLET
+        parameter (ORD_GPI32POLYFILLET = 413)
+        integer  ORD_GPI32POLYFILLETSHARP
+        parameter (ORD_GPI32POLYFILLETSHARP = 414)
+        integer  ORD_GPI32POLYLINE
+        parameter (ORD_GPI32POLYLINE = 415)
+        integer  ORD_GPI32POLYMARKER
+        parameter (ORD_GPI32POLYMARKER = 416)
+        integer  ORD_GPI32POLYSPLINE
+        parameter (ORD_GPI32POLYSPLINE = 417)
+        integer  ORD_GPI32POP
+        parameter (ORD_GPI32POP = 418)
+        integer  ORD_GPI32PTINREGION
+        parameter (ORD_GPI32PTINREGION = 419)
+        integer  ORD_GPI32PTVISIBLE
+        parameter (ORD_GPI32PTVISIBLE = 420)
+        integer  ORD_GPI32PUTDATA
+        parameter (ORD_GPI32PUTDATA = 421)
+        integer  ORD_GPI32QUERYARCPARAMS
+        parameter (ORD_GPI32QUERYARCPARAMS = 422)
+        integer  ORD_GPI32QUERYATTRMODE
+        parameter (ORD_GPI32QUERYATTRMODE = 423)
+        integer  ORD_GPI32QUERYBACKCOLOR
+        parameter (ORD_GPI32QUERYBACKCOLOR = 424)
+        integer  ORD_GPI32QUERYBACKMIX
+        parameter (ORD_GPI32QUERYBACKMIX = 425)
+        integer  ORD_GPI32QUERYBITMAPDIMENSION
+        parameter (ORD_GPI32QUERYBITMAPDIMENSION = 426)
+        integer  ORD_GPI32QUERYBITMAPHANDLE
+        parameter (ORD_GPI32QUERYBITMAPHANDLE = 427)
+        integer  ORD_GPI32QUERYBOUNDARYDATA
+        parameter (ORD_GPI32QUERYBOUNDARYDATA = 428)
+        integer  ORD_GPI32QUERYCHARANGLE
+        parameter (ORD_GPI32QUERYCHARANGLE = 429)
+        integer  ORD_GPI32QUERYCHARBOX
+        parameter (ORD_GPI32QUERYCHARBOX = 430)
+        integer  ORD_GPI32QUERYCHARDIRECTION
+        parameter (ORD_GPI32QUERYCHARDIRECTION = 431)
+        integer  ORD_GPI32QUERYCHARMODE
+        parameter (ORD_GPI32QUERYCHARMODE = 432)
+        integer  ORD_GPI32QUERYCHARSET
+        parameter (ORD_GPI32QUERYCHARSET = 433)
+        integer  ORD_GPI32QUERYCHARSHEAR
+        parameter (ORD_GPI32QUERYCHARSHEAR = 434)
+        integer  ORD_GPI32QUERYCLIPBOX
+        parameter (ORD_GPI32QUERYCLIPBOX = 435)
+        integer  ORD_GPI32QUERYCLIPREGION
+        parameter (ORD_GPI32QUERYCLIPREGION = 436)
+        integer  ORD_GPI32QUERYCOLOR
+        parameter (ORD_GPI32QUERYCOLOR = 437)
+        integer  ORD_GPI32QUERYCOLORDATA
+        parameter (ORD_GPI32QUERYCOLORDATA = 438)
+        integer  ORD_GPI32QUERYCOLORINDEX
+        parameter (ORD_GPI32QUERYCOLORINDEX = 439)
+        integer  ORD_GPI32QUERYCP
+        parameter (ORD_GPI32QUERYCP = 440)
+        integer  ORD_GPI32QUERYCURRENTPOSITION
+        parameter (ORD_GPI32QUERYCURRENTPOSITION = 441)
+        integer  ORD_GPI32QUERYDEFCHARBOX
+        parameter (ORD_GPI32QUERYDEFCHARBOX = 442)
+        integer  ORD_GPI32QUERYDEFAULTVIEWMATRIX
+        parameter (ORD_GPI32QUERYDEFAULTVIEWMATRIX = 443)
+        integer  ORD_GPI32QUERYDEVICE
+        parameter (ORD_GPI32QUERYDEVICE = 444)
+        integer  ORD_GPI32QUERYDEVICEBITMAPFORMATS
+        parameter (ORD_GPI32QUERYDEVICEBITMAPFORMATS = 445)
+        integer  ORD_GPI32QUERYDRAWCONTROL
+        parameter (ORD_GPI32QUERYDRAWCONTROL = 446)
+        integer  ORD_GPI32QUERYDRAWINGMODE
+        parameter (ORD_GPI32QUERYDRAWINGMODE = 447)
+        integer  ORD_GPI32QUERYEDITMODE
+        parameter (ORD_GPI32QUERYEDITMODE = 448)
+        integer  ORD_GPI32QUERYELEMENT
+        parameter (ORD_GPI32QUERYELEMENT = 449)
+        integer  ORD_GPI32QUERYELEMENTPOINTER
+        parameter (ORD_GPI32QUERYELEMENTPOINTER = 450)
+        integer  ORD_GPI32QUERYELEMENTTYPE
+        parameter (ORD_GPI32QUERYELEMENTTYPE = 451)
+        integer  ORD_GPI32QUERYFONTFILEDESCRIPTIONS
+        parameter (ORD_GPI32QUERYFONTFILEDESCRIPTIONS = 452)
+        integer  ORD_GPI32QUERYFONTMETRICS
+        parameter (ORD_GPI32QUERYFONTMETRICS = 453)
+        integer  ORD_GPI32QUERYGRAPHICSFIELD
+        parameter (ORD_GPI32QUERYGRAPHICSFIELD = 454)
+        integer  ORD_GPI32QUERYINITIALSEGMENTATTRS
+        parameter (ORD_GPI32QUERYINITIALSEGMENTATTRS = 455)
+        integer  ORD_GPI32QUERYKERNINGPAIRS
+        parameter (ORD_GPI32QUERYKERNINGPAIRS = 456)
+        integer  ORD_GPI32QUERYLINEEND
+        parameter (ORD_GPI32QUERYLINEEND = 457)
+        integer  ORD_GPI32QUERYLINEJOIN
+        parameter (ORD_GPI32QUERYLINEJOIN = 458)
+        integer  ORD_GPI32QUERYLINETYPE
+        parameter (ORD_GPI32QUERYLINETYPE = 459)
+        integer  ORD_GPI32QUERYLINEWIDTH
+        parameter (ORD_GPI32QUERYLINEWIDTH = 460)
+        integer  ORD_GPI32QUERYLINEWIDTHGEOM
+        parameter (ORD_GPI32QUERYLINEWIDTHGEOM = 461)
+        integer  ORD_GPI32QUERYMARKER
+        parameter (ORD_GPI32QUERYMARKER = 462)
+        integer  ORD_GPI32QUERYMARKERBOX
+        parameter (ORD_GPI32QUERYMARKERBOX = 463)
+        integer  ORD_GPI32QUERYMARKERSET
+        parameter (ORD_GPI32QUERYMARKERSET = 464)
+        integer  ORD_GPI32QUERYMETAFILEBITS
+        parameter (ORD_GPI32QUERYMETAFILEBITS = 465)
+        integer  ORD_GPI32QUERYMETAFILELENGTH
+        parameter (ORD_GPI32QUERYMETAFILELENGTH = 466)
+        integer  ORD_GPI32QUERYMIX
+        parameter (ORD_GPI32QUERYMIX = 467)
+        integer  ORD_GPI32QUERYMODELTRANSFORMMATRIX
+        parameter (ORD_GPI32QUERYMODELTRANSFORMMATRIX = 468)
+        integer  ORD_GPI32QUERYNEARESTCOLOR
+        parameter (ORD_GPI32QUERYNEARESTCOLOR = 469)
+        integer  ORD_GPI32QUERYNUMBERSETIDS
+        parameter (ORD_GPI32QUERYNUMBERSETIDS = 470)
+        integer  ORD_GPI32QUERYPS
+        parameter (ORD_GPI32QUERYPS = 471)
+        integer  ORD_GPI32QUERYPAGEVIEWPORT
+        parameter (ORD_GPI32QUERYPAGEVIEWPORT = 472)
+        integer  ORD_GPI32QUERYPATTERN
+        parameter (ORD_GPI32QUERYPATTERN = 473)
+        integer  ORD_GPI32QUERYPATTERNREFPOINT
+        parameter (ORD_GPI32QUERYPATTERNREFPOINT = 474)
+        integer  ORD_GPI32QUERYPATTERNSET
+        parameter (ORD_GPI32QUERYPATTERNSET = 475)
+        integer  ORD_GPI32QUERYPEL
+        parameter (ORD_GPI32QUERYPEL = 476)
+        integer  ORD_GPI32QUERYPICKAPERTUREPOSITION
+        parameter (ORD_GPI32QUERYPICKAPERTUREPOSITION = 477)
+        integer  ORD_GPI32QUERYPICKAPERTURESIZE
+        parameter (ORD_GPI32QUERYPICKAPERTURESIZE = 478)
+        integer  ORD_GPI32QUERYRGBCOLOR
+        parameter (ORD_GPI32QUERYRGBCOLOR = 479)
+        integer  ORD_GPI32QUERYREALCOLORS
+        parameter (ORD_GPI32QUERYREALCOLORS = 480)
+        integer  ORD_GPI32QUERYREGIONBOX
+        parameter (ORD_GPI32QUERYREGIONBOX = 481)
+        integer  ORD_GPI32QUERYSEGMENTATTRS
+        parameter (ORD_GPI32QUERYSEGMENTATTRS = 482)
+        integer  ORD_GPI32QUERYSEGMENTNAMES
+        parameter (ORD_GPI32QUERYSEGMENTNAMES = 483)
+        integer  ORD_GPI32QUERYSEGMENTPRIORITY
+        parameter (ORD_GPI32QUERYSEGMENTPRIORITY = 484)
+        integer  ORD_GPI32QUERYSEGMENTTRANSFORMMATR
+        parameter (ORD_GPI32QUERYSEGMENTTRANSFORMMATR = 485)
+        integer  ORD_GPI32QUERYSETIDS
+        parameter (ORD_GPI32QUERYSETIDS = 486)
+        integer  ORD_GPI32QUERYSTOPDRAW
+        parameter (ORD_GPI32QUERYSTOPDRAW = 487)
+        integer  ORD_GPI32QUERYTAG
+        parameter (ORD_GPI32QUERYTAG = 488)
+        integer  ORD_GPI32QUERYTEXTBOX
+        parameter (ORD_GPI32QUERYTEXTBOX = 489)
+        integer  ORD_GPI32QUERYVIEWINGLIMITS
+        parameter (ORD_GPI32QUERYVIEWINGLIMITS = 490)
+        integer  ORD_GPI32QUERYVIEWINGTRANSFORMMATR
+        parameter (ORD_GPI32QUERYVIEWINGTRANSFORMMATR = 491)
+        integer  ORD_GPI32QUERYWIDTHTABLE
+        parameter (ORD_GPI32QUERYWIDTHTABLE = 492)
+        integer  ORD_GPI32RECTINREGION
+        parameter (ORD_GPI32RECTINREGION = 494)
+        integer  ORD_GPI32RECTVISIBLE
+        parameter (ORD_GPI32RECTVISIBLE = 495)
+        integer  ORD_GPI32REMOVEDYNAMICS
+        parameter (ORD_GPI32REMOVEDYNAMICS = 496)
+        integer  ORD_GPI32RESETBOUNDARYDATA
+        parameter (ORD_GPI32RESETBOUNDARYDATA = 497)
+        integer  ORD_GPI32RESETPS
+        parameter (ORD_GPI32RESETPS = 498)
+        integer  ORD_GPI32RESTOREPS
+        parameter (ORD_GPI32RESTOREPS = 499)
+        integer  ORD_GPI32SAVEMETAFILE
+        parameter (ORD_GPI32SAVEMETAFILE = 500)
+        integer  ORD_GPI32SAVEPS
+        parameter (ORD_GPI32SAVEPS = 501)
+        integer  ORD_GPI32SETARCPARAMS
+        parameter (ORD_GPI32SETARCPARAMS = 502)
+        integer  ORD_GPI32SETATTRMODE
+        parameter (ORD_GPI32SETATTRMODE = 503)
+        integer  ORD_GPI32SETBACKCOLOR
+        parameter (ORD_GPI32SETBACKCOLOR = 504)
+        integer  ORD_GPI32SETBACKMIX
+        parameter (ORD_GPI32SETBACKMIX = 505)
+        integer  ORD_GPI32SETBITMAP
+        parameter (ORD_GPI32SETBITMAP = 506)
+        integer  ORD_GPI32SETBITMAPDIMENSION
+        parameter (ORD_GPI32SETBITMAPDIMENSION = 507)
+        integer  ORD_GPI32SETBITMAPID
+        parameter (ORD_GPI32SETBITMAPID = 508)
+        integer  ORD_GPI32SETCHARANGLE
+        parameter (ORD_GPI32SETCHARANGLE = 509)
+        integer  ORD_GPI32SETCHARBOX
+        parameter (ORD_GPI32SETCHARBOX = 510)
+        integer  ORD_GPI32SETCHARDIRECTION
+        parameter (ORD_GPI32SETCHARDIRECTION = 511)
+        integer  ORD_GPI32SETCHARMODE
+        parameter (ORD_GPI32SETCHARMODE = 512)
+        integer  ORD_GPI32SETCHARSET
+        parameter (ORD_GPI32SETCHARSET = 513)
+        integer  ORD_GPI32SETCHARSHEAR
+        parameter (ORD_GPI32SETCHARSHEAR = 514)
+        integer  ORD_GPI32SETCLIPPATH
+        parameter (ORD_GPI32SETCLIPPATH = 515)
+        integer  ORD_GPI32SETCLIPREGION
+        parameter (ORD_GPI32SETCLIPREGION = 516)
+        integer  ORD_GPI32SETCOLOR
+        parameter (ORD_GPI32SETCOLOR = 517)
+        integer  ORD_GPI32SETCP
+        parameter (ORD_GPI32SETCP = 518)
+        integer  ORD_GPI32SETCURRENTPOSITION
+        parameter (ORD_GPI32SETCURRENTPOSITION = 519)
+        integer  ORD_GPI32SETDEFAULTVIEWMATRIX
+        parameter (ORD_GPI32SETDEFAULTVIEWMATRIX = 520)
+        integer  ORD_GPI32SETDRAWCONTROL
+        parameter (ORD_GPI32SETDRAWCONTROL = 521)
+        integer  ORD_GPI32SETDRAWINGMODE
+        parameter (ORD_GPI32SETDRAWINGMODE = 522)
+        integer  ORD_GPI32SETEDITMODE
+        parameter (ORD_GPI32SETEDITMODE = 523)
+        integer  ORD_GPI32SETELEMENTPOINTER
+        parameter (ORD_GPI32SETELEMENTPOINTER = 524)
+        integer  ORD_GPI32SETELEMENTPOINTERATLABEL
+        parameter (ORD_GPI32SETELEMENTPOINTERATLABEL = 525)
+        integer  ORD_GPI32SETGRAPHICSFIELD
+        parameter (ORD_GPI32SETGRAPHICSFIELD = 526)
+        integer  ORD_GPI32SETINITIALSEGMENTATTRS
+        parameter (ORD_GPI32SETINITIALSEGMENTATTRS = 527)
+        integer  ORD_GPI32SETLINEEND
+        parameter (ORD_GPI32SETLINEEND = 528)
+        integer  ORD_GPI32SETLINEJOIN
+        parameter (ORD_GPI32SETLINEJOIN = 529)
+        integer  ORD_GPI32SETLINETYPE
+        parameter (ORD_GPI32SETLINETYPE = 530)
+        integer  ORD_GPI32SETLINEWIDTH
+        parameter (ORD_GPI32SETLINEWIDTH = 531)
+        integer  ORD_GPI32SETLINEWIDTHGEOM
+        parameter (ORD_GPI32SETLINEWIDTHGEOM = 532)
+        integer  ORD_GPI32SETMARKER
+        parameter (ORD_GPI32SETMARKER = 533)
+        integer  ORD_GPI32SETMARKERBOX
+        parameter (ORD_GPI32SETMARKERBOX = 534)
+        integer  ORD_GPI32SETMARKERSET
+        parameter (ORD_GPI32SETMARKERSET = 535)
+        integer  ORD_GPI32SETMETAFILEBITS
+        parameter (ORD_GPI32SETMETAFILEBITS = 536)
+        integer  ORD_GPI32SETMIX
+        parameter (ORD_GPI32SETMIX = 537)
+        integer  ORD_GPI32SETMODELTRANSFORMMATRIX
+        parameter (ORD_GPI32SETMODELTRANSFORMMATRIX = 538)
+        integer  ORD_GPI32SETPS
+        parameter (ORD_GPI32SETPS = 539)
+        integer  ORD_GPI32SETPAGEVIEWPORT
+        parameter (ORD_GPI32SETPAGEVIEWPORT = 540)
+        integer  ORD_GPI32SETPATTERN
+        parameter (ORD_GPI32SETPATTERN = 541)
+        integer  ORD_GPI32SETPATTERNREFPOINT
+        parameter (ORD_GPI32SETPATTERNREFPOINT = 542)
+        integer  ORD_GPI32SETPATTERNSET
+        parameter (ORD_GPI32SETPATTERNSET = 543)
+        integer  ORD_GPI32SETPEL
+        parameter (ORD_GPI32SETPEL = 544)
+        integer  ORD_GPI32SETPICKAPERTUREPOSITION
+        parameter (ORD_GPI32SETPICKAPERTUREPOSITION = 545)
+        integer  ORD_GPI32SETREGION
+        parameter (ORD_GPI32SETREGION = 546)
+        integer  ORD_GPI32SETSEGMENTATTRS
+        parameter (ORD_GPI32SETSEGMENTATTRS = 547)
+        integer  ORD_GPI32SETSEGMENTPRIORITY
+        parameter (ORD_GPI32SETSEGMENTPRIORITY = 548)
+        integer  ORD_GPI32SETSEGMENTTRANSFORMMATRIX
+        parameter (ORD_GPI32SETSEGMENTTRANSFORMMATRIX = 549)
+        integer  ORD_GPI32SETSTOPDRAW
+        parameter (ORD_GPI32SETSTOPDRAW = 550)
+        integer  ORD_GPI32SETTAG
+        parameter (ORD_GPI32SETTAG = 551)
+        integer  ORD_GPI32SETVIEWINGLIMITS
+        parameter (ORD_GPI32SETVIEWINGLIMITS = 552)
+        integer  ORD_GPI32SETVIEWINGTRANSFORMMATRIX
+        parameter (ORD_GPI32SETVIEWINGTRANSFORMMATRIX = 553)
+        integer  ORD_GPI32STROKEPATH
+        parameter (ORD_GPI32STROKEPATH = 554)
+        integer  ORD_GPI32UNLOADFONTS
+        parameter (ORD_GPI32UNLOADFONTS = 555)
+        integer  ORD_GPI32WCBITBLT
+        parameter (ORD_GPI32WCBITBLT = 557)
+        integer  ORD_GPI32POLYLINEDISJOINT
+        parameter (ORD_GPI32POLYLINEDISJOINT = 558)
+        integer  ORD_GPI32PATHTOREGION
+        parameter (ORD_GPI32PATHTOREGION = 559)
+        integer  ORD_GPI32FLOODFILL
+        parameter (ORD_GPI32FLOODFILL = 560)
+        integer  ORD_GPI32SUSPENDPLAY
+        parameter (ORD_GPI32SUSPENDPLAY = 561)
+        integer  ORD_GPI32RESUMEPLAY
+        parameter (ORD_GPI32RESUMEPLAY = 562)
+        integer  ORD_GPI32OUTLINEPATH
+        parameter (ORD_GPI32OUTLINEPATH = 563)
+        integer  ORD_GPI32TRANSLATE
+        parameter (ORD_GPI32TRANSLATE = 564)
+        integer  ORD_GPI32SCALE
+        parameter (ORD_GPI32SCALE = 565)
+        integer  ORD_GPI32ROTATE
+        parameter (ORD_GPI32ROTATE = 566)
+        integer  ORD_GPI32QUERYDEFARCPARAMS
+        parameter (ORD_GPI32QUERYDEFARCPARAMS = 567)
+        integer  ORD_GPI32QUERYDEFTAG
+        parameter (ORD_GPI32QUERYDEFTAG = 568)
+        integer  ORD_GPI32QUERYDEFVIEWINGLIMITS
+        parameter (ORD_GPI32QUERYDEFVIEWINGLIMITS = 569)
+        integer  ORD_GPI32SETDEFARCPARAMS
+        parameter (ORD_GPI32SETDEFARCPARAMS = 570)
+        integer  ORD_GPI32SETDEFTAG
+        parameter (ORD_GPI32SETDEFTAG = 571)
+        integer  ORD_GPI32SETDEFVIEWINGLIMITS
+        parameter (ORD_GPI32SETDEFVIEWINGLIMITS = 572)
+        integer  ORD_GPI32QUERYBITMAPPARAMETERS
+        parameter (ORD_GPI32QUERYBITMAPPARAMETERS = 573)
+        integer  ORD_GPI32QUERYLOGICALFONT
+        parameter (ORD_GPI32QUERYLOGICALFONT = 574)
+        integer  ORD_GPI32QUERYFACESTRING
+        parameter (ORD_GPI32QUERYFACESTRING = 575)
+        integer  ORD_GPI32QUERYFONTACTION
+        parameter (ORD_GPI32QUERYFONTACTION = 576)
+        integer  ORD_GPI32DELETEPALETTE
+        parameter (ORD_GPI32DELETEPALETTE = 577)
+        integer  ORD_GPI32SELECTPALETTE
+        parameter (ORD_GPI32SELECTPALETTE = 578)
+        integer  ORD_GPI32QUERYPALETTE
+        parameter (ORD_GPI32QUERYPALETTE = 579)
+        integer  ORD_GPI32CHARSTRINGPOS
+        parameter (ORD_GPI32CHARSTRINGPOS = 580)
+        integer  ORD_GPI32CHARSTRINGPOSAT
+        parameter (ORD_GPI32CHARSTRINGPOSAT = 581)
+        integer  ORD_GPI32CORRELATESEGMENT
+        parameter (ORD_GPI32CORRELATESEGMENT = 582)
+        integer  ORD_GPI32QUERYATTRS
+        parameter (ORD_GPI32QUERYATTRS = 583)
+        integer  ORD_GPI32QUERYCHARSTRINGPOS
+        parameter (ORD_GPI32QUERYCHARSTRINGPOS = 584)
+        integer  ORD_GPI32QUERYCHARSTRINGPOSAT
+        parameter (ORD_GPI32QUERYCHARSTRINGPOSAT = 585)
+        integer  ORD_GPI32QUERYFONTS
+        parameter (ORD_GPI32QUERYFONTS = 586)
+        integer  ORD_GPI32QUERYREGIONRECTS
+        parameter (ORD_GPI32QUERYREGIONRECTS = 587)
+        integer  ORD_GPI32SETATTRS
+        parameter (ORD_GPI32SETATTRS = 588)
+        integer  ORD_GPI32SETPICKAPERTURESIZE
+        parameter (ORD_GPI32SETPICKAPERTURESIZE = 589)
+        integer  ORD_GPI32QUERYDEFATTRS
+        parameter (ORD_GPI32QUERYDEFATTRS = 590)
+        integer  ORD_GPI32SETDEFATTRS
+        parameter (ORD_GPI32SETDEFATTRS = 591)
+        integer  ORD_GPI32CREATELOGCOLORTABLE
+        parameter (ORD_GPI32CREATELOGCOLORTABLE = 592)
+        integer  ORD_GPI32QUERYLOGCOLORTABLE
+        parameter (ORD_GPI32QUERYLOGCOLORTABLE = 593)
+        integer  ORD_GPI32CREATEPALETTE
+        parameter (ORD_GPI32CREATEPALETTE = 594)
+        integer  ORD_GPI32ANIMATEPALETTE
+        parameter (ORD_GPI32ANIMATEPALETTE = 595)
+        integer  ORD_GPI32SETPALETTEENTRIES
+        parameter (ORD_GPI32SETPALETTEENTRIES = 596)
+        integer  ORD_GPI32QUERYPALETTEINFO
+        parameter (ORD_GPI32QUERYPALETTEINFO = 597)
+        integer  ORD_GPI32CREATEBITMAP
+        parameter (ORD_GPI32CREATEBITMAP = 598)
+        integer  ORD_GPI32QUERYBITMAPBITS
+        parameter (ORD_GPI32QUERYBITMAPBITS = 599)
+        integer  ORD_GPI32QUERYBITMAPINFOHEADER
+        parameter (ORD_GPI32QUERYBITMAPINFOHEADER = 601)
+        integer  ORD_GPI32SETBITMAPBITS
+        parameter (ORD_GPI32SETBITMAPBITS = 602)
+        integer  ORD_GPI32DRAWBITS
+        parameter (ORD_GPI32DRAWBITS = 603)
+        integer  ORD_DEV32CLOSEDC
+        parameter (ORD_DEV32CLOSEDC = 604)
+        integer  ORD_DEV32ESCAPE
+        parameter (ORD_DEV32ESCAPE = 605)
+        integer  ORD_DEV32QUERYCAPS
+        parameter (ORD_DEV32QUERYCAPS = 606)
+        integer  ORD_DEV32QUERYDEVICENAMES
+        parameter (ORD_DEV32QUERYDEVICENAMES = 607)
+        integer  ORD_DEV32QUERYHARDCOPYCAPS
+        parameter (ORD_DEV32QUERYHARDCOPYCAPS = 608)
+        integer  ORD_DEV32POSTDEVICEMODES
+        parameter (ORD_DEV32POSTDEVICEMODES = 609)
+        integer  ORD_DEV32OPENDC
+        parameter (ORD_DEV32OPENDC = 610)
+        integer  ORD_GPI32DESTROYREGION
+        parameter (ORD_GPI32DESTROYREGION = 611)
+        integer  ORD_GPI32PARTIALARC
+        parameter (ORD_GPI32PARTIALARC = 612)
+        integer  ORD_GPI32QUERYCHAREXTRA
+        parameter (ORD_GPI32QUERYCHAREXTRA = 613)
+        integer  ORD_GPI32SETCHAREXTRA
+        parameter (ORD_GPI32SETCHAREXTRA = 614)
+        integer  ORD_GPI32QUERYCHARBREAKEXTRA
+        parameter (ORD_GPI32QUERYCHARBREAKEXTRA = 615)
+        integer  ORD_GPI32SETCHARBREAKEXTRA
+        parameter (ORD_GPI32SETCHARBREAKEXTRA = 616)
+        integer  ORD_GPI32FRAMEREGION
+        parameter (ORD_GPI32FRAMEREGION = 617)
+        integer  ORD_GPI32CONVERTWITHMATRIX
+        parameter (ORD_GPI32CONVERTWITHMATRIX = 618)
+        integer  ORD_GPI32LOADPUBLICFONTS
+        parameter (ORD_GPI32LOADPUBLICFONTS = 622)
+        integer  ORD_GPI32UNLOADPUBLICFONTS
+        parameter (ORD_GPI32UNLOADPUBLICFONTS = 623)
+
+        integer  ORD_WINQUERYDESKTOPWINDOW
+        parameter (ORD_WINQUERYDESKTOPWINDOW = 1)
+        integer  ORD_WINQUERYOBJECTWINDOW
+        parameter (ORD_WINQUERYOBJECTWINDOW = 2)
+        integer  ORD_WINREGISTERCLASS
+        parameter (ORD_WINREGISTERCLASS = 3)
+        integer  ORD_WINQUERYCLASSNAME
+        parameter (ORD_WINQUERYCLASSNAME = 4)
+        integer  ORD_WINQUERYCLASSINFO
+        parameter (ORD_WINQUERYCLASSINFO = 5)
+        integer  ORD_WINCREATEWINDOW
+        parameter (ORD_WINCREATEWINDOW = 6)
+        integer  ORD_WINDESTROYWINDOW
+        parameter (ORD_WINDESTROYWINDOW = 7)
+        integer  ORD_WINSETWINDOWPOS
+        parameter (ORD_WINSETWINDOWPOS = 8)
+        integer  ORD_WINSETMULTWINDOWPOS
+        parameter (ORD_WINSETMULTWINDOWPOS = 9)
+        integer  ORD_WINQUERYWINDOWPOS
+        parameter (ORD_WINQUERYWINDOWPOS = 10)
+        integer  ORD_WINENABLEWINDOW
+        parameter (ORD_WINENABLEWINDOW = 11)
+        integer  ORD_WINISWINDOWENABLED
+        parameter (ORD_WINISWINDOWENABLED = 12)
+        integer  ORD_WINSHOWWINDOW
+        parameter (ORD_WINSHOWWINDOW = 13)
+        integer  ORD_WINENABLEWINDOWUPDATE
+        parameter (ORD_WINENABLEWINDOWUPDATE = 14)
+        integer  ORD_WINISWINDOWVISIBLE
+        parameter (ORD_WINISWINDOWVISIBLE = 15)
+        integer  ORD_WINSETWINDOWTEXT
+        parameter (ORD_WINSETWINDOWTEXT = 16)
+        integer  ORD_WINQUERYWINDOWTEXT
+        parameter (ORD_WINQUERYWINDOWTEXT = 17)
+        integer  ORD_WINQUERYWINDOWTEXTLENGTH
+        parameter (ORD_WINQUERYWINDOWTEXTLENGTH = 18)
+        integer  ORD_WINWINDOWFROMID
+        parameter (ORD_WINWINDOWFROMID = 19)
+        integer  ORD_WINMULTWINDOWFROMIDS
+        parameter (ORD_WINMULTWINDOWFROMIDS = 20)
+        integer  ORD_WINISWINDOW
+        parameter (ORD_WINISWINDOW = 21)
+        integer  ORD_WINISCHILD
+        parameter (ORD_WINISCHILD = 22)
+        integer  ORD_WINSETPARENT
+        parameter (ORD_WINSETPARENT = 23)
+        integer  ORD_WINSETOWNER
+        parameter (ORD_WINSETOWNER = 24)
+        integer  ORD_WINQUERYWINDOW
+        parameter (ORD_WINQUERYWINDOW = 25)
+        integer  ORD_WINQUERYWINDOWRECT
+        parameter (ORD_WINQUERYWINDOWRECT = 26)
+        integer  ORD_WINQUERYWINDOWPROCESS
+        parameter (ORD_WINQUERYWINDOWPROCESS = 27)
+        integer  ORD_WINSETWINDOWUSHORT
+        parameter (ORD_WINSETWINDOWUSHORT = 28)
+        integer  ORD_WINQUERYWINDOWUSHORT
+        parameter (ORD_WINQUERYWINDOWUSHORT = 29)
+        integer  ORD_WINSETWINDOWULONG
+        parameter (ORD_WINSETWINDOWULONG = 30)
+        integer  ORD_WINQUERYWINDOWULONG
+        parameter (ORD_WINQUERYWINDOWULONG = 31)
+        integer  ORD_WINBEGINENUMWINDOWS
+        parameter (ORD_WINBEGINENUMWINDOWS = 32)
+        integer  ORD_WINGETNEXTWINDOW
+        parameter (ORD_WINGETNEXTWINDOW = 33)
+        integer  ORD_WINENDENUMWINDOWS
+        parameter (ORD_WINENDENUMWINDOWS = 34)
+        integer  ORD_WINWINDOWFROMPOINT
+        parameter (ORD_WINWINDOWFROMPOINT = 35)
+        integer  ORD_WINMAPWINDOWPOINTS
+        parameter (ORD_WINMAPWINDOWPOINTS = 36)
+        integer  ORD_WINSUBCLASSWINDOW
+        parameter (ORD_WINSUBCLASSWINDOW = 37)
+        integer  ORD_WINLOCKWINDOW
+        parameter (ORD_WINLOCKWINDOW = 38)
+        integer  ORD_WINQUERYWINDOWLOCKCOUNT
+        parameter (ORD_WINQUERYWINDOWLOCKCOUNT = 39)
+        integer  ORD_WINREGISTERWINDOWDESTROY
+        parameter (ORD_WINREGISTERWINDOWDESTROY = 40)
+        integer  ORD_WINOPENWINDOWDC
+        parameter (ORD_WINOPENWINDOWDC = 41)
+        integer  ORD_WINGETSCREENPS
+        parameter (ORD_WINGETSCREENPS = 42)
+        integer  ORD_WINGETPS
+        parameter (ORD_WINGETPS = 43)
+        integer  ORD_WINRELEASEPS
+        parameter (ORD_WINRELEASEPS = 44)
+        integer  ORD_WINBEGINPAINT
+        parameter (ORD_WINBEGINPAINT = 45)
+        integer  ORD_WINENDPAINT
+        parameter (ORD_WINENDPAINT = 46)
+        integer  ORD_WININVALIDATERECT
+        parameter (ORD_WININVALIDATERECT = 47)
+        integer  ORD_WININVALIDATEREGION
+        parameter (ORD_WININVALIDATEREGION = 48)
+        integer  ORD_WINVALIDATERECT
+        parameter (ORD_WINVALIDATERECT = 49)
+        integer  ORD_WINVALIDATEREGION
+        parameter (ORD_WINVALIDATEREGION = 50)
+        integer  ORD_WINQUERYUPDATERECT
+        parameter (ORD_WINQUERYUPDATERECT = 51)
+        integer  ORD_WINQUERYUPDATEREGION
+        parameter (ORD_WINQUERYUPDATEREGION = 52)
+        integer  ORD_WINUPDATEWINDOW
+        parameter (ORD_WINUPDATEWINDOW = 53)
+        integer  ORD_WINEXCLUDEUPDATEREGION
+        parameter (ORD_WINEXCLUDEUPDATEREGION = 54)
+        integer  ORD_WINLOCKWINDOWUPDATE
+        parameter (ORD_WINLOCKWINDOWUPDATE = 55)
+        integer  ORD_WINLOCKVISREGIONS
+        parameter (ORD_WINLOCKVISREGIONS = 56)
+        integer  ORD_WINWINDOWFROMDC
+        parameter (ORD_WINWINDOWFROMDC = 57)
+        integer  ORD_WINCREATEMSGQUEUE
+        parameter (ORD_WINCREATEMSGQUEUE = 58)
+        integer  ORD_WINDESTROYMSGQUEUE
+        parameter (ORD_WINDESTROYMSGQUEUE = 59)
+        integer  ORD_WINQUERYQUEUESTATUS
+        parameter (ORD_WINQUERYQUEUESTATUS = 60)
+        integer  ORD_WINSENDMSG
+        parameter (ORD_WINSENDMSG = 61)
+        integer  ORD_WINBROADCASTMSG
+        parameter (ORD_WINBROADCASTMSG = 63)
+        integer  ORD_WININSENDMSG
+        parameter (ORD_WININSENDMSG = 64)
+        integer  ORD_WINGETMSG
+        parameter (ORD_WINGETMSG = 65)
+        integer  ORD_WINPEEKMSG
+        parameter (ORD_WINPEEKMSG = 66)
+        integer  ORD_WINWAITMSG
+        parameter (ORD_WINWAITMSG = 67)
+        integer  ORD_WINDISPATCHMSG
+        parameter (ORD_WINDISPATCHMSG = 68)
+        integer  ORD_WINPOSTMSG
+        parameter (ORD_WINPOSTMSG = 69)
+        integer  ORD_WINPOSTQUEUEMSG
+        parameter (ORD_WINPOSTQUEUEMSG = 70)
+        integer  ORD_WINQUERYMSGPOS
+        parameter (ORD_WINQUERYMSGPOS = 71)
+        integer  ORD_WINQUERYMSGTIME
+        parameter (ORD_WINQUERYMSGTIME = 72)
+        integer  ORD_WINCALLMSGFILTER
+        parameter (ORD_WINCALLMSGFILTER = 73)
+        integer  ORD_WINSETMSGINTEREST
+        parameter (ORD_WINSETMSGINTEREST = 74)
+        integer  ORD_WINSETCAPTURE
+        parameter (ORD_WINSETCAPTURE = 75)
+        integer  ORD_WINQUERYCAPTURE
+        parameter (ORD_WINQUERYCAPTURE = 76)
+        integer  ORD_WINSETFOCUS
+        parameter (ORD_WINSETFOCUS = 77)
+        integer  ORD_WINQUERYFOCUS
+        parameter (ORD_WINQUERYFOCUS = 78)
+        integer  ORD_WINSETACTIVEWINDOW
+        parameter (ORD_WINSETACTIVEWINDOW = 79)
+        integer  ORD_WINQUERYACTIVEWINDOW
+        parameter (ORD_WINQUERYACTIVEWINDOW = 80)
+        integer  ORD_WINSETSYSMODALWINDOW
+        parameter (ORD_WINSETSYSMODALWINDOW = 81)
+        integer  ORD_WINQUERYSYSMODALWINDOW
+        parameter (ORD_WINQUERYSYSMODALWINDOW = 82)
+        integer  ORD_WINISTHREADACTIVE
+        parameter (ORD_WINISTHREADACTIVE = 83)
+        integer  ORD_WINSTARTTIMER
+        parameter (ORD_WINSTARTTIMER = 84)
+        integer  ORD_WINSTOPTIMER
+        parameter (ORD_WINSTOPTIMER = 85)
+        integer  ORD_WINGETCURRENTTIME
+        parameter (ORD_WINGETCURRENTTIME = 86)
+        integer  ORD_WINLOADPOINTER
+        parameter (ORD_WINLOADPOINTER = 87)
+        integer  ORD_WINCREATEPOINTER
+        parameter (ORD_WINCREATEPOINTER = 88)
+        integer  ORD_WINDESTROYPOINTER
+        parameter (ORD_WINDESTROYPOINTER = 89)
+        integer  ORD_OLDWINQUERYPOINTERINFO
+        parameter (ORD_OLDWINQUERYPOINTERINFO = 90)
+        integer  ORD_WINQUERYSYSPOINTER
+        parameter (ORD_WINQUERYSYSPOINTER = 91)
+        integer  ORD_WINSETPOINTER
+        parameter (ORD_WINSETPOINTER = 92)
+        integer  ORD_WINQUERYPOINTER
+        parameter (ORD_WINQUERYPOINTER = 93)
+        integer  ORD_WINSHOWPOINTER
+        parameter (ORD_WINSHOWPOINTER = 94)
+        integer  ORD_WINSETPOINTERPOS
+        parameter (ORD_WINSETPOINTERPOS = 95)
+        integer  ORD_WINQUERYPOINTERPOS
+        parameter (ORD_WINQUERYPOINTERPOS = 96)
+        integer  ORD_WINGETSYSBITMAP
+        parameter (ORD_WINGETSYSBITMAP = 97)
+        integer  ORD_WINCREATECURSOR
+        parameter (ORD_WINCREATECURSOR = 98)
+        integer  ORD_WINDESTROYCURSOR
+        parameter (ORD_WINDESTROYCURSOR = 99)
+        integer  ORD_WINSHOWCURSOR
+        parameter (ORD_WINSHOWCURSOR = 100)
+        integer  ORD_WINQUERYCURSORINFO
+        parameter (ORD_WINQUERYCURSORINFO = 101)
+        integer  ORD_WINLOADACCELTABLE
+        parameter (ORD_WINLOADACCELTABLE = 102)
+        integer  ORD_WINCREATEACCELTABLE
+        parameter (ORD_WINCREATEACCELTABLE = 103)
+        integer  ORD_WINDESTROYACCELTABLE
+        parameter (ORD_WINDESTROYACCELTABLE = 104)
+        integer  ORD_WINTRANSLATEACCEL
+        parameter (ORD_WINTRANSLATEACCEL = 105)
+        integer  ORD_WINSETACCELTABLE
+        parameter (ORD_WINSETACCELTABLE = 106)
+        integer  ORD_WINQUERYACCELTABLE
+        parameter (ORD_WINQUERYACCELTABLE = 107)
+        integer  ORD_WINCOPYACCELTABLE
+        parameter (ORD_WINCOPYACCELTABLE = 108)
+        integer  ORD_WINSETHOOK
+        parameter (ORD_WINSETHOOK = 109)
+        integer  ORD_WINRELEASEHOOK
+        parameter (ORD_WINRELEASEHOOK = 110)
+        integer  ORD_WINOPENCLIPBRD
+        parameter (ORD_WINOPENCLIPBRD = 111)
+        integer  ORD_WINCLOSECLIPBRD
+        parameter (ORD_WINCLOSECLIPBRD = 112)
+        integer  ORD_WINEMPTYCLIPBRD
+        parameter (ORD_WINEMPTYCLIPBRD = 113)
+        integer  ORD_WINSETCLIPBRDOWNER
+        parameter (ORD_WINSETCLIPBRDOWNER = 114)
+        integer  ORD_WINQUERYCLIPBRDOWNER
+        parameter (ORD_WINQUERYCLIPBRDOWNER = 115)
+        integer  ORD_WINSETCLIPBRDDATA
+        parameter (ORD_WINSETCLIPBRDDATA = 116)
+        integer  ORD_WINQUERYCLIPBRDDATA
+        parameter (ORD_WINQUERYCLIPBRDDATA = 117)
+        integer  ORD_WINENUMCLIPBRDFMTS
+        parameter (ORD_WINENUMCLIPBRDFMTS = 118)
+        integer  ORD_WINQUERYCLIPBRDFMTINFO
+        parameter (ORD_WINQUERYCLIPBRDFMTINFO = 119)
+        integer  ORD_WINSETCLIPBRDVIEWER
+        parameter (ORD_WINSETCLIPBRDVIEWER = 120)
+        integer  ORD_WINQUERYCLIPBRDVIEWER
+        parameter (ORD_WINQUERYCLIPBRDVIEWER = 121)
+        integer  ORD_WINLOADDLG
+        parameter (ORD_WINLOADDLG = 122)
+        integer  ORD_WINCREATEDLG
+        parameter (ORD_WINCREATEDLG = 123)
+        integer  ORD_WINPROCESSDLG
+        parameter (ORD_WINPROCESSDLG = 124)
+        integer  ORD_WINDLGBOX
+        parameter (ORD_WINDLGBOX = 125)
+        integer  ORD_WINDISMISSDLG
+        parameter (ORD_WINDISMISSDLG = 126)
+        integer  ORD_WINSENDDLGITEMMSG
+        parameter (ORD_WINSENDDLGITEMMSG = 127)
+        integer  ORD_WINSETDLGITEMSHORT
+        parameter (ORD_WINSETDLGITEMSHORT = 128)
+        integer  ORD_WINQUERYDLGITEMSHORT
+        parameter (ORD_WINQUERYDLGITEMSHORT = 129)
+        integer  ORD_WINMAPDLGPOINTS
+        parameter (ORD_WINMAPDLGPOINTS = 130)
+        integer  ORD_WINSUBSTITUTESTRINGS
+        parameter (ORD_WINSUBSTITUTESTRINGS = 132)
+        integer  ORD_WINENUMDLGITEM
+        parameter (ORD_WINENUMDLGITEM = 133)
+        integer  ORD_WINSETDLGITEMTEXT
+        parameter (ORD_WINSETDLGITEMTEXT = 134)
+        integer  ORD_WINQUERYDLGITEMTEXT
+        parameter (ORD_WINQUERYDLGITEMTEXT = 135)
+        integer  ORD_WINLOADMENU
+        parameter (ORD_WINLOADMENU = 136)
+        integer  ORD_WINCREATEMENU
+        parameter (ORD_WINCREATEMENU = 137)
+        integer  ORD_WINALARM
+        parameter (ORD_WINALARM = 138)
+        integer  ORD_WINMESSAGEBOX
+        parameter (ORD_WINMESSAGEBOX = 139)
+        integer  ORD_WINCREATESTDWINDOW
+        parameter (ORD_WINCREATESTDWINDOW = 140)
+        integer  ORD_WINCREATEFRAMECONTROLS
+        parameter (ORD_WINCREATEFRAMECONTROLS = 141)
+        integer  ORD_WINCALCFRAMERECT
+        parameter (ORD_WINCALCFRAMERECT = 143)
+        integer  ORD_WINFLASHWINDOW
+        parameter (ORD_WINFLASHWINDOW = 144)
+        integer  ORD_WINGETMINPOSITION
+        parameter (ORD_WINGETMINPOSITION = 146)
+        integer  ORD_WINGETMAXPOSITION
+        parameter (ORD_WINGETMAXPOSITION = 147)
+        integer  ORD_WINQUERYSYSVALUE
+        parameter (ORD_WINQUERYSYSVALUE = 149)
+        integer  ORD_WINSETSYSVALUE
+        parameter (ORD_WINSETSYSVALUE = 150)
+        integer  ORD_WINSETSYSCOLORS
+        parameter (ORD_WINSETSYSCOLORS = 151)
+        integer  ORD_WINQUERYSYSCOLOR
+        parameter (ORD_WINQUERYSYSCOLOR = 152)
+        integer  ORD_WINSCROLLWINDOW
+        parameter (ORD_WINSCROLLWINDOW = 153)
+        integer  ORD_WINTRACKRECT
+        parameter (ORD_WINTRACKRECT = 154)
+        integer  ORD_WINSHOWTRACKRECT
+        parameter (ORD_WINSHOWTRACKRECT = 155)
+        integer  ORD_GPILOADBITMAP
+        parameter (ORD_GPILOADBITMAP = 156)
+        integer  ORD_WINLOADSTRING
+        parameter (ORD_WINLOADSTRING = 157)
+        integer  ORD_WINLOADMESSAGE
+        parameter (ORD_WINLOADMESSAGE = 158)
+        integer  ORD_WINSETRECTEMPTY
+        parameter (ORD_WINSETRECTEMPTY = 159)
+        integer  ORD_WINSETRECT
+        parameter (ORD_WINSETRECT = 160)
+        integer  ORD_WINCOPYRECT
+        parameter (ORD_WINCOPYRECT = 161)
+        integer  ORD_WINISRECTEMPTY
+        parameter (ORD_WINISRECTEMPTY = 162)
+        integer  ORD_WINEQUALRECT
+        parameter (ORD_WINEQUALRECT = 163)
+        integer  ORD_WINPTINRECT
+        parameter (ORD_WINPTINRECT = 164)
+        integer  ORD_WINOFFSETRECT
+        parameter (ORD_WINOFFSETRECT = 165)
+        integer  ORD_WININFLATERECT
+        parameter (ORD_WININFLATERECT = 166)
+        integer  ORD_WININTERSECTRECT
+        parameter (ORD_WININTERSECTRECT = 167)
+        integer  ORD_WINUNIONRECT
+        parameter (ORD_WINUNIONRECT = 168)
+        integer  ORD_WINSUBTRACTRECT
+        parameter (ORD_WINSUBTRACTRECT = 169)
+        integer  ORD_WINMAKERECT
+        parameter (ORD_WINMAKERECT = 170)
+        integer  ORD_WINMAKEPOINTS
+        parameter (ORD_WINMAKEPOINTS = 171)
+        integer  ORD_WININVERTRECT
+        parameter (ORD_WININVERTRECT = 172)
+        integer  ORD_WINFILLRECT
+        parameter (ORD_WINFILLRECT = 173)
+        integer  ORD_KBDPACKET
+        parameter (ORD_KBDPACKET = 174)
+        integer  ORD_WINDRAWPOINTER
+        parameter (ORD_WINDRAWPOINTER = 177)
+        integer  ORD_WINDEFWINDOWPROC
+        parameter (ORD_WINDEFWINDOWPROC = 178)
+        integer  ORD_WINDEFDLGPROC
+        parameter (ORD_WINDEFDLGPROC = 179)
+        integer  ORD_WINGETKEYSTATE
+        parameter (ORD_WINGETKEYSTATE = 211)
+        integer  ORD_WINGETPHYSKEYSTATE
+        parameter (ORD_WINGETPHYSKEYSTATE = 212)
+        integer  ORD_WINSETKEYBOARDSTATETABLE
+        parameter (ORD_WINSETKEYBOARDSTATETABLE = 213)
+        integer  ORD_WINENABLEPHYSINPUT
+        parameter (ORD_WINENABLEPHYSINPUT = 214)
+        integer  ORD_WINSETCP
+        parameter (ORD_WINSETCP = 215)
+        integer  ORD_WINQUERYCP
+        parameter (ORD_WINQUERYCP = 216)
+        integer  ORD_WINQUERYCPLIST
+        parameter (ORD_WINQUERYCPLIST = 217)
+        integer  ORD_WINCPTRANSLATESTRING
+        parameter (ORD_WINCPTRANSLATESTRING = 218)
+        integer  ORD_WINCPTRANSLATECHAR
+        parameter (ORD_WINCPTRANSLATECHAR = 219)
+        integer  ORD_WINCOMPARESTRINGS
+        parameter (ORD_WINCOMPARESTRINGS = 220)
+        integer  ORD_WINUPPER
+        parameter (ORD_WINUPPER = 221)
+        integer  ORD_WINUPPERCHAR
+        parameter (ORD_WINUPPERCHAR = 222)
+        integer  ORD_WINNEXTCHAR
+        parameter (ORD_WINNEXTCHAR = 223)
+        integer  ORD_WINPREVCHAR
+        parameter (ORD_WINPREVCHAR = 224)
+        integer  ORD_WINCREATEHEAP
+        parameter (ORD_WINCREATEHEAP = 225)
+        integer  ORD_WINDESTROYHEAP
+        parameter (ORD_WINDESTROYHEAP = 226)
+        integer  ORD_WINAVAILMEM
+        parameter (ORD_WINAVAILMEM = 227)
+        integer  ORD_WINALLOCMEM
+        parameter (ORD_WINALLOCMEM = 228)
+        integer  ORD_WINREALLOCMEM
+        parameter (ORD_WINREALLOCMEM = 229)
+        integer  ORD_WINFREEMEM
+        parameter (ORD_WINFREEMEM = 230)
+        integer  ORD_WINLOCKHEAP
+        parameter (ORD_WINLOCKHEAP = 231)
+        integer  ORD_WINCREATEATOMTABLE
+        parameter (ORD_WINCREATEATOMTABLE = 233)
+        integer  ORD_WINDESTROYATOMTABLE
+        parameter (ORD_WINDESTROYATOMTABLE = 234)
+        integer  ORD_WINADDATOM
+        parameter (ORD_WINADDATOM = 235)
+        integer  ORD_WINFINDATOM
+        parameter (ORD_WINFINDATOM = 236)
+        integer  ORD_WINDELETEATOM
+        parameter (ORD_WINDELETEATOM = 237)
+        integer  ORD_WINQUERYATOMUSAGE
+        parameter (ORD_WINQUERYATOMUSAGE = 238)
+        integer  ORD_WINQUERYATOMLENGTH
+        parameter (ORD_WINQUERYATOMLENGTH = 239)
+        integer  ORD_WINQUERYATOMNAME
+        parameter (ORD_WINQUERYATOMNAME = 240)
+        integer  ORD_WINQUERYSYSTEMATOMTABLE
+        parameter (ORD_WINQUERYSYSTEMATOMTABLE = 241)
+        integer  ORD_WINGETLASTERROR
+        parameter (ORD_WINGETLASTERROR = 243)
+        integer  ORD_WINGETERRORINFO
+        parameter (ORD_WINGETERRORINFO = 244)
+        integer  ORD_WINFREEERRORINFO
+        parameter (ORD_WINFREEERRORINFO = 245)
+        integer  ORD_WININITIALIZE
+        parameter (ORD_WININITIALIZE = 246)
+        integer  ORD_WINTERMINATE
+        parameter (ORD_WINTERMINATE = 247)
+        integer  ORD_WINCATCH
+        parameter (ORD_WINCATCH = 248)
+        integer  ORD_WINTHROW
+        parameter (ORD_WINTHROW = 249)
+        integer  ORD_WINQUERYVERSION
+        parameter (ORD_WINQUERYVERSION = 250)
+        integer  ORD_WINISPHYSINPUTENABLED
+        parameter (ORD_WINISPHYSINPUTENABLED = 264)
+        integer  ORD_WINQUERYWINDOWDC
+        parameter (ORD_WINQUERYWINDOWDC = 265)
+        integer  ORD_WINDRAWBORDER
+        parameter (ORD_WINDRAWBORDER = 266)
+        integer  ORD_WINDRAWTEXT
+        parameter (ORD_WINDRAWTEXT = 267)
+        integer  ORD_WINDRAWBITMAP
+        parameter (ORD_WINDRAWBITMAP = 268)
+        integer  ORD_WINQUERYWINDOWPTR
+        parameter (ORD_WINQUERYWINDOWPTR = 269)
+        integer  ORD_WINSETWINDOWPTR
+        parameter (ORD_WINSETWINDOWPTR = 270)
+        integer  ORD_WINMSGSEMWAIT
+        parameter (ORD_WINMSGSEMWAIT = 274)
+        integer  ORD_WINMSGMUXSEMWAIT
+        parameter (ORD_WINMSGMUXSEMWAIT = 275)
+        integer  ORD_WINCANCELSHUTDOWN
+        parameter (ORD_WINCANCELSHUTDOWN = 277)
+        integer  ORD_WINSETWINDOWBITS
+        parameter (ORD_WINSETWINDOWBITS = 278)
+        integer  ORD_WINGETCLIPPS
+        parameter (ORD_WINGETCLIPPS = 279)
+        integer  ORD_WINSAVEWINDOWPOS
+        parameter (ORD_WINSAVEWINDOWPOS = 285)
+        integer  ORD_WINFOCUSCHANGE
+        parameter (ORD_WINFOCUSCHANGE = 286)
+        integer  ORD_WINQUERYQUEUEINFO
+        parameter (ORD_WINQUERYQUEUEINFO = 287)
+        integer  ORD_WINSETCLASSMSGINTEREST
+        parameter (ORD_WINSETCLASSMSGINTEREST = 292)
+        integer  ORD_WINQUERYDLGITEMTEXTLENGTH
+        parameter (ORD_WINQUERYDLGITEMTEXTLENGTH = 294)
+        integer  ORD_WINDDEINITIATE
+        parameter (ORD_WINDDEINITIATE = 297)
+        integer  ORD_WINDDERESPOND
+        parameter (ORD_WINDDERESPOND = 298)
+        integer  ORD_WINDDEPOSTMSG
+        parameter (ORD_WINDDEPOSTMSG = 299)
+        integer  ORD_WINSETPRESPARAM
+        parameter (ORD_WINSETPRESPARAM = 301)
+        integer  ORD_WINQUERYPRESPARAM
+        parameter (ORD_WINQUERYPRESPARAM = 302)
+        integer  ORD_WINREMOVEPRESPARAM
+        parameter (ORD_WINREMOVEPRESPARAM = 303)
+        integer  ORD_DUMWINCREATEHELPINSTANCE
+        parameter (ORD_DUMWINCREATEHELPINSTANCE = 311)
+        integer  ORD_DUMWINDESTROYHELPINSTANCE
+        parameter (ORD_DUMWINDESTROYHELPINSTANCE = 312)
+        integer  ORD_DUMWINASSOCIATEHELPINSTANCE
+        parameter (ORD_DUMWINASSOCIATEHELPINSTANCE = 313)
+        integer  ORD_DUMWINCREATEHELPTABLE
+        parameter (ORD_DUMWINCREATEHELPTABLE = 314)
+        integer  ORD_DUMWINLOADHELPTABLE
+        parameter (ORD_DUMWINLOADHELPTABLE = 315)
+        integer  ORD_DUMWINQUERYHELPINSTANCE
+        parameter (ORD_DUMWINQUERYHELPINSTANCE = 316)
+        integer  ORD_WINSETCLASSTHUNKPROC
+        parameter (ORD_WINSETCLASSTHUNKPROC = 959)
+        integer  ORD_WINQUERYCLASSTHUNKPROC
+        parameter (ORD_WINQUERYCLASSTHUNKPROC = 960)
+        integer  ORD_WINSETWINDOWTHUNKPROC
+        parameter (ORD_WINSETWINDOWTHUNKPROC = 961)
+        integer  ORD_WINQUERYWINDOWTHUNKPROC
+        parameter (ORD_WINQUERYWINDOWTHUNKPROC = 962)
+        integer  ORD_WINQUERYWINDOWMODEL
+        parameter (ORD_WINQUERYWINDOWMODEL = 317)
+        integer  ORD_WINSETDESKTOPBKGND
+        parameter (ORD_WINSETDESKTOPBKGND = 318)
+        integer  ORD_WINQUERYDESKTOPBKGND
+        parameter (ORD_WINQUERYDESKTOPBKGND = 319)
+        integer  ORD_WINPOPUPMENU
+        parameter (ORD_WINPOPUPMENU = 320)
+        integer  ORD_WINREALIZEPALETTE
+        parameter (ORD_WINREALIZEPALETTE = 321)
+        integer  ORD_WINDELETELIBRARY
+        parameter (ORD_WINDELETELIBRARY = 602)
+        integer  ORD_WINLOADPROCEDURE
+        parameter (ORD_WINLOADPROCEDURE = 603)
+        integer  ORD_WINDELETEPROCEDURE
+        parameter (ORD_WINDELETEPROCEDURE = 604)
+        integer  ORD_WINSETMSGMODE
+        parameter (ORD_WINSETMSGMODE = 605)
+        integer  ORD_WINSETSYNCHROMODE
+        parameter (ORD_WINSETSYNCHROMODE = 606)
+        integer  ORD_WINGETDLGMSG
+        parameter (ORD_WINGETDLGMSG = 607)
+        integer  ORD_WINREGISTERUSERMSG
+        parameter (ORD_WINREGISTERUSERMSG = 608)
+        integer  ORD_WINQUERYANCHORBLOCK
+        parameter (ORD_WINQUERYANCHORBLOCK = 609)
+        integer  ORD_WINREGISTERUSERDATATYPE
+        parameter (ORD_WINREGISTERUSERDATATYPE = 612)
+        integer  ORD_WINISWINDOWSHOWING
+        parameter (ORD_WINISWINDOWSHOWING = 614)
+        integer  ORD_WINLOADLIBRARY
+        parameter (ORD_WINLOADLIBRARY = 615)
+        integer  ORD_WINCREATEPOINTERINDIRECT
+        parameter (ORD_WINCREATEPOINTERINDIRECT = 616)
+        integer  ORD_WINQUERYPOINTERINFO
+        parameter (ORD_WINQUERYPOINTERINFO = 617)
+        integer  ORD_WINGETERASEPS
+        parameter (ORD_WINGETERASEPS = 624)
+        integer  ORD_WINRELEASEERASEPS
+        parameter (ORD_WINRELEASEERASEPS = 625)
+        integer  ORD_WINSTRETCHPOINTER
+        parameter (ORD_WINSTRETCHPOINTER = 632)
+        integer  ORD_WIN32ADDATOM
+        parameter (ORD_WIN32ADDATOM = 700)
+        integer  ORD_WIN32ALARM
+        parameter (ORD_WIN32ALARM = 701)
+        integer  ORD_WIN32BEGINENUMWINDOWS
+        parameter (ORD_WIN32BEGINENUMWINDOWS = 702)
+        integer  ORD_WIN32BEGINPAINT
+        parameter (ORD_WIN32BEGINPAINT = 703)
+        integer  ORD_WIN32CALCFRAMERECT
+        parameter (ORD_WIN32CALCFRAMERECT = 704)
+        integer  ORD_WIN32CANCELSHUTDOWN
+        parameter (ORD_WIN32CANCELSHUTDOWN = 705)
+        integer  ORD_WIN32CLOSECLIPBRD
+        parameter (ORD_WIN32CLOSECLIPBRD = 707)
+        integer  ORD_WIN32COMPARESTRINGS
+        parameter (ORD_WIN32COMPARESTRINGS = 708)
+        integer  ORD_WIN32COPYACCELTABLE
+        parameter (ORD_WIN32COPYACCELTABLE = 709)
+        integer  ORD_WIN32COPYRECT
+        parameter (ORD_WIN32COPYRECT = 710)
+        integer  ORD_WIN32CPTRANSLATECHAR
+        parameter (ORD_WIN32CPTRANSLATECHAR = 711)
+        integer  ORD_WIN32CPTRANSLATESTRING
+        parameter (ORD_WIN32CPTRANSLATESTRING = 712)
+        integer  ORD_WIN32CREATEACCELTABLE
+        parameter (ORD_WIN32CREATEACCELTABLE = 713)
+        integer  ORD_WIN32CREATEATOMTABLE
+        parameter (ORD_WIN32CREATEATOMTABLE = 714)
+        integer  ORD_WIN32CREATECURSOR
+        parameter (ORD_WIN32CREATECURSOR = 715)
+        integer  ORD_WIN32CREATEMSGQUEUE
+        parameter (ORD_WIN32CREATEMSGQUEUE = 716)
+        integer  ORD_WIN32CREATEPOINTER
+        parameter (ORD_WIN32CREATEPOINTER = 717)
+        integer  ORD_WIN32DDEINITIATE
+        parameter (ORD_WIN32DDEINITIATE = 718)
+        integer  ORD_WIN32DDEPOSTMSG
+        parameter (ORD_WIN32DDEPOSTMSG = 719)
+        integer  ORD_WIN32DDERESPOND
+        parameter (ORD_WIN32DDERESPOND = 720)
+        integer  ORD_WIN32DELETEATOM
+        parameter (ORD_WIN32DELETEATOM = 721)
+        integer  ORD_WIN32DELETELIBRARY
+        parameter (ORD_WIN32DELETELIBRARY = 722)
+        integer  ORD_WIN32DESTROYACCELTABLE
+        parameter (ORD_WIN32DESTROYACCELTABLE = 723)
+        integer  ORD_WIN32DESTROYATOMTABLE
+        parameter (ORD_WIN32DESTROYATOMTABLE = 724)
+        integer  ORD_WIN32DESTROYCURSOR
+        parameter (ORD_WIN32DESTROYCURSOR = 725)
+        integer  ORD_WIN32DESTROYMSGQUEUE
+        parameter (ORD_WIN32DESTROYMSGQUEUE = 726)
+        integer  ORD_WIN32DESTROYPOINTER
+        parameter (ORD_WIN32DESTROYPOINTER = 727)
+        integer  ORD_WIN32DESTROYWINDOW
+        parameter (ORD_WIN32DESTROYWINDOW = 728)
+        integer  ORD_WIN32DISMISSDLG
+        parameter (ORD_WIN32DISMISSDLG = 729)
+        integer  ORD_WIN32DRAWBITMAP
+        parameter (ORD_WIN32DRAWBITMAP = 730)
+        integer  ORD_WIN32DRAWBORDER
+        parameter (ORD_WIN32DRAWBORDER = 731)
+        integer  ORD_WIN32DRAWPOINTER
+        parameter (ORD_WIN32DRAWPOINTER = 732)
+        integer  ORD_WIN32EMPTYCLIPBRD
+        parameter (ORD_WIN32EMPTYCLIPBRD = 733)
+        integer  ORD_WIN32ENABLEPHYSINPUT
+        parameter (ORD_WIN32ENABLEPHYSINPUT = 734)
+        integer  ORD_WIN32ENABLEWINDOW
+        parameter (ORD_WIN32ENABLEWINDOW = 735)
+        integer  ORD_WIN32ENABLEWINDOWUPDATE
+        parameter (ORD_WIN32ENABLEWINDOWUPDATE = 736)
+        integer  ORD_WIN32ENDENUMWINDOWS
+        parameter (ORD_WIN32ENDENUMWINDOWS = 737)
+        integer  ORD_WIN32ENDPAINT
+        parameter (ORD_WIN32ENDPAINT = 738)
+        integer  ORD_WIN32ENUMCLIPBRDFMTS
+        parameter (ORD_WIN32ENUMCLIPBRDFMTS = 739)
+        integer  ORD_WIN32ENUMDLGITEM
+        parameter (ORD_WIN32ENUMDLGITEM = 740)
+        integer  ORD_WIN32EQUALRECT
+        parameter (ORD_WIN32EQUALRECT = 741)
+        integer  ORD_WIN32EXCLUDEUPDATEREGION
+        parameter (ORD_WIN32EXCLUDEUPDATEREGION = 742)
+        integer  ORD_WIN32FILLRECT
+        parameter (ORD_WIN32FILLRECT = 743)
+        integer  ORD_WIN32FINDATOM
+        parameter (ORD_WIN32FINDATOM = 744)
+        integer  ORD_WIN32FLASHWINDOW
+        parameter (ORD_WIN32FLASHWINDOW = 745)
+        integer  ORD_WIN32FOCUSCHANGE
+        parameter (ORD_WIN32FOCUSCHANGE = 746)
+        integer  ORD_WIN32FREEERRORINFO
+        parameter (ORD_WIN32FREEERRORINFO = 748)
+        integer  ORD_WIN32GETCLIPPS
+        parameter (ORD_WIN32GETCLIPPS = 749)
+        integer  ORD_WIN32GETCURRENTTIME
+        parameter (ORD_WIN32GETCURRENTTIME = 750)
+        integer  ORD_WIN32GETERRORINFO
+        parameter (ORD_WIN32GETERRORINFO = 751)
+        integer  ORD_WIN32GETKEYSTATE
+        parameter (ORD_WIN32GETKEYSTATE = 752)
+        integer  ORD_WIN32GETLASTERROR
+        parameter (ORD_WIN32GETLASTERROR = 753)
+        integer  ORD_WIN32GETMAXPOSITION
+        parameter (ORD_WIN32GETMAXPOSITION = 754)
+        integer  ORD_WIN32GETMINPOSITION
+        parameter (ORD_WIN32GETMINPOSITION = 755)
+        integer  ORD_WIN32GETNEXTWINDOW
+        parameter (ORD_WIN32GETNEXTWINDOW = 756)
+        integer  ORD_WIN32GETPS
+        parameter (ORD_WIN32GETPS = 757)
+        integer  ORD_WIN32GETPHYSKEYSTATE
+        parameter (ORD_WIN32GETPHYSKEYSTATE = 758)
+        integer  ORD_WIN32GETSCREENPS
+        parameter (ORD_WIN32GETSCREENPS = 759)
+        integer  ORD_WIN32GETSYSBITMAP
+        parameter (ORD_WIN32GETSYSBITMAP = 760)
+        integer  ORD_WIN32INSENDMSG
+        parameter (ORD_WIN32INSENDMSG = 761)
+        integer  ORD_WIN32INFLATERECT
+        parameter (ORD_WIN32INFLATERECT = 762)
+        integer  ORD_WIN32INITIALIZE
+        parameter (ORD_WIN32INITIALIZE = 763)
+        integer  ORD_WIN32INTERSECTRECT
+        parameter (ORD_WIN32INTERSECTRECT = 764)
+        integer  ORD_WIN32INVALIDATERECT
+        parameter (ORD_WIN32INVALIDATERECT = 765)
+        integer  ORD_WIN32INVALIDATEREGION
+        parameter (ORD_WIN32INVALIDATEREGION = 766)
+        integer  ORD_WIN32INVERTRECT
+        parameter (ORD_WIN32INVERTRECT = 767)
+        integer  ORD_WIN32ISCHILD
+        parameter (ORD_WIN32ISCHILD = 768)
+        integer  ORD_WIN32ISPHYSINPUTENABLED
+        parameter (ORD_WIN32ISPHYSINPUTENABLED = 769)
+        integer  ORD_WIN32ISRECTEMPTY
+        parameter (ORD_WIN32ISRECTEMPTY = 770)
+        integer  ORD_WIN32ISTHREADACTIVE
+        parameter (ORD_WIN32ISTHREADACTIVE = 771)
+        integer  ORD_WIN32ISWINDOW
+        parameter (ORD_WIN32ISWINDOW = 772)
+        integer  ORD_WIN32ISWINDOWENABLED
+        parameter (ORD_WIN32ISWINDOWENABLED = 773)
+        integer  ORD_WIN32ISWINDOWSHOWING
+        parameter (ORD_WIN32ISWINDOWSHOWING = 774)
+        integer  ORD_WIN32ISWINDOWVISIBLE
+        parameter (ORD_WIN32ISWINDOWVISIBLE = 775)
+        integer  ORD_WIN32LOADACCELTABLE
+        parameter (ORD_WIN32LOADACCELTABLE = 776)
+        integer  ORD_WIN32LOADLIBRARY
+        parameter (ORD_WIN32LOADLIBRARY = 777)
+        integer  ORD_WIN32LOADMENU
+        parameter (ORD_WIN32LOADMENU = 778)
+        integer  ORD_WIN32LOADMESSAGE
+        parameter (ORD_WIN32LOADMESSAGE = 779)
+        integer  ORD_WIN32LOADPOINTER
+        parameter (ORD_WIN32LOADPOINTER = 780)
+        integer  ORD_WIN32LOADSTRING
+        parameter (ORD_WIN32LOADSTRING = 781)
+        integer  ORD_WIN32LOCKVISREGIONS
+        parameter (ORD_WIN32LOCKVISREGIONS = 782)
+        integer  ORD_WIN32LOCKWINDOWUPDATE
+        parameter (ORD_WIN32LOCKWINDOWUPDATE = 784)
+        integer  ORD_WIN32MAKEPOINTS
+        parameter (ORD_WIN32MAKEPOINTS = 785)
+        integer  ORD_WIN32MAKERECT
+        parameter (ORD_WIN32MAKERECT = 786)
+        integer  ORD_WIN32MAPDLGPOINTS
+        parameter (ORD_WIN32MAPDLGPOINTS = 787)
+        integer  ORD_WIN32MAPWINDOWPOINTS
+        parameter (ORD_WIN32MAPWINDOWPOINTS = 788)
+        integer  ORD_WIN32MESSAGEBOX
+        parameter (ORD_WIN32MESSAGEBOX = 789)
+        integer  ORD_WIN32MSGSEMWAIT
+        parameter (ORD_WIN32MSGSEMWAIT = 790)
+        integer  ORD_WIN32NEXTCHAR
+        parameter (ORD_WIN32NEXTCHAR = 791)
+        integer  ORD_WIN32OFFSETRECT
+        parameter (ORD_WIN32OFFSETRECT = 792)
+        integer  ORD_WIN32OPENCLIPBRD
+        parameter (ORD_WIN32OPENCLIPBRD = 793)
+        integer  ORD_WIN32OPENWINDOWDC
+        parameter (ORD_WIN32OPENWINDOWDC = 794)
+        integer  ORD_WIN32PREVCHAR
+        parameter (ORD_WIN32PREVCHAR = 795)
+        integer  ORD_WIN32PROCESSDLG
+        parameter (ORD_WIN32PROCESSDLG = 796)
+        integer  ORD_WIN32PTINRECT
+        parameter (ORD_WIN32PTINRECT = 797)
+        integer  ORD_WIN32QUERYACCELTABLE
+        parameter (ORD_WIN32QUERYACCELTABLE = 798)
+        integer  ORD_WIN32QUERYACTIVEWINDOW
+        parameter (ORD_WIN32QUERYACTIVEWINDOW = 799)
+        integer  ORD_WIN32QUERYANCHORBLOCK
+        parameter (ORD_WIN32QUERYANCHORBLOCK = 800)
+        integer  ORD_WIN32QUERYATOMLENGTH
+        parameter (ORD_WIN32QUERYATOMLENGTH = 801)
+        integer  ORD_WIN32QUERYATOMNAME
+        parameter (ORD_WIN32QUERYATOMNAME = 802)
+        integer  ORD_WIN32QUERYATOMUSAGE
+        parameter (ORD_WIN32QUERYATOMUSAGE = 803)
+        integer  ORD_WIN32QUERYCAPTURE
+        parameter (ORD_WIN32QUERYCAPTURE = 804)
+        integer  ORD_WIN32QUERYCLASSNAME
+        parameter (ORD_WIN32QUERYCLASSNAME = 805)
+        integer  ORD_WIN32QUERYCLIPBRDDATA
+        parameter (ORD_WIN32QUERYCLIPBRDDATA = 806)
+        integer  ORD_WIN32QUERYCLIPBRDFMTINFO
+        parameter (ORD_WIN32QUERYCLIPBRDFMTINFO = 807)
+        integer  ORD_WIN32QUERYCLIPBRDOWNER
+        parameter (ORD_WIN32QUERYCLIPBRDOWNER = 808)
+        integer  ORD_WIN32QUERYCLIPBRDVIEWER
+        parameter (ORD_WIN32QUERYCLIPBRDVIEWER = 809)
+        integer  ORD_WIN32QUERYCP
+        parameter (ORD_WIN32QUERYCP = 810)
+        integer  ORD_WIN32QUERYCPLIST
+        parameter (ORD_WIN32QUERYCPLIST = 811)
+        integer  ORD_WIN32QUERYCURSORINFO
+        parameter (ORD_WIN32QUERYCURSORINFO = 812)
+        integer  ORD_WIN32QUERYDESKTOPWINDOW
+        parameter (ORD_WIN32QUERYDESKTOPWINDOW = 813)
+        integer  ORD_WIN32QUERYDLGITEMSHORT
+        parameter (ORD_WIN32QUERYDLGITEMSHORT = 814)
+        integer  ORD_WIN32QUERYDLGITEMTEXT
+        parameter (ORD_WIN32QUERYDLGITEMTEXT = 815)
+        integer  ORD_WIN32QUERYDLGITEMTEXTLENGTH
+        parameter (ORD_WIN32QUERYDLGITEMTEXTLENGTH = 816)
+        integer  ORD_WIN32QUERYFOCUS
+        parameter (ORD_WIN32QUERYFOCUS = 817)
+        integer  ORD_WIN32QUERYMSGPOS
+        parameter (ORD_WIN32QUERYMSGPOS = 818)
+        integer  ORD_WIN32QUERYMSGTIME
+        parameter (ORD_WIN32QUERYMSGTIME = 819)
+        integer  ORD_WIN32QUERYOBJECTWINDOW
+        parameter (ORD_WIN32QUERYOBJECTWINDOW = 820)
+        integer  ORD_WIN32QUERYPOINTER
+        parameter (ORD_WIN32QUERYPOINTER = 821)
+        integer  ORD_WIN32QUERYPOINTERINFO
+        parameter (ORD_WIN32QUERYPOINTERINFO = 822)
+        integer  ORD_WIN32QUERYPOINTERPOS
+        parameter (ORD_WIN32QUERYPOINTERPOS = 823)
+        integer  ORD_WIN32QUERYQUEUEINFO
+        parameter (ORD_WIN32QUERYQUEUEINFO = 824)
+        integer  ORD_WIN32QUERYQUEUESTATUS
+        parameter (ORD_WIN32QUERYQUEUESTATUS = 825)
+        integer  ORD_WIN32QUERYSYSCOLOR
+        parameter (ORD_WIN32QUERYSYSCOLOR = 826)
+        integer  ORD_WIN32QUERYSYSMODALWINDOW
+        parameter (ORD_WIN32QUERYSYSMODALWINDOW = 827)
+        integer  ORD_WIN32QUERYSYSPOINTER
+        parameter (ORD_WIN32QUERYSYSPOINTER = 828)
+        integer  ORD_WIN32QUERYSYSVALUE
+        parameter (ORD_WIN32QUERYSYSVALUE = 829)
+        integer  ORD_WIN32QUERYSYSTEMATOMTABLE
+        parameter (ORD_WIN32QUERYSYSTEMATOMTABLE = 830)
+        integer  ORD_WIN32QUERYUPDATERECT
+        parameter (ORD_WIN32QUERYUPDATERECT = 831)
+        integer  ORD_WIN32QUERYUPDATEREGION
+        parameter (ORD_WIN32QUERYUPDATEREGION = 832)
+        integer  ORD_WIN32QUERYVERSION
+        parameter (ORD_WIN32QUERYVERSION = 833)
+        integer  ORD_WIN32QUERYWINDOW
+        parameter (ORD_WIN32QUERYWINDOW = 834)
+        integer  ORD_WIN32QUERYWINDOWDC
+        parameter (ORD_WIN32QUERYWINDOWDC = 835)
+        integer  ORD_WIN32QUERYWINDOWPOS
+        parameter (ORD_WIN32QUERYWINDOWPOS = 837)
+        integer  ORD_WIN32QUERYWINDOWPROCESS
+        parameter (ORD_WIN32QUERYWINDOWPROCESS = 838)
+        integer  ORD_WIN32QUERYWINDOWPTR
+        parameter (ORD_WIN32QUERYWINDOWPTR = 839)
+        integer  ORD_WIN32QUERYWINDOWRECT
+        parameter (ORD_WIN32QUERYWINDOWRECT = 840)
+        integer  ORD_WIN32QUERYWINDOWTEXT
+        parameter (ORD_WIN32QUERYWINDOWTEXT = 841)
+        integer  ORD_WIN32QUERYWINDOWTEXTLENGTH
+        parameter (ORD_WIN32QUERYWINDOWTEXTLENGTH = 842)
+        integer  ORD_WIN32QUERYWINDOWULONG
+        parameter (ORD_WIN32QUERYWINDOWULONG = 843)
+        integer  ORD_WIN32QUERYWINDOWUSHORT
+        parameter (ORD_WIN32QUERYWINDOWUSHORT = 844)
+        integer  ORD_WIN32REGISTERUSERDATATYPE
+        parameter (ORD_WIN32REGISTERUSERDATATYPE = 845)
+        integer  ORD_WIN32REGISTERUSERMSG
+        parameter (ORD_WIN32REGISTERUSERMSG = 846)
+        integer  ORD_WIN32RELEASEPS
+        parameter (ORD_WIN32RELEASEPS = 848)
+        integer  ORD_WIN32SCROLLWINDOW
+        parameter (ORD_WIN32SCROLLWINDOW = 849)
+        integer  ORD_WIN32SETACCELTABLE
+        parameter (ORD_WIN32SETACCELTABLE = 850)
+        integer  ORD_WIN32SETACTIVEWINDOW
+        parameter (ORD_WIN32SETACTIVEWINDOW = 851)
+        integer  ORD_WIN32SETCAPTURE
+        parameter (ORD_WIN32SETCAPTURE = 852)
+        integer  ORD_WIN32SETCLASSMSGINTEREST
+        parameter (ORD_WIN32SETCLASSMSGINTEREST = 853)
+        integer  ORD_WIN32SETCLIPBRDDATA
+        parameter (ORD_WIN32SETCLIPBRDDATA = 854)
+        integer  ORD_WIN32SETCLIPBRDOWNER
+        parameter (ORD_WIN32SETCLIPBRDOWNER = 855)
+        integer  ORD_WIN32SETCLIPBRDVIEWER
+        parameter (ORD_WIN32SETCLIPBRDVIEWER = 856)
+        integer  ORD_WIN32SETCP
+        parameter (ORD_WIN32SETCP = 857)
+        integer  ORD_WIN32SETDLGITEMSHORT
+        parameter (ORD_WIN32SETDLGITEMSHORT = 858)
+        integer  ORD_WIN32SETDLGITEMTEXT
+        parameter (ORD_WIN32SETDLGITEMTEXT = 859)
+        integer  ORD_WIN32SETFOCUS
+        parameter (ORD_WIN32SETFOCUS = 860)
+        integer  ORD_WIN32SETMSGINTEREST
+        parameter (ORD_WIN32SETMSGINTEREST = 861)
+        integer  ORD_WIN32SETMSGMODE
+        parameter (ORD_WIN32SETMSGMODE = 862)
+        integer  ORD_WIN32SETMULTWINDOWPOS
+        parameter (ORD_WIN32SETMULTWINDOWPOS = 863)
+        integer  ORD_WIN32SETOWNER
+        parameter (ORD_WIN32SETOWNER = 864)
+        integer  ORD_WIN32SETPARENT
+        parameter (ORD_WIN32SETPARENT = 865)
+        integer  ORD_WIN32SETPOINTER
+        parameter (ORD_WIN32SETPOINTER = 866)
+        integer  ORD_WIN32SETPOINTERPOS
+        parameter (ORD_WIN32SETPOINTERPOS = 867)
+        integer  ORD_WIN32SETRECT
+        parameter (ORD_WIN32SETRECT = 868)
+        integer  ORD_WIN32SETRECTEMPTY
+        parameter (ORD_WIN32SETRECTEMPTY = 869)
+        integer  ORD_WIN32SETSYNCHROMODE
+        parameter (ORD_WIN32SETSYNCHROMODE = 870)
+        integer  ORD_WIN32SETSYSCOLORS
+        parameter (ORD_WIN32SETSYSCOLORS = 871)
+        integer  ORD_WIN32SETSYSMODALWINDOW
+        parameter (ORD_WIN32SETSYSMODALWINDOW = 872)
+        integer  ORD_WIN32SETSYSVALUE
+        parameter (ORD_WIN32SETSYSVALUE = 873)
+        integer  ORD_WIN32SETWINDOWBITS
+        parameter (ORD_WIN32SETWINDOWBITS = 874)
+        integer  ORD_WIN32SETWINDOWPOS
+        parameter (ORD_WIN32SETWINDOWPOS = 875)
+        integer  ORD_WIN32SETWINDOWPTR
+        parameter (ORD_WIN32SETWINDOWPTR = 876)
+        integer  ORD_WIN32SETWINDOWTEXT
+        parameter (ORD_WIN32SETWINDOWTEXT = 877)
+        integer  ORD_WIN32SETWINDOWULONG
+        parameter (ORD_WIN32SETWINDOWULONG = 878)
+        integer  ORD_WIN32SETWINDOWUSHORT
+        parameter (ORD_WIN32SETWINDOWUSHORT = 879)
+        integer  ORD_WIN32SHOWCURSOR
+        parameter (ORD_WIN32SHOWCURSOR = 880)
+        integer  ORD_WIN32SHOWPOINTER
+        parameter (ORD_WIN32SHOWPOINTER = 881)
+        integer  ORD_WIN32SHOWTRACKRECT
+        parameter (ORD_WIN32SHOWTRACKRECT = 882)
+        integer  ORD_WIN32SHOWWINDOW
+        parameter (ORD_WIN32SHOWWINDOW = 883)
+        integer  ORD_WIN32STARTTIMER
+        parameter (ORD_WIN32STARTTIMER = 884)
+        integer  ORD_WIN32STOPTIMER
+        parameter (ORD_WIN32STOPTIMER = 885)
+        integer  ORD_WIN32SUBSTITUTESTRINGS
+        parameter (ORD_WIN32SUBSTITUTESTRINGS = 886)
+        integer  ORD_WIN32SUBTRACTRECT
+        parameter (ORD_WIN32SUBTRACTRECT = 887)
+        integer  ORD_WIN32TERMINATE
+        parameter (ORD_WIN32TERMINATE = 888)
+        integer  ORD_WIN32TRACKRECT
+        parameter (ORD_WIN32TRACKRECT = 890)
+        integer  ORD_WIN32UNIONRECT
+        parameter (ORD_WIN32UNIONRECT = 891)
+        integer  ORD_WIN32UPDATEWINDOW
+        parameter (ORD_WIN32UPDATEWINDOW = 892)
+        integer  ORD_WIN32UPPER
+        parameter (ORD_WIN32UPPER = 893)
+        integer  ORD_WIN32UPPERCHAR
+        parameter (ORD_WIN32UPPERCHAR = 894)
+        integer  ORD_WIN32VALIDATERECT
+        parameter (ORD_WIN32VALIDATERECT = 895)
+        integer  ORD_WIN32VALIDATEREGION
+        parameter (ORD_WIN32VALIDATEREGION = 896)
+        integer  ORD_WIN32WAITMSG
+        parameter (ORD_WIN32WAITMSG = 897)
+        integer  ORD_WIN32WINDOWFROMDC
+        parameter (ORD_WIN32WINDOWFROMDC = 898)
+        integer  ORD_WIN32WINDOWFROMID
+        parameter (ORD_WIN32WINDOWFROMID = 899)
+        integer  ORD_WIN32WINDOWFROMPOINT
+        parameter (ORD_WIN32WINDOWFROMPOINT = 900)
+        integer  ORD_WIN32BROADCASTMSG
+        parameter (ORD_WIN32BROADCASTMSG = 901)
+        integer  ORD_WIN32POSTQUEUEMSG
+        parameter (ORD_WIN32POSTQUEUEMSG = 902)
+        integer  ORD_WIN32SENDDLGITEMMSG
+        parameter (ORD_WIN32SENDDLGITEMMSG = 903)
+        integer  ORD_WIN32TRANSLATEACCEL
+        parameter (ORD_WIN32TRANSLATEACCEL = 904)
+        integer  ORD_WIN32CALLMSGFILTER
+        parameter (ORD_WIN32CALLMSGFILTER = 905)
+        integer  ORD_WIN32CREATEFRAMECONTROLS
+        parameter (ORD_WIN32CREATEFRAMECONTROLS = 906)
+        integer  ORD_WIN32CREATEMENU
+        parameter (ORD_WIN32CREATEMENU = 907)
+        integer  ORD_WIN32CREATESTDWINDOW
+        parameter (ORD_WIN32CREATESTDWINDOW = 908)
+        integer  ORD_WIN32CREATEWINDOW
+        parameter (ORD_WIN32CREATEWINDOW = 909)
+        integer  ORD_WIN32DEFDLGPROC
+        parameter (ORD_WIN32DEFDLGPROC = 910)
+        integer  ORD_WIN32DEFWINDOWPROC
+        parameter (ORD_WIN32DEFWINDOWPROC = 911)
+        integer  ORD_WIN32DISPATCHMSG
+        parameter (ORD_WIN32DISPATCHMSG = 912)
+        integer  ORD_WIN32DRAWTEXT
+        parameter (ORD_WIN32DRAWTEXT = 913)
+        integer  ORD_WIN32GETDLGMSG
+        parameter (ORD_WIN32GETDLGMSG = 914)
+        integer  ORD_WIN32GETMSG
+        parameter (ORD_WIN32GETMSG = 915)
+        integer  ORD_WIN32MSGMUXSEMWAIT
+        parameter (ORD_WIN32MSGMUXSEMWAIT = 916)
+        integer  ORD_WIN32MULTWINDOWFROMIDS
+        parameter (ORD_WIN32MULTWINDOWFROMIDS = 917)
+        integer  ORD_WIN32PEEKMSG
+        parameter (ORD_WIN32PEEKMSG = 918)
+        integer  ORD_WIN32POSTMSG
+        parameter (ORD_WIN32POSTMSG = 919)
+        integer  ORD_WIN32SENDMSG
+        parameter (ORD_WIN32SENDMSG = 920)
+        integer  ORD_WIN32SETKEYBOARDSTATETABLE
+        parameter (ORD_WIN32SETKEYBOARDSTATETABLE = 921)
+        integer  ORD_WIN32CREATEDLG
+        parameter (ORD_WIN32CREATEDLG = 922)
+        integer  ORD_WIN32DLGBOX
+        parameter (ORD_WIN32DLGBOX = 923)
+        integer  ORD_WIN32LOADDLG
+        parameter (ORD_WIN32LOADDLG = 924)
+        integer  ORD_WIN32QUERYCLASSINFO
+        parameter (ORD_WIN32QUERYCLASSINFO = 925)
+        integer  ORD_WIN32REGISTERCLASS
+        parameter (ORD_WIN32REGISTERCLASS = 926)
+        integer  ORD_WIN32RELEASEHOOK
+        parameter (ORD_WIN32RELEASEHOOK = 927)
+        integer  ORD_WIN32SETHOOK
+        parameter (ORD_WIN32SETHOOK = 928)
+        integer  ORD_WIN32SUBCLASSWINDOW
+        parameter (ORD_WIN32SUBCLASSWINDOW = 929)
+        integer  ORD_WIN32SETCLASSTHUNKPROC
+        parameter (ORD_WIN32SETCLASSTHUNKPROC = 930)
+        integer  ORD_WIN32QUERYCLASSTHUNKPROC
+        parameter (ORD_WIN32QUERYCLASSTHUNKPROC = 931)
+        integer  ORD_WIN32SETWINDOWTHUNKPROC
+        parameter (ORD_WIN32SETWINDOWTHUNKPROC = 932)
+        integer  ORD_WIN32QUERYWINDOWTHUNKPROC
+        parameter (ORD_WIN32QUERYWINDOWTHUNKPROC = 933)
+        integer  ORD_WIN32QUERYWINDOWMODEL
+        parameter (ORD_WIN32QUERYWINDOWMODEL = 934)
+        integer  ORD_WIN32SETDESKTOPBKGND
+        parameter (ORD_WIN32SETDESKTOPBKGND = 935)
+        integer  ORD_WIN32QUERYDESKTOPBKGND
+        parameter (ORD_WIN32QUERYDESKTOPBKGND = 936)
+        integer  ORD_WIN32POPUPMENU
+        parameter (ORD_WIN32POPUPMENU = 937)
+        integer  ORD_WIN32SETPRESPARAM
+        parameter (ORD_WIN32SETPRESPARAM = 938)
+        integer  ORD_WIN32QUERYPRESPARAM
+        parameter (ORD_WIN32QUERYPRESPARAM = 939)
+        integer  ORD_WIN32REMOVEPRESPARAM
+        parameter (ORD_WIN32REMOVEPRESPARAM = 940)
+        integer  ORD_WIN32REALIZEPALETTE
+        parameter (ORD_WIN32REALIZEPALETTE = 941)
+        integer  ORD_WIN32CREATEPOINTERINDIRECT
+        parameter (ORD_WIN32CREATEPOINTERINDIRECT = 942)
+        integer  ORD_WIN32SAVEWINDOWPOS
+        parameter (ORD_WIN32SAVEWINDOWPOS = 943)
+        integer  ORD_WIN32GETERASEPS
+        parameter (ORD_WIN32GETERASEPS = 952)
+        integer  ORD_WIN32RELEASEERASEPS
+        parameter (ORD_WIN32RELEASEERASEPS = 953)
+        integer  ORD_WIN32STRETCHPOINTER
+        parameter (ORD_WIN32STRETCHPOINTER = 968)
+
+        integer  ORD_PICPRINT
+        parameter (ORD_PICPRINT = 1)
+        integer  ORD_PICICHG
+        parameter (ORD_PICICHG = 2)
+
+        integer  ORD_WINQUERYPROFILEINT
+        parameter (ORD_WINQUERYPROFILEINT = 2)
+        integer  ORD_WINQUERYPROFILESTRING
+        parameter (ORD_WINQUERYPROFILESTRING = 3)
+        integer  ORD_WINWRITEPROFILESTRING
+        parameter (ORD_WINWRITEPROFILESTRING = 4)
+        integer  ORD_WINQUERYPROFILESIZE
+        parameter (ORD_WINQUERYPROFILESIZE = 5)
+        integer  ORD_WINQUERYPROFILEDATA
+        parameter (ORD_WINQUERYPROFILEDATA = 6)
+        integer  ORD_WINWRITEPROFILEDATA
+        parameter (ORD_WINWRITEPROFILEDATA = 7)
+        integer  ORD_WININITSESSIONMGR
+        parameter (ORD_WININITSESSIONMGR = 8)
+        integer  ORD_WINSETFGNDWINDOW
+        parameter (ORD_WINSETFGNDWINDOW = 9)
+        integer  ORD_WINADDPROGRAM
+        parameter (ORD_WINADDPROGRAM = 12)
+        integer  ORD_WINREMOVEPROGRAM
+        parameter (ORD_WINREMOVEPROGRAM = 13)
+        integer  ORD_WINCHANGEPROGRAM
+        parameter (ORD_WINCHANGEPROGRAM = 14)
+        integer  ORD_WINQUERYDEFINITION
+        parameter (ORD_WINQUERYDEFINITION = 15)
+        integer  ORD_WINQUERYPROGRAMTITLES
+        parameter (ORD_WINQUERYPROGRAMTITLES = 16)
+        integer  ORD_WINCREATEGROUP
+        parameter (ORD_WINCREATEGROUP = 17)
+        integer  ORD_WINADDTOGROUP
+        parameter (ORD_WINADDTOGROUP = 19)
+        integer  ORD_WINQUERYPROGRAMUSE
+        parameter (ORD_WINQUERYPROGRAMUSE = 20)
+        integer  ORD_WINREMOVEFROMGROUP
+        parameter (ORD_WINREMOVEFROMGROUP = 21)
+        integer  ORD_WINDESTROYGROUP
+        parameter (ORD_WINDESTROYGROUP = 23)
+        integer  ORD_WINQUERYFILEEXTOPTS
+        parameter (ORD_WINQUERYFILEEXTOPTS = 24)
+        integer  ORD_WINSETFILEEXTOPTS
+        parameter (ORD_WINSETFILEEXTOPTS = 25)
+        integer  ORD_WINQUERYPROGRAMTYPE
+        parameter (ORD_WINQUERYPROGRAMTYPE = 26)
+        integer  ORD_PRFQUERYPROFILEINT
+        parameter (ORD_PRFQUERYPROFILEINT = 32)
+        integer  ORD_PRFQUERYPROFILESTRING
+        parameter (ORD_PRFQUERYPROFILESTRING = 33)
+        integer  ORD_PRFWRITEPROFILESTRING
+        parameter (ORD_PRFWRITEPROFILESTRING = 34)
+        integer  ORD_PRFQUERYPROFILESIZE
+        parameter (ORD_PRFQUERYPROFILESIZE = 35)
+        integer  ORD_PRFQUERYPROFILEDATA
+        parameter (ORD_PRFQUERYPROFILEDATA = 36)
+        integer  ORD_PRFWRITEPROFILEDATA
+        parameter (ORD_PRFWRITEPROFILEDATA = 37)
+        integer  ORD_PRFOPENPROFILE
+        parameter (ORD_PRFOPENPROFILE = 38)
+        integer  ORD_PRFCLOSEPROFILE
+        parameter (ORD_PRFCLOSEPROFILE = 39)
+        integer  ORD_PRFRESET
+        parameter (ORD_PRFRESET = 42)
+        integer  ORD_PRFQUERYPROFILE
+        parameter (ORD_PRFQUERYPROFILE = 43)
+        integer  ORD_WININSTSTARTAPP
+        parameter (ORD_WININSTSTARTAPP = 44)
+        integer  ORD_WINTERMINATEAPP
+        parameter (ORD_WINTERMINATEAPP = 45)
+        integer  ORD_WINCREATESWITCHENTRY
+        parameter (ORD_WINCREATESWITCHENTRY = 46)
+        integer  ORD_WINQUERYSESSIONTITLE
+        parameter (ORD_WINQUERYSESSIONTITLE = 47)
+        integer  ORD_WINADDSWITCHENTRY
+        parameter (ORD_WINADDSWITCHENTRY = 48)
+        integer  ORD_WINCHANGESWITCHENTRY
+        parameter (ORD_WINCHANGESWITCHENTRY = 49)
+        integer  ORD_PRFADDPROGRAM
+        parameter (ORD_PRFADDPROGRAM = 50)
+        integer  ORD_PRFREMOVEPROGRAM
+        parameter (ORD_PRFREMOVEPROGRAM = 51)
+        integer  ORD_PRFCHANGEPROGRAM
+        parameter (ORD_PRFCHANGEPROGRAM = 52)
+        integer  ORD_PRFQUERYDEFINITION
+        parameter (ORD_PRFQUERYDEFINITION = 53)
+        integer  ORD_PRFQUERYPROGRAMTITLES
+        parameter (ORD_PRFQUERYPROGRAMTITLES = 54)
+        integer  ORD_PRFCREATEGROUP
+        parameter (ORD_PRFCREATEGROUP = 55)
+        integer  ORD_WINQUERYSWITCHENTRY
+        parameter (ORD_WINQUERYSWITCHENTRY = 56)
+        integer  ORD_WINQUERYSWITCHHANDLE
+        parameter (ORD_WINQUERYSWITCHHANDLE = 57)
+        integer  ORD_PRFQUERYPROGRAMHANDLE
+        parameter (ORD_PRFQUERYPROGRAMHANDLE = 58)
+        integer  ORD_PRFQUERYPROGRAMCATEGORY
+        parameter (ORD_PRFQUERYPROGRAMCATEGORY = 59)
+        integer  ORD_PRFDESTROYGROUP
+        parameter (ORD_PRFDESTROYGROUP = 60)
+        integer  ORD_WINQUERYTASKTITLE
+        parameter (ORD_WINQUERYTASKTITLE = 65)
+        integer  ORD_WINQUERYTASKSIZEPOS
+        parameter (ORD_WINQUERYTASKSIZEPOS = 66)
+        integer  ORD_WINQUERYSWITCHLIST
+        parameter (ORD_WINQUERYSWITCHLIST = 67)
+        integer  ORD_WINREMOVESWITCHENTRY
+        parameter (ORD_WINREMOVESWITCHENTRY = 68)
+        integer  ORD_WINSWITCHTOPROGRAM
+        parameter (ORD_WINSWITCHTOPROGRAM = 69)
+        integer  ORD_WINSWITCHPROGRAMREGISTER
+        parameter (ORD_WINSWITCHPROGRAMREGISTER = 70)
+        integer  ORD_WINENDPROGRAM
+        parameter (ORD_WINENDPROGRAM = 73)
+        integer  ORD_WINSTOPPROGRAM
+        parameter (ORD_WINSTOPPROGRAM = 74)
+        integer  ORD_WINENDWINDOWSESSION
+        parameter (ORD_WINENDWINDOWSESSION = 75)
+        integer  ORD_WINSWITCHTOTASKMANAGER
+        parameter (ORD_WINSWITCHTOTASKMANAGER = 78)
+        integer  ORD_WINSWITCHTOPROGRAM2
+        parameter (ORD_WINSWITCHTOPROGRAM2 = 80)
+        integer  ORD_WINPROCESSHOTKEY
+        parameter (ORD_WINPROCESSHOTKEY = 81)
+        integer  ORD_WININITSESSION
+        parameter (ORD_WININITSESSION = 82)
+        integer  ORD_WINENDSESSION
+        parameter (ORD_WINENDSESSION = 83)
+        integer  ORD_WININITSWENTRY
+        parameter (ORD_WININITSWENTRY = 84)
+        integer  ORD_WINSETSWENTRY
+        parameter (ORD_WINSETSWENTRY = 85)
+        integer  ORD_WINQUERYEXTIDFOCUS
+        parameter (ORD_WINQUERYEXTIDFOCUS = 86)
+        integer  ORD_WINSETEXTIDFOCUS
+        parameter (ORD_WINSETEXTIDFOCUS = 87)
+        integer  ORD_WINNOSHUTDOWN
+        parameter (ORD_WINNOSHUTDOWN = 91)
+        integer  ORD_WINSETTITLE
+        parameter (ORD_WINSETTITLE = 93)
+        integer  ORD_WINSETTITLEANDICON
+        parameter (ORD_WINSETTITLEANDICON = 97)
+        integer  ORD_PRF32QUERYPROFILESIZE
+        parameter (ORD_PRF32QUERYPROFILESIZE = 101)
+        integer  ORD_PRF32OPENPROFILE
+        parameter (ORD_PRF32OPENPROFILE = 102)
+        integer  ORD_PRF32CLOSEPROFILE
+        parameter (ORD_PRF32CLOSEPROFILE = 103)
+        integer  ORD_PRF32QUERYPROFILE
+        parameter (ORD_PRF32QUERYPROFILE = 107)
+        integer  ORD_PRF32RESET
+        parameter (ORD_PRF32RESET = 108)
+        integer  ORD_PRF32QUERYPROFILEINT
+        parameter (ORD_PRF32QUERYPROFILEINT = 114)
+        integer  ORD_PRF32QUERYPROFILESTRING
+        parameter (ORD_PRF32QUERYPROFILESTRING = 115)
+        integer  ORD_PRF32WRITEPROFILESTRING
+        parameter (ORD_PRF32WRITEPROFILESTRING = 116)
+        integer  ORD_PRF32QUERYPROFILEDATA
+        parameter (ORD_PRF32QUERYPROFILEDATA = 117)
+        integer  ORD_PRF32WRITEPROFILEDATA
+        parameter (ORD_PRF32WRITEPROFILEDATA = 118)
+        integer  ORD_WIN32STARTAPP
+        parameter (ORD_WIN32STARTAPP = 119)
+        integer  ORD_WIN32ADDSWITCHENTRY
+        parameter (ORD_WIN32ADDSWITCHENTRY = 120)
+        integer  ORD_WIN32CREATESWITCHENTRY
+        parameter (ORD_WIN32CREATESWITCHENTRY = 121)
+        integer  ORD_WIN32QUERYSESSIONTITLE
+        parameter (ORD_WIN32QUERYSESSIONTITLE = 122)
+        integer  ORD_WIN32CHANGESWITCHENTRY
+        parameter (ORD_WIN32CHANGESWITCHENTRY = 123)
+        integer  ORD_WIN32QUERYSWITCHENTRY
+        parameter (ORD_WIN32QUERYSWITCHENTRY = 124)
+        integer  ORD_WIN32QUERYSWITCHHANDLE
+        parameter (ORD_WIN32QUERYSWITCHHANDLE = 125)
+        integer  ORD_WIN32QUERYSWITCHLIST
+        parameter (ORD_WIN32QUERYSWITCHLIST = 126)
+        integer  ORD_WIN32QUERYTASKSIZEPOS
+        parameter (ORD_WIN32QUERYTASKSIZEPOS = 127)
+        integer  ORD_WIN32QUERYTASKTITLE
+        parameter (ORD_WIN32QUERYTASKTITLE = 128)
+        integer  ORD_WIN32REMOVESWITCHENTRY
+        parameter (ORD_WIN32REMOVESWITCHENTRY = 129)
+        integer  ORD_WIN32TERMINATEAPP
+        parameter (ORD_WIN32TERMINATEAPP = 130)
+        integer  ORD_WIN32SWITCHTOPROGRAM
+        parameter (ORD_WIN32SWITCHTOPROGRAM = 131)
+        integer  ORD_WIN32SWITCHPROGRAMREGISTER
+        parameter (ORD_WIN32SWITCHPROGRAMREGISTER = 156)
+        integer  ORD_WINSTARTAPP
+        parameter (ORD_WINSTARTAPP = 201)
+        integer  ORD_WINHAPPFROMPID
+        parameter (ORD_WINHAPPFROMPID = 208)
+        integer  ORD_WINHSWITCHFROMHAPP
+        parameter (ORD_WINHSWITCHFROMHAPP = 209)
+        integer  ORD_DOSREADQUEUE
+        parameter (ORD_DOSREADQUEUE = 1)
+        integer  ORD_DOSPURGEQUEUE
+        parameter (ORD_DOSPURGEQUEUE = 2)
+        integer  ORD_DOSCLOSEQUEUE
+        parameter (ORD_DOSCLOSEQUEUE = 3)
+        integer  ORD_DOSQUERYQUEUE
+        parameter (ORD_DOSQUERYQUEUE = 4)
+        integer  ORD_DOSPEEKQUEUE
+        parameter (ORD_DOSPEEKQUEUE = 5)
+        integer  ORD_DOSWRITEQUEUE
+        parameter (ORD_DOSWRITEQUEUE = 6)
+        integer  ORD_DOSOPENQUEUE
+        parameter (ORD_DOSOPENQUEUE = 7)
+        integer  ORD_DOSCREATEQUEUE
+        parameter (ORD_DOSCREATEQUEUE = 8)
+        integer  ORD_DOS32READQUEUE
+        parameter (ORD_DOS32READQUEUE = 9)
+        integer  ORD_DOS32PURGEQUEUE
+        parameter (ORD_DOS32PURGEQUEUE = 10)
+        integer  ORD_DOS32CLOSEQUEUE
+        parameter (ORD_DOS32CLOSEQUEUE = 11)
+        integer  ORD_DOS32QUERYQUEUE
+        parameter (ORD_DOS32QUERYQUEUE = 12)
+        integer  ORD_DOS32PEEKQUEUE
+        parameter (ORD_DOS32PEEKQUEUE = 13)
+        integer  ORD_DOS32WRITEQUEUE
+        parameter (ORD_DOS32WRITEQUEUE = 14)
+        integer  ORD_DOS32OPENQUEUE
+        parameter (ORD_DOS32OPENQUEUE = 15)
+        integer  ORD_DOS32CREATEQUEUE
+        parameter (ORD_DOS32CREATEQUEUE = 16)
+
+        integer  ORD_DOSSTOPSESSION
+        parameter (ORD_DOSSTOPSESSION = 8)
+        integer  ORD_DOSSELECTSESSION
+        parameter (ORD_DOSSELECTSESSION = 9)
+        integer  ORD_DOSSETSESSION
+        parameter (ORD_DOSSETSESSION = 14)
+        integer  ORD_DOSSTARTSESSION
+        parameter (ORD_DOSSTARTSESSION = 17)
+        integer  ORD_DOSSMREGISTERDD
+        parameter (ORD_DOSSMREGISTERDD = 29)
+        integer  ORD_DOS32STARTSESSION
+        parameter (ORD_DOS32STARTSESSION = 37)
+        integer  ORD_DOS32SELECTSESSION
+        parameter (ORD_DOS32SELECTSESSION = 38)
+        integer  ORD_DOS32SETSESSION
+        parameter (ORD_DOS32SETSESSION = 39)
+        integer  ORD_DOS32STOPSESSION
+        parameter (ORD_DOS32STOPSESSION = 40)
+
+        integer  ORD_WINFONTDLG
+        parameter (ORD_WINFONTDLG = 1)
+        integer  ORD_WINDEFFONTDLGPROC
+        parameter (ORD_WINDEFFONTDLGPROC = 2)
+        integer  ORD_WINFILEDLG
+        parameter (ORD_WINFILEDLG = 3)
+        integer  ORD_WINDEFFILEDLGPROC
+        parameter (ORD_WINDEFFILEDLGPROC = 4)
+        integer  ORD_WINFREEFILEDLGLIST
+        parameter (ORD_WINFREEFILEDLGLIST = 5)
+        integer  ORD_WIN32FONTDLG
+        parameter (ORD_WIN32FONTDLG = 6)
+        integer  ORD_WIN32DEFFONTDLGPROC
+        parameter (ORD_WIN32DEFFONTDLGPROC = 7)
+        integer  ORD_WIN32FILEDLG
+        parameter (ORD_WIN32FILEDLG = 8)
+        integer  ORD_WIN32DEFFILEDLGPROC
+        parameter (ORD_WIN32DEFFILEDLGPROC = 9)
+        integer  ORD_WIN32FREEFILEDLGLIST
+        parameter (ORD_WIN32FREEFILEDLGLIST = 10)
+
+        integer  ORD_VIOENDPOPUP
+        parameter (ORD_VIOENDPOPUP = 1)
+        integer  ORD_VIOGETPHYSBUF
+        parameter (ORD_VIOGETPHYSBUF = 2)
+        integer  ORD_VIOGETANSI
+        parameter (ORD_VIOGETANSI = 3)
+        integer  ORD_VIOSETANSI
+        parameter (ORD_VIOSETANSI = 5)
+        integer  ORD_VIODEREGISTER
+        parameter (ORD_VIODEREGISTER = 6)
+        integer  ORD_VIOSCROLLUP
+        parameter (ORD_VIOSCROLLUP = 7)
+        integer  ORD_VIOPRTSC
+        parameter (ORD_VIOPRTSC = 8)
+        integer  ORD_VIOGETCURPOS
+        parameter (ORD_VIOGETCURPOS = 9)
+        integer  ORD_VIOWRTCELLSTR
+        parameter (ORD_VIOWRTCELLSTR = 10)
+        integer  ORD_VIOPOPUP
+        parameter (ORD_VIOPOPUP = 11)
+        integer  ORD_VIOSCROLLRT
+        parameter (ORD_VIOSCROLLRT = 12)
+        integer  ORD_VIOWRTCHARSTR
+        parameter (ORD_VIOWRTCHARSTR = 13)
+        integer  ORD_VIOSETCURPOS
+        parameter (ORD_VIOSETCURPOS = 15)
+        integer  ORD_VIOSCRUNLOCK
+        parameter (ORD_VIOSCRUNLOCK = 18)
+        integer  ORD_VIOWRTTTY
+        parameter (ORD_VIOWRTTTY = 19)
+        integer  ORD_VIOGETMODE
+        parameter (ORD_VIOGETMODE = 21)
+        integer  ORD_VIOSETMODE
+        parameter (ORD_VIOSETMODE = 22)
+        integer  ORD_VIOSCRLOCK
+        parameter (ORD_VIOSCRLOCK = 23)
+        integer  ORD_VIOREADCELLSTR
+        parameter (ORD_VIOREADCELLSTR = 24)
+        integer  ORD_VIOSAVREDRAWWAIT
+        parameter (ORD_VIOSAVREDRAWWAIT = 25)
+        integer  ORD_VIOWRTNATTR
+        parameter (ORD_VIOWRTNATTR = 26)
+        integer  ORD_VIOGETCURTYPE
+        parameter (ORD_VIOGETCURTYPE = 27)
+        integer  ORD_VIOSAVREDRAWUNDO
+        parameter (ORD_VIOSAVREDRAWUNDO = 28)
+        integer  ORD_VIOGETFONT
+        parameter (ORD_VIOGETFONT = 29)
+        integer  ORD_VIOREADCHARSTR
+        parameter (ORD_VIOREADCHARSTR = 30)
+        integer  ORD_VIOGETBUF
+        parameter (ORD_VIOGETBUF = 31)
+        integer  ORD_VIOSETCURTYPE
+        parameter (ORD_VIOSETCURTYPE = 32)
+        integer  ORD_VIOSETFONT
+        parameter (ORD_VIOSETFONT = 33)
+        integer  ORD_VIOMODEUNDO
+        parameter (ORD_VIOMODEUNDO = 35)
+        integer  ORD_VIOMODEWAIT
+        parameter (ORD_VIOMODEWAIT = 37)
+        integer  ORD_VIOGETCP
+        parameter (ORD_VIOGETCP = 40)
+        integer  ORD_VIOSETCP
+        parameter (ORD_VIOSETCP = 42)
+        integer  ORD_VIOSHOWBUF
+        parameter (ORD_VIOSHOWBUF = 43)
+        integer  ORD_VIOSCROLLLF
+        parameter (ORD_VIOSCROLLLF = 44)
+        integer  ORD_VIOREGISTER
+        parameter (ORD_VIOREGISTER = 45)
+        integer  ORD_VIOGETCONFIG
+        parameter (ORD_VIOGETCONFIG = 46)
+        integer  ORD_VIOSCROLLDN
+        parameter (ORD_VIOSCROLLDN = 47)
+        integer  ORD_VIOWRTCHARSTRATT
+        parameter (ORD_VIOWRTCHARSTRATT = 48)
+        integer  ORD_VIOGETSTATE
+        parameter (ORD_VIOGETSTATE = 49)
+        integer  ORD_VIOPRTSCTOGGLE
+        parameter (ORD_VIOPRTSCTOGGLE = 50)
+        integer  ORD_VIOSETSTATE
+        parameter (ORD_VIOSETSTATE = 51)
+        integer  ORD_VIOWRTNCELL
+        parameter (ORD_VIOWRTNCELL = 52)
+        integer  ORD_VIOWRTNCHAR
+        parameter (ORD_VIOWRTNCHAR = 53)
+        integer  ORD_VIOASSOCIATE
+        parameter (ORD_VIOASSOCIATE = 55)
+        integer  ORD_VIOCREATEPS
+        parameter (ORD_VIOCREATEPS = 56)
+        integer  ORD_VIODELETESETID
+        parameter (ORD_VIODELETESETID = 57)
+        integer  ORD_VIOGETDEVICECELLSIZE
+        parameter (ORD_VIOGETDEVICECELLSIZE = 58)
+        integer  ORD_VIOGETORG
+        parameter (ORD_VIOGETORG = 59)
+        integer  ORD_VIOCREATELOGFONT
+        parameter (ORD_VIOCREATELOGFONT = 60)
+        integer  ORD_VIODESTROYPS
+        parameter (ORD_VIODESTROYPS = 61)
+        integer  ORD_VIOQUERYSETIDS
+        parameter (ORD_VIOQUERYSETIDS = 62)
+        integer  ORD_VIOSETORG
+        parameter (ORD_VIOSETORG = 63)
+        integer  ORD_VIOQUERYFONTS
+        parameter (ORD_VIOQUERYFONTS = 64)
+        integer  ORD_VIOSETDEVICECELLSIZE
+        parameter (ORD_VIOSETDEVICECELLSIZE = 65)
+        integer  ORD_VIOSHOWPS
+        parameter (ORD_VIOSHOWPS = 66)
+        integer  ORD_VIOGETPSADDRESS
+        parameter (ORD_VIOGETPSADDRESS = 67)
+        integer  ORD_VIOGLOBALREG
+        parameter (ORD_VIOGLOBALREG = 70)
+        integer  ORD_XVIOSETCASTATE
+        parameter (ORD_XVIOSETCASTATE = 71)
+        integer  ORD_XVIOCHECKCHARTYPE
+        parameter (ORD_XVIOCHECKCHARTYPE = 72)
+        integer  ORD_XVIODESTROYCA
+        parameter (ORD_XVIODESTROYCA = 73)
+        integer  ORD_XVIOCREATECA
+        parameter (ORD_XVIOCREATECA = 74)
+        integer  ORD_VIOCHECKCHARTYPE
+        parameter (ORD_VIOCHECKCHARTYPE = 75)
+        integer  ORD_XVIOGETCASTATE
+        parameter (ORD_XVIOGETCASTATE = 76)
+
+        integer  ORD_WINDEFAVIOWINDOWPROC
+        parameter (ORD_WINDEFAVIOWINDOWPROC = 30)
+
+c$reference

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 
 static short    imgHeight;
@@ -37,11 +38,10 @@ static short    imgWidth;
 static BOOL     stretchImage;
 
 /*
- * ChangeSizeProc - change the size of the image being edited.
+ * ChangeSizeProc - change the size of the image being edited
  */
 WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
-                                       WPI_PARAM1 wparam,
-                                       WPI_PARAM2 lparam )
+                                       WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL        trnslate;
     char        *title;
@@ -49,33 +49,33 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
     char        *msg_text;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
-        switch( LOWORD(wparam) ) {
+        switch( LOWORD( wparam ) ) {
         case DLGID_OK:
-            imgHeight = _wpi_getdlgitemint(hwnd, SIZE_HEIGHT, &trnslate, TRUE);
-            imgWidth = _wpi_getdlgitemint(hwnd, SIZE_WIDTH, &trnslate, TRUE);
-            if (!trnslate) {
+            imgHeight = _wpi_getdlgitemint( hwnd, SIZE_HEIGHT, &trnslate, TRUE );
+            imgWidth = _wpi_getdlgitemint( hwnd, SIZE_WIDTH, &trnslate, TRUE );
+            if( !trnslate ) {
                 return( FALSE );
             }
-            if( (imgHeight > MAX_DIM) || (imgHeight < MIN_DIM) ||
-                (imgWidth > MAX_DIM) || (imgWidth < MIN_DIM) ) {
+            if( imgHeight > MAX_DIM || imgHeight < MIN_DIM ||
+                imgWidth > MAX_DIM || imgWidth < MIN_DIM ) {
                 title = IEAllocRCString( WIE_NOTE );
                 text = IEAllocRCString( WIE_DIMENSIONSBETWEEN );
-                if( text ) {
+                if( text != NULL ) {
                     msg_text = (char *)MemAlloc( strlen( text ) + 20 + 1 );
-                    if( msg_text ) {
+                    if( msg_text != NULL ) {
                         sprintf( msg_text, text, MIN_DIM, MAX_DIM );
                         MessageBox( hwnd, msg_text, title, MB_OK | MB_ICONINFORMATION );
                         MemFree( msg_text );
                     }
                     IEFreeRCString( text );
                 }
-                if( title ) {
+                if( title != NULL ) {
                     IEFreeRCString( title );
                 }
                 return( FALSE );
             }
 
-            if (_wpi_isbuttonchecked(hwnd, SIZE_STRETCH)) {
+            if( _wpi_isbuttonchecked( hwnd, SIZE_STRETCH ) ) {
                 stretchImage = TRUE;
             } else {
                 stretchImage = FALSE;
@@ -97,12 +97,12 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
     } else {
         switch( msg ) {
         case WM_INITDIALOG:
-            _wpi_setdlgitemint(hwnd, SIZE_HEIGHT, imgHeight, FALSE);
-            _wpi_setdlgitemint(hwnd, SIZE_WIDTH, imgWidth, FALSE);
-            if (stretchImage) {
-                _wpi_checkradiobutton(hwnd, SIZE_STRETCH, SIZE_CLIP, SIZE_STRETCH);
+            _wpi_setdlgitemint( hwnd, SIZE_HEIGHT, imgHeight, FALSE );
+            _wpi_setdlgitemint( hwnd, SIZE_WIDTH, imgWidth, FALSE );
+            if( stretchImage ) {
+                _wpi_checkradiobutton( hwnd, SIZE_STRETCH, SIZE_CLIP, SIZE_STRETCH );
             } else {
-                _wpi_checkradiobutton(hwnd, SIZE_STRETCH, SIZE_CLIP, SIZE_CLIP);
+                _wpi_checkradiobutton( hwnd, SIZE_STRETCH, SIZE_CLIP, SIZE_CLIP );
             }
             return( TRUE );
 
@@ -116,10 +116,11 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg,
             _wpi_enddialog( hwnd, IDCANCEL );
             break;
         default:
-            return( _wpi_defdlgproc(hwnd, msg, wparam, lparam) );
+            return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
     _wpi_dlgreturn( FALSE );
+
 } /* ChangeSizeProc */
 
 /*
@@ -149,9 +150,13 @@ void ChangeImageSize( void )
     char        *text;
 
     node = GetCurrentNode();
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    if (node->imgtype != BITMAP_IMG) return;
+    if( node->imgtype != BITMAP_IMG ) {
+        return;
+    }
 
     imgHeight = node->height;
     imgWidth = node->width;
@@ -160,25 +165,24 @@ void ChangeImageSize( void )
     button_type = _wpi_dialogbox( HMainWindow, fp, Instance, IMAGESIZE, 0L );
     _wpi_freeprocinstance( fp );
 
-    if (button_type == DLGID_CANCEL) {
+    if( button_type == DLGID_CANCEL ) {
         return;
     }
-    if ( (imgWidth == node->width) && (imgHeight == node->height) ) {
+    if( imgWidth == node->width && imgHeight == node->height ) {
         PrintHintTextByID( WIE_IMAGESIZEUNCHANGED, NULL );
         return;
     }
     title = IEAllocRCString( WIE_INFORMATIONTEXT );
     text = IEAllocRCString( WIE_RESETUNDOSTACKWARNING );
-    retcode = _wpi_messagebox( HMainWindow, text, title,
-                               MB_YESNO | MB_ICONINFORMATION );
-    if( text ) {
+    retcode = _wpi_messagebox( HMainWindow, text, title, MB_YESNO | MB_ICONINFORMATION );
+    if( text != NULL ) {
         IEFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         IEFreeRCString( title );
     }
 
-    if (retcode == WPI_IDNO) {
+    if( retcode == WPI_IDNO ) {
         return;
     }
 
@@ -197,13 +201,13 @@ void ChangeImageSize( void )
     oldsrc = _wpi_selectbitmap( srcpres, node->hxorbitmap );
     olddest = _wpi_selectbitmap( destpres, new_node.hxorbitmap );
 
-    if (stretchImage) {
+    if( stretchImage ) {
         _wpi_stretchblt( destpres, 0, 0, imgWidth, imgHeight,
-                    srcpres, 0, 0, node->width, node->height, SRCCOPY );
+                         srcpres, 0, 0, node->width, node->height, SRCCOPY );
     } else {
 #ifdef __OS2_PM__
         y_src = node->height - imgHeight;
-        if ( y_src < 0 ) {
+        if( y_src < 0 ) {
             y_src = 0;
             y_dest = imgHeight - node->height;
         } else {
@@ -213,20 +217,19 @@ void ChangeImageSize( void )
         y_src = 0;
         y_dest = 0;
 #endif
-        _wpi_bitblt( destpres, 0, y_dest, node->width, node->height, srcpres,
-                                                        0, y_src, SRCCOPY );
+        _wpi_bitblt( destpres, 0, y_dest, node->width, node->height,
+                     srcpres, 0, y_src, SRCCOPY );
     }
     _wpi_getoldbitmap( srcpres, oldsrc );
     oldsrc = _wpi_selectbitmap( srcpres, node->handbitmap );
     _wpi_getoldbitmap( destpres, olddest );
     olddest = _wpi_selectbitmap( destpres, new_node.handbitmap );
 
-    if (stretchImage) {
+    if( stretchImage ) {
         _wpi_stretchblt( destpres, 0, 0, imgWidth, imgHeight,
-                    srcpres, 0, 0, node->width, node->height, SRCCOPY );
+                         srcpres, 0, 0, node->width, node->height, SRCCOPY );
     } else {
-        _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres,
-                                                            0, 0, SRCCOPY );
+        _wpi_bitblt( destpres, 0, 0, node->width, node->height, srcpres, 0, 0, SRCCOPY );
     }
 
     _wpi_getoldbitmap( srcpres, oldsrc );
@@ -254,5 +257,5 @@ void ChangeImageSize( void )
     ResizeChild( lparam, node->hwnd, FALSE );
     DisplayImageText( node );
     WriteSetSizeText( WIE_NEWIMAGESIZE, imgWidth, imgHeight );
-} /* ChangeImageSize */
 
+} /* ChangeImageSize */

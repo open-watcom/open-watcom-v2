@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool   WRENewAccelResource     ( void );
-extern Bool   WREEditAccelResource    ( WRECurrentResInfo * );
-extern Bool   WRESaveEditAccelResource( WAccelHandle );
-extern Bool   WREEndEditAccelResource ( WAccelHandle );
-extern Bool   WREEndAllAccelSessions  ( Bool );
-extern void   WREEndLangAccelSession  ( WResLangNode *lnode );
-extern void   WREEndResAccelSessions  ( WREResInfo *rinfo );
+extern Bool WRENewAccelResource( void );
+extern Bool WREEditAccelResource( WRECurrentResInfo * );
+extern Bool WRESaveEditAccelResource( WAccelHandle );
+extern Bool WREEndEditAccelResource( WAccelHandle );
+extern Bool WREEndAllAccelSessions( Bool );
+extern void WREEndLangAccelSession( WResLangNode *lnode );
+extern void WREEndResAccelSessions( WREResInfo *rinfo );
 
 #endif

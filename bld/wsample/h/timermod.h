@@ -33,8 +33,10 @@
 #ifdef DEFVARS
     #define extern
 #endif
-extern unsigned                        TimerMult;
-extern unsigned                        TimerMod;
+extern unsigned                 TimerMult;
+extern unsigned                 TimerMod;
+extern unsigned                 TimerRestoreValue;
+
 #ifdef DEFVARS
     #undef extern
 #endif
@@ -43,16 +45,9 @@ extern unsigned                        TimerMod;
 #define MN_MULT                 1
 #define MX_MULT                 100
 
-#if defined(_NEC_PC) || defined(_FMR_PC)
- #define DEF_MULT               5
- #define MN_MILLISEC            10
- #define MX_MILLISEC            100
- #define MILLISEC_PER_TICK      10
-#else
- #define DEF_MULT               MN_MULT
- #define MN_MILLISEC            1
- #define MX_MILLISEC            55
- #define MILLISEC_PER_TICK      55
-#endif
+#define DEF_MULT               MN_MULT
+#define MN_MILLISEC            1
+#define MX_MILLISEC            55
+#define MILLISEC_PER_TICK      55
 
 #define TICKS_PER_HUNDRED       ((1193180*100)/DIVISOR)

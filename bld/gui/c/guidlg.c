@@ -45,7 +45,7 @@ static bool CreateDlg( gui_create_info *dialog, int num_controls,
 
     wnd = GUISetupWnd( dialog );
     if( wnd == NULL ) {
-        return( NULL );
+        return( FALSE );
     }
     if( GUIXCreateDialog( dialog, wnd, num_controls, controls, sys, dlg_id ) ) {
         return( TRUE );

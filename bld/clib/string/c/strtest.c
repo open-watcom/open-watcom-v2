@@ -24,26 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of the C library string functions.
 *
 ****************************************************************************/
 
-
-/*
- *  STRTEST.C
- *  Non-exhaustive test of the C library string functions.
- *
- *  12 January 1995
- *  By Matthew Hildebrand
- */
 
 #include <errno.h>
 #include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <malloc.h>     // for malloc RSIZE_MAX buffer
 
 #ifdef __SW_BW
     #include <wdefwin.h>
@@ -66,11 +59,14 @@ void TestToken( void );
 void TestLocale( void );
 void TestError( void );
 void TestFormatted( void );
+void TestBounded( void );
 void Test__vbprintf( char *buf, char *format, ... );
 int  Test_vsscanf( char *buf, char *format, ... );
 void Test_vsprintf( char *buf, char *format, ... );
+int  Test_vsnprintf( char *buf, char *format, ... );
 
-#if !defined(__AXP__)
+
+#ifdef __X86__
 void TestCompareF( void );
 void TestCaseF( void );
 void TestMoveF( void );
@@ -82,61 +78,6 @@ void TestTokenF( void );
 
 char ProgramName[128];                          /* executable filename */
 int NumErrors = 0;                              /* number of errors */
-
-
-
-/****
-***** Program entry point.
-****/
-
-int main( int argc, char *argv[] )
-{
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
-    /*** Initialize ***/
-    strcpy( ProgramName, strlwr(argv[0]) );     /* store filename */
-
-    /*** Test various functions ***/
-    TestCompare();                              /* compare stuff */
-    TestMove();                                 /* moving data about */
-    TestCase();                                 /* upper/lowercase stuff */
-    TestSearch();                               /* searching stuff */
-    TestSubstring();                            /* substring stuff */
-    TestToken();                                /* tokenizing stuff */
-    TestLocale();                               /* locale stuff */
-    TestError();                                /* error string stuff */
-    TestFormatted();                            /* formatted I/O stuff */
-    #if !defined(__AXP__)
-        TestCompareF();
-        TestMoveF();
-        TestCaseF();
-        TestSearchF();
-        TestSubstringF();
-        TestTokenF();
-    #endif
-
-    /*** Print a pass/fail message and quit ***/
-    if( NumErrors!=0 ) {
-        printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
-        return( EXIT_FAILURE );
-    }
-    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
-    {
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
-    }
-    #endif
-    return( 0 );
-}
-
 
 
 /****
@@ -185,7 +126,7 @@ void TestCompare( void )
 }
 
 
-#if !defined(__AXP__)
+#ifdef __X86__
 void TestCompareF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -279,7 +220,48 @@ void TestMove( void )
 }
 
 
-#if !defined(__AXP__)
+/****
+***** Test strlcpy() and strlcat().
+****/
+
+void TestBounded( void )
+{
+    char            bufA[80] = "FoO baR gOoBeR bLaH";
+    char            bufB[80];
+    char            *bufPtr;
+    int             status;
+    size_t          len;
+
+    len = strlcpy( bufB, "FoO baR", sizeof( bufB ) ); /* copy string */
+    VERIFY( len == strlen( "FoO baR" ) );
+
+    len = strlcat( bufB, " gOoBeR bLaH", sizeof( bufB ) ); /* append rest */
+    VERIFY( len == strlen( bufA ) );
+
+    status = strcmp( bufA, bufB );              /* check result */
+    VERIFY( status == 0 );
+
+    bufPtr = strset( bufB, 0x00 );              /* zero out buffer */
+    VERIFY( bufPtr == bufB );
+
+    len = strlcpy( bufB, "ABCDEFGHIJ", 3 );     /* copy two chars */
+    VERIFY( len == strlen( "ABCDEFGHIJ" ) );
+
+    len = strlcat( bufB, "CDEFGHIJ", 6 );       /* copy three more */
+    VERIFY( len == strlen( "ABCDEFGHIJ" ) );
+
+    status = strcmp( bufB, "ABCDE" );           /* ensure only five chars */
+    VERIFY( status == 0 );
+
+    len = strlcat( bufB, "junk", 3 );           /* ensure no running off */
+    VERIFY( len == 3 );
+
+    bufPtr = strnset( bufB, 0x00, 10 );         /* blank string */
+    VERIFY( bufPtr == bufB );
+}
+
+
+#ifdef __X86__
 void TestMoveF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -365,7 +347,7 @@ void TestCase( void )
 }
 
 
-#if !defined(__AXP__)
+#ifdef __X86__
 void TestCaseF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -426,7 +408,7 @@ void TestSearch( void )
 }
 
 
-#if !defined(__AXP__)
+#ifdef __X86__
 void TestSearchF( void )
 {
     char            buf[] = "The quick brown fox jumped over the lazy dogs.";
@@ -496,7 +478,7 @@ void TestSubstring( void )
 }
 
 
-#if !defined(__AXP__)
+#ifdef __X86__
 void TestSubstringF( void )
 {
     char            buf[] = "The quick brown fox jumped over the lazy dogs.";
@@ -563,7 +545,7 @@ void TestToken( void )
 }
 
 
-#if !defined(__AXP__)
+#ifdef __X86__
 void TestTokenF( void )
 {
     char            buf[] = "Find!all;the.tokens,";
@@ -634,7 +616,7 @@ void TestError( void )
 void TestFormatted( void )
 {
     char            buf[80];
-    int             status;
+    int             status, len;
     int             numA, numB;
 
     status = _bprintf( buf, 3, "%d", 12345 );   /* try to print too much */
@@ -663,6 +645,13 @@ void TestFormatted( void )
     VERIFY( status == 2 );
     VERIFY( numA == 101 );
     VERIFY( numB == 37 );
+
+    len = Test_vsnprintf( buf, "%d %d", 101, 37 );    /* try to print too much */
+    status = Test_vsscanf( buf, "%d", &numA );
+    VERIFY( status == 1 );
+    VERIFY( numA == 101 );
+    /* make sure that we get back the same length for zero size buffer */
+    VERIFY( len == snprintf( NULL, 0, "%d %d", 101, 37 ) );
 }
 
 
@@ -675,6 +664,21 @@ void Test__vbprintf( char *buf, char *format, ... )
     status = _vbprintf( buf, 80, format, args );    /* print some stuff */
     VERIFY( status <= 80 );
     va_end( args );
+}
+
+int Test_vsnprintf( char *buf, char *format, ... )
+{
+    va_list         args;
+    int             len;
+
+    va_start( args, format );
+    memset( buf, 0, 10 );
+    len = vsnprintf( buf, 4, format, args );    /* print some stuff */
+    VERIFY( len > 4 );
+    VERIFY( buf[4] == '\0' );   /* ensure we're not overflowing the buffer */
+    VERIFY( buf[5] == '\0' );
+    va_end( args );
+    return len;
 }
 
 
@@ -699,4 +703,56 @@ void Test_vsprintf( char *buf, char *format, ... )
     status = vsprintf( buf, format, args );     /* print some stuff */
     VERIFY( status > 0 );
     va_end( args );
+}
+
+
+/****
+***** Program entry point.
+****/
+
+int main( int argc, char *argv[] )
+{
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+    /*** Initialize ***/
+    strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
+
+    /*** Test various functions ***/
+    TestCompare();                              /* compare stuff */
+    TestMove();                                 /* moving data about */
+    TestCase();                                 /* upper/lowercase stuff */
+    TestSearch();                               /* searching stuff */
+    TestSubstring();                            /* substring stuff */
+    TestToken();                                /* tokenizing stuff */
+    TestLocale();                               /* locale stuff */
+    TestError();                                /* error string stuff */
+    TestFormatted();                            /* formatted I/O stuff */
+    TestBounded();                              /* bounded string stuff */
+#ifdef __X86__
+    TestCompareF();
+    TestMoveF();
+    TestCaseF();
+    TestSearchF();
+    TestSubstringF();
+    TestTokenF();
+#endif
+
+    /*** Print a pass/fail message and quit ***/
+    if( NumErrors != 0 ) {
+        printf( "%s: FAILURE (%d errors).\n", ProgramName, NumErrors );
+        return( EXIT_FAILURE );
+    }
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+    return( 0 );
 }

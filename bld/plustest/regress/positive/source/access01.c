@@ -21,11 +21,28 @@ void Z::bar( Y *p ) {
     p->foo();
 }
 
+class A {
+private:
+    static void f() {
+    }
+
+public:
+    class B {
+    public:
+        static void f() {
+            A::f();
+        }
+    };
+};
+
 int main() {
     Y y;
     Z z;
 
     c = (X*) &y;
     z.bar( &y );
+
+    A::B::f();
+
     _PASS;
 }

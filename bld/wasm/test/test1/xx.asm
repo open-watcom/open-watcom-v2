@@ -1,5 +1,5 @@
                 .386
-code            segment
+code            segment 'CODE'
 assume          cs:code, ds:code
                 add     al, '@' - '9'
                 add     al, '@' - 4

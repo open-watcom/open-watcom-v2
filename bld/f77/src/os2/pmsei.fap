@@ -1,0 +1,2 @@
+c$pragma aux (__syscall) WinSetErrorInfo parm( value*4, \
+c		value*4 )

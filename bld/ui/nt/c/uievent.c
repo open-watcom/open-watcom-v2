@@ -130,9 +130,9 @@ static void setshiftstate( BOOL has_shift, BOOL has_ctrl, BOOL has_alt )
     }
 }
 
-int CompareEvents( const map *p1, const map *p2 )
+int CompareEvents( const void *p1, const void *p2 )
 {
-    return( p1->vk - p2->vk );
+    return( ((map*)p1)->vk - ((map*)p2)->vk );
 }
 
 bool intern initkeyboard( void )
@@ -144,7 +144,7 @@ bool intern initkeyboard( void )
     return( TRUE );
 }
 
-void intern finikeyboard()
+void intern finikeyboard( void )
 {
 //    if( InputHandle != NULL ) {
 //      CloseHandle( InputHandle );
@@ -183,16 +183,16 @@ void intern mousespawnend( void )
 
 void uimousespeed( unsigned speed )
 {
-    if( speed <= 0 ) {
+    if( (int)speed <= 0 ) {
         speed = 1;
     }
 }
 
-bool global initmouse( bool install )
+bool global initmouse( int install )
 {
     DWORD       tmp;
 
-    if( !install ) {
+    if( install == 0 ) {
         return( FALSE );
     }
     UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
@@ -339,9 +339,8 @@ void intern waitforevent( void )
 
 } /* waitforevent */
 
-unsigned char global uicheckshift()
-/**********************************/
-
+unsigned char global uicheckshift( void )
+/***************************************/
 {
     return( ShftState );
 }

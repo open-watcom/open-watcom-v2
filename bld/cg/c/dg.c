@@ -38,9 +38,10 @@
 #include "cg.h"
 #include "bckdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
@@ -53,11 +54,8 @@
 
 extern  unsigned_16     TypeIdx;
 
-extern  type_def        *TypeAddress(cg_type);
-
 extern  char            *ACopyOf(char *);
 extern  void            VerTipe(cg_type ,cg_type *);
-extern  void            CGFree(pointer );
 extern  char            *Tipe(cg_type );
 extern  char            *FtnTipe(dbg_ftn_type );
 extern  char            *Label(l *);
@@ -65,7 +63,6 @@ extern  void            Action(char *,... );
 extern  void            TypDbg(char *,... );
 extern  void            Code(char *,... );
 extern  char            *Name(pointer );
-extern  pointer         CGAlloc(uint );
 extern  void            Put(char *,... );
 extern  void            SymDbg(char *,... );
 extern  void            VerBack(b *);
@@ -380,30 +377,30 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
     case DB_OP_POINTS:
         VerTipe( other, NULL );
         switch( TypeAddress( other )->refno ) {
-        #if  !(_TARGET & _TARG_80386)
-            case T_NEAR_POINTER:
-            case T_NEAR_CODE_PTR:
-        #endif
-        case T_UINT_2:
-        case T_INT_2:
+#if  !(_TARGET & _TARG_80386)
+        case TY_NEAR_POINTER:
+        case TY_NEAR_CODE_PTR:
+#endif
+        case TY_UINT_2:
+        case TY_INT_2:
             stkop = LOP_IND_2;
             break;
-        #if  _TARGET & _TARG_80386
-            case T_NEAR_POINTER:
-            case T_NEAR_CODE_PTR:
-        #endif
-        case T_UINT_4:
-        case T_INT_4:
+#if  _TARGET & _TARG_80386
+        case TY_NEAR_POINTER:
+        case TY_NEAR_CODE_PTR:
+#endif
+        case TY_UINT_4:
+        case TY_INT_4:
             stkop = LOP_IND_4;
             break;
-        case T_LONG_POINTER:
-        case T_HUGE_POINTER:
-        case T_LONG_CODE_PTR:
-            #if  _TARGET & _TARG_80386
-                stkop = LOP_IND_ADDR386;
-            #else
-                stkop = LOP_IND_ADDR286;
-            #endif
+        case TY_LONG_POINTER:
+        case TY_HUGE_POINTER:
+        case TY_LONG_CODE_PTR:
+#if  _TARGET & _TARG_80386
+            stkop = LOP_IND_ADDR386;
+#else
+            stkop = LOP_IND_ADDR286;
+#endif
             break;
         default:
             CGError( "Invalid DB points type %d\n", other );
@@ -469,7 +466,7 @@ static  void    DBSrcFileFini( void ){
     while( curr != NULL ){
         old = curr;
         curr = curr->next;
-        _Free( old, sizeof( *old ) );
+        CGFree( old );
     }
     SrcFiles = NULL;
 }
@@ -491,7 +488,7 @@ extern  uint    DBSrcFile( char *fname ){
        lnk = &curr->next;
     }
     len = strlen( fname );
-    _Alloc( curr, sizeof( *curr )+len );
+    curr = CGAlloc( sizeof( *curr )+len );
     curr->next = NULL;
     strcpy( curr->fname, fname );
     *lnk = curr;

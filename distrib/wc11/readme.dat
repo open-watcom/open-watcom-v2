@@ -1,0 +1,7 @@
+# readme files
+[ DEFAULT ]
+usr="readme.txt" 	dir="." 	where="c"
+usr="freadme.txt" 	dir="." 	where="f77"
+usr="jreadme.txt" 	dir="." 	where="jc"
+usr="jfreadme.txt" 	dir="." 	where="jf77"
+usr="areadme.txt" 	dir="." 	where="ac"

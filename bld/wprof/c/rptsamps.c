@@ -24,20 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump formatted profiler data to a file.
 *
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <fcntl.h>
-#ifndef __ALPHA__
-#include <i86.h>
-#endif
 #include <sys/stat.h>
 #include <string.h>
 #include <time.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -48,42 +44,11 @@
 #include "sampinfo.h"
 #include "pathlist.h"
 
-//#include "getsamps.def"
-//#include "msg.def"
-//#include "memutil.def"
-//#include "support.def"
-//#include "utils.def"
-//#include "dipinter.def"
-
 extern unsigned         FormatAddr( address a, char *buffer, unsigned max );
 
-extern sio_data *       SIOData;
+extern sio_data         *SIOData;
 
-STATIC FILE     *df;
-
-STATIC void dumpSampleImages( bint, sio_data * );
-STATIC void dumpSampleInfo();
-
-
-
-extern void ReportSampleInfo()
-/****************************/
-{
-    sio_data *      curr_sio;
-
-    df = fopen( "report.dmp", "w" );
-    if( df != NULL ) {
-        curr_sio = SIOData;
-        for(;;) {
-            curr_sio = curr_sio->next;
-            dumpSampleInfo();
-            fprintf(  df, "\n" );
-            dumpSampleImages( B_TRUE, curr_sio );
-            if( curr_sio == SIOData ) break;
-        }
-        fclose( df );
-    }
-}
+STATIC FILE             *df;
 
 
 
@@ -91,10 +56,10 @@ STATIC void dumpSampleImages( bint all_info, sio_data * curr_sio )
 /****************************************************************/
 {
     location_list   ll;
-    image_info *    curr_image;
-    mod_info *      curr_mod;
-    file_info *     curr_file;
-    rtn_info *      curr_rtn;
+    image_info      *curr_image;
+    mod_info        *curr_mod;
+    file_info       *curr_file;
+    rtn_info        *curr_rtn;
     int             image_index;
     int             mod_count;
     int             file_count;
@@ -118,7 +83,7 @@ STATIC void dumpSampleImages( bint all_info, sio_data * curr_sio )
         mod_count = 0;
         while( mod_count < curr_image->mod_count ) {
             curr_mod = curr_image->module[mod_count];
-            if( (all_info && curr_mod->mh != NULL)
+            if( (all_info && curr_mod->mh != 0)
              || curr_mod->agg_count != 0) {
                 fprintf( df, "  module name '%s'   (%s language)\n", curr_mod->name,
                         ModSrcLang( curr_mod->mh ) );
@@ -167,15 +132,15 @@ STATIC void dumpSampleImages( bint all_info, sio_data * curr_sio )
 
 
 
-STATIC void dumpSampleInfo()
-/**************************/
+STATIC void dumpSampleInfo( void )
+/********************************/
 {
-    sio_data *          sio_rover;
-    mark_data *         mark;
-    overlay_data *      ovl;
-    image_info *        image;
-    remap_data *        remap;
-    ovl_entry *         ovl_entry;
+    sio_data            *sio_rover;
+    mark_data           *mark;
+    overlay_data        *ovl;
+    image_info          *image;
+    remap_data          *remap;
+    ovl_entry           *ovl_entry;
     int                 image_index;
     long int            count;
     int                 index;
@@ -318,5 +283,27 @@ STATIC void dumpSampleInfo()
                     massgd->raw->sect_id, buff1, massgd->hits );
         }
         if( sio_rover == SIOData ) break;
+    }
+}
+
+
+
+extern void ReportSampleInfo( void )
+/**********************************/
+{
+    sio_data        *curr_sio;
+
+    if( SIOData == NULL ) return;
+    df = fopen( "report.dmp", "w" );
+    if( df != NULL ) {
+        curr_sio = SIOData;
+        for( ;; ) {
+            curr_sio = curr_sio->next;
+            dumpSampleInfo();
+            fprintf( df, "\n" );
+            dumpSampleImages( P_TRUE, curr_sio );
+            if( curr_sio == SIOData ) break;
+        }
+        fclose( df );
     }
 }

@@ -1,3 +1,3 @@
-movsb
-repe movsw
-repne movsd
+ movsb
+ rep movsw
+ rep movsd

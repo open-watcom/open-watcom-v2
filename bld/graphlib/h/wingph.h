@@ -67,7 +67,7 @@ extern PFNWP            _OldFrameProc;
 /* Mapping utitlity functions */
 int             _MapPlotAct();
 HBITMAP         _Mask2Bitmap( HDC, char* );
-int             _MapLineStyle(int );
+int             _MapLineStyle( unsigned short );
 WPI_COLOUR      _Col2RGB( short );
 short           _RGB2Col( WPI_COLOUR );
 

@@ -44,9 +44,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WREDisplayHint      ( int id );
-extern void WREHandleMenuSelect ( WPARAM, LPARAM );
-extern Bool WREInitHints        ( void );
-extern void WREFiniHints        ( void );
+extern void WREDisplayHint( int id );
+extern void WREHandleMenuSelect( WPARAM, LPARAM );
+extern Bool WREInitHints( void );
+extern void WREFiniHints( void );
 
 #endif

@@ -1,0 +1,37 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: algorithm (Definitions of various algorithm templates)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines a collection of useful algorithm templates.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _ALGORITHM_INCLUDED
+#define _ALGORITHM_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#if defined(max) || defined(min)
+ #error The previously defined macro(s) max/min conflict with algorithm
+:: We could #undef max/min here, but that seems a bit rude.
+#endif
+
+// Non-modifying sequence operations.
+#ifndef __ALGNMOD_H_INCLUDED
+ #include <_algnmod.h>
+#endif
+
+// Mutating sequence operations.
+#ifndef __ALGMUT_H_INCLUDED
+ #include <_algmut.h>
+#endif
+
+// Sorting and related operations.
+#ifndef __ALGSORT_H_INCLUDED
+ #include <_algsort.h>
+#endif
+
+#endif

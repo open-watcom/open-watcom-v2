@@ -1,0 +1,20 @@
+.387
+.386p
+_text1		SEGMENT	PARA PRIVATE USE32 'code'
+		ASSUME CS:_text1, DS:DGROUP, SS:DGROUP
+    jmp         far ptr L$1
+    jmp         far ptr L$2
+_text1		ENDS
+_text2		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:_text2, DS:DGROUP, SS:DGROUP
+L$1:
+    nop         
+    jmp         far ptr L$2
+_text2		ENDS
+_text3		SEGMENT	PARA PRIVATE USE32 'code'
+		ASSUME CS:_text3, DS:DGROUP, SS:DGROUP
+L$2:
+    nop         
+    jmp         far ptr L$1
+_text3		ENDS
+		END

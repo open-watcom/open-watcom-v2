@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fmemchr().
 *
 ****************************************************************************/
 
@@ -41,16 +40,17 @@
 
 #undef  _fmemchr
 
-_WCRTLINK void _WCFAR *_fmemchr( const char _WCFAR *s, int c, size_t n )
-    {
+_WCRTLINK void _WCFAR *_fmemchr( const void _WCFAR *vs, int c, size_t n )
+{
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fmemchr( s, c, n ) );
+    return( _inline__fmemchr( vs, c, n ) );
 #else
-        while( n ) {
-            if( *s == c ) return( s );
-            ++s;
-            --n;
-        }
-        return( NULL );
-#endif
+    const char _WCFAR *s = vs;
+    while( n ) {
+        if( *s == c ) return( (void _WCFAR *)s );
+        ++s;
+        --n;
     }
+    return( NULL );
+#endif
+}

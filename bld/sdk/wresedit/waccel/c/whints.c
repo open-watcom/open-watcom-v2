@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
-#include <win1632.h>
+#include "win1632.h"
 #include "wglbl.h"
 #include "wmem.h"
 #include "wstat.h"
 #include "sys_rc.h"
 #include "wlist.h"
 #include "whints.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -60,90 +60,87 @@ typedef struct {
     DWORD       hint;
 } WPopupHintItem;
 
-WPopupListItem;
-
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WHintItem      *WGetHintItem          ( int id );
-static void            WHandlePopupHint      ( wstatbar *, HMENU, HMENU );
-static DWORD           WGetPopupHint         ( WPopupHintItem *, int, HMENU );
-static Bool            WInitHintItems        ( int, HMENU, WPopupHintItem * );
+static WHintItem    *WGetHintItem( int id );
+static void         WHandlePopupHint( WStatBar *, HMENU, HMENU );
+static DWORD        WGetPopupHint( WPopupHintItem *, int, HMENU );
+static Bool         WInitHintItems( int, HMENU, WPopupHintItem * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HMENU  WLastMenu  = NULL;
 
-static WHintItem WHints[] =
-{
-    { IDM_ACC_CLEAR     , W_ACC_CLEAR           }
-,   { IDM_ACC_UPDATE    , W_ACC_UPDATE          }
-,   { IDM_ACC_SAVE      , W_ACC_SAVE            }
-,   { IDM_ACC_SAVEAS    , W_ACC_SAVEAS          }
-,   { IDM_ACC_SAVEINTO  , W_ACC_SAVEINTO        }
-,   { IDM_ACC_EXIT      , W_ACC_EXIT            }
-,   { IDM_ACC_CUT       , W_ACC_CUT             }
-,   { IDM_ACC_COPY      , W_ACC_COPY            }
-,   { IDM_ACC_PASTE     , W_ACC_PASTE           }
-,   { IDM_ACC_DELETE    , W_ACC_DELETE          }
-,   { IDM_ACC_SHOWRIBBON, W_ACC_SHOWRIBBON      }
-,   { IDM_ACC_SYMBOLS   , W_ACC_SYMBOLS         }
-,   { IDM_ACC_LOAD_SYMBOLS      , W_ACC_LOAD_SYMBOLS            }
-,   { IDM_ACC_RENAME    , W_ACC_RENAME          }
-,   { IDM_ACC_MEM_FLAGS , W_ACC_MEM_FLAGS       }
-,   { IDM_ACC_NEWITEM   , W_ACC_NEWITEM         }
-,   { IDM_ACC_KEYVALUE  , W_ACC_KEYVALUE        }
-,   { IDM_ACC_ABOUT     , W_ACC_ABOUT           }
-,   { IDM_HELP          , W_ACC_HELP            }
-,   { -1                , NULL                  }
+static WHintItem WHints[] = {
+    { IDM_ACC_CLEAR,        W_ACC_CLEAR         },
+    { IDM_ACC_UPDATE,       W_ACC_UPDATE        },
+    { IDM_ACC_SAVE,         W_ACC_SAVE          },
+    { IDM_ACC_SAVEAS,       W_ACC_SAVEAS        },
+    { IDM_ACC_SAVEINTO,     W_ACC_SAVEINTO      },
+    { IDM_ACC_EXIT,         W_ACC_EXIT          },
+    { IDM_ACC_CUT,          W_ACC_CUT           },
+    { IDM_ACC_COPY,         W_ACC_COPY          },
+    { IDM_ACC_PASTE,        W_ACC_PASTE         },
+    { IDM_ACC_DELETE,       W_ACC_DELETE        },
+    { IDM_ACC_SHOWRIBBON,   W_ACC_SHOWRIBBON    },
+    { IDM_ACC_SYMBOLS,      W_ACC_SYMBOLS       },
+    { IDM_ACC_LOAD_SYMBOLS, W_ACC_LOAD_SYMBOLS  },
+    { IDM_ACC_RENAME,       W_ACC_RENAME        },
+    { IDM_ACC_MEM_FLAGS,    W_ACC_MEM_FLAGS     },
+    { IDM_ACC_NEWITEM,      W_ACC_NEWITEM       },
+    { IDM_ACC_KEYVALUE,     W_ACC_KEYVALUE      },
+    { IDM_ACC_ABOUT,        W_ACC_ABOUT         },
+    { IDM_HELP,             W_ACC_HELP          },
+    { IDM_HELP_SEARCH,      W_ACC_HELP_SEARCH   },
+    { IDM_HELP_ON_HELP,     W_ACC_HELP_ON_HELP  },
+    { -1,                   0                   }
 };
 
-static WPopupHintItem WPopupHints[] =
-{
-    { { 0, -1 },  NULL, W_ACC_FILEMENU  }
-,   { { 1, -1 },  NULL, W_ACC_EDITMENU  }
-,   { { 2, -1 },  NULL, W_ACC_RESMENU   }
-,   { { 3, -1 },  NULL, W_ACC_ACCMENU   }
-,   { { 4, -1 },  NULL, W_ACC_HELPMENU  }
+static WPopupHintItem WPopupHints[] = {
+    { { 0, -1 },  NULL, W_ACC_FILEMENU  },
+    { { 1, -1 },  NULL, W_ACC_EDITMENU  },
+    { { 2, -1 },  NULL, W_ACC_RESMENU   },
+    { { 3, -1 },  NULL, W_ACC_ACCMENU   },
+    { { 4, -1 },  NULL, W_ACC_HELPMENU  }
 };
 
-#define NUM_POPUPS (sizeof(WPopupHints)/sizeof(WPopupHintItem))
+#define NUM_POPUPS (sizeof( WPopupHints ) / sizeof( WPopupHintItem ))
 
-void WHandleMenuSelect ( wstatbar *wsb, HMENU menu, WPARAM wParam,
-                         LPARAM lParam )
+void WHandleMenuSelect( WStatBar *wsb, HMENU menu, WPARAM wParam,
+                        LPARAM lParam )
 {
-    HMENU popup;
-    WORD  flags;
+    HMENU   popup;
+    WORD    flags;
 
-    if ( !wsb || !menu ) {
+    if( wsb == NULL || menu == NULL ) {
         return;
     }
 
-    flags = GET_WM_MENUSELECT_FLAGS(wParam,lParam);
+    flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
 
-    if ( ( flags == (WORD)-1 ) &&
-         ( GET_WM_MENUSELECT_HMENU(wParam,lParam) == (HMENU)NULL ) ) {
-        WSetStatusText ( wsb, NULL, "" );
-    } else if ( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-        WSetStatusText ( wsb, NULL, "" );
-    } else if ( flags & MF_POPUP ) {
-        popup = (HMENU) GET_WM_MENUSELECT_ITEM(wParam,lParam);
-        #ifdef __NT__
-            popup = GetSubMenu( (HMENU)lParam, (int)popup );
-        #endif
-        WHandlePopupHint ( wsb, menu, popup );
+    if( flags == (WORD)-1 && GET_WM_MENUSELECT_HMENU( wParam, lParam ) == (HMENU)NULL ) {
+        WSetStatusText( wsb, NULL, "" );
+    } else if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
+        WSetStatusText( wsb, NULL, "" );
+    } else if( flags & MF_POPUP ) {
+        popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+#ifdef __NT__
+        popup = GetSubMenu( (HMENU)lParam, (int)popup );
+#endif
+        WHandlePopupHint( wsb, menu, popup );
     } else {
-        WDisplayHint ( wsb, (int) GET_WM_MENUSELECT_ITEM(wParam,lParam) );
+        WDisplayHint( wsb, (int)GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
     }
 }
 
-void WDisplayHint( wstatbar *wsb, int id )
+void WDisplayHint( WStatBar *wsb, int id )
 {
     WHintItem *hint;
 
     hint = WGetHintItem( id );
-    if( hint ) {
+    if( hint != NULL ) {
         WSetStatusByID( wsb, -1, hint->hint );
     }
 }
@@ -152,13 +149,13 @@ WHintItem *WGetHintItem( int id )
 {
     int i;
 
-    for ( i = 0; WHints[i].id != -1; i++ ) {
-        if ( WHints[i].id == id ) {
-            return ( &(WHints[i]) );
+    for( i = 0; WHints[i].id != -1; i++ ) {
+        if( WHints[i].id == id ) {
+            return( &WHints[i] );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
 DWORD WGetPopupHint( WPopupHintItem *items, int num, HMENU popup )
@@ -171,10 +168,10 @@ DWORD WGetPopupHint( WPopupHintItem *items, int num, HMENU popup )
         }
     }
 
-    return( NULL );
+    return( 0L );
 }
 
-void WHandlePopupHint( wstatbar *wsb, HMENU menu, HMENU popup )
+void WHandlePopupHint( WStatBar *wsb, HMENU menu, HMENU popup )
 {
     DWORD       hint;
 
@@ -184,29 +181,26 @@ void WHandlePopupHint( wstatbar *wsb, HMENU menu, HMENU popup )
     }
 
     hint = WGetPopupHint( WPopupHints, NUM_POPUPS, popup );
-    if( hint ) {
+    if( hint != 0 ) {
         WSetStatusByID( wsb, -1, hint );
     } else {
         WSetStatusText( wsb, NULL, "" );
     }
 }
 
-Bool WInitHintItems ( int num, HMENU menu, WPopupHintItem *hint_items )
+Bool WInitHintItems( int num, HMENU menu, WPopupHintItem *hint_items )
 {
-    int   i;
-    int   j;
-    HMENU popup;
+    int     i;
+    int     j;
+    HMENU   popup;
 
-    for ( i = 0; i < num; i++ ) {
+    for( i = 0; i < num; i++ ) {
         popup = menu;
-        for ( j = 0;
-              (j < MAX_NESTED_POPUPS) && (hint_items[i].loc[j] != -1);
-              j++ ) {
-            popup = GetSubMenu ( popup, hint_items[i].loc[j] );
+        for( j = 0; j < MAX_NESTED_POPUPS && hint_items[i].loc[j] != -1; j++ ) {
+            popup = GetSubMenu( popup, hint_items[i].loc[j] );
         }
         hint_items[i].popup = popup;
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
-

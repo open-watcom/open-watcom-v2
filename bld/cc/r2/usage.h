@@ -70,7 +70,6 @@
 "-4s            486 stack calling conventions",
 "-5r            Pentium register calling conventions",
 "-5s            Pentium stack calling conventions",
-"-7             inline 80x87 instructions",
 "-nc=<name>     set code class name",
 "-nd=<name>     set data segment name",
 "-nm=<name>     set module name",

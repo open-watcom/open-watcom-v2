@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate Microsoft RC to Watcom options.
 *
 ****************************************************************************/
 
@@ -43,19 +42,17 @@
 
 
 /*
- * Translate scanned MS options to Watcom options.
+ * Add one more unsupported option to optStr.
  */
-void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
-/*************************************************************/
+static void append_unsupported( char *optStr, char *opt )
+/*******************************************************/
 {
-    if( cmdOpts->nologo ) {
-        QuietModeMessage();
+    if( optStr[0] != '\0' ) {
+        strcat( optStr, " /" );
     } else {
-        BannerMessage();
+        strcat( optStr, "/" );
     }
-    unsupported_opts( cmdOpts );
-    default_opts( cmdOpts, cmdLine );
-    convert_opts( cmdOpts, cmdLine );
+    strcat( optStr, opt );
 }
 
 
@@ -77,21 +74,6 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     if( opts[0] != '\0' ) {
         UnsupportedOptsMessage( opts );
     }
-}
-
-
-/*
- * Add one more unsupported option to optStr.
- */
-static void append_unsupported( char *optStr, char *opt )
-/*******************************************************/
-{
-    if( optStr[0] != '\0' ) {
-        strcat( optStr, " /" );
-    } else {
-        strcat( optStr, "/" );
-    }
-    strcat( optStr, opt );
 }
 
 
@@ -151,4 +133,21 @@ static void convert_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     if( cmdOpts->x ) {
         AppendCmdLine( cmdLine, RC_OPTS_SECTION, "-x" );
     }
+}
+
+
+/*
+ * Translate scanned MS options to Watcom options.
+ */
+void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
+/*************************************************************/
+{
+    if( cmdOpts->nologo ) {
+        QuietModeMessage();
+    } else {
+        BannerMessage();
+    }
+    unsupported_opts( cmdOpts );
+    default_opts( cmdOpts, cmdLine );
+    convert_opts( cmdOpts, cmdLine );
 }

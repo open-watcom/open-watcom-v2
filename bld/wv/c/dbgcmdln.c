@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger command line processing.
 *
 ****************************************************************************/
 
@@ -38,37 +37,42 @@
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "dui.h"
+#include "wdmsg.h"
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
-
-extern unsigned         ConfigScreen(void);
-extern unsigned         Lookup(char *, char *, unsigned);
-extern int              DUIEnvLkup(char *,char *, int );
-extern char             *Format(char *,char *,... );
+extern unsigned         ConfigScreen( void );
+extern unsigned         Lookup( char *, char *, unsigned );
+extern int              DUIEnvLkup( char *, char *, int );
+extern char             *Format( char *, char *, ... );
 extern bool             OptDelim( char );
-extern void             ProcSysOptInit(void);
+extern void             ProcSysOptInit( void );
 extern bool             ProcSysOption( char *, unsigned, int );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             PopErrBox( char * );
-extern void             SysSetMemLimit(void);
+extern void             SysSetMemLimit( void );
 extern void             SetNumColumns( int cols );
 extern void             SetNumLines( int lines );
 extern char             *DupStr( char * );
-extern char             *StrCopy(char*src,char*dst);
+extern char             *StrCopy( char *src, char *dst );
 void                    FindLocalDebugInfo( char *name );
 extern void             StartupErr( char *err );
 
 
 extern char             *TrpFile;
+#ifdef ENABLE_TRAP_LOGGING
+extern char             *TrpDebugFile;
+extern bool             TrpDebugFileFlush;
+#endif
 extern char             *InitCmdList;
 extern char             *InvokeFile;
 extern char             *DipFiles[];
 
 extern unsigned long    MemSize;
 
-static char             *(*GetArg)(int);
+static char             *(*GetArg)( int );
 static int              CurrArgc;
 static char             *CurrArgp;
 static char             CurrChar;
@@ -104,6 +108,11 @@ static char OptNameTab[] = {
     "DEfersymbols\0"
     "NOSOurcecheck\0"
     "CONtinueunexpectedbreak\0"
+    "Help\0"
+#ifdef ENABLE_TRAP_LOGGING
+    "TDebug\0"
+    "TFDebug\0"
+#endif
 };
 
 enum { OPT_INVOKE=1,
@@ -131,16 +140,15 @@ enum { OPT_INVOKE=1,
        OPT_DEFERSYM,
        OPT_NOSOURCECHECK,
        OPT_CONTINUE_UNEXPECTED_BREAK,
+       OPT_HELP,
+#ifdef ENABLE_TRAP_LOGGING
+       OPT_TRAP_DEBUG,
+       OPT_TRAP_DEBUG_FLUSH,
+#endif
 };
 
 
-void NextChar()
-{
-    ++CurrArgp;
-    SetupChar();
-}
-
-void SetupChar()
+void SetupChar( void )
 {
    CurrChar = *CurrArgp;
    if( CurrChar == NULLCHAR ) {
@@ -153,6 +161,13 @@ void SetupChar()
             --CurrArgp; /* so that NextChar increment is negated */
         }
     }
+}
+
+
+void NextChar( void )
+{
+    ++CurrArgp;
+    SetupChar();
 }
 
 
@@ -177,7 +192,7 @@ void OptError( char *err )
 }
 
 
-void SkipSpaces()
+void SkipSpaces( void )
 {
     while( CurrChar == ' ' || CurrChar == '\t' ) {
         NextChar();
@@ -185,14 +200,14 @@ void SkipSpaces()
 }
 
 
-bool HasEquals()
+bool HasEquals( void )
 {
     SkipSpaces();
     return( CurrChar == '=' || CurrChar == '#' );
 }
 
 
-void WantEquals()
+void WantEquals( void )
 {
     SkipSpaces();
     if( CurrChar != '=' && CurrChar != '#' ) OptError( LIT( STARTUP_Expect_Eql ) );
@@ -204,7 +219,7 @@ void WantEquals()
 /*
  * GetValueLong -- get a long numeric value from command line
  */
-unsigned long GetValueLong()
+unsigned long GetValueLong( void )
 {
     unsigned long val;
 
@@ -218,7 +233,7 @@ unsigned long GetValueLong()
     return( val );
 }
 
-unsigned GetValue()
+unsigned GetValue( void )
 {
     unsigned long val;
 
@@ -227,7 +242,7 @@ unsigned GetValue()
     return( val );
 }
 
-unsigned long GetMemory()
+unsigned long GetMemory( void )
 {
     unsigned long   val;
 
@@ -336,6 +351,20 @@ static void GetInitCmd( int pass )
     }
 }
 
+#ifndef __GUI__
+static void PrintUsage( int first_ln )
+{
+    char        *msg_buff;
+
+    for( ;; first_ln++ ) {
+        msg_buff = DUILoadString( first_ln );
+        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
+            break;
+        puts( msg_buff );
+    }
+}
+#endif
+
 /*
  * ProcOptList -- process an option list
  */
@@ -353,6 +382,12 @@ static void ProcOptList( int pass )
         if( !OptDelim( CurrChar ) ) break;
         NextChar();
         curr = buff;
+#ifndef __GUI__
+        if( CurrChar == '?' ) {
+            PrintUsage( MSG_USE_BASE );
+            StartupErr( "" );
+        }
+#endif
         while( isalnum( CurrChar ) ) {
             *curr++ = CurrChar;
             NextChar();
@@ -428,6 +463,20 @@ static void ProcOptList( int pass )
                 GetTrapParm( pass );
             }
             break;
+#ifdef ENABLE_TRAP_LOGGING
+        case OPT_TRAP_DEBUG_FLUSH:
+            if( pass == 2 )
+                _Free( TrpDebugFile );
+            TrpDebugFile = GetFileName( pass );
+            TrpDebugFileFlush = TRUE;
+            break;
+        case OPT_TRAP_DEBUG:
+            if( pass == 2 )
+                _Free( TrpDebugFile );
+            TrpDebugFile = GetFileName( pass );
+            TrpDebugFileFlush = FALSE;
+            break;
+#endif
         case OPT_REMOTE_FILES:
             _SwitchOn( SW_REMOTE_FILES );
             break;
@@ -451,6 +500,12 @@ static void ProcOptList( int pass )
         case OPT_POWERBUILDER:
             _SwitchOn( SW_POWERBUILDER );
             break;
+        case OPT_HELP:
+#ifndef __GUI__
+            PrintUsage( MSG_USE_BASE );
+            StartupErr( "" );
+#endif
+            break;
         default:
             if( !ProcSysOption( buff, curr - buff, pass ) ) {
                 Format( err_buff, LIT( STARTUP_Invalid_Option ), buff, curr - buff );
@@ -473,7 +528,7 @@ OVL_EXTERN char *GetEnvArg( int i )
  * ProcCmd -- start processing command line options
  */
 
-void ProcCmd()
+void ProcCmd( void )
 {
     char        buff[TXT_LEN];
     unsigned    screen_mem;

@@ -24,12 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototype for sort linked list utility routine.
 *
 ****************************************************************************/
 
 
 extern void *SortLinkedList( void *list, unsigned next_offset,
-                       int (*compare)(void**,void**),
-                       void (*allocrtn)(unsigned), void (*freertn)(void*) );
+                       int (*compare)(void*,void*),
+                       void *(*allocrtn)(unsigned), void (*freertn)(void*) );

@@ -33,18 +33,12 @@
 #include <stdio.h>
 #include "uidef.h"
 
-extern          cdecl intern     farcopy( LPPIXEL, LPPIXEL, int, int );
+extern  void    cdecl intern     farcopy( LPPIXEL, LPPIXEL, int, int );
 
 
-void intern uibcopy( sptr, srow, scol, dptr, drow, dcol, len )
-/**********************************************************/
-    BUFFER      *sptr;
-    BUFFER      *dptr;
-    int         srow;
-    int         scol;
-    int         drow;
-    int         dcol;
-    int         len;
+void intern uibcopy( BUFFER *sptr, int srow, int scol, BUFFER *dptr,
+                                       int drow, int dcol, int len )
+/******************************************************************/
 {
     LPPIXEL     dst;
     LPPIXEL     src;

@@ -1,0 +1,8 @@
+
+!include ../../ui.mif
+
+ctkeyb.obj : ctkeyb.c conesc.gh
+
+conesc.gh : ../c/buildesc.c ../tix/qnx.tix
+        $(bld_cl) ../c/buildesc -I"$(lang_root)/qh"
+        buildesc ../tix/qnx.tix conesc.gh

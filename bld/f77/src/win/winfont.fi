@@ -1,0 +1,157 @@
+*$noreference
+
+! Font Functions:
+! ---------------
+
+      external AddFontResource
+      external CreateFont
+      external CreateFontIndirect
+      external EnumFonts
+      external GetAspectRatioFilter
+      external GetCharWidth
+      external RemoveFontResource
+      external SetMapperFlags
+
+      integer*2 AddFontResource
+      integer*2 CreateFont
+      integer*2 CreateFontIndirect
+      integer*4 GetAspectRatioFilter
+      integer*2 EnumFonts
+      integer*2 GetCharWidth
+      integer*2 RemoveFontResource
+      integer*4 SetMapperFlags
+
+! Logical Font
+
+      integer LF_FACESIZE
+
+      parameter ( LF_FACESIZE         = 32 )
+
+      structure /LOGFONT/
+          integer*2           lfHeight
+          integer*2           lfWidth
+          integer*2           lfEscapement
+          integer*2           lfOrientation
+          integer*2           lfWeight
+          integer*1           lfItalic
+          integer*1           lfUnderline
+          integer*1           lfStrikeOut
+          integer*1           lfCharSet
+          integer*1           lfOutPrecision
+          integer*1           lfClipPrecision
+          integer*1           lfQuality
+          integer*1           lfPitchAndFamily
+          integer*1           lfFaceName(LF_FACESIZE)
+      end structure
+
+      integer OUT_DEFAULT_PRECIS
+      integer OUT_STRING_PRECIS
+      integer OUT_CHARACTER_PRECIS
+      integer OUT_STROKE_PRECIS
+
+      integer CLIP_DEFAULT_PRECIS
+      integer CLIP_CHARACTER_PRECIS
+      integer CLIP_STROKE_PRECIS
+
+      integer DEFAULT_QUALITY
+      integer DRAFT_QUALITY
+      integer PROOF_QUALITY
+
+      integer DEFAULT_PITCH
+      integer FIXED_PITCH
+      integer VARIABLE_PITCH
+
+      integer ANSI_CHARSET
+      integer SYMBOL_CHARSET
+      integer SHIFTJIS_CHARSET
+      integer OEM_CHARSET
+
+      parameter ( OUT_DEFAULT_PRECIS      = 0 )
+      parameter ( OUT_STRING_PRECIS       = 1 )
+      parameter ( OUT_CHARACTER_PRECIS    = 2 )
+      parameter ( OUT_STROKE_PRECIS       = 3 )
+
+      parameter ( CLIP_DEFAULT_PRECIS     = 0 )
+      parameter ( CLIP_CHARACTER_PRECIS   = 1 )
+      parameter ( CLIP_STROKE_PRECIS      = 2 )
+
+      parameter ( DEFAULT_QUALITY         = 0 )
+      parameter ( DRAFT_QUALITY           = 1 )
+      parameter ( PROOF_QUALITY           = 2 )
+
+      parameter ( DEFAULT_PITCH           = 0 )
+      parameter ( FIXED_PITCH             = 1 )
+      parameter ( VARIABLE_PITCH          = 2 )
+
+      parameter ( ANSI_CHARSET            = 0 )
+      parameter ( SYMBOL_CHARSET          = 2 )
+      parameter ( SHIFTJIS_CHARSET        = 128 )
+      parameter ( OEM_CHARSET             = 255 )
+
+! Font Families
+
+      integer FF_DONTCARE
+      integer FF_ROMAN
+      integer FF_SWISS
+      integer FF_MODERN
+      integer FF_SCRIPT
+      integer FF_DECORATIVE
+
+      parameter ( FF_DONTCARE         = 0*2**4 ) ! Don't care or don't know.
+      parameter ( FF_ROMAN            = 1*2**4 ) ! Variable stroke width:
+                                                 ! serifed, Times Roman
+                                                 ! Century Schoolbook, etc.
+      parameter ( FF_SWISS            = 2*2**4 ) ! Variable stroke width:
+                                                 ! sans-serifed, Helvetica
+                                                 ! Swiss, etc.
+      parameter ( FF_MODERN           = 3*2**4 ) ! Constant stroke width:
+                                                 ! serifed or sans-serifed
+                                                 ! Pica, Elite, Courier, etc.
+      parameter ( FF_SCRIPT           = 4*2**4 ) ! Cursive, etc.
+      parameter ( FF_DECORATIVE       = 5*2**4 ) ! Old English, etc.
+
+! Font Weights
+
+      integer FW_DONTCARE
+      integer FW_THIN
+      integer FW_EXTRALIGHT
+      integer FW_LIGHT
+      integer FW_NORMAL
+      integer FW_MEDIUM
+      integer FW_SEMIBOLD
+      integer FW_BOLD
+      integer FW_EXTRABOLD
+      integer FW_HEAVY
+
+      integer FW_ULTRALIGHT
+      integer FW_REGULAR
+      integer FW_DEMIBOLD
+      integer FW_ULTRABOLD
+      integer FW_BLACK
+
+      parameter ( FW_DONTCARE         = 0 )
+      parameter ( FW_THIN             = 100 )
+      parameter ( FW_EXTRALIGHT       = 200 )
+      parameter ( FW_LIGHT            = 300 )
+      parameter ( FW_NORMAL           = 400 )
+      parameter ( FW_MEDIUM           = 500 )
+      parameter ( FW_SEMIBOLD         = 600 )
+      parameter ( FW_BOLD             = 700 )
+      parameter ( FW_EXTRABOLD        = 800 )
+      parameter ( FW_HEAVY            = 900 )
+
+      parameter ( FW_ULTRALIGHT       = FW_EXTRALIGHT )
+      parameter ( FW_REGULAR          = FW_NORMAL )
+      parameter ( FW_DEMIBOLD         = FW_SEMIBOLD )
+      parameter ( FW_ULTRABOLD        = FW_EXTRABOLD )
+      parameter ( FW_BLACK            = FW_HEAVY )
+
+! EnumFonts() Masks
+
+      integer RASTER_FONTTYPE
+      integer DEVICE_FONTTYPE
+
+      parameter ( RASTER_FONTTYPE     = '0001'x )
+      parameter ( DEVICE_FONTTYPE     = '0002'x )
+
+*$reference

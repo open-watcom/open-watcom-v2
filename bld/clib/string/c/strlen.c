@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strlen() and wcslen().
 *
 ****************************************************************************/
 
@@ -43,16 +42,16 @@
 #else
  _WCRTLINK size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )    /* return length of s */
 #endif
-    {
+{
 
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( _inline_strlen( s ) );
+    return( _inline_strlen( s ) );
 #else
-        const CHAR_TYPE *p;
+    const CHAR_TYPE *p;
 
-        p = s;
-        while( *p != NULLCHAR )
-            ++p;
-        return( p - s );
+    p = s;
+    while( *p != NULLCHAR )
+        ++p;
+    return( p - s );
 #endif
-    }
+}

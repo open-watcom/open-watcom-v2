@@ -32,7 +32,11 @@
 
 #include "dbgdefn.h"
 #include "dbglit.h"
-//#include "dbgwind.h"
+
+#include "doserr.h"
+
+extern char *Format(char *,char *,... );
+extern char *StrCopy(char *,char *);
 
 char **DosErrMsgs[] = {
     LITREF( Empty ),
@@ -55,4 +59,13 @@ char **DosErrMsgs[] = {
     LITREF( DOS_not_same_device ),
 };
 
-int MaxDosErrMsg = (sizeof( DosErrMsgs ) / sizeof( char * ) - 1);
+#define MAX_CODE (sizeof( DosErrMsgs ) / sizeof( char * ) - 1)
+
+void GetDOSErrMsg( sys_error code, char *buff )
+{
+    if( code > MAX_CODE ) {
+        Format( buff, "error #%u", code );
+    } else {
+        StrCopy( *DosErrMsgs[ code ], buff );
+    }
+}

@@ -24,16 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Back-end support for state-variable version.
 *
 ****************************************************************************/
 
+#include "plusplus.h"
 
 #include <float.h>
-#include <stdlib.h>
 
-#include "plusplus.h"
 #include "cgfront.h"
 #include "cgback.h"
 #include "memmgr.h"
@@ -640,3 +638,124 @@ void DbgDumpStateTable(         // DUMP STATE TABLE INSTANCE
 
 
 
+//**********************************************************************
+// SE (state entries) Support
+//**********************************************************************
+
+
+
+SE* StateTableAdd(              // ADD TO STATE TABLE
+    SE* se,                     // - state entry
+    STAB_CTL* sctl )            // - state table information
+{
+    return stateTableAddSe( se, &sctl->defn->state_table );
+}
+
+
+SE* SeAlloc(                    // ALLOCATE AN SE ENTRY
+    uint_8 se_type )            // - code for entry
+{
+    SE* se;                     // - new entry
+
+    se = CarveAlloc( seCarver( se_type ) );
+    se->base.se_type = se_type;
+    se->base.gen = BlkPosnUseStab();;
+    return se;
+}
+
+
+SE* SeSetSvPosition(            // LOCATE STATE ENTRY PAST OPTIONAL SET_SV'S
+    SE* se )                    // - starting position
+{
+    for( ; se != NULL; ) {
+        switch( se->base.se_type ) {
+          case DTC_SET_SV :
+            se = se->set_sv.se;
+            continue;
+          case DTC_CTOR_TEST :
+            se = se->base.prev;
+            continue;
+          default :
+            break;
+        }
+        break;
+    }
+    return se;
+}
+
+
+STATE_VAR SeStateVar(           // GET STATE VARIABLE AT CURRENT POSITION
+    SE* se )                    // - state entry
+{
+    STATE_VAR state_var;        // - state variable
+
+    if( se == NULL ) {
+        state_var = 0;
+    } else {
+        state_var = se->base.state_var;
+    }
+    return state_var;
+}
+
+
+STATE_VAR SeStateOptimal(       // GET STATE VALUE FOR POSITION (OPTIMAL)
+    SE* se )                    // - state entry
+{
+    return SeStateVar( SeSetSvPosition( se ) );
+}
+
+
+
+//**********************************************************************
+// Initialization and Completion
+//**********************************************************************
+
+static void stabInit(           // INITIALIZATION
+    INITFINI* defn )            // - definition
+{
+    defn = defn;
+    carveSE_SYM_STATIC  = CarveCreate( sizeof( SE_SYM_STATIC ),     32 );
+    carveSE_SYM_AUTO    = CarveCreate( sizeof( SE_SYM_AUTO ),       32 );
+    carveSE_SUBOBJ      = CarveCreate( sizeof( SE_SUBOBJ ),         16 );
+    carveSE_TRY         = CarveCreate( sizeof( SE_TRY ),            4  );
+    carveSE_CATCH       = CarveCreate( sizeof( SE_CATCH ),          8  );
+    carveSE_FN_EXC      = CarveCreate( sizeof( SE_FN_EXC ),         4  );
+    carveSE_SET_SV      = CarveCreate( sizeof( SE_SET_SV ),         8  );
+    carveSE_TEST_FLAG   = CarveCreate( sizeof( SE_TEST_FLAG ),      16 );
+    carveSE_COMPONENT   = CarveCreate( sizeof( SE_COMPONENT ),      16 );
+    carveSE_ARRAY_INIT  = CarveCreate( sizeof( SE_ARRAY_INIT ),     4  );
+    carveSE_DLT_1       = CarveCreate( sizeof( SE_DLT_1 ),          4  );
+    carveSE_DLT_2       = CarveCreate( sizeof( SE_DLT_2 ),          4  );
+    carveSE_DLT_1_ARRAY = CarveCreate( sizeof( SE_DLT_1_ARRAY ),    4  );
+    carveSE_DLT_2_ARRAY = CarveCreate( sizeof( SE_DLT_2_ARRAY ),    4  );
+    carveSE_CTOR_TEST   = CarveCreate( sizeof( SE_CTOR_TEST ),      4  );
+    carveSTAB_DEFN      = CarveCreate( sizeof( STAB_DEFN ),         8  );
+    carveSTAB_CTL       = CarveCreate( sizeof( STAB_CTL ),          8  );
+}
+
+
+static void stabFini(           // COMPLETION
+    INITFINI* defn )            // - definition
+{
+    defn = defn;
+    CarveDestroy( carveSE_SYM_AUTO );
+    CarveDestroy( carveSE_SYM_STATIC );
+    CarveDestroy( carveSE_SUBOBJ );
+    CarveDestroy( carveSE_TRY );
+    CarveDestroy( carveSE_CATCH );
+    CarveDestroy( carveSE_FN_EXC );
+    CarveDestroy( carveSE_SET_SV );
+    CarveDestroy( carveSE_TEST_FLAG );
+    CarveDestroy( carveSE_COMPONENT );
+    CarveDestroy( carveSE_ARRAY_INIT );
+    CarveDestroy( carveSE_DLT_1 );
+    CarveDestroy( carveSE_DLT_2 );
+    CarveDestroy( carveSE_DLT_1_ARRAY );
+    CarveDestroy( carveSE_DLT_2_ARRAY );
+    CarveDestroy( carveSE_CTOR_TEST );
+    CarveDestroy( carveSTAB_DEFN );
+    CarveDestroy( carveSTAB_CTL );
+}
+
+
+INITDEFN( state_table, stabInit, stabFini )

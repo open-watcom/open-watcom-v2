@@ -24,44 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/28    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/29    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <string.h>
-#include <iostream.h>
-#include <streambu.h>
+#include <iostream>
+#include <streambu>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 
-int streambuf::do_sgetn( char *buf, int len ) {
-/*********************************************/
-// Return the "len" characters starting at get_ptr.
-// If there aren't enough characters, return as many as possible.
-// Advance the get_ptr.
+namespace std {
+
+  // Return the "len" characters starting at get_ptr. If there aren't
+  // enough characters, return as many as possible. Advance the get_ptr.
+
+  int streambuf::do_sgetn( char *buf, int len ) {
 
     int available;
     int returned;
@@ -85,4 +68,6 @@ int streambuf::do_sgetn( char *buf, int len ) {
         len       -= available;
     }
     return( returned );
+  }
+
 }

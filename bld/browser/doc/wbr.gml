@@ -1,37 +1,29 @@
-.* (c) Copyright 1992 by WATCOM International Corporation
-.*
-.* All rights reserved. No part of this publication may be reproduced or
-.* used in any form or by any means - graphic, electronic, or mechanical,
-.* including photocopying, recording, taping or information storage and
-.* retrieval systems - without written permission of WATCOM International
-.* Corporation.
-.*
 .* Pictures follow this informal code for naming:
 .*
-.*	BR<name>
-.*	^ 
-.*	| 
-.*	|
-.*	+---- 2 letter constant meaning Browser
+.*  BR<name>
+.*  ^
+.*  |
+.*  |
+.*  +---- 2 letter constant meaning Browser
 .*
-:set symbol='wbrname'	value='WATCOM Browser'
-:set symbol='brname'	value='browser'
-:set symbol='wbrcmd'	value='wbr'
-:set symbol='wbrcmdup'	value='WBR'
-:set symbol='wbrwarnd'	value='-w'
-:set symbol='wbrfile'	value='.WBR file'
-:set symbol='mbrfile'	value='.MBR file'
+:set symbol='wbrname'   value='Open Watcom Browser'
+:set symbol='brname'    value='browser'
+:set symbol='wbrcmd'    value='wbr'
+:set symbol='wbrcmdup'  value='WBR'
+:set symbol='wbrwarnd'  value='-w'
+:set symbol='wbrfile'   value='.WBR file'
+:set symbol='mbrfile'   value='.MBR file'
 .*
-:set symbol='vmakenm' value='WATCOM Visual Make'
+:set symbol='vmakenm' value='Open Watcom Visual Make'
 .*
-:set symbol='compname'	value='WATCOM C/C++ Compiler'
-:set symbol='compcmd'	value='wcc'
-:set symbol='compcmdup'	value='WCC'
+:set symbol='compname'  value='Open Watcom C/C++ Compiler'
+:set symbol='compcmd'   value='wcc'
+:set symbol='compcmdup' value='WCC'
 :set symbol='genbrflag' value='-B??'
 .*
-:set symbol='edname'	value='WATCOM Editor'
-:set symbol='edcmd'	value='vi'
-:set symbol='edcmdup'	value='VI'
+:set symbol='edname'    value='Open Watcom Editor'
+:set symbol='edcmd' value='vi'
+:set symbol='edcmdup'   value='VI'
 .*
 .chap The &wbrname
 .*
@@ -149,9 +141,9 @@ composed of a different set of modules.
 .*
 .np
 Release 1.0 of &wbrname is supported only under Microsoft Windows version 3.1 or
-later. However, any WATCOM C++ compiler can produce the appropriate format of
+later. However, any &compname can produce the appropriate format of
 data for browsing by the Windows hosted browser.  Future versions are planned
-for all environments that WATCOM compilers support.
+for all environments that these compilers support.
 .*
 .*
 .section &brname Command Line Format
@@ -187,7 +179,7 @@ is the path and name of the '.wbr' project browse file.
 .section Getting Started
 .*
 .np
-&wbrname release 1.0 must be initiated from within Microsoft Windows 3.x.  
+&wbrname release 1.0 must be initiated from within Microsoft Windows 3.x.
 .*
 .np
 Startup can be be done in two ways, resulting in two different operating
@@ -204,7 +196,7 @@ description of loading manually generated modules into the browser session.
 
 :fig id='brstart' frame=box place=inline.
 :graphic depth='0.5i'
-	file='brstart.eps'
+    file='brstart.eps'
 :figcap.&brname Startup Screen
 :efig.
 .*
@@ -331,7 +323,7 @@ window is already minimized.
 Many of the &brname windows are pushpin windows.  These may be recognized by the
 pushpin button visible on the left end of the window's title bar.  The
 purpose of the push pin is to provide some degree of window-to-window
-coordination, to avoid the disorganization that might otherwise occur with 
+coordination, to avoid the disorganization that might otherwise occur with
 many independent windows.
 .*
 .np
@@ -380,7 +372,7 @@ previous owner.
 .*
 :fig id='pushicon' frame=box place=inline.
 :graphic depth='0.5i'
-	file='pushicon.eps'
+    file='pushicon.eps'
 :figcap.PushPin Button States
 :efig.
 .*
@@ -430,13 +422,13 @@ labels, and typedefs (see
 .*
 :fig id='viewsym' frame=box place=inline.
 :graphic depth='2.0i'
-	file='viewsym.eps'
+    file='viewsym.eps'
 :figcap.Basic Detail View
 :efig.
 .*
 .np
 All Detail Views are pushpin windows, exhibiting standard pushpin
-behavior. 
+behavior.
 .*
 .np
 Since there are many routes to arrive at the detail view for a given
@@ -636,7 +628,7 @@ button is pressed, and they only affect the current Class Detail View.
 .*
 :fig id='dmfltdlg' frame=box place=inline.
 :graphic depth='2.0i'
-	file='dmfltdlg.eps'
+    file='dmfltdlg.eps'
 :figcap.Data Members Filter Dialog
 :efig.
 .*
@@ -668,7 +660,7 @@ button is pressed, and they only affect the current Class Detail View.
 .*
 :fig id='mffltdlg' frame=box place=inline.
 :graphic depth='2.0i'
-	file='mffltdlg.eps'
+    file='mffltdlg.eps'
 :figcap.Member Function Filter Dialog
 :efig.
 .*
@@ -706,8 +698,8 @@ followed by an indented list of all of its data members (see
 .*
 :fig id='decomp' frame=box place=inline.
 :graphic depth='2.0i'
-	file='decomp.eps'
-:figcap.Structure Decomposition 
+    file='decomp.eps'
+:figcap.Structure Decomposition
 :efig.
 .*
 .np
@@ -796,7 +788,7 @@ In text form, the call graph is represented as three columns (see
 .*
 :fig id='funtxttr' frame=box place=inline.
 :graphic depth='1.5i'
-	file='funtxttr.eps'
+    file='funtxttr.eps'
 :figcap.Text Format Function Call Graph
 :efig.
 .*
@@ -825,7 +817,7 @@ selection.
 .np
 Selection of a new focal point will cause a refresh of the two outer columns
 to indicate the direct calls to and from the new focal point.  The new focal
-point will be highlighted in the center column.  
+point will be highlighted in the center column.
 
 
 If the new focal point was already on the existing browse path, that item on
@@ -851,7 +843,7 @@ this function which are not shown.
 .*
 :fig id='fungrptr' frame=box place=inline.
 :graphic depth='2.5i'
-	file='fungrptr.eps'
+    file='fungrptr.eps'
 :figcap.Graphical Format Function Call Graph
 :efig.
 .*
@@ -874,7 +866,7 @@ activated with a right mouse click (FIXME - need hot key for keyboard)
 .*
 :fig id='treemenu' frame=box place=inline.
 :graphic depth='2.5i'
-	file='treemenu.eps'
+    file='treemenu.eps'
 :figcap.Graph Node Popup Menu
 :efig.
 .np
@@ -949,7 +941,7 @@ files, as well as providing for exit from the application.
 .*
 :fig id='filemenu' frame=box place=inline.
 :graphic depth='1.3i'
-	file='filemenu.eps'
+    file='filemenu.eps'
 :figcap.File Menu Items
 :efig.
 .*
@@ -963,7 +955,7 @@ is done through a standard Windows file selection dialog, as in
 .*
 :fig id='opendlg' frame=box place=inline.
 :graphic depth='2.2i'
-	file='opendlg.eps'
+    file='opendlg.eps'
 :figcap.Open File Dialog
 :efig.
 .*
@@ -1026,7 +1018,7 @@ appears, to avoid accidental data loss.
 .*
 :fig id='savasdlg' frame=box place=inline.
 :graphic depth='2.2i'
-	file='savasdlg.eps'
+    file='savasdlg.eps'
 :figcap.File SaveAs Dialog
 :efig.
 .*
@@ -1045,7 +1037,7 @@ FIXME - need to review dialog to fill in details.
 .*
 :fig id='editproj' frame=box place=inline.
 :graphic depth='2.0i'
-	file='editproj.eps'
+    file='editproj.eps'
 :figcap.Edit Project Dialog
 :efig.
 .*
@@ -1112,13 +1104,13 @@ type filter.
 .*
 :fig id='loctmenu' frame=box place=inline.
 :graphic depth='1.2i'
-	file='loctmenu.eps'
+    file='loctmenu.eps'
 :figcap.Locate Symbols Menu Items
 :efig.
 .*
 :fig id='picksym' frame=box place=inline.
 :graphic depth='2.5i'
-	file='picksym.eps'
+    file='picksym.eps'
 :figcap.Locate Symbols Query Dialog
 :efig.
 .*
@@ -1136,7 +1128,7 @@ elements:
 .*
 .np
 The Filter Edit Line accepts the following syntax for creating general or
-specific queries (the same syntax is used by WATCOM's WVideo debugger):
+specific queries (the same syntax is used by Open Watcom's WD debugger):
 .*
 .millust begin
 [FileName[.ext]@][ClassName::][FuncName.][SymbolName]
@@ -1185,7 +1177,7 @@ type setting is always reflected in the query dialog's title bar.
 As might be expected, a value of 'All' applies no restrictions to the symbol
 types matching the query.
 .*
-.section Locate Button 
+.section Locate Button
 .*
 .np
 The Locate Button initiates a query that incorporates the current settings of
@@ -1247,7 +1239,7 @@ Currently, the only diagram supported is the project-wide inheritance tree.
 .*
 :fig id='diagmenu' frame=box place=inline.
 :graphic depth='0.8i'
-	file='diagmenu.eps'
+    file='diagmenu.eps'
 :figcap.Diagrams Menu Items
 :efig.
 .*
@@ -1304,7 +1296,7 @@ hypertext format.  (FIXME - this could use more meat.)
 .*
 :fig id='helpmenu' frame=box place=inline.
 :graphic depth='1.3i'
-	file='helpmenu.eps'
+    file='helpmenu.eps'
 :figcap.Help Menu Items
 :efig.
 .*
@@ -1328,7 +1320,7 @@ containing the symbol name, the file name, and the source location.
 .*
 .np
 The result of the query will be all symbols that have that name that are
-in scope at that scope in that file. 
+in scope at that scope in that file.
 .*
 .np
 If only a single symbol is found, a Detail View for that symbol will be created,

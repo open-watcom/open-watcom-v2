@@ -1,0 +1,293 @@
+---- Test -1 ----
+Caught assertion failure
+  ..  Exact type unreachable_code_reached_impl
+  ..  Level 0 Exact type unreachable_code_reached_impl
+  ..  Dynamic cast [exact type is unreachable_code_reached_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test -1 complete, exceptions handled
+
+---- Test 1 ----
+tr1(): throw precondition violation
+Caught precondition Violation
+  ..  Exact type precondition_violation_impl
+  ..  Level 0 Exact type precondition_violation_impl
+  ..  Dynamic cast [exact type is precondition_violation_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test 1 complete, exceptions handled
+
+---- Test 2 ----
+tr2(): throw null pointer error
+Caught precondition Violation
+  ..  Exact type null_pointer_error_impl
+  ..  Level 0 Exact type null_pointer_error_impl
+  ..  Dynamic cast [exact type is null_pointer_error_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test 2 complete, exceptions handled
+
+---- Test 3 ----
+tr3(): throw floating overflow error
+Caught precondition Violation
+  ..  Exact type floating_overflow_impl
+  ..  Level 0 Exact type floating_overflow_impl
+  ..  We've got an arithmetic_domain_error = floating_overflow_impl
+  ..  Dynamic cast [exact type is floating_overflow_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test 3 complete, exceptions handled
+
+---- Test 4 ----
+tr4(): exhaust memory using new[]
+Allocating (new no 0) 1000 bytes ..  .. done 1000
+Allocating (new no 1) 10000 bytes ..  .. done 10000
+Allocating (new no 2) 100000 bytes ..  .. done 100000
+Allocating (new no 3) 1000000 bytes ..  .. done 1000000
+Allocating (new no 4) 10000000 bytes ..  .. done 10000000
+Allocating (new no 5) 100000000 bytes ..  .. done 100000000
+Allocating (new no 6) 1000000000 bytes .. Deleting no 6
+Deleting no 5
+Deleting no 4
+Deleting no 3
+Deleting no 2
+Deleting no 1
+Deleting no 0
+Caught resource acquisition failure
+  ..  Exact type bad_alloc_impl
+  ..  rethrowing (nested) internally ..
+  ..  Sensed bad_alloc using nested rethrown exception
+  ..  requested 0, available=0
+  ..  Exact type bad_alloc_impl
+  ..  Level 0 Exact type bad_alloc_impl
+  ..  Dynamic cast [exact type is bad_alloc_impl] to exception_backtrace?
+  ..  CAST FAILED!
+  ..  Internal rethrow handled
+Test 4 complete, exceptions handled
+
+---- Test 5 ----
+tr5(): exhaust memory using malloc
+Allocating (malloc no 0) 1000 bytes ..  .. done 1000
+Allocating (malloc no 1) 10000 bytes ..  .. done 10000
+Allocating (malloc no 2) 100000 bytes ..  .. done 100000
+Allocating (malloc no 3) 1000000 bytes ..  .. done 1000000
+Allocating (malloc no 4) 10000000 bytes .. Freeing no 4
+Freeing no 3
+Freeing no 2
+Freeing no 1
+Freeing no 0
+Caught resource acquisition failure
+  ..  Exact type bad_alloc_impl
+  ..  rethrowing (nested) internally ..
+  ..  Sensed bad_alloc using nested rethrown exception
+  ..  requested 10000000, available=0
+  ..  Exact type bad_alloc_impl
+  ..  Level 0 Exact type bad_alloc_impl
+  ..  Dynamic cast [exact type is bad_alloc_impl] to exception_backtrace?
+  ..  CAST FAILED!
+  ..  Internal rethrow handled
+Test 5 complete, exceptions handled
+
+---- Test 6 ----
+tr6(): throw assertion failure
+Caught assertion failure
+  ..  Exact type assertion_failure_impl
+  ..  Level 0 Exact type assertion_failure_impl
+  ..  Dynamic cast [exact type is assertion_failure_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test 6 complete, exceptions handled
+
+---- Test 7 ----
+tr7(): throw assertion failure with message
+Caught assertion failure
+  ..  Exact type assertion_failure_msg
+  ..  Level 0 Exact type assertion_failure_msg
+  .. MESSAGE tr7 failure
+  ..  Dynamic cast [exact type is assertion_failure_msg] to exception_backtrace?
+  ..  CAST FAILED!
+Test 7 complete, exceptions handled
+
+---- Test 8 ----
+tr8(): MI test
+Caught resource acquisition failure
+  ..  Exact type resource_limit_impl
+  ..  rethrowing (nested) internally ..
+  ..  No more information
+  ..  Internal rethrow handled
+Test 8 complete, exceptions handled
+
+---- Test 9 ----
+tr9(): simple exception translation test
+Exception string "Translated Exception : tr9()" caught
+Test 9 complete, exceptions handled
+
+---- Test 10 ----
+tr10(): test message attachment by cloning
+Caught resource acquisition failure
+  ..  Exact type bad_alloc_msg
+  ..  rethrowing (nested) internally ..
+  ..  Sensed bad_alloc using nested rethrown exception
+  ..  requested 100, available=200
+  ..  Exact type bad_alloc_msg
+  ..  Level 0 Exact type bad_alloc_msg
+  .. MESSAGE Just fooling: there's plenty of RAM left!
+  ..  Dynamic cast [exact type is bad_alloc_msg] to exception_backtrace?
+  ..  CAST FAILED!
+  ..  Internal rethrow handled
+Test 10 complete, exceptions handled
+
+---- Test 11 ----
+tr11(): backtrace chain test
+tr11_3: caught exception
+00000002 [exception_message_impl] Cloned 00000001 [exception_message_impl]
+ATTACH: the clone 00000001 of 00000004 to 00000003
+COPY->BEGIN: Copy backtrace object 00000003 --> 00000005 
+Linked object of source is 00000001
+00000007 [exception_message_impl] Cloned 00000006 [exception_message_impl]
+Linked object cloned to 00000006 and attached to 00000005
+COPY->END:   Copy backtrace object 00000003 --> 00000005 done
+Destructor 00000003 is Deleting backtrace 00000001
+tr11_2: caught exception
+COPY->BEGIN: Copy backtrace object 00000005 --> 00000008 
+Linked object of source is 00000006
+0000000a [exception_message_impl] Cloned 00000009 [exception_message_impl]
+Linked object cloned to 00000009 and attached to 00000008
+COPY->END:   Copy backtrace object 00000005 --> 00000008 done
+0000000c [backAssert] Cloned 0000000b [backAssert]
+ATTACH: the clone 0000000b of 0000000e to 0000000d
+COPY->BEGIN: Copy backtrace object 0000000d --> 0000000f 
+Linked object of source is 0000000b
+COPY->BEGIN: Copy backtrace object 00000008 --> 00000010 
+Linked object of source is 00000009
+00000012 [exception_message_impl] Cloned 00000011 [exception_message_impl]
+Linked object cloned to 00000011 and attached to 00000010
+COPY->END:   Copy backtrace object 00000008 --> 00000010 done
+00000014 [backAssert] Cloned 00000013 [backAssert]
+Linked object cloned to 00000013 and attached to 0000000f
+COPY->END:   Copy backtrace object 0000000d --> 0000000f done
+Destructor 0000000d is Deleting backtrace 0000000b
+Destructor 00000008 is Deleting backtrace 00000009
+Destructor 00000005 is Deleting backtrace 00000006
+tr11_1: caught exception
+COPY->BEGIN: Copy backtrace object 0000000f --> 00000008 
+Linked object of source is 00000013
+COPY->BEGIN: Copy backtrace object 00000010 --> 00000015 
+Linked object of source is 00000011
+00000016 [exception_message_impl] Cloned 00000006 [exception_message_impl]
+Linked object cloned to 00000006 and attached to 00000015
+COPY->END:   Copy backtrace object 00000010 --> 00000015 done
+00000018 [backAssert] Cloned 00000017 [backAssert]
+Linked object cloned to 00000017 and attached to 00000008
+COPY->END:   Copy backtrace object 0000000f --> 00000008 done
+00000019 [backAssert] Cloned 0000000b [backAssert]
+ATTACH: the clone 0000000b of 0000001b to 0000001a
+COPY->BEGIN: Copy backtrace object 0000001a --> 0000001c 
+Linked object of source is 0000000b
+COPY->BEGIN: Copy backtrace object 00000008 --> 0000001d 
+Linked object of source is 00000017
+COPY->BEGIN: Copy backtrace object 00000015 --> 0000001e 
+Linked object of source is 00000006
+0000000a [exception_message_impl] Cloned 00000009 [exception_message_impl]
+Linked object cloned to 00000009 and attached to 0000001e
+COPY->END:   Copy backtrace object 00000015 --> 0000001e done
+00000020 [backAssert] Cloned 0000001f [backAssert]
+Linked object cloned to 0000001f and attached to 0000001d
+COPY->END:   Copy backtrace object 00000008 --> 0000001d done
+00000014 [backAssert] Cloned 00000021 [backAssert]
+Linked object cloned to 00000021 and attached to 0000001c
+COPY->END:   Copy backtrace object 0000001a --> 0000001c done
+Destructor 0000001a is Deleting backtrace 0000000b
+Destructor 00000008 is Deleting backtrace 00000017
+Destructor 00000015 is Deleting backtrace 00000006
+Destructor 0000000f is Deleting backtrace 00000013
+Destructor 00000010 is Deleting backtrace 00000011
+tr11: caught exception
+COPY->BEGIN: Copy backtrace object 0000001c --> 00000008 
+Linked object of source is 00000021
+COPY->BEGIN: Copy backtrace object 0000001d --> 00000010 
+Linked object of source is 0000001f
+COPY->BEGIN: Copy backtrace object 0000001e --> 00000022 
+Linked object of source is 00000009
+00000012 [exception_message_impl] Cloned 00000023 [exception_message_impl]
+Linked object cloned to 00000023 and attached to 00000022
+COPY->END:   Copy backtrace object 0000001e --> 00000022 done
+00000025 [backAssert] Cloned 00000024 [backAssert]
+Linked object cloned to 00000024 and attached to 00000010
+COPY->END:   Copy backtrace object 0000001d --> 00000010 done
+00000026 [backAssert] Cloned 00000013 [backAssert]
+Linked object cloned to 00000013 and attached to 00000008
+COPY->END:   Copy backtrace object 0000001c --> 00000008 done
+00000027 [backAssert] Cloned 0000000b [backAssert]
+ATTACH: the clone 0000000b of 00000029 to 00000028
+COPY->BEGIN: Copy backtrace object 00000028 --> 0000002a 
+Linked object of source is 0000000b
+COPY->BEGIN: Copy backtrace object 00000008 --> 0000002b 
+Linked object of source is 00000013
+COPY->BEGIN: Copy backtrace object 00000010 --> 0000002c 
+Linked object of source is 00000024
+COPY->BEGIN: Copy backtrace object 00000022 --> 0000002d 
+Linked object of source is 00000023
+0000002f [exception_message_impl] Cloned 0000002e [exception_message_impl]
+Linked object cloned to 0000002e and attached to 0000002d
+COPY->END:   Copy backtrace object 00000022 --> 0000002d done
+00000016 [backAssert] Cloned 00000030 [backAssert]
+Linked object cloned to 00000030 and attached to 0000002c
+COPY->END:   Copy backtrace object 00000010 --> 0000002c done
+00000018 [backAssert] Cloned 00000031 [backAssert]
+Linked object cloned to 00000031 and attached to 0000002b
+COPY->END:   Copy backtrace object 00000008 --> 0000002b done
+00000014 [backAssert] Cloned 00000032 [backAssert]
+Linked object cloned to 00000032 and attached to 0000002a
+COPY->END:   Copy backtrace object 00000028 --> 0000002a done
+Destructor 00000028 is Deleting backtrace 0000000b
+Destructor 00000008 is Deleting backtrace 00000013
+Destructor 00000010 is Deleting backtrace 00000024
+Destructor 00000022 is Deleting backtrace 00000023
+Destructor 0000001c is Deleting backtrace 00000021
+Destructor 0000001d is Deleting backtrace 0000001f
+Destructor 0000001e is Deleting backtrace 00000009
+Caught assertion failure
+  ..  Exact type backAssert
+  ..  Level 0 Exact type backAssert
+  .. MESSAGE tr11 (0) translator
+  ..  Dynamic cast [exact type is backAssert] to exception_backtrace?
+  ..  backtrace to 00000032 detected
+  ..  Level 1 Exact type backAssert
+  .. MESSAGE tr11_1 translator
+  ..  Dynamic cast [exact type is backAssert] to exception_backtrace?
+  ..  backtrace to 00000031 detected
+  ..  Level 2 Exact type backAssert
+  .. MESSAGE tr11_2 translator
+  ..  Dynamic cast [exact type is backAssert] to exception_backtrace?
+  ..  backtrace to 00000030 detected
+  ..  Level 3 Exact type backAssert
+  .. MESSAGE tr11_3 translator
+  ..  Dynamic cast [exact type is backAssert] to exception_backtrace?
+  ..  backtrace to 0000002e detected
+  ..  Level 4 Exact type exception_message_impl
+  .. MESSAGE Root exception
+  ..  Dynamic cast [exact type is exception_message_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Destructor 0000002a is Deleting backtrace 00000032
+Destructor 0000002b is Deleting backtrace 00000031
+Destructor 0000002c is Deleting backtrace 00000030
+Destructor 0000002d is Deleting backtrace 0000002e
+Test 11 complete, exceptions handled
+
+---- Test 12 ----
+tr12(): throw source reference
+Caught assertion failure
+  ..  Exact type assertion_failure_src
+  ..  Level 0 Exact type assertion_failure_src
+  .. FILE ehmix.cpp LINE 232
+  ..  Dynamic cast [exact type is assertion_failure_src] to exception_backtrace?
+  ..  CAST FAILED!
+Test 12 complete, exceptions handled
+
+---- Test 13 ----
+tr13(): throw source reference with message
+Caught exception
+  ..  Exact type source_message_impl
+  ..  Level 0 Exact type source_message_impl
+  .. MESSAGE Test 13 message
+  .. FILE ehmix.cpp LINE 238
+  ..  Dynamic cast [exact type is source_message_impl] to exception_backtrace?
+  ..  CAST FAILED!
+Test 13 complete, exceptions handled
+

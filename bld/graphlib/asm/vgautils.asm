@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Graphics library VGA specific code.
 ;*
 ;*****************************************************************************
 
@@ -38,7 +37,7 @@ include graph.inc
         extrn   __PlotAct : word
         extrn   __Transparent : word
 
-        modstart vgautils
+        modstart vgautils,WORD
 
         xdefp   _MoveUp19_
         xdefp   _MoveDown19_
@@ -58,7 +57,7 @@ include graph.inc
 ;
 ;   Plotting primitives
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -66,13 +65,13 @@ include graph.inc
 
         db      E_And19-_And19_
 _And19_:
-        and     es:0[edi],al
+        and     es:0[_edi],al
 E_And19:
         ret
 
         db      E_Rep19-_Rep19_
 _Rep19_:
-        mov     es:0[edi],al     ; replace pixel
+        mov     es:0[_edi],al     ; replace pixel
 E_Rep19:
         ret
 
@@ -80,7 +79,7 @@ E_Rep19:
 ;
 ;   Movement primitives
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -90,25 +89,25 @@ E_Rep19:
 
         db      E_MoveUp19-_MoveUp19_
 _MoveUp19_:                     ; move up one dot
-        sub     edi,320         ; 320x200x256
+        sub     _edi,320         ; 320x200x256
 E_MoveUp19:
         ret
 
         db      E_MoveDown19-_MoveDown19_
 _MoveDown19_:                   ; move down one dot
-        add     edi,320
+        add     _edi,320
 E_MoveDown19:
         ret
 
         db      E_MoveLeft19-_MoveLeft19_
 _MoveLeft19_:
-        dec     edi
+        dec     _edi
 E_MoveLeft19:
         ret
 
         db      E_MoveRight19-_MoveRight19_
 _MoveRight19_:
-        inc     edi
+        inc     _edi
 E_MoveRight19:
         ret
 
@@ -116,7 +115,7 @@ E_MoveRight19:
 ;
 ;   GetDot routine
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               CL          bit position
 ;
 ;   Output      AX          colour of pixel at location
@@ -124,7 +123,7 @@ E_MoveRight19:
 ;=========================================================================
 
 _GetDot19_:
-        mov     al,es:[edi]     ; get byte
+        mov     al,es:[_edi]     ; get byte
         xor     ah,ah           ; clear high byte
         ret
 
@@ -132,24 +131,28 @@ _GetDot19_:
 ;
 ;   Zap routine
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
 ;
 ;=========================================================================
 
-func_table      VGAJmp,<_Rep19_,_CoXor_,_And19_,_CoOr_>
+ifdef __386__
+    VGAJmp dd _Rep19_, _CoXor_, _And19_, _CoOr_
+else
+    VGAJmp dw _Rep19_, _CoXor_, _And19_, _CoOr_
+endif
 
 _Zap19_:
 
-ifdef _386
-        movzx   ebx,word ptr ss:__PlotAct
-        or      ebx,ebx
+ifdef __386__
+        movzx   _ebx,word ptr ss:__PlotAct
+        or      _ebx,_ebx
         _if     e               ; if replace mode
           rep     stosb         ; - do fast fill
         _else
-          mov     ebx,cs:VGAJmp[ebx*4]  ; load plot routine
+          mov     _ebx,cs:VGAJmp[_ebx*4]  ; load plot routine
 else
         mov     bx,ss:__PlotAct
         or      bx,bx
@@ -160,8 +163,8 @@ else
           mov     bx,cs:VGAJmp[bx]      ; load plot routine
 endif
 zap_loop:                       ; loop
-            call    ebx         ; - call the plot routine
-            inc     edi         ; - move to next pixel on the right
+            call    _ebx         ; - call the plot routine
+            inc     _edi         ; - move to next pixel on the right
           loop    zap_loop      ; until( --count == 0 )
         _endif
         ret
@@ -170,7 +173,7 @@ zap_loop:                       ; loop
 ;
 ;   Fill routines
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
@@ -183,9 +186,9 @@ _Fill19_:
         rol     bl,cl               ; adjust fill mask
         mov     cl,dl               ; restore the count
         mov     dl,bl               ; get mask in dl
-ifdef _386
-        movzx   ebx,word ptr ss:__PlotAct
-        mov     ebx,cs:VGAJmp[ebx*4]; load the appropriate plot routine
+ifdef __386__
+        movzx   _ebx,word ptr ss:__PlotAct
+        mov     _ebx,cs:VGAJmp[_ebx*4]; load the appropriate plot routine
 else
         mov     bx,ss:__PlotAct     ; load the appropriate plot routine
         shl     bx,1                ; ...
@@ -196,9 +199,9 @@ endif
 style_loop:
             rol     dl,1            ; adjust fill style mask
             _if     c
-              call    ebx           ; pixel has to be set
+              call    _ebx           ; pixel has to be set
             _endif
-            inc     edi             ; move to next pixel
+            inc     _edi             ; move to next pixel
           loop    style_loop
         _else
           mov     dh,al             ; save the colour mask
@@ -209,8 +212,8 @@ trans_loop:
             _else
               xor     al,al         ; background color
             _endif
-            call    ebx             ; plot the pixel
-            inc     edi             ; move to next pixel
+            call    _ebx             ; plot the pixel
+            inc     _edi             ; move to next pixel
           loop    trans_loop        ; decrement the count
         _endif
         ret
@@ -219,8 +222,8 @@ trans_loop:
 ;
 ;   PixCopy routine
 ;
-;   Input       ES:EDI,DH   screen memory
-;               SI:EAX,DL   buffer to copy from
+;   Input       ES:_EDI,DH   screen memory
+;               SI:_EAX,DL   buffer to copy from
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
@@ -228,15 +231,15 @@ trans_loop:
 _PixCopy19_:
         push    ds              ; save DS
         mov     ds,si           ; get SI:AX into DS:SI
-        mov     esi,eax
+        mov     _esi,_eax
         cmp     word ptr ss:__PlotAct,0
         _if     e
           rep     movsb         ; - do fast copy
         _else
-          push    ebx
-ifdef _386
-          movzx   ebx,word ptr ss:__PlotAct
-          mov     ebx,cs:VGAJmp[ebx*4]; load the appropriate plot routine
+          push    _ebx
+ifdef __386__
+          movzx   _ebx,word ptr ss:__PlotAct
+          mov     _ebx,cs:VGAJmp[_ebx*4]; load the appropriate plot routine
 else
           mov     bx,ss:__PlotAct     ; load the appropriate plot routine
           shl     bx,1                ; ...
@@ -244,10 +247,10 @@ else
 endif
 copy_loop:                      ; loop
             lodsb               ; - get the next colour
-            call    ebx         ; - call the plot routine
-            inc     edi         ; - move to next pixel on the right
+            call    _ebx         ; - call the plot routine
+            inc     _edi         ; - move to next pixel on the right
           loop    copy_loop     ; until( --count == 0 )
-          pop     ebx
+          pop     _ebx
         _endif
         pop     ds
         ret
@@ -256,8 +259,8 @@ copy_loop:                      ; loop
 ;
 ;   ReadRow routine
 ;
-;   Input       ES:EDI      buffer to copy into
-;               SI:EAX,DL   screen memory (SI:AX for 16-bit)
+;   Input       ES:_EDI      buffer to copy into
+;               SI:_EAX,DL   screen memory (SI:AX for 16-bit)
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
@@ -265,7 +268,7 @@ copy_loop:                      ; loop
 _PixRead19_:
         push    ds              ; save DS
         mov     ds,si           ; get SI:AX into DS:SI
-        mov     esi,eax
+        mov     _esi,_eax
         rep     movsb           ; do the copy
         pop     ds
         ret
@@ -274,7 +277,7 @@ _PixRead19_:
 ;
 ;   Scan routines
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
@@ -286,37 +289,37 @@ _PixRead19_:
 ;=========================================================================
 
 _ScanLeft19_:
-        mov     ecx,ebx
-        sub     ecx,esi
-        inc     ecx
-        inc     ecx
+        mov     _ecx,_ebx
+        sub     _ecx,_esi
+        inc     _ecx
+        inc     _ecx
         std                     ; use autodecrement
         or      dl,dl
         _if      ne             ; if scan while colour
           _loop                 ; do the scan until colour = al and count > 0
-            dec   ecx           ; decrement the count
+            dec   _ecx           ; decrement the count
             _quif e             ; stop if cx == 0
             scasb               ; scan the byte
             _quif ne            ; ... while color == al
           _endloop
         _else                   ; else if scan until colour
           _loop                 ; do the scan while color = al and count > 0
-            dec   ecx           ; decrement the count
+            dec   _ecx           ; decrement the count
             _quif e             ; stop if cx == 0
             scasb               ; scan the byte
             _quif e             ; ... until color == al
           _endloop
         _endif
         cld                     ; clear direction flag
-        add     esi,ecx
-        mov     ebx,esi
+        add     _esi,_ecx
+        mov     _ebx,_esi
         ret
 
 _ScanRight19_:
-        mov     ecx,esi
-        sub     ecx,ebx
-        inc     ecx
-        inc     ecx
+        mov     _ecx,_esi
+        sub     _ecx,_ebx
+        inc     _ecx
+        inc     _ecx
         cld                     ; use autoincrement
         or      dl,dl
         _if      ne             ; if scan while colour
@@ -324,8 +327,8 @@ _ScanRight19_:
         _else                   ; else if scan until colour
           repne   scasb
         _endif
-        sub     esi,ecx
-        mov     ebx,esi
+        sub     _esi,_ecx
+        mov     _ebx,_esi
         ret
 
         endmod vgautils

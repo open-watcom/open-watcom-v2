@@ -1,10 +1,14 @@
-#pmake: build trap remote os2 16 32 par x86
+#pmake: trap remote os_os2 cpu_i86 par
+host_CPU = i86
+host_OS = os2
 
-os = os2
+os  = os2
 srv = par
 cpu = x86
+which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs) paros2.obj portos2.obj
+extra_objs = paros2.obj portos2.obj os2noth.obj
 
-!include $(trap_dir)\trap.mif
-!include ..\os2.mif
+!include ../os2.mif
+!include $(trap_dir)/master.mif

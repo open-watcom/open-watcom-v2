@@ -1,0 +1,122 @@
+
+-------
+	FILE: sim.doc
+
+	sim.c benchmark 
+
+	It will be best to first create a directory (e.g., 'sim') to 
+	hold the sim files.
+
+
+
+1.      UNPACKING sim.shar
+
+	Do the following to unpack sim.shar:
+
+
+	sh sim.shar
+
+	It contains the files:
+	sim.c
+	sim.doc
+	simrun.doc
+	tob.38-44
+	liv.42-48
+
+	NOTE: sim.tbl (table of sim results) is not included in 
+	      sim.shar.
+
+
+2.      CHANGING COMPILER OPTIONS
+
+	(a) Compiler options
+	
+	As a minimum you should run with the '-O' option, but be
+	aware that most compilers come with numerous options (switches)
+	that may (or may not) improve program execution speed.
+
+	(b) Timer options
+
+	The default '-DUNIX' option is one of several timer options
+	avaliable.
+	
+	The timer option MUST be specified for the program to compile.
+	
+	The various timer options are available at the end of sim.c which
+	you may need to examine to find the right match for your machine.
+	Here are the current timer choices (the actual option name
+	follows the '-D'):
+
+	'-DAmiga'       for Amiga systems.
+	'-DUNIX'        for UNIX systems (preferred)
+	'-DUNIX_Old'    for UNIX systems (avoid if possible)
+	'-DVMS'         for VMS systems 
+	'-DBORLAND_C'   for PC's with Borland C
+	'-DMSC'         for PC's with Microsoft C
+	'-DMAC'         for Macintosh systems with Think C
+	'-DIPSC'        for i860 IPSC systems
+	'-DFORTRAN_SEC' for Cray systems (preferred)
+	'-DGTODay'      for UNIX systems
+	'-DCTimer'      for Cray systems (avoid if possible)
+	'-DUXPM'        for Fijitsu UXP/M systems.
+
+
+
+4.      COMPILING
+
+	If you are using UNIX (or gcc) then as a minimum you can do:
+
+	cc -DUNIX -O sim.c -o sim
+
+	or
+
+	gcc -DUNIX -O sim.c -o sim
+
+	or whatever ...
+
+	There are generally other options that one can use which can
+	improve performance beyond that obtained from the '-O' alone.
+
+
+
+5.      RUNNING THE PROGRAM
+
+	Do the following to run the program:
+
+	sim 8 tob.38-44 liv.42-48 
+
+
+6.      REPORTING RESULTS
+
+	Edit the ascii file 'simrun.doc' and please add in the 
+	following:
+		    
+		    NAME: [ e.g., Matt Pounder ]
+		    DATE: [ e.g., 14 Aug 1993 ]
+	   EMAIL ADDRESS: [ e.g., pounder@wrestle.state.edu ]
+
+    MACHINE/SYSTEM/MODEL: [ e.g., HP 9000/735 ]
+		     CPU: [ e.g., PA-RISC 7100 ]
+   CPU CLOCK SPEED (MHz): [ e.g., 99.0 MHz ]
+	   OS/OS-VERSION: [ e.g., HP-UX 9.00 ]
+	COMPILER/VERSION: [ e.g., gcc 3.4.2 ]
+	COMPILER OPTIONS: [ e.g., -DUNIX -O2 -finline-functions ]
+		
+		COMMENTS: [ e.g.,  None.]    
+		    
+		 RESULTS:
+     USER RUN TIME (sec):
+
+
+	Email simrun.doc to aburto@marlin.nosc.mil and I will include
+	in, and maintain, table of results. Results and other programs 
+	are available via anonymous ftp to 'ftp.nosc.mil' in
+	directory 'pub/aburto'. The IP address is: 128.49.192.51
+
+	Thank you very much ...
+
+	Al Aburto
+	aburto@marlin.nosc.mil
+-------
+
+

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Variable splitting - find cases where a var is used for
+*               separate and independent purposes.
 *
 ****************************************************************************/
 
@@ -35,26 +35,28 @@
 #include "conflict.h"
 #include "opcodes.h"
 #include "stackok.h"
+#include "stack.h"
 
 extern  block           *HeadBlock;
 extern  conflict_node   *ConfList;
 
-extern  void            NullConflicts(var_usage);
-extern  void            FreeConflicts();
-extern  void            FindReferences();
-extern  void            MakeConflicts();
-extern  name            *SAllocTemp(type_class_def,type_length);
-extern  bool            InsDead(void);
-extern  bool            MoreConflicts();
+extern  void            NullConflicts( var_usage );
+extern  void            FreeConflicts( void );
+extern  void            FindReferences( void );
+extern  void            MakeConflicts( void );
+extern  name            *SAllocTemp( type_class_def, type_length );
+extern  bool            InsDead( void );
+extern  bool            MoreConflicts( void );
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,
                                     type_length,int,i_flags);
 
 static  block_num       Instance;
 static  global_bit_set  Id;
+static  pointer         MarkInstance(pointer);
 
-static  block   *FindUnMarkedInstance() {
-/***************************************/
-
+static  block   *FindUnMarkedInstance( void )
+/*******************************************/
+{
     block               *blk;
     data_flow_def       *flow;
 
@@ -70,52 +72,9 @@ static  block   *FindUnMarkedInstance() {
 }
 
 
-static  bool    Split1Var( conflict_node *conf ) {
-/************************************************/
-
-    block       *unlabeled;
-    bool        change;
-    name        *op;
-
-    NotVisited();
-    Instance = 0;
-    _GBitAssign( Id, conf->id.out_of_block );
-    for(;;) {
-        unlabeled = FindUnMarkedInstance();
-        if( unlabeled == NULL ) break;
-        ++Instance;
-        MarkInstance( unlabeled );
-    }
-    op = conf->name;
-    change = FALSE;
-    while( Instance > 1 ) {
-        change = TRUE;
-        ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
-        --Instance;
-    }
-    return( change );
-}
-
-
-static  void    CleanUp() {
-/*************************/
-
-    block       *blk;
-    block_num   id;
-
-    blk = HeadBlock;
-    id = 0;
-    while( blk != NULL ) {
-        blk->class &= ~BLOCK_VISITED;
-        blk->id = ++id;
-        blk = blk->next_block;
-    }
-}
-
-
-static  void    NotVisited() {
-/****************************/
-
+static  void    NotVisited( void )
+/********************************/
+{
     block       *blk;
 
     blk = HeadBlock;
@@ -127,45 +86,9 @@ static  void    NotVisited() {
 }
 
 
-static  void    MarkInstance( block *blk ) {
-/**********************************/
-
-    block_edge          *edge;
-    int                 i;
-    data_flow_def       *flow;
-    global_bit_set      *bitp;
-
-    if( blk->class & BLOCK_VISITED ) return;
-    blk->class |= BLOCK_VISITED;
-    blk->id = Instance;
-    flow = blk->dataflow;
-    if( _GBitOverlap( flow->in, Id ) ) {
-        edge = blk->input_edges;
-        while( edge != NULL ) {
-            bitp = &edge->source->dataflow->out;
-            if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurse( MarkInstance, edge->source );
-            }
-            edge = edge->next_source;
-        }
-    }
-    if( _GBitOverlap( flow->out, Id ) ) {
-        i = blk->targets;
-        edge = &blk->edge[ 0 ];
-        while( --i >= 0 ) {
-            bitp = &edge->destination->dataflow->in;
-            if( _GBitOverlap( *bitp, Id ) ) {
-                SafeRecurse( MarkInstance, edge->destination );
-            }
-            ++edge;
-        }
-    }
-}
-
-
-extern  bool    RepOp( name **pop, name *of, name *with ) {
-/*********************************************************/
-
+extern  bool    RepOp( name **pop, name *of, name *with )
+/*******************************************************/
+{
     name        *op;
     name        *base;
     name        *index;
@@ -196,9 +119,10 @@ extern  bool    RepOp( name **pop, name *of, name *with ) {
     return( change );
 }
 
-static  void    ReplaceInstances( name_def *of, name_def *with ) {
-/*****************************************************************/
 
+static  void    ReplaceInstances( name *of, name *with )
+/******************************************************/
+{
     block       *blk;
     instruction *ins;
     int         i;
@@ -224,13 +148,94 @@ static  void    ReplaceInstances( name_def *of, name_def *with ) {
     }
 }
 
-extern  void    SplitVars() {
-/***************************/
 
+static  bool    Split1Var( conflict_node *conf )
+/**********************************************/
+{
+    block       *unlabeled;
+    bool        change;
+    name        *op;
+
+    NotVisited();
+    Instance = 0;
+    _GBitAssign( Id, conf->id.out_of_block );
+    for( ;; ) {
+        unlabeled = FindUnMarkedInstance();
+        if( unlabeled == NULL ) break;
+        ++Instance;
+        MarkInstance( unlabeled );
+    }
+    op = conf->name;
+    change = FALSE;
+    while( Instance > 1 ) {
+        change = TRUE;
+        ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
+        --Instance;
+    }
+    return( change );
+}
+
+
+static  void    CleanUp( void )
+/*****************************/
+{
+    block       *blk;
+    block_num   id;
+
+    blk = HeadBlock;
+    id = 0;
+    while( blk != NULL ) {
+        blk->class &= ~BLOCK_VISITED;
+        blk->id = ++id;
+        blk = blk->next_block;
+    }
+}
+
+
+static  pointer MarkInstance( pointer bl )
+/****************************************/
+{
+    block_edge          *edge;
+    int                 i;
+    data_flow_def       *flow;
+    global_bit_set      *bitp;
+    block               *blk = bl;
+
+    if( blk->class & BLOCK_VISITED ) return NULL;
+    blk->class |= BLOCK_VISITED;
+    blk->id = Instance;
+    flow = blk->dataflow;
+    if( _GBitOverlap( flow->in, Id ) ) {
+        edge = blk->input_edges;
+        while( edge != NULL ) {
+            bitp = &edge->source->dataflow->out;
+            if( _GBitOverlap( *bitp, Id ) ) {
+                SafeRecurse( MarkInstance, edge->source );
+            }
+            edge = edge->next_source;
+        }
+    }
+    if( _GBitOverlap( flow->out, Id ) ) {
+        i = blk->targets;
+        edge = &blk->edge[ 0 ];
+        while( --i >= 0 ) {
+            bitp = &edge->destination->dataflow->in;
+            if( _GBitOverlap( *bitp, Id ) ) {
+                SafeRecurse( MarkInstance, edge->destination );
+            }
+            ++edge;
+        }
+    }
+    return NULL;
+}
+
+
+extern  void    SplitVars( void )
+/*******************************/
 /* For each variable, find out if it can be split into two separate variables.*/
 /* This often happens when programmers re-use variables rather than defining*/
 /* a new one.*/
-
+{
     name                *op;
     conflict_node       *conf;
 

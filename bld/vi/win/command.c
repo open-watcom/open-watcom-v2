@@ -24,17 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command window.
 *
 ****************************************************************************/
 
 
-#include <assert.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
-#include "keys.h"
 #include "utils.h"
 #include "win.h"
 
@@ -54,7 +51,7 @@ window CommandWindow = {
 
 window_id CommandId = NO_WINDOW;
 
-LONG WINEXP CommandWindowProc( HWND, unsigned, UINT, LONG );
+LONG WINEXP CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *className = "CommandWindow";
 
@@ -65,12 +62,12 @@ static BOOL Init( window *w, void *parm )
     w = w;
     parm = parm;
     wc.style = 0;
-    wc.lpfnWndProc = (LPVOID) CommandWindowProc;
+    wc.lpfnWndProc = (WNDPROC)CommandWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LPVOID );
     wc.hInstance = InstanceHandle;
-    wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+    wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
@@ -102,7 +99,8 @@ LONG WINEXP CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        if( w && ( (HWND) w == Root || GetWindow( (HWND) w, GW_OWNER ) == EditContainer ) ) {
+        if( w && ((HWND) w == Root ||
+                   GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );
@@ -111,9 +109,9 @@ LONG WINEXP CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         break;
     case WM_KEYDOWN:
         if( WindowsKeyPush( w, HIWORD( l ) ) ) {
-            return( FALSE );
+            return( 0 );
         }
-        return( DefWindowProc( hwnd, msg, w, l ) );
+        break;
     case WM_PAINT:
         hdc = BeginPaint( hwnd, &ps );
         FillRect( hdc, &ps.rcPaint, ColorBrush( WIN_BACKCOLOR( &CommandWindow ) ) );
@@ -146,7 +144,7 @@ window_id NewCommandWindow( void )
         WS_POPUPWINDOW | WS_CLIPSIBLINGS,
         p.x, p.y,
         size->right - size->left, bottom - size->top, Root,
-        (HMENU)NULL, InstanceHandle, NULL );
+        (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( cmd, SW_SHOWNORMAL );
     UpdateWindow( cmd );
     return( cmd );

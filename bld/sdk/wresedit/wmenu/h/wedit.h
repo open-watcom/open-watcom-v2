@@ -46,29 +46,29 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WInitEditWindows           ( HINSTANCE );
-extern void  WFiniEditWindows           ( void );
-extern void  WInitEditDlg               ( HINSTANCE inst, HWND parent );
-extern Bool  WCreateMenuEditWindow      ( WMenuEditInfo *, HINSTANCE );
-extern Bool  WResizeMenuEditWindow      ( WMenuEditInfo *, RECT * );
-extern Bool  WSetEditWinResName         ( WMenuEditInfo * );
-extern Bool  WInitEditWindowListBox     ( WMenuEditInfo * );
-extern void  WHandleSelChange           ( WMenuEditInfo * );
-extern void  WDoHandleSelChange         ( WMenuEditInfo *, Bool, Bool );
-extern Bool  WResetEditWindowFlags      ( HWND dlg );
+extern void WInitEditWindows( HINSTANCE );
+extern void WFiniEditWindows( void );
+extern void WInitEditDlg( HINSTANCE inst, HWND parent );
+extern Bool WCreateMenuEditWindow( WMenuEditInfo *, HINSTANCE );
+extern Bool WResizeMenuEditWindow( WMenuEditInfo *, RECT * );
+extern Bool WSetEditWinResName( WMenuEditInfo * );
+extern Bool WInitEditWindowListBox( WMenuEditInfo * );
+extern void WHandleSelChange( WMenuEditInfo * );
+extern void WDoHandleSelChange( WMenuEditInfo *, Bool, Bool );
+extern Bool WResetEditWindowFlags( HWND dlg );
 
-extern void  WSetEditWindowControls     ( WMenuEditInfo *, WMenuEntry * );
-extern Bool  WSetEditWindowMenuEntry    ( WMenuEditInfo *, WMenuEntry * );
-extern Bool  WGetEditWindowMenuEntry    ( WMenuEditInfo *, WMenuEntry *, Bool, Bool * );
+extern void WSetEditWindowControls( WMenuEditInfo *, WMenuEntry * );
+extern Bool WSetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry * );
+extern Bool WGetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry *, Bool, Bool * );
 
-extern Bool  WSetEditWindowText         ( HWND, MenuFlags, char * );
-extern Bool  WSetEditWindowID           ( HWND, uint_16, Bool, char * );
-extern Bool  WSetEditWindowFlags        ( HWND, MenuFlags, Bool );
+extern Bool WSetEditWindowText( HWND, MenuFlags, char * );
+extern Bool WSetEditWindowID( HWND, uint_16, Bool, char * );
+extern Bool WSetEditWindowFlags( HWND, MenuFlags, Bool );
 
-extern Bool  WGetEditWindowText         ( HWND, char ** );
-extern Bool  WGetEditWindowID           ( HWND, char **, uint_16 *, WRHashTable *, Bool );
-extern Bool  WGetEditWindowFlags        ( HWND, MenuFlags * );
-extern Bool  WClipMenuItem              ( WMenuEditInfo *einfo, Bool cut );
-extern Bool  WPasteMenuItem             ( WMenuEditInfo *einfo );
+extern Bool WGetEditWindowText( HWND, char ** );
+extern Bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, Bool );
+extern Bool WGetEditWindowFlags( HWND, MenuFlags * );
+extern Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut );
+extern Bool WPasteMenuItem( WMenuEditInfo *einfo );
 
 #endif

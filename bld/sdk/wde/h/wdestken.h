@@ -46,8 +46,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdePushEnv ( jmp_buf * );
-extern Bool WdePopEnv  ( jmp_buf * );
-extern Bool WdeTopEnv  ( jmp_buf * );
+extern Bool WdePushEnv( jmp_buf * );
+extern Bool WdePopEnv( jmp_buf * );
+extern Bool WdeTopEnv( jmp_buf * );
 
 #endif

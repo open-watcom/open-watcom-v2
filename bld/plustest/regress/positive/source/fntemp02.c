@@ -4,41 +4,41 @@
 #include <stdlib.h>
 
 template <class T>
-    struct OV {
-	operator void *()
-	{
-	    return 0;
-	}
-    };
-
-template <class T>
-    int operator ==( OV<T> const &x, OV<T> const &y )
+struct OV {
+    operator void *()
     {
-	fail(__LINE__);
-	return 0;
+        fail(__LINE__);
+        return 0;
     }
+};
 
 template <class T>
-    struct OK {
-    };
+int operator ==( OV<T> const &x, OV<T> const &y )
+{
+    return 0;
+}
 
 template <class T>
-    int operator ==( OK<T> const &x, OK<T> const &y )
-    {
-	return 0;
-    }
+struct OK {
+};
 
 template <class T>
-    int foo( OV<T> &x, OV<T> &y )
-    {
-	return x == y;
-    }
+int operator ==( OK<T> const &x, OK<T> const &y )
+{
+    return 0;
+}
 
 template <class T>
-    int foo( OK<T> &x, OK<T> &y )
-    {
-	return x == y;
-    }
+int foo( OV<T> &x, OV<T> &y )
+{
+    return x == y;
+}
+
+template <class T>
+int foo( OK<T> &x, OK<T> &y )
+{
+    return x == y;
+}
 
 int main()
 {

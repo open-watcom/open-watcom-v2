@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  BIOS time of day service, 16-bit version.
 ;*
 ;*****************************************************************************
 
@@ -38,11 +37,7 @@ include struct.inc
         modstart b_timofd
 
         defp    __ibm_bios_timeofday
-        if __WASM__ ge 100
-         xdefp  "C",__ibm_bios_timeofday
-        else
-         xdefp  <"C",__ibm_bios_timeofday>
-        endif
+        xdefp  "C",__ibm_bios_timeofday
 ;
 ;       int     __ibm_bios_timeofday( int service, long *timeval );
 ;

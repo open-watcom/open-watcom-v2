@@ -49,7 +49,8 @@ typedef enum {
 typedef struct lib_cmd {
     struct      lib_cmd *next;
     operation   ops;
-    char        name[1];
+    char        *fname;
+    char        name[ 1 ];
 } lib_cmd;
 
 extern lib_cmd *CmdList;

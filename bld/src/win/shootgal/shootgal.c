@@ -10,29 +10,29 @@ HWND        MessageWnd = NULL;
 HWND        ScoreWnd = NULL;
 BOOL        MessagesOn = FALSE;
 
-int PASCAL WinMain( HANDLE, HANDLE, LPSTR, int );
-static BOOL FirstInstance( HANDLE );
-static BOOL AnyInstance( HANDLE, int );
+int PASCAL WinMain( HINSTANCE, HINSTANCE, LPSTR, int );
+static BOOL FirstInstance( HINSTANCE );
+static BOOL AnyInstance( HINSTANCE, int );
 
-BOOL _EXPORT FAR PASCAL About( HWND, unsigned, UINT, LONG );
-BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND, unsigned, UINT, LONG );
-long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
+BOOL _EXPORT FAR PASCAL About( HWND, UINT, WPARAM, LPARAM );
+BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND, UINT, WPARAM, LPARAM );
+long _EXPORT FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );
 BOOL TurnMessageWindowOn( HWND );
 BOOL TurnScoreWindowOn( HWND );
-BOOL _EXPORT FAR PASCAL MessageWindowProc( HWND, unsigned, UINT, LONG );
-BOOL _EXPORT FAR PASCAL ScoreProc( HWND, unsigned, UINT, LONG );
+BOOL _EXPORT FAR PASCAL MessageWindowProc( HWND, UINT, WPARAM, LPARAM );
+BOOL _EXPORT FAR PASCAL ScoreProc( HWND, UINT, WPARAM, LPARAM );
 static void CheckHit( HDC, POINT );
-static void DrawBitmap( HDC, HBITMAP, short, short );
+static void DrawBitmap( HDC, HBITMAP, int, int );
 POINT RandPoint( RECT, POINT );
-void _EXPORT FAR PASCAL DrawBolt( short, short, LPSTR );
+void _EXPORT FAR PASCAL DrawBolt( int, int, LPSTR );
 static void ShootBolt( HWND );
-static void BoomSound();
-static void BoltSound();
+static void BoomSound( void );
+static void BoltSound( void );
 
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
                     int cmdshow )
 /*******************************/
 {
@@ -50,7 +50,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
 
     if( !AnyInstance( this_inst, cmdshow ) ) return( FALSE );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
         /*
          * check to see if any of the messages are for a modeless dialog box,
          */
@@ -71,7 +71,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 /*******************************************/
 {
     WNDCLASS    wc;
@@ -100,7 +100,7 @@ static BOOL FirstInstance( HANDLE this_inst )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow )
 /******************************************************/
 {
     HWND        window_handle;
@@ -112,8 +112,8 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
      */
     window_handle = CreateWindow(
         ShootGalClass,           /* class */
-        "WATCOM Shooting Gallery - Sample Application",   /* caption */
-        WS_OVERLAPPEDWINDOW | WS_VSCROLL | WS_HSCROLL,    /* style */
+        "Open Watcom Shooting Gallery - Sample Application",    /* caption */
+        WS_OVERLAPPEDWINDOW | WS_VSCROLL | WS_HSCROLL,          /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
         CW_USEDEFAULT,          /* init. x size */
@@ -130,7 +130,7 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
      * get a timer
      */
     while( !SetTimer( window_handle, TARGET_TIMER, STD_TARGET_SPEED,
-                                                 ( FARPROC ) NULL ) ) {
+                                                 (LPVOID) NULL ) ) {
         if( MessageBox( window_handle, "Too many timers in use!", NULL,
                         MB_ICONEXCLAMATION | MB_RETRYCANCEL ) == IDCANCEL ) {
             return( FALSE );
@@ -158,9 +158,9 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
     edata_ptr->bolt_speed = STD_BOLT_SPEED;
     GetClientRect( window_handle, &edata_ptr->client_rect );
     edata_ptr->message_window_proc =
-             MakeProcInstance( MessageWindowProc, this_inst );
+             MakeProcInstance( (FARPROC)MessageWindowProc, this_inst );
     edata_ptr->score_window_proc =
-             MakeProcInstance( ScoreProc, this_inst );
+             MakeProcInstance( (FARPROC)ScoreProc, this_inst );
     edata_ptr->bolt_icon = LoadIcon( this_inst, "Bolt" );
 
     /*
@@ -181,8 +181,8 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
 /*
  * About -  processes messages for the about dialogue.
  */
-BOOL _EXPORT FAR PASCAL About( HWND window_handle, unsigned msg,
-                                UINT wparam, LONG lparam )
+BOOL _EXPORT FAR PASCAL About( HWND window_handle, UINT msg,
+                                WPARAM wparam, LPARAM lparam )
 /********************************************************/
 {
     lparam = lparam;                    /* turn off warning */
@@ -208,8 +208,8 @@ BOOL _EXPORT FAR PASCAL About( HWND window_handle, unsigned msg,
  * Allows the user to select speeds for the target or lightning bolt,
  * depending on which selection was chosen.
  */
-BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND dialog_wnd, unsigned msg,
-                                UINT wparam, LONG lparam )
+BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND dialog_wnd, UINT msg,
+                                WPARAM wparam, LPARAM lparam )
 /********************************************************/
 {
     extra_data              *edata_ptr;
@@ -294,7 +294,7 @@ BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND dialog_wnd, unsigned msg,
             /* restart timer at new speed */
             KillTimer( GetWindow( dialog_wnd, GW_OWNER), TARGET_TIMER );
             SetTimer( GetWindow( dialog_wnd, GW_OWNER), TARGET_TIMER,
-                      speed, ( FARPROC ) NULL );
+                      speed, (LPVOID) NULL );
         } else {
             /* change speed back to positive value */
             edata_ptr-> bolt_speed = -speed;
@@ -324,8 +324,8 @@ BOOL _EXPORT FAR PASCAL SpeedDlgProc( HWND dialog_wnd, unsigned msg,
 /*
  * WindowProc - handle messages for the main application window
  */
-LONG _EXPORT FAR PASCAL WindowProc( HWND window_handle, unsigned msg,
-                                     UINT wparam, LONG lparam )
+LONG _EXPORT FAR PASCAL WindowProc( HWND window_handle, UINT msg,
+                                     WPARAM wparam, LPARAM lparam )
 /*************************************************************/
 {
     FARPROC             proc;
@@ -412,8 +412,8 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND window_handle, unsigned msg,
         switch( cmd ) {
         case MENU_ABOUT:
             inst_handle = GET_HINST( window_handle );
-            proc = MakeProcInstance( About, inst_handle );
-            DialogBox( inst_handle,"AboutBox", window_handle, proc );
+            proc = MakeProcInstance( (FARPROC)About, inst_handle );
+            DialogBox( inst_handle,"AboutBox", window_handle, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         case MENU_EXIT:
@@ -421,15 +421,15 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND window_handle, unsigned msg,
             break;
         case MENU_SET_TARGET_SPEED:
             inst_handle = GET_HINST( window_handle );
-            proc = MakeProcInstance( SpeedDlgProc, inst_handle );
-            DialogBoxParam( inst_handle,"SpeedDlg", window_handle, proc,
+            proc = MakeProcInstance( (FARPROC)SpeedDlgProc, inst_handle );
+            DialogBoxParam( inst_handle,"SpeedDlg", window_handle, (DLGPROC)proc,
                             (DWORD)SET_TARGET_SPEED );
             FreeProcInstance( proc );
             break;
         case MENU_SET_BOLT_SPEED:
             inst_handle = GET_HINST( window_handle );
-            proc = MakeProcInstance( SpeedDlgProc, inst_handle );
-            DialogBoxParam( inst_handle,"SpeedDlg", window_handle, proc,
+            proc = MakeProcInstance( (FARPROC)SpeedDlgProc, inst_handle );
+            DialogBoxParam( inst_handle,"SpeedDlg", window_handle, (DLGPROC)proc,
                             (DWORD)SET_BOLT_SPEED );
             FreeProcInstance( proc );
             break;
@@ -632,7 +632,7 @@ BOOL TurnMessageWindowOn( HWND window_handle )
     inst_handle = GET_HINST( window_handle );
 
     MessageWnd = CreateDialog( inst_handle,"MessageWindow", window_handle,
-                     edata_ptr->message_window_proc );
+                     (DLGPROC)edata_ptr->message_window_proc );
     return( MessageWnd != NULL );
 
 } /* TurnMessageWindowOn */
@@ -654,7 +654,7 @@ BOOL TurnScoreWindowOn( HWND window_handle )
     inst_handle = GET_HINST( window_handle );
 
     ScoreWnd = CreateDialog( inst_handle,"ScoreWindow", window_handle,
-                     edata_ptr->score_window_proc );
+                     (DLGPROC)edata_ptr->score_window_proc );
     return( ScoreWnd != NULL );
 
 } /* TurnScoreWindowOn */
@@ -662,8 +662,8 @@ BOOL TurnScoreWindowOn( HWND window_handle )
 /*
  * processes messages for the score dialog box
  */
-BOOL _EXPORT FAR PASCAL ScoreProc( HWND window_handle, unsigned msg,
-                                            UINT wparam, LONG lparam )
+BOOL _EXPORT FAR PASCAL ScoreProc( HWND window_handle, UINT msg,
+                                            WPARAM wparam, LPARAM lparam )
 /********************************************************************/
 {
 
@@ -697,8 +697,8 @@ BOOL _EXPORT FAR PASCAL ScoreProc( HWND window_handle, unsigned msg,
     return( FALSE );
 } /* ScoreProc */
 
-BOOL _EXPORT FAR PASCAL MessageWindowProc( HWND window_handle, unsigned msg,
-                                            UINT wparam, LONG lparam )
+BOOL _EXPORT FAR PASCAL MessageWindowProc( HWND window_handle, UINT msg,
+                                            WPARAM wparam, LPARAM lparam )
 /********************************************************************/
 {
     char textbuffer[48];
@@ -902,7 +902,7 @@ static void CheckHit( HDC hdc, POINT hit_point )
  * display a bitmap on the given DC, at device coordinates x,y
  * make the bitmap the same size as the source bitmap
  */
-static void DrawBitmap( HDC hdc, HBITMAP bitmap, short x, short y )
+static void DrawBitmap( HDC hdc, HBITMAP bitmap, int x, int y )
 /*****************************************************************/
 {
     BITMAP      bitmapbuff;
@@ -1035,9 +1035,9 @@ static void ShootBolt( HWND window_handle )
      * use aim - boltheight so that the bottom left corner of the bolt icon
      * stops at the point AIM
      */
-    proc = MakeProcInstance( DrawBolt, inst_handle );
+    proc = MakeProcInstance( (FARPROC)DrawBolt, inst_handle );
     LineDDA( edata_ptr->bolt.x, edata_ptr->bolt.y, edata_ptr->aim.x,
-             edata_ptr->aim.y - BOLTHEIGHT, proc, (LPARAM)(LPVOID)&mover );
+             edata_ptr->aim.y - BOLTHEIGHT, (LINEDDAPROC)proc, (LPARAM)(LPVOID)&mover );
     FreeProcInstance( proc );
 
     /*
@@ -1071,8 +1071,8 @@ static void ShootBolt( HWND window_handle )
  * this function is called after each time BoltSound is called
  * Sound is not implemented for the NT version
  */
-static void BoomSound()
-/*********************/
+static void BoomSound( void )
+/***************************/
 {
 #ifndef __NT__
     short i;
@@ -1102,8 +1102,8 @@ static void BoomSound()
  * create a tone that goes from high-pitched to low-pitched
  * Sound is not implemented for the NT version
  */
-static void BoltSound()
-/*********************/
+static void BoltSound( void )
+/***************************/
 {
 #ifndef __NT__
     short i;

@@ -35,39 +35,29 @@
 #include <stdio.h>
 #include <wos2.h>
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
-    #include <stdlib.h>
-    #include "mbwcconv.h"
-#endif
 
 
 _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *new )
-    {
-        APIRET      rc;
+{
+    APIRET      rc;
 #ifdef __WIDECHAR__
-        char        mbOld[MB_CUR_MAX*_MAX_PATH];    /* single-byte char */
-        char        mbNew[MB_CUR_MAX*_MAX_PATH];    /* single-byte char */
-#endif
+    char        mbOld[MB_CUR_MAX * _MAX_PATH];  /* single-byte char */
+    char        mbNew[MB_CUR_MAX * _MAX_PATH];  /* single-byte char */
 
-        #ifdef __WIDECHAR__
-            __filename_from_wide( mbOld, old );
-            __filename_from_wide( mbNew, new );
-            #if defined(__WARP__)
-                rc = DosMove( (PSZ)mbOld, (PSZ)mbNew );
-            #else
-                rc = DosMove( mbOld, mbNew, 0 );
-            #endif
-        #else
-            #if defined(__WARP__)
-                rc = DosMove( (PSZ)old, (PSZ)new );
-            #else
-                rc = DosMove( (PSZ)old, (PSZ)new, 0 );
-            #endif
-        #endif
-
-        if( rc != 0  ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );            /* indicate no error */
+    if( wcstombs( mbOld, old, sizeof( mbOld ) ) == -1 ) {
+        mbOld[0] = '\0';
     }
+    if( wcstombs( mbNew, new, sizeof( mbNew ) ) == -1 ) {
+        mbNew[0] = '\0';
+    }
+#endif
+#ifdef _M_I86
+    rc = DosMove( (PSZ)__F_NAME(old,mbOld), (PSZ)__F_NAME(new,mbNew), 0 );
+#else
+    rc = DosMove( (PSZ)__F_NAME(old,mbOld), (PSZ)__F_NAME(new,mbNew) );
+#endif
+    if( rc != 0  ) {
+        return( __set_errno_dos( rc ) );
+    }
+    return( 0 );            /* indicate no error */
+}

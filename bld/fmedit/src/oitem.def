@@ -1,4 +1,4 @@
 typedef struct oitem OITEM;
 
-extern OBJPTR OItemCreate( OBJPTR, RECT *, OBJPTR );
-extern void InitOItem();
+extern OBJPTR   OItemCreate( OBJPTR, RECT *, OBJPTR );
+extern void     InitOItem( void );

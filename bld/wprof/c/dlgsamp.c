@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sample file open dialog.
 *
 ****************************************************************************/
 
 
 #include <unistd.h>
 #include <sys/stat.h>
-#include <process.h>
 
 #include "common.h"
 #include "aui.h"
@@ -42,10 +40,7 @@
 #include "msg.h"
 #include "pathlist.h"
 
-//#include "dlgsamp.def"
-//#include "wpdriver.def"
-//#include "utils.def"
-//#include "msg.def"
+
 extern void OpenSample(void);
 extern void ReplaceExt(char *path,char *addext);
 extern void ErrorMsg(char *msg,... );
@@ -61,26 +56,26 @@ static char * sampFilterList = {
 
 
 
-extern bint WPSampFound()
-/***********************/
+extern bint WPSampFound( void )
+/*****************************/
 {
     struct stat     file_stat;
     char            buffer[_MAX_PATH2];
-    char *          ext;
+    char            *ext;
 
-    if( stat( SamplePath, &file_stat ) != -1 ) return( B_TRUE );
-    if( SamplePath[0] == NULLCHAR ) return( B_FALSE );
+    if( stat( SamplePath, &file_stat ) != -1 ) return( P_TRUE );
+    if( SamplePath[0] == NULLCHAR ) return( P_FALSE );
     _splitpath2( SamplePath, buffer, NULL, NULL, NULL, &ext );
-    if( *ext != NULLCHAR ) return( B_FALSE );
+    if( *ext != NULLCHAR ) return( P_FALSE );
     ReplaceExt( SamplePath, ".smp" );
-    if( stat( SamplePath, &file_stat ) != -1 ) return( B_TRUE );
-    return( B_FALSE );
+    if( stat( SamplePath, &file_stat ) != -1 ) return( P_TRUE );
+    return( P_FALSE );
 }
 
 
 
-extern void DlgOpenSample()
-/*************************/
+extern void DlgOpenSample( void )
+/*******************************/
 {
     for( ;; ) {
         if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,

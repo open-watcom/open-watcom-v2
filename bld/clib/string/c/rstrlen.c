@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strlen() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -40,79 +39,80 @@ size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )
 {
     RISC_DATA_LOCALREF;
     int                 offset = OFFSET(s);
-    UINT *              dw = ROUND(s);          /* round down to dword */
+    UINT                *dw = ROUND(s); /* round down to dword */
     UINT                dword;
     size_t              len = 0;
 
-    #ifdef __WIDECHAR__
-        if( offset % 2 )  return( __simple_wcslen( s ) );
-    #endif
+#ifdef __WIDECHAR__
+    if( offset % 2 )
+        return( __simple_wcslen( s ) );
+#endif
 
     /*** Scan until s is aligned ***/
     dword = *dw++;
     if( OFFSET_GOT_NIL(dword,offset) ) {
-        #if USE_INT64
-            switch( offset ) {
-              case 0:
-                if( !CHR1(dword) )  break;
-                len++;
-                /* fall through */
-              case 1:
-                if( !CHR2(dword) )  break;
-                len++;
-                /* fall through */
-              case 2:
-                if( !CHR3(dword) )  break;
-                len++;
-                /* fall through */
-              case 3:
-                if( !CHR4(dword) )  break;
-                len++;
-                /* fall through */
-              case 4:
-                if( !CHR5(dword) )  break;
-                len++;
-                /* fall through */
-              case 5:
-                if( !CHR6(dword) )  break;
-                len++;
-                /* fall through */
-              case 6:
-                if( !CHR7(dword) )  break;
-                len++;
-                /* fall through */
-              default:
-                break;
-            }
-        #else
-            #ifdef __WIDECHAR__
-                switch( offset ) {
-                  case 0:
-                    if( !CHR1(dword) )  break;
-                    len++;
-                    /* fall through */
-                  default:              /* offset==2 (no odd offsets) */
-                    break;
-                }
-            #else
-                switch( offset ) {
-                  case 0:
-                    if( !CHR1(dword) )  break;
-                    len++;
-                    /* fall through */
-                  case 1:
-                    if( !CHR2(dword) )  break;
-                    len++;
-                    /* fall through */
-                  case 2:
-                    if( !CHR3(dword) )  break;
-                    len++;
-                    /* fall through */
-                  default:
-                    break;
-                }
-            #endif
-        #endif
+#if USE_INT64
+        switch( offset ) {
+          case 0:
+            if( !CHR1(dword) )  break;
+            len++;
+            /* fall through */
+          case 1:
+            if( !CHR2(dword) )  break;
+            len++;
+            /* fall through */
+          case 2:
+            if( !CHR3(dword) )  break;
+            len++;
+            /* fall through */
+          case 3:
+            if( !CHR4(dword) )  break;
+            len++;
+            /* fall through */
+          case 4:
+            if( !CHR5(dword) )  break;
+            len++;
+            /* fall through */
+          case 5:
+            if( !CHR6(dword) )  break;
+            len++;
+            /* fall through */
+          case 6:
+            if( !CHR7(dword) )  break;
+            len++;
+            /* fall through */
+          default:
+            break;
+        }
+#else
+    #ifdef __WIDECHAR__
+        switch( offset ) {
+          case 0:
+            if( !CHR1(dword) )  break;
+            len++;
+            /* fall through */
+          default:              /* offset==2 (no odd offsets) */
+            break;
+        }
+    #else
+        switch( offset ) {
+          case 0:
+            if( !CHR1(dword) )  break;
+            len++;
+            /* fall through */
+          case 1:
+            if( !CHR2(dword) )  break;
+            len++;
+            /* fall through */
+          case 2:
+            if( !CHR3(dword) )  break;
+            len++;
+            /* fall through */
+          default:
+            break;
+        }
+    #endif
+#endif
         return( len );
     } else {
         len += ( BYTES_PER_WORD - offset ) / CHARSIZE;
@@ -121,51 +121,53 @@ size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )
     /*** Scan one word at a time until a null char is found ***/
     for( ;; ) {
         dword = *dw++;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
 
         dword = *dw++;
-        if( GOT_NIL(dword) )  break;
+        if( GOT_NIL(dword) )
+            break;
     }
 
     /*** Locate the null char within the offending word ***/
     len = (CHAR_TYPE*)dw - s;
-    #if USE_INT64
-        if( !CHR1(dword) ) {
-            len -= 8;
-        } else if( !CHR2(dword) ) {
-            len -= 7;
-        } else if( !CHR3(dword) ) {
-            len -= 6;
-        } else if( !CHR4(dword) ) {
-            len -= 5;
-        } else if( !CHR5(dword) ) {
-            len -= 4;
-        } else if( !CHR6(dword) ) {
-            len -= 3;
-        } else if( !CHR7(dword) ) {
-            len -= 2;
-        } else {
-            len -= 1;
-        }
-    #else
-        #ifdef __WIDECHAR__
-            if( !CHR1(dword) ) {
-                len -= 2;
-            } else {
-                len -= 1;
-            }
-        #else
-            if( !CHR1(dword) ) {
-                len -= 4;
-            } else if( !CHR2(dword) ) {
-                len -= 3;
-            } else if( !CHR3(dword) ) {
-                len -= 2;
-            } else {
-                len -= 1;
-            }
-        #endif
-    #endif
+#if USE_INT64
+    if( !CHR1(dword) ) {
+        len -= 8;
+    } else if( !CHR2(dword) ) {
+        len -= 7;
+    } else if( !CHR3(dword) ) {
+        len -= 6;
+    } else if( !CHR4(dword) ) {
+        len -= 5;
+    } else if( !CHR5(dword) ) {
+        len -= 4;
+    } else if( !CHR6(dword) ) {
+        len -= 3;
+    } else if( !CHR7(dword) ) {
+        len -= 2;
+    } else {
+        len -= 1;
+    }
+#else
+  #ifdef __WIDECHAR__
+    if( !CHR1(dword) ) {
+        len -= 2;
+    } else {
+        len -= 1;
+    }
+  #else
+    if( !CHR1(dword) ) {
+        len -= 4;
+    } else if( !CHR2(dword) ) {
+        len -= 3;
+    } else if( !CHR3(dword) ) {
+        len -= 2;
+    } else {
+        len -= 1;
+    }
+  #endif
+#endif
 
     return( len );
 }

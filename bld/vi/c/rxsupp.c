@@ -30,14 +30,24 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 #include "rxsupp.h"
 
-extern char near META[];
+extern char _NEAR META[];
+
+/*
+ * IsMagicCharRegular - check if character is magic and regular (no-magic meaning)
+ */
+bool IsMagicCharRegular( char ch )
+{
+    if( !EditFlags.Magic && Majick != NULL ) {
+        if( strchr( Majick, ch ) != NULL ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+
+} /* IsMagicCharRegular */
 
 /*
  * CurrentRegComp - compile current regular expression
@@ -69,46 +79,28 @@ int GetCurrRegExpLength( void )
 {
     int len;
 
-    len = (int) (CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0] );
+    len = (int) (CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0]);
     return( len );
 
 } /* GetCurrRegExpLength */
-
-/*
- * SetMajickString - set up the Majick string
- */
-void SetMajickString( char *str )
-{
-
-    if( str == NULL ) {
-        if( Majick != NULL ) {
-            return;
-        }
-        str = "()~@";
-    }
-    AddString2( &Majick, str );
-
-} /* SetMajickString */
 
 /*
  * MakeExpressionNonRegular - escape out all magical chars
  */
 void MakeExpressionNonRegular( char *str )
 {
-    int         i,j=0,k;
+    int         i, j = 0, k;
     char        *foo;
 
     k = strlen( str );
     foo = StaticAlloc();
-    for( i=0;i<k;i++ ) {
+    for( i = 0; i < k; i++ ) {
         if( str[i] == '/' ) {
             foo[j++] = '\\';
         } else if( strchr( META, str[i] ) != NULL ) {
             foo[j++] = '\\';
-            if( !EditFlags.Magic && Majick != NULL ) {
-                if( strchr( Majick, str[i] ) != NULL ) {
-                    j--;
-                }
+            if( IsMagicCharRegular( str[i] ) ) {
+                j--;
             }
         }
         foo[j++] = str[i];
@@ -118,3 +110,32 @@ void MakeExpressionNonRegular( char *str )
     StaticFree( foo );
 
 } /* MakeExpressionNonRegular */
+
+
+static bool old_CaseIgnore = FALSE;
+static bool old_Magic      = TRUE;
+static char *old_Majick    = NULL;
+
+void RegExpAttrSave( int caseignore, char *majick )
+{
+    old_CaseIgnore  = EditFlags.CaseIgnore;
+    old_Magic       = EditFlags.Magic;
+    old_Majick      = Majick;
+
+    if( caseignore != -1 ) {
+        EditFlags.CaseIgnore = caseignore;
+    }
+    if( majick == NULL ) {
+        EditFlags.Magic      = TRUE;
+    } else {
+        EditFlags.Magic      = FALSE;
+        Majick               = majick;
+    }
+}
+
+void RegExpAttrRestore( void )
+{
+    EditFlags.CaseIgnore = old_CaseIgnore;
+    EditFlags.Magic      = old_Magic;
+    Majick               = old_Majick;
+}

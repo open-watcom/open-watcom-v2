@@ -84,7 +84,7 @@ extern unsigned _func_name( version_dll ) (
         if( ver_dll_num == NULL ) {
             ver = 0;
         } else {
-            ver = (*ver_dll_num) ();
+            ver = ((unsigned(*)(void))(*ver_dll_num)) ();
         }
         FreeLibrary( lib );
     }

@@ -23,7 +23,7 @@ HDC PrinterDC( void )
     char        *tmp;
     HDC         hdc;
     char        str[128];
-    HANDLE      hlib;
+    HINSTANCE   hlib;
     FARPROC     fp;
 
     /*
@@ -92,7 +92,7 @@ HDC PrinterDC( void )
      */
     sprintf( str, DriverFormat, DriverName );
     hlib = LoadLibrary( str );
-    if( hlib >= 32 ) {
+    if( (UINT)hlib >= 32 ) {
         fp = GetProcAddress( hlib, "EXTDEVICEMODE" );
         if( fp != NULL ) PrinterSupport = PSUPP_CANPRINTANDSET;
         FreeLibrary( hlib );
@@ -102,7 +102,7 @@ HDC PrinterDC( void )
 } /* PrinterDC */
 
 #ifndef __WINDOWS_386__
-typedef int (FAR PASCAL *EDMPROC)(HWND,HANDLE,LPDEVMODE,LPSTR, LPSTR,LPDEVMODE,LPSTR,WORD);
+typedef int (CALLBACK* EDMPROC)(HWND, HANDLE, LPDEVMODE, LPSTR, LPSTR, LPDEVMODE, LPSTR, WORD);
 #endif
 /*
  * GetPrinterSetup - get data about this printer
@@ -110,25 +110,23 @@ typedef int (FAR PASCAL *EDMPROC)(HWND,HANDLE,LPDEVMODE,LPSTR, LPSTR,LPDEVMODE,L
 void GetPrinterSetup( HWND hwnd )
 {
     char        str[128];
-    HANDLE      hlib;
+    HINSTANCE   hlib;
     int         edm_flag;
     char        _FAR *newdata;
     char        _FAR *olddata;
     WORD        bytes;
     WORD        rc;
 #ifdef __WINDOWS_386__
-    FARPROC     fp;
     HINDIR      hindir;
-#else
-    EDMPROC     fp;
 #endif
+    FARPROC     fp;
 
     /*
      * get ExtDeviceMode address
      */
     sprintf( str, DriverFormat, DriverName );
     hlib = LoadLibrary( str );
-    if( hlib < 32 ) return;
+    if( (UINT)hlib < 32 ) return;
     fp = GetProcAddress( hlib, "EXTDEVICEMODE" );
     if( fp == NULL ) {
         FreeLibrary( hlib );
@@ -147,7 +145,7 @@ void GetPrinterSetup( HWND hwnd )
                         DeviceName, PortName, NULL, NULL, 0 );
     MemFree( (void *) hindir );
 #else
-    bytes = fp( hwnd, hlib, (LPDEVMODE) NULL, (LPSTR) DeviceName,
+    bytes = ((EDMPROC)fp)( hwnd, hlib, (LPDEVMODE) NULL, (LPSTR) DeviceName,
                   (LPSTR) PortName, (LPDEVMODE) NULL, (LPSTR) NULL, 0);
 #endif
     /*
@@ -178,8 +176,8 @@ void GetPrinterSetup( HWND hwnd )
                         edm_flag );
     MemFree( (void *) hindir );
 #else
-    rc =  fp( hwnd, hlib, (LPDEVMODE) newdata, (LPSTR) DeviceName,
-                 (LPSTR) PortName, (LPDEVMODE) olddata,
+    rc = ((EDMPROC)fp)( hwnd, hlib, (LPDEVMODE) newdata, (LPSTR) DeviceName,
+                 (LPSTR) PortName, (LPDEVMODE) olddata, 
                  (LPSTR) NULL, edm_flag );
 #endif
 
@@ -300,9 +298,9 @@ BOOL Print( LPEDATA ed )
     /*
      * create procs
      */
-    abort = MakeProcInstance( Abort, ed->inst );
+    abort = MakeProcInstance( (FARPROC)Abort, ed->inst );
     if( abort == NULL ) return( 0 );
-    abortdlg = MakeProcInstance( AbortDialog, ed->inst );
+    abortdlg = MakeProcInstance( (FARPROC)AbortDialog, ed->inst );
     if( abortdlg == NULL ) return( CleanUp( NULL, abort, NULL, FALSE ) );
 
     /*
@@ -314,7 +312,7 @@ BOOL Print( LPEDATA ed )
     /*
      * Create abort dialog
      */
-    DlgWnd = CreateDialog( ed->inst, "AbortDialog", ed->hwnd, abortdlg );
+    DlgWnd = CreateDialog( ed->inst, "AbortDialog", ed->hwnd, (DLGPROC)abortdlg );
     if( DlgWnd == NULL ) return( CleanUp( hdc, abort, abortdlg, 0 ) );
     ShowWindow( DlgWnd, SW_SHOW );
     UpdateWindow( DlgWnd );

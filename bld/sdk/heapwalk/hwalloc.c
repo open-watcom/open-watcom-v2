@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Display and stress memory allocation.
 *
 ****************************************************************************/
 
 
 #include <ctype.h>
 #include "heapwalk.h"
-#include "stress.h"
+#include <stress.h>
 #include "jdlg.h"
 
 static DWORD    FreeAmt;
@@ -41,7 +40,7 @@ static WORD     DialMode;
 
 static char AmtTable[] = { 1, 2, 5, 10, 25, 50, 0 };
 
-static UpdateAllocMenu( void ) {
+static void UpdateAllocMenu( void ) {
 
     HMENU       mh;
     WORD        i;
@@ -141,7 +140,7 @@ BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam,
     wparam = wparam;
     switch( msg ) {
     case WM_INITDIALOG:
-        parent = GetWindowWord( hwnd, GWW_HWNDPARENT );
+        parent = (HWND)GetWindowWord( hwnd, GWW_HWNDPARENT );
         GetClientRect( parent, &area );
         SetWindowPos( hwnd, NULL, -area.left, -area.top, 0, 0,
                       SWP_NOSIZE | SWP_NOZORDER );
@@ -150,7 +149,7 @@ BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam,
         UpdateAllocInfo( hwnd );
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_CLOSE:
         break;
@@ -206,27 +205,27 @@ BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
         SetStaticText( hwnd, FREE_ALLOCATED, buf );
         switch( DialMode ) {
         case HEAPMENU_FREE_NK:
-            str = GetRCString( STR_FREE_N_BYTES );
+            str = HWGetRCString( STR_FREE_N_BYTES );
             SetWindowText( hwnd, str );
-            str = GetRCString( STR_BYTES_TO_FREE );
+            str = HWGetRCString( STR_BYTES_TO_FREE );
             SetDlgItemText( hwnd, FREE_AMT_TITLE, str );
             break;
         case HEAPMENU_ALLOC_NK:
-            str = GetRCString( STR_ALLOC_N_BYTES );
+            str = HWGetRCString( STR_ALLOC_N_BYTES );
             SetWindowText( hwnd, str );
-            str = GetRCString( STR_BYTES_TO_ALLOC );
+            str = HWGetRCString( STR_BYTES_TO_ALLOC );
             SetDlgItemText( hwnd, FREE_AMT_TITLE, str );
             break;
         case HEAPMENU_ALLOC_BUT_NK:
-            str = GetRCString( STR_ALLOC_ALL_BUT_N );
+            str = HWGetRCString( STR_ALLOC_ALL_BUT_N );
             SetWindowText( hwnd, str );
-            str = GetRCString( STR_BYTES_TO_LEAVE_FREE );
+            str = HWGetRCString( STR_BYTES_TO_LEAVE_FREE );
             SetDlgItemText( hwnd, FREE_AMT_TITLE, str );
             break;
         }
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         if( HIWORD( lparam ) == BN_CLICKED ) {
@@ -289,9 +288,9 @@ void DoNBytes( HWND parent, WORD type ) {
     int                 ret;
 
     DialMode = type;
-    fp = MakeProcInstance( FreeNDlgProc, Instance );
+    fp = MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
     if( fp != NULL ) {
-        ret = JDialogBox( Instance, "FREE_N_DLG", parent, fp );
+        ret = JDialogBox( Instance, "FREE_N_DLG", parent, (DLGPROC)fp );
         if( ret != -1 ) {
             FreeProcInstance( fp );
             return;
@@ -300,8 +299,8 @@ void DoNBytes( HWND parent, WORD type ) {
     /* there's not enough memory to do the dialog
        so free some memory so we can do it */
     FreeAllMem();
-    fp = MakeProcInstance( FreeNDlgProc, Instance );
-    ret = JDialogBox( Instance, "FREE_N_DLG", parent, fp );
+    fp = MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
+    ret = JDialogBox( Instance, "FREE_N_DLG", parent, (DLGPROC)fp );
     FreeProcInstance( fp );
     AllocMem( FreeAmt );
 }

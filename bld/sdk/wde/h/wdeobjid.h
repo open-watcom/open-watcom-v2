@@ -39,37 +39,37 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    BASE_OBJ = USER_OBJ
-,   DIALOG_OBJ
-,   CONTROL_OBJ
-,   PBUTTON_OBJ
-,   CBUTTON_OBJ
-,   RBUTTON_OBJ
-,   GBUTTON_OBJ
-,   FRAME_OBJ
-,   TEXT_OBJ
-,   ICON_OBJ
-,   EDIT_OBJ
-,   LISTBOX_OBJ
-,   COMBOBOX_OBJ
-,   HSCROLL_OBJ
-,   VSCROLL_OBJ
-,   SIZEBOX_OBJ
-,   SBAR_OBJ
-,   LVIEW_OBJ
-,   TVIEW_OBJ
-,   TABCNTL_OBJ
-,   ANIMATE_OBJ
-,   UPDOWN_OBJ
-,   TRACKBAR_OBJ
-,   PROGRESS_OBJ
-,   HOTKEY_OBJ
-,   HEADER_OBJ
-,   CUSTCNTL1_OBJ
-,   CUSTCNTL2_OBJ
-,   LAST__OBJ
+    BASE_OBJ = USER_OBJ,
+    DIALOG_OBJ,
+    CONTROL_OBJ,
+    PBUTTON_OBJ,
+    CBUTTON_OBJ,
+    RBUTTON_OBJ,
+    GBUTTON_OBJ,
+    FRAME_OBJ,
+    TEXT_OBJ,
+    ICON_OBJ,
+    EDIT_OBJ,
+    LISTBOX_OBJ,
+    COMBOBOX_OBJ,
+    HSCROLL_OBJ,
+    VSCROLL_OBJ,
+    SIZEBOX_OBJ,
+    SBAR_OBJ,
+    LVIEW_OBJ,
+    TVIEW_OBJ,
+    TABCNTL_OBJ,
+    ANIMATE_OBJ,
+    UPDOWN_OBJ,
+    TRACKBAR_OBJ,
+    PROGRESS_OBJ,
+    HOTKEY_OBJ,
+    HEADER_OBJ,
+    CUSTCNTL1_OBJ,
+    CUSTCNTL2_OBJ,
+    LAST__OBJ
 } Wde_Objects;
 
-#define NUM_OBJECTS ( LAST__OBJ - USER_OBJ )
+#define NUM_OBJECTS (LAST__OBJ - USER_OBJ)
 
 #endif

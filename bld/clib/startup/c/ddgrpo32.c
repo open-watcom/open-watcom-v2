@@ -24,30 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Single DGROUP in a DLL sanity check for 32-bit OS/2.
 *
 ****************************************************************************/
 
 
+/* Note: All the complex junk is here to make sure the clib does not
+ * statically link against Presentation Manager DLLs, so that we can load
+ * without PM installed.
+ */
+
 #include "variety.h"
 #define INCL_WIN
 #define INCL_DOSFILEMGR
+#define INCL_DOSERRORS
+#define INCL_DOSPROCESS
 #define INCL_DOSMODULEMGR
+#define INCL_ORDINALS
 #include <os2.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define message \
-    "This Dynamic Link Library is already in use.\n\n" \
-    "The Watcom OS/2 32bit runtime library does not support "\
-    "attaching more than one process to a Dynamic Link Library "\
-    "that does not have a separate data space for each attached process.\n"
+    "The DLL is already in use.\n\n" \
+    "The Open Watcom OS/2 32-bit runtime library does not support "\
+    "attaching multiple processes to a DLL with shared DGROUP.\n"
 
 static char dllname[_MAX_PATH];
-static char buf[sizeof(message)+sizeof(dllname)+6];
+static char buf[sizeof( message ) + sizeof( dllname ) + 6];
 
-static char *my_strcat( char *p, char *msg ) {
+static char *my_strcat( char *p, char *msg )
+{
     while( *msg ) {
         *p = *msg;
         if( *p == '\n' ) {
@@ -61,34 +68,60 @@ static char *my_strcat( char *p, char *msg ) {
     return( p );
 }
 
-int __disallow_single_dgroup( unsigned hmod ) {
+static HAB     (APIENTRY *pfnWinInitialize)( ULONG );
+static HMQ     (APIENTRY *pfnWinCreateMsgQueue)( HAB, ULONG );
+static ULONG   (APIENTRY *pfnWinGetLastError)( HAB );
+static ERRORID (APIENTRY *pfnWinGetLastError)( HAB );
+static BOOL    (APIENTRY *pfnWinDestroyMsgQueue)( HMQ );
+static BOOL    (APIENTRY *pfnWinTerminate)( HAB );
+static BOOL    (APIENTRY *pfnWinTerminate)( HAB );
+static ULONG   (APIENTRY *pfnWinMessageBox)( HWND, HWND, PCSZ, PCSZ, ULONG, ULONG );
 
+int __disallow_single_dgroup( unsigned hmod )
+{
     int         use_pm = 0;
     HMQ         hMessageQueue = 0;
     HAB         AnchorBlock = 0;
+    PTIB        ptib;
+    PPIB        ppib;
+    HMODULE     hmodPMWIN;
 
     DosQueryModuleName( hmod, sizeof( dllname ), dllname );
 
-    AnchorBlock = WinInitialize( 0 );
-    if( AnchorBlock != 0 ) {
-        hMessageQueue = WinCreateMsgQueue( AnchorBlock, 0 );
-        if( hMessageQueue != 0 ) {
-            use_pm = 1;
-        } else {
-            int rc;
-            rc = WinGetLastError( AnchorBlock );
-            if( (rc & 0xffff) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
-                use_pm = 1;
+    DosGetInfoBlocks( &ptib, &ppib );
+    /* If this isn't a PM process, don't even try to initialize PM */
+    if( ppib->pib_ultype == PT_PM ) {
+        if( DosLoadModule( NULL, 0, "PMWIN", &hmodPMWIN) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32INITIALIZE, NULL, (PFN*)&pfnWinInitialize ) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32CREATEMSGQUEUE, NULL, (PFN*)&pfnWinCreateMsgQueue ) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32GETLASTERROR, NULL, (PFN*)&pfnWinGetLastError ) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32DESTROYMSGQUEUE, NULL, (PFN*)&pfnWinDestroyMsgQueue ) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32TERMINATE, NULL, (PFN*)&pfnWinTerminate ) == NO_ERROR
+            && DosQueryProcAddr( hmodPMWIN, ORD_WIN32MESSAGEBOX, NULL, (PFN*)&pfnWinMessageBox ) == NO_ERROR
+            ) {
+            AnchorBlock = pfnWinInitialize( 0 );
+            if( AnchorBlock != 0 ) {
+                hMessageQueue = pfnWinCreateMsgQueue( AnchorBlock, 0 );
+                if( hMessageQueue != 0 ) {
+                    use_pm = 1;
+                } else {
+                    int rc;
+                    rc = pfnWinGetLastError( AnchorBlock );
+                    if( (rc & 0xffff) == PMERR_MSG_QUEUE_ALREADY_EXISTS ) {
+                        use_pm = 1;
+                    }
+                }
             }
         }
     }
     if( use_pm ) {
-        WinMessageBox( HWND_DESKTOP, 0, message, dllname, 0, MB_NOICON | MB_OK );
+        pfnWinMessageBox( HWND_DESKTOP, 0, message, dllname, 0, MB_NOICON | MB_OK );
     } else {
-        HFILE file;
-        ULONG written;
-        ULONG action;
-        char *p = buf;
+        HFILE   file;
+        ULONG   written;
+        ULONG   action;
+        char    *p = buf;
+
         p = my_strcat( p, dllname );
         p = my_strcat( p, "\n" );
         p = my_strcat( p, message );
@@ -100,10 +133,10 @@ int __disallow_single_dgroup( unsigned hmod ) {
         }
     }
     if( hMessageQueue != 0 ) {
-        WinDestroyMsgQueue( hMessageQueue );
+        pfnWinDestroyMsgQueue( hMessageQueue );
     }
     if( AnchorBlock != 0 ) {
-        WinTerminate( AnchorBlock );
+        pfnWinTerminate( AnchorBlock );
     }
     return( 1 );
 }

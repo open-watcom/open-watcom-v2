@@ -41,8 +41,8 @@ static unsigned long                    NumTicks;
 
 #pragma aux inp = 0xec parm routine [ dx ];
 #pragma aux outp = 0xee parm routine [ dx ] [ ax ];
-extern char inp();
-extern void outp();
+extern char inp( int );
+extern void outp( int, int );
 
 short PortTest[] =
 {
@@ -66,7 +66,7 @@ int CheckForPort( int i, char value )
 }
 
 
-static void InitPorts()
+static void InitPorts( void )
 {
     int                 i;
     int                 portnum;
@@ -80,7 +80,7 @@ static void InitPorts()
 }
 
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
     return( NumTicks );
 }
@@ -94,7 +94,7 @@ static void Ticker( LONG dummy )
 }
 
 
-static void SetupTimerData()
+static void SetupTimerData( void )
 {
     TimerData.TCallBackProcedure = Ticker;
     TimerData.TCallBackEBXParameter = 0;
@@ -103,7 +103,7 @@ static void SetupTimerData()
 }
 
 
-char *InitSys()
+char *InitSys( void )
 {
     NumTicks = 0;
     InitPorts();
@@ -113,14 +113,14 @@ char *InitSys()
 }
 
 
-void FiniSys()
+void FiniSys( void )
 {
     SetupTimerData();
     CCancelInterruptTimeCallBack( &TimerData );
 }
 
 
-int NumPrinters()
+int NumPrinters( void )
 {
     int         i;
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  The 'Calls' window (call stack).
 *
 ****************************************************************************/
 
@@ -43,23 +42,23 @@
 
 extern char             *TxtBuff;
 
-extern a_window         *WndSrcInspect(address);
-extern a_window         *WndAsmInspect(address);
+extern a_window         *WndSrcInspect( address );
+extern a_window         *WndAsmInspect( address );
 extern address          FindLclBlock( address addr );
-extern int              AddrComp(address ,address );
+extern int              AddrComp( address, address );
 extern void             GoToAddr( address addr );
-extern bool             DlgBreak(address);
-extern char             *StrCopy(char*,char*);
+extern bool             DlgBreak( address );
+extern char             *StrCopy( char *, char * );
 extern char             *CopySourceLine( cue_handle * );
-extern unsigned         LineNumLkup(address);
+extern unsigned         LineNumLkup( address );
 extern void             UnAsm( address addr, unsigned, char *buff );
-extern char             *DupStr(char*);
+extern char             *DupStr( char * );
 extern void             SetStackPos( location_context *lc, int pos );
-extern int              GetStackPos();
+extern int              GetStackPos( void );
 extern char             *CnvNearestAddr( address, char *, unsigned );
 
 extern address          FindNextIns( address a );
-extern void             InitTraceBack( cached_traceback* );
+extern void             InitTraceBack( cached_traceback * );
 extern call_chain       *GetCallChain( cached_traceback *tb, int row );
 extern void             UpdateTraceBack( cached_traceback *tb );
 extern void             FiniTraceBack( cached_traceback *tb );
@@ -81,6 +80,12 @@ enum {
     PIECE_TABSTOP = PIECE_SYMBOL,
     PIECE_SOURCE,
 };
+
+static WNDNUMROWS CallNumRows;
+static int CallNumRows( a_window *wnd )
+{
+    return( WndCall( wnd )->tb.curr->total_depth );
+}
 
 static  WNDMENU CallMenuItem;
 static void     CallMenuItem( a_window *wnd, unsigned id, int row, int piece )
@@ -117,12 +122,6 @@ static void     CallMenuItem( a_window *wnd, unsigned id, int row, int piece )
         GoToAddr( FindNextIns( chain->lc.execution ) );
         break;
     }
-}
-
-static WNDNUMROWS CallNumRows;
-static int CallNumRows( a_window *wnd )
-{
-    return( WndCall( wnd )->tb.curr->total_depth );
 }
 
 static WNDGETLINE CallGetLine;
@@ -258,7 +257,7 @@ wnd_info CallInfo = {
 };
 
 extern WNDOPEN WndCallOpen;
-extern a_window *WndCallOpen()
+extern a_window *WndCallOpen( void )
 {
     call_window *call;
     a_window    *wnd;

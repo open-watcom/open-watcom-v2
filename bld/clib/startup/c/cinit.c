@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Common clib initialization code.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
-#if defined(__DOS_386__)
+#if defined(__DOS_386__) && !defined(__OSI__)
     #include "extender.h"
     #include "dpmi.h"
 #elif defined(__OS2__)
@@ -44,28 +43,7 @@
     #include <windows.h>
 #endif
 
-#if defined(__NT__)
-    #pragma library("advapi32")
-    #pragma library("comdlg32")
-    #pragma library("gdi32")
-    #pragma library("kernel32")
-    #pragma library("user32")
-    #pragma library("winspool")
-    #pragma library("shell32")
-    #pragma library("version")
-    #pragma library("netapi32")
-    #pragma library("dlcapi")
-    #pragma library("lz32")
-    #pragma library("mpr")
-    #pragma library("ole32")
-    #pragma library("rpcns4")
-    #pragma library("rpcrt4")
-    #pragma library("vdmdbg")
-    #pragma library("win32spl")
-    #pragma library("winmm")
-    #pragma library("winstrm")
-    #pragma library("wsock32")
-#elif defined(__OS2__)
+#if defined(__OS2__)
     #if defined(__PPC__)
     #else
         #pragma library("os2386")
@@ -73,20 +51,20 @@
     unsigned            __hmodule;
 #endif
 
-#ifdef __DOS_386__
-    extern     __GETDSStart_;
-    extern     __GETDSEnd_;
+#if defined(__DOS_386__) && !defined(__OSI__)
+    extern int __GETDSStart_;
+    extern int __GETDSEnd_;
     extern int __DPMI_hosted(void);
 #endif
 
-void    __CommonInit()
-/********************/
+void    __CommonInit( void )
+/**************************/
 {
-#if !defined(__NETWARE__) && !defined(__NT__)
+#if !defined(__NETWARE__) && !defined(__NT__) && !defined(__RDOSDEV__)
     _amblksiz = 32 * 1024;      /* set minimum memory block allocation */
 #endif
 
-#ifdef __DOS_386__
+#if defined(__DOS_386__) && !defined(__OSI__)
     /*
      * If we are running under DOS/4G then we need to page lock interrupt
      * handlers (since we could be running under VMM).

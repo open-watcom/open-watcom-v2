@@ -49,8 +49,8 @@ extern char             *Format( char *buff, char *fmt, ... );
 
 extern char             *TxtBuff;
 
-extern GUIPICKER SymPick;
-DLGPICKTEXT SymPickText;
+static GUIPICKER        SymPick;
+DLGPICKTEXT             SymPickText;
 
 extern int DUIDisambiguate( ambig_info *ambig, int count )
 {

@@ -1,5 +1,0 @@
-#include "windows.h"
-#include "../mif/rcdef.h"
-#include "../h/wprof.rc"
-
-ApplIcon icon "../bitmap/win/prof_i.ico"

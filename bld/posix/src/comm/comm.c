@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX comm utility
+*               Compares sorted files
 *
 ****************************************************************************/
-
 
 
 #include <stdlib.h>
@@ -49,7 +48,7 @@
 
 char *OptEnvVar="comm";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: comm [-?123] [@env] file1 file2",
     "\tenv                : environment variable to expand",
     "\tfile1 file2        : similarly sorted files to be compared",

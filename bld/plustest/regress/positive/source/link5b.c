@@ -1,6 +1,6 @@
 #include "failex.h"
 
-#if defined( M_I86 ) || defined( M_I386 )
+#if defined( _M_IX86 )
 
 #include <i86.h>
 #include "link5.h"

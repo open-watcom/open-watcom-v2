@@ -24,20 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ldiv().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <stdlib.h>
 
-_WCRTLINK ldiv_t (ldiv)( long int numer, long int denom )
-    {
-        auto ldiv_t result;
 
-        result.quot = numer / denom;
-        result.rem  = numer % denom;
-        return( result );
-    }
+_WCRTLINK ldiv_t ldiv( long int numer, long int denom )
+/*****************************************************/
+{
+    ldiv_t  result;
+
+    result.quot = numer / denom;
+    result.rem  = numer % denom;
+    return( result );
+}

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "brinfoim.h"
 #include "ring.h"
@@ -143,8 +141,8 @@ static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
                 if( curr->macro_len == src_len
                  && curr->macro_defn == src_defn
                  && curr->parm_count == src->parm_count
-                 && ( curr->macro_flags & MACRO_BRINFO_DEFN ) ==
-                    (  src->macro_flags & MACRO_BRINFO_DEFN )
+                 && ( curr->macro_flags & MFLAG_BRINFO_DEFN ) ==
+                    (  src->macro_flags & MFLAG_BRINFO_DEFN )
                  && curr->macro_name[0] == src->macro_name[0]
                  && 0 == strcmp( curr->macro_name, src->macro_name )
                  && ( curr->macro_defn == 0

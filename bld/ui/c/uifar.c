@@ -24,17 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines accessing far memory.
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
-#if defined( UNIX )
+#ifndef __WATCOMC__
     #include "clibext.h"
 #else
-    #if defined(__386__) || defined(M_I86)
+    #if defined( _M_IX86 )
         #include <i86.h>
     #endif
     #include <conio.h>
@@ -42,7 +41,7 @@
 #include <string.h>
 #include "uidef.h"
 
-#if defined( M_I86 )
+#if defined( _M_I86 )
 
 extern PIXEL far *_snowput( PIXEL far *, PIXEL );
 extern PIXEL _snowget( PIXEL far * );
@@ -123,17 +122,13 @@ extern void _backward(void);
 
 #endif
 
-#if defined( _NEC_PC )
-    #define ATTR_FLIP_MASK      0x04
-#else
-    #define ATTR_FLIP_MASK      0x77
-#endif
+#define ATTR_FLIP_MASK      0x77
 
 intern void cdecl farfill( LPPIXEL start, PIXEL fill, int len, int snow )
 {
     int         i;
 
-#if defined(M_I86)
+#if defined( _M_I86 )
     if( snow ) {
         for( i = 0 ; i < len ; ++i ) {
             start = _snowput( start, fill );
@@ -154,14 +149,14 @@ intern void cdecl farfill( LPPIXEL start, PIXEL fill, int len, int snow )
 
 intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
 {
-#if defined(__AXP__)
+#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     _unused( snow );
     memmove( dst, src, len*sizeof(PIXEL) );
-#elif defined( __386__ ) || defined( UNIX )
+#elif defined( __386__ ) || defined( __UNIX__ )
     _unused( snow );
-    #if defined( __QNX__ )
+    #if defined( __UNIX__ )
         memmove( dst, src, len*sizeof(PIXEL) );
-    #elif defined( NLM )
+    #elif defined( __NETWARE__ )
         // Netware compiled with "far" defined, but pointers aren't really
         // far, and there is no _fmemmove function, and we were getting
         // "pointer truncated" warnings before, so just cast. (SteveM)
@@ -169,7 +164,7 @@ intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
     #else
         _fmemmove( dst, src, len*sizeof(PIXEL) );
     #endif
-#elif defined(M_I86)
+#elif defined( _M_I86 )
     if( snow ) {
         if( FP_SEG(src) == FP_SEG(dst) && FP_OFF(src) < FP_OFF(dst) ) {
             src += len - 1;
@@ -188,13 +183,13 @@ intern void cdecl farcopy( LPPIXEL src, LPPIXEL dst, int len, int snow )
 
 
 intern void cdecl farstring( LPPIXEL start, int attr, int len,
-                                          int snow, char __FAR *str )
+                                          int snow, const char __FAR *str )
 {
     int         i;
     PIXEL       p;
 
     p.attr = attr;
-#if defined(M_I86)
+#if defined( _M_I86 )
     if( snow ) {
         for( i = 0 ; i < len ; ++i ) {
             p.ch = *str;
@@ -228,7 +223,7 @@ intern void cdecl farattrib( LPPIXEL start, int attr, int len, int snow )
     int         i;
     PIXEL       p;
 
-#if defined(M_I86)
+#if defined( _M_I86 )
     if( snow ) {
         for( i = 0 ; i < len ; ++i ) {
             p = _snowget( start );
@@ -254,7 +249,7 @@ intern void cdecl farattrflip( LPPIXEL start, int len, int snow )
     int         i;
     PIXEL       p;
 
-#if defined(M_I86)
+#if defined( _M_I86 )
     if( snow ) {
         for( i = 0 ; i < len ; ++i ) {
             p = _snowget( start );

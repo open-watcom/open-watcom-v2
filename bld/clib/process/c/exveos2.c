@@ -38,8 +38,8 @@
 #include <errno.h>
 #include "rtdata.h"
 #include "seterrno.h"
-
-extern void (*__int23_exit)(void);
+#include "_process.h"
+#include "_int23.h"
 
 int __p_overlay = 2;
 

@@ -1,0 +1,41 @@
+#
+# extra options
+#
+opt_diag0007  = -za99
+opt_diag0011  = -za
+opt_diag0019  = -za99
+opt_diag0022  = -za99
+
+diags_0099_defn = &
+    diag0001$(err_sin) &
+    diag0002$(err_sin) &
+    diag0003$(err_sin) &
+    diag0004$(err_sin) &
+    diag0005$(err_sin) &
+    diag0006$(err_sin) &
+    diag0007$(err_sin) &
+    diag0008$(err_sin) &
+    diag0009$(err_sin) &
+    diag0010$(err_sin) &
+    diag0011$(err_sin) &
+    diag0012$(err_sin) &
+    diag0013$(err_sin) &
+    diag0014$(err_sin) &
+    diag0015$(err_sin) &
+    diag0016$(err_sin) &
+    diag0017$(err_sin) &
+    diag0018$(err_sin) &
+    diag0019$(err_sin) &
+    diag0020$(err_sin) &
+    diag0021$(err_sin) &
+    diag0022$(err_sin) &
+
+    
+err_sin = .err
+err_sys = .ser
+
+diags_0099 = $+ $(diags_0099_defn) $-
+    
+    
+err_sin =
+err_sys =

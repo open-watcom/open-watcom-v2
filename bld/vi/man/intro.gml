@@ -68,6 +68,7 @@ are configurable.
 :LI.QNX
 :LI.Windows 3.x GUI
 :LI.Windows NT GUI
+:LI.Linux (multiple CPU architectures)
 :eUL.
 :SECTION.Terms and Notation
 :SUBSECT.The Mouse

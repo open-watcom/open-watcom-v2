@@ -1,0 +1,36 @@
+*$noreference
+
+! String-Manipulation Functions:
+! ------------------------------
+
+      external AnsiLower
+      external AnsiLowerBuff
+      external AnsiNext
+      external AnsiPrev
+      external AnsiToOem
+      external AnsiToOemBuff
+      external AnsiUpper
+      external AnsiUpperBuff
+      external IsCharAlpha
+      external IsCharAlphaNumeric
+      external IsCharUpper
+      external IsCharLower
+      external OemToAnsi
+      external OemToAnsiBuff
+      external ToAscii
+
+      integer*4 AnsiLower
+      integer*2 AnsiLowerBuff
+      integer*4 AnsiNext
+      integer*4 AnsiPrev
+      integer*2 AnsiToOem
+      integer*4 AnsiUpper
+      integer*2 AnsiUpperBuff
+      integer*2 IsCharAlpha
+      integer*2 IsCharAlphaNumeric
+      integer*2 IsCharUpper
+      integer*2 IsCharLower
+      integer*2 OemToAnsi
+      integer*2 ToAscii
+
+*$reference

@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fprintf() - formatted output.
 *
 ****************************************************************************/
 
-
-/*
- * printf -- CLIB formatted output
- */
 
 #include "variety.h"
 #include "widechar.h"
@@ -40,11 +35,10 @@
 #include <stdarg.h>
 #include "farsupp.h"
 #include "printf.h"
+#include "fprtf.h"
 
-extern int __F_NAME(__fprtf,__fwprtf)( FILE *fp, const CHAR_TYPE *format, va_list arg );
 
-
-_WCRTLINK int __F_NAME(vprintf,vwprintf)( const CHAR_TYPE *format, va_list arg)
+_WCRTLINK int __F_NAME(vprintf,vwprintf)( const CHAR_TYPE *format, va_list arg )
 {
     return( __F_NAME(__fprtf,__fwprtf)( stdout, format, arg ) );
 }

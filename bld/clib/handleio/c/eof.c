@@ -24,29 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of eof().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <stdio.h>
+#include <unistd.h>
 #include "rtcheck.h"
-
-extern  long    filelength(int);
-extern  long    tell(int);
 
 
 _WCRTLINK int eof( int handle )         /* determine if at EOF */
 {
-    long current_posn, file_len;
+    off_t   current_posn, file_len;
 
     __handle_check( handle, -1 );
     file_len = filelength( handle );
-    if( file_len == -1L ) return( -1 );
+    if( file_len == -1L )
+        return( -1 );
     current_posn = tell( handle );
-    if( current_posn == -1L ) return( -1L );
-    if( current_posn == file_len ) return( 1 );
+    if( current_posn == -1L )
+        return( -1 );
+    if( current_posn == file_len )
+        return( 1 );
     return( 0 );
 }

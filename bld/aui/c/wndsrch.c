@@ -32,14 +32,15 @@
 
 #include "auipvt.h"//
 #include <string.h>
+#include "rxwrap.h"
 #include "wndregx.h"
 
 bool    WndDoingSearch = FALSE;
 
 void WndSetSrchItem( a_window *wnd, char *expr )
 {
-    WndFree( wnd->searchitem );
-    wnd->searchitem = WndAlloc( strlen( expr ) + 1 );
+    GUIMemFree( wnd->searchitem );
+    wnd->searchitem = GUIMemAlloc( strlen( expr ) + 1 );
     strcpy( wnd->searchitem, expr );
 }
 
@@ -75,6 +76,37 @@ void WndSetMagicStr( char *str )
         }
     }
     *ignore = '\0';
+}
+
+char *WndGetSrchMagicChars( void )
+{
+    return( SrchMagicChars );
+}
+
+void WndSetSrchMagicChars( char *str )
+{
+    strncpy( SrchMagicChars, str, MAX_MAGIC_STR );
+    SrchMagicChars[MAX_MAGIC_STR] = '\0';
+}
+
+bool WndGetSrchIgnoreCase( void )
+{
+    return( SrchIgnoreCase );
+}
+
+void WndSetSrchIgnoreCase( bool flag )
+{
+    SrchIgnoreCase = flag;
+}
+
+bool WndGetSrchRX( void )
+{
+    return( SrchRX );
+}
+
+void WndSetSrchRX( bool flag )
+{
+    SrchRX = flag;
 }
 
 bool WndRXFind( void * _rx, char **pos, char **endpos )

@@ -1,0 +1,514 @@
+WATCOM FORTRAN 77 Version 11.0 - README
+---------------------------------------
+
+Welcome to WATCOM FORTRAN 77 version 11.0.  This README provides helpful
+hints found during testing as well as updated information that was not
+available at the time the documentation was produced.
+
+For a list of new features in version 11.0 see the GETTING STARTED helpfile.
+
+This file includes:
+-------------------
+Installation Instructions
+General Notes about version 11.0 
+11.0 B-level Notes
+Fixes in version 11.0 B-level
+Fixes in version 11.0 A-level
+
+
+==================================================== 
+Installation suggestions:
+==================================================== 
+Installing Watcom FORTRAN 77 Version 11.0
+
+If you have installed a previous version of Watcom FORTRAN then you should 
+install Watcom FORTRAN 11.0 into the same path. It will examine a previous 
+installation to determine what features were previously installed.  
+It will use this information to establish default settings for the 
+installation that you are about to attempt.  Of course, you can add or
+remove features as you progress through the installation steps.
+
+If you are installing both Watcom C/C++ and Watcom FORTRAN 77 products, we
+recommend that you install Watcom C/C++ and Watcom FORTRAN 77 in the same
+directory.  
+
+If you are installing only one of the Watcom C/C++ or Watcom FORTRAN 77
+products and you have an older version of the other product, we do NOT
+recommend that you install the new product into the same directory as the
+old product. 
+
+See the Getting Started Helpfile (READF10.HLP) for more information.
+
+When you install Watcom C/C++ and Watcom FORTRAN 77 in the same directory,
+you should not deselect any options when running the second installation;
+otherwise the second product's install may remove files that were installed
+(and are required) by the first product's install.  
+
+If you wish to create a backup of your previous version, please do so before
+installing Watcom FORTRAN 11.0.
+
+You may wish to run Watcom FORTRAN under more than one operating system on the
+same personal computer.  For every operating system that you use, simply
+start up the operating system and run the corresponding install procedure.
+
+To install from CD-Rom, run "SETUP" under all operating systems except OS/2;
+under OS/2 run "INSTALL".
+   
+
+Note: %DstDir% represents the directory in which WATCOM FORTRAN 77 was
+      installed.  %WinSysDir% represents your Windows 3.x system directory.
+      
+==================================================== 
+General Notes about version 11.0 
+==================================================== 
+      
+1.  When debugging a 32-bit Phar Lap, TNT or DOS/4GW application, make sure
+    that "run386.exe", "tnt.exe", or "dos4gw.exe" respectively, are in your
+    path.  Failure to do so, may cause your computer to hang.
+   
+2. When using the GUI debugger to debug Windows 3.x applications, certain
+   Windows applications may cause the debugger to behave in an unpredictable
+   way.  Typically, this occurs when debugging certain messages in window
+   callback functions.  For example, hitting a breakpoint in a window
+   function that is processing a WM_INITDIALOG message will crash the system.
+   If this happens, the character-mode version of the debugger should be
+   used.
+   
+3. In order to use CodeWright with our IDE, you will need to change the
+   "cwright.ini" file.  This file contains the following line.
+
+	;LibPreload=cwdde.dll
+
+   Uncomment this line by removing the ';' character.  This is required to
+   enable communication between the IDE and CodeWright when "weditcw.dll"
+   is selected as the editor interface DLL from the IDE.
+    
+4. Parallel remote debug servers now work in an OS/2 session. 
+   
+5. Under OS/2, if you are debugging a DOS application from the IDE, you
+   must ensure that %DstDir%\binw is in your DOS path so that when the IDE
+   starts a DOS session to debug your application, the remote server can find
+   its support files.
+   
+6. Under OS/2, you must ensure that the "Comet cursor" desktop setting is
+   disabled if you want to debug PM applications.  By default, this setting
+   is disabled.
+   
+7. The BINW version of WFC.EXE and WFC386.EXE require DOS4GW.EXE to run.
+   This is installed if you select DOS TARGET.
+   
+8. The OS/2 Resource Comiler ( RC.EXE ) does not work correctly if the 
+   directory which contains RC.EXE occurs too late in your PATH environment 
+   variable ( > 250 characters ). If you experience problems with RC.EXE, 
+   you should change the PATH environment variable in your CONFIG.SYS file, 
+   by moving %WATCOM%\BINP and %WATCOM%\BINW earlier in the path.
+   
+  
+===========================================================
+11.0 B-level Notes
+===========================================================
+
+The SOM toolkit for OS/2 is no longer supported, and has
+been removed in this version.
+  
+ 
+===========================================================
+Fixes in version 11.0 B-level
+===========================================================
+
+          ********************
+          ** Code Generator **
+          ********************
+
+    When static member functions are supplied to the ?: operator, no code was being generated
+===========================================================
+
+    added a compiler switch to disable the "common epilogue" optimization.
+===========================================================
+
+          ***************
+          ** C Library **
+          ***************
+    
+    Fixed a bug where an app was doing a chmod() on a file in a directory and 
+    is supposed to remove the file and then delete the directory itself. 
+    Under Win95 the directory was getting removed, however under NT it was not.
+    
+    use div in place of ldiv for 32-bit code, since they should be the same
+    
+    stripped out some unnecessary functions from the 32-bit Windows math DLLs
+    _GR_ceil(), _GR_cos(), _GR_ecvt(), _GR_fcvt(), _GR_log10(), _GR_log(), _GR_sin(), 
+    _GR_sqrt(). These are used by the Presentation Graphics (part of the graphics library) for 32-
+    bit DOS, so they can stripped out of the 32-bit Windows maths DLL's.
+    
+    Marked the Product Version as 11.0b for the RTL DLLs, such as CLBR110.DLL, 
+    CLBS110.DLL, MT7R110.DLL, MT7S110.DLL, MTHR110.DLL, MTHS110.DLL, 
+    PLBR110.DLL, PLBS110.DLL, 
+    so it is less difficult to distinguish them from older DLLs.
+===========================================================
+    
+    fixed a bug where Win386 DLLs would GPF every second time they are unloaded. 
+    To reproduce this, 
+    modify the samples in samples\fortran\win\dll by adding the line "call FreeLibrary( hlib )" 
+    before the line "FWinMain = 0" in gen*.for. When you run the samples, they GPF the first, 
+    third, fifth, etc. times when FreeLibrary is called. If you compile/link these modified samples 
+    with 10.6a or earlier versions, then the problem doc not occur. Reproduce this behaviour 
+    under WFW 3.11 and Win NT 4.0. Customer has reproed this under Win 95, and also reproed 
+    it when the DLLs are called from VB 4.0.
+===========================================================
+    
+    _wtof was missing from the 16-bit math libaries, 
+    and the 32-bit version was returning erroneous results.
+===========================================================
+    
+    Target: Win32: Using fmod() or modf() in code compiled with /br was giving 
+    undefined references.
+===========================================================
+    
+    fixed a bug with itoa() in win16 apps, where you couldn't run 
+    multiple instances of the app.  If you tried to, you got 
+    "Cannot start more than one copy of the specified program" under NT and 
+    "Error: Cannot <something> multiple writeable data segments" under Win 3.x. 
+===========================================================
+    
+    Win32 target only: feof() was not set when end-of-file occurs on an input pipe. 
+    ferror() was being set instead.
+===========================================================
+    
+    ftime() was not reporting correct timezone field in timeb struct when 
+    TZ is negative. 
+===========================================================
+    
+    Overflow range error in pow was not reported unless /fpc used. 
+===========================================================
+
+
+          ******************
+          ** Disassembler **
+          ******************
+
+    wdis couldn't  recognize "SHLD EDX,EAX,CL", "SHRD EDX,EAX,CL" 
+    and a few other instructions.
+===========================================================
+    
+    Wdis did not give the correct code when disassembling memchr(). 
+    It placed the label in the wrong position. 
+    This is because the code makes a jump into the 
+    middle of an opcode sequence depending on the result of memchr(). WDISASM with 10.6 
+    "knew" about this and issued DB instructions.
+===========================================================
+
+          *******************
+          ** Documentation **
+          *******************
+	  
+    Fixed the C library matherr example, so it works with the C++ compiler.
+===========================================================
+	
+    Watcom 10.6 aligns structure members on a byte boundary by default. 
+    Watcom 11.0 aligns structure members on an 8 byte boundary by default. 
+    Fixed some places where the documentation hadn't been updated from 10.6.
+===========================================================
+
+    Added - wlink's OPTION SHOWDEAD, which was not documented. 
+    This option is very useful as it shows in the map file which functions 
+    the linker stripped out.
+===========================================================
+
+    Added documentation for wcc/wcc386/wpp/wpp386 options /of & /of+. 
+===========================================================
+
+    Corrected the Programmer's Guide sample on 32-bit OS/2 DLLs. 
+    The dllsamp.c file was missing a: define EXTERNC.
+===========================================================
+
+    Upated Linker docs indicate that incremental linking is not 
+    supported for 16-bit DOS and NetWare targets. 
+===========================================================
+
+          *************************
+          ** FORTRAN 77 Compiler **
+          *************************
+
+    fixed a bug where the compiler would produce an access violation error if
+    you passed an external as an argument to a subroutine 
+    the error would only occur if debug info was on ( -d2 )
+    
+===========================================================
+
+    write(*.*) (notice the period instead of a comma) 
+    was not being caught as a syntax error. 
+===========================================================
+
+          ***************
+          ** Librarian **
+          ***************
+
+    Wlib wasn't giving a warning message if you tried to extract a nonexistent 
+    object file. 
+===========================================================
+
+          ************
+          ** Linker **
+          ************
+
+    Fixed output of QNX executables for a rare case of
+    internal buffer filling.
+    
+===========================================================
+
+    OP INC IS NOT SUPPORTED FOR 16-BIT DOS OR NetWare, 
+    in 11.0 you didn't get an error to indicate this
+===========================================================
+    
+    fixed a bug where
+    "wlink debug watcom types or debug watcom locals or debug watcom lines"
+    would all cause the linker to crash
+    debug watcom all was fine
+===========================================================
+    
+    NT linker was crashing if you ran it with no arguments, and typed something
+    at the WLINK> prompt
+===========================================================
+    
+    fixed a bug where WLINK was crashing while trying to link an app with
+    codeview debuggin info
+===========================================================
+
+          ************
+          ** WVIDEO **
+          ************
+
+    dwarf dip now exits gracefully if it failes to load debug info 
+===========================================================
+    
+    Fixed a bug on DOS or Win95 Host: 
+    binw\wd was crashing on loading DOS/4GW EXE. 
+    The debugger was running out of memory trying to read in a large app 
+    or large app + symbolic debugging info (.SYM) file.
+    Problem did not occur with the binnt debuggers under NT. 
+===========================================================
+    
+    binw\wd was crashing when inspecting ofstream structure with Watcom or Codeview 
+    debugging information. 
+===========================================================
+    
+    Debugger was crashing when double-clicking on an entry in calls window. 
+===========================================================
+    
+    If winserv terminated abnormally for any reason, you could not restart it 
+    unless you gave the server a different name. This is a bigger problem 
+    than appears at first, because the IDE uses an unnamed debug server. 
+    As such, if you were debugging DOS/4GW under Windows 95 and the application 
+    crashed the server, then you had to reboot before you can debug in the IDE 
+    to start the debugger again.
+    Winserv will now free the name and try again if it tries to connect to a server
+    and is unable to connect.
+===========================================================
+
+          ***************
+          ** Assembler **
+          ***************
+
+    Fixed a bug where wasm wouldn't assemble: 
+    "psrlq m1, dummy" 
+    where dummy is a quadword 
+    It gave an error: "Second operand too big". 
+===========================================================
+ 
+
+
+===========================================================
+Fixes in version 11.0 A-level
+===========================================================
+
+
+          ********************
+          ** Code Generator **
+          ********************
+
+    If optimizing for time, align procedures on 16-byte
+    boundaries for anything above a 486.
+===========================================================
+
+    Fixed a problem with short-circuit operators in which
+    a side effect would be discarded (ie ( (a=b) || 1 )
+    would get reduced to (1) and the (a=b) discarded. Ditto
+    for ( (a=b) && 0 ).
+===========================================================
+
+    Fixed a problem with long filenames in object file
+    generation.
+===========================================================
+
+    Fixed a problem with loopopts and far pointers - if
+    inductions optimizations introduced an add of an integer
+    to a far pointer, it was possible that the add would be
+    generated incorrectly, resulting in some highly suspicious
+    references to odd locations such as -1[bp] or 7[bp].
+===========================================================
+
+    Fixed a problem in which conversions between floats and 
+    ints (or floats and doubles) within a union might not 
+    be generated correctly.
+===========================================================
+
+          ***************
+          ** C Library **
+          ***************
+
+    _findfirst() has been changed to take a const char * instead of just a char *.
+===========================================================
+===========================================================
+
+    __FSU87 was trashing ecx - this routine is called to convert an unsigned __int64
+    to a float.
+===========================================================
+
+    Fixed memory leak, due to us not deallocating the _iomode array during fini rtns.
+    Also added _UnloadCLib call to library to allow user to properly unload 16 bit OS/2
+    user loadable DLLs.
+===========================================================
+
+    fixed a bug where fortran default windowing apps would sometimes appear 
+    to print lines  twice, when printing at the bottom of the screen.
+    Since they were being printed at the bottom of the window and
+    then not erased when the window scrolled up, leaving a 2nd copy at the bottom
+===========================================================
+
+    Input value range checking for strtod() has been improved for very
+    small values.
+===========================================================
+
+    The runtime dll support has been fixed to no longer leave a potentially
+    dangerous reference from the C runtime DLL into whichever DLL has
+    been most recently loaded into the process image.  The reference from 
+    the C runtime DLL now points directly into the Math runtime DLL.
+===========================================================
+
+    The _dos_getdiskfree() function for 32bit platforms now has an
+    expanded data structure.
+===========================================================
+
+    The assert() function for WIN32 and OS/2 platforms will attempt
+    to use stderr for output if it is available.
+===========================================================
+
+    The __declspec(thread) support for WIN32 platforms has been
+    improved.  In some, pathological cases, it could lead to a GPF
+    on program startup.
+===========================================================
+
+    The system() function for WIN32 platform no longer passes
+    posix file handles for inheritance by child processes by default.
+===========================================================
+
+    The delay() function for NEC98 machines used to hang on initialization.
+===========================================================
+
+    The race condition in the _beginthread() function related
+    to the saving of the child thread handle has been fixed.
+===========================================================
+
+    The multibyte init code for the C runtime library would
+    always crash on startup when running under the Pharlap
+    Run386 or TNT DOS extenders.
+===========================================================
+
+    The heapchk() function for 32bit platforms could, in some
+    cases, enter an infinite loop.
+===========================================================
+
+    The posix level open() function for WIN32 platforms did not
+    properly truncate existing files on NT server machines when
+    run from an NT workstation.
+===========================================================
+
+    The WIN32 stat() function now ensures that directories
+    cannot be marked as character mode devices.
+===========================================================
+
+    The WIN32 and OS/2 runtime shutdown code now does a better
+    job of releasing all resources on image shutdown.
+===========================================================
+
+          ******************
+          ** Disassembler **
+          ******************
+
+    fixed problem with disassembly of 3-operand imul instructions
+    (only 2 operands were displayed)
+===========================================================
+
+          *************************
+          ** FORTRAN 77 Compiler **
+          *************************
+
+    fixed a bug where the compiler would produce an access violation error if
+    you passed an external as an argument to a subroutine 
+    the error would only occur if debug info was on ( -d2 )
+    
+===========================================================
+
+          ********************
+          ** C Header Files **
+          ********************
+
+    const qualifiers have been added to the char* parameters
+    to the findfirst and variant functions in io.h
+===========================================================
+
+    The register mode calling convention prototype for longjmp()
+    is no longer marked as "#pragma aborts" to facilitate
+    profiling support.
+===========================================================
+
+          **********************************************
+          ** Integrated Development Environment (IDE) **
+          **********************************************
+
+    Added pentium pro (p6) switches to the options pages
+    ( compiler, linker, assembler, etc. )
+===========================================================
+
+    added a switch for Watcom debugging info to the linker
+    options page - watcom was previously the default if you
+    selected debug all, now Dwarf is the default
+===========================================================
+
+    fixed a resource problem that was causing some of the
+    buttons and menu items to appear with no text
+===========================================================
+
+    Don't use incremental linking for DOS or Netware 
+    applications - it is not supported
+===========================================================
+
+    Changed the compiler options for Netware targets to use
+    -5s, -ms -- stack based, small model
+===========================================================
+
+    changed the linker options for 32-bit OS/2 DLL's
+    now uses op manyautodata, initinstance, terminstance
+===========================================================
+
+          **********
+          ** Make **
+          **********
+
+    In non-Microsoft mode, WMAKE will find and process
+    a file named "MAKEFINI" after all makefiles have been
+    processed.
+    
+===========================================================
+
+          ************
+          ** WVIDEO **
+          ************
+
+    Rolled back DOS4G extender to 1.96 to fix pharlap application debugging crashes.
+    
+===========================================================
+
+    fixed a bug where you couldn't debug "Large" DOS/4GW apps
+===========================================================

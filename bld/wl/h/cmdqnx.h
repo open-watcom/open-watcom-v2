@@ -31,7 +31,7 @@
 
 
 extern bool     ProcLongLived( void );
-extern bool     ProcQnxPrivilege( void );
+extern bool     ProcQNXPrivilege( void );
 extern bool     ProcLinearRelocs( void );
 extern bool     ProcQNX( void );
 

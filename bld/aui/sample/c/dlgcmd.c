@@ -95,6 +95,7 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
         cmd = GUIGetText( gui, CTL_CMD_HISTORY );
         GUISetText( gui, CTL_CMD_EDIT, cmd );
         GUISelectAll( gui, CTL_CMD_EDIT, TRUE );
+        GUIMemFree( cmd );
         return( TRUE );
     case GUI_CONTROL_DCLICKED:
     case GUI_CONTROL_CLICKED:
@@ -103,12 +104,15 @@ extern bool CmdEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_CMD_HISTORY:
             text = GUIGetText( gui, CTL_CMD_HISTORY );
             GUISetText( gui, CTL_CMD_EDIT, text );
-            WndFree( text );
-            if( gui_ev == GUI_CONTROL_CLICKED ) return( TRUE );
+            GUIMemFree( text );
+            if( gui_ev == GUI_CONTROL_CLICKED )
+                return( TRUE );
             /* fall through */
         case CTL_CMD_OK:
             text = GUIGetText( gui, CTL_CMD_EDIT );
-            if( text != NULL ) DoCmd( text );
+            if( text != NULL )
+                DoCmd( text );
+            GUIMemFree( text );
             break;
         case CTL_CMD_CHECK:
             return( FALSE );

@@ -12,3 +12,5 @@ XX<double> *q;
 void foo()
 {
 }
+
+template class XX<int>;

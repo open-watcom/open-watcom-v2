@@ -1,0 +1,32 @@
+.387
+		EXTRN	hug:BYTE
+		EXTRN	farlabel:BYTE
+		EXTRN	nearlabel:BYTE
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_NearProc:
+    push        bp 
+    mov         bp,sp 
+    sub         sp,10H 
+    mov         ax,word ptr 6[bp] 
+    mov         ax,word ptr es:hug 
+    mov         ax,word ptr cs:hug 
+    call        far ptr _FarProc 
+    mov         sp,bp 
+    pop         bp 
+    retf        5 
+_TEXT		ENDS
+far_text		SEGMENT	BYTE PUBLIC USE16 'far_code'
+		ASSUME CS:far_text, DS:DGROUP, SS:DGROUP
+_FarProc:
+    push        bp 
+    mov         bp,sp 
+    sub         sp,2 
+    mov         ax,word ptr 6[bp] 
+    mov         bx,bx 
+    mov         dx,word ptr 8[bp] 
+    mov         sp,bp 
+    pop         bp 
+    retf        
+far_text		ENDS
+		END

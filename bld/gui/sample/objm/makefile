@@ -13,4 +13,4 @@ target : sample.exe .SYMBOLIC
 samp2 : samp2.exe  .SYMBOLIC
     @%null
 
-!include ..\makefile
+!include ../makefile

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "win1632.h"
 
@@ -43,4 +43,3 @@ char *WResIDNameToStr( WResIDName *name )
 {
     return( WRWResIDNameToStr( name ) );
 }
-

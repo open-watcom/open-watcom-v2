@@ -1,0 +1,61 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    cmpsb     
+    cmpsw     
+    cmpsd     
+    repe cmpsb 
+    repe cmpsw 
+    repe cmpsd 
+    cmpsb     
+    cmpsw     
+    cmpsd     
+    repe cmpsb 
+    repe cmpsw 
+    repe cmpsd 
+    cmpsb     
+    cmpsw     
+    cmpsd     
+    cmps      byte ptr cs:[esi],byte ptr [edi]
+    cmps      word ptr cs:[esi],word ptr [edi]
+    cmps      dword ptr cs:[esi],dword ptr [edi]
+    cmps      byte ptr cs:[esi],byte ptr [edi]
+    cmps      word ptr cs:[esi],word ptr [edi]
+    cmps      dword ptr cs:[esi],dword ptr [edi]
+    repe cmpsb 
+    repe cmpsw 
+    repe cmpsd 
+    repe cmps byte ptr cs:[esi],byte ptr [edi]
+    repe cmps word ptr cs:[esi],word ptr [edi]
+    repe cmps dword ptr cs:[esi],dword ptr [edi]
+    repe cmps byte ptr cs:[esi],byte ptr [edi]
+    repe cmps word ptr cs:[esi],word ptr [edi]
+    repe cmps dword ptr cs:[esi],dword ptr [edi]
+    cmps      byte ptr [si],byte ptr [di]
+    cmps      word ptr [si],word ptr [di]
+    cmps      dword ptr [si],dword ptr [di]
+    cmps      byte ptr cs:[si],byte ptr [di]
+    cmps      word ptr cs:[si],word ptr [di]
+    cmps      dword ptr cs:[si],dword ptr [di]
+    cmps      byte ptr cs:[si],byte ptr [di]
+    cmps      word ptr cs:[si],word ptr [di]
+    cmps      dword ptr cs:[si],dword ptr [di]
+    repe cmps byte ptr [si],byte ptr [di]
+    repe cmps word ptr [si],word ptr [di]
+    repe cmps dword ptr [si],dword ptr [di]
+    repe cmps byte ptr cs:[si],byte ptr [di]
+    repe cmps word ptr cs:[si],word ptr [di]
+    repe cmps dword ptr cs:[si],dword ptr [di]
+    repe cmps byte ptr cs:[si],byte ptr [di]
+    repe cmps word ptr cs:[si],word ptr [di]
+    repe cmps dword ptr cs:[si],dword ptr [di]
+    repe cmps byte ptr cs:[si],byte ptr [di]
+    repe cmps dword ptr cs:[esi],dword ptr [edi]
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0
+
+_DATA		ENDS
+		END

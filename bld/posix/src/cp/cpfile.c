@@ -24,48 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Performs enhanced Unix cp file I/O.
 *
 ****************************************************************************/
 
 
-/*
-   CPFILE.C - perform enhanced unix cp file io
-
-   Date         By              Reason
-   ====         ==              ======
-   17-aug-90    Craig Eisler    defined
-   28-sep-90    Craig Eisler    more work
-   19-aug-91    Craig Eisler    more work
-   19-oct-91    Craig Eisler    more work
-   11-nov-91    Craig Eisler    cleaned up
-   25-mar-92    Craig Eisler    NT version
-   15-jun-92    Craig Eisler    cleaned up same file testing
-   18-jun-92    Greg Bentz      OS/2 2.0 port
-   20-jun-92    Craig Eisler    use FileMatch (regular expressions)
-   23-jun-92    Craig Eisler    use FileMatchNoRx
-   07-jul-92    D.J.Gaudet      decreased stack requirements of DoCP()
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
 #include <conio.h>
 #include <errno.h>
 #include <dos.h>
 #include <direct.h>
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
 #define  INCL_DOSFILEMGR
 #define  INCL_DOSERRORS
 #define  INCL_DOSMISC
 #include <os2.h>
 #endif
-#if defined(__OS_nt__) || defined( __OS_alpha__ )
+#if defined(__OS_nt386__) || defined( __OS_ntaxp__ )
 #include <windows.h>
 #endif
 #include "cp.h"
@@ -117,7 +99,7 @@ static int osSameFile( char *dest, char *src )
 
 } /* osSameFile */
 
-#elif defined(__OS_nt__) || defined(__OS_alpha__)
+#elif defined(__OS_nt386__) || defined(__OS_ntaxp__)
 /*
  * osSameFile - NT specific same file test
  */
@@ -138,7 +120,7 @@ static int osSameFile( char *dest, char *src )
 
 #endif
 
-#if !defined(__OS_os2v2__)
+#if !defined(__OS_os2386__)
 /*
  * sameFile - test if two files are the same
  */
@@ -289,14 +271,14 @@ void DoCP( char *f, char *dir )
     char                *source_tail;
     char                dest_buf[ _MAX_PATH ];
     char                *dest_tail;
-    int                 i;
+    int                 i = strlen( f );
 
     /*
      * get file path prefix
      */
     source_tail = source_buf;
-    for( i=strlen( f ); i>=0 ;i-- ) {
-        if( f[i] == ':' || f[i] == FILESEP ) {
+    while( --i >= 0 ) {
+        if( f[i] == ':' || isFILESEP( f[i] ) ) {
             source_tail = (char *)memcpy( source_buf, f, i + 1 ) + i + 1;
             break;
         }
@@ -343,7 +325,7 @@ void CopyOneFile( char *dest, char *src )
      */
     if( stat( dest,&stat_d ) != -1 ) {
 
-#if !defined(__OS_os2v2__)
+#if !defined(__OS_os2386__)
         if( sameFile( dest, &stat_d, src, &stat_s ) ) {
             DropPrintALine( "%s and %s the same file, copy failed",src,dest );
             return;
@@ -397,7 +379,7 @@ void IOError( int error )
 
 } /* IOError */
 
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
 /*
  * OS2Error - fatal I/O error encountered
  */

@@ -45,61 +45,6 @@
 // require that we also include headers from several other places.
 #define GET_HWND( x ) (*((HWND *)(x)))
 
-#ifdef __WINDOWS__
- #define RCS_DLLNAME                    "rcsdll.dll"
- #define CHECKIN_FN_NAME                "RCSCHECKIN"
- #define CHECKOUT_FN_NAME               "RCSCHECKOUT"
- #define GETSYS_FN_NAME                 "RCSQUERYSYSTEM"
- #define GETVER_FN_NAME                 "RCSGETVERSION"
- #define FINI_FN_NAME                   "RCSFINI"
- #define HAS_SHELL_FN_NAME              "RCSHASSHELL"
- #define INIT_FN_NAME                   "RCSINIT"
- #define REG_BAT_CB_FN_NAME             "RCSREGISTERBATCHCALLBACK"
- #define REG_MSGBOX_CB_FN_NAME          "RCSREGISTERMESSAGEBOXCALLBACK"
- #define RUNSHELL_FN_NAME               "RCSRUNSHELL"
- #define SETSYS_FN_NAME                 "RCSSETSYSTEM"
-#elif defined( __NT__ )
- #define RCS_DLLNAME                    "rcsdll.dll"
- #ifdef __AXP__
-  #define CHECKIN_FN_NAME               "RCSCheckin"
-  #define CHECKOUT_FN_NAME              "RCSCheckout"
-  #define GETSYS_FN_NAME                "RCSQuerySystem"
-  #define GETVER_FN_NAME                "RCSGetVersion"
-  #define FINI_FN_NAME                  "RCSFini"
-  #define HAS_SHELL_FN_NAME             "RCSHasShell"
-  #define INIT_FN_NAME                  "RCSInit"
-  #define REG_BAT_CB_FN_NAME            "RCSRegisterBatchCallback"
-  #define REG_MSGBOX_CB_FN_NAME         "RCSRegisterMessageBoxCallback"
-  #define RUNSHELL_FN_NAME              "RCSRunShell"
-  #define SETSYS_FN_NAME                "RCSSetSystem"
- #else
-  #define CHECKIN_FN_NAME               "_RCSCheckin@16"
-  #define CHECKOUT_FN_NAME              "_RCSCheckout@16"
-  #define GETSYS_FN_NAME                "_RCSQuerySystem@4"
-  #define GETVER_FN_NAME                "_RCSGetVersion@0"
-  #define FINI_FN_NAME                  "_RCSFini@4"
-  #define HAS_SHELL_FN_NAME             "_RCSHasShell@4"
-  #define INIT_FN_NAME                  "_RCSInit@8"
-  #define REG_BAT_CB_FN_NAME            "_RCSRegisterBatchCallback@12"
-  #define REG_MSGBOX_CB_FN_NAME         "_RCSRegisterMessageBoxCallback@12"
-  #define RUNSHELL_FN_NAME              "_RCSRunShell@4"
-  #define SETSYS_FN_NAME                "_RCSSetSystem@8"
- #endif
-#elif defined( __OS2__ )
- #define RCS_DLLNAME                    "rcsdll"
- #define CHECKIN_FN_NAME                "RCSCheckin"
- #define CHECKOUT_FN_NAME               "RCSCheckout"
- #define GETSYS_FN_NAME                 "RCSQuerySystem"
- #define GETVER_FN_NAME                 "RCSGetVersion"
- #define FINI_FN_NAME                   "RCSFini"
- #define HAS_SHELL_FN_NAME              "RCSHasShell"
- #define INIT_FN_NAME                   "RCSInit"
- #define REG_BAT_CB_FN_NAME             "RCSRegisterBatchCallback"
- #define REG_MSGBOX_CB_FN_NAME          "RCSRegisterMessageBoxCallback"
- #define RUNSHELL_FN_NAME               "RCSRunShell"
- #define SETSYS_FN_NAME                 "RCSSetSystem"
-#endif
-
 extern "C" {
 int RCSAPI GetInputCB( rcsstring text, rcsstring title,
                                         char *buffer, int len,
@@ -164,45 +109,45 @@ bool VRcsClient::Init( void ) {
     _dllhdl = WSystemService::loadLibrary( RCS_DLLNAME );
     if( _dllhdl == 0 ) return( FALSE );
 
-    _checkin = (RCSCheckinFn)
+    _checkin = (RCSCheckinFn *)
         WSystemService::getProcAddr( _dllhdl, CHECKIN_FN_NAME );
     if( _checkin == NULL ) return( FALSE );
 
-    _checkout = (RCSCheckoutFn)
+    _checkout = (RCSCheckoutFn *)
         WSystemService::getProcAddr( _dllhdl, CHECKOUT_FN_NAME );
     if( _checkout == NULL ) return( FALSE );
 
-    _fini = (RCSFiniFn)WSystemService::getProcAddr( _dllhdl, FINI_FN_NAME );
+    _fini = (RCSFiniFn *)WSystemService::getProcAddr( _dllhdl, FINI_FN_NAME );
     if( _fini == NULL ) return( FALSE );
 
-    _getver = (RCSGetVerFn)
+    _getver = (RCSGetVersionFn *)
         WSystemService::getProcAddr( _dllhdl, GETVER_FN_NAME );
     if( _getver == NULL ) return( FALSE );
 
-    _hasshell = (RCSHasShellFn)
+    _hasshell = (RCSHasShellFn *)
         WSystemService::getProcAddr( _dllhdl, HAS_SHELL_FN_NAME );
     if( _hasshell == NULL ) return( FALSE );
 
-    _querysystem = (RCSQuerySystemFn)
+    _querysystem = (RCSQuerySystemFn *)
         WSystemService::getProcAddr( _dllhdl, GETSYS_FN_NAME );
     if( _querysystem == NULL ) return( FALSE );
 
-    _init = (RCSInitFn)WSystemService::getProcAddr( _dllhdl, INIT_FN_NAME );
+    _init = (RCSInitFn *)WSystemService::getProcAddr( _dllhdl, INIT_FN_NAME );
     if( _init == NULL ) return( FALSE );
 
-    _regbatchcb = (RCSRegBatchCbFn)
+    _regbatchcb = (RCSRegBatchCbFn *)
         WSystemService::getProcAddr( _dllhdl, REG_BAT_CB_FN_NAME );
     if( _regbatchcb == NULL ) return( FALSE );
 
-    _regmsgboxcb = (RCSRegMsgBoxCbFn)
+    _regmsgboxcb = (RCSRegMsgBoxCbFn *)
         WSystemService::getProcAddr( _dllhdl, REG_MSGBOX_CB_FN_NAME );
     if( _regmsgboxcb== NULL ) return( FALSE );
 
-    _runshell = (RCSRunShellFn)
+    _runshell = (RCSRunShellFn *)
         WSystemService::getProcAddr( _dllhdl, RUNSHELL_FN_NAME );
     if( _runshell == NULL ) return( FALSE );
 
-    _setsystem = (RCSSetSystemFn)
+    _setsystem = (RCSSetSystemFn *)
         WSystemService::getProcAddr( _dllhdl, SETSYS_FN_NAME );
     if( _setsystem == NULL ) return( FALSE );
 

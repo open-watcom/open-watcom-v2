@@ -120,7 +120,7 @@ extern void rend_list_sort(
     rend_list *     list,
     int             (*compare) (const rend_obj **, const rend_obj **)
 ) {
-    qsort( list->list, list->last + 1, sizeof(rend_obj *), compare );
+    qsort( list->list, list->last + 1, sizeof(rend_obj *), (int (*)(const void *, const void *))compare );
 }
 
 extern void rend_list_bin_insert(
@@ -144,7 +144,7 @@ extern void rend_list_bin_insert(
     mid = (low + high) / 2;
 
     while (low <= high ) {
-        comp_rc = compare( obj, list->list + mid );
+        comp_rc = compare( (const rend_obj **)obj, (const rend_obj **)(list->list + mid) );
         if (comp_rc < 0) {
             high = mid - 1;
         } else if (comp_rc > 0) {

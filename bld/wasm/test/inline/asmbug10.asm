@@ -1,0 +1,1 @@
+ out dx,eax

@@ -1,0 +1,17 @@
+.387
+		PUBLIC	foo_
+		EXTRN	bar_:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+foo_:
+    mov       bx,0aH
+L$1:
+    call      near ptr bar_
+    dec       bx
+    jne       L$1
+    ret       
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

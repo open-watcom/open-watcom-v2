@@ -5,17 +5,29 @@
  */
 #ifndef _SHARE_H_INCLUDED
 #define _SHARE_H_INCLUDED
+
 :include readonly.sp
 
-#define SH_COMPAT   0x00    /* compatibility mode   */
-#define SH_DENYRW   0x10    /* deny read/write mode */
-#define SH_DENYWR   0x20    /* deny write mode      */
-#define SH_DENYRD   0x30    /* deny read mode       */
-#define SH_DENYNO   0x40    /* deny none mode       */
-:segment QNX
-
-#define SH_MASK     0x70    /* mask for standard share modes    */
-
-#define SH_DOS      0x01    /* DOS-like interpretation of open, locks, etc. */
+#define _SH_COMPAT  0x00    /* compatibility mode   */
+#define _SH_DENYRW  0x10    /* deny read/write mode */
+#define _SH_DENYWR  0x20    /* deny write mode      */
+#define _SH_DENYRD  0x30    /* deny read mode       */
+#define _SH_DENYNO  0x40    /* deny none mode       */
+:segment QNX | LINUX
+#define _SH_MASK    0x70    /* mask for standard share modes    */
+#define _SH_DOS     0x01    /* DOS-like interpretation of open, locks, etc. */
 :endsegment
+
+:include ext.sp
+#define SH_COMPAT   _SH_COMPAT
+#define SH_DENYRW   _SH_DENYRW
+#define SH_DENYWR   _SH_DENYWR
+#define SH_DENYRD   _SH_DENYRD
+#define SH_DENYNO   _SH_DENYNO
+:segment QNX | LINUX
+#define SH_MASK     _SH_MASK
+#define SH_DOS      _SH_DOS
+:endsegment
+:include extepi.sp
+
 #endif

@@ -46,7 +46,7 @@ WPickList
 11
 MItem
 5
-*.BMP
+*.bmp
 12
 WString
 3
@@ -64,7 +64,7 @@ WVList
 15
 MItem
 11
-..\BACK.BMP
+../back.bmp
 16
 WString
 3
@@ -82,7 +82,7 @@ WVList
 19
 MItem
 15
-..\BRIGHTER.BMP
+../brighter.bmp
 20
 WString
 3
@@ -100,7 +100,7 @@ WVList
 23
 MItem
 13
-..\DARKER.BMP
+../darker.bmp
 24
 WString
 3
@@ -118,7 +118,7 @@ WVList
 27
 MItem
 11
-..\DOWN.BMP
+../down.bmp
 28
 WString
 3
@@ -136,7 +136,7 @@ WVList
 31
 MItem
 14
-..\FORWARD.BMP
+../forward.bmp
 32
 WString
 3
@@ -154,7 +154,7 @@ WVList
 35
 MItem
 11
-..\LEFT.BMP
+../left.bmp
 36
 WString
 3
@@ -172,7 +172,7 @@ WVList
 39
 MItem
 12
-..\RIGHT.BMP
+../right.bmp
 40
 WString
 3
@@ -190,7 +190,7 @@ WVList
 43
 MItem
 9
-..\UP.BMP
+../up.bmp
 44
 WString
 3
@@ -226,7 +226,7 @@ WVList
 51
 MItem
 12
-..\drawwin.c
+../drawwin.c
 52
 WString
 4
@@ -244,7 +244,7 @@ WVList
 55
 MItem
 5
-*.CPP
+*.cpp
 56
 WString
 6
@@ -274,7 +274,7 @@ WVList
 62
 MItem
 10
-..\BOX.CPP
+../box.cpp
 63
 WString
 6
@@ -292,7 +292,7 @@ WVList
 66
 MItem
 15
-..\DRAWROOM.CPP
+../drawroom.cpp
 67
 WString
 6
@@ -310,7 +310,7 @@ WVList
 70
 MItem
 14
-..\FURNITU.CPP
+../furnitu.cpp
 71
 WString
 6
@@ -418,7 +418,7 @@ WVList
 94
 MItem
 10
-..\draw.rc
+../draw.rc
 95
 WString
 5

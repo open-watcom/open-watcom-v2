@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler options dialog.
 *
 ****************************************************************************/
 
 
 #include <unistd.h>
 #include <stdio.h>
-#include <process.h>
 
 #include "common.h"
 #include "aui.h"
@@ -54,12 +52,12 @@ extern void StretchSetAll(sio_data *curr_sio,bint bar_max);
 extern void SortSetAll(sio_data *curr_sio,int sort_type);
 
 
-bint    OptStretchGlobal = B_FALSE;
-bint    OptAbsBarGlobal = B_TRUE;
-bint    OptRelBarGlobal = B_TRUE;
-bint    OptSortCountGlobal = B_TRUE;
-bint    OptSortNameGlobal = B_FALSE;
-bint    OptGatherGlobal = B_FALSE;
+bint    OptStretchGlobal = P_FALSE;
+bint    OptAbsBarGlobal = P_TRUE;
+bint    OptRelBarGlobal = P_TRUE;
+bint    OptSortCountGlobal = P_TRUE;
+bint    OptSortNameGlobal = P_FALSE;
+bint    OptGatherGlobal = P_FALSE;
 int     OptGatherCut = 10;
 
 STATIC bint     getDlgValues( gui_window * );
@@ -120,7 +118,7 @@ STATIC bint getDlgValues( gui_window * gui )
         SortSetAll( CurrSIOData, sort_type );
         GatherSetAll( CurrSIOData, OptGatherGlobal );
     }
-    return( B_TRUE );
+    return( P_TRUE );
 }
 
 
@@ -146,12 +144,12 @@ STATIC void setDlgValues( gui_window * gui )
 STATIC void setDlgDefaults( gui_window * gui )
 /********************************************/
 {
-    OptStretchGlobal = B_FALSE;
-    OptAbsBarGlobal = B_TRUE;
-    OptRelBarGlobal = B_TRUE;
-    OptSortCountGlobal = B_TRUE;
-    OptSortNameGlobal = B_FALSE;
-    OptGatherGlobal = B_FALSE;
+    OptStretchGlobal = P_FALSE;
+    OptAbsBarGlobal = P_TRUE;
+    OptRelBarGlobal = P_TRUE;
+    OptSortCountGlobal = P_TRUE;
+    OptSortNameGlobal = P_FALSE;
+    OptGatherGlobal = P_FALSE;
     OptGatherCut = 1;
     setDlgValues( gui );
 }
@@ -167,24 +165,24 @@ STATIC bool progEvent( gui_window * gui, gui_event gui_ev, void * param )
     case GUI_INIT_DIALOG:
         setDlgValues( gui );
         GUISetFocus( gui, CTL_GATHER );
-        return( B_TRUE );
+        return( P_TRUE );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_OK:
             getDlgValues( gui );
             GUICloseDialog( gui );
-            return( B_TRUE );
+            return( P_TRUE );
         case CTL_DEFAULTS:
             setDlgDefaults( gui );
-            return( B_TRUE );
+            return( P_TRUE );
         case CTL_CANCEL:
             GUICloseDialog( gui );
-            return( B_TRUE );
+            return( P_TRUE );
         }
-        return( B_FALSE );
+        return( P_FALSE );
     case GUI_DESTROY:
-        return( B_TRUE );
+        return( P_TRUE );
     }
-    return( B_FALSE );
+    return( P_FALSE );
 }

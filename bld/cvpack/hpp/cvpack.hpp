@@ -71,6 +71,7 @@ class CVpack {
         }
 
         unsigned_32     _lfaBase;
+        unsigned_32     _ddeBase;
         ExeMaker        _eMaker;
         Retriever       _aRetriever;
         ODirectory      _newDir;

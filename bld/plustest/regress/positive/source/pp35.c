@@ -1,4 +1,5 @@
 /* +++Date last modified: 05-Jul-1997 */
+// dfc: added return types 16 nov 06
 
 /* Written by Tom Torfs (2:292/516@fidonet,tomtorfs@dma.be)
    Donated to the public domain */
@@ -55,7 +56,7 @@ int put( char c )
 
 #define /*_## (__\* /#*/__(/* #)#_*/_/*__ (#_)*/) /*__*/# _/*#_) _(_##_)\*#_*/
 char _t[]=__(ABCDEF) __(GHIJKLM) __(NOPQRS) __(TUVWXYZ) __(abcdef) __(ghijklm)
-__(nopqrs) __(tuvwxyz) ".,;- ?!'\n"; extern _(char *); extern _b(char); _main(int c,char **a){
+__(nopqrs) __(tuvwxyz) ".,;- ?!'\n"; extern int _(char *); extern int _b(char); int _main(int c,char **a){
 if (_(__(I##dt)),_(__(Q##Tqt)),_(__(d##gtc)),_(__(d##iti))) _main(c-1,a+1);
 if (_(__(dtQ##Tt)),_(__(s##ti)),_(__(W##Pi)),_(__(t##Xht))) _main(c+1,a-1);
 if (_(__(i##WT)),_(__(tfj##Th)),_(__(iXd##cp)),_(__(x##LW))) _main(c-1,a+1);
@@ -146,8 +147,8 @@ if (_(__(X##ht)),_(__(g##TV)),_(__(P##gS)),_(__(qt##iWT))) _main(c-1,a+1);
 if (_(__(Xg##tRj)),_(__(gg##Tc)),_(__(i##ht)),_(__(i##jgc))) _main(c+1,a-1);
 if (_(__(tP##lg)),_(__(nqx##yc)),_(__(S##ta)),_(__(d##hTti))) _main(c-1,a+1);
 if (_(__(W##Ttc)),_(__(P##bT)),_(__(td##Ut)),_(__(P##Ri))) _main(c+1,a-1);
-return _(__(Xd##cp)),_(__(x));} _(char *_a){int _c=atoi(__(_a));for (;*_a;_a++)
-_c+=_b(*_a);return _c;}_b(char _a){char *_p=strchr(_t,_a);return
+return _(__(Xd##cp)),_(__(x));} int _(char *_a){int _c=atoi(__(_a));for (;*_a;_a++)
+_c+=_b(*_a);return _c;}int _b(char _a){char *_p=strchr(_t,_a);return
 _p?!put(_t[((_p-_t)+11)%61]):atoi(__(_p));}
 
 int main(int argc,char **argv){

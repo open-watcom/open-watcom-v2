@@ -1,0 +1,800 @@
+.387
+		PUBLIC	_RMDataStart
+		PUBLIC	_RMSegStart
+		PUBLIC	RMTrapInit_
+		PUBLIC	RMTrapAccess_
+		PUBLIC	RMTrapFini_
+		PUBLIC	RMTrapHandler_
+		PUBLIC	RawSwitchHandler_
+		PUBLIC	Interrupt10_
+		PUBLIC	Interrupt1b_23_
+		PUBLIC	Interrupt24_
+		PUBLIC	Interrupt15_
+		PUBLIC	BackFromRealMode_
+		PUBLIC	_RMSegEnd
+rmhandlr_TEXT16		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:rmhandlr_TEXT16, DS:DGROUP, SS:DGROUP
+_RMDataStart:
+_RMSegStart:
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH, 4aH
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	48H, 48H, 48H, 48H, 48H, 48H, 48H, 48H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	49H, 49H, 49H, 49H, 49H, 49H, 49H, 49H
+    DB	0, 0, 0aaH, 0aaH, 0aaH, 0aaH, 0bbH, 0bbH
+    DB	0bbH, 0bbH, 0ccH, 0ccH, 0ccH, 0ccH, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	4aH, 4aH, 42H, 42H, 43H, 43H, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 4dH
+    DB	4dH, 4dH, 4dH, 4dH, 4dH, 4dH, 41H, 41H
+    DB	01FFH DUP(41H,41H,41H,41H,41H,41H,41H,41H)
+    DB	41H, 41H, 41H, 41H, 41H, 41H
+restore_state:
+    push        ax
+    push        es
+    mov         es,word ptr ds:[0c1aH]
+    mov         al,1
+    call        dword ptr ds:[0c16H]
+    pop         es
+    pop         ax
+    ret         
+save_state:
+    push        ax
+    push        es
+    mov         es,word ptr ds:[0c1aH]
+    mov         al,0
+    call        dword ptr ds:[0c16H]
+    pop         es
+    pop         ax
+    ret         
+RMTrapInit_:
+    push        es
+    push        cx
+    push        si
+    sub         sp,4
+    mov         si,sp
+    push        word ptr ds:[0c3eH]
+    mov         ax,0c47H
+    mov         dx,cs
+    mov         bx,word ptr ds:[0c45H]
+    add         bx,0c3eH
+    mov         cx,dx
+    call        dword ptr ds:[0c02H]
+    pop         dx
+    mov         word ptr ds:[0c42H],dx
+    pop         ax
+    mov         byte ptr ds:[0c44H],al
+    pop         si
+    pop         cx
+    pop         es
+    ret         
+RMTrapAccess_:
+    push        ax
+    push        bx
+    push        cx
+    push        dx
+    cmp         word ptr cs:[0c44H],0
+    jne         L$1
+    push        0
+    mov         dx,0
+    push        0
+    jmp         L$2
+L$1:
+    mov         dx,1
+    push        cs
+    push        0c44H
+L$2:
+    mov         bx,0c3eH
+    mov         cx,cs
+    mov         ax,1
+    call        dword ptr ds:[0c06H]
+    mov         word ptr ds:[0c4aH],ax
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         ax
+    ret         
+RMTrapFini_:
+    call        dword ptr ds:[0c0aH]
+    ret         
+calltrapfile:
+    push        cx
+    push        si
+    push        di
+    push        ds
+    push        es
+    push        0
+    push        ds
+    mov         si,0
+    mov         di,800H
+    pop         es
+    pop         ds
+    mov         cx,200H
+    cli         
+    rep movsw   
+    sti         
+    pop         es
+    pop         ds
+    pop         di
+    pop         si
+    pop         cx
+    push        cx
+    push        si
+    push        di
+    push        ds
+    push        es
+    push        ds
+    push        0
+    mov         si,400H
+    mov         di,0
+    pop         es
+    pop         ds
+    mov         cx,200H
+    cli         
+    rep movsw   
+    sti         
+    pop         es
+    pop         ds
+    pop         di
+    pop         si
+    pop         cx
+    push        ax
+    push        bx
+    push        es
+    pushf       
+    mov         ah,51H
+    int         21H
+    mov         es,bx
+    mov         ax,word ptr es:[2cH]
+    mov         word ptr ds:[0c30H],ax
+    mov         ax,word ptr ds:[0c0eH]
+    mov         word ptr es:[2cH],ax
+    popf        
+    pop         es
+    pop         bx
+    pop         ax
+    call        word ptr ds:[0c00H]
+    push        ax
+    push        bx
+    push        es
+    pushf       
+    mov         ah,51H
+    int         21H
+    mov         es,bx
+    mov         ax,word ptr es:[2cH]
+    mov         word ptr ds:[0c0eH],ax
+    mov         ax,word ptr ds:[0c30H]
+    mov         word ptr es:[2cH],ax
+    popf        
+    pop         es
+    pop         bx
+    pop         ax
+    push        cx
+    push        si
+    push        di
+    push        ds
+    push        es
+    push        0
+    push        ds
+    mov         si,0
+    mov         di,400H
+    pop         es
+    pop         ds
+    mov         cx,200H
+    cli         
+    rep movsw   
+    sti         
+    pop         es
+    pop         ds
+    pop         di
+    pop         si
+    pop         cx
+    push        cx
+    push        si
+    push        di
+    push        ds
+    push        es
+    push        ds
+    push        0
+    mov         si,800H
+    mov         di,0
+    pop         es
+    pop         ds
+    mov         cx,200H
+    cli         
+    rep movsw   
+    sti         
+    pop         es
+    pop         ds
+    pop         di
+    pop         si
+    pop         cx
+    ret         
+L$3:
+    jmp         dword ptr cs:[68H]
+RMTrapHandler_:
+    cmp         ah,6
+    jne         L$3
+    cmp         cx,0ffffH
+    jne         L$3
+    push        ds
+    push        ax
+    mov         ax,cs
+    mov         ds,ax
+    mov         word ptr ds:[0c32H],ss
+    mov         word ptr ds:[0c34H],sp
+    mov         ss,ax
+    mov         sp,207eH
+    call        near ptr calltrapfile
+    mov         ss,word ptr ds:[0c32H]
+    mov         sp,word ptr ds:[0c34H]
+    pop         ax
+    pop         ds
+    iret        
+RawSwitchHandler_:
+    sti         
+    mov         sp,207eH
+    mov         dword ptr ds:[0c2cH],ebp
+    xor         di,di
+    call        near ptr save_state
+    cmp         byte ptr ds:[0c3dH],0
+    je          L$4
+    mov         di,word ptr ds:[0c1eH]
+    call        near ptr restore_state
+L$4:
+    call        near ptr calltrapfile
+    mov         byte ptr ds:[0c3dH],1
+    mov         di,word ptr ds:[0c1eH]
+    call        near ptr save_state
+    xor         di,di
+    call        near ptr restore_state
+    mov         ax,word ptr ds:[0c20H]
+    mov         cx,word ptr ds:[0c22H]
+    mov         dx,word ptr ds:[0c2aH]
+    mov         si,word ptr ds:[0c24H]
+    mov         edi,dword ptr ds:[0c26H]
+    mov         ebx,dword ptr ds:[0c2cH]
+    jmp         dword ptr ds:[0c12H]
+Interrupt10_:
+    cmp         ax,1130H
+    jne         L$5
+    mov         byte ptr cs:[0c3cH],bl
+L$5:
+    jmp         dword ptr cs:[0c36H]
+Interrupt1b_23_:
+    mov         byte ptr cs:[0c3aH],0ffH
+    iret        
+Interrupt24_:
+    mov         al,byte ptr cs:[0c3bH]
+    iret        
+Interrupt15_:
+    cmp         ax,0bf02H
+    je          L$6
+    cmp         ax,0bfdcH
+    je          L$6
+    jmp         dword ptr cs:[54H]
+L$6:
+    iret        
+BackFromRealMode_:
+    DB	66H
+    retf        
+_RMSegEnd:
+rmhandlr_TEXT16		ENDS
+		END

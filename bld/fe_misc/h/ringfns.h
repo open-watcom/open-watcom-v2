@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for ring support. See comments in ring.c for
+*               a list of implicit assumptions.
 *
 ****************************************************************************/
 
@@ -33,10 +33,6 @@
 #ifndef __RINGFNS_H__
 #define __RINGFNS_H__
 
-// RING.H -- definitions for ring support
-//
-// See comments in ring.c for a description of assumptions.
-//
 
 #include <stdlib.h>
 
@@ -51,30 +47,30 @@ extern "C" {
 // PROTOTYPES:
 
 void *RingAlloc(                // ALLOCATE AND APPEND NEW ELEMENT
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     size_t size )               // - size of entry to be allocated
 ;
 void RingAppend(                // APPEND ELEMENT TO RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be appended
 ;
 int RingCount(                  // COUNT ELEMENTS IN A RING
     void *hdr )                 // - ring hdr
 ;
 void RingDealloc(               // DE-ALLOCATE A RING ELEMENT
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be de-allocated
 ;
 void RingFree(                  // FREE ALL ELEMENTS IN A RING
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 ;
 void* RingPromote(              // PROMOTE ELEMENT TO START OF RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *elt,                  // - element to be promoted
     void *prv )                 // - element just before element
 ;
 void RingInsert(                // INSERT ELEMENT INTO RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element,              // - element to be inserted
     void *insert )              // - insertion point (or NULL for start)
 ;
@@ -86,26 +82,26 @@ void *RingLookup(               // LOOKUP IN A RING
     const void *comparand )     // - comparand
 ;
 void *RingPop(                  // PRUNE FIRST ELEMENT IN THE RING
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 ;
 void *RingTop(                  // RETURN FIRST ELEMENT IN THE RING
-    void **hdr )                // - addr( ring header )
+    void *hdr )                 // - addr( ring header )
 ;
 void *RingPred(                 // FIND PREDECESSOR ELEMENT IN A RING
     void *hdr,                  // - ring header
     void *element )             // - element
 ;
 void *RingPrune(                // PRUNE ELEMENT FROM A RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be pruned
 ;
 void *RingPruneWithPrev(        // PRUNE ELEMENT FROM A RING (PREV ELT AVAILABLE)
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element,              // - element to be pruned
     void *prv )                 // - element just before element
 ;
 void* RingPush(                 // INSERT ELEMENT AT START OF RING
-    void **hdr,                 // - addr( ring header )
+    void *hdr,                  // - addr( ring header )
     void *element )             // - element to be pushed
 ;
 void *RingConcatAppend(         // APPEND A RING

@@ -1,0 +1,38 @@
+!   ADSDLGAP.FI  -  Definitions for ADS Programmable Dialogue Boxes
+
+c$pragma aux ads "!"
+
+! Dialog Functions
+
+c$pragma aux (ads) ads_load_dialog parm( value, reference )
+c$pragma aux (ads) ads_unload_dialog parm( value*4 )
+c$pragma aux (ads) ads_new_dialog parm( value, value*4, reference, reference )
+c$pragma aux (ads) ads_new_positioned_dialog parm( value, value*4, \
+c                                                  reference, value*4, \
+c                                                  value*4, reference )
+c$pragma aux (ads) ads_start_dialog parm( value, reference )
+c$pragma aux (ads) ads_term_dialog parm()
+c$pragma aux (ads) ads_action_tile parm( value, value, reference )
+c$pragma aux (ads) ads_done_dialog parm( value, value*4 )
+c$pragma aux (ads) ads_done_positioned_dialog parm( value, value*4, \
+c                                                   reference, reference )
+c$pragma aux (ads) ads_set_tile parm( value, value, value )
+c$pragma aux (ads) ads_client_data_tile parm( value, value, reference )
+c$pragma aux (ads) ads_get_tile parm( value, value, value, value*4 )
+c$pragma aux (ads) ads_get_attr parm( value, value, value, value, value*4 )
+c$pragma aux (ads) ads_get_attr_string parm( reference, value, value, \
+c                                            value*4 )
+c$pragma aux (ads) ads_start_list parm( value, value, value*2, value*2 )
+c$pragma aux (ads) ads_add_list parm( value )
+c$pragma aux (ads) ads_end_list parm()
+c$pragma aux (ads) ads_mode_tile parm( value, value, value*2 )
+c$pragma aux (ads) ads_dimensions_tile parm( value, value, reference, \
+c                                            reference )
+c$pragma aux (ads) ads_start_image parm( value, value )
+c$pragma aux (ads) ads_vector_image parm( value*2, value*2, value*2, \
+c                                         value*2, value*2 )
+c$pragma aux (ads) ads_fill_image parm( value*2, value*2, value*2, value*2, \
+c                                       value*2 )
+c$pragma aux (ads) ads_slide_image parm( value*2, value*2, value*2, value*2, \
+c                                        value )
+c$pragma aux (ads) ads_end_image parm()

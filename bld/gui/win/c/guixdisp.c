@@ -81,7 +81,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
 
     style |= MB_MOVEABLE;
 
-    hwnd = NULL;
+    hwnd = NULLHANDLE;
     if( wnd != NULL ) {
         hwnd = wnd->hwnd;
     }

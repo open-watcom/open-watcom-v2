@@ -1,0 +1,10 @@
+.387
+.386p
+code		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:code, DS:DGROUP, SS:DGROUP
+    add       al,7
+    add       al,3cH
+    mov       ax,3031H
+    mov       eax,6b79626fH
+code		ENDS
+		END

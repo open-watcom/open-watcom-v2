@@ -41,9 +41,9 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-char *OptEnvVar="split";
+extern char *OptEnvVar="split";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: split [-?] [-number] [@env] file [prefix]",
     "\tenv                : environment variable to expand",
     "\tfile               : name of file to split",

@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker symbol table structures.
 *
 ****************************************************************************/
 
-
-//  Linker symbol table structures
 
 typedef enum {
 
@@ -47,6 +44,7 @@ typedef enum {
     ST_FIND             = 0x08,         // just looking for the symbol
     ST_REFERENCE        = 0x10,         // mark symbol as referenced
     ST_DEFINE           = 0x20,         // mark symbol as defined
+    ST_NONUNIQUE        = 0x40,         // duplicate names allowed
     ST_DEFINE_SYM       = 0x26          // frequently used combo
 } sym_flags;
 
@@ -58,6 +56,23 @@ typedef enum {
 // SYM_MAP_GLOBAL is also used inbetween pass 1 and pass 2 to keep track of
 // symbols which are going in the map file (for sort global command)
 // SYM_KILL & SYM_RELOC_REFD only used before pass 1
+
+// Here is what is put in the first four bits of the info field.
+
+    SYM_COMMUNAL_16     = 0,    // symbol is a 16-bit communal symbol
+    SYM_COMMUNAL_32     = 1,    // symbol is a 32-bit communal symbol
+    SYM_COMDAT          = 2,    // symbol is an initialized communal.
+    SYM_REGULAR         = 3,    // a good, old-fashioned linker symbol
+    SYM_ALIAS           = 4,    // this is an alias for another symbol.
+    SYM_IMPORTED        = 5,    // symbol is imported (OS/2 & Novell).
+    SYM_GROUP           = 6,    // symbol is attached to a group
+    SYM_LAZY_REF        = 7,    // symbol is a "lazy" reference.
+    SYM_WEAK_REF        = 8,    // symbol is a "weak" reference.
+    SYM_LINK_WEAK_REF   = 9,    // symbol is a linker-generated weak reference
+    SYM_VF_REF          = 10,   // symbol is a virtual function table reference
+    SYM_PURE_REF        = 11,   // symbol is a pure virt. func. table reference
+
+// Here is all other values except the first four bits of the info field.
 
     SYM_DEAD            = 0x00000010, // symbol has been eliminated.
     SYM_FREE_ALIAS      = 0x00000010, // used for aliases only.
@@ -105,24 +120,7 @@ typedef enum {
     SYM_VF_REFS_DONE    = 0x80000000  // ALL: vf refs added to call graph
 } sym_info;
 
-// Here is what is put in the first four bits of the info field.
-
-enum {
-    SYM_COMMUNAL_16     = 0,    // symbol is a 16-bit communal symbol
-    SYM_COMMUNAL_32     = 1,    // symbol is a 32-bit communal symbol
-    SYM_COMDAT          = 2,    // symbol is an initialized communal.
-    SYM_REGULAR         = 3,    // a good, old-fashioned linker symbol
-    SYM_ALIAS           = 4,    // this is an alias for another symbol.
-    SYM_IMPORTED        = 5,    // symbol is imported (OS/2 & Novell).
-    SYM_GROUP           = 6,    // symbol is attached to a group
-    SYM_LAZY_REF        = 7,    // symbol is a "lazy" reference.
-    SYM_WEAK_REF        = 8,    // symbol is a "weak" reference.
-    SYM_LINK_WEAK_REF   = 9,    // symbol is a linker-generated weak reference
-    SYM_VF_REF          = 10,   // symbol is a virtual function table reference
-    SYM_PURE_REF        = 11    // symbol is a pure virt. func. table reference
-};
-
-// some handy macros for checking and setting this field
+// some handy macros for checking and setting symbol type bits
 
 #define SYM_TYPE_MASK      0xF
 
@@ -184,33 +182,36 @@ typedef struct {
 } dos_sym_data;
 
 typedef struct symbol {
-    struct symbol *     hash;
-    struct symbol *     publink;
-    struct symbol *     link;
+    struct symbol       *hash;
+    struct symbol       *publink;
+    struct symbol       *link;
     targ_addr           addr;
-    unsigned_16         namelen;
+    unsigned_16         namelen_cmp;
     sym_info            info;       // flags & floating point fixup type.
-    struct mod_entry *  mod;
+    struct mod_entry    *mod;
     union {
-        void *          edges;      // for dead code elim. when sym undefd
-        struct segdata *seg;        // seg symbol is in.
-        char *          alias;      // for aliased syms.
-        void *          import;     // NOVELL & OS/2 only: imported symbol data.
+        void            *edges;     // for dead code elim. when sym undefd
+        struct segdata  *seg;       // seg symbol is in.
+        char            *alias;     // for aliased syms.
+        void            *import;    // NOVELL & OS/2 only: imported symbol data.
         offset          cdefsize;   // altdef comdefs: size of comdef
     } p;
     union {
         dos_sym_data    d;
-        struct symbol * altdefs;    // for keeping track of comdat & comdef defs
-        struct symbol * datasym;    // altdef comdats: sym which has data def
-        int             aliaslen;   // for aliases - length of name.
+        struct symbol   *altdefs;   // for keeping track of comdat & comdef defs
+        struct symbol   *datasym;   // altdef comdats: sym which has data def
+        unsigned        aliaslen;   // for aliases - length of name.
     } u;
     union {
-        struct symbol * mainsym;    // altdefs: main symbol definition
-        struct symbol * def;        // for lazy externs
-        struct symbol **vfdata;     // for virtual function lazy externs.
-        void *          export;     // OS/2 & PE only: exported sym info.
+        struct symbol   *mainsym;   // altdefs: main symbol definition
+        struct symbol   *def;       // for lazy externs
+        struct symbol   **vfdata;   // for virtual function lazy externs.
+        void            *export;    // OS/2 & PE only: exported sym info.
     } e;
-    char *              name;
+    char                *name;
+    char                *prefix;    // primarily for netware, though could be
+                                    // subverted for other use. gives symbol
+                                    // namespace qualification
 } symbol;
 
 /* function prototypes */
@@ -227,17 +228,17 @@ extern void             SymModEnd( void );
 extern void             ClearSymUnion( symbol * );
 extern void             ClearRefInfo( symbol * );
 extern void             TraceSymList( symbol * );
-extern void             MakeSymAlias( char *, int, char *, int );
-extern symbol *         MakeWeakExtdef( char *, symbol * );
+extern void             MakeSymAlias( char *, unsigned, char *, unsigned );
+extern symbol           *MakeWeakExtdef( char *, symbol * );
 extern void             ConvertVFSym( symbol * );
 extern void             WeldSyms( symbol *, symbol * );
-extern symbol *         UnaliasSym( sym_flags, symbol * );
+extern symbol           *UnaliasSym( sym_flags, symbol * );
 extern void             ConvertLazyRefs( void );
-extern symbol *         RefISymbol( char * );
-extern symbol *         DefISymbol( char * );
-extern symbol *         FindISymbol( char * );
-extern symbol *         SymXOp( sym_flags, char *, int );
-extern symbol *         SymOp( sym_flags , char *, int );
+extern symbol           *RefISymbol( char * );
+extern symbol           *DefISymbol( char * );
+extern symbol           *FindISymbol( char * );
+extern symbol           *SymOpNWPfx( sym_flags, char *, unsigned, char * , unsigned );
+extern symbol           *SymOp( sym_flags , char *, unsigned );
 extern void             ReportMultiple( symbol *, char *, unsigned );
 extern void             ReportUndefined( void );
 extern void             ClearFloatBits( void );
@@ -245,12 +246,12 @@ extern void             WriteCommunals( void );
 extern void             XDefSymAddr( symbol *, offset, unsigned_16 );
 extern void             XReportSymAddr( symbol * );
 extern void             XWriteImports( void );
-extern symbol *         AddAltDef( symbol *, unsigned );
-extern symbol *         HashReplace( symbol * );
+extern symbol           *AddAltDef( symbol *, sym_info );
+extern symbol           *HashReplace( symbol * );
 extern void             PurgeSymbols( void );
 extern offset           SymbolAbsAddr( symbol * );
-extern struct group_entry *     SymbolGroup( symbol * );
+extern struct group_entry *SymbolGroup( symbol * );
 
-extern unsigned NameLen;
-extern int      (*CmpRtn)( const void *, const void *, size_t );
-extern symbol * LastSym;
+extern unsigned         NameLen;
+extern int              (*CmpRtn)( const void *, const void *, size_t );
+extern symbol           *LastSym;

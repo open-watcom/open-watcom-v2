@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object Reader Library public interface.
 *
 ****************************************************************************/
 
@@ -72,7 +71,7 @@ orl_sec_handle          ORLENTRY ORLSecGetRelocTable( orl_sec_handle );
 orl_linnum *            ORLENTRY ORLSecGetLines( orl_sec_handle );
 orl_table_index         ORLENTRY ORLSecGetNumLines( orl_sec_handle );
 orl_sec_offset          ORLENTRY ORLSecGetOffset( orl_sec_handle );
-orl_return              ORLENTRY ORLSecGetContents( orl_sec_handle, char ** );
+orl_return              ORLENTRY ORLSecGetContents( orl_sec_handle, unsigned_8 ** );
 orl_return              ORLENTRY ORLSecQueryReloc( orl_sec_handle, orl_sec_offset, orl_reloc_return_func );
 orl_return              ORLENTRY ORLSecScanReloc( orl_sec_handle, orl_reloc_return_func );
 orl_table_index         ORLENTRY ORLCvtSecHdlToIdx( orl_sec_handle );

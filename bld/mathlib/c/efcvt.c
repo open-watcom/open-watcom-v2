@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of ecvt() and fcvt().
 *
 ****************************************************************************/
 
@@ -37,18 +36,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <float.h>
+#include "xfloat.h"
 
-extern  CHAR_TYPE *__CVTBuffer();
+extern  CHAR_TYPE *__CVTBuffer( void );
 extern  char *__cvt( double, int, int *, int *, int, char * );
 
-// LDBL_DIG + decimal point + 'e' + exponent (what about '\0'?)
-#define MaxPrec (LDBL_DIG+1+1+3)
+#define MAX_PRECISION __FPCVT_BUFFERLEN
 
 static char *fixup( char *p, int n )
 {
-    char *start = p;
-    if( n < MaxPrec && isdigit( *p ) ) {
+    char    *start = p;
+
+    if( n < MAX_PRECISION && isdigit( *p ) ) {
         while( *p ) {
             p++;
             n--;
@@ -62,7 +61,7 @@ static char *fixup( char *p, int n )
     return( start );
 }
 
-_WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)(double value,int ndigits, int *dec, int *sign )
+_WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)( double value,int ndigits, int *dec, int *sign )
 {
     /* ndigits represents the number of significant digits */
     CHAR_TYPE   *buf;
@@ -72,7 +71,7 @@ _WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)(double value,int ndigits, int *dec, i
     return( _AToUni( buf, fixup( (char *)buf, ndigits ) ) );
 }
 
-_WMRTLINK CHAR_TYPE *__F_NAME(fcvt,_wfcvt)(double value,int ndigits, int *dec, int *sign )
+_WMRTLINK CHAR_TYPE *__F_NAME(fcvt,_wfcvt)( double value,int ndigits, int *dec, int *sign )
 {
     /* ndigits represents the number of decimal places */
     CHAR_TYPE   *buf;

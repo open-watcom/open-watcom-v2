@@ -5,8 +5,14 @@
 
 jmp_buf env;
 
+void rtn()
+{
+    printf( "about to longjmp\n" );
+    longjmp( env, 14 );
+}
+
 void main()
-  {
+{
     int ret_val;
 
     ret_val = 293;
@@ -17,10 +23,4 @@ void main()
     } else {
       printf( "back from longjmp %d\n", ret_val );
     }
-  }
-
-rtn()
-  {
-    printf( "about to longjmp\n" );
-    longjmp( env, 14 );
-  }
+}

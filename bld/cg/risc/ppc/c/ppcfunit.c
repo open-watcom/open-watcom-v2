@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "model.h"
 #include "sched.h"
 #include "funits.h"
@@ -54,7 +53,7 @@ static const FU_entry FUnits[] = {
     F_ALU,                      1,          1,      /* LDSTR */
 };
 
-FU_entry *FUEntry( instruction *ins )
+FU_entry const *FUEntry( instruction *ins )
 {
     return( &FUnits[ ins->u.gen_table->func_unit ] );
 }

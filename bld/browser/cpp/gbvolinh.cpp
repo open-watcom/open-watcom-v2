@@ -50,11 +50,6 @@ GBVInheritOutline::GBVInheritOutline( const char * text )
     load();
 }
 
-GBVInheritOutline::~GBVInheritOutline()
-//-------------------------------------
-{
-}
-
 bool GBVInheritOutline::contextHelp( bool is_active_win )
 //-------------------------------------------------------
 {
@@ -168,5 +163,14 @@ void GBVInheritOutline::load()
     }
 
     reset();
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+GBVInheritOutline::~GBVInheritOutline()
+//-------------------------------------
+{
 }
 

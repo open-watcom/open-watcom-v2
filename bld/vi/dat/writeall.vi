@@ -1,14 +1,20 @@
 set quiet
-push
 
 assign %c = %F
 
 loop
-quif %F == ""
-write
-next
-quif "%c" == "%F"
+    quif %F == ""
+    if "%N" == "untitled"
+        assign %d = %F
+        write ?
+        if "%d" == "%c"
+            assign %c = %F
+        endif
+    else
+        write
+    endif
+    next
+    quif "%c" == "%F"
 endloop
 
-pop
 set noquiet

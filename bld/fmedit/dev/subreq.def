@@ -1,11 +1,9 @@
-
 #ifndef _SUBREQ_INCLUDE
-
 #define _SUBREQ_INCLUDE 
 
 typedef enum {
-    ALL
-,   BY_POINT
+    ALL,
+    BY_POINT
 } REQ_ID;
 
 typedef struct {

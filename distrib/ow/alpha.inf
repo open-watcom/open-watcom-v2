@@ -1,0 +1,8 @@
+IsFortranInstall=0
+IsAlphaInstall=1
+AppName=Open Watcom C/C++ ALPHA
+Setup=csetup\setup.exe
+Exe=csetup\setup32.exe
+Exe=csetup\setupaxp.exe
+DefPMGroup=wcpp32.grp, Open Watcom C/C++ ALPHA, %DstDir%\watcom.ico
+include=common.inf

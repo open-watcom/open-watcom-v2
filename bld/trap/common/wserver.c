@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote debug server mainline for Windows GUI versions.
 *
 ****************************************************************************/
 
@@ -64,8 +63,8 @@ static bool     Connected;
 static bool     Linked;
 static bool     OneShot;
 
-static BOOL FirstInstance( HANDLE );
-static BOOL AnyInstance( HANDLE, int, LPSTR );
+static BOOL FirstInstance( HINSTANCE );
+static BOOL AnyInstance( HINSTANCE, int, LPSTR );
 #ifdef __NT__
 extern void TellHWND( HWND );
 #endif
@@ -78,11 +77,16 @@ extern BOOL _EXPORT FAR PASCAL OptionsDlgProc( HWND hwnd, unsigned msg,
 
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
+/* Forward declarations */
+void StartupErr(char *err);
+void ServError( char *msg );
+void Output( char *str );
+
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
-                    int cmdshow )
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
+                      int cmdshow )
 {
     MSG         msg;
 
@@ -109,7 +113,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 {
     WNDCLASS    wc;
     BOOL        rc;
@@ -150,7 +154,7 @@ static void EnableMenus( HWND hwnd, BOOL connected, BOOL session )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
     char        *err;
 
@@ -167,7 +171,7 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
      */
     hwndMain = CreateWindow(
         ServerClass,            /* class */
-        "WATCOM Debug Server",
+        ServName,
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
@@ -224,8 +228,8 @@ static bool Exit = FALSE;
 /*
  * WindowProc - handle messages for the main application window
  */
-LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
-                                     UINT wparam, LONG lparam )
+LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
+                                     WPARAM wparam, LPARAM lparam )
 {
     FARPROC     proc;
     char        *err;
@@ -235,8 +239,8 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
-            proc = MakeProcInstance( AboutDlgProc, Instance );
-            DialogBox( Instance,"AboutBox", hwnd, proc );
+            proc = MakeProcInstance( (FARPROC)AboutDlgProc, Instance );
+            DialogBox( Instance,"AboutBox", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
 
@@ -293,10 +297,10 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
 
             break;
         case MENU_OPTIONS:
-            proc = MakeProcInstance( OptionsDlgProc, Instance );
+            proc = MakeProcInstance( (FARPROC)OptionsDlgProc, Instance );
             if( Linked ) RemoteUnLink();
             Linked = FALSE;
-            DialogBox( Instance, "Options", hwnd, proc );
+            DialogBox( Instance, "Options", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         case MENU_EXIT:

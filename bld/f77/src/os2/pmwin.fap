@@ -1,0 +1,1217 @@
+c$ifdef INCL_WIN
+c$define INCL_WINWINDOWMGR
+c$define INCL_WINMESSAGEMGR
+c$define INCL_WININPUT
+c$define INCL_WINDIALOGS
+c$define INCL_WINSTATICS
+c$define INCL_WINBUTTONS
+c$define INCL_WINENTRYFIELDS
+c$define INCL_WINMLE
+c$define INCL_WINLISTBOXES
+c$define INCL_WINMENUS
+c$define INCL_WINSCROLLBARS
+c$define INCL_WINFRAMEMGR
+c$define INCL_WINFRAMECTLS
+c$define INCL_WINRECTANGLES
+c$define INCL_WINSYS
+c$define INCL_WINTIMER
+c$define INCL_WINACCELERATORS
+c$define INCL_WINTRACKRECT
+c$define INCL_WINCLIPBOARD
+c$define INCL_WINCURSORS
+c$define INCL_WINPOINTERS
+c$define INCL_WINHOOKS
+c$define INCL_WINSWITCHLIST
+c$define INCL_WINPROGRAMLIST
+c$define INCL_WINSHELLDATA
+c$define INCL_WINCOUNTRY
+c$define INCL_WINHEAP
+c$define INCL_WINATOM
+c$define INCL_WINERRORS
+c$define INCL_WINDDE
+c$define INCL_WINHELP
+c$define INCL_WINSEI
+c$define INCL_WINLOAD
+c$define INCL_WINTYPES
+c$define INCL_WINDESKTOP
+c$define INCL_WINPALETTE
+c$define INCL_WINTHUNKAPI
+c$define INCL_WINSTDDLGS
+c$endif
+
+c$ifdef INCL_WINMLE
+c$define INCL_WINENTRYFIELDS
+c$endif
+
+c$ifdef INCL_WINCOMMON
+c$define INCL_WINWINDOWMGR
+c$endif
+
+c$ifdef INCL_ERRORS
+c$define INCL_WINERRORS
+c$endif
+
+c$pragma aux MPFROMP = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux MPFROMHWND = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux MPFROMCHAR = "and eax,000000ffh" \
+c parm (value*1) [al] value [eax] modify exact [eax]
+
+c$pragma aux MPFROMSHORT = "and eax,0000ffffh" \
+c parm (value*2) [ax] value [eax] modify exact [eax]
+
+c$pragma aux MPFROM2SHORT = "shl eax,16" \
+c                           "or ax,dx" \
+c parm (value*2,value*2) [dx] [ax] value [eax] modify exact [eax]
+
+c$pragma aux MPFROMSH2CH = "shl eax,16" \
+c                          "or ax,dx" \
+c parm (value*2,value*1,value*1) [dx] [al] [ah] value [eax] modify exact [eax]
+
+c$pragma aux MPFROMLONG = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux PVOIDFROMMP = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux HWNDFROMMP = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux CHAR1FROMMP = \
+c parm (value*4) [eax] value [al] modify exact []
+
+c$pragma aux CHAR2FROMMP = \
+c parm (value*4) [eax] value [ah] modify exact []
+
+c$pragma aux CHAR3FROMMP = "shr eax,16" \
+c parm (value*4) [eax] value [al] modify exact [eax]
+
+c$pragma aux CHAR4FROMMP = "shr eax,24" \
+c parm (value*4) [eax] value [al] modify exact [eax]
+
+c$pragma aux SHORT1FROMMP = "and eax,0000ffffh" \
+c parm (value*4) [eax] value [eax] modify exact [eax]
+
+c$pragma aux SHORT2FROMMP = "shr eax,16" \
+c parm (value*4) [eax] value [eax] modify exact [eax]
+
+c$pragma aux LONGFROMMP = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux MRFROMMP = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux MRFROMSHORT = "and eax,0000ffffh" \
+c parm (value*2) [ax] value [eax] modify exact [eax]
+
+c$pragma aux MRFROM2SHORT = "shl eax,16" \
+c                           "mov ax,dx" \
+c parm (value*2,value*2) [dx] [ax] value [eax] modify exact [eax]
+
+c$pragma aux MRFROMLONG = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux PVOIDFROMMR = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux SHORT1FROMMR = "and eax,0000ffffh" \
+c parm (value*4) [eax] value [eax] modify exact [eax]
+
+c$pragma aux SHORT2FROMMR = "shr eax,16" \
+c parm (value*4) [eax] value [eax] modify exact [eax]
+
+c$pragma aux LONGFROMMR = \
+c parm (value*4) [eax] value [eax] modify exact []
+
+c$pragma aux (__syscall) fnwp parm( value*4, value*4, value*4, value*4 )
+
+c$ifdef INCL_WINWINDOWMGR
+   
+c$pragma aux (__syscall) WinRegisterClass parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDefWindowProc parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDestroyWindow parm( value*4 )
+   
+c$pragma aux (__syscall) WinShowWindow parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryWindowRect parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinGetPS parm( value*4 )
+   
+c$pragma aux (__syscall) WinReleasePS parm( value*4 )
+   
+c$pragma aux (__syscall) WinEndPaint parm( value*4 )
+   
+c$pragma aux (__syscall) WinGetClipPS parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinIsWindowShowing parm( value*4 )
+   
+c$pragma aux (__syscall) WinBeginPaint parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinOpenWindowDC parm( value*4 )
+   
+c$pragma aux (__syscall) WinScrollWindow parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinFillRect parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryVersion parm( value*4 )
+   
+c$pragma aux (__syscall) WinInitialize parm( value*4 )
+   
+c$pragma aux (__syscall) WinTerminate parm( value*4 )
+   
+c$pragma aux (__syscall) WinQueryAnchorBlock parm( value*4 )
+   
+c$endif
+
+c$pragma aux (__syscall) WinCreateWindow parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinEnableWindow parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsWindowEnabled parm( value*4 )
+
+c$pragma aux (__syscall) WinEnableWindowUpdate parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsWindowVisible parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowText parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowText parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowTextLength parm( value*4 )
+
+c$pragma aux (__syscall) WinWindowFromID parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsWindow parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryWindow parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinMultWindowFromIDs parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetParent parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsChild parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetOwner parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowProcess parm( value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinQueryObjectWindow parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryDesktopWindow parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowPos parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetMultWindowPos parm( value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowPos parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinUpdateWindow parm( value*4 )
+
+c$pragma aux (__syscall) WinInvalidateRect parm( value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinInvalidateRegion parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinInvertRect parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDrawBitmap parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDrawText parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDrawBorder parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinLoadString parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinLoadMessage parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$ifdef INCL_WINWINDOWMGR
+   
+c$pragma aux (__syscall) WinSetActiveWindow parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSubclassWindow parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinQueryClassName parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryClassInfo parm( value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinQueryActiveWindow parm( value*4 )
+   
+c$pragma aux (__syscall) WinIsThreadActive parm( value*4 )
+
+c$pragma aux (__syscall) WinQuerySysModalWindow parm( value*4 )
+   
+c$pragma aux (__syscall) WinSetSysModalWindow parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryWindowUShort parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowUShort parm( value*4, \
+c		value*4, \
+c		value*2 )
+
+c$pragma aux (__syscall) WinQueryWindowULong parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowULong parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowPtr parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowPtr parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetWindowBits parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinBeginEnumWindows parm( value*4 )
+
+c$pragma aux (__syscall) WinGetNextWindow parm( value*4 )
+
+c$pragma aux (__syscall) WinEndEnumWindows parm( value*4 )
+   
+c$pragma aux (__syscall) WinWindowFromPoint parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinMapWindowPoints parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinValidateRect parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinValidateRegion parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinWindowFromDC parm( value*4 )
+      
+c$pragma aux (__syscall) WinQueryWindowDC parm( value*4 )
+      
+c$pragma aux (__syscall) WinGetScreenPS parm( value*4 )
+      
+c$pragma aux (__syscall) WinLockWindowUpdate parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinLockVisRegions parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryUpdateRect parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinQueryUpdateRegion parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinExcludeUpdateRegion parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINMESSAGEMGR
+   
+c$pragma aux COMMANDMSG = "add eax,4" \
+c	parm [eax] value [eax] modify exact [eax]
+   
+c$pragma aux (__syscall) WinSendMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCreateMsgQueue parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDestroyMsgQueue parm( value*4 )
+   
+c$pragma aux (__syscall) WinQueryQueueInfo parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCancelShutdown parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinGetMsg parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinPeekMsg parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDispatchMsg parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinPostMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinRegisterUserMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinRegisterUserDatatype parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinSetMsgMode parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSetSynchroMode parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINMESSAGEMGR
+   
+c$pragma aux (__syscall) WinInSendMsg parm( value*4 )
+   
+c$pragma aux (__syscall) WinBroadcastMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinWaitMsg parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryQueueStatus parm( value*4 )
+      
+c$pragma aux (__syscall) WinQueryMsgPos parm( value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinQueryMsgTime parm( value*4 )
+   
+c$pragma aux (__syscall) WinPostQueueMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSetMsgInterest parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSetClassMsgInterest parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WININPUT
+   
+c$pragma aux (__syscall) WinSetFocus parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinFocusChange parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSetCapture parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryCapture parm( value*4 )
+   
+c$pragma aux (__syscall) WinQueryFocus parm( value*4 )
+   
+c$pragma aux MOUSEMSG = "add eax,4" \
+c	parm [eax] value [eax] modify exact [eax]
+   
+c$pragma aux CHARMSG = "add eax,4" \
+c	parm [eax] value [eax] modify exact [eax]
+   
+c$pragma aux (__syscall) WinGetKeyState parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinGetPhysKeyState parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinEnablePhysInput parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsPhysInputEnabled parm( value*4 )
+
+c$pragma aux (__syscall) WinSetKeyboardStateTable parm( value*4, \
+c		reference, \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_WINDIALOGS
+   
+c$pragma aux (__syscall) WinGetDlgMsg parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinLoadDlg parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDlgBox parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDismissDlg parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQueryDlgItemShort parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetDlgItemShort parm( value*4, \
+c		value*4, \
+c		value*2, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetDlgItemText parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryDlgItemText parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryDlgItemTextLength parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinDefDlgProc parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinAlarm parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinMessageBox parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCheckButton parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) WinQueryButtonCheckState parm( value*4, value*4 )
+   
+c$pragma aux (__syscall) WinEnableControl parm( value*4, value*4 )
+   
+c$pragma aux (__syscall) WinIsControlEnabled parm( value*4, value*4 )
+   
+c$pragma aux (__syscall) WinProcessDlg parm( value*4 )
+
+c$pragma aux (__syscall) WinSendDlgItemMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinMapDlgPoints parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinEnumDlgItem parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSubstituteStrings parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCreateDlg parm( value*4, \
+c		value*4, \
+c		reference, \
+c		reference, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINLISTBOXES
+   
+c$pragma aux (__syscall) WinDeleteLboxItem parm( value*4, value*4 )
+
+c$pragma aux (__syscall) WinInsertLboxItem parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) WinQueryLboxCount parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryLboxItemText parm( value*4, value*4, \
+c		value*4, value*4 )
+
+c$pragma aux (__syscall) WinQueryLboxItemTextLength parm( value*4, value*4 )
+
+c$pragma aux (__syscall) WinSetLboxItemText parm( value*4, value*4, value*4 )
+
+c$pragma aux (__syscall) WinQueryLboxSelectedItem parm( value*4 )
+
+c$endif
+
+c$ifdef INCL_WINMENUS
+   
+c$pragma aux (__syscall) WinLoadMenu parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCreateMenu parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinPopupMenu parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCheckMenuItem parm( value*4, value*4, value*4 )
+   
+c$pragma aux (__syscall) WinIsMenuItemChecked parm( value*4, value*4 )
+   
+c$pragma aux (__syscall) WinEnableMenuItem parm( value*4, value*4, value*4 )
+   
+c$pragma aux (__syscall) WinIsMenuItemEnabled parm( value*4, value*4 )
+   
+c$pragma aux (__syscall) WinSetMenuItemText parm( value*4, value*4, value*4 )
+   
+c$pragma aux (__syscall) WinIsMenuItemValid parm( value*4, value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINFRAMEMGR
+   
+c$pragma aux (__syscall) WinCreateStdWindow parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinFlashWindow parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCreateFrameControls parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinCalcFrameRect parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinGetMinPosition parm( value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinGetMaxPosition parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinSaveWindowPos parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINRECTANGLES
+   
+c$pragma aux (__syscall) WinCopyRect parm( value*4, \
+c		reference, \
+c		reference )
+   
+c$pragma aux (__syscall) WinSetRect parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinIsRectEmpty parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinEqualRect parm( value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinSetRectEmpty parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinOffsetRect parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinInflateRect parm( value*4, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinPtInRect parm( value*4, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinIntersectRect parm( value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinUnionRect parm( value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinSubtractRect parm( value*4, \
+c		reference, \
+c		reference, \
+c		reference )
+
+c$pragma aux (__syscall) WinMakeRect parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinMakePoints parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINSYS
+   
+c$pragma aux (__syscall) WinQuerySysValue parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetSysValue parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinSetPresParam parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryPresParam parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinRemovePresParam parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinQuerySysColor parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetSysColors parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$endif
+
+c$ifdef INCL_WINTIMER
+   
+c$pragma aux (__syscall) WinStartTimer parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinStopTimer parm( value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinGetCurrentTime parm( value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINACCELERATORS
+   
+c$pragma aux (__syscall) WinLoadAccelTable parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCopyAccelTable parm( value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCreateAccelTable parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDestroyAccelTable parm( value*4 )
+
+c$pragma aux (__syscall) WinTranslateAccel parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinSetAccelTable parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryAccelTable parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINTRACKRECT
+   
+c$pragma aux (__syscall) WinTrackRect parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinShowTrackRect parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINCLIPBOARD
+
+c$pragma aux (__syscall) WinSetClipbrdOwner parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetClipbrdData parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryClipbrdData parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryClipbrdFmtInfo parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinSetClipbrdViewer parm( value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinEnumClipbrdFmts parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinEmptyClipbrd parm( value*4 )
+
+c$pragma aux (__syscall) WinOpenClipbrd parm( value*4 )
+
+c$pragma aux (__syscall) WinCloseClipbrd parm( value*4 )
+   
+c$pragma aux (__syscall) WinQueryClipbrdOwner parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryClipbrdViewer parm( value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINCURSORS
+   
+c$pragma aux (__syscall) WinDestroyCursor parm( value*4 )
+
+c$pragma aux (__syscall) WinShowCursor parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCreateCursor parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinQueryCursorInfo parm( value*4, \
+c		reference )
+   
+c$endif
+
+
+c$ifdef INCL_WINPOINTERS
+   
+c$pragma aux (__syscall) WinSetPointer parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetPointerOwner parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinShowPointer parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQuerySysPointer parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinLoadPointer parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCreatePointer parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinSetPointerPos parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDestroyPointer parm( value*4 )
+   
+c$pragma aux (__syscall) WinQueryPointer parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryPointerPos parm( value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) WinCreatePointerIndirect parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinQueryPointerInfo parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDrawPointer parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinGetSysBitmap parm( value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINHOOKS
+   
+c$pragma aux (__syscall) WinSetHook parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinReleaseHook parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinCallMsgFilter parm( value*4, \
+c		reference, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINTHUNKAPI
+   
+c$pragma aux (__syscall) WinSetClassThunkProc parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinQueryClassThunkProc parm( value*4 )
+
+c$pragma aux (__syscall) WinSetWindowThunkProc parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinQueryWindowThunkProc parm( value*4 )
+
+c$pragma aux (__syscall) WinQueryWindowModel parm( value*4 )
+   
+c$endif
+
+c$include pmshl.fap
+
+c$ifdef INCL_WINCOUNTRY
+   
+c$pragma aux (__syscall) WinQueryCp parm( value*4 )
+   
+c$pragma aux (__syscall) WinSetCp parm( value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinQueryCpList parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinCpTranslateString parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinCpTranslateChar parm( value*4, \
+c		value*4, \
+c		value*1, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinUpper parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinUpperChar parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinNextChar parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinPrevChar parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+      
+c$pragma aux (__syscall) WinCompareStrings parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$endif
+
+c$ifdef INCL_WINATOM
+   
+c$pragma aux (__syscall) WinQuerySystemAtomTable parm(  )
+
+c$pragma aux (__syscall) WinCreateAtomTable parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDestroyAtomTable parm( value*4 )
+
+c$pragma aux (__syscall) WinAddAtom parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinFindAtom parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinDeleteAtom parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryAtomUsage parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryAtomLength parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinQueryAtomName parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+	
+c$pragma aux MPFROMP = "or eax,0ffff0000h" \
+c parm (value*2) [ax] value [eax] modify exact [eax]
+   
+c$endif
+
+c$ifdef INCL_WINERRORS
+
+c$pragma aux (__syscall) WinGetLastError parm( value*4 )
+
+c$pragma aux (__syscall) WinGetErrorInfo parm( value*4 )
+
+c$pragma aux (__syscall) WinFreeErrorInfo parm( reference )
+   
+c$endif
+
+c$ifdef INCL_WINSEI
+c$ifndef SEI_PMWINP
+c$define SEI_PMWIN
+c$include pmsei.fap
+c$endif
+c$endif
+
+c$ifdef INCL_WINDDE
+      
+c$pragma aux (__syscall) WinDdeInitiate parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinDdeRespond parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		reference )
+      
+c$pragma aux (__syscall) WinDdePostMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+      
+c$pragma aux DDES_PSZITEMNAME = "add eax,8[eax]" \ 
+c	parm [eax] value [eax] modify exact [eax]
+      
+c$pragma aux DDES_PABDATA = "add eax,10[eax]" \ 
+c	parm [eax] value [eax] modify exact [eax]
+      
+c$pragma aux DDEI_PCONVCONTEXT = "add eax,12[eax]" \ 
+c	parm [eax] value [eax] modify exact [eax]
+      
+c$endif
+
+c$ifdef INCL_WINHELP
+c$include pmhelp.fap
+c$endif
+
+c$ifdef INCL_WINLOAD
+
+c$pragma aux (__syscall) WinDeleteProcedure parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDeleteLibrary parm( value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinLoadProcedure parm( value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) WinLoadLibrary parm( value*4, \
+c		value*4 )
+
+c$endif
+
+c$ifdef INCL_WINDESKTOP
+      
+c$pragma aux (__syscall) WinSetDesktopBkgnd parm( value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinQueryDesktopBkgnd parm( value*4, \
+c		reference )
+      
+c$endif
+
+c$ifdef INCL_WINPALETTE
+      
+c$pragma aux (__syscall) WinRealizePalette parm( value*4, \
+c		value*4, \
+c		reference )
+      
+c$endif

@@ -172,7 +172,7 @@ pch_status PCHReadTokenLocns( void )
     CarveInitStart( carveSYMBOL_LOCN, &data );
     for(;;) {
         PCHReadMapped( pch, b, i, data );
-        b->tl.line = pch->tl.column;
+        b->tl.line = pch->tl.line;
         b->tl.column = pch->tl.column;
         b->tl.src_file = SrcFileMapIndex( pch->tl.src_file );
         b->dwh = pch->dwh;

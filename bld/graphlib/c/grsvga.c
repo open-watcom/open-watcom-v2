@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Setup for SuperVGA and VESA modes.
 *
 ****************************************************************************/
 
@@ -39,79 +38,8 @@
 #endif
 
 
-extern void pascal      _MoveLeft256();
-extern void pascal      _MoveRight256();
-extern void pascal      _MoveUp640();
-extern void pascal      _MoveDown640();
-extern void pascal      _MoveUp800();
-extern void pascal      _MoveDown800();
-extern void pascal      _MoveUp1024();
-extern void pascal      _MoveDown1024();
-extern void pascal      _Rep19();
-extern void pascal      _CoXor();
-extern void pascal      _And19();
-extern void pascal      _CoOr();
-#if 0 // This mode is untested
-extern void             _MoveUp1280();
-extern void             _MoveDown1280();
-extern void             _MoveLeftWord();
-extern void             _MoveRightWord();
-extern void             _RepWord();
-extern void             _XorWord();
-extern void             _AndWord();
-extern void             _OrWord();
-extern void             _GetDotWord();
-extern void             _ZapWord();
-extern void             _FillWord();
-extern void             _PixCopyWord();
-extern void             _PixReadWord();
-extern void             _ScanLeftWord();
-extern void             _ScanRightWord();
-#endif
-extern void pascal      _GetDot19();
-extern void pascal      _Zap256();
-extern void pascal      _Fill256();
-extern void pascal      _PixCopy256();
-extern void pascal      _PixRead256();
-extern void pascal      _ScanLeft256();
-extern void pascal      _ScanRight256();
-extern void             _EGASet();
-extern void             _EGAReset();
-extern void pascal      _EGAMoveLeft();
-extern void pascal      _EGAMoveRight();
-extern void pascal      _MoveUp100();
-extern void pascal      _MoveDown100();
-extern void pascal      _MoveUp128();
-extern void pascal      _MoveDown128();
-extern void pascal      _EGARep();
-extern void pascal      _EGAGetDot();
-extern void pascal      _EGAZap();
-extern void pascal      _EGAFill();
-extern void pascal      _EGAPixCopy();
-extern void pascal      _EGAReadRow();
-extern void pascal      _EGAScanLeft();
-extern void pascal      _EGAScanRight();
-extern void pascal      _MoveLeft19();
-extern void pascal      _MoveRight19();
-extern void pascal      _Zap19();
-extern void pascal      _Fill19();
-extern void pascal      _PixCopy19();
-extern void pascal      _PixRead19();
-extern void pascal      _ScanLeft19();
-extern void pascal      _ScanRight19();
-extern void             _PageVESA();
-extern void             _PageVideo7();
-extern void             _PageParadise();
-extern void             _PageATI();
-extern void             _PageTseng3();
-extern void             _PageTseng4();
-extern void             _PageOak();
-extern void             _PageTrident();
-extern void             _PageChips();
-extern void             _PageGenoa();
-extern void             _PageS3();
-extern void             _PageCirrus();
-extern void             _PageViper();
+extern void             _EGASet( void );
+extern void             _EGAReset( void );
 
 
 /*  Use PASCAL pragma to define our convention for
@@ -176,8 +104,8 @@ static void INIT_FARC * _VGAPageFunc[ _SV_MAX-1 ] = {
 };
 
 
-static short SuperVGASetMode( short adapter, short mode )
-//=======================================================
+static short SuperVGASetMode( short adapter, short mode, short *stride )
+//======================================================================
 
 {
     short               val;
@@ -191,6 +119,7 @@ static short SuperVGASetMode( short adapter, short mode )
 #endif
 //#endif
 
+    *stride = 0;
     switch( adapter ) {
 //#if !defined( __QNX__ )
     case _SV_VESA:
@@ -207,7 +136,7 @@ static short SuperVGASetMode( short adapter, short mode )
             val = _RMInterrupt( 0x10, 0x4f01, 0, mode, 0, mem.rm_seg, 0 );
             if( val == 0x004f ) {
                 rbuf = mem.pm_ptr;
-                for( i = 2; i <= 4; ++i ) {
+                for( i = 2; i <= 8; ++i ) {
                     buf[ i ] = rbuf[ i ];
                 }
             }
@@ -227,6 +156,7 @@ static short SuperVGASetMode( short adapter, short mode )
         #endif
             return( FALSE );                            // starting at A000
         }
+        *stride = buf[ 8 ];
         /*
             AH=0x4F is a VESA BIOS call AL=0x02 VESA set SVGA Display Mode
             BX=desired mode
@@ -361,6 +291,7 @@ static short _SuperVGAInit( short mode )
 {
     short               bios_mode;
     short               adapter;
+    short               stride;
 
     adapter = _SuperVGAType();
     if( adapter == _SV_NONE ) {
@@ -383,57 +314,60 @@ static short _SuperVGAInit( short mode )
         return( FALSE );
     }
 
-    if( !SuperVGASetMode( adapter, bios_mode ) ) {
+    if( !SuperVGASetMode( adapter, bios_mode, &stride ) ) {
         return( FALSE );
     }
 
     _VGAPage = 0xff;
     _SetVGAPage = MAKE_VGA_PG_PTR( _VGAPageFunc[ adapter - 1 ] );
 
-    //              x,   y, col, bpp, pag, seg,     off,     siz,   mis
+    //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis
     switch( mode ) {
     case 0x100:
-        _GrInit(  640, 400, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit(  640, 400,  640, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 25;
         break;
     case 0x101:
-        _GrInit(  640, 480, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit(  640, 480,  640, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 30;
         break;
     case 0x102:
-        _GrInit(  800, 600,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
+        _GrInit(  800, 600,  100,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
         _CurrState->vc.numtextcols = 100;
         _CurrState->vc.numtextrows = 40;
         break;
     case 0x103:
-        _GrInit(  800, 600, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit(  800, 600,  800, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 100;
         _CurrState->vc.numtextrows = 40;
         break;
     case 0x104:
-        _GrInit( 1024, 768,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
+        _GrInit( 1024, 768,  128,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
         _CurrState->vc.numtextcols = 128;
         _CurrState->vc.numtextrows = 50;
         break;
     case 0x105:
-        _GrInit( 1024, 768, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit( 1024, 768, 1024, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 128;
         _CurrState->vc.numtextrows = 50;
         break;
 #if 0
 // This mode is untested
     case 0x110:
-        _GrInit(  640, 480, 32768,16,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
+        _GrInit(  640, 480, 1280, 32768,16,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 30;
         break;
 #endif
     }
 
-    _CurrState->vc.mode = mode;     // _GrInit fills in bios_mode
+    _CurrState->vc.mode = mode;         // _GrInit fills in bios_mode
     _CurrState->vc.adapter = _SVGA;
+    if( stride )
+        _CurrState->stride = stride;    // Override default stride if necessary
+    _VGAStride = _CurrState->stride;
 
     return( TRUE );
 }
@@ -505,7 +439,7 @@ static void _Setup100( short x, short y, short colour )
 {
     unsigned int        pixel_offset;
 
-    pixel_offset = y * 100 + ( x >> 3 );
+    pixel_offset = y * _CurrState->stride + ( x >> 3 );
     _Screen.mem = MK_FP( _CurrState->screen_seg,
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
@@ -524,7 +458,7 @@ static void _Setup128( short x, short y, short colour )
     short               page_num;
     unsigned long       pixel_offset;
 
-    pixel_offset = (long) y * 128 + ( x >> 3 );
+    pixel_offset = (long) y * _CurrState->stride + ( x >> 3 );
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     _SetPage( page_num );
@@ -546,7 +480,7 @@ static void _Setup640( short x, short y, short colour )
     short               page_num;
     unsigned long       pixel_offset;
 
-    pixel_offset = (long) y * 640 + x;
+    pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     _SetPage( page_num );
@@ -567,7 +501,7 @@ static void _Setup800( short x, short y, short colour )
     short               page_num;
     unsigned long       pixel_offset;
 
-    pixel_offset = (long) y * 800 + x;
+    pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     _SetPage( page_num );
@@ -588,7 +522,7 @@ static void _Setup1024( short x, short y, short colour )
     short               page_num;
     unsigned long       pixel_offset;
 
-    pixel_offset = (long) y * 1024 + x;
+    pixel_offset = (long) y * _CurrState->stride + x;
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     _SetPage( page_num );
@@ -610,7 +544,7 @@ static void _Setup1280( short x, short y, short colour )
     short               page_num;
     unsigned long       pixel_offset;
 
-    pixel_offset = (long) y * 1280 + (x << 1);
+    pixel_offset = (long) y * _CurrState->stride + (x << 1);
     page_num = pixel_offset / 0x10000;
     pixel_offset &= 0xffff;
     _SetPage( page_num );

@@ -24,28 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC parameter passing processing.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "procdef.h"
 #include "cgdefs.h"
 #include "typedef.h"
+#include "types.h"
 #include "regset.h"
 #include "zoiks.h"
 #include "ppcparm.h"
+#include "feprotos.h"
 
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
 extern  reg_list        *ParmChoices(type_class_def);
-extern  cg_type         FEParmType(sym_handle,sym_handle,cg_type);
-extern  type_def        *TypeAddress(cg_type);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 extern  type_class_def  TypeClass( type_def * );
 
@@ -65,7 +64,8 @@ static  hw_reg_set      floatRegs[] = {
     HW_D_1( HW_F11 ),
     HW_D_1( HW_F12 ),
     HW_D_1( HW_F13 ),
-    HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY )
+};
 
 static  hw_reg_set      scalarRegs[] = {
     HW_D_1( HW_D3 ),
@@ -76,7 +76,8 @@ static  hw_reg_set      scalarRegs[] = {
     HW_D_1( HW_D8 ),
     HW_D_1( HW_D9 ),
     HW_D_1( HW_D10 ),
-    HW_D_1( HW_EMPTY ) };
+    HW_D_1( HW_EMPTY )
+};
 
 
 extern  void            InitPPCParmState( call_state *state ) {
@@ -97,6 +98,8 @@ extern  type_length     ParmAlignment( type_def *tipe ) {
             return( 8 );
         }
     } else if( class == FD ) {
+        return( 8 );
+    } else if( class == U8 || class == I8 ) {
         return( 8 );
     }
     return( 4 );
@@ -136,6 +139,13 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
             state->parm.gr += 2;
             state->parm.offset += 8;
             parm = floatRegSet( state->parm.fr - 1 );
+        }
+    } else if( _IsI64( class ) ) {
+        if( state->parm.gr <= (LAST_SCALAR_PARM_REG - 1) ) {
+            state->parm.gr += 2;
+            state->parm.offset += 8;
+            parm = scalarRegSet( state->parm.gr - 2 );
+            HW_TurnOn( parm, scalarRegSet( state->parm.gr - 1 ) );
         }
     } else {
         if( state->parm.gr <= LAST_SCALAR_PARM_REG ) {

@@ -29,17 +29,7 @@
 *
 ****************************************************************************/
 
-
 #include "wres.h"
-
-#if defined( UNIX )
-#include "wreslang.h"
-
-res_language_enumeration _WResLanguage(void)
-{
-    return( RLE_ENGLISH );
-}
-#endif
 
 WResLangInfo * WResGetLangInfo( WResDirWindow currwind )
 /****************************************************/

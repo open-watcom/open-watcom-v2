@@ -1,20 +1,9 @@
-:GDOC.
-:INCLUDE file=extra.
-:FRONTM
-:TITLEP.
-:TITLE.WVIDEO Overlay Manager Interface
-:TITLE.VERSION 1.0
-:AUTHOR.Copyright 1993 by WATCOM International Corp.
-:DATE
-:eTITLEP
-:TOC.
-:BODY.
-:H0.Overlay manager interface
-For WVIDEO to be able to debug overlays, it must be able to make requests
+.chap Overlay manager interface
+For &company Debugger to be able to debug overlays, it must be able to make requests
 of the overlay manager for certain operations. The overlay manager must also
-be able to inform WVIDEO when a new overlay section is loaded.
+be able to inform &company Debugger when a new overlay section is loaded.
 :P.
-When WVIDEO loads a DOS program, it looks at the initial CS:IP value for the
+When &company Debugger loads a DOS program, it looks at the initial CS:IP value for the
 following structure:
 :XMP.
 struct ovl_header {
@@ -26,17 +15,18 @@ struct ovl_header {
 };
 :eXMP.
 :PC.
-WVIDEO checks to make sure that the first instruction is a short jump (opcode
+&company Debugger checks to make sure that the first instruction is a short jump (opcode
 0xeb) and that the word following that instruction contains the value 0x2112.
-If this occurs, WVIDEO assumes that it is debugging an overlaid application.
+If this occurs, &company Debugger assumes that it is debugging an overlaid application.
 :P.
-WVIDEO then fills in the :F.hook:eF. field with the far address of a routine
+&company Debugger then fills in the :F.hook:eF. field with the far address of a routine
 that is invoked with a far call whenever a change in the overlay state occurs.
 The initial CS value and the contents of the :F.handler_offset:eF. field gives
 the far address of the overlay manager routine responsible for handling
 debugger requests.
-:H1.The Hook Routine
-After the routine addresses have been exchanged, WVIDEO starts the program
+.section The Hook Routine
+.np
+After the routine addresses have been exchanged, &company Debugger starts the program
 executing, to allow the overlay manager to initialize. After the manager has
 finished its initialization, it performs a far call to the debugger hook
 routine, with the return address on the stack being the "real" starting
@@ -58,7 +48,8 @@ current overlay manager also loads all of the ancestors of a section (See
 the WLINK documentation in the Users' Guide for a description of what an
 ancestor is). To find out what sections are really in memory the debugger
 should invoke the handler routine with a GET_OVERLAY_STATE request.
-:H1.The Handler Routine
+.section The Handler Routine
+.np
 The handler routine is responsible for processing requests from the debugger
 pertaining to overlays. It is invoked by the debugger by performing a far
 call with a request number in the AX register. The AX register is used
@@ -86,14 +77,17 @@ The second structure used is an overlay address. This consists of a far
 pointer followed by a 16-bit section number.
 :P.
 The following requests are recognized by the debug handler routine.
-:H2.GET_STATE_SIZE
+.beglevel
+.section GET_STATE_SIZE
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (0)	    AX = size of overlay state
 :eXMP.
 :P
 This request returns the number of bytes required for an overlay state.
-:H2.GET_OVERLAY_STATE
+.section GET_OVERLAY_STATE
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (1)	    AX = 1
@@ -103,7 +97,8 @@ This request returns the number of bytes required for an overlay state.
 :P.
 This request copies the overlay state into the memory pointed at by
 the CX:BX registers. A one is always returned in AX.
-:H2.SET_OVERLAY_STATE
+.section SET_OVERLAY_STATE
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (2)	    AX = 1
@@ -122,7 +117,8 @@ do this, zero out a block of memory the size of an overlay state, and then
 turn on the appropriate section number in the bit vector, then make a
 SET_OVERLAY_STATE request. Remember that not only that section will be loaded,
 but all of its ancestor sections as well.
-:H2.TRANSLATE_VECTOR_ADDR
+.section TRANSLATE_VECTOR_ADDR
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (3)	    AX = 1 if addr was translated,
@@ -137,7 +133,8 @@ the vector is for, and the section number portion is filled in with the section
 number the of routine. A one is returned in AX in this case. If the address
 is not an overlay vector, then the overlay address is untouched and an zero
 is returned in AX.
-:H2.TRANSLATE_RETURN_ADDR
+.section TRANSLATE_RETURN_ADDR
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (4)	    AX = 1 if addr was translated,
@@ -162,7 +159,8 @@ to be found (zero is the top entry of the overlay stack). The true return
 address and section number then replaces the contents of the overlay address
 and a one is returned in AX. If the address is not the parallel return code,
 then the overlay address is left untouched and a zero is returned in AX.
-:H2.GET_OVL_TBL_ADDR
+.section GET_OVL_TBL_ADDR
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (5)	    AX = 0
@@ -181,7 +179,8 @@ the sample file. Since the overlay table is always in the root, the profiler
 can then find the overlay table and from that, find the other sections. It
 should be noted that the format of the overlay table may change,
 so this call should be avoided if at all possible.
-:H2.GET_MOVED_SECTION
+.section GET_MOVED_SECTION
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (6)         AX = 1 if the section exists
@@ -215,7 +214,8 @@ void CheckMovedSections()
     }
 }
 :eXMP.
-:H2.GET_SECTION_DATA
+.section GET_SECTION_DATA
+.np
 :XMP.
     Inputs:			    Outputs:
     AX = request number (7)         AX = 1 if the section exists
@@ -232,7 +232,9 @@ exist. Otherwise it returns one and fills in the overlay address with
 the location that the section is in memory, or where it would currently
 go if it was loaded at that time. It also fills in the section number
 portion of the address with the size of the section in paragraphs.
-:H1.Overlay Table Structure
+.endlevel
+.section Overlay Table Structure
+.np
 The pointer returned by the GET_OVL_TBL_ADDR request has the following format:
 :XMP
 typedef struct ovl_table {
@@ -248,7 +250,7 @@ typedef struct ovl_table {
 the overlay table structure. If an upwardly compatible change in the structures
 is made, the minor number will be incremented. If a non-upwardly compatible
 change to the structures is made, the major field will be incremented.
-The current major version is three, the current minor version is zero.
+The current major version is &ovl_majver., the current minor version is &ovl_minver..
 The
 :F.start:eF. field contains a 32-bit far pointer to the "actual" starting
 address of the program. The overlay manager jumps to this address after it
@@ -293,7 +295,7 @@ the overlay section data and relocations (The segment value is the same as
 the overlay table). If the top bit of the offset is on, then the file is
 the original EXE file rather than a separate overlay file, and the overlay
 manager should use the program file name obtained from DOS (if the version
-is 3.0 or greater). The :F.disk_addr:eF. field gives
+is 3.0. or greater). The :F.disk_addr:eF. field gives
 the starting offset the overlay data in the overlay file. 
 The segment relocation
 items immediately follow the data.
@@ -302,4 +304,3 @@ The end of the :F.entries:eF. array is indicated when an element's
 :F.flags_anc:eF.
 field contains the value 0xffff. The remaining fields in that element contain
 garbage values.
-:eGDOC

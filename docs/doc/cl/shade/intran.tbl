@@ -1,0 +1,5 @@
+:INTRANS.
+  b $20
+  ( $5B
+  ) $5D
+:eINTRANS.

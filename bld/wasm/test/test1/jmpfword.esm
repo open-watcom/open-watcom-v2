@@ -1,0 +1,18 @@
+.387
+.386p
+_DATA		SEGMENT	PARA PRIVATE USE32 'data'
+L$1:
+    DB	0, 0, 0, 0, 0, 0
+
+_DATA		ENDS
+_KYB		SEGMENT	PARA PRIVATE USE32 'data'
+L$2:
+    DB	0, 0, 0, 0, 0, 0
+
+_KYB		ENDS
+_THIRTY_TWO		SEGMENT	PARA PRIVATE USE32 'code'
+		ASSUME CS:_THIRTY_TWO, DS:DGROUP, SS:DGROUP
+    call      fword ptr es:L$1
+    call      fword ptr fs:L$2
+_THIRTY_TWO		ENDS
+		END

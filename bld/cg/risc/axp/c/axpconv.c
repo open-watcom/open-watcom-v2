@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP type conversions.
 *
 ****************************************************************************/
 
@@ -40,14 +39,11 @@
 #include "vergen.h"
 #include "zoiks.h"
 #include "model.h"
+#include "makeins.h"
 
 extern  name    *       AllocS32Const( signed_32 );
 extern  name    *       AllocTemp(type_class_def);
-extern  instruction*    MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction*    MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction*    MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction*    MakeMove(name*,name*,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  opcode_entry    *OpcodeTable( table_def );
 extern  void            UpdateLive(instruction*,instruction*);
@@ -183,7 +179,7 @@ _Un(    M,      ANY,    NONE ),         V_NO,           R_MOVOP1TEMP,   RG_QD, F
 _Un(    ANY,    ANY,    NONE ),         V_NO,           G_UNKNOWN,      RG_QD_NEED, FU_ALU,
 };
 
-static instruction *cC8TO4( instruction *ins ) { ins->table = &ctable_C8TO4; return( ins ); }
+static instruction *cC8TO4( instruction *ins ) { ins->table = ctable_C8TO4; return( ins ); }
 
 static opcode_entry ctable_S4TO8[] = {
 /************************************/
@@ -195,7 +191,7 @@ _Un(    M,      ANY,    NONE ),         V_NO,           R_MOVOP1TEMP,   RG_DQ, F
 _Un(    ANY,    ANY,    NONE ),         V_NO,           G_UNKNOWN,      RG_DQ_NEED, FU_ALU,
 };
 
-static instruction *cS4TO8( instruction *ins ) { ins->table = &ctable_S4TO8; return( ins ); }
+static instruction *cS4TO8( instruction *ins ) { ins->table = ctable_S4TO8; return( ins ); }
 
 static convert_rtn ConvertRoutines[] = {
     #define _C_( a )    c##a,

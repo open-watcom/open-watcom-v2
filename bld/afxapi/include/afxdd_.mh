@@ -1,0 +1,47 @@
+/*
+ *  afxdd_.h    Application Framework dialog data exchange and validation functions
+ *
+:include crwatcnt.sp
+ */
+
+// Forward declarations
+class CDataExchange;
+
+_AFXLINK void AFXAPI DDV_MaxChars( CDataExchange *pDX, const CString &value, int nChars );
+_AFXLINK void AFXAPI DDV_MinMaxByte( CDataExchange *pDX, BYTE value, BYTE minVal, BYTE maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxDateTime( CDataExchange *pDX, CTime &refValue, const CTime *refMinRange, const CTime *refMaxRange );
+_AFXLINK void AFXAPI DDV_MinMaxDouble( CDataExchange *pDX, const double &value, double minVal, double maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxDWord( CDataExchange *pDX, const DWORD &value, DWORD minVal, DWORD maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxFloat( CDataExchange *pDX, float value, float minVal, float maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxInt( CDataExchange *pDX, int value, int minVal, int maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxLong( CDataExchange *pDX, long value, long minVal, long maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxLongLong( CDataExchange *pDX, LONGLONG value, LONGLONG minVal, LONGLONG maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxMonth( CDataExchange *pDX, CTime &refValue, const CTime *refMinRange, const CTime *refMaxRange );
+_AFXLINK void AFXAPI DDV_MinMaxShort( CDataExchange *pDX, short value, short minVal, short maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxSlider( CDataExchange *pDX, DWORD value, DWORD minVal, DWORD maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxUInt( CDataExchange *pDX, UINT value, UINT minVal, UINT maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxULongLong( CDataExchange *pDX, ULONGLONG value, ULONGLONG minVal, ULONG maxVal );
+_AFXLINK void AFXAPI DDV_MinMaxUnsigned( CDataExchange *pDX, unsigned value, unsigned minVal, unsigned maxVal );
+_AFXLINK void AFXAPI DDX_CBIndex( CDataExchange *pDX, int nIDC, int &index );
+_AFXLINK void AFXAPI DDX_CBString( CDataExchange *pDX, int nIDC, CString &value );
+_AFXLINK void AFXAPI DDX_CBStringExact( CDataExchange *pDX, int nIDC, CString &value );
+_AFXLINK void AFXAPI DDX_Check( CDataExchange *pDX, int nIDC, int &value );
+_AFXLINK void AFXAPI DDX_Control( CDataExchange *pDX, int nIDC, CWnd &rControl );
+_AFXLINK void AFXAPI DDX_DateTimeCtrl( CDataExchange *pDX, int nIDC, CTime &value );
+_AFXLINK void AFXAPI DDX_IPAddress( CDataExchange *pDX, int nIDC, DWORD &value );
+_AFXLINK void AFXAPI DDX_LBIndex( CDataExchange *pDX, int nIDC, int &index );
+_AFXLINK void AFXAPI DDX_LBString( CDataExchange *pDX, int nIDC, CString &value );
+_AFXLINK void AFXAPI DDX_LBStringExact( CDataExchange *pDX, int nIDC, CString &value );
+_AFXLINK void AFXAPI DDX_MonthCalCtrl( CDataExchange *pDX, int nIDC, CTime &value );
+_AFXLINK void AFXAPI DDX_Radio( CDataExchange *pDX, int nIDC, int &value );
+_AFXLINK void AFXAPI DDX_Scroll( CDataExchange *pDX, int nIDC, int &value );
+_AFXLINK void AFXAPI DDX_Slider( CDataExchange *pDX, int nIDC, int &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, BYTE &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, short &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, int &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, UINT &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, long &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, DWORD &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, CString &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, float &value );
+_AFXLINK void AFXAPI DDX_Text( CDataExchange *pDX, int nIDC, double &value );

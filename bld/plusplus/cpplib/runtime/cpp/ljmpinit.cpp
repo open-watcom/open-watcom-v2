@@ -45,7 +45,7 @@ static void longjmpInit(        // INITIALIZATION FOR longjmp SUPPORT
 
 extern "C" XI( CPPDATA( init_longjmp ), longjmpInit, INIT_PRIORITY_THREAD )
 
-#ifdef M_PC_INTEL
+#ifdef _M_IX86
 
 #pragma aux CPPDATA(init_longjmp) "_*";
 

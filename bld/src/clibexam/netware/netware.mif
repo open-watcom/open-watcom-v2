@@ -168,8 +168,8 @@ FN_DQN32 = int386.nlm &
 int386x.nlm &
 intr.nlm
 
-#Win32 only
-FN_WIN32 = mktemp.nlm &
+#MMX required
+FN_MMX = &
 mempty.nlm &
 mfromint.nlm &
 mpaddb.nlm &

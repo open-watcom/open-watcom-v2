@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 
 #include "wdeglbl.h"
 #include "wdemem.h"
@@ -61,29 +61,24 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeLViewDispatcher  ( ACTION, WdeLViewObject *, void *,
-                                              void *);
-extern LRESULT WINEXPORT WdeLViewSuperClassProc ( HWND, UINT, WPARAM, LPARAM);
+extern BOOL    WINEXPORT WdeLViewDispatcher( ACTION, WdeLViewObject *, void *, void * );
+extern LRESULT WINEXPORT WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeLView            ( OBJPTR, RECT *, OBJPTR, DialogStyle,
-                                          char *, OBJ_ID );
-static OBJPTR   WdeLVCreate             ( OBJPTR, RECT *, OBJPTR,
-                                          OBJ_ID, WdeDialogBoxControl *);
-static BOOL     WdeLViewDestroy         ( WdeLViewObject *, BOOL *, void *);
-static BOOL     WdeLViewValidateAction  ( WdeLViewObject *, ACTION *, void *);
-static BOOL     WdeLViewCopyObject      ( WdeLViewObject *, WdeLViewObject **,
-                                          WdeLViewObject *);
-static BOOL     WdeLViewIdentify                ( WdeLViewObject *, OBJ_ID *, void *);
-static BOOL     WdeLViewGetWndProc      ( WdeLViewObject *, WNDPROC *, void *);
-static BOOL     WdeLViewGetWindowClass  ( WdeLViewObject *, char **, void *);
-static BOOL     WdeLViewDefine          ( WdeLViewObject *, POINT *, void *);
-static void     WdeLViewSetDefineInfo   ( WdeDefineObjectInfo *, HWND );
-static void     WdeLViewGetDefineInfo   ( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeLViewDefineHook      ( HWND, WORD, WPARAM, LPARAM,
-                                          DialogStyle );
+static OBJPTR   WdeMakeLView( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeLVCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static BOOL     WdeLViewDestroy( WdeLViewObject *, BOOL *, void * );
+static BOOL     WdeLViewValidateAction( WdeLViewObject *, ACTION *, void * );
+static BOOL     WdeLViewCopyObject( WdeLViewObject *, WdeLViewObject **, WdeLViewObject * );
+static BOOL     WdeLViewIdentify( WdeLViewObject *, OBJ_ID *, void * );
+static BOOL     WdeLViewGetWndProc( WdeLViewObject *, WNDPROC *, void * );
+static BOOL     WdeLViewGetWindowClass( WdeLViewObject *, char **, void * );
+static BOOL     WdeLViewDefine( WdeLViewObject *, POINT *, void * );
+static void     WdeLViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeLViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
+static BOOL     WdeLViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -93,35 +88,34 @@ static FARPROC                  WdeLViewDispatch;
 static WdeDialogBoxControl      *WdeDefaultLView = NULL;
 static int                      WdeLViewWndExtra;
 static WNDPROC                  WdeOriginalLViewProc;
-//static WNDPROC                        WdeLViewProc;
+//static WNDPROC                WdeLViewProc;
 
 #define WWC_LISTVIEW     WC_LISTVIEW
 
 static DISPATCH_ITEM WdeLViewActions[] = {
-    { DESTROY           ,  WdeLViewDestroy              }
-,   { COPY              ,  WdeLViewCopyObject           }
-,   { VALIDATE_ACTION   ,  WdeLViewValidateAction       }
-,   { IDENTIFY          ,  WdeLViewIdentify             }
-,   { GET_WINDOW_CLASS  ,  WdeLViewGetWindowClass       }
-,   { DEFINE            ,  WdeLViewDefine               }
-,   { GET_WND_PROC      ,  WdeLViewGetWndProc           }
+    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeLViewDestroy         },
+    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeLViewCopyObject      },
+    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeLViewValidateAction  },
+    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeLViewIdentify        },
+    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeLViewGetWindowClass  },
+    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeLViewDefine          },
+    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeLViewGetWndProc      }
 };
 
-#define MAX_ACTIONS      (sizeof(WdeLViewActions)/sizeof (DISPATCH_ITEM))
+#define MAX_ACTIONS      (sizeof( WdeLViewActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeLViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle)
+OBJPTR WINEXPORT WdeLViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeLView( parent, obj_rect, handle,
-                              0, "", LVIEW_OBJ ) );
+        return( WdeMakeLView( parent, obj_rect, handle, 0, "", LVIEW_OBJ ) );
     } else {
         return( WdeLVCreate( parent, obj_rect, NULL, LVIEW_OBJ,
-                             (WdeDialogBoxControl *) handle) );
+                             (WdeDialogBoxControl *)handle ) );
     }
 }
 
 OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+                     DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -131,84 +125,82 @@ OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     SETCTL_TEXT( WdeDefaultLView, ResStrToNameOrOrd( text ) );
     SETCTL_ID( WdeDefaultLView, WdeGetNextControlID() );
 
-    WdeChangeSizeToDefIfSmallRect ( parent, id, obj_rect );
+    WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
 
-    new = WdeLVCreate ( parent, obj_rect, handle, id, WdeDefaultLView );
+    new = WdeLVCreate( parent, obj_rect, handle, id, WdeDefaultLView );
 
-    WdeMemFree( GETCTL_TEXT(WdeDefaultLView) );
+    WdeMemFree( GETCTL_TEXT( WdeDefaultLView ) );
     SETCTL_TEXT( WdeDefaultLView, NULL );
 
-    return ( new );
+    return( new );
 }
 
 OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info)
+                    OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeLViewObject *new;
 
-    WdeDebugCreate("LView", parent, obj_rect, handle);
+    WdeDebugCreate( "LView", parent, obj_rect, handle );
 
-    if ( parent == NULL ) {
-        WdeWriteTrail("WdeLViewCreate: LView has no parent!");
-        return ( NULL );
+    if( parent == NULL ) {
+        WdeWriteTrail( "WdeLViewCreate: LView has no parent!" );
+        return( NULL );
     }
 
-    new = (WdeLViewObject *) WdeMemAlloc ( sizeof(WdeLViewObject) );
-    if ( new == NULL ) {
-        WdeWriteTrail("WdeLViewCreate: Object malloc failed");
-        return ( NULL );
+    new = (WdeLViewObject *)WdeMemAlloc( sizeof( WdeLViewObject ) );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeLViewCreate: Object malloc failed" );
+        return( NULL );
     }
 
     new->dispatcher = WdeLViewDispatch;
 
     new->object_id = id;
 
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         new->object_handle = new;
     } else {
         new->object_handle = handle;
     }
 
-    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle);
+    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle );
 
-    if (new->control == NULL) {
-        WdeWriteTrail("WdeLViewCreate: CONTROL_OBJ not created!");
-        WdeMemFree ( new );
-        return ( NULL );
+    if( new->control == NULL ) {
+        WdeWriteTrail( "WdeLViewCreate: CONTROL_OBJ not created!" );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL) ) {
-        WdeWriteTrail("WdeLViewCreate: SET_OBJECT_INFO failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+        WdeWriteTrail( "WdeLViewCreate: SET_OBJECT_INFO failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, CREATE_WINDOW,
-                   NULL, NULL) ) {
-        WdeWriteTrail("WdeLViewCreate: CREATE_WINDOW failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+        WdeWriteTrail( "WdeLViewCreate: CREATE_WINDOW failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    return ( new );
+    return( new );
 }
 
-BOOL WINEXPORT WdeLViewDispatcher ( ACTION act, WdeLViewObject *obj,
-                                     void *p1, void *p2)
+BOOL WINEXPORT WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
-    WdeDebugDispatch("LView", act, obj, p1, p2);
+    WdeDebugDispatch( "LView", act, obj, p1, p2 );
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLViewActions[i].id == act ) {
-            return( (WdeLViewActions[i].rtn)( obj, p1, p2 ) );
+            return( WdeLViewActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return (Forward ((OBJPTR)obj->control, act, p1, p2));
+    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
 Bool WdeLViewInit( Bool first )
@@ -222,26 +214,26 @@ Bool WdeLViewInit( Bool first )
 
     if( first ) {
 #if 0
-        if ( wc.style & CS_GLOBALCLASS ) {
+        if( wc.style & CS_GLOBALCLASS ) {
             wc.style ^= CS_GLOBALCLASS;
         }
-        if ( wc.style & CS_PARENTDC ) {
+        if( wc.style & CS_PARENTDC ) {
             wc.style ^= CS_PARENTDC;
         }
-        wc.style |= ( CS_HREDRAW | CS_VREDRAW );
-        wc.hInstance     = WdeApplicationInstance;
+        wc.style |= CS_HREDRAW | CS_VREDRAW;
+        wc.hInstance = WdeApplicationInstance;
         wc.lpszClassName = "wdeedit";
-        wc.cbWndExtra  += sizeof( OBJPTR );
-        //wc.lpfnWndProc      = WdeLViewSuperClassProc;
+        wc.cbWndExtra += sizeof( OBJPTR );
+        //wc.lpfnWndProc = WdeLViewSuperClassProc;
         if( !RegisterClass( &wc ) ) {
-            WdeWriteTrail("WdeLViewInit: RegisterClass failed.");
+            WdeWriteTrail( "WdeLViewInit: RegisterClass failed." );
         }
 #endif
     }
 
-    WdeDefaultLView = WdeAllocDialogBoxControl ();
-    if( !WdeDefaultLView ) {
-        WdeWriteTrail ("WdeLViewInit: Alloc of control failed!");
+    WdeDefaultLView = WdeAllocDialogBoxControl();
+    if( WdeDefaultLView == NULL ) {
+        WdeWriteTrail( "WdeLViewInit: Alloc of control failed!" );
         return( FALSE );
     }
 
@@ -254,285 +246,282 @@ Bool WdeLViewInit( Bool first )
     SETCTL_SIZEW( WdeDefaultLView, 0 );
     SETCTL_SIZEH( WdeDefaultLView, 0 );
     SETCTL_TEXT( WdeDefaultLView, NULL );
-    SETCTL_CLASSID( WdeDefaultLView, WdeStrDup( WWC_LISTVIEW ) );
+    SETCTL_CLASSID( WdeDefaultLView, WdeStrToControlClass( WWC_LISTVIEW ) );
 
-    WdeLViewDispatch = MakeProcInstance((FARPROC)WdeLViewDispatcher,
-                                           WdeGetAppInstance());
+    WdeLViewDispatch = MakeProcInstance( (FARPROC)WdeLViewDispatcher, WdeGetAppInstance() );
     return( TRUE );
 }
 
-void WdeLViewFini ( void )
+void WdeLViewFini( void )
 {
-    WdeFreeDialogBoxControl ( &WdeDefaultLView );
-    FreeProcInstance        ( WdeLViewDispatch );
+    WdeFreeDialogBoxControl( &WdeDefaultLView );
+    FreeProcInstance( WdeLViewDispatch );
 }
 
-BOOL WdeLViewDestroy ( WdeLViewObject *obj, BOOL *flag, void *p2 )
+BOOL WdeLViewDestroy( WdeLViewObject *obj, BOOL *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    if ( !Forward ( obj->control, DESTROY, flag, NULL ) ) {
-        WdeWriteTrail("WdeLViewDestroy: Control DESTROY failed");
-        return ( FALSE );
+    if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
+        WdeWriteTrail( "WdeLViewDestroy: Control DESTROY failed" );
+        return( FALSE );
     }
 
     WdeMemFree( obj );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeLViewValidateAction ( WdeLViewObject *obj, ACTION *act, void *p2 )
+BOOL WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLViewActions[i].id == *act ) {
-            return ( TRUE );
+            return( TRUE );
         }
     }
 
-    return ( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeLViewCopyObject ( WdeLViewObject *obj, WdeLViewObject **new,
-                           WdeLViewObject *handle )
+BOOL WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObject *handle )
 {
-    if (new == NULL) {
-        WdeWriteTrail("WdeLViewCopyObject: Invalid new object!");
-        return ( FALSE );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeLViewCopyObject: Invalid new object!" );
+        return( FALSE );
     }
 
-    *new = (WdeLViewObject *) WdeMemAlloc ( sizeof(WdeLViewObject) );
+    *new = (WdeLViewObject *)WdeMemAlloc( sizeof( WdeLViewObject ) );
 
-    if ( *new == NULL ) {
-        WdeWriteTrail("WdeLViewCopyObject: Object malloc failed");
-        return ( FALSE );
+    if( *new == NULL ) {
+        WdeWriteTrail( "WdeLViewCopyObject: Object malloc failed" );
+        return( FALSE );
     }
 
-    (*new)->dispatcher    = obj->dispatcher;
-    (*new)->object_id     = obj->object_id;
+    (*new)->dispatcher = obj->dispatcher;
+    (*new)->object_id = obj->object_id;
 
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         (*new)->object_handle = *new;
     } else {
         (*new)->object_handle = handle;
     }
 
-    if (!CopyObject(obj->control, &((*new)->control), (*new)->object_handle)) {
-        WdeWriteTrail("WdeLViewCopyObject: Control not created!");
-        WdeMemFree ( (*new) );
-        return ( FALSE );
+    if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
+        WdeWriteTrail( "WdeLViewCopyObject: Control not created!" );
+        WdeMemFree( *new );
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeLViewIdentify ( WdeLViewObject *obj, OBJ_ID *id, void *p2 )
+BOOL WdeLViewIdentify( WdeLViewObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 BOOL WdeLViewGetWndProc( WdeLViewObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *proc = WdeLViewSuperClassProc;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeLViewGetWindowClass ( WdeLViewObject *obj, char **class, void *p2 )
+BOOL WdeLViewGetWindowClass( WdeLViewObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *class = WWC_LISTVIEW;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeLViewDefine ( WdeLViewObject *obj, POINT *pnt, void *p2 )
+BOOL WdeLViewDefine( WdeLViewObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(pnt);
-    _wde_touch(p2);
+    _wde_touch( pnt );
+    _wde_touch( p2 );
 
-    o_info.obj       = obj->object_handle;
-    o_info.obj_id    = obj->object_id;
-    o_info.mask      = WS_VISIBLE | WS_DISABLED |
-                        WS_TABSTOP | WS_GROUP | WS_BORDER;
-    o_info.set_func  = WdeLViewSetDefineInfo;
-    o_info.get_func  = WdeLViewGetDefineInfo;
+    o_info.obj = obj->object_handle;
+    o_info.obj_id = obj->object_id;
+    o_info.mask = WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP | WS_BORDER;
+    o_info.set_func = (WdeSetProc)WdeLViewSetDefineInfo;
+    o_info.get_func = (WdeGetProc)WdeLViewGetDefineInfo;
     o_info.hook_func = WdeLViewDefineHook;
-    o_info.win       = NULL;
+    o_info.win = NULL;
 
-    return ( WdeControlDefine ( &o_info ) );
+    return( WdeControlDefine( &o_info ) );
 }
 
-void WdeLViewSetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeLViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask;
 
     // set the list view options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000003;
-    if ( mask == LVS_REPORT ) {
-        CheckDlgButton ( hDlg, IDB_LVS_REPORT, 1);
-    } else if ( mask == LVS_SMALLICON ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SMALLICON, 1);
-    } else if ( mask == LVS_LIST ) {
-        CheckDlgButton ( hDlg, IDB_LVS_LIST, 1);
+    if( mask == LVS_REPORT ) {
+        CheckDlgButton( hDlg, IDB_LVS_REPORT, 1 );
+    } else if( mask == LVS_SMALLICON ) {
+        CheckDlgButton( hDlg, IDB_LVS_SMALLICON, 1 );
+    } else if( mask == LVS_LIST ) {
+        CheckDlgButton( hDlg, IDB_LVS_LIST, 1 );
     } else {
-        CheckDlgButton ( hDlg, IDB_LVS_ICON, 1);
+        CheckDlgButton( hDlg, IDB_LVS_ICON, 1 );
     }
 
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
 
-    if ( mask & LVS_SINGLESEL ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SINGLESEL, 1);
+    if( mask & LVS_SINGLESEL ) {
+        CheckDlgButton( hDlg, IDB_LVS_SINGLESEL, 1 );
     }
-    if ( mask & LVS_SHOWSELALWAYS ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SHOWSELALWAYS, 1);
+    if( mask & LVS_SHOWSELALWAYS ) {
+        CheckDlgButton( hDlg, IDB_LVS_SHOWSELALWAYS, 1 );
     }
-    if ( mask & LVS_SHAREIMAGELISTS ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SHAREIMAGELISTS, 1);
+    if( mask & LVS_SHAREIMAGELISTS ) {
+        CheckDlgButton( hDlg, IDB_LVS_SHAREIMAGELISTS, 1 );
     }
-    if ( mask & LVS_NOLABELWRAP ) {
-        CheckDlgButton ( hDlg, IDB_LVS_NOLABELWRAP, 1);
+    if( mask & LVS_NOLABELWRAP ) {
+        CheckDlgButton( hDlg, IDB_LVS_NOLABELWRAP, 1 );
     }
-    if ( mask & LVS_AUTOARRANGE ) {
-        CheckDlgButton ( hDlg, IDB_LVS_AUTOARRANGE, 1);
+    if( mask & LVS_AUTOARRANGE ) {
+        CheckDlgButton( hDlg, IDB_LVS_AUTOARRANGE, 1 );
     }
-    if ( mask & LVS_EDITLABELS ) {
-        CheckDlgButton ( hDlg, IDB_LVS_EDITLABELS, 1);
+    if( mask & LVS_EDITLABELS ) {
+        CheckDlgButton( hDlg, IDB_LVS_EDITLABELS, 1 );
     }
-    if ( mask & LVS_ALIGNLEFT ) {
-        CheckDlgButton ( hDlg, IDB_LVS_ALIGNLEFT, 1);
+    if( mask & LVS_ALIGNLEFT ) {
+        CheckDlgButton( hDlg, IDB_LVS_ALIGNLEFT, 1 );
     }
-    if ( mask & LVS_OWNERDRAWFIXED ) {
-        CheckDlgButton ( hDlg, IDB_LVS_OWNERDRAWFIXED, 1);
+    if( mask & LVS_OWNERDRAWFIXED ) {
+        CheckDlgButton( hDlg, IDB_LVS_OWNERDRAWFIXED, 1 );
     }
-    if ( mask & LVS_NOSCROLL ) {
-        CheckDlgButton ( hDlg, IDB_LVS_NOSCROLL, 1);
+    if( mask & LVS_NOSCROLL ) {
+        CheckDlgButton( hDlg, IDB_LVS_NOSCROLL, 1 );
     }
-    if ( mask & LVS_NOCOLUMNHEADER ) {
-        CheckDlgButton ( hDlg, IDB_LVS_NOCOLUMNHEADER, 1);
+    if( mask & LVS_NOCOLUMNHEADER ) {
+        CheckDlgButton( hDlg, IDB_LVS_NOCOLUMNHEADER, 1 );
     }
-    if ( mask & LVS_NOSORTHEADER ) {
-        CheckDlgButton ( hDlg, IDB_LVS_NOSORTHEADER, 1);
+    if( mask & LVS_NOSORTHEADER ) {
+        CheckDlgButton( hDlg, IDB_LVS_NOSORTHEADER, 1 );
     }
 
-    if ( mask & LVS_SORTDESCENDING ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SORTDESCENDING, 1);
-    } else if ( mask & LVS_SORTASCENDING ) {
-        CheckDlgButton ( hDlg, IDB_LVS_SORTASCENDING, 1);
+    if( mask & LVS_SORTDESCENDING ) {
+        CheckDlgButton( hDlg, IDB_LVS_SORTDESCENDING, 1 );
+    } else if( mask & LVS_SORTASCENDING ) {
+        CheckDlgButton( hDlg, IDB_LVS_SORTASCENDING, 1 );
     } else {
-        CheckDlgButton ( hDlg, IDB_LVS_NOSORTING, 1);
+        CheckDlgButton( hDlg, IDB_LVS_NOSORTING, 1 );
     }
 
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-void WdeLViewGetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeLViewGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask;
 
     // get the list view settings
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_ICON ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_ICON ) ) {
         mask = LVS_ICON;
-    } else if ( IsDlgButtonChecked ( hDlg, IDB_LVS_REPORT ) ) {
+    } else if( IsDlgButtonChecked( hDlg, IDB_LVS_REPORT ) ) {
         mask = LVS_REPORT;
-    } else if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SMALLICON ) ) {
+    } else if( IsDlgButtonChecked( hDlg, IDB_LVS_SMALLICON ) ) {
         mask = LVS_SMALLICON;
     } else {
         mask = LVS_LIST;
     }
 
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SINGLESEL ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_SINGLESEL ) ) {
         mask |= LVS_SINGLESEL;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SHOWSELALWAYS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_SHOWSELALWAYS ) ) {
         mask |= LVS_SHOWSELALWAYS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SORTASCENDING ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_SORTASCENDING ) ) {
         mask |= LVS_SORTASCENDING;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SORTDESCENDING ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_SORTDESCENDING ) ) {
         mask |= LVS_SORTDESCENDING;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_SHAREIMAGELISTS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_SHAREIMAGELISTS ) ) {
         mask |= LVS_SHAREIMAGELISTS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_NOLABELWRAP ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_NOLABELWRAP ) ) {
         mask |= LVS_NOLABELWRAP;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_AUTOARRANGE ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_AUTOARRANGE ) ) {
         mask |= LVS_AUTOARRANGE;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_EDITLABELS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_EDITLABELS ) ) {
         mask |= LVS_EDITLABELS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_NOSCROLL ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_NOSCROLL ) ) {
         mask |= LVS_NOSCROLL;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_ALIGNTOP ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_ALIGNTOP ) ) {
         mask |= LVS_ALIGNTOP;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_ALIGNLEFT ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_ALIGNLEFT ) ) {
         mask |= LVS_ALIGNLEFT;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_OWNERDRAWFIXED ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_OWNERDRAWFIXED ) ) {
         mask |= LVS_OWNERDRAWFIXED;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_NOCOLUMNHEADER ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_NOCOLUMNHEADER ) ) {
         mask |= LVS_NOCOLUMNHEADER;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_LVS_NOSORTHEADER ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_LVS_NOSORTHEADER ) ) {
         mask |= LVS_NOSORTHEADER;
     }
 
     SETCTL_STYLE( o_info->info.c.info,
-                  ( GETCTL_STYLE(o_info->info.c.info) & 0xffff0000 ) | mask );
+                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
-    WdeEXGetDefineInfo ( o_info, hDlg );
+    WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-BOOL WdeLViewDefineHook( HWND hDlg, WORD message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+BOOL WdeLViewDefineHook( HWND hDlg, UINT message,
+                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     BOOL processed;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(hDlg);
-    _wde_touch(message);
-    _wde_touch(wParam);
-    _wde_touch(lParam);
-    _wde_touch(mask);
+    _wde_touch( hDlg );
+    _wde_touch( message );
+    _wde_touch( wParam );
+    _wde_touch( lParam );
+    _wde_touch( mask );
 
     processed = FALSE;
 
@@ -540,14 +529,10 @@ BOOL WdeLViewDefineHook( HWND hDlg, WORD message,
 }
 
 LRESULT WINEXPORT WdeLViewSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam,
-                                         LPARAM lParam )
+                                          WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return( CallWindowProc( WdeOriginalLViewProc,
-                                 hWnd, message, wParam, lParam ) );
+        return( CallWindowProc( WdeOriginalLViewProc, hWnd, message, wParam, lParam ) );
     }
     return( FALSE );
 }
-
-

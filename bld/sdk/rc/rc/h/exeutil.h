@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Executable processing utility function prototypes.
 *
 ****************************************************************************/
 
@@ -54,7 +53,7 @@ extern RcStatus PadExeData( int handle, uint_32 length );
 extern void CheckDebugOffset( ExeFileInfo * info );
 extern RcStatus SeekRead( int handle, unsigned_32 newpos, void *buff,
                    unsigned_16 size );
-extern ExeType FindNEPEHeader( int handle, unsigned_32 *nh_offset );
+extern ExeType FindNEPELXHeader( int handle, unsigned_32 *nh_offset );
 extern unsigned_32 OffsetFromRVA( ExeFileInfo *info, pe_va rva );
 
 #endif

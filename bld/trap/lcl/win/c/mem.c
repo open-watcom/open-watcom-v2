@@ -42,7 +42,7 @@ void PopAll( void );
 /*
  * ReadMem - read some memory, using toolhelp or wdebug.386
  */
-DWORD ReadMem( WORD sel, DWORD off, LPSTR buff, DWORD size )
+DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 {
     DWORD       rc;
 
@@ -59,7 +59,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPSTR buff, DWORD size )
 /*
  * WriteMem - write some memory, using toolhelp or wdebug.386
  */
-DWORD WriteMem( WORD sel, DWORD off, LPSTR buff, DWORD size )
+DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 {
     DWORD       rc;
 

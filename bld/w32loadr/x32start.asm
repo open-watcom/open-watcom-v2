@@ -96,9 +96,9 @@ DGROUP group BEGTEXT,_TEXT,_NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,Y
 ; signal function.
 
 BEGTEXT  segment use32 para public 'CODE'
-if @Version     LT      600     ;If MASM is < 6.0
-        assume  cs:_TEXT
-endif
+;if @Version     LT      600     ;If MASM is < 6.0
+;        assume  cs:_TEXT
+;endif
         jmp     null_error
         nop     ;2
         nop     ;3
@@ -158,8 +158,10 @@ __x32_zero_base_ptr             label dword
 __x386_zero_base_ptr            dd      0f0000000h
 
 ;the variables in the following list are from the module crwdata
-        public  __LpPgmName,__LpCmdLine,___FPE_handler,__FPE_handler
-        public  __Envseg,__Envptr,__Extender,__no87,__cbyte2
+        public  "C",__FPE_handler
+        public  "C",_Extender
+        public  __LpPgmName,__LpCmdLine
+        public  __Envptr,__no87,__cbyte2
         public  __child,__cbyte,__STACKTOP,__STACKLOW
         public  __osminor,__osmajor,__psp,__curbrk
         public  __dynend,__x386_stacklow,__X32VM,__ASTACKSIZ,__ASTACKPTR
@@ -178,14 +180,12 @@ __cbyte         dd      0
 __cbyte2        dd      0
 __child         dd      0
 __no87          dw      0
-__Extender      db      3               ;pretend we are Pharlap version 3
+_Extender       db      3               ;pretend we are Pharlap version 3
                 db      0
-__Envptr        dd      0
-__Envseg        dw      0
+__Envptr        df      0
 __osmajor       db      0
 __osminor       db      0
 __X32VM         db      1
-___FPE_handler label dword
 __FPE_handler   dd      offset DGROUP:fpe_handler
 ;end of crwdata variables
 
@@ -193,11 +193,13 @@ __x386_break    dd      ?
 
 __saved_DS      dw  0           ; save area for DS for interrupt routines
 
-insuf_msg       db      10,13,'Insufficient memory for stack setup',24h
+insuf_msg       db      'Insufficient memory for stack setup',0Dh,0Ah,'$'
 
-null_msg        db      10,13,'Null code pointer was called',0
+null_msg        db      'Null code pointer was called',0
 
 ConsoleName     db      "con",0
+
+NewLine         db      0Dh,0Ah
 
 _DATA    ends
 
@@ -209,9 +211,9 @@ _BSS          segment word public 'BSS'
 _BSS          ends
 
 
-if @Version     LT      600     ;If the MASM is < 6.0
-        assume  cs:_TEXT
-endif
+;if @Version     LT      600     ;If the MASM is < 6.0
+;        assume  cs:_TEXT
+;endif
         assume  ds:DGROUP
 
 ;
@@ -247,7 +249,7 @@ __x386_init proc near
         mov     __osminor,ah
 
         mov     __saved_DS,ds           ; save DS value
-        mov     __Envseg,gs             ; save segment of environment area
+        mov     word ptr __Envptr+4,gs  ; save segment of environment area
         push    fs
         pop     es                      ;pointer to psp
         mov     edi,81h                 ;DOS command buffer es:edi
@@ -387,6 +389,10 @@ L4:     lodsb                           ; get char
         sub     ecx,edx                 ; . . .
         dec     ecx                     ; . . .
         mov     ah,040h                 ; write out the string
+        int     021h                    ; . . .
+        mov     edx,offset DGROUP:NewLine ; write out the string
+        mov     ecx,sizeof NewLine      ; . . .
+        mov     ah,040h                 ; . . .
         int     021h                    ; . . .
         pop     eax                     ; restore return code
 

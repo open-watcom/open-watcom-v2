@@ -24,11 +24,12 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Very basic test of PPC instruction encodings.
 ;*
 ;*****************************************************************************
 
 
-add r0,r1,r2
-addi r0,r1,0x10
+add     r0,r1,r2
+addi    r0,r1,0x10
+fmul    fr0,fr1,fr2
+fmuls   f0,f1,f2

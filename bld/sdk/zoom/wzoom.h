@@ -35,7 +35,8 @@
 #include "watcom.h"
 #include "mem.h"
 #include "config.h"
-#include "rcstr.h"
+#include "rcstr.gh"
+#include "uistr.gh"
 #include "ldstr.h"
 
 
@@ -97,10 +98,10 @@ extern ZoomConfigInfo   ConfigInfo;
 extern char             *AppName;
 
 /* zmproc.c */
-BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
-BOOL __export FAR PASCAL ZOOMFloatWndProc( HWND hwnd, WORD msg, WORD wparam,
-                                    DWORD lparam );
+BOOL __export FAR PASCAL ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam );
+BOOL __export FAR PASCAL ZOOMFloatWndProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                    LPARAM lparam );
 void DoAutoRefresh( HWND mainhwnd, BOOL on );
 
 /* zmscreen.c */

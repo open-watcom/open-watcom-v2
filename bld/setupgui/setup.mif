@@ -1,0 +1,350 @@
+proj_name = setupgui
+
+setupgui_autodepends = .AUTODEPEND
+
+.EXTENSIONS: .rc .ico .res
+
+.ERROR:
+
+additional_cleanup = *.i *.rex setup.inf
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include wres.mif
+
+# objects
+##########
+objs = &
+    setup.obj       &
+    setupfil.obj    &
+    setupinf.obj    &
+    guistat.obj     &
+    dlggen.obj      &
+    guiutil.obj     &
+    guicolor.obj    &
+    guictrl.obj     &
+    genvbl.obj      &
+    dynarray.obj    &
+    gendlg.obj      &
+    hash.obj        &
+    nlmver.obj      &
+    utils.obj
+
+!ifdef patch
+objs +=             &
+    exetype.obj
+!endif
+
+!ifeq host_os win
+objs += &
+!ifeq host_cpu 386
+    setupio.obj     &
+!else
+    setupiod.obj    &
+!endif
+    winutil.obj     &
+    winddeml.obj
+!else ifeq host_os nt
+objs += &
+    setupio.obj     &
+    winutil.obj     &
+    winddeml.obj
+!else ifeq host_os os2
+objs += &
+    setupio.obj     &
+    winutil.obj     &
+    os2util.obj
+!else ifeq host_os linux
+objs += &
+    setupio.obj
+!else
+objs += &
+    setupio.obj
+!endif
+
+!ifeq sys_windowed 1
+
+libs_nt = $(guidir)/win/nt$(host_cpu)/gui.lib
+
+libs_os2 = $(guidir)/win/os2$(host_cpu)/gui.lib
+
+libs_win = $(guidir)/win/win$(host_cpu)/gui.lib
+
+!else
+
+# custom version of resource finder
+extra_c_flags_loadfind = -I"$(wres_dir)/h"
+objs += loadfind.obj
+
+libs_dos = &
+$(guidir)/ui/dos$(host_cpu)/gui.lib &
+$(uidir)/dos/dos$(host_cpu)/ui.lib &
+$(wres_lib)
+
+libs_linux = &
+$(guidir)/ui/linux$(host_cpu)/gui.lib &
+$(uidir)/unix/linux$(host_cpu)/ui.lib &
+$(ncurses_dir)/linux$(host_cpu)/ncurses.lib &
+$(wres_lib)
+
+libs_os2 = &
+$(guidir)/ui/os2$(host_cpu)/gui.lib &
+$(uidir)/os2/os2$(host_cpu)/ui.lib &
+$(wres_lib)
+
+libs_nt = &
+$(guidir)/ui/nt$(host_cpu)/gui.lib &
+$(uidir)/nt/nt$(host_cpu)/ui.lib &
+$(wres_lib)
+
+!endif
+
+libs_os2    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+libs_nt     += ../zlib/osi$(host_cpu)/zlib.lib ../ziplib/osi$(host_cpu)/ziplib.lib
+libs_dos    += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+libs_linux  += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+libs_win386 += ../zlib/osi386/zlib.lib ../ziplib/osi386/ziplib.lib
+
+libs = $(libs_$(host_os)) $(libs_$(host_os)$(host_cpu))
+
+gendeps = _guimsgs.gh $(objs) $(libs) setup.lnk
+
+# cflags
+#########
+extra_c_flags = -s
+!ifneq sys_windowed 1
+extra_c_flags += -D_UI
+!endif
+!ifdef patch
+extra_c_flags += -DPATCH
+!endif
+
+extra_c_flags_i86 = -zc
+
+#extra_c_flags_common = -fi=setupmem.h
+#extra_c_flags_io = -fi=setupmem.h
+
+# lflags
+#########
+extra_l_flags = op map op symfile
+
+# rc flags
+###########
+extra_rc_flags     = -r
+extra_rc_flags_win = -30 -D_WIN
+extra_rc_flags_nt  = -D_WINNT
+
+res_dir = ../res/$(host_os)
+
+rcx_out_os2 = $(rc)
+rcx_out_win = $(rc) -30 -k
+rcx_out_nt  = $(rc) -k
+rc_out = $(rcx_out_$(host_os))
+
+!ifeq host_os os2
+!ifeq sys_windowed 1
+dep_res1 = ../h/setup.h setup.ico gui.rc _guimsgs.gh
+!else
+dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+!endif
+!else ifeq host_os dos
+dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+!else ifeq host_os linux
+dep_res1 = ../h/setup.h gui.rc _guimsgs.gh
+!else
+dep_res1 = ../h/setup.h setup.ico disk.ico gui.rc _guimsgs.gh
+!endif
+
+# where to find objects
+########################
+
+.c : ../c;$(build_root)/bdiff;$(build_root)/wpack/c;$(trmem_dir)
+.rc : ../res;$(res_dir);$(gui_dir)/h
+.ico : $(res_dir)
+
+res_inc_dirs = -I"$(res_dir)" -I"../res" -I"$(gui_dir)/h" $(inc_dirs_sys)
+
+inc_dirs  = -I"../h" -I"$(sdk_dir)/misc" -I"$(build_root)/wpack/h"
+inc_dirs += -I"$(uidir)/h" -I"$(wpi_dir)/h" -I"$(gui_dir)/h"
+inc_dirs += -I"$(commonui_dir)/h"
+inc_dirs += -I"$(build_root)/bdiff/h" -I$(trmem_dir) -I"$(libzip_dir)/lib"
+
+
+# explicit rules
+##################
+
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
+
+!ifeq host_os win
+
+all : virgin.exe setup.exe csetup.exe f77setup.exe .SYMBOLIC
+
+virgin.exe: $(gendeps) dosstub.exe
+!ifeq host_cpu 386
+    $(linker) name virgin.rex @setup.lnk
+    wbind -q -n virgin.rex
+!else
+    $(linker) name $^@ op stub=dosstub.exe @setup.lnk
+!endif
+
+!else ifeq host_os os2
+
+!ifeq sys_windowed 1
+
+all : virgin.exe setup.exe csetup.exe f77setup.exe .SYMBOLIC
+
+virgin.exe: $(gendeps)
+    $(linker) name $^@ @setup.lnk
+
+!else
+
+setup.exe: $(gendeps) setupui.res
+    $(linker) name $^@ @setup.lnk
+    wstrip -q -a -r setup.exe . setupui.res
+
+!endif
+
+!else ifeq host_os nt
+
+!ifeq sys_windowed 1
+
+all : setup.exe csetup.exe f77setup.exe .SYMBOLIC
+
+setup.exe: virgin.exe $(version_res_$(host_os)_$(host_cpu)) setup.res
+    cp $[@ $^@ > $(nulldevice)
+    cp $[&.sym $^&.sym > $(nulldevice)
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc_out) $]@ $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+    $(rc_out) $]@ $^@
+!endif
+
+virgin.exe: $(gendeps)
+    $(linker) name $^@ @setup.lnk
+
+!else
+
+setup.exe: $(gendeps) setupui.res
+    $(linker) name $^@ @setup.lnk
+    wstrip -q -a -r setup.exe . setupui.res
+
+!endif
+
+!else ifeq host_os dos
+
+all : setup.exe .SYMBOLIC
+
+setup.exe: $(gendeps) setupui.res
+    $(linker) name $^@ @setup.lnk
+    wstrip -q -a -r setup.exe . setupui.res
+
+!else ifeq host_os linux
+
+all : setup.exe .SYMBOLIC
+
+setup.exe: $(gendeps) setupui.res
+    $(linker) name $^@ @setup.lnk
+    wstrip -q -a -r setup.exe . setupui.res
+
+!else
+
+all : .SYMBOLIC
+    %null
+
+!endif
+
+setup.lnk : makefile ../setup.mif
+    %create setup.lnk
+    @%append setup.lnk $(lflags)
+    @%append setup.lnk option map, verbose
+!ifeq host_os win
+!ifeq host_cpu 386
+    @%append setup.lnk option stack=24K
+!else
+    @%append setup.lnk option manyautodata, stack=20K, heap=10K
+    # Segments must be NONDISCARDABLE so that Windows will not attempt
+    # to load a segment after the user has swapped diskettes.
+    @%append setup.lnk SEGMENT CLASS 'CODE' MOVEABLE PRELOAD
+    @%append setup.lnk SEGMENT CLASS 'DATA' MOVEABLE PRELOAD
+    @%append setup.lnk LIBRARY ddeml
+!endif
+!else ifeq host_os os2
+    @%append setup.lnk option stack=30K
+!else ifeq host_os nt
+    @%append setup.lnk option stack=30K, heap=20K
+! ifneq host_cpu axp
+    @%append setup.lnk lib shell32.lib
+    @%append setup.lnk lib uuid.lib
+! endif
+!else ifeq host_os dos
+    @%append setup.lnk option stack=30K
+!ifeq host_cpu 386
+    @%append setup.lnk option stub=$(cw_dir)/cw32/dosi86/cwstub.exe
+!endif
+!else
+!endif
+!ifdef PROJECT_LIBS
+    @%append setup.lnk lib $(PROJECT_LIBS)
+!endif
+    @for %i in ( $(objs) ) do @%append setup.lnk file %i
+    @for %i in ( $(libs) ) do @%append setup.lnk lib %i
+
+nonibm.obj : $(new_clib)/startup/c/nonibm.c
+
+setupui.res : setupui.rc $(dep_res1)
+    $(rc_aui) -I"$(gui_dir)/h" $[@ -fo=setupui.res
+
+csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
+    $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
+
+jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
+    $(rc) $(rc_flags) -DJCSETUP -DJAPANESE_MESSAGES -zk0 $(res_inc_dirs) $[@ -fo=$^@
+
+f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp
+    $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
+
+jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp
+    $(rc) $(rc_flags) -DJFSETUP -DJAPANESE_MESSAGES -zk0 $(res_inc_dirs) $[@ -fo=$^@
+
+setup.res : setup.rc $(dep_res1) ../res/generic.bmp
+    $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
+
+dosstub.exe : dosstub.c
+    wcl -zq -l=dos -os -d0 -bt=dos $(inc_dirs_sys) $[@
+
+.res.exe :
+!if "$(host_os)" == "win" && "$(host_cpu)" == "386"
+    cp virgin.rex $^*.rex
+    wbind -q $*.rex -R -q $]@
+    rm $^*.rex
+!else
+    cp virgin.exe $^@
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc_out) $]@ $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+    $(rc_out) $]@ $^@
+!endif
+!endif
+
+./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
+    $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+
+_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
+    $[@ $^@ $(gui_msg_id_modifier)
+
+verrc_exe = setup
+!include verrc.mif
+
+# additional dependencies for implicit rules
+############################################
+
+csetup.exe   : virgin.exe
+
+f77setup.exe : virgin.exe
+
+jcsetup.exe  : virgin.exe
+
+jfsetup.exe  : virgin.exe

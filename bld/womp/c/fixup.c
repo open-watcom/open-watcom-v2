@@ -93,21 +93,21 @@ STATIC uint_16 frameDatum( obj_rec *objr, uint_8 method ) {
 
 /**/myassert( objr != NULL );
     switch( method ) {
-    case F_SEG:
-    case F_GRP:
-    case F_EXT:
+    case FRAME_SEG:
+    case FRAME_GRP:
+    case FRAME_EXT:
         return( ObjGetIndex( objr ) );
-    case F_ABS:
+    case FRAME_ABS:
         return( ObjGet16( objr ) );
     }
-    /* for F_LOC, F_TARG, and F_NONE we return 0 */
+    /* for FRAME_LOC, FRAME_TARG, and FRAME_NONE we return 0 */
     return( 0 );
 }
 
 STATIC uint_16 targetDatum( obj_rec *objr, uint_8 method ) {
 
 /**/myassert( objr != NULL );
-    if( ( method & 0x03 ) == T_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABSWD ) {
         return( ObjGet16( objr ) );
     }
     return( ObjGetIndex( objr ) );
@@ -258,7 +258,7 @@ void FixGetRef( fixinfo *info, obj_rec *objr, logphys *ref, int is_logical ) {
 
 #if _WOMP_OPT & _WOMP_WRITE
 
-STATIC char *putIndex( char *p, uint_16 index ) {
+STATIC uint_8 *putIndex( uint_8 *p, uint_16 index ) {
 
     if( index > 0x7f ) {
         *p++ = 0x80 | ( index >> 8 );
@@ -267,45 +267,45 @@ STATIC char *putIndex( char *p, uint_16 index ) {
     return( p );
 }
 
-STATIC char *put16( char *p, uint_16 word ) {
+STATIC uint_8 *put16( uint_8 *p, uint_16 word ) {
 
     WriteU16( p, word );
     return( p + 2 );
 }
 
-STATIC char *put32( char *p, uint_32 dword ) {
+STATIC uint_8 *put32( uint_8 *p, uint_32 dword ) {
 
     WriteU32( p, dword );
     return( p + 4 );
 }
 
-STATIC char *putFrameDatum( char *p, uint_8 method, uint_16 datum ) {
+STATIC uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 
 /**/myassert( p != NULL );
     switch( method ) {
-    case F_SEG:
-    case F_GRP:
-    case F_EXT:
+    case FRAME_SEG:
+    case FRAME_GRP:
+    case FRAME_EXT:
         return( putIndex( p, datum ) );
-    case F_ABS:
+    case FRAME_ABS:
         return( put16( p, datum ) );
     }
-    /* for F_LOC, F_TARG, and F_NONE there is nothing to output */
+    /* for FRAME_LOC, FRAME_TARG, and FRAME_NONE there is nothing to output */
     return( p );
 }
 
-STATIC char *putTargetDatum( char *p, uint_8 method, uint_16 datum ) {
+STATIC uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 
 /**/myassert( p != NULL );
-    if( ( method & 0x03 ) == T_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABSWD ) {
         return( put16( p, datum ) );
     }
     return( putIndex( p, datum ) );
 }
 
-size_t FixGenLRef( logref *log, char *buf, int type ) {
-/***************************************************/
-    char    *p;
+size_t FixGenLRef( logref *log, uint_8 *buf, int type ) {
+/*****************************************************/
+    uint_8  *p;
     uint_8  target;
 
 /**/myassert( log != NULL );
@@ -336,9 +336,9 @@ size_t FixGenLRef( logref *log, char *buf, int type ) {
     return( p - buf );
 }
 
-size_t FixGenPRef( physref *ref, char *buf, int type ) {
-/****************************************************/
-    char    *p;
+size_t FixGenPRef( physref *ref, uint_8 *buf, int type ) {
+/******************************************************/
+    uint_8  *p;
 
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
@@ -353,8 +353,8 @@ size_t FixGenPRef( physref *ref, char *buf, int type ) {
     return( p - buf );
 }
 
-size_t FixGenRef( logphys *ref, int is_logical, char *buf, int type ) {
-/*******************************************************************/
+size_t FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type ) {
+/*********************************************************************/
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
 /**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP ||
@@ -365,9 +365,9 @@ size_t FixGenRef( logphys *ref, int is_logical, char *buf, int type ) {
     return( FixGenPRef( &ref->phys, buf, type ) );
 }
 
-size_t FixGenFix( fixup *fix, char *buf, int type ) {
-/*************************************************/
-    char    *p;
+size_t FixGenFix( fixup *fix, uint_8 *buf, int type ) {
+/***************************************************/
+    uint_8  *p;
     uint_8  byte;
     uint_16 data_rec_offset;
 

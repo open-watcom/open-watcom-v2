@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Cover functions to avoid dependency on CTL3D DLL.
 *
 ****************************************************************************/
 
@@ -42,19 +41,19 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef BOOL    ( WINAPI *LPFN_Ctl3dSubclassDlg ) (HWND, WORD);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dSubclassDlgEx ) (HWND, DWORD);
-typedef WORD    ( WINAPI *LPFN_Ctl3dGetVer ) (void);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dEnabled ) (void);
-typedef HBRUSH  ( WINAPI *LPFN_Ctl3dCtlColor ) (HDC, LONG);
-typedef HBRUSH  ( WINAPI *LPFN_Ctl3dCtlColorEx ) (UINT wm, WPARAM wParam, LPARAM lParam);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dColorChange ) (void);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dSubclassCtl ) (HWND);
-typedef LONG    ( WINAPI *LPFN_Ctl3dDlgFramePaint ) (HWND, UINT, WPARAM, LPARAM);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dAutoSubclass ) (HANDLE);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dRegister ) (HANDLE);
-typedef BOOL    ( WINAPI *LPFN_Ctl3dUnregister ) (HANDLE);
-typedef VOID    ( WINAPI *LPFN_Ctl3dWinIniChange ) (void);
+typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassDlg)( HWND, WORD );
+typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassDlgEx)( HWND, DWORD );
+typedef WORD    (WINAPI *LPFN_Ctl3dGetVer)( void );
+typedef BOOL    (WINAPI *LPFN_Ctl3dEnabled)( void );
+typedef HBRUSH  (WINAPI *LPFN_Ctl3dCtlColor)( HDC, LONG );
+typedef HBRUSH  (WINAPI *LPFN_Ctl3dCtlColorEx)( UINT wm, WPARAM wParam, LPARAM lParam );
+typedef BOOL    (WINAPI *LPFN_Ctl3dColorChange)( void );
+typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassCtl)( HWND );
+typedef LONG    (WINAPI *LPFN_Ctl3dDlgFramePaint)( HWND, UINT, WPARAM, LPARAM );
+typedef BOOL    (WINAPI *LPFN_Ctl3dAutoSubclass)( HANDLE );
+typedef BOOL    (WINAPI *LPFN_Ctl3dRegister)( HANDLE );
+typedef BOOL    (WINAPI *LPFN_Ctl3dUnregister)( HANDLE );
+typedef VOID    (WINAPI *LPFN_Ctl3dWinIniChange)( void );
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -105,43 +104,41 @@ void WRCtl3DDLLFini( void )
 
 static int WRCtl3DDLLInit( void )
 {
-    #ifndef __NT__
-        wrDLLLib = LoadLibrary("CTL3D.DLL");
-    #else
-        wrDLLLib = LoadLibrary("CTL3D32.DLL");
-    #endif
+#ifdef __NT__
+    wrDLLLib = LoadLibrary( "CTL3D32.DLL" );
+#else
+    UINT    uErrMode;
+
+    /* Use SetErrorMode to prevent annoying error popups. */
+    uErrMode = SetErrorMode( SEM_NOOPENFILEERRORBOX );
+    wrDLLLib = LoadLibrary( "CTL3DV2.DLL" );
+    SetErrorMode( uErrMode );
+#endif
 
     if( wrDLLLib == (HINSTANCE)NULL ) {
         return( FALSE );
     }
 
-    wrCtl3dSubclassDlg          = (void *)GetProcAddress( wrDLLLib, (LPCSTR)2 );
-    wrCtl3dSubclassDlgEx        = (void *)GetProcAddress( wrDLLLib, (LPCSTR)21 );
-    wrCtl3dGetVer               = (void *)GetProcAddress( wrDLLLib, (LPCSTR)1 );
-    wrCtl3dEnabled              = (void *)GetProcAddress( wrDLLLib, (LPCSTR)5 );
-    wrCtl3dCtlColor             = (void *)GetProcAddress( wrDLLLib, (LPCSTR)4 );
-    wrCtl3dCtlColorEx           = (void *)GetProcAddress( wrDLLLib, (LPCSTR)18 );
-    wrCtl3dColorChange          = (void *)GetProcAddress( wrDLLLib, (LPCSTR)6 );
-    wrCtl3dSubclassCtl          = (void *)GetProcAddress( wrDLLLib, (LPCSTR)3 );
-    wrCtl3dDlgFramePaint        = (void *)GetProcAddress( wrDLLLib, (LPCSTR)20 );
-    wrCtl3dAutoSubclass         = (void *)GetProcAddress( wrDLLLib, (LPCSTR)16 );
-    wrCtl3dRegister             = (void *)GetProcAddress( wrDLLLib, (LPCSTR)12 );
-    wrCtl3dUnregister           = (void *)GetProcAddress( wrDLLLib, (LPCSTR)13 );
-    wrCtl3dWinIniChange         = (void *)GetProcAddress( wrDLLLib, (LPCSTR)22 );
+    wrCtl3dSubclassDlg = (void *)GetProcAddress( wrDLLLib, (LPCSTR)2 );
+    wrCtl3dSubclassDlgEx = (void *)GetProcAddress( wrDLLLib, (LPCSTR)21 );
+    wrCtl3dGetVer = (void *)GetProcAddress( wrDLLLib, (LPCSTR)1 );
+    wrCtl3dEnabled = (void *)GetProcAddress( wrDLLLib, (LPCSTR)5 );
+    wrCtl3dCtlColor = (void *)GetProcAddress( wrDLLLib, (LPCSTR)4 );
+    wrCtl3dCtlColorEx = (void *)GetProcAddress( wrDLLLib, (LPCSTR)18 );
+    wrCtl3dColorChange = (void *)GetProcAddress( wrDLLLib, (LPCSTR)6 );
+    wrCtl3dSubclassCtl = (void *)GetProcAddress( wrDLLLib, (LPCSTR)3 );
+    wrCtl3dDlgFramePaint = (void *)GetProcAddress( wrDLLLib, (LPCSTR)20 );
+    wrCtl3dAutoSubclass = (void *)GetProcAddress( wrDLLLib, (LPCSTR)16 );
+    wrCtl3dRegister = (void *)GetProcAddress( wrDLLLib, (LPCSTR)12 );
+    wrCtl3dUnregister = (void *)GetProcAddress( wrDLLLib, (LPCSTR)13 );
+    wrCtl3dWinIniChange = (void *)GetProcAddress( wrDLLLib, (LPCSTR)22 );
 
-    if( ( wrCtl3dSubclassDlg == NULL ) ||
-        ( wrCtl3dSubclassDlgEx == NULL ) ||
-        ( wrCtl3dGetVer == NULL ) ||
-        ( wrCtl3dEnabled == NULL ) ||
-        ( wrCtl3dCtlColor == NULL ) ||
-        ( wrCtl3dCtlColorEx == NULL ) ||
-        ( wrCtl3dColorChange == NULL ) ||
-        ( wrCtl3dSubclassCtl == NULL ) ||
-        ( wrCtl3dDlgFramePaint == NULL ) ||
-        ( wrCtl3dAutoSubclass == NULL ) ||
-        ( wrCtl3dRegister == NULL ) ||
-        ( wrCtl3dUnregister == NULL ) ||
-        ( wrCtl3dWinIniChange == NULL ) ) {
+    if( wrCtl3dSubclassDlg == NULL || wrCtl3dSubclassDlgEx == NULL ||
+        wrCtl3dGetVer == NULL || wrCtl3dEnabled == NULL || wrCtl3dCtlColor == NULL ||
+        wrCtl3dCtlColorEx == NULL || wrCtl3dColorChange == NULL ||
+        wrCtl3dSubclassCtl == NULL || wrCtl3dDlgFramePaint == NULL ||
+        wrCtl3dAutoSubclass == NULL || wrCtl3dRegister == NULL ||
+        wrCtl3dUnregister == NULL || wrCtl3dWinIniChange == NULL ) {
         WRCtl3DDLLFini();
         return( FALSE );
     }
@@ -154,17 +151,17 @@ int WR_EXPORT WRCtl3DInit( HINSTANCE inst )
     DWORD       ver;
     BYTE        vm;
 
-    _wtouch(inst);
+    _wtouch( inst );
 
     ver = GetVersion();
-    vm = (BYTE)( ver & 0x000000FF );
+    vm = (BYTE)(ver & 0x000000FF);
     if( vm >= 0x04 ) {
         return( TRUE );
     }
 
     WRCtl3DDLLInit();
 
-#if defined(WR_USE_3D)
+#if defined( WR_USE_3D )
     if( !Ctl3dRegister( inst ) ) {
         return( FALSE );
     }
@@ -179,8 +176,8 @@ int WR_EXPORT WRCtl3DInit( HINSTANCE inst )
 
 void WR_EXPORT WRCtl3DFini( HINSTANCE inst )
 {
-    _wtouch(inst);
-#if defined(WR_USE_3D)
+    _wtouch( inst );
+#if defined( WR_USE_3D )
     Ctl3dUnregister( inst );
 #endif
     WRCtl3DDLLFini();
@@ -188,7 +185,7 @@ void WR_EXPORT WRCtl3DFini( HINSTANCE inst )
 
 BOOL WR_EXPORT WRCtl3dSubclassDlg( HWND hwnd, WORD w )
 {
-    if( wrCtl3dSubclassDlg ) {
+    if( wrCtl3dSubclassDlg != NULL ) {
         return( wrCtl3dSubclassDlg( hwnd, w ) );
     }
     return( FALSE );
@@ -196,7 +193,7 @@ BOOL WR_EXPORT WRCtl3dSubclassDlg( HWND hwnd, WORD w )
 
 BOOL WR_EXPORT WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 {
-    if( wrCtl3dSubclassDlgEx ) {
+    if( wrCtl3dSubclassDlgEx != NULL ) {
         return( wrCtl3dSubclassDlgEx( hwnd, dw ) );
     }
     return( FALSE );
@@ -204,15 +201,15 @@ BOOL WR_EXPORT WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 
 WORD WR_EXPORT WRCtl3dGetVer( void )
 {
-    if( wrCtl3dGetVer ) {
+    if( wrCtl3dGetVer != NULL ) {
         return( wrCtl3dGetVer() );
     }
-    return( NULL );
+    return( 0 );
 }
 
 BOOL WR_EXPORT WRCtl3dEnabled( void )
 {
-    if( wrCtl3dEnabled ) {
+    if( wrCtl3dEnabled != NULL ) {
         return( wrCtl3dEnabled() );
     }
     return( FALSE );
@@ -220,15 +217,15 @@ BOOL WR_EXPORT WRCtl3dEnabled( void )
 
 HBRUSH WR_EXPORT WRCtl3dCtlColor( HDC dc, LONG l )
 {
-    if( wrCtl3dCtlColor ) {
+    if( wrCtl3dCtlColor != NULL ) {
         return( wrCtl3dCtlColor( dc, l ) );
     }
     return( (HBRUSH)NULL );
 }
 
-HBRUSH WR_EXPORT WRCtl3dCtlColorEx(UINT wm, WPARAM wParam, LPARAM lParam)
+HBRUSH WR_EXPORT WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
 {
-    if( wrCtl3dCtlColorEx ) {
+    if( wrCtl3dCtlColorEx != NULL ) {
         return( wrCtl3dCtlColorEx( wm, wParam, lParam ) );
     }
     return( (HBRUSH)NULL );
@@ -236,7 +233,7 @@ HBRUSH WR_EXPORT WRCtl3dCtlColorEx(UINT wm, WPARAM wParam, LPARAM lParam)
 
 BOOL WR_EXPORT WRCtl3dColorChange( void )
 {
-    if( wrCtl3dColorChange ) {
+    if( wrCtl3dColorChange != NULL ) {
         return( wrCtl3dColorChange() );
     }
     return( FALSE );
@@ -244,7 +241,7 @@ BOOL WR_EXPORT WRCtl3dColorChange( void )
 
 BOOL WR_EXPORT WRCtl3dSubclassCtl( HWND hwnd )
 {
-    if( wrCtl3dSubclassCtl ) {
+    if( wrCtl3dSubclassCtl != NULL ) {
         return( wrCtl3dSubclassCtl( hwnd ) );
     }
     return( FALSE );
@@ -252,15 +249,15 @@ BOOL WR_EXPORT WRCtl3dSubclassCtl( HWND hwnd )
 
 LONG WR_EXPORT WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
-    if( wrCtl3dDlgFramePaint ) {
+    if( wrCtl3dDlgFramePaint != NULL ) {
         return( wrCtl3dDlgFramePaint( hwnd, msg, wp, lp ) );
     }
-    return( NULL );
+    return( 0L );
 }
 
 BOOL WR_EXPORT WRCtl3dAutoSubclass(HANDLE hndl )
 {
-    if( wrCtl3dAutoSubclass ) {
+    if( wrCtl3dAutoSubclass != NULL ) {
         return( wrCtl3dAutoSubclass( hndl ) );
     }
     return( FALSE );
@@ -268,7 +265,7 @@ BOOL WR_EXPORT WRCtl3dAutoSubclass(HANDLE hndl )
 
 BOOL WR_EXPORT WRCtl3dRegister( HANDLE hndl )
 {
-    if( wrCtl3dRegister ) {
+    if( wrCtl3dRegister != NULL ) {
         return( wrCtl3dRegister( hndl ) );
     }
     return( FALSE );
@@ -276,7 +273,7 @@ BOOL WR_EXPORT WRCtl3dRegister( HANDLE hndl )
 
 BOOL WR_EXPORT WRCtl3dUnregister( HANDLE inst )
 {
-    if( wrCtl3dUnregister ) {
+    if( wrCtl3dUnregister != NULL ) {
         return( wrCtl3dUnregister( inst ) );
     }
     return( FALSE );
@@ -284,8 +281,7 @@ BOOL WR_EXPORT WRCtl3dUnregister( HANDLE inst )
 
 void WR_EXPORT WRCtl3dWinIniChange( void )
 {
-    if( wrCtl3dWinIniChange ) {
+    if( wrCtl3dWinIniChange != NULL ) {
         wrCtl3dWinIniChange();
     }
 }
-

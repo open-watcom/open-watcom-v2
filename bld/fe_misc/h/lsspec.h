@@ -54,7 +54,7 @@ typedef enum LocaleSpecificSig {
     #undef LS_DEF
 } LocaleSpecificSig;
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define LSF_TEXT_HEADER         "Sybase C++ Locale Data 1.0\n\x0c\x04"
 #else
 #define LSF_TEXT_HEADER         "Sybase C++ Locale Data 1.0\r\n\x1a"
@@ -64,7 +64,7 @@ typedef enum LocaleSpecificSig {
 #define LSF_MINOR               0x00
 
 
-#pragma pack(push,1);
+#include <pushpck1.h>
 
 typedef struct LocaleData {
     char        text_header[ ( sizeof( LSF_TEXT_HEADER ) + 3 ) & ~3 ];
@@ -93,7 +93,7 @@ typedef struct LocaleUsage {
     char        data[];         // <text> <0> ... <text> <0> <0>
 } LocaleUsage;
 
-#pragma pack(pop);
+#include <poppck.h>
 
 #define LOCALE_DATA_EXT         "int"
 

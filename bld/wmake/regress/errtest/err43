@@ -4,6 +4,9 @@
 
 .ERASE
 
+#override mkerr
+mkerr = false
+
 all.43 : first z43.43 last
     @$(mkerr)
 
@@ -16,4 +19,4 @@ z43.43 :
     @%null
 
 last : .symbolic
-    @%null    
+    @%null

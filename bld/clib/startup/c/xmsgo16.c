@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for 16-bit OS/2.
 *
 ****************************************************************************/
 
@@ -35,20 +34,25 @@
 #include "rtdata.h"
 #include "exitwmsg.h"
 
-_WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode ) {
-/********************************************************************/
-
+_WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
+/*********************************************************************/
+{
     unsigned    len;
     char        _WCI86FAR *end;
+    char        newline[2];
 
     end = msg;
-    for( len = 0; *end++ != '\0'; len++ );
+    for( len = 0; *end++ != '\0'; len++ )
+        ;
     VioWrtTTY( msg, len, 0 );
+    newline[0] = '\r';
+    newline[1] = '\n';
+    VioWrtTTY( &newline, 2, 0 );
     __exit( retcode );
 }
 
 _WCRTLINK void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
-/*****************************************************************/
+/***************************************************************************/
 {
     if( !__EnterWVIDEO( msg ) ) {
         __exit_with_msg( msg, retcode );

@@ -1,0 +1,38 @@
+.387
+		PUBLIC	_proc1
+		PUBLIC	_proc2
+DGROUP		GROUP	_DATA
+jmpshrt_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:jmpshrt_TEXT, DS:DGROUP, SS:DGROUP
+    DB	01FH DUP(0,0,0,0,0,0,0,0)
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+_proc1:
+    mov         ax,0bH
+    jmp         _proc_both
+_proc2:
+    mov         ax,0cH
+_proc_both:
+    push        bp
+    mov         bp,sp
+    push        es
+    push        edi
+    push        ebx
+    les         di,dword ptr 8[bp]
+    movzx       edi,di
+    movzx       ebx,word ptr 6[bp]
+    int         31H
+    jb          L$1
+    mov         ax,1
+    jmp         L$2
+L$1:
+    xor         ax,ax
+L$2:
+    pop         ebx
+    pop         edi
+    pop         es
+    leave       
+    retf        
+jmpshrt_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

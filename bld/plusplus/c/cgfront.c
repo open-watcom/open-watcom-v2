@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "plusplus.h"
+
 #include <limits.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "preproc.h"
 #include "cgfront.h"
@@ -574,7 +574,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
         emitSourcePosn( gen, posn );
     }
     CgFrontCodePtr( IC_FUNCTION_OPEN, func );
-    CgFrontCodePtr( IC_FUNCTION_ARGS, CurrScope );
+    CgFrontCodePtr( IC_FUNCTION_ARGS, GetCurrScope() );
     dtm = CompInfo.dt_method_speced;
     if( ! SymIsDtor( func ) ) {
         switch( dtm ) {
@@ -608,11 +608,11 @@ void CgFrontFuncClose(          // CLOSE A FUNCTION (AND ITS FILE)
             codeCGFILE->opt_retn = opt_sym;
             switch( ObjModelFunctionReturn( func->sym_type ) ) {
               case OMR_CLASS_REF :
-                codeCGFILE->opt_retn_ref = TRUE;
+                codeCGFILE->s.opt_retn_ref = TRUE;
                 break;
               case OMR_CLASS_VAL :
               case OMR_SCALAR :
-                codeCGFILE->opt_retn_val = TRUE;
+                codeCGFILE->s.opt_retn_val = TRUE;
                 break;
             }
         }
@@ -776,7 +776,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
         CgFrontCodePtr( IC_SCOPE_CALL_FUN, fun );
     }
     if( keep_scope ) {
-        ScopeKeep( CurrScope );
+        ScopeKeep( GetCurrScope() );
     }
 }
 
@@ -784,7 +784,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
 void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
     void )
 {
-    codeCGFILE->ctor_test = TRUE;
+    codeCGFILE->s.ctor_test = TRUE;
 }
 
 
@@ -872,13 +872,6 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
     emitDataCGFILE = &dataCGFILE;
     flags.init_data_beg = FALSE;
     flags.init_data_end = FALSE;
-}
-
-
-void CgFrontResetDefaultCodeSeg(// RESET DEFAULT CODE SEG TO DEFAULT NAME
-    void )
-{
-    SegmentCode( TextSegName, NULL );
 }
 
 

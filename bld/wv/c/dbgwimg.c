@@ -101,6 +101,12 @@ static image_entry      *ImgGetImage( int row )
     return( NULL );
 }
 
+static void     ImgInit( a_window *wnd )
+{
+    ImgSort();
+    CalcIndents( wnd );
+    WndZapped( wnd );
+}
 
 static  WNDMENU ImgMenuItem;
 static void     ImgMenuItem( a_window *wnd, unsigned id, int row, int piece )
@@ -233,15 +239,6 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     }
     return( FALSE );
 }
-
-
-static void     ImgInit( a_window *wnd )
-{
-    ImgSort();
-    CalcIndents( wnd );
-    WndZapped( wnd );
-}
-
 
 static WNDREFRESH ImgRefresh;
 static void     ImgRefresh( a_window *wnd )

@@ -1,0 +1,74 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [Physical Memory Mapping]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">9.0 - DOS/32 Advanced -
+Physical Memory Mapping<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender
+supports Physical Memory Mapping through its built-in DPMI functions 0800h
+and 0801h. However the programmers should take a note when using these functions
+as they are implemented differently than those available in DOS/4G(W) Extenders.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">As defined by DPMI specification,
+when mapping physical memory region into linear memory using function 0800h,
+the DPMI host should recognize calls to this functions which map already
+mapped physical memory regions and perform no action, instead reporting
+the linear address of the linear memory which maps physical memory. However,
+DOS/4G(W) DPMI server does not seem to do this and will map the same physical
+memory regions twice (or as many times as this function is called) into
+different linear memory at different addresses.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">An example would be a
+program which maps Linear Framebuffer of a Video card located at 0xE8000000
+two times. DOS/4G(W) DOS Extenders will report one linear address the first
+time DPMI function 0800h is called, and another, completely different linear
+address the second time. This will result in that the program will use two
+different linear addresses when accessing one and the same physical address
+of memory.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced built-in
+DPMI will act differently, and will always check whether the physical memory
+region being mapped by the application has already been mapped. If that
+is the case, DOS/32 Advanced will report the linear address of the previously
+mapped memory block. Please note that this behavior of DOS/32 Advanced ADPMI
+does not impact the compatibility with DOS/4G(W) Extenders and is completely
+transparent to the application which uses Physical Memory Mapping. On the
+other hand this will also save you the valuable linear memory and Page Tables.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note that Physical
+Memory Mapping will require allocation of additional Page Tables when running
+under VCPI. If you are not planning to use DPMI functions 0800h and 0801h
+in your programs, and you want to free up some of DOS memory, you may lower
+the number of the Page Tables reserved by the DOS Extender for Physical
+Memory Mapping, VCPI PhysTables, by using the <a href="../util/3.html">SUNSYS
+Setup Utility</a> program.
+</font></p>
+
+<p><center>&nbsp;</center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

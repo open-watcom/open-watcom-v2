@@ -61,8 +61,11 @@ char *ImgSymName( image_entry *img, bool always )
     }
 }
 
-static int ImageCompare( image_entry **pa, image_entry **pb )
+static int ImageCompare( void *_pa, void *_pb )
 {
+    image_entry **pa = _pa;
+    image_entry **pb = _pb;
+
     if( *pa == ImagePrimary() ) return( -1 );
     if( *pb == ImagePrimary() ) return( 1 );
     return( DIPImagePriority( (*pa)->dip_handle ) - DIPImagePriority( (*pb)->dip_handle ) );

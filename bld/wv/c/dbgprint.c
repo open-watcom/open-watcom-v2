@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger 'print' command.
 *
 ****************************************************************************/
 
@@ -54,26 +53,26 @@
 #define MAX_WIDTH       40
 #define NAME_WIDTH      25
 
-extern void             ChkExpr(void);
-extern void             NormalExpr(void);
-extern void             ExprValue(stack_entry *);
-extern void             PopEntry(void);
-extern void             DupStack(void);
-extern void             DoGivenField(sym_handle *);
-extern void             ReqEOC(void);
-extern void             Scan(void);
-extern unsigned int     ScanCmd(char *);
-extern bool             ScanQuote(char **,unsigned int *);
-extern bool             ScanEOC(void);
-extern char             *LineAddr(address *,char *);
-extern char             *StrAddr(address *,char * ,unsigned);
-extern void             FindRadixSpec(unsigned char ,char **,unsigned int *);
-extern void             WriteToPgmScreen(void *,unsigned int );
-extern void             GraphicDisplay(void);
-extern void             ConvertTo(stack_entry *,type_kind,type_modifier,unsigned );
-extern void             PushNum(long );
-extern void             DoPlus(void);
-extern void             DoPoints(type_kind );
+extern void             ChkExpr( void );
+extern void             NormalExpr( void );
+extern void             ExprValue( stack_entry * );
+extern void             PopEntry( void );
+extern void             DupStack( void );
+extern void             DoGivenField( sym_handle * );
+extern void             ReqEOC( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
+extern bool             ScanQuote( char **, unsigned int * );
+extern bool             ScanEOC( void );
+extern char             *LineAddr( address *, char * );
+extern char             *StrAddr( address *, char *, unsigned );
+extern void             FindRadixSpec( unsigned char, char **, unsigned int * );
+extern void             WriteToPgmScreen( void *, unsigned int );
+extern void             GraphicDisplay( void );
+extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
+extern void             PushNum( long );
+extern void             DoPlus( void );
+extern void             DoPoints( type_kind );
 extern void             DefAddr( memory_expr, address * );
 extern void             ChkBreak( void );
 extern void             PushType( type_handle * );
@@ -86,9 +85,9 @@ extern void             AddrFix( address * );
 extern void             StartSubscript( void );
 extern void             AddSubscript( void );
 extern void             EndSubscript( void );
-extern void             DlgNewWithSym(char*,char*,int);
-extern char             *ReScan(char*);
-extern unsigned         ProgPeek(address ,void *,unsigned int );
+extern void             DlgNewWithSym( char *, char *, int);
+extern char             *ReScan( char * );
+extern unsigned         ProgPeek( address, void *, unsigned int );
 extern char             *GetCmdName( int );
 extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_type_info *mti );
 
@@ -99,8 +98,8 @@ extern void             GetMADTypeDefaultAt( address a, mad_type_kind mtk, mad_t
 extern stack_entry      *ExprSP;
 extern tokens           CurrToken;
 extern unsigned char    CurrRadix;
-extern unsigned char  DefRadix;
-extern machine_state   *DbgRegs;
+extern unsigned char    DefRadix;
+extern machine_state    *DbgRegs;
 
 
 static char             *OutPtr;
@@ -111,7 +110,7 @@ static bool             First;
 
 static char PrintOps[] = { "Program\0Window\0" };
 
-extern void PrintValue();
+extern void PrintValue( void );
 
 typedef enum { NUM_SIGNED, NUM_UNSIGNED, NUM_CHECK } sign_class;
 
@@ -125,13 +124,7 @@ extern void StartPrintBuff( char *buff, unsigned len )
 }
 
 
-extern void EndPrintBuff()
-{
-    PrtChar( '\0' );
-}
-
-
-static void PrtBuff()
+static void PrtBuff( void )
 {
     if( OutPgm ) {
         WriteToPgmScreen( OutBuff, OutPtr - OutBuff );
@@ -159,6 +152,13 @@ static void PrtChar( unsigned ch )
     }
 }
 
+
+extern void EndPrintBuff( void )
+{
+    PrtChar( '\0' );
+}
+
+
 static void PrtNeed( unsigned len )
 {
     if( OutPtr + len > OutBuff + OutLen ) {
@@ -167,7 +167,7 @@ static void PrtNeed( unsigned len )
 }
 
 
-static void EndBuff()
+static void EndBuff( void )
 {
     if( OutBuff != OutPtr || *OutPtr != NULLCHAR ) {
         PrtBuff();
@@ -282,9 +282,15 @@ static void PrintRadix( unsigned radix, char base_letter, sign_class sign_type,
         } else {
             ExprSP->info.modifier = TM_UNSIGNED;
         }
-        ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
-        ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type,
-                        ptr, 1, prefix, pref_len );
+        if( 1 ) {
+            unsigned len = 1;
+            /* If we are printing hex, expand to both nibbles */            
+            if( ( ExprSP->info.modifier == TM_UNSIGNED ) && ( 16 == radix ) && !_IsOn( SW_DONT_EXPAND_HEX ) )
+                len = ExprSP->info.size * 2;
+            ConvertTo( ExprSP, TK_INTEGER, TM_UNSIGNED, sizeof( ExprSP->v.uint ) );
+            ptr = FmtNum( ExprSP->v.uint, radix, base_letter, sign_type,
+                        ptr, len, prefix, pref_len );
+        }
         break;
     case TK_ARRAY:
     case TK_FUNCTION:
@@ -437,7 +443,7 @@ static void PrintComplex( char format )
 /*
  * PrintChar -- print expression as a character
  */
-void PrintChar()
+void PrintChar( void )
 {
     PrtChar( '\'' );
     switch( ExprSP->info.kind ) {
@@ -509,27 +515,39 @@ static void DoPrintString( bool force )
 }
 
 
-void PrintString()
+void PrintString( void )
 {
     DoPrintString( FALSE );
 }
 
 
-void ForcePrintString()
+void ForcePrintString( void )
 {
     DoPrintString( TRUE );
 }
 
 
-static void PrintCharBlock()
+static void PrintCharBlock( void )
 {
     char        *ascii_start;
     unsigned_16 *unicode_start;
     unsigned    len;
-
+    int         overflow = 0;
+    
     PrtChar( '\'' );
     ascii_start = ExprSP->v.string.loc.e[0].u.p;
     len = ExprSP->info.size;
+    
+    /*
+     *  If the memory required to display the string is larger than what we have to display, then
+     *  we adjust things so we can display them with a hint that the string is longer than can be displayed
+     */
+    
+    if(len + 2 > BUFLEN){   /* or UTIL_LEN/TXT_LEN? */
+        len = BUFLEN-7; /* 'string'....<NUL> */
+        overflow = 1;
+    }
+    
     switch( ExprSP->info.modifier ) {
     case TM_NONE:
     case TM_ASCII:
@@ -557,9 +575,12 @@ static void PrintCharBlock()
         break;
     }
     PrtChar( '\'' );
+    if(overflow && len == 0){
+        PrtStr( " ...",  4 );
+    }
 }
 
-static void GetExpr()
+static void GetExpr( void )
 {
     if( !First && CurrToken == T_COMMA ) Scan();
     NormalExpr();
@@ -688,8 +709,9 @@ typedef struct {
 } print_fld;
 
 
-static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member, print_fld *d )
+static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member, void *_d )
 {
+    print_fld   *d = _d;
     char        *name;
     unsigned    len;
 
@@ -715,7 +737,7 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member, print_f
     return( WR_CONTINUE );
 }
 
-static void PrintStruct()
+static void PrintStruct( void )
 {
     print_fld   d;
 
@@ -725,7 +747,7 @@ static void PrintStruct()
     PrtChar( '}' );
 }
 
-static void PrintArray()
+static void PrintArray( void )
 {
     array_info          ai;
     char                *ptr;
@@ -844,7 +866,7 @@ static unsigned ValueToName( char *buff, unsigned len )
     return( p - buff );
 }
 
-void PrintValue()
+void PrintValue( void )
 {
     char                *pref;
     unsigned            pref_len;
@@ -916,7 +938,7 @@ void PrintValue()
 }
 
 
-static void DoDefault()
+static void DoDefault( void )
 {
     char        buff[BUFLEN+1];
 
@@ -929,8 +951,8 @@ static void DoDefault()
 
 void DoPrintList( bool output )
 {
-    char *fmt_start;
-    unsigned fmt_len;
+    char        *fmt_start;
+    unsigned    fmt_len;
 
     OutPgm = output;
     First = TRUE;
@@ -943,7 +965,7 @@ void DoPrintList( bool output )
     }
 }
 
-static void LogPrintList()
+static void LogPrintList( void )
 {
     if( _IsOn( SW_CMD_INTERACTIVE ) ) {
         DUIShowLogWindow();
@@ -951,11 +973,11 @@ static void LogPrintList()
     DoPrintList( FALSE );
 }
 
-void ChkPrintList()
+void ChkPrintList( void )
 {
-    bool first;
-    char *start;
-    unsigned len;
+    bool        first;
+    char        *start;
+    unsigned    len;
 
     first = TRUE;
     while( !ScanEOC() ) {
@@ -974,7 +996,7 @@ void ChkPrintList()
  */
 
 static char     PrintBuff[TXT_LEN];
-void ProcPrint()
+void ProcPrint( void )
 {
     char        *old;
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrncmp() - far strncmp().
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include <string.h>
 
-#ifdef  M_I86
+#ifdef  _M_I86
 
 extern int _fast_strncmp( const char _WCFAR *, const char _WCFAR *, size_t );
 
@@ -61,20 +60,23 @@ extern int _fast_strncmp( const char _WCFAR *, const char _WCFAR *, size_t );
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 _WCRTLINK int _fstrncmp( const char _WCFAR *s, const char _WCFAR *t, size_t n )
-    {
-#if defined(M_I86)
-        if( n ) {
-            return( _fast_strncmp( s, t, n ) );
-        }
-        return( 0 );
-#else
-        for(;;) {
-            if( n == 0 )     return( 0 );       /* equal */
-            if( *s != *t )   return( *s - *t ); /* less than or greater than */
-            if( *s == '\0' ) return( 0 );       /* equal */
-            ++s;
-            ++t;
-            --n;
-        }
-#endif
+{
+#if defined( _M_I86 )
+    if( n ) {
+        return( _fast_strncmp( s, t, n ) );
     }
+    return( 0 );
+#else
+    for( ;; ) {
+        if( n == 0 )
+            return( 0 );       /* equal */
+        if( *s != *t )
+            return( *s - *t ); /* less than or greater than */
+        if( *s == '\0' )
+            return( 0 );       /* equal */
+        ++s;
+        ++t;
+        --n;
+    }
+#endif
+}

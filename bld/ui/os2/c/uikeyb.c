@@ -60,8 +60,8 @@ static          EVENT                   EventsRelease[] = {
 
 static unsigned         ShftState;
 
-unsigned char global uicheckshift()
-/*******************************/
+unsigned char global uicheckshift( void )
+/***************************************/
 {
     return( ShftState );
 }
@@ -76,28 +76,28 @@ static bool os2getkey( struct _KBDKEYINFO *keyInfo )
     }
 }
 
-void intern flushkey()
-/********************/
+void intern flushkey( void )
+/**************************/
 {
     struct _KBDKEYINFO                  keyInfo;
     while( os2getkey( &keyInfo ) );
 }
 
-void intern kbdspawnstart()
-/*************************/
+void intern kbdspawnstart( void )
+/*******************************/
 {
     finikeyboard();
 }
 
-void intern kbdspawnend()
-/***********************/
+void intern kbdspawnend( void )
+/*****************************/
 {
     initkeyboard();
 }
 
 
-EVENT intern keyboardevent()
-/**************************/
+EVENT intern keyboardevent( void )
+/********************************/
 {
     register    unsigned                scan;
     register    unsigned char           key;
@@ -173,8 +173,8 @@ EVENT intern keyboardevent()
 
 KBDINFO     SaveStatus;
 
-bool intern initkeyboard()
-/************************/
+bool intern initkeyboard( void )
+/******************************/
 {
     KBDINFO         new;
 
@@ -190,7 +190,7 @@ bool intern initkeyboard()
     return( TRUE );
 }
 
-void intern finikeyboard()
+void intern finikeyboard( void )
 {
     KbdSetStatus( &SaveStatus, 0 );
 }

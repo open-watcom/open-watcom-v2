@@ -24,12 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Restore structure packing defaults.
 *
 ****************************************************************************/
 
 
+/* See comment in digpck.h */
+#ifndef __SUNPRO_C
 #ifdef _M_IX86
-#pragma pack(pop)
+#include "poppck.h"
+#endif
 #endif

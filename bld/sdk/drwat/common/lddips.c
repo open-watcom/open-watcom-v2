@@ -36,7 +36,7 @@
 #include "dip.h"
 #include "dipload.h"
 #include "ldstr.h"
-#include "rcstr.h"
+#include "rcstr.gh"
 #include "mem.h"
 #include "jdlg.h"
 
@@ -65,8 +65,8 @@ void initDipMsgs( void ) {
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, UINT wparam,
-                                  DWORD lparam )
+BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
+                                  LPARAM lparam )
 {
     WORD        cmd;
     WORD        i;
@@ -102,8 +102,8 @@ void ShowDIPStatus( HWND hwnd ) {
 
     FARPROC     fp;
 
-    fp = MakeProcInstance( ShowDipStatDlgProc, Instance );
-    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
+    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
 }
 

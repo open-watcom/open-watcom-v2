@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  FlashTek 32-bit DOS extender startup code.
 ;*
 ;*****************************************************************************
 
@@ -58,6 +57,8 @@ comment&
 &
 
 .386p
+
+include xinit.inc
 
 public  __x386_zero_base_ptr
 public  __x386_zero_base_selector
@@ -176,19 +177,16 @@ __x386_zero_base_selector       dw      ?       ;writable segment, base = 0
 __x32_zero_base_ptr             label dword
 __x386_zero_base_ptr            dd      0f0000000h
 
-__GDAptr   dd 0                 ; IGC and Intel Code Builder GDA address
 __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
 
-        public  __GDAptr
         public  __D16Infoseg
 
         extrn   "C",_LpPgmName          : dword
         extrn   "C",_LpCmdLine          : dword
-        extrn   ___FPE_handler          : dword
-        extrn   __FPE_handler           : dword
-        extrn   "C",_Envseg             : word
-        extrn   "C",_Envptr             : dword
-        extrn   __no87                  : word
+        extrn   "C",__FPE_handler       : dword
+        extrn   "C",_Envptr             : fword
+        extrn   __no87                  : byte
+        extrn   "C",__uselfn            : byte
         extrn   "C",_Extender           : byte
         extrn   "C",_child              : dword
         extrn   "C",_STACKTOP           : dword
@@ -203,9 +201,10 @@ __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
 __x386_break    dd      ?
 __saved_DS      dw      0 ; save area for DS for interrupt routines
 
-insuf_msg       db      10,13,'Insufficient memory for stack setup',24h
-null_msg        db      10,13,'Null code pointer was called',0
+insuf_msg       db      'Insufficient memory for stack setup',0Dh,0Ah,'$'
+null_msg        db      'Null code pointer was called',0
 ConsoleName     db      "con",0
+NewLine         db      0Dh,0Ah
 
 _DATA    ends
 
@@ -225,9 +224,9 @@ STACK   ends
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by WATCOM International Inc. 1989-1995."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
@@ -255,7 +254,9 @@ __x386_init proc near
         mov     _osminor,ah
 
         mov     __saved_DS,ds           ; save DS value
-        mov     _Envseg,gs              ; save segment of environment area
+        mov     word ptr _Envptr+4,gs   ; save segment of environment area
+        sub     eax,eax                 ; offset 0
+        mov     dword ptr _Envptr,eax   ; save offset of environment area
         mov     _Extender,3             ; pretend to be PharLap V3
         mov     __X32VM,1               ; mark that this is X32VM
         push    fs
@@ -290,14 +291,14 @@ noparm: sub     al,al
         lds     esi,fword ptr _Envptr   ; load pointer to environment
         dec     edi                     ; back up pointer 1
         push    edi                     ; save pointer to pgm name
-        sub     ebp,ebp                 ; assume "no87" env. var. not present
+        sub     ebp,ebp                 ; assume "NO87" env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
-        or      eax,20202020h           ; map to lower case
-        cmp     eax,'78on'              ; check for "no87"
+        or      eax,2020h               ; map to lower case
+        cmp     eax,37386f6eh           ; check for 'no87'
         jne     short L2                ; skip if not "no87"
         cmp     byte ptr 4[esi],'='     ; make sure next char is "="
         jne     short L2                ; no
-        inc     ebp                     ; - indicate "no87" was present
+        inc     ebp                     ; - indicate "NO87" was present
 L2:     cmp     byte ptr [esi],0        ; end of string ?
         lodsb
         jne     L2                      ; until end of string
@@ -317,7 +318,9 @@ L3:     cmp     byte ptr [esi],0        ; end of pgm name ?
         pop     ds
         pop     esi                     ; restore address of pgm name
 
-        mov     __no87,bp               ; set state of "no87" enironment var
+        mov     eax,ebp
+        mov     __no87,al               ; set state of "NO87" enironment var
+        and     __uselfn,ah             ; set "LFN" support status
 
         mov     ecx,offset DGROUP:_end  ; end of _BSS segment (start of STACK)
         mov     _dynend,ecx             ; top of dynamic memory allocation
@@ -399,6 +402,10 @@ L4:     lodsb                           ; get char
         dec     ecx                     ; . . .
         mov     ah,040h                 ; write out the string
         int     021h                    ; . . .
+        mov     edx,offset DGROUP:NewLine ; write out the new line
+        mov     ecx,sizeof NewLine      ; . . .
+        mov     ah,040h                 ; . . .
+        int     021h                    ; . . .
 ifndef __STACK__
         pop     eax                     ; restore return code
 endif
@@ -409,7 +416,7 @@ ifndef __STACK__
         push    eax                     ; save return code
 endif
         mov     eax,00H                 ; run finalizers
-        mov     edx,0FH                 ; less than exit
+        mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
         pop     eax                     ; restore return code
         mov     ah,4cH                  ; DOS call to exit with return code
@@ -526,4 +533,3 @@ __Int21_ endp
 _TEXT   ends
 
         end     _cstart_
-

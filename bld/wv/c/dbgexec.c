@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run program until the next debugger event.
 *
 ****************************************************************************/
 
@@ -50,23 +49,23 @@
 
 
 extern bool             AdvMachState( int );
-extern bool             DispBPMsg(bool );
-extern bool             InsertBPs(bool );
-extern void             RemoveBPs(void);
-extern bool             InsertWPs(void);
-extern bool             UpdateWPs(void);
-extern unsigned         CheckBPs(unsigned,unsigned);
-extern void             Ring(void);
-extern unsigned         MakeProgRun(bool);
-extern void             DoSetWatchPnt(unsigned int, brk *);
-extern bool             TBreak();
-extern void             PopInpStack(void);
-extern bool             PurgeInpStack(void);
-extern void             ReadDbgRegs();
-extern void             WriteDbgRegs();
-extern void             SectTblRead(machine_state *);
-extern address          GetRegIP(void);
-extern bool             AddLibInfo(bool,bool*);
+extern bool             DispBPMsg( bool );
+extern bool             InsertBPs( bool );
+extern void             RemoveBPs( void );
+extern bool             InsertWPs( void );
+extern bool             UpdateWPs( void );
+extern unsigned         CheckBPs( unsigned, unsigned );
+extern void             Ring( void );
+extern unsigned         MakeProgRun( bool );
+extern void             DoSetWatchPnt( unsigned int, brkp * );
+extern bool             TBreak( void );
+extern void             PopInpStack( void );
+extern bool             PurgeInpStack( void );
+extern void             ReadDbgRegs( void );
+extern void             WriteDbgRegs( void );
+extern void             SectTblRead( machine_state * );
+extern address          GetRegIP( void );
+extern bool             AddLibInfo( bool, bool * );
 extern char             *StrCopy( char *, char * );
 extern char             *Format( char *buff, char *fmt, ... );
 extern unsigned         RemoteGetMsgText( char *, unsigned );
@@ -76,25 +75,25 @@ extern bool             SourceStep( void );
 extern bool             SetUpTrace( bool );
 extern void             CheckForNewThreads( bool );
 extern void             CheckSegAlias( void );
-extern void             SetMemBefore(bool);
-extern void             SetMemAfter(bool);
+extern void             SetMemBefore( bool );
+extern void             SetMemAfter( bool );
 extern void             SetCodeDot( address );
-extern char             DlgFatal();
-extern void             InvalidateTblCache(void);
-extern bool             CheckStackPos();
+extern char             DlgFatal( void );
+extern void             InvalidateTblCache( void );
+extern bool             CheckStackPos( void );
 extern void             RecordEvent( char *p );
 extern void             RecordGo( char *p );
-extern void             CheckEventRecorded();
+extern void             CheckEventRecorded( void );
 extern char             *GetCmdName( int );
-extern void             RecordAsynchEvent();
-extern dtid_t           RemoteSetThread(dtid_t);
-extern char             *GetLastImageName();
-extern bool             DLLMatch();
+extern void             RecordAsynchEvent( void );
+extern dtid_t           RemoteSetThread( dtid_t );
+extern char             *GetLastImageName( void );
+extern bool             DLLMatch( void );
 extern void             DUIPlayDead( bool );
 extern bool             TraceSimulate( void );
 extern bool             TraceStart( bool );
 extern mad_trace_how    TraceHow( bool force_into );
-extern unsigned         TraceCheck(unsigned);
+extern unsigned         TraceCheck( unsigned );
 extern void             TraceStop( bool );
 extern void             ReMapPoints( image_entry *);
 extern void             DbgUpdate( update_list );
@@ -108,21 +107,38 @@ extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
 extern void             TypeInpStack(input_type);
 extern char             *CnvNearestAddr( address, char *, unsigned );
-extern void             PopInpStack(void);
-extern void             ProcACmd(void);
+extern void             PopInpStack( void );
+extern void             ProcACmd( void );
+extern bool             SymUserModLoad( char *fname, address *loadaddr );
+extern bool             SymUserModUnload( char *fname );
+extern bool             HaveRemoteAsync( void );
+extern unsigned         MakeAsyncRun( bool single );
+extern unsigned         DlgAsyncRun( void );
+
 
 extern input_stack      *InpStack;
 extern machine_state    *DbgRegs;
 extern tokens           CurrToken;
 extern screen_state     ScrnState;
-extern brk              DbgTmpBrk;
+extern brkp             DbgTmpBrk;
 extern char             *TxtBuff;
 extern thread_state     *HeadThd;
 extern thread_state     *ExecThd;
 static char             *MsgText;
-extern brk              UserTmpBrk;
+extern brkp             UserTmpBrk;
 
 static int              InCall = 0;
+
+static void NoCRLF( char *str )
+/*****************************/
+{
+    char *p;
+
+    for( p = str; *p != '\0'; ++p ) {
+        if( *p == '\r' ) *p = ' ';
+        if( *p == '\n' ) *p = ' ';
+    }
+}
 
 void SetProgState( unsigned run_conditions )
 {
@@ -137,7 +153,7 @@ void SetProgState( unsigned run_conditions )
     if( run_conditions & COND_ALIASING ) CheckSegAlias();
 }
 
-static void SetThreadStates()
+static void SetThreadStates( void )
 {
     thread_state        *thd;
 
@@ -179,6 +195,7 @@ bool SetMsgText( char *message, unsigned *conditions )
     char        *equal,*comma1,*comma2;
     address     addr,buff_addr;
     long        buff_len,sym_len;
+    long        num_returns;
     cmd_list    *cmds;
 
     if( memcmp( message, DEBUGGER_THREADID_COMMAND,
@@ -227,14 +244,14 @@ bool SetMsgText( char *message, unsigned *conditions )
         message += sizeof( DEBUGGER_LOOKUP_COMMAND )-1;
         comma1 = strchr( message, ',' );
         if( comma1 == NULL ) return( TRUE );
-        *comma1 = '\0';
-        comma2 = strchr( comma1+1, ',' );
+        *comma1++ = '\0';
+        comma2 = strchr( comma1, ',' );
         if( comma2 == NULL ) return( TRUE );
-        *comma2 = '\0';
-        NoCRLF( comma2+1 );
+        *comma2++ = '\0';
+        NoCRLF( comma2 );
         if( !DlgScanDataAddr( message, &addr ) ) return( TRUE );
-        if( !DlgScanDataAddr( comma1+1, &buff_addr ) ) return( TRUE );
-        if( !DlgScanLong( comma2+1, &buff_len ) ) return( TRUE );
+        if( !DlgScanDataAddr( comma1, &buff_addr ) ) return( TRUE );
+        if( !DlgScanLong( comma2, &buff_len ) ) return( TRUE );
         CnvNearestAddr( addr, TxtBuff, TXT_LEN );
         sym_len = strlen( TxtBuff )+1;
         if( sym_len > buff_len ) {
@@ -242,6 +259,32 @@ bool SetMsgText( char *message, unsigned *conditions )
             sym_len = buff_len;
         }
         ProgPoke( buff_addr, TxtBuff, sym_len );
+        return( FALSE );
+    } else if( memcmp( message, DEBUGGER_LOADMODULE_COMMAND,
+                sizeof( DEBUGGER_LOADMODULE_COMMAND )-1 ) == 0 ) {
+        message += sizeof( DEBUGGER_LOADMODULE_COMMAND )-1;
+        comma1 = strchr( message, ',' );
+        if( comma1 == NULL )
+            return( TRUE );
+        *comma1++ = '\0';
+        NoCRLF( comma1 );
+        if( !DlgScanDataAddr( message, &addr ) )
+            return( TRUE );
+        SymUserModLoad( comma1, &addr );
+        return( FALSE );
+    } else if( memcmp( message, DEBUGGER_UNLOADMODULE_COMMAND,
+                sizeof( DEBUGGER_UNLOADMODULE_COMMAND )-1 ) == 0 ) {
+        message += sizeof( DEBUGGER_UNLOADMODULE_COMMAND )-1;
+        NoCRLF( message );
+        SymUserModUnload( message );
+        return( FALSE );
+    } else if( memcmp( message, DEBUGGER_BREAKRETURN_COMMAND,
+                sizeof( DEBUGGER_BREAKRETURN_COMMAND )-1 ) == 0 ) {
+        message += sizeof( DEBUGGER_BREAKRETURN_COMMAND )-1;
+        NoCRLF( message );
+        if( !DlgScanLong( message, &num_returns ) )
+            return( TRUE );
+        // TODO: do something with num_returns value
         return( FALSE );
     } else {
         AddMessageText( message );
@@ -282,6 +325,21 @@ typedef enum {
     ES_FORCE_BREAK
 } execute_state;
 
+static unsigned DoRun( bool step )
+{
+    unsigned     conditions;
+    
+    if( HaveRemoteAsync() ) {
+        conditions = MakeAsyncRun( step );
+        if( conditions & COND_RUNNING ) {
+            conditions = DlgAsyncRun();
+        }
+    } else {
+        conditions = MakeProgRun( step );
+    }
+    return( conditions );
+}
+
 unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
 {
     bool                have_brk_at_ip;
@@ -300,7 +358,9 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     first_time = TRUE;
     es = ES_NORMAL;
     run_conditions = 0;
-    DUIPlayDead( TRUE );
+    if( !HaveRemoteAsync() ) {
+        DUIPlayDead( TRUE );
+    }
     for( ;; ) {
         switch( es ) {
         case ES_FORCE_BREAK:
@@ -309,22 +369,22 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
                 how = TraceHow( FALSE );
             } else {
                 _SwitchOn( SW_EXECUTE_LONG );
-                how = MTH_BREAK;
+                how = MTRH_BREAK;
             }
             break;
         case ES_STEP_ONE:
             how = TraceHow( TRUE );
             break;
         }
-        if( how == MTH_STOP ) break;
+        if( how == MTRH_STOP ) break;
         switch( how ) {
-        case MTH_BREAK:
+        case MTRH_BREAK:
             DbgUpdate( UP_CSIP_JUMPED );
             _SwitchOn( SW_TOUCH_SCREEN_BUFF );
             /* fall through */
-        case MTH_SIMULATE:
-        case MTH_STEP:
-        case MTH_STEPBREAK:
+        case MTRH_SIMULATE:
+        case MTRH_STEP:
+        case MTRH_STEPBREAK:
             if( _IsOff( SW_TOUCH_SCREEN_BUFF ) ) break;
             /* fall through */
         default:
@@ -341,7 +401,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         }
         have_brk_at_ip = InsertBPs( (es == ES_FORCE_BREAK) );
         act_wps = UpdateWPs();
-        if( how == MTH_BREAK ) {
+        if( how == MTRH_BREAK ) {
             if( have_brk_at_ip ) {
                 es = ES_STEP_ONE;
                 RemoveBPs();
@@ -354,19 +414,19 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
 
         SetMemBefore( tracing );
         switch( how ) {
-        case MTH_SIMULATE:
+        case MTRH_SIMULATE:
             if( TraceSimulate() ) {
                 conditions = COND_TRACE;
                 break;
             }
             /* fall through */
-        case MTH_STEP:
+        case MTRH_STEP:
             /* only updates stack/execution */
-            conditions = MakeProgRun( TRUE );
+            conditions = DoRun( TRUE );
             break;
         default:
             /* only updates stack/execution */
-            conditions = MakeProgRun( FALSE  );
+            conditions = DoRun( FALSE  );
             break;
         }
         if( _IsOn( SW_EXECUTE_LONG ) ) {
@@ -389,7 +449,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
         if( _IsOn( SW_BREAK_ON_DEBUG_MESSAGE ) && ( conditions & COND_MESSAGE ) ) {
             conditions |= COND_STOP;
         }
-        if( how == MTH_STEPBREAK && (conditions & COND_BREAK) && DbgTmpBrk.status.b.hit ) {
+        if( how == MTRH_STEPBREAK && (conditions & COND_BREAK) && DbgTmpBrk.status.b.hit ) {
             conditions &= ~COND_BREAK;
             conditions |= COND_TRACE;
         }
@@ -446,19 +506,8 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
 }
 
 
-static void NoCRLF( char *str )
-/*****************************/
-{
-    char *p;
-
-    for( p = str; *p != '\0'; ++p ) {
-        if( *p == '\r' ) *p = ' ';
-        if( *p == '\n' ) *p = ' ';
-    }
-}
-
-static void DisplayMsgText()
-/**************************/
+static void DisplayMsgText( void )
+/********************************/
 {
     if( MsgText != NULL ) {
         DUIDlgTxt( MsgText );

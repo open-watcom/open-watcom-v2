@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX dirname utility
+*               Splits directory component out of a pathname
 *
 ****************************************************************************/
 
@@ -41,7 +41,7 @@
 
 char *OptEnvVar="dirname";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: dirname [-?] [@env] pathname",
     "\tenv                : environment variable to expand",
     "\tpathname           : filename from which to split directory component",

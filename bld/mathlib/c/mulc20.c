@@ -34,9 +34,9 @@
 #include "cplx.h"
 
 
-_WMRTLINK xcomplex _IF_C32Mul( extended a, extended b, extended c, extended d ) {
-//==============================================================================
-
+_WMRTLINK xcomplex _IF_C32Mul( extended a, extended b, extended c, extended d )
+//=============================================================================
+{
 // Return the real part of the result of multiplying two extended precision
 // complex numbers.
 // ( a, b ) * ( c, d ) = ( ac-bd, bc+ad )

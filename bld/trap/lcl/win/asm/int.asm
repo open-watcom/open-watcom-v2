@@ -24,17 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Handle interrupts for trap file (assembly wrapper).
 ;*
 ;*****************************************************************************
 
 
-;****************************************************************************
-;***                                                                      ***
-;*** INT.ASM - handle interrupts for trap file                            ***
-;***                                                                      ***
-;****************************************************************************
 .386p
 
 extrn _FaultHandler:near
@@ -97,11 +91,11 @@ INTHANDLER PROC far
         push    gs
         push    ss
 
-;        mov     ds,ax
+;        mov     ds,ax                   ; make sure we can access our data
 
         ;* Stack frame to function is
         ;*
-                ;*       BP---->|  Old BP  |
+        ;*       BP---->|  Old BP  |
         ;*              |    SS    |
         ;*              |    GS    |
         ;*              |    FS    |
@@ -124,7 +118,7 @@ INTHANDLER PROC far
         ;*              |    IP    |
         ;*              |    CS    |
         ;*              |   Flags  |
-                ;**
+        ;**
         call    _FaultHandler
 
         pop     ax                      ; was SS

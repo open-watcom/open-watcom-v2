@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Base 10 logarithm routine.
 *
 ****************************************************************************/
 
@@ -34,32 +33,27 @@
 #include <math.h>
 #include "ifprag.h"
 #include "mathcode.h"
+#include "mathlib.h"
 
 #define log10_of_e    0.4342944819032518
 
-_WMRTLINK extern double _IF_dlog10( double );
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_log10 "IF@LOG10";
-  #pragma aux (if_rtn) _IF_dlog10 "IF@DLOG10";
-#endif
 
 _WMRTLINK float _IF_log10( float x )
-/*********************/
-    {
-        return( _IF_dlog10( x ) );
-    }
+/**********************************/
+{
+    return( _IF_dlog10( x ) );
+}
 
 _WMRTLINK double (log10)( double x )
-/************************/
-    {
-        return( _IF_dlog10( x ) );
-    }
+/**********************************/
+{
+    return( _IF_dlog10( x ) );
+}
 
 _WMRTLINK double _IF_dlog10( double x )
-/**************************/
+/*************************************/
 {
     if( x <= 0.0 ) {
-//        x = _matherr( x == 0.0 ? SING : DOMAIN, "log10", &x, &x, -HUGE_VAL );
         x = __log87_err( x, FUNC_LOG10 );
     } else {
         x =  log(x) * log10_of_e;

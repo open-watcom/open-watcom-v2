@@ -1,0 +1,31 @@
+#include <windows.h>
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION 1,0,$h,$l
+    PRODUCTVERSION $j,$n,$h,$l
+    FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+    FILEFLAGS 0x0L
+    FILEOS VOS_NT_WINDOWS32
+    FILETYPE VFT_APP
+    FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"        /* US English, Unicode */
+        BEGIN
+            VALUE "CompanyName", "openwatcom.org\0"
+            VALUE "FileDescription", "Open Watcom Debugger\0"
+            VALUE "FileVersion", "$j.$n$1\0"
+            VALUE "InternalName", "$0\0"
+            VALUE "LegalCopyright", "Portions Copyright \251 2002 Sybase, Inc.\0"
+            VALUE "OriginalFilename", "$0.exe\0"
+            VALUE "ProductName", "Open Watcom\0"
+            VALUE "ProductVersion", "$j.$n$1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200        /* US English, Unicode */
+    END
+END
+

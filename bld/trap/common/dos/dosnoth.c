@@ -24,13 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS real mode do-nothing (idle) routine.
 *
 ****************************************************************************/
 
 
-void NothingToDo()
+#include <string.h>
+#include <i86.h>
+
+void NothingToDo( void )
 {
-    //NYI: call DOS Idle interrupt?
+    union REGS  regs;
+
+    // Release Current Virtual Machine's Time Slice
+    regs.w.ax = 0x1680;
+    int86( 0x2f, &regs, &regs );
 }

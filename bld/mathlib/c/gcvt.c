@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of gcvt().
 *
 ****************************************************************************/
 
@@ -50,13 +49,13 @@ _WMRTLINK char *gcvt( double value, int digits, char *buf )
     int         i;
     CVT_INFO    cvt;
     long_double ld;
-    auto char   stkbuf[64];     // See comment in LDCVT.c regarding stkbuf size
+    auto char   stkbuf[64];     // See comment in ldcvt.c regarding stkbuf size
 #ifdef _LONG_DOUBLE_
     double      double_value;
 
     /* convert this double into a long double */
     double_value = value;
-    __iFDLD( (double _WCNEAR *)&double_value, (long_double _WCNEAR *)&ld );
+    __iFDLD( &double_value, &ld );
 #else
     ld.value = value;
 #endif

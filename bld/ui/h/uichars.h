@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-alphanumeric IBM PC character definitions.
 *
 ****************************************************************************/
 
 
 #ifndef _UICHARS_H_
 #define _UICHARS_H_
+
 #define PC_smiley           1
 #define PC_bsmiley          2
 #define PC_hart             3
@@ -198,53 +198,4 @@
 #define PC_smallsolid       254
 #define PC_notdef           255
 
-#if defined(_NEC_PC)
-
-#undef PC_arrowup
-#undef PC_arrowdown
-#undef PC_arrowright
-#undef PC_arrowleft
-#undef PC_triangup
-#undef PC_triangdown
-#undef PC_triangright
-#undef PC_triangleft
-#undef PC_sparseblock
-#undef PC_solid
-
-#define PC_arrowup          30
-#define PC_arrowdown        31
-#define PC_arrowright       28
-#define PC_arrowleft        29
-#define PC_triangup         30
-#define PC_triangdown       31
-#define PC_triangright      62
-#define PC_triangleft       60
-#define PC_sparseblock      32
-#define PC_solid            32
-
-#elif defined(_FMR_PC)
-
-#undef PC_arrowup
-#undef PC_arrowdown
-#undef PC_arrowright
-#undef PC_arrowleft
-#undef PC_triangup
-#undef PC_triangdown
-#undef PC_triangright
-#undef PC_triangleft
-#undef PC_sparseblock
-#undef PC_solid
-
-#define PC_arrowup          30
-#define PC_arrowdown        31
-#define PC_arrowright       28
-#define PC_arrowleft        29
-#define PC_triangup         30
-#define PC_triangdown       31
-#define PC_triangright      62
-#define PC_triangleft       60
-#define PC_sparseblock      254
-#define PC_solid            135
-
-#endif
 #endif

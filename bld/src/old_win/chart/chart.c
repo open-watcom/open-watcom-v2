@@ -60,14 +60,14 @@ void WINEXP ChartCloseUse()
     }
 }
 
-int WINEXP LibMain( HANDLE inst, WORD data, WORD heap_size, LPSTR cmd_line )
+int WINEXP LibMain( HINSTANCE inst, WORD data, WORD heap_size, LPSTR cmd_line )
 /**************************************************************************/
 /* Entry routine to the CHART DLL. Called by windows when the first application
    to use the DLL is started */
 
 {
     LOGPALETTE far      *pal;
-    HANDLE              pal_hld;
+    HGLOBAL             pal_hld;
 
     inst = inst;
     data = data;

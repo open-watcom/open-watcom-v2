@@ -1,0 +1,26 @@
+LIBRARY NCRYPT.DLL
+EXPORTS
+NCryptCreatePersistedKey@24
+NCryptDecrypt@32
+NCryptDeleteKey@8
+NCryptDeriveKey@28
+NCryptEncrypt@32
+NCryptEnumAlgorithms@20
+NCryptEnumKeys@20
+NCryptEnumStorageProviders@12
+NCryptExportKey@32
+NCryptFinalizeKey@8
+NCryptFreeBuffer@4
+NCryptFreeObject@4
+NCryptGetProperty@24
+NCryptImportKey@32
+NCryptIsAlgSupported@12
+NCryptIsKeyHandle@4
+NCryptNotifyChangeKey@12
+NCryptOpenKey@20
+NCryptOpenStorageProvider@12
+NCryptSecretAgreement@16
+NCryptSetProperty@20
+NCryptSignHash@32
+NCryptTranslateHandle@24
+NCryptVerifySignature@28

@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.11 - DPMI function 000Ch
+- Set Descriptor</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Copies the contents of
+an 8-byte buffer into the descriptor for the specified selector.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 000Ch<br>
+<b>BX</b> = selector<br>
+<b>ES:EDI</b>= selector:offset of 8-byte buffer containing descriptor</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8021h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - invalid value (access rights/type
+  byte invalid)<br>
+  <b>8022h</b> - invalid selector<br>
+  <b>8025h</b> - invalid linear address (descriptor references a linear address
+  range outside that allowed for DPMI clients)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The descriptor's access
+  rights/type byte (byte 5) follows the same format and restrictions as the
+  access rights/type parameter (in CL) for the Set Descriptor Access Rights
+  DPMI function 0009h, and the descriptor's extended access rights/type byte
+  (byte 6) follows the same format and restrictions as the extended access
+  rights/type parameter (in CH) for the same function, except the low-order
+  4 bits (marked &quot;reserved&quot;) are used to set the upper 4 bits of
+  the descriptor's limit.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) DOS/32 Advanced DPMI
+  and DPMI 1.0 hosts will reload any segment registers which contain the
+  selector specified in register BX. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

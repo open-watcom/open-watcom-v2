@@ -5,25 +5,26 @@
  */
 #ifndef _SETJMPEX_H_INCLUDED
 #define _SETJMPEX_H_INCLUDED
+
 :include readonly.sp
 
-:include cpluspro.sp
-
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include owrtlink.sp
 
 #if !defined(_SETJMP_H_INCLUDED_)
  #include <setjmp.h>
 #endif
 
 #if defined(__AXP__)
- _WCRTLINK extern int _setjmpex(jmp_buf __env);
 
- #undef setjmp
- #define setjmp(__env)  _setjmpex(__env)
-#endif
+:include cpluspro.sp
+
+_WCRTLINK extern int _setjmpex(jmp_buf __env);
+
+#undef setjmp
+#define setjmp(__env)  _setjmpex(__env)
 
 :include cplusepi.sp
+
+#endif
 
 #endif

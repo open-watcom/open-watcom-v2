@@ -38,6 +38,7 @@
 #include "osver.h"
 #include "rtcheck.h"
 #include "seterrno.h"
+#include "lseek.h"
 
 // pad with zero bytes
 void static __padfile( int hid, long offset, long diff ) {
@@ -45,7 +46,7 @@ void static __padfile( int hid, long offset, long diff ) {
     unsigned amount;
     auto char buff[512];
 
-    rc = lseek( hid, offset, SEEK_SET );
+    rc = __lseek( hid, offset, SEEK_SET );
     if( rc != offset ) {
         // run away
         return;
@@ -74,11 +75,11 @@ _WCRTLINK int chsize( int hid, long size )
     h = __getOSHandle( hid );
 
     _AccessFileH( hid );
-    curOffset = lseek( hid, 0L, SEEK_CUR );     /* get current offset */
+    curOffset = __lseek( hid, 0L, SEEK_CUR );     /* get current offset */
 
     // if windows 95 or win32s
     if( !WIN32_IS_NT ) {
-        oldSize = lseek( hid, 0L, SEEK_END );
+        oldSize = __lseek( hid, 0L, SEEK_END );
     }
     /*
         Note that it is not an error to set the file pointer to a position
@@ -107,7 +108,7 @@ _WCRTLINK int chsize( int hid, long size )
     }
 
     if( curOffset > size ) curOffset = size;
-    curOffset = lseek( hid, curOffset, SEEK_SET );
+    curOffset = __lseek( hid, curOffset, SEEK_SET );
     _ReleaseFileH( hid );
     if( curOffset == -1 ) {
         return( __set_errno_nt() );

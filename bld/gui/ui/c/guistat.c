@@ -69,14 +69,14 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     if( ( wnd->parent != NULL ) || ( wnd->status != NULL ) || ( colour == NULL ) ) {
         return( FALSE );
     }
-    stat_info = (statusinfo *)GUIAlloc( sizeof( statusinfo ) );
+    stat_info = (statusinfo *)GUIMemAlloc( sizeof( statusinfo ) );
     if( stat_info == NULL ) {
         return( FALSE );
     }
     stat_info->text = NULL;
     stat_info->attr = GUIMakeColour( colour->fore, colour->back );
     if( !SetStatusArea( wnd, x, height, &stat_info->area ) ) {
-        GUIFree( stat_info );
+        GUIMemFree( stat_info );
         return( FALSE );
     }
     wnd->status = stat_info;
@@ -121,7 +121,7 @@ void GUIDrawStatus( gui_window *wnd )
     }
 }
 
-bool GUIDrawStatusText( gui_window *wnd, char *text )
+bool GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     bool        ret;
 
@@ -129,7 +129,7 @@ bool GUIDrawStatusText( gui_window *wnd, char *text )
         return( FALSE );
     }
     if( wnd->status->text != NULL ) {
-        GUIFree( wnd->status->text );
+        GUIMemFree( wnd->status->text );
     }
     ret = GUIStrDup( text, &wnd->status->text );
     GUIDrawStatus( wnd );
@@ -148,9 +148,9 @@ void GUIFreeStatus( gui_window *wnd )
 {
     if( GUIHasStatus( wnd ) ) {
         if( wnd->status->text != NULL ) {
-            GUIFree( wnd->status->text );
+            GUIMemFree( wnd->status->text );
         }
-        GUIFree( wnd->status );
+        GUIMemFree( wnd->status );
         wnd->status = NULL;
     }
 }

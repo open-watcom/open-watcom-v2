@@ -1,0 +1,269 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs [Setup]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+3.0 - DOS/32 Advanced - SUNSYS Setup Utility
+<br></font></b></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    SUNSYS Setup Utility program can be used for manual (re)configuration of
+protected   mode  applications  bound  to   DOS/32  Advanced  DOS  Extender as well as the
+stand-alone DOS/32 Advanced DOS Extender and STUB/32C Configurable Stub file
+executables (<i>DOS32A.EXE</i> and <i>STUB32C.EXE</i> files).
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The usage of SUNSYS Setup Utility is:
+<blockquote>
+<i>SS &lt;execname[.xxx]&gt; [config[.d32] | command] [option]</i>
+</blockquote>
+where  <i>execname[.xxx]</i> is the name of the  file that is to be configured, and
+an   optional   <i>config[.d32]</i>  is  the   file   that  contains  configuration
+information.
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    When  only  one  file  name is specified  at  the  command line (that is
+<i>execname.xxx</i>)  SUNSYS  Setup  Utility  will  enter  a  specially  designed
+windowed  mode  which will allow  manual (re)configuration of the referenced
+application <i>execname.xxx</i>.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    When  two file names, or a file name followed by a command are specified
+at  the  command  line,  the  Setup program  will  act  as  a  console based
+application  without  entering windowed mode. In  the case of two file names
+specified  at the command line  (for example <i>execname.xxx config.d32</i>), the
+Setup  will  read  configuration  from <i>config.d32</i>  file  and  apply  it to
+<i>execname.xxx</i>  application.  In the case of a  file name and a command (for
+example  <i>execname.xxx /INFO</i>),  the  Setup will  perform  an  action  on the
+referenced application without altering its configuration.
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The optional <i>config.d32</i> configuration file can be replaced with the following Commands:
+</font></p>
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td width="85" bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Command</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/I or /INFO
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Write ID32 configuration header information to the console.
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/L or /LOCK
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Lock configuration in the referenced Extender executable. (*)
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/U or /UNLOCK
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Unlock configuration in the referenced Extender executable.
+	</font></td>
+</tr>
+</table>
+</blockquote>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+The supported Options are:
+</font></p>
+
+<blockquote>
+<table width="86%">
+<tr>
+	<td width="85" bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Command</b>
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;<b>Description</b>
+	</font></td>
+</tr>
+<tr>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+	<td><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/Q or /QUIET
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Quiet mode (partially disables console output).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/S or /SILENT
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Silent mode (totally disables console output).
+	</font></td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;/H or /HELP
+	</font></td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	&nbsp;Help (/? is also accepted).
+	</font></td>
+</tr>
+
+</table>
+</blockquote>
+
+
+<p><br></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Examples:</b><br>
+The examples below will give a further explanation of how
+to use the SUNSYS Setup Utility program.<br>
+<br>
+<br>
+
+<b>Example 1:</b><br>
+<i>>SS MYPROG.EXE</i>
+<blockquote>
+<li>Enter windowed mode and allow manual reconfiguration of the
+referenced application <i>MYPROG.EXE</i>.
+</blockquote>
+
+
+<b>Example 2:</b><br>
+<i>>SS MYPROG.EXE MYPROG.D32</i>
+<blockquote>
+<li>Apply configuration <i>MYPROG.D32</i> to <i>MYPROG.EXE</i> without entering the
+windowed mode.
+</blockquote>
+
+
+<b>Example 3:</b><br>
+<i>>SS MYPROG /U /Q</i>
+<blockquote>
+<li>Unlock configuration in application <i>MYPROG</i>[.<i>EXE</i>].
+<li>Operate quietly.
+</blockquote>
+
+</font></p>
+
+
+
+<p>&nbsp;</p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    Below is included a detailed description of all the windows available in the
+windowed  mode  of the SUNSYS Setup Utility,  information  displayed in them and
+options available.
+</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    Please  read  this document carefully  before  attempting to reconfigure
+DOS/32  Advanced, and be aware of that certain options, when set to improper
+values may cause the DOS Extender to malfunction and crash your application.
+Note  that  the Setup Utility will  always check whether the changed options
+are  outside  the  recommended and critical  ranges.  Values shown in yellow
+color  will  warn you that they are  outside  the recommended range, and the
+red-flashing values will inform you of that the chosen parameter is invalid.
+Remember  that you can always use the  F6-key to quickly restore the default
+(factory) settings.
+</font></p>
+
+
+<p><br></p>
+
+
+<p><font size=-2 face="Verdana, Arial, Helvetica">(*) <b>Note:</b><br>
+The locking and unlocking features can be effectively used to protect your
+DOS/32 Advanced applications against accidental reconfiguring which, when
+performed by an unauthorized person altering the configuration to improper values,
+can cause programs to malfunction and crash.
+</font></p>
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+
+
+<p><b><font face="Verdana, Arial, Helvetica"><img src="../../img/p1.png" border="0" alt="Contents"> Contents:</font></b></p>
+<blockquote><p>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3a.html">
+3.1 - SUNSYS Setup - General Information Window</a></font><br>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3b.html">
+3.2 - SUNSYS Setup - Environment String Window</a></font><br>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3c.html">
+3.3 - SUNSYS Setup - Quick Help Window</a></font><br>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3d.html">
+3.4 - SUNSYS Setup - Main Menu Window</a></font><br>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3e.html">
+3.5 - SUNSYS Setup - DPMI Kernel Configuration Window</a></font><br>
+<font size=-1 face="Verdana, Arial, Helvetica"><a href="3f.html">
+3.6 - SUNSYS Setup - DOS Extender Configuration Window</a></font><br>
+</p></blockquote>
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Multithreaded support extended function registration.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "extfunc.h"
+#include <process.h>
 #include "thread.h"
+#include "cthread.h"
 
-extern beginnerex   __CBeginThreadEx;
-extern enderex      __CEndThreadEx;
 
 static beginnerex   *__BeginThreadEx    = __CBeginThreadEx;
 static enderex      *__EndThreadEx      = __CEndThreadEx;
@@ -43,7 +41,7 @@ static enderex      *__EndThreadEx      = __CEndThreadEx;
 _WCRTLINK unsigned long _beginthreadex(
     void *security,
     unsigned stack_size,
-    thread_fnex start_address,
+    thread_fnex *start_address,
     void *arglist,
     unsigned initflag,
     unsigned *thrdaddr )

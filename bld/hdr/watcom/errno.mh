@@ -1,24 +1,28 @@
-:segment PENPOINT
-:include penpoint/errno.mh
-:elsesegment
 /*
- *  errno.h     Error numbers
+ *  errno.h/cerrno     Error numbers
  *
 :include crwatqnx.sp
  */
 #ifndef _ERRNO_H_INCLUDED
 #define _ERRNO_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include errno.sp
 
-:segment QNX
+:segment !CNAME
+:include saferpro.sp
 
+:include errnot.sp
+
+:include saferepi.sp
+
+:endsegment
+:segment QNX
 /* --- Symbolic names of the error return conditions --- */
 
 #define EOK              0  /* No error                                 */
@@ -160,7 +164,12 @@
 #define ECTRLTERM       1010 /* Remap to the controlling terminal       */
 #define ENOLIC          1011 /* No license                              */
 #define EDSTFAULT       1012 /* Destination fault on msg pass           */
+:elsesegment LINUX
+:include incdir.sp
 
+:: Calling the header 'errno.h' is no good because there's already a macro
+:: called 'errno' which will fuck us up
+#include _ARCH_INCLUDE(err_no.h)
 :elsesegment DOS
 /*
  * Error codes
@@ -209,10 +218,10 @@
 #define ENOLCK  37      /* No locks available in system */
 #define ENOSYS  38      /* Unknown system call */
 #define ENOTEMPTY 39    /* Directory not empty */
-/* Normative Addendum error */
+/* additional Standard C error */
 #define EILSEQ  40      /* Illegal multibyte sequence */
 :endsegment
 
 :include cplusepi.sp
+
 #endif
-:endsegment

@@ -24,46 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <strstrea.h>
+#include <strstrea>
 #endif
 #include "ssfhdr.h"
 
-streampos __get_position( streamoff offset, ios::seekdir direction,
-/**********************************************************************/
-    char *base, char *ptr, char *end, char *extended_end ) {
-// For "put" buffers, "extended_end" equals "end".
-// For "get" buffers, "extended_end" may be greater than "end" if there
-// are characters in the put area, allowing the seek to go beyond the
-// end of the get area.
-// The get area must then be extended.
+// For "put" buffers, "extended_end" equals "end". For "get" buffers,
+// "extended_end" may be greater than "end" if there are characters in
+// the put area, allowing the seek to go beyond the end of the get
+// area. The get area must then be extended.
+
+streampos __get_position( streamoff offset,
+                          ios::seekdir direction,
+                          char *base,
+                          char *ptr,
+                          char *end,
+                          char *extended_end ) {
 
     streampos size;
 

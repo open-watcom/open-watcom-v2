@@ -1,0 +1,76 @@
+/*
+    Resource file for Accel example
+*/
+#include <os2.h>
+#include "t3.h"
+
+POINTER IDR_ACCEL       accel.ico
+
+MENU IDR_ACCEL {
+    SUBMENU     "~Accelerator", IDM_FILE {
+        MENUITEM "~Create...",          IDM_CREATE,     MIS_TEXT
+        MENUITEM "~Delete...",          IDM_DELETE,     MIS_TEXT, MIA_DISABLED
+        MENUITEM SEPARATOR
+        MENUITEM "E~xit",               SC_CLOSE,       MIS_SYSCOMMAND
+        MENUITEM "A~bout...\t^A",       IDM_ABOUT,      MIS_TEXT
+    }
+    MENUITEM "F1=Help", -1, MIS_BUTTONSEPARATOR
+}
+
+DLGTEMPLATE IDD_ABOUT {
+    DIALOG "", 0, 10, 60, 160, 75, WS_SAVEBITS | FS_DLGBORDER {
+        CTEXT   "OS/2 Presentation Manager"        -1, 10, 60, 140, 10
+        CTEXT   "AccelTable Sample"                -1, 10, 50, 140, 10
+// The following statement is ambiguous - IBM's RC version 5 parses it
+// differently from older versions; wrc matches RC v5
+//        ICON    IDR_ACCEL                          -1,  8, 40,   0,  0
+// Unambiguous version uses additional comma
+        ICON    IDR_ACCEL,                         -1,  8, 40,   0,  0
+        CTEXT   "Version 1.0"                      -1, 10, 30, 140, 10
+        CTEXT   "Created by A Large Corp., 1989"   -1, 10, 20, 140, 10
+        DEFPUSHBUTTON "~Ok"                DID_OK, 64,  4, 32,  14, WS_GROUP
+    }
+}
+
+DLGTEMPLATE IDD_CREATE {
+  DIALOG "Create Accelerator", 0, 10, 10, 250, 110, FS_DLGBORDER {
+    LTEXT               "Key:"                  -1, 10, 90,  20, 10
+    ENTRYFIELD          ""               IDD_ENTRY, 40, 90,  30, 10, ES_MARGIN
+
+    GROUPBOX            "Flags",                -1, 10, 20, 110, 65
+    AUTOCHECKBOX        "ALT"              IDD_ALT, 15, 65, 100, 10
+    AUTOCHECKBOX        "CONTROL"      IDD_CONTROL, 15, 55, 100, 10
+    AUTOCHECKBOX        "LONEKEY"      IDD_LONEKEY, 15, 45, 100, 10
+    AUTOCHECKBOX        "SHIFT"          IDD_SHIFT, 15, 35, 100, 10
+    AUTOCHECKBOX        "VIRTUALKEY"      IDD_VKEY, 15, 25, 100, 10
+
+    GROUPBOX            "Translation"           -1,125, 70, 110, 35
+    AUTORADIOBUTTON     "CHAR",           IDD_CHAR,130, 85, 100, 10, WS_GROUP
+    AUTORADIOBUTTON     "SCANCODE",   IDD_SCANCODE,130, 75, 100, 10
+
+    GROUPBOX            "Notification Type"     -1,125, 20, 110, 45
+    AUTORADIOBUTTON     "WM_COMMAND"       IDD_CMD,130, 45, 100, 10, WS_GROUP
+    AUTORADIOBUTTON     "WM_HELP"        IDD_FHELP,130, 35, 100, 10
+    AUTORADIOBUTTON     "WM_SYSCOMMAND" IDD_SYSCMD,130, 25, 100, 10
+
+    DEFPUSHBUTTON       "~Ok"               DID_OK, 15, 4, 32, 14
+    PUSHBUTTON          "~Cancel"       DID_CANCEL, 64, 4, 40, 14
+  }
+}
+
+DLGTEMPLATE IDD_HELP {
+    DIALOG "ACCEL.EXE Help", 0, 10, 60, 240, 75, WS_SAVEBITS | FS_DLGBORDER {
+        LTEXT "The application does the following, on:" -1, 10, 55,180, 10
+        LTEXT "WM_COMMAND"                              -1, 15, 40, 90, 10
+        LTEXT "Pops up the About... box"                -1,120, 40,110, 10
+        LTEXT "WM_HELP"                                 -1, 15, 30, 90, 10
+        LTEXT "Pops up this dialog"                     -1,120, 30,110, 10
+        LTEXT "WM_SYSCOMMAND"                           -1, 15, 20, 90, 10
+        LTEXT "Sends SC_MINIMIZE"                       -1,120, 20,110, 10
+        PUSHBUTTON "~Ok"                            DID_OK,104,  4, 32, 14
+    }
+}
+
+ACCELTABLE IDR_ACCEL {
+    "^a", IDM_ABOUT
+}

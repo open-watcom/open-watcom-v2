@@ -1,0 +1,7 @@
+# This file produced by MS2WLINK
+system os2 pmcompatible
+file obj.obj
+option map=foo.map
+# segments option is not necessary when using WLINK
+option stack=3
+option stack=1024

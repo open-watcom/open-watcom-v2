@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wreglbl.h"
 #include "wreresin.h"
@@ -40,57 +40,56 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void          WREDestroyMDIWindow      ( HWND );
+static void WREDestroyMDIWindow( HWND );
 
-void WREFreeResInfo ( WREResInfo *info )
+void WREFreeResInfo( WREResInfo *info )
 {
-    if ( info ) {
-        if ( ( info->info_win != NULL ) && IsWindow ( info->info_win ) ) {
-            DestroyWindow ( info->info_win );
+    if( info != NULL ) {
+        if( info->info_win != NULL && IsWindow( info->info_win ) ) {
+            DestroyWindow( info->info_win );
         }
-        if ( ( info->res_win != NULL ) && IsWindow ( info->res_win ) ) {
-            WREDestroyMDIWindow ( info->res_win );
+        if( info->res_win != NULL && IsWindow( info->res_win ) ) {
+            WREDestroyMDIWindow( info->res_win );
         }
-        if ( info->info ) {
-            WRFreeWRInfo ( info->info );
+        if( info->info != NULL ) {
+            WRFreeWRInfo( info->info );
         }
-        if( info->symbol_table ) {
+        if( info->symbol_table != NULL ) {
             WRFreeHashTable( info->symbol_table );
         }
-        if( info->symbol_file ) {
+        if( info->symbol_file != NULL ) {
             WREMemFree( info->symbol_file );
         }
-        WREMemFree ( info );
+        WREMemFree( info );
     }
 }
 
-WREResInfo *WREAllocResInfo ( void )
+WREResInfo *WREAllocResInfo( void )
 {
     WREResInfo  *info;
 
-    info = (WREResInfo *) WREMemAlloc ( sizeof(WREResInfo) );
+    info = (WREResInfo *)WREMemAlloc( sizeof( WREResInfo ) );
 
-    if ( info ) {
-        memset ( info, 0, sizeof(WREResInfo) );
+    if( info != NULL ) {
+        memset( info, 0, sizeof( WREResInfo ) );
     }
 
-    return ( info );
+    return( info );
 }
 
-Bool WREIsResModified ( WREResInfo *info )
+Bool WREIsResModified( WREResInfo *info )
 {
-    return ( !info || info->modified );
+    return( info == NULL || info->modified );
 }
 
-void WRESetResModified ( WREResInfo *info, Bool mod )
+void WRESetResModified( WREResInfo *info, Bool mod )
 {
-    if ( info ) {
+    if( info != NULL ) {
         info->modified = mod;
     }
 }
 
-void WREDestroyMDIWindow ( HWND win )
+void WREDestroyMDIWindow( HWND win )
 {
-    SendMessage ( WREGetMDIWindowHandle(), WM_MDIDESTROY, (WPARAM) win, 0 );
+    SendMessage( WREGetMDIWindowHandle(), WM_MDIDESTROY, (WPARAM)win, 0 );
 }
-

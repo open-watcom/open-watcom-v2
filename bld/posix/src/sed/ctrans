@@ -1,0 +1,41 @@
+# First, change over comment delimiters
+        /{/s//\/* /g
+        /}/s// *\//g
+# Then the block start and end
+        /begin/s//{/g
+        /end/s//}/g
+# Stash away assignment ops and the relationals with = in them
+        /:=/s//::/g
+        />=/s//>:/g
+        /<=/s//<:/g
+# Remaining Pascal = are C ==
+        /=/s//==/g
+# Now convert to C assignment syntax and restore relationals
+        /::/s//=/g
+        />:/s//>=/g
+        /<:/s//<=/g
+# Now convert Pascal's not-equal
+        /<>/s//!=/g
+# Eliminate unused thens
+        / then/s///g
+# Convert to C logical operators
+        / or /s// || /g
+        / and /s// && /g
+# Convert modulo operator
+        / mod /s// % /g
+# Now convert procedure syntax
+        /procedure/s/);$/)/
+        /procedure/s//void/
+# So C won't think it's a declare
+        /function/s/function \(.*\): *\(.*\);/function \2 \1/
+        /function/s/: [a-zA-Z0-9]+//
+        /function +/s///
+# First hack at changing strings
+        /'/s//"/g
+# Turn space pairs to tabs
+        /^  /s/  /      /g
+# Change standard types
+        /integer/s//int/g
+        /integer/s//bool/g
+        /cycle/s//continue/g
+

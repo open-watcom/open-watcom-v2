@@ -133,7 +133,8 @@ typedef union field_any{
 }field_any;
 
 typedef struct struct_list {
-    field_entry         *list;
+    field_any          *list;
+    field_any           **list_tail;
     uint                num;
     unsigned long       size;
     dbg_type            me;
@@ -165,7 +166,7 @@ typedef struct enum_list {
 } enum_list;
 
 typedef struct dim_entry{
-    struct dim_entry *next;
+    union dim_any *next;
     enum {
         DIM_VAR,
         DIM_CON,
@@ -187,14 +188,14 @@ typedef struct{
     dbg_type  idx;
 }dim_con;
 
-typedef union{
+typedef union dim_any {
     dim_entry entry;
     dim_var   var;
     dim_con   con;
 }dim_any;
 
 typedef struct array_list {
-    dim_entry      *list;
+    dim_any         *list;
     uint            num;
     unsigned long   size;
     dbg_type        base;

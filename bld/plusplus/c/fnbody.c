@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <stddef.h>
+
 #include "preproc.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -235,7 +234,9 @@ static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
             PTreeWarnExpr( expr, WARN_WHILE_FALSE );
             break;
           case CS_DO :
-            PTreeWarnExpr( expr, WARN_WHILE_FALSE );
+            if( ! parsed_int_const ) {
+                PTreeWarnExpr( expr, WARN_WHILE_FALSE );
+            }
             break;
           case CS_SWITCH :
             PTreeWarnExpr( expr, WARN_SWITCH_ALWAYS_CONSTANT );
@@ -270,7 +271,7 @@ static void warnBoolConst(      // WARN, WHEN SPECIFIC BOOLEAN CONSTANT
     boolean parsed_int_const )  // - user coded an int constant
 {
     if( NodeIsConstantInt( expr ) ) {
-        warnBoolConstVal( NodeIsZeroConstant( expr )
+        warnBoolConstVal( NodeIsZeroIntConstant( expr )
                         , parsed_int_const
                         , expr );
     } else if( expr->flags & PTF_PTR_NONZERO ) {
@@ -478,7 +479,8 @@ static void parseLabels( void )
         nextYYToken();
     }
     if( label != NULL ) {
-        if( CurToken == T_RIGHT_BRACE ) {
+        if( ( CurToken == T_RIGHT_BRACE )
+         || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }
     }
@@ -494,6 +496,7 @@ static void parseIfStmt( void )
     initBlkLabel( &if_block->outside );
     initBlkLabel( &if_block->u.i.else_part );
     nextYYToken();
+    openScope();
     if( EXPR_ANAL_OK == parseBracketExpr( &AnalyseBoolExpr ) ) {
         if( if_block->expr_true ) {
             CgFrontCode( IC_EXPR_TRASH );
@@ -513,7 +516,6 @@ static void parseIfStmt( void )
         jumpBlkLabel( &if_block->u.i.else_part, O_GOTO );
         currFunction->dead_code = FALSE;
     }
-    openScope();
 }
 
 
@@ -532,7 +534,6 @@ static void parseElseStmt( void )
         dumpBlkLabel( &if_block->u.i.else_part );
     }
     CgFrontLabfreeCs( 1 );
-    openScope();
 }
 
 
@@ -563,6 +564,7 @@ static void parseWhileStmt( void )
     CSTACK *loop;
 
     loop = beginLoop( CS_WHILE );
+    openScope();
     if( EXPR_ANAL_OK == parseBracketExpr( &AnalyseBoolExpr ) ) {
         if( loop->expr_true ) {
             CgFrontCode( IC_EXPR_TRASH );
@@ -576,7 +578,6 @@ static void parseWhileStmt( void )
         jumpBlkLabel( &loop->outside, O_GOTO );
         currFunction->dead_code = FALSE;
     }
-    openScope();
 }
 
 static void parseForStmt( void )
@@ -591,6 +592,9 @@ static void parseForStmt( void )
 
     nextYYToken();
     mustRecog( T_LEFT_PAREN );
+    if( ! CompFlags.use_old_for_scope ) {
+        openScope();
+    }
     if( CurToken == T_SEMI_COLON ) {
         mustRecog( T_SEMI_COLON );
     } else {
@@ -670,11 +674,12 @@ static void parseSwitchStmt( void )
     nextYYToken();
     switch_block = beginControl( CS_SWITCH );
     switch_block->u.s.type = NULL;
+    openScope();
     initBlkLabel( &switch_block->outside );
     switch_block->u.s.cases = NULL;
     switch_block->u.s.imm_block = NULL;
     switch_block->u.s.default_dropped = 0;
-    switch_block->u.s.defn_scope = CurrScope;
+    switch_block->u.s.defn_scope = GetCurrScope();
     switch_block->u.s.is_signed = TRUE;
     switch_block->u.s.default_locn.src_file = NULL;
     SrcFileGetTokenLocn( &switch_block->u.s.switch_locn );
@@ -683,7 +688,7 @@ static void parseSwitchStmt( void )
     LabelSwitchBeg();
     FunctionBodyDeadCode();
     openScope();
-    if( CurToken == T_LEFT_BRACE ) {
+    if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
         switch_block->u.s.block_after = TRUE;
     } else {
         switch_block->u.s.block_after = FALSE;
@@ -807,7 +812,7 @@ static void parseCaseStmt( void )
                      , case_entry->value );
     currFunction->dead_code = FALSE;
     RingAppend( &(my_switch->u.s.cases), case_entry );
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         CErr1( ERR_STMT_REQUIRED_AFTER_CASE );
     }
 }
@@ -845,7 +850,7 @@ static void parseDefaultStmt( void )
     }
     LabelSwitch( my_switch->u.s.defn_scope );
     genDefaultStmt( my_switch, &my_switch->u.s.default_locn );
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         CErr1( ERR_STMT_REQUIRED_AFTER_DEFAULT );
     }
 }
@@ -938,8 +943,8 @@ static void parseReturnStmt( SYMBOL func )
     } else {
         currFunction->ret_reqd = TRUE;
         expr = safeParseExpr( T_SEMI_COLON );
-        if( expecting_return ) {
-            if( expr != NULL ) {
+        if( expr != NULL ) {
+            if( expecting_return ) {
                 if( expr->op == PT_ERROR ) {
                     PTreeFreeSubtrees( expr );
                 } else {
@@ -950,10 +955,21 @@ static void parseReturnStmt( SYMBOL func )
                     emitCodeExpr( AnalyseReturnExpr( func, expr ) );
                     return_operand = return_sym;
                 }
+            } else {
+                if( return_sym == NULL ) {
+                    // see C++98 6.6.3 (3)
+                    expr = AnalyseStmtExpr( expr );
+                    if( ( expr->type != NULL ) && VoidType( expr->type ) ) {
+                        emitCodeExpr( expr );
+                        expr = NULL;
+                    }
+                }
+
+                if( expr != NULL ) {
+                    PTreeErrorExpr( expr, ERR_NOT_EXPECTING_RETURN_VALUE );
+                    PTreeFreeSubtrees( expr );
+                }
             }
-        } else {
-            PTreeErrorExpr( expr, ERR_NOT_EXPECTING_RETURN_VALUE );
-            PTreeFreeSubtrees( expr );
         }
     }
     CgFrontReturnSymbol( return_operand );
@@ -1065,7 +1081,7 @@ static void parseTryBlock(      // PARSE TRY
     try_block->u.t.catch_err = FALSE;
     try_block->u.t.catches = NULL;
     try_block->u.t.catch_no = 0;
-    try_block->u.t.defn_scope = CurrScope;
+    try_block->u.t.defn_scope = GetCurrScope();
     try_block->u.t.try_locn = SrcPosnEmitCurrent();
     initBlkLabel( &try_block->outside );
     try_block->u.t.try_var = allocTryVar( try_block );
@@ -1278,8 +1294,9 @@ static SYMBOL makeCatchVar(     // CREATE A CATCH VARIABLE
     }
     catch_var = SymCreateCurrScope( info->type
                                   , SC_AUTO
-                                  , SF_REFERENCED | SF_ALIAS | SF_CATCH_ALIAS
+                                  , SF_REFERENCED
                                   , name );
+    catch_var->flag |= SF_ALIAS | SF_CATCH_ALIAS;
     catch_var->u.alias = try_var;
     return catch_var;
 }
@@ -1383,13 +1400,13 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
             switch( next->id ) {
             case CS_SWITCH :
                 if( top_block->u.b.block_switch ) {
-                    if( next->u.s.default_dropped || ! CurrScope->dtor_naked ) {
+                    if( next->u.s.default_dropped || ! GetCurrScope()->s.dtor_naked ) {
                         if( ! next->u.s.default_dropped ) {
                             TOKEN_LOCN locn;
                             locn = SrcPosnEmitCurrent();
                             genDefaultStmt( next, &locn );
                         }
-                        next->u.s.imm_block = CurrScope;
+                        next->u.s.imm_block = GetCurrScope();
                     }
                 }
                 if( ! currFunction->dead_code ) {
@@ -1413,22 +1430,33 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
             endBlock();
             break;
         case CS_IF:
-            closeScope();
             if( recog ) {
                 nextYYToken();
                 recog = FALSE;
             }
             if( CurToken == T_ELSE ) {
                 parseElseStmt();
+                /* Note that the scope opened in parseIfStmt is not
+                 * closed when there is an "else" part. Also note that
+                 * parseElseStmt doesn't open a new scope, so the
+                 * closeScope in the CS_ELSE case below will close the
+                 * scope opened in parseIfStmt.
+                 *
+                 * See 6.4 (3): the name introduced by a declaration
+                 * in a conditoin is in scope until the end of the
+                 * "else" part. BTW, re-declaring that name is not
+                 * allowed by the standard, but the current code
+                 * doesn't catch that.
+                 */ 
                 return recog;
             }
             if( ! top_block->expr_true ) {
                 dumpBlkLabel( &top_block->u.i.else_part );
             }
+            closeScope();
             CgFrontLabfreeCs( 2 );
             break;
         case CS_ELSE:
-            closeScope();
             dead_code = currFunction->dead_code;
             if( ! top_block->expr_false ) {
                 dumpOutsideLabel( top_block );
@@ -1436,6 +1464,7 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
             if( ! dead_code ) {
                 currFunction->dead_code = FALSE;
             }
+            closeScope();
             CgFrontLabfreeCs( 1 );
             break;
         case CS_FOR:
@@ -1446,6 +1475,9 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
             closeScope();
             doJUMP( IC_LABEL_CS, O_GOTO, top_block->u.l.top_loop );
             dumpOutsideLabel( top_block );
+            if( id == CS_FOR && ! CompFlags.use_old_for_scope ) {
+                closeScope();
+            }
             CgFrontLabfreeCs( 3 );
             break;
         case CS_DO:
@@ -1505,6 +1537,7 @@ static boolean endOfStmt(       // PROCESS END-OF-STATEMENT
                     CErr1( WARN_SWITCH_NO_CASE_LABELS );
                 }
             }
+            closeScope();
             break;
         case CS_TRY:
             if( recog ) {
@@ -1554,12 +1587,12 @@ static void insertFunctionReturn( SYMBOL func )
         break;
       case OMR_SCALAR :
       case OMR_CLASS_VAL :
-        retn_sym = SymAllocReturn( CurrScope, base );
+        retn_sym = SymAllocReturn( GetCurrScope(), base );
         CgFrontCodePtr( IC_FUNCTION_RETN, retn_sym );
         break;
       case OMR_CLASS_REF :
         if( NULL == SymFunctionReturn() ) {
-            retn_sym = SymAllocReturn( CurrScope->enclosing, base );
+            retn_sym = SymAllocReturn( GetCurrScope()->enclosing, base );
             CgFrontCodePtr( IC_FUNCTION_RETN, retn_sym );
         }
         break;
@@ -1579,7 +1612,7 @@ static void exceptSpec(         // GENERATE AN EXCEPTION SPECIFICATION
     }
 #endif
     CgFrontCodePtr( IC_EXCEPT_SPEC, except );
-    ScopeKeep( CurrScope );
+    ScopeKeep( GetCurrScope() );
 }
 
 
@@ -1661,7 +1694,7 @@ static void doFnStartup( SYMBOL func
 {
     PTREE mem_init;
 
-    fdata->fn_scope = CurrScope;
+    fdata->fn_scope = GetCurrScope();
     func->flag |= SF_INITIALIZED;
     if( flags & FUNC_NO_STACK_CHECK ) {
         /* in case the type was derived from a stack-checked function */
@@ -1812,7 +1845,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     while( CurToken == T_SEMI_COLON ) {
         nextYYToken();
     }
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         // these must execute before doFnStartup so that the prologues
         // of ctors and dtors can be affected
         if( f->is_dtor ) {
@@ -1824,7 +1857,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
         }
     }
     doFnStartup( func, f, mem_init, posnForFunction( dinfo ), FUNC_NULL );
-    ScopeArgumentCheck( CurrScope );
+    ScopeArgumentCheck( GetCurrScope() );
 }
 
 static void finiLabel( FNLABEL *lbl )
@@ -1875,9 +1908,11 @@ static void skipFunctionBody( unsigned depth )
         case T_EOF:
             return;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             ++depth;
             break;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             --depth;
             if( depth == 0 ) {
                 return;
@@ -1953,6 +1988,7 @@ static TYPE handleDefnChecks( SYMBOL func )
 
     DbgAssert( FunctionDeclarationType( func->sym_type ) != NULL );
     fn_type = TypeGetActualFlags( func->sym_type, &flags );
+    fn_type->of = BindTemplateClass( fn_type->of, &func->locn->tl, FALSE );
     if( ! TypeDefined( fn_type->of ) ) {
         SetErrLoc( &func->locn->tl );
         CErr2p( ERR_CLASS_NOT_DEFINED, TypeClassInfo( fn_type->of )->name );
@@ -2040,7 +2076,7 @@ void FunctionBody( DECL_INFO *dinfo )
         skipFunctionBody( 1 );
         return;
     }
-    func = TemplateFunctionTranslate( func, &parsing_scope );
+    func = TemplateFunctionTranslate( func, dinfo->friend_fn, &parsing_scope );
     dinfo->sym = func;
     CtxFunction( func );
     fn_control = TemplateFunctionControl();
@@ -2078,8 +2114,11 @@ void FunctionBody( DECL_INFO *dinfo )
     fn_type = handleDefnChecks( func );
     handleDefnChangesToSym( func );
     previous_func = CgFrontCurrentFunction();
-    enclosing_scope = CurrScope;
-    CurrScope = parsing_scope;
+
+    enclosing_scope = GetCurrScope();
+    SetCurrScope( parsing_scope );
+    ScopeAdjustUsing( enclosing_scope, parsing_scope );
+
     initFunctionBody( dinfo, &fn_data, fn_type );
     // after initFunctionBody so .DEF files can have names in their prototypes
     MainProcSetup( func );
@@ -2104,7 +2143,8 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         case T_DO:
             beginLoop( CS_DO );
-            if( CurToken == T_RIGHT_BRACE ) {
+            if( ( CurToken == T_RIGHT_BRACE )
+             || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
                 CErr1( ERR_STMT_REQUIRED_AFTER_DO );
                 break;
             }
@@ -2148,6 +2188,7 @@ void FunctionBody( DECL_INFO *dinfo )
             if( fn_data.control->id != CS_BLOCK ) break;
             continue;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             startBlock();
             if( ( fn_data.control->next->id == CS_SWITCH )
               &&( fn_data.control->next->u.s.block_after ) ) {
@@ -2156,6 +2197,7 @@ void FunctionBody( DECL_INFO *dinfo )
             nextYYToken();
             continue;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( fn_data.control->id != CS_BLOCK ) {
                 CErr1( ERR_MISPLACED_RIGHT_BRACE );
             }
@@ -2189,8 +2231,11 @@ void FunctionBody( DECL_INFO *dinfo )
     }
     switch( returnIsRequired( fn_type ) ) {
       case RETN_REQUIRED :
-        CErr1( ERR_MISSING_RETURN_VALUE );
-        break;
+        if( ! MainProcedure( func ) ) {
+            CErr1( ERR_MISSING_RETURN_VALUE );
+            break;
+        }
+        // drops thru, see 3.6.1 (5)
       case RETN_DFLT_INT :
         if( MainProcedure( func ) ) {
             PTREE expr;
@@ -2204,7 +2249,10 @@ void FunctionBody( DECL_INFO *dinfo )
         break;
     }
     finiFunctionBody( func );
-    CurrScope = enclosing_scope;
+
+    SetCurrScope( enclosing_scope );
+    ScopeAdjustUsing( parsing_scope, enclosing_scope );
+
     CgFrontResumeFunction( previous_func );
 }
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _dos_getftime() for OS/2. 
 *
 ****************************************************************************/
 
@@ -37,33 +36,31 @@
 
 
 
-_WCRTLINK unsigned _dos_getftime( int handle, unsigned short *date, unsigned short *time )
-    {
-        APIRET          error;
-        OS_UINT         hand_type;
-        OS_UINT         device_attr;
-        FILESTATUS      info;
-        USHORT          *p;
+_WCRTLINK unsigned _dos_getftime( int handle, unsigned *date, unsigned *time )
+{
+    APIRET          rc;
+    OS_UINT         hand_type;
+    OS_UINT         device_attr;
+    FILESTATUS      info;
+    USHORT          *p;
 
-        error = DosQHandType( handle, &hand_type, &device_attr );
-        if( error ) {
-            __set_errno_dos( error );
-            return( error );
-        }
+    rc = DosQHandType( handle, &hand_type, &device_attr );
+    if( rc == 0 ) {
         if( ( hand_type & ~HANDTYPE_NETWORK ) == HANDTYPE_FILE ) {
-            error = DosQFileInfo( handle, 1, (PBYTE)&info, sizeof( FILESTATUS ) );
-            if( error ) {
-                __set_errno_dos( error );
-                return( error );
+            rc = DosQFileInfo( handle, 1, (PBYTE)&info, sizeof( FILESTATUS ) );
+            if( rc == 0 ) {
+                p = (USHORT *)(&info.fdateLastWrite);
+                *date = *p;
+                p = (USHORT *)(&info.ftimeLastWrite);
+                *time = *p;
             }
-            p = (USHORT *)(&info.fdateLastWrite);
-            *date = *(unsigned short *)p;
-            p = (USHORT *)(&info.ftimeLastWrite);
-            *time = *(unsigned short *)p;
         } else {                        /* it is a device */
             *date = 0;
             *time = 0;
         }
-        return( 0 );
     }
-
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
+    }
+    return( 0 );
+}

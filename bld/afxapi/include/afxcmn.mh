@@ -1,0 +1,1107 @@
+/*
+ *  afxcmn.h    Application Framework common control classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXCMN_H__
+#define __AFXCMN_H__
+
+:include readonly.sp
+
+#include <afxwin.h>
+#include <richedit.h>
+#include <richole.h>
+
+#ifdef _UNICODE
+class CToolInfo : public tagTOOLINFOW {
+#else
+class CToolInfo : public tagTOOLINFOA {
+#endif
+public:
+    TCHAR   szText[256];
+};
+
+class _AFXLINK CImageList : public CObject {
+public:
+    HIMAGELIST  m_hImageList;
+    
+    DECLARE_DYNAMIC( CImageList )
+    
+public:
+    CImageList();
+    virtual ~CImageList();
+    
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    int         Add( CBitmap *pbmImage, CBitmap *pbmMask );
+    int         Add( CBitmap *pbmImage, COLORREF crMask );
+    int         Add( HICON hIcon );
+    BOOL        Attach( HIMAGELIST hImageList );
+    BOOL        BeginDrag( int nImage, CPoint ptHotSpot );
+    BOOL        Create( int cx, int cy, UINT nFlags, int nInitial, int nGrow );
+    BOOL        Create( UINT nBitmapID, int cx, int nGrow, COLORREF crMask );
+    BOOL        Create( LPCTSTR lpszBitmapID, int cx, int nGrow, COLORREF crMask );
+    BOOL        Create( CImageList &imagelist1, int nImage1, CImageList &imagelist2, int nImage2, int dx, int dy );
+    BOOL        DeleteImageList();
+    HIMAGELIST  Detach();
+    BOOL        Draw( CDC *pDC, int nImage, POINT pt, UINT nStyle );
+    BOOL        DrawEx( CDC *pDC, int nImage, POINT pt, SIZE sz, COLORREF clrBk, COLORREF clrFg, UINT nStyle );
+    HICON       ExtractIcon( int nImage );
+    COLORREF    GetBkColor() const;
+    int         GetImageCount() const;
+    BOOL        GetImageInfo( int nImage, IMAGEINFO *pImageInfo ) const;
+    HIMAGELIST  GetSafeHandle() const;
+    BOOL        Read( CArchive *pArchive );
+    BOOL        Remove( int nImage );
+    BOOL        Replace( int nImage, CBitmap *pbmImage, CBitmap *pbmMask );
+    int         Replace( int nImage, HICON hIcon );
+    COLORREF    SetBkColor( COLORREF cr );
+    BOOL        SetDragCursorImage( int nDrag, CPoint ptHotSpot );
+    BOOL        SetOverlayImage( int nImage, int nOverlay );
+    BOOL        Write( CArchive *pArchive );
+#if (_WIN32_IE >= 0x0300)
+    BOOL        Copy( int iDst, int iSrc, UINT uFlags = ILCF_MOVE );
+    BOOL        Copy( int iDst, CImageList *pSrc, int iSrc, UINT nFlags = ILCF_MOVE );
+    BOOL        DrawIndirect( IMAGELISTDRAWPARAMS *pimldp );
+    BOOL        DrawIndirect( CDC *pDC, int nImage, POINT pt, SIZE sz, POINT ptOrigin, UINT fStyle = ILD_NORMAL, DWORD dwRop = SRCCOPY, COLORREF rgbBack = CLR_DEFAULT, COLORREF rgbFore = CLR_DEFAULT, DWORD fState = ILS_NORMAL, DWORD Frame = 0, COLORREF crEffect = CLR_DEFAULT );
+    BOOL        SetImageCount( UINT nNewCount );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    BOOL        Create( CImageList *pImageList );
+#endif
+    
+    operator HIMAGELIST() const;
+    
+    static void PASCAL          DeleteTempMap();
+    static BOOL PASCAL          DragEnter( CWnd *pWndLock, CPoint point );
+    static BOOL PASCAL          DragLeave( CWnd *pWndLock );
+    static BOOL PASCAL          DragMove( CPoint pt );
+    static BOOL PASCAL          DragShowNolock( BOOL bShow );
+    static void PASCAL          EndDrag();
+    static CImageList * PASCAL  FromHandle( HIMAGELIST hImageList );
+    static CImageList * PASCAL  FromHandlePermanent( HIMAGELIST hImageList );
+    static CImageList * PASCAL  GetDragImage( LPPOINT lpPoint, LPPOINT lpPointHotSpot );
+};
+
+class _AFXLINK CToolBarCtrl : public CWnd {
+    DECLARE_DYNAMIC( CToolBarCtrl )
+    
+public:
+    CToolBarCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    int             AddBitmap( int nNumButtons, UINT nBitmapID );
+    int             AddBitmap( int nNumButtons, CBitmap *pBitmap );
+    BOOL            AddButtons( int nNumButtons, LPTBBUTTON lpButtons );
+    int             AddString( UINT nStringID );
+    int             AddStrings( LPCTSTR lpszStrings );
+    void            AutoSize();
+    BOOL            ChangeBitmap( int idButton, int iBitmap );
+    BOOL            CheckButton( int nID, BOOL bCheck = TRUE );
+    UINT            CommandToIndex( UINT nID ) const;
+    void            Customize();
+    BOOL            DeleteButton( int nIndex );
+    BOOL            EnableButton( int nID, BOOL bEnable = TRUE );
+    int             GetBitmap( int nID ) const;
+    UINT            GetBitmapFlags() const;
+    BOOL            GetButton( int nIndex, LPTBBUTTON lpButton ) const;
+    int             GetButtonCount() const;
+    CString         GetButtonText( int iButton ) const;
+    BOOL            GetItemRect( int nIndex, LPRECT lpRect ) const;
+    int             GetRows() const;
+    int             GetState( int nID ) const;
+    CToolTipCtrl    *GetToolTips() const;
+    BOOL            HideButton( int nID, BOOL bHide = TRUE );
+    BOOL            Indeterminate( int nID, BOOL bIndeterminate = TRUE );
+    BOOL            InsertButton( int nIndex, LPTBBUTTON lpButton );
+    BOOL            IsButtonChecked( int nID ) const;
+    BOOL            IsButtonEnabled( int nID ) const;
+    BOOL            IsButtonHidden( int nID ) const;
+    BOOL            IsButtonIndeterminate( int nID ) const;
+    BOOL            IsButtonPressed( int nID ) const;
+    BOOL            PressButton( int nID, BOOL bPress = TRUE );
+    BOOL            ReplaceBitmap( LPTBREPLACEBITMAP pReplaceBitmap );
+    void            RestoreState( HKEY hKeyRoot, LPCTSTR lpszSubKey, LPCTSTR lpszValueName );
+    void            SaveState( HKEY hKeyRoot, LPCTSTR lpszSubKey, LPCTSTR lpszValueName );
+    BOOL            SetBitmapSize( CSize size );
+    BOOL            SetButtonSize( CSize size );
+    void            SetButtonStructSize( int nSize );
+    BOOL            SetCmdID( int nIndex, UINT nID );
+    void            SetOwner( CWnd *pWnd );
+    void            SetRows( int nRows, BOOL bLarger, LPRECT lpRect );
+    BOOL            SetState( int nID, UINT nState );
+    void            SetToolTips( CToolTipCtrl *pTip );
+#if (_WIN32_IE >= 0x0300)
+    DWORD           GetButtonSize() const;
+    CImageList      *GetDisabledImageList() const;
+    CImageList      *GetHotImageList() const;
+    CImageList      *GetImageList() const;
+    int             GetMaxTextRows() const;
+    BOOL            GetRect( int nID, LPRECT lpRect ) const;
+    DWORD           GetStyle() const;
+    void            LoadImages( int iBitmapID, HINSTANCE hinst );
+    BOOL            SetButtonWidth( int cxMin, int cxMax );
+    CImageList      *SetDisabledImageList( CImageList *pImageList );
+    CImageList      *SetHotImageList( CImageList *pImageList );
+    CImageList      *SetImageList( CImageList *pImageList );
+    BOOL            SetIndent( int iIndent );
+    BOOL            SetMaxTextRows( int iMaxRows );
+    void            SetStyle( DWORD dwStyle );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    BOOL            GetAnchorHighlight() const;
+    BOOL            GetButtonInfo( int nID, TBBUTTONINFO *ptbbi ) const;
+    BOOL            GetColorScheme( COLORSCHEME *lpColorScheme ) const;
+    HRESULT         GetDropTarget( IDropTarget **ppDropTarget ) const;
+    DWORD           GetExtendedStyle() const;
+    int             GetHotItem() const;
+    void            GetInsertMark( TBINSERTMARK *ptbim ) const;
+    COLORREF        GetInsertMarkColor() const;
+    BOOL            GetMaxSize( LPSIZE lpSize ) const;
+    BOOL            GetPadding( int *pnHorzPadding, int *pnVertPadding ) const;
+    int             HitTest( LPPOINT ppt ) const;
+    BOOL            InsertMarkHitTest( LPPOINT ppt, LPTBINSERTMARK ptbim ) const;
+    BOOL            IsButtonHighlighted( int nID ) const;
+    BOOL            MapAccelerator( TCHAR chAccel, UINT *pIDBtn );
+    BOOL            MarkButton( int nID, BOOL fHighlight = TRUE );
+    BOOL            MoveButton( UINT nOldPos, UINT nNewPos );
+    BOOL            SetAnchorHighlight( BOOL fAnchor = TRUE );
+    BOOL            SetButtonInfo( int nID, TBBUTTONINFO *ptbbi );
+    void            SetColorScheme( const COLORSCHEME *lpColorScheme );
+    DWORD           SetDrawTextFlags( DWORD dwMask, DWORD dwDTFlags );
+    DWORD           SetExtendedStyle( DWORD dwExStyle );
+    int             SetHotItem( int nHot );
+    void            SetInsertMark( TBINSERTMARK *ptbim );
+    COLORREF        SetInsertMarkColor( COLORREF clrNew );
+    DWORD           SetPadding( int nHorzPadding, int nVertPadding );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    int             GetString( int nString, LPTSTR lpstrString, int cchMaxLen ) const;
+    int             GetString( int nString, CString &str ) const;
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    void            GetMetrics( LPTBMETRICS ptbm ) const;
+    void            SetMetrics( LPTBMETRICS ptbm );
+    HRESULT         SetWindowTheme( LPCWSTR pszSubAppName );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    CImageList      *GetPressedImageList() const;
+    CImageList      *SetPressedImageList( int iImageID, CImageList *pImageList );
+#endif
+};
+
+class _AFXLINK CStatusBarCtrl : public CWnd {
+    DECLARE_DYNAMIC( CStatusBarCtrl )
+    
+public:
+    CStatusBarCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual void    DrawItem( LPDRAWITEMSTRUCT lpDrawItemStruct );
+    
+    virtual BOOL    OnChildNotify( UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    
+    BOOL        GetBorders( int *pBorders ) const;
+    BOOL        GetBorders( int &nHorz, int &nVert, int &nSpacing ) const;
+    int         GetParts( int nParts, int *pParts ) const;
+    BOOL        GetRect( int nPane, LPRECT lpRect ) const;
+    CString     GetText( int nPane, int *pType = NULL ) const;
+    int         GetText( LPTSTR lpszText, int nPane, int *pType = NULL ) const;
+    int         GetTextLength( int nPane, int *pType = NULL ) const;
+    void        SetMinHeight( int nMin );
+    BOOL        SetParts( int nParts, int *pWidths );
+    BOOL        SetSimple( BOOL bSimple = TRUE );
+    BOOL        SetText( LPCTSTR lpszText, int nPane, int nType );
+#if (_WIN32_IE >= 0x0300)
+    BOOL        IsSimple() const;
+#endif
+#if (_WIN32_IE >= 0x0400)
+    HICON       GetIcon( int iPart ) const;
+    CString     GetTipText( int nPane ) const;
+    COLORREF    SetBkColor( COLORREF cr );
+    BOOL        SetIcon( int nPane, HICON hIcon );
+    void        SetTipText( int nPane, LPCTSTR pszTipText );
+#endif
+};
+
+#if (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CReBarCtrl : public CWnd {
+    DECLARE_DYNAMIC( CReBarCtrl )
+    
+public:
+    CReBarCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    BOOL            DeleteBand( UINT uBand );
+    UINT            GetBandCount() const;
+    BOOL            GetBandInfo( UINT uBand, REBARBANDINFO *prbbi ) const;
+    BOOL            GetBarInfo( REBARINFO *prbi ) const;
+    CImageList      *GetImageList() const;
+    UINT            GetRowCount() const;
+    UINT            GetRowHeight( UINT uRow ) const;
+    BOOL            InsertBand( UINT uIndex, REBARBANDINFO *prbbi );
+    void            RestoreBand( UINT uBand );
+    BOOL            SetBandInfo( UINT uBand, REBARBANDINFO *prbbi );
+    BOOL            SetBarInfo( REBARINFO *prbi );
+    BOOL            SetImageList( CImageList *pImageList );
+    CWnd            *SetOwner( CWnd *pWnd );
+#if (_WIN32_IE >= 0x0400)
+    void            BeginDrag( UINT uBand, DWORD dwPos = 0xFFFFFFFFL );
+    void            DragMove( DWORD dwPos = 0xFFFFFFFFL );
+    void            EndDrag();
+    void            GetBandBorders( UINT uBand, LPRECT prc ) const;
+    UINT            GetBarHeight() const;
+    COLORREF        GetBkColor() const;
+    BOOL            GetColorScheme( COLORSCHEME *lpcs ) const;
+    IDropTarget     *GetDropTarget() const;
+    CPalette        *GetPalette() const;
+    BOOL            GetRect( UINT uBand, LPRECT prc ) const;
+    COLORREF        GetTextColor() const;
+    CToolTipCtrl    *GetToolTips() const;
+    int             HitTest( RBHITTESTINFO *prbht );
+    int             IDToIndex( UINT uBandID ) const;
+    void            MaximizeBand( UINT uBand );
+    void            MinimizeBand( UINT uBand );
+    BOOL            MoveBand( UINT uFrom, UINT uTo );
+    COLORREF        SetBkColor( COLORREF clr );
+    void            SetColorScheme( const COLORSCHEME *lpcs );
+    CPalette        *SetPalette( HPALETTE hPal );
+    COLORREF        SetTextColor( COLORREF clr );
+    void            SetToolTips( CToolTipCtrl *pToolTip );
+    BOOL            ShowBand( UINT uBand, BOOL fShow = TRUE );
+    BOOL            SizeToRect( CRect &rect );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    void            PushChevron( UINT uBand, LPARAM lAppValue );
+#endif
+#if (_WIN32_IE >= 0x0600)
+    DWORD           GetExtendedStyle() const;
+    DWORD           SetExtendedStyle( DWORD dwMask, DWORD dwStyleEx );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    void            GetBandMargins( PMARGINS pMargins ) const;
+    HRESULT         SetWindowTheme( LPCWSTR pszSubAppName );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    BOOL            SetBandWidth( UINT uBand, int cxWidth );
+#endif
+};
+
+#endif // (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CToolTipCtrl : public CWnd {
+    DECLARE_DYNAMIC( CToolTipCtrl )
+    
+public:
+    CToolTipCtrl();
+    
+    virtual BOOL    Create( CWnd *pParentWnd, DWORD dwStyle = 0L );
+    virtual BOOL    CreateEx( CWnd *pParentWnd, DWORD dwStyle = 0L, DWORD dwStyleEx = 0L );
+    
+    void        Activate( BOOL bActivate );
+    BOOL        AddTool( CWnd *pWnd, UINT nIDText, LPCRECT lpRectTool = NULL, UINT_PTR nIDTool = 0 );
+    BOOL        AddTool( CWnd *pWnd, LPCTSTR lpszText = LPSTR_TEXTCALLBACK, LPCRECT lpRectTool = NULL, UINT_PTR nIDTool = 0 );
+    void        DelTool( CWnd *pWnd, UINT_PTR nIDTool = 0 );
+    void        GetText( CString &str, CWnd *pWnd, UINT_PTR nIDTool = 0 ) const;
+    int         GetToolCount() const;
+    BOOL        GetToolInfo( CToolInfo &ToolInfo, CWnd *pWnd, UINT_PTR nIDTool = 0 ) const;
+    BOOL        HitTest( CWnd *pWnd, CPoint pt, LPTOOLINFO lpToolInfo ) const;
+    void        RelayEvent( LPMSG lpMsg );
+    void        SetDelayTime( UINT nDelay );
+    void        SetDelayTime( DWORD dwDuration, int iTime );
+    void        SetToolInfo( LPTOOLINFO lpToolInfo );
+    void        SetToolRect( CWnd *pWnd, UINT_PTR nIDTool, LPCRECT lpRect );
+    void        UpdateTipText( LPCTSTR lpszText, CWnd *pWnd, UINT_PTR nIDTool = 0 );
+    void        UpdateTipText( UINT nIDText, CWnd *pWnd, UINT_PTR nIDTool = 0 );
+#if (_WIN32_IE >= 0x0300)
+    int         GetDelayTime( DWORD dwDuration ) const;
+    void        GetMargin( LPRECT lprc ) const;
+    int         GetMaxTipWidth() const;
+    COLORREF    GetTipBkColor() const;
+    COLORREF    GetTipTextColor() const;
+    void        Pop();
+    void        SetMargin( LPRECT lprc );
+    int         SetMaxTipWidth( int iWidth );
+    void        SetTipBkColor( COLORREF clr );
+    void        SetTipTextColor( COLORREF clr );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    void        Update();
+#endif
+#if (_WIN32_IE >= 0x0500)
+    BOOL        AdjustRect( LPRECT lprc, BOOL bLarger = TRUE );
+    CSize       GetBubbleSize( LPTOOLINFO lpToolInfo ) const;
+    BOOL        SetTitle( UINT uIcon, LPCTSTR lpstrTitle );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    HRESULT     SetWindowTheme( LPCWSTR pszSubAppName );
+#endif
+};
+
+class _AFXLINK CAnimateCtrl : public CWnd {
+    DECLARE_DYNAMIC( CAnimateCtrl )
+    
+public:
+    CAnimateCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    BOOL    Close();
+    BOOL    Open( LPCTSTR lpszFileName );
+    BOOL    Open( UINT nID );
+    BOOL    Play( UINT nFrom, UINT nTo, UINT nRep );
+    BOOL    Seek( UINT nTo );
+    BOOL    Stop();
+#if (_WIN32_WINNT >= 0x0600)
+    BOOL    IsPlaying() const;
+#endif
+};
+
+class _AFXLINK CProgressCtrl : public CWnd {
+    DECLARE_DYNAMIC( CProgressCtrl )
+    
+public:
+    CProgressCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    int         OffsetPos( int nPos );
+    int         SetPos( int nPos );
+    void        SetRange( short nLower, short nUpper );
+    int         SetStep( int nStep );
+    int         StepIt();
+#if (_WIN32_IE >= 0x0300)
+    int         GetPos() const;
+    void        GetRange( int &nLower, int &nUpper ) const;
+    void        SetRange32( int nLower, int nUpper );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    COLORREF    SetBarColor( COLORREF clrBar );
+    COLORREF    SetBkColor( COLORREF clrNew );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    BOOL        SetMarquee( BOOL fMarqueeMode, int nInterval );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    COLORREF    GetBarColor() const;
+    COLORREF    GetBkColor() const;
+    int         GetState() const;
+    int         GetStep() const;
+    int         SetState( int iState );
+#endif
+};
+
+class _AFXLINK CSliderCtrl : public CWnd {
+    DECLARE_DYNAMIC( CSliderCtrl )
+    
+public:
+    CSliderCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    void            ClearSel( BOOL bRedraw = FALSE );
+    void            ClearTics( BOOL bRedraw = FALSE );
+    void            GetChannelRect( LPRECT lprc ) const;
+    int             GetLineSize() const;
+    UINT            GetNumTics() const;
+    int             GetPageSize() const;
+    int             GetPos() const;
+    void            GetRange( int &nMin, int &nMax ) const;
+    int             GetRangeMax() const;
+    int             GetRangeMin() const;
+    void            GetSelection( int &nMin, int &nMax ) const;
+    int             GetThumbLength() const;
+    void            GetThumbRect( LPRECT lprc ) const;
+    int             GetTic( int nTic ) const;
+    DWORD           *GetTicArray() const;
+    int             GetTicPos( int nTic ) const;
+    int             SetLineSize( int nSize );
+    int             SetPageSize( int nSize );
+    void            SetPos( int nPos );
+    void            SetRange( int nMin, int nMax, BOOL bRedraw = FALSE );
+    void            SetRangeMax( int nMax, BOOL bRedraw = FALSE );
+    void            SetRangeMin( int nMin, BOOL bRedraw = FALSE );
+    void            SetSelection( int nMin, int nMax );
+    void            SetThumbLength( int nLength );
+    BOOL            SetTic( int nTic );
+    void            SetTicFreq( int nFreq );
+#if (_WIN32_IE >= 0x0300)
+    CWnd            *GetBuddy( BOOL fLocation = TRUE ) const;
+    CToolTipCtrl    *GetToolTips() const;
+    CWnd            *SetBuddy( CWnd *pWndBuddy, BOOL fLocation = TRUE );
+    int             SetTipSide( int nLocation );
+    void            SetToolTips( CToolTipCtrl *pWndTip );
+#endif
+};
+
+class _AFXLINK CSpinButtonCtrl : public CWnd {
+    DECLARE_DYNAMIC( CSpinButtonCtrl )
+    
+public:
+    CSpinButtonCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    UINT    GetAccel( int nAccel, UDACCEL *pAccel ) const;
+    UINT    GetBase() const;
+    CWnd    *GetBuddy() const;
+    int     GetPos() const;
+    DWORD   GetRange() const;
+    void    GetRange( int &lower, int &upper ) const;
+    BOOL    SetAccel( int nAccel, UDACCEL *pAccel );
+    int     SetBase( int nBase );
+    CWnd    *SetBuddy( CWnd *pWndBuddy );
+    int     SetPos( int nPos );
+    void    SetRange( short nLower, short nUpper );
+#if (_WIN32_IE >= 0x0400)
+    void    GetRange32( int &lower, int &upper ) const;
+    void    SetRange32( int nLower, int nUpper );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    int     GetPos32( LPBOOL lpbError = NULL ) const;
+    int     SetPos32( int nPos );
+#endif
+};
+
+class _AFXLINK CHotKeyCtrl : public CWnd {
+    DECLARE_DYNAMIC( CHotKeyCtrl )
+    
+public:
+    CHotKeyCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    DWORD   GetHotKey() const;
+    void    GetHotKey( WORD &wVirtualKeyCode, WORD &wModifiers ) const;
+    CString GetHotKeyName() const;
+    void    SetHotKey( WORD wVirtualKeyCode, WORD wModifiers );
+    void    SetRules( WORD wInvalidComb, WORD wModifiers );
+    
+    static CString  GetKeyName( UINT vk, BOOL fExtended );
+};
+
+#if (_WIN32_IE >= 0x0400)
+
+class _AFXLINK CIPAddressCtrl : public CWnd {
+    DECLARE_DYNAMIC( CIPAddressCtrl )
+    
+public:
+    CIPAddressCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    void    ClearAddress();
+    int     GetAddress( BYTE &nField0, BYTE &nField1, BYTE &nField2, BYTE &nField3 );
+    int     GetAddress( DWORD &dwAddress );
+    BOOL    IsBlank() const;
+    void    SetAddress( BYTE nField0, BYTE nField1, BYTE nField2, BYTE nField3 );
+    void    SetAddress( DWORD dwAddress );
+    void    SetFieldFocus( WORD nField );
+    void    SetFieldRange( int nField, BYTE nLower, BYTE nUpper );
+};
+
+#endif // (_WIN32_IE >= 0x0400)
+
+class _AFXLINK CHeaderCtrl : public CWnd {
+    DECLARE_DYNAMIC( CHeaderCtrl )
+    
+public:
+    CHeaderCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual void    DrawItem( LPDRAWITEMSTRUCT lpDrawItemStruct );
+    
+    virtual BOOL    OnChildNotify( UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    
+    BOOL        DeleteItem( int nPos );
+    BOOL        GetItem( int nPos, HDITEM *pHeaderItem ) const;
+    int         GetItemCount() const;
+    int         HitTest( LPHDHITTESTINFO phdhti );
+    int         InsertItem( int nPos, HDITEM *phdi );
+    BOOL        Layout( HDLAYOUT *pHeaderLayout );
+    BOOL        SetItem( int nPos, HDITEM *pHeaderItem );
+#if (_WIN32_IE >= 0x0300)
+    CImageList  *CreateDragImage( int nIndex );
+    CImageList  *GetImageList() const;
+    BOOL        GetItemRect( int nIndex, LPRECT lpRect ) const;
+    BOOL        GetOrderArray( LPINT piArray, int iCount ) const;
+    int         OrderToIndex( int nOrder ) const;
+    int         SetHotDivider( CPoint pt );
+    int         SetHotDivider( int nIndex );
+    CImageList  *SetImageList( CImageList *pImageList );
+    BOOL        SetOrderArray( int iCount, LPINT piArray );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    int         ClearAllFilters();
+    int         ClearFilter( int nColumn );
+    int         EditFilter( int nColumn, BOOL bDiscardChanges );
+    int         GetBitmapMargin() const;
+    int         SetBitmapMargin( int nWidth );
+    int         SetFilterChangeTimeout( DWORD dwTimeOut );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    int         GetFocusedItem() const;
+    BOOL        GetItemDropDownRect( int iItem, LPRECT lpRect ) const;
+    BOOL        GetOverflowRect( LPRECT lpRect ) const;
+    BOOL        SetFocusedItem( int iItem );
+#endif
+};
+
+class _AFXLINK CTreeCtrl : public CWnd {
+    DECLARE_DYNAMIC( CTreeCtrl )
+    
+public:
+    CTreeCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    CImageList      *CreateDragImage( HTREEITEM hItem );
+    BOOL            DeleteAllItems();
+    BOOL            DeleteItem( HTREEITEM hItem );
+    CEdit           *EditLabel( HTREEITEM hItem );
+    BOOL            EndEditLabelNow( BOOL fCancelWithoutSave );
+    BOOL            EnsureVisible( HTREEITEM hItem );
+    BOOL            Expand( HTREEITEM hItem, UINT nCode );
+    BOOL            GetCheck( HTREEITEM hItem ) const;
+    HTREEITEM       GetChildItem( HTREEITEM hItem ) const;
+    UINT            GetCount() const;
+    HTREEITEM       GetDropHilightItem() const;
+    CEdit           *GetEditControl() const;
+    HTREEITEM       GetFirstVisibleItem() const;
+    CImageList      *GetImageList( UINT nImageList ) const;
+    UINT            GetIndent() const;
+    BOOL            GetItem( TVITEM *pItem ) const;
+    DWORD_PTR       GetItemData( HTREEITEM hItem ) const;
+    BOOL            GetItemImage( HTREEITEM hItem, int &nImage, int &nSelectedImage ) const;
+    BOOL            GetItemRect( HTREEITEM hItem, LPRECT lpRect, BOOL bTextOnly ) const;
+    UINT            GetItemState( HTREEITEM hItem, UINT nStateMask ) const;
+    CString         GetItemText( HTREEITEM hItem ) const;
+    HTREEITEM       GetNextItem( HTREEITEM hItem, UINT nCode ) const;
+    HTREEITEM       GetNextSiblingItem( HTREEITEM hItem ) const;
+    HTREEITEM       GetNextVisibleItem( HTREEITEM hItem ) const;
+    HTREEITEM       GetParentItem( HTREEITEM hItem ) const;
+    HTREEITEM       GetPrevSiblingItem( HTREEITEM hItem ) const;
+    HTREEITEM       GetPrevVisibleItem( HTREEITEM hItem ) const;
+    HTREEITEM       GetRootItem() const;
+    HTREEITEM       GetSelectedItem() const;
+    UINT            GetVisibleCount() const;
+    HTREEITEM       HitTest( CPoint pt, UINT *pFlags = NULL ) const;
+    HTREEITEM       HitTest( TVHITTESTINFO *pHitTestInfo ) const;
+    HTREEITEM       InsertItem( LPTVINSERTSTRUCT lpInsertStruct );
+    HTREEITEM       InsertItem( UINT nMask, LPCTSTR lpszItem, int nImage, int nSelectedImage, UINT nState, UINT nStateMask, LPARAM lParam, HTREEITEM hParent, HTREEITEM hInsertAfter );
+    HTREEITEM       InsertItem( LPCTSTR lpszItem, HTREEITEM hParent = TVI_ROOT, HTREEITEM hInsertAfter = TVI_LAST );
+    HTREEITEM       InsertItem( LPCTSTR lpszItem, int nImage, int nSelectedImage, HTREEITEM hParent = TVI_ROOT, HTREEITEM hInsertAfter = TVI_LAST );
+    BOOL            ItemHasChildren( HTREEITEM hItem ) const;
+    BOOL            Select( HTREEITEM hItem, UINT nCode );
+    BOOL            SelectDropTarget( HTREEITEM hItem );
+    BOOL            SelectItem( HTREEITEM hItem );
+    BOOL            SelectSetFirstVisible( HTREEITEM hItem );
+    BOOL            SetCheck( HTREEITEM hItem, BOOL fCheck = TRUE );
+    CImageList      *SetImageList( CImageList *pImageList, int nImageListType );
+    void            SetIndent( UINT nIndent );
+    BOOL            SetItem( TVITEM *pItem );
+    BOOL            SetItem( HTREEITEM hItem, UINT nMask, LPCTSTR lpszItem, int nImage, int nSelectedImage, UINT nState, UINT nStateMask, LPARAM lParam );
+    BOOL            SetItemData( HTREEITEM hItem, DWORD_PTR dwData );
+    BOOL            SetItemImage( HTREEITEM hItem, int nImage, int nSelectedImage );
+    BOOL            SetItemState( HTREEITEM hItem, UINT nState, UINT nStateMask );
+    BOOL            SetItemText( HTREEITEM hItem, LPCTSTR lpszItem );
+    BOOL            SortChildren( HTREEITEM hItem );
+    BOOL            SortChildrenCB( LPTVSORTCB pSort );
+#if (_WIN32_IE >= 0x0300)
+    CToolTipCtrl    *GetToolTips() const;
+    CToolTipCtrl    *SetToolTips( CToolTipCtrl *pWndTip );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    COLORREF        GetBkColor() const;
+    COLORREF        GetInsertMarkColor() const;
+    SHORT           GetItemHeight() const;
+    HTREEITEM       GetLastVisibleItem() const;
+    UINT            GetScrollTime() const;
+    COLORREF        GetTextColor() const;
+    COLORREF        SetBkColor( COLORREF clr );
+    BOOL            SetInsertMark( HTREEITEM hItem, BOOL fAfter = TRUE );
+    COLORREF        SetInsertMarkColor( COLORREF clrNew );
+    SHORT           SetItemHeight( SHORT cyHeight );
+    UINT            SetScrollTime( UINT uScrollTime );
+    COLORREF        SetTextColor( COLORREF clr );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    COLORREF        GetLineColor() const;
+    COLORREF        SetLineColor( COLORREF clrNew = CLR_DEFAULT );
+#endif
+#if (_WIN32_IE >= 0x0600)
+    int             GetItemExpandedImageIndex( HTREEITEM hItem ) const;
+    UINT            GetItemStateEx( HTREEITEM hItem ) const;
+    BOOL            SetItemExpandedImageIndex( HTREEITEM hItem, int iExpandedImage );
+    BOOL            SetItemStateEx( HTREEITEM hItem, UINT nStateEx );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    HTREEITEM       MapAccIdToItem( UINT uAccId ) const;
+    UINT            MapItemToAccId( HTREEITEM hItem ) const;
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    DWORD           GetExtendedStyle() const;
+    BOOL            GetItemPartRect( HTREEITEM hItem, int nPart, LPRECT lpRect ) const;
+    UINT            GetSelectedCount();
+    BOOL            SetAutoscrollInfo( UINT uPixelsPerSec, UINT uUpdateTime );
+    DWORD           SetExtendedStyle( DWORD dwExMask, DWORD dwExStyles );
+    void            ShowInfoTip( HTREEITEM hItem );
+#endif
+};
+
+class _AFXLINK CListCtrl : public CWnd {
+    DECLARE_DYNAMIC( CListCtrl )
+    
+public:
+    CListCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual void    DrawItem( LPDRAWITEMSTRUCT lpDrawItemStruct );
+    
+    virtual BOOL    OnChildNotify( UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    
+    BOOL            Arrange( UINT nCode );
+    CImageList      *CreateDragImage( int nItem, LPPOINT lpPoint );
+    BOOL            DeleteAllItems();
+    BOOL            DeleteColumn( int nCol );
+    BOOL            DeleteItem( int nItem );
+    CEdit           *EditLabel( int nItem );
+    BOOL            EnsureVisible( int nItem, BOOL bPartialOK );
+    int             FindItem( LVFINDINFO *pFindInfo, int nStart = -1 ) const;
+    COLORREF        GetBkColor() const;
+    UINT            GetCallbackMask() const;
+    BOOL            GetCheck( int nItem ) const;
+    BOOL            GetColumn( int nCol, LVCOLUMN *pColumn ) const;
+    int             GetColumnWidth( int nCol ) const;
+    int             GetCountPerPage() const;
+    CEdit           *GetEditControl() const;
+    POSITION        GetFirstSelectedItemPosition() const;
+    CImageList      *GetImageList( int nImageList ) const;
+    BOOL            GetItem( LVITEM *pItem ) const;
+    int             GetItemCount() const;
+    DWORD_PTR       GetItemData( int nItem ) const;
+    BOOL            GetItemPosition( int nItem, LPPOINT lpPoint ) const;
+    BOOL            GetItemRect( int nItem, LPRECT lpRect, UINT nCode ) const;
+    BOOL            GetItemSpacing( BOOL fSmall, int *pnHorzSpacing, int *pnVertSpacing ) const;
+    UINT            GetItemState( int nItem, UINT nMask ) const;
+    int             GetItemText( int nItem, int nSubItem, LPTSTR lpszText, int nLen ) const;
+    CString         GetItemText( int nItem, int nSubItem ) const;
+    int             GetNextItem( int nItem, int nFlags ) const;
+    int             GetNextSelectedItem( POSITION &pos ) const;
+    BOOL            GetOrigin( LPPOINT lpPoint ) const;
+    UINT            GetSelectedCount() const;
+    int             GetStringWidth( LPCTSTR lpsz ) const;
+    COLORREF        GetTextBkColor() const;
+    COLORREF        GetTextColor() const;
+    int             GetTopIndex() const;
+    BOOL            GetViewRect( LPRECT lpRect ) const;
+    int             HitTest( LVHITTESTINFO *pHitTestInfo ) const;
+    int             HitTest( CPoint pt, UINT *pFlags = NULL ) const;
+    int             InsertColumn( int nCol, const LVCOLUMN *pColumn );
+    int             InsertColumn( int nCol, LPCTSTR lpszColumnHeading, int nFormat = LVCFMT_LEFT, int nWidth = -1, int nSubItem = -1 );
+    int             InsertItem( const LVITEM *pItem );
+    int             InsertItem( int nItem, LPCTSTR lpszItem );
+    int             InsertItem( int nItem, LPCTSTR lpszItem, int nImage );
+    int             InsertItem( UINT nMask, int nItem, LPCTSTR lpszItem, UINT nState, UINT nStateMask, int nImage, LPARAM lParam );
+    BOOL            RedrawItems( int nFirst, int nLast );
+    BOOL            Scroll( CSize size );
+    BOOL            SetBkColor( COLORREF cr );
+    BOOL            SetCallbackMask( UINT nMask );
+    BOOL            SetCheck( int nItem, BOOL fCheck = TRUE );
+    BOOL            SetColumn( int nCol, const LVCOLUMN *pColumn );
+    BOOL            SetColumnWidth( int nCol, int cx );
+    CImageList      *SetImageList( CImageList *pImageList, int nImageListType );
+    BOOL            SetItem( const LVITEM *pItem );
+    BOOL            SetItem( int nItem, int nSubItem, UINT nMask, LPCTSTR lpszItem, int nImage, UINT nState, UINT nStateMask, LPARAM lParam );
+    BOOL            SetItem( int nItem, int nSubItem, UINT nMask, LPCTSTR lpszItem, int nImage, UINT nState, UINT nStateMask, LPARAM lParam, int nIndent );
+    void            SetItemCount( int nItems );
+    BOOL            SetItemData( int nItem, DWORD_PTR dwData );
+    BOOL            SetItemPosition( int nItem, POINT pt );
+    BOOL            SetItemState( int nItem, LVITEM *pItem );
+    BOOL            SetItemState( int nItem, UINT nState, UINT nMask );
+    BOOL            SetItemText( int nItem, int nSubItem, LPCTSTR lpszText );
+    BOOL            SetTextBkColor( COLORREF cr );
+    BOOL            SetTextColor( COLORREF cr );
+    BOOL            SortItems( PFNLVCOMPARE pfnCompare, DWORD_PTR dwData );
+    BOOL            Update( int nItem );
+#if (_WIN32_IE >= 0x0300)
+    CSize           ApproximateViewRect( CSize sz = CSize( -1, -1 ), int iCount = -1 ) const;
+    BOOL            GetColumnOrderArray( LPINT piArray, int iCount = -1 ) const;
+    DWORD           GetExtendedStyle() const;
+    CHeaderCtrl     *GetHeaderCtrl() const;
+    HCURSOR         GetHotCursor() const;
+    int             GetHotItem() const;
+    BOOL            GetSubItemRect( int iItem, int iSubItem, int nArea, CRect &ref ) const;
+    BOOL            SetColumnOrderArray( int iCount, LPINT piArray );
+    DWORD           SetExtendedStyle( DWORD dwNewStyle );
+    HCURSOR         SetHotCursor( HCURSOR hc );
+    int             SetHotItem( int iIndex );
+    CSize           SetIconSpacing( int cx, int cy );
+    CSize           SetIconSpacing( CSize size );
+    BOOL            SetItemCountEx( int iCount, DWORD dwFlags = LVSICF_NOINVALIDATEALL );
+    int             SubItemHitTest( LPLVHITTESTINFO pInfo );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    BOOL            GetBkImage( LVBKIMAGE *plvbkImage ) const;
+    DWORD           GetHoverTime() const;
+    UINT            GetNumberOfWorkAreas() const;
+    int             GetSelectionMark() const;
+    CToolTipCtrl    *GetToolTips() const;
+    void            GetWorkAreas( int nWorkAreas, LPRECT prc ) const;
+    BOOL            SetBkImage( LVBKIMAGE *plvbkImage );
+    BOOL            SetBkImage( HBITMAP hbm, BOOL fTile = TRUE, int xOffsetPercent = 0, int yOffsetPercent = 0 );
+    BOOL            SetBkImage( LPTSTR pszUrl, BOOL fTile = TRUE, int xOffsetPercent = 0, int yOffsetPercent = 0 );
+    DWORD           SetHoverTime( DWORD dwHoverTime = 0xFFFFFFFFL );
+    int             SetSelectionMark( int iIndex );
+    CToolTipCtrl    *SetToolTips( CToolTipCtrl *pWndTip );
+    void            SetWorkAreas( int nWorkAreas, LPRECT lpRect );
+#endif
+#if (_WIN32_IE >= 0x0500)
+    BOOL            SortItemsEx( PFNLVCOMPARE pfnCompare, DWORD_PTR dwData );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    void            CancelEditLabel();
+    LRESULT         EnableGroupView( BOOL fEnable );
+    int             GetGroupInfo( int iGroupId, PLVGROUP pgrp ) const;
+    void            GetGroupMetrics( PLVGROUPMETRICS pGroupMetrics ) const;
+    BOOL            GetInsertMark( LPLVINSERTMARK lvim ) const;
+    COLORREF        GetInsertMarkColor() const;
+    int             GetInsertMarkRect( LPRECT pRect ) const;
+    COLORREF        GetOutlineColor() const;
+    UINT            GetSelectedColumn() const;
+    BOOL            GetTileInfo( PLVTILEINFO pti ) const;
+    BOOL            GetTileViewInfo( PLVTILEVIEWINFO ptvi ) const;
+    DWORD           GetView() const;
+    BOOL            HasGroup( int iGroupId ) const;
+    LRESULT         InsertGroup( int index, PLVGROUP pgrp );
+    LRESULT         InsertGroupSorted( PLVINSERTGROUPSORTED pStructInsert );
+    int             InsertMarkHitTest( LPPOINT lpPoint, LPLVINSERTMARK lvim ) const;
+    BOOL            IsGroupViewEnabled() const;
+    UINT            MapIDToIndex( UINT id ) const;
+    UINT            MapIndexToID( UINT index ) const;
+    LRESULT         MoveGroup( int iGroupId, int toIndex );
+    void            MoveItemToGroup( int idItemFrom, int idGroupTo );
+    void            RemoveAllGroups();
+    LRESULT         RemoveGroup( int iGroupId );
+    int             SetGroupInfo( int iGroupId, PLVGROUP pgrp );
+    void            SetGroupMetrics( PLVGROUPMETRICS pGroupMetrics );
+    BOOL            SetInfoTip( PLVSETINFOTIP plvInfoTip );
+    BOOL            SetInsertMark( LPLVINSERTMARK lvim );
+    COLORREF        SetInsertMarkColor( COLORREF color );
+    COLORREF        SetOutlineColor( COLORREF color );
+    LRESULT         SetSelectedColumn( int iCol );
+    BOOL            SetTileInfo( PLVTILEINFO pti );
+    BOOL            SetTileViewInfo( PLVTILEVIEWINFO ptvi );
+    DWORD           SetView( int iView );
+    BOOL            SortGroups( PFNLVGROUPCOMPARE _pfnGroupCompare, LPVOID _plv );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    CString         GetEmptyText() const;
+    int             GetFocusedGroup() const;
+    int             GetGroupCount() const;
+    BOOL            GetGroupInfoByIndex( int iIndex, PLVGROUP pGroup ) const;
+    BOOL            GetGroupRect( int iGroupId, LPRECT lpRect, int iCoords = LVGGR_GROUP ) const;
+    UINT            GetGroupState( int iGroupId, DWORD dwMask ) const;
+    BOOL            GetItemIndexRect( PLVITEMINDEX pItemIndex, int iColumn, int rectType, LPRECT pRect ) const;
+    BOOL            GetNextItemIndex( PLVITEMINDEX pItemIndex, int nFlags ) const;
+    BOOL            IsItemVisible( int index ) const;
+    BOOL            SetItemIndexState( PLVITEMINDEX pItemIndex, DWORD dwState, DWORD dwMask );
+#endif
+};
+
+class _AFXLINK CTabCtrl : public CWnd {
+    DECLARE_DYNAMIC( CTabCtrl )
+    
+public:
+    CTabCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual void    DrawItem( LPDRAWITEMSTRUCT lpDrawItemStruct );
+    
+    virtual BOOL    OnChildNotify( UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    
+    void            AdjustRect( BOOL bLarger, LPRECT lpRect );
+    BOOL            DeleteAllItems();
+    BOOL            DeleteItem( int nItem );
+    int             GetCurFocus() const;
+    int             GetCurSel() const;
+    CImageList      *GetImageList() const;
+    BOOL            GetItem( int nItem, TCITEM *pTabCtrlItem ) const;
+    int             GetItemCount() const;
+    BOOL            GetItemRect( int nItem, LPRECT lpRect ) const;
+    DWORD           GetItemState( int nItem, DWORD dwMask ) const;
+    int             GetRowCount() const;
+    CToolTipCtrl    *GetToolTips() const;
+    int             HitTest( TCHITTESTINFO *pHitTestInfo ) const;
+    LONG            InsertItem( int nItem, TCITEM *pTabCtrlItem );
+    LONG            InsertItem( int nItem, LPCTSTR lpszItem );
+    LONG            InsertItem( int nItem, LPCTSTR lpszItem, int nImage );
+    LONG            InsertItem( UINT nMask, int nItem, LPCTSTR lpszItem, int nImage, LPARAM lParam );
+    LONG            InsertItem( UINT nMask, int nItem, LPCTSTR lpszItem, int nImage, LPARAM lParam, DWORD dwState, DWORD dwStateMask );
+    void            RemoveImage( int nImage );
+    void            SetCurFocus( int nItem );
+    int             SetCurSel( int nItem );
+    CImageList      *SetImageList( CImageList *pImageList );
+    BOOL            SetItem( int nItem, TCITEM *pTabCtrlItem );
+    BOOL            SetItemExtra( int nBytes );
+    CSize           SetItemSize( CSize size );
+    BOOL            SetItemState( int nItem, DWORD dwMask, DWORD dwState );
+    void            SetPadding( CSize size );
+    void            SetToolTips( CToolTipCtrl *pWndTip );
+#if (_WIN32_IE >= 0x0300)
+    void            DeselectAll( BOOL fExcludeFocus );
+    int             SetMinTabWidth( int cx );
+#endif
+#if (_WIN32_IE >= 0x0400)
+    DWORD           GetExtendedStyle();
+    BOOL            HighlightItem( int idItem, BOOL fHighlight = TRUE );
+    DWORD           SetExtendedStyle( DWORD dwNewStyle, DWORD dwExMask = 0L );
+#endif
+};
+
+#if (_WIN32_IE >= 0x0400)
+
+class _AFXLINK CPagerCtrl : public CWnd {
+    DECLARE_DYNAMIC( CPagerCtrl )
+    
+public:
+    CPagerCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    void        ForwardMouse( BOOL bForward );
+    COLORREF    GetBkColor() const;
+    int         GetBorder() const;
+    int         GetButtonSize() const;
+    DWORD       GetButtonState( int iButton ) const;
+    IDropTarget *GetDropTarget() const;
+    int         GetScrollPos() const;
+    BOOL        IsButtonDepressed( int iButton ) const;
+    BOOL        IsButtonGrayed( int iButton ) const;
+    BOOL        IsButtonHot( int iButton ) const;
+    BOOL        IsButtonInvisible( int iButton ) const;
+    BOOL        IsButtonNormal( int iButton ) const;
+    void        RecalcSize();
+    COLORREF    SetBkColor( COLORREF clrBk );
+    int         SetBorder( int iBorder );
+    int         SetButtonSize( int iButtonSize );
+    void        SetChild( HWND hwndChild );
+    void        SetScrollPos( int iPos );
+};
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_WINNT >= 0x0501)
+
+class _AFXLINK CLinkCtrl : public CWnd {
+    DECLARE_DYNAMIC( CLinkCtrl )
+    
+public:
+    CLinkCtrl();
+    
+    virtual BOOL    Create( LPCTSTR lpszLinkMarkup, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( LPCTSTR lpszLinkMarkup, DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    int     GetIdealHeight() const;
+    BOOL    GetItem( PLITEM pItem ) const;
+    BOOL    GetItemID( int iLink, CString &strID ) const;
+    BOOL    GetItemID( int iLink, LPWSTR szID, UINT cchID ) const;
+    BOOL    GetItemState( int iLink, UINT *pnState, UINT stateMask = LIS_FOCUSED | LIS_ENABLED | LIS_VISITED ) const;
+    BOOL    GetItemUrl( int iLink, CString &strUrl ) const;
+    BOOL    GetItemUrl( int iLink, LPWSTR szUrl, UINT cchUrl ) const;
+    BOOL    HitTest( PLHITTESTINFO phti ) const;
+    BOOL    SetItem( PLITEM pItem );
+    BOOL    SetItemID( int iLink, LPCWSTR szID );
+    BOOL    SetItemState( int iLink, UINT state, UINT stateMask = LIS_FOCUSED | LIS_ENABLED | LIS_VISITED );
+    BOOL    SetItemUrl( int iLink, LPCWSTR szUrl );
+#if (_WIN32_WINNT >= 0x0600)
+    int     GetIdealSize( int cxMaxWidth, SIZE *pSize ) const;
+#endif
+};
+
+#endif // (_WIN32_WINNT >= 0x0501)
+
+#if (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CComboBoxEx : public CComboBox {
+    DECLARE_DYNAMIC( CComboBoxEx )
+    
+public:
+    CComboBoxEx();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    int         DeleteItem( int iIndex );
+    CComboBox   *GetComboBoxCtrl();
+    CEdit       *GetEditCtrl();
+    CImageList  *GetImageList() const;
+    BOOL        GetItem( COMBOBOXEXITEM *pCBItem );
+    BOOL        HasEditChanged();
+    int         InsertItem( const COMBOBOXEXITEM *pCBItem );
+    CImageList  *SetImageList( CImageList *pImageList );
+    BOOL        SetItem( const COMBOBOXEXITEM *pCBItem );
+#if (_WIN32_IE >= 0x0400)
+    DWORD       GetExtendedStyle() const;
+    DWORD       SetExtendedStyle( DWORD dwExMask, DWORD dwExStyles );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    HRESULT     SetWindowTheme( LPCWSTR pszSubAppName );
+#endif
+};
+
+#endif // (_WIN32_IE >= 0x0300)
+
+class _AFXLINK CDragListBox : public CListBox {
+protected:
+    int m_nLast;
+    
+    DECLARE_DYNAMIC( CDragListBox )
+    
+public:
+    CDragListBox();
+    
+    virtual BOOL    BeginDrag( CPoint pt );
+    virtual void    CancelDrag( CPoint pt );
+    virtual UINT    Dragging( CPoint pt );
+    virtual void    DrawInsert( int nItem );
+    virtual void    Dropped( int nSrcIndex, CPoint pt );
+    
+    virtual BOOL    OnChildNotify( UINT message, WPARAM wParam, LPARAM lParam, LRESULT *pResult );
+    virtual void    PreSubclassWindow();
+#ifdef _DEBUG
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    int ItemFromPt( CPoint pt, BOOL bAutoScroll = TRUE ) const;
+};
+
+class _AFXLINK CRichEditCtrl : public CWnd {
+    DECLARE_DYNAMIC( CRichEditCtrl )
+    
+public:
+    CRichEditCtrl();
+    
+    virtual BOOL    Create( DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    virtual BOOL    CreateEx( DWORD dwExStyle, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, UINT nID );
+    
+    BOOL            CanPaste( UINT nFormat = 0 ) const;
+    BOOL            CanUndo() const;
+    int             CharFromPos( CPoint pt ) const;
+    void            Clear();
+    void            Copy();
+    void            Cut();
+    BOOL            DisplayBand( LPRECT pDisplayRect );
+    void            EmptyUndoBuffer();
+    long            FindText( DWORD dwFlags, FINDTEXTEX *pFindText ) const;
+    DWORD           FindWordBreak( UINT nCode, DWORD nStart ) const;
+    long            FormatRange( FORMATRANGE *pfr, BOOL bDisplay = TRUE );
+    CPoint          GetCharPos( long lChar ) const;
+    DWORD           GetDefaultCharFormat( CHARFORMAT &cf ) const;
+    long            GetEventMask() const;
+    int             GetFirstVisibleLine() const;
+    IRichEditOle    *GetIRichEditOle() const;
+    long            GetLimitText() const;
+    int             GetLine( int nIndex, LPTSTR lpszBuffer ) const;
+    int             GetLine( int nIndex, LPTSTR lpszBuffer, int nMaxLength ) const;
+    int             GetLineCount() const;
+    BOOL            GetModify() const;
+    UINT            GetOptions() const;
+    DWORD           GetParaFormat( PARAFORMAT &pf ) const;
+    BOOL            GetPunctuation( UINT fType, PUNCTUATION *lpPunc ) const;
+    void            GetRect( LPRECT lpRect ) const;
+    void            GetSel( CHARRANGE &cr ) const;
+    void            GetSel( long &nStartChar, long &nEndChar ) const;
+    long            GetSelText( LPSTR lpBuf ) const;
+    CString         GetSelText() const;
+    DWORD           GetSelectionCharFormat( CHARFORMAT &cf ) const;
+    WORD            GetSelectionType() const;
+    long            GetTextLength() const;
+    int             GetTextRange( int nFirst, int nLast, CString &refString ) const;
+    UINT            GetWordWrapMode() const;
+    void            HideSelection( BOOL bHide, BOOL bPerm );
+    void            LimitText( long nChars = 0 );
+    long            LineFromChar( long nIndex ) const;
+    int             LineIndex( int nLine = -1 ) const;
+    int             LineLength( int nLine = -1 ) const;
+    void            LineScroll( int nLines, int nChars = 0 );
+    void            Paste();
+    void            PasteSpecial( UINT nClipFormat, DWORD dvAspect = 0L, HMETAFILE hMF = NULL );
+    CPoint          PosFromChar( UINT nChar ) const;
+    void            ReplaceSel( LPCTSTR lpszNewText, BOOL bCanUndo = FALSE );
+    void            RequestResize();
+    COLORREF        SetBackgroundColor( BOOL bSysColor, COLORREF cr );
+    BOOL            SetDefaultCharFormat( CHARFORMAT &cf );
+    DWORD           SetEventMask( DWORD dwEventMask );
+    void            SetModify( BOOL bModified = TRUE );
+    BOOL            SetOLECallback( IRichEditOleCallback *pCallback );
+    void            SetOptions( WORD wOp, DWORD dwFlags );
+    BOOL            SetParaFormat( PARAFORMAT &pf );
+    BOOL            SetPunctuation( UINT fType, PUNCTUATION *lpPunc );
+    BOOL            SetReadOnly( BOOL bReadOnly = TRUE );
+    void            SetRect( LPCRECT lpRect );
+    void            SetSel( long nStartChar, long nEndChar );
+    void            SetSel( CHARRANGE &cr );
+    BOOL            SetSelectionCharFormat( CHARFORMAT &cf );
+    BOOL            SetTargetDevice( HDC hDC, long lLineWidth );
+    BOOL            SetTargetDevice( CDC &dc, long lLineWidth );
+    BOOL            SetWordCharFormat( CHARFORMAT &cf );
+    UINT            SetWordWrapMode( UINT uFlags ) const;
+    long            StreamIn( int nFormat, EDITSTREAM &es );
+    long            StreamOut( int nFormat, EDITSTREAM &es );
+    BOOL            Undo();
+#if (_RICHEDIT_VER >= 0x0200)
+    BOOL            CanRedo() const;
+    DWORD           GetDefaultCharFormat( CHARFORMAT2 &cf ) const;
+    DWORD           GetParaFormat( PARAFORMAT2 &pf ) const;
+    UNDONAMEID      GetRedoName() const;
+    DWORD           GetSelectionCharFormat( CHARFORMAT2 &cf ) const;
+    long            GetTextLengthEx( DWORD dwFlags, UINT uCodePage = -1 ) const;
+    UINT            GetTextMode() const;
+    UNDONAMEID      GetUndoName() const;
+    BOOL            Redo();
+    BOOL            SetAutoURLDetect( BOOL bEnable = TRUE );
+    BOOL            SetDefaultCharFormat( CHARFORMAT2 &cf );
+    BOOL            SetParaFormat( PARAFORMAT2 &pf );
+    BOOL            SetSelectionCharFormat( CHARFORMAT2 &cf );
+    BOOL            SetTextMode( UINT fMode );
+    UINT            SetUndoLimit( UINT nLimit );
+    BOOL            SetWordCharFormat( CHARFORMAT2 &cf );
+    void            StopGroupTyping();
+#endif
+};
+
+#ifndef _DEBUG
+    #include <afxcmn1.inl>
+    #include <afxcmn2.inl>
+    #if (_WIN32_IE >= 0x0300)
+        #include <afxcmn3.inl>
+    #endif
+    #if (_WIN32_IE >= 0x0400)
+        #include <afxcmn4.inl>
+    #endif
+#endif
+
+#endif /* __AFXCMN_H__ */

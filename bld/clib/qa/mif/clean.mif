@@ -1,2 +1,2 @@
 clean global : .symbolic
-        rm *.err *.obj *.exe *.exp *.dll *.res *.log tmpfile _tmpfile.*
+        rm -f *.err *.obj *.exe *.exp *.dll *.res *.log tmpfile _tmpfile.* $(additional_cleanup)

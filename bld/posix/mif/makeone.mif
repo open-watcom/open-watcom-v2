@@ -10,15 +10,14 @@
 #       name            the name of the command to be built
 #
 
-!include $(posix_dir)\mif\targos.mif
-!include $(posix_dir)\mif\common.mif
+!include $(posix_dir)/mif/targos.mif
+!include $(posix_dir)/mif/common.mif
 
 #
 #       define the main target
 #
-lnk=$(name).lnk
-$(name).exe: $(objs) $(lnk) $(posixlib)
-        $(linker) @$(lnk)
+$(name).exe: $(objs) $(name).lnk $(posixlibdir)/posix.lib $(__MAKEFILES__)
+        $(linker) @$(name).lnk
 !ifeq targos dosos2
         $(binder)\bind $(name).exe $(apilib) $(doscalls)
 !else ifeq targos pharlap
@@ -28,39 +27,41 @@ $(name).exe: $(objs) $(lnk) $(posixlib)
 #
 #       create the lnk file
 #
-$(LNK) : makefile $(objs)
-        %create $(LNK)
-        @%append $(lnk) name $(name).exe
-        @%append $(LNK) debug all option quiet,caseexact,map
-        @%append $(LNK) path $(obj_dir)
-        @%append $(LNK) lib $(posixlib)
-!ifeq targos dosos2
-        @%append $(LNK) system os2 pmc
-        @%append $(LNK) option heapsize=8k,newfiles
-        @%append $(LNK) option stack=8k
-        @%append $(LNK) lib $(doscalls)
-!else ifeq targos dos
-        @%append $(LNK) system dos
-!else ifeq targos os2v2
-        @%append $(LNK) system os2v2 pmc
-        @%append $(LNK) lib $(watcomdir)lib\os2386.lib
-!else ifeq targos pharlap
-        @%append $(lnk) name $(name).exp
-        @%append $(LNK) system pharlap
-        @%append $(LNK) option stack=4096
-        @%append $(LNK) option offset=16384
-!else ifeq targos nt
-        @%append $(LNK) system nt
-!else ifeq targos alpha
-        @%append $(LNK) system ntaxp
-!else ifeq targos qnx
-        @%append $(LNK) system qnx386
-!else ifeq targos qnx16
-        @%append $(LNK) system qnx
+$(name).lnk : $(objs) $(__MAKEFILES__)
+        @%create $(name).lnk
+        @%append $(name).lnk name $(name).exe
+        @%append $(name).lnk debug all option quiet,map
+!ifeq release 0	
+        @%append $(name).lnk option symfile
 !endif
-        @for %i in ($(objs)) do @%append $(lnk) file %i
-!ifdef EXTRA_LNK
-        @%make $(EXTRA_LNK)
+        @%append $(name).lnk lib $(posixlibdir)/posix.lib
+!ifeq targos dosos2
+        @%append $(name).lnk system os2 pmc
+        @%append $(name).lnk option heapsize=8k,newfiles
+        @%append $(name).lnk option stack=8k
+        @%append $(name).lnk lib $(doscalls)
+!else ifeq targos dos
+        @%append $(name).lnk system dos
+!else ifeq targos os2386
+        @%append $(name).lnk system os2v2 pmc
+!else ifeq targos pharlap
+        @%append $(name).lnk name $(name).exp
+        @%append $(name).lnk system pharlap
+        @%append $(name).lnk option stack=4096
+        @%append $(name).lnk option offset=16384
+!else ifeq targos nt386
+        @%append $(name).lnk system nt
+!else ifeq targos ntaxp
+        @%append $(name).lnk system ntaxp
+!else ifeq targos qnx
+        @%append $(name).lnk system qnx386
+!else ifeq targos qnx16
+        @%append $(name).lnk system qnx
+!endif
+        @for %i in ($(objs)) do @%append $(name).lnk file %i
+!ifdef extra_lnk
+        @%make $(extra_lnk)
 !endif
 
-!include $(posix_dir)\mif\clean.mif
+clean : .symbolic
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym

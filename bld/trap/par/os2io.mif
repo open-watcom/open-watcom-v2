@@ -1,5 +1,3 @@
+extra_c_flags_wdio = -nt=port -nc=IOPL_CODE
 
-portos2.obj : portos2.c
-        $(compile) -nt=port
-
-extra_linker = segment 'port' iopl exp INPORT 2, OUTPORT 4
+extra_linker = segment 'port' IOPL export INPORT 2, OUTPORT 4

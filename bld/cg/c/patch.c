@@ -36,7 +36,10 @@
 #include "cgdefs.h"
 #include "tree.h"
 #include "addrname.h"
-#include "sysmacro.h"
+#include "cgmem.h"
+#include "types.h"
+#include "addrfold.h"
+#include "makeins.h"
 
 typedef struct {
 #ifndef NDEBUG
@@ -52,17 +55,14 @@ typedef struct {
 
 extern  tn              TGPatch( patch_handle, type_def * );
 extern  type_class_def  TypeClass( type_def *);
-extern  an              AddrName( name *, type_def *);
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocS32Const( signed_32 );
-extern  instruction     *MakeMove( name *, name *, type_class_def );
 extern  void            AddIns( instruction * );
-extern  type_def        *TypeAddress(cg_type );
 
 extern  patch   *BGNewPatch() {
     patch               *p;
 
-    _Alloc( p, sizeof( patch ) );
+    p = CGAlloc( sizeof( patch ) );
     p->in_tree = FALSE;
     p->patched = FALSE;
 #ifndef NDEBUG
@@ -112,5 +112,5 @@ extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
 }
 
 extern  void    BGFiniPatch( patch *hdl ) {
-    _Free( hdl, sizeof( patch ) );
+    CGFree( hdl );
 }

@@ -1,0 +1,252 @@
+ex2_4.c
+s1 reads: Hello
+s1 has 5 characters
+s1 reads: Hello world!
+s1 has 12 characters
+s1 backwards reads: !dlrow olleH
+s1 upper case: HELLO WORLD!
+s1 lower case: hello world!
+s1 capitalized: Hello World!
+s1 reads: Oh, Hello World!
+s1 reads: Oh, Goodbye World!
+s1 reads: Oh, World!
+ex2_7.c
+The pattern `Hi There' is found in `Garbage Hi There garbage'
+The pattern begins at zero-relative index 8 and ends at index 16
+The pattern `[^ab1-9]' is found in `ab123QQ59ba'
+The pattern begins at zero-relative index 5 and ends at index 6
+The pattern `O(.*r)' is found in `That's OK for me. OK for you?'
+The pattern begins at zero-relative index 7 and ends at index 24
+ex2_9.c
+s1 reads: Hello
+s1 has 5 characters
+s1 reads: Hello world!
+s1 has 12 characters
+s1 backwards reads: !dlrow olleH
+s1 upper case: HELLO WORLD!
+s1 lower case: hello world!
+s1 capitalized: Hello World!
+s1 reads: Oh, Hello World!
+s1 reads: Oh, Goodbye World!
+s1 reads: Oh, World!
+The pattern `Hi There' is found in `Garbage Hi There garbage'
+The pattern begins at zero-relative index 8 and ends at index 16
+The pattern `[^ab1-9]' is found in `ab123QQ59ba'
+The pattern begins at zero-relative index 5 and ends at index 6
+The pattern `O(.*r)' is found in `That's OK for me. OK for you?'
+The pattern begins at zero-relative index 7 and ends at index 24
+ex3_4.c
+Simple random number generator:
+  Random number 0 is: 6.08313
+  Random number 1 is: 4.05432
+  Random number 2 is: 4.85175
+  Random number 3 is: 6.20709
+  Random number 4 is: 8.68561
+  Random number 5 is: 4.03033
+  Random number 6 is: 7.21326
+  Random number 7 is: 4.35846
+  Random number 8 is: 5.96851
+  Random number 9 is: 3.74817
+
+Three congruential linear random number generator:
+  Random number 0 is: 9.26861
+  Random number 1 is: 7.84012
+  Random number 2 is: 8.84924
+  Random number 3 is: 7.22898
+  Random number 4 is: 8.1818
+  Random number 5 is: 7.3039
+  Random number 6 is: 9.18251
+  Random number 7 is: 10.0368
+  Random number 8 is: 10.3957
+  Random number 9 is: 11.3929
+ex3_6.c
+Circuit impedence is (2000.6,0.00747744) at frequency 346.87
+ex3_8.c
+10/3 + -4/27 = 86/27
+10/3 * -4/27 = -40/81
+10/3 / -4/27 = -45/2
+10/3 % -4/27 = 2/27
+3.33333 + -0.148148 = 3.18519
+3.33333 * -0.148148 = -0.493827
+3.33333 / -0.148148 = -22.5
+ex3_10.c
+b2 = 4294967295
+b3 = 12345000000000000000000000000000000
+b2 + b3 = 12345000000000000000000004294967295
+b2 - b3 = -12344999999999999999999995705032705
+b2 * b3 = 53021371256775000000000000000000000000000000
+b3 / b2 = 2874294296576244359970149
+b3 % b2 = 2868723045
+ex4_9.c
+Summation of integers from 0 through 1000000 (1783293664=1783293664) took log10(log10(time in ms)) = 0
+ex5_8.c
+[ 0 1 2 3 4 5 6 7 8 9 ]
+ex6_4.c
+[ Texas Alaska New York Alabama North Dakota ]
+Texas
+North Dakota
+New York
+Alaska
+Alabama
+ex6_6.c
+55555
+4444
+333
+22
+1
+ex6_8.c
+[ 6.08313 4.05432 4.85175 6.20709 8.68561 ]
+[ 6.08313 4.85175 6.20709 8.68561 ]
+ex6_10.c
+17 21 25 29 
+23 29 35 41 
+29 37 45 53 
+
+11 13 15 17 
+14 17 20 23 
+17 21 25 29 
+ex7_4.c
+
+     A programming  language  serves two  related purposes: it  provides a
+     vehicle  for the programmer to  specify actions to  be executed and a
+     set of concepts for  the programmer to use when  thinking about  what
+     can be done.  The first aspect ideally  requires  a  language that is
+     `close to  the machine', so that  all important aspects of  a machine
+     are handled  simply  and efficiently   in a way  that  is  reasonably
+     obvious to the programmer. The C language was primarily designed with
+     this in  mind. The second aspect  ideally requires a language that is
+     `close  to the problem to  be   solved'  so  that the  concepts of  a
+     solution  can be expressed directly   and concisely.  The  facilities
+     added to C to create C++ were primarily designed with this in mind.
+
+                -- Bjarne Stroupstrup
+
+There are 129 words
+There are 71 unique words
+The most common word is `to' and is used 9 times
+ex7_7.c
+
+     A programming  language  serves two  related purposes: it  provides a
+     vehicle  for the programmer to  specify actions to  be executed and a
+     set of concepts for  the programmer to use when  thinking about  what
+     can be done.  The first aspect ideally  requires  a  language that is
+     `close to  the machine', so that  all important aspects of  a machine
+     are handled  simply  and efficiently   in a way  that  is  reasonably
+     obvious to the programmer. The C language was primarily designed with
+     this in  mind. The second aspect  ideally requires a language that is
+     `close  to the problem to  be   solved'  so  that the  concepts of  a
+     solution  can be expressed directly   and concisely.  The  facilities
+     added to C to create C++ were primarily designed with this in mind.
+
+                -- Bjarne Stroupstrup
+
+There are 129 words
+There are 71 unique words
+The most common word is `to' and is used 9 times
+ex7_9.c
+
+     A programming  language  serves two  related purposes: it  provides a
+     vehicle  for the programmer to  specify actions to  be executed and a
+     set of concepts for  the programmer to use when  thinking about  what
+     can be done.  The first aspect ideally  requires  a  language that is
+     `close to  the machine', so that  all important aspects of  a machine
+     are handled  simply  and efficiently   in a way  that  is  reasonably
+     obvious to the programmer. The C language was primarily designed with
+     this in  mind. The second aspect  ideally requires a language that is
+     `close  to the problem to  be   solved'  so  that the  concepts of  a
+     solution  can be expressed directly   and concisely.  The  facilities
+     added to C to create C++ were primarily designed with this in mind.
+
+                -- Bjarne Stroupstrup
+
+There are 129 words
+There are 71 unique words
+The most common word is `to' and is used 9 times
+ex8_4.c
+Set A contains: [ RED YELLOW ORANGE PINK GREEN ]
+Set B contains: [ BLUE PURPLE ORANGE GREEN PINK ]
+A | B: [ RED YELLOW BLUE PURPLE ORANGE PINK GREEN ]
+A & B: [ ORANGE PINK GREEN ]
+A ^ B: [ RED YELLOW BLUE PURPLE ]
+A - B: [ RED YELLOW ]
+ex8_6.c
+Set A contains: [ 01111100 ]
+Set B contains: [ 00011111 ]
+A | B: [ 01111111 ]
+A & B: [ 00011100 ]
+A ^ B: [ 01100011 ]
+A - B: [ 01100000 ]
+ex9_5.c
+                         WHEN
+                              WHAT
+                    VEHICLE
+                         USE
+               TWO
+                         TO
+                              THINKING
+                    THE
+                         SPECIFY
+                              SET
+          SERVES
+               RELATED
+                    PURPOSES
+                         PROVIDES
+     PROGRAMMING
+               PROGRAMMER
+                    OF
+          LANGUAGE
+               IT
+                    FOR
+                                   EXECUTED
+                                             DONE
+                                        CONCEPTS
+                                             CAN
+                              BE
+                                   AND
+                         ACTIONS
+                              ABOUT
+A
+ex9_7.c
+                    WHEN
+                         WHAT
+               VEHICLE
+                    USE
+          TWO
+               TO
+                    THINKING
+     THE
+               SPECIFY
+                    SET
+          SERVES
+                    RELATED
+               PURPOSES
+                    PROVIDES
+PROGRAMMING
+                    PROGRAMMER
+               OF
+                    LANGUAGE
+          IT
+                    FOR
+               EXECUTED
+                         DONE
+                    CONCEPTS
+                         CAN
+     BE
+               AND
+          ACTIONS
+                    ABOUT
+               A
+ex9_11.c
+President
+   Sales
+      Domestic
+      International
+         Asia
+         Europe
+         Africa
+   Service
+   Finance
+      Short Term
+      Long Term
+      Collections
+   Legal

@@ -24,21 +24,20 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Win386 executable and DLL startup code (32-bit).
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++32 under Microsoft Windows
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm cstrtw32 -bt=WINDOWS -mf -3r
 ;               wasm cstrtw32 -bt=WINDOWS -mf -3s
 ;
+
 .387
 .386p
+
+include xinit.inc
 
 DGROUP group CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
@@ -175,8 +174,7 @@ public  "C",__Is_DLL
 __Is_DLL    label byte
 __inDLL db      0               ; 0 => ordinary EXE, non-zero => DLL
 
- __FPE_handler label dword
-___FPE_handler dd __null_FPE_rtn ; FPE handler
+__FPE_handler dd __null_FPE_rtn ; FPE handler
 
         public  "C",_LpCmdLine
         public  "C",_LpPgmName
@@ -190,8 +188,7 @@ ___FPE_handler dd __null_FPE_rtn ; FPE handler
         public  "C",_osminor
         public  "C",_Extender
         public  __no87
-        public   __FPE_handler
-        public  ___FPE_handler
+        public  "C",__FPE_handler
         public  __init_387_emulator
 
 _DATA   ends
@@ -334,9 +331,9 @@ not_dll2:                               ; endif
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
         dd      ___begtext              ; make sure dead code elimination
                                         ; doesn't kill BEGTEXT segment
 _cstart_ endp
@@ -352,7 +349,7 @@ endif
         push    eax                     ; save return value
         push    edx                     ; save edx
         mov     eax,00h                 ; run finalizers
-        mov     edx,0fh                 ; less than exit
+        mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
         pop     eax                     ; restore return value

@@ -1,0 +1,51 @@
+THE WINHELP |CONTEXT INTERNAL FILE
+==================================
+
+The |CONTEXT file is used by WinHelp as a lookup table to obtain the offset
+of a topic based on a hash value.  See b_tree.txt for a general discussion
+of b-trees.  The |CONTEXT file is used to resolve hotlinks.
+
+Hash Values
+-----------
+
+Hotlinks within the help text are *not* stored as the offset of the topic
+to which they point.  Rather, hotlinks are stored as hash values which
+are generated from the context string for the topic...usually.  I'm not
+sure about hot spots embedded in bitmaps (.SHG files), because those files
+store both the hash value and the context string.  Whatever the case,
+it's clear that both 'hc31' and 'shed' (and possibly WinHelp) share a
+common notion of what the hashing function is.
+
+Fortunately, that hashing function isn't too difficult.  Characters are
+assigned a numeric value as follows:
+
+Character	1  ... 9   0   .   _   a   b ...  z
+---------------------------------------------------
+Value		1  ... 9  10  12  13  17  18 ... 42
+
+I don't yet know which characters, if any, get the values 11, 14, 15 or 16,
+or 0.
+
+Then the string is converted to a DWORD via a simple algorithm:
+	1)  Set the hash value to zero, current character to first
+	    character of the context string.
+	2)  Multiply hash value by 43 (0x2B).
+	3)  Add value of current character to hash value.
+	4)  Throw away all but the low 32 bits.
+	5)  If characters remain in the string, increment current
+	    character and go to step 2.
+	    
+If two context strings will receive the same hash value (unlikely but
+possible) a warning is issued by the help compiler and only the first
+string in recorded in the |CONTEXT table.
+
+The |CONTEXT B-tree
+-------------------
+
+The index pages of the |CONTEXT b-tree use the 4-byte hash values as key
+values.
+
+The leaf pages of the tree store 8-byte records.  The first four bytes
+are a hash value; the last four bytes are the offset of the corresponding
+topic within the |TOPIC file.  These offsets are in the form of "Character"
+offsets; see topic.txt.

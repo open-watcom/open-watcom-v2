@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wrectl3d.h"
 #include "wrctl3d.h"
@@ -58,44 +58,43 @@
 
 Bool WRECtl3DInit ( HINSTANCE inst )
 {
-#if !defined(WRE_USE_3D)
-    _wre_touch(inst);
-    return ( TRUE );
+#if !defined( WRE_USE_3D )
+    _wre_touch( inst );
+    return( TRUE );
 #else
     Bool ok;
 
-    ok = WRCtl3dRegister ( inst );
-    if ( ok ) {
-        ok = WRCtl3dAutoSubclass ( inst );
+    ok = WRCtl3dRegister( inst );
+    if( ok ) {
+        ok = WRCtl3dAutoSubclass( inst );
     }
 
-    return ( ok );
+    return( ok );
 #endif
 }
 
-void WRECtl3DFini ( HINSTANCE inst )
+void WRECtl3DFini( HINSTANCE inst )
 {
-#if !defined(WRE_USE_3D)
-    _wre_touch(inst);
+#if !defined( WRE_USE_3D )
+    _wre_touch( inst );
 #else
-    WRCtl3dUnregister ( inst );
+    WRCtl3dUnregister( inst );
 #endif
 }
 
-void WRECtl3dColorChange ( void )
+void WRECtl3dColorChange( void )
 {
-#if defined(WRE_USE_3D)
-    WRCtl3dColorChange ();
+#if defined( WRE_USE_3D )
+    WRCtl3dColorChange();
 #endif
 }
 
-void WRECtl3dSubclassDlg ( HWND win, WORD w )
+void WRECtl3dSubclassDlg( HWND win, WORD w )
 {
-#if !defined(WRE_USE_3D)
-    _wre_touch(win);
-    _wre_touch(w);
+#if !defined( WRE_USE_3D)
+    _wre_touch( win );
+    _wre_touch( w );
 #else
-    WRCtl3dSubclassDlg ( win, w );
+    WRCtl3dSubclassDlg( win, w );
 #endif
 }
-

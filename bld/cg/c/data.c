@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Global code generator data.
 *
 ****************************************************************************/
 
@@ -34,10 +33,10 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgswitch.h"
-#include "ptrint.h"
+#include "data.h"
 
-pointer                 HeadBlock;
-pointer                 BlockList;
+block                   *HeadBlock;
+block                   *BlockList;
 //pointer                 CurrBlock;
 int                     InsId;
 int                     TempId;
@@ -56,15 +55,16 @@ global_bit_set          MemoryBits;
 type_class_def          ClassPointer;
 bool                    BlockByBlock;
 type_length             MaxStack;
-pointer                 TypeBoolean;
-pointer                 TypeInteger;
-pointer                 TypeUnsigned;
-pointer                 TypePtr;
-pointer                 TypeNone;
-pointer                 TypeProcParm;
-pointer                 TypeNearInteger;
-pointer                 TypeLongInteger;
-pointer                 TypeHugeInteger;
+type_def                *TypeBoolean;
+type_def                *TypeInteger;
+type_def                *TypeUnsigned;
+type_def                *TypePtr;
+type_def                *TypeNone;
+type_def                *TypeProcParm;
+type_def                *TypeNearInteger;
+type_def                *TypeLongInteger;
+type_def                *TypeLongLongInteger;
+type_def                *TypeHugeInteger;
 hw_reg_set              GivenRegisters;
 bool                    BlocksUnTrimmed;
 pointer                 AddrList;

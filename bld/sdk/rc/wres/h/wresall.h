@@ -45,24 +45,4 @@
     #define min( x, y ) (((x) > (y)) ? (y) : (x))
 #endif
 
-/* reference the correct library to include for the memory model that is */
-/* being compiled */
-#ifndef _NO_LIB_PRAGMAS_
-#if defined(__SMALL__)
-    #pragma library (wress)
-#elif defined(__MEDIUM__)
-    #pragma library (wresm)
-#elif defined(__COMPACT__)
-    #pragma library (wresc)
-#elif defined(__LARGE__)
-    #pragma library (wresl)
-#elif defined(__HUGE__)
-    #pragma library (wresh)
-#elif defined(__FLAT__)
-    #pragma library (wresf)
-#elif !defined(__AXP__)
-    #error The current memory model is not supported for the WRES library.
-#endif
-#endif
-
 #endif

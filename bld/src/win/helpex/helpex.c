@@ -6,8 +6,6 @@
                HelpEx loads library MenuHook, which detects F1 keystrokes in
                the HelpEx application menus.
 
-   Modifyed by WATCOM Systems Inc. For C/386 for Windows.
-
    FUNCTIONS:
 
    WinMain() - Calls initialization function, processes message loop.
@@ -28,7 +26,7 @@
 
 char       _class[64];
 HWND       hWnd;               /* Handle to main window */
-HANDLE     hInst;              /* Handle to instance data*/
+HINSTANCE  hInst;              /* Handle to instance data*/
 BOOL       bHelp = FALSE;      /* Help mode flag; TRUE = "ON"*/
 HCURSOR    hHelpCursor;        /* Cursor displayed when in help mode*/
 char       szHelpFileName[EXE_NAME_MAX_SIZE+1];    /* Help file name*/
@@ -39,15 +37,15 @@ void MakeHelpPathName(char*);  /* Function deriving help file path */
 
 /****************************************************************************
 
-   FUNCTION:   WinMain(HANDLE, HANDLE, LPSTR, int)
+   FUNCTION:   WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
    PURPOSE:    Calls initialization function, processes message loop.
 
 ****************************************************************************/
 
 int PASCAL WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
-HANDLE hInstance;
-HANDLE hPrevInstance;
+HINSTANCE hInstance;
+HINSTANCE hPrevInstance;
 LPSTR  lpCmdLine;
 int    nCmdShow;
 {
@@ -79,7 +77,7 @@ int    nCmdShow;
 
 /****************************************************************************
 
-   FUNCTION:   InitApplication(HANDLE)
+   FUNCTION:   InitApplication(HINSTANCE)
 
    PURPOSE:    Initializes window data and registers window class.
 
@@ -88,7 +86,7 @@ int    nCmdShow;
 ****************************************************************************/
 
 BOOL InitApplication(hInstance)
-HANDLE hInstance;
+HINSTANCE hInstance;
 {
    WNDCLASS wc;
 
@@ -110,7 +108,7 @@ HANDLE hInstance;
 
 /****************************************************************************
 
-   FUNCTION:   InitInstance(HANDLE, int)
+   FUNCTION:   InitInstance(HINSTANCE, int)
 
    PURPOSE:    Saves instance handle in global variable and creates main
                window.
@@ -120,7 +118,7 @@ HANDLE hInstance;
 ****************************************************************************/
 
 BOOL InitInstance(hInstance, nCmdShow)
-HANDLE hInstance;
+HINSTANCE hInstance;
 int    nCmdShow;
 {
 
@@ -172,9 +170,9 @@ int    nCmdShow;
 
 long _EXPORT FAR PASCAL MainWndProc(hWnd, message, wParam, lParam)
 HWND       hWnd;
-unsigned   message;
-UINT       wParam;
-LONG       lParam;
+UINT       message;
+WPARAM     wParam;
+LPARAM     lParam;
 {
    FARPROC      lpProcAbout;
    DWORD        dwHelpContextId;
@@ -249,11 +247,11 @@ LONG       lParam;
                    break;
 
                case IDM_ABOUT:
-                   lpProcAbout = MakeProcInstance(About, hInst);
+                   lpProcAbout = MakeProcInstance((FARPROC)About, hInst);
                    DialogBox(hInst,
                        "AboutBox",
                        hWnd,
-                       lpProcAbout);
+                       (DLGPROC)lpProcAbout);
                    FreeProcInstance(lpProcAbout);
                    break;
 
@@ -382,9 +380,9 @@ LONG       lParam;
 
 BOOL _EXPORT FAR PASCAL About(hDlg, message, wParam, lParam)
 HWND       hDlg;
-unsigned   message;
-UINT       wParam;
-LONG       lParam;
+UINT       message;
+WPARAM     wParam;
+LPARAM     lParam;
 {
    lParam = lParam;
    switch (message) {

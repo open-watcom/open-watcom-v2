@@ -1,3 +1,3 @@
-outsb
-outsw
-outsd
+ outsb
+ outsw
+ outsd

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level Netware implementation code for the debugger trap.
 *
 ****************************************************************************/
 
@@ -41,7 +40,9 @@
 
 #include "loader.h"
 //#include "nlmheadr.h"
+#if !defined ( _USE_NEW_KERNEL )
 #include "nwsemaph.h"
+#endif
 #include "debugapi.h"
 
 #undef TRUE
@@ -57,6 +58,9 @@
 #include "nlmport.h"
 #include "nw3to4.h"
 
+#include "x86cpu.h"
+#include "misc7386.h"
+
 #define NO_DREG     ((byte)-1)
 #define NUM_DREG    4
 
@@ -64,6 +68,26 @@
 
 typedef LONG pPID;
 
+#if defined ( _USE_NEW_KERNEL )
+void *          kSemaphoreAlloc( const char *, long );
+unsigned long   kSemaphoreExamineCount( void *sp );
+int             kSemaphoreFree( void *sp );
+int             kSemaphoreWait( void *sp );
+int             kSemaphoreTimedWait( void *sp, unsigned long ms);
+int             kSemaphoreSignal( void *sp );
+int             kSemaphoreTry( void *sp );
+int             kSemaphoreValidate( void *sp );
+int             kGetSemaphoreInfo( void *sp, char *name, size_t nameMax,
+                    unsigned long *count, int *waitingThreads, void *owner );
+
+// R.E.
+int             kSemaphoreSignalAll( void *sp );
+
+#endif
+
+/* Forward declarations */
+static void ClearDebugRegs( void );
+static void ActivateDebugRegs( void );
 
 struct      {
     dword   address;
@@ -80,7 +104,12 @@ typedef struct msb {
         dword                           errnum;
         trap_cpu_regs                   cpu;
         trap_fpu_regs                   fpu;
+#if defined ( _USE_NEW_KERNEL )
+        void *                          ksem;
+        void *                          tksem;
+#else
         dword                           sem;
+#endif
         char                            *description;
         unsigned                        asleep:1;/* sleeping on our semaphore */
         unsigned                        frozen:1;/* allowed to execute? */
@@ -105,9 +134,9 @@ typedef struct nlm_entry {
         bool                            is_load;
 } nlm_entry;
 
+static unsigned_8                       RealNPXType;
 
 nlmstate                                NLMState;
-byte                                    RealNPXType;
 #define BUFF_SIZE                       256
 char                                    CmdLine[BUFF_SIZE];
 char                                    NLMName[14];
@@ -116,8 +145,13 @@ msb                                     *MSB;
 msb                                     *MSBHead;
 trap_cpu_regs                           HelperThreadRegs;
 dword                                   ThreadId;
+#if defined ( _USE_NEW_KERNEL )
+void *                                  kDebugSem = NULL;
+void *                                  kHelperSem = NULL;
+#else
 dword                                   DebugSem = 0;
 dword                                   HelperSem = 0;
+#endif
 struct LoadDefinitionStructure         *DebuggerLoadedNLM = NULL;
 nlm_entry                               *NLMList = NULL;
 nlm_entry                               *LastNLMListEntry = NULL;
@@ -148,21 +182,13 @@ extern int IORead( int readhandle, char *buff, int len );
 extern void StringToNLMPath( char *name, char *res );
 
 /* from NLMINTR.ASM */
-extern void                             DoALongJumpTo();
+extern void                     DoALongJumpTo( unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32, unsigned_32 );
 dword                           ReturnESP;
-extern void                     Return(void);
+extern void                     Return( void );
 extern int                      AdjustStack( dword old_esp, dword adjust );
-extern byte                     NPXType();
-extern void                     Read387(trap_fpu_regs*);
-extern void                     Write387(trap_fpu_regs*);
-extern word                     GetDS();
-extern word                     GetCS();
+extern word                     GetDS( void );
+extern word                     GetCS( void );
 
-#define CR0_EM                  0x00000004L
-extern dword                    GetCR0();
-
-
-extern unsigned                 X86CPUType();
 /* from NLMCLIB.C */
 
 extern struct LoadDefinitionStructure *GetNLMFromPID(pPID);
@@ -171,10 +197,25 @@ extern void                     UnBoobyTrapPID(pPID);
 extern char                     *GetPIDName(pPID);
 extern int                      ValidatePID(pPID);
 extern void                     SetupPIDForACleanExit(pPID);
-extern void                     ImportCLIBSymbols();
+#if defined ( __NW40__ )
+extern int                      ImportCLIBSymbols( void );
+#endif
 
-/* from CLIB */
+/* Must be CLIB! */
 void  _exit( int __status );
+#if defined ( __NW50__ )
+void  NXVmExit( int status ) ;
+
+int   get_app_type       ( void );
+
+/* return flags for get_app_type()... */
+#define LIBRARY_UNKNOWN      0x01  /* thread has default library context     */
+#define LIBRARY_LIBC         0x02  /* thread has specific NKS/LibC context   */
+#define LIBRARY_CLIB         0x04  /* thread has CLib context                */
+#define LIBRARY_JAVA         0x08  /* thread belongs to Java Virtual Machine */
+
+#endif
+
 
 /* from SERVNAME.C */
 extern char ServPref[];
@@ -190,6 +231,27 @@ typedef struct watch {
 #define MAX_WP  32
 watch   WatchPoints[ MAX_WP ];
 int     WatchCount;
+
+/*
+//  Code to release all waiters on a semaphore and delete it
+*/
+#if defined ( _USE_NEW_KERNEL )
+int msb_KernelSemaphoreReleaseAll( msb * m )
+{
+    void *      ksem = m->ksem;
+    m->ksem = NULL;
+    m->tksem = ksem;
+
+    return( kSemaphoreSignalAll( ksem ) );
+}
+
+int KernelSemaphoreReleaseAll( void * sp )
+{
+    kSemaphoreSignalAll( sp );
+    return ( kSemaphoreFree( sp ) );
+}
+
+#endif
 
 void NewNLMListEntry( struct LoadDefinitionStructure *ld )
 {
@@ -208,15 +270,17 @@ void DeadNLMListEntry( struct LoadDefinitionStructure *ld )
     nlm_entry   *curr;
 
     for( curr = NLMList; curr != NULL; curr = curr->next ) {
-        if( !curr->is_load ) continue;
-        if( curr->ld.LDCodeImageOffset != ld->LDCodeImageOffset ) continue;
+        if( !curr->is_load )
+            continue;
+        if( curr->ld.LDCodeImageOffset != ld->LDCodeImageOffset )
+            continue;
         curr->is_load = FALSE;
 //      _DBG_EVENT(( "DeadNLMListEntry: %8x %s\r\n", ld, &(ld->LDFileName[1]) ));
         break;
     }
 }
 
-void FreeAnNLMListEntry()
+void FreeAnNLMListEntry( void )
 {
     nlm_entry   *junk;
 
@@ -230,7 +294,7 @@ msb *LocateThread( pPID pid )
     msb         *m;
 
     m = MSBHead;
-    _DBG_THREAD(( "Looking for  MSB for thread=%8x -- ", pid ));
+    _DBG_THREAD(( "Looking for  MSB for thread=%8x -- \r\n", pid ));
     while( m != NULL ) {
         if( m->os_id == pid ) {
             _DBG_THREAD(( "Found MSB=%8x TID=%d\r\n", m, m->dbg_id ));
@@ -239,6 +303,12 @@ msb *LocateThread( pPID pid )
         m = m->next;
     }
     m = Alloc( sizeof( msb ), AllocTag );
+
+    if( NULL == m ){
+        _DBG_ERROR(( "LocateThread: Failed to allocate msb block\r\n" ));
+        return NULL;
+    }
+
     m->description = NULL;
     m->load = NULL;
     m->os_id = pid;
@@ -248,27 +318,41 @@ msb *LocateThread( pPID pid )
     m->in_start_proc = FALSE;
     m->clib_created = FALSE;
     m->to_be_killed = FALSE;
+#if defined ( _USE_NEW_KERNEL )
+    m->ksem = NULL;
+    m->tksem = NULL;
+#else
     m->sem = 0;
+#endif
     m->next = MSBHead;
     //_DBG_THREAD(( "Allocating MSB=%8x TID=%d\r\n", m, m->dbg_id ));
     MSBHead = m;
     return( m );
 }
 
-void FreeThread( msb *m ) {
-
+void FreeThread( msb *m )
+{
     msb **owner;
     msb *curr;
 
-    _DBG_THREAD(( "Trying to free thread MSB=%8x -- ", m ));
+    _DBG_THREAD(( "Trying to free thread MSB=%8x -- \r\n", m ));
     owner = &MSBHead;
     for( ;; ) {
         curr = *owner;
-        if( curr == NULL ) return;
+        if( curr == NULL )
+            return;
         if( curr == m ) {
             *owner = curr->next;
             _DBG_THREAD(( "Freed it\r\n" ));
-            if( m->sem ) CDeAllocateSemaphore( m->sem );
+#if defined ( _USE_NEW_KERNEL )
+            if( m->ksem){
+                kSemaphoreFree( m->ksem );
+                m->ksem = NULL;
+            }
+#else
+            if( m->sem )
+                CDeAllocateSemaphore( m->sem );
+#endif
             Free( m );
             _DBG_THREAD(( "\r\n" ));
             return;
@@ -278,7 +362,7 @@ void FreeThread( msb *m ) {
 }
 
 
-void FreeInvalidThreads()
+void FreeInvalidThreads( void )
 {
     msb **owner;
     msb *curr;
@@ -286,12 +370,22 @@ void FreeInvalidThreads()
     owner = &MSBHead;
     for( ;; ) {
         curr = *owner;
-        if( curr == NULL ) return;
+        if( curr == NULL )
+            return;
         if( !ValidatePID( curr->os_id ) ) {
-            *owner = curr->next;
-            if( curr->sem ) CDeAllocateSemaphore( curr->sem );
-            owner = &(curr->next);
-            Free( curr );
+            *owner = curr->next;    /* remove MSB from chain */
+#if defined ( _USE_NEW_KERNEL )
+            if( curr->ksem ){
+                kSemaphoreFree( curr->ksem );
+                curr->ksem = NULL;
+            }
+#else
+            if( curr->sem )
+                CDeAllocateSemaphore( curr->sem );
+#endif
+            //owner = &(curr->next);
+            owner = &MSBHead;       /* start from the begiining again */
+            Free( curr );           /* free MSB */
         } else {
             owner = &(curr->next);
         }
@@ -299,13 +393,13 @@ void FreeInvalidThreads()
 }
 
 
-void Suicide()
+void Suicide( void )
 {
     CDestroyProcess( CGetMyProcessID() );
 }
 
 
-void TheBigSleep()
+void TheBigSleep( void )
 {
     while( TRUE ) {
         CSleepUntilInterrupt();
@@ -313,20 +407,28 @@ void TheBigSleep()
 }
 
 
-void WakeDebugger()
+void WakeDebugger( void )
 {
     if( !DebuggerRunning ) {
         ClearDebugRegs();
         DebuggerRunning = TRUE;
+#if defined ( _USE_NEW_KERNEL )
+        kSemaphoreSignal( kDebugSem );
+#else
         CVSemaphore( DebugSem );
+#endif
     }
 }
 
 
-void SleepDebugger()
+void SleepDebugger( void )
 {
     DebuggerRunning = FALSE;
+#if defined ( _USE_NEW_KERNEL )
+    kSemaphoreWait( kDebugSem );
+#else
     CPSemaphore( DebugSem );
+#endif
     DebuggerRunning = TRUE;
 }
 
@@ -358,22 +460,21 @@ bool IsInOSCode( LONG eip )
 
 bool CheckIfBreakOKInOS( LONG eip )
 {
-
-    if( !IsInOSCode( eip ) ) return( TRUE );
+    if( !IsInOSCode( eip ) )
+        return( TRUE );
     ServMessage( TRP_NLM_cant_debug_os );
     return( FALSE );
 }
 #endif
 
 
-int NPX()
+unsigned_8 NPX( void )
 {
-    if( ( GetCR0() & CR0_EM ) == 0 ) return( RealNPXType );
-    #ifdef __NW40__
-    {
-        return( X86_EMU );
-    }
-    #else
+    if( HAVE_EMU == 0 )
+        return( RealNPXType );
+#if defined ( __NW50__ ) || defined ( __NW40__ )
+    return( X86_EMU );
+#elif defined ( __NW30__ )
     {
         struct ExternalPublicDefinitionStructure    *epd;
 
@@ -389,7 +490,7 @@ int NPX()
         }
         return( RealNPXType );
     }
-    #endif
+#endif
 }
 
 
@@ -427,7 +528,7 @@ void DumpRegs( msb *m, char *str )
 #define DumpRegs( m, s )
 #endif
 
-static void BigKludge();
+static void BigKludge( msb *m );
 #pragma aux BigKludge parm [ esi ];
 
 static LONG DebugEntry( StackFrame *frame )
@@ -435,7 +536,7 @@ static LONG DebugEntry( StackFrame *frame )
     msb         *m;
     struct LoadDefinitionStructure *load;
     int         exception_number;
-    char        *description;
+    BYTE        *description;
     long        error_code;
 
     exception_number = FieldExceptionNumber( frame );
@@ -473,7 +574,7 @@ static LONG DebugEntry( StackFrame *frame )
     switch( exception_number ) {
     case START_NLM_EVENT:
         /* The NLM is being loaded. We are on the loader thread here */
-        _DBG_EVENT(( "  START_NLM_EVENT: LDS=%x (%s) D_LDS=%x NLMState=%x ",
+        _DBG_EVENT(( "  START_NLM_EVENT: LDS=%x (%s) D_LDS=%x NLMState=%x\r\n",
                         load, &(load->LDFileName[1]),
                         DebuggerLoadedNLM, NLMState ));
         if( NLMState == NLM_LOADED ) {
@@ -508,12 +609,13 @@ static LONG DebugEntry( StackFrame *frame )
             WakeDebugger();
         } else {
             DeadNLMListEntry( load );
-            if( DebuggerLoadedNLM != NULL ) break;
+            if( DebuggerLoadedNLM != NULL )
+                break;
         }
         return( RETURN_TO_PROGRAM );
     case START_THREAD_EVENT:
         load = GetNLMFromPID( RunningProcess );
-        _DBG_EVENT(( "  START_THREAD_EVENT: LDS=%x (%s) D_LDS=%x ",
+        _DBG_EVENT(( "  START_THREAD_EVENT: LDS=%x (%s) D_LDS=%x\r\n",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         m = LocateThread( RunningProcess );
         m->load = load;
@@ -525,7 +627,7 @@ static LONG DebugEntry( StackFrame *frame )
     case TERMINATE_THREAD_EVENT:
         /* The thread is terminating. Free it's control block and let it die */
         load = GetNLMFromPID( RunningProcess ); // returns NULL
-        _DBG_EVENT(( "  TERMINATE_THREAD_EVENT: LDS=%x (%s) D_LDS=%x, ",
+        _DBG_EVENT(( "  TERMINATE_THREAD_EVENT: LDS=%x (%s) D_LDS=%x,\r\n",
                         load, &(load->LDFileName[1]), DebuggerLoadedNLM ));
         m = LocateThread( RunningProcess );
         _DBG_EVENT(( "MSB=%x, NLM=%x\r\n", m, m->load ));
@@ -590,7 +692,7 @@ static LONG DebugEntry( StackFrame *frame )
     }
     m->xnum = exception_number;
     m->errnum = error_code;
-    m->description = FieldExceptionDescription( frame );
+    m->description = (char *)FieldExceptionDescription( frame );
     SaveRegs( m->cpu );
     DumpRegs( m, "DebugEntry" );
     if( NPX() != X86_NO ) {
@@ -624,7 +726,8 @@ void JumpTo( msb *m )
     fl = m->cpu.EFL;
     ip = m->cpu.EIP;
     DumpRegs( m, "JumpTo" );
-    if( m->to_be_killed ) FreeThread( m );
+    if( m->to_be_killed )
+        FreeThread( m );
     DoALongJumpTo( ax,bx,cx,dx,si,di,bp,sp,fl,ip );
 }
 
@@ -633,9 +736,18 @@ void BigKludge( msb *m )
 {
     _DBG_EVENT(( "*BigKludge: MSB=%8x xnum=%d PID=%8x\r\n", m, m->xnum, m->os_id ));
     m->asleep = TRUE;
+#if defined ( _USE_NEW_KERNEL )
+    if( NULL == m->ksem ){
+        m->ksem = kSemaphoreAlloc( NULL, 0 );
+        if( NULL == m->ksem ){
+            _DBG_ERROR(( "*BigKludge: Failed to allocate semaphore\r\n" ));
+        }
+    }
+#else
     if( m->sem == 0 ) {
         m->sem = CAllocSemaphore( 0, SemaphoreTag );
     }
+#endif
     if( m->xnum != THREAD_BOOBY_TRAP_EVENT ) {
         _DBG_EVENT(( "  Waking up the debugger for debug event\r\n" ));
         BoobyTrapPID( m->os_id ); /* catch all other threads in NLM */
@@ -644,8 +756,13 @@ void BigKludge( msb *m )
         }
         WakeDebugger();
     }
+#if defined ( _USE_NEW_KERNEL )
+    _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x\r\n", m, m->ksem ));
+    kSemaphoreWait( m->ksem );
+#else
     _DBG_THREAD(( "Putting to sleep MSB=%8x on sem=%8x\r\n", m, m->sem ));
     CPSemaphore( m->sem );
+#endif
     m->asleep = FALSE;
     _DBG_EVENT(( "  Waking up as MSB=%8x\r\n", m ));
     if( NPX() != X86_NO ) {
@@ -674,26 +791,56 @@ void BigKludge( msb *m )
                 _DBG_EVENT(( "  NLMState = NLM_FORCED_INIT_FAILURE\r\n" ));
             }
         } else if( m->clib_created ) {
-            //_DBG_THREAD(( "     Warping off to _exit!!!\r\n" ));
+#if defined ( __NW50__ )
+            int type = get_app_type();
+
+            if( type & LIBRARY_CLIB ) {
+                _DBG_THREAD(( "     Warping off to _exit!!!\r\n" ));
+                m->cpu.EIP = (dword)_exit;
+            } else if( type & LIBRARY_LIBC) {
+                _DBG_THREAD(( "     Warping off to NXVMExit!!!\r\n" ));
+                m->cpu.EIP = (dword)NXVmExit;
+            } else {
+                _DBG_THREAD(( "     Warping off to suicide!!!\r\n" ));
+                m->cpu.EIP = (dword)Suicide;
+            }
+#else
+            _DBG_THREAD(( "     Warping off to _exit!!!\r\n" ));
             m->cpu.EIP = (dword)_exit;
+#endif
         } else {
-            //_DBG_THREAD(( "     Suicide!!!\r\n" ));
+            _DBG_THREAD(( "     Suicide!!!\r\n" ));
             m->cpu.EIP = (dword)Suicide;
         }
     }
     JumpTo( m );
 }
 
-#ifdef __NW40__
+#if defined ( __NW50__ )    /* This is duplicate to 4.0 but I want to change soon */
     static struct debuggerStructure DbgStruct = {
-        NULL, NULL,
-        (LONG(*)(struct T_StackFrame *))DebugEntry, AT_FIRST, TSS_FRAME_BIT
+        NULL,
+        NULL,
+        (LONG(*)(StackFrame *))DebugEntry,
+        AT_FIRST,
+        TSS_FRAME_BIT
     };
-#else
-    static T_DebuggerStruct DbgStruct = { NULL, NULL, DebugEntry };
+#elif defined ( __NW40__ )
+    static struct debuggerStructure DbgStruct = {
+        NULL,
+        NULL,
+        (LONG(*)(StackFrame *))DebugEntry,
+        AT_FIRST,
+        TSS_FRAME_BIT
+    };
+#elif defined ( __NW30__ )
+    static T_DebuggerStruct DbgStruct = {
+        0,
+        NULL,
+        DebugEntry
+    };
 #endif
 
-unsigned ReqGet_sys_config()
+unsigned ReqGet_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -708,7 +855,7 @@ unsigned ReqGet_sys_config()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr()
+unsigned ReqMap_addr( void )
 {
     nlm_entry   *curr;
     map_addr_req        *acc;
@@ -726,8 +873,10 @@ unsigned ReqMap_addr()
     curr = (nlm_entry *)acc->handle;
     if( curr == NULL ) { // main NLM
         _DBG_MISC(( "Main NLM\r\n" ));
-        if( MSB == NULL ) return( sizeof( *ret ) );
-        if( MSB->load == NULL ) return( sizeof( *ret ) );
+        if( MSB == NULL )
+            return( sizeof( *ret ) );
+        if( MSB->load == NULL )
+            return( sizeof( *ret ) );
         ld = MSB->load;
     } else {
         ld = &curr->ld;
@@ -765,7 +914,7 @@ unsigned ReqMap_addr()
 }
 
 //obsolete
-unsigned ReqAddr_info()
+unsigned ReqAddr_info( void )
 {
     addr_info_ret       *ret;
 
@@ -774,7 +923,7 @@ unsigned ReqAddr_info()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMachine_data()
+unsigned ReqMachine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -789,23 +938,29 @@ unsigned ReqMachine_data()
 
 static int ReadMemory( addr48_ptr *addr, unsigned long req, void *buf )
 {
-    if( MSB == NULL ) return( -1 );
-    if( CValidatePointer( (char *)addr->offset ) == NULL ) return( -1 );
-    if( CValidatePointer( (char *)addr->offset+req-1 ) == NULL ) return( -1 );
+    if( MSB == NULL )
+        return( -1 );
+    if( CValidatePointer( (char *)addr->offset ) == 0 )
+        return( -1 );
+    if( CValidatePointer( (char *)addr->offset + req - 1 ) == 0 )
+        return( -1 );
     memcpy( buf, (void *)addr->offset, req );
     return( 0 );
 }
 
 static int WriteMemory( addr48_ptr *addr, unsigned long req, void *buf )
 {
-    if( MSB == NULL ) return( -1 );
-    if( CValidatePointer( (char *)addr->offset ) == NULL ) return( -1 );
-    if( CValidatePointer( (char *)addr->offset+req-1 ) == NULL ) return( -1 );
+    if( MSB == NULL )
+        return( -1 );
+    if( CValidatePointer( (char *)addr->offset ) == 0 )
+        return( -1 );
+    if( CValidatePointer( (char *)addr->offset + req - 1 ) == 0 )
+        return( -1 );
     memcpy( (void *)addr->offset, buf, req );
     return( 0 );
 }
 
-static unsigned short ReadWrite( int (*rtn)(), addr48_ptr *addr,
+static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *), addr48_ptr *addr,
                                 char *buff, unsigned short requested )
 {
     int                 err;
@@ -818,7 +973,8 @@ static unsigned short ReadWrite( int (*rtn)(), addr48_ptr *addr,
     }
     len = requested;
     while( len != 0 ) {
-        if( rtn( addr, 1UL, buff++ ) != 0 ) break;
+        if( rtn( addr, 1UL, buff++ ) != 0 )
+            break;
         --len;
         addr->offset++;
     }
@@ -826,7 +982,7 @@ static unsigned short ReadWrite( int (*rtn)(), addr48_ptr *addr,
 }
 
 
-unsigned ReqChecksum_mem()
+unsigned ReqChecksum_mem( void )
 {
     unsigned short      len;
     addr48_ptr          addr;
@@ -844,19 +1000,21 @@ unsigned ReqChecksum_mem()
     ret->result = 0;
     while( len > 0 ) {
         want = len;
-        if( want > BUFF_SIZE ) want = BUFF_SIZE;
+        if( want > BUFF_SIZE )
+            want = BUFF_SIZE;
         got = ReadWrite( ReadMemory, &addr, UtilBuff, want );
         for( i = 0; i < got; ++i ) {
             ret->result += UtilBuff[ i ];
         }
-        if( got != want ) break;
+        if( got != want )
+            break;
         len -= want;
     }
     return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRead_mem()
+unsigned ReqRead_mem( void )
 {
     addr48_ptr          addr;
     read_mem_req        *acc;
@@ -870,7 +1028,7 @@ unsigned ReqRead_mem()
     return( len );
 }
 
-unsigned ReqWrite_mem()
+unsigned ReqWrite_mem( void )
 {
     addr48_ptr          addr;
     write_mem_req       *acc;
@@ -889,7 +1047,7 @@ unsigned ReqWrite_mem()
 }
 
 
-unsigned ReqRead_io()
+unsigned ReqRead_io( void )
 {
     read_io_req *acc;
     void         *data;
@@ -907,7 +1065,7 @@ unsigned ReqRead_io()
 }
 
 
-unsigned ReqWrite_io()
+unsigned ReqWrite_io( void )
 {
     write_io_req        *acc;
     write_io_ret        *ret;
@@ -930,7 +1088,7 @@ unsigned ReqWrite_io()
 }
 
 //obsolete
-unsigned ReqRead_cpu()
+unsigned ReqRead_cpu( void )
 {
     trap_cpu_regs       *regs;
 
@@ -944,7 +1102,7 @@ unsigned ReqRead_cpu()
 }
 
 //obsolete
-unsigned ReqRead_fpu()
+unsigned ReqRead_fpu( void )
 {
     trap_fpu_regs       *regs;
 
@@ -958,7 +1116,7 @@ unsigned ReqRead_fpu()
 }
 
 //obsolete
-unsigned ReqWrite_cpu()
+unsigned ReqWrite_cpu( void )
 {
     if( MSB != NULL ) {
         MSB->cpu = *(trap_cpu_regs *)GetInPtr(sizeof(write_cpu_req));
@@ -967,7 +1125,7 @@ unsigned ReqWrite_cpu()
 }
 
 //obsolete
-unsigned ReqWrite_fpu()
+unsigned ReqWrite_fpu( void )
 {
     if( MSB != NULL ) {
         MSB->fpu = *(trap_fpu_regs *)GetInPtr(sizeof(write_fpu_req));
@@ -1004,7 +1162,94 @@ static char *LoadName;
 static unsigned LoadLen;
 static prog_load_ret *LoadRet;
 
-static void LoadHelper()
+static void LoadHelper( void )
+{
+    int         err;
+    int         handle;
+    char        *src, *dst;
+    char        nlm_name[256];
+    char        ch;
+    unsigned    len;
+
+    Enable();
+    MSBHead = NULL;
+    ThreadId = 0;
+    MSB = NULL;
+    src = LoadName;
+    StringToNLMPath( src, nlm_name );
+    dst = CmdLine;
+    len = LoadLen;
+
+    for( ;; ) {
+        if( len == 0 )
+            break;
+        ch = *src;
+        if( ch == '\0' )
+            ch = ' ';
+        *dst = ch;
+        ++dst;
+        ++src;
+        --len;
+    }
+
+    if( dst > CmdLine && src[-1] == '\0' )
+        --dst;
+    *dst = '\0';
+    LoadRet->err = 0;
+    NLMState = NLM_PRELOADING;
+    _DBG_EVENT(( "*LoadHelper: NLMState = NLM_PRELOADING\r\n" ));
+    ExpectingEvent = TRUE;
+
+    if( nlm_name[0] == '\0'
+     || ( handle = IOOpen( nlm_name, O_RDONLY ) ) == -1
+     || IOSeek( handle, SEEK_SET, offsetof( nlm_header, moduleName ) )
+                != offsetof( nlm_header, moduleName )
+     || IORead( handle, NLMName, 14 ) != 14
+     || IOClose( handle ) != 0 ) {
+        NLMState = NLM_NONE;
+        _DBG_EVENT(( "  NLMState = NLM_NONE\r\n" ));
+        DebuggerLoadedNLM = NULL;
+        if( LoadRet != NULL )
+            LoadRet->err = 2;
+        _DBG_EVENT(( "  Waking up the debugger for noopen event\r\n" ));
+        WakeDebugger();
+    } else {
+        _DBG_EVENT(( "  Name is '%S'\r\n", NLMName ));
+        err = LoadModule( systemConsoleScreen, (BYTE *)CmdLine, LO_DEBUG );
+        _DBG_EVENT(( "  Load ret code %d\r\n", err ));
+        if( err != 0 ) {
+            NLMState = NLM_NONE;
+            _DBG_EVENT(( "    NLMState = NLM_NONE\r\n" ));
+            DebuggerLoadedNLM = NULL;
+            if( LoadRet != NULL )
+                LoadRet->err = err;
+            _DBG_EVENT(( "    Waking up the debugger for noload event\r\n" ));
+            WakeDebugger();
+        }
+    }
+    FreeThread( LocateThread( RunningProcess ) );
+
+    if( NLMState != NLM_NONE) {
+        NLMState = NLM_LOADED;
+        _DBG_EVENT(( "LoadHelper: NLMState = NLM_LOADED\r\n" ));
+#if defined ( _USE_NEW_KERNEL )
+        kSemaphoreWait( kHelperSem );
+#else
+        CPSemaphore( HelperSem );
+#endif
+        _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!\r\n", DebuggerLoadedNLM ));
+        NLMState = NLM_NONE;
+        _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE\r\n" ));
+        if( DebuggerLoadedNLM )
+            KillMe( DebuggerLoadedNLM );
+    }
+    DebuggerLoadedNLM = NULL;
+    _DBG_EVENT(( "LoadHelper: Helper killing itself\r\n" ));
+    Suicide();
+}
+
+#if 0
+static void LoadHelper( void )
 {
     int         err;
     int         handle;
@@ -1022,15 +1267,18 @@ static void LoadHelper()
     dst = CmdLine;
     len = LoadLen;
     for( ;; ) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         ch = *src;
-        if( ch == '\0' ) ch = ' ';
+        if( ch == '\0' )
+            ch = ' ';
         *dst = ch;
         ++dst;
         ++src;
         --len;
     }
-    if( dst > CmdLine && src[-1] == '\0' ) --dst;
+    if( dst > CmdLine && src[-1] == '\0' )
+        --dst;
     *dst = '\0';
     LoadRet->err = 0;
     NLMState = NLM_PRELOADING;
@@ -1056,7 +1304,8 @@ static void LoadHelper()
             NLMState = NLM_NONE;
             _DBG_EVENT(( "    NLMState = NLM_NONE\r\n" ));
             DebuggerLoadedNLM = NULL;
-            if( LoadRet != NULL ) LoadRet->err = err;
+            if( LoadRet != NULL )
+                LoadRet->err = err;
             _DBG_EVENT(( "    Waking up the debugger for noload event\r\n" ));
             WakeDebugger();
         }
@@ -1068,16 +1317,17 @@ static void LoadHelper()
     _DBG_EVENT(( "LoadHelper: Helper awake -- calling KillMe NLM=%8x!\r\n", DebuggerLoadedNLM ));
     NLMState = NLM_NONE;
     _DBG_EVENT(( "LoadHelper: NLMState = NLM_NONE\r\n" ));
-    if( DebuggerLoadedNLM ) KillMe( DebuggerLoadedNLM );
+    if( DebuggerLoadedNLM )
+        KillMe( DebuggerLoadedNLM );
     DebuggerLoadedNLM = NULL;
     _DBG_EVENT(( "LoadHelper: Helper killing itself\r\n" ));
     Suicide();
 }
-
+#endif
 
 static char    helper_stack[8192]; /* We may return before thread dies! */
 
-unsigned ReqProg_load()
+unsigned ReqProg_load( void )
 {
     prog_load_ret       *ret;
     struct LoadDefinitionStructure *ld;
@@ -1105,7 +1355,8 @@ unsigned ReqProg_load()
     nlm = 0;
     for( ;; ) {
         nlm = GetNextLoadedListEntry( nlm );
-        if( nlm == 0 ) break;
+        if( nlm == 0 )
+            break;
         ld = ValidateModuleHandle( nlm );
         if( ld != DebuggerLoadedNLM ) {
             // skip the main NLM
@@ -1116,7 +1367,7 @@ unsigned ReqProg_load()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill()
+unsigned ReqProg_kill( void )
 {
     msb         *m;
     prog_kill_ret       *ret;
@@ -1130,9 +1381,15 @@ unsigned ReqProg_kill()
                 DebuggerLoadedNLM = NULL;
                 SetupPIDForACleanExit( m->os_id );
             }
+#if defined ( _USE_NEW_KERNEL )
+            _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x\r\n", m, m->ksem ));
+            msb_KernelSemaphoreReleaseAll( m );
+            m->ksem = NULL;
+#else
             _DBG_THREAD(( "----- Releasing semaphore for MSB=%8x, sem=%8x\r\n", m, m->sem ));
             CSemaphoreReleaseAll( m->sem ); /* will be freed when thread awakes */
             m->sem = 0;
+#endif
             m = m->next;
         }
     }
@@ -1140,7 +1397,11 @@ unsigned ReqProg_kill()
         FreeAnNLMListEntry();
     }
     LastNLMListEntry = NULL;
+#if defined ( _USE_NEW_KERNEL )
+    kSemaphoreSignal( kHelperSem );
+#else
     CVSemaphore( HelperSem );
+#endif
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -1152,11 +1413,16 @@ unsigned Execute( msb *which )
     msb         *m;
 
     for( m = MSBHead; m != NULL; m = m->next ) {
-        _DBG_THREAD(( "check thread %8x: f=%d, a=%d\r\n", m, m->frozen, m->asleep ));
+        _DBG_THREAD(( "check thread msb=%8x: frozen=%d, asleep=%d\r\n", m, m->frozen, m->asleep ));
         if( !m->frozen && m->asleep ) {
             if( which == NULL || which == m ) {
+#if defined ( _USE_NEW_KERNEL )
+                _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x\r\n", m, m->ksem ));
+                kSemaphoreSignal( m->ksem );
+#else
                 _DBG_THREAD(( "Letting a thread execute, MSB=%8x, sem=%8x\r\n", m, m->sem ));
                 CVSemaphore( m->sem );
+#endif
             }
         }
     }
@@ -1164,7 +1430,8 @@ unsigned Execute( msb *which )
     _DBG_EVENT(( "*Execute: Putting debugger to sleep for execution\r\n" ));
     SleepDebugger();
     _DBG_EVENT(( "Execute: Debugger awake after execution\r\n" ));
-    if( MSB == NULL ) return( COND_TERMINATE );
+    if( MSB == NULL )
+        return( COND_TERMINATE );
     switch( MSB->xnum )
     {
     case 1:
@@ -1203,7 +1470,7 @@ unsigned Execute( msb *which )
     }
 }
 
-unsigned ReqSet_watch()
+unsigned ReqSet_watch( void )
 {
     dword        l;
     set_watch_req       *acc;
@@ -1233,29 +1500,32 @@ unsigned ReqSet_watch()
         }
         for( i = 0; i < NUM_DREG; ++i ) {
             dreg_avail[ i ] = DoReserveBreakpoint();
-            if( dreg_avail[ i ] < 0 ) break;
+            if( dreg_avail[ i ] < 0 )
+                break;
         }
         for( i = 0; i < NUM_DREG; ++i ) {
-            if( dreg_avail[ i ] < 0 ) break;
+            if( dreg_avail[ i ] < 0 )
+                break;
             UnReserveABreakpoint( dreg_avail[ i ] );
         }
-        if( needed <= i ) ret->multiplier |= USING_DEBUG_REG;
+        if( needed <= i )
+            ret->multiplier |= USING_DEBUG_REG;
     }
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch()
+unsigned ReqClear_watch( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break()
+unsigned ReqSet_break( void )
 {
-    byte             l;
-    set_break_req       *acc;
-    set_break_ret       *ret;
-    char                ch;
+    byte            l;
+    set_break_req   *acc;
+    set_break_ret   *ret;
+    byte            ch;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -1270,7 +1540,7 @@ unsigned ReqSet_break()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break()
+unsigned ReqClear_break( void )
 {
     clear_break_req     *acc;
 
@@ -1279,7 +1549,7 @@ unsigned ReqClear_break()
     return( 0 );
 }
 
-static void ClearDebugRegs()
+static void ClearDebugRegs( void )
 {
     int     i;
 
@@ -1293,7 +1563,7 @@ static void ClearDebugRegs()
 }
 
 
-static void ActivateDebugRegs()
+static void ActivateDebugRegs( void )
 {
     int         i;
 
@@ -1320,7 +1590,7 @@ static bool SetDR( unsigned address, int len )
     return( TRUE );
 }
 
-static bool SetDebugRegs()
+static bool SetDebugRegs( void )
 {
     int         i;
     unsigned    address;
@@ -1329,9 +1599,11 @@ static bool SetDebugRegs()
     for( i = WatchCount, wp = WatchPoints; i != 0; --i, ++wp ) {
         address = wp->addr.offset;
         _DBG_DR(( "offset = %8x, addr=%8x\r\n", wp->addr.offset, address ));
-        if( !SetDR( wp->linear, wp->len ) ) return( FALSE );
+        if( !SetDR( wp->linear, wp->len ) )
+            return( FALSE );
         if( wp->dregs == 2 ) {
-            if( !SetDR( wp->linear+wp->len, wp->len ) ) return( FALSE );
+            if( !SetDR( wp->linear+wp->len, wp->len ) )
+                return( FALSE );
         }
     }
     return( TRUE );
@@ -1364,9 +1636,12 @@ static unsigned ProgRun( bool step )
                 TrapInt1 = TRUE;
                 ret->conditions |= Execute( MSB );
                 TrapInt1 = FALSE;
-                if( ret->conditions & COND_TERMINATE ) break;
-                if( MSB->xnum != 1 ) break;
-                if( !( MSB->errnum & DR6_BS ) ) break;
+                if( ret->conditions & COND_TERMINATE )
+                    break;
+                if( MSB->xnum != 1 )
+                    break;
+                if( !( MSB->errnum & DR6_BS ) )
+                    break;
                 for( wp = WatchPoints, i = WatchCount; i > 0; ++wp, --i ) {
                     ReadMemory( &wp->addr, 4UL, &value );
                     if( value != wp->value ) {
@@ -1396,17 +1671,17 @@ leave:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go()
+unsigned ReqProg_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-unsigned ReqProg_step()
+unsigned ReqProg_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-unsigned ReqGet_next_alias()
+unsigned ReqGet_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -1422,14 +1697,16 @@ static msb *LocateTid( dword tid )
 
     m = MSBHead;
     for( ;; ) {
-        if( m == NULL ) return( NULL );
-        if( m->dbg_id == tid ) return( m );
+        if( m == NULL )
+            return( NULL );
+        if( m->dbg_id == tid )
+            return( m );
         m = m->next;
     }
 }
 
 
-unsigned ReqThread_get_next()
+unsigned ReqThread_get_next( void )
 {
     msb             *m;
     thread_get_next_req *acc;
@@ -1441,7 +1718,8 @@ unsigned ReqThread_get_next()
         m = MSBHead;
     } else {
         m = LocateTid( acc->thread );
-        if( m != NULL ) m = m->next;
+        if( m != NULL )
+            m = m->next;
     }
     if( m != NULL ) {
         ret->thread = m->dbg_id;
@@ -1453,7 +1731,7 @@ unsigned ReqThread_get_next()
 }
 
 
-unsigned ReqThread_set()
+unsigned ReqThread_set( void )
 {
     msb            *m;
     thread_set_req      *acc;
@@ -1480,7 +1758,7 @@ unsigned ReqThread_set()
 }
 
 
-unsigned ReqThread_freeze()
+unsigned ReqThread_freeze( void )
 {
     msb               *m;
     thread_freeze_req   *acc;
@@ -1500,7 +1778,7 @@ unsigned ReqThread_freeze()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqThread_thaw()
+unsigned ReqThread_thaw( void )
 {
     msb             *m;
     thread_thaw_req     *acc;
@@ -1521,7 +1799,7 @@ unsigned ReqThread_thaw()
 }
 
 
-unsigned ReqThread_get_extra()
+unsigned ReqThread_get_extra( void )
 {
     msb              *m;
     char             *name;
@@ -1542,7 +1820,7 @@ unsigned ReqThread_get_extra()
     return( strlen( name ) + 1 );
 }
 
-unsigned ReqGet_err_text()
+unsigned ReqGet_err_text( void )
 {
     char        *err;
 
@@ -1552,7 +1830,7 @@ unsigned ReqGet_err_text()
     return( strlen( err ) + 1 );
 }
 
-unsigned ReqGet_message_text()
+unsigned ReqGet_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1573,7 +1851,8 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 {
     LoadedListHandle    nlm;
 
-    if( ld == NULL ) return( 0 );
+    if( ld == NULL )
+        return( 0 );
     nlm = GetNextLoadedListEntry( 0 );
     while( nlm != 0 ) {
         if( ld == ValidateModuleHandle( nlm ) ) {
@@ -1585,7 +1864,7 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 }
 #endif
 
-unsigned ReqGet_lib_name()
+unsigned ReqGet_lib_name( void )
 {
     int             len;
     get_lib_name_req    *acc;
@@ -1621,7 +1900,7 @@ unsigned ReqGet_lib_name()
     }
 }
 
-unsigned ReqRedirect_stdin()
+unsigned ReqRedirect_stdin( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -1630,7 +1909,7 @@ unsigned ReqRedirect_stdin()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout()
+unsigned ReqRedirect_stdout( void )
 {
     redirect_stdout_ret *ret;
 
@@ -1640,21 +1919,21 @@ unsigned ReqRedirect_stdout()
 }
 
 
-unsigned ReqSet_user_screen()
+unsigned ReqSet_user_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-unsigned ReqSet_debug_screen()
+unsigned ReqSet_debug_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-unsigned ReqRead_user_keyboard()
+unsigned ReqRead_user_keyboard( void )
 {
     /* NOT IMPLEMENTED */
     read_user_keyboard_ret      *ret;
@@ -1664,7 +1943,7 @@ unsigned ReqRead_user_keyboard()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSplit_cmd()
+unsigned ReqSplit_cmd( void )
 {
     char             *cmd;
     char             *start;
@@ -1677,7 +1956,8 @@ unsigned ReqSplit_cmd()
     len = GetTotalSize() - sizeof( split_cmd_req );
 
     for( ;; ) {
-        if( len == 0 ) goto done;
+        if( len == 0 )
+            goto done;
         switch( *cmd ) {
         case '\0':
             goto done;
@@ -1702,7 +1982,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     trap_version        ver;
     extern              struct LoadDefinitionStructure *MyNLMHandle;
 
-#ifdef __NW40__
+#if defined ( __NW40__ )
     ImportCLIBSymbols();
 #endif
     remote = remote; parm = parm;
@@ -1713,8 +1993,13 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     FakeBreak = FALSE;
     RealNPXType = NPXType();
     WatchCount = 0;
+#if defined ( _USE_NEW_KERNEL )
+    kDebugSem = kSemaphoreAlloc( NULL, 0 );
+    kHelperSem = kSemaphoreAlloc( NULL, 0 );
+#else
     DebugSem = CAllocSemaphore( 0, SemaphoreTag );
     HelperSem = CAllocSemaphore( 0, SemaphoreTag );
+#endif
     DebuggerLoadedNLM = NULL;
     NLMState = NLM_NONE;
     DebuggerRunning = TRUE;
@@ -1725,17 +2010,30 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     return( ver );
 }
 
-void TRAPENTRY TrapFini()
+void TRAPENTRY TrapFini( void )
 {
     UnRegisterDebugger( &DbgStruct );
     ExpectingEvent = FALSE;
-    while( MSBHead ) FreeThread( MSBHead );
-    if( DebugSem ) CSemaphoreReleaseAll( DebugSem );
+    while( MSBHead )
+        FreeThread( MSBHead );
+#if defined ( _USE_NEW_KERNEL )
+    if( kDebugSem )
+        KernelSemaphoreReleaseAll( kDebugSem );
+    kDebugSem = NULL;
+    if( kHelperSem )
+        KernelSemaphoreReleaseAll( kHelperSem );
+    kHelperSem = 0;
+#else
+    if( DebugSem )
+        CSemaphoreReleaseAll( DebugSem );
     DebugSem = 0;
-    if( HelperSem ) CSemaphoreReleaseAll( HelperSem );
+    if( HelperSem )
+        CSemaphoreReleaseAll( HelperSem );
     HelperSem = 0;
+#endif
     while( NLMList != NULL ) {
         FreeAnNLMListEntry();
     }
     LastNLMListEntry = NULL;
 }
+

@@ -31,30 +31,30 @@
 
 
 //#define DEBUG_TRAP
-#include "trapdbg2.h"
+#include "trapdbg.h"
 
 #include <string.h>
 #include "trpimp.h"
 #include "packet.h"
 
-static char             PackBuff[0x400];
+static char             PackBuff[ 0x400 ];
 static unsigned         PackInd = 0;
 
 #undef MAX_PACK_LEN
 #define MAX_PACK_LEN (sizeof(PackBuff))
 
-void StartPacket()
+void StartPacket( void )
 {
     _DBG_Writeln( "in StartPacket()" );
     PackInd = 0;
 }
 
-unsigned PutPacket()
+unsigned PutPacket( void )
 {
     unsigned rc;
 
     _DBG_Writeln( "in PutPacket()" );
-    rc = RemotePut( (void *)PackBuff, PackInd );
+    rc = RemotePut( PackBuff, PackInd );
     PackInd = 0;
     return( rc );
 }
@@ -64,7 +64,7 @@ unsigned PutBuffPacket( unsigned len, void *buff )
     unsigned rc;
 
     _DBG_Writeln( "in PutBuffPacket()" );
-    rc = RemotePut( (void *)buff, len );
+    rc = RemotePut( buff, len );
     PackInd = 0;
     return( rc );
 }
@@ -74,15 +74,15 @@ void AddPacket( int len, void *ptr )
     if( ( len + PackInd ) > MAX_PACK_LEN ) {
         len = MAX_PACK_LEN - PackInd;
     }
-    memcpy( (char *)&PackBuff[PackInd], (char *)ptr, len );
+    memcpy( &PackBuff[ PackInd ], ptr, len );
     PackInd += len;
 }
 
-unsigned GetPacket()
+unsigned GetPacket( void )
 {
     _DBG_Writeln( "in GetPacket()" );
     PackInd = 0;
-    return( RemoteGet( (void *)PackBuff, MAX_PACK_LEN ) );
+    return( RemoteGet( PackBuff, MAX_PACK_LEN ) );
 }
 
 void RemovePacket( int len, void *ptr )
@@ -90,16 +90,16 @@ void RemovePacket( int len, void *ptr )
     if( ( len + PackInd ) > MAX_PACK_LEN ) {
         len = MAX_PACK_LEN - PackInd;
     }
-    memcpy( (char *)ptr, (char *)&PackBuff[PackInd], len );
+    memcpy( ptr, &PackBuff[ PackInd ], len );
     PackInd += len;
 }
 
-void *GetPacketBuffPtr()
+char *GetPacketBuffPtr( void )
 {
-    return( (void *)&PackBuff[PackInd] );
+    return( &PackBuff[ PackInd ] );
 }
 
-unsigned MaxPacketSize()
+unsigned MaxPacketSize( void )
 {
     return( MAX_PACK_LEN );
 }

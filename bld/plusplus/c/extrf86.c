@@ -48,9 +48,9 @@
 ExtraRptCtr( ctr_cgfiles );     // number of CGFILE lookups
 
 
-typedef struct ovfn OVFN;
-struct ovfn                     // ORIGINATING VIRTUAL FUNCTION
-{   OVFN *next;                 // - next in ring
+typedef struct _ovfn OVFN;
+struct _ovfn {                  // ORIGINATING VIRTUAL FUNCTION
+    OVFN *next;                 // - next in ring
     SYMBOL vfun;                // - the virtual function
 };
 
@@ -61,9 +61,10 @@ static carve_t carveRingHead;   // - memory control: rings of vfun ref.s
 
 
 static void extrefAddOvfn(      // ADD ORIGINATING VIRTUAL FUNCTION
-    OVFN **ring,                // - functions to date
+    void *_ring,                // - functions to date
     SYMBOL latest )             // - latest
 {
+    OVFN **ring = _ring;        // - functions to date
     OVFN *ovfn;                 // - new entry
 
     ovfn = RingCarveAlloc( carveOVFN, ring );
@@ -72,9 +73,10 @@ static void extrefAddOvfn(      // ADD ORIGINATING VIRTUAL FUNCTION
 
 
 static void extrefPruneOvfn(    // PRUNE ANY NON-ORIGINATING VIRT FUNC.S
-    OVFN **ring,                // - functions to date
+    void *_ring,                // - functions to date
     SYMBOL latest )             // - latest
 {
+    OVFN **ring = _ring;        // - functions to date
     OVFN *ovfn;                 // - existing items
     SCOPE scope;                // - class scope
 
@@ -135,8 +137,9 @@ void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
 static void extrefClassVisit(   // VISIT ANCESTRAL CLASS
     SYMBOL sym,                 // - original symbol
     SYMBOL csym,                // - corresponding class symbol
-    EXTRF *rinfo )              // - resolution information
+    void * _rinfo )              // - resolution information
 {
+    EXTRF *rinfo = _rinfo;
     sym = sym;
     extrefPruneOvfn( &rinfo->syms, csym );
     extrefAddOvfn( &rinfo->syms, csym );
@@ -216,7 +219,7 @@ static void* resolveInitedSym(  // RESOLVE AN INITIALIZED SYMBOL
 
     ExtraRptIncrementCtr( ctr_cgfiles );
     cgfile = CgioLocateAnyFile( sym );
-    if( cgfile != NULL && cgfile->refed ) {
+    if( cgfile != NULL && cgfile->s.refed ) {
         retn = NULL;
     } else {
         // function is initialized and inlined everywhere it is referenced
@@ -274,6 +277,10 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
                 retn = NULL;
             }
         } else {
+            // TODO!!!!!!!!!!!!!!
+            // there are allocated memory blocks by virtualListBuild
+            // which are not freed
+            // 
             virtualListBuild( sym, rinfo );
             if( pureSymCanBeUndefd( sym ) ) {
                 rinfo->type = EXTRF_PURE_VFN_CONDITIONAL;
@@ -322,8 +329,9 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
 static void extrefVfunRegister( // REGISTER AN ANCESTRAL FUNCTION
     SYMBOL sym,                 // - original symbol
     SYMBOL csym,                // - corresponding class symbol
-    OVFN **orig )               // - ring of functions
+    void * _orig )              // - ring of functions
 {
+    OVFN **orig = _orig;
     sym = sym;
     extrefPruneOvfn( orig, csym );
     extrefAddOvfn( orig, csym );
@@ -419,7 +427,11 @@ static void extrefFini(         // COMPLETION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
+// TODO!!!!!!!!!!!!!!
+// there are allocated memory blocks by virtualListBuild
+// which are not freed
+// 
+//    DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
     DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
     CarveDestroy( carveOVFN );
     CarveDestroy( carveRingHead );

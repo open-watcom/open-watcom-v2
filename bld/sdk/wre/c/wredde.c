@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 
 #include "wreglbl.h"
@@ -54,9 +54,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
-                                      HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                      DWORD lData1, DWORD lData2 );
+extern HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, DWORD lData1, DWORD lData2 );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -80,32 +78,30 @@ typedef struct WRETopic {
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  WREServer       EditServers[NUM_SERVERS] =
-{
+static WREServer EditServers[NUM_SERVERS] = {
     { WDE_SERVICE_NAME, WDE_SERVICE_TOPIC, NULL, NULL },
     { BMP_SERVICE_NAME, BMP_SERVICE_TOPIC, NULL, NULL },
     { CUR_SERVICE_NAME, CUR_SERVICE_TOPIC, NULL, NULL },
     { ICO_SERVICE_NAME, ICO_SERVICE_TOPIC, NULL, NULL }
 };
 
-static  WRETopic        Topics[NUM_TOPICS] =
-{
+static WRETopic Topics[NUM_TOPICS] = {
     { WRE_DIALOG_TOPIC, NULL },
     { WRE_BITMAP_TOPIC, NULL },
     { WRE_CURSOR_TOPIC, NULL },
     { WRE_ICON_TOPIC,   NULL }
 };
 
-static  DWORD           IdInst                  = 0;
-static  FARPROC         DdeProc                 = NULL;
-static  HSZ             hServiceName            = NULL;
-static  HSZ             hFileItem               = NULL;
-static  HSZ             hIs32BitItem            = NULL;
-static  HSZ             hNameItem               = NULL;
-static  HSZ             hDataItem               = NULL;
-static  HSZ             hDialogDump             = NULL;
-static  HSZ             hImageDump              = NULL;
-static  WRESPT          PendingService          = NoServicePending;
+static DWORD    IdInst                  = 0;
+static FARPROC  DdeProc                 = NULL;
+static HSZ      hServiceName            = NULL;
+static HSZ      hFileItem               = NULL;
+static HSZ      hIs32BitItem            = NULL;
+static HSZ      hNameItem               = NULL;
+static HSZ      hDataItem               = NULL;
+static HSZ      hDialogDump             = NULL;
+static HSZ      hImageDump              = NULL;
+static WRESPT   PendingService          = NoServicePending;
 
 WRESPT WREGetPendingService( void )
 {
@@ -119,7 +115,7 @@ void WRESetPendingService( WRESPT s )
 
 Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
 {
-    if( !data || !size || ( hData == (HDDEDATA)NULL ) ) {
+    if( data == NULL || size == NULL || hData == (HDDEDATA)NULL ) {
         return( FALSE );
     }
 
@@ -133,7 +129,7 @@ Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    if( (DWORD)(*size) != DdeGetData( hData, *data, (DWORD)*size, 0 ) ) {
+    if( (DWORD)*size != DdeGetData( hData, *data, (DWORD)*size, 0 ) ) {
         WREMemFree( *data );
         return( FALSE );
     }
@@ -147,7 +143,7 @@ Bool WREDDEStart( HINSTANCE inst )
     DWORD       flags;
     int         i;
 
-    _wre_touch(inst); /* MakeProcInstance vanishes in NT */
+    _wre_touch( inst ); /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
         return( FALSE );
@@ -159,26 +155,28 @@ Bool WREDDEStart( HINSTANCE inst )
     }
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
-                CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
-                CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
+            CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
+            CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
     ret = DdeInitialize( &IdInst, (PFNCALLBACK)DdeProc, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
 
-    for( i=0; i<NUM_SERVERS;i++ ) {
-        EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic, CP_WINANSI );
+    for( i = 0; i < NUM_SERVERS; i++ ) {
+        EditServers[i].htopic = DdeCreateStringHandle( IdInst, EditServers[i].topic,
+                                                       CP_WINANSI );
         if( EditServers[i].htopic == (HSZ)NULL ) {
             return( FALSE );
         }
-        EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service, CP_WINANSI );
+        EditServers[i].hservice = DdeCreateStringHandle( IdInst, EditServers[i].service,
+                                                         CP_WINANSI );
         if( EditServers[i].hservice == (HSZ)NULL ) {
             return( FALSE );
         }
     }
 
-    for( i=0; i<NUM_TOPICS;i++ ) {
+    for( i = 0; i < NUM_TOPICS; i++ ) {
         Topics[i].htopic = DdeCreateStringHandle( IdInst, Topics[i].topic, CP_WINANSI );
         if( Topics[i].htopic == (HSZ)NULL ) {
             return( FALSE );
@@ -231,12 +229,12 @@ void WREDDEEnd( void )
 
     if( IdInst != 0 ) {
         DdeNameService( IdInst, (HSZ)NULL, (HSZ)NULL, DNS_UNREGISTER );
-        for( i=0; i<NUM_TOPICS;i++ ) {
+        for( i = 0; i < NUM_TOPICS; i++ ) {
             if( Topics[i].htopic != (HSZ)NULL ) {
                 DdeFreeStringHandle( IdInst, Topics[i].htopic );
             }
         }
-        for( i=0; i<NUM_SERVERS;i++ ) {
+        for( i = 0; i < NUM_SERVERS; i++ ) {
             if( EditServers[i].htopic != (HSZ)NULL ) {
                 DdeFreeStringHandle( IdInst, EditServers[i].htopic );
             }
@@ -278,19 +276,24 @@ Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
     UINT        err;
     Bool        timeout;
     Bool        ret;
+    UINT        tries;
 
-    if( ( conv == (HCONV)NULL ) || ( data == NULL ) || ( size == 0 ) ) {
+    if( conv == (HCONV)NULL || data == NULL || size == 0 ) {
         return( FALSE );
     }
 
+    if( retry ) {
+        tries = 8;
+    } else {
+        tries = 0;
+    }
+
     while( TRUE ) {
-        ret = (Bool)
-            DdeClientTransaction( (LPBYTE)data, size, conv, hDataItem,
-                                  CF_TEXT, XTYP_POKE, LONG_TIME_OUT,
-                                  &result );
-        if( !ret && retry ) {
+        ret = (Bool)DdeClientTransaction( (LPBYTE)data, size, conv, hDataItem, CF_TEXT,
+                                          XTYP_POKE, LONG_TIME_OUT, &result );
+        if( !ret && tries-- != 0 ) {
             err = DdeGetLastError( IdInst );
-            timeout = ( ( err & DMLERR_POKEACKTIMEOUT ) != 0 );
+            timeout = ((err & DMLERR_POKEACKTIMEOUT) != 0);
             if( !timeout ) {
                 break;
             }
@@ -303,8 +306,8 @@ Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
 }
 
 HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
-                               HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                               DWORD lData1, DWORD lData2 )
+                                HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
+                                DWORD lData1, DWORD lData2 )
 {
     HDDEDATA    ret;
     HSZPAIR     hszpair[2];
@@ -314,137 +317,132 @@ HDDEDATA WINEXPORT DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
     uint_32     size;
     Bool        ok;
 
-    _wre_touch(hdata);
-    _wre_touch(lData1);
-    _wre_touch(lData2);
+    _wre_touch( hdata );
+    _wre_touch( lData1 );
+    _wre_touch( lData2 );
 
     ret = (HDDEDATA)FALSE;
 
     switch( wType ) {
-        case XTYP_CONNECT:
-        case XTYP_WILDCONNECT:
-            if( PendingService == NoServicePending ) {
-                htopic = (HSZ)NULL;
-            } else {
-                htopic = (HSZ)Topics[PendingService].htopic;
-            }
-            break;
+    case XTYP_CONNECT:
+    case XTYP_WILDCONNECT:
+        if( PendingService == NoServicePending ) {
+            htopic = (HSZ)NULL;
+        } else {
+            htopic = (HSZ)Topics[PendingService].htopic;
+        }
+        break;
     }
 
     switch( wType ) {
-        case XTYP_CONNECT_CONFIRM:
-            htconv = (HCONV)NULL;
-            if( PendingService != NoServicePending ) {
-                    htconv = DdeConnect( IdInst,
-                                         EditServers[PendingService].hservice,
-                                         EditServers[PendingService].htopic,
-                                         (LPVOID)NULL );
-            }
-            if( htconv != (HCONV)NULL ) {
-                if( PendingService == DialogService ) {
-                    ok = WRECommitDialogSession( hConv, htconv );
-                } else {
-                    ok = WRECommitImageSession( hConv, htconv );
-                }
-                if( !ok ) {
-                    DdeDisconnect( htconv );
-                    DdeDisconnect( hConv );
-                }
+    case XTYP_CONNECT_CONFIRM:
+        htconv = (HCONV)NULL;
+        if( PendingService != NoServicePending ) {
+                htconv = DdeConnect( IdInst, EditServers[PendingService].hservice,
+                                     EditServers[PendingService].htopic, (LPVOID)NULL );
+        }
+        if( htconv != (HCONV)NULL ) {
+            if( PendingService == DialogService ) {
+                ok = WRECommitDialogSession( hConv, htconv );
             } else {
+                ok = WRECommitImageSession( hConv, htconv );
+            }
+            if( !ok ) {
+                DdeDisconnect( htconv );
                 DdeDisconnect( hConv );
             }
-            break;
+        } else {
+            DdeDisconnect( hConv );
+        }
+        break;
 
-        case XTYP_DISCONNECT:
-            if( !WREEndEditImageResource( hConv ) ) {
-                WREEndEditDialogResource( hConv );
-            }
-            break;
+    case XTYP_DISCONNECT:
+        if( !WREEndEditImageResource( hConv ) ) {
+            WREEndEditDialogResource( hConv );
+        }
+        break;
 
-        case XTYP_CONNECT:
-            if( hsz1 == hDialogDump ) {
-                WREDumpPendingDialogSession();
-            } else if( hsz1 == hImageDump ) {
-                WREDumpPendingImageSession();
-            } else if( hsz1 == htopic ) {
-                ret = (HDDEDATA)TRUE;
-            }
-            break;
+    case XTYP_CONNECT:
+        if( hsz1 == hDialogDump ) {
+            WREDumpPendingDialogSession();
+        } else if( hsz1 == hImageDump ) {
+            WREDumpPendingImageSession();
+        } else if( hsz1 == htopic ) {
+            ret = (HDDEDATA)TRUE;
+        }
+        break;
 
-        case XTYP_WILDCONNECT:
-            if( hsz2 != hServiceName ) {
-                break;
-            }
-            if( htopic == (HSZ)NULL ) {
-                break;
-            }
-            hszpair[0].hszSvc   = hServiceName;
-            hszpair[0].hszTopic = htopic;
-            hszpair[1].hszSvc   = (HSZ)NULL;
-            hszpair[1].hszTopic = (HSZ)NULL;
-            ret = (HDDEDATA)
-                DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
-                                     sizeof(hszpair), 0L, 0, CF_TEXT, 0 );
+    case XTYP_WILDCONNECT:
+        if( hsz2 != hServiceName ) {
             break;
+        }
+        if( htopic == (HSZ)NULL ) {
+            break;
+        }
+        hszpair[0].hszSvc = hServiceName;
+        hszpair[0].hszTopic = htopic;
+        hszpair[1].hszSvc = (HSZ)NULL;
+        hszpair[1].hszTopic = (HSZ)NULL;
+        ret = (HDDEDATA)DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], sizeof( hszpair ),
+                                             0L, 0, CF_TEXT, 0 );
+        break;
 
-        case XTYP_REQUEST:
-            data = NULL;
-            size = 0;
-            ok = FALSE;
-            if( hsz1 == Topics[DialogService].htopic ) {
-                if( hsz2 == hFileItem ) {
-                    ok = WREGetDlgSessionFileName( hConv, &data, &size );
-                } else if( hsz2 == hDataItem ) {
-                    ok = WREGetDlgSessionData( hConv, &data, &size );
-                } else if( hsz2 == hNameItem ) {
-                    ok = WREGetDlgSessionResName( hConv, &data, &size );
-                } else if( hsz2 == hIs32BitItem ) {
-                    ok = WREGetDlgSessionIs32Bit( hConv, &data, &size );
-                }
-            } else if( ( hsz1 == Topics[BitmapService].htopic ) ||
-                       ( hsz1 == Topics[CursorService].htopic ) ||
-                       ( hsz1 == Topics[IconService].htopic ) ) {
-                if( hsz2 == hFileItem ) {
-                    ok = WREGetImageSessionFileName( hConv, &data, &size );
-                } else if( hsz2 == hDataItem ) {
-                    ok = WREGetImageSessionData( hConv, &data, &size );
-                } else if( hsz2 == hNameItem ) {
-                    ok = WREGetImageSessionResName( hConv, &data, &size );
-                }
+    case XTYP_REQUEST:
+        data = NULL;
+        size = 0;
+        ok = FALSE;
+        if( hsz1 == Topics[DialogService].htopic ) {
+            if( hsz2 == hFileItem ) {
+                ok = WREGetDlgSessionFileName( hConv, &data, &size );
+            } else if( hsz2 == hDataItem ) {
+                ok = WREGetDlgSessionData( hConv, &data, &size );
+            } else if( hsz2 == hNameItem ) {
+                ok = WREGetDlgSessionResName( hConv, &data, &size );
+            } else if( hsz2 == hIs32BitItem ) {
+                ok = WREGetDlgSessionIs32Bit( hConv, &data, &size );
             }
-            if( data ) {
-                if( ok ) {
-                    ret = DdeCreateDataHandle( IdInst, (LPBYTE)data,
-                                               size, 0, hsz2, wFmt, 0 );
-                }
-                WREMemFree( data );
+        } else if( hsz1 == Topics[BitmapService].htopic ||
+                   hsz1 == Topics[CursorService].htopic ||
+                   hsz1 == Topics[IconService].htopic ) {
+            if( hsz2 == hFileItem ) {
+                ok = WREGetImageSessionFileName( hConv, &data, &size );
+            } else if( hsz2 == hDataItem ) {
+                ok = WREGetImageSessionData( hConv, &data, &size );
+            } else if( hsz2 == hNameItem ) {
+                ok = WREGetImageSessionResName( hConv, &data, &size );
             }
-            break;
+        }
+        if( data != NULL ) {
+            if( ok ) {
+                ret = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hsz2, wFmt, 0 );
+            }
+            WREMemFree( data );
+        }
+        break;
 
-        case XTYP_POKE:
-            data = NULL;
-            size = 0;
-            ok = FALSE;
-            ret = (HDDEDATA)DDE_FNOTPROCESSED;
-            if( hsz1 == Topics[DialogService].htopic ) {
-                if( hsz2 == hDataItem ) {
-                    ok = WRESetDlgSessionResData( hConv, hdata );
-                } else if( hsz2 == hNameItem ) {
-                    ok = WRESetDlgSessionResName( hConv, hdata );
-                }
-            } else if( ( hsz1 == Topics[BitmapService].htopic ) ||
-                       ( hsz1 == Topics[CursorService].htopic ) ||
-                       ( hsz1 == Topics[IconService].htopic ) ) {
-                if( hsz2 == hDataItem ) {
-                    ok = WRESetImageSessionResData( hConv, hdata );
-                } else if( hsz2 == hNameItem ) {
-                    ok = WRESetImageSessionResName( hConv, hdata );
-                }
+    case XTYP_POKE:
+        data = NULL;
+        size = 0;
+        ok = FALSE;
+        ret = (HDDEDATA)DDE_FNOTPROCESSED;
+        if( hsz1 == Topics[DialogService].htopic ) {
+            if( hsz2 == hDataItem ) {
+                ok = WRESetDlgSessionResData( hConv, hdata );
+            } else if( hsz2 == hNameItem ) {
+                ok = WRESetDlgSessionResName( hConv, hdata );
             }
-            ret = (HDDEDATA)DDE_FACK;
-            break;
+        } else if( hsz1 == Topics[BitmapService].htopic ||
+                   hsz1 == Topics[CursorService].htopic ||
+                   hsz1 == Topics[IconService].htopic ) {
+            if( hsz2 == hDataItem ) {
+                ok = WRESetImageSessionResData( hConv, hdata );
+            } else if( hsz2 == hNameItem ) {
+                ok = WRESetImageSessionResName( hConv, hdata );
+            }
+        }
+        ret = (HDDEDATA)DDE_FACK;
+        break;
     }
 
     return( ret );
 }
-

@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  OS/2 32-bit executable startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++32 under OS/2
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm cstrto32 -bt=OS2 -ms -3r
 ;               wasm cstrto32 -bt=OS2 -ms -3s
@@ -56,9 +52,9 @@ _cstart_ proc near
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
 _cstart_ endp
 
 _TEXT   ends

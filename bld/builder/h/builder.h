@@ -24,34 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  builder & langdat definitions
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "bool.h"
+#include <watcom.h>
+#include <bool.h>
 
-typedef struct copy_entry copy_entry;
-typedef struct copy_entry {
+typedef struct copy_entry       copy_entry;
+struct copy_entry {
     copy_entry  *next;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
 };
 
-typedef struct include include;
+typedef struct include          include;
 struct include {
     include     *prev;
     FILE        *fp;
     unsigned    skipping;
+    unsigned    ifdefskipping;
     char        name[_MAX_PATH];
     char        cwd[_MAX_PATH];
     copy_entry  *reset_abit;
 };
 
-typedef struct ctl_file ctl_file;
+typedef struct ctl_file         ctl_file;
 struct ctl_file {
     ctl_file    *next;
     char        name[_MAX_PATH];
@@ -59,17 +60,23 @@ struct ctl_file {
 
 #define         MAX_LINE        4096
 
-extern include  *IncludeStk;
-extern FILE     *LogFile;
+extern bool         Quiet;
 
-void            LogFlush( void );
-void            Log( bool quiet, const char *, ... );
-void            OpenLog( const char * );
-void            Fatal( const char *, ... );
-void            *Alloc( unsigned );
-char            *SkipBlanks( const char * );
-unsigned        RunIt( char * );
-void            ResetArchives( copy_entry * );
-void            SysInit( int argc, char *argv[] );
-unsigned        SysRunCommand( const char * );
-unsigned        SysChdir( const char * );
+extern include      *IncludeStk;
+extern FILE         *LogFile;
+
+extern void         LogFlush( void );
+extern void         Log( bool quiet, const char *, ... );
+extern void         OpenLog( const char * );
+extern void         CloseLog( void );
+extern const char   *LogDirEquals( char *dir );
+extern void         Fatal( const char *, ... );
+extern void         *Alloc( unsigned );
+extern char         *SkipBlanks( const char * );
+extern int          RunIt( char *, bool );
+extern void         ResetArchives( copy_entry * );
+extern void         SysInit( int argc, char *argv[] );
+extern int          SysRunCommand( const char * );
+extern int          SysRunCommandPipe( const char *, int *readpipe );
+extern int          SysChdir( char * );
+extern int          SysDosChdir( char * );

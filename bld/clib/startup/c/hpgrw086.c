@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Wrapper for near heap growing routine in large data models.
 *
 ****************************************************************************/
 
@@ -34,7 +33,8 @@
 #include <malloc.h>
 
 #if defined(__BIG_DATA__)
-void __CMain_nheapgrow( void ) {
+void __CMain_nheapgrow( void )
+{
     _nheapgrow();           /* grow near heap to 64K */
 }
 #endif

@@ -1,4 +1,6 @@
-NAME = fgrep
-OBJS =  $(name).obj
+name = fgrep
+objs =  $(name).obj
 
-!include $(posix_dir)\mif\makeone.mif
+extra_cflags = -DFGREP
+
+!include $(posix_dir)/mif/makeone.mif

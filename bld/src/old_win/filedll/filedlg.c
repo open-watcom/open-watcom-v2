@@ -11,7 +11,7 @@
 #include "filedlg.h"
 #include "filerc.h"
 
-HANDLE          Inst;
+HINSTANCE       Inst;
 LPFILEOPEN      Ofs;
 char            HasFile;
 char            _ext[128];
@@ -20,7 +20,7 @@ char            Buff[256];
 /*
  * LibMain - main DLL entry point
  */
-int PASCAL LibMain( HANDLE inst, WORD data, WORD heapsize,
+int FAR PASCAL LibMain( HINSTANCE inst, WORD data, WORD heapsize,
                             LPSTR cmdline )
 {
     cmdline = cmdline;
@@ -235,10 +235,10 @@ int __export FAR PASCAL GetFileName( LPFILEOPEN of )
     char        *ptr;
 
     if( of == NULL || Ofs != NULL ) return( 1 );
-    fp = MakeProcInstance( GetFile, Inst );
+    fp = MakeProcInstance( (FARPROC)GetFile, Inst );
     Ofs = of;
     strcpy( _ext, Ofs->ext );
-    rc = DialogBox( Inst, (LPSTR) "FileOpen", of->hwnd, fp );
+    rc = DialogBox( Inst, (LPSTR) "FileOpen", of->hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
     if( rc ) {
         i = 0;

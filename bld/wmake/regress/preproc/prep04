@@ -1,0 +1,36 @@
+# test NMAKE style [cmd] expressions
+
+foo = "str] || [echo ing"
+DIR = dyr
+
+!if [echo $(foo)]
+!   error failed
+!endif
+
+!if [false] != 255
+!    error failed
+!endif
+
+#!if exists($(DIR))
+#!if [rmdir $(DIR)]
+#!    error failed
+#!endif
+#!endif
+
+!if [mkdir $(DIR)] || [cd $(DIR)]
+!    error failed
+!endif
+
+!if [cd ..] || [rmdir $(DIR)]
+!    error failed
+!endif
+
+!if ([true] + 3) != 3
+!    error failed
+!endif
+
+!if [false] || [echo evaluate this] || [set VAR=done]
+!endif
+
+all : .symbolic
+    @echo $(%VAR)

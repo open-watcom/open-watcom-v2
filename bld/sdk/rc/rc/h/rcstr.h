@@ -50,13 +50,11 @@ typedef struct StringBlock {
     uint_16     StringBlockSize;
     void *      StringBlock;
     uint_16     StringListLen;  /* number of entries in the string list */
-    void        **StringList;   /* sorted array of pointers to strings
-                                 * in the StringBlock */
+    void        **StringList;   /* sorted array of pointers to strings in the StringBlock */
 } StringBlock;
 
 
-extern void StringBlockBuild( StringBlock *, WResDir, int use_unicode );
-extern int_32 StringBlockFind( StringBlock *, WResIDName * name );
-int CompareStringItems32( const StringItem32 *item1,
-                          const StringItem32 *item2 );
+extern void     StringBlockBuild( StringBlock *, WResDir, int use_unicode );
+extern int_32   StringBlockFind( StringBlock *, WResIDName *name );
+extern int      CompareStringItems32( const StringItem32 *item1, const StringItem32 *item2 );
 #endif

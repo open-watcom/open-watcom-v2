@@ -1,0 +1,12 @@
+#pmake: build flat cpu_386 os_osi
+#
+# plibmt3s -- 32-bit 3s PLIB multi-thread
+#
+processor  = 386
+system     = generic
+model      = mf
+convention = stack
+linkage    = static
+mthreaded  = 1
+define_library_include = $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/mklib.mif

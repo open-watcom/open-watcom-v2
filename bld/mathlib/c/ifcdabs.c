@@ -34,9 +34,9 @@
 #include "cplx.h"
 #include "pdiv.h"
 
-_WMRTLINK double _IF_CDABS( double rp, double ip ) {
-//=================================================
-
+_WMRTLINK double _IF_CDABS( double rp, double ip )
+//================================================
+{
 // Return the absolute value of arg.
 
     rp = fabs( rp );

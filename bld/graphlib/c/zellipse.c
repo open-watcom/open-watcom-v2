@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _ellipse_w( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _ellipse_w( short fill, double x1, double y1,
 /*==========================*/ double x2, double y2 )
 
 /* This function draws and fills an ellipse defined by the rectangle
@@ -56,7 +56,7 @@ short _WCI86FAR _CGRAPH _ellipse_w( short fill, double x1, double y1,
 Entry( _ELLIPSE_W, _ellipse_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _ellipse_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK short _WCI86FAR _CGRAPH _ellipse_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
 /*============================*/ struct _wxycoord _WCI86FAR * p2 )
 
 /* This function draws and fills an ellipse defined by the rectangle
@@ -69,7 +69,7 @@ short _WCI86FAR _CGRAPH _ellipse_wxy( short fill, struct _wxycoord _WCI86FAR * p
 Entry( _ELLIPSE_WXY, _ellipse_wxy ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _ellipse_w_87( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _ellipse_w_87( short fill, double x1, double y1,
 /*=========================================*/ double x2, double y2 )
 
 {

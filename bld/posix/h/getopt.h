@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Specifies GetOpt() and associated interfaces
 *
 ****************************************************************************/
 
@@ -70,7 +69,7 @@ enum {
 #ifndef __ALPHA__
 #pragma aux ExitWithUsage aborts;
 #endif
-extern void     ExitWithUsage( const char *__usage[], int __type);
+extern void     ExitWithUsage( const char *__usage[], int __type );
 /*
  * __usage:     same as the usage parameter for GetOpt
  * __type:      _USAGE_ALL: print entire usage text

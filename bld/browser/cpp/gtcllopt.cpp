@@ -71,6 +71,7 @@ GTCallOption::~GTCallOption()
 void GTCallOption::initialize()
 //-----------------------------
 {
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();

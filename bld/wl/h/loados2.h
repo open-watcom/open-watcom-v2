@@ -106,6 +106,6 @@ extern void             PhoneyStack( void );
 extern void             FiniOS2LoadFile( void );
 extern void             FreeImpNameTab( void );
 extern unsigned_32      GetStubSize( void );
-extern unsigned_32      Write_Stub_File( void );
+extern unsigned_32      Write_Stub_File( unsigned_32 );
 
 #endif

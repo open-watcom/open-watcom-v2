@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Translate Microsoft NMAKE to Watcom options.
 *
 ****************************************************************************/
 
@@ -44,31 +43,18 @@
 
 
 /*
- * Translate scanned MS options to Watcom options.
+ * Add one more unsupported option to optStr.
  */
-void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
-/*************************************************************/
+static void append_unsupported( char *optStr, char *opt )
+/*******************************************************/
 {
-    /*** Parse the /nologo switch now so we can print the banner ***/
-    if( cmdOpts->nologo ) {
-        QuietModeMessage();
+    if( optStr[0] != '\0' ) {
+        strcat( optStr, " -" );
     } else {
-        BannerMessage();
+        strcat( optStr, "-" );
     }
-
-    if( cmdOpts->help || cmdOpts->_ ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-
-    }
-
-    /*** Parse everything ***/
-    default_opts( cmdOpts, cmdLine );
-    unsupported_opts( cmdOpts );
-    nmake_opts( cmdOpts, cmdLine );
-    watcom_opts( cmdOpts, cmdLine );
+    strcat( optStr, opt );
 }
-
 
 
 /*
@@ -81,33 +67,19 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
 
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
-    if( cmdOpts->b )  append_unsupported( opts, "B" );
-    if( cmdOpts->c )  append_unsupported( opts, "C" );
-    if( cmdOpts->e )  append_unsupported( opts, "E" );
-    if( cmdOpts->r )  append_unsupported( opts, "R" );
-    if( cmdOpts->x )  append_unsupported( opts, "X" );
+    if( cmdOpts->B )  append_unsupported( opts, "B" );
+    if( cmdOpts->C )  append_unsupported( opts, "C" );
+    if( cmdOpts->E )  append_unsupported( opts, "E" );
+    if( cmdOpts->R )  append_unsupported( opts, "R" );
+    if( cmdOpts->U )  append_unsupported( opts, "U" );
+    if( cmdOpts->Y )  append_unsupported( opts, "Y" );
+    if( cmdOpts->X )  append_unsupported( opts, "X" );
     /*** If an unsupported option was used, give a warning ***/
     if( opts[0] != '\0' ) {
         UnsupportedOptsMessage( opts );
     }
 
 }
-
-
-/*
- * Add one more unsupported option to optStr.
- */
-static void append_unsupported( char *optStr, char *opt )
-/*******************************************************/
-{
-    if( optStr[0] != '\0' ) {
-        strcat( optStr, " /" );
-    } else {
-        strcat( optStr, "/" );
-    }
-    strcat( optStr, opt );
-}
-
 
 
 /*
@@ -118,48 +90,48 @@ static void nmake_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 {
     OPT_STRING *        optStr;
 
-    if( cmdOpts->a ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/a" );
+    if( cmdOpts->A ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-a" );
     }
 
-    if( cmdOpts->d ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/d" );
+    if( cmdOpts->D ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-d" );
     }
 
-    if( cmdOpts->f ) {
-        AppendFmtCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/f %s",cmdOpts->f_value->data );
+    if( cmdOpts->F ) {
+        AppendFmtCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-f %s",cmdOpts->F_value->data );
     }
 
-    if( cmdOpts->i ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/i" );
+    if( cmdOpts->I ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-i" );
     }
 
-    if( cmdOpts->k ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/k" );
+    if( cmdOpts->K ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-k" );
     }
 
-    if( cmdOpts->n ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/n" );
+    if( cmdOpts->N ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-n" );
     }
 
-    if( cmdOpts->p ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/p" );
+    if( cmdOpts->P ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-p" );
     }
 
-    if( cmdOpts->q ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/q" );
+    if( cmdOpts->Q ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-q" );
     }
 
-    if( cmdOpts->s ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/s" );
+    if( cmdOpts->S ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-s" );
     }
 
-    if( cmdOpts->t ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/t" );
+    if( cmdOpts->T ) {
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-t" );
     }
 
     if( cmdOpts->verbose ) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/v" );
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-v" );
     }
 
     /* transfer stored macros and targets */
@@ -180,10 +152,10 @@ static void default_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /**************************************************************/
 {
 
-    AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/ms" );
+    AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-ms" );
     if (!cmdOpts->nowopts) {
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/z" );
-        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "/h" );
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-z" );
+        AppendCmdLine( cmdLine, NMAKE_OPTS_SECTION, "-h" );
     }
 }
 
@@ -204,4 +176,31 @@ static void watcom_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
     }
 
+}
+
+
+/*
+ * Translate scanned MS options to Watcom options.
+ */
+void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
+/*************************************************************/
+{
+    /*** Parse the /nologo switch now so we can print the banner ***/
+    if( cmdOpts->NOLOGO ) {
+        QuietModeMessage();
+    } else {
+        BannerMessage();
+    }
+
+    if( cmdOpts->HELP || cmdOpts->_ ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+
+    }
+
+    /*** Parse everything ***/
+    default_opts( cmdOpts, cmdLine );
+    unsupported_opts( cmdOpts );
+    nmake_opts( cmdOpts, cmdLine );
+    watcom_opts( cmdOpts, cmdLine );
 }

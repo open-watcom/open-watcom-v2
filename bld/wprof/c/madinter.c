@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD interface client callback routines.
 *
 ****************************************************************************/
 
 
 #include <string.h>
-#include <malloc.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -50,6 +48,7 @@
 #include "common.h"
 #include "sampinfo.h"
 #include "msg.h"
+
 
 extern void     ErrorMsg(char *msg,... );
 extern void     fatal(char *msg,... );
@@ -184,14 +183,14 @@ system_config   *DIGCLIENT MADCliSystemConfig( void )
  *      Debugger routines
  */
 
-void InitMADInfo()
+void InitMADInfo( void )
 {
     if( MADInit() != MS_OK ) {
         fatal( LIT( Mad_Init_Failed ) );
     }
 }
 
-void FiniMADInfo()
+void FiniMADInfo( void )
 {
     MADFini();
     AsmFini();

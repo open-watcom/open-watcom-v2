@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for Windows.
 *
 ****************************************************************************/
 
@@ -46,7 +45,7 @@ _WCRTLINK void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
         *b++ = *a++;
     *b = 0;
 
-    MessageBox( NULL, tmp, "WATCOM", MB_OK );
+    MessageBox( (HWND)NULL, tmp, "Open Watcom", MB_OK );
     _exit( retcode );
 }
 

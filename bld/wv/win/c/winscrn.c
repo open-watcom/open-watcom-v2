@@ -36,14 +36,14 @@
 #include <string.h>
 #include <dos.h>
 #include <stddef.h>
-#include "..\..\dos\h\dbgscrn.h"
+#include "../../dos/h/dbgscrn.h"
 #include "dbgtoggl.h"
 #include "windows.h"
 #include "winscrn.h"
 #include "swap.h"
 
 extern void far HookRtn( unsigned event, unsigned info );
-extern void (far __pascal *HookFunc)();
+extern void (far __pascal *HookFunc)( void far (*)( unsigned, unsigned ) );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
 
@@ -70,16 +70,14 @@ int             ScrnLines=25;
 volatile int    BrkPending;
 bool WndUseGMouse = FALSE;
 
-#if !defined(_NEC_PC)
 static display_configuration    HWDisplay;
-#endif
 
-void InitHookFunc()
+void InitHookFunc( void )
 {
     HookFunc( HookRtn );
 }
 
-void FiniHookFunc()
+void FiniHookFunc( void )
 {
 }
 
@@ -93,7 +91,7 @@ void ForceLines( unsigned lines )
     ScrnLines = lines;
 }
 
-int SwapScrnLines()
+int SwapScrnLines( void )
 {
     return( ScrnLines );
 }
@@ -103,21 +101,8 @@ int SwapScrnLines()
  */
 unsigned ConfigScreen( void )
 {
-#if defined( _NEC_PC )
-    unsigned char               mode;
-
-    FlipMech = FLIP_SWAP;
-    mode = BIOSGetMode();
-
-    if( mode & NEC_20_LINES ) {
-        ScrnLines = 20;
-    } else if( mode & NEC_31_LINES ) {
-        ScrnLines = 31;
-    }
-    //win_uisetcolor( M_VGA );
-#else
     GetDispConfig();
-    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME )) {
+    if( !(FlipMech == FLIP_TWO && HWDisplay.alt == DISP_MONOCHROME) ) {
         FlipMech = FLIP_SWAP;
         switch( HWDisplay.active ) {
         case DISP_VGA_MONO:
@@ -136,7 +121,6 @@ unsigned ConfigScreen( void )
     } else {
         win_uisetmono();
     }
-#endif
     return( 0 );
 }
 
@@ -179,7 +163,7 @@ bool DebugScreen( void )
     }
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
@@ -199,7 +183,7 @@ bool UserScreen( void )
     return( rc );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
@@ -226,7 +210,6 @@ void InitScreen( void )
     if( _IsOn( SW_USE_MOUSE ) ) GUIInitMouse( 1 );
 }
 
-#if !defined(_NEC_PC)
 static bool ChkCntrlr( int port )
 {
     char curr;
@@ -308,7 +291,6 @@ static void GetDispConfig( void )
     /* only thing left is a single CGA display */
     HWDisplay.active = DISP_CGA;
 }
-#endif
 
 /*****************************************************************************\
  *                                                                           *
@@ -316,7 +298,7 @@ static void GetDispConfig( void )
  *                                                                           *
 \*****************************************************************************/
 
-void *uifaralloc( unsigned size )
+void *uifaralloc( int size )
 {
     return( ExtraAlloc( size ) );
 }
@@ -326,7 +308,7 @@ void uifarfree( void *ptr )
     ExtraFree( ptr );
 }
 
-void uirefresh()
+void uirefresh( void )
 {
     extern void uidorefresh(void);
 
@@ -335,7 +317,7 @@ void uirefresh()
     }
 }
 
-bool SysGUI()
+bool SysGUI( void )
 {
     return( FALSE );
 }

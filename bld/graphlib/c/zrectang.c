@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _rectangle_w( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _rectangle_w( short fill, double x1, double y1,
 /*========================================*/ double x2, double y2 )
 
 /* This routine draws or fills a rectangle whose opposite corners are
@@ -55,7 +55,7 @@ short _WCI86FAR _CGRAPH _rectangle_w( short fill, double x1, double y1,
 Entry( _RECTANGLE_W, _rectangle_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _rectangle_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK short _WCI86FAR _CGRAPH _rectangle_wxy( short fill, struct _wxycoord _WCI86FAR * p1,
 /*==========================================*/ struct _wxycoord _WCI86FAR * p2 )
 
 /* This routine draws or fills a rectangle whose opposite corners are
@@ -68,7 +68,7 @@ short _WCI86FAR _CGRAPH _rectangle_wxy( short fill, struct _wxycoord _WCI86FAR *
 Entry( _RECTANGLE_WXY, _rectangle_wxy ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _rectangle_w_87( short fill, double x1, double y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _rectangle_w_87( short fill, double x1, double y1,
 /*===========================================*/ double x2, double y2 )
 
 {

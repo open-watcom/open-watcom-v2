@@ -1,0 +1,17 @@
+#pmake: bootstrap
+
+bootstrap = 1
+
+host_os  = $(%BOOTSTRAP_OS)
+host_cpu = $(%BOOTSTRAP_CPU)
+
+syshdir = .
+
+sysobjs = linuxcmd.obj &
+          linuxio.obj &
+          lnxinit.obj &
+          lnxscrn.obj &
+          lnxlkup.obj &
+          lnxchk.obj
+
+!include ../../master.mif

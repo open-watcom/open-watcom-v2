@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CodeView type support.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
 #include <string.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "cvinfo.h"
 
 #define UNKNOWN_TYPE_IDX        ((unsigned short)-1)
@@ -44,9 +43,6 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
 extern dip_status ImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, type_info *ti );
 
-/*
-    Stuff dealing with type handles.
-*/
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
                         char **namep, unsigned *lenp, lf_all **pp )
@@ -74,25 +70,25 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
     case LF_CLASS:
     case LF_STRUCTURE:
         name = GetNumLeaf( &p->class_ + 1, &dummy );
-        skip = name - (unsigned_8 *)p;
+        skip = name - (char *)p;
         break;
     case LF_UNION:
         name = GetNumLeaf( &p->union_ + 1, &dummy );
-        skip = name - (unsigned_8 *)p;
+        skip = name - (char *)p;
         break;
     case LF_ENUM:
         skip = sizeof( lf_enum );
         break;
     case LF_ENUMERATE:
         name = GetNumLeaf( &p->enumerate + 1, &dummy );
-        skip = name - (unsigned_8 *)p;
+        skip = name - (char *)p;
         break;
     case LF_FRIENDFCN:
         skip = sizeof( lf_friendfcn );
         break;
     case LF_MEMBER:
         name = GetNumLeaf( &p->member + 1, &dummy );
-        skip = name - (unsigned_8 *)p;
+        skip = name - (char *)p;
         break;
     case LF_STMEMBER:
         skip = sizeof( lf_stmember );
@@ -122,8 +118,8 @@ static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
     /* A name can't be longer than 255 bytes */
     p = VMBlock( ii, base, 256 + skip );
     if( p == NULL ) return( DS_ERR|DS_FAIL );
-    name = (unsigned_8 *)p + skip;
-    *lenp = name[0];
+    name = (char *)p + skip;
+    *lenp = *(unsigned_8 *)name;
     *namep = &name[1];
     if( pp != NULL ) *pp = p;
     return( DS_OK );
@@ -1472,6 +1468,10 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
     case LF_PROCEDURE:
     case LF_MFUNCTION:
         ti->kind = TK_FUNCTION;
+        break;
+    case LF_VTSHAPE:
+    case LF_METHODLIST:
+    case LF_DERIVED:
         break;
     case LF_COBOL0:
     case LF_COBOL1:

@@ -12,7 +12,7 @@
 .* 04-aug-92	Craig Eisler	initial draft
 .*
 :CHAPTER id=rxchap.Regular Expressions
-:CMT :SECTION.Introduction
+:SECTION.Introduction
 Regular expressions are a powerful method of matching strings in your text.
 Commands that use regular expressions are:
 :UL.

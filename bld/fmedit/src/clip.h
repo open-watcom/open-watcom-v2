@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#define CLIP_ID "WATCOM FORMEDIT"
+#define CLIP_ID         "WATCOM FORMEDIT"
 #define MAX_DESC_STR    80
 
 typedef struct {
     HANDLE  task;
-    DLIST * objs;
+    DLIST   *objs;
 } CLIP_INFO;

@@ -1,0 +1,21 @@
+pfx__ =$(mathlib_dir)
+__ifx__ =library/$(system).$(processor)/$(subdir)
+
+dll_libs = $+ &
+    $(pfx__)/$(__ifx__).dll/math3$(dllname_$(convention)).lib &
+    $(clib_dir)/rtdll/$(system).386/$(subdir)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $-
+
+dll_def = $+ &
+    $(pfx__)/$(__ifx__).dll/export.def &
+    $(pfx__)/export.$(processor) &
+    $-
+
+dll_objs = $+ &
+    $(clib_dir)/startup/$(__ifx__)/clibdo32.obj &
+    $-
+
+static_objs =
+
+pfx__ =
+__ifx__ =

@@ -2,15 +2,15 @@ objqnxtimeroot = &
         int.obj
 
 objqnxsizeroot = &
-        biosqnx.ybj
+        biosqnx.obj
 
 objqnxsize = &
-        qnxsys.ybj &
-        qnxdir.ybj &
-        qnxmain.ybj &
-        qnxmouse.ybj &
-        time.ybj  &
-        spawn.ybj
+        qnxsys.obj &
+        qnxdir.obj &
+        qnxmain.obj &
+        qnxmouse.obj &
+        time.obj  &
+        spawn.obj
 
 extraobjs = $(objqnxsize)
 extraobjsroot = $(objqnxtimeroot) $(objqnxsizeroot)

@@ -1,4 +1,6 @@
-#                    d16c d16i d32c d32i ncc nci wnc wni axp ntp op
-#==================================================================
-!include ..\..\..\objs.mif
-!include ..\..\..\..\objlist.mif
+#                    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
+#====================================================================
+!if exist(../../../objs.mif)
+!   include ../../../objs.mif
+!endif
+!include ../../../../objlist.mif

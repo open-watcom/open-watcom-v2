@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <float.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
+
+#include <float.h>
+
 #include "cgfront.h"
 #include "cgback.h"
 #include "memmgr.h"
@@ -170,7 +170,7 @@ boolean FstabSetup(             // SETUP FUNCTION STATE TABLE
     if( 0 == CgNonThunkDepth( fctl ) && ! SymIsThunk( fctl->func ) ) {
         fstab.marked_posn = NULL;
         flag_bytes = ( file_ctl->cond_flags + 7 ) / 8;
-        if( file_ctl->state_table && file_ctl->stab_gen ) {
+        if( file_ctl->s.state_table && file_ctl->s.stab_gen ) {
 #ifndef NDEBUG
             if( PragDbgToggle.dump_stab ) {
                 printf( "State Table for Function: %x\n"
@@ -362,12 +362,10 @@ void FstabRegister(             // REGISTER FUNCTION
         if( 0 == CgBackInlinedDepth() ) {
             CgFunRegister( fctl, fstab.rw, fStabDefn.ro );
         }
-#if 0
-        if( fctl->is_dtor ) {
+        if( fctl->is_dtor && fctl->dtor_method == DTM_TABLE ) {
             SE* se = BlkPosnCurr();
             FstabAssignStateVar( se );
         }
-#endif
     }
 }
 

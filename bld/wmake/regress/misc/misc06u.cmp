@@ -1,0 +1,13 @@
+rm -f foo
+rmdir food 2> /dev/null
+echo foo > foo
+rm foo
+echo foo > foo
+chmod -w foo
+rm foo < /dev/null
+rm -f foo
+rm -f foo
+mkdir food
+rm -f food
+rm: cannot remove `food': Is a directory
+rm -f -r food

@@ -1,82 +1,54 @@
-.EXTENSIONS:
-.EXTENSIONS: .exe .exp .lib .wbj .zbj .pbj .sbj .tbj .qbj .ibj .2bj .obj .fbj .dbj .cpp .c .h .asm .psm
-.ERASE
-.DEFAULT
-        @%null
 
-extra_c_flags_386       = -zp4 -fpc
+extra_c_flags_386       = -zp4
 
 !ifndef cg_autodepends
 cg_autodepends = .AUTODEPEND
 !endif
 
+extra_c_flags   = -DBY_CG
 !ifeq sys_dll 1
-extra_c_flags           = -D_CGDLL
+extra_c_flags  += -D_CGDLL
 !endif
 
-track_flags_i86 = /d_TRACK /of+
-track_flags_386 = /d_TRACK /of+
-track_flags_axp = /d_TRACK
+track_flags_i86 = -D_TRACK -of+
+track_flags_386 = -D_TRACK -of+
+track_flags_axp = -D_TRACK
 
 !ifeq cg_trmem 1
-extra_c_flags_memmgt    = $(track_flags_$(host_CPU))
-extra_c_flags_memwrap   = $(track_flags_$(host_CPU))
-extra_c_flags_trmem     = $(track_flags_$(host_CPU))
+extra_c_flags_memmgt    = $(track_flags_$(host_cpu))
+extra_c_flags_memwrap   = $(track_flags_$(host_cpu))
+extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif
 
-wlib_parms      = -q -b
-
-!ifdef on_build_machine
-std_defines = -dNDEBUG
+!ifeq release 0
+!else
+std_defines = -DNDEBUG
 !endif
 
 !ifdef %CGEXTRAOPTS
 opt_standard += $(%CGEXTRAOPTS)
 !endif
 
-inc_dirs        = $(include_path);$(dwarf_dir)\dw\h;$(watcom_dir)\h;$(mem_include)
-
-.BEFORE
-        @set include=$(inc_path)
+inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 
 .c: $(src_path);$(trmem_dir)
 .h: $(include_path)
-.psm: $(asm_path)
+.asm: $(asm_path)
 
-.c.obj: $(cg_autodepends)
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+./bitset.exe : $(watcom_dir)/c/bitset.c
+    $(bld_cl) $< $(wcl_util_opts)
 
-.psm.obj:
-        $(as) $(aflags) $(extra_a_flags_$[&) $[@
+gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
+    $[@ $(gbit_size) _GBit global_bit_set $@
 
-libfile: .PROCEDURE
-        @if exist $^&.clb @erase $^&.clb
-!ifdef on_brads_machine
-        @for %i in ($?) do @%append $^&.clb -+%i
-!else
-        @for %i in ($<) do @%append $^&.clb -+%i
-!endif
-        $(librarian) $(wlib_parms) $^. @$^&.clb
+lbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
+    $[@ $(lbit_size) _LBit local_bit_set $@
 
-global.chk : $(cg_dir)/compile.gbl
-    # do not renable this (build machine is auto-dep) - BBB
-    # if exist *.?bj del *.?bj
-    wtouch -f $[@ $^@
+dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
+    $[@ $(dbit_size) _DBit dom_bit_set $@
 
-bitset.exe : $(watcom_dir)\c\bitset.c
-    $(bld_cl) -d2 $[@
+cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
+    $(c_pp) -I"$(cg_dir)/h" $[@ >$@
 
-$(cg_dir)\h\gbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
-    bitset $(gbit_size) _GBit global_bit_set $(cg_dir)\h\gbit.gh
-
-$(cg_dir)\h\lbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
-    bitset $(lbit_size) _LBit local_bit_set $(cg_dir)\h\lbit.gh
-
-$(cg_dir)\h\dbit.gh : bitset.exe $(cg_dir)\mif\cg.mif
-    bitset $(dbit_size) _DBit dom_bit_set $(cg_dir)\h\dbit.gh
-
-$(cg_dir)\h\cgprotos.gh : $(cg_dir)\h\cgfuntab.h $(cg_dir)\h\cgapicvr.h
-    $(cc) -p -fo=$(cg_dir)\h\cgprotos.gh $(cg_dir)\h\cgapicvr.h -I$(cg_dir)\h
-
-$(cg_dir)\h\feprotos.gh : $(cg_dir)\h\cgfertns.h $(cg_dir)\h\cgfecvr.h
-    $(cc) -p -fo=$(cg_dir)\h\feprotos.gh $(cg_dir)\h\cgfecvr.h -I$(cg_dir)\h
+feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
+    $(c_pp) -I"$(cg_dir)/h" $[@ >$@

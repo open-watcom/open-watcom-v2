@@ -1,0 +1,797 @@
+/*
+ * afxcoll.h    Application Framework collection classes
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __AFXCOLL_H__
+#define __AFXCOLL_H__
+
+:include readonly.sp
+
+class _AFXLINK CByteArray : public CObject {
+private:
+    BYTE    *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CByteArray )
+
+public:
+    CByteArray();
+    virtual ~CByteArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     Add( BYTE newElement );
+    INT_PTR     Append( const CByteArray &src );
+    void        Copy( const CByteArray &src );
+    BYTE        &ElementAt( INT_PTR nIndex );
+    void        FreeExtra();
+    BYTE        GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const BYTE  *GetData() const;
+    BYTE        *GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, BYTE newElement, int nCount = 1 );
+    void        InsertAt( INT_PTR nStartIndex, CByteArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, BYTE newElement );
+    void        SetAtGrow( INT_PTR nIndex, BYTE newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    BYTE    &operator[]( INT_PTR nIndex );
+    BYTE    operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CWordArray : public CObject {
+private:
+    WORD    *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CWordArray )
+
+public:
+    CWordArray();
+    virtual ~CWordArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     Add( WORD newElement );
+    INT_PTR     Append( const CWordArray &src );
+    void        Copy( const CWordArray &src );
+    WORD        &ElementAt( INT_PTR nIndex );
+    void        FreeExtra();
+    WORD        GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const WORD  *GetData() const;
+    WORD        *GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, WORD newElement, int nCount = 1 );
+    void        InsertAt( INT_PTR nStartIndex, CWordArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, WORD newElement );
+    void        SetAtGrow( INT_PTR nIndex, WORD newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    WORD    &operator[]( INT_PTR nIndex );
+    WORD    operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CDWordArray : public CObject {
+private:
+    DWORD   *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CDWordArray )
+
+public:
+    CDWordArray();
+    virtual ~CDWordArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     Add( DWORD newElement );
+    INT_PTR     Append( const CDWordArray &src );
+    void        Copy( const CDWordArray &src );
+    DWORD       &ElementAt( INT_PTR nIndex );
+    void        FreeExtra();
+    DWORD       GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const DWORD *GetData() const;
+    DWORD       *GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, DWORD newElement, int nCount = 1 );
+    void        InsertAt( INT_PTR nStartIndex, CDWordArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, DWORD newElement );
+    void        SetAtGrow( INT_PTR nIndex, DWORD newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    DWORD   &operator[]( INT_PTR nIndex );
+    DWORD   operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CUIntArray : public CObject {
+private:
+    UINT    *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CUIntArray )
+
+public:
+    CUIntArray();
+    virtual ~CUIntArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     Add( UINT newElement );
+    INT_PTR     Append( const CUIntArray &src );
+    void        Copy( const CUIntArray &src );
+    UINT        &ElementAt( INT_PTR nIndex );
+    void        FreeExtra();
+    UINT        GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const UINT  *GetData() const;
+    UINT        *GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, UINT newElement, int nCount = 1 );
+    void        InsertAt( INT_PTR nStartIndex, CUIntArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, UINT newElement );
+    void        SetAtGrow( INT_PTR nIndex, UINT newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    UINT    &operator[]( INT_PTR nIndex );
+    UINT    operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CPtrArray : public CObject {
+private:
+    void    **m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_DYNAMIC( CPtrArray )
+
+public:
+    CPtrArray();
+    virtual ~CPtrArray();
+    
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     Add( void *newElement );
+    INT_PTR     Append( const CPtrArray &src );
+    void        Copy( const CPtrArray &src );
+    void        *&ElementAt( INT_PTR nIndex );
+    void        FreeExtra();
+    void        *GetAt( INT_PTR nIndex ) const;
+    INT_PTR     GetCount() const;
+    const void  **GetData() const;
+    void        **GetData();
+    INT_PTR     GetSize() const;
+    INT_PTR     GetUpperBound() const;
+    void        InsertAt( INT_PTR nIndex, void *newElement, int nCount = 1 );
+    void        InsertAt( INT_PTR nStartIndex, CPtrArray *pNewArray );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void        SetAt( INT_PTR nIndex, void *newElement );
+    void        SetAtGrow( INT_PTR nIndex, void *newElement );
+    void        SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    void    *&operator[]( INT_PTR nIndex );
+    void    *operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CObArray : public CObject {
+private:
+    CObject **m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CObArray )
+
+public:
+    CObArray();
+    virtual ~CObArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR         Add( CObject *newElement );
+    INT_PTR         Append( const CObArray &src );
+    void            Copy( const CObArray &src );
+    CObject         *&ElementAt( INT_PTR nIndex );
+    void            FreeExtra();
+    CObject         *GetAt( INT_PTR nIndex ) const;
+    INT_PTR         GetCount() const;
+    const CObject   **GetData() const;
+    CObject         **GetData();
+    INT_PTR         GetSize() const;
+    INT_PTR         GetUpperBound() const;
+    void            InsertAt( INT_PTR nIndex, CObject *newElement, int nCount = 1 );
+    void            InsertAt( INT_PTR nStartIndex, CObArray *pNewArray );
+    BOOL            IsEmpty() const;
+    void            RemoveAll();
+    void            RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void            SetAt( INT_PTR nIndex, CObject *newElement );
+    void            SetAtGrow( INT_PTR nIndex, CObject *newElement );
+    void            SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    CObject *&operator[]( INT_PTR nIndex );
+    CObject *operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CStringArray : public CObject {
+private:
+    CString *m_pData;
+    INT_PTR m_nSize;
+    INT_PTR m_nMaxSize;
+    INT_PTR m_nGrowBy;
+
+    DECLARE_SERIAL( CStringArray )
+
+public:
+    CStringArray();
+    virtual ~CStringArray();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR         Add( LPCTSTR newElement );
+    INT_PTR         Add( const CString &newElement );
+    INT_PTR         Append( const CStringArray &src );
+    void            Copy( const CStringArray &src );
+    CString         &ElementAt( INT_PTR nIndex );
+    void            FreeExtra();
+    CString         GetAt( INT_PTR nIndex ) const;
+    INT_PTR         GetCount() const;
+    const CString   *GetData() const;
+    CString         *GetData();
+    INT_PTR         GetSize() const;
+    INT_PTR         GetUpperBound() const;
+    void            InsertAt( INT_PTR nIndex, LPCTSTR newElement, int nCount = 1 );
+    void            InsertAt( INT_PTR nIndex, const CString &newElement, int nCount = 1 );
+    void            InsertAt( INT_PTR nStartIndex, CStringArray *pNewArray );
+    BOOL            IsEmpty() const;
+    void            RemoveAll();
+    void            RemoveAt( INT_PTR nIndex, INT_PTR nCount = 1 );
+    void            SetAt( INT_PTR nIndex, LPCTSTR newElement );
+    void            SetAt( INT_PTR nIndex, const CString &newElement );
+    void            SetAtGrow( INT_PTR nIndex, LPCTSTR newElement );
+    void            SetAtGrow( INT_PTR nIndex, const CString &newElement );
+    void            SetSize( INT_PTR nNewSize, INT_PTR nGrowBy = -1 );
+    
+    CString &operator[]( INT_PTR nIndex );
+    CString operator[]( INT_PTR nIndex ) const;
+};
+
+class _AFXLINK CPtrList : public CObject {
+private:
+    struct CNode {
+        CNode   *pNext;
+        CNode   *pPrev;
+        void    *data;
+    };
+    
+    CNode   *m_pNodeHead;
+    CNode   *m_pNodeTail;
+    INT_PTR m_nCount;
+
+    DECLARE_DYNAMIC( CPtrList )
+
+public:
+    CPtrList();
+    virtual ~CPtrList();
+    
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    POSITION    AddHead( void *newElement );
+    void        AddHead( CPtrList *pNewList );
+    POSITION    AddTail( void *newElement );
+    void        AddTail( CPtrList *pNewList );
+    POSITION    Find( void *searchValue, POSITION startAfter = NULL ) const;
+    POSITION    FindIndex( INT_PTR nIndex ) const;
+    const void  *GetAt( POSITION position ) const;
+    void        *&GetAt( POSITION position );
+    INT_PTR     GetCount() const;
+    const void  *GetHead() const;
+    void        *&GetHead();
+    POSITION    GetHeadPosition() const;
+    const void  *GetNext( POSITION &rPosition ) const;
+    void        *&GetNext( POSITION &rPosition );
+    const void  *GetPrev( POSITION &rPosition ) const;
+    void        *&GetPrev( POSITION &rPosition );
+    INT_PTR     GetSize() const;
+    const void  *GetTail() const;
+    void        *&GetTail();
+    POSITION    GetTailPosition() const;
+    POSITION    InsertAfter( POSITION position, void *newElement );
+    POSITION    InsertBefore( POSITION position, void *newElement );
+    BOOL        IsEmpty() const;
+    void        RemoveAll();
+    void        RemoveAt( POSITION position );
+    void        *RemoveHead();
+    void        *RemoveTail();
+    void        SetAt( POSITION position, void *newElement );
+};
+
+class _AFXLINK CObList : public CObject {
+private:
+    struct CNode {
+        CNode   *pNext;
+        CNode   *pPrev;
+        CObject *data;
+    };
+    
+    CNode   *m_pNodeHead;
+    CNode   *m_pNodeTail;
+    INT_PTR m_nCount;
+
+    DECLARE_SERIAL( CObList )
+
+public:
+    CObList();
+    virtual ~CObList();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    POSITION        AddHead( CObject *newElement );
+    void            AddHead( CObList *pNewList );
+    POSITION        AddTail( CObject *newElement );
+    void            AddTail( CObList *pNewList );
+    POSITION        Find( CObject *searchValue, POSITION startAfter = NULL ) const;
+    POSITION        FindIndex( INT_PTR nIndex ) const;
+    const CObject   *GetAt( POSITION position ) const;
+    CObject         *&GetAt( POSITION position );
+    INT_PTR         GetCount() const;
+    const CObject   *GetHead() const;
+    CObject         *&GetHead();
+    POSITION        GetHeadPosition() const;
+    const CObject   *GetNext( POSITION &rPosition ) const;
+    CObject         *&GetNext( POSITION &rPosition );
+    const CObject   *GetPrev( POSITION &rPosition ) const;
+    CObject         *&GetPrev( POSITION &rPosition );
+    INT_PTR         GetSize() const;
+    const CObject   *GetTail() const;
+    CObject         *&GetTail();
+    POSITION        GetTailPosition() const;
+    POSITION        InsertAfter( POSITION position, CObject *newElement );
+    POSITION        InsertBefore( POSITION position, CObject *newElement );
+    BOOL            IsEmpty() const;
+    void            RemoveAll();
+    void            RemoveAt( POSITION position );
+    CObject         *RemoveHead();
+    CObject         *RemoveTail();
+    void            SetAt( POSITION position, CObject *newElement );
+};
+
+class _AFXLINK CStringList : public CObject {
+private:
+    struct CNode {
+        CNode   *pNext;
+        CNode   *pPrev;
+        CString data;
+    };
+    
+    CNode   *m_pNodeHead;
+    CNode   *m_pNodeTail;
+    INT_PTR m_nCount;
+
+    DECLARE_SERIAL( CStringList )
+
+public:
+    CStringList();
+    virtual ~CStringList();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    POSITION        AddHead( LPCTSTR newElement );
+    POSITION        AddHead( const CString &newElement );
+    void            AddHead( CStringList *pNewList );
+    POSITION        AddTail( LPCTSTR newElement );
+    POSITION        AddTail( const CString &newElement );
+    void            AddTail( CStringList *pNewList );
+    POSITION        Find( LPCTSTR searchValue, POSITION startAfter = NULL ) const;
+    POSITION        FindIndex( INT_PTR nIndex ) const;
+    const CString   &GetAt( POSITION position ) const;
+    CString         &GetAt( POSITION position );
+    INT_PTR         GetCount() const;
+    const CString   &GetHead() const;
+    CString         &GetHead();
+    POSITION        GetHeadPosition() const;
+    const CString   &GetNext( POSITION &rPosition ) const;
+    CString         &GetNext( POSITION &rPosition );
+    const CString   &GetPrev( POSITION &rPosition ) const;
+    CString         &GetPrev( POSITION &rPosition );
+    INT_PTR         GetSize() const;
+    const CString   &GetTail() const;
+    CString         &GetTail();
+    POSITION        GetTailPosition() const;
+    POSITION        InsertAfter( POSITION position, LPCTSTR newElement );
+    POSITION        InsertAfter( POSITION position, const CString &newElement );
+    POSITION        InsertBefore( POSITION position, LPCTSTR newElement );
+    POSITION        InsertBefore( POSITION position, const CString &newElement );
+    BOOL            IsEmpty() const;
+    void            RemoveAll();
+    void            RemoveAt( POSITION position );
+    CString         RemoveHead();
+    CString         RemoveTail();
+    void            SetAt( POSITION position, LPCTSTR newElement );
+    void            SetAt( POSITION position, const CString &newElement );
+};
+
+class _AFXLINK CMapWordToPtr : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        void    *value;
+        WORD    key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_DYNAMIC( CMapWordToPtr )
+    
+public:
+    CMapWordToPtr();
+    virtual ~CMapWordToPtr();
+    
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, WORD &rKey, void *&rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( WORD key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( WORD key, void *&rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( WORD key );
+    void        SetAt( WORD key, void *newValue );
+    
+    void    *&operator[]( WORD key );
+    
+protected:
+    typedef WORD    BASE_KEY;
+    typedef WORD    BASE_ARG_KEY;
+    typedef void    *BASE_VALUE;
+};
+
+class _AFXLINK CMapPtrToWord : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        WORD    value;
+        void    *key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_DYNAMIC( CMapPtrToWord )
+    
+public:
+    CMapPtrToWord();
+    virtual ~CMapPtrToWord();
+    
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, void *&rKey, WORD &rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( void *key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( void *key, WORD &rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( void *key );
+    void        SetAt( void *key, WORD newValue );
+    
+    WORD    &operator[]( void *key );
+    
+protected:
+    typedef void    *BASE_KEY;
+    typedef void    *BASE_ARG_KEY;
+    typedef WORD    BASE_VALUE;
+};
+
+class _AFXLINK CMapPtrToPtr : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        void    *value;
+        void    *key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_DYNAMIC( CMapPtrToPtr )
+    
+public:
+    CMapPtrToPtr();
+    virtual ~CMapPtrToPtr();
+    
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, void *&rKey, void *&rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( void *key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( void *key, void *&rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( void *key );
+    void        SetAt( void *key, void *newValue );
+    
+    void    *&operator[]( void *key );
+    
+protected:
+    typedef void    *BASE_KEY;
+    typedef void    *BASE_ARG_KEY;
+    typedef void    *BASE_VALUE;
+};
+
+class _AFXLINK CMapWordToOb : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        CObject *value;
+        WORD    key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_SERIAL( CMapWordToOb )
+    
+public:
+    CMapWordToOb();
+    virtual ~CMapWordToOb();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, WORD &rKey, CObject *&rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( WORD key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( WORD key, CObject *&rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( WORD key );
+    void        SetAt( WORD key, CObject *newValue );
+    
+    CObject *&operator[]( WORD key );
+    
+protected:
+    typedef WORD    BASE_KEY;
+    typedef WORD    BASE_ARG_KEY;
+    typedef CObject *BASE_VALUE;
+};
+
+class _AFXLINK CMapStringToPtr : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        void    *value;
+        CString key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_DYNAMIC( CMapStringToPtr )
+    
+public:
+    CMapStringToPtr();
+    virtual ~CMapStringToPtr();
+
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, CString &rKey, void *&rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( LPCTSTR key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( LPCTSTR key, void *&rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( LPCTSTR key );
+    void        SetAt( LPCTSTR key, void *newValue );
+    
+    void    *&operator[]( LPCTSTR key );
+    
+protected:
+    typedef CString BASE_KEY;
+    typedef LPCTSTR BASE_ARG_KEY;
+    typedef void    *BASE_VALUE;
+};
+
+class _AFXLINK CMapStringToOb : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        CObject *value;
+        CString key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_SERIAL( CMapStringToOb )
+    
+public:
+    CMapStringToOb();
+    virtual ~CMapStringToOb();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, CString &rKey, CObject *&rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( LPCTSTR key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( LPCTSTR key, CObject *&rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( LPCTSTR key );
+    void        SetAt( LPCTSTR key, CObject *newValue );
+    
+    CObject *&operator[]( LPCTSTR key );
+    
+protected:
+    typedef CString BASE_KEY;
+    typedef LPCTSTR BASE_ARG_KEY;
+    typedef CObject *BASE_VALUE;
+};
+
+class _AFXLINK CMapStringToString : public CObject {
+private:
+    struct CAssoc {
+        CAssoc  *pNext;
+        CString value;
+        CString key;
+    };
+
+    CAssoc  **m_pHashTable;
+    UINT    m_nHashTableSize;
+    INT_PTR m_nCount;
+
+    DECLARE_SERIAL( CMapStringToString )
+    
+public:
+    CMapStringToString();
+    virtual ~CMapStringToString();
+    
+    virtual void    Serialize( CArchive &ar );
+#ifdef _DEBUG
+    virtual void    AssertValid() const;
+    virtual void    Dump( CDumpContext &dc ) const;
+#endif
+    
+    INT_PTR     GetCount() const;
+    UINT        GetHashTableSize() const;
+    void        GetNextAssoc( POSITION &rNextPosition, CString &rKey, CString &rValue ) const;
+    INT_PTR     GetSize() const;
+    POSITION    GetStartPosition() const;
+    UINT        HashKey( LPCTSTR key ) const;
+    void        InitHashTable( UINT hashSize, BOOL bAllocNow = TRUE );
+    BOOL        IsEmpty() const;
+    BOOL        Lookup( LPCTSTR key, CString &rValue ) const;
+    void        RemoveAll();
+    BOOL        RemoveKey( LPCTSTR key );
+    void        SetAt( LPCTSTR key, LPCTSTR newValue );
+    
+    CString &operator[]( LPCTSTR key );
+    
+protected:
+    typedef CString BASE_KEY;
+    typedef LPCTSTR BASE_ARG_KEY;
+    typedef CString BASE_VALUE;
+};
+
+#ifndef _DEBUG
+    #include <afxcoll.inl>
+#endif
+
+#endif /* __AFXCOLL_H__ */

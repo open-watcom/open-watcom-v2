@@ -123,17 +123,24 @@ typedef struct instruction {
     ins_operand *operands[MAX_OPERANDS];
 } instruction;
 
-extern void             AsInsInit();
+extern void             AsInsInit( void );
 extern instruction      *AsInsCreate( sym_handle );
 extern void             AsInsAddOperand( instruction *, ins_operand * );
 extern void             AsInsEmit( instruction * );
 extern void             AsInsDestroy( instruction * );
-extern void             AsInsFini();
+extern void             AsInsFini( void );
 
-extern ins_operand      *AsOpImmed( void * );
+extern ins_operand      *AsOpImmed( expr_tree * );
 extern ins_operand      *AsOpRegister( reg );
-extern ins_operand      *AsOpRegIndirect( reg, void * );
+extern ins_operand      *AsOpRegIndirect( reg, expr_tree * );
 extern ins_operand      *AsOpBI( uint_32, uint_32 );
+
+#ifdef _STANDALONE_
+extern void PPCEmit( owl_section_handle, instruction * );
+#else
+extern void PPCEmit( instruction * );
+#endif
+extern bool PPCValidate( instruction * );
 
 #ifdef _STANDALONE_
 #ifndef NDEBUG

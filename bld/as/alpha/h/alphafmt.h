@@ -36,9 +36,3 @@ typedef enum {
 #undef PICK
 } alpha_template;
 
-#ifdef _STANDALONE_
-extern void AlphaEmit( void *, void * );
-#else
-extern void AlphaEmit( void * );
-#endif
-extern bool AlphaValidate( void * );

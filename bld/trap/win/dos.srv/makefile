@@ -1,9 +1,13 @@
-#pmake: build serv remote dos 16 32 winl x86
+#pmake: build serv remote os_dos cpu_i86 cpu_386 winl x86
+host_CPU = i86
+host_OS = dos
 
 os = dos
 srv = win
 cpu = x86
+which = SERVER
+type  = remote_link
 
-extra_objs = $(remote_objs)
+extra_c_flags_i86 = -3
 
-!include $(trap_dir)\serv.mif
+!include $(trap_dir)/master.mif

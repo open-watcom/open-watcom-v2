@@ -1,0 +1,18 @@
+name=32Bit
+static_text=\
+        //1"Select the 32-bit calling conventions you wish to use:"\
+        //2"使用する32ビット呼出規約の選択:"\
+        //0
+static_text=
+check_box=3r,,\
+        //1"&Register based calling"\
+        //2"レジスタ・ベース呼び出し(&R)"\
+        //0
+check_box=3s,,\
+        //1"&Stack based calling"\
+        //2"スタックベース呼び出し(&S)"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

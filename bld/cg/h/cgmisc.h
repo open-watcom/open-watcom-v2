@@ -35,7 +35,7 @@
 
 #include "cgstd.h"
 
-extern bool TBreak( void );
-extern void CauseTBreak( void );
+extern bool _CGAPI TBreak( void );
+extern void _CGAPI CauseTBreak( void );
 
 #endif

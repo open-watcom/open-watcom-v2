@@ -1,0 +1,142 @@
+additional_cleanup = *.mod *.ref *.stb
+
+!ifeq host_os qnx
+clibdir = $(clib_dir)/library/qnx.286/ms/clibs.lib
+!else ifeq host_cpu i86
+clibdir = $(clib_dir)/library/msdos.086/ms/clibs.lib
+!else
+clibdir = $(clib_dir)/library/msdos.386/ms_r/clib3r.lib
+!endif
+
+!ifeq host_os dos
+
+all: graph.lib
+
+!ifeq host_cpu i86
+
+tmp.lib : ../../dosi86/graphs.lib ../../../pgchart/dosi86/charts.lib &
+                               ../../dosi86/dummy.obj ../../dosi86/fsmath.obj
+    @%write  tmp.lbc  +../../dosi86/graphs.lib
+    @%append tmp.lbc  +../../dosi86/dummy.obj
+    @%append tmp.lbc  +../../dosi86/fsmath.obj
+    @%append tmp.lbc  +../../../pgchart/dosi86/charts.lib
+    $(librarian) $(libflags) @tmp.lbc
+
+!else
+
+tmp.lib : ../../dos386s/graph3s.lib ../../dos386r/graph3r.lib &
+  ../../../pgchart/dos386r/chart3r.lib ../../../pgchart/dos386s/chart3s.lib &
+  ../../dos386r/dummy.obj ../../dos386r/fsmath.obj
+    @%write  tmp.lbc  +../../dos386s/graph3s.lib
+    @%append tmp.lbc  -globals
+    @%append tmp.lbc  -bit
+    @%append tmp.lbc  -sqrtf
+    @%append tmp.lbc  -std
+    @%append tmp.lbc  -hercfont
+    @%append tmp.lbc  -cgautils
+    @%append tmp.lbc  -egautils
+    @%append tmp.lbc  -vgautils
+    @%append tmp.lbc  -hgcutils
+    @%append tmp.lbc  -svgautil
+    @%append tmp.lbc  -font8x8
+    @%append tmp.lbc  +../../dos386r/graph3r.lib
+    @%append tmp.lbc  +../../dos386r/dummy.obj
+    @%append tmp.lbc  +../../dos386r/fsmath.obj
+    @%append tmp.lbc  +../../../pgchart/dos386r/chart3r.lib
+    @%append tmp.lbc  +../../../pgchart/dos386s/chart3s.lib
+    $(librarian) $(libflags) @tmp.lbc
+
+!endif
+
+!else ifeq host_os qnx
+
+!ifeq host_cpu i86
+
+all: graph.lib
+
+tmp.lib : ../../qnxi86/graphs.lib ../../../pgchart/dosi86/charts.lib &
+                              ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj
+    @%write  tmp.lbc  +../../qnxi86/graphs.lib
+    @%append tmp.lbc  +../../qnxi86/dummy.obj
+    @%append tmp.lbc  +../../qnxi86/fsmath.obj
+    @%append tmp.lbc  +../../../pgchart/dosi86/charts.lib
+    $(librarian) $(libflags) @tmp.lbc
+
+!else
+
+all: graph3r.lib graph3s.lib
+
+graph3r.lib : ../../qnx386r/graph3r.lib ../../../pgchart/dos386r/chart3r.lib
+    $(librarian) $(libflags) +../../qnx386r/graph3r.lib +../../../pgchart/dos386r/chart3r.lib
+
+graph3s.lib : ../../qnx386r/graph3r.lib ../../../pgchart/dos386s/chart3s.lib
+    $(librarian) $(libflags) +../../qnx386s/graph3s.lib +../../../pgchart/dos386s/chart3s.lib
+
+!endif
+
+!else ifeq host_os os2
+
+.c : ../../c
+
+extra_c_flags_seginit = -zld -DDOSX286
+
+all: seginit.obj
+
+!endif
+
+graph.lib : $(clibdir) tmp.lib
+    @rm -f *.obj
+  # find external references - and check for double precision usage
+    objxref -e=../except tmp.lib | sort >graph.ref
+    egrep "__FD" graph.ref >x.x
+    diff x.x ../fd.ok
+    @if errorlevel 1 echo ERROR - double precision floating point used
+    @rm -f x.x
+  # find all modules in clib which are referenced from graph.lib
+    objfind -i=graph.ref $(clibdir) >clib.mod
+  # extract all modules from clib which are referenced from graph.lib
+!ifdef __UNIX__
+    $(awk) -v host=unix -f ../fix1.awk clib.mod >clibget.lbc
+!else
+    $(awk) -v host= -f ../fix1.awk clib.mod >clibget.lbc
+!endif
+    $(librarian) -b $(clibdir) @clibget.lbc
+#    @rm -f clibget.lbc
+  # get all public symbols in extracted modules from clib, fsmath and dummy
+  # they will be renamed later to don't conflict with public symbols in clib
+!ifeq host_os qnx
+    objxdef *.obj ../../qnxi86/fsmath.obj ../../qnxi86/dummy.obj >graph.stb
+!else ifeq host_cpu i86
+    objxdef *.obj ../../dosi86/fsmath.obj ../../dosi86/dummy.obj >graph.stb
+!else
+    objxdef *.obj ../../dos386r/dummy.obj ../../dos386r/fsmath.obj >graph.stb
+!endif
+!ifeq host_cpu i86
+  # extract all modules from graph.lib library
+    $(librarian) -b -x=.obj tmp.lib
+  # modify modules as needed
+  # add _GR to names of all symbols in extracted files and fsmath, dummy
+  # change _TEXT segment to GRAPH_TEXT
+    objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=graph.stb *.obj
+!else
+  # extract all modules from graph.lib library, use alias for 8.3 format
+    objlist tmp.lib >graph.mod
+!ifdef __UNIX__
+    $(awk) -v host=unix -f ../fix2.awk graph.mod >extract.lbc
+!else
+    $(awk) -v host= -f ../fix2.awk graph.mod >extract.lbc
+!endif
+    $(librarian) -b tmp.lib @extract.lbc
+#    @rm -f extract.lbc
+  # modify modules as needed
+  # add _GR to names of all symbols in extracted files and fsmath, dummy
+    objchg -m=_GR* -s=graph.stb *.obj
+!endif
+  # put all modules together into new library
+    @%create $^&.lbc
+    @for %i in (*.obj) do @%append $^&.lbc +%i
+    $(librarian) $(libflags) @$^&.lbc
+    @rm -f *.obj
+
+graphics_prefix = ../
+!include ../../dosi86/makefile

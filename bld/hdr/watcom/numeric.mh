@@ -1,0 +1,183 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: numeric ()
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _NUMERIC_INCLUDED
+#define _NUMERIC_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+  // accumulate
+  // **********
+
+  template< class InputIterator, class Type >
+  Type accumulate( InputIterator first, InputIterator last, Type init )
+  {
+    Type result( init );
+    while( first != last ) {
+      result = result + *first;
+      ++first;
+    }
+    return( result );
+  }
+
+  template< class InputIterator, class Type, class BinaryOperation >
+  Type accumulate(
+    InputIterator first,
+    InputIterator last,
+    Type init,
+    BinaryOperation bin_op )
+  {
+    Type result( init );
+    while( first != last ) {
+      result = bin_op( result, *first );
+      ++first;
+    }
+    return( result );
+  }
+
+  // inner_product
+  // *************
+
+  template< class InputIterator1, class InputIterator2, class Type >
+  Type inner_product(
+    InputIterator1 first1,
+    InputIterator1 last1,
+    InputIterator2 first2,
+    Type init )
+  {
+    Type result( init );
+    while( first1 != last1 ) {
+      result = result + ( *first1 ) * ( *first2 );
+      ++first1;
+      ++first2;
+    }
+    return( result );
+  }
+
+  template< class InputIterator1, class InputIterator2, class Type,
+            class BinaryOperation1, class BinaryOperation2 >
+  Type inner_product(
+    InputIterator1 first1,
+    InputIterator1 last1,
+    InputIterator2 first2,
+    Type init,
+    BinaryOperation1 bin_op1,
+    BinaryOperation2 bin_op2 )
+  {
+    Type result( init );
+    while( first1 != last1 ) {
+      result = bin_op1( result, bin_op2( *first1, *first2 ) );
+      ++first1;
+      ++first2;
+    }
+    return( result );
+  }
+
+  // partial_sum
+  // ***********
+
+  template< class InputIterator, class OutputIterator >
+  OutputIterator partial_sum(
+    InputIterator first, InputIterator last, OutputIterator result )
+  {
+    if( first == last ) return( result );
+
+    typename iterator_traits< InputIterator >::value_type acc( *first );
+    *result = acc;
+    ++first;
+    ++result;
+
+    while( first != last ) {
+      acc = acc + *first;
+      *result = acc;
+      ++first;
+      ++result;
+    }
+    return( result );
+  }
+
+  template< class InputIterator, class OutputIterator, class BinaryOperation >
+  OutputIterator partial_sum(
+    InputIterator first,
+    InputIterator last,
+    OutputIterator result,
+    BinaryOperation bin_op )
+  {
+    if( first == last ) return( result );
+
+    typename iterator_traits< InputIterator >::value_type acc( *first );
+    *result = acc;
+    ++first;
+    ++result;
+
+    while( first != last ) {
+      acc = bin_op( acc, *first );
+      *result = acc;
+      ++first;
+      ++result;
+    }
+    return( result );
+  }
+
+  // adjacent_difference
+  // *******************
+
+  template< class InputIterator, class OutputIterator >
+  OutputIterator adjacent_difference(
+    InputIterator first,
+    InputIterator last,
+    OutputIterator result )
+  {
+    if( first == last ) return( result );
+
+    typename iterator_traits< InputIterator >::value_type previous( *first );
+    *result = previous;
+    ++first;
+    ++result;
+
+    while( first != last ) {
+      typename iterator_traits< InputIterator >::value_type temp( *first );
+      *result = temp - previous;
+      previous = temp;
+      ++first;
+      ++result;
+    }
+    return( result );
+  }
+
+  template< class InputIterator, class OutputIterator, class BinaryOperation >
+  OutputIterator adjacent_difference(
+    InputIterator first,
+    InputIterator last,
+    OutputIterator result,
+    BinaryOperation bin_op )
+  {
+    if( first == last ) return( result );
+
+    typename iterator_traits< InputIterator >::value_type previous( *first );
+    *result = previous;
+    ++first;
+    ++result;
+
+    while( first != last ) {
+      typename iterator_traits< InputIterator >::value_type temp( *first );
+      *result = bin_op( temp, previous );
+      previous = temp;
+      ++first;
+      ++result;
+    }
+    return( result );
+  }
+
+} // namespace std
+
+#endif

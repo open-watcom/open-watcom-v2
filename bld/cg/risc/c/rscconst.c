@@ -24,14 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Integer factoring for RISC architectures. Designed for
+*               Alpha AXP.
 *
 ****************************************************************************/
 
 
-
 #include "standard.h"
 
-void FactorInt32( signed_32 val, signed_16 *high, signed_16 *extra, signed_16 *low ) {
-/
+void FactorInt32( signed_32 val, signed_16 *high, signed_16 *extra, signed_16 *low )
+//**********************************************************************************
+// Factor a signed_32 value into 16-bit constants such that the following sequence
+//  ldah rn,high(r31)
+//  ldah rn,extra(rn)
+//  lda  rn,low(rn)
+// results in value, properly sign-extended, being in rn.
+{
+    signed_16       h, l, e;
+    signed_32       tmp;
+
+    e = 0;
+    l = val & 0xffff;
+    tmp = val - (signed_32)l;
+    h = (tmp >> 16) & 0xffff;
+    if( val >= 0x7fff8000 ) {
+        e = 0x4000;
+        tmp -= 0x40000000;
+        h = (tmp >> 16) & 0xffff;
+    }
+    *high = h;
+    *extra = e;
+    *low = l;
+}

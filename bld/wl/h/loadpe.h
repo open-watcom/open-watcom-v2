@@ -29,28 +29,32 @@
 *
 ****************************************************************************/
 
+#include "exepe.h"
 
 #define PE_DEFAULT_BASE (0x400000UL)
-#define PE_BSS_SHIFT    16
 #define PE_DEF_STACK_COMMIT (0xFFFFFFFFUL)
 
 extern void             DoAddResource( char * );
 extern void             FiniPELoadFile( void );
-extern void             ReadPEExportTable( f_handle, void * );
+extern void             ReadPEExportTable( f_handle, pe_hdr_table_entry * );
 extern void             AllocPETransferTable( void );
 extern void             GenPEToc( void );
 extern void             ChkPEData( void );
 extern unsigned long    GetPEHeaderSize( void );
+extern void             ResetLoadPE( void );
+extern void             AddPEImportLocalSym( symbol *, symbol * );
+extern bool             ImportPELocalSym( symbol * );
+extern void             FreePELocalImports( void );
 
 struct import_name {
-    struct import_name *next;
-    dll_sym_info *      dll;
-    name_list *         imp;
+    struct import_name  *next;
+    dll_sym_info        *dll;
+    name_list           *imp;
 };
 
 typedef struct module_import {
-    struct module_import *      next;
-    struct name_list *          mod;
-    struct import_name *        imports;
+    struct module_import        *next;
+    struct name_list            *mod;
+    struct import_name          *imports;
     unsigned                    num_entries;
 } module_import;

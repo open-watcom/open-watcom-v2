@@ -24,11 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate indirect fe callback cover macros.
 *
 ****************************************************************************/
 
 
-#define CGCALLBACKDEF( a, b, c )        #define a (FEFuncTable->##a)
+#define HASH_DEF                        #define
+#define CGCALLBACKDEF( a, b, c )        HASH_DEF a (FEFuncTable->a)
+
 #include "cgfertns.h"
+
+#undef HASH_DEF
+#undef CGCALLBACKDEF

@@ -34,7 +34,7 @@
 #include "drwatcom.h"
 
 interrupt_struct        IntData;
-WORD                    DeadTask;
+HTASK                   DeadTask;
 TASKENTRY               DTTaskEntry;
 MODULEENTRY             DTModuleEntry;
 HWND                    MainWindow;

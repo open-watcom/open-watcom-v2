@@ -29,3 +29,7 @@ template <class T>
     };
 
 S3<int> x;
+
+template class S1<int>;
+template class S2<int>;
+template class S3<int>;

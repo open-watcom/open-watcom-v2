@@ -24,29 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CPU independent instruction decoding core.
 *
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include "distypes.h"
 #include "dis.h"
+#include "distbls.gh"
 
+#if DISCPU & DISCPU_axp
 extern const dis_cpu_data       AXPData;
+#endif
+#if DISCPU & DISCPU_ppc
 extern const dis_cpu_data       PPCData;
+#endif
+#if DISCPU & DISCPU_x86
 extern const dis_cpu_data       X86Data;
+#endif
+#if DISCPU & DISCPU_x64
+extern const dis_cpu_data       X64Data;
+#endif
+#if DISCPU & DISCPU_jvm
 extern const dis_cpu_data       JVMData;
+#endif
+#if DISCPU & DISCPU_sparc
 extern const dis_cpu_data       SPARCData;
-
-extern const char               DisStringTable[];
-extern const dis_selector       DisSelectorTable[];
-extern const dis_ins_descript   DisInstructionTable[];
-extern const unsigned short     DisRegisterTable[];
-extern const unsigned short     DisRefTypeTable[];
-
+#endif
+#if DISCPU & DISCPU_mips
+extern const dis_cpu_data       MIPSData;
+#endif
 
 long SEX( unsigned long v, unsigned bit )
 {
@@ -89,30 +99,51 @@ dis_handler_return DisDummyHandler( dis_handle *h, void *d, dis_dec_ins *ins )
     return( DHR_INVALID );
 }
 
-dis_return DisInit( dis_cpu cpu, dis_handle *h )
+dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
 // Perform all setup required
 {
     h->cpu = cpu;
     switch( cpu ) {
+#if DISCPU & DISCPU_axp
     case DISCPU_axp:
         h->d = &AXPData;
         break;
+#endif
+#if DISCPU & DISCPU_ppc
     case DISCPU_ppc:
         h->d = &PPCData;
         break;
+#endif
+#if DISCPU & DISCPU_x86
     case DISCPU_x86:
         h->d = &X86Data;
         break;
+#endif
+#if DISCPU & DISCPU_x64
+    case DISCPU_x64:
+        h->d = &X64Data;
+        break;
+#endif
+#if DISCPU & DISCPU_jvm
     case DISCPU_jvm:
         h->d = &JVMData;
         break;
+#endif
+#if DISCPU & DISCPU_sparc
     case DISCPU_sparc:
         h->d = &SPARCData;
         break;
+#endif
+#if DISCPU & DISCPU_mips
+    case DISCPU_mips:
+        h->d = &MIPSData;
+        break;
+#endif
     default:
         return( DR_FAIL );
     }
     if( h->d->range == NULL ) return( DR_FAIL );
+    h->need_bswap = swap_bytes;
     return( DR_OK );
 }
 
@@ -131,6 +162,7 @@ void DisDecodeInit( dis_handle *h, dis_dec_ins *ins )
     case DISCPU_axp:
     case DISCPU_ppc:
     case DISCPU_sparc:
+    case DISCPU_mips:
         ins->size = sizeof( unsigned_32 );
         break;
     }
@@ -147,26 +179,43 @@ static void BadOpcode( dis_handle *h, dis_dec_ins *ins )
 dis_return DisDecode( dis_handle *h, void *d, dis_dec_ins *ins )
 // Decode an instruction
 {
-    int                         curr;
-    const dis_range             *table;
-    dis_return                  dr;
-    unsigned                    idx;
-    unsigned                    start;
-    dis_handler_return          hr;
+    int                     curr;
+    const dis_range        *table;
+    dis_return              dr;
+    unsigned                idx;
+    unsigned                start;
+    dis_handler_return      hr;
+    int                     page;
+    int const              *pos;
+    int                     offs;
 
-    table = h->d->range;
     start = 0;
+    curr  = 0;
+    table = h->d->range;
     for( ;; ) {
         dr = DisCliGetData( d, start, sizeof( ins->opcode ), &ins->opcode );
-        if( dr != DR_OK ) return( dr );
-        curr = 0;
-        for( ;; ) {
-            idx = (ins->opcode >> table[curr].shift) & table[curr].mask;
-            curr = DisSelectorTable[idx + table[curr].index];
-            if( curr >= 0 ) break;
-            curr = -curr;
+        if( dr != DR_OK ) {
+            ins->num_ops = 0;   /* must reset num_ops before returning! */
+            return( dr );
         }
-        if( (DisInstructionTable[curr].mask & ins->opcode) != DisInstructionTable[curr].opcode ) {
+        h->d->preproc_hook( h, d, ins );
+        page = 0;
+        for( pos = h->d->range_pos ; *pos != -1 ; ++pos, ++page ) {
+            if( h->d->decode_check( page, ins ) != DHR_DONE )
+                continue;
+            offs = *pos;
+            curr = 0;
+            for( ;; ) {
+                idx = (ins->opcode >> table[curr+offs].shift) & table[curr+offs].mask;
+                curr = DisSelectorTable[idx + table[curr+offs].index];
+                if( curr >= 0 ) break;
+                curr = -curr;
+            }
+            if( (DisInstructionTable[curr].mask & ins->opcode) == DisInstructionTable[curr].opcode ) {
+                break;
+            }
+        }
+        if( *pos == -1 ) {
             BadOpcode( h, ins );
             break;
         }
@@ -195,30 +244,71 @@ char *DisAddReg( dis_register reg, char *dst, dis_format_flags flags )
                         (flags & DFF_REG_UP) ) ] );
 }
 
-char *DisOpFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
+char *DisOpFormat( dis_handle *h, void *d, dis_dec_ins *ins, dis_format_flags flags,
                         unsigned i, char *p )
 {
-    p += DisCliValueString( d, ins, i, p );
+    const char chLbrac = ( h->cpu == DISCPU_sparc ) ? '[' : '(';
+    const char chRbrac = ( h->cpu == DISCPU_sparc ) ? ']' : ')';
+
+
+    // BartoszP 23.10.2005
+    // for SPARC architecture DO_IMMED value could not be emited before
+    // other arguments (registers) so we should dissassembly like:
+    //   [ %reg + offset ]
+    // not like x86:
+    //   offset[reg]
+    if( h->cpu != DISCPU_sparc ) {
+        p += DisCliValueString( d, ins, i, p );
+    }
     switch( ins->op[i].type & DO_MASK ) {
+    case DO_IMMED:
+        if( h->cpu == DISCPU_sparc ) {
+            p += DisCliValueString( d, ins, i, p );
+        }
+        break;
     case DO_REG:
         p = DisAddReg( ins->op[i].base, p, flags );
         break;
     case DO_ABSOLUTE:
     case DO_RELATIVE:
+        if( h->cpu == DISCPU_sparc ) {
+            p += DisCliValueString( d, ins, i, p );
+            break;
+        }
     case DO_MEMORY_ABS:
     case DO_MEMORY_REL:
         if( ins->op[i].base != DR_NONE || ins->op[i].index != DR_NONE ) {
-            *p++ = '(';
+            *p++ = chLbrac;
             p = DisAddReg( ins->op[i].base, p, flags );
-            if( ins->op[i].index != DR_NONE ) {
-                *p++ = ',';
-                p = DisAddReg( ins->op[i].index, p, flags );
-                if( ins->op[i].scale != 1 ) {
+            if( h->cpu != DISCPU_sparc ) {
+                if( ins->op[i].index != DR_NONE ) {
                     *p++ = ',';
-                    *p++ = '0' + ins->op[i].scale;
+                    p = DisAddReg( ins->op[i].index, p, flags );
+                    if( ins->op[i].scale != 1 ) {
+                        *p++ = ',';
+                        *p++ = '0' + ins->op[i].scale;
+                    }
+                }
+            } else {
+                // SPARC stuff
+                if( ins->op[i].index != DR_NONE
+                     && ( DO_MEMORY_ABS == (ins->op[i].type & DO_MASK ) ) ) {
+                    // ASI stuff
+                } else if( ins->op[i].index == DR_NONE
+                            && ins->op[i].value != 0 ) {
+                    // always add offset to base reg
+                    // offset > 0 dissassembles like %reg + offset
+                    // offset < 0 dissassembles like %reg + -offset
+                    *p++ = ' '; *p++ = '+'; *p++ = ' ';
+                    p += DisCliValueString( d, ins, i, p );
+                } else {
+                    // who knows ??
+                    *p++ = '/'; *p++ = '*';
+                    *p++ = '?'; *p++ = '?'; *p++ = '?';
+                    *p++ = '*'; *p++ = '/';
                 }
             }
-            *p++ = ')';
+            *p++ = chRbrac;
         }
         break;
     }
@@ -252,13 +342,22 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
         p = opers;
         for( i = 0; i < ins.num_ops; ++i ) {
             if( !(ins.op[i].type & DO_HIDDEN) ) {
-                if( p != opers ) *p++ = ',';
+                if( p != opers )
+                    *p++ = ',';
                 len = h->d->op_hook( h, d, &ins, flags, i, p );
                 p += len;
                 if( len == 0 ) {
-                    p = DisOpFormat( d, &ins, flags, i, p );
+                    p = DisOpFormat( h, d, &ins, flags, i, p );
                 }
             }
+        }
+        if( p != opers )
+            *p++ = ' ';
+        len = h->d->post_op_hook( h, d, &ins, flags, i, p );
+        if( len ) {
+            p += len;
+        } else if( p != opers ) {
+            --p;
         }
         *p = '\0';
     }

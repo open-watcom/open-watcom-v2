@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This master file includes the source for the strstream
+*               member functions.
 *
 ****************************************************************************/
-
 
 #include    "sstconch.cpp"
 #include    "sstconde.cpp"

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 #include <string.h>
 #include "wrdll.h"
@@ -57,73 +57,72 @@
 
 void *WdeMemAlloc( size_t size )
 {
-    return ( WRMemAlloc ( size ) );
+    return( WRMemAlloc( size ) );
 }
 
 void WdeMemFree( void *ptr )
 {
-    WRMemFree ( ptr );
+    WRMemFree( ptr );
 }
 
-void *WdeMemRealloc ( void *old_ptr, size_t newsize )
+void *WdeMemRealloc( void *old_ptr, size_t newsize )
 {
-    return ( WRMemRealloc ( old_ptr, newsize ) );
+    return( WRMemRealloc( old_ptr, newsize ) );
 }
 
-int WdeMemValidate ( void *ptr )
+int WdeMemValidate( void *ptr )
 {
-    return ( WRMemValidate( ptr ) );
+    return( WRMemValidate( ptr ) );
 }
 
-int WdeMemChkRange ( void *start, size_t len )
+int WdeMemChkRange( void *start, size_t len )
 {
-    return ( WRMemChkRange ( start, len ) );
+    return( WRMemChkRange( start, len ) );
 }
 
-void WdeMemPrtUsage ( void )
+void WdeMemPrtUsage( void )
 {
-    WRMemPrtUsage ();
+    WRMemPrtUsage();
 }
 
-int WdeMemPrtList ( void )
+int WdeMemPrtList( void )
 {
-    return ( WRMemPrtList () );
+    return( WRMemPrtList() );
 }
 
 /* functions to replace those in mem.c in SDK/MISC */
 
 void MemStart( void )
 {
-#if !defined(__386__) && !defined(__ALPHA__)
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+#if !defined( __386__ ) && !defined( __ALPHA__ )
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 }
 
-void *MemAlloc ( unsigned size )
+void *MemAlloc( unsigned size )
 {
     void *p;
 
-    p = WdeMemAlloc ( size );
+    p = WdeMemAlloc( size );
 
-    if ( p ) {
-        memset ( p, 0, size );
+    if( p != NULL ) {
+        memset( p, 0, size );
     }
 
-    return ( p );
+    return( p );
 }
 
-void *MemReAlloc ( void *ptr, unsigned size )
+void *MemReAlloc( void *ptr, unsigned size )
 {
     void *p;
 
-    p = WdeMemRealloc ( ptr, size );
+    p = WdeMemRealloc( ptr, size );
 
-    return ( p );
+    return( p );
 }
 
-void MemFree ( void *ptr )
+void MemFree( void *ptr )
 {
-    WdeMemFree ( ptr );
+    WdeMemFree( ptr );
 }
-

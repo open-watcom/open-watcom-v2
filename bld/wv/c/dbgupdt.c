@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Update debugger's internal state.
 *
 ****************************************************************************/
 
@@ -42,17 +41,18 @@
 #include "dui.h"
 #include <ctype.h>
 
-extern void             BrkAddrRefresh();
+extern void             BrkAddrRefresh( void );
 extern void             InitLC( location_context *new, bool use_real_regs );
 extern void             SetStackPos( location_context *lc, int pos );
-extern void             SymCompFini();
-extern void             PopInpStack(void);
+extern void             SymCompFini( void );
+extern void             PopInpStack( void );
 extern address          GetCodeDot( void );
 
 extern update_list      WndFlags;
 extern mod_handle       ContextMod;
 extern mod_handle       CodeAddrMod;
 extern input_stack      *InpStack;
+
 
 void DbgUpdate( update_list flags )
 {

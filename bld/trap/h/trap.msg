@@ -1,597 +1,612 @@
 trappick( TRP_ERR_BAD_TRAP_FILE,
-	"Invalid trap file",
-	"jInvalid trap file" )
+    "Invalid trap file",
+    "jInvalid trap file" )
 trappick( TRP_ERR_CANT_LOAD_TRAP,
-	"Unable to load trap file",
-	"jUnable to load trap file" )
+    "Unable to load trap file",
+    "jUnable to load trap file" )
 trappick( TRP_ERR_OUT_OF_MEMORY,
-	"Out of memory",
-	"jOut of memory" )
+    "Out of memory",
+    "jOut of memory" )
 trappick( TRP_ERR_OUT_OF_DOS_MEMORY,
-	"Out of DOS memory",
-	"jOut of DOS memory" )
+    "Out of DOS memory",
+    "jOut of DOS memory" )
 trappick( TRP_ERR_WRONG_TRAP_VERSION,
-	"Incorrect version of trap file",
-	"jIncorrect version of trap file" )
+    "Incorrect version of trap file",
+    "jIncorrect version of trap file" )
 trappick( TRP_ERR_CANT_REGISTER_SERVER,
-	"Unable to register server",
-	"jUnable to register server" )
+    "Unable to register server",
+    "jUnable to register server" )
 trappick( TRP_ERR_CANT_FIND_SERVER,
-	"Unable to register server",
-	"jUnable to register server" )
+    "Unable to register server",
+    "jUnable to register server" )
 trappick( TRP_ERR_CANT_CONNECT,
-	"Unable to connect to server",
-	"jUnable to connect to server" )
+    "Unable to connect to server",
+    "jUnable to connect to server" )
 trappick( TRP_ERR_WRONG_SERVER_VERSION,
-	"Incorrect version of debug server",
-	"jIncorrect version of debug server" )
+    "Incorrect version of debug server",
+    "jIncorrect version of debug server" )
 trappick( TRP_EXC_divide_overflow,
-	"divide overflow",
-	"jdivide overflow" )
+    "divide overflow",
+    "jdivide overflow" )
 trappick( TRP_EXC_non_maskable_interrupt,
-	"non-maskable interrupt",
-	"jnon-maskable interrupt" )
+    "non-maskable interrupt",
+    "jnon-maskable interrupt" )
 trappick( TRP_EXC_integer_overflow,
-	"integer overflow",
-	"jinteger overflow" )
+    "integer overflow",
+    "jinteger overflow" )
 trappick( TRP_EXC_bounds_check,
-	"bounds check",
-	"jbounds check" )
+    "bounds check",
+    "jbounds check" )
 trappick( TRP_EXC_invalid_opcode,
-	"invalid opcode",
-	"jinvalid opcode" )
+    "invalid opcode",
+    "jinvalid opcode" )
 trappick( TRP_EXC_coprocessor_not_available,
-	"coprocessor not available",
-	"jcoprocessor not available" )
+    "coprocessor not available",
+    "jcoprocessor not available" )
 trappick( TRP_EXC_double_fault,
-	"double fault",
-	"jdouble fault" )
+    "double fault",
+    "jdouble fault" )
 trappick( TRP_EXC_coprocessor_segment_overrun,
-	"coprocessor segment overrun",
-	"jcoprocessor segment overrun" )
+    "coprocessor segment overrun",
+    "jcoprocessor segment overrun" )
 trappick( TRP_EXC_invalid_TSS,
-	"invalid TSS",
-	"jinvalid TSS" )
+    "invalid TSS",
+    "jinvalid TSS" )
 trappick( TRP_EXC_segment_not_present,
-	"segment not present",
-	"jsegment not present" )
+    "segment not present",
+    "jsegment not present" )
 trappick( TRP_EXC_stack_exception,
-	"stack exception",
-	"jstack exception" )
+    "stack exception",
+    "jstack exception" )
 trappick( TRP_EXC_general_protection_fault,
-	"general protection fault",
-	"jgeneral protection fault" )
+    "general protection fault",
+    "jgeneral protection fault" )
 trappick( TRP_EXC_page_fault,
-	"page fault",
-	"jpage fault" )
+    "page fault",
+    "jpage fault" )
 trappick( TRP_EXC_coprocessor_error,
-	"coprocessor error",
-	"jcoprocessor error" )
+    "coprocessor error",
+    "jcoprocessor error" )
 trappick( TRP_EXC_unknown,
-	"unknown exception",
-	"junknown exception" )
+    "unknown exception",
+    "junknown exception" )
 trappick( TRP_EXC_data_type_misalignment,
-	"data type misalignment",
-	"jdata type misalignment" )
+    "data type misalignment",
+    "jdata type misalignment" )
 trappick( TRP_EXC_illegal_instruction,
-	"illegal instruction",
-	"jillegal instruction" )
+    "illegal instruction",
+    "jillegal instruction" )
 trappick( TRP_EXC_integer_divide_by_zero,
-	"integer divide by zero",
-	"jinteger divide by zero" )
+    "integer divide by zero",
+    "jinteger divide by zero" )
 trappick( TRP_EXC_privileged_instruction,
-	"privileged instruction",
-	"jprivileged instruction" )
+    "privileged instruction",
+    "jprivileged instruction" )
 trappick( TRP_EXC_floating_point_denormal_operand,
-	"floating point denormal operand",
-	"jfloating point denormal operand" )
+    "floating point denormal operand",
+    "jfloating point denormal operand" )
 trappick( TRP_EXC_floating_point_divide_by_zero,
-	"floating point divide by zero",
-	"jfloating point divide by zero" )
+    "floating point divide by zero",
+    "jfloating point divide by zero" )
 trappick( TRP_EXC_floating_point_inexact_result,
-	"floating point inexact result",
-	"jfloating point inexact result" )
+    "floating point inexact result",
+    "jfloating point inexact result" )
 trappick( TRP_EXC_floating_point_invalid_operation,
-	"floating point invalid operation",
-	"jfloating point invalid operation" )
+    "floating point invalid operation",
+    "jfloating point invalid operation" )
 trappick( TRP_EXC_floating_point_overflow,
-	"floating point overflow",
-	"jfloating point overflow" )
+    "floating point overflow",
+    "jfloating point overflow" )
 trappick( TRP_EXC_floating_point_stack_check,
-	"floating point stack check",
-	"jfloating point stack check" )
+    "floating point stack check",
+    "jfloating point stack check" )
 trappick( TRP_EXC_floating_point_underflow,
-	"floating point underflow",
-	"jfloating point underflow" )
+    "floating point underflow",
+    "jfloating point underflow" )
 trappick( TRP_EXC_access_violation,
-	"access violation",
-	"jaccess violation" )
+    "access violation",
+    "jaccess violation" )
+trappick( TRP_EXC_process_terminate,
+    "process termination",
+    "jprocess termination" )
+trappick( TRP_EXC_async_process_terminate,
+    "asynchronous process termination",
+    "jasynchronous process termination" )
+trappick( TRP_EXC_signal,
+    "asynchronous signal",
+    "jasynchronous signal" )
 trappick( TRP_ERR_invalid_function_number,
-	"invalid function number",
-	"jinvalid function number" )
+    "invalid function number",
+    "jinvalid function number" )
 trappick( TRP_ERR_file_not_found,
-	"file not found",
-	"jfile not found" )
+    "file not found",
+    "jfile not found" )
 trappick( TRP_ERR_path_not_found,
-	"path not found",
-	"jpath not found" )
+    "path not found",
+    "jpath not found" )
 trappick( TRP_ERR_too_many_open_files,
-	"too many open files",
-	"jtoo many open files" )
+    "too many open files",
+    "jtoo many open files" )
 trappick( TRP_ERR_access_denied,
-	"access denied",
-	"jaccess denied" )
+    "access denied",
+    "jaccess denied" )
 trappick( TRP_ERR_invalid_handle,
-	"invalid handle",
-	"jinvalid handle" )
+    "invalid handle",
+    "jinvalid handle" )
 trappick( TRP_ERR_memory_control_blocks_destroyed,
-	"memory control blocks destroyed",
-	"jmemory control blocks destroyed" )
+    "memory control blocks destroyed",
+    "jmemory control blocks destroyed" )
 trappick( TRP_ERR_insufficient_memory,
-	"insufficient memory",
-	"jinsufficient memory" )
+    "insufficient memory",
+    "jinsufficient memory" )
 trappick( TRP_ERR_invalid_memory_block_address,
-	"invalid memory block address",
-	"jinvalid memory block address" )
+    "invalid memory block address",
+    "jinvalid memory block address" )
 trappick( TRP_ERR_invalid_environment,
-	"invalid environment",
-	"jinvalid environment" )
+    "invalid environment",
+    "jinvalid environment" )
 trappick( TRP_ERR_invalid_format,
-	"invalid format",
-	"jinvalid format" )
+    "invalid format",
+    "jinvalid format" )
 trappick( TRP_ERR_invalid_access_code,
-	"invalid access code",
-	"jinvalid access code" )
+    "invalid access code",
+    "jinvalid access code" )
 trappick( TRP_ERR_invalid_data,
-	"invalid data",
-	"jinvalid data" )
+    "invalid data",
+    "jinvalid data" )
 trappick( TRP_ERR_reserved_error_code,
-	"reserved error code",
-	"jreserved error code" )
+    "reserved error code",
+    "jreserved error code" )
 trappick( TRP_ERR_invalid_drive_was_specified,
-	"invalid drive was specified",
-	"jinvalid drive was specified" )
+    "invalid drive was specified",
+    "jinvalid drive was specified" )
 trappick( TRP_ERR_attempt_to_remove_current_directory,
-	"attempt to remove current directory",
-	"jattempt to remove current directory" )
+    "attempt to remove current directory",
+    "jattempt to remove current directory" )
 trappick( TRP_ERR_not_same_device,
-	"not same device",
-	"jnot same device" )
+    "not same device",
+    "jnot same device" )
 trappick( TRP_ERR_no_more_files,
-	"no more files",
-	"jno more files" )
+    "no more files",
+    "jno more files" )
 trappick( TRP_ERR_must_use_rsi,
-	"must use the '/tr=rsi' command line option to debug a rational application",
-	"jmust use the '/tr=rsi' command line option to debug a rational application" )
+    "must use the '/tr=rsi' command line option to debug a rational application",
+    "jmust use the '/tr=rsi' command line option to debug a rational application" )
 trappick( TRP_ERR_must_use_pls,
-	"must use the '/tr=pls' command line option to debug a pharlap application",
-	"jmust use the '/tr=pls' command line option to debug a pharlap application" )
+    "must use the '/tr=pls' command line option to debug a pharlap application",
+    "jmust use the '/tr=pls' command line option to debug a pharlap application" )
 trappick( TRP_ERR_unknown_system_error,
-	"unknown system error",
-	"junknown system error" )
+    "unknown system error",
+    "junknown system error" )
 trappick( TRP_ERR_not_from_command,
-	"Cannot be executed from the command line",
-	"jCannot be executed from the command line" )
+    "Cannot be executed from the command line",
+    "jCannot be executed from the command line" )
 trappick( TRP_ERR_no_extender,
-	"Unable to locate DOS extender. Probable cause: incorrectly set PATH",
-	"jUnable to locate DOS extender. Probable cause: incorrectly set PATH" )
+    "Unable to locate DOS extender. Probable cause: incorrectly set PATH",
+    "jUnable to locate DOS extender. Probable cause: incorrectly set PATH" )
 trappick( TRP_ERR_cant_start_extender,
-	"Could not start DOS extender. Probable cause: insufficent DOS memory",
-	"jCould not start DOS extender. Probable cause: insufficent DOS memory" )
+    "Could not start DOS extender. Probable cause: insufficent DOS memory",
+    "jCould not start DOS extender. Probable cause: insufficent DOS memory" )
 trappick( TRP_ERR_bad_dpmi,
-	"Cannot debug a DOS extender application under DPMI 0.9.  Use remote debugging.",
-	"jCannot debug a DOS extender application under DPMI 0.9.  Use remote debugging." )
+    "Cannot debug a DOS extender application under DPMI 0.9.  Use remote debugging.",
+    "jCannot debug a DOS extender application under DPMI 0.9.  Use remote debugging." )
 trappick( TRP_QNX_hangup,
-	"hangup",
-	"jhangup" )
+    "hangup",
+    "jhangup" )
 trappick( TRP_QNX_user_interrupt,
-	"user interrupt",
-	"juser interrupt" )
+    "user interrupt",
+    "juser interrupt" )
 trappick( TRP_QNX_quit,
-	"quit",
-	"jquit" )
+    "quit",
+    "jquit" )
 trappick( TRP_QNX_trap,
-	"trap",
-	"jtrap" )
+    "trap",
+    "jtrap" )
 trappick( TRP_QNX_abort,
-	"abort",
-	"jabort" )
+    "abort",
+    "jabort" )
 trappick( TRP_QNX_emt,
-	"emt",
-	"jemt" )
+    "emt",
+    "jemt" )
 trappick( TRP_QNX_floating_point_error,
-	"floating point error",
-	"jfloating point error" )
+    "floating point error",
+    "jfloating point error" )
 trappick( TRP_QNX_process_killed,
-	"process killed",
-	"jprocess killed" )
+    "process killed",
+    "jprocess killed" )
 trappick( TRP_QNX_bus_error,
-	"bus error",
-	"jbus error" )
+    "bus error",
+    "jbus error" )
 trappick( TRP_QNX_sys,
-	"sys",
-	"jsys" )
+    "sys",
+    "jsys" )
 trappick( TRP_QNX_broken_pipe,
-	"broken pipe",
-	"jbroken pipe" )
+    "broken pipe",
+    "jbroken pipe" )
 trappick( TRP_QNX_alarm,
-	"alarm",
-	"jalarm" )
+    "alarm",
+    "jalarm" )
 trappick( TRP_QNX_process_termination,
-	"process termination",
-	"jprocess termination" )
+    "process termination",
+    "jprocess termination" )
 trappick( TRP_QNX_user_signal_1,
-	"user signal 1",
-	"juser signal 1" )
+    "user signal 1",
+    "juser signal 1" )
 trappick( TRP_QNX_user_signal_2,
-	"user signal 2",
-	"juser signal 2" )
+    "user signal 2",
+    "juser signal 2" )
 trappick( TRP_QNX_child_stopped,
-	"child stopped",
-	"jchild stopped" )
+    "child stopped",
+    "jchild stopped" )
 trappick( TRP_QNX_power_fail,
-	"power fail",
-	"jpower fail" )
+    "power fail",
+    "jpower fail" )
 trappick( TRP_QNX_winch,
-	"winch",
-	"jwinch" )
+    "winch",
+    "jwinch" )
 trappick( TRP_QNX_urgent,
-	"urgent",
-	"jurgent" )
+    "urgent",
+    "jurgent" )
 trappick( TRP_QNX_poll,
-	"poll",
-	"jpoll" )
+    "poll",
+    "jpoll" )
 trappick( TRP_QNX_process_stopped,
-	"process stopped",
-	"jprocess stopped" )
+    "process stopped",
+    "jprocess stopped" )
 trappick( TRP_QNX_process_continued,
-	"process continued",
-	"jprocess continued" )
+    "process continued",
+    "jprocess continued" )
 trappick( TRP_QNX_device_ready,
-	"device ready",
-	"jdevice ready" )
+    "device ready",
+    "jdevice ready" )
 trappick( TRP_QNX_no_proxy,
-	"can not create proxy",
-	"jcan not create proxy" )
+    "can not create proxy",
+    "jcan not create proxy" )
 trappick( TRP_QNX_invalid_node_number,
-	"invalid node number",
-	"jinvalid node number" )
+    "invalid node number",
+    "jinvalid node number" )
 trappick( TRP_NT_status_user_apc,
-	"user apc",
-	"juser apc" );
+    "user apc",
+    "juser apc" );
 trappick( TRP_NT_status_guard_page_violation,
-	"guard page violation",
-	"jguard page violation" );
+    "guard page violation",
+    "jguard page violation" );
 trappick( TRP_NT_status_in_page_error,
-	"in page error",
-	"jin page error" );
+    "in page error",
+    "jin page error" );
 trappick( TRP_NT_status_no_memory,
-	"no memory",
-	"jno memory" );
+    "no memory",
+    "jno memory" );
 trappick( TRP_NT_status_invalid_disposition,
-	"invalid disposition",
-	"jinvalid disposition" );
+    "invalid disposition",
+    "jinvalid disposition" );
 trappick( TRP_NT_status_stack_overflow,
-	"stack overflow",
-	"jstack overflow" );
+    "stack overflow",
+    "jstack overflow" );
 trappick( TRP_NT_invalid_handle,
-	"Invalid handle passed to system API",
-	"jInvalid handle passed to system API" )
+    "Invalid handle passed to system API",
+    "jInvalid handle passed to system API" )
 trappick( TRP_NT_wait_0,
-	"wait 0",
-	"jwait 0" )
+    "wait 0",
+    "jwait 0" )
 trappick( TRP_NT_abandoned_Wait_0,
-	"abandoned Wait 0",
-	"jabandoned Wait 0" )
+    "abandoned Wait 0",
+    "jabandoned Wait 0" )
 trappick( TRP_NT_timeout,
-	"timeout",
-	"jtimeout" )
+    "timeout",
+    "jtimeout" )
 trappick( TRP_NT_pending,
-	"pending",
-	"jpending" )
+    "pending",
+    "jpending" )
 trappick( TRP_NT_noncontinuable_exception,
-	"non-continuable exception",
-	"jnon-continuable exception" )
+    "non-continuable exception",
+    "jnon-continuable exception" )
 trappick( TRP_NT_control_C_exit,
-	"control C exit",
-	"jcontrol C exit" )
+    "control C exit",
+    "jcontrol C exit" )
 trappick( TRP_NT_wow_warning,
-	"cannot debug application since NTVDM is already running.  Killing NTVDM will allow debugging to continue but will stop any running 16-bit applications. Kill NTVDM?",
-	"jcannot debug application since NTVDM is already running.  Killing NTVDM will allow debugging to continue but will stop any running 16-bit applications. Kill NTVDM?" )
+    "cannot debug application since NTVDM is already running.  Killing NTVDM will allow debugging to continue but will stop any running 16-bit applications. Kill NTVDM?",
+    "jcannot debug application since NTVDM is already running.  Killing NTVDM will allow debugging to continue but will stop any running 16-bit applications. Kill NTVDM?" )
 trappick( TRP_The_WATCOM_Debugger,
-	"The WATCOM Debugger",
-	"jThe WATCOM Debugger" )
+    "The Open Watcom Debugger",
+    "jThe Open Watcom Debugger" )
 trappick( TRP_WIN_Failed_to_get_interrupt_hook,
-	"Failed to get interrupt hook",
-	"jFailed to get interrupt hook" )
+    "Failed to get interrupt hook",
+    "jFailed to get interrupt hook" )
 trappick( TRP_WIN_Failed_to_get_notify_hook,
-	"Failed to get notify hook",
-	"jFailed to get notify hook" )
+    "Failed to get notify hook",
+    "jFailed to get notify hook" )
 trappick( TRP_WIN_no_can_do,
-	"The debugger cannot be used while the application is running.",
-	"jThe debugger cannot be used while the application is running." )
+    "The debugger cannot be used while the application is running.",
+    "jThe debugger cannot be used while the application is running." )
 trappick( TRP_WIN_LOADERR,
-	"Internal Error - LOADERR",
-	"jInternal Error - LOADERR" )
+    "Internal Error - LOADERR",
+    "jInternal Error - LOADERR" )
 trappick( TRP_WIN_WDEBUG386,
-	"WDEBUG.386 must be installed in the [386Enh] section of SYSTEM.INI in order to debug a 32-bit application",
-	"jWDEBUG.386 must be installed in the [386Enh] section of SYSTEM.INI in order to debug a 32-bit application" )
+    "WDEBUG.386 must be installed in the [386Enh] section of SYSTEM.INI in order to debug a 32-bit application",
+    "jWDEBUG.386 must be installed in the [386Enh] section of SYSTEM.INI in order to debug a 32-bit application" )
 trappick( TRP_WIN_NOINT1,
-	"Internal Error - expecting INT 1",
-	"jInternal Error - expecting INT 1" )
+    "Internal Error - expecting INT 1",
+    "jInternal Error - expecting INT 1" )
 trappick( TRP_WIN_NOINT3,
-	"Internal Error - expecting INT 3",
-	"jInternal Error - expecting INT 3" )
+    "Internal Error - expecting INT 3",
+    "jInternal Error - expecting INT 3" )
 trappick( TRP_WIN_LoadModule_failed,
-	"LoadModule() failed",
-	"jLoadModule() failed" )
+    "LoadModule() failed",
+    "jLoadModule() failed" )
 trappick( TRP_WIN_NOSTART,
-	"Internal Error - unable to find application start address",
-	"jInternal Error - unable to find application start address" )
+    "Internal Error - unable to find application start address",
+    "jInternal Error - unable to find application start address" )
 trappick( TRP_WIN_NOWINDEBUG,
-	"NOWINDEBUG",
-	"jNOWINDEBUG" )
+    "NOWINDEBUG",
+    "jNOWINDEBUG" )
 trappick( TRP_WIN_Unexpected_notification,
-	"Internal error: Unexpected notification - expecting break point",
-	"jInternal error: Unexpected notification - expecting break point" )
+    "Internal error: Unexpected notification - expecting break point",
+    "jInternal error: Unexpected notification - expecting break point" )
 trappick( TRP_OS2_Wrong_Version,
-	"Not running OS/2 2.x",
-	"jNot running OS/2 2.x" )
+    "Not running OS/2 2.x",
+    "jNot running OS/2 2.x" )
 trappick( TRP_OS2_no_info,
-	"Internal error - Can not access info segments",
-	"jInternal error - Can not access info segments" )
+    "Internal error - Can not access info segments",
+    "jInternal error - Can not access info segments" )
 trappick( TRP_OS2_not_1p2,
-	"Not running OS/2 1.2",
-	"jNot running OS/2 1.2" )
+    "Not running OS/2 1.2",
+    "jNot running OS/2 1.2" )
 trappick( TRP_OS2_no_dll,
-	"Internal error - Could not find DLL directory",
-	"jInternal error - Could not find DLL directory" )
+    "Internal error - Could not find DLL directory",
+    "jInternal error - Could not find DLL directory" )
 trappick( TRP_OS2_no_pipe,
-	"Internal error - Could not create pipe",
-	"jInternal error - Could not create pipe" )
+    "Internal error - Could not create pipe",
+    "jInternal error - Could not create pipe" )
 trappick( TRP_OS2_no_help,
-	"Internal error - Could not start OS2V2HLP.EXE",
-	"jInternal error - Could not start OS2V2HLP.EXE" )
+    "Internal error - Could not start OS2V2HLP.EXE",
+    "jInternal error - Could not start OS2V2HLP.EXE" )
 trappick( TRP_OS2_no_pm_from_vio,
-	"Cannot debug a PM application from an OS/2 Windowed session",
-	"jCannot debug a PM application from an OS/2 Windowed session" )
+    "Cannot debug a PM application from an OS/2 Windowed session",
+    "jCannot debug a PM application from an OS/2 Windowed session" )
 trappick( TRP_OS2_cannot_set_thread_priority,
-	"Internal error - cannot set thread priority",
-	"jInternal error - cannot set thread priority" )
+    "Internal error - cannot set thread priority",
+    "jInternal error - cannot set thread priority" )
 trappick( TRP_OS2_cannot_create_helper_thread,
-	"cannot create helper thread",
-	"jcannot create helper thread" )
+    "cannot create helper thread",
+    "jcannot create helper thread" )
 trappick( TRP_ERR_cannot_access_parallel_ports,
-	"Unable to access parallel ports",
-	"jUnable to access parallel ports" )
+    "Unable to access parallel ports",
+    "jUnable to access parallel ports" )
 trappick( TRP_ERR_invalid_parallel_port_number,
-	"invalid parallel port number",
-	"jinvalid parallel port number" )
+    "invalid parallel port number",
+    "jinvalid parallel port number" )
 trappick( TRP_ERR_parallel_port_not_present,
-	"parallel port not present",
-	"jparallel port not present" )
+    "parallel port not present",
+    "jparallel port not present" )
 trappick( TRP_ERR_invalid_serial_port_number,
-	"invalid serial port number",
-	"jinvalid serial port number" )
+    "invalid serial port number",
+    "jinvalid serial port number" )
 trappick( TRP_ERR_serial_port_does_not_exist,
-	"serial port does not exist",
-	"jserial port does not exist" )
+    "serial port does not exist",
+    "jserial port does not exist" )
 trappick( TRP_ERR_serial_port_not_available,
-	"serial port not available",
-	"jserial port not available" )
+    "serial port not available",
+    "jserial port not available" )
 trappick( TRP_ERR_could_not_set_serial_port_characteristics,
-	"could not set serial port characteristics",
-	"jcould not set serial port characteristics" )
+    "could not set serial port characteristics",
+    "jcould not set serial port characteristics" )
 trappick( TRP_ERR_invalid_maximum_baud_rate,
-	"invalid maximum baud rate",
-	"jinvalid maximum baud rate" )
+    "invalid maximum baud rate",
+    "jinvalid maximum baud rate" )
 trappick( TRP_ERR_invalid_baud_rate,
-	"invalid baud rate",
-	"jinvalid baud rate" )
+    "invalid baud rate",
+    "jinvalid baud rate" )
 trappick( TRP_ERR_ambiguous_baud_rate,
-	"ambiguous baud rate",
-	"jambiguous baud rate" )
+    "ambiguous baud rate",
+    "jambiguous baud rate" )
 trappick( TRP_ERR_invalid_modem_string,
-	"invalid modem string",
-	"jinvalid modem string" )
+    "invalid modem string",
+    "jinvalid modem string" )
 trappick( TRP_ERR_timeout_on_modem_string,
-	"timeout on modem string",
-	"jtimeout on modem string" )
+    "timeout on modem string",
+    "jtimeout on modem string" )
 trappick( TRP_ERR_modem_failed_connection,
-	"modem failed connection",
-	"jmodem failed connection" )
+    "modem failed connection",
+    "jmodem failed connection" )
 trappick( TRP_ERR_NetBIOS_is_not_running,
-	"NetBIOS is not running",
-	"jNetBIOS is not running" )
+    "NetBIOS is not running",
+    "jNetBIOS is not running" )
+trappick( TRP_ERR_NetBIOS_name_add_failed,
+    "NetBIOS name registration failed",
+    "jNetBIOS name registration failed" )
 trappick( TRP_ERR_can_not_start_server,
-	"can not start server",
-	"jcan not start server" )
+    "can not start server",
+    "jcan not start server" )
 trappick( TRP_ERR_IPX_SPX_not_present,
-	"IPX/SPX not present",
-	"jIPX/SPX not present" )
+    "IPX/SPX not present",
+    "jIPX/SPX not present" )
 trappick( TRP_ERR_Netware_API_not_present,
-	"Netware API not present",
-	"jNetware API not present" )
+    "Netware API not present",
+    "jNetware API not present" )
 trappick( TRP_ERR_NETWAREDRV_not_present,
-	"NETWARE.DRV not present",
-	"jNETWARE.DRV not present" )
+    "NETWARE.DRV not present",
+    "jNETWARE.DRV not present" )
 trappick( TRP_ERR_IPX_not_initialized,
-	"IPX not initialized",
-	"jIPX not initialized" )
+    "IPX not initialized",
+    "jIPX not initialized" )
 trappick( TRP_ERR_SPX_not_present,
-	"SPX not present",
-	"jSPX not present" )
+    "SPX not present",
+    "jSPX not present" )
 trappick( TRP_ERR_can_not_obtain_socket,
-	"can not obtain socket",
-	"jcan not obtain socket" )
+    "can not obtain socket",
+    "jcan not obtain socket" )
 trappick( TRP_ERR_server_name_already_in_use,
-	"server name already in use",
-	"jserver name already in use" )
+    "server name already in use",
+    "jserver name already in use" )
 trappick( TRP_ERR_can_not_initialize_server,
-	"can not initialize server",
-	"jcan not initialize server" )
+    "can not initialize server",
+    "jcan not initialize server" )
 trappick( TRP_ERR_no_such_server,
-	"no such server",
-	"jno such server" )
+    "no such server",
+    "jno such server" )
 trappick( TRP_ERR_invalid_server_name,
-	"invalid server name",
-	"jinvalid server name" )
+    "invalid server name",
+    "jinvalid server name" )
 trappick( TRP_ERR_unable_to_access_server,
-	"unable to access server",
-	"junable to access server" )
+    "unable to access server",
+    "junable to access server" )
 trappick( TRP_NMPBIND_running,
-	"NMPBIND is already running",
-	"jNMPBIND is already running" )
+    "NMPBIND is already running",
+    "jNMPBIND is already running" )
 trappick( TRP_ERR_NMPBIND_not_found,
-	"NMPBIND not found",
-	"jNMPBIND not found" )
+    "NMPBIND not found",
+    "jNMPBIND not found" )
 trappick( TRP_ERR_invalid_server_name_format_is,
-	"invalid server name - format is name@machine",
-	"jinvalid server name - format is name@machine" )
+    "invalid server name - format is name@machine",
+    "jinvalid server name - format is name@machine" )
 trappick( TRP_ERR_server_not_found,
-	"server not found",
-	"jserver not found" )
+    "server not found",
+    "jserver not found" )
 trappick( TRP_ERR_unable_to_initialize_TCPIP,
-	"unable to initialize TCPIP",
-	"junable to initialize TCPIP" )
+    "unable to initialize TCPIP",
+    "junable to initialize TCPIP" )
 trappick( TRP_ERR_unable_to_open_stream_socket,
-	"unable to open stream socket",
-	"junable to open stream socket" )
+    "unable to open stream socket",
+    "junable to open stream socket" )
 trappick( TRP_ERR_unable_to_bind_stream_socket,
-	"unable to bind stream socket",
-	"junable to bind stream socket" )
+    "unable to bind stream socket",
+    "junable to bind stream socket" )
 trappick( TRP_ERR_unable_to_get_socket_name,
-	"unable to get socket name",
-	"junable to get socket name" )
+    "unable to get socket name",
+    "junable to get socket name" )
 trappick( TRP_ERR_unable_to_parse_port_number,
-	"unable to parse port number",
-	"junable to parse port number" )
+    "unable to parse port number",
+    "junable to parse port number" )
 trappick( TRP_ERR_unknown_host,
-	"unknown host",
-	"junknown host" )
+    "unknown host",
+    "junknown host" )
 trappick( TRP_NLM_cant_debug_os,
-	"Cannot Debug OS code. Entering system debugger.",
-	"jCannot Debug OS code. Entering system debugger." )
+    "Cannot Debug OS code. Entering system debugger.",
+    "jCannot Debug OS code. Entering system debugger." )
 trappick( TRP_NLM_no_unload,
-	"This NLM may not be unloaded!",
-	"jThis NLM may not be unloaded!" )
+    "This NLM may not be unloaded!",
+    "jThis NLM may not be unloaded!" )
 trappick( TRP_NLM_no_screen,
-	"Could not create a screen",
-	"jCould not create a screen" )
+    "Could not create a screen",
+    "jCould not create a screen" )
 trappick( TRP_NLM_not_version_3,
-	"Must be running on NetWare version 3",
-	"jMust be running on NetWare version 3" )
+    "Must be running on NetWare version 3",
+    "jMust be running on NetWare version 3" )
 trappick( TRP_MSG_loading_program,
-	"Loading program:",
-	"jLoading program:" );
+    "Loading program:",
+    "jLoading program:" );
 trappick( TRP_ERR_expect_brace,
-	"Invalid parameter: expecting '}'",
-	"jInvalid parameter: expecting '}'" )
+    "Invalid parameter: expecting '}'",
+    "jInvalid parameter: expecting '}'" )
 trappick( TRP_MSG_usage,
-	"Usage: ",
-	"jUsage: " )
+    "Usage: ",
+    "jUsage: " )
 trappick( TRP_ERR_expect_option,
-	"Invalid command line: expecting an option",
-	"jInvalid command line: expecting an option" )
+    "Invalid command line: expecting an option",
+    "jInvalid command line: expecting an option" )
 trappick( TRP_ERR_expect_equal,
-	"Invalid command line: expecting equals sign",
-	"jInvalid command line: expecting equals sign" )
+    "Invalid command line: expecting equals sign",
+    "jInvalid command line: expecting equals sign" )
 trappick( TRP_MSG_connection_established,
-	"Initial connection established",
-	"jInitial connection established" )
+    "Initial connection established",
+    "jInitial connection established" )
 trappick( TRP_MSG_session_started,
-	"Session started",
-	"jSession started" )
+    "Session started",
+    "jSession started" )
 trappick( TRP_MSG_session_ended,
-	"Session ended",
-	"jSession ended" )
+    "Session ended",
+    "jSession ended" )
 trappick( TRP_MSG_press_q,
-	"Press 'q' to exit",
-	"jPress 'q' to exit" )
+    "Press 'q' to exit",
+    "jPress 'q' to exit" )
 trappick( TRP_MSG_select_exit,
-	"Enter new specifications; or select 'Exit' to quit",
-	"jEnter new specifications; or select 'Exit' to quit" )
+    "Enter new specifications; or select 'Exit' to quit",
+    "jEnter new specifications; or select 'Exit' to quit" )
 trappick( TRP_TCP_socket_number,
-	 "Socket port number: ",
-	 "jSocket port number: " )
+     "Socket port number: ",
+     "jSocket port number: " )
+trappick( TRP_TCP_ip_address,
+     "Local IP address  : ",
+     "jLocal IP address  : " )
 trappick( TRP_PARSERV_Usage,
-	"PARSERV [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]",
-	"jPARSERV [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]" )
+    "parserv [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]",
+    "jparserv [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]" )
 trappick( TRP_SERSERV_Usage,
-	"SERSERV [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]",
-	"jSERSERV [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]" )
+    "serserv [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]",
+    "jserserv [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]" )
 trappick( TRP_NETSERV_Usage,
-	"NETSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
-	"jNETSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
+    "netserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
+    "jnetserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
 trappick( TRP_NOVSERV_Usage,
-	"NOVSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
-	"jNOVSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
+    "novserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
+    "jnovserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
 trappick( TRP_VDMSERV_Usage,
-	"VDMSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
-	"jVDMSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
+    "vdmserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
+    "jvdmserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
 trappick( TRP_NMPSERV_Usage,
-	"NMPSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
-	"jNMPSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
+    "nmpserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
+    "jnmpserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
 trappick( TRP_TCPSERV_Usage,
-	"TCPSERV [-Trap=trap_file[;trap_parm]] [-Once] [service_or_port]",
-	"jTCPSERV [-Trap=trap_file[;trap_parm]] [-Once] [service_or_port]" )
+    "tcpserv [-Trap=trap_file[;trap_parm]] [-Once] [service_or_port]",
+    "jtcpserv [-Trap=trap_file[;trap_parm]] [-Once] [service_or_port]" )
 trappick( TRP_WINSERV_Usage,
-	"WINSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
-	"jWINSERV [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
+    "winserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
+    "jwinserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
 trappick( TRP_Parallel_Name,
-	"WATCOM Parallel Debug Server",
-	"jWATCOM Parallel Debug Server" )
+    "Parallel Debug Server",
+    "jParallel Debug Server" )
 trappick( TRP_Serial_Name,
-	"WATCOM Serial Debug Server",
-	"jWATCOM Serial Debug Server" )
+    "Serial Debug Server",
+    "jSerial Debug Server" )
 trappick( TRP_NetBIOS_Name,
-	"WATCOM NetBIOS Debug Server",
-	"jWATCOM NetBIOS Debug Server" )
+    "NetBIOS Debug Server",
+    "jNetBIOS Debug Server" )
 trappick( TRP_Novell_Name,
-	"WATCOM Novell Debug Server",
-	"jWATCOM Novell Debug Server" )
+    "Novell Debug Server",
+    "jNovell Debug Server" )
 trappick( TRP_Virtual_Name,
-	"WATCOM Virtual DOS Machine Debug Server",
-	"jWATCOM Virtual DOS Machine Debug Server" )
+    "Virtual DOS Machine Debug Server",
+    "jVirtual DOS Machine Debug Server" )
 trappick( TRP_Named_Name,
-	"WATCOM Named Pipe Debug Server",
-	"jWATCOM Named Pipe Debug Server" )
+    "Named Pipe Debug Server",
+    "jNamed Pipe Debug Server" )
 trappick( TRP_TCP_Name,
-	"WATCOM TCP/IP Debug Server",
-	"jWATCOM TCP/IP Debug Server" )
+    "TCP/IP Debug Server",
+    "jTCP/IP Debug Server" )
 trappick( TRP_Windows_Name,
-	"WATCOM Windows DOS box Debug Server",
-	"jWATCOM Windows DOS box Debug Server" )
+    "Windows DOS box Debug Server",
+    "jWindows DOS box Debug Server" )
 trappick( TRP_ERR_one_allowed,
-	"Only One Server Allowed",
-	"jOnly One Server Allowed" )
+    "Only One Server Allowed",
+    "jOnly One Server Allowed" )
 trappick( TRP_WIN_not_protect_mode,
-	"Must Run In Protect Mode",
-	"jMust Run In Protect Mode" )
+    "Must Run In Protect Mode",
+    "jMust Run In Protect Mode" )
 trappick( TRP_WIN_server_name,
-	"Server Name:",
-	"jServer Name:" )
+    "Server Name:",
+    "jServer Name:" )
 trappick( TRP_WIN_register_name,
-	"Try To Register Above Server Name",
-	"jTry To Register Above Server Name" )
+    "Try To Register Above Server Name",
+    "jTry To Register Above Server Name" )
 trappick( TRP_ERR_null_name,
-	"Null name not allowed",
-	"jNull name not allowed" )
+    "Null name not allowed",
+    "jNull name not allowed" )
 trappick( TRP_WIN_setting_name,
-	"Setting server name to %s",
-	"jSetting server name to %s" )
+    "Setting server name to %s",
+    "jSetting server name to %s" )
 trappick( TRP_WIN_parallel_port,
-	"Parallel Port %d",
-	"jParallel Port %d" )
+    "Parallel Port %d",
+    "jParallel Port %d" )
 trappick( TRP_WIN_port_set,
-	"Port set to LPT%d",
-	"jPort set to LPT%d" )
+    "Port set to LPT%d",
+    "jPort set to LPT%d" )
 trappick( TRP_QNX_PROC_FORK,
-	"Process forked",
-	"jProcess forked" )
+    "Process forked",
+    "jProcess forked" )
 trappick( TRP_WIN_wanna_interrupt,
-	"The debugger cannot be used while the application is running. Do you want to interrupt the application?",
-	"jThe debugger cannot be used while the application is running. Do you want to interrupt the application?" )
+    "The debugger cannot be used while the application is running. Do you want to interrupt the application?",
+    "jThe debugger cannot be used while the application is running. Do you want to interrupt the application?" )
 trappick( TRP_WIN_wanna_kill,
-	"The debugger could not sucessfully interrupt your application.  Do you want to terminate the application?",
-	"jThe debugger could not sucessfully interrupt your application.  Do you want to terminate the application?" )
+    "The debugger could not sucessfully interrupt your application.  Do you want to terminate the application?",
+    "jThe debugger could not sucessfully interrupt your application.  Do you want to terminate the application?" )

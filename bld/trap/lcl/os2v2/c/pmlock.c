@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 Presentation Manager locking; start and communicate
+*               with a helper program.
 *
 ****************************************************************************/
 
@@ -52,9 +52,9 @@ static bool             Response;
 static bool             HaveHelper;
 static ULONG            SIDLocker;
 
-static int SpawnLocker(HFILE inh, HFILE outh)
+static int SpawnLocker( HFILE inh, HFILE outh )
 {
-    NEWSTARTDATA    start;
+    STARTDATA       start;
     char            parms[20];
     PID             pid;
 
@@ -62,7 +62,7 @@ static int SpawnLocker(HFILE inh, HFILE outh)
     parms[1] = ' ';
     parms[2] = outh + ADJUST_HFILE;
     parms[3] = '\0';
-    start.Length = offsetof(NEWSTARTDATA, IconFile);
+    start.Length = offsetof( STARTDATA, IconFile );
     start.Related = 1;
     start.FgBg = 1;
     start.TraceOpt = 0;
@@ -73,67 +73,67 @@ static int SpawnLocker(HFILE inh, HFILE outh)
     start.Environment = NULL;
     start.InheritOpt = 1;
     start.SessionType = SSF_TYPE_PM;
-    return DosStartSession(&start, &SIDLocker, &pid);
+    return( DosStartSession( &start, &SIDLocker, &pid ) );
 }
 
-static void PmHelp(int command)
+static void PmHelp( int command )
 {
     ULONG          dummy;
     pmhelp_packet  data;
 
-    if (!HaveHelper)
+    if( !HaveHelper )
         return;
     data.command = command;
-    DosWrite(PmOuth, &data, sizeof(data), &dummy);
+    DosWrite( PmOuth, &data, sizeof( data ), &dummy );
 }
 
 
-static VOID SwitchBack(VOID)
+static VOID SwitchBack( VOID )
 {
     APIRET         rc;
     pmhelp_packet  data;
     ULONG          dummy;
 
-    for ( ; ; ) {
-        rc = DosRead(PmInh, &data, sizeof(data), &dummy);
-        if (data.command == PMHELP_SWITCHBACK) {
+    for( ; ; ) {
+        rc = DosRead( PmInh, &data, sizeof( data ), &dummy );
+        if( data.command == PMHELP_SWITCHBACK ) {
             Response = 1;
-            DosSelectSession(0);
+            DosSelectSession( 0 );
         }
     }
 }
 
 void StopPMHelp()
 {
-    if (!HaveHelper)
+    if( !HaveHelper )
         return;
-    PmHelp(PMHELP_EXIT);
-    DosClose(PmInh);
-    DosClose(PmOuth);
-    DosClose(HisOuth);
-    DosClose(HisInh);
+    PmHelp( PMHELP_EXIT );
+    DosClose( PmInh );
+    DosClose( PmOuth );
+    DosClose( HisOuth );
+    DosClose( HisInh );
 }
 
-void PMLock(unsigned long pid, unsigned long tid)
+void PMLock( unsigned long pid, unsigned long tid )
 {
     pid = pid; tid = tid;
-    PmHelp(PMHELP_LOCK);
+    PmHelp( PMHELP_LOCK );
 }
 
 void PMUnLock()
 {
-    PmHelp(PMHELP_UNLOCK);
+    PmHelp( PMHELP_UNLOCK );
 }
 
 int PMFlip()
 {
-    if (!HaveHelper)
-        return FALSE;
+    if( !HaveHelper )
+        return( FALSE );
     Response = 0;
-    DosSelectSession(SIDLocker);
-    while (!Response)
-        DosSleep(100);
-    return TRUE;
+    DosSelectSession( SIDLocker );
+    while( !Response )
+        DosSleep( 100 );
+    return( TRUE );
 }
 
 #define STACK_SIZE 32768
@@ -142,13 +142,13 @@ void StartPMHelp()
     TID         tid;
 
     HaveHelper = FALSE;
-    if (DosCreatePipe(&PmInh, &HisOuth, sizeof(pmhelp_packet)))
+    if( DosCreatePipe( &PmInh, &HisOuth, sizeof( pmhelp_packet ) ) )
         return;
-    if (DosCreatePipe(&HisInh, &PmOuth, sizeof(pmhelp_packet)))
+    if( DosCreatePipe( &HisInh, &PmOuth, sizeof(pmhelp_packet) ) )
         return;
-    if (SpawnLocker(HisInh, HisOuth))
+    if( SpawnLocker( HisInh, HisOuth ) )
         return;
-    if (DosCreateThread(&tid, (PFNTHREAD)SwitchBack, NULL, 0, STACK_SIZE))
+    if( DosCreateThread( &tid, (PFNTHREAD)SwitchBack, 0, 0, STACK_SIZE ) )
         return;
     HaveHelper = TRUE;
 }

@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Library writing routines.
 *
 ****************************************************************************/
 
 
 extern void WriteNew( void *buff, file_offset len );
-extern void WriteNewLib();
+extern void WriteNewLib( void );
 extern void WriteLittleEndian16( unsigned_16 num );
 extern void WriteBigEndian32( unsigned_32 num );
 extern void WriteLittleEndian32( unsigned_32 num );

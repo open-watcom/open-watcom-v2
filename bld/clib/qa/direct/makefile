@@ -1,5 +1,7 @@
-#pmake:all clibqa direct
+#pmake: clibqa direct
+
 .BEFORE
-    @if exist _T_M_P_ rm -r _T_M_P_ > nul
-srcfile = $(clib_dir)\direct\c\dir_test.c
-!include ..\mif\master.mif
+    @if exist _T_M_P_ rd _T_M_P_
+
+srcfile = $(clib_dir)/direct/c/dir_test.c
+!include ../mif/master.mif

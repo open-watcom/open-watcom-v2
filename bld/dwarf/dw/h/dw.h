@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public DWARF Writer library interface.
 *
 ****************************************************************************/
 
@@ -37,7 +36,6 @@
 
 #include "dwcnf.h"
 
-#pragma pack(1)
 /*
     Types
 */
@@ -180,6 +178,7 @@ typedef enum dw_sectnum{
     DW_DEBUG_LOC,
     DW_DEBUG_ABBREV,
     DW_DEBUG_MACINFO,
+    DW_DEBUG_STR,
     DW_DEBUG_REF,
     DW_DEBUG_MAX
 }dw_sectnum;
@@ -213,10 +212,10 @@ enum {
 
 /* the client supplied functions */
 typedef struct {
-    void                (*reloc)( uint, dw_relocs, ... );
-    void                (*write)( uint, const void *, dw_size_t );
-    void                (*seek)( uint, long, uint );
-    long                (*tell)( uint );
+    void                (*reloc)( dw_sectnum, dw_relocs, ... );
+    void                (*write)( dw_sectnum, const void *, dw_size_t );
+    void                (*seek)( dw_sectnum, long, uint );
+    long                (*tell)( dw_sectnum );
     void *              (*alloc)( size_t );
     void                (*free)( void * );
 } dw_funcs;
@@ -316,7 +315,7 @@ void            DWLineSeg(  dw_client  cli, dw_sym_handle sym );
 void            DWENTRY DWDeclFile( dw_client, char const *__fname );
 void            DWENTRY DWDeclPos( dw_client, dw_linenum, dw_column );
 
-unsigned        DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, char * );
+unsigned        DWENTRY DWLineGen( dw_linenum_delta, dw_addr_delta, uint_8 * );
 
 /* reference declarations */
 void            DWENTRY DWReference( dw_client, dw_linenum,
@@ -328,9 +327,9 @@ dw_loc_label    DWENTRY DWLocNewLabel( dw_client, dw_loc_id __loc );
 void            DWENTRY DWLocSetLabel( dw_client, dw_loc_id __loc,
                             dw_loc_label __label );
 void            DWENTRY DWLocReg( dw_client, dw_loc_id __loc,
-                            int __reg );
+                            uint __reg );
 void            DWENTRY DWLocPiece( dw_client, dw_loc_id __loc,
-                            int __size );
+                            uint __size );
 void            DWENTRY DWLocStatic( dw_client, dw_loc_id __loc,
                             dw_sym_handle __sym );
 void            DWENTRY DWLocSym( dw_client, dw_loc_id,
@@ -538,14 +537,9 @@ dw_handle       DWENTRY DWConstant( dw_client, dw_handle __type,
                             dw_handle __member_of, char const * __name,
                             dw_addr_offset __start_scope, uint __flags );
 /* name list      */
-dw_handle DWENTRY DWNameListBegin(
-    dw_client                   cli,
-    char const *                name );
-void DWENTRY DWNameListItem(
-    dw_client                   cli,
-    dw_handle                    ref );
-void DWENTRY DWEndNameList(
-    dw_client                   cli );
+dw_handle       DWENTRY DWNameListBegin( dw_client cli, char const *name );
+void            DWENTRY DWNameListItem( dw_client cli, dw_handle ref );
+void            DWENTRY DWEndNameList( dw_client cli );
 /* address ranges */
 void            DWENTRY DWAddress( dw_client, uint_32 );
 
@@ -553,12 +547,7 @@ void            DWENTRY DWAddress( dw_client, uint_32 );
 void            DWENTRY DWPubname( dw_client, dw_handle __hdl,
                             char const *__name );
 /* util used for PCH */
-uint_32         DWDebugRefOffset(
-    dw_client                   cli,
-    dw_handle                   hdl );
-dw_handle DWENTRY DWRefPCH(
-    dw_client                   cli,
-    uint_32                     ref );
+uint_32         DWENTRY DWDebugRefOffset( dw_client cli, dw_handle hdl );
+dw_handle       DWENTRY DWRefPCH( dw_client cli, uint_32 ref );
 
-#pragma pack()
 #endif

@@ -24,17 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of min().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#undef min
 
-_WCRTLINK int min( a, b )
-    int a;
-    int b;
+
+_WCRTLINK int min( int a, int b )
+/*******************************/
 {
     return( ( a < b ) ? a : b );
 }

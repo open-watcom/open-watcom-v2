@@ -44,7 +44,7 @@ const int   BucketPoolSize = 16;   // 16 elements per hunk
 const MergeNameKey MidKey;          // initial separator
 
 typedef DIETreeSearch * DIETreeSearchP;
-const StackGuess = 512;
+const int StackGuess = 512;
 static uint             StackSize = StackGuess;
 static DIETreeSearchP * Stack = NULL;
 

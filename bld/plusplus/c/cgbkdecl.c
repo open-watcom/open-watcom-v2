@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "cgfront.h"
 #include "cgback.h"
@@ -116,7 +114,7 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         sym = inlineSymbol( sym );
         if( ( TF1_PLUSPLUS & ftype->flag )
          && OMR_CLASS_REF == ObjModelArgument( sym->sym_type ) ) {
-            cgtype = T_POINTER;
+            cgtype = TY_POINTER;
         } else {
             cgtype = CgTypeOutput( sym->sym_type );
         }
@@ -124,9 +122,9 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & DBG_DF ){
-                DwarfSymDebugGenSymbol( sym, TRUE, cgtype == T_POINTER );
+                DwarfSymDebugGenSymbol( sym, TRUE, cgtype == TY_POINTER );
             }else{
-                SymbolicDebugGenSymbol( sym, TRUE, cgtype == T_POINTER );
+                SymbolicDebugGenSymbol( sym, TRUE, cgtype == TY_POINTER );
             }
         }
         IbpDefineSym( fctl->handle, sym );
@@ -219,7 +217,7 @@ static void declareAuto(        // DECLARE AN AUTO SYMBOL
 {
     CGAutoDecl( (cg_sym_handle)sym, CgTypeSym( sym ) );
     if( SymRequiresDtoring( sym ) ) {
-        SymScope( sym )->dtor_reqd = TRUE;
+        SymScope( sym )->s.dtor_reqd = TRUE;
     }
 }
 

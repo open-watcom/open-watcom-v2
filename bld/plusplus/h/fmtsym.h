@@ -42,6 +42,7 @@ void FormatScope( SCOPE, VBUF *, boolean );
 void FormatName( char *, VBUF * );
 void FormatTemplateParms( VBUF *, TYPE );
 void FormatUnboundTemplateParms( VBUF *, TYPE );
+void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope );
 
 #define _FMTSYM_H
 #endif

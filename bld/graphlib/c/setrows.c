@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routines to set number of text rows.
 *
 ****************************************************************************/
 
@@ -35,51 +34,7 @@
 #include "gbios.h"
 
 
-#if defined( _NEC_PC )
-
-short _SetRows( short rows )
-/*==========================
-
-   This function sets the number of text rows in the current mode. It only
-   affects the _VGA, _EGA, and _MCGA adapters and the NEC 9800 series.  */
-
-{
-    _ErrorStatus = _GROK;
-    _InitState();           // read the current machine state
-    if( rows == _MAXTEXTROWS ) {
-        rows = 25;
-    }
-    if( rows != 20 && rows != 25 ) {
-        _ErrorStatus = _GRINVALIDPARAMETER;
-        return( 0 );
-    }
-    _clearscreen( _GCLEARSCREEN );
-    if( IsTextMode ) {
-        if( rows == 25 ) {
-            NECVideoInt( _BIOS_SIZE_25, 0, 0, 0 ); // screen has 25 rows
-        } else {
-            NECVideoInt( _BIOS_SIZE_20, 0, 0, 0 ); // screen has 20 rows
-        }
-        // display cursor - turned off by previous call
-        NECVideoInt( _BIOS_CURSOR_START, 0, 0, 0 );
-    }
-    _CurrState->vc.numtextrows = rows;
-    _Tx_Row_Min = 0;                            // text window is now
-    _Tx_Col_Min = 0;                            // the full screen
-    _Tx_Row_Max = _CurrState->vc.numtextrows - 1;
-    _Tx_Col_Max = _CurrState->vc.numtextcols - 1;
-    _TextPos.row = 0;                           // set mode function
-    _TextPos.col = 0;                           // sets position to 0,0
-    _CurrVisualPage = 0;
-    _CurrActivePage = 0;
-    NECVideoInt( _BIOS_PAGE_SET, 0, 0, 0 );     // set to page zero
-    NECVideoIntDC( 0x0300, 0, 0x0010, 0 );      // tell DOS where cursor is
-    NECVideoInt( _BIOS_CURSOR_SET, 0, 0, 0 );   // set cursor position
-    return( _CurrState->vc.numtextrows );
-}
-
-
-#elif defined( _DEFAULT_WINDOWS )
+#if defined( _DEFAULT_WINDOWS )
 
 short _SetRows( short rows )
 /*==========================
@@ -119,75 +74,10 @@ short _SetRows( short rows )
 #define SCAN_400        0x1202
 
 
-static void             Load_25();
+static void             Load_25( void );
 static void             Load_VGA( short, short, short );
 static void             Load_EGA( short, short, short );
 static void             Load_MCGA( short, short, short );
-
-
-extern void         InitGener( void );
-#if defined ( __386__ )
-    #pragma aux InitGener = \
-        0x06                        /*  push    es          */ \
-        0xb8 0x00 0xa0 0x00 0x00    /*  mov     ax,0a000H   */ \
-        0x8e 0xc0                   /*  mov     es,ax       */ \
-        0x33 0xc0                   /*  xor     eax,eax     */ \
-        0x8b 0xf8                   /*  mov     edi,eax     */ \
-        0xb9 0x00 0x10 0x00 0x00    /*  mov     ecx,1000H   */ \
-        0x66 0xab                   /* L1     stosw         */ \
-        0xfe 0xc0                   /*    inc     al        */ \
-        0xe2 0xfa                   /*  loop    L1          */ \
-        0x07                        /*  pop     es          */ \
-        modify [eax ecx edi];
-#else
-    #pragma aux InitGener = \
-        0xb8 0x00 0xa0              /*  mov     ax,0a000H   */ \
-        0x8e 0xc0                   /*  mov     es,ax       */ \
-        0x33 0xc0                   /*  xor     ax,ax       */ \
-        0x8b 0xf8                   /*  mov     di,ax       */ \
-        0xb9 0x00 0x10              /*  mov     cx,1000H    */ \
-        0xab                        /* L1     stosw         */ \
-        0xfe 0xc0                   /*    inc     al        */ \
-        0xe2 0xfb                   /*  loop    L1          */ \
-        modify [ax cx es di];
-#endif
-
-
-short _SetRows( short rows )
-/*==========================
-
-   This function sets the number of text rows in the current mode. It only
-   affects the _VGA, _EGA, and _MCGA adapters and the NEC 9800 series.  */
-
-{
-    _ErrorStatus = _GROK;
-    _InitState();           // read the current machine state
-    if( _GrMode ) {
-        GrModeRows( rows );
-    } else {
-        TextModeRows( rows );
-    }
-    if( _ErrorStatus != _GROK ) {
-        return( 0 );
-    } else {
-        rows = *(char far *)_BIOS_data( ROWS ) + 1;     // 0 for Hercules
-        if( rows == 1 ) rows = 25;
-        _CurrState->vc.numtextrows = rows;
-        if( !_GrMode ) {
-            _CalcNumPages();              // update the video configuration
-        }
-        _Tx_Row_Min = 0;                            // text window is now
-        _Tx_Col_Min = 0;                            // the full screen
-        _Tx_Row_Max = _CurrState->vc.numtextrows - 1;
-        _Tx_Col_Max = _CurrState->vc.numtextcols - 1;
-        _TextPos.row = 0;                           // set mode function
-        _TextPos.col = 0;                           // sets position to 0,0
-        _CurrVisualPage = 0;
-        _CurrActivePage = 0;
-        VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );      // set to page 0
-        return( _CurrState->vc.numtextrows );
-    }
-}
 
 
 static void TextModeRows( short rows )
@@ -330,7 +220,44 @@ static void GrModeRows( short rows )
 }
 
 
-static void Load_25()
+short _SetRows( short rows )
+/*==========================
+
+   This function sets the number of text rows in the current mode. It only
+   affects the _VGA, _EGA, and _MCGA adapters.  */
+
+{
+    _ErrorStatus = _GROK;
+    _InitState();           // read the current machine state
+    if( _GrMode ) {
+        GrModeRows( rows );
+    } else {
+        TextModeRows( rows );
+    }
+    if( _ErrorStatus != _GROK ) {
+        return( 0 );
+    } else {
+        rows = *(char far *)_BIOS_data( ROWS ) + 1;     // 0 for Hercules
+        if( rows == 1 ) rows = 25;
+        _CurrState->vc.numtextrows = rows;
+        if( !_GrMode ) {
+            _CalcNumPages();              // update the video configuration
+        }
+        _Tx_Row_Min = 0;                            // text window is now
+        _Tx_Col_Min = 0;                            // the full screen
+        _Tx_Row_Max = _CurrState->vc.numtextrows - 1;
+        _Tx_Col_Max = _CurrState->vc.numtextcols - 1;
+        _TextPos.row = 0;                           // set mode function
+        _TextPos.col = 0;                           // sets position to 0,0
+        _CurrVisualPage = 0;
+        _CurrActivePage = 0;
+        VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );      // set to page 0
+        return( _CurrState->vc.numtextrows );
+    }
+}
+
+
+static void Load_25( void )
 /*===================
 
    When we want to go back to a 25-row display, just do a set mode
@@ -386,7 +313,7 @@ static void Load_MCGA( short rows, short font, short cursor )
 {
     VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );         // set active page to 0
     VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    InitGener();                                    // must do for MCGA 40 rows
+    _fmemset( MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 );  // must do for MCGA 40 rows
     VideoInt( font & 0xFF0F, 0, 0, 0 );             // load character set
     VideoInt( 0x1103, 0, 0, 0 );
     VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
@@ -399,17 +326,17 @@ static void Load_MCGA( short rows, short font, short cursor )
 #endif
 
 
-short _WCI86FAR _CGRAPH _settextrows( short rows )
+_WCRTLINK short _WCI86FAR _CGRAPH _settextrows( short rows )
 /*===========================================
 
    This function sets the number of text rows in the current mode. It only
-   affects the _VGA, _EGA, and _MCGA adapters and the NEC 9800 series.  */
+   affects the _VGA, _EGA, and _MCGA adapters.  */
 
 {
     short               set_rows;
 
     set_rows = _SetRows( rows );
-    #if !defined( _NEC_PC ) && !defined( _DEFAULT_WINDOWS )
+    #if !defined( _DEFAULT_WINDOWS )
         _PaletteInit();   // need to reset palette after changing mode
     #endif
     return( set_rows );
@@ -419,7 +346,7 @@ Entry( _SETTEXTROWS, _settextrows ) // alternate entry-point
 
 
 
-short _WCI86FAR _CGRAPH _setvideomoderows( short mode, short rows )
+_WCRTLINK short _WCI86FAR _CGRAPH _setvideomoderows( short mode, short rows )
 /*============================================================
 
    This routine sets the video mode if it is supported by the current

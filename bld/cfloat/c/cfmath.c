@@ -68,9 +68,24 @@ extern  int     CFOrder( cfloat *float1, cfloat *float2 ) {
     return( 0 );        /* | float1 | == | float2 |*/
 }
 
-static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)() ) {
-/******************************************************************/
+static  int     Max( int a, int b ) {
+/***********************************/
 
+    if( b > a ) return( b );
+    return( a );
+}
+
+
+static  int     Min( int a, int b ) {
+/***********************************/
+
+    if( b < a ) return( b );
+    return( a );
+}
+
+static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
+/****************************************************************************/
+{
     int         carry;
     int         pos;
     int         length;
@@ -252,7 +267,7 @@ extern  void    CFClean( cfloat *f ) {
     }
     if( headindex > 0 ) {
         tailindex -= headindex;
-        memcpy( f->mant, head, tailindex + 1 );
+        memmove( f->mant, head, tailindex + 1 );
         f->exp -= headindex;
     }
     if( tailindex > CF_MAX_PREC ) {
@@ -260,20 +275,4 @@ extern  void    CFClean( cfloat *f ) {
     }
     f->len = tailindex + 1;
     f->mant[ tailindex + 1 ] = 0;
-}
-
-
-static  int     Max( int a, int b ) {
-/***********************************/
-
-    if( b > a ) return( b );
-    return( a );
-}
-
-
-static  int     Min( int a, int b ) {
-/***********************************/
-
-    if( b < a ) return( b );
-    return( a );
 }

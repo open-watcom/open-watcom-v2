@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Change cursor shape according to state.
 *
 ****************************************************************************/
 
@@ -36,30 +35,30 @@
 #include "cursor.def"
 
 enum {
-    CURSOR_ARROW
-,   CURSOR_CROSS
-,   CURSOR_S_UD
-,   CURSOR_S_LR
-,   CURSOR_S_UR_BL
-,   CURSOR_S_UL_BR
-,   MAX_CURSORS
+    CURSOR_ARROW,
+    CURSOR_CROSS,
+    CURSOR_S_UD,
+    CURSOR_S_LR,
+    CURSOR_S_UR_BL,
+    CURSOR_S_UL_BR,
+    MAX_CURSORS
 };
 
 
 static HCURSOR Cursors[MAX_CURSORS];
 
 static unsigned char StateCursor[] = {
-    CURSOR_ARROW        /* DORMANT       */
-,   0                   /* OVERBOX       */
-,   CURSOR_CROSS        /* MOVING        */
-,   CURSOR_ARROW        /* EDITING       */
-,   0                   /* SIZING        */
-,   CURSOR_ARROW        /* CREATING      */
-,   CURSOR_ARROW        /* ALIGNING      */
-,   CURSOR_CROSS        /* PASTE_PENDING */
-,   CURSOR_CROSS        /* PASTEING      */
-,   CURSOR_CROSS        /* SELECTING     */
-,   CURSOR_CROSS        /* MOVE_PENDING  */
+    CURSOR_ARROW,       /* DORMANT       */
+    0,                  /* OVERBOX       */
+    CURSOR_CROSS,       /* MOVING        */
+    CURSOR_ARROW,       /* EDITING       */
+    0,                  /* SIZING        */
+    CURSOR_ARROW,       /* CREATING      */
+    CURSOR_ARROW,       /* ALIGNING      */
+    CURSOR_CROSS,       /* PASTE_PENDING */
+    CURSOR_CROSS,       /* PASTEING      */
+    CURSOR_CROSS,       /* SELECTING     */
+    CURSOR_CROSS        /* MOVE_PENDING  */
 };
 
 static unsigned char SizeCursor[] = {
@@ -69,33 +68,29 @@ static unsigned char SizeCursor[] = {
 };
 
 
-extern void InitCursors()
-/***********************/
-
-/* set up the various mouse cursors needed */
-
- {
+extern void InitCursors( void )
+/*****************************/
+{
+    /* set up the various mouse cursors needed */
     Cursors[CURSOR_ARROW] = LoadCursor( NULL, IDC_ARROW );
-    Cursors[CURSOR_CROSS] = LoadCursor( NULL , IDC_CROSS );
+    Cursors[CURSOR_CROSS] = LoadCursor( NULL, IDC_CROSS );
     Cursors[CURSOR_S_UD] =  LoadCursor( NULL, IDC_SIZENS );
     Cursors[CURSOR_S_LR] = LoadCursor( NULL, IDC_SIZEWE );
-    Cursors[CURSOR_S_UR_BL] =  LoadCursor( NULL, IDC_SIZENESW );
+    Cursors[CURSOR_S_UR_BL] = LoadCursor( NULL, IDC_SIZENESW );
     Cursors[CURSOR_S_UL_BR] = LoadCursor( NULL, IDC_SIZENWSE );
- }
+}
 
 
 extern void SetStateCursor( STATE_ID st )
 /***************************************/
-
-/* set the cursor depending on the specified state */
-
-  {
+{
+    /* set the cursor depending on the specified state */
     int cursoridx;
 
-    if( (st != SIZING) && (st != OVERBOX) ) {
+    if( st != SIZING && st != OVERBOX ) {
         cursoridx = StateCursor[st];
     } else {
         cursoridx = SizeCursor[GetSizing()];
     }
     SetCursor( Cursors[cursoridx] );
-  }
+}

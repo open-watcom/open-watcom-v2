@@ -34,4 +34,4 @@
 #define FT_STYLE        102
 #define FT_SIZE         103
 #define FT_FTPICK       104
-#define FT_RECTANGLE                105
+#define FT_RECTANGLE    105

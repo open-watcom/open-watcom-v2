@@ -63,7 +63,7 @@ enum {
 
     MENU_HELP               = 8000,
     MENU_HELP_CONTENTS,
-#if _OS == _OS_WIN || _OS == _OS_NT || defined(_OS2_PM)
+#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
     MENU_HELP_ONHELP,
     MENU_HELP_SEARCH,
 #endif

@@ -59,15 +59,15 @@ extern          ATTR                    CGAAttrs[];
 extern          ATTR                    EGAAttrs[];
 extern          ATTR                    MonoAttrs[];
 
-bool global uiset80col()
-/**********************/
+bool global uiset80col( void )
+/****************************/
 {
     return( TRUE );
 }
 
 
-bool intern initmonitor()
-/***********************/
+bool intern initmonitor( void )
+/*****************************/
 {
     struct      _VIOMODEINFO            vioMode;
     struct      _VIOCONFIGINFO          config;
@@ -98,8 +98,8 @@ bool intern initmonitor()
 }
 
 
-int intern initbios()
-/*******************/
+int intern initbios( void )
+/*************************/
 {
     int                 initialized;
     // unsigned            offset;
@@ -152,8 +152,8 @@ unsigned global uiclockdelay( unsigned milli )
 
 
 
-void intern finibios()
-/********************/
+void intern finibios( void )
+/**************************/
 {
     uifinicursor();
     finikeyboard();

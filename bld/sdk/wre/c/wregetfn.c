@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 #include <commdlg.h>
@@ -39,7 +39,7 @@
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wrestrdp.h"
 #include "wrectl3d.h"
 #include "wremem.h"
@@ -48,27 +48,27 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern UINT WINEXPORT WREOpenHookProc ( HWND, UINT, WPARAM, LPARAM );
+extern UINT WINEXPORT WREOpenHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    OPENFILE
-,   SAVEFILE
+    OPENFILE,
+    SAVEFILE
 } WREGetFileAction;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static char *WREGetFileName ( WREGetFileStruct *, DWORD, WREGetFileAction );
+static char *WREGetFileName( WREGetFileStruct *, DWORD, WREGetFileAction );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static char  wrefntitle[_MAX_PATH];
-static char  wre_file_name[_MAX_PATH];
-static char  wre_initial_dir[_MAX_PATH] = { 0 };
+static char wrefntitle[_MAX_PATH];
+static char wre_file_name[_MAX_PATH];
+static char wre_initial_dir[_MAX_PATH] = { 0 };
 static char *LastFileFilter = NULL;
 
 static int WREFindFileFilterIndex( char *filter )
@@ -78,14 +78,14 @@ static int WREFindFileFilterIndex( char *filter )
 
     if( filter != NULL && LastFileFilter != NULL ) {
         index = 1;
-        for( i=0; ; i++ ) {
+        for( i = 0;; i++ ) {
             if( filter[i] == '\0' ) {
-                if( filter[i+1] == '\0' ) {
+                if( filter[i + 1] == '\0' ) {
                     break;
                 }
-                index ++;
-                if( ( index % 2 ) == 0 ) {
-                    if( !stricmp( LastFileFilter, &filter[i+1] ) ) {
+                index++;
+                if( index % 2 == 0 ) {
+                    if( !stricmp( LastFileFilter, &filter[i + 1] ) ) {
                         return( index / 2 );
                     }
                 }
@@ -103,14 +103,14 @@ static char *WREFindFileFilterFromIndex( char *filter, int index )
 
     if( filter != NULL ) {
         ind = 1;
-        for( i=0; ; i++ ) {
+        for( i = 0;; i++ ) {
             if( filter[i] == '\0' ) {
-                if( filter[i+1] == '\0' ) {
+                if( filter[i + 1] == '\0' ) {
                     break;
                 }
                 ind++;
-                if( ( ind % 2 == 0 ) && ( ind / 2 == index ) ) {
-                    return( &filter[i+1] );
+                if( ind % 2 == 0 && ind / 2 == index ) {
+                    return( &filter[i + 1] );
                 }
             }
         }
@@ -137,44 +137,43 @@ void WREFreeFileFilter( void )
     }
 }
 
-char *WREGetInitialDir ( void )
+char *WREGetInitialDir( void )
 {
-    if ( *wre_initial_dir ) {
-        return ( wre_initial_dir );
+    if( *wre_initial_dir != '\0' ) {
+        return( wre_initial_dir );
     }
-    return ( NULL );
+    return( NULL );
 }
 
-void WRESetInitialDir ( char *dir )
+void WRESetInitialDir( char *dir )
 {
     int len;
 
-    if ( dir && *dir ) {
-        len = strlen ( dir );
-        if ( len >= _MAX_PATH ) {
+    if( dir != NULL && *dir != '\0' ) {
+        len = strlen( dir );
+        if( len >= _MAX_PATH ) {
             return;
         }
-        strcpy ( wre_initial_dir, dir );
+        strcpy( wre_initial_dir, dir );
     }
 
 }
 
-char *WREGetOpenFileName ( WREGetFileStruct *gf )
+char *WREGetOpenFileName( WREGetFileStruct *gf )
 {
-    return ( WREGetFileName ( gf, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST |
-                                  OFN_FILEMUSTEXIST,
-                              OPENFILE ) );
+    return( WREGetFileName( gf, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST |
+                                OFN_FILEMUSTEXIST,
+                            OPENFILE ) );
 }
 
-char *WREGetSaveFileName ( WREGetFileStruct *gf )
+char *WREGetSaveFileName( WREGetFileStruct *gf )
 {
-    return ( WREGetFileName ( gf, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST |
-                                  OFN_OVERWRITEPROMPT,
-                              SAVEFILE ) );
+    return( WREGetFileName( gf, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST |
+                                OFN_OVERWRITEPROMPT,
+                            SAVEFILE ) );
 }
 
-char *WREGetFileName ( WREGetFileStruct *gf, DWORD flags,
-                       WREGetFileAction action )
+char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action )
 {
     OPENFILENAME  wreofn;
     HWND          owner_window;
@@ -184,7 +183,7 @@ char *WREGetFileName ( WREGetFileStruct *gf, DWORD flags,
     char          fn_drive[_MAX_DRIVE];
     char          fn_dir[_MAX_DIR];
     char          fn_name[_MAX_FNAME];
-    char          fn_ext[_MAX_EXT+1];
+    char          fn_ext[_MAX_EXT + 1];
     HINSTANCE     app_inst;
 
     if( gf == NULL ) {
@@ -192,108 +191,108 @@ char *WREGetFileName ( WREGetFileStruct *gf, DWORD flags,
     }
 
     owner_window = WREGetMainWindowHandle();
-    app_inst = WREGetAppInstance ();
+    app_inst = WREGetAppInstance();
 
-    if ( !app_inst || !owner_window ) {
-        return ( NULL );
+    if( app_inst == NULL || owner_window == NULL ) {
+        return( NULL );
     }
 
-    if ( gf->title ) {
-        len = strlen ( gf->title );
-        if ( len < _MAX_PATH ) {
-            memcpy ( wrefntitle, gf->title, len + 1 );
+    if( gf->title != NULL ) {
+        len = strlen( gf->title );
+        if( len < _MAX_PATH ) {
+            memcpy( wrefntitle, gf->title, len + 1 );
         } else {
-            memcpy ( wrefntitle, gf->title, _MAX_PATH );
-            wrefntitle[_MAX_PATH-1] = 0;
+            memcpy( wrefntitle, gf->title, _MAX_PATH );
+            wrefntitle[_MAX_PATH - 1] = 0;
         }
     } else {
         wrefntitle[0] = 0;
     }
 
-    if ( gf->file_name && *gf->file_name ) {
-        _splitpath ( gf->file_name, fn_drive, fn_dir, fn_name, fn_ext );
-        if ( *fn_drive || *fn_dir ) {
-            _makepath  ( wre_initial_dir, fn_drive, fn_dir, NULL, NULL );
+    if( gf->file_name != NULL && *gf->file_name != '\0' ) {
+        _splitpath( gf->file_name, fn_drive, fn_dir, fn_name, fn_ext );
+        if( *fn_drive != '\0' || *fn_dir != '\0' ) {
+            _makepath( wre_initial_dir, fn_drive, fn_dir, NULL, NULL );
         }
-        _makepath  ( wre_file_name, NULL, NULL, fn_name, fn_ext );
+        _makepath( wre_file_name, NULL, NULL, fn_name, fn_ext );
     } else {
         wre_file_name[0] = 0;
     }
 
     /* set the initial directory */
-    if ( !*wre_initial_dir ) {
-        getcwd ( wre_initial_dir, _MAX_PATH );
+    if( *wre_initial_dir == '\0' ) {
+        getcwd( wre_initial_dir, _MAX_PATH );
     }
 
-    //ctl3d no longer requires this
+#if !defined ( __NT__ )
+    // CTL3D no longer requires this
     flags |= OFN_ENABLEHOOK;
-
-    /* initialize the OPENFILENAME struct */
-    memset (&wreofn, 0, sizeof(OPENFILENAME));
-
-    /* fill in non-variant fields of OPENFILENAME struct */
-    wreofn.lStructSize       = sizeof(OPENFILENAME);
-    wreofn.hwndOwner         = owner_window;
-    wreofn.hInstance         = app_inst;
-    wreofn.lpstrFilter       = gf->filter;
-    wreofn.lpstrCustomFilter = NULL;
-    wreofn.nMaxCustFilter    = 0;
-    wreofn.nFilterIndex      = WREFindFileFilterIndex( gf->filter );
-    wreofn.lpstrFile         = wre_file_name;
-    wreofn.nMaxFile          = _MAX_PATH;
-    wreofn.lpstrFileTitle    = wrefntitle;
-    wreofn.nMaxFileTitle     = _MAX_PATH;
-    wreofn.lpstrInitialDir   = wre_initial_dir;
-    wreofn.lpstrTitle        = wrefntitle;
-    wreofn.Flags             = flags;
-    wreofn.lpfnHook          = (LPVOID) MakeProcInstance
-                                ( (LPVOID) WREOpenHookProc, app_inst );
-
-#if 0
-    wreofn.nFileOffset       = 0L;
-    wreofn.nFileExtension    = 0L;
-    wreofn.lpstrDefExt       = NULL;
-    wreofn.lCustData         = NULL;
-    wreofn.lpTemplateName    = NULL;
 #endif
 
-    if ( action == OPENFILE ) {
-        ret = GetOpenFileName ((LPOPENFILENAME)&wreofn);
-    } else if ( action == SAVEFILE ) {
-        ret = GetSaveFileName ((LPOPENFILENAME)&wreofn);
+    /* initialize the OPENFILENAME struct */
+    memset( &wreofn, 0, sizeof( OPENFILENAME ) );
+
+    /* fill in non-variant fields of OPENFILENAME struct */
+    wreofn.lStructSize = sizeof( OPENFILENAME );
+    wreofn.hwndOwner = owner_window;
+    wreofn.hInstance = app_inst;
+    wreofn.lpstrFilter = gf->filter;
+    wreofn.lpstrCustomFilter = NULL;
+    wreofn.nMaxCustFilter = 0;
+    wreofn.nFilterIndex = WREFindFileFilterIndex( gf->filter );
+    wreofn.lpstrFile = wre_file_name;
+    wreofn.nMaxFile = _MAX_PATH;
+    wreofn.lpstrFileTitle = wrefntitle;
+    wreofn.nMaxFileTitle = _MAX_PATH;
+    wreofn.lpstrInitialDir = wre_initial_dir;
+    wreofn.lpstrTitle = wrefntitle;
+    wreofn.Flags = flags;
+    wreofn.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)WREOpenHookProc, app_inst );
+
+#if 0
+    wreofn.nFileOffset = 0L;
+    wreofn.nFileExtension = 0L;
+    wreofn.lpstrDefExt = NULL;
+    wreofn.lCustData = NULL;
+    wreofn.lpTemplateName = NULL;
+#endif
+
+    if( action == OPENFILE ) {
+        ret = GetOpenFileName( (LPOPENFILENAME)&wreofn );
+    } else if( action == SAVEFILE ) {
+        ret = GetSaveFileName( (LPOPENFILENAME)&wreofn );
     } else {
-        return ( NULL );
+        return( NULL );
     }
 
-    #ifndef __NT__
-    if ( wreofn.lpfnHook ) {
-        FreeProcInstance ( (FARPROC) wreofn.lpfnHook );
+#ifndef __NT__
+    if( wreofn.lpfnHook != NULL ) {
+        FreeProcInstance( (FARPROC)wreofn.lpfnHook );
     }
-    #endif
+#endif
 
-    if (!ret) {
+    if( !ret ) {
         error = CommDlgExtendedError();
-        if ( error ) {
+        if( error ) {
             WREDisplayErrorMsg( WRE_ERRORSELECTINGFILE );
         }
-        return ( NULL );
+        return( NULL );
     } else {
-        memcpy(wre_initial_dir,wre_file_name,wreofn.nFileOffset);
-        if ( ( wre_initial_dir[wreofn.nFileOffset-1] == '\\' ) &&
-             ( wre_initial_dir[wreofn.nFileOffset-2] != ':' )  ) {
-            wre_initial_dir[wreofn.nFileOffset-1] = '\0';
+        memcpy( wre_initial_dir, wre_file_name, wreofn.nFileOffset );
+        if( wre_initial_dir[wreofn.nFileOffset - 1] == '\\' &&
+            wre_initial_dir[wreofn.nFileOffset - 2] != ':' ) {
+            wre_initial_dir[wreofn.nFileOffset - 1] = '\0';
         } else {
             wre_initial_dir[wreofn.nFileOffset] = '\0';
         }
         if( gf->save_ext ) {
-            _splitpath ( wre_file_name, NULL, NULL, NULL, (fn_ext+1) );
-            if( fn_ext[1] ) {
+            _splitpath( wre_file_name, NULL, NULL, NULL, fn_ext + 1 );
+            if( fn_ext[1] != '\0' ) {
                 fn_ext[0] = '*';
                 WRESetFileFilter( fn_ext );
             } else {
                 char *out_ext;
-                out_ext = WREFindFileFilterFromIndex( gf->filter,
-                                                      wreofn.nFilterIndex );
+                out_ext = WREFindFileFilterFromIndex( gf->filter, wreofn.nFilterIndex );
                 if( out_ext[2] != '*' ) {
                     strcat( wre_file_name, &out_ext[1] );
                 }
@@ -303,33 +302,29 @@ char *WREGetFileName ( WREGetFileStruct *gf, DWORD flags,
 
     UpdateWindow( WREGetMainWindowHandle() );
 
-    return ( WREStrDup ( wre_file_name ) );
+    return( WREStrDup( wre_file_name ) );
 }
 
-UINT WINEXPORT WREOpenHookProc ( HWND hwnd, UINT msg,
-                                 WPARAM wparam, LPARAM lparam )
+UINT WINEXPORT WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    _wre_touch(wparam);
-    _wre_touch(lparam);
+    char    *title;
 
-    switch ( msg ) {
-        case WM_INITDIALOG:
-            // We must call this to subclass the directory listbox even
-            // if the app calls Ctl3dAutoSubclass (commdlg bug)
-            //WRECtl3dSubclassDlg ( hwnd, CTL3D_ALL );
-            {
-                char    *title;
+    _wre_touch( wparam );
+    _wre_touch( lparam );
 
-                title = WREAllocRCString( WRE_GETFNCOMBOTITLE );
-                if( title ) {
-                    SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
-                    WREFreeRCString( title );
-                }
-            }
+    switch( msg ) {
+    case WM_INITDIALOG:
+        // We must call this to subclass the directory listbox even
+        // if the app calls Ctl3dAutoSubclass (commdlg bug)
+        //WRECtl3dSubclassDlg( hwnd, CTL3D_ALL );
 
-            return( TRUE );
+        title = WREAllocRCString( WRE_GETFNCOMBOTITLE );
+        if( title != NULL ) {
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            WREFreeRCString( title );
+        }
+        return( TRUE );
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
-

@@ -30,15 +30,16 @@
 ****************************************************************************/
 
 
-#include <standard.h>
-#include <cg.h>
-#include <bckdef.h>
-#include <objrep.h>
-#include <ocentry.h>
-#include <optopts.h>
-#include <optq.h>
-#include <optlbl.h>
-#include <optsave.h>
-#include <optmac.h>
-#include <sysmacro.h>
-#include <model.h>
+#include "standard.h"
+#include "cgmem.h"
+#include "cg.h"
+#include "bckdef.h"
+#include "objrep.h"
+#include "ocentry.h"
+#include "optopts.h"
+#include "optq.h"
+#include "optlbl.h"
+#include "optsave.h"
+#include "optmac.h"
+#include "optdata.h"
+#include "model.h"

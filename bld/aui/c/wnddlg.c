@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI dialog window.
 *
 ****************************************************************************/
 
@@ -64,7 +63,7 @@ static bool DlgEventProc( gui_window * gui, gui_event event, void *parm )
 }
 
 
-extern gui_window *DlgGetParent()
+extern gui_window *DlgGetParent( void )
 {
     if( Nested >= MAX_DLG_NESTS ) return( NULL );
     return( ( Nested == -1 ) ? WndMain->gui : Parents[ Nested ] );

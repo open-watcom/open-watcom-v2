@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
 
 static input_lib *InputLibs;
 
@@ -82,7 +82,9 @@ input_lib *FindInLib( libfile io )
     input_lib   *curr;
 
     for( curr = InputLibs; curr != NULL; curr = curr->next ) {
-        if( curr->io == io ) return( curr );
+        if( curr->io == io ) {
+            return( curr );
+        }
     }
     return( NULL );
 }

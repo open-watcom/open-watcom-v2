@@ -1,0 +1,298 @@
+/*
+ *  hidpi.h     Human Interface Device (HID) parsing functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __HIDPI_H__
+#define __HIDPI_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef PUCHAR  PHIDP_REPORT_DESCRIPTOR;
+
+/* HID parsing link collection special values */
+#define HIDP_LINK_COLLECTION_ROOT           ((USHORT)-1)
+#define HIDP_LINK_COLLECTION_UNSPECIFIED    ((USHORT)0)
+
+/* HID facility code */
+#ifndef FACILITY_HID_ERROR_CODE
+    #define FACILITY_HID_ERROR_CODE 0x11
+#endif
+
+/* Macro to make HID parsing error codes */
+#define HIDP_ERROR_CODES( p1, p2 ) \
+    ((NTSTATUS)(((p1) << 28) | (FACILITY_HID_ERROR_CODE << 16) | (p2)))
+
+/* HID parsing status codes */
+#define HIDP_STATUS_SUCCESS                 HIDP_ERROR_CODES( 0x0, 0x0000 )
+#define HIDP_STATUS_NULL                    HIDP_ERROR_CODES( 0x8, 0x0001 )
+#define HIDP_STATUS_INVALID_PREPARSED_DATA  HIDP_ERROR_CODES( 0xC, 0x0001 )
+#define HIDP_STATUS_INVALID_REPORT_TYPE     HIDP_ERROR_CODES( 0xC, 0x0002 )
+#define HIDP_STATUS_INVALID_REPORT_LENGTH   HIDP_ERROR_CODES( 0xC, 0x0003 )
+#define HIDP_STATUS_USAGE_NOT_FOUND         HIDP_ERROR_CODES( 0xC, 0x0004 )
+#define HIDP_STATUS_VALUE_OUT_OF_RANGE      HIDP_ERROR_CODES( 0xC, 0x0005 )
+#define HIDP_STATUS_BAD_LOG_PHY_VALUES      HIDP_ERROR_CODES( 0xC, 0x0006 )
+#define HIDP_STATUS_BUFFER_TOO_SMALL        HIDP_ERROR_CODES( 0xC, 0x0007 )
+#define HIDP_STATUS_INTERNAL_ERROR          HIDP_ERROR_CODES( 0xC, 0x0008 )
+#define HIDP_STATUS_I8042_TRANS_UNKNOWN     HIDP_ERROR_CODES( 0xC, 0x0009 )
+#define HIDP_STATUS_INCOMPATIBLE_REPORT_ID  HIDP_ERROR_CODES( 0xC, 0x000A )
+#define HIDP_STATUS_NOT_VALUE_ARRAY         HIDP_ERROR_CODES( 0xC, 0x000B )
+#define HIDP_STATUS_IS_VALUE_ARRAY          HIDP_ERROR_CODES( 0xC, 0x000C )
+#define HIDP_STATUS_DATA_INDEX_NOT_FOUND    HIDP_ERROR_CODES( 0xC, 0x000D )
+#define HIDP_STATUS_DATA_INDEX_OUT_OF_RANGE HIDP_ERROR_CODES( 0xC, 0x000E )
+#define HIDP_STATUS_BUTTON_NOT_PRESSED      HIDP_ERROR_CODES( 0xC, 0x000F )
+#define HIDP_STATUS_REPORT_DOES_NOT_EXIST   HIDP_ERROR_CODES( 0xC, 0x0010 )
+#define HIDP_STATUS_NOT_IMPLEMENTED         HIDP_ERROR_CODES( 0xC, 0x0020 )
+#define HIDP_STATUS_I8242_TRANS_UNKNOWN     HIDP_STATUS_I8042_TRANS_UNKNOWN
+
+/* All structures in this file get four-byte packing. */
+#include <pshpack4.h>
+
+/* Opaque data types */
+typedef struct _HIDP_PREPARSED_DATA *PHIDP_PREPARSED_DATA;
+
+/* HID parsing report types */
+typedef enum _HIDP_REPORT_TYPE {
+    HidP_Input      = 0,
+    HidP_Output     = 1,
+    HidP_Feature    = 2
+} HIDP_REPORT_TYPE;
+
+/* Usage and page */
+typedef struct _USAGE_AND_PAGE {
+    USAGE   Usage;
+    USAGE   UsagePage;
+} USAGE_AND_PAGE;
+typedef USAGE_AND_PAGE  *PUSAGE_AND_PAGE;
+
+/* HID parsing button capabilities */
+typedef struct _HIDP_BUTTON_CAPS {
+    USAGE   UsagePage;
+    UCHAR   ReportID;
+    BOOLEAN IsAlias;
+    USHORT  BitField;
+    USHORT  LinkCollection;
+    USAGE   LinkUsage;
+    USAGE   LinkUsagePage;
+    BOOLEAN IsRange;
+    BOOLEAN IsStringRange;
+    BOOLEAN IsDesignatorRange;
+    BOOLEAN IsAbsolute;
+    ULONG   Reserved[10];
+    union {
+        struct {
+            USAGE   UsageMin;
+            USAGE   UsageMax;
+            USHORT  StringMin;
+            USHORT  StringMax;
+            USHORT  DesignatorMin;
+            USHORT  DesignatorMax;
+            USHORT  DataIndexMin;
+            USHORT  DataIndexMax;
+        } Range;
+        struct {
+            USAGE   Usage;
+            USAGE   Reserved1;
+            USHORT  StringIndex;
+            USHORT  Reserved2;
+            USHORT  DesignatorIndex;
+            USHORT  Reserved3;
+            USHORT  DataIndex;
+            USHORT  Reserved4;
+        } NotRange;
+    };
+} HIDP_BUTTON_CAPS;
+typedef HIDP_BUTTON_CAPS    *PHIDP_BUTTON_CAPS;
+
+/* HID parsing value capabilities */
+typedef struct _HIDP_VALUE_CAPS {
+    USAGE   UsagePage;
+    UCHAR   ReportID;
+    BOOLEAN IsAlias;
+    USHORT  BitField;
+    USHORT  LinkCollection;
+    USAGE   LinkUsage;
+    USAGE   LinkUsagePage;
+    BOOLEAN IsRange;
+    BOOLEAN IsStringRange;
+    BOOLEAN IsDesignatorRange;
+    BOOLEAN IsAbsolute;
+    BOOLEAN HasNull;
+    UCHAR   Reserved;
+    USHORT  BitSize;
+    USHORT  ReportCount;
+    USHORT  Reserved2[5];
+    ULONG   UnitsExp;
+    ULONG   Units;
+    LONG    LogicalMin;
+    LONG    LogicalMax;
+    LONG    PhysicalMin;
+    LONG    PhysicalMax;
+    union {
+        struct {
+            USAGE   UsageMin;
+            USAGE   UsageMax;
+            USHORT  StringMin;
+            USHORT  StringMax;
+            USHORT  DesignatorMin;
+            USHORT  DesignatorMax;
+            USHORT  DataIndexMin;
+            USHORT  DataIndexMax;
+        } Range;
+        struct {
+            USAGE   Usage;
+            USAGE   Reserved1;
+            USHORT  StringIndex;
+            USHORT  Reserved2;
+            USHORT  DesignatorIndex;
+            USHORT  Reserved3;
+            USHORT  DataIndex;
+            USHORT  Reserved4;
+        } NotRange;
+    };
+} HIDP_VALUE_CAPS;
+typedef HIDP_VALUE_CAPS *PHIDP_VALUE_CAPS;
+
+/* HID parsing link collection node */
+typedef struct _HIDP_LINK_COLLECTION_NODE {
+    USAGE   LinkUsage;
+    USAGE   LinkUsagePage;
+    USHORT  Parent;
+    USHORT  NumberOfChildren;
+    USHORT  NextSibling;
+    USHORT  FirstChild;
+    ULONG   CollectionType  : 8;
+    ULONG   IsAlias         : 1;
+    ULONG   Reserved        : 23;
+    PVOID   UserContext;
+} HIDP_LINK_COLLECTION_NODE;
+typedef HIDP_LINK_COLLECTION_NODE   *PHIDP_LINK_COLLECTION_NODE;
+
+/* HID parsing capabilities */
+typedef struct _HIDP_CAPS {
+    USAGE   Usage;
+    USAGE   UsagePage;
+    USHORT  InputReportByteLength;
+    USHORT  OutputReportByteLength;
+    USHORT  FeatureReportByteLength;
+    USHORT  Reserved[17];
+    USHORT  NumberLinkCollectionNodes;
+    USHORT  NumberInputButtonCaps;
+    USHORT  NumberInputValueCaps;
+    USHORT  NumberInputDataIndices;
+    USHORT  NumberOutputButtonCaps;
+    USHORT  NumberOutputValueCaps;
+    USHORT  NumberOutputDataIndices;
+    USHORT  NumberFeatureButtonCaps;
+    USHORT  NumberFeatureValueCaps;
+    USHORT  NumberFeatureDataIndices;
+} HIDP_CAPS;
+typedef HIDP_CAPS   *PHIDP_CAPS;
+
+/* HID parsing data */
+typedef struct _HIDP_DATA {
+    USHORT  DataIndex;
+    USHORT  Reserved;
+    union {
+        ULONG   RawValue;
+        BOOLEAN On;
+    };
+} HIDP_DATA;
+typedef HIDP_DATA   *PHIDP_DATA;
+
+/* HID parsing unknown token */
+typedef struct _HIDP_UNKNOWN_TOKEN {
+    UCHAR   Token;
+    UCHAR   Reserved[3];
+    ULONG   BitField;
+} HIDP_UNKNOWN_TOKEN;
+typedef HIDP_UNKNOWN_TOKEN  *PHIDP_UNKNOWN_TOKEN;
+
+/* HID extended attributes */
+typedef struct _HIDP_EXTENDED_ATTRIBUTES {
+    UCHAR               NumGlobalUnknowns;
+    UCHAR               Reserved[3];
+    PHIDP_UNKNOWN_TOKEN GlobalUnknowns;
+    ULONG               Data[1];
+} HIDP_EXTENDED_ATTRIBUTES;
+typedef HIDP_EXTENDED_ATTRIBUTES    *PHIDP_EXTENDED_ATTRIBUTES;
+
+/* HID parsing keyboard directions */
+typedef enum _HIDP_KEYBOARD_DIRECTION {
+    HidP_Keyboard_Break = 0,
+    HidP_Keyboard_Make  = 1
+} HIDP_KEYBOARD_DIRECTION;
+
+/* HID parsing keyboard modifier state */
+typedef struct _HIDP_KEYBOARD_MODIFIER_STATE {
+    union {
+        struct {
+            ULONG   LeftControl     : 1;
+            ULONG   LeftShift       : 1;
+            ULONG   LeftAlt         : 1;
+            ULONG   LeftGUI         : 1;
+            ULONG   RightControl    : 1;
+            ULONG   RightShift      : 1;
+            ULONG   RightAlt        : 1;
+            ULONG   RightGUI        : 1;
+            ULONG   CapsLock        : 1;
+            ULONG   ScollLock       : 1;
+            ULONG   NumLock         : 1;
+            ULONG   Reserved        : 21;
+        };
+        ULONG   ul;
+    };
+} HIDP_KEYBOARD_MODIFIER_STATE;
+typedef HIDP_KEYBOARD_MODIFIER_STATE    *PHIDP_KEYBOARD_MODIFIER_STATE;
+
+/* HID parsing callbacks */
+typedef BOOLEAN (NTAPI *PHIDP_INSERT_SCANCODES)( PVOID, PCHAR, ULONG );
+
+/* Revert to default packing. */
+#include <poppack.h>
+
+/* Functions in HIDPARSE.SYS and HID.DLL */
+NTSTATUS __stdcall  HidP_GetButtonCaps( HIDP_REPORT_TYPE, PHIDP_BUTTON_CAPS, PUSHORT, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_GetCaps( PHIDP_PREPARSED_DATA, PHIDP_CAPS );
+NTSTATUS __stdcall  HidP_GetData( HIDP_REPORT_TYPE, PHIDP_DATA, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetExtendedAttributes( HIDP_REPORT_TYPE, USHORT, PHIDP_PREPARSED_DATA, PHIDP_EXTENDED_ATTRIBUTES, PULONG );
+NTSTATUS __stdcall  HidP_GetLinkCollectionNodes( PHIDP_LINK_COLLECTION_NODE, PULONG, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_GetScaledUsageValue( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PLONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetSpecificButtonCaps( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PHIDP_BUTTON_CAPS, PUSHORT, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_GetSpecificValueCaps( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PHIDP_VALUE_CAPS, PUSHORT, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_GetUsageValue( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetUsageValueArray( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PCHAR, USHORT, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetUsages( HIDP_REPORT_TYPE, USAGE, USHORT, PUSAGE, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetUsagesEx( HIDP_REPORT_TYPE, USHORT, PUSAGE_AND_PAGE, ULONG *, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_GetValueCaps( HIDP_REPORT_TYPE, PHIDP_VALUE_CAPS, PUSHORT, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_InitializeReportForID( HIDP_REPORT_TYPE, UCHAR, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+ULONG __stdcall     HidP_MaxDataListLength( HIDP_REPORT_TYPE, PHIDP_PREPARSED_DATA );
+ULONG __stdcall     HidP_MaxUsageListLength( HIDP_REPORT_TYPE, USAGE, PHIDP_PREPARSED_DATA );
+NTSTATUS __stdcall  HidP_SetData( HIDP_REPORT_TYPE, PHIDP_DATA, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_SetScaledUsageValue( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, LONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_SetUsageValue( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, ULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_SetUsageValueArray( HIDP_REPORT_TYPE, USAGE, USHORT, USAGE, PCHAR, USHORT, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_SetUsages( HIDP_REPORT_TYPE, USAGE, USHORT, PUSAGE, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_TranslateUsagesToI8042ScanCodes( PUSAGE, ULONG, HIDP_KEYBOARD_DIRECTION, PHIDP_KEYBOARD_MODIFIER_STATE, PHIDP_INSERT_SCANCODES, PVOID );
+NTSTATUS __stdcall  HidP_UnsetUsages( HIDP_REPORT_TYPE, USAGE, USHORT, PUSAGE, PULONG, PHIDP_PREPARSED_DATA, PCHAR, ULONG );
+NTSTATUS __stdcall  HidP_UsageAndPageListDifference( PUSAGE_AND_PAGE, PUSAGE_AND_PAGE, PUSAGE_AND_PAGE, PUSAGE_AND_PAGE, ULONG );
+NTSTATUS __stdcall  HidP_UsageListDifference( PUSAGE, PUSAGE, PUSAGE, PUSAGE, ULONG );
+
+/* Functions implemented as macros */
+#define HidP_GetButtons( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    HidP_GetUsages( p1, p2, p3, p4, p5, p6, p7, p8 )
+#define HidP_GetButtonsEx( p1, p2, p3, p4, p5, p6, p7 ) \
+    HidP_GetUsagesEx( p1, p2, p3, p4, p5, p6, p7 )
+#define HidP_IsSameUsageAndPage( p1, p2 )   ((*(PULONG)&p1) == (*(PULONG)&p2))
+#define HidP_SetButtons( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    HidP_SetUsages( p1, p2, p3, p4, p5, p6, p7, p8 )
+#define HidP_UnsetButtons( p1, p2, p3, p4, p5, p6, p7, p8 ) \
+    HidP_UnsetUsages( p1, p2, p3, p4, p5, p6, p7, p8 )
+
+:include cplusepi.sp
+
+#endif /* __HIDPI_H__ */

@@ -35,6 +35,10 @@
 
 #include <typeinfo>
 
-const char *type_info::raw_name() const {
+namespace std {
+
+  const char *type_info::raw_name() const {
     return( __raw );
+  }
+
 }

@@ -36,5 +36,5 @@ BOOL PASCAL _Cover_mciSetYieldProc (UINT uDeviceID, YIELDPROC fpYieldProc,
                 DWORD dwYieldData)
 {
     return( mciSetYieldProc( uDeviceID,
-        SetProc( fpYieldProc, GETPROC_MMSYSTEM_YIELDPROC ), dwYieldData ) );
+        SetProc( (FARPROC)fpYieldProc, GETPROC_MMSYSTEM_YIELDPROC ), dwYieldData ) );
 }

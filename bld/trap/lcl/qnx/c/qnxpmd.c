@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap file for QNX post-mortem debugging.
 *
 ****************************************************************************/
 
@@ -57,7 +56,7 @@
 #include <sys/name.h>
 #include "trpimp.h"
 #include "qnxcomm.h"
-#include "squish87.h"
+#include "misc7086.h"
 #include "mad.h"
 #include "madregs.h"
 
@@ -65,11 +64,11 @@ typedef unsigned short  USHORT;
 typedef unsigned long   ULONG;
 
 typedef struct {
-        word    real_seg;
-        word    is_32;
-        dword   seg_len;
-        dword   file_off;
-        dword   mem_off;
+    word    real_seg;
+    word    is_32;
+    dword   seg_len;
+    dword   file_off;
+    dword   mem_off;
 } seg_data;
 
 #define DUMP_SIGNATURE  0x706d7564
@@ -85,17 +84,17 @@ enum {
 };
 
 struct {
-    unsigned                    loaded                  : 1;
-    unsigned                    ignore_timestamp        : 1;
-    unsigned                    fpu32                   : 1;
-    unsigned                    read_gdts               : 1;
-    unsigned                    enable_read_gdts        : 1;
-    unsigned                    force_read_gdts         : 1;
-    unsigned                    dbg32                   : 1;
-    unsigned                    mapping_shared          : 1;
-    int                         fd;
-    struct      _dumper_hdr     hdr;
-    seg_data                    *segs;
+    unsigned            loaded              : 1;
+    unsigned            ignore_timestamp    : 1;
+    unsigned            fpu32               : 1;
+    unsigned            read_gdts           : 1;
+    unsigned            enable_read_gdts    : 1;
+    unsigned            force_read_gdts     : 1;
+    unsigned            dbg32               : 1;
+    unsigned            mapping_shared      : 1;
+    int                 fd;
+    struct _dumper_hdr  hdr;
+    seg_data            *segs;
 } PmdInfo;
 
 #if 0

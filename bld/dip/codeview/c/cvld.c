@@ -102,7 +102,7 @@ static dip_status TryFindPE( dig_fhandle h, unsigned long *offp,
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( h, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
-        return( DS_ERR|DS_FREAD_FAILED );
+        return( DS_FAIL );
     }
     if( hdr.pe.signature != PE_SIGNATURE ) {
         return( DS_FAIL );

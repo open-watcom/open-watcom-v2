@@ -1,6 +1,6 @@
 name = edit
 LNK = $(name).lnk
-CFLAGS += -i=..\..
+CFLAGS += -I"../.."
 OBJS = edit.obj efile.obj eprint.obj efont.obj emem.obj
 resources =
-lnk_dependencies = makefile ..\edit.mif ..\..\master.mif
+lnk_dependencies = makefile ../edit.mif ../../master.mif

@@ -38,4 +38,3 @@
 extern Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append );
 
 #endif
-

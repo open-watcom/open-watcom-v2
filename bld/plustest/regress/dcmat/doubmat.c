@@ -1,4 +1,4 @@
-#include "doubMat.h"
+#include "doubmat.h"
 
 doubleMatrix doubleArray::operator - () const {
   double* newX = new double [M*N];
@@ -1351,9 +1351,10 @@ doubleMatrix doubleArray::i(double epsilon) const {	// inverse
   double** u = new double* [M];
   double** v = new double* [N];
   void svdcmp(double**, int, int, double*, double**);
-  for (int i = 0; i < M; i++)
+  int i, j, k;
+  for (i = 0; i < M; i++)
     u[i] = &(uu[N*i]);
-  for (int j = 0; j < N; j++)
+  for (j = 0; j < N; j++)
     v[j] = &(vv[N*j]);
   for (i = 0; i < M; i++)
     for (j = 0; j < N; j++)
@@ -1364,7 +1365,7 @@ doubleMatrix doubleArray::i(double epsilon) const {	// inverse
     if (w[j] > wmax)
       wmax = w[j];
   double wmin = wmax*epsilon;
-  for (int k = 0; k < N; k++)
+  for (k = 0; k < N; k++)
     if (w[k] < wmin)
       w[k] = 0.0;
     else

@@ -49,32 +49,32 @@ static char             *res_types[ 15 ];
 static char             Buffer[100];
 
 void InitListStrTables( void ) {
-    gbl_types[ 0 ] = GetRCString( STR_MC_UNKNOWN );
-    gbl_types[ 1 ] = GetRCString( STR_DGROUP );
-    gbl_types[ 2 ] = GetRCString( STR_DATA );
-    gbl_types[ 3 ] = GetRCString( STR_CODE );
-    gbl_types[ 4 ] = GetRCString( STR_TASK );
-    gbl_types[ 5 ] = GetRCString( STR_RESOURCE );
-    gbl_types[ 6 ] = GetRCString( STR_MC_MODULE );
-    gbl_types[ 7 ] = GetRCString( STR_MC_FREE );
-    gbl_types[ 8 ] = GetRCString( STR_INTERNAL );
-    gbl_types[ 9 ] = GetRCString( STR_SENTINEL );
-    gbl_types[ 10 ] = GetRCString( STR_BURGERMASTER );
-    res_types[ 0 ] = GetRCString( STR_USERDEFINED );
-    res_types[ 1 ] = GetRCString( STR_CURSOR_COMP );
-    res_types[ 2 ] = GetRCString( STR_MC_BITMAP );
-    res_types[ 3 ] = GetRCString( STR_ICON_COMP );
-    res_types[ 4 ] = GetRCString( STR_MC_MENU );
-    res_types[ 5 ] = GetRCString( STR_DIALOG );
-    res_types[ 6 ] = GetRCString( STR_STRING );
-    res_types[ 7 ] = GetRCString( STR_FONTDIR );
-    res_types[ 8 ] = GetRCString( STR_MC_FONT );
-    res_types[ 9 ] = GetRCString( STR_ACCELERATORS );
-    res_types[ 10 ] = GetRCString( STR_RCDATA );
-    res_types[ 11 ] = GetRCString( STR_ERRTABLE );
-    res_types[ 12 ] = GetRCString( STR_MC_CURSOR );
-    res_types[ 13 ] = GetRCString( STR_MC_ICON );
-    res_types[ 14 ] = GetRCString( STR_NAMETABLE );
+    gbl_types[ 0 ] = HWGetRCString( STR_MC_UNKNOWN );
+    gbl_types[ 1 ] = HWGetRCString( STR_DGROUP );
+    gbl_types[ 2 ] = HWGetRCString( STR_DATA );
+    gbl_types[ 3 ] = HWGetRCString( STR_CODE );
+    gbl_types[ 4 ] = HWGetRCString( STR_TASK );
+    gbl_types[ 5 ] = HWGetRCString( STR_RESOURCE );
+    gbl_types[ 6 ] = HWGetRCString( STR_MC_MODULE );
+    gbl_types[ 7 ] = HWGetRCString( STR_MC_FREE );
+    gbl_types[ 8 ] = HWGetRCString( STR_INTERNAL );
+    gbl_types[ 9 ] = HWGetRCString( STR_SENTINEL );
+    gbl_types[ 10 ] = HWGetRCString( STR_BURGERMASTER );
+    res_types[ 0 ] = HWGetRCString( STR_USERDEFINED );
+    res_types[ 1 ] = HWGetRCString( STR_CURSOR_COMP );
+    res_types[ 2 ] = HWGetRCString( STR_MC_BITMAP );
+    res_types[ 3 ] = HWGetRCString( STR_ICON_COMP );
+    res_types[ 4 ] = HWGetRCString( STR_MC_MENU );
+    res_types[ 5 ] = HWGetRCString( STR_DIALOG );
+    res_types[ 6 ] = HWGetRCString( STR_STRING );
+    res_types[ 7 ] = HWGetRCString( STR_FONTDIR );
+    res_types[ 8 ] = HWGetRCString( STR_MC_FONT );
+    res_types[ 9 ] = HWGetRCString( STR_ACCELERATORS );
+    res_types[ 10 ] = HWGetRCString( STR_RCDATA );
+    res_types[ 11 ] = HWGetRCString( STR_ERRTABLE );
+    res_types[ 12 ] = HWGetRCString( STR_MC_CURSOR );
+    res_types[ 13 ] = HWGetRCString( STR_MC_ICON );
+    res_types[ 14 ] = HWGetRCString( STR_NAMETABLE );
 }
 
 /*
@@ -120,11 +120,11 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
                 }
             } else if( tmp == GT_RESOURCE ) {
                 if( t1 >= (sizeof( res_types ) /sizeof( char *) ) ) {
-                    ret = strcmp( GetRCString( STR_LOWER_UNKNOWN ),
+                    ret = strcmp( HWGetRCString( STR_LOWER_UNKNOWN ),
                                   res_types[t2] );
                 } else if( t2 >= (sizeof( res_types ) /sizeof( char *) ) ) {
                     ret = strcmp(  res_types[t1],
-                                   GetRCString( STR_LOWER_UNKNOWN ) );
+                                   HWGetRCString( STR_LOWER_UNKNOWN ) );
                 } else ret = strcmp( res_types[t1], res_types[t2] );
             }
         }
@@ -269,7 +269,7 @@ BOOL FormatHeapListItem( char *line, unsigned index )
         } else if( hl->info.ge.wType == GT_RESOURCE ) {
             sprintf( type,"%s(%s)", gbl_types[GT_RESOURCE],
                    (hl->info.ge.wData < (sizeof( res_types ) /sizeof( char *))) ?
-                    res_types[ hl->info.ge.wData ]: GetRCString( STR_LOWER_UNKNOWN ) );
+                    res_types[ hl->info.ge.wData ]: HWGetRCString( STR_LOWER_UNKNOWN ) );
         } else {
             strcpy( type,gbl_types[hl->info.ge.wType] );
         }
@@ -295,7 +295,7 @@ BOOL FormatHeapListItem( char *line, unsigned index )
 
 static BOOL SaveGlobalListState( HWND boxhwnd, GlobStateStruct *state ) {
 
-    int         top, sel;
+    LRESULT     top, sel;
 
     if( HeapList == NULL ) return( FALSE );
     top = SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
@@ -339,17 +339,17 @@ void ReDisplayHeapList( HWND boxhwnd, GlobStateStruct *state ) {
                 }
             }
         } else {
-            curselector = state->sel.info.ge.hBlock;
-            topselector = state->top.info.ge.hBlock;
+            curselector = (WORD)state->sel.info.ge.hBlock;
+            topselector = (WORD)state->top.info.ge.hBlock;
             for( i=0; i < HeapListSize; i++ ) {
-                if( HeapList[i]->info.ge.hBlock == topselector
+                if( (WORD)HeapList[i]->info.ge.hBlock == topselector
                 && HeapList[i]->info.ge.dwAddress
                 == state->top.info.ge.dwAddress ) {
                     SendMessage( boxhwnd, LB_SETTOPINDEX, i, 0 );
                 }
 
                 if( state->sel_valid
-                && HeapList[i]->info.ge.hBlock == curselector
+                && (WORD)HeapList[i]->info.ge.hBlock == curselector
                 && HeapList[i]->info.ge.dwAddress
                 == state->sel.info.ge.dwAddress ) {
                     SendMessage( boxhwnd, LB_SETCURSEL, i, 0 );
@@ -423,7 +423,7 @@ static BOOL AddAllSelectors( WORD sel )
 
 static char GetMemFlag( heap_list *hl ) {
 
-    if( hl->info.ge.hBlock % 2 ) return( 'F' );
+    if( (WORD)hl->info.ge.hBlock % 2 ) return( 'F' );
     if( hl->info.ge.wType == GT_CODE || hl->info.ge.wType == GT_RESOURCE ) {
         if( hl->info.ge.wcLock == 0 && hl->info.ge.wcPageLock == 0 ) {
             return( 'D' );

@@ -1,0 +1,29 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: unordere (Definition of std::tr1::unordered_set and unordered_map)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It defines
+//              the unordered associative containers.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _UNORDERED_SET_INCLUDED
+#define _UNORDERED_SET_INCLUDED
+#define _UNORDERED_MAP_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef __HASH_H_INCLUDED
+ #include <_hash.h>
+#endif
+
+namespace std {
+  namespace tr1 {
+    
+
+  } // namespace tr1
+} // namespace std
+
+#endif

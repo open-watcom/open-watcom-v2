@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler disassembly view routines.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
+#include "walloca.h"
 
 #include "common.h"
 #include "aui.h"
@@ -45,13 +44,7 @@
 #include "srcmgt.h"
 #include "msg.h"
 
-//#include "wpasmfil.def"
-//#include "wpsrcfil.def"
-//#include "srcmgt.def"
-//#include "support.def"
-//#include "memutil.def"
-//#include "setsamps.def"
-//#include "msg.def"
+
 extern massgd_sample_addr *WPGetMassgdSampData(sio_data *curr_sio,clicks_t click_index);
 extern void *ProfRealloc(void *p,size_t new_size);
 extern void *ProfCAlloc(size_t size);
@@ -121,8 +114,8 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
     clicks_t            addr_tick_index;
 
     quiet=quiet;
-    ch = __alloca( DIPHandleSize( HK_CUE ) );
-    ch2 = __alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
+    ch2 = alloca( DIPHandleSize( HK_CUE ) );
     curr_file = curr_sio->curr_file;
     curr_mod = curr_sio->curr_mod;
     if( curr_file->fid == 0 || LineCue( curr_mod->mh, curr_sio->curr_file->fid,
@@ -139,7 +132,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
     wpasm_file->asm_buff = ProfAlloc( MAX_ASM_BUFF_LEN );
     wpasm_file->asm_buff_len = MAX_ASM_BUFF_LEN;
     SetNumBytes( 0 );
-    SetExeFile( fh, B_FALSE );
+    SetExeFile( fh, P_FALSE );
     wpasm_file->fh = fh;
     addr = ModAddr( curr_mod->mh );
     SetExeOffset( addr );
@@ -161,7 +154,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
         }
         asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         if( cue_find ) {
-            asm_line->source_line = B_TRUE;
+            asm_line->source_line = P_TRUE;
             asm_line->u.src.line = CueLine( ch );
             asm_line->u.src.src_file = NULL;
             if( !curr_file->unknown_file ) {
@@ -181,17 +174,17 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
             asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         }
         asm_line = &wpasm_file->asm_data[asm_group].asm_lines[asm_row];
-        asm_line->source_line = B_FALSE;
-        asm_line->u.asm.addr = addr;
-        asm_line->u.asm.tick_count = 0;
+        asm_line->source_line = P_FALSE;
+        asm_line->u.asm_line.addr = addr;
+        asm_line->u.asm_line.tick_count = 0;
         for( ;; ) {
             if( samp_data == NULL ) break;
             addr_cmp = AddrCmp( &addr, samp_data->raw );
             if( addr_cmp < 0 ) break;
             if( addr_cmp == 0 ) {
-                asm_line->u.asm.tick_count = samp_data->hits;
-                if( asm_line->u.asm.tick_count > wpasm_file->max_time ) {
-                    wpasm_file->max_time = asm_line->u.asm.tick_count;
+                asm_line->u.asm_line.tick_count = samp_data->hits;
+                if( asm_line->u.asm_line.tick_count > wpasm_file->max_time ) {
+                    wpasm_file->max_time = asm_line->u.asm_line.tick_count;
                 }
             }
             samp_data = WPGetMassgdSampData( curr_sio, addr_tick_index++ );
@@ -286,9 +279,9 @@ extern char * WPAsmGetLine( a_window * wnd, int line )
         }
     } else {
         SetNumBytes( 0 );
-        SetExeFile( wpasm_file->fh, B_FALSE );
+        SetExeFile( wpasm_file->fh, P_FALSE );
         SetExeImage( curr_sio->curr_image );
-        GetFullInstruct( asm_line->u.asm.addr, wpasm_file->asm_buff, wpasm_file->asm_buff_len-1 );
+        GetFullInstruct( asm_line->u.asm_line.addr, wpasm_file->asm_buff, wpasm_file->asm_buff_len-1 );
     }
     return( wpasm_file->asm_buff );
 }

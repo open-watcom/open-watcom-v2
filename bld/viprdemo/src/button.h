@@ -24,23 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Button library interface.
 *
 ****************************************************************************/
 
 
-extern void add_button(HWND parent, int top, int left, int id, int FAR * pwidth, int FAR * pheight );
+extern void add_button( HWND parent, int top, int left, int id, int FAR * pwidth, int FAR * pheight );
 
 #if defined(__OS2__)
 
-extern ULONG measure_button(HWND parent, MPARAM mp1, MPARAM mp2 );
+extern ULONG measure_button( HWND parent, MPARAM mp1, MPARAM mp2 );
 
 extern void draw_button( MPARAM mp1, MPARAM mp2 );
 
-#else   // Windows or NT
+#else   // Win16 or Win32
 
-extern void measure_button(HWND parent, int button_id, MEASUREITEMSTRUCT FAR * measure );
+extern void measure_button( HWND parent, int button_id, MEASUREITEMSTRUCT FAR * measure );
 
 extern void draw_button( int button_id, DRAWITEMSTRUCT FAR * draw );
 

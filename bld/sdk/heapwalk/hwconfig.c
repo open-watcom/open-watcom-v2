@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap walker configuration.
 *
 ****************************************************************************/
 
@@ -88,7 +87,7 @@ static BOOL ValidateFName( char *path ) {
 /*
  * PutProfileBool - write a boolean value to the configuration file
  */
-static PutProfileBool( char *id, BOOL val ) {
+static void PutProfileBool( char *id, BOOL val ) {
 
     char        buf[15];
 
@@ -103,7 +102,7 @@ static PutProfileBool( char *id, BOOL val ) {
 /*
  * GetDefaults - set 'info' to the default configuration values
  */
-static GetDefaults( HeapConfigInfo *info ) {
+static void GetDefaults( HeapConfigInfo *info ) {
 
     WORD        x;
     WORD        y;
@@ -118,9 +117,9 @@ static GetDefaults( HeapConfigInfo *info ) {
     info->glob_ypos = y / 8;
     info->glob_xsize = 15 * ( x / 16 );
     info->glob_ysize = 3 * ( y / 4 );
-    str = GetRCString( STR_DEF_GLOB_HEAP_FNAME );
+    str = HWGetRCString( STR_DEF_GLOB_HEAP_FNAME );
     strcpy( info->gfname, str );
-    str = GetRCString( STR_DEF_LCL_HEAP_FNAME );
+    str = HWGetRCString( STR_DEF_LCL_HEAP_FNAME );
     strcpy( info->lfname, str );
 } /* GetDefaults */
 
@@ -250,7 +249,7 @@ void SaveConfigFile( BOOL save_all_values ) {
  * SetupConfigDlg - set the fields in the configuration dialog to
  *                  reflect the values in 'heap' and 'mem'
  */
-static SetupConfigDlg( HeapConfigInfo *heap, MemWndConfig *mem, HWND hwnd ) {
+static void SetupConfigDlg( HeapConfigInfo *heap, MemWndConfig *mem, HWND hwnd ) {
 
     SetDlgItemText( hwnd, CONFIG_GNAME, heap->gfname  );
     SetDlgItemText( hwnd, CONFIG_LNAME, heap->lfname  );
@@ -303,7 +302,7 @@ BOOL __export FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam,
         SetupConfigDlg( &Config, &info, hwnd );
         break;
     case WM_SYSCOLORCHANGE:
-        Ctl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_COMMAND:
         switch( wparam ) {
@@ -384,7 +383,7 @@ void HWConfigure( void ) {
 
     FARPROC             fp;
 
-    fp = MakeProcInstance( ConfigDlgProc, Instance );
-    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, fp );
+    fp = MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
+    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, (DLGPROC)fp );
     FreeProcInstance( fp );
 } /* HWConfigure */

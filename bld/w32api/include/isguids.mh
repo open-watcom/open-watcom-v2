@@ -1,0 +1,26 @@
+/*
+ *  isguids.h   Internet shortcut GUIDs
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _ISGUIDS_H_
+#define _ISGUIDS_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* UUIDs */
+EXTERN_C const CLSID    CLSID_InternetShortcut;
+EXTERN_C const IID      IID_IUniformResourceLocatorA;
+EXTERN_C const IID      IID_IUniformResourceLocatorW;
+#ifdef UNICODE
+    #define IID_IUniformResourceLocator IID_IUniformResourceLocatorW
+#else
+    #define IID_IUniformResourceLocator IID_IUniformResourceLocatorA
+#endif
+
+:include cplusepi.sp
+
+#endif /* _ISGUIDS_H_ */

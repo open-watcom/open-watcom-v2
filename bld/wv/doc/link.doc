@@ -1,0 +1,144 @@
+		   ***************************
+		   * The Interface Functions *
+		   ***************************
+
+The interface to the remote link code which is specific to a particular
+type of transport media is defined by the following six functions.  All
+the functions use standard WATCOM C calling conventions.
+
+==============================================================================
+extern char	*RemoteLink( char *config, char server );
+
+Purpose:
+    This function initializes the remote link code.
+
+Parameters:
+    'config'	a pointer to a string containing configuration data, such
+		as the the printer port number in the case of the parallel
+		port link or the name of the server.
+    'server'	a 1 if the program is initializing the link as a server,
+		a 0 if the program is initializing as a client (trap file).
+
+Returns:
+    If the link initializes properly, NULL is returned.  Otherwise a pointer
+    to a static area containing a string with the text of an error message
+    giving the reason for the failure is returned.
+
+Note:
+    If the link is being initialized as a server and the transport media is
+    such that there can be more than one server present with the same name
+    (e.g. NetBIOS), this function should check to make sure that no other
+    server with the same name has started.
+
+==============================================================================
+extern char	RemoteConnect( void );
+
+Purpose:
+    Establish the connection between a client and server.
+
+Parameters:
+    None.
+
+Returns:
+    A one if the connection has been established, a zero if not.  If the link
+    has been initialized as a server, the function should return a one or
+    zero immediately (the function that calls this one is in a busy-wait loop).
+    If the link has been initialized as a client, the routine should make the
+    connection attempt and not return until either the connection is
+    established, or the attempt fails or times out.
+
+Note:
+    The connection attempt should fail if another client has already
+    connected to the server.
+
+==============================================================================
+extern unsigned	RemoteGet( void *data, unsigned length );
+
+Purpose:
+    To retrieve data sent from the other end of the connection.
+
+Parameters:
+    'data'	a pointer to a buffer to store the retrieved data.
+    'length'	the maximum length of data to be received.
+
+Returns:
+    The actual number of bytes of data obtained.
+
+Note:
+    The connection between the server and client is assumed to be error
+    free.  That is, this function should not return until it has properly
+    received a packet from the other end of the connection.  Also, currently
+    the maximum amount of data that will be transmitted/received at one time
+    is 256 bytes.  This may change in later versions.
+
+==============================================================================
+extern void	RemotePut( void *data, unsigned length );
+
+Purpose:
+    To send data to the other end of the connection.
+
+Parameters:
+    'data'	a pointer to a buffer containing the data to send.
+    'length'	the length of data to be sent.
+
+Returns:
+    None.
+
+Note:
+    The connection between the server and client is assumed to be error
+    free.  That is, this function should not return until it has properly
+    sent a packet to the other end of the connection.  Also, currently
+    the maximum amount of data that will be transmitted/received at one time
+    is 256 bytes.  This may change in later versions.
+
+==============================================================================
+extern void	RemoteDisco( void );
+
+Purpose:
+    This function discontinues the connection between the client and server
+    and allows the server to reconnect to a different client.
+
+Parameters:
+    None.
+
+Returns:
+    None.
+
+Note:
+    It is not required that one end of the connection informs the other that
+    a disconnect has occurred.	The trap file will inform the debug server that
+    it will be disconnecting through a request packet being sent by RemotePut.
+
+==============================================================================
+extern void	RemoteUnLink( void );
+
+Purpose:
+    Terminate the remote link functions and release any acquired resources.
+
+Parameters:
+    None.
+
+Returns:
+    None.
+==============================================================================
+
+			***************************
+			* The Runtime Environment *
+			***************************
+
+The remote link code is all compact model, and for the server there is nothing
+magical.  It is a normal compact model program.  However the trap file is 
+midway between being a COM file and a device driver.  The segment registers 
+in a trap file are set up as follows: SS != DGROUP, DS, ES floats.  This
+means that the code must be compiled with the -zu compiler switch set.
+
+When developing a remote link, first use the 'tclient.c' and 'tserv.c' files
+to test the remote link code.  This will allow you to debug the code using
+the debugger.  Once you have the remote link code working in the test case, 
+then try to make a real debug server and trap file. If these do not work, the
+most likely cause is something in the trap file is assuming SS == DGROUP.
+
+The only mechanism for debugging the remote link code once it has been linked
+into the trap file is to insert DOS function requests to output debugging
+messages.  You will not be able to use many functions from the standard C
+library because normal program intialization is not done.

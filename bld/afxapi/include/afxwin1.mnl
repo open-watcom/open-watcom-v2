@@ -1,0 +1,2259 @@
+/*
+ *  afxwin1.inl Inline implementation of functions declared in afxwin.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE CRect::CRect()
+/***********************/
+{
+    ::SetRectEmpty( this );
+}
+
+AFX_INLINE CRect::CRect( int l, int t, int r, int b )
+/***************************************************/
+{
+    ::SetRect( this, l, t, r, b );
+}
+
+AFX_INLINE CRect::CRect( const RECT &srcRect )
+/********************************************/
+{
+    ::CopyRect( this, &srcRect );
+}
+
+AFX_INLINE CRect::CRect( LPCRECT lpSrcRect )
+/******************************************/
+{
+    ::CopyRect( this, lpSrcRect );
+}
+
+AFX_INLINE CRect::CRect( POINT point, SIZE size )
+/***********************************************/
+{
+    ::SetRect( this, point.x, point.y, point.x + size.cx, point.y + size.cy );
+}
+
+AFX_INLINE CRect::CRect( POINT topLeft, POINT bottomRight )
+/*********************************************************/
+{
+    ::SetRect( this, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y );
+}
+
+AFX_INLINE const CPoint &CRect::BottomRight() const
+/*************************************************/
+{
+    return( *((const CPoint *)&right) );
+}
+
+AFX_INLINE CPoint &CRect::BottomRight()
+/*************************************/
+{
+    return( *((CPoint *)&right) );
+}
+
+AFX_INLINE CPoint CRect::CenterPoint() const
+/******************************************/
+{
+    return( CPoint( (left + right) / 2, (top + bottom) / 2 ) );
+}
+
+AFX_INLINE void CRect::CopyRect( LPCRECT lpSrcRect )
+/**************************************************/
+{
+    ::CopyRect( this, lpSrcRect );
+}
+
+AFX_INLINE void CRect::DeflateRect( int x, int y )
+/************************************************/
+{
+    ::InflateRect( this, -x, -y );
+}
+
+AFX_INLINE void CRect::DeflateRect( SIZE size )
+/*********************************************/
+{
+    ::InflateRect( this, -size.cx, -size.cy );
+}
+
+AFX_INLINE void CRect::DeflateRect( LPCRECT lpRect )
+/**************************************************/
+{
+    left += lpRect->left;
+    top += lpRect->top;
+    right -= lpRect->right;
+    bottom -= lpRect->bottom;
+}
+
+AFX_INLINE void CRect::DeflateRect( int l, int t, int r, int b )
+/**************************************************************/
+{
+    left += l;
+    top += t;
+    right -= r;
+    bottom -= b;
+}
+
+AFX_INLINE BOOL CRect::EqualRect( LPCRECT lpRect ) const
+/******************************************************/
+{
+    return( ::EqualRect( this, lpRect ) );
+}
+
+AFX_INLINE int CRect::Height() const
+/**********************************/
+{
+    return( bottom - top );
+}
+
+AFX_INLINE void CRect::InflateRect( int x, int y )
+/************************************************/
+{
+    ::InflateRect( this, x, y );
+}
+
+AFX_INLINE void CRect::InflateRect( SIZE size )
+/*********************************************/
+{
+    ::InflateRect( this, size.cx, size.cy );
+}
+
+AFX_INLINE void CRect::InflateRect( LPCRECT lpRect )
+/**************************************************/
+{
+    left -= lpRect->left;
+    top -= lpRect->top;
+    right += lpRect->right;
+    bottom += lpRect->bottom;
+}
+
+AFX_INLINE void CRect::InflateRect( int l, int t, int r, int b )
+/**************************************************************/
+{
+    left -= l;
+    top -= t;
+    right += r;
+    bottom += b;
+}
+
+AFX_INLINE BOOL CRect::IntersectRect( LPCRECT lpRect1, LPCRECT lpRect2 )
+/**********************************************************************/
+{
+    return( ::IntersectRect( this, lpRect1, lpRect2 ) );
+}
+
+AFX_INLINE BOOL CRect::IsRectEmpty() const
+/****************************************/
+{
+    return( ::IsRectEmpty( this ) );
+}
+
+AFX_INLINE BOOL CRect::IsRectNull() const
+/***************************************/
+{
+    return( left == 0 && top == 0 && right == 0 && bottom == 0 );
+}
+
+AFX_INLINE void CRect::MoveToX( int x )
+/*************************************/
+{
+    ::OffsetRect( this, x - left, 0 );
+}
+
+AFX_INLINE void CRect::MoveToXY( int x, int y )
+/*********************************************/
+{
+    ::OffsetRect( this, x - left, y - top );
+}
+
+AFX_INLINE void CRect::MoveToXY( POINT point )
+/********************************************/
+{
+    ::OffsetRect( this, point.x - left, point.y - top );
+}
+
+AFX_INLINE void CRect::MoveToY( int y )
+/*************************************/
+{
+    ::OffsetRect( this, 0, y - top );
+}
+
+AFX_INLINE void CRect::NormalizeRect()
+/************************************/
+{
+    int temp;
+    if( left > right ) {
+        temp = left;
+        left = right;
+        right = temp;
+    }
+    if( top > bottom ) {
+        temp = top;
+        top = bottom;
+        bottom = temp;
+    }
+}
+
+AFX_INLINE void CRect::OffsetRect( int x, int y )
+/***********************************************/
+{
+    ::OffsetRect( this, x, y );
+}
+
+AFX_INLINE void CRect::OffsetRect( POINT point )
+/**********************************************/
+{
+    ::OffsetRect( this, point.x, point.y );
+}
+
+AFX_INLINE void CRect::OffsetRect( SIZE size )
+/********************************************/
+{
+    ::OffsetRect( this, size.cx, size.cy );
+}
+
+AFX_INLINE BOOL CRect::PtInRect( POINT point ) const
+/**************************************************/
+{
+    return( ::PtInRect( this, point ) );
+}
+
+AFX_INLINE void CRect::SetRect( int x1, int y1, int x2, int y2 )
+/**************************************************************/
+{
+    ::SetRect( this, x1, y1, x2, y2 );
+}
+
+AFX_INLINE void CRect::SetRectEmpty()
+/***********************************/
+{
+    ::SetRectEmpty( this );
+}
+
+AFX_INLINE CSize CRect::Size() const
+/**********************************/
+{
+    return( CSize( right - left, bottom - top ) );
+}
+
+AFX_INLINE BOOL CRect::SubtractRect( LPCRECT lpRectSrc1, LPCRECT lpRectSrc2 )
+/***************************************************************************/
+{
+    return( ::SubtractRect( this, lpRectSrc1, lpRectSrc2 ) );
+}
+
+AFX_INLINE const CPoint &CRect::TopLeft() const
+/*********************************************/
+{
+    return( *((const CPoint *)this) );
+}
+
+AFX_INLINE CPoint &CRect::TopLeft()
+/*********************************/
+{
+    return( *((CPoint *)this) );
+}
+
+AFX_INLINE BOOL CRect::UnionRect( LPCRECT lpRect1, LPCRECT lpRect2 )
+/******************************************************************/
+{
+    return( ::UnionRect( this, lpRect1, lpRect2 ) );
+}
+
+AFX_INLINE int CRect::Width() const
+/*********************************/
+{
+    return( right - left );
+}
+
+AFX_INLINE void CRect::operator=( const RECT &srcRect )
+/*****************************************************/
+{
+    ::CopyRect( this, &srcRect );
+}
+
+AFX_INLINE BOOL CRect::operator==( const RECT &rect ) const
+/*********************************************************/
+{
+    return( ::EqualRect( this, &rect ) );
+}
+
+AFX_INLINE BOOL CRect::operator!=( const RECT &rect ) const
+/*********************************************************/
+{
+    return( !::EqualRect( this, &rect ) );
+}
+
+AFX_INLINE void CRect::operator+=( POINT point )
+/**********************************************/
+{
+    ::OffsetRect( this, point.x, point.y );
+}
+
+AFX_INLINE void CRect::operator+=( SIZE size )
+/********************************************/
+{
+    ::OffsetRect( this, size.cx, size.cy );
+}
+
+AFX_INLINE void CRect::operator+=( LPCRECT lpRect )
+/*************************************************/
+{
+    left -= lpRect->left;
+    top -= lpRect->top;
+    right += lpRect->right;
+    bottom += lpRect->bottom;
+}
+
+AFX_INLINE void CRect::operator-=( POINT point )
+/**********************************************/
+{
+    ::OffsetRect( this, -point.x, -point.y );
+}
+
+AFX_INLINE void CRect::operator-=( SIZE size )
+/********************************************/
+{
+    ::OffsetRect( this, -size.cx, -size.cy );
+}
+
+AFX_INLINE void CRect::operator-=( LPCRECT lpRect )
+/*************************************************/
+{
+    left += lpRect->left;
+    top += lpRect->top;
+    right -= lpRect->right;
+    bottom -= lpRect->bottom;
+}
+
+AFX_INLINE void CRect::operator&=( const RECT &rect )
+/***************************************************/
+{
+    ::IntersectRect( this, this, &rect );
+}
+
+AFX_INLINE void CRect::operator|=( const RECT &rect )
+/***************************************************/
+{
+    ::UnionRect( this, this, &rect );
+}
+
+AFX_INLINE CRect CRect::operator+( POINT point ) const
+/****************************************************/
+{
+    CRect rect( *this );
+    rect.OffsetRect( point );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator+( SIZE size ) const
+/**************************************************/
+{
+    CRect rect( *this );
+    rect.OffsetRect( size );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator+( LPCRECT lpRect ) const
+/*******************************************************/
+{
+    CRect rect( *this );
+    rect.InflateRect( lpRect );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator-( POINT point ) const
+/****************************************************/
+{
+    CRect rect( *this );
+    rect.OffsetRect( -point.x, -point.y );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator-( SIZE size ) const
+/**************************************************/
+{
+    CRect rect( *this );
+    rect.OffsetRect( -size.cx, -size.cy );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator-( LPCRECT lpRect ) const
+/*******************************************************/
+{
+    CRect rect( *this );
+    rect.DeflateRect( lpRect );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator&( const RECT &rect2 ) const
+/**********************************************************/
+{
+    CRect rect;
+    rect.IntersectRect( this, &rect2 );
+    return( rect );
+}
+
+AFX_INLINE CRect CRect::operator|( const RECT &rect2 ) const
+/**********************************************************/
+{
+    CRect rect;
+    rect.UnionRect( this, &rect2 );
+    return( rect );
+}
+
+AFX_INLINE CRect::operator LPCRECT() const
+/****************************************/
+{
+    return( this );
+}
+
+AFX_INLINE CRect::operator LPRECT()
+/*********************************/
+{
+    return( this );
+}
+
+AFX_INLINE CPoint::CPoint()
+/*************************/
+{
+    x = 0;
+    y = 0;
+}
+
+AFX_INLINE CPoint::CPoint( int initX, int initY )
+/***********************************************/
+{
+    x = initX;
+    y = initY;
+}
+
+AFX_INLINE CPoint::CPoint( POINT initPt )
+/***************************************/
+{
+    x = initPt.x;
+    y = initPt.y;
+}
+
+AFX_INLINE CPoint::CPoint( SIZE initSize )
+/****************************************/
+{
+    x = initSize.cx;
+    y = initSize.cy;
+}
+
+AFX_INLINE CPoint::CPoint( LPARAM dwPoint )
+/*****************************************/
+{
+    x = (short)LOWORD( dwPoint );
+    y = (short)HIWORD( dwPoint );
+}
+
+AFX_INLINE void CPoint::Offset( int xOffset, int yOffset )
+/********************************************************/
+{
+    x += xOffset;
+    y += yOffset;
+}
+
+AFX_INLINE void CPoint::Offset( POINT point )
+/*******************************************/
+{
+    x += point.x;
+    y += point.y;
+}
+
+AFX_INLINE void CPoint::Offset( SIZE size )
+/*****************************************/
+{
+    x += size.cx;
+    y += size.cy;
+}
+
+AFX_INLINE BOOL CPoint::operator==( POINT point ) const
+/*****************************************************/
+{
+    return( x == point.x && y == point.y );
+}
+
+AFX_INLINE BOOL CPoint::operator!=( POINT point ) const
+/*****************************************************/
+{
+    return( x != point.x || y != point.y );
+}
+
+AFX_INLINE void CPoint::operator+=( SIZE size )
+/*********************************************/
+{
+    x += size.cx;
+    y += size.cy;
+}
+
+AFX_INLINE void CPoint::operator+=( POINT point )
+/***********************************************/
+{
+    x += point.x;
+    y += point.y;
+}
+
+AFX_INLINE void CPoint::operator-=( SIZE size )
+/*********************************************/
+{
+    x -= size.cx;
+    y -= size.cy;
+}
+
+AFX_INLINE void CPoint::operator-=( POINT point )
+/***********************************************/
+{
+    x -= point.x;
+    y -= point.y;
+}
+
+AFX_INLINE CPoint CPoint::operator+( SIZE size ) const
+/****************************************************/
+{
+    return( CPoint( x + size.cx, y + size.cy ) );
+}
+
+AFX_INLINE CPoint CPoint::operator+( POINT point ) const
+/******************************************************/
+{
+    return( CPoint( x + point.x, y + point.y ) );
+}
+
+AFX_INLINE CRect CPoint::operator+( const RECT *lpRect ) const
+/************************************************************/
+{
+    CRect rect( *lpRect );
+    rect.OffsetRect( *this );
+    return( rect );
+}
+
+AFX_INLINE CSize CPoint::operator-( POINT point ) const
+/*****************************************************/
+{
+    return( CSize( x - point.x, y - point.y ) );
+}
+
+AFX_INLINE CPoint CPoint::operator-( SIZE size ) const
+/****************************************************/
+{
+    return( CPoint( x - size.cx, y - size.cy ) );
+}
+
+AFX_INLINE CRect CPoint::operator-( const RECT *lpRect ) const
+/************************************************************/
+{
+    CRect rect( *lpRect );
+    rect.OffsetRect( -x, -y );
+    return( rect );
+}
+
+AFX_INLINE CPoint CPoint::operator-() const
+/*****************************************/
+{
+    return( CPoint( -x, -y ) );
+}
+
+AFX_INLINE CSize::CSize()
+/***********************/
+{
+    cx = 0;
+    cy = 0;
+}
+
+AFX_INLINE CSize::CSize( int initCX, int initCY )
+/***********************************************/
+{
+    cx = initCX;
+    cy = initCY;
+}
+
+AFX_INLINE CSize::CSize( SIZE initSize )
+/**************************************/
+{
+    cx = initSize.cx;
+    cy = initSize.cy;
+}
+
+AFX_INLINE CSize::CSize( POINT initPt )
+/*************************************/
+{
+    cx = initPt.x;
+    cy = initPt.y;
+}
+
+AFX_INLINE CSize::CSize( DWORD dwSize )
+/*************************************/
+{
+    cx = (short)LOWORD( dwSize );
+    cy = (short)HIWORD( dwSize );
+}
+
+AFX_INLINE BOOL CSize::operator==( SIZE size ) const
+/**************************************************/
+{
+    return( cx == size.cx && cy == size.cy );
+}
+
+AFX_INLINE BOOL CSize::operator!=( SIZE size ) const
+/**************************************************/
+{
+    return( cx != size.cx || cy != size.cy );
+}
+
+AFX_INLINE void CSize::operator+=( SIZE size )
+/********************************************/
+{
+    cx += size.cx;
+    cy += size.cy;
+}
+
+AFX_INLINE void CSize::operator-=( SIZE size )
+/********************************************/
+{
+    cx -= size.cx;
+    cy -= size.cy;
+}
+
+AFX_INLINE CSize CSize::operator+( SIZE size ) const
+/**************************************************/
+{
+    return( CSize( cx + size.cx, cy + size.cy ) );
+}
+
+AFX_INLINE CPoint CSize::operator+( POINT point ) const
+/*****************************************************/
+{
+    return( CPoint( cx + point.x, cy + point.y ) );
+}
+
+AFX_INLINE CRect CSize::operator+( const RECT *lpRect ) const
+/***********************************************************/
+{
+    CRect rect( *lpRect );
+    rect.OffsetRect( *this );
+    return( rect );
+}
+
+AFX_INLINE CSize CSize::operator-( SIZE size ) const
+/**************************************************/
+{
+    return( CSize( cx - size.cx, cy - size.cy ) );
+}
+
+AFX_INLINE CPoint CSize::operator-( POINT point ) const
+/*****************************************************/
+{
+    return( CPoint( cx - point.x, cy - point.y ) );
+}
+
+AFX_INLINE CRect CSize::operator-( const RECT *lpRect ) const
+/***********************************************************/
+{
+    CRect rect( *lpRect );
+    rect.OffsetRect( -cx, -cy );
+    return( rect );
+}
+
+AFX_INLINE CSize CSize::operator-() const
+/***************************************/
+{
+    return( CSize( -cx, -cy ) );
+}
+
+AFX_INLINE CGdiObject::CreateStockObject( int nIndex )
+/****************************************************/
+{
+    return( Attach( ::GetStockObject( nIndex ) ) );
+}
+
+AFX_INLINE BOOL CGdiObject::DeleteObject()
+/****************************************/
+{
+    return( ::DeleteObject( Detach() ) );
+}
+
+AFX_INLINE int CGdiObject::GetObject( int nCount, LPVOID lpObject ) const
+/***********************************************************************/
+{
+    return( ::GetObject( m_hObject, nCount, lpObject ) );
+}
+
+AFX_INLINE UINT CGdiObject::GetObjectType() const
+/***********************************************/
+{
+    return( ::GetObjectType( m_hObject ) );
+}
+
+AFX_INLINE HGDIOBJ CGdiObject::GetSafeHandle() const
+/**************************************************/
+{
+    return( this == NULL ? NULL : m_hObject );
+}
+
+AFX_INLINE BOOL CGdiObject::UnrealizeObject()
+/*******************************************/
+{
+    return( ::UnrealizeObject( m_hObject ) );
+}
+
+AFX_INLINE BOOL CGdiObject::operator==( const CGdiObject &obj ) const
+/*******************************************************************/
+{
+    return( m_hObject == obj.m_hObject );
+}
+
+AFX_INLINE BOOL CGdiObject::operator!=( const CGdiObject &obj ) const
+/*******************************************************************/
+{
+    return( m_hObject == obj.m_hObject );
+}
+
+AFX_INLINE CGdiObject::operator HGDIOBJ() const
+/*********************************************/
+{
+    return( this == NULL ? NULL : m_hObject );
+}
+
+AFX_INLINE BOOL CPen::CreatePen( int nPenStyle, int nWidth, COLORREF crColor )
+/****************************************************************************/
+{
+    return( Attach( ::CreatePen( nPenStyle, nWidth, crColor ) ) );
+}
+
+AFX_INLINE BOOL CPen::CreatePen( int nPenStyle, int nWidth, const LOGBRUSH *pLogBrush,
+                                 int nStyleCount, const DWORD *lpStyle )
+/**********************************************************************/
+{
+    return( Attach( ::ExtCreatePen( nPenStyle, nWidth, pLogBrush, nStyleCount,
+                                    lpStyle ) ) );
+}
+
+AFX_INLINE BOOL CPen::CreatePenIndirect( LPLOGPEN lpLogPen )
+/**********************************************************/
+{
+    return( Attach( ::CreatePenIndirect( lpLogPen ) ) );
+}
+
+AFX_INLINE int CPen::GetExtLogPen( EXTLOGPEN *pLogPen )
+/*****************************************************/
+{
+    return( ::GetObject( m_hObject, sizeof( EXTLOGPEN ), pLogPen ) );
+}
+
+AFX_INLINE int CPen::GetLogPen( LOGPEN *pLogPen )
+/***********************************************/
+{
+    return( ::GetObject( m_hObject, sizeof( LOGPEN ), pLogPen ) );
+}
+
+AFX_INLINE CPen::operator HPEN() const
+/************************************/
+{
+    return( this == NULL ? NULL : (HPEN)m_hObject );
+}
+
+AFX_INLINE CPen * PASCAL CPen::FromHandle( HPEN hPen )
+/****************************************************/
+{
+    return( (CPen *)CGdiObject::FromHandle( hPen ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateBrushIndirect( const LOGBRUSH *lpLogBrush )
+/***********************************************************************/
+{
+    return( Attach( ::CreateBrushIndirect( lpLogBrush ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateDIBPatternBrush( HGLOBAL hPackedDIB, UINT nUsage )
+/******************************************************************************/
+{
+    return( Attach( ::CreateDIBPatternBrush( hPackedDIB, nUsage ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateDIBPatternBrush( const void *lpPackedDIB, UINT nUsage )
+/***********************************************************************************/
+{
+    return( Attach( ::CreateDIBPatternBrushPt( lpPackedDIB, nUsage ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateHatchBrush( int nIndex, COLORREF crColor )
+/**********************************************************************/
+{
+    return( Attach( ::CreateHatchBrush( nIndex, crColor ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreatePatternBrush( CBitmap *pBitmap )
+/************************************************************/
+{
+    return( Attach( ::CreatePatternBrush( (HBITMAP)pBitmap->GetSafeHandle() ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateSolidBrush( COLORREF crColor )
+/**********************************************************/
+{
+    return( Attach( ::CreateSolidBrush( crColor ) ) );
+}
+
+AFX_INLINE BOOL CBrush::CreateSysColorBrush( int nIndex )
+/*******************************************************/
+{
+    return( Attach( ::GetSysColorBrush( nIndex ) ) );
+}
+
+AFX_INLINE int CBrush::GetLogBrush( LOGBRUSH *lpLogBrush )
+/********************************************************/
+{
+    return( ::GetObject( m_hObject, sizeof( LOGBRUSH ), lpLogBrush ) );
+}
+
+AFX_INLINE CBrush::operator HBRUSH() const
+/****************************************/
+{
+    return( this == NULL ? NULL : (HBRUSH)m_hObject );
+}
+
+AFX_INLINE CBrush * PASCAL CBrush::FromHandle( HBRUSH hBrush )
+/************************************************************/
+{
+    return( (CBrush *)CGdiObject::FromHandle( hBrush ) );
+}
+
+AFX_INLINE BOOL CFont::CreateFont( int nHeight, int nWidth, int nEscapement,
+                                   int nOrientation, int nWeight, BYTE bItalic,
+                                   BYTE bUnderline, BYTE cStrikeOut, BYTE nCharSet,
+                                   BYTE nOutPrecision, BYTE nClipPrecision,
+                                   BYTE nQuality, BYTE nPitchAndFamily,
+                                   LPCTSTR lpszFacename )
+/*******************************************************/
+{
+    return( Attach( ::CreateFont( nHeight, nWidth, nEscapement, nOrientation, nWeight,
+                                  bItalic, bUnderline, cStrikeOut, nCharSet,
+                                  nOutPrecision, nClipPrecision, nQuality,
+                                  nPitchAndFamily, lpszFacename ) ) );
+}
+
+AFX_INLINE BOOL CFont::CreateFontIndirect( const LOGFONT *lpLogFont )
+/*******************************************************************/
+{
+    return( Attach( ::CreateFontIndirect( lpLogFont ) ) );
+}
+
+AFX_INLINE int CFont::GetLogFont( LOGFONT *pLogFont )
+/***************************************************/
+{
+    return( ::GetObject( m_hObject, sizeof( LOGFONT ), pLogFont ) );
+}
+
+AFX_INLINE CFont::operator HFONT() const
+/**************************************/
+{
+    return( this == NULL ? NULL : (HFONT)m_hObject );
+}
+
+AFX_INLINE CFont * PASCAL CFont::FromHandle( HFONT hFont )
+/********************************************************/
+{
+    return( (CFont *)CGdiObject::FromHandle( hFont ) );
+}
+
+AFX_INLINE int CRgn::CombineRgn( CRgn *pRgn1, CRgn *pRgn2, int nCombineMode )
+/***************************************************************************/
+{
+    return( ::CombineRgn( (HRGN)m_hObject, (HRGN)pRgn1->GetSafeHandle(),
+                          (HRGN)pRgn2->GetSafeHandle(), nCombineMode ) );
+}
+
+AFX_INLINE int CRgn::CopyRgn( CRgn *pRgnSrc )
+/*******************************************/
+{
+    return( ::CombineRgn( (HRGN)m_hObject, (HRGN)pRgnSrc->GetSafeHandle(),
+                          NULL, RGN_COPY ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateEllipticRgn( int x1, int y1, int x2, int y2 )
+/***********************************************************************/
+{
+    return( Attach( ::CreateEllipticRgn( x1, y1, x2, y2 ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateEllipticRgnIndirect( LPCRECT lpRect )
+/***************************************************************/
+{
+    return( Attach( ::CreateEllipticRgnIndirect( lpRect ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateFromData( const XFORM *lpXForm, int nCount,
+                                      const RGNDATA *lpRgnData )
+/**************************************************************/
+{
+    return( Attach( ::ExtCreateRegion( lpXForm, nCount, lpRgnData ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateFromPath( CDC *pDC )
+/**********************************************/
+{
+    return( Attach( ::PathToRegion( pDC->GetSafeHdc() ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreatePolygonRgn( LPPOINT lpPoints, int nCount, int nMode )
+/*******************************************************************************/
+{
+    return( Attach( ::CreatePolygonRgn( lpPoints, nCount, nMode ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreatePolyPolygonRgn( LPPOINT lpPoints, LPINT nPolyCounts,
+                                            int nCount, int nMode )
+/*****************************************************************/
+{
+    return( Attach( ::CreatePolyPolygonRgn( lpPoints, nPolyCounts, nCount, nMode ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateRectRgn( int x1, int y1, int x2, int y2 )
+/*******************************************************************/
+{
+    return( Attach( ::CreateRectRgn( x1, y1, x2, y2 ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateRectRgnIndirect( LPCRECT lpRect )
+/***********************************************************/
+{
+    return( Attach( ::CreateRectRgnIndirect( lpRect ) ) );
+}
+
+AFX_INLINE BOOL CRgn::CreateRoundRectRgn( int x1, int y1, int x2, int y2,
+                                          int x3, int y3 )
+/********************************************************/
+{
+    return( Attach( ::CreateRoundRectRgn( x1, y1, x2, y2, x3, y3 ) ) );
+}
+
+AFX_INLINE BOOL CRgn::EqualRgn( CRgn *pRgn ) const
+/************************************************/
+{
+    return( ::EqualRgn( (HRGN)m_hObject, (HRGN)pRgn->GetSafeHandle() ) );
+}
+
+AFX_INLINE int CRgn::GetRegionData( LPRGNDATA lpRgnData, int nCount ) const
+/*************************************************************************/
+{
+    return( ::GetRegionData( (HRGN)m_hObject, nCount, lpRgnData ) );
+}
+
+AFX_INLINE int CRgn::GetRgnBox( LPRECT lpRect ) const
+/***************************************************/
+{
+    return( ::GetRgnBox( (HRGN)m_hObject, lpRect ) );
+}
+
+AFX_INLINE int CRgn::OffsetRgn( int x, int y )
+/********************************************/
+{
+    return( ::OffsetRgn( (HRGN)m_hObject, x, y ) );
+}
+
+AFX_INLINE int CRgn::OffsetRgn( POINT point )
+/*******************************************/
+{
+    return( ::OffsetRgn( (HRGN)m_hObject, point.x, point.y ) );
+}
+
+AFX_INLINE BOOL CRgn::PtInRegion( int x, int y ) const
+/****************************************************/
+{
+    return( ::PtInRegion( (HRGN)m_hObject, x, y ) );
+}
+
+AFX_INLINE BOOL CRgn::PtInRegion( POINT point ) const
+/***************************************************/
+{
+    return( ::PtInRegion( (HRGN)m_hObject, point.x, point.y ) );
+}
+
+AFX_INLINE BOOL CRgn::RectInRegion( LPCRECT lpRect ) const
+/********************************************************/
+{
+    return( ::RectInRegion( (HRGN)m_hObject, lpRect ) );
+}
+
+AFX_INLINE void CRgn::SetRectRgn( int x1, int y1, int x2, int y2 )
+/****************************************************************/
+{
+    ::SetRectRgn( (HRGN)m_hObject, x1, y1, x2, y2 );
+}
+
+AFX_INLINE void CRgn::SetRectRgn( LPCRECT lpRect )
+/************************************************/
+{
+    ::SetRectRgn( (HRGN)m_hObject, lpRect->left, lpRect->top, lpRect->right,
+                  lpRect->bottom );
+}
+
+AFX_INLINE CRgn::operator HRGN() const
+/************************************/
+{
+    return( this == NULL ? NULL : (HRGN)m_hObject );
+}
+
+AFX_INLINE CRgn * PASCAL CRgn::FromHandle( HRGN hRgn )
+/****************************************************/
+{
+    return( (CRgn *)CGdiObject::FromHandle( hRgn ) );
+}
+
+AFX_INLINE void CPalette::AnimatePalette( UINT nStartIndex, UINT nNumEntries,
+                                          LPPALETTEENTRY lpPaletteColors )
+/************************************************************************/
+{
+    ::AnimatePalette( (HPALETTE)m_hObject, nStartIndex, nNumEntries, lpPaletteColors );
+}
+
+AFX_INLINE BOOL CPalette::CreateHalftonePalette( CDC *pDC )
+/*********************************************************/
+{
+    return( Attach( ::CreateHalftonePalette( pDC->GetSafeHdc() ) ) );
+}
+
+AFX_INLINE BOOL CPalette::CreatePalette( LPLOGPALETTE lpLogPalette )
+/******************************************************************/
+{
+    return( Attach( ::CreatePalette( lpLogPalette ) ) );
+}
+
+AFX_INLINE int CPalette::GetEntryCount()
+/**************************************/
+{
+    WORD    wCount;
+    ::GetObject( m_hObject, sizeof( WORD ), &wCount );
+    return( wCount );
+}
+
+AFX_INLINE UINT CPalette::GetNearestPaletteIndex( COLORREF crColor ) const
+/************************************************************************/
+{
+    return( ::GetNearestPaletteIndex( (HPALETTE)m_hObject, crColor ) );
+}
+
+AFX_INLINE UINT CPalette::GetPaletteEntries( UINT nStartIndex, UINT nNumEntries,
+                                             LPPALETTEENTRY lpPaletteColors ) const
+/*********************************************************************************/
+{
+    return( ::GetPaletteEntries( (HPALETTE)m_hObject, nStartIndex, nNumEntries,
+                                 lpPaletteColors ) );
+}
+
+AFX_INLINE BOOL CPalette::ResizePalette( UINT nNumEntries )
+/*********************************************************/
+{
+    return( ::ResizePalette( (HPALETTE)m_hObject, nNumEntries ) );
+}
+
+AFX_INLINE UINT CPalette::SetPaletteEntries( UINT nStartIndex, UINT nNumEntries,
+                                             LPPALETTEENTRY lpPaletteColors )
+/***************************************************************************/
+{
+    return( ::SetPaletteEntries( (HPALETTE)m_hObject, nStartIndex, nNumEntries,
+                                 lpPaletteColors ) );
+}
+
+AFX_INLINE CPalette::operator HPALETTE() const
+/********************************************/
+{
+    return( this == NULL ? NULL : (HPALETTE)m_hObject );
+}
+
+AFX_INLINE CPalette * PASCAL CPalette::FromHandle( HPALETTE hPalette )
+/********************************************************************/
+{
+    return( (CPalette *)CGdiObject::FromHandle( hPalette ) );
+}
+
+AFX_INLINE BOOL CBitmap::CreateBitmap( int nWidth, int nHeight, UINT nPlanes,
+                                       UINT nBitCount, const void *lpBits )
+/*************************************************************************/
+{
+    return( Attach( ::CreateBitmap( nWidth, nHeight, nPlanes, nBitCount, lpBits ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::CreateBitmapIndirect( LPBITMAP lpBitmap )
+/****************************************************************/
+{
+    return( Attach( ::CreateBitmapIndirect( lpBitmap ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::CreateCompatibleBitmap( CDC *pDC, int nWidth, int nHeight )
+/**********************************************************************************/
+{
+    return( Attach( ::CreateCompatibleBitmap( pDC->GetSafeHdc(), nWidth, nHeight ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::CreateDiscardableBitmap( CDC *pDC, int nWidth, int nHeight )
+/***********************************************************************************/
+{
+    return( Attach( ::CreateDiscardableBitmap( pDC->GetSafeHdc(), nWidth, nHeight ) ) );
+}
+
+AFX_INLINE int CBitmap::GetBitmap( BITMAP *lpBitmap )
+/***************************************************/
+{
+    return( ::GetObject( m_hObject, sizeof( BITMAP ), lpBitmap ) );
+}
+
+AFX_INLINE DWORD CBitmap::GetBitmapBits( DWORD dwCount, LPVOID lpBits ) const
+/***************************************************************************/
+{
+    return( ::GetBitmapBits( (HBITMAP)m_hObject, dwCount, lpBits ) );
+}
+
+AFX_INLINE CSize CBitmap::GetBitmapDimension() const
+/**************************************************/
+{
+    CSize size;
+    ::GetBitmapDimensionEx( (HBITMAP)m_hObject, &size );
+    return( size );
+}
+
+AFX_INLINE BOOL CBitmap::LoadBitmap( LPCTSTR lpszResourceName )
+/*************************************************************/
+{
+    return( Attach( ::LoadBitmap( AfxGetResourceHandle(), lpszResourceName ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::LoadBitmap( UINT nIDResource )
+/*****************************************************/
+{
+    return( Attach( ::LoadBitmap( AfxGetResourceHandle(),
+                                  MAKEINTRESOURCE( nIDResource ) ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::LoadMappedBitmap( UINT nIDResource, UINT nFlags,
+                                           LPCOLORMAP lpColorMap, int nMapSize )
+/******************************************************************************/
+{
+    return( Attach( ::CreateMappedBitmap( AfxGetResourceHandle(), nIDResource, nFlags,
+                                          lpColorMap, nMapSize ) ) );
+}
+
+AFX_INLINE BOOL CBitmap::LoadOEMBitmap( UINT nIDBitmap )
+/******************************************************/
+{
+    return( Attach( ::LoadBitmap( NULL, MAKEINTRESOURCE( nIDBitmap ) ) ) );
+}
+
+AFX_INLINE DWORD CBitmap::SetBitmapBits( DWORD dwCount, const void *lpBits )
+/**************************************************************************/
+{
+    return( ::SetBitmapBits( (HBITMAP)m_hObject, dwCount, lpBits ) );
+}
+
+AFX_INLINE CSize CBitmap::SetBitmapDimension( int nWidth, int nHeight )
+/*********************************************************************/
+{
+    CSize size;
+    ::SetBitmapDimensionEx( (HBITMAP)m_hObject, nWidth, nHeight, &size );
+    return( size );
+}
+
+AFX_INLINE CBitmap::operator HBITMAP() const
+/******************************************/
+{
+    return( this == NULL ? NULL : (HBITMAP)m_hObject );
+}
+
+AFX_INLINE CBitmap * PASCAL CBitmap::FromHandle( HBITMAP hBitmap )
+/****************************************************************/
+{
+    return( (CBitmap *)CGdiObject::FromHandle( hBitmap ) );
+}
+
+AFX_INLINE int CDC::AbortDoc()
+/****************************/
+{
+    return( ::AbortDoc( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::AbortPath()
+/******************************/
+{
+    return( ::AbortPath( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::AddMetaFileComment( UINT nDataSize, const BYTE *pCommentData )
+/*********************************************************************************/
+{
+    return( ::GdiComment( m_hDC, nDataSize, pCommentData ) );
+}
+
+AFX_INLINE BOOL CDC::AngleArc( int x, int y, int nRadius, float fStartAngle,
+                               float fSweepAngle )
+/************************************************/
+{
+    return( ::AngleArc( m_hDC, x, y, nRadius, fStartAngle, fSweepAngle ) );
+}
+
+AFX_INLINE BOOL CDC::Arc( int x1, int y1, int x2, int y2, int x3, int y3,
+                          int x4, int y4 )
+/****************************************/
+{
+    return( ::Arc( m_hDC, x1, y1, x2, y2, x3, y3, x4, y4 ) );
+}
+
+AFX_INLINE BOOL CDC::Arc( LPCRECT lpRect, POINT ptStart, POINT ptEnd )
+/********************************************************************/
+{
+    return( ::Arc( m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom,
+                   ptStart.x, ptStart.y, ptEnd.x, ptEnd.y ) );
+}
+
+AFX_INLINE BOOL CDC::ArcTo( LPCRECT lpRect, POINT ptStart, POINT ptEnd )
+/**********************************************************************/
+{
+    return( ArcTo( lpRect->left, lpRect->top, lpRect->right, lpRect->bottom,
+                   ptStart.x, ptStart.y, ptEnd.x, ptEnd.y ) );
+}
+
+AFX_INLINE BOOL CDC::BeginPath()
+/******************************/
+{
+    return( ::BeginPath( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::BitBlt( int x, int y, int nWidth, int nHeight, CDC *pSrcDC,
+                             int xSrc, int ySrc, DWORD dwRop )
+/************************************************************/
+{
+    return( ::BitBlt( m_hDC, x, y, nWidth, nHeight, pSrcDC->GetSafeHdc(),
+                      xSrc, ySrc, dwRop ) );
+}
+
+AFX_INLINE BOOL CDC::Chord( int x1, int y1, int x2, int y2, int x3, int y3,
+                            int x4, int y4 )
+/******************************************/
+{
+    return( ::Chord( m_hDC, x1, y1, x2, y2, x3, y3, x4, y4 ) );
+}
+
+AFX_INLINE BOOL CDC::Chord( LPCRECT lpRect, POINT ptStart, POINT ptEnd )
+/**********************************************************************/
+{
+    return( ::Chord( m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom,
+                     ptStart.x, ptStart.y, ptEnd.x, ptEnd.y ) );
+}
+
+AFX_INLINE BOOL CDC::CloseFigure()
+/********************************/
+{
+    return( ::CloseFigure( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::CreateCompatibleDC( CDC *pDC )
+/*************************************************/
+{
+    return( Attach( ::CreateCompatibleDC( pDC->GetSafeHdc() ) ) );
+}
+
+AFX_INLINE BOOL CDC::CreateDC( LPCTSTR lpszDriverName, LPCTSTR lpszDeviceName,
+                               LPCTSTR lpszOutput, const void *lpInitData )
+/*************************************************************************/
+{
+    return( Attach( ::CreateDC( lpszDriverName, lpszDeviceName, lpszOutput,
+                                (const DEVMODE *)lpInitData ) ) );
+}
+
+AFX_INLINE BOOL CDC::CreateIC( LPCTSTR lpszDriverName, LPCTSTR lpszDeviceName,
+                               LPCTSTR lpszOutput, const void *lpInitData )
+/*************************************************************************/
+{
+    return( Attach( ::CreateIC( lpszDriverName, lpszDeviceName, lpszOutput,
+                                (const DEVMODE *)lpInitData ) ) );
+}
+
+AFX_INLINE void CDC::DPtoLP( LPPOINT lpPoints, int nCount ) const
+/***************************************************************/
+{
+    ::DPtoLP( m_hAttribDC, lpPoints, nCount );
+}
+
+AFX_INLINE void CDC::DPtoLP( LPRECT lpRect ) const
+/************************************************/
+{
+    ::DPtoLP( m_hAttribDC, (LPPOINT)lpRect, 2 );
+}
+
+AFX_INLINE void CDC::DPtoLP( LPSIZE lpSize ) const
+/************************************************/
+{
+    ::DPtoLP( m_hAttribDC, (LPPOINT)lpSize, 1 );
+}
+
+AFX_INLINE void CDC::Draw3dRect( LPCRECT lpRect, COLORREF clrTopLeft,
+                                 COLORREF clrBottomRight )
+/********************************************************/
+{
+    ASSERT( lpRect != NULL );
+    Draw3dRect( lpRect->left, lpRect->top, lpRect->right - lpRect->left, 
+                lpRect->bottom - lpRect->top, clrTopLeft, clrBottomRight );
+}
+
+AFX_INLINE BOOL CDC::DrawEdge( LPRECT lpRect, UINT nEdge, UINT nFlags )
+/*********************************************************************/
+{
+    return( ::DrawEdge( m_hDC, lpRect, nEdge, nFlags ) );
+}
+
+AFX_INLINE int CDC::DrawEscape( int nEscape, int nInputSize, LPCSTR lpszInputData )
+/*********************************************************************************/
+{
+    return( ::DrawEscape( m_hDC, nEscape, nInputSize, lpszInputData ) );
+}
+
+AFX_INLINE void CDC::DrawFocusRect( LPCRECT lpRect )
+/**************************************************/
+{
+    ::DrawFocusRect( m_hDC, lpRect );
+}
+
+AFX_INLINE BOOL CDC::DrawFrameControl( LPRECT lpRect, UINT nType, UINT nState )
+/*****************************************************************************/
+{
+    return( ::DrawFrameControl( m_hDC, lpRect, nType, nState ) );
+}
+
+AFX_INLINE BOOL CDC::DrawIcon( int x, int y, HICON hIcon )
+/********************************************************/
+{
+    return( ::DrawIcon( m_hDC, x, y, hIcon ) );
+}
+
+AFX_INLINE BOOL CDC::DrawIcon( POINT point, HICON hIcon )
+/*******************************************************/
+{
+    return( ::DrawIcon( m_hDC, point.x, point.y, hIcon ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, HBITMAP hBitmap, UINT nFlags,
+                                HBRUSH hBrush )
+/*********************************************/
+{
+    return( ::DrawState( m_hDC, hBrush, NULL, (LPARAM)hBitmap, 0, pt.x, pt.y,
+                         size.cx, size.cy, nFlags | DST_BITMAP ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, CBitmap *pBitmap, UINT nFlags,
+                                CBrush *pBrush )
+/**********************************************/
+{
+    return( ::DrawState( m_hDC, (HBRUSH)pBrush->GetSafeHandle(), NULL,
+                         (LPARAM)pBitmap->GetSafeHandle(), 0, pt.x, pt.y,
+                         size.cx, size.cy, nFlags | DST_BITMAP ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, HICON hIcon, UINT nFlags,
+                                HBRUSH hBrush )
+/*********************************************/
+{
+    return( ::DrawState( m_hDC, hBrush, NULL, (LPARAM)hIcon, 0, pt.x, pt.y,
+                         size.cx, size.cy, nFlags | DST_ICON ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, HICON hIcon, UINT nFlags,
+                                CBrush *pBrush )
+/**********************************************/
+{
+    return( ::DrawState( m_hDC, (HBRUSH)pBrush->GetSafeHandle(), NULL, (LPARAM)hIcon, 0,
+                         pt.x, pt.y, size.cx, size.cy, nFlags | DST_ICON ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags,
+                                BOOL bPrefixText, int nTextLen, HBRUSH hBrush )
+/*****************************************************************************/
+{
+    return( ::DrawState( m_hDC, hBrush, NULL, (LPARAM)lpszText, nTextLen, pt.x, pt.y,
+                         size.cx, size.cy,
+                         nFlags | (bPrefixText ? DST_PREFIXTEXT : DST_TEXT) ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, LPCTSTR lpszText, UINT nFlags,
+                                BOOL bPrefixText, int nTextLen, CBrush *pBrush )
+/******************************************************************************/
+{
+    return( ::DrawState( m_hDC, (HBRUSH)pBrush->GetSafeHandle(), NULL, (LPARAM)lpszText,
+                         nTextLen, pt.x, pt.y, size.cx, size.cy,
+                         nFlags | (bPrefixText ? DST_PREFIXTEXT : DST_TEXT) ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc,
+                                LPARAM lData, UINT nFlags, HBRUSH hBrush )
+/************************************************************************/
+{
+    return( ::DrawState( m_hDC, hBrush, lpDrawProc, lData, 0, pt.x, pt.y,
+                         size.cx, size.cy, nFlags | DST_COMPLEX ) );
+}
+
+AFX_INLINE BOOL CDC::DrawState( CPoint pt, CSize size, DRAWSTATEPROC lpDrawProc,
+                                LPARAM lData, UINT nFlags, CBrush *pBrush )
+/*************************************************************************/
+{
+    return( ::DrawState( m_hDC, (HBRUSH)pBrush->GetSafeHandle(), lpDrawProc, lData, 0,
+                         pt.x, pt.y, size.cx, size.cy, nFlags | DST_COMPLEX ) );
+}
+
+AFX_INLINE int CDC::DrawText( const CString &str, LPRECT lpRect, UINT nFormat )
+/*****************************************************************************/
+{
+    return( DrawText( (LPCTSTR)str, str.GetLength(), lpRect, nFormat ) );
+}
+
+AFX_INLINE int CDC::DrawTextEx( const CString &str, LPRECT lpRect, UINT nFormat,
+                                LPDRAWTEXTPARAMS lpDTParams )
+/***********************************************************/
+{
+    return( DrawTextEx( (LPTSTR)(LPCTSTR)str, str.GetLength(), lpRect, nFormat,
+                        lpDTParams ) );
+}
+
+AFX_INLINE BOOL CDC::Ellipse( int x1, int y1, int x2, int y2 )
+/************************************************************/
+{
+    return( ::Ellipse( m_hDC, x1, y1, x2, y2 ) );
+}
+
+AFX_INLINE BOOL CDC::Ellipse( LPCRECT lpRect )
+/********************************************/
+{
+    return( ::Ellipse( m_hDC, lpRect->left, lpRect->top, lpRect->right,
+                       lpRect->bottom ) );
+}
+
+AFX_INLINE int CDC::EndDoc()
+/**************************/
+{
+    return( ::EndDoc( m_hDC ) );
+}
+
+AFX_INLINE int CDC::EndPage()
+/***************************/
+{
+    return( ::EndPage( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::EndPath()
+/****************************/
+{
+    return( ::EndPath( m_hDC ) );
+}
+
+AFX_INLINE int CDC::EnumObjects( int nObjectType, GOBJENUMPROC lpfn, LPARAM lpData )
+/**********************************************************************************/
+{
+    return( ::EnumObjects( m_hDC, nObjectType, lpfn, lpData ) );
+}
+
+AFX_INLINE int CDC::Escape( int nEscape, int nInputSize, LPCSTR lpszInputData,
+                            int nOutputSize, LPSTR lpszOutputData )
+/*****************************************************************/
+{
+    return( ::ExtEscape( m_hDC, nEscape, nInputSize, lpszInputData, nOutputSize,
+                         lpszOutputData ) );
+}
+
+AFX_INLINE int CDC::ExcludeClipRect( LPCRECT lpRect )
+/***************************************************/
+{
+    return( ExcludeClipRect( lpRect->left, lpRect->top, lpRect->right,
+                             lpRect->bottom ) );
+}
+
+AFX_INLINE BOOL CDC::ExtFloodFill( int x, int y, COLORREF crColor, UINT nFillType )
+/*********************************************************************************/
+{
+    return( ::ExtFloodFill( m_hDC, x, y, crColor, nFillType ) );
+}
+
+AFX_INLINE BOOL CDC::ExtTextOut( int x, int y, UINT nOptions, LPCRECT lpRect,
+                                 const CString &str, LPINT lpDxWidths )
+/*********************************************************************/
+{
+    return( ExtTextOut( x, y, nOptions, lpRect, (LPCTSTR)str, str.GetLength(),
+                        lpDxWidths ) );
+}
+
+AFX_INLINE BOOL CDC::FillPath()
+/*****************************/
+{
+    return( ::FillPath( m_hDC ) );
+}
+
+AFX_INLINE void CDC::FillRect( LPCRECT lpRect, CBrush *pBrush )
+/*************************************************************/
+{
+    ::FillRect( m_hDC, lpRect, (HBRUSH)pBrush->GetSafeHandle() );
+}
+
+AFX_INLINE BOOL CDC::FillRgn( CRgn *pRgn, CBrush *pBrush )
+/********************************************************/
+{
+    return( ::FillRgn( m_hDC, (HRGN)pRgn->GetSafeHandle(),
+                       (HBRUSH)pBrush->GetSafeHandle() ) );
+}
+
+AFX_INLINE BOOL CDC::FlattenPath()
+/********************************/
+{
+    return( ::FlattenPath( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::FloodFill( int x, int y, COLORREF crColor )
+/**************************************************************/
+{
+    return( ::FloodFill( m_hDC, x, y, crColor ) );
+}
+
+AFX_INLINE void CDC::FrameRect( LPCRECT lpRect, CBrush *pBrush )
+/**************************************************************/
+{
+    ::FrameRect( m_hDC, lpRect, (HBRUSH)pBrush->GetSafeHandle() );
+}
+
+AFX_INLINE BOOL CDC::FrameRgn( CRgn *pRgn, CBrush *pBrush, int nWidth, int nHeight )
+/**********************************************************************************/
+{
+    return( ::FrameRgn( m_hDC, (HRGN)pRgn->GetSafeHandle(),
+                       (HBRUSH)pBrush->GetSafeHandle(), nWidth, nHeight ) );
+}
+
+AFX_INLINE int CDC::GetArcDirection() const
+/*****************************************/
+{
+    return( ::GetArcDirection( m_hAttribDC ) );
+}
+
+AFX_INLINE CSize CDC::GetAspectRatioFilter() const
+/************************************************/
+{
+    CSize size;
+    ::GetAspectRatioFilterEx( m_hAttribDC, &size );
+    return( size );
+}
+
+AFX_INLINE COLORREF CDC::GetBkColor() const
+/*****************************************/
+{
+    return( ::GetBkColor( m_hAttribDC ) );
+}
+
+AFX_INLINE int CDC::GetBkMode() const
+/***********************************/
+{
+    return( ::GetBkMode( m_hAttribDC ) );
+}
+
+AFX_INLINE UINT CDC::GetBoundsRect( LPRECT lpRectBounds, UINT flags )
+/*******************************************************************/
+{
+    return( ::GetBoundsRect( m_hAttribDC, lpRectBounds, flags ) );
+}
+
+AFX_INLINE CPoint CDC::GetBrushOrg() const
+/****************************************/
+{
+    CPoint point;
+    ::GetBrushOrgEx( m_hAttribDC, &point );
+    return( point );
+}
+
+AFX_INLINE DWORD CDC::GetCharacterPlacement( LPCTSTR lpString, int nCount,
+                                             int nMaxExtent, LPGCP_RESULTS lpResults,
+                                             DWORD dwFlags ) const
+/****************************************************************/
+{
+    return( ::GetCharacterPlacement( m_hAttribDC, lpString, nCount, nMaxExtent,
+                                     lpResults, dwFlags ) );
+}
+
+AFX_INLINE DWORD CDC::GetCharacterPlacement( CString &str, int nMaxExtent,
+                                             LPGCP_RESULTS lpResults,
+                                             DWORD dwFlags ) const
+/****************************************************************/
+{
+    return( ::GetCharacterPlacement( m_hAttribDC, (LPCTSTR)str, str.GetLength(),
+                                     nMaxExtent, lpResults, dwFlags ) );
+}
+
+AFX_INLINE BOOL CDC::GetCharABCWidths( UINT nFirstChar, UINT nLastChar,
+                                       LPABC lpabc ) const
+/********************************************************/
+{
+    return( ::GetCharABCWidths( m_hAttribDC, nFirstChar, nLastChar, lpabc ) );
+}
+
+AFX_INLINE BOOL CDC::GetCharABCWidths( UINT nFirstChar, UINT nLastChar,
+                                       LPABCFLOAT lpABCF ) const
+/**************************************************************/
+{
+    return( ::GetCharABCWidthsFloat( m_hAttribDC, nFirstChar, nLastChar, lpABCF ) );
+}
+
+AFX_INLINE BOOL CDC::GetCharWidth( UINT nFirstChar, UINT nLastChar,
+                                   LPINT lpBuffer ) const
+/*******************************************************/
+{
+    return( ::GetCharWidth( m_hAttribDC, nFirstChar, nLastChar, lpBuffer ) );
+}
+
+AFX_INLINE BOOL CDC::GetCharWidth( UINT nFirstChar, UINT nLastChar,
+                                   float *lpFloatBuffer ) const
+/*************************************************************/
+{
+    return( ::GetCharWidthFloat( m_hAttribDC, nFirstChar, nLastChar, lpFloatBuffer ) );
+}
+
+AFX_INLINE BOOL CDC::GetColorAdjustment( LPCOLORADJUSTMENT lpColorAdjust ) const
+/******************************************************************************/
+{
+    return( ::GetColorAdjustment( m_hAttribDC, lpColorAdjust ) );
+}
+
+AFX_INLINE CBitmap *CDC::GetCurrentBitmap() const
+/***********************************************/
+{
+    return( CBitmap::FromHandle( (HBITMAP)::GetCurrentObject( m_hAttribDC,
+                                                              OBJ_BITMAP ) ) );
+}
+
+AFX_INLINE CBrush *CDC::GetCurrentBrush() const
+/*********************************************/
+{
+    return( CBrush::FromHandle( (HBRUSH)::GetCurrentObject( m_hAttribDC, OBJ_BRUSH ) ) );
+}
+
+AFX_INLINE CFont *CDC::GetCurrentFont() const
+/*******************************************/
+{
+    return( CFont::FromHandle( (HFONT)::GetCurrentObject( m_hAttribDC, OBJ_FONT ) ) );
+}
+
+AFX_INLINE CPalette *CDC::GetCurrentPalette() const
+/*************************************************/
+{
+    return( CPalette::FromHandle( (HPALETTE)::GetCurrentObject( m_hAttribDC,
+                                                                OBJ_PAL ) ) );
+}
+
+AFX_INLINE CPen *CDC::GetCurrentPen() const
+/*****************************************/
+{
+    return( CPen::FromHandle( (HPEN)::GetCurrentObject( m_hAttribDC, OBJ_PEN ) ) );
+}
+
+AFX_INLINE CPoint CDC::GetCurrentPosition() const
+/***********************************************/
+{
+    CPoint point;
+    ::GetCurrentPositionEx( m_hAttribDC, &point );
+    return( point );
+}
+
+AFX_INLINE int CDC::GetDeviceCaps( int nIndex ) const
+/***************************************************/
+{
+    return( ::GetDeviceCaps( m_hAttribDC, nIndex ) );
+}
+
+AFX_INLINE DWORD CDC::GetFontData( DWORD dwTable, DWORD dwOffset, LPVOID lpData,
+                                   DWORD cbData ) const
+/*****************************************************/
+{
+    return( ::GetFontData( m_hAttribDC, dwTable, dwOffset, lpData, cbData ) );
+}
+
+AFX_INLINE DWORD CDC::GetFontLanguageInfo() const
+/***********************************************/
+{
+    return( ::GetFontLanguageInfo( m_hAttribDC ) );
+}
+
+AFX_INLINE DWORD CDC::GetGlyphOutline( UINT nChar, UINT nFormat, LPGLYPHMETRICS lpgm,
+                                       DWORD cbBuffer, LPVOID lpBuffer,
+                                       const MAT2 *lpmat2 ) const
+/***************************************************************/
+{
+    return( ::GetGlyphOutline( m_hAttribDC, nChar, nFormat, lpgm, cbBuffer, lpBuffer,
+                               lpmat2 ) );
+}
+
+AFX_INLINE int CDC::GetGraphicsMode() const
+/*****************************************/
+{
+    return( ::GetGraphicsMode( m_hAttribDC ) );
+}
+
+AFX_INLINE int CDC::GetKerningPairs( int nPairs, LPKERNINGPAIR lpkrnpair ) const
+/******************************************************************************/
+{
+    return( ::GetKerningPairs( m_hAttribDC, nPairs, lpkrnpair ) );
+}
+
+AFX_INLINE int CDC::GetMapMode() const
+/************************************/
+{
+    return( ::GetMapMode( m_hAttribDC ) );
+}
+
+AFX_INLINE float CDC::GetMiterLimit() const
+/*****************************************/
+{
+    float fMiterLimit;
+    ::GetMiterLimit( m_hAttribDC, &fMiterLimit );
+    return( fMiterLimit );
+}
+
+AFX_INLINE COLORREF CDC::GetNearestColor( COLORREF crColor ) const
+/****************************************************************/
+{
+    return( ::GetNearestColor( m_hAttribDC, crColor ) );
+}
+
+AFX_INLINE UINT CDC::GetOutlineTextMetrics( UINT cbData,
+                                            LPOUTLINETEXTMETRIC lpotm ) const
+/***************************************************************************/
+{
+    return( ::GetOutlineTextMetrics( m_hAttribDC, cbData, lpotm ) );
+}
+
+AFX_INLINE BOOL CDC::GetOutputCharWidth( UINT nFirstChar, UINT nLastChar,
+                                         LPINT lpBuffer ) const
+/*************************************************************/
+{
+    return( ::GetCharWidth( m_hDC, nFirstChar, nLastChar, lpBuffer ) );
+}
+
+AFX_INLINE CSize CDC::GetOutputTabbedTextExtent( LPCTSTR lpszString, int nCount,
+                                                 int nTabPositions,
+                                                 LPINT lpnTabPositions ) const
+/****************************************************************************/
+{
+    return( CSize( ::GetTabbedTextExtent( m_hDC, lpszString, nCount, nTabPositions,
+                                          lpnTabPositions ) ) );
+}
+
+AFX_INLINE CSize CDC::GetOutputTabbedTextExtent( const CString &str, int nTabPositions,
+                                                 LPINT lpnTabPositions ) const
+/****************************************************************************/
+{
+    return( CSize( ::GetTabbedTextExtent( m_hDC, (LPCTSTR)str, str.GetLength(),
+                                          nTabPositions, lpnTabPositions ) ) );
+}
+
+AFX_INLINE CSize CDC::GetOutputTextExtent( LPCTSTR lpszString, int nCount ) const
+/*******************************************************************************/
+{
+    CSize size;
+    ::GetTextExtentPoint32( m_hDC, lpszString, nCount, &size );
+    return( size );
+}
+
+AFX_INLINE CSize CDC::GetOutputTextExtent( const CString &str ) const
+/*******************************************************************/
+{
+    CSize size;
+    ::GetTextExtentPoint32( m_hDC, (LPCTSTR)str, str.GetLength(), &size );
+    return( size );
+}
+
+AFX_INLINE BOOL CDC::GetOutputTextMetrics( LPTEXTMETRIC lpMetrics ) const
+/***********************************************************************/
+{
+    return( ::GetTextMetrics( m_hDC, lpMetrics ) );
+}
+
+AFX_INLINE int CDC::GetPath( LPPOINT lpPoints, LPBYTE lpTypes, int nCount ) const
+/*******************************************************************************/
+{
+    return( ::GetPath( m_hDC, lpPoints, lpTypes, nCount ) );
+}
+
+AFX_INLINE COLORREF CDC::GetPixel( int x, int y ) const
+/*****************************************************/
+{
+    return( ::GetPixel( m_hDC, x, y ) );
+}
+
+AFX_INLINE COLORREF CDC::GetPixel( POINT point ) const
+/****************************************************/
+{
+    return( ::GetPixel( m_hDC, point.x, point.y ) );
+}
+
+AFX_INLINE int CDC::GetPolyFillMode() const
+/*****************************************/
+{
+    return( ::GetPolyFillMode( m_hAttribDC ) );
+}
+
+AFX_INLINE int CDC::GetROP2() const
+/*********************************/
+{
+    return( ::GetROP2( m_hAttribDC ) );
+}
+
+AFX_INLINE HDC CDC::GetSafeHdc() const
+/************************************/
+{
+    return( this == NULL ?  NULL : m_hDC );
+}
+
+AFX_INLINE int CDC::GetStretchBltMode() const
+/*******************************************/
+{
+    return( ::GetStretchBltMode( m_hAttribDC ) );
+}
+
+AFX_INLINE CSize CDC::GetTabbedTextExtent( LPCTSTR lpszString, int nCount,
+                                           int nTabPositions,
+                                           LPINT lpnTabStopPositions ) const
+/**************************************************************************/
+{
+    return( CSize( ::GetTabbedTextExtent( m_hAttribDC, lpszString, nCount, nTabPositions,
+                                          lpnTabStopPositions ) ) );
+}
+
+AFX_INLINE CSize CDC::GetTabbedTextExtent( const CString &str, int nTabPositions,
+                                           LPINT lpnTabStopPositions ) const
+/**************************************************************************/
+{
+    return( CSize( ::GetTabbedTextExtent( m_hAttribDC, (LPCTSTR)str, str.GetLength(),
+                                          nTabPositions, lpnTabStopPositions ) ) );
+}
+
+AFX_INLINE UINT CDC::GetTextAlign() const
+/***************************************/
+{
+    return( ::GetTextAlign( m_hAttribDC ) );
+}
+
+AFX_INLINE int CDC::GetTextCharacterExtra() const
+/***********************************************/
+{
+    return( ::GetTextCharacterExtra( m_hAttribDC ) );
+}
+
+AFX_INLINE COLORREF CDC::GetTextColor() const
+/*******************************************/
+{
+    return( ::GetTextColor( m_hAttribDC ) );
+}
+
+AFX_INLINE CSize CDC::GetTextExtent( LPCTSTR lpszString, int nCount ) const
+/*************************************************************************/
+{
+    CSize size;
+    ::GetTextExtentPoint32( m_hAttribDC, lpszString, nCount, &size );
+    return( size );
+}
+
+AFX_INLINE CSize CDC::GetTextExtent( const CString &str ) const
+/*************************************************************/
+{
+    CSize size;
+    ::GetTextExtentPoint32( m_hAttribDC, (LPCTSTR)str, str.GetLength(), &size );
+    return( size );
+}
+
+AFX_INLINE int CDC::GetTextFace( int nCount, LPTSTR lpszFacename ) const
+/**********************************************************************/
+{
+    return( ::GetTextFace( m_hAttribDC, nCount, lpszFacename ) );
+}
+
+AFX_INLINE int CDC::GetTextFace( CString &rString ) const
+/*******************************************************/
+{
+    LPTSTR lpszFacename = rString.GetBuffer( 256 );
+    int nResult = ::GetTextFace( m_hAttribDC, 255, lpszFacename );
+    rString.ReleaseBuffer( nResult );
+    return( nResult );
+}
+
+AFX_INLINE BOOL CDC::GetTextMetrics( LPTEXTMETRIC lpMetrics ) const
+/*****************************************************************/
+{
+    return( ::GetTextMetrics( m_hAttribDC, lpMetrics ) );
+}
+
+AFX_INLINE CSize CDC::GetViewportExt() const
+/******************************************/
+{
+    CSize size;
+    ::GetViewportExtEx( m_hAttribDC, &size );
+    return( size );
+}
+
+AFX_INLINE CPoint CDC::GetViewportOrg() const
+/*******************************************/
+{
+    CPoint point;
+    ::GetViewportOrgEx( m_hAttribDC, &point );
+    return( point );
+}
+
+AFX_INLINE CWnd *CDC::GetWindow() const
+/*************************************/
+{
+    return( CWnd::FromHandle( ::WindowFromDC( m_hDC ) ) );
+}
+
+AFX_INLINE CSize CDC::GetWindowExt() const
+/****************************************/
+{
+    CSize size;
+    ::GetWindowExtEx( m_hAttribDC, &size );
+    return( size );
+}
+
+AFX_INLINE CPoint CDC::GetWindowOrg() const
+/*****************************************/
+{
+    CPoint point;
+    ::GetWindowOrgEx( m_hAttribDC, &point );
+    return( point );
+}
+
+AFX_INLINE BOOL CDC::GetWorldTransform( XFORM &rXform ) const
+/***********************************************************/
+{
+    return( ::GetWorldTransform( m_hAttribDC, &rXform ) );
+}
+
+AFX_INLINE int CDC::IntersectClipRect( LPCRECT lpRect )
+/*****************************************************/
+{
+    return( IntersectClipRect( lpRect->left, lpRect->top, lpRect->right,
+                               lpRect->bottom ) );
+}
+
+AFX_INLINE void CDC::InvertRect( LPCRECT lpRect )
+/***********************************************/
+{
+    ::InvertRect( m_hDC, lpRect );
+}
+
+AFX_INLINE BOOL CDC::InvertRgn( CRgn *pRgn )
+/******************************************/
+{
+    return( ::InvertRgn( m_hDC, (HRGN)pRgn->GetSafeHandle() ) );
+}
+
+AFX_INLINE BOOL CDC::IsPrinting() const
+/*************************************/
+{
+    return( m_bPrinting );
+}
+
+AFX_INLINE BOOL CDC::LineTo( POINT point )
+/****************************************/
+{
+    return( LineTo( point.x, point.y ) );
+}
+
+AFX_INLINE void CDC::LPtoDP( LPPOINT lpPoints, int nCount ) const
+/***************************************************************/
+{
+    ::LPtoDP( m_hAttribDC, lpPoints, nCount );
+}
+
+AFX_INLINE void CDC::LPtoDP( LPRECT lpRect ) const
+/************************************************/
+{
+    ::LPtoDP( m_hAttribDC, (LPPOINT)lpRect, 2 );
+}
+
+AFX_INLINE void CDC::LPtoDP( LPSIZE lpSize ) const
+/************************************************/
+{
+    ::LPtoDP( m_hAttribDC, (LPPOINT)lpSize, 1 );
+}
+
+AFX_INLINE BOOL CDC::MaskBlt( int x, int y, int nWidth, int nHeight, CDC *pSrcDC,
+                              int xSrc, int ySrc, CBitmap &maskBitmap,
+                              int xMask, int yMask, DWORD dwRop )
+/***************************************************************/
+{
+    return( ::MaskBlt( m_hDC, x, y, nWidth, nHeight, pSrcDC->GetSafeHdc(), xSrc, ySrc,
+                       (HBITMAP)maskBitmap.GetSafeHandle(), xMask, yMask, dwRop ) );
+}
+
+AFX_INLINE CPoint CDC::MoveTo( POINT point )
+/******************************************/
+{
+    return( MoveTo( point.x, point.y ) );
+}
+
+AFX_INLINE int CDC::OffsetClipRgn( SIZE size )
+/**********************************************/
+{
+    return( OffsetClipRgn( size.cx, size.cy ) );
+}
+
+AFX_INLINE BOOL CDC::PaintRgn( CRgn *pRgn )
+/*****************************************/
+{
+    return( ::PaintRgn( m_hDC, (HRGN)pRgn->GetSafeHandle() ) );
+}
+
+AFX_INLINE BOOL CDC::PatBlt( int x, int y, int nWidth, int nHeight, DWORD dwRop )
+/*******************************************************************************/
+{
+    return( ::PatBlt( m_hDC, x, y, nWidth, nHeight, dwRop ) );
+}
+
+AFX_INLINE BOOL CDC::Pie( int x1, int y1, int x2, int y2, int x3, int y3,
+                          int x4, int y4 )
+/****************************************/
+{
+    return( ::Pie( m_hDC, x1, y1, x2, y2, x3, y3, x4, y4 ) );
+}
+
+AFX_INLINE BOOL CDC::Pie( LPCRECT lpRect, POINT ptStart, POINT ptEnd )
+/********************************************************************/
+{
+    return( ::Pie( m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom,
+                   ptStart.x, ptStart.y, ptEnd.x, ptEnd.y ) );
+}
+
+AFX_INLINE BOOL CDC::PlayMetaFile( HMETAFILE hMF )
+/************************************************/
+{
+    return( ::PlayMetaFile( m_hDC, hMF ) );
+}
+
+AFX_INLINE BOOL CDC::PlayMetaFile( HENHMETAFILE hEnhMetaFile, LPCRECT lpBounds )
+/******************************************************************************/
+{
+    return( ::PlayEnhMetaFile( m_hDC, hEnhMetaFile, lpBounds ) );
+}
+
+AFX_INLINE BOOL CDC::PlgBlt( LPPOINT lpPoint, CDC *pSrcDC, int xSrc, int ySrc,
+                             int nWidth, int nHeight, CBitmap &maskBitmap,
+                             int xMask, int yMask )
+/*************************************************/
+{
+    return( ::PlgBlt( m_hDC, lpPoint, pSrcDC->GetSafeHdc(), xSrc, ySrc, nWidth, nHeight,
+                      (HBITMAP)maskBitmap.GetSafeHandle(), xMask, yMask ) );
+}
+
+AFX_INLINE BOOL CDC::PolyBezier( const POINT *lpPoints, int nCount )
+/******************************************************************/
+{
+    return( ::PolyBezier( m_hDC, lpPoints, nCount ) );
+}
+
+AFX_INLINE BOOL CDC::PolyPolygon( LPPOINT lpPoints, LPINT lpPolyCounts, int nCount )
+/**********************************************************************************/
+{
+    return( ::PolyPolygon( m_hDC, lpPoints, lpPolyCounts, nCount ) );
+}
+
+AFX_INLINE BOOL CDC::PolyPolyline( const POINT *lpPoints, const DWORD *lpPolyPoints,
+                                   int nCount )
+/*********************************************/
+{
+    return( ::PolyPolyline( m_hDC, lpPoints, lpPolyPoints, nCount ) );
+}
+
+AFX_INLINE BOOL CDC::Polygon( LPPOINT lpPoints, int nCount )
+/**********************************************************/
+{
+    return( ::Polygon( m_hDC, lpPoints, nCount ) );
+}
+
+AFX_INLINE BOOL CDC::Polyline( LPPOINT lpPoints, int nCount )
+/***********************************************************/
+{
+    return( ::Polyline( m_hDC, lpPoints, nCount ) );
+}
+
+AFX_INLINE BOOL CDC::PtVisible( POINT point ) const
+/*************************************************/
+{
+    return( PtVisible( point.x, point.y ) );
+}
+
+AFX_INLINE UINT CDC::RealizePalette()
+/***********************************/
+{
+    return( ::RealizePalette( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::Rectangle( int x1, int y1, int x2, int y2 )
+/**************************************************************/
+{
+    return( ::Rectangle( m_hDC, x1, y1, x2, y2 ) );
+}
+
+AFX_INLINE BOOL CDC::Rectangle( LPCRECT lpRect )
+/**********************************************/
+{
+    return( ::Rectangle( m_hDC, lpRect->left, lpRect->top, lpRect->right,
+                         lpRect->bottom ) );
+}
+
+AFX_INLINE BOOL CDC::ResetDC( const DEVMODE *lpDevMode )
+/******************************************************/
+{
+    return( ::ResetDC( m_hDC, lpDevMode ) != NULL );
+}
+
+AFX_INLINE BOOL CDC::RoundRect( int x1, int y1, int x2, int y2, int x3, int y3 )
+/******************************************************************************/
+{
+    return( ::RoundRect( m_hDC, x1, y1, x2, y2, x3, y3 ) );
+}
+
+AFX_INLINE BOOL CDC::RoundRect( LPCRECT lpRect, POINT point )
+/***********************************************************/
+{
+    return( ::RoundRect( m_hDC, lpRect->left, lpRect->top, lpRect->right, lpRect->bottom,
+                         point.x, point.y ) );
+}
+
+AFX_INLINE BOOL CDC::ScrollDC( int dx, int dy, LPCRECT lpRectScroll, LPCRECT lpRectClip,
+                               CRgn *pRgnUpdate, LPRECT lpRectUpdate )
+/********************************************************************/
+{
+    return( ::ScrollDC( m_hDC, dx, dy, lpRectScroll, lpRectClip,
+                        (HRGN)pRgnUpdate->GetSafeHandle(), lpRectUpdate ) );
+}
+
+AFX_INLINE int CDC::SelectObject( CRgn *pRgn )
+/********************************************/
+{
+    return( SelectClipRgn( pRgn ) );
+}
+
+AFX_INLINE int CDC::SetAbortProc( ABORTPROC lpfn )
+/************************************************/
+{
+    return( ::SetAbortProc( m_hDC, lpfn ) );
+}
+
+AFX_INLINE CPoint CDC::SetBrushOrg( POINT point )
+/***********************************************/
+{
+    return( SetBrushOrg( point.x, point.y ) );
+}
+
+AFX_INLINE COLORREF CDC::SetPixel( int x, int y, COLORREF crColor )
+/*****************************************************************/
+{
+    return( ::SetPixel( m_hDC, x, y, crColor ) );
+}
+
+AFX_INLINE COLORREF CDC::SetPixel( POINT point, COLORREF crColor )
+/****************************************************************/
+{
+    return( ::SetPixel( m_hDC, point.x, point.y, crColor ) );
+}
+
+AFX_INLINE BOOL CDC::SetPixelV( int x, int y, COLORREF crColor )
+/**************************************************************/
+{
+    return( ::SetPixelV( m_hDC, x, y, crColor ) );
+}
+
+AFX_INLINE BOOL CDC::SetPixelV( POINT point, COLORREF crColor )
+/*************************************************************/
+{
+    return( ::SetPixelV( m_hDC, point.x, point.y, crColor ) );
+}
+
+AFX_INLINE CSize CDC::SetViewportExt( SIZE size )
+/***********************************************/
+{
+    return( SetViewportExt( size.cx, size.cy ) );
+}
+
+AFX_INLINE CPoint CDC::SetViewportOrg( POINT point )
+/**************************************************/
+{
+    return( SetViewportOrg( point.x, point.y ) );
+}
+
+AFX_INLINE CSize CDC::SetWindowExt( SIZE size )
+/*********************************************/
+{
+    return( SetWindowExt( size.cx, size.cy ) );
+}
+
+AFX_INLINE CPoint CDC::SetWindowOrg( POINT point )
+/************************************************/
+{
+    return( SetWindowOrg( point.x, point.y ) );
+}
+
+AFX_INLINE int CDC::StartDoc( LPDOCINFO lpDocInfo )
+/*************************************************/
+{
+    return( ::StartDoc( m_hDC, lpDocInfo ) );
+}
+
+AFX_INLINE int CDC::StartPage()
+/*****************************/
+{
+    return( ::StartPage( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::StretchBlt( int x, int y, int nWidth, int nHeight, CDC *pSrcDC,
+                                 int xSrc, int ySrc, int nSrcWidth, int nSrcHeight,
+                                 DWORD dwRop )
+/********************************************/
+{
+    return( ::StretchBlt( m_hDC, x, y, nWidth, nHeight, pSrcDC->GetSafeHdc(), xSrc, ySrc,
+                          nSrcWidth, nSrcHeight, dwRop ) );
+}
+
+AFX_INLINE BOOL CDC::StrokeAndFillPath()
+/**************************************/
+{
+    return( ::StrokeAndFillPath( m_hDC ) );
+}
+
+AFX_INLINE BOOL CDC::StrokePath()
+/*******************************/
+{
+    return( ::StrokePath( m_hDC ) );
+}
+
+AFX_INLINE CSize CDC::TabbedTextOut( int x, int y, const CString &str, int nTabPositions,
+                                     LPINT lpnTabStopPositions, int nTabOrigin )
+/******************************************************************************/
+{
+    return( TabbedTextOut( x, y, (LPCTSTR)str, str.GetLength(), nTabPositions,
+                           lpnTabStopPositions, nTabOrigin ) );
+}
+
+AFX_INLINE BOOL CDC::TextOut( int x, int y, const CString &str )
+/**************************************************************/
+{
+    return( TextOut( x, y, (LPCTSTR)str, str.GetLength() ) );
+}
+
+AFX_INLINE void CDC::UpdateColors()
+/*********************************/
+{
+    ::UpdateColors( m_hDC );
+}
+
+AFX_INLINE BOOL CDC::WidenPath()
+/******************************/
+{
+    return( ::WidenPath( m_hDC ) );
+}
+
+AFX_INLINE CDC::operator HDC() const
+/**********************************/
+{
+    return( this == NULL ? NULL : m_hDC );
+}

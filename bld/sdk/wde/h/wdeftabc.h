@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeTabCCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeTabCInit        ( Bool );
-extern void              WdeTabCFini        ( void );
+extern OBJPTR WINEXPORT  WdeTabCCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeTabCInit( Bool );
+extern void              WdeTabCFini( void );
 
 #endif

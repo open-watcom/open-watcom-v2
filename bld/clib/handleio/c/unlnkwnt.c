@@ -35,9 +35,9 @@
 #include <windows.h>
 #include "libwin32.h"
 #include "seterrno.h"
+#include <unistd.h>
 
-
-_WCRTLINK int __F_NAME(unlink,_wunlink)( CHAR_TYPE *filename )
+_WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 {
     if( __F_NAME(DeleteFileA,__lib_DeleteFileW)( filename )  ==  FALSE ) {
         return( __set_errno_nt() );

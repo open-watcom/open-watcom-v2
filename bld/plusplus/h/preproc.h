@@ -24,18 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for preprocessing.
 *
 ****************************************************************************/
 
 
 #ifndef _PREPROC_H_
 #define _PREPROC_H_
-// PREPROC.H -- definitions for preprocessing
-//
-// 91/06/04 -- J.W.Welch        -- defined
-// 92/12/29 -- B.J. Stecher     -- QNX support
 
 #include <stdio.h>
 
@@ -46,21 +41,21 @@
 
 #include "i64.h"
 
+#include "pragdefn.h"
+
 typedef unsigned char TOKEN;
 
 
 #define BUF_SIZE_SHIFT          (9)
 #define BUF_SIZE                (1<<BUF_SIZE_SHIFT)
 
+#ifdef pick
+#undef pick
+#endif
+#define pick( a, b, c ) a,
 enum
-{       M_UNKNOWN
-,       M_DEFAULT
-,       M_CDECL
-,       M_PASCAL
-,       M_FORTRAN
-,       M_SYSCALL
-,       M_STDCALL
-,       M_OPTLINK
+{
+#include "auxinfo.h"
 };
 
 //typedef target_ulong target_int_const;
@@ -75,36 +70,37 @@ typedef enum ppstate_t {
 
 // PREPROCESSOR DATA:
 
-global  unsigned PPState;       // pre-processor state (ppstate_t)
-global  int     CurToken;       // current token
-global  unsigned BadTokenInfo;  // error message that describes why T_BAD_TOKEN is bad
-global  int     TokenLen;       // length of current token
-global  int     TokenLine;      // line # of current token
-global  int     TokenColumn;    // column # of current token
-global  int     CurrChar;       // current character
-global  int     ConstType;      // type of constant
-global  signed_64 Constant64;       // value of constant: 33-64 bits
-global  int     NestLevel;      // pre-processing level of #if
-global  int     SkipLevel;      // pre-processing level of #if to skip to
-global  char    *SavedId;       // saved id when doing look ahead
-global  int     LAToken;        // look ahead token
-global  char    InitialMacroFlag;// current value to init macro flags to
-global  MACADDR_T MacroOffset;  // first free byte in MacroSegment
-global  char    __Time[10];     // "HH:MM:SS" for __TIME__ macro
-global  char    __Date[12];     // "MMM DD YYYY" for __DATE__ macro
-global  FILE    *CppFile;       /* output for preprocessor */
-global  char    *ForceInclude;
-global  char    *SrcFName;      /* source file name without suffix */
-global  char    *WholeFName;    /* whole file name with suffix */
-global  char    PreProcChar;    /* preprocessor directive indicator */
-global  int     SwitchChar;     // DOS switch character
+global  unsigned    PPState;            // pre-processor state (ppstate_t)
+global  boolean     PPStateAsm;         // pre-processor state in _asm
+global  enum TOKEN  CurToken;           // current token
+global  unsigned    BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
+global  int         TokenLen;           // length of current token
+global  int         TokenLine;          // line # of current token
+global  int         TokenColumn;        // column # of current token
+global  int         CurrChar;           // current character
+global  int         ConstType;          // type of constant
+global  signed_64   Constant64;         // value of constant: 33-64 bits
+global  int         NestLevel;          // pre-processing level of #if
+global  int         SkipLevel;          // pre-processing level of #if to skip to
+global  char *      SavedId;            // saved id when doing look ahead
+global  enum TOKEN  LAToken;            // look ahead token
+global  macro_flags InitialMacroFlag;   // current value to init macro flags to
+global  MACADDR_T   MacroOffset;        // first free byte in MacroSegment
+global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
+global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
+global  FILE *      CppFile;            /* output for preprocessor */
+global  char *      ForceInclude;
+global  char *      SrcFName;           /* source file name without suffix */
+global  char *      WholeFName;         /* whole file name with suffix */
+global  char        PreProcChar;        /* preprocessor directive indicator */
+global  int         SwitchChar;         // DOS switch character
 
 // token buffer
 // extra 16 is for unrolled scanning loops
 // extra uint_32 is for buffer overrun checking in debugging compiler
-global  char    Buffer[BUF_SIZE+16+sizeof(uint_32)];
+global  char        Buffer[BUF_SIZE+16+sizeof(uint_32)];
 
-extern  int     (*NextChar)();  // next-character routine (initialized in SRCFILE)
+extern  int     (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
 // PROTOTYPES: exposed to C++ project
 
@@ -169,7 +165,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 ;
 int OpenSrcFile(                // OPEN A SOURCE FILE
-    char * filename,            // - file name
+    const char * filename,      // - file name
     boolean is_lib )            // - TRUE ==> is <file>
 ;
 void PpInit(                    // INITIALIZE PREPROCESSING
@@ -202,12 +198,16 @@ void FiniPPScan(                 // INIT SCANNER FOR PPNUMBER TOKENS
 int SpecialMacro(               // EXECUTE A SPECIAL MACRO
     MEPTR fmentry )             // - macro entry
 ;
-void * PragmaLookup(            // FIND A PRAGMA
+void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
+    void )
+;
+AUX_INFO * PragmaLookup(        // FIND A PRAGMA
     char * name,                // - name of the pragma
     unsigned index )            // - index (M_UNKNOWN if not known)
 ;
-void *PragmaGetIndex( void * );
-void *PragmaMapIndex( void * );
+unsigned PragmaGetIndex( AUX_INFO * );
+
+AUX_INFO *PragmaMapIndex( unsigned index );
 
 // PROTOTYPES: internal to scanner
 
@@ -252,7 +252,7 @@ int GetNextChar(                // GET NEXT CHARACTER FROM A SOURCE FILE
 void GetNextCharUndo(           // UNDO PREVIOUS GET NEXT CHARACTER
     int c )                     // - character to undo
 ;
-void *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
+AUX_INFO *GetTargetHandlerPragma // GET PRAGMA FOR FS HANDLER
     ( void )
 ;
 int KwLookup(                   // TRANSFORM TO T_ID OR KEYWORD TOKEN
@@ -267,7 +267,8 @@ void KwEnable(                  // ENABLE A KEYWORD TOKEN FROM T_ID
 ;
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     char *name,                 // - macro name
-    unsigned value )            // - value for special macro
+    unsigned value,             // - value for special macro
+    macro_flags flags )         // - macro flags
 ;
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro

@@ -1,0 +1,198 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: User's Reference [Configuration]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- User's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">4.0 - DOS/32 Advanced -
+Configuration<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced can be
+configured in two different ways. Either can it be configured by a special
+environment variable, <b>DOS32A</b>, that can be defined in <i>autoexec.bat</i>
+file, or by the <a href="../util/3.html">SUNSYS Setup Utility</a> program, <i>ss.exe</i>, which is provided
+with DOS/32 Advanced and is located in the <i>.\BINW</i> directory.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">To define DOS/32 Advanced
+environment variable you need to edit your <i>autoexec.bat</i> file
+and add the following line: <b>SET DOS32A=</b>. Please note that the
+configuration defined in the environment should be considered as &quot;global&quot;,
+ie it affects all the programs that use DOS/32 Advanced DOS Extender, as opposed
+to manual configuration of DOS/32A executables with SUNSYS Setup Utility,
+which is called &quot;local&quot; because it requires manual configuration
+of each program which uses DOS/32 Advanced.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The following is a list
+of options which can be added directly after the equal sign:</font></p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4"
+height="1139">
+<tr>
+<td bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">Option</font></b></td>
+<td bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">Description</font></b></td></tr>
+<tr>
+<td width="30%"><b><font size=-1 face="Verdana, Arial, Helvetica">/QUIET</font></b></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">Disables console output and
+sound generation on run-time errors. No warnings will be reported, only
+fatal and run-time errors will be displayed on the screen. Also disables
+the copyright banner which is otherwise displayed on DOS Extender's startup.
+This option is equivalent to /PRINT:OFF and /SOUND:OFF options put together.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/PRINT:X</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where switch X can be
+ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Disables console output. No warnings will be reported, only fatal and run-time
+errors will be displayed on the screen. This option also disables the copyright
+banner, displayed on the screen otherwise.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/SOUND:X</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where switch X can be
+ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Disables sound generation on run-time errors.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/EXTMEM:NNNN</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where NNNN is the number
+of KB of extended memory that will be allocated by DOS/32 Advanced at startup
+and made available for program's use</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Defines how much extended memory DOS/32 Advanced will allocate and make
+available for application's use. No more than NNNN KB will be allocated,
+so for example if you have 16 MB of extended memory in your machine and
+want that DOS/32 Advanced programs will use only 12 MB, leaving the rest
+(4 MB) of the memory for other programs, you can set the value NNNN to 12288
+(12*1024). To make DOS/32 Advanced allocate no extended memory at all set
+the NNNN value to 0. Note that when DOS/32 Advanced reads the NNNN number,
+it will automatically update the limit number of the Page Tables that will be allocated
+under the VCPI system.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/DOSBUF:NNNN</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where NNNN is the number
+of KB of conventional (DOS) memory that will be reserved by DOS/32 Advanced
+for its internal DOS Transfer Buffer</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Defines the size of the DOS Transfer Buffer that will be used by DOS/32
+Advanced when it transferring data from conventional (DOS) memory to
+extended memory and back, where it can be reached by the real mode DOS functions.
+The number NNNN must be in range from 4KB to 64KB.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/DPMITST:X</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where switch X can be
+ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Defines the order of VCPI/DPMI detection. When turned on, the DOS Extender will look
+for a DPMI host first. Note that by default DOS/32 Advanced will always look
+for a VCPI server first.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/RESTORE:X</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where switch X can be
+ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Defines whether the real mode interrupts are to be restored when a protected
+mode program returns to DOS. All 256 interrupt vectors will be restored
+when this option is turned on. Note that by default DOS/32 Advanced will
+always restore the real mode interrupts.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/NULLP[:X]</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where optional switch
+X can be ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+Defines whether the Null-Pointer Protection is to be installed. When a protected
+mode program writes to the addresses at the beginning of the memory,
+an error will be reported. Note that by default DOS/32 Advanced will not
+install Null-Pointer Protection. Also note that you do not have to specify the
+ON (or 1) switch for the Null-Pointer Protection to be turned on. However, if
+you wish to disable the Null-Pointer Protection for all DOS/32 Advanced programs
+that are configured to install it, you must specify the OFF (or 0) switch
+after the colon sign.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/VERBOSE[:X]</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where optional switch
+X can be ON, OFF, 1 (=ON), 0 (=OFF)</font></i><font size=-1 face="Verdana, Arial, Helvetica"><br>
+This option, when turned on, will tell the DOS Extender to show verbose
+information about system, memory and programs that the DOS Extender executes.</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/NOWARN[:NNNN]</font></b></td>
+<td><i><font size=-1 face="Verdana, Arial, Helvetica">where NNNN is a valid warning number</font></i>
+<font size=-1 face="Verdana, Arial, Helvetica"><br>
+This option allows you to separately disable specific warnings. Note that this
+option does not disable copyright banner shown at DOS Extender's startup.
+</font></td></tr>
+<tr>
+<td><b><font size=-1 face="Verdana, Arial, Helvetica">/NOC</font></b></td>
+<td><font size=-1 face="Verdana, Arial, Helvetica">
+Disables the copyright banner only. The warning messages are still displayed on the screen.
+</font></td></tr>
+
+</table>
+</center></p>
+
+<p>&nbsp;</p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Examples:</font></b></p>
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">1) SET DOS32A=/QUIET
+  /EXTMEM:4096 /DOSBUF:16 /RESTORE:OFF</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">- disable warnings and
+  sound generation<br>
+  - allocate no more than 4096KB (=4MB) of extended memory<br>
+  - set DOS Transfer Buffer size to 16KB<br>
+  - do not restore real mode interrupts on exit</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">2) SET DOS32A=/PRINT:0
+  /EXTMEM:0 /NULLP</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">- disable warnings<br>
+  - allocate no extended memory<br>
+  - install Null-Pointer protection</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">3) SET DOS32A= DPMITST:1
+  RESTORE:1 SOUND:1 DOSBUF:76</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">- enable check for DPMI
+  host first<br>
+  - enable restoring of real mode interrupts on exit<br>
+  - enable sound generation on run-time errors<br>
+  - invalid number 76 (out of range), option is ignored!</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+<p><font size=-1 face="Verdana, Arial, Helvetica">a) Options defined by
+the environment variable <b>DOS32A</b> in the <i>autoexec.bat</i> will take
+effect after you reboot your computer.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">b) All the programs that use
+DOS/32 Advanced DOS Extender will be configured according to the <b>DOS32A</b>
+environment variable, no matter on which drive or in which directory they
+are placed, unless you reconfigure them manually with SUNSYS Setup Utility program
+to not to read the environment, or the environment variable <b>DOS32A</b> is removed
+from the <i>autoexec.bat</i> file and the machine is rebooted.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">c) Each DOS/32 Advanced
+application can be configured manually with SUNSYS Setup Utility program, but that configuration
+will be overridden by the options defined in the <b>DOS32A</b> environment variable,
+since each time a DOS/32 Advanced application is started, it will read the
+built-in configuration header first, and environment variable <b>DOS32A</b> second.</font></p>
+</blockquote>
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The second way to configure
+DOS/32 Advanced programs is to use the SUNSYS Setup Utility program <i>ss.exe</i> .
+Please refer to <a href="../util/3.html">SUNSYS Setup Utility</a> documentation
+for information about how to use SUNSYS Setup Utility program.
+</font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

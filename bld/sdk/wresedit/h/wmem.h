@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WMemOpen     ( void );
-extern void  WMemClose    ( void );
-extern void *WMemAlloc    ( unsigned );
-extern void  WMemFree     ( void * );
-extern void *WMemRealloc  ( void *, unsigned );
-extern int   WMemValidate ( void * );
-extern int   WMemChkRange ( void *, unsigned );
+extern void WMemOpen( void );
+extern void WMemClose( void );
+extern void *WMemAlloc( unsigned );
+extern void WMemFree( void * );
+extern void *WMemRealloc( void *, unsigned );
+extern int  WMemValidate( void * );
+extern int  WMemChkRange( void *, unsigned );
 
 #endif

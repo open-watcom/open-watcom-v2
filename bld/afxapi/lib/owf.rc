@@ -1,0 +1,3 @@
+#include <afxres.h>
+#include <afxres.rc>
+#include <afxprint.rc>

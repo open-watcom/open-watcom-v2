@@ -1,27 +1,21 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=================================================================================
-!inject bdisk086.obj d16     dpm                                       w16
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
+#==========================================================================================
+!inject bdisk086.obj d16     dpm                                            w16
 !inject bdisk386.obj     d32
-!inject biosdisk.obj d16 d32                                           w16
-!inject biosequi.obj d16 d32                                           w16
-!inject bioskeyb.obj d16 d32                                           w16
-!inject biosmems.obj d16 d32                                           w16
-!inject biosprin.obj d16 d32                                           w16
-!inject biosseri.obj d16 d32                                           w16
-!inject biostime.obj d16 d32                                           w16
-!inject biosfunc.obj                                                       w32
-!inject b_disk.obj                                                         w32
-!inject b_timofd.obj                                                       w32
-!inject func086.obj  d16     dpm                                       w16
+!inject biosdisk.obj d16 d32                                                w16
+!inject biosequi.obj d16 d32                                                w16
+!inject bioskeyb.obj d16 d32                                                w16
+!inject biosmems.obj d16 d32                                                w16
+!inject biosprin.obj d16 d32                                                w16
+!inject biosseri.obj d16 d32                                                w16
+!inject biostime.obj d16 d32                                                w16
+!inject biosfunc.obj                                                            w32
+!inject b_disk.obj                                                              w32
+!inject b_timofd.obj                                                            w32
+!inject func086.obj  d16     dpm                                            w16
 !inject func386.obj      d32
-!inject n_disk.obj   d16 d32                                           w16
-!inject n_equipl.obj d16 d32                                           w16
-!inject n_keybrd.obj d16 d32                                           w16
-!inject n_mem.obj    d16 d32                                           w16
-!inject n_print.obj  d16 d32                                           w16
-!inject n_serial.obj d16 d32                                           w16
-!inject n_timofd.obj d16 d32                                           w16
-!inject tmofd086.obj d16     dpm                                       w16
+!inject tmofd086.obj d16     dpm                                            w16
 !inject tmofd386.obj     d32
 
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
+

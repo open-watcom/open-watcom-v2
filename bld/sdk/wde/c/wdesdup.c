@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 
 #include "wdemem.h"
@@ -48,17 +48,16 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-char *WdeStrDup ( const char *src )
+char *WdeStrDup( const char *src )
 {
     char *dest;
 
-    if ( src == NULL ) {
-        return ( NULL );
+    if( src == NULL ) {
+        return( NULL );
     }
-    dest = WdeMemAlloc ( strlen ( src ) + 1 );
-    if ( dest != NULL ) {
-        strcpy ( dest, src );
+    dest = WdeMemAlloc( strlen( src ) + 1 );
+    if( dest != NULL ) {
+        strcpy( dest, src );
     }
-    return ( dest );
+    return( dest );
 }
-

@@ -39,7 +39,7 @@ editor runs, use these at your own risk:
 %M   	 - modified status - contains 1 if current file is modified, 
 	   0 otherwise
 %(OS)    - what operating system the editor is hosted on
-	   (possible values are: nt, qnx, os2, os2v2, dos)
+	   (possible values are: nt, unix, os2, os2v2, dos)
 %(OS386) - is 1 if the host operating system is 386 (or higher) based
 %P   	 - path of current file (actual path)
 %(P1)	 - path of current file (as typed by user)

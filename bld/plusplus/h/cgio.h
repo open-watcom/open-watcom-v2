@@ -48,7 +48,10 @@
 
 // STRUCTURES:
 
+#ifndef CGFILE_DEFINED
+#define CGFILE_DEFINED
 typedef struct cgfile           CGFILE;         // control for a virtual file
+#endif
 typedef struct cgfile_gen       CGFILE_GEN;     // data while generating file
 
 struct cgfile {                 // CGFILE -- control for a virtual file
@@ -81,8 +84,8 @@ struct cgfile {                 // CGFILE -- control for a virtual file
     unsigned    write_to_pch :1;// - TRUE ==> write out to PCH
     unsigned    opt_retn_val :1;// - TRUE ==> optimize struct return: value
     unsigned    opt_retn_ref :1;// - TRUE ==> optimize struct return: reference
-          }; // of struct
-        };   // of union
+          } s;  // of struct
+        };      // of union
     SYMBOL      opt_retn;       // - symbol translated for optimized return
 };
 
@@ -114,7 +117,7 @@ void CgioCloseOutputFile(       // CLOSE VIRTUAL FILE AFTER OUTPUT PHASE
     CGFILE *ctl )               // - control for file
 ;
 CGFILE *CgioCreateFile(         // CREATE A CG VIRTUAL FILE
-    void *symbol )              // - controlling symbol-table entry
+    SYMBOL symbol )             // - controlling symbol-table entry
 ;
 void CgioFreeFile(              // FREE A VIRTUAL FILE
     CGFILE *ctl )               // - control for file

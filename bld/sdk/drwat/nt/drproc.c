@@ -42,6 +42,7 @@
 #include <time.h>
 
 #define DR_HELP_FILE    "drnt.hlp"
+#define DR_CHM_FILE     "drnt.chm"
 #define HELP_HELP_FILE  "winhelp.hlp"
 
 /*
@@ -68,7 +69,7 @@ void SaveExtra( FILE *f )
  * QueryEnddlgProc
  */
 
-BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     char        buf[100];
@@ -143,7 +144,7 @@ static void setupSystemMenu( HWND hwnd ) {
 /*
  * WindowProc - main window message handler
  */
-LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                        cmd;
     about_info                  ai;
@@ -248,10 +249,14 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             FreeRCString( ai.title );
             break;
         case MENU_HELP_CONTENTS:
-            WWinHelp( hwnd, DR_HELP_FILE, HELP_CONTENTS, 0 );
+            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_CONTENTS, 0 ) ) {
+                WWinHelp( hwnd, DR_HELP_FILE, HELP_CONTENTS, 0 );
+            }
             break;
         case MENU_HELP_SRCH:
-            WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_PARTIALKEY, (DWORD)"" ) ) {
+                WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            }
             break;
         case MENU_HELP_ON_HELP:
             WWinHelp( hwnd, HELP_HELP_FILE, HELP_HELPONHELP, 0 );

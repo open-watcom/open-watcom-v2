@@ -30,29 +30,17 @@
 ****************************************************************************/
 
 
-#define FONT_COURIER        0
-#define FONT_COURIERBOLD    1
-#define FONT_HELV           2
-#define FONT_ARIAL          3
-#define FONT_ARIALBOLD      4
-#define FONT_FIXED          5
-#define FONT_SANSSERIF      6
-
-#define FONT_DEFAULT        FONT_COURIER
-#define FONT_DEFAULTBOLD    FONT_COURIERBOLD
-
-extern UINT DefineFont( LOGFONT * );
-extern HFONT FontHandle( UINT );
-extern UINT FontHeight( UINT );
-extern int FontlfHeight( UINT );
-extern char *FontlfFaceName( UINT );
-extern char FontIsFunnyItalic( UINT );
-extern UINT FontAverageWidth( UINT );
-extern UINT FontMaxWidth( UINT );
-extern UINT FontTabWidth( UINT );
-extern UINT FontFixed( UINT );
-extern InitFonts();
-extern FiniFonts();
-extern void PickFont( int, HWND );
-extern void SetUpFont( LOGFONT *, int );
-void EnsureUniformFonts( int, int, LOGFONT *, BOOL );
+extern HFONT    FontHandle( font_type );
+extern UINT     FontHeight( font_type );
+extern int      FontlfHeight( font_type );
+extern char     *FontlfFaceName( font_type );
+extern char     FontIsFunnyItalic( font_type );
+extern UINT     FontAverageWidth( font_type );
+extern UINT     FontMaxWidth( font_type );
+extern UINT     FontTabWidth( font_type );
+extern UINT     FontFixed( font_type );
+extern void     InitFonts( void );
+extern void     FiniFonts( void );
+extern void     PickFont( font_type, HWND );
+extern void     SetUpFont( LOGFONT *, font_type );
+extern void     EnsureUniformFonts( font_type, font_type, LOGFONT *, BOOL );

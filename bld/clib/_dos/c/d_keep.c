@@ -24,22 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS Keep (Terminate and Stay Resident).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <dos.h>
 #include "tinyio.h"
 
-extern  void    _keep(unsigned,unsigned);
 
-#pragma aux     _keep = 0xb4 0x31       /* mov ah,31h */\
-                        0xcd 0x21       /* int 21h    */\
-                        parm [ax] [dx];
+extern  void    _keep( unsigned, unsigned );
+#pragma aux     _keep = \
+    "mov ah,31h"        \
+    "int 21h"           \
+    parm [ax] [dx];
 
 _WCRTLINK void _dos_keep( unsigned retcode, unsigned memsize )
-    {
-        _keep( retcode, memsize );
-    }
+{
+    _keep( retcode, memsize );
+}

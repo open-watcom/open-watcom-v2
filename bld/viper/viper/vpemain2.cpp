@@ -29,6 +29,14 @@
 *
 ****************************************************************************/
 
+#include <stdio.h>
+#include <io.h>
+#include <stdlib.h>
+
+extern "C" {
+    #include "rcdefs.h"
+    #include "banner.h"
+};
 
 #include "vpemain.hpp"
 #include "vmsglog.hpp"
@@ -67,29 +75,8 @@
 #include "veditdlg.hpp"
 #include "ide.h"
 #include "mitem.hpp"
-
 #include "inifile.hpp"
 
-extern "C" {
-    #include <io.h>
-    #include "rcdefs.h"
-    #include "stdlib.h"
-    #include "banner.h"
-};
-
-#define IDE_INI_IDENTIFIER      "WATCOM_IDE_0"
-#define IDE_INI_TOOLBAR         "toolbar"
-#define IDE_INI_STATWND         "statuswnd"
-#define IDE_INI_AUTOREFRESH     "refresh"
-#define IDE_INI_EDITOR          "editor"
-#define IDE_INI_EDITOR_ISDLL    "dll_editor"
-#define IDE_INI_EDITOR_PARMS    "editor_parms"
-#define IDE_INI_FILENAME        "ideinit.cfg"
-#define IDE_INI_DIR             "binw"
-#define IDE_INI_HEIGHT          "height"
-#define IDE_INI_WIDTH           "width"
-#define IDE_INI_X               "x_coord"
-#define IDE_INI_Y               "y_coord"
 #define MAX_CMD_LINE            256
 
 extern char _viperTitle[];
@@ -140,157 +127,60 @@ void VpeMain::cForPBProject( WFileName &pj, bool nt ) {
     }
 }
 
-static void splitCommand( const char *cmd, WString &targ, WString &file ) {
-    unsigned    i;
-    unsigned    targ_end;
-
-    while( isspace( *cmd ) ) cmd++;
-    i = 0;
-    targ = cmd;
-    while( !isspace( targ[i] ) && targ[i] != '\0' ) i++;
-    targ_end = i;
-    while( isspace( targ[i] ) ) i++;
-    file = targ.gets() + i;
-    targ.truncate( targ_end );
-}
-
-void VpeMain::remoteFileOp( const char *cmd ) {
-    WFileName   targ;
-    WFileName   file;
-    WFileName   fn;
-    VComponent  *comp;
-    unsigned    i;
-
-    splitCommand( cmd + 2, targ, file );
-    i = _compViews.count();
-    while( i > 0 ) {
-        comp = (VComponent *)_compViews[ i-1 ];
-        comp->component()->filename().noExt( fn );
-        if( fn == targ ) {
-            if( cmd[0] == 'f' ) {
-                switch( cmd[1] ) {
-                case 'b':
-                    comp->beginFileList( MITEM_OWNER_WINMAKER );
-                    break;
-                case 'a':
-                    comp->markFile( file, MITEM_OWNER_WINMAKER );
-                    break;
-                case 'e':
-                    comp->endFileList( MITEM_OWNER_WINMAKER );
-                    break;
-                }
-            }
-        }
-        i--;
-    }
-}
-
-WString* VpeMain::DdeCallback( const char* c ) {
-
-    WFileName   fn( c );
-
-    switch( c[0] ) {
-    case 'f':
-        if( _refuseFileLists ) {
-            return( new WString( "err" ) );
-        } else {
-            remoteFileOp( c );
-            return( new WString( "ok" ) );
-        }
-    case 'p':
-        if( c[1] == 'b' ) {
-            WFileName   fn( c + 2 );
-            show();
-            cForPBProject( fn, FALSE );
-            return( new WString( "ok" ) );
-        } else if( c[1] == 'n' ) {
-            WFileName   fn( c + 2 );
-            show();
-            cForPBProject( fn, TRUE );
-            return( new WString( "ok" ) );
-        }
-        break;
-    case 'v':
-        if( c[1] == 'e' ) {
-            // do nothing
-        }
-        break;
-    case 'z':
-        if( c[1] == '0' ) {
-            show();
-            setFocus();
-        }
-        break;
-    }
-    return( NULL );
-}
-
 void VpeMain::readIdeInit()
 {
-    char buff[_MAX_PATH];
+    char buff[FILENAME_MAX];
     int width, height, x, y;
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_TOOLBAR, "1", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_TOOLBAR, "1", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
         delete clearToolBar();
         _toolBarActive = FALSE;
     }
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_STATWND, "1", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_STATWND, "1", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
         deleteStatusBar();
     }
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_AUTOREFRESH, "1", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER,IDE_INI_AUTOREFRESH, "1", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
         _autoRefresh = FALSE;
     } else {
         _autoRefresh = TRUE;
     }
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_EDITOR, (const char*)_config->editor(),
-                        buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR, (const char*)_config->editor(),
+               buff, sizeof( buff ) );
     _editor = buff;
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_EDITOR_ISDLL,
-                        _config->editorIsDLL() ? "1" : "0",
-                        buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_ISDLL,
+               _config->editorIsDLL() ? "1" : "0", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
         _editorIsDll = FALSE;
     } else {
         _editorIsDll = TRUE;
     }
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_EDITOR_PARMS, "%f", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_PARMS, "%f", buff, sizeof( buff ) );
     _editorParms = buff;
 
-    for( int i=0; i<4; i++ ) {
+    for( int i=0; i < MAXOLDPROJECTS; i++ ) {
         itoa( i+1, buff, 10 );
-        MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                buff, "*", buff, _MAX_PATH ); // if we get "*", doesn't exist
+        _ini.read( IDE_INI_IDENTIFIER, buff, "*", buff, sizeof( buff ) ); // if we get "*", doesn't exist
         if( buff[0] != '*' ) {
             _oldProjects.add( new WFileName( buff ) );
         }
     }
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_HEIGHT, "0", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_HEIGHT, "0", buff, sizeof( buff ) );
     height = atoi( buff );
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_WIDTH, "0", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_WIDTH, "0", buff, sizeof( buff ) );
     width = atoi( buff );
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_X, "0", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_X, "0", buff, sizeof( buff ) );
     x = atoi( buff );
 
-    MyGetProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                        IDE_INI_Y, "0", buff, _MAX_PATH );
+    _ini.read( IDE_INI_IDENTIFIER, IDE_INI_Y, "0", buff, sizeof( buff ) );
     y = atoi( buff );
 
     WRect sc;
@@ -324,39 +214,27 @@ bool VpeMain::reallyClose()
         startWait();
         clearProject();
         stopWait();
-        _winMakerClient.ShutDown();
         // write out .INI file stuff
         char buff[_MAX_PATH];
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_EDITOR, (char*)_editor.gets() );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_EDITOR_ISDLL, _editorIsDll ? "1" : "0" );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_EDITOR_PARMS, _editorParms.gets() );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_EDITOR, (char*)_editor.gets() );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_ISDLL, _editorIsDll ? "1" : "0" );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_PARMS, _editorParms.gets() );
         for( int i=0; i<_oldProjects.count(); i++ ) {
             itoa( i+1, buff, 10 );
-            MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                buff, (const char*)*((WFileName*)_oldProjects[i]) );
+            _ini.write( IDE_INI_IDENTIFIER, buff, (const char*)*((WFileName*)_oldProjects[i]) );
         }
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_TOOLBAR, _toolBarActive ? "1" : "0" );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_STATWND, (_statusBar != NULL) ? "1" : "0" );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_AUTOREFRESH, _autoRefresh ? "1" : "0" );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_TOOLBAR, _toolBarActive ? "1" : "0" );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_STATWND, (_statusBar != NULL) ? "1" : "0" );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_AUTOREFRESH, _autoRefresh ? "1" : "0" );
         getRectangle( rect );
         itoa( rect.w(), buff, 10 );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_WIDTH, buff );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_WIDTH, buff );
         itoa( rect.h(), buff, 10 );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_HEIGHT, buff );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_HEIGHT, buff );
         itoa( rect.x(), buff, 10 );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_X, buff );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_X, buff );
         itoa( rect.y(), buff, 10 );
-        MyWriteProfileString( IDE_INI_DIR, IDE_INI_FILENAME, IDE_INI_IDENTIFIER,
-                              IDE_INI_Y, buff );
+        _ini.write( IDE_INI_IDENTIFIER, IDE_INI_Y, buff );
         if( _otherhelp != NULL ) {
             delete _otherhelp;
             _otherhelp = NULL;
@@ -370,10 +248,12 @@ bool VpeMain::reallyClose()
 
 bool VpeMain::executeCommand( const char* c, int location, const char* title )
 {
+    int i;
+
     if( c && strlen( c ) > 0 ) {
         WString* cur = NULL;
         WStringList opts;
-        for( int i=0; c[i]!= '\0'; i++ ) {
+        for( i=0; c[i]!= '\0'; i++ ) {
             if( cur ) {
                 if( c[i] == '"' ) {
                     opts.add( cur );
@@ -462,13 +342,6 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
                 }
                 _otherhelp = new WSystemHelp( this, "", cmd );
                 _otherhelp->sysHelpContent();
-                break;
-            }
-            case EXECUTE_WINMAKER: {
-                if( _winMakerClient.Run( cmd ) ) {
-                    WMessageDialog::messagef( this, MsgError, MsgOk,
-                        _viperError, "Unable to run or connect to Visual Programmer.");
-                }
                 break;
             }
         }
@@ -701,27 +574,17 @@ void VpeMain::executeEditor( const WString& cmd )
 bool VpeMain::makeMake()
 {
     WString     editcmd( "EditSaveAll" );
-    MsgRetType  ret;
 
     if( !running() ) {
         if( checkProject() ) {
             executeEditor( editcmd );
-            ret = MsgRetYes;
-            if( _winMakerClient.GenerateCode() ) {
-                ret = WMessageDialog::messagef( this, MsgError, MsgYesNo,
-                                        _viperError,
-                                        "Unable refresh Visual Programmer Files\n"
-                                        "Do you want to continue the build?" );
+            setStatus( "Creating MAKE file(s)..." );
+            if( _project->makeMakeFile() ) {
+                return( TRUE );
             }
-            if( ret == MsgRetYes ) {
-                setStatus( "Creating MAKE file(s)..." );
-                if( _project->makeMakeFile() ) {
-                    return( TRUE );
-                }
-                WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
-                                          "Unable to create makefile(s)" );
-                return( FALSE );
-            }
+            WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
+                                      "Unable to create makefile(s)" );
+            return( FALSE );
         }
         return( FALSE );
     }

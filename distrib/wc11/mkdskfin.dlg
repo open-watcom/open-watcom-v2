@@ -1,0 +1,12 @@
+name=MakeDisksFullFinal
+condition=MakeDisks FullInstall
+static_text=\
+        //1"@ will now make the diskette set."\
+        //2"@ はディスケット・セットを作成します."\
+        //0
+dynamic_text=mdff_1,\
+        //1"You will need %NumDisksNeeded% diskettes."\
+        //2"%NumDisksNeeded% 枚のディスケットが必要です."\
+        //0
+static_text=
+include=poc.dlg

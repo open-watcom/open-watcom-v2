@@ -24,11 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debuggee address mapping (using Toolhelp).
 *
 ****************************************************************************/
 
+
+#ifdef __WINDOWS__
+#pragma library("toolhelp.lib");
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,14 +45,14 @@
 
 #define MAX_MODULE      256
 
-HANDLE          ModuleTop=0;
-HANDLE          CurrentModule = 0;
+int        ModuleTop=0;
+int        CurrentModule = 0;
 
 static int      mod32Top;
 
-static HANDLE moduleIDs[ MAX_MODULE ];
-static HANDLE modules32[ MAX_MODULE ];
-static HANDLE moduleIsDLL[ MAX_MODULE ];
+static HMODULE moduleIDs[ MAX_MODULE ];
+static HMODULE modules32[ MAX_MODULE ];
+static BOOL moduleIsDLL[ MAX_MODULE ];
 
 /*
  * AddAllCurrentModules - add all currently running modules to
@@ -105,7 +108,7 @@ BOOL HasSegAliases( void )
 void AddDebugeeModule( void )
 {
     int i;
-    for( i=ModuleTop;i>0;i-- ) {
+    for( i = ModuleTop; i > 0; i-- ) {
         moduleIDs[i] = moduleIDs[i-1];
     }
     ModuleTop++;
@@ -195,10 +198,10 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
     WORD                sel;
     WORD                offset;
 
-    ReadMem( gh, 0x22, &offset, sizeof( offset ) );
+    ReadMem( (WORD)gh, 0x22, &offset, sizeof( offset ) );
     i = 0;
     while( i < segment ) {
-        ReadMem( gh, offset+8, &sel, sizeof( sel ) );
+        ReadMem( (WORD)gh, offset+8, &sel, sizeof( sel ) );
         offset += 10;
         i++;
     }
@@ -229,11 +232,11 @@ static void accessSegment( GLOBALHANDLE gh, WORD segment )
  * other task. Why DLL's work at all (since they are not a "task") is beyond
  * me.
  */
-static BOOL horkyFindSegment( HANDLE module, WORD segment )
+static BOOL horkyFindSegment( int module, WORD segment )
 {
     static GLOBALENTRY  ge;
-    static WORD         lastmodid;
-    HANDLE              modid;
+    static HMODULE      lastmodid;
+    HMODULE             modid;
 
     modid = moduleIDs[ module ];
     if( !moduleIsDLL[ module ] ) {
@@ -285,7 +288,7 @@ unsigned ReqMap_addr( void )
     WORD        sel;
     WORD        cs,ds;
     DWORD       off;
-    HANDLE      module;
+    int         module;
     addr_seg    in_seg;
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -328,7 +331,7 @@ unsigned ReqMap_addr( void )
         GlobalUnlock( ge.hBlock );
         sel = FP_SEG( ptr );
         if( sel == NULL ) {
-            sel = ge.hBlock + 1;
+            sel = (WORD)ge.hBlock + 1;
         }
         ret->out_addr.segment = sel;
         ret->out_addr.offset = 0;

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "iemem.h"
@@ -39,10 +40,11 @@ static int              windowIndex;    // used to figure out window coordinates
 #ifdef __OS2_PM__
 static int              imageMax;
 #endif
+
 /*
- * CreateViewBitmap - creates the bitmap on the screen (with the background
- *                      colour as it should be etc...).  Function caller is
- *                      responsible for deleting the bitmap.
+ * CreateViewBitmap - create the bitmap on the screen (with the background
+ *                    color as it should be, etc.)
+ *                  - the caller is responsible for deleting the bitmap
  */
 HBITMAP CreateViewBitmap( img_node *mdi_node )
 {
@@ -58,31 +60,33 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
     HBRUSH      brush;
     HBRUSH      oldbrush;
     img_node    *node;
-    COLORREF    bkcolour;
+    COLORREF    bkcolor;
 
-    if (mdi_node) {
+    if( mdi_node != NULL ) {
         node = mdi_node;
     } else {
         node = GetCurrentNode();
-        if (!node) return(NULL);
+        if( node == NULL ) {
+            return( NULL );
+        }
     }
 
     pres = _wpi_getpres( HWND_DESKTOP );
     xorandpres = _wpi_createcompatiblepres( pres, Instance, &xoranddc );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    newbitmap = _wpi_createcompatiblebitmap(pres, node->width, node->height );
+    newbitmap = _wpi_createcompatiblebitmap( pres, node->width, node->height );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
     _wpi_torgbmode( mempres );
     _wpi_torgbmode( xorandpres );
-    bkcolour = GetBkColour();
+    bkcolor = GetViewBkColor();
 
 #ifdef __OS2_PM__
-    _wpi_preparemono( mempres, BLACK, bkcolour );
+    _wpi_preparemono( mempres, BLACK, bkcolor );
 #endif
     oldbitmap = _wpi_selectobject( mempres, newbitmap );
 
-    brush = _wpi_createsolidbrush( bkcolour );
+    brush = _wpi_createsolidbrush( bkcolor );
     oldbrush = _wpi_selectobject( mempres, brush );
 
     _wpi_patblt( mempres, 0, 0, node->width, node->height, PATCOPY );
@@ -93,22 +97,22 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
     if( freehandpres == (WPI_PRES)NULL ) {
         oldxorandbitmap = _wpi_selectobject( xorandpres, node->handbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
-                     xorandpres, 0, 0, SRCAND);
+                     xorandpres, 0, 0, SRCAND );
         _wpi_selectobject( xorandpres, oldxorandbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
-                     freehandpres, 0, 0, SRCAND);
+                     freehandpres, 0, 0, SRCAND );
     }
 
     GetFreeHandPresentationSpaces( NULL, NULL, &freehandpres );
     if( freehandpres == (WPI_PRES)NULL ) {
         oldxorandbitmap = _wpi_selectobject( xorandpres, node->hxorbitmap );
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
-                     xorandpres, 0, 0, SRCINVERT);
+                     xorandpres, 0, 0, SRCINVERT );
         _wpi_selectobject( xorandpres, oldxorandbitmap );
     } else {
         _wpi_bitblt( mempres, 0, 0, node->width, node->height,
-                     freehandpres, 0, 0, SRCINVERT);
+                     freehandpres, 0, 0, SRCINVERT );
     }
 
     _wpi_deletecompatiblepres( xorandpres, xoranddc );
@@ -116,12 +120,13 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
     _wpi_deletecompatiblepres( mempres, memdc );
 
     return( newbitmap );
+
 } /* CreateViewBitmap */
 
 /*
- * DuplicateBitmap - produces a duplicate of the bitmap.
+ * DuplicateBitmap - produces a duplicate of the bitmap
  */
-HBITMAP DuplicateBitmap( HBITMAP hbitmap)
+HBITMAP DuplicateBitmap( HBITMAP hbitmap )
 {
     HDC         srcdc;
     WPI_PRES    srcpres;
@@ -142,12 +147,12 @@ HBITMAP DuplicateBitmap( HBITMAP hbitmap)
     destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    newbitmap = _wpi_createbitmap(width, height, planes, bitspixel, NULL );
+    newbitmap = _wpi_createbitmap( width, height, planes, bitspixel, NULL );
 
     oldbitmap = _wpi_selectobject( srcpres, hbitmap );
     oldnewbitmap = _wpi_selectobject( destpres, newbitmap );
 
-    _wpi_bitblt(destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY);
+    _wpi_bitblt( destpres, 0, 0, width, height, srcpres, 0, 0, SRCCOPY );
 
     _wpi_selectobject( srcpres, oldbitmap );
     _wpi_selectobject( destpres, oldnewbitmap );
@@ -155,8 +160,12 @@ HBITMAP DuplicateBitmap( HBITMAP hbitmap)
     _wpi_deletecompatiblepres( srcpres, srcdc );
     _wpi_deletecompatiblepres( destpres, destdc );
     return( newbitmap );
+
 } /* DuplicateBitmap */
 
+/*
+ * IEStretchBlt
+ */
 BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
                                      int nWidthDest, int nHeightDest,
                    WPI_PRES hdcSrc, int nXOriginSrc, int nYOriginSrc,
@@ -176,35 +185,35 @@ BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
 
     num_strips.x = nWidthDest / 256;
     num_strips.x++;
-    if (nWidthDest > 32 && FALSE) {
+    if( nWidthDest > 32 && FALSE ) {
         /* use the version that returns exact bytes needed for bits */
-        linesize = BITS_INTO_BYTES( (unsigned long)( nWidthDest * bitcount), 1 );
+        linesize = BITS_INTO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
     } else {
         /* use the version that rounds up to 32 bits */
-        linesize = BITS_TO_BYTES( (unsigned long)( nWidthDest * bitcount), 1 );
+        linesize = BITS_TO_BYTES( (unsigned long)(nWidthDest * bitcount), 1 );
     }
-    num_strips.y = ( (unsigned long)nHeightDest * linesize ) / ( 16 * 1024 );
+    num_strips.y = ((unsigned long)nHeightDest * linesize) / (16 * 1024);
     num_strips.y++;
 
     if( num_strips.x > nWidthSrc ) {
         num_strips.x = nWidthSrc;
     } else if( num_strips.x < nWidthSrc ) {
-        num_strips.x += ( num_strips.x % 2 );
+        num_strips.x += num_strips.x % 2;
     }
 
     if( num_strips.y > nHeightSrc ) {
         num_strips.y = nHeightSrc;
     } else if( num_strips.y < nHeightSrc ) {
-        num_strips.y += ( num_strips.y % 2 );
+        num_strips.y += num_strips.y % 2;
     }
 
     slines.x = nWidthSrc / num_strips.x;
-    dlines.x = ( (unsigned long)slines.x * (unsigned long)nWidthDest ) /
-                   (unsigned long)nWidthSrc;
+    dlines.x = ((unsigned long)slines.x * (unsigned long)nWidthDest) /
+               (unsigned long)nWidthSrc;
 
     slines.y = nHeightSrc / num_strips.y;
-    dlines.y = ( (unsigned long)slines.y * (unsigned long)nHeightDest ) /
-                   (unsigned long)nHeightSrc;
+    dlines.y = ((unsigned long)slines.y * (unsigned long)nHeightDest) /
+               (unsigned long)nHeightSrc;
 
     srcpres = _wpi_createcompatiblepres( hdcDest, Instance, &srcdc );
     newbitmap = _wpi_createcompatiblebitmap( hdcDest, dlines.x, dlines.y );
@@ -212,24 +221,23 @@ BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
 
     sw = slines.x;
     dw = dlines.x;
-    for( x=0; slines.x * x <= nWidthSrc; x++ ) {
-        if( ( slines.x * x + sw ) > nWidthSrc ) {
+    for( x = 0; slines.x * x <= nWidthSrc; x++ ) {
+        if( slines.x * x + sw > nWidthSrc ) {
             sw = nWidthSrc - x * slines.x;
             dw = nWidthDest - x * dlines.x;
         }
         sh = slines.y;
         dh = dlines.y;
-        for( y=0; slines.y * y <= nHeightSrc; y++ ) {
-            if( ( slines.y * y + sh ) > nHeightSrc ) {
+        for( y = 0; slines.y * y <= nHeightSrc; y++ ) {
+            if( slines.y * y + sh > nHeightSrc ) {
                 sh = nHeightSrc - y * slines.y;
                 dh = nHeightDest - y * dlines.y;
             }
             _wpi_stretchblt( srcpres, 0, 0, dw, dh, hdcSrc,
-                             nXOriginSrc + slines.x*x, nYOriginSrc + slines.y*y,
+                             nXOriginSrc + slines.x * x, nYOriginSrc + slines.y * y,
                              sw, sh, fdwRop );
-            _wpi_bitblt( hdcDest, nXOriginDest + dlines.x*x,
-                         nYOriginDest + dlines.y*y, dw, dh, srcpres, 0, 0,
-                         SRCCOPY );
+            _wpi_bitblt( hdcDest, nXOriginDest + dlines.x * x,
+                         nYOriginDest + dlines.y * y, dw, dh, srcpres, 0, 0, SRCCOPY );
         }
     }
 
@@ -238,12 +246,14 @@ BOOL IEStretchBlt( WPI_PRES hdcDest, int nXOriginDest, int nYOriginDest,
     _wpi_deletecompatiblepres( srcpres, srcdc );
 
     return( TRUE );
-}
+
+} /* IEStretchBlt */
 
 /*
- * EnlargeImage - takes an mdi window handle and enlarges the view bitmap
- *                that goes with it.  It returns a handle to the bitmap.
- *                The bitmap must be deleted by the calling routine.
+ * EnlargeImage - take an MDI window handle and enlarge the view bitmap
+ *                that goes with it
+ *              - returns a handle to the bitmap
+ *              - the bitmap must be deleted by the calling routine
  */
 HBITMAP EnlargeImage( HWND hwnd )
 {
@@ -265,7 +275,9 @@ HBITMAP EnlargeImage( HWND hwnd )
     BITMAP      bm;
 
     node = SelectImage( hwnd );
-    if (!node) return (NULL);
+    if( node == NULL ) {
+        return( NULL );
+    }
 
     viewbitmap = CreateViewBitmap( node );
     _wpi_getclientrect( hwnd, &rc );
@@ -285,10 +297,10 @@ HBITMAP EnlargeImage( HWND hwnd )
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
     destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
-    newbitmap = _wpi_createcompatiblebitmap( pres, _wpi_getwidthrect(rc),
-                                                        _wpi_getheightrect(rc));
+    newbitmap = _wpi_createcompatiblebitmap( pres, _wpi_getwidthrect( rc ),
+                                                   _wpi_getheightrect( rc ) );
     _wpi_releasepres( HWND_DESKTOP, pres );
-    GetObject( newbitmap, sizeof(BITMAP), &bm );
+    GetObject( newbitmap, sizeof( BITMAP ), &bm );
 
     _wpi_torgbmode( destpres );
     _wpi_torgbmode( srcpres );
@@ -297,9 +309,9 @@ HBITMAP EnlargeImage( HWND hwnd )
     height = node->height;
     width = node->width;
 
-    IEStretchBlt( destpres, 0, 0, _wpi_getwidthrect(rc),
-            _wpi_getheightrect(rc), srcpres, 0, 0, width, height,
-            SRCCOPY, bm.bmBitsPixel );
+    IEStretchBlt( destpres, 0, 0, _wpi_getwidthrect( rc ),
+                  _wpi_getheightrect( rc ), srcpres, 0, 0, width, height,
+                  SRCCOPY, bm.bmBitsPixel );
 
     _wpi_selectobject( srcpres, oldbitmap );
     _wpi_deletecompatiblepres( srcpres, srcdc );
@@ -309,55 +321,57 @@ HBITMAP EnlargeImage( HWND hwnd )
     _wpi_deletecompatiblepres( destpres, destdc );
 
     return( newbitmap );
+
 } /* EnlargeImage */
 
 /*
- * SetIsSaved - Sets whether the given mdi child has been saved.
+ * SetIsSaved - set whether the given MDI child has been saved
  */
 void SetIsSaved( HWND hwnd, BOOL fissaved )
 {
     img_node    *node;
     img_node    *next_icon;
-    char        fname[ _MAX_FNAME ];
-    char        dir[ _MAX_DIR ];
-    char        ext[ _MAX_EXT ];
-    char        drive[ _MAX_DRIVE ];
-    char        title[ _MAX_EXT + _MAX_FNAME + 2];
+    char        fname[_MAX_FNAME];
+    char        dir[_MAX_DIR];
+    char        ext[_MAX_EXT];
+    char        drive[_MAX_DRIVE];
+    char        title[_MAX_EXT + _MAX_FNAME + 2];
     char        *main_title;
 
     node = GetImageNode( hwnd );
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
     // We do not check whether or not the image needs to have its
     // title bars updated here because sometimes we will save images
     // that are not modified to different files.
-    #if 0
-    if (fissaved == node->issaved) {
+#if 0
+    if( fissaved == node->issaved ) {
         return;
     }
-    #endif
+#endif
 
     next_icon = node;
-    while (next_icon) {
+    while( next_icon != NULL ) {
         next_icon->issaved = fissaved;
         next_icon = next_icon->nexticon;
     }
 
     if( fissaved ) {
-        _wpi_getwindowtext( _wpi_getframe(node->hwnd), title, 14 );
-        if( ( strnicmp( title, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) &&
-            ( strnicmp( node->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) ) {
+        _wpi_getwindowtext( _wpi_getframe( node->hwnd ), title, sizeof( title ) );
+        if( strnicmp( title, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 &&
+            strnicmp( node->fname, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
             return;
         }
         _splitpath( node->fname, drive, dir, fname, ext );
 
-        strcpy( title, strupr(fname) );
-        strcat( title, strupr(ext) );
-        _wpi_setwindowtext( _wpi_getframe(node->hwnd), (LPSTR)title );
+        strcpy( title, strupr( fname ) );
+        strcat( title, strupr( ext ) );
+        _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
-        main_title = (char *)
-            MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
-        if( main_title ) {
+        main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
+        if( main_title != NULL ) {
             strcpy( main_title, IEAppTitle );
             strcat( main_title, " - " );
             strcat( main_title, title );
@@ -365,23 +379,23 @@ void SetIsSaved( HWND hwnd, BOOL fissaved )
             MemFree( main_title );
         }
     } else {
-        _wpi_getwindowtext( _wpi_getframe(node->hwnd), title, 14 );
+        _wpi_getwindowtext( _wpi_getframe( node->hwnd ), title, sizeof( title ) );
         if( strnicmp( title, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
             return;
-        } else if (title[strlen(title)-1] == '*') {
+        } else if( title[strlen( title ) - 1] == '*' ) {
             return;
         } else {
             strcat( title, "*" );
-            _wpi_setwindowtext( _wpi_getframe(node->hwnd), (LPSTR)title );
+            _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
         }
     }
+
 } /* SetIsSaved */
 
 /*
- * OutlineRectangle - This routine outlines a rectangle with the xor pen.
+ * OutlineRectangle - outline a rectangle with the XOR pen
  */
-void OutlineRectangle( BOOL firsttime, WPI_PRES pres, WPI_RECT *prevrc,
-                                                            WPI_RECT *newrc )
+void OutlineRectangle( BOOL firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc )
 {
     int         prevrop2;
     HBRUSH      holdbrush;
@@ -398,7 +412,7 @@ void OutlineRectangle( BOOL firsttime, WPI_PRES pres, WPI_RECT *prevrc,
     holdpen = _wpi_selectobject( pres, whitepen );
 
     prevrop2 = _wpi_setrop2( pres, R2_XORPEN );
-    if (!firsttime) {
+    if( !firsttime ) {
         _wpi_getintrectvalues( *prevrc, &left, &top, &right, &bottom );
         /*
          * In this case don't call _wpi_convertheight because of the
@@ -415,15 +429,16 @@ void OutlineRectangle( BOOL firsttime, WPI_PRES pres, WPI_RECT *prevrc,
     _wpi_setrop2( pres, prevrop2 );
     _wpi_deleteobject( whitepen );
     _wpi_deletenullbrush( nullbrush );
+
 } /* OutlineRectangle */
 
 /*
- * GetFnameFromPath - given a full pathname, return just the file name.
+ * GetFnameFromPath - given a full pathname, return just the file name
  */
 void GetFnameFromPath( char *fullpath, char *fname )
 {
-    char        filename[ _MAX_FNAME ];
-    char        ext[ _MAX_EXT ];
+    char        filename[_MAX_FNAME];
+    char        ext[_MAX_EXT];
 
     if( strnicmp( fullpath, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
         strcpy( fname, fullpath );
@@ -431,21 +446,23 @@ void GetFnameFromPath( char *fullpath, char *fname )
     }
     _splitpath( fullpath, NULL, NULL, filename, ext );
 
-    strcpy( fname, strupr(filename) );
-    strcat( fname, strupr(ext) );
+    strcpy( fname, strupr( filename ) );
+    strcat( fname, strupr( ext ) );
 
 } /* GetFnameFromPath */
 
 /*
- * GrayEditOptions - grays the edit options (at the beginning and when an
- *                   image is closed).
+ * GrayEditOptions - gray the edit options (at the beginning and when an
+ *                   image is closed)
  */
 void GrayEditOptions( void )
 {
     HMENU       hmenu;
 
-    if (!HMainWindow) return;
-    hmenu = _wpi_getmenu( _wpi_getframe(HMainWindow) );
+    if( HMainWindow == NULL ) {
+        return;
+    }
+    hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
 
     _wpi_enablemenuitem( hmenu, IMGED_UNDO, FALSE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_REDO, FALSE, FALSE );
@@ -466,10 +483,11 @@ void GrayEditOptions( void )
     _wpi_enablemenuitem( hmenu, IMGED_FLIPVERT, FALSE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_ROTATECC, FALSE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_ROTATECL, FALSE, FALSE );
+
 } /* GrayEditOptions */
 
 /*
- * GetPosProc - used to get the position of all the child windows
+ * GetPosProc - get the position of all the child windows
  */
 BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
 {
@@ -481,18 +499,18 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
 
 #ifdef __OS2_PM__
     if( windowIndex >= imageMax ) {
-        return 0;
+        return( 0 );
     }
 #endif
-    if ( _wpi_getowner(hwnd) ) {
-        return 1;
+    if( _wpi_getowner( hwnd ) != NULL ) {
+        return( 1 );
     }
 
-    if ( _wpi_isiconic(hwnd) ) {
+    if( _wpi_isiconic( hwnd ) ) {
         windowCoords[windowIndex].x = -1;
         windowCoords[windowIndex].y = -1;
-        ++windowIndex;
-        return 1;
+        windowIndex++;
+        return( 1 );
     }
 
     _wpi_getwindowrect( hwnd, &windowrect );
@@ -501,42 +519,44 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
     topleft.y = top;
 
     _wpi_screentoclient( ClientWindow, &topleft );
-    if (topleft.x < 0) {
+    if( topleft.x < 0 ) {
         topleft.x = 0;
     }
 #ifndef __OS2_PM__
-    if (topleft.y < 0) {
+    if( topleft.y < 0 ) {
         topleft.y = 0;
     }
 #endif
     windowCoords[windowIndex] = topleft;
-    ++windowIndex;
-    return 1;
+    windowIndex++;
+    return( 1 );
+
 } /* GetPosProc */
 
 /*
- * FindOrigin - This function "cascades" the windows to find the placement
- *              of the new mdi child.  Origin is expected to come in as 0,0
- *              or the equivalent for PM.
+ * FindOrigin - "cascade" the windows to find the placement of the new MDI child
+ *            - origin is expected to come in as (0, 0) or the equivalent for PM
  */
 void FindOrigin( WPI_POINT *new_origin )
 {
-    WPI_ENUMPROC        fp;
-    int         image_count;
-    int         i,j;
-    WPI_POINT   temp;
-    WPI_RECT    proposed;
-    int         width;
-    int         base;
+    WPI_ENUMPROC    fp;
+    int             image_count;
+    int             i, j;
+    WPI_POINT       temp;
+    WPI_RECT        proposed;
+    int             width;
+    int             base;
 
     image_count = DoImagesExist();
 
-    if (!image_count) return;
+    if( image_count == 0 ) {
+        return;
+    }
 
 #ifdef __OS2_PM__
     imageMax = image_count;
 #endif
-    windowCoords = MemAlloc( image_count * sizeof(WPI_POINT) );
+    windowCoords = MemAlloc( image_count * sizeof( WPI_POINT ) );
     windowIndex = 0;
 
     fp = _wpi_makeenumprocinstance( GetPosProc, Instance );
@@ -546,49 +566,49 @@ void FindOrigin( WPI_POINT *new_origin )
     /*
      * I'm just using a simple bubble sort ... we're using small amounts of data
      */
-    for (i=0; i < image_count; ++i) {
-        for (j=0; j < image_count-i-1; ++j) {
-            if ( windowCoords[j].x > windowCoords[j+1].x ) {
+    for( i = 0; i < image_count; i++ ) {
+        for( j = 0; j < image_count - i - 1; j++ ) {
+            if( windowCoords[j].x > windowCoords[j + 1].x ) {
                 temp = windowCoords[j];
-                windowCoords[j] = windowCoords[j+1];
-                windowCoords[j+1] = temp;
+                windowCoords[j] = windowCoords[j + 1];
+                windowCoords[j + 1] = temp;
             }
         }
     }
 
     /*
-     * minimized windows will have coordinates set to negative, and we only
+     * Minimized windows will have coordinates set to negative, and we only
      * want non-minimized windows.
      */
-    for (base=0; base < image_count; ++ base) {
-        if (windowCoords[base].x >= 0) {
+    for( base = 0; base < image_count; base++ ) {
+        if( windowCoords[base].x >= 0 ) {
             break;
         }
     }
-    if (base >= image_count) {
+    if( base >= image_count ) {
         MemFree( windowCoords );
         return;
     }
 
     width = _wpi_getsystemmetrics( SM_CYCAPTION );
 #ifndef __OS2_PM__
-    _wpi_setintrectvalues(&proposed, new_origin->x, new_origin->y,
-                                new_origin->x + width, new_origin->y + width);
+    _wpi_setintrectvalues( &proposed, new_origin->x, new_origin->y,
+                           new_origin->x + width, new_origin->y + width );
 #else
-    _wpi_setrectvalues(&proposed, new_origin->x, new_origin->y - 1,
-                                new_origin->x + width, new_origin->y + width-1);
+    _wpi_setrectvalues( &proposed, new_origin->x, new_origin->y - 1,
+                        new_origin->x + width, new_origin->y + width - 1 );
 #endif
 
     /*
-     * try to place at the origin passed in if we can
+     * Try to place at the origin passed in if we can.
      */
-    if ( !_wpi_ptinrect(&proposed, windowCoords[base]) ) {
+    if( !_wpi_ptinrect( &proposed, windowCoords[base] ) ) {
         MemFree( windowCoords );
         return;
     }
 
-    for (i=base; i < image_count-1; ++i) {
-        if ( windowCoords[i+1].x - windowCoords[i].x > 2*width ) {
+    for( i = base; i < image_count - 1; i++ ) {
+        if( windowCoords[i + 1].x - windowCoords[i].x > 2 * width ) {
             break;
         }
     }
@@ -602,7 +622,7 @@ void FindOrigin( WPI_POINT *new_origin )
 
     _wpi_getclientrect( ClientWindow, &proposed );
 #ifndef __OS2_PM__
-    if ( !_wpi_ptinrect(&proposed, temp) ) {
+    if( !_wpi_ptinrect( &proposed, temp ) ) {
         return;
     } else {
         new_origin->x = temp.x;
@@ -614,41 +634,42 @@ void FindOrigin( WPI_POINT *new_origin )
 #endif
 
     MemFree( windowCoords );
+
 } /* FindOrigin */
 
 /*
- * SetMenus - sets the menu options for the new image.
-  */
+ * SetMenus - set the menu options for the new image
+ */
 void SetMenus( img_node *node )
 {
     HMENU       hmenu;
 
-    hmenu = _wpi_getmenu( _wpi_getframe(HMainWindow) );
+    hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
     _wpi_enablemenuitem( hmenu, IMGED_SNAP, TRUE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_CUT, TRUE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_COPY, TRUE, FALSE );
     _wpi_enablemenuitem( hmenu, IMGED_CLEAR, TRUE, FALSE );
 #ifndef __OS2_PM__
-    SetColourMenus( node );
+    SetColorMenus( node );
 #endif
 
-    if (node->imgtype == BITMAP_IMG) {
+    if( node->imgtype == BITMAP_IMG ) {
         DisplayScreenClrs( FALSE );
         AddHotSpotTool( FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_DELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, TRUE, FALSE );
-    } else if (node->imgtype == ICON_IMG) {
+    } else if( node->imgtype == ICON_IMG ) {
         DisplayScreenClrs( TRUE );
         AddHotSpotTool( FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SELIMG, TRUE, FALSE );
-        if ( node->num_of_images < NUM_OF_ICONS ) {
+        if( node->num_of_images < NUM_OF_ICONS ) {
             _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, TRUE, FALSE );
         } else {
             _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, FALSE, FALSE );
         }
-        if ( node->num_of_images > 1 ) {
+        if( node->num_of_images > 1 ) {
             _wpi_enablemenuitem( hmenu, IMGED_DELIMG, TRUE, FALSE );
             _wpi_enablemenuitem( hmenu, IMGED_SELIMG, TRUE, FALSE );
         } else {
@@ -657,7 +678,7 @@ void SetMenus( img_node *node )
         }
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, FALSE, FALSE );
         SetIconInfo( node );
-    } else if (node->imgtype == CURSOR_IMG) {
+    } else if( node->imgtype == CURSOR_IMG ) {
         DisplayScreenClrs( TRUE );
         AddHotSpotTool( TRUE );
         _wpi_enablemenuitem( hmenu, IMGED_NEWIMG, FALSE, FALSE );
@@ -665,11 +686,13 @@ void SetMenus( img_node *node )
         _wpi_enablemenuitem( hmenu, IMGED_DELIMG, FALSE, FALSE );
         _wpi_enablemenuitem( hmenu, IMGED_SIZE, FALSE, FALSE );
     }
+
 } /* SetMenus */
 
 #if 0
-/*      This routine is not necessary as far as I can see.
- * ConvertToDIBitmap - converts the device dependent bitmap to a DI bitmap
+
+/*
+ * ConvertToDIBitmap - convert the device dependent bitmap to a DI bitmap
  */
 void ConvertToDIBitmap( HBITMAP hbitmap )
 {
@@ -686,15 +709,15 @@ void ConvertToDIBitmap( HBITMAP hbitmap )
     node = GetCurrentNode();
     bmi = GetDIBitmapInfo( node );
 
-    GetObject( hbitmap, sizeof(BITMAP), &bm );
+    GetObject( hbitmap, sizeof( BITMAP ), &bm );
     /*
      * Replace the fields on the info header with values for *this* bitmap.
      */
     bmi->bmiHeader.biWidth = bm.bmWidth;
     bmi->bmiHeader.biHeight = bm.bmHeight;
-    if (bmi->bmiHeader.bmWidth > 32 && FALSE) {
+    if( bmi->bmiHeader.bmWidth > 32 && FALSE ) {
         bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( bmi->bmiHeader.biBitCount *
-                                                    bm.bmWidth, bm.bmHeight );
+                                                      bm.bmWidth, bm.bmHeight );
     } else {
         bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( bmi->bmiHeader.biBitCount *
                                                     bm.bmWidth, bm.bmHeight );
@@ -702,14 +725,14 @@ void ConvertToDIBitmap( HBITMAP hbitmap )
     bits = MemAlloc( bmi->bmiHeader.biSizeImage );
 
     hdc = GetDC( NULL );
-    GetDIBits(hdc, hbitmap, 0, bmi->bmiHeader.biHeight, bits, bmi,
-                                                        DIB_RGB_COLORS);
-    SetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, bits, bmi,
-                                                        DIB_RGB_COLORS);
+    GetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, bits, bmi, DIB_RGB_COLORS );
+    SetDIBits( hdc, hbitmap, 0, bmi->bmiHeader.biHeight, bits, bmi, DIB_RGB_COLORS );
 
     ReleaseDC( NULL, hdc );
 
     FreeDIBitmapInfo( bmi );
     MemFree( bits );
+
 } /* ConvertToDIBitmap */
+
 #endif

@@ -1,8 +1,4 @@
-#if defined( __PC98__ )
-  #include <graph98.h>
-#else
-  #include <graph.h>
-#endif
+#include <graph.h>
 #include <pgchart.h>
 #include <string.h>
 #include <conio.h>

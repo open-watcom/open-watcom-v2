@@ -33,10 +33,11 @@
 #include "standard.h"
 #include "coderep.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "typedef.h"
+#include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
@@ -48,7 +49,7 @@ extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
 extern  void            BuffWSLString(char*);
 extern  seg_id          SetOP(seg_id);
-extern  offset          AskLocation();
+extern  offset          AskLocation( void );
 extern  void            SetLocation(offset);
 extern  void            ChkDbgSegSize( offset, bool );
 extern  void            DataInt(short_offset);
@@ -65,12 +66,14 @@ extern  void            BuffStart(temp_buff*,uint);
 extern  void            BuffEnd(seg_id);
 extern  void            LocDump( dbg_loc );
 extern  dbg_loc         LocDupl( dbg_loc );
-extern  type_def        *TypeAddress(cg_type);
+
+static  void            NewType( temp_buff *temp, uint ty_def );
+static  void            EndType( bool check_too_big );
 
 extern  unsigned_16     TypeIdx;
 extern  seg_id          DbgTypes;
-extern cue_ctl          LineInfo;
-extern fname_ctl       DBFiles;
+extern  cue_ctl         LineInfo;
+extern  fname_ctl       DBFiles;
 
 #define MAX_TYPE_SIZE  (1024 * 16)
 
@@ -83,7 +86,7 @@ static  byte    GetScalar( cg_type tipe ) {
     type_def    *tipe_addr;
 
     tipe_addr = TypeAddress( tipe );
-    if( tipe_addr->refno == T_DEFAULT ) {
+    if( tipe_addr->refno == TY_DEFAULT ) {
         return( SCALAR_VOID );
     }
     scalar = tipe_addr->length - 1;
@@ -131,7 +134,7 @@ extern  void    WVSrcCueLoc( void  ) {
 // Leave a dword to be back patched with the offset of line info
     temp_buff   temp;
 
-    BuffStart( &temp, TY_NAME + NAME_CUEINFO );
+    BuffStart( &temp, WT_NAME + NAME_CUEINFO );
     BuffForward( &CueInfoOffset ); /* does a  0 word */
     BuffWord( 0 ); /* another 0 word */
     EndType( FALSE );
@@ -142,7 +145,7 @@ extern  void    WVTypesEof( void ) {
 // Leave Eof indicator for types
     temp_buff   temp;
 
-    BuffStart( &temp, TY_NAME + NAME_EOF );
+    BuffStart( &temp, WT_NAME + NAME_EOF );
     EndType( FALSE );
 }
 
@@ -151,7 +154,7 @@ extern  dbg_type        WVFtnType( char *name, dbg_ftn_type tipe ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_NAME + NAME_SCALAR );
+    NewType( &temp, WT_NAME + NAME_SCALAR );
     BuffByte( tipe );
     BuffWSLString( name );
     EndType( TRUE );
@@ -164,7 +167,7 @@ extern  dbg_type        WVScalar( char *name, cg_type tipe ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_NAME + NAME_SCALAR );
+    NewType( &temp, WT_NAME + NAME_SCALAR );
     BuffByte( GetScalar( tipe ) );
     BuffWSLString( name );
     EndType( TRUE );
@@ -177,7 +180,7 @@ extern  dbg_type        WVScope( char *name ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_NAME + NAME_SCOPE );
+    NewType( &temp, WT_NAME + NAME_SCOPE );
     BuffWSLString( name );
     EndType( TRUE );
     return( TypeIdx );
@@ -189,7 +192,7 @@ extern  void    WVDumpName( name_entry *name, dbg_type tipe ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_NAME + NAME_NAME );
+    NewType( &temp, WT_NAME + NAME_NAME );
     name->refno = TypeIdx;
     if( _IsModel( DBG_TYPES ) ) {
         BuffIndex( name->scope );
@@ -223,7 +226,7 @@ extern  dbg_type        WVCharBlock( unsigned_32 len ) {
     int         class;
 
     class = SignedSizeClass( len );
-    NewType( &temp, TY_CHAR_BLOCK + NAME_CHAR_BYTE + class );
+    NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_BYTE + class );
     BuffValue( len, class );
     EndType( TRUE );
     return( TypeIdx );
@@ -235,7 +238,7 @@ extern  dbg_type        WVIndCharBlock( back_handle len, cg_type len_type,
 
     temp_buff   temp;
 
-    NewType( &temp, TY_CHAR_BLOCK + NAME_CHAR_IND );
+    NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_IND );
     BuffByte( GetScalar( len_type ) );
     BuffBack( len, off );
     EndType( TRUE );
@@ -247,7 +250,7 @@ extern  dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_CHAR_BLOCK + NAME_CHAR_LOC );
+    NewType( &temp, WT_CHAR_BLOCK + NAME_CHAR_LOC );
     BuffByte( GetScalar( len_type ) );
     LocDump( LocDupl( loc ) );
     EndType( TRUE );
@@ -262,7 +265,7 @@ extern  dbg_type        WVFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
     temp_buff   temp;
 
-    NewType( &temp, TY_ARRAY + FORTRAN_TYPE );
+    NewType( &temp, WT_ARRAY + FORTRAN_TYPE );
     BuffByte( GetScalar( lo_bound_tipe ) );
     BuffByte( GetScalar( num_elts_tipe ) );
     BuffBack( dims, off );
@@ -277,7 +280,7 @@ extern  dbg_type        WVArray( dbg_type idx, dbg_type base ) {
 
     temp_buff   temp;
 
-    NewType( &temp, TY_ARRAY + ARRAY_TYPE );
+    NewType( &temp, WT_ARRAY + ARRAY_TYPE );
     BuffIndex( idx );
     BuffIndex( base );
     EndType( TRUE );
@@ -292,7 +295,7 @@ extern  dbg_type        WVIntArray( unsigned_32 hi, dbg_type base ) {
     temp_buff   temp;
 
     class = SignedSizeClass( hi );
-    NewType( &temp, TY_ARRAY + ARRAY_BYTE + class );
+    NewType( &temp, WT_ARRAY + ARRAY_BYTE + class );
     BuffValue( hi, class );
     BuffIndex( base );
     EndType( TRUE );
@@ -312,7 +315,7 @@ extern  dbg_type        WVSubRange( signed_32 lo, signed_32 hi,
     if( class_lo > class_hi ) {
        class_hi = class_lo;
     }
-    NewType( &temp, TY_SUBRANGE + RANGE_BYTE + class_hi );
+    NewType( &temp, WT_SUBRANGE + RANGE_BYTE + class_hi );
     BuffValue( lo, class_hi );
     BuffValue( hi, class_hi );
     BuffIndex( base );
@@ -342,7 +345,7 @@ static  void    ReverseDims( array_list *ar  ){
 extern  dbg_type    WVEndArray( array_list *ar ){
 /************************************************/
     dim_any   *dim;
-    dbg_type  ret;
+    dbg_type  ret = 0;
     dbg_type  sub;
 
 //  ReverseDims( ar );
@@ -363,7 +366,7 @@ extern  dbg_type    WVEndArray( array_list *ar ){
 
         }
         ar->list = dim->entry.next;
-        _Free( dim, sizeof( field_entry )  );
+        CGFree( dim  );
     }
     return( ret );
 }
@@ -375,12 +378,12 @@ static  dbg_type        DbgPtr( cg_type ptr_type, dbg_type base, int adjust,
     temp_buff   temp;
 
     switch( TypeAddress( ptr_type )->refno ) {
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-        NewType( &temp, TY_POINTER + POINTER_NEAR + adjust );
+    case TY_NEAR_POINTER:
+    case TY_NEAR_CODE_PTR:
+        NewType( &temp, WT_POINTER + POINTER_NEAR + adjust );
         break;
     default:
-        NewType( &temp, TY_POINTER + POINTER_FAR + adjust );
+        NewType( &temp, WT_POINTER + POINTER_FAR + adjust );
     }
     BuffIndex( base );
     if( loc_segment != NULL ) {
@@ -410,23 +413,23 @@ extern  dbg_type        WVBasedPtr( cg_type ptr_type, dbg_type base,
     return( DbgPtr( ptr_type, base, 0, loc_segment ) );
 }
 
-static  void    AddField( field_any **owner, field_member *field  ){
+static  void    AddField( field_any **owner, field_any *field  ){
 /*** Sort according to WV(brian)***********************************/
 
-    field_member  *curr;
+    field_any     *curr;
     unsigned      strt;
     offset        off;
 
-    strt = field->b_strt;
-    off  = field->u.off;
+    strt = field->member.b_strt;
+    off  = field->member.u.off;
     for(;;) {
         curr = *owner;
         if( curr == NULL ) break;
-        if( curr->entry.field_type == FIELD_OFFSET ) {
-            if( (off == curr->u.off) && (strt >= curr->b_strt) ) break;
-            if( off >= curr->u.off ) break;
+        if( curr->member.entry.field_type == FIELD_OFFSET ) {
+            if( (off == curr->member.u.off) && (strt >= curr->member.b_strt) ) break;
+            if( off >= curr->member.u.off ) break;
         }
-        owner = &curr->entry.next;
+        owner = &curr->member.entry.next;
     }
     field->entry.next = curr;
     *owner = field;
@@ -436,8 +439,8 @@ static  void    SortFields( struct_list *st  ){
 /***********************************************/
 
     field_any   *curr;
-    field_entry *next;
-    field_entry *head;
+    field_any   *next;
+    field_any   *head;
 
     curr = st->list;
     head = NULL;
@@ -463,7 +466,7 @@ extern  dbg_type        WVEndStruct( struct_list  *st ) {
     uint        class;
     temp_buff   temp;
 
-    NewType( &temp, TY_STRUCTURE + STRUCT_LIST );
+    NewType( &temp, WT_STRUCTURE + STRUCT_LIST );
     BuffWord( st->num );
     BuffDWord( st->size );
     EndType( TRUE );
@@ -473,17 +476,17 @@ extern  dbg_type        WVEndStruct( struct_list  *st ) {
         if( field == NULL ) break;
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
-            BuffStart( &temp, TY_STRUCTURE + STRUCT_INHERIT );
+            BuffStart( &temp, WT_STRUCTURE + STRUCT_INHERIT );
             LocDump( field->bclass.u.adjustor );
             BuffIndex( field->bclass.base );
             break;
         case FIELD_LOC:
             if( field->member.b_len == 0 ) {
-                BuffStart( &temp, TY_STRUCTURE + STRUCT_F_LOC );
+                BuffStart( &temp, WT_STRUCTURE + STRUCT_F_LOC );
                 BuffByte( field->member.attr );
                 LocDump( field->member.u.loc );
             } else {
-                BuffStart( &temp, TY_STRUCTURE + STRUCT_BF_LOC );
+                BuffStart( &temp, WT_STRUCTURE + STRUCT_BF_LOC );
                 BuffByte( field->member.attr );
                 LocDump( field->member.u.loc );
                 BuffByte( field->member.b_strt );
@@ -501,10 +504,10 @@ extern  dbg_type        WVEndStruct( struct_list  *st ) {
                 class = 2;
             }
             if( field->member.b_len == 0 ) {
-                BuffStart( &temp, TY_STRUCTURE + STRUCT_F_BYTE + class );
+                BuffStart( &temp, WT_STRUCTURE + STRUCT_F_BYTE + class );
                 BuffValue( field->member.u.off, class );
             } else {
-                BuffStart( &temp, TY_STRUCTURE + STRUCT_BF_BYTE + class );
+                BuffStart( &temp, WT_STRUCTURE + STRUCT_BF_BYTE + class );
                 BuffValue( field->member.u.off, class );
                 BuffByte( field->member.b_strt );
                 BuffByte( field->member.b_len );
@@ -518,10 +521,12 @@ extern  dbg_type        WVEndStruct( struct_list  *st ) {
             break;
         case FIELD_VFUNC:
             break;
+        default:
+            break;
         }
         EndType( FALSE );
         st->list = field->entry.next;
-        _Free( field, sizeof( field_entry )  );
+        CGFree( field  );
     }
     return( TypeIdx );
 }
@@ -535,7 +540,7 @@ extern  dbg_type        WVEndEnum( enum_list *en ) {
     temp_buff   temp;
     signed_64   val;
 
-    NewType( &temp, TY_ENUMERATED + ENUM_LIST );
+    NewType( &temp, WT_ENUMERATED + ENUM_LIST );
     BuffWord( en->num );
     BuffByte( GetScalar( en->tipe ) );
     EndType( TRUE );
@@ -544,7 +549,7 @@ extern  dbg_type        WVEndEnum( enum_list *en ) {
         if( cons == NULL ) break;
         val = cons->val;
         class = SignedSizeClass64( val );
-        BuffStart( &temp, TY_ENUMERATED + ENUM_BYTE + class );
+        BuffStart( &temp, WT_ENUMERATED + ENUM_BYTE + class );
         if( class == 3 ){
             BuffValue( val.u._32[I64LO32], 2 );
             BuffValue( val.u._32[I64HI32], 2 );
@@ -554,7 +559,7 @@ extern  dbg_type        WVEndEnum( enum_list *en ) {
         BuffString( cons->len, cons->name );
         EndType( FALSE );
         en->list = cons->next;
-        _Free( cons, sizeof( const_entry ) + cons->len );
+        CGFree( cons );
     }
     return( TypeIdx );
 }
@@ -567,10 +572,10 @@ extern  dbg_type        WVEndProc( proc_list  *pr ) {
     temp_buff   temp;
     dbg_type    proc_type;
 
-    if( pr->call == T_NEAR_CODE_PTR ) {
-        NewType( &temp, TY_PROCEDURE + PROC_NEAR );
+    if( pr->call == TY_NEAR_CODE_PTR ) {
+        NewType( &temp, WT_PROCEDURE + PROC_NEAR );
    } else {
-        NewType( &temp, TY_PROCEDURE + PROC_FAR );
+        NewType( &temp, WT_PROCEDURE + PROC_FAR );
     }
     proc_type = TypeIdx;
     BuffIndex( pr->ret );
@@ -581,11 +586,11 @@ extern  dbg_type        WVEndProc( proc_list  *pr ) {
         if( BuffLoc() > DB_BUFF_SIZE - 4 ) {
             /* record is getting too big - split it up */
             EndType( TRUE );
-            NewType( &temp, TY_PROCEDURE + PROC_EXT_PARM_LIST );
+            NewType( &temp, WT_PROCEDURE + PROC_EXT_PARM_LIST );
         }
         BuffIndex( parm->tipe );
         pr->list = parm->next;
-        _Free( parm, sizeof( parm_entry ) );
+        CGFree( parm );
     }
     EndType( FALSE );
     return( proc_type );
@@ -626,7 +631,7 @@ static void DmpFileInfo( void ){
     }
     lst = DBFiles.lst;
     while( lst != NULL ){
-        DataBytes( lst->len, lst->fname );
+        DataBytes( lst->len, (byte *)lst->fname );
         lst = lst->next;
     }
 }

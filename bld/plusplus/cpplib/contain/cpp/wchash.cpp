@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementations for the base classes used by
+*               the WATCOM Container Hash Classes
 *
 ****************************************************************************/
 
@@ -179,15 +179,6 @@ _WPRTLINK WCSLink * WCHashBase::base_set_insert( TTypePtr elem ) {
     base_throw_not_unique();
     return( 0 );
 };
-
-
-
-//
-// Basic hash destructor
-//
-
-_WPRTLINK WCHashBase::~WCHashBase() {};
-
 
 
 //
@@ -357,4 +348,14 @@ _WPRTLINK void WCHashIterBase::reset() {
     }
     curr_bucket = 0;
     at_end = 0;
+};
+
+//
+// Supply basic hash destructor for pure virtual function
+//
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WCHashBase::~WCHashBase() {
 };

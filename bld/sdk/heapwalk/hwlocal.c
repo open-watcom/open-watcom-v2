@@ -182,7 +182,7 @@ BOOL FormatLocalHeapListItem( char *line, unsigned index ) {
     }
     sprintf( line, "%04X    %04X  %6d %-9s %4d  %-20s",
              item->wAddress,
-             item->hHandle,
+             (UINT)item->hHandle,
              item->wSize,
              flags,
              item->wcLock,
@@ -195,8 +195,8 @@ BOOL FormatLocalHeapListItem( char *line, unsigned index ) {
  * EnableLocalMenu - grey or enable the local menu in the main window
  */
 
-static EnableLocalMenu( BOOL enable ) {
-
+static void EnableLocalMenu( BOOL enable )
+{
     WORD                action;
     HMENU               mh;
 
@@ -232,7 +232,7 @@ static BOOL AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
  */
 BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
 
-    int         top, sel;
+    LRESULT     top, sel;
 
     top = SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
     sel = SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );

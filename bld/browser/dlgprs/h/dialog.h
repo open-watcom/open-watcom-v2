@@ -56,7 +56,7 @@ public:
                                         Dialog( const char * name, Rect rect );
                                         ~Dialog();
 
-            int                         addRect( Rect & r );
+            int                         addRect( const Rect & r );
             void                        setCaption( const char * text );
             void                        setFont( int ptsize, const char * text );
             void                        setStyle( long style );

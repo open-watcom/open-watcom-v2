@@ -50,17 +50,30 @@ static buffer_position          OutputPos = 0;
 
 void FmtHexNum( char *buff, unsigned prec, unsigned long value )
 {
+    char * src;
+    char * dst;
+
     if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
-        sprintf( buff, "0%*.*lxH", prec, prec, value );
-        if( isdigit( buff[1] ) ) {
-            /* don't need the extra leading zero, squeeze it out */
-            while( buff[0] != '\0' ) {
-                buff[0] = buff[1];
-                ++buff;
+        if( ( value == 0 ) && ( prec == 0 ) ) {
+            strcpy( buff, "0" );
+        } else {
+            sprintf( buff, "0%*.*lxH", prec, prec, value );
+        }
+        /* don't need the extra leading zero, squeeze it out */
+        for ( src = dst = buff; *src != '\0'; src++ ) {
+            if ( dst != buff || src[0] != '0' || !isdigit( src[1] ) ) {
+                *dst = *src;
+                dst++;
             }
         }
+        *dst = '\0';
+        if ( buff[1] == 'H' ) buff[1] = '\0';
     } else {
-        sprintf( buff, "0x%*.*lx", prec, prec, value );
+        if( ( value == 0 ) && ( prec == 0 ) ) {
+            strcpy( buff, "0x0" );
+        } else {
+            sprintf( buff, "0x%*.*lx", prec, prec, value );
+        }
     }
 }
 

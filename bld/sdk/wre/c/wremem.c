@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "stdlib.h"
 #include "string.h"
 #include "wrdll.h"
@@ -69,7 +69,7 @@ void WREMemClose( void )
 
 void *WREMemAlloc( size_t size )
 {
-    return( WRMemAlloc ( size ) );
+    return( WRMemAlloc( size ) );
 }
 
 void WREMemFree( void *ptr )
@@ -98,7 +98,7 @@ void MemStart( void )
 {
 #ifndef __386__
 #ifndef __ALPHA__
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 #endif
@@ -110,7 +110,7 @@ void *MemAlloc( unsigned size )
 
     p = WREMemAlloc( size );
 
-    if( p ) {
+    if( p != NULL ) {
         memset( p, 0, size );
     }
 
@@ -130,4 +130,3 @@ void MemFree( void *ptr )
 {
     WREMemFree( ptr );
 }
-

@@ -50,6 +50,7 @@ struct jump_list {
     jlist       *next;
     pobj_filter func;
 };
+
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
 STATIC jlist    *readJump[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
@@ -132,16 +133,6 @@ void PObjRegister( uint_8 command, uint_8 pass, pobj_filter func ) {
     }
 }
 
-void PObjRegList( const pobj_list *list, size_t len ) {
-/***************************************************/
-    size_t  i;
-
-/**/myassert( list != NULL );
-    for( i = 0; i < len; ++i ) {
-        PObjRegister( list[i].command, list[i].pass, list[i].func );
-    }
-}
-
 void PObjUnRegister( uint_8 command, uint_8 pass, pobj_filter func ) {
 /******************************************************************/
     jlist   **walk;
@@ -170,16 +161,6 @@ void PObjUnRegister( uint_8 command, uint_8 pass, pobj_filter func ) {
         walk = &(*walk)->next;
     }
 /**/never_reach();
-}
-
-void PObjUnRegList( const pobj_list *list, size_t len ) {
-/*****************************************************/
-    size_t  i;
-
-/**/myassert( list != NULL );
-    for( i = 0; i < len; ++i ) {
-        PObjUnRegister( list[i].command, list[i].pass, list[i].func );
-    }
 }
 
 void PObjEnqueue( obj_rec *objr ) {
@@ -543,7 +524,13 @@ STATIC int pass1LinnumData( obj_rec *objr ) {
     objr->d.linnum.num_lines = res.quot;
     linedata = objr->d.linnum.lines =
         MemAlloc( res.quot * sizeof( linnum_data ) );
-#if LITTLE_ENDIAN
+#if defined( __BIG_ENDIAN__ )
+    for( line = 0; line < res.quot; ++line ) {
+        linedata[ line ].number = ObjGet16( objr );
+        linedata[ line ].offset = ObjGetEither( objr );
+    }
+    ObjDetachData( objr );
+#else
     if( is32 ) {
         memcpy( linedata, ObjGet( objr, len ), len );
 /**/    myassert( sizeof( linnum_data ) == 6 );
@@ -552,12 +539,6 @@ STATIC int pass1LinnumData( obj_rec *objr ) {
             linedata[ line ].number = ObjGet16( objr );
             linedata[ line ].offset = (uint_32)ObjGet16( objr );
         }
-    }
-    ObjDetachData( objr );
-#else
-    for( line = 0; line < res.quot; ++line ) {
-        linedata[ line ].number = ObjGet16( objr );
-        linedata[ line ].offset = ObjGetEither( objr );
     }
     ObjDetachData( objr );
 #endif
@@ -596,7 +577,7 @@ STATIC int pass1Pubdef( obj_rec *objr ) {
     if( !ObjEOR( objr ) ) {
         for(;;) {
             name_len = ObjGet8( objr );
-            pubdata[ num_pubs ].name = NameAdd( ObjGet( objr, name_len ),
+            pubdata[ num_pubs ].name = NameAdd( (char *)ObjGet( objr, name_len ),
                 name_len );
             pubdata[ num_pubs ].offset = ObjGetEither( objr );
             pubdata[ num_pubs ].type.idx = ObjGetIndex( objr );

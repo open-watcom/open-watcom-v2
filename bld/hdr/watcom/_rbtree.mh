@@ -1,0 +1,2128 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: _rbtree (std::_OW::RedBlackTree definition)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is an OpenWatcom red black tree container
+//              implementation. Although it not part of the 14882 C++ standard
+//              library it is written with a similar interface. It is used by
+//              the OpenWatcom implementation of the C++ standard library
+//              (map, set, multimap, multiset)
+///////////////////////////////////////////////////////////////////////////
+#ifndef __RBTREE_H_INCLUDED
+#define __RBTREE_H_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _UTILITY_INCLUDED
+ #include <utility>
+#endif
+
+#ifndef _ITERATOR_INCLUDED
+ #include <iterator>
+#endif
+
+#ifndef _FUNCTIONAL_INCLUDED
+ #include <function>
+#endif
+
+#ifndef _MEMORY_INCLUDED
+ #include <memory>
+#endif
+
+namespace std {
+namespace _ow {
+
+/* ==================================================================
+ * value wrappers
+ * Two classes/functors for set and map that allow single keys and 
+ * pairs to be used so memory is not wasted.  Provides a common 
+ * interface for getting the key value so the same tree code can be used.
+ */
+
+template< class Key >
+struct TreeKeyWrapper{
+    typedef Key const value_type;
+    Key const& operator()( value_type const & v ) const
+        { return( v ); }
+};
+
+template< class Key, class Type >
+struct TreePairWrapper{
+    typedef pair< Key const, Type > value_type;
+    Key const& operator()( value_type const & v ) const
+        { return( v.first ); }
+};
+
+/* ==================================================================
+ * Red-Black Tree container interface
+ * To do: 
+ *  * find out what supposed to do with allocator alloc/construct exceptions
+ *  * rebind and copy allocator
+ *  * finish off all functions so has 14882 style interface
+ *  * check const is used where ever it can/needed
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+class RedBlackTree{
+public:
+    typedef ValueWrapper::value_type    value_type;
+    typedef Key                         key_type;
+    typedef unsigned int                size_type;
+
+protected:
+    struct Node{
+        enum Chroma { red = 0, black = 1 };
+        value_type value;
+        Node* left;
+        Node* right;
+    private:
+        Node* parent;
+
+    #if 0
+        // simple implementation
+        Chroma colour;
+    public:
+        void   setParent( Node* const p )   { parent = p; }
+        Node*  getParent()                  { return( parent ); }
+        void   setRed()                     { colour = red; }
+        void   setBlack()                   { colour = black; }
+        Chroma getColour()                  { return( colour ); }
+        void   setColour( Chroma c )        { colour = c; }
+        bool   isRed()                      { return( colour == red ); }
+        bool   isBlack()                    { return( colour == black ); }
+
+    #else
+        // colour hidden in parent
+    public:
+        void   setParent( Node* const p )
+        {   // debug assert parent really has lsb clear ?
+            parent = (Node*)( (long)p | ((long)parent & 1) );
+        }
+
+        Node* getParent()
+            { return( (Node*)( (long)parent & -2 ) ); }
+
+        void setRed()
+            { parent = (Node*)( (long)parent & -2 ) ; }
+
+        void setBlack()
+            { parent = (Node*)( (long)parent | 1 ) ; }
+
+        Chroma getColour()
+            { return( (Chroma)( (long)parent & 1 ) ); }
+
+        void setColour( Chroma c )
+        {
+            parent = (Node*)( (long)parent & -2 );
+            parent = (Node*)( (long)parent |  c );
+        }
+
+        bool isRed()
+            { return( !( (long)parent & 1 ) ); }
+
+        bool isBlack()
+            { return( (bool)( (long)parent & 1 ) ); }
+    #endif
+
+        Node( const value_type& v, Node* const p = 0, Chroma c = red )
+            : value( v ), left( 0 ), right( 0 )
+        {
+            setParent(p);
+            setColour(c);
+        }
+    };
+
+    // !!! moved up here until compiler bug fixed !!!
+    Allocator::rebind< Node >::other mem;
+
+public:
+    class iterator;
+
+    //ctors and dtor
+    explicit RedBlackTree( Compare c, Allocator a )
+        : mRoot(0), mFirst(0), mLast(0), mSize(0), mError(0), cmp(c), mem(a)
+    { }
+
+    template< class InputIterator >
+    RedBlackTree(
+        InputIterator f,
+        InputIterator l,
+        Compare const &c,
+        Allocator const &a )
+        : mRoot(0), mFirst(0), mLast(0), mSize(0), mError(0), cmp(c), mem(a)
+    {
+        // presume init data sorted, hint ignored when tree empty
+        iterator hint;
+        for( ; f != l ; ++f ) hint = insert( hint, *f ).first; 
+    }
+
+    RedBlackTree( RedBlackTree const & );
+    RedBlackTree& operator=( RedBlackTree const & );
+   ~RedBlackTree();
+    Allocator get_allocator() const 
+        { Allocator a( mem ); return( a ); }
+
+
+    /* ------------------------------------------------------------------
+     * iterators
+     */
+    class iterator_base :
+        public std::iterator< std::bidirectional_iterator_tag, value_type> {
+
+        friend class RedBlackTree;
+        typedef RedBlackTree<Key, Compare, Allocator, ValueWrapper> rbt_type;
+
+    public:
+        bool operator==( iterator_base i )
+            { return( self==i.self ); }
+
+        bool operator!=( iterator_base i )
+            { return( self!=i.self ); }
+
+        iterator_base& operator++()
+        {
+            self = rbt->walkRight( self );
+            return *this;
+        }
+
+        iterator_base& operator--()
+        {
+            self ? self = rbt->walkLeft( self ) : self = rbt->mLast;
+            return *this;
+        }
+
+    protected:
+        iterator_base( iterator_base const & i ) : self( i.self ), rbt( i.rbt )
+            { }
+
+        iterator_base() : self( 0 ), rbt( 0 )
+            { }
+
+        iterator_base( rbt_type const * rb, Node* n ) : self(n), rbt(rb)
+            { }
+
+        Node* getNodePtr()
+            { return( self ); }
+
+        Node* self;
+        rbt_type const *rbt;
+    };
+
+    class iterator : public iterator_base{
+    public:
+        iterator() : iterator_base() { }
+        iterator( iterator_base const & i ) : iterator_base( i ) { }
+        iterator( rbt_type const * rb, Node* n )
+            : iterator_base( rb, n )
+        { }
+
+        RedBlackTree::value_type& operator*()
+            { return( self->value ); }
+
+        RedBlackTree::value_type* operator->()
+            { return &(self->value); }
+
+        iterator& operator++()
+            { return( (iterator&)iterator_base::operator++( ) ); }
+
+        iterator operator++( int )
+            { iterator i = *this; operator++(); return i; }
+
+        iterator& operator--()
+            { return( (iterator&)iterator_base::operator--( ) ); }
+ 
+        iterator operator--( int )
+            { iterator i = *this; operator--(); return i; }
+    };
+
+    class const_iterator : public iterator_base{
+    public:
+        const_iterator( iterator_base const & i ) : iterator_base( i ) { }
+        const_iterator() : iterator_base() { }
+        const_iterator( rbt_type const* rb, Node* n )
+            : iterator_base( rb, n )
+        { }
+
+        RedBlackTree::value_type const& operator*()
+            { return self->value; }
+
+        RedBlackTree::value_type const* operator->()
+            { return &(self->value); }
+
+        const_iterator& operator++()
+            { return( (const_iterator&)iterator_base::operator++()); }
+
+        const_iterator operator++( int )
+            { const_iterator i = *this; operator++(); return i; }
+
+        const_iterator& operator--()
+            { return( (const_iterator&)iterator_base::operator--()); }
+
+        const_iterator operator--( int )
+            { const_iterator i = *this; operator--(); return i; }
+    };
+
+    friend class iterator_base;
+    friend class iterator;
+    friend class const_iterator;
+    /*
+     * end of iterators
+     * ------------------------------------------------------------------ */
+    
+    iterator end()
+        { return iterator( this, (Node*) 0 ); }
+
+    iterator begin()
+        { return iterator( this, mFirst ); }
+
+    const_iterator end() const
+        { return const_iterator( this, (Node*)0 ); }
+
+    const_iterator begin() const
+        { return const_iterator( this, mFirst ); }
+    
+    //pair< iterator, bool > insert( value_type const & );
+
+    // TODO: Move to out-of-line when compiler supports syntax.
+    template< class InputIterator >
+    void RedBlackTree< Key, Compare, Allocator, ValueWrapper>::insert(
+        InputIterator first_it, InputIterator last_it )
+    {
+        // presume data sorted; use last insert point as hint
+        iterator hint;
+        if( first_it != last_it ) hint = insert( *first_it ).first;
+        for( ++first_it ; first_it != last_it ; ++first_it )
+            hint = insert( hint, *first_it ).first; 
+    }
+
+    void            erase( iterator );
+    size_type       erase( key_type const & );
+    //void erase(iterator first, iterator last);
+    void            clear();
+    iterator        find( key_type const & );
+    bool            empty() const { return( mSize == 0 ); }
+    size_type       size() const  { return( mSize ); }
+    size_type       max_size() const;
+    iterator        upper_bound( key_type const & );
+    const_iterator  upper_bound( key_type const & x) const;
+    iterator        lower_bound( key_type const & );
+    const_iterator  lower_bound( key_type const & x) const;
+
+    std::pair< iterator, iterator >
+        equal_range( key_type const & x )
+            { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
+
+    std::pair< const_iterator, const_iterator >
+        equal_range( key_type const & x ) const
+            { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
+    
+    bool _Sane();
+    int mError;
+
+protected:
+    void    doubleBlackTransform( Node* parent, bool lefty );
+    void    insBalTransform( Node* inserted );
+    // std::pair< iterator, bool > unbalancedInsert( value_type const & );
+    int     blackHeight( iterator );
+    int     height( iterator );
+    Node*   walkRight( Node* ) const;
+    Node*   walkLeft( Node* ) const;
+    int     mSize;
+    Node*   mRoot;
+    Node*   mFirst;
+    Node*   mLast;
+    Compare cmp;
+    ValueWrapper keyGetter;
+
+    std::pair< RedBlackTree::iterator, bool >
+        unbalancedInsert( value_type const & v );
+
+public:
+    std::pair< RedBlackTree::iterator, bool >
+        insert( value_type const & v );
+
+    std::pair< RedBlackTree::iterator, bool >
+        insert( iterator hint, value_type const & v );
+
+}; //class RedBlackTree
+
+
+/* ==================================================================
+ * Red-Black Tree Functions
+ */
+
+/* ------------------------------------------------------------------
+ * Copy Ctor
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::RedBlackTree(
+    RedBlackTree< Key, Compare, Allocator, ValueWrapper > const & that )
+    : mem(that.mem)
+{
+    //copy comparator ? 
+    //other bits?
+    mSize = that.mSize;
+    //copy nodes
+    //special case node
+    if( !that.mRoot ) {
+        // no root, therefore first and last don't exist either
+        mFirst = 0;
+        mLast = 0;
+        mRoot = 0;
+        return;
+    }
+    mRoot = mem.allocate( 1 );
+    try {
+        mem.construct( mRoot,
+                       Node( that.mRoot->value, 0, that.mRoot->getColour() ) );
+    } catch( ... ) {
+        mem.deallocate( mRoot, 1 );
+        mRoot = 0;
+        throw;
+    }
+        
+    Node* n;
+    Node* o;
+    
+    o = that.mRoot;
+    n = mRoot;
+    for( ;; ) {
+        //check to see if reached first/last and fix up
+        if( o == that.mFirst ) {
+            mFirst = n;
+        }
+        if( o == that.mLast ) {
+            mLast = n;
+        }
+        //logic for tree traverse and copy
+        if( o->left && !n->left ) {
+            //copy left node if we can/haven't already
+            o = o->left;
+            try {
+                n->left = mem.allocate( 1 );
+                try {
+                    mem.construct( n->left,
+                                   Node( o->value, n, o->getColour() ) );
+                } catch( ... ) {
+                    mem.deallocate( n->left, 1 );
+                    throw;
+                }
+            } catch( ... ) {
+                n->left = 0;
+                clear();
+                throw;
+            }
+            n = n->left;
+        } else if( o->right && !n->right ) {
+            //or copy right node if we can/haven't already
+            o = o->right;
+            try {
+                n->right = mem.allocate( 1 );
+                try {
+                    mem.construct( n->right,
+                                   Node( o->value, n, o->getColour() ) );
+                } catch( ... ) {
+                    mem.deallocate( n->right, 1 );
+                    throw;
+                }
+            } catch( ... ) {
+                n->right = 0;
+                clear();
+                throw;
+            }
+            n = n->right;
+        } else if( o->getParent() ) {
+            //no children nodes left to copy, move back up
+            o = o->getParent();
+            n = n->getParent();
+        } else {
+            //no children nodes left to copy and we are root therefore
+            //finished
+            return;
+        }
+    } //end for( ;; )
+}
+
+/* ------------------------------------------------------------------
+ * operator=
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >&
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::operator=(
+    RedBlackTree< Key, Compare, Allocator, ValueWrapper > const & that )
+{
+    clear();
+    new ( this ) RedBlackTree( that );  //call copy ctor to do the copy
+    return( *this );
+}
+
+/* ------------------------------------------------------------------
+ * Dtor
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::~RedBlackTree()
+{
+    clear();
+}
+
+/* ------------------------------------------------------------------
+ * clear()
+ *
+ * erase all elements. Should be quicker than iterating through each one as we
+ * don't have to walk and rebalance
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+void RedBlackTree< Key, Compare, Allocator, ValueWrapper >::clear( )
+{
+    //note copy constructor clean up assumes clear() need any members set
+    //correctly except mRoot
+    Node* n = mRoot;
+    while( n ) {
+        if( n->left ) n = n->left;
+        else if( n->right ) n = n->right;
+        else {
+            //delete it when all children gone
+            if( !n->getParent() ) {
+                //if no parent then root, therefore finished
+                mem.destroy( n );
+                mem.deallocate( n, 1 );
+                mSize = 0;
+                mRoot = 0;
+                mFirst = 0;
+                mLast = 0;
+                return; 
+            }
+            if( n == n->getParent()->left ) n->getParent()->left = 0;
+            else n->getParent()->right = 0;
+            Node* delme = n;
+            n = n->getParent();
+            mem.destroy( delme );
+            mem.deallocate( delme, 1 );
+        }
+    }
+}
+
+/* ------------------------------------------------------------------
+ * Find( )
+ * Climb the tree until we get to the key :)
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::iterator 
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::find(Key const& findMe)
+{
+    Node* n=mRoot;
+    Node* notLT=0;
+    
+    while( n ) {
+        if( cmp(findMe, keyGetter(n->value) ) ) n = n->left;
+        else {
+            notLT=n;
+            n=n->right;
+        }
+    }
+    // the last node the key is not less than (if any) may be equal, in which
+    // case it was found
+    if( notLT && !(cmp(keyGetter(notLT->value), findMe) ) ) // !(a<b) & !(b<a) then a==b
+        return iterator(this, notLT);
+    else
+        return end();
+}
+
+/* ------------------------------------------------------------------
+ * lower_bound( key_type )
+ *
+ * find first[lowest/most left] node that !(node.key < k) [equivalent to
+ * node.key >= k]
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::iterator
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::lower_bound(
+    key_type const & findMe )
+{
+    Node* n = mRoot;
+    Node* nodeNotLTkey = 0;
+    
+    while( n ) {
+        if( cmp( keyGetter(n->value), findMe ) ) n = n->right;
+        else {
+            nodeNotLTkey = n;
+            n = n->left;
+        }
+    }
+    // if there are no nodes >= findMe then nodeNotLTkey will still be 0 thus
+    // the end() iterator will be created as expected
+    return( iterator(this, nodeNotLTkey) );
+}
+
+/* ------------------------------------------------------------------
+ * lower_bound( key_type ) const
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::lower_bound(
+    key_type const & k ) const
+{
+    return( const_cast<RedBlackTree*>(this)->lower_bound( k ) );
+}
+
+/* ------------------------------------------------------------------
+ * upper_bound( key_type )
+ * find first[lowest/most left] node that node.key > k
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::iterator
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::upper_bound(
+    key_type const & findMe )
+{
+    Node* n = mRoot;
+    Node* nodeGTkey = 0;
+    
+    while( n ) {
+        if( cmp( findMe, keyGetter(n->value) ) ) {
+            nodeGTkey = n;
+            n = n->left;
+        } else {
+            n = n->right;
+        }
+    }
+    // if there are no node > findMe then nodeNotGTkey will still be 0 thus
+    // the end() iterator will be created as expected
+    return( iterator(this, nodeGTkey) );
+}
+
+
+/* ------------------------------------------------------------------
+ * upper_bound( key_type ) const
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::upper_bound(
+    key_type const & k ) const
+{
+    return( const_cast<RedBlackTree*>(this)->upper_bound( k ) );
+}
+
+/* ------------------------------------------------------------------
+ * walkRight( Node* )
+ *
+ * iterate to next greater node 
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::Node*
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::walkRight(
+    Node* n ) const
+{
+    if( n->right) {
+        n = n->right;
+        while( n->left ) n = n->left;
+    } else {
+        while( n->getParent() && (n == n->getParent()->right) ) {
+            n = n->getParent();
+        }
+        n = n->getParent();
+    }
+    return n;
+}
+
+/* ------------------------------------------------------------------
+ * walkLeft( Node* )
+ * iterate to next node with lower key
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::Node*
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::walkLeft(
+    Node* n ) const
+{
+    if( n->left ) {
+        n = n->left;
+        while( n->right ) n = n->right;
+    } else {
+        while( n->getParent() && (n == n->getParent()->left) ) {
+            n = n->getParent();
+        }
+        n = n->getParent();
+    }
+    return n;
+}
+
+/* ------------------------------------------------------------------
+ * blackHeight( iterator )
+ * calculate black height of node
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+int RedBlackTree< Key, Compare, Allocator, ValueWrapper >::blackHeight(
+    iterator i)
+{
+    Node* n = i.getNodePtr();
+    int c = 0;
+    while(n) {
+        if( n->isBlack() ) c++;
+        n = n->getParent();
+    }
+    return c;
+}
+
+/* ------------------------------------------------------------------
+ * height( iterator )
+ * calculate height of node
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+int RedBlackTree< Key, Compare, Allocator, ValueWrapper >::height( iterator i )
+{
+    Node* n = i.getNodePtr();
+    int c = 0;
+    while(n) {
+        c++;
+        n = n->getParent();
+    }
+    return c;
+}
+
+/* ------------------------------------------------------------------
+ * insBalTransform
+ *
+ * Ref: Chris Okasaki paper (2005?) proposing simple transform for insert
+ * ballance and Lyn Turbak CS231 handout #21 (2001)
+ * 
+ * if uncle is red we just do a colour change, if uncle is black we do a
+ * transform in summary 4 cases transform to this:
+ *
+ *        y(b)          
+ *      /     \         
+ *    x(r)    z(r)      
+ *  /   \     /   \     
+ * a(b) b(b) c(b) d(b)  
+ *
+ * case 1:          case 2:        case 3:         case 4:
+ * (insert x)      (insert y)     (insert z)      (insert y)
+ *       z             z             x                x
+ *      / \           / \           / \              / \
+ *     y   d         x   d         a   y            a   z
+ *    / \           / \               / \              / \
+ *   x   c         a   y             b   z            y   d
+ *  / \               / \               / \          / \
+ * a   b             b   c             c   d        b   c
+ */
+template<class Key, class Compare, class Allocator, class ValueWrapper>
+void RedBlackTree<Key, Compare, Allocator, ValueWrapper>::insBalTransform(
+    Node* inserted)
+{
+    // at this point inserted->colour == red;
+    for( ;; ) { 
+        /* terminating case
+         * 1. we have moved up the tree and are now the root
+         * 2. our parent is the root (therefore must be black)
+         * 3. our parent is black (no red-red problem any more)
+         */
+        if( inserted->getParent() == 0 ||
+            inserted->getParent()->getParent() == 0 ||
+            inserted->getParent()->isBlack() )
+            return;
+
+        /* so at this point parent must also be red, and grandparent must be
+         * black therefore our sibling must be black (our children are black
+         * by definition) leaving two main cases : our uncle can black or red
+         */
+        Node* parent = inserted->getParent();
+        Node* grandparent = inserted->getParent()->getParent();
+        Node* uncle;
+        //find uncle
+        if( parent == grandparent->left ) uncle = grandparent->right;
+        else uncle = grandparent->left;
+
+        if( uncle && (uncle->isRed()) ) {    // main case a: red uncle
+            // now we propergate grandparents blackness between parent and
+            // uncle (without need to rotate)
+            grandparent->setRed();
+            parent->setBlack();
+            uncle->setBlack();
+            mRoot->setBlack();      // just in case grandparent was root
+            inserted = grandparent; // prepare to propergate red-red up tree
+            // the execusion flow now jumps back to the for loop instead of
+            // recursive insBalTransform( inserted );
+        } else { // main case b:  black uncle
+            Node *x,*y,*z,*b,*c;
+            // case 1
+            if( (inserted == parent->left) && (parent == grandparent->left) ) {
+                x = inserted;
+                y = parent;
+                z = grandparent;
+                b = x->right;
+                c = y->right;
+            }
+            //case 2 
+            else if( (inserted == parent->right) && (parent == grandparent->left) ){
+                x = parent;
+                y = inserted;
+                z = grandparent;
+                b = y->left;
+                c = y->right;
+            }
+            //case 3
+            else if( (inserted == parent->right) && (parent == grandparent->right) ){
+                x = grandparent;
+                y = parent;
+                z = inserted;
+                b = y->left;
+                c = z->left;
+            }
+            //case4
+            else if( (inserted == parent->left) && (parent == grandparent->right) ){
+                x = grandparent;
+                y = inserted;
+                z = parent;
+                b = y->left;
+                c = y->right;
+            }
+            
+            //recolour - can use this order becase all leafs a,b,c,d must be
+            //black (uncle is black) this will stop red-red violation from
+            //propergating
+            y->setBlack();
+            x->setRed();
+            z->setRed();
+            
+            //transform to balanced structure
+            if( grandparent == mRoot ) {
+                mRoot = y;
+                y->setParent( 0 );
+            } else {
+                if (grandparent->getParent()->left == grandparent){
+                    grandparent->getParent()->left = y;
+                } else { //grandparent is righty
+                    grandparent->getParent()->right = y;
+                }
+                y->setParent( grandparent->getParent() );
+            }
+            
+            y->left = x;
+            y->right = z;
+            x->setParent( y );
+            z->setParent( y );
+            x->right = b;
+            z->left = c;
+            if( b ) b->setParent( x );
+            if( c ) c->setParent( z );
+            // a and d are always already linked to the right parent in this
+            // case we have fixed the red-red violation so finish
+            return;
+        } //end main case uncle black
+    } //end for( ever )
+}
+
+/* ------------------------------------------------------------------
+ * _Sane( )
+ *
+ * test the implementation for errors and test the container hasn't been
+ * corrupt return true if everything is ok
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+bool RedBlackTree< Key, Compare, Allocator, ValueWrapper >::_Sane()
+{
+    if( !mRoot ) {
+        //no element in tree
+        if( mSize != 0 ) {
+            mError = 10;
+            return false;
+        } else {
+            //nothing else in tree to check
+            return true;
+        }
+    }
+    iterator it = begin();
+    Node* n = it.getNodePtr();
+    Node* highN = n;
+    Node* lowN = n;
+    Key const * lowkey = &keyGetter(n->value);
+    Key const * highkey = &keyGetter(n->value);
+    int count = 0;
+    int maxheight = height(it);
+    int bheight = -1;
+    
+    if( n->left ) {             //begining element cant have a left node
+        mError = 20;
+        return false;
+    }
+    if( mRoot->isRed() ) {
+        mError = 25;
+        return false;           //root should always be black
+    }
+    
+    do {
+        if( ++count > size()  ){
+            mError = 30;                // we could have got trapped in
+            return false;               // a loop, cant be more iterations
+        }                               // than size
+        Node* n_old = n;
+        n = it.getNodePtr();
+        if( (it != begin()) && (n_old == n) ) {
+            mError = 40;                //circular links:
+            return false;               //iterating didn't advance
+        }
+        if( n->isRed() &&
+            n->getParent() &&
+            n->getParent()->isRed() ) {
+            mError = 50;
+            return false;               //red-red error
+        }
+        if( n->getParent() &&
+            (n->getParent()->left != n) &&
+            (n->getParent()->right != n) ) {
+            mError = 60;
+            return false;               //links broken
+        }
+        if( !n->getParent() && (mRoot != n) ) {
+            mError = 70;
+            return false;              //links broken
+        }
+        if( (n->left == n) || (n->right == n) ) {
+            mError = 80;
+            return false;               //simple circular loop detection
+            //? not sure this works as iterating will get stuck before
+            //detection ?
+        }
+        if( !n->getParent() && n!=mRoot) {
+            mError = 90;
+            return false;               //no parent but not root
+        }
+        //keep track of the lowest key we come across
+        if( cmp( keyGetter(n->value), *lowkey) ) {
+            lowkey = &keyGetter(n->value);
+            lowN = n;
+        }
+        //keep track of the highest key we come across
+        if( cmp(*highkey, keyGetter(n->value)) ) {
+            highkey = &keyGetter(n->value);
+            highN = n;
+        }
+        if( !n->left || !n->right ) {   //null child is a leaf
+            int bh = blackHeight(it);
+            if( bheight == -1 ) bheight = bh;
+            else if(bheight != bh) {
+                mError = 100;
+                return false;           //black height to leaves not same
+            }
+        }
+        int h = height(it);             //keep track of deepest node depth
+        if( h > maxheight ) maxheight = h;
+        
+    } while( ++it != end() );
+    
+    if( count != size() ) {
+        mError = 110;
+        return false;
+    }        
+    if( n->right ) { // end element cant have a right node
+        mError = 120;
+        return false;
+    }
+    if( (highN != (--end()).getNodePtr()) ||
+        (lowN != begin().getNodePtr()) ) {
+        mError = 130;
+        return false;
+    }
+    return true;
+}
+
+/* ------------------------------------------------------------------
+ * Erase( key )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::size_type
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::erase( const Key& k )
+{
+    iterator it = find(k);
+    if(it == end()) return 0;
+    else{
+        erase(it);
+        return 1;
+    }
+}
+
+/* ------------------------------------------------------------------
+ * Erase( iterator )
+ * Maybe to do: this isn't the most easy to understand, is there a nicer
+ * way of writing it?
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+void RedBlackTree< Key, Compare, Allocator, ValueWrapper >::erase(
+    iterator it )
+{
+    Node* delme = it.getNodePtr();
+    Node* child;    //(re)moved endnode child
+    Node* parent;   // parent of (re)moved endnode 
+    bool  lefty;    //true if (re)moved endnode was left child
+    Node::Chroma colour;    //(re)moved endnode colour
+    
+    mSize--;
+    
+    if( delme == mFirst ) {
+        if( delme == mLast ) {
+            //special case, deleted == only element in tree
+            mFirst = 0;
+            mLast = 0;
+        } else 
+            mFirst = walkRight(delme);
+    } else if( delme == mLast) mLast = walkLeft(delme);
+    
+    //if not end node swap for predecessor
+    if( delme->left && delme->right) {
+        Node* predecessor = walkLeft(delme);
+        colour = predecessor->getColour();
+        child = predecessor->left;  //predecessor can't have a right child
+        if( predecessor == predecessor->getParent()->left ) lefty = true;
+        else lefty = false;
+        //fix up parent's link 
+        if( delme == mRoot )
+            mRoot = predecessor;
+        else if( delme == delme->getParent()->left ) {
+            delme->getParent()->left = predecessor;
+        } else {
+            delme->getParent()->right = predecessor;
+        }
+        //if delme is one level above predecessor we have to be
+        //careful linking left as it could create a circular link
+        //and a link to the deleted item
+        if( predecessor != delme->left ) {
+            //fix up chidren's link
+            delme->left->setParent( predecessor );
+            //fix predecessors link
+            predecessor->left = delme->left;
+            parent = predecessor->getParent();
+        } else { //predecessor is erased node's child
+            parent = predecessor;
+            //leave old left child links intact
+        }
+        //common bits
+        //fix childrens links
+        delme->right->setParent( predecessor );
+        //fix predecessor's links
+        predecessor->setColour( delme->getColour() );
+        predecessor->setParent( delme->getParent() );
+        predecessor->right = delme->right;
+    }
+    else { //end node
+        if( delme->left ) child = delme->left;
+        else child = delme->right;
+        parent = delme->getParent();
+        colour = delme->getColour();
+        if( parent && (delme == parent->left) ) lefty = true;
+        else lefty = false;
+    }
+    
+    //delete delme;
+    mem.destroy( delme );
+    mem.deallocate( delme, 1 );
+    //handle simple cases
+    if( !parent ) {
+        //root with up to 1 child
+        if( child ) {
+            mRoot = child;
+            mRoot->setParent( 0 );
+            mRoot->setBlack();
+        } else {
+            mRoot = 0;
+        }
+    } else if( colour == Node::red ) {
+        //red end node cant have a single child node or it would have violated
+        //red-red rule or black height rule removing it doesn't change black
+        //height so we are done
+        if( lefty ) parent->left = 0;
+        else parent->right = 0;
+    } else if( child ) {
+        //black end node may have a single child, in which case it has to be
+        //red and we can fix up the black height easily
+        if( lefty ) {
+            parent->left = child;
+        } else { //righty
+            parent->right = child;
+        }
+        child->setParent( parent );
+        child->setBlack();
+    } else {
+        //black node with no children, 
+        if( lefty ) parent->left = 0;
+        else parent->right = 0;
+        //(re)moving this will cause black height problem do some operations
+        //to keep rb tree valid
+        doubleBlackTransform( parent,lefty );
+    }
+    
+    return;
+}
+
+/* ------------------------------------------------------------------
+ * DoubleBlackTransform
+ * Fix double-black node to rebalance the tree after delete
+ * 
+ * references: backs of lots of matchboxes :)
+ *
+ * (this doesn't touch key or type, can the compiler figure out it can use one
+ * block of code for all template instantiations or does it need to be coded
+ * in a non template base class?)
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+void
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::doubleBlackTransform(
+    Node* parent, bool lefty )
+{
+    for( ;; ) {
+        Node* sibling;
+        Node *x,*y,*z,*b,*c;
+        if( lefty ) {
+            sibling = parent->right;
+        } else { //righty
+            sibling = parent->left;
+        }
+        
+        if( sibling->isBlack() ) {
+            if( ( sibling->right && sibling->right->isRed() ) ||
+                ( sibling->left && sibling->left->isRed() ) ) {
+        //main case 1 sibling black, at least one nephew red we can fix this
+        //case
+    /*
+     *     case a               case b        case c              case d    
+     *      Z(*)                 Z(*)          X(*)                X(*)     
+     *     /   \\               /   \\       //    \             //    \    
+     *   X(b)   d(bb)         Y(b)   d(bb)  a(bb)   Y(b)       a(bb)   Z(b) 
+     *  /    \               /    \                 /  \              /  \  
+     * a(*)   Y(r)          X(r)  c(*)            b(*) Z(r)         Y(r) d(*)
+     *       /   \         /   \                       /   \       /   \    
+     *     b(b)   c(b)   a(b)  b(b)                   c(b) d(b)   b(b) c(b) 
+     *
+     * Transform to this:
+     *       Y(*)
+     *      /     \
+     *   X(b)      Z(b)
+     *  /   \     /   \
+     * a(*) b(*) c(*) d(*)
+     *
+     * where double black goes black & new root takes old root colour note
+     * nodes a,b,c may be null (leafs)
+     */
+                if( sibling->right && sibling->right->isRed() ) {
+                    if( lefty ) {       // case 1 c
+                        x = parent;
+                        y = sibling;
+                        z = sibling->right;
+                        b = y->left;
+                        c = z->left;
+                    } else {            // case 1 a
+                        z = parent;
+                        x = sibling;
+                        y = sibling->right;
+                        b = y->left;
+                        c = y->right;
+                    }
+                } else { // sibling->left && sibling->left->colour == red 
+                    if( lefty ) {       // case 1 d
+                        x = parent;
+                        z = sibling;
+                        y = sibling->left;
+                        b = y->left;
+                        c = y->right;
+                    } else {            // case 1 b
+                        z = parent;
+                        y = sibling;
+                        x = sibling->left;
+                        b = x->right;
+                        c = y->right;
+                    }
+                }
+                // finish off case 1 by relinking to correct sturcture
+                y->setParent( parent->getParent() );
+                if( parent == mRoot ) mRoot = y;
+                else{    //link grandparent back to y;
+                    if( parent == parent->getParent()->left ) 
+                        parent->getParent()->left = y;
+                    else parent->getParent()->right = y;
+                }
+                y->setColour( parent->getColour() );
+                y->left = x;
+                y->right = z;
+                x->setParent( y );
+                x->setBlack();
+                x->right = b;       // x->left is unchanged as a
+                if( b ) b->setParent( x );
+                z->setParent( y );
+                z->setBlack();
+                z->left = c;        // z->right is unchanged as d
+                if( c ) c->setParent( z );
+                return;
+            } else {  //nephews both black
+                if( parent->isRed() ){
+        //main case 2: sibling black, two black nephews, parent red we can fix
+        //this case
+        /*
+         *      case a           case b         
+         *       Z(r)             X(r)          
+         *      /   \\           //   \         
+         *    X(b)   d(bb)     a(bb)  Z(b)      
+         *   /    \                  /    \     
+         *  a(b)   b(b)             b(b)  d(b)  
+         * 
+         * Recolour to this:
+         *        Z(b)              X(b)        
+         *       /    \            /    \       
+         *    X(r)    d(b)       a(b)   Z(r)    
+         *   /   \                     /    \   
+         *  a(b) b(b)                b(b)   d(b)
+         *
+         */
+                    parent->setBlack();
+                    sibling->setRed();
+                    return;
+                } else { //parent black
+        //main case 3: sibling black, two black nephews, parent black
+        /*
+         *        case a           case b       
+         *         Z(b)             X(b)        
+         *        /   \\           //   \       
+         *      X(b)   d(bb)     a(bb)  Z(b)    
+         *     /    \                  /    \   
+         *    a(b)   b(b)             b(b)  d(b)
+         * 
+         * Recolour to propergate double black:
+         *        ||                ||          
+         *       Z(bb)             X(bb)        
+         *      /     \           /    \        
+         *   X(r)      d(b)     a(b)   Z(r)     
+         *  /   \                     /    \    
+         * a(b) b(b)                b(b)   d(b) 
+         *
+         * Not much we can do - propergate double black If double black has
+         * properaged to to root just set it black as we have acheived balance
+         * (higher order special cases may be possible eg node a has two red
+         * children but probably not worth the extra code to check?)
+         */
+                    sibling->setRed();
+                    if( parent == mRoot ) {
+                        parent->setBlack();
+                        return;
+                    }
+                    Node* grandparent = parent->getParent();
+                    if( parent == grandparent->left) lefty = true;
+                    else lefty = false;
+                    //loop to top of doubleBlackTransform with new parent
+                    //(replaces recursion) doubleBlackTransform(grandparent,
+                    //lefty); return;
+                    parent = grandparent;
+                }
+            } //end main case 2/3
+        } else {
+        //main case 4: red sibling
+        /*
+         *        case a           case b       
+         *         Z(b)             X(b)        
+         *        /   \\           //   \       
+         *      X(r)   d(bb)     a(bb)  Z(r)    
+         *     /    \                  /    \   
+         *    a(b)   b(b)             c(b)  d(b)
+         * 
+         * Recolour to propergate double black:
+         *       X(b)                   Z(b)    
+         *      /    \                 /    \   
+         *   a(b)     Z(r)           X(r)   d(b)
+         *           /   \\         //  \       
+         *         b(b)  d(bb)   a(bb)  c(b)    
+         *
+         * This is an annoying one! Note, a and b must have children (ie a/b
+         * can't be null/leaves) or the black height doesn't add up. Double
+         * black stays with the same node but restructure so we can use one of
+         * the previous cases (1 or 2) where the sibling is black.
+         */
+            //common bits
+            if( parent == mRoot ) {
+                mRoot = sibling;
+                sibling->setParent( 0 );
+            } else if ( parent == parent->getParent()->left ) {
+                parent->getParent()->left = sibling;
+                sibling->setParent( parent->getParent() );
+            } else {//parent is a righty
+                parent->getParent()->right = sibling;
+                sibling->setParent( parent->getParent() );
+            }
+            parent->setRed();
+            sibling->setBlack();
+            
+            if( lefty ) {
+                //case b
+                x = parent;
+                c = sibling->left;
+                z = sibling;
+                x->right = c;      
+                c->setParent( x );
+                x->setParent( z );
+                z->left = x;
+                //a & d stay linked to the same nodes
+            } else {  //righty
+                //case a
+                z = parent;
+                b = sibling->right;
+                x = sibling;
+                z->left = b;
+                b->setParent( z );
+                z->setParent( x );
+                x->right = z;
+                //a & d stay linked to the same nodes
+            }
+            //now try again and case will be 1, 2, or 3 note old parent is
+            //still parent of double black and left/right position of double
+            //black hasn't changed recursion has been replaced with the for
+            //loop doubleBlackTransform(parent,lefty); return;
+        }
+    }//end for( ever )
+}
+
+
+/* ------------------------------------------------------------------
+ * unbalancedInsert( value_type const & )
+ *
+ * like find but create new node after last node visited if cant find an
+ * existing key
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper>
+std::pair< typename RedBlackTree< Key,
+                                  Compare,
+                                  Allocator,
+                                  ValueWrapper >::iterator, bool >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::unbalancedInsert(
+  value_type const & v)
+{
+    if( mRoot==0 ) {                 //special case nothing exists yet
+        mRoot = mem.allocate( 1 );
+        try{
+            mem.construct( mRoot, Node( v, 0, Node::black ) );
+        } catch( ... ) {
+            mem.deallocate( mRoot, 1 );
+            mRoot = 0;
+            throw;
+        }
+        mFirst = mRoot;
+        mLast = mRoot;
+        mSize++;
+        return( std::pair<iterator, bool>( iterator(this, mRoot), true ) );
+    }
+    
+    Node* n = mRoot;
+    Node* notLT = 0;
+    Node* last = n;
+    bool LtLast;
+    
+    while( n ) {
+        if( cmp(keyGetter( v ), keyGetter( n->value ) ) ) {
+            last = n;
+            LtLast = true;
+            n = n->left;
+        } else {
+            last = n;
+            LtLast = false;
+            notLT = n;
+            n = n->right;
+        }
+    }
+
+    // the last node the key is not less than (if any) may be equal, in which
+    // case it was found
+    if( notLT && 
+        !( cmp( keyGetter( notLT->value ), keyGetter( v ) ) ) ) {
+        // !(a<b) & !(b<a) then a==b
+        return( std::pair<iterator,bool>( iterator(this, notLT), false ) );
+    }
+    // else insert the new node with parent as last node travelled to
+    Node* newnode = mem.allocate( 1 );
+    try {
+        mem.construct( newnode, Node( v, last, Node::red ) );
+    } catch( ... ) {
+        mem.deallocate( newnode, 1 );
+        throw;
+        }
+    mSize++;
+    if( LtLast ) {
+        last->left = newnode;
+        if( last == mFirst ) mFirst = newnode;
+    } else {
+        last->right = newnode;
+        if( last == mLast ) mLast = newnode;
+    }
+    
+    return( std::pair<iterator,bool>( iterator(this, newnode), true ) );
+}
+
+
+/* ------------------------------------------------------------------
+ * insert( value_type const & )
+ *
+ * inserts v into the tree if it doesn't exist already and maintains balance
+ * returns a pair containing iterator with key equivelent to that of v and a
+ * bool that is true if v was inserted or false if the key already existed
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+std::pair< typename RedBlackTree< Key,
+                                  Compare,
+                                  Allocator,
+                                  ValueWrapper >::iterator, bool >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::insert(
+    value_type const & v)
+{
+    pair< iterator, bool > inserted = unbalancedInsert( v );
+    if( inserted.second ) { 
+        Node* n = inserted.first.getNodePtr();
+        if( n != mRoot ) {
+            //do some operations to keep rb tree valid
+            insBalTransform( n );
+        }
+        // else if n==mRoot it has been inserted as single black node and
+        // there is nothing else to do
+    }
+    return inserted;
+}
+
+
+/* ------------------------------------------------------------------
+ * insert( iterator hint, value_type const &)
+ *
+ * inserts v into the tree if it doesn't exist already and maintains ballance
+ * returns a pair containing iterator with key equivelent to that of v and a
+ * bool that is true if v was inserted or false if the key already existed
+ * Written in the spirit of N1780 (not strictly standard compliant?)
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+std::pair< typename RedBlackTree< Key,
+                                  Compare,
+                                  Allocator,
+                                  ValueWrapper >::iterator, bool >
+RedBlackTree< Key, Compare, Allocator, ValueWrapper >::insert(
+    iterator hint, value_type const & v )
+{
+    pair< iterator, bool > inserted;
+    iterator b4hint;
+    if( mSize &&
+        ( hint == end() || cmp( keyGetter(v), keyGetter(*hint) ) ) ) {
+
+        //at this point tree isn't empty and key is before hint
+        b4hint = hint;
+        if( hint == begin() ||
+            cmp( keyGetter( *(--b4hint) ), keyGetter( v ) ) ) {
+
+            //at this point key is also before begin or after (hint-1) so hint
+            //is good now, either hint->left or (hint-1)->right must have a
+            //unused leaf node where the new node belongs
+            Node* parent;
+            bool lefty = true;
+
+            if( hint != end() && hint.getNodePtr()->left == 0 ) {
+                parent = hint.getNodePtr();
+            } else {
+                parent = b4hint.getNodePtr();
+                lefty = false;
+            }
+            //create the new node
+            Node* newnode = mem.allocate( 1 );
+            try {
+                mem.construct( newnode, Node(v, parent, Node::red) );
+            } catch( ... ) {
+                mem.deallocate( newnode, 1 );
+                throw;
+            }
+            mSize++;
+            //fix up pointers
+            if( lefty ) {
+                parent->left = newnode;
+                if( parent == mFirst ) mFirst = newnode;
+            } else {
+                parent->right = newnode;
+                if( parent == mLast ) mLast = newnode;
+            }
+            inserted = make_pair( iterator(this, newnode), true );
+        } else inserted = unbalancedInsert( v ); //hint bad (or key already exists)
+    } else inserted = unbalancedInsert( v ); //hint is bad or tree is empty
+    
+    if( inserted.second ) { 
+        Node* n = inserted.first.getNodePtr();
+        if( n != mRoot ) {
+            //do some operations to keep rb tree valid
+            insBalTransform(n);
+        }
+        // else if n==mRoot it has been inserted as single black node and
+        // there is nothing else to do
+    }
+    return inserted;
+}
+
+
+/* ================================================================== */
+
+
+
+
+/* ==================================================================
+ * MLRBTNode 
+ * sub-node type that forms a linked list and is stored in the 
+ * rbtree node to create the MultiListRBTree
+ */
+template< class ValueType >
+struct MLRBTNode{
+    MLRBTNode* fwd;
+    MLRBTNode* bwd;
+    ValueType value;
+    MLRBTNode() {}
+    MLRBTNode( ValueType v ) : value( v ) { }
+};
+
+/* ==================================================================
+ * ValueWrappers for MultiListRBTree
+ *
+ * pairs for multimap, plain Keys for multiset wraps up the rbtree type
+ * (pointer to the list) and knows how to get a key out of it
+ */
+template< class Key, class Type >
+struct ListTreePairWrapper{
+    //this is the value_type actually contained in the container
+    typedef pair< Key const, Type > value_type;
+    Key const& operator()( value_type const & v ) const
+        { return( v.first ); }
+    
+    struct TreeWrapper{
+        //this is the rbtree value_type (pointer to list)
+        typedef MLRBTNode< pair< Key const, Type > >* value_type;
+        Key const& operator()( value_type const & v ) const
+            { return( v->value.first ); }
+    };
+};
+
+template< class Key >
+struct ListTreeKeyWrapper{
+    //this is the value_type actually contained in the container
+    typedef Key value_type;
+    Key const& operator()( value_type const & v ) const
+        { return( v ); }
+    
+    struct TreeWrapper{
+        //this is the rbtree value_type (pointer to list)
+        typedef MLRBTNode< Key >* value_type;
+        Key const& operator()( value_type const & v ) const
+            { return( v->value); }
+    };
+};
+
+/* ==================================================================
+ * MultiListRBTree 
+ *
+ * Adds linked list to redblack tree to build a multimap/set. handles the list
+ * operations in this class rather than using a full blown (or even a cut down
+ * one) list object in tree node. This should save a little memory. Note for a
+ * low number of repetitions of each key this alogorithm will use more memory
+ * than holding the repeated nodes directly in tree for this algorithm p = 4 +
+ * 2n ; c = 1 for tree only algo p = 3n ; c = n where p is num of pointers, c
+ * is num of colour enums, n is num of key repetitions so if c uses same space
+ * as p (likely due to alignment?) this algo is better if n >=3 This algo
+ * should have slightly faster find (+ insert/delete) operations
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+class MultiListRBTree{
+public:
+    typedef ValueWrapper::value_type        value_type;
+    typedef unsigned int                    size_type;
+    typedef Key                             key_type;
+
+private:
+    typedef RedBlackTree< Key, Compare, Allocator, ValueWrapper::TreeWrapper > tree_type;
+    typedef MLRBTNode< value_type > node_type;
+    
+    Allocator::rebind< node_type >::other mem; //moved up here to stop crash
+
+public:
+    MultiListRBTree(Compare c, Allocator a)
+        : mSize( 0 ), mTree( tree_type( c, a ) ), mem( a )
+    { }
+
+    MultiListRBTree( MultiListRBTree const & );
+    ~MultiListRBTree();
+
+    Allocator get_allocator() const 
+        { Allocator a(mem); return( a ); }
+
+    MultiListRBTree& operator=( MultiListRBTree const & );
+    
+    /* ------------------------------------------------------------------
+     * iterators
+     */
+    class iterator_base;
+    friend class iterator_base;
+
+    class iterator_base{
+    public:
+        iterator_base& operator++() 
+        { 
+            if( self == (*tit)->bwd ) {  //if last element in list
+                ++tit;
+                if( tit != mlt->mTree.end() ) self = *tit;  //move on to first list node in next tree node
+                else self = 0;          //signals end iterator
+            } else {
+                self = self->fwd;
+            }
+            return( *this );
+        }
+
+        iterator_base& operator--()
+        {
+            if( self == 0 || self == (*tit) ) {
+                                      //if first element in list or end of list
+                --tit;                //move back to last list node in 
+                self = (*tit)->bwd;   //previous tree node
+            } else {
+                self = self->bwd;
+            }
+            return( *this );
+        }
+
+        value_type& operator*()
+            { return( self->value ); }
+
+        value_type* operator->()
+            { return( &(self->value) ); }
+
+        bool operator==( iterator_base const & that )
+            { return( self == that.self ); }
+
+        bool operator!=( iterator_base const & that )
+            { return( self != that.self ); }
+
+        iterator_base const & operator=( iterator_base const & that ) 
+        {
+            tit = that.tit;
+            mlt = that.mlt;
+            self = that.self;
+            return( *this );
+        }
+
+    protected:
+        friend class MultiListRBTree;
+        iterator_base()
+        { }
+
+        iterator_base( iterator_base const & x )
+            : tit( x.tit ), mlt( x.mlt ), self( x.self )
+        { }
+
+        iterator_base( MultiListRBTree const* m, tree_type::iterator const &i ) 
+            : mlt( m ), tit( i )
+            { ( tit != (mlt->mTree).end() ) ? self = (*tit) : self = 0; }
+
+        iterator_base( MultiListRBTree const* m,
+                       tree_type::iterator const & i,
+                       node_type* n )
+            : mlt( m ), tit( i ), self( n )
+        { }
+
+        tree_type::iterator tit;
+        MultiListRBTree const* mlt;
+        node_type* self;
+    };
+
+    class iterator : public iterator_base{
+    public:
+        iterator() : iterator_base() {}
+        iterator( iterator const & i ) : iterator_base(i) {}
+        iterator( MultiListRBTree const* m, tree_type::iterator const & i) 
+            : iterator_base( m, i )
+        { }
+
+        iterator( MultiListRBTree const* m,
+                  tree_type::iterator const & i,
+                  node_type* n )
+            : iterator_base( m, i, n )
+        { }
+
+        iterator& operator++()
+            { return( (iterator&)iterator_base::operator++() ); }
+
+        iterator& operator--()
+           { return( (iterator&)iterator_base::operator--() ); }
+
+        iterator& operator++( int )
+           { iterator i(*this); operator++(); return( i ); }
+
+        iterator& operator--( int )
+           { iterator i(*this); operator--(); return( i ); }
+    };
+
+    class const_iterator : public iterator_base{
+        public:
+        const_iterator() : iterator_base() {}
+        const_iterator( const_iterator const & i ) : iterator_base(i) {}
+        const_iterator( iterator const & i ) : iterator_base(i) {}
+        const_iterator( MultiListRBTree const* m, tree_type::iterator const & i) 
+            : iterator_base( m, i )
+        { }
+
+        const_iterator( MultiListRBTree const* m,
+                        tree_type::iterator const & i,
+                        node_type* n )
+            : iterator_base( m, i, n )
+        { }
+
+        const_iterator& operator++()
+            { return( (const_iterator&)iterator_base::operator++() ); }
+
+        const_iterator& operator--()
+            { return( (const_iterator&)iterator_base::operator--() ); }
+
+        const_iterator& operator++( int )
+            { const_iterator i(*this); operator++(); return( i ); }
+
+        const_iterator& operator--( int )
+            { const_iterator i(*this); operator--(); return( i ); }
+    };
+
+    iterator begin()
+        { return( iterator( this, mTree.begin() ) ); }
+
+    iterator end()
+        { return( iterator( this, mTree.end() ) ); }
+
+    // note use const_cast<> so calls version of mTree.end()/begin() that
+    // return an iterator not a const_iterator for interal use within the
+    // iterator of this class. mTree still doesn't get modified.
+    const_iterator begin() const
+        { return( const_iterator( this, const_cast<tree_type*>(&mTree)->begin() ) ); }
+
+    const_iterator end() const
+        { return( const_iterator( this, const_cast<tree_type*>(&mTree)->end() ) ); }
+
+    //capacity
+    size_type   size() { return( mSize ); }
+    bool        empty() { return( !mSize ); }
+    //modifiers
+    iterator    insert( value_type const & );
+    iterator    insert( iterator, value_type const & );
+    void        erase( iterator );
+    size_type   erase( key_type const & );
+    void        clear();
+    //operations
+    iterator        find( key_type const & );
+    size_type       count( key_type const & );
+    iterator        upper_bound( key_type const & );
+    const_iterator  upper_bound( key_type const & x) const;
+    iterator        lower_bound( key_type const & );
+    const_iterator  lower_bound( key_type const & x) const;
+
+    std::pair< iterator, iterator > equal_range( key_type const & x )
+        { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
+
+    std::pair< const_iterator, const_iterator > equal_range( key_type const & x ) const
+        { return( make_pair( lower_bound(x), upper_bound(x) ) ); }
+    
+    //owstl extentions
+    bool _Sane();
+private:
+    size_type mSize;
+    tree_type mTree;            //this is the tree that holds the lists
+    Compare cmp;
+    ValueWrapper keyGetter;
+};
+
+/* ------------------------------------------------------------------
+ * copy ctor
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::MultiListRBTree( 
+    MultiListRBTree< Key, Compare, Allocator, ValueWrapper > const & that )
+    : mTree( that.mTree ), mem( that.mem )
+{
+    // pointer to old list elements is copied by rbtree copy ctor and the
+    // pointers will still link back to the old list elements so now make
+    // copies of new list elments and fixup pointers
+    tree_type::iterator it;
+    tree_type::const_iterator it2;
+    try {
+        for( it = mTree.begin(), it2 = that.mTree.begin();
+             it != mTree.end();
+             ++it, ++it2 ) {
+            //special case, copy the first element in the list
+            try {
+                *it = mem.allocate( 1 );
+                try {
+                    mem.construct( *it, **it2 );
+                } catch( ... ) {
+                    mem.deallocate( *it, 1 );
+                    throw;
+                }
+            } catch( ... ) {
+                //signal no first element to rewind logic
+                *it = 0;
+                throw;
+            }
+            //copy the rest of the list (if they exist)
+            node_type* start = *it2;
+            node_type* o = start->fwd;
+            node_type* n = *it;
+            while( o != start ) {
+                try {
+                    //allocate the next node
+                    n->fwd = mem.allocate( 1 );
+                    try {
+                        //o already points to the next node
+                        mem.construct( n->fwd, *o );
+                    } catch( ... ) {
+                        mem.deallocate( n->fwd, 1 );
+                        throw;
+                    }
+                } catch( ... ) {
+                    //finish off the links so can do a generic rewind
+                    n->fwd = *it;
+                    (*it)->bwd = n;
+                    throw;
+                }
+                n->fwd->bwd = n;
+                n = n->fwd;
+                o = o->fwd;
+            }
+            n->fwd = *it;
+            (*it)->bwd = n;
+        }
+    } catch( ... ) {
+        //the copy either completely succeeds or completely fails so rewind
+        //the nodes added so far:
+        for( ; it != mTree.begin(); --it ) {
+            if( *it == 0 ) continue;
+            node_type* n = *it;
+            node_type* delme;
+            node_type* end = n;
+            do {
+                delme = n;
+                n = n->fwd;
+                mem.destroy( delme );
+                mem.deallocate( delme, 1 );
+            } while( n != end );
+        }
+        mTree.clear();
+        throw;
+    }
+    
+    //success
+    mSize = that.mSize;
+}
+
+/* ------------------------------------------------------------------
+ * operator=( that )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >&
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::operator=(
+    MultiListRBTree const & that )
+{
+    clear();
+    new ( this ) MultiListRBTree(that);
+    return( *this );
+}
+
+/* ------------------------------------------------------------------
+ * insert( value_type const & )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::insert(
+    value_type const & x )
+{
+    node_type* n;
+    pair< tree_type::iterator, bool > ans;
+    n = mem.allocate( 1 );
+    try {
+        mem.construct( n, node_type(x) );
+    } catch( ... ) {
+        mem.deallocate( n, 1 );
+        throw;
+    }
+    try {
+        ans = mTree.insert( n );
+    } catch( ... ) {
+        mem.destroy( n );
+        mem.deallocate( n, 1 );
+        throw;
+    }
+    if( ans.second ) {  //insert happened
+        n->fwd = n;
+        n->bwd = n;
+    } else {            //already inserted
+        node_type* o = *ans.first;  //get pointer to already inserted node
+        n->bwd = o->bwd;            //fix up links so as to add new node
+        n->fwd = o;                 //to end of list
+        o->bwd->fwd = n;
+        o->bwd = n;
+    }
+    mSize++;
+    return iterator( this, ans.first, n );
+}
+
+/* ------------------------------------------------------------------
+ * insert( iterator hint, value_type const & )
+ * Insert as close to as before hint as possible. In the spirit of
+ * N1780 (Comments on LWG issue 233, Howard E. Hinnant, 23/04/2005)
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::insert(
+    iterator hint, value_type const & v )
+{
+    //!!!!I'm not happy with this function and it needs redesigning when I
+    //have time...!!!
+
+    //To insert x at p:
+    //   if p == end || x <= *p
+    //      if p == begin || x >= *(p-1)
+    //         insert x before p
+    //      else
+    //         insert x before upper_bound(x)
+    //   else
+    //      insert x before lower_bound(x)
+
+    iterator pos;
+    if( mSize == 0 ) {
+        //cout<<"pos = end\n";
+        pos = end();
+    } else {
+        if( hint == end() || !cmp( keyGetter( *hint ), keyGetter( v ) ) ) {
+            // !(hint < v)  ==  v <= hint
+            iterator b4hint = hint; 
+            if( hint == begin() || !cmp( keyGetter( v ), keyGetter( *(--b4hint) ) ) ) {
+                // !(v < hint)  ==  v >= hint
+                //insert before hint
+                //cout<<"pos = hint\n";
+                pos = hint;
+            } else {
+                //insert before upper_bound
+                //cout<<"pos = upper\n";
+                pos = upper_bound( keyGetter(v) );
+            }
+        } else {
+            //insert before lower_bound
+            //cout<<"pos = lower "<<keyGetter( *hint )<<"\n";
+            pos = lower_bound( keyGetter(v) );
+        }
+    }
+    node_type* n;
+    pair< tree_type::iterator, bool> ans;
+    n = mem.allocate( 1 );
+    try {
+        mem.construct( n, node_type(v) );
+    } catch( ... ) {
+        mem.deallocate( n, 1 );
+        throw;
+    }
+    try {
+        //insert into tree. to do: rewrite rbtree hint insert so it doesn't
+        //need to recheck the hint pos
+        ans = mTree.insert( pos.tit, n );
+    } catch( ... ) {
+        mem.destroy( n );
+        mem.deallocate( n, 1 );
+        throw;
+    }
+    //insert node
+    if( ans.second ) {
+        //only node in list
+        //cout<<"only node in list\n";
+        n->fwd = n;
+        n->bwd = n;
+    } else {
+        if( pos == end() || cmp( keyGetter( v ), keyGetter( *pos ) ) ) {
+            //insert at end of previous list
+            //cout<<"insert at end\n";
+            --pos;
+            n->bwd = pos.self;
+            n->fwd = pos.self->fwd;
+            pos.self->fwd->bwd = n;
+            pos.self->fwd = n;
+        } else {
+            //cout<<"insert before hint\n";
+            //insert in list before hint
+            if( *(pos.tit) == pos.self ) *(pos.tit) = n;
+            n->bwd = pos.self->bwd;
+            n->fwd = pos.self;
+            pos.self->bwd->fwd = n;
+            pos.self->bwd = n;
+        }
+    }
+    ++mSize;
+    return( iterator(this, ans.first, n) );
+}
+
+/* ------------------------------------------------------------------
+ * dtor
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::~MultiListRBTree( )
+{
+    clear();
+}
+
+/* ------------------------------------------------------------------
+ * clear()
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+void MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::clear( )
+{
+    for( tree_type::iterator i = mTree.begin(); i != mTree.end(); ++i ) {
+        node_type* n = *i;
+        node_type* delme;
+        node_type* end = n;
+        do {
+            delme = n;
+            n = n->fwd;
+            mem.destroy( delme );
+            mem.deallocate( delme, 1 );
+        } while( n != end );
+    }
+    mTree.clear();
+    mSize = 0;
+}
+
+/* ------------------------------------------------------------------
+ * _Sane()
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+bool MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::_Sane( )
+{
+    if( !mTree._Sane() ) return false;
+    //do more tests here
+    return true;
+}
+
+/* ------------------------------------------------------------------
+ * find()
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::find(
+    key_type const & k )
+{
+    return iterator( this, mTree.find( k ) );
+}
+
+/* ------------------------------------------------------------------
+ * count( key_type )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::size_type
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::count(
+    key_type const & k )
+{
+    tree_type::iterator tit = mTree.find( k );
+    if( tit == mTree.end() ) return 0;
+    node_type* start = *tit;
+    node_type* n = start;
+    size_type c = 0;
+    do {
+        n = n->fwd;
+        ++c;
+    } while( n != start );
+    
+    return( c );
+}
+
+/* ------------------------------------------------------------------
+ * erase( iterator )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+void MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::erase(
+    iterator it )
+{
+    node_type* n = it.self;
+    if( n == n->fwd ) {           //if only element in list 
+        mTree.erase( it.tit );
+    } else if( *(it.tit) == n ) { //if master element in list & >1 element
+        n->bwd->fwd = n->fwd;     //relink to remove n
+        n->fwd->bwd = n->bwd;
+        *(it.tit) = n->fwd;       //set tree to hold new master element
+    } else {                      //if not master element & >1 element
+        n->bwd->fwd = n->fwd;     //relink to remove n
+        n->fwd->bwd = n->bwd;
+    }
+    mem.destroy( n );
+    mem.deallocate( n, 1 );
+    --mSize;
+}
+
+/* ------------------------------------------------------------------
+ * erase( key_type )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::size_type
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::erase(
+    key_type const & k )
+{
+    iterator it = find( k );
+    node_type* n = it.self;
+    node_type* delme;
+    node_type* end = n;
+    size_type c = 0;
+    do {
+        delme = n;
+        n = n->fwd;
+        mem.destroy( delme );
+        mem.deallocate( delme, 1 );
+        ++c;
+        --mSize;
+    } while( n != end );
+    mTree.erase( it.tit );
+    return( c );
+}
+
+/* ------------------------------------------------------------------
+ * lower_bound( key_type )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::lower_bound(
+    key_type const & k )
+{
+    tree_type::iterator tit = mTree.lower_bound( k );
+    node_type* n = (tit == mTree.end()) ? 0 : *tit;
+    return( iterator( this, tit, n ) );
+}
+
+/* ------------------------------------------------------------------
+ * lower_bound( key_type ) const
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::lower_bound(
+    key_type const & k ) const
+{
+    return( const_cast<MultiListRBTree*>(this)->lower_bound( k ) );
+}
+
+/* ------------------------------------------------------------------
+ * upper_bound( key_type )
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::upper_bound(
+    key_type const & k )
+{
+    tree_type::iterator tit = mTree.upper_bound( k );
+    node_type* n = (tit == mTree.end()) ? 0 : *tit;
+    return( iterator( this, tit, n ) );
+}
+
+/* ------------------------------------------------------------------
+ * upper_bound( key_type ) const
+ */
+template< class Key, class Compare, class Allocator, class ValueWrapper >
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::const_iterator
+MultiListRBTree< Key, Compare, Allocator, ValueWrapper >::upper_bound(
+    key_type const & k ) const
+{
+    return( const_cast<MultiListRBTree*>(this)->upper_bound( k ) );
+}
+
+
+} // namespace _ow
+} // namespace std
+
+#endif

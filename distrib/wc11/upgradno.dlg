@@ -1,0 +1,40 @@
+name=UpgradeNotQualified
+dynamic_text=unc_1,\
+        //1"@ cannot confirm that you are a licensee of %AppName%"\
+        //2"@ cannot confirm that you are a licensee of %AppName%"\
+	//0
+static_text=\
+        //1"or a qualifying competitive product:"\
+        //2"or a qualifying competitive product:"\
+	//0
+include=upgrlist.dlg
+static_text=\
+        //1"If you are not qualified to obtain this product upgrade,"\
+        //2"If you are not qualified to obtain this product upgrade,"\
+	//0
+dynamic_text=unc_2,\
+        //1"Watcom grants you no rights to use it, and the %AppName%"\
+        //2"Watcom grants you no rights to use it, and the %AppName%"\
+	//0
+static_text=\
+        //1"Licence Agreement included in this package is null and void."\
+        //2"Licence Agreement included in this package is null and void."\
+	//0
+static_text=\
+        //1"If you have any questions, contact your reseller.  If you"\
+        //2"If you have any questions, contact your reseller.  If you"\
+	//0
+dynamic_text=unc_3,\
+        //1"do own %AppName%, or one of the qualifying products in the"\
+        //2"do own %AppName%, or one of the qualifying products in the"\
+	//0
+static_text=\
+        //1"above list, you are qualified to obtain this upgrade."\
+        //2"above list, you are qualified to obtain this upgrade."\
+	//0
+static_text=
+static_text=\
+        //1"Press OK to continue installation, Cancel to abort."\
+        //2"Press OK to continue installation, Cancel to abort."\
+	//0
+include=oc.dlg

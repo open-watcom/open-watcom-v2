@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stdarg.h>
 
-#include "plusplus.h"
 #include "cgfront.h"
 #include "fold.h"
 #include "errdefns.h"
@@ -456,7 +457,6 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     type = TypedefModifierRemoveOnly( type );
     if( type->id == TYP_VOID ) {
         PTreeErrorExpr( expr, ERR_EXPR_IS_VOID );
-#if 1
     } else {
         if( ( NULL == StructType( type ) )
           &&( NULL == MemberPtrType( type ) ) ) {
@@ -474,21 +474,44 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
         expr = PTreeCopySrcLocation( expr, operand );
         expr = NodeSetBooleanType( expr );
         expr = ConvertBoolean( expr );
-#else
-    // test bitset, rogue wave test streams before checking this in
-    } else if( type->id == TYP_CLASS && ! CompFlags.extensions_enabled ) {
+    }
+    return expr;
+}
+
+static CNV_DIAG diagConvertToBool = // DIAGNOSIS FOR CONVERT-TO-BOOL NODE
+{   ERR_IMPLICIT_CAST_ILLEGAL   // - impossible
+,   ERR_CALL_WATCOM             // - ambiguous
+,   ERR_CALL_WATCOM
+,   ERR_CALL_WATCOM             // - protected violation
+,   ERR_CALL_WATCOM             // - private violation
+};
+
+PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
+    PTREE expr )
+{
+    PTREE zero;                 // - constant node (contains zero)
+    PTREE operand;              // - operand to be compared
+    TYPE type;                  // - expression type, unmodified
+
+    if( expr->flags & PTF_BOOLEAN ) {
+        return expr;
+    }
+    if( PTreeOpFlags( expr ) & PTO_BOOLEAN ) {
+        return expr;
+    }
+    type = TypeReferenced( expr->type );
+    type = TypedefModifierRemoveOnly( type );
+    if( type->id == TYP_VOID ) {
+        PTreeErrorExpr( expr, ERR_EXPR_IS_VOID );
+    } else if( type->id == TYP_CLASS ) {
         TYPE bool_type = GetBasicType( TYP_BOOL );
-        expr = CastImplicit( expr, bool_type, CNV_EXPR, NULL );
-        #if 0
-        PTreeErrorExpr( expr, ERR_NOT_BOOLEAN );
-        #endif
+        expr = CastImplicit( expr, bool_type, CNV_EXPR, &diagConvertToBool );
     } else {
         operand = expr;
         zero = NodeIntegralConstant( 0, GetBasicType( TYP_SINT ) );
         expr = NodeBinary( CO_NE, expr, zero );
         expr = PTreeCopySrcLocation( expr, operand );
         expr = AnalyseOperator( expr );
-#endif
     }
     return expr;
 }
@@ -498,8 +521,17 @@ PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
     PTREE node )                // - starting node
 {
     while( NodeIsBinaryOp( node, CO_CONVERT ) ) {
-        node = PTreeOpRight( node );
+
+        node = node->u.subtree[1];
+
+        while( ( node->op == PT_BINARY )
+            && ( node->cgop == CO_COMMA )
+            && !( node->u.subtree[0]->flags & PTF_SIDE_EFF ) ) {
+
+            node = node->u.subtree[1];
+        }
     }
+
     return node;
 }
 
@@ -735,7 +767,7 @@ boolean NodeIsIntConstant       // TEST IF INTEGRAL CONSTANT AND GET VALUE
 }
 
 
-boolean NodeIsZeroConstant(     // TEST IF A ZERO INTEGER CONSTANT
+boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
     PTREE node )                // - node
 {
     boolean retn;               // - TRUE ==> is zero constant
@@ -743,6 +775,26 @@ boolean NodeIsZeroConstant(     // TEST IF A ZERO INTEGER CONSTANT
 
     if( nodeGetConstant( node, &icon ) ) {
         retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+    } else {
+        retn = FALSE;
+    }
+    return retn;
+}
+
+
+boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
+    PTREE node )                // - node
+{
+    boolean retn;               // - TRUE ==> is zero constant
+    INT_CONSTANT icon;          // - integral constant
+
+    if( nodeGetConstant( node, &icon ) ) {
+        if( ( icon.type->id < TYP_BOOL )
+         || ( icon.type->id > TYP_ULONG64 ) ) {
+            retn = FALSE;
+        } else {
+            retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+        }
     } else {
         retn = FALSE;
     }
@@ -1730,6 +1782,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
 
     type = node->type;
     if( ( node->flags & PTF_LVALUE )
+      &&( NULL != type )
       &&( NULL == TypeReference( type ) ) ) {
         type = MakeReferenceTo( type );
     }
@@ -1751,7 +1804,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
         orig = expr;
         if( ! SymIsModuleDtorable( sym ) ) {
             sym->flag |= SF_CG_ADDR_TAKEN;
-            SymScope( sym )->dtor_reqd = TRUE;
+            SymScope( sym )->s.dtor_reqd = TRUE;
         }
         PTreeExtractLocn( expr, &err_locn );
         dtor = DtorFindLocn( sym->sym_type, &err_locn );

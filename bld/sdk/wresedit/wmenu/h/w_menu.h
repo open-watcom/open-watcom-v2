@@ -45,13 +45,13 @@
 #define FIRST_PREVIEW_ID        0x0001
 #define LAST_PREVIEW_ID         0xffff
 #define WGETMENUITEMTEXT( item ) \
-    ( ((item)->IsPopup) ? (item)->Item.Popup.ItemText \
-                        : (item)->Item.Normal.ItemText )
-#define WGETMENUITEMFLAGS( item ) ( (item)->Item.Normal.ItemFlags )
+    ((item)->IsPopup ? (item)->Item.Popup.ItemText : (item)->Item.Normal.ItemText)
+#define WGETMENUITEMFLAGS( item ) \
+    ((item)->Item.Normal.ItemFlags)
 #define WSETMENUITEMFLAGS( item, flags ) \
-    ( (item)->Item.Normal.ItemFlags = (flags) )
+    ((item)->Item.Normal.ItemFlags = (flags))
 #define WGETMENUITEMID( item ) \
-    ( ((item)->IsPopup) ? -1 : (item)->Item.Normal.ItemID )
+    ((item)->IsPopup ? -1 : (item)->Item.Normal.ItemID)
 
 /****************************************************************************/
 /* data types                                                               */
@@ -82,7 +82,7 @@ typedef struct WMenuEditInfo {
     HWND        win;
     HWND        edit_dlg;
     HWND        preview_window;
-    wstatbar    *wsb;
+    WStatBar    *wsb;
     WToolBar    *ribbon;
     Bool        show_ribbon;
     char        *file_name;
@@ -96,29 +96,25 @@ typedef struct WMenuEditInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void             WInitDummyMenuEntry     ( void );
-extern void             WFiniDummyMenuEntry     ( void );
-extern WMenuEditInfo    *WAllocMenuEInfo     ( void );
-extern void             WFreeMenuEInfo       ( WMenuEditInfo * );
-extern void             WMakeDataFromMenu    ( WMenu *, void **, int * );
-extern void             WFreeMenu            ( WMenu *menu );
-extern void             WFreeMenuEntries     ( WMenuEntry *entry );
-extern void             WFreeMenuEntry       ( WMenuEntry *entry );
-extern Bool             WRemoveMenuEntry     ( WMenu *, WMenuEntry *);
-extern WMenu            *WMakeMenuFromInfo   ( WMenuInfo * );
-extern int              WGetMenuEntryDepth   ( WMenuEntry *entry );
-extern Bool             WInsertEntryIntoMenu ( WMenuEditInfo *einfo,
-                                               WMenuEntry *after,
-                                               WMenuEntry *parent,
-                                               WMenuEntry *entry, Bool popup );
-extern int              WCountMenuChildren   ( WMenuEntry *entry );
-extern Bool             WResetPreviewIDs     ( WMenuEditInfo *einfo );
-extern HMENU            WCreatePreviewMenu   ( WMenuEditInfo *einfo );
+extern void             WInitDummyMenuEntry( void );
+extern void             WFiniDummyMenuEntry( void );
+extern WMenuEditInfo    *WAllocMenuEInfo( void );
+extern void             WFreeMenuEInfo( WMenuEditInfo * );
+extern void             WMakeDataFromMenu( WMenu *, void **, int * );
+extern void             WFreeMenu( WMenu *menu );
+extern void             WFreeMenuEntries( WMenuEntry *entry );
+extern void             WFreeMenuEntry( WMenuEntry *entry );
+extern Bool             WRemoveMenuEntry( WMenu *, WMenuEntry * );
+extern WMenu            *WMakeMenuFromInfo( WMenuInfo * );
+extern int              WGetMenuEntryDepth( WMenuEntry *entry );
+extern Bool             WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after, WMenuEntry *parent, WMenuEntry *entry, Bool popup );
+extern int              WCountMenuChildren( WMenuEntry *entry );
+extern Bool             WResetPreviewIDs( WMenuEditInfo *einfo );
+extern HMENU            WCreatePreviewMenu( WMenuEditInfo *einfo );
 extern WMenuEntry       *WFindEntryFromPreviewID( WMenuEntry *, WORD );
 extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
-extern Bool             WFindEntryLBPos      ( WMenuEntry *, WMenuEntry *,
-                                               int * );
-extern Bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry *);
+extern Bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, int * );
+extern Bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
 extern Bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );
 extern WMenuEntry       *WMakeMenuEntryFromClipData( void *data, uint_32 dsize );

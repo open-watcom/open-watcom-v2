@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,7 +44,7 @@
 #include "wdedebug.h"
 #include "wdestat.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wdemem.h"
 #include "wdeopts.h"
 #include "wdectl3d.h"
@@ -54,13 +54,13 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool WINEXPORT WdeSetControlEnumProc            ( HWND, LPARAM );
+extern Bool WINEXPORT WdeSetControlEnumProc( HWND, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WdeTestCurrentObject            ( void );
-static Bool     WdeSetDefaultTestControlEntries ( HWND );
+static Bool     WdeTestCurrentObject( void );
+static Bool     WdeSetDefaultTestControlEntries( HWND );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -74,7 +74,7 @@ Bool WdeHandleTestModeMenu( WdeResInfo *info )
     HWND   main_window;
     Bool   ret;
 
-    if( !info ) {
+    if( info == NULL ) {
         return( FALSE );
     }
 
@@ -86,7 +86,7 @@ Bool WdeHandleTestModeMenu( WdeResInfo *info )
             DestroyWindow( WdeTestDialogHandle );
         }
         WdeSetTestModeMenu( FALSE );
-        WdeSetStatusReadyText( );
+        WdeSetStatusReadyText();
         WdeShowResourceWindows( SW_SHOWNA );
         if( WdeTestResource != NULL ) {
             //InitState( WdeTestResource->forms_win );
@@ -104,34 +104,34 @@ Bool WdeHandleTestModeMenu( WdeResInfo *info )
             WdeTestMode = TRUE;
             WdeTestResource = info;
         } else {
-            WdeSetStatusReadyText( );
+            WdeSetStatusReadyText();
         }
     }
 
     return( ret );
 }
 
-BOOL WdeIsTestMessage ( MSG *msg )
+BOOL WdeIsTestMessage( MSG *msg )
 {
-    if ( WdeTestMode && WdeTestDialogHandle ) {
-        return ( IsDialogMessage ( WdeTestDialogHandle, msg ) );
+    if( WdeTestMode && WdeTestDialogHandle != NULL ) {
+        return( IsDialogMessage( WdeTestDialogHandle, msg ) );
     } else {
-        return ( FALSE );
+        return( FALSE );
     }
 }
 
-Bool WdeGetTestMode ( void )
+Bool WdeGetTestMode( void )
 {
-    return ( WdeTestMode );
+    return( WdeTestMode );
 }
 
-static Bool WdeTestCurrentObject ( void )
+static Bool WdeTestCurrentObject( void )
 {
     OBJPTR              obj;
     WdeOrderMode        mode;
     Bool                ret;
 
-    ret = ( ( obj = WdeGetCurrentDialog () ) != NULL );
+    ret = ((obj = WdeGetCurrentDialog()) != NULL);
 
     if( ret ) {
         ret = Forward( obj, GET_ORDER_MODE, &mode, NULL );
@@ -150,26 +150,25 @@ static Bool WdeTestCurrentObject ( void )
     return( ret );
 }
 
-Bool WdeSetTestControlDefaults ( HWND dialog )
+Bool WdeSetTestControlDefaults( HWND dialog )
 {
     WNDENUMPROC child_proc;
     Bool        ret;
 
-    if ( dialog != NULL ) {
-        child_proc = (WNDENUMPROC)
-            MakeProcInstance ( (FARPROC) WdeSetControlEnumProc,
-                               WdeGetAppInstance() );
+    if( dialog != NULL ) {
+        child_proc = (WNDENUMPROC)MakeProcInstance( (FARPROC)WdeSetControlEnumProc,
+                                                    WdeGetAppInstance() );
         ret = EnumChildWindows( dialog, child_proc, 0 );
-        FreeProcInstance ( (FARPROC) child_proc );
+        FreeProcInstance( (FARPROC)child_proc );
     }
 
-    return ( ret );
+    return( ret );
 }
 
 Bool WINEXPORT WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
     /* touch unused var to get rid of warning */
-    _wde_touch(ret);
+    _wde_touch( ret );
 
     WdeSetDefaultTestControlEntries( win );
 
@@ -186,16 +185,16 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
     uint_8      class;
 
     len = GetClassName( win, cname, 19 );
-    if( !len ) {
+    if( len == 0 ) {
         return( TRUE );
     }
 
     class = WdeGetClassFromClassName( cname );
 
-    if( ( class == CLASS_LISTBOX ) || ( class == CLASS_COMBOBOX ) ) {
+    if( class == CLASS_LISTBOX || class == CLASS_COMBOBOX ) {
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
-        if( text ) {
+        if( text != NULL ) {
             str = (char *)WdeMemAlloc( strlen( text ) + 10 + 1 );
             if( str == NULL ) {
                 WdeFreeRCString( text );
@@ -205,7 +204,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
             return( TRUE );
         }
         SendMessage( win, WM_SETREDRAW, FALSE, 0 );
-        for( index=1; index <= TEST_DEFAULT_ENTRIES; index++ ) {
+        for( index = 1; index <= TEST_DEFAULT_ENTRIES; index++ ) {
             sprintf( str, text, index );
             if( class == CLASS_LISTBOX ) {
                 SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
@@ -222,67 +221,63 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
     return( TRUE );
 }
 
-LRESULT WINEXPORT WdeTestDlgProc( HWND hWnd, UINT message,
-                                   WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     int msg_processed;
 
     /* touch unused var to get rid of warning */
-    _wde_touch(wParam);
-    _wde_touch(lParam);
+    _wde_touch( wParam );
+    _wde_touch( lParam );
 
     msg_processed = FALSE;
 
-    switch (message) {
-        case WM_DLGBORDER:
-            if( lParam ) {
-                *((int *)lParam) = CTL3D_BORDER;
-                if( !WdeGetOption( WdeOptUse3DEffects ) ) {
-                    *((int *)lParam) = CTL3D_NOBORDER;
-                }
+    switch( message ) {
+    case WM_DLGBORDER:
+        if( lParam ) {
+            *((int *)lParam) = CTL3D_BORDER;
+            if( !WdeGetOption( WdeOptUse3DEffects ) ) {
+                *((int *)lParam) = CTL3D_NOBORDER;
             }
-            msg_processed = TRUE;
-            break;
-        case WM_DLGSUBCLASS:
-            if( lParam ) {
-                *((int *)lParam) = CTL3D_SUBCLASS;
-                if( !WdeGetOption( WdeOptUse3DEffects ) ) {
-                    *((int *)lParam) = CTL3D_NOSUBCLASS;
-                }
+        }
+        msg_processed = TRUE;
+        break;
+    case WM_DLGSUBCLASS:
+        if( lParam ) {
+            *((int *)lParam) = CTL3D_SUBCLASS;
+            if( !WdeGetOption( WdeOptUse3DEffects ) ) {
+                *((int *)lParam) = CTL3D_NOSUBCLASS;
             }
-            msg_processed = TRUE;
-            break;
-        case WM_INITDIALOG:
-            if( WdeGetOption( WdeOptUse3DEffects ) ) {
-                WdeCtl3dSubclassDlg( hWnd, CTL3D_ALL );
-            }
-            WdeTestDialogHandle = hWnd;
-            msg_processed = FALSE;
-            break;
+        }
+        msg_processed = TRUE;
+        break;
+    case WM_INITDIALOG:
+        if( WdeGetOption( WdeOptUse3DEffects ) ) {
+            WdeCtl3dSubclassDlg( hWnd, CTL3D_ALL );
+        }
+        WdeTestDialogHandle = hWnd;
+        msg_processed = FALSE;
+        break;
 
-        case WM_DESTROY:
-            WdeTestDialogHandle = NULL;
-            break;
+    case WM_DESTROY:
+        WdeTestDialogHandle = NULL;
+        break;
 
-        case WM_COMMAND:
-            switch( LOWORD(wParam) ) {
-                case IDOK:
-                case IDCANCEL:
-                    PostMessage( WdeGetMainWindowHandle(), WM_COMMAND,
-                                 IDM_TEST_MODE, MAKELONG(0,0) );
-                    break;
-            }
-            break;
-
-        case WM_CLOSE:
-            /* send a IDM_TEST message to the parent to toggle
-             * test mode off
-             */
+    case WM_COMMAND:
+        switch( LOWORD( wParam ) ) {
+        case IDOK:
+        case IDCANCEL:
             PostMessage( WdeGetMainWindowHandle(), WM_COMMAND,
-                         IDM_TEST_MODE, MAKELONG(0,0) );
+                         IDM_TEST_MODE, MAKELONG( 0, 0 ) );
             break;
+        }
+        break;
+
+    case WM_CLOSE:
+        /* send a IDM_TEST message to the parent to toggle test mode off */
+        PostMessage( WdeGetMainWindowHandle(), WM_COMMAND,
+                     IDM_TEST_MODE, MAKELONG( 0, 0 ) );
+        break;
     }
 
     return( msg_processed );
 }
-

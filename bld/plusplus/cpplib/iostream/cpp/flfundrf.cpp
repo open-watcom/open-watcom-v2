@@ -24,58 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/19    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/22    Greg Bentz      modify filebuf::open() and filebuf::attach()
-//                              to assume ios::binary unless ios::text is
-//                              found in the fstat() so that QNX is supported.
-//  93/07/22    Greg Bentz      Make sure overflow() function sets up the
-//                              put area
-//  93/09/13    Greg Bentz      filebuf::~filebuf() must close if !__attached
-//  93/10/15    Greg Bentz      let __plusplus_open() determine if default
-//                              file mode is TEXT or BINARY
-//  93/10/15    Raymond Tang    Modify filebuf::open() to return NULL if both
-//                              ios::noreplace and ios::nocreate are specified
-//  93/10/22    Raymond Tang    Split into separate files.
-//  93/11/09    Greg Bentz      make sure that the put area is discarded
-//                              in the right order
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <fstream.h>
+#include <fstream>
 #endif
 #include "ioutil.h"
 
+namespace std {
 
-int filebuf::underflow() {
-/************************/
-// Handle allocating a buffer, if required.
-// Handle filling the get area of the streambuf.
-// Read more stuff from the input device.
-// Return the first character read.
+  // Handle allocating a buffer, if required. Handle filling the get
+  // area of the streambuf. Read more stuff from the input device.
+  // Return the first character read.
+
+  int filebuf::underflow() {
 
     char *ptr;
     int   len;
@@ -128,4 +96,7 @@ int filebuf::underflow() {
     }
     setg( eback(), gptr(), egptr() + len );
     return( gptr() < egptr() ? *gptr() : EOF );
+  }
+
 }
+

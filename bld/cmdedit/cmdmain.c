@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command input.
 *
 ****************************************************************************/
 
@@ -33,62 +32,63 @@
 #include <string.h>
 #include "cmdedit.h"
 
-extern int     NonFileChar( char ch );
+extern int      NonFileChar( char ch );
 extern char     far *GetEnv( char far *name, int len );
 extern char     far *InitAlias( char far * inname );
-extern int      ExpandDirCommand();
-extern int      LocateLeftWord();
-extern int      LocateRightWord();
-extern void     ToLastCmd();
-extern void     ToFirstCmd();
-extern void     BOL();
-extern void     BackSpace();
-extern void     Delete();
-extern void     DeleteBOW();
-extern void     DeleteEOW();
-extern void     DoDirCommand();
-extern void     DownScreen();
-extern void     EOL();
-extern void     EraseBOL();
-extern void     EraseEOL();
-extern void     EraseLine();
-extern void     FlipInsertMode();
-extern void     FlipScreenCursor();
+extern int      ExpandDirCommand( void );
+extern int      LocateLeftWord( void );
+extern int      LocateRightWord( void );
+extern void     ToLastCmd( void );
+extern void     ToFirstCmd( void );
+extern void     BOL( void );
+extern void     BackSpace( void );
+extern void     Delete( void );
+extern void     DeleteBOW( void );
+extern void     DeleteEOW( void );
+extern void     DoDirCommand( void );
+extern void     DownScreen( void );
+extern void     EOL( void );
+extern void     EraseBOL( void );
+extern void     EraseEOL( void );
+extern void     EraseLine( void );
+extern void     FlipInsertMode( void );
+extern void     FlipScreenCursor( void );
 extern void     InitSave( char far *name );
-extern void     InsertChar();
-extern void     Left();
-extern void     LeftScreen();
-extern void     LeftWord();
-extern void     ListAliases();
-extern void     ListCommands();
-extern void     LookForAlias();
-extern void     MatchACommand( int (*advance)(char *), int (*retreat)(char *) );
-extern void     FiniFile();
-extern void     NextFile();
-extern void     OverlayChar();
-extern void     PFKey();
-extern void     PrevFile();
+extern void     InsertChar( void );
+extern void     Left( void );
+extern void     LeftScreen( void );
+extern void     LeftWord( void );
+extern void     ListAliases( void );
+extern void     ListCommands( void );
+extern void     LookForAlias( void );
+extern void     MatchACommand( void (*advance)(char *), void (*retreat)(char *) );
+extern void     FiniFile( void );
+extern void     NextFile( void );
+extern void     OverlayChar( void );
+extern void     PFKey( void );
+extern void     PrevFile( void );
 extern void     PutChar( char ch );
-extern void     PutNL();
+extern void     PutNL( void );
 extern void     PutString( char far * str );
 extern void     ReadScreen( int next_line );
-extern void     RestoreLine();
-extern void     RetrieveACommand( int (* advance)(char *) );
-extern void     Right();
-extern void     RightScreen();
-extern void     RightWord();
+extern void     RestoreLine( void );
+extern void     RetrieveACommand( void (* advance)(char *) );
+extern void     Right( void );
+extern void     RightScreen( void );
+extern void     RightWord( void );
 extern void     SaveCmd( char *, unsigned );
-extern void     SaveLine();
-extern void     ScreenCursorOff();
-extern void     SetCursorType();
-extern void     UpScreen();
-extern void     NextCmd(char *);
-extern void     PrevCmd(char *);
-extern void     DelCmd(char *);
+extern void     SaveLine( void );
+extern void     ScreenCursorOff( void );
+extern void     SetCursorType( void );
+extern void     UpScreen( void );
+extern void     NextCmd( char * );
+extern void     PrevCmd( char * );
+extern void     DelCmd( char * );
 
-void InitRetrieve( char far * inname ) {
-/**************************************/
 
+void InitRetrieve( char far * inname )
+/************************************/
+{
     char far *envname;
 
     AppendSlash = FALSE;
@@ -168,7 +168,7 @@ void InitRetrieve( char far * inname ) {
 }
 
 
-static int BubbleQuotes()
+static int BubbleQuotes( void )
 {
     int i;
     int quotes = 0;
@@ -199,7 +199,7 @@ static int BubbleQuotes()
     return( change );
 }
 
-static void ConsolidateQuotes()
+static void ConsolidateQuotes( void )
 {
     int i;
 
@@ -212,9 +212,78 @@ static void ConsolidateQuotes()
     }
 }
 
-int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine ) {
-/****************************************************************************/
+void CopyCmd( char far * userbuff, LENGTH far * l, int i )
+/********************************************************/
+{
+    char ch;
+    int j;
 
+    j = 0;
+    for( ;; ) {
+        if( i == MaxCursor ) {
+            More = 0;
+            break;
+        }
+        userbuff[j] = ch = Line[i];
+        if( ch == CmdSeparator ) {
+            if( Line[ i+1 ] == CmdSeparator ) {
+                ++i;
+            } else {
+                More = i + 1;
+                break;
+            }
+        }
+        ++i;
+        ++j;
+    }
+    l->output = j;
+    userbuff[ j ] = Kbd.cr;
+}
+
+
+static void DrawLine( int old_len, int old_base )
+/***********************************************/
+{
+    int towrite;
+    int oldwrite;
+    int left;
+    int right;
+
+    if( Draw ) {
+        towrite = MaxCursor - Base;
+        right = 0;
+        if( towrite > SCREEN_WIDTH - 1 - StartCol ) {
+            towrite = SCREEN_WIDTH - 1 - StartCol;
+            right = 1;
+        }
+        oldwrite = old_len - old_base;
+        if( oldwrite > SCREEN_WIDTH - 1 - StartCol ) {
+            oldwrite = SCREEN_WIDTH - 1 - StartCol;
+        }
+        left = StartDraw - Base;
+        VioWrtCharStr( (char PASPTR *)Line + Base + left,
+                       towrite - left, Row, StartCol + left, 0 );
+        if( Cursor == MaxCursor ) {
+            VioWrtNChar( (char PASPTR *)" ", 1, Row,
+                         MaxCursor + StartCol - Base, 0 );
+        }
+        if( towrite < oldwrite ) {
+            VioWrtNChar( (char PASPTR *)" ", oldwrite - towrite, Row,
+                         MaxCursor + StartCol - Base, 0 );
+        }
+        if( Base != 0 ) {
+            VioWrtNChar( (char PASPTR *)"\021", 1, Row, StartCol, 0 );
+        }
+        if( right ) {
+            VioWrtNChar( (char PASPTR *)"\020", 1, Row, SCREEN_WIDTH-2, 0 );
+        }
+    }
+}
+
+
+int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
+/******************************************************************************/
+{
     int     old_len,old_base;
     int     first_match;
 
@@ -257,7 +326,7 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
     FirstNextOrPrev = TRUE;
     first_match = TRUE;
 
-    for(;;) { /* for each typed character */
+    for( ;; ) { /* for each typed character */
         Draw = FALSE;
         StartDraw = Base;
         old_len = MaxCursor;
@@ -508,73 +577,3 @@ int StringIn( char far * userbuff, LENGTH far * l, int want_alias, int routine )
 #endif
     return( 0 );
 }
-
-
-
-static void DrawLine( int old_len, int old_base ) {
-/*************************************************/
-
-    int towrite;
-    int oldwrite;
-    int left;
-    int right;
-
-    if( Draw ) {
-        towrite = MaxCursor - Base;
-        right = 0;
-        if( towrite > SCREEN_WIDTH - 1 - StartCol ) {
-            towrite = SCREEN_WIDTH - 1 - StartCol;
-            right = 1;
-        }
-        oldwrite = old_len - old_base;
-        if( oldwrite > SCREEN_WIDTH - 1 - StartCol ) {
-            oldwrite = SCREEN_WIDTH - 1 - StartCol;
-        }
-        left = StartDraw - Base;
-        VioWrtCharStr( (char PASPTR *)Line + Base + left,
-                       towrite - left, Row, StartCol + left, 0 );
-        if( Cursor == MaxCursor ) {
-            VioWrtNChar( (char PASPTR *)" ", 1, Row,
-                         MaxCursor + StartCol - Base, 0 );
-        }
-        if( towrite < oldwrite ) {
-            VioWrtNChar( (char PASPTR *)" ", oldwrite - towrite, Row,
-                         MaxCursor + StartCol - Base, 0 );
-        }
-        if( Base != 0 ) {
-            VioWrtNChar( (char PASPTR *)"\021", 1, Row, StartCol, 0 );
-        }
-        if( right ) {
-            VioWrtNChar( (char PASPTR *)"\020", 1, Row, SCREEN_WIDTH-2, 0 );
-        }
-    }
-}
-
-void CopyCmd( char far * userbuff, LENGTH far * l, int i ) {
-/*****************************************************/
-
-    char ch;
-    int j;
-
-    j = 0;
-    for(;;) {
-        if( i == MaxCursor ) {
-            More = 0;
-            break;
-        }
-        userbuff[j] = ch = Line[i];
-        if( ch == CmdSeparator ) {
-            if( Line[ i+1 ] == CmdSeparator ) {
-                ++i;
-            } else {
-                More = i + 1;
-                break;
-            }
-        }
-        ++i;
-        ++j;
-    }
-    l->output = j;
-    userbuff[ j ] = Kbd.cr;
-}
-

@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <dos.h>
+#include "vi.h"
 #include <signal.h>
 #include <setjmp.h>
-#include "vi.h"
 #include "win.h"
 #define INCL_DOSSIGNALS
 #define INCL_DOSPROCESS
@@ -55,7 +53,7 @@ static volatile int     exitThread;
 
 #ifndef __OS2V2__
 #define TSTACK_SIZE     1024
-static char             thread_stack[TSTACK_SIZE];
+static unsigned char    __far thread_stack[TSTACK_SIZE];
 #else
 #define TSTACK_SIZE     10240
 #endif
@@ -69,12 +67,12 @@ void TimerThread( void )
         DosSleep( 55 );
         ClockTicks++;
         if( EditFlags.ClockActive && EditFlags.SpinningOurWheels && EditFlags.Spinning ) {
-            (*(char_info *)SpinLoc).ch = SpinData[ SpinCount ];
+            (*(char_info *)SpinLoc).ch = SpinData[SpinCount];
             SpinCount++;
             if( SpinCount >= 4 ) {
                 SpinCount = 0;
             }
-            MyVioShowBuf( SpinLoc-Scrn, 1 );
+            MyVioShowBuf( SpinLoc - Scrn, 1 );
         }
         if( (ClockTicks % 9) != 0 ) {
             continue;
@@ -84,17 +82,17 @@ void TimerThread( void )
             int bytes = 5;
             clk = (char_info *) ClockStart;
             if( EditFlags.DisplaySeconds ) {
-                clk[ 7 ].ch = date[DATE_LEN-1];
-                clk[ 6 ].ch = date[DATE_LEN-2];
-                clk[ 5 ].ch = ':';
+                clk[7].ch = date[DATE_LEN - 1];
+                clk[6].ch = date[DATE_LEN - 2];
+                clk[5].ch = ':';
                 bytes = 8;
             }
-            clk[ 4 ].ch = date[DATE_LEN-4];
-            clk[ 3 ].ch = date[DATE_LEN-5];
-            clk[ 2 ].ch = ':';
-            clk[ 1 ].ch = date[DATE_LEN-7];
-            clk[ 0 ].ch = date[DATE_LEN-8];
-            MyVioShowBuf( ClockStart-Scrn, bytes );
+            clk[4].ch = date[DATE_LEN - 4];
+            clk[3].ch = date[DATE_LEN - 5];
+            clk[2].ch = ':';
+            clk[1].ch = date[DATE_LEN - 7];
+            clk[0].ch = date[DATE_LEN - 8];
+            MyVioShowBuf( ClockStart - Scrn, bytes );
         }
     }
     exitThread = FALSE;
@@ -105,14 +103,13 @@ static TID timerTID;
 
 void SetInterrupts( void )
 {
-
     signal( SIGINT, BrkHandler );
     signal( SIGBREAK, BrkHandler );
     exitThread = FALSE;
 #ifdef __OS2V2__
-    DosCreateThread( &timerTID, (PFNTHREAD)TimerThread, NULL, FALSE, TSTACK_SIZE );
+    DosCreateThread( &timerTID, (PFNTHREAD)TimerThread, 0, FALSE, TSTACK_SIZE );
 #else
-    DosCreateThread( TimerThread, &timerTID, &thread_stack[TSTACK_SIZE-2] );
+    DosCreateThread( TimerThread, &timerTID, &thread_stack[TSTACK_SIZE - 2] );
 #endif
 }
 

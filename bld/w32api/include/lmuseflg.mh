@@ -1,0 +1,21 @@
+/*
+ *  lmuseflg.h  LAN Manager deletion force levels
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _LMUSEFLG_
+#define _LMUSEFLG_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Deletion force levels */
+#define USE_NOFORCE         0L
+#define USE_FORCE           1L
+#define USE_LOTS_OF_FORCE   2L
+
+:include cplusepi.sp
+
+#endif /* _LMUSEFLG_ */

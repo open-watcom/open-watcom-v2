@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Main entrypoint for 16-bit OS/2.
 *
 ****************************************************************************/
 
@@ -50,6 +49,7 @@
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "crwd.h"
+#include "thread.h"
 
 #if defined(__SW_BM)
 
@@ -59,61 +59,62 @@ ULONG                   __iosemaphore[_NFILES];
 int                     __iosemcount[_NFILES];
 TID                     __iothreadid[_NFILES];
 
-extern  void            *__InitThreadProcessing(void);
-extern  void            __SetupThreadProcessing(int);
+extern  void            *__InitThreadProcessing( void );
+extern  void            __SetupThreadProcessing( int );
 
 extern  unsigned        __MaxThreads;
 
-extern  unsigned        *__MultipleThread();
-#define _STACKLOW       (*(__MultipleThread()))
+extern  struct thread_data *    __MultipleThread();
+#define _STACKLOW       (*(unsigned *)(__MultipleThread()))
 
 #else
 
-unsigned                _STACKLOW;
+unsigned        _STACKLOW;
 
 #endif
 
 /* global data */
 
-int  __far *            _threadid;
-char __far *            _LpCmdLine;     /* pointer to command line */
-char __far *            _LpPgmName;     /* pointer to program name */
-unsigned                _dynend;
-unsigned                _curbrk;
-unsigned                _STACKTOP;
-unsigned short          _HShift;
-int                     _cbyte;     /* used by getch, getche */
-int                     _cbyte2;    /* used by getch */
-unsigned char __near    _osmajor;
-unsigned char __near    _osminor;
-unsigned char __near    _osmode;
+int             _WCI86FAR *_threadid;
+char            _WCI86FAR *_LpCmdLine;  /* pointer to command line */
+char            _WCI86FAR *_LpPgmName;  /* pointer to program name */
+unsigned        _dynend;
+unsigned        _curbrk;
+unsigned        _STACKTOP;
+unsigned char   _HShift;
+int             _cbyte;     /* used by getch, getche */
+int             _cbyte2;    /* used by getch */
+unsigned char   _WCDATA _osmajor;
+unsigned char   _WCDATA _osminor;
+unsigned char   _WCDATA _osmode;
 #if defined(__SW_BD)
 #include <setjmp.h>
-jmp_buf                 JmpBuff;
-int                     RetCode;
+jmp_buf         JmpBuff;
+int             RetCode;
 #endif
 #if !defined(__SW_BM)
-int                     _nothread;
+int             _nothread;
 #endif
 
 /* End of static data - used in OS/2 DLL to find beginning of near heap */
-extern char             end;
+extern char     end;
 
-void __far __null_FPE_handler()
-    {
-    }
+void __far __null_FPE_handler( void )
+{
+}
 
 void    (__far *__FPE_handler)() = __null_FPE_handler;
 
-extern  int _CMain();
+extern  int _CMain( void );
 #pragma aux _CMain "_*";
 #pragma aux _OS2Main "_*" parm caller [ dx ax ] [ cx bx ];
 
 
-int _OS2Main( char far *stklow, char far * stktop,
-               unsigned envseg, unsigned cmdoff ) {
-/*************************************************/
-
+int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
+                        unsigned envseg, unsigned cmdoff )
+/***********************************************************/
+{
+    USHORT      shftval;
 
     cmdoff = cmdoff;    /* supress warnings */
     envseg = envseg;
@@ -128,7 +129,8 @@ int _OS2Main( char far *stklow, char far * stktop,
     _STACKTOP = FP_OFF( stktop );
     _curbrk = _dynend = _STACKTOP;
 #endif
-    DosGetHugeShift( (PUSHORT)&_HShift );
+    DosGetHugeShift( (PUSHORT)&shftval );
+    _HShift = shftval;
     DosGetMachineMode( (PBYTE)&_osmode );
     {
     unsigned short      version;
@@ -144,8 +146,8 @@ int _OS2Main( char far *stklow, char far * stktop,
 #else
     /* copy progname and arguments to bottom of stack */
     {
-    char                far *src;
-    char                far *pgmp;
+    char    _WCI86FAR *src;
+    char    _WCI86FAR *pgmp;
 
     src = MK_FP( envseg, cmdoff );
     _LpPgmName = stklow;
@@ -167,7 +169,8 @@ int _OS2Main( char far *stklow, char far * stktop,
 
         DosGetInfoSeg( &globalseg, &localseg );
         _threadid = MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
-        if( __InitThreadProcessing() == NULL ) _Not_Enough_Memory();
+        if( __InitThreadProcessing() == NULL )
+            __fatal_runtime_error( "Not enough memory", 1 );
         #if defined(__SW_BD)
         {
             unsigned    i;
@@ -210,16 +213,9 @@ int _OS2Main( char far *stklow, char far * stktop,
 }
 
 
-void _Not_Enough_Memory() {
-/*************************/
-
-    __fatal_runtime_error( "Not enough memory\r\n", 1 );
-}
-
-
-_WCRTLINK void  __exit( unsigned ret_code ) {
-/*******************************************/
-
+_WCRTLINK void  __exit( unsigned ret_code )
+/*****************************************/
+{
     __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
 #ifdef __SW_BD
     RetCode = ret_code;

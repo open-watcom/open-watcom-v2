@@ -368,9 +368,8 @@ HW_FPR_##x  = (hw_reg_part)(HW_F0_##x+HW_F1_##x+HW_F2_##x+HW_F3_##x+\
         HW_F10_##x+HW_F11_##x+HW_F12_##x+HW_F13_##x+HW_F14_##x+HW_F15_##x+\
         HW_F16_##x+HW_F17_##x+HW_F18_##x+HW_F19_##x+HW_F20_##x+HW_F21_##x+\
         HW_F22_##x+HW_F23_##x+HW_F24_##x+HW_F25_##x+HW_F26_##x+HW_F27_##x+\
-        HW_F28_##x+HW_F29_##x+HW_F30_##x+HW_F31_##x ),           \
+        HW_F28_##x+HW_F29_##x+HW_F30_##x+HW_F31_##x )           \
                                                                 \
-HW__COMPOUND_END_##x                                               \
 }
 
 HW_ITER( HW_DEFINE_COMPOUND );

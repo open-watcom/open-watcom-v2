@@ -34,10 +34,10 @@
 #define wwinmain_module
 
 #include "_windows.hpp"
-
+/*
 #pragma library
 #pragma library (wclass)
-
+*/
 typedef enum {
     COORD_USER,
     COORD_SCREEN,

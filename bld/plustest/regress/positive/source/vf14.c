@@ -4,7 +4,7 @@ struct B {
     B() {}
 };
 struct D : B {
-    virtual B() { return __LINE__; };
+    virtual int B() { return __LINE__; };
 };
 struct E : D {
     virtual int B() { return __LINE__; };

@@ -24,38 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _rotl().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <stdlib.h>
 #include <limits.h>
 
-#undef  _rotl
-
+#if defined(__WATCOMC__)
 extern unsigned int __rotl( unsigned int value, unsigned int shift );
 
-#if defined(__AXP__)
-#elif defined(__PPC__)
-#elif defined(__386__)
+#if defined(__386__)
 #pragma aux __rotl = "rol eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
-#else
+#elif defined( _M_I86 )
 #pragma aux __rotl = "rol ax,cl" parm [ax] [cx] value [ax] modify [cx];
 #endif
+#endif /* __WATCOMC__ */
 
 _WCRTLINK unsigned int _rotl( unsigned int value, unsigned int shift )
 {
-    #if defined(__AXP__) || defined(__PPC__)
-        unsigned int tmp;
-        tmp = value;
-        value = value << shift;
-        tmp = tmp >> ((sizeof(tmp)*CHAR_BIT)-shift);
-        value = value | tmp;
-        return( value );
-    #else
-        return( __rotl( value, shift ) );
-    #endif
+#if defined( _M_IX86 ) && defined(__WATCOMC__)
+    return( __rotl( value, shift ) );
+#else
+    unsigned int    tmp;
+
+    tmp = value;
+    value = value << shift;
+    tmp = tmp >> ((sizeof( tmp ) * CHAR_BIT) - shift);
+    value = value | tmp;
+    return( value );
+#endif
 }

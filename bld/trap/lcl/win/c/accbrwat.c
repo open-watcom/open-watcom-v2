@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows 3.x breakpoint support.
 *
 ****************************************************************************/
 
@@ -107,7 +106,7 @@ void ResetBreakpoints( WORD sel )
 
 } /* ResetBreakpoints */
 
-break_point far * findBrkEntry()
+break_point far * findBrkEntry( void )
 {
     int         i;
     int         old_num;

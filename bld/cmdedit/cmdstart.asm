@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  OS/2 (1.x) specific part of cmdedit.
 ;*
 ;*****************************************************************************
 
@@ -42,11 +41,11 @@ fard ends
 _TEXT segment para public 'code'
 
 _data segment para public 'data'
-alias           db "C:\ALIAS.OS2",0
+alias_      db "C:\ALIAS.OS2",0
 index       dw 0
 globalseg   dw 0
 localseg    dw 0
-pid     dw 0
+pid         dw 0
 want_alias  dw 0
 arewein     dw 0
 public      _AliasList
@@ -72,7 +71,7 @@ CMDStart_       proc    far
         push    dx
         mov     dx,dgroup
         mov     ds,dx
-        mov     ax,offset dgroup:alias
+        mov     ax,offset dgroup:alias_
         call    InitRetrieve_
     push    ds
     mov ax,offset globalseg

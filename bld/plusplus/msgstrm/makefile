@@ -17,7 +17,7 @@ compiler = /d1 /w4 /zq /ox /os /xs /ew /ms /bt=dos
 msgstrm.exe : $(OBJS) makefile msgstrm.os2 msgstrm.stb
     $(linker) @msgstrm.os2
 #   $(pharlap)bind386 $(pharlap)run386b msgstrm.exp -exe msgstrm.exe
-#   del msgstrm.exp >nul
+#   @rm -f msgstrm.exp
 
 msgstrm.stb : $(OBJS) makefile msgstrm.dos
     $(linker) @msgstrm.dos
@@ -42,10 +42,7 @@ msgstrm.dos : makefile $(objs)
     $(comp286plus) $[* $(compiler)
 
 reference : .symbolic
-    copy msgstrm.exe $(plusplus_dir)\bin
+    cp msgstrm.exe $(plusplus_dir)/bin
 
 global : .symbolic
-    if exist *.obj @del *.obj >nul
-    if exist *.exe @del *.exe >nul
-    if exist *.exp @del *.exp >nul
-    if exist *.err @del *.err >nul
+    @rm -f *.obj *.exe *.exp *.err

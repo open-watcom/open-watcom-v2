@@ -24,16 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  UTILS : utility routines for the MS linker file translator
 *
 ****************************************************************************/
-
-
-/*
- *  UTILS : utility routines for the MS linker file translator
- *
-*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -52,11 +45,11 @@ static  char *  DefExt[] = {
 };
 
 extern char *   PromptText[] = {
-    "object modules ",
-    "run file ",
-    "list file ",
-    "libraries ",
-    "definitions file "
+    "Object Modules ",
+    "Run File ",
+    "List File ",
+    "Libraries ",
+    "Definitions File "
 };
 
 static bool     WritePrompt;
@@ -68,8 +61,8 @@ extern unsigned QWrite( f_handle, void *, unsigned, char * );
 extern bool     QIsConIn( f_handle );
 extern void     QSetBinary( f_handle );
 
-extern char *   Msg2Splice( char *, char * );
-extern char *   Msg3Splice( char *, char *, char * );
+extern char     *Msg2Splice( const char *, const char * );
+extern char     *Msg3Splice( const char *, const char *, const char * );
 
 extern format_type  FmtType;
 extern cmdentry *   Commands[];
@@ -89,8 +82,8 @@ void ImplyFormat( format_type typ )
     if( FmtType == FMT_DEFAULT ) FmtType = typ;
 }
 
-extern char *FileName( char *buff, int len, char etype, bool force )
-/******************************************************************/
+extern char *FileName( char *buff, int len, int etype, bool force )
+/*****************************************************************/
 {
     char                *namptr;
     char                *ptr;
@@ -100,9 +93,10 @@ extern char *FileName( char *buff, int len, char etype, bool force )
     cnt = 0;
     while( cnt != len ) {
         cnt++;
-        if( *--namptr == '\\' ) break;
+        --namptr;
+        if( *namptr == '\\' || *namptr == '/' ) break;
     }
-    if( *namptr == '\\' ) {
+    if( *namptr == '\\' || *namptr == '/' ) {
         namptr++;
     }
     cnt = len - ( (int) namptr - (int) buff );
@@ -125,11 +119,38 @@ extern char *FileName( char *buff, int len, char etype, bool force )
     return( ptr );
 }
 
+extern void AddCommand( char *msg, int prompt, bool verbatim )
+/************************************************************/
+{
+    cmdentry *  cmd;
+    cmdentry *  list;
+
+    cmd = MemAlloc( sizeof( cmdentry ) );
+    cmd->command = msg;
+    cmd->asis = verbatim;
+    cmd->next = NULL;
+    list = Commands[ prompt ];
+    if( list == NULL ) {
+        Commands[ prompt ] = cmd;
+    } else {                         // always add at the end of the list.
+        while( list->next != NULL ) {
+            list = list->next;
+        }
+        list->next = cmd;
+    }
+}
+
 extern void Warning( char *msg, int prompt )
 /******************************************/
 // print a warning to the linker command file in the form of a linker comment.
 {
     AddCommand( Msg2Splice( "# ", msg ), prompt, TRUE );
+}
+
+extern void AddOption( char *msg )
+/********************************/
+{
+    AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, TRUE );
 }
 
 extern void AddNumOption( char *msg, unsigned value )
@@ -162,34 +183,38 @@ extern void AddStringOption( char *msg, char *string, int len )
     AddOption( cmd );
 }
 
-extern void NotSupported( char *msg )
-/***********************************/
+extern void NotSupported( const char *msg )
+/*****************************************/
 {
-    char * msg2;
+    char    *msg2;
 
     msg2 = Msg2Splice( msg, " option is not supported by WLINK" );
     Warning( msg2, OPTION_SLOT );
     MemFree( msg2 );
 }
 
-extern void NotNecessary( char *msg )
-/***********************************/
+extern void NotNecessary( const char *msg )
+/*****************************************/
 {
-    char * msg2;
+    char    *msg2;
 
     msg2 = Msg2Splice( msg, " option is not necessary when using WLINK" );
     Warning( msg2, OPTION_SLOT );
     MemFree( msg2 );
 }
 
-extern void AddOption( char *msg )
-/********************************/
+extern void NotRecognized( const char *msg )
+/******************************************/
 {
-    AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, TRUE );
+    char    *msg2;
+
+    msg2 = Msg3Splice( "/", msg, " : unrecognized option name; ignored" );
+    Warning( msg2, OPTION_SLOT );
+    MemFree( msg2 );
 }
 
-extern char * Msg2Splice( char *msg1, char *msg2 )
-/************************************************/
+extern char *Msg2Splice( const char *msg1, const char *msg2 )
+/***********************************************************/
 // splice 2 messages together
 {
     int     len1;
@@ -205,8 +230,8 @@ extern char * Msg2Splice( char *msg1, char *msg2 )
     return( both );
 }
 
-extern char * Msg3Splice( char *msg1, char *msg2, char *msg3 )
-/************************************************************/
+extern char *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 )
+/*****************************************************************************/
 {
     int     len1;
     int     len2;
@@ -222,27 +247,6 @@ extern char * Msg3Splice( char *msg1, char *msg2, char *msg3 )
     memcpy( all+len1+len2, msg3, len3 );
     *(all+len1+len2+len3) = '\0';
     return( all );
-}
-
-extern void AddCommand( char *msg, int prompt, bool verbatim )
-/************************************************************/
-{
-    cmdentry *  cmd;
-    cmdentry *  list;
-
-    cmd = MemAlloc( sizeof( cmdentry ) );
-    cmd->command = msg;
-    cmd->asis = verbatim;
-    cmd->next = NULL;
-    list = Commands[ prompt ];
-    if( list == NULL ) {
-        Commands[ prompt ] = cmd;
-    } else {                         // always add at the end of the list.
-        while( list->next != NULL ) {
-            list = list->next;
-        }
-        list->next = cmd;
-    }
 }
 
 extern char * FindNotAsIs( int slot )
@@ -261,8 +265,8 @@ extern char * FindNotAsIs( int slot )
     return( NULL );
 }
 
-static char * FindObjectName( void )
-/**********************************/
+extern char *FindObjectName( void )
+/*********************************/
 {
     char *  msg;
 
@@ -274,6 +278,19 @@ static char * FindObjectName( void )
         }
     }
     return( msg );
+}
+
+static void PromptStart( char * msg, int prompt )
+/***********************************************/
+{
+    char *  text;
+
+    text = PromptText[ prompt ];
+    QWrite( STDERR_HANDLE, text, strlen( text ), "console" );
+    QWrite( STDERR_HANDLE, "[", 1, "console" );
+    if( msg != NULL ) {
+        QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
+    }
 }
 
 extern void OutPutPrompt( int prompt )
@@ -307,28 +324,15 @@ extern void OutPutPrompt( int prompt )
         PromptStart( msg, prompt );
         QWrite( STDERR_HANDLE, DefExt[ prompt ], 4, "console" );
     }
-    QWrite( STDERR_HANDLE, "]:", 2, "console" );
-}
-
-static void PromptStart( char * msg, int prompt )
-/***********************************************/
-{
-    char *  text;
-
-    text = PromptText[ prompt ];
-    QWrite( STDERR_HANDLE, text, strlen( text ), "console" );
-    QWrite( STDERR_HANDLE, "[", 1, "console" );
-    if( msg != NULL ) {
-        QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
-    }
+    QWrite( STDERR_HANDLE, "]: ", 3, "console" );
 }
 
 // spawn/suicide support.
 
 static void *SpawnStack;
 
-extern int Spawn( void (*fn)() )
-/******************************/
+extern int Spawn( void (*fn)( void ) )
+/************************************/
 {
     void *save_env;
     jmp_buf env;

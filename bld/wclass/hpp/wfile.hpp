@@ -34,8 +34,8 @@
 #define wfile_class
 
 #include "wfilenam.hpp"
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 
 typedef int Handle;

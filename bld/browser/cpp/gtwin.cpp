@@ -46,7 +46,7 @@
 #include "keysym.h"
 #include "querycfg.h"
 
-const sibSep = 10;
+const int sibSep = 10;
 
 
 // FIXME --- has too many invalidates due to paranoia

@@ -16,7 +16,7 @@ Modified	By		Reason
 */
 
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "layer0.h"
 #include "filefmt.h"
 #include "resfmt.h"

@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#define IDB_CUST_NONSTANDARD 114
-#define IDB_CUST_INFO      115
-#define IDB_CUST_STYLE     116
-#define IDB_CUST_FLAGS     117
-#define IDB_CUST_ORD       118
-#define IDB_CUST_INFOT     119
-#define IDB_CUST_STYLET    120
-#define IDB_CUST_FLAGST    121
-#define IDB_CUST_GBOX      122
-
+#define IDB_CUST_NONSTANDARD    114
+#define IDB_CUST_INFO           115
+#define IDB_CUST_STYLE          116
+#define IDB_CUST_FLAGS          117
+#define IDB_CUST_ORD            118
+#define IDB_CUST_INFOT          119
+#define IDB_CUST_STYLET         120
+#define IDB_CUST_FLAGST         121
+#define IDB_CUST_GBOX           122

@@ -1,0 +1,28 @@
+LIBRARY     SHELL
+EXPORTS
+    REGOPENKEY                     @1
+    REGCREATEKEY                   @2
+    REGCLOSEKEY                    @3
+    REGDELETEKEY                   @4
+    REGSETVALUE                    @5
+    REGQUERYVALUE                  @6
+    REGENUMKEY                     @7
+    WEP                            @8
+    DRAGACCEPTFILES                @9
+    DRAGQUERYFILE                  @11
+    DRAGFINISH                     @12
+    DRAGQUERYPOINT                 @13
+    SHELLEXECUTE                   @20
+    FINDEXECUTABLE                 @21
+    SHELLABOUT                     @22
+    WCI                            @32
+    ABOUTDLGPROC                   @33
+    EXTRACTICON                    @34
+    EXTRACTASSOCIATEDICON          @36
+    DOENVIRONMENTSUBST             @37
+    FINDENVIRONMENTSTRING          @38
+    INTERNALEXTRACTICON            @39
+    HERETHARBETYGARS               @100
+    FINDEXEDLGPROC                 @101
+    REGISTERSHELLHOOK              @102
+    SHELLHOOKPROC                  @103

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrcat() - far strcat().
 *
 ****************************************************************************/
 
@@ -38,14 +37,16 @@
 /* concatenate t to the end of dst */
 
 _WCRTLINK char _WCFAR *_fstrcat( char _WCFAR *dst, const char _WCFAR *t )
-    {
+{
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fstrcat( dst, t ) );
+    return( _inline__fstrcat( dst, t ) );
 #else
-        char _WCFAR *s;
-        s = dst;
-        while( *s != '\0' )  ++s;
-        while( *s++ = *t++ ) ;
-        return( dst );
+    char _WCFAR     *s;
+    s = dst;
+    while( *s != '\0' )
+        ++s;
+    while( *s++ = *t++ )
+        ;
+    return( dst );
 #endif
-    }
+}

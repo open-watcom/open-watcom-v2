@@ -1,0 +1,40 @@
+*$noreference
+
+! General Purpose Definitions:
+! ----------------------------
+
+      integer NULL, NULL_HANDLE
+      parameter ( NULL = 0, NULL_HANDLE = 0 )
+
+! Define NULL_POINTER (to be used when a null pointer is to be
+! passed to a subprogram expecting a pointer)
+
+      integer NULL_POINTER(:)
+
+! Rectangle Data Structure
+
+      structure /RECT/
+          integer*2           left
+          integer*2           top
+          integer*2           right
+          integer*2           bottom
+      end structure
+
+! Point Data Structure
+
+      structure /POINT/
+          integer*2           x
+          integer*2           y
+      end structure
+
+! Window Handle Table
+
+      structure /HANDLETABLE/
+          integer*2           objectHandle(1)
+      end structure
+
+*$reference
+
+! Force startup code to be included.
+
+      external wstart

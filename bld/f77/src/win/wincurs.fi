@@ -1,0 +1,67 @@
+*$noreference
+
+! Cursor Functions:
+! -----------------
+
+      external ClipCursor
+      external CreateCursor
+      external DestroyCursor
+      external GetCurrentPosition
+      external GetCursorPos
+      external LoadCursor
+      external SetCursor
+      external SetCursorPos
+      external ShowCursor
+
+      integer*2 CreateCursor
+      integer*2 DestroyCursor
+      integer*4 GetCurrentPosition
+      integer*2 LoadCursor
+      integer*2 SetCursor
+      integer*2 ShowCursor
+
+! Predefined Cursors
+
+      integer IDC_ARROW
+      integer IDC_IBEAM
+      integer IDC_WAIT
+      integer IDC_CROSS
+      integer IDC_UPARROW
+      integer IDC_SIZE
+      integer IDC_ICON
+      integer IDC_SIZENWSE
+      integer IDC_SIZENESW
+      integer IDC_SIZEWE
+      integer IDC_SIZENS
+
+c$ifdef __386__
+
+      parameter ( IDC_ARROW           = 'ffff0000'x .or. 32512 )
+      parameter ( IDC_IBEAM           = 'ffff0000'x .or. 32513 )
+      parameter ( IDC_WAIT            = 'ffff0000'x .or. 32514 )
+      parameter ( IDC_CROSS           = 'ffff0000'x .or. 32515 )
+      parameter ( IDC_UPARROW         = 'ffff0000'x .or. 32516 )
+      parameter ( IDC_SIZE            = 'ffff0000'x .or. 32640 )
+      parameter ( IDC_ICON            = 'ffff0000'x .or. 32641 )
+      parameter ( IDC_SIZENWSE        = 'ffff0000'x .or. 32642 )
+      parameter ( IDC_SIZENESW        = 'ffff0000'x .or. 32643 )
+      parameter ( IDC_SIZEWE          = 'ffff0000'x .or. 32644 )
+      parameter ( IDC_SIZENS          = 'ffff0000'x .or. 32645 )
+
+c$else
+
+      parameter ( IDC_ARROW           = 32512 )
+      parameter ( IDC_IBEAM           = 32513 )
+      parameter ( IDC_WAIT            = 32514 )
+      parameter ( IDC_CROSS           = 32515 )
+      parameter ( IDC_UPARROW         = 32516 )
+      parameter ( IDC_SIZE            = 32640 )
+      parameter ( IDC_ICON            = 32641 )
+      parameter ( IDC_SIZENWSE        = 32642 )
+      parameter ( IDC_SIZENESW        = 32643 )
+      parameter ( IDC_SIZEWE          = 32644 )
+      parameter ( IDC_SIZENS          = 32645 )
+
+c$endif
+
+*$reference

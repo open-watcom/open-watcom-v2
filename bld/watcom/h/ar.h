@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition used by ar format
 *
 ****************************************************************************/
 
@@ -34,27 +33,27 @@
 
 #define AR_H
 
-#define AR_IDENT "!<arch>\n"
-#define AR_IDENT_LEN 8
+#define AR_IDENT        "!<arch>\n"
+#define AR_IDENT_LEN    8
 
-#define AR_HEADER_IDENT "`\n"
+#define AR_HEADER_IDENT     "`\n"
 #define AR_HEADER_IDENT_LEN 2
 
-#define AR_NAME_LEN 16
-#define AR_DATE_LEN 12
-#define AR_UID_LEN 6
-#define AR_GID_LEN 6
-#define AR_MODE_LEN 8
-#define AR_SIZE_LEN 10
+#define AR_NAME_LEN     16
+#define AR_DATE_LEN     12
+#define AR_UID_LEN      6
+#define AR_GID_LEN      6
+#define AR_MODE_LEN     8
+#define AR_SIZE_LEN     10
 
 #define AR_ELEMENT_BASE 10
-#define AR_MODE_BASE 8
+#define AR_MODE_BASE    8
 
-#define AR_NAME_CONTINUED_AFTER "#1/"
+#define AR_NAME_CONTINUED_AFTER     "#1/"
 #define AR_NAME_CONTINUED_AFTER_LEN 3
 
-#define AR_NAME_END_CHAR '/'
-#define AR_VALUE_END_CHAR ' '
+#define AR_NAME_END_CHAR    '/'
+#define AR_VALUE_END_CHAR   ' '
 
 struct ar_header {
     char        name[AR_NAME_LEN];
@@ -69,7 +68,10 @@ typedef struct ar_header ar_header;
 
 #define AR_HEADER_SIZE sizeof( ar_header )
 
-#define AR_FILE_PADDING_STRING "\n"
-#define AR_FILE_PADDING_STRING_LEN 1
+#define AR_FILE_PADDING_STRING      "\n"
+#define AR_FILE_PADDING_STRING_LEN  1
+
+#define AR_LONG_NAME_END_STRING     "/\n"
+#define AR_LONG_NAME_END_STRING_LEN 2
 
 #endif

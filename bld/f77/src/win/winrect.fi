@@ -1,0 +1,24 @@
+*$noreference
+
+! Rectangle Functions:
+! --------------------
+
+      external CopyRect
+      external EqualRect
+      external InflateRect
+      external IntersectRect
+      external IsRectEmpty
+      external OffsetRect
+      external PtInRect
+      external SetRect
+      external SetRectEmpty
+      external UnionRect
+
+      integer*2 CopyRect
+      integer*2 EqualRect
+      integer*2 IntersectRect
+      integer*2 IsRectEmpty
+      integer*2 PtInRect
+      integer*2 UnionRect
+
+*$reference

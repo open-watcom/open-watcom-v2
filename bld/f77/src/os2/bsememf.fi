@@ -1,0 +1,83 @@
+c$noreference
+
+        integer  PAG_READ
+        parameter (PAG_READ = '00000001'x)
+
+        integer  PAG_WRITE
+        parameter (PAG_WRITE = '00000002'x)
+
+        integer  PAG_EXECUTE
+        parameter (PAG_EXECUTE = '00000004'x)
+
+        integer  PAG_GUARD
+        parameter (PAG_GUARD = '00000008'x)
+
+        integer  PAG_DEFAULT
+        parameter (PAG_DEFAULT = '00000400'x)
+
+        integer  PAG_COMMIT
+        parameter (PAG_COMMIT = '00000010'x)
+
+        integer  PAG_DECOMMIT
+        parameter (PAG_DECOMMIT = '00000020'x)
+
+        integer  OBJ_TILE
+        parameter (OBJ_TILE = '00000040'x)
+
+        integer OBJ_PROTECTED
+        parameter (OBJ_PROTECTED = '00000080'x)
+
+        integer  OBJ_GETTABLE
+        parameter (OBJ_GETTABLE = '00000100'x)
+
+        integer  OBJ_GIVEABLE
+        parameter (OBJ_GIVEABLE = '00000200'x)
+
+        integer fPERM
+        parameter (fPERM = PAG_EXECUTE .or. PAG_READ .or. PAG_WRITE)
+
+        integer fSHARE
+        parameter (fSHARE = OBJ_GETTABLE .or. OBJ_GIVEABLE)
+
+        integer fALLOC
+        parameter (fALLOC = OBJ_TILE .or. PAG_COMMIT .or. fPERM)
+
+        integer fALLOCSHR
+        parameter (fALLOCSHR = OBJ_TILE .or. PAG_COMMIT .or.
+     +                         fSHARE .or. fPERM)
+
+        integer  fGETNMSHR
+        parameter (fGETNMSHR = (fPERM))
+
+        integer  fGETSHR
+        parameter (fGETSHR = (fPERM))
+
+        integer  fGIVESHR
+        parameter (fGIVESHR = (fPERM))
+
+        integer fSET
+        parameter (fSET = PAG_COMMIT + PAG_DECOMMIT +
+     +                    PAG_DEFAULT + fPERM)
+
+        integer  DOSSUB_INIT
+        parameter (DOSSUB_INIT = '00000001'x)
+
+        integer  DOSSUB_GROW
+        parameter (DOSSUB_GROW = '00000002'x)
+
+        integer  DOSSUB_SPARSE_OBJ
+        parameter (DOSSUB_SPARSE_OBJ = '00000004'x)
+
+        integer  DOSSUB_SERIALIZE
+        parameter (DOSSUB_SERIALIZE = '00000008'x)
+
+        integer  PAG_SHARED
+        parameter (PAG_SHARED = '00002000'x)
+
+        integer  PAG_FREE
+        parameter (PAG_FREE = '00004000'x)
+
+        integer  PAG_BASE
+        parameter (PAG_BASE = '00010000'x)
+
+c$reference

@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous DWARF utility function prototypes.
 *
 ****************************************************************************/
 
 
-extern DFAddImage( imp_image_handle *ii );
-extern DFFreeImage( imp_image_handle *ii );
+extern void DFAddImage( imp_image_handle *ii );
+extern void  DFFreeImage( imp_image_handle *ii );

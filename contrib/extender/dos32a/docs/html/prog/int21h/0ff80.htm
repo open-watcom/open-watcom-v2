@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">3.44 - DOS function 0FF80h
+- DOS/32 Advanced Magic Function</font></b></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0FF80h<br>
+<b>EBX</b> = first argument(s)<br>
+<b>ECX</b> = second argument(s)<br>
+<b>DS:EDX</b> = pointer to ASCIIZ string</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><font size=-1 face="Verdana, Arial, Helvetica">string written to STDOUT</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) This call is specific
+  to DOS/32 Advanced DOS Extender only, and is not supported by standard
+  DOS.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) This function writes
+  a formatted ASCIIZ string to STDOUT, and is equal to DOS function AH=09h,
+  except that it takes argument parameters passed in the EBX and ECX registers.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) The string may contain
+  optional modifiers which will be converted to the ASCII codes by the DOS
+  Extender.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">The valid modifiers are:</font></p>
+  <blockquote>
+    <p><font size=-1 face="Verdana, Arial, Helvetica">%c - convert argument
+    to an ASCII character (8-bit)<br>
+    %d - convert argument to a decimal number in range 0..2^16 (16-bit)<br>
+    %b - convert argument to a heximal number in range 0..2^8 (8-bit)<br>
+    %w - convert argument to a heximal number in range 0..2^16 (16-bit)<br>
+    %l - convert argument to a heximal number in range 0..2^32 (32-bit)</font></p>
+  </blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) This function can
+  accept the maximum of two 32-bit arguments passed in the EBX and ECX registers
+  or four 8- and 16-bit arguments passed in the respective high/low words
+  of EBX and ECX registers (the 8-bit arguments are zero-extended to 16-bit
+  values internally).</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) The maximum length
+  of the *formatted* string is 256 bytes.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) This function may
+  be called from interrupt and exception handlers. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

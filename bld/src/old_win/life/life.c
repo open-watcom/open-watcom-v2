@@ -5,8 +5,8 @@
 #include "life.h"
 
 static char LifeClass[32]="LifeClass";
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow );
-static BOOL FirstInstance( HANDLE this_inst );
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow );
+static BOOL FirstInstance( HINSTANCE this_inst );
 
 extern void Error( char *str )
 /*****************************
@@ -25,7 +25,7 @@ extern BOOL NoMemory()
 }
 
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -58,7 +58,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
 
 extern long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 /********************************************
 
     Register window class for the application,
@@ -83,7 +83,7 @@ static BOOL FirstInstance( HANDLE this_inst )
 
 }
 
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow )
 /*******************************************************
 
     Do work required for every instance of the application:
@@ -254,8 +254,8 @@ static void DisplayDialog( char *name, BOOL _EXPORT FAR PASCAL rtn() )
 {
     FARPROC     proc;
 
-    proc = MakeProcInstance( rtn, ThisInst );
-    DialogBox( ThisInst, name, WinHandle, proc );
+    proc = MakeProcInstance( (FARPROC)rtn, ThisInst );
+    DialogBox( ThisInst, name, WinHandle, (DLGPROC)proc );
     FreeProcInstance( proc );
 }
 

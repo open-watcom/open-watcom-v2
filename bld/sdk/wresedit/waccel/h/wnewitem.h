@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool  WInsertAccelEntry     ( WAccelEditInfo * );
-extern Bool  WAddEditWinLBoxEntry  ( WAccelEditInfo *, WAccelEntry *, int );
+extern Bool WInsertAccelEntry( WAccelEditInfo * );
+extern Bool WAddEditWinLBoxEntry( WAccelEditInfo *, WAccelEntry *, int );
 
 #endif

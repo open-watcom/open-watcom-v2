@@ -23,30 +23,33 @@
 #                               second pass
 #       lnk_dependencies        a list of files the linker command file
 #                               depends upon
+#       platform                Win32 for Win9x/Me/NT/2K/XP, Win16 for 3.x/Win386
 #
 # In addition the makefile must declare a procedure called linkit that
 # that can be used to add commands to the linker command file
 
-!ifeq CFLAGS -zW
-CFLAGS += -i=$(%WATCOM)\h;$(%WATCOM)\h\win
+!ifeq platform Win32
+CFLAGS += -I"$(%WATCOM)/h" -I"$(%WATCOM)/h/nt"
+RCINCS += -I"$(%WATCOM)/h/nt"
 !else
-CFLAGS += -i=$(%WATCOM)\h;$(%WATCOM)\h\nt
+CFLAGS += -I"$(%WATCOM)/h" -I"$(%WATCOM)/h/win"
+RCINCS += -I"$(%WATCOM)/h/win"
 !endif
 
-CFLAGS += -oaxt -d2 -w4
+CFLAGS += -zq -oaxt -d2 -w8 -fo=.obj
 
 $(name).exe : $(OBJS) $(name).res $(LNK)
     wlink @$(LNK)
     @%make bindit
 
 $(name).res : $(name).rc $(resources)
-    wrc -r -i=.. -fo=.\$(name).res $(res1_flags) $[@
+    wrc -q -r -I.. $(RCINCS) -fo=./$(name).res $(res1_flags) $[@
 
 $(LNK) : $(lnk_dependencies)
     %create $(LNK)
     @%append $(LNK) debug all
     @%append $(LNK) name $(name)
-    @%append $(LNK) op map
+    @%append $(LNK) op map, quiet
     @%make linkit
     @for %i in ($(OBJS)) do @%append $(LNK) file %i
 
@@ -67,10 +70,6 @@ $(LNK) : $(lnk_dependencies)
         $(CC) $(CFLAGS) $[*
 
 clean: .symbolic
-    @erase *.obj
-    @erase *.err
-    @erase *.exe
-    @erase *.lnk
-    @erase *.res
-    @erase *.rex
-    @erase *.lib
+    rm -f *.obj *.err *.exe *.lnk *.res *.rex *.lib *.sym *.map
+    rm -f *.lk1 *.mk1 *.mk
+

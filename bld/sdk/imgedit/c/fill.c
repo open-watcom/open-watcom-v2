@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 
 /*
- * makeBiggerBitmap - makes a bitmap 1 pixel wider and 1 higher than that
+ * makeBiggerBitmap - make a bitmap 1 pixel wider and 1 higher than that
  *                    of the given bitmap
  */
 static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
@@ -51,10 +52,8 @@ static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
     int         bmplanes;
     int         bmbitspixel;
 
-    _wpi_getbitmapparms( hbitmap, &bmwidth, &bmheight, &bmplanes, NULL,
-                                                        &bmbitspixel );
-    newbitmap = _wpi_createbitmap(bmwidth+1, bmheight+1, bmplanes, bmbitspixel,
-                                                                        NULL );
+    _wpi_getbitmapparms( hbitmap, &bmwidth, &bmheight, &bmplanes, NULL, &bmbitspixel );
+    newbitmap = _wpi_createbitmap(bmwidth + 1, bmheight + 1, bmplanes, bmbitspixel, NULL );
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, Instance, &srcdc );
     destpres = _wpi_createcompatiblepres( pres, Instance, &destdc );
@@ -65,10 +64,10 @@ static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
     olddestbmp = _wpi_selectobject( destpres, newbitmap );
     oldsrcbmp = _wpi_selectobject( srcpres, hbitmap );
 
-    if ( _wpi_getpixel(srcpres, pt->x, pt->y) == BLACK ) {
-        _wpi_patblt( destpres, 0, 0, bmwidth+1, bmheight+1, WHITENESS );
+    if( _wpi_getpixel( srcpres, pt->x, pt->y ) == BLACK ) {
+        _wpi_patblt( destpres, 0, 0, bmwidth + 1, bmheight + 1, WHITENESS );
     } else {
-        _wpi_patblt( destpres, 0, 0, bmwidth+1, bmheight+1, BLACKNESS );
+        _wpi_patblt( destpres, 0, 0, bmwidth + 1, bmheight + 1, BLACKNESS );
     }
     /*
      * put the old bitmap in the top left corner of our new bitmap
@@ -81,11 +80,12 @@ static HBITMAP makeBiggerBitmap( HBITMAP hbitmap, WPI_POINT *pt )
     _wpi_deletecompatiblepres( srcpres, srcdc );
 
     return( newbitmap );
+
 } /* makeBiggerBitmap */
 
 /*
- * getFillCase - There are a number of different possible cases when filling
- *               an image.  This routine determines which case we are in.
+ * getFillCase - there are a number of different possible cases when filling an image
+ *             - determine which case we are in
  */
 static int getFillCase( fill_info_struct *fillinfo, img_node *node )
 {
@@ -98,7 +98,7 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
     COLORREF    andpixel;
     COLORREF    xorpixel;
 
-    if (fillinfo->img_type == BITMAP_IMG) {
+    if( fillinfo->img_type == BITMAP_IMG ) {
         return( NORMAL_FILL );
     }
 
@@ -112,7 +112,7 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
     _wpi_selectobject( andpres, oldbitmap );
     _wpi_deletecompatiblepres( andpres, anddc );
 
-    if (andpixel == BLACK) {
+    if( andpixel == BLACK ) {
         pres = _wpi_getpres( HWND_DESKTOP );
         xorpres = _wpi_createcompatiblepres( pres, Instance, &xordc );
         _wpi_releasepres( HWND_DESKTOP, pres );
@@ -122,22 +122,22 @@ static int getFillCase( fill_info_struct *fillinfo, img_node *node )
         xorpixel = _wpi_getpixel( xorpres, fillinfo->pt.x, fillinfo->pt.y );
         _wpi_selectobject( xorpres, oldbitmap );
         _wpi_deletecompatiblepres( xorpres, xordc );
-        if (xorpixel == BLACK || xorpixel == WHITE) {
+        if( xorpixel == BLACK || xorpixel == WHITE ) {
             return( DIFFERENT_FILL );
         }
-        if ( fillinfo->colourtype == NORMAL_CLR ) {
+        if( fillinfo->colortype == NORMAL_CLR ) {
             return( NORMAL_FILL );
         } else {
-            return (DIFFERENT_FILL);
+            return( DIFFERENT_FILL );
         }
     } else {
         return( DIFFERENT_FILL );
     }
+
 } /* getFillCase */
 
 /*
- * fillNormal - This routine just does a normal fill on the xorbitmap and
- *              leaves the and bitmap alone.
+ * fillNormal - do a normal fill on the XOR bitmap and leave the AND bitmap alone
  */
 static void fillNormal( fill_info_struct *fillinfo, img_node *node )
 {
@@ -160,25 +160,24 @@ static void fillNormal( fill_info_struct *fillinfo, img_node *node )
     /*
      * Because ExtFloodFill seems to screw up on the right side of the
      * bitmap, I create a bitmap 1 bigger on the right, and fill with
-     * another colour (black or white) so that we can avoid the right
+     * another color (black or white) so that we can avoid the right
      * side screw up thing.
      */
-    bigbitmap = makeBiggerBitmap( node->hxorbitmap, &(fillinfo->pt) );
+    bigbitmap = makeBiggerBitmap( node->hxorbitmap, &fillinfo->pt );
 
     _wpi_torgbmode( dupmempres );
     _wpi_torgbmode( xormempres );
-    hbrush = _wpi_createsolidbrush( fillinfo->xorcolour );
+    hbrush = _wpi_createsolidbrush( fillinfo->xorcolor );
     oldbrush = _wpi_selectobject( dupmempres, hbrush );
     oldbitmap = _wpi_selectobject( dupmempres, bigbitmap );
 
     _wpi_extfloodfill( dupmempres, fillinfo->pt.x, fillinfo->pt.y,
-                        _wpi_getpixel(dupmempres, fillinfo->pt.x,
-                        fillinfo->pt.y), FLOODFILLSURFACE );
+                       _wpi_getpixel( dupmempres, fillinfo->pt.x, fillinfo->pt.y ),
+                       FLOODFILLSURFACE );
 
     oldxorbmp = _wpi_selectobject( xormempres, node->hxorbitmap );
 
-    _wpi_bitblt( xormempres, 0, 0, node->width, node->height, dupmempres,
-                                                            0, 0, SRCCOPY );
+    _wpi_bitblt( xormempres, 0, 0, node->width, node->height, dupmempres, 0, 0, SRCCOPY );
 
     _wpi_selectobject( dupmempres, oldbrush );
     _wpi_deleteobject( hbrush );
@@ -187,14 +186,16 @@ static void fillNormal( fill_info_struct *fillinfo, img_node *node )
     _wpi_selectobject( dupmempres, oldbitmap );
     _wpi_deletecompatiblepres( dupmempres, dupmemdc );
     _wpi_deletebitmap( bigbitmap );
+
 } /* fillNormal */
 
 #ifdef __OS2_PM__
+
 /*
- * fillScreenFirst - We fill the screen bitmap first and find out which
- *                   pixels have changed.  We use these pixels to determine
- *                   which should change in the AND and XOR bitmaps.
- *                   PM version
+ * fillScreenFirst - fill the screen bitmap first and find out which pixels have changed
+ *                 - use these pixels to determine which should change in the
+ *                   AND and XOR bitmaps
+ *                 - PM version
  */
 static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 {
@@ -207,27 +208,27 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     screendup;
     HBITMAP     oldscreen;
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
-    COLORREF    fillcolour;
+    COLORREF    fillcolor;
     BOOL        screenchanged;
-    short       x,y;
+    short       x, y;
     bitmap_bits *xorbits;
     bitmap_bits *screenbeforebits;
     bitmap_bits *screenbits;
     bitmap_bits *andbits;
 
     /*
-     * create a copy of the screen bitmap but make it one bigger so that
+     * Create a copy of the screen bitmap but make it one bigger so that
      * the fill won't screw up on the right hand side of the bitmap.
      */
     screenbitmap = CreateViewBitmap( node );
-    bigbitmap = makeBiggerBitmap( screenbitmap, &(fillinfo->pt) );
+    bigbitmap = makeBiggerBitmap( screenbitmap, &fillinfo->pt );
     _wpi_deletebitmap( screenbitmap );
 
     /*
-     * First fill the screen bitmap with a colour we know will force the
+     * First fill the screen bitmap with a color we know will force the
      * pixels to change (we know that either black or white will do).  We
-     * also fill the xor bitmap with the colour since it may be a dithered
-     * colour.
+     * also fill the XOR bitmap with the color since it may be a dithered
+     * color.
      */
     screendup = DuplicateBitmap( bigbitmap );
 
@@ -238,17 +239,17 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     _wpi_torgbmode( screenpres );
 
     oldscreen = _wpi_selectobject( screenpres, bigbitmap );
-    if ( _wpi_getpixel(screenpres, fillinfo->pt.x, fillinfo->pt.y) == BLACK ) {
-        fillcolour = WHITE;
+    if( _wpi_getpixel( screenpres, fillinfo->pt.x, fillinfo->pt.y ) == BLACK ) {
+        fillcolor = WHITE;
     } else {
-        fillcolour = BLACK;
+        fillcolor = BLACK;
     }
 
-    hbrush = _wpi_createsolidbrush( fillcolour );
+    hbrush = _wpi_createsolidbrush( fillcolor );
     oldbrush = _wpi_selectobject( screenpres, hbrush );
     _wpi_extfloodfill( screenpres, fillinfo->pt.x, fillinfo->pt.y,
-                        _wpi_getpixel(screenpres, fillinfo->pt.x,
-                        fillinfo->pt.y), FLOODFILLSURFACE );
+                       _wpi_getpixel( screenpres, fillinfo->pt.x, fillinfo->pt.y ),
+                       FLOODFILLSURFACE );
     _wpi_selectobject( screenpres, oldbrush );
     _wpi_deleteobject( hbrush );
     _wpi_selectobject( screenpres, oldscreen );
@@ -263,14 +264,14 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
      * Now go through every pixel and see if it changed on the screen.  If
      * it did then it should change on the XOR and AND bitmaps
      */
-    for (x=0; x < node->width; ++x) {
-        for (y=0; y < node->height; ++y) {
-            screenchanged = (MyGetPixel(screenbits, x, y) !=
-                                        MyGetPixel(screenbeforebits, x, y));
+    for( x = 0; x < node->width; x++ ) {
+        for( y = 0; y < node->height; y++ ) {
+            screenchanged = (MyGetPixel( screenbits, x, y ) !=
+                             MyGetPixel( screenbeforebits, x, y ) );
 
-            if (screenchanged) {
-                MySetPixel( xorbits, x, y, fillinfo->xorcolour );
-                MySetPixel( andbits, x, y, fillinfo->andcolour );
+            if( screenchanged ) {
+                MySetPixel( xorbits, x, y, fillinfo->xorcolor );
+                MySetPixel( andbits, x, y, fillinfo->andcolor );
             }
         }
     }
@@ -281,15 +282,16 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 
     _wpi_deletebitmap( bigbitmap );
     _wpi_deletebitmap( screendup );
+
 } /* fillScreenFirst */
 
 #else
 
 /*
- * fillScreenFirst - We fill the screen bitmap first and find out which
- *                   pixels have changed.  We use these pixels to determine
- *                   which should change in the AND and XOR bitmaps.
- *                   Windows version
+ * fillScreenFirst - fill the screen bitmap first and find out which pixels have changed
+ *                 - use these pixels to determine which should change in the
+ *                   AND and XOR bitmaps
+ *                 - Windows version
  */
 static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 {
@@ -310,24 +312,24 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     HBITMAP     oldscreen;
     HBITMAP     oldscreendup;
     HBITMAP     bigbitmap;      // bigger bitmap we actually fill
-    COLORREF    xorcolour;
-    COLORREF    fillcolour;
+    COLORREF    xorcolor;
+    COLORREF    fillcolor;
     BOOL        xorchanged;
     BOOL        screenchanged;
-    short       x,y;
+    short       x, y;
 
     /*
-     * create a copy of the screen bitmap but make it one bigger so that
+     * Create a copy of the screen bitmap but make it one bigger so that
      * the fill won't screw up on the right hand side of the bitmap.
      */
     screenbitmap = CreateViewBitmap( node );
-    bigbitmap = makeBiggerBitmap( screenbitmap, &(fillinfo->pt) );
+    bigbitmap = makeBiggerBitmap( screenbitmap, &fillinfo->pt );
 
     /*
-     * First fill the screen bitmap with a colour we know will force the
+     * First fill the screen bitmap with a color we know will force the
      * pixels to change (we know that either black or white will do).  We
-     * also fill the xor bitmap with the colour since it may be a dithered
-     * colour.
+     * also fill the XOR bitmap with the color since it may be a dithered
+     * color.
      */
     screendup = DuplicateBitmap( bigbitmap );
 
@@ -340,26 +342,26 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
     ReleaseDC( NULL, hdc );
 
     oldscreen = SelectObject( screendc, bigbitmap );
-    if (GetPixel(screendc, fillinfo->pt.x, fillinfo->pt.y) == BLACK) {
-        fillcolour = WHITE;
+    if( GetPixel( screendc, fillinfo->pt.x, fillinfo->pt.y ) == BLACK ) {
+        fillcolor = WHITE;
     } else {
-        fillcolour = BLACK;
+        fillcolor = BLACK;
     }
-    hbrush = CreateSolidBrush( fillcolour );
+    hbrush = CreateSolidBrush( fillcolor );
     oldbrush = SelectObject( screendc, hbrush );
     ExtFloodFill( screendc, fillinfo->pt.x, fillinfo->pt.y,
-                        GetPixel(screendc, fillinfo->pt.x, fillinfo->pt.y),
-                        FLOODFILLSURFACE );
+                  GetPixel( screendc, fillinfo->pt.x, fillinfo->pt.y ),
+                  FLOODFILLSURFACE );
     SelectObject( screendc, oldbrush );
     DeleteObject( hbrush );
 
     xorbmpbefore = DuplicateBitmap( node->hxorbitmap );
     oldxorbmp = SelectObject( xordc, node->hxorbitmap );
-    hbrush = CreateSolidBrush( fillinfo->xorcolour );
+    hbrush = CreateSolidBrush( fillinfo->xorcolor );
     oldbrush = SelectObject( xordc, hbrush );
     ExtFloodFill( xordc, fillinfo->pt.x, fillinfo->pt.y,
-                        GetPixel(xordc, fillinfo->pt.x, fillinfo->pt.y),
-                        FLOODFILLSURFACE );
+                  GetPixel( xordc, fillinfo->pt.x, fillinfo->pt.y ),
+                  FLOODFILLSURFACE );
     SelectObject( xordc, oldbrush );
     DeleteObject( hbrush );
 
@@ -369,28 +371,28 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 
     /*
      * Now go through every pixel and see if it changed on the screen.  If
-     * it did not change, it should not have changed on the xor bitmap.
+     * it did not change, it should not have changed on the XOR bitmap.
      */
-    for (x=0; x < node->width; ++x) {
-        for (y=0; y < node->height; ++y) {
-            xorcolour = GetPixel(xordcbefore, x, y);
+    for( x = 0; x < node->width; x++ ) {
+        for( y = 0; y < node->height; y++ ) {
+            xorcolor = GetPixel( xordcbefore, x, y );
 
-            xorchanged = (GetPixel(xordc, x, y) != xorcolour);
-            screenchanged = (GetPixel(screendc, x, y) != GetPixel(screendcbefore, x, y));
+            xorchanged = (GetPixel( xordc, x, y ) != xorcolor);
+            screenchanged = (GetPixel( screendc, x, y ) != GetPixel( screendcbefore, x, y ));
 
-            if (!screenchanged) {
-                if (xorchanged) {
-                    SetPixel( xordc, x, y, xorcolour );
+            if( !screenchanged ) {
+                if( xorchanged ) {
+                    SetPixel( xordc, x, y, xorcolor );
                 }
             } else {
-                SetPixel( anddc, x, y, fillinfo->andcolour );
+                SetPixel( anddc, x, y, fillinfo->andcolor );
             }
         }
     }
-    SelectObject( screendc, oldscreen);
+    SelectObject( screendc, oldscreen );
     DeleteDC( screendc );
 
-    SelectObject( screendcbefore, oldscreendup);
+    SelectObject( screendcbefore, oldscreendup );
     DeleteDC( screendcbefore );
 
     SelectObject( xordcbefore, oldxorbmpbefore );
@@ -412,17 +414,17 @@ static void fillScreenFirst( fill_info_struct *fillinfo, img_node *node )
 #endif
 
 /*
- * Fill - This routine handles the filling of the image.  If the image is
- * a bitmap, we simply do a flood fill on the xorbitmap.  For icons and
- * cursors we have to consider the AND bitmap and the potential of screen
- * colours to screw us up.
+ * Fill - handle the filling of the image
+ *      - if the image is a bitmap, we simply do a flood fill on the XOR bitmap
+ *      - for icons and cursors, we have to consider the AND bitmap and the
+ *        potential of screen colors to screw us up
  */
 void Fill( fill_info_struct *fillinfo, img_node *node )
 {
     int         fillcase;
     HCURSOR     prev_cursor;
 
-    prev_cursor = _wpi_setcursor( _wpi_getsyscursor(IDC_WAIT) );
+    prev_cursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
     fillcase = getFillCase( fillinfo, node );
 
     switch( fillcase ) {
@@ -441,4 +443,3 @@ void Fill( fill_info_struct *fillinfo, img_node *node )
     _wpi_setcursor( prev_cursor );
 
 } /* Fill */
-

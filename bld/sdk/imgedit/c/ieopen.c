@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Open file dialog.
 *
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <commdlg.h>
+#include <shellapi.h>
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <cderr.h>
 #include "imgedit.h"
-#include "colours.h"
+#include "colors.h"
 #include "iebmpdat.h"
 #include "wrdll.h"
 #include "wrbitmap.h"
@@ -47,11 +47,20 @@
 #include "wrselimg.h"
 #include "iemem.h"
 
+#ifdef __NT__
+    #pragma library( "shell32.lib" )
+#else
+    #pragma library( "commdlg.lib" )
+#endif
+
 static signed short     imgType = BITMAP_IMG;
-static char             initialDir[ _MAX_PATH+_MAX_DIR ];
+static char             initialDir[_MAX_PATH + _MAX_DIR];
 
 extern BOOL OpenNewFiles;
 
+/*
+ * SetupMenuAfterOpen
+ */
 void SetupMenuAfterOpen( void )
 {
     HMENU               hmenu;
@@ -75,16 +84,19 @@ void SetupMenuAfterOpen( void )
     EnableMenuItem( hmenu, IMGED_CLIP, MF_ENABLED );
 
     SetFocus( HMainWindow );
+
 } /* SetupMenuAfterOpen */
 
-static BOOL DoReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi,
-                                char *fullname, WRInfo *info,
-                                WResLangNode *lnode )
+/*
+ * doReadInBitmapFile
+ */
+static BOOL doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullname,
+                                WRInfo *info, WResLangNode *lnode )
 {
     HBITMAP             oldbmp1;
     HBITMAP             oldbmp2;
     img_node            node;
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
     BITMAPINFOHEADER    *h;
     HDC                 hdc;
     HDC                 srcdc;
@@ -92,31 +104,25 @@ static BOOL DoReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi,
 
     GetFnameFromPath( fullname, filename );
 
-    if (hbitmap != NULL) {
-        h = &(bmi->bm_info->bmiHeader);
+    if( hbitmap != NULL ) {
+        h = &bmi->bm_info->bmiHeader;
 
-        if ( (h->biWidth > MAX_DIM) || (h->biHeight > MAX_DIM) ) {
+        if( h->biWidth > MAX_DIM || h->biHeight > MAX_DIM ) {
             WImgEditError( WIE_ERR_BITMAP_TOO_BIG, filename );
             MemFree( bmi->bm_info );
             DeleteObject( hbitmap );
             return( FALSE );
-#ifdef JAMIE
-        } else if (h->biBitCount > 4) {
-            WImgEditError( WIE_ERR_256CLR_BITMAP, filename );
-            MessageBox(HMainWindow,
-                       "The support is being added now...so it may not be perfect.",
-                       "Patience is a virtue", MB_OK|MB_ICONINFORMATION);
+        }
 
-            // MemFree( bmi->bm_info );
-            // DeleteObject( hbitmap );
-            // return( FALSE );
-#endif
-        } else if (h->biBitCount > 8) {
+#if 0
+        /* Should not be an error... */
+        else if( h->biBitCount > 8 ) {
             WImgEditError( WIE_ERR_TOO_MANY_COLOURS, filename );
             MemFree( bmi->bm_info );
             DeleteObject( hbitmap );
             return( FALSE );
         }
+#endif
         node.imgtype = BITMAP_IMG;
         node.width = bmi->bm_info->bmiHeader.biWidth;
         node.height = bmi->bm_info->bmiHeader.biHeight;
@@ -126,7 +132,7 @@ static BOOL DoReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi,
         node.num_of_images = 1;
         node.nexticon = NULL;
         node.issaved = TRUE;
-        if (node.bitcount == 1) {
+        if( node.bitcount == 1 ) {
             hdc = GetDC( NULL );
             srcdc = CreateCompatibleDC( hdc );
             destdc = CreateCompatibleDC( hdc );
@@ -158,11 +164,12 @@ static BOOL DoReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi,
         return( TRUE );
     }
     return( FALSE );
-} /* DoReadInBitmapFile */
+
+} /* doReadInBitmapFile */
 
 /*
- * readInBitmapFile - reads in the bitmap file, initializes the draw area and
- *                    the view window.
+ * readInBitmapFile - read in the bitmap file, initialize the draw area and
+ *                    the view window
  */
 static BOOL readInBitmapFile( char *fullname )
 {
@@ -170,14 +177,13 @@ static BOOL readInBitmapFile( char *fullname )
     HBITMAP             hbitmap;
     HCURSOR             prevcursor;
 
-    prevcursor = SetCursor( LoadCursor(NULL, IDC_WAIT) );
+    prevcursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
     hbitmap = ReadBitmapFile( HMainWindow, fullname, &bmi );
     SetCursor( prevcursor );
 
     if( hbitmap == (HBITMAP)NULL ) {
-        if( bmi.bm_info != NULL &&
-            bmi.bm_info->bmiHeader.biBitCount > 8 ) {
-            WImgEditError( WIE_ERR_TOO_MANY_COLOURS, fullname );
+        if( bmi.bm_info != NULL && bmi.bm_info->bmiHeader.biBitCount > 32 ) { /* Was 8 */
+            WImgEditError( WIE_ERR_TOO_MANY_COLORS, fullname );
         } else {
             WImgEditError( WIE_ERR_BAD_BITMAP_FILE, fullname );
         }
@@ -187,18 +193,21 @@ static BOOL readInBitmapFile( char *fullname )
         return( FALSE );
     }
 
-    return( DoReadInBitmapFile( hbitmap, &bmi, fullname, NULL, NULL ) );
+    return( doReadInBitmapFile( hbitmap, &bmi, fullname, NULL, NULL ) );
+
 } /* readInBitmapFile */
 
-BOOL readBitmapFromData( void *data, char *fullname, WRInfo *info,
-                         WResLangNode *lnode )
+/*
+ * ReadBitmapFromData
+ */
+BOOL ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode )
 {
     bitmap_info         bmi;
     HBITMAP             hbitmap;
     HCURSOR             prevcursor;
     BOOL                ret;
 
-    prevcursor = SetCursor( LoadCursor(NULL, IDC_WAIT) );
+    prevcursor = SetCursor( LoadCursor( NULL, IDC_WAIT ) );
     hbitmap = BitmapFromData( data, &bmi );
     SetCursor( prevcursor );
     if( hbitmap == (HBITMAP)NULL ) {
@@ -206,32 +215,37 @@ BOOL readBitmapFromData( void *data, char *fullname, WRInfo *info,
         return( FALSE );
     }
 
-    ret = DoReadInBitmapFile( hbitmap, &bmi, fullname, info, lnode );
+    ret = doReadInBitmapFile( hbitmap, &bmi, fullname, info, lnode );
 
     if( ret ) {
         SetupMenuAfterOpen();
     }
 
     return( ret );
-} /* readBitmapFromData */
 
+} /* ReadBitmapFromData */
+
+/*
+ * WriteIconLoadedText
+ */
 void WriteIconLoadedText( char *filename, int num )
 {
     char        *text;
-    char        msg[ _MAX_PATH ];
+    char        msg[_MAX_PATH];
 
     text = IEAllocRCString( WIE_ICONOPENEDTEXT );
-    if( text ) {
+    if( text != NULL ) {
         sprintf( msg, text, filename, num );
         SetHintText( msg );
         IEFreeRCString( text );
     }
-}
+
+} /* WriteIconLoadedText */
 
 /*
- * readInIconFile - Read the icon file and set up structures.
+ * readInIconFile - read the icon file and set up structures
  */
-static BOOL readInIconFile( char *fname  )
+static BOOL readInIconFile( char *fname )
 {
     FILE                *fp;
     an_img_file         *iconfile;
@@ -240,10 +254,10 @@ static BOOL readInIconFile( char *fname  )
     HDC                 hdc;
     int                 i;
     an_img              *icon;
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
 
     fp = fopen( fname, "rb" );
-    if (!fp) {
+    if( fp == NULL ) {
         WImgEditError( WIE_ERR_FILE_NOT_OPENED, fname );
         return( FALSE );
     }
@@ -251,57 +265,51 @@ static BOOL readInIconFile( char *fname  )
     GetFnameFromPath( fname, filename );
 #ifdef JAMIE
     {
-    char msg[80];
-    sprintf(msg, "Jamie: IconHeader size = %d", sizeof(an_img_file));
-    MessageBox(HMainWindow, msg, "FYI", MB_OK);
+        char msg[80];
+        sprintf( msg, "Jamie: IconHeader size = %d", sizeof( an_img_file ) );
+        MessageBox( HMainWindow, msg, "FYI", MB_OK );
     }
 #endif
     iconfile = ImageOpen( fp );
-    if (!iconfile) {
+    if( iconfile == NULL ) {
         fclose( fp );
         WImgEditError( WIE_ERR_BAD_ICON_FILE, filename );
         return( FALSE );
     }
+
     num_of_images = iconfile->count;
-    for (i=0; i < num_of_images; ++i) {
-        if (iconfile->resources[i].colour_count != 2 &&
-            iconfile->resources[i].colour_count != 8 &&
-            iconfile->resources[i].colour_count != 16 &&
-            iconfile->resources[i].colour_count != 0) {
+
+#if 0
+    /* See biBitCount test below... */
+    for( i = 0; i < num_of_images; i++ ) {
+        if( iconfile->resources[i].color_count != 2 &&
+            iconfile->resources[i].color_count != 8 &&
+            iconfile->resources[i].color_count != 16 &&
+            iconfile->resources[i].color_count != 0 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ImageClose( iconfile );
             fclose( fp );
-            return(FALSE);
+            return( FALSE );
         }
-#ifdef JAMIE
-        {
-            char msg[80];
-            int ncolours;
-            HDC  hdc;
-            hdc = GetDC( NULL );
-            ncolours = GetDeviceCaps(hdc, NUMCOLORS);
-            sprintf(msg, "colour_count = %d, ncolours = %d",
-                    iconfile->resources[i].colour_count, ncolours);
-            MessageBox(HMainWindow, msg, "FYI", MB_OK);
-        }
-#endif
     }
-    node = MemAlloc( sizeof(img_node) * num_of_images );
+#endif
+
+    node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );
-    for (i=0; i < num_of_images; ++i) {
+    for( i = 0; i < num_of_images; i++ ) {
         icon = ImgResourceToImg( fp, iconfile, i );
 
-        if (icon->bm->bmiHeader.biBitCount != 4 &&
+        if( icon->bm->bmiHeader.biBitCount != 4 &&
             icon->bm->bmiHeader.biBitCount != 1 &&
-            icon->bm->bmiHeader.biBitCount != 8) {
+            icon->bm->bmiHeader.biBitCount != 8 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ReleaseDC( NULL, hdc );
             ImageFini( icon );
             ImageClose( iconfile );
             fclose( fp );
             MemFree( node );
-            return(FALSE);
+            return( FALSE );
         }
 
         node[i].imgtype = ICON_IMG;
@@ -316,15 +324,15 @@ static BOOL readInIconFile( char *fname  )
         node[i].viewhwnd = NULL;
         node[i].wrinfo = NULL;
         node[i].lnode = NULL;
-        if (i > 0) {
-            node[i-1].nexticon = &(node[i]);
+        if( i > 0 ) {
+            node[i - 1].nexticon = &node[i];
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
         strcpy( node[i].fname, strupr( fname ) );
         ImageFini( icon );
     }
-    node[i-1].nexticon = NULL;
+    node[i - 1].nexticon = NULL;
 
     ReleaseDC( NULL, hdc );
     ImageClose( iconfile );
@@ -334,15 +342,14 @@ static BOOL readInIconFile( char *fname  )
     CreateNewDrawPad( node );
 
     MemFree( node );
-    return(TRUE);
+    return( TRUE );
 
 } /* readInIconFile */
 
 /*
- * readIconFromData - Read the icon data and set up structures.
+ * ReadIconFromData - read the icon data and set up structures
  */
-BOOL readIconFromData( void *data, char *fname, WRInfo *info,
-                       WResLangNode *lnode  )
+BOOL ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode )
 {
     unsigned            pos;
     an_img_file         *iconfile;
@@ -351,41 +358,45 @@ BOOL readIconFromData( void *data, char *fname, WRInfo *info,
     HDC                 hdc;
     int                 i;
     an_img              *icon;
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
 
     pos = 0;
     GetFnameFromPath( fname, filename );
     iconfile = ImageOpenData( (BYTE *)data, &pos );
-    if( !iconfile ) {
+    if( iconfile == NULL ) {
         WImgEditError( WIE_ERR_BAD_ICON_DATA, filename );
         return( FALSE );
     }
     num_of_images = iconfile->count;
-    for( i=0; i < num_of_images; ++i ) {
-        if (iconfile->resources[i].colour_count != 2 &&
-            iconfile->resources[i].colour_count != 8 &&
-            iconfile->resources[i].colour_count != 16 &&
-            iconfile->resources[i].colour_count != 0)
-        {
+
+#if 0
+    /* See biBitCount test below... */
+    for( i = 0; i < num_of_images; i++ ) {
+        if( iconfile->resources[i].color_count != 2 &&
+            iconfile->resources[i].color_count != 8 &&
+            iconfile->resources[i].color_count != 16 &&
+            iconfile->resources[i].color_count != 0 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ImageClose( iconfile );
-            return(FALSE);
+            return( FALSE );
         }
     }
-    node = MemAlloc( sizeof(img_node) * num_of_images );
+#endif
+    
+    node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );
-    for( i=0; i < num_of_images; ++i ) {
+    for( i = 0; i < num_of_images; i++ ) {
         icon = ImgResourceToImgData( (BYTE *)data, &pos, iconfile, i );
-        if( ( icon->bm->bmiHeader.biBitCount != 4 ) &&
-            ( icon->bm->bmiHeader.biBitCount != 1 ) &&
-            ( icon->bm->bmiHeader.biBitCount != 8 ) ) {
+        if( icon->bm->bmiHeader.biBitCount != 4 &&
+            icon->bm->bmiHeader.biBitCount != 1 &&
+            icon->bm->bmiHeader.biBitCount != 8 ) {
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ReleaseDC( NULL, hdc );
             ImageFini( icon );
             ImageClose( iconfile );
             MemFree( node );
-            return(FALSE);
+            return( FALSE );
         }
 
         node[i].imgtype = ICON_IMG;
@@ -398,8 +409,8 @@ BOOL readIconFromData( void *data, char *fname, WRInfo *info,
         node[i].hxorbitmap = ImgToXorBitmap( hdc, icon );
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
-        if (i > 0) {
-            node[i-1].nexticon = &(node[i]);
+        if( i > 0 ) {
+            node[i - 1].nexticon = &node[i];
         }
         node[i].wrinfo = NULL;
         node[i].lnode = NULL;
@@ -412,7 +423,7 @@ BOOL readIconFromData( void *data, char *fname, WRInfo *info,
         strcpy( node[i].fname, strupr( fname ) );
         ImageFini( icon );
     }
-    node[i-1].nexticon = NULL;
+    node[i - 1].nexticon = NULL;
 
     ReleaseDC( NULL, hdc );
     ImageClose( iconfile );
@@ -424,18 +435,21 @@ BOOL readIconFromData( void *data, char *fname, WRInfo *info,
 
     SetupMenuAfterOpen();
 
-    return(TRUE);
+    return( TRUE );
 
-} /* readIconFromData */
+} /* ReadIconFromData */
 
-BOOL DoReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
+/*
+ * doReadCursor
+ */
+BOOL doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
                    WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;
     HDC                 hdc;
-    char                filename[ _MAX_FNAME+_MAX_EXT ];
+    char                filename[_MAX_FNAME + _MAX_EXT];
 
-    if( !cursorfile || !cursor ) {
+    if( cursorfile == NULL || cursor == NULL ) {
         return( FALSE );
     }
 
@@ -470,11 +484,12 @@ BOOL DoReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
     MakeIcon( &node, FALSE );           // also makes cursors
     CreateNewDrawPad( &node );
 
-    return(TRUE);
-} /* DoReadCursor */
+    return( TRUE );
+
+} /* doReadCursor */
 
 /*
- * readInCursorFile - Read the cursor file and set up structures.
+ * readInCursorFile - read the cursor file and set up structures
  */
 static BOOL readInCursorFile( char *fname )
 {
@@ -483,13 +498,13 @@ static BOOL readInCursorFile( char *fname )
     an_img              *cursor;
 
     fp = fopen( fname, "rb" );
-    if (!fp) {
+    if( fp == NULL ) {
         WImgEditError( WIE_ERR_FILE_NOT_OPENED, fname );
         return( FALSE );
     }
 
     cursorfile = ImageOpen( fp );
-    if (!cursorfile) {
+    if( cursorfile == NULL ) {
         fclose( fp );
         WImgEditError( WIE_ERR_BAD_CURSOR_FILE, fname );
         return( FALSE );
@@ -497,13 +512,14 @@ static BOOL readInCursorFile( char *fname )
     cursor = ImgResourceToImg( fp, cursorfile, 0 );
     fclose( fp );
 
-    return( DoReadCursor( fname, cursorfile, cursor, NULL, NULL ) );
+    return( doReadCursor( fname, cursorfile, cursor, NULL, NULL ) );
+
 } /* readInCursorFile */
 
 /*
- * readCursorFromData - Read the cursor data and set up structures.
+ * ReadCursorFromData - read the cursor data and set up structures
  */
-BOOL readCursorFromData( void *data, char *fname, WRInfo *info,
+BOOL ReadCursorFromData( void *data, char *fname, WRInfo *info,
                          WResLangNode *lnode )
 {
     unsigned            pos;
@@ -513,23 +529,24 @@ BOOL readCursorFromData( void *data, char *fname, WRInfo *info,
 
     pos = 0;
     cursorfile = ImageOpenData( (BYTE *)data, &pos );
-    if (!cursorfile) {
+    if( cursorfile == NULL ) {
         WImgEditError( WIE_ERR_BAD_CURSOR_DATA, fname );
         return( FALSE );
     }
     cursor = ImgResourceToImgData( (BYTE *)data, &pos, cursorfile, 0 );
 
-    ret = DoReadCursor( fname, cursorfile, cursor, info, lnode );
+    ret = doReadCursor( fname, cursorfile, cursor, info, lnode );
 
     if( ret ) {
         SetupMenuAfterOpen();
     }
 
     return( ret );
-} /* readCursorFromData */
+
+} /* ReadCursorFromData */
 
 /*
- * OpenHook - hook used called by common dialog - for 3-d controls
+ * OpenHook - hook used called by common dialog for 3D controls
  */
 BOOL CALLBACK OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
 {
@@ -539,8 +556,15 @@ BOOL CALLBACK OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
     switch( msg ) {
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
-        // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        IECtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        // if the app calls Ctl3dAutoSubclass (commdlg bug).
+#if defined( __NT__ )
+        // Only do it if NOT new shell.
+        if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
+#endif
+            IECtl3dSubclassDlg( hwnd, CTL3D_ALL );
+#if defined( __NT__ )
+        }
+#endif
         return( TRUE );
     }
     return( FALSE );
@@ -548,22 +572,62 @@ BOOL CALLBACK OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
 } /* OpenHook */
 
 /*
+ * getImageTypeFromFilename
+ */
+static int getImageTypeFromFilename( char *fname )
+{
+    char                ext[_MAX_EXT];
+    char                drive[_MAX_DRIVE];
+    char                path[_MAX_PATH];
+
+    _splitpath( fname, drive, path, NULL, ext );
+    strcpy( initialDir, drive );
+    strcat( initialDir, path );
+    initialDir[strlen( initialDir ) - 1] = '\0';
+
+    if( !stricmp( ext, ".bmp" ) ) {
+        return( BITMAP_IMG );
+    } else if( !stricmp( ext, ".ico" ) ) {
+        return( ICON_IMG );
+    } else if( !stricmp( ext, ".cur" ) ) {
+        return( CURSOR_IMG );
+    } else if( !stricmp( ext, ".res" ) || !stricmp( ext, ".exe" ) ||
+               !stricmp( ext, ".dll" ) ) {
+        return( RESOURCE_IMG );
+    } else {
+        return( UNDEF_IMG );
+    }
+
+} /* getImageTypeFromFilename */
+
+/*
  * getOpenFName - let the user select a file name for an open operation
- *                fname must point to a buffer of length at least _MAX_PATH
- *                also sets the type of file (bitmap, icon, cursor).
+ *              - fname must point to a buffer of length at least _MAX_PATH
+ *              - also set the type of file (bitmap, icon, cursor)
  */
 static BOOL getOpenFName( char *fname )
 {
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
-    char                ext[ _MAX_EXT ];
-    char                drive[ _MAX_DRIVE ];
-    char                path[ _MAX_PATH ];
     int                 rc;
+    long                of_size;
+#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+    OSVERSIONINFO       os_info;
+#endif
 
-    fname[ 0 ] = 0;
-    memset( &of, 0, sizeof( OPENFILENAME ) );
-    of.lStructSize = sizeof( OPENFILENAME );
+    of_size = sizeof( OPENFILENAME );
+#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+    os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    GetVersionEx( &os_info );
+    if( os_info.dwMajorVersion < 5 ) {
+        /* Set the appropriate structure size to make this work on Windows 95. */
+        of_size = OPENFILENAME_SIZE_VERSION_400;
+    }
+#endif    
+    fname[0] = '\0';
+    memset( &of, 0, of_size );
+    
+    of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
     of.lpstrFilter = (LPSTR)IEImageFilter;
     of.lpstrDefExt = "*.*";
@@ -571,45 +635,32 @@ static BOOL getOpenFName( char *fname )
     of.lpstrFile = fname;
     of.nMaxFile = _MAX_PATH;
     of.lpstrFileTitle = szFileTitle;
-    of.nMaxFileTitle = sizeof(szFileTitle);
+    of.nMaxFileTitle = sizeof( szFileTitle );
     of.lpstrTitle = IEOpenImageTitle;
     of.lpstrInitialDir = initialDir;
-    of.Flags = OFN_SHOWHELP | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST |
-                                OFN_HIDEREADONLY | OFN_ENABLEHOOK;
-    of.lpfnHook = (LPVOID) MakeProcInstance( (LPVOID) OpenHook, Instance );
+#if !defined( __NT__ )
+    /* Important! Do not use hook in Win32, you will not get the nice dialog! */
+    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)OpenHook, Instance );
+    of.Flags = OFN_ENABLEHOOK;
+#endif
+    of.Flags |= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     rc = GetOpenFileName( &of );
-    #ifndef __NT__
-    FreeProcInstance( (LPVOID) of.lpfnHook );
-    #endif
+#ifndef __NT__
+    FreeProcInstance( (LPVOID)of.lpfnHook );
+#endif
 
     if( rc ) {
-        _splitpath( fname, drive, path, NULL, ext );
-        strcpy( initialDir, drive );
-        strcat( initialDir, path );
-        initialDir[ strlen(initialDir)-1 ] = '\0';
-
-        if( !stricmp(ext, ".bmp") ) {
-            imgType = BITMAP_IMG;
-            return( TRUE );
-        } else if( !stricmp(ext, ".ico") ) {
-            imgType = ICON_IMG;
-            return( TRUE );
-        } else if( !stricmp(ext, ".cur") ) {
-            imgType = CURSOR_IMG;
-            return( TRUE );
-        } else if( !stricmp(ext, ".res") || !stricmp(ext, ".exe") ||
-                   !stricmp(ext, ".dll") ) {
-            imgType = RESOURCE_IMG;
-            return( TRUE );
-        } else {
-            imgType = UNDEF_IMG;
-            return( TRUE );
-        }
+        imgType = getImageTypeFromFilename( fname );
+        return( TRUE );
     } else {
         return( FALSE );
     }
+
 } /* getOpenFName */
 
+/*
+ * readInResourceFile
+ */
 static BOOL readInResourceFile( char *fullname )
 {
     BYTE                *data;
@@ -622,18 +673,18 @@ static BOOL readInResourceFile( char *fullname )
     info = NULL;
     sii = NULL;
     data = NULL;
-    ok = ( fullname != NULL );
+    ok = (fullname != NULL);
 
     if( ok ) {
         info = WRLoadResource( fullname, WR_DONT_KNOW );
-        ok = ( info != NULL );
+        ok = (info != NULL);
     }
 
     if( ok ) {
         cb = _wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
         sii = WRSelectImage( HMainWindow, info, cb );
         _wpi_freeprocinstance( cb );
-        ok = ( sii && sii->lnode );
+        ok = (sii != NULL && sii->lnode != NULL);
     }
 
     if( ok ) {
@@ -641,7 +692,7 @@ static BOOL readInResourceFile( char *fullname )
             imgType = BITMAP_IMG;
             data = WRCopyResData( info, sii->lnode );
             dsize = sii->lnode->Info.Length;
-            ok = ( data != NULL );
+            ok = (data != NULL);
             if( ok ) {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
@@ -659,15 +710,15 @@ static BOOL readInResourceFile( char *fullname )
 
     if( ok ) {
         if( sii->type == (uint_16)RT_BITMAP ) {
-            ok = readBitmapFromData( data, fullname, info, sii->lnode );
+            ok = ReadBitmapFromData( data, fullname, info, sii->lnode );
         } else if( sii->type == (uint_16)RT_GROUP_CURSOR ) {
-            ok = readCursorFromData( data, fullname, info, sii->lnode );
+            ok = ReadCursorFromData( data, fullname, info, sii->lnode );
         } else if( sii->type == (uint_16)RT_GROUP_ICON ) {
-            ok = readIconFromData( data, fullname, info, sii->lnode );
+            ok = ReadIconFromData( data, fullname, info, sii->lnode );
         }
     }
 
-    if( sii ) {
+    if( sii != NULL ) {
         WRFreeSelectImageInfo( sii );
     }
 
@@ -676,26 +727,16 @@ static BOOL readInResourceFile( char *fullname )
     }
 
     return( ok );
-}
+
+} /* readInResourceFile */
 
 /*
- * OpenImage - Get the filename of the file to open.  Depending on the
- *              extension set the type (.ico, .bmp, .cur) and call the
- *              appropriate function to open it.
+ * reallyOpenImage
  */
-int OpenImage( void )
+static int reallyOpenImage( char *fname )
 {
-    char                fname[ _MAX_PATH ];
-    char                filename[ _MAX_FNAME + _MAX_EXT ];
-
-    if (!getOpenFName( &fname )) {
-        if ( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
-            WImgEditError( WIE_ERR_BAD_FILENAME, fname );
-            return( FALSE );
-        }
-        return( FALSE );
-    }
-
+    char                filename[_MAX_FNAME + _MAX_EXT];
+    
     switch( imgType ) {
     case BITMAP_IMG:
         if( !readInBitmapFile( fname ) ) {
@@ -722,12 +763,57 @@ int OpenImage( void )
         WImgEditError( WIE_ERR_BAD_FILE_EXT, filename );
         imgType = BITMAP_IMG;
         return( FALSE );
-        break;
     }
 
-    SetupMenuAfterOpen();
-
     return( imgType );
+
+} /* reallyOpenImage */
+
+/*
+ * OpenImage - get the filename of the file to open
+ *           - depending on the extension, set the type (.ico, .bmp, .cur) and call the
+ *             appropriate function to open it
+ */
+int OpenImage( HANDLE hDrop )
+{
+    char                fname[_MAX_PATH];
+    int                 rv = FALSE;
+
+    if( NULL == hDrop ) {
+        /*
+         * Not doing a drag-drop
+         */
+        if( !getOpenFName( &fname ) ) {
+            if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
+                WImgEditError( WIE_ERR_BAD_FILENAME, fname );
+                return( FALSE );
+            }
+            return( FALSE );
+        }
+        rv = reallyOpenImage( fname );
+    } else {
+        /*
+         * hDrop is only ever !NULL when we're dealing with a WM_DROPFILES
+         * message, and that only happens with __NT__
+         */
+#ifdef __NT__
+        int     nFiles = DragQueryFile( hDrop, 0xFFFFFFFF, NULL, 0 );
+        int     i;
+        
+        for( i = 0, rv = TRUE; rv && i < nFiles; i++ ) {
+            DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
+            imgType = getImageTypeFromFilename( fname );
+            rv = reallyOpenImage( fname );
+        }
+#endif
+    }
+    
+    if( rv ) {
+        SetupMenuAfterOpen();
+    }
+
+    return( rv );
+
 } /* OpenImage */
 
 /*
@@ -738,10 +824,24 @@ static BOOL getOpenPalName( char *fname )
     static OPENFILENAME of;
     char                szFileTitle[_MAX_PATH];
     int                 rc;
+    long                of_size;
+#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+    OSVERSIONINFO       os_info;
+#endif
 
-    fname[ 0 ] = 0;
-    memset( &of, 0, sizeof( OPENFILENAME ) );
-    of.lStructSize = sizeof( OPENFILENAME );
+    of_size = sizeof( OPENFILENAME );
+#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+    os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
+    GetVersionEx( &os_info );
+    if( os_info.dwMajorVersion < 5 ) {
+        /* Set the appropriate structure size to make this work on Windows 95. */
+        of_size = OPENFILENAME_SIZE_VERSION_400;
+    }
+#endif    
+
+    fname[0] = 0;
+    memset( &of, 0, of_size );
+    of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
     of.lpstrFilter = (LPSTR)IEPaletteFilter;
     of.lpstrDefExt = "*.*";
@@ -749,42 +849,45 @@ static BOOL getOpenPalName( char *fname )
     of.lpstrFile = fname;
     of.nMaxFile = _MAX_PATH;
     of.lpstrFileTitle = szFileTitle;
-    of.nMaxFileTitle = sizeof(szFileTitle);
+    of.nMaxFileTitle = sizeof( szFileTitle );
     of.lpstrTitle = IEOpenPaletteTitle;
     of.lpstrInitialDir = initialDir;
-    of.Flags = OFN_SHOWHELP | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST |
-                        OFN_HIDEREADONLY | OFN_ENABLEHOOK;
-    of.lpfnHook = (LPVOID) MakeProcInstance( (LPVOID) OpenHook, Instance );
+    of.Flags =  OFN_SHOWHELP | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST |
+                OFN_HIDEREADONLY;
+#if !defined( __NT__ )
+    of.Flags |= OFN_ENABLEHOOK;
+    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)OpenHook, Instance );
+#endif
     rc = GetOpenFileName( &of );
-    #ifndef __NT__
-    FreeProcInstance( (LPVOID) of.lpfnHook );
-    #endif
+#ifndef __NT__
+    FreeProcInstance( (LPVOID)of.lpfnHook );
+#endif
     return( rc );
 
 } /* getOpenPalName */
 
 /*
- * LoadColourPalette - loads a palette
+ * LoadColorPalette - load a palette
  */
-BOOL LoadColourPalette( void )
+BOOL LoadColorPalette( void )
 {
-    char                fname[ _MAX_PATH ];
-    char                filename[ _MAX_FNAME + _MAX_EXT ];
+    char                fname[_MAX_PATH];
+    char                filename[_MAX_FNAME + _MAX_EXT];
     a_pal_file          *pal_file;
     FILE                *fp;
     WORD                file_type;
 
-    if (!getOpenPalName( &fname )) {
-        if ( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
+    if( !getOpenPalName( &fname ) ) {
+        if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
             WImgEditError( WIE_ERR_BAD_FILENAME, fname );
             return( FALSE );
         }
         return( TRUE );
     }
 
-    pal_file = MemAlloc( sizeof(a_pal_file) );
+    pal_file = MemAlloc( sizeof( a_pal_file ) );
     fp = fopen( fname, "rb" );
-    if (!fp) {
+    if( fp == NULL ) {
         WImgEditError( WIE_ERR_FILE_NOT_OPENED, fname );
         return( FALSE );
     }
@@ -807,37 +910,40 @@ BOOL LoadColourPalette( void )
     PrintHintTextByID( WIE_PALETTELOADEDFROM, filename );
 
     MemFree( pal_file );
-    return(TRUE);
-} /* LoadColourPalette */
+    return( TRUE );
+
+} /* LoadColorPalette */
 
 /*
- * SetInitialOpenDir - sets the initial directory for the open filename
+ * SetInitialOpenDir - set the initial directory for the open filename
  */
 void SetInitialOpenDir( char *new_dir )
 {
-    if (new_dir) {
+    if( new_dir != NULL ) {
         strcpy( initialDir, new_dir );
     } else {
         strcpy( initialDir, "" );
     }
+
 } /* SetInitialOpenDir */
 
 /*
- * GetInitOpenDir - gets the directory which we want to use as our initial one
- *              next time we run.
+ * GetInitOpenDir - get the directory that we want to use as our initial one
+ *                  next time we run
  */
 char *GetInitOpenDir( void )
 {
-    return(initialDir);
+    return( initialDir );
+
 } /* GetInitOpenDir */
 
 /*
- * OpenFileOnStart - opens a file on program startup
+ * OpenFileOnStart - open a file on program startup
  */
 void OpenFileOnStart( char *fname )
 {
     int         namelen;
-    char        ext[ _MAX_EXT ];
+    char        ext[_MAX_EXT];
     FILE        *fp;
 
     fp = fopen( fname, "r" );
@@ -853,18 +959,18 @@ void OpenFileOnStart( char *fname )
     fclose( fp );
 
     namelen = strlen( fname );
-    strcpy( ext, &(fname[namelen-3]) );
+    strcpy( ext, &fname[namelen - 3] );
 
-    if( strcmpi(ext, "bmp") == 0 ) {
-        if (!readInBitmapFile( fname )) {
+    if( strcmpi( ext, "bmp" ) == 0 ) {
+        if( !readInBitmapFile( fname ) ) {
             return;
         }
-    } else if( strcmpi(ext, "ico") == 0 ) {
-        if (!readInIconFile( fname )) {
+    } else if( strcmpi( ext, "ico" ) == 0 ) {
+        if( !readInIconFile( fname ) ) {
             return;
         }
-    } else if( strcmpi(ext, "cur") == 0 ) {
-        if (!readInCursorFile( fname )) {
+    } else if( strcmpi( ext, "cur" ) == 0 ) {
+        if( !readInCursorFile( fname ) ) {
             return;
         }
     } else {
@@ -874,4 +980,3 @@ void OpenFileOnStart( char *fname )
     SetupMenuAfterOpen();
 
 } /* OpenFileOnStart */
-

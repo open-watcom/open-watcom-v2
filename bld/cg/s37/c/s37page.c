@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "standard.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
@@ -320,7 +320,7 @@ static bool ChkBrRef( page_entry *page, bead_hwins_rx *bead ) {
         }else {
             page->size = size;
             page->refs.frefs++;
-            _Alloc( lsyms, sizeof( *lsyms ) );
+            lsyms = CGAlloc( sizeof( *lsyms ) );
             lsyms->sym = sym;
             lsyms->next = NULL;
             lsyms->defined = FALSE;
@@ -356,7 +356,7 @@ static void ChkLabel( page_entry *page, bead_label *bead ) {
         lsyms = *link;
     }
     if( lsyms == NULL ) {
-        _Alloc( lsyms, sizeof( *lsyms ) );
+        lsyms = CGAlloc( sizeof( *lsyms ) );
         lsyms->sym = sym;
         lsyms->next = NULL;
         lsyms->frefs = 0;
@@ -376,7 +376,7 @@ static void AddITab( page_entry *page, bead_bindex *bead ) {
     ref_lit     *lit;
     bead_def *litdef;
 
-    _Alloc( new, sizeof( *new ) );
+    new = CGAlloc( sizeof( *new ) );
     new->bri = bead;
     new->next = page->bri_list;
     page->bri_list = new;
@@ -735,7 +735,7 @@ static void DoLits( lit_pool *pool, bead_def *end ) {
     bead_ltorg *ltorg;
 
     if( pool->head != NULL ) {
-        ltorg = _Alloc( ltorg, sizeof( *ltorg ) );
+        ltorg = CGAlloc( sizeof( *ltorg ) );
         ltorg->common.class = BEAD_LTORG;
         *pool->end_lnk = NULL; /* snip pool at end */
         ltorg->align = SortLitPool( pool );
@@ -767,7 +767,7 @@ static bool UpdateDisps( bead_def *table, hw_sym *curr_base, page_entry *head ){
     if( expand ) {
         disp = (bead_disp *)table->next;
         while( disp != NULL && disp->common.class == BEAD_DISP ) {
-            _Alloc( bead, sizeof( *bead ) );
+            bead = CGAlloc( sizeof( *bead ) );
             bead->common.class = BEAD_DISP;
             bead->val = 0;
             bead->ref =  disp->base;
@@ -830,7 +830,7 @@ static page_entry *PageInit( bead_def *bead ) {
 /**** Init page entry to start state *********/
     page_entry *page;
 
-    _Alloc( page, sizeof( *page ) );
+    page = CGAlloc( sizeof( *page ) );
     page->next = NULL;
     page->size = 8; /* lit pool alignment adjustment */
     page->usesym = NULL;
@@ -862,7 +862,7 @@ static void FreePages( page_entry *page ) {
 
             for( lsyms = page->refs.lsyms; lsyms != NULL; lsyms = next ){
                 next = lsyms->next;
-                _Free( lsyms, sizeof( *lsyms ) );
+                CGFree( lsyms );
             }
         }
         /*** free index branch ***/
@@ -871,12 +871,12 @@ static void FreePages( page_entry *page ) {
 
             for( bri_list = page->bri_list; bri_list != NULL; bri_list = next ){
                 next = bri_list->next;
-                _Free( bri_list, sizeof( *bri_list ) );
+                CGFree( bri_list );
             }
         }
 
         next = page->next;
-        _Free( page, sizeof( *page ) );
+        CGFree( page );
         page = next;
     }
 }

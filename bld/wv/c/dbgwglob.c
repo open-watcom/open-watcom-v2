@@ -41,7 +41,7 @@
 #include "namelist.h"
 
 
-extern brk              *FindBreak(address);
+extern brkp             *FindBreak(address);
 extern void             *AddBreak(address );
 extern void             RemoveBreak(address );
 extern void             GoToAddr( address addr );
@@ -70,6 +70,16 @@ enum {
     PIECE_NAME,
 };
 
+static  void    GlobInit( a_window *wnd )
+{
+    glob_window *glob = WndGlob( wnd );
+
+    WndScrollAbs( wnd, 0 );
+    NameListFree( NameList( glob ) );
+    WndZapped( wnd );
+    NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, TRUE );
+    WndSetKey( wnd, PIECE_NAME );
+}
 
 extern  WNDMENU GlobMenuItem;
 extern void     GlobMenuItem( a_window *wnd, unsigned id, int row, int piece )
@@ -129,19 +139,6 @@ extern  bool    GlobGetLine( a_window *wnd, int row, int piece,
         return( FALSE );
     }
 }
-
-
-static  void    GlobInit( a_window *wnd )
-{
-    glob_window *glob = WndGlob( wnd );
-
-    WndScrollAbs( wnd, 0 );
-    NameListFree( NameList( glob ) );
-    WndZapped( wnd );
-    NameListAddModules( NameList( glob ), glob->mod, glob->d2_only, TRUE );
-    WndSetKey( wnd, PIECE_NAME );
-}
-
 
 void GlobNewMod( a_window *wnd, mod_handle mod )
 {

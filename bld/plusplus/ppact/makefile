@@ -30,7 +30,7 @@ ppact.wlb : makefile
     @for %i in ($(object_files)) do @%append $^@ + %i
 
 ppact.lib : $(object_files) ppact.wlb
-    @if exist ppact.lib @rm -f ppact.lib >nul
+    @rm -f ppact.lib
     wlib -q -n ppact.lib @ppact.wlb
 !endif
 

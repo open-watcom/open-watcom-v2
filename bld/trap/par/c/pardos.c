@@ -32,38 +32,13 @@
 
 #include <dos.h>
 
-#if defined(_FMR)
-void fmr_read_clk(unsigned __off, unsigned __seg);
-#pragma aux fmr_read_clk = \
-    "push DS"           \
-    "push DI"           \
-    "mov DI,AX"         \
-    "mov DS,DX"         \
-    "mov AH,1"          \
-    "int 96h"           \
-    "pop DI"            \
-    "pop DS"            \
-    parm [ax][dx]       \
-    modify [ax];
-
-int fmr_chk_prt(char prt_num);
-#pragma aux fmr_chk_prt = \
-    "mov AH,0"          \
-    "int 94h"           \
-    parm caller [al]    \
-    value [ax]          \
-    modify [ax dx];
-#else
 #include "dosequip.h"
 
 static  unsigned long far *BiosTime;
-#endif
 
 char *InitSys()
 {
-#if !defined(_FMR)
     BiosTime = MK_FP( 0x40, 0x6c );
-#endif
     return( 0 );
 }
 
@@ -75,52 +50,19 @@ void FiniSys()
 
 unsigned long Ticks()
 {
-#if defined(_FMR)
-    auto struct date_time_block {
-            unsigned short year;            /* 1980 - 2079 */
-            unsigned char  month;           /* 1 - 12 */
-            unsigned char  day;             /* 1 - 31 */
-            unsigned char  day_of_week;     /* 0 - 6 */
-            unsigned char  hours;           /* 0 - 23 */
-            unsigned char  minutes;         /* 0 - 59 */
-            unsigned char  seconds;         /* 0 - 59 */
-            unsigned char  hundreds;        /* 1/100 second 0 - 99 */
-            unsigned char  fill;            /* always 0 */
-    } dt;
-    fmr_read_clk( FP_OFF(&dt), FP_SEG(&dt) );
-    return( dt.hundreds / 10 +
-            (dt.seconds + ((dt.minutes + (dt.hours * 60)) * 60L)) * 10L );
-#else
     return( *BiosTime >> 1 );
-#endif
 }
 
 
 int NumPrinters()
 {
-#if defined(_FMR)
-    int num_printers;
-    char status;
-
-    for( num_printers = 0; ; num_printers++ ) {
-        status = fmr_chk_prt( num_printers ) >> 8;
-        if( status != 0 ) break;
-    }
-    return( num_printers );
-#else
     return( Equipment().num_printers );
-#endif
 }
 
 
 unsigned PrnAddress( int printer )
 {
-#if defined(_FMR)
-    if( printer == 0 ) return( 0x800 );
-    return( 0 );    /* we don't know how to get port address */
-#else
     return( *(unsigned far *) MK_FP( BIOS_SEG, PRINTER_BASE + printer*2 ) );
-#endif
 }
 
 #pragma off(unreferenced);

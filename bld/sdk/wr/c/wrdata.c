@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <io.h>
 #include <limits.h>
 #include <string.h>
@@ -43,7 +44,6 @@
 #include "wrmsg.h"
 #include "wresall.h"
 #include "wrinfo.h"
-#include "wrcmsg.h"
 #include "wrdata.h"
 #include "wrdatai.h"
 
@@ -74,13 +74,13 @@ int WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
     int         ok;
 
     size = 0;
-    ok = ( data && length );
-    while( ok && ( length - size ) > CHUNK_SIZE ) {
-        ok = ( read( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE );
+    ok = (data != NULL && length != 0);
+    while( ok && length - size > CHUNK_SIZE ) {
+        ok = (read( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
         size += CHUNK_SIZE;
     }
-    if( ok && ( length - size ) ) {
-        ok = ( read( handle, &data[size], (length-size) ) == (length-size) );
+    if( ok && length - size != 0 ) {
+        ok = (read( handle, &data[size], length - size ) == length - size);
     }
 
     return( ok );
@@ -92,13 +92,13 @@ int WRWriteResData( WResFileID handle, BYTE *data, uint_32 length )
     int         ok;
 
     size = 0;
-    ok = ( data && length );
-    while( ok && ( length - size ) > CHUNK_SIZE ) {
-        ok = ( write( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE );
+    ok = (data != NULL && length != 0);
+    while( ok && length - size > CHUNK_SIZE ) {
+        ok = (write( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
         size += CHUNK_SIZE;
     }
-    if( ok && ( length - size ) ) {
-        ok = ( write( handle, &data[size], (length-size) ) == (length-size) );
+    if( ok && length - size != 0 ) {
+        ok = (write( handle, &data[size], length - size ) == length - size);
     }
 
     return( ok );
@@ -113,11 +113,11 @@ void *WRCopyExistingData( WResLangNode *lnode )
     }
 
     rdata = WRMemAlloc( lnode->Info.Length );
-    if( rdata ) {
+    if( rdata != NULL ) {
         memcpy( rdata, lnode->data, lnode->Info.Length );
     }
 
-    return ( rdata );
+    return( rdata );
 }
 
 void * WR_EXPORT WRCopyResData( WRInfo *info, WResLangNode *lnode )
@@ -127,27 +127,26 @@ void * WR_EXPORT WRCopyResData( WRInfo *info, WResLangNode *lnode )
 
     rdata = NULL;
 
-    ok = ( info && lnode );
+    ok = (info != NULL && lnode != NULL);
 
-    if( ok && lnode->data ) {
+    if( ok && lnode->data != NULL ) {
         return( WRCopyExistingData( lnode ) );
     }
 
     if( ok ) {
-        ok = ( lnode->Info.Length < UINT_MAX );
+        ok = (lnode->Info.Length < UINT_MAX);
         if( !ok ) {
             WRDisplayErrorMsg( WR_RESTOOLARGE );
         }
     }
 
     if( ok ) {
-        rdata = WRLoadResData( info->tmp_file, lnode->Info.Offset,
-                               lnode->Info.Length );
-        ok = ( rdata != NULL );
+        rdata = WRLoadResData( info->tmp_file, lnode->Info.Offset, lnode->Info.Length );
+        ok = (rdata != NULL);
     }
 
     if( !ok ) {
-        if( rdata ) {
+        if( rdata != NULL ) {
             WRMemFree( rdata );
             rdata = NULL;
         }
@@ -162,21 +161,21 @@ void * WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length )
     WResFileID  handle;
     int         ok;
 
-    data        = NULL;
-    handle      = -1;
+    data = NULL;
+    handle = -1;
 
-    ok = ( file && length );
+    ok = (file != NULL && length != 0);
 
     if( ok ) {
-        ok = ( ( data = WRMemAlloc( length ) ) != NULL );
+        ok = ((data = WRMemAlloc( length )) != NULL);
     }
 
     if( ok ) {
-        ok = ( ( handle = ResOpenFileRO( file ) ) != -1 );
+        ok = ((handle = ResOpenFileRO( file )) != -1);
     }
 
     if( ok ) {
-        ok = ( ( ResSeek( handle, offset, SEEK_SET ) ) != -1 );
+        ok = ((ResSeek( handle, offset, SEEK_SET )) != -1);
     }
 
     if( ok ) {
@@ -188,7 +187,7 @@ void * WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length )
     }
 
     if( !ok ) {
-        if( data ) {
+        if( data != NULL ) {
             WRMemFree( data );
             data = NULL;
         }
@@ -197,19 +196,19 @@ void * WR_EXPORT WRLoadResData( char *file, uint_32 offset, uint_32 length )
     return( data );
 }
 
-int WR_EXPORT WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length  )
+int WR_EXPORT WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
 {
     WResFileID  file;
     int         ok;
 
     file = -1;
 
-    ok = ( file_name && data && length );
+    ok = (file_name != NULL && data != NULL && length != 0);
 
     if( ok ) {
-        file = open( file_name, O_CREAT | O_WRONLY | O_TRUNC |
-                                O_BINARY, S_IWRITE | S_IREAD );
-        ok = ( file  != -1 );
+        file = open( file_name, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
+                     S_IWRITE | S_IREAD );
+        ok = (file != -1);
     }
 
     if( ok ) {
@@ -222,4 +221,3 @@ int WR_EXPORT WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length  )
 
     return( ok );
 }
-

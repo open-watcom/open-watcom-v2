@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of alignment relative to other objects.
 *
 ****************************************************************************/
 
 
-/* ALIGN.C - impelmentation of alignment relative to other objects */
-
-#include "windows.h"
+#include <windows.h>
 #include "fmedit.def"
 #include "state.def"
 #include "align.def"
@@ -40,20 +37,18 @@
 #include "mouse.def"
 
 extern void Align( WPARAM wparam )
-/******************************/
-
-/* Perform the requested alignment of current objects relative to the primary
- * object
- */
-
-  {
+/********************************/
+{
+    /* Perform the requested alignment of current objects relative to the primary
+     * object
+     */
     OBJPTR   currobj;
     OBJPTR   primary;
     RECT     primrect;
     RECT     rect;
     BOOL     atleasttwo;
     POINT    offset;
-    LIST *   objlist;
+    LIST     *objlist;
 
     primary = GetPrimaryObject();
     if( primary == NULL ) {
@@ -61,7 +56,7 @@ extern void Align( WPARAM wparam )
     }
     atleasttwo = FALSE;
     currobj = GetECurrObject();
-    while( ( currobj != NULL ) && ( !atleasttwo ) ) {
+    while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
             atleasttwo = TRUE;
         } else {
@@ -82,37 +77,37 @@ extern void Align( WPARAM wparam )
     while( currobj != NULL ) {
         if( currobj != primary ) {
             Location( currobj, &rect );
-            switch( LOWORD(wparam) ) {
-                case IDM_FMLEFT :
-                    offset.x = primrect.left - rect.left;
-                    offset.y = 0;
-                    break;
-                case IDM_FMHCENTRE :
-                    offset.x = ( ( primrect.right + primrect.left ) / 2 ) -
-                               ( ( rect.right + rect.left ) / 2 );
-                    offset.y = 0;
-                    break;
-                case IDM_FMRIGHT :
-                    offset.x = primrect.right - rect.right;
-                    offset.y = 0;
-                    break;
-                case IDM_FMTOP :
-                    offset.x = 0;
-                    offset.y = primrect.top - rect.top;
-                    break;
-                case IDM_FMVCENTRE :
-                    offset.x = 0;
-                    offset.y = ( ( primrect.bottom + primrect.top ) / 2 ) -
-                               ( ( rect.bottom + rect.top ) / 2 );
-                    break;
-                case IDM_FMBOTTOM :
-                    offset.x = 0;
-                    offset.y = primrect.bottom - rect.bottom;
-                    break;
+            switch( LOWORD( wparam ) ) {
+            case IDM_FMLEFT:
+                offset.x = primrect.left - rect.left;
+                offset.y = 0;
+                break;
+            case IDM_FMHCENTRE:
+                offset.x = ((primrect.right + primrect.left) / 2) -
+                           ((rect.right + rect.left) / 2);
+                offset.y = 0;
+                break;
+            case IDM_FMRIGHT:
+                offset.x = primrect.right - rect.right;
+                offset.y = 0;
+                break;
+            case IDM_FMTOP:
+                offset.x = 0;
+                offset.y = primrect.top - rect.top;
+                break;
+            case IDM_FMVCENTRE:
+                offset.x = 0;
+                offset.y = ((primrect.bottom + primrect.top) / 2) -
+                           ((rect.bottom + rect.top) / 2);
+                break;
+            case IDM_FMBOTTOM:
+                offset.x = 0;
+                offset.y = primrect.bottom - rect.bottom;
+                break;
             }
             Move( currobj, &offset, TRUE );
         }
         currobj = GetNextECurrObject( currobj );
     }
     FinishMoveOperation( TRUE );
-  }
+}

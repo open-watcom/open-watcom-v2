@@ -26,7 +26,7 @@ struct S {
                     throw 567;
                 }
             }
-    print()
+    void print()
             {   printf( " %d", s );
             }
 };

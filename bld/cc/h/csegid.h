@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Segment identifiers used by the C front end.
 *
 ****************************************************************************/
 
 
 /* segment identifiers */
 enum  segments {
+        SEG_UNKNOWN = 0,        /* unknown segment (for type checks only) */
         SEG_CODE = 1,           /* code segment */
         SEG_CONST,              /* literal strings */
         SEG_CONST2,             /* other static initialized data */

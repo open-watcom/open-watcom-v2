@@ -1,0 +1,1426 @@
+/*
+ *  ddrawint.h  DirectDraw internal definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __DD_INCLUDED__
+#define __DD_INCLUDED__
+
+:include readonly.sp
+
+#include <ddraw.h>
+#include <dvp.h>
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef ULONG_PTR       FLATPTR;
+typedef DDSURFACEDESC   *PDD_SURFACEDESC;
+typedef DDVIDEOPORTINFO *PDD_VIDEOPORTINFO;
+
+/* Maximum number of autoflip buffers */
+#define MAX_AUTOFLIP_BUFFERS    10
+
+/* DirectDraw surface capability flags */
+#define DDSCAPS_EXECUTEBUFFER   0x00800000L
+#define DDSCAPS_COMMANDBUFFER   0x00000400L
+#define DDSCAPS_VERTEXBUFFER    0x00000004L
+
+/* DirectDraw pixel format flags */
+#define DDPF_D3DFORMAT  0x00200000L
+
+/* Direct3D format operations */
+#define D3DFORMAT_OP_TEXTURE                                0x00000001L
+#define D3DFORMAT_OP_VOLUMETEXTURE                          0x00000002L
+#define D3DFORMAT_OP_CUBETEXTURE                            0x00000004L
+#define D3DFORMAT_OP_OFFSCREEN_RENDERTARGET                 0x00000008L
+#define D3DFORMAT_OP_SAME_FORMAT_RENDERTARGET               0x00000010L
+#define D3DFORMAT_OP_ZSTENCIL                               0x00000040L
+#define D3DFORMAT_OP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH    0x00000080L
+#define D3DFORMAT_OP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET   0x00000100L
+#define D3DFORMAT_OP_DISPLAYMODE                            0x00000400L
+#define D3DFORMAT_OP_3DACCELERATION                         0x00000800L
+#define D3DFORMAT_OP_PIXELSIZE                              0x00001000L
+#define D3DFORMAT_OP_CONVERT_TO_ARGB                        0x00002000L
+#define D3DFORMAT_OP_OFFSCREENPLAIN                         0x00004000L
+#define D3DFORMAT_OP_SRGBREAD                               0x00008000L
+#define D3DFORMAT_OP_BUMPMAP                                0x00010000L
+#define D3DFORMAT_OP_DMAP                                   0x00020000L
+#define D3DFORMAT_OP_NOFILTER                               0x00040000L
+#define D3DFORMAT_MEMBEROFGROUP_ARGB                        0x00080000L
+#define D3DFORMAT_OP_SRGBWRITE                              0x00100000L
+#define D3DFORMAT_OP_NOALPHABLEND                           0x00200000L
+#define D3DFORMAT_OP_AUTOGENMIPMAP                          0x00400000L
+#define D3DFORMAT_OP_VERTEXTEXTURE                          0x00800000L
+#define D3DFORMAT_OP_NOTEXCOORDWRAPNORMIP                   0x01000000L
+
+/* DirectDraw video memory flags */
+#define DDHAL_PLEASEALLOC_BLOCKSIZE 0x00000002L
+#define DDHAL_PLEASEALLOC_USERMEM   0x00000004L
+
+/* Video memory data flags */
+#define VIDMEM_ISLINEAR         0x00000001L
+#define VIDMEM_ISRECTANGULAR    0x00000002L
+#define VIDMEM_ISHEAP           0x00000004L
+#define VIDMEM_ISNONLOCAL       0x00000008L
+#define VIDMEM_ISWC             0x00000010L
+#define VIDMEM_HEAPDISABLED     0x00000020L
+
+/* DirectDraw callback flags */
+#define DDHAL_CB32_DESTROYDRIVER        0x00000001L
+#define DDHAL_CB32_CREATESURFACE        0x00000002L
+#define DDHAL_CB32_SETCOLORKEY          0x00000004L
+#define DDHAL_CB32_SETMODE              0x00000008L
+#define DDHAL_CB32_WAITFORVERTICALBLANK 0x00000010L
+#define DDHAL_CB32_CANCREATESURFACE     0x00000020L
+#define DDHAL_CB32_CREATEPALETTE        0x00000040L
+#define DDHAL_CB32_GETSCANLINE          0x00000080L
+#define DDHAL_CB32_MAPMEMORY            0x80000000L
+
+/* DirectDraw miscellaneous callback flags */
+#define DDHAL_MISCCB32_GETAVAILDRIVERMEMORY 0x00000001L
+
+/* DirectDraw miscellaneous callback flags (level 2) */
+#define DDHAL_MISC2CB32_ALPHABLT            0x00000001L
+#define DDHAL_MISC2CB32_CREATESURFACEEX     0x00000002L
+#define DDHAL_MISC2CB32_GETDRIVERSTATE      0x00000004L
+#define DDHAL_MISC2CB32_DESTROYDDLOCAL      0x00000008L
+
+/* CreateSurfaceEx flags */
+#define DDHAL_CREATESURFACEEX_SWAPHANDLES   0x00000001L
+
+/* DirectDraw NT callback flags */
+#define DDHAL_NTCB32_FREEDRIVERMEMORY   0x00000001L
+#define DDHAL_NTCB32_SETEXCLUSIVEMODE   0x00000002L
+#define DDHAL_NTCB32_FLIPTOGDISURFACE   0x00000004L
+
+/* DirectDraw palette callback flags */
+#define DDHAL_PALCB32_DESTROYPALETTE    0x00000001L
+#define DDHAL_PALCB32_SETENTRIES        0x00000002L
+
+/* DirectDraw surface callback flags */
+#define DDHAL_SURFCB32_DESTROYSURFACE       0x00000001L
+#define DDHAL_SURFCB32_FLIP                 0x00000002L
+#define DDHAL_SURFCB32_SETCLIPLIST          0x00000004L
+#define DDHAL_SURFCB32_LOCK                 0x00000008L
+#define DDHAL_SURFCB32_UNLOCK               0x00000010L
+#define DDHAL_SURFCB32_BLT                  0x00000020L
+#define DDHAL_SURFCB32_SETCOLORKEY          0x00000040L
+#define DDHAL_SURFCB32_ADDATTACHEDSURFACE   0x00000080L
+#define DDHAL_SURFCB32_GETBLTSTATUS         0x00000100L
+#define DDHAL_SURFCB32_GETFLIPSTATUS        0x00000200L
+#define DDHAL_SURFCB32_UPDATEOVERLAY        0x00000400L
+#define DDHAL_SURFCB32_SETOVERLAYPOSITION   0x00000800L
+#define DDHAL_SURFCB32_SETPALETTE           0x00002000L
+
+/* DirectDraw video port callback flags */
+#define DDHAL_VPORT32_CANCREATEVIDEOPORT    0x00000001L
+#define DDHAL_VPORT32_CREATEVIDEOPORT       0x00000002L
+#define DDHAL_VPORT32_FLIP                  0x00000004L
+#define DDHAL_VPORT32_GETBANDWIDTH          0x00000008L
+#define DDHAL_VPORT32_GETINPUTFORMATS       0x00000010L
+#define DDHAL_VPORT32_GETOUTPUTFORMATS      0x00000020L
+#define DDHAL_VPORT32_GETAUTOFLIPSURF       0x00000040L
+#define DDHAL_VPORT32_GETFIELD              0x00000080L
+#define DDHAL_VPORT32_GETLINE               0x00000100L
+#define DDHAL_VPORT32_GETCONNECT            0x00000200L
+#define DDHAL_VPORT32_DESTROY               0x00000400L
+#define DDHAL_VPORT32_GETFLIPSTATUS         0x00000800L
+#define DDHAL_VPORT32_UPDATE                0x00001000L
+#define DDHAL_VPORT32_WAITFORSYNC           0x00002000L
+#define DDHAL_VPORT32_GETSIGNALSTATUS       0x00004000L
+#define DDHAL_VPORT32_COLORCONTROL          0x00008000L
+
+/* DirectDraw color control callback flags */
+#define DDHAL_COLOR_COLORCONTROL    0x00000001L
+
+/* DirectDraw kernel surface callback flags */
+#define DDHAL_KERNEL_SYNCSURFACEDATA    0x00000001L
+#define DDHAL_KERNEL_SYNCVIDEOPORTDATA  0x00000002L
+
+/* DirectDraw video callback flags */
+#define DDHAL_MOCOMP32_GETGUIDS         0x00000001L
+#define DDHAL_MOCOMP32_GETFORMATS       0x00000002L
+#define DDHAL_MOCOMP32_CREATE           0x00000004L
+#define DDHAL_MOCOMP32_GETCOMPBUFFINFO  0x00000008L
+#define DDHAL_MOCOMP32_GETINTERNALINFO  0x00000010L
+#define DDHAL_MOCOMP32_BEGINFRAME       0x00000020L
+#define DDHAL_MOCOMP32_ENDFRAME         0x00000040L
+#define DDHAL_MOCOMP32_RENDER           0x00000080L
+#define DDHAL_MOCOMP32_QUERYSTATUS      0x00000100L
+#define DDHAL_MOCOMP32_DESTROY          0x00000200L
+
+/* Callback return values */
+#define DDHAL_DRIVER_NOTHANDLED 0x00000000L
+#define DDHAL_DRIVER_HANDLED    0x00000001L
+#define DDHAL_DRIVER_NOCKEYHW   0x00000002L
+
+/* DirectDraw surface flags */
+#define DDRAWISURF_HASCKEYSRCBLT    0x00000800L
+#define DDRAWISURF_HASPIXELFORMAT   0x00002000L
+#define DDRAWISURF_HASOVERLAYDATA   0x00004000L
+#define DDRAWISURF_FRONTBUFFER      0x04000000L
+#define DDRAWISURF_BACKBUFFER       0x08000000L
+#define DDRAWISURF_INVALID          0x10000000L
+#define DDRAWISURF_DRIVERMANAGED    0x40000000L
+
+/* Raster operations */
+#define ROP_HAS_SOURCE          0x00000001L
+#define ROP_HAS_PATTERN         0x00000002L
+#define ROP_HAS_SOURCEPATTERN   (ROP_HAS_SOURCE | ROP_HAS_PATTERN)
+
+/* DirectDraw Direct3D buffer callback flags */
+#define DDHAL_EXEBUFCB32_CANCREATEEXEBUF    0x00000001L
+#define DDHAL_EXEBUFCB32_CREATEEXEBUF       0x00000002L
+#define DDHAL_EXEBUFCB32_DESTROYEXEBUF      0x00000004L
+#define DDHAL_EXEBUFCB32_LOCKEXEBUF         0x00000008L
+#define DDHAL_EXEBUFCB32_UNLOCKEXEBUF       0x00000010L
+#define DDHAL_D3DBUFCB32_CANCREATED3DBUF    DDHAL_EXEBUFCB32_CANCREATEEXEBUF
+#define DDHAL_D3DBUFCB32_CREATED3DBUF       DDHAL_EXEBUFCB32_CREATEEXEBUF
+#define DDHAL_D3DBUFCB32_DESTROYD3DBUF      DDHAL_EXEBUFCB32_DESTROYEXEBUF
+#define DDHAL_D3DBUFCB32_LOCKD3DBUF         DDHAL_EXEBUFCB32_LOCKEXEBUF
+#define DDHAL_D3DBUFCB32_UNLOCKD3DBUF       DDHAL_EXEBUFCB32_UNLOCKEXEBUF
+
+/* DirectDraw hardware abstraction layer information flags */
+#define DDHALINFO_GETDRIVERINFOSET  0x00000004L
+#define DDHALINFO_GETDRIVERINFO2    0x00000008L
+
+/* DirectDraw video port flags */
+#define DDRAWIVPORT_ON                  0x00000001L
+#define DDRAWIVPORT_SOFTWARE_AUTOFLIP   0x00000002L
+#define DDRAWIVPORT_COLORKEYANDINTERP   0x00000004L
+
+/* DirectDraw NT private driver capability flags */
+#define DDHAL_PRIVATECAP_ATOMICSURFACECREATION  0x00000001L
+#define DDHAL_PRIVATECAP_NOTIFYPRIMARYCREATION  0x00000002L
+
+/* Blt flags */
+#define DDBLT_AFLAGS    0x80000000L
+
+/* AlphaBlt flags */
+#define DDABLT_SRCOVERDEST  0x00000001L
+
+/* WaitForVerticalBlank flags */
+#define DDWAITVB_I_TESTVB   0x80000006L
+
+/* UpdateVideoPort flags */
+#define DDRAWI_VPORTSTART   0x00000001L
+#define DDRAWI_VPORTSTOP    0x00000002L
+#define DDRAWI_VPORTUPDATE  0x00000003L
+
+/* ColorControl flags */
+#define DDRAWI_VPORTGETCOLOR    0x00000001L
+#define DDRAWI_VPORTSETCOLOR    0x00000002L
+#define DDRAWI_GETCOLOR         0x00000001L
+#define DDRAWI_SETCOLOR         0x00000002L
+
+/* QueryMoCompStatus flags */
+#define DDMCQUERY_READ  0x00000001L
+
+/* Opaque data types */
+typedef struct _DD_DESTROYDRIVERDATA            *PDD_DESTROYDRIVERDATA;
+typedef struct _DD_SETMODEDATA                  *PDD_SETMODEDATA;
+typedef struct _DD_GETVPORTAUTOFLIPSURFACEDATA  *PDD_GETVPORTAUTOFLIPSURFACEDATA;
+typedef struct _DD_GETHEAPALIGNMENTDATA         *PDD_GETHEAPALIGNMENTDATA;
+
+/* Video memory data */
+typedef struct _VIDEOMEMORY {
+    DWORD   dwFlags;
+    FLATPTR fpStart;
+    union {
+        FLATPTR fpEnd;
+        DWORD   dwWidth;
+    };
+    DDSCAPS ddsCaps;
+    DDSCAPS ddsCapsAlt;
+    union {
+        struct _VMEMHEAP    *lpHeap;
+        DWORD               dwHeight;
+    };
+} VIDEOMEMORY;
+typedef VIDEOMEMORY *LPVIDEOMEMORY;
+
+/* Video memory information */
+typedef struct _VIDEOMEMORYINFO {
+    FLATPTR         fpPrimary;
+    DWORD           dwFlags;
+    DWORD           dwDisplayWidth;
+    DWORD           dwDisplayHeight;
+    LONG            lDisplayPitch;
+    DDPIXELFORMAT   ddpfDisplay;
+    DWORD           dwOffScreenAlign;
+    DWORD           dwOverlayAlign;
+    DWORD           dwTextureAlign;
+    DWORD           dwZBufferAlign;
+    DWORD           dwAlphaAlign;
+    PVOID           pvPrimary;
+} VIDEOMEMORYINFO;
+typedef VIDEOMEMORYINFO *LPVIDEOMEMORYINFO;
+
+/* DirectDraw callbacks */
+typedef DWORD (APIENTRY *PDD_SETCOLORKEY)( struct _DD_DRVSETCOLORKEYDATA * );
+typedef DWORD (APIENTRY *PDD_CANCREATESURFACE)( struct _DD_CANCREATESURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_WAITFORVERTICALBLANK)( struct _DD_WAITFORVERTICALBLANKDATA * );
+typedef DWORD (APIENTRY *PDD_CREATESURFACE)( struct _DD_CREATESURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_DESTROYDRIVER)( struct _DD_DESTROYDRIVERDATA * );
+typedef DWORD (APIENTRY *PDD_SETMODE)( struct _DD_SETMODEDATA * );
+typedef DWORD (APIENTRY *PDD_CREATEPALETTE)( struct _DD_CREATEPALETTEDATA * );
+typedef DWORD (APIENTRY *PDD_GETSCANLINE)( struct _DD_GETSCANLINEDATA * );
+typedef DWORD (APIENTRY *PDD_MAPMEMORY)( struct _DD_MAPMEMORY * );
+typedef DWORD (APIENTRY *PDD_GETDRIVERINFO)( struct _DD_GETDRIVERINFODATA * );
+typedef struct DD_CALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_DESTROYDRIVER           DestroyDriver;
+    PDD_CREATESURFACE           CreateSurface;
+    PDD_SETCOLORKEY             SetColorKey;
+    PDD_SETMODE                 SetMode;
+    PDD_WAITFORVERTICALBLANK    WaitForVerticalBlank;
+    PDD_CANCREATESURFACE        CanCreateSurface;
+    PDD_CREATEPALETTE           CreatePalette;
+    PDD_GETSCANLINE             GetScanLine;
+    PDD_MAPMEMORY               MapMemory;
+} DD_CALLBACKS;
+typedef DD_CALLBACKS    *PDD_CALLBACKS;
+
+/* DirectDraw miscellaneous callbacks */
+typedef DWORD (APIENTRY *PDD_GETAVAILDRIVERMEMORY)( struct _DD_GETAVAILDRIVERMEMORYDATA * );
+typedef struct _DD_MISCELLANEOUSCALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_GETAVAILDRIVERMEMORY    GetAvailDriveMemory;
+} DD_MISCELLANEOUSCALLBACKS;
+typedef DD_MISCELLANEOUSCALLBACKS   *PDD_MISCELLANEOUSCALLBACKS;
+
+/* DirectDraw miscellaneous callbacks (level 2)*/
+typedef DWORD (APIENTRY *PDD_ALPHABLT)( struct _DD_BLTDATA * );
+typedef DWORD (APIENTRY *PDD_CREATESURFACEEX)( struct _DD_CREATESURFACEEXDATA * );
+typedef DWORD (APIENTRY *PDD_GETDRIVERSTATE)( struct _DD_GETDRIVERSTATEDATA * );
+typedef DWORD (APIENTRY *PDD_DESTROYDDLOCAL)( struct _DD_DESTROYDDLOCALDATA * );
+typedef struct _DD_MISCELLANEOUS2CALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_ALPHABLT                AlphaBlt;
+    PDD_CREATESURFACEEX         CreateSurfaceEx;
+    PDD_GETDRIVERSTATE          GetDriverState;
+    PDD_DESTROYDDLOCAL          DestroyDDLocal;
+} DD_MISCELLANEOUS2CALLBACKS;
+typedef DD_MISCELLANEOUS2CALLBACKS  *PDD_MISCELLANEOUS2CALLBACKS;
+
+/* DirectDraw NT callbacks */
+typedef DWORD (APIENTRY *PDD_FREEDRIVERMEMORY)( struct _DD_FREEDRIVERMEMORYDATA * );
+typedef DWORD (APIENTRY *PDD_SETEXCLUSIVEMODE)( struct _DD_SETEXCLUSIVEMODEDATA * );
+typedef DWORD (APIENTRY *PDD_FLIPTOGDISURFACE)( struct _DD_FLIPTOGDISURFACEDATA * );
+typedef struct _DD_NTCALLBACKS {
+    DWORD                   dwSize;
+    DWORD                   dwFlags;
+    PDD_FREEDRIVERMEMORY    FreeDriverMemory;
+    PDD_SETEXCLUSIVEMODE    SetExclusiveMode;
+    PDD_FLIPTOGDISURFACE    FlipToGDISurface;
+} DD_NTCALLBACKS;
+typedef DD_NTCALLBACKS  *PDD_NTCALLBACKS;
+
+/* DirectDraw palette callbacks */
+typedef DWORD (APIENTRY *PDD_PALCB_DESTROYPALETTE)( struct _DD_DESTROYPALETTEDATA * );
+typedef DWORD (APIENTRY *PDD_PALCB_SETENTRIES)( struct _DD_SETENTRIESDATA * );
+typedef struct DD_PALETTECALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_PALCB_DESTROYPALETTE    DestroyPalette;
+    PDD_PALCB_SETENTRIES        SetEntries;
+} DD_PALETTECALLBACKS;
+typedef DD_PALETTECALLBACKS *PDD_PALETTECALLBACKS;
+
+/* DirectDraw surface callbacks */
+typedef DWORD (APIENTRY *PDD_SURFCB_LOCK)( struct _DD_LOCKDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_UNLOCK)( struct _DD_UNLOCKDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_BLT)( struct _DD_BLTDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_UPDATEOVERLAY)( struct _DD_UPDATEOVERLAYDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_SETOVERLAYPOSITION)( struct _DD_SETOVERLAYPOSITIONDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_SETPALETTE)( struct _DD_SETPALETTEDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_FLIP)( struct _DD_FLIPDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_DESTROYSURFACE)( struct _DD_DESTROYSURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_SETCLIPLIST)( struct _DD_SETCLIPLISTDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_ADDATTACHEDSURFACE)( struct _DD_ADDATTACHEDSURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_SETCOLORKEY)( struct _DD_SETCOLORKEYDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_GETBLTSTATUS)( struct _DD_GETBLTSTATUSDATA * );
+typedef DWORD (APIENTRY *PDD_SURFCB_GETFLIPSTATUS)( struct _DD_GETFLIPSTATUSDATA * );
+typedef struct DD_SURFACECALLBACKS {
+    DWORD                           dwSize;
+    DWORD                           dwFlags;
+    PDD_SURFCB_DESTROYSURFACE       DestroySurface;
+    PDD_SURFCB_FLIP                 Flip;
+    PDD_SURFCB_SETCLIPLIST          SetClipList;
+    PDD_SURFCB_LOCK                 Lock;
+    PDD_SURFCB_UNLOCK               Unlock;
+    PDD_SURFCB_BLT                  Blt;
+    PDD_SURFCB_SETCOLORKEY          SetColorKey;
+    PDD_SURFCB_ADDATTACHEDSURFACE   AddAttachedSurface;
+    PDD_SURFCB_GETBLTSTATUS         GetBltStatus;
+    PDD_SURFCB_GETFLIPSTATUS        GetFlipStatus;
+    PDD_SURFCB_UPDATEOVERLAY        UpdateOverlay;
+    PDD_SURFCB_SETOVERLAYPOSITION   SetOverlayPosition;
+    LPVOID                          reserved4;
+    PDD_SURFCB_SETPALETTE           SetPalette;
+} DD_SURFACECALLBACKS;
+typedef DD_SURFACECALLBACKS *PDD_SURFACECALLBACKS;
+
+/* DirectDraw video port callbacks */
+typedef DWORD (APIENTRY *PDD_VPORTCB_CANCREATEVIDEOPORT)( struct _DD_CANCREATEVPORTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_CREATEVIDEOPORT)( struct _DD_CREATEVPORTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_FLIP)( struct _DD_FLIPVPORTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETBANDWIDTH)( struct _DD_GETVPORTBANDWIDTHDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETINPUTFORMATS)( struct _DD_GETVPORTINPUTFORMATDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETOUTPUTFORMATS)( struct _DD_GETVPORTOUTPUTFORMATDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETAUTOFLIPSURF)( struct _DD_GETVPORTAUTOFLIPSURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETFIELD)( struct _DD_GETVPORTFIELDDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETLINE)( struct _DD_GETVPORTLINEDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETVPORTCONNECT)( struct _DD_GETVPORTCONNECTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_DESTROYVPORT)( struct _DD_DESTROYVPORTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETFLIPSTATUS)( struct _DD_GETVPORTFLIPSTATUSDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_UPDATE)( struct _DD_UPDATEVPORTDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_WAITFORSYNC)( struct _DD_WAITFORVPORTSYNCDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_GETSIGNALSTATUS)( struct _DD_GETVPORTSIGNALDATA * );
+typedef DWORD (APIENTRY *PDD_VPORTCB_COLORCONTROL)( struct _DD_VPORTCOLORDATA * );
+typedef struct DD_VIDEOPORTCALLBACKS {
+    DWORD                           dwSize;
+    DWORD                           dwFlags;
+    PDD_VPORTCB_CANCREATEVIDEOPORT  CanCreateVideoPort;
+    PDD_VPORTCB_CREATEVIDEOPORT     CreateVideoPort;
+    PDD_VPORTCB_FLIP                FlipVideoPort;
+    PDD_VPORTCB_GETBANDWIDTH        GetVideoPortBandwidth;
+    PDD_VPORTCB_GETINPUTFORMATS     GetVideoPortInputFormats;
+    PDD_VPORTCB_GETOUTPUTFORMATS    GetVideoPortOutputFormats;
+    LPVOID                          lpReserved1;
+    PDD_VPORTCB_GETFIELD            GetVideoPortField;
+    PDD_VPORTCB_GETLINE             GetVideoPortLine;
+    PDD_VPORTCB_GETVPORTCONNECT     GetVideoPortConnectInfo;
+    PDD_VPORTCB_DESTROYVPORT        DestroyVideoPort;
+    PDD_VPORTCB_GETFLIPSTATUS       GetVideoPortFlipStatus;
+    PDD_VPORTCB_UPDATE              UpdateVideoPort;
+    PDD_VPORTCB_WAITFORSYNC         WaitForVideoPortSync;
+    PDD_VPORTCB_GETSIGNALSTATUS     GetVideoSignalStatus;
+    PDD_VPORTCB_COLORCONTROL        ColorControl;
+} DD_VIDEOPORTCALLBACKS;
+typedef DD_VIDEOPORTCALLBACKS   *PDD_VIDEOPORTCALLBACKS;
+
+/* DirectDraw color control callbacks */
+typedef DWORD (APIENTRY *PDD_COLORCB_COLORCONTROL)( struct _DD_COLORCONTROLDATA * );
+typedef struct _DD_COLORCONTROLCALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_COLORCB_COLORCONTROL    ColorControl;
+} DD_COLORCONTROLCALLBACKS;
+typedef DD_COLORCONTROLCALLBACKS    *PDD_COLORCONTROLCALLBACKS;
+
+/* DirectDraw surface kernel callbacks */
+typedef DWORD (APIENTRY *PDD_KERNELCB_SYNCSURFACE)( struct _DD_SYNCSURFACEDATA * );
+typedef DWORD (APIENTRY *PDD_KERNELCB_SYNCVIDEOPORT)( struct _DD_SYNCVIDEOPORTDATA * );
+typedef struct DD_KERNELCALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_KERNELCB_SYNCSURFACE    SyncSurfaceData;
+    PDD_KERNELCB_SYNCVIDEOPORT  SyncVideoPortData;
+} DD_KERNELCALLBACKS;
+typedef DD_KERNELCALLBACKS  *PDD_KERNELCALLBACKS;
+
+/* DirectDraw video callbacks */
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_GETGUIDS)( struct _DD_GETMOCOMPGUIDSDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_GETFORMATS)( struct _DD_GETMOCOMPFORMATSDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_CREATE)( struct _DD_CREATEMOCOMPDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_GETCOMPBUFFINFO)( struct _DD_GETMOCOMPCOMPBUFFDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_GETINTERNALINFO)( struct _DD_GETINTERNALMOCOMPDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_BEGINFRAME)( struct _DD_BEGINMOCOMPFRAMEDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_ENDFRAME)( struct _DD_ENDMOCOMPFRAMEDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_RENDER)( struct _DD_RENDERMOCOMPDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_QUERYSTATUS)( struct _DD_QUERYMOCOMPSTATUSDATA * );
+typedef DWORD (APIENTRY *PDD_MOCOMPCB_DESTROY)( struct _DD_DESTROYMOCOMPDATA * );
+typedef struct DD_MOTIONCOMPCALLBACKS {
+    DWORD                           dwSize;
+    DWORD                           dwFlags;
+    PDD_MOCOMPCB_GETGUIDS           GetMoCompGuids;
+    PDD_MOCOMPCB_GETFORMATS         GetMoCompFormats;
+    PDD_MOCOMPCB_CREATE             CreateMoComp;
+    PDD_MOCOMPCB_GETCOMPBUFFINFO    GetMoCompBuffInfo;
+    PDD_MOCOMPCB_GETINTERNALINFO    GetInternalMoCompBuffInfo;
+    PDD_MOCOMPCB_BEGINFRAME         BeginMoCompFrame;
+    PDD_MOCOMPCB_ENDFRAME           EndMoCompFrame;
+    PDD_MOCOMPCB_RENDER             RenderMoComp;
+    PDD_MOCOMPCB_QUERYSTATUS        QueryMoCompStatus;
+    PDD_MOCOMPCB_DESTROY            DestroyMoComp;
+} DD_MOTIONCOMPCALLBACKS;
+typedef DD_MOTIONCOMPCALLBACKS  *PDD_MOTIONCOMPCALLBACKS;
+
+/* Nonlocal video memory capabilities */
+typedef struct _DD_NONLOCALVIDMEMCAPS {
+    DWORD   dwSize;
+    DWORD   dwNLVBCaps;
+    DWORD   dwNLVBCaps2;
+    DWORD   dwNLVBCKeyCaps;
+    DWORD   dwNLVBFXCaps;
+    DWORD   dwNLVBRops[DD_ROP_SPACE];
+} DD_NONLOCALVIDMEMCAPS;
+typedef DD_NONLOCALVIDMEMCAPS   *PDD_NONLOCALVIDMEMCAPS;
+
+/* DirectDraw global palette */
+typedef struct _DD_PALETTE_GLOBAL {
+    ULONG_PTR   dwReserved1;
+} DD_PALETTE_GLOBAL;
+typedef DD_PALETTE_GLOBAL   *PDD_PALETTE_GLOBAL;
+
+/* DirectDraw local palette */
+typedef struct _DD_PALETTE_LOCAL {
+    ULONG       dwReserved0;
+    ULONG_PTR   dwReserved1;
+} DD_PALETTE_LOCAL;
+typedef DD_PALETTE_LOCAL    *PDD_PALETTE_LOCAL;
+
+/* DirectDraw global clipper */
+typedef struct _DD_CLIPPER_GLOBAL {
+    ULONG_PTR   dwReserved1;
+} DD_CLIPPER_GLOBAL;
+typedef DD_CLIPPER_GLOBAL   *PDD_CLIPPER_GLOBAL;
+
+/* DirectDraw local clipper */
+typedef struct _DD_CLIPPER_LOCAL {
+    ULONG_PTR   dwReserved1;
+} DD_CLIPPER_LOCAL;
+typedef DD_CLIPPER_LOCAL    *PDD_CLIPPER_LOCAL;
+
+/* DirectDraw attach list */
+typedef struct _DD_ATTACHLIST {
+    struct _DD_ATTACHLIST       *lpLink;
+    struct _DD_SURFACE_LOCAL    *lpAttached;
+} DD_ATTACHLIST;
+typedef DD_ATTACHLIST   *PDD_ATTACHLIST;
+
+/* DirectDraw surface interface */
+typedef struct _DD_SURFACE_INT {
+    struct _DD_SURFACE_LOCAL    *lpLcl;
+} DD_SURFACE_INT;
+typedef DD_SURFACE_INT  *PDD_SURFACE_INT;
+
+/* DirectDraw global surface */
+typedef struct _DD_SURFACE_GLOBAL {
+    union {
+        DWORD   dwBlockSizeY;
+        LONG    lSlicePitch;
+    };
+    union {
+        LPVIDEOMEMORY   lpVidMemHeap;
+        DWORD           dwBlockSizeX;
+        DWORD           dwUserMemSize;
+    };
+    FLATPTR         fpVidMem;
+    union {
+        LONG    lPitch;
+        DWORD   dwLinearSize;
+    };
+    LONG            yHint;
+    LONG            xHint;
+    DWORD           wHeight;
+    DWORD           wWidth;
+    ULONG_PTR       dwReserved1;
+    DDPIXELFORMAT   ddpfSurface;
+    FLATPTR         fpHeapOffset;
+    HANDLE          hCreatorProcess;
+} DD_SURFACE_GLOBAL;
+typedef DD_SURFACE_GLOBAL   *PDD_SURFACE_GLOBAL;
+
+/* DirectDraw more surface */
+typedef struct _DD_SURFACE_MORE {
+    DWORD                       dwMipMapCount;
+    struct _DD_VIDEOPORT_LOCAL  *lpVideoPort;
+    DWORD                       dwOverlayFlags;
+    DDSCAPSEX                   ddsCapsEx;
+    DWORD                       dwSurfaceHandle;
+} DD_SURFACE_MORE;
+typedef DD_SURFACE_MORE *PDD_SURFACE_MORE;
+
+/* DirectDraw local surface */
+typedef struct _DD_SURFACE_LOCAL {
+    PDD_SURFACE_GLOBAL  lpGbl;
+    DWORD               dwFlags;
+    DDSCAPS             ddsCaps;
+    ULONG_PTR           dwReserved1;
+    union {
+        DDCOLORKEY  ddckCKSrcOverlay;
+        DDCOLORKEY  ddckCKSrcBlt;
+    };
+    union {
+        DDCOLORKEY  ddckCKDestOverlay;
+        DDCOLORKEY  ddckCKDestBlt;
+    };
+    PDD_SURFACE_MORE    lpSurfMore;
+    PDD_ATTACHLIST      lpAttachList;
+    PDD_ATTACHLIST      lpAttachListFrom;
+    RECT                rcOverlaySrc;
+} DD_SURFACE_LOCAL;
+typedef DD_SURFACE_LOCAL    *PDD_SURFACE_LOCAL;
+
+/* DirectDraw more capabilities */
+typedef struct _DD_MORECAPS {
+    DWORD   dwSize;
+    DWORD   dwAlphaCaps;
+    DWORD   dwSVBAlphaCaps;
+    DWORD   dwVSBAlphaCaps;
+    DWORD   dwSSBAlphaCaps;
+    DWORD   dwFilterCaps;
+    DWORD   dwSVBFilterCaps;
+    DWORD   dwVSBFilterCaps;
+    DWORD   dwSSBFilterCaps;
+} DD_MORECAPS;
+typedef DD_MORECAPS *PDD_MORECAPS;
+
+/* DirectDraw NT capabilities */
+typedef struct _DDNTCORECAPS {
+    DWORD   dwSize;
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCKeyCaps;
+    DWORD   dwFXCaps;
+    DWORD   dwFXAlphaCaps;
+    DWORD   dwPalCaps;
+    DWORD   dwSVCaps;
+    DWORD   dwAlphaBltConstBitDepths;
+    DWORD   dwAlphaBltPixelBitDepths;
+    DWORD   dwAlphaBltSurfaceBitDepths;
+    DWORD   dwAlphaOverlayConstBitDepths;
+    DWORD   dwAlphaOverlayPixelBitDepths;
+    DWORD   dwAlphaOverlaySurfaceBitDepths;
+    DWORD   dwZBufferBitDepths;
+    DWORD   dwVidMemTotal;
+    DWORD   dwVidMemFree;
+    DWORD   dwMaxVisibleOverlays;
+    DWORD   dwCurrVisibleOverlays;
+    DWORD   dwNumFourCCCodes;
+    DWORD   dwAlignBoundarySrc;
+    DWORD   dwAlignSizeSrc;
+    DWORD   dwAlignBoundaryDest;
+    DWORD   dwAlignSizeDest;
+    DWORD   dwAlignStrideAlign;
+    DWORD   dwRops[DD_ROP_SPACE];
+    DDSCAPS ddsCaps;
+    DWORD   dwMinOverlayStretch;
+    DWORD   dwMaxOverlayStretch;
+    DWORD   dwMinLiveVideoStretch;
+    DWORD   dwMaxLiveVideoStretch;
+    DWORD   dwMinHwCodecStretch;
+    DWORD   dwMaxHwCodecStretch;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+    DWORD   dwReserved3;
+    DWORD   dwSVBCaps;
+    DWORD   dwSVBCKeyCaps;
+    DWORD   dwSVBFXCaps;
+    DWORD   dwSVBRops[DD_ROP_SPACE];
+    DWORD   dwVSBCaps;
+    DWORD   dwVSBCKeyCaps;
+    DWORD   dwVSBFXCaps;
+    DWORD   dwVSBRops[DD_ROP_SPACE];
+    DWORD   dwSSBCaps;
+    DWORD   dwSSBCKeyCaps;
+    DWORD   dwSSBFXCaps;
+    DWORD   dwSSBRops[DD_ROP_SPACE];
+    DWORD   dwMaxVideoPorts;
+    DWORD   dwCurrVideoPorts;
+    DWORD   dwSVBCaps2;
+} DDNTCORECAPS;
+typedef DDNTCORECAPS    *PDDNTCORECAPS;
+
+/* DirectDraw Direct3D buffer callbacks */
+typedef struct _DD_D3DBUFCALLBACKS {
+    DWORD                       dwSize;
+    DWORD                       dwFlags;
+    PDD_CANCREATESURFACE        CanCreateD3DBuffer;
+    PDD_CREATESURFACE           CreateD3DBuffer;
+    PDD_SURFCB_DESTROYSURFACE   DestroyD3DBuffer;
+    PDD_SURFCB_LOCK             LockD3DBuffer;
+    PDD_SURFCB_UNLOCK           UnlockD3DBuffer;
+} DD_D3DBUFCALLBACKS;
+typedef DD_D3DBUFCALLBACKS  *PDD_D3DBUFCALLBACKS;
+
+/* DirectDraw hardware abstraction layer information (version 4) */
+typedef struct _DD_HALINFO_V4 {
+    DWORD               dwSize;
+    VIDEOMEMORYINFO     vmiData;
+    DDNTCORECAPS        ddCaps;
+    PDD_GETDRIVERINFO   GetDriverInfo;
+    DWORD               dwFlags;
+} DD_HALINFO_V4;
+typedef DD_HALINFO_V4   *PDD_HALINFO_V4;
+
+/* DirectDraw hardware abstraction layer information */
+typedef struct _DD_HALINFO {
+    DWORD               dwSize;
+    VIDEOMEMORYINFO     vmiData;
+    DDNTCORECAPS        ddCaps;
+    PDD_GETDRIVERINFO   GetDriverInfo;
+    DWORD               dwFlags;
+    LPVOID              lpD3DGlobalDriverData;
+    LPVOID              lpD3DHALCallbacks;
+    PDD_D3DBUFCALLBACKS lpD3DBufCallbacks;
+} DD_HALINFO;
+typedef DD_HALINFO  *PDD_HALINFO;
+
+/* DirectDraw global */
+typedef struct _DD_DIRECTDRAW_GLOBAL {
+    VOID                *dhpdev;
+    ULONG_PTR           dwReserved1;
+    ULONG_PTR           dwReserved2;
+    LPDDVIDEOPORTCAPS   lpDDVideoPortCaps;
+} DD_DIRECTDRAW_GLOBAL;
+typedef DD_DIRECTDRAW_GLOBAL    *PDD_DIRECTDRAW_GLOBAL;
+
+/* DirectDraw local */
+typedef struct _DD_DIRECTDRAW_LOCAL {
+    PDD_DIRECTDRAW_GLOBAL   lpGbl;
+} DD_DIRECTDRAW_LOCAL;
+typedef DD_DIRECTDRAW_LOCAL *PDD_DIRECTDRAW_LOCAL;
+
+/* DirectDraw local videoport */
+typedef struct _DD_VIDEOPORT_LOCAL {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    DDVIDEOPORTDESC         ddvpDesc;
+    DDVIDEOPORTINFO         ddvpInfo;
+    PDD_SURFACE_INT         lpSurface;
+    PDD_SURFACE_INT         lpVBISurface;
+    DWORD                   dwNumAutoflip;
+    DWORD                   dwNumVBIAutoflip;
+    ULONG_PTR               dwReserved1;
+    ULONG_PTR               dwReserved2;
+    ULONG_PTR               dwReserved3;
+} DD_VIDEOPORT_LOCAL;
+typedef DD_VIDEOPORT_LOCAL  *PDD_VIDEOPORT_LOCAL;
+
+/* DirectDraw local video */
+typedef struct _DD_MOTIONCOMP_LOCAL {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    GUID                    guid;
+    DWORD                   dwUncompWidth;
+    DWORD                   dwUncompHeight;
+    DDPIXELFORMAT           dwUncompPixelFormat;
+    DWORD                   dwDriverReserved1;
+    DWORD                   dwDriverReserved2;
+    DWORD                   dwDriverReserved3;
+    LPVOID                  lpDriverReserved1;
+    LPVOID                  lpDriverReserved2;
+    LPVOID                  lpDriverReserved3;
+} DD_MOTIONCOMP_LOCAL;
+typedef DD_MOTIONCOMP_LOCAL *PDD_MOTIONCOMP_LOCAL;
+
+/* DirectDraw more surface capabilities */
+typedef struct _DD_MORESURFACECAPS {
+    DWORD       dwSize;
+    DDSCAPSEX   ddsCapsMore;
+    struct tagNTExtendedHeapRestrictions {
+        DDSCAPSEX   ddsCapsEx;
+        DDSCAPSEX   ddsCapsExAlt;
+    } ddsExtendedHeapRestrictions[1];
+} DD_MORESURFACECAPS;
+typedef DD_MORESURFACECAPS  *PDD_MORESURFACECAPS;
+
+/* DirectDraw stereo mode */
+typedef struct _DD_STEREOMODE {
+    DWORD   dwSize;
+    DWORD   dwHeight;
+    DWORD   dwWidth;
+    DWORD   dwBpp;
+    DWORD   dwRefreshRate;
+    BOOL    bSupported;
+} DD_STEREOMODE;
+typedef DD_STEREOMODE   *PDD_STEREOMODE;
+
+/* DirectDraw update nonlocal heap data */
+typedef struct _DD_UPDATENONLOCALHEAPDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    DWORD                   dwHeap;
+    FLATPTR                 fpGARTLin;
+    FLATPTR                 fpGARTDev;
+    ULONG_PTR               ulPolicyMaxBytes;
+    HRESULT                 ddRVal;
+    VOID                    *UpdateNonLocalHeap;
+} DD_UPDATENONLOCALHEAPDATA;
+typedef DD_UPDATENONLOCALHEAPDATA   *PDD_UPDATENONLOCALHEAPDATA;
+
+/* DirectDraw NT private driver capabilities */
+typedef struct DD_NTPRIVATEDRIVERCAPS {
+    DWORD   dwSize;
+    DWORD   dwPrivateCaps;
+} DD_NTPRIVATEDRIVERCAPS;
+
+/* Blt parameters */
+typedef struct _DD_BLTDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDDestSurface;
+    RECTL                   rDest;
+    PDD_SURFACE_LOCAL       lpDDSrcSurface;
+    RECTL                   rSrc;
+    DWORD                   dwFlags;
+    DWORD                   dwROPFlags;
+    DDBLTFX                 bltFX;
+    HRESULT                 ddRVal;
+    VOID                    *Blt;
+    BOOL                    IsClipped;
+    RECTL                   rOrigDest;
+    RECTL                   rOrigSrc;
+    DWORD                   dwRectCnt;
+    LPRECT                  prDestRects;
+    DWORD                   dwAFlags;
+    DDARGB                  ddargbScaleFactors;
+} DD_BLTDATA;
+typedef DD_BLTDATA  *PDD_BLTDATA;
+
+/* Lock parameters */
+typedef struct _DD_LOCKDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    DWORD                   bHasRect;
+    RECTL                   rArea;
+    LPVOID                  lpSurfData;
+    HRESULT                 ddRVal;
+    VOID                    *Lock;
+    DWORD                   dwFlags;
+    FLATPTR                 fpProcess;
+} DD_LOCKDATA;
+typedef DD_LOCKDATA *PDD_LOCKDATA;
+
+/* Unlock parameters */
+typedef struct _DD_UNLOCKDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    HRESULT                 ddRVal;
+    VOID                    *Unlock;
+} DD_UNLOCKDATA;
+typedef DD_UNLOCKDATA   *PDD_UNLOCKDATA;
+
+/* UpdateOverlay parameters */
+typedef struct _DD_UPDATEOVERLAYDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDDestSurface;
+    RECTL                   rDest;
+    PDD_SURFACE_LOCAL       lpDDSrcSurface;
+    RECTL                   rSrc;
+    DWORD                   dwFlags;
+    DDOVERLAYFX             overlayFX;
+    HRESULT                 ddRVal;
+    VOID                    *UpdateOverlay;
+} DD_UPDATEOVERLAYDATA;
+typedef DD_UPDATEOVERLAYDATA    *PDD_UPDATEOVERLAYDATA;
+
+/* SetOverlayPosition parameters */
+typedef struct _DD_SETOVERLAYPOSITIONDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSrcSurface;
+    PDD_SURFACE_LOCAL       lpDDDestSurface;
+    LONG                    lXPos;
+    LONG                    lYPos;
+    HRESULT                 ddRVal;
+    VOID                    *SetOverlayPosition;
+} DD_SETOVERLAYPOSITIONDATA;
+typedef DD_SETOVERLAYPOSITIONDATA   *PDD_SETOVERLAYPOSITIONDATA;
+
+/* SetPalette parameters */
+typedef struct _DD_SETPALETTEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    PDD_PALETTE_GLOBAL      lpDDPalette;
+    HRESULT                 ddRVal;
+    VOID                    *SetPalette;
+    BOOL                    Attach;
+} DD_SETPALETTEDATA;
+typedef DD_SETPALETTEDATA   *PDD_SETPALETTEDATA;
+
+/* Flip parameters */
+typedef struct _DD_FLIPDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpSurfCurr;
+    PDD_SURFACE_LOCAL       lpSurfTarg;
+    DWORD                   dwFlags;
+    HRESULT                 ddRVal;
+    VOID                    *Flip;
+    PDD_SURFACE_LOCAL       lpSurfCurrLeft;
+    PDD_SURFACE_LOCAL       lpSurfTargLeft;
+} DD_FLIPDATA;
+typedef DD_FLIPDATA *PDD_FLIPDATA;
+
+/* DestroySurface parameters */
+typedef struct _DD_DESTROYSURFACEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    HRESULT                 ddRVal;
+    VOID                    *DestroySurface;
+} DD_DESTROYSURFACEDATA;
+typedef DD_DESTROYSURFACEDATA   *PDD_DESTROYSURFACEDATA;
+
+/* SetClipList parameters */
+typedef struct _DD_SETCLIPLISTDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    HRESULT                 ddRVal;
+    VOID                    *SetClipList;
+} DD_SETCLIPLISTDATA;
+typedef DD_SETCLIPLISTDATA  *PDD_SETCLIPLISTDATA;
+
+/* AddAttachedSurface parameters */
+typedef struct _DD_ADDATTACHEDSURFACEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    PDD_SURFACE_LOCAL       lpSurfAttached;
+    HRESULT                 ddRVal;
+    VOID                    *AddAttachedSurface;
+} DD_ADDATTACHEDSURFACEDATA;
+typedef DD_ADDATTACHEDSURFACEDATA   *PDD_ADDATTACHEDSURFACEDATA;
+
+/* SetColorKey parameters */
+typedef struct _DD_SETCOLORKEYDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    DWORD                   dwFlags;
+    DDCOLORKEY              ckNew;
+    HRESULT                 ddRVal;
+    VOID                    *SetColorKey;
+} DD_SETCOLORKEYDATA;
+typedef DD_SETCOLORKEYDATA  *PDD_SETCOLORKEYDATA;
+
+/* GetBltStatus parameters */
+typedef struct _DD_GETBLTSTATUSDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    DWORD                   dwFlags;
+    HRESULT                 ddRVal;
+    VOID                    *GetBltStatus;
+} DD_GETBLTSTATUSDATA;
+typedef DD_GETBLTSTATUSDATA *PDD_GETBLTSTATUSDATA;
+
+/* GetFlipStatus parameters */
+typedef struct _DD_GETFLIPSTATUSDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    DWORD                   dwFlags;
+    HRESULT                 ddRVal;
+    VOID                    *GetFlipStatus;
+} DD_GETFLIPSTATUSDATA;
+typedef DD_GETFLIPSTATUSDATA    *PDD_GETFLIPSTATUSDATA;
+
+/* DestroyPalette parameters */
+typedef struct _DD_DESTROYPALETTEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_PALETTE_GLOBAL      lpDDPalette;
+    HRESULT                 ddRVal;
+    VOID                    *DestroyPalette;
+} DD_DESTROYPALETTEDATA;
+typedef DD_DESTROYPALETTEDATA   *PDD_DESTROYPALETTEDATA;
+
+/* SetEntries parameters */
+typedef struct _DD_SETENTRIESDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_PALETTE_GLOBAL      lpDDPalette;
+    DWORD                   dwBase;
+    DWORD                   dwNumEntries;
+    LPPALETTEENTRY          lpEntries;
+    HRESULT                 ddRVal;
+    VOID                    *SetEntries;
+} DD_SETENTRIESDATA;
+typedef DD_SETENTRIESDATA   *PDD_SETENTRIESDATA;
+
+/* CreateSurface parameters */
+typedef struct _DD_CREATESURFACEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACEDESC         lpDDSurfaceDesc;
+    PDD_SURFACE_LOCAL       *lplpSList;
+    DWORD                   dwSCnt;
+    HRESULT                 ddRVal;
+    VOID                    *CreateSurface;
+} DD_CREATESURFACEDATA;
+typedef DD_CREATESURFACEDATA    *PDD_CREATESURFACEDATA;
+
+/* CanCreateSurface parameters */
+typedef struct _DD_CANCREATESURFACEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACEDESC         lpDDSurfaceDesc;
+    DWORD                   bIsDifferentPixelFormat;
+    HRESULT                 ddRVal;
+    VOID                    *CanCreateSurface;
+} DD_CANCREATESURFACEDATA;
+typedef DD_CANCREATESURFACEDATA *PDD_CANCREATESURFACEDATA;
+
+/* CreatePalette parameters */
+typedef struct _DD_CREATEPALETTEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_PALETTE_GLOBAL      lpDDPalette;
+    LPPALETTEENTRY          lpColorTable;
+    HRESULT                 ddRVal;
+    VOID                    *CreatePalette;
+    BOOL                    is_excl;
+} DD_CREATEPALETTEDATA;
+typedef DD_CREATEPALETTEDATA    *PDD_CREATEPALETTEDATA;
+
+/* WaitForVerticalBlank parameters */
+typedef struct _DD_WAITFORVERTICALBLANKDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    DWORD                   dwFlags;
+    DWORD                   bIsInVB;
+    ULONG_PTR               hEvent;
+    HRESULT                 ddRVal;
+    VOID                    *WaitForVerticalBlank;
+} DD_WAITFORVERTICALBLANKDATA;
+typedef DD_WAITFORVERTICALBLANKDATA *PDD_WAITFORVERTICALBLANKDATA;
+
+/* SetColorKey parameters */
+typedef struct _DD_DRVSETCOLORKEYDATA {
+    PDD_SURFACE_LOCAL   lpDDSurface;
+    DWORD               dwFlags;
+    DDCOLORKEY          ckNew;
+    HRESULT             ddRVal;
+    VOID                *SetColorKey;
+} DD_DRVSETCOLORKEYDATA;
+
+/* GetScanLine parameters */
+typedef struct _DD_GETSCANLINEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    DWORD                   dwScanLine;
+    HRESULT                 ddRVal;
+    VOID                    *GetScanLine;
+} DD_GETSCANLINEDATA;
+typedef DD_GETSCANLINEDATA  *PDD_GETSCANLINEDATA;
+
+/* MapMemory parameters */
+typedef struct _DD_MAPMEMORYDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    BOOL                    bMap;
+    HANDLE                  hProcess;
+    FLATPTR                 fpProcess;
+    HRESULT                 ddRVal;
+} DD_MAPMEMORYDATA;
+typedef DD_MAPMEMORYDATA    *PDD_MAPMEMORYDATA;
+
+/* CanCreateVideoPort parameters */
+typedef struct _DD_CANCREATEVPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    LPDDVIDEOPORTDESC       lpDDVideoPortDesc;
+    HRESULT                 ddRVal;
+    VOID                    *CanCreateVideoPort;
+} DD_CANCREATEVPORTDATA;
+typedef DD_CANCREATEVPORTDATA   *PDD_CANCREATEVPORTDATA;
+
+/* CreateVideoPort parameters */
+typedef struct _DD_CREATEVPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    LPDDVIDEOPORTDESC       lpDDVideoPortDesc;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    HRESULT                 ddRVal;
+    VOID                    *CreateVideoPort;
+} DD_CREATEVPORTDATA;
+typedef DD_CREATEVPORTDATA  *PDD_CREATEVPORTDATA;
+
+/* FlipVideoPort parameters */
+typedef struct _DD_FLIPVPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    PDD_SURFACE_LOCAL       lpSurfCurr;
+    PDD_SURFACE_LOCAL       lpSurfTarg;
+    HRESULT                 ddRVal;
+    VOID                    *FlipVideoPort;
+} DD_FLIPVPORTDATA;
+typedef DD_FLIPVPORTDATA    *PDD_FLIPVPORTDATA;
+
+/* GetVideoPortBandwidth parameters */
+typedef struct _DD_GETVPORTBANDWIDTHDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    LPDDPIXELFORMAT         lpddpfFormat;
+    DWORD                   dwWidth;
+    DWORD                   dwHeight;
+    DWORD                   dwFlags;
+    LPDDVIDEOPORTBANDWIDTH  lpBandwidth;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortBandwidth;
+} DD_GETVPORTBANDWIDTHDATA;
+typedef DD_GETVPORTBANDWIDTHDATA    *PDD_GETVPORTBANDWIDTHDATA;
+
+/* GetVideoPortInputFormats parameters */
+typedef struct _DD_GETVPORTINPUTFORMATDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwFlags;
+    LPDDPIXELFORMAT         lpddpfFormat;
+    DWORD                   dwNumFormats;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortInputFormats;
+} DD_GETVPORTINPUTFORMATDATA;
+typedef DD_GETVPORTINPUTFORMATDATA  *PDD_GETVPORTINPUTFORMATDATA;
+
+/* GetVideoPortOutputFormats parameters */
+typedef struct _DD_GETVPORTOUTPUTFORMATDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwFlags;
+    LPDDPIXELFORMAT         lpddpfInputFormat;
+    LPDDPIXELFORMAT         lpddpfOutputFormats;
+    DWORD                   dwNumFormats;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortInputFormats;
+} DD_GETVPORTOUTPUTFORMATDATA;
+typedef DD_GETVPORTOUTPUTFORMATDATA *PDD_GETVPORTOUTPUTFORMATDATA;
+
+/* GetVideoPortField parameters */
+typedef struct _DD_GETVPORTFIELDDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    BOOL                    bField;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortField;
+} DD_GETVPORTFIELDDATA;
+typedef DD_GETVPORTFIELDDATA    *PDD_GETVPORTFIELDDATA;
+
+/* GetVideoPortLine parameters */
+typedef struct _DD_GETVPORTLINEDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwLine;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortLine;
+} DD_GETVPORTLINEDATA;
+typedef DD_GETVPORTLINEDATA *PDD_GETVPORTLINEDATA;
+
+/* GetVideoPortConnectInfo parameters */
+typedef struct _DD_GETVPORTCONNECTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    DWORD                   dwPortId;
+    LPDDVIDEOPORTCONNECT    lpConnect;
+    DWORD                   dwNumEntries;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortConnectInfo;
+} DD_GETVPORTCONNECTDATA;
+typedef DD_GETVPORTCONNECTDATA  *PDD_GETVPORTCONNECTDATA;
+
+/* DestroyVideoPort parameters */
+typedef struct _DD_DESTROYVPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    HRESULT                 ddRVal;
+    VOID                    *DestroyVideoPort;
+} DD_DESTROYVPORTDATA;
+typedef DD_DESTROYVPORTDATA *PDD_DESTROYVPORTDATA;
+
+/* GetVideoPortFlipStatus parameters */
+typedef struct _DD_GETVPORTFLIPSTATUSDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    FLATPTR                 fpSurface;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoPortFlipStatus;
+} DD_GETVPORTFLIPSTATUSDATA;
+
+/* UpdateVideoPort parameters */
+typedef struct _DD_UPDATEVPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    PDD_SURFACE_INT         *lplpDDSurface;
+    PDD_SURFACE_INT         *lplpDDVBISurface;
+    PDD_VIDEOPORTINFO       lpVideoInfo;
+    DWORD                   dwFlags;
+    DWORD                   dwNumAutoflip;
+    DWORD                   dwNumVBIAutoflip;
+    HRESULT                 ddRVal;
+    VOID                    *UpdateVideoPort;
+} DD_UPDATEVPORTDATA;
+typedef DD_UPDATEVPORTDATA  *PDD_UPDATEVPORTDATA;
+
+/* WaitForVideoPortSync parameters */
+typedef struct _DD_WAITFORVPORTSYNCDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwFlags;
+    DWORD                   dwLine;
+    DWORD                   dwTimeOut;
+    HRESULT                 ddRVal;
+    VOID                    *UpdateVideoPort;
+} DD_WAITFORVPORTSYNCDATA;
+typedef DD_WAITFORVPORTSYNCDATA *PDD_WAITFORVPORTSYNCDATA;
+
+/* GetVideoSignalStatus parameters */
+typedef struct _DD_GETVPORTSIGNALDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwStatus;
+    HRESULT                 ddRVal;
+    VOID                    *GetVideoSignalStatus;
+} DD_GETVPORTSIGNALDATA;
+typedef DD_GETVPORTSIGNALDATA   *PDD_GETVPORTSIGNALDATA;
+
+/* ColorControl parameters */
+typedef struct _DD_VPORTCOLORDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwFlags;
+    LPDDCOLORCONTROL        lpColorData;
+    HRESULT                 ddRVal;
+    VOID                    *ColorControl;
+} DD_VPORTCOLORDATA;
+typedef DD_VPORTCOLORDATA   *PDD_VPORTCOLORDATA;
+
+/* ColorControl parameters */
+typedef struct _DD_COLORCONTROLDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    LPDDCOLORCONTROL        lpColorData;
+    DWORD                   dwFlags;
+    HRESULT                 ddRVal;
+    VOID                    *ColorControl;
+} DD_COLORCONTROLDATA;
+typedef DD_COLORCONTROLDATA *PDD_COLORCONTROLDATA;
+
+/* GetDriverData parameters */
+typedef struct _DD_GETDRIVERINFODATA {
+    VOID    *dhpdev;
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    GUID    guidInfo;
+    DWORD   dwExpectedSize;
+    PVOID   lpvData;
+    DWORD   dwActualSize;
+    HRESULT ddRVal;
+} DD_GETDRIVERINFODATA;
+typedef DD_GETDRIVERINFODATA    *PDD_GETDRIVERINFODATA;
+
+/* GetAvailDriverMemory parameters */
+typedef struct _DD_GETAVAILDRIVERMEMORYDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    DDSCAPS                 DDSCaps;
+    DWORD                   dwTotal;
+    DWORD                   dwFree;
+    HRESULT                 ddRVal;
+    VOID                    *GetAvailDriverMemory;
+} DD_GETAVAILDRIVERMEMORYDATA;
+typedef DD_GETAVAILDRIVERMEMORYDATA *PDD_GETAVAILDRIVERMEMORYDATA;
+
+/* FreeDriverMemory parameters */
+typedef struct _DD_FREEDRIVERMEMORYDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    HRESULT                 ddRVal;
+    VOID                    *FreeDriverMemory;
+} DD_FREEDRIVERMEMORYDATA;
+typedef DD_FREEDRIVERMEMORYDATA *PDD_FREEDRIVERMEMORYDATA;
+
+/* SetExclusiveMode parameters */
+typedef struct _DD_SETEXCLUSIVEMODEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    DWORD                   dwEnterExcl;
+    DWORD                   dwReserved;
+    HRESULT                 ddRVal;
+    VOID                    *SetExclusiveMode;
+} DD_SETEXCLUSIVEMODEDATA;
+typedef DD_SETEXCLUSIVEMODEDATA *PDD_SETEXCLUSIVEMODEDATA;
+
+/* FlipToGDISurface parameters */
+typedef struct _DD_FLIPTOGDISURFACEDATA {
+    PDD_DIRECTDRAW_GLOBAL   lpDD;
+    DWORD                   dwToGDI;
+    DWORD                   dwReserved;
+    HRESULT                 ddRVal;
+    VOID                    *FlipToGDISurface;
+} DD_FLIPTOGDISURFACEDATA;
+typedef DD_FLIPTOGDISURFACEDATA *PDD_FLIPTOGDISURFACEDATA;
+
+/* SyncSurface parameters */
+typedef struct _DD_SYNCSURFACEDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_SURFACE_LOCAL       lpDDSurface;
+    DWORD                   dwSurfaceOffset;
+    ULONG_PTR               fpLockPtr;
+    LONG                    lPitch;
+    DWORD                   dwOverlayOffset;
+    ULONG                   dwDriverReserved1;
+    ULONG                   dwDriverReserved2;
+    ULONG                   dwDriverReserved3;
+    ULONG                   dwDriverReserved4;
+    HRESULT                 ddRVal;
+} DD_SYNCSURFACEDATA;
+typedef DD_SYNCSURFACEDATA  *PDD_SYNCSURFACEDATA;
+
+/* SyncVideoPort parameters */
+typedef struct _DD_SYNCVIDEOPORTDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_VIDEOPORT_LOCAL     lpVideoPort;
+    DWORD                   dwOriginOffset;
+    DWORD                   dwHeight;
+    DWORD                   dwVBIHeight;
+    ULONG                   dwDriverReserved1;
+    ULONG                   dwDriverReserved2;
+    ULONG                   dwDriverReserved3;
+    HRESULT                 ddRVal;
+} DD_SYNCVIDEOPORTDATA;
+typedef DD_SYNCVIDEOPORTDATA    *PDD_SYNCVIDEOPORTDATA;
+
+/* GetMoCompGuids parameters */
+typedef struct _DD_GETMOCOMPGUIDSDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    DWORD                   dwNumGuids;
+    GUID                    *lpGuids;
+    HRESULT                 ddRVal;
+} DD_GETMOCOMPGUIDSDATA;
+typedef DD_GETMOCOMPGUIDSDATA   *PDD_GETMOCOMPGUIDSDATA;
+
+/* GetMoCompFormats parameters */
+typedef struct _DD_GETMOCOMPFORMATSDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    GUID                    *lpGuid;
+    DWORD                   dwNumFormats;
+    LPDDPIXELFORMAT         lpFormats;
+    HRESULT                 ddRVal;
+} DD_GETMOCOMPFORMATSDATA;
+typedef DD_GETMOCOMPFORMATSDATA *PDD_GETMOCOMPFORMATSDATA;
+
+/* CreateMoComp parameters */
+typedef struct _DD_CREATEMOCOMPDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    GUID                    *lpGuid;
+    DWORD                   dwUncompWidth;
+    DWORD                   dwUncompHeight;
+    DDPIXELFORMAT           ddUncompPixelFormat;
+    LPVOID                  lpData;
+    DWORD                   dwDataSize;
+    HRESULT                 ddRVal;
+} DD_CREATEMOCOMPDATA;
+typedef DD_CREATEMOCOMPDATA *PDD_CREATEMOCOMPDATA;
+
+/* DirectDraw compressed buffer information */
+typedef struct _DDCOMPBUFFERINFO {
+    DWORD           dwSize;
+    DWORD           dwNumCompBuffers;
+    DWORD           dwWidthToCreate;
+    DWORD           dwHeightToCreate;
+    DWORD           dwBytesToAllocate;
+    DDSCAPS2        ddCompCaps;
+    DDPIXELFORMAT   ddPixelFormat;
+} DDCOMPBUFFERINFO;
+typedef DDCOMPBUFFERINFO    *LPDDCOMPBUFFERINFO;
+
+/* GetMoCompBuffInfo parameters */
+typedef struct _DD_GETMOCOMPCOMPBUFFDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    GUID                    *lpGuid;
+    DWORD                   dwWidth;
+    DWORD                   dwHeight;
+    DDPIXELFORMAT           ddPixelFormat;
+    DWORD                   dwNumTypesCompBuffs;
+    LPDDCOMPBUFFERINFO      lpCompBuffInfo;
+    HRESULT                 ddRVal;
+} DD_GETMOCOMPCOMPBUFFDATA;
+typedef DD_GETMOCOMPCOMPBUFFDATA    *PDD_GETMOCOMPCOMPBUFFDATA;
+
+/* GetInternalMoCompBuffInfo parameters */
+typedef struct _DD_GETINTERNALMOCOMPDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    GUID                    *lpGuid;
+    DWORD                   dwWidth;
+    DWORD                   dwHeight;
+    DDPIXELFORMAT           ddPixelFormat;
+    DWORD                   dwScratchMemAlloc;
+    HRESULT                 ddRVal;
+} DD_GETINTERNALMOCOMPDATA;
+typedef DD_GETINTERNALMOCOMPDATA    *PDD_GETINTERNALMOCOMPDATA;
+
+/* BeginMoCompFrame parameters */
+typedef struct _DD_BEGINMOCOMPFRAMEDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    PDD_SURFACE_LOCAL       lpDestSurface;
+    DWORD                   dwInputDataSize;
+    LPVOID                  lpInputData;
+    DWORD                   dwOutputDataSize;
+    LPVOID                  lpOutputData;
+    HRESULT                 ddRVal;
+} DD_BEGINMOCOMPFRAMEDATA;
+typedef DD_BEGINMOCOMPFRAMEDATA *PDD_BEGINMOCOMPFRAMEDATA;
+
+/* EndMoCompFrame parameters */
+typedef struct _DD_ENDMOCOMPFRAMEDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    LPVOID                  lpInputData;
+    DWORD                   dwInputDataSize;
+    HRESULT                 ddRVal;
+} DD_ENDMOCOMPFRAMEDATA;
+typedef DD_ENDMOCOMPFRAMEDATA   *PDD_ENDMOCOMPFRAMEDATA;
+
+/* DirectDraw video buffer information */
+typedef struct _DDMOCOMPBUFFERINFO {
+    DWORD               dwSize;
+    PDD_SURFACE_LOCAL   lpCompSurface;
+    DWORD               dwDataOffset;
+    DWORD               dwDataSize;
+    LPVOID              lpPrivate;
+} DDMOCOMPBUFFERINFO;
+typedef DDMOCOMPBUFFERINFO  *LPDDMOCOMPBUFFERINFO;
+
+/* RenderMoComp parameters */
+typedef struct _DD_RENDERMOCOMPDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    DWORD                   dwNumBuffers;
+    LPDDMOCOMPBUFFERINFO    lpBufferInfo;
+    DWORD                   dwFunction;
+    LPVOID                  lpInputData;
+    DWORD                   dwInputDataSize;
+    LPVOID                  lpOutputData;
+    DWORD                   dwOutputDataSize;
+    HRESULT                 ddRVal;
+} DD_RENDERMOCOMPDATA;
+typedef DD_RENDERMOCOMPDATA *PDD_RENDERMOCOMPDATA;
+
+/* QueryMoCompStatus parameters */
+typedef struct _DD_QUERYMOCOMPSTATUSDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    PDD_SURFACE_LOCAL       lpSurface;
+    DWORD                   dwFlags;
+    HRESULT                 ddRVal;
+} DD_QUERYMOCOMPSTATUSDATA;
+typedef DD_QUERYMOCOMPSTATUSDATA    *PDD_QUERYMOCOMPSTATUSDATA;
+
+/* DestroyMoComp parameters */
+typedef struct _DD_DESTROYMOCOMPDATA {
+    PDD_DIRECTDRAW_LOCAL    lpDD;
+    PDD_MOTIONCOMP_LOCAL    lpMoComp;
+    HRESULT                 ddRVal;
+} DD_DESTROYMOCOMPDATA;
+typedef DD_DESTROYMOCOMPDATA    *PDD_DESTROYMOCOMPDATA;
+
+/* CreateSurfaceEx parameters */
+typedef struct _DD_CREATESURFACEEXDATA {
+    DWORD                   dwFlags;
+    PDD_DIRECTDRAW_LOCAL    lpDDLcl;
+    PDD_SURFACE_LOCAL       lpDDSLcl;
+    HRESULT                 ddRVal;
+} DD_CREATESURFACEEXDATA;
+typedef DD_CREATESURFACEEXDATA  *PDD_CREATESURFACEEXDATA;
+
+/* GetDriverState parameters */
+typedef struct _DD_GETDRIVERSTATEDATA {
+    DWORD   dwFlags;
+    union {
+        PDD_DIRECTDRAW_GLOBAL   lpDD;
+        DWORD_PTR               dwhContext;
+    };
+    LPDWORD lpdwStates;
+    DWORD   dwLength;
+    HRESULT ddRVal;
+} DD_GETDRIVERSTATEDATA;
+typedef DD_GETDRIVERSTATEDATA   *PDD_GETDRIVERSTATEDATA;
+
+/* DestroyDDLocal parameters */
+typedef struct _DD_DESTROYDDLOCALDATA {
+    DWORD                   dwFlags;
+    PDD_DIRECTDRAW_LOCAL    pDDLcl;
+    HRESULT                 ddRVal;
+} DD_DESTROYDDLOCALDATA;
+typedef DD_DESTROYDDLOCALDATA   *PDD_DESTROYDDLOCALDATA;
+
+:include cplusepi.sp
+
+#endif /* __DD_INCLUDED__ */

@@ -1,0 +1,64 @@
+#
+#  LONGFILE TEST 06
+#  Test wildcards in filename patterns
+#
+
+!ifdef __OS2__
+!else ifdef __UNIX__
+!else ifdef __NT__
+!else
+nothing: .symbolic
+!endif
+
+test: .symbolic create clean    
+
+create: .symbolic
+    -@mkdir Path1
+    @cd Path1
+    @echo Creating <<"Long Filename.o1"
+OK
+<< keep
+    @echo Creating <<"Long Filename.out"
+OK
+<< keep
+    @echo Creating <<"Long Filename.out1"
+OK
+<< keep
+    @echo Creating <<"Long Filename.t1"
+OK
+<< keep
+    @echo Creating <<"Long Filename.txt"
+OK
+<< keep
+    @echo Creating <<"Long Filename.txt1"
+OK
+<< keep
+    @cd ..
+
+clean: .symbolic
+    @cd Path1
+    for %i in (L*e.*) do @echo %i
+    for %i in (l*e.*) do @echo %i
+    for %i in (*F*e.*) do @echo %i
+    for %i in (*f*e.*) do @echo %i
+    for %i in (*e.*) do @echo %i
+    for %i in (*a??.*) do @echo %i
+    for %i in (*a*.*) do @echo %i
+    for %i in (*.???) do @echo %i
+    for %i in (*.????) do @echo %i
+    for %i in (*.?????) do @echo %i
+    for %i in (*.???1) do @echo %i
+    for %i in (*.*1) do @echo %i
+    for %i in (*1) do @echo %i
+    -rm *.?1
+    for %i in (*) do @echo %i
+    -rm *.txt
+    for %i in (*) do @echo %i
+    -rm *.txt1
+    for %i in (*) do @echo %i
+    -rm *.out
+    for %i in (*) do @echo %i
+    -rm *.out1
+    for %i in (*) do @echo %i
+    @cd ..
+    -@rmdir Path1

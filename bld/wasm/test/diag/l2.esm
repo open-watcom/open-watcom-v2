@@ -1,0 +1,252 @@
+.387
+code		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:code, DS:DGROUP, SS:DGROUP
+    call        near ptr L$1
+L$1:
+    int         12H
+    sub         ax,4
+    shl         ax,6
+    push        cs
+    pop         ds
+    pop         si
+    sub         si,3
+    mov         es,ax
+    xor         di,di
+    mov         cx,100H
+    cli         
+    rep movsw   
+    sti         
+    push        es
+    push        offset L$2
+    retf        
+L$2:
+    push        cs
+    pop         ds
+    push        cs
+    pop         ss
+    mov         sp,800H
+    mov         si,offset L$25
+L$3:
+    lodsb       
+    or          al,al
+    je          L$4
+    call        near ptr L$24
+    jmp         L$3
+L$4:
+    mov         ax,word ptr L$31
+    mul         byte ptr L$32
+    mov         word ptr L$33,ax
+    mov         ax,2
+    cwd         
+    mov         di,1
+    mov         bx,200H
+    call        near ptr L$13
+    mov         ds,cx
+    mov         cx,1bH
+L$5:
+    mov         ax,100H
+    int         16H
+    jne         L$7
+    mov         dx,word ptr ds:[46cH]
+L$6:
+    cmp         dx,word ptr ds:[46cH]
+    je          L$6
+    loop        L$5
+L$7:
+    push        cs
+    pop         ds
+    mov         bp,280H
+    cmp         al,1bH
+    jne         L$8
+    or          byte ptr L$27,20H
+    cmp         word ptr 70H[bp],0
+    je          L$8
+    add         bp,40H
+L$8:
+    mov         cx,word ptr 30H[bp]
+    cmp         cx,1
+    je          L$9
+    push        bx
+    mov         ax,word ptr 1cH[bp]
+    mov         dx,word ptr 1eH[bp]
+    mov         di,1
+    mov         bx,400H
+    call        near ptr L$13
+    pop         bx
+L$9:
+    lea         si,14H[bp]
+    mov         di,408H
+    mov         ax,word ptr [si]
+    movsw       
+    mov         dx,word ptr [si]
+    movsw       
+    movsw       
+    movsw       
+    mov         di,1
+    call        near ptr L$13
+    mov         bp,60H
+    cmp         word ptr 4[bx],4444H
+    jne         L$10
+    mov         bp,word ptr 0aH[bx]
+L$10:
+    mov         word ptr L$26,bp
+    mov         si,408H
+L$11:
+    mov         ax,word ptr [si]
+    mov         dx,word ptr 2[si]
+L$12:
+    mov         di,word ptr 4[si]
+    mov         es,bp
+    xor         bx,bx
+    call        near ptr L$13
+    add         ax,di
+    adc         dx,0
+    sub         word ptr 4[si],di
+    shl         di,5
+    add         bp,di
+    cmp         word ptr 4[si],0
+    jne         L$12
+    add         si,8
+    loop        L$11
+    mov         al,0ffH
+    out         21H,al
+    cli         
+    mov         bl,byte ptr L$27
+    mov         es,word ptr L$26
+    mov         byte ptr es:[0cH],bl
+    push        es
+    xor         ax,ax
+    push        ax
+    retf        
+L$13:
+    push        ax
+    push        bx
+    push        cx
+    push        dx
+    sub         ax,1
+    sbb         dx,0
+    add         ax,word ptr L$29
+    adc         dx,word ptr L$30
+    div         word ptr L$33
+    cmp         ax,400H
+    jl          L$15
+    mov         al,43H
+    call        near ptr L$24
+L$14:
+    jmp         L$14
+L$15:
+    mov         ch,al
+    mov         cl,ah
+    ror         cl,2
+    mov         ax,dx
+    cwd         
+    div         byte ptr L$32
+    mov         dh,al
+    or          cl,ah
+    add         cl,byte ptr L$28
+    test        byte ptr L$27,8
+    je          L$16
+    mov         dl,80H
+    mov         al,dl
+    jmp         L$17
+L$16:
+    xor         dl,dl
+    mov         al,byte ptr L$32
+    sub         al,ah
+L$17:
+    xor         ah,ah
+    cmp         ax,di
+    jg          L$18
+    mov         di,ax
+L$18:
+    mov         al,0dH
+    call        near ptr L$24
+    mov         al,0aH
+    call        near ptr L$24
+    mov         ax,di
+    call        near ptr L$21
+    mov         ax,bx
+    call        near ptr L$21
+    mov         ax,cx
+    call        near ptr L$21
+    mov         ax,dx
+    call        near ptr L$21
+    mov         ax,es
+    call        near ptr L$21
+    mov         ax,di
+    mov         ah,2
+    int         13H
+    jae         L$19
+    mov         al,ah
+    add         al,30H
+    call        near ptr L$24
+    xor         ah,ah
+    int         13H
+    shr         di,1
+    jmp         L$18
+L$19:
+    or          ax,ax
+    je          L$20
+    mov         di,ax
+L$20:
+    add         al,40H
+    call        near ptr L$24
+    pop         dx
+    pop         cx
+    pop         bx
+    pop         ax
+    ret         
+L$21:
+    rol         ax,4
+    call        near ptr L$22
+    rol         ax,4
+    call        near ptr L$22
+    rol         ax,4
+    call        near ptr L$22
+    rol         ax,4
+    call        near ptr L$22
+    mov         al,20H
+    call        near ptr L$24
+    ret         
+L$22:
+    push        ax
+    and         al,0fH
+    add         al,30H
+    cmp         al,39H
+    jbe         L$23
+    add         al,7
+L$23:
+    call        near ptr L$24
+    pop         ax
+    ret         
+L$24:
+    push        bx
+    mov         bx,7
+    mov         ah,0eH
+    int         10H
+    pop         bx
+    ret         
+L$25:
+    DB	50H, 72H, 65H, 73H, 73H, 20H, 45H, 73H
+    DB	63H, 20H, 74H, 6fH, 20H, 62H, 6fH, 6fH
+    DB	74H, 20H, 61H, 6cH, 74H, 65H, 72H, 6eH
+    DB	61H, 74H, 65H, 20H, 4fH, 53H, 0
+    DB	0
+L$26:
+    DB	0, 0
+L$27:
+    DB	46H
+L$28:
+    DB	0
+L$29:
+    DB	0, 0
+L$30:
+    DB	0, 0
+L$31:
+    DB	0, 0
+L$32:
+    DB	0, 0, 0, 0
+L$33:
+    DB	0, 0
+code		ENDS
+		END

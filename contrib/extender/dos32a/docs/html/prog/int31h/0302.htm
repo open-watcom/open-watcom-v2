@@ -1,0 +1,176 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.25 - DPMI function 0302h
+- Call Real Mode Procedure With IRET Frame</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Simulates a FAR CALL with
+flags pushed on the stack to a real mode procedure. The real mode routine
+must return by executing an IRET instruction.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><p><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> = 0302h<br>
+<b>BH</b> = flags (must be 0)<br>
+<b>CX</b> = number of words to copy from protected mode to real mode stack<br>
+<b>ES:EDI</b> = selector:offset of real mode register data structure in
+the following format:</font></p>
+
+<p><table width="60%" height="447" border="0" cellspacing="0" cellpadding=
+"4">
+<tr>
+<td height="24" bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Offset</font></b></td>
+<td bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Length</font></b></td>
+<td bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Contents</font></b></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">00h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">EDI</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">04h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">ESI</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">08h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">EBP</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">0Ch</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">reserved, should be
+zero</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">10h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">EBX</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">14h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">EDX</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">18h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">ECX</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">1Ch</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">EAX</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">20h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">CPU status flags</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">22h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">ES</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">24h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">DS</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">26h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">FS</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">28h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">GS</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2Ah</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">IP</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2Ch</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">CS</font></td></tr>
+<tr>
+<td height="24" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2Eh</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">SP</font></td></tr>
+<tr>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">30h</font></td>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">2</font></td>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">SS</font></td></tr>
+</table>
+</td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>ES:EDI</b> = selector:offset of modified real mode register data structure</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8012h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - linear memory unavailable
+  (stack)<br>
+  <b>8013h</b> - physical memory unavailable (stack)<br>
+  <b>8014h</b> - backing store unavailable (stack)<br>
+  <b>8021h</b> - invalid value (CX too large)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The CS:IP in the real
+  mode register data structure specifies the address of the real mode procedure
+  to call.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) If the SS:SP fields
+  in the real mode register data structure are zero, a real mode stack will
+  be provided by the DPMI host. Otherwise, the real mode SS:SP will be set
+  to the specified values before the interrupt handler is called.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) The flags specified
+  in the real mode register data structure will be pushed on the real mode
+  stack's IRET frame. The procedure will be called with the interrupt and
+  trace flags clear.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) Values placed in the
+  segment register positions of the data structure must be valid for real
+  mode; ie the values must be paragraph addresses and not selectors.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) All general register
+  fields in the data structure are DWORDs so that 32-bit registers can be
+  passed to real mode.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) The target real mode
+  handler or procedure must return with the stack in the same state as when
+  it was called. This means that the real mode code may switch stacks while
+  it is running, but must return on the same stack that it was called on
+  and must return with an IRET or discard the flags from the stack with a
+  RETF(2) .</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">g) When this function
+  returns, the real mode register data structure will contain the values
+  that were returned by the real mode procedure. The CS:IP and SS:SP values
+  will be unmodified in the register data structure.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">h) It is the caller's
+  responsibility to remove any parameters that were pushed on the protected
+  mode stack. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

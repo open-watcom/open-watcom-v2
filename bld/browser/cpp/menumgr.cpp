@@ -49,19 +49,19 @@ struct MenuInfo {
 };
 
 MenuInfo MainMenuInfo[ MMNumMainMenus ] = {
-    { MMFile,           "&File",                             "Create / Open DBR files, Load/Save Options" },
-    { MMView,           "&View",                             "Open new views / change view options for current window" },
-    { MMDetail,         "&Detail",                           "View extra information for this symbol" },
-    { MMTree,           "&Tree",                             "Select nodes to view" },
-    { MMLocate,         "&Locate",                           "Find symbols within view / re-load view" },
-    { MMOptions,        "&Options",                          "Change options for all windows" },
-    { MMWindows,        "&Windows",                          "Arrange/show/hide/select windows" },
-    { MMHelp,           "&Help",                             "View Help" },
+    { MMFile,           "&File",                             "Create/open DBR files, load/save options." },
+    { MMView,           "&View",                             "Open new views, change view options for current window." },
+    { MMDetail,         "&Detail",                           "View extra information for this symbol." },
+    { MMTree,           "&Tree",                             "Select nodes to view." },
+    { MMLocate,         "&Locate",                           "Find symbols within view, reload view." },
+    { MMOptions,        "&Options",                          "Change options for all windows." },
+    { MMWindows,        "&Windows",                          "Arrange/show/hide/select windows." },
+    { MMHelp,           "&Help",                             "View help." },
 };
 
 MenuInfo CascadeMenuInfo[ CMNumCascadeMenus ] = {
-    { VMInherit,        "&Inheritance",                     "View the inheritance hierarchy" },
-    { VMCall,           "&Calls",                           "View the call hierarchy" },
+    { VMInherit,        "&Inheritance",                     "View the inheritance hierarchy." },
+    { VMCall,           "&Calls",                           "View the call hierarchy." },
 };
 
 struct SubMenuInfo {
@@ -72,96 +72,96 @@ struct SubMenuInfo {
 };
 
 static SubMenuInfo FileMenuInfo[ FMNumFileMenus ] = {
-    { MMFile, FMNew,            "&New...",                   "Create a new database file" },
-    { MMFile, FMOpen,           "&Open...",                  "Open an existing database file" },
-    { MMFile, FMModules,        "&Modules...",               "List Browser modules" },
+    { MMFile, FMNew,            "&New...",                   "Create a new database file." },
+    { MMFile, FMOpen,           "&Open...",                  "Open an existing database file." },
+    { MMFile, FMModules,        "&Modules...",               "List Browser modules." },
     { MMFile, FMSep0,           NULL,                        NULL },
-    { MMFile, FMLoad,           "&Load Options...",          "Load Setup" },
-    { MMFile, FMSave,           "&Save Options",             "Save current options" },
-    { MMFile, FMSaveAs,         "Save Options &As...",       "Save current options, specifying a file name" },
+    { MMFile, FMLoad,           "&Load Options...",          "Load Setup." },
+    { MMFile, FMSave,           "&Save Options",             "Save current options." },
+    { MMFile, FMSaveAs,         "Save Options &As...",       "Save current options, specifying a file name." },
 #ifdef REPORT_IMPLEMENTED
     { MMFile, FMSep1,           NULL,                        NULL },
-    { MMFile, FMReport,         "&Report...",                "Write a formatted report to a disk file" },
+    { MMFile, FMReport,         "&Report...",                "Write a formatted report to a disk file." },
 #endif
     { MMFile, FMSep2,           NULL,                        NULL },
-    { MMFile, FMExit,           "E&xit",                     "Leave the Browser" },
+    { MMFile, FMExit,           "E&xit",                     "Exit the Open Watcom Source Browser." },
 };
 
 
 static SubMenuInfo ViewMenuInfo[ VMNumViewMenus ] = {
-    { MMView, VMList,           "&List...",                  "View a list of symbols" },
+    { MMView, VMList,           "&List...",                  "View a list of symbols." },
     { MMView, VMInherit,        NULL,                        NULL },
     { MMView, VMCall,           NULL,                        NULL },
 };
 
 static SubMenuInfo ViewInheritMenuInfo[ VMNumViewInheritMenus ] = {
-    { CMViewInherit, VMInheritTree,    "&Graph...",                 "Show a tree view of inheritance" },
-    { CMViewInherit, VMInheritOutline, "&Outline...",               "Show an outline view of inheritance" },
+    { CMViewInherit, VMInheritTree,    "&Graph...",                 "Show a tree view of inheritance." },
+    { CMViewInherit, VMInheritOutline, "&Outline...",               "Show an outline view of inheritance." },
 };
 
 static SubMenuInfo ViewCallMenuInfo[ VMNumViewCallMenus ] = {
-    { CMViewCall, VMCallTree,   "&Graph...",                 "Show a tree view of calls" },
-    { CMViewCall, VMCallOutline,"&Outline...",               "Show an outline view of calls" },
+    { CMViewCall, VMCallTree,   "&Graph...",                 "Show a tree view of calls." },
+    { CMViewCall, VMCallOutline,"&Outline...",               "Show an outline view of calls." },
 };
 
 static SubMenuInfo DetailMenuInfo[ DMNumDetailMenus ] = {
-    { MMDetail, DMDetail,       "&Detail...",                "View the details of the selected symbol" },
-    { MMDetail, DMDefinition,   "&Goto Definition...",       "Start editor at the definition of the current symbol" },
+    { MMDetail, DMDetail,       "&Detail...",                "View the details of the selected symbol." },
+    { MMDetail, DMDefinition,   "&Goto Definition...",       "Start editor at the definition of the current symbol." },
     { MMDetail, DMSep0,         NULL,                        NULL },
-    { MMDetail, DMReferences,   "&Source References...",     "List the source lines which refer to the current symbol" },
-    { MMDetail, DMUsers,        "Symbol &References...",     "List the symbols which refer to the current symbol" },
+    { MMDetail, DMReferences,   "&Source References...",     "List the source lines which refer to the current symbol." },
+    { MMDetail, DMUsers,        "Symbol &References...",     "List the symbols which refer to the current symbol." },
 #ifdef DETAIL_STUFF_IMPLEMENTED
     { MMDetail, DMSep1,         NULL,                        NULL },
-    { MMDetail, DMInheritance,  "&Inheritance...",           "Show immediate base and derived classes of the current symbol" },
-    { MMDetail, DMStructure,    "&Member Layout...",         "Show the layout of member variables for the current symbol" },
+    { MMDetail, DMInheritance,  "&Inheritance...",           "Show immediate base and derived classes of the current symbol." },
+    { MMDetail, DMStructure,    "&Member Layout...",         "Show the layout of member variables for the current symbol." },
     { MMDetail, DMSep2,         NULL,                        NULL },
-    { MMDetail, DMCalls,        "&Calls...",                 "Show immediate calls to and from the current symbol" },
+    { MMDetail, DMCalls,        "&Calls...",                 "Show immediate calls to and from the current symbol." },
 #endif
 };
 
 static SubMenuInfo TreeMenuInfo[ TMNumTreeMenus ] = {
-    { MMTree, TMRoots,           "&Select Root Nodes...",    "Select which trees are displayed, which are hidden" },
-    { MMTree, TMArrangeAll,      "&Arrange Graph",           "Arrange the nodes currently visible in the active graphical tree" },
+    { MMTree, TMRoots,           "&Select Root Nodes...",    "Select which trees are displayed, which are hidden." },
+    { MMTree, TMArrangeAll,      "&Arrange Graph",           "Arrange the nodes currently visible in the active graphical tree." },
     { MMTree, TMSep0,            NULL,                       NULL },
-    { MMTree, TMExpandOne,       "Expand One Level\t+",      "Show the immediate child nodes of the selected node" },
-    { MMTree, TMExpandBranch,    "Expand Branch\t*",         "Expand all the descendants of the selected node" },
-    { MMTree, TMExpandAll,       "Expand All\tCtrl *",       "Expand all nodes in the display" },
-    { MMTree, TMCollapseBranch,  "Collapse Branch\t-",       "Collapse all the descendants of the selected node" },
-    { MMTree, TMCollapseAll,     "Collapse All\tCtrl -",     "Collapse all nodes, showing only root nodes" },
+    { MMTree, TMExpandOne,       "Expand One Level\t+",      "Show the immediate child nodes of the selected node." },
+    { MMTree, TMExpandBranch,    "Expand Branch\t*",         "Expand all the descendants of the selected node." },
+    { MMTree, TMExpandAll,       "Expand All\tCtrl *",       "Expand all nodes in the display." },
+    { MMTree, TMCollapseBranch,  "Collapse Branch\t-",       "Collapse all the descendants of the selected node." },
+    { MMTree, TMCollapseAll,     "Collapse All\tCtrl -",     "Collapse all nodes, showing only root nodes." },
     #ifdef DEBUGTREE
     { MMTree, TMSep1,            NULL,                       NULL },
-    { MMTree, TMDebugInfo,       "Debug Info",               "Show debugging info for selected node" },
-    { MMTree, TMSibWidth,        "Sib Width",                "Show sibling width" },
+    { MMTree, TMDebugInfo,       "Debug Info",               "Show debugging info for selected node." },
+    { MMTree, TMSibWidth,        "Sib Width",                "Show sibling width." },
     #endif
 };
 
 static SubMenuInfo LocateMenuInfo[ LMNumLocateMenus ] = {
-    { MMLocate, LMFind,           "&Find...",                "Find a symbol in the current view" },
-    { MMLocate, LMFindNext,       "Find &Next",              "Find the next occurence of a symbol in the current view" },
+    { MMLocate, LMFind,           "&Find...",                "Find a symbol in the current view." },
+    { MMLocate, LMFindNext,       "Find &Next",              "Find the next occurence of a symbol in the current view." },
     { MMLocate, LMSep0,           NULL,                      NULL },
-    { MMLocate, LMFindSelected,   "Find &Selected",          "Find the currently selected symbol in the current view" },
+    { MMLocate, LMFindSelected,   "Find &Selected",          "Find the currently selected symbol in the current view." },
 };
 
 
 static SubMenuInfo OptionsMenuInfo[ OMNumOptionsMenus ] = {
-    { MMOptions, OMRegExp,           "&Regular Expressions...", "Configure regular expression usage" },
-    { MMOptions, OMQuery,            "&Query...",               "Re-load the current view, for the specified query" },
+    { MMOptions, OMRegExp,           "&Regular Expressions...", "Configure regular expression usage." },
+    { MMOptions, OMQuery,            "&Query...",               "Reload the current view for the specified query." },
     { MMOptions, OMSep0,             NULL,                       NULL },
-    { MMOptions, OMEnumStyles,       "&Enumeration Styles...",  "Choose display styles for enumeration values" },
-    { MMOptions, OMMemberFilters,    "Member &Filters...",      "Choose which class members to display" },
+    { MMOptions, OMEnumStyles,       "&Enumeration Styles...",  "Choose display styles for enumeration values." },
+    { MMOptions, OMMemberFilters,    "Member &Filters...",      "Choose which class members to display." },
 #ifdef OPTIONS_IMPLEMENTED
-    { MMOptions, OMMemberOrder,      "Member &Order...",        "Configure the display order of class members" },
+    { MMOptions, OMMemberOrder,      "Member &Order...",        "Configure the display order of class members." },
 #endif
     { MMOptions, OMSep1,             NULL,                      NULL },
-    { MMOptions, OMTreeAutoArrange,  "Graph &Auto-arrange",     "Automatically re-arrange graph views when nodes collapsed" },
-    { MMOptions, OMTreeSquareLines,  "Graph Square &Lines",     "Use square lines to display trees" },
-    { MMOptions, OMTreeHorizontal,   "Graph &Horizontal",       "Draw graphs horizontally" },
+    { MMOptions, OMTreeAutoArrange,  "Graph &Auto Arrange",     "Automatically rearrange graph views when nodes are collapsed." },
+    { MMOptions, OMTreeSquareLines,  "Graph Square &Lines",     "Use square lines to display trees." },
+    { MMOptions, OMTreeHorizontal,   "Graph &Horizontal",       "Draw graphs horizontally." },
     { MMOptions, OMSep2,             NULL,                      NULL },
-    { MMOptions, OMInheritTreeLegend,"&Inheritance Graph Legend...",  "Choose colours and line styles for inheritance trees" },
-    { MMOptions, OMCallTreeLegend,   "&Call Graph Legend...",   "Choose colours and line styles for call trees" },
+    { MMOptions, OMInheritTreeLegend,"&Inheritance Graph Legend...",  "Choose colors and line styles for inheritance trees." },
+    { MMOptions, OMCallTreeLegend,   "&Call Graph Legend...",   "Choose colors and line styles for call trees." },
     { MMOptions, OMSep3,             NULL,                      NULL },
-    { MMOptions, OMEditorDLL,        "Set Text E&ditor...",     "Choose a text editor executable or a DLL to communicate with a text editor" },
-    { MMOptions, OMAutoSave,         "&Save Options on Exit",   "Automatically save options on program exit" },
+    { MMOptions, OMEditorDLL,        "Set Text E&ditor...",     "Choose a text editor executable or a DLL to communicate with a text editor." },
+    { MMOptions, OMAutoSave,         "&Save Options on Exit",   "Automatically save options on program exit." },
 };
 
 #if defined( __OS2__ )
@@ -173,17 +173,18 @@ static SubMenuInfo OptionsMenuInfo[ OMNumOptionsMenus ] = {
 #else
 #define _HelpMenuContents               "&Contents"
 #define _HelpMenuIndex                  "&Search for Help On..."
-#define _HelpMenuIndexHint              "Search for topic"
+#define _HelpMenuIndexHint              "Search for help on a specific topic."
 #define _HelpMenuUsing                  "&How to Use Help"
-#define _HelpMenuInformation            "&About Source Browser..."
+#define _HelpMenuInformation            "&About..."
 #endif
 
 static SubMenuInfo HelpMenuInfo[ HMNumHelpMenus ] = {
-    { MMHelp, HMContents,       _HelpMenuContents,      "View table of contents" },
+    { MMHelp, HMContents,       _HelpMenuContents,      "List Open Watcom Source Browser help topics." },
     { MMHelp, HMSearch,         _HelpMenuIndex,         _HelpMenuIndexHint },
-    { MMHelp, HMUsingHelp,      _HelpMenuUsing,         "View help on using help" },
     { MMHelp, HMSep0,           NULL,                   NULL },
-    { MMHelp, HMAbout,          _HelpMenuInformation,   "View product information for the source browser" },
+    { MMHelp, HMUsingHelp,      _HelpMenuUsing,         "Display information on how to use help." },
+    { MMHelp, HMSep1,           NULL,                   NULL },
+    { MMHelp, HMAbout,          _HelpMenuInformation,   "Display information on how to use help." },
 };
 
 unsigned MenuHash( const MIMenuID & id )

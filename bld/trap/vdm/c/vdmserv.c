@@ -36,8 +36,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <tinyio.h>
-#include <packet.h>
+#include "tinyio.h"
+#include "packet.h"
 #include "watcom.h"
 #include "vdm.h"
 #include "trperr.h"
@@ -114,7 +114,7 @@ char RemoteConnect( void )
 }
 
 
-unsigned RemoteGet( void *data, unsigned length )
+unsigned RemoteGet( char *data, unsigned length )
 {
     unsigned_16 incoming;
     unsigned    got;
@@ -125,14 +125,14 @@ unsigned RemoteGet( void *data, unsigned length )
     ret = incoming;
     while( incoming != 0 ) {
         got = TinyRead( pipeHdl, data, incoming );
-        data = (unsigned_8 *)data + got;
+        data += got;
         incoming -= got;
     }
     return( ret );
 }
 
 
-unsigned RemotePut( void *data, unsigned length )
+unsigned RemotePut( char *data, unsigned length )
 {
     unsigned_16 outgoing;
 

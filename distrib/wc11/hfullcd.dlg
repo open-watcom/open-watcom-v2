@@ -1,0 +1,8 @@
+static_text=\
+        //1"Full Installation leaving help files on CD-ROM"\
+        //2"ヘルプファイルは CD-ROM に残したまま、それ以外をすべてインストール"\
+        //0,SrcIsCD
+static_text=\
+        //1"	- like full install with help icons pointing to the CD-ROM"\
+        //2"	- ﾍﾙﾌﾟｱｲｺﾝが CD-ROM を指していること以外, 全てインストールと同じ"\
+        //0,SrcIsCD

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 
 #include "wdeglbl.h"
@@ -38,96 +38,93 @@
 #include "wdedebug.h"
 #include "wdelist.h"
 
-void WdeInsertObject ( LIST **list, void *obj )
+void WdeInsertObject( LIST **list, void *obj )
 {
     LIST *end;
 
-    if ( !list ) {
-        WdeWriteTrail("WdeInsertObject: bad list var!");
+    if( list == NULL ) {
+        WdeWriteTrail( "WdeInsertObject: bad list var!" );
         return;
     }
 
-    if ( *list == NULL ) {
+    if( *list == NULL ) {
         ListAddElt( list, obj );
     } else {
         /* make sure obj is inserted at end of list */
-        WdeListLastElt ( *list, &end );
+        WdeListLastElt( *list, &end );
         ListInsertElt( end, obj );
     }
-
 }
 
-void WdeListLastElt ( LIST *list, LIST **last )
+void WdeListLastElt( LIST *list, LIST **last )
 {
     LIST *end;
 
-    if ( !list || !last ) {
-        if ( last ) {
+    if( list == NULL || last == NULL ) {
+        if( last != NULL ) {
             *last = NULL;
         }
         return;
     }
 
     /* find the end of the list */
-    for ( end = list; end && ListNext(end); end = ListNext (end) ) ;
+    for( end = list; end != NULL && ListNext( end ) != NULL; end = ListNext( end ) );
 
     *last = end;
-
 }
 
-Bool WdeListConcat ( LIST **dest, LIST *src, uint_32 size )
+Bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
 {
-    LIST *end;
-    LIST *olist;
-    void *elt;
+    LIST    *end;
+    LIST    *olist;
+    void    *elt;
 
-    if ( dest == NULL ) {
-        return ( TRUE );
+    if( dest == NULL ) {
+        return( TRUE );
     }
 
-    WdeListLastElt ( *dest, &end );
+    WdeListLastElt( *dest, &end );
 
-    for ( olist = src; olist; olist = ListNext ( olist ) ) {
-        if ( size == 0 ) {
-            elt = ListElement ( olist );
+    for( olist = src; olist != NULL; olist = ListNext( olist ) ) {
+        if( size == 0 ) {
+            elt = ListElement( olist );
         } else {
-            elt = WdeMemAlloc ( size );
-            if ( elt == NULL ) {
-                return ( FALSE );
+            elt = WdeMemAlloc( size );
+            if( elt == NULL ) {
+                return( FALSE );
             }
-            memcpy ( elt, ListElement ( olist ), size );
+            memcpy( elt, ListElement( olist ), size );
         }
-        if ( end == NULL ) {
-            ListAddElt ( dest, elt );
+        if( end == NULL ) {
+            ListAddElt( dest, elt );
             end = *dest;
         } else {
-            ListInsertElt ( end, elt );
-            end = ListNext ( end );
+            ListInsertElt( end, elt );
+            end = ListNext( end );
         }
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-LIST *WdeListCopy ( LIST *src )
+LIST *WdeListCopy( LIST *src )
 {
-    LIST *new;
-    LIST *end;
-    LIST *olist;
+    LIST    *new;
+    LIST    *end;
+    LIST    *olist;
 
     end = NULL;
     new = NULL;
 
-    for ( olist = src; olist; olist = ListNext ( olist ) ) {
-        if ( end == NULL ) {
-            ListAddElt ( &new, ListElement ( olist ) );
+    for( olist = src; olist != NULL; olist = ListNext( olist ) ) {
+        if( end == NULL ) {
+            ListAddElt( &new, ListElement( olist ) );
             end = new;
         } else {
-            ListInsertElt ( end, ListElement ( olist ) );
-            end = ListNext ( end );
+            ListInsertElt( end, ListElement( olist ) );
+            end = ListNext( end );
         }
     }
 
-    return ( new );
+    return( new );
 }
-

@@ -39,11 +39,7 @@ include int21.inc
         modstart dosdrive
 
         defp    _dos_getdrive
-        if __WASM__ ge 100
-            xdefp       "C",_dos_getdrive
-        else
-            xdefp       <"C",_dos_getdrive>
-        endif
+        xdefp   "C",_dos_getdrive
 ;
 ;       unsigned _dos_getdrive( unsigned *drive );
 ;
@@ -62,12 +58,9 @@ endif
         pop     EBX             ; restore BX
         ret                     ; return to caller
         endproc _dos_getdrive
+
         defp    _dos_setdrive
-        if __WASM__ ge 100
-            xdefp       "C",_dos_setdrive
-        else
-            xdefp       <"C",_dos_setdrive>
-        endif
+        xdefp   "C",_dos_setdrive
 ;
 ;       void _dos_setdrive( unsigned drivenum, unsigned *drives )
 ;

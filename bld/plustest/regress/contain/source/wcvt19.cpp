@@ -25,7 +25,8 @@ int main() {
 void test1() {
     WCValSortedVector<int> vect( NUM_ELEMS );
 
-    for( int i = 0; i < NUM_ELEMS; i++ ) {
+    int i;
+    for( i = 0; i < NUM_ELEMS; i++ ) {
 	vect.insert( nums[ i ] );
     }
     for( i = 0; i < NUM_ELEMS; i++ ) {
@@ -39,7 +40,8 @@ void test1() {
 void test2() {
     WCPtrSortedVector<int> vect( NUM_ELEMS );
 
-    for( int i = 0; i < NUM_ELEMS; i++ ) {
+    int i;
+    for( i = 0; i < NUM_ELEMS; i++ ) {
 	vect.insert( &nums[ i ] );
     }
     for( i = 0; i < NUM_ELEMS; i++ ) {

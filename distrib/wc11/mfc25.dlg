@@ -1,0 +1,26 @@
+name=dMFC25
+any_check=mfc25
+static_text=\
+        //1"Select MFC 2.5 Options:"\
+        //2"MFC 2.5 オプションを選択してください:"\
+        //0
+static_text=
+detail_check=dMFC25LIB,\
+        //1"&Libraries..."\
+        //2"ライブラリ(&L)..."\
+        //0,mfc25lib,,\
+        //1"Libraries:"\
+        //2"ライブラリ:"\
+        //0
+static_text=
+detail_check=dMFC25SMP,\
+        //1"&Samples..."\
+        //2"サンプル(&S)..."\
+        //0,mfc25smp,,\
+        //1"Sample Program Source:"\
+        //2"サンプル・ソース:"\
+        //0
+static_text=
+include=space.dlg
+static_text=
+include=oc.dlg

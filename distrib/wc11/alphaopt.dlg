@@ -1,0 +1,62 @@
+name=AlphaOptions
+condition=SelectiveInstall MakeDisks ! IsALphaInstall
+static_text=\
+        //1"Select components to install:"\
+        //2"インストールするコンポーネントを選択してください:"\
+        //0
+static_text=\
+        //1"(Un-selected components will be removed)"\
+        //2"(選択されていないコンポーネントは削除されます)"\
+        //0
+static_text=
+check_box=cplusplus,,\
+        //1"Include &C++ compiler components"\
+        //2"C++コンパイラ・コンポーネントを含みます (&I)"\
+        //0,IsFortranInstall !
+check_box=samples,,\
+        //1"Sample &programs"\
+        //2"サンプル・プログラム (&p)"\
+        //0
+static_text=
+other_button=\
+        //1"32-B&it..."\
+        //2"32ビット(&i)..."\
+        //0,32Bit,\
+        //1"32-bit compiler options:"\
+        //2"32-bitオプション:"\
+        //0
+static_text=
+other_button=\
+        //1"&Target..."\
+        //2"ターゲット(&T)..."\
+        //0,axp_targ,\
+        //1"Target operating systems:"\
+        //2"ターゲットOS:"\
+        //0
+static_text=
+other_button=\
+        //1"Ho&st..."\
+        //2"ホスト(&s)..."\
+        //0,axp_host,\
+        //1"Host operating systems:"\
+        //2"ホストOS:"\
+        //0
+static_text=
+detail_check=dwin32sdk,\
+        //1"&Win32 SDK..."\
+        //2"&Win32 SDK..."\
+        //0,win32sdk,,\
+        //1"32-&bit Windows SDK"\
+        //2"32-&bit Windows SDK"\
+        //0,IsFortranInstall !
+static_text=
+static_text=,SrcIsCD
+radio_button=helpfiles,,\
+        //1"Copy on-line help files to hard &disk"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします (&d)"\
+        //0,SrcIsCD
+radio_button=other_dummy_1,helpfiles !,\
+        //1"&Leave on-line help files on CD-ROM"\
+        //2"オンライン・ヘルプファイルを CD-ROM に残します (&L)"\
+        //0,SrcIsCD
+include=options2.dlg

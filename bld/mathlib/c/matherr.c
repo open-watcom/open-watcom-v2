@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of matherr().
 *
 ****************************************************************************/
 
@@ -33,9 +32,9 @@
 #include "variety.h"
 #include <math.h>
 
-_WMRTLINK int matherr( struct exception *x )
-/********************************/
-    {
-        x = x;
-        return( 0 );    /* 0 => take default action on error */
-    }
+_WMRTLINK int matherr( struct _exception *x )
+/*******************************************/
+{
+    x = x;
+    return( 0 );    /* 0 => take default action on error */
+}

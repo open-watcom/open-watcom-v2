@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of clearerr() - clear stream error indicator.
 *
 ****************************************************************************/
 
@@ -34,14 +33,13 @@
 #include <stdio.h>
 #include "variety.h"
 #include "fileacc.h"
-#undef  clearerr
 
-_WCRTLINK void clearerr( fp )
-        register FILE *fp;
-    {
-        __stream_check( fp, 0 );
-        _ValidFile( fp, 0 );
-        _AccessFile( fp );
-        fp->_flag &= ~(_SFERR|_EOF);
-        _ReleaseFile( fp );
-    }
+
+_WCRTLINK void (clearerr)( FILE *fp )
+{
+    __stream_check( fp, 0 );
+    _ValidFile( fp, 0 );
+    _AccessFile( fp );
+    fp->_flag &= ~(_SFERR | _EOF);
+    _ReleaseFile( fp );
+}

@@ -139,7 +139,7 @@ typedef struct {
 typedef ExpandFuncEntry ExpandFuncTable[MAX_PRINT_TYPE];
 typedef ExpandFuncTable *pExpandFuncTable;
 
-void expandPushTree(int fileNum, pCTree tree);
+void expandPushTree(int fileNum, void *tree);
 
 typedef struct {
     int numOfOutFiles;

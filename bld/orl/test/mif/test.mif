@@ -1,37 +1,29 @@
-.extensions:
-.extensions: .exe .obj .c .h
-.extensions: .mif
+proj_name = objread
 
-.c: $(orl_dir)\test\c;$(trmem_dir)
-.h: $(orl_dir)\test\h;$(trmem_dir)
-.mif: $(mif_path)
+objread_autodepends = .autodepend
 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
-obj             = .obj
-exe             = .exe
+!include $(orl_dir)/client.mif
 
-inc_dirs = $(orl_dir)\h;$(orl_dir)\elf\h;$(orl_dir)\coff\h;$(watcom_dir)\h;$(trmem_dir)
+.c: $(orl_dir)/test/c;$(trmem_dir)
+.h: $(orl_dir)/test/h;$(trmem_dir)
 
-!ifndef on_build_machine
-extra_c_flags_test      = -of+
-extra_c_flags_trmemcvr  = -dTRMEM -of+
-extra_c_flags_trmem     = -dTRMEM -of+
+inc_dirs = -I"$(orl_dir)/h" -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(watcom_dir)/h" -I$(trmem_dir)
+
+!ifeq release 0
+extra_c_flags_test      = -DTRMEM -of+
+extra_c_flags_trmemcvr  = -DTRMEM -of+
+extra_c_flags_trmem     = -DTRMEM -of+
 !endif
 
-extra_l_flags           = library $(orl_dir)\o\orl.lib
-
-.before:
-        set include=$(inc_path)
-
-test_objs       =   test$(obj) &
-                    getopt$(obj) &
-                    trmemcvr$(obj)
-!ifndef on_build_machine
-test_objs       +=  trmem$(obj)
+objs = test.obj trmemcvr.obj
+!ifeq release 0
+objs += trmem.obj
 !endif
 
-objread$(exe) : $(test_objs) $(orl_dir)\o\orl.lib
-        $(linker) $(lflags) name $@ file { $(test_objs) }
+libs = $(orl_lib)
+
+!include exetarg.mif

@@ -1,5 +1,0 @@
-lds esi,pword ptr x
-lss esi,pword ptr x
-lfs esi,pword ptr x
-lgs esi,pword ptr x
-les esi,pword ptr x

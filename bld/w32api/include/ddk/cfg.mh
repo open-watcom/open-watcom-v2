@@ -1,0 +1,168 @@
+/*
+ *  cfg.h       Configuration manager definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _CFG_INCLUDED_
+#define _CFG_INCLUDED_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* CM_Get_DevInst_Status() flags */
+#define CM_PROB_NOT_CONFIGURED              0x00000001L
+#define CM_PROB_DEVLOADER_FAILED            0x00000002L
+#define CM_PROB_OUT_OF_MEMORY               0x00000003L
+#define CM_PROB_ENTRY_IS_WRONG_TYPE         0x00000004L
+#define CM_PROB_LACKED_ARBITRATOR           0x00000005L
+#define CM_PROB_BOOT_CONFIG_CONFLICT        0x00000006L
+#define CM_PROB_FAILED_FILTER               0x00000007L
+#define CM_PROB_DEVLOADER_NOT_FOUND         0x00000008L
+#define CM_PROB_INVALID_DATA                0x00000009L
+#define CM_PROB_FAILED_START                0x0000000AL
+#define CM_PROB_LIAR                        0x0000000BL
+#define CM_PROB_NORMAL_CONFLICT             0x0000000CL
+#define CM_PROB_NOT_VERIFIED                0x0000000DL
+#define CM_PROB_NEED_RESTART                0x0000000EL
+#define CM_PROB_REENUMERATION               0x0000000FL
+#define CM_PROB_PARTIAL_LOG_CONF            0x00000010L
+#define CM_PROB_UNKNOWN_RESOURCE            0x00000011L
+#define CM_PROB_REINSTALL                   0x00000012L
+#define CM_PROB_REGISTRY                    0x00000013L
+#define CM_PROB_VXDLDR                      0x00000014L
+#define CM_PROB_WILL_BE_REMOVED             0x00000015L
+#define CM_PROB_DISABLED                    0x00000016L
+#define CM_PROB_DEVLOADER_NOT_READY         0x00000017L
+#define CM_PROB_DEVICE_NOT_THERE            0x00000018L
+#define CM_PROB_MOVED                       0x00000019L
+#define CM_PROB_TOO_EARLY                   0x0000001AL
+#define CM_PROB_NO_VALID_LOG_CONF           0x0000001BL
+#define CM_PROB_FAILED_INSTALL              0x0000001CL
+#define CM_PROB_HARDWARE_DISABLED           0x0000001DL
+#define CM_PROB_CANT_SHARE_IRQ              0x0000001EL
+#define CM_PROB_FAILED_ADD                  0x0000001FL
+#define CM_PROB_DISABLED_SERVICE            0x00000020L
+#define CM_PROB_TRANSLATION_FAILED          0x00000021L
+#define CM_PROB_NO_SOFTCONFIG               0x00000022L
+#define CM_PROB_BIOS_TABLE                  0x00000023L
+#define CM_PROB_IRQ_TRANSLATION_FAILED      0x00000024L
+#define CM_PROB_FAILED_DRIVER_ENTRY         0x00000025L
+#define CM_PROB_DRIVER_FAILED_PRIOR_UNLOAD  0x00000026L
+#define CM_PROB_DRIVER_FAILED_LOAD          0x00000027L
+#define CM_PROB_DRIVER_SERVICE_KEY_INVALID  0x00000028L
+#define CM_PROB_LEGACY_SERIVCE_NO_DEVICES   0x00000029L
+#define CM_PROB_DUPLICATE_DEVICE            0x0000002AL
+#define CM_PROB_FAILED_POST_START           0x0000002BL
+#define CM_PROB_HALTED                      0x0000002CL
+#define CM_PROB_PHANTOM                     0x0000002DL
+#define CM_PROB_SYSTEM_SHUTDOWN             0x0000002EL
+#define CM_PROB_HELD_FOR_EJECT              0x0000002FL
+#define CM_PROB_DRIVER_BLOCKED              0x00000030L
+#define CM_PROB_REGISTRY_TOO_LARGE          0x00000031L
+#define CM_PROB_SETPROPERTIES_FAILED        0x00000032L
+#define CM_PROB_WAITING_ON_DEPENDENCY       0x00000033L
+#define CM_PROB_UNSIGNED_DRIVER             0x00000034L
+#define NUM_CM_PROB_V1                      0x00000025L
+#define NUM_CM_PROB_V2                      0x00000032L
+#define NUM_CM_PROB_V3                      0x00000033L
+#define NUM_CM_PROB_V4                      0x00000034L
+#define NUM_CM_PROB_V5                      0x00000035L
+#if (NTDDI_VERSION >= 0x06010000)
+    #define NUM_CM_PROB                     NUM_CM_PROB_V5
+#elif (NTDDI_VERSION >= 0x06000100)
+    #define NUM_CM_PROB                     NUM_CM_PROB_V4
+#elif (NTDDI_VERSION >= 0x05020000)
+    #define NUM_CM_PROB                     NUM_CM_PROB_V3
+#elif (NTDDI_VERSION >= 0x05010000)
+    #define NUM_CM_PROB                     NUM_CM_PROB_V2
+#elif (NTDDI_VERSION >= 0x05000000)
+    #define NUM_CM_PROB                     NUM_CM_PROB_V1
+#endif
+
+/* Device instance status flags */
+#define DN_ROOT_ENUMERATED              0x00000001L
+#define DN_DRIVER_LOADED                0x00000002L
+#define DN_ENUM_LOADED                  0x00000004L
+#define DN_STARTED                      0x00000008L
+#define DN_MANUAL                       0x00000010L
+#define DN_NEED_TO_ENUM                 0x00000020L
+#define DN_NOT_FIRST_TIME               0x00000040L
+#define DN_HARDWARE_ENUM                0x00000080L
+#define DN_LIAR                         0x00000100L
+#define DN_HAS_MARK                     0x00000200L
+#define DN_HAS_PROBLEM                  0x00000400L
+#define DN_FILTERED                     0x00000800L
+#define DN_MOVED                        0x00001000L
+#define DN_DISABLEABLE                  0x00002000L
+#define DN_REMOVABLE                    0x00004000L
+#define DN_PRIVATE_PROBLEM              0x00008000L
+#define DN_MF_PARENT                    0x00010000L
+#define DN_MF_CHILD                     0x00020000L
+#define DN_WILL_BE_REMOVED              0x00040000L
+#define DN_NOT_FIRST_TIMEE              0x00080000L
+#define DN_STOP_FREE_RES                0x00100000L
+#define DN_REBAL_CANDIDATE              0x00200000L
+#define DN_BAD_PARTIAL                  0x00400000L
+#define DN_NT_ENUMERATOR                0x00800000L
+#define DN_NT_DRIVER                    0x01000000L
+#define DN_NEEDS_LOCKING                0x02000000L
+#define DN_ARM_WAKEUP                   0x04000000L
+#define DN_ARM_ENUMERATOR               0x08000000L
+#define DN_ARM_DRIVER                   0x10000000L
+#define DN_SILENT_INSTALL               0x20000000L
+#define DN_NO_SHOW_IN_DM                0x40000000L
+#define DN_BOOT_LOG_PROB                0x80000000L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define DN_NEED_RESTART             DN_LIAR
+    #define DN_DRIVER_BLOCED            DN_NOT_FIRST_TIME
+    #define DN_LEGACY_DRIVER            DN_MOVED
+    #define DN_CHILD_WITH_INVALID_ID    DN_HAS_MARK
+#elif (NTDDI_VERSION >= 0x05000000)
+    #define DN_NEED_RESTART             0x00000100L
+#endif
+#define DN_CHANGEABLE_FLAGS \
+    (DN_NOT_FIRST_TIME + DN_HARDWARE_ENUM + DN_HAS_MARK + DN_DISABLEABLE + \
+    DN_REMOVABLE + DN_MF_CHILD + DN_MF_PARENT + DN_NOT_FIRST_TIMEE + DN_STOP_FREE_RES + \
+    DN_REBAL_CANDIDATE + DN_NT_ENUMERATOR + DN_NT_DRIVER + DN_SILENT_INSTALL + \
+    DN_NO_SHOW_IN_DM)
+
+/* Logical configuration priority */
+#define LCPRI_FORCECONFIG       0x00000000L
+#define LCPRI_BOOTCONFIG        0x00000001L
+#define LCPRI_DESIRED           0x00002000L
+#define LCPRI_NORMAL            0x00003000L
+#define LCPRI_LASTBESTCONFIG    0x00003FFFL
+#define LCPRI_SUBOPTIMAL        0x00005000L
+#define LCPRI_LASTSOFTCONFIG    0x00007FFFL
+#define LCPRI_RESTART           0x00008000L
+#define LCPRI_REBOOT            0x00009000L
+#define LCPRI_POWEROFF          0x0000A000L
+#define LCPRI_HARDRECONFIG      0x0000C000L
+#define LCPRI_HARDWIRED         0x0000E000L
+#define LCPRI_IMPOSSIBLE        0x0000F000L
+#define LCPRI_DISABLED          0x0000FFFFL
+#define MAX_LCPRI               0x0000FFFFL
+
+/* Plug and Play veto types */
+typedef enum _PNP_VETO_TYPE {
+    PNP_VetoTypeUnknown             = 0,
+    PNP_VetoLegacyDevice            = 1,
+    PNP_VetoPendingClose            = 2,
+    PNP_VetoWindowsApp              = 3,
+    PNP_VetoWindowsService          = 4,
+    PNP_VetoOutstandingOpen         = 5,
+    PNP_VetoDevice                  = 6,
+    PNP_VetoDriver                  = 7,
+    PNP_VetoIllegalDeviceRequest    = 8,
+    PNP_VetoInsufficientPower       = 9,
+    PNP_VetoNonDisableable          = 10,
+    PNP_VetoLegacyDriver            = 11,
+    PNP_VetoInsufficientRights      = 12
+} PNP_VETO_TYPE;
+typedef PNP_VETO_TYPE   *PPNP_VETO_TYPE;
+
+:include cplusepi.sp
+
+#endif /* _CFG_INCLUDED_ */

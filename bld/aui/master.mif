@@ -1,0 +1,136 @@
+proj_name = aui
+
+!ifndef aui_autodepends
+aui_autodepends = .AUTODEPEND
+!endif
+
+suppress_zc = 1
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.EXTENSIONS: .dlg .rc
+
+inc_dirs = -I. -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(posix_dir)/h"
+
+.c: .;$(aui_dir)/c;$(posix_dir)/misc
+.h: .;$(aui_dir)/h
+
+extra_c_flags += -s
+
+extra_c_flags_i86 = -zc
+
+extra_c_flags_nov = -4s -dNLM -ot
+!ifeq host_cpu i86
+extra_c_flags_win = -zW
+extra_c_flags_dos = -of
+!ifdef pm
+extra_c_flags_os2 = -zu
+!endif
+!else
+extra_c_flags_win = -zw
+!endif
+
+!ifdef pm
+dlgs = dlgrx.dlg dlgsrch.dlg dlgsrcha.dlg &
+       japrx.dlg japsrch.dlg japsrcha.dlg
+!endif
+
+all : auistr.gh aui.lib $(dlgs) .SYMBOLIC
+
+objs =  guimain.obj &
+        wndgadgt.obj &
+        wndrect.obj &
+        wndtbatr.obj &
+        wndbgch.obj &
+        wndstyle.obj &
+        wndhist.obj &
+        wndhelp.obj &
+        wndstat.obj &
+        wndchoos.obj &
+        wndcreat.obj &
+        wndcrsr.obj &
+        wndcurr.obj &
+        wndid.obj &
+        wndmem.obj &
+        wndmeth.obj &
+        wndutil.obj &
+        wndchar.obj &
+        wndpop.obj &
+        rxwrap.obj &
+        wndscrol.obj &
+        wndsel.obj &
+        wndsrch.obj &
+        wndfdlg.obj &
+        wnddlg.obj &
+        dlgsrch.obj &
+        dlgpick.obj &
+        dlgnew.obj &
+        wndspawn.obj &
+        wndalloc.obj &
+        wndshrnk.obj &
+        wndtool.obj &
+        wnddoin.obj &
+        wndresiz.obj &
+        wndsysin.obj &
+        wndclean.obj &
+        wndmacro.obj &
+        wndring.obj &
+        wndefra.obj &
+        wndfonhk.obj &
+        wndshthk.obj &
+        wndqryhk.obj &
+        wndendhk.obj &
+        wndrszhk.obj &
+        wndsfra.obj &
+        wndfont.obj &
+        wndldstr.obj &
+        wndfront.obj &
+        wndpaint.obj &
+        wnddirt.obj &
+        wnddfclr.obj &
+        wndcolor.obj &
+        wndmouse.obj &
+        wndrxerr.obj &
+        wndfref.obj &
+        wndmsg.obj &
+        wndmnsz.obj &
+        wndimain.obj
+
+aui.lib : $(objs) $(__makefiles__) $(aui_dir)/h/aui.rc
+        $(librarian) $(libflags) $(objs)
+
+.rc: ../h
+!ifdef pm
+pmfont=-font=10.Helv
+pmfontfj=
+
+dlgrx.dlg : ../h/dlgrx.dlg
+    parsedlg $(pmfont) $[@ dlgrx.dlg
+
+dlgsrch.dlg : ../h/dlgsrch.dlg
+    parsedlg $(pmfont) $[@ dlgsrch.dlg
+
+dlgsrcha.dlg : ../h/dlgsrcha.dlg
+    parsedlg $(pmfont) $[@ dlgsrcha.dlg
+
+japrx.dlg : ../h/japrx.dlg
+    parsedlg $(pmfontj) $[@ japrx.dlg
+
+japsrch.dlg : ../h/japsrch.dlg
+    parsedlg $(pmfontj) $[@ japsrch.dlg
+
+japsrcha.dlg : ../h/japsrcha.dlg
+    parsedlg $(pmfontj) $[@ japsrcha.dlg
+!else
+.dlg : ../h
+!endif
+
+dlgfiles = dlgrx.h dlgsrch.h dlgrx.dlg dlgsrch.dlg dlgsrcha.dlg auistr.gh auistr.rc auigui.rc
+
+./mkstr.exe: $(aui_dir)/c/mkstr.c
+        $(bld_cl) $(wcl_util_opts) $]@
+
+auistr.gh : ./mkstr.exe $(aui_dir)/h/aui.msg
+        $[@ $^@

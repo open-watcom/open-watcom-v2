@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Utility to print arguments passed directly or in
+*               environment variables.
 *
 ****************************************************************************/
 
@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     int     i;
 
@@ -44,5 +44,5 @@ void main( int argc, char **argv )
             printf( "%d:\"%s\"\n", i, argv[i] );
         }
     }
-    exit(0);
+    return( 0 );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Helper program used in wmake regression testing.
 *
 ****************************************************************************/
 
@@ -46,7 +45,7 @@ FILE *safeopen( char *name, char *mode )
     return( fp );
 }
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     int i, max;
     FILE *fp;
@@ -54,48 +53,56 @@ void main( int argc, char **argv )
 
     if( argc != 2 ) {
         printf( "Usage: create n\n" );
-        exit(1);
+        return( 1 );
     }
     max = atoi( argv[1] );
 
     for( i = 1; i <= max; i++ ) {
-        sprintf(buf, "FOO%04d.C", i );
+        sprintf(buf, "foo%04d.c", i );
         fp = safeopen( buf, "w" );
-        fprintf( fp, "extern void printf(char *,...);"
+        fprintf( fp, "extern int printf(char *,...);"
                      "void foo%04d(void){printf(\"%04d\\t\");}\n", i, i );
         fclose( fp );
     }
 
-    fp = safeopen( "MAIN.C", "w" );
+    fp = safeopen( "main.c", "w" );
     fprintf( fp, "#include <stdio.h>\n" );
     for( i=1; i <= max; i++ ) {
         fprintf(fp, "extern void foo%04d(void);\n", i );
     }
-    fprintf(fp, "\nvoid main(void)\n{\n" );
+    fprintf(fp, "\nint main(void)\n{\n" );
     for( i=1; i <= max; i++ ) {
         fprintf(fp, "    foo%04d();\n", i );
     }
-    fprintf(fp, "    printf( \"\\n\" );\n}\n" );
+    fprintf(fp, "    printf( \"\\n\" );\n    return( 0 );\n}\n" );
     fclose(fp);
 
-    fp = safeopen( "MAKETST1", "w" );
+    fp = safeopen( "maketst1", "w" );
     fputs("# big makefile!\n"
           ".c.obj:\n"
+#ifndef __WATCOMC__
+          "    cc -c -o $@ $<\n"
+#else
           "    wcc386 $[* /zq\n"
+#endif
           "\n"
           "main.exe : main.obj &\n    ", fp);
     for( i=1; i<= max; i++ ) {
         fprintf( fp, "foo%04d.obj ", i );
         if( i%6 == 0 ) fputs( "&\n    ", fp );
     }
+#ifndef __WATCOMC__
+    fputs("\n    cc -o main.exe $<\n", fp);
+#else
     fputs("\n    wlink @main.lnk\n", fp);
+#endif
     fclose(fp);
 
-    fp = safeopen( "MAIN.LNK", "w" );
+    fp = safeopen( "main.lnk", "w" );
     fputs( "NAME main\nFILE MAIN\nOPTION quiet\n", fp);
     for( i=1; i<=max; i++ ) {
         fprintf( fp, "FILE foo%04d\n", i);
     }
     fclose(fp);
+    return( 0 );
 }
-

@@ -24,73 +24,50 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/04    Steve McDowell  Initial implementation.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/15    Greg Bentz      fix uninitialized state variables.
-//  93/07/29    Greg Bentz      - change istream::op>>(streambuf &) to
-//                                istream::op>>( streambuf * )
-//                              - fix istream::getline() to not set failbit
-//                                if no input stored in user buffer
-//  93/09/15    Greg Bentz      change getline() back to set ios::failbit
-//                              if not input stored in user buffer
-//  93/10/21    Greg Bentz      change get() and getline() to not set failbit
-//                              if the delim character has been seen
-//  93/10/28    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  95/11/15    Greg Bentz      make behaviour consistent with industry
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
-#include <streambu.h>
+#include <iostream>
+#include <streambu>
 #endif
 #include "lock.h"
 #include "isthdr.h"
 
-ios::iostate __getaline( istream &istrm, char *buf, int len,
-/***************************************************************/
-    char delim, int is_get, int &chars_read ) {
-// Read characters into buffer "buf".
-// At most "len - 1" characters are read, and a 0 is added at the end.
-// If "delim" is encountered, it is left in the stream and the read is
-// terminated (and the NULLCHAR is added).
+// Read characters into buffer "buf". At most "len - 1" characters are
+// read, and a 0 is added at the end. If "delim" is encountered, it is
+// left in the stream and the read is terminated (and the NULLCHAR is
+// added).
+//
 // Used by:
 //    get( char *buf, int len, char delim )
 //    getline( char *buf, int len, char delim )
 //
-// NOTE: Borland sets eofbit only. A full buffer just stops reading.
-//       If something has been read, set eofbit anyway.
+// NOTE: Borland sets eofbit only. A full buffer just stops reading. If
+//       something has been read, set eofbit anyway.
 //
-//       The proposed standard says to set failbit if the buffer is filled
-//       without finding the delimiter (if doing a "getline"), or if a read
-//       fails and no characters are extracted. It says nothing about eofbit.
+//       The proposed standard says to set failbit if the buffer is
+//       filled without finding the delimiter (if doing a "getline"), or
+//       if a read fails and no characters are extracted. It says
+//       nothing about eofbit.
 //
-//       Currently we set eofbit only if eof occurs on first character read.
-//       failbit is set if no characters were read.
+//       Currently we set eofbit only if eof occurs on first character
+//       read. failbit is set if no characters were read.
 //
-//       Failbit was being set (prior to Nov15,95) when len-1 characters were
-//       read in the buffer.  At that time we discerned that no one else
-//       was setting failbit in that case, so we stopped doing it.
+//       Failbit was being set (prior to Nov15,95) when len-1 characters
+//       were read in the buffer. At that time we discerned that no one
+//       else was setting failbit in that case, so we stopped doing it.
 
+ios::iostate __getaline( std::istream &istrm,
+                         char *buf,
+                         int len,
+                         char delim,
+                         int is_get,
+                         int &chars_read ) {
     int           c;
     int           offset;
     ios::iostate  state = 0;
@@ -124,18 +101,19 @@ ios::iostate __getaline( istream &istrm, char *buf, int len,
     buf[offset]  = '\0';
     chars_read = offset;
 
-    // the draft standard says that no characters is an
-    // error if using get() or getline().
-    // the IOStreams Handbook suggests that no characters is not
-    // an error if the delim was seen, this seems to be what our
-    // competitors do.
+    // the draft standard says that no characters is an error if using
+    // get() or getline(). the IOStreams Handbook suggests that no
+    // characters is not an error if the delim was seen, this seems to
+    // be what our competitors do.
+    // 
     if( (offset == 0) && (c != delim) ) {
         state |= ios::failbit;
     }
-    // the draft standard says that len-1 characters is an
-    // error if using getline()
-    // our competitors don't agree with the draft, we won't follow the
-    // draft either
+
+    // the draft standard says that len-1 characters is an error if
+    // using getline() our competitors don't agree with the draft, we
+    // won't follow the draft either.
+    // 
     #if 0
     if( offset == len && !is_get ) {
         state |= ios::failbit;

@@ -35,29 +35,28 @@
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "model.h"
 
 #include "s37type.def"
 
-extern  type_def        *TypeAlias(cg_type,cg_type);
-
-type_def TNearCP= {  T_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
-//type_def THugeCP= {  T_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
-type_def TLongCP= {  T_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
-type_def TNearP = {  T_NEAR_POINTER, 4,      TYPE_POINTER };
-type_def THugeP = {  T_NEAR_POINTER, 4,      TYPE_POINTER };
-type_def TLongP = {  T_NEAR_POINTER, 4,      TYPE_POINTER };
+type_def TNearCP= {  TY_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
+//type_def THugeCP= {  TY_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
+type_def TLongCP= {  TY_NEAR_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
+type_def TNearP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
+type_def THugeP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
+type_def TLongP = {  TY_NEAR_POINTER, 4,      TYPE_POINTER };
 
 
 
 extern  void    TargTypeInit() {
 /**************************/
 
-    TypeAlias( T_UNSIGNED, T_UINT_4 );
-    TypeAlias( T_INTEGER, T_INT_4 );
-    TypeAlias( T_CODE_PTR, T_NEAR_CODE_PTR );
-    TypeAlias( T_POINTER, T_NEAR_POINTER );
-    TypeAlias( T_NEAR_INTEGER, T_INT_4 );
-    TypeAlias( T_LONG_INTEGER, T_INT_4 );
-    TypeAlias( T_HUGE_INTEGER, T_INT_4 );
+    TypeAlias( TY_UNSIGNED, TY_UINT_4 );
+    TypeAlias( TY_INTEGER, TY_INT_4 );
+    TypeAlias( TY_CODE_PTR, TY_NEAR_CODE_PTR );
+    TypeAlias( TY_POINTER, TY_NEAR_POINTER );
+    TypeAlias( TY_NEAR_INTEGER, TY_INT_4 );
+    TypeAlias( TY_LONG_INTEGER, TY_INT_4 );
+    TypeAlias( TY_HUGE_INTEGER, TY_INT_4 );
 }

@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Linker file I/O related definitions.
 *
 ****************************************************************************/
 
 
 #define NIL_HANDLE      ((f_handle)-1)
-#if _OS == _NT
+#if defined( __NT__ )
 #include <stdio.h>
     #define STDIN_HANDLE        (stdin->_handle)
     #define STDOUT_HANDLE       (stdout->_handle)
@@ -69,9 +68,6 @@ extern f_handle         ExeOpen( char * );
 extern int              ResOpen( const char *name, int access, ... );
 extern unsigned         QRead( f_handle, void *, unsigned, char * );
 extern unsigned         QWrite( f_handle, void *, unsigned, char * );
-extern void             WriteStdOut( char * );
-extern void             WriteNLStdOut( void );
-extern void             WriteInfoStdOut( char *, unsigned, char * );
 extern void             QWriteNL( f_handle, char * );
 extern void             QClose( f_handle, char * );
 extern long             QLSeek( f_handle, long, int, char * );
@@ -90,9 +86,7 @@ extern bool             QModTime( char *, time_t * );
 extern time_t           QFModTime( int );
 extern char             WaitForKey( void );
 extern void             GetCmdLine( char * );
-extern char *           GetEnvString( char * );
-extern bool             GetAddtlCommand( unsigned, char * );
-extern bool             IsStdOutConsole( void );
 extern void             TrapBreak( int );
 extern void             SetBreak( void );
 extern void             RestoreBreak( void );
+extern void             CheckBreak( void );

@@ -264,9 +264,9 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     refed = node->u.symcg.symbol;
     previous_func = CgFrontCurrentFunction();
     func->flag |= SF_INITIALIZED;
-    stashed_scope = CurrScope;
+    stashed_scope = GetCurrScope();
     scope_class = SymScope( func );
-    CurrScope = scope_class;
+    SetCurrScope(scope_class);
     ScopeBeginFunction( func );
     FunctionBodyStartup( func, &func_fd, FUNC_NO_STACK_CHECK );
     type_ret = SymFuncReturnType( func );
@@ -294,7 +294,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     CgFrontReturnSymbol( ret );
     FunctionBodyShutdown( func, &func_fd );
     ScopeEnd( SCOPE_FUNCTION );
-    CurrScope = stashed_scope;
+    SetCurrScope(stashed_scope);
     CgFrontResumeFunction( previous_func );
 }
 
@@ -837,6 +837,7 @@ boolean MembPtrZeroConst(       // DETERMINE IF ZERO MEMBER-PTR CONSTANT
 {
     expr = expr->u.subtree[0];
     expr = expr->u.subtree[1];
+
     return NodeIsZeroConstant( expr );
 }
 

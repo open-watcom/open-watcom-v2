@@ -1,0 +1,14 @@
+( sets $draft no
+( dev ps
+( script
+( lay wbpslay
+( font 0 times-roman	  2 12
+( font 1 times-italic	  2 12
+( font 2 times-bold	  2 12
+( font 3 times-bolditalic 2 12
+( font 4 times-bold	  2 19
+( font 5 times-bold	  2 29
+( font 6 courier	  1 12
+( font 7 symbol 	  2 12
+( font 8 courier	  1 10
+( font 9 courier-bold	  1 12

@@ -1,0 +1,1141 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: list (Definition of std::list)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              provides the list sequence container.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _LIST_INCLUDED
+#define _LIST_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef _ALGORITHM_INCLUDED
+ #include <algorithm>
+#endif
+
+#ifndef _ITERATOR_INCLUDED
+ #include <iterator>
+#endif
+
+#ifndef _MEMORY_INCLUDED
+ #include <memory>
+#endif
+
+#ifndef _TYPE_TRAITS_INCLUDED
+ #include <type_traits>
+#endif
+
+#ifndef _FUNCTIONAL_INCLUDED
+ #include <function>
+#endif
+
+namespace std {
+
+    template< class Type, class Allocator = allocator< Type > >
+    class list {
+    public:
+        typedef Type                                value_type;
+        typedef unsigned int                        size_type;
+        typedef int                                 difference_type;
+        typedef Allocator                           allocator_type;
+        typedef typename Allocator::reference       reference;
+        typedef typename Allocator::const_reference const_reference;
+        typedef typename Allocator::pointer         pointer;
+        typedef typename Allocator::const_pointer   const_pointer;
+
+    private:
+        struct link{
+            link *next;
+            link *previous;
+        };
+
+        struct node : public link {
+            value_type value;
+            node( value_type const & v ) : value( v ) { }
+        };
+
+        link *sentinel;   // sentinel->next = first element in the list.
+                          // sentinel->previous = last element in the list.
+        Allocator::rebind< node >::other node_allocator;
+        Allocator::rebind< link >::other link_allocator;
+        size_type item_count;
+    
+    public:
+
+        class iterator_base {
+        public:
+            iterator_base( );
+            iterator_base( link *d );
+            bool operator==( iterator_base it ) const;
+            bool operator!=( iterator_base it ) const;
+        protected:
+            link *current;
+        };
+
+        class iterator :
+            public iterator_base,
+            public std::iterator< std::bidirectional_iterator_tag, list::value_type > {
+            friend class list;
+        public:
+            typedef list::value_type *pointer;
+            typedef list::value_type &reference;
+
+            iterator( );
+            iterator( link* d );
+            reference operator* ( ) const;
+            pointer   operator->( ) const;
+            iterator &operator++( );
+            iterator &operator--( );
+            iterator  operator++( int );
+            iterator  operator--( int );
+        };
+
+        class const_iterator :
+            public iterator_base,
+            public std::iterator< std::bidirectional_iterator_tag, const list::value_type > {
+            friend class list;
+        public:
+            typedef const list::value_type *pointer;
+            typedef const list::value_type &reference;
+
+            const_iterator( iterator_base it );
+            const_iterator( );
+            const_iterator( const link *d );
+            reference       operator* ( ) const;
+            pointer         operator->( ) const;
+            const_iterator &operator++( );
+            const_iterator &operator--( );
+            const_iterator  operator++( int );
+            const_iterator  operator--( int );
+        };
+
+        typedef std::reverse_iterator< iterator >       reverse_iterator;
+        typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
+
+        explicit list( const Allocator & = Allocator( ) );
+        explicit list( size_type, const Type &, const Allocator & = Allocator( ) );
+
+        template< class InputIterator >
+        list( InputIterator first, InputIterator last, const Allocator &a = Allocator( ) )
+            : item_count( 0 ), node_allocator( a ), link_allocator( a )
+        {
+            sentinel = link_allocator.allocate( 1 );
+            sentinel->next = sentinel->previous = sentinel;
+            helper_assign( first, last, tr1::is_integral<InputIterator>::type( ) );
+        }
+    
+        list( const list & );
+       ~list( );
+        list &operator=( const list & );
+        void assign( size_type, const value_type & );
+
+        template< class InputIterator >
+        void assign( InputIterator first, InputIterator last )
+        {
+            clear( );
+            helper_assign( first, last, tr1::is_integral<InputIterator>::type( ) );
+        }
+
+        allocator_type get_allocator( ) const;
+        iterator       begin( );
+        iterator       end( );
+        const_iterator begin( ) const;
+        const_iterator end( ) const;
+
+        reverse_iterator       rbegin( );
+        reverse_iterator       rend( );
+        const_reverse_iterator rbegin( ) const;
+        const_reverse_iterator rend ( ) const;
+    
+        size_type  size( )  const;
+        bool       empty( ) const;
+        reference  front( );
+        reference  back( );
+        void       push_front( const value_type & );
+        void       pop_front( );
+        void       push_back( const value_type & );
+        void       pop_back( );
+
+        iterator insert( iterator, const value_type & );
+        void insert( iterator, size_type, const value_type & );
+
+        template< class InputIterator >
+        void insert( iterator it, InputIterator first, InputIterator last )
+        {
+            helper_insert( it, first, last, tr1::is_integral<InputIterator>::type( ) );
+        }
+    
+        iterator erase( iterator it );
+        iterator erase( iterator first, iterator last );
+        void swap( list & );
+        void clear( );
+        void remove( const value_type & );
+
+        void splice( iterator it, list &other );
+        void splice( iterator it, list &other, iterator other_it );
+        void splice( iterator it, list &other, iterator first, iterator last );
+
+        void reverse( );
+        void merge( list &other );
+
+        // sort( )
+        // *******
+        void sort( )
+        {
+            if( size( ) > 1 )
+                merge_sort( sentinel->next,
+                            sentinel->previous,
+                            size( ) - 1,
+                            less< value_type >( ) );
+        }
+
+        // Sort( Compare )
+        // ***************
+        template< class Compare >
+        void sort( Compare comp )
+        {
+            if( size( ) > 1 )
+                merge_sort( sentinel->next,
+                            sentinel->previous,
+                            size( ) - 1,
+                            comp );
+        }
+
+        // Open Watcom extensions.
+        bool _Sane( ) const;
+
+    private:
+        inline void  pop( node * );
+        inline node *push( node *, value_type const & );
+
+        // helper_assign( InputIterator, InputIterator, true_type )
+        // ********************************************************
+        template< class InputIterator >
+        void helper_assign( InputIterator first, InputIterator last, tr1::true_type )
+        {
+            for( size_type i = 0; i < static_cast< size_type >( first ); i++ ) {
+                push_back( static_cast< value_type >( last ) );
+            }
+        }
+
+        // helper_insert( iterator, InputIterator, InputIterator, true_type )
+        // ******************************************************************
+        template< class InputIterator >
+        void helper_insert( iterator it, InputIterator first, InputIterator last, tr1::true_type )
+        { 
+            for( size_type n = static_cast< size_type >( first ); n > 0; n-- ) {
+                push( static_cast< node * >( it.current ),
+                      static_cast< value_type >( last ) );
+            }
+        }
+
+        // helper_assign( InputIterator, InputIterator, false_type )
+        // *********************************************************
+        template< class InputIterator >
+        void helper_assign( InputIterator first, InputIterator last, tr1::false_type )
+        {
+            for( ; first != last; ++first ) push_back( *first );
+        }
+
+        // helper_insert( iterator, InputIterator, InputIterator, false_type )
+        // *******************************************************************
+        template< class InputIterator >
+        void helper_insert( iterator it, InputIterator first, InputIterator last, tr1::false_type )
+        {
+            for( ; first != last; ++first, ++it ) it = insert( it, *first );
+        }
+
+        // merge_sort( link *, link *, size_type, Compare )
+        // ************************************************
+        template< class Compare >
+        void merge_sort(
+            link *first, link *last, size_type distance,  Compare comp )
+
+        // first, last - Pointers in chain.
+        // distance    - Internal value: distance between first and last.
+        //               For initial call, it's a size( ) - 1
+        // comp        - Comparison object.
+        //
+        // distance is introduced for simplification of calculating the middle of given list's
+        // range. I's number of steps to go from first to last.
+        // 1 element  in range - distance is 0
+        // 2 elements in range - distance is 1
+        // etc
+        //
+        // Here we can't make inexpensive check, what distance corresponds with (last - first).
+        // So, using guard check in loop.
+        //
+        {
+            // Is it a one-element list?
+            if( first != last ) {
+                // Anchors beyond list borders.
+                link *first_previous = first->previous;
+                link *last_next      = last->next;
+                link *middle         = first;
+                link *l2begin        = NULL;
+                size_type middle_position = distance / 2;
+            
+                // Moving throw links.
+                while( (middle_position >= 1) && (middle != last) ) {
+                    middle = middle->next;
+                    middle_position -= 1;
+                }
+                // Here middle_position may be not zero. It means, what rounding errors make
+                // such binary cut innacurate. Redo it more nicely.
+                if( middle_position ) {
+                    distance = distance / 2 - middle_position;
+                    middle_position = distance / 2;
+                    middle = first;
+                    // Moving throw links. Again.
+                    while( (middle_position >= 1) && (middle != last) ) {
+                        middle = middle->next;
+                        middle_position -= 1;
+                    }
+                }
+    
+                if( distance > 0 ) {
+                    // Two recursive calls for two subranges.
+                    l2begin = middle->next;
+                    merge_sort(first, middle, (size_type)distance/2, comp );
+                    middle = l2begin->previous;   // Can change.
+                    merge_sort( l2begin, last, (size_type)(distance - distance/2 - 1), comp );
+                    //l2begin = middle->next;     // Can change.
+                    first = first_previous->next; // Can change.
+                    last = last_next->previous;   // Can change.
+                }
+                merge_lists( first, middle, /*middle->next,*/ last, comp );
+            }
+        }
+    
+        // merge_lists( link *, link *, link *, Compare )
+        // **********************************************
+        template< class Compare >
+        void merge_lists(
+            link *first, link *middle, link *last, Compare comp )
+        {
+            // Merge two ajacent sorted ranges into one sorted range. first is start, middle is
+            // end of first subrange (so as middle->next is start of other subrange), last is
+            // end.
+            link *list1       = first;
+            link *list2       = middle->next;
+            link *list2end    = last->next;
+            link *temp_l2next = NULL;
+        
+            if( first == last ) return; // Just guard for 1-element lists.
+            
+            // Compare elements on both lists as long as possible.
+            do {
+                while( !comp( static_cast< node * >( list2 )->value,
+                              static_cast< node * >( list1 )->value ) ) {
+                    list1 = list1->next;
+                    if( list1 == list2 ) return;
+                }
+            
+                // *list2 is less than *list1 move *list2 _before_ *list1.
+                temp_l2next = list2->next;         // Store list2 next value.
+                if( list1->next == list2 ) {       // Ajacent list elements.
+                    list2->previous       = list1->previous;
+                    list1->previous->next = list2;
+                    list2->next->previous = list1;
+                    list1->next           = list2->next;
+                    list1->previous       = list2;
+                    list2->next           = list1;
+                } else {                          // Non-ajacent elements.
+                    list2->previous->next = list2->next;
+                    list2->next->previous = list2->previous;
+                    list1->previous->next = list2;
+                    list2->previous       = list1->previous;
+                    list2->next           = list1;
+                    list1->previous       = list2;
+                }
+                list2 = temp_l2next;
+            } while( (list2 != list2end) && (list1 != list2) &&
+                     (list2 != sentinel) && (list1 != sentinel) );
+        }
+    };
+
+
+    // ========================================
+    // Member functions of the iterator classes
+    // ========================================
+
+    // iterator_base::iterator_base( )
+    // *******************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::iterator_base::iterator_base( )
+        { }
+
+    // iterator_base::iterator_base( link * )
+    // ********************************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::iterator_base::iterator_base( link *d )
+        : current( d )
+        { }
+
+    // iterator_base::operator==( iterator_base )
+    // ******************************************
+    template< class Type, class Allocator >
+    inline bool list< Type, Allocator >::iterator_base::operator==( iterator_base it ) const
+        { return( current == it.current ); }
+
+    // iterator_base::operator!=( iterator_base )
+    // ******************************************
+    template< class Type, class Allocator >
+    inline bool list< Type, Allocator >::iterator_base::operator!=( iterator_base it ) const
+        { return( current != it.current ); }
+
+    // iterator::iterator( )
+    // *********************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::iterator::iterator( )
+        { }
+
+    // iterator::iterator( link * )
+    // **********************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::iterator::iterator( link *d )
+        : iterator_base( d )
+        { }
+
+    // iterator::operator*( ) const
+    // ****************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator::reference
+        list< Type, Allocator >::iterator::operator*( ) const
+        { return( static_cast< node * >( current )->value ); }
+
+    // iterator::operator->( ) const
+    // *****************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator::pointer
+        list< Type, Allocator >::iterator::operator->( ) const
+        { return( &( static_cast< node * >( current )->value ) ); }
+
+    // iterator::operator++( )
+    // ***********************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator &
+        list< Type, Allocator >::iterator::operator++( )
+    {
+        current = current->next; 
+        return( *this );
+    }
+
+    // iterator::operator--( )
+    // ***********************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator &
+        list< Type, Allocator >::iterator::operator--( )
+    {
+        current = current->previous; 
+        return( *this );
+    }
+
+    // iterator::operator++( int )
+    // ***************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::iterator::operator++( int )
+    {
+        iterator it( *this );
+        current = current->next; 
+        return( it );
+    }
+
+    // iterator::operator--( int )
+    // ***********************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::iterator::operator--( int )
+    {
+        iterator it( *this );
+        current = current->previous; 
+        return( it );
+    }
+
+    // const_iterator::const_iterator( iterator_base )
+    // ***********************************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::const_iterator::const_iterator( iterator_base it )
+        : iterator_base( it )
+        { }
+
+    // const_iterator::const_iterator( )
+    // *********************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::const_iterator::const_iterator( )
+        : iterator_base( )
+        { }
+
+    // const_iterator::const_iterator( const link * )
+    // ****************************************************
+    template< class Type, class Allocator >
+    inline list< Type, Allocator >::const_iterator::const_iterator( const link *d )
+        : iterator_base( const_cast< link * >( d ) )
+        { }
+
+    // const_iterator::operator*( ) const
+    // **********************************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_iterator::reference
+        list< Type, Allocator >::const_iterator::operator*( ) const
+        { return( static_cast< const node * >( current )->value ); }
+
+    // const_iterator::operator->( ) const
+    // ***********************************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_iterator::pointer
+        list< Type, Allocator >::const_iterator::operator->( ) const
+        { return( &( static_cast< const node * >( current )->value ) ); }
+
+    // const_iterator::operator++( )
+    // *****************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::const_iterator &
+        list< Type, Allocator >::const_iterator::operator++( )
+    {
+        current = current->next;
+        return( *this );
+    }
+
+    // const_iterator::operator--( )
+    // *****************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::const_iterator &
+        list< Type, Allocator >::const_iterator::operator--( )
+    {
+        current = current->previous;
+        return( *this );
+    }
+
+    // const_iterator::operator++( int )
+    // *********************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::const_iterator
+        list< Type, Allocator >::const_iterator::operator++( int )
+    {
+        const_iterator it( *this );
+        current = current->next;
+        return( it );
+    }
+
+    // const_iterator::operator--( int )
+    // *********************************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator >::const_iterator
+        list< Type, Allocator >::const_iterator::operator--( int )
+    {
+        const_iterator it( *this );
+        current = current->previous;
+        return( it );
+    }
+
+
+    // ========================
+    // Member functions of list
+    // ========================
+
+    // list( const Allocator & )
+    // *************************
+    template< class Type, class Allocator >
+    list< Type, Allocator >::list( const Allocator &a )
+        : item_count( 0 ), node_allocator( a ), link_allocator( a )
+    {
+        sentinel = link_allocator.allocate( 1 );
+        sentinel->next = sentinel->previous = sentinel;
+    }
+
+    // list( size_type, Type, Allocator )
+    // **********************************
+    template< class Type, class Allocator > 
+    list< Type, Allocator >::list( size_type n, const Type &value, const Allocator &a )
+        : item_count( 0 ), node_allocator( a ), link_allocator( a )
+    {
+        sentinel = link_allocator.allocate( 1 );
+        sentinel->next = sentinel->previous = sentinel;
+        for( size_type i = 0; i < n; i++ ) {
+            push_back( value );
+        }
+    }
+
+    // list( const list & )
+    // ********************
+    template< class Type, class Allocator > 
+    list< Type, Allocator >::list( const list &other )
+        : node_allocator( other.node_allocator ), link_allocator( other.link_allocator )
+    {
+        sentinel = link_allocator.allocate( 1 );
+        
+        const link *other_current = other.sentinel;
+        link *current = sentinel;
+        item_count = 0;
+        while( other_current->next != other.sentinel ) {
+            try {
+                current->next = node_allocator.allocate( 1 );
+                try {
+                    node_allocator.construct(
+                        static_cast< node * >( current->next ),
+                        node(static_cast< node * >( other_current->next )->value ) );
+                }
+                catch(...) {
+                    node_allocator.deallocate( static_cast< node * >( current->next ), 1 );
+                    throw;
+                }
+            }
+            catch(...) {
+                // Unwind - can't finish copy construction so remove all elements.
+                link *delete_me;
+                while( current != sentinel ) {
+                    delete_me = current;
+                    current = current->previous;
+                    node_allocator.destroy( static_cast< node * >( delete_me ) );
+                    node_allocator.deallocate( static_cast< node * >( delete_me ), 1 );
+                }
+                link_allocator.deallocate( sentinel, 1 );
+                throw;
+            }
+            current->next->previous = current;
+            current                 = current->next;
+            other_current           = other_current->next;
+        }
+        current->next      = sentinel;
+        sentinel->previous = current;
+        item_count         = other.item_count;
+    }
+
+    // ~list( )
+    // ********
+    template< class Type, class Allocator >
+    list< Type, Allocator >::~list( )
+    {
+        clear( );
+        link_allocator.deallocate( sentinel, 1 );
+    }
+
+    // operator=( const list & )
+    // *************************
+    template< class Type, class Allocator >
+    list< Type, Allocator > &
+        list< Type, Allocator >::operator=( const list &other )
+    {
+        if( &other == this ) return( *this );
+
+        clear( );
+        const_iterator it = other.begin( );
+        while( it != other.end( ) ) {
+            push_back( *it );
+            ++it;
+        }
+        return( *this );
+    }
+
+    // assign( size_type, const value_type & )
+    // ***************************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::assign( size_type n, const value_type &value )
+    {
+        clear( );
+        for( size_type i = 0; i < n; ++i ) {
+            push_back( value );
+        }
+    }
+
+    // get_allocator( ) const
+    // **********************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::allocator_type
+        list< Type, Allocator >::get_allocator( ) const
+        { return( node_allocator ); }
+
+    // begin( )
+    // ********
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::begin( )
+        { return( iterator( sentinel->next ) ); }
+
+    // end( )
+    // ******
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::end( )
+        { return( iterator( sentinel ) ); }
+
+    // begin( ) const
+    // **************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_iterator
+        list< Type, Allocator >::begin( ) const
+        { return( const_iterator( sentinel->next ) ); }
+
+    // end( ) const
+    // ************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_iterator
+        list< Type, Allocator >::end( ) const
+        { return( const_iterator( sentinel ) ); }
+
+    // rbegin( )
+    // *********
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::reverse_iterator
+        list< Type, Allocator >::rbegin( )
+        { return( reverse_iterator( iterator( sentinel ) ) ); }
+
+    // rend( )
+    // *******
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::reverse_iterator
+        list< Type, Allocator >::rend( )
+        { return( reverse_iterator( iterator( sentinel->next ) ) ); }
+
+    // rbegin( ) const
+    // ***************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reverse_iterator
+        list< Type, Allocator >::rbegin( ) const
+        { return( const_reverse_iterator( const_iterator( sentinel ) ) ); }
+
+    // rend( ) const
+    // *************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reverse_iterator
+        list< Type, Allocator >::rend( ) const
+        { return( const_reverse_iterator( const_iterator( sentinel->next ) ) ); }
+
+    // size( ) const
+    // *************
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::size_type
+        list< Type, Allocator >::size( ) const
+        { return( item_count ); }
+
+    // empty( ) const
+    // **************
+    template< class Type, class Allocator >
+    inline bool list< Type, Allocator >::empty( ) const
+        { return( item_count == 0 ); }
+
+    // front( )
+    // ********
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::reference
+        list< Type, Allocator >::front( )
+        { return( static_cast< node * >( sentinel->next )->value ); }
+
+    // back( )
+    // *******
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::reference
+        list< Type, Allocator >::back( )
+        { return( static_cast< node * >( sentinel->previous )->value ); }
+
+    // push_front( )
+    // *************
+    template< class Type, class Allocator >
+    inline void list< Type, Allocator >::push_front( const value_type &x )
+        { push( static_cast< node * >( sentinel->next ), x ); }
+
+    // pop_front( )
+    // ************
+    template< class Type, class Allocator >
+    inline void list< Type, Allocator >::pop_front( )
+        { pop( static_cast< node * >( sentinel->next ) ); }
+
+    // push_back( )
+    // ************
+    template< class Type, class Allocator >
+    inline void list< Type, Allocator >::push_back( const value_type &x )
+        { push( static_cast< node * >( sentinel ), x ); }
+
+    // pop_back( )
+    // ***********
+    template< class Type, class Allocator >
+    inline void list< Type, Allocator >::pop_back( )
+        { pop( static_cast< node * >( sentinel->previous ) ); }
+    
+    // insert( iterator, const value_type & )
+    // **************************************
+    template< class Type, class Allocator >
+    typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::insert( iterator it, const value_type &value )
+    {
+        node *current = push( static_cast< node * >( it.current ), value );
+        return iterator( current );
+    }
+    
+    // insert( iterator, size_type, const value_type & )
+    // *************************************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::insert( iterator it, size_type n, const value_type &value )
+    {
+        for( size_type i = 0; i < n; ++i ) {
+            push( static_cast< node * >( it.current ), value );
+        }
+    }
+
+    // erase( iterator )
+    // *****************
+    template< class Type, class Allocator >
+    typename list< Type, Allocator >::iterator list< Type, Allocator >::erase( iterator it )
+    {
+        iterator temp( it );
+        ++temp;
+        pop( static_cast< node * >( it.current ) );
+        return( temp );
+    }
+
+    // erase( iterator, iterator )
+    // ***************************
+    template< class Type, class Allocator >
+    typename list< Type, Allocator >::iterator
+        list< Type, Allocator >::erase( iterator first, iterator last )
+    {
+        while( first != last ) {
+            first = erase( first );
+        }
+        return( last );
+    }
+
+    // swap( list & )
+    // **************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::swap( list &other )
+    {
+        link *sen_temp( sentinel );
+        sentinel = other.sentinel;
+        other.sentinel = sen_temp;
+
+        Allocator::rebind< node >::other node_temp( node_allocator );
+        node_allocator = other.node_allocator;
+        other.node_allocator = node_temp;
+
+        Allocator::rebind< link >::other link_temp( link_allocator );
+        link_allocator = other.link_allocator;
+        other.link_allocator = link_temp;
+
+        size_type count_temp( item_count );
+        item_count = other.item_count;
+        other.item_count = count_temp;
+    }
+
+    // clear( )
+    // ********
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::clear( )
+    {
+        node *current;
+        node *delete_me;
+        current = static_cast< node * >( sentinel ->next );
+        while( current != static_cast< node * >( sentinel ) ) {
+            delete_me = current;
+            current = static_cast< node * >( current->next );
+            node_allocator.destroy( delete_me );
+            node_allocator.deallocate( delete_me, 1 );
+        }
+        sentinel->next = sentinel->previous = sentinel;
+        item_count = 0;
+    }
+
+    // remove( const value_type & )
+    // ****************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::remove( const value_type &value )
+    {
+        iterator it( begin( ) );
+        while( it != end( ) ) {
+            if( *it == value ) it = erase( it );
+            else ++it;
+        }
+    }
+
+    // splice( iterator, list & )
+    // **************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::splice( iterator it, list &other )
+    {
+        if( other.item_count == 0 ) return;
+        link *head = other.sentinel->next;
+        link *tail = other.sentinel->previous;
+
+        // Do the splice.
+        head->previous             = it.current->previous;
+        it.current->previous->next = head;
+        tail->next                 = it.current;
+        it.current->previous       = tail;
+
+        // Fix up the other sentinel.
+        other.sentinel->next     = other.sentinel;
+        other.sentinel->previous = other.sentinel;
+
+        // Fix up list sizes.
+        item_count += other.item_count;
+        other.item_count = 0;
+    }
+
+    // splice( iterator, list &, iterator )
+    // ************************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::splice( iterator it, list &other, iterator other_it )
+    {
+        if( it.current == other_it.current ||
+            it.current == other_it.current->next ) return;
+
+        // Do the splice.
+        link *spliced_node           = other_it.current;
+        spliced_node->previous->next = spliced_node->next;
+        spliced_node->next->previous = spliced_node->previous;
+        spliced_node->previous       = it.current->previous;
+        it.current->previous->next   = spliced_node;
+        spliced_node->next           = it.current;
+        it.current->previous         = spliced_node;
+
+        // Fix up list sizes.
+        item_count++;
+        other.item_count--;
+    }
+
+    // splice( iterator, list &, iterator, iterator )
+    // **********************************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::splice(
+        iterator it, list &other, iterator first, iterator last )
+    {
+        size_type count = 0;
+        for( iterator it( first ); it != last; ++it ) ++count;
+        if( count == 0 ) return;
+        link *head = first.current;
+        link *tail = last.current->previous;
+
+        // Do the splice.
+        head->previous->next       = tail->next;
+        tail->next->previous       = head->previous;
+        head->previous             = it.current->previous;
+        it.current->previous->next = head;
+        tail->next                 = it.current;
+        it.current->previous       = tail;
+
+        // Fix up list sizes.
+        item_count += count;
+        other.item_count -= count;    
+    }
+    
+    // reverse( )
+    // **********
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::reverse( )
+    {
+        link *temp;
+
+        // (carefully) Reverse pointers in each node.
+        link *current = sentinel->next;
+        while( current != sentinel ) {
+            temp              = current->next;
+            current->next     = current->previous;
+            current->previous = temp;
+            current           = temp;
+        }
+        
+        // Reverse pointers in sentinel (to flip head and tail of list).
+        temp               = sentinel->next;
+        sentinel->next     = sentinel->previous;
+        sentinel->previous = temp;
+    }
+
+    // merge( list & )
+    // ***************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::merge( list &other )
+    {
+        link *temp_link;
+        size_type   temp_size;
+
+        if( other.item_count == 0 ) return;
+        if( item_count == 0 ) {
+            temp_link        = sentinel;
+            sentinel         = other.sentinel;
+            other.sentinel   = temp_link;
+            temp_size        = item_count;
+            item_count       = other.item_count;
+            other.item_count = temp_size;
+        }
+
+        link *list1 = sentinel->next;
+        link *list2 = other.sentinel->next;
+
+        // Compare elements on both lists as long as possible.
+        while( list1 != sentinel && list2 != other.sentinel ) {
+            if( !( static_cast< node * >( list2 )->value <
+                   static_cast< node * >( list1 )->value ) ) {
+                list1 = list1->next;
+            }
+            else {
+                list1->previous->next     = list2;
+                temp_link                 = list1->previous;
+                list1->previous           = list2;
+                list2->previous->next     = list2->next;
+                list2->next->previous     = list2->previous;
+                list2                     = list2->next;
+                list1->previous->next     = list1;
+                list1->previous->previous = temp_link;
+                item_count++;
+                other.item_count--;
+            }
+        }
+
+        // Deal with the tail end of list2 (if anything is left).
+        if( list2 != other.sentinel ) {
+            list1                          = sentinel->previous;
+            list1->next                    = list2;
+            list2->previous                = list1;
+            sentinel->previous             = other.sentinel->previous;
+            other.sentinel->previous->next = sentinel;
+            other.sentinel->previous       = other.sentinel;
+            other.sentinel->next           = other.sentinel;
+            item_count += other.item_count;
+            other.item_count = 0;
+        }
+    }
+
+    // _Sane( )
+    // ********
+    template< class Type, class Allocator >
+    bool list< Type, Allocator >::_Sane( ) const
+    {
+        // Sentinel can't have null links.
+        if( !sentinel->next || !sentinel->previous ) return( false );
+    
+        link *d = sentinel->next;
+        size_type count = 0;
+    
+        while( d != sentinel ){
+            count++;
+            // If exceeded size, something is wrong so abort now.
+            if( count > item_count) return( false );
+
+            if( !(d->next) || !(d->previous) ) return( false );  // Can't have null links.
+            if( d->previous->next != d ) return( false );        // Broken links.
+            if( d->next->previous != d ) return( false );        // Broken links.
+            d = d->next;
+        }
+        if( count != item_count ) return( false );              // Check size.
+        return( true );
+    }
+
+    // ================================
+    // Private member functions of list
+    // ================================
+
+    // push( node *, const Type & )
+    // ****************************
+    template< class Type, class Allocator >
+    typename list< Type, Allocator >::node *
+        list< Type, Allocator >::push( node *current, const Type &value )
+    {
+        // Insert copy of x in list just before element identified by node *.
+
+        node *new_node = node_allocator.allocate( 1 );
+        try {
+            node_allocator.construct( new_node, node( value ) );
+        }
+        catch( ... ) {
+            node_allocator.deallocate( new_node, 1 );
+            throw;
+        }
+        new_node->next          = current;
+        new_node->previous      = current->previous;
+        current->previous->next = new_node;
+        current->previous       = new_node;
+        ++item_count;
+        return( new_node );
+    }
+
+    // pop( node * )
+    // *************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::pop( node *current )
+    {
+        // Remove (destory and deallocate) an element.
+
+        current->next->previous = current->previous;
+        current->previous->next = current->next;
+        node_allocator.destroy( current );
+        node_allocator.deallocate( current, 1 );
+        --item_count;
+    }
+
+    // =============================
+    // Ordinary functions using list
+    // =============================
+
+    template< class Type, class Allocator >
+    bool operator==( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        typename list< Type, Allocator >::const_iterator p1;
+        typename list< Type, Allocator >::const_iterator p2;
+
+        if( x.size( ) != y.size( ) ) return( false );
+
+        p1 = x.begin( );
+        p2 = y.begin( );
+        while( p1 != x.end( ) ) {
+            if( !( *p1 == *p2 ) ) return( false );
+            ++p1;
+            ++p2;
+        }
+        return( true );
+    }
+
+    template< class Type, class Allocator >
+    inline
+    bool operator!=( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        return( !( x == y ) );
+    }
+
+    template< class Type, class Allocator >
+    inline
+    bool operator<( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        return( lexicographical_compare( x.begin( ), x.end( ), y.begin( ), y.end( ) ) );
+    }
+
+    template< class Type, class Allocator >
+    inline
+    bool operator>( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        return( y < x );
+    }
+
+    template< class Type, class Allocator >
+    inline
+    bool operator>=( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        return( !( x < y ) );
+    }
+
+    template< class Type, class Allocator >
+    inline
+    bool operator<=( const list< Type, Allocator > &x, const list< Type, Allocator > &y )
+    {
+        return( !( y < x ) );
+    }
+
+} // namespace std
+
+#endif

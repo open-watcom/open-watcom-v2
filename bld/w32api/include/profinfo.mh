@@ -1,0 +1,47 @@
+/*
+ *  profinfo.h  Profile information data structure
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_PROFINFO
+#define _INC_PROFINFO
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Profile information */
+typedef struct _PROFILEINFOA {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    LPSTR   lpUserName;
+    LPSTR   lpProfilePath;
+    LPSTR   lpDefaultPath;
+    LPSTR   lpServerName;
+    LPSTR   lpPolicyPath;
+    HANDLE  hProfile;
+} PROFILEINFOA;
+typedef PROFILEINFOA    *LPPROFILEINFOA;
+typedef struct _PROFILEINFOW {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    LPWSTR  lpUserName;
+    LPWSTR  lpProfilePath;
+    LPWSTR  lpDefaultPath;
+    LPWSTR  lpServerName;
+    LPWSTR  lpPolicyPath;
+    HANDLE  hProfile;
+} PROFILEINFOW;
+typedef PROFILEINFOW    *LPPROFILEINFOW;
+#ifdef UNICODE
+typedef PROFILEINFOW    PROFILEINFO;
+typedef LPPROFILEINFOW  LPPROFILEINFO;
+#else
+typedef PROFILEINFOA    PROFILEINFO;
+typedef LPPROFILEINFOA  LPPROFILEINFO;
+#endif
+
+:include cplusepi.sp
+
+#endif /* _INC_PROFINFO */

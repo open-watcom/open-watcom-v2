@@ -1,6 +1,5 @@
 d a
 op stack=20k
-sys os2v2
 f try
 import WINQUEUEFROMID PMWIN.305
 import WINREPLYMSG PMWIN.307

@@ -38,7 +38,6 @@ typedef uint_16                 thread_id;
 typedef uint_16                 section_id;
 typedef unsigned long           clicks_t;
 typedef unsigned long           sample_index_t;
-typedef unsigned long           dos_addr;
 
 enum {
     SORT_COUNT = 0,
@@ -63,7 +62,7 @@ typedef struct ovl_entry {
     char *                      fname;
     uint_16                     start_para;
     addr_seg                    base_para;
-    fpos_t                      disk_addr;
+    off_t                       disk_addr;
     unsigned                    separate_overlay : 1;
 } ovl_entry;
 

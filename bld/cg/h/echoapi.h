@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public interface to echoapi module.
 *
 ****************************************************************************/
 
 
 #ifndef __ECHOAPI__H__
-#define __ECAPIHO__H__
+#define __ECHOAPI__H__
 
 #ifndef NDEBUG
 
@@ -39,32 +38,30 @@
 #include "seldef.h"
 #include "tree.h"
 
-void EchoAPI( const char* text, ... );
-cg_name EchoAPICgnameReturn( cg_name retn );
-int EchoAPIHexReturn( int retn );
-int EchoAPIIntReturn( int retn );
+void        EchoAPI( const char *text, ... );
+cg_name     EchoAPICgnameReturn( cg_name retn );
+int         EchoAPIHexReturn( int retn );
+int         EchoAPIIntReturn( int retn );
 call_handle EchoAPICallHandleReturn( call_handle retn );
 select_node *EchoAPISelHandleReturn( select_node *retn );
 call_handle EchoAPITempHandleReturn( temp_handle retn );
-cg_type EchoAPICgtypeReturn( cg_type retn );
+cg_type     EchoAPICgtypeReturn( cg_type retn );
 
-void EchoAPIInit();
-void EchoAPIFini();
+void        EchoAPIInit( void );
+void        EchoAPIFini( void );
 
+void        EchoAPICallBack( tn node, cg_callback rtn, callback_handle param, char *start_end );
 
-void EchoAPICallBack(tn node, cg_callback rtn ,callback_handle param ,char *start_end );
+void        hdlAddUnary( handle_type hdltype, tn ffihandle, tn old );
+void        hdlAddBinary( handle_type hdltype, tn handle, tn old_l, tn old_r );
+void        hdlAddTernary( handle_type hdltype, tn handle, tn old_t, tn old_l, tn old_r );
 
+void        handleUseOnce( handle_type hdltype, use_info *useinfo );
+void        hdlAllUsed( handle_type hdltype );
+void        verifyNotUserType( cg_type type );
 
-void hdlAddUnary( handle_type hdltype, tn ffihandle, tn old );
-void hdlAddBinary( handle_type hdltype, tn handle, tn old_l, tn old_r );
-void hdlAddTernary( handle_type hdltype, tn handle, tn old_t, tn old_l, tn old_r );
-
-void handleUseOnce( handle_type hdltype, use_info *useinfo );
-void hdlAllUsed( handle_type hdltype );
-void verifyNotUserType( cg_type type );
-
-void handleAdd( handle_type hdltype, use_info *useinfo );
-void handleExists( handle_type hdltype, use_info *useinfo );
+void        handleAdd( handle_type hdltype, use_info *useinfo );
+void        handleExists( handle_type hdltype, use_info *useinfo );
 
 #define hdlUseOnce( type, handle ) ( handleUseOnce( type, (use_info *)handle ) )
 #define hdlAdd( type, handle ) ( handleAdd( type, (use_info *)handle ) )

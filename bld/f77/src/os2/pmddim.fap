@@ -1,0 +1,642 @@
+c$ifdef INCL_GRE
+c$define INCL_GRE_ARCS
+c$define INCL_GRE_LINES
+c$define INCL_GRE_SCANS
+c$define INCL_GRE_BITMAPS
+c$define INCL_WINPOINTERS
+c$define INCL_GRE_STRINGS
+c$define INCL_GRE_MARKERS
+c$define INCL_GRE_STRINGS
+c$define INCL_GRE_PATHS
+c$define INCL_GRE_REGIONS
+c$define INCL_GRE_CLIP
+c$define INCL_GRE_XFORMS
+c$define INCL_GRE_DEVMISC1
+c$define INCL_GRE_DEVMISC2
+c$define INCL_GRE_PICK
+c$define INCL_GRE_DEVMISC3
+c$define INCL_GRE_DEVMISC2
+c$define INCL_GRE_COLORTABLE
+c$define INCL_GRE_DEVICE
+c$define INCL_GRE_PALETTE
+c$define INCL_GRE_DCS
+c$define INCL_GRE_DEVSUPPORT
+c$define INCL_GRE_SETID
+c$define INCL_GRE_LCID
+c$define INCL_GRE_FONTS
+c$define INCL_GRE_JOURNALING
+c$define INCL_GRE_HFONT
+c$define INCL_GRE_POLYGON
+c$endif
+
+c$pragma aux (__syscall) Gre32Entry2 parm( value )
+c$pragma aux (__syscall) Gre32Entry3 parm( value )
+c$pragma aux (__syscall) Gre32Entry4 parm( value )
+c$pragma aux (__syscall) Gre32Entry5 parm( value )
+c$pragma aux (__syscall) Gre32Entry6 parm( value )
+c$pragma aux (__syscall) Gre32Entry7 parm( value )
+c$pragma aux (__syscall) Gre32Entry8 parm( value )
+c$pragma aux (__syscall) Gre32Entry9 parm( value )
+c$pragma aux (__syscall) Gre32Entry10 parm( value )
+
+c$ifdef INCL_GRE_ARCS
+
+c$pragma aux GreGetArcParameters parm( value, reference )
+
+c$pragma aux GreSetArcParameters parm( value, reference )
+
+c$pragma aux GreArc parm( value, reference )
+
+c$pragma aux GrePartialArc parm( value, reference, value, value, value )
+
+c$pragma aux GreFullArcInterior parm( value, value )
+
+c$pragma aux GreFullArcBoundary parm( value, value )
+
+c$pragma aux GreFullArcBoth parm( value, value )
+
+c$pragma aux GreBoxInterior parm( value, reference )
+
+c$pragma aux GreBoxBoundary parm( value, reference )
+
+c$pragma aux GreBoxBoth parm( value, reference )
+
+c$pragma aux GrePolyFillet parm( value, reference, value )
+
+c$pragma aux GrePolyFilletSharp parm( value, reference, value, reference )
+
+c$pragma aux GrePolySpline parm( value, reference, value )
+
+c$pragma aux GreDrawConicsInPath parm( value, reference, reference, value )
+
+c$pragma aux GreCookWholePath parm( value, reference )
+
+c$pragma aux GreCookPathCurves parm( value, reference, reference )
+
+c$pragma aux GreRenderPath parm( value, reference, reference, value, value, value, reference, value )
+
+c$endif
+
+c$ifdef INCL_GRE_LINES
+
+c$pragma aux GreDisjointLines parm( value, reference, value )
+
+c$pragma aux GreGetCurrentPosition parm( value, reference )
+
+c$pragma aux GreSetCurrentPosition parm( value, reference )
+
+c$pragma aux GrePolyLine parm( value, reference, value )
+
+c$pragma aux GreDrawLinesInPath parm( value, reference, reference, value )
+
+c$pragma aux GrePolyShortLine parm( value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_SCANS
+
+c$pragma aux GrePolyScanline parm( value, reference )
+	
+c$endif
+
+c$ifdef INCL_GRE_BITMAPS
+
+c$pragma aux GreDrawBits parm( value, reference, reference, value, reference, value, value )
+
+c$pragma aux GreDeviceCreateBitmap parm( value, reference, value, reference, reference )
+
+c$pragma aux GreDeviceDeleteBitmap parm( value, value, reference, value )
+
+c$pragma aux GreDeviceSelectBitmap parm( value, value )
+
+c$pragma aux GreBitblt parm( value, value, value, reference, value, value, reference )
+
+c$pragma aux GreGetPel parm( value, reference )
+
+c$pragma aux GreSetPel parm( value, reference )
+
+c$pragma aux GreImageData parm( value, reference, value, value )
+
+c$pragma aux GreSaveScreenBits parm( value, reference )
+
+c$pragma aux GreRestoreScreenBits parm( value, value, reference, value )
+
+c$pragma aux GreDrawBorder parm( value, reference, value, value, value, value, value )
+
+c$pragma aux GreDeviceSetCursor parm( value, reference, value )
+
+c$pragma aux GreGetBitmapBits parm( value, value, value, value, reference, reference )
+
+c$pragma aux GreSetBitmapBits parm( value, value, value, value, reference, reference )
+
+c$endif
+
+c$ifdef INCL_WINPOINTERS
+
+c$pragma aux GreSetColorCursor parm( value, reference )
+	
+c$endif
+
+c$ifdef INCL_GRE_STRINGS
+
+c$pragma aux GreCharString parm( value, value, reference )
+
+c$pragma aux GreCharStringPos parm( value, reference, reference, value, value, reference, reference, reference )
+
+c$pragma aux GreQueryTextBox parm( value, value, reference, value, reference )
+
+c$pragma aux GreQueryCharPositions parm( value, reference, value, value, reference, reference, reference )
+
+c$pragma aux GreQueryWidthTable parm( value, value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_MARKERS
+
+c$pragma aux GrePolyMarker parm( value, reference, value )
+
+c$endif
+
+c$ifdef INCL_GRE_STRINGS
+
+c$pragma aux GreCharRect parm( value, reference, reference )
+
+c$pragma aux GreCharStr parm( value, reference, reference )
+
+c$pragma aux GreScrollRect parm( value, reference, reference )
+
+c$pragma aux GreUpdateCursor parm( value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_PATHS
+
+c$pragma aux GreBeginArea parm( value, value )
+
+c$pragma aux GreEndArea parm( value, value )
+
+c$pragma aux GreBeginPath parm( value, reference )
+
+c$pragma aux GreEndPath parm( value, value )
+
+c$pragma aux GreCloseFigure parm( value )
+
+c$pragma aux GreFillPath parm( value, reference, value )
+
+c$pragma aux GreOutlinePath parm( value, reference, value )
+
+c$pragma aux GreModifyPath parm( value, reference, value )
+
+c$pragma aux GreStrokePath parm( value, reference, value )
+
+c$pragma aux GreSelectClipPath parm( value, reference, value )
+
+c$pragma aux GreSavePath parm( value, value )
+
+c$pragma aux GreRestorePath parm( value, value )
+
+c$pragma aux GreClip1DPath parm( value, reference, reference )
+
+c$pragma aux GreDrawRawPath parm( value, reference )
+
+c$pragma aux GreDrawCookedPath parm( value, reference, reference, value )
+
+c$pragma aux GreAreaSetAttributes parm( value, value, value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_REGIONS
+
+c$pragma aux GreGetRegionBox parm( value, value, reference )
+
+c$pragma aux GreGetRegionRects parm( value, value, reference, reference, reference )
+
+c$pragma aux GreOffsetRegion parm( value, value, reference )
+
+c$pragma aux GrePtInRegion parm( value, value, reference )
+
+c$pragma aux GreRectInRegion parm( value, value, reference )
+
+c$pragma aux GreCreateRectRegion parm( value, reference, value )
+
+c$pragma aux GreDestroyRegion parm( value, value )
+
+c$pragma aux GreSetRectRegion parm( value, value, reference, value )
+
+c$pragma aux GreCombineRegion parm( value, value, value, value, value )
+
+c$pragma aux GreCombineRectRegion parm( value, value, reference, value, value )
+
+c$pragma aux GreCombineShortLineRegion parm( value, value, reference )
+
+c$pragma aux GreEqualRegion parm( value, value, value )
+
+c$pragma aux GrePaintRegion parm( value, value )
+
+c$pragma aux GreSetRegionOwner parm( value, value, value )
+
+c$pragma aux GreFrameRegion parm( value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_CLIP
+
+c$pragma aux GreGetClipBox parm( value, reference )
+
+c$pragma aux GreGetClipRects parm( value, reference, reference, reference )
+
+c$pragma aux GreOffsetClipRegion parm( value, reference )
+
+c$pragma aux GrePtVisible parm( value, reference )
+
+c$pragma aux GreRectVisible parm( value, reference )
+
+c$pragma aux GreQueryClipRegion parm( value )
+
+c$pragma aux GreSelectClipRegion parm( value, value, reference )
+
+c$pragma aux GreIntersectClipRectangle parm( value, reference )
+
+c$pragma aux GreExcludeClipRectangle parm( value, reference )
+
+c$pragma aux GreSetXformRect parm( value, reference )
+
+c$pragma aux GreSaveRegion parm( value, value )
+
+c$pragma aux GreRestoreRegion parm( value, value )
+
+c$pragma aux GreClipPathCurves parm( value, reference, reference )
+
+c$pragma aux GreSelectPathRegion parm( value, value )
+
+c$pragma aux GreRegionSelectBitmap parm( value, value )
+
+c$pragma aux GreCopyClipRegion parm( value, value, reference, value )
+
+c$pragma aux GreSetupDC parm( value, value, value, value, reference, value )
+
+c$endif
+
+c$ifdef INCL_GRE_XFORMS
+
+c$pragma aux GreGetPageUnits parm( value, reference )
+
+c$pragma aux GreSetPageUnits parm( value, value, value, value )
+
+c$pragma aux GreGetModelXform parm( value, reference )
+
+c$pragma aux GreSetModelXform parm( value, reference, value )
+
+c$pragma aux GreGetWindowViewportXform parm( value, reference )
+
+c$pragma aux GreSetWindowViewportXform parm( value, reference, value )
+
+c$pragma aux GreGetGlobalViewingXform parm( value, reference )
+
+c$pragma aux GreSetGlobalViewingXform parm( value, reference, value )
+
+c$pragma aux GreSaveXformData parm( value, value, reference )
+
+c$pragma aux GreRestoreXformData parm( value, value, reference )
+
+c$pragma aux GreGetPageViewport parm( value, reference )
+
+c$pragma aux GreSetPageViewport parm( value, reference, value )
+
+c$pragma aux GreGetGraphicsField parm( value, reference )
+
+c$pragma aux GreSetGraphicsField parm( value, reference )
+
+c$pragma aux GreGetViewingLimits parm( value, reference )
+
+c$pragma aux GreSetViewingLimits parm( value, reference )
+
+c$pragma aux GreQueryViewportSize parm( value, value, value, reference )
+
+c$pragma aux GreConvert parm( value, value, value, reference, value )
+
+c$pragma aux GreConvertPath parm( value, reference, value, value, reference, value )
+
+c$pragma aux GreSaveXform parm( value, value )
+
+c$pragma aux GreRestoreXform parm( value, value )
+
+c$pragma aux GreMultiplyXforms parm( value, reference, reference, value )
+
+c$pragma aux GreConvertWithMatrix parm( value, reference, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC1
+
+c$pragma aux GreDeviceGetAttributes parm( value, value, value, reference )
+
+c$pragma aux GreDeviceSetAVIOFont2 parm( value, reference, reference, value )
+
+c$pragma aux GreGetPairKerningTable parm( value, value, reference )
+
+c$pragma aux GreDeviceSetAVIOFont parm( value, reference, value )
+
+c$pragma aux GreDeviceSetAttributes parm( value, value, value, value, reference )
+
+c$pragma aux GreDeviceSetGlobalAttribute parm( value, value, value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC2
+
+c$pragma aux GreNotifyClipChange parm( value, reference, value, value )
+
+c$pragma aux GreNotifyTransformChange parm( value, value, reference )
+
+c$pragma aux GreRealizeFont parm( value, value, reference, reference )
+
+c$pragma aux GreErasePS parm( value )
+
+c$pragma aux GreSetStyleRatio parm( value, reference )
+
+c$pragma aux GreDeviceQueryFontAttributes parm( value, value, reference )
+
+c$pragma aux GreDeviceQueryFonts parm( value, value, value, reference, value, reference )
+
+c$pragma aux GreDeviceInvalidateVisRegion parm( value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_PICK
+
+c$pragma aux GreGetPickWindow parm( value, reference )
+
+c$pragma aux GreSetPickWindow parm( value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC3
+
+c$pragma aux GreResetBounds parm( value, value )
+
+c$pragma aux GreGetBoundsData parm( value, value, reference )
+
+c$pragma aux GreAccumulateBounds parm( value, reference )
+
+c$pragma aux GreGetCodePage parm( value )
+
+c$pragma aux GreSetCodePage parm( value, value )
+
+c$pragma aux GreLockDevice parm( value )
+
+c$pragma aux GreUnlockDevice parm( value )
+
+c$pragma aux GreDeath parm( value )
+
+c$pragma aux GreResurrection parm( value, value, reference )
+
+c$pragma aux GreGetDCOrigin parm( value, reference )
+
+c$pragma aux GreDeviceSetDCOrigin parm( value, reference )
+
+c$pragma aux GreGetLineOrigin parm( value, reference )
+
+c$pragma aux GreSetLineOrigin parm( value, reference, value )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVMISC2
+
+c$pragma aux GreGetStyleRatio parm( value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_COLORTABLE
+
+c$pragma aux GreQueryColorData parm( value, value, reference )
+
+c$pragma aux GreQueryLogColorTable parm( value, value, value, value, reference )
+
+c$pragma aux GreCreateLogColorTable parm( value, value, value, value, value, reference )
+
+c$pragma aux GreRealizeColorTable parm( value )
+
+c$pragma aux GreUnrealizeColorTable parm( value )
+
+c$pragma aux GreQueryRealColors parm( value, value, value, value, reference )
+
+c$pragma aux GreQueryNearestColor parm( value, value, value )
+
+c$pragma aux GreQueryColorIndex parm( value, value, value )
+
+c$pragma aux GreQueryRGBColor parm( value, value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVICE
+
+c$pragma aux GreQueryDeviceBitmaps parm( value, reference, value )
+
+c$pragma aux GreQueryDeviceCaps parm( value, value, reference, value )
+
+c$pragma aux GreEscape parm( value, value, value, reference, reference, reference )
+
+c$pragma aux GreQueryHardcopyCaps parm( value, value, value, reference )
+
+c$pragma aux GreQueryDevResource2 parm( value, value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_PALETTE
+
+c$pragma aux GreDeviceCreatePalette parm( value, reference, value )
+
+c$pragma aux GreDeviceDeletePalette parm( value, value )
+
+c$pragma aux GreDeviceSetPaletteEntries parm( value, value, value, value, value, reference )
+
+c$pragma aux GreDeviceAnimatePalette parm( value, value, value, value, value, reference )
+
+c$pragma aux GreDeviceResizePalette parm( value, value, value )
+
+c$pragma aux GreRealizePalette parm( value, value, reference )
+
+c$pragma aux GreQueryHWPaletteInfo parm( value, value, value, reference )
+
+c$pragma aux GreUpdateColors parm( value )
+
+c$pragma aux GreQueryPaletteRealization parm( value, value, value, reference )
+
+c$pragma aux GreGetVisRects parm( value, reference, reference, reference )
+
+c$pragma aux GreCreatePalette parm( value, value, value, reference )
+
+c$pragma aux GreDeletePalette parm( value )
+
+c$pragma aux GreSelectPalette parm( value, value )
+
+c$pragma aux GreSetPaletteEntries parm( value, value, value, value, reference )
+
+c$pragma aux GreAnimatePalette parm( value, value, value, value, reference )
+
+c$pragma aux GreQueryPalette parm( value )
+
+c$pragma aux GreQueryPaletteInfo parm( value, value, value, value, reference )
+
+c$pragma aux GreSetPaletteOwner parm( value, value )
+
+c$pragma aux GreResizePalette parm( value, value )
+
+c$pragma aux GreQueryDefaultPaletteInfo parm( value, value, value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_DCS
+
+c$pragma aux GreOpenDC parm( value, value, value, value, reference )
+
+c$pragma aux GreCloseDC parm( value )
+
+c$pragma aux GreResetDC parm( value, value )
+
+c$pragma aux GreGetHandle parm( value, value )
+
+c$pragma aux GreSetHandle parm( value, value, value )
+
+c$pragma aux GreGetProcessControl parm( value )
+
+c$pragma aux GreSetProcessControl parm( value, value, value )
+
+c$pragma aux GreSaveDC parm( value )
+
+c$pragma aux GreRestoreDC parm( value, value )
+
+c$pragma aux GreQueryDeviceNames parm( value, reference, reference, reference, reference, reference )
+
+c$pragma aux GreQueryEngineVersion parm()
+
+c$pragma aux GreSetDCOwner parm( value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_DEVSUPPORT
+
+c$pragma aux GreInvalidateVisRegion parm( value, value, reference )
+
+c$pragma aux GreCreateBitmap parm( value, reference, value, reference, reference )
+
+c$pragma aux GreDeleteBitmap parm( value )
+
+c$pragma aux GreSelectBitmap parm( value, value )
+
+c$pragma aux GreGetBitmapParameters parm( value, reference )
+
+c$pragma aux GreGetBitmapDimension parm( value, reference )
+
+c$pragma aux GreSetBitmapDimension parm( value, reference )
+
+c$pragma aux GreSetCursor parm( value, reference, value )
+
+c$pragma aux GreGetAttributes parm( value, value, value, reference )
+
+c$pragma aux GreSetAttributes parm( value, value, value, value, reference )
+
+c$pragma aux GreSetGlobalAttribute parm( value, value, value, value )
+
+c$pragma aux GreSetBitmapOwner parm( value, value )
+
+c$pragma aux GreGetDefaultAttributes parm( value, value, value, reference )
+
+c$pragma aux GreSetDefaultAttributes parm( value, value, value, reference )
+
+c$pragma aux GreGetDefaultArcParameters parm( value, reference )
+
+c$pragma aux GreSetDefaultArcParameters parm( value, reference )
+
+c$pragma aux GreGetDefaultViewingLimits parm( value, reference )
+
+c$pragma aux GreSetDefaultViewingLimits parm( value, reference )
+
+c$pragma aux GreInitializeAttributes parm( value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_SETID
+
+c$pragma aux GreDeleteSetId parm( value, value )
+
+c$pragma aux GreQueryNumberSetIds parm( value, value )
+
+c$pragma aux GreQuerySetIds parm( value, value, reference, reference, reference, value )
+
+c$endif
+
+c$ifdef INCL_GRE_LCID
+
+c$pragma aux GreQueryBitmapHandle parm( value, value )
+
+c$pragma aux GreSetBitmapID parm( value, value, value )
+
+c$pragma aux GreCopyDCLoadData parm( value, value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_FONTS
+
+c$pragma aux GreQueryLogicalFont parm( value, value, reference, reference, value )
+
+c$pragma aux GreCreateLogicalFont parm( value, value, reference, reference )
+
+c$pragma aux GreLoadFont parm( value )
+
+c$pragma aux GreUnloadFont parm( value )
+
+c$pragma aux GreQueryFonts parm( value, value, value, reference, value, reference )
+
+c$pragma aux GreQueryFontAttributes parm( value, value, reference )
+
+c$pragma aux GreInstallIFI parm( value, value, value, value )
+
+c$pragma aux GreLoadPublicFont parm( value )
+
+c$pragma aux GreUnLoadPublicFont parm( value )
+
+c$pragma aux GreQueryCodePageVector parm( value )
+
+c$pragma aux GreQueryFontFileDescriptions parm( value, value, reference )
+
+c$endif
+
+c$ifdef INCL_GRE_JOURNALING
+
+c$pragma aux GreCreateJournalFile parm( value, value, value )
+
+c$pragma aux GreDeleteJournalFile parm( value )
+
+c$pragma aux GreStartJournalFile parm( value, value )
+
+c$pragma aux GreStopJournalFile parm( value, value )
+
+c$pragma aux GrePlayJournalFile parm( value, value )
+
+c$pragma aux GreOpenJournalFile parm( value, value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_HFONT
+
+c$pragma aux GreCreateFontHandle parm( value, reference, reference )
+
+c$pragma aux GreQueryFontHandle parm( value, reference, reference, reference, value )
+
+c$pragma aux GreSelectFontHandle parm( value, value )
+
+c$pragma aux GreDeleteFontHandle parm( value )
+
+c$pragma aux GreSetFontHandleOwner parm( value, value )
+
+c$endif
+
+c$ifdef INCL_GRE_POLYGON
+
+c$pragma aux GreDrawRLE parm( value, reference )
+
+c$pragma aux GrePolySet parm( value, value, value, reference )
+
+c$endif

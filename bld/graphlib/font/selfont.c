@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Select the current font.
 *
 ****************************************************************************/
 
@@ -33,13 +32,13 @@
 #include "gdefn.h"
 
 
-void _FAR * _FAR _CGRAPH _selectfont( void _FAR *new_font )
+font_def _WCI86FAR * _WCI86FAR _CGRAPH _selectfont( font_def _WCI86FAR *new_font )
 /*=========================================================
 
    This routine sets the current font. */
 
 {
-    void _FAR           *prev;
+    font_def _WCI86FAR           *prev;
 
     prev = _CurrFont;
     _CurrFont = new_font;

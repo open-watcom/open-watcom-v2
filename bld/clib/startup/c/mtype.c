@@ -24,28 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Machine type determination.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "nonibm.h"
 #include "mtype.h"
 
-_machine_type __MachineType( void ) {
-    #if defined(__AXP__)
-        return( _MT_UNKNOWN_AXP );
-    #elif defined(__PPC__)
-        return( _MT_UNKNOWN_PPC );
-    #else
-        if( __NonIBM == -1 ) {
-            return( _MT_UNKNOWN );
-        } else if( __NonIBM == 0 ) {
-            return( _MT_AT );
-        } else {
-            return( _MT_NEC98 );
-        }
-    #endif
+_machine_type __MachineType( void )
+{
+#if defined(__AXP__)
+    return( _MT_UNKNOWN_AXP );
+#elif defined(__PPC__)
+    return( _MT_UNKNOWN_PPC );
+#else
+    return( _MT_AT );
+#endif
 }

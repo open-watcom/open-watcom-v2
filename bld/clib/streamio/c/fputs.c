@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fputs() - put string to stream.
 *
 ****************************************************************************/
 
@@ -35,24 +34,18 @@
 #include <stdio.h>
 #include "fileacc.h"
 #include "rtdata.h"
+#include "flush.h"
+#include "streamio.h"
 
 
-extern void __ioalloc( FILE * );
-extern int  __flush( FILE * );
-
-
-_WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )    /* put string s to file fp */
+_WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
 {
     const CHAR_TYPE     *start;
-    int         c;
-    int         not_buffered;
-    int         rc;
+    INTCHAR_TYPE        c;
+    int                 not_buffered;
+    int                 rc;
 
-    #ifndef __WIDECHAR__
-        _ValidFile( fp, EOF );
-    #else
-        _ValidFile( fp, WEOF );
-    #endif
+    _ValidFile( fp, __F_NAME(EOF,WEOF) );
     _AccessFile( fp );
 
     if( _FP_BASE(fp) == NULL ) {
@@ -68,22 +61,17 @@ _WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )    /* put s
     start = s;
     while( c = *s ) {
         s++;
-        #ifndef __WIDECHAR__
-            if( (fputc)( c, fp ) == EOF ) {         /* 23-oct-91 */
-                rc = EOF;
-                break;
-            }
-        #else
-            if( (fputwc)( c, fp ) == WEOF ) {       /* 23-oct-91 */
-                rc = -1;
-                break;
-            }
-        #endif
+        if( __F_NAME(fputc,fputwc)( c, fp ) == __F_NAME(EOF,WEOF) ) {
+            rc = EOF;
+            break;
+        }
     }
     if( not_buffered ) {
         fp->_flag &= ~_IOLBF;
         fp->_flag |= _IONBF;
-        if( rc == 0 ) rc = __flush( fp );               /* 23-oct-91 */
+        if( rc == 0 ) {
+            rc = __flush( fp );
+        }
     }
     if( rc == 0 ) {
         /* return the number of items written */

@@ -44,11 +44,11 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL     IEDDEStart              ( HINSTANCE inst );
-extern void     IEDDEEnd                ( void );
-extern BOOL     IEDDEDumpConversation   ( HINSTANCE inst );
-extern BOOL     IEDDEStartConversation  ( void );
-extern void     IEDDEEndConversation    ( void );
-extern BOOL     IEUpdateDDEEditSession  ( void );
+extern BOOL IEDDEStart( HINSTANCE inst );
+extern void IEDDEEnd( void );
+extern BOOL IEDDEDumpConversation( HINSTANCE inst );
+extern BOOL IEDDEStartConversation( void );
+extern void IEDDEEndConversation( void );
+extern BOOL IEUpdateDDEEditSession( void );
 
 #endif

@@ -31,5 +31,5 @@
 
 
 void MemFree( void *ptr );
-void *MemAlloc( unsigned size );
-void *MemReAlloc( void *ptr, unsigned size );
+void *MemAlloc( size_t size );
+void *MemReAlloc( void *ptr, size_t size );

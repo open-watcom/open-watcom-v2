@@ -1,0 +1,3 @@
+Change log for wipfc
+
+2009-11-05	Autotoolized the sources, testing particularly <cstdint>

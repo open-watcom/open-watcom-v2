@@ -42,9 +42,9 @@ extern  extended          QATAN2(extended,extended);
 */
 dcomplex _IF_C16Pow( double a, double b, double c, double d );
 
-_WMRTLINK xcomplex _IF_C32Pow( extended a, extended b, extended c, extended d ) {
-//==============================================================================
-
+_WMRTLINK xcomplex _IF_C32Pow( extended a, extended b, extended c, extended d )
+//=============================================================================
+{
 // Return the real part of the result of taking one extended precision
 // complex number to the power of another.
 // ( a, b ) ** ( c, d ) = exp( ( c,d ) * log( a,b ) )

@@ -1,0 +1,211 @@
+/*
+ *  variant.h   Variant definitions and functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _VARIANT_H_
+#define _VARIANT_H_
+
+:include readonly.sp
+
+/* Forward declarations */
+typedef interface IDispatch IDispatch;
+
+/* OLE string data types */
+typedef char                OLECHAR;
+typedef OLECHAR FAR         *LPOLESTR;
+typedef const OLECHAR FAR   *LPCOLESTR;
+#define OLESTR( x )         x
+
+/* String data type for automation */
+typedef OLECHAR FAR *BSTR;
+typedef BSTR FAR    *LPBSTR;
+
+/* Boolean data type for automation */
+typedef short   VARIANT_BOOL;
+
+/* Date data type */
+typedef double  DATE;
+
+/* Variant type data type */
+typedef unsigned short  VARTYPE;
+
+/* Safe array features */
+#define FADF_AUTO       0x0001
+#define FADF_STATIC     0x0002
+#define FADF_EMBEDDED   0x0004
+#define FADF_FIXEDSIZE  0x0010
+#define FADF_BSTR       0x0100
+#define FADF_UNKNOWN    0x0200
+#define FADF_DISPATCH   0x0400
+#define FADF_VARIANT    0x0800
+
+/* Boolean values for automation */
+#define VARIANT_TRUE    0xFFFF
+#define VARIANT_FALSE   0
+
+/* Variant type flags */
+#define VT_VECTOR   0x1000
+#define VT_ARRAY    0x2000
+#define VT_BYREF    0x4000
+#define VT_RESERVED 0x8000
+
+/* Safe array bound */
+typedef struct FARSTRUCT tagSAFEARRAYBOUND {
+    unsigned long   cElements;
+    long            lLbound;
+} SAFEARRAYBOUND;
+typedef SAFEARRAYBOUND FAR  *LPSAFEARRAYBOUND;
+
+/* Safe array */
+typedef struct FARSTRUCT tagSAFEARRAY {
+    unsigned short  cDims;
+    unsigned short  fFeatures;
+    unsigned short  cbElements;
+    unsigned short  cLocks;
+    unsigned long   handle;
+    void HUGEP      *pvData;
+    SAFEARRAYBOUND  rgsabound[1];
+} SAFEARRAY;
+typedef SAFEARRAY FAR   *LPSAFEARRAY;
+
+/* Currency */
+typedef struct FARSTRUCT tagCY {
+    unsigned long   Lo;
+    long            Hi;
+} CY;
+
+/* Variant types */
+enum VARENUM {
+    VT_EMPTY            = 0,
+    VT_NULL             = 1,
+    VT_I2               = 2,
+    VT_I4               = 3,
+    VT_R4               = 4,
+    VT_R8               = 5,
+    VT_CY               = 6,
+    VT_DATE             = 7,
+    VT_BSTR             = 8,
+    VT_DISPATCH         = 9,
+    VT_ERROR            = 10,
+    VT_BOOL             = 11,
+    VT_VARIANT          = 12,
+    VT_UNKNOWN          = 13,
+    VT_I1               = 16,
+    VT_UI1              = 17,
+    VT_UI2              = 18,
+    VT_UI4              = 19,
+    VT_I8               = 20,
+    VT_UI8              = 21,
+    VT_INT              = 22,
+    VT_UINT             = 23,
+    VT_VOID             = 24,
+    VT_HRESULT          = 25,
+    VT_PTR              = 26,
+    VT_SAFEARRAY        = 27,
+    VT_CARRAY           = 28,
+    VT_USERDEFINED      = 29,
+    VT_LPSTR            = 30,
+    VT_LPWSTR           = 31,
+    VT_FILETIME         = 64,
+    VT_BLOB             = 65,
+    VT_STREAM           = 66,
+    VT_STORAGE          = 67,
+    VT_STREAMED_OBJECT  = 68,
+    VT_STORED_OBJECT    = 69,
+    VT_BLOB_OBJECT      = 70,
+    VT_CF               = 71,
+    VT_CLSID            = 72
+};
+
+/* Variant */
+typedef struct FARSTRUCT tagVARIANT {
+    VARTYPE         vt;
+    unsigned short  wReserved1;
+    unsigned short  wReserved2;
+    unsigned short  wReserved3;
+    union {
+        unsigned char       bVal;
+        short               iVal;
+        long                lVal;
+        float               fltVal;
+        double              dblVal;
+#if !defined( __cplusplus ) && !defined( bool )
+        VARIANT_BOOL        bool;
+#endif
+        VARIANT_BOOL        boolVal;
+        SCODE               scode;
+        CY                  cyVal;
+        DATE                date;
+        BSTR                bstrVal;
+        IUnknown FAR        *punkVal;
+        IDispatch FAR       *pdispVal;
+        SAFEARRAY FAR       *parray;
+        unsigned char FAR   *pbVal;
+        short FAR           *piVal;
+        long FAR            *plVal;
+        float FAR           *pfltVal;
+        double FAR          *pdblVal;
+        VARIANT_BOOL FAR    *pbool;
+        VARIANT_BOOL FAR    *pboolVal;
+        SCODE FAR           *pscode;
+        CY FAR              *pcyVal;
+        DATE FAR            *pdate;
+        BSTR FAR            *pbstrVal;
+        IUnknown FAR * FAR  *ppunkVal;
+        IDispatch FAR * FAR *ppdispVal;
+        SAFEARRAY FAR * FAR *pparray;
+        struct FARSTRUCT tagVARIANT FAR *pvarVal;
+        void FAR            *byref;
+#ifdef NONAMELESSUNION
+    } u;
+#else
+    };
+#endif
+} VARIANT;
+typedef VARIANT FAR *LPVARIANT;
+typedef VARIANT     VARIANTARG;
+typedef VARIANT FAR *LPVARIANTARG;
+
+/* Variant access macros */
+#ifdef NONAMELESSUNION
+    #define V_UNION( x, p ) ((x)->u.p)
+#else
+    #define V_UNION( x, p ) ((x)->p)
+#endif
+#define V_VT( x )           ((x)->vt)
+#define V_ISBYREF( x )      (V_VT( x ) & VT_BYREF)
+#define V_ISARRAY( x )      (V_VT( x ) & VT_ARRAY)
+#define V_ISVECTOR( x )     (V_VT( x ) & VT_VECTOR)
+#define V_UI1( x )          V_UNION( x, bVal )
+#define V_UI1REF( x )       V_UNION( x, pbVal )
+#define V_I2( x )           V_UNION( x, iVal )
+#define V_I2REF( x )        V_UNION( x, piVal )
+#define V_I4( x )           V_UNION( x, lVal )
+#define V_I4REF( x )        V_UNION( x, plVal )
+#define V_R4( x )           V_UNION( x, fltVal )
+#define V_R4REF( x )        V_UNION( x, pfltVal )
+#define V_R8( x )           V_UNION( x, dblVal )
+#define V_R8REF( x )        V_UNION( x, pdblVal )
+#define V_BOOL( x )         V_UNION( x, boolVal )
+#define V_BOOLREF( x )      V_UNION( x, pboolVal )
+#define V_ERROR( x )        V_UNION( x, scode )
+#define V_ERRORREF( x )     V_UNION( x, pscode )
+#define V_CY( x )           V_UNION( x, cyVal )
+#define V_CYREF( x )        V_UNION( x, pcyVal )
+#define V_DATE( x )         V_UNION( x, date )
+#define V_DATEREF( x )      V_UNION( x, pdate )
+#define V_BSTR( x )         V_UNION( x, bstrVal )
+#define V_BSTRREF( x )      V_UNION( x, pbstrVal )
+#define V_UNKNOWN( x )      V_UNION( x, punkVal )
+#define V_UNKNOWNREF( x )   V_UNION( x, ppunkVal )
+#define V_DISPATCH( x )     V_UNION( x, pdispVal )
+#define V_DISPATCHREF( x )  V_UNION( x, ppdispVal )
+#define V_VARIANTREF( x )   V_UNION( x, pvarVal )
+#define V_ARRAY( x )        V_UNION( x, parray )
+#define V_ARRAYREF( x )     V_UNION( x, pparray )
+#define V_BYREF( x )        V_UNION( x, byref )
+#define V_NONE( x )         V_I2( x )
+
+#endif /* _VARIANT_H_ */

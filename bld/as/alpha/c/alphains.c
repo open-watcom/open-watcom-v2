@@ -302,7 +302,7 @@ static void addInstructionSymbol( qualifier_flags flags, ins_table *table_entry 
     SymSetLink( sym, (void *)entry );
 }
 
-static void enum_NONE( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_NONE( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //********************************************************************************************************************************
 
     method = method;
@@ -311,7 +311,7 @@ static void enum_NONE( ins_enum_method method, uint_32 mask, uint_8 level, void 
     func( QF_NONE, parm );
 }
 
-static void enum_OF_ADDL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_OF_ADDL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //***********************************************************************************************************************************
 
     method = method;
@@ -321,7 +321,7 @@ static void enum_OF_ADDL( ins_enum_method method, uint_32 mask, uint_8 level, vo
     func( QF_V, parm );
 }
 
-static void enum_DTI_CVTQL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_DTI_CVTQL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //*************************************************************************************************************************************
 
     method = method;
@@ -332,7 +332,7 @@ static void enum_DTI_CVTQL( ins_enum_method method, uint_32 mask, uint_8 level, 
     func( QF_S | QF_V, parm );
 }
 
-static void enum_IEEE_CMPTEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_IEEE_CMPTEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //***************************************************************************************************************************************
 
     method = method;
@@ -342,7 +342,7 @@ static void enum_IEEE_CMPTEQ( ins_enum_method method, uint_32 mask, uint_8 level
     func( QF_S | QF_U, parm );
 }
 
-static void enum_IEEE_CVTQS( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_IEEE_CVTQS( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //**************************************************************************************************************************************
 
     assert( level < 2 );
@@ -366,7 +366,7 @@ static void enum_IEEE_CVTQS( ins_enum_method method, uint_32 mask, uint_8 level,
     }
 }
 
-static void enum_VAX_ADDF_or_CVTGQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_VAX_ADDF_or_CVTGQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //*********************************************************************************************************************************************
 
     assert( level < 3 );
@@ -389,7 +389,7 @@ static void enum_VAX_ADDF_or_CVTGQ( ins_enum_method method, uint_32 mask, uint_8
     }
 }
 
-static void enum_VAX_CMPGEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_VAX_CMPGEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //**************************************************************************************************************************************
 
     method = method;
@@ -399,7 +399,7 @@ static void enum_VAX_CMPGEQ( ins_enum_method method, uint_32 mask, uint_8 level,
     func( QF_S, parm );
 }
 
-static void enum_VAX_CVTQF( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_VAX_CVTQF( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //*************************************************************************************************************************************
 
     method = method;
@@ -409,7 +409,7 @@ static void enum_VAX_CVTQF( ins_enum_method method, uint_32 mask, uint_8 level, 
     func( QF_C, parm );
 }
 
-static void enum_IEEE_ADDS_or_CVTTQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, void * ), void *parm ) {
+static void enum_IEEE_ADDS_or_CVTTQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //**********************************************************************************************************************************************
 
     assert( level < 4 );
@@ -447,7 +447,7 @@ static void enum_IEEE_ADDS_or_CVTTQ( ins_enum_method method, uint_32 mask, uint_
     }
 }
 
-typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qualifier_flags, void * ), void * );
+typedef void (*enumFunc_t)( ins_enum_method, uint_32, uint_8, void (*func)( qualifier_flags, ins_table * ), void * );
 
 #define PICK( a, b )    b,
 static enumFunc_t enumFunc[] = {
@@ -455,7 +455,7 @@ static enumFunc_t enumFunc[] = {
 };
 #undef PICK
 
-static void enumInstructions( ins_enum_method method, void (*func)( qualifier_flags set, void *parm ), void *parm ) {
+static void enumInstructions( ins_enum_method method, void (*func)( qualifier_flags set, ins_table *parm ), void *parm ) {
 //************************************************************************************************
 // Depending on which enum_method it belongs to, different instruction-
 // enumeration functions will be called to generate all the possible

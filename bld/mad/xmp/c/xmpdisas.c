@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Skeleton MAD machine code disassembly routines.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "xmp.h"
 #include "xmptypes.h"
 #include "madregs.h"

@@ -44,27 +44,26 @@
 void *RcMemMalloc( unsigned size )
 {
 #ifdef DEBUG_RCMEM
-    return ( WRMemAlloc ( size ) );
+    return ( WRMemAlloc( size ) );
 #else
-    return ( malloc ( size ) );
+    return ( malloc( size ) );
 #endif
 }
 
 void RcMemFree( void *ptr )
 {
 #ifdef DEBUG_RCMEM
-    WRMemFree ( ptr );
+    WRMemFree( ptr );
 #else
-    free ( ptr );
+    free( ptr );
 #endif
 }
 
-void *RcMemRealloc ( void *old_ptr, unsigned newsize )
+void *RcMemRealloc( void *old_ptr, unsigned newsize )
 {
 #ifdef DEBUG_RCMEM
-    return ( WRMemRealloc ( old_ptr, newsize ) );
+    return( WRMemRealloc( old_ptr, newsize ) );
 #else
-    return ( realloc ( old_ptr, newsize ) );
+    return( realloc( old_ptr, newsize ) );
 #endif
 }
-

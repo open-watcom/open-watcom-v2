@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Complex absolute value routine.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 
 
 _WMRTLINK double cabs( struct _complex z )
-/*****************************/
-    {
-        return( sqrt( z.x * z.x  +  z.y * z.y ) );
-    }
+/****************************************/
+{
+    return( sqrt( z.x * z.x  +  z.y * z.y ) );
+}

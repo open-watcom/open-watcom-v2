@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implemetation of spawnv() and _wspawnv().
 *
 ****************************************************************************/
 
@@ -35,14 +34,16 @@
 #include <stdlib.h>
 #include <process.h>
 #include "rtdata.h"
-#include "wenviron.h"
+#include "_environ.h"
+
 
 _WCRTLINK int __F_NAME(spawnv,_wspawnv)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *const argv[] )
-    {
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-            return( _wspawnve( mode, path, argv, (const CHAR_TYPE**)_RWD_wenviron ) );
-        #else
-            return( spawnve( mode, path, argv, (const CHAR_TYPE**)_RWD_environ ) );
-        #endif
-    }
+{
+#ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL )
+        __create_wide_environment();
+    return( _wspawnve( mode, path, argv, (const CHAR_TYPE **)_RWD_wenviron ) );
+#else
+    return( spawnve( mode, path, argv, (const CHAR_TYPE **)_RWD_environ ) );
+#endif
+}

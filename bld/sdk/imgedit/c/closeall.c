@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "iedde.h"
 
@@ -43,21 +44,22 @@ static void IECheckIfActiveWindow( void )
             ShowWindow( HMainWindow, SW_RESTORE );
         }
 #ifdef __NT__
-        SetWindowPos( HMainWindow, HWND_TOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
-        SetWindowPos( HMainWindow, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
-        SetWindowPos( HMainWindow, HWND_NOTOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetForegroundWindow( HMainWindow );
 #else
         SetActiveWindow( HMainWindow );
-        SetWindowPos( HMainWindow, HWND_TOP, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( HMainWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 #endif
     }
 }
 
 /*
- * lastChanceSave - is called when the user quits and the current image
- *                  is not yet saved.  Returns FALSE if CANCEL
- *                  is selected, otherwise, it returns TRUE.
+ * lastChanceSave - called when the user quits and the current image
+ *                  is not yet saved
+ *                - returns FALSE if CANCEL is selected
+ *                - otherwise, returns TRUE
  */
 static BOOL lastChanceSave( img_node *node )
 {
@@ -67,9 +69,11 @@ static BOOL lastChanceSave( img_node *node )
     char        *title;
     char        *text;
     char        *msg_text;
-    char        filename[ _MAX_PATH ];
+    char        filename[_MAX_PATH];
 
-    if( !node ) return( TRUE );
+    if( node == NULL ) {
+        return( TRUE );
+    }
 
     IECheckIfActiveWindow();
     if( strnicmp( node->fname, IEImageUntitled, strlen( IEImageUntitled ) ) != 0 ) {
@@ -87,9 +91,9 @@ static BOOL lastChanceSave( img_node *node )
     } else {
         text = IEAllocRCString( WIE_QUERYIMAGESAVE );
     }
-    if( text ) {
+    if( text != NULL ) {
         msg_text = (char *)MemAlloc( strlen( text ) + strlen( filename ) + 1 );
-        if( msg_text ) {
+        if( msg_text != NULL ) {
             sprintf( msg_text, text, filename );
             retcode = _wpi_messagebox( HMainWindow, msg_text, title,
                                        MB_YESNOCANCEL | MB_ICONQUESTION );
@@ -97,11 +101,11 @@ static BOOL lastChanceSave( img_node *node )
         }
         IEFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         IEFreeRCString( title );
     }
 
-    if (retcode == IDYES) {
+    if( retcode == IDYES ) {
         if( ImgedIsDDE ) {
 #ifndef __OS2_PM__
             if( IEUpdateDDEEditSession() ) {
@@ -115,7 +119,7 @@ static BOOL lastChanceSave( img_node *node )
             return( FALSE );
 #endif
         } else {
-            if (!SaveFile( how )) {
+            if( !SaveFile( how ) ) {
                 PrintHintTextByID( WIE_FILENOTSAVED, NULL );
                 return( FALSE );
             } else {
@@ -124,39 +128,42 @@ static BOOL lastChanceSave( img_node *node )
                 SetIsSaved( node->hwnd, TRUE );
             }
         }
-    } else if (retcode == IDCANCEL) {
-        return (FALSE);
+    } else if( retcode == IDCANCEL ) {
+        return( FALSE );
     }
-    return (TRUE);
+    return( TRUE );
+
 } /* lastChanceSave */
 
 /*
- * closeTheImage - Gets the current image the user is editing and deletes
- *                     the node from the linked list and sends a message to
- *                     destroy the mdi child (this will activate another
- *                     child then).
+ * closeTheImage - get the current image the user is editing, delete
+ *                 the node from the linked list, and send a message to
+ *                 destroy the MDI child (this will activate another child)
  */
 static void closeTheImage( img_node *node )
 {
-    char        file_name[ _MAX_PATH ];
+    char        file_name[_MAX_PATH];
     BOOL        ret;
     HWND        hwnd;
 
-    if (!node) return;
+    if( node == NULL ) {
+        return;
+    }
 
-    ret = _wpi_destroywindow( _wpi_getframe(node->viewhwnd) );
+    ret = _wpi_destroywindow( _wpi_getframe( node->viewhwnd ) );
     GetFnameFromPath( node->fname, file_name );
     hwnd = node->hwnd;
     DeleteUndoStack( hwnd );
-    if ( !DeleteNode(hwnd) ) {
+    if( !DeleteNode( hwnd ) ) {
         WImgEditError( WIE_ERR_BAD_HWND, WIE_INTERNAL_002 );
         return;
     }
 #ifdef __OS2_PM__
-    ret = DestroyWindow( _wpi_getframe(hwnd) );
+    ret = DestroyWindow( _wpi_getframe( hwnd ) );
 #else
-    SendMessage(ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L);
+    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L );
 #endif
+
 } /* closeTheImage */
 
 /*
@@ -170,24 +177,24 @@ void CloseAllImages( void )
     HWND        parent;
 
     head = GetHeadNode();
-    if( !head ) {
+    if( head == NULL ) {
         PrintHintTextByID( WIE_NOIMAGESTOCLOSE, NULL );
         return;
     }
 
     current = head;
-    while( current ) {
-        if( !(current->issaved) ) {
+    while( current != NULL ) {
+        if( !current->issaved ) {
             p1 = WPI_MAKEP1( current->hwnd, 0 );
             parent = _wpi_getparent( current->hwnd );
 #ifdef __OS2_PM__
-            _wpi_sendmessage(parent, WM_ACTIVATE, (WPI_PARAM1)p1, 0L);
+            _wpi_sendmessage( parent, WM_ACTIVATE, (WPI_PARAM1)p1, 0L );
 #else
             _wpi_sendmessage( parent, WM_MDIRESTORE, (WPI_PARAM1)p1, 0L );
-            _wpi_sendmessage(ClientWindow, WM_MDIACTIVATE, (WPI_PARAM1)p1, 0L);
+            _wpi_sendmessage( ClientWindow, WM_MDIACTIVATE, (WPI_PARAM1)p1, 0L );
 #endif
 
-            if( !(lastChanceSave(current)) ) {
+            if( !lastChanceSave( current ) ) {
                 return;
             }
         }
@@ -195,7 +202,7 @@ void CloseAllImages( void )
     }
 
     DeleteActiveImage();
-    while( head ) {
+    while( head != NULL ) {
         closeTheImage( head );
         head = GetHeadNode();
     }
@@ -203,27 +210,29 @@ void CloseAllImages( void )
     ClearImageText();
     GrayEditOptions();
     PrintHintTextByID( WIE_ALLIMAGESCLOSED, NULL );
-    _wpi_setwindowtext( _wpi_getframe(HMainWindow), IEAppTitle );
+    _wpi_setwindowtext( _wpi_getframe( HMainWindow ), IEAppTitle );
+
 } /* CloseAllImages */
 
 /*
- * CloseCurrentImage - Gets the current image the user is editing and deletes
- *                     the node from the linked list and sends a message to
- *                     destroy the mdi child (this will activate another
- *                     child then).
+ * CloseCurrentImage - get the current image the user is editing, delete
+ *                     the node from the linked list, and send a message to
+ *                     destroy the MDI child (this will activate another child)
  */
 void CloseCurrentImage( HWND hwnd )
 {
     img_node    *node;
-    char        file_name[ _MAX_PATH ];
+    char        file_name[_MAX_PATH];
     BOOL        ret;
 
     node = SelectImage( hwnd );
-    if (!node) return;
-    ret = DestroyWindow( _wpi_getframe(node->viewhwnd) );
+    if( node == NULL ) {
+        return;
+    }
+    ret = DestroyWindow( _wpi_getframe( node->viewhwnd ) );
     GetFnameFromPath( node->fname, file_name );
     DeleteUndoStack( hwnd );
-    if ( !DeleteNode(hwnd) ) {
+    if( !DeleteNode( hwnd ) ) {
         WImgEditError( WIE_ERR_BAD_HWND, WIE_INTERNAL_002 );
         return;
     }
@@ -232,17 +241,18 @@ void CloseCurrentImage( HWND hwnd )
 
     GrayEditOptions();
     PrintHintTextByID( WIE_FILEHASBEENCLOSED, file_name );
-    SetWindowText( _wpi_getframe(HMainWindow), IEAppTitle );
+    SetWindowText( _wpi_getframe( HMainWindow ), IEAppTitle );
 
 #ifdef __OS2_PM__
-    ret = DestroyWindow( _wpi_getframe(hwnd) );
+    ret = DestroyWindow( _wpi_getframe( hwnd ) );
 #else
-    SendMessage(ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L);
+    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L );
 #endif
+
 } /* CloseCurrentImage */
 
 /*
- * SaveAllImages -
+ * SaveAllImages - save all currently open images
  */
 void SaveAllImages( void )
 {
@@ -250,17 +260,16 @@ void SaveAllImages( void )
     img_node    *current;
 
     head = GetHeadNode();
-    if( !head ) {
+    if( head == NULL ) {
         return;
     }
 
     current = head;
-    while( current ) {
-        if( !(current->issaved) ) {
+    while( current != NULL ) {
+        if( !current->issaved ) {
             SaveFileFromNode( current, SB_SAVE );
         }
         current = current->next;
     }
 
 } /* SaveAllImages */
-

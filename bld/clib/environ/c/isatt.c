@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of isatty() for DOS/Win16.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <unistd.h>
 #include "tinyio.h"
 #include "defwin.h"
 #include "rtcheck.h"
@@ -38,17 +38,17 @@
 /* determine if file is a terminal */
 
 _WCRTLINK int isatty( int handle )
-    {
-        tiny_ret_t rc;
+{
+    tiny_ret_t rc;
 
-        __handle_check( handle, 0 );
-        #ifdef DEFAULT_WINDOWING
-            if( _WindowsIsWindowedHandle != 0 ) {
-                if( _WindowsIsWindowedHandle( handle ) ) {
-                    return( 1 );
-                }
-            }
-        #endif
-        rc = TinyGetDeviceInfo( handle );
-        return( ( TINY_INFO( rc ) & TIO_CTL_DEVICE ) != 0 );
+    __handle_check( handle, 0 );
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsIsWindowedHandle != 0 ) {
+        if( _WindowsIsWindowedHandle( handle ) ) {
+            return( 1 );
+        }
     }
+#endif
+    rc = TinyGetDeviceInfo( handle );
+    return( ( TINY_INFO( rc ) & TIO_CTL_DEVICE ) != 0 );
+}

@@ -24,29 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  cp header file.
 *
 ****************************************************************************/
 
 
-/*
-   CP.H - cp header file
-
-   Date         By              Reason
-   ====         ==              ======
-   17-aug-90    Craig Eisler    defined
-   19-oct-91    Craig Eisler    more work
-   11-nov-91    Craig Eisler    cleaned up
-   28-jan-92    Craig Eisler    display time
-   25-mar-92    Craig Eisler    NT port
-   18-jun-92    Greg Bentz      OS/2 2.0 port
-   20-jan-92    Craig Eisler    added rxflag
- */
 #ifndef _CP_INCLUDED
 #define _CP_INCLUDED
 
-#if defined(__OS_nt__) || defined(__OS_os2v2__) || defined(__OS_alpha__)
+#include <sys/stat.h>
+
+#if defined(__OS_nt386__) || defined(__OS_os2386__) || defined(__OS_ntaxp__)
 #define __FAR
 #else
 #define __FAR   far
@@ -113,14 +101,14 @@ extern char __FAR *Buffer;
 extern char __FAR *FileList;
 extern char OutOfMemory[],InvalidTDStr[];
 extern timedate before_t_d,after_t_d;
-extern int rflag,iflag,npflag,aflag,fflag,tflag,Tflag,dflag,Dflag,sflag,xflag;
+extern int rflag,iflag,npflag,aflag,fflag,tflag2,Tflag1,dflag2,Dflag1,sflag,xflag;
 extern int todflag,pattrflag,rxflag;
 
 /* routines */
 void MemInit( void );
 void DoCP( char *, char * );
 void CopyOneFile( char *, char *);
-int GrabFile( char *, void *, char *, char );
+int GrabFile( char *, struct stat *, char *, char );
 void FlushMemoryBlocks( void );
 void __FAR *FarAlloc( unsigned );
 void *NearAlloc( unsigned );
@@ -128,7 +116,7 @@ void FarFree( void __FAR *ptr );
 void NearFree( void *ptr );
 void MemFini( void );
 void IOError( int );
-#if defined(__OS_os2v2__)
+#if defined(__OS_os2386__)
 void OS2Error( int );
 #endif
 

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Address/name/const/bool/instruction dumping.
 *
 ****************************************************************************/
 
@@ -69,31 +68,6 @@ static char * Formats[] = {
 };
 
 
-extern  void    Dumpan( an node ) {
-/*********************************/
-
-    DumpString( Formats[ node->format ] );
-    DumpLiteral( " " );
-    switch( node->format ) {
-    case NF_ADDR:
-        DumpAnAddr( node );
-        break;
-    case NF_NAME:
-        DumpAnName( node );
-        break;
-    case NF_CONS:
-        DumpAnCons( node );
-        break;
-    case NF_BOOL:
-        DumpAnBool( (bn)node );
-        break;
-    case NF_INS:
-        DumpAnIns( node );
-        break;
-    }
-    DumpNL();
-}
-
 static  void    DumpAnAddr( an node ) {
 /*************************************/
 
@@ -134,13 +108,41 @@ static  void    DumpAnAddr( an node ) {
     }
 }
 
+static  void    DumpLbl( label_handle *what ) {
+/*****************************************************/
+
+    block       *blk;
+    int         i;
+
+    blk = HeadBlock;
+    for(;;) {
+        if( blk == NULL ) {
+            DumpLiteral( "Target ????" );
+            DumpPtr( what );
+            return;
+        }
+        i = blk->targets;
+        while( --i >= 0 ) {
+            if( (void *)what == (void *)&blk->edge[ i ].destination ) {
+                DumpLiteral( "Target " );
+                DumpPtr( blk );
+                DumpLiteral( "(" );
+                DumpInt( i+1 );
+                DumpLiteral( ") " );
+                return;
+            }
+        }
+        blk = blk->next_block;
+    }
+}
+
 static  void    DumpAnBool( bn node ) {
 /*************************************/
 
     DumpLiteral( "TRUE " );
-    DumpLbl( node->t );
+    DumpLbl( (void **)node->t );
     DumpLiteral( " FALSE " );
-    DumpLbl( node->f );
+    DumpLbl( (void **)node->f );
     DumpLiteral( " ENTRY L" );
     DumpPtr( node->e );
 }
@@ -163,30 +165,27 @@ static  void    DumpAnName( an node ) {
     DumpOperand( node->u.name );
 }
 
-static  void    DumpLbl( label_handle *what ) {
-/*****************************************************/
+extern  void    Dumpan( an node ) {
+/*********************************/
 
-    block       *blk;
-    int         i;
-
-    blk = HeadBlock;
-    for(;;) {
-        if( blk == NULL ) {
-            DumpLiteral( "Target ????" );
-            DumpPtr( what );
-            return;
-        }
-        i = blk->targets;
-        while( --i >= 0 ) {
-            if( what == &blk->edge[ i ].destination ) {
-                DumpLiteral( "Target " );
-                DumpPtr( blk );
-                DumpLiteral( "(" );
-                DumpInt( i+1 );
-                DumpLiteral( ") " );
-                return;
-            }
-        }
-        blk = blk->next_block;
+    DumpString( Formats[ node->format ] );
+    DumpLiteral( " " );
+    switch( node->format ) {
+    case NF_ADDR:
+        DumpAnAddr( node );
+        break;
+    case NF_NAME:
+        DumpAnName( node );
+        break;
+    case NF_CONS:
+        DumpAnCons( node );
+        break;
+    case NF_BOOL:
+        DumpAnBool( (bn)node );
+        break;
+    case NF_INS:
+        DumpAnIns( node );
+        break;
     }
+    DumpNL();
 }

@@ -32,22 +32,45 @@
 
 include mdef.inc
 
-        xref    __8087
+ifdef __DOS__
+ifndef __386__
+__DOS_086__ = 1
+endif
+endif
 
         modstart _old8087
 
-        xdefp   __old_8087
-        defp    __old_8087
+datasegment
+        xref    __8087
+ifdef __DOS_086__
+        xred    __dos87emucall, word
+        xred    __dos87real, byte
+endif
+enddata
+
+        xdefp    __old_8087
+        defp     __old_8087
+ifdef __DOS_086__
+        cmp     __dos87real,0
+        jz      l1
+endif
         fldz
         fldz
         fldz
         fldz
+ifdef __DOS_086__
+l1:     cmp     __dos87emucall,0
+        jz      l2
+        mov     ax,2
+        call    __dos87emucall
+l2:
+endif
         ret
         endproc __old_8087
         endmod
 
 include xinit.inc
 
-        xinit   __old_8087,3
+        xinit   __old_8087,INIT_PRIORITY_FPU + 4
 
         end

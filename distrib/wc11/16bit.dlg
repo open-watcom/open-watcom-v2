@@ -1,0 +1,47 @@
+name=16Bit
+any_check=tools16
+detail_check=dMFC252,\
+        //1"M&FC Support..."\
+        //2"MFC サポート(&F)..."\
+        //0,mfc252,,\
+        //1"16-&bit MFC 2.52 support:"\
+        //2"16-&bit MFC 2.52 サポート:"\
+        //0,IsFortranInstall !
+static_text=,IsFortranInstall !
+static_text=\
+        //1"Select the 16-bit memory models you wish to use:"\
+        //2"使用したい16ビット・メモリモデルの選択:"\
+        //0
+static_text=
+check_box=ms,,\
+        //1"&Small"\
+        //2"スモール(&S)"\
+        //0,IsFortranInstall !
+check_box_continue=mm,,\
+        //1"&Medium"\
+        //2"ミディアム(&M)"\
+        //0,IsFortranInstall !
+check_box=mc,,\
+        //1"C&ompact"\
+        //2"コンパクト(&o)"\
+        //0,IsFortranInstall !
+check_box_continue=ml,,\
+        //1"&Large"\
+        //2"ラージ(&L)"\
+        //0,IsFortranInstall !
+check_box=mh,,\
+        //1"H&uge"\
+        //2"ヒュージ(&u)"\
+        //0,IsFortranInstall !
+check_box=mm,,\
+        //1"&Medium"\
+        //2"ミディアム(&M)"\
+        //0,IsFortranInstall
+check_box=ml,,\
+        //1"&Large"\
+        //2"ラージ(&L)"\
+        //0,IsFortranInstall
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

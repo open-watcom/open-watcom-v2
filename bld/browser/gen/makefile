@@ -1,3 +1,5 @@
+#pmake/50: build os_nt os_os2 os_osi os_win cpu_axp cpu_i86 cpu_386
+
 dialogs = &
 dgenums.$(ext) &
 dgeddll.$(ext) &
@@ -21,16 +23,13 @@ dialog_source = $+$(dialogs)$-
 ext = gh
 dialog_headers = $+$(dialogs)$-
 
-dlg_dir = ..\res\dlg
-bnd_dir = ..\bnd
+dlg_dir = ../res/dlg
 
-!ifdef __OS2__
-dlgprs = ..\dlgprs\o\dlgprsp
+!ifdef __LINUX__
+parse = ../dlgprs/o/dlgprs.exe $[@ ../bnd/$[&.bnd $[&.gh $^@
 !else
-dlgprs = ..\dlgprs\o\dlgprs
+parse = ..\dlgprs\o\dlgprs $[@ ..\bnd\$[&.bnd $[&.gh $^@
 !endif
-
-parse = $(dlgprs) $[@ $(bnd_dir)\$[&.bnd $[&.gh $^@
 
 .BEFORE
     @set dos4g=quiet
@@ -38,8 +37,7 @@ parse = $(dlgprs) $[@ $(bnd_dir)\$[&.bnd $[&.gh $^@
 .extensions:
 .extensions: .gpp .gh .dlg .bnd
 
-compile.tim : $(dialog_source) $(dialog_headers)
-    wtouch $^@
+all : $(dialog_source) $(dialog_headers)
 
 .dlg: $(dlg_dir)
 .dlg.gpp:
@@ -49,3 +47,5 @@ compile.tim : $(dialog_source) $(dialog_headers)
 .dlg.gh:
     $(parse)
 
+clean: .SYMBOLIC
+    rm -f *.gh *.gpp *.tim

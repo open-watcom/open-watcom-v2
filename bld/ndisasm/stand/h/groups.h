@@ -37,6 +37,6 @@
 
 extern return_val       DumpASMGroupName( char *name, bool fasm );
 extern return_val       DumpASMGroupMember( char *name );
-extern return_val       DumpASMGroupFini();
+extern return_val       DumpASMGroupFini( void );
 
 #endif

@@ -1,0 +1,17 @@
+[ DEFAULT type="s" cond="samples" where="c jc ac" dir="src" ]
+usr="_matherr.c"
+usr="calendar.c"
+usr="calendar.cpp"
+usr="calendar.jc"
+usr="grdemo.c"
+usr="grdemo.cpp"
+usr="hello.c"
+usr="hello.cpp"
+usr="memos.c"
+usr="memos.def"
+usr="memos.h"
+usr="pgdemo.c"
+usr="pmhello.c"
+#usr="shapes.c"		// Moved?
+#usr="shapes.cpp"	// Moved?
+usr="winhello.c"

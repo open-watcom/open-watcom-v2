@@ -33,21 +33,23 @@
 #include <string.h>
 #include "standard.h"
 #include "coderep.h"
-#include "sysmacro.h"
 #include "opcodes.h"
 #include "regset.h"
 #include "zoiks.h"
 #include "freelist.h"
+#include "conflict.h"
+#include "makeins.h"
 
 
 extern  void            DoNothing(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 
-static    pointer       InsFrl;
+static  pointer         *InsFrl;
 
+extern  conflict_node   *ConfList;
 
-extern  void    InitIns() {
-/**************************
+extern  void    InitIns( void ) {
+/********************************
     Initialize the free list of "instruction"
 */
 
@@ -55,7 +57,7 @@ extern  void    InitIns() {
 }
 
 
-extern  bool    InsFrlFree( ) {
+extern  bool    InsFrlFree( void ) {
 /******************************
     Free up the "instruction" free list.
 */
@@ -70,6 +72,16 @@ extern  void    FreeIns( instruction *ins ) {
     Free an instruction "ins"
 */
     instruction         *next;
+
+#if 0  /* Debugging code for integrity of conflict edges */
+    conflict_node       *conf;
+
+    for (conf = ConfList; conf; conf = conf->next_conflict) {
+        if (conf->ins_range.first == ins || conf->ins_range.last == ins) {
+            Zoiks(ZOIKS_050);
+        }
+    }
+#endif
 
     next = ins->head.next;
     if( next->head.opcode != OP_BLOCK && next->head.line_num == 0 ) {
@@ -114,13 +126,13 @@ extern  instruction     *NewIns( int num ) {
     new->table = NULL;
     new->u.gen_table = NULL;
     new->base_type_class = XX;
-    new->zap = AllocRegName( HW_EMPTY );
+    new->zap = (register_name *) AllocRegName( HW_EMPTY );
     return( new );
 }
 
 
-extern  instruction     *MakeNop() {
-/***********************************
+extern  instruction     *MakeNop( void ) {
+/*****************************************
     Return an initialized "NOP" instruction
 */
 

@@ -1,3 +1,0 @@
-#define SERVER_TYPE "Named Pipe"
-
-#include "winserv.rc"

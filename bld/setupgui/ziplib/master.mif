@@ -1,0 +1,58 @@
+proj_name       = ziplib
+ziplib_autodepends = .autodepend
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: $(libzip_dir)/lib
+.h: $(libzip_dir)/lib
+
+inc_dirs = -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
+
+objs = &
+    zadd.obj &
+    zclose.obj &
+    zdelete.obj &
+    zdirent.obj &
+    zentfree.obj &
+    zentnew.obj &
+    zerr2str.obj &
+    zerrget.obj &
+    zerrgets.obj &
+    zerrstr.obj &
+    zerrstre.obj &
+    zfclose.obj &
+    zferrget.obj &
+    zfgetoff.obj &
+    zfopen.obj &
+    zfopenin.obj &
+    zfread.obj &
+    zfree.obj &
+    zstrerr.obj &
+    zgetname.obj &
+    zgetnumf.obj &
+    ziperror.obj &
+    znameloc.obj &
+    znew.obj &
+    zopen.obj &
+    zrename.obj &
+    zreplace.obj &
+    zsetname.obj &
+    zsrcbuff.obj &
+    zsrcfile.obj &
+    zsrcfilp.obj &
+    zsrcfree.obj &
+    zsrcfunc.obj &
+    zsrczip.obj &
+    zstat.obj &
+    zstatind.obj &
+    zstrerr.obj &
+    zuchg.obj &
+    zuchgall.obj &
+    zuchgdat.obj
+
+$(proj_name).lib : $(objs)
+        @%create $^&.lbc
+        @for %i in ($(objs)) do @%append $^&.lbc +%i
+        $(librarian) $(libflags) @$^&.lbc

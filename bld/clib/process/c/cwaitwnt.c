@@ -38,29 +38,31 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-
 _WCRTLINK int cwait(int *status, int process_id, int action)
+/***********************************************************/
 {
-        DWORD  rc;
-        HANDLE p = (HANDLE)process_id;
+    DWORD  rc;
+    HANDLE p = (HANDLE)process_id;
 
-        if (action != WAIT_CHILD)
-        {
-                __set_errno(EINVAL);
-                return -1;
-        }
+    if (action != WAIT_CHILD) {
+        __set_errno(EINVAL);
+        return -1;
+    }
 
-        if (WaitForSingleObject(p, -1) != 0)
-        {
-                CloseHandle(p);
-                __set_errno(EINVAL);
-                return -1;
-        }
+    rc = WaitForSingleObject(p, INFINITE);
 
+    if (rc == WAIT_FAILED) {
+        rc = GetLastError();
+        __set_errno(EINVAL);
+        return -1;
+    } else if (rc == WAIT_OBJECT_0) {
         GetExitCodeProcess(p, &rc);
         CloseHandle(p);
-
         *status = (rc << 8) & 0xff00;
-
         return process_id;
-} /* cwait() */
+    } else {
+        CloseHandle(p);
+        __set_errno(EINVAL);
+        return -1;
+    }
+}

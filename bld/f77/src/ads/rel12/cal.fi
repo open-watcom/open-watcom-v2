@@ -1,0 +1,8 @@
+! CAL.FI : Include file containing all other calculator include files
+
+        include 'adslib.fi'
+        include 'util.fi'
+        include 'calerr.fi'
+        include 'callex.fi'
+        include 'calexpr.fi'
+        include 'calmngf.fi'

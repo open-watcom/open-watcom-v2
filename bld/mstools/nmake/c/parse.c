@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line parsing for NMAKE clone tool.
 *
 ****************************************************************************/
 
@@ -43,7 +42,6 @@
 #include "memory.h"
 #include "message.h"
 #include "parse.h"
-#include "optparse.c"
 
 
 /*
@@ -67,6 +65,63 @@ void FiniParse( OPT_STORAGE *cmdOpts )
 
 
 /*
+ * Add another string to an OPT_STRING.
+ */
+static void add_string( OPT_STRING **p, char *str, char quote )
+/*************************************************************/
+{
+    OPT_STRING *        buf;
+    OPT_STRING *        curElem;
+    int                 len;
+    int                 add_quote = 0;
+
+    len = strlen(str);
+    if( quote != 0 ) {
+        do {
+            if( str[0] == '"'  && str[len-1] == '"'  ) break;
+            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            len += 2;
+            add_quote = 1;
+        } while( 0 );
+    }
+    /*** Make a new list item ***/
+    buf = AllocMem( sizeof(OPT_STRING) + len );
+    if( add_quote ) {
+        buf->data[0] = quote;
+        strcpy( &(buf->data[1]), str );
+        buf->data[len-1] = quote;
+        buf->data[len] = '\0';
+    } else {
+        strcpy( buf->data, str );
+    }
+    buf->next = NULL;
+
+    /*** Put it at the end of the list ***/
+    if( *p == NULL ) {
+        *p = buf;
+    } else {
+        curElem = *p;
+        while( curElem->next != NULL )  curElem = curElem->next;
+        curElem->next = buf;
+    }
+}
+
+
+/*
+ * Gripe about a command line error.
+ */
+static void cmd_line_error( void )
+/********************************/
+{
+    char *              str;
+
+    GoToMarkContext();
+    str = CmdScanString();
+    Warning( "Ignoring invalid option '%s'", str );
+}
+
+
+/*
  * Parse the command string contained in the current context.
  */
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
@@ -86,10 +141,18 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         /*** Handle switches, command files, and input files ***/
         if( ch == '-'  ||  ch == '/' ) {        /* switch */
             if( OPT_PROCESS( cmdOpts ) != 0 ) {
-                cmd_line_error();
+                /*
+                 * Switch didn't match, if user entered empty switch,
+                 * just be silent like MS's nmake does.
+                 */
+
+                ch = GetCharContext();
+                if( ch != '\0' && !isspace(ch)) {
+                    cmd_line_error();
+                }
             }
         } else if( ch == '@' ) {                /* command file */
-            filename = CmdScanFileName();
+            filename = CmdScanFileNameWithoutQuotes();
             PushContext();
             if( OpenFileContext( filename ) ) {
                 FatalError( "Cannot open '%s'.", filename );
@@ -132,6 +195,45 @@ static int parse_t010101010101( OPT_STRING **p )
 }
 
 
+/*
+ * Destroy an OPT_STRING.
+ */
+static void OPT_CLEAN_STRING( OPT_STRING **p )
+/********************************************/
+{
+    OPT_STRING *        s;
+
+    while( *p != NULL ) {
+        s = *p;
+        *p = s->next;
+        FreeMem( s );
+    }
+}
+
+
+/*
+ * For the /optName option, read in :string and store the string into the
+ * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
+ * be deleted.  If quote is non-zero, make sure the string is quoted.
+ * Use quote if there aren't any quotes already.
+ */
+static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
+/*********************************************************************/
+                            int quote )
+{
+    char *              str;
+
+    CmdScanWhitespace();
+    str = CmdScanString();
+    if( str == NULL ) {
+        FatalError( "/%s option requires a filename", optName );
+        return( 0 );
+    }
+    if( onlyOne )  OPT_CLEAN_STRING( p );
+    add_string( p, str, quote );
+    return( 1 );
+}
+
 
 /*
  * Parse the /F option.
@@ -151,6 +253,59 @@ static int parse_X( OPT_STRING **p )
     return( do_string_parse( p, "X", 1, 0 ) );
 }
 
+/*
+ * Parse combining parameters
+ */
+static int parse_combining( OPT_STORAGE *cmdOpts, int x )
+/******************************************/
+{
+    int                 ch;
+
+    x = x;
+
+    /*
+     * Make sure -L is translated correctly to -NOLOGO if it is
+     * a first (or the only) parameter
+     */
+    if( cmdOpts->L ) {
+        cmdOpts->NOLOGO = 1;
+    }
+
+    /* scan for combined options */
+    do {
+        /* get next character */
+        ch = toupper( GetCharContext() );
+
+        switch( ch ) {
+        case 'A':  cmdOpts->A = 1; break;      /* gml-option: A */
+        case 'B':  cmdOpts->B = 1; break;      /* gml-option: B */
+        case 'C':  cmdOpts->C = 1; break;      /* gml-option: C */
+        case 'D':  cmdOpts->D = 1; break;      /* gml-option: D */
+        case 'E':  cmdOpts->E = 1; break;      /* gml-option: E */
+        case 'I':  cmdOpts->I = 1; break;      /* gml-option: I */
+        case 'K':  cmdOpts->K = 1; break;      /* gml-option: K */
+        case 'L':  cmdOpts->NOLOGO = 1; break; /* gml-option: L */
+        case 'N':  cmdOpts->N = 1; break;      /* gml-option: N */
+        case 'P':  cmdOpts->P = 1; break;      /* gml-option: P */
+        case 'Q':  cmdOpts->Q = 1; break;      /* gml-option: Q */
+        case 'R':  cmdOpts->R = 1; break;      /* gml-option: R */
+        case 'S':  cmdOpts->S = 1; break;      /* gml-option: S */
+        case 'T':  cmdOpts->T = 1; break;      /* gml-option: T */
+        case 'U':  cmdOpts->U = 1; break;      /* gml-option: U */
+        case 'Y':  cmdOpts->Y = 1; break;      /* gml-option: Y */
+        case '\0': break;
+        default:
+            /* if character is space, return without an error */
+            if( isspace( ch ) )
+                return 1;
+
+            return 0;
+        }
+    } while( ch != '\0' );
+
+    /* all went nicely, return success */
+    return 1;
+}
 
 /*
  * Parse the /passwopts option.
@@ -198,47 +353,6 @@ static int parse_passwopts( OPT_STRING **p )
 } /* parse_passwopts() */
 
 
-
-/*
- * For the /optName option, read in :string and store the string into the
- * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
- * be deleted.  If quote is non-zero, make sure the string is quoted.
- * Use quote if there aren't any quotes already.
- */
-static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
-/*********************************************************************/
-                            int quote )
-{
-    char *              str;
-
-    CmdScanWhitespace();
-    str = CmdScanString();
-    if( str == NULL ) {
-        FatalError( "/%s option requires a filename", optName );
-        return( 0 );
-    }
-    if( onlyOne )  OPT_CLEAN_STRING( p );
-    add_string( p, str, quote );
-    return( 1 );
-}
-
-
-
-
-/*
- * Gripe about a command line error.
- */
-static void cmd_line_error( void )
-/********************************/
-{
-    char *              str;
-
-    GoToMarkContext();
-    str = CmdScanString();
-    Warning( "Ignoring invalid option '%s'", str );
-}
-
-
 /*
  * Return the next character (forced to lowercase since LINK's options are
  * not case-sensitive) and advance to the next one.
@@ -272,61 +386,5 @@ static void OPT_UNGET( void )
 }
 
 
-
-/*
- * Destroy an OPT_STRING.
- */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
-{
-    OPT_STRING *        s;
-
-    while( *p != NULL ) {
-        s = *p;
-        *p = s->next;
-        FreeMem( s );
-    }
-}
-
-
-/*
- * Add another string to an OPT_STRING.
- */
-static void add_string( OPT_STRING **p, char *str, char quote )
-/*************************************************************/
-{
-    OPT_STRING *        buf;
-    OPT_STRING *        curElem;
-    int                 len;
-    int                 add_quote = 0;
-
-    len = strlen(str);
-    if( quote != 0 ) {
-        do {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
-            len += 2;
-            add_quote = 1;
-        } while( 0 );
-    }
-    /*** Make a new list item ***/
-    buf = AllocMem( sizeof(OPT_STRING) + len );
-    if( add_quote ) {
-        buf->data[0] = quote;
-        strcpy( &(buf->data[1]), str );
-        buf->data[len-1] = quote;
-        buf->data[len] = '\0';
-    } else {
-        strcpy( buf->data, str );
-    }
-    buf->next = NULL;
-
-    /*** Put it at the end of the list ***/
-    if( *p == NULL ) {
-        *p = buf;
-    } else {
-        curElem = *p;
-        while( curElem->next != NULL )  curElem = curElem->next;
-        curElem->next = buf;
-    }
-}
+/* Include after all static functions were declared */
+#include "optparsc.gh"

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF writer library test client.
 *
 ****************************************************************************/
 
@@ -51,7 +50,7 @@ uint_32         RelocValues[ DW_W_MAX ];
 uint_32         SymHandles[ 20 ];
 
 
-void CLIWrite( uint sect, const void *block, size_t size ) {
+void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
 
     memcpy( &Sections[ sect ].data[ Sections[ sect ].cur_offset ], block, size );
     Sections[ sect ].cur_offset += size;
@@ -60,7 +59,7 @@ void CLIWrite( uint sect, const void *block, size_t size ) {
 }
 
 
-void CLIReloc( uint sect, uint reloc_type, ... )
+void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
 {
     static char                 zeros[] = { 0, 0 };
     dw_sym_handle               sym;
@@ -100,7 +99,7 @@ void CLIReloc( uint sect, uint reloc_type, ... )
 }
 
 
-void CLISeek( uint sect, long offs, uint type ) {
+void CLISeek( dw_sectnum sect, long offs, uint type ) {
 
     switch( type ) {
     case DW_SEEK_CUR:
@@ -115,7 +114,7 @@ void CLISeek( uint sect, long offs, uint type ) {
     }
 }
 
-long CLITell( uint sect ) {
+long CLITell( dw_sectnum sect ) {
 
     return( Sections[ sect ].cur_offset );
 }
@@ -153,6 +152,7 @@ void main( void ) {
     };
     dw_init_info        info;
     dw_loc_handle       seg;
+    dw_cu_info          cuinfo;
 
     info.language = DW_LANG_C89;
     info.compiler_options = DW_CM_BROWSER;
@@ -169,12 +169,16 @@ void main( void ) {
             exit( 1 );
         }
         seg = DWLocFini( Client, DWLocInit( Client ) );
-        DWBeginCompileUnit( Client, "foo.bar",
-            "somewhere\\over\\the\\rainbow", seg, 4 );
+        memset( &cuinfo, 0, sizeof( cuinfo ));
+        cuinfo.source_filename = "foo.bar";
+        cuinfo.directory = "somewhere\\over\\the\\rainbow";
+
+        DWBeginCompileUnit( Client, &cuinfo );
         Test();
         DWEndCompileUnit( Client );
-        DWBeginCompileUnit( Client, "empty.unit",
-            "in\\a\\land\\far\\far\\away", seg, 4 );
+        cuinfo.source_filename = "empty.unit";
+        cuinfo.directory = "in\\a\\land\\far\\far\\away";
+        DWBeginCompileUnit( Client, &cuinfo );
         DWEndCompileUnit( Client );
         DWLocTrash( Client, seg );
         DWFini( Client );

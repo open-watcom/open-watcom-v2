@@ -24,22 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Bind utility for OSI executables.
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <io.h>
+#include <string.h>
+#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <dos.h>
+#include <sys/stat.h>
 #include "watcom.h"
-//#include "tinyio.h"
 
 typedef unsigned short  WORD;
 typedef unsigned long   DWORD;
@@ -68,10 +65,16 @@ char    *CompressedBufPtr;
 unsigned short  *RelocBuffer;
 #define W32Putc(c) *CompressedBufPtr++ = (c)
 
-int CmpReloc( DWORD *p, DWORD *q )
+/* Function prototypes */
+int lookup( unsigned char, unsigned char );
+int fileread( FILE * );
+void CompressFile( int handle, DWORD filesize );
+void CompressRelocs( DWORD relocsize );
+
+int CmpReloc( const void *_p, const void *_q )
 {
-    DWORD       reloc1;
-    DWORD       reloc2;
+    DWORD       reloc1, const *p = _p;
+    DWORD       reloc2, const *q = _q;
 
     reloc1 = *p & 0x7FFFFFFF;
     reloc2 = *q & 0x7FFFFFFF;
@@ -137,7 +140,6 @@ DWORD RelocSize( DWORD *relocs, unsigned n )
 int CreateRelocs( DWORD *relocs, unsigned short *newrelocs, unsigned n )
 {
     DWORD       page;
-    unsigned    num;
     unsigned    i;
     unsigned    j;
     unsigned    k;
@@ -170,7 +172,6 @@ int main( int argc, char *argv[] )
     int                 handle;
     int                 loader_handle;
     int                 newfile;
-    long                rc;
     char                *file;
     DWORD               size;
     DWORD               codesize;
@@ -418,10 +419,6 @@ int     old_size;
 int     chars_used;
 int     BlockSize;
 
-/* Function prototypes */
-int lookup( unsigned char, unsigned char );
-int fileread( FILE * );
-
 /* Return index of character pair in hash table */
 /* Deleted nodes have count of 1 for hashing */
 
@@ -446,7 +443,6 @@ int lookup( unsigned char a, unsigned char b )
 void HashBlock( int len )
 {
     int         c;
-    int         i;
     int         index;
     int         used = 0;
 
@@ -553,49 +549,6 @@ void inc_count( int index )
     }
 }
 
-/* Compress from input file to output file */
-void CompressFile( int handle, DWORD filesize )
-{
-    int         done = 0;
-    int         len;
-
-    /* Compress each data block until end of file */
-    BlockSize = 2048;
-    while( filesize != 0 ) {
-        len = BlockSize;
-        if( len > filesize )  len = filesize;
-        if( read( handle, buffer, len ) != len ) {
-            printf( "Read error\n" );
-            exit( 1 );
-        }
-        HashBlock( len );
-        CompressBlock();
-        filewrite();
-        filesize -= len;
-    }
-}
-
-void CompressRelocs( DWORD relocsize )
-{
-    int         len;
-    char        *p;
-
-    p = (char *)RelocBuffer;
-    while( relocsize != 0 ) {
-        if( relocsize < BLOCKSIZE ) {
-            len = relocsize;
-        } else {
-            len = 4096;
-        }
-        memcpy( buffer, p, len );
-        p += len;
-        HashBlock( len );
-        CompressBlock();
-        filewrite();
-        relocsize -= len;
-    }
-}
-
 void CompressBlock( void )
 {
     unsigned char       leftch;
@@ -671,5 +624,47 @@ void CompressBlock( void )
         /* Delete pair from hash table */
 //          index = lookup( leftch, rightch );
         count[best_index] = 1;
+    }
+}
+
+void CompressRelocs( DWORD relocsize )
+{
+    int         len;
+    char        *p;
+
+    p = (char *)RelocBuffer;
+    while( relocsize != 0 ) {
+        if( relocsize < BLOCKSIZE ) {
+            len = relocsize;
+        } else {
+            len = 4096;
+        }
+        memcpy( buffer, p, len );
+        p += len;
+        HashBlock( len );
+        CompressBlock();
+        filewrite();
+        relocsize -= len;
+    }
+}
+
+/* Compress from input file to output file */
+void CompressFile( int handle, DWORD filesize )
+{
+    int         len;
+
+    /* Compress each data block until end of file */
+    BlockSize = 2048;
+    while( filesize != 0 ) {
+        len = BlockSize;
+        if( len > filesize )  len = filesize;
+        if( read( handle, buffer, len ) != len ) {
+            printf( "Read error\n" );
+            exit( 1 );
+        }
+        HashBlock( len );
+        CompressBlock();
+        filewrite();
+        filesize -= len;
     }
 }

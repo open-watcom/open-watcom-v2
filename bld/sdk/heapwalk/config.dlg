@@ -5,7 +5,7 @@ END
 
 HEAP_CONFIG DIALOG 29, 15, 287, 160
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "WATCOM HeapWalker Configuration"
+CAPTION "Open Watcom HeapWalker Configuration"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "File name for Global Heap Saves", CONFIG_DONT_CARE, 6,

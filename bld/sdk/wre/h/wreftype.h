@@ -42,12 +42,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WResTypeNode *WREFindTypeNodeFromWResID   ( WResDir, WResID * );
-extern WResResNode  *WREFindResNodeFromWResID    ( WResTypeNode *, WResID * );
-extern WResTypeNode *WREFindTypeNode             ( WResDir, uint_16, char * );
-extern WResResNode  *WREFindResNode              ( WResTypeNode *, uint_16,
-                                                   char * );
-extern WResLangNode *WREFindLangNodeFromLangType ( WResResNode *,
-                                                   WResLangType * );
+extern WResTypeNode *WREFindTypeNodeFromWResID( WResDir, WResID * );
+extern WResResNode  *WREFindResNodeFromWResID( WResTypeNode *, WResID * );
+extern WResTypeNode *WREFindTypeNode( WResDir, uint_16, char * );
+extern WResResNode  *WREFindResNode( WResTypeNode *, uint_16, char * );
+extern WResLangNode *WREFindLangNodeFromLangType( WResResNode *, WResLangType * );
 
 #endif

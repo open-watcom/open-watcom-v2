@@ -1,0 +1,13 @@
+# AS component of install manifest
+
+[ DEFAULT type="e" ]
+usr="wasaxp.exe" 	dir="binw" 	cond="doshost" 		where="c jc"
+usr="wasppc.exe" 	dir="binw" 	cond="doshost" 		where="c jc"
+usr="wasaxp.exe" 	dir="binp" 	cond="os2host" 		where="c jc"
+usr="wasppc.exe" 	dir="binp" 	cond="os2host" 		where="c jc"
+usr="wasaxp.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc"
+usr="wasppc.exe" 	dir="binnt" 	cond="wnthost" 		where="c jc"
+usr="wasaxp.exe" 	dir="axpnt" 	cond="alphahost"	where="ac"
+usr="wasppc.exe" 	dir="axpnt" 	cond="alphahost"	where="ac"
+usr="wasaxp" 	dir="binl" 	cond="lnxhost" 		where="c jc"
+usr="wasppc" 	dir="binl" 	cond="lnxhost" 		where="c jc"

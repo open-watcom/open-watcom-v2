@@ -129,7 +129,7 @@ static void insertArgument(     // INSERT AN ARGUMENT
     SYMBOL sym;                 // - new argument
 
     sym = SymMakeDummy( type, &name );
-    ScopeInsert( CurrScope, sym, name );
+    ScopeInsert( GetCurrScope(), sym, name );
 }
 
 
@@ -162,9 +162,9 @@ static SCOPE thunkPrologue(     // PROLOGUE FOR A SCOPE
 
     orig = thunk_sym->u.thunk_calls;
     thunk_sym->flag |= SF_INITIALIZED;
-    CurrScope = SymScope( thunk_sym );
+    SetCurrScope (SymScope( thunk_sym ));
     ScopeBeginFunction( thunk_sym );
-    arg_scope = CurrScope;
+    arg_scope = GetCurrScope();
     declareThunkArgs( orig, FunctionDeclarationType( orig->sym_type ) );
     FunctionBodyStartup( thunk_sym, data, FUNC_NULL );
     return arg_scope;
@@ -272,7 +272,7 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
         return;
     }
     classification = classifyThunk( orig_sym );
-    save_scope = CurrScope;
+    save_scope = GetCurrScope();
     curr_func = CgFrontCurrentFunction();
     fn_scope = thunkPrologue( thunk_sym, &func_data );
     return_type = SymFuncReturnType( thunk_sym );
@@ -313,10 +313,10 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     }
     CgFrontCodePtr( IC_PROC_RETURN, return_sym );
     thunkEpilogue( thunk_sym, &func_data );
-    CurrScope = save_scope;
+    SetCurrScope(save_scope);
     CgFrontResumeFunction( curr_func );
     cgfile = CgioLocateFile( thunk_sym );
-    cgfile->thunk = TRUE;
+    cgfile->s.thunk = TRUE;
     if( ( SymIsInitialized( orig_sym ) )
       ||( SymIsDefArg( orig_sym ) )
       ||( classification == SPECIAL_OP_DEL_THUNK )
@@ -405,16 +405,16 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
         CErr( ERR_NO_VIRTUAL_ELLIPSE_FUNCTION_THUNKS, sym );
         InfMsgPtr( INF_THUNK_TARGET, override_sym );
     }
-    save_scope = CurrScope;
+    save_scope = GetCurrScope();
     thunk_type = MakeThunkPragmaFunction( sym->sym_type );
     thunk_sym = AllocTypedSymbol( thunk_type );
     name = CppThunkName( host_scope, thunk );
     scope = SymScope( thunk->sym );
-    CurrScope = scope;
+    SetCurrScope (scope);
     thunk_sym = ScopeInsert( scope, thunk_sym, name );
     thunk->thunk = thunk_sym;
     ScopeBeginFunction( thunk_sym );
-    fn_scope = CurrScope;
+    fn_scope = GetCurrScope();
     fn_type = FunctionDeclarationType( thunk_type );
     declareThunkArgs( sym, fn_type );
     FunctionBodyStartup( thunk_sym, &func_data, FUNC_NO_STACK_CHECK );
@@ -460,7 +460,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     }
     FunctionBodyShutdown( thunk_sym, &func_data );
     ScopeEnd( SCOPE_FUNCTION );
-    CurrScope = save_scope;
+    SetCurrScope (save_scope);
 }
 
 

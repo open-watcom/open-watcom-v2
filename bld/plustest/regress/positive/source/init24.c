@@ -19,7 +19,7 @@ main(void)
     if( d.a != d.c[0] ) _fail;
     if( d.b != d.c[1] ) _fail;
     if( d.a != 0.0 ) _fail;
-    if( d.b != 0.1 ) _fail;
+    if( d.b != 0.1f ) _fail;
     _PASS;
 }
 

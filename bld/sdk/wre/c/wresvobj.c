@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wremem.h"
 #include "wrewait.h"
 #include "wrdll.h"
@@ -55,58 +55,58 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool SaveObjectAs   ( WRECurrentResInfo *, void * );
-static Bool SaveObjectInto ( WRECurrentResInfo *, void * );
+static Bool SaveObjectAs( WRECurrentResInfo *, void * );
+static Bool SaveObjectInto( WRECurrentResInfo *, void * );
 
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-extern char  *WREResSaveIntoTitle;
-extern char  *WREResSaveAsTitle;
-extern char  *WREResFilter;
+extern char *WREResSaveIntoTitle;
+extern char *WREResSaveAsTitle;
+extern char *WREResFilter;
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool SaveObject ( Bool save_into )
+Bool SaveObject( Bool save_into )
 {
-    WRECurrentResInfo  curr;
-    void              *rdata;
-    Bool               ok;
+    WRECurrentResInfo   curr;
+    void                *rdata;
+    Bool                ok;
 
-    WRESetWaitCursor ( TRUE );
+    WRESetWaitCursor( TRUE );
 
     rdata = NULL;
 
-    ok = WREGetCurrentResource ( &curr );
+    ok = WREGetCurrentResource( &curr );
 
-    if ( ok ) {
-        ok = ( curr.lang->Info.Length != 0 );
+    if( ok ) {
+        ok = (curr.lang->Info.Length != 0);
         if( !ok ) {
             WREDisplayErrorMsg( WRE_UPDATEBEFORESAVE1 );
         }
     }
 
-    if ( ok ) {
-        ok = ( ( rdata = WREGetCurrentResData ( &curr ) ) != NULL );
+    if( ok ) {
+        ok = ((rdata = WREGetCurrentResData( &curr )) != NULL);
     }
 
-    if ( ok ) {
-        if ( save_into ) {
-            ok = SaveObjectInto ( &curr, rdata );
+    if( ok ) {
+        if( save_into ) {
+            ok = SaveObjectInto( &curr, rdata );
         } else {
-            ok = SaveObjectAs ( &curr, rdata );
+            ok = SaveObjectAs( &curr, rdata );
         }
     }
 
-    if ( rdata ) {
-        WREMemFree ( rdata );
+    if( rdata != NULL ) {
+        WREMemFree( rdata );
     }
 
-    WRESetWaitCursor ( FALSE );
+    WRESetWaitCursor( FALSE );
 
-    return ( ok );
+    return( ok );
 }
 
 Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
@@ -120,20 +120,20 @@ Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
 
     fname = NULL;
 
-    ok = ( curr && rdata );
+    ok = (curr != NULL && rdata != NULL);
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WREResSaveAsTitle;
-        gf.filter    = WREResFilter;
-        gf.save_ext  = TRUE;
-        fname        = WREGetSaveFileName( &gf );
-        ok = ( fname && *fname );
+        gf.title = WREResSaveAsTitle;
+        gf.filter = WREResFilter;
+        gf.save_ext = TRUE;
+        fname = WREGetSaveFileName( &gf );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
         ftype = WRESelectFileType( fname, curr->info->is32bit );
-        ok = ( ftype != WR_DONT_KNOW );
+        ok = (ftype != WR_DONT_KNOW);
     }
 
     if( ok ) {
@@ -149,7 +149,7 @@ Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
         ok = WRSaveObjectAs( fname, ftype, &idata );
     }
 
-    if( fname ) {
+    if( fname != NULL ) {
         WREMemFree( fname );
     }
 
@@ -166,17 +166,17 @@ Bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     uint_32             size;
 
     fname = NULL;
-    dup   = FALSE;
+    dup = FALSE;
 
-    ok = ( curr && rdata );
+    ok = (curr != NULL && rdata != NULL);
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WREResSaveIntoTitle;
-        gf.filter    = WREResFilter;
-        gf.save_ext  = TRUE;
-        fname        = WREGetOpenFileName( &gf );
-        ok = ( fname && *fname );
+        gf.title = WREResSaveIntoTitle;
+        gf.filter = WREResFilter;
+        gf.save_ext = TRUE;
+        fname = WREGetOpenFileName( &gf );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
@@ -196,10 +196,9 @@ Bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
         WREDisplayErrorMsg( WRE_DUPRESNAME );
     }
 
-    if( fname ) {
+    if( fname != NULL ) {
         WREMemFree( fname );
     }
 
     return( ok );
 }
-

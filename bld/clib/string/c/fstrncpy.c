@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrncpy() - far strncpy().
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include <string.h>
 
-#ifdef M_I86
+#ifdef _M_I86
 
 extern char _WCFAR *fast_strncpy( char _WCFAR *, const char _WCFAR *, size_t );
 
@@ -59,24 +58,25 @@ extern char _WCFAR *fast_strncpy( char _WCFAR *, const char _WCFAR *, size_t );
 #endif
 
 _WCRTLINK char _WCFAR *_fstrncpy( char _WCFAR *dst, const char _WCFAR *src, size_t len )
-    {
-#ifdef M_I86
-        if( len ) {
-            return( fast_strncpy( dst, src, len ) );
-        }
-        return( dst );
-#else
-        char _WCFAR *ret;
-
-        ret = dst;
-        for(;len; --len ) {
-            if( *src == '\0' ) break;
-            *dst++ = *src++;
-        }
-        while( len != 0 ) {
-            *dst++ = '\0';      /* pad destination string with null chars */
-            --len;
-        }
-        return( ret );
-#endif
+{
+#ifdef _M_I86
+    if( len ) {
+        return( fast_strncpy( dst, src, len ) );
     }
+    return( dst );
+#else
+    char _WCFAR     *ret;
+
+    ret = dst;
+    for( ;len; --len ) {
+        if( *src == '\0' )
+            break;
+        *dst++ = *src++;
+    }
+    while( len != 0 ) {
+        *dst++ = '\0';      /* pad destination string with null chars */
+        --len;
+    }
+    return( ret );
+#endif
+}

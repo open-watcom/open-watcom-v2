@@ -34,8 +34,9 @@
 #define INCL_SUB
 #include <wos2.h>
 #include "defwin.h"
+#include <conio.h>
+#include "qread.h"
 
-extern int __qread( int, char *, unsigned );
 
 _WCRTLINK char *cgets( char *s )
     {
@@ -43,14 +44,18 @@ _WCRTLINK char *cgets( char *s )
         STRINGINBUF stringin_buf;
         char    *p;
 
+#ifdef DEFAULT_WINDOWING
         if( _WindowsStdin != 0 ) {              // Default windowing
             __qread( STDIN_FILENO, s + 2, *s - 1 );
             len = *s;
         } else {
+#endif
             stringin_buf.cb = *s;
             KbdStringIn( s + 2, &stringin_buf, IO_WAIT, 0 );
             len = stringin_buf.cchIn + 1;       // Including null char
+#ifdef DEFAULT_WINDOWING
         }
+#endif
         p = s + 2;
         for(;;) {
             if( len <= 1 ) break;

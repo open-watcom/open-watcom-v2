@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Source file access.
 *
 ****************************************************************************/
 
@@ -41,16 +40,15 @@
 #include <string.h>
 
 
-
 extern cue_file_id      CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern unsigned int     ScanCmd(char *);
-extern void             Scan(void);
-extern struct browser   *FOpenSource(char *, mod_handle, cue_file_id );
-extern void             ConfigLine(char *);
-extern char             *StrCopy(char *,char *);
+extern bool             ScanItem( bool ,char **,unsigned int *);
+extern unsigned int     ScanCmd( char * );
+extern void             Scan( void );
+extern struct browser   *FOpenSource( char *, mod_handle, cue_file_id );
+extern void             ConfigLine( char * );
+extern char             *StrCopy(char *, char *);
 extern char             *GetCmdName( int );
 extern void             DbgUpdate( update_list );
 extern bool             IsAbsolutePath( char *path );
@@ -61,6 +59,7 @@ extern char      *TxtBuff;
 extern tokens     CurrToken;
 
 static char AddTab[] = { "Add\0" };
+
 
 void FreeRing( char_ring *p )
 {
@@ -77,13 +76,13 @@ void FreeRing( char_ring *p )
  * InitSource -- initialize the source path and extension
  */
 
-void InitSource()
+void InitSource( void )
 {
     SrcSpec = NULL;
 }
 
 
-void FiniSource()
+void FiniSource( void )
 {
     FreeRing( SrcSpec );
     SrcSpec = NULL;
@@ -154,7 +153,7 @@ char_ring *NextSourceSpec( char_ring *curr )
  * SourceSet -- set the source path prefix and extension
  */
 
-void SourceSet()
+void SourceSet( void )
 {
     char_ring **owner;
     char      *start;
@@ -180,7 +179,7 @@ void SourceSet()
     DbgUpdate( UP_NEW_SRC );
 }
 
-void SourceConf()
+void SourceConf( void )
 {
     char_ring *curr;
     char *ptr;

@@ -159,7 +159,7 @@ has been modified, and a 0 otherwise.
 What operating system the editor is hosted on. Possible values are:
 :UL compact.
 :LI.dos (protect and real mode).
-:LI.qnx
+:LI.unix (QNX, Linux or other Unix-based systems)
 :LI.os2
 :LI.os2v2
 :LI.nt
@@ -171,6 +171,7 @@ This variable is set to 1 is the host operating system is 386
 :LI.dos (protect mode).
 :LI.os2v2
 :LI.nt
+:LI.unix (when running on a 386)
 :eUL.
 :DEFITEM.%P   	 
 Path of current file (no extension, name, or drive) based on the actual

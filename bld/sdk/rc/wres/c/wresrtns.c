@@ -24,35 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Client callback routines for wres library.
 *
 ****************************************************************************/
 
 
 #include <unistd.h>
-#if defined( __QNX__ ) || defined( UNIX )
-#include <fcntl.h>
+#if defined( __UNIX__ )
+    #include <fcntl.h>
 #endif
-#include <malloc.h>
+#include <stdlib.h>
 #include "wressetr.h"
-#ifdef UNIX
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
-    #include <stdlib.h>  // malloc for AIX
 #endif
 
-#if defined( LINUX )
-
-#include <sys/types.h>
-
-// Linux does not have a tell call
-// use this equivelent one instead
-off_t linux_tell( int fd )
-{
-        return( lseek( fd, 0, SEEK_CUR ) );
-}
-
-WResSetRtns( open, close, read, write, lseek, linux_tell, malloc, free );
-#else
 WResSetRtns( open, close, read, write, lseek, tell, malloc, free );
-#endif

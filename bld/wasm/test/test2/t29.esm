@@ -1,0 +1,10 @@
+.387
+flora		GROUP	text
+text		SEGMENT	PARA PUBLIC USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    xor       ax,ax
+    mov       si,ax
+    mov       word ptr 2[si],ax
+    mov       word ptr 2[si],ax
+text		ENDS
+		END

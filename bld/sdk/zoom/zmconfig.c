@@ -32,9 +32,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "wzoom.h"
 #include "watini.h"
+#include "inipath.h"
 
 #define SECT_NAME       "WATCOM Zoom Utility"
 
@@ -48,6 +50,8 @@
 typedef struct {
     char        interval[ BUFSIZE ];
 } ConfigDlgInfo;
+
+static char iniPath[_MAX_PATH];
 
 /*
  * ParseNumeric
@@ -192,8 +196,8 @@ void DoConfig( HWND hwnd ) {
 
     FARPROC     fp;
 
-    fp = MakeProcInstance( ConfigDlgProc, Instance );
-    DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, fp );
+    fp = MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
+    DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, (DLGPROC)fp );
     FreeProcInstance( fp );
 }
 
@@ -202,18 +206,20 @@ void DoConfig( HWND hwnd ) {
  */
 void LoadConfig( void ) {
 
+    GetConfigFilePath( iniPath, sizeof(iniPath) );
+    strcat( iniPath, "\\" WATCOM_INI );
 #ifndef __NT__
     ConfigInfo.stickymagnifier = GetPrivateProfileInt( SECT_NAME, STICKY_ID,
-                                             FALSE, WATCOM_INI );
+                                             FALSE, iniPath );
 #else
     ConfigInfo.stickymagnifier = FALSE;
 #endif
     ConfigInfo.topmost = GetPrivateProfileInt( SECT_NAME, ON_TOP,
-                                             TRUE, WATCOM_INI );
+                                             TRUE, iniPath );
     ConfigInfo.refresh_interval = GetPrivateProfileInt( SECT_NAME, INTERVAL,
-                                                         10, WATCOM_INI );
+                                                         10, iniPath );
     ConfigInfo.autorefresh = GetPrivateProfileInt( SECT_NAME, AUTOREFRESH,
-                                                         FALSE, WATCOM_INI );
+                                                         FALSE, iniPath );
 }
 
 /*
@@ -225,13 +231,13 @@ void SaveConfig( void ) {
 
 #ifndef __NT__
     itoa( ConfigInfo.stickymagnifier, buf, 10 );
-    WritePrivateProfileString( SECT_NAME, STICKY_ID, buf, WATCOM_INI );
+    WritePrivateProfileString( SECT_NAME, STICKY_ID, buf, iniPath );
 #endif
     itoa( ConfigInfo.topmost, buf, 10 );
-    WritePrivateProfileString( SECT_NAME, ON_TOP, buf, WATCOM_INI );
+    WritePrivateProfileString( SECT_NAME, ON_TOP, buf, iniPath );
     itoa( ConfigInfo.refresh_interval, buf, 10 );
-    WritePrivateProfileString( SECT_NAME, INTERVAL, buf, WATCOM_INI );
+    WritePrivateProfileString( SECT_NAME, INTERVAL, buf, iniPath );
     itoa( ConfigInfo.autorefresh, buf, 10 );
-    WritePrivateProfileString( SECT_NAME, AUTOREFRESH, buf, WATCOM_INI );
+    WritePrivateProfileString( SECT_NAME, AUTOREFRESH, buf, iniPath );
 }
 

@@ -1,81 +1,46 @@
-###################################################################
-#       Copyright by WATCOM Systems Inc. 1987, 1990. All rights   #
-#       reserved. No part of this software may be reproduced      #
-#       in any form or by any means - graphic, electronic or      #
-#       mechanical, including photocopying, recording, taping     #
-#       or information storage and retrieval systems - except     #
-#       with the written permission of WATCOM Systems Inc.        #
-###################################################################
-
 proj_name = wtouch
-name = wtouch
 
-.ERASE
-
-.EXTENSIONS:
-.EXTENSIONS: .exe .qnx .obj .msg .sp .c .rc .vi .mif
-
-.c .msg .rc .vi .sp : $(wtouch_dir)
-
-.mif : $(mif_path)
 !include cproj.mif
+!include deftarg.mif
 !include defrule.mif
 
-MODEL = s
 !include wres.mif
 
-mem_model_i86 = -ms
-extra_c_flags = -s
+.EXTENSIONS: .msg .vi .rc .sp
 
-inc_dirs = $(watcom_dir)\h
+inc_dirs = -I"$(wtouch_dir)"
 
-.before:
-        set include=$(inc_path)
+.c .msg .vi .rc .sp: ..
 
-extra_dependants_os2 = $(wtouch_dir)\o\wtouch.exe
-objects = touch.obj dtparse.obj wtmsg.obj
-dependants = wtouch.res $(objects) $(extra_dependants_$(host_OS))
+objs =               &
+        touch.obj    &
+        dtparse.obj  &
+        wtmsg.obj
 
-lflags_dos_i86 = sys dos
-extra_l_flags_os2 = option newfiles,stub=$(extra_dependants_os2)
+dependants = wtouch.res $(objs) $(wres_lib)
 
-lnk = tmp.lnk
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
 
-$(name).exe : $(dependants)
-        @%create $(lnk)
-        @%append $(lnk) NAME $(name).exe
-        @%append $(lnk) FILE touch.obj
-        @%append $(lnk) FILE dtparse.obj
-        @%append $(lnk) FILE wtmsg.obj
-        @%append $(lnk) LIB $(wres_lib)
-        $(linker) op quiet $(lflags) @$(lnk)
-        wstrip -q -a -r $(name).exe . wtouch.res
-        @del $(lnk)
-#!ifneq host_OS dos
-#       wstrip -q -a -r $(name).exe . wtouch.res
-#!endif
+$(proj_name).exe : $(dependants) $(version_res_$(host_os)_$(host_cpu))
+        $(linker) option quiet $(lflags) name $^@ file { $(objs) } lib $(wres_lib)
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+        wstrip -q -a -r $(proj_name).exe . $(proj_name).res
 
-$(name).res : $(name).rc $(name).msg usage.rc usagej.rc msg.gh
-        $(rc) -q -r -i$(wtouch_dir) -zk0 -fo=$^@ $[@ /bt=windows
+$(proj_name).res : $(proj_name).rc $(proj_name).msg usage.rc usagej.rc msg.gh
+        $(rc_aui) $[@ -fo=$^@
 
 usage.rc : usage.sp
-        wsplice -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ usage.rc
+        @%write $^&.tmp -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< $^@
+        wsplice @$^&.tmp
 
 usagej.rc : usage.sp
-        wsplice -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $[@  usagej.rc
+        @%write $^&.tmp -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< $^@
+        wsplice @$^&.tmp
 
-msg.gh : $(name).msg msg.vi
-        copy $[@ msg.gh
-        vi -q -d -i -s $]@ msg.gh
+msg.gh : $(proj_name).msg
+        $(awk) -v base=MSG_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.lib del *.lib
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.rc  del *.rc
-        @if exist *.gh  del *.gh
-        @if exist *.sym del *.sym
+!include verrc.mif

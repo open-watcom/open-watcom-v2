@@ -353,10 +353,11 @@ static RcStatus traverseTree( PEResDir * dir, void * visit_data,
     return( RS_OK );
 } /* traverseTree */
 
-static RcStatus SetEntryOffset( PEResEntry * entry, uint_32 * curr_offset )
-/********************************************************************/
+static RcStatus SetEntryOffset( PEResEntry * entry, void * _curr_offset )
+/***********************************************************************/
 {
     int     num_entries;
+    uint_32 *curr_offset = _curr_offset;
 
     if( entry->IsDirEntry ) {
         entry->Entry.entry_rva = *curr_offset | PE_RESOURCE_MASK_ON;
@@ -371,10 +372,11 @@ static RcStatus SetEntryOffset( PEResEntry * entry, uint_32 * curr_offset )
     return( RS_OK );
 } /* SetEntryOffset */
 
-static RcStatus AdjustNameEntry( PEResEntry * entry, uint_32 * dir_size )
-/******************************************************************/
+static RcStatus AdjustNameEntry( PEResEntry * entry, void * _dir_size )
+/*********************************************************************/
 {
     uint_32     str_offset;
+    uint_32    *dir_size = _dir_size;
 
     if( entry->Entry.id_name & PE_RESOURCE_MASK_ON ) {
         /* the id_name contains the offset into the string block */
@@ -386,10 +388,13 @@ static RcStatus AdjustNameEntry( PEResEntry * entry, uint_32 * dir_size )
     return( RS_OK );
 } /* AdjustNameEntry */
 
-static int ComparePEResIdName( const PEResEntry * entry1,
-                               const PEResEntry * entry2 )
+static int ComparePEResIdName( const void * _entry1,
+                               const void * _entry2 )
 /***********************************************************************/
 {
+    const PEResEntry * entry1 = _entry1;
+    const PEResEntry * entry2 = _entry2;
+
     if( entry1->Name == NULL ) {
         if( entry2->Name == NULL ) {
             if( entry1->Entry.id_name > entry2->Entry.id_name ) {
@@ -463,9 +468,10 @@ typedef struct CopyResInfo {
  * copyDataEntry
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus copyDataEntry( PEResEntry *entry, CopyResInfo *copy_info )
-/*********************************************************************/
+static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
+/******************************************************************/
 {
+    CopyResInfo         *copy_info = _copy_info;
     WResLangInfo        *res_info;
     long                seek_rc;
     uint_32             diff;
@@ -537,6 +543,7 @@ static RcStatus copyPEResources( ExeFileInfo * tmp, ResFileInfo *resfiles,
         ret = traverseTree( &info->Res, &copy_info, copyDataEntry );
         *errres = copy_info.errres;
     } else {
+        ret = RS_OK;
         while( resfiles != NULL ) {
             copy_info.curres = resfiles;
             if( resfiles->IsOpen ) {
@@ -612,11 +619,12 @@ typedef struct {
 /*
  * setDataEntry
  */
-static RcStatus setDataEntry( PEResEntry *entry, DataEntryCookie *info )
-/********************************************************************/
+static RcStatus setDataEntry( PEResEntry *entry, void *_info )
+/************************************************************/
 {
     WResLangInfo        *langinfo;
     ResFileInfo         *fileinfo;
+    DataEntryCookie     *info = _info;
 
     if( !entry->IsDirEntry ) {
         fileinfo = WResGetFileInfo( entry->u.Data.Wind );
@@ -637,9 +645,11 @@ static RcStatus setDataEntry( PEResEntry *entry, DataEntryCookie *info )
  * writeEntry-
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeEntry( PEResEntry * entry, int * handle )
-/*******************************************************/
+static RcStatus writeEntry( PEResEntry * entry, void * _handle )
+/**************************************************************/
 {
+    int *handle = _handle;
+
     if( entry->IsDirEntry ) {
         return( writeDirEntry( &entry->u.Dir, *handle ) );
     } else {
@@ -924,6 +934,7 @@ int RcBuildResourceObject( void ) {
     if( CmdLineParms.NoResFile ) {
         exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].rva = 0;
         exeinfo->u.PEInfo.WinHead->table[ PE_TBL_RESOURCE ].size = 0;
+        error = RS_OK;
     } else {
         res_obj = exeinfo->u.PEInfo.Objects
                   + exeinfo->u.PEInfo.WinHead->num_objects - 1;
@@ -932,10 +943,13 @@ int RcBuildResourceObject( void ) {
         error = BuildResourceObject( exeinfo, Pass2Info.ResFiles,
                                      res_obj, rva, offset,
                                      !Pass2Info.AllResFilesOpen );
+// use of CmdLineParms.WritableRes has been commented out in param.c
+// removed here too as it wasn't initialised anymore (Ernest ter Kuile 31 aug 2003)
+//        if( CmdLineParms.WritableRes ) {
+//            res_obj->flags |= PE_OBJ_WRITABLE;
+//        }
     }
-    if( CmdLineParms.WritableRes ) {
-        res_obj->flags |= PE_OBJ_WRITABLE;
-    }
+
     return( error );
 }
 #endif

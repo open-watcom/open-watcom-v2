@@ -46,13 +46,15 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WAccelEditInfo *WGetCurrentEditInfo      ( void );
-extern void            WSetCurrentEditInfo      ( WAccelEditInfo * );
-extern HMENU           WGetMenuHandle           ( WAccelEditInfo * );
-extern void            WResizeWindows           ( WAccelEditInfo * );
-extern char           *WCreateEditTitle         ( WAccelEditInfo * );
-extern void            WSetEditTitle            ( WAccelEditInfo * );
-extern void            WHandleRename            ( WAccelEditInfo *einfo );
-extern void CALLBACK   WAccHelpRoutine          ( void );
+extern WAccelEditInfo   *WGetCurrentEditInfo( void );
+extern void             WSetCurrentEditInfo( WAccelEditInfo * );
+extern HMENU            WGetMenuHandle( WAccelEditInfo * );
+extern void             WResizeWindows( WAccelEditInfo * );
+extern char             *WCreateEditTitle( WAccelEditInfo * );
+extern void             WSetEditTitle( WAccelEditInfo * );
+extern void             WHandleRename( WAccelEditInfo *einfo );
+extern void CALLBACK    WAccHelpRoutine( void );
+extern void CALLBACK    WAccHelpSearchRoutine( void );
+extern void CALLBACK    WAccHelpOnHelpRoutine( void );
 
 #endif

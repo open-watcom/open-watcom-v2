@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE sample application menus.
 *
 ****************************************************************************/
 
-
-// Draw menus
 
 #define IDM_EXIT                100
 

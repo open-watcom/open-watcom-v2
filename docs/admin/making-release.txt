@@ -1,0 +1,222 @@
+
+At the time of this writing (April 2012) the process of creating a
+release is rather manually intensive. A valuable contribution would be
+finding a way of automating the process, at least as much as feasible.
+That would make it much easier to create releases frequently...
+something that would probably be good for the project.
+
+All this is done in a client view that maps the entire depot, although I
+believe it is only really necessary to have the openwatcom_1.0 branch
+mapped to the client.
+
+1. Prepare a new release notes
+------------------------------
+
+The release notes are stored in docs/doc/gs/diffs.gml. Note the date
+when the last release notes were generated (should be a comment in the
+file). Ask Perforce to produce a list of all changes since then using a
+command such as
+
+        p4 changes -l @yyyy/mm/dd,#head
+
+Use this file to update diffs.gml as appropriate. The release notes
+should be worded in a consistent way to past release notes. Also the
+various notes should be organized in sections: compilers, code
+generator, libraries, tools. Important changes that affect many users
+should be first in each section with obscure changes and bug fixes
+toward the end of each section. If any changes will require users to
+recompile their code (libraries, applications, etc), that should be
+noted in a separate section of the document.
+
+
+2. Branch the trunk into the release branch
+-------------------------------------------
+
+NOTE: It might be good to create an openwatcom_2.x branch for the 2.x
+releases instead of putting them into the 1.0 branch. In that case the
+procedure below will need to be updated. The first time the 2.x branch
+is created, it shouldn't be necessary to resolve files, etc. Review the
+Perforce documentation.
+
+Note that past practice has been for each release to go into the 1.0
+branch with a label made to mark that release. This causes the releases
+to be "stacked up" in that one branch rather than having separate
+branches for each release. The name "1.0" is thus misleading, but it's a
+historical accident.
+
+ p4 integrate -b openwatcom_1.0
+
+   We probably also want the -d option and maybe the -i option, although
+   in most cases it won't make any difference. I actually used P4V for
+   this operation by right clicking on the branch specification and
+   selecting the 'Integrate Using Branch...' option. This allows me to
+   preview the integration. The advantage of the preview is that it lets
+   you check to be absolutely sure the direction of integration is
+   correct.
+
+ p4 resolve ...
+
+   Again I used P4V. This involves right clicking on the changelist
+   created by the integrate command above and selecting resolve files.
+   Begin with the auto resolve feature: "Accept changed file (only one
+   file differs from the base)." This takes care of most of the files.
+   This operation also takes a long time.
+
+   Only one file should fail to auto-resolve: bld/watcom/h/bancfg.h.
+   P4Merge (launched from P4V when doing an "interactive" resolve of the
+   remaining file) makes it easy to see what to do. Follow the lead of
+   the existing target file from the last release. The version number
+   will need to be updated, but this is done by the merge operation
+   (there should be zero conflicts reported).
+
+ p4 submit ...
+
+   Again I used P4V. Right click on the changelist and submit it in the
+   usual way.
+
+
+3. Build the release candidate files. There are eight files:
+   (HOST,    LANGUAGE)
+   (windows, c/c++)
+   (windows, fortran)
+   (os/2,    c/c++)
+   (os/2,    fortran)
+   (linux,   c/c++)
+   (linux,   fortran)
+   (dos,     c/c++)
+   (dos,     fortran)
+------------------------------------------------------------
+
+I did full builds and regression tests under both Win32 and OS/2. It is
+not strictly necessary to do this. A single build platform is all that
+is technically needed since all hosts and targets can be generated from
+a single build platform. Win32 is the most tested build platform. NOTE:
+When doing the build be sure you've installed support on the build
+platform for all possible targets, including experimental targets!
+
+However, it is good to give the system as much exercise as possible
+before releasing it. Ideally we would verify that the entire system
+builds on all supported build platforms (the four hosts above), and the
+the resulting code passes all regression tests on those platforms.
+Realistically that is hard.
+
+It is important that the system be buildable with the previous release
+so use the previous release as your build compiler to start.
+
+I suggest doing the build twice: the first time using the previous
+release and then again using the freshly made compiler. Don't forget to
+at least execute 'builder clean' between builds. I also use some
+JavaScript scripts that I created to locate and remove all writable
+files since 'builder clean' does not do a perfect job of cleaning house.
+Ideally regression tests should be executed after each build.
+
+This procedure, while time consuming, helps give confidence that the new
+compiler as released will be able to compile its own source code. Also
+this way any improvements in the new compiler, for example enhanced
+optimizations, can be immediately applied to the new release.
+
+It necessary to rename the help files built for windows so that all the
+*.HLP files have lower case names. This is what is expected by the
+installer. This quirk should be cleaned up.
+
+Once all the builds and testing have completed, Then switch to the
+distrib\ow directory and issue the commands
+
+      builder rel2 os_nt
+      builder rel2 os_os2
+      builder rel2 os_dos
+      builder rel2 os_linux
+
+to build all the Windows, OS/2, DOS, and Linux installers. Ideally the
+installers would be tested before they are posted. This is important
+because sometimes the file manifests are wrong and files that need to be
+part of the installer don't get included. The result is an installed
+system that doesn't quite work. Ideally one would install the system on
+a fresh machine and then verify that the compiler AS INSTALLED can build
+its own source code and pass all regression tests. I haven't been doing
+that because it's just a crazy amount of work.
+
+
+4. Post the release candidates and see how it goes
+--------------------------------------------------
+
+Hopefully other users will check the installed package against their
+non-trivial projects. Typically what happens is that many users wait for
+the final release before upgrading. That's understandable but it is also
+frustrating; bugs have occasionally been found days after the release
+goes final due to this effect.
+
+
+5. Create a label in the release branch
+---------------------------------------
+
+First you need to create a label using 'p4 label' or its equivalent in
+P4V. Then, after the label has been defined, you need to use 'p4 tag' to
+actually associate files with the label.
+
+
+6. Make the final release
+-------------------------
+
+Post the final versions to the FTP site, and edit the Wiki accordingly.
+There are four places where the Wiki will need changing.
+
+  a) The main page (of course).
+  b) The change list page to add the changes for the new version.
+  c) The download page where the latest version number is mentioned.
+  d) The history page (see the 'Timeline' section).
+
+Don't forget to also post the reference source code and make an
+announcement to the announcements mailing list (wait a couple of days
+for the new release to be copied to the mirror sites). The reference
+source code comes in two flavors: the version with CR/LF line endings
+and the version with just LF line endings.
+
+You might also want to update the downloadable PDF documentation,
+especially if the documentation has changed significantly since the last
+release. Finally, there is a readme.txt file on the FTP site (next to
+the distribution archives) that needs to be updated.
+
+Finally, update Bugzilla to include the option of reporting bugs against
+the new version.
+
+
+7. Move the code base to the next version number
+------------------------------------------------
+
+The following email from Michal, with some additional notes of my own,
+describes what needs to be done. Note: the email addresses in the
+message below are no longer valid.
+
+Note: The copyright year might need updating, but I'm not sure where all
+the locations for that might be. The copyright notice for the
+documentation is in xdefs.gml.
+
+++++
+
+Date: Mon, 18 Dec 2006 15:41:15 +0100
+From: Michal Necasek <michaln@prodigy.net>
+To: Peter C. Chapin <pchapin@sover.net>
+Subject: Re: First annoying OW question. :-)
+
+Peter C. Chapin wrote:
+
+> Hi! It seems like the source should now be moved forward to v1.7. Is it
+> really as simple as changing two lines in the various setvars files?
+>
+
+No, but it's not much more difficult. And this might be worth writing
+down, perhaps on the wiki.
+
+You have to change the setvars files [actually the cmnvars files now],
+which affect a bunch of file names. You have to change
+bld/watcom/h/bancfg.h [and banner.h]. For documentation, you need to
+change docs/doc/gml/xdefs.gml, and also the docs/readme.txt file [also
+freadme.txt and areadme.txt]. Finally you need to modify
+bld/rtdll/files.dat.
+
+Some of this might probably be automated better (with sed or wsplice or
+whatever). For the setvars files, the version should perhaps be split
+out into a separate file so that people don't need to touch their own
+customized setvars copies - but that's just an idea. [This has been
+done.]

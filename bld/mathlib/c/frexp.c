@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point normalization routine.
 *
 ****************************************************************************/
 
@@ -35,22 +34,22 @@
 
 
 _WMRTLINK double frexp( double value, int *exp )
-/************************************/
-    {
-        register int n;
-        auto    union {
-                        double x;
-                        unsigned short int a[4];
-                } u;
+/**********************************************/
+{
+    int     n;
+    union {
+        double          x;
+        unsigned short  a[4];
+    } u;
 
-        n = 0;
-        u.x = value;
-        if( value != 0.0 ) {
-            n = (u.a[3] & 0x7ff0) >> 4;
-            n -= 0x03fe;
-            u.a[3] &= 0x800f;
-            u.a[3] |= 0x3fe0;
-        }
-        *exp = n;
-        return( u.x );
+    n = 0;
+    u.x = value;
+    if( value != 0.0 ) {
+        n = (u.a[3] & 0x7ff0) >> 4;
+        n -= 0x03fe;
+        u.a[3] &= 0x800f;
+        u.a[3] |= 0x3fe0;
     }
+    *exp = n;
+    return( u.x );
+}

@@ -1,0 +1,66 @@
+name=dmfc32SMP
+any_check=mfc32samp
+static_text=\
+        //1"Select MFC 3.2 Samples:"\
+        //2"MFC 3.2 サンプルを選択してください:"\
+        //0
+static_text=
+check_box=         mfc32bin,,\
+        //1"&Include sample program executables"\
+        //2"サンプル・プログラムの実行可能ファイルを含めます (&I)"\
+        //0
+check_box         =mfc32samp_autoclik,,"autoclik"
+check_box_continue=mfc32samp_autodriv,,"autodriv"
+check_box_continue=mfc32samp_batch,,"batch"
+check_box_continue=mfc32samp_calcdriv,,"calcdriv"
+check_box         =mfc32samp_catalog,,"catalog"
+check_box_continue=mfc32samp_chkbook,,"chkbook"
+check_box_continue=mfc32samp_chatsrvr,,"chatsrvr"
+check_box_continue=mfc32samp_chatter,,"chatter"
+check_box         =mfc32samp_clipart,,"clipart"
+check_box_continue=mfc32samp_collect,,"collect"
+check_box_continue=mfc32samp_contain,,"contain"
+check_box_continue=mfc32samp_ctrlbars,,"ctrlbars"
+check_box         =mfc32samp_ctrltest,,"ctrltest"
+check_box_continue=mfc32samp_cube,,"cube"
+check_box_continue=mfc32samp_diblook,,"diblook"
+check_box_continue=mfc32samp_dllhusk,,"dllhusk"
+check_box         =mfc32samp_dlltrace,,"dlltrace"
+check_box_continue=mfc32samp_docktool,,"docktool"
+check_box_continue=mfc32samp_drawcli,,"drawcli"
+check_box_continue=mfc32samp_dynabind,,"dynabind"
+check_box         =mfc32samp_dynamenu,,"dynamenu"
+check_box_continue=mfc32samp_enroll,,"enroll"
+check_box_continue=mfc32samp_fire,,"fire"
+check_box_continue=mfc32samp_guidgen,,"guidgen"
+check_box         =mfc32samp_hello,,"hello"
+check_box_continue=mfc32samp_helloapp,,"helloapp"
+check_box_continue=mfc32samp_hiersvr,,"hiersvr"
+check_box_continue=mfc32samp_inproc,,"inproc"
+check_box         =mfc32samp_ipdrive,,"ipdrive"
+check_box_continue=mfc32samp_makehm,,"makehm"
+check_box_continue=mfc32samp_mdi,,"mdi"
+check_box_continue=mfc32samp_mfcans32,,"mfcans32"
+check_box         =mfc32samp_mfccalc,,"mfccalc"
+check_box_continue=mfc32samp_mfcuix32,,"mfcuix32"
+check_box_continue=mfc32samp_mtgdi,,"mtgdi"
+check_box_continue=mfc32samp_mtmdi,,"mtmdi"
+check_box         =mfc32samp_mtrecalc,,"mtrecalc"
+check_box_continue=mfc32samp_multipad,,"multipad"
+check_box_continue=mfc32samp_npp,,"npp"
+check_box_continue=mfc32samp_oclient,,"oclient"
+check_box         =mfc32samp_oleview,,"oleview"
+check_box_continue=mfc32samp_propdlg,,"propdlg"
+check_box_continue=mfc32samp_saver,,"saver"
+check_box_continue=mfc32samp_scribble,,"scribble"
+check_box         =mfc32samp_speakn,,"speakn"
+check_box_continue=mfc32samp_stdreg,,"stdreg"
+check_box_continue=mfc32samp_superpad,,"superpad"
+check_box_continue=mfc32samp_templdef,,"templdef"
+check_box         =mfc32samp_tracer,,"tracer"
+check_box_continue=mfc32samp_tracker,,"tracker"
+check_box_continue=mfc32samp_viewex,,"viewex"
+check_box_continue=mfc32samp_wordpad,,"wordpad"
+include=space.dlg
+static_text=
+include=oc.dlg

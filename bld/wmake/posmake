@@ -1,0 +1,104 @@
+# This makefile ought to be POSIX compatible, ie. maximally simple. No vendor
+# specific extensions, no 'clever' tricks here. That means the stupid hard
+# tabs, too!
+
+INCS = -I../h -I../../watcom/h -I../../lib_misc/h -I. $(DEFS)
+DEFS = -D__LINUX__ -D__UNIX__ -DUNIX -Uunix -DBOOTSTRAP
+CFLAGS = -g -O2 $(INCS)
+
+all: $(OWBINDIR)/wmake
+
+
+# Unfortunately there appears to be no portable way of specifying source
+# directories. So we use brute force - it's just this one makefile, once we
+# build wmake we're set :-)
+
+macros.o: ../c/macros.c
+	$(CC) $(CFLAGS) -c $?
+main.o: ../c/main.c
+	$(CC) $(CFLAGS) -c $?
+massert.o: ../c/massert.c
+	$(CC) $(CFLAGS) -c $?
+mautodep.o: ../c/mautodep.c
+	$(CC) $(CFLAGS) -c $?
+mautoomf.o: ../c/mautoomf.c
+	$(CC) $(CFLAGS) -c $?
+mautoorl.o: ../c/mautoorl.c
+	$(CC) $(CFLAGS) -c $?
+mautores.o: ../c/mautores.c
+	$(CC) $(CFLAGS) -c $?
+mcache.o: ../c/mcache.c
+	$(CC) $(CFLAGS) -c $?
+memory.o: ../c/memory.c
+	$(CC) $(CFLAGS) -c $?
+mexec.o: ../c/mexec.c
+	$(CC) $(CFLAGS) -c $?
+mglob.o: ../c/mglob.c
+	$(CC) $(CFLAGS) -c $?
+mhash.o: ../c/mhash.c
+	$(CC) $(CFLAGS) -c $?
+misc.o: ../c/misc.c
+	$(CC) $(CFLAGS) -c $?
+mlex.o: ../c/mlex.c
+	$(CC) $(CFLAGS) -c $?
+mlexmac.o: ../c/mlexmac.c
+	$(CC) $(CFLAGS) -c $?
+mlexprs.o: ../c/mlexprs.c
+	$(CC) $(CFLAGS) -c $?
+mparse.o: ../c/mparse.c
+	$(CC) $(CFLAGS) -c $?
+mpreproc.o: ../c/mpreproc.c
+	$(CC) $(CFLAGS) -c $?
+mrcmsg.o: ../c/mrcmsg.c
+	$(CC) $(CFLAGS) -c $?
+msg.o: ../c/msg.c
+	$(CC) $(CFLAGS) -c $?
+mstream.o: ../c/mstream.c
+	$(CC) $(CFLAGS) -c $?
+msuffix.o: ../c/msuffix.c
+	$(CC) $(CFLAGS) -c $?
+msysdep.o: ../c/msysdep.c
+	$(CC) $(CFLAGS) -c $?
+mtarget.o: ../c/mtarget.c
+	$(CC) $(CFLAGS) -c $?
+mupdate.o: ../c/mupdate.c
+	$(CC) $(CFLAGS) -c $?
+mvecstr.o: ../c/mvecstr.c
+	$(CC) $(CFLAGS) -c $?
+autodept.o: ../../watcom/c/autodept.c
+	$(CC) $(CFLAGS) -c $?
+wsplice.o: ../../builder/c/wsplice.c
+	$(CC) $(CFLAGS) -c $?
+clibext.o: ../../watcom/c/clibext.c
+	$(CC) $(CFLAGS) -c $?
+
+OBJS = macros.o main.o massert.o mautodep.o mautoomf.o mautoorl.o mautores.o \
+ mcache.o memory.o mexec.o mglob.o mhash.o misc.o mlex.o mlexmac.o mlexprs.o \
+ mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
+ mtarget.o mupdate.o mvecstr.o autodept.o clibext.o
+
+wsplice: wsplice.o clibext.o
+	$(CC) -g wsplice.o clibext.o -o $@
+
+usage.gh : ../h/usage.sp wsplice
+	./wsplice -kIS_RC -kENGLISH -f '{%+(MSG_USE_E_BASE+%#-1), "%s"},' ../h/usage.sp $@
+
+usageend.gh: usage.gh wsplice
+	./wsplice usage.gh -o "%n%n%n%n" usage.rcp
+	./wsplice -f "%+" usage.rcp -o "#define USAGE_LAST (USAGE_BASE+%#)%n" $@
+	rm -f usage.rcp
+
+cretype : ../c/cretype.c
+	$(CC) -o $@ $?
+
+isarray.gh : cretype
+	./cretype > $@
+
+$(OWBINDIR)/wmake: wmake
+	cp wmake $@
+
+wmake: usageend.gh isarray.gh $(OBJS)
+	$(CC) -g $(OBJS) -o $@
+
+clean:
+	rm -f *.o *.gh

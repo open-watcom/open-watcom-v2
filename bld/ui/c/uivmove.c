@@ -33,13 +33,8 @@
 #include "uidef.h"
 
 
-void global uivmoveblock( vptr, area, drow, dcol )
-/************************************************/
-
-register        VSCREEN                 *vptr;
-register        int                     drow;
-register        int                     dcol;
-register        SAREA                   area;
+void global uivmoveblock( VSCREEN *vptr, SAREA area, int drow, int dcol )
+/***********************************************************************/
 {
     register    BUFFER                  *bptr;
     register    ORD                     row;

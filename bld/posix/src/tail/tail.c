@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX tail utility
+*               Displays tail lines of a file
 *
 ****************************************************************************/
 
@@ -44,9 +44,9 @@
 
 char *OptEnvVar = "tail";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: tail [-?X][-<number>] [files]",
-    "\tfiles              : files to display head lines of",
+    "\tfiles              : files to display tail lines of",
     "\tOptions: -?        : print this list",
     "\t\t -<number> : number of lines to show",
     "\t\t -X        : match files by regular expressions",

@@ -1,0 +1,182 @@
+			Implementation Notes
+			********************
+
+To compile DOS/32A DOS Extender use Turbo Assembler (TASM) 4.0 or better.
+
+
+General Notes
+*************
+
+DOS/32A is built up of three different parts, that are split up into three
+different segments: _ID32, _KERNEL and _TEXT16. An additional segment, _STACK,
+is used by the DOS Extender as a local stack.
+
+The _ID32 segment contains DOS/32A built-in configuration which can be
+changed by SUNSYS Setup Utility. The segment is located at 0080h by default,
+and is 128 bytes long including the copyright message and time-stamp.
+
+_ID32 is followed by the _KERNEL segment, which contains DOS/32A built-in DPMI
+Kernel and initialization routines that determine CPU, FPU, System type
+(INT 15h, XMS, VCPI or DPMI) etc. It is from here DOS/32A provides DPMI
+services through INT 31h.
+
+_TEXT16 segment, which follows the _KERNEL, contains the main code of the DOS
+Extender. This segment includes initialization routines, configuration
+routines and entry points for extended INT 10h, INT 21h and INT 33h. It also
+contains the LE/LX/LC loader.
+
+When the documentation refers to "Kernel" it acually means the _KERNEL segment,
+likewise "Client" means the _TEXT16 segment.
+
+
+
+DOS/32A Memory Map Layout
+*************************
+
+This diagram shows what the memory looks like when the DOS Extender is loaded
+and executed by the Operating System:
+
+
+	Memory Area Description		Length	Comment
+	=======================		======	=======
+
+	+-----------------------+
+	|	PSP		|	0200h - Program Segment Prefix
+	+-----------------------+
+	+-----------------------+
+	|	ID32 		|	0080h - DOS/32A ID32 Header
+	+-----------------------+
+*[1]	|			|	xxxxh - DOS/32A built-in ADPMI host
+	|	Kernel		|
+	|			|
+	+-----------------------+
+	|			|	xxxxh - DOS/32A DOS Extender client
+	|	Client		|
+	|			|
+	+-----------------------+
+*[2]	|-	Stack	       -|	0800h - DOS/32A internal stack
+	+-----------------------+
+	|	RM INT Table	|	0400h - copy of Real Mode Interrupts
+	+-----------------------+
+*[3]	|	DPMI host data	|	xxxxh -	present DPMI host private data
+	//			//
+	|			|
+	+-----------------------+
+	|  DOS Transfer Buffer	|	xxxxh -	DOS Transfer Buffer
+	//			//
+	|			|
+	+-----------------------+
+	+-----------------------+
+	|  Free DOS Memory	|	xxxxh - Free DOS memory available for
+	|			|		DOS programs
+	//			//
+	|			|
+	|			|
+	+-----------------------+
+
+
+
+[1] Kernel Note
+***************
+
+When DOS/32A has recognized the system software to be DPMI, it will remove
+its own built-in DPMI from memory by copying the Client code (the whole
+segment) to the upper memory location overwriting Kernel, to free up some
+conventional memory. See "dos32a.asm" for more info.
+
+
+
+[2] Stack Structure Note
+************************
+
+The local stack (ie DOS/32A own stack) is used by the DOS Extender when
+loading executable image, as well as a temporary buffer for Mouse Callback,
+local DTA and Mouse Shape Buffer (used when mouse functions are called):
+
+
+Offset	Stack Area Description		Comments
+======	======================		========
+
++0000h	+-----------------------+ <- Top of stack (lower address)
+	| Space used by Loader	|
+	|			|
++0040h	+-----------------------+
+	| Mouse Callback Struct.|
+	|			|
++0100h	+-----------------------+
+	| Local DTA Structure	|
+	|			|
++0180h	+-----------------------+
+	| Local Mouse ShapeBuf	|
+	|			|
+	//			//
+	|			|
++07FFh	+-----------------------+ <- Bottom of stack (higher address)
+
+
+In order to save some conventional memory, DOS/32A (Client) will allocate
+certain local variables at the very top of stack. DOS/32A will also reuse
+its own memory space occupied by executable code to allocate additional
+variables, when that code has been executed and is no longer needed. See the
+source code for more information.
+
+
+[3] DOS/32A built-in DPMI structure map
+***************************************
+
+This diagram shows the memory map of the built-in DPMI server:
+
+
+Size	DPMI Area Description		Comments
+====	=====================		========
+
+	+-----------------------+
+1000h	|  VCPI Page Dir	|	VCPI PageDir (if sys_type == VCPI,
+	|			|	 otherwise N/A)
+	+-----------------------+
+????h	|  VCPI Page Tables	|	VCPI PageTables, # determind at runtime
+	|			|	(if sys_type == VCPI, otherwise N/A)
+	//			//
+	|			|
+	+-----------------------+
+????h	|  VCPI Phys Tables	|	VCPI PageTables for phys. mem. mapping
+	|			|	( --//--, --//-- N/A)
+	//			//
+	|			|
+	+-----------------------+
+	| VCPI TSS		|
+	|			|
+	+-----------------------+
+
+
+
+
+The below diagram is common for Clean, XMS and VCPI
+
+	+-----------------------+
+0800h	|  IDT			|	Interrupt Descriptor Table
+	+-----------------------+
+????h	|  RM stacks		|	Real Mode stack structure for use
+	//			//	when passing interrupts down
+	|			|	(# of stacks configurable)
+	+-----------------------+
+????h	|  PM stacks		|	Prot. Mode stack structure for use
+	//			//	when passing interrupts up
+	|			|	(# of stacks configurable)
+	+-----------------------+
+????h	|  Callbacks		|	Allocated Callbacks
+	//			//	(# of Callbacks configurable)
+	|			|
+	+-----------------------+
+????h	|  GDT			|	Global Descriptor Table containing
+	//			//	Selectors (initially reset to 0)
+	|			|	(# of Selectors configurable)
+	+-----------------------+
+
+For more information see "KERNEL\init.asm" file.
+
+
+
+
+
+[end of notes]

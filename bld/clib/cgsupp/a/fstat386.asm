@@ -24,14 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Floating-point exception signaling
 ;*
 ;*****************************************************************************
 
 
-;                               of AX:DX
-;
 include mdef.inc
 include struct.inc
 include fstatus.inc
@@ -43,94 +40,129 @@ include fstatus.inc
 
         datasegment
         enddata
+
         assume  ss:nothing
 
-
-FPS_OK                  =       0
-FPS_UNDERFLOW           =       1
-FPS_OVERFLOW            =       2
-FPS_DIVIDE_BY_0         =       3
-FPS_BAD_ARG             =       4
-
-jmps    macro   dsym
-        jmp     short dsym
-        endm
-
-
+        xdefp   FPUnderFlow
+        xdefp   FPInvalidOp
+        xdefp   FPDivZero
+        xdefp   FPOverFlow
         xdefp   F8UnderFlow
-        xdefp   F4UnderFlow
-        xdefp   F8InvalidOp
+;        xdefp   F8InvalidOp
         xdefp   F8DivZero
-        xdefp   F4DivZero
         xdefp   F8OverFlow
+        xdefp   F8RetInf
+        xdefp   F4UnderFlow
+;        xdefp   F4InvalidOp
+        xdefp   F4DivZero
         xdefp   F4OverFlow
-        xdefp   F8RetInf_
-        xdefp   _F8RetInf_
+        xdefp   F4RetInf
 
-        defpe   F8UnderFlow
-        sub     EDX,EDX         ; . . .
+;
+;       FPUnderFlow( void ) : void
+;
+        defpe   FPUnderFlow
+        push    eax                 ; save EAX
+;;      mov     eax,FPE_UNDERFLOW   ; indicate underflow
+;;      call    __FPE_exception_    ;
+        pop     eax                 ; restore EAX
+        ret                         ; return
+        endproc FPUnderFlow
 
-        defpe   F4UnderFlow
-;;      mov     EAX,FPE_UNDERFLOW; indicate underflow
-;;      call    __FPE_exception_;
-        sub     EAX,EAX         ; return a zero
-        ret                     ; return
+;
+;       FPInvalidOp( void ) : void
+;
+        defpe   FPInvalidOp
+        push    eax                 ; save EAX
+        mov     eax,FPE_ZERODIVIDE  ; indicate divide by 0
+        call    __FPE_exception_    ;
+        pop     eax                 ; restore EAX
+        ret                         ; return
+        endproc FPInvalidOp
+
+;
+;       FPDivZero( void ) : void
+;
+        defpe   FPDivZero
+        push    eax                 ; save EAX
+        mov     eax,FPE_ZERODIVIDE  ; indicate divide by 0
+        call    __FPE_exception_    ;
+        pop     eax                 ; restore EAX
+        ret                         ; return
+        endproc FPDivZero
+
+;
+;       FPOverFlow( void ) : void
+;
+        defpe   FPOverFlow
+        push    eax                 ; save EAX
+        call    __set_ERANGE        ; errno = ERANGE
+        mov     eax,FPE_OVERFLOW    ; indicate overflow
+        call    __FPE_exception_    ;
+        pop     eax                 ; restore EAX
+        ret                         ; return
+        endproc FPOverFlow
+
+;
+;       F8UnderFlow( void ) : reallong
+;
+        defp    F8UnderFlow
+        xor     edx,edx             ; return zero
+;
+;       F4UnderFlow( void ) : real
+;
+        defp    F4UnderFlow
+        call    FPUnderFlow         ; handle underflow
+        xor     eax,eax             ; return zero
+        ret                         ; return
         endproc F4UnderFlow
         endproc F8UnderFlow
 
+;
+;       F4DivZero( sign : int ) : real
+;
+        defp    F4DivZero
+        call    FPDivZero           ; handle divide by 0
+        jmp short F4RetInf          ; return Infinity
+;
+;       F4OverFlow( sign : int ) : real
+;
+        defp    F4OverFlow
+        call    FPOverFlow          ; handle overflow
+;
+;       F4RetInf( sign : int ) : real
+;
+        defp    F4RetInf
+        and     eax,80000000h       ; get sign
+        or      eax,7F800000h       ; set infinity
+        ret                         ; return
+        endproc F4RetInf
+        endproc F4OverFlow
+        endproc F4DivZero
 
-        defpe   F8InvalidOp
-        mov     EAX,FPE_ZERODIVIDE; indicate divide by 0
-        call    __FPE_exception_;
-        jmps    F8RetInf9       ; return infinity
-        endproc F8InvalidOp
-
-        defpe   F8DivZero
-        mov     EAX,FPE_ZERODIVIDE; indicate divide by 0
-        call    __FPE_exception_;
-        jmps    F8RetInf9       ; return infinity
-        endproc F8DivZero
-
-        defpe   F8OverFlow
+;
+;       F8DivZero( sign : int ) : reallong
+;
+        defp    F8DivZero
+        call    FPDivZero           ; handle divide by 0
+        jmp short F8RetInf          ; return Infinity
+;
+;       F8OverFlow( sign : int ) : reallong
+;
+        defp    F8OverFlow
+        call    FPOverFlow          ; handle overflow
 ;
 ;       F8RetInf( sign : int ) : reallong
 ;
-        defpe   F8RetInf_
-        defpe   _F8RetInf_
-        push    EAX             ; save sign of result
-        call    __set_ERANGE    ; errno = ERANGE
-        mov     EAX,FPE_OVERFLOW ; indicate overflow
-        call    __FPE_exception_;
-        pop     EAX             ; restore sign of result
-F8RetInf9: and  EAX,80000000h   ; get sign
-        or      EAX,7FF00000h   ; set infinity
-        mov     EDX,EAX         ;
-        sub     EAX,EAX         ; ...
-        ret                     ; return
-        endproc _F8RetInf_
-        endproc F8RetInf_
+        defp    F8RetInf
+        and     eax,80000000h       ; get sign
+        or      eax,7FF00000h       ; set infinity
+        mov     edx,eax             ;
+        sub     eax,eax             ; ...
+        ret                         ; return
+        endproc F8RetInf
         endproc F8OverFlow
-
-
-        defpe   F4DivZero
-        mov     EAX,FPE_ZERODIVIDE; indicate divide by 0
-        call    __FPE_exception_;
-        jmps    F4RetInf9       ; return infinity
-        endproc F4DivZero
-
-        defpe   F4OverFlow
-        defp    F4RetInf        ; return infinity
-        push    EAX             ; save sign of result
-        call    __set_ERANGE    ; errno = ERANGE
-        mov     EAX,FPE_OVERFLOW ; indicate overflow
-        call    __FPE_exception_;
-        pop     EAX             ; restore sign of result
-F4RetInf9: and  EAX,80000000h   ; get sign
-        or      EAX,7F800000h
-        ret
-        endproc F4RetInf
-        endproc F4OverFlow
-
+        endproc F8DivZero
 
         endmod
         end

@@ -121,9 +121,3 @@ enum {
     BATL    = 529,
 }; // Special Purpose Register encodings
 
-#ifdef _STANDALONE_
-extern void PPCEmit( void *, void * );
-#else
-extern void PPCEmit( void * );
-#endif
-extern bool PPCValidate( void * );

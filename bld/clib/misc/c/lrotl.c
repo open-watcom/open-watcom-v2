@@ -24,25 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _lrotl().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <stdlib.h>
 #include <limits.h>
 
-#undef _lrotl
+extern  unsigned long __lrotl( unsigned long, unsigned );
 
-extern  unsigned long __lrotl(unsigned long,unsigned);
-
-#if defined(__AXP__)
-#elif defined(__PPC__)
-#elif defined(__386__)
+#if defined(__386__)
 #pragma aux __lrotl = "rol eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
-#else
+#elif defined( _M_I86 )
 #pragma aux __lrotl =   "    and cx,31"\
                         "    je  short L2"\
                         "L1: adc ax,ax"\
@@ -57,14 +53,15 @@ extern  unsigned long __lrotl(unsigned long,unsigned);
 
 _WCRTLINK unsigned long _lrotl( unsigned long value, unsigned int shift )
 {
-    #if defined(__AXP__) || defined(__PPC__)
-        unsigned long tmp;
-        tmp = value;
-        value = value << shift;
-        tmp = tmp >> ((sizeof(tmp)*CHAR_BIT)-shift);
-        value = value | tmp;
-        return( value );
-    #else
-        return( __lrotl( value, shift ) );
-    #endif
+#if defined( _M_IX86 )
+    return( __lrotl( value, shift ) );
+#else
+    unsigned long   tmp;
+
+    tmp = value;
+    value = value << shift;
+    tmp = tmp >> ((sizeof( tmp ) * CHAR_BIT) - shift);
+    value = value | tmp;
+    return( value );
+#endif
 }

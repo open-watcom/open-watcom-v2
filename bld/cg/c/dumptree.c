@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump expression tree.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
-#include "sysmacro.h"
 #include "coderep.h"
 #include "addrname.h"
 #include "model.h"
@@ -47,6 +45,8 @@ extern  void            Dumpan(an);
 extern  void            DumpClass(type_class_def);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            DumpPtr( pointer );
+
+static  void            DumpSubTree( tn node, int indent );
 
 static char * Ops[] = {
         "<O_NOP>",
@@ -84,7 +84,7 @@ static char * Ops[] = {
         "<O_SINH>",
         "<O_TANH>",
         "<O_PTR_TO_NATIVE>",
-        "<O_PTR_TO_FORIEGN>",
+        "<O_PTR_TO_FOREIGN>",
         "<O_SLACK_19>",
         "<O_CONVERT>",
         "<O_INTERNAL_05>",
@@ -168,11 +168,51 @@ static char * PostEq = { "=(post)" };
 static char * Question = { "?" };
 static char * Colon = { ":" };
 
-extern  void    DumpTree( tn node ) {
+static  void    DumpIndent( int i ) {
 /***********************************/
 
-    DumpSubTree( node, 0 );
+    while( --i >= 0 ) {
+        DumpLiteral( " " );
+    }
+}
+
+
+static  void    DumpStrType(tn node, char *s1, char *s2, int indent) {
+/********************************************************************/
+
+    DumpIndent( indent );
+    DumpString( s1 );
+    DumpString( s2 );
+    DumpLiteral( " " );
+    DumpClass( TypeClass( node->tipe ) );
     DumpNL();
+}
+
+
+static  void    DumpOpType( tn node, int indent ) {
+/*************************************************/
+
+    DumpStrType( node, Ops[ node->op ], Null, indent );
+}
+
+
+static  void    DumpCall( tn what, int indent ) {
+/***********************************************/
+
+    tn  scan;
+
+    DumpIndent( indent );
+    DumpLiteral( "<O_CALL>" );
+    DumpNL();
+    DumpSubTree( what->u.left->u.left, indent+2 );
+    scan = what->rite;
+    while( scan != NULL ) {
+        DumpIndent( indent );
+        DumpLiteral( "<O_PARM>" );
+        DumpNL();
+        DumpSubTree( scan->u.left, indent+2 );
+        scan = scan->rite;
+    }
 }
 
 
@@ -289,48 +329,9 @@ static  void    DumpSubTree( tn node, int indent ) {
 }
 
 
-static  void    DumpOpType( tn node, int indent ) {
-/*************************************************/
-
-    DumpStrType( node, Ops[ node->op ], Null, indent );
-}
-
-static  void    DumpStrType(tn node, char *s1, char *s2, int indent) {
-/********************************************************************/
-
-    DumpIndent( indent );
-    DumpString( s1 );
-    DumpString( s2 );
-    DumpLiteral( " " );
-    DumpClass( TypeClass( node->tipe ) );
-    DumpNL();
-}
-
-
-static  void    DumpIndent( int i ) {
+extern  void    DumpTree( tn node ) {
 /***********************************/
 
-    while( --i >= 0 ) {
-        DumpLiteral( " " );
-    }
-}
-
-
-static  void    DumpCall( tn what, int indent ) {
-/***********************************************/
-
-    tn  scan;
-
-    DumpIndent( indent );
-    DumpLiteral( "<O_CALL>" );
+    DumpSubTree( node, 0 );
     DumpNL();
-    DumpSubTree( what->u.left->u.left, indent+2 );
-    scan = what->rite;
-    while( scan != NULL ) {
-        DumpIndent( indent );
-        DumpLiteral( "<O_PARM>" );
-        DumpNL();
-        DumpSubTree( scan->u.left, indent+2 );
-        scan = scan->rite;
-    }
 }

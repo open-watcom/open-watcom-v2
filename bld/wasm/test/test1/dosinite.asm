@@ -1,5 +1,5 @@
 ; need to resolve this extension business
-_OS=_PLDT
+;_OS=_PLDT
 ; fixme:
 ; This file contains translations that should be made in the asm source files.
 ; They are being done here as a stopgap measure.
@@ -129,35 +129,19 @@ _endif  macro
         endm
 
 _set    macro   base1,ext1,base2,ext2
-        ifdef __WASM__
-            base1&&ext1 = base2&&ext2
-        else
-            base1&ext1 = base2&ext2
-        endif
+        base1&ext1 = base2&ext2
         endm
 
 _label  macro   base,ext
-ifdef __WASM__
-    base&&ext:
-else
-    base&ext:
-endif
+base&ext:
         endm
 
 _j      macro   cc,base,ext
-        ifdef __WASM__
-            j&cc        base&&ext
-        else
-            j&cc        base&ext
-        endif
+        j&cc        base&ext
         endm
 
 _jn     macro   cc,base,ext
-        ifdef __WASM__
-            jn&cc       base&&ext
-        else
-            jn&cc       base&ext
-        endif
+        jn&cc       base&ext
         endm
 
 jnna    macro   label
@@ -369,7 +353,7 @@ hook_in_emulator proc near
           mov   eax,00000E02h           ; - "set cr0" function
           mov   ebx,EM                  ; - want EM bit turned on
           mov   ecx,__GDAptr            ; - get address of GDA
-          call  GDA_SERV[ecx]           ; - call extender service routine
+          call  dword ptr [ecx+GDA_SERV]          ; - call extender service routine
         _admit                          ; guess: Rational DOS/4G
           cmp   byte ptr __Extender,X_RATIONAL   ; - quit if not DOS/4G
           _quif ne                      ; - ...
@@ -491,7 +475,7 @@ __sys_fini_387_emulator proc near
           mov   eax,00000E02h           ; - "set cr0" function
           mov   ebx,0                   ; - want EM bit turned off
           mov   ecx,__GDAptr            ; - get address of GDA
-          call  GDA_SERV[ecx]           ; - call extender service routine
+          call  dword ptr [ecx+GDA_SERV]          ; - call extender service routine
         _admit                          ; guess: Ergo DOS extender (OS/386)
           cmp   al,X_ERGO               ; - quit if not OS/386
           _quif ne                      ; - ...
@@ -567,5 +551,4 @@ _reset_EM_MP_bits endp
 
 _TEXT   ends
 
-        end
         end

@@ -41,46 +41,48 @@
 #include "msdos.h"
 #include "rtdata.h"
 #include "seterrno.h"
+#include "_process.h"
 
 
 _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
-    {
-        register CHAR_TYPE *p;
-        register CHAR_TYPE *p2;
-        register int retval;
-        auto CHAR_TYPE buffer[_MAX_PATH];
-        size_t file_len;
-        CHAR_TYPE *end;
+{
+    register CHAR_TYPE *p;
+    register CHAR_TYPE *p2;
+    register int retval;
+    auto CHAR_TYPE buffer[_MAX_PATH];
+    size_t file_len;
+    CHAR_TYPE *end;
 
-        retval = __F_NAME(execve,_wexecve)( file, argv, envp );
-        if( retval != -1  ||
-            (_RWD_errno != ENOENT && _RWD_errno != EINVAL)) return( retval );
-        if( *file == '\\' || *file == '\0' || file[1] == ':' ) return( retval );
-        p = __F_NAME(getenv,_wgetenv)( __F_NAME("PATH",L"PATH") );
-        if( p == NULL ) return( retval );
-        file_len = __F_NAME(strlen,wcslen)( file ) + 1;
-        for(;;) {
-            if( *p == '\0' ) break;
-            end = __F_NAME(strchr,wcschr)( p, ';' );
-            if( end == NULL ) {
-                end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
-            }
-            if( end - p > _MAX_PATH - file_len ) {
-                __set_errno( E2BIG );
-                __set_doserrno( E_badenv );
-                return( -1 );
-            }
-            memcpy( buffer, p, (end-p)*sizeof(CHAR_TYPE) );
-            p2 = buffer + ( end - p );
-            if( p2[-1] != '\\' ) {
-                *p2++ = '\\';
-            }
-            memcpy( p2, file, file_len*sizeof(CHAR_TYPE) );
-            retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
-            if( retval != -1 ) break;
-            if(_RWD_errno != ENOENT && _RWD_errno != EINVAL) break;
-            if( *end != ';' ) break;
-            p = end + 1;
-        }
+    retval = __F_NAME(execve,_wexecve)( file, argv, envp );
+    if( retval != -1  ||
+        (_RWD_errno != ENOENT && _RWD_errno != EINVAL)) return( retval );
+    if( *file == STRING( '\\' ) || *file == NULLCHAR || file[1] == STRING( ':' ) )
         return( retval );
+    p = __F_NAME(getenv,_wgetenv)( STRING( "PATH" ) );
+    if( p == NULL ) return( retval );
+    file_len = __F_NAME(strlen,wcslen)( file ) + 1;
+    for(;;) {
+        if( *p == NULLCHAR ) break;
+        end = __F_NAME(strchr,wcschr)( p, STRING( ';' ) );
+        if( end == NULL ) {
+            end = p + __F_NAME(strlen,wcslen)( p ); /* find null-terminator */
+        }
+        if( end - p > _MAX_PATH - file_len ) {
+            __set_errno( E2BIG );
+            __set_doserrno( E_badenv );
+            return( -1 );
+        }
+        memcpy( buffer, p, (end-p)*sizeof(CHAR_TYPE) );
+        p2 = buffer + ( end - p );
+        if( p2[-1] != STRING( '\\' ) ) {
+            *p2++ = STRING( '\\' );
+        }
+        memcpy( p2, file, file_len*sizeof(CHAR_TYPE) );
+        retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
+        if( retval != -1 ) break;
+        if(_RWD_errno != ENOENT && _RWD_errno != EINVAL) break;
+        if( *end != STRING( ';' ) ) break;
+        p = end + 1;
     }
+    return( retval );
+}

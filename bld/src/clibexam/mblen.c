@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <mbctype.h>
+#include <mbstring.h>
 
 
 const char chars[] = {
@@ -19,7 +19,7 @@ const char chars[] = {
 };
 
 void main()
-  {
+{
     int         i, j, k;
 
     _setmbcp( 932 );
@@ -27,15 +27,15 @@ void main()
             ( mblen( NULL, MB_CUR_MAX ) ) ? "" : "not " );
     j = 1;
     for( i = 0; j > 0; i += j ) {
-      j = mblen( &chars[i], MB_CUR_MAX );
-      printf( "%d bytes in character ", j );
-      if( j == 0 ) {
-        k = 0;
-      } else if ( j == 1 ) {
-        k = chars[i];
-      } else if( j == 2 ) {
-        k = chars[i]<<8 | chars[i+1];
-      }
-      printf( "(%#6.4x)\n", k );
+        j = mblen( &chars[i], MB_CUR_MAX );
+        printf( "%d bytes in character ", j );
+        if( j == 0 ) {
+            k = 0;
+        } else if ( j == 1 ) {
+            k = chars[i];
+        } else if( j == 2 ) {
+            k = chars[i]<<8 | chars[i+1];
+        }
+        printf( "(%#6.4x)\n", k );
     }
-  }
+}

@@ -105,7 +105,6 @@ static void* ctor_array             // CTOR THE ARRAY
 #endif
     )
 {
-    void* (*rtn)( void*, unsigned, RT_TYPE_SIG ); // - ctor R/T routine
 #ifdef RT_EXC_ENABLED
     _CTAS ctas;                     // - controls CTOR or ARRAY_STORAGE
 
@@ -117,11 +116,10 @@ static void* ctor_array             // CTOR THE ARRAY
     if( 0 != array ) {
 #endif
         if( sig->hdr.type == THROBJ_CLASS_VIRT ) {
-            rtn = &CPPLIB( ctor_varray );
+            array = CPPLIB( ctor_varray )( array, count, sig );
         } else {
-            rtn = &CPPLIB( ctor_array );
+            array = CPPLIB( ctor_array )( array, count, sig );
         }
-        array = (*rtn)( array, count, sig );
 #ifdef RT_EXC_ENABLED
         ctas.complete();
 #else

@@ -49,8 +49,6 @@
     #endif
 #else
     #define _INITNEXTFTOK
-    #if !defined(__PENPOINT__)
-        static char _WCFAR *nextftok = NULL;
-        #define _NEXTFTOK nextftok
-    #endif
+    static char _WCFAR *nextftok = NULL;
+    #define _NEXTFTOK nextftok
 #endif

@@ -160,8 +160,8 @@ static cg_name ctorFlagSet(     // SET/RESET CTOR FLAG
     *a_ph = BEPatch();
     op_flg = CGLVPreGets( opcode
                         , op_flg
-                        , CGPatchNode( *a_ph, T_UINT_1 )
-                        , T_UINT_1 );
+                        , CGPatchNode( *a_ph, TY_UINT_1 )
+                        , TY_UINT_1 );
     return op_flg;
 }
 
@@ -229,7 +229,7 @@ cg_name CgCallBackInitRefBeg(   // START CALL-BACK FOR INIT-REF
     SE* se )                    // - state entry for init-ref variable
 {
     FstabCtorTest( FnCtlTop() );
-    return genCtorFlagClr( NULL, T_POINTER, se );
+    return genCtorFlagClr( NULL, TY_POINTER, se );
 }
 
 
@@ -404,7 +404,7 @@ SE* DtorForDelBeg(              // DTORING AREA TO BE DELETED: start
             se_dlt = SeAlloc( dlt1 );
         }
         se_dlt->del_1_array.op_del = op_del;
-        var = CgVarRw( T_POINTER, SC_AUTO );
+        var = CgVarRw( TY_POINTER, SC_AUTO );
         if( se_dlt->base.gen ) {
             AutoRelRegister( var, &se_dlt->del_1_array.offset );
         }

@@ -1,110 +1,118 @@
 proj_name = vi
 
+!ifndef vi_autodepends
+vi_autodepends = .AUTODEPEND
+!endif
 
-msgcheckviw = 1
-msgcheckviwp = 1
-msgcheckvintw = 1
-msgcheckviaxpw = 1
+!ifeq host_os win
+!ifeq host_cpu 386
+!define win_386
+!endif
+!endif
 
-.EXTENSIONS:
-.EXTENSIONS: .exe
-.EXTENSIONS: .obj .ybj .ubj
-.EXTENSIONS: .asm .cpp .c .h
 .EXTENSIONS: .ch .dh
 .EXTENSIONS: .ctl .dyn
 .EXTENSIONS: .vi
-.EXTENSIONS: .mif
 
-.mif : $(mif_path);$(vi_dir)\mif
-!include name.mif
+name = $(proj_name).exe
+!ifdef win_386
+lname = $(proj_name).rex
+!else
+lname = $(name)
+!endif
 
 PROJECT : $(name) .symbolic
 
+additional_cleanup = *.dh *.ch
+
 !include cproj.mif
-!include rcsdll.mif
-!include include.mif
-!include objects.mif
-!include compile.mif
-!include special.mif
-!include link.mif
+!include deftarg.mif
+!include defrule.mif
 
-.h : $(vi_dir)\h
-.ctl : $(vi_dir)\ctl
-.dyn : $(vi_dir)\ctl
-
-.BEFORE:
-        set include=$(inc_path)
-
-!ifdef bind
-.vi : $(vi_dir)\dat
-!include $(vi_dir)\dat\videps.mif
+# get the right version of tool depending on host platform
+!ifdef __OS2__
+edbind = $(vi_dir)\bind\os2386\edbind
+parsectl = $(vi_dir)\ctl\os2386\parsectl
+parsedyn = $(vi_dir)\ctl\os2386\parsedyn
+!else ifdef __MSDOS__
+edbind = $(vi_dir)\bind\dos386\edbind
+parsectl = $(vi_dir)\ctl\dos386\parsectl
+parsedyn = $(vi_dir)\ctl\dos386\parsedyn
+!else ifdef __LINUXMIPS__
+edbind = $(vi_dir)/bind/linuxmps/edbind.exe
+parsectl = $(vi_dir)/ctl/linuxmps/parsectl.exe
+parsedyn = $(vi_dir)/ctl/linuxmps/parsedyn.exe
+!else ifdef __LINUX__
+edbind = $(vi_dir)/bind/linux386/edbind.exe
+parsectl = $(vi_dir)/ctl/linux386/parsectl.exe
+parsedyn = $(vi_dir)/ctl/linux386/parsedyn.exe
+!else ifdef __NTAXP__
+edbind = $(vi_dir)\bind\ntaxp\edbind
+parsectl = $(vi_dir)\ctl\ntaxp\parsectl
+parsedyn = $(vi_dir)\ctl\ntaxp\parsedyn
 !else
-videps =
+edbind = $(vi_dir)\bind\nt386\edbind
+parsectl = $(vi_dir)\ctl\nt386\parsectl
+parsedyn = $(vi_dir)\ctl\nt386\parsedyn
 !endif
 
-!ifdef vroomed
-start_flags += begin section
-more_flags = autosection
-final_flags = end
+!include ../mif/rcsdll.mif
+!include ../mif/include.mif
+!include ../mif/objects.mif
+!include ../mif/compile.mif
+!include ../mif/special.mif
+!include ../mif/link.mif
+
+.h : $(vi_dir)/h
+.ctl : $(vi_dir)/ctl
+.dyn : $(vi_dir)/ctl
+
+!ifdef bind
+.vi : $(vi_dir)/dat
+!include $(vi_dir)/dat/videps.mif
+!else
+videps =
 !endif
 
 !ifdef sys_windowed
 bindextra = -d$(vi_dir)\dat\winbind.dat
 !endif
 
-$(name) : $(special) $(objs) $(objsroot) $(objinit) $(other) $(videps) master.mif $(mifdep)
-        $(cc) $(cflags) version.c -fo=.ybj
-        -$(linker) $(lflags) name $^& file version.ybj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
-!ifeq ED vi386
-        $(tnt_dir)\bin\rebind $(tnt_dir)\bin\rtk\tntb.exe $(ED).exp -exe $(name)
-!endif
-!ifeq ED viwp
-        wbind $(name) -s $(lang_root)\binw\win386.ext -R viwp.res
-        @erase $(ED).rex
-!endif
-!ifeq ED viw
-        $(rc) -k -zk0 -bt=windows viw.res
-!endif
-!ifeq ED vintw
-        $(rc) -bt=NT -zk0 vintw.res
-!endif
-!ifeq ED viaxpw
-        $(rc) -bt=NT -zk0 viaxpw.res
-!endif
-!ifdef bind
+# systems where version resources must be added to .EXE
 !ifdef sys_windowed
+version_res_nt_386 = exever.res
+!endif
+
+!ifdef bootstrap
+$(name) : $(special) $(objs) $(cl_objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(res_objs)
+        $(cl) $(clflags) $< $(cl_libs)
+!else
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_$(host_os)_$(host_cpu))
+        $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
+!ifdef sys_windowed
+!ifdef win_386
+        wbind $(lname) -s $(lang_root)/binw/win386.ext -R -q $(proj_name).res
+        rm $(lname)
+!else ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(proj_name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(proj_name).res $^@
+!endif
         # don't bind - it screws up everything - BBB
 !else
-        set edpath=$(vi_dir)\dat
-    # run the right version of edbind depending on host platform
-!ifdef __OS2__
-        $(vi_dir)\bind\objos2\edbind $(bindextra) -q $(name)
-!else
-        $(vi_dir)\bind\objnt\edbind $(bindextra) -q $(name)
-!endif
+        set edpath=$(vi_dir)/dat
+        $(edbind) $(bindextra) -q $(name)
 !endif
 !endif
 
+verrc_exe_skel = ../win/exever.rc
+!include verrc.mif
 
-!ifeq ED viw
-tags : ..\win\tags .SYMBOLIC
+!ifeq host_os win
+!ifeq host_cpu i86
+tags : ../win/tags .SYMBOLIC
 
-..\win\tags: vi.tag
-    ctags @vi.tag -f..\win\tags
+../win/tags: vi.tag
+    ctags @vi.tag -f$^@
 !endif
-
-
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj del *.?bj
-        @if exist *.lnk del *.lnk
-        @if exist *.exe del *.exe
-        @if exist *.dll del *.dll
-        @if exist *.res del *.res
-        @if exist *.clb del *.clb
-        @if exist *.err del *.err
-        @if exist *.map del *.map
-        @if exist *.sym del *.sym
-        @if exist *.dh del *.dh
-        @if exist *.ch del *.ch
-        @if exist *.h del *.h
-        @if exist *.msg del *.msg
+!endif

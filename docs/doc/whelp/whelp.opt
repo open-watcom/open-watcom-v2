@@ -1,0 +1,17 @@
+( wscript
+( dev whelp
+( lay whelplay.gml
+( font 0 mono01
+( font 1 mono01 bold
+( font 2 mono01 bold
+( font 3 mono01 ibold
+( font 4 mono01 xmp
+( font 5 mono01 xmp
+( font 6 mono01 xmp
+( font 7 mono01
+( font 8 mono01 bold
+( font 14 mono01 size12
+( font 15 mono01 head5
+( font 16 mono01 head6
+( font 20 mono01 symbol
+( font 40 mono01 uline

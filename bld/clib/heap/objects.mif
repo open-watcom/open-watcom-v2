@@ -1,71 +1,74 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=================================================================================
-!inject allocseg.obj d16                               o16     q16     w16
-!inject ambsptr.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject amblksiz.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject bcalloc.obj  d16                               o16     q16     w16
-!inject bexpand.obj  d16                               o16     q16     w16
-!inject bfree.obj    d16                               o16     q16     w16
-!inject bfreeseg.obj d16                               o16     q16     w16
-!inject bheapchk.obj d16                               o16     q16     w16
-!inject bheapmin.obj d16                               o16     q16     w16
-!inject bheapseg.obj d16                               o16     q16     w16
-!inject bheapset.obj d16                               o16     q16     w16
-!inject bheapwal.obj d16                               o16     q16     w16
-!inject bmalloc.obj  d16                               o16     q16     w16
-!inject bmsize.obj   d16                               o16     q16     w16
-!inject brealloc.obj d16                               o16     q16     w16
-!inject calloc.obj   d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-!inject fcalloc.obj  d16                               o16     q16     w16
-!inject fexpand.obj  d16                               o16     q16     w16
-!inject ffree.obj    d16                               o16     q16     w16
-!inject fheapchk.obj d16                               o16     q16     w16
-!inject fheapmin.obj d16                               o16     q16     w16
-!inject fheapset.obj d16                               o16     q16     w16
-!inject fheapwal.obj d16                               o16     q16     w16
-!inject fmalloc.obj  d16                               o16     q16     w16
-!inject fmemneed.obj d16                               o16     q16     w16
-!inject fmsize.obj   d16                               o16     q16     w16
-!inject frealloc.obj d16                               o16     q16     w16
-!inject freect.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject freeseg.obj  d16                               o16     q16     w16
-!inject grownear.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject growseg.obj  d16                               o16     q16     w16
-!inject haloc.obj    d16                                               w16
-!inject haloco16.obj                                   o16
-!inject halocq16.obj                                           q16
-!inject heapen.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject heapgrow.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==========================================================================================================
+!inject allocseg.obj d16                                    o16     q16     w16
+!inject ambsptr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject amblksiz.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject bcalloc.obj  d16                                    o16     q16     w16
+!inject bexpand.obj  d16                                    o16     q16     w16
+!inject bfree.obj    d16                                    o16     q16     w16
+!inject bfreeseg.obj d16                                    o16     q16     w16
+!inject bheapchk.obj d16                                    o16     q16     w16
+!inject bheapmin.obj d16                                    o16     q16     w16
+!inject bheapseg.obj d16                                    o16     q16     w16
+!inject bheapset.obj d16                                    o16     q16     w16
+!inject bheapwal.obj d16                                    o16     q16     w16
+!inject bmalloc.obj  d16                                    o16     q16     w16
+!inject bmsize.obj   d16                                    o16     q16     w16
+!inject brealloc.obj d16                                    o16     q16     w16
+!inject calloc.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject fcalloc.obj  d16                                    o16     q16     w16
+!inject fexpand.obj  d16                                    o16     q16     w16
+!inject ffree.obj    d16                                    o16     q16     w16
+!inject fheapchk.obj d16                                    o16     q16     w16
+!inject fheapmin.obj d16                                    o16     q16     w16
+!inject fheapset.obj d16                                    o16     q16     w16
+!inject fheapwal.obj d16                                    o16     q16     w16
+!inject fmalloc.obj  d16                                    o16     q16     w16
+!inject fmemneed.obj d16                                    o16     q16     w16
+!inject fmsize.obj   d16                                    o16     q16     w16
+!inject frealloc.obj d16                                    o16     q16     w16
+!inject freect.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
+!inject freeseg.obj  d16                                    o16     q16     w16
+!inject grownear.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject growseg.obj  d16                                    o16     q16     w16
+!inject haloc.obj    d16                                                    w16
+!inject haloco16.obj                                        o16
+!inject halocq16.obj                                                q16
+!inject heapen.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject heapgrow.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject heapinit.obj d16
-!inject heapmin.obj  d16                               o16     q16     w16
-!inject heapmod.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject heapset.obj  d16                               o16     q16     w16
-!inject heapwalk.obj d16                               o16     q16     w16
-!inject mem.obj      d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject memavl.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
-!inject memmax.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32
+!inject heapmin.obj  d16                                    o16     q16     w16
+!inject heapset.obj  d16                                    o16     q16     w16
+!inject heapwalk.obj d16                                    o16     q16     w16
+!inject mem.obj      d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject memavl.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
+!inject memmax.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
 !inject minreal.obj      d32
 !inject mrlptr.obj       d32
-!inject ncalloc.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nexpand.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nfree.obj    d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nheapchk.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nheapmin.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nheapset.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nheapwal.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nmalloc.obj  d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nmemneed.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nmsize.obj   d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject nrealloc.obj d16 d32             nt nta ntp    o16 o32 q16 q32 w16 w32 osi
-!inject qallflgs.obj                                           q16 q32
-!inject sbrk.obj     d16                               o16     q16 q32 w16
-!inject sbrk386.obj      d32                               o32             w32 osi
+!inject ncalloc.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nexpand.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nfree.obj    d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nheapchk.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nheapmin.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nheapset.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nheapwal.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nmalloc.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nmemneed.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nmsize.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nrealloc.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject qallflgs.obj                                                q16 q32
+!inject rdfree.obj                                                                                      rdk
+!inject rdmalloc.obj                                                                                    rdk
+!inject sbrk.obj     d16                                    o16     q16 q32 w16
+!inject sbrk386.obj      d32                                    o32             w32 osi
+!inject sbrklnx.obj                                                                     l32 lpc lmp
 !inject sbrkwnt.obj                      nt nta ntp
-!inject wafptr.obj                                                     w16 w32
-!inject wallflgs.obj                                                   w16 w32
-!inject wrafptr.obj                                                    w16 w32
+!inject sbrkrdu.obj                                                                                 rdu
+!inject wafptr.obj                                                          w16 w32
+!inject wallflgs.obj                                                        w16 w32
+!inject wrafptr.obj                                                         w16 w32
 
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
 
 086_ac_opts=-zdp
 286_ac_opts=-zdp
@@ -73,10 +76,15 @@
 axp_ac_opts=
 mem_opts = -ol+t $($(processor)_ac_opts)
 
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=================================================================================
-!inject chksize.obj  d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
+# WORKAROUND! The heap code contains a very suspect far pointer truncation,
+# but the code can't be modified without fully understanding it
+nheapchk_postopts = -wcd310
+nheapwal_postopts = -wcd310
+
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+#==================================================================================================
+!inject chksize.obj  d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 
 objsuffix=files
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
 objsuffix=

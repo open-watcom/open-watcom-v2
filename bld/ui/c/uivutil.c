@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 #include "uidef.h"
-#ifndef UNIX
+#ifndef __UNIX__
 #include <conio.h>
 #if defined(HAVE_FAR)
 #include <i86.h>
@@ -40,10 +40,8 @@
 #endif
 
 
-bool intern isdialogue( vptr )
-/****************************/
-
-register        VSCREEN*                vptr;
+bool intern isdialogue( VSCREEN *vptr )
+/*************************************/
 {
     return( ( vptr != NULL ) && ( ( vptr->flags & V_DIALOGUE ) != 0 ) );
 }
@@ -52,7 +50,7 @@ register        VSCREEN*                vptr;
 bool intern isscreen( BUFFER * bptr )
 /***********************************/
 {
-#if defined( HAVE_FAR ) && !defined( UNIX )
+#if defined( HAVE_FAR ) && !defined( __UNIX__ )
     // Short cut when using far pointers. Just check segment:
 
     return( FP_SEG( bptr->origin ) == FP_SEG( UIData->screen.origin ) );
@@ -66,10 +64,8 @@ bool intern isscreen( BUFFER * bptr )
 }
 
 
-void global uisetsnow( snow )
-/***************************/
-
-register        bool                    snow;
+void global uisetsnow( bool snow )
+/********************************/
 {
     UIData->no_snow = ~snow;
 }

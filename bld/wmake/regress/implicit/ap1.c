@@ -24,21 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Test app for wmake. 
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
 
-extern void ap2(void);
-extern void ap3(void);
+extern void ap2( void );
+extern void ap3( void );
 
-void main(void)
+int main(void)
 {
     ap2();
     ap3();
-    printf("done\n");
+    printf( "done\n" );
+    return( 0 );
 }
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Top level WOMP include file.
 *
 ****************************************************************************/
 
@@ -55,28 +54,28 @@
 #define STDOUT  1
 #define STDERR  2
 
-#if defined( M_I86SM ) || defined( M_I86MM )
-#error This code can only be compiled for a large data model
+#if ( defined( M_I86SM ) || defined( M_I86MM ) ) && defined( _M_I86 )
+  #error This code can only be compiled for a large data model
 #endif
 
-#if defined( M_I86 ) || defined( __386__ ) || defined ( __AXP__ )
-#define LITTLE_ENDIAN   1
-#define ReadU16(p)      (*(uint_16*)(p))
-#define ReadU32(p)      (*(uint_32*)(p))
-#define ReadS16(p)      (*(int_16*)(p))
-#define ReadS32(p)      (*(int_16*)(p))
-#define WriteU16(p,n)   (*(uint_16*)(p) = (uint_16)(n))
-#define WriteU32(p,n)   (*(uint_32*)(p) = (uint_32)(n))
-#define WriteS16(p,n)   (*(int_16*)(p) = (int_16)(n))
-#define WriteS32(p,n)   (*(int_32*)(p) = (int_32)(n))
+#if defined( __BIG_ENDIAN__ )
+  #define ReadU16(p)      (((uint_8*)p)[0] | (((uint_8*)p)[1] << 8))
+  #define ReadU32(p)      (ReadU16(p) | (ReadU16(p+2) << 16))
+  #define ReadS16(p)      (((uint_8*)p)[0] | (((uint_8*)p)[1] << 8))
+  #define ReadS32(p)      (ReadS16(p) | (ReadS16(p+2) << 16))
+  #define WriteU16(r,n)   (*(uint_16*)(r) = (uint_16)(((n) & 0xff) << 8) | (((n) & 0xff00) >> 8))
+  #define WriteU32(r,n)   (*(uint_32*)(r) = (uint_32)(((n) & 0xff) << 24) | (((n) & 0xff00) << 8) | (((n) & 0xff0000) >> 8) | (((n) & 0xff000000) >> 24))
+  #define WriteS16(r,n)   (*(int_16*)(r) = (int_16)(((n) & 0xff) << 8) | (((n) & 0xff00) >> 8))
+  #define WriteS32(r,n)   (*(int_32*)(r) = (int_32)(((n) & 0xff) << 24) | (((n) & 0xff00) << 8) | (((n) & 0xff0000) >> 8) | (((n) & 0xff000000) >> 24))
 #else
-#define LITTLE_ENDIAN   0
-#define ReadU16(p)      ((p)[0] | ((p)[1] << 8))
-#define ReadU32(p)      (ReadU16(p) | (ReadU16(p+2) << 16))
-#error "No support for non-little endian host machines..."
-/*
-    we need some other macros that I don't feel like writing
-*/
+  #define ReadU16(p)      (*(uint_16*)(p))
+  #define ReadU32(p)      (*(uint_32*)(p))
+  #define ReadS16(p)      (*(int_16*)(p))
+  #define ReadS32(p)      (*(int_16*)(p))
+  #define WriteU16(p,n)   (*(uint_16*)(p) = (uint_16)(n))
+  #define WriteU32(p,n)   (*(uint_32*)(p) = (uint_32)(n))
+  #define WriteS16(p,n)   (*(int_16*)(p) = (int_16)(n))
+  #define WriteS32(p,n)   (*(int_32*)(p) = (int_32)(n))
 #endif
 
 #endif

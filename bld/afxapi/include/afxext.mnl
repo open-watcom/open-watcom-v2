@@ -1,0 +1,250 @@
+/*
+ *  afxext.inl  Inline implementation of functions declared in afxext.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE DWORD CControlBar::GetBarStyle()
+/*****************************************/
+{
+    return( m_dwStyle );
+}
+
+AFX_INLINE CRect CControlBar::GetBorders() const
+/*********************************************/
+{
+    return( CRect( m_cxLeftBorder, m_cyTopBorder, m_cxRightBorder, m_cyBottomBorder ) );
+}
+
+AFX_INLINE int CControlBar::GetCount() const
+/******************************************/
+{
+    return( m_nCount );
+}
+
+AFX_INLINE void CControlBar::SetBorders( LPCRECT lpRect )
+/*******************************************************/
+{
+    ASSERT( lpRect != NULL );
+    SetBorders( lpRect->left, lpRect->top, lpRect->right, lpRect->bottom );
+}
+
+AFX_INLINE int CToolBar::CommandToIndex( UINT nIDFind ) const
+/***********************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, TB_COMMANDTOINDEX, nIDFind, 0L ) );
+}
+
+AFX_INLINE void CToolBar::GetButtonText( int nIndex, CString &rString ) const
+/***************************************************************************/
+{
+    rString = GetButtonText( nIndex );
+}
+
+AFX_INLINE CToolBarCtrl &CToolBar::GetToolBarCtrl() const
+/*******************************************************/
+{
+    return( *(CToolBarCtrl *)this );
+}
+
+AFX_INLINE BOOL CToolBar::LoadBitmap( UINT nIDResource )
+/******************************************************/
+{
+    return( LoadBitmap( MAKEINTRESOURCE( nIDResource ) ) );
+}
+
+AFX_INLINE BOOL CToolBar::LoadToolBar( UINT nIDResource )
+/*******************************************************/
+{
+    return( LoadToolBar( MAKEINTRESOURCE( nIDResource ) ) );
+}
+
+AFX_INLINE void CStatusBar::GetItemRect( int nIndex, LPRECT lpRect ) const
+/************************************************************************/
+{
+    ASSERT( nIndex < m_nCount );
+    ::SendMessage( m_hWnd, SB_GETRECT, nIndex, (LPARAM)lpRect );
+}
+
+AFX_INLINE void CStatusBar::GetPaneText( int nIndex, CString &rString ) const
+/***************************************************************************/
+{
+    rString = GetPaneText( nIndex );
+}
+
+AFX_INLINE CStatusBarCtrl &CStatusBar::GetStatusBarCtrl() const
+/*************************************************************/
+{
+    return( *(CStatusBarCtrl *)this );
+}
+
+#if (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CReBarCtrl &CReBar::GetReBarCtrl() const
+/*************************************************/
+{
+    return( *(CReBarCtrl *)this );
+}
+
+#endif // (_WIN32_IE >= 0x0300)
+
+AFX_INLINE CEdit &CEditView::GetEditCtrl() const
+/**********************************************/
+{
+    return( *(CEdit *)this );
+}
+
+AFX_INLINE CFont *CEditView::GetPrinterFont() const
+/*************************************************/
+{
+    return( CFont::FromHandle( m_hPrinterFont ) );
+}
+
+AFX_INLINE void CEditView::SetPrinterFont( CFont *pFont )
+/*******************************************************/
+{
+    m_hPrinterFont = (HFONT)pFont->GetSafeHandle();
+}
+
+AFX_INLINE void CEditView::UnlockBuffer() const
+/*********************************************/
+{
+}
+
+AFX_INLINE int CSplitterWnd::GetColumnCount() const
+/*************************************************/
+{
+    return( m_nCols );
+}
+
+AFX_INLINE void CSplitterWnd::GetColumnInfo( int col, int &cxCur, int &cxMin ) const
+/**********************************************************************************/
+{
+    ASSERT( col >= 0 && col < m_nCols );
+    cxCur = m_pColInfo[col].nCurSize;
+    cxMin = m_pColInfo[col].nMinSize;
+}
+
+AFX_INLINE CWnd *CSplitterWnd::GetPane( int row, int col ) const
+/**************************************************************/
+{
+    return( GetDlgItem( IdFromRowCol( row, col ) ) );
+}
+
+AFX_INLINE int CSplitterWnd::GetRowCount() const
+/**********************************************/
+{
+    return( m_nRows );
+}
+
+AFX_INLINE void CSplitterWnd::GetRowInfo( int row, int &cyCur, int &cyMin ) const
+/*******************************************************************************/
+{
+    ASSERT( row >= 0 && row < m_nRows );
+    cyCur = m_pRowInfo[row].nCurSize;
+    cyMin = m_pRowInfo[row].nMinSize;
+}
+
+AFX_INLINE BOOL CSplitterWnd::IsTracking()
+/****************************************/
+{
+    return( m_bTracking );
+}
+
+AFX_INLINE void CSplitterWnd::SetColumnInfo( int col, int cxIdeal, int cxMin )
+/****************************************************************************/
+{
+    ASSERT( col >= 0 && col < m_nCols );
+    m_pColInfo[col].nIdealSize = cxIdeal;
+    m_pColInfo[col].nMinSize = cxMin;
+}
+
+AFX_INLINE void CSplitterWnd::SetRowInfo( int row, int cyIdeal, int cyMin )
+/*************************************************************************/
+{
+    ASSERT( row >= 0 && row < m_nRows );
+    m_pRowInfo[row].nIdealSize = cyIdeal;
+    m_pRowInfo[row].nMinSize = cyMin;
+}
+
+AFX_INLINE int CSplitterWnd::IdFromRowCol( int row, int col ) const
+/*****************************************************************/
+{
+    ASSERT( row >= 0 );
+    ASSERT( col >= 0 );
+    ASSERT( row < 16 );
+    ASSERT( col < 16 );
+    return( AFX_IDW_PANE_FIRST + row * 16 + col );
+}
+
+AFX_INLINE HMETAFILE CMetaFileDC::Close()
+/***************************************/
+{
+    ASSERT( !m_bEnhanced );
+    return( ::CloseMetaFile( Detach() ) );
+}
+
+AFX_INLINE HENHMETAFILE CMetaFileDC::CloseEnhanced()
+/**************************************************/
+{
+    ASSERT( m_bEnhanced );
+    return( ::CloseEnhMetaFile( Detach() ) );
+}
+
+AFX_INLINE BOOL CMetaFileDC::Create( LPCTSTR lpszFilename )
+/*******************************************************/
+{
+    m_bEnhanced = FALSE;
+    return( Attach( ::CreateMetaFile( lpszFilename ) ) );
+}
+
+AFX_INLINE BOOL CMetaFileDC::CreateEnhanced( CDC *pDCRef, LPCTSTR lpszFileName,
+                                           LPCRECT lpBounds, LPCTSTR lpszDescription )
+/************************************************************************************/
+{
+    m_bEnhanced = TRUE;
+    return( Attach( ::CreateEnhMetaFile( pDCRef->GetSafeHdc(), lpszFileName, lpBounds,
+                                         lpszDescription ) ) );
+}
+
+AFX_INLINE UINT CPrintInfo::GetFromPage() const
+/*********************************************/
+{
+    ASSERT( m_pPD != NULL );
+    return( m_pPD->m_pd.nFromPage );
+}
+
+AFX_INLINE UINT CPrintInfo::GetMaxPage() const
+/********************************************/
+{
+    ASSERT( m_pPD != NULL );
+    return( m_pPD->m_pd.nMaxPage );
+}
+
+AFX_INLINE UINT CPrintInfo::GetMinPage() const
+/********************************************/
+{
+    ASSERT( m_pPD != NULL );
+    return( m_pPD->m_pd.nMinPage );
+}
+
+AFX_INLINE UINT CPrintInfo::GetToPage() const
+/*******************************************/
+{
+    ASSERT( m_pPD != NULL );
+    return( m_pPD->m_pd.nToPage );
+}
+
+AFX_INLINE void CPrintInfo::SetMaxPage( UINT nMaxPage )
+/*****************************************************/
+{
+    ASSERT( m_pPD != NULL );
+    m_pPD->m_pd.nMaxPage = (WORD)nMaxPage;
+}
+
+AFX_INLINE void CPrintInfo::SetMinPage( UINT nMinPage )
+/*****************************************************/
+{
+    ASSERT( m_pPD != NULL );
+    m_pPD->m_pd.nMinPage = (WORD)nMinPage;
+}

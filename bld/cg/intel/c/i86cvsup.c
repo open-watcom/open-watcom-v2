@@ -37,7 +37,6 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -52,11 +51,8 @@
 
 extern  seg_id          DbgSegDef( char *, char *, int  );
 
-extern seg_id                CVSyms;
-extern seg_id                CVTypes;
 
-
-extern  void    CVDefSegs(){
+extern  void    CVDefSegs( void ){
 /**************************/
     if( _IsModel( DBG_LOCALS ) ) {
         CVSyms = DbgSegDef( "$$SYMBOLS", "DEBSYM",

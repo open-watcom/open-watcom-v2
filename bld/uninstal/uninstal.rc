@@ -1,0 +1,16 @@
+#include <windows.h>
+#include "rcstr.gh"
+#include "progress.h"
+
+#include "progress.dlg"
+
+#undef pick
+#define pick( a, b, c ) a, b
+STRINGTABLE
+BEGIN
+    #include "rcstrmsg.gh"
+END
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+
+"APPLICON" ICON DISCARDABLE "uninstal.ico"

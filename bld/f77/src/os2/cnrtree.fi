@@ -1,0 +1,138 @@
+c$noreference
+
+c$ifdef INCL_CNRTREEDRAG
+
+c$define INCL_WINSTDDRAG
+
+c$endif
+
+c$define INCL_WINSTDCNR
+
+c$include pmstddlg.fi
+
+        integer  WC_CNRTREE
+        parameter (WC_CNRTREE = (0xffff0091)
+
+        integer  CV_DYNAMICSCROLLBARS
+        parameter (CV_DYNAMICSCROLLBARS = '08000000'x)
+        integer  CV_AUTOSIZEBITMAP
+        parameter (CV_AUTOSIZEBITMAP = '10000000'x)
+        integer  CV_AUTOSIZEBITMAP
+        parameter (CV_AUTOSIZEBITMAP = '10000000'x)
+        integer  CV_NOTREELINES
+        parameter (CV_NOTREELINES = '00800000'x)
+        integer  CV_BORDER
+        parameter (CV_BORDER = '20000000'x)
+        integer  CV_REFRESHONEXPAND
+        parameter (CV_REFRESHONEXPAND = '40000000'x)
+        integer  CV_DYNAMICINSERT
+        parameter (CV_DYNAMICINSERT = '80000000'x)
+
+        integer  CRA_LEAF
+        parameter (CRA_LEAF = '80000000'x)
+        integer  CRA_EXPANDED
+        parameter (CRA_EXPANDED = '40000000'x)
+        integer  CRA_COLLAPSED
+        parameter (CRA_COLLAPSED = '20000000'x)
+
+        structure /BITMAPDESC/
+            integer*4 hbmLeaf
+            integer*4 hbmExpanded
+            integer*4 hbmCollapsed
+        end structure
+
+        structure /RECORDCORE2/
+            integer*4 cb
+            integer*4 pszText
+            integer*4 pszName
+            integer*4 pszIcon
+            integer*4 flRecordAttr
+            record /POINTL/ ptlIcon
+            integer*4 hbmBitmap
+            integer*4 hbmMiniBitmap
+            integer*4 hptrIcon
+            integer*4 hptrMiniIcon
+            integer*4 preccNextRecord
+            integer*4 preccParent
+        end structure
+
+        structure /CNRTREEVARS/
+            integer*4 pCnrInfo
+            integer*4 hbmLeaf
+            integer*4 hbmExpanded
+            integer*4 hbmCollapsed
+            integer*2 cxTreeLine
+            integer*2 cyTreeLine
+        end structure
+
+        integer  CMA_SORT
+        parameter (CMA_SORT = '0000400'x)
+        integer  CMA_PARENT
+        parameter (CMA_PARENT = '0000800'x)
+        integer  CMA_CHILDREN
+        parameter (CMA_CHILDREN = '0001000'x)
+        integer  CMA_NEXTSIBLING
+        parameter (CMA_NEXTSIBLING = '0000200'x)
+        integer  CMA_PREVSIBLING
+        parameter (CMA_PREVSIBLING = '0004000'x)
+        integer  CMA_SELECTED
+        parameter (CMA_SELECTED = '0008000'x)
+
+        integer  CM_QUERYRECORDSTRING
+        parameter (CM_QUERYRECORDSTRING = WM_USER + 211)
+        integer  CM_ISRECORDVISIBLE
+        parameter (CM_ISRECORDVISIBLE = WM_USER + 215)
+        integer  CM_QUERYPATHLEN
+        parameter (CM_QUERYPATHLEN = WM_USER + 220)
+        integer  CM_BUILDPATH
+        parameter (CM_BUILDPATH = WM_USER + 221)
+        integer  CM_MOVECHILDREN
+        parameter (CM_MOVECHILDREN = WM_USER + 222)
+        integer  CM_QUERYRECORDFROMPATH
+        parameter (CM_QUERYRECORDFROMPATH = WM_USER + 223)
+        integer  CM_SHOWSELECTED
+        parameter (CM_SHOWSELECTED = WM_USER + 224)
+        integer  CM_EXPANDALL
+        parameter (CM_EXPANDALL = WM_USER + 225)
+        integer  CM_COLLAPSE
+        parameter (CM_COLLAPSE = WM_USER + 226)
+        integer  CM_EXPANDONE
+        parameter (CM_EXPANDONE = WM_USER + 227)
+        integer  CM_QUERYCHILD
+        parameter (CM_QUERYCHILD = WM_USER + 228)
+        integer  CM_TRAVERSE
+        parameter (CM_TRAVERSE = WM_USER + 229)
+        integer  CM_QUERYRECORDIMAGE
+        parameter (CM_QUERYRECORDIMAGE = WM_USER + 230)
+        integer  CM_EXPANDBRANCH
+        parameter (CM_EXPANDBRANCH = WM_USER + 231)
+        integer  CM_ALLOCMEM
+        parameter (CM_ALLOCMEM = WM_USER + 233)
+        integer  CM_FREEMEM
+        parameter (CM_FREEMEM = WM_USER + 234)
+        integer  CM_INVALIDATESCROLLBARS
+        parameter (CM_INVALIDATESCROLLBARS = WM_USER + 235)
+
+        integer  CN_EXPAND
+        parameter (CN_EXPAND = WM_USER + 248)
+        integer  CN_REFRESH
+        parameter (CN_REFRESH = WM_USER + 249)
+        integer  CN_COLLAPSE
+        parameter (CN_COLLAPSE = WM_USER + 250)
+        integer  CN_FREERECORD
+        parameter (CN_FREERECORD = WM_USER + 251)
+        integer  CN_TRAVERSE
+        parameter (CN_TRAVERSE = WM_USER + 252)
+        integer  CN_QUERYLEAFNESS
+        parameter (CN_QUERYLEAFNESS = WM_USER + 253)
+        integer  CN_SELECTED
+        parameter (CN_SELECTED = WM_USER + 254)
+        integer  CN_SETCNRINFO
+        parameter (CN_SETCNRINFO = WM_USER + 255)
+        integer  CN_ENDCONTEXTMENU
+        parameter (CN_ENDCONTEXTMENU = WM_USER + 257)
+
+        integer*4 CnrTreeRegister
+        external CnrTreeRegister
+
+c$reference

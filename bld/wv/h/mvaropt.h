@@ -24,11 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Defines the menu entries for the Variable context menu
+*               "Options" entry
 *
 ****************************************************************************/
 
 
 MENU_ITEM( MENU_VAR_SHOW_WHOLE_EXPR,    XWhole_Expression )
 MENU_ITEM( MENU_VAR_SHOW_MEMBER,        XMembers )
+MENU_ITEM( MENU_VAR_EXPAND_ALL,         XExpandAll )

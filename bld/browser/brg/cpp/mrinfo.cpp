@@ -83,7 +83,7 @@ void MergeInfoSection::print()
 //----------------------------
 {
     Log.printf( "\nMergeInfoSection\n----------------\n" );
-//    Log.printf( "   _diesByName:         %u entries\n", _diesByName->entries() );
+//    Log.printf( "     _diesByName: %5u entries\n", _diesByName->entries() );
 
 }
 #endif
@@ -114,10 +114,10 @@ void MergeInfoSection::writePass( MergeFile * outFile,
                                   WCPtrOrderedVector<MergeFile> & inFiles )
 //-------------------------------------------------------------------------
 {
-    uint_32 len;
-    uint_32 size;
-    char *  block;
-    const   BufSize = 512;
+    uint_32     len;
+    uint_32     size;
+    char *      block;
+    const int   BufSize = 512;
 
     MergeStringHdl::ragnarok();
     _diesByName->freeDirectory();
@@ -146,7 +146,6 @@ void MergeInfoSection::scanFile( MergeFile * file, uint_8 indx )
 {
     uint_32     len;
     MergeOffset moff( indx, 0 );
-    MergeOffset startOff;
 
     len = file->getDRSizes()[ DR_DEBUG_INFO ];
 
@@ -168,7 +167,9 @@ void MergeInfoSection::readCompUnitHdr( MergeFile * file, MergeOffset& moff )
                         sizeof( MergeCompunitHdr ) );
 
     #if INSTRUMENTS
-    Log.printf( "%s:  length %lx   version %d   abbrev %lx   address size %hx\n", file->getFileName(), _compunitHdr->_infoLength, _compunitHdr->_version, _compunitHdr->_abbrevIdx, _compunitHdr->_addressSize );
+    Log.printf( "%s:  length = %lx, version = %d, abbrev = %lx, address size = %hx\n",
+    file->getFileName(), _compunitHdr->_infoLength, _compunitHdr->_version, _compunitHdr->_abbrevIdx,
+    _compunitHdr->_addressSize );
     #endif
 
     // read the compunit and all its children
@@ -184,7 +185,7 @@ void MergeInfoSection::readCompUnitHdr( MergeFile * file, MergeOffset& moff )
     }
 }
 
-void MergeInfoSection::readDIE( MergeFile * file, MergeOffset& startOff,
+void MergeInfoSection::readDIE( MergeFile * file, MergeOffset startOff,
                                 MergeDIE * prt, MergeOffset& moff,
                                 uint_32 abbCode )
 //-------------------------------------------------------------------

@@ -41,45 +41,45 @@
     #include <wos2.h>
 #endif
 
-_WCRTLINK unsigned _dos_getdiskfree( int dnum, struct diskfree_t *df )
+_WCRTLINK unsigned _dos_getdiskfree( unsigned dnum, struct _diskfree_t *df )
 {
-    #if defined(__NT__)
-        DWORD   spc;
-        DWORD   bps;
-        DWORD   nfc;
-        DWORD   tnc;
-        char    path[4];
-        char    *pname;
+#if defined(__NT__)
+    DWORD   spc;
+    DWORD   bps;
+    DWORD   nfc;
+    DWORD   tnc;
+    char    path[4];
+    char    *pname;
 
-        if( dnum != 0 ) {
-            path[0] = 'A' + dnum - 1;
-            path[1] = ':';
-            path[2] = '\\';
-            path[3] = 0;
-            pname = path;
-        } else {
-            pname = NULL;
-        }
+    if( dnum != 0 ) {
+        path[0] = 'A' + dnum - 1;
+        path[1] = ':';
+        path[2] = '\\';
+        path[3] = 0;
+        pname = path;
+    } else {
+        pname = NULL;
+    }
 
-        if( !GetDiskFreeSpace( pname, &spc, &bps, &nfc, &tnc ) ) {
-            return( __set_errno_nt() );
-        }
-        df->total_clusters = tnc;
-        df->avail_clusters = nfc;
-        df->sectors_per_cluster = spc;
-        df->bytes_per_sector = bps;
-    #elif defined(__OS2__)
-        FSALLOCATE fsinfo;
-        APIRET rc;
-        rc = DosQFSInfo( dnum, FSIL_ALLOC, (PVOID)&fsinfo, sizeof( fsinfo ) );
-        if( rc ) {
-            __set_errno_dos( rc );
-            return( rc );
-        }
-        df->total_clusters = fsinfo.cUnit;
-        df->avail_clusters = fsinfo.cUnitAvail;
-        df->sectors_per_cluster = fsinfo.cSectorUnit;
-        df->bytes_per_sector = fsinfo.cbSector;
-    #endif
+    if( !GetDiskFreeSpace( pname, &spc, &bps, &nfc, &tnc ) ) {
+        return( __set_errno_nt_reterr() );
+    }
+    df->total_clusters = tnc;
+    df->avail_clusters = nfc;
+    df->sectors_per_cluster = spc;
+    df->bytes_per_sector = bps;
+#elif defined(__OS2__)
+    FSALLOCATE  fsinfo;
+    APIRET      rc;
+
+    rc = DosQFSInfo( dnum, FSIL_ALLOC, (PVOID)&fsinfo, sizeof( fsinfo ) );
+    if( rc ) {
+        return( __set_errno_dos_reterr( rc ) );
+    }
+    df->total_clusters = fsinfo.cUnit;
+    df->avail_clusters = fsinfo.cUnitAvail;
+    df->sectors_per_cluster = fsinfo.cSectorUnit;
+    df->bytes_per_sector = fsinfo.cbSector;
+#endif
     return( 0 );
 }

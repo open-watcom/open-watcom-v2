@@ -1,9 +1,9 @@
 /*
-    SPWNRPLS.C - The following program demonstrates how to
+    spwnrpls.c - The following program demonstrates how to
     spawn another Phar Lap application.
 
     Compile & Link:
-        wcl386 /l=pharlap /"runt minr=300K,maxr=400K" spwnrpls
+        wcl386 -l=pharlap -"runt minr=300K,maxr=400K" spwnrpls.c
  */
 #include <process.h>
 #include <stdio.h>

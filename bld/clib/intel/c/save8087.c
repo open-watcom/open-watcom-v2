@@ -31,8 +31,9 @@
 
 
 #include "variety.h"
+#include "rtdata.h"
 
-static void _do_nothing() {}
+static void _do_nothing( _87state *st ) {}
 
-_WCRTLINK void (*__Save8087)() = _do_nothing;
-_WCRTLINK void (*__Rest8087)() = _do_nothing;
+void (*_RWD_Save8087)(_87state *) = _do_nothing;
+void (*_RWD_Rest8087)(_87state *) = _do_nothing;

@@ -30,16 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
 #include "source.h"
 #include "parsecl.h"
-#include "keys.h"
 #include "win.h"
 #ifdef __WIN__
-#include "winvi.h"
 #include "utils.h"
 #include "font.h"
 
@@ -58,7 +53,7 @@ static vars *findHook( char *which )
     char        foo[64];
     vars        *v;
 
-    MySprintf( foo,"%shook",which );
+    MySprintf( foo, "%shook", which );
     v = VarFind( foo, NULL );
     return( v );
 
@@ -101,10 +96,11 @@ vars *GetHookVar( hooktype num )
 /*
  * srcHook - run a specified source hook
  */
-static int srcHook( hooktype num, int lastrc )
+static vi_rc srcHook( hooktype num, vi_rc lastrc )
 {
     vars        *v;
-    int         ln,rc;
+    int         ln;
+    vi_rc       rc;
 
     if( hookRun & num ) {
         return( lastrc );
@@ -114,17 +110,16 @@ static int srcHook( hooktype num, int lastrc )
      * check script type
      */
     v = GetHookVar( num );
-    if( num == SRC_HOOK_COMMAND &&  v != NULL ) {
-        VarAddGlobal( "Com", CommandBuffer );
-    }
-    if( num == SRC_HOOK_MODIFIED && v != NULL ) {
-        lastrc = LastEvent;
-    }
-
     /*
      * run script, if we have one
      */
     if( v != NULL ) {
+        if( num == SRC_HOOK_COMMAND ) {
+            VarAddGlobalStr( "Com", CommandBuffer );
+        }
+//        if( num == SRC_HOOK_MODIFIED ) {
+//            lastrc = LastEvent;
+//        }
 
         /*
          * set up for and run script
@@ -159,7 +154,7 @@ static int srcHook( hooktype num, int lastrc )
 /*
  * SourceHook - activate source hook, no data
  */
-int SourceHook( hooktype num, int lastrc )
+vi_rc SourceHook( hooktype num, vi_rc lastrc )
 {
     char        data[1];
 
@@ -172,9 +167,9 @@ int SourceHook( hooktype num, int lastrc )
 /*
  * SourceHookData - activate source hook with data
  */
-int SourceHookData( hooktype num, char *data )
+vi_rc SourceHookData( hooktype num, char *data )
 {
-    int         rc;
+    vi_rc       rc;
 
     srcHookData = data;
     rc = srcHook( num, ERR_NO_ERR );
@@ -197,54 +192,56 @@ void HookScriptCheck( void )
 /*
  * InvokeColSelHook - invoke column hook with specified data
  */
-int InvokeColSelHook( int sc, int ec )
+vi_rc InvokeColSelHook( int sc, int ec )
 {
-    int         j,i;
+    int         j, i;
     char        wordbuff[MAX_STR];
-    char        data[MAX_STR+32];
+    char        data[MAX_STR + 32];
     int         lne;
-    #ifndef __WIN__
-        int     x1;
-        bool    has_bord;
-    #endif
+#ifndef __WIN__
+    int         x1;
+    bool        has_bord;
+#endif
 
 #ifndef __WIN__
     has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
     x1 = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 );
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
         lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) +
-                    CurrentLineNumber - TopOfPage + has_bord;
+            CurrentPos.line - LeftTopPos.line + has_bord;
     } else {
         lne = MouseRow;
     }
 #else
     if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
-        lne = ( CurrentLineNumber - TopOfPage ) * FontHeight( WIN_FONT( &EditWindow ) );
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
     } else {
         lne = MouseY;
     }
 #endif
 
     j = 0;
-    if( ec-sc >= MAX_STR ) {
-        ec = sc+MAX_STR-2;
+    if( ec - sc >= MAX_STR ) {
+        ec = sc + MAX_STR - 2;
     }
-    for( i=sc-1;i<=ec-1;i++ ) {
+    for( i = sc - 1; i <= ec - 1; i++ ) {
         wordbuff[j++] = CurrentLine->data[i];
     }
     wordbuff[j] = 0;
 #ifndef __WIN__
-    sc = x1+VirtualCursorPosition2( sc ) - LeftColumn;
-    ec = x1+VirtualCursorPosition2( ec ) - LeftColumn;
+    sc = x1 + VirtualColumnOnCurrentLine( sc ) - LeftTopPos.column;
+    ec = x1 + VirtualColumnOnCurrentLine( ec ) - LeftTopPos.column;
     if( !has_bord ) {
         sc--;
         ec--;
     }
 #else
-    sc = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ), &CurrentLine->data[ 0 ], sc );
-    ec = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ), &CurrentLine->data[ 0 ], ec );
+    sc = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+        &CurrentLine->data[0], sc );
+    ec = MyTextExtent( CurrentWindow, WIN_STYLE( &EditWindow ),
+        &CurrentLine->data[0], ec );
 #endif
-    MySprintf( data,"\"%s\" %d %d %d %d", wordbuff, lne, sc, ec, ec - sc + 1 );
+    MySprintf( data, "\"%s\" %d %d %d %d", wordbuff, lne, sc, ec, ec - sc + 1 );
     return( SourceHookData( SRC_HOOK_MOUSE_CHARSEL, data ) );
 
 } /* InvokeColSelHook */
@@ -253,21 +250,21 @@ int InvokeColSelHook( int sc, int ec )
 /*
  * InvokeLineSelHook - invoke the mouse selection
  */
-int InvokeLineSelHook( linenum s, linenum e )
+vi_rc InvokeLineSelHook( linenum s, linenum e )
 {
     char        tmp[32];
-    int         lne,col;
-    #ifndef __WIN__
-        bool    has_bord;
-    #endif
+    int         lne, col;
+#ifndef __WIN__
+    bool        has_bord;
+#endif
 
 #ifndef __WIN__
     if( LastEvent != VI_KEY( MOUSEEVENT ) ) {
         has_bord = WindowAuxInfo( CurrentWindow, WIND_INFO_HAS_BORDER );
         lne = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) +
-                    CurrentLineNumber - TopOfPage + has_bord;
+              CurrentPos.line - LeftTopPos.line + has_bord;
         col = WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ) +
-                        VirtualCursorPosition()-LeftColumn - 1 + has_bord;
+              VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column - 1 + has_bord;
         if( col < 0 ) {
             col = 0;
         }
@@ -278,14 +275,14 @@ int InvokeLineSelHook( linenum s, linenum e )
 #else
     if( LastEvent != VI_KEY( FAKEMOUSE ) ) {
         /* assume we're not in insert mode *ouch* */
-        col = PixelFromColumnOnCurrentLine( CurrentColumn );
-        lne = ( CurrentLineNumber - TopOfPage ) * FontHeight( WIN_FONT( &EditWindow ) );
+        col = PixelFromColumnOnCurrentLine( CurrentPos.column );
+        lne = (CurrentPos.line - LeftTopPos.line) * FontHeight( WIN_FONT( &EditWindow ) );
     } else {
         col = MouseX;
         lne = MouseY;
     }
 #endif
-    MySprintf( tmp,"%d %d %l %l", lne, col, s, e );
+    MySprintf( tmp, "%d %d %l %l", lne, col, s, e );
     return( SourceHookData( SRC_HOOK_MOUSE_LINESEL, tmp ) );
 
 } /* InvokeLineSelHook */
@@ -293,12 +290,12 @@ int InvokeLineSelHook( linenum s, linenum e )
 /*
  * InvokeMenuHook - invoke the menu hook
  */
-int InvokeMenuHook( int menunum, int line )
+vi_rc InvokeMenuHook( int menunum, int line )
 {
     char        tmp[16];
-    int         rc;
+    vi_rc       rc;
 
-    MySprintf( tmp,"%d %d", menunum, line );
+    MySprintf( tmp, "%d %d", menunum, line );
     rc = SourceHookData( SRC_HOOK_MENU, tmp );
     return( rc );
 

@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <process.h>
-
 #include "plusplus.h"
+
 #include "memmgr.h"
 #include "errdefns.h"
 #include "iosupp.h"
@@ -375,7 +372,25 @@ void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
 void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
     int this_token )            // - token to be recognized
 {
-    if( CurToken != this_token ) {
+    int alt_token;
+
+    /* also accept alternative tokens (digraphs) */
+    if( this_token == T_LEFT_BRACKET ) {
+        alt_token = T_ALT_LEFT_BRACKET;
+    }
+    if( this_token == T_RIGHT_BRACKET ) {
+        alt_token = T_ALT_RIGHT_BRACKET;
+    }
+    if( this_token == T_LEFT_BRACE ) {
+        alt_token = T_ALT_LEFT_BRACE;
+    }
+    if( this_token == T_RIGHT_BRACE ) {
+        alt_token = T_ALT_RIGHT_BRACE;
+    } else {
+        alt_token = this_token;
+    }
+
+    if( ( CurToken != this_token ) && ( CurToken != alt_token ) ) {
         Expecting( Tokens[ this_token ] );
         if( CurToken != T_EOF ) {
             NextToken();

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NE segment table manipulation prototypes and structures.
 *
 ****************************************************************************/
 
@@ -33,11 +32,16 @@
 #ifndef EXESEG_INCLUDED
 #define EXESEG_INCLUDED
 
-#include "types.h"
+#include "rctypes.h"
 
+/* NB: NumOS2ResSegs is a subset of total segments (must be <= NumSegs) but
+ * is not always equal to number of resources, because resources > 64K will
+ * be split into multiple segments! Only applicable to OS/2 NE, not Windows.
+ */
 typedef struct SegTable {
-    uint_16             NumSegs;
-    segment_record *    Segments;   /* array of size NumSegs */
+    uint_16             NumSegs;        /* Total number of segments */
+    uint_16             NumOS2ResSegs;  /* Number of resource segments */
+    segment_record      *Segments;      /* array of size NumSegs */
 } SegTable;
 
 typedef enum {
@@ -47,7 +51,9 @@ typedef enum {
 } CpSegRc;
 
 extern int AllocAndReadSegTables( int *err_code );
+extern int AllocAndReadOS2SegTables( int *err_code );
 extern uint_32 ComputeSegmentSize( int handle, SegTable *, int shift_count );
 extern CpSegRc CopySegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern CpSegRc CopyOS2Segments( void );
 
 #endif

@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [Allocating 64MB and above]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">8.0 - DOS/32 Advanced -
+Allocation of &gt;64MB of memory<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">DOS/32 Advanced DOS Extender
+of version 6.00 and higher supports allocation of more than 64MB of memory
+without using Virtual Memory. This is accomplished by using the Superset
+of standard XMS functions, but also puts certain limitations on under which
+system softwares the application will run.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">In general, allocation
+of &gt;64MB of memory is supported only when running with a memory manager
+installed, which is the case with XMS, VCPI and DPMI systems. When running
+under Clean (INT 15h) system, allocation of more than 64MB is not available
+due to the abscence of a memory manager. Furthermore, when running DOS/32
+Advanced under DPMI system, the present, &quot;external&quot;, DPMI host
+will be responsible for providing the application with memory management
+functions and memory allocation. This leaves us with XMS and VCPI system
+softwares under which DOS/32 Advanced will use its own, built-in DPMI host
+when allocating memory.</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Under XMS system, DOS/32
+Advanced will automatically recognize whether the allocation of &gt;64MB
+is supported and there is more than 64MB of memory installed into the computer.
+If that is the case, DOS/32 Advanced will allocate all free XMS memory making
+it available for protected mode programs's use. Otherwise, the DOS Extender
+will act in the standard way allocating as much memory as it can. To force
+DOS/32 Advanced not to allocate all the available memory you can reconfigure
+the DOS Extender and specify the amount of Extended Memory your application
+will require. However, DOS/32 Advanced emposes certain requirements for
+the XMS server under which it is running: the XMS specification version
+must be at least 3.0 for the DOS Extender to be able to use the Superset
+of XMS functions, and the computer must have 64MB or more free XMS memory.
+If any of these requirements are not met, DOS/32 Advanced will not be able
+to allocate &gt;64MB of memory. The maximum amount of memory DOS/32 Advanced
+can allocate under XMS is limited to 2GB.</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The things are more complex
+when running under a VCPI server. The amount of extended memory DOS/32 Advanced
+can allocate under VCPI is controlled by three factors: &quot;Extended Memory&quot;
+(see <a href="../util/3.html">SUNSYS Setup Utility</a> documentation), &quot;VCPI PageTables&quot;
+and &quot;XMS+VCPI Allocation Scheme&quot;. To allocate &gt;64MB of memory
+under VCPI you need to make sure that the VCPI PageTables value is greater
+than 16, and the XMS+VCPI Allocation Scheme feature is turned on. Most of
+VCPI servers are not capable of providing the client with more than 64MB
+(or even 32MB) of memory through EMS allocation mode. The XMS+VCPI Allocation
+Scheme feature turned on will ensure that the DOS Extender will allocate
+as much memory as it can from the VCPI memory pool (the EMS memory) and
+then will try to allocate the rest of the memory (if any) from the XMS.
+When running under VCPI, DOS/32 Advanced can allocate up to 256MB of memory.</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note: successful
+allocation of &gt;64MB of memory depends on many different factors, for
+example computer's BIOS vendor and BIOS' ability to provide the memory manager
+with the correct information about amount of physical memory present, installed
+memory manager and its ability to correctly determine the type of BIOS and
+make use of all the available physical memory and so on. Although allocation
+of more than 64MB of memory is a relatively simple process, it is vital
+that both the hardware and the software support it. If you are having problems
+with allocation of &gt;64MB, try using another memory manager or switch
+to another system software. We highly recommend using XMS system as it is
+fast and more reliable than VCPI. But if you must use the VCPI system, make
+sure to configure the DOS Extender the right way, as suggested above. </font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -1,0 +1,24 @@
+c$noreference
+
+        integer  PMERR_INV_TYPE
+        parameter (PMERR_INV_TYPE = '00005001'x)
+        integer  PMERR_INV_CONV
+        parameter (PMERR_INV_CONV = '00005002'x)
+        integer  PMERR_INV_SEGLEN
+        parameter (PMERR_INV_SEGLEN = '00005003'x)
+        integer  PMERR_DUP_SEGNAME
+        parameter (PMERR_DUP_SEGNAME = '00005004'x)
+        integer  PMERR_INV_XFORM
+        parameter (PMERR_INV_XFORM = '00005005'x)
+        integer  PMERR_INV_VIEWLIM
+        parameter (PMERR_INV_VIEWLIM = '00005006'x)
+        integer  PMERR_INV_3DCOORD
+        parameter (PMERR_INV_3DCOORD = '00005007'x)
+        integer  PMERR_SMB_OVFLOW
+        parameter (PMERR_SMB_OVFLOW = '00005008'x)
+        integer  PMERR_SEG_OVFLOW
+        parameter (PMERR_SEG_OVFLOW = '00005009'x)
+        integer  PMERR_PIC_DUP_FILENAME
+        parameter (PMERR_PIC_DUP_FILENAME = '00005010'x)
+
+c$reference

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Plug-compatible replacement for getopt()
+*                for parsing tar-like
 *
 ****************************************************************************/
 
@@ -45,20 +45,15 @@
 
 #include <stdio.h>
 
+#include "getopt.h"	/* local copy of getopt */
+#include "port.h"
 
-int
-getoldopt(argc, argv, optstring)
-int             argc;
-char          **argv;
-char           *optstring;
+int getoldopt( int argc, char **argv, char *optstring )
 {
-        extern char    *optarg;         /* Points to next arg */
-        extern int      optind;         /* Global argv index */
         static char    *key;            /* Points to next keyletter */
-        static char     use_getopt;     /* !=0 if argv[1][0] was '-' */
-        extern char    *index();
+        static char    use_getopt;     /* !=0 if argv[1][0] was '-' */
         char            c;
-        char           *place;
+        char            *place;
 
         optarg = NULL;
 
@@ -74,7 +69,7 @@ char           *optstring;
         }
 
         if (use_getopt)
-                return getopt(argc, argv, optstring);
+                return ow_getopt(argc, argv, optstring);
 
         c = *key++;
         if (c == '\0')

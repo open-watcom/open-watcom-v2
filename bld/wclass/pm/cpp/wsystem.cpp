@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WSystemService class implementation.
 *
 ****************************************************************************/
 
@@ -44,6 +43,39 @@
 #define WINOS2_PARM     "/K"
 
 
+// Build an environment array suitable for DosExecPgm
+char    *build_exec_env( char **env )
+{
+    char    **s;
+    int     len;
+    char    *env_copy;
+    char    *d;
+
+    if( env == NULL ) {
+        return( NULL );
+    }
+    s = env;
+    // figure out how much memory we need
+    while( *s != NULL ) {
+        len += strlen( *s ) + 1;
+        ++s;
+    }
+    ++len;  // for terminating NUL
+    env_copy = (char *)malloc( len );
+    if( env_copy == NULL ) {
+        return( NULL );
+    }
+    // copy the environment strings
+    s = env;
+    d = env_copy;
+    while( *s != NULL ) {
+        d = strcpy( d, *s ) + strlen( *s ) + 1;
+        ++s;
+    }
+    *d = '\0';  // terminate array
+    return( env_copy );
+}
+
 int WEXPORT WSystemService::sysExec( const char *cmd,
                                      WWindowState state,
                                      WWindowType typ,
@@ -51,7 +83,10 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
 /******************************************************/
 
     WStringList args;
+    const char  *arg_pgm;
     const char  *pgm;
+    char        pgm_buf[_MAX_PATH];
+    char        searchenv_buf[_MAX_PATH];
     char        *cmdline;
     APIRET      rc;
     RESULTCODES returncodes;
@@ -67,16 +102,38 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     WORD        sess_type;
 
     args.parseIn( cmd );
-    pgm = args.stringAt( 0 );
+    arg_pgm = args.stringAt( 0 );
+    // if the filename was quoted, we need to strip the quotes
+    // or OS/2 won't like us
+    if( arg_pgm[0] == '\"' ) {
+        strncpy( pgm_buf, arg_pgm + 1, _MAX_PATH - 1 );
+        pgm_buf[ strlen( pgm_buf ) - 1 ] = '\0';
+        pgm = pgm_buf;
+    } else {
+        pgm = arg_pgm;
+    }
+
+    WFileName exename( pgm );
+    if( *exename.ext() == NULLCHAR ) {
+        exename.setExt( "exe" );
+    }
+
+    // Try to determine full pathname; the process PATH may not be what
+    // we started with.
+    _searchenv( (const char *)exename, "PATH", searchenv_buf );
+    if( searchenv_buf[0] != '\0' )
+        pgm = searchenv_buf;
+
     pgm_starter = PGM_DOSSTARTSESSION;
     sess_type = SSF_TYPE_DEFAULT;
     rc = DosQueryAppType( (char const *)pgm, &app_type );
-    if( rc != 0 ) return( -1 );
+    if( rc != 0 )
+        return( -1 );
     if( typ == WWinTypeDefault ) {
         if( app_type & FAPPTYP_DOS ) {
             pgm_starter = PGM_DOSSTARTSESSION;
             sess_type = SSF_TYPE_WINDOWEDVDM;
-        } else if( app_type & FAPPTYP_WINDOWSPROT31 ) {
+        } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
             pgm_starter = PGM_DOSSTARTSESSION;
             sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             args.insertAt( 0, new WString( WINOS2_NAME ) );
@@ -108,7 +165,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeFullScreen:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_VDM;
-            } else if( app_type & FAPPTYP_WINDOWSPROT31 ) {
+            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
                 sess_type = SSF_TYPE_DEFAULT;
                 args.insertAt( 0, new WString( WINOS2_NAME ) );
                 args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -119,7 +176,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeWindowed:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_WINDOWEDVDM;
-            } else if( app_type & FAPPTYP_WINDOWSPROT31 ) {
+            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
                 sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             } else {
                 sess_type = SSF_TYPE_WINDOWABLEVIO;
@@ -127,11 +184,14 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             break;
         }
     }
-    WFileName fn( args.stringAt( 0 ) );
+
+    WFileName fn( pgm );
     if( *fn.ext() == NULLCHAR ) {
         fn.setExt( "exe" );
     }
     if( pgm_starter == PGM_DOSEXECPGM ) {
+        char    *exec_env;
+
         exec_state = EXEC_ASYNC;
         if( background ) {
             exec_state = EXEC_BACKGROUND;
@@ -140,10 +200,14 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             cmdline = NULL;
         } else {
             cmdline = (char *)args.cString();
-            cmdline[ strlen( pgm ) ] = '\0';
+            cmdline[ strlen( args.stringAt( 0 ) ) ] = '\0';
         }
-        rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)NULL,
+        exec_env = build_exec_env( environ );
+        rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)exec_env,
                          &returncodes, (char *)(const char *)fn );
+        if( exec_env != NULL ) {
+            free( exec_env );
+        }
         if( rc != 0 ) return( -1 );
         return( returncodes.codeTerminate );    // process id of child
     } else { // pgm_starter == PGM_DOSSTARTSESSION
@@ -179,7 +243,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         sd.TraceOpt = SSF_TRACEOPT_NONE;
         sd.PgmTitle = NULL;
         sd.PgmName = (char *)(const char *)fn;
-        sd.PgmInputs = (char *)cmdline;
+        sd.PgmInputs = (PBYTE)cmdline;
         sd.TermQ = NULL;
         sd.Environment = NULL;
         sd.InheritOpt = SSF_INHERTOPT_PARENT;

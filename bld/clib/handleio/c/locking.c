@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of the locking() function.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#ifdef __QNX__
+#ifdef __UNIX__
 #include <fcntl.h>
 #else
 #include <dos.h>
@@ -45,9 +44,10 @@
 #include "rtcheck.h"
 #include "rtdata.h"
 #include "seterrno.h"
+#include "lseek.h"
 
-#ifdef __QNX__
-_WCRTLINK int (locking)( int handle, int mode, long nbytes )
+#ifdef __UNIX__
+_WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
 {
     int                 cmd;
     struct flock        flock_buff;
@@ -83,7 +83,7 @@ _WCRTLINK int (locking)( int handle, int mode, long nbytes )
         flock_buff.l_type = F_RDLCK;
         break;
     default:
-        errno = ENOTSUP;
+        errno = ENOSYS;
         return( -1 );
     }
     tries = 10;
@@ -101,7 +101,7 @@ _WCRTLINK int (locking)( int handle, int mode, long nbytes )
 
 #else
 
-_WCRTLINK int (locking)( int handle, int mode, long nbytes )
+_WCRTLINK int (locking)( int handle, int mode, unsigned long nbytes )
 {
     unsigned long offset;
     int retry_count;
@@ -109,7 +109,7 @@ _WCRTLINK int (locking)( int handle, int mode, long nbytes )
 
     __handle_check( handle, -1 );
 
-    offset = lseek( handle, 0L, SEEK_CUR );
+    offset = __lseek( handle, 0L, SEEK_CUR );
     if( mode == LK_UNLCK ) return( unlock( handle, offset, nbytes ) );
     for( retry_count = 0; retry_count < 10; ++retry_count ) {
         rc = lock( handle, offset, nbytes );

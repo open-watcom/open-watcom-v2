@@ -46,3 +46,5 @@ void bar()
     QQ z;
     x.a( &z );
 }
+
+template class LL<int>;

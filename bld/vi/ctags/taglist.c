@@ -37,6 +37,8 @@
 #include <malloc.h>
 #include "ctags.h"
 
+#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
+
 static char     **tagList;
 
 /*
@@ -46,16 +48,16 @@ static void addToTagList( char *res )
 {
     int         len;
 
-    len = strlen( res )+1;
-    tagList = realloc( tagList, (TagCount+1)* sizeof( char * ));
+    len = strlen( res ) + 1;
+    tagList = realloc( tagList, (TagCount + 1) * sizeof( char * ) );
     if( tagList == NULL ) {
-        Die( "Out of memory!\n" );
+        ErrorMsgExit( "Out of memory!\n" );
     }
-    tagList[ TagCount ] = malloc( len );
-    if( tagList[ TagCount ] == NULL ) {
-        Die( "Out of memory!\n" );
+    tagList[TagCount] = malloc( len );
+    if( tagList[TagCount] == NULL ) {
+        ErrorMsgExit( "Out of memory!\n" );
     }
-    memcpy( tagList[ TagCount ], res, len );
+    memcpy( tagList[TagCount], res, len );
     TagCount++;
 
 } /* addToTagList */
@@ -73,48 +75,49 @@ void AddTag( char *id )
     linedata = GetCurrentLineDataPtr();
     fname = GetCurrentFileName();
 #ifdef __ENABLE_FNAME_PROCESSING__
-    if (!strnicmp(id, "__F_NAME", 8)) {
+    if( !strnicmp( id, "__F_NAME", 8 ) ) {
         char *ptr;
 
-        id = strchr(id, '(');
-        if (id) {
+        id = strchr( id, '(' );
+        if( id ) {
             ++id;
             ptr = res;
 
-            while (*id && isspace(*id)) {
+            while( *id && isspace( *id ) ) {
                 ++id;
             }
 
-            while (*id && (*id != ',')) {
+            while( *id && (*id != ',') ) {
                 *ptr++ = *id++;
             }
 
-            sprintf(ptr,"\t%s\t/%s/", fname, linedata);
-            addToTagList(res);
+            sprintf( ptr, "\t%s\t/%s/", fname, linedata );
+            addToTagList( res );
 
-            if (*id == ',') {
+            if( *id == ',' ) {
                 ++id;
                 ptr = res;
 
-                while (*id && isspace(*id)) {
+                while( *id && isspace( *id ) ) {
                     ++id;
                 }
 
-                while (*id && (*id != ')')) {
+                while( *id && (*id != ')') ) {
                     *ptr++ = *id++;
                 }
 
-                sprintf(ptr,"\t%s\t/%s/", fname, linedata);
-                addToTagList(res);
+                sprintf( ptr, "\t%s\t/%s/", fname, linedata );
+                addToTagList( res );
             }
         }
     } else {
 #endif //__ENABLE_FNAME_PROCESSING__
-        sprintf(res,"%s\t%s\t/%s/", id, fname, linedata);
+        sprintf( res, "%s\t%s\t/%s/", id, fname, linedata );
         addToTagList( res );
 #ifdef __ENABLE_FNAME_PROCESSING__
     }
 #endif //__ENABLE_FNAME_PROCESSING__
+
 } /* AddTag */
 
 /*
@@ -122,7 +125,7 @@ void AddTag( char *id )
  */
 int CompareStrings( char **p1, char **p2 )
 {
-    return( strcmp( *p1,*p2 ) );
+    return( strcmp( *p1, *p2 ) );
 
 } /* CompareStrings */
 
@@ -136,18 +139,18 @@ void GenerateTagsFile( char *fname )
     long        total;
 
     qsort( tagList, TagCount, sizeof( char * ),
-           (int(*)(const void*, const void*))CompareStrings );
-    f = fopen( fname,"w" );
+           (int (*)( const void*, const void* ))CompareStrings );
+    f = fopen( fname, "w" );
     if( f == NULL ) {
-        Die( "Could not open tags file \"%s\"\n", fname );
+        ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
     }
     if( tagList == NULL ) {
         total = 0;
     } else {
         total = _msize( tagList );
     }
-    for( i=0;i<TagCount;i++ ) {
-        fprintf( f,"%s\n", tagList[i] );
+    for( i = 0; i < TagCount; i++ ) {
+        fprintf( f, "%s\n", tagList[i] );
         total += _msize( tagList[i] );
     }
     fclose( f );
@@ -165,13 +168,16 @@ void ReadExtraTags( char *fname )
 {
     FILE        *f;
     char        res[MAX_STR];
+    int         i;
 
     f = fopen( fname, "r" );
     if( f == NULL ) {
         return;
     }
     while( fgets( res, sizeof( res ), f ) != NULL ) {
-        res[ strlen(res) -1 ] = 0;
+        for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
+            res[i - 1] = '\0';
+        }
         addToTagList( res );
     }
     fclose( f );

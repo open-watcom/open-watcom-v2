@@ -33,7 +33,7 @@
 #ifndef WDIS_PASS_2_INCLUDED
 #define WDIS_PASS_2_INCLUDED
 
-extern num_errors       DoPass2( section_ptr, char *, orl_sec_size, label_list,
+extern num_errors       DoPass2( section_ptr, unsigned_8 *, orl_sec_size, label_list,
                                  ref_list );
 extern unsigned         HandleAReference( dis_value, int, ref_flags,
                                           orl_sec_offset, orl_sec_size,

@@ -1,0 +1,29 @@
+% Saved by WATFILE/Plus V5.2a
+define type                 =  2   L
+define redist               =  1   L
+define directory            = 48   L
+define usr_file             = 18   L
+define rel_file             = 40   L
+define condition            = 88   L
+define patch_file           =  8   L
+define pack_file            =  8   L
+define where                = 80   L
+define description          = 80   L
+define dest_var             =  8   L
+define old_directory        = 48   L
+bye
+s  h                                               assert.h          .                                       true                                                                                    ptch435 stdhdrs c c16 c32             p16 p32                                                                                                                                           oh
+s  binw                                            net.dll           .                                       true                                                                                    ptch435 dbgdll  c c16 c32             p16 p32
+s  binw                                            nmp.dll           .                                       true                                                                                    ptch435 dbgdll  c c16 c32             p16 p32
+s  binw                                            nov.dll           .                                       true                                                                                    ptch435 dbgdll  c c16 c32             p16 p32
+s  binw                                            clib.hlp          .                                       helpfiles                                                                               ptch435 helpers c c16 c32             p16 p32
+s  h                                               conio.h           .                                       true                                                                                    ptch436 stdhdrs c c16 c32             p16 p32                                                                                                                                           oh
+s  h                                               ctype.h           .                                       true                                                                                    ptch437 stdhdrs c c16 c32             p16 p32                                                                                                                                           oh
+s  h                                               env.h             .                                       true                                                                                    ptch438 stdhdrs c c16 c32             p16 p32                                                                                                                                   envh    oh
+s  h                                               errno.h           .                                       true                                                                                    ptch439 stdhdrs c c16 c32             p16 p32                                                                                                                                   errnoh  oh
+s  nlm                                             parserv3.nlm      .                                       nlmtarg                                                                                 ptch439 nlmsdrs c c16 c32             p16 p32
+s Xh\nt                                            cderr.h           .                                       wnttarg                                                                                 ptch507 nthdrs  c c32                      p32                                                                                                                                          oh\nt
+s  h\sys                                           stat.h            .                                       true                                                                                    ptch591 syshdrs c c16 c32             p16 p32                                                                                                                                           oh\sys
+s  h\sys                                           timeb.h           .                                       true                                                                                    ptch594 syshdrs c c16 c32             p16 p32                                                                                                                                           oh\sys
+s  h\sys                                           utime.h           .                                       true                                                                                    ptch595 syshdrs c c16 c32             p16 p32                                                                                                                                           oh\sys
+g  lib286\dos                                      graph98.lib       .                                       true                                                                                    ptch690 pack0610

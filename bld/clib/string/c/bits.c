@@ -24,24 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Bit mask array used by character vector functions.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <string.h>
+#include "setbits.h"
 
 const unsigned char _HUGEDATA _Bits[] =
     { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
-
-void __setbits( unsigned char vector[32], unsigned char *charset )
-{
-    unsigned char c;
-
-    memset( vector, 0, 32 );
-    for( ; c = *charset; ++charset ) {
-        vector[ c >> 3 ] |= _Bits[ c & 0x07 ];
-    }
-}

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "memmgr.h"
 #include "ring.h"
@@ -43,7 +41,14 @@ struct imp_list {
     char        name[1];
 };
 
+typedef struct imp_list_s IMP_LIST_S;
+struct imp_list_s {
+    IMP_LIST    *next;
+    SYMBOL      sym;
+};
+
 static IMP_LIST *importRing;
+static IMP_LIST_S *importRingS;
 
 static IMP_LIST *addNewImport( char *name )
 {
@@ -57,10 +62,28 @@ static IMP_LIST *addNewImport( char *name )
     return( new_import );
 }
 
+static IMP_LIST_S *addNewImportS( SYMBOL sym )
+{
+    IMP_LIST_S *new_import;
+
+    new_import = CMemAlloc( sizeof( *new_import ) );
+    new_import->sym = sym;
+    RingAppend( &importRingS, new_import );
+    return( new_import );
+}
+
 void CgInfoAddImport( char *name )
 /********************************/
 {
-    addNewImport( name );
+    if(CompFlags.emit_targimp_symbols)
+        addNewImport( name );
+}
+
+void CgInfoAddImportS( SYMBOL sym )
+/********************************/
+{
+    if(CompFlags.emit_targimp_symbols)
+        addNewImportS( sym );
 }
 
 void *CgInfoImportNext( void *h )
@@ -69,14 +92,32 @@ void *CgInfoImportNext( void *h )
     return( RingStep( importRing, h ) );
 }
 
+void *CgInfoImportNextS( void *h )
+/*******************************/
+{
+    return( RingStep( importRingS, h ) );
+}
+
 char *CgInfoImportName( void *h )
 /*******************************/
 {
     return( ((IMP_LIST *)h)->name );
 }
 
+SYMBOL CgInfoImportNameS( void *h )
+/*******************************/
+{
+    return( ((IMP_LIST_S *)h)->sym );
+}
+
 void CgInfoFreeImports( void )
 /****************************/
 {
     RingFree( &importRing );
+}
+
+void CgInfoFreeImportsS( void )
+/****************************/
+{
+    RingFree( &importRingS );
 }

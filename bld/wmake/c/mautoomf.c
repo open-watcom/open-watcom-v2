@@ -24,63 +24,61 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OMF autodependency records access routines.
 *
 ****************************************************************************/
 
 
 #include "make.h"
 #include "mcache.h"
-#include "memory.h"
+#include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
+#include "autodept.h"
 
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
 
 #include "pcobj.h"
 
 typedef struct {
-    int         handle;         // file handle of open obj file
-    time_t      time_stamp;     // time stamp of next dependancy comment
-    char        *name;          // point to nameBuffer - name of next dependancy comment
-} omf_info;
+    int     handle;         // file handle of open obj file
+    time_t  time_stamp;     // time stamp of next dependancy comment
+    char    *name;          // point to nameBuffer - name of next dependancy comment
+}           omf_info;
 
 static omf_info fileHandle;
-static char     nameBuffer[ _MAX_PATH2 + 1 ];
+static char     nameBuffer[_MAX_PATH2 + 1];
 
-#pragma pack( push,1 );
+#include "pushpck1.h"
 typedef struct {
-    uint_8              bits;
-    uint_8              type;
-    uint_16             dos_time;
-    uint_16             dos_date;
-    uint_8              name_len;
-} obj_comment;
-#pragma pack( pop );
+    uint_8  bits;
+    uint_8  type;
+    uint_16 dos_time;
+    uint_16 dos_date;
+    uint_8  name_len;
+}           obj_comment;
+#include "poppck.h"
 
 static BOOLEAN verifyObjFile( int fh )
 /************************************/
 {
-    auto struct {
-        obj_record      header;
-        obj_name        name;
-    } theadr;
+    struct {
+        obj_record  header;
+        obj_name    name;
+    }   theadr;
 
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
         return( FALSE );
     }
-    if( read( fh, &theadr, sizeof(theadr) ) != sizeof(theadr) ) {
+    if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
         return( FALSE );
     }
     if( theadr.header.command != CMD_THEADR ) {
         return( FALSE );
     }
-    if(( theadr.name.len + 2 ) != theadr.header.length ) {
+    if( (theadr.name.len + 2) != theadr.header.length ) {
         return( FALSE );
     }
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
@@ -89,81 +87,96 @@ static BOOLEAN verifyObjFile( int fh )
     return( TRUE );
 }
 
-STATIC omf_info *OMFInitFile( const char *name ) {
-/************************************************/
 
-    int         handle;
-    omf_info    *ret_val;
+STATIC handle OMFInitFile( const char *name )
+/*******************************************/
+{
+    int     handl;
+    handle  ret_val;
 
     ret_val = NULL;
-    handle = open( name, O_RDONLY|O_BINARY );
-    if( handle != -1 ) {
-        fileHandle.handle = handle;
-        if( verifyObjFile( handle ) ) {
+    handl = open( name, O_RDONLY | O_BINARY );
+    if( handl != -1 ) {
+        fileHandle.handle = handl;
+        if( verifyObjFile( handl ) ) {
             ret_val = &fileHandle;
         } else {
-            close( handle );
+            close( handl );
         }
     }
     return( ret_val );
 }
 
-static BOOLEAN getCommentRecord( omf_info *info ) {
-/*************************************************/
 
-    obj_record          header;
-    obj_comment         comment;
-    int                 hdl;
-    unsigned            len;
+static BOOLEAN getOMFCommentRecord( omf_info *info )
+/**************************************************/
+{
+    obj_record  header;
+    obj_comment comment;
+    int         hdl;
+    unsigned    len;
 
     hdl = info->handle;
-    for(;;) {
-        if( read( hdl, &header, sizeof( header ) ) != sizeof( header ) ) break;
+    while( read( hdl, &header, sizeof header ) == sizeof header ) {
         if( header.command != CMD_COMENT ) {
-            // first LNAMES record means objfile has no dependancy info
-            if( header.command == CMD_LNAMES ) break;
+            // first LNAMES record means objfile has no dependency info
+            if( header.command == CMD_LNAMES ) {
+                break;
+            }
             lseek( hdl, header.length, SEEK_CUR );
             continue;
         }
-        if( read( hdl, &comment, sizeof( comment ) ) != sizeof( comment ) ) break;
+        if( read( hdl, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
+            break;
+        }
         if( comment.type != CMT_DEPENDENCY ) {
-            lseek( hdl, header.length - sizeof( comment ), SEEK_CUR );
+            lseek( hdl, header.length - sizeof comment, SEEK_CUR );
             continue;
         }
         // NULL dependency means end of dependency info
-        if( header.length < sizeof( comment ) ) break;
-        // we have a dependency comment!
+        if( header.length < sizeof( comment ) ) {
+            break;
+        }
+        // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( read( hdl, &nameBuffer, len ) != len ) break;
-        nameBuffer[ len - 1 ] = '\0';
-        info->time_stamp = SysDOSStampToTime( comment.dos_date, comment.dos_time );
-        info->name = &nameBuffer[ 0 ];
+        if( read( hdl, nameBuffer, len ) != len ) {
+            break;  // darn, it's broke
+        }
+        nameBuffer[len - 1] = '\0';
+        info->time_stamp = _DOSStampToTime( comment.dos_date, comment.dos_time );
+        info->name = &nameBuffer[0];
         return( TRUE );
     }
     return( FALSE );
 }
 
-STATIC omf_info *OMFNextDep( omf_info *info ) {
-/**********************************************/
-
-    if( getCommentRecord( info ) ) {
+STATIC dep_handle OMFNextDep( dep_handle info )
+/*********************************************/
+{
+    if( getOMFCommentRecord( info ) ) {
         return( info );
     }
     return( NULL );
 }
 
-STATIC void OMFTransDep( omf_info *info, char **name, time_t *stamp ) {
-/*********************************************************************/
+STATIC void OMFTransDep( dep_handle info, char **name, time_t *stamp )
+/********************************************************************/
+{
+    omf_info *o = (void*)info;
 
-    *name = info->name;
-    *stamp = info->time_stamp;
+    *name  = o->name;
+    *stamp = o->time_stamp;
 }
 
-STATIC void OMFFiniFile( omf_info *info ) {
-/*****************************************/
 
-    close( info->handle );
+STATIC void OMFFiniFile( handle info )
+/************************************/
+{
+    omf_info *o = (void*)info;
+
+    close( o->handle );
 }
+
 
 const auto_dep_info OMFAutoDepInfo = {
     NULL,

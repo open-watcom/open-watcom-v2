@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool   WRENewMenuResource     ( void );
-extern Bool   WREEditMenuResource    ( WRECurrentResInfo * );
-extern Bool   WRESaveEditMenuResource( WMenuHandle );
-extern Bool   WREEndEditMenuResource ( WMenuHandle );
-extern Bool   WREEndAllMenuSessions  ( Bool );
-extern void   WREEndLangMenuSession  ( WResLangNode *lnode );
-extern void   WREEndResMenuSessions  ( WREResInfo *rinfo );
+extern Bool WRENewMenuResource( void );
+extern Bool WREEditMenuResource( WRECurrentResInfo * );
+extern Bool WRESaveEditMenuResource( WMenuHandle );
+extern Bool WREEndEditMenuResource( WMenuHandle );
+extern Bool WREEndAllMenuSessions( Bool );
+extern void WREEndLangMenuSession( WResLangNode *lnode );
+extern void WREEndResMenuSessions( WREResInfo *rinfo );
 
 #endif

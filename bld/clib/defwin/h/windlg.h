@@ -24,83 +24,89 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dynamic dialogs for Windows.
 *
 ****************************************************************************/
 
 
-#if !defined( __OS2__ )
+#ifndef __OS2__
 
 #ifdef __NT__
-#define ADJUST_ITEMLEN( a ) a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a ) a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a ) (((a)+1) & ~1)
-#define _FARmemcpy      memcpy
-#define MK_FP32( a )    a
-#define SLEN( a ) (strlen((a))*2+2)
+
+#define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
+#define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
+#define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
+#define _FARmemcpy              memcpy
+#define MK_FP32( a )            a
+#define _ISFAR
+#define SLEN( a )               (strlen((a))*2+2)
 typedef WORD INFOTYPE;
+
 #else
-#define SLEN( a ) (strlen((a))+1)
+
+#define SLEN( a )               (strlen((a))+1)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a ) a
-#define _FARmemcpy      _fmemcpy
+#define ROUND_CLASSLEN( a )     a
+#define _ISFAR                  __far
+#define _FARmemcpy              _fmemcpy
 typedef BYTE INFOTYPE;
+
 #endif
 
-#if defined(__NT__)
-    #include <pshpack2.h>
-#endif
-typedef struct {
-long    dtStyle;
 #ifdef __NT__
-DWORD   dtExtendedStyle;
-WORD    dtItemCount;
+    #include <pshpack2.h>
 #else
-BYTE    dtItemCount;
-BYTE    filler;
+    #pragma pack( push, 1 )
 #endif
-short   dtX;
-short   dtY;
-short   dtCX;
-short   dtCY;
-//char  dtMenuName[];
-//char  dtClassName[];
-//char  dtCaptionText[];
+
+typedef struct {
+    DWORD   dtStyle;
+#ifdef __NT__
+    DWORD   dtExtendedStyle;
+    WORD    dtItemCount;
+#else
+    BYTE    dtItemCount;
+#endif
+    WORD    dtX;
+    WORD    dtY;
+    WORD    dtCX;
+    WORD    dtCY;
+//  char    dtMenuName[];
+//  char    dtClassName[];
+//  char    dtCaptionText[];
 } _DLGTEMPLATE;
 
 typedef struct {
-short   PointSize;
-//char  szTypeFace[];
+    WORD    PointSize;
+//  char    szTypeFace[];
 } FONTINFO;
 
 typedef struct {
 #ifdef __NT__
-long    dtilStyle;
-DWORD   dtExtendedStyle;
+    DWORD   dtilStyle;
+    DWORD   dtExtendedStyle;
 #endif
-short   dtilX;
-short   dtilY;
-short   dtilCX;
-short   dtilCY;
-short   dtilID;
-#ifndef __NT__
-#if !defined(_M_IX86)
-short   filler;
+    WORD    dtilX;
+    WORD    dtilY;
+    WORD    dtilCX;
+    WORD    dtilCY;
+    WORD    dtilID;
+#ifdef __NT__
+    WORD    crap;
+#else
+    DWORD   dtilStyle;
 #endif
-long    dtilStyle;
-#endif
-#if defined(__NT__)
-unsigned short  crap;
-#endif
-//char  dtilClass[];
-//char  dtilText[];
-//BYTE  dtilInfo;
-//BYTE  dtilData;
+//  char    dtilClass[];
+//  char    dtilText[];
+//  BYTE    dtilInfo;
+//  BYTE    dtilData;
 } _DLGITEMTEMPLATE;
-#if defined(__NT__)
+
+#ifdef __NT__
     #include <poppack.h>
+#else
+    #pragma pack( pop )
 #endif
 
 extern GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,

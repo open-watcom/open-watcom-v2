@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library window proc and other assorted guts.
 *
 ****************************************************************************/
 
@@ -89,7 +88,7 @@ typedef struct wmcreate_info {
 WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 /* include from the app */
-extern void GUImain();
+extern void GUImain( void );
 extern bool GUIFirstCrack( void );
 
 /* Changes added to enable use of the system tray */
@@ -99,6 +98,12 @@ extern bool GUIFirstCrack( void );
 extern void TrayCallBack( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
 // Function to allow use of system tray when objects are minimized - include in app
 extern void WndSizeChange( HWND hwnd, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+
+#ifdef __NT__
+#if !defined(WM_MOUSEWHEEL)
+#define WM_MOUSEWHEEL (WM_MOUSELAST + 1)
+#endif
+#endif
 
 gui_window      *GUICurrWnd     = NULL;
 WPI_INST        GUIMainHInst;
@@ -137,8 +142,8 @@ static void GUISetWindowClassName( void )
     if( !class_name || !*class_name ) {
         class_name = GUIDefaultClassName;
     }
-    strncpy( GUIClass, class_name, GUI_CLASSNAME_MAX-1 );
-    GUIClass[ GUI_CLASSNAME_MAX-1 ] = '\0';
+    strncpy( GUIClass, class_name, GUI_CLASSNAME_MAX - 1 );
+    GUIClass[GUI_CLASSNAME_MAX - 1] = '\0';
 }
 
 void GUIWantPartialRows( gui_window *wnd, bool want )
@@ -213,7 +218,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
     wc.lpszMenuName = NULL;
     wc.lpszClassName = class_name;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 #else
     return( WinRegisterClass( hinst.hab, class_name, call_back,
                               CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY |
@@ -224,7 +229,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
  * SetupClass - Register the GUIClass class
  */
 
-static bool SetupClass()
+static bool SetupClass( void )
 
 {
     if( DoRegisterClass( GUIMainHInst, GUIClass, (WPI_CLASSPROC)GUIWindowProc,
@@ -262,7 +267,7 @@ int GUIXMain( int argc, char *argv[] )
     bool        register_done;
     HAB         inst;
 
-    inst = WinInitialize( NULL );
+    inst = WinInitialize( 0 );
     if( !inst ) {
         return( 0 );
     }
@@ -393,11 +398,12 @@ void GUIShowWindowNA( gui_window *wnd )
 
 bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
 {
+    GUIMemOpen();
     Style = style;
     GUISysInit( 0 );
     _wpi_setdoubleclicktime( DClickInterval );
     GUISetScreen( 0, 0, _wpi_getsystemmetrics( SM_CXSCREEN ),
-                  _wpi_getsystemmetrics( SM_CYSCREEN ) );
+                        _wpi_getsystemmetrics( SM_CYSCREEN ) );
     GUIInitDialog();
     return( TRUE );
 }
@@ -461,6 +467,8 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
     ULONG               show_flags;
     WPI_RECT            rect;
     WPI_RECT            parent_client;
+#else
+    DWORD               exstyle;
 #endif
 
 #ifdef __OS2_PM__
@@ -484,7 +492,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
             style |= CHILD_STYLE;
         }
     }
-    hmenu = NULL;
+    hmenu = NULLHANDLE;
     if( !GUISetupStruct( wnd, info, &pos, &size, parent_hwnd, &hmenu ) ) {
         return( FALSE );
     }
@@ -584,7 +592,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
     }
     frame_hwnd = WinCreateStdWindow( parent_hwnd, frame_flags | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, &flags,
                                      NULL, info->text,
-                                     0, NULL, 0, NULL );
+                                     0, (HMODULE)0, 0, NULL );
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, (WPI_PROC)GUIFrameProc );
         _wpi_setmenu( frame_hwnd, hmenu );
@@ -607,15 +615,21 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
                                        &wmcreateinfo, NULL );
         if( client_hwnd == NULLHANDLE ) {
             WinDestroyWindow( frame_hwnd );
-            frame_hwnd = NULL;
-            hwnd = NULL;
+            frame_hwnd = NULLHANDLE;
+            hwnd = NULLHANDLE;
         }
     }
 #else
-    hwnd = _wpi_createwindow_ex( WS_EX_NOPARENTNOTIFY,
-                                 class_name, info->text, style, 0, 0, pos.x,
-                                 pos.y, size.x, size.y, parent_hwnd, hmenu,
-                                 GUIMainHInst, &wmcreateinfo, &frame_hwnd );
+    exstyle = WS_EX_NOPARENTNOTIFY;
+#ifdef __NT__
+    if( info->style & GUI_3D_BORDER ) {
+        exstyle |= WS_EX_CLIENTEDGE;
+        style &= ~WS_BORDER;
+    }
+#endif
+    hwnd = _wpi_createwindow_ex( exstyle, class_name, info->text, style, 0, 0, pos.x,
+                                 pos.y, size.x, size.y, parent_hwnd, hmenu, GUIMainHInst,
+                                 &wmcreateinfo, &frame_hwnd );
 #endif
     if( hwnd == NULLHANDLE ) {
         return( FALSE );
@@ -720,7 +734,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     }
 }
 
-bool SetFocusToParent()
+bool SetFocusToParent( void )
 {
     HWND        curr_hwnd;
 
@@ -811,6 +825,16 @@ static void NextWndToFront( HWND hwnd )
     }
 }
 
+static bool IsToolBarCommand( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+{
+#ifdef __NT__
+    return( wnd != NULL && wnd->toolbar != NULL && wnd->toolbar->hdl != NULL &&
+            GET_WM_COMMAND_HWND( wparam, lparam ) == ToolBarWindow( wnd->toolbar->hdl ) );
+#else
+    return( FALSE );
+#endif
+}
+
 static WPI_POINT prevpoint = { -1, -1 };
 
 /*  Procedure to control windows */
@@ -836,6 +860,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     HWND                win;
 #ifndef __OS2_PM__
     gui_key_state       key_state;
+    RECT                rc;
 #endif
 
     root = NULL;
@@ -912,7 +937,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         case WM_MOVE :
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
             break;
-        case WM_VSCROLL:
+        case WM_VSCROLL :
         case WM_HSCROLL :
         case WM_CLOSE :
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
@@ -977,7 +1002,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         case CTLCOLOR_LISTBOX :
         case CTLCOLOR_MSGBOX :
         case CTLCOLOR_STATIC :
-            ret = GUICtl3dCtlColorEx( msg, wparam, lparam );
+            ret = (WPI_MRESULT)GUICtl3dCtlColorEx( msg, wparam, lparam );
             if( ret == (HBRUSH)NULL ) {
                 SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
                             GUIGetBack( wnd, GUI_BACKGROUND ) ) );
@@ -1011,7 +1036,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         return( (WPI_MRESULT)TRUE );
 #else
         if( !_wpi_isiconic( hwnd ) ) {
-            SET_HBRBACKGROUND( hwnd, (UINT)wnd->bk_brush );
+            GetClientRect( hwnd, &rc );
+            FillRect( (HDC)wparam, &rc, wnd->bk_brush );
         }
         use_defproc = TRUE;
         break;
@@ -1060,7 +1086,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         }
         if( !EditControlHasFocus ) {
             if( SetFocusToParent() ) {
-                return( 0l );
+                return( 0L );
             }
         }
         break;
@@ -1068,7 +1094,45 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     case WM_VSCROLL :
     case WM_HSCROLL :
         GUIProcessScrollMsg( wnd, msg, wparam, lparam );
-        return( 0l );
+        return( 0L );
+#ifdef __NT__
+    case WM_MOUSEWHEEL :
+        {
+        // Try to handle mousewheel messages...
+        // Fake them into GUIProcessScrollMsg()
+        // as "normal" vertical scroll messages.
+        short gcWheelDelta; //wheel delta from roll
+        WORD  wKey;
+
+        // The wnd I get is not the same as WM_VSCROLL : above gets...
+        // Note to self: Fix it...
+        // Seems like the main app window gets the message, rather than
+        // the MDI clients...
+
+        gcWheelDelta = HIWORD(wparam);
+        wKey = LOWORD(wparam);
+        // Scroll wheel upwards  gives  120
+        //    "     "   downward   "   -120
+        if( wnd != GUICurrWnd ) // Send to child window with focus
+            wnd = GUICurrWnd;
+        if( gcWheelDelta > 0 ) {
+            // positive - scroll up
+            if( wKey == MK_CONTROL || wKey == MK_SHIFT )
+               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEUP, 0L );
+            else
+               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEUP, 0L );
+        } else {
+            // negative - scroll down
+            if( wKey == MK_CONTROL || wKey == MK_SHIFT )
+               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_PAGEDOWN, 0L );
+            else
+               GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_LINEDOWN, 0L );
+        }
+        // Inform GUI system we are done with scrolling for now.
+        GUIProcessScrollMsg( wnd, WM_VSCROLL, SB_ENDSCROLL, 0 );
+        }
+        return( 0L );
+#endif
     case WM_MOVE :
         use_defproc = TRUE;
         if( wnd->flags & DOING_CLOSE ) {
@@ -1223,7 +1287,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         es.endsession = (bool)wparam;
         es.logoff = (bool)( lparam == 0x80000000L );
         GUIEVENTWND( wnd, GUI_ENDSESSION, &es );
-        return( 0l );
+        return( 0L );
     }
     case WM_QUERYENDSESSION : {
         gui_end_session     es;
@@ -1233,11 +1297,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         if( !GUIEVENTWND( wnd, GUI_QUERYENDSESSION, &es ) ) {
             return( TRUE );
         }
-        return( 0l );
+        return( 0L );
     }
 #endif
     case WM_COMMAND:
-        if( _wpi_ismenucommand( wparam, lparam ) ) {  /* from menu */
+        if( _wpi_ismenucommand( wparam, lparam ) ||
+            IsToolBarCommand( wnd, wparam, lparam ) ) { /* from menu or toolbar */
             ProcessMenu( wnd, _wpi_getid( wparam ) );
             //SetFocusToParent();
         } else {
@@ -1257,6 +1322,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
 #ifdef __OS2_PM__
     case WM_CHAR :
+    case WM_TRANSLATEACCEL :
 #else
     case WM_MENUCHAR :
     case WM_SYSKEYDOWN :
@@ -1278,12 +1344,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                 }
             }
         }
-        return( 0l );
+        return( 0L );
 
     // Message to deal with tray icons (Win 95 and NT 4.0 ).
     case WM_TRAYCALLBACK :
         TrayCallBack( hwnd, wparam, lparam );
-        return( 0l );
+        return( 0L );
 
     case WM_DESTROY :
         wnd->flags |= DOING_DESTROY;
@@ -1299,7 +1365,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             _wpi_postquitmessage( 0 );
             Posted = TRUE;
         }
-        return( 0l );
+        return( 0L );
     default:
         use_defproc = TRUE;
     }
@@ -1310,31 +1376,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         return( ret );
     }
 }
-
-#if defined(__NT__) || defined(WILLOWS)
-VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime )
-{
-    gui_window *wnd;
-    gui_timer_event timer;
-
-    uMsg = uMsg; dwTime = dwTime;
-    wnd = GUIGetWindow( hwnd );
-    if( wnd != NULL ) {
-        timer.id = idEvent;
-        GUIEVENTWND( wnd, GUI_TIMER_EVENT, &timer );
-    }
-}
-
-void GUIStartTimer( gui_window *wnd, int id, int msec )
-{
-    SetTimer( wnd->hwnd, id, msec, GUITimerProc );
-}
-
-void GUIStopTimer( gui_window *wnd, int id )
-{
-    KillTimer( wnd->hwnd, id );
-}
-#endif
 
 #ifdef __OS2_PM__
 WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
@@ -1353,11 +1394,26 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
     if( wnd != NULL ) {
         switch( msg ) {
+
         case WM_SAVEAPPLICATION:
             call_def = TRUE; // I'm cheating and using 'call_def'
                              // outside of its self-documented purpose
             GUIEVENTWND( wnd, GUI_ENDSESSION, &call_def );
-            return( 0l );
+            return( 0L );
+
+        case WM_TRANSLATEACCEL:  {
+                // Don't let OS/2 process F10 as an accelerator
+                // Note: similar code exists in guimapky.c but we need to
+                // take different default action
+                PQMSG   pqmsg = wparam;
+                USHORT  flags = SHORT1FROMMP(pqmsg->mp1);
+                USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
+
+                if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
+                    return( (WPI_MRESULT)FALSE );
+            }
+            break;
+
         case WM_CHAR:
             return( GUIProcesskey( hwnd, msg, wparam, lparam ) );
             break;
@@ -1385,6 +1441,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         case WM_HSCROLL :
             GUIProcessScrollMsg( wnd, msg, wparam, lparam );
             call_def = FALSE;
+            break;
         }
     }
 

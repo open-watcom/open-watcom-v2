@@ -1,0 +1,62 @@
+*$noreference
+
+! Message Functions:
+! ------------------
+
+      external CallWindowProc
+      external DispatchMessage
+      external GetMessage
+      external GetMessagePos
+      external GetMessageTime
+      external InSendMessage
+      external PeekMessage
+      external PostAppMessage
+      external PostMessage
+      external PostQuitMessage
+      external RegisterWindowMessage
+      external ReplyMessage
+      external SendMessage
+      external SetMessageQueue
+      external TranslateAccelerator
+      external TranslateMDISysAccel
+      external TranslateMessage
+      external WaitMessage
+
+      integer*4 CallWindowProc
+      integer*4 DispatchMessage
+      integer*2 GetMessage
+      integer*4 GetMessagePos
+      integer*4 GetMessageTime
+      integer*2 InSendMessage
+      integer*2 PeekMessage
+      integer*2 PostAppMessage
+      integer*2 PostMessage
+      integer*2 RegisterWindowMessage
+      integer*4 SendMessage
+      integer*2 SetMessageQueue
+      integer*2 TranslateAccelerator
+      integer*2 TranslateMessage
+      integer*2 TranslateMDISysAccel
+
+! PeekMessage() Options
+
+      integer PM_NOREMOVE
+      integer PM_REMOVE
+      integer PM_NOYIELD
+
+      parameter ( PM_NOREMOVE         = '0000'x )
+      parameter ( PM_REMOVE           = '0001'x )
+      parameter ( PM_NOYIELD          = '0002'x )
+
+! Message structure
+
+      structure /MSG/
+          integer*2           hwnd
+          integer*2           message
+          integer*2           wParam
+          integer*4           lParam
+          integer*4           time
+          record /POINT/      pt
+      end structure
+
+*$reference

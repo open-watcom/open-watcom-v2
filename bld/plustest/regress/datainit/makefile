@@ -1,5 +1,5 @@
 plustest_name = datainit
-!include ..\environ.mif
+!include ../environ.mif
 
 exes = &
 idata01.$(exe) &
@@ -45,26 +45,37 @@ idata40.$(exe) &
 idata41.$(exe) &
 idata42.$(exe)
 
-cflags += -ox-d1-zq-w0
+test_cflags += -ox-d1-zq-w0
+alt_error=00
+
+stack_386=opt stack=16k
+stack_i86=opt stack=8k
+stack_axp=opt stack=16k
 
 .cpp.obj:
-    $(wpp_$(arch)) $[@ $(cflags)
-    
-.obj.$(exe):
-    wlink @idata FILE $[@
+    $(wpp_$(arch)) $[@ $(test_cflags) -fo=.obj
 
-test : .symbolic idata.lnk $(exes)
-    %create idata.out
-    @for %i in ( $(exes) ) do $(run) %i >>idata.out
+.obj.$(exe):
+    $(linker) @idata.lnk name $@ file $[@
+    $(run) $(exec_prefix)$@ >>idata.out
+
+test : .symbolic start_test idata.lnk $(exes)
     diff idata.out idata.chk
-    %make global
+    @%make global
     %append $(log_file) PASS $(%__CWD__)
-    
+
+start_test : .symbolic
+    %create idata.out
+    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+
 idata.lnk : $(__MAKEFILES__)
     %create $^@
     @%append $^@ DEBUG line
     @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION map, caseexact, stack=16k, quiet
+    @%append $^@ $(stack_$(arch))
 
-global : .SYMBOLIC
+save : .symbolic
+    @if exist idata.out cp idata.out s$(arch)_$(alt_error).sav
+
+global : .procedure
     @%make common_clean

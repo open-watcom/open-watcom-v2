@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Floating-point floor routine.
 *
 ****************************************************************************/
 
@@ -35,15 +34,14 @@
 
 
 _WMRTLINK double floor( double x )
-/**********************/
-    {
-        double  ipart;
-        double  fraction;
+/********************************/
+{
+    double  ipart;
+    double  fraction;
 
-        fraction = modf( x, &ipart );
-        if( fraction < 0.0 ) {
-            ipart -= 1.0;
-        }
-        return( ipart );
+    fraction = modf( x, &ipart );
+    if( fraction < 0.0 ) {
+        ipart -= 1.0;
     }
-
+    return( ipart );
+}

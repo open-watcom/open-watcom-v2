@@ -37,6 +37,16 @@
 extern gui_window       *GUIMDIGetWindow( int id );
 extern void             GUIMDIMoreWindows(void);
 
+static void BringWindowToFront( gui_window *wnd )
+{
+    if( wnd != NULL ) {
+        if( GUIIsMinimized( wnd ) ) {
+            GUIRestoreWindow( wnd );
+        }
+        GUIBringToFront( wnd );
+    }
+}
+
 static bool FakeMDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                                WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
@@ -66,14 +76,4 @@ bool XFakeInitMDI( gui_window *wnd )
 {
     GUISetMDIProcessMessage( &FakeMDIProcessMessage );
     return( wnd->root == NULLHANDLE );
-}
-
-static void BringWindowToFront( gui_window *wnd )
-{
-    if( wnd != NULL ) {
-        if( GUIIsMinimized( wnd ) ) {
-            GUIRestoreWindow( wnd );
-        }
-        GUIBringToFront( wnd );
-    }
 }

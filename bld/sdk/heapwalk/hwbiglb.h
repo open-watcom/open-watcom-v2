@@ -36,8 +36,8 @@ typedef HWND    TextBoxHdl;
 
 BOOL RegTextBox( HANDLE instance );
 void RedrawBox( TextBoxHdl hdl, int index );
-TextBoxHdl CreateTextBox( HANDLE instance, HWND parent, HFONT font,
-                        HMENU boxid, char *(*fmt)(), WORD flags );
+TextBoxHdl CreateTextBox( HINSTANCE instance, HWND parent, HFONT font,
+                        HMENU boxid, char *(*fmt)(unsigned), WORD flags );
 void SetBoxCnt( TextBoxHdl hdl, unsigned cnt );
 HWND GetTextBoxHWND( TextBoxHdl hdl );
 void SetBoxFont( TextBoxHdl hwnd, HFONT font );

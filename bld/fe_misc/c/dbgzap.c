@@ -44,11 +44,11 @@
 #include "dbgzap.h"
 
 
-char DbgZapChars[2] = { 0xa0, 0xf0 };   // zap characters
+unsigned char DbgZapChars[2] = { 0xa0, 0xf0 };   // zap characters
 
 #define NEXT_ZAP( index, v ) \
         { \
-            char __t; \
+            unsigned char __t; \
             v = DbgZapChars[ index ]; \
             __t = v + 1; \
             v &= 0xf0; \
@@ -71,7 +71,7 @@ void* DbgZapAlloc(              // ZAP ALLOCATED MEMORY
     void* tgt,                  // - target
     unsigned size )             // - size
 {
-    char z;
+    unsigned char   z;
 
     NEXT_ZAP( 0, z );
     return DbgZapMem( tgt, z, size );
@@ -82,7 +82,7 @@ void* DbgZapFreed(              // ZAP FREED MEMORY
     void* tgt,                  // - target
     unsigned size )             // - size
 {
-    char z;
+    unsigned char   z;
 
     NEXT_ZAP( 1, z );
     return DbgZapMem( tgt, z, size );
@@ -92,9 +92,9 @@ int DbgZapQuery(                // QUERY WHETHER MEMORY IS STILL ZAPPED
     void *tgt,                  // - target
     unsigned size )             // - size
 {
-    char *c = tgt;
-    char *p = c + ( size - 1 );
-    char *s = c + sizeof( void * );
+    unsigned char *c = tgt;
+    unsigned char *p = c + ( size - 1 );
+    unsigned char *s = c + sizeof( void * );
 
     while( p > s ) {
         if( *p != *s ) {

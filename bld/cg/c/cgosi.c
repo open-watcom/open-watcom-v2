@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  User I/O interface for OSI.
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "cg.h"
 #include "feprotos.h"
@@ -42,9 +42,10 @@ extern  char            *_BreakFlagPtr;
 static  int             TicCount;
 bool                    BlipsOn;
 
-int TBreak() {
-/*************/
 
+int TBreak( void )
+/****************/
+{
     int         brk;
 
     brk = *_BreakFlagPtr;
@@ -52,24 +53,25 @@ int TBreak() {
     return( brk );
 }
 
-void CauseTBreak() {
-/******************/
+void CauseTBreak( void )
+/**********************/
+{
     *_BreakFlagPtr = 1;
 }
 
-void FatalError( char * str ) {
-/*****************************/
-
+void FatalError( char * str )
+/***************************/
+{
      ScratchObj();
      FEMessage( MSG_FATAL, str );
 }
 
-unsigned GetTickCount()
+unsigned GetTickCount( void )
 {
     return( TicCount );
 }
 
-void Blip(unsigned short loc,char ch )
+void Blip( unsigned short loc, char ch )
 {
     loc = loc;
     ch = ch;
@@ -79,30 +81,36 @@ void BlipInit( void )
 {
 }
 
-void    FiniBlip() { }
+void    FiniBlip( void ) { }
 
 
-void    InitBlip()
+void    InitBlip( void )
 {
     BlipsOn = FALSE;
 }
 
-bool    WantZoiks2()
+bool    WantZoiks2( void )
 {
     return( FALSE );
 }
 
+static  void    CheckEvents( void )
+{
+    if( *_BreakFlagPtr ) {              // if( TBreak() )
+        *_BreakFlagPtr = 0;
+        FatalError( "Program interrupted from keyboard" );
+    }
+}
 
 void    LNBlip( source_line_number num )
 {
-    num=num;
+    num = num;
     CheckEvents();
 }
 
-
-void    PGBlip(char *name)
+void    PGBlip( char *name )
 {
-    name=name;
+    name = name;
     CheckEvents();
 }
 
@@ -117,11 +125,3 @@ void    SCBlip() { CheckEvents(); }
 void    PSBlip() { CheckEvents(); }
 void    PLBlip() { CheckEvents(); }
 void    DGBlip() { CheckEvents(); }
-
-static  void    CheckEvents()
-{
-    if( *_BreakFlagPtr ) {              // if( TBreak() )
-        *_BreakFlagPtr = 0;
-        FatalError( "Program interrupted from keyboard" );
-    }
-}

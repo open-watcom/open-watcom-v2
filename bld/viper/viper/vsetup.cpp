@@ -176,6 +176,7 @@ void VSetup::initialize()
     WVList              famList;
     int                 k;
     int                 icount;
+    setSystemFont( FALSE );
 #ifndef TEST
     show();
 #endif
@@ -192,8 +193,8 @@ void VSetup::initialize()
     radiobutton_hite = text_hite;
     groupbox_hite = frame_hite + text_hite + text_hite / 2;
 
-    button_width = getTextExtentX( resetdev ) + frame_width*2;
-    button_hite = getTextExtentY( resetdev ) * 3/2;
+    button_width = 50 * avgCh.x() / 4;
+    button_hite = 14 * avgCh.y() / 8;
     bxoff = button_width + frame_width;
     byoff = button_hite * 5/4;
 

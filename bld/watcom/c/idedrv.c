@@ -24,75 +24,85 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Driver for DLLs pluggable into the IDE (and wmake).
 *
 ****************************************************************************/
 
 
 #include <fcntl.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
 #include "idedll.h"
 #include "idedrv.h"
+#include "walloca.h"
+#include "errout.h"
 
 
-#ifndef USE_RUNYOURSELF_ARGV
-# if defined(__QNX__)
-#  define USE_RUNYOURSELF_ARGV
-# endif
+#ifdef DLLS_IMPLEMENTED
+#undef DLLS_IMPLEMENTED
 #endif
 
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) && defined( CAUSEWAY )
     //
-    // DLL's implemented only for:
-    //      Intel 386 (OS/2,NT)
-    //      Digital Alpha (NT)
-    //      IBM PowerPc (OS/2,NT)
+    // DLLs implemented only for:
+    //      DOS (386 Causeway Extender)
+    //      OS/2 (386, PowerPC)
+    //      NT (386, Alpha AXP, PowerPC)
 
     // you can use link in the dll objects into the stub in other os's
     //(eg dos--if you consider that an os) by defining STATIC_LINKAGE
     // and IDE_PGM. note that IDE_PGM needs to be defined anywhere that
     // IDEDLL_EXPORT is used and/or idedll.h is included
 
-#   if defined(__OS2__) && !defined(__OSI__)
-#       define DLLS_IMPLEMENTED
+    #if defined( __OS2__ ) && !defined( __OSI__ )
+        #define DLLS_IMPLEMENTED
 
         // The following are defined in os2.h
-#       undef  COMMENT
-#       define ERR         OS2_ERR
+        #undef  COMMENT
+        #define ERR         OS2_ERR
 
-#       define INCL_DOS
-#       include "os2.h"
-#       define IDETOOL_GETVER          "_IDEGetVersion@0"
-#       define IDETOOL_INITDLL         "_IDEInitDLL@12"
-#       define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-#       define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelf@16"
-#       define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
-#       define IDETOOL_STOPRUN         "_IDEStopRunning@0"
-#       define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
-#       undef  ERR
+        #define INCL_DOS
+        #include "os2.h"
+        #define IDETOOL_GETVER          "_IDEGetVersion@0"
+        #define IDETOOL_INITDLL         "_IDEInitDLL@12"
+        #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
+        #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
+        #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
+        #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
+        #undef  ERR
         typedef HMODULE DLL_HANDLE;
-#   elif defined __NT__
-#       define DLLS_IMPLEMENTED
-#       include <windows.h>
-#       define IDETOOL_GETVER          "_IDEGetVersion@0"
-#       define IDETOOL_INITDLL         "_IDEInitDLL@12"
-#       define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-#       define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelf@16"
-#       define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
-#       define IDETOOL_STOPRUN         "_IDEStopRunning@0"
-#       define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
+    #elif defined( __NT__ )
+        #define DLLS_IMPLEMENTED
+        #include <windows.h>
+        #define IDETOOL_GETVER          "_IDEGetVersion@0"
+        #define IDETOOL_INITDLL         "_IDEInitDLL@12"
+        #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
+        #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
+        #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
+        #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
         typedef HINSTANCE DLL_HANDLE;
-#else
-#include "bool.h"
-#endif
+    #elif defined( __DOS__ ) && defined( CAUSEWAY )
+        #define DLLS_IMPLEMENTED
+        #include "cwdllfnc.h"
+        #include "bool.h"
+        #define IDETOOL_GETVER          "_IDEGetVersion@0"
+        #define IDETOOL_INITDLL         "_IDEInitDLL@12"
+        #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
+        #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
+        #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
+        #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
+    #else
+        #include "bool.h"
+    #endif
 
-#   ifdef DLLS_IMPLEMENTED
+    #ifdef DLLS_IMPLEMENTED
         typedef unsigned IDEDLL_EXPORT (*GetVerFn)( void );
         typedef IDEBool IDEDLL_EXPORT (*InitDllFn)( IDECBHdl hdl
                                                   , IDECallBacks *cb
@@ -108,11 +118,13 @@
         typedef void IDEDLL_EXPORT (*StopRunFn)( void );
         typedef IDEBool IDEDLL_EXPORT (*PassInitInfo)( IDEDllHdl hdl
                                                      , IDEInitInfo *info );
-#   endif
+    #endif
 
+#else
+    #include "bool.h"
 #endif
 
-#if (defined DLLS_IMPLEMENTED || ( defined STATIC_LINKAGE && defined IDE_PGM ) )
+#if (defined DLLS_IMPLEMENTED || (defined STATIC_LINKAGE && defined IDE_PGM) )
 
 typedef void (*P_FUN)( void );
 
@@ -123,43 +135,46 @@ typedef void (*P_FUN)( void );
     // OS/2 Interface
     //
 
-static int sysdepDLLLoad( IDEDRV* inf )
+static int sysdepDLLLoad( IDEDRV *inf )
 {
 #define SIZE 32
-    unsigned char badfile[SIZE];
+    unsigned char   badfile[SIZE];
+
     return (int)DosLoadModule( (PSZ)badfile
-                             , SIZE
+                             , sizeof( badfile )
                              , (PSZ)inf->dll_name
-                             , (DLL_HANDLE*)&inf->dll_handle );
+                             , (DLL_HANDLE *)&inf->dll_handle );
 }
 
-static int sysdepDLLUnload( IDEDRV* inf )
+static int sysdepDLLUnload( IDEDRV *inf )
 {
     DosFreeModule( (DLL_HANDLE)inf->dll_handle );
-    return 0;   // sometimes get failure in good situations
+    return( 0 );    // sometimes get failure in good situations
 }
 
-static int sysdepDLLgetProc( IDEDRV* inf
-                           , char const* fun_name
-                           , P_FUN* fun )
+static int sysdepDLLgetProc( IDEDRV *inf
+                           , char const *fun_name
+                           , P_FUN *fun )
 {
     int retcode;
+
     retcode = (int)DosQueryProcAddr( (DLL_HANDLE)inf->dll_handle
                                    , 0
                                    , (PSZ)fun_name
-                                   , (PFN*)fun );
+                                   , (PFN *)fun );
     if( 0 != retcode ) {
         // DLL could be linked case-insensitive
-        unsigned size = strlen( fun_name ) + 1;
-        char* p = alloca( size );
+        unsigned    size = strlen( fun_name ) + 1;
+        char        *p = alloca( size );
+
         p = memcpy( p, fun_name, size );
         p = strupr( p );
         retcode = (int)DosQueryProcAddr( (DLL_HANDLE)inf->dll_handle
                                        , 0
                                        , (PSZ)p
-                                       , (PFN*)fun );
+                                       , (PFN *)fun );
     }
-    return retcode;
+    return( retcode );
 }
 
 #endif // __OS2__
@@ -169,27 +184,64 @@ static int sysdepDLLgetProc( IDEDRV* inf
     // NT Interface
     //
 
-static int sysdepDLLLoad( IDEDRV* inf )
+static int sysdepDLLLoad( IDEDRV *inf )
 {
-    inf->dll_handle = (unsigned long) LoadLibrary( inf->dll_name );
-    return 0 == inf->dll_handle;
+    inf->dll_handle = (void *)LoadLibrary( inf->dll_name );
+    return( 0 == inf->dll_handle );
 }
 
-static int sysdepDLLUnload( IDEDRV* inf )
+static int sysdepDLLUnload( IDEDRV *inf )
 {
-    return !(int)FreeLibrary( (DLL_HANDLE) inf->dll_handle );
+    return( !(int)FreeLibrary( (DLL_HANDLE)inf->dll_handle ) );
 }
 
-static int sysdepDLLgetProc( IDEDRV* inf,
-                             char const* fun_name,
-                             P_FUN* fun )
+static int sysdepDLLgetProc( IDEDRV *inf,
+                             char const *fun_name,
+                             P_FUN *fun )
 {
-    P_FUN fp = (P_FUN) GetProcAddress( (DLL_HANDLE)inf->dll_handle, fun_name );
+    P_FUN fp = (P_FUN)GetProcAddress( (DLL_HANDLE)inf->dll_handle, fun_name );
+
     *fun = fp;
-    return 0 == fp;
+    return( 0 == fp );
 }
 
 #endif // __NT__
+
+#if defined( __DOS__ ) && defined( CAUSEWAY )
+    //
+    // DOS Causeway Extender Interface
+    //
+
+static int sysdepDLLLoad( IDEDRV *inf )
+{
+    inf->dll_handle = LoadModule( (void *)inf->dll_name );
+    return( 0 == inf->dll_handle );
+}
+
+static int sysdepDLLUnload( IDEDRV *inf )
+{
+    FreeModule( inf->dll_handle );
+    return( 0 );
+}
+
+static int sysdepDLLgetProc( IDEDRV *inf
+                           , char const *fun_name
+                           , P_FUN *fun )
+{
+    *fun = GetProcAddress( inf->dll_handle, (void *)fun_name );
+    if( 0 == *fun ) {
+        // DLL could be linked case-insensitive
+        unsigned    size = strlen( fun_name ) + 1;
+        char        *p = alloca( size );
+
+        p = memcpy( p, fun_name, size );
+        p = strupr( p );
+        *fun = GetProcAddress( inf->dll_handle, (void *)p );
+    }
+    return( 0 == *fun );
+}
+
+#endif // __DOS__
 
 #endif // STATIC_LINKAGE
 
@@ -200,7 +252,7 @@ typedef int (*USER_DLL_FUN_ARGV)( int, char ** );
 
 #ifndef CHAIN_CALLBACK
 
-static IDEBool __stdcall stubPrintMsgFn( IDECBHdl hdl, char const * msg )
+static IDEBool IDECALL stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 {
     hdl = hdl;
 #ifndef NDEBUG
@@ -214,7 +266,8 @@ static IDEBool __stdcall stubPrintMsgFn( IDECBHdl hdl, char const * msg )
 }
 
 #ifndef NDEBUG
-static void __stdcall printProgressIndex( IDECBHdl hdl, unsigned index ) {
+static void IDECALL printProgressIndex( IDECBHdl hdl, unsigned index )
+{
     hdl = hdl;
     fprintf( errout, "progress: %u\n", index );
 }
@@ -222,7 +275,7 @@ static void __stdcall printProgressIndex( IDECBHdl hdl, unsigned index ) {
 #define printProgressIndex      NULL
 #endif
 
-static IDEBool __stdcall printMessage( IDECBHdl hdl, char const * msg )
+static IDEBool IDECALL printMessage( IDECBHdl hdl, char const *msg )
 {
     hdl = hdl;
     fputs( msg, errout );
@@ -230,10 +283,11 @@ static IDEBool __stdcall printMessage( IDECBHdl hdl, char const * msg )
     return( FALSE );
 }
 
-static IDEBool __stdcall printWithInfo( IDECBHdl hdl, IDEMsgInfo* inf )
+static IDEBool IDECALL printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
 {
-    FILE *fp;
-    char prt_buffer[ 512 ];
+    FILE    *fp;
+    char    prt_buffer[ 512 ];
+
     hdl = hdl;
     IdeMsgFormat( hdl
                 , inf
@@ -258,43 +312,7 @@ static IDEBool __stdcall printWithInfo( IDECBHdl hdl, IDEMsgInfo* inf )
     return( FALSE );
 }
 
-#if 0
-static IDEBool __stdcall printWithInfo( IDECBHdl hdl, IDEMsgInfo* inf )
-{
-    IDEMsgInfoNew nw;
-    IdeMsgInit( &nw, inf->severity, inf->msg );
-    if( NULL != inf->helpfile ) {
-        IdeMsgSetHelp( &nw, inf->helpfile, inf->helpid );
-        if( 0 != inf->helpid ) {
-            IdeMsgSetMsgNo( &nw, inf->helpid );
-        }
-    }
-    switch( inf->type ) {
-      case IDEMSGINFO_LINE_COL :
-        IdeMsgSetSrcColumn( &nw, inf->line_col.column );
-        IdeMsgSetSrcLine( &nw, inf->line_col.line );
-        IdeMsgSetSrcFile( &nw, inf->line_col.file );
-        break;
-      case IDEMSGINFO_LINE :
-        IdeMsgSetSrcLine( &nw, inf->line.line );
-        IdeMsgSetSrcFile( &nw, inf->line.file );
-        break;
-      case IDEMSGINFO_FILE :
-        IdeMsgSetLnkFile( &nw, inf->file.file );
-        break;
-      case IDEMSGINFO_SYMBOL_FILE :
-        IdeMsgSetLnkSymbol( &nw, inf->sym_file.symbol );
-        IdeMsgSetLnkFile( &nw, inf->sym_file.file );
-        break;
-      case IDEMSGINFO_SYMBOL :
-        IdeMsgSetLnkSymbol( &nw, inf->symbol.symbol );
-        break;
-    }
-    return printWithNewInfo( hdl, &nw );
-}
-#endif
-
-static IDEBool __stdcall printWithCrLf( IDECBHdl hdl, const char *message )
+static IDEBool IDECALL printWithCrLf( IDECBHdl hdl, const char *message )
 {
     hdl = hdl;
     fputs( message, errout );
@@ -302,28 +320,31 @@ static IDEBool __stdcall printWithCrLf( IDECBHdl hdl, const char *message )
     return( FALSE );
 }
 
-static IDEBool __stdcall getInfoCB( IDECBHdl hdl, IDEInfoType type,
-                                unsigned long extra, unsigned long lparam )
+static IDEBool IDECALL getInfoCB( IDECBHdl hdl, IDEInfoType type,
+                                  unsigned long extra, unsigned long lparam )
 {
     int retn;
+
     extra = extra;
     hdl = hdl;
     switch( type ) {
-      default:
+    default:
         retn = TRUE;
         break;
-      case IDE_GET_ENV_VAR:
-      { char const* env_var;
-        char const* env_val;
-        char const * * p_env_val;
-        env_var = (char const*)extra;
-        env_val = getenv( env_var );
-        p_env_val = (char const * *)lparam;
-        *p_env_val = env_val;
-        retn = ( env_val == NULL );
-      } break;
+    case IDE_GET_ENV_VAR:
+        {
+            char const* env_var;
+            char const* env_val;
+            char const * * p_env_val;
+            env_var = (char const*)extra;
+            env_val = getenv( env_var );
+            p_env_val = (char const * *)lparam;
+            *p_env_val = env_val;
+            retn = ( env_val == NULL );
+        }
+        break;
     }
-    return retn;
+    return( retn );
 }
 
 
@@ -352,9 +373,9 @@ static IDECallBacks callbacks = {     // CALL-BACK STRUCTURE
 
     printProgressIndex,         // ProgressIndex
 };
-static IDECallBacks * CBPtr = &callbacks;
+static IDECallBacks *CBPtr = &callbacks;
 #else
-static IDECallBacks * CBPtr = NULL;
+static IDECallBacks *CBPtr = NULL;
 #endif
 
 static IDEInitInfo info =           // INFORMATION STRUCTURE
@@ -366,10 +387,10 @@ static IDEInitInfo info =           // INFORMATION STRUCTURE
 ,   0                               // - progress index
 };
 
-static IDEInitInfo *  InfoPtr = NULL;
+static IDEInitInfo  *InfoPtr = NULL;
 
 #ifndef STATIC_LINKAGE
-static IDEDRV* Inf;
+static IDEDRV   *Inf;
 #endif
 
 #ifdef __OSI__
@@ -377,38 +398,21 @@ static IDEDRV* Inf;
 #endif
 
 #ifndef NO_CTRL_HANDLERS
-static void StopRunning( void ){
+static void StopRunning( void )
+{
 // Provide static and dynamic linking
 #ifdef STATIC_LINKAGE
     IDEStopRunning();
 #else
-    StopRunFn idestopdll;
-    int retcode;
-    retcode = sysdepDLLgetProc( Inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll );
-    if( IDEDRV_SUCCESS == retcode ) {
+    StopRunFn   idestopdll;
+
+    if( 0 == sysdepDLLgetProc( Inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll ) ) {
        idestopdll();
     }
 #endif
 }
 #endif // NO_CTRL_HANDLERS
 
-#if defined(__NT__) && __WATCOMC__ < 1100
-// work around a CLIB signal problem
-#define USE_NT_CTRL_HANDLERS
-#endif
-
-
-#ifdef USE_NT_CTRL_HANDLERS
-static BOOL __stdcall ctrlHandler( DWORD e ) {
-    switch( e ) {
-    case CTRL_C_EVENT:
-    case CTRL_BREAK_EVENT:
-        StopRunning();
-        return( TRUE );
-    }
-    return( FALSE );
-}
-#else
 #ifndef NO_CTRL_HANDLERS
 static void intHandler( int sig_num )
 {
@@ -416,34 +420,25 @@ static void intHandler( int sig_num )
     StopRunning();
 }
 #endif // NO_CTRL_HANDLERS
-#endif // USE_NT_CTRL_HANDLERS
 
 static void initInterrupt( void )
 {
-#ifdef USE_NT_CTRL_HANDLERS
-    SetConsoleCtrlHandler( ctrlHandler, TRUE );
-#else
 #ifndef NO_CTRL_HANDLERS
     signal( SIGINT, intHandler );
-#ifndef __QNX__
+#ifndef __UNIX__
     signal( SIGBREAK, intHandler );
-#endif // __QNX__
+#endif // __UNIX__
 #endif // NO_CTRL_HANDLERS
-#endif // USE_NT_CTRL_HANDLERS
 }
 
 static void finiInterrupt( void )
 {
-#ifdef USE_NT_CTRL_HANDLERS
-    SetConsoleCtrlHandler( ctrlHandler, FALSE );
-#else
 #ifndef NO_CTRL_HANDLERS
     signal( SIGINT, SIG_DFL );
-#ifndef __QNX__
+#ifndef __UNIX__
     signal( SIGBREAK, SIG_DFL );
-#endif // __QNX__
+#endif // __UNIX__
 #endif // NO_CTRL_HANDLERS
-#endif // USE_NT_CTRL_HANDLERS
 }
 
 #ifndef NDEBUG
@@ -455,17 +450,16 @@ static void finiInterrupt( void )
 #endif
 
 #ifdef STATIC_LINKAGE
-static int ensureLoaded( IDEDRV *inf, int *p_runcode ) {
+static int ensureLoaded( IDEDRV *inf, int *p_runcode )
+{
     int runcode = 0;
     int retcode = IDEDRV_SUCCESS;
 
-    if( ! inf->loaded ) {
+    if( !inf->loaded ) {
         if( NULL == inf->ent_name ) {
-            runcode = IDEInitDLL( NULL
-                                , CBPtr
-                                , &inf->ide_handle );
+            runcode = IDEInitDLL( NULL, CBPtr, &inf->ide_handle );
             if( 0 == runcode ) {
-                if( InfoPtr == NULL ) {
+                if( NULL == InfoPtr ) {
                     InfoPtr = &info;
                     info.console_output = isatty( fileno( stdout ) );
                 }
@@ -486,27 +480,26 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode ) {
     return( retcode );
 }
 #else
-static int ensureLoaded( IDEDRV *inf, int *p_runcode ) {
+static int ensureLoaded( IDEDRV *inf, int *p_runcode )
+{
     int runcode = 0;
     int retcode = IDEDRV_SUCCESS;
 
     if( ! inf->loaded ) {
-        retcode = sysdepDLLLoad( inf );
-        if( IDEDRV_SUCCESS == retcode ) {
+        runcode = sysdepDLLLoad( inf );
+        if( 0 == runcode ) {
             if( NULL == inf->ent_name ) {
                 InitDllFn initdll;
-                retcode = sysdepDLLgetProc( inf
-                                          , IDETOOL_INITDLL
-                                          , (P_FUN*)&initdll );
-                if( IDEDRV_SUCCESS == retcode ) {
+                runcode = sysdepDLLgetProc( inf, IDETOOL_INITDLL, 
+                                                          (P_FUN *)&initdll );
+                if( 0 == runcode ) {
                     runcode = initdll( NULL , CBPtr, &inf->ide_handle );
                     if( 0 == runcode ) {
                         PassInitInfo initinfo;
-                        retcode = sysdepDLLgetProc( inf
-                                                  , IDETOOL_INITINFO
-                                                  , (P_FUN*)&initinfo );
-                        if( IDEDRV_SUCCESS == retcode ) {
-                            if( InfoPtr == NULL ) {
+                        runcode = sysdepDLLgetProc( inf, IDETOOL_INITINFO, 
+                                                          (P_FUN *)&initinfo );
+                        if( 0 == runcode ) {
+                            if( NULL == InfoPtr ) {
                                 InfoPtr = &info;
                                 info.console_output = isatty( fileno(stdout) );
                             }
@@ -540,7 +533,8 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode ) {
 }
 #endif
 
-static int retcodeFromFatal( IDEBool fatal, int runcode, int retcode ) {
+static int retcodeFromFatal( IDEBool fatal, int runcode, int retcode )
+{
     if( fatal ) {
         retcode = IDEDRV_ERR_RUN_FATAL;
     } else if( 0 != runcode ) {
@@ -549,13 +543,15 @@ static int retcodeFromFatal( IDEBool fatal, int runcode, int retcode ) {
     return( retcode );
 }
 
-static void initConsole( void ) {
+static void initConsole( void )
+{
     if( info.console_output ) {
         initInterrupt();
     }
 }
 
-static void finiConsole( void ) {
+static void finiConsole( void )
+{
     if( info.console_output ) {
         finiInterrupt();
     }
@@ -565,7 +561,7 @@ static void finiConsole( void ) {
     (_inf)->dll_status = (_run); (_inf)->drv_status = (_ret);
 
 int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
-    ( IDEDRV* inf               // - driver control information
+    ( IDEDRV *inf               // - driver control information
     , char const *cmd_line )    // - command line
 #ifdef STATIC_LINKAGE
 // Execute DLL
@@ -587,7 +583,7 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
         retcode = retcodeFromFatal( fatal, runcode, retcode );
     }
     stashCodes( inf, runcode, retcode );
-    return retcode;
+    return( retcode );
 }
 #else
 // Execute DLL
@@ -607,8 +603,8 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     if( retcode == IDEDRV_SUCCESS ) {
         if( NULL == inf->ent_name ) {
             RunSelfFn fun;
-            retcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF, (P_FUN*)&fun );
-            if( IDEDRV_SUCCESS == retcode ) {
+            runcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF, (P_FUN *)&fun );
+            if( 0 == runcode ) {
                 IDEBool fatal = FALSE;
                 initConsole();
                 runcode = fun( inf->ide_handle, cmd_line, &fatal );
@@ -623,8 +619,8 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
             }
         } else {
             USER_DLL_FUN fun;
-            retcode = sysdepDLLgetProc( inf, inf->ent_name, (P_FUN*)&fun );
-            if( IDEDRV_SUCCESS == retcode ) {
+            runcode = sysdepDLLgetProc( inf, inf->ent_name, (P_FUN *)&fun );
+            if( 0 == runcode ) {
                 initConsole();
                 runcode = fun( cmd_line );
                 finiConsole();
@@ -635,14 +631,14 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
         }
     }
     stashCodes( inf, runcode, retcode );
-    return retcode;
+    return( retcode );
 }
 #endif
 
-#ifdef __QNX__
+#ifdef __UNIX__
 
 int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
-    ( IDEDRV* inf               // - driver control information
+    ( IDEDRV *inf               // - driver control information
     , int argc                  // - # of arguments
     , char **argv )             // - argument vector
 #ifdef STATIC_LINKAGE
@@ -665,7 +661,7 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
         retcode = retcodeFromFatal( fatal, runcode, retcode );
     }
     stashCodes( inf, runcode, retcode );
-    return retcode;
+    return( retcode );
 }
 #else
 // Execute DLL
@@ -685,8 +681,8 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
     if( retcode == IDEDRV_SUCCESS ) {
         if( NULL == inf->ent_name ) {
             RunSelfFnArgv fun;
-            retcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF_ARGV, (P_FUN*)&fun );
-            if( IDEDRV_SUCCESS == retcode ) {
+            runcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF_ARGV, (P_FUN *)&fun );
+            if( 0 == runcode ) {
                 IDEBool fatal = FALSE;
                 initConsole();
                 runcode = fun( inf->ide_handle, argc, argv, &fatal );
@@ -701,8 +697,8 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
             }
         } else {
             USER_DLL_FUN_ARGV fun;
-            retcode = sysdepDLLgetProc( inf, inf->ent_name, (P_FUN*)&fun );
-            if( IDEDRV_SUCCESS == retcode ) {
+            runcode = sysdepDLLgetProc( inf, inf->ent_name, (P_FUN *)&fun );
+            if( 0 == runcode ) {
                 initConsole();
                 runcode = fun( argc, argv );
                 finiConsole();
@@ -713,7 +709,7 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
         }
     }
     stashCodes( inf, runcode, retcode );
-    return retcode;
+    return( retcode );
 }
 #endif
 
@@ -721,7 +717,7 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
 
 
 int IdeDrvUnloadDLL             // UNLOAD THE DLL
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 #ifdef STATIC_LINKAGE
 // Static Linkage: nothing to unload
 {
@@ -729,7 +725,7 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
         inf->loaded = FALSE;
         IDEFiniDLL( inf->ide_handle );
     }
-    return IDEDRV_SUCCESS;
+    return( IDEDRV_SUCCESS );
 }
 #else
 // Dynamic Linkage: unload the DLL
@@ -738,8 +734,7 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
     FiniDllFn   fini;
 
     if( inf->loaded ) {
-        retcode = sysdepDLLgetProc( inf, IDETOOL_FINIDLL, (P_FUN*)&fini );
-        if( IDEDRV_SUCCESS == retcode ) {
+        if( 0 == sysdepDLLgetProc( inf, IDETOOL_FINIDLL, (P_FUN*)&fini ) ) {
             fini( inf->ide_handle );
         }
         inf->loaded = FALSE;
@@ -751,13 +746,13 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
     } else {
         retcode = IDEDRV_SUCCESS;
     }
-    return retcode;
+    return( retcode );
 }
 #endif
 
 
 int IdeDrvStopRunning           // SIGNAL A BREAK
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 #ifdef STATIC_LINKAGE
 // Static Linkage: direct call
 {
@@ -765,23 +760,22 @@ int IdeDrvStopRunning           // SIGNAL A BREAK
         inf->loaded = FALSE;
         IDEStopRunning();
     }
-    return IDEDRV_SUCCESS;
+    return( IDEDRV_SUCCESS );
 }
 #else
 // Dynamic Linkage: indirect call
 {
     int         retcode;                // - return code
-    StopRunFn idestopdll;
+    StopRunFn   idestopdll;
 
     if( inf->loaded ) {
-        retcode = sysdepDLLgetProc( inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll );
-        if( IDEDRV_SUCCESS == retcode ) {
+        if( 0 == sysdepDLLgetProc( inf, IDETOOL_STOPRUN, (P_FUN*)&idestopdll ) ) {
            idestopdll();
         }
     } else {
         retcode = IDEDRV_SUCCESS;
     }
-    return retcode;
+    return( retcode );
 }
 #endif
 
@@ -795,37 +789,32 @@ __IDEDRV
 
 
 int IdeDrvPrintError            // UNLOAD THE DLL
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 {
-    char const * msg;
-    int retcode = inf->drv_status;
+    char const  *msg;
+    int         retcode = inf->drv_status;
+
     if( retcode != IDEDRV_SUCCESS ) {
         if( retcode <= 0 || retcode >= IDEDRV_ERR_MAXIMUM ) {
             msg = "impossible error";
         } else {
             msg = msgs[ retcode ];
         }
-        fputs( "ERROR with dll: ", errout );
-        fputs( inf->dll_name, errout );
-        fputs( "\n    ", errout );
-        fputs( msg, errout );
+        fprintf( errout, "ERROR with dll: %s\n    %s", inf->dll_name, msg );
         if( inf->dll_status != 0 ) {
-            char buf[32];
-            fputs( "    return code: ", errout );
-            itoa( inf->dll_status, buf, 10 );
-            fputs( buf, errout );
+            fprintf( errout, "    return code: %ld", inf->dll_status );
         }
         fputc( '\n', errout );
         fflush( errout );
     }
-    return inf->drv_status;
+    return( inf->drv_status );
 }
 
 void IdeDrvChainCallbacks       // SET CALLBACKS FOR DLL CALLLING A DLL
     ( void *cb                  // - parent dll callbacks
     , void *info )              // - parent dll initialization
 {
-    CBPtr = (IDECallBacks * )cb;
+    CBPtr   = (IDECallBacks *)cb;
     InfoPtr = (IDEInitInfo *)info;
 }
 
@@ -838,25 +827,25 @@ void *IdeDrvGetCallbacks                // GET CALLBACKS
 void IdeDrvSetCallbacks         // GET CALLBACKS
     ( void *cb )
 {
-    CBPtr = (IDECallBacks * )cb;
+    CBPtr = (IDECallBacks *)cb;
 }
 
 
 void IdeDrvInit                 // INITIALIZE IDEDRV INFORMATION
-    ( IDEDRV* inf               // - information
+    ( IDEDRV *inf               // - information
     , char const *dll_name      // - dll name
     , char const *ent_name )    // - entry name
 {
-    inf->dll_name = dll_name;
-    inf->ent_name = ent_name;
+    inf->dll_name   = dll_name;
+    inf->ent_name   = ent_name;
     inf->ide_handle = 0;
     inf->dll_handle = 0;
     inf->drv_status = 0;
     inf->dll_status = 0;
-    inf->loaded = 0;
+    inf->loaded     = 0;
 }
 
 
 #else
-#   error IDE not implemented for target platform
+    #error IDE not implemented for target platform
 #endif // DLLS_IMPLEMENTED

@@ -1,0 +1,108 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Technical Reference [Spawning]</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Technical Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><br>
+</font><b><font face="Verdana, Arial, Helvetica">11.0 - Spawning programs
+under DOS/32 Advanced<br>
+</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">When spawning programs
+under different DOS Extenders, the major problem that often arises is sharing
+of extended memory. DOS/32 Advanced solves this problem in a very efficient
+way and features a very fast and reliable spawning when using extended DOS
+function AX=4B00h. Basically, there are two different modes of spawning
+applications under DOS/32 Advanced.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The first mode applies
+when spawning a DOS/32 Advanced non-compatible application, for example
+a DOS/4GW program. By default, DOS/32 Advanced will allocate all extended
+memory available in the machine, however this can be changed by specifying
+the amount of memory for DOS/32A to allocate. This can be easily done by
+either adding an &quot;EXTMEM:&quot; option to DOS/32 Advanced environment
+variable DOS32A, followed by the number of KB of memory to allocate, or
+by configuring DOS/32 Advanced with the <a href="../util/3.html">SUNSYS Setup
+Utility</a> program. When
+the DOS Extender will be started, it will only allocate the specified amount
+of extended memory, leaving the rest to the application it will spawn.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The second mode is designed
+especially for situations when the both applications, ie the spawning program
+and the program that is to be spawned are both DOS/32 Advanced compatible.
+This mode is the default spawning mode for DOS/32 Advanced DOS Extender.
+At startup, DOS/32 Advanced will try to autodetect if it was spawned from
+another DOS/32A compatible application. If that is the case, the spawned
+program, the &quot;child process&quot;, will be able to share the extended
+memory with the host application, the &quot;parent process&quot;. It is
+important to understand, that DOS/32 Advanced DOS Extender will not release
+the allocated extended memory when spawning programs. This is done so to
+achieve the maximum speed possible, which when combined with DOS/32 Advanced
+short startup time will give you great results.</font></p>
+
+<p><br></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">However, the second mode
+restricts you with some limitations:</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">1) To allow sharing of
+extended memory, the both &quot;child&quot; and &quot;parent&quot; processes
+must be DOS/32 Advanced compatible applications, ie they both must run under
+DOS/32 Advanced DOS Extender.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">2) The both applications
+must use the same version of DOS/32 Advanced. That is, if you for example
+have one application bound to DOS/32A v4.00, and the other is using DOS/32A
+v5.00 the spawning will not work!</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">3) If the applications
+that are to be spawned are bound to the multiple copies of DOS/32 Advanced
+DOS Extender executable <i>dos32a.exe</i>, or to DOS/32 Advanced Configurable
+stub file <i>stub32c.exe</i> (as opposed to applications bound to DOS/32
+Advanced Standard stub file <i>stub32a.exe</i>), the DOS Extenders/Stub
+files must have the same configuration. In particular, the following settings
+must be configured equally (refer to <a href="../util/3.html">
+SUNSYS Setup Utility</a> documentation):</font></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">VCPI PageTables<br>
+  VCPI PhysTables<br>
+  Extended Memory</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">The two modes described
+above can certainly be combined to allow spawning applications which either
+support DOS/32 Advanced memory sharing or don't. For example, if you have
+several applications which run under DOS/32 Advanced DOS Extender and another
+bunch of applications which run under, say DOS/4GW, you can manually adjust
+the amount of memory for the first DOS/32 Advanced started, which will cause
+all DOS/32 Advanced compatible programs to use that amount of memory, and
+the other programs to allocate the rest of the memory from the system.</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Please note, that if the
+program you intend to spawn from DOS/32 Advanced does not require any extended
+memory, these spawning modes will not be used and the program will simply
+be started as if it was running in real mode DOS. </font></p>
+
+<p>&nbsp;</p>
+
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

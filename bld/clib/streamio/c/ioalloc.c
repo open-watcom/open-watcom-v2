@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent __ioalloc() implementation.
 *
 ****************************************************************************/
 
@@ -33,44 +32,33 @@
 #include "variety.h"
 #include <stdio.h>
 #include "liballoc.h"
-#if defined(__PENPOINT__)  ||  defined(__QNX__)
 #include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include "rtdata.h"
+#include "streamio.h"
 
-extern  void    __chktty(FILE *);
 
-
-void __ioalloc( fp )
-    register FILE *fp;
+void __ioalloc( FILE *fp )
 {
     __chktty( fp );                                 /* JBS 28-aug-90 */
     if( fp->_bufsize == 0 ) {
         if( fp->_flag & _IOLBF ) {
             fp->_bufsize = 134;
         } else if( fp->_flag & _IONBF ) {
-            /* note that this is big enough for UNICODE due to */
-            /* heap manager rounding up of size */
-            fp->_bufsize = 1;
+            /* Use small but reasonably sized buffer; otherwise we will end
+             * up calling into the OS for every character, completely killing
+             * performance on unbuffered stream output through printf() etc.,
+             * especially in extended DOS because of mode switches.
+             */
+            fp->_bufsize = 64;
         } else {
             fp->_bufsize = BUFSIZ;
         }
     }
-#if defined(__PENPOINT__)
-    if( fp->_flag & _SHRMEM ) {
-        _FP_BASE(fp) = _smalloc( fp->_bufsize );
-    } else {
-        _FP_BASE(fp) = lib_malloc( fp->_bufsize );
-    }
-#else
     _FP_BASE(fp) = lib_malloc( fp->_bufsize );
-#endif
     if( _FP_BASE(fp) == NULL ) {
-        fp->_flag &= ~ ( _IONBF | _IOLBF | _IOFBF );
+        fp->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
         fp->_flag |= _IONBF;        /* can't get big buffer */
-        _FP_BASE(fp) = (char*) &(fp->_ungotten);
+        _FP_BASE(fp) = (unsigned char *)&(fp->_ungotten);
         fp->_bufsize = 1;
     } else {
         fp->_flag |= _BIGBUF;       /* got big buffer */

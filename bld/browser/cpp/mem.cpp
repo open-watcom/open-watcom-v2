@@ -176,6 +176,7 @@ void WBRFree( void *p )
 }
 
 #ifndef STANDALONE_MERGER
+#if 0
 extern void *GUIAlloc( unsigned a )
 //---------------------------------
 {
@@ -205,6 +206,7 @@ extern void GUIMemClose( void )
 extern void GUIMemPrtUsage( void )
 {
 }
+#endif
 #endif // STANDALONE_MERGER
 
 };  // extern "C"

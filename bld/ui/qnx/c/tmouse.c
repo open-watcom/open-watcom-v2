@@ -108,8 +108,8 @@ static int new_sample;
 #define XT_INIT "\033[?1000h"
 #define XT_FINI "\033[?1000l"
 
-static  void tm_error()
-/*********************/
+static  void tm_error( void )
+/***************************/
 {
 //    write( UIConHandle, QW_BELL, sizeof( QW_BELL ) - 1 );
 }
@@ -124,7 +124,7 @@ static  void tm_error()
 static int last_row, last_col, last_status;
 
 /* Parse a QNX Windows/Photon mouse event. */
-static void QW_parse()
+static void QW_parse( void )
 {
     int func, mrow, mcol, mbut, mclick;
     char *p = buf;
@@ -158,7 +158,7 @@ static void QW_parse()
 }
 
 /* Parse an xterm mouse event. */
-static void XT_parse()
+static void XT_parse( void )
 {
     last_col = buf[1] - 0x21;
     last_row = buf[2] - 0x21;
@@ -173,7 +173,7 @@ static void XT_parse()
 
 static int tm_check( unsigned short *status, unsigned short *row,
                         unsigned short *col, unsigned long *time )
-/**********************************************/
+/****************************************************************/
 {
     if( !MouseInstalled ) {
          uisetmouse(*row, *col);
@@ -200,8 +200,8 @@ static int tm_check( unsigned short *status, unsigned short *row,
     return 0;
 }
 
-static int tm_stop()
-/*********************/
+static int tm_stop( void )
+/************************/
 {
     return 0;
 }
@@ -209,8 +209,8 @@ static int tm_stop()
 static void DoMouseInit( int type, char *init, char *input )
 {
     struct _osinfo      osinfo;
-    unsigned short      row;
-    unsigned short      col;
+    MOUSEORD            row;
+    MOUSEORD            col;
 
     MouseType = type;
     uimouseforceoff();
@@ -232,7 +232,7 @@ static void DoMouseInit( int type, char *init, char *input )
 }
 
 static int tm_init( bool install )
-/******************************/
+/********************************/
 {
     char        *term;
 
@@ -256,8 +256,8 @@ static int tm_init( bool install )
     return( TRUE );
 }
 
-static int tm_fini()
-/*********************/
+static int tm_fini( void )
+/************************/
 {
     switch( MouseType ) {
     case M_QW:
@@ -273,8 +273,8 @@ static int tm_fini()
     return 0;
 }
 
-static int tm_set_speed( unsigned speed )
-/****************************************/
+static int tm_set_speed( int speed )
+/**********************************/
 
 /* Set speed of mouse. 1 is fastest; the higher the number the slower
  * it goes.
@@ -287,8 +287,8 @@ static int tm_set_speed( unsigned speed )
     return 0;
 }
 
-void tm_saveevent()
-/*****************/
+void tm_saveevent( void )
+/***********************/
 {
     int i;
     int c;

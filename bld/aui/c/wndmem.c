@@ -48,32 +48,3 @@ void    *WndMustRealloc( void *chunk, unsigned size )
     if( chunk == NULL ) WndNoMemory();
     return( chunk );
 }
-
-extern void *   GUIAlloc( unsigned size )
-{
-    return( WndAlloc( size ) );
-}
-
-extern void     GUIFree( void *chunk )
-{
-    WndFree( chunk );
-}
-
-extern void *   GUIRealloc( void * chunk, unsigned size )
-{
-    return( WndRealloc( chunk, size ) );
-}
-
-extern void     GUIMemOpen()
-{
-    WndMemInit();
-}
-
-extern void     GUIMemClose( void )
-{
-    WndMemFini();
-}
-
-extern void     GUIMemPrtUsage( void )
-{
-}

@@ -1,0 +1,47 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: D32A Library Reference</title>
+  <link rel="stylesheet" href="../../sheet.css"></head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - D32A C/C++ Run-Time Library Reference</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+2.13 - DOS/32 Advanced D32A Library function - <i>d32a_get_cpu_speed()</i>
+<br></font></b></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Synopsys:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><i><blockquote>
+#include &lt;d32a.h><br>
+int d32a_get_cpu_id(void);
+</blockquote></i></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Description:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+This function determines the speed of the processor.
+Please note that this function will work on most types of CPU, independent of CPU brand
+and vendor. When measuring speed of the modern processors (Pentium) this
+function will use &quot;Read Timestamp Counter&quot; instruction, while on older
+processors it will fall back to the more common &quot;IDIV&quot; algorithm. To obtain
+the most precise results you should call this function several times, selecting
+the value which seems to be the most common.
+</blockquote></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Returns:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+Returns the speed of the CPU in MHz.
+</blockquote></font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -1,0 +1,63 @@
+#define INCL_WINSTDFILE
+#include "os2.h"
+
+#include "rules.h"
+#include "menu.h"
+
+rcinclude "rules.dlg"
+rcinclude "name.dlg"
+rcinclude "about.dlg"
+
+BITMAP MENU_TINY_BIT tiny.bmp
+BITMAP MENU_SMALL_BIT small.bmp
+BITMAP MENU_MED_BIT med.bmp
+BITMAP MENU_LARGE_BIT large.bmp
+BITMAP MENU_HUGE_BIT huge.bmp
+
+ICON RES_ICON life.ico
+
+MENU RES_MAIN_MENU PRELOAD
+{
+    SUBMENU "~File", SUBMENU_FILE
+    {
+        MENUITEM "~Save Selected Region ...", MENU_SAVE
+        MENUITEM "~Load New Pattern ...", MENU_LOAD
+        MENUITEM SEPARATOR
+        MENUITEM "~About Life ...", MENU_ABOUT
+    }
+    SUBMENU "~Rules", SUBMENU_BOUNDARY
+    {
+        MENUITEM "~Wrap Around Edges", MENU_WRAP_AROUND
+        MENUITEM "~Bounded Edges", MENU_BOUNDED_EDGES
+        MENUITEM "~New Rules...", MENU_NEW_RULES
+    }
+    SUBMENU "~Pattern", SUBMENU_PATTERN
+    {
+    }
+    SUBMENU "~Mouse", SUBMENU_MOUSE
+    {
+        MENUITEM "~Select A Region", MENU_SELECT
+        MENUITEM "~Flip Patterns", MENU_FLIP_PATTERNS
+    }
+    SUBMENU "~Control", SUBMENU_CONTROL
+    {
+        MENUITEM "~Pause", MENU_PAUSE
+        MENUITEM "~Resume", MENU_RESUME
+        MENUITEM "~Single Step", MENU_SINGLE_STEP
+        MENUITEM "~Fastest", MENU_FASTEST
+    }
+    SUBMENU "~Screen", SUBMENU_SCREEN
+    {
+        MENUITEM "~Clear", MENU_CLEAR
+        MENUITEM "~Randomize", MENU_RANDOM
+        MENUITEM "~Grid", MENU_GRID
+    }
+    SUBMENU "~Bitmap", SUBMENU_BITMAP
+    {
+        MENUITEM "~Tiny", MENU_TINY_BIT
+        MENUITEM "~Small", MENU_SMALL_BIT
+        MENUITEM "~Medium", MENU_MED_BIT
+        MENUITEM "~Large", MENU_LARGE_BIT
+        MENUITEM "~Huge", MENU_HUGE_BIT
+    }
+}

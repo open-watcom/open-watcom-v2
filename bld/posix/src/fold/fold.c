@@ -40,7 +40,7 @@
 
 char *OptEnvVar = "fold";
 
-char *usageTxt[] = {
+const char *usageTxt[] = {
     "Usage: fold [-?X] [-<width>] [files]",
     "\tfiles             : files to fold",
     "\tOptions: -?       : print this list",

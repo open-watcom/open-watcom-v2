@@ -24,23 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status bar.
 *
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
-#include <stdlib.h>
+#include "vi.h"
 #include "ssbar.h"
 #include "ssbardef.h"
 #include "utils.h"
 #include "subclass.h"
 #include "wstatus.h"
 #include "statwnd.h"
+#include <assert.h>
 
-#define NARRAY( a )             ( sizeof( a ) / sizeof( a[ 0 ] ) )
+#define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
 #define DEFAULT_STATUSSTRING    "Line:$5L$[Col:$3C$[Mode: $M$[$|$T$[$H"
 #define DEFAULT_STATUSSECTIONS  { 60, 105, 192, 244 }
@@ -50,7 +48,7 @@ enum buttonType {
     BUTTON_ALIGNMENT,
 };
 
-HWND            hSSbar = NULL;
+HWND            hSSbar;
 static bool     haveCapture = FALSE;
 static int      curItemID = -1;
 static HWND     mod_hwnd;
@@ -86,7 +84,7 @@ void totalRedraw( void )
 
 void destroyBlock( int i, char *start )
 {
-    char    new_ss[ MAX_STR ];
+    char    new_ss[MAX_STR];
 
     if( NumStatusSections == 1 ) {
         // unfortunately wstatus.c can't handle this right now
@@ -97,15 +95,15 @@ void destroyBlock( int i, char *start )
 
     if( i != NumStatusSections ) {
         memmove( StatusSections + i, StatusSections + i + 1,
-                 ( NumStatusSections - 1 - i ) * sizeof( short ) );
+                 (NumStatusSections - 1 - i) * sizeof( short ) );
     }
     NumStatusSections--;
     StatusSections = MemReAlloc( StatusSections,
                                  NumStatusSections * sizeof( short ) );
 
     strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[ start - StatusString ] = '\0';
-    while( start[0] && !( start[0] == '$' && start[1] == '[' ) ) {
+    new_ss[start - StatusString] = '\0';
+    while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
         start++;
     }
     if( start[0] == '$' ) {
@@ -119,7 +117,7 @@ void destroyBlock( int i, char *start )
 
 void splitBlock( int i, char *start )
 {
-    char    new_ss[ MAX_STR ];
+    char    new_ss[MAX_STR];
     int     diff;
     RECT    rect;
 
@@ -130,11 +128,11 @@ void splitBlock( int i, char *start )
 
     if( i == NumStatusSections ) {
         GetWindowRect( StatusWindow, &rect );
-        diff = rect.right - StatusSections[ i - 1 ];
+        diff = rect.right - StatusSections[i - 1];
     } else if( i == 0 ) {
-        diff = StatusSections[ 1 ];
+        diff = StatusSections[1];
     } else {
-        diff = StatusSections[ i ] - StatusSections[ i - 1 ];
+        diff = StatusSections[i] - StatusSections[i - 1];
     }
 
     if( diff < BOUNDARY_WIDTH * 4 ) {
@@ -145,18 +143,18 @@ void splitBlock( int i, char *start )
     StatusSections = MemReAlloc( StatusSections,
                                  NumStatusSections * sizeof( short ) );
     memmove( StatusSections + i + 1, StatusSections + i,
-             ( NumStatusSections - 1 - i ) * sizeof( short ) );
+             (NumStatusSections - 1 - i) * sizeof( short ) );
     if( i > 0 ) {
-        StatusSections[ i ] = StatusSections[ i - 1 ] + ( diff / 2 );
+        StatusSections[i] = StatusSections[i - 1] + (diff / 2);
     } else {
-        StatusSections[ i ] /= 2;
+        StatusSections[i] /= 2;
     }
 
-    while( start[0] && !( start[0] == '$' && start[1] == '[' ) ) {
+    while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
         start++;
     }
     strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[ start - StatusString ] = '\0';
+    new_ss[start - StatusString] = '\0';
     strcat( new_ss, "$[ " );
     strcat( new_ss, start );
     AddString2( &StatusString, new_ss );
@@ -166,7 +164,7 @@ void splitBlock( int i, char *start )
 
 void buildNewItem( char *start, int id )
 {
-    char    new_ss[ MAX_STR ];
+    char    new_ss[MAX_STR];
     char    *sz_content[] = { "$T", "$D", "Mode: $M",
                               "Line:$5L", "Col:$3C", "$H" };
     char    *sz_alignment[] = { "$<", "$|", "$>" };
@@ -174,23 +172,23 @@ void buildNewItem( char *start, int id )
     int     type;
 
     if( id >= SS_FIRST_CONTENT && id <= SS_LAST_CONTENT ) {
-        new_item = sz_content[ id - SS_FIRST_CONTENT ];
+        new_item = sz_content[id - SS_FIRST_CONTENT];
         type = BUTTON_CONTENT;
     } else if( id >= SS_FIRST_ALIGNMENT && id <= SS_LAST_ALIGNMENT ) {
-        new_item = sz_alignment[ id - SS_FIRST_ALIGNMENT ];
+        new_item = sz_alignment[id - SS_FIRST_ALIGNMENT];
         type = BUTTON_ALIGNMENT;
     } else {
         assert( 0 );
     }
 
     strncpy( new_ss, StatusString, start - StatusString );
-    new_ss[ start - StatusString ] = '\0';
+    new_ss[start - StatusString] = '\0';
     strcat( new_ss, new_item );
     if( type == BUTTON_CONTENT ) {
         // only copy alignments, if any
-        while( start[0] && !( start[0] == '$' && start[1] == '[' ) ) {
-            if( start[0] == '$' && ( start[1] == '<' || start[1] == '|'
-                                                     || start[1] == '>' ) ) {
+        while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
+            if( start[0] == '$' && (start[1] == '<' || start[1] == '|'
+                                                    || start[1] == '>') ) {
                 strncat( new_ss, start, 2 );
                 start++;
             }
@@ -198,9 +196,9 @@ void buildNewItem( char *start, int id )
         }
     } else {
         // only copy contents, if any
-        while( start[0] && !( start[0] == '$' && start[1] == '[' ) ) {
-            if( start[0] == '$' && ( start[1] == '<' || start[1] == '|'
-                                                     || start[1] == '>' ) ) {
+        while( start[0] && !(start[0] == '$' && start[1] == '[') ) {
+            if( start[0] == '$' && (start[1] == '<' || start[1] == '|'
+                                                    || start[1] == '>') ) {
                 start += 2;
                 continue;
             }
@@ -229,24 +227,23 @@ void buildDefaults( void )
 }
 
 void buildNewStatusString( int block, int id )
-
 {
     char    *mod;
 
     mod = findBlockString( block );
 
     switch( id ) {
-        case SS_SPLIT:
-            splitBlock( block, mod );
-            break;
-        case SS_DESTROY:
-            destroyBlock( block, mod );
-            break;
-        case SS_DEFAULTS:
-            buildDefaults();
-            break;
-        default:
-            buildNewItem( mod, id );
+    case SS_SPLIT:
+        splitBlock( block, mod );
+        break;
+    case SS_DESTROY:
+        destroyBlock( block, mod );
+        break;
+    case SS_DEFAULTS:
+        buildDefaults();
+        break;
+    default:
+        buildNewItem( mod, id );
     }
 }
 
@@ -260,7 +257,7 @@ static void sendNewItem( int x, int id )
     assert( mod_hwnd == StatusWindow );
 
     i = 0;
-    while( i < NumStatusSections && StatusSections[ i ] < x ) {
+    while( i < NumStatusSections && StatusSections[i] < x ) {
         i++;
     }
 
@@ -292,7 +289,7 @@ static long processLButtonDown( HWND hwnd )
     SetCapture( hwnd );
     haveCapture = TRUE;
     curItemID = GetDlgCtrlID( hwnd );
-    mod_hwnd = NULL;
+    mod_hwnd = (HWND)NULLHANDLE;
     return( 0L );
 }
 
@@ -314,7 +311,7 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     GetWindowRect( GetParent( hwnd ), &rect );
     if( PtInRect( &rect, m_pt ) ) {
         CursorOp( COP_DROPSS );
-        mod_hwnd = NULL;
+        mod_hwnd = (HWND)NULLHANDLE;
         return( 0L );
     }
 
@@ -323,13 +320,13 @@ static long processMouseMove( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     if( mod_hwnd == StatusWindow ) {
         CursorOp( COP_DROPSS );
     } else {
-        mod_hwnd = NULL;
+        mod_hwnd = (HWND)NULLHANDLE;
         CursorOp( COP_NODROP );
     }
     return( 0L );
 }
 
-long WINEXP StaticSubclassProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+long WINEXP StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_NCHITTEST:
@@ -349,13 +346,13 @@ void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
     }
     for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
     }
     for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
     }
 }
 
@@ -390,14 +387,15 @@ BOOL WINEXP SSDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         return( TRUE );
     case WM_CLOSE:
         removeSubclasses( hwnd );
-        hSSbar = NULL;
+        hSSbar = (HWND)NULLHANDLE;
         // update editflags (may have closed from system menu)
         EditFlags.SSbar = FALSE;
         DestroyWindow( hwnd );
         break;
     }
     return( FALSE );
-}
+
+} /* SSDlgProc */
 
 /*
  * RefreshSSbar - turn status settings bar on/off
@@ -420,5 +418,5 @@ void RefreshSSbar( void )
         FreeProcInstance( (FARPROC) proc );
     }
     UpdateStatusWindow();
-}
 
+} /* RefreshSSbar */

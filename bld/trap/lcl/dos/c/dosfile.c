@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level trap file I/O for DOS.
 *
 ****************************************************************************/
 
@@ -37,12 +36,12 @@
 #include "trpimp.h"
 
 extern bool             CheckPointMem( unsigned, char * );
-extern void             CheckPointRestore();
-extern long             Fork(char *, unsigned);
-extern char             *DOSEnvFind( char * );
+extern void             CheckPointRestore( void );
+extern tiny_ret_t       Fork(char *, unsigned);
+extern const char       far *DOSEnvFind( char * );
 extern char             *GetExeExtensions(void);
 
-unsigned ReqFile_get_config()
+unsigned ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
 
@@ -57,13 +56,13 @@ unsigned ReqFile_get_config()
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open()
+unsigned ReqFile_open( void )
 {
     tiny_ret_t      rc;
     int             mode;
     char            *filename;
-    file_open_req       *acc;
-    file_open_ret       *ret;
+    file_open_req   *acc;
+    file_open_ret   *ret;
     static int MapAcc[] = { TIO_READ, TIO_WRITE, TIO_READ_WRITE };
 
     acc = GetInPtr( 0 );
@@ -76,39 +75,40 @@ unsigned ReqFile_open()
         if( IsDOS3 ) mode |= 0x80; /* set no inheritance */
         rc = TinyOpen( filename, mode );
     }
-    ret->handle = rc;
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->handle = TINY_INFO( rc );
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek()
+unsigned ReqFile_seek( void )
 {
-    tiny_ret_t     rc;
-    file_seek_req       *acc;
-    file_seek_ret       *ret;
+    tiny_ret_t      rc;
+    file_seek_req   *acc;
+    file_seek_ret   *ret;
+    unsigned long   pos;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinySeek( acc->handle, acc->pos, acc->mode );
-    ret->pos = rc;
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    rc = TinyLSeek( acc->handle, acc->pos, acc->mode, (u32_stk_ptr)&pos );
+    ret->pos = pos;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read()
+unsigned ReqFile_read( void )
 {
-    tiny_ret_t   rc;
-    file_read_req       *acc;
-    file_read_ret       *ret;
-    char         *buff;
-    unsigned    len;
+    tiny_ret_t      rc;
+    file_read_req   *acc;
+    file_read_ret   *ret;
+    char            *buff;
+    unsigned        len;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     buff = GetOutPtr( sizeof( *ret ) );
     rc = TinyRead( acc->handle, buff, acc->len );
     if( TINY_ERROR( rc ) ) {
-        ret->err = TINY_LINFO( rc );
+        ret->err = TINY_INFO( rc );
         len = 0;
     } else {
         ret->err = 0;
@@ -117,55 +117,55 @@ unsigned ReqFile_read()
     return( sizeof( *ret ) + len );
 }
 
-unsigned ReqFile_write()
+unsigned ReqFile_write( void )
 {
-    tiny_ret_t   rc;
-    file_write_req      *acc;
-    file_write_ret      *ret;
+    tiny_ret_t      rc;
+    file_write_req  *acc;
+    file_write_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     rc = TinyWrite( acc->handle, GetInPtr( sizeof( *acc ) ),
                        ( GetTotalSize() - sizeof( *acc ) ) );
-    ret->len = rc;
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->len = TINY_INFO( rc );
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console()
+unsigned ReqFile_write_console( void )
 {
-    tiny_ret_t   rc;
-    file_write_console_ret      *ret;
+    tiny_ret_t              rc;
+    file_write_console_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    rc = TinyWrite( 2, GetInPtr( sizeof( file_write_console_req ) ),
+    rc = TinyWrite( TINY_ERR, GetInPtr( sizeof( file_write_console_req ) ),
                    ( GetTotalSize() - sizeof( file_write_console_req ) ) );
-    ret->len = rc;
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->len = TINY_INFO( rc );
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close()
+unsigned ReqFile_close( void )
 {
-    tiny_ret_t     rc;
-    file_close_req      *acc;
-    file_close_ret      *ret;
+    tiny_ret_t      rc;
+    file_close_req  *acc;
+    file_close_ret  *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     rc = TinyClose( acc->handle );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase()
+unsigned ReqFile_erase( void )
 {
-    tiny_ret_t       rc;
-    file_erase_ret      *ret;
+    tiny_ret_t      rc;
+    file_erase_ret  *ret;
 
     ret = GetOutPtr( 0 );
     rc = TinyDelete( (char *)GetInPtr( sizeof( file_erase_req ) ) );
-    ret->err = TINY_ERROR( rc ) ? TINY_LINFO( rc ) : 0;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
 }
 
@@ -184,17 +184,17 @@ static tiny_ret_t TryPath( char *name, char *end, char *ext_list )
             {}
         rc = TinyOpen( name, mode );
         if( TINY_OK( rc ) ) {
-            TinyClose( rc );
-            return( 0 );
+            TinyClose( TINY_INFO( rc ) );
+            return( rc );
         }
         ++ext_list;
     } while( !done );
-    return( TINY_LINFO( rc ) );
+    return( rc );
 }
 
 tiny_ret_t FindFilePath( char *pgm, char *buffer, char *ext_list )
 {
-    char        *p;
+    const char  far *path;
     char        *p2;
     char        *p3;
     tiny_ret_t  rc;
@@ -203,8 +203,8 @@ tiny_ret_t FindFilePath( char *pgm, char *buffer, char *ext_list )
 
     have_ext = 0;
     have_path = 0;
-    for( p = pgm, p2 = buffer; *p2 = *p; ++p, ++p2 ) {
-        switch( *p ) {
+    for( p3 = pgm, p2 = buffer; *p2 = *p3; ++p3, ++p2 ) {
+        switch( *p3 ) {
         case '\\':
         case '/':
         case ':':
@@ -216,17 +216,22 @@ tiny_ret_t FindFilePath( char *pgm, char *buffer, char *ext_list )
             break;
         }
     }
-    if( have_ext ) ext_list = "";
+    if( have_ext )
+        ext_list = "";
     rc = TryPath( buffer, p2, ext_list );
-    if( rc == 0 || have_path ) return( rc );
-    p = DOSEnvFind( "PATH" );
-    if( p == NULL ) return( rc );
+    if( TINY_OK( rc ) || have_path )
+        return( rc );
+    path = DOSEnvFind( "PATH" );
+    if( path == NULL )
+        return( rc );
     for(;;) {
-        if( *p == '\0' ) break;
+        if( *path == '\0' )
+            break;
         p2 = buffer;
-        while( *p ) {
-            if( *p == ';' ) break;
-            *p2++ = *p++;
+        while( *path ) {
+            if( *path == ';' )
+                break;
+            *p2++ = *path++;
         }
         if( p2[-1] != '\\' && p2[-1] != '/' ) {
             *p2++ = '\\';
@@ -234,21 +239,24 @@ tiny_ret_t FindFilePath( char *pgm, char *buffer, char *ext_list )
         for( p3 = pgm; *p2 = *p3; ++p2, ++p3 )
             {}
         rc = TryPath( buffer, p2, ext_list );
-        if( rc == 0 ) break;
-        if( *p == '\0' ) break;
-        ++p;
+        if( TINY_OK( rc ) )
+            break;
+        if( *path == '\0' )
+            break;
+        ++path;
     }
     return( rc );
 }
 
 
-unsigned ReqFile_string_to_fullpath()
+unsigned ReqFile_string_to_fullpath( void )
 {
-    char               *name;
-    char               *fullname;
+    char                        *name;
+    char                        *fullname;
     char                        *ext_list;
     file_string_to_fullpath_req *acc;
     file_string_to_fullpath_ret *ret;
+    tiny_ret_t                  rc;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
@@ -259,12 +267,17 @@ unsigned ReqFile_string_to_fullpath()
     } else {
         ext_list = "";
     }
-    ret->err = FindFilePath( name, fullname, ext_list );
-    if( ret->err != 0 ) *fullname = '\0';
+    rc = FindFilePath( name, fullname, ext_list );
+    if( TINY_OK( rc ) ) {
+        ret->err = 0;
+    } else {
+        ret->err = TINY_INFO( rc );
+        *fullname = '\0';
+    }
     return( sizeof( *ret ) + 1 + strlen( fullname ) );
 }
 
-unsigned ReqFile_run_cmd()
+unsigned ReqFile_run_cmd( void )
 {
     file_run_cmd_ret    *ret;
 #if defined(__WINDOWS__)
@@ -276,13 +289,15 @@ unsigned ReqFile_run_cmd()
     char                buff[64];
     file_run_cmd_req    *acc;
     unsigned            len;
+    tiny_ret_t          rc;
 
     acc = GetInPtr( 0 );
     len = GetTotalSize() - sizeof( *acc );
     ret = GetOutPtr( 0 );
 
     chk = CheckPointMem( acc->chk_size, buff );
-    ret->err = Fork( (char *)GetInPtr( sizeof(*acc) ), len );
+    rc = Fork( (char *)GetInPtr( sizeof(*acc) ), len );
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     if( chk ) CheckPointRestore();
 #endif
     return( sizeof( *ret ) );

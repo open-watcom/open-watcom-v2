@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern ResNameOrOrdinal *       WR_EXPORT WRMem2NameOrOrdinal   ( void *data, int is32bit );
-extern int                      WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size );
+extern ResNameOrOrdinal *   WR_EXPORT WRMem2NameOrOrdinal( void *data, int is32bit );
+extern int                  WR_EXPORT WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size );
 
 #endif

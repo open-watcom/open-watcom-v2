@@ -1,0 +1,489 @@
+c$noreference
+
+        integer  DTYP_USER
+        parameter (DTYP_USER = 16384)
+
+        integer  DTYP_CTL_ARRAY
+        parameter (DTYP_CTL_ARRAY = 1)
+        integer  DTYP_CTL_PARRAY
+        parameter (DTYP_CTL_PARRAY = -1)
+        integer  DTYP_CTL_OFFSET
+        parameter (DTYP_CTL_OFFSET = 2)
+        integer  DTYP_CTL_LENGTH
+        parameter (DTYP_CTL_LENGTH = 3)
+
+        integer  DTYP_ACCEL
+        parameter (DTYP_ACCEL = 28)
+        integer  DTYP_ACCELTABLE
+        parameter (DTYP_ACCELTABLE = 29)
+        integer  DTYP_ARCPARAMS
+        parameter (DTYP_ARCPARAMS = 38)
+        integer  DTYP_AREABUNDLE
+        parameter (DTYP_AREABUNDLE = 139)
+        integer  DTYP_ATOM
+        parameter (DTYP_ATOM = 90)
+        integer  DTYP_BITMAPINFO
+        parameter (DTYP_BITMAPINFO = 60)
+        integer  DTYP_BITMAPINFOHEADER
+        parameter (DTYP_BITMAPINFOHEADER = 61)
+        integer  DTYP_BITMAPINFO2
+        parameter (DTYP_BITMAPINFO2 = 170)
+        integer  DTYP_BITMAPINFOHEADER2
+        parameter (DTYP_BITMAPINFOHEADER2 = 171)
+        integer  DTYP_BIT16
+        parameter (DTYP_BIT16 = 20)
+        integer  DTYP_BIT32
+        parameter (DTYP_BIT32 = 21)
+        integer  DTYP_BIT8
+        parameter (DTYP_BIT8 = 19)
+        integer  DTYP_BOOL
+        parameter (DTYP_BOOL = 18)
+        integer  DTYP_BTNCDATA
+        parameter (DTYP_BTNCDATA = 35)
+        integer  DTYP_BYTE
+        parameter (DTYP_BYTE = 13)
+        integer  DTYP_CATCHBUF
+        parameter (DTYP_CATCHBUF = 141)
+        integer  DTYP_CHAR
+        parameter (DTYP_CHAR = 15)
+        integer  DTYP_CHARBUNDLE
+        parameter (DTYP_CHARBUNDLE = 135)
+        integer  DTYP_CLASSINFO
+        parameter (DTYP_CLASSINFO = 95)
+        integer  DTYP_COUNT2
+        parameter (DTYP_COUNT2 = 93)
+        integer  DTYP_COUNT2B
+        parameter (DTYP_COUNT2B = 70)
+        integer  DTYP_COUNT2CH
+        parameter (DTYP_COUNT2CH = 82)
+        integer  DTYP_COUNT4
+        parameter (DTYP_COUNT4 = 152)
+        integer  DTYP_COUNT4B
+        parameter (DTYP_COUNT4B = 42)
+        integer  DTYP_CPID
+        parameter (DTYP_CPID = 57)
+        integer  DTYP_CREATESTRUCT
+        parameter (DTYP_CREATESTRUCT = 98)
+        integer  DTYP_CURSORINFO
+        parameter (DTYP_CURSORINFO = 34)
+        integer  DTYP_DEVOPENSTRUC
+        parameter (DTYP_DEVOPENSTRUC = 124)
+        integer  DTYP_DLGTEMPLATE
+        parameter (DTYP_DLGTEMPLATE = 96)
+        integer  DTYP_DLGTITEM
+        parameter (DTYP_DLGTITEM = 97)
+        integer  DTYP_ENTRYFDATA
+        parameter (DTYP_ENTRYFDATA = 127)
+        integer  DTYP_ERRORID
+        parameter (DTYP_ERRORID = 45)
+        integer  DTYP_FATTRS
+        parameter (DTYP_FATTRS = 75)
+        integer  DTYP_FFDESCS
+        parameter (DTYP_FFDESCS = 142)
+        integer  DTYP_FIXED
+        parameter (DTYP_FIXED = 99)
+        integer  DTYP_FONTMETRICS
+        parameter (DTYP_FONTMETRICS = 74)
+        integer  DTYP_FRAMECDATA
+        parameter (DTYP_FRAMECDATA = 144)
+        integer  DTYP_GRADIENTL
+        parameter (DTYP_GRADIENTL = 48)
+        integer  DTYP_HAB
+        parameter (DTYP_HAB = 10)
+        integer  DTYP_HACCEL
+        parameter (DTYP_HACCEL = 30)
+        integer  DTYP_HAPP
+        parameter (DTYP_HAPP = 146)
+        integer  DTYP_HATOMTBL
+        parameter (DTYP_HATOMTBL = 91)
+        integer  DTYP_HBITMAP
+        parameter (DTYP_HBITMAP = 62)
+        integer  DTYP_HCINFO
+        parameter (DTYP_HCINFO = 46)
+        integer  DTYP_HDC
+        parameter (DTYP_HDC = 132)
+        integer  DTYP_HENUM
+        parameter (DTYP_HENUM = 117)
+        integer  DTYP_HHEAP
+        parameter (DTYP_HHEAP = 109)
+        integer  DTYP_HINI
+        parameter (DTYP_HINI = 53)
+        integer  DTYP_HLIB
+        parameter (DTYP_HLIB = 147)
+        integer  DTYP_HMF
+        parameter (DTYP_HMF = 85)
+        integer  DTYP_HMQ
+        parameter (DTYP_HMQ = 86)
+        integer  DTYP_HPOINTER
+        parameter (DTYP_HPOINTER = 106)
+        integer  DTYP_HPROGRAM
+        parameter (DTYP_HPROGRAM = 131)
+        integer  DTYP_HPS
+        parameter (DTYP_HPS = 12)
+        integer  DTYP_HRGN
+        parameter (DTYP_HRGN = 116)
+        integer  DTYP_HSEM
+        parameter (DTYP_HSEM = 140)
+        integer  DTYP_HSPL
+        parameter (DTYP_HSPL = 32)
+        integer  DTYP_HSWITCH
+        parameter (DTYP_HSWITCH = 66)
+        integer  DTYP_HVPS
+        parameter (DTYP_HVPS = 58)
+        integer  DTYP_HWND
+        parameter (DTYP_HWND = 11)
+        integer  DTYP_IDENTITY
+        parameter (DTYP_IDENTITY = 133)
+        integer  DTYP_IDENTITY4
+        parameter (DTYP_IDENTITY4 = 169)
+        integer  DTYP_IMAGEBUNDLE
+        parameter (DTYP_IMAGEBUNDLE = 136)
+        integer  DTYP_INDEX2
+        parameter (DTYP_INDEX2 = 81)
+        integer  DTYP_IPT
+        parameter (DTYP_IPT = 155)
+        integer  DTYP_KERNINGPAIRS
+        parameter (DTYP_KERNINGPAIRS = 118)
+        integer  DTYP_LENGTH2
+        parameter (DTYP_LENGTH2 = 68)
+        integer  DTYP_LENGTH4
+        parameter (DTYP_LENGTH4 = 69)
+        integer  DTYP_LINEBUNDLE
+        parameter (DTYP_LINEBUNDLE = 137)
+        integer  DTYP_LONG
+        parameter (DTYP_LONG = 25)
+        integer  DTYP_MARKERBUNDLE
+        parameter (DTYP_MARKERBUNDLE = 138)
+        integer  DTYP_MATRIXLF
+        parameter (DTYP_MATRIXLF = 113)
+        integer  DTYP_MLECTLDATA
+        parameter (DTYP_MLECTLDATA = 161)
+        integer  DTYP_MLEMARGSTRUCT
+        parameter (DTYP_MLEMARGSTRUCT = 157)
+        integer  DTYP_MLEOVERFLOW
+        parameter (DTYP_MLEOVERFLOW = 158)
+        integer  DTYP_OFFSET2B
+        parameter (DTYP_OFFSET2B = 112)
+        integer  DTYP_OWNERITEM
+        parameter (DTYP_OWNERITEM = 154)
+        integer  DTYP_PID
+        parameter (DTYP_PID = 92)
+        integer  DTYP_PIX
+        parameter (DTYP_PIX = 156)
+        integer  DTYP_POINTERINFO
+        parameter (DTYP_POINTERINFO = 105)
+        integer  DTYP_POINTL
+        parameter (DTYP_POINTL = 77)
+        integer  DTYP_PROGCATEGORY
+        parameter (DTYP_PROGCATEGORY = 129)
+        integer  DTYP_PROGRAMENTRY
+        parameter (DTYP_PROGRAMENTRY = 128)
+        integer  DTYP_PROGTYPE
+        parameter (DTYP_PROGTYPE = 130)
+        integer  DTYP_PROPERTY2
+        parameter (DTYP_PROPERTY2 = 88)
+        integer  DTYP_PROPERTY4
+        parameter (DTYP_PROPERTY4 = 89)
+        integer  DTYP_QMSG
+        parameter (DTYP_QMSG = 87)
+        integer  DTYP_RECTL
+        parameter (DTYP_RECTL = 121)
+        integer  DTYP_RESID
+        parameter (DTYP_RESID = 125)
+        integer  DTYP_RGB
+        parameter (DTYP_RGB = 111)
+        integer  DTYP_RGNRECT
+        parameter (DTYP_RGNRECT = 115)
+        integer  DTYP_SBCDATA
+        parameter (DTYP_SBCDATA = 159)
+        integer  DTYP_SEGOFF
+        parameter (DTYP_SEGOFF = 126)
+        integer  DTYP_SHORT
+        parameter (DTYP_SHORT = 23)
+        integer  DTYP_SIZEF
+        parameter (DTYP_SIZEF = 101)
+        integer  DTYP_SIZEL
+        parameter (DTYP_SIZEL = 102)
+        integer  DTYP_STRL
+        parameter (DTYP_STRL = 17)
+        integer  DTYP_STR16
+        parameter (DTYP_STR16 = 40)
+        integer  DTYP_STR32
+        parameter (DTYP_STR32 = 37)
+        integer  DTYP_STR64
+        parameter (DTYP_STR64 = 47)
+        integer  DTYP_STR8
+        parameter (DTYP_STR8 = 33)
+        integer  DTYP_SWBLOCK
+        parameter (DTYP_SWBLOCK = 63)
+        integer  DTYP_SWCNTRL
+        parameter (DTYP_SWCNTRL = 64)
+        integer  DTYP_SWENTRY
+        parameter (DTYP_SWENTRY = 65)
+        integer  DTYP_SWP
+        parameter (DTYP_SWP = 31)
+        integer  DTYP_TID
+        parameter (DTYP_TID = 104)
+        integer  DTYP_TIME
+        parameter (DTYP_TIME = 107)
+        integer  DTYP_TRACKINFO
+        parameter (DTYP_TRACKINFO = 73)
+        integer  DTYP_UCHAR
+        parameter (DTYP_UCHAR = 22)
+        integer  DTYP_ULONG
+        parameter (DTYP_ULONG = 26)
+        integer  DTYP_USERBUTTON
+        parameter (DTYP_USERBUTTON = 36)
+        integer  DTYP_USHORT
+        parameter (DTYP_USHORT = 24)
+        integer  DTYP_WIDTH4
+        parameter (DTYP_WIDTH4 = 108)
+        integer  DTYP_WNDPARAMS
+        parameter (DTYP_WNDPARAMS = 83)
+        integer  DTYP_WNDPROC
+        parameter (DTYP_WNDPROC = 84)
+        integer  DTYP_WPOINT
+        parameter (DTYP_WPOINT = 59)
+        integer  DTYP_WRECT
+        parameter (DTYP_WRECT = 55)
+        integer  DTYP_XYWINSIZE
+        parameter (DTYP_XYWINSIZE = 52)
+
+        integer  DTYP_PACCEL
+        parameter (DTYP_PACCEL = -28)
+        integer  DTYP_PACCELTABLE
+        parameter (DTYP_PACCELTABLE = -29)
+        integer  DTYP_PARCPARAMS
+        parameter (DTYP_PARCPARAMS = -38)
+        integer  DTYP_PAREABUNDLE
+        parameter (DTYP_PAREABUNDLE = -139)
+        integer  DTYP_PATOM
+        parameter (DTYP_PATOM = -90)
+        integer  DTYP_PBITMAPINFO
+        parameter (DTYP_PBITMAPINFO = -60)
+        integer  DTYP_PBITMAPINFOHEADER
+        parameter (DTYP_PBITMAPINFOHEADER = -61)
+        integer  DTYP_PBITMAPINFO2
+        parameter (DTYP_PBITMAPINFO2 = -170)
+        integer  DTYP_PBITMAPINFOHEADER2
+        parameter (DTYP_PBITMAPINFOHEADER2 = -171)
+        integer  DTYP_PBIT16
+        parameter (DTYP_PBIT16 = -20)
+        integer  DTYP_PBIT32
+        parameter (DTYP_PBIT32 = -21)
+        integer  DTYP_PBIT8
+        parameter (DTYP_PBIT8 = -19)
+        integer  DTYP_PBOOL
+        parameter (DTYP_PBOOL = -18)
+        integer  DTYP_PBTNCDATA
+        parameter (DTYP_PBTNCDATA = -35)
+        integer  DTYP_PBYTE
+        parameter (DTYP_PBYTE = -13)
+        integer  DTYP_PCATCHBUF
+        parameter (DTYP_PCATCHBUF = -141)
+        integer  DTYP_PCHAR
+        parameter (DTYP_PCHAR = -15)
+        integer  DTYP_PCHARBUNDLE
+        parameter (DTYP_PCHARBUNDLE = -135)
+        integer  DTYP_PCLASSINFO
+        parameter (DTYP_PCLASSINFO = -95)
+        integer  DTYP_PCOUNT2
+        parameter (DTYP_PCOUNT2 = -93)
+        integer  DTYP_PCOUNT2B
+        parameter (DTYP_PCOUNT2B = -70)
+        integer  DTYP_PCOUNT2CH
+        parameter (DTYP_PCOUNT2CH = -82)
+        integer  DTYP_PCOUNT4
+        parameter (DTYP_PCOUNT4 = -152)
+        integer  DTYP_PCOUNT4B
+        parameter (DTYP_PCOUNT4B = -42)
+        integer  DTYP_PCPID
+        parameter (DTYP_PCPID = -57)
+        integer  DTYP_PCREATESTRUCT
+        parameter (DTYP_PCREATESTRUCT = -98)
+        integer  DTYP_PCURSORINFO
+        parameter (DTYP_PCURSORINFO = -34)
+        integer  DTYP_PDEVOPENSTRUC
+        parameter (DTYP_PDEVOPENSTRUC = -124)
+        integer  DTYP_PDLGTEMPLATE
+        parameter (DTYP_PDLGTEMPLATE = -96)
+        integer  DTYP_PDLGTITEM
+        parameter (DTYP_PDLGTITEM = -97)
+        integer  DTYP_PENTRYFDATA
+        parameter (DTYP_PENTRYFDATA = -127)
+        integer  DTYP_PERRORID
+        parameter (DTYP_PERRORID = -45)
+        integer  DTYP_PFATTRS
+        parameter (DTYP_PFATTRS = -75)
+        integer  DTYP_PFFDESCS
+        parameter (DTYP_PFFDESCS = -142)
+        integer  DTYP_PFIXED
+        parameter (DTYP_PFIXED = -99)
+        integer  DTYP_PFONTMETRICS
+        parameter (DTYP_PFONTMETRICS = -74)
+        integer  DTYP_PFRAMECDATA
+        parameter (DTYP_PFRAMECDATA = -144)
+        integer  DTYP_PGRADIENTL
+        parameter (DTYP_PGRADIENTL = -48)
+        integer  DTYP_PHAB
+        parameter (DTYP_PHAB = -10)
+        integer  DTYP_PHACCEL
+        parameter (DTYP_PHACCEL = -30)
+        integer  DTYP_PHAPP
+        parameter (DTYP_PHAPP = -146)
+        integer  DTYP_PHATOMTBL
+        parameter (DTYP_PHATOMTBL = -91)
+        integer  DTYP_PHBITMAP
+        parameter (DTYP_PHBITMAP = -62)
+        integer  DTYP_PHCINFO
+        parameter (DTYP_PHCINFO = -46)
+        integer  DTYP_PHDC
+        parameter (DTYP_PHDC = -132)
+        integer  DTYP_PHENUM
+        parameter (DTYP_PHENUM = -117)
+        integer  DTYP_PHHEAP
+        parameter (DTYP_PHHEAP = -109)
+        integer  DTYP_PHINI
+        parameter (DTYP_PHINI = -53)
+        integer  DTYP_PHLIB
+        parameter (DTYP_PHLIB = -147)
+        integer  DTYP_PHMF
+        parameter (DTYP_PHMF = -85)
+        integer  DTYP_PHMQ
+        parameter (DTYP_PHMQ = -86)
+        integer  DTYP_PHPOINTER
+        parameter (DTYP_PHPOINTER = -106)
+        integer  DTYP_PHPROGRAM
+        parameter (DTYP_PHPROGRAM = -131)
+        integer  DTYP_PHPS
+        parameter (DTYP_PHPS = -12)
+        integer  DTYP_PHRGN
+        parameter (DTYP_PHRGN = -116)
+        integer  DTYP_PHSEM
+        parameter (DTYP_PHSEM = -140)
+        integer  DTYP_PHSPL
+        parameter (DTYP_PHSPL = -32)
+        integer  DTYP_PHSWITCH
+        parameter (DTYP_PHSWITCH = -66)
+        integer  DTYP_PHVPS
+        parameter (DTYP_PHVPS = -58)
+        integer  DTYP_PHWND
+        parameter (DTYP_PHWND = -11)
+        integer  DTYP_PIDENTITY
+        parameter (DTYP_PIDENTITY = -133)
+        integer  DTYP_PIDENTITY4
+        parameter (DTYP_PIDENTITY4 = -169)
+        integer  DTYP_PIMAGEBUNDLE
+        parameter (DTYP_PIMAGEBUNDLE = -136)
+        integer  DTYP_PINDEX2
+        parameter (DTYP_PINDEX2 = -81)
+        integer  DTYP_PIPT
+        parameter (DTYP_PIPT = -155)
+        integer  DTYP_PKERNINGPAIRS
+        parameter (DTYP_PKERNINGPAIRS = -118)
+        integer  DTYP_PLENGTH2
+        parameter (DTYP_PLENGTH2 = -68)
+        integer  DTYP_PLENGTH4
+        parameter (DTYP_PLENGTH4 = -69)
+        integer  DTYP_PLINEBUNDLE
+        parameter (DTYP_PLINEBUNDLE = -137)
+        integer  DTYP_PLONG
+        parameter (DTYP_PLONG = -25)
+        integer  DTYP_PMARKERBUNDLE
+        parameter (DTYP_PMARKERBUNDLE = -138)
+        integer  DTYP_PMATRIXLF
+        parameter (DTYP_PMATRIXLF = -113)
+        integer  DTYP_PMLECTLDATA
+        parameter (DTYP_PMLECTLDATA = -161)
+        integer  DTYP_PMLEMARGSTRUCT
+        parameter (DTYP_PMLEMARGSTRUCT = -157)
+        integer  DTYP_PMLEOVERFLOW
+        parameter (DTYP_PMLEOVERFLOW = -158)
+        integer  DTYP_POFFSET2B
+        parameter (DTYP_POFFSET2B = -112)
+        integer  DTYP_POWNERITEM
+        parameter (DTYP_POWNERITEM = -154)
+        integer  DTYP_PPID
+        parameter (DTYP_PPID = -92)
+        integer  DTYP_PPIX
+        parameter (DTYP_PPIX = -156)
+        integer  DTYP_PPOINTERINFO
+        parameter (DTYP_PPOINTERINFO = -105)
+        integer  DTYP_PPOINTL
+        parameter (DTYP_PPOINTL = -77)
+        integer  DTYP_PPROGCATEGORY
+        parameter (DTYP_PPROGCATEGORY = -129)
+        integer  DTYP_PPROGRAMENTRY
+        parameter (DTYP_PPROGRAMENTRY = -128)
+        integer  DTYP_PPROGTYPE
+        parameter (DTYP_PPROGTYPE = -130)
+        integer  DTYP_PPROPERTY2
+        parameter (DTYP_PPROPERTY2 = -88)
+        integer  DTYP_PPROPERTY4
+        parameter (DTYP_PPROPERTY4 = -89)
+        integer  DTYP_PQMSG
+        parameter (DTYP_PQMSG = -87)
+        integer  DTYP_PRECTL
+        parameter (DTYP_PRECTL = -121)
+        integer  DTYP_PRESID
+        parameter (DTYP_PRESID = -125)
+        integer  DTYP_PRGB
+        parameter (DTYP_PRGB = -111)
+        integer  DTYP_PRGNRECT
+        parameter (DTYP_PRGNRECT = -115)
+        integer  DTYP_PSBCDATA
+        parameter (DTYP_PSBCDATA = -159)
+        integer  DTYP_PSEGOFF
+        parameter (DTYP_PSEGOFF = -126)
+        integer  DTYP_PSHORT
+        parameter (DTYP_PSHORT = -23)
+        integer  DTYP_PSIZEF
+        parameter (DTYP_PSIZEF = -101)
+        integer  DTYP_PSIZEL
+        parameter (DTYP_PSIZEL = -102)
+        integer  DTYP_PSTRL
+        parameter (DTYP_PSTRL = -17)
+        integer  DTYP_PSTR16
+        parameter (DTYP_PSTR16 = -40)
+        integer  DTYP_PSTR32
+        parameter (DTYP_PSTR32 = -37)
+        integer  DTYP_PSTR64
+        parameter (DTYP_PSTR64 = -47)
+        integer  DTYP_PSTR8
+        parameter (DTYP_PSTR8 = -33)
+        integer  DTYP_PSWBLOCK
+        parameter (DTYP_PSWBLOCK = -63)
+        integer  DTYP_PSWCNTRL
+        parameter (DTYP_PSWCNTRL = -64)
+        integer  DTYP_PSWENTRY
+        parameter (DTYP_PSWENTRY = -65)
+        integer  DTYP_PSWP
+        parameter (DTYP_PSWP = -31)
+        integer  DTYP_PTID
+        parameter (DTYP_PTID = -104)
+        integer  DTYP_PTIME
+        parameter (DTYP_PTIME = -107)
+        integer  DTYP_PTRACKINFO
+        parameter (DTYP_PTRACKINFO = -73)
+        integer  DTYP_PUCHAR
+        parameter (DTYP_PUCHAR = -22)
+        integer  DTYP_PULONG
+        parameter (DTYP_PULONG = -26)
+        integer  DTYP_PUSERBUTTON
+        parameter (DTYP_PUSERBUTTON = -36)
+        integer  DTYP_PUSHORT
+        parameter (DTYP_PUSHORT = -24)
+        integer  DTYP_PWIDTH4
+        parameter (DTYP_PWIDTH4 = -108)
+        integer  DTYP_PWNDPARAMS
+        parameter (DTYP_PWNDPARAMS = -83)
+        integer  DTYP_PWNDPROC
+        parameter (DTYP_PWNDPROC = -84)
+        integer  DTYP_PWPOINT
+        parameter (DTYP_PWPOINT = -59)
+        integer  DTYP_PWRECT
+        parameter (DTYP_PWRECT = -55)
+        integer  DTYP_PXYWINSIZE
+        parameter (DTYP_PXYWINSIZE = -52)
+
+c$reference

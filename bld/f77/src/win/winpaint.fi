@@ -1,0 +1,85 @@
+*$noreference
+
+! Painting Functions:
+! -------------------
+
+      external BeginPaint
+      external DrawFocusRect
+      external DrawIcon
+      external DrawText
+      external EndPaint
+      external ExcludeUpdateRgn
+      external FillRect
+      external FrameRect
+      external GetDC
+      external GetUpdateRect
+      external GetUpdateRgn
+      external GetWindowDC
+      external GrayString
+      external InvalidateRect
+      external InvalidateRgn
+      external InvertRect
+      external ReleaseDC
+      external UpdateWindow
+      external ValidateRect
+      external ValidateRgn
+
+      integer*2 BeginPaint
+      integer*2 DrawIcon
+      integer*2 DrawText
+      integer*2 ExcludeUpdateRgn
+      integer*2 FillRect
+      integer*2 FrameRect
+      integer*2 GetDC
+      integer*2 GetUpdateRect
+      integer*2 GetUpdateRgn
+      integer*2 GetWindowDC
+      integer*2 GrayString
+      integer*2 ReleaseDC
+
+! DrawText() Format Flags
+
+      integer DT_TOP
+      integer DT_LEFT
+      integer DT_CENTER
+      integer DT_RIGHT
+      integer DT_VCENTER
+      integer DT_BOTTOM
+      integer DT_WORDBREAK
+      integer DT_SINGLELINE
+      integer DT_EXPANDTABS
+      integer DT_TABSTOP
+      integer DT_NOCLIP
+      integer DT_EXTERNALLEADING
+      integer DT_CALCRECT
+      integer DT_NOPREFIX
+      integer DT_INTERNAL
+
+      parameter ( DT_TOP              = '0000'x )
+      parameter ( DT_LEFT             = '0000'x )
+      parameter ( DT_CENTER           = '0001'x )
+      parameter ( DT_RIGHT            = '0002'x )
+      parameter ( DT_VCENTER          = '0004'x )
+      parameter ( DT_BOTTOM           = '0008'x )
+      parameter ( DT_WORDBREAK        = '0010'x )
+      parameter ( DT_SINGLELINE       = '0020'x )
+      parameter ( DT_EXPANDTABS       = '0040'x )
+      parameter ( DT_TABSTOP          = '0080'x )
+      parameter ( DT_NOCLIP           = '0100'x )
+      parameter ( DT_EXTERNALLEADING  = '0200'x )
+      parameter ( DT_CALCRECT         = '0400'x )
+      parameter ( DT_NOPREFIX         = '0800'x )
+      parameter ( DT_INTERNAL         = '1000'x )
+
+! Paint Data Structure
+
+      structure /PAINTSTRUCT/
+          integer*2             hdc
+          integer*2             fErase
+          record /RECT/         rcPaint
+          integer*2             fRestore
+          integer*2             fIncUpdate
+          integer*1             rgbReserved(16)
+      end structure
+
+*$reference

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Fatal runtime error handler for Win32.
 *
 ****************************************************************************/
 
@@ -43,10 +42,15 @@ _WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
     unsigned    len;
     char        *end;
     ULONG       written;
+    char        newline[2];
 
     end = msg;
-    for( len = 0; *end++ != '\0'; len++ );
+    for( len = 0; *end++ != '\0'; len++ )
+        ;
     WriteFile( NT_STDERR_FILENO, msg, len, &written, NULL );
+    newline[0] = '\r';
+    newline[1] = '\n';
+    WriteFile( NT_STDERR_FILENO, &newline, 2, &written, NULL );
     __exit( retcode );
 }
 

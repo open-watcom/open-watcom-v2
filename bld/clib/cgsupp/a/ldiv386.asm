@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Signed 4-byte division for 386. 
 ;*
 ;*****************************************************************************
 
@@ -34,10 +33,11 @@
 ;==     Name:           LDIV                                           ==
 ;==     Operation:      Signed 4 byte divide                           ==
 ;==     Inputs:         EAX     Dividend                               ==
-;==                     EDX     Divisor                                ==
+;==                     EDX/ECX Divisor                                ==
 ;==                     SS:ESI  pointer to result structure            ==
 ;==     Volatile:       none                                           ==
 ;========================================================================
+
 include mdef.inc
 include struct.inc
 
@@ -54,16 +54,20 @@ endif
         P5Prolog
     endif
     ifdef __STACK__
-        mov     EDX,8[ESP]      ; get divisor
         mov     EAX,4[ESP]      ; get numerator
+        mov     ECX,8[ESP]      ; get divisor
+                                ; we don't need to save/restore ECX
+    else
+        push    ECX             ; save ECX
+        mov     ECX,EDX         ; get divisor
     endif
-        push    EBX             ; save EBX
-        mov     EBX,EDX         ; get divisor
         cdq                     ; sign extend dividend
-        idiv    EBX             ; do the divide
+        idiv    ECX             ; do the divide
         mov     [ESI],EAX       ; store quotient
         mov     4[ESI],EDX      ; store remainder
-        pop     EBX             ; restore EBX
+    ifndef __STACK__
+        pop     ECX             ; restore ECX
+    endif
     ifdef _PROFILE
         P5Epilog
     endif

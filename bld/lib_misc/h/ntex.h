@@ -42,8 +42,9 @@ typedef struct _REGISTRATION_RECORD {
 
 #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
 
-_WCRTLINK void __NewExceptionHandler( REGISTRATION_RECORD *, int reg_unh );
-_WCRTLINK void __DoneExceptionHandler( void );
+_WCRTLINK void __DefaultExceptionHandler( void );
+_WCRTLINK void __NewExceptionFilter( REGISTRATION_RECORD * );
+_WCRTLINK void __DoneExceptionFilter( void );
 
 struct dirent;
 

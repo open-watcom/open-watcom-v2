@@ -37,13 +37,13 @@
 #define IMGED_EXIT              2004
 #define IMGED_ABOUT             2005
 #define IMGED_REST              2006
-#define IMGED_LCOLOUR           2007
-#define IMGED_SCOLOUR           2008
-#define IMGED_RCOLOUR           2009
+#define IMGED_LCOLOR            2007
+#define IMGED_SCOLOR            2008
+#define IMGED_RCOLOR            2009
 #define IMGED_CLOSE             2010
 #define IMGED_ARRANGE           2011
 #define IMGED_CLOSEALL          2012
-#define IMGED_COLOUR            2013
+#define IMGED_COLOR             2013
 #define IMGED_VIEW              2014
 #define IMGED_TOOLBAR           2015
 // The following must be consecutive
@@ -96,6 +96,8 @@
 #define IMGED_CSCREEN           2063
 #define IMGED_MAXIMIZE          2064
 #define IMGED_HELP              2065
+#define IMGED_HELP_SEARCH       2066
+#define IMGED_HELP_ON_HELP      2067
 
-// the following are special identifiers for DDE mode
+// The following are special identifiers for DDE mode
 #define IMGED_DDE_UPDATE_PRJ    2080

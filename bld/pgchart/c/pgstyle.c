@@ -42,7 +42,7 @@ static unsigned short   _DefaultStyle[ 16 ] = {
 };
 
 
-void _WCI86FAR _CGRAPH _pg_resetstyleset( void )
+_WCRTLINK void _WCI86FAR _CGRAPH _pg_resetstyleset( void )
 //=========================================
 
 /*  Initializes the global styleset variable.   */
@@ -54,7 +54,7 @@ void _WCI86FAR _CGRAPH _pg_resetstyleset( void )
 Entry( _PG_RESETSTYLESET, _pg_resetstyleset ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR *style )
+_WCRTLINK void _WCI86FAR _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR *style )
 //=============================================================
 
 /*  Gets the contents of the global styleset variable. */
@@ -66,7 +66,7 @@ void _WCI86FAR _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR *style )
 Entry( _PG_GETSTYLESET, _pg_getstyleset ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _pg_setstyleset( unsigned short _WCI86FAR *style )
+_WCRTLINK void _WCI86FAR _CGRAPH _pg_setstyleset( unsigned short _WCI86FAR *style )
 //=============================================================
 
 /*  Set the global styleset to that passed as a parameter. */

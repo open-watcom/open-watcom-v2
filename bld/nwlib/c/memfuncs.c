@@ -30,23 +30,56 @@
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
+#ifdef TRMEM
+#include "trmem.h"
+
+static _trmem_hdl   TRMemHandle;
+static int          TRFileHandle;   /* stream to put output on */
+#endif
+
 static MemPtr   *memPtr;
-void InitMem( void )
+
+#ifdef TRMEM
+extern void TRPrintLine( int * handle, const char * buff, size_t len )
+/********************************************************************/
 {
-    TRMemOpen();
+    write( *handle, buff, len );
+}
+#endif
+
+void InitMem( void )
+/******************/
+{
+#ifdef TRMEM
+  #ifdef NLM
+    TRFileHandle = STDERR_HANDLE;
+  #else
+    TRFileHandle = STDERR_FILENO;
+  #endif
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL,
+            &TRFileHandle, TRPrintLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
     memPtr= NULL;
 }
 
 
 void *MemAlloc( size_t size )
+/***************************/
 {
     MemPtr *ptr;
     if( size == 0 ) {
         return( NULL );
     }
-    ptr = TRMemAlloc( sizeof( MemPtr ) + size );
-    if( ptr == NULL ) FatalError( ERR_NO_MEMORY );
+#ifdef TRMEM
+    ptr = _trmem_alloc( size + sizeof( MemPtr ), _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = malloc( size + sizeof( MemPtr ) );
+#endif
+    if( ptr == NULL )
+        FatalError( ERR_NO_MEMORY );
     ptr->next = memPtr;
     ptr->prev = NULL;
     if( memPtr ) {
@@ -57,6 +90,7 @@ void *MemAlloc( size_t size )
 }
 
 void *MemRealloc( void *ptr, size_t size )
+/****************************************/
 {
     MemPtr  *mptr;
     if( ptr ) {
@@ -73,8 +107,13 @@ void *MemRealloc( void *ptr, size_t size )
         }
         ptr = mptr;
     }
-    mptr = TRMemRealloc( ptr, size + sizeof( MemPtr ) );
-    if( mptr == NULL ) FatalError( ERR_NO_MEMORY );
+#ifdef TRMEM
+    mptr = _trmem_realloc( ptr, size + sizeof( MemPtr ), _trmem_guess_who(), TRMemHandle );
+#else
+    mptr = realloc( ptr, size + sizeof( MemPtr ) );
+#endif
+    if( mptr == NULL )
+        FatalError( ERR_NO_MEMORY );
     mptr->next = memPtr;
     mptr->prev = NULL;
     if( memPtr ) {
@@ -86,9 +125,11 @@ void *MemRealloc( void *ptr, size_t size )
 }
 
 void MemFree( void *ptr )
+/***********************/
 {
     MemPtr  *mptr;
-    if( ptr == NULL ) return;
+    if( ptr == NULL )
+        return;
     mptr = ptr;
     mptr--;
     if( mptr == memPtr ) {
@@ -100,48 +141,78 @@ void MemFree( void *ptr )
     if( mptr->next ) {
         mptr->next->prev = mptr->prev;
     }
-    TRMemFree( mptr );
+#ifdef TRMEM
+    _trmem_free( mptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( mptr );
+#endif
 }
 
 void *MemAllocGlobal( size_t size )
+/*********************************/
 {
     void *ptr;
-    ptr = TRMemAlloc( size );
-    if( ptr == NULL && size != 0 ) FatalError( ERR_NO_MEMORY );
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = malloc( size );
+#endif
+    if( ptr == NULL && size != 0 )
+        FatalError( ERR_NO_MEMORY );
     return( ptr );
 }
 
 void *MemReallocGlobal( void *ptr, size_t size )
+/**********************************************/
 {
-    ptr = TRMemRealloc( ptr, size );
-    if( ptr == NULL && size != 0 ) FatalError( ERR_NO_MEMORY );
+#ifdef TRMEM
+    ptr = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = realloc( ptr, size );
+#endif
+    if( ptr == NULL && size != 0 )
+        FatalError( ERR_NO_MEMORY );
     return( ptr );
 }
 
 void MemFreeGlobal( void *ptr )
+/*****************************/
 {
-    if( ptr == NULL ) return;
-    TRMemFree( ptr );
+    if( ptr == NULL )
+        return;
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
+#else
+    free( ptr );
+#endif
 }
+
 void ResetMem( void )
+/*******************/
 {
     MemPtr  *mptr;
     while( memPtr ) {
         mptr = memPtr;
         memPtr = memPtr->next;
-        TRMemFree( mptr );
+#ifdef TRMEM
+        _trmem_free( mptr, _trmem_guess_who(), TRMemHandle );
+#else
+        free( mptr );
+#endif
     }
 }
 
 void FiniMem( void )
+/******************/
 {
 #ifdef TRMEM
-    TRMemPrtUsage();
+    _trmem_prt_usage( TRMemHandle );
+    _trmem_close( TRMemHandle );
 #endif
-    TRMemClose();
 }
 
-extern char *DupStr( char *str )
+char *DupStr( char *str )
+/***********************/
 {
     char *ptr;
 
@@ -150,7 +221,8 @@ extern char *DupStr( char *str )
     return( ptr );
 }
 
-extern char *DupStrGlobal( char *str )
+char *DupStrGlobal( char *str )
+/*****************************/
 {
     char *ptr;
 

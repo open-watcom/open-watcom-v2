@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for floating-point formatting routines.
 *
 ****************************************************************************/
 
@@ -36,12 +35,11 @@
 #include "variety.h"
 #include "farsupp.h"
 
-//extern  void    _FtoS();
 _WCRTLINK extern FAR_STRING (*__EFG_printf)();
-_WCRTLINK extern void     (*__EFG_scanf)();
-extern FAR_STRING _EFG_Format();
-extern void       __cnvs2d();
+_WCRTLINK extern void       (*__EFG_scanf)();
+extern FAR_STRING           _EFG_Format();
+extern void                 __cnvs2d();
 _WMRTLINK extern FAR_STRING (*__get_EFG_Format())();
-_WMRTLINK extern void     (*__get__cnvs2d())();
+_WMRTLINK extern void       (*__get__cnvs2d())();
 
 #endif

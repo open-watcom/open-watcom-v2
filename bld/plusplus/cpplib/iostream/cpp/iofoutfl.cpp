@@ -24,72 +24,135 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Converts a float value to string representation for stream
+*               output.
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  93/05/26    Greg Bentz      pull floating point out of istream/ostream
-//  93/10/08    Greg Bentz      make LDFloatToString set scale_factor to 1
-//                              for _Ftos when 'G' format
-//  93/10/25    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
-//  99/10/12    J.B.Schueler    ensure that we don't walk over end of buffer
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 #include "iofhdr.h"
 
 
+#if 0
+// it will be enabled as soon as long double will be supported
+enum {
+    FLOAT_OVERHEAD  = 8,            // 2 signs, decimal, E, 4-digit exponent
+    MAX_PREC        = LDBL_DIG,
+    LONGEST_FLOAT   = LDBL_DIG + FLOAT_OVERHEAD
+};
+#else
 enum {
     FLOAT_OVERHEAD  = 7,            // 2 signs, decimal, E, 3-digit exponent
-    EXTRA_DIG       = 10,           // some extra for useless mantissa digits
-    MAX_PREC        = LDBL_DIG + EXTRA_DIG,
-    LONGEST_FLOAT   = LDBL_DIG + EXTRA_DIG + FLOAT_OVERHEAD
+    MAX_PREC        = DBL_DIG,
+    LONGEST_FLOAT   = DBL_DIG + FLOAT_OVERHEAD
 };
+#endif
 
-#define MAX_DIGITS LDBL_DIG+EXTRA_DIG
+namespace std {
 
-ostream &ostream::__outfloat( long double const &f ) {
-/****************************************************/
-// Write a "long double" floating-point value.
+  // Write a "long double" floating-point value.
 
-    int   digit_offset;
-    int   precision;
-    char  buf[LONGEST_FLOAT+1];
+  ostream &ostream::__outfloat( long double const &f ) {
 
-    ::memset( buf, 0, sizeof( buf ) );
+    int                 digit_offset;
+    int                 precision;
+    char                buf[ LONGEST_FLOAT * 2 ];
+    long_double         ld;
+    int                 i;
+    int                 len;
+    char                *x;
+    CVT_INFO            cvt;
+    auto char           stkbuf[ LONGEST_FLOAT + 1 ];
+    std::ios::fmtflags  format_flags;
+#ifdef _LONG_DOUBLE_
+    double              double_value;
+
+    /* convert this double into a long double */
+    double_value = f;
+    __EFG__FDLD( (double _WCNEAR *)&double_value, (long_double _WCNEAR *)&ld );
+#else
+    ld.value = f;
+#endif
     __lock_it( __i_lock );
     precision = this->precision();
-    if( precision > MAX_PREC ) precision = MAX_PREC;
-    __LDFloatToString( buf, (double const *)&f, precision, this->flags() );
-    if( buf[0] == '-' || buf[0] == '+' ) {
-        digit_offset = 1;
+    if( precision > MAX_PREC )
+        precision = MAX_PREC;
+
+    format_flags = this->flags();
+    if(( format_flags & ( std::ios::scientific | ios::fixed )) == std::ios::scientific ) {
+        cvt.flags = E_FMT;
+        cvt.scale = 1;
+    } else if(( format_flags & ( std::ios::scientific | ios::fixed )) == std::ios::fixed ) {
+        cvt.flags = F_FMT;
+        cvt.scale = 0;
+    } else {
+        cvt.flags = G_FMT;
+        cvt.scale = 1;
+        if( precision == 0 ) {
+            precision = 1;
+        }
+    }
+    if( format_flags & std::ios::showpoint ) {
+        cvt.flags |= F_DOT;
+    }
+    cvt.ndigits = precision;
+    cvt.expchar = ( format_flags & std::ios::uppercase ) ? 'E' : 'e';
+    cvt.expwidth = 0;
+    __EFG_LDcvt( &ld, &cvt, stkbuf );
+    // put all the pieces together
+    len = cvt.n1 + cvt.nz1 + cvt.n2 + cvt.nz2 + 1;
+    if( cvt.sign < 0 ) {
+        ++len;
+    } else if( format_flags & std::ios::showpos ) {
+        ++len;
+    }
+    if( len > sizeof( buf ) ) {
+        x = new char[ len + 1 ];
+    } else {
+        x = buf;
+    }
+    i = 0;
+    digit_offset = 1;
+    if( cvt.sign < 0 ) {
+        x[i++] = '-';
+    } else if( format_flags & std::ios::showpos ) {
+        x[i++] = '+';
     } else {
         digit_offset = 0;
     }
+    if( cvt.n1 != 0 ) {
+        ::memcpy( &x[i], &stkbuf[0], cvt.n1 );
+        i += cvt.n1;
+    }
+    if( cvt.nz1 != 0 ) {
+        ::memset( &x[i], '0', cvt.nz1 );
+        i += cvt.nz1;
+    }
+    if( cvt.n2 != 0 ) {
+        ::memcpy( &x[i], &stkbuf[cvt.n1], cvt.n2 );
+        i += cvt.n2;
+    }
+    if( cvt.nz2 != 0 ) {
+        ::memset( &x[i], '0', cvt.nz2 );
+        i += cvt.nz2;
+    }
+    x[i] = '\0';
+                
     if( opfx() ) {
-        setstate( __WATCOM_ios::writeitem( *this, buf, ::strlen(buf), digit_offset ) );
+        setstate( __WATCOM_ios::writeitem( *this, x, ::strlen( x ), digit_offset ) );
         osfx();
     }
+    if( len > sizeof( buf ) ) {
+        delete x;
+    }
     return( *this );
-}
+  }
+}   /* end namespace std */
 

@@ -29,15 +29,14 @@
 *
 ****************************************************************************/
 
-
 #include "stdnt.h"
 
-unsigned ReqEnv_setvar()
+unsigned ReqEnv_setvar( void )
 {
-    env_set_var_req     *req;
-    env_set_var_ret     *ret;
-    char                *var;
-    char                *value;
+    env_set_var_req *req;
+    env_set_var_ret *ret;
+    char            *var;
+    char            *value;
 
     req = GetInPtr( 0 );
     var = GetInPtr( sizeof( *req ) );
@@ -45,19 +44,21 @@ unsigned ReqEnv_setvar()
     ret = GetOutPtr( 0 );
 
     ret->err = 0;
-    if( value[0] == '\0' ) value = NULL;
+    if( value[0] == '\0' ) {
+        value = NULL;
+    }
     if( !SetEnvironmentVariable( var, value ) ) {
         ret->err = GetLastError();
     }
     return( sizeof( *ret ) );
 }
 
-unsigned ReqEnv_getvar()
+unsigned ReqEnv_getvar( void )
 {
-    env_get_var_req     *req;
-    env_get_var_ret     *ret;
-    char                *var;
-    char                *value;
+    env_get_var_req *req;
+    env_get_var_ret *ret;
+    char            *var;
+    char            *value;
 
     req = GetInPtr( 0 );
     var = GetInPtr( sizeof( *req ) );
@@ -67,7 +68,6 @@ unsigned ReqEnv_getvar()
     if( GetEnvironmentVariable( var, value, req->res_len ) == 0 ) {
         ret->err = GetLastError();
         return( sizeof( *ret ) );
-    } else {
-        return( sizeof( *ret ) + strlen( value ) + 1 );
     }
+    return( sizeof( *ret ) + strlen( value ) + 1 );
 }

@@ -1,0 +1,16 @@
+*$noreference
+
+! Property Functions:
+! -------------------
+
+      external EnumProps
+      external GetProp
+      external RemoveProp
+      external SetProp
+
+      integer*2 EnumProps
+      integer*2 GetProp
+      integer*2 RemoveProp
+      integer*2 SetProp
+
+*$reference

@@ -1,0 +1,34 @@
+*$noreference
+
+! Clipping Functions:
+! -------------------
+
+      external ExcludeClipRect
+      external GetClipBox
+      external IntersectClipRect
+      external OffsetClipRgn
+      external PtVisible
+      external RectVisible
+      external SelectClipRgn
+
+      integer*2 ExcludeClipRect
+      integer*2 GetClipBox
+      integer*2 IntersectClipRect
+      integer*2 OffsetClipRgn
+      integer*2 PtVisible
+      integer*2 RectVisible
+      integer*2 SelectClipRgn
+
+! Region Flags
+
+      integer ERROR
+      integer NULLREGION
+      integer SIMPLEREGION
+      integer COMPLEXREGION
+
+      parameter ( ERROR               = 0 )
+      parameter ( NULLREGION          = 1 )
+      parameter ( SIMPLEREGION        = 2 )
+      parameter ( COMPLEXREGION       = 3 )
+
+*$reference

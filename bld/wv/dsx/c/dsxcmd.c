@@ -48,7 +48,7 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 
-extern unsigned                 Lookup(char *,char *, unsigned);
+extern unsigned                 Lookup( char *, char *, unsigned );
 extern void                     ForceLines( unsigned );
 extern bool                     HasEquals( void );
 extern unsigned                 GetValue( void );
@@ -83,30 +83,31 @@ static char SysOptNameTab[] = {
     "XXDPMI\0"                  /* DON'T DOCUMENT: Internal use only */
 };
 
-enum { OPT_MONO = 1,
-       OPT_COLOR,
-       OPT_COLOUR,
-       OPT_EGA43,
-       OPT_VGA50,
+enum {
+    OPT_MONO = 1,
+   OPT_COLOR,
+   OPT_COLOUR,
+   OPT_EGA43,
+   OPT_VGA50,
 
-       OPT_OVERWRITE,
-       OPT_PAGE,
-       OPT_SWAP,
-       OPT_TWO,
+   OPT_OVERWRITE,
+   OPT_PAGE,
+   OPT_SWAP,
+   OPT_TWO,
 
-       OPT_CHECKSIZE,
+   OPT_CHECKSIZE,
 
-       OPT_NOREMAP,
-       OPT_NOGMOUSE,
-       OPT_HEAPENABLE,
-       OPT_XXNODPMI,
-       OPT_XXDPMI,
+   OPT_NOREMAP,
+   OPT_NOGMOUSE,
+   OPT_HEAPENABLE,
+   OPT_XXNODPMI,
+   OPT_XXDPMI,
 };
 
 gui_window_styles WndStyle = GUI_PLAIN+GUI_GMOUSE;
 
 
-static void GetLines()
+static void GetLines( void )
 {
     if( HasEquals() ) {
         ForceLines( GetValue() );
@@ -199,7 +200,7 @@ bool ProcSysOption( char *start, unsigned len, int pass )
  * ProcSysOptInit -- initial system options
  */
 
-void ProcSysOptInit()
+void ProcSysOptInit( void )
 {
     char                *ptr;
 

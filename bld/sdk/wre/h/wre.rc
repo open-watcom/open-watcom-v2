@@ -1,21 +1,9 @@
-/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %       Copyright (C) 1992, by WATCOM Systems Inc. All rights     %
-   %       reserved. No part of this software may be reproduced      %
-   %       in any form or by any means - graphic, electronic or      %
-   %       mechanical, including photocopying, recording, taping     %
-   %       or information storage and retrieval systems - except     %
-   %       with the written permission of WATCOM Systems Inc.        %
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-   Date         By              Reason
-   ----         --              ------
-   07 Jun 93    Wes Nelson      initial implementation
-*/
-
 #include <windows.h>
+#include "about.h"
 #include "banner.h"
 #include "wre_rc.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
+#include "uistr.gh"
 
 #undef pick
 #undef sp
@@ -24,12 +12,13 @@
 
 STRINGTABLE
 BEGIN
-    #include "wre.msg"
+    #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 #include "wre.men"
 
-WREAccelTable ACCELERATORS
+"WREAccelTable" ACCELERATORS
 BEGIN
     VK_DELETE,    IDM_DELETE,       VIRTKEY
     VK_F1,        IDM_HELP,         VIRTKEY
@@ -43,47 +32,52 @@ BEGIN
 END
 
 /* icons */
-WREIcon      ICON wre.ico
-ResIcon      ICON restext.ico
+"APPLICON"  ICON "wre.ico"
+"ResIcon"   ICON "restext.ico"
 
 /* private clipboard format bitmap */
-PrivateFmt   BITMAP clip.bmp
+"PrivateFmt"    BITMAP "clip.bmp"
 
 /* aboutbox bitmap */
-AboutLogo    BITMAP logo4.bmp
+"AboutLogo"     BITMAP "logo4.bmp"
 
 /* ribbon bitmaps */
-New          BITMAP new.bmp
-Open         BITMAP open.bmp
-Save         BITMAP save.bmp
+"New"           BITMAP "new.bmp"
+"Open"          BITMAP "open.bmp"
+"Save"          BITMAP "save.bmp"
 
-Cut          BITMAP cut.bmp
-Copy         BITMAP copy.bmp
-Paste        BITMAP paste.bmp
+"Cut"           BITMAP "cut.bmp"
+"Copy"          BITMAP "copy.bmp"
+"Paste"         BITMAP "paste.bmp"
 
 /* resource type toolbar bitmaps */
-AccelU       BITMAP ACCEL.BMP
-AccelD       BITMAP ACCELD.BMP
-BitmapU      BITMAP BMP.BMP
-BitmapD      BITMAP BMPD.BMP
-CursorU      BITMAP CUR.BMP
-CursorD      BITMAP CURD.BMP
-DialogU      BITMAP DLG.BMP
-DialogD      BITMAP DLGD.BMP
-FontU        BITMAP FONT.BMP
-FontD        BITMAP FONTD.BMP
-IconU        BITMAP ICON.BMP
-IconD        BITMAP ICOND.BMP
-MenuU        BITMAP MENU.BMP
-MenuD        BITMAP MENUD.BMP
-StringU      BITMAP STR.BMP
-StringD      BITMAP STRD.BMP
-UPUser       BITMAP USER.BMP
-UserD        BITMAP USERD.BMP
+"AccelU"        BITMAP "accel.bmp"
+"AccelD"        BITMAP "acceld.bmp"
+"BitmapU"       BITMAP "bmp.bmp"
+"BitmapD"       BITMAP "bmpd.bmp"
+"CursorU"       BITMAP "cur.bmp"
+"CursorD"       BITMAP "curd.bmp"
+"DialogU"       BITMAP "dlg.bmp"
+"DialogD"       BITMAP "dlgd.bmp"
+"FontU"         BITMAP "font.bmp"
+"FontD"         BITMAP "fontd.bmp"
+"IconU"         BITMAP "icon.bmp"
+"IconD"         BITMAP "icond.bmp"
+"MenuU"         BITMAP "menu.bmp"
+"MenuD"         BITMAP "menud.bmp"
+"StringU"       BITMAP "str.bmp"
+"StringD"       BITMAP "strd.bmp"
+"UPUser"        BITMAP "user.bmp"
+"UserD"         BITMAP "userd.bmp"
 
-#include "about.dlg"
+#ifdef __NT__
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
+#endif
+
+#include "splash.dlg"
 #include "del.dlg"
 #include "paste.dlg"
 #include "renam.dlg"
 #include "res.dlg"
 
+#include "about.dlg"

@@ -934,7 +934,8 @@ static int prelex(void) {
     return retval;
 }
 
-static pToken _dupTokenKeepPos(pToken tok) {
+static pToken _dupTokenKeepPos(void * _tok) {
+    pToken tok = _tok;
     return dupToken(tok, NULL);
 }
 

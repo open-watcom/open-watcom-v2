@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP instruction decoding.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "axp.h"
 #include "axptypes.h"
 #include "madregs.h"
@@ -42,7 +41,7 @@ static dis_handle DH;
 
 mad_status DisasmInit()
 {
-    if( DisInit( DISCPU_axp, &DH ) != DR_OK ) {
+    if( DisInit( DISCPU_axp, &DH, FALSE ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
     }
     return( MS_OK );
@@ -53,7 +52,7 @@ void DisasmFini()
     DisFini( &DH );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, unsigned int size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
@@ -84,7 +83,7 @@ unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
+        MCTypeInfoForHost( MTK_INTEGER, -(int)sizeof( ins->op[0].value ), &mti );
         max = 40;
         MCTypeToString( dd->radix, &mti, &ins->op[op].value, &max, p );
         break;
@@ -145,7 +144,7 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
     if( MADState->disasm_state & DT_PSEUDO_OPS ) ff |= DFF_PSEUDO;
     if( MADState->disasm_state & DT_UPPER ) ff |= DFF_INS_UP | DFF_REG_UP;
     if( MADState->reg_state[CPU_REG_SET] & CT_SYMBOLIC_NAMES ) {
-        ff |= DFF_AXP_SYMBOLIC_REG;
+        ff |= DFF_SYMBOLIC_REG;
     }
     dd->radix = radix;
     if( DisFormat( &DH, dd, &dd->ins, ff, np, op ) != DR_OK ) {

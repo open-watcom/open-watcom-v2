@@ -30,19 +30,16 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 
 /*
  * tempFileSetup - set up a temp file with data in it
  */
 static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
-                                bool makelower )
+                           bool makelower )
 {
-    int         j,boff,i,k;
-    char        dd[_MAX_PATH];
+    int         j, boff, i, k;
+    char        dd[FILENAME_MAX];
 
     /*
      * allocate temporary file structures
@@ -54,47 +51,48 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
      */
     j = boff = 0;
     while( j < maxlist ) {
-        strcpy( dd,list[j] );
+        strcpy( dd, list[j] );
         if( makelower ) {
             FileLower( dd );
         }
         k = strlen( dd );
-        if( k +2 +indent + boff > MAX_IO_BUFFER ) {
+        if( k + 2 + indent + boff > MAX_IO_BUFFER ) {
             CreateFcbData( *cfile, boff );
-            (*cfile)->fcb_tail->non_swappable = TRUE;
+            (*cfile)->fcbs.tail->non_swappable = TRUE;
             boff = 0;
         }
         if( indent ) {
-            for( i=0;i<indent;i++ ) {
-                ReadBuffer[boff+i] = ' ';
+            for( i = 0; i < indent; i++ ) {
+                ReadBuffer[boff + i] = ' ';
             }
         }
-        memcpy( &ReadBuffer[boff+indent], dd, k );
+        memcpy( &ReadBuffer[boff + indent], dd, k );
         /* Don't change the CRLF state of the current file */
         if( EditFlags.WriteCRLF ) {
-            memcpy( &ReadBuffer[boff+k+indent],crlf,2 );
+            memcpy( &ReadBuffer[boff + k + indent], crlf, 2 );
             boff += 2;
         } else {
-            memcpy( &ReadBuffer[boff+k+indent],&crlf[1],1 );
+            memcpy( &ReadBuffer[boff + k + indent], &crlf[1], 1 );
             boff += 1;
         }
-        boff += k+indent;
+        boff += k + indent;
         j++;
     }
 
     CreateFcbData( *cfile, boff );
-    (*cfile)->fcb_tail->non_swappable = TRUE;
+    (*cfile)->fcbs.tail->non_swappable = TRUE;
 
 } /* tempFileSetup */
 
 /*
  * SelectItem - select item to set from a menu
  */
-int SelectItem( selectitem *si )
+vi_rc SelectItem( selectitem *si )
 {
-    int                 j,rc;
+    int                 j;
     file                *cfile;
     selflinedata        sfd;
+    vi_rc               rc;
 
     tempFileSetup( &cfile, si->list, si->maxlist, 0, FALSE );
 
@@ -115,8 +113,8 @@ int SelectItem( selectitem *si )
     sfd.is_menu = si->is_menu;
     rc = SelectLineInFile( &sfd );
     si->event = sfd.event;
-    if( !rc ) {
-        if( sfd.sl == -1 ) {
+    if( rc == ERR_NO_ERR ) {
+        if( sfd.sl == -1 || sfd.sl == 0 ) {
             if( si->result != NULL ) {
                 si->result[0] = 0;
             }
@@ -144,13 +142,14 @@ int SelectItem( selectitem *si )
 /*
  * SelectItemAndValue - select item from list and give it a value
  */
-int SelectItemAndValue( window_info *wi, char *title, char *list[],
-                        int maxlist, int (*updatertn)(), int indent,
-                        char **vals, int valoff )
+vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
+                        int maxlist, vi_rc (*updatertn)( char *, char *, int * ),
+                        int indent, char **vals, int valoff )
 {
-    int                 j,rc;
+    int                 j;
     file                *cfile;
     selflinedata        sfd;
+    vi_rc               rc;
 
     tempFileSetup( &cfile, list, maxlist, indent, TRUE );
 
@@ -169,7 +168,7 @@ int SelectItemAndValue( window_info *wi, char *title, char *list[],
         sfd.vals = vals;
         sfd.valoff = valoff;
         rc = SelectLineInFile( &sfd );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( sfd.sl == -1 ) {

@@ -40,6 +40,7 @@
 #include "iomode.h"
 #include "seterrno.h"
 #include "defwin.h"
+#include "close.h"
 
 
 int __close( int handle )
@@ -66,6 +67,6 @@ int __close( int handle )
         }
 #endif
     }
-    __SetIOMode( handle, 0 );
+    __SetIOMode_nogrow( handle, 0 );
     return( rv );
 }

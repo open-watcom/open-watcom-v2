@@ -45,7 +45,8 @@ void test1() {
     WCPtrSList<str_data> list;
     str_data temp = text[ 0 ];
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	list.insert( &str_text[ i ] );
     };
 
@@ -62,7 +63,8 @@ void test2() {
     WCPtrDList<str_data> list;
     str_data temp = text[ 0 ];
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	list.insert( &str_text[ i ] );
     };
 
@@ -79,7 +81,8 @@ void test3() {
     WCValSList<str_data> list;
     str_data temp = text[ 0 ];
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	list.insert( str_text[ i ] );
     };
 
@@ -96,7 +99,8 @@ void test4() {
     WCValDList<str_data> list;
     str_data temp = text[ 0 ];
 
-    for( int i = 0; i < 20; i++ ) {
+    int i;
+    for( i = 0; i < 20; i++ ) {
 	list.insert( str_text[ i ] );
     };
 

@@ -39,7 +39,7 @@
 extern "C" {
     #include <string.h>
     #include <stdio.h>
-    #include <io.h>
+    #include <unistd.h>
     #include <stdlib.h>
     #include <stdarg.h>
 };
@@ -68,7 +68,9 @@ WEXPORT WFile::~WFile()
 
 bool WEXPORT WFile::open( const char* name, OpenStyle style )
 {
-    #define PERM S_IRWXU | S_IRWXG | S_IRWXO
+// Why should execute permission be set?
+//    #define PERM S_IRWXU | S_IRWXG | S_IRWXO
+    #define PERM S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH
     _handle = ::open( name, style, PERM );
     _style = style;
     _ok = (bool)( _handle != FILE_ERROR );
@@ -160,7 +162,9 @@ WString& WEXPORT WFile::gets( WString& str )
 
 void WEXPORT WFile::gets( char* str, int len )
 {
-    for( int i=0; !_eof && i<len; i++ ) {
+    int     i;
+
+    for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
         if( str[i] == CR || str[i] == LF || str[i] == NC ) {
             ungetch( str[i] );
@@ -172,8 +176,10 @@ void WEXPORT WFile::gets( char* str, int len )
 
 void WEXPORT WFile::gets_exact( char* str, int len )
 {
+    int     i;
+
     // read exactly len bytes -- don't stop for separator characters ( CR/LF )
-    for( int i=0; !_eof && i<len; i++ ) {
+    for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
         if( str[i] == NC ) {
             ungetch( str[i] );

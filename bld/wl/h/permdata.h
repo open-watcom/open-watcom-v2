@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Permanent linker data structures and routines (heavily
+*               used for incremental linking).
 *
 ****************************************************************************/
 
 
-
 #define INC_FILE_SIG_SIZE        36
 #ifdef __QNX__
-#define INC_FILE_SIG  "WLINK Incremental Link File V1.02\n\x0c\x04"
+#define INC_FILE_SIG  "WLINK Incremental Link File V1.03\n\x0c\x04"
 #else
-#define INC_FILE_SIG  "WLINK Incremental Link File V1.02\r\n\x1a"
+#define INC_FILE_SIG  "WLINK Incremental Link File V1.03\r\n\x1a"
 #endif
 
 typedef struct {
@@ -74,20 +73,40 @@ typedef struct {
 #define INC_FLAG_START_SEG      0x0001  // startidx is a segname
 
 typedef struct groupdef {
-    struct groupdef *   next;
+    struct groupdef     *next;
     unsigned            numsegs;
-    char *              names[1];
+    char                *grpname;
+    char                *names[1];
 } incgroupdef;
 
 typedef struct liblist {
-    struct liblist *    next;
+    struct liblist      *next;
     unsigned            namelen;
     char                name[1];
 } libnamelist;
 
+struct perm_read_info_struct {
+    f_handle    incfhdl;
+    unsigned    currpos;
+    char        *buffer;
+    unsigned    num;
+    void        (*cbfn)(void *, struct perm_read_info_struct *);
+    carve_t     cv;
+};
+
+typedef struct perm_read_info_struct perm_read_info;
+
+typedef struct {
+    stringtable strtab;
+    unsigned    currpos;
+    f_handle    incfhdl;
+    void        (*prepfn)( void *, void * );
+} perm_write_info;
+
 /* data and functions used for permanent data structure storage */
 
 extern stringtable      PermStrings;
+extern stringtable      PrefixStrings;  /* these are NetWare prefix strings of which there could possibly be several */
 extern carve_t          CarveLeader;
 extern carve_t          CarveModEntry;
 extern carve_t          CarveDLLInfo;
@@ -96,11 +115,11 @@ extern carve_t          CarveSymbol;
 extern carve_t          CarveSegData;
 extern carve_t          CarveClass;
 extern carve_t          CarveGroup;
-extern char *           IncFileName;
-extern incgroupdef *    IncGroupDefs;
-extern group_entry **   IncGroups;
-extern libnamelist *    SavedUserLibs;
-extern libnamelist *    SavedDefLibs;
+extern char             *IncFileName;
+extern incgroupdef      *IncGroupDefs;
+extern group_entry      **IncGroups;
+extern libnamelist      *SavedUserLibs;
+extern libnamelist      *SavedDefLibs;
 
 extern void     ResetPermData( void );
 extern void     CleanPermData( void );
@@ -111,9 +130,9 @@ extern void     IncP2Start( void );
 extern void     PermSaveFixup( void *, unsigned );
 extern void     PermStartMod( mod_entry * );
 extern void     PermEndMod( mod_entry * );
-extern void     WritePermFile( void *, void *, unsigned );
-extern void     ReadPermFile( void *, void *, unsigned );
+extern void     WritePermFile( perm_write_info *, void *, unsigned );
+extern void     ReadPermFile( perm_read_info *, void *, unsigned );
 extern void     IterateModRelocs( unsigned,unsigned,unsigned (*)(void *));
-extern void *   GetSegContents( segdata *, virt_mem );
-extern void *   GetAltdefContents( segdata * );
+extern void     *GetSegContents( segdata *, virt_mem );
+extern void     *GetAltdefContents( segdata * );
 extern void     FreeSavedRelocs( void );

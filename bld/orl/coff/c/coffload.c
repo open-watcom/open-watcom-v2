@@ -24,35 +24,51 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load COFF object file into memory for processing.
 *
 ****************************************************************************/
 
 
 #include "coffload.h"
+#include "coffimpl.h"
+
+/* This is a hack for a flaw in wlib. Because wlib does not keep track
+ * of member sizes, one can't tell if a read past the end of file occurred.
+ * Unfortunately for COFF, it is impossible to tell whether a string table
+ * is present or not except by attempting to read its size. If we read
+ * some ridiculously large value, it's the start of the next member.
+ */
+#define MAX_STRTAB_SIZE     0x1000000   /* 16MB */
 
 static char SectionNames[3][COFF_SEC_NAME_LEN] =
     { ".rel", ".symtab", ".strtab" };
 
-static void determine_file_specs( coff_file_handle coff_file_hnd,
-                                  coff_file_header *f_hdr )
-/***************************************************************/
+static int determine_file_specs( coff_file_handle coff_file_hnd,
+                                 coff_file_header *f_hdr )
+/**************************************************************/
 {
     uint_16 cpu_type;
-    coff_import_object_header *i_hdr;
+    uint_16 flags;
+    int     flag_import_library;
 
-
-    cpu_type = f_hdr->cpu_type;
-    if( coff_file_hnd->type == ORL_FILE_TYPE_IMPORT ) {
-        i_hdr = (coff_import_object_header *) f_hdr;
-        cpu_type = i_hdr->machine;
+    if( (f_hdr->cpu_type == IMAGE_FILE_MACHINE_UNKNOWN) &&
+            (f_hdr->num_sections == IMPORT_OBJECT_HDR_SIG2) ) {
+        // COFF import library
+        cpu_type = ((coff_import_object_header *)f_hdr)->machine;
+        flags = 0;
+        flag_import_library = 1;
+    } else {
+        // other COFF objects
+        cpu_type = f_hdr->cpu_type;
+        flags = f_hdr->flags;
+        flag_import_library = 0;
     }
     switch( cpu_type ) {
         case IMAGE_FILE_MACHINE_I860:
             coff_file_hnd->machine_type = ORL_MACHINE_TYPE_I860;
             break;
         case IMAGE_FILE_MACHINE_I386:
+        case IMAGE_FILE_MACHINE_I386A:
             coff_file_hnd->machine_type = ORL_MACHINE_TYPE_I386;
             break;
         case IMAGE_FILE_MACHINE_R3000:
@@ -67,6 +83,9 @@ static void determine_file_specs( coff_file_handle coff_file_hnd,
         case IMAGE_FILE_MACHINE_POWERPC:
             coff_file_hnd->machine_type = ORL_MACHINE_TYPE_PPC601;
             break;
+        case IMAGE_FILE_MACHINE_AMD64:
+            coff_file_hnd->machine_type = ORL_MACHINE_TYPE_AMD64;
+            break;
         case IMAGE_FILE_MACHINE_UNKNOWN:
             coff_file_hnd->machine_type = ORL_MACHINE_TYPE_NONE;
             break;
@@ -74,50 +93,60 @@ static void determine_file_specs( coff_file_handle coff_file_hnd,
             coff_file_hnd->machine_type = ORL_MACHINE_TYPE_UNKNOWN;
             break;
     }
+
+    if( flags & IMAGE_FILE_DLL ) {
+        coff_file_hnd->type = ORL_FILE_TYPE_DLL;
+    } else if( flags & IMAGE_FILE_EXECUTABLE_IMAGE ) {
+        coff_file_hnd->type = ORL_FILE_TYPE_EXECUTABLE;
+    } else {
+        coff_file_hnd->type = ORL_FILE_TYPE_OBJECT;
+    }
+
     coff_file_hnd->flags = ORL_FILE_FLAG_NONE;
-    if( coff_file_hnd->type == ORL_FILE_TYPE_IMPORT ) {
+    if( flags & IMAGE_FILE_RELOCS_STRIPPED ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_RELOCS_STRIPPED;
+    }
+    if( flags & IMAGE_FILE_LINE_NUMS_STRIPPED ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_LINE_NUMS_STRIPPED;
+    }
+    if( flags & IMAGE_FILE_LOCAL_SYMS_STRIPPED ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED;
+    }
+    if( flags & IMAGE_FILE_DEBUG_STRIPPED ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_DEBUG_STRIPPED;
+    }
+    if( flags & IMAGE_FILE_16BIT_MACHINE ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
+    }
+    if( flags & IMAGE_FILE_32BIT_MACHINE ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_32BIT_MACHINE;
+    }
+    if( flags & IMAGE_FILE_SYSTEM ) {
+            coff_file_hnd->flags |= ORL_FILE_FLAG_SYSTEM;
+    }
+    if( coff_file_hnd->type != ORL_FILE_TYPE_OBJECT ) {
+        /* There are no known big endian PE images, but there are lying
+         * cheating PE images that claim to be big endian and aren't.
+         */
         coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
     } else {
-        if( f_hdr->flags & IMAGE_FILE_DLL ) {
-            coff_file_hnd->type = ORL_FILE_TYPE_DLL;
-        } else if( f_hdr->flags & IMAGE_FILE_EXECUTABLE_IMAGE ) {
-            coff_file_hnd->type = ORL_FILE_TYPE_EXECUTABLE;
-        } else {
-            coff_file_hnd->type = ORL_FILE_TYPE_OBJECT;
-        }
-
-        if( f_hdr->flags & IMAGE_FILE_RELOCS_STRIPPED ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_RELOCS_STRIPPED;
-        }
-        if( f_hdr->flags & IMAGE_FILE_LINE_NUMS_STRIPPED ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_LINE_NUMS_STRIPPED;
-        }
-        if( f_hdr->flags & IMAGE_FILE_LOCAL_SYMS_STRIPPED ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED;
-        }
-        if( f_hdr->flags & IMAGE_FILE_DEBUG_STRIPPED ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_DEBUG_STRIPPED;
-        }
-        if( f_hdr->flags & IMAGE_FILE_16BIT_MACHINE ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_16BIT_MACHINE;
-        }
-        if( f_hdr->flags & IMAGE_FILE_32BIT_MACHINE ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_32BIT_MACHINE;
-        }
-        if( f_hdr->flags & IMAGE_FILE_SYSTEM ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_SYSTEM;
-        }
         /*
-        if( f_hdr->flags & IMAGE_FILE_BYTES_REVERSED_LO ) {
-            coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
+        if( flags & IMAGE_FILE_BYTES_REVERSED_LO ) {
+                coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
         }
         */
-        if( f_hdr->flags & IMAGE_FILE_BYTES_REVERSED_HI ) {
+        if( flags & IMAGE_FILE_BYTES_REVERSED_HI ) {
             coff_file_hnd->flags |= ORL_FILE_FLAG_BIG_ENDIAN;
         } else {
-            // inserting a default here
+            /* Inserting a default here - note that the BYTES_REVERSED_LO/HI 
+             * flags are now deprecated and neither is supposed to be present.
+             */
             coff_file_hnd->flags |= ORL_FILE_FLAG_LITTLE_ENDIAN;
         }
+    }
+
+    if( f_hdr->sym_table == 0 ) {
+        f_hdr->num_symbols = 0; /* Fix up incorrectly stripped images */
     }
     /*
         At this point, we have filled in
@@ -125,6 +154,7 @@ static void determine_file_specs( coff_file_handle coff_file_hnd,
             coff_file_hnd->machine_type
             coff_file_hnd->flags
     */
+    return( flag_import_library );
 }
 
 static void determine_section_specs( coff_sec_handle coff_sec_hnd,
@@ -316,7 +346,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
             }
             coff_reloc_sec_hnd->file_format = ORL_COFF;
             coff_reloc_sec_hnd->coff_file_hnd = coff_file_hnd;
-            coff_reloc_sec_hnd->name = SectionNames[0];
+            coff_reloc_sec_hnd->name = SectionNames[0];     // ".rel"
             coff_reloc_sec_hnd->name_alloced = COFF_FALSE;
             coff_reloc_sec_hnd->relocs_done = COFF_FALSE;
             coff_reloc_sec_hnd->size = reloc_sec_size[loop];
@@ -327,6 +357,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
             coff_reloc_sec_hnd->hdr = NULL;
             coff_reloc_sec_hnd->assoc.reloc.orig_sec = coff_file_hnd->coff_sec_hnd[loop];
             coff_reloc_sec_hnd->assoc.reloc.relocs = NULL;
+            coff_reloc_sec_hnd->align = 4;
             coff_file_hnd->coff_sec_hnd[loop]->assoc.normal.reloc_sec = coff_reloc_sec_hnd;
             coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created - 1] = coff_reloc_sec_hnd;
         }
@@ -341,7 +372,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     }
     coff_file_hnd->symbol_table->file_format = ORL_COFF;
     coff_file_hnd->symbol_table->coff_file_hnd = coff_file_hnd;
-    coff_file_hnd->symbol_table->name = SectionNames[1];
+    coff_file_hnd->symbol_table->name = SectionNames[1];    // ".symtab"
     coff_file_hnd->symbol_table->name_alloced = COFF_FALSE;
     coff_file_hnd->symbol_table->relocs_done = COFF_FALSE;
     coff_file_hnd->symbol_table->size = f_hdr->num_symbols * sizeof( coff_symbol );
@@ -351,6 +382,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_file_hnd->symbol_table->assoc.normal.reloc_sec = NULL;
     coff_file_hnd->symbol_table->type = ORL_SEC_TYPE_SYM_TABLE;
     coff_file_hnd->symbol_table->flags = ORL_SEC_FLAG_NONE;
+    coff_file_hnd->symbol_table->align = 4;
     coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = coff_file_hnd->symbol_table;
     loop++;
     // create the string table section
@@ -363,20 +395,17 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     }
     coff_file_hnd->string_table->file_format = ORL_COFF;
     coff_file_hnd->string_table->coff_file_hnd = coff_file_hnd;
-    coff_file_hnd->string_table->name = SectionNames[2];
+    coff_file_hnd->string_table->name = SectionNames[2];    // ".strtab"
     coff_file_hnd->string_table->name_alloced = COFF_FALSE;
     coff_file_hnd->string_table->relocs_done = COFF_FALSE;
-    if( coff_file_hnd->type == ORL_FILE_TYPE_OBJECT ) {
-        coff_file_hnd->string_table->size = 4; // for now
-    } else {
-        coff_file_hnd->string_table->size = 0; // for now
-    }
+    coff_file_hnd->string_table->size = 0;  // determined later
     coff_file_hnd->string_table->base = 0;
     coff_file_hnd->string_table->offset = coff_file_hnd->symbol_table->offset + coff_file_hnd->symbol_table->size;
     coff_file_hnd->string_table->hdr = NULL;
     coff_file_hnd->string_table->assoc.normal.reloc_sec = NULL;
     coff_file_hnd->string_table->type = ORL_SEC_TYPE_STR_TABLE;
     coff_file_hnd->string_table->flags = ORL_SEC_FLAG_NONE;
+    coff_file_hnd->string_table->align = 4;
     coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created + 1] = coff_file_hnd->string_table;
     _ClientFree( coff_file_hnd, reloc_sec_offset );
     _ClientFree( coff_file_hnd, reloc_sec_size );
@@ -398,7 +427,8 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     int                 loop_limit;
     pe_header *         pe_hdr;
     char *              PE;
-    orl_file_offset     PEoffset=0;
+    orl_file_offset     PEoffset = 0;
+    orl_sec_size        *string_sec_size;
 
     pe_hdr = _ClientRead( coff_file_hnd, 2 );
     _ClientSeek( coff_file_hnd, -2, SEEK_CUR );
@@ -415,39 +445,36 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );
     if( !(coff_file_hnd->f_hdr_buffer) ) return( ORL_OUT_OF_MEMORY );
     f_hdr = (coff_file_header *) coff_file_hnd->f_hdr_buffer;
-
-/**+ JBS 99/06/22 ***/
-    coff_file_hnd->type = ORL_FILE_TYPE_NONE;
-    if( (f_hdr->cpu_type == IMAGE_FILE_MACHINE_UNKNOWN) &&
-        (f_hdr->num_sections == IMPORT_OBJECT_HDR_SIG2) ) {
+    if( determine_file_specs( coff_file_hnd, f_hdr ) ) {
         // we have identified an import_object_header
-        coff_file_hnd->type = ORL_FILE_TYPE_IMPORT;
-        coff_file_hnd->initial_size = sizeof( coff_import_object_header ) + PEoffset;
+        // convert short import library structures to long import
+        // library structures, change _ClientRead and _ClientSeek
+        // macros to read from converted metadata
+        error = convert_import_library( coff_file_hnd );
+        if ( error != ORL_OKAY ) {
+            return( error );
+        }
+        // reread new converted file header and next process as normal
+        coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );
+        if( !(coff_file_hnd->f_hdr_buffer) ) return( ORL_OUT_OF_MEMORY );
+        f_hdr = (coff_file_header *) coff_file_hnd->f_hdr_buffer;
         determine_file_specs( coff_file_hnd, f_hdr );
-        coff_file_hnd->num_symbols = 0;
-        coff_file_hnd->num_sections = 0;
-        coff_file_hnd->symbol_table = NULL;
-        coff_file_hnd->string_table = NULL;
-        coff_file_hnd->size = 0;
-        coff_file_hnd->rest_of_file_buffer = NULL;
-        return( ORL_OKAY );
     }
-/**- JBS ***/
     if( f_hdr->opt_hdr_size > 0 ) {     // skip optional header
-        pe_opt_hdr *opt_hdr = (pe_opt_hdr *)_ClientRead(coff_file_hnd, f_hdr->opt_hdr_size);
+        pe_opt_hdr *opt_hdr = (pe_opt_hdr *)_ClientRead( coff_file_hnd, f_hdr->opt_hdr_size );
 
-        if (opt_hdr->magic == 0x10b) {
+        if( (opt_hdr->magic == 0x10b) || (opt_hdr->magic == 0x20b) ) {
             coff_file_hnd->export_table_rva = opt_hdr->export_table_rva;
         } else {
             coff_file_hnd->export_table_rva = 0L;
         }
     }
     coff_file_hnd->initial_size = sizeof( coff_file_header ) + f_hdr->opt_hdr_size + PEoffset;
-    determine_file_specs( coff_file_hnd, f_hdr );
     switch( coff_file_hnd->machine_type ) {
-    case ORL_MACHINE_TYPE_NONE:
     case ORL_MACHINE_TYPE_UNKNOWN:
         return( ORL_ERROR );
+    default:
+        break;
     }
     coff_file_hnd->num_symbols = f_hdr->num_symbols;
     coff_file_hnd->num_sections = f_hdr->num_sections;
@@ -478,22 +505,27 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     buf_size -= coff_file_hnd->initial_size;
     coff_file_hnd->rest_of_file_buffer = _ClientRead( coff_file_hnd, buf_size );
     if( !(coff_file_hnd->rest_of_file_buffer ) ) {
-        free_coff_sec_handles( coff_file_hnd, coff_file_hnd->num_sections );
         return( ORL_ERROR );
     }
     loop_limit = coff_file_hnd->num_sections;
-    if( last_sec_hnd == coff_file_hnd->string_table &&
-                coff_file_hnd->type == ORL_FILE_TYPE_OBJECT ) {
-        memcpy( &(last_sec_hnd->size), coff_file_hnd->rest_of_file_buffer + last_sec_hnd->offset - coff_file_hnd->initial_size, sizeof( coff_sec_size ) );
-        if( last_sec_hnd->size < 4 ) {
+    // read string table; always follows the symbol table, but may not exist
+    if( last_sec_hnd == coff_file_hnd->string_table ) {
+        // read the string table size; if that fails, there isn't any
+        if( f_hdr->sym_table ) {
+            string_sec_size = _ClientRead( coff_file_hnd, sizeof( coff_sec_size ) );
+            if( string_sec_size ) {
+                last_sec_hnd->size = *string_sec_size;
+            }
+        }
+        if( last_sec_hnd->size <= sizeof( coff_sec_size ) 
+         || last_sec_hnd->size > MAX_STRTAB_SIZE ) {
             last_sec_hnd->size = 0;
         }
         if( last_sec_hnd->size != 0 ) {
             last_sec_hnd->size -= sizeof( coff_sec_size );
         }
         if( last_sec_hnd->size > 0 && last_sec_hnd->offset != 0 ) {
-            if( last_sec_hnd->offset == buf_size +
-                        coff_file_hnd->initial_size - 4 ) {
+            if( last_sec_hnd->offset == buf_size + coff_file_hnd->initial_size ) {
                 last_sec_hnd->contents = _ClientRead( coff_file_hnd,
                                                   last_sec_hnd->size );
                 coff_file_hnd->size += last_sec_hnd->size;
@@ -503,7 +535,6 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
                         sizeof( coff_sec_size );
             }
             if( !(last_sec_hnd->contents ) ) {
-                free_coff_sec_handles( coff_file_hnd, coff_file_hnd->num_sections );
                 return( ORL_ERROR );
             }
         } else {
@@ -523,7 +554,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     }
     if( last_sec_hnd != coff_file_hnd->string_table ) {
         memcpy( &(coff_file_hnd->string_table->size),
-                 coff_file_hnd->string_table->contents, sizeof(coff_sec_size) );
+                 coff_file_hnd->string_table->contents, sizeof( coff_sec_size ) );
         if( coff_file_hnd->string_table->size != 0 ) {
             coff_file_hnd->string_table->size -= sizeof( coff_sec_size );
             coff_file_hnd->string_table->contents += sizeof( coff_sec_size );

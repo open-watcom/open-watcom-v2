@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Browsing Information Merger main module.
 *
 ****************************************************************************/
 
@@ -93,6 +92,7 @@ static void printHeader()
     puts( banner1w( "Browsing Information Merger ", _WBRG_VERSION_ ) );
     puts( banner2( "1994" ) );
     puts( banner3 );
+    puts( banner3a );
     puts( "" );
 }
 

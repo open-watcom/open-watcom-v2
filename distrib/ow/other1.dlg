@@ -1,0 +1,25 @@
+static_text=\
+        //1"Select other options:"\
+        //2"その他のオプションを選択してください:"\
+        //0
+static_text=
+check_box=cplusplus,,\
+        //1"&Include C++ compiler components"\
+        //2"C++コンパイラ・コンポーネントを含みます (&I)"\
+        //0,IsFortranInstall !
+check_box=samples,,\
+        //1"Sample &programs"\
+        //2"サンプル・プログラム (&p)"\
+        //0
+check_box=rtsource,,\
+        //1"&Run-time startup source code"\
+        //2"ランタイム・スタートアップ・ソースコード (&R)"\
+        //0
+static_text=
+other_button=\
+        //1"&Helpfiles..."\
+        //2"&Helpfiles..."\
+        //0,Helpfile,\
+        //1"Helpfiles to Install:"\
+        //2"Helpfiles to Install:"\
+        //0

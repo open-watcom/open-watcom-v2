@@ -1,21 +1,25 @@
-64lskwnt.obj : ..\..\..\c\64lskwnt.c ..\..\..\c\lseekwnt.c
-64fillen.obj : ..\..\..\c\64fillen.c ..\..\..\c\filelen.c
-64telwnt.obj : ..\..\..\c\64telwnt.c ..\..\..\c\tellwnt.c
+64_lseek.obj : ../../../c/64_lseek.c ../../../c/__lseek.c
+64lseek.obj  : ../../../c/64lseek.c  ../../../c/lseek.c
+64fillen.obj : ../../../c/64fillen.c ../../../c/filelen.c
+64tell.obj   : ../../../c/64tell.c   ../../../c/tell.c
 
-ucreat.obj   : ..\..\..\c\ucreat.c   ..\..\..\c\creat.c
+ucreat.obj   : ../../../c/ucreat.c   ../../../c/creat.c
 
-ufsta.obj    : ..\..\..\c\ufsta.c    ..\..\..\c\fstat.c
-ufstaos2.obj : ..\..\..\c\ufstaos2.c ..\..\..\c\fstatos2.c
-u64fstat.obj : ..\..\..\c\u64fstat.c ..\..\..\c\64fstat.c
+ufsta.obj    : ../../../c/ufsta.c    ../../../c/fstat.c
+u64fstat.obj : ../../../c/u64fstat.c ../../../c/64fstat.c
 
-ufstawnt.obj : ..\..\..\c\ufstawnt.c ..\..\..\c\fstatwnt.c
-64fstwnt.obj : ..\..\..\c\64fstwnt.c ..\..\..\c\fstatwnt.c
-u64fswnt.obj : ..\..\..\c\u64fswnt.c ..\..\..\c\ufstawnt.c ..\..\..\c\fstatwnt.c
+ufstaos2.obj : ../../../c/ufstaos2.c ../../../c/fstatos2.c
+64fstos2.obj : ../../../c/64fstos2.c ../../../c/fstatos2.c
+u64fsos2.obj : ../../../c/u64fsos2.c ../../../c/ufstaos2.c ../../../c/fstatos2.c
 
-uopen.obj    : ..\..\..\c\uopen.c    ..\..\..\c\open.c
-uopenos2.obj : ..\..\..\c\uopenos2.c ..\..\..\c\openos2.c
-uopenwnt.obj : ..\..\..\c\uopenwnt.c ..\..\..\c\openwnt.c
+ufstawnt.obj : ../../../c/ufstawnt.c ../../../c/fstatwnt.c
+64fstwnt.obj : ../../../c/64fstwnt.c ../../../c/fstatwnt.c
+u64fswnt.obj : ../../../c/u64fswnt.c ../../../c/ufstawnt.c ../../../c/fstatwnt.c
 
-uunln.obj    : ..\..\..\c\uunln.c    ..\..\..\c\unlnk.c
-uunlnos2.obj : ..\..\..\c\uunlnos2.c ..\..\..\c\unlnkos2.c
-uunlnwnt.obj : ..\..\..\c\uunlnwnt.c ..\..\..\c\unlnkwnt.c
+uopen.obj    : ../../../c/uopen.c    ../../../c/open.c
+uopenos2.obj : ../../../c/uopenos2.c ../../../c/openos2.c
+uopenwnt.obj : ../../../c/uopenwnt.c ../../../c/openwnt.c
+
+uunln.obj    : ../../../c/uunln.c    ../../../c/unlnk.c
+uunlnos2.obj : ../../../c/uunlnos2.c ../../../c/unlnkos2.c
+uunlnwnt.obj : ../../../c/uunlnwnt.c ../../../c/unlnkwnt.c

@@ -38,6 +38,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int           WRIsCorrectNode            ( WResID *, uint_16, char * );
+extern int  WRIsCorrectNode( WResID *, uint_16, char * );
 
 #endif

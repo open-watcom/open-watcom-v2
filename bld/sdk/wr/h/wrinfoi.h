@@ -43,7 +43,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int WRCopyFileToTemp     ( WRInfo *info, char *filename );
-extern int WRRelinkInfo         ( WRInfo *info );
+extern int  WRCopyFileToTemp( WRInfo *info, char *filename );
+extern int  WRRelinkInfo( WRInfo *info );
 
 #endif

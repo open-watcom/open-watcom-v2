@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Windows 3.x debug output.
 *
 ****************************************************************************/
 
@@ -36,105 +35,9 @@
 #include <dos.h>
 #include <stdarg.h>
 
-/*
- * This is going to get ugly, 'cause I'm adding NEC code which is TOTALLY
- * different. But I'll try to keep it nice.
- */
 
 unsigned DbgFlags = -1;
 
-#if defined( _NEC_PC )
-#ifdef DEBUG
-
-/*
- * Debugging output code for the NEC
- */
-char FAR *              CharPtr;
-char FAR *              AttrPtr;
-
-static int SetupVideoPointers();
-
-int _cnt;
-
-static int _initialized=0;
-static int _line=0;
-static unsigned         screen_mem;
-
-static int SetupVideoPointers()
-{
-    FARPROC tmpp;
-
-    tmpp = GetProcAddress(GetModuleHandle("KERNEL"), "__A000h");
-    if( tmpp == NULL ) return( TRUE );
-    screen_mem = LOWORD( (DWORD)tmpp );
-
-    CharPtr = MK_FP( screen_mem, 0 );
-    AttrPtr = MK_FP( screen_mem, 0x2000 );
-    _initialized = 1;
-    return( FALSE );
-}
-
-void MyClearScreen()
-{
-    int i;
-
-    if( !_initialized ) {
-        SetupVideoPointers();
-    }
-    for( i=0; i < 80 * 25; i++ ) {
-        CharPtr[ i * 2 ] = ' ';
-        CharPtr[ i * 2 + 1 ] = 0;
-        AttrPtr[ i * 2 ] = 0xE1;
-        AttrPtr[ i * 2 + 1 ] = 0;
-    }
-}
-
-void MyOut( unsigned f, char *str, ... )
-{
-    va_list     al;
-    char        res[128];
-    int         len,i;
-    char        *scr;
-    char        *atr;
-
-    if( ( f & DbgFlags ) == 0 ) return;
-    if( !_initialized ) SetupVideoPointers();
-    sprintf( res,"%03d) ",++_cnt );
-    va_start( al, str );
-    vsprintf( &res[5],str, al );
-    len = strlen( res );
-
-    scr = &CharPtr[ _line*80*2 ];
-    atr = &AttrPtr[ _line*80*2 ];
-
-    for( i=0;i<len;i++ ) {
-        scr[i*2] = res[i];
-        scr[i*2+1] = 0;
-        atr[ i*2 ] = 0xE1;
-        atr[ i*2+1 ] = 0;
-    }
-    for( i=len;i<80;i++ ) {
-        scr[i*2] = ' ';
-        scr[i*2+1] = 0;
-        atr[i*2] = 0xE1;
-        atr[i*2+1] = 0;
-    }
-    _line++;
-    if( _line > 24 ) _line = 0;
-
-    scr = &CharPtr[_line*80*2];
-    atr = &AttrPtr[_line*80*2];
-    for( i=0;i<80;i++ ) {
-        scr[i*2] = ' ';
-        scr[i*2+1] = 0;
-        atr[i*2] = 0xE1;
-        atr[i*2+1] = 0;
-    }
-}
-
-#endif                          // ifdef DEBUG
-
-#else                           // if defined( _NEC_PC )
 #ifdef DEBUG
 
 /*
@@ -217,4 +120,3 @@ void MyOut( unsigned f, char *str, ... )
 #endif
 }
 #endif                                  // ifdef DEBUG
-#endif                                  // if defined( _NEC_PC )

@@ -24,76 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  maro processing routines
 *
 ****************************************************************************/
 
 
 #define     PLACEHOLDER_SIZE 3      /* for #dd - number sign, digit, digit */
 
-// fixme some of these include files are not needed
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
+#include "asmglob.h"
 #include <ctype.h>
 
-#include "asmglob.h"
 #include "asmalloc.h"
-#include "asmerr.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins1.h"
-#include "namemgr.h"
-#include "asmsym.h"
-#include "asmerr.h"
-
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
-#include "myassert.h"
-#include "fixup.h"
-#include "expand.h"
-
+#include "asmeval.h"
+#include "asmexpnd.h"
 #include "directiv.h"
-// #undef _DIRECT_H_
-// #define _DIRECT_FIX_
-// #include "directiv.h"
+#include "asminput.h"
 
-extern char             *ReadTextLine( char * );
-extern void             FlushCurrSeg( void );
-extern void             AsmError( int );
-extern int              InputQueueFile( char * );
-extern int              AsmScan( char *, char * );
-extern struct fixup     *CreateFixupRec( int );
-extern void             InputQueueLine( char * );
-extern void             PushLineQueue(void);
-extern void             AsmTakeOut( char * );
-extern int              EvalExpr( int, int, int );
-extern dir_node         *dir_insert( char *name, int tab );
-extern void             wipe_space( char *token );
-extern char             *get_curr_filename( void );
-extern void             PushMacro( char *, bool );
+#include "myassert.h"
 
-extern  const struct asm_ins    ASMFAR AsmOpTable[];
-extern  uint            LineNumber;
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
-extern  struct AsmCodeName AsmOpcode[];
-extern  char            StringBuf[];
-extern  char            Parse_Pass;     // phase of parsing
-extern  module_info     ModuleInfo;
+extern bool             GetQueueMacroHidden( void );
+
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern dir_node         *CurrProc;
-extern int_8            Use32;          // if 32-bit code is use
-extern File_Info        AsmFiles;
-extern char             *CurrString;    // Current Input Line
-extern char             EndDirectiveFound;
-extern char             AsmChars[];
-extern int              Token_Count;    // number of tokens on line
 extern int              MacroLocalVarCounter;
 
+int                     MacroExitState = 0;
 
 /* quick explanation:
  *
@@ -163,7 +118,7 @@ static char *replace_parm( parm_list *parms, char *start, char len, asmlines *ls
 
             AsmFree( old_line );
 
-            return( new_line + PLACEHOLDER_SIZE );  /* ptr to char after #dd */
+            return( new_line + before + PLACEHOLDER_SIZE );  /* ptr to char after #dd */
         }
         count++;
     }
@@ -186,6 +141,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
     line = linestruct->line;
     for( tmp = line; *tmp != '\0'; ) {
         /* scan across the string for space, &, " - to start a word */
+        line = tmp;
         for( ; *tmp != '\0'; tmp++ ) {
             if( is_valid_id_char( *tmp ) ) {
                 if( tmp == line ) break; /* ok to start at beginning of line */
@@ -255,15 +211,15 @@ static int macro_local( void )
     int i = 0;
     char buffer[MAX_LINE_LEN];
 
-    if( AsmBuffer[i]->value != T_LOCAL ) {
+    if( AsmBuffer[i]->u.token != T_LOCAL ) {
         AsmError( SYNTAX_ERROR );
         return( ERROR );
     }
 
     PushLineQueue();
-    for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {
+    for( i++; AsmBuffer[i]->class != TC_FINAL; i++ ) {
         /* define an equ to expand the specified variable to a temp. name */
-        if( AsmBuffer[i]->token != T_ID ) {
+        if( AsmBuffer[i]->class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
             return( ERROR );
         }
@@ -273,9 +229,9 @@ static int macro_local( void )
         MacroLocalVarCounter++;
         InputQueueLine( buffer );
         i++;
-        if( AsmBuffer[i]->token == T_FINAL ) break;
+        if( AsmBuffer[i]->class == TC_FINAL ) break;
         /* now skip the comma */
-        if( AsmBuffer[i]->token != T_COMMA ) {
+        if( AsmBuffer[i]->class != TC_COMMA ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -299,14 +255,18 @@ static int macro_exam( int i )
     uint                nesting_depth = 0;
     bool                store_data;
 
-    name = AsmBuffer[i++]->string_ptr;
+    if( Options.mode & MODE_IDEAL ) {
+        name = AsmBuffer[i+1]->string_ptr;
+    } else {
+        name = AsmBuffer[i]->string_ptr;
+    }
     dir = (dir_node *)AsmGetSymbol( name );
     info = dir->e.macroinfo;
 
     store_data = Parse_Pass == PASS_1 || info->data == NULL;
 
-    /* go past "MACRO" */
-    i++;
+    /* go past "MACRO" and name*/
+    i += 2;
 
     if( store_data ) {
         for( ; i < Token_Count ; ) {
@@ -322,11 +282,11 @@ static int macro_exam( int i )
             i++;
 
             /* now see if it has a default value or is required */
-            if( AsmBuffer[i]->token == T_COLON ) {
+            if( AsmBuffer[i]->class == TC_COLON ) {
                 i++;
                 if( *AsmBuffer[i]->string_ptr == '=' ) {
                     i++;
-                    if( AsmBuffer[i]->token != T_STRING ) {
+                    if( AsmBuffer[i]->class != TC_STRING ) {
                         AsmError( SYNTAX_ERROR );
                         return( ERROR );
                     }
@@ -340,7 +300,7 @@ static int macro_exam( int i )
                     i++;
                 }
             }
-            if( i< Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+            if( i< Token_Count && AsmBuffer[i]->class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
                 return( ERROR );
             }
@@ -381,7 +341,10 @@ static int macro_exam( int i )
         while( isspace( *ptr ) ) ptr++;
         if( lineis( ptr, "for" )
          || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" ) ) {
+         || lineis( ptr, "irp" )
+         || lineis( ptr, "irpc" )
+         || lineis( ptr, "rept" )
+         || lineis( ptr, "repeat" ) ) {
             nesting_depth++;
         }
         while( *ptr != '\0' && !isspace( *ptr ) ) ptr++; // skip 1st token
@@ -389,7 +352,10 @@ static int macro_exam( int i )
         if( lineis( ptr, "macro" )
          || lineis( ptr, "for" )
          || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" ) ) {
+         || lineis( ptr, "irp" )
+         || lineis( ptr, "irpc" )
+         || lineis( ptr, "rept" )
+         || lineis( ptr, "repeat" ) ) {
             nesting_depth++;
         }
 
@@ -410,9 +376,9 @@ static int my_sprintf( char *dest, char *format, int argc, char *argv[] )
     char buffer[3];
     char *start;
     char *end;
-    char parmno = 0;
+    int  parmno = 0;
 
-    *dest = NULL;
+    *dest = '\0';
     start = format;
     for( end = start ;*end != '\0'; start = end + PLACEHOLDER_SIZE ) {
         /* scan till we hit a placeholdr ( #dd ) or the end of the string */
@@ -445,7 +411,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     parm_list           *parm;
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
-    char                count = 0;
+    int                 count = 0;
 
     for( parm = parmlist; parm != NULL; parm = parm->next ) {
         count ++;
@@ -458,7 +424,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    new_line = AsmAlloc( strlen( (char*)buffer ) + 1 );
+    new_line = AsmAlloc( strlen( buffer ) + 1 );
     strcpy( new_line, buffer );
     return( new_line );
 }
@@ -479,7 +445,6 @@ int ExpandMacro( int tok_count)
 /*****************************/
 {
     char        buffer[MAX_LINE_LEN];
-    char        next_char[2];
     dir_node    *dir;
     asm_sym     *sym = NULL;
     macro_info  *info;
@@ -490,14 +455,14 @@ int ExpandMacro( int tok_count)
     int         macro_name_loc;
     char        expansion_flag = FALSE;
     int         exp_start;
+    int         nesting_depth;
+    char        *ptr;
 
-    if( AsmBuffer[count]->token == T_FINAL ) return( tok_count );
-
-    next_char[1]='\0';
+    if( AsmBuffer[count]->class == TC_FINAL ) return( tok_count );
 
     /* first, find out if it is a macro */
     for( ; count < tok_count; count++ ) {
-        if( AsmBuffer[count]->token == T_ID ) {
+        if( AsmBuffer[count]->class == TC_ID ) {
             sym = AsmGetSymbol( AsmBuffer[count]->string_ptr );
         }
         if( sym != NULL && sym->state == SYM_MACRO ) break;
@@ -506,18 +471,25 @@ int ExpandMacro( int tok_count)
         return( tok_count );
     }
     macro_name_loc = count;
-    if( AsmBuffer[count+1]->token == T_DIRECTIVE &&
-        AsmBuffer[count+1]->value == T_MACRO ) {
-        /* this is a macro DEFINITION! */
-        return( tok_count );
+    if( Options.mode & MODE_IDEAL ) {
+        count--;
+    } else {
+        count++;
     }
-
+    if( count >= 0 ) {
+        if( AsmBuffer[count]->class == TC_DIRECTIVE &&
+            AsmBuffer[count]->u.token == T_MACRO ) {
+            /* this is a macro DEFINITION! */
+            return( tok_count );
+        }
+    }
     if( macro_name_loc != 0 ) {
         /* save the rest of the line from before the macro */
         PushLineQueue();
         buffer[0]='\0';
         for( count=0; count < macro_name_loc; count++ ) {
             strcat( buffer, AsmBuffer[count]->string_ptr );
+            strcat( buffer, " " );
         }
         InputQueueLine( buffer );
     }
@@ -534,8 +506,8 @@ int ExpandMacro( int tok_count)
     for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
         buffer[0]='\0';
         if( count < tok_count ) {
-            if( AsmBuffer[count]->token == T_COMMA ||
-                ( AsmBuffer[count]->token == T_STRING &&
+            if( AsmBuffer[count]->class == TC_COMMA ||
+                ( AsmBuffer[count]->class == TC_STRING &&
                   strlen( AsmBuffer[count]->string_ptr ) == 0 ) ) {
                 /* blank parm */
 
@@ -548,10 +520,10 @@ int ExpandMacro( int tok_count)
                     parm->replace = AsmAlloc( strlen( parm->def )+1 );
                     strcpy( parm->replace, parm->def );
                 }
-                if( AsmBuffer[count]->token != T_COMMA ) {
+                if( AsmBuffer[count]->class != TC_COMMA ) {
                     count++;
                     if( count < tok_count &&
-                        AsmBuffer[count]->token != T_COMMA ) {
+                        AsmBuffer[count]->class != TC_COMMA ) {
                         AsmError( EXPECTING_COMMA );
                         return( ERROR );
                     }
@@ -561,7 +533,7 @@ int ExpandMacro( int tok_count)
             } else {
                 /* we have a parm! :) */
                 for( ; ; ) {
-                    if( AsmBuffer[count]->token == T_FINAL ) break;
+                    if( AsmBuffer[count]->class == TC_FINAL ) break;
                     if( *(AsmBuffer[count]->string_ptr) == '%' ) {
                         *(AsmBuffer[count]->string_ptr) = ' ';
                         expansion_flag = TRUE;
@@ -569,22 +541,22 @@ int ExpandMacro( int tok_count)
                     }
 
                     if( !expansion_flag ) {
-                        if( AsmBuffer[count]->token == T_COMMA ||
+                        if( AsmBuffer[count]->class == TC_COMMA ||
                             AsmBuffer[count]->string_ptr == NULL ||
                             count == tok_count ) {
                             break;
                         }
-                        if( ( AsmBuffer[count]->token > T_ID_IN_BACKQUOTES ) ) {
-                            next_char[0] = *( AsmBuffer[count]->string_ptr );
-                            strcat( buffer, next_char );
-                        } else if( AsmBuffer[count]->token == T_NUM ) {
-                            itoa( AsmBuffer[count]->value, buffer+strlen( buffer ), 10 );
-                        } else if( AsmBuffer[count]->token == T_STRING ) {
+                        if( AsmBuffer[count]->class == TC_NUM ) {
+                            if( *AsmBuffer[count]->string_ptr == 0 ) {
+                                itoa( AsmBuffer[count]->u.value, buffer+strlen( buffer ), 10 );
+                            } else {
+                                strcpy( buffer+strlen( buffer ), AsmBuffer[count]->string_ptr );
+                            }
+                        } else if( AsmBuffer[count]->class == TC_STRING ) {
                             char        *src;
                             char        *dst;
 
                             dst = &buffer[strlen(buffer)];
-                            *dst++ = '\'';
 
                             src = AsmBuffer[count]->string_ptr;
                             while( *src != '\0' ) {
@@ -593,7 +565,6 @@ int ExpandMacro( int tok_count)
                                 }
                                 *dst++ = *src++;
                             }
-                            *dst++ = '\'';
                             *dst = '\0';
                         } else {
                             strcat( buffer, AsmBuffer[count]->string_ptr );
@@ -604,14 +575,15 @@ int ExpandMacro( int tok_count)
                             free_parmlist( info->parmlist );
                             return( ERROR );
                         case STRING_EXPANDED:
+                            tok_count = Token_Count;
                             continue;
                         }
 
-                        if( AsmBuffer[count]->token == T_COMMA ||
+                        if( AsmBuffer[count]->class == TC_COMMA ||
                             AsmBuffer[count]->string_ptr == NULL ||
-                            AsmBuffer[count+1]->token == T_FINAL ) {
-                            if( AsmBuffer[count+1]->token == T_FINAL ) count++;
-                            tok_count = EvalExpr( tok_count, exp_start, count-1 );
+                            AsmBuffer[count+1]->class == TC_FINAL ) {
+                            if( AsmBuffer[count+1]->class == TC_FINAL ) count++;
+                            tok_count = EvalExpr( tok_count, exp_start, count-1, TRUE );
                             expansion_flag = FALSE;
                             Token_Count = tok_count;
                             count = exp_start;
@@ -633,13 +605,27 @@ int ExpandMacro( int tok_count)
 
     /* now actually fill in the parms */
     PushLineQueue();
+    nesting_depth = 0;
     for( lnode = info->data; lnode != NULL; lnode = lnode->next ) {
         line = fill_in_parms( lnode, info->parmlist );
-        if( lineis( line, "local" ) ) {
-            AsmScan( line, StringBuf );
-            if( macro_local() == ERROR ) return( ERROR );
-            AsmFree( line );
-            continue;
+        if( lineis( line, "endm" ) ) {
+            if( nesting_depth ) {
+                nesting_depth--;
+            }
+        } else if( lineis( line, "local" ) ) {
+            if( nesting_depth == 0 ) {
+                AsmScan( line );
+                if( macro_local() == ERROR ) return( ERROR );
+                AsmFree( line );
+                continue;
+            }
+        } else {
+            ptr = line;
+            while( *ptr != '\0' && !isspace( *ptr ) ) ptr++; // skip 1st token
+            while( isspace( *ptr ) ) ptr++; // skip all spaces
+            if( lineis( ptr, "macro" ) ) {
+                nesting_depth++;
+            }
         }
         InputQueueLine( line );
         AsmFree( line );
@@ -651,44 +637,52 @@ int ExpandMacro( int tok_count)
     /* now free the parm replace strings */
     free_parmlist( info->parmlist );
 
-//    tok_count = macro_name_loc - 1;
     return( 0 );
 }
 
 int MacroDef( int i, bool hidden )
 /********************************/
 {
-    struct asm_sym      *sym;
-    char                *name;
-    dir_node            *currproc;
+    char        *name;
+    int         n;
+    dir_node    *currproc;
 
-    if( Parse_Pass != PASS_1 ) {
-        /**/myassert( i >= 0 );
-        //  currproc = DirLookup( AsmBuffer[i]->string_ptr, TAB_MACRO );
-        currproc = (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr );
-        if( currproc != NULL ) {
-            return( macro_exam( i ) );
-        }
+    if( Options.mode & MODE_IDEAL ) {
+        n = i + 1;
+    } else {
+        n = --i;
     }
-    // error checking for nested macro defs here?
-
-    if( i < 0 ) {
+    if( ( Parse_Pass == PASS_1 ) &&
+        ( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) ) {
         AsmError( PROC_MUST_HAVE_A_NAME );
         return( ERROR );
     }
-    name = AsmBuffer[i]->string_ptr;
-    sym = AsmGetSymbol( name );
-    if( sym == NULL ) {
-         currproc = dir_insert( name, TAB_MACRO );
-         name = get_curr_filename();
-         currproc->e.macroinfo->filename = AsmAlloc( strlen( name ) + 1 );
-         strcpy( currproc->e.macroinfo->filename, name );
-         currproc->e.macroinfo->hidden = hidden;
-         sym = (asm_sym *)currproc;
-    } else {
+    name = AsmBuffer[n]->string_ptr;
+    currproc = (dir_node *)AsmGetSymbol( name );
+    if( currproc == NULL ) {
+        currproc = dir_insert( name, TAB_MACRO );
+        currproc->e.macroinfo->srcfile = get_curr_srcfile();
+        currproc->e.macroinfo->hidden = hidden;
+    } else if( Parse_Pass == PASS_1 ) {
         AsmError( PROC_ALREADY_DEFINED );
         return( ERROR );
     }
-    sym->state = SYM_MACRO;
-    return( macro_exam( i ) ) ;
+    return( macro_exam( i ) );
+}
+
+int MacroEnd( bool exit_flag )
+/*******************/
+{
+    if( exit_flag ) {
+        MacroExitState = 2;
+    } else if( MacroExitState > 0 ) {
+        if( GetQueueMacroHidden() ) {
+            MacroExitState--;
+        } else {
+            MacroExitState = 0;
+        }
+    } else {
+        MacroExitState = 0;
+    }
+    return( 0 );
 }

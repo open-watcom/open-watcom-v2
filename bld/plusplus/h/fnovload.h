@@ -65,6 +65,8 @@ typedef enum
     FNC_STDOP_CV_VOID       = 0x1000,       // check cv-qual adjustments on stdop void
     FNC_NO_DEALIAS          = 0x2000,       // don't dealias syms before overload
     FNC_USE_WP13332         = 0x4000,       // abide by wp13332 rules
+    FNC_ONLY_TEMPLATE       = 0x8000,       // only template functions
+    FNC_ONLY_NON_TEMPLATE   = 0x10000,      // only non-template functions
     FNC_DEFAULT             = 0x0000        // default behaviour
 } FNOV_CONTROL;
 
@@ -112,7 +114,10 @@ typedef struct {
     unsigned                userdef : 1;    // use of user-defined conversion
 } FNOV_RANK;
 
+#ifndef FNOV_LIST_DEFINED
+#define FNOV_LIST_DEFINED
 typedef struct func_list FNOV_LIST;
+#endif
 struct func_list {
     FNOV_LIST               *next;          // next entry
     SYMBOL                  sym;            // associated symbol
@@ -202,6 +207,7 @@ FNOV_RESULT FuncOverloadedLimitDiag(// FIND OVERLOADED FUNCTION FOR ARGUMENTS
     arg_list *alist,            // - arguments
     PTREE *ptlist,              // - parse tree nodes for each argument
     FNOV_CONTROL control,       // - bits to regulate overloading
+    PTREE templ_args,           // - explicit template arguments
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
 FNOV_RESULT FuncOverloaded(     // FIND OVERLOADED FUNCTION FOR ARGUMENTS
@@ -217,6 +223,7 @@ FNOV_RESULT FuncOverloadedDiag( // FIND OVERLOADED FUNCTION FOR ARGUMENTS
     SYMBOL sym,                 // - starting symbol
     arg_list *alist,            // - arguments
     PTREE *ptlist,              // - parse tree nodes for each argument
+    PTREE templ_args,           // - explicit template arguments
     FNOV_DIAG *fnov_diag )      // - diagnosis information
 ;
 FNOV_COARSE_RANK UdcLocate(     // SELECT A DIRECT OR COPY INITIALIZTION
@@ -306,10 +313,10 @@ void BuildUdcList(              // BUILD FNOV_LIST FOR USER-DEFD CONVERSIONS
     FNOV_LIST **pcandidates,    // - pointer to candidate list
     SYMBOL sym )                // - symbol to add
 ;
-void BuildUdcListDiag(              // BUILD FNOV_LIST FOR USER-DEFD CONVERSIONS
+void BuildCtorList(             // BUILD FNOV_LIST FOR CTOR CONVERSIONS
     FNOV_LIST **pcandidates,    // - pointer to candidate list
     SYMBOL sym,                 // - symbol to add
-    FNOV_DIAG *fnov_diag )
+    arg_list *alist )           // - argument list
 ;
 FNOV_RESULT ResolveUdcList(     // SELECT BEST USER-DEFD CONVERSION TO 'type'
     FNOV_LIST *candidates,      // - candidate list

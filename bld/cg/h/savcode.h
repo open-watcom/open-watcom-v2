@@ -227,12 +227,16 @@
 #ifdef _InRegAssgn
                 if( first_use == NULL ) {
                     first_use = conf->ins_range.first;
+                    _INS_NOT_BLOCK( first_use );
+                    _INS_NOT_BLOCK( blk->ins.hd.next );
                     if( first_use->id < blk->ins.hd.next->id ) {
                         first_use = blk->ins.hd.next;
                     }
                 }
                 if( final_defn == NULL ) {
                     final_defn = conf->ins_range.last;
+                    _INS_NOT_BLOCK( final_defn );
+                    _INS_NOT_BLOCK( blk->ins.hd.prev );
                     if( final_defn->id > blk->ins.hd.prev->id ) {
                         final_defn = blk->ins.hd.prev;
                         if( ( blk->class & CONDITIONAL )

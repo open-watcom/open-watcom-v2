@@ -1,9 +1,9 @@
-retf            MACRO   POP_COUNT
-                LOCAL   DUMMY
-                DUMMY   PROC FAR
-                RET     POP_COUNT
-                DUMMY   ENDP
-                ENDM
+;retf            MACRO   POP_COUNT
+;                LOCAL   DUMMY
+;                DUMMY   PROC FAR
+;                RET     POP_COUNT
+;                DUMMY   ENDP
+;                ENDM
                 NAME    macro
                 EXTRN   _big_code_ :BYTE
                 EXTRN   get_curr_filename_ :BYTE

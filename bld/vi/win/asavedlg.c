@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Auto-save confirmation dialog.
 *
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "asavedlg.h"
 
 /*
@@ -70,13 +68,13 @@ BOOL WINEXP ASaveDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 /*
  * GetAutosaveResponse - create dialog for controlling settings
  */
-char GetAutosaveResponse( void )
+vi_key GetAutosaveResponse( void )
 {
     DLGPROC     proc;
     int         rc;
 
     proc = (DLGPROC) MakeProcInstance( (FARPROC) ASaveDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND) NULL, proc );
+    rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, proc );
     FreeProcInstance( (FARPROC) proc );
 
     return( rc );

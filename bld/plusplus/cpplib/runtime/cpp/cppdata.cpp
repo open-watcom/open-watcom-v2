@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous C++ runtime data.
 *
 ****************************************************************************/
 
@@ -56,27 +55,38 @@ AXI( CPPLIB(multi_thread_init), INIT_PRIORITY_THREAD )
 
 #endif
 
-#if defined( M_PC_INTEL )
+#if defined( _M_IX86 )
 extern "C" {
 
-    // Note: these have _WRTLINK because they are used only to check
+    // Note: these have _WPRTDATA because they are used only to check
     //       consistency. Linker must resolve references to them.
 
+/*
+    This used to use the following nifty construct:
+
     #pragma aux no_extra_underscores "*";
+    _WPRTLINK int __pragma("no_extra_underscores") __compiled_under_NT;
+
+    However, this fails when _WPRTLINK specifies a calling convention.
+    It is not clear whether it really should fail or not.
+*/
 
     #if defined( FS_REGISTRATION_NT )
-        _WPRTLINK int __pragma("no_extra_underscores") __compiled_under_NT;
+        _WPRTDATA int __compiled_under_NT;
+        #pragma aux   __compiled_under_NT "*";
     #elif defined( FS_REGISTRATION_OS2 )
-        _WPRTLINK int __pragma("no_extra_underscores") __compiled_under_OS2;
+        _WPRTDATA int __compiled_under_OS2;
+        #pragma aux   __compiled_under_OS2 "*";
     #else
-        _WPRTLINK int __pragma("no_extra_underscores") __compiled_under_generic;
+        _WPRTDATA int __compiled_under_generic;
+        #pragma aux   __compiled_under_generic "*";
     #endif
 
 };
-#elif defined( M_ALPHA )
+#elif defined( __AXP__ )
 extern "C" {
 
-        _WPRTLINK int __compiled_under_generic;
+        _WPRTDATA int __compiled_under_generic;
 
 };
 #endif

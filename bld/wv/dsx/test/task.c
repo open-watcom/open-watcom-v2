@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS protected mode test child program (32-bit executable).
 *
 ****************************************************************************/
 
@@ -42,29 +41,28 @@
 
 #define _debug( s )     { cputs( s ); cputs( "\n\rPress a key\n\r" ); getch(); }
 #define NB_VECTORS      256
-#define _PUSH_BP        0x55
-#define _POP_BP         0x5d
 
 static void             far *SavePMVTable[ NB_VECTORS ];
 static unsigned         SaveRMVTable[ NB_VECTORS ];
 static unsigned         NewPMVTable[ NB_VECTORS ];
 static unsigned         NewRMVTable[ NB_VECTORS ];
 
+// Shouldn't this set si as well?? - MN
 extern void DoInt66( uint_16, uint_16, void __far * );
 #pragma aux DoInt66 =   \
-    _XCHG_BX_CX         \
-    _SHR_ECX_N 0x10     \
-    _PUSH_BP            \
-    _INT 0x66           \
-    _POP_BP             \
+    "xchg bx, cx "      \
+    "shr  ecx, 16"      \
+    "push bp     "      \
+    "int  0x66   "      \
+    "pop  bp     "      \
     parm [ax] [dx] [cx ebx] \
     modify exact [eax ebx ecx edx esi edi];
 
 extern void StoreDTs( void *, uint_16 *, void * );
 #pragma aux StoreDTs = \
-    0x0f 0x01 0x03   /* sgdt [ebx] */ \
-    0x0f 0x00 0x06   /* sldt [esi] */ \
-    0x0f 0x01 0x0f   /* sidt [edi] */ \
+    "sgdt [ebx]" \
+    "sldt [esi]" \
+    "sidt [edi]" \
     parm [ebx] [esi] [edi]     \
     modify exact [];
 

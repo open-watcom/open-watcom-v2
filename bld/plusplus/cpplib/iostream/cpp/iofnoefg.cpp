@@ -29,33 +29,19 @@
 *
 ****************************************************************************/
 
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  95/06/19    Greg Bentz      indirect calls to math library
-
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <errno.h>
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "exitwmsg.h"
 #include "iofhdr.h"
 
 
 static void _no_support_loaded() {
-    __fatal_runtime_error( "C++ floating-point support not loaded\r\n", 1 );
+    __fatal_runtime_error( "C++ floating-point support not loaded", 1 );
 }
 
 _WPRTLINK _type_EFG_cnvs2d __EFG_cnvs2d
@@ -66,3 +52,7 @@ _WPRTLINK _type_EFG_LDcvt  __EFG_LDcvt
        = (_type_EFG_LDcvt)_no_support_loaded;
 _WPRTLINK _type_EFG_fcvt   __EFG_fcvt
        = (_type_EFG_fcvt)_no_support_loaded;
+#ifdef _LONG_DOUBLE_
+_WPRTLINK _type_EFG__FDLD  __EFG__FDLD
+       = (_type_EFG__FDLD)_no_support_loaded;
+#endif

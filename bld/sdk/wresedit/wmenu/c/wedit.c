@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ctype.h>
 #include <string.h>
 #include "win1632.h"
@@ -46,7 +46,7 @@
 #include "wsetedit.h"
 #include "wprev.h"
 #include "wclip.h"
-#include "wmsgfile.h"
+#include "rcstr.gh"
 #include "wmsg.h"
 #include "sys_rc.h"
 #include "jdlg.h"
@@ -63,52 +63,51 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-LRESULT WINEXPORT WMenuEditProc ( HWND, UINT, WPARAM, LPARAM );
+LRESULT WINEXPORT WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
 
-extern UINT     WClipbdFormat;
-extern UINT     WItemClipbdFormat;
+extern UINT WClipbdFormat;
+extern UINT WItemClipbdFormat;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool  WInitEditWindow            ( WMenuEditInfo * );
-static void  WExpandEditWindowItem      ( HWND, HWND, RECT * );
+static Bool WInitEditWindow( WMenuEditInfo * );
+static void WExpandEditWindowItem( HWND, HWND, RECT * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static DLGPROC     WMenuEditWinProc = NULL;
-static HBRUSH      WEditWinBrush     = NULL;
-static COLORREF    WEditWinColor     = NULL;
+static HBRUSH      WEditWinBrush    = NULL;
+static COLORREF    WEditWinColor    = 0;
 
 int appWidth = -1;
 int appHeight = -1;
 
-void WInitEditWindows ( HINSTANCE inst )
+void WInitEditWindows( HINSTANCE inst )
 {
-    _wtouch(inst);
+    _wtouch( inst );
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
-    WEditWinBrush = CreateSolidBrush ( WEditWinColor );
-    WMenuEditWinProc = (DLGPROC)
-        MakeProcInstance ( (FARPROC) WMenuEditProc, inst );
+    WEditWinBrush = CreateSolidBrush( WEditWinColor );
+    WMenuEditWinProc = (DLGPROC)MakeProcInstance( (FARPROC)WMenuEditProc, inst );
 }
 
-void WFiniEditWindows ( void )
+void WFiniEditWindows( void )
 {
-    if ( WEditWinBrush ) {
-        DeleteObject ( WEditWinBrush );
+    if( WEditWinBrush != NULL ) {
+        DeleteObject( WEditWinBrush );
     }
-    FreeProcInstance ( (FARPROC) WMenuEditWinProc );
+    FreeProcInstance( (FARPROC)WMenuEditWinProc );
 }
 
 
-Bool WCreateMenuEditWindow ( WMenuEditInfo *einfo, HINSTANCE inst )
+Bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
 {
     einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win,
-                                          WMenuEditWinProc, (LPARAM) einfo );
+                                          WMenuEditWinProc, (LPARAM)einfo );
 
-    if( einfo->edit_dlg == (HWND) NULL ) {
+    if( einfo->edit_dlg == (HWND)NULL ) {
         return( FALSE );
     }
 
@@ -122,31 +121,30 @@ Bool WCreateMenuEditWindow ( WMenuEditInfo *einfo, HINSTANCE inst )
     return( WInitEditWindow( einfo ) );
 }
 
-Bool WResizeMenuEditWindow ( WMenuEditInfo *einfo, RECT *prect )
+Bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
 {
-    int   width, height, ribbon_depth;
-    HWND  win;
-    RECT  crect;
+    int     width, height, ribbon_depth;
+    HWND    win;
+    RECT    crect;
 
-    if ( !einfo || !einfo->edit_dlg || !prect  ) {
-        return ( FALSE );
+    if( einfo == NULL || einfo->edit_dlg == NULL || prect == NULL ) {
+        return( FALSE );
     }
 
-    if ( einfo->show_ribbon ) {
+    if( einfo->show_ribbon ) {
         ribbon_depth = WGetRibbonHeight();
     } else {
         ribbon_depth = 0;
     }
 
-    width  = prect->right - prect->left;
+    width = prect->right - prect->left;
     height = prect->bottom - prect->top - ribbon_depth - WGetStatusDepth();
 
     /* change the size of the divider */
-    win = GetDlgItem ( einfo->edit_dlg, IDM_MENUEDBLACKLINE );
-    GetWindowRect ( win, &crect );
-    SetWindowPos ( win, (HWND) NULL, 0, 0, width,
-                   crect.bottom - crect.top,
-                   SWP_NOMOVE | SWP_NOZORDER );
+    win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDBLACKLINE );
+    GetWindowRect( win, &crect );
+    SetWindowPos( win, (HWND)NULL, 0, 0, width, crect.bottom - crect.top,
+                  SWP_NOMOVE | SWP_NOZORDER );
 
     // change the size of the resource name edit field
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDRNAME );
@@ -156,37 +154,34 @@ Bool WResizeMenuEditWindow ( WMenuEditInfo *einfo, RECT *prect )
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
     WExpandEditWindowItem( einfo->edit_dlg, win, prect );
 
-    SetWindowPos ( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth,
-                   width, height, SWP_NOZORDER );
+    SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth,
+                  width, height, SWP_NOZORDER );
 
     // change the size of the preview window
     WExpandEditWindowItem( einfo->edit_dlg, einfo->preview_window, prect );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 void WExpandEditWindowItem( HWND hDlg, HWND win, RECT *prect )
 {
-    RECT  crect, t;
+    RECT crect, t;
 
     if( win == (HWND)NULL ) {
         return;
     }
 
     /* expand the child window */
-    GetWindowRect ( win, &crect );
-    MapWindowPoints ( (HWND)NULL, hDlg, (POINT *)&crect, 2 );
-    t.left   = 0;
-    t.top    = 0;
-    t.right  = 0;
+    GetWindowRect( win, &crect );
+    MapWindowPoints( (HWND)NULL, hDlg, (POINT *)&crect, 2 );
+    t.left = 0;
+    t.top = 0;
+    t.right = 0;
     t.bottom = WEDIT_PAD;
-    MapDialogRect ( hDlg, &t );
-    SetWindowPos ( win, (HWND) NULL, 0, 0,
-                   prect->right - crect.left - t.bottom,
-                   crect.bottom - crect.top,
-                   SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE );
-    InvalidateRect ( win, NULL, TRUE );
-
+    MapDialogRect( hDlg, &t );
+    SetWindowPos( win, (HWND)NULL, 0, 0, prect->right - crect.left - t.bottom,
+                  crect.bottom - crect.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE );
+    InvalidateRect( win, NULL, TRUE );
 }
 
 void WSetEditWindowControls( WMenuEditInfo *einfo, WMenuEntry *entry )
@@ -194,22 +189,20 @@ void WSetEditWindowControls( WMenuEditInfo *einfo, WMenuEntry *entry )
     Bool        enable;
 
     // can this entry be reset or changed
-    enable = ( entry != NULL );
+    enable = (entry != NULL);
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDRESET ), enable );
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDCHANGE ), enable );
 
     // can this entry be shifted left
-    enable = ( entry && ( entry->parent != NULL ) && !entry->next );
+    enable = (entry != NULL && entry->parent != NULL && entry->next == NULL);
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDSHIFTLEFT ), enable );
 
     // can this entry be shifted right
-    enable = ( entry && entry->prev && entry->prev->item->IsPopup );
+    enable = (entry != NULL && entry->prev != NULL && entry->prev->item->IsPopup);
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDSHIFTRIGHT ), enable );
-
-    return;
 }
 
-Bool WSetEditWindowMenuEntry ( WMenuEditInfo *einfo, WMenuEntry *entry )
+Bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     Bool        ok;
     Bool        pop_sep;
@@ -217,30 +210,30 @@ Bool WSetEditWindowMenuEntry ( WMenuEditInfo *einfo, WMenuEntry *entry )
     uint_16     id;
     char        *text;
 
-    ok = ( einfo && einfo->edit_dlg && entry );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
     if( ok ) {
         if( entry->item->IsPopup ) {
             flags = entry->item->Item.Popup.ItemFlags;
-            text  = entry->item->Item.Popup.ItemText;
+            text = entry->item->Item.Popup.ItemText;
         } else {
             flags = entry->item->Item.Normal.ItemFlags;
-            id    = entry->item->Item.Normal.ItemID;
-            text  = entry->item->Item.Normal.ItemText;
+            id = entry->item->Item.Normal.ItemID;
+            text = entry->item->Item.Normal.ItemText;
         }
-        ok = WSetEditWindowText ( einfo->edit_dlg, flags, text );
+        ok = WSetEditWindowText( einfo->edit_dlg, flags, text );
     }
 
-    if ( ok ) {
-        ok = WSetEditWindowFlags ( einfo->edit_dlg, flags, FALSE );
+    if( ok ) {
+        ok = WSetEditWindowFlags( einfo->edit_dlg, flags, FALSE );
     }
 
-    if ( ok ) {
-        pop_sep = ( entry->item->IsPopup || ( flags & MENU_SEPARATOR ) );
+    if( ok ) {
+        pop_sep = (entry->item->IsPopup || (flags & MENU_SEPARATOR));
         ok = WSetEditWindowID( einfo->edit_dlg, id, pop_sep, entry->symbol );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 static Bool WQueryNukePopup( WMenuEditInfo *einfo )
@@ -256,10 +249,10 @@ static Bool WQueryNukePopup( WMenuEditInfo *einfo )
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
-    if( text ) {
+    if( text != NULL ) {
         WFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         WMemFree( title );
     }
 
@@ -289,20 +282,20 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         *reset = FALSE;
     }
 
-    ok = ( einfo && einfo->edit_dlg && entry );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
     if( ok ) {
         ok = WGetEditWindowFlags( einfo->edit_dlg, &flags );
     }
 
-    if ( ok ) {
-        if( !( flags & MENU_SEPARATOR ) ) {
-            ok = WGetEditWindowText ( einfo->edit_dlg, &text );
+    if( ok ) {
+        if( !(flags & MENU_SEPARATOR) ) {
+            ok = WGetEditWindowText( einfo->edit_dlg, &text );
         }
     }
 
     if( ok ) {
-        if( !( flags & MENU_POPUP ) ) {
+        if( !(flags & MENU_POPUP) ) {
             ok = WGetEditWindowID( einfo->edit_dlg, &symbol, &id,
                                    einfo->info->symbol_table,
                                    einfo->combo_change );
@@ -310,23 +303,24 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     }
 
     /* check if anything was actually modified */
-    if ( ok ) {
+    if( ok ) {
         // make sure the symbol info did not change
-        ok = ( !entry->symbol && symbol ) || ( entry->symbol && !symbol );
+        ok = (entry->symbol == NULL && symbol != NULL) ||
+             (entry->symbol != NULL && symbol == NULL);
         if( !ok ) {
             ok = symbol && stricmp( entry->symbol, symbol );
             if( !ok ) {
                 iflags = entry->item->Item.Popup.ItemFlags;
                 iflags &= ~MENU_ENDMENU;
-                ok = ( iflags != flags );
+                ok = (iflags != flags);
                 if( !ok ) {
                     if( flags & MENU_POPUP ) {
                         ok = strcmp( entry->item->Item.Popup.ItemText, text );
                     } else if( flags & MENU_SEPARATOR ) {
                         ok = FALSE;
                     } else {
-                        ok = ( entry->item->Item.Normal.ItemID != id ) ||
-                               strcmp( entry->item->Item.Normal.ItemText, text );
+                        ok = (entry->item->Item.Normal.ItemID != id ||
+                              strcmp( entry->item->Item.Normal.ItemText, text ));
                     }
                 }
             }
@@ -338,7 +332,7 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
 
     if( ok ) {
         if( entry->item->IsPopup ) {
-            if( entry->child && ( (flags & MENU_POPUP) == 0 ) ) {
+            if( entry->child != NULL && (flags & MENU_POPUP) == 0 ) {
                 ok = WQueryNukePopup( einfo );
             }
         }
@@ -351,7 +345,7 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                     *reset = TRUE;
                 }
                 entry->preview_popup = (HMENU)NULL;
-                if( entry->child ) {
+                if( entry->child != NULL ) {
                     WFreeMenuEntries( entry->child );
                     entry->child = NULL;
                 }
@@ -362,8 +356,7 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         } else {
             // if the item is being changed from a normal item into a popup
             // or separator then reset the preview
-            if( ( (flags & MENU_POPUP) != 0 ) ||
-                ( (flags & MENU_SEPARATOR) != 0 ) ) {
+            if( (flags & MENU_POPUP) != 0 || (flags & MENU_SEPARATOR) != 0 ) {
                 if( reset ) {
                     *reset = TRUE;
                 }
@@ -373,10 +366,10 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 WMemFree( entry->item->Item.Normal.ItemText );
             }
         }
-        if( entry->symbol ) {
+        if( entry->symbol != NULL ) {
             WMemFree( entry->symbol );
         }
-        entry->item->IsPopup = ( (flags & MENU_POPUP) != 0 );
+        entry->item->IsPopup = ((flags & MENU_POPUP) != 0);
         if( entry->item->IsPopup ) {
             entry->item->Item.Popup.ItemText = text;
             entry->item->Item.Popup.ItemFlags = flags;
@@ -406,74 +399,73 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
 
 Bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
 {
-    Bool  ok;
-    char *t;
-    char *n;
+    Bool    ok;
+    char    *t;
+    char    *n;
 
-    ok = ( dlg != (HWND) NULL );
+    ok = (dlg != (HWND)NULL);
 
-    if ( ok ) {
+    if( ok ) {
         if( flags & MENU_SEPARATOR ) {
             t = "";
         } else {
             t = text;
-            if ( t == NULL ) {
+            if( t == NULL ) {
                 t = "";
             }
         }
     }
 
-    if ( ok ) {
+    if( ok ) {
         n = WConvertStringFrom( t, "\t\x8", "ta" );
-        if( n ) {
-            ok = WSetEditWithStr ( GetDlgItem ( dlg, IDM_MENUEDTEXT ), n );
+        if( n != NULL ) {
+            ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), n );
             WMemFree( n );
         } else {
-            ok = WSetEditWithStr ( GetDlgItem ( dlg, IDM_MENUEDTEXT ), t );
+            ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), t );
         }
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WGetEditWindowText ( HWND dlg, char **text )
+Bool WGetEditWindowText( HWND dlg, char **text )
 {
     Bool        ok;
     char        *n;
 
-    ok = ( ( dlg != (HWND) NULL ) && ( text != NULL ) );
+    ok = (dlg != (HWND)NULL && text != NULL);
 
-    if ( ok ) {
-        n = WGetStrFromEdit ( GetDlgItem ( dlg, IDM_MENUEDTEXT ), NULL );
-        if( n && !*n ) {
+    if( ok ) {
+        n = WGetStrFromEdit( GetDlgItem( dlg, IDM_MENUEDTEXT ), NULL );
+        if( n != NULL && *n == '\0' ) {
             WMemFree( n );
             n = NULL;
         }
         *text = WConvertStringTo( n, "\t\x8", "ta" );
-        if( n ) {
+        if( n != NULL ) {
             WMemFree( n );
         }
-        ok = ( *text != NULL );
+        ok = (*text != NULL);
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WSetEditWindowID( HWND dlg, uint_16 id, Bool is_pop_sep, char *symbol )
 {
-    Bool  ok;
+    Bool    ok;
 
-    ok = ( dlg != (HWND) NULL );
+    ok = (dlg != (HWND)NULL);
 
     if( ok ) {
         if( is_pop_sep ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDID ), "" );
         } else {
-            if( symbol ) {
+            if( symbol != NULL ) {
                 ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDID ), symbol );
             } else {
-                ok = WSetEditWithSINT32( GetDlgItem( dlg, IDM_MENUEDID ),
-                                         (int_32)id, 10 );
+                ok = WSetEditWithSINT32( GetDlgItem( dlg, IDM_MENUEDID ), (int_32)id, 10 );
             }
         }
     }
@@ -482,8 +474,7 @@ Bool WSetEditWindowID( HWND dlg, uint_16 id, Bool is_pop_sep, char *symbol )
         if( is_pop_sep ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDNUM ), "" );
         } else {
-            ok = WSetEditWithSINT32( GetDlgItem( dlg, IDM_MENUEDNUM ),
-                                     (int_32)id, 10 );
+            ok = WSetEditWithSINT32( GetDlgItem( dlg, IDM_MENUEDNUM ), (int_32)id, 10 );
         }
     }
 
@@ -513,7 +504,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         return( FALSE );
     }
 
-    if( !**symbol ) {
+    if( **symbol == '\0' ) {
         *symbol = WGetStrFromEdit( GetDlgItem( dlg, IDM_MENUEDNUM ), NULL );
     }
 
@@ -525,9 +516,9 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
 
     // check if the string has a numeric representation
     val = (int_32)strtol( *symbol, &ep, 0 );
-    if( *ep ) {
+    if( *ep != '\0' ) {
         // the string did not have a numeric representation
-        // so lets look it up in the hash table
+        // so let's look it up in the hash table
         if( WRLookupName( symbol_table, *symbol, &hv ) ) {
             *id = (uint_16)hv;
         } else {
@@ -558,76 +549,78 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     return( TRUE );
 }
 
-Bool WSetEditWindowFlags ( HWND dlg, MenuFlags flags, Bool reset )
+Bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, Bool reset )
 {
-    Bool  ok;
+    Bool ok;
 
-    ok = ( dlg != (HWND) NULL );
+    ok = (dlg != (HWND)NULL);
 
-    if ( ok ) {
-        #if 0
-        EnableWindow( GetDlgItem( dlg, IDM_MENUEDPOPUP ), ( (flags & MENU_POPUP) != 0 ) );
-        EnableWindow( GetDlgItem( dlg, IDM_MENUEDSEP ), ( (flags & MENU_SEPARATOR) != 0 ) );
-        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ), ( !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) ) );
-        #endif
+    if( ok ) {
+#if 0
+        EnableWindow( GetDlgItem( dlg, IDM_MENUEDPOPUP ), (flags & MENU_POPUP) != 0 );
+        EnableWindow( GetDlgItem( dlg, IDM_MENUEDSEP ), (flags & MENU_SEPARATOR) != 0 );
+        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ),
+                      !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
+#endif
 
-        CheckDlgButton( dlg, IDM_MENUEDPOPUP,  reset || ( (flags & MENU_POPUP) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDSEP,  !reset && ( (flags & MENU_SEPARATOR) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDNORMAL, !reset && ( !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) ) );
-        CheckDlgButton( dlg, IDM_MENUEDCHECKED, !reset && ( (flags & MENU_CHECKED) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDGRAYED, !reset && ( (flags & MENU_GRAYED) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDINACTIVE, !reset && ( (flags & MENU_INACTIVE) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDHELP, !reset && ( (flags & MENU_HELP) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDMENU, !reset && ( (flags & MENU_MENUBREAK) != 0 ) );
-        CheckDlgButton( dlg, IDM_MENUEDMENUBAR, !reset && ( (flags & MENU_MENUBARBREAK) != 0 ) );
+        CheckDlgButton( dlg, IDM_MENUEDPOPUP, reset || (flags & MENU_POPUP) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDSEP, !reset && (flags & MENU_SEPARATOR) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDNORMAL,
+                        !reset && !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
+        CheckDlgButton( dlg, IDM_MENUEDCHECKED, !reset && (flags & MENU_CHECKED) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDGRAYED, !reset && (flags & MENU_GRAYED) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDINACTIVE, !reset && (flags & MENU_INACTIVE) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDHELP, !reset && (flags & MENU_HELP) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDMENU, !reset && (flags & MENU_MENUBREAK) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDMENUBAR, !reset && (flags & MENU_MENUBARBREAK) != 0 );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WResetEditWindowFlags( HWND dlg )
 {
-    Bool  ok;
+    Bool ok;
 
-    ok = ( dlg != (HWND) NULL );
+    ok = (dlg != (HWND)NULL);
 
-    if ( ok ) {
-        ok = WSetEditWindowFlags ( dlg, 0, TRUE );
+    if( ok ) {
+        ok = WSetEditWindowFlags( dlg, 0, TRUE );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool WGetEditWindowFlags( HWND dlg, MenuFlags *flags )
 {
-    Bool  ok;
+    Bool ok;
 
-    ok = ( ( dlg != (HWND) NULL ) && flags );
+    ok = (dlg != (HWND)NULL && flags != NULL);
 
     if( ok ) {
         *flags = 0;
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDPOPUP ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDPOPUP ) ) {
             *flags |= MENU_POPUP;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDSEP ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDSEP ) ) {
             *flags |= MENU_SEPARATOR;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDCHECKED ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDCHECKED ) ) {
             *flags |= MENU_CHECKED;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDGRAYED ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDGRAYED ) ) {
             *flags |= MENU_GRAYED;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDINACTIVE ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDINACTIVE ) ) {
             *flags |= MENU_INACTIVE;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDHELP ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDHELP ) ) {
             *flags |= MENU_HELP;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDMENU ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDMENU ) ) {
             *flags |= MENU_MENUBREAK;
         }
-        if( IsDlgButtonChecked ( dlg, IDM_MENUEDMENUBAR ) ) {
+        if( IsDlgButtonChecked( dlg, IDM_MENUEDMENUBAR ) ) {
             *flags |= MENU_MENUBARBREAK;
         }
     }
@@ -635,36 +628,35 @@ Bool WGetEditWindowFlags( HWND dlg, MenuFlags *flags )
     return( ok );
 }
 
-Bool WSetEditWinResName ( WMenuEditInfo *einfo )
+Bool WSetEditWinResName( WMenuEditInfo *einfo )
 {
-    if ( einfo && einfo->edit_dlg && einfo->info->res_name ) {
-        return ( WSetEditWithWResID ( GetDlgItem ( einfo->edit_dlg,
-                                                   IDM_MENUEDRNAME ),
-                                      einfo->info->res_name ) );
+    if( einfo != NULL && einfo->edit_dlg != NULL && einfo->info->res_name != NULL ) {
+        return( WSetEditWithWResID( GetDlgItem( einfo->edit_dlg, IDM_MENUEDRNAME ),
+                                    einfo->info->res_name ) );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WInitEditWindowListBox ( WMenuEditInfo *einfo )
+Bool WInitEditWindowListBox( WMenuEditInfo *einfo )
 {
     Bool        ok;
     HWND        lbox;
     int         pos;
 
-    ok = ( einfo && einfo->edit_dlg && einfo->menu );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL && einfo->menu != NULL);
 
-    if ( ok ) {
+    if( ok ) {
         pos = 0;
-        lbox = GetDlgItem ( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = ( lbox != (HWND)NULL );
+        lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
+        ok = (lbox != (HWND)NULL);
     }
 
     if( ok ) {
-        SendMessage ( lbox, WM_SETREDRAW, FALSE, 0 );
-        SendMessage ( lbox, LB_RESETCONTENT, FALSE, 0 );
-        ok = WAddMenuEntriesToLBox ( lbox, einfo->menu->first_entry, &pos );
-        SendMessage ( lbox, WM_SETREDRAW, TRUE, 0 );
+        SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
+        SendMessage( lbox, LB_RESETCONTENT, FALSE, 0 );
+        ok = WAddMenuEntriesToLBox( lbox, einfo->menu->first_entry, &pos );
+        SendMessage( lbox, WM_SETREDRAW, TRUE, 0 );
         InvalidateRect( lbox, NULL, TRUE );
     }
 
@@ -672,18 +664,18 @@ Bool WInitEditWindowListBox ( WMenuEditInfo *einfo )
         ok = WResetPrevWindowMenu( einfo );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-Bool WInitEditWindow ( WMenuEditInfo *einfo )
+Bool WInitEditWindow( WMenuEditInfo *einfo )
 {
-    HWND  lbox;
-    Bool  ok;
+    HWND    lbox;
+    Bool    ok;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
-    if ( ok ) {
-        ok = WSetEditWinResName ( einfo );
+    if( ok ) {
+        ok = WSetEditWinResName( einfo );
     }
 
     if( ok ) {
@@ -692,13 +684,13 @@ Bool WInitEditWindow ( WMenuEditInfo *einfo )
 
     if( ok ) {
         WSetEditWindowControls( einfo, einfo->menu->first_entry );
-        if( einfo->menu->first_entry ) {
+        if( einfo->menu->first_entry != NULL ) {
             ok = WSetEditWindowMenuEntry( einfo, einfo->menu->first_entry );
             if( ok ) {
                 lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-                ok = ( SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR );
+                ok = (SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR);
                 einfo->current_entry = einfo->menu->first_entry;
-                einfo->current_pos   = 0;
+                einfo->current_pos = 0;
             }
         } else {
             CheckDlgButton( einfo->edit_dlg, IDM_MENUEDPOPUP, TRUE );
@@ -716,7 +708,7 @@ Bool WPasteMenuItem( WMenuEditInfo *einfo )
     Bool        ok;
 
     data = NULL;
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
     if( ok ) {
         ok = WGetClipData( einfo->win, WItemClipbdFormat, &data, &dsize );
@@ -724,7 +716,7 @@ Bool WPasteMenuItem( WMenuEditInfo *einfo )
 
     if( ok ) {
         entry = WMakeMenuEntryFromClipData( data, dsize );
-        ok = ( entry != NULL );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
@@ -735,7 +727,7 @@ Bool WPasteMenuItem( WMenuEditInfo *einfo )
         ok = WInsertMenuEntry( einfo, entry, TRUE );
     }
 
-    if( data ) {
+    if( data != NULL ) {
         WMemFree( data );
     }
 
@@ -752,22 +744,21 @@ Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut )
     Bool        ok;
 
     data = NULL;
-    ok = ( einfo != NULL );
+    ok = (einfo != NULL);
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = ( lbox != (HWND)NULL );
+        ok = (lbox != (HWND)NULL);
     }
 
     if( ok ) {
         index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = ( index != LB_ERR );
+        ok = (index != LB_ERR);
     }
 
     if( ok ) {
-        entry = (WMenuEntry *)
-            SendMessage ( lbox, LB_GETITEMDATA, (WPARAM) index, 0 );
-        ok = ( entry != NULL );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
@@ -804,10 +795,10 @@ static Bool WQueryChangeEntry( WMenuEditInfo *einfo )
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
-    if( text ) {
+    if( text != NULL ) {
         WFreeRCString( text );
     }
-    if( title ) {
+    if( title != NULL ) {
         WMemFree( title );
     }
 
@@ -826,28 +817,27 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
     Bool        reinit;
     Bool        mod;
 
-    if( !einfo ) {
+    if( einfo == NULL ) {
         return;
     }
 
     reinit = FALSE;
 
     lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-    if( lbox == (HWND) NULL ) {
+    if( lbox == (HWND)NULL ) {
         return;
     }
 
     index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( index != LB_ERR ) {
-        entry = (WMenuEntry *)
-            SendMessage( lbox, LB_GETITEMDATA, (WPARAM) index, 0 );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
     } else {
         entry = NULL;
     }
 
-    if( einfo->current_entry && !reset ) {
+    if( einfo->current_entry != NULL && !reset ) {
         mod = WGetEditWindowMenuEntry( einfo, einfo->current_entry, TRUE, NULL );
-        if( mod && ( einfo->current_pos != -1 ) ) {
+        if( mod && einfo->current_pos != -1 ) {
             if( change || WQueryChangeEntry( einfo ) ) {
                 WGetEditWindowMenuEntry( einfo, einfo->current_entry, FALSE, &reinit );
                 einfo->info->modified = TRUE;
@@ -855,8 +845,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
                     WInitEditWindowListBox( einfo );
                 } else {
                     SendMessage( lbox, LB_DELETESTRING, einfo->current_pos, 0 );
-                    WAddEditWinLBoxEntry( lbox, einfo->current_entry,
-                                          einfo->current_pos );
+                    WAddEditWinLBoxEntry( lbox, einfo->current_entry, einfo->current_pos );
                     WModifyEntryInPreview( einfo, einfo->current_entry );
                 }
             }
@@ -864,7 +853,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
     }
 
     WSetEditWindowControls( einfo, entry );
-    if( entry ) {
+    if( entry != NULL ) {
         if( !change || reinit ) {
             WSetEditWindowMenuEntry( einfo, entry );
         } else {
@@ -875,17 +864,17 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
                 flags = entry->item->Item.Popup.ItemFlags;
             } else {
                 flags = entry->item->Item.Normal.ItemFlags;
-                id    = entry->item->Item.Normal.ItemID;
+                id = entry->item->Item.Normal.ItemID;
             }
-            pop_sep = ( entry->item->IsPopup || ( flags & MENU_SEPARATOR ) );
+            pop_sep = (entry->item->IsPopup || (flags & MENU_SEPARATOR));
             WSetEditWindowID( einfo->edit_dlg, id, pop_sep, entry->symbol );
         }
     }
 
     einfo->current_entry = entry;
-    einfo->current_pos   = (index == LB_ERR) ? -1 : index;
+    einfo->current_pos = (index == LB_ERR ? -1 : index);
     if( index != LB_ERR ) {
-        SendMessage( lbox, LB_SETCURSEL, (WPARAM) index, 0 );
+        SendMessage( lbox, LB_SETCURSEL, (WPARAM)index, 0 );
     }
 }
 
@@ -906,22 +895,21 @@ static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
 
     entry_removed = FALSE;
 
-    ok = ( einfo && einfo->edit_dlg );
+    ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = ( lbox != NULL );
+        ok = (lbox != NULL);
     }
 
     if( ok ) {
         ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = ( ret != LB_ERR );
+        ok = (ret != LB_ERR);
     }
 
     if( ok ) {
-        entry = (WMenuEntry *)
-            SendMessage( lbox, LB_GETITEMDATA, (WPARAM)ret, 0 );
-        ok = ( entry != NULL );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)ret, 0 );
+        ok = (entry != NULL);
     }
 
     if( ok ) {
@@ -935,12 +923,12 @@ static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
 
     if( ok ) {
         if( left ) {
-            ok = WInsertEntryIntoMenu( einfo, parent, parent->parent,
-                                       entry, FALSE );
+            ok = WInsertEntryIntoMenu( einfo, parent, parent->parent, entry, FALSE );
         } else {
             if( prev->child != NULL ) {
                 parent = prev;
-                for( prev=parent->child; prev && prev->next; prev=prev->next );
+                for( prev = parent->child; prev != NULL && prev->next != NULL;
+                     prev = prev->next );
                 ok = WInsertEntryIntoMenu( einfo, prev, parent, entry, FALSE );
             } else {
                 ok = WInsertEntryIntoMenu( einfo, prev, parent, entry, TRUE );
@@ -955,18 +943,18 @@ static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
     if( ok ) {
         einfo->info->modified = TRUE;
         einfo->current_entry = NULL;
-        einfo->current_pos   = -1;
-        ret = SendMessage ( lbox, LB_SETCURSEL, (WPARAM)ret, 0 );
-        ok = ( ret != LB_ERR );
-        if ( ok ) {
-            WHandleSelChange ( einfo );
+        einfo->current_pos = -1;
+        ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)ret, 0 );
+        ok = (ret != LB_ERR);
+        if( ok ) {
+            WHandleSelChange( einfo );
         }
     }
 
     if( !ok ) {
         if( entry_removed ) {
-            WFreeMenuEntries ( entry->child );
-            WFreeMenuEntry ( entry );
+            WFreeMenuEntries( entry->child );
+            WFreeMenuEntry( entry );
             WInitEditWindowListBox( einfo );
         }
     }
@@ -974,8 +962,7 @@ static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
     return( ok );
 }
 
-LRESULT WINEXPORT WMenuEditProc ( HWND hDlg, UINT message,
-                                   WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WMenuEditInfo       *einfo;
     HWND                win;
@@ -984,140 +971,139 @@ LRESULT WINEXPORT WMenuEditProc ( HWND hDlg, UINT message,
     LRESULT             ret;
     WORD                wp, cmd;
 
-    ret   = FALSE;
-    einfo = (WMenuEditInfo *) GetWindowLong ( hDlg, DWL_USER );
+    ret = FALSE;
+    einfo = (WMenuEditInfo *)GetWindowLong( hDlg, DWL_USER );
 
-    switch ( message ) {
-        case WM_INITDIALOG:
-            einfo = (WMenuEditInfo *) lParam;
-            einfo->edit_dlg = hDlg;
-            SetWindowLong ( hDlg, DWL_USER, (LONG) einfo );
-            WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
-                                    IDM_MENUEDID, WR_HASHENTRY_ALL );
-            ret = TRUE;
-            break;
+    switch( message ) {
+    case WM_INITDIALOG:
+        einfo = (WMenuEditInfo *)lParam;
+        einfo->edit_dlg = hDlg;
+        SetWindowLong( hDlg, DWL_USER, (LONG)einfo );
+        WRAddSymbolsToComboBox( einfo->info->symbol_table, hDlg,
+                                IDM_MENUEDID, WR_HASHENTRY_ALL );
+        ret = TRUE;
+        break;
 
-        case WM_SYSCOLORCHANGE:
-            WCtl3dColorChange ();
-            break;
+    case WM_SYSCOLORCHANGE:
+        WCtl3dColorChange();
+        break;
 
 #if 0
 #ifdef __NT__
-        case WM_CTLCOLORBTN:
-        case WM_CTLCOLORDLG:
-        case WM_CTLCOLOREDIT:
-        case WM_CTLCOLORLISTBOX:
-        case WM_CTLCOLORMSGBOX:
-        case WM_CTLCOLORSCROLLBAR:
-        case WM_CTLCOLORSTATIC:
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORDLG:
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORMSGBOX:
+    case WM_CTLCOLORSCROLLBAR:
+    case WM_CTLCOLORSTATIC:
 #else
-        case WM_CTLCOLOR:
+    case WM_CTLCOLOR:
 #endif
-            return( (LRESULT)WCtl3dCtlColorEx( message, wParam, lParam ) );
+        return( (LRESULT)WCtl3dCtlColorEx( message, wParam, lParam ) );
 #endif
 
-        case WM_LBUTTONDBLCLK:
-        case WM_RBUTTONDBLCLK:
-        case WM_RBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+    case WM_RBUTTONUP:
+        MAKE_POINT( p, lParam );
+        win = GetDlgItem( hDlg, IDM_MENUEDRNAME );
+        GetWindowRect( win, &r );
+        MapWindowPoints( HWND_DESKTOP, hDlg, (POINT *)&r, 2 );
+        if( PtInRect( &r, p ) ) {
+            WHandleRename( einfo );
+        }
+        ret = TRUE;
+        break;
+
+    case WM_SETFOCUS:
+        if( einfo != NULL && einfo->preview_window != (HWND)NULL ) {
+            SendMessage( einfo->preview_window, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+        }
+        break;
+
+#if 0
+    case WM_PARENTNOTIFY:
+        cmd = GET_WM_PARENTNOTIFY_EVENT( wParam, lParam );
+        switch( cmd ) {
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
             MAKE_POINT( p, lParam );
-            win = GetDlgItem ( hDlg, IDM_MENUEDRNAME );
-            GetWindowRect( win, &r );
-            MapWindowPoints( HWND_DESKTOP, hDlg, (POINT *)&r, 2 );
+            win = GetDlgItem( hDlg, IDM_MENUEDLIST );
+            GetClientRect( win, &r );
+            MapWindowPoints( win, hDlg, (POINT *)&r, 2 );
             if( PtInRect( &r, p ) ) {
-                WHandleRename( einfo );
+                WHandleSelChange( einfo );
             }
-            ret = TRUE;
             break;
+        }
+        ret = TRUE;
+        break;
+#endif
 
-        case WM_SETFOCUS:
-            if( einfo && ( einfo->preview_window != (HWND)NULL ) ) {
-                SendMessage( einfo->preview_window, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+    case WM_COMMAND:
+        wp = LOWORD( wParam );
+        cmd = GET_WM_COMMAND_CMD( wParam, lParam );
+        switch( wp ) {
+        case IDM_MENUEDGRAYED:
+            if( IsDlgButtonChecked( hDlg, wp ) ) {
+                CheckDlgButton( hDlg, IDM_MENUEDINACTIVE, 0 );
             }
             break;
-
-        #if 0
-        case WM_PARENTNOTIFY:
-            cmd = GET_WM_PARENTNOTIFY_EVENT(wParam,lParam);
-            switch( cmd ) {
-            case WM_LBUTTONDOWN:
-            case WM_RBUTTONDOWN:
-                MAKE_POINT( p, lParam );
-                win = GetDlgItem ( hDlg, IDM_MENUEDLIST );
-                GetClientRect( win, &r );
-                MapWindowPoints( win, hDlg, (POINT *)&r, 2 );
-                if( PtInRect( &r, p ) ) {
-                    WHandleSelChange( einfo );
-                }
-                break;
-            }
-            ret = TRUE;
-            break;
-        #endif
-
-        case WM_COMMAND:
-            wp = LOWORD(wParam);
-            cmd = GET_WM_COMMAND_CMD(wParam,lParam);
-            switch ( wp ) {
-                case IDM_MENUEDGRAYED:
-                    if ( IsDlgButtonChecked(hDlg, wp) ) {
-                        CheckDlgButton(hDlg, IDM_MENUEDINACTIVE, 0);
-                    }
-                    break;
-                case IDM_MENUEDINACTIVE:
-                    if( IsDlgButtonChecked(hDlg, wp) ) {
-                        CheckDlgButton(hDlg, IDM_MENUEDGRAYED, 0);
-                    }
-                    break;
-                #if 0
-                case IDM_MENUEDID:
-                    if( cmd == CBN_SELCHANGE ) {
-                        einfo->combo_change = TRUE;
-                        WHandleSelChange( einfo );
-                        einfo->combo_change = FALSE;
-                    }
-                    break;
-                #endif
-                case IDM_MENUEDINSERT:
-                    WInsertNew( einfo );
-                    break;
-                case IDM_MENUEDCHANGE:
-                    WDoHandleSelChange( einfo, TRUE, FALSE );
-                    break;
-                case IDM_MENUEDRESET:
-                    WDoHandleSelChange( einfo, FALSE, TRUE );
-                    break;
-                case IDM_MENUEDSHIFTLEFT:
-                    WShiftEntry( einfo, TRUE );
-                    break;
-                case IDM_MENUEDSHIFTRIGHT:
-                    WShiftEntry( einfo, FALSE );
-                    break;
-                case IDM_MENUEDLIST:
-                    if( cmd == LBN_SELCHANGE ) {
-                        WHandleSelChange( einfo );
-                    }
-                    break;
-                case IDM_MENUEDSETMENU:
-                    if( einfo->menu && einfo->menu->first_entry ) {
-                        WHandleSelChange( einfo );
-                    } else {
-                        WInsertNew( einfo );
-                    }
-                    break;
+        case IDM_MENUEDINACTIVE:
+            if( IsDlgButtonChecked( hDlg, wp ) ) {
+                CheckDlgButton( hDlg, IDM_MENUEDGRAYED, 0 );
             }
             break;
+#if 0
+        case IDM_MENUEDID:
+            if( cmd == CBN_SELCHANGE ) {
+                einfo->combo_change = TRUE;
+                WHandleSelChange( einfo );
+                einfo->combo_change = FALSE;
+            }
+            break;
+#endif
+        case IDM_MENUEDINSERT:
+            WInsertNew( einfo );
+            break;
+        case IDM_MENUEDCHANGE:
+            WDoHandleSelChange( einfo, TRUE, FALSE );
+            break;
+        case IDM_MENUEDRESET:
+            WDoHandleSelChange( einfo, FALSE, TRUE );
+            break;
+        case IDM_MENUEDSHIFTLEFT:
+            WShiftEntry( einfo, TRUE );
+            break;
+        case IDM_MENUEDSHIFTRIGHT:
+            WShiftEntry( einfo, FALSE );
+            break;
+        case IDM_MENUEDLIST:
+            if( cmd == LBN_SELCHANGE ) {
+                WHandleSelChange( einfo );
+            }
+            break;
+        case IDM_MENUEDSETMENU:
+            if( einfo->menu != NULL && einfo->menu->first_entry != NULL ) {
+                WHandleSelChange( einfo );
+            } else {
+                WInsertNew( einfo );
+            }
+            break;
+        }
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
 
-LRESULT WINEXPORT WTestProc( HWND hDlg, UINT message,
-                             WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
-    _wtouch(wParam);
-    _wtouch(lParam);
+    _wtouch( wParam );
+    _wtouch( lParam );
 
     if( message == WM_INITDIALOG ) {
         GetWindowRect( hDlg, &r );
@@ -1134,10 +1120,7 @@ void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
     FARPROC     lpProc;
 
-    lpProc = MakeProcInstance( (FARPROC) WTestProc, inst );
-    JCreateDialog( inst, "WMenuEditDLG", parent, (DLGPROC) lpProc );
+    lpProc = MakeProcInstance( (FARPROC)WTestProc, inst );
+    JCreateDialog( inst, "WMenuEditDLG", parent, (DLGPROC)lpProc );
     FreeProcInstance( lpProc );
-
-    return;
 }
-

@@ -1,0 +1,13 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov       ax,word ptr 1[bx]
+    mov       ax,word ptr 2[bx]
+    mov       ax,word ptr 3[bx]
+    mov       word ptr 1[bx],ax
+    mov       word ptr 1[bx],ax
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

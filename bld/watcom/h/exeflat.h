@@ -24,17 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 Linear Executable (LE/LX) and 
+*               Windows VxD (LE) format structures.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEFLAT_H
 
-#pragma pack(push,1);
-
-/* OS2 Flat executable format structures */
+#include "pushpck1.h"
 
 #define OSF_FLAT_RESERVED 20
 
@@ -88,20 +86,33 @@ typedef struct os2_flat_header {
     unsigned_32     num_inst_preload;   /* # of instance pages in preload sect*/
     unsigned_32     num_inst_demand;    /*# instance pages in demand load sect*/
     unsigned_32     heapsize;       /* size of heap - for 16-bit apps */
-    unsigned_32     stacksize;      /* size of stack */
-    unsigned_8      reserved[ OSF_FLAT_RESERVED ];   /* pad to 196 bytes. */
+    unsigned_32     stacksize;      /* size of stack OS/2 only */
+    union {                         /* pad to 196 bytes. */
+        unsigned_8      reserved[ OSF_FLAT_RESERVED ];
+        struct {
+            unsigned_8      reserved1[ 8 ];   /* +0xB0 */
+            unsigned_32     winresoff;        /* +0xB8 Windows VxD version info resource offset */
+            unsigned_32     winreslen;        /* +0xBC Windows VxD version info resource lenght */
+            unsigned_16     device_ID;        /* +0xC0 Windows VxD device ID */
+            unsigned_16     DDK_version;      /* +0xC2 Windows VxD DDK version (0x030A) */
+        } vxd;
+    } r;
 } os2_flat_header;
 
 #define OSF_DEF_PAGE_SIZE  4096
-#define OSF_FLAT_SIGNATURE 0x454C
-#define OSF_FLAT_LX_SIGNATURE 0x584C
+#define OSF_FLAT_SIGNATURE 0x454C        // 'LE'
+#define OSF_FLAT_LX_SIGNATURE 0x584C     // 'LX'
 #define OSF_386_BYTE_ORDER 0
 #define OSF_386_WORD_ORDER 0
 #define OSF_EXE_LEVEL      0
+
 #define OSF_CPU_286        1
 #define OSF_CPU_386        2
 #define OSF_CPU_486        3
-#define OSF_OS_LEVEL       1
+
+#define OSF_OS_LEVEL       1    // OS/2
+#define OSF_WIN386_LEVEL   4    // Windows 386 (VxD)
+
 /******************************************************************************
  *
  *    The flags field low order word goes as follows:
@@ -111,9 +122,9 @@ typedef struct os2_flat_header {
  *  |   |      | | |          | |        |   +-> single data flag
  *  |   |      | | |          | |        +-----> if DLL, per-process
  *  |   |      | | |          | |                initialization
- *  |   |          | | |          | +--------------> no internal fixups.
+ *  |   |      | | |          | +--------------> no internal fixups.
  *  |   |      | | |          +----------------> no external fixups.
- *  |   |          +-+-+---------------------------> PM compatibility flags
+ *  |   |      +-+-+---------------------------> PM compatibility flags
  *  |   +------------------------------------------> errors during link
  *  |                            (not executable)
  *  +----------------------------------------------> 1=DLL, 0=program file
@@ -121,26 +132,30 @@ typedef struct os2_flat_header {
  *    The flags field high order word goes as follows:
  *
  *  x x x x  x x x x      x x x x      x x x x
- *    |                                        | |
- *    |                                        | +-> prot. mem. lib. mod
- *    |                                        +---> device driver.
+ *    |                                    | |
+ *    |                                    | +-> prot. mem. lib. mod
+ *    |                                    +---> device driver.
  *    +--------------------------------------------> DLL per-proc termination
  *****************************************************************************/
 
-#define OSF_SINGLE_DATA         0x0001
-#define OSF_INIT_INSTANCE       0x0004
-#define OSF_INTERNAL_FIXUPS_DONE    0x0010
-#define OSF_EXTERNAL_FIXUPS_DONE    0x0020
-#define OSF_NOT_PM_COMPATIBLE       0x0100
-#define OSF_PM_COMPATIBLE           0x0200
-#define OSF_PM_APP                  0x0300
-#define OSF_LINK_ERROR          0x2000
-#define OSF_IS_DLL          0x8000
-#define OSF_IS_PROT_DLL         0x00010000UL
-#define OSF_DEVICE_DRIVER       0x00020000UL
-#define OSF_PHYS_DEVICE         0x00020000UL
-#define OSF_VIRT_DEVICE         0x00028000UL
-#define OSF_TERM_INSTANCE       0x40000000UL
+#define OSF_SINGLE_DATA               0x0001
+#define OSF_INIT_INSTANCE             0x0004
+#define OSF_INTERNAL_FIXUPS_DONE      0x0010
+#define OSF_EXTERNAL_FIXUPS_DONE      0x0020
+#define OSF_NOT_PM_COMPATIBLE         0x0100
+#define OSF_PM_COMPATIBLE             0x0200
+#define OSF_PM_APP                    0x0300
+#define OSF_LINK_ERROR                0x2000
+#define OSF_IS_DLL                    0x8000
+#define OSF_IS_PROT_DLL           0x00010000UL
+#define OSF_DEVICE_DRIVER         0x00020000UL
+#define OSF_PHYS_DEVICE           0x00020000UL
+#define OSF_VIRT_DEVICE           0x00028000UL
+#define OSF_TERM_INSTANCE         0x40000000UL
+
+#define VXD_DEVICE_DRIVER_3x      0x00008020UL
+#define VXD_DEVICE_DRIVER_STATIC  0x00028000UL
+#define VXD_DEVICE_DRIVER_DYNAMIC 0x00038000UL
 
 typedef struct object_record {
     unsigned_32     size;       /* object virtual size */
@@ -153,13 +168,13 @@ typedef struct object_record {
 
 /******************************************************************************
  *
- *    The flags field is used as follows:
+ *    The flags field low order word is used as follows:
  *
  *  x x x x  x x x x      x x x x      x x x x
  *  | | | |    | | |      | | | |      | | | |
  *  | | | |    | | |      | | | |      | | | +-> readable object
- *  | | | |        | | |      | | | |      | | +---> writeable object
- *  | | | |        | | |      | | | |      | +-----> executable object
+ *  | | | |    | | |      | | | |      | | +---> writeable object
+ *  | | | |    | | |      | | | |      | +-----> executable object
  *  | | | |    | | |      | | | |      +-------> resource object
  *  | | | |    | | |      | | | +--------------> discardable object
  *  | | | |    | | |      | | +----------------> sharable object
@@ -173,6 +188,10 @@ typedef struct object_record {
  *  | | +------------------------------------------> big/default bit setting
  *  | +--------------------------------------------> conforming for code
  *  +----------------------------------------------> object io privilege level
+ *
+ *    The flags field high order word is used as follows:
+ *
+ *  x x x x  x x x x      x x x x      x x x x
  *
  *****************************************************************************/
 
@@ -279,13 +298,13 @@ typedef struct flat_res_table {
 #define OSF_IMP_ORD_REF     0x01
 #define OSF_IMP_NAME_REF    0x02
 #define OSF_INT_ENT_REF     0x03
-#define OSF_ADD_FIX     0x04
+#define OSF_ADD_FIX         0x04
 #define OSF_TARGET_OFF      0x10
 #define OSF_ADD_FIX_32      0x20
-#define OSF_OBJ_ORD     0x40
+#define OSF_OBJ_ORD         0x40
 #define OSF_ORD_FLAG        0x80
 
-#pragma pack(pop);
+#include "poppck.h"
 
 #define _EXEFLAT_H
 #endif

@@ -1,0 +1,49 @@
+List of all wgml command line options (V4.0).
+
+full name	short name (abbreviation)
+
+altextension	altext
+bind		b
+cpinch		cpi
+delim		del
+device		dev
+description	desc
+duplex		dup
+font		font		
+fontfamily	fontf
+format		form
+from		from		
+inclist		incl
+index		ind
+layout		lay
+linemode	line
+llength		ll
+logfile		log
+lpinch		lpi
+mailmerge	mail
+noduplex	nodup
+noinclist	noincl
+noindex		noind
+nopause		nop
+noquiet		noq
+noscript	noscr
+nostatistics	nostat
+nowait		nowait		
+nowarning	nowarn
+output		out
+passes		pass
+pause		pause		
+process		proc
+quiet		quiet		
+resetscreen	reset
+script		scr
+setsymbol	set
+statistics	stat
+terse		terse		
+to		to			
+valueset	values
+verbose		verb
+wait		wait		
+warning		warn
+wscript		wscr
+

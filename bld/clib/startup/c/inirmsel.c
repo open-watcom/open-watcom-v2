@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Real mode selector setup for DOS extenders and Win386.
 *
 ****************************************************************************/
 
@@ -37,14 +36,15 @@
 #include "exitwmsg.h"
 #include "rtinit.h"
 
-_WCRTLINK unsigned short   _ExtenderRealModeSelector;
+unsigned short  _ExtenderRealModeSelector;
 
 #ifndef __WINDOWS_386__
 
 extern short __get_ds( void );
 #pragma aux __get_ds = "mov ax,ds" value[ax];
 
-static void init( void ) {
+static void init( void )
+{
     if( _IsFlashTek() ) {
         _ExtenderRealModeSelector = __x386_zero_base_selector;
     } else if( _IsPharLap() || _IsOS386() ) {
@@ -54,6 +54,7 @@ static void init( void ) {
         _ExtenderRealModeSelector = __get_ds();
     } else if( _IsRationalNonZeroBase() ) {
         long    result;
+
         result = DPMIAllocateLDTDescriptors( 1 );
         if( result < 0 ) {
             __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
@@ -67,7 +68,8 @@ static void init( void ) {
     }
 }
 
-static void fini( void ) {
+static void fini( void )
+{
     if( _IsRationalNonZeroBase() ) {
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
     }
@@ -77,7 +79,7 @@ static void fini( void ) {
 
 static void init( void )
 {
-    long                result;
+    long    result;
 
     result = DPMIAllocateLDTDescriptors( 1 );
     if( result < 0 ) {
@@ -96,5 +98,5 @@ static void fini( void )
 
 #endif
 
-AXI( init, INIT_PRIORITY_RUNTIME )
-AYI( fini, INIT_PRIORITY_RUNTIME )
+AXI( init, INIT_PRIORITY_FPU )
+AYI( fini, INIT_PRIORITY_FPU )

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Operations on OBJ_INIT and DTREG_OBJ.
 *
 ****************************************************************************/
 
@@ -138,7 +137,7 @@ cg_name objInitAssignBaseExpr(  // ASSIGN BASE REGISTRATION, FROM EXPR'N
     OBJ_INIT* init,             // - initialization element
     cg_name expr )              // - expression
 {
-    return CGLVAssign( objInitField( fctl, init, 0 ), expr, T_POINTER );
+    return CGLVAssign( objInitField( fctl, init, 0 ), expr, TY_POINTER );
 }
 
 
@@ -246,6 +245,7 @@ OBJ_INIT* ObjInitPop(           // POP INITIALIZATION OBJECT (HAS COMPONENTS)
     OBJ_INIT* init;             // - new object
 
     init = VstkPop( &stack_object_init );
+    DbgVerify( init != NULL, "ObjInitPop -- init object stack empty" );
     dtregObjFree( init->reg );
     return init;
 }
@@ -293,14 +293,14 @@ cg_name ObjInitRegisterObj(     // CREATE AN OBJECT REGISTRATION
     if( use_fun_cdtor && fctl->cdtor_sym != NULL ) {
         cdtor = CgFetchSym( fctl->cdtor_sym );
     } else {
-        cdtor = CGInteger( 0, T_UINT_1 );
+        cdtor = CGInteger( 0, TY_UINT_1 );
     }
     expr = CGLVAssign( objInitField( fctl, init, CgbkInfo.size_data_ptr )
                      , cdtor
-                     , T_UINT_1 );
+                     , TY_UINT_1 );
     expr = CgComma( objInitAssignBaseExpr( fctl, init, base_expr )
                   , expr
-                  , T_POINTER );
+                  , TY_POINTER );
     return expr;
 }
 
@@ -313,21 +313,21 @@ cg_name ObjInitRegActualBase    // REGISTER FOR AN ACTUAL BASE
 
     expr1 = CGLVAssign( CgSymbolPlusOffset( se->component.obj->sym
                                           , CgbkInfo.size_data_ptr )
-                      , CGInteger( DTOR_COMPONENT, T_UINT_1 )
-                      , T_UINT_1 );
+                      , CGInteger( DTOR_COMPONENT, TY_UINT_1 )
+                      , TY_UINT_1 );
 #if 0
     expr2 = CGLVAssign( CgSymbolPlusOffset( se->component.obj->sym, 0 )
                       , CGBinary( O_PLUS
                                 , IbpFetchRef( NULL )
                                 , CgOffset( se->component.offset )
-                                , T_POINTER )
-                      , T_POINTER );
+                                , TY_POINTER )
+                      , TY_POINTER );
 #else
     expr2 = CGLVAssign( CgSymbolPlusOffset( se->component.obj->sym, 0 )
                       , IbpFetchRef( NULL )
-                      , T_POINTER );
+                      , TY_POINTER );
 #endif
-    expr2 =  CgComma( expr1, expr2, T_POINTER );
+    expr2 =  CgComma( expr1, expr2, TY_POINTER );
     return expr2;
 }
 

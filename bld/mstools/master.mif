@@ -3,43 +3,63 @@
 #
 proj_name = mstools
 
+!ifndef mstools_autodepends
+mstools_autodepends = .AUTODEPEND
+!endif
+
+!ifeq host_cpu axp
+targdef = -D__TARGET_AXP__
+!else ifeq host_cpu ppc
+targdef = -D__TARGET_PPC__
+!else
+targdef = -D__TARGET_$(host_cpu)__
+!endif
 
 #
 # MSTOOLS macros.
 #
-mstools_c_path      = ..\..\..\c
+
 mstools_stub_obj    = stub.obj
 mstools_objs        = cmdline.obj cmdscan.obj context.obj error.obj file.obj memory.obj pathconv.obj
-mstools_compile     = $(cc) $(cflags) -i$(inc_path) $(extra_c_flags)
 
-inc_dirs = ..\..\..\h;..\..\h
+.c :  ../c;../../c
+.h :  ../h;../../h
 
-!ifndef extra_l_flags
-!   define extra_l_flags
-!endif
-extra_l_flags       += op quiet
-
-
-#
-# Build a release version by default, and a debug version if
-# $(release_mstools) is zero.
-#
-!ifndef release_mstools
-!   define release_mstools 1
-!endif
-
-!ifeq release_mstools 0
-!   define release 0
-!else
-!   define release 1
-!endif
-
+inc_dirs = -I"../h" -I"../../h" -I"../c"
 
 #
 # Include standard .mif files to do the work.
 #
 !include cproj.mif
 !include deftarg.mif
+!include defrule.mif
 
-.EXTENSIONS:
-.EXTENSIONS: .exe .obj .386 .axp .ppc .h .c .gml
+optp386c.gh optp386h.gh : ./optencod.exe ../gml/ms.gml
+        $[@ $]@ optp386h.gh optp386c.gh usage386.gh i86
+
+optpaxpc.gh optpaxph.gh :  ./optencod.exe ../gml/ms.gml
+        $[@ $]@ optpaxph.gh optpaxpc.gh usageaxp.gh axp
+
+optpppcc.gh optpppch.gh :  ./optencod.exe ../gml/ms.gml
+        $[@ $]@ optpppch.gh optpppcc.gh usageppc.gh ppc
+
+optparsc.gh optparsh.gh : ./optencod.exe ../gml/ms.gml
+        $[@ $]@ optparsh.gh optparsc.gh usagemsg.gh i86
+
+#
+# Dependencies for source in $(fe_misc_dir).
+#
+./optencod.exe : $(fe_misc_dir)/c/optencod.c
+        $(bld_cl) $(wcl_util_opts) -I"$(fe_misc_dir)/h" -I"$(watcom_dir)/h" $[@
+
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
+ver386_res_nt_386 = ver386.res
+veraxp_res_nt_386 = veraxp.res
+verppc_res_nt_386 = verppc.res
+
+verrc_exe = $(name)
+verrc386_exe = $(name)386
+verrcaxp_exe = $(name)axp
+verrcppc_exe = $(name)ppc
+!include verrc.mif

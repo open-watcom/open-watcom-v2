@@ -24,27 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Status line window.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
 #include "statwnd.h"
 #include "wstatus.h"
-#include "windows.h"
 #include "watcom.h"
+#include <assert.h>
 
 static BOOL Init( window *, void * );
 static BOOL Fini( window *, void * );
 
 static BOOL     capIndex = -1;
 static short    *sections;
+static void     *sw = NULL;
 
 window StatusBar = {
     &statusw_info,
@@ -61,26 +60,32 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
     assert( num > 0 );
     list = MemAlloc( num * sizeof( status_block_desc ) );
     for( i = 0; i < num; i++ ) {
-        list[ i ].separator_width = SEPERATOR_WIDTH;
-        list[ i ].width = source[ i ];
-        list[ i ].width_is_pixels = TRUE;
+        list[i].separator_width = SEPERATOR_WIDTH;
+        list[i].width = source[i];
+        list[i].width_is_pixels = TRUE;
     }
-    StatusWndSetSeparators( num, list );
+    StatusWndSetSeparators( sw, num, list );
     MemFree( list );
 }
 
-BOOL StatusWindowProc( HWND, unsigned, UINT, LONG );
+BOOL StatusWindowProc( HWND, UINT, UINT, LONG );
 static BOOL Init( window *w, void *parm )
 {
-    BOOL                rc;
+    BOOL    rc;
 
     parm = parm;
     w = w;
 
     rc = StatusWndInit( InstanceHandle, StatusWindowProc, sizeof( LPVOID ),
-                        (HCURSOR)NULL );
+                        (HCURSOR)NULLHANDLE );
+    sw = StatusWndStart();
+#if defined( __NT__ )
+    StatusWndChangeSysColors( GetSysColor( COLOR_BTNFACE ),
+                              GetSysColor( COLOR_BTNTEXT ),
+#else
     StatusWndChangeSysColors( GetRGB( statusw_info.text.background ),
                               GetRGB( statusw_info.text.foreground ),
+#endif
                               GetSysColor( COLOR_BTNHIGHLIGHT ),
                               GetSysColor( COLOR_BTNSHADOW ) );
     if( NumStatusSections > 0 ) {
@@ -93,6 +98,7 @@ static BOOL Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
+    StatusWndDestroy( sw );
     StatusWndFini();
     return( FALSE );
 }
@@ -101,7 +107,7 @@ int setCursor( short x )
 {
     int     i;
     for( i = 0; i < NumStatusSections; i++ ) {
-        if( abs( x - ( StatusSections[ i ] ) ) < MOUSE_ALLOWANCE ) {
+        if( abs( x - (StatusSections[i]) ) < MOUSE_ALLOWANCE ) {
             CursorOp( COP_STATMOVE );
             return( i );
         }
@@ -129,34 +135,34 @@ void processMouseMove( UINT w, LONG l )
 
     // shove bars to left
     deep = 0;
-    delta = sections[ secIndex ] - x;
+    delta = sections[secIndex] - x;
     while( delta > 0 && secIndex - deep > 0 ) {
         next = secIndex - deep;
-        maxmove = sections[ next ] - sections[ next - 1 ] - BOUNDARY_WIDTH;
+        maxmove = sections[next] - sections[next - 1] - BOUNDARY_WIDTH;
         movedby = 0;
         if( maxmove > 0 ) {
             movedby = min( maxmove, delta );
             delta -= movedby;
         }
         for( i = next; i <= secIndex; i++ ) {
-            sections[ i ] -= movedby;
+            sections[i] -= movedby;
         }
         deep++;
     }
 
     // shove bars to right
     deep = 0;
-    delta = x - sections[ secIndex ];
+    delta = x - sections[secIndex];
     while( delta > 0 && secIndex + deep <= NumStatusSections ) {
         next = secIndex + deep;
-        maxmove = sections[ next + 1 ] - sections[ next ] - BOUNDARY_WIDTH;
+        maxmove = sections[next + 1] - sections[next] - BOUNDARY_WIDTH;
         movedby = 0;
         if( maxmove > 0 ) {
             movedby = min( maxmove, delta );
             delta -= movedby;
         }
         for( i = secIndex; i <= next; i++ ) {
-            sections[ i ] += movedby;
+            sections[i] += movedby;
         }
         deep++;
     }
@@ -174,13 +180,13 @@ void processLButtonDown( HWND hwnd, UINT w, LONG l )
     capIndex = setCursor( (signed_16)LOWORD( l ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = MemAlloc( ( NumStatusSections + 2 ) * sizeof( short ) );
+        sections = MemAlloc( (NumStatusSections + 2) * sizeof( short ) );
         GetClientRect( StatusWindow, &rect );
         memcpy( sections + 1, StatusSections,
                 NumStatusSections * sizeof( short ) );
-        sections[ 0 ] = 0;
-        sections[ NumStatusSections + 1 ] = rect.right - BOUNDARY_WIDTH +
-                                            CURSOR_CORRECT;
+        sections[0] = 0;
+        sections[NumStatusSections + 1] = rect.right - BOUNDARY_WIDTH +
+                                          CURSOR_CORRECT;
     }
 }
 
@@ -199,7 +205,7 @@ void processLButtonUp( void )
 /*
  * StatusWindowProc - handle messages for the status window
  */
-BOOL StatusWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
+BOOL StatusWindowProc( HWND hwnd, UINT msg, UINT w, LONG l )
 {
     w = w;
     l = l;
@@ -236,7 +242,7 @@ window_id NewStatWindow( void )
     size.left -= 1;
     size.right += 1;
     size.bottom += 1;
-    stat = StatusWndCreate( Root, &size, InstanceHandle, NULL );
+    stat = StatusWndCreate( sw, Root, &size, InstanceHandle, NULL );
     return( stat );
 
 } /* NewStatWindow */
@@ -247,7 +253,7 @@ window_id NewStatWindow( void )
 void StatusLine( int line, char *str, int format )
 {
     HDC         hdc;
-    UINT        font;
+    font_type   font;
     HFONT       hfont;
 
     format = format;
@@ -261,6 +267,16 @@ void StatusLine( int line, char *str, int format )
     hdc = TextGetDC( StatusWindow, WIN_STYLE( &StatusBar ) );
     font = WIN_FONT( &StatusBar );
     hfont = FontHandle( font );
-    StatusWndDrawLine( hdc, hfont, str, (UINT) -1 );
+    StatusWndDrawLine( sw, hdc, hfont, str, (UINT) -1 );
     TextReleaseDC( StatusWindow, hdc );
+
 } /* StatusLine */
+
+/*
+ * GetStatusHeight - get the height of a Win32 native status bar
+ */
+int GetStatusHeight( void )
+{
+    return( StatusWndGetHeight( sw ) );
+
+} /* GetStatusHeight */

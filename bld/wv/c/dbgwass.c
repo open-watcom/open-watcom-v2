@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Processing of pop-up menu for assembly view.
 *
 ****************************************************************************/
 
@@ -62,7 +61,7 @@ extern void             ToggleBreak(address);
 extern void             SetCodeDot(address);
 extern address          GetCodeDot(void);
 extern bool             HasLineInfo(address);
-extern brk              *FindBreak(address);
+extern brkp             *FindBreak(address);
 extern unsigned         NewCurrRadix(unsigned int );
 extern bool             SrcMoveDot( a_window *, address );
 extern void             SrcJoinAsm( a_window *, a_window * );
@@ -71,7 +70,7 @@ extern void             SrcNewAsmNotify( a_window *, mod_handle, bool track );
 extern a_window         *SrcWndFind( a_window*src, address addr,bool track );
 extern void             SkipToAddr( address );
 extern char             *StrAddr(address *,char *,unsigned);
-extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool curr, brk *bp );
+extern void             FileBreakGadget( a_window *,wnd_line_piece *line, bool curr, brkp *bp );
 extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern unsigned         ProgPeek(address ,void *,unsigned int );
 extern bool             DlgModName( char *title, mod_handle *mod );
@@ -167,131 +166,143 @@ typedef struct {
 } asm_window;
 #define WndAsm( wnd ) ( (asm_window *)WndExtra( wnd ) )
 
-static bool ExactCueAt( asm_window *asm, address addr, cue_handle *ch )
+static bool ExactCueAt( asm_window *asw, address addr, cue_handle *ch )
 {
-    if( !asm->source ) return( FALSE );
+    if( !asw->source ) return( FALSE );
     if( DeAliasAddrCue( NO_MOD, addr, ch ) == SR_NONE ) return( FALSE );
     if( AddrComp( CueAddr( ch ), addr ) ) return( FALSE );
     return( TRUE );
 }
 
+static  void    AsmResize( a_window *wnd );
+
 static void AsmSetFirst( a_window *wnd, address addr, bool use_first_source )
 {
     int                 row,rows;
-    asm_window          *asm = WndAsm( wnd );
+    asm_window          *asw = WndAsm( wnd );
     char                chr;
     mad_disasm_data     *dd;
     unsigned            addr_len;
     DIPHDL( cue, ch );
 
-    _AllocA( dd, asm->ddsize );
+    _AllocA( dd, asw->ddsize );
 
 
     if( IS_NIL_ADDR( addr ) || ProgPeek( addr, &chr, 1 ) != 1 ) {
         addr = NilAddr;
     }
-    asm->ins[ 0 ].addr = addr;
-    asm->ins[ 0 ].line = 0;
+    asw->ins[ 0 ].addr = addr;
+    asw->ins[ 0 ].line = 0;
     addr_len = AddrToString( &addr, MAF_OFFSET, TxtBuff, TXT_LEN ) - TxtBuff;
-    if( addr_len != asm->addr_len ) {
-        asm->addr_len = addr_len;
+    if( addr_len != asw->addr_len ) {
+        asw->addr_len = addr_len;
         AsmResize( wnd ); // recusively calls this routine!
         WndZapped( wnd );
         return;
     }
     rows = WndRows( wnd );
     for( row = 0; row < rows; ++row ) {
-        asm->ins[ row ].addr = addr;
+        asw->ins[ row ].addr = addr;
         if( IS_NIL_ADDR( addr ) ) continue;
-        if( ExactCueAt( asm, addr, ch ) ) {
+        if( ExactCueAt( asw, addr, ch ) ) {
             if( row != 0 || use_first_source ) {
-                asm->ins[ row ].addr = addr;
-                asm->ins[ row ].line = CueLine( ch );
+                asw->ins[ row ].addr = addr;
+                asw->ins[ row ].line = CueLine( ch );
                 ++row;
                 if( row >= rows ) break;
             }
         }
-        asm->ins[ row ].addr = addr;
-        asm->ins[ row ].line = 0;
+        asw->ins[ row ].addr = addr;
+        asw->ins[ row ].line = 0;
         if( MADDisasm( dd, &addr, 0 ) != MS_OK ) {
             addr = NilAddr;
         }
     }
 }
 
+static  void    CalcAddrLen( a_window *wnd, address addr )
+{
+    asm_window  *asw = WndAsm( wnd );
+    unsigned    old;
+
+    old = NewCurrRadix( asw->hex ? 16 : 10 );
+    AddrToString( &addr, MAF_OFFSET, TxtBuff, TXT_LEN );
+    asw->address_end = MaxGadgetLength;
+    asw->address_end += ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
+    NewCurrRadix( old );
+}
+
+static  void    AsmResize( a_window *wnd )
+{
+    asm_window          *asw = WndAsm( wnd );
+    asm_addr            *new_ins;
+    address             first;
+    int         size;
+
+    size = WndRows( wnd );
+    if( size <= 0 ) size = 1;
+    first = asw->ins[ 0 ].addr;
+    new_ins = WndAlloc( size*sizeof( *new_ins ) );
+    memset( new_ins, 0, size*sizeof( *new_ins ) );
+    if( new_ins == NULL ) {
+        WndClose( wnd );
+        WndNoMemory();
+    }
+    WndFree( asw->ins );
+    asw->ins = new_ins;
+    asw->ins_size = size;
+    AsmSetFirst( wnd, first, asw->ins[ 0 ].line != 0 );
+    CalcAddrLen( wnd, first );
+    if( asw->last_width != WndWidth( wnd ) ) {
+        WndZapped( wnd );
+    }
+    asw->last_width = WndWidth( wnd );
+    WndFixedThumb( wnd );
+}
+
 static int AsmAddrRow( a_window *wnd, address ip )
 {
     int         row;
-    asm_window *asm = WndAsm( wnd );
+    asm_window *asw = WndAsm( wnd );
 
     for( row = 0; row < WndRows( wnd ); ++row ) {
-        if( asm->ins[ row ].line != 0 ) continue;
-        if( AddrComp( asm->ins[ row ].addr, ip ) == 0 ) break;
+        if( asw->ins[ row ].line != 0 ) continue;
+        if( AddrComp( asw->ins[ row ].addr, ip ) == 0 ) break;
     }
     return( row );
 }
-
-
-extern  void    AsmNewSrcNotify( a_window *src, mod_handle mod, bool track )
-{
-    asm_window  *asm;
-    a_window    *wnd;
-
-    for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
-        if( WndClass( wnd ) != WND_ASSEMBLY ) continue;
-        asm = WndAsm( wnd );
-        if( track != asm->track ) continue;
-        if( mod != asm->mod ) continue;
-        if( asm->src != NULL ) continue;
-        SrcJoinAsm( src, wnd );
-        AsmJoinSrc( wnd, src );
-        break;
-    }
-}
-
-
-extern a_window *AsmWndFind( a_window *wnd, address addr, bool track )
-{
-    a_window    *new;
-
-    if( wnd == NULL ) {
-        new = DoWndAsmOpen( addr, track );
-    } else {
-        WndRestoreToFront( wnd );
-        new = wnd;
-    }
-    AsmMoveDot( new, addr );
-    return( new );
-}
-
 
 extern  void    AsmJoinSrc( a_window *wnd, a_window *src )
 {
     WndAsm( wnd )->src = src;
 }
 
-extern  void    AsmFreeSrc( a_window *wnd )
+extern  void    AsmNewSrcNotify( a_window *src, mod_handle mod, bool track )
 {
-    if( wnd == NULL ) return;
-    WndAsm( wnd )->src = NULL;
-}
+    asm_window  *asw;
+    a_window    *wnd;
 
-#ifdef DEADCODE
-extern  bool    AsmIsTracking( a_window *wnd )
-{
-    return( WndAsm( wnd )->track );
+    for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
+        if( WndClass( wnd ) != WND_ASSEMBLY ) continue;
+        asw = WndAsm( wnd );
+        if( track != asw->track ) continue;
+        if( mod != asw->mod ) continue;
+        if( asw->src != NULL ) continue;
+        SrcJoinAsm( src, wnd );
+        AsmJoinSrc( wnd, src );
+        break;
+    }
 }
-#endif
 
 static void AsmSetTitle( a_window *wnd )
 {
     char        *p;
     char        *image_name;
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
 
     p = StrCopy( ": ", StrCopy( LIT( WindowAssembly ), TxtBuff ) );
-    p += ModName( asm->mod, p, TXT_LEN );
-    image_name = ModImageName( asm->mod );
+    p += ModName( asw->mod, p, TXT_LEN );
+    image_name = ModImageName( asw->mod );
     if( image_name[0] != '\0' ) {
         p = StrCopy( "(", StrCopy( " ", p ) );
         p = StrCopy( ")", StrCopy( SkipPathInfo( image_name, OP_REMOTE ), p ) );
@@ -302,20 +313,20 @@ static void AsmSetTitle( a_window *wnd )
 static void AsmSetDotAddr( a_window *wnd, address addr )
 {
     mod_handle  mod;
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
 
-    if( AddrComp( asm->dotaddr, addr ) != 0 ) {
+    if( AddrComp( asw->dotaddr, addr ) != 0 ) {
         WndRowDirty( wnd, -TITLE_SIZE );
-        asm->dotaddr = addr;
+        asw->dotaddr = addr;
         DeAliasAddrMod( addr, &mod );
-        if( mod != asm->mod ) {
+        if( mod != asw->mod ) {
             DbgUpdate( UP_OPEN_CHANGE );
-            asm->mod = mod;
+            asw->mod = mod;
             AsmSetTitle( wnd );
         }
         if( IS_NIL_ADDR( addr ) ) return;
         if( wnd == WndFindActive() ) {
-            SrcMoveDot( asm->src, addr );
+            SrcMoveDot( asw->src, addr );
             SetCodeDot( addr );
         }
     }
@@ -324,15 +335,15 @@ static void AsmSetDotAddr( a_window *wnd, address addr )
 extern  void    AsmMoveDot( a_window *wnd, address addr )
 {
     int         row;
-    asm_window  *asm;
+    asm_window  *asw;
     DIPHDL( cue, ch1 );
     DIPHDL( cue, ch2 );
 
     if( wnd == NULL ) return;
 
-    asm = WndAsm( wnd );
-    if( DeAliasAddrCue( asm->mod, addr, ch1 ) != SR_NONE &&
-        DeAliasAddrCue( asm->mod, asm->dotaddr, ch2 ) != SR_NONE ) {
+    asw = WndAsm( wnd );
+    if( DeAliasAddrCue( asw->mod, addr, ch1 ) != SR_NONE &&
+        DeAliasAddrCue( asw->mod, asw->dotaddr, ch2 ) != SR_NONE ) {
         if( CueMod( ch1 )    == CueMod( ch2 ) &&
             CueFileId( ch1 ) == CueFileId( ch2 ) &&
             CueLine( ch1 )   == CueLine( ch2 ) ) {
@@ -355,18 +366,45 @@ extern  void    AsmMoveDot( a_window *wnd, address addr )
     AsmSetDotAddr( wnd, addr );
 }
 
+extern a_window *AsmWndFind( a_window *wnd, address addr, bool track )
+{
+    a_window    *new;
+
+    if( wnd == NULL ) {
+        new = DoWndAsmOpen( addr, track );
+    } else {
+        WndRestoreToFront( wnd );
+        new = wnd;
+    }
+    AsmMoveDot( new, addr );
+    return( new );
+}
+
+
+extern  void    AsmFreeSrc( a_window *wnd )
+{
+    if( wnd == NULL ) return;
+    WndAsm( wnd )->src = NULL;
+}
+
+#ifdef DEADCODE
+extern  bool    AsmIsTracking( a_window *wnd )
+{
+    return( WndAsm( wnd )->track );
+}
+#endif
 
 static  WNDMODIFY AsmModify;
 static  void    AsmModify( a_window *wnd, int row, int piece )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
     address     addr;
     unsigned    old;
 
-    old = NewCurrRadix( asm->hex ? 16 : 10 );
-    addr = asm->ins[ row ].addr;
+    old = NewCurrRadix( asw->hex ? 16 : 10 );
+    addr = asw->ins[ row ].addr;
     if( piece == PIECE_BREAK ) {
-        asm->toggled_break = ( ( WndFlags & UP_BREAK_CHANGE ) == 0 );
+        asw->toggled_break = ( ( WndFlags & UP_BREAK_CHANGE ) == 0 );
         ToggleBreak( addr );
     } else {
         WndFirstMenuItem( wnd, row, piece );
@@ -379,13 +417,13 @@ static  void    AsmModify( a_window *wnd, int row, int piece )
 static WNDNOTIFY        AsmNotify;
 static void AsmNotify( a_window *wnd, wnd_row row, int piece )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
     address     addr;
 
     piece=piece;
     if( wnd != WndFindActive() ) return;
     if( row < 0 ) return;
-    addr = asm->ins[ row ].addr;
+    addr = asw->ins[ row ].addr;
     AsmSetDotAddr( wnd, addr );
 }
 
@@ -410,7 +448,7 @@ static  WNDMENU AsmMenuItem;
 static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
 {
     address     addr;
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
     mod_handle  mod;
     bool        has_popitem;
     char        buff[TXT_LEN];
@@ -423,9 +461,9 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
     if( row < 0 ) {
         addr = NilAddr;
     } else {
-        addr = asm->ins[ row ].addr;
+        addr = asw->ins[ row ].addr;
     }
-    old = NewCurrRadix( asm->hex ? 16 : 10 );
+    old = NewCurrRadix( asw->hex ? 16 : 10 );
     switch( id ) {
     case MENU_INITIALIZE:
         if( IS_NIL_ADDR( addr ) ) {
@@ -437,15 +475,17 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
         WndMenuEnable( wnd, MENU_ASM_SHOW_MODULE, TRUE );
         WndMenuEnable( wnd, MENU_ASM_SHOW, TRUE );
         WndMenuEnable( wnd, MENU_ASM_SOURCE, HasLineInfo( addr ) );
-        WndMenuEnable( wnd, MENU_ASM_FUNCTIONS, asm->mod != NO_MOD );
-        WndMenuCheck( wnd, MENU_ASM_HEX, asm->hex );
+        WndMenuCheck( wnd, MENU_ASM_NOSOURCE, !asw->source );
+        WndMenuEnable( wnd, MENU_ASM_FUNCTIONS, asw->mod != NO_MOD );
+        WndMenuCheck( wnd, MENU_ASM_HEX, asw->hex );
         has_popitem = ( *WndPopItem( wnd ) != '\0' );
         WndMenuEnable( wnd, MENU_ASM_INSPECT, has_popitem );
         WndMenuEnable( wnd, MENU_ASM_STEP_INTO, has_popitem );
         WndMenuEnable( wnd, MENU_ASM_BREAK, has_popitem );
         WndMenuEnable( wnd, MENU_ASM_RUN, !IS_NIL_ADDR( addr ) );
+        WndMenuEnable( wnd, MENU_ASM_SKIP_TO_CURSOR, !IS_NIL_ADDR( addr ) );
         bit = MADDisasmToggle( 0, 0 );
-        for( i = 0; i < asm->num_toggles; ++i ) {
+        for( i = 0; i < asw->num_toggles; ++i ) {
             WndMenuCheck( wnd, MENU_ASM_TOGGLES + i, ( bit & 1 ) != 0 );
             bit >>= 1;
         }
@@ -453,18 +493,21 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
     case MENU_ASM_RUN:
         GoToAddr( addr );
         break;
+    case MENU_ASM_SKIP_TO_CURSOR:
+        SkipToAddr( addr );
+        break;
     case MENU_ASM_HOME:
         GoHome();
         break;
     case MENU_ASM_HEX:
-        asm->hex = !asm->hex;
+        asw->hex = !asw->hex;
         NewCurrRadix( old );
         AsmResize( wnd );
         WndZapped( wnd );
         break;
     case MENU_ASM_INSPECT:
         StrCopy( WndPopItem( wnd ), buff );
-        if( asm->ins[ row ].line != 0 ) {
+        if( asw->ins[ row ].line != 0 ) {
             if( WndEvalInspectExpr( buff, FALSE ) ) { // eval in asm window's radix
                 NewCurrRadix( old );
                 WndInspectExprSP( buff );       // open in default radix
@@ -478,11 +521,17 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
         }
         break;
     case MENU_ASM_SOURCE:
-        SrcWndFind( asm->src, addr, asm->track );
+        SrcWndFind( asw->src, addr, asw->track );
+        break;
+    case MENU_ASM_NOSOURCE:
+        asw->source = !asw->source;
+        NewCurrRadix( old );
+        AsmResize( wnd );
+        WndZapped( wnd );
         break;
     case MENU_ASM_BREAK:
         StrCopy( WndPopItem( wnd ), buff );
-        if( asm->ins[ row ].line != 0 ) {
+        if( asw->ins[ row ].line != 0 ) {
             BreakOnSelected( buff );
         } else {
             if( MADDisasmInspectAddr( buff, strlen( buff ), CurrRadix, &DbgRegs->mr, &addr ) == MS_OK ) {
@@ -493,7 +542,7 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
         break;
     case MENU_ASM_STEP_INTO:
         StrCopy( WndPopItem( wnd ), buff );
-        if( asm->ins[ row ].line != 0 ) {
+        if( asw->ins[ row ].line != 0 ) {
             StepIntoFunction( buff );
         } else {
             if( MADDisasmInspectAddr( buff, strlen( buff ), CurrRadix, &DbgRegs->mr, &addr ) == MS_OK ) {
@@ -502,10 +551,10 @@ static void     AsmMenuItem( a_window *wnd, unsigned id, int row, int piece )
         }
         break;
     case MENU_ASM_FUNCTIONS:
-        WndFuncInspect( asm->mod );
+        WndFuncInspect( asw->mod );
         break;
     case MENU_ASM_SHOW_MODULE:
-        mod = asm->mod;
+        mod = asw->mod;
         if( DlgModName( LIT( New_Module ), &mod ) ) {
             WndAsmInspect( ModFirstAddr( mod ) );
         }
@@ -531,15 +580,15 @@ static int AsmScroll( a_window *wnd, int lines )
 {
     address             addr;
     int                 moved;
-    asm_window          *asm = WndAsm( wnd );
+    asm_window          *asw = WndAsm( wnd );
     bool                use_first_source;
     mad_disasm_data     *dd;
     DIPHDL( cue, ch );
 
-    _AllocA( dd, asm->ddsize );
-    addr = asm->ins[ 0 ].addr;
-    if( lines == -1 && asm->ins[ 0 ].line == 0 &&
-        ExactCueAt( asm, addr, ch ) ) {
+    _AllocA( dd, asw->ddsize );
+    addr = asw->ins[ 0 ].addr;
+    if( lines == -1 && asw->ins[ 0 ].line == 0 &&
+        ExactCueAt( asw, addr, ch ) ) {
         moved = -1;
         AsmSetFirst( wnd, addr, TRUE );
     } else if( lines < 0 ) {
@@ -549,7 +598,7 @@ static int AsmScroll( a_window *wnd, int lines )
         do {
             if( MADDisasm( dd, &addr, -1 ) != MS_OK ) break;
             addr.mach.offset -= MADDisasmInsSize( dd );
-            if( ExactCueAt( asm, addr, ch ) ) {
+            if( ExactCueAt( asw, addr, ch ) ) {
                 ++lines;
                 --moved;
                 use_first_source = FALSE;
@@ -562,7 +611,7 @@ static int AsmScroll( a_window *wnd, int lines )
         AsmSetFirst( wnd, addr, use_first_source );
     } else {
         if( lines >= WndRows( wnd ) ) return( 0 );
-        AsmSetFirst( wnd, asm->ins[ lines ].addr, asm->ins[ lines ].line != 0 );
+        AsmSetFirst( wnd, asw->ins[ lines ].addr, asw->ins[ lines ].line != 0 );
         moved = lines;
     }
     WndFixedThumb( wnd );
@@ -573,10 +622,10 @@ static int AsmScroll( a_window *wnd, int lines )
 static WNDBEGPAINT AsmBegPaint;
 static  void    AsmBegPaint( a_window *wnd, int row, int num )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
 
     row=row;num=num;
-    InitCache( asm->ins[ 0 ].addr, WndRows( wnd ) * AVG_INS_SIZE );
+    InitCache( asw->ins[ 0 ].addr, WndRows( wnd ) * AVG_INS_SIZE );
 }
 
 
@@ -588,28 +637,28 @@ static  void    AsmEndPaint( a_window *wnd, int row, int piece )
 }
 
 
-static  void    DoDisAsm( asm_window *asm, address addr )
+static  void    DoDisAsm( asm_window *asw, address addr )
 {
-    if( IS_NIL_ADDR( addr ) || AddrComp( asm->cache_addr, addr ) != 0 ) {
-        asm->ins_end = 0;
-        asm->cache_addr = addr;
-        MADDisasm( asm->cache_dd, &addr, 0 );
+    if( IS_NIL_ADDR( addr ) || AddrComp( asw->cache_addr, addr ) != 0 ) {
+        asw->ins_end = 0;
+        asw->cache_addr = addr;
+        MADDisasm( asw->cache_dd, &addr, 0 );
     }
 }
 
 
-static void AsmNewSource( asm_window *asm, cue_handle *ch )
+static void AsmNewSource( asm_window *asw, cue_handle *ch )
 {
-    if( asm->viewhndl != NULL ) FDoneSource( asm->viewhndl );
-    asm->viewhndl = NULL;
+    if( asw->viewhndl != NULL ) FDoneSource( asw->viewhndl );
+    asw->viewhndl = NULL;
     if( ch != NULL ) {
-        asm->viewhndl = OpenSrcFile( ch );
-        if( asm->viewhndl != NULL ) {
-            asm->src_list.mod = CueMod( ch );
-            asm->src_list.file_id = CueFileId( ch );
+        asw->viewhndl = OpenSrcFile( ch );
+        if( asw->viewhndl != NULL ) {
+            asw->src_list.mod = CueMod( ch );
+            asw->src_list.file_id = CueFileId( ch );
         }
     } else {
-        asm->src_list.mod = NO_MOD;
+        asw->src_list.mod = NO_MOD;
     }
 }
 
@@ -618,7 +667,7 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
     address     addr;
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
     bool        ret;
     int         indent;
     bool        curr;
@@ -634,12 +683,12 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
         row += TITLE_SIZE;
         switch( row ) {
         case 0:
-            old = NewCurrRadix( asm->hex ? 16 : 10 );
+            old = NewCurrRadix( asw->hex ? 16 : 10 );
             line->text = TxtBuff;
-            if( IS_NIL_ADDR( asm->dotaddr ) ) {
-                addr = asm->ins[ 0 ].addr;
+            if( IS_NIL_ADDR( asw->dotaddr ) ) {
+                addr = asw->ins[ 0 ].addr;
             } else {
-                addr = asm->dotaddr;
+                addr = asw->dotaddr;
             }
             AddrToString( &addr, MAF_FULL, buff, sizeof( buff ) );
             line->tabstop = FALSE;
@@ -670,13 +719,13 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
         }
     }
     if( row >= WndRows( wnd ) ) return( FALSE );
-    old = NewCurrRadix( asm->hex ? 16 : 10 );
+    old = NewCurrRadix( asw->hex ? 16 : 10 );
     ret = TRUE;
-    addr = asm->ins[ row ].addr;
-    src_line = asm->ins[ row ].line;
+    addr = asw->ins[ row ].addr;
+    src_line = asw->ins[ row ].line;
     line->text = TxtBuff;
     StrCopy( " ", TxtBuff );
-    curr = !IS_NIL_ADDR(addr) && AddrComp(addr, asm->active) == 0 && src_line == 0;
+    curr = !IS_NIL_ADDR(addr) && AddrComp(addr, asw->active) == 0 && src_line == 0;
     line->tabstop = TRUE;
     if( curr ) line->attr = WND_STANDOUT;
     switch( piece ) {
@@ -690,13 +739,13 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
         if( src_line != 0 ) {
             line->text = TxtBuff;
             if( DeAliasAddrCue( NO_MOD, addr, ch ) != SR_NONE ) {
-                if( CueMod( ch ) != asm->src_list.mod
-                 || CueFileId( ch ) != asm->src_list.file_id ) {
-                    AsmNewSource( asm, ch );
+                if( CueMod( ch ) != asw->src_list.mod
+                 || CueFileId( ch ) != asw->src_list.file_id ) {
+                    AsmNewSource( asw, ch );
                 }
                 Format( TxtBuff, LIT( No_Source_Line ), src_line );
-                if( asm->viewhndl != NULL ) {
-                    len = FReadLine( asm->viewhndl, src_line, 0, TxtBuff, TXT_LEN );
+                if( asw->viewhndl != NULL ) {
+                    len = FReadLine( asw->viewhndl, src_line, 0, TxtBuff, TXT_LEN );
                     if( len > 0 ) TxtBuff[len] = '\0';
                 }
             }
@@ -711,9 +760,9 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
             break;
         }
         line->text = " ";
-        DoDisAsm( asm, addr );
+        DoDisAsm( asw, addr );
         if( AddrComp( Context.execution, addr ) == 0 ) {
-            ctrl = MADDisasmControl( asm->cache_dd, &DbgRegs->mr );
+            ctrl = MADDisasmControl( asw->cache_dd, &DbgRegs->mr );
             if( ctrl & MDC_CONDITIONAL ) {
                 switch( ctrl & MDC_TAKEN_MASK ) {
                 case MDC_TAKEN_BACK:
@@ -734,41 +783,41 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece,
                 }
             }
         }
-        line->indent = asm->address_end;
+        line->indent = asw->address_end;
         break;
     case PIECE_OPCODE:
         if( src_line != 0 ) {
             ret = FALSE;
             break;
         }
-        DoDisAsm( asm, addr );
-        MADDisasmFormat( asm->cache_dd, MDP_INSTRUCTION, CurrRadix, TXT_LEN, TxtBuff );
-        line->indent = asm->address_end + WndMaxCharX( wnd );
+        DoDisAsm( asw, addr );
+        MADDisasmFormat( asw->cache_dd, MDP_INSTRUCTION, CurrRadix, TXT_LEN, TxtBuff );
+        line->indent = asw->address_end + WndMaxCharX( wnd );
         break;
     case PIECE_OPERANDS:
         if( src_line != 0 ) {
             ret = FALSE;
             break;
         }
-        DoDisAsm( asm, addr );
-        MADDisasmFormat( asm->cache_dd, MDP_OPERANDS, CurrRadix, TXT_LEN, TxtBuff );
-        line->indent = asm->address_end + (MADDisasmNameMax()+1) * WndAvgCharX( wnd );
-        asm->ins_end = line->indent + WndExtentX( wnd, line->text );
+        DoDisAsm( asw, addr );
+        MADDisasmFormat( asw->cache_dd, MDP_OPERANDS, CurrRadix, TXT_LEN, TxtBuff );
+        line->indent = asw->address_end + (MADDisasmNameMax()+1) * WndAvgCharX( wnd );
+        asw->ins_end = line->indent + WndExtentX( wnd, line->text );
         break;
     case PIECE_MEMREF:
         if( src_line != 0 ) {
             ret = FALSE;
             break;
         }
-        DoDisAsm( asm, addr );
-        if( asm->ins_end == 0 ) {
-            MADDisasmFormat( asm->cache_dd, MDP_ALL, CurrRadix, TXT_LEN, TxtBuff );
-            asm->ins_end = asm->address_end + WndExtentX( wnd, TxtBuff );
+        DoDisAsm( asw, addr );
+        if( asw->ins_end == 0 ) {
+            MADDisasmFormat( asw->cache_dd, MDP_ALL, CurrRadix, TXT_LEN, TxtBuff );
+            asw->ins_end = asw->address_end + WndExtentX( wnd, TxtBuff );
         }
-        if( InsMemRef( asm->cache_dd ) ) {
+        if( InsMemRef( asw->cache_dd ) ) {
             indent = WndWidth( wnd ) - WndExtentX( wnd, TxtBuff );
-            if( indent < asm->ins_end ) {
-                line->indent = asm->ins_end + WndMidCharX( wnd );
+            if( indent < asw->ins_end ) {
+                line->indent = asw->ins_end + WndMidCharX( wnd );
             } else {
                 line->indent = indent;
             }
@@ -788,12 +837,12 @@ static void AsmTrack( a_window *wnd, address ip )
 {
     int         row;
     int         slack;
-    asm_window *asm = WndAsm( wnd );
+    asm_window *asw = WndAsm( wnd );
     address     old_active;
     wnd_row     curr_row;
     int         curr_piece;
 
-    if( AddrComp( ip, asm->active ) != 0 ) {
+    if( AddrComp( ip, asw->active ) != 0 ) {
         WndGetCurrent( wnd, &curr_row, &curr_piece );
         WndNoCurrent( wnd );
         if( curr_row != WND_NO_ROW ) WndRowDirty( wnd, curr_row );
@@ -803,8 +852,8 @@ static void AsmTrack( a_window *wnd, address ip )
             WndZapped( wnd );
             row = AsmAddrRow( wnd, ip );
         } else {
-            old_active = asm->active;
-            asm->active = NilAddr;
+            old_active = asw->active;
+            asw->active = NilAddr;
             slack = WndRows( wnd ) / 4;
             if( slack > 2 ) slack = 2;
             if( row >= WndRows( wnd ) - slack ) {
@@ -819,7 +868,7 @@ static void AsmTrack( a_window *wnd, address ip )
         WndNewCurrent( wnd, row, PIECE_CURRENT );
         WndRowDirty( wnd, row );
         AsmSetDotAddr( wnd, ip );
-        asm->active = ip;
+        asw->active = ip;
     } else {
         AsmMoveDot( wnd, ip );
         WndRowDirty( wnd, AsmAddrRow( wnd, ip ) );
@@ -829,20 +878,20 @@ static void AsmTrack( a_window *wnd, address ip )
 
 static  void    AsmNewIP( a_window *wnd )
 {
-    asm_window          *asm = WndAsm( wnd );
+    asm_window          *asw = WndAsm( wnd );
     address             ip;
     mad_type_handle     th;
 
     ip = Context.execution;
-    if( asm->track ) {
+    if( asw->track ) {
         AsmTrack( wnd, ip );
     } else {
-        asm->active = ip;
+        asw->active = ip;
     }
     WndRowDirty( wnd, -TITLE_SIZE );
     th = GetMADTypeHandleDefaultAt( ip, MTK_ADDRESS );
-    if( th != asm->def_addr ) {
-        asm->def_addr = th;
+    if( th != asw->def_addr ) {
+        asw->def_addr = th;
         AsmResize( wnd );
     }
 }
@@ -850,7 +899,7 @@ static  void    AsmNewIP( a_window *wnd )
 static WNDREFRESH AsmRefresh;
 static void     AsmRefresh( a_window *wnd )
 {
-    asm_window          *asm = WndAsm( wnd );
+    asm_window          *asw = WndAsm( wnd );
     unsigned            new_size;
     mad_disasm_data     *new;
 
@@ -858,14 +907,14 @@ static void     AsmRefresh( a_window *wnd )
         /* _have_ to check this one first */
         WndZapped( wnd );
         new_size = MADDisasmDataSize();
-        if( new_size > asm->ddsize ) {
-            new = asm->cache_dd;
+        if( new_size > asw->ddsize ) {
+            new = asw->cache_dd;
             _Realloc( new, new_size );
             if( new == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
             } else {
-                asm->cache_dd = new;
-                asm->ddsize = new_size;
+                asw->cache_dd = new;
+                asw->ddsize = new_size;
             }
         }
     }
@@ -875,15 +924,15 @@ static void     AsmRefresh( a_window *wnd )
     }
     if( WndFlags & UP_NEW_PROGRAM ) {
         AsmSetFirst( wnd, NilAddr, TRUE );
-        asm->active = NilAddr;
+        asw->active = NilAddr;
         AsmSetDotAddr( wnd, NilAddr );
-        asm->cache_addr = NilAddr;
+        asw->cache_addr = NilAddr;
         CalcAddrLen( wnd, NilAddr );
-        AsmNewSource( asm, NULL );
+        AsmNewSource( asw, NULL );
     }
     if( WndFlags & (UP_SYM_CHANGE+UP_NEW_SRC) ) {
-        asm->mod = NO_MOD;
-        AsmNewSource( asm, NULL );
+        asw->mod = NO_MOD;
+        AsmNewSource( asw, NULL );
         AsmNewIP( wnd );
         WndZapped( wnd );
     } else if( WndFlags & (UP_STACKPOS_CHANGE+UP_CSIP_CHANGE) ) {
@@ -891,8 +940,8 @@ static void     AsmRefresh( a_window *wnd )
     } else if( WndFlags & (UP_RADIX_CHANGE) ) {
         WndZapped( wnd );
     } else if( WndFlags & UP_BREAK_CHANGE ) {
-        if( asm->toggled_break ) {
-            asm->toggled_break = FALSE;
+        if( asw->toggled_break ) {
+            asw->toggled_break = FALSE;
         } else {
             WndRepaint( wnd );
         }
@@ -900,103 +949,59 @@ static void     AsmRefresh( a_window *wnd )
 }
 
 
-static  void    AsmFini( asm_window *asm )
+static  void    AsmFini( asm_window *asw )
 {
-    AsmNewSource( asm, NULL );
-    _Free( asm->cache_dd );
-    WndFree( asm->ins );
-    WndFree( asm );
+    AsmNewSource( asw, NULL );
+    _Free( asw->cache_dd );
+    WndFree( asw->ins );
+    WndFree( asw );
 }
-
-
-static  void    CalcAddrLen( a_window *wnd, address addr )
-{
-    asm_window  *asm = WndAsm( wnd );
-    unsigned    old;
-
-    old = NewCurrRadix( asm->hex ? 16 : 10 );
-    AddrToString( &addr, MAF_OFFSET, TxtBuff, TXT_LEN );
-    asm->address_end = MaxGadgetLength;
-    asm->address_end += ( strlen( TxtBuff ) + 1 ) * WndMidCharX( wnd );
-    NewCurrRadix( old );
-}
-
 
 static  void    AsmInit( a_window *wnd )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
     int         size;
 
     size = WndRows( wnd );
     if( size <= 0 ) size = 1;
-    asm->ins = WndAlloc( size * sizeof( *asm->ins ) );
-    memset( asm->ins, 0, size * sizeof( *asm->ins ) );
-    asm->ins_size = size;
-    if( asm->ins == NULL ) {
+    asw->ins = WndAlloc( size * sizeof( *asw->ins ) );
+    memset( asw->ins, 0, size * sizeof( *asw->ins ) );
+    asw->ins_size = size;
+    if( asw->ins == NULL ) {
         WndClose( wnd );
         WndNoMemory();
     }
-    asm->num_toggles = 0;
-    asm->source = _IsOn( SW_ASM_SOURCE );
-    asm->hex = _IsOn( SW_ASM_HEX );
-    AsmSetFirst( wnd, asm->active, TRUE ); // hidden here by Open
-    asm->viewhndl = NULL;
+    asw->num_toggles = 0;
+    asw->source = _IsOn( SW_ASM_SOURCE );
+    asw->hex = _IsOn( SW_ASM_HEX );
+    AsmSetFirst( wnd, asw->active, TRUE ); // hidden here by Open
+    asw->viewhndl = NULL;
     AsmRefresh( wnd );
-    asm->src = NULL;
-    asm->mod = NO_MOD;
-    AsmSetDotAddr( wnd, asm->active );
-    asm->active = NilAddr;
-    asm->src_list.mod = NO_MOD;
-    asm->src_list.file_id = 0;
+    asw->src = NULL;
+    asw->mod = NO_MOD;
+    AsmSetDotAddr( wnd, asw->active );
+    asw->active = NilAddr;
+    asw->src_list.mod = NO_MOD;
+    asw->src_list.file_id = 0;
     WndFixedThumb( wnd );
     WndSetIDChars( wnd, WND_ALNUM_STR "_$:[]+-*" );
     CalcAddrLen( wnd, Context.execution );
     WndZapped( wnd );
 }
 
-
-static  void    AsmResize( a_window *wnd )
-{
-    asm_window          *asm = WndAsm( wnd );
-    asm_addr            *new_ins;
-    address             first;
-    int         size;
-
-    size = WndRows( wnd );
-    if( size <= 0 ) size = 1;
-    first = asm->ins[ 0 ].addr;
-    new_ins = WndAlloc( size*sizeof( *new_ins ) );
-    memset( new_ins, 0, size*sizeof( *new_ins ) );
-    if( new_ins == NULL ) {
-        WndClose( wnd );
-        WndNoMemory();
-    }
-    WndFree( asm->ins );
-    asm->ins = new_ins;
-    asm->ins_size = size;
-    AsmSetFirst( wnd, first, asm->ins[ 0 ].line != 0 );
-    CalcAddrLen( wnd, first );
-    if( asm->last_width != WndWidth( wnd ) ) {
-        WndZapped( wnd );
-    }
-    asm->last_width = WndWidth( wnd );
-    WndFixedThumb( wnd );
-}
-
-
 static WNDCALLBACK AsmEventProc;
 static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
 
     parm=parm;
-    asm = WndAsm( wnd );
+    asw = WndAsm( wnd );
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
         ActiveWindowLevel = ASM;
-        if( IS_NIL_ADDR( asm->dotaddr ) ) return( TRUE );
-        SetCodeDot( asm->dotaddr );
-        SrcMoveDot( asm->src, asm->dotaddr );
+        if( IS_NIL_ADDR( asw->dotaddr ) ) return( TRUE );
+        SetCodeDot( asw->dotaddr );
+        SrcMoveDot( asw->src, asw->dotaddr );
         return( TRUE );
     case GUI_RESIZE:
         AsmResize( wnd );
@@ -1005,13 +1010,13 @@ static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         AsmInit( wnd );
         AsmNewIP( wnd );
         DbgUpdate( UP_OPEN_CHANGE );
-        asm->popup = WndAppendToggles( MADDisasmToggleList(), &asm->num_toggles, &AsmMenu, ArraySize( AsmMenu ), MENU_ASM_TOGGLES );
-        WndSetPopUpMenu( wnd, asm->popup, ArraySize( AsmMenu ) + asm->num_toggles );
+        asw->popup = WndAppendToggles( MADDisasmToggleList(), &asw->num_toggles, AsmMenu, ArraySize( AsmMenu ), MENU_ASM_TOGGLES );
+        WndSetPopUpMenu( wnd, asw->popup, ArraySize( AsmMenu ) + asw->num_toggles );
         return( TRUE );
     case GUI_DESTROY :
-        SrcFreeAsm( asm->src );
-        WndDeleteToggles( asm->popup, ArraySize( AsmMenu ), asm->num_toggles );
-        AsmFini( asm );
+        SrcFreeAsm( asw->src );
+        WndDeleteToggles( asw->popup, ArraySize( AsmMenu ), asw->num_toggles );
+        AsmFini( asw );
         DbgUpdate( UP_OPEN_CHANGE );
         return( TRUE );
     }
@@ -1020,11 +1025,11 @@ static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 
 static void DoAsmChangeOptions( a_window *wnd )
 {
-    asm_window  *asm = WndAsm( wnd );
+    asm_window  *asw = WndAsm( wnd );
 
-    asm->hex = _IsOn( SW_ASM_HEX );
-    asm->source = _IsOn( SW_ASM_SOURCE );
-    AsmSetFirst( wnd, asm->ins[ 0 ].addr, asm->ins[ 0 ].line != 0 );
+    asw->hex = _IsOn( SW_ASM_HEX );
+    asw->source = _IsOn( SW_ASM_SOURCE );
+    AsmSetFirst( wnd, asw->ins[ 0 ].addr, asw->ins[ 0 ].line != 0 );
     WndZapped( wnd );
 }
 
@@ -1054,31 +1059,32 @@ wnd_info AsmInfo = {
 
 extern a_window *DoWndAsmOpen( address addr, bool track )
 {
-    asm_window  *asm;
+    asm_window  *asw;
     a_window    *wnd;
 
-    asm = WndMustAlloc( sizeof( asm_window ) );
-    asm->ddsize = MADDisasmDataSize();
-    _Alloc( asm->cache_dd, asm->ddsize );
-    if( asm->cache_dd == NULL ) {
-        WndFree( asm );
+    asw = WndMustAlloc( sizeof( asm_window ) );
+    asw->ddsize = MADDisasmDataSize();
+    _Alloc( asw->cache_dd, asw->ddsize );
+    if( asw->cache_dd == NULL ) {
+        WndFree( asw );
         return( NULL );
     }
-    asm->active = addr;
-    asm->track = 0;
-    asm->cache_addr = NilAddr;
-    asm->last_width = 0;
+    asw->active = addr;
+    asw->track = 0;
+    asw->cache_addr = NilAddr;
+    asw->dotaddr = NilAddr;
+    asw->last_width = 0;
     wnd = DbgTitleWndCreate( LIT( WindowAssembly ), &AsmInfo, WND_ASSEMBLY,
-                             asm, &AsmIcon, TITLE_SIZE, FALSE );
+                             asw, &AsmIcon, TITLE_SIZE, FALSE );
     if( wnd == NULL ) return( wnd );
-    asm->track = track;
-    asm->def_addr = MAD_NIL_TYPE_HANDLE;
+    asw->track = track;
+    asw->def_addr = MAD_NIL_TYPE_HANDLE;
     AsmSetDotAddr( wnd, addr );
     AsmSetTitle( wnd );
     WndSetSwitches( wnd, WSW_LBUTTON_SELECTS+WSW_RBUTTON_SELECTS+
                          WSW_CHAR_CURSOR+WSW_SUBWORD_SELECT );
     WndClrSwitches( wnd, WSW_HIGHLIGHT_CURRENT );
-    SrcNewAsmNotify( wnd, asm->mod, asm->track );
+    SrcNewAsmNotify( wnd, asw->mod, asw->track );
     return( wnd );
 }
 

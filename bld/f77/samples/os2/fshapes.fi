@@ -1,0 +1,24 @@
+
+        include 'os2.fi'
+
+        integer         SizeX
+        integer         SizeY
+        integer         FrameHandle
+        integer         WinHandle
+        integer         hMessageQueue
+        integer         AnchorBlock
+
+        common /globals/
+     +  SizeX,
+     +  SizeY,
+     +  FrameHandle,
+     +  WinHandle,
+     +  hMessageQueue,
+     +  AnchorBlock
+
+        external                Random
+        integer                 Random
+
+        external                MainDriver
+        integer                 MainDriver
+c$pragma aux (FNWP)             MainDriver

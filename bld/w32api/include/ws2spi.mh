@@ -1,0 +1,305 @@
+/*
+ *  ws2spi.h    Windows Sockets (version 2) service provider functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _WINSOCK2SPI_
+#define _WINSOCK2SPI_
+
+:include readonly.sp
+
+#include <winsock2.h>
+
+:include cpluspro.sp
+
+/* Windows Sockets service provider calling convention */
+#define WSPAPI  WSAAPI
+
+/* String lengths */
+#define WSPDESCRIPTION_LEN  255
+
+/* Windows Sockets overlapped flags */
+#define WSS_OPERATION_IN_PROGRESS   0x00000103L
+
+/* LSP categories */
+#if (_WIN32_WINNT >= 0x0600)
+    #define LSP_SYSTEM          0x80000000L
+    #define LSP_INSPECTOR       0x00000001L
+    #define LSP_REDIRECTOR      0x00000002L
+    #define LSP_PROXY           0x00000004L
+    #define LSP_FIREWALL        0x00000008L
+    #define LSP_INBOUND_MODIFY  0x00000010L
+    #define LSP_OUTBOUND_MODIFY 0x00000020L
+    #define LSP_CRYPTO_COMPRESS 0x00000040L
+    #define LSP_LOCAL_CACHE     0x00000080L
+#endif
+
+/* Windows Sockets provider data */
+typedef struct WSPData {
+    WORD    wVersion;
+    WORD    wHighVersion;
+    WCHAR   szDescription[WSPDESCRIPTION_LEN + 1];
+} WSPDATA;
+typedef WSPDATA *LPWSPDATA;
+
+/* Windows Sockets thread identifier */
+typedef struct _WSATHREADID {
+    HANDLE      ThreadHandle;
+    DWORD_PTR   Reserved;
+} WSATHREADID;
+typedef WSATHREADID *LPWSATHREADID;
+
+/* Service provider callbacks */
+typedef BOOL (CALLBACK *LPBLOCKINGCALLBACK)( DWORD_PTR );
+typedef VOID (CALLBACK *LPWSAUSERAPC)( DWORD_PTR );
+
+/* Functions implemented by service providers */
+typedef SOCKET (WSPAPI *LPWSPACCEPT)( SOCKET, struct sockaddr *, LPINT, LPCONDITIONPROC, DWORD_PTR, LPINT );
+typedef INT (WSPAPI *LPWSPADDRESSTOSTRING)( LPSOCKADDR, DWORD, LPWSAPROTOCOL_INFOW, LPWSTR, LPDWORD, LPINT );
+typedef int (WSPAPI *LPWSPASYNCSELECT)( SOCKET, HWND, unsigned int, long, LPINT );
+typedef int (WSPAPI *LPWSPBIND)( SOCKET, const struct sockaddr *, int, LPINT );
+typedef int (WSPAPI *LPWSPCANCELBLOCKINGCALL)( LPINT );
+typedef int (WSPAPI *LPWSPCLEANUP)( LPINT );
+typedef int (WSPAPI *LPWSPCLOSESOCKET)( SOCKET, LPINT );
+typedef int (WSPAPI *LPWSPCONNECT)( SOCKET, const struct sockaddr *, int, LPWSABUF, LPWSABUF, LPQOS, LPQOS, LPINT );
+typedef int (WSPAPI *LPWSPDUPLICATESOCKET)( SOCKET, DWORD, LPWSAPROTOCOL_INFOW, LPINT );
+typedef int (WSPAPI *LPWSPENUMNETWORKEVENTS)( SOCKET, WSAEVENT, LPWSANETWORKEVENTS, LPINT );
+typedef int (WSPAPI *LPWSPEVENTSELECT)( SOCKET, WSAEVENT, long, LPINT );
+typedef BOOL (WSPAPI *LPWSPGETOVERLAPPEDRESULT)( SOCKET, LPWSAOVERLAPPED, LPDWORD, BOOL, LPDWORD, LPINT );
+typedef int (WSPAPI *LPWSPGETPEERNAME)( SOCKET, struct sockaddr *, LPINT, LPINT );
+typedef int (WSPAPI *LPWSPGETSOCKNAME)( SOCKET, struct sockaddr *, LPINT, LPINT );
+typedef int (WSPAPI *LPWSPGETSOCKOPT)( SOCKET, int, int, char *, LPINT, LPINT );
+typedef BOOL (WSPAPI *LPWSPGETQOSBYNAME)( SOCKET, LPWSABUF, LPQOS, LPINT );
+typedef int (WSPAPI *LPWSPIOCTL)( SOCKET, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE, LPWSATHREADID, LPINT );
+typedef SOCKET (WSPAPI *LPWSPJOINLEAF)( SOCKET, const struct sockaddr *, int, LPWSABUF, LPWSABUF, LPQOS, LPQOS, DWORD, LPINT );
+typedef int (WSPAPI *LPWSPLISTEN)( SOCKET, int, LPINT );
+typedef int (WSPAPI *LPWSPRECV)( SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE, LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWSPRECVDISCONNECT)( SOCKET, LPWSABUF, LPINT );
+typedef int (WSPAPI *LPWSPRECVFROM)( SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, struct sockaddr *, LPINT, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE, LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWSPSELECT)( int, fd_set *, fd_set *, fd_set *, const struct timeval *, LPINT );
+typedef int (WSPAPI *LPWSPSEND)( SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE, LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWSPSENDDISCONNECT)( SOCKET, LPWSABUF, LPINT );
+typedef int (WSPAPI *LPWSPSENDTO)( SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, const struct sockaddr *, int, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE, LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWSPSETSOCKOPT)( SOCKET, int, int, const char *, int, LPINT );
+typedef int (WSPAPI *LPWSPSHUTDOWN)( SOCKET, int, LPINT );
+typedef SOCKET (WSPAPI *LPWSPSOCKET)( int, int, int, LPWSAPROTOCOL_INFOW, GROUP, DWORD, LPINT );
+typedef INT (WSPAPI *LPWSPSTRINGTOADDRESS)( LPWSTR, INT, LPWSAPROTOCOL_INFOW, LPSOCKADDR, LPINT, LPINT );
+
+/* Service provider procedure table */
+typedef struct _WSPPROC_TABLE {
+    LPWSPACCEPT                 lpWSPAccept;
+    LPWSPADDRESSTOSTRING        lpWSPAddressToString;
+    LPWSPASYNCSELECT            lpWSPAsyncSelect;
+    LPWSPBIND                   lpWSPBind;
+    LPWSPCANCELBLOCKINGCALL     lpWSPCancelBlockingCall;
+    LPWSPCLEANUP                lpWSPCleanup;
+    LPWSPCLOSESOCKET            lpWSPCloseSocket;
+    LPWSPCONNECT                lpWSPConnect;
+    LPWSPDUPLICATESOCKET        lpWSPDuplicateSocket;
+    LPWSPENUMNETWORKEVENTS      lpWSPEnumNetworkEvents;
+    LPWSPEVENTSELECT            lpWSPEventSelect;
+    LPWSPGETOVERLAPPEDRESULT    lpWSPGetOverlappedResult;
+    LPWSPGETPEERNAME            lpWSPGetPeerName;
+    LPWSPGETSOCKNAME            lpWSPGetSockName;
+    LPWSPGETSOCKOPT             lpWSPGetSockOpt;
+    LPWSPGETQOSBYNAME           lpWSPGetQOSByName;
+    LPWSPIOCTL                  lpWSPIoctl;
+    LPWSPJOINLEAF               lpWSPJoinLeaf;
+    LPWSPLISTEN                 lpWSPListen;
+    LPWSPRECV                   lpWSPRecv;
+    LPWSPRECVDISCONNECT         lpWSPRecvDisconnect;
+    LPWSPRECVFROM               lpWSPRecvFrom;
+    LPWSPSELECT                 lpWSPSelect;
+    LPWSPSEND                   lpWSPSend;
+    LPWSPSENDDISCONNECT         lpWSPSendDisconnect;
+    LPWSPSENDTO                 lpWSPSendTo;
+    LPWSPSETSOCKOPT             lpWSPSetSockOpt;
+    LPWSPSHUTDOWN               lpWSPShutdown;
+    LPWSPSOCKET                 lpWSPSocket;
+    LPWSPSTRINGTOADDRESS        lpWSPStringToAddress;
+} WSPPROC_TABLE;
+typedef WSPPROC_TABLE   *LPWSPPROC_TABLE;
+
+/* Provider upcall functions */
+typedef BOOL (WSPAPI *LPWPUCLOSEEVENT)( WSAEVENT, LPINT );
+typedef int (WSPAPI *LPWPUCLOSESOCKETHANDLE)( SOCKET, LPINT );
+typedef WSAEVENT (WSPAPI *LPWPUCREATEEVENT)( LPINT );
+typedef SOCKET (WSPAPI *LPWPUCREATESOCKETHANDLE)( DWORD, DWORD_PTR, LPINT );
+typedef int (WSPAPI *LPWPUFDISSET)( SOCKET, fd_set * );
+typedef int (WSPAPI *LPWPUGETPROVIDERPATH)( LPGUID, WCHAR *, LPINT, LPINT );
+typedef SOCKET (WSPAPI *LPWPUMODIFYIFSHANDLE)( DWORD, SOCKET, LPINT );
+typedef BOOL (WSPAPI *LPWPUPOSTMESSAGE)( HWND, UINT, WPARAM, LPARAM );
+typedef int (WSPAPI *LPWPUQUERYBLOCKINGCALLBACK)( DWORD, LPBLOCKINGCALLBACK *, PDWORD_PTR, LPINT );
+typedef int (WSPAPI *LPWPUQUERYSOCKETHANDLECONTEXT)( SOCKET, PDWORD_PTR, LPINT );
+typedef int (WSPAPI *LPWPUQUEUEAPC)( LPWSATHREADID, LPWSAUSERAPC, DWORD_PTR, LPINT );
+typedef BOOL (WSPAPI *LPWPURESETEVENT)( WSAEVENT, LPINT );
+typedef BOOL (WSPAPI *LPWPUSETEVENT)( WSAEVENT, LPINT );
+typedef int (WSPAPI *LPWPUOPENCURRENTTHREAD)( LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWPUCLOSETHREAD)( LPWSATHREADID, LPINT );
+typedef int (WSPAPI *LPWPUCOMPLETEOVERLAPPEDREQUEST)( SOCKET, LPWSAOVERLAPPED, DWORD, DWORD, LPINT );
+
+/* Service provider upcall table */
+typedef struct _WSPUPCALLTABLE {
+    LPWPUCLOSEEVENT                 lpWPUCloseEvent;
+    LPWPUCLOSESOCKETHANDLE          lpWPUCloseSocketHandle;
+    LPWPUCREATEEVENT                lpWPUCreateEvent;
+    LPWPUCREATESOCKETHANDLE         lpWPUCreateSocketHandle;
+    LPWPUFDISSET                    lpWPUFDIsSet;
+    LPWPUGETPROVIDERPATH            lpWPUGetProviderPath;
+    LPWPUMODIFYIFSHANDLE            lpWPUModifyIFSHandle;
+    LPWPUPOSTMESSAGE                lpWPUPostMessage;
+    LPWPUQUERYBLOCKINGCALLBACK      lpWPUQueryBlockingCallback;
+    LPWPUQUERYSOCKETHANDLECONTEXT   lpWPUQuerySocketHandleContext;
+    LPWPUQUEUEAPC                   lpWPUQueueAPC;
+    LPWPURESETEVENT                 lpWPUResetEvent;
+    LPWPUSETEVENT                   lpWPUSetEvent;
+    LPWPUOPENCURRENTTHREAD          lpWPUOpenCurrentThread;
+    LPWPUCLOSETHREAD                lpWPUCloseThread;
+} WSPUPCALLTABLE;
+typedef WSPUPCALLTABLE  *LPWSPUPCALLTABLE;
+
+/* Pointer to function exported by service providers */
+typedef int (WSPAPI *LPWSPSTARTUP)( WORD, LPWSPDATA, LPWSAPROTOCOL_INFOW, WSPUPCALLTABLE, LPWSPPROC_TABLE );
+
+/* Pointers to functions called by service providers */
+typedef int (WSPAPI *LPWSCDEINSTALLPROVIDER)( LPGUID, LPINT );
+typedef INT (WSPAPI *LPWSCENABLENSPROVIDER)( LPGUID, BOOL );
+typedef int (WSPAPI *LPWSCENUMPROTOCOLS)( LPINT, LPWSAPROTOCOL_INFOW, LPDWORD, LPINT );
+typedef int (WSPAPI *LPWSCGETPROVIDERPATH)( LPGUID, WCHAR *, LPINT, LPINT );
+typedef INT (WSPAPI *LPWSCINSTALLNAMESPACE)( LPWSTR, LPWSTR, DWORD, DWORD, LPGUID );
+typedef int (WSPAPI *LPWSCINSTALLPROVIDER)( LPGUID, const WCHAR *, const LPWSAPROTOCOL_INFOW, DWORD, LPINT );
+typedef INT (WSPAPI *LPWSCUNINSTALLNAMESPACE)( LPGUID );
+#if (_WIN32_WINNT >= 0x0501)
+typedef int (WSPAPI *LPWSCUPDATEPROVIDER)( LPGUID, const WCHAR *, const LPWSAPROTOCOL_INFOW, DWORD, LPINT );
+#endif
+#if (_WIN32_WINNT < 0x0600)
+typedef int (WSPAPI *LPWSCINSTALLQOSTEMPLATE)( const LPGUID, LPWSABUF, LPQOS );
+typedef int (WSPAPI *LPWSCREMOVEQOSTEMPLATE)( const LPGUID, LPWSABUF );
+#endif
+
+/* Provider information types */
+#if (_WIN32_WINNT >= 0x0600)
+typedef enum _WSC_PROVIDER_INFO_TYPE {
+    ProviderInfoLspCategories   = 0,
+    ProviderInfoAudit           = 1
+} WSC_PROVIDER_INFO_TYPE;
+#endif
+
+/* Provider audit information */
+#if (_WIN32_WINNT >= 0x0600)
+typedef struct _WSC_PROVIDER_AUDIT_INFO {
+    DWORD   RecordSize;
+    PVOID   Reserved;
+} WSC_PROVIDER_AUDIT_INFO;
+#endif
+
+/* Namespace provider routines */
+typedef INT (WSAAPI *LPNSPCLEANUP)( LPGUID );
+typedef INT (WSAAPI *LPNSPGETSERVICECLASSINFO)( LPGUID, LPDWORD, LPWSASERVICECLASSINFOW );
+typedef INT (WSAAPI *LPNSPINSTALLSERVICECLASS)( LPGUID, LPWSASERVICECLASSINFOW );
+typedef INT (WSAAPI *LPNSPLOOKUPSERVICEBEGIN)( LPGUID, LPWSAQUERYSETW, LPWSASERVICECLASSINFOW, DWORD, LPHANDLE );
+typedef INT (WSAAPI *LPNSPLOOKUPSERVICEEND)( HANDLE );
+typedef INT (WSAAPI *LPNSPLOOKUPSERVICENEXT)( HANDLE, DWORD, LPDWORD, LPWSAQUERYSETW );
+typedef INT (WSAAPI *LPNSPREMOVESERVICECLASS)( LPGUID, LPGUID );
+typedef INT (WSAAPI *LPNSPSETSERVICE)( LPGUID, LPWSASERVICECLASSINFOW, LPWSAQUERYSETW, WSAESETSERVICEOP, DWORD );
+#if (_WIN32_WINNT >= 0x0501)
+typedef INT (WSAAPI *LPNSPIOCTL)( HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPWSACOMPLETION, LPWSATHREADID );
+#endif
+
+/* Namespace provider routine table */
+typedef struct _NSP_ROUTINE {
+    DWORD                       cbSize;
+    DWORD                       dwMajorVersion;
+    DWORD                       dwMinorVersion;
+    LPNSPCLEANUP                NSPCleanup;
+    LPNSPLOOKUPSERVICEBEGIN     NSPLookupServiceBegin;
+    LPNSPLOOKUPSERVICENEXT      NSPLookupServiceNext;
+    LPNSPLOOKUPSERVICEEND       NSPLookupServiceEnd;
+    LPNSPSETSERVICE             NSPSetService;
+    LPNSPINSTALLSERVICECLASS    NSPInstallServiceClass;
+    LPNSPREMOVESERVICECLASS     NSPRemoveServiceClass;
+    LPNSPGETSERVICECLASSINFO    NSPGetServiceClassInfo;
+#if (_WIN32_WINNT >= 0x0501)
+    LPNSPIOCTL                  NSPIoctl;
+#endif
+} NSP_ROUTINE;
+typedef NSP_ROUTINE *LPNSP_ROUTINE;
+
+/* Pointer to function exported by namespace providers */
+typedef INT (WSAAPI *LPNSPSTARTUP)( LPGUID, LPNSP_ROUTINE );
+
+/* Namespace provider routines (version 2) */
+typedef INT (WSAAPI *LPNSPV2CLEANUP)( LPGUID, LPVOID );
+typedef VOID (WSAAPI *LPNSPV2CLIENTSESSIONRUNDOWN)( LPGUID, LPVOID );
+typedef INT (WSAAPI *LPNSPV2LOOKUPSERVICEBEGIN)( LPGUID, LPWSAQUERYSET2W, DWORD, LPVOID, LPHANDLE );
+typedef INT (WSAAPI *LPNSPV2LOOKUPSERVICEEND)( HANDLE );
+typedef INT (WSAAPI *LPNSPV2LOOKUPSERVICENEXTEX)( HANDLE, HANDLE, DWORD, LPDWORD, LPWSAQUERYSET2W );
+typedef VOID (WSAAPI *LPNSPV2SETSERVICEEX)( HANDLE, LPGUID, LPWSAQUERYSET2W, WSAESETSERVICEOP, DWORD, LPVOID );
+typedef INT (WSAAPI *LPNSPV2STARTUP)( LPGUID, LPVOID * );
+
+/* Namespace provider routine table (version 2) */
+typedef struct _NSPV2_ROUTINE {
+    DWORD                       cbSize;
+    DWORD                       dwMajorVersion;
+    DWORD                       dwMinorVersion;
+    LPNSPV2STARTUP              NSPv2Startup;
+    LPNSPV2CLEANUP              NSPv2Cleanup;
+    LPNSPV2LOOKUPSERVICEBEGIN   NSPv2LookupServiceBegin;
+    LPNSPV2LOOKUPSERVICENEXTEX  NSPv2LookupServiceNextEx;
+    LPNSPV2LOOKUPSERVICEEND     NSPv2LookupServiceEnd;
+    LPNSPV2SETSERVICEEX         NSPv2SetServiceEx;
+    LPNSPV2CLIENTSESSIONRUNDOWN NSPv2ClientSessionRundown;
+} NSPV2_ROUTINE;
+typedef NSPV2_ROUTINE       *PNSPV2_ROUTINE;
+typedef NSPV2_ROUTINE       *LPNSPV2_ROUTINE;
+typedef const NSPV2_ROUTINE *PCNSPV2_ROUTINE;
+typedef const NSPV2_ROUTINE *LPCNSPV2_ROUTINE;
+
+/* Function exported by service providers */
+int WSPAPI  WSPStartup( WORD, LPWSPDATA, LPWSAPROTOCOL_INFOW, WSPUPCALLTABLE, LPWSPPROC_TABLE );
+
+/* Function exported by namespace providers */
+int WSAAPI  NSPStartup( LPGUID, LPNSP_ROUTINE );
+
+/* Functions in WS2_32.DLL */
+int WSPAPI  WPUCompleteOverlappedRequest( SOCKET, WSAOVERLAPPED, DWORD, DWORD, LPINT );
+int WSPAPI  WSCDeinstallProvider( LPGUID, LPINT );
+INT WSPAPI  WSCEnableNSProvider( LPGUID, BOOL );
+int WSPAPI  WSCEnumProtocols( LPINT, LPWSAPROTOCOL_INFOW, LPDWORD, LPINT );
+int WSPAPI  WSCGetProviderPath( LPGUID, WCHAR *, LPINT, LPINT );
+INT WSPAPI  WSCInstallNameSpace( LPWSTR, LPWSTR, DWORD, DWORD, LPGUID );
+int WSPAPI  WSCInstallProvider( LPGUID, const WCHAR *, const LPWSAPROTOCOL_INFOW, DWORD, LPINT );
+INT WSPAPI  WSCUnInstallNameSpace( LPGUID );
+#if (_WIN32_WINNT >= 0x0501)
+int WSPAPI  WSCUpdateProvider( LPGUID, const WCHAR *, const LPWSAPROTOCOL_INFOW, DWORD, LPINT );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+INT WSAAPI  WSAAdvertiseProvider( const GUID *, const LPCNSPV2_ROUTINE );
+INT WSAAPI  WSAProviderCompleteAsyncCall( HANDLE, INT );
+INT WSAAPI  WSAUnadvertiseProvider( const GUID * );
+int WSPAPI  WSCGetApplicationCategory( LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD *, LPINT );
+int WSPAPI  WSCGetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, size_t *, DWORD, LPINT );
+INT WSPAPI  WSCInstallNameSpaceEx( LPWSTR, LPWSTR, DWORD, DWORD, LPGUID, LPBLOB );
+int WSPAPI  WSCInstallProviderAndChains( LPGUID, const LPWSTR, const LPWSTR, DWORD, LPWSAPROTOCOL_INFOW, DWORD, LPDWORD, LPINT );
+int WSPAPI  WSCSetApplicationCategory( LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD, DWORD *, LPINT );
+int WSPAPI  WSCSetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, size_t, DWORD, LPINT );
+#endif
+
+/* Functions in QOSNAME.DLL */
+#if (_WIN32_WINNT < 0x0600)
+int WSPAPI  WSCInstallQOSTemplate( const LPGUID, LPWSABUF, LPQOS );
+int WSPAPI  WSCRemoveQOSTemplate( const LPGUID, LPWSABUF );
+#endif
+
+/* Aliases */
+#if (_WIN32_WINNT >= 0x0501)
+    #define WSCEnumNameSpaceProviders   WSAEnumNameSpaceProvidersW
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+    #define WSCEnumNameSpaceProvidersEx WSAEnumNameSpaceProvidersExW
+#endif
+
+:include cplusepi.sp
+
+#endif /* _WINSOCK2SPI_ */

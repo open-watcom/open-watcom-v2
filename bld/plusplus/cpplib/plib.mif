@@ -1,20 +1,20 @@
-!include $(plusplus_cpplib_dir)\plibname.mif
+!include $(cpplib_dir)/plibname.mif
 
 prefix = $(plib_n)
 
 libs =
-libs += $(plusplus_runtime_dir)\$(fs_prefix)$(subdir)\$(plib_n)$(suffix).lib
-libs += $(plusplus_iostream_dir)\$(fs_prefix)$(subdir)\$(iost_n)$(suffix).lib
-libs += $(plusplus_string_dir)\$(fs_prefix)$(subdir)\$(strg_n)$(suffix).lib
-libs += $(plusplus_contain_dir)\$(fs_prefix)$(subdir)\$(cont_n)$(suffix).lib
+libs += $(cpplib_dir)/runtime/$(system).$(processor)/$(subdir)/$(plib_n)$(suffix).lib
+libs += $(cpplib_dir)/iostream/$(system).$(processor)/$(subdir)/$(iost_n)$(suffix).lib
+libs += $(cpplib_dir)/string/$(system).$(processor)/$(subdir)/$(strg_n)$(suffix).lib
+libs += $(cpplib_dir)/contain/$(system).$(processor)/$(subdir)/$(cont_n)$(suffix).lib
 
 prefix_x = $(plib_x)
 
 libx =
-libx += $(plusplus_runtime_dir)\$(fs_prefix)$(subdir)\$(plib_x)$(suffix).lib
-libx += $(plusplus_iostream_dir)\$(fs_prefix)$(subdir)\$(iost_x)$(suffix).lib
-libx += $(plusplus_string_dir)\$(fs_prefix)$(subdir)\$(strg_x)$(suffix).lib
-libx += $(plusplus_contain_dir)\$(fs_prefix)$(subdir)\$(cont_x)$(suffix).lib
+libx += $(cpplib_dir)/runtime/$(system).$(processor)/$(subdir)/$(plib_x)$(suffix).lib
+libx += $(cpplib_dir)/iostream/$(system).$(processor)/$(subdir)/$(iost_x)$(suffix).lib
+libx += $(cpplib_dir)/string/$(system).$(processor)/$(subdir)/$(strg_x)$(suffix).lib
+libx += $(cpplib_dir)/contain/$(system).$(processor)/$(subdir)/$(cont_x)$(suffix).lib
 
 target_lib = $(prefix)$(suffix).lib
 target_lib_x = $(prefix_x)$(suffix).lib

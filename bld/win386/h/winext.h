@@ -81,4 +81,4 @@ extern void FiniSelList( void );
 extern void FreeDPMIMemBlocks( void );
 extern int Fini( int, ... );
 extern void FAR FiniDLLs( void );
-int Init32BitTask( HANDLE, HANDLE, LPSTR, int );
+int Init32BitTask( HINSTANCE, HINSTANCE, LPSTR, int );

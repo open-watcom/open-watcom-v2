@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strcoll() and wcscoll().
 *
 ****************************************************************************/
 
@@ -46,10 +45,10 @@
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 
-_WCRTLINK int __F_NAME(strcoll,wcscoll) ( const CHAR_TYPE *s, const CHAR_TYPE *t )
-    {
-        for( ; *s == *t; s++, t++ )
-            if( *s == '\0' )
-                return( 0 );
-        return( *s - *t );
-    }
+_WCRTLINK int __F_NAME(strcoll,wcscoll)( const CHAR_TYPE *s, const CHAR_TYPE *t )
+{
+    for( ; *s == *t; s++, t++ )
+        if( *s == '\0' )
+            return( 0 );
+    return( *s - *t );
+}

@@ -1,0 +1,52 @@
+------------------------------------------------ others
+* regression tests (duplicate file names, unchange, .{200})
+* zip_commit
+* zip_replace_zip: allow rewinding
+* API for (file and archive) comments
+* zipcmp: add option for file content comparison
+* support for zip64 (large file)
+
+* append to files (for self-extracting files)
+* add custom compression function support
+* zip_replace_zip: remember compression method, recompress if different speced
+* close even if error...
+* update-zip (instead of close, reopen)
+* support for old compression methods?????
+------------------------------------------------ regression tests
+* (add, replace)
+	add to empty zip
+	add to existing zip
+	add w/ existing file name [E]
+	replace ok
+	replace w/ illegal index [E]
+	replace w/ deleted name [E]
+* (close)
+	copy zip file
+	open copy
+	rename, delete, replace, add w/ new name, add w/ deleted name
+	close
+	zipcmp copy expected
+	remove copy
+* (delete)
+* (error_get)
+* (error_get_sys_type)
+* (error_to_str)
+* (file_error_get)
+* (file_strerror)
+* (fopen_index)
+	illegal index
+* (get_name)
+* (get_num_files)
+* (rename)
+* (replace)
+* (source_buffer)
+* (source_file)
+* (source_filep)
+* (source_free)
+* (source_function)
+* (source_zip)
+* (stat)
+* (stat_index)
+* (strerror)
+* (unchange)
+* (unchange_all)

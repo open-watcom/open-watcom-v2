@@ -32,7 +32,7 @@
 
 void ToGraphical( void );
 void ToCharacter( void );
-void InitSwapper( char );
+void InitSwapper( int );
 void FiniSwapper( void );
 
 #ifdef __WANTALL__
@@ -268,7 +268,7 @@ enum vid_state_info {
 };
 
 
-extern char _A000H[];
+extern char _A000h[];
 extern void FAR PASCAL Death( HDC );
 extern void FAR PASCAL Resurrection( HDC, WORD w1, WORD w2, WORD w3, WORD w4,
                                 WORD w5, WORD w6 );

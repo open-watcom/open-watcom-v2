@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void *WdeMemAlloc    ( unsigned );
-extern void  WdeMemFree     ( void * );
-extern void *WdeMemRealloc  ( void *, unsigned );
-extern int   WdeMemValidate ( void * );
-extern int   WdeMemChkRange ( void *, unsigned );
-extern void  WdeMemPrtUsage ( void );
-extern int   WdeMemPrtList  ( void );
+extern void *WdeMemAlloc( unsigned );
+extern void WdeMemFree( void * );
+extern void *WdeMemRealloc( void *, unsigned );
+extern int  WdeMemValidate( void * );
+extern int  WdeMemChkRange( void *, unsigned );
+extern void WdeMemPrtUsage( void );
+extern int  WdeMemPrtList( void );
 
 #endif

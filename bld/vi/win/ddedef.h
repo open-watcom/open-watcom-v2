@@ -40,9 +40,9 @@ extern bool             UseDDE;
 extern DWORD            DDERet;
 
 /* dde.c */
-bool DDEInit( void );
-void DDEFini( void );
-bool CreateStringHandle( char *name, HSZ *hdl );
-void DeleteStringHandle( HSZ hdl );
+bool    DDEInit( void );
+void    DDEFini( void );
+bool    CreateStringHandle( char *name, HSZ *hdl );
+void    DeleteStringHandle( HSZ hdl );
 
 #endif

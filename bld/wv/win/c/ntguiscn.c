@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgwind.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "dbgtoggl.h"
 #include <windows.h>
+#include "dbgdefn.h"
+#include "dbgwind.h"
+#include "dbgtoggl.h"
 
 extern void     *ExtraAlloc( unsigned );
 extern void     ExtraFree( void * );

@@ -34,9 +34,9 @@
 #include "cplx.h"
 #include "pdiv.h"
 
-_WMRTLINK dcomplex _IF_CDSQRT( double rp, double ip ) {
-//====================================================
-
+_WMRTLINK dcomplex _IF_CDSQRT( double rp, double ip )
+//===================================================
+{
 // Return the complex square root of "arg".
 
     double      r;

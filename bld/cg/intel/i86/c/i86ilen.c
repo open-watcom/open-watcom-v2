@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instuction size calculation and NOP padding.
 *
 ****************************************************************************/
 
@@ -48,10 +47,11 @@ static  byte    InsSize[ 4 ][ OC_DEST_FAR+1 ] = {
 {       2,              4,              0,              0 },    /* JCOND,386 */
 };
 
-extern  int     OptInsSize( oc_class class, oc_dest_attr attr) {
-/**************************************************************/
 
-    int         i;
+extern  int     OptInsSize( oc_class class, oc_dest_attr attr)
+/************************************************************/
+{
+    int         i = 0;
 
     if( class == OC_LREF ) return( 2 );
     switch( class ) {
@@ -67,4 +67,3 @@ extern  int     OptInsSize( oc_class class, oc_dest_attr attr) {
     }
     return( InsSize[ i ][ attr ] );
 }
-

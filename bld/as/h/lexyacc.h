@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stuff that's shared by the parser and the lexer.
 *
 ****************************************************************************/
 
-
-/* lexyacc.h:   stuff that's shared by the parser and the lexer */
 
 #ifdef _STANDALONE_
 typedef struct {
@@ -39,7 +36,7 @@ typedef struct {
 } fileinfo;
 #endif
 
-extern int      asyylex();
+extern int      asyylex( void );
 extern void     asyyerror( char * );
 
 extern int      asyylineno;

@@ -3,14 +3,14 @@
  *
 :include crwat.sp
  */
-#ifndef __LOCKING_H_INCLUDED
-#define __LOCKING_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
+#ifndef _SYS_LOCKING_H_INCLUDED
+#define _SYS_LOCKING_H_INCLUDED
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 #define _LK_UNLCK   0   /* unlock region of a file */
 #define LK_UNLCK    _LK_UNLCK
@@ -27,4 +27,5 @@ _WCRTLINK extern int locking(int __handle,int __mode,unsigned long __nbyte);
 _WCRTLINK extern int _locking(int __handle,int __mode,unsigned long __nbyte);
 
 :include cplusepi.sp
+
 #endif

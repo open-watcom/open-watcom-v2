@@ -1,0 +1,72 @@
+###############################################################################
+# DOS/32 Advanced DOS Extender version 7.1 system file for WATCOM Linker.
+#==============================================================================
+# Available DOS/32 Advanced DOS Extender systems (for use with "wcl386.exe"):
+#       -l=dos32a - DOS/32 Advanced DOS Extender                    (LE-style)
+#       -l=dos32x - DOS/32 Advanced DOS Extender                    (LX-style)
+#       -l=stub32a - DOS/32A DOS Extender w/ Standard stub          (LE-style)
+#       -l=stub32x - DOS/32A DOS Extender w/ Standard stub          (LX-style)
+#       -l=stub32ac - DOS/32A DOS Extender w/ Configurable stub     (LE-style)
+#       -l=stub32xc - DOS/32A DOS Extender w/ Configurable stub     (LX-style)
+###############################################################################
+
+system begin dos32a
+    option osname='DOS/32 Advanced DOS Extender (LE-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+    op stub=dos32a.exe
+    format os2 le
+end
+system begin dos32x
+    option osname='DOS/32 Advanced DOS Extender (LX-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+#   debug watcom all
+#   op symfile
+    op stub=dos32a.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end
+system begin stub32a
+    option osname='DOS/32A DOS Extender w/ Standard stub (LE-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+    op stub=stub32a.exe
+    format os2 le
+end
+system begin stub32x
+    option osname='DOS/32A DOS Extender w/ Standard stub (LX-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+#   debug watcom all
+#   op symfile
+    op stub=stub32a.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end
+system begin stub32ac
+    option osname='DOS/32A DOS Extender w/ Configurable stub (LE-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+    op stub=stub32c.exe
+    format os2 le
+end
+system begin stub32xc
+    option osname='DOS/32A DOS Extender w/ Configurable stub (LX-style)'
+    libpath %WATCOM%\lib386
+    libpath %WATCOM%\lib386\dos
+    libpath %WATCOM%\lib386\l32
+#   debug watcom all
+#   op symfile
+    op stub=stub32c.exe
+    op internalrelocs
+    op align=16
+    format os2 lx
+end

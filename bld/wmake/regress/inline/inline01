@@ -7,12 +7,12 @@ test1: test .symbolic
 test: .symbolic
     @-diff <<test.1 <<test.2
 HELLO
-BOO
+BOO#me
 <<KEEP
 HELLO
 BOO2
 <<KEEP
     @-diff test.1 <<test.3
 HELLO1
-BOO
+BOO#me
 <<KEEP 

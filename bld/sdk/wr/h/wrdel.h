@@ -30,8 +30,5 @@
 ****************************************************************************/
 
 
-extern int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir,
-                                              WResTypeNode **tnode,
-                                              WResResNode **rnode,
-                                              WResLangNode **lnode );
+extern int WR_EXPORT WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode, WResResNode **rnode, WResLangNode **lnode );
 extern int WR_EXPORT WRRemoveTypeNodeFromDir( WResDir, WResTypeNode * );

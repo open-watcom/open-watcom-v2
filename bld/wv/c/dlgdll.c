@@ -36,14 +36,15 @@
 #include "dlglist.h"
 #include <string.h>
 
-extern void RecordSetDLLBreaks();
-extern void RecordClearDLLBreaks();
-extern void FiniDLLList();
-extern char *DLLListName( char_ring *src );
-extern char_ring *NextDLLList( char_ring *curr );
-extern void AddDLLList( char *name );
+extern void         RecordSetDLLBreaks( void );
+extern void         RecordClearDLLBreaks( void );
+extern void         FiniDLLList( void );
+extern char         *DLLListName( char_ring *src );
+extern char_ring    *NextDLLList( char_ring *curr );
+extern void         AddDLLList( char *name );
 
-void DlgBreakDLL()
+
+void DlgBreakDLL( void )
 {
     RecordClearDLLBreaks();
     DlgList( LIT( DLL_Name ), FiniDLLList, AddDLLList,

@@ -403,3 +403,14 @@ Color WEXPORT WWindow::backgroundColour() {
     GUIGetRGB( colour.back, &rgb );
     return( rgb );
 }
+
+
+void WEXPORT WWindow::changeBackground( WPaintAttr attr ) {
+/*********************************************************/
+
+    gui_colour_set      colour;
+
+    GUIGetWndColour( handle(), attr, &colour );
+    GUISetWndColour( handle(), WPaintAttrBackground, &colour );
+}
+

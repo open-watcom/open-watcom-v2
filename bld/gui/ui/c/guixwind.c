@@ -102,15 +102,15 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     }
     if( wnd->hgadget != NULL ) {
         uifinigadget( wnd->hgadget );
-        GUIFree( wnd->hgadget );
+        GUIMemFree( wnd->hgadget );
     }
     if( wnd->vgadget != NULL ) {
         uifinigadget( wnd->vgadget );
-        GUIFree( wnd->vgadget );
+        GUIMemFree( wnd->vgadget );
     }
     GUIFreeMenus( wnd );
     GUIFreeHint( wnd );
-    GUIFree( wnd->icon_name );
+    GUIMemFree( wnd->icon_name );
     if( !dialog ) {
         uivshow( &wnd->screen );
         wnd->screen.open = TRUE;
@@ -119,9 +119,9 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     if( GUICurrWnd == wnd ) {
         GUICurrWnd = NULL;
     }
-    GUIFree( wnd->screen.name );
+    GUIMemFree( wnd->screen.name );
     GUIFreeColours( wnd );
-    GUIFree( wnd );
+    GUIMemFree( wnd );
 }
 
 static void DoDestroy( gui_window * wnd, bool dialog )
@@ -224,16 +224,3 @@ bool GUIIsFirstInstance( void )
 {
     return( TRUE );
 }
-
-#if defined(__NT__) || defined(WILLOWS)
-void GUIStartTimer( gui_window *wnd, int id, int msec )
-{
-    //stub
-}
-
-void GUIStopTimer( gui_window *wnd, int id )
-{
-    //stub
-}
-#endif
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS debugger screen flip support.
 *
 ****************************************************************************/
 
@@ -33,38 +32,9 @@
 #include <i86.h>
 #include "trpimp.h"
 
-extern int GtKey();
+extern int GtKey( void );
 extern unsigned KeyWaiting( void );
 
-#if defined(_FMR_PC)
-#pragma aux GtKey =             \
-    "mov AL,01h"                \
-    "mov AH,09h"                \
-    "int 90h"                   \
-    "mov AX,DX"                 \
-    modify [ax bx dx];
-
-#pragma aux KeyWaiting =        \
-    "mov AH,07h"                \
-    "int 90h"                   \
-    modify [ax bx dx];
-
-#elif defined(_NEC_PC)
-#pragma aux GtKey =             \
-    "mov ah,0"                  \
-    "int 18h"                   \
-    parm caller [ax];
-
-#pragma aux KeyWaiting =        \
-    "mov ah,1"                  \
-    "int 18h"                   \
-    "mov ax,bx"                 \
-    "and ax,0100h"              \
-    "xor ax,0100h"              \
-    modify [ax bh]              \
-    parm caller [ax];
-
-#else
 #pragma aux GtKey =             \
     "mov AH,00h"                \
     "int 16h"                   \
@@ -77,9 +47,8 @@ extern unsigned KeyWaiting( void );
     "and AX,4000h"              \
     parm caller [ax];
 
-#endif
 
-unsigned ReqRead_user_keyboard()
+unsigned ReqRead_user_keyboard( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -87,16 +56,6 @@ unsigned ReqRead_user_keyboard()
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     ret->key = 0;
-#ifdef _NEC_PC
-        /*
-            For some reason, any attempt to perform a software interrupt
-            in this routine causes a crash. Therefore, we cheat and
-            look at the keyboard buffer count in low memory. If it's
-            non-zero, we know that a character is available to be read.
-        */
-        while( *(volatile unsigned char *)MK_FP( 0x50, 0x28 ) == 0 ) {
-        }
-#else
     if( acc->wait != 0 ) {
         unsigned long   end_time;
         unsigned long   *cur_time;
@@ -112,16 +71,15 @@ unsigned ReqRead_user_keyboard()
         }
     }
     ret->key = GtKey();
-#endif
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen()
+unsigned ReqSet_user_screen( void )
 {
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen()
+unsigned ReqSet_debug_screen( void )
 {
     return( 0 );
 }

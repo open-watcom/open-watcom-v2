@@ -33,7 +33,6 @@
 #include <windows.h>
 #include "dlltool.h"
 #include "error.h"
-#include "idedll.h"             /* from watcom project */
 #include "memory.h"
 
 #define WLIB_DLL_FILENAME       "wlibd.dll"
@@ -43,7 +42,6 @@
 #define DLL_FINIDLL             "_IDEFiniDLL@4"
 #define DLL_STOPRUN             "_IDEStopRunning@0"
 #define DLL_INITINFO            "_IDEPassInitInfo@8"
-#define IDEDLL_EXPORT           __export __stdcall
 
 
 /*

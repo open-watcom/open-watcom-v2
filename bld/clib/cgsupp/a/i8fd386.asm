@@ -43,7 +43,7 @@ include struct.inc
 ; Output: [EDX, EAX] = double
 
         xdefp   __I8FD
-        defp    __I8FD
+        defpe   __I8FD
         or      EDX,EDX         ; check sign
         jns     __U8FD          ; if positive, just convert
         neg     EDX             ;
@@ -59,7 +59,7 @@ include struct.inc
 ; Output: [EDX, EAX] = double
 
         xdefp   __U8FD
-        defp    __U8FD
+        defpe   __U8FD
         or      EAX,EAX         ; if lo is zero
         _if     e               ;
         or      EDX,EDX         ; and if hi is zero

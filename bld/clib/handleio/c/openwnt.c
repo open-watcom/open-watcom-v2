@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 implementation of open() and sopen().
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 #include <errno.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <share.h>
 #include <windows.h>
 #include "iomode.h"
@@ -54,27 +53,7 @@
 extern unsigned __NFiles;
 
 
-_WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
-{
-    int         permission;
-    va_list     args;
-
-    va_start( args, mode );
-    permission = va_arg( args, int );
-    va_end( args );
-    return( __F_NAME(sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
-}
-
-
-_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
-{
-    va_list             args;
-
-    va_start( args, shflag );
-    return( __F_NAME(_sopen,__wsopen)( name, mode, shflag, args ) );
-}
-
-static int __F_NAME(_sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share, va_list args )
+static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share, va_list args )
 {
     DWORD               create_disp, exists_disp;
     DWORD               perm, fileattr;
@@ -100,11 +79,8 @@ static int __F_NAME(_sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share
     security.lpSecurityDescriptor = NULL;
     security.bInheritHandle = mode&O_NOINHERIT ? FALSE : TRUE;
 
-#ifdef __WIDECHAR__
-    if( _WindowsNewWindow != 0 && !_wcsicmp( name, L"con" ) )
-#else
-    if( _WindowsNewWindow != 0 && !stricmp( name, "con" ) )
-#endif
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsNewWindow != 0 && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
     {
         handle = (HANDLE) __NTGetFakeHandle();
 
@@ -114,6 +90,7 @@ static int __F_NAME(_sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share
 
         iomode_flags = _ISTTY;
     } else {
+#endif
         if( mode & O_CREAT ) {
             perm = va_arg( args, int );
                 va_end( args );
@@ -172,7 +149,9 @@ static int __F_NAME(_sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share
         if( isatty(hid) ) {
             iomode_flags = _ISTTY;
         }
+#ifdef DEFAULT_WINDOWING
     }
+#endif
 
     if( rwmode == O_RDWR )       iomode_flags |= _READ | _WRITE;
     else if( rwmode == O_RDONLY) iomode_flags |= _READ;
@@ -185,4 +164,25 @@ static int __F_NAME(_sopen,__wsopen)( const CHAR_TYPE *name, int mode, int share
     }
     __SetIOMode( hid, iomode_flags );
     return( hid );
+}
+
+
+_WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
+{
+    int         permission;
+    va_list     args;
+
+    va_start( args, mode );
+    permission = va_arg( args, int );
+    va_end( args );
+    return( __F_NAME(sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
+}
+
+
+_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
+{
+    va_list             args;
+
+    va_start( args, shflag );
+    return( __F_NAME(__sopen,__wsopen)( name, mode, shflag, args ) );
 }

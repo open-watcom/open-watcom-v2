@@ -38,10 +38,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHScrollCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeVScrollCreate   ( OBJPTR, RECT *, OBJPTR );
-extern OBJPTR WINEXPORT  WdeSizeBoxCreate   ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeScrollInit      ( Bool );
-extern void              WdeScrollFini      ( void );
+extern OBJPTR WINEXPORT  WdeHScrollCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeVScrollCreate( OBJPTR, RECT *, OBJPTR );
+extern OBJPTR WINEXPORT  WdeSizeBoxCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeScrollInit( Bool );
+extern void              WdeScrollFini( void );
 
 #endif

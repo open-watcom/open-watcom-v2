@@ -1,0 +1,16 @@
+proj_name = exe2bin
+
+exe2bin_autodepends = .autodepend
+
+memory_model_i86 = s
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+objs = exe2bin.obj
+
+.c: ..
+
+$(proj_name).exe : $(objs)
+        $(cl) $(clflags) $<

@@ -57,7 +57,7 @@ extern struct ResourceTagStructure              *SemaphoreTag;
 #define SPXCancelEvent( x )     if( CSPXCancelSessionListen( x ) ) \
                                     CIPXCancelECB( x );
 
-extern  void    NothingToDo(void);
+extern  void    NothingToDo( void );
 
 #define NUM_REC_BUFFS   5
 
@@ -105,8 +105,8 @@ struct TimerDataStructure       Timer;
 AdvertisingStruct               SAPStruct;
 int                             Tick;
 
-extern void                     IpxGetInternetworkAddress();
-extern void                     IpxGetLocalTarget();
+extern void                     IpxGetInternetworkAddress( void );
+extern void                     IpxGetLocalTarget( void );
 
 static void MyDelay( unsigned amount )
 {
@@ -116,7 +116,16 @@ static void MyDelay( unsigned amount )
     }
 }
 
-static unsigned DoRemoteGet( void *rec, unsigned len )
+static void PostAListen( int i )
+{
+_DBG_IPX(("Posting RecECB[%d]\r\n", i));
+    _INITECB( RecECB[i], RecHead[i], 2, SPX );
+    RecECB[i].fragmentDescriptor[1].address = Buffer[i];
+    RecECB[i].fragmentDescriptor[1].size = sizeof( Buffer[i] );
+    CSPXListenForSequencedPacket( &RecECB[i] );
+}
+
+static unsigned DoRemoteGet( char *rec, unsigned len )
 {
     unsigned    recvd;
     int         i;
@@ -149,12 +158,12 @@ _DBG_IPX(("Got a packet - size=%d\r\n", got));
         recvd += got;
         PostAListen( p );
         if( got != MAX_DATA_SIZE ) break;
-        rec = (unsigned_8 *)rec + got;
+        rec = (char *)rec + got;
     }
     return( recvd );
 }
 
-static unsigned DoRemotePut( void *snd, unsigned len )
+static unsigned DoRemotePut( char *snd, unsigned len )
 {
 _DBG_IPX(("RemotePut\r\n"));
     _INITSPXECB( Send, 2, snd, len );
@@ -165,18 +174,18 @@ _DBG_IPX(("RemotePut\r\n"));
     return( len );
 }
 
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 {
     return( DoRemoteGet( rec, len ) );
 }
 
-unsigned RemotePut( void *snd, unsigned len )
+unsigned RemotePut( char *snd, unsigned len )
 {
     while( len >= MAX_DATA_SIZE ) {
         if( DoRemotePut( snd, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
             return( REQUEST_FAILED );
         }
-        snd = (unsigned_8 *)snd + MAX_DATA_SIZE;
+        snd = (char *)snd + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( DoRemotePut( snd, len ) == REQUEST_FAILED ) {
@@ -185,16 +194,7 @@ unsigned RemotePut( void *snd, unsigned len )
     return( len );
 }
 
-static void PostAListen( int i )
-{
-_DBG_IPX(("Posting RecECB[%d]\r\n", i));
-    _INITECB( RecECB[i], RecHead[i], 2, SPX );
-    RecECB[i].fragmentDescriptor[1].address = Buffer[i];
-    RecECB[i].fragmentDescriptor[1].size = sizeof( Buffer[i] );
-    CSPXListenForSequencedPacket( &RecECB[i] );
-}
-
-static void PostListens()
+static void PostListens( void )
 {
     int         i;
 
@@ -342,13 +342,13 @@ LONG ReadPropertyValue( char *objectName,
 {
     LONG rc;
     LONG objectID;
-    BYTE name_buff[48];
+    char name_buff[48];
     BYTE moreSegmentsT, propertyFlagsT;
 
     ASCIIZToLenStr( name_buff, objectName );
-    MapNameToID( 0, name_buff, objectType, &objectID, NOCHECK );
+    MapNameToID( 0, (BYTE *)name_buff, objectType, &objectID, NOCHECK );
     ASCIIZToLenStr( name_buff, propertyName );
-    rc = ReadProperty( 0, objectID, name_buff, (LONG)segmentNumber,
+    rc = ReadProperty( 0, objectID, (BYTE *)name_buff, (LONG)segmentNumber,
                        propertyValue, &moreSegmentsT, &propertyFlagsT,
                        CHECK );
     if( rc != 0 ) return( rc );
@@ -360,7 +360,7 @@ static int FindPartner( void )
     BYTE        property_value[130];
     LONG        transport_time;
 
-    if( ReadPropertyValue( SAPStruct.ASServerIDpacket.serverName,
+    if( ReadPropertyValue( (char *)SAPStruct.ASServerIDpacket.serverName,
                            DBG_SERVER_TYPE, "NET_ADDRESS",
                            1, (BYTE *)&property_value ) != 0 ) return( 0 );
     AssignArray( ServHead.destination, property_value );
@@ -444,7 +444,7 @@ void RemoteUnLink( void )
     CCancelInterruptTimeCallBack( &Timer );
     CCancelInterruptTimeCallBack( &SAPTimer );
 
-    if (SAPStruct.AS_ECB.status <= 0) {
+    if (SAPStruct.AS_ECB.status == 0) {
         SAPStruct.ASServerIDpacket.interveningNetworks = _SWAPINT( 0x10 );
         CIPXSendPacket( &SAPStruct.AS_ECB );
     }

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Thread data size registration. Allows the caller to override
+*               the default. Used by the C++ runtime.
 *
 ****************************************************************************/
 
@@ -37,19 +37,20 @@
 extern void     (*_AccessTDList)(void);
 extern void     (*_ReleaseTDList)(void);
 
-_WCRTLINK unsigned __ThreadDataSize = sizeof( thread_data );
+_WCRTDATA extern unsigned   __ThreadDataSize;
 
 _WCRTLINK unsigned __RegisterThreadDataSize( unsigned size )
-/*********************************************************/
+/**********************************************************/
 {
     unsigned    offset;
 
     _AccessTDList();
     offset = __ThreadDataSize;
     __ThreadDataSize += size;
-    #if !defined( __QNX__ ) && !defined( __NETWARE__ )
-        __ResizeThreadDataList();
-    #endif
+#if !defined(__UNIX__) && !defined(_NETWARE_CLIB) && !defined(__RDOSDEV__)
+    __ResizeThreadDataList();
+#endif
     _ReleaseTDList();
     return( offset );
 }
+

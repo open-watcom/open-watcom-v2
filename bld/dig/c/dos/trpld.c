@@ -31,6 +31,7 @@
 
 
 #include <dos.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "tinyio.h"
@@ -59,20 +60,30 @@ extern trap_version     TrapVer;
 extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
                                         unsigned, mx_entry * );
 
+void KillTrap( void )
+{
+    void    (TRAPENTRY *fini_func)(void);
+
+    fini_func = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
+    fini_func();
+    ReqFunc = NULL;
+    TinyFreeBlock( FP_SEG( TrapCode ) );
+}
+
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char        init_error[256];
     tiny_handle_t filehndl;
     char        *ptr;
     char        *parm;
-    trap_version (TRAPENTRY *init_func)( void *, void *, unsigned_8);
+    trap_version (TRAPENTRY *init_func)( char *, char *, bool);
 
     if( trapbuff == NULL ) trapbuff = "std";
     for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
     filehndl = PathOpen( trapbuff, ptr - trapbuff, "trp" );
     if( filehndl <= 0 ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
@@ -95,17 +106,6 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     TrapVer = *trap_ver;
     ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
     return( NULL );
-}
-
-
-void KillTrap()
-{
-    void    (TRAPENTRY *fini_func)();
-
-    fini_func = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
-    fini_func();
-    ReqFunc = NULL;
-    TinyFreeBlock( FP_SEG( TrapCode ) );
 }
 
 

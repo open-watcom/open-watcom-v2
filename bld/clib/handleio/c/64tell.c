@@ -30,27 +30,7 @@
 ****************************************************************************/
 
 
-/*
- * This file is not indirected with an #include so we can compile this code
- * for multiple platforms without duplicating it in multiple files.
- */
-
-#include "variety.h"
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
 #define __INT64__
-#include "int64.h"
-#ifdef __QNX__
-    #include <unistd.h>
-#else
-    #include <io.h>
-#endif
-
-
-_WCRTLINK __int64 _telli64( int hid )
-{
-    INT_TYPE            retval;
-    long                pos;
-
-    pos = tell( hid );
-    _clib_I32ToI64( pos, retval );
-    RETURN_INT64(retval);
-}
+#include "tell.c"

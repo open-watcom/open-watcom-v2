@@ -32,7 +32,7 @@
 
 #include "coff.h"
 
-#pragma pack( 1 );
+#pragma pack( 1 )
 
 typedef uint_32         coff_offset;
 
@@ -58,4 +58,4 @@ typedef struct coff_section_info {
 
 extern void COFFFileEmit( owl_file_handle );
 
-#pragma pack();
+#pragma pack()

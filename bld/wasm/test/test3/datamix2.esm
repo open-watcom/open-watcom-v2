@@ -1,0 +1,117 @@
+.387
+.386p
+		PUBLIC	code_proc16
+		PUBLIC	code_proc32
+_DATA16		SEGMENT	PARA PRIVATE USE16 'DATA'
+L$1:
+    DB	0, 0, 0, 0
+    DW	seg L$1
+    DW	seg L$2
+    DW	seg code_proc16
+    DW	seg code_proc32
+    DW	seg L$1
+    DW	seg code_proc16
+    DW	seg L$2
+    DW	seg code_proc32
+    DW	seg L$1
+    DB	0, 0
+    DW	seg L$2
+    DB	0, 0
+    DW	seg code_proc16
+    DB	0, 0
+    DW	seg code_proc32
+    DB	0, 0
+    DW	seg L$1
+    DB	0, 0
+    DW	seg code_proc16
+    DB	0, 0
+    DW	seg L$2
+    DB	0, 0
+    DW	seg code_proc32
+    DB	0, 0
+
+_DATA16		ENDS
+_DATA32		SEGMENT	PARA PRIVATE USE32 'DATA'
+L$2:
+    DB	0, 0, 0, 0
+    DW	seg L$1
+    DW	seg L$2
+    DW	seg code_proc16
+    DW	seg code_proc32
+    DW	seg L$1
+    DW	seg code_proc16
+    DW	seg L$2
+    DW	seg code_proc32
+    DW	seg L$1
+    DB	0, 0
+    DW	seg L$2
+    DB	0, 0
+    DW	seg code_proc16
+    DB	0, 0
+    DW	seg code_proc32
+    DB	0, 0
+    DW	seg L$1
+    DB	0, 0
+    DW	seg code_proc16
+    DB	0, 0
+    DW	seg L$2
+    DB	0, 0
+    DW	seg code_proc32
+    DB	0, 0
+
+_DATA32		ENDS
+_TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+code_proc16:
+    mov         ax,_DATA16
+    mov         ax,_DATA32
+    mov         eax,_DATA16
+    mov         eax,_DATA32
+    mov         dword ptr [bx],_DATA16
+    mov         dword ptr [bx],_DATA32
+    mov         dword ptr [ebx],_DATA16
+    mov         dword ptr [ebx],_DATA32
+    mov         ax,_DATA16
+    mov         eax,_DATA16
+    mov         eax,_TEXT16
+    mov         dword ptr [bx],_DATA16
+    mov         dword ptr [ebx],_DATA16
+    mov         dword ptr [bx],_TEXT16
+    mov         dword ptr [ebx],_TEXT16
+    mov         ax,_DATA32
+    mov         eax,_DATA32
+    mov         eax,_TEXT32
+    mov         dword ptr [bx],_DATA32
+    mov         dword ptr [ebx],_DATA32
+    mov         dword ptr [bx],_TEXT32
+    mov         dword ptr [ebx],_TEXT32
+    ret         
+_TEXT16		ENDS
+_TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
+code_proc32:
+    mov         ax,_DATA16
+    mov         ax,_DATA32
+    mov         eax,_DATA16
+    mov         eax,_DATA32
+    mov         dword ptr [bx],_DATA16
+    mov         dword ptr [bx],_DATA32
+    mov         dword ptr [ebx],_DATA16
+    mov         dword ptr [ebx],_DATA32
+    mov         ax,_DATA16
+    mov         eax,_DATA16
+    mov         eax,_TEXT16
+    mov         dword ptr [bx],_DATA16
+    mov         dword ptr [ebx],_DATA16
+    mov         dword ptr [bx],_TEXT16
+    mov         dword ptr [ebx],_TEXT16
+    mov         ax,_DATA32
+    mov         eax,_DATA32
+    mov         eax,_TEXT32
+    mov         dword ptr [bx],_DATA32
+    mov         dword ptr [ebx],_DATA32
+    mov         dword ptr [bx],_TEXT32
+    mov         dword ptr [ebx],_TEXT32
+    ret         
+_TEXT32		ENDS
+		END

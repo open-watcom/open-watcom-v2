@@ -1,27 +1,60 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nv o16 o32 q16 q32 w16 w32 osi
-#=================================================================================
-!inject chipd16.obj  d16                               o16     q16     w16
-!inject chipa16.obj  d16                               o16     q16     w16
-!inject chipw16.obj  d16                               o16     q16     w16
-!inject chipt16.obj  d16                               o16     q16     w16
-!inject chipr16.obj  d16                               o16     q16     w16
-!inject chipd32.obj      d32             nt         nv     o32     q32     w32
-!inject chipa32.obj      d32             nt         nv     o32     q32     w32
-!inject chipw32.obj      d32             nt         nv     o32     q32     w32
-!inject chipt32.obj      d32             nt         nv     o32     q32     w32
-!inject chipr32.obj      d32             nt         nv     o32     q32     w32
-!inject cntrl87.obj  d16 d32             nt         nv o16 o32 q16 q32 w16 w32
-!inject cntrlfp.obj  d16 d32             nt nta ntp nv o16 o32 q16 q32 w16 w32
-!inject fclex387.obj                     nt
-!inject fpe87.obj    d16                               o16
-!inject ini87086.obj d16                               o16     q16     w16
-!inject ini87386.obj     d32             nt         nv     o32     q32     w32
-!inject old87.obj    d16 d32             nt         nv o16 o32 q16 q32 w16 w32
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==================================================================================================================
+!inject chipd16.obj  d16                                            o16     q16     w16
+!inject chipa16.obj  d16                                            o16     q16     w16
+!inject chipw16.obj  d16                                            o16     q16     w16
+!inject chipt16.obj  d16                                            o16     q16     w16
+!inject chipr16.obj  d16                                            o16     q16     w16
+!inject chipd32.obj      d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
+!inject chipa32.obj      d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
+!inject chipw32.obj      d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
+!inject chipt32.obj      d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
+!inject chipr32.obj      d32             nt         nvc     nvl         o32     q32     w32     l32         rdu rdk
+!inject cntrl87.obj  d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         rdu rdk
+!inject cntrlfp.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
+!inject fclex387.obj                     nt                                                                 rdu rdk
+!inject fenv.obj     d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         rdu rdk
+!inject fpe87.obj    d16                                            o16
+!inject fpe387.obj       d32
+!inject fpedos4g.obj     d32
+!inject fpeint.obj   d16 d32                                                        w16 w32
+#fixme: should fpeinth.obj be in the netware library?
+!inject fpeinth.obj      d32
+!inject fpephar.obj      d32
+!inject ini87086.obj d16                                            o16     q16     w16
+!inject ini87386.obj     d32             nt         nvc ncl nvl nll     o32     q32     w32     l32         rdu rdk
+!inject old87.obj    d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         rdu rdk
+!inject dosinite.obj     d32
+!inject hook387.obj      d32
 
-!include ..\..\..\..\objlist.mif
+!include ../../../../objlist.mif
 
-chipd16_opts=-fpi87
-chipa16_opts=-fpi87
-chipw16_opts=-fpi87
-chipt16_opts=-fpi87
-chipr16_opts=-fpi87
+086_fpi87_postopts=-fpi87
+286_fpi87_postopts=-fpi87
+386_fpi87_postopts=-fpi87
+axp_fpi87_postopts=
+ppc_fpi87_postopts=
+mps_fpi87_postopts=
+fpi87_postopts=$($(processor)_fpi87_postopts)
+
+chipa16_postopts=$(fpi87_postopts)
+chipd16_postopts=$(fpi87_postopts)
+chipr16_postopts=$(fpi87_postopts)
+chipt16_postopts=$(fpi87_postopts)
+chipw16_postopts=$(fpi87_postopts)
+chipa32_postopts=$(fpi87_postopts)
+chipd32_postopts=$(fpi87_postopts)
+chipr32_postopts=$(fpi87_postopts)
+chipt32_postopts=$(fpi87_postopts)
+chipw32_postopts=$(fpi87_postopts)
+fclex387_postopts=$(fpi87_postopts)
+ini87086_postopts=$(fpi87_postopts)
+ini87386_postopts=$(fpi87_postopts)
+old87_postopts=$(fpi87_postopts)
+fpe87_postopts=$(fpi87_postopts)
+fpe387_postopts=$(fpi87_postopts)
+fpeinth_postopts=$(fpi87_postopts)
+fenv_postopts=$(fpi87_postopts) -za99
+cntrl87_postopts=$(fpi87_postopts)
+dosinite_postopts=$(fpi87_postopts)
+hook387_postopts=-I"../../../../../d16api/include"

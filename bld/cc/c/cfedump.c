@@ -24,116 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump internal C compiler data structures.
 *
 ****************************************************************************/
 
 
-// dump routines
 #include "cvars.h"
 #include "cgdefs.h"
-
+#include "cgswitch.h"
 
 static char *_Ops[] = {
-    "+",
-    "-",
-    "*",
-    "/",
-    "-",
-    "cmp",
-    "%",
-    "~",
-    "!",
-    "|",
-    "&",
-    "^",
-    ">>",
-    "<<",
-    "=",
-    "|=",
-    "&=",
-    "^=",
-    ">>=",
-    "<<=",
-    "+=",
-    "-=",
-    "*=",
-    "/=",
-    "%=",
-    "?",
-    ":",
-    "||",
-    "&&",
-    "*",
-    "spare",
-    "spare",
-    "++",
-    "--",
-    "convert",
-    "pushsym",
-    "pushaddr",
-    "pushint",
-    "pushfloat",
-    "pushstring",
-    "convert_ptr",
-    "nop",
-    ".",
-    "->",
-    "[]",
-    "&",
-    ":>",
-    "funcname",
-    "call",
-    "*call",
-    ",",
-    ",",
-    "return",
-    "label",
-    "case",
-    "jumptrue",
-    "jumpfalse",
-    "jump",
-    "switch",
-    "function",
-    "funcend",
-    "stmt",
-    "{",
-    "}",
-    "_try",
-    "_except",
-    "_exception_code",
-    "_exception_info",
-    "unwind",
-    "_finally",
-    "_end_finally",
-    "error",
-    "cast",
-    "label_count",
-    "mathfunc",
-    "mathfunc2",
-    "vastart",
-    "index2[]",
-    "alloca",
-    "patchnode",
-    "inline_call",
-    "temp_addr",
-    "push_temp",
-    "push_parm",
-    "post ||",
-    "side_effect",
-    "&index",
+#undef pick1
+#define pick1(enum,dump,cgenum) dump,
+#include "copcodes.h"
 };
 
-char    *CCOps[] = { "==", "!=", "<", "<=", ">", ">=" };
-
-void PageOutQuads() {}
-void PageOutLeafs() {}
-void GenQuad() {}
-void WriteOutSegment() {}
-void SetExpressCGInterface() {}
-
-extern  TREEPTR FirstStmt;
+char    *CCOps[] = {
+#undef pick1
+#define pick1(enum,dump,cgenum) dump,
+#include "copcond.h"
+};
 
 static void DumpAString( STR_HANDLE str_handle )
 {
@@ -156,6 +66,30 @@ static void DumpAString( STR_HANDLE str_handle )
     printf( "\"" );
 }
 
+#ifdef _LONG_DOUBLE_
+/* Dump a long_double value */
+void DumpALD( long_double *pld )
+{
+    CVT_INFO    cvt;
+    char        buf[256];
+
+    cvt.ndigits  = 20;
+    cvt.scale    = 0;
+    cvt.flags    = G_FMT | NO_TRUNC;
+    cvt.expchar  = 'e';
+    cvt.expwidth = 8;
+    __LDcvt( pld, &cvt, buf );
+    printf( "%s", buf );
+}
+
+/* Dump a long double followed by newline */
+void DumpALDNL( long_double *pld )
+{
+    DumpALD( pld );
+    printf( "\n" );
+}
+#endif
+
 void DumpOpnd( TREEPTR opnd )
 {
     SYM_ENTRY   sym;
@@ -168,7 +102,15 @@ void DumpOpnd( TREEPTR opnd )
         printf( "%ld", opnd->op.long_value );
         break;
     case OPR_PUSHFLOAT:
-        printf( "%s", opnd->op.float_value->string );
+#ifdef _LONG_DOUBLE_
+        DumpALD( &opnd->op.float_value->ld );
+#else
+        if( opnd->op.float_value->len != 0 ) {
+            printf( "%s", opnd->op.float_value->string );
+        } else {
+            printf( "%g", opnd->op.float_value->ld.value );
+        }
+#endif
         break;
     case OPR_PUSHSTRING:
         DumpAString( opnd->op.string_handle );
@@ -253,11 +195,14 @@ void DumpInfix( TREEPTR node )
         printf( "funcend\n" );
         break;
     case OPR_LABEL:
-    case OPR_CASE:
     case OPR_JUMP:
     case OPR_JUMPTRUE:
     case OPR_JUMPFALSE:
         printf( "%s L%u ", _Ops[ node->op.opr ], node->op.label_index );
+        break;
+    case OPR_CASE:
+        printf( "%s %u (L%u)", _Ops[ node->op.opr ], 
+                node->op.case_info->value, node->op.case_info->label );
         break;
     case OPR_INDEX:
         printf( "[" );
@@ -282,14 +227,14 @@ void DumpInfix( TREEPTR node )
         printf( " %s ", CCOps[ node->op.cc ] );
         break;
     case OPR_TRY:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.parent_scope );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.parent_scope );
         break;
     case OPR_UNWIND:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.try_index );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.try_index );
         break;
     case OPR_EXCEPT:
     case OPR_FINALLY:
-        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.parent_scope );
+        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.st.parent_scope );
         break;
     default:
         printf( " " );
@@ -328,14 +273,20 @@ void DumpPostfix( TREEPTR node )
     }
 }
 
+void DumpExpr( TREEPTR tree )
+{
+    WalkExprTree( tree, DumpOpnd, DumpPrefix, DumpInfix, DumpPostfix );
+    printf( "\n" );
+}
+
 void DumpStmt( TREEPTR tree )
 {
-    printf( "line %3.3u: ", tree->srclinenum );
+    printf( "line %3.3u: ", tree->op.src_loc.line );
     WalkExprTree( tree->right, DumpOpnd, DumpPrefix, DumpInfix, DumpPostfix );
     printf( "\n" );
 }
 
-void DumpProgram()
+void DumpProgram( void )
 {
     TREEPTR     tree;
 
@@ -347,5 +298,184 @@ void DumpProgram()
         }
         DumpStmt( tree );
         tree = tree->left;
+    }
+}
+
+static void DumpDQuad( DATA_QUAD *dq, unsigned long *psize )
+{
+    cg_type             data_type;
+    int                 size_of_item;
+    unsigned long       amount;
+    SYM_ENTRY           sym;
+
+    if( dq->flags & Q_NEAR_POINTER ) {
+        data_type = TY_NEAR_POINTER;
+        size_of_item = TARGET_NEAR_POINTER;
+    } else if( dq->flags & Q_FAR_POINTER ) {
+        data_type = TY_LONG_POINTER;
+        size_of_item = TARGET_FAR_POINTER;
+    } else if( dq->flags & Q_CODE_POINTER ) {
+        data_type = TY_CODE_PTR;
+        size_of_item = TARGET_POINTER;
+#if _CPU == 8086
+        if( TargetSwitches & BIG_CODE ) {
+            size_of_item = TARGET_FAR_POINTER;
+        }
+#endif
+    } else {
+        data_type = TY_POINTER;
+        size_of_item = TARGET_POINTER;
+#if _CPU == 8086
+        if( TargetSwitches & BIG_DATA ) {
+            size_of_item = TARGET_FAR_POINTER;
+        }
+#endif
+    }
+    switch( dq->type ) {
+    case QDT_STATIC:
+        printf( "%6lu bytes (QDT_STATIC): segment %d\n",
+                0, sym.u.var.segment );
+        *psize = 0;
+        break;
+    case QDT_CHAR:
+    case QDT_UCHAR:
+    case QDT_BOOL:
+        amount = sizeof( char );
+        printf( "%6lu byte char (%s): %d\n",
+                amount, dq->type == QDT_CHAR ? "QDT_CHAR" :
+                dq->type == QDT_UCHAR ? "QDT_UCHAR" : "QDT_BOOL",
+                dq->u.long_values[0] );
+        *psize += amount;
+        if( dq->flags & Q_2_INTS_IN_ONE ) {
+            printf( "%6lu byte second char: %d\n",
+                    dq->u.long_values[1] );
+            *psize += amount;
+        }
+        break;
+    case QDT_SHORT:
+    case QDT_USHORT:
+        amount = sizeof( target_short );
+        printf( "%6lu byte short (%s): %d\n",
+                amount, dq->type == QDT_SHORT ? "QDT_SHORT" :
+                "QDT_UINT", dq->u.long_values[0] );
+        *psize += amount;
+        if( dq->flags & Q_2_INTS_IN_ONE ) {
+            printf( "%6lu byte second short: %d\n",
+                    dq->u.long_values[1] );
+            *psize += amount;
+        }
+        break;
+    case QDT_INT:
+    case QDT_UINT:
+        amount = sizeof( target_int );
+        printf( "%6lu byte int (%s): %d\n",
+                amount, dq->type == QDT_INT ? "QDT_INT" :
+                "QDT_UINT", dq->u.long_values[0] );
+        *psize += amount;
+        if( dq->flags & Q_2_INTS_IN_ONE ) {
+            printf( "%6lu byte second int: %d\n",
+                    dq->u.long_values[1] );
+            *psize += amount;
+        }
+        break;
+    case QDT_LONG:
+    case QDT_ULONG:
+        amount = sizeof( target_long );
+        printf( "%6lu byte long (%s): %d\n",
+                amount, dq->type == QDT_LONG ? "QDT_LONG" :
+                "QDT_ULONG", dq->u.long_values[0] );
+        *psize += amount;
+        if( dq->flags & Q_2_INTS_IN_ONE ) {
+            printf( "%6lu byte second long: %d\n",
+                    dq->u.long_values[1] );
+            *psize += amount;
+        }
+        break;
+    case QDT_LONG64:
+    case QDT_ULONG64:
+        amount = sizeof( int64 );
+        printf( "%6lu byte long long (%s)\n",
+                amount, dq->type == QDT_LONG64 ? "QDT_LONG64" :
+                "QDT_ULONG64" );
+        *psize += amount;
+        break;
+    case QDT_FLOAT:
+    case QDT_FIMAGINARY:
+        amount = sizeof( float );
+        printf( "%6lu byte float (%s): %f\n",
+                amount, dq->type == QDT_FLOAT ? "QDT_FLOAT" :
+                "QDT_IMAGINARY", dq->u.double_value );
+        *psize += amount;
+        break;
+    case QDT_DOUBLE:
+    case QDT_DIMAGINARY:
+        amount = sizeof( double );
+        printf( "%6lu byte double (%s): %f\n",
+                amount, dq->type == QDT_DOUBLE ? "QDT_DOUBLE" :
+                "QDT_DIMAGINARY", dq->u.double_value );
+        *psize += amount;
+        break;
+    case QDT_LONG_DOUBLE:
+    case QDT_LDIMAGINARY:
+        amount = sizeof( long_double );
+        printf( "%6lu byte long double (%s)\n",
+                amount, dq->type == QDT_DOUBLE ? "QDT_LONG_DOUBLE" :
+                "QDT_LDIMAGINARY" );
+        *psize += amount;
+        break;
+    case QDT_STRING:
+        amount = size_of_item;
+        printf( "%6lu byte string (QDT_STRING): \"%s\"\n", amount,
+                dq->u.string_leaf->literal );
+        *psize += amount;
+        break;
+    case QDT_POINTER:
+    case QDT_ID:
+        amount = size_of_item;
+        printf( "%6lu byte pointer (%s): offset %x\n",
+                amount, dq->type == QDT_POINTER ? "QDT_POINTER" :
+                "QDT_ID", dq->u.var.offset );
+        *psize += amount;
+        break;
+    case QDT_CONST:
+        amount = dq->u.string_leaf->length;
+        printf( "%6lu byte long literal (QDT_CONST): \"%s\"\n", amount,
+                dq->u.string_leaf->literal );
+        *psize += amount;
+        break;
+    case QDT_CONSTANT:
+        amount = dq->u.long_values[0];
+        printf( "%6lu zero bytes (QDT_CONSTANT)\n", amount );
+        *psize += amount;
+        break;
+    default:
+        assert( 0 );
+    }
+}
+
+void DumpDataQuads( void )
+{
+    DATA_QUAD       *dq;
+    void            *cookie;
+    unsigned long   size;
+
+    cookie = StartDataQuadAccess();
+    if( cookie != NULL ) {
+        size = 0;
+        printf( "=== Data Quads ===\n" );
+        for( ;; ) {
+            dq = NextDataQuad();
+            if( dq == NULL )
+                break;
+            for( ;; ) {
+                DumpDQuad( dq, &size );
+                if( ! (dq->flags & Q_REPEATED_DATA) )
+                    break;
+                dq->u.long_values[1]--;
+                if( dq->u.long_values[1] == 0 )
+                    break;
+            }
+        }
+        EndDataQuadAccess( cookie );
     }
 }

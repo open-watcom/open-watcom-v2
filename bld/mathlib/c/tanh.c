@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Hyperbolic tangent routine.
 *
 ****************************************************************************/
 
@@ -36,44 +35,38 @@
 #include "pdiv.h"
 
 
-_WMRTLINK extern double _IF_dtanh( double );
-#if defined(_M_IX86)
-  #pragma aux (if_rtn) _IF_tanh "IF@TANH";
-  #pragma aux (if_rtn) _IF_dtanh "IF@DTANH";
-#endif
-
 _WMRTLINK float _IF_tanh( float x )
-/*********************/
-    {
-        return( _IF_dtanh( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dtanh( x ) );
+}
 
 _WMRTLINK double (tanh)( double x )
-/***********************/
-    {
-        return( _IF_dtanh( x ) );
-    }
+/*********************************/
+{
+    return( _IF_dtanh( x ) );
+}
 
 _WMRTLINK double _IF_dtanh( double x )
-/*************************/
-    {
-        double z;
+/************************************/
+{
+    double  z;
 
-        z = fabs( x );
-        if( z >= 64.0 ) {
-            if( x < 0.0 ) {
-                z = -1.0;
-            } else {
-                z = 1.0;
-            }
+    z = fabs( x );
+    if( z >= 64.0 ) {
+        if( x < 0.0 ) {
+            z = -1.0;
         } else {
-/*          if( z <= ldexp( 1.0, -26 ) ) { */
-            if( z <= 1.49011611938476580e-008 ) { /* if x is small */
-                z = x;
-            } else {
-                z = exp( (-2.0) * x );
-                z = PDIV( (1.0 - z) , (1.0 + z) );
-            }
+            z = 1.0;
         }
-        return( z );
+    } else {
+/*          if( z <= ldexp( 1.0, -26 ) ) { */
+        if( z <= 1.49011611938476580e-008 ) { /* if x is small */
+            z = x;
+        } else {
+            z = exp( (-2.0) * x );
+            z = PDIV( (1.0 - z), (1.0 + z) );
+        }
     }
+    return( z );
+}

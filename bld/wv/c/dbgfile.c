@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Local and remote file access routines.
 *
 ****************************************************************************/
 
@@ -39,12 +38,12 @@
 #include "dui.h"
 #include <string.h>
 
-extern int              DUIEnvLkup(char *,char *, int);
-extern char             *StrCopy(char const *,char *);
-extern void             FreeRing(char_ring *);
-extern unsigned         RemoteStringToFullName(bool,char *,char *,unsigned);
+extern int              DUIEnvLkup( char *, char *, int );
+extern char             *StrCopy( char const *, char * );
+extern void             FreeRing( char_ring * );
+extern unsigned         RemoteStringToFullName( bool, char *, char *, unsigned );
 extern void             StartupErr( char * );
-extern bool             HaveRemoteFiles(void);
+extern bool             HaveRemoteFiles( void );
 
 extern unsigned         RemoteErase( char const * );
 extern void             RemoteErrMsg( sys_error, char * );
@@ -63,7 +62,7 @@ extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
 extern sys_handle       LocalOpen( char const *, open_access );
 extern unsigned         LocalClose( sys_handle );
 extern sys_handle       LocalHandle( handle );
-extern void             DUIWndUser();
+extern void             DUIWndUser( void );
 
 
 extern file_components  RemFile;
@@ -150,7 +149,7 @@ static file_components *PathInfo( char const *path, open_access loc )
     return( info );
 }
 
-static handle FindFreeHandle()
+static handle FindFreeHandle( void )
 {
     handle      i;
 
@@ -231,7 +230,7 @@ handle FileOpen( char const *name, open_access o )
     }
     if( sys == NIL_SYS_HANDLE ) return( NIL_HANDLE );
     SysHandles[ h & ~REMOTE_IND ] = sys;
-    if( o & OP_APPEND ) SeekStream( h, 0, SEEK_END );
+    if( o & OP_APPEND ) SeekStream( h, 0, DIO_SEEK_END );
     return( h );
 }
 
@@ -260,7 +259,9 @@ unsigned FileRemove( char const *name, open_access loc )
 
 void WriteToPgmScreen( void *buff, unsigned len )
 {
+#if !defined( BUILD_RFX )
     DUIWndUser();
+#endif
     RemoteWriteConsole( buff, len );
 }
 
@@ -464,8 +465,8 @@ handle LclStringToFullName( char *name, unsigned len, char *full )
 /*
  *
  */
-
-handle FullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+static handle FullPathOpenInternal( char const *name, char *ext, char *result,
+                                    unsigned max_result, bool force_local )
 {
     char        buffer[TXT_LEN];
     char        *p;
@@ -480,6 +481,10 @@ handle FullPathOpen( char const *name, char *ext, char *result, unsigned max_res
     name = p;
     have_ext = FALSE;
     have_path = FALSE;
+    if( force_local ) {
+        loc &= ~OP_REMOTE;
+        loc |= OP_LOCAL;
+    }
     if( loc & OP_LOCAL ) {
         file = &LclFile;
     } else {
@@ -523,6 +528,17 @@ handle FullPathOpen( char const *name, char *ext, char *result, unsigned max_res
     return( f );
 }
 
+handle FullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+{
+    return( FullPathOpenInternal( name, ext, result, max_result, FALSE ) );
+}
+
+handle LocalFullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+{
+    return( FullPathOpenInternal( name, ext, result, max_result, TRUE ) );
+}
+
+#if !defined( BUILD_RFX )
 static bool IsWritable( char const *name, open_access loc )
 {
     handle      h;
@@ -572,9 +588,9 @@ bool FindWritable( char const *src, char *dst )
     MakeNameWithPath( loc, NULL, 0, name, nlen, dst );
     return( IsWritable( dst, loc ) );
 }
+#endif
 
-
-handle PathOpen( char const *name, unsigned len, char *ext )
+static handle PathOpenInternal( char const *name, unsigned len, char *ext, bool force_local )
 {
     char        result[TXT_LEN];
     char        *p;
@@ -582,10 +598,23 @@ handle PathOpen( char const *name, unsigned len, char *ext )
     _AllocA( p, len + 1 );
     memcpy( p, name, len );
     p[ len ] = '\0';
-    return( FullPathOpen( p, ext, result, TXT_LEN ) );
+    if( force_local )
+        return( LocalFullPathOpen( p, ext, result, TXT_LEN ) );
+    else
+        return( FullPathOpen( p, ext, result, TXT_LEN ) );
 }
 
-void SysFileInit()
+handle PathOpen( char const *name, unsigned len, char *ext )
+{
+    return( PathOpenInternal( name, len, ext, FALSE ) );
+}
+
+handle LocalPathOpen( char const *name, unsigned len, char *ext )
+{
+    return( PathOpenInternal( name, len, ext, TRUE ) );
+}
+
+void SysFileInit( void )
 {
     unsigned    i;
 
@@ -597,26 +626,12 @@ void SysFileInit()
     SysHandles[STD_ERR] = LocalHandle( STD_ERR );
 }
 
-void PathInit()
-{
-    #define BSIZE 2048
-    char        *buff;
+#if !defined( BUILD_RFX )
 
-    _Alloc( buff, BSIZE ); /* allocate enough room for a very long PATH */
-    if( buff == NULL ) {
-        StartupErr( LIT( ERR_NO_MEMORY ) );
-    }
-    if( DUIEnvLkup( "PATH", buff, BSIZE ) != 0 ) {
-        EnvParse( &LclPath, buff );
-    }
-    _Free( buff );
-}
-
-void PathFini()
+void PathFini( void )
 {
     FreeRing( LclPath );
 }
-
 
 /*
  * EnvParse -- parse environment string into separate pieces
@@ -648,4 +663,22 @@ static void EnvParse( char_ring **owner, char *src )
             start = end + 1;
         }
     }
+}
+#endif
+
+void PathInit( void )
+{
+#if !defined( BUILD_RFX )
+    #define BSIZE 2048
+    char        *buff;
+
+    _Alloc( buff, BSIZE ); /* allocate enough room for a very long PATH */
+    if( buff == NULL ) {
+        StartupErr( LIT( ERR_NO_MEMORY ) );
+    }
+    if( DUIEnvLkup( "PATH", buff, BSIZE ) != 0 ) {
+        EnvParse( &LclPath, buff );
+    }
+    _Free( buff );
+#endif
 }

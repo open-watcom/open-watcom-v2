@@ -24,36 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Create wide character copy of environment.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <env.h>
-#include <malloc.h>
 #include <mbstring.h>
 #include <stdlib.h>
 #include "liballoc.h"
 #include "rtdata.h"
-#include "wenviron.h"
+#include "_environ.h"
 
 
 void __create_wide_environment( void )
 /************************************/
 {
-    char **             envp = _RWD_environ;
-    char *              p;
+    char                **envp = _RWD_environ;
+    char                *p;
     size_t              len;
-    wchar_t *           wcs;
+    wchar_t             *wcs;
 
-    if( envp == NULL )  return;
+    if( envp == NULL ) return;
     while( (p=*envp++) != NULL ) {
         len = _mbslen( p ) + 1;
         wcs = lib_malloc( len * sizeof(wchar_t) );
         if( wcs != NULL ) {
-            if( mbstowcs( wcs, p, len )  !=  -1 ) {
+            if( mbstowcs( wcs, p, len ) != -1 ) {
                 __wputenv( wcs );
             } else {
                 lib_free( wcs );

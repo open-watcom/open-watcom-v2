@@ -199,7 +199,7 @@ static void centerDialog( HWND hwnd ) {
 /*
  * ExceptionProc
  */
-BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ExceptDlgInfo       *info;

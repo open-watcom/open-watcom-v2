@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if (defined M_I86 || defined M_I386)
+#if defined( _M_IX86 )
 #define MD_x86
 #elif defined __AXP__
 #define MD_axp

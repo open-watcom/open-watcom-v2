@@ -1,0 +1,21 @@
+RCDATA 1000
+BEGIN
+    0x123
+    0x1234,
+    0x1234L
+    0x12345,
+    123456,
+    12, 0x13u, 34lU, 65ul, 0X35LU
+END
+
+RCDATA 5 DISCARDABLE PURE
+{
+    "E. A. Poe", 1849, -32, 3L, 0x8000000l, 3+4+5
+}
+
+RESOURCE 300 17 FIXED 437
+BEGIN
+    7, "test", 7L, "Resource\0", 56 - 57
+END
+
+RESOURCE 1 14 test1.ico

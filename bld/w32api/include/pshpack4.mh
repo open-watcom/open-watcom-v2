@@ -1,0 +1,9 @@
+/*
+ *  pshpack4.h  Push 4-byte packing
+ *
+:include crwatcnt.sp
+ */
+ 
+:include readonly.sp
+
+#pragma pack( push, 4 )

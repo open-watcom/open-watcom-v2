@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 #include "win.h"
-#include "keys.h"
-#include "colors.h"
 #include "dosx.h"
 
 static char *tmpImage;
@@ -44,16 +41,16 @@ static char *tmpImage;
  */
 static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
 {
-    int                 i,tl,bl,tr,br,height,width,k;
+    int                 i, tl, bl, tr, br, height, width, k;
     char_info           what;
     char_info           _FAR *scr;
 
-    height = y2-y1+1;
-    width = x2-x1+1;
-    tl = x1 + y1*WindMaxWidth;
-    tr = x2 + y1*WindMaxWidth;
-    bl = x1 + y2*WindMaxWidth;
-    br = x2 + y2*WindMaxWidth;
+    height = y2 - y1 + 1;
+    width = x2 - x1 + 1;
+    tl = x1 + y1 * WindMaxWidth;
+    tr = x2 + y1 * WindMaxWidth;
+    bl = x1 + y2 * WindMaxWidth;
+    br = x2 + y2 * WindMaxWidth;
     what.attr = MAKE_ATTR( NULL, color, BLACK );
 
     /*
@@ -74,41 +71,43 @@ static void drawTmpBorder( int color, int x1, int y1, int x2, int y2 )
      */
     what.ch = WindowBordersNG[WB_LEFTSIDE];
     k = WindMaxWidth;
-    for( i=1;i<height-1;i++) {
-        WRITE_SCREEN( scr[tr+k], what );
-        WRITE_SCREEN( scr[tl+k], what );
+    for( i = 1; i < height - 1; i++) {
+        WRITE_SCREEN( scr[tr + k], what );
+        WRITE_SCREEN( scr[tl + k], what );
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr+k), 1 );
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl+k), 1 );
+        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr + k), 1 );
+        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl + k), 1 );
 #endif
         k += WindMaxWidth;
     }
     what.ch = WindowBordersNG[WB_TOPBOTTOM];
-    for( i=1;i<width-1;i++ ) {
-        WRITE_SCREEN( scr[bl+i], what );
+    for( i = 1; i < width - 1; i++ ) {
+        WRITE_SCREEN( scr[bl + i], what );
     }
-    for( i=1;i<width-1;i++ ) {
-        WRITE_SCREEN( scr[tl+i], what );
+    for( i = 1; i < width - 1; i++ ) {
+        WRITE_SCREEN( scr[tl + i], what );
     }
 #ifdef __VIO__
     MyVioShowBuf( (unsigned) sizeof( char_info ) * tl, width );
     MyVioShowBuf( (unsigned) sizeof( char_info ) * bl, width );
 #endif
+
 } /* drawTmpBorder */
 
 /*
  * swapTmp - exchange border and tmpImage
  */
-static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1, int x2, int y2 )
+static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
+                     int x2, int y2 )
 {
-    int i,tl,bl,tr,br,height,width,k;
+    int i, tl, bl, tr, br, height, width, k;
 
-    height = y2-y1+1;
-    width = x2-x1+1;
-    tl = x1 + y1*WindMaxWidth;
-    tr = x2 + y1*WindMaxWidth;
-    bl = x1 + y2*WindMaxWidth;
-    br = x2 + y2*WindMaxWidth;
+    height = y2 - y1 + 1;
+    width = x2 - x1 + 1;
+    tl = x1 + y1 * WindMaxWidth;
+    tr = x2 + y1 * WindMaxWidth;
+    bl = x1 + y2 * WindMaxWidth;
+    br = x2 + y2 * WindMaxWidth;
 
     /*
      * corners
@@ -122,18 +121,18 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1, 
      * sides, top and bottom
      */
     k = WindMaxWidth;
-    for( i=1;i<height-1;i++) {
-        WRITE_SCREEN2( dest[tr+k], src[ tr+k ] );
-        WRITE_SCREEN2( dest[tl+k], src[ tl+k ] );
+    for( i = 1; i < height - 1; i++ ) {
+        WRITE_SCREEN2( dest[tr + k], src[tr + k] );
+        WRITE_SCREEN2( dest[tl + k], src[tl + k] );
 #ifdef __VIO__
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr+k), 1 );
-        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl+k), 1 );
+        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tr + k), 1 );
+        MyVioShowBuf( (unsigned) sizeof( char_info ) * (tl + k), 1 );
 #endif
         k += WindMaxWidth;
     }
-    for( i=1;i<width-1;i++ ) {
-        WRITE_SCREEN2( dest[bl+i], src[ bl+i ] );
-        WRITE_SCREEN2( dest[tl+i], src[ tl+i ] );
+    for( i = 1; i < width - 1; i++ ) {
+        WRITE_SCREEN2( dest[bl + i], src[bl + i] );
+        WRITE_SCREEN2( dest[tl + i], src[tl + i] );
     }
 #ifdef __VIO__
     MyVioShowBuf( (unsigned) sizeof( char_info ) * tl, width );
@@ -147,13 +146,13 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1, 
  * dickWithAWindow - resize window based on keys/mouse
  */
 static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
-                                windim *wd, bool mouse )
+                             windim *wd, bool mouse )
 {
-    int         key;
-    bool        done=FALSE;
-    int         x1,x2,y1,y2,nx1,nx2,ny1,ny2;
-    int         mrow,mcol;
-    int         dx,dy,bclr;
+    vi_key      key;
+    bool        done = FALSE;
+    int         x1, x2, y1, y2, nx1, nx2, ny1, ny2;
+    int         mrow, mcol;
+    int         dx, dy, bclr;
     wind        *cwd;
 
     /*
@@ -166,8 +165,8 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
         DisplayMouse( FALSE );
     }
     *doresize = FALSE;
-    cwd = Windows[ wn ];
-    tmpImage = MemAlloc( WindMaxWidth * WindMaxHeight * sizeof(char_info) );
+    cwd = Windows[wn];
+    tmpImage = MemAlloc( WindMaxWidth * WindMaxHeight * sizeof( char_info ) );
     x1 = cwd->x1;
     x2 = cwd->x2;
     y1 = cwd->y1;
@@ -177,8 +176,8 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
     } else {
         bclr = ResizeColor;
     }
-    swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage,x1,y1,x2,y2 );
-    drawTmpBorder( bclr,x1,y1,x2,y2 );
+    swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage, x1, y1, x2, y2 );
+    drawTmpBorder( bclr, x1, y1, x2, y2 );
 
     /*
      * engage in resizing
@@ -256,9 +255,10 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
          * check if we should exit
          */
         if( done ) {
-            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,x1,y1,x2,y2 );
+            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,
+                     x1, y1, x2, y2 );
             MemFree( tmpImage );
-            if( (*doresize) ) {
+            if( *doresize ) {
                 wd->x1 = x1;
                 wd->x2 = x2;
                 wd->y1 = y1;
@@ -273,8 +273,8 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
         nx1 = x1; nx2 = x2; ny1 = y1; ny2 = y2;
         if( mouse ) {
             if( move ) {
-                dy = MouseRow-mrow;
-                dx = MouseCol-mcol;
+                dy = MouseRow - mrow;
+                dx = MouseCol - mcol;
                 ny2 += dy;
                 ny1 += dy;
                 nx1 += dx;
@@ -304,11 +304,13 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
         /*
          * do the resize
          */
-        if( ValidDimension( nx1, ny1, nx2, ny2, cwd->has_border  ) ) {
-            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,x1,y1,x2,y2 );
+        if( ValidDimension( nx1, ny1, nx2, ny2, cwd->has_border ) ) {
+            swapTmp( (char_info _FAR *) tmpImage, (char_info _FAR *) Scrn,
+                     x1, y1, x2, y2 );
             x1 = nx1; x2 = nx2; y1 = ny1; y2 = ny2;
-            swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage,x1,y1,x2,y2 );
-            drawTmpBorder( bclr,x1,y1,x2,y2 );
+            swapTmp( (char_info _FAR *) Scrn, (char_info _FAR *) tmpImage,
+                     x1, y1, x2, y2 );
+            drawTmpBorder( bclr, x1, y1, x2, y2 );
             *doresize = TRUE;
         }
 
@@ -319,15 +321,15 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
 /*
  * dickWithCurrentWindow - set up to play with current window
  */
-static int dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
+static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 {
     int         resize;
     windim      w;
-    int         rc;
+    vi_rc       rc;
 
     dickWithAWindow( CurrentWindow, topcorner, move, &resize, &w, mouse );
     if( resize ) {
-        rc = CurrentWindowResize( w.x1,w.y1,w.x2,w.y2 );
+        rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );
         if( mouse ) {
             DisplayMouse( TRUE );
         }
@@ -340,7 +342,7 @@ static int dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 /*
  * routines to resize/move current window
  */
-int ResizeCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, FALSE, FALSE ) ); }
-int MoveCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, TRUE, FALSE ) ); }
-int ResizeCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, FALSE, TRUE ) ); }
-int MoveCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, TRUE, TRUE ) ); }
+vi_rc ResizeCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, FALSE, FALSE ) ); }
+vi_rc MoveCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, TRUE, FALSE ) ); }
+vi_rc ResizeCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, FALSE, TRUE ) ); }
+vi_rc MoveCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, TRUE, TRUE ) ); }

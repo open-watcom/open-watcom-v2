@@ -1,16 +1,16 @@
 /*
- *  float.h     Floating point functions
+ *  float.h/cfloat     Floating point functions
  *
 :include crwat.sp
  */
 #ifndef _FLOAT_H_INCLUDED
 #define _FLOAT_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include null.sp
 
@@ -21,12 +21,13 @@
 #define _DBL_ROUNDS     1
 #define _LDBL_RADIX     _DBL_RADIX
 #define _LDBL_ROUNDS    _DBL_ROUNDS
+
 :include ext.sp
 #define DBL_RADIX      _DBL_RADIX
 #define DBL_ROUNDS     _DBL_ROUNDS
 #define LDBL_RADIX     _DBL_RADIX
 #define LDBL_ROUNDS    _DBL_ROUNDS
-#endif
+:include extepi.sp
 
 /* number of base-FLT_RADIX digits in the floating-point mantissa */
 #define FLT_MANT_DIG    24
@@ -37,6 +38,10 @@
 #define FLT_DIG         6
 #define DBL_DIG         15
 #define LDBL_DIG        15
+
+:: If 80-bit long double was supported, DECIMAL_DIG would be 21
+/* decimal digits needed to accurately represent any floating-point value */
+#define DECIMAL_DIG     17
 
 /* minimum negative integer such that FLT_RADIX raised to that power minus 1
  is a normalized floating-point number */
@@ -62,30 +67,19 @@
 #define DBL_MAX_10_EXP  308
 #define LDBL_MAX_10_EXP 308
 
-/*
- *  The Watcom C/C++ 11.0 compile-time constant analyzer for
- *  doubles is inaccurate. For accurate numeric representation
- *  use _DBL_MAX, _DBL_MIN, and _DBL_EPSILON (ANSI C allows
- *  these values to be non-constant expressions).
- */
-_WMRTLINK extern double  strtod( const char *__nptr, char **__endptr );
-
 /* maximum representable floating-point number */
 #define FLT_MAX         3.402823466e+38f
-#define DBL_MAX         1.7976931348623150e+308 /* inaccurate constant value */
-#define _DBL_MAX        (strtod("1.7976931348623157e+308",NULL))
+#define DBL_MAX         1.7976931348623157e+308
 #define LDBL_MAX        DBL_MAX
 
 /* minimum positive floating-point number x such that 1.0 + x != 1.0 */
 #define FLT_EPSILON     1.192092896e-7f
-#define DBL_EPSILON     2.2204460492503130e-16  /* inaccurate constant value */
-#define _DBL_EPSILON    (strtod("2.2204460492503131e-16",NULL))
+#define DBL_EPSILON     2.2204460492503131e-16
 #define LDBL_EPSILON    DBL_EPSILON
 
 /* minimum representable positive floating-point number */
 #define FLT_MIN         1.175494351e-38f
-#define DBL_MIN         2.2250738585072020e-308 /* inaccurate constant value */
-#define _DBL_MIN        (strtod("2.2250738585072014e-308",NULL))
+#define DBL_MIN         2.2250738585072014e-308
 #define LDBL_MIN        DBL_MIN
 
 /*
@@ -160,6 +154,10 @@ _WMRTLINK extern double  strtod( const char *__nptr, char **__endptr );
 #define _FPE_MODERR             0x8f
 
 :include ext.sp
+::
+:: Begin of extension section
+::
+
 /*
  *  8087/80287/80387 math co-processor control information
  */
@@ -223,10 +221,35 @@ _WMRTLINK extern double  strtod( const char *__nptr, char **__endptr );
 
 _WMRTLINK extern unsigned _clear87(void);
 _WCRTLINK extern unsigned _control87(unsigned,unsigned);
+_WCRTLINK extern unsigned _controlfp(unsigned,unsigned);
 _WCRTLINK extern void     _fpreset(void);
 _WMRTLINK extern unsigned _status87(void);
 _WMRTLINK extern int      _finite(double);
-#endif
+
+/* Floating-point Infinity and NaN constants */
+
+_WMRTDATA extern const float        __f_infinity;
+_WMRTDATA extern const float        __f_posqnan;
+_WMRTDATA extern const double       __d_infinity;
+_WMRTDATA extern const double       __d_posqnan;
+_WMRTDATA extern const long double  __ld_infinity;
+_WMRTDATA extern const long double  __ld_posqnan;
+
+#define _INFF      __f_infinity
+#define _INFINITYF __f_infinity
+#define _INF       __d_infinity
+#define _INFINITY  __d_infinity
+#define _INFL      __ld_infinity
+#define _INFINITYL __ld_infinity
+#define _NANF      __f_posqnan
+#define _NAN       __d_posqnan
+#define _NANL      __ld_posqnan
+
+::
+:: End of extension section
+::
+:include extepi.sp
 
 :include cplusepi.sp
+
 #endif

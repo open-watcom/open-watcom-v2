@@ -1,0 +1,254 @@
+proj_name = trap
+
+!ifndef trap_autodepends
+trap_autodepends = .AUTODEPEND
+!endif
+
+suppress_zc = 1
+
+.EXTENSIONS : .res .rc
+
+#
+# Common stuff between trap file and server implementations
+#
+# Macros:
+#       os              - Name of the operating system the executable is
+#                         being built for. Look at the "comp_*" macros
+#                         below for the list of acceptable names (required).
+#       srv             - Name of the remote link that the server/trap file
+#                         is implementing. Use "lcl" for "STD" trap
+#                         files (required).
+#       cpu             - Name of the CPU that the server/trap is being
+#                         built for (x86,axp,ppc,etc).
+#       name            - Root name of the server/trap file. A name is
+#                         created from the "srv" macro if this is not
+#                         defined (optional).
+#       extra_objs      - names of extra object files to be included in the
+#                         the link (optional, but I can't think of a case
+#                         where it wouldn't be defined).
+#       extra_dobjs     - names of extra object files to be included in the
+#                         debugging version. If not defined, extra_objs is
+#                         used (options).
+#       extra_incs      - A list of extra directories to search for include
+#                         files (optional).
+#       extra_srcs      - A list of extra directories to search for source
+#                         files (optional).
+#       extra_libs      - A (space separated) list of extra libraries to
+#                         include in the link (optional).
+#       extra_cflags    - Extra C compiler flags (optional).
+#       extra_aflags    - Extra wasm flags (optional).
+#       extra_linker    - Extra linker directives (optional).
+#       extra_deps      - Extra dependencies for executable (optional).
+#       extra_cmds      - Extra commands to be executed when creating
+#                         the executable (optional).
+#       resource_file   - root name of a resource file (optional).
+
+!ifndef memory_model_i86
+memory_model_i86 = c
+!endif
+
+!ifdef test
+!ifneq type remote_link
+!error test version can be build only for remote link
+!endif
+!endif
+
+fpu_flags_dos_i86   = -fpc
+fpu_flags_dos_386   = -fpc
+fpu_flags_os2_i86   = -fpc
+fpu_flags_os2_386   = -fpc
+fpu_flags_win_i86   = -fpc
+fpu_flags_nt_386    = -fpc
+fpu_flags_linux_386 = -fpc
+fpu_flags_rdos_386  = -fpc
+
+additional_cleanup = *.d32 *.trp
+
+!ifndef name
+!ifeq srv lcl
+name = std
+!else ifeq which SERVER
+name = $(srv)serv
+!ifeq os win
+name+=w
+!endif
+!else
+name = $(srv)
+!endif
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!ifeq release 1
+!ifdef test
+xname=z$(name)
+!else
+xname=$(name)
+!endif
+!else
+!ifdef test
+xname=t$(name)
+!else
+xname=d$(name)
+!endif
+!endif
+
+!ifeq which SERVER
+!include $(trap_dir)/serv.mif
+!else
+!include $(trap_dir)/trap.mif
+!endif
+
+!ifeq type remote_link
+!include $(trap_dir)/remote.mif
+!endif
+
+# cflags stuff
+###############
+extra_c_flags += -D$(which) -DMD_$(cpu) $(extra_cflags)
+!ifndef bootstrap
+extra_c_flags += -s
+!endif
+
+!ifeq which TRAP
+extra_c_flags += -zlf
+!endif
+
+!ifdef builtin_trap
+!ifndef test
+extra_c_flags += -DBUILTIN_TRAP_FILE
+!endif
+!endif
+
+!ifdef japanese
+extra_c_flags += -DJAPANESE_MESSAGES
+!endif
+
+!ifeq host_os nov
+extra_c_flags_386 += -3s
+!else ifeq os ads
+extra_c_flags_386 += -3s
+!endif
+
+!ifeq which TRAP
+!ifeq host_cpu i86
+extra_c_flags_os2 += -zu
+extra_c_flags_win += -zu
+extra_c_flags_dos += -zu
+!ifndef test
+extra_c_flags_win += -bd
+!endif
+!endif
+!endif
+
+# aflags stuff
+###############
+
+extra_a_flags_misc7086 = -fpi87
+extra_a_flags_misc7386 = -fpi87
+
+# lflags stuff
+###############
+
+!ifeq host_os dos
+extra_libs += dbgstr.lib
+!endif
+
+!ifeq release 0
+default_targ    = d
+!else
+default_targ    = w
+!endif
+
+first : $(default_targ) .SYMBOLIC
+        @%null
+
+target = $+$(targ_$(cpu)_$(os))$-
+
+trperr_h = _err.gh
+jtrperr_h = _jerr.gh
+mkstr_c = $(trap_dir)/c/mkstr.c
+trap_msg = $(trap_dir)/h/trap.msg
+
+!ifeq host_os nov
+extra_deps = nversion.tmp
+!endif
+
+w : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
+        @%make $(target)
+
+d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
+        @%make $(target)
+
+./mkstr.exe: $(mkstr_c) $(trap_msg)
+        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" $[@
+
+$(trperr_h) : ./mkstr.exe
+        $[@ $^@
+
+./jmkstr.exe: $(mkstr_c) $(trap_msg)
+        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@
+
+$(jtrperr_h) : ./jmkstr.exe
+        $[@ $^@
+
+./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
+        $(bld_cl) $(wcl_util_opts) -I"$(watcom_dir)/h" $[@
+
+nversion.tmp: ./mknver.exe
+    	$[@ $^@
+
+!ifndef extra_dobjs
+extra_dobjs = $(extra_objs)
+!endif
+
+!ifeq release 1
+objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
+!else
+objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
+!endif
+
+!ifndef substitute_linker
+
+$(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+        %create $^&.lnk
+        @%append $^&.lnk $(mode_lflags)
+        @%append $^&.lnk op map name $^@
+        @%append $^&.lnk $(sys_$(cpu)_$(os))
+!ifeq which TRAP
+        @%append $^&.lnk op dosseg
+!endif
+        @for %i in ($(objs)) do @%append $^&.lnk file %i
+        @for %i in ($(libs_$(cpu)_$(os)) $(extra_libs)) do @%append $^&.lnk library %i
+        @%append $^&.lnk $(extra_linker)
+        $(linker) @$^&.lnk 
+!ifdef resource_file
+        $(rc) $(resource_file) $^@
+!endif
+!ifdef extra_cmds
+        $(extra_cmds)
+!endif
+
+!endif
+
+dbgstr.lib : dbgstr.obj
+        $(librarian) $(libflags) +$[@
+
+inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)" 
+inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
+!ifeq host_os nov
+inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/h" 
+inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/src" -I"$(ow_nwoss_root)/common/h"
+!endif
+
+.c: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.cpp: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)
+.asm: ../asm;../../asm;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
+.rc: ../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(extra_srcs)
+
+# implicit rules
+#################
+.rc.res: .AUTODEPEND
+        $(rc) $(rc_flags) -I"$(trap_dir)/common" $(inc_dirs_sys) $[@ -fo=$^@

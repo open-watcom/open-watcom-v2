@@ -24,19 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  overlay support routines which can't be put in an overlay
 *
 ****************************************************************************/
 
 
-/*
-   OVERLAYS -- overlay support routines which can't be put in an overlay.
-*/
-
 #include "linkstd.h"
 #include "alloc.h"
 #include "newmem.h"
+#include "dbgcomm.h"
 #include "dbgall.h"
 #include "dbgwat.h"
 #include "objpass2.h"
@@ -44,7 +40,16 @@
 #include "distrib.h"
 #include "overlays.h"
 
-extern void ProcAllOvl( void (*rtn)( section * ) )
+void WalkAllSects( void (*rtn)( section * ) )
+/**************************************************/
+{
+    rtn( Root );
+    if( FmtData.type & MK_OVERLAYS ) {
+        WalkAreas( Root->areas, rtn );
+    }
+}
+
+void WalkAllOvl( void (*rtn)( section * ) )
 /************************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -52,8 +57,17 @@ extern void ProcAllOvl( void (*rtn)( section * ) )
     }
 }
 
-extern void ParmWalkOvl( void (*rtn)( section *, void * ), void *parm )
-/*********************************************************************/
+void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
+/**************************************************************************/
+{
+    rtn( Root, parm );
+    if( FmtData.type & MK_OVERLAYS ) {
+        ParmWalkAreas( Root->areas, rtn, parm );
+    }
+}
+
+void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
+/************************************************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         ParmWalkAreas( Root->areas, rtn, parm );
@@ -69,53 +83,24 @@ static void NumASect( section *sect )
     sect->ovl_num = OvlNum++;
 }
 
-extern void NumberSections( void )
+void NumberSections( void )
 /********************************/
 {
-    if( FmtData.type & MK_OVERLAYS && FmtData.u.dos.distribute ) {
-        _ChkAlloc( SectOvlTab, sizeof(section *) * (OvlNum + 1) );
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+        _ChkAlloc( SectOvlTab, sizeof( section * ) * ( OvlNum + 1 ) );
         SectOvlTab[0] = Root;
     }
     OvlNum = 1;
-    ProcAllOvl( &NumASect );
+    WalkAllOvl( &NumASect );
 }
 
-extern void FillOutFilePtrs( void )
+void FillOutFilePtrs( void )
 /*********************************/
 {
-    ProcAllOvl( FillOutPtr );
+    WalkAllOvl( FillOutPtr );
 }
 
-extern void DBIOvlPass2( void )
-/*****************************/
-{
-    ProcAllOvl( DBIP2Start );
-}
-
-extern void DBIOvlFini( void )
-/****************************/
-{
-    ProcAllOvl( DBIFini );
-    if( NonSect != NULL ) {
-        DBIFini( NonSect );
-    }
-}
-
-#if _LINKER != _WATFOR77
-extern void WriteOvlSecs( void )
-/******************************/
-{
-    ProcAllOvl( WriteDBISecs );
-}
-#endif
-
-extern void DBIAddrOvlStart( void )
-/*********************************/
-{
-    ProcAllOvl( DBIAddrSectStart );
-}
-
-extern void TryDefVector( symbol * sym )
+void TryDefVector( symbol *sym )
 /**************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -127,7 +112,7 @@ extern void TryDefVector( symbol * sym )
     }
 }
 
-extern void TryUseVector( symbol * sym, extnode *newnode )
+void TryUseVector( symbol *sym, extnode *newnode )
 /********************************************************/
 {
     if( newnode != NULL ) {
@@ -138,20 +123,6 @@ extern void TryUseVector( symbol * sym, extnode *newnode )
     }
 }
 
-extern section * GetOvlSect( char *clname )
-/*****************************************/
-/* Pick the right section for this segment, based on its class */
-{
-    section             *sect;
-
-    if( !(FmtData.type & MK_OVERLAYS) ) {
-        sect = Root;
-    } else {
-        sect = CheckOvlSect( clname );
-    }
-    return( sect );
-}
-
 static void PSection( section *sec )
 /***********************************/
 {
@@ -159,26 +130,11 @@ static void PSection( section *sec )
     PModList( sec->mods );
 }
 
-extern void OvlPass2( void )
+void OvlPass2( void )
 /**************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
         EmitOvlVectors();
-        ProcAllOvl( PSection );
+        WalkAllOvl( PSection );
     }
 }
-
-#if 0           // NYI
-extern void TryGetVector( extnode *ext, thread *targ )
-/****************************************************/
-{
-    /* check if reference needs overlay vector */
-    if( ext->ovlref != 0 ) {
-        /* get address for overlay vector */
-        GetVecAddr2( ext->entry->u.d.ovlref, targ );
-        targ->flags |= TRD_DEFINED;
-    } else {
-        XSymAddr( ext->entry, targ );
-    }
-}
-#endif

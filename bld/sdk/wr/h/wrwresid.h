@@ -36,8 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WResID * WR_EXPORT WRMem2WResID  ( void *data, int is32bit );
-extern int              WR_EXPORT WRWResID2Mem  ( WResID *name, void **data,
-                                                  uint_32 *size, int is32bit );
+extern WResID * WR_EXPORT WRMem2WResID( void *data, int is32bit );
+extern int      WR_EXPORT WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit );
 
 #endif

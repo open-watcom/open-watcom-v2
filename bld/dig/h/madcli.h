@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD client callback function prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef _MADCLI_H_INCLUDED
-#define _MADCLI_H_INCLUDED
-#include "digpck.h"
+#ifndef MADCLI_H_INCLUDED
+#define MADCLI_H_INCLUDED
+
 #include "madtypes.h"
 #include "digcli.h"
 
@@ -53,5 +52,5 @@ void            DIGCLIENT MADCliAddrSection( address * );
 mad_status      DIGCLIENT MADCliAddrOvlReturn( address * );
 
 system_config   *DIGCLIENT MADCliSystemConfig( void );
-#include "digunpck.h"
+
 #endif

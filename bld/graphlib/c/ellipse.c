@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _ellipse( short fill, short x1, short y1, short x2, short y2 )
+_WCRTLINK short _WCI86FAR _CGRAPH _ellipse( short fill, short x1, short y1, short x2, short y2 )
 /*===============================================================================
 
    This function draws or fills an ellipse defined by the rectangle whose

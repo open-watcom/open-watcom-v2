@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit local implementation of remote file access.
 *
 ****************************************************************************/
 
@@ -61,100 +60,100 @@ typedef struct {
 #define BUFF_SIZE       256
 
 
-unsigned ReqRfx_rename()
+unsigned ReqRfx_rename( void )
 {
-    char           *old_name;
-    char           *new_name;
-    rfx_rename_ret *ret;
+    char                *old_name;
+    char                *new_name;
+    rfx_rename_ret      *ret;
 
-    old_name = GetInPtr(sizeof(rfx_rename_req));
-    new_name = GetInPtr(sizeof(rfx_rename_req) + strlen(old_name) + 1);
-    ret = GetOutPtr(0);
-    ret->err = DosMove(old_name, new_name);
-    return sizeof(*ret);
+    old_name = GetInPtr( sizeof( rfx_rename_req ) );
+    new_name = GetInPtr( sizeof( rfx_rename_req ) + strlen( old_name ) + 1 );
+    ret = GetOutPtr( 0 );
+    ret->err = DosMove( old_name, new_name );
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_mkdir()
+unsigned ReqRfx_mkdir( void )
 {
-    char             *name;
-    rfx_mkdir_ret    *ret;
+    char                *name;
+    rfx_mkdir_ret       *ret;
 
-    name = GetInPtr(sizeof(rfx_mkdir_req));
-    ret = GetOutPtr(0);
-    ret->err = DosCreateDir(name, 0);
-    return sizeof(*ret);
+    name = GetInPtr( sizeof( rfx_mkdir_req ) );
+    ret = GetOutPtr( 0 );
+    ret->err = DosCreateDir( name, 0 );
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_rmdir()
+unsigned ReqRfx_rmdir( void )
 {
-    char             *name;
-    rfx_rmdir_ret    *ret;
+    char                *name;
+    rfx_rmdir_ret       *ret;
 
-    name = GetInPtr(sizeof(rfx_rmdir_req));
-    ret = GetOutPtr(0);
-    ret->err = DosDeleteDir(name);
-    return sizeof(*ret);
+    name = GetInPtr( sizeof( rfx_rmdir_req ) );
+    ret = GetOutPtr( 0 );
+    ret->err = DosDeleteDir( name );
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_setdrive()
+unsigned ReqRfx_setdrive( void )
 {
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    ret->err = DosSetDefaultDisk(acc->drive + 1);
-    return sizeof(*ret);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    ret->err = DosSetDefaultDisk( acc->drive + 1 );
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_getdrive()
+unsigned ReqRfx_getdrive( void )
 {
-    ULONG              drive;
-    ULONG              map;
-    rfx_getdrive_ret   *ret;
+    ULONG               drive;
+    ULONG               map;
+    rfx_getdrive_ret    *ret;
 
-    ret = GetOutPtr(0);
-    if (DosQueryCurrentDisk(&drive, &map) == 0) {
+    ret = GetOutPtr( 0 );
+    if( DosQueryCurrentDisk( &drive, &map ) == 0 ) {
         ret->drive = drive - 1;
     } else {
         ret->drive = 0;
     }
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_setcwd()
+unsigned ReqRfx_setcwd( void )
 {
-    char              *name;
-    rfx_setcwd_ret    *ret;
+    char                *name;
+    rfx_setcwd_ret      *ret;
 
-    name = GetInPtr(sizeof(rfx_setcwd_req));
-    ret = GetOutPtr(0);
-    ret->err = DosSetCurrentDir(name);
-    return sizeof(*ret);
+    name = GetInPtr( sizeof( rfx_setcwd_req ) );
+    ret = GetOutPtr( 0 );
+    ret->err = DosSetCurrentDir( name );
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_getfileattr()
+unsigned ReqRfx_getfileattr( void )
 {
-    FILESTATUS3        info;
-    USHORT             ret_code;
-    char               *name;
+    FILESTATUS3         info;
+    USHORT              ret_code;
+    char                *name;
     rfx_getfileattr_ret *ret;
 
-    name = GetInPtr(sizeof(rfx_getfileattr_req));
-    ret = GetOutPtr(0);
-    ret_code = DosQueryPathInfo(name, FIL_STANDARD, &info, sizeof(info));
+    name = GetInPtr( sizeof( rfx_getfileattr_req ) );
+    ret = GetOutPtr( 0 );
+    ret_code = DosQueryPathInfo( name, FIL_STANDARD, &info, sizeof( info ) );
     ret->attribute = (ret_code == 0) ? info.attrFile : (0xffff0000 | ret_code);
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
 
-unsigned ReqRfx_setfileattr()
+unsigned ReqRfx_setfileattr( void )
 {
     FILESTATUS3         info;
     char                *name;
@@ -162,33 +161,33 @@ unsigned ReqRfx_setfileattr()
     rfx_setfileattr_ret *ret;
 
     // Not tested, and not used right now
-    acc = GetInPtr(0);
-    name = GetInPtr(sizeof(*acc));
-    ret = GetOutPtr(0);
-    ret->err = DosQueryPathInfo(name, FIL_STANDARD, &info, sizeof(info));
+    acc = GetInPtr( 0 );
+    name = GetInPtr( sizeof( *acc ) );
+    ret = GetOutPtr( 0 );
+    ret->err = DosQueryPathInfo( name, FIL_STANDARD, &info, sizeof( info ) );
     if (ret->err == 0) {
         info.attrFile = acc->attribute;
-        ret->err = DosSetPathInfo(name, FIL_STANDARD, &info, sizeof(info), 0);
+        ret->err = DosSetPathInfo( name, FIL_STANDARD, &info, sizeof( info ), 0 );
         }
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfreespace()
+unsigned ReqRfx_getfreespace( void )
 {
     FSALLOCATE              info;
     rfx_getfreespace_req    *acc;
     rfx_getfreespace_ret    *ret;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    DosQFSInfo(acc->drive, 1, (PBYTE)&info, sizeof(info));
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    DosQueryFSInfo( acc->drive, 1, (PBYTE)&info, sizeof( info ) );
     ret->size = (long)info.cbSector
                  * (long)info.cSectorUnit
                  * (long)info.cUnitAvail;
-    return sizeof(*ret);
+    return( sizeof( *ret ) );
 }
 
-static void mylocaltime(ULONG date_time, USHORT *time, USHORT *date)
+static void mylocaltime( ULONG date_time, USHORT *time, USHORT *date )
 {
     unsigned      num_yr_since_1970;
     unsigned      num_leap_since_1970;
@@ -196,29 +195,29 @@ static void mylocaltime(ULONG date_time, USHORT *time, USHORT *date)
     unsigned      day_since_jan[] = { 0,31,59,90,120,151,181,212,243,273,304,334,365 };
 
     num_yr_since_1970 = date_time / 31622400UL;
-    num_leap_since_1970 = ( num_yr_since_1970 - 2 ) / 4;
-    date_time -= (( num_leap_since_1970 * 366 +
-                  ( num_yr_since_1970 - num_leap_since_1970 ) * 365 )
+    num_leap_since_1970 = (num_yr_since_1970 - 2) / 4;
+    date_time -= ((num_leap_since_1970 * 366 +
+                  (num_yr_since_1970 - num_leap_since_1970) * 365)
                    * 86400 );
     day = (date_time / 86400) + 1;   // Start from Jan 1, not Jan 0
-    if (((num_yr_since_1970 - 2) % 4) == 0) {
+    if( ((num_yr_since_1970 - 2) % 4) == 0 ) {
         //leap
-        if (day >= 366) {
+        if( day >= 366 ) {
             day -= 366;
             num_yr_since_1970++;
         }
     } else {
-        if (day >= 365) {
+        if( day >= 365 ) {
             day -= 365;
             num_yr_since_1970++;
         }
     }
-    if ((( num_yr_since_1970 - 2) % 4) == 0 ) {
-        for (month = 2; month <= 12; ++day_since_jan[month], ++month)
+    if( (( num_yr_since_1970 - 2) % 4) == 0 ) {
+        for( month = 2; month <= 12; ++day_since_jan[month], ++month )
             ;
     }
     year = num_yr_since_1970 - 10;
-    for (month = 1; (day > day_since_jan[month] && month <= 12); month++)
+    for( month = 1; (day > day_since_jan[month] && month <= 12); month++ )
         ;
     day -= day_since_jan[month - 1];
     date_time %= 86400;
@@ -231,28 +230,28 @@ static void mylocaltime(ULONG date_time, USHORT *time, USHORT *date)
     *date = (year << 9) | (month << 5) | day;
 }
 
-unsigned ReqRfx_setdatetime()
+unsigned ReqRfx_setdatetime( void )
 {
     FILESTATUS3         info;
     FTIME               time;
     FDATE               date;
     rfx_setdatetime_req *acc;
 
-    acc = GetInPtr(0);
-    mylocaltime(acc->time, (USHORT*)&time, (USHORT*)&date);
+    acc = GetInPtr( 0 );
+    mylocaltime( acc->time, (USHORT*)&time, (USHORT*)&date );
     info.fdateCreation = date;
     info.ftimeCreation = time;
     info.fdateLastAccess = date;
     info.ftimeLastAccess = time;
     info.fdateLastWrite = date;
     info.ftimeLastWrite = time;
-    DosSetFileInfo(acc->handle, FIL_STANDARD, &info, sizeof(info));
-    return(0);
+    DosSetFileInfo( acc->handle, FIL_STANDARD, &info, sizeof( info ) );
+    return( 0 );
 }
 
 #define NM_SEC_1970_1980 315532800UL
 
-static unsigned long mymktime(unsigned time, unsigned date)
+static unsigned long mymktime( unsigned time, unsigned date )
 {
     unsigned      day_since_jan[] = { 0,31,59,90,120,151,181,212,243,273,304,334 };
     unsigned      num_yr_since_1980;
@@ -269,45 +268,45 @@ static unsigned long mymktime(unsigned time, unsigned date)
     //note that year 2000 is a leap year and I don't think this prog. will still
     //be around in year 2099....
     num_yr_since_1980 = year;
-    num_leap_since_1980 = ( num_yr_since_1980 + 3 ) / 4;
-    if( ( ( num_yr_since_1980 % 4 ) == 0 ) && ( month > 2 ) ) {  // is leap year
+    num_leap_since_1980 = (num_yr_since_1980 + 3) / 4;
+    if( ( (num_yr_since_1980 % 4) == 0 ) && (month > 2) ) {  // is leap year
         day++;
     }
     day += (num_leap_since_1980 * 366
              + (num_yr_since_1980 - num_leap_since_1980) * 365
              + day_since_jan[month - 1] - 1);
-    return NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec;
+    return( NM_SEC_1970_1980 + day*86400 + hour*3600 + min*60 + sec );
 }
 
-unsigned ReqRfx_getdatetime()
+unsigned ReqRfx_getdatetime( void )
 {
     rfx_getdatetime_req *acc;
     rfx_getdatetime_ret *ret;
-    FILESTATUS         info;
+    FILESTATUS3         info;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    DosQFileInfo(acc->handle, 1, (char *)&info, sizeof(info));
-    ret->time = mymktime(*(USHORT *)&info.ftimeLastWrite,
-                         *(USHORT *)&info.fdateLastWrite );
-    return sizeof(*ret);
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    DosQueryFileInfo( acc->handle, FIL_STANDARD, (char *)&info, sizeof( info ) );
+    ret->time = mymktime( *(USHORT *)&info.ftimeLastWrite,
+                          *(USHORT *)&info.fdateLastWrite );
+    return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getcwd()
+unsigned ReqRfx_getcwd( void )
 {
-    ULONG             len = BUFF_SIZE;
-    rfx_getcwd_req    *acc;
-    rfx_getcwd_ret    *ret;
-    char              *buff;
+    ULONG               len = BUFF_SIZE;
+    rfx_getcwd_req      *acc;
+    rfx_getcwd_ret      *ret;
+    char                *buff;
 
-    acc = GetInPtr(0);
-    ret = GetOutPtr(0);
-    buff = GetOutPtr(sizeof(*ret));
-    ret->err = DosQueryCurrentDir(acc->drive, buff, &len);
-    return sizeof(*ret) + len;
+    acc = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+    buff = GetOutPtr( sizeof( *ret ) );
+    ret->err = DosQueryCurrentDir( acc->drive, buff, &len );
+    return( sizeof( *ret ) + len );
 }
 
-static MoveDirInfo(FILEFINDBUF *os2, trap_dta *dos)
+static void MoveDirInfo( FILEFINDBUF3 *os2, trap_dta *dos )
 {
     dos->dos.dir_entry_num = *(USHORT *)&os2->fdateLastWrite;
     dos->dos.cluster = *(USHORT *)&os2->ftimeLastWrite;
@@ -315,12 +314,12 @@ static MoveDirInfo(FILEFINDBUF *os2, trap_dta *dos)
     dos->time = *(USHORT *)&os2->ftimeLastWrite;
     dos->date = *(USHORT *)&os2->fdateLastWrite;
     dos->size = os2->cbFile;
-    strcpy(dos->name, os2->achName);
+    strcpy( dos->name, os2->achName );
 }
 
-unsigned ReqRfx_findfirst()
+unsigned ReqRfx_findfirst( void )
 {
-    FILEFINDBUF          info;
+    FILEFINDBUF3         info;
     APIRET               rc;
     HDIR                 hdl = 1;
     ULONG                count = 1;
@@ -328,78 +327,78 @@ unsigned ReqRfx_findfirst()
     rfx_findfirst_ret    *ret;
     char                 *filename;
 
-    acc = GetInPtr(0);
-    filename = GetInPtr(sizeof(*acc));
-    ret = GetOutPtr(0);
-    rc = DosFindFirst(filename, &hdl, acc->attrib, &info,
-                      sizeof(info), &count, 0);
-    if (rc == 0) {
-        MoveDirInfo(&info, (trap_dta *)GetOutPtr(sizeof(*ret)));
+    acc = GetInPtr( 0 );
+    filename = GetInPtr( sizeof( *acc ) );
+    ret = GetOutPtr( 0 );
+    rc = DosFindFirst( filename, &hdl, acc->attrib, &info,
+                      sizeof( info ), &count, FIL_STANDARD );
+    if( rc == 0 ) {
+        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof( *ret ) ) );
         ret->err = 0;
-        return(sizeof(*ret) + sizeof(trap_dta));
+        return( sizeof( *ret ) + sizeof( trap_dta ) );
     } else {
         ret->err = rc;
-        return (sizeof(*ret));
+        return( sizeof( *ret ) );
     }
 }
 
-unsigned ReqRfx_findnext()
+unsigned ReqRfx_findnext( void )
 {
-    FILEFINDBUF         info;
+    FILEFINDBUF3        info;
     APIRET              rc;
     ULONG               count = 1;
     rfx_findnext_ret    *ret;
 
-    ret = GetOutPtr(0);
-    rc = DosFindNext(1, &info, sizeof(info), &count);
-    if (rc == 0) {
-        MoveDirInfo(&info, (trap_dta *)GetOutPtr(sizeof(*ret)));
+    ret = GetOutPtr( 0 );
+    rc = DosFindNext( 1, &info, sizeof( info ), &count );
+    if( rc == 0 ) {
+        MoveDirInfo( &info, (trap_dta *)GetOutPtr( sizeof( *ret ) ) );
         ret->err = 0;
-        return sizeof(*ret) + sizeof(trap_dta);
+        return( sizeof( *ret ) + sizeof( trap_dta ) );
     } else {
         ret->err = rc;
-        return sizeof(*ret);
+        return( sizeof( *ret ) );
     }
 }
 
-unsigned ReqRfx_findclose()
+unsigned ReqRfx_findclose( void )
 {
-    return(0);
+    return( 0 );
 }
 
-unsigned ReqRfx_nametocannonical()
+unsigned ReqRfx_nametocannonical( void )
 {
     rfx_nametocannonical_ret    *ret;
-    char                  *name;
-    char                  *fullname;
-    char                  *p;
-    int                   level = 0;
-    ULONG                 drive;
-    ULONG                 map;
-    ULONG                 len = BUFF_SIZE;
+    char                        *name;
+    char                        *fullname;
+    char                        *p;
+    int                         level = 0;
+    ULONG                       drive;
+    ULONG                       map;
+    ULONG                       len = BUFF_SIZE;
 
     // Not tested, and not used right now
-    name = GetInPtr(sizeof(rfx_nametocannonical_req));
-    ret = GetOutPtr(0);
-    fullname = GetOutPtr(sizeof(*ret));
+    name = GetInPtr( sizeof( rfx_nametocannonical_req ) );
+    ret = GetOutPtr( 0 );
+    fullname = GetOutPtr( sizeof( *ret ) );
     ret->err = 1;
-    while (*name == ' ') {
+    while( *name == ' ' ) {
         name++;
     }
-    if (*(name + 1) == ':') {
-        drive = toupper(*name) - 'A';
+    if( *(name + 1) == ':' ) {
+        drive = toupper( *name ) - 'A';
         name += 2;
     } else {
-        DosQueryCurrentDisk(&drive, &map);
+        DosQueryCurrentDisk( &drive, &map );
     }
     if( *name != '\\' ) {
         *fullname++ = '\\';
         // DOS : TinyGetCWDir( fullname, TinyGetCurrDrive() + 1 );
-        DosQueryCurrentDir(drive + 1, fullname, &len);
-        if (*fullname != '\0') {
+        DosQueryCurrentDir( drive + 1, fullname, &len );
+        if( *fullname != '\0' ) {
             level++;
-            while (*fullname != '\0') {
-                if (*fullname == '\\') {
+            while( *fullname != '\0' ) {
+                if( *fullname == '\\' ) {
                     level++;
                 }
                 fullname++;
@@ -407,26 +406,26 @@ unsigned ReqRfx_nametocannonical()
         }
     } else {
         name++;
-        if (*name == '\0') {
+        if( *name == '\0' ) {
             *fullname++ = '\\';
         }
         *fullname = '\0';
     }
     p = name;
-    for ( ; ; ) {
-        for ( ; ; ) {
-            if (*p == '\0')
+    for( ;; ) {
+        for( ;; ) {
+            if( *p == '\0' )
                 goto done;
-            if (*p == '\\')
+            if( *p == '\\' )
                 break;
-            if (*p == '/')
+            if( *p == '/' )
                 break;
             ++p;
         }
-        if (strcmp(p, ".") == 0) {
-        } else if (strcmp(p, "..") == 0) {
-            if (level > 0) {
-                while (*fullname != '\\') {
+        if( strcmp( p, "." ) == 0 ) {
+        } else if( strcmp( p, ".." ) == 0 ) {
+            if( level > 0 ) {
+                while( *fullname != '\\' ) {
                     fullname--;
                 }
                 level--;
@@ -440,11 +439,11 @@ unsigned ReqRfx_nametocannonical()
             level++;
             do {
                 *fullname++ = *p++;
-            } while (*p != '\0')
+            } while( *p != '\0' )
                 ;
             *fullname = '\0';
         }
     }
 done:
-    return sizeof(*ret) + strlen(GetOutPtr(sizeof(*ret))) + 1;
+    return( sizeof( *ret ) + strlen( GetOutPtr( sizeof( *ret ) ) ) + 1 );
 }

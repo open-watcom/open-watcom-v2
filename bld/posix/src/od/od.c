@@ -55,7 +55,7 @@
 
 char *OptEnvVar="od";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: od [-?bcdDhoOsSxX] [@env] [file] [[+]offset[.][b]]",
     "\tenv                : environment variable to expand",
     "\tfile               : name of file to dump",

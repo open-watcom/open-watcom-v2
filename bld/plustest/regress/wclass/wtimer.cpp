@@ -5,7 +5,7 @@ static int _timerId = 0;
 
 extern "C" WORD _export _far _pascal timerProc( HWND /*hwin*/, UINT /*msg*/, int id, DWORD sysTime )
 {
-	WTimer* timer = (WTimer*)WTimer::_timerMap.findThis( id );
+	WTimer* timer = (WTimer*)WTimer::_timerMap.findThis( (HANDLE)id );
 	ifptr( timer ) {
 		timer->tick( sysTime );
 	}
@@ -28,7 +28,7 @@ bool WEXPORT WTimer::start( WORD interval, int count )
 {
 	_count = count;
 	_id = SetTimer( NIL, _timerId++, interval, (TIMERPROC) timerProc );
-	_timerMap.setThis( this, _id );
+	_timerMap.setThis( this, (HANDLE)_id );
 	return _id != 0;
 }
 

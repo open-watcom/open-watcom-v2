@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution profiler command line processing.
 *
 ****************************************************************************/
 
@@ -35,7 +34,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <process.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#else
+    #include "clibext.h"
+#endif
 
 #include "common.h"
 #include "msg.h"
@@ -46,16 +49,6 @@
 #ifdef TRMEM
 #include "trmemcvr.h"
 #endif
-
-//#include "utils.def"
-//#include "msg.def"
-//#include "memutil.def"
-//#include "dipinter.def"
-//#include "aboutmsg.def"
-//#include "getsamps.def"
-//#include "clrsamps.def"
-//#include "rptsamps.def"
-//#include "wphelp.def"
 
 extern void WPFiniHelp(void);
 extern void WPDipInit(void);
@@ -81,7 +74,7 @@ STATIC char *   eatAllChars( char * );
 enum {
     FAIL_OPT,
     DIP_OPT,
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
     NOCHARREMAP_OPT,
     NOGRAPHICSMOUSE_OPT,
 #endif
@@ -91,7 +84,7 @@ enum {
 
 STATIC char * cmdNames[] = {
     "dip",
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
     "nocharremap",
     "nographicsmouse",
 #endif
@@ -105,7 +98,7 @@ STATIC char * cmdNames[] = {
 
 STATIC unsigned_8 cmdLen[] = {
     3,
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
     4,
     3,
 #endif
@@ -118,7 +111,7 @@ STATIC unsigned_8 cmdLen[] = {
 
 STATIC int cmdType[] = {
     DIP_OPT,
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
     NOGRAPHICSMOUSE_OPT,
     NOCHARREMAP_OPT,
 #endif
@@ -135,7 +128,7 @@ STATIC char * cmdUsage[] = {
     LIT( Usage3 ),
     LIT( Usage4 ),
     LIT( Usage5 ),
-#ifndef __QNX__
+#if defined( __DOS__ )
     LIT( Usage6 ),
     LIT( Usage7 ),
     LIT( Usage8 ),
@@ -144,18 +137,18 @@ STATIC char * cmdUsage[] = {
 };
 
 
-bint        WPWndInitDone = B_FALSE;
+bint        WPWndInitDone = P_FALSE;
 char        SamplePath[ _MAX_PATH ];
-char *      WProfDips = NULL;
+char        *WProfDips = NULL;
 
 static int  WProfDipSize = 0;
 
 
 
-extern void WPInit()
-/******************/
+extern void WPInit( void )
+/************************/
 {
-    char *      rover;
+    char        *rover;
     bint        do_report;
     char        buff[256];
 
@@ -171,8 +164,8 @@ extern void WPInit()
     }
     getcmd( buff );
     do_report = procCmd( buff );
-    WndInit( "WATCOM Profiler" );
-    WPWndInitDone = B_TRUE;
+    WndInit( "Open Watcom Profiler" );
+    WPWndInitDone = P_TRUE;
     InitMADInfo();
     WPDipInit();
     if( do_report ) {
@@ -185,8 +178,8 @@ extern void WPInit()
 
 
 
-extern void WPFini()
-/******************/
+extern void WPFini( void )
+/************************/
 {
 #ifdef TRMEM
     ClearAllSamples();
@@ -205,7 +198,7 @@ extern void WPFini()
 STATIC bint procCmd( char * cmd )
 /*******************************/
 {
-    char *  rover;
+    char    *rover;
     int     name_len;
     int     old_len;
     int     cmd_type;
@@ -213,23 +206,23 @@ STATIC bint procCmd( char * cmd )
     bint    do_report;
     bint    do_option;
 
-    do_report = B_FALSE;
-    for(;;) {
+    do_report = P_FALSE;
+    for( ;; ) {
         cmd = eatBlanks( cmd );
         if( *cmd == NULLCHAR ) break;
-#ifdef __QNX__
+#ifdef __UNIX__
         if( *cmd == '-' ) {
 #else
         if( *cmd == '-' || *cmd == '/' ) {
 #endif
-            do_option = B_TRUE;
+            do_option = P_TRUE;
             ++cmd;
             cmd_type = minLook( &cmd );
         } else if( *cmd == '?' ) {
-            do_option = B_TRUE;
+            do_option = P_TRUE;
             cmd_type = HELP_OPT;
         } else {
-            do_option = B_FALSE;
+            do_option = P_FALSE;
             rover = cmd;
             cmd = eatAllChars( cmd );
             name_len = cmd - rover;
@@ -243,7 +236,7 @@ STATIC bint procCmd( char * cmd )
             switch( cmd_type ) {
             case FAIL_OPT:
                 ErrorMsg( LIT( Cmd_Option_Not_Valid ), cmd-1 );
-#if _OS == _OS_WIN || _OS == _OS_NT || defined(_OS2_PM)
+#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
                 fatal( LIT( Usage ) );
 #else
                 /* fall through */
@@ -283,7 +276,7 @@ STATIC bint procCmd( char * cmd )
                     WProfDips[old_len] = NULLCHAR;
                 }
                 break;
-#if _OS == _OS_DOS
+#if defined( __DOS__ )
             case NOGRAPHICSMOUSE_OPT:
             case NOCHARREMAP_OPT:
                 WndStyle &= ~(GUI_CHARMAP_DLG|GUI_CHARMAP_MOUSE);
@@ -291,7 +284,7 @@ STATIC bint procCmd( char * cmd )
 #endif
 #ifndef NDEBUG
             case R_OPT:
-                do_report = B_TRUE;
+                do_report = P_TRUE;
                 break;
 #endif
             }
@@ -337,7 +330,7 @@ STATIC int minLook( char * * value ) {
 
     int         index;
     int         curr_len;
-    void * *    strtab;
+    char * *    strtab;
     byte *      lentab;
     char *      strlook;
     char *      strchck;

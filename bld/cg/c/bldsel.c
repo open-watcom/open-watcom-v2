@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build code for a selection (switch) statement.
 *
 ****************************************************************************/
 
@@ -34,51 +33,50 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "addrname.h"
 #include "seldef.h"
 #include "tree.h"
 #include "zoiks.h"
+#include "types.h"
+#include "bldins.h"
+#include "makeins.h"
 
-extern  an              BGConvert(an,type_def*);
-extern  label_handle    AskForNewLabel();
-extern  an              BGDuplicate(an);
-extern  type_def        *TypeAddress(cg_type);
+extern  label_handle    AskForNewLabel(void);
 extern  void            AddTarget(label_handle,bool);
 extern  signed_32       IfCost(select_node*,int);
 extern  void            EnLink(label_handle,bool);
 extern  name            *ScanCall(tbl_control*,name*,type_class_def);
-extern  an              BGBinary(cg_op,an,an,type_def*,bool);
 extern  void            AddIns(instruction*);
 extern  signed_32       JumpCost(select_node*);
-extern  bn              BGCompare(cg_op,an,an,label_handle,type_def*);
-extern  an              BGInteger(signed_32,type_def*);
-extern  instruction     *NewIns(int);
-extern  void            BGControl(cg_op,bn,label_handle);
 extern  void            Generate(bool);
 extern  signed_32       ScanCost(select_node*);
-extern  void            GenBlock(int,int);
+extern  void            GenBlock( block_class, int );
 extern  name            *GenIns(an);
-extern  void            BGDone(an);
 extern  tbl_control     *MakeScanTab(select_list*,signed_32,
                                      label_handle,cg_type,cg_type);
 extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,
                                     label_handle);
 extern  name_def        *SelIdx(tbl_control*,an);
-extern  an              Arithmetic(an,type_def*);
 extern  type_def        *SelNodeType(an,bool);
 extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
 extern  void            MkSelOp( name *idx, cg_type tipe );
 
 extern    type_def      *TypeInteger;
 
+/* forward declarations */
+extern  void    BGSelRange( select_node *s_node, signed_32 lo,
+                            signed_32 hi, label_handle label );
+static  void    ScanBlock( tbl_control *table, an node, cg_type tipe,
+                           label_handle other );
+static  void    SelectBlock( tbl_control *table, an node, label_handle other );
 
 static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
 /******************************************************************************/
 
     select_list         *new_entry;
 
-    _Alloc( new_entry, sizeof( select_list ) );
+    new_entry = CGAlloc( sizeof( select_list ) );
     new_entry->low = lo;
     new_entry->high = hi;
     new_entry->count = hi - lo + 1;
@@ -88,12 +86,12 @@ static  select_list *NewCase( signed_32 lo, signed_32 hi, label_handle label ) {
 }
 
 
-extern  select_node     *BGSelInit() {
+extern  select_node     *BGSelInit( void ) {
 /************************************/
 
     select_node         *s_node;
 
-    _Alloc( s_node, sizeof( select_node ) );
+    s_node = CGAlloc( sizeof( select_node ) );
     s_node->num_cases = 0;
     s_node->other_wise = NULL;
     s_node->list = NULL;
@@ -149,10 +147,10 @@ extern int SelCompare( signed_32 lo1, signed_32 lo2 ) {
 }
 
 
-static  bool            NodeLess( select_list *s1, select_list *s2 ) {
-/********************************************************************/
+static  bool            NodeLess( void *s1, void *s2 ) {
+/******************************************************/
 
-    return( SelCompare( s1->low, s2->low ) < 0 );
+    return( SelCompare( ((select_list *)s1)->low, ((select_list *)s2)->low ) < 0 );
 }
 
 
@@ -192,7 +190,7 @@ static  void    MergeListEntries( select_node *s_node ) {
         if( ( list->high + 1 == next->low ) && ( list->label == next->label ) ) {
             list->high = next->high;
             list->next = next->next;
-            _Free( next, sizeof( select_list ) );
+            CGFree( next );
         } else {
             list = list->next;
         }
@@ -229,26 +227,26 @@ extern  cg_type SelType( unsigned_32 value_range ) {
 
     if( ( value_range & 0xFFFF0000 ) == 0 ) {
         if( ( value_range & 0xFF00 ) == 0 ) {
-            tipe = T_UINT_1;
+            tipe = TY_UINT_1;
         } else {
-            tipe = T_UINT_2;
+            tipe = TY_UINT_2;
         }
     } else {
-        tipe = T_UINT_4;
+        tipe = TY_UINT_4;
     }
     if( tipe > SortTipe->refno ) {
         switch( SortTipe->refno ) {
-        case T_UINT_1:
-        case T_INT_1:
-            tipe = T_UINT_1;
+        case TY_UINT_1:
+        case TY_INT_1:
+            tipe = TY_UINT_1;
             break;
-        case T_UINT_2:
-        case T_INT_2:
-            tipe = T_UINT_2;
+        case TY_UINT_2:
+        case TY_INT_2:
+            tipe = TY_UINT_2;
             break;
-        case T_UINT_4:
-        case T_INT_4:
-            tipe = T_UINT_4;
+        case TY_UINT_4:
+        case TY_INT_4:
+            tipe = TY_UINT_4;
             break;
         }
     }
@@ -261,11 +259,11 @@ static  type_def        *UnSignedIntTipe( type_def *tipe ) {
 
     switch( tipe->length ) {
     case 1:
-        return( TypeAddress( T_UINT_1 ) );
+        return( TypeAddress( TY_UINT_1 ) );
     case 2:
-        return( TypeAddress( T_UINT_2 ) );
+        return( TypeAddress( TY_UINT_2 ) );
     case 4:
-        return( TypeAddress( T_UINT_4 ) );
+        return( TypeAddress( TY_UINT_4 ) );
     }
     _Zoiks( ZOIKS_102 );  /* if we get here bug */
     return( NULL );
@@ -275,9 +273,9 @@ static  type_def        *UnSignedIntTipe( type_def *tipe ) {
 static  an      GenScanTable( an node, select_node *s_node, type_def *tipe){
 /**************************************************************************/
 
-    bn                  lt;
-    type_class_def      value_type;
-    type_class_def      real_type;
+    bn          lt;
+    cg_type     value_type;
+    cg_type     real_type;
 
     value_type = SelType( s_node->upper - s_node->lower );
     real_type = tipe->refno;
@@ -355,6 +353,49 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
             return;
         }
     }
+    if( hi == mid + 1 && mid_list->next->low == mid_list->next->high ) {
+        /* a linear sequence for three different non-sequential cases where
+           c1<c2<c3, looks like:
+        if( a == c3 ) goto l3;
+        if( a == c2 ) goto l2;
+        if( a != c1 ) goto default;
+        l1: ...
+
+           a binary sequence for these three cases looks like:
+        if( a < c2 goto lt;    \
+        if( a <= c2 ) goto l2; /only one cmp ins on x86
+        if( a == c3 ) goto l3;
+        goto default;
+        lt:
+        if ( a != c1 ) goto default;
+        l1: ...
+
+        Advantage of the linear search:
+        * 3 goto's instead of 5, resulting in smaller code.
+        Advantage of the binary search:
+        * Execution time for all the cases is more balanced. which one is
+          really faster depends a lot on the CPU's branch prediction and
+          other things that are very hard to measure here.
+
+        Using a linear search here for <= 3 cases to save on code size
+        with negligible performance loss or gain.
+        */
+        mid_list = mid_list->next;
+        cmp = BGCompare( O_EQ, BGDuplicate( node ),
+                         BGInteger( mid_list->low, tipe ), NULL, tipe );
+        BGControl( O_IF_TRUE, cmp, mid_list->label );
+        /* Because we only compared for equality, it is only possible to
+           decrease the upper bound if it was already set and equal to
+           the value we are comparing to. Otherwise the incoming value
+           may still be higher, where the inner call may produce an
+           unconditional O_GOTO to a specific case label!
+        */
+        if( have_hibound && hibound == mid_list->low )
+            hibound--;
+        DoBinarySearch( node, list, tipe, lo, mid, other,
+                        lobound, hibound, have_lobound, have_hibound );
+        return;
+    }
     lt = AskForNewLabel();
     if( !have_lobound || SelCompare( lobound, mid_list->low ) < 0 ) {
         if( have_hibound && SelCompare( hibound, mid_list->low ) < 0 ) {
@@ -426,7 +467,7 @@ static  void    ScanBlock( tbl_control *table, an node, cg_type tipe,
 
     uint                i;
     uint                targets;
-    name_def            *value;
+    name                *value;
 
     value = GenIns( node );
     MkSelOp( ScanCall( table, value, tipe ), tipe );
@@ -463,7 +504,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
     uint                i;
     uint                targets;
 
-    MkSelOp( SelIdx( table, node ), T_UINT_2 );
+    MkSelOp( (name *) SelIdx( table, node ), TY_UINT_2 );
     i = 0;
     targets = 0;
     for(;;) {
@@ -494,7 +535,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other ) {
 extern  void    FreeTable( tbl_control *table ) {
 /***********************************************/
 
-    _Free( table, (table->size-1)*sizeof(label_handle) + sizeof(tbl_control) );
+    CGFree( table );
 }
 
 
@@ -508,9 +549,9 @@ static  void    FreeSelectNode( select_node *s_node ) {
     while( list != NULL ) {
         prev = list;
         list = list->next;
-        _Free( prev, sizeof( select_list ) );
+        CGFree( prev );
     }
-    _Free( s_node, sizeof( select_node ) );
+    CGFree( s_node );
 }
 
 

@@ -35,12 +35,12 @@
 #include "conflict.h"
 #include "pattern.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "regset.h"
 #include "model.h"
 #include "cgaux.h"
 #include "offset.h"
-
+#include "makeins.h"
 #include "s37index.def"
 
 extern  block               *HeadBlock;
@@ -49,8 +49,6 @@ extern  opcode_defs         String[];
 
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocTemp(type_class_def);
@@ -66,7 +64,6 @@ extern  int             FEAttr(sym_handle);
 extern  pointer         FEAuxInfo(pointer,int);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      GblReg();
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  hw_reg_set      WordReg(int);
 extern  void            GetRALN(name*,char*,char*);
@@ -156,7 +153,7 @@ static void BaseTempAdd( name *idx, label_handle label ){
     }
     /* don't add same index twice */
     if( cur == NULL || idx != cur->idx ){
-        _Alloc( cur, sizeof( struct idx_list ) );
+        cur = CGAlloc( sizeof( struct idx_list ) );
         cur->idx = idx;
         cur->label = label;
         cur->next = *lnk;
@@ -199,7 +196,7 @@ static void BaseTempFini( instruction *start ){
         while( (list = *lnk ) != NULL ){
             if( list->idx->i.constant != 0 ){
                 *lnk = list->next;
-                _Free( list, sizeof( struct idx_list ) );
+                CGFree( list );
             }else{
                 list->idx = list->idx->i.index;
                 new_ins = MakeUnary( OP_LA, list->mem_loc,
@@ -289,7 +286,7 @@ void FixMemBases( void ){
         }
         old = list;
         list = list->next;
-        _Free( old, sizeof( struct idx_list ) );
+        CGFree( old );
     }
 }
 

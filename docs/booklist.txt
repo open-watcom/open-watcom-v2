@@ -1,0 +1,62 @@
+
+     Watcom C/C++ Getting Started (92 pages)
+		Document Number BA0614 (C_README)
+
+     Watcom C/C++ User's Guide, 3rd Edition (632 pages)
+		(CGUIDE)
+
+     Watcom C/C++ Programmer's Guide, 3rd Edition (399 pages)
+		(PGUIDE)
+
+     Watcom C/C++ Tools User's Guide, 3rd Edition (149 pages)
+		(CTOOLS)
+
+     Watcom C Language Reference, 4th Edition (296 pages)
+		(C)
+
+     Watcom C Library Reference, 7th Edition, Volume 1 (599 pages)
+		(CLIB_V1)
+
+     Watcom C Library Reference, 7th Edition, Volume 2 (667 pages)
+		(CLIB_V2)
+
+     Watcom C++ Class Library Reference, 5th Edition (976 pages)
+		(CPPLIB)
+
+     The C++ Programming Language by Bjarne Stroustrup (681 pages)
+
+
+     Visual Programmer User's Guide (290 pages)
+		(WVP)
+
+     MFC Switch-It Module User's Guide (200 pages)
+		(VPMFC)
+
+     Watcom Graphical Tools User's Guide, 3rd Edition (491 pages) **
+		(GUITOOL)
+
+     Watcom Debugger User's Guide, 3rd Edition (252 pages) **
+		(WDBG)
+
+     Watcom Linker User's Guide, 6th Edition (245 pages) **
+		(LGUIDE)
+
+     Watcom FORTRAN 77 Getting Started (65 pages)
+		Document Number BA0615 (F_README)
+
+     Watcom FORTRAN 77 User's Guide, 2nd Edition (337 pages)
+		(FUGUIDE)
+
+     Watcom FORTRAN 77 Programmer's Guide, 2nd Edition (354 pages)
+		(FPGUIDE)
+
+     Watcom FORTRAN 77 Tools User's Guide, 3rd Edition (146 pages)
+		(FTOOLS)
+
+     Watcom FORTRAN 77 Language Reference, 6th Edition (373 pages)
+		(F77LR)
+
+     Watcom FORTRAN 77 Graphics Library Reference, 3rd Edition (192 pages)
+		(F77GRAPH)
+
+     ** Note: books in common with Watcom C/C++ and WATCOM FORTRAN 77

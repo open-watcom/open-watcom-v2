@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
 /*==================================================
 
    This function queries the color of the pixel at ( x, y ), in
@@ -54,7 +54,7 @@ short _WCI86FAR _CGRAPH _getpixel_w( double x, double y )
 Entry( _GETPIXEL_W, _getpixel_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
 /*===================================================*/
 
 {
@@ -64,7 +64,7 @@ short _WCI86FAR _CGRAPH _getpixel_w_87( double x, double y )
 Entry( _GETPIXEL_W_87, _getpixel_w_87 ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
 /*==================================================
 
    This routine sets the pixel at the point ( x, y ), in window coords. */
@@ -84,7 +84,7 @@ short _WCI86FAR _CGRAPH _setpixel_w( double x, double y )
 Entry( _SETPIXEL_W, _setpixel_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
+_WCRTLINK short _WCI86FAR _CGRAPH _setpixel_w_87( double x, double y )
 /*===================================================*/
 
 {

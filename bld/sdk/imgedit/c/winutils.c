@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
+#include "imgedit.h"
 #include <malloc.h>
 #include <math.h>
-#include "imgedit.h"
 
 /*
- * InitXorAndBitmaps - initializes the XOR and AND bitmaps
+ * InitXorAndBitmaps - initialize the XOR and AND bitmaps
  */
 void InitXorAndBitmaps( img_node *node )
 {
@@ -47,7 +48,7 @@ void InitXorAndBitmaps( img_node *node )
     hdc = GetDC( NULL );
     memdc = CreateCompatibleDC( hdc );
 
-    if (node->bitcount == 1) {
+    if( node->bitcount == 1 ) {
         node->hxorbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
     } else {
         bmih.biSize = sizeof( BITMAPINFOHEADER );
@@ -64,24 +65,25 @@ void InitXorAndBitmaps( img_node *node )
 
         node->hxorbitmap = CreateDIBitmap( hdc, &bmih, 0L, NULL, NULL, 0 );
     }
-    ReleaseDC(NULL, hdc);
+    ReleaseDC( NULL, hdc );
 
     oldbitmap = SelectObject( memdc, node->hxorbitmap);
-    if ( node->imgtype == BITMAP_IMG ) {
-        PatBlt(memdc, 0, 0, node->width, node->height, WHITENESS);
+    if( node->imgtype == BITMAP_IMG ) {
+        PatBlt( memdc, 0, 0, node->width, node->height, WHITENESS );
     } else {
-        PatBlt(memdc, 0, 0, node->width, node->height, BLACKNESS);
+        PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
     }
     SelectObject( memdc, oldbitmap );
 
     node->handbitmap = CreateCompatibleBitmap( memdc, node->width, node->height );
 
-    oldbitmap = SelectObject( memdc, node->handbitmap);
-    if ( node->imgtype == BITMAP_IMG ) {
-        PatBlt(memdc, 0, 0, node->width, node->height, BLACKNESS);
+    oldbitmap = SelectObject( memdc, node->handbitmap );
+    if( node->imgtype == BITMAP_IMG ) {
+        PatBlt( memdc, 0, 0, node->width, node->height, BLACKNESS );
     } else {
-        PatBlt(memdc, 0, 0, node->width, node->height, WHITENESS);
+        PatBlt( memdc, 0, 0, node->width, node->height, WHITENESS );
     }
     SelectObject( memdc, oldbitmap );
     DeleteDC( memdc );
+
 } /* InitXorAndBitmaps */

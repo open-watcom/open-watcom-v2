@@ -33,45 +33,74 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "wrmaini.h"
 #include "wrmsg.h"
-#include "wrcmsg.h"
 #include "errprt.h"
 
 #define ERRPRT_BUFFER 512
 static char buf[ERRPRT_BUFFER];
 
-static void WRDisplayRCMsg ( const char *msg )
+static void WRDisplayRCMsg( const char *msg )
 {
     char        *title;
 
     title = WRAllocRCString( WR_WRCMSG );
 
-    MessageBox( (HWND) NULL, msg, title,
+    MessageBox( (HWND)NULL, msg, title,
                 MB_ICONEXCLAMATION | MB_OK | MB_APPLMODAL );
 
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 }
 
-int RcFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
+int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
 {
     int         err;
     va_list     args;
+    char        *fmt;
+    char        *p;
 
-    info = info;
     fp = fp;
-
+    p = buf;
+    if( info->flags & OUTFLAG_FILE ) {
+        err = sprintf( p, "%s(%d): ", info->file, info->lineno );
+        if( err < 0 ) {
+            return( err );
+        }
+        p += err;
+    }
+    switch( info->severity ) {
+    case SEV_WARNING:
+        fmt = "Warning! %d: ";
+        break;
+    case SEV_ERROR:
+        fmt = "Error! %d: ";
+        break;
+    case SEV_FATAL_ERR:
+        fmt = "Fatal Error! %d: ";
+        break;
+    default:
+        fmt = "%d: ";
+        break;
+    }
+    err = sprintf( p, fmt, info->errid );
+    if( err < 0 ) {
+        return( err );
+    }
+    p += err;
     va_start( args, format );
-    err = vsprintf( buf, format, args );
+    err = vsprintf( p, format, args );
     va_end( args );
-
-    if( err > 0 ) {
+    if( err < 0 ) {
+        return( err );
+    }
+    p += err;
+    if( p > buf ) {
         WRDisplayRCMsg ( buf );
     }
-
-    return( err );
+    return( p - buf );
 }
 
 int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
@@ -83,7 +112,7 @@ int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
     return( 1 );
 }
 
-void InitOutPutInfo( OutPutInfo *info ) {
+void InitOutPutInfo( OutPutInfo *info )
+{
     info->flags = 0;
 }
-

@@ -2,13 +2,13 @@
 
 void main( void ) {
 
-    String    s1 ("Watcom C++");
-    String    s2 ("Watcom C++ compiler");
-    String    s3 ("Watcom C");
+    String    s1 ("Open Watcom C++");
+    String    s2 ("Open Watcom C++ compiler");
+    String    s3 ("Open Watcom C");
     char     *pch1, *pch2;
 
-    pch1 = "Watcom C++   ";
-    pch2 = "Watcom C";
+    pch1 = "Open Watcom C++   ";
+    pch2 = "Open Watcom C";
     cout << "String \"" << s1 << "\" "
          << ( operator >( s1, s2 ) ? "is longer than" : "is shorter than" )
          << " string \"" << s2 << "\"" << endl;

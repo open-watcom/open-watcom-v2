@@ -24,46 +24,80 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Several functions taking Suicide()-using function parameters
 *
 ****************************************************************************/
 
 
 #include <setjmp.h>
 
-static jmp_buf          *ExitSP;
+static jmp_buf  *ExitSP;
 
 /*
- * Spawn - mark a level to pop back to on an error
+ * Spawn* - mark a level to pop back to on an error.
+ *
+ * These functions only differ in the specification of the called function.
+ * The defining declaration used to be made by a call of a macro.
+ * Debugger-stepping through the code could not be done with that technique.
+ * 
  */
+int Spawn( void (*func)(void) )
+{
+    jmp_buf env;
+    jmp_buf *old;
+    int     ret;
 
-#define SpawnMacro( Header, Call ) \
-int Header \
-{ \
-    jmp_buf env; \
-    jmp_buf *old; \
-    int     ret; \
- \
-    old = ExitSP; \
-    ExitSP = env; \
-    if( setjmp( env ) == 0 ) { \
-        Call; \
-        ret = 0; \
-    } else { \
-        ret = 1; \
-    } \
-    ExitSP = old; \
-    return( ret ); \
+    old = ExitSP;
+    ExitSP = env;
+    if( setjmp( env ) == 0 ) {
+        func();
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+    ExitSP = old;
+    return( ret );
 }
 
-SpawnMacro( ( Spawn( void (*func)(void) ) ), func() )
-SpawnMacro( ( SpawnP( void (*func)(void*), void *parm ) ), func( parm ) )
-SpawnMacro( ( SpawnPP( void (*func)(void*, void*), void *p1, void *p2 ) ), func( p1, p2 ) )
+int SpawnP( void (*func)(void*), void *parm )
+{
+    jmp_buf env;
+    jmp_buf *old;
+    int     ret;
 
-extern void     PopErrBox(char*);
+    old = ExitSP;
+    ExitSP = env;
+    if( setjmp( env ) == 0 ) {
+        func( parm );
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+    ExitSP = old;
+    return( ret );
+}
 
-void Suicide()
+int SpawnPP( void (*func)(void*, void*), void *p1, void *p2 )
+{
+    jmp_buf env;
+    jmp_buf *old;
+    int     ret;
+
+    old = ExitSP;
+    ExitSP = env;
+    if( setjmp( env ) == 0 ) {
+        func( p1, p2 );
+        ret = 0;
+    } else {
+        ret = 1;
+    }
+    ExitSP = old;
+    return( ret );
+}
+
+extern void PopErrBox( char *buff );
+
+void Suicide( void )
 {
     if( ExitSP ) {
         longjmp( ExitSP, 1 );

@@ -1,0 +1,46 @@
+#
+# WARPWRAP definitions file
+#
+# ~NEW adds string to environment variable block if doesn't exist,
+# ignores if the environment variable string already exists
+#
+~NEW
+#
+INCLUDE=D:\SYSTEM\INCLUDE
+TEMP=C:\DOS;
+# preceding whitespace in line is optional
+   USEEMS=OFF
+#
+# ~REPLACE replaces existing environment variables if exist, add if not
+#
+~REPLACE
+#
+PROMPT=$P$G
+# 'SET ' is optional, can be used before ~<environment variable>
+#  or #<environment variable> so environment variable is not confused with
+# WARPWRAP comment or command
+SET SAFETYNET=ON
+#
+# make environment variable adds/replaces/removes case sensitive
+ ~SAVECASE
+#
+# you don't usually see lowercase environment variables in DOS
+lowercase=on
+#
+#
+# ~DELETE deletes existing environment variables if present
+#
+~DELETE
+# trailing '=' is optional
+LIB
+# because of preceding SAVECASE, only deleted if lowercase 'network'
+# environment variable is present
+network=
+#
+# restore to default all uppercase environment variables
+~NOSAVECASE
+#
+#
+# clear uninitialized program memory words to 00a5h hexadecimal
+#
+~CLEAR a5

@@ -1,0 +1,45 @@
+.387
+.386p
+_TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+proc16:
+    mov         eax,ds 
+    mov         ax,ds 
+    mov         word ptr [bx],ds 
+    mov         word ptr [ebx],ds 
+    mov         word ptr [bx],ds 
+    mov         word ptr [ebx],ds 
+    mov         dword ptr [bx],ds 
+    mov         dword ptr [ebx],ds 
+    mov         ds,eax 
+    mov         ds,ax 
+    mov         ds,word ptr [bx] 
+    mov         ds,word ptr [ebx] 
+    mov         ds,word ptr [bx] 
+    mov         ds,word ptr [ebx] 
+    mov         ds,dword ptr [bx] 
+    mov         ds,dword ptr [ebx] 
+    ret         
+_TEXT16		ENDS
+_TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
+proc32:
+    mov         eax,ds 
+    mov         ax,ds 
+    mov         dword ptr [bx],ds 
+    mov         dword ptr [ebx],ds 
+    mov         word ptr [bx],ds 
+    mov         word ptr [ebx],ds 
+    mov         dword ptr [bx],ds 
+    mov         dword ptr [ebx],ds 
+    mov         ds,eax 
+    mov         ds,ax 
+    mov         ds,dword ptr [bx] 
+    mov         ds,dword ptr [ebx] 
+    mov         ds,word ptr [bx] 
+    mov         ds,word ptr [ebx] 
+    mov         ds,dword ptr [bx] 
+    mov         ds,dword ptr [ebx] 
+    ret         
+_TEXT32		ENDS
+		END

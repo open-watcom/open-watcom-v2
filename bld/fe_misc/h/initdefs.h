@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for automated initialization/termination.
 *
 ****************************************************************************/
 
-
-// INITDEFS.H  -- definitions for automated initialization/completion
-//
-//
 
 #ifndef __INITDEFS_H__
 #define __INITDEFS_H__

@@ -24,22 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message resource handling.
 *
 ****************************************************************************/
 
 
+#include "as.h"
 #ifdef _STANDALONE_
-#include <process.h>
-#include <unistd.h>
-#include <stdlib.h>
+#ifdef __WATCOMC__
+    #include <process.h>
+#endif
+#include <fcntl.h>
 #include "wressetr.h"
 #include "wreslang.h"
-#endif
-#include "as.h"
-
-#ifndef _STANDALONE_
+#else
 // No res file to use. Just compile in the messages...
 #undef PICK
 // Use English message unless compiled with "-dJAPANESE_MSG"
@@ -64,4 +62,77 @@ static HANDLE_INFO      hInstance = {0};
 static unsigned         msgShift;
 extern long             FileShift;
 
-static long resSeek( int handle, long position, int where ) {
+static off_t resSeek( int handle, off_t position, int where )
+//***********************************************************
+{
+    if( where == SEEK_SET ) {
+        return( lseek( handle, position+FileShift, where ) - FileShift );
+    } else {
+        return( lseek( handle, position, where ) );
+    }
+}
+
+WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
+#endif
+
+extern int AsMsgInit() {
+//**********************
+
+#ifdef _STANDALONE_
+    int         error;
+    char        name[_MAX_PATH];
+
+    hInstance.handle = NIL_HANDLE;
+    if( _cmdname( name ) == NULL ) {
+        error = 1;
+    } else {
+        hInstance.filename = name;
+        OpenResFile( &hInstance );
+        if( hInstance.handle == NIL_HANDLE ) {
+            error = 1;
+        } else {
+            error = FindResources( &hInstance );
+            if( !error ) {
+                error = InitResources( &hInstance );
+            }
+        }
+    }
+    msgShift = WResLanguage() * MSG_LANG_SPACING;
+    if( !error && !AsMsgGet( USAGE_1, name ) ) {
+        error = 1;
+    }
+    if( error ) {
+        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+        AsMsgFini();
+        return 0;
+    }
+#endif
+    return 1;
+}
+
+extern int AsMsgGet( int resourceid, char *buffer ) {
+//***************************************************
+
+#ifdef _STANDALONE_
+    if( LoadString( &hInstance, resourceid + msgShift,
+                (LPSTR) buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+        buffer[0] = '\0';
+        return( 0 );
+    }
+    return( 1 );
+#else
+    strcpy( buffer, asMessages[ resourceid ] );
+    return( 1 );
+#endif
+}
+
+extern void AsMsgFini() {
+//***********************
+
+#ifdef _STANDALONE_
+    if( hInstance.handle != NIL_HANDLE ) {
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
+    }
+#endif
+}

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Command line parser enumerations, structures, constants and
+*               prototypes, including CmdTble function call prototypes
 *
 ****************************************************************************/
 
@@ -73,16 +73,17 @@ typedef enum {
 } ord_state;
 
 typedef struct tok {
-    char *      buff;
-    int         len;
-    char *      next;
-    char *      this;
+    char        *buff;
+    unsigned    len;
+    char        *next;
+    char        *this;
     unsigned_16 line;
     unsigned_16 where : 2;
     unsigned_16 how : 3;
     unsigned_16 thumb : 1;
     unsigned_16 locked : 1;
     unsigned_16 quoted : 1;     /* set true if token parsed as a quoted string*/
+   unsigned_16 skipToNext : 1;   /* set true if we need to skip to next token without a separator */
 } tok;
 
 typedef enum commandflag {
@@ -113,20 +114,21 @@ typedef struct cmdfilelist {
     struct cmdfilelist *prev;
     struct cmdfilelist *next;
     f_handle            file;
-    char *              name;
+    char                *symprefix;
+    char                *name;
     tok                 token;
 } cmdfilelist;
 
 typedef struct parse_entry {
     char                *keyword;
-    bool                (*rtn)();
+    bool                (*rtn)( void );
     enum exe_format     format;
     commandflag         flags;
 } parse_entry;
 
 typedef struct sysblock {
-    struct sysblock *   next;
-    char *              name;
+    struct sysblock     *next;
+    char                *name;
     char                commands[1];
 } sysblock;
 
@@ -165,6 +167,7 @@ extern parse_entry SubFormats[];
 extern parse_entry OS2FormatKeywords[];
 extern parse_entry WindowsFormatKeywords[];
 extern parse_entry NTFormatKeywords[];
+extern parse_entry VXDFormatKeywords[];
 extern parse_entry Init_Keywords[];
 extern parse_entry Term_Keywords[];
 extern parse_entry Exp_Keywords[];
@@ -173,37 +176,47 @@ extern parse_entry SegTypeDesc[];
 extern parse_entry SegModel[];
 extern parse_entry CommitKeywords[];
 extern parse_entry ELFFormatKeywords[];
+extern parse_entry ZdosOptions[];
+extern parse_entry RdosOptions[];
+extern parse_entry RawOptions[];
+extern parse_entry OrderOpts[];
+extern parse_entry OrderClassOpts[];
+extern parse_entry OrderSegOpts[];
+extern parse_entry OutputOpts[];
 
 /* handy globals */
 
-extern byte         Extension;
-extern file_list ** CurrFList;
+extern file_defext  Extension;
+extern file_list    **CurrFList;
 extern tok          Token;
 extern commandflag  CmdFlags;
-extern char *       Name;
-extern sysblock *   SysBlocks;
-extern sysblock *   LinkCommands;
+extern char         *Name;
+extern sysblock     *SysBlocks;
+extern sysblock     *LinkCommands;
 extern cmdfilelist *CmdFile;
 
 /* routines used in command parser */
 
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
+extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
 extern bool             ProcOne( parse_entry *, sep_type, bool );
+extern bool             MatchOne( parse_entry *, sep_type, char *, unsigned );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );
 extern bool             HaveEquals( tokcontrol );
 extern bool             GetLong( unsigned_32 * );
-extern char *           tostring( void );
-extern char *           totext( void );
+extern char             *tostring( void );
+extern char             *totext( void );
 extern bool             GetToken( sep_type, tokcontrol );
+extern bool             GetTokenEx( sep_type, tokcontrol ,cmdfilelist *, bool * );
 extern void             RestoreParser( void );
 extern void             NewCommandSource( char *, char *, method );
 extern void             SetCommandFile( f_handle, char * );
 extern void             EatWhite( void );
-extern char *           FileName( char *, int, byte, bool );
+extern char             *FileName( char *, unsigned, file_defext, bool );
 extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );
-extern outfilelist *    NewOutFile( char * );
-extern section *        NewSection( void );
-extern char *           GetFileName( char **, bool );
+extern outfilelist      *NewOutFile( char * );
+extern section          *NewSection( void );
+extern char             *GetFileName( char **, bool );

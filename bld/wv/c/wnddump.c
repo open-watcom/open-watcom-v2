@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump window contents to a file.
 *
 ****************************************************************************/
 
@@ -37,24 +36,24 @@
 #include "dbgadget.h"
 #include <string.h>
 
-extern char              *GetDmpName();
-extern void             ReqEOC(void);
-extern bool             ScanItem(bool ,char **,unsigned int *);
+
+extern char             *GetDmpName( void );
+extern void             ReqEOC( void );
+extern bool             ScanItem( bool, char **, unsigned int * );
 extern bool             WndDlgTxt( char *buff );
 extern char             *StrCopy( char *src, char *dest );
 
 extern gui_resource     WndGadgetArray[];
 extern char             *TxtBuff;
 
+
 typedef void WRITERTN( handle, char * );
 
-WRITERTN WriteFile;
 static void WriteFile( handle file, char *buff )
 {
     WriteText( file, buff, strlen( buff ) );
 }
 
-WRITERTN WriteLog;
 static void WriteLog( handle dummy, char *buff )
 {
     dummy = dummy;
@@ -107,7 +106,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
                 ++chars_written;
             }
             if( line.bitmap ) {
-                line.text = WndGadgetArray[ line.text[0] ].chars;
+                line.text = WndGadgetArray[ (int)line.text[0] ].chars;
                 line.length = strlen( line.text );
             }
             p = StrCopy( line.text, p );
@@ -118,7 +117,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     }
     MaxGadgetLength = gadget_len;
     if( font != NULL ) WndSetFontInfo( wnd, font );
-    WndFree( font );
+    GUIMemFree( font );
 }
 
 

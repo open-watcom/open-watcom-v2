@@ -35,10 +35,8 @@
 #include "uidef.h"
 
 
-void global uiunprotect( vptr )
-/*****************************/
-
-VSCREEN *vptr;
+void global uiunprotect( VSCREEN *vptr )
+/**************************************/
 {
     if( !(vptr->flags & V_UNPROTECTED) && ((vptr->flags & V_UNFRAMED) == 0 ) ){
         vptr->area.row -= 1;
@@ -52,10 +50,8 @@ VSCREEN *vptr;
 }
 
 
-void global uiprotect( vptr )
-/***************************/
-
-VSCREEN *vptr;
+void global uiprotect( VSCREEN *vptr )
+/************************************/
 {
     if( vptr->flags & V_UNPROTECTED ) {
         vptr->area.row += 1;

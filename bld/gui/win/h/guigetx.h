@@ -32,7 +32,7 @@
 
 #ifndef _GUIGETX_H_
 #define _GUIGETX_H_
-extern UINT GUIGetTextExtentX( gui_window * wnd, char *, int );
-extern UINT GUIGetTextExtentY( gui_window * wnd, char *, int );
-extern void GUIGetTextExtent( gui_window * wnd, char *, int, int *, int * );
+extern UINT GUIGetTextExtentX( gui_window * wnd, const char *, int );
+extern UINT GUIGetTextExtentY( gui_window * wnd, const char *, int );
+extern void GUIGetTextExtent( gui_window * wnd, const char *, int, int *, int * );
 #endif // _GUIGETX_H_

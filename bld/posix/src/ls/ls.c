@@ -24,39 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX ls utility.
 *
 ****************************************************************************/
 
 
-/*
-  LS.C - perform unix-like ls function.
-         must be compiled with compact data.
-
-   Date         By              Reason
-   ====         ==              ======
-   26-jun-89
-    ...
-   24-aug-91    Craig Eisler    original development
-   09-jan-92    G.R.Bentz       implement -R, -p, -s
-                                tidy up format (tidy up this pal!)
-   10-jan-92    Craig Eisler    fixed to work with trailing slashes
-   22-jan-92    Craig Eisler    check for out of memory conditions
-   28-jan-92    Craig Eisler    use Quit function
-   25-mar-92    Craig Eisler    NT port
-   15-jun-92    Craig Eisler    added -C switch, do /1 if !isatty(stdout)
-   19-jun-92    Craig Eisler    use GetOpt
-   20-jun-92    Craig Eisler    use FileMatch (regular expressions)
-   07-jul-92    D.J.Gaudet      fixes to preserve case of filenames
-   26-aug-92    S.Bosnick       fixes to -p and -R for wildcarding and made
-                                -1 the default if -p given.
-   31-mar-94    S.Bosnick       added -h flag
-   05-apr-94    S.Bosnick       added code to allow 'ls d:' to work like
-                                'ls d:\'
-   31-aug-95    Kevin Hui       detect console dimensions
-
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,7 +36,7 @@
 #include <direct.h>
 #include <io.h>
 #include <dos.h>
-#if defined(__OS_dosos2__) || defined(__OS_os2v2__)
+#if defined(__OS_dosos2__) || defined(__OS_os2386__)
 #include <os2.h>
 #endif
 #include "misc.h"
@@ -106,7 +78,7 @@ int  N1flag=FALSE,
      sflag=FALSE,
      tflag=FALSE;
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: ls [-?1CFRlhprstX] [files]",
     "\tfiles       : directories/files to list",
     "\tOptions: -? : display this message",
@@ -124,10 +96,17 @@ static char *usageMsg[] = {
     NULL
 };
 
+/* forward declarations */
+static void DoLS( char *path, char *name );
+static int IsSpecialRoot( char * filename );
+static void PrintFile( char *drive, char *dir, DIR *file );
+static int IsX( char *file );
+
+
 /*
  * start of mainline
  */
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     DIR         *d;
     char        filebuff[_MAX_PATH];
@@ -244,8 +223,7 @@ main( int argc, char *argv[] )
         DoLS( NULL, todo[i] );
     }
     free( todo );
-    exit( 0 );
-
+    return( 0 );
 } /* main */
 
 /*
@@ -315,7 +293,7 @@ int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 /*
  * DoLS - perform LS on a specified directory
  */
-void DoLS( char *path, char *name )
+static void DoLS( char *path, char *name )
 {
     char                filename[_MAX_PATH];
     char                filebuff[_MAX_PATH2];
@@ -339,7 +317,7 @@ void DoLS( char *path, char *name )
      */
     if( path != NULL ) {
         strcpy( filename, path );
-        if( path[ strlen( path ) - 1 ] != FILESEP ) {
+        if( !isFILESEP( path[ strlen( path ) - 1 ] ) ) {
             strcat( filename, FILESEPSTR );
         }
         strcat( filename, name );
@@ -442,7 +420,7 @@ void DoLS( char *path, char *name )
                 fn = Compare;
             }
         }
-        qsort( files, filecnt, sizeof(struct dirent *), fn );
+        qsort( files, filecnt, sizeof(struct dirent *), (int (*)(const void *, const void * ))fn );
 
         /*
          * print out results
@@ -490,7 +468,7 @@ void DoLS( char *path, char *name )
 /*
  * PrintFile - print a file entry
  */
-void PrintFile( char *drive, char *dir, DIR *file )
+static void PrintFile( char *drive, char *dir, DIR *file )
 {
     static char months[13][4] = {
         "***", "Jan", "Feb", "Mar", "Apr",
@@ -595,7 +573,7 @@ void PrintFile( char *drive, char *dir, DIR *file )
 /*
  * IsX - check if a file has .com, .bat, or .exe at the end
  */
-int IsX( char *file )
+static int IsX( char *file )
 {
     char        *f;
 
@@ -604,7 +582,7 @@ int IsX( char *file )
     if( !FNameCompare( f, ".com" )
       ||!FNameCompare( f, ".bat" )
       ||!FNameCompare( f, ".exe" )
-#if defined( __OS_os2v2__ ) || defined( __OS_dosos2__ )
+#if defined( __OS_os2386__ ) || defined( __OS_dosos2__ )
       ||!FNameCompare( f, ".cmd" )
 #endif
        ) {
@@ -614,7 +592,7 @@ int IsX( char *file )
 
 } /* IsX */
 
-int IsSpecialRoot( char * filename )
+static int IsSpecialRoot( char * filename )
 /**********************************/
 // Check if 'filename' is of the form 'd:'
 {

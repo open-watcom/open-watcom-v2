@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void  WREMemOpen     ( void );
-extern void  WREMemClose    ( void );
-extern void *WREMemAlloc    ( unsigned );
-extern void  WREMemFree     ( void * );
-extern void *WREMemRealloc  ( void *, unsigned );
-extern int   WREMemValidate ( void * );
-extern int   WREMemChkRange ( void *, unsigned );
+extern void WREMemOpen( void );
+extern void WREMemClose( void );
+extern void *WREMemAlloc( unsigned );
+extern void WREMemFree( void * );
+extern void *WREMemRealloc( void *, unsigned );
+extern int  WREMemValidate( void * );
+extern int  WREMemChkRange( void *, unsigned );
 
 #endif

@@ -1,0 +1,17 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+_foo:
+    push        bp 
+    mov         bp,sp 
+    lea         bx,4[bp] 
+    lea         bx,0aH[bp] 
+    lea         bx,12H[bp] 
+    lea         cx,1cH[bp] 
+    pop         bp 
+    ret         
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

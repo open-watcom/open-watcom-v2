@@ -1,0 +1,24 @@
+#U.S. English text
+
+Country=1
+CodePage=850
+Note="Note&colon."
+Caution="CAUTION&colon."
+Warning="Warning&colon."
+Reference="Reference"
+olChars=abcdefghijklmnopqrstuvwxyz
+olClose1=.
+olClose2=)
+ulItemId1=
+ulItemId2=-
+ulItemId3=--
+cgraphicFontFaceName="Courier"
+cgraphicFontWidth=11
+cgraphicFontHeight=18
+
+# Words defines the characters that make words.  This is used for
+# searching and data compression.  The following is for Code page 850.
+
+Grammer
+Words=0-9+A-Z+a-z
+eGrammer

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load/store calculations.
 *
 ****************************************************************************/
 
@@ -35,6 +34,7 @@
 #include "conflict.h"
 #include "opcodes.h"
 #include "stackok.h"
+#include "zoiks.h"
 
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  bool            NameIsConstant(name*);
@@ -46,19 +46,10 @@ extern    bool  BlockByBlock;
 #define NO_LOAD_STORE   BLOCK_VISITED
 #define CONTAINS_CALL   LOOP_EXIT /* borrow. Only used during loop opts */
 
-extern  void    CalcLoadStore( conflict_node *conf ) {
-/*****************************************************
-    see below
-*/
 
-    if( BlockByBlock == FALSE ) {
-        CalculateLoadStore( conf );
-    }
-}
-
-static  void    BitsOff() {
-/*************************/
-
+static  void    BitsOff( void )
+/*****************************/
+{
     block               *blk;
 
     blk = HeadBlock;
@@ -69,9 +60,9 @@ static  void    BitsOff() {
 }
 
 
-static  bool    SameConf( name *op, instruction *ins, conflict_node *conf ) {
-/***************************************************************************/
-
+static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
+/*************************************************************************/
+{
     if( op->n.class == N_INDEXED ) {
         if( NameConflict( ins, op->i.index ) == conf ) return( TRUE );
         if( HasTrueBase( op ) ) {
@@ -84,12 +75,12 @@ static  bool    SameConf( name *op, instruction *ins, conflict_node *conf ) {
 }
 
 
-static  void    CheckRefs( conflict_node *conf, block *blk ) {
-/*************************************************************
+static  void    CheckRefs( conflict_node *conf, block *blk )
+/***********************************************************
     mark block as REAL_REFERENCE if it contains a reference to conf.
     Also mark as CONTAINS_CALL if it does
 */
-
+{
     int         i;
     instruction *ins;
 
@@ -122,91 +113,8 @@ static  void    CheckRefs( conflict_node *conf, block *blk ) {
 }
 
 
-static  void    CalculateLoadStore( conflict_node *conf ) {
-/**********************************************************
-    If we are going to cache a global variable in a register, we have a
-    few problems, which are resolved in this routine.  If a subroutine
-    is called, we must store the register into memory just before the
-    subroutine call, and load the new value afterward.  We must also
-    store before leaving the range of the conflict node, and load it if
-    the conflict range is entered from without.  This routine uses an
-    iterative algorithm to determine which blocks will need to have
-    loads/stores at the beginning/end because of this. All blocks outside
-    the range of the conflict are marked as "need load" and "need store".
-    All blocks which don't reference the conflict variable, yet have a
-    call are marked as "need load" and "need store". An iterative algorithm
-    is used to ensure consistency in the state of the variable/register.
-    "need load" requires "need store" in all ancestor blocks. "need store"
-    requires "need load" in all successor blocks. Once this is done,
-    we optimize by "painting" regions of the blocks which don't reference
-    the variable at all. Internal "need load"/"need store" attributes
-    are turned off in these regions.
-*/
-
-    global_bit_set      id;
-    block               *blk;
-    data_flow_def       *flow;
-
-    BitsOff();
-    blk = HeadBlock;
-    if( blk != NULL ) {
-        blk->class |= BIG_LABEL;
-    }
-    _GBitAssign( id, conf->id.out_of_block );
-    /* turn on bits before the conflict range */
-    while( blk != NULL ) {
-        if( blk == conf->start_block ) break;
-        _GBitTurnOn( blk->dataflow->need_load, id );
-        _GBitTurnOn( blk->dataflow->need_store, id );
-        blk->class |= REAL_REFERENCE;
-        blk = blk->next_block;
-    }
-    /* turn on bits in the conflict range */
-    while( blk != NULL ) {
-        flow = blk->dataflow;
-        CheckRefs( conf, blk );
-        if( _GBitOverlap( flow->in, id ) && ( blk->class & BIG_LABEL ) ) {
-            _GBitTurnOn( flow->need_load, id );
-        } else {
-            _GBitTurnOff( flow->need_load, id );
-        }
-        if( _GBitOverlap( flow->out, id )
-         && ( blk->class & ( RETURN | BIG_JUMP ) ) ) {
-            _GBitTurnOn( flow->need_store, id );
-        } else {
-            _GBitTurnOff( flow->need_store, id );
-        }
-        if( blk->ins.hd.prev != (instruction *)&blk->ins ) {
-            if( blk->ins.hd.prev->id >= conf->ins_range.last->id) break;
-        }
-        blk = blk->next_block;
-    }
-    /* turn on bits after the conflict range */
-    while( blk != NULL ) {
-        flow = blk->dataflow;
-        blk = blk->next_block;
-        if( blk == NULL ) break;
-        blk->class |= REAL_REFERENCE;
-        _GBitTurnOn( flow->need_load, id );
-        _GBitTurnOn( flow->need_store, id );
-    }
-    LoadStoreIfCall( &id );
-    PropagateLoadStoreBits( conf->start_block, &id );
-    TurnOffLoadStoreBits( &id );
-    if( NameIsConstant( conf->name ) ) {
-        blk = HeadBlock;
-        id = conf->id.out_of_block;
-        while( blk != NULL ) {
-            flow = blk->dataflow;
-            _GBitTurnOff( flow->need_store, id );
-            blk = blk->next_block;
-        }
-    }
-    BitsOff();
-}
-
-static  void    LoadStoreIfCall( global_bit_set *id ) {
-/******************************************************
+static  void    LoadStoreIfCall( global_bit_set *id )
+/****************************************************
     Turn on bits for need_load/need_store for conflict id in all blocks
     which have a call but no real reference to id.  This is sort of
     backwards, since it would cause a load at the start of the block and
@@ -216,8 +124,8 @@ static  void    LoadStoreIfCall( global_bit_set *id ) {
     this block, and we achieve an optimial load/store scheme for
     cacheing a static.
 */
-
-    block       *blk;
+{
+    block               *blk;
     data_flow_def       *flow;
 
     blk = HeadBlock;
@@ -233,13 +141,13 @@ static  void    LoadStoreIfCall( global_bit_set *id ) {
 }
 
 
-static  void    TurnOffLoadStoreBits( global_bit_set *id ) {
-/***************************************************
+static  void    TurnOffLoadStoreBits( global_bit_set *id )
+/*********************************************************
     If a block has need_load and need_store but never really references
     id, we can get rid of the load/store.
 */
-
-    block       *blk;
+{
+    block               *blk;
     data_flow_def       *flow;
 
     blk = HeadBlock;
@@ -257,13 +165,13 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id ) {
 }
 
 
-static  void    PropagateLoadStoreBits( block *start, global_bit_set *id ) {
-/***************************************************************************
+static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
+/*************************************************************************
     Make sure that ancestors of need_load blocks do a store at the end
     and successors of need_store blocks do a load at the beginning.  This
     will be a conservative estimate, fixed up by TurnOffLoadStoreBits
 */
-
+{
     data_flow_def       *source_dat;
     data_flow_def       *blk_dat;
     bool                change;
@@ -299,5 +207,102 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id ) {
             blk = blk->next_block;
         }
         if( change == FALSE ) break;
+    }
+}
+
+
+static  void    CalculateLoadStore( conflict_node *conf )
+/********************************************************
+    If we are going to cache a global variable in a register, we have a
+    few problems, which are resolved in this routine.  If a subroutine
+    is called, we must store the register into memory just before the
+    subroutine call, and load the new value afterward.  We must also
+    store before leaving the range of the conflict node, and load it if
+    the conflict range is entered from without.  This routine uses an
+    iterative algorithm to determine which blocks will need to have
+    loads/stores at the beginning/end because of this. All blocks outside
+    the range of the conflict are marked as "need load" and "need store".
+    All blocks which don't reference the conflict variable, yet have a
+    call are marked as "need load" and "need store". An iterative algorithm
+    is used to ensure consistency in the state of the variable/register.
+    "need load" requires "need store" in all ancestor blocks. "need store"
+    requires "need load" in all successor blocks. Once this is done,
+    we optimize by "painting" regions of the blocks which don't reference
+    the variable at all. Internal "need load"/"need store" attributes
+    are turned off in these regions.
+*/
+{
+    global_bit_set      id;
+    block               *blk;
+    data_flow_def       *flow;
+
+    BitsOff();
+    blk = HeadBlock;
+    if( blk != NULL ) {
+        blk->class |= BIG_LABEL;
+    }
+    _GBitAssign( id, conf->id.out_of_block );
+    /* turn on bits before the conflict range */
+    while( blk != NULL ) {
+        if( blk == conf->start_block ) break;
+        _GBitTurnOn( blk->dataflow->need_load, id );
+        _GBitTurnOn( blk->dataflow->need_store, id );
+        blk->class |= REAL_REFERENCE;
+        blk = blk->next_block;
+    }
+    /* turn on bits in the conflict range */
+    while( blk != NULL ) {
+        flow = blk->dataflow;
+        CheckRefs( conf, blk );
+        if( _GBitOverlap( flow->in, id ) && ( blk->class & BIG_LABEL ) ) {
+            _GBitTurnOn( flow->need_load, id );
+        } else {
+            _GBitTurnOff( flow->need_load, id );
+        }
+        if( _GBitOverlap( flow->out, id )
+         && ( blk->class & ( RETURN | BIG_JUMP ) ) ) {
+            _GBitTurnOn( flow->need_store, id );
+        } else {
+            _GBitTurnOff( flow->need_store, id );
+        }
+        if( blk->ins.hd.prev != (instruction *)&blk->ins ) {
+            _INS_NOT_BLOCK( blk->ins.hd.prev );
+            _INS_NOT_BLOCK( conf->ins_range.last );
+            if( blk->ins.hd.prev->id >= conf->ins_range.last->id) break;
+        }
+        blk = blk->next_block;
+    }
+    /* turn on bits after the conflict range */
+    while( blk != NULL ) {
+        flow = blk->dataflow;
+        blk = blk->next_block;
+        if( blk == NULL ) break;
+        blk->class |= REAL_REFERENCE;
+        _GBitTurnOn( flow->need_load, id );
+        _GBitTurnOn( flow->need_store, id );
+    }
+    LoadStoreIfCall( &id );
+    PropagateLoadStoreBits( conf->start_block, &id );
+    TurnOffLoadStoreBits( &id );
+    if( NameIsConstant( conf->name ) ) {
+        blk = HeadBlock;
+        id = conf->id.out_of_block;
+        while( blk != NULL ) {
+            flow = blk->dataflow;
+            _GBitTurnOff( flow->need_store, id );
+            blk = blk->next_block;
+        }
+    }
+    BitsOff();
+}
+
+
+extern  void    CalcLoadStore( conflict_node *conf )
+/***************************************************
+    see below
+*/
+{
+    if( BlockByBlock == FALSE ) {
+        CalculateLoadStore( conf );
     }
 }

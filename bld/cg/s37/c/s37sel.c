@@ -34,12 +34,12 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "addrname.h"
 #include "tree.h"
 #include "offset.h"
 #include "seldef.h"
-
+#include "makeins.h"
 #include "s37sel.def"
 
 extern  void            HWIntGen(offset,int);
@@ -68,8 +68,6 @@ extern  seg_id          SetOP(seg_id);
 extern  type_def        *TypeAddress(cg_type);
 extern  name            *LoadTemp(name*,type_class_def);
 extern  int             SelCompare(signed_32,signed_32);
-extern  instruction     *NewIns(int);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  void            AddIns(instruction*);
 
 extern  char            OptForSize;
@@ -212,7 +210,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
 
     cases = NumValues( list, hi );
     lo = list->low;
-    _Alloc( table, sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     table->size = cases;
     old = SetOP( AskBackSeg() );
     table->value_lbl = AskForNewLabel();
@@ -280,7 +278,7 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     seg_id              old;
 
     cases = hi - lo + 1;
-    _Alloc( table, sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
+    table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     old = SetOP( AskBackSeg() );
     table->lbl = AskForNewLabel();
     table->value_lbl = NULL;
@@ -333,13 +331,13 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
 
     switch( node->tipe->length ) {
     case 1:
-        unsigned_t = T_UINT_1;
-        signed_t = T_INT_1;
+        unsigned_t = TY_UINT_1;
+        signed_t = TY_INT_1;
         break;
     case 2: /* no support in switch */
     case 4:
-        unsigned_t = T_UINT_4;
-        signed_t = T_INT_4;
+        unsigned_t = TY_UINT_4;
+        signed_t = TY_INT_4;
         break;
     default: /* an error */
         unsigned_t = NULL;

@@ -35,8 +35,8 @@
 
 typedef struct {
     wie_imgtype img_type;
-    COLORREF    xorcolour;
-    COLORREF    andcolour;
+    COLORREF    xorcolor;
+    COLORREF    andcolor;
     WPI_POINT   pt;
-    wie_clrtype colourtype;
+    wie_clrtype colortype;
 } fill_info_struct;

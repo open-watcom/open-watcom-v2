@@ -45,9 +45,7 @@
 
 typedef EVENT           an_event;
 
-static bool exit_field( info, field )
-    a_dialog            *info;
-    VFIELD              *field;
+static bool exit_field( a_dialog *info, VFIELD *field )
 {
     bool                flag;
     an_edit_control     *edit;
@@ -140,19 +138,16 @@ static VFIELD *nextfield( VFIELD *fld )
     return( fld );
 }
 
-static void print_field( vs, field, current )
-    VSCREEN             *vs;
-    VFIELD              *field;
-    unsigned            current;
+static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
 {
     SAREA               *area;
     char                *str;
     ATTR                attr;
     ATTR                hotattr;
     char                ctrlbuf[CTRL_BUF_LEN+1];
-    unsigned            length;
-    a_check             *check;
-    a_radio             *radio;
+    unsigned            length = 0;
+    a_check             *check = NULL;
+    a_radio             *radio = NULL;
     a_list              *list;
     a_combo_box         *combo;
     a_hot_spot          *hotspot;
@@ -334,10 +329,7 @@ void uiprintfield( a_dialog *dialog, VFIELD *field )
     print_field( dialog->vs, field, field == dialog->curr );
 }
 
-static void *makevs( heading, cols, rows, cpos, rpos )
-    char                *heading;
-    int                 cols, rows;
-    int                 cpos, rpos;
+static void *makevs( char *heading, int cols, int rows, int cpos, int rpos )
 {
     SAREA               area;
 
@@ -355,8 +347,8 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     unsigned            delim, cr, i;
     char                *str;
     unsigned            len;
-    unsigned            slen;
-    char                ch;
+    unsigned            slen = 0;
+    char                ch = '\0';
 
     str = *sptr;
     len = t - str;
@@ -390,12 +382,8 @@ unsigned ui_split_line( char **sptr, char *t, unsigned max )
     return( slen );
 }
 
-void *uiinitdialog( heading, attr, lines, extra_rows, maxlen, rpos, cpos )
-    char                *heading;
-    char                *lines[];
-    ATTR                attr;
-    unsigned            extra_rows;
-    int                 maxlen, cpos, rpos;
+void *uiinitdialog( char *heading, ATTR attr, char *lines[],
+            unsigned int extra_rows, int maxlen, int rpos, int cpos )
 {
     VSCREEN             *vs;
     int                 len;
@@ -440,15 +428,12 @@ void *uiinitdialog( heading, attr, lines, extra_rows, maxlen, rpos, cpos )
     return( vs );
 }
 
-void uifinidialog( vs )
-    void        *vs;
+void uifinidialog( void *vs )
 {
     uiclose( vs );
 }
 
-static void enter_field( info, field )
-    a_dialog            *info;
-    VFIELD              *field;
+static void enter_field( a_dialog *info, VFIELD *field )
 {
     an_edit_control     *edit;
     a_combo_box         *combo;
@@ -533,11 +518,7 @@ bool uigetdialogarea( a_dialog *dialog, SAREA *area )
     return( FALSE );
 }
 
-void *uibegdialog( title, fields, rows, cols, rpos, cpos )
-    char                *title;
-    VFIELD              *fields;
-    ORD                 rows, cols;
-    int                 rpos, cpos;
+void *uibegdialog( char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
 {
     char                *lines[1];
     a_dialog            *info;
@@ -650,7 +631,7 @@ static  void setcombobuffer( a_dialog *info, VFIELD *fld )
 
 EVENT   pulldownfilter( EVENT ev, a_dialog *info )
 {
-    a_list          *list;
+    a_list          *list = NULL;
     a_combo_box     *combo;
 
     VSCREEN     *vs;

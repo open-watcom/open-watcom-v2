@@ -1,0 +1,77 @@
+.387
+.386p
+		EXTRN	foo:BYTE
+		EXTRN	bar:BYTE
+		EXTRN	b:BYTE
+		EXTRN	d:BYTE
+		EXTRN	e:BYTE
+		EXTRN	a:BYTE
+		EXTRN	f:BYTE
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    jmp       bx
+    jmp       ebx
+    jmp       word ptr [bx]
+    jmp       dword ptr [bx]
+    jmp       fword ptr [bx]
+    jmp       word ptr [ebx]
+    jmp       dword ptr [ebx]
+    jmp       fword ptr [ebx]
+    jmp       word ptr 2[ebx]
+    jmp       dword ptr 2[ebx]
+    jmp       fword ptr 2[ebx]
+    jmp       word ptr DGROUP:foo
+    jmp       dword ptr DGROUP:foo
+    jmp       fword ptr DGROUP:foo
+    jmp       word ptr DGROUP:bar
+    jmp       dword ptr DGROUP:bar
+    jmp       fword ptr DGROUP:bar
+    jmp       word ptr DGROUP:bar+2
+    jmp       dword ptr DGROUP:bar+3
+    jmp       fword ptr DGROUP:bar+4
+L$1:
+    jmp       word ptr DGROUP:b
+    jmp       dword ptr DGROUP:d
+    jmp       fword ptr DGROUP:e
+    jmp       far ptr DGROUP:a
+    jmp       far ptr DGROUP:b
+    jmp       far ptr DGROUP:d
+    jmp       far ptr DGROUP:e
+    jmp       far ptr DGROUP:f
+    jmp       L$1
+    jmp       L$1
+    jmp       near ptr L$1
+    jmp       far ptr L$1
+    jmp       L$1
+    jmp       near ptr L$1
+    jmp       far ptr L$1
+    jmp       word ptr cs:L$1
+    jmp       dword ptr cs:L$1
+    jmp       fword ptr cs:L$1
+    jmp       word ptr DGROUP:L$1
+    jmp       dword ptr DGROUP:L$1
+    jmp       fword ptr DGROUP:L$1
+    jmp       far ptr DGROUP:L$2
+    jmp       word ptr cs:L$2
+    jmp       dword ptr cs:L$2
+    jmp       fword ptr cs:L$2
+    jmp       word ptr DGROUP:L$2
+    jmp       dword ptr DGROUP:L$2
+    jmp       fword ptr DGROUP:L$2
+    jmp       word ptr DGROUP:foo+2
+    jmp       dword ptr DGROUP:foo+3
+    jmp       fword ptr DGROUP:foo+4
+    jmp       far ptr bar
+    jmp       far ptr bar
+    jmp       far ptr bar+2
+    jmp       far ptr bar+2
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+L$2:
+    DB	0cH, 0, 0, 0, 0, 0, 0, 0
+    DB	0F9H DUP(0,0,0,0,0,0,0,0)
+    DB	0
+
+_DATA		ENDS
+		END

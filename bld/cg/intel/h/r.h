@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Reductions used by the Intel x86 cg (see i86/386table.c).
 *
 ****************************************************************************/
 
 
 _R_( R_CHANGESHIFT,     rCHANGESHIFT ),
+_R_( R_FIXSHIFT,        rFIXSHIFT ),
 _R_( R_CLRHIGH_B,       rCLRHI_BW ),
 _R_( R_CLRHIGH_W,       rCLRHI_BW ),
 _R_( R_CONVERT_LOW,     rCONVERT_LOW ),
@@ -128,3 +128,5 @@ _R_( R_SPLIT8TST,       rSPLIT8TST ),
 _R_( R_SPLIT8CMP,       rSPLIT8CMP ),
 _R_( R_MOVE8LOW,        rMOVE8LOW ),
 _R_( R_CMPCP,           rCMPCP ),
+_R_( R_MOVPTI8,         rMOVPTI8 ),
+_R_( R_MOVI8PT,         rMOVI8PT ),

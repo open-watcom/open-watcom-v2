@@ -1,22 +1,71 @@
-#include "windows.h"
-#include "genwin.h"
+#include <windows.h>
+#include "generic.h"
 
 GenericIcon ICON generic.ico
+
 GenericMenu MENU
 BEGIN
-    POPUP "&Info"
-    BEGIN
-        MENUITEM "&Command line specified...", MENU_CMDSTR
-        MENUITEM "&About Generic...", MENU_ABOUT
-    END
+ POPUP "&Info"
+   BEGIN
+     MENUITEM "&Command line specified...", MENU_CMDSTR
+   END
+ POPUP "&Help"
+   BEGIN
+     MENUITEM "&About Generic...", MENU_ABOUT
+   END
 END
 
-AboutBox DIALOG 22, 17, 144, 75
-        STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
-        CAPTION "About WATCOM Generic"
-        BEGIN
-            CTEXT "WATCOM Generic Program for Windows", -1, 0,  5, 144, 8
-            CTEXT "Version 1.0", -1, 0, 14, 144, 8
-            DEFPUSHBUTTON "OK", IDOK, 53, 59, 32, 14, WS_GROUP
-            ICON "GenericIcon", -1, 15,15,40,40
-        END
+AboutBox DIALOG 20, 10, 144, 75
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About Generic"
+FONT 8, "Helv"
+BEGIN
+  ICON  "GenericIcon",     -1,  6,  6, 40, 40
+  LTEXT "Generic Program", -1, 52,  6, 86, 10
+  LTEXT "Version 1.0",     -1, 52, 20, 86, 10
+  DEFPUSHBUTTON "OK",    IDOK, 44, 56, 50, 14, WS_GROUP
+END
+
+#if defined(__NT__)
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "manifest.xml"
+#endif
+
+/* Version information appears on a tab when  */
+/* file properties is selcted in Explorer.    */
+/* Explicit \0 in each string for WIN16 exe's */
+/* For documentation of the fields, try:      */
+/* http://tinyurl.com/z7377                   */
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILEFLAGSMASK  0x3fL
+#if defined(DEBUG) || defined(_DEBUG)
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+FILEOS         0x4L
+FILETYPE       0x1L
+FILESUBTYPE    0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904b0"
+    BEGIN
+      VALUE "Comments",         "Open Watcom Source Sample\0"
+      VALUE "CompanyName",      "OpenWatcom.org\0"
+      VALUE "FileDescription",  "Generic Windows Sample\0"
+      VALUE "FileVersion",      "1, 0, 0, 0\0"
+      VALUE "InternalName",     "Generic\0"
+      VALUE "LegalCopyright",   "Open Watcom Public License 1.0\0"
+      VALUE "OriginalFilename", "generic.exe\0"
+      VALUE "ProductName",      "Open Watcom C/C++ compilers\0"
+      VALUE "ProductVersion",   "1, 0, 0, 0\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409, 1252
+  END
+END
+

@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stdio.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "carve.h"
 #include "pcheader.h"
@@ -267,7 +268,7 @@ SYMBOL TypeidICAccess( TYPE type )
 
     sym = TypeidAccess( type );
     CgFrontCodePtr( IC_TYPEID_REF, sym );
-    if( ModuleInitScope() == CurrScope ) {
+    if( ModuleInitScope() == GetCurrScope() ) {
         // useless if module fn is generated (which it always will be if there
         // is any code to execute) but if there is no code, any static links
         // to typeids must be satisfied

@@ -1,0 +1,3226 @@
+/*
+ *  ddraw.h     DirectDraw interfaces
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __DDRAW_INCLUDED__
+#define __DDRAW_INCLUDED__
+
+:include readonly.sp
+
+#define COM_NO_WINDOWS_H
+#include <objbase.h>
+
+:include cpluspro.sp
+
+/* Monitor handle data type */
+#if (WINVER < 0x0500)
+DECLARE_HANDLE( HMONITOR );
+#endif
+
+/* DirectDraw interface pointers */
+typedef interface IDirectDraw               *LPDIRECTDRAW;
+typedef interface IDirectDraw2              *LPDIRECTDRAW2;
+typedef interface IDirectDraw4              *LPDIRECTDRAW4;
+typedef interface IDirectDraw7              *LPDIRECTDRAW7;
+typedef interface IDirectDrawSurface        *LPDIRECTDRAWSURFACE;
+typedef interface IDirectDrawSurface2       *LPDIRECTDRAWSURFACE2;
+typedef interface IDirectDrawSurface3       *LPDIRECTDRAWSURFACE3;
+typedef interface IDirectDrawSurface4       *LPDIRECTDRAWSURFACE4;
+typedef interface IDirectDrawSurface7       *LPDIRECTDRAWSURFACE7;
+typedef interface IDirectDrawPalette        *LPDIRECTDRAWPALETTE;
+typedef interface IDirectDrawClipper        *LPDIRECTDRAWCLIPPER;
+typedef interface IDirectDrawColorControl   *LPDIRECTDRAWCOLORCONTROL;
+typedef interface IDirectDrawGammaControl   *LPDIRECTDRAWGAMMACONTROL;
+
+/* DirectDraw structure pointers */
+typedef struct _DDFXROP         *LPDDFXROP;
+typedef struct _DDSURFACEDESC   *LPDDSURFACEDESC;
+typedef struct _DDSURFACEDESC2  *LPDDSURFACEDESC2;
+typedef struct _DDCOLORCONTROL  *LPDDCOLORCONTROL;
+
+/* DirectDraw facility code */
+#define _FACDD  0x0876
+
+/* Macro to make DirectDraw error codes */
+#define MAKE_DDHRESULT( x ) MAKE_HRESULT( 1, _FACDD, x )
+
+/* The following macro makes it possible to disable nameless unions in certain structures
+ * by defining NONAMELESSUNION.
+ */
+#ifndef DUMMYUNIONNAMEN
+    #if defined( __cplusplus ) || !defined( NONAMELESSUNION )
+        #define DUMMYUNIONNAMEN( x )
+    #else
+        #define DUMMYUNIONNAMEN( x )    u##n
+    #endif
+#endif
+
+/* FOURCC codes for DirectDraw */
+#define FOURCC_DXT1 MAKEFOURCC( 'D', 'X', 'T', '1' )
+#define FOURCC_DXT2 MAKEFOURCC( 'D', 'X', 'T', '2' )
+#define FOURCC_DXT3 MAKEFOURCC( 'D', 'X', 'T', '3' )
+#define FOURCC_DXT4 MAKEFOURCC( 'D', 'X', 'T', '4' )
+#define FOURCC_DXT5 MAKEFOURCC( 'D', 'X', 'T', '5' )
+
+/* DirectDrawEnumerateEx() flags */
+#define DDENUM_ATTACHEDSECONDARYDEVICES 0x00000001L
+#define DDENUM_DETACHEDSECONDARYDEVICES 0x00000002L
+#define DDENUM_NONDISPLAYDEVICES        0x00000004L
+
+/* DirectDraw registry keys */
+#define REGSTR_KEY_DDHW_DESCRIPTION "Description"
+#define REGSTR_KEY_DDHW_DRIVERNAME  "DriverName"
+#define REGSTR_PATH_DDHW            "Hardware\\DirectDrawDrivers"
+
+/* DirectDrawCreate() flags */
+#define DDCREATE_HARDWAREONLY   0x00000001L
+#define DDCREATE_EMULATIONONLY  0x00000002L
+
+/* DirectDraw raster operation array size */
+#define DD_ROP_SPACE    8
+
+/* DirectDraw device identifier maximum length */
+#define MAX_DDDEVICEID_STRING   512
+
+/* IDirectDraw4::GetDeviceIdentifier() flags */
+#define DDGDI_GETHOSTIDENTIFIER 0x000000001L
+
+/* Macros to manipulate WHQL levels */
+#define GET_WHQL_YEAR( x )  ((x) / 0x00010000L)
+#define GET_WHQL_MONTH( x ) (((x) / 0x00000100L) & 0x000000FFL)
+#define GET_WHQL_DAY( x )   ((x) & 0x000000FFL)
+
+/* DirectDraw surface description flags */
+#define DDSD_CAPS               0x00000001L
+#define DDSD_HEIGHT             0x00000002L
+#define DDSD_WIDTH              0x00000004L
+#define DDSD_PITCH              0x00000008L
+#define DDSD_BACKBUFFERCOUNT    0x00000020L
+#define DDSD_ZBUFFERBITDEPTH    0x00000040L
+#define DDSD_ALPHABITDEPTH      0x00000080L
+#define DDSD_LPSURFACE          0x00000800L
+#define DDSD_PIXELFORMAT        0x00001000L
+#define DDSD_CKDESTOVERLAY      0x00002000L
+#define DDSD_CKDESTBLT          0x00004000L
+#define DDSD_CKSRCOVERLAY       0x00008000L
+#define DDSD_CKSRCBLT           0x00010000L
+#define DDSD_MIPMAPCOUNT        0x00020000L
+#define DDSD_REFRESHRATE        0x00040000L
+#define DDSD_LINEARSIZE         0x00080000L
+#define DDSD_TEXTURESTAGE       0x00100000L
+#define DDSD_FVF                0x00200000L
+#define DDSD_SRCVBHANDLE        0x00400000L
+#define DDSD_DEPTH              0x00800000L
+#define DDSD_ALL                0x00FFF9EEL
+
+/* DirectDraw optimized surface description flags */
+#define DDOSD_GUID              0x00000001L
+#define DDOSD_COMPRESSION_RATIO 0x00000002L
+#define DDOSD_SCAPS             0x00000004L
+#define DDOSD_OSCAPS            0x00000008L
+#define DDOSD_ALL               0x0000000FL
+
+/* DirectDraw optimized surface capability flags */
+#define DDOSDCAPS_OPTCOMPRESSED     0x00000001L
+#define DDOSDCAPS_OPTREORDERED      0x00000002L
+#define DDOSDCAPS_MONOLITHICMIPMAP  0x00000004L
+#define DDOSDCAPS_VALIDOSCAPS       0x00000007L
+#define DDOSDCAPS_VALIDSCAPS        0x30004800L
+
+/* DirectDraw color control flags */
+#define DDCOLOR_BRIGHTNESS  0x00000001L
+#define DDCOLOR_CONTRAST    0x00000002L
+#define DDCOLOR_HUE         0x00000004L
+#define DDCOLOR_SATURATION  0x00000008L
+#define DDCOLOR_SHARPNESS   0x00000010L
+#define DDCOLOR_GAMMA       0x00000020L
+#define DDCOLOR_COLORENABLE 0x00000040L
+
+/* DirectDraw surface capability flags */
+#define DDSCAPS_ALPHA               0x00000002L
+#define DDSCAPS_BACKBUFFER          0x00000004L
+#define DDSCAPS_COMPLEX             0x00000008L
+#define DDSCAPS_FLIP                0x00000010L
+#define DDSCAPS_FRONTBUFFER         0x00000020L
+#define DDSCAPS_OFFSCREENPLAIN      0x00000040L
+#define DDSCAPS_OVERLAY             0x00000080L
+#define DDSCAPS_PALETTE             0x00000100L
+#define DDSCAPS_PRIMARYSURFACE      0x00000200L
+#define DDSCAPS_PRIMARYSURFACELEFT  0x00000000L
+#define DDSCAPS_SYSTEMMEMORY        0x00000800L
+#define DDSCAPS_TEXTURE             0x00001000L
+#define DDSCAPS_3DDEVICE            0x00002000L
+#define DDSCAPS_VIDEOMEMORY         0x00004000L
+#define DDSCAPS_VISIBLE             0x00008000L
+#define DDSCAPS_WRITEONLY           0x00010000L
+#define DDSCAPS_ZBUFFER             0x00020000L
+#define DDSCAPS_OWNDC               0x00040000L
+#define DDSCAPS_LIVEVIDEO           0x00080000L
+#define DDSCAPS_HWCODEC             0x00100000L
+#define DDSCAPS_MODEX               0x00200000L
+#define DDSCAPS_MIPMAP              0x00400000L
+#define DDSCAPS_ALLOCONLOAD         0x04000000L
+#define DDSCAPS_VIDEOPORT           0x08000000L
+#define DDSCAPS_LOCALVIDMEM         0x10000000L
+#define DDSCAPS_NONLOCALVIDMEM      0x20000000L
+#define DDSCAPS_STANDARDVGAMODE     0x40000000L
+#define DDSCAPS_OPTIMIZED           0x80000000L
+
+/* DirectDraw surface capability flags (level 2) */
+#define DDSCAPS2_HARDWAREDEINTERLACE    0x00000000L
+#define DDSCAPS2_HINTDYNAMIC            0x00000004L
+#define DDSCAPS2_HINTSTATIC             0x00000008L
+#define DDSCAPS2_TEXTUREMANAGE          0x00000010L
+#define DDSCAPS2_OPAQUE                 0x00000080L
+#define DDSCAPS2_HINTANTIALIASING       0x00000100L
+#define DDSCAPS2_CUBEMAP                0x00000200L
+#define DDSCAPS2_CUBEMAP_POSITIVEX      0x00000400L
+#define DDSCAPS2_CUBEMAP_NEGATIVEX      0x00000800L
+#define DDSCAPS2_CUBEMAP_POSITIVEY      0x00001000L
+#define DDSCAPS2_CUBEMAP_NEGATIVEY      0x00002000L
+#define DDSCAPS2_CUBEMAP_POSITIVEZ      0x00004000L
+#define DDSCAPS2_CUBEMAP_NEGATIVEZ      0x00008000L
+#define DDSCAPS2_CUBEMAP_ALLFACES \
+    (DDSCAPS2_CUBEMAP_POSITIVEX | DDSCAPS2_CUBEMAP_NEGATIVEX | \
+    DDSCAPS2_CUBEMAP_POSITIVEY | DDSCAPS2_CUBEMAP_NEGATIVEY | \
+    DDSCAPS2_CUBEMAP_POSITIVEZ | DDSCAPS2_CUBEMAP_NEGATIVEZ)
+#define DDSCAPS2_MIPMAPSUBLEVEL         0x00010000L
+#define DDSCAPS2_D3DTEXTUREMANAGE       0x00020000L
+#define DDSCAPS2_DONOTPERSIST           0x00040000L
+#define DDSCAPS2_STEREOSURFACELEFT      0x00080000L
+#define DDSCAPS2_VOLUME                 0x00200000L
+#define DDSCAPS2_NOTUSERLOCKABLE        0x00400000L
+#define DDSCAPS2_POINTS                 0x00800000L
+#define DDSCAPS2_RTPATCHES              0x01000000L
+#define DDSCAPS2_NPATCHES               0x02000000L
+#define DDSCAPS2_DISCARDBACKBUFFER      0x10000000L
+#define DDSCAPS2_ENABLEALPHACHANNEL     0x20000000L
+#define DDSCAPS2_EXTENDEDFORMATPRIMARY  0x40000000L
+#define DDSCAPS2_ADDITIONALPRIMARY      0x80000000L
+
+/* DirectDraw surface capability flags (level 3) */
+#define DDSCAPS3_MULTISAMPLE_MASK           0x0000001FL
+#define DDSCAPS3_MULTISAMPLE_QUALITY_MASK   0x000000E0L
+#define DDSCAPS3_MULTISAMPLE_QUALITY_SHIFT  5
+#define DDSCAPS3_LIGHTWEIGHTMIPMAP          0x00000400L
+#define DDSCAPS3_AUTOGENMIPMAP              0x00000800L
+#define DDSCAPS3_DMAP                       0x00001000L
+#define DDSCAPS3_CREATESHAREDRESOURCE       0x00002000L
+#define DDSCAPS3_READONLYRESOURCE           0x00004000L
+#define DDSCAPS3_OPENSHAREDRESOURCE         0x00008000L
+
+/* DirectDraw driver capability flags */
+#define DDCAPS_3D                   0x00000001L
+#define DDCAPS_ALIGNBOUNDARYDEST    0x00000002L
+#define DDCAPS_ALIGNSIZEDEST        0x00000004L
+#define DDCAPS_ALIGNBOUNDARYSRC     0x00000008L
+#define DDCAPS_ALIGNSIZESRC         0x00000010L
+#define DDCAPS_ALIGNSTRIDE          0x00000020L
+#define DDCAPS_BLT                  0x00000040L
+#define DDCAPS_BLTQUEUE             0x00000080L
+#define DDCAPS_BLTFOURCC            0x00000100L
+#define DDCAPS_BLTSTRETCH           0x00000200L
+#define DDCAPS_GDI                  0x00000400L
+#define DDCAPS_OVERLAY              0x00000800L
+#define DDCAPS_OVERLAYCANTCLIP      0x00001000L
+#define DDCAPS_OVERLAYFOURCC        0x00002000L
+#define DDCAPS_OVERLAYSTRETCH       0x00004000L
+#define DDCAPS_PALETTE              0x00008000L
+#define DDCAPS_PALETTEVSYNC         0x00010000L
+#define DDCAPS_READSCANLINE         0x00020000L
+#define DDCAPS_VBI                  0x00080000L
+#define DDCAPS_ZBLTS                0x00100000L
+#define DDCAPS_ZOVERLAYS            0x00200000L
+#define DDCAPS_COLORKEY             0x00400000L
+#define DDCAPS_ALPHA                0x00800000L
+#define DDCAPS_COLORKEYHWASSIST     0x01000000L
+#define DDCAPS_NOHARDWARE           0x02000000L
+#define DDCAPS_BLTCOLORFILL         0x04000000L
+#define DDCAPS_BANKSWITCHED         0x08000000L
+#define DDCAPS_BLTDEPTHFILL         0x10000000L
+#define DDCAPS_CANCLIP              0x20000000L
+#define DDCAPS_CANCLIPSTRETCHED     0x40000000L
+#define DDCAPS_CANBLTSYSMEM         0x80000000L
+
+/* DirectDraw driver capability flags (level 2) */
+#define DDCAPS2_CERTIFIED                   0x00000001L
+#define DDCAPS2_NO2DDURING3DSCENE           0x00000002L
+#define DDCAPS2_VIDEOPORT                   0x00000004L
+#define DDCAPS2_AUTOFLIPOVERLAY             0x00000008L
+#define DDCAPS2_CANBOBINTERLEAVED           0x00000010L
+#define DDCAPS2_CANBOBNONINTERLEAVED        0x00000020L
+#define DDCAPS2_COLORCONTROLOVERLAY         0x00000040L
+#define DDCAPS2_COLORCONTROLPRIMARY         0x00000080L
+#define DDCAPS2_CANDROPZ16BIT               0x00000100L
+#define DDCAPS2_NONLOCALVIDMEM              0x00000200L
+#define DDCAPS2_NONLOCALVIDMEMCAPS          0x00000400L
+#define DDCAPS2_NOPAGELOCKREQUIRED          0x00000800L
+#define DDCAPS2_WIDESURFACES                0x00001000L
+#define DDCAPS2_CANFLIPODDEVEN              0x00002000L
+#define DDCAPS2_CANBOBHARDWARE              0x00004000L
+#define DDCAPS2_COPYFOURCC                  0x00008000L
+#define DDCAPS2_PRIMARYGAMMA                0x00020000L
+#define DDCAPS2_CANRENDERWINDOWED           0x00080000L
+#define DDCAPS2_CANCALIBRATEGAMMA           0x00100000L
+#define DDCAPS2_FLIPINTERVAL                0x00200000L
+#define DDCAPS2_FLIPNOVSYNC                 0x00400000L
+#define DDCAPS2_CANMANAGETEXTURE            0x00800000L
+#define DDCAPS2_TEXTMANINNONLOCALVIDMEM     0x01000000L
+#define DDCAPS2_STEREO                      0x02000000L
+#define DDCAPS2_SYSTONONLOCAL_AS_SYSTOLOCAL 0x04000000L
+#define DDCAPS2_CANMANAGERESOURCE           0x10000000L
+#define DDCAPS2_DYNAMICTEXTURES             0x20000000L
+#define DDCAPS2_CANAUTOGENMIPMAP            0x40000000L
+#define DDCAPS2_CANSHARERESOURCE            0x80000000L
+
+/* DirectDraw effects alpha capability flags */
+#define DDFXALPHACAPS_BLTALPHAEDGEBLEND         0x00000001L
+#define DDFXALPHACAPS_BLTALPHAPIXELS            0x00000002L
+#define DDFXALPHACAPS_BLTALPHAPIXELSNEG         0x00000004L
+#define DDFXALPHACAPS_BLTALPHASURFACES          0x00000008L
+#define DDFXALPHACAPS_BLTALPHASURFACESNEG       0x00000010L
+#define DDFXALPHACAPS_OVERLAYALPHAEDGEBLEND     0x00000020L
+#define DDFXALPHACAPS_OVERLAYALPHAPIXELS        0x00000040L
+#define DDFXALPHACAPS_OVERLAYALPHAPIXELSNEG     0x00000080L
+#define DDFXALPHACAPS_OVERLAYALPHASURFACES      0x00000100L
+#define DDFXALPHACAPS_OVERLAYALPHASURFACESNEG   0x00000200L
+
+/* DirectDraw effects capability flags */
+#define DDFXCAPS_BLTARITHSTRETCHY       0x00000020L
+#define DDFXCAPS_BLTARITHSTRETCHYN      0x00000010L
+#define DDFXCAPS_BLTMIRRORLEFTRIGHT     0x00000040L
+#define DDFXCAPS_BLTMIRRORUPDOWN        0x00000080L
+#define DDFXCAPS_BLTROTATION            0x00000100L
+#define DDFXCAPS_BLTROTATION90          0x00000200L
+#define DDFXCAPS_BLTSHRINKX             0x00000400L
+#define DDFXCAPS_BLTSHRINKXN            0x00000800L
+#define DDFXCAPS_BLTSHRINKY             0x00001000L
+#define DDFXCAPS_BLTSHRINKYN            0x00002000L
+#define DDFXCAPS_BLTSTRETCHX            0x00004000L
+#define DDFXCAPS_BLTSTRETCHXN           0x00008000L
+#define DDFXCAPS_BLTSTRETCHY            0x00010000L
+#define DDFXCAPS_BLTSTRETCHYN           0x00020000L
+#define DDFXCAPS_OVERLAYARITHSTRETCHY   0x00040000L
+#define DDFXCAPS_OVERLAYARITHSTRETCHYN  0x00000008L
+#define DDFXCAPS_OVERLAYSHRINKX         0x00080000L
+#define DDFXCAPS_OVERLAYSHRINKXN        0x00100000L
+#define DDFXCAPS_OVERLAYSHRINKY         0x00200000L
+#define DDFXCAPS_OVERLAYSHRINKYN        0x00400000L
+#define DDFXCAPS_OVERLAYSTRETCHX        0x00800000L
+#define DDFXCAPS_OVERLAYSTRETCHXN       0x01000000L
+#define DDFXCAPS_OVERLAYSTRETCHY        0x02000000L
+#define DDFXCAPS_OVERLAYSTRETCHYN       0x04000000L
+#define DDFXCAPS_OVERLAYMIRRORLEFTRIGHT 0x08000000L
+#define DDFXCAPS_OVERLAYMIRRORUPDOWN    0x10000000L
+#define DDFXCAPS_OVERLAYDEINTERLACE     0x20000000L
+#define DDFXCAPS_BLTALPHA               0x00000001L
+#define DDFXCAPS_BLTFILTER              DDFXCAPS_BLTARITHSTRETCHY
+#define DDFXCAPS_OVERLAYALPHA           0x00000004L
+#define DDFXCAPS_OVERLAYFILTER          DDFXCAPS_OVERLAYARITHSTRETCHY
+
+/* DirectDraw stereo view capability flags */
+#define DDSVCAPS_STEREOSEQUENTIAL   0x00000010L
+
+/* DirectDraw palette capability flags */
+#define DDPCAPS_4BIT                0x00000001L
+#define DDPCAPS_8BITENTRIES         0x00000002L
+#define DDPCAPS_8BIT                0x00000004L
+#define DDPCAPS_INITIALIZE          0x00000000L
+#define DDPCAPS_PRIMARYSURFACE      0x00000010L
+#define DDPCAPS_PRIMARYSURFACELEFT  0x00000020L
+#define DDPCAPS_ALLOW256            0x00000040L
+#define DDPCAPS_VSYNC               0x00000080L
+#define DDPCAPS_1BIT                0x00000100L
+#define DDPCAPS_2BIT                0x00000200L
+#define DDPCAPS_ALPHA               0x00000400L
+
+/* DirectDraw surface private data flags */
+#define DDSPD_IUNKNOWNPOINTER   0x00000001L
+#define DDSPD_VOLATILE          0x00000002L
+
+/* DirectDraw bit depth flags */
+#define DDBD_1  0x00004000L
+#define DDBD_2  0x00002000L
+#define DDBD_4  0x00001000L
+#define DDBD_8  0x00000800L
+#define DDBD_16 0x00000400L
+#define DDBD_24 0x00000200L
+#define DDBD_32 0x00000100L
+
+/* DirectDraw color key flags */
+#define DDCKEY_COLORSPACE   0x00000001L
+#define DDCKEY_DESTBLT      0x00000002L
+#define DDCKEY_DESTOVERLAY  0x00000004L
+#define DDCKEY_SRCBLT       0x00000008L
+#define DDCKEY_SRCOVERLAY   0x00000010L
+
+/* DirectDraw color key capability flags */
+#define DDCKEYCAPS_DESTBLT                  0x00000001L
+#define DDCKEYCAPS_DESTBLTCLRSPACE          0x00000002L
+#define DDCKEYCAPS_DESTBLTCLRSPACEYUV       0x00000004L
+#define DDCKEYCAPS_DESTBLTYUV               0x00000008L
+#define DDCKEYCAPS_DESTOVERLAY              0x00000010L
+#define DDCKEYCAPS_DESTOVERLAYCLRSPACE      0x00000020L
+#define DDCKEYCAPS_DESTOVERLAYCLRSPACEYUV   0x00000040L
+#define DDCKEYCAPS_DESTOVERLAYONEACTIVE     0x00000080L
+#define DDCKEYCAPS_DESTOVERLAYYUV           0x00000100L
+#define DDCKEYCAPS_SRCBLT                   0x00000200L
+#define DDCKEYCAPS_SRCBLTCLRSPACE           0x00000400L
+#define DDCKEYCAPS_SRCBLTCLRSPACEYUV        0x00000800L
+#define DDCKEYCAPS_SRCBLTYUV                0x00001000L
+#define DDCKEYCAPS_SRCOVERLAY               0x00002000L
+#define DDCKEYCAPS_SRCOVERLAYCLRSPACE       0x00004000L
+#define DDCKEYCAPS_SRCOVERLAYCLRSPACEYUV    0x00008000L
+#define DDCKEYCAPS_SRCOVERLAYONEACTIVE      0x00010000L
+#define DDCKEYCAPS_SRCOVERLAYYUV            0x00020000L
+#define DDCKEYCAPS_NOCOSTOVERLAY            0x00040000L
+
+/* DirectDraw pixel format flags */
+#define DDPF_ALPHAPIXELS        0x00000001L
+#define DDPF_ALPHA              0x00000002L
+#define DDPF_FOURCC             0x00000004L
+#define DDPF_PALETTEINDEXD4     0x00000008L
+#define DDPF_PALETTEINDEXDTO8   0x00000010L
+#define DDPF_PALETTEINDEXD8     0x00000020L
+#define DDPF_RGB                0x00000040L
+#define DDPF_COMPRESSED         0x00000080L
+#define DDPF_RGBTOYUV           0x00000100L
+#define DDPF_YUV                0x00000200L
+#define DDPF_ZBUFFER            0x00000400L
+#define DDPF_PALETTEINDEXED1    0x00000800L
+#define DDPF_PALETTEINDEXED2    0x00001000L
+#define DDPF_ZPIXELS            0x00002000L
+#define DDPF_STENCILBUFFER      0x00004000L
+#define DDPF_ALPHAPREMULT       0x00008000L
+#define DDPF_LUMINANCE          0x00020000L
+#define DDPF_BUMPLUMINANCE      0x00040000L
+#define DDPF_BUMPDUDV           0x00080000L
+
+/* DirectDraw surface enumeration flags */
+#define DDENUMSURFACES_ALL          0x00000001L
+#define DDENUMSURFACES_MATCH        0x00000002L
+#define DDENUMSURFACES_NOMATCH      0x00000004L
+#define DDENUMSURFACES_CANBECREATED 0x00000008L
+#define DDENUMSURFACES_DOESEXIST    0x00000010L
+
+/* IDirectDraw::SetDisplayMode() flags */
+#define DDSDM_STANDARDVGAMODE   0x00000001L
+
+/* DirectDraw display mode enumeration flags */
+#define DDEDM_REFRESHRATES      0x00000001L
+#define DDEDM_STANDARDVGAMODES  0x00000002L
+
+/* IDirectDraw::SetCooperativeLevel() flags */
+#define DDSCL_FULLSCREEN            0x00000001L
+#define DDSCL_ALLOWREBOOT           0x00000002L
+#define DDSCL_NOWINDOWCHANGES       0x00000004L
+#define DDSCL_NORMAL                0x00000008L
+#define DDSCL_EXCLUSIVE             0x00000010L
+#define DDSCL_ALLOWMODEX            0x00000040L
+#define DDSCL_SETFOCUSWINDOW        0x00000080L
+#define DDSCL_SETDEVICEWINDOW       0x00000100L
+#define DDSCL_CREATEDEVICEWINDOW    0x00000200L
+#define DDSCL_MULTITHREADED         0x00000400L
+#define DDSCL_FPUSETUP              0x00000800L
+#define DDSCL_FPURESERVE            0x00001000L
+
+/* DirectDraw block transfer flags */
+#define DDBLT_ALPHADEST                 0x00000001L
+#define DDBLT_ALPHADESTCONSTOVERRIDE    0x00000002L
+#define DDBLT_ALPHADESTNEG              0x00000004L
+#define DDBLT_ALPHADESTSURFACEOVERRIDE  0x00000008L
+#define DDBLT_ALPHAEDGEBLEND            0x00000010L
+#define DDBLT_ALPHASRC                  0x00000020L
+#define DDBLT_ALPHASRCCONSTOVERRIDE     0x00000040L
+#define DDBLT_ALPHASRCNEG               0x00000080L
+#define DDBLT_ALPHASRCSURFACEOVERRIDE   0x00000100L
+#define DDBLT_ASYNC                     0x00000200L
+#define DDBLT_COLORFILL                 0x00000400L
+#define DDBLT_DDFX                      0x00000800L
+#define DDBLT_DDROPS                    0x00001000L
+#define DDBLT_KEYDEST                   0x00002000L
+#define DDBLT_KEYDESTOVERRIDE           0x00004000L
+#define DDBLT_KEYSRC                    0x00008000L
+#define DDBLT_KEYSRCOVERRIDE            0x00010000L
+#define DDBLT_ROP                       0x00020000L
+#define DDBLT_ROTATIONANGLE             0x00040000L
+#define DDBLT_ZBUFFER                   0x00080000L
+#define DDBLT_ZBUFFERDESTCONSTOVERRIDE  0x00100000L
+#define DDBLT_ZBUFFERDESTOVERRIDE       0x00200000L
+#define DDBLT_ZBUFFERSRCCONSTOVERRIDE   0x00400000L
+#define DDBLT_ZBUFFERSRCOVERRIDE        0x00800000L
+#define DDBLT_WAIT                      0x01000000L
+#define DDBLT_DEPTHFILL                 0x02000000L
+#define DDBLT_DONOTWAIT                 0x08000000L
+#define DDBLT_PRESENTATION              0x10000000L
+#define DDBLT_LAST_PRESENTATION         0x20000000L
+#define DDBLT_EXTENDED_FLAGS            0x40000000L
+#define DDBLT_EXTENDED_LIENAR_CONTENT   0x00000004L
+
+/* DirectDraw fast block transfer flags */
+#define DDBLTFAST_NOCOLORKEY    0x00000000L
+#define DDBLTFAST_SRCCOLORKEY   0x00000001L
+#define DDBLTFAST_DESTCOLORKEY  0x00000002L
+#define DDBLTFAST_WAIT          0x00000010L
+#define DDBLTFAST_DONOTWAIT     0x00000020L
+
+/* DirectDraw flip flags */
+#define DDFLIP_WAIT         0x00000001L
+#define DDFLIP_EVEN         0x00000002L
+#define DDFLIP_ODD          0x00000004L
+#define DDFLIP_NOVSYNC      0x00000008L
+#define DDFLIP_INTERVAL2    0x02000000L
+#define DDFLIP_INTERVAL3    0x03000000L
+#define DDFLIP_INTERVAL4    0x04000000L
+#define DDFLIP_STEREO       0x00000010L
+#define DDFLIP_DONOTWAIT    0x00000020L
+
+/* DirectDraw overlay flags */
+#define DDOVER_ALPHADEST                0x00000001L
+#define DDOVER_ALPHADESTCONSTOVERRIDE   0x00000002L
+#define DDOVER_ALPHADESTNEG             0x00000004L
+#define DDOVER_ALPHADESTSURFACEOVERRIDE 0x00000008L
+#define DDOVER_ALPHAEDGEBLEND           0x00000010L
+#define DDOVER_ALPHASRC                 0x00000020L
+#define DDOVER_ALPHASRCCONSTOVERRIDE    0x00000040L
+#define DDOVER_ALPHASRCNEG              0x00000080L
+#define DDOVER_ALPHASRCSURFACEOVERRIDE  0x00000100L
+#define DDOVER_HIDE                     0x00000200L
+#define DDOVER_KEYDEST                  0x00000400L
+#define DDOVER_KEYDESTOVERRIDE          0x00000800L
+#define DDOVER_KEYSRC                   0x00001000L
+#define DDOVER_KEYSRCOVERRIDE           0x00002000L
+#define DDOVER_SHOW                     0x00004000L
+#define DDOVER_ADDDIRTYRECT             0x00008000L
+#define DDOVER_REFRESHDIRTYRECTS        0x00010000L
+#define DDOVER_REFRESHALL               0x00020000L
+#define DDOVER_DDFX                     0x00080000L
+#define DDOVER_AUTOFLIP                 0x00100000L
+#define DDOVER_BOB                      0x00200000L
+#define DDOVER_OVERRIDEBOBWEAVE         0x00400000L
+#define DDOVER_INTERLEAVED              0x00800000L
+#define DDOVER_BOBHARDWARE              0x01000000L
+#define DDOVER_ARGBSCALEFACTORS         0x02000000L
+#define DDOVER_DEGRADEARGBSCALING       0x04000000L
+
+/* IDirectDrawSurface3::SetSurfaceDesc() flags */
+#define DDSETSURFACEDESC_RECREATEDC 0x00000000L
+#define DDSETSURFACEDESC_PRESERVEDC 0x00000001L
+
+/* DirectDraw lock flags */
+#define DDLOCK_SURFACEMEMORYPTR         0x00000000L
+#define DDLOCK_WAIT                     0x00000001L
+#define DDLOCK_EVENT                    0x00000002L
+#define DDLOCK_READONLY                 0x00000010L
+#define DDLOCK_WRITEONLY                0x00000020L
+#define DDLOCK_NOSYSLOCK                0x00000800L
+#define DDLOCK_NOOVERWRITE              0x00001000L
+#define DDLOCK_DISCARDCONTENTS          0x00002000L
+#define DDLOCK_OKTOSWAP                 0x00002000L
+#define DDLOCK_DONOTWAIT                0x00004000L
+#define DDLOCK_HASVOLUMETEXTUREBOXRECT  0x00008000L
+#define DDLOCK_NODIRTYUPDATE            0x00010000L
+
+/* DirectDraw block transfer effects flags */
+#define DDBLTFX_ARITHSTRETCHY   0x00000001L
+#define DDBLTFX_MIRRORLEFTRIGHT 0x00000002L
+#define DDBLTFX_MIRRORUPDOWN    0x00000004L
+#define DDBLTFX_NOTEARING       0x00000008L
+#define DDBLTFX_ROTATE180       0x00000010L
+#define DDBLTFX_ROTATE270       0x00000020L
+#define DDBLTFX_ROTATE90        0x00000040L
+#define DDBLTFX_ZBUFFERRANGE    0x00000080L
+#define DDBLTFX_ZBUFFERBASEDEST 0x00000100L
+
+/* DirectDraw overlay effects flags */
+#define DDOVERFX_ARITHSTRETCHY      0x00000001L
+#define DDOVERFX_MIRRORLEFTRIGHT    0x00000002L
+#define DDOVERFX_MIRRORUPDOWN       0x00000004L
+#define DDOVERFX_DEINTERLACE        0x00000008L
+
+/* IDirectDraw::WaitForVerticalBlank() flags */
+#define DDWAITVB_BLOCKBEGIN         0x00000001L
+#define DDWAITVB_BLOCKBEGINEVENT    0x00000002L
+#define DDWAITVB_BLOCKEND           0x00000004L
+
+/* IDirectDrawSurface::GetFlipStatus() flags */
+#define DDGFS_CANFLIP       0x00000001L
+#define DDGFS_ISFLIPDONE    0x00000002L
+
+/* IDirectDrawSurface::GetBltStatus() flags */
+#define DDGBS_CANBLT    0x00000001L
+#define DDGBS_ISBLTDONE 0x00000002L
+
+/* IDirectDrawSurface::EnumOverlayZOrders() flags */
+#define DDENUMOVERLAYZ_BACKTOFRONT  0x00000000L
+#define DDENUMOVERLAYZ_FRONTTOBACK  0x00000001L
+
+/* IDirectDrawSurface::UpdateOverlayZOrder() flags */
+#define DDOVERZ_SENDTOFRONT     0x00000000L
+#define DDOVERZ_SENDTOBACK      0x00000001L
+#define DDOVERZ_MOVEFORWARD     0x00000002L
+#define DDOVERZ_MOVEBACKWARD    0x00000003L
+#define DDOVERZ_INSERTINFRONTOF 0x00000004L
+#define DDOVERZ_INSERTINBACKOF  0x00000005L
+
+/* IDirectDrawGammaControl::SetGammaRamp() flags */
+#define DDSGR_CALIBRATE 0x00000001L
+
+/* IDirectDraw7::StartModeTest() flags */
+#define DDSMT_ISTESTREQUIRED    0x00000001L
+
+/* IDirectDraw7::EvaluateMode() flags */
+#define DDEM_MODEPASSED 0x00000001L
+#define DDEM_MODEFAILED 0x00000002L
+
+/* DirectDraw return codes */
+#define DD_OK       S_OK
+#define DD_FALSE    S_FALSE
+
+/* DirectDraw enumeration callback return codes */
+#define DDENUMRET_CANCEL    0
+#define DDENUMRET_OK        1
+
+/* DirectDraw error codes */
+#define DDERR_ALREADYINITIALIZED            MAKE_DDHRESULT( 5 )
+#define DDERR_CANNOTATTACHSURFACE           MAKE_DDHRESULT( 10 )
+#define DDERR_CANNOTDETACHSURFACE           MAKE_DDHRESULT( 20 )
+#define DDERR_CURRENTLYNOTAVAIL             MAKE_DDHRESULT( 40 )
+#define DDERR_EXCEPTION                     MAKE_DDHRESULT( 55 )
+#define DDERR_GENERIC                       E_FAIL
+#define DDERR_HEIGHTALIGN                   MAKE_DDHRESULT( 90 )
+#define DDERR_INCOMPATIBLEPRIMARY           MAKE_DDHRESULT( 95 )
+#define DDERR_INVALIDCAPS                   MAKE_DDHRESULT( 100 )
+#define DDERR_INVALIDCLIPLIST               MAKE_DDHRESULT( 110 )
+#define DDERR_INVALIDMODE                   MAKE_DDHRESULT( 120 )
+#define DDERR_INVALIDOBJECT                 MAKE_DDHRESULT( 130 )
+#define DDERR_INVALIDPARAMS                 E_INVALIDARG
+#define DDERR_INVALIDPIXELFORMAT            MAKE_DDHRESULT( 145 )
+#define DDERR_INVALIDRECT                   MAKE_DDHRESULT( 150 )
+#define DDERR_LOCKEDSURFACES                MAKE_DDHRESULT( 160 )
+#define DDERR_NO3D                          MAKE_DDHRESULT( 170 )
+#define DDERR_NOALPHAHW                     MAKE_DDHRESULT( 180 )
+#define DDERR_NOSTEREOHARDWARE              MAKE_DDHRESULT( 181 )
+#define DDERR_NOSURFACELEFT                 MAKE_DDHRESULT( 182 )
+#define DDERR_NOCLIPLIST                    MAKE_DDHRESULT( 205 )
+#define DDERR_NOCOLORCONVHW                 MAKE_DDHRESULT( 210 )
+#define DDERR_NOCOOPERATIVELEVELSET         MAKE_DDHRESULT( 212 )
+#define DDERR_NOCOLORKEY                    MAKE_DDHRESULT( 215 )
+#define DDERR_NOCOLORKEYHW                  MAKE_DDHRESULT( 220 )
+#define DDERR_NODIRECTDRAWSUPPORT           MAKE_DDHRESULT( 222 )
+#define DDERR_NOEXCLUSIVEMODE               MAKE_DDHRESULT( 225 )
+#define DDERR_NOFLIPHW                      MAKE_DDHRESULT( 230 )
+#define DDERR_NOGDI                         MAKE_DDHRESULT( 240 )
+#define DDERR_NOMIRRORHW                    MAKE_DDHRESULT( 250 )
+#define DDERR_NOTFOUND                      MAKE_DDHRESULT( 255 )
+#define DDERR_NOOVERLAYHW                   MAKE_DDHRESULT( 260 )
+#define DDERR_OVERLAPPINGRECTS              MAKE_DDHRESULT( 270 )
+#define DDERR_NORASTEROPHW                  MAKE_DDHRESULT( 280 )
+#define DDERR_NOROTATIONHW                  MAKE_DDHRESULT( 290 )
+#define DDERR_NOSTRETCHHW                   MAKE_DDHRESULT( 310 )
+#define DDERR_NOT4BITCOLOR                  MAKE_DDHRESULT( 316 )
+#define DDERR_NOT4BITCOLORINDEX             MAKE_DDHRESULT( 317 )
+#define DDERR_NOT8BITCOLOR                  MAKE_DDHRESULT( 320 )
+#define DDERR_NOTEXTUREHW                   MAKE_DDHRESULT( 330 )
+#define DDERR_NOVSYNCHW                     MAKE_DDHRESULT( 335 )
+#define DDERR_NOZBUFFERHW                   MAKE_DDHRESULT( 340 )
+#define DDERR_NOZOVERLAYHW                  MAKE_DDHRESULT( 350 )
+#define DDERR_OUTOFCAPS                     MAKE_DDHRESULT( 360 )
+#define DDERR_OUTOFMEMORY                   E_OUTOFMEMORY
+#define DDERR_OUTOFVIDEOMEMORY              MAKE_DDHRESULT( 380 )
+#define DDERR_OVERLAYCANTCLIP               MAKE_DDHRESULT( 382 )
+#define DDERR_OVERLAYCOLORKEYONLYONEACTIVE  MAKE_DDHRESULT( 384 )
+#define DDERR_PALETTEBUSY                   MAKE_DDHRESULT( 387 )
+#define DDERR_COLORKEYNOTSET                MAKE_DDHRESULT( 400 )
+#define DDERR_SURFACEALREADYATTACHED        MAKE_DDHRESULT( 410 )
+#define DDERR_SURFACEALREADYDEPENDENT       MAKE_DDHRESULT( 420 )
+#define DDERR_SURFACEBUSY                   MAKE_DDHRESULT( 430 )
+#define DDERR_CANTLOCKSURFACE               MAKE_DDHRESULT( 435 )
+#define DDERR_SURFACEISOBSCURED             MAKE_DDHRESULT( 440 )
+#define DDERR_SURFACELOST                   MAKE_DDHRESULT( 450 )
+#define DDERR_SURFACENOTATTACHED            MAKE_DDHRESULT( 460 )
+#define DDERR_TOOBIGHEIGHT                  MAKE_DDHRESULT( 470 )
+#define DDERR_TOOBIGSIZE                    MAKE_DDHRESULT( 480 )
+#define DDERR_TOOBIGWIDTH                   MAKE_DDHRESULT( 490 )
+#define DDERR_UNSUPPORTED                   E_NOTIMPL
+#define DDERR_UNSUPPORTEDFORMAT             MAKE_DDHRESULT( 510 )
+#define DDERR_UNSUPPORTEDMASK               MAKE_DDHRESULT( 520 )
+#define DDERR_INVALIDSTREAM                 MAKE_DDHRESULT( 521 )
+#define DDERR_VERTICALBLANKINPROGRESS       MAKE_DDHRESULT( 537 )
+#define DDERR_WASSTILLDRAWING               MAKE_DDHRESULT( 540 )
+#define DDERR_DDSCAPSCOMPLEXREQUIRED        MAKE_DDHRESULT( 542 )
+#define DDERR_XALIGN                        MAKE_DDHRESULT( 560 )
+#define DDERR_INVALIDDIRECTDRAWGUID         MAKE_DDHRESULT( 561 )
+#define DDERR_DIRECTDRAWALREADYCREATED      MAKE_DDHRESULT( 562 )
+#define DDERR_NODIRECTDRAWHW                MAKE_DDHRESULT( 563 )
+#define DDERR_PRIMARYSURFACEALREADYEXISTS   MAKE_DDHRESULT( 564 )
+#define DDERR_NOEMULATION                   MAKE_DDHRESULT( 565 )
+#define DDERR_REGIONTOOSMALL                MAKE_DDHRESULT( 566 )
+#define DDERR_CLIPPERISUSINGHWND            MAKE_DDHRESULT( 567 )
+#define DDERR_NOCLIPPERATTACHED             MAKE_DDHRESULT( 568 )
+#define DDERR_NOHWND                        MAKE_DDHRESULT( 569 )
+#define DDERR_HWNDSUBCLASSED                MAKE_DDHRESULT( 570 )
+#define DDERR_HWNDALREADYSET                MAKE_DDHRESULT( 571 )
+#define DDERR_NOPALETTEATTACHED             MAKE_DDHRESULT( 572 )
+#define DDERR_NOPALETTEHW                   MAKE_DDHRESULT( 573 )
+#define DDERR_BLTFASTCANTCLIP               MAKE_DDHRESULT( 574 )
+#define DDERR_NOBLTHW                       MAKE_DDHRESULT( 575 )
+#define DDERR_NODDROPSHW                    MAKE_DDHRESULT( 576 )
+#define DDERR_OVERLAYNOTVISIBLE             MAKE_DDHRESULT( 577 )
+#define DDERR_NOOVERLAYDEST                 MAKE_DDHRESULT( 578 )
+#define DDERR_INVALIDPOSITION               MAKE_DDHRESULT( 579 )
+#define DDERR_NOTAOVERLAYSURFACE            MAKE_DDHRESULT( 580 )
+#define DDERR_EXCLUSIVEMODEALREADYSET       MAKE_DDHRESULT( 581 )
+#define DDERR_NOTFLIPPABLE                  MAKE_DDHRESULT( 582 )
+#define DDERR_CANTDUPLICATE                 MAKE_DDHRESULT( 583 )
+#define DDERR_NOTLOCKED                     MAKE_DDHRESULT( 584 )
+#define DDERR_CANTCREATEDC                  MAKE_DDHRESULT( 585 )
+#define DDERR_NODC                          MAKE_DDHRESULT( 586 )
+#define DDERR_WRONGMODE                     MAKE_DDHRESULT( 587 )
+#define DDERR_IMPLICITLYCREATED             MAKE_DDHRESULT( 588 )
+#define DDERR_NOTPALETTIZED                 MAKE_DDHRESULT( 589 )
+#define DDERR_UNSUPPORTEDMODE               MAKE_DDHRESULT( 590 )
+#define DDERR_NOMIPMAPHW                    MAKE_DDHRESULT( 591 )
+#define DDERR_INVALIDSURFACETYPE            MAKE_DDHRESULT( 592 )
+#define DDERR_NOOPTIMIZEHW                  MAKE_DDHRESULT( 600 )
+#define DDERR_NOTLOADED                     MAKE_DDHRESULT( 601 )
+#define DDERR_NOFOCUSWINDOW                 MAKE_DDHRESULT( 602 )
+#define DDERR_NOTONMIPMAPSUBLEVEL           MAKE_DDHRESULT( 603 )
+#define DDERR_DCALREADYCREATED              MAKE_DDHRESULT( 620 )
+#define DDERR_NONONLOCALVIDMEM              MAKE_DDHRESULT( 630 )
+#define DDERR_CANTPAGELOCK                  MAKE_DDHRESULT( 640 )
+#define DDERR_CANTPAGEUNLOCK                MAKE_DDHRESULT( 660 )
+#define DDERR_NOTPAGELOCKED                 MAKE_DDHRESULT( 680 )
+#define DDERR_MOREDATA                      MAKE_DDHRESULT( 690 )
+#define DDERR_EXPIRED                       MAKE_DDHRESULT( 691 )
+#define DDERR_TESTFINISHED                  MAKE_DDHRESULT( 692 )
+#define DDERR_NEWMODE                       MAKE_DDHRESULT( 693 )
+#define DDERR_D3DNOTINITIALIZED             MAKE_DDHRESULT( 694 )
+#define DDERR_VIDEONOTACTIVE                MAKE_DDHRESULT( 695 )
+#define DDERR_NOMONITORINFORMATION          MAKE_DDHRESULT( 696 )
+#define DDERR_NODRIVERSUPPORT               MAKE_DDHRESULT( 697 )
+#define DDERR_DEVICEDOESNTOWNSURFACE        MAKE_DDHRESULT( 699 )
+#define DDERR_NOTINITIALIZED                CO_E_NOTINITIALIZED
+
+/* DirectDraw enumeration callbacks */
+typedef BOOL (PASCAL *LPDDENUMCALLBACKA)( GUID *, LPSTR, LPSTR, LPVOID );
+typedef BOOL (PASCAL *LPDDENUMCALLBACKW)( GUID *, LPWSTR, LPWSTR, LPVOID );
+typedef BOOL (PASCAL *LPDDENUMCALLBACKEXA)( GUID *, LPSTR, LPSTR, LPVOID, HMONITOR );
+typedef BOOL (PASCAL *LPDDENUMCALLBACKEXW)( GUID *, LPWSTR, LPWSTR, LPVOID, HMONITOR );
+typedef HRESULT (PASCAL *LPDDENUMMODESCALLBACK)( LPDDSURFACEDESC, LPVOID );
+typedef HRESULT (PASCAL *LPDDENUMMODESCALLBACK2)( LPDDSURFACEDESC2, LPVOID );
+typedef HRESULT (PASCAL *LPDDENUMSURFACESCALLBACK)( LPDIRECTDRAWSURFACE, LPDDSURFACEDESC, LPVOID );
+typedef HRESULT (PASCAL *LPDDENUMSURFACESCALLBACK2)( LPDIRECTDRAWSURFACE4, LPDDSURFACEDESC2, LPVOID );
+typedef HRESULT (PASCAL *LPDDENUMSURFACESCALLBACK7)( LPDIRECTDRAWSURFACE7, LPDDSURFACEDESC2, LPVOID );
+#ifdef UNICODE
+    #define LPDDENUMCALLBACK    LPDDENUMCALLBACKW;
+    #define LPDDENUMCALLBACKEX  LPDDENUMCALLBACKEXW;
+#else
+    #define LPDDENUMCALLBACK    LPDDENUMCALLBACKA;
+    #define LPDDENUMCALLBACKEX  LPDDENUMCALLBACKEXA;
+#endif
+
+/* DirectDraw alpha/RGB quadruple */
+typedef struct _DDARGB {
+    BYTE    blue;
+    BYTE    green;
+    BYTE    red;
+    BYTE    alpha;
+} DDARGB;
+typedef DDARGB  *LPDDARGB;
+
+/* DirectDraw RGB/alpha quadruple */
+typedef struct _DDRGBA {
+    BYTE    red;
+    BYTE    green;
+    BYTE    blue;
+    BYTE    alpha;
+} DDRGBA;
+typedef DDRGBA  *LPDDRGBA;
+
+/* DirectDraw color key */
+typedef struct _DDCOLORKEY {
+    DWORD   dwColorSpaceLowValue;
+    DWORD   dwColorSpaceHighValue;
+} DDCOLORKEY;
+typedef DDCOLORKEY  *LPDDCOLORKEY;
+
+/* IDirectDrawSurface::Blt() override information */
+typedef struct _DDBLTFX {
+    DWORD       dwSize;
+    DWORD       dwDDFX;
+    DWORD       dwROP;
+    DWORD       dwDDROP;
+    DWORD       dwRotationAngle;
+    DWORD       dwZBufferOpCode;
+    DWORD       dwZBufferLow;
+    DWORD       dwZBufferHigh;
+    DWORD       dwZBufferBaseDest;
+    DWORD       dwZDestConstBitDepth;
+    union {
+        DWORD               dwZDestConst;
+        LPDIRECTDRAWSURFACE lpDDSZBufferDest;
+    } DUMMYUNIONNAMEN( 1 );
+    DWORD       dwZSrcConstBitDepth;
+    union {
+        DWORD               dwZSrcCount;
+        LPDIRECTDRAWSURFACE lpDDSZBufferSrc;
+    } DUMMYUNIONNAMEN( 2 );
+    DWORD       dwAlphaEdgeBlendBitDepth;
+    DWORD       dwAlphaEdgeBlend;
+    DWORD       dwReserved;
+    DWORD       dwAlphaDestConstBitDepth;
+    union {
+        DWORD               dwAlphaDestConst;
+        LPDIRECTDRAWSURFACE lpDDSAlphaDest;
+    } DUMMYUNIONNAMEN( 3 );
+    DWORD       dwAlphaSrcConstBitDepth;
+    union {
+        DWORD               dwAlphaSrcConst;
+        LPDIRECTDRAWSURFACE lpDDSAlphaSrc;
+    } DUMMYUNIONNAMEN( 4 );
+    union {
+        DWORD               dwFillColor;
+        DWORD               dwFillDepth;
+        DWORD               dwFillPixel;
+        LPDIRECTDRAWSURFACE lpDDSPattern;
+    } DUMMYUNIONNAMEN( 5 );
+    DDCOLORKEY  ddckDestColorKey;
+    DDCOLORKEY  ddckSrcColorKey;
+} DDBLTFX;
+typedef DDBLTFX *LPDDBLTFX;
+
+/* DirectDraw surface capabilities */
+typedef struct _DDSCAPS {
+    DWORD   dwCaps;
+} DDSCAPS;
+typedef DDSCAPS     *LPDDSCAPS;
+
+/* DirectDraw optimized surface capabilities */
+typedef struct _DDOSCAPS {
+    DWORD   dwCaps;
+} DDOSCAPS;
+typedef DDOSCAPS    *LPDDOSCAPS;
+
+/* DirectDraw surface capabilities (extended version) */
+typedef struct _DDSCAPSEX {
+    DWORD   dwCaps2;
+    DWORD   dwCaps3;
+    union {
+        DWORD   dwCaps4;
+        DWORD   dwVolumeDepth;
+    } DUMMYUNIONNAMEN( 1 );
+} DDSCAPSEX;
+typedef DDSCAPSEX   *LPDDSCAPSEX;
+
+/* DirectDraw surface capabilities (version 2) */
+typedef struct _DDSCAPS2 {
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCaps3;
+    union {
+        DWORD   dwCaps4;
+        DWORD   dwVolumeDepth;
+    } DUMMYUNIONNAMEN( 1 );
+} DDSCAPS2;
+typedef DDSCAPS2    *LPDDSCAPS2;
+
+/* DirectDraw capabilities for DirectDraw 1.0 */
+typedef struct _DDCAPS_DX1 {
+    DWORD   dwSize;
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCKeyCaps;
+    DWORD   dwFXCaps;
+    DWORD   dwFXAlphaCaps;
+    DWORD   dwPalCaps;
+    DWORD   dwSVCaps;
+    DWORD   dwAlphaBltConstBitDepths;
+    DWORD   dwAlphaBltPixelBitDepths;
+    DWORD   dwAlphaBltSurfaceBitDepths;
+    DWORD   dwAlphaOverlayConstBitDepths;
+    DWORD   dwAlphaOverlayPixelBitDepths;
+    DWORD   dwAlphaOverlaySurfaceBitDepths;
+    DWORD   dwZBufferBitDepths;
+    DWORD   dwVidMemTotal;
+    DWORD   dwVidMemFree;
+    DWORD   dwMaxVisibleOverlays;
+    DWORD   dwCurrVisibleOverlays;
+    DWORD   dwNumFourCCCodes;
+    DWORD   dwAlignBoundarySrc;
+    DWORD   dwAlignSizeSrc;
+    DWORD   dwAlignBoundaryDest;
+    DWORD   dwAlignSizeDest;
+    DWORD   dwAlignStrideAlign;
+    DWORD   dwRops[DD_ROP_SPACE];
+    DDSCAPS ddsCaps;
+    DWORD   dwMinOverlayStretch;
+    DWORD   dwMaxOverlayStretch;
+    DWORD   dwMinLiveVideoStretch;
+    DWORD   dwMaxLiveVideoStretch;
+    DWORD   dwMinHwCodecStretch;
+    DWORD   dwMaxHwCodecStretch;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+    DWORD   dwReserved3;
+} DDCAPS_DX1;
+typedef DDCAPS_DX1  *LPDDCAPS_DX1;
+
+/* DirectDraw capabilities for DirectDraw 3.0 */
+typedef struct _DDCAPS_DX3 {
+    DWORD   dwSize;
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCKeyCaps;
+    DWORD   dwFXCaps;
+    DWORD   dwFXAlphaCaps;
+    DWORD   dwPalCaps;
+    DWORD   dwSVCaps;
+    DWORD   dwAlphaBltConstBitDepths;
+    DWORD   dwAlphaBltPixelBitDepths;
+    DWORD   dwAlphaBltSurfaceBitDepths;
+    DWORD   dwAlphaOverlayConstBitDepths;
+    DWORD   dwAlphaOverlayPixelBitDepths;
+    DWORD   dwAlphaOverlaySurfaceBitDepths;
+    DWORD   dwZBufferBitDepths;
+    DWORD   dwVidMemTotal;
+    DWORD   dwVidMemFree;
+    DWORD   dwMaxVisibleOverlays;
+    DWORD   dwCurrVisibleOverlays;
+    DWORD   dwNumFourCCCodes;
+    DWORD   dwAlignBoundarySrc;
+    DWORD   dwAlignSizeSrc;
+    DWORD   dwAlignBoundaryDest;
+    DWORD   dwAlignSizeDest;
+    DWORD   dwAlignStrideAlign;
+    DWORD   dwRops[DD_ROP_SPACE];
+    DDSCAPS ddsCaps;
+    DWORD   dwMinOverlayStretch;
+    DWORD   dwMaxOverlayStretch;
+    DWORD   dwMinLiveVideoStretch;
+    DWORD   dwMaxLiveVideoStretch;
+    DWORD   dwMinHwCodecStretch;
+    DWORD   dwMaxHwCodecStretch;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+    DWORD   dwReserved3;
+    DWORD   dwSVBCaps;
+    DWORD   dwSVBCKeyCaps;
+    DWORD   dwSVBFXCaps;
+    DWORD   dwSVBRops[DD_ROP_SPACE];
+    DWORD   dwVSBCaps;
+    DWORD   dwVSBCKeyCaps;
+    DWORD   dwVSBFXCaps;
+    DWORD   dwVSBRops[DD_ROP_SPACE];
+    DWORD   dwSSBCaps;
+    DWORD   dwSSBCKeyCaps;
+    DWORD   dwSSBFXCaps;
+    DWORD   dwSSBRops[DD_ROP_SPACE];
+    DWORD   dwReserved4;
+    DWORD   dwReserved5;
+    DWORD   dwReserved6;
+} DDCAPS_DX3;
+typedef DDCAPS_DX3  *LPDDCAPS_DX3;
+
+/* DirectDraw capabilities for DirectDraw 5.0 */
+typedef struct _DDCAPS_DX5 {
+    DWORD   dwSize;
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCKeyCaps;
+    DWORD   dwFXCaps;
+    DWORD   dwFXAlphaCaps;
+    DWORD   dwPalCaps;
+    DWORD   dwSVCaps;
+    DWORD   dwAlphaBltConstBitDepths;
+    DWORD   dwAlphaBltPixelBitDepths;
+    DWORD   dwAlphaBltSurfaceBitDepths;
+    DWORD   dwAlphaOverlayConstBitDepths;
+    DWORD   dwAlphaOverlayPixelBitDepths;
+    DWORD   dwAlphaOverlaySurfaceBitDepths;
+    DWORD   dwZBufferBitDepths;
+    DWORD   dwVidMemTotal;
+    DWORD   dwVidMemFree;
+    DWORD   dwMaxVisibleOverlays;
+    DWORD   dwCurrVisibleOverlays;
+    DWORD   dwNumFourCCCodes;
+    DWORD   dwAlignBoundarySrc;
+    DWORD   dwAlignSizeSrc;
+    DWORD   dwAlignBoundaryDest;
+    DWORD   dwAlignSizeDest;
+    DWORD   dwAlignStrideAlign;
+    DWORD   dwRops[DD_ROP_SPACE];
+    DDSCAPS ddsCaps;
+    DWORD   dwMinOverlayStretch;
+    DWORD   dwMaxOverlayStretch;
+    DWORD   dwMinLiveVideoStretch;
+    DWORD   dwMaxLiveVideoStretch;
+    DWORD   dwMinHwCodecStretch;
+    DWORD   dwMaxHwCodecStretch;
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+    DWORD   dwReserved3;
+    DWORD   dwSVBCaps;
+    DWORD   dwSVBCKeyCaps;
+    DWORD   dwSVBFXCaps;
+    DWORD   dwSVCRops[DD_ROP_SPACE];
+    DWORD   dwVSBCaps;
+    DWORD   dwVSBCKeyCaps;
+    DWORD   dwVSBFXCaps;
+    DWORD   dwVSBRops[DD_ROP_SPACE];
+    DWORD   dwSSBCaps;
+    DWORD   dwSSBCKeyCaps;
+    DWORD   dwSSBFXCaps;
+    DWORD   dwSSBRops[DD_ROP_SPACE];
+    DWORD   dwMaxVideoPorts;
+    DWORD   dwCurrVideoPorts;
+    DWORD   dwSVBCaps2;
+    DWORD   dwNLVBCaps;
+    DWORD   dwNLVBCaps2;
+    DWORD   dwNLVBCKeyCaps;
+    DWORD   dwNLVBFXCaps;
+    DWORD   dwNLVBRops[DD_ROP_SPACE];
+} DDCAPS_DX5;
+typedef DDCAPS_DX5  *LPDDCAPS_DX5;
+
+/* DirectDraw capabilities for DirectDraw 6.0 */
+typedef struct _DDCAPS_DX6 {
+    DWORD       dwSize;
+    DWORD       dwCaps;
+    DWORD       dwCaps2;
+    DWORD       dwCKeyCaps;
+    DWORD       dwFXCaps;
+    DWORD       dwFXAlphaCaps;
+    DWORD       dwPalCaps;
+    DWORD       dwSVCaps;
+    DWORD       dwAlphaBltConstBitDepths;
+    DWORD       dwAlphaBltPixelBitDepths;
+    DWORD       dwAlphaBltSurfaceBitDepths;
+    DWORD       dwAlphaOverlayConstBitDepths;
+    DWORD       dwAlphaOverlayPixelBitDepths;
+    DWORD       dwAlphaOverlaySurfaceBitDepths;
+    DWORD       dwZBufferBitDepths;
+    DWORD       dwVidMemTotal;
+    DWORD       dwVidMemFree;
+    DWORD       dwMaxVisibleOverlays;
+    DWORD       dwCurrVisibleOverlays;
+    DWORD       dwNumFourCCCodes;
+    DWORD       dwAlignBoundarySrc;
+    DWORD       dwAlignSizeSrc;
+    DWORD       dwAlignBoundaryDest;
+    DWORD       dwAlignSizeDest;
+    DWORD       dwAlignStrideAlign;
+    DWORD       dwRops[DD_ROP_SPACE];
+    DDSCAPS     ddsOldCaps;
+    DWORD       dwMinOverlayStretch;
+    DWORD       dwMaxOverlayStretch;
+    DWORD       dwMinLiveVideoStretch;
+    DWORD       dwMaxLiveVideoStretch;
+    DWORD       dwMinHwCodecStretch;
+    DWORD       dwMaxHwCodecStretch;
+    DWORD       dwReserved1;
+    DWORD       dwReserved2;
+    DWORD       dwReserved3;
+    DWORD       dwSVBCaps;
+    DWORD       dwSVBCKeyCaps;
+    DWORD       dwSVBFXCaps;
+    DWORD       dwSVBRops[DD_ROP_SPACE];
+    DWORD       dwVSBCaps;
+    DWORD       dwVSBCKeyCaps;
+    DWORD       dwVSBFXCaps;
+    DWORD       dwVSBRops[DD_ROP_SPACE];
+    DWORD       dwSSBCaps;
+    DWORD       dwSSBCKeyCaps;
+    DWORD       dwSSBFXCaps;
+    DWORD       dwSSBRops[DD_ROP_SPACE];
+    DWORD       dwMaxVideoPorts;
+    DWORD       dwCurrVideoPorts;
+    DWORD       dwSVBCaps2;
+    DWORD       dwNLVBCaps;
+    DWORD       dwNLVBCaps2;
+    DWORD       dwNLVBCKeyCaps;
+    DWORD       dwNLVBFXCaps;
+    DWORD       dwNLVBRops[DD_ROP_SPACE];
+    DDSCAPS2    ddsCaps;
+} DDCAPS_DX6;
+typedef DDCAPS_DX6  *LPDDCAPS_DX6;
+
+/* DirectDraw capabilities for DirectDraw 7.0 */
+typedef struct _DDCAPS_DX7 {
+    DWORD       dwSize;
+    DWORD       dwCaps;
+    DWORD       dwCaps2;
+    DWORD       dwCKeyCaps;
+    DWORD       dwFXCaps;
+    DWORD       dwFXAlphaCaps;
+    DWORD       dwPalCaps;
+    DWORD       dwSVCaps;
+    DWORD       dwAlphaBltConstBitDepths;
+    DWORD       dwAlphaBltPixelBitDepths;
+    DWORD       dwAlphaBltSurfaceBitDepths;
+    DWORD       dwAlphaOverlayConstBitDepths;
+    DWORD       dwAlphaOverlayPixelBitDepths;
+    DWORD       dwAlphaOverlaySurfaceBitDepths;
+    DWORD       dwZBufferBitDepths;
+    DWORD       dwVidMemTotal;
+    DWORD       dwVidMemFree;
+    DWORD       dwMaxVisibleOverlays;
+    DWORD       dwCurrVisibleOverlays;
+    DWORD       dwNumFourCCCodes;
+    DWORD       dwAlignBoundarySrc;
+    DWORD       dwAlignSizeSrc;
+    DWORD       dwAlignBoundaryDest;
+    DWORD       dwAlignSizeDest;
+    DWORD       dwAlignStrideAlign;
+    DWORD       dwRops[DD_ROP_SPACE];
+    DDSCAPS     ddsOldCaps;
+    DWORD       dwMinOverlayStretch;
+    DWORD       dwMaxOverlayStretch;
+    DWORD       dwMinLiveVideoStretch;
+    DWORD       dwMaxLiveVideoStretch;
+    DWORD       dwMinHwCodecStretch;
+    DWORD       dwMaxHwCodecStretch;
+    DWORD       dwReserved1;
+    DWORD       dwReserved2;
+    DWORD       dwReserved3;
+    DWORD       dwSVBCaps;
+    DWORD       dwSVBCKeyCaps;
+    DWORD       dwSVBFXCaps;
+    DWORD       dwSVBRops[DD_ROP_SPACE];
+    DWORD       dwVSBCaps;
+    DWORD       dwVSBCKeyCaps;
+    DWORD       dwVSBFXCaps;
+    DWORD       dwVSBRops[DD_ROP_SPACE];
+    DWORD       dwSSBCaps;
+    DWORD       dwSSBCKeyCaps;
+    DWORD       dwSSBFXCaps;
+    DWORD       dwSSBRops[DD_ROP_SPACE];
+    DWORD       dwMaxVideoPorts;
+    DWORD       dwCurrVideoPorts;
+    DWORD       dwSVBCaps2;
+    DWORD       dwNLVBCaps;
+    DWORD       dwNLVBCaps2;
+    DWORD       dwNLVBCKeyCaps;
+    DWORD       dwNLVBFXCaps;
+    DWORD       dwNLVBRops[DD_ROP_SPACE];
+    DDSCAPS2    ddsCaps;
+} DDCAPS_DX7;
+typedef DDCAPS_DX7  *LPDDCAPS_DX7;
+
+/* Use the correct version of the DirectDraw capabilities data structure. */
+#if (DIRECTDRAW_VERSION <= 0x0300)
+typedef DDCAPS_DX3  DDCAPS;
+#elif (DIRECTDRAW_VERSION <= 0x0500)
+typedef DDCAPS_DX5  DDCAPS;
+#elif (DIRECTDRAW_VERSION <= 0x0600)
+typedef DDCAPS_DX6  DDCAPS;
+#else
+typedef DDCAPS_DX7  DDCAPS;
+#endif
+typedef DDCAPS      *LPDDCAPS;
+
+/* DirectDraw pixel format */
+typedef struct _DDPIXELFORMAT {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    DWORD   dwFourCC;
+    union {
+        DWORD   dwRGBBitCount;
+        DWORD   dwYUVBitCount;
+        DWORD   dwZBufferBitDepth;
+        DWORD   dwAlphaBitDepth;
+        DWORD   dwLuminanceBitCount;
+        DWORD   dwBumpBitCount;
+        DWORD   dwPrivateFormatBitCount;
+    } DUMMYUNIONNAMEN( 1 );
+    union {
+        DWORD   dwRBitMask;
+        DWORD   dwYBitMask;
+        DWORD   dwStencilBitDepth;
+        DWORD   dwLuminanceBitMask;
+        DWORD   dwBumpDuBitMask;
+        DWORD   dwOperations;
+    } DUMMYUNIONNAMEN( 2 );
+    union {
+        DWORD   dwGBitMask;
+        DWORD   dwUBitMask;
+        DWORD   dwZBitMask;
+        DWORD   dwBumpDvBitMask;
+        struct {
+            WORD    wFlipMSTypes;
+            WORD    wBltMSTypes;
+        } MultiSampleCaps;
+    } DUMMYUNIONNAMEN( 3 );
+    union {
+        DWORD   dwBBitMask;
+        DWORD   dwVBitMask;
+        DWORD   dwStencilBitMask;
+        DWORD   dwBumpLuminanceBitMask;
+    } DUMMYUNIONNAMEN( 4 );
+    union {
+        DWORD   dwRGBAlphaBitMask;
+        DWORD   dwYUVAlphaBitMask;
+        DWORD   dwLuminanceAlphaBitMask;
+        DWORD   dwRGBZBitMask;
+        DWORD   dwYUVZBitMask;
+    } DUMMYUNIONNAMEN( 5 );
+} DDPIXELFORMAT;
+typedef DDPIXELFORMAT   *LPDDPIXELFORMAT;
+
+/* DirectDraw overlay effects */
+typedef struct _DDOVERLAYFX {
+    DWORD       dwSize;
+    DWORD       dwAlphaEdgeBlendBitDepth;
+    DWORD       dwAlphaEdgeBlend;
+    DWORD       dwReserved;
+    DWORD       dwAlphaDestConstBitDepth;
+    union {
+        DWORD               dwAlphaDestConst;
+        LPDIRECTDRAWSURFACE lpDDSAlphaDest;
+    } DUMMYUNIONNAMEN( 1 );
+    DWORD       dwAlphaSrcConstBitDepth;
+    union {
+        DWORD               dwAlphaSrcConst;
+        LPDIRECTDRAWSURFACE lpDDSAlphaSrc;
+    } DUMMYUNIONNAMEN( 2 );
+    DDCOLORKEY  dckDestColorKey;
+    DDCOLORKEY  dckSrcColorKey;
+    DWORD       dwDDFX;
+    DWORD       dwFlags;
+} DDOVERLAYFX;
+typedef DDOVERLAYFX *LPDDOVERLAYFX;
+
+/* BltBatch() parameters */
+typedef struct _DDBLTBATCH {
+    LPRECT              lprDest;
+    LPDIRECTDRAWSURFACE lpDDSSrc;
+    LPRECT              lprSrc;
+    DWORD               dwFlags;
+    LPDDBLTFX           lpDDBltFx;
+} DDBLTBATCH;
+typedef DDBLTBATCH  *LPDDBLTBATCH;
+
+/* DirectDraw gamma ramp */
+typedef struct _DDGAMMARAMP {
+    WORD    red[256];
+    WORD    green[256];
+    WORD    blue[256];
+} DDGAMMARAMP;
+typedef DDGAMMARAMP *LPDDGAMMARAMP;
+
+/* DirectDraw device identifier */
+typedef struct tagDDDEVICEIDENTIFIER {
+    char            szDriver[MAX_DDDEVICEID_STRING];
+    char            szDescription[MAX_DDDEVICEID_STRING];
+    LARGE_INTEGER   liDriverVersion;
+    DWORD           dwVendorId;
+    DWORD           dwDeviceId;
+    DWORD           dwSubSysId;
+    DWORD           dwRevision;
+    GUID            guidDeviceIdentifier;
+} DDDEVICEIDENTIFIER;
+typedef DDDEVICEIDENTIFIER  *LPDDDEVICEIDENTIFIER;
+
+/* DirectDraw device identifier (version 2) */
+typedef struct tagDDDEVICEIDENTIFIER2 {
+    char            szDriver[MAX_DDDEVICEID_STRING];
+    char            szDescription[MAX_DDDEVICEID_STRING];
+    LARGE_INTEGER   liDriverVersion;
+    DWORD           dwVendorId;
+    DWORD           dwDeviceId;
+    DWORD           dwSubSysId;
+    DWORD           dwRevision;
+    GUID            guidDeviceIdentifier;
+    DWORD           dwWHQLLevel;
+} DDDEVICEIDENTIFIER2;
+typedef DDDEVICEIDENTIFIER2 *LPDDDEVICEIDENTIFIER2;
+
+/* Callbacks */
+typedef DWORD (PASCAL *LPCLIPPERCALLBACK)( LPDIRECTDRAWCLIPPER, HWND, DWORD, LPVOID );
+#ifdef STREAMING
+typedef DWORD (PASCAL *LPSURFACESTREAMINGCALLBACK)( DWORD );
+#endif
+
+/* DirectDraw surface description */
+typedef struct _DDSURFACEDESC {
+    DWORD           dwSize;
+    DWORD           dwFlags;
+    DWORD           dwHeight;
+    DWORD           dwWidth;
+    union {
+        LONG    lPitch;
+        DWORD   dwLinearSize;
+    } DUMMYUNIONNAMEN( 1 );
+    DWORD           dwBackBufferCount;
+    union {
+        DWORD   dwMipMapCount;
+        DWORD   dwZBufferBitDepth;
+        DWORD   dwRefreshRate;
+    } DUMMYUNIONNAMEN( 2 );
+    DWORD           dwAlphaBitDepth;
+    DWORD           dwReserved;
+    LPVOID          lpSurface;
+    DDCOLORKEY      ddckCKDestOverlay;
+    DDCOLORKEY      ddckCKDestBlt;
+    DDCOLORKEY      ddckCKSrcOverlay;
+    DDCOLORKEY      ddckCKSrcBlt;
+    DDPIXELFORMAT   ddpfPixelFormat;
+    DDSCAPS         ddsCaps;
+} DDSURFACEDESC;
+
+/* DirectDraw surface description (version 2) */
+typedef struct _DDSURFACEDESC2 {
+    DWORD       dwSize;
+    DWORD       dwFlags;
+    DWORD       dwHeight;
+    DWORD       dwWidth;
+    union {
+        LONG    lPitch;
+        DWORD   dwLinearSize;
+    } DUMMYUNIONNAMEN( 1 );
+    union {
+        DWORD   dwBackBufferCount;
+        DWORD   dwDepth;
+    } DUMMYUNIONNAMEN( 5 );
+    union {
+        DWORD   dwMipMapCount;
+        DWORD   dwRefreshRate;
+        DWORD   dwSrcVBHandle;
+    } DUMMYUNIONNAMEN( 2 );
+    DWORD       dwAlphaBitDepth;
+    DWORD       dwReserved;
+    LPVOID      lpSurface;
+    union {
+        DDCOLORKEY  ddckCKDestOverlay;
+        DWORD       dwEmptyFaceColor;
+    } DUMMYUNIONNAMEN( 3 );
+    DDCOLORKEY  ddckCKDestBlt;
+    DDCOLORKEY  ddckCKSrcOverlay;
+    DDCOLORKEY  ddckCKSrcBlt;
+    union {
+        DDPIXELFORMAT   ddpfPixelFormat;
+        DWORD           dwFVF;
+    } DUMMYUNIONNAMEN( 4 );
+    DDSCAPS2    ddsCaps;
+    DWORD       dwTextureStage;
+} DDSURFACEDESC2;
+
+/* DirectDraw optimized surface description */
+typedef struct _DDOPTSURFACEDESC {
+    DWORD       dwSize;
+    DWORD       dwFlags;
+    DDSCAPS2    ddSCaps;
+    DDOSCAPS    ddOSCaps;
+    GUID        guid;
+    DWORD       dwCompressionRatio;
+} DDOPTSURFACEDESC;
+
+/* DirectDraw color control */
+typedef struct _DDCOLORCONTROL {
+    DWORD   dwSize;
+    DWORD   dwFlags;
+    LONG    lBrightness;
+    LONG    lContrast;
+    LONG    lHue;
+    LONG    lSaturation;
+    LONG    lSharpness;
+    LONG    lGamma;
+    LONG    lColorEnable;
+    DWORD   dwReserved1;
+} DDCOLORCONTROL;
+
+/* GUIDs */
+EXTERN_C const CLSID    CLSID_DirectDraw;
+EXTERN_C const CLSID    CLSID_DirectDraw7;
+EXTERN_C const CLSID    CLSID_DirectDrawClipper;
+EXTERN_C const IID      IID_IDirectDraw;
+EXTERN_C const IID      IID_IDirectDraw2;
+EXTERN_C const IID      IID_IDirectDraw4;
+EXTERN_C const IID      IID_IDirectDraw7;
+EXTERN_C const IID      IID_IDirectDrawSurface;
+EXTERN_C const IID      IID_IDirectDrawSurface2;
+EXTERN_C const IID      IID_IDirectDrawSurface3;
+EXTERN_C const IID      IID_IDirectDrawSurface4;
+EXTERN_C const IID      IID_IDirectDrawSurface7;
+EXTERN_C const IID      IID_IDirectDrawPalette;
+EXTERN_C const IID      IID_IDirectDrawClipper;
+EXTERN_C const IID      IID_IDirectDrawColorControl;
+EXTERN_C const IID      IID_IDirectDrawGammaControl;
+
+/* IDirectDraw interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDraw
+DECLARE_INTERFACE_( IDirectDraw, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDraw methods */
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( CreateClipper )( THIS_ DWORD, LPDIRECTDRAWCLIPPER *, IUnknown * ) PURE;
+    STDMETHOD( CreatePalette )( THIS_ DWORD, LPPALETTEENTRY, LPDIRECTDRAWPALETTE, IUnknown * ) PURE;
+    STDMETHOD( CreateSurface )( THIS_ LPDDSURFACEDESC, LPDIRECTDRAWSURFACE *, IUnknown * ) PURE;
+    STDMETHOD( DuplicateSurface )( THIS_ LPDIRECTDRAWSURFACE, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( EnumDisplayModes )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK ) PURE;
+    STDMETHOD( EnumSurfaces )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( FlipToGDISurface )( THIS ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDCAPS, LPDDCAPS ) PURE;
+    STDMETHOD( GetDisplayMode )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( GetFourCCCodes )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetGDISurface )( THIS_ LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetMonitorFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetScanLine )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetVerticalBlankStatus )( THIS_ LPBOOL ) PURE;
+    STDMETHOD( Initialize )( THIS_ GUID * ) PURE;
+    STDMETHOD( RestoreDisplayMode )( THIS ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( SetDisplayMode )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( WaitForVerticalBlank )( THIS_ DWORD, HANDLE ) PURE;
+};
+
+/* IDirectDraw2 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDraw2
+DECLARE_INTERFACE_( IDirectDraw2, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDraw methods */
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( CreateClipper )( THIS_ DWORD, LPDIRECTDRAWCLIPPER *, IUnknown * ) PURE;
+    STDMETHOD( CreatePalette )( THIS_ DWORD, LPPALETTEENTRY, LPDIRECTDRAWPALETTE, IUnknown * ) PURE;
+    STDMETHOD( CreateSurface )( THIS_ LPDDSURFACEDESC, LPDIRECTDRAWSURFACE *, IUnknown * ) PURE;
+    STDMETHOD( DuplicateSurface )( THIS_ LPDIRECTDRAWSURFACE, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( EnumDisplayModes )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK ) PURE;
+    STDMETHOD( EnumSurfaces )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( FlipToGDISurface )( THIS ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDCAPS, LPDDCAPS ) PURE;
+    STDMETHOD( GetDisplayMode )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( GetFourCCCodes )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetGDISurface )( THIS_ LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetMonitorFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetScanLine )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetVerticalBlankStatus )( THIS_ LPBOOL ) PURE;
+    STDMETHOD( Initialize )( THIS_ GUID * ) PURE;
+    STDMETHOD( RestoreDisplayMode )( THIS ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( SetDisplayMode )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( WaitForVerticalBlank )( THIS_ DWORD, HANDLE ) PURE;
+
+    /* IDirectDraw2 methods */
+    STDMETHOD( GetAvailableVidMem )( THIS_ LPDDSCAPS, LPDWORD, LPDWORD ) PURE;
+};
+
+/* IDirectDraw4 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDraw4
+DECLARE_INTERFACE_( IDirectDraw4, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDraw methods */
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( CreateClipper )( THIS_ DWORD, LPDIRECTDRAWCLIPPER *, IUnknown * ) PURE;
+    STDMETHOD( CreatePalette )( THIS_ DWORD, LPPALETTEENTRY, LPDIRECTDRAWPALETTE, IUnknown * ) PURE;
+    STDMETHOD( CreateSurface )( THIS_ LPDDSURFACEDESC, LPDIRECTDRAWSURFACE *, IUnknown * ) PURE;
+    STDMETHOD( DuplicateSurface )( THIS_ LPDIRECTDRAWSURFACE, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( EnumDisplayModes )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK ) PURE;
+    STDMETHOD( EnumSurfaces )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( FlipToGDISurface )( THIS ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDCAPS, LPDDCAPS ) PURE;
+    STDMETHOD( GetDisplayMode )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( GetFourCCCodes )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetGDISurface )( THIS_ LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetMonitorFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetScanLine )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetVerticalBlankStatus )( THIS_ LPBOOL ) PURE;
+    STDMETHOD( Initialize )( THIS_ GUID * ) PURE;
+    STDMETHOD( RestoreDisplayMode )( THIS ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( SetDisplayMode )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( WaitForVerticalBlank )( THIS_ DWORD, HANDLE ) PURE;
+
+    /* IDirectDraw2 methods */
+    STDMETHOD( GetAvailableVidMem )( THIS_ LPDDSCAPS, LPDWORD, LPDWORD ) PURE;
+
+    /* IDirectDraw4 methods */
+    STDMETHOD( GetSurfaceFromDC )( THIS_ HDC, LPDIRECTDRAWSURFACE4 * ) PURE;
+    STDMETHOD( RestoreAllSurfaces )( THIS ) PURE;
+    STDMETHOD( TestCooperativeLevel )( THIS ) PURE;
+    STDMETHOD( GetDeviceIdentifier )( THIS_ LPDDDEVICEIDENTIFIER, DWORD ) PURE;
+};
+
+/* IDirectDraw7 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDraw7
+DECLARE_INTERFACE_( IDirectDraw7, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDraw methods */
+    STDMETHOD( Compact )( THIS ) PURE;
+    STDMETHOD( CreateClipper )( THIS_ DWORD, LPDIRECTDRAWCLIPPER *, IUnknown * ) PURE;
+    STDMETHOD( CreatePalette )( THIS_ DWORD, LPPALETTEENTRY, LPDIRECTDRAWPALETTE, IUnknown * ) PURE;
+    STDMETHOD( CreateSurface )( THIS_ LPDDSURFACEDESC, LPDIRECTDRAWSURFACE *, IUnknown * ) PURE;
+    STDMETHOD( DuplicateSurface )( THIS_ LPDIRECTDRAWSURFACE, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( EnumDisplayModes )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK ) PURE;
+    STDMETHOD( EnumSurfaces )( THIS_ DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( FlipToGDISurface )( THIS ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDCAPS, LPDDCAPS ) PURE;
+    STDMETHOD( GetDisplayMode )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( GetFourCCCodes )( THIS_ LPDWORD, LPDWORD ) PURE;
+    STDMETHOD( GetGDISurface )( THIS_ LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetMonitorFrequency )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetScanLine )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetVerticalBlankStatus )( THIS_ LPBOOL ) PURE;
+    STDMETHOD( Initialize )( THIS_ GUID * ) PURE;
+    STDMETHOD( RestoreDisplayMode )( THIS ) PURE;
+    STDMETHOD( SetCooperativeLevel )( THIS_ HWND, DWORD ) PURE;
+    STDMETHOD( SetDisplayMode )( THIS_ DWORD, DWORD, DWORD ) PURE;
+    STDMETHOD( WaitForVerticalBlank )( THIS_ DWORD, HANDLE ) PURE;
+
+    /* IDirectDraw2 methods */
+    STDMETHOD( GetAvailableVidMem )( THIS_ LPDDSCAPS, LPDWORD, LPDWORD ) PURE;
+
+    /* IDirectDraw4 methods */
+    STDMETHOD( GetSurfaceFromDC )( THIS_ HDC, LPDIRECTDRAWSURFACE4 * ) PURE;
+    STDMETHOD( RestoreAllSurfaces )( THIS ) PURE;
+    STDMETHOD( TestCooperativeLevel )( THIS ) PURE;
+    STDMETHOD( GetDeviceIdentifier )( THIS_ LPDDDEVICEIDENTIFIER, DWORD ) PURE;
+
+    /* IDirectDraw7 methods */
+    STDMETHOD( StartModeTest )( THIS_ LPSIZE, DWORD, DWORD ) PURE;
+    STDMETHOD( EvaluateMode )( THIS_ DWORD, DWORD * ) PURE;
+};
+
+/* IDirectDrawPalette interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawPalette
+DECLARE_INTERFACE_( IDirectDrawPalette, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawPalette methods */
+    STDMETHOD( GetCaps )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( GetEntries )( THIS_ DWORD, DWORD, DWORD, LPPALETTEENTRY ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, DWORD, LPPALETTEENTRY ) PURE;
+    STDMETHOD( SetEntries )( THIS_ DWORD, DWORD, DWORD, LPPALETTEENTRY ) PURE;
+};
+
+/* IDirectDrawClipper interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawClipper
+DECLARE_INTERFACE_( IDirectDrawClipper, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawClipper methods */
+    STDMETHOD( GetClipList )( THIS_ LPRECT, LPRGNDATA, LPDWORD ) PURE;
+    STDMETHOD( GetHWnd )( THIS_ HWND * ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, DWORD ) PURE;
+    STDMETHOD( IsClipListChanged )( THIS_ BOOL * ) PURE;
+    STDMETHOD( SetClipList )( THIS_ LPRGNDATA, DWORD ) PURE;
+    STDMETHOD( SetHWnd )( THIS_ DWORD, HWND ) PURE;
+};
+
+/* IDirectDrawSurface interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawSurface
+DECLARE_INTERFACE_( IDirectDrawSurface, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawSurface methods */
+    STDMETHOD( AddAttachedSurface )( THIS_ LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( AddOverlayDirtyRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( Blt )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX ) PURE;
+    STDMETHOD( BltBatch )( THIS_ LPDDBLTBATCH, DWORD, DWORD ) PURE;
+    STDMETHOD( BltFast )( THIS_ DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD ) PURE;
+    STDMETHOD( DeleteAttachedSurface )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( EnumAttachedSurfaces )( THIS_ LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( EnumOverlayZOrders )( THIS_ DWORD, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( Flip )( THIS_ LPDIRECTDRAWSURFACE, DWORD ) PURE;
+    STDMETHOD( GetAttachedSurface )( THIS_ LPDDSCAPS, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetBltStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDSCAPS ) PURE;
+    STDMETHOD( GetClipper )( THIS_ LPDIRECTDRAWCLIPPER * ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( GetDC )( THIS_ HDC * ) PURE;
+    STDMETHOD( GetFlipStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOverlayPosition )( THIS_ LPLONG, LPLONG ) PURE;
+    STDMETHOD( GetPalette )( THIS_ LPDIRECTDRAWPALETTE * ) PURE;
+    STDMETHOD( GetPixelFormat )( THIS_ LPDDPIXELFORMAT ) PURE;
+    STDMETHOD( GetSurfaceDesc )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, LPDDSURFACEDESC ) PURE;
+    STDMETHOD( IsLost )( THIS ) PURE;
+    STDMETHOD( Lock )( THIS_ LPRECT, LPDDSURFACEDESC, DWORD, HANDLE ) PURE;
+    STDMETHOD( ReleaseDC )( THIS_ HDC ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+    STDMETHOD( SetClipper )( THIS_ LPDIRECTDRAWCLIPPER ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( SetOverlayPosition )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( SetPalette )( THIS_ LPDIRECTDRAWPALETTE ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID ) PURE;
+    STDMETHOD( UpdateOverlay )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, WORD, LPDDOVERLAYFX ) PURE;
+    STDMETHOD( UpdateOverlayDisplay )( THIS_ DWORD ) PURE;
+    STDMETHOD( UpdateOverlayZOrder )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+};
+
+/* IDirectDrawSurface2 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawSurface2
+DECLARE_INTERFACE_( IDirectDrawSurface2, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawSurface methods */
+    STDMETHOD( AddAttachedSurface )( THIS_ LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( AddOverlayDirtyRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( Blt )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX ) PURE;
+    STDMETHOD( BltBatch )( THIS_ LPDDBLTBATCH, DWORD, DWORD ) PURE;
+    STDMETHOD( BltFast )( THIS_ DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD ) PURE;
+    STDMETHOD( DeleteAttachedSurface )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( EnumAttachedSurfaces )( THIS_ LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( EnumOverlayZOrders )( THIS_ DWORD, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( Flip )( THIS_ LPDIRECTDRAWSURFACE, DWORD ) PURE;
+    STDMETHOD( GetAttachedSurface )( THIS_ LPDDSCAPS, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetBltStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDSCAPS ) PURE;
+    STDMETHOD( GetClipper )( THIS_ LPDIRECTDRAWCLIPPER * ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( GetDC )( THIS_ HDC * ) PURE;
+    STDMETHOD( GetFlipStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOverlayPosition )( THIS_ LPLONG, LPLONG ) PURE;
+    STDMETHOD( GetPalette )( THIS_ LPDIRECTDRAWPALETTE * ) PURE;
+    STDMETHOD( GetPixelFormat )( THIS_ LPDDPIXELFORMAT ) PURE;
+    STDMETHOD( GetSurfaceDesc )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, LPDDSURFACEDESC ) PURE;
+    STDMETHOD( IsLost )( THIS ) PURE;
+    STDMETHOD( Lock )( THIS_ LPRECT, LPDDSURFACEDESC, DWORD, HANDLE ) PURE;
+    STDMETHOD( ReleaseDC )( THIS_ HDC ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+    STDMETHOD( SetClipper )( THIS_ LPDIRECTDRAWCLIPPER ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( SetOverlayPosition )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( SetPalette )( THIS_ LPDIRECTDRAWPALETTE ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID ) PURE;
+    STDMETHOD( UpdateOverlay )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, WORD, LPDDOVERLAYFX ) PURE;
+    STDMETHOD( UpdateOverlayDisplay )( THIS_ DWORD ) PURE;
+    STDMETHOD( UpdateOverlayZOrder )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+
+    /* IDirectDrawSurface2 methods */
+    STDMETHOD( GetDDInterface )( THIS_ LPVOID * ) PURE;
+    STDMETHOD( PageLock )( THIS_ DWORD ) PURE;
+    STDMETHOD( PageUnlock )( THIS_ DWORD ) PURE;
+};
+
+/* IDirectDrawSurface3 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawSurface3
+DECLARE_INTERFACE_( IDirectDrawSurface3, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawSurface methods */
+    STDMETHOD( AddAttachedSurface )( THIS_ LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( AddOverlayDirtyRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( Blt )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX ) PURE;
+    STDMETHOD( BltBatch )( THIS_ LPDDBLTBATCH, DWORD, DWORD ) PURE;
+    STDMETHOD( BltFast )( THIS_ DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD ) PURE;
+    STDMETHOD( DeleteAttachedSurface )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( EnumAttachedSurfaces )( THIS_ LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( EnumOverlayZOrders )( THIS_ DWORD, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( Flip )( THIS_ LPDIRECTDRAWSURFACE, DWORD ) PURE;
+    STDMETHOD( GetAttachedSurface )( THIS_ LPDDSCAPS, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetBltStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDSCAPS ) PURE;
+    STDMETHOD( GetClipper )( THIS_ LPDIRECTDRAWCLIPPER * ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( GetDC )( THIS_ HDC * ) PURE;
+    STDMETHOD( GetFlipStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOverlayPosition )( THIS_ LPLONG, LPLONG ) PURE;
+    STDMETHOD( GetPalette )( THIS_ LPDIRECTDRAWPALETTE * ) PURE;
+    STDMETHOD( GetPixelFormat )( THIS_ LPDDPIXELFORMAT ) PURE;
+    STDMETHOD( GetSurfaceDesc )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, LPDDSURFACEDESC ) PURE;
+    STDMETHOD( IsLost )( THIS ) PURE;
+    STDMETHOD( Lock )( THIS_ LPRECT, LPDDSURFACEDESC, DWORD, HANDLE ) PURE;
+    STDMETHOD( ReleaseDC )( THIS_ HDC ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+    STDMETHOD( SetClipper )( THIS_ LPDIRECTDRAWCLIPPER ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( SetOverlayPosition )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( SetPalette )( THIS_ LPDIRECTDRAWPALETTE ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID ) PURE;
+    STDMETHOD( UpdateOverlay )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, WORD, LPDDOVERLAYFX ) PURE;
+    STDMETHOD( UpdateOverlayDisplay )( THIS_ DWORD ) PURE;
+    STDMETHOD( UpdateOverlayZOrder )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+
+    /* IDirectDrawSurface2 methods */
+    STDMETHOD( GetDDInterface )( THIS_ LPVOID * ) PURE;
+    STDMETHOD( PageLock )( THIS_ DWORD ) PURE;
+    STDMETHOD( PageUnlock )( THIS_ DWORD ) PURE;
+
+    /* IDirectDrawSurface3 methods */
+    STDMETHOD( SetSurfaceDesc )( THIS_ LPDDSURFACEDESC, DWORD ) PURE;
+};
+
+/* IDirectDrawSurface4 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawSurface4
+DECLARE_INTERFACE_( IDirectDrawSurface4, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawSurface methods */
+    STDMETHOD( AddAttachedSurface )( THIS_ LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( AddOverlayDirtyRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( Blt )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX ) PURE;
+    STDMETHOD( BltBatch )( THIS_ LPDDBLTBATCH, DWORD, DWORD ) PURE;
+    STDMETHOD( BltFast )( THIS_ DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD ) PURE;
+    STDMETHOD( DeleteAttachedSurface )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( EnumAttachedSurfaces )( THIS_ LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( EnumOverlayZOrders )( THIS_ DWORD, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( Flip )( THIS_ LPDIRECTDRAWSURFACE, DWORD ) PURE;
+    STDMETHOD( GetAttachedSurface )( THIS_ LPDDSCAPS, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetBltStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDSCAPS ) PURE;
+    STDMETHOD( GetClipper )( THIS_ LPDIRECTDRAWCLIPPER * ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( GetDC )( THIS_ HDC * ) PURE;
+    STDMETHOD( GetFlipStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOverlayPosition )( THIS_ LPLONG, LPLONG ) PURE;
+    STDMETHOD( GetPalette )( THIS_ LPDIRECTDRAWPALETTE * ) PURE;
+    STDMETHOD( GetPixelFormat )( THIS_ LPDDPIXELFORMAT ) PURE;
+    STDMETHOD( GetSurfaceDesc )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, LPDDSURFACEDESC ) PURE;
+    STDMETHOD( IsLost )( THIS ) PURE;
+    STDMETHOD( Lock )( THIS_ LPRECT, LPDDSURFACEDESC, DWORD, HANDLE ) PURE;
+    STDMETHOD( ReleaseDC )( THIS_ HDC ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+    STDMETHOD( SetClipper )( THIS_ LPDIRECTDRAWCLIPPER ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( SetOverlayPosition )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( SetPalette )( THIS_ LPDIRECTDRAWPALETTE ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID ) PURE;
+    STDMETHOD( UpdateOverlay )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, WORD, LPDDOVERLAYFX ) PURE;
+    STDMETHOD( UpdateOverlayDisplay )( THIS_ DWORD ) PURE;
+    STDMETHOD( UpdateOverlayZOrder )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+
+    /* IDirectDrawSurface2 methods */
+    STDMETHOD( GetDDInterface )( THIS_ LPVOID * ) PURE;
+    STDMETHOD( PageLock )( THIS_ DWORD ) PURE;
+    STDMETHOD( PageUnlock )( THIS_ DWORD ) PURE;
+
+    /* IDirectDrawSurface3 methods */
+    STDMETHOD( SetSurfaceDesc )( THIS_ LPDDSURFACEDESC, DWORD ) PURE;
+
+    /* IDirectDrawSurface4 methods */
+    STDMETHOD( SetPrivateData )( THIS_ REFGUID, LPVOID, DWORD, DWORD ) PURE;
+    STDMETHOD( GetPrivateData )( THIS_ REFGUID, LPVOID, LPDWORD ) PURE;
+    STDMETHOD( FreePrivateData )( THIS_ REFGUID ) PURE;
+    STDMETHOD( GetUniquenessValue )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( ChangeUniquenessValue )( THIS ) PURE;
+};
+
+/* IDirectDrawSurface7 interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawSurface7
+DECLARE_INTERFACE_( IDirectDrawSurface7, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawSurface methods */
+    STDMETHOD( AddAttachedSurface )( THIS_ LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( AddOverlayDirtyRect )( THIS_ LPRECT ) PURE;
+    STDMETHOD( Blt )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX ) PURE;
+    STDMETHOD( BltBatch )( THIS_ LPDDBLTBATCH, DWORD, DWORD ) PURE;
+    STDMETHOD( BltFast )( THIS_ DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD ) PURE;
+    STDMETHOD( DeleteAttachedSurface )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+    STDMETHOD( EnumAttachedSurfaces )( THIS_ LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( EnumOverlayZOrders )( THIS_ DWORD, LPVOID, LPDDENUMSURFACESCALLBACK ) PURE;
+    STDMETHOD( Flip )( THIS_ LPDIRECTDRAWSURFACE, DWORD ) PURE;
+    STDMETHOD( GetAttachedSurface )( THIS_ LPDDSCAPS, LPDIRECTDRAWSURFACE * ) PURE;
+    STDMETHOD( GetBltStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetCaps )( THIS_ LPDDSCAPS ) PURE;
+    STDMETHOD( GetClipper )( THIS_ LPDIRECTDRAWCLIPPER * ) PURE;
+    STDMETHOD( GetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( GetDC )( THIS_ HDC * ) PURE;
+    STDMETHOD( GetFlipStatus )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOverlayPosition )( THIS_ LPLONG, LPLONG ) PURE;
+    STDMETHOD( GetPalette )( THIS_ LPDIRECTDRAWPALETTE * ) PURE;
+    STDMETHOD( GetPixelFormat )( THIS_ LPDDPIXELFORMAT ) PURE;
+    STDMETHOD( GetSurfaceDesc )( THIS_ LPDDSURFACEDESC ) PURE;
+    STDMETHOD( Initialize )( THIS_ LPDIRECTDRAW, LPDDSURFACEDESC ) PURE;
+    STDMETHOD( IsLost )( THIS ) PURE;
+    STDMETHOD( Lock )( THIS_ LPRECT, LPDDSURFACEDESC, DWORD, HANDLE ) PURE;
+    STDMETHOD( ReleaseDC )( THIS_ HDC ) PURE;
+    STDMETHOD( Restore )( THIS ) PURE;
+    STDMETHOD( SetClipper )( THIS_ LPDIRECTDRAWCLIPPER ) PURE;
+    STDMETHOD( SetColorKey )( THIS_ DWORD, LPDDCOLORKEY ) PURE;
+    STDMETHOD( SetOverlayPosition )( THIS_ LONG, LONG ) PURE;
+    STDMETHOD( SetPalette )( THIS_ LPDIRECTDRAWPALETTE ) PURE;
+    STDMETHOD( Unlock )( THIS_ LPVOID ) PURE;
+    STDMETHOD( UpdateOverlay )( THIS_ LPRECT, LPDIRECTDRAWSURFACE, LPRECT, WORD, LPDDOVERLAYFX ) PURE;
+    STDMETHOD( UpdateOverlayDisplay )( THIS_ DWORD ) PURE;
+    STDMETHOD( UpdateOverlayZOrder )( THIS_ DWORD, LPDIRECTDRAWSURFACE ) PURE;
+
+    /* IDirectDrawSurface2 methods */
+    STDMETHOD( GetDDInterface )( THIS_ LPVOID * ) PURE;
+    STDMETHOD( PageLock )( THIS_ DWORD ) PURE;
+    STDMETHOD( PageUnlock )( THIS_ DWORD ) PURE;
+
+    /* IDirectDrawSurface3 methods */
+    STDMETHOD( SetSurfaceDesc )( THIS_ LPDDSURFACEDESC, DWORD ) PURE;
+
+    /* IDirectDrawSurface4 methods */
+    STDMETHOD( SetPrivateData )( THIS_ REFGUID, LPVOID, DWORD, DWORD ) PURE;
+    STDMETHOD( GetPrivateData )( THIS_ REFGUID, LPVOID, LPDWORD ) PURE;
+    STDMETHOD( FreePrivateData )( THIS_ REFGUID ) PURE;
+    STDMETHOD( GetUniquenessValue )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( ChangeUniquenessValue )( THIS ) PURE;
+
+    /* IDirectDrawSurface7 methods */
+    STDMETHOD( SetPriority )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetPriority )( THIS_ LPDWORD ) PURE;
+    STDMETHOD( SetLOD )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetLOD )( THIS_ LPDWORD ) PURE;
+};
+
+/* IDirectDrawColorControl interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawColorControl
+DECLARE_INTERFACE_( IDirectDrawColorControl, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawColorControl methods */
+    STDMETHOD( GetColorControls )( THIS_ LPDDCOLORCONTROL ) PURE;
+    STDMETHOD( SetColorControls )( THIS_ LPDDCOLORCONTROL ) PURE;
+};
+
+/* IDirectDrawGammaControl interface */
+#undef INTERFACE
+#define INTERFACE   IDirectDrawGammaControl
+DECLARE_INTERFACE_( IDirectDrawGammaControl, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDirectDrawGammaControl methods */
+    STDMETHOD( GetGammaRamp )( THIS_ DWORD, LPDDGAMMARAMP ) PURE;
+    STDMETHOD( SetGammaRamp )( THIS_ DWORD, LPDDGAMMARAMP ) PURE;
+};
+
+/* C/C++ object macros */
+#if !defined( __cplusplus ) || defined( CINTERFACE )
+    #define IDirectDraw_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDraw_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDraw_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDraw_Compact( x ) \
+        (x)->lpVtbl->Compact( x )
+    #define IDirectDraw_CreateClipper( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateClipper( x, p1, p2, p3 )
+    #define IDirectDraw_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreatePalette( x, p1, p2, p3, p4 )
+    #define IDirectDraw_CreateSurface( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSurface( x, p1, p2, p3 )
+    #define IDirectDraw_DuplicateSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DuplicateSurface( x, p1, p2 )
+    #define IDirectDraw_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumDisplayModes( x, p1, p2, p3, p4 )
+    #define IDirectDraw_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumSurfaces( x, p1, p2, p3, p4 )
+    #define IDirectDraw_FlipToGDISurface( x ) \
+        (x)->lpVtbl->FlipToGDISurface( x )
+    #define IDirectDraw_GetCaps( x, p1, p2 ) \
+        (x)->lpVtbl->GetCaps( x, p1, p2 )
+    #define IDirectDraw_GetDisplayMode( x, p ) \
+        (x)->lpVtbl->GetDisplayMode( x, p )
+    #define IDirectDraw_GetFourCCCodes( x, p1, p2 ) \
+        (x)->lpVtbl->GetFourCCCodes( x, p1, p2 )
+    #define IDirectDraw_GetGDISurface( x, p ) \
+        (x)->lpVtbl->GetGDISurface( x, p )
+    #define IDirectDraw_GetMonitorFrequency( x, p ) \
+        (x)->lpVtbl->GetMonitorFrequency( x, p )
+    #define IDirectDraw_GetScanLine( x, p ) \
+        (x)->lpVtbl->GetScanLine( x, p )
+    #define IDirectDraw_GetVerticalBlankStatus( x, p ) \
+        (x)->lpVtbl->GetVerticalBlankStatus( x, p )
+    #define IDirectDraw_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectDraw_RestoreDisplayMode( x ) \
+        (x)->lpVtbl->RestoreDisplayMode( x )
+    #define IDirectDraw_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+    #define IDirectDraw_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetDisplayMode( x, p1, p2, p3 )
+    #define IDirectDraw_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForVerticalBlank( x, p1, p2 )
+    #define IDirectDraw2_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDraw2_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDraw2_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDraw2_Compact( x ) \
+        (x)->lpVtbl->Compact( x )
+    #define IDirectDraw2_CreateClipper( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateClipper( x, p1, p2, p3 )
+    #define IDirectDraw2_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreatePalette( x, p1, p2, p3, p4 )
+    #define IDirectDraw2_CreateSurface( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSurface( x, p1, p2, p3 )
+    #define IDirectDraw2_DuplicateSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DuplicateSurface( x, p1, p2 )
+    #define IDirectDraw2_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumDisplayModes( x, p1, p2, p3, p4 )
+    #define IDirectDraw2_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumSurfaces( x, p1, p2, p3, p4 )
+    #define IDirectDraw2_FlipToGDISurface( x ) \
+        (x)->lpVtbl->FlipToGDISurface( x )
+    #define IDirectDraw2_GetCaps( x, p1, p2 ) \
+        (x)->lpVtbl->GetCaps( x, p1, p2 )
+    #define IDirectDraw2_GetDisplayMode( x, p ) \
+        (x)->lpVtbl->GetDisplayMode( x, p )
+    #define IDirectDraw2_GetFourCCCodes( x, p1, p2 ) \
+        (x)->lpVtbl->GetFourCCCodes( x, p1, p2 )
+    #define IDirectDraw2_GetGDISurface( x, p ) \
+        (x)->lpVtbl->GetGDISurface( x, p )
+    #define IDirectDraw2_GetMonitorFrequency( x, p ) \
+        (x)->lpVtbl->GetMonitorFrequency( x, p )
+    #define IDirectDraw2_GetScanLine( x, p ) \
+        (x)->lpVtbl->GetScanLine( x, p )
+    #define IDirectDraw2_GetVerticalBlankStatus( x, p ) \
+        (x)->lpVtbl->GetVerticalBlankStatus( x, p )
+    #define IDirectDraw2_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectDraw2_RestoreDisplayMode( x ) \
+        (x)->lpVtbl->RestoreDisplayMode( x )
+    #define IDirectDraw2_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+    #define IDirectDraw2_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetDisplayMode( x, p1, p2, p3 )
+    #define IDirectDraw2_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForVerticalBlank( x, p1, p2 )
+    #define IDirectDraw2_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetAvailableVidMem( x, p1, p2, p3 )
+    #define IDirectDraw4_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDraw4_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDraw4_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDraw4_Compact( x ) \
+        (x)->lpVtbl->Compact( x )
+    #define IDirectDraw4_CreateClipper( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateClipper( x, p1, p2, p3 )
+    #define IDirectDraw4_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreatePalette( x, p1, p2, p3, p4 )
+    #define IDirectDraw4_CreateSurface( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSurface( x, p1, p2, p3 )
+    #define IDirectDraw4_DuplicateSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DuplicateSurface( x, p1, p2 )
+    #define IDirectDraw4_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumDisplayModes( x, p1, p2, p3, p4 )
+    #define IDirectDraw4_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumSurfaces( x, p1, p2, p3, p4 )
+    #define IDirectDraw4_FlipToGDISurface( x ) \
+        (x)->lpVtbl->FlipToGDISurface( x )
+    #define IDirectDraw4_GetCaps( x, p1, p2 ) \
+        (x)->lpVtbl->GetCaps( x, p1, p2 )
+    #define IDirectDraw4_GetDisplayMode( x, p ) \
+        (x)->lpVtbl->GetDisplayMode( x, p )
+    #define IDirectDraw4_GetFourCCCodes( x, p1, p2 ) \
+        (x)->lpVtbl->GetFourCCCodes( x, p1, p2 )
+    #define IDirectDraw4_GetGDISurface( x, p ) \
+        (x)->lpVtbl->GetGDISurface( x, p )
+    #define IDirectDraw4_GetMonitorFrequency( x, p ) \
+        (x)->lpVtbl->GetMonitorFrequency( x, p )
+    #define IDirectDraw4_GetScanLine( x, p ) \
+        (x)->lpVtbl->GetScanLine( x, p )
+    #define IDirectDraw4_GetVerticalBlankStatus( x, p ) \
+        (x)->lpVtbl->GetVerticalBlankStatus( x, p )
+    #define IDirectDraw4_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectDraw4_RestoreDisplayMode( x ) \
+        (x)->lpVtbl->RestoreDisplayMode( x )
+    #define IDirectDraw4_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+    #define IDirectDraw4_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetDisplayMode( x, p1, p2, p3 )
+    #define IDirectDraw4_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForVerticalBlank( x, p1, p2 )
+    #define IDirectDraw4_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetAvailableVidMem( x, p1, p2, p3 )
+    #define IDirectDraw4_GetSurfaceFromDC( x, p1, p2 ) \
+        (x)->lpVtbl->GetSurfaceFromDC( x, p1, p2 )
+    #define IDirectDraw4_RestoreAllSurfaces( x ) \
+        (x)->lpVtbl->RestoreAllSurfaces( x )
+    #define IDirectDraw4_TestCooperativeLevel( x ) \
+        (x)->lpVtbl->TestCooperativeLevel( x )
+    #define IDirectDraw4_GetDeviceIdentifier( x, p1, p2 ) \
+        (x)->lpVtbl->GetDeviceIdentifier( x, p1, p2 )
+    #define IDirectDraw7_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDraw7_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDraw7_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDraw7_Compact( x ) \
+        (x)->lpVtbl->Compact( x )
+    #define IDirectDraw7_CreateClipper( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateClipper( x, p1, p2, p3 )
+    #define IDirectDraw7_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->CreatePalette( x, p1, p2, p3, p4 )
+    #define IDirectDraw7_CreateSurface( x, p1, p2, p3 ) \
+        (x)->lpVtbl->CreateSurface( x, p1, p2, p3 )
+    #define IDirectDraw7_DuplicateSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DuplicateSurface( x, p1, p2 )
+    #define IDirectDraw7_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumDisplayModes( x, p1, p2, p3, p4 )
+    #define IDirectDraw7_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->EnumSurfaces( x, p1, p2, p3, p4 )
+    #define IDirectDraw7_FlipToGDISurface( x ) \
+        (x)->lpVtbl->FlipToGDISurface( x )
+    #define IDirectDraw7_GetCaps( x, p1, p2 ) \
+        (x)->lpVtbl->GetCaps( x, p1, p2 )
+    #define IDirectDraw7_GetDisplayMode( x, p ) \
+        (x)->lpVtbl->GetDisplayMode( x, p )
+    #define IDirectDraw7_GetFourCCCodes( x, p1, p2 ) \
+        (x)->lpVtbl->GetFourCCCodes( x, p1, p2 )
+    #define IDirectDraw7_GetGDISurface( x, p ) \
+        (x)->lpVtbl->GetGDISurface( x, p )
+    #define IDirectDraw7_GetMonitorFrequency( x, p ) \
+        (x)->lpVtbl->GetMonitorFrequency( x, p )
+    #define IDirectDraw7_GetScanLine( x, p ) \
+        (x)->lpVtbl->GetScanLine( x, p )
+    #define IDirectDraw7_GetVerticalBlankStatus( x, p ) \
+        (x)->lpVtbl->GetVerticalBlankStatus( x, p )
+    #define IDirectDraw7_Initialize( x, p ) \
+        (x)->lpVtbl->Initialize( x, p )
+    #define IDirectDraw7_RestoreDisplayMode( x ) \
+        (x)->lpVtbl->RestoreDisplayMode( x )
+    #define IDirectDraw7_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->lpVtbl->SetCooperativeLevel( x, p1, p2 )
+    #define IDirectDraw7_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->lpVtbl->SetDisplayMode( x, p1, p2, p3 )
+    #define IDirectDraw7_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->lpVtbl->WaitForVerticalBlank( x, p1, p2 )
+    #define IDirectDraw7_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetAvailableVidMem( x, p1, p2, p3 )
+    #define IDirectDraw7_GetSurfaceFromDC( x, p1, p2 ) \
+        (x)->lpVtbl->GetSurfaceFromDC( x, p1, p2 )
+    #define IDirectDraw7_RestoreAllSurfaces( x ) \
+        (x)->lpVtbl->RestoreAllSurfaces( x )
+    #define IDirectDraw7_TestCooperativeLevel( x ) \
+        (x)->lpVtbl->TestCooperativeLevel( x )
+    #define IDirectDraw7_GetDeviceIdentifier( x, p1, p2 ) \
+        (x)->lpVtbl->GetDeviceIdentifier( x, p1, p2 )
+    #define IDirectDraw7_StartModeTest( x, p1, p2, p3 ) \
+        (x)->lpVtbl->StartModeTest( x, p1, p2, p3 )
+    #define IDirectDraw7_EvaluateMode( x, p1, p2 ) \
+        (x)->lpVtbl->EvaluateMode( x, p1, p2 )
+    #define IDirectDrawPalette_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawPalette_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawPalette_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawPalette_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawPalette_GetEntries( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->GetEntries( x, p1, p2, p3, p4 )
+    #define IDirectDrawPalette_Initialize( x, p1, p2, p3 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2, p3 )
+    #define IDirectDrawPalette_SetEntries( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetEntries( x, p1, p2, p3, p4 )
+    #define IDirectDrawClipper_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawClipper_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawClipper_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawClipper_GetClipList( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetClipList( x, p1, p2, p3 )
+    #define IDirectDrawClipper_GetHWnd( x, p ) \
+        (x)->lpVtbl->GetHWnd( x, p )
+    #define IDirectDrawClipper_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawClipper_IsClipListChanged( x, p ) \
+        (x)->lpVtbl->IsClipListChanged( x, p )
+    #define IDirectDrawClipper_SetClipList( x, p1, p2 ) \
+        (x)->lpVtbl->SetClipList( x, p1, p2 )
+    #define IDirectDrawClipper_SetHWnd( x, p1, p2 ) \
+        (x)->lpVtbl->SetHWnd( x, p1, p2 )
+    #define IDirectDrawSurface_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawSurface_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawSurface_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawSurface_AddAttachedSurface( x, p ) \
+        (x)->lpVtbl->AddAttachedSurface( x, p )
+    #define IDirectDrawSurface_AddOverlayDirtyRect( x, p ) \
+        (x)->lpVtbl->AddOverlayDirtyRect( x, p )
+    #define IDirectDrawSurface_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Blt( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_BltBatch( x, p1, p2, p3 ) \
+        (x)->lpVtbl->BltBatch( x, p1, p2, p3 )
+    #define IDirectDrawSurface_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BltFast( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->lpVtbl->EnumAttachedSurfaces( x, p1, p2 )
+    #define IDirectDrawSurface_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->lpVtbl->EnumOverlayZOrders( x, p1, p2, p3 )
+    #define IDirectDrawSurface_Flip( x, p1, p2 ) \
+        (x)->lpVtbl->Flip( x, p1, p2 )
+    #define IDirectDrawSurface_GetAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface_GetBltStatus( x, p ) \
+        (x)->lpVtbl->GetBltStatus( x, p )
+    #define IDirectDrawSurface_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawSurface_GetClipper( x, p ) \
+        (x)->lpVtbl->GetClipper( x, p )
+    #define IDirectDrawSurface_GetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->GetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface_GetDC( x, p ) \
+        (x)->lpVtbl->GetDC( x, p )
+    #define IDirectDrawSurface_GetFlipStatus( x, p ) \
+        (x)->lpVtbl->GetFlipStatus( x, p )
+    #define IDirectDrawSurface_GetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface_GetPalette( x, p ) \
+        (x)->lpVtbl->GetPalette( x, p )
+    #define IDirectDrawSurface_GetPixelFormat( x, p ) \
+        (x)->lpVtbl->GetPixelFormat( x, p )
+    #define IDirectDrawSurface_GetSurfaceDesc( x, p ) \
+        (x)->lpVtbl->GetSurfaceDesc( x, p )
+    #define IDirectDrawSurface_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawSurface_IsLost( x ) \
+        (x)->lpVtbl->IsLost( x )
+    #define IDirectDrawSurface_Lock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface_ReleaseDC( x, p ) \
+        (x)->lpVtbl->ReleaseDC( x, p )
+    #define IDirectDrawSurface_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectDrawSurface_SetClipper( x, p ) \
+        (x)->lpVtbl->SetClipper( x, p )
+    #define IDirectDrawSurface_SetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->SetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface_SetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->SetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface_SetPalette( x, p ) \
+        (x)->lpVtbl->SetPalette( x, p )
+    #define IDirectDrawSurface_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IDirectDrawSurface_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->UpdateOverlay( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_UpdateOverlayDisplay( x, p ) \
+        (x)->lpVtbl->UpdateOverlayDisplay( x, p )
+    #define IDirectDrawSurface_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->lpVtbl->UpdateOverlayZOrder( x, p1, p2 )
+    #define IDirectDrawSurface2_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawSurface2_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawSurface2_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawSurface2_AddAttachedSurface( x, p ) \
+        (x)->lpVtbl->AddAttachedSurface( x, p )
+    #define IDirectDrawSurface2_AddOverlayDirtyRect( x, p ) \
+        (x)->lpVtbl->AddOverlayDirtyRect( x, p )
+    #define IDirectDrawSurface2_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Blt( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_BltBatch( x, p1, p2, p3 ) \
+        (x)->lpVtbl->BltBatch( x, p1, p2, p3 )
+    #define IDirectDrawSurface2_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BltFast( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface2_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->lpVtbl->EnumAttachedSurfaces( x, p1, p2 )
+    #define IDirectDrawSurface2_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->lpVtbl->EnumOverlayZOrders( x, p1, p2, p3 )
+    #define IDirectDrawSurface2_Flip( x, p1, p2 ) \
+        (x)->lpVtbl->Flip( x, p1, p2 )
+    #define IDirectDrawSurface2_GetAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface2_GetBltStatus( x, p ) \
+        (x)->lpVtbl->GetBltStatus( x, p )
+    #define IDirectDrawSurface2_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawSurface2_GetClipper( x, p ) \
+        (x)->lpVtbl->GetClipper( x, p )
+    #define IDirectDrawSurface2_GetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->GetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface2_GetDC( x, p ) \
+        (x)->lpVtbl->GetDC( x, p )
+    #define IDirectDrawSurface2_GetFlipStatus( x, p ) \
+        (x)->lpVtbl->GetFlipStatus( x, p )
+    #define IDirectDrawSurface2_GetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface2_GetPalette( x, p ) \
+        (x)->lpVtbl->GetPalette( x, p )
+    #define IDirectDrawSurface2_GetPixelFormat( x, p ) \
+        (x)->lpVtbl->GetPixelFormat( x, p )
+    #define IDirectDrawSurface2_GetSurfaceDesc( x, p ) \
+        (x)->lpVtbl->GetSurfaceDesc( x, p )
+    #define IDirectDrawSurface2_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawSurface2_IsLost( x ) \
+        (x)->lpVtbl->IsLost( x )
+    #define IDirectDrawSurface2_Lock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface2_ReleaseDC( x, p ) \
+        (x)->lpVtbl->ReleaseDC( x, p )
+    #define IDirectDrawSurface2_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectDrawSurface2_SetClipper( x, p ) \
+        (x)->lpVtbl->SetClipper( x, p )
+    #define IDirectDrawSurface2_SetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->SetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface2_SetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->SetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface2_SetPalette( x, p ) \
+        (x)->lpVtbl->SetPalette( x, p )
+    #define IDirectDrawSurface2_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IDirectDrawSurface2_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->UpdateOverlay( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_UpdateOverlayDisplay( x, p ) \
+        (x)->lpVtbl->UpdateOverlayDisplay( x, p )
+    #define IDirectDrawSurface2_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->lpVtbl->UpdateOverlayZOrder( x, p1, p2 )
+    #define IDirectDrawSurface2_GetDDInterface( x, p ) \
+        (x)->lpVtbl->GetDDInterface( x, p )
+    #define IDirectDrawSurface2_PageLock( x, p ) \
+        (x)->lpVtbl->PageLock( x, p )
+    #define IDirectDrawSurface2_PageUnlock( x, p ) \
+        (x)->lpVtbl->PageUnlock( x, p )
+    #define IDirectDrawSurface3_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawSurface3_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawSurface3_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawSurface3_AddAttachedSurface( x, p ) \
+        (x)->lpVtbl->AddAttachedSurface( x, p )
+    #define IDirectDrawSurface3_AddOverlayDirtyRect( x, p ) \
+        (x)->lpVtbl->AddOverlayDirtyRect( x, p )
+    #define IDirectDrawSurface3_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Blt( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_BltBatch( x, p1, p2, p3 ) \
+        (x)->lpVtbl->BltBatch( x, p1, p2, p3 )
+    #define IDirectDrawSurface3_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BltFast( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface3_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->lpVtbl->EnumAttachedSurfaces( x, p1, p2 )
+    #define IDirectDrawSurface3_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->lpVtbl->EnumOverlayZOrders( x, p1, p2, p3 )
+    #define IDirectDrawSurface3_Flip( x, p1, p2 ) \
+        (x)->lpVtbl->Flip( x, p1, p2 )
+    #define IDirectDrawSurface3_GetAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface3_GetBltStatus( x, p ) \
+        (x)->lpVtbl->GetBltStatus( x, p )
+    #define IDirectDrawSurface3_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawSurface3_GetClipper( x, p ) \
+        (x)->lpVtbl->GetClipper( x, p )
+    #define IDirectDrawSurface3_GetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->GetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface3_GetDC( x, p ) \
+        (x)->lpVtbl->GetDC( x, p )
+    #define IDirectDrawSurface3_GetFlipStatus( x, p ) \
+        (x)->lpVtbl->GetFlipStatus( x, p )
+    #define IDirectDrawSurface3_GetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface3_GetPalette( x, p ) \
+        (x)->lpVtbl->GetPalette( x, p )
+    #define IDirectDrawSurface3_GetPixelFormat( x, p ) \
+        (x)->lpVtbl->GetPixelFormat( x, p )
+    #define IDirectDrawSurface3_GetSurfaceDesc( x, p ) \
+        (x)->lpVtbl->GetSurfaceDesc( x, p )
+    #define IDirectDrawSurface3_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawSurface3_IsLost( x ) \
+        (x)->lpVtbl->IsLost( x )
+    #define IDirectDrawSurface3_Lock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface3_ReleaseDC( x, p ) \
+        (x)->lpVtbl->ReleaseDC( x, p )
+    #define IDirectDrawSurface3_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectDrawSurface3_SetClipper( x, p ) \
+        (x)->lpVtbl->SetClipper( x, p )
+    #define IDirectDrawSurface3_SetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->SetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface3_SetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->SetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface3_SetPalette( x, p ) \
+        (x)->lpVtbl->SetPalette( x, p )
+    #define IDirectDrawSurface3_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IDirectDrawSurface3_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->UpdateOverlay( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_UpdateOverlayDisplay( x, p ) \
+        (x)->lpVtbl->UpdateOverlayDisplay( x, p )
+    #define IDirectDrawSurface3_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->lpVtbl->UpdateOverlayZOrder( x, p1, p2 )
+    #define IDirectDrawSurface3_GetDDInterface( x, p ) \
+        (x)->lpVtbl->GetDDInterface( x, p )
+    #define IDirectDrawSurface3_PageLock( x, p ) \
+        (x)->lpVtbl->PageLock( x, p )
+    #define IDirectDrawSurface3_PageUnlock( x, p ) \
+        (x)->lpVtbl->PageUnlock( x, p )
+    #define IDirectDrawSurface3_SetSurfaceDesc( x, p1, p2 ) \
+        (x)->lpVtbl->SetSurfaceDesc( x, p1, p2 )
+    #define IDirectDrawSurface4_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawSurface4_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawSurface4_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawSurface4_AddAttachedSurface( x, p ) \
+        (x)->lpVtbl->AddAttachedSurface( x, p )
+    #define IDirectDrawSurface4_AddOverlayDirtyRect( x, p ) \
+        (x)->lpVtbl->AddOverlayDirtyRect( x, p )
+    #define IDirectDrawSurface4_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Blt( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_BltBatch( x, p1, p2, p3 ) \
+        (x)->lpVtbl->BltBatch( x, p1, p2, p3 )
+    #define IDirectDrawSurface4_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BltFast( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface4_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->lpVtbl->EnumAttachedSurfaces( x, p1, p2 )
+    #define IDirectDrawSurface4_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->lpVtbl->EnumOverlayZOrders( x, p1, p2, p3 )
+    #define IDirectDrawSurface4_Flip( x, p1, p2 ) \
+        (x)->lpVtbl->Flip( x, p1, p2 )
+    #define IDirectDrawSurface4_GetAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface4_GetBltStatus( x, p ) \
+        (x)->lpVtbl->GetBltStatus( x, p )
+    #define IDirectDrawSurface4_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawSurface4_GetClipper( x, p ) \
+        (x)->lpVtbl->GetClipper( x, p )
+    #define IDirectDrawSurface4_GetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->GetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface4_GetDC( x, p ) \
+        (x)->lpVtbl->GetDC( x, p )
+    #define IDirectDrawSurface4_GetFlipStatus( x, p ) \
+        (x)->lpVtbl->GetFlipStatus( x, p )
+    #define IDirectDrawSurface4_GetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface4_GetPalette( x, p ) \
+        (x)->lpVtbl->GetPalette( x, p )
+    #define IDirectDrawSurface4_GetPixelFormat( x, p ) \
+        (x)->lpVtbl->GetPixelFormat( x, p )
+    #define IDirectDrawSurface4_GetSurfaceDesc( x, p ) \
+        (x)->lpVtbl->GetSurfaceDesc( x, p )
+    #define IDirectDrawSurface4_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawSurface4_IsLost( x ) \
+        (x)->lpVtbl->IsLost( x )
+    #define IDirectDrawSurface4_Lock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface4_ReleaseDC( x, p ) \
+        (x)->lpVtbl->ReleaseDC( x, p )
+    #define IDirectDrawSurface4_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectDrawSurface4_SetClipper( x, p ) \
+        (x)->lpVtbl->SetClipper( x, p )
+    #define IDirectDrawSurface4_SetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->SetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface4_SetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->SetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface4_SetPalette( x, p ) \
+        (x)->lpVtbl->SetPalette( x, p )
+    #define IDirectDrawSurface4_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IDirectDrawSurface4_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->UpdateOverlay( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_UpdateOverlayDisplay( x, p ) \
+        (x)->lpVtbl->UpdateOverlayDisplay( x, p )
+    #define IDirectDrawSurface4_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->lpVtbl->UpdateOverlayZOrder( x, p1, p2 )
+    #define IDirectDrawSurface4_GetDDInterface( x, p ) \
+        (x)->lpVtbl->GetDDInterface( x, p )
+    #define IDirectDrawSurface4_PageLock( x, p ) \
+        (x)->lpVtbl->PageLock( x, p )
+    #define IDirectDrawSurface4_PageUnlock( x, p ) \
+        (x)->lpVtbl->PageUnlock( x, p )
+    #define IDirectDrawSurface4_SetSurfaceDesc( x, p1, p2 ) \
+        (x)->lpVtbl->SetSurfaceDesc( x, p1, p2 )
+    #define IDirectDrawSurface4_SetPrivateData( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetPrivateData( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface4_GetPrivateData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetPrivateData( x, p1, p2, p3 )
+    #define IDirectDrawSurface4_FreePrivateData( x, p ) \
+        (x)->lpVtbl->FreePrivateData( x, p )
+    #define IDirectDrawSurface4_GetUniquenessValue( x, p ) \
+        (x)->lpVtbl->GetUniquenessValue( x, p )
+    #define IDirectDrawSurface4_ChangeUniquenessValue( x ) \
+        (x)->lpVtbl->ChangeUniquenessValue( x )
+    #define IDirectDrawSurface7_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawSurface7_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawSurface7_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawSurface7_AddAttachedSurface( x, p ) \
+        (x)->lpVtbl->AddAttachedSurface( x, p )
+    #define IDirectDrawSurface7_AddOverlayDirtyRect( x, p ) \
+        (x)->lpVtbl->AddOverlayDirtyRect( x, p )
+    #define IDirectDrawSurface7_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->Blt( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_BltBatch( x, p1, p2, p3 ) \
+        (x)->lpVtbl->BltBatch( x, p1, p2, p3 )
+    #define IDirectDrawSurface7_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->BltFast( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->DeleteAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface7_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->lpVtbl->EnumAttachedSurfaces( x, p1, p2 )
+    #define IDirectDrawSurface7_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->lpVtbl->EnumOverlayZOrders( x, p1, p2, p3 )
+    #define IDirectDrawSurface7_Flip( x, p1, p2 ) \
+        (x)->lpVtbl->Flip( x, p1, p2 )
+    #define IDirectDrawSurface7_GetAttachedSurface( x, p1, p2 ) \
+        (x)->lpVtbl->GetAttachedSurface( x, p1, p2 )
+    #define IDirectDrawSurface7_GetBltStatus( x, p ) \
+        (x)->lpVtbl->GetBltStatus( x, p )
+    #define IDirectDrawSurface7_GetCaps( x, p ) \
+        (x)->lpVtbl->GetCaps( x, p )
+    #define IDirectDrawSurface7_GetClipper( x, p ) \
+        (x)->lpVtbl->GetClipper( x, p )
+    #define IDirectDrawSurface7_GetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->GetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface7_GetDC( x, p ) \
+        (x)->lpVtbl->GetDC( x, p )
+    #define IDirectDrawSurface7_GetFlipStatus( x, p ) \
+        (x)->lpVtbl->GetFlipStatus( x, p )
+    #define IDirectDrawSurface7_GetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->GetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface7_GetPalette( x, p ) \
+        (x)->lpVtbl->GetPalette( x, p )
+    #define IDirectDrawSurface7_GetPixelFormat( x, p ) \
+        (x)->lpVtbl->GetPixelFormat( x, p )
+    #define IDirectDrawSurface7_GetSurfaceDesc( x, p ) \
+        (x)->lpVtbl->GetSurfaceDesc( x, p )
+    #define IDirectDrawSurface7_Initialize( x, p1, p2 ) \
+        (x)->lpVtbl->Initialize( x, p1, p2 )
+    #define IDirectDrawSurface7_IsLost( x ) \
+        (x)->lpVtbl->IsLost( x )
+    #define IDirectDrawSurface7_Lock( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->Lock( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface7_ReleaseDC( x, p ) \
+        (x)->lpVtbl->ReleaseDC( x, p )
+    #define IDirectDrawSurface7_Restore( x ) \
+        (x)->lpVtbl->Restore( x )
+    #define IDirectDrawSurface7_SetClipper( x, p ) \
+        (x)->lpVtbl->SetClipper( x, p )
+    #define IDirectDrawSurface7_SetColorKey( x, p1, p2 ) \
+        (x)->lpVtbl->SetColorKey( x, p1, p2 )
+    #define IDirectDrawSurface7_SetOverlayPosition( x, p1, p2 ) \
+        (x)->lpVtbl->SetOverlayPosition( x, p1, p2 )
+    #define IDirectDrawSurface7_SetPalette( x, p ) \
+        (x)->lpVtbl->SetPalette( x, p )
+    #define IDirectDrawSurface7_Unlock( x, p ) \
+        (x)->lpVtbl->Unlock( x, p )
+    #define IDirectDrawSurface7_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->lpVtbl->UpdateOverlay( x, p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_UpdateOverlayDisplay( x, p ) \
+        (x)->lpVtbl->UpdateOverlayDisplay( x, p )
+    #define IDirectDrawSurface7_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->lpVtbl->UpdateOverlayZOrder( x, p1, p2 )
+    #define IDirectDrawSurface7_GetDDInterface( x, p ) \
+        (x)->lpVtbl->GetDDInterface( x, p )
+    #define IDirectDrawSurface7_PageLock( x, p ) \
+        (x)->lpVtbl->PageLock( x, p )
+    #define IDirectDrawSurface7_PageUnlock( x, p ) \
+        (x)->lpVtbl->PageUnlock( x, p )
+    #define IDirectDrawSurface7_SetSurfaceDesc( x, p1, p2 ) \
+        (x)->lpVtbl->SetSurfaceDesc( x, p1, p2 )
+    #define IDirectDrawSurface7_SetPrivateData( x, p1, p2, p3, p4 ) \
+        (x)->lpVtbl->SetPrivateData( x, p1, p2, p3, p4 )
+    #define IDirectDrawSurface7_GetPrivateData( x, p1, p2, p3 ) \
+        (x)->lpVtbl->GetPrivateData( x, p1, p2, p3 )
+    #define IDirectDrawSurface7_FreePrivateData( x, p ) \
+        (x)->lpVtbl->FreePrivateData( x, p )
+    #define IDirectDrawSurface7_GetUniquenessValue( x, p ) \
+        (x)->lpVtbl->GetUniquenessValue( x, p )
+    #define IDirectDrawSurface7_ChangeUniquenessValue( x ) \
+        (x)->lpVtbl->ChangeUniquenessValue( x )
+    #define IDirectDrawSurface7_SetPriority( x, p ) \
+        (x)->lpVtbl->SetPriority( x, p )
+    #define IDirectDrawSurface7_GetPriority( x, p ) \
+        (x)->lpVtbl->GetPriority( x, p )
+    #define IDirectDrawSurface7_SetLOD( x, p ) \
+        (x)->lpVtbl->SetLOD( x, p )
+    #define IDirectDrawSurface7_GetLOD( x, p ) \
+        (x)->lpVtbl->GetLOD( x, p )
+    #define IDirectDrawColorControl_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawColorControl_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawColorControl_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawColorControl_GetColorControls( x, p ) \
+        (x)->lpVtbl->GetColorControls( x, p )
+    #define IDirectDrawColorControl_SetColorControls( x, p ) \
+        (x)->lpVtbl->SetColorControls( x, p )
+    #define IDirectDrawGammaControl_QueryInterface( x, p1, p2 ) \
+        (x)->lpVtbl->QueryInterface( x, p1, p2 )
+    #define IDirectDrawGammaControl_AddRef( x ) \
+        (x)->lpVtbl->AddRef( x )
+    #define IDirectDrawGammaControl_Release( x ) \
+        (x)->lpVtbl->Release( x )
+    #define IDirectDrawGammaControl_GetGammaRamp( x, p ) \
+        (x)->lpVtbl->GetGammaRamp( x, p )
+    #define IDirectDrawGammaControl_SetGammaRamp( x, p ) \
+        (x)->lpVtbl->SetGammaRamp( x, p )
+#else
+    #define IDirectDraw_QueryInterface( p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDraw_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDraw_Release( x ) \
+        (x)->Release()
+    #define IDirectDraw_Compact( x ) \
+        (x)->Compact()
+    #define IDirectDraw_CreateClipper( x, p1, p2, p3 ) \
+        (x)->CreateClipper( p1, p2, p3 )
+    #define IDirectDraw_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->CreatePalette( p1, p2, p3, p4 )
+    #define IDirectDraw_CreateSurface( x, p1, p2, p3 ) \
+        (x)->CreateSurface( p1, p2, p3 )
+    #define IDirectDraw_DuplicateSurface( x, p1, p2 ) \
+        (x)->DuplicateSurface( p1, p2 )
+    #define IDirectDraw_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->EnumDisplayModes( p1, p2, p3, p4 )
+    #define IDirectDraw_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->EnumSurfaces( p1, p2, p3, p4 )
+    #define IDirectDraw_FlipToGDISurface( x ) \
+        (x)->FlipToGDISurface()
+    #define IDirectDraw_GetCaps( x, p1, p2 ) \
+        (x)->GetCaps( p1, p2 )
+    #define IDirectDraw_GetDisplayMode( x, p ) \
+        (x)->GetDisplayMode( p )
+    #define IDirectDraw_GetFourCCCodes( x, p1, p2 ) \
+        (x)->GetFourCCCodes( p1, p2 )
+    #define IDirectDraw_GetGDISurface( x, p ) \
+        (x)->GetGDISurface( p )
+    #define IDirectDraw_GetMonitorFrequency( x, p ) \
+        (x)->GetMonitorFrequency( p )
+    #define IDirectDraw_GetScanLine( x, p ) \
+        (x)->GetScanLine( p )
+    #define IDirectDraw_GetVerticalBlankStatus( x, p ) \
+        (x)->GetVerticalBlankStatus( p )
+    #define IDirectDraw_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectDraw_RestoreDisplayMode( x ) \
+        (x)->RestoreDisplayMode()
+    #define IDirectDraw_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->SetCooperativeLevel( p1, p2 )
+    #define IDirectDraw_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->SetDisplayMode( p1, p2, p3 )
+    #define IDirectDraw_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->WaitForVerticalBlank( p1, p2 )
+    #define IDirectDraw2_QueryInterface( p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDraw2_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDraw2_Release( x ) \
+        (x)->Release()
+    #define IDirectDraw2_Compact( x ) \
+        (x)->Compact()
+    #define IDirectDraw2_CreateClipper( x, p1, p2, p3 ) \
+        (x)->CreateClipper( p1, p2, p3 )
+    #define IDirectDraw2_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->CreatePalette( p1, p2, p3, p4 )
+    #define IDirectDraw2_CreateSurface( x, p1, p2, p3 ) \
+        (x)->CreateSurface( p1, p2, p3 )
+    #define IDirectDraw2_DuplicateSurface( x, p1, p2 ) \
+        (x)->DuplicateSurface( p1, p2 )
+    #define IDirectDraw2_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->EnumDisplayModes( p1, p2, p3, p4 )
+    #define IDirectDraw2_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->EnumSurfaces( p1, p2, p3, p4 )
+    #define IDirectDraw2_FlipToGDISurface( x ) \
+        (x)->FlipToGDISurface()
+    #define IDirectDraw2_GetCaps( x, p1, p2 ) \
+        (x)->GetCaps( p1, p2 )
+    #define IDirectDraw2_GetDisplayMode( x, p ) \
+        (x)->GetDisplayMode( p )
+    #define IDirectDraw2_GetFourCCCodes( x, p1, p2 ) \
+        (x)->GetFourCCCodes( p1, p2 )
+    #define IDirectDraw2_GetGDISurface( x, p ) \
+        (x)->GetGDISurface( p )
+    #define IDirectDraw2_GetMonitorFrequency( x, p ) \
+        (x)->GetMonitorFrequency( p )
+    #define IDirectDraw2_GetScanLine( x, p ) \
+        (x)->GetScanLine( p )
+    #define IDirectDraw2_GetVerticalBlankStatus( x, p ) \
+        (x)->GetVerticalBlankStatus( p )
+    #define IDirectDraw2_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectDraw2_RestoreDisplayMode( x ) \
+        (x)->RestoreDisplayMode()
+    #define IDirectDraw2_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->SetCooperativeLevel( p1, p2 )
+    #define IDirectDraw2_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->SetDisplayMode( p1, p2, p3 )
+    #define IDirectDraw2_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->WaitForVerticalBlank( p1, p2 )
+    #define IDirectDraw2_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->GetAvailableVidMem( p1, p2, p3 )
+    #define IDirectDraw4_QueryInterface( p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDraw4_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDraw4_Release( x ) \
+        (x)->Release()
+    #define IDirectDraw4_Compact( x ) \
+        (x)->Compact()
+    #define IDirectDraw4_CreateClipper( x, p1, p2, p3 ) \
+        (x)->CreateClipper( p1, p2, p3 )
+    #define IDirectDraw4_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->CreatePalette( p1, p2, p3, p4 )
+    #define IDirectDraw4_CreateSurface( x, p1, p2, p3 ) \
+        (x)->CreateSurface( p1, p2, p3 )
+    #define IDirectDraw4_DuplicateSurface( x, p1, p2 ) \
+        (x)->DuplicateSurface( p1, p2 )
+    #define IDirectDraw4_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->EnumDisplayModes( p1, p2, p3, p4 )
+    #define IDirectDraw4_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->EnumSurfaces( p1, p2, p3, p4 )
+    #define IDirectDraw4_FlipToGDISurface( x ) \
+        (x)->FlipToGDISurface()
+    #define IDirectDraw4_GetCaps( x, p1, p2 ) \
+        (x)->GetCaps( p1, p2 )
+    #define IDirectDraw4_GetDisplayMode( x, p ) \
+        (x)->GetDisplayMode( p )
+    #define IDirectDraw4_GetFourCCCodes( x, p1, p2 ) \
+        (x)->GetFourCCCodes( p1, p2 )
+    #define IDirectDraw4_GetGDISurface( x, p ) \
+        (x)->GetGDISurface( p )
+    #define IDirectDraw4_GetMonitorFrequency( x, p ) \
+        (x)->GetMonitorFrequency( p )
+    #define IDirectDraw4_GetScanLine( x, p ) \
+        (x)->GetScanLine( p )
+    #define IDirectDraw4_GetVerticalBlankStatus( x, p ) \
+        (x)->GetVerticalBlankStatus( p )
+    #define IDirectDraw4_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectDraw4_RestoreDisplayMode( x ) \
+        (x)->RestoreDisplayMode()
+    #define IDirectDraw4_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->SetCooperativeLevel( p1, p2 )
+    #define IDirectDraw4_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->SetDisplayMode( p1, p2, p3 )
+    #define IDirectDraw4_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->WaitForVerticalBlank( p1, p2 )
+    #define IDirectDraw4_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->GetAvailableVidMem( p1, p2, p3 )
+    #define IDirectDraw4_GetSurfaceFromDC( x, p1, p2 ) \
+        (x)->GetSurfaceFromDC( p1, p2 )
+    #define IDirectDraw4_RestoreAllSurface( x ) \
+        (x)->RestoreAllSurface()
+    #define IDirectDraw4_TestCooperativeLevel( x ) \
+        (x)->TestCooperativeLevel()
+    #define IDirectDraw4_GetDeviceIdentifier( x, p1, p2 ) \
+        (x)->GetDeviceIdentifier( p1, p2 )
+    #define IDirectDraw7_QueryInterface( p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDraw7_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDraw7_Release( x ) \
+        (x)->Release()
+    #define IDirectDraw7_Compact( x ) \
+        (x)->Compact()
+    #define IDirectDraw7_CreateClipper( x, p1, p2, p3 ) \
+        (x)->CreateClipper( p1, p2, p3 )
+    #define IDirectDraw7_CreatePalette( x, p1, p2, p3, p4 ) \
+        (x)->CreatePalette( p1, p2, p3, p4 )
+    #define IDirectDraw7_CreateSurface( x, p1, p2, p3 ) \
+        (x)->CreateSurface( p1, p2, p3 )
+    #define IDirectDraw7_DuplicateSurface( x, p1, p2 ) \
+        (x)->DuplicateSurface( p1, p2 )
+    #define IDirectDraw7_EnumDisplayModes( x, p1, p2, p3, p4 ) \
+        (x)->EnumDisplayModes( p1, p2, p3, p4 )
+    #define IDirectDraw7_EnumSurfaces( x, p1, p2, p3, p4 ) \
+        (x)->EnumSurfaces( p1, p2, p3, p4 )
+    #define IDirectDraw7_FlipToGDISurface( x ) \
+        (x)->FlipToGDISurface()
+    #define IDirectDraw7_GetCaps( x, p1, p2 ) \
+        (x)->GetCaps( p1, p2 )
+    #define IDirectDraw7_GetDisplayMode( x, p ) \
+        (x)->GetDisplayMode( p )
+    #define IDirectDraw7_GetFourCCCodes( x, p1, p2 ) \
+        (x)->GetFourCCCodes( p1, p2 )
+    #define IDirectDraw7_GetGDISurface( x, p ) \
+        (x)->GetGDISurface( p )
+    #define IDirectDraw7_GetMonitorFrequency( x, p ) \
+        (x)->GetMonitorFrequency( p )
+    #define IDirectDraw7_GetScanLine( x, p ) \
+        (x)->GetScanLine( p )
+    #define IDirectDraw7_GetVerticalBlankStatus( x, p ) \
+        (x)->GetVerticalBlankStatus( p )
+    #define IDirectDraw7_Initialize( x, p ) \
+        (x)->Initialize( p )
+    #define IDirectDraw7_RestoreDisplayMode( x ) \
+        (x)->RestoreDisplayMode()
+    #define IDirectDraw7_SetCooperativeLevel( x, p1, p2 ) \
+        (x)->SetCooperativeLevel( p1, p2 )
+    #define IDirectDraw7_SetDisplayMode( x, p1, p2, p3 ) \
+        (x)->SetDisplayMode( p1, p2, p3 )
+    #define IDirectDraw7_WaitForVerticalBlank( x, p1, p2 ) \
+        (x)->WaitForVerticalBlank( p1, p2 )
+    #define IDirectDraw7_GetAvailableVidMem( x, p1, p2, p3 ) \
+        (x)->GetAvailableVidMem( p1, p2, p3 )
+    #define IDirectDraw7_GetSurfaceFromDC( x, p1, p2 ) \
+        (x)->GetSurfaceFromDC( p1, p2 )
+    #define IDirectDraw7_RestoreAllSurface( x ) \
+        (x)->RestoreAllSurface()
+    #define IDirectDraw7_TestCooperativeLevel( x ) \
+        (x)->TestCooperativeLevel()
+    #define IDirectDraw7_GetDeviceIdentifier( x, p1, p2 ) \
+        (x)->GetDeviceIdentifier( p1, p2 )
+    #define IDirectDraw7_StartModeTest( x, p1, p2, p3 ) \
+        (x)->StartModeTest( x, p1, p2, p3 )
+    #define IDirectDraw7_EvaluateMode( x, p1, p2 ) \
+        (x)->EvaluateMode( x, p1, p2 )
+    #define IDirectDrawPalette_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawPalette_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawPalette_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawPalette_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawPalette_GetEntries( x, p1, p2, p3, p4 ) \
+        (x)->GetEntries( p1, p2, p3, p4 )
+    #define IDirectDrawPalette_Initialize( x, p1, p2, p3 ) \
+        (x)->Initialize( p1, p2, p3 )
+    #define IDirectDrawPalette_SetEntries( x, p1, p2, p3, p4 ) \
+        (x)->SetEntries( p1, p2, p3, p4 )
+    #define IDirectDrawClipper_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawClipper_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawClipper_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawClipper_GetClipList( x, p1, p2, p3 ) \
+        (x)->GetClipList( p1, p2, p3 )
+    #define IDirectDrawClipper_GetHWnd( x, p ) \
+        (x)->GetHWnd( p )
+    #define IDirectDrawClipper_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawClipper_IsClipListChanged( x, p ) \
+        (x)->IsClipListChanged( p )
+    #define IDirectDrawClipper_SetClipList( x, p1, p2 ) \
+        (x)->SetClipList( p1, p2 )
+    #define IDirectDrawClipper_SetHWnd( x, p1, p2 ) \
+        (x)->SetHWnd( p1, p2 )
+    #define IDirectDrawSurface_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawSurface_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawSurface_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawSurface_AddAttachedSurface( x, p ) \
+        (x)->AddAttachedSurface( p )
+    #define IDirectDrawSurface_AddOverlayDirtyRect( x, p ) \
+        (x)->AddOverlayDirtyRect( p )
+    #define IDirectDrawSurface_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->Blt( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_BltBatch( x, p1, p2, p3 ) \
+        (x)->BltBatch( p1, p2, p3 )
+    #define IDirectDrawSurface_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->BltFast( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->DeleteAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->EnumAttachedSurfaces( p1, p2 )
+    #define IDirectDrawSurface_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->EnumOverlayZOrders( p1, p2, p3 )
+    #define IDirectDrawSurface_Flip( x, p1, p2 ) \
+        (x)->Flip( p1, p2 )
+    #define IDirectDrawSurface_GetAttachedSurface( x, p1, p2 ) \
+        (x)->GetAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface_GetBltStatus( x, p ) \
+        (x)->GetBltStatus( p )
+    #define IDirectDrawSurface_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawSurface_GetClipper( x, p ) \
+        (x)->GetClipper( p )
+    #define IDirectDrawSurface_GetColorKey( x, p1, p2 ) \
+        (x)->GetColorKey( p1, p2 )
+    #define IDirectDrawSurface_GetDC( x, p ) \
+        (x)->GetDC( p )
+    #define IDirectDrawSurface_GetFlipStatus( x, p ) \
+        (x)->GetFlipStatus( p )
+    #define IDirectDrawSurface_GetOverlayPosition( x, p1, p2 ) \
+        (x)->GetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface_GetPalette( x, p ) \
+        (x)->GetPalette( p )
+    #define IDirectDrawSurface_GetPixelFormat( x, p ) \
+        (x)->GetPixelFormat( p )
+    #define IDirectDrawSurface_GetSurfaceDesc( x, p ) \
+        (x)->GetSurfaceDesc( p )
+    #define IDirectDrawSurface_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawSurface_IsLost( x ) \
+        (x)->IsLost()
+    #define IDirectDrawSurface_Lock( x, p1, p2, p3, p4 ) \
+        (x)->Lock( p1, p2, p3, p4 )
+    #define IDirectDrawSurface_ReleaseDC( x, p ) \
+        (x)->ReleaseDC( p )
+    #define IDirectDrawSurface_Restore( x ) \
+        (x)->Restore()
+    #define IDirectDrawSurface_SetClipper( x, p ) \
+        (x)->SetClipper( p )
+    #define IDirectDrawSurface_SetColorKey( x, p1, p2 ) \
+        (x)->SetColorKey( p1, p2 )
+    #define IDirectDrawSurface_SetOverlayPosition( x, p1, p2 ) \
+        (x)->SetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface_SetPalette( x, p ) \
+        (x)->SetPalette( p )
+    #define IDirectDrawSurface_Unlock( x, p ) \
+        (x)->Unlock( p )
+    #define IDirectDrawSurface_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->UpdateOverlay( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface_UpdateOverlayDisplay( x, p ) \
+        (x)->UpdateOverlayDisplay( p )
+    #define IDirectDrawSurface_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->UpdateOverlayZOrder( p1, p2 )
+    #define IDirectDrawSurface2_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawSurface2_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawSurface2_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawSurface2_AddAttachedSurface( x, p ) \
+        (x)->AddAttachedSurface( p )
+    #define IDirectDrawSurface2_AddOverlayDirtyRect( x, p ) \
+        (x)->AddOverlayDirtyRect( p )
+    #define IDirectDrawSurface2_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->Blt( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_BltBatch( x, p1, p2, p3 ) \
+        (x)->BltBatch( p1, p2, p3 )
+    #define IDirectDrawSurface2_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->BltFast( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->DeleteAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface2_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->EnumAttachedSurfaces( p1, p2 )
+    #define IDirectDrawSurface2_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->EnumOverlayZOrders( p1, p2, p3 )
+    #define IDirectDrawSurface2_Flip( x, p1, p2 ) \
+        (x)->Flip( p1, p2 )
+    #define IDirectDrawSurface2_GetAttachedSurface( x, p1, p2 ) \
+        (x)->GetAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface2_GetBltStatus( x, p ) \
+        (x)->GetBltStatus( p )
+    #define IDirectDrawSurface2_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawSurface2_GetClipper( x, p ) \
+        (x)->GetClipper( p )
+    #define IDirectDrawSurface2_GetColorKey( x, p1, p2 ) \
+        (x)->GetColorKey( p1, p2 )
+    #define IDirectDrawSurface2_GetDC( x, p ) \
+        (x)->GetDC( p )
+    #define IDirectDrawSurface2_GetFlipStatus( x, p ) \
+        (x)->GetFlipStatus( p )
+    #define IDirectDrawSurface2_GetOverlayPosition( x, p1, p2 ) \
+        (x)->GetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface2_GetPalette( x, p ) \
+        (x)->GetPalette( p )
+    #define IDirectDrawSurface2_GetPixelFormat( x, p ) \
+        (x)->GetPixelFormat( p )
+    #define IDirectDrawSurface2_GetSurfaceDesc( x, p ) \
+        (x)->GetSurfaceDesc( p )
+    #define IDirectDrawSurface2_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawSurface2_IsLost( x ) \
+        (x)->IsLost()
+    #define IDirectDrawSurface2_Lock( x, p1, p2, p3, p4 ) \
+        (x)->Lock( p1, p2, p3, p4 )
+    #define IDirectDrawSurface2_ReleaseDC( x, p ) \
+        (x)->ReleaseDC( p )
+    #define IDirectDrawSurface2_Restore( x ) \
+        (x)->Restore()
+    #define IDirectDrawSurface2_SetClipper( x, p ) \
+        (x)->SetClipper( p )
+    #define IDirectDrawSurface2_SetColorKey( x, p1, p2 ) \
+        (x)->SetColorKey( p1, p2 )
+    #define IDirectDrawSurface2_SetOverlayPosition( x, p1, p2 ) \
+        (x)->SetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface2_SetPalette( x, p ) \
+        (x)->SetPalette( p )
+    #define IDirectDrawSurface2_Unlock( x, p ) \
+        (x)->Unlock( p )
+    #define IDirectDrawSurface2_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->UpdateOverlay( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface2_UpdateOverlayDisplay( x, p ) \
+        (x)->UpdateOverlayDisplay( p )
+    #define IDirectDrawSurface2_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->UpdateOverlayZOrder( p1, p2 )
+    #define IDirectDrawSurface2_GetDDInterface( x, p ) \
+        (x)->GetDDInterface( p )
+    #define IDirectDrawSurface2_PageLock( x, p ) \
+        (x)->PageLock( p )
+    #define IDirectDrawSurface2_PageUnlock( x, p ) \
+        (x)->PageUnlock( p )
+    #define IDirectDrawSurface3_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawSurface3_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawSurface3_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawSurface3_AddAttachedSurface( x, p ) \
+        (x)->AddAttachedSurface( p )
+    #define IDirectDrawSurface3_AddOverlayDirtyRect( x, p ) \
+        (x)->AddOverlayDirtyRect( p )
+    #define IDirectDrawSurface3_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->Blt( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_BltBatch( x, p1, p2, p3 ) \
+        (x)->BltBatch( p1, p2, p3 )
+    #define IDirectDrawSurface3_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->BltFast( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->DeleteAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface3_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->EnumAttachedSurfaces( p1, p2 )
+    #define IDirectDrawSurface3_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->EnumOverlayZOrders( p1, p2, p3 )
+    #define IDirectDrawSurface3_Flip( x, p1, p2 ) \
+        (x)->Flip( p1, p2 )
+    #define IDirectDrawSurface3_GetAttachedSurface( x, p1, p2 ) \
+        (x)->GetAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface3_GetBltStatus( x, p ) \
+        (x)->GetBltStatus( p )
+    #define IDirectDrawSurface3_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawSurface3_GetClipper( x, p ) \
+        (x)->GetClipper( p )
+    #define IDirectDrawSurface3_GetColorKey( x, p1, p2 ) \
+        (x)->GetColorKey( p1, p2 )
+    #define IDirectDrawSurface3_GetDC( x, p ) \
+        (x)->GetDC( p )
+    #define IDirectDrawSurface3_GetFlipStatus( x, p ) \
+        (x)->GetFlipStatus( p )
+    #define IDirectDrawSurface3_GetOverlayPosition( x, p1, p2 ) \
+        (x)->GetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface3_GetPalette( x, p ) \
+        (x)->GetPalette( p )
+    #define IDirectDrawSurface3_GetPixelFormat( x, p ) \
+        (x)->GetPixelFormat( p )
+    #define IDirectDrawSurface3_GetSurfaceDesc( x, p ) \
+        (x)->GetSurfaceDesc( p )
+    #define IDirectDrawSurface3_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawSurface3_IsLost( x ) \
+        (x)->IsLost()
+    #define IDirectDrawSurface3_Lock( x, p1, p2, p3, p4 ) \
+        (x)->Lock( p1, p2, p3, p4 )
+    #define IDirectDrawSurface3_ReleaseDC( x, p ) \
+        (x)->ReleaseDC( p )
+    #define IDirectDrawSurface3_Restore( x ) \
+        (x)->Restore()
+    #define IDirectDrawSurface3_SetClipper( x, p ) \
+        (x)->SetClipper( p )
+    #define IDirectDrawSurface3_SetColorKey( x, p1, p2 ) \
+        (x)->SetColorKey( p1, p2 )
+    #define IDirectDrawSurface3_SetOverlayPosition( x, p1, p2 ) \
+        (x)->SetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface3_SetPalette( x, p ) \
+        (x)->SetPalette( p )
+    #define IDirectDrawSurface3_Unlock( x, p ) \
+        (x)->Unlock( p )
+    #define IDirectDrawSurface3_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->UpdateOverlay( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface3_UpdateOverlayDisplay( x, p ) \
+        (x)->UpdateOverlayDisplay( p )
+    #define IDirectDrawSurface3_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->UpdateOverlayZOrder( p1, p2 )
+    #define IDirectDrawSurface3_GetDDInterface( x, p ) \
+        (x)->GetDDInterface( p )
+    #define IDirectDrawSurface3_PageLock( x, p ) \
+        (x)->PageLock( p )
+    #define IDirectDrawSurface3_PageUnlock( x, p ) \
+        (x)->PageUnlock( p )
+    #define IDirectDrawSurface3_SetSurfaceDesc( x, p1, p2 ) \
+        (X)->SetSurfaceDesc( p1, p2 )
+    #define IDirectDrawSurface4_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawSurface4_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawSurface4_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawSurface4_AddAttachedSurface( x, p ) \
+        (x)->AddAttachedSurface( p )
+    #define IDirectDrawSurface4_AddOverlayDirtyRect( x, p ) \
+        (x)->AddOverlayDirtyRect( p )
+    #define IDirectDrawSurface4_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->Blt( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_BltBatch( x, p1, p2, p3 ) \
+        (x)->BltBatch( p1, p2, p3 )
+    #define IDirectDrawSurface4_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->BltFast( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->DeleteAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface4_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->EnumAttachedSurfaces( p1, p2 )
+    #define IDirectDrawSurface4_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->EnumOverlayZOrders( p1, p2, p3 )
+    #define IDirectDrawSurface4_Flip( x, p1, p2 ) \
+        (x)->Flip( p1, p2 )
+    #define IDirectDrawSurface4_GetAttachedSurface( x, p1, p2 ) \
+        (x)->GetAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface4_GetBltStatus( x, p ) \
+        (x)->GetBltStatus( p )
+    #define IDirectDrawSurface4_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawSurface4_GetClipper( x, p ) \
+        (x)->GetClipper( p )
+    #define IDirectDrawSurface4_GetColorKey( x, p1, p2 ) \
+        (x)->GetColorKey( p1, p2 )
+    #define IDirectDrawSurface4_GetDC( x, p ) \
+        (x)->GetDC( p )
+    #define IDirectDrawSurface4_GetFlipStatus( x, p ) \
+        (x)->GetFlipStatus( p )
+    #define IDirectDrawSurface4_GetOverlayPosition( x, p1, p2 ) \
+        (x)->GetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface4_GetPalette( x, p ) \
+        (x)->GetPalette( p )
+    #define IDirectDrawSurface4_GetPixelFormat( x, p ) \
+        (x)->GetPixelFormat( p )
+    #define IDirectDrawSurface4_GetSurfaceDesc( x, p ) \
+        (x)->GetSurfaceDesc( p )
+    #define IDirectDrawSurface4_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawSurface4_IsLost( x ) \
+        (x)->IsLost()
+    #define IDirectDrawSurface4_Lock( x, p1, p2, p3, p4 ) \
+        (x)->Lock( p1, p2, p3, p4 )
+    #define IDirectDrawSurface4_ReleaseDC( x, p ) \
+        (x)->ReleaseDC( p )
+    #define IDirectDrawSurface4_Restore( x ) \
+        (x)->Restore()
+    #define IDirectDrawSurface4_SetClipper( x, p ) \
+        (x)->SetClipper( p )
+    #define IDirectDrawSurface4_SetColorKey( x, p1, p2 ) \
+        (x)->SetColorKey( p1, p2 )
+    #define IDirectDrawSurface4_SetOverlayPosition( x, p1, p2 ) \
+        (x)->SetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface4_SetPalette( x, p ) \
+        (x)->SetPalette( p )
+    #define IDirectDrawSurface4_Unlock( x, p ) \
+        (x)->Unlock( p )
+    #define IDirectDrawSurface4_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->UpdateOverlay( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface4_UpdateOverlayDisplay( x, p ) \
+        (x)->UpdateOverlayDisplay( p )
+    #define IDirectDrawSurface4_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->UpdateOverlayZOrder( p1, p2 )
+    #define IDirectDrawSurface4_GetDDInterface( x, p ) \
+        (x)->GetDDInterface( p )
+    #define IDirectDrawSurface4_PageLock( x, p ) \
+        (x)->PageLock( p )
+    #define IDirectDrawSurface4_PageUnlock( x, p ) \
+        (x)->PageUnlock( p )
+    #define IDirectDrawSurface4_SetSurfaceDesc( x, p1, p2 ) \
+        (X)->SetSurfaceDesc( p1, p2 )
+    #define IDirectDrawSurface4_SetPrivateData( x, p1, p2, p3, p4 ) \
+        (x)->SetPrivateData( p1, p2, p3, p4 )
+    #define IDirectDrawSurface4_GetPrivateData( x, p1, p2, p3 ) \
+        (x)->GetPrivateData( p1, p2, p3 )
+    #define IDirectDrawSurface4_FreePrivateData( x, p ) \
+        (x)->FreePrivateData( p )
+    #define IDirectDrawSurface4_GetUniquenessValue( x, p ) \
+        (x)->GetUniquenessValue( p )
+    #define IDirectDrawSurface4_ChangeUniquenessValue( x ) \
+        (x)->ChangeUniquenessValue()
+    #define IDirectDrawSurface7_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawSurface7_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawSurface7_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawSurface7_AddAttachedSurface( x, p ) \
+        (x)->AddAttachedSurface( p )
+    #define IDirectDrawSurface7_AddOverlayDirtyRect( x, p ) \
+        (x)->AddOverlayDirtyRect( p )
+    #define IDirectDrawSurface7_Blt( x, p1, p2, p3, p4, p5 ) \
+        (x)->Blt( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_BltBatch( x, p1, p2, p3 ) \
+        (x)->BltBatch( p1, p2, p3 )
+    #define IDirectDrawSurface7_BltFast( x, p1, p2, p3, p4, p5 ) \
+        (x)->BltFast( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_DeleteAttachedSurface( x, p1, p2 ) \
+        (x)->DeleteAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface7_EnumAttachedSurfaces( x, p1, p2 ) \
+        (x)->EnumAttachedSurfaces( p1, p2 )
+    #define IDirectDrawSurface7_EnumOverlayZOrders( x, p1, p2, p3 ) \
+        (x)->EnumOverlayZOrders( p1, p2, p3 )
+    #define IDirectDrawSurface7_Flip( x, p1, p2 ) \
+        (x)->Flip( p1, p2 )
+    #define IDirectDrawSurface7_GetAttachedSurface( x, p1, p2 ) \
+        (x)->GetAttachedSurface( p1, p2 )
+    #define IDirectDrawSurface7_GetBltStatus( x, p ) \
+        (x)->GetBltStatus( p )
+    #define IDirectDrawSurface7_GetCaps( x, p ) \
+        (x)->GetCaps( p )
+    #define IDirectDrawSurface7_GetClipper( x, p ) \
+        (x)->GetClipper( p )
+    #define IDirectDrawSurface7_GetColorKey( x, p1, p2 ) \
+        (x)->GetColorKey( p1, p2 )
+    #define IDirectDrawSurface7_GetDC( x, p ) \
+        (x)->GetDC( p )
+    #define IDirectDrawSurface7_GetFlipStatus( x, p ) \
+        (x)->GetFlipStatus( p )
+    #define IDirectDrawSurface7_GetOverlayPosition( x, p1, p2 ) \
+        (x)->GetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface7_GetPalette( x, p ) \
+        (x)->GetPalette( p )
+    #define IDirectDrawSurface7_GetPixelFormat( x, p ) \
+        (x)->GetPixelFormat( p )
+    #define IDirectDrawSurface7_GetSurfaceDesc( x, p ) \
+        (x)->GetSurfaceDesc( p )
+    #define IDirectDrawSurface7_Initialize( x, p1, p2 ) \
+        (x)->Initialize( p1, p2 )
+    #define IDirectDrawSurface7_IsLost( x ) \
+        (x)->IsLost()
+    #define IDirectDrawSurface7_Lock( x, p1, p2, p3, p4 ) \
+        (x)->Lock( p1, p2, p3, p4 )
+    #define IDirectDrawSurface7_ReleaseDC( x, p ) \
+        (x)->ReleaseDC( p )
+    #define IDirectDrawSurface7_Restore( x ) \
+        (x)->Restore()
+    #define IDirectDrawSurface7_SetClipper( x, p ) \
+        (x)->SetClipper( p )
+    #define IDirectDrawSurface7_SetColorKey( x, p1, p2 ) \
+        (x)->SetColorKey( p1, p2 )
+    #define IDirectDrawSurface7_SetOverlayPosition( x, p1, p2 ) \
+        (x)->SetOverlayPosition( p1, p2 )
+    #define IDirectDrawSurface7_SetPalette( x, p ) \
+        (x)->SetPalette( p )
+    #define IDirectDrawSurface7_Unlock( x, p ) \
+        (x)->Unlock( p )
+    #define IDirectDrawSurface7_UpdateOverlay( x, p1, p2, p3, p4, p5 ) \
+        (x)->UpdateOverlay( p1, p2, p3, p4, p5 )
+    #define IDirectDrawSurface7_UpdateOverlayDisplay( x, p ) \
+        (x)->UpdateOverlayDisplay( p )
+    #define IDirectDrawSurface7_UpdateOverlayZOrder( x, p1, p2 ) \
+        (x)->UpdateOverlayZOrder( p1, p2 )
+    #define IDirectDrawSurface7_GetDDInterface( x, p ) \
+        (x)->GetDDInterface( p )
+    #define IDirectDrawSurface7_PageLock( x, p ) \
+        (x)->PageLock( p )
+    #define IDirectDrawSurface7_PageUnlock( x, p ) \
+        (x)->PageUnlock( p )
+    #define IDirectDrawSurface7_SetSurfaceDesc( x, p1, p2 ) \
+        (X)->SetSurfaceDesc( p1, p2 )
+    #define IDirectDrawSurface7_SetPrivateData( x, p1, p2, p3, p4 ) \
+        (x)->SetPrivateData( p1, p2, p3, p4 )
+    #define IDirectDrawSurface7_GetPrivateData( x, p1, p2, p3 ) \
+        (x)->GetPrivateData( p1, p2, p3 )
+    #define IDirectDrawSurface7_FreePrivateData( x, p ) \
+        (x)->FreePrivateData( p )
+    #define IDirectDrawSurface7_GetUniquenessValue( x, p ) \
+        (x)->GetUniquenessValue( p )
+    #define IDirectDrawSurface7_ChangeUniquenessValue( x ) \
+        (x)->ChangeUniquenessValue()
+    #define IDirectDrawSurface7_SetPriority( x, p ) \
+        (x)->SetPriority( p )
+    #define IDirectDrawSurface7_GetPriority( x, p ) \
+        (x)->GetPriority( p )
+    #define IDirectDrawSurface7_SetLOD( x, p ) \
+        (x)->SetLOD( p )
+    #define IDirectDrawSurface7_GetLOD( x, p ) \
+        (x)->GetLOD( p )
+    #define IDirectDrawColorControl_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawColorControl_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawColorControl_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawColorControl_GetColorControls( x, p ) \
+        (x)->GetColorControls( p )
+    #define IDirectDrawColorControl_SetColorControls( x, p ) \
+        (x)->SetColorControls( p )
+    #define IDirectDrawGammaControl_QueryInterface( x, p1, p2 ) \
+        (x)->QueryInterface( p1, p2 )
+    #define IDirectDrawGammaControl_AddRef( x ) \
+        (x)->AddRef()
+    #define IDirectDrawGammaControl_Release( x ) \
+        (x)->Release()
+    #define IDirectDrawGammaControl_GetGammaRamp( x, p ) \
+        (x)->GetGammaRamp( p )
+    #define IDirectDrawGammaControl_SetGammaRamp( x, p ) \
+        (x)->SetGammaRamp( p )
+#endif
+
+/* Functions in DDRAW.DLL */
+extern HRESULT WINAPI   DirectDrawCreate( GUID *, LPDIRECTDRAW *, IUnknown * );
+extern HRESULT WINAPI   DirectDrawCreateClipper( DWORD, LPDIRECTDRAWCLIPPER *, IUnknown * );
+extern HRESULT WINAPI   DirectDrawCreateEx( GUID *, LPVOID *, REFIID, IUnknown * );
+extern HRESULT WINAPI   DirectDrawEnumerateA( LPDDENUMCALLBACKA, LPVOID );
+extern HRESULT WINAPI   DirectDrawEnumerateExA( LPDDENUMCALLBACKEXA, LPVOID, DWORD );
+extern HRESULT WINAPI   DirectDrawEnumerateExW( LPDDENUMCALLBACKEXW, LPVOID, DWORD );
+extern HRESULT WINAPI   DirectDrawEnumerateW( LPDDENUMCALLBACKW, LPVOID );
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define DirectDrawEnumerate     DirectDrawEnumerateW
+    #define DirectDrawEnumerateEx   DirectDrawEnumerateExW
+#else
+    #define DirectDrawEnumerate     DirectDrawEnumerateA
+    #define DirectDrawEnumerateEx   DirectDrawEnumerateExA
+#endif
+
+:include cplusepi.sp
+
+#endif /* __DDRAW_INCLUDED__ */

@@ -37,4 +37,3 @@
 #define IDB_SYM_REMOVE     115
 #define IDB_SYM_LISTBOX    116
 #define IDB_SYM_NUM        117
-

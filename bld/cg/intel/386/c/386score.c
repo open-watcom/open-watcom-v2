@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Scoreboarding routines specific to the 386.
 *
 ****************************************************************************/
 
@@ -39,18 +38,16 @@
 #include "vergen.h"
 #include "opcodes.h"
 
-extern  void            RegInsert(score*,int,int);
-extern  bool            RegsEqual(score*,int,int);
-extern  name            *AllocRegName(hw_reg_set);
+extern  name            *AllocRegName( hw_reg_set );
 
 extern  proc_def        *CurrProc;
 
 
-extern  void    ScInitRegs( score *sc ) {
-/****************************************
+extern  void    ScInitRegs( score *sc )
+/**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
-
+{
     int xs;
     int ds;
 
@@ -72,34 +69,34 @@ extern  void    ScInitRegs( score *sc ) {
 }
 
 
-extern  void    AddRegs() {
-/**************************
+extern  void    AddRegs( void )
+/******************************
     Add some registers to the N_REGISTER list, so that we can do
     scoreboarding on them
 */
-
+{
     AllocRegName( HW_DS );
     AllocRegName( HW_ES );
     AllocRegName( HW_SS );
 }
 
 
-extern  void    ScoreSegments( score *sc ) {
-/*******************************************
+extern  void    ScoreSegments( score *sc )
+/*****************************************
     Do special scoreboarding on segment registers.
 */
+{
     sc = sc;
 }
 
 
-extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
-/************************************************************
+extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
+/**********************************************************
     Is it ok to say that "reg1" = "reg2"?  This is not ok for
     unalterable registers since there may be hidden modifications of
     these registers.
 */
-
-
+{
     if( HW_Ovlap( reg1, CurrProc->state.unalterable ) ) {
         if( !HW_CEqual( reg1, HW_DS ) && !HW_CEqual( reg1, HW_SS ) ) {
             return( FALSE );
@@ -114,29 +111,31 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
 }
 
 
-extern  bool    ScConvert( instruction *ins ) {
-/**********************************************
+extern  bool    ScConvert( instruction *ins )
+/********************************************
     Get rid of instructions like CBW if the high part is not used in the
     next instruction.
 */
+{
     ins = ins;
     return( FALSE );
 }
 
 
-extern  bool    CanReplace( instruction *ins ) {
-/***********************************************
+extern  bool    CanReplace( instruction *ins )
+/*********************************************
     an 8086ism
 */
+{
     ins = ins;
     return( TRUE );
 }
 
-extern  bool    ScRealRegister( name *reg ) {
-/********************************************
+extern  bool    ScRealRegister( name *reg )
+/******************************************
     Return "TRUE" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.
 */
-
+{
     return( reg->n.name_class != XX );
 }

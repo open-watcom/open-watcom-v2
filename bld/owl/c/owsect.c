@@ -86,3 +86,63 @@ static void freeRelocs( owl_file_handle file, owl_reloc_info *relocs ) {
 }
 
 owl_section_handle OWLENTRY OWLSectionInit( owl_file_handle file, const char *name, owl_section_type type, owl_alignment align ) {
+//********************************************************************************************************************************
+
+    owl_section_handle          section;
+
+    section = _ClientAlloc( file, sizeof( owl_section_info ) );
+    section->file = file;
+    section->name = OWLStringAdd( file->string_table, name );
+    section->type = type;
+    section->align = align;
+    section->buffer = ( type & OWL_SEC_ATTR_BSS ) ? NULL : OWLBufferInit( file );
+    section->linenum_buffer = NULL;
+    section->num_linenums = 0;
+    section->size = 0;
+    section->location = 0;
+    section->first_reloc = NULL;
+    section->last_reloc = NULL;
+    section->num_relocs = 0;
+    section->comdat_sym = NULL;
+    section->comdat_dep = NULL;
+    addSection( file, section );
+    addSectionSymbol( section, name );
+    _Log(( file, "OWLSectionInit( %x, '%s', %x, %x ) -> %x\n", file, name, type, align, section ));
+    return( section );
+}
+
+void OWLENTRY OWLComdatDep( owl_section_handle section, owl_section_handle dep ) {
+//*********************************************************************************************
+
+    _Log(( section->file, "OWLComdatDep( %x, %x )\n", section, dep ));
+    section->comdat_dep = dep;
+}
+
+void OWLENTRY OWLSectionFini( owl_section_handle section ) {
+//**********************************************************
+
+    // while user may be done with this section, we can't trash
+    // it until we are ready to write the entire file
+    section = section;
+    _Log(( section->file, "OWLSectionFini( %x )\n", section ));
+}
+
+void OWLENTRY OWLSectionFree( owl_section_handle section ) {
+//**********************************************************
+
+    owl_file_handle     file;
+
+    file = section->file;
+    deleteSection( file, section );
+    if( section->buffer != NULL ) {
+        OWLBufferFini( section->buffer );
+    }
+    if( section->linenum_buffer != NULL ) {
+        OWLBufferFini( section->linenum_buffer );
+    }
+    if( section->first_reloc != NULL ) {
+        freeRelocs( file, section->first_reloc );
+    }
+    _ClientFree( file, section );
+    _Log(( file, "OWLSectionFree( %x )\n", section ));
+}

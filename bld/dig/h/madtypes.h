@@ -24,17 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD (Machine Architecture Description) types.
 *
 ****************************************************************************/
 
 
-#ifndef MADTYPES_H
-#define MADTYPES_H
-#include "digpck.h"
+#ifndef MADTYPES_H_INCLUDED
+#define MADTYPES_H_INCLUDED
+
 #include "madstr.h"
 #include "digtypes.h"
+#include "digpck.h"
 
 struct mad_reg_set_data;
 struct mad_state_data;
@@ -81,7 +81,8 @@ typedef unsigned_8 mad_type_kind; enum {
     MTK_ADDRESS = 0x02,
     MTK_FLOAT   = 0x04,
     MTK_CUSTOM  = 0x08,
-    MTK_ALL     = MTK_INTEGER|MTK_ADDRESS|MTK_FLOAT|MTK_CUSTOM,
+    MTK_XMM     = 0x10,
+    MTK_ALL     = MTK_INTEGER|MTK_ADDRESS|MTK_FLOAT|MTK_CUSTOM|MTK_XMM,
 
     MAS_MEMORY  = 0x40,
     MAS_IO      = 0x80,
@@ -197,18 +198,18 @@ typedef unsigned_8 mad_memref_kind; enum {
 };
 
 typedef unsigned_8 mad_trace_kind; enum {
-    MTK_INTO,
-    MTK_OVER,
-    MTK_OUT,
-    MTK_NEXT
+    MTRK_INTO,
+    MTRK_OVER,
+    MTRK_OUT,
+    MTRK_NEXT
 };
 
 typedef unsigned_8 mad_trace_how; enum {
-    MTH_STOP,
-    MTH_SIMULATE,
-    MTH_STEP,
-    MTH_STEPBREAK,
-    MTH_BREAK
+    MTRH_STOP,
+    MTRH_SIMULATE,
+    MTRH_STEP,
+    MTRH_STEPBREAK,
+    MTRH_BREAK
 };
 
 

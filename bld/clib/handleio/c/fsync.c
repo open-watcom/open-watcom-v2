@@ -39,12 +39,19 @@
 #elif defined(__OS2__)
     #include <os2.h>
 #elif defined(__NETWARE__)
-    #include <fileengd.h>
+    #if defined (_NETWARE_CLIB)
+        #include <owfileng.h>
+    #endif
 #endif
+#include <unistd.h>
 #include "iomode.h"
 #include "rtcheck.h"
 #include "seterrno.h"
 
+/*
+//  take fsync from LIBC import file
+*/
+#if !defined (_NETWARE_LIBC)
 
 _WCRTLINK int fsync( int handle )
 /*******************************/
@@ -54,25 +61,31 @@ _WCRTLINK int fsync( int handle )
     __handle_check( handle, -1 );
 
     #if defined(__DOS__) || defined(__WINDOWS__)
-        ret = _dos_commit( handle );
+    ret = _dos_commit( handle );
     #elif defined(__NT__)
-        if( !FlushFileBuffers( __getOSHandle( handle ) ) ) {
-            __set_errno_nt();
-            ret = -1;
-        }
+    if( !FlushFileBuffers( __getOSHandle( handle ) ) ) 
+    {
+        __set_errno_nt();
+        ret = -1;
+    }
     #elif defined(__OS2__)
-        if( DosBufReset( handle ) != 0 ) {
-            __set_errno( EBADF );
-            ret = -1;
-        }
+    if( DosBufReset( handle ) != 0 ) 
+    {
+        __set_errno( EBADF );
+        ret = -1;
+    }
     #elif defined(__NETWARE__)
-        if( FEFlushWrite( handle ) != 0 ) {
-            __set_errno( EBADF );
-            ret = -1;
-        }
+
+    if( FEFlushWrite( handle ) != 0 ) 
+    {
+        __set_errno( EBADF );
+        ret = -1;
+    }
     #else
         #error Unknown target system
     #endif
 
     return( ret );
 }
+
+#endif /* !defined (_NETWARE_LIBC) */

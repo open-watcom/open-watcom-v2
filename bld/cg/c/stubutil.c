@@ -30,39 +30,31 @@
 ****************************************************************************/
 
 
-// (jww) 93/12/13 -- force recompile
-
 #include <stdarg.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <process.h>
 #include "standard.h"
 #include "cg.h"
 #include "bckdef.h"
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
 #include "hostsys.h"
 #include "cgstub.h"
 #include "feprotos.h"
+#include "cgmem.h"
 
 #include "stubdata.h"
 
-extern  pointer         CGAlloc(int );
-
-extern  type_def        *TypeAddress(cg_type);
-extern  void            DumpTree(pointer);
-extern  type_def        *TypeDef(cg_type,type_length);
+extern  void            DumpTree(n *);
 extern  uint            Length(char*);
-extern  void            TypeFini();
 extern  char            *CopyStr(char*,char*);
-extern  void            TypeInit();
-extern  type_def        *TypeAlias(cg_type,cg_type);
 extern  byte            *Copy(void*,void*,uint);
-extern  void            CGFree(pointer);
 extern  void            BECloseFiles();
 extern  void            exit(int);
 extern  void            Action(char * str, ... );
@@ -337,10 +329,8 @@ extern  char    *FtnTipe( dbg_ftn_type tipe ) {
 //=============================================
 
     switch( tipe ) {
-    case 0x47: return( "T_DBG_COMPLEX" );
-    case 0x4f: return( "T_DBG_DCOMPLEX" );
-    case 0x53: return( "T_DBG_NEAR_SCB" );
-    case 0x55: return( "T_DBG_FAR_SCB" );
+    case T_DBG_COMPLEX: return( "T_DBG_COMPLEX" );
+    case T_DBG_DCOMPLEX: return( "T_DBG_DCOMPLEX" );
     default:   CGError( "Undefined FORTRAN debug type %d", tipe );
     }
     return( NULL );
@@ -358,11 +348,12 @@ extern  char    *Tipe( cg_type tipe ) {
     char        *res;
     type_def    *t;
 
-    if( tipe >= T_FIRST_FREE ) {
+    if( tipe >= TY_FIRST_FREE ) {
         VerTipe( tipe, NULL );
         t = TypeAddress( tipe );
         res = LToS( t->refno );
         *--res = '_';
+        *--res = 'Y';
         *--res = 'T';
     } else {
         res = Tipes[ tipe ];
@@ -471,7 +462,7 @@ extern  n       *NewNode( nclass c, cg_type t ) {
     return( nd );
 }
 
-#define FE_TYPE( x )    ( ( (x) > T_FIRST_FREE ) && ( (x) < T_LAST_FREE ) )
+#define FE_TYPE( x )    ( ( (x) >= TY_FIRST_FREE ) && ( (x) <= TY_LAST_FREE ) )
 extern  n       *Binary( cg_op op, n *l, n *r, cg_type t ) {
 //==========================================================
 
@@ -566,7 +557,7 @@ extern  void    VerTipe( cg_type t, cg_type *l ) {
     }
     t = a->refno;
     if( l != NULL ) {
-        while( *l != T_DEFAULT ) {
+        while( *l != TY_DEFAULT ) {
             if( t == *l++ ) return;
         }
         CGError( "Illegal type for given routine %s", Tipe(t) );
@@ -836,19 +827,20 @@ extern  segment_id      SetFile( segment_id seg ) {
 extern  void    NotDefault( cg_type  t ) {
 //========================================
 
-    if( t == T_DEFAULT ) {
-        CGError( "T_DEFAULT not allowed as type to routine" );
+    if( t == TY_DEFAULT ) {
+        CGError( "TY_DEFAULT not allowed as type to routine" );
     }
 }
 
-extern  void    CFCnvFS( cfloat *f ) {
+extern  char   *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
 //====================================
 
     int         len;
-    char        *buffer;
 
-    buffer = UBuff;
     len = f->len - 1;
+    if( len + 10 > maxlen ) {
+        len = maxlen - 10;
+    }
     if( f->sign == -1 ) {
         *buffer++ = '-';
     }
@@ -858,11 +850,17 @@ extern  void    CFCnvFS( cfloat *f ) {
     buffer += len;
     *buffer++ = 'E';
     len = f->exp - 1;
-    buffer[ 2 ] = len % 10;
+    if( len < 0 ) {
+        *buffer++ = '-';
+        len = -len;
+    }
+    buffer[ 2 ] = len % 10 + '0';
     len /= 10;
-    buffer[ 1 ] = len % 10;
+    buffer[ 1 ] = len % 10 + '0';
     len /= 10;
-    buffer[ 0 ] = len % 10;
+    buffer[ 0 ] = len + '0';
+    buffer += 3;
+    return( buffer );
 }
 
 pointer SafeRecurse( pointer (* rtn)(), pointer arg ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default implementation of LibMain() for Win32.
 *
 ****************************************************************************/
 
@@ -34,6 +33,7 @@
 
 extern int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 
-int __stdcall LibMain( HANDLE hdll, DWORD reason, LPVOID reserved ) {
+int __stdcall LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
+{
     return( DllMain( hdll, reason, reserved ) );
 }

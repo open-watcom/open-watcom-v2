@@ -36,7 +36,7 @@ typedef struct {
     SYMBOL              sym;            // typedef symbol of current enum
     TYPE                type;           // type of current enum
     TOKEN_LOCN          locn;           // location of typedef symbol
-    char                *name;          // name of current enum
+    PTREE               id;             // PTREE of current enum name
     signed_64           next_value;     // next value
     uint_8              index;          // index into enum_ranges table
     type_id             base_id;        // id for base type

@@ -1,71 +1,42 @@
+# Line drawing
+display  1 alt 'm'	# BottomLeftCorner
+display  2 alt 'j'	# BottomRightCorner
+display  3 alt 'l'	# TopLeftCorner
+display  4 alt 'k'	# TopRightCorner
+display  5 alt 'q'	# H_Line
+display  6 alt 'x'	# V_Line
+display  7 alt 'w'	# TopTee
+display  8 alt 'u'	# RightTee
+display  9 alt 't'	# LeftTee
+display 10 alt 'm'	# BottomLeftCorner (double)
+display 11 alt 'j'	# BottomRightCorner (double)
+display 12 alt 'l'	# TopLeftCorner (double)
+display 13 alt 'k'	# RightCorner (double)
+display 14 alt 'q'	# H_Line (double)
+display 15 alt 'x'	# V_Line (double)
+
 # Arrows
-display 0x10 alt '+'	# RightArrow	#    
-display 0x11 alt ','	# LeftArrow	# 
-display 0x1e alt '-'	# UpArrow	# 
-display 0x1f alt '.'	# DownArrow	# 
-display 0x1a alt '+'	# RightArrow	# (ctrl-z)   
-display 0x1b alt ','	# LeftArrow	#    
-display 0x18 alt '-'	# UpArrow	# 
-display 0x19 alt '.'	# DownArrow	# 
+display 16 alt '.'	# DownArrow (triangle)
+display 17 alt ','	# LeftArrow (triangle)
+display 18 alt '+'	# RightArrow (triangle)
+display 19 alt '-'	# UpArrow (triangle)
+display 20 alt '.'	# DownArrow
+display 21 '/'		# UpDownArrow
 
 # Squares
-display 0xb0 alt 'a'	# Checkers	# °
-display 0xb1 alt 'a'	# Checkers	# ±
-display 0xb2 alt 'O'	# Squares	# ²
-display 0xdb alt 'O'	# Square	# Û
-display 0xdc ' '	# 0x20 		# Ü
-display 0xdd alt 'O'	# Square	# Ý
-display 0xde ' ' 	# 0x20		# Þ
-display 0xdf alt 'O'	# Square	# ß
-
-# Line drawing
-display 0xb3 alt 'x'	# V_Line		# ³
-display 0xb4 alt 'u'	# RightTee		# ´
-display 0xb5 alt 'u'	# RightTee		# µ
-display 0xb6 alt 'u'	# RightTee		# ¶
-display 0xb7 alt 'k'	# TopRightCorner	# ·
-display 0xb8 alt 'k'	# TopRightCorner	# ¸
-display 0xb9 alt 'u'	# RightTee		# ¹
-display 0xba alt 'x'	# V_Line		# º
-display 0xbb alt 'k'	# TopRightCorner	# »
-display 0xbc alt 'j'	# BottomRightCorner	# ¼
-display 0xbd alt 'j'	# BottomRightCorner	# ½
-display 0xbe alt 'j'	# BottomRightCorner	# ¾
-display 0xbf alt 'k'	# TopRightCorner	# ¿
-display 0xc0 alt 'm'	# BottomLeftCorner	# À
-display 0xc1 alt 'v'	# BottomTee		# Á
-display 0xc2 alt 'w'	# TopTee		# Â
-display 0xc3 alt 't'	# LeftTee		# Ã
-display 0xc4 alt 'q'	# H_Line		# Ä
-display 0xc5 alt 'n'	# Cross			# Å
-display 0xc6 alt 't'	# LeftTee		# Æ
-display 0xc7 alt 't'	# LeftTee		# Ç
-display 0xc8 alt 'm'	# BottomLeftCorner	# È
-display 0xc9 alt 'l'	# TopLeftCorner		# É
-display 0xca alt 'v'	# BottomTee		# Ê
-display 0xcb alt 'w'	# TopTee		# Ë
-display 0xcc alt 't'	# LeftTee		# Ì
-display 0xcd alt 'q'	# H_Line		# Í
-display 0xce alt 'n'	# Cross			# Î
-display 0xcf alt 'v'	# BottomTee		# Ï
-display 0xd0 alt 'v'	# BottomTee		# Ð
-display 0xd1 alt 'w'	# TopTee		# Ñ
-display 0xd2 alt 'w'	# TopTee		# Ò
-display 0xd3 alt 'j'	# BottomLeftCorner	# Ó
-display 0xd4 alt 'j'	# BottomLeftCorner	# Ô
-display 0xd5 alt 'l'	# TopLeftCorner		# Õ
-display 0xd6 alt 'l'	# TopLeftCorner		# Ö
-display 0xd7 alt 'n'	# Cross			# ×
-display 0xd8 alt 'n'	# Cross			# Ø
-display 0xd9 alt 'j'	# BottomRightCorner	# Ù
-display 0xda alt 'l'	# TopLeftCorner		# Ú
+display 22 ' '		# 0x20
+display 23 alt '0'	# Square
+display 24 ' ' 		# 0x20
+display 25 alt '0'	# Square
+display 26 alt 'a'	# Checkers
+display 27 alt 'h'	# Squares
+display 28 alt '0'	# Square
 
 # Misc.
-display 0xf1 alt 'g'	# Plus_Minus		# ñ
-display 0xf8 alt 'f'	# Degree		# ø
-display 0xf9 alt '~'	# Bullet		# ù
-display 0xfa alt '~'	# Bullet		# ú
-display 0xfe alt 'h'	# Square		# þ
+display 29 alt 'h'	# Square
+display 30 '*'		# Root
+display 31 '='		# Equivalent
+display 0xa0 0xa0       # No Break Space
 
 key 0x000 0xff 0x20	# ignore extended key follows
 key 0x000 0xff 0x21	# ignore key up

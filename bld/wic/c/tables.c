@@ -41,7 +41,10 @@
 
 static symbol_table symTab;
 
-static symTabCmp(pSymTabEntry entry1, pSymTabEntry entry2) {
+static int symTabCmp(void *_entry1, void *_entry2) {
+    pSymTabEntry entry1 = _entry1;
+    pSymTabEntry entry2 = _entry2;
+
     return strcmp(entry1->name, entry2->name);
 }
 
@@ -69,7 +72,9 @@ pSymTabEntry findSymbol(char *name) {
     return SymFind(symTab, &nameEntry);
 }
 
-int zapSymbolTableElem(pSymTabEntry entry, void *dummy) {
+int zapSymbolTableElem(void *_entry, void *dummy) {
+    pSymTabEntry entry = _entry;
+
     dummy = dummy;
     switch (entry->type) {
         case SYMT_MACRO:
@@ -105,7 +110,9 @@ pSymTabEntry createTabEntry(char *name, SymType type, void *data) {
     return newEntry;
 }
 
-int printSymTabElement(pSymTabEntry entry, void *dummy) {
+int printSymTabElement(void *_entry, void *dummy) {
+    pSymTabEntry entry = _entry;
+
     dummy = dummy;
     switch (entry->type) {
         case SYMT_MACRO:
@@ -209,7 +216,7 @@ void walkHTable(pHTable table, void* (action)(void *)) {
     }
 }
 
-void zapHTable(pHTable table, void* (zapElemAction)(void *)) {
+void zapHTable(pHTable table, void (zapElemAction)(void *)) {
     int i;
     _pHTElem *tblPtr;
     _pHTElem tblElem, temp;

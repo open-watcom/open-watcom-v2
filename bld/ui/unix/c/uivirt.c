@@ -38,7 +38,7 @@
  The modules for each type....
 */
 
-extern bool             TInfCheck(void);
+extern bool             TInfCheck( void );
 extern Display          TInfDisplay;
 extern Keyboard         ConsKeyboard;
 extern Mouse            TermMouse;

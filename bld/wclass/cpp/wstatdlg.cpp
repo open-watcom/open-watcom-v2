@@ -65,8 +65,8 @@ WControl * WEXPORT WStatDialog::getControl( unsigned control_id ) {
 
 extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm );
 
-virtual void WStatDialog::doDialog( WWindow *parent ) {
-/*****************************************************/
+void WStatDialog::doDialog( WWindow *parent ) {
+/*********************************************/
 
     gui_create_info     create_info;
 
@@ -103,7 +103,7 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
 
     char *text = GUIGetText( handle(), control_id );
     WString t( text );
-    GUIFree( text );
+    GUIMemFree( text );
     str = t;
 }
 
@@ -123,7 +123,7 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
         if( text_len > len - 1 ) text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = NULLCHAR;
-        GUIFree( text );
+        GUIMemFree( text );
     }
 }
 
@@ -133,7 +133,7 @@ int  WEXPORT WStatDialog::getCtrlTextLength( unsigned control_id ) {
     char *text = GUIGetText( handle(), control_id );
     if( text == NULL ) return( 0 );
     int len = strlen( text );
-    GUIFree( text );
+    GUIMemFree( text );
     return( len );
 }
 

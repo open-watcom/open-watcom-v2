@@ -1,6 +1,0 @@
-#include "windows.h"
-#include "../mif/rcdef.h"
-#include "../h/wprof.rc"
-ApplIcon icon "../bitmap/win/prof_i.ico"
-
-// BITMAP_SPLASH BITMAP "../bitmap/win/prof_s.bmp"

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <commdlg.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,8 +41,7 @@
 #include "iemem.h"
 
 /*
- * getXorBits - retrieves the bits for the xor bitmap (only for icons and
- *              cursors).
+ * getXorBits - retrieve the bits for the XOR bitmap (only for icons and cursors)
  */
 static BOOL getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
 {
@@ -53,22 +52,24 @@ static BOOL getXorBits( BITMAPINFO *bmi, BYTE *bits, img_node *node )
     memdc = CreateCompatibleDC( hdc );
     ReleaseDC( node->viewhwnd, hdc );
 
-    GetDIBits(memdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS);
-    if (bmi->bmiHeader.biSizeImage == 0) {
-        if (node->width > 32 && FALSE)
-            bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES(node->width*node->bitcount,
-                                                            node->height );
-        else
-            bmi->bmiHeader.biSizeImage = BITS_TO_BYTES(node->width*node->bitcount,
-                                                            node->height );
+    GetDIBits( memdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    if( bmi->bmiHeader.biSizeImage == 0 ) {
+        if( node->width > 32 && FALSE ) {
+            bmi->bmiHeader.biSizeImage = BITS_INTO_BYTES( node->width * node->bitcount,
+                                                          node->height );
+        } else {
+            bmi->bmiHeader.biSizeImage = BITS_TO_BYTES( node->width*node->bitcount,
+                                                        node->height );
+        }
     }
-    GetDIBits(memdc, node->hxorbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS);
+    GetDIBits( memdc, node->hxorbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
     DeleteDC( memdc );
-    return(TRUE);
+    return( TRUE );
+
 } /* getXorBits */
 
 /*
- * getBitmapInfo - Retrieves the bitmap info structure
+ * getBitmapInfo - retrieve the bitmap information structure
  */
 static void getBitmapInfo( BITMAPINFO *bmi, img_node *node )
 {
@@ -77,17 +78,19 @@ static void getBitmapInfo( BITMAPINFO *bmi, img_node *node )
 
     GetBitmapInfoHeader( &bmih, node );
 
-    aRgbq = MemAlloc(RGBQ_SIZE(node->bitcount));
-    SetRGBValues(aRgbq, (1<<(node->bitcount)));
+    memcpy( &bmi->bmiHeader, &bmih, sizeof( BITMAPINFOHEADER ) );
 
-    memcpy( &(bmi->bmiHeader), &bmih, sizeof(BITMAPINFOHEADER) );
-    memcpy( bmi->bmiColors, aRgbq, RGBQ_SIZE(node->bitcount) );
-    MemFree(aRgbq);
+    if( node->bitcount < 9 ) {
+        aRgbq = MemAlloc( RGBQ_SIZE( node->bitcount ) );
+        SetRGBValues( aRgbq, 1 << node->bitcount );
+        memcpy( bmi->bmiColors, aRgbq, RGBQ_SIZE( node->bitcount ) );
+        MemFree( aRgbq );
+    }
 
 } /* getBitmapInfo */
 
 /*
- * getAndBits - retrieves the bits for the and bitmap.
+ * getAndBits - retrieve the bits for the AND bitmap
  */
 static void getAndBits( BYTE *bits, img_node *node )
 {
@@ -102,16 +105,16 @@ static void getAndBits( BYTE *bits, img_node *node )
     memdc = CreateCompatibleDC( hdc );
     ReleaseDC( node->viewhwnd, hdc );
 
-    bmi = MemAlloc( DIB_INFO_SIZE(1) );
+    bmi = MemAlloc( DIB_INFO_SIZE( 1 ) );
 
-    rgbq = MemAlloc(RGBQ_SIZE(1));
-    SetRGBValues(rgbq, 2);
-    memcpy( bmi->bmiColors, rgbq, RGBQ_SIZE(1) );
-    MemFree(rgbq);
+    rgbq = MemAlloc( RGBQ_SIZE( 1 ) );
+    SetRGBValues( rgbq, 2 );
+    memcpy( bmi->bmiColors, rgbq, RGBQ_SIZE( 1 ) );
+    MemFree( rgbq );
 
-    h = &(bmi->bmiHeader);
+    h = &bmi->bmiHeader;
 
-    h->biSize = sizeof(BITMAPINFOHEADER);
+    h->biSize = sizeof( BITMAPINFOHEADER );
     h->biWidth = node->width;
     h->biHeight = node->height;
     h->biPlanes = 1;
@@ -124,16 +127,15 @@ static void getAndBits( BYTE *bits, img_node *node )
     h->biClrImportant = 0;
 
     oldbitmap = SelectObject( memdc, node->handbitmap );
-    GetDIBits(memdc, node->handbitmap, 0, node->height, bits, bmi,
-                                                        DIB_RGB_COLORS);
+    GetDIBits( memdc, node->handbitmap, 0, node->height, bits, bmi, DIB_RGB_COLORS );
     SelectObject( memdc, oldbitmap );
     DeleteDC( memdc );
 
 } /* getAndBits */
 
 /*
- * GetBitmapInfoHeader - Gets the bitmap info header structure from the
- *                       bitmap info structure.
+ * GetBitmapInfoHeader - gets the bitmap information header structure from the
+ *                       bitmap information structure
  */
 void GetBitmapInfoHeader( BITMAPINFOHEADER *bmih, img_node *node )
 {
@@ -144,7 +146,7 @@ void GetBitmapInfoHeader( BITMAPINFOHEADER *bmih, img_node *node )
     bmih->biBitCount = node->bitcount;
     bmih->biCompression = 0;
 //    bmih->biSizeImage = BITS_TO_BYTES( node->bitcount * node->width,
-//                                                      node->height );
+//                                       node->height );
     bmih->biSizeImage = 0;
     bmih->biXPelsPerMeter = 0;
     bmih->biYPelsPerMeter = 0;
@@ -154,45 +156,49 @@ void GetBitmapInfoHeader( BITMAPINFOHEADER *bmih, img_node *node )
 } /* GetBitmapInfoHeader */
 
 /*
- * FillImageResource - fills the "an_img_resource" structure from the image
- *                      information structure.
+ * FillImageResource - fill the "an_img_resource" structure from the image
+ *                     information structure
  */
 void FillImageResource( an_img_resource *img_res, img_node *node )
 {
     img_res->width = node->width;
     img_res->height = node->height;
-    img_res->colour_count = 1 << (node->bitcount);
+    img_res->color_count = 1 << node->bitcount;
     img_res->reserved = 0;
     img_res->xhotspot = node->hotspot.x;
     img_res->yhotspot = node->hotspot.y;
+
 } /* FillImageResource */
 
 /*
- * GetImageData - Gets icon/cursor information for saving the icon/cursor.
+ * GetImageData - get icon/cursor information for saving the icon/cursor
  */
 void GetImageData( an_img *img, img_node *node )
 {
     RGBQUAD             *aRgbq;
     BITMAPINFOHEADER    *h;
 
-    h = &(img->bm->bmiHeader);
+    h = &img->bm->bmiHeader;
 
-    aRgbq = MemAlloc(RGBQ_SIZE(h->biBitCount));
-    SetRGBValues(aRgbq, (1<<(h->biBitCount)));
-    memcpy( img->bm->bmiColors, aRgbq, RGBQ_SIZE(h->biBitCount) );
-    MemFree(aRgbq);
+    if( h->biBitCount < 9 ) {
+        aRgbq = MemAlloc( RGBQ_SIZE( h->biBitCount ) );
+        SetRGBValues( aRgbq, 1 << h->biBitCount );
+        memcpy( img->bm->bmiColors, aRgbq, RGBQ_SIZE( h->biBitCount ) );
+        MemFree( aRgbq );
+    }
 
     getXorBits( img->bm, img->xor_mask, node );
 
     /*
-     * Get the "and" bitmap information ...
+     * Get the AND bitmap information ...
      */
     getAndBits( img->and_mask, node );
+
 } /* GetImageData */
 
 /*
- * GetDIBitmapInfo - Returns a pointer to a bitmap info structure ... memory
- *                   should be freed with FreeDIBitmapInfo.
+ * GetDIBitmapInfo - return a pointer to a bitmap information structure
+ *                 - memory should be freed with FreeDIBitmapInfo
  */
 BITMAPINFO *GetDIBitmapInfo( img_node *node )
 {
@@ -207,10 +213,10 @@ BITMAPINFO *GetDIBitmapInfo( img_node *node )
 } /* GetDIBitmapInfo */
 
 /*
- * FreeDIBitmapInfo - Frees the memory allocated by GetDIBitmapInfo
+ * FreeDIBitmapInfo - free the memory allocated by GetDIBitmapInfo
  */
 void FreeDIBitmapInfo( BITMAPINFO *bmi )
 {
-    MemFree (bmi);
-} /* FreeDIBitmapInfo */
+    MemFree( bmi );
 
+} /* FreeDIBitmapInfo */

@@ -1,3 +1,30 @@
-# .mif file for clients
-cfloat_lib      = $(cfloat_dir)\O.$(host_CPU)\cf.lib
-cfloat_include  = $(cfloat_dir)\h
+# CFLOAT library finder.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+#
+# CFLOAT library
+#
+!ifdef __UNIX__
+cfloat_lib_386 = $(cfloat_dir)/osi386/cf.lib
+cfloat_lib_axp = $(cfloat_dir)/osiaxp/cf.lib
+cfloat_lib_mps = $(cfloat_dir)/osimps/cf.lib
+!else
+cfloat_lib_386 = $(cfloat_dir)\osi386\cf.lib
+cfloat_lib_axp = $(cfloat_dir)\osiaxp\cf.lib
+cfloat_lib_mps = $(cfloat_dir)\osimps\cf.lib
+!endif
+
+#
+# CFLOAT run-time DLL used
+#
+!ifeq $(proj_name)_rtdll 1
+!endif
+
+#
+!ifdef bootstrap
+cfloat_lib = $(cfloat_dir)/$(%OBJDIR)/cf.lib
+!else ifdef cfloat_lib_$(host_os)_$(host_cpu)
+cfloat_lib = $(cfloat_lib_$(host_os)_$(host_cpu))
+!else
+cfloat_lib = $(cfloat_lib_$(host_cpu))
+!endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS Equipment list interface.
 *
 ****************************************************************************/
 
@@ -51,4 +50,4 @@ typedef struct {
 #pragma aux Equipment   = 0xcd 0x11 value [ax];
 
 
-extern equip_list       Equipment();
+extern equip_list       Equipment( void );

@@ -93,7 +93,7 @@ void APIENTRY SoftModeThread( thread_data *thread )
 
     rc = WinThreadAssocQueue( HabDebugger, thread->hmq );
     PSetHmqDebugee( thread->hmq, HwndDummy );
-    rc = WinSetHook( HabDebugger, NULL, HK_SENDMSG, PSendMsgHookProc, HookDLL );
+    rc = WinSetHook( HabDebugger, NULL, HK_SENDMSG, (PFN)PSendMsgHookProc, HookDLL );
     while( WinQuerySendMsg( HabDebugger, NULL, thread->hmq, &qmsg ) ) {
         WinReplyMsg( HabDebugger, NULL, thread->hmq, (MRESULT) 0 );
     }
@@ -107,13 +107,13 @@ void APIENTRY SoftModeThread( thread_data *thread )
             WinDefWindowProc( qmsg.hwnd, qmsg.msg, qmsg.mp1, qmsg.mp2 );
         }
     }
-    WinReleaseHook( HabDebugger, NULL, HK_SENDMSG, PSendMsgHookProc, HookDLL );
+    WinReleaseHook( HabDebugger, NULL, HK_SENDMSG, (PFN)PSendMsgHookProc, HookDLL );
     PSetHmqDebugee( thread->hmq, NULL );
     WinThreadAssocQueue( HabDebugger, NULL );
     WinPostMsg( HwndDebugger, WM_QUIT, 0, 0 ); // tell debugger we're done
 }
 
-static void BeginThreadHelper()
+static void BeginThreadHelper( void )
 {
     thread_data *_arg;
 
@@ -149,12 +149,12 @@ char SetHardMode( char hard )
     return( old );
 }
 
-BOOL IsPMDebugger()
+BOOL IsPMDebugger( void )
 {
     return( HabDebugger != NULL );
 }
 
-void CreateDummyWindow()
+void CreateDummyWindow( void )
 {
     ULONG flCreate;
     HWND        frame;
@@ -162,7 +162,7 @@ void CreateDummyWindow()
     WinRegisterClass( HabDebugger, "Dummy", WinDefWindowProc, CS_SIZEREDRAW, 0 );
     flCreate = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX;
     frame = WinCreateStdWindow( HWND_DESKTOP, 0L, &flCreate, "Dummy",
-                                    "", 0L, NULL, 99, &HwndDummy );
+                                    "", 0L, 0, 99, &HwndDummy );
     if( frame == NULL ) {
         HwndDummy = HwndDebugger;
     }
@@ -253,14 +253,14 @@ void ExitSoftMode( PID pid )
 //    if( WinIsWindow( HabDebugger, AppActiveWnd ) ) WinSetActiveWindow( HWND_DESKTOP, AppActiveWnd );
 }
 
-void EnterHardMode()
+void EnterHardMode( void )
 {
     if( InHardMode ) return;
     WinLockInput( 0, TRUE );
     InHardMode = TRUE;
 }
 
-void ExitHardMode()
+void ExitHardMode( void )
 {
     if( !InHardMode ) return;
     WinLockInput( 0, FALSE );
@@ -300,6 +300,6 @@ void TellSoftModeHandles( HAB hab, HWND hwnd )
 VOID InitSoftDebug( VOID )
 {
     DosLoadModule( NULL, 0, HOOKER, &HookDLL );
-    DosGetProcAddr( HookDLL, "SENDMSGHOOKPROC", &PSendMsgHookProc );
-    DosGetProcAddr( HookDLL, "SETHMQDEBUGEE", &PSetHmqDebugee );
+    DosGetProcAddr( HookDLL, "SENDMSGHOOKPROC", (PFN*)&PSendMsgHookProc );
+    DosGetProcAddr( HookDLL, "SETHMQDEBUGEE", (PFN*)&PSetHmqDebugee );
 }

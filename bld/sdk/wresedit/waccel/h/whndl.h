@@ -43,11 +43,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WAccelHandle    WRegisterEditSession   ( WAccelEditInfo * );
-extern int             WUnRegisterEditSession ( WAccelHandle );
-extern WAccelEditInfo *WGetEditSessionInfo    ( WAccelHandle );
-extern WAccelHandle    WGetEditSessionHandle  ( WAccelEditInfo *info );
-extern int             WIsValidHandle         ( WAccelHandle );
-extern int             WIsAccelDialogMessage  ( MSG *msg, HACCEL acel_table );
+extern WAccelHandle     WRegisterEditSession( WAccelEditInfo * );
+extern int              WUnRegisterEditSession( WAccelHandle );
+extern WAccelEditInfo   *WGetEditSessionInfo( WAccelHandle );
+extern WAccelHandle     WGetEditSessionHandle( WAccelEditInfo *info );
+extern int              WIsValidHandle( WAccelHandle );
+extern int              WIsAccelDialogMessage( MSG *msg, HACCEL acel_table );
 
 #endif

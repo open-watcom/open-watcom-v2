@@ -1,0 +1,37 @@
+/*
+ *  afxcmn3.inl Inline implementation of functions declared in afxcmn.h
+ *
+:include crwatcnt.sp
+ */
+
+// This file contains only those functions that require Internet Explorer 3.0 or later.
+// Do not add any functions that run on earlier versions or any functions that
+// require a later version to this file.  Doing so will break compatibility.
+
+AFX_INLINE BOOL CImageList::Copy( int iDst, int iSrc, UINT uFlags )
+/*****************************************************************/
+{
+    return( ::ImageList_Copy( m_hImageList, iDst, m_hImageList, iSrc, uFlags ) );
+}
+
+AFX_INLINE BOOL CImageList::Copy( int iDst, CImageList *pSrc, int iSrc, UINT uFlags )
+/***********************************************************************************/
+{
+    return( ::ImageList_Copy( m_hImageList, iDst, pSrc->GetSafeHandle(), iSrc,
+                              uFlags ) );
+}
+
+AFX_INLINE BOOL CImageList::DrawIndirect( IMAGELISTDRAWPARAMS *pimldp )
+/*********************************************************************/
+{
+    ASSERT( pimldp != NULL );
+    pimldp->cbSize = sizeof( IMAGELISTDRAWPARAMS );
+    pimldp->himl = m_hImageList;
+    return( ::ImageList_DrawIndirect( pimldp ) );
+}
+
+AFX_INLINE BOOL CImageList::SetImageCount( UINT nNewCount )
+/*********************************************************/
+{
+    return( ::ImageList_SetImageCount( m_hImageList, nNewCount ) );
+}

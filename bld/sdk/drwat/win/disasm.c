@@ -155,12 +155,12 @@ char *DrWatToStr( DWORD value, WORD length, DWORD off )
 /*
  * DrWatToIndex -- convert to index
  */
-char *DrWatToIndex( long value, DWORD off )
+char *DrWatToIndex( unsigned long value, DWORD off )
 {
 
     off = off;
-    if( value < 0 ) {
-        LongToHex( disasmBuf + 1, -value, 4 );
+    if( (long)value < 0 ) {
+        LongToHex( disasmBuf + 1, -(long)value, 4 );
         disasmBuf[0] = '-';
     } else {
         LongToHex( disasmBuf, value, 4 );
@@ -546,8 +546,8 @@ void PreviousInstruction( ADDRESS *addr )
             addr->offset = next_off;
         }
     }
-    addr->seg = NULL;
-    addr->offset = NULL;
+    addr->seg    = 0;
+    addr->offset = 0;
 
 } /* PreviousInstruction */
 

@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <stdlib.h>
+#include "vi.h"
 #include "linedlg.h"
 
-static char     lineStr[ 20 ];
-static char     lineLen = sizeof( lineStr - 1 );
+static char     lineStr[20];
+static char     lineLen = sizeof( lineStr ) - 1;
 static linenum  *lineVal;
 
 /*
@@ -54,15 +53,15 @@ BOOL WINEXP GotoLineDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDCANCEL:
-            EndDialog( hwnd, 0 );
+            EndDialog( hwnd, FALSE );
             break;
         case IDOK:
             GetDlgItemText( hwnd, GOTOLINE_EDIT, lineStr, lineLen );
             *lineVal = atol( lineStr );
-            if( ( *lineVal ) > 0 ) {
-                EndDialog( hwnd, 1 );
+            if( *lineVal > 0 ) {
+                EndDialog( hwnd, TRUE );
             } else {
-                EndDialog( hwnd, 0 );
+                EndDialog( hwnd, FALSE );
             }
             break;
         default:
@@ -82,7 +81,7 @@ bool GetLineDialog( linenum *line )
     DLGPROC     proc;
     bool        rc;
 
-    lineStr[ 0 ] = '\0';
+    lineStr[0] = '\0';
     lineVal = line;
     proc = (DLGPROC) MakeProcInstance( (FARPROC) GotoLineDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "LINEDLG", Root, proc );

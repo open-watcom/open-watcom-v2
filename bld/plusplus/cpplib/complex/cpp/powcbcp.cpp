@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <complex>
+#include <complex.h>
 #include "cplx.h"
 
 _WPRTLINK Complex pow( const Complex &base, const Complex &power ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Exception handler registration using FS register.
 *
 ****************************************************************************/
 
@@ -33,9 +32,8 @@
 #ifndef __FSREG_H__
 #define __FSREG_H__
 
-#include <variety.h>
+#include "variety.h"
 
-// FSREG.H -- registration using fs register
 //
 // 94/10/11 -- J.W.Welch            -- defined
 //
@@ -81,8 +79,8 @@ struct FsExcRec;
     #define EXC_HAND_CATCH      ExceptionContinueExecution
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
 
-    void __stdcall RtlUnwind            // can't find def'n
-                    ( CONTEXT *
+    extern "C" void __stdcall RtlUnwind // can't find def'n
+                    ( void *
                     , void *
                     , EXCEPTION_RECORD *
                     , void * );
@@ -116,7 +114,7 @@ struct FsExcRec;
     #define FS_REGISTRATION
     #define FS_REGISTRATION_NT
 
-    #define FS_REGISTRATION_CONVENTION  __cdecl
+    #define FSREGAPI _WPRTDATA __declspec(__cdecl)
 
     #define RW_REGISTRATION
 
@@ -161,7 +159,7 @@ struct FsExcRec;
     #define FS_REGISTRATION
     #define FS_REGISTRATION_OS2
 
-    #define FS_REGISTRATION_CONVENTION  __syscall
+    #define FSREGAPI _WPRTDATA __declspec(__syscall)
 
     #define RW_REGISTRATION
 
@@ -195,7 +193,7 @@ struct FsExcRec;
 
     #define FS_REGISTRATION_SYSIND
 
-    #define FS_REGISTRATION_CONVENTION
+    #define FSREGAPI _WPRTDATA __declspec(__watcall)
 
     #define RW_REGISTRATION
 
@@ -317,7 +315,7 @@ struct FsExcRec;
     #define PD_REGISTRATION
     #define PD_REGISTRATION_RW
 
-    #define FS_REGISTRATION_CONVENTION
+    #define FSREGAPI _WPRTDATA __declspec(__watcall)
 
 #else
 
@@ -358,28 +356,20 @@ struct FsCtxRec {               // Context record
     uint_32 not_used;
 };
 
-typedef unsigned FS_REGISTRATION_CONVENTION FS_HANDLER
+typedef FSREGAPI unsigned FS_HANDLER
                            ( FsExcRec*
                            , RW_DTREG*
                            , FsCtxRec*
                            , unsigned );
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-_WPRTLINK
-unsigned FS_REGISTRATION_CONVENTION CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
+extern "C"
+FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
     ( FsExcRec* rec_exc         // - exception record
     , RW_DTREG* rw              // - current R/W block
     , FsCtxRec* rec_ctx         // - context record
     , unsigned context          // - dispatch context
-    )
-;
+    );
 
-#ifdef __cplusplus
-}
-#endif
 
 #if defined( FS_REGISTRATION )  // FS definitions
 

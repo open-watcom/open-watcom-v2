@@ -24,18 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of labs().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
-#include <stdio.h>
-#undef labs
+#include <stdlib.h>
+
 
 _WCRTLINK long int labs( long int i )
-    {
-        if( i < 0 ) i = - i;
-        return( i );
-    }
+/***********************************/
+{
+    if( i < 0 )
+        i = - i;
+    return( i );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler window callback routines.
 *
 ****************************************************************************/
 
@@ -35,10 +34,8 @@
 #include "wpaui.h"
 #include "msg.h"
 
-//#include "wpwind.def"
 
 extern void     WndGetClientRect( a_window *, gui_rect * );
-extern wnd_row  WndGetMouseRow();
 
 extern a_window *   WndMain;
 
@@ -109,7 +106,7 @@ extern void WPAdjustRowHeight( a_window * wnd, bint initial_set )
 extern void WPSetRowHeight( a_window * wnd )
 /******************************************/
 {
-    WPAdjustRowHeight( wnd, B_TRUE );
+    WPAdjustRowHeight( wnd, P_TRUE );
 }
 
 

@@ -78,7 +78,9 @@ WEXPORT WClient::~WClient() {
 /***************************/
 
     DdeUninitialize( _procid );
+#if !defined(__NT__)
     FreeProcInstance( _procInst );
+#endif
     _procid = NULL;
 }
 

@@ -1,19 +1,19 @@
 BUILDER is a sort of quick and dirty command line processor that is optimized
 for the tasks performed when creating an executable image as part of the
-build process.
+build process. It is controlled by one or more text files with directives and
+commands, called control files.
 
 
         Searching for the default control file
         --------------------------------------
 
 If no -c command line options are specified, BUILDER looks for an environment
-variable called "BUILDER.CTL". The value of that environment variable is
+variable called "BUILDER_CTL". The value of that environment variable is
 used as name of the default control file. If the variable is not defined, the
-file called "BUILDER.CTL" is used. It first checks the current directory, if
+file called "builder.ctl" is used. It first checks the current directory, if
 the file is not present it will check the parent directories, up to the root
-of the current drive. If BUILDER.CTL has not yet been found, the PATH
-environment variable is checked. This means that you can put the BUILDER.CTL
-in the root directory of a project, and a "BUILDER" command will find it
+of the current drive. This means that you can put your builder.ctl file
+in the root directory of a project, and a "builder" command will find it
 no matter what project directory you're located in.
 
 
@@ -38,6 +38,12 @@ There are two special macro names:
         <CWD>   will be replaced with the current working directory.
         <*>     will be replaced with a space separated list of all the
                 command line parameters.
+        <n*>    (n is a number) will be replaced with a space separated list
+                of all the command line parameters from the n-th onward.
+
+
+Another expansion which takes place is that any of '[', ']', '(' and ')' are
+surrounded by spaces.
 
 
         BUILDER Directives
@@ -45,13 +51,15 @@ There are two special macro names:
 
 After the command line is macro-substituted, the first non-blank character
 is examined. If it's a "#" character, the line is a comment and is ignored.
-If the line starts with "[", it's a BUILDER directive line, otherwise, it's
-a system command to be executed. Here are the directives.
+If it is a "[", it's a BUILDER directive line, otherwise, it's a system
+command to be executed. Here are the directives.
+
 
         [INCLUDE file_name]
 
 This causes the named file to opened and it's contents processed as a nested
 control file.
+
 
         [LOG file_name {backup_copies} ]
 
@@ -68,16 +76,45 @@ directive. If backup_copies is not specified in the LOG directive, the value
 of the -b command line option is used. If no -b is specified, the default
 number of backup copies is one.
 
+
         [BLOCK match word1 word2 word3...]
 
 The "match" word is compared in turn with the words following. If it matches
 one of the words following, the commands following are executed. If none
 of the words match, the commands are skipped, until the next BLOCK directive
-or until the end of the control file. If you want to start unconditional
-execution of commands after you've had a sequence of BLOCK's, just use a
-BLOCK that's sure to match, e.g.:
-
+or until the end of the control file. In other words, BLOCK directives cannot
+be nested. If you want to start unconditional execution of commands after
+you've had a sequence of BLOCK's, just use a BLOCK that's sure to match, e.g.:
         [BLOCK . .]
+The "match" word can be a single word, or multiple words. If multiple words,
+they must be surrounded by parentheses. Within parentheses, a special 'word'
+is the empty word formed by two double quotes. For example, (os_linux "")
+will match "os_linux" or nothing .
+
+
+        [IFDEF match word1 word2 word3...]
+
+This works the same as BLOCK, except that an IFDEF can occur inside and
+outside a BLOCK. An IFDEF is terminated by another IFDEF (they cannot be
+nested), an ENDIF or a BLOCK. An IFDEF may occur inside or outside a BLOCK.
+
+
+        [ENDIF]
+
+This terminates a preceding IFDEF. It has no effect on the BLOCK.
+
+
+        Predefined Variables
+        --------------------
+
+Builder predefines special environment variables for use within builder
+control files or any child processes. These variables are useful for testing
+in BLOCK and IFDEF directives.
+
+
+ BLD_HOST       - describes the platform builder is executing on. Currently
+                  defined values are UNIX, NT, OS2, and DOS.
+
 
 
         Built-in Commands
@@ -108,14 +145,45 @@ Set the environment variable "var" to "value".
 Copy the source file to the destination file. The src_file may have
 wild card characters in it. The destination file may only be a full pathname,
 or it may end in a '\' or '/' character, in which case the source file
-name is used in the destination.
+name is used in the destination. The destination file will have the same
+'access' and 'modified' times as the source file.
+BUILDER will attempt to create the destination path if it does not exist and
+the source file exists.
+
+        CCOPY src_file dst_file
+
+Conditional copy; same as the COPY command, but does not fail if src_file 
+does not exist. Useful when src_file may or may not exist, and it is not
+considered an error when it doesn't.
 
         ACOPY src_file dst_file
 
 Same as the COPY command, except that the file is only copied if dst_file
 does not exist or src_file has the archive bit turned on. At the _end_ of
 the control file, all src_file's copied by an ACOPY have their archive bits
-turned off.
+turned off. On Linux, where there is no archive bit, the 'modified' times
+of the two files are compared instead: if unequal, the file is copied.
+
+        ACCOPY src_file dst_file
+
+Conditional ACOPY; same as the ACOPY command, but does not fail if src_file
+does not exist.
+
+        ECHO text
+
+Write the text to the screen and any log file(s). The text may contains macros
+which are expanded first.
+
+        ERROR text
+
+Similar to the ECHO command, but returns a failure code. Useful for aborting
+when some precondition is not satisfied, eg. a required environment variable is
+not set.
+
+        MKDIR new_dir
+
+Create a new directory called "new_dir". BUILDER will not attempt to create
+the directory if it already exists.
 
         PMAKE pmake_command_line
 
@@ -147,6 +215,10 @@ The following command line options are recognized:
 
                 Determine the default number of backup copies of a log file
                 that are to be kept.
+
+        -i
+                Ignore errors. If a command delivers non-zero return code,
+                continue executing the next command. Use with caution.
 
         -v
                 Verbose. Commands that are about to be executed are written
@@ -182,7 +254,7 @@ sign is found, the ordinal position of the parameter is used as the
 environment variable name and the whole of the parameter contents are used
 as the value. E.g.:
 
-        BUILDER HI_HO FOO=BAR GOODBYE
+        builder HI_HO FOO=BAR GOODBYE
 
 will set the following environment variables:
 

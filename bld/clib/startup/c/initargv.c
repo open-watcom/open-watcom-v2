@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Functions to set up argc and argv parameters of main(), etc.
 *
 ****************************************************************************/
 
@@ -42,31 +41,47 @@
 #include <string.h>
 #include <io.h>
 #include "liballoc.h"
+#include "initarg.h"
 
 extern  int         __historical_splitparms;
 extern  void        _Not_Enough_Memory( void );             /* 25-jul-89 */
-static  unsigned    _SplitParms( CHAR_TYPE *, CHAR_TYPE **, CHAR_TYPE ** );
-_WCRTLINK extern CHAR_TYPE  *__F_NAME(_LpCmdLine,_LpwCmdLine);
-_WCRTLINK extern CHAR_TYPE  *__F_NAME(_LpPgmName,_LpwPgmName);
-extern  int         __F_NAME(_argc,_wargc);             /* argument count  */
-extern  int         __F_NAME(__argc,__wargc);           /* argument count  */
-extern  CHAR_TYPE **__F_NAME(_argv,_wargv);             /* argument vector */
-extern  CHAR_TYPE **__F_NAME(__argv,__wargv);           /* argument vector */
-_WCRTLINK extern int        __F_NAME(___Argc,___wArgc); /* argument count */
-_WCRTLINK extern CHAR_TYPE**__F_NAME(___Argv,___wArgv); /* argument vector */
-static CHAR_TYPE   *__F_NAME(__CmdLine,__wCmdLine);     /* cmdline buffer */
+static  unsigned    _SplitParms(int, CHAR_TYPE *, CHAR_TYPE **, CHAR_TYPE ** );
+_WCRTDATA static CHAR_TYPE  *__F_NAME(__CmdLine,__wCmdLine);    /* cmdline buffer */
 
-void __F_NAME(__Init_Argv,__wInit_Argv)()
+_WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
+        int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
+        int *pargc, CHAR_TYPE ***pargv );
+
+void __F_NAME(__Init_Argv,__wInit_Argv)( void )
+{
+    __F_NAME( __CmdLine, __wCmdLine ) = __F_NAME( _getargv, _wgetargv )(
+        __historical_splitparms,
+        __F_NAME( _LpPgmName, _LpwPgmName ), __F_NAME( _LpCmdLine, _LpwCmdLine ),
+        &__F_NAME( _argc, _wargc ), &__F_NAME( _argv, _wargv ) );
+
+    __F_NAME( __argc, __wargc )   = __F_NAME( _argc, _wargc );
+    __F_NAME( ___Argc, ___wArgc ) = __F_NAME( _argc, _wargc );
+    __F_NAME( __argv, __wargv )   = __F_NAME( _argv, _wargv );
+    __F_NAME( ___Argv, ___wArgv ) = __F_NAME( _argv, _wargv );
+}
+
+_WCRTLINK void *__F_NAME( _getargv, _wgetargv )(
+        int historical, CHAR_TYPE *exe, CHAR_TYPE *cmd,
+        int *pargc, CHAR_TYPE ***pargv )
 {
     unsigned    argc;           /* argument count */
+    CHAR_TYPE   **argv;         /* Actual arguments */
     CHAR_TYPE   *endptr;        /* ptr to end of command line */
     unsigned    len;            /* length of command line */
     CHAR_TYPE   *cmdline;       /* copy of command line */
     unsigned    size;           /* amount to allocate */
     unsigned    argv_offset;    /* offset of argv in storage */
+#if defined(__REAL_MODE__) && defined(__BIG_DATA__)
+    void _WCI86NEAR *ncmd;      /* near cmdline, if we can get it */
+#endif
 
-    argc = _SplitParms( __F_NAME(_LpCmdLine,_LpwCmdLine), NULL, &endptr ) + 1;
-    len = endptr - __F_NAME(_LpCmdLine,_LpwCmdLine) + 1;
+    argc = _SplitParms( historical, cmd, NULL, &endptr ) + 1;
+    len = (unsigned) ( endptr - cmd ) + 1;
     argv_offset = __ALIGN_SIZE(len * sizeof(CHAR_TYPE));
     size = argv_offset + (argc+1) * sizeof(CHAR_TYPE *);
     // round up size for alignment of argv pointer
@@ -75,43 +90,39 @@ void __F_NAME(__Init_Argv,__wInit_Argv)()
     #if defined(__REAL_MODE__) && defined(__BIG_DATA__)
         #if defined(__OS2_286__)
             if( _osmode == DOS_MODE ) {
-                cmdline = lib_nmalloc( size );
-                if( (void _WCI86NEAR *) cmdline == NULL ) {
+                cmdline = ncmd = lib_nmalloc( size );
+                if( ncmd == NULL ) {
                     cmdline = lib_malloc( size );
                 }
             } else {
                 cmdline = lib_malloc( size );
             }
         #else
-            cmdline = lib_nmalloc( size );
-            if( (void _WCI86NEAR *) cmdline == NULL ) {
+            cmdline = ncmd = lib_nmalloc( size );
+            if( ncmd == NULL ) {
                 cmdline = lib_malloc( size );
             }
         #endif
     #else
         cmdline = lib_malloc( size );
     #endif
-
+    argv = NULL;
+    argc = 0;
     if( cmdline ) {
-        __F_NAME(_argv,_wargv) = (CHAR_TYPE **)(((char*)cmdline) + argv_offset);
-        memcpy( cmdline, __F_NAME(_LpCmdLine,_LpwCmdLine), len*sizeof(CHAR_TYPE) );
-        __F_NAME(_argv,_wargv)[0] = __F_NAME(_LpPgmName,_LpwPgmName);
-        _SplitParms( cmdline, &__F_NAME(_argv,_wargv)[1], &endptr );
-        __F_NAME(_argv,_wargv)[argc] = NULL;
-        __F_NAME(_argc,_wargc) = argc;
-    } else {
-        __F_NAME(_argv,_wargv) = NULL;
-        __F_NAME(_argc,_wargc) = 0;
+        memcpy( cmdline, cmd, len * sizeof(CHAR_TYPE) );
+        argv = (void *) ( ( ( char*) cmdline ) + argv_offset );
+        argv[0] = exe;
+        argc = _SplitParms( historical, cmdline, argv + 1, &endptr ) + 1;
+        argv[argc] = NULL;
     }
-    __F_NAME(___Argc,___wArgc) = __F_NAME(_argc,_wargc);
-    __F_NAME(___Argv,___wArgv) = __F_NAME(_argv,_wargv);
-    __F_NAME(__argc,__wargc) = __F_NAME(___Argc,___wArgc);
-    __F_NAME(__argv,__wargv) = __F_NAME(___Argv,___wArgv);
-    __F_NAME(__CmdLine,__wCmdLine) = cmdline;   // track this since we must free it
+    *pargc = argc;
+    *pargv = argv;
+    return( cmdline );
 }
 
 
-static unsigned _SplitParms( CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr ) {
+static unsigned _SplitParms( int historical, CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr )
+{
     register unsigned argc;
     register CHAR_TYPE *start;
     register CHAR_TYPE *new;
@@ -137,15 +148,14 @@ static unsigned _SplitParms( CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr 
         new = start = p;
         for(;;) {
             if( *p == '\"' ) {
-                if( !__historical_splitparms ) {
+                if( !historical ) {
                     p++;
                     if( state == QUOTE_NONE ) {
                         state = QUOTE_STARTED;
-                        continue;
-                    } else if( state != QUOTE_NONE ) {
+                    } else {
                         state = QUOTE_NONE;
-                        continue;
                     }
+                    continue;
                 } else {
                     if( state == QUOTE_DELIMITER ) {
                         break;
@@ -159,7 +169,7 @@ static unsigned _SplitParms( CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr 
             }
             if( *p == '\0' ) break;
             if( *p == '\\' ) {
-                if( !__historical_splitparms ) {
+                if( !historical ) {
                     if( p[1] == '\"' ) {
                         ++p;
                         if( p[-2] == '\\' ) {
@@ -167,22 +177,15 @@ static unsigned _SplitParms( CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr 
                         }
                     }
                 } else {
-                    if( state == QUOTE_DELIMITER ) {
-                        if( p[1] == '\"' || p[1] == '\\' ) {
-                            ++p;
-                        }
-                    } else {
-                        if( p[1] == '\"' ) {
-                            ++p;
-                        }
+                    if( p[1] == '\"' || p[1] == '\\' && state == QUOTE_DELIMITER ) {
+                        ++p;
                     }
                 }
             }
             if( argv ) {
-                *(new++) = *(p++);
-            } else {
-                ++p;
+                *(new++) = *p;
             }
+            ++p;
         }
         if( argv ) {
             argv[ argc ] = start;
@@ -213,7 +216,7 @@ static unsigned _SplitParms( CHAR_TYPE *p, CHAR_TYPE **argv, CHAR_TYPE **endptr 
     return( argc );
 }
 
-void __F_NAME(__Fini_Argv,__wFini_Argv)()
+void __F_NAME(__Fini_Argv,__wFini_Argv)( void )
 {
     if( __F_NAME(__CmdLine,__wCmdLine) != NULL ) {
         lib_free( __F_NAME(__CmdLine,__wCmdLine) );

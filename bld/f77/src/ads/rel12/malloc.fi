@@ -1,0 +1,4 @@
+c$pragma aux wc "!"
+
+c$pragma aux (wc) free parm( value )
+c$pragma aux (wc) malloc parm( value )

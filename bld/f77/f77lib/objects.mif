@@ -1,0 +1,535 @@
+rt =
+dep_rt =
+both =
+dep_both =
+math =
+ifns =
+xfns =
+ufns =
+
+
+# Files required to support Dynamic Link Libraries
+# ================================================
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# dep_rt 
+!inject fdllinit.obj                 nt nta ntp         o32                        
+!inject fdllterm.obj                 nt nta ntp         o32                        
+!inject finitdll.obj                 nt nta ntp         o32                        
+!inject ftermdll.obj                 nt nta ntp         o32                        
+!inject ftrdinit.obj                 nt nta ntp         o32                        
+!inject ftrdterm.obj                 nt nta ntp         o32                        
+!inject rtlbmain.obj                 nt nta ntp         o32                        
+#===============================================================================
+
+
+# Files required to support multiple threads
+# ==========================================
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# rt 
+!inject finittrd.obj                 nt nta ntp nov     o32     q32         l32       
+!inject ftermtrd.obj                 nt nta ntp nov     o32     q32         l32       
+!inject fthrdini.obj                 nt nta ntp nov     o32     q32         l32       
+!inject thrdutil.obj                 nt nta ntp nov     o32     q32         l32       
+# dep_rt
+!inject fiosem.obj                   nt nta ntp nov     o32     q32         l32       
+!inject initftrd.obj                 nt nta ntp nov     o32     q32         l32       
+# ufns 
+!inject fthread.obj                  nt nta ntp nov     o32     q32         l32       
+#===============================================================================
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# rt 
+#===============================================================================
+
+rt += &
+    aalloc.obj &
+    arrayio.obj &
+    setrecfm.obj &
+    setiocb.obj &
+    setfmt.obj &
+    setnml.obj &
+    setunit.obj &
+    setintl.obj &
+    seterr.obj &
+    setend.obj &
+    setrec.obj &
+    setios.obj &
+    setacc.obj &
+    setblnk.obj &
+    setfile.obj &
+    setform.obj &
+    setlen.obj &
+    setstat.obj &
+    setdir.obj &
+    setfmtd.obj &
+    setname.obj &
+    setseq.obj &
+    setunfmt.obj &
+    setexst.obj &
+    setnmd.obj &
+    setnrec.obj &
+    setnumb.obj &
+    setopen.obj &
+    setrecl.obj &
+    setnofmt.obj &
+    setcctrl.obj &
+    setactn.obj &
+    setbsize.obj &
+    settrace.obj &
+    inqbsize.obj &
+    setshare.obj &
+    iomain.obj &
+    rmemmgr.obj &
+    exback.obj &
+    exclose.obj &
+    exendf.obj &
+    exinq.obj &
+    exread.obj &
+    exopen.obj &
+    exrew.obj &
+    exutil.obj &
+    exwrite.obj &
+    fmtrtns.obj &
+    freeout.obj &
+    freein.obj &
+    ifile.obj &
+    nmlio.obj &
+    chrutils.obj &
+    cctrl.obj &
+    rdutils.obj &
+    wrutils.obj &
+    rdwr.obj &
+    rtutls.obj &
+    rtinq.obj &
+    rfmterr.obj &
+    rfmtemit.obj &
+    rfmtinit.obj &
+    rfmtexec.obj &
+    rfmtlog.obj &
+    rfmtutil.obj &
+    unfmtin.obj &
+    unfmtout.obj &
+    unfmtutl.obj &
+    rterr.obj &
+    ioerr.obj &
+    stop.obj &
+    pause.obj &
+    rfmttab.obj &
+    rcat.obj &
+    rtcat.obj &
+    rmove.obj &
+    rsubstr.obj &
+    rsubscr.obj &
+    runmain.obj &
+    rstdio.obj &
+    stracc.obj &
+    subscr.obj &
+    substr.obj
+
+
+# WORKAROUND: Disable pointer truncation warning for aalloc module; this
+# module for some mysterious reason uses far pointers even on flat model
+# platforms, despite the fact that it can't actually allocate far memory!
+aalloc_postopts = -wcd310
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# both 
+#===============================================================================
+
+both += &
+    blderr.obj &
+    chinese.obj &
+    csetinfo.obj &
+    dbcsutil.obj &
+    english.obj &
+    errincl.obj &
+    errrsrc.obj &
+    errutil.obj &
+    errrtns.obj &
+    errgrp.obj &
+    errmsg.obj &
+    fmtboth.obj &
+    fmtcnvt.obj &
+    fmtscan.obj &
+    hexcnv.obj &
+    japanese.obj &
+    korean.obj &
+    lexcmp.obj &
+    spawn.obj
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# dep_rt 
+!inject fwinmain.obj                 nt nta ntp                     w16 w32        
+!inject intovfrt.obj                    nta                                        
+!inject realvec.obj          d32                                                   
+#===============================================================================
+
+dep_rt += &
+    deffname.obj &
+    fdutil.obj &
+    flt86.obj &
+    initeng.obj &
+    initchi.obj &
+    initjap.obj &
+    initkor.obj &
+    initrsrc.obj &
+    initerr.obj &
+    initcc.obj &
+    initff.obj &
+    initcoma.obj &
+    ioinit.obj &
+    rtsysutl.obj &
+    stdio.obj &
+    sysinq.obj &
+    rdata.obj &
+    expchk.obj &
+    rtmain.obj &
+    rtinit.obj &
+    rttraps.obj &
+    fptraps.obj &
+    undefcg.obj &
+    cortns.obj &
+    coread.obj &
+    cowrite.obj
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# dep_both 
+!inject i4mul.obj        d16     dpm                o16     q16     w16            
+#===============================================================================
+
+dep_both += &
+    btraps.obj &
+    intarith.obj &
+    posback.obj &
+    poscc.obj &
+    posdat.obj &
+    posdel.obj &
+    poserr.obj &
+    posflush.obj &
+    posget.obj &
+    posopen.obj &
+    posput.obj &
+    posrew.obj &
+    posseek.obj &
+    postrunc.obj &
+    sdfile.obj
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# math 
+#===============================================================================
+
+math += &
+    _matherr.obj
+
+# The following support routines are provided in the math libraries.
+
+!ifdef __never_defined__
+math += &
+    powc20.obj &
+    powc16.obj &
+    powc8.obj &
+    divc20.obj &
+    divc16.obj &
+    divc8.obj &
+    mulc8.obj &
+    mulc16.obj &
+    mulc20.obj
+!endif
+
+# The following support routines are generated in-line
+# by the code generator (implemented as primitive operators).
+
+!ifdef __never_defined__
+math += &
+    powri.obj &
+    powxi.obj &
+    powrr.obj &
+    powii.obj
+!endif
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# ifns 
+#===============================================================================
+
+ifns += &
+    ifaint.obj &
+    ifanint.obj &
+    ifccos.obj &
+    ifcdcos.obj &
+    ifcdexp.obj &
+    ifcdlog.obj &
+    ifcdsin.obj &
+    ifcdsqrt.obj &
+    ifcexp.obj &
+    ifchar.obj &
+    ifclog.obj &
+    ifcsin.obj &
+    ifcsqrt.obj &
+    ifcqcos.obj &
+    ifcqexp.obj &
+    ifcqlog.obj &
+    ifcqsin.obj &
+    ifcqsqrt.obj &
+    ifddim.obj &
+    ifqdim.obj &
+    ifdim.obj &
+    ifdint.obj &
+    ifqint.obj &
+    ifdnint.obj &
+    ifqnint.obj &
+    ifdsign.obj &
+    ifqsign.obj &
+    ifi1dim.obj &
+    ifi2dim.obj &
+    ifidim.obj &
+    ifidnint.obj &
+    ifiqnint.obj &
+    ifindex.obj &
+    ifisign.obj &
+    iflge.obj &
+    iflgt.obj &
+    iflle.obj &
+    ifllt.obj &
+    ifnint.obj &
+    ifi1sign.obj &
+    ifi2sign.obj &
+    ifsign.obj &
+    ifi1sha.obj &
+    ifi1shc.obj &
+    ifi1shft.obj &
+    ifi1shl.obj &
+    ifi2sha.obj &
+    ifi2shc.obj &
+    ifi2shft.obj &
+    ifi2shl.obj &
+    ifishl.obj &
+    ifisha.obj &
+    ifishc.obj &
+    ifishft.obj &
+    ifi1lshf.obj &
+    ifi1rshf.obj &
+    ifi2lshf.obj &
+    ifi2rshf.obj &
+    iflshift.obj &
+    ifrshift.obj &
+    ifi1bchg.obj &
+    ifi2bchg.obj &
+    ifibchng.obj &
+    ifgamma.obj &
+    ifdgamma.obj &
+    ifqgamma.obj &
+    ifalgama.obj &
+    ifdlgama.obj &
+    ifqlgama.obj &
+    iferf.obj &
+    iferfc.obj &
+    ifderf.obj &
+    ifderfc.obj &
+    ifderfdt.obj &
+    ifqerf.obj &
+    ifqerfc.obj &
+    ifqerfdt.obj &
+    ifcabs.obj &
+    ifcdabs.obj &
+    ifcqabs.obj &
+    iflen.obj &
+    iflentrm.obj
+
+# The following intrinsic functions are generated in-line by the front end
+# but are required because they define the X... versions which are
+# referenced if the intrinsic function passed as an argument.
+
+ifns += &
+    ifi1abs.obj &
+    ifi2abs.obj &
+    ifiabs.obj &
+    ifi1mod.obj &
+    ifi2mod.obj &
+    ifmod.obj &
+    ifichar.obj &
+    ifaimag.obj &
+    ifdimag.obj &
+    ifqimag.obj &
+    ifconjg.obj &
+    ifdconjg.obj &
+    ifqconjg.obj &
+    ifdprod.obj &
+    ifqprod.obj &
+    ifbtest.obj &
+    ifibset.obj &
+    ifibclr.obj &
+    ifior.obj &
+    ifiand.obj &
+    ifnot.obj &
+    ifieor.obj &
+    ifi1and.obj &
+    ifi1bclr.obj &
+    ifi1bset.obj &
+    ifi1btst.obj &
+    ifi1eor.obj &
+    ifi1not.obj &
+    ifi1or.obj &
+    ifi2and.obj &
+    ifi2bclr.obj &
+    ifi2bset.obj &
+    ifi2btst.obj &
+    ifi2eor.obj &
+    ifi2not.obj &
+    ifi2or.obj
+
+
+# The following intrinsic functions are generated in-line
+# by the front end.
+
+!ifdef __never_defined__
+ifns += &
+    ifmax0.obj &
+    ifmax1.obj &
+    ifmin0.obj &
+    ifmin1.obj &
+    ifi1max0.obj &
+    ifi1min0.obj &
+    ifi2max0.obj &
+    ifi2min0.obj &
+    ifamax0.obj &
+    ifamax1.obj &
+    ifamin0.obj &
+    ifamin1.obj &
+    ifdmax1.obj &
+    ifdmin1.obj &
+    ifqmax1.obj &
+    ifqmin1.obj
+!endif
+
+# The following intrinsic functions are generated in-line
+# by the code generator (implemented as primitive operators)
+# but are required because they define the X... versions which are
+# referenced if the intrinsic function passed as an argument.
+
+ifns += &
+    ifatan.obj &
+    ifdatan.obj &
+    ifalog.obj &
+    ifdlog.obj &
+    ifqlog.obj &
+    ifcos.obj &
+    ifdcos.obj &
+    ifexp.obj &
+    ifdexp.obj &
+    ifqexp.obj &
+    ifalog10.obj &
+    ifdlog10.obj &
+    ifqlog10.obj &
+    ifsin.obj &
+    ifdsin.obj &
+    ifsqrt.obj &
+    ifdsqrt.obj &
+    ifqsqrt.obj &
+    iftan.obj &
+    ifdtan.obj &
+    ifatan2.obj &
+    ifdatan2.obj &
+    ifdacos.obj &
+    ifdasin.obj &
+    ifdcosh.obj &
+    ifdsinh.obj &
+    ifdtanh.obj &
+    ifcotan.obj &
+    ifdcotan.obj &
+    ifsinh.obj &
+    ifcosh.obj &
+    iftanh.obj &
+    ifacos.obj &
+    ifasin.obj &
+    ifqacos.obj &
+    ifqasin.obj &
+    ifqatan.obj &
+    ifqatan2.obj &
+    ifqcos.obj &
+    ifqcosh.obj &
+    ifqcotan.obj &
+    ifqsin.obj &
+    ifqsinh.obj &
+    ifqtan.obj &
+    ifqtanh.obj &
+    ifamod.obj &
+    ifdmod.obj &
+    ifqmod.obj &
+    ifabs.obj &
+    ifdabs.obj &
+    ifqabs.obj
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# xfns 
+#===============================================================================
+
+xfns += &
+    xfi1max0.obj &
+    xfi1min0.obj &
+    xfi2max0.obj &
+    xfi2min0.obj &
+    xfamax0.obj &
+    xfamax1.obj &
+    xfamin0.obj &
+    xfamin1.obj &
+    xfdmax1.obj &
+    xfdmin1.obj &
+    xfqmax1.obj &
+    xfqmin1.obj &
+    xfmax0.obj &
+    xfmax1.obj &
+    xfmin0.obj &
+    xfmin1.obj
+
+
+#                        d16 d32 dpm nt nta ntp nov o16 o32 q16 q32 w16 w32 l32
+#===============================================================================
+# ufns 
+!inject fdefwin.obj                  nt nta ntp         o32         w16 w32
+!inject fintr.obj        d16 d32 dpm                                w16 w32
+!inject fspawn.obj       d16 d32 dpm nt nta ntp nov o16 o32             w32 l32
+!inject fsystem.obj      d16 d32 dpm nt nta ntp nov o16 o32             w32 l32
+!inject winapi.obj                                                  w16 w32
+#===============================================================================
+
+ufns += &
+    urand.obj &
+    fgrowhdl.obj &
+    fhandle.obj &
+    seekunit.obj &
+    flushuni.obj &
+    getdat.obj &
+    gettim.obj &
+    fexit.obj &
+    filesize.obj &
+    fnxtrecl.obj &
+    fsignal.obj
+
+ufns += &
+    fargs.obj &
+    fgetenv.obj &
+    fgetcmd.obj &
+    ftracebk.obj
+
+#===============================================================================
+
+!include ../../objlist.mif
+
+files = $(rt) $(both) $(dep_rt) $(dep_both) $(ifns) $(xfns) $(math) $(ufns) $(objs)

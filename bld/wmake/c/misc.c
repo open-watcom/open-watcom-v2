@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous wmake helper functions.
 *
 ****************************************************************************/
 
 
-#if defined(__QNX__)
- #include <dirent.h>
+#if defined( __UNIX__ )
+    #include <dirent.h>
 #else
- #include <direct.h>
+    #include <direct.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
@@ -41,50 +40,152 @@
 
 #include "make.h"
 #include "massert.h"
-#include "memory.h"
-#include "misc.h"
-#include "mpathgrp.h"
+#include "mmemory.h"
+#include "mmisc.h"
+#include "pathgrp.h"
 #include "mtypes.h"
+#include "mlex.h"
 
-#if ! defined(__QNX__)
- #define CHECK_MASK( attr ) if((attr & IGNORE_MASK)==0) break
-#endif
+static ENV_TRACKER  *envList;
 
-static ENV_TRACKER *envList;
-
-extern char *SkipWS( const char *p )
-/**********************************/
+char *SkipWS( char *p )
+/*****************************
+ * p is not const because the return value is usually used to write data.
+ */
 {
     while( isws( *p ) ) {
         ++p;
     }
-    return( (char *)p );
+    return( p );
 }
 
+char *FindNextWS( char *str )
+/***********************************
+ * Finds next free white space character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ *
+ * str is not const because the return value is usually used to write data.
+ */
+{
+    char    string_open = 0;
 
-#if defined( __DOS__ ) || defined( __WINDOWS__ )
+    while( *str != NULLCHAR ) {
+        if( *str == BACKSLASH ) {
+            str++;
+            if( *str != NULLCHAR ) {
+                if( !string_open && isws ( *str ) ) {
+                    break;
+                }
+                str++;
+            }
+        } else {
+            if( *str == DOUBLEQUOTE ) {
+                string_open = !string_open;
+                str++;
+            } else {
+                if( string_open ) {
+                    str++;
+                } else {
+                    if( isws( *str ) ) {
+                        break;
+                    }
+                    str++;
+                }
+            }
+        }
+    }
 
-extern char *FixName( char *name )
+    return( str );
+}
+
+char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
+/************************************************************************
+ * Removes doublequote characters from string and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character.
+ */
+{
+    char    *orgdst = dst;
+    char    string_open = 0;
+    int     pos = 0;
+    int     t;
+
+    assert( maxlen );
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( pos < maxlen ) {
+        t = *src++;
+
+        if( t == NULLCHAR ) {
+            break;
+        }
+
+        if( t == BACKSLASH ) {
+            t = *src++;
+
+            if( t == DOUBLEQUOTE ) {
+                *dst++ = DOUBLEQUOTE;
+                pos++;
+            } else {
+                *dst++ = BACKSLASH;
+                pos++;
+
+                if( pos < maxlen ) {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        } else {
+            if( t == DOUBLEQUOTE ) {
+                string_open = !string_open;
+            } else {
+                if( string_open ) {
+                    *dst++ = t;
+                    pos++;
+                } else
+                if( isws( t ) ) {
+                    break;
+                } else {
+                    *dst++ = t;
+                    pos++;
+                }
+            }
+        }
+    }
+
+    *dst = NULLCHAR;
+
+    return( orgdst );
+}
+
+char *FixName( char *name )
+{
+#if defined( __DOS__ )
 /*********************************
  * Down case all filenames, converting fwd-slash to back-slash
  */
-{
-    char *ptr;
-    char hold;
+    char    *ptr;
+    char    hold;
 
     assert( name != NULL );
 
     ptr = name;
     hold = *ptr;
-    for(;;) {
-        if( hold == NULLCHAR ) break;
+    for( ;; ) {
+        if( hold == NULLCHAR ) {
+            break;
+        }
         if( hold == '/' ) {
             *ptr = '\\';
         } else if( ( hold -= 'A' ) < 26 ) {     /* SIDE EFFECT!!! */
             *ptr = hold + 'a';
         }
         hold = *++ptr;
-        if( hold == NULLCHAR ) break;
+        if( hold == NULLCHAR ) {
+            break;
+        }
         if( hold == '/' ) {
             *ptr = '\\';
         } else if( ( hold -= 'A' ) < 26 ) {     /* SIDE EFFECT!!! */
@@ -94,45 +195,28 @@ extern char *FixName( char *name )
     }
 
     return( name );
-}
-
-
-extern int FNameCmp( const char *a, const char *b )
-/*************************************************/
-{
-    return( strcmp( a, b ) );
-}
-
-
-#ifdef USE_FAR
-extern int _fFNameCmp( const char FAR *a, const char FAR *b )
-/***********************************************************/
-{
-    return( _fstrcmp( a, b ) );
-}
-#endif
-
 #elif defined( __OS2__ ) || defined( __NT__ )
-
-extern char *FixName( char *name )
 /*********************************
  * convert fwd-slash to back-slash
  */
-{
-    char *ptr;
-    char hold;
+    char    *ptr;
+    char    hold;
 
     assert( name != NULL );
 
     ptr = name;
     hold = *ptr;
-    for(;;) {
-        if( hold == NULLCHAR ) break;
+    for( ;; ) {
+        if( hold == NULLCHAR ) {
+            break;
+        }
         if( hold == '/' ) {
             *ptr = '\\';
         }
         hold = *++ptr;
-        if( hold == NULLCHAR ) break;
+        if( hold == NULLCHAR ) {
+            break;
+        }
         if( hold == '/' ) {
             *ptr = '\\';
         }
@@ -140,49 +224,132 @@ extern char *FixName( char *name )
     }
 
     return( name );
-}
-
-
-extern int FNameCmp( const char *a, const char *b )
-/*************************************************/
-{
-    return( stricmp( a, b ) );
-}
-
-
-#ifdef USE_FAR
-extern int _fFNameCmp( const char FAR *a, const char FAR *b )
-/***********************************************************/
-{
-    return( _fstricmp( a, b ) );
-}
-#endif
-
 #else
-
-extern char *FixName( char *name )
-/********************************/
-{
     return( name );
+#endif
 }
 
 
-extern int FNameCmp( const char *a, const char *b )
+int FNameCmp( const char *a, const char *b )
 /*************************************************/
 {
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+    return( stricmp( a, b ) );
+#else
     return( strcmp( a, b ) );
+#endif
 }
+
+
+static int FNameCmpChr( char a, char b )
+/**************************************/
+{
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+    return( tolower( a ) - tolower( b ) );
+#else
+    return( a - b );
+#endif
+}
+
 
 #ifdef USE_FAR
-extern int _fFNameCmp( const char FAR *a, const char FAR *b )
+int _fFNameCmp( const char FAR *a, const char FAR *b )
 /***********************************************************/
 {
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+    return( _fstricmp( a, b ) );
+#else
     return( _fstrcmp( a, b ) );
+#endif
 }
 #endif
 
-#endif
 
+#define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
+
+static int __fnmatch( char *pattern, char *string )
+/**************************************************
+ * OS specific compare function FNameCmpChr
+ * must be used for file names
+ */
+{
+    char    *p;
+    int     len;
+    int     star_char;
+    int     i;
+
+    /*
+     * check pattern section with wildcard characters
+     */
+    star_char = 0;
+    while( IS_WILDCARD_CHAR( pattern ) ) {
+        if( *pattern == '?' ) {
+            if( *string == 0 ) {
+                return( 0 );
+            }
+            string++;
+        } else {
+            star_char = 1;
+        }
+        pattern++;
+    }
+    if( *pattern == 0 ) {
+        if( (*string == 0) || star_char ) {
+            return( 1 );
+        } else {
+            return( 0 );
+        }
+    }
+    /*
+     * check pattern section with exact match
+     * ( all characters except wildcards )
+     */
+    p = pattern;
+    len = 0;
+    do {
+        if( star_char ) {
+            if( string[len] == 0 ) {
+                return( 0 );
+            }
+            len++;
+        } else {
+            if( FNameCmpChr( *pattern, *string ) != 0 ) {
+                return( 0 );
+            }
+            string++;
+        }
+        pattern++;
+    } while( *pattern && !IS_WILDCARD_CHAR( pattern ) );
+    if( star_char == 0 ) {
+        /*
+         * match is OK, try next pattern section
+         */
+        return( __fnmatch( pattern, string ) );
+    } else {
+        /*
+         * star pattern section, try locate exact match
+         */
+        while( *string ) {
+            if( FNameCmpChr( *p, *string ) == 0 ) {
+                for( i = 1; i < len; i++ ) {
+                    if( FNameCmpChr( *(p + i), *(string + i) ) != 0 ) {
+                        break;
+                    }
+                }
+                if( i == len ) {
+                    /*
+                     * if rest doesn't match, find next occurence
+                     */
+                    if( __fnmatch( pattern, string + len ) ) {
+                        return( 1 );
+                    }
+                }
+            }
+            string++;
+        }
+        return( 0 );
+    }
+}
 
 /*
  * THIS FUNCTION IS NOT RE-ENTRANT!
@@ -204,38 +371,39 @@ extern int _fFNameCmp( const char FAR *a, const char FAR *b )
  * DoWildCard returns null.
  *
  */
-extern const char *DoWildCard( const char *base )
+
+static DIR  *parent = NULL;  /* we need this across invocations */
+static char *path = NULL;
+static char *pattern = NULL;
+
+const char *DoWildCard( const char *base )
 /***********************************************/
 {
-    static DIR      *parent = NULL;  /* we need this across invocations */
-    static char     *path = NULL;
-
-    PGROUP          *pg;
+    PGROUP          pg;
     struct dirent   *entry;
 
-
     if( base != NULL ) {
-        if( path != NULL ) {        /* clean up from previous invocation */
-            FreeSafe( path );
-            path = NULL;            /* 1-jun-90 AFS */
-        }
-
-        if( parent != NULL ) {
-            closedir( parent );
-            parent = NULL;          /* 1-jun-90 AFS */
-        }
+        /* clean up from previous invocation */
+        DoWildCardClose();
 
         if( strpbrk( base, WILD_METAS ) == NULL ) {
             return( base );
         }
+        // create directory name and pattern
+        path = MallocSafe( _MAX_PATH );
+        pattern = MallocSafe( _MAX_PATH );
+        strcpy( path, base );
+        FixName( path );
+        _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        _makepath( path, pg.drive, pg.dir, ".", NULL );
+        // create file name pattern
+        _makepath( pattern, NULL, NULL, pg.fname, pg.ext );
 
-        parent = opendir( base );
+        parent = opendir( path );
         if( parent == NULL ) {
+            DoWildCardClose();
             return( base );
         }
-
-        path = MallocSafe( _MAX_PATH );
-        strcpy( path, base );
     }
 
     if( parent == NULL ) {
@@ -245,38 +413,59 @@ extern const char *DoWildCard( const char *base )
     assert( path != NULL && parent != NULL );
 
     entry = readdir( parent );
-#ifdef CHECK_MASK
     while( entry != NULL ) {
-        CHECK_MASK( entry->d_attr );
+#ifndef __UNIX__
+        if( ( entry->d_attr & IGNORE_MASK ) == 0 ) {
+#endif
+            if( __fnmatch( pattern, entry->d_name ) ) {
+                break;
+            }
+#ifndef __UNIX__
+        }
+#endif
         entry = readdir( parent );
     }
-#endif
     if( entry == NULL ) {
-        closedir( parent );
-        parent = NULL;
-        FreeSafe( path );
-        path = NULL;                    /* 1-jun-90 AFS */
-        return( NULL );
+        DoWildCardClose();
+        return( base );
     }
 
-    pg = SplitPath( path );
-    _makepath( path, pg->drive, pg->dir, entry->d_name, NULL );
-    DropPGroup( pg );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( path, pg.drive, pg.dir, entry->d_name, NULL );
 
     return( path );
 }
 
 
-extern int KWCompare( const char **p1, const char **p2 )    /* for bsearch */
+void DoWildCardClose( void )
+/*********************************/
+{
+    if( path != NULL ) {
+        FreeSafe( path );
+        path = NULL;
+    }
+    if( pattern != NULL ) {
+        FreeSafe( pattern );
+        pattern = NULL;
+    }
+    if( parent != NULL ) {
+        closedir( parent );
+        parent = NULL;
+    }
+}
+
+
+int KWCompare( const char **p1, const char **p2 )    /* for bsearch */
 /******************************************************/
 {
     return( stricmp( *p1, *p2 ) );
 }
 
 
-extern int PutEnvSafe( ENV_TRACKER *env )
-/***************************************/
-/* This function takes over responsibility for freeing env */
+int PutEnvSafe( ENV_TRACKER *env )
+/****************************************
+ * This function takes over responsibility for freeing env
+ */
 {
     char        *p;
     ENV_TRACKER **walk;
@@ -284,18 +473,17 @@ extern int PutEnvSafe( ENV_TRACKER *env )
     int         rc;
     size_t      len;
 
-                                /* upper case the name */
     p = env->value;
+                                // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
         *p = toupper( *p );
         ++p;
     }
-    rc = putenv( env->value );  /* put into environment */
+    rc = putenv( env->value );  // put into environment
     if( p[0] == '=' && p[1] == '\0' ) {
-        // we are deleting the envvar, ignore errors
-        rc = 0;
+        rc = 0;                 // we are deleting the envvar, ignore errors
     }
-    len = p - env->value + 1;   /* len including '=' */
+    len = p - env->value + 1;   // len including '='
     walk = &envList;
     while( *walk != NULL ) {
         if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
@@ -305,21 +493,21 @@ extern int PutEnvSafe( ENV_TRACKER *env )
     }
     old = *walk;
     if( old != NULL ) {
-        *walk = old->next;      /* unlink from chain */
+        *walk = old->next;      // unlink from chain
         FreeSafe( old );
     }
-    if( p[1] != 0 ) {           /* we're giving it a new value */
-        env->next = envList;    /* save the memory since putenv keeps a */
-        envList = env;          /* pointer to it... */
-    } else {                    /* we're deleting an old value */
+    if( p[1] != 0 ) {           // we're giving it a new value
+        env->next = envList;    // save the memory since putenv keeps a
+        envList = env;          // pointer to it...
+    } else {                    // we're deleting an old value
         FreeSafe( env );
     }
     return( rc );
 }
 
 
-#ifndef NDEBUG
-extern void PutEnvFini( void )
+#if !defined(NDEBUG) || defined(DEVELOPMENT)
+void PutEnvFini( void )
 /****************************/
 {
     ENV_TRACKER *cur;

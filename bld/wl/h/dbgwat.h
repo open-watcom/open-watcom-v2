@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom style debugging information procedure prototypes
 *
 ****************************************************************************/
 
@@ -40,16 +39,14 @@ extern void     ODBIGenModule( void );
 extern void     ODBIAddFakeModule( unsigned );
 extern void     ODBIGenFakeModule( char * );
 extern void     ODBIDefClass( class_entry *, unsigned_32 );
-extern void     ODBIAddLocal( unsigned_16, offset );
+extern void     ODBIAddLocal( seg_leader *, offset );
 extern void     ODBIGenLocal( segdata * );
 extern void     ODBIAddGlobal( symbol * );
 extern void     ODBIGenGlobal( symbol *, section * );
-extern void     ODBIGenLines( segdata *, void *, unsigned, bool );
-extern void     ODBIGenLines( segdata *, void *, unsigned, bool );
+extern void     ODBIGenLines( lineinfo * );
 extern void     ODBIAddAddrInfo( seg_leader * );
 extern void     ODBIAddrSectStart( section * );
 extern void     ODBIP2Start( section * );
 extern void     ODBISectCleanup( section * );
 extern void     ODBIFini( section * );
-extern void     OWriteDBI( void );
-extern void     WriteDBISecs( section * );
+extern void     ODBIWrite( void );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Gets/sets initialization data from ini file
 *
 ****************************************************************************/
 
@@ -34,11 +33,11 @@
 #include "font.h"
 #include "drwatcom.h"
 #include "intdlg.h"
+#include "inipath.h"
 #include "watini.h"
 #include "mem.h"
 
 #define PROFILE_SECT            "Dr_WATCOM_NT"
-#define INIT_FILE               WATCOM_INI
 #define LOG_NAME                "log_name"
 #define LOG_EDITOR              "log_viewer"
 #define LOG_PROCESS             "log_processes"
@@ -59,6 +58,8 @@
 #define DEF_EDITOR              "vi.exe"
 #define DEF_DBCS_EDITOR         "notepad.exe"
 
+static char iniPath[_MAX_PATH];
+
 /*
  * writeProfileInt
  */
@@ -68,7 +69,7 @@ static void writeProfileInt( int val, char *item ) {
     char        buf[30];
 
     itoa( val, buf, 10 );
-    WritePrivateProfileString( PROFILE_SECT, item, buf, INIT_FILE );
+    WritePrivateProfileString( PROFILE_SECT, item, buf, iniPath );
 }
 
 /*
@@ -103,42 +104,44 @@ void SetDefProfile( void ) {
  */
 void GetProfileInfo( void )
 {
+    GetConfigFilePath( iniPath, sizeof(iniPath) );
+    strcat( iniPath, "\\" WATCOM_INI );
     SetDefProfile();
-    InitMonoFont( PROFILE_SECT, INIT_FILE, SYSTEM_FIXED_FONT, Instance );
+    InitMonoFont( PROFILE_SECT, iniPath, SYSTEM_FIXED_FONT, Instance );
     GetPrivateProfileString( PROFILE_SECT, LOG_NAME, LogData.logname,
-                         LogData.logname, _MAX_PATH, WATCOM_INI );
+                         LogData.logname, _MAX_PATH, iniPath );
     GetPrivateProfileString( PROFILE_SECT, LOG_EDITOR, LogData.editor,
-                         LogData.editor, _MAX_PATH, WATCOM_INI );
+                         LogData.editor, _MAX_PATH, iniPath );
     LogData.log_process = GetPrivateProfileInt( PROFILE_SECT, LOG_PROCESS,
-                          LogData.log_process, WATCOM_INI );
+                          LogData.log_process, iniPath );
     LogData.log_stacktrace = GetPrivateProfileInt( PROFILE_SECT,
                              LOG_STACKTRACE, LogData.log_stacktrace,
-                             WATCOM_INI );
+                             iniPath );
     LogData.log_mem_manager = GetPrivateProfileInt( PROFILE_SECT,
                               LOG_MEM_INFO, LogData.log_mem_manager,
-                              WATCOM_INI );
+                              iniPath );
     LogData.log_mem_dmp = GetPrivateProfileInt( PROFILE_SECT,
-                              LOG_MEM_DMP, LogData.log_mem_dmp, WATCOM_INI );
+                              LOG_MEM_DMP, LogData.log_mem_dmp, iniPath );
     LogData.query_notes = GetPrivateProfileInt( PROFILE_SECT, LOG_NOTES,
-                          LogData.query_notes, WATCOM_INI );
+                          LogData.query_notes, iniPath );
     LogData.log_modules = GetPrivateProfileInt( PROFILE_SECT, LOG_MODULES,
-                          LogData.log_modules, WATCOM_INI );
+                          LogData.log_modules, iniPath );
     LogData.autolog = GetPrivateProfileInt( PROFILE_SECT, LOG_AUTOLOG,
-                      LogData.autolog, WATCOM_INI );
+                      LogData.autolog, iniPath );
     LogData.asm_cnt = GetPrivateProfileInt( PROFILE_SECT, LOG_ASM_CNT,
-                         LogData.asm_cnt, WATCOM_INI );
+                         LogData.asm_cnt, iniPath );
     LogData.asm_bkup = GetPrivateProfileInt( PROFILE_SECT, LOG_ASM_BKUP,
-                         LogData.asm_bkup, WATCOM_INI );
+                         LogData.asm_bkup, iniPath );
     LogData.max_flen = GetPrivateProfileInt( PROFILE_SECT, LOG_MAX_FILE,
-                         LogData.max_flen, WATCOM_INI );
+                         LogData.max_flen, iniPath );
     ConfigData.continue_exception= GetPrivateProfileInt( PROFILE_SECT,
                     LOG_EXCPT_CONT, ConfigData.continue_exception,
-                    WATCOM_INI );
+                    iniPath );
     ConfigData.auto_attatch = GetPrivateProfileInt( PROFILE_SECT,
-                    LOG_AUTO_ATTATCH, ConfigData.auto_attatch, WATCOM_INI );
+                    LOG_AUTO_ATTATCH, ConfigData.auto_attatch, iniPath );
     ConfigData.exception_action = GetPrivateProfileInt( PROFILE_SECT,
                     LOG_EXCPT_ACTION, ConfigData.exception_action,
-                    WATCOM_INI );
+                    iniPath );
 }
 
 /*
@@ -146,11 +149,11 @@ void GetProfileInfo( void )
  */
 void PutProfileInfo( void )
 {
-    SaveMonoFont( PROFILE_SECT, INIT_FILE );
+    SaveMonoFont( PROFILE_SECT, iniPath );
     WritePrivateProfileString( PROFILE_SECT, LOG_NAME, LogData.logname,
-                               INIT_FILE );
+                               iniPath );
     WritePrivateProfileString( PROFILE_SECT, LOG_EDITOR, LogData.editor,
-                               INIT_FILE );
+                               iniPath );
     writeProfileInt( LogData.log_process, LOG_PROCESS );
     writeProfileInt( LogData.log_stacktrace, LOG_STACKTRACE );
     writeProfileInt( LogData.log_mem_manager, LOG_MEM_INFO );

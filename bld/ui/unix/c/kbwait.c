@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wait for a keyboard or mouse event
 *
 ****************************************************************************/
 
 
 #include "ctkeyb.h"
+extern int UIMouseHandle;
 
 int kb_wait( int secs, int usecs )
 /********************************/
@@ -38,13 +38,23 @@ int kb_wait( int secs, int usecs )
     int                 numfds;   // Number of file descriptors
     fd_set              readfds;
     struct timeval      timeout;
+    int                 res;
 
     timeout.tv_sec      = secs;
     timeout.tv_usec     = usecs;
     FD_ZERO( &readfds );
     FD_SET( UIConHandle, &readfds );
 
-    numfds = UIConHandle + 1;
-    return( select( numfds, &readfds, NULL, NULL, &timeout ) );
+    numfds = UIConHandle;
+    if( UIMouseHandle != -1 ) {
+        if( UIMouseHandle > numfds ) numfds = UIMouseHandle;
+        FD_SET( UIMouseHandle, &readfds );
+    }
+    numfds++;
+    res = select( numfds, &readfds, NULL, NULL, &timeout );
+    if( res <= 0 ) return res;
+    if( FD_ISSET( UIConHandle, &readfds ) ) return 1;
+    /* must be a mouse event */
+    return 2;
 }
 

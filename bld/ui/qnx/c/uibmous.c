@@ -43,7 +43,7 @@ static bool     MouseOn = FALSE;
 static ATTR     OldAttr;
 
 static char __FAR *RegenPos( unsigned row, unsigned col )
-/*****************************************************/
+/*******************************************************/
 {
     char        __FAR *pos;
 
@@ -52,8 +52,8 @@ static char __FAR *RegenPos( unsigned row, unsigned col )
     return( pos );
 }
 
-static void uisetmouseoff()
-/*************************/
+static void uisetmouseoff( void )
+/*******************************/
 {
     char                __FAR *old;
     SAREA               area;
@@ -70,7 +70,7 @@ static void uisetmouseoff()
 }
 
 static void uisetmouseon( row, col )
-/********************************/
+/**********************************/
     register MOUSEORD        row;
     register MOUSEORD        col;
 {

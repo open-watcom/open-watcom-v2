@@ -24,152 +24,149 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger mainline.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgtoken.h"
+#include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbgtoggl.h"
-#include "dbginp.h"
 #include "dbginfo.h"
-#include "dbgreg.h"
 #include "dbglit.h"
 #include "spawn.h"
 #include "dui.h"
 #include <string.h>
+#include "trpcore.h"
+#include "trpcapb.h"
 
 
-extern void             ProcSystem(void);
-
-extern void             StartupErr(char *);
-extern char             *ScanPos(void);
-extern unsigned int     ScanLen(void);
-extern unsigned int     ScanCmd(char *);
-extern void             InitBPs(void);
-extern void             InitMachState(void);
-extern void             InitLook(void);
-extern void             InitScan(void);
-extern void             InitSource(void);
-extern void             InitDLLList(void);
-extern void             ProfileInvoke(char *);
-extern void             SysFileInit(void);
-extern void             PathInit(void);
-extern void             ProcBreak(void);
-extern void             ProcCall(void);
-extern void             ProcCapture(void);
-extern void             ProcDisplay(void);
-extern void             ProcDo(void);
-extern void             ProcError(void);
-extern void             ProcExamine(void);
-extern void             ProcFlip(void);
-extern void             ProcGo(void);
-extern void             ProcHelp(void);
-extern void             ProcIf(void);
-extern void             ProcInvoke(void);
-extern void             ProcLog(void);
-extern void             ProcAccel(void);
-extern void             ProcNew(void);
-extern void             ProcPaint(void);
-extern void             ProcFont(void);
-extern void             ProcPrint(void);
-extern void             ProcQuit(void);
-extern void             ProcRegister(void);
-extern void             ProcRemark(void);
-extern void             ProcSet(void);
-extern void             ProcShow(void);
-extern void             ProcThread(void);
-extern void             ProcTrace(void);
-extern void             FiniTrace(void);
-extern void             ProcView(void);
-extern void             ProcWhile(void);
-extern void             ProcWindow(void);
-extern void             ProcHook(void);
-extern void             InitHook(void);
-extern void             FiniHook(void);
-extern void             VarDisplayInit(void);
-extern void             VarDisplayFini(void);
-extern void             InitDbgInfo(void);
-extern void             FiniDbgInfo(void);
-extern void             InitMADInfo(void);
-extern void             FiniMADInfo(void);
-
-extern void             Scan(void);
-extern void             PredefInit(void);
-extern void             WndDlgFini(void);
-extern void             LogInit(void);
-extern void             LogFini(void);
-extern void             ReleaseProgOvlay( bool );
-extern void             Ring(void);
-extern char             *Format(char *,char *,... );
-extern bool             TBreak();
-extern void             InitTrap(char *);
-extern void             FiniTrap(void);
-extern void             LoadProg(void);
-extern bool             LangSetInit(void);
-extern void             LangSetFini(void);
-extern void             SupportFini(void);
-extern bool             PurgeInpStack(void);
-extern void             ClearInpStack(input_type  );
-extern void             PopInpStack(void);
-extern char             *ReScan(char *);
-extern void             RecordInit(void);
-extern void             RecordFini(void);
-extern void             FiniMachState(void);
-extern void             PredefFini(void);
-extern void             FiniScan(void);
-extern void             FiniLook(void);
-extern void             FiniSource(void);
-extern void             FiniDLLList(void);
-extern void             FiniCall(void);
-extern void             PointFini();
-extern void             PathFini(void);
-extern void             FingOpen(void);
-extern void             FingFront(void);
-extern void             FingClose(void);
-extern bool             InitCmd( void );
+// This list of extern functions is in alphabetic order.:
+extern cmd_list         *AllocCmdList( char *,unsigned int );
+extern void             ClearInpStack( input_type  );
+extern void             FingClose( void );
+extern void             FingFront( void );
+extern void             FingOpen( void );
+extern void             FiniAboutMessage( void );
+extern void             FiniBrowse( void );
+extern void             FiniCall( void );
 extern void             FiniCmd( void );
-extern void             InitLocalInfo( void );
+extern void             FiniDLLList( void );
+extern void             FiniDbgInfo( void );
+extern void             FiniFont( void );
+extern void             FiniGadget( void );
+extern void             FiniHook( void );
+extern void             FiniIOWindow( void );
+extern void             FiniLiterals( void );
 extern void             FiniLocalInfo( void );
-extern  void            FiniMacros(void);
-extern  void            FiniLiterals(void);
-extern void             InitLiterals(void);
-extern  void            FiniToolBar(void);
-extern void             InitToolBar(void);
-extern  void            FiniMenus(void);
-extern void             InitMenus(void);
-extern  void            FiniMemWindow(void);
-extern void             InitMemWindow(void);
-extern  void            FiniIOWindow(void);
-extern void             InitIOWindow(void);
-extern  void            FiniAboutMessage(void);
-extern void             InitAboutMessage(void);
-extern  void            FiniPaint(void);
-extern  void            FiniFont(void);
-extern void             InitFont(void);
-extern void             InitPaint(void);
-extern void             InitScreen(void);
-extern void             FiniScreen(void);
-extern void             GrabHandlers(void);
-extern void             RestoreHandlers(void);
-extern void             ProcCmd(void);
-extern void             InitGadget();
-extern void             FiniGadget();
-extern void             InitBrowse(void);
-extern void             FiniBrowse(void);
-extern void             FreezeInpStack();
+extern void             FiniLook( void );
+extern void             FiniMADInfo( void );
+extern void             FiniMachState( void );
+extern void             FiniMacros( void );
+extern void             FiniMemWindow( void );
+extern void             FiniMenus( void );
+extern void             FiniPaint( void );
+extern void             FiniScan( void );
+extern void             FiniScreen( void );
+extern void             FiniSource( void );
+extern void             FiniToolBar( void );
+extern void             FiniTrace( void );
+extern void             FiniTrap( void );
+extern char             *Format( char *,char *,... );
+extern void             FreeCmdList( cmd_list * );
+extern void             FreezeInpStack( void );
 extern char             *GetCmdEntry( char *tab, int index, char *buff );
-extern void             SymCompFini();
-extern void             InitHelp();
+extern trap_shandle     GetSuppId( char * );
+extern void             GrabHandlers( void );
+extern void             InitAboutMessage( void );
+extern void             InitBPs( void );
+extern void             InitBrowse( void );
+extern bool             InitCmd( void );
+extern void             InitDLLList( void );
+extern void             InitDbgInfo( void );
+extern void             InitFont( void );
+extern void             InitGadget( void );
+extern void             InitHelp( void );
+extern void             InitHook( void );
+extern void             InitIOWindow( void );
+extern void             InitLiterals( void );
+extern void             InitLocalInfo( void );
+extern void             InitLook( void );
+extern void             InitMADInfo( void );
+extern void             InitMachState( void );
+extern void             InitMemWindow( void );
+extern void             InitMenus( void );
+extern void             InitPaint( void );
+extern void             InitScan( void );
+extern void             InitScreen( void );
+extern void             InitSource( void );
+extern void             InitToolBar( void );
+extern void             InitTrap( char * );
+extern void             LangSetFini( void );
+extern bool             LangSetInit( void );
+extern void             LoadProg( void );
+extern void             LogFini( void );
+extern void             LogInit( void );
+extern void             PathFini( void );
+extern void             PathInit( void );
+extern void             PointFini( void );
+extern void             PopInpStack( void );
+extern void             PredefFini( void );
+extern void             PredefInit( void );
+extern void             ProcAccel( void );
+extern void             ProcBreak( void );
+extern void             ProcCall( void );
+extern void             ProcCapture( void );
+extern void             ProcCmd( void );
+extern void             ProcDisplay( void );
+extern void             ProcDo( void );
+extern void             ProcError( void );
+extern void             ProcExamine( void );
+extern void             ProcFlip( void );
+extern void             ProcFont( void );
+extern void             ProcGo( void );
+extern void             ProcHelp( void );
+extern void             ProcHook( void );
+extern void             ProcIf( void );
+extern void             ProcInput( void );
+extern void             ProcInvoke( void );
+extern void             ProcLog( void );
+extern void             ProcNew( void );
+extern void             ProcPaint( void );
+extern void             ProcPrint( void );
+extern void             ProcQuit( void );
+extern void             ProcRegister( void );
+extern void             ProcRemark( void );
+extern void             ProcSet( void );
+extern void             ProcShow( void );
+extern void             ProcSystem( void );
+extern void             ProcThread( void );
+extern void             ProcTrace( void );
+extern void             ProcView( void );
+extern void             ProcWhile( void );
+extern void             ProcWindow( void );
+extern void             ProfileInvoke( char * );
+extern bool             PurgeInpStack( void );
 extern void             PushCmdList( cmd_list *cmds );
-extern cmd_list         *AllocCmdList(char *,unsigned int );
-extern void             FreeCmdList(cmd_list *);
-extern void             Suicide();
-extern void             ProcInput(void);
-
+extern void             RecordFini( void );
+extern void             RecordInit( void );
+extern void             ReleaseProgOvlay( bool );
+extern char             *ReScan( char * );
+extern void             RestoreHandlers( void );
+extern void             Ring( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
+extern unsigned int     ScanLen( void );
+extern char             *ScanPos( void );
+extern void             StartupErr( char * );
+extern void             Suicide( void );
+extern void             SupportFini( void );
+extern void             SymCompFini( void );
+extern void             SysFileInit( void );
+extern bool             TBreak( void );
+extern void             VarDisplayFini( void );
+extern void             VarDisplayInit( void );
+extern void             WndDlgFini( void );
+extern void             WndMemInit( void );
 
 extern char             *InitCmdList;
 extern char             *TrpFile;
@@ -186,12 +183,16 @@ extern int              ScanSavePtr;
 extern address          NilAddr;
 extern char             *InvokeFile;
 
-OVL_EXTERN void         ProcNil(void);
+OVL_EXTERN void         ProcNil( void );
 
 
+/* Internal - to be moved */
+int CapabilitiesGet8ByteBreakpointSupport( void );
+int CapabilitiesGetExactBreakpointSupport( void );
+int CapabilitiesSet8ByteBreakpointSupport( bool status );
+int CapabilitiesSetExactBreakpointSupport( bool status );
 
-
-#define pick( a, b, c ) extern void b(void);
+#define pick( a, b, c ) extern void b( void );
 #include "dbgcmd.h"
 
 static char CmdNameTab[] = {
@@ -201,7 +202,7 @@ static char CmdNameTab[] = {
 
 
 
-static void (* const CmdJmpTab[])() = {
+static void ( * const CmdJmpTab[] )( void ) = {
     &ProcNil,
     #define pick( a, b, c ) &b,
     #include "dbgcmd.h"
@@ -220,7 +221,7 @@ char *GetCmdName( int index )
  * DebugInit -- mainline for initialization
  */
 
-void DebugInit()
+void DebugInit( void )
 {
     _SwitchOn( SW_ERROR_STARTUP );
     _SwitchOn( SW_CHECK_SOURCE_EXISTS );
@@ -265,7 +266,7 @@ void DebugInit()
  * ProcNil -- process NIL command
  */
 
-OVL_EXTERN void ProcNil()
+OVL_EXTERN void ProcNil( void )
 {
     if( ScanLen() == 0 ) Scan();
     Error( ERR_NONE, LIT( ERR_BAD_COMMAND ), ScanPos(), ScanLen() );
@@ -303,7 +304,7 @@ void ReportTask( task_status task, unsigned code )
  * ChkBreak -- report an error if there is a pending user interrupt
  */
 
-void ChkBreak()
+void ChkBreak( void )
 {
     if( TBreak() ) Error( ERR_NONE, LIT( ERR_DBG_INTERRUPT ) );
 }
@@ -314,7 +315,7 @@ void ChkBreak()
  */
 
 
-void ProcACmd()
+void ProcACmd( void )
 {
     unsigned cmd;
 
@@ -365,7 +366,7 @@ void ProcACmd()
 }
 
 
-OVL_EXTERN void Profile()
+OVL_EXTERN void Profile( void )
 {
     if( InvokeFile != NULL ) {
         ProfileInvoke( InvokeFile );
@@ -375,7 +376,7 @@ OVL_EXTERN void Profile()
     }
 }
 
-static void PushInitCmdList()
+static void PushInitCmdList( void )
 {
     cmd_list    *cmds;
 
@@ -393,12 +394,13 @@ static void PushInitCmdList()
  */
 
 
-void DebugMain()
+void DebugMain( void )
 {
     bool        save;
 
     GrabHandlers();
     SysFileInit();
+    WndMemInit();
     InitLiterals();
     InitLocalInfo();
     ProcCmd();
@@ -434,12 +436,12 @@ void DebugExit( void )
 }
 
 
-void DebugFini()
+void DebugFini( void )
 {
     PointFini();
-    #if !(defined(__GUI__) && defined(__OS2__))
-        ReleaseProgOvlay( TRUE ); // see dlgfile.c
-    #endif
+#if !( defined( __GUI__ ) && defined( __OS2__ ) )
+    ReleaseProgOvlay( TRUE ); // see dlgfile.c
+#endif
     VarDisplayFini();
     FiniHook();
     FiniCmd();
@@ -468,4 +470,142 @@ void DebugFini()
     _Free( TrpFile );
     FiniLiterals();
     FiniLocalInfo();
+}
+
+/*
+ *  Find if the current trap file supports the capabilities service
+ */
+trap_shandle    SuppCapabilitiesId = 0;
+
+bool InitCapabilities( void )
+{
+    /* Always reset in case of trap switch */
+    Supports8ByteBreakpoints = 0;
+    SupportsExactBreakpoints = 0;
+
+    SuppCapabilitiesId = GetSuppId( CAPABILITIES_SUPP_NAME );
+    if( SuppCapabilitiesId == 0 ) 
+        return( FALSE );
+        
+    CapabilitiesGet8ByteBreakpointSupport();
+    CapabilitiesGetExactBreakpointSupport();
+    
+    if( Supports8ByteBreakpoints )
+        CapabilitiesSet8ByteBreakpointSupport( TRUE );
+        
+    if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
+        CapabilitiesSetExactBreakpointSupport( TRUE );
+        
+    return( TRUE );
+}
+
+#define SUPP_CAPABILITIES_SERVICE( in, request )   \
+        in.supp.core_req        = REQ_PERFORM_SUPPLEMENTARY_SERVICE;    \
+        in.supp.id              = SuppCapabilitiesId;       \
+        in.req                  = request;
+
+int CapabilitiesGet8ByteBreakpointSupport()
+{
+    mx_entry                    in[1];
+    mx_entry                    out[1];
+    capabilities_get_8b_bp_req  acc;
+    capabilities_get_8b_bp_ret  ret;
+
+    if( SuppCapabilitiesId == 0 ) 
+        return( -1 );
+    
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_8B_BP );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+
+    TrapAccess( 1, &in, 1, &out );
+    if( ret.err != 0 ) {
+        return( FALSE );
+    } else {
+        Supports8ByteBreakpoints = 1;   /* The trap supports 8 byte breakpoints */
+        return( TRUE );
+    }
+}
+
+int CapabilitiesSet8ByteBreakpointSupport( bool status )
+{
+    mx_entry                    in[1];
+    mx_entry                    out[1];
+    capabilities_set_8b_bp_req  acc;
+    capabilities_set_8b_bp_ret  ret;
+    
+    if( SuppCapabilitiesId == 0 ) 
+        return( -1 );
+    
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_8B_BP );
+    acc.status = status ? TRUE : FALSE;
+    
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+
+    TrapAccess( 1, &in, 1, &out );
+    if( ret.err != 0 ) {
+        return( FALSE );
+    } else {
+        Supports8ByteBreakpoints = ret.status ? TRUE : FALSE;
+        return( TRUE );
+    }
+}
+
+int CapabilitiesGetExactBreakpointSupport( void )
+{
+    mx_entry                    in[1];
+    mx_entry                    out[1];
+    capabilities_get_8b_bp_req  acc;
+    capabilities_get_8b_bp_ret  ret;
+
+
+    if( SuppCapabilitiesId == 0 ) 
+        return( -1 );
+    
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_GET_EXACT_BP );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+
+    TrapAccess( 1, &in, 1, &out );
+    if( ret.err != 0 ) {
+        return( FALSE );
+    } else {
+        /* The trap may support it, but it is not possible currently */
+        SupportsExactBreakpoints = ret.status ? TRUE : FALSE;        
+        return( TRUE );
+    }
+}
+
+int CapabilitiesSetExactBreakpointSupport( bool status )
+{
+    mx_entry                    in[1];
+    mx_entry                    out[1];
+    capabilities_set_8b_bp_req  acc;
+    capabilities_set_8b_bp_ret  ret;
+    
+    if( SuppCapabilitiesId == 0 ) 
+        return( -1 );
+    
+    SUPP_CAPABILITIES_SERVICE( acc, REQ_CAPABILITIES_SET_EXACT_BP );
+    acc.status = status ? TRUE : FALSE;
+    
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    out[0].ptr = &ret;
+    out[0].len = sizeof( ret );
+
+    TrapAccess( 1, &in, 1, &out );
+    if( ret.err != 0 ) {
+        return( FALSE );
+    } else {
+        _SwitchSet( SW_BREAK_ON_WRITE, ret.status ? TRUE : FALSE ); 
+        return( TRUE );
+    }
 }

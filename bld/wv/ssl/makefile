@@ -1,15 +1,13 @@
-#pmake: build
-!include ../make.wv
+#pmake: build os_dos os_os2 os_win os_nt os_linux
 
-bin = bin
+!include cproj.mif
 
 .extensions:
 .extensions: .prs .ssl
 
-!ifndef on_build_machine
-verbose = /v
+!ifeq release 0
+ssl_verbose = -v
 !endif
-
 
 all : fortran.prs cpp.prs c.prs java.prs .SYMBOLIC
 
@@ -24,12 +22,7 @@ c.prs : c.ssl pp_c.ssl $(common)
 java.prs : java.ssl pp_c.ssl $(common)
 
 .ssl.prs
-        ssl $(verbose) $[@ $^@
-!ifndef on_build_machine
-        @copy $^@ $(bdir) >nul
-!endif
+        ssl $(ssl_verbose) $[@ $^@
 
-lexusbld : .symbolic c.prs cpp.prs java.prs
-    @newer c.prs $(lexlib_dir)\tools\system "^copy &f $#f > nul"
-    @newer cpp.prs $(lexlib_dir)\tools\system "^copy &f $#f > nul"
-    @newer java.prs $(lexlib_dir)\tools\system "^copy &f $#f > nul"
+clean: .SYMBOLIC
+    rm -f *.prs

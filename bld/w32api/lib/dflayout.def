@@ -1,0 +1,3 @@
+LIBRARY DFLAYOUT.DLL
+EXPORTS
+StgOpenLayoutDocfile@16

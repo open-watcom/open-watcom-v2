@@ -43,9 +43,9 @@ struct action_group {
     uint_8      quiet           :1; /* should we be quiet */
     uint_8      deflib          :1; /* move default library COMENTs */
     uint_8      batch           :1; /* output batch commands */
-    const char  *output;            /* output file spec */
+    char        *output;            /* output file spec */
     uint        num_files;
-    const char  *files[1];
+    char        *files[1];
 };
 
 typedef struct cmdline cmdline_t;

@@ -63,10 +63,14 @@ struct ss *next,*prev;
 /*
  * ResInsertLLItemAfter - insert an item into a linked list after an item
  */
+#ifdef __WATCOMC__
 #pragma off (unreferenced)
+#endif
 void ResInsertLLItemAfter( void **headptr, void **tailptr,
                                 void *whoptr, void *itemptr )
+#ifdef __WATCOMC__
 #pragma on (unreferenced)
+#endif
 {
     ss          *after_who;
     ss          **tail;

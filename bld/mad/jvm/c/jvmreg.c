@@ -347,7 +347,7 @@ void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_register
         ma->offset = mr->jvm.optop;
         break;
     case MSR_FP:
-        ma->offset = mr->jvm.frame;
+        ma->offset = mr->jvm.frame.offset;
         break;
     }
 }
@@ -366,7 +366,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
         mr->jvm.optop = ma->offset;
         break;
     case MSR_FP:
-        mr->jvm.frame = ma->offset;
+        mr->jvm.frame.offset = ma->offset;
         break;
     }
 }

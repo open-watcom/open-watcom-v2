@@ -1,10 +1,10 @@
-lds si,x
-lds esi,x
-lss si,x
-lss esi,x
-lfs si,x
-lfs esi,x
-lgs si,x
-lgs esi,x
-les si,x
-les esi,x
+ lds si,dword ptr x
+ lds esi,fword ptr x
+ lss si,dword ptr x
+ lss esi,fword ptr x
+ lfs si,dword ptr x
+ lfs esi,fword ptr x
+ lgs si,dword ptr x
+ lgs esi,fword ptr x
+ les si,dword ptr x
+ les esi,fword ptr x

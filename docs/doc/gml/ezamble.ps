@@ -1,0 +1,1162 @@
+% Modified June 8, 1988 by David Yach
+% Changed reverse attribute to always use bold to improve readability
+%
+% Tweeked June 17, 1988 by Jim Welch
+% Add support for x'80' attribute
+%
+% Modified Feb. 15, 1989 by Gary Pianosi
+%   Removed extra blank line at the bottom of the figure box (see endFig)
+%
+% Modified Feb. 20, 1989 by Jim Bruyn
+%   Fixed charcter 223 - SolidTop
+%
+% Modified Mar. 8, 1989 by Russ Chamberlain
+%   paintString now draws a box and fills it (for reverse attr chars) instead
+%     instead of dumping the block char out for the length of the reverse str.
+%   The bitmaps for the block chars (°±²) were changed to be 8x8.
+%
+
+/BuildCharDict 10 dict def
+
+/PcFontDict 8 dict def
+PcFontDict begin
+  /FontType 3 def
+  /FontMatrix [0.001 0 0 0.001 0 0] def
+  /FontBBox [0 -250 600 750] def
+  /Encoding 256 array def
+
+  Encoding 0 /.notdef put
+  Encoding 1 /smiley put
+  Encoding 2 /bsmiley put
+  Encoding 3 /hart put
+  Encoding 4 /diamond put
+  Encoding 5 /club put
+  Encoding 6 /spade put
+  Encoding 7 /bullet put
+  Encoding 8 /bbullet put
+  Encoding 9 /hole put
+  Encoding 10 /bhole put
+  Encoding 11 /male put
+  Encoding 12 /female put
+  Encoding 13 /quaver put
+  Encoding 14 /dblequaver put
+  Encoding 15 /sun put
+  Encoding 16 /triangright put
+  Encoding 17 /triangleft put
+  Encoding 18 /arrowupdn put
+  Encoding 19 /dblexclam put
+  Encoding 20 /paragraph put
+  Encoding 21 /section put
+  Encoding 22 /hbar put
+  Encoding 23 /arrowupdngrnd put
+  Encoding 24 /arrowup put
+  Encoding 25 /arrowdown put
+  Encoding 26 /arrowright put
+  Encoding 27 /arrowleft put
+  Encoding 28 /hook put
+  Encoding 29 /arrowboth put
+  Encoding 30 /triangup put
+  Encoding 31 /triangdown put
+
+  32 1 126 {Encoding exch /.notdef put} for
+  Encoding 127 /house put
+
+  Encoding 128 /Ccedilla put
+  Encoding 129 /udieresis put
+  Encoding 130 /eacute put
+  Encoding 131 /acicumflex put
+  Encoding 132 /adieresis put
+  Encoding 133 /agrave put
+  Encoding 134 /aring put
+  Encoding 135 /ccedilla put
+  Encoding 136 /ecircumflex put
+  Encoding 137 /edieresis put
+  Encoding 138 /egrave put
+  Encoding 139 /idieresis put
+  Encoding 140 /icircumflex put
+  Encoding 141 /igrave put
+  Encoding 142 /Adieresis put
+  Encoding 143 /Aring put
+  Encoding 144 /Eacute put
+  Encoding 145 /ae put
+  Encoding 146 /AE put
+  Encoding 147 /ocircumflex put
+  Encoding 148 /odieresis put
+  Encoding 149 /ograve put
+  Encoding 150 /ucircumflex put
+  Encoding 151 /ugrave put
+  Encoding 152 /ydieresis put
+  Encoding 153 /Odieresis put
+  Encoding 154 /Udieresis put
+  Encoding 155 /cent put
+  Encoding 156 /sterling put
+  Encoding 157 /yen put
+  Encoding 158 /Pt put
+  Encoding 159 /florin put
+
+  Encoding 160 /aacute put
+  Encoding 161 /iacute put
+  Encoding 162 /oacute put
+  Encoding 163 /uacute put
+  Encoding 164 /ntilde put
+  Encoding 165 /Ntilde put
+  Encoding 166 /ordfeminine put
+  Encoding 167 /ordmasculine put
+  Encoding 168 /questiondown put
+  Encoding 169 /bracketlefttp put
+  Encoding 170 /bracketrighttp put
+  Encoding 171 /half put
+  Encoding 172 /quarter put
+  Encoding 173 /exclamdown put
+  Encoding 174 /guillemotleft put
+  Encoding 175 /guillemotright put
+  Encoding 176 /sparseblock put
+  Encoding 177 /mediumblock put
+  Encoding 178 /denseblock put
+  Encoding 179 /vertical put
+  Encoding 180 /vertleft put
+  Encoding 181 /vertdblleft put
+  Encoding 182 /dblvertleft put
+  Encoding 183 /toprightdbldown put
+  Encoding 184 /toprightdblleft put
+  Encoding 185 /dblvertdblleft put
+  Encoding 186 /dblvert put
+  Encoding 187 /dbltopright put
+  Encoding 188 /dblbotright put
+  Encoding 189 /botrightdblup put
+  Encoding 190 /botrightdblleft put
+  Encoding 191 /topright put
+
+  Encoding 192 /botleft put
+  Encoding 193 /botmiddle put
+  Encoding 194 /topmiddle put
+  Encoding 195 /vertright put
+  Encoding 196 /horizontal put
+  Encoding 197 /vertcross put
+  Encoding 198 /vertdblright put
+  Encoding 199 /dblvertright put
+  Encoding 200 /dblbotleft put
+  Encoding 201 /dbletopleft put
+  Encoding 202 /dblbotdblmiddle put
+  Encoding 203 /dbltopdblmiddle put
+  Encoding 204 /dblvertdblright put
+  Encoding 205 /dblhorizontal put
+  Encoding 206 /dblvertdblcross put
+  Encoding 207 /dblbotmiddle put
+  Encoding 208 /botdblmiddle put
+  Encoding 209 /dbltopmiddle put
+  Encoding 210 /topdblmiddle put
+  Encoding 211 /botleftdblup put
+  Encoding 212 /botleftdblright put
+  Encoding 213 /topleftdblright put
+  Encoding 214 /topleftdbldown put
+  Encoding 215 /dblvertcross put
+  Encoding 216 /vertdblcross put
+  Encoding 217 /botright put
+  Encoding 218 /topleft put
+  Encoding 219 /solid put
+  Encoding 220 /solidbot put
+  Encoding 221 /solidleft put
+  Encoding 222 /solidright put
+  Encoding 223 /solidtop put
+
+  Encoding 224 /alpha put
+  Encoding 225 /beta put
+  Encoding 226 /Gamma put
+  Encoding 227 /pi put
+  Encoding 228 /Sigma put
+  Encoding 229 /sigma put
+  Encoding 230 /mu put
+  Encoding 231 /tau put
+  Encoding 232 /Phi put
+  Encoding 233 /theta put
+  Encoding 234 /Omega put
+  Encoding 235 /delta put
+  Encoding 236 /infinity put
+  Encoding 237 /emptyset put
+  Encoding 238 /element put
+  Encoding 239 /intersection put
+  Encoding 240 /equivalence put
+  Encoding 241 /plusminus put
+  Encoding 242 /greaterequal put
+  Encoding 243 /lessequal put
+  Encoding 244 /integraltp put
+  Encoding 245 /integralbt put
+  Encoding 246 /divide put
+  Encoding 247 /approxequal put
+  Encoding 248 /degree put
+  Encoding 249 /bigdotmath put
+  Encoding 250 /dotmath put
+  Encoding 251 /radical put
+  Encoding 252 /npower put
+  Encoding 253 /square put
+  Encoding 254 /smallsolid put
+  Encoding 255 /.notdef put
+
+  /CharacterDefs 256 dict def
+
+   CharacterDefs /.notdef
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /smiley
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007E008100A50081008100
+         BD00990081007E00000000000000>} imagemask
+     } put
+   CharacterDefs /bsmiley
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007E00FF00DB00FF00FF00
+         C300E700FF007E00000000000000>} imagemask
+     } put
+   CharacterDefs /hart
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000036007F007F007F00
+         7F003E001C000800000000000000>} imagemask
+     } put
+   CharacterDefs /diamond
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000008001C003E007F00
+         3E001C0008000000000000000000>} imagemask
+     } put
+   CharacterDefs /club
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018003C003C00E700E700
+         E700180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /spade
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018003C007E00FF00FF00
+         7E00180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /bullet
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000018003C00
+         3C00180000000000000000000000>} imagemask
+     } put
+   CharacterDefs /bbullet
+     { 9 14 true [9 0 0 -14 0 14]
+       {<FF00FF00FF00FF00FF00E700C300
+         C300E700FF00FF00FF00FF00FF00>} imagemask
+     } put
+   CharacterDefs /hole
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003C0066004200
+         420066003C000000000000000000>} imagemask
+     } put
+   CharacterDefs /bhole
+     { 9 14 true [9 0 0 -14 0 14]
+       {<FF00FF00FF00FF00C3009900BD00
+         BD009900C300FF00FF00FF00FF00>} imagemask
+     } put
+   CharacterDefs /male
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000F0007000D0019003C00
+         6600660066003C00000000000000>} imagemask
+     } put
+   CharacterDefs /female
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000003C006600660066003C00
+         18007E0018001800000000000000>} imagemask
+     } put
+   CharacterDefs /quaver
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000003F0033003F0030003000
+         30007000F000E000000000000000>} imagemask
+     } put
+   CharacterDefs /dblequaver
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007F0063007F0063006300
+         63006700E700E600C00000000000>} imagemask
+     } put
+   CharacterDefs /sun
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018001800DB003C00E700
+         3C00DB0018001800000000000000>} imagemask
+     } put
+   CharacterDefs /triangright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000004000600070007C007F00
+         7C00700060004000000000000000>} imagemask
+     } put
+   CharacterDefs /triangleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000100030007001F007F00
+         1F00070003000100000000000000>} imagemask
+     } put
+   CharacterDefs /arrowupdn
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018003C007E0018001800
+         18007E003C001800000000000000>} imagemask
+     } put
+   CharacterDefs /dblexclam
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000033003300330033003300
+         3300000033003300000000000000>} imagemask
+     } put
+   CharacterDefs /paragraph
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007F00DB00DB00DB007B00
+         1B001B001B001B00000000000000>} imagemask
+     } put
+   CharacterDefs /section
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00003E00630030001C0036006300
+         630036001C00060063003E000000>} imagemask
+     } put
+   CharacterDefs /hbar
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         00007F007F007F00000000000000>} imagemask
+     } put
+   CharacterDefs /arrowupdngrnd
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018003C007E0018001800
+         18007E003C0018007E0000000000>} imagemask
+     } put
+   CharacterDefs /arrowup
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018003C007E0018001800
+         1800180018001800000000000000>} imagemask
+     } put
+   CharacterDefs /arrowdown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018001800180018001800
+         18007E003C001800000000000000>} imagemask
+     } put
+   CharacterDefs /arrowright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000C0006007F00
+         06000C0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /arrowleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000180030007F00
+         3000180000000000000000000000>} imagemask
+     } put
+   CharacterDefs /hook
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000060006000
+         60007F0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /arrowboth
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000024006600FF00
+         6600240000000000000000000000>} imagemask
+     } put
+   CharacterDefs /triangup
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000008001C001C003E00
+         3E007F007F000000000000000000>} imagemask
+     } put
+   CharacterDefs /triangdown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000007F007F003E003E00
+         1C001C0008000000000000000000>} imagemask
+     } put
+
+   CharacterDefs /house
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000008001C003600
+         630063007F000000000000000000>} imagemask
+     } put
+   CharacterDefs /Ccedilla
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001E003300610060006000
+         610033001E00060003003E000000>} imagemask
+     } put
+   CharacterDefs /udieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000066006600000066006600
+         6600660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /eacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000006000C00180000003E006300
+         7F00600063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /acicumflex
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000008001C00360000003C000600
+         3E00660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /adieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000006600660000003C000600
+         3E00660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /agrave
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000300018000C0000003C000600
+         3E00660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /aring
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00001C0036001C0000003C000600
+         3E00660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /ccedilla
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003C0066006000
+         66003C000C0006003C0000000000>} imagemask
+     } put
+   CharacterDefs /ecircumflex
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000008001C00360000003E006300
+         7F00600063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /edieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000006600660000003E006300
+         7F00600063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /egrave
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000300018000C0000003E006300
+         7F00600063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /idieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000066006600000038001800
+         1800180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /icircumflex
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000018003C006600000038001800
+         1800180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /igrave
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000600030001800000038001800
+         1800180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /Adieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00006300630008001C0036006300
+         63007F0063006300000000000000>} imagemask
+     } put
+   CharacterDefs /Aring
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1C0036001C0000001C0036006300
+         63007F0063006300000000000000>} imagemask
+     } put
+   CharacterDefs /Eacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0C001800300000007F0033003000
+         3E00300033007F00000000000000>} imagemask
+     } put
+   CharacterDefs /ae
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000006E003B001B00
+         7E00D800DC007700000000000000>} imagemask
+     } put
+   CharacterDefs /AE
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001F003600660066007F00
+         6600660066006700000000000000>} imagemask
+     } put
+   CharacterDefs /ocircumflex
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000008001C00360000003E006300
+         6300630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /odieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000006300630000003E006300
+         6300630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /ograve
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000300018000C0000003E006300
+         6300630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /ucircumflex
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000018003C006600000066006600
+         6600660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /ugrave
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000300018000C00000066006600
+         6600660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /ydieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000063006300000063006300
+         630063003F00030006003C000000>} imagemask
+     } put
+   CharacterDefs /Odieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000630063001C00360063006300
+         6300630036001C00000000000000>} imagemask
+     } put
+   CharacterDefs /Udieresis
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000630063000000630063006300
+         6300630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /cent
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000180018007E00C300C000C000
+         C3007E0018001800000000000000>} imagemask
+     } put
+   CharacterDefs /sterling
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00001C0036003200300078003000
+         3000300073007E00000000000000>} imagemask
+     } put
+   CharacterDefs /yen
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000C30066003C001800FF00
+         1800FF0018001800000000000000>} imagemask
+     } put
+   CharacterDefs /Pt
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000FC00660066007C0062006600
+         6F0066006600F300000000000000>} imagemask
+     } put
+   CharacterDefs /florin
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000E001B001800180018007E00
+         1800180018001800D80070000000>} imagemask
+     } put
+   CharacterDefs /aacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000C001800300000003C000600
+         3E00660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /iacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000C0018003000000038001800
+         1800180018003C00000000000000>} imagemask
+     } put
+   CharacterDefs /oacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000C001800300000003E006300
+         6300630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /uacute
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000C0018003000000066006600
+         6600660066003B00000000000000>} imagemask
+     } put
+   CharacterDefs /ntilde
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000003B006E0000006E003300
+         3300330033003300000000000000>} imagemask
+     } put
+   CharacterDefs /Ntilde
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3B006E000000630073007B007F00
+         6F00670063006300000000000000>} imagemask
+     } put
+   CharacterDefs /ordfeminine
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00003C006C006C003E0000007E00
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /ordmasculine
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000038006C006C00380000007C00
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /questiondown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018001800000018001800
+         3000630063003E00000000000000>} imagemask
+     } put
+   CharacterDefs /bracketlefttp
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000007F00
+         6000600060000000000000000000>} imagemask
+     } put
+   CharacterDefs /bracketrighttp
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000007F00
+         0300030003000000000000000000>} imagemask
+     } put
+   CharacterDefs /half
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00006000E000630066006C001800
+         30006E00C30006000C001F000000>} imagemask
+     } put
+   CharacterDefs /quarter
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00006000E000630066006C001800
+         33006700CF001F00030003000000>} imagemask
+     } put
+   CharacterDefs /exclamdown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000018001800000018001800
+         3C003C003C001800000000000000>} imagemask
+     } put
+   CharacterDefs /guillemotleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000001B0036006C00
+         36001B0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /guillemotright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000006C0036001B00
+         36006C0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /sparseblock
+     { 8 8 true [8 0 0 -8 0 8]
+       {<11441144
+         44114411>} imagemask
+     } put
+   CharacterDefs /mediumblock
+     { 8 8 true [8 0 0 -8 0 8]
+       {<55AA55AA
+         AA55AA55>} imagemask
+     } put
+   CharacterDefs /denseblock
+     { 8 8 true [8 0 0 -8 0 8]
+       {<DD77DD77
+         77DD77DD>} imagemask
+     } put
+   CharacterDefs /vertical
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         1800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /vertleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         F800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /vertdblleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<18001800180018001800F8001800
+         F800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /dblvertleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         F600360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /toprightdbldown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         FE00360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /toprightdblleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000000F8001800
+         F800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /dblvertdblleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<36003600360036003600F6000600
+         F600360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblvert
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         3600360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dbltopright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000000FE000600
+         F600360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblbotright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<36003600360036003600F6000600
+         FE00000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /botrightdblup
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         FE00000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /botrightdblleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<18001800180018001800F8001800
+         F800000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /topright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         F800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /botleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         1F80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /botmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /topmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         FF80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /vertright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         1F80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /horizontal
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /vertcross
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         FF80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /vertdblright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<180018001800180018001F801800
+         1F80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /dblvertright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         3780360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblbotleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360037803000
+         3F80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /dbletopleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000000003F803000
+         3780360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblbotdblmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<36003600360036003600F7800000
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /dbltopdblmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000000FF800000
+         F780360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblvertdblright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360037803000
+         3780360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblhorizontal
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000000FF800000
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /dblvertdblcross
+     { 9 14 true [9 0 0 -14 0 14]
+       {<36003600360036003600F7800000
+         F780360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblbotmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<18001800180018001800FF800000
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /botdblmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         FF80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /dbltopmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000000000FF800000
+         FF80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /topdblmiddle
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         FF80360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /botleftdblup
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         3F80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /botleftdblright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<180018001800180018001F801800
+         1F80000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /topleftdblright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000000001F801800
+         1F80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /topleftdbldown
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         3F80360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /dblvertcross
+     { 9 14 true [9 0 0 -14 0 14]
+       {<3600360036003600360036003600
+         FF80360036003600360036003600>} imagemask
+     } put
+   CharacterDefs /vertdblcross
+     { 9 14 true [9 0 0 -14 0 14]
+       {<18001800180018001800FF801800
+         FF80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /botright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         F800000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /topleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         1F80180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /solid
+%    { 0 0 moveto
+%      0 1000 lineto
+%      1000 1000 lineto
+%      1000 0 lineto
+%      0 0 lineto
+%      fill
+%    } put
+     { 0 0 moveto 0 1 rlineto
+       1 0 rlineto
+       0 -1 rlineto
+       -1 0 rlineto
+       fill
+     } put
+   CharacterDefs /solidbot
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         FF80FF80FF80FF80FF80FF80FF80>} imagemask
+     } put
+   CharacterDefs /solidleft
+     { 9 14 true [9 0 0 -14 0 14]
+       {<F000F000F000F000F000F000F000
+         F000F000F000F000F000F000F000>} imagemask
+     } put
+   CharacterDefs /solidright
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0F800F800F800F800F800F800F80
+         0F800F800F800F800F800F800F80>} imagemask
+     } put
+   CharacterDefs /solidtop
+     { 9 14 true [9 0 0 -14 0 14]
+       {<FF80FF80FF80FF80FF80FF80FF80
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /alpha
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000000003B006E00
+         6C006C006E003B00000000000000>} imagemask
+     } put
+   CharacterDefs /beta
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003E0063007E00
+         630063007E006000600020000000>} imagemask
+     } put
+   CharacterDefs /Gamma
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007F006300630060006000
+         6000600060006000000000000000>} imagemask
+     } put
+   CharacterDefs /pi
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000007F0036003600
+         3600360036003600000000000000>} imagemask
+     } put
+   CharacterDefs /Sigma
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007F006300300018000C00
+         1800300063007F00000000000000>} imagemask
+     } put
+   CharacterDefs /sigma
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000000003F006C00
+         6C006C006C003800000000000000>} imagemask
+     } put
+   CharacterDefs /mu
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000330033003300
+         33003E0030003000600000000000>} imagemask
+     } put
+   CharacterDefs /tau
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003B006E000C00
+         0C000C000C000C00000000000000>} imagemask
+     } put
+   CharacterDefs /Phi
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000007E0018003C0066006600
+         66003C0018007E00000000000000>} imagemask
+     } put
+   CharacterDefs /theta
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001C003600630063007F00
+         6300630036001C00000000000000>} imagemask
+     } put
+   CharacterDefs /Omega
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001C003600630063006300
+         3600360036007700000000000000>} imagemask
+     } put
+   CharacterDefs /delta
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001E00300018000C003E00
+         6600660066003C00000000000000>} imagemask
+     } put
+   CharacterDefs /infinity
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000000000000007E00DB00
+         DB007E0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /emptyset
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000030006007E00DB00DB00
+         F3007E006000C000000000000000>} imagemask
+     } put
+   CharacterDefs /element
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001C003000600060007C00
+         6000600030001C00000000000000>} imagemask
+     } put
+   CharacterDefs /intersection
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000003E00630063006300
+         6300630063006300000000000000>} imagemask
+     } put
+   CharacterDefs /equivalence
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000007F00000000007F00
+         000000007F000000000000000000>} imagemask
+     } put
+   CharacterDefs /plusminus
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000180018001800FF001800
+         180018000000FF00000000000000>} imagemask
+     } put
+   CharacterDefs /greaterequal
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000300018000C0006000C00
+         1800300000007E00000000000000>} imagemask
+     } put
+   CharacterDefs /lessequal
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000C001800300060003000
+         18000C0000007E00000000000000>} imagemask
+     } put
+   CharacterDefs /integraltp
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000000E001B001B0018001800
+         1800180018001800180018001800>} imagemask
+     } put
+   CharacterDefs /integralbt
+     { 9 14 true [9 0 0 -14 0 14]
+       {<1800180018001800180018001800
+         1800D800D8007000000000000000>} imagemask
+     } put
+   CharacterDefs /divide
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000000001800180000000000FF00
+         0000000018001800000000000000>} imagemask
+     } put
+   CharacterDefs /approxequal
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003B006E000000
+         3B006E0000000000000000000000>} imagemask
+     } put
+   CharacterDefs /degree
+     { 9 14 true [9 0 0 -14 0 14]
+       {<000038006C006C00380000000000
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /bigdotmath
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000001800
+         1800000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /dotmath
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000000000000000000000000000
+         1800000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /radical
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000F000C000C000C000C000C00
+         EC006C003C001C00000000000000>} imagemask
+     } put
+   CharacterDefs /npower
+     { 9 14 true [9 0 0 -14 0 14]
+       {<0000D8006C006C006C006C006C00
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /square
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00007000D80030006000C800F800
+         0000000000000000000000000000>} imagemask
+     } put
+   CharacterDefs /smallsolid
+     { 9 14 true [9 0 0 -14 0 14]
+       {<00000000000000003E003E003E00
+         3E003E003E000000000000000000>} imagemask
+     } put
+
+  /BuildChar
+  { BuildCharDict begin
+    /char exch def
+    /fontdict exch def
+    /charname fontdict /Encoding get char get def
+    /charproc fontdict /CharacterDefs get charname get def
+    600 0 0 -250 600 750 setcachedevice
+    gsave 0 -250 translate 600 1000 scale charproc grestore
+    end
+  } def
+end
+
+/PcFont PcFontDict definefont pop
+
+%
+%  Attributes are <blink,bold,underline,reverse>
+%
+/defineFont {
+  findfont fontSize scalefont def
+} def
+
+/UnderlineIt {
+  gsave
+  dup length
+  { (_) show } repeat
+  grestore
+} def
+
+/myshow {
+  {
+    ( ) dup 0 3 index put exch
+    32 1 index le exch 127 le and
+      { show }
+      { currentfont exch pcfont setfont show setfont }
+    ifelse
+  } forall
+} def
+
+/paintString {
+  exch /atr exch def
+
+  atr 4 and 4 eq
+    { boldfont setfont }
+    { normalfont setfont }
+  ifelse
+  atr 2 and 2 eq
+    { UnderlineIt }
+  if
+
+  atr 1 and 1 eq
+    {
+      gsave
+      atr 4 and 4 eq
+        {
+%         150 0 { mul 0 gt { 1 } { -1 } ifelse } setscreen
+%         0.75 setgray
+          100 0 { mul 0 gt { 1 } { -1 } ifelse } setscreen
+          0.90 setgray
+        }
+      if
+      atr 8 and 8 eq
+        {
+%         75 45 { mul 0 gt { 1 } { -1 } ifelse } setscreen
+%         0.9325 setgray
+          75 45 { mul 0 gt { 1 } { -1 } ifelse } setscreen
+          0.9325 setgray
+        }
+      if
+%     pcfont setfont
+%     dup length {(\333) show} repeat
+%     grestore
+      pcfont setfont
+      dup length () stringwidth pop dup 1000 600 div mul
+      0 1 index .75 mul rlineto
+      2 index 2 index mul 0 rlineto
+      0 1 index neg rlineto
+      2 index 2 index mul neg 0 rlineto
+      0 1 index .25 mul rlineto
+      pop pop pop
+      fill
+      grestore
+
+      gsave
+      atr 12 and 0 eq
+        {
+          1.0 setgray
+        }
+      if
+      boldfont setfont
+      myshow
+      currentpoint
+      grestore
+      moveto
+    }
+    { myshow }
+  ifelse
+} def
+
+/startFig{
+   /oldFont currentfont def
+   /boxon exch def
+   normalfont setfont
+   0 lineskip rmoveto
+   currentpoint
+   /oldY exch def
+   /oldX exch def
+   ( ) stringwidth rmoveto
+   currentpoint pop /myLmargin exch def
+   /maxX myLmargin def
+   boxon 0 ne {
+     nextline
+   } if
+} def
+
+/endFig {
+  normalfont setfont
+%  boxon 0 ne {     (GMP)   DO NOT NEED A BLANK LINE AT THE BOTTOM OF BOX.
+%    nextline       (GMP)
+%  } if             (GMP)
+  currentpoint oldX exch moveto pop
+  boxon 0 ne {
+    maxX oldX sub ( ) stringwidth pop add  % dx
+    oldY currentpoint exch pop sub         % dy
+    box
+  } if
+  0 lineskip rmoveto
+  oldFont null ne {
+    oldFont setfont
+  } if
+} def
+
+/nextline { currentpoint pop dup maxX gt {dup /maxX exch def} if
+  myLmargin sub neg lineskip rmoveto } def
+
+/box {
+  gsave
+  currentlinewidth sub
+  exch currentlinewidth sub exch
+  currentlinewidth 2 div dup rmoveto
+  dup 0 exch rmoveto
+  dup 0 exch neg rlineto
+  exch 0 rlineto
+  0 exch rlineto
+  closepath stroke
+  grestore
+} def
+
+/setSize {
+  /fontSize exch def
+  /lineskip fontSize neg def
+  /normalfont /Courier defineFont
+  /boldfont /Courier-Bold defineFont
+  /pcfont /PcFont defineFont
+} def

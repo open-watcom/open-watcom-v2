@@ -1,0 +1,23 @@
+/*
+ *  winres.h    Extra Win32 resource definitions
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+/* Define default version number */
+#ifndef WINVER
+    #define WINVER  0x0500
+#endif
+
+#include <winresrc.h>
+
+/* Version information resource identifier */
+#define VS_VERSION_INFO 1
+
+/* Selected control messages */
+#define LB_ADDSTRING    (WM_USER + 1)
+#define CB_ADDSTRING    (WM_USER + 3)
+
+:include static.sp

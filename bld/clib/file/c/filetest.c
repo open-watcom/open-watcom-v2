@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Simple test of clib file I/O routines.
 *
 ****************************************************************************/
 
@@ -33,10 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys\types.h>
-#include <sys\stat.h>
-#include <io.h>
-#include <sys\utime.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <utime.h>
 #include <errno.h>
 #include <time.h>
 
@@ -99,8 +98,10 @@ void main( int argc, char *argv[] )
         }
         fclose( fp );
     }
+#ifndef __UNIX__    // rename is allowed
     VERIFY( rename( filename[0], filename[1] ) != 0 );  // rename should fail
     EXPECT( (errno == EACCES)||(errno == EEXIST) );
+#endif
     VERIFY( rename( filename[0], filename[2] ) == 0 );
     VERIFY( remove( filename[0] ) != 0 );   // filename[0] was renamed -> DNE
     EXPECT( errno == ENOENT );
@@ -115,11 +116,22 @@ void main( int argc, char *argv[] )
     // filename[1] is now read-only
     VERIFY( access( filename[1], W_OK ) == -1 );
     EXPECT( errno == EACCES );
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )    // remove would succeed
     VERIFY( remove( filename[1] ) != 0 );
     EXPECT( errno == EACCES );
+#endif
     VERIFY( chmod( filename[1], S_IRWXU | S_IRWXG ) == 0 );
     VERIFY( stat( filename[1], &info ) == 0 );
+    VERIFY( stat( "NSF", &info ) == -1 );       // No Such File
+    VERIFY( stat( "/", &info ) == 0 );
+#ifndef __UNIX__
+    VERIFY( stat( "C:\\", &info ) == 0 );       // the a/c/m times are faked
+    VERIFY( info.st_atime == info.st_ctime && info.st_ctime == info.st_mtime );
+    VERIFY( info.st_dev == 2 );
+#endif
+#ifndef __UNIX__
     EXPECT( 0 <= info.st_dev && info.st_dev < 26 );
+#endif
     VERIFY( utime( filename[1], NULL ) == 0 );
     VERIFY( remove( filename[1] ) == 0 );
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );

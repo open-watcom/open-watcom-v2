@@ -1,6 +1,6 @@
 #include "fail.h"
 
-#if ( __WATCOMC__ > 950 ) && ( defined( M_I86 ) || defined( M_I386 ) )
+#if ( __WATCOMC__ > 950 ) && defined( _M_IX86 )
 
 int one_cpp( int x, int y = -1 )
 {

@@ -1,5 +1,5 @@
 proj_name       = mkcdpg
-inc_dirs        = $(wrc_dir)\h;$(watcom_dir)\h
+inc_dirs        = -I"$(wrc_dir)/h"
 
 !include cproj.mif
 !include defrule.mif

@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+#if defined(__OS2__)
+    #define INCL_SUB
+    #include <os2.h>
+#endif
+
 void tprintf( int row, int col, char *fmt, ... );
 
 #define FEBRUARY        1
@@ -90,7 +95,7 @@ void Calendar( month, year, row, col, width, title )
     str = MonthName[ month ];
 
     tprintf( row - 1, col + 1 + ( box_width - strlen( str ) - 5 ) / 2 ,
-                "%s 19%d\n", str, year );
+                "%s %d\n", str, 1900 + year );
     tprintf( row + 1, col + 1, title );
 
     start = year + year / 4 + Jump[ month ];
@@ -203,9 +208,6 @@ void PosCursor( row, col )
     int                         col;
 {
 #if defined(__OS2__)
-    extern int far pascal   VioSetCurPos( unsigned short, unsigned short,
-                            unsigned short );
-
     VioSetCurPos( row, col, 0 );
 #elif defined(__QNX__)
     term_cur( row - 1, col - 1 );
@@ -230,9 +232,6 @@ void ClearScreen()
 /****************/
 {
 #if defined(__OS2__)
-    extern int far pascal   VioWrtNChar( char far *, unsigned short,
-                            unsigned short, unsigned short, unsigned short );
-
     VioWrtNChar( " ", 2000, 0, 0, 0 );
 #elif defined(__QNX__)
     term_load();

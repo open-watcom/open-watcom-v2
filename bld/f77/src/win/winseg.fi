@@ -1,0 +1,24 @@
+*$noreference
+
+! Segment Functions:
+! ------------------
+
+      external AllocDStoCSAlias
+      external AllocSelector
+      external ChangeSelector
+      external FreeSelector
+      external GetCodeInfo
+      external GlobalFix
+      external GlobalPageLock
+      external GlobalPageUnlock
+      external GlobalUnfix
+
+      integer*2 AllocDStoCSAlias
+      integer*2 AllocSelector
+      integer*2 ChangeSelector
+      integer*2 FreeSelector
+      integer*2 GlobalPageLock
+      integer*2 GlobalPageUnlock
+      integer*2 GlobalUnfix
+
+*$reference

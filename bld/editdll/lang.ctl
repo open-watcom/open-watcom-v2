@@ -3,39 +3,58 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>\master.ctl ]
-[ INCLUDE <LANG_BLD>\wproj.ctl ]
+[ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
 [ BLOCK <1> build rel2 ]
-    cdsay epm
-    wmake /h /i
-    cdsay ..\cw
-    wmake /h /i
-    cdsay ..\viw\objwin
-    wmake /h /i
-    cdsay ..\objnt
-    wmake /h /i
-    cd <PROJDIR>
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CPCMD> <devdir>\editdll\epm\epmlink.dll  <relroot>\rel2\binp\dll\
-    <CPCMD> <devdir>\editdll\viw\objwin\weditviw.dll <relroot>\rel2\binw\weditviw.dll
-    <CPCMD> <devdir>\editdll\viw\objnt\weditviw.dll <relroot>\rel2\binnt\weditviw.dll
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> <DEVDIR>/editdll/epm/epmlink.dll            <RELROOT>/binp/dll/epmlink.dll
+    <CPCMD> <DEVDIR>/editdll/epm/epmlink.sym            <RELROOT>/binp/dll/epmlink.sym
+    <CPCMD> <DEVDIR>/editdll/epm/wedit.lib              <RELROOT>/src/editdll/os2/wedit.lib
+    <CPCMD> <DEVDIR>/editdll/epm/wedit.dll              <RELROOT>/src/editdll/os2/wedit.dll
 
-    <CPCMD> <devdir>\editdll\cw\weditcw.dll <relroot>\rel2\binw\weditcw.dll
-    <CPCMD> <devdir>\editdll\cw\weditcwn.dll <relroot>\rel2\binnt\weditcw.dll
-    <CPCMD> <devdir>\editdll\cw\weditcw.c <relroot>\rel2\src\editdll\weditcw.c
-    <CPCMD> <devdir>\editdll\cw\weditcw.h <relroot>\rel2\src\editdll\weditcw.h
-    <CPCMD> <devdir>\editdll\cw\weditcw.lnk <relroot>\rel2\src\editdll\weditcw.lnk
-    <CPCMD> <devdir>\editdll\cw\weditcwn.lnk <relroot>\rel2\src\editdll\weditcwn.lnk
-    <CPCMD> <devdir>\editdll\cw\makefile <relroot>\rel2\src\editdll\makefile
-    <CPCMD> <devdir>\editdll\wedit.h <relroot>\rel2\src\editdll\wedit.h
-    <CPCMD> <devdir>\editdll\wedit.doc <relroot>\rel2\src\editdll\wedit.doc
+  [ IFDEF (os_win "") <2*> ]
+
+    <CPCMD> <DEVDIR>/editdll/viw/wini86/weditviw.dll    <RELROOT>/binw/weditviw.dll
+    <CPCMD> <DEVDIR>/editdll/viw/wini86/weditviw.sym    <RELROOT>/binw/weditviw.sym
+    <CPCMD> <DEVDIR>/editdll/cw/wini86/weditcw.dll      <RELROOT>/binw/weditcw.dll
+    <CPCMD> <DEVDIR>/editdll/viw/wini86/wedit.lib       <RELROOT>/src/editdll/win/wedit.lib
+    <CPCMD> <DEVDIR>/editdll/cw/wini86/wedit.dll        <RELROOT>/src/editdll/win/cw/wedit.dll
+    <CPCMD> <DEVDIR>/editdll/viw/wini86/wedit.dll       <RELROOT>/src/editdll/win/viw/wedit.dll
+
+  [ IFDEF (os_nt "") <2*> ]
+    <CPCMD> <DEVDIR>/editdll/viw/nt386/weditviw.dll     <RELROOT>/binnt/weditviw.dll
+    <CPCMD> <DEVDIR>/editdll/viw/nt386/weditviw.sym     <RELROOT>/binnt/weditviw.sym
+    <CPCMD> <DEVDIR>/editdll/cw/nt386/weditcw.dll       <RELROOT>/binnt/weditcw.dll
+    <CPCMD> <DEVDIR>/editdll/viw/nt386/wedit.lib        <RELROOT>/src/editdll/nt/wedit.lib
+    <CPCMD> <DEVDIR>/editdll/cw/nt386/wedit.dll         <RELROOT>/src/editdll/nt/cw/wedit.dll
+    <CPCMD> <DEVDIR>/editdll/viw/nt386/wedit.dll        <RELROOT>/src/editdll/nt/viw/wedit.dll
+
+  [ IFDEF (cpu_axp) <2*> ]
+    <CPCMD> <DEVDIR>/editdll/viw/ntaxp/weditviw.dll     <RELROOT>/axpnt/weditviw.dll
+    <CPCMD> <DEVDIR>/editdll/viw/ntaxp/weditviw.sym     <RELROOT>/axpnt/weditviw.sym
+  [ ENDIF ]
+
+    <CPCMD> <DEVDIR>/editdll/wedit.h                    <RELROOT>/src/editdll/wedit.h
+    <CPCMD> <DEVDIR>/editdll/wedit.doc                  <RELROOT>/src/editdll/wedit.doc
+
 
 [ BLOCK <1> clean ]
 #==================
-    sweep killobjs
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK . . ]
+#============
+
+cdsay <PROJDIR>

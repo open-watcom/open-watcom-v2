@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Open Watcom banner strings and version defines.
 *
 ****************************************************************************/
 
@@ -34,10 +33,6 @@
 
 #define DOBANSTR( p )   #p
 #define BANSTR( p )     DOBANSTR( p )
-
-#ifndef _BANEXTRA
-#define _BANEXTRA
-#endif
 
 #ifndef _BETASTR_
 #define _BETASTR_ "beta"
@@ -49,42 +44,59 @@
 #define _BETA_                  _BANEXTRA
 #endif
 
-#define CURR_YEAR       "2002"
+#define CURR_YEAR       "2010"
 
 #define banner1p1(p)  p
 #define banner1p2(v)  "Version " v
 #define banner1(p,v) banner1p1(p) " " banner1p2(v)
-#define banner1w(p,v) "Watcom " banner1p1(p) " " banner1p2(v)
+#define banner1w(p,v) "Open Watcom " banner1p1(p) " " banner1p2(v)
 
-#define banner2p1(year) "Copyright by Sybase, Inc., and its subsidiaries, " \
-                      year ", " CURR_YEAR
+#define banner2p1(year) "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved"
 //#define banner2p2() "All rights reserved"
 //#define banner2(year) banner2p1(year) ". " banner2p2() "."
 #define banner2p2() ""
 #define banner2(year) banner2p1(year) "."
 
-#define banner2a() "Copyright by Sybase, Inc., and its subsidiaries, " \
-                        CURR_YEAR "."
+#define banner2a() "Portions Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved."
 
-#define banner3       "All rights reserved.  Watcom is a trademark of Sybase, Inc."
+#define banner3       "Source code is available under the Sybase Open Watcom Public License."
+#define banner3a      "See http://www.openwatcom.org/ for details."
 
 #define banner1ps(p,v)  "Powersoft " banner1p1(p) " " banner1p2(v)
 #define banner2ps       banner2a()
 #define banner3ps       "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
-// the following macros define the delimeters used bythe resource
+/* Used by setupgui/c/guiinit.c */
+#define banner4gui()    "Copyright © 2002-%s Open Watcom Contributors. All Rights Reserved."
+#define banner2agui() "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
+
+// the following macros define the delimeters used by the resource
 // compiler when concatenating strings
 #define _RC_DELIM_LEFT_         [
 #define _RC_DELIM_RIGHT_        ]
 
-#if _BANVER == 1070
-    #define BAN_VER_STR "10.7" _BETA_
-#elif _BANVER == 1080
-    #define BAN_VER_STR "10.8" _BETA_
-#elif _BANVER == 1090
-    #define BAN_VER_STR "10.9" _BETA_
-#elif _BANVER == 1100
-    #define BAN_VER_STR "11.0c" _BETA_
+#if _BANVER == 1200
+    #define BAN_VER_STR "1.0" _BETA_
+#elif _BANVER == 1210
+    #define BAN_VER_STR "1.1" _BETA_
+#elif _BANVER == 1220
+    #define BAN_VER_STR "1.2" _BETA_
+#elif _BANVER == 1230
+    #define BAN_VER_STR "1.3" _BETA_
+#elif _BANVER == 1240
+    #define BAN_VER_STR "1.4" _BETA_
+#elif _BANVER == 1250
+    #define BAN_VER_STR "1.5" _BETA_
+#elif _BANVER == 1260
+    #define BAN_VER_STR "1.6" _BETA_
+#elif _BANVER == 1270
+    #define BAN_VER_STR "1.7" _BETA_
+#elif _BANVER == 1280
+    #define BAN_VER_STR "1.8" _BETA_
+#elif _BANVER == 1290
+    #define BAN_VER_STR "1.9" _BETA_
+#elif _BANVER == 2000
+    #define BAN_VER_STR "2.0" _BETA_
 #else
     #error **** Specified Banner version not supported ****
     #define BAN_VER_STR "12.0" _BETA_
@@ -113,6 +125,7 @@
 #define _WDISASM_VERSION_       BAN_VER_STR
 #define _FCENABLE_VERSION_      BAN_VER_STR
 #define _MS2WLINK_VERSION_      BAN_VER_STR
+#define _EXE2BIN_VERSION_       BAN_VER_STR
 #define _WLIB_VERSION_          BAN_VER_STR
 #define _WMAKE_VERSION_         BAN_VER_STR
 #define _WOMP_VERSION_          BAN_VER_STR
@@ -143,6 +156,8 @@
 #define _LINK_CLONE_VERSION_    BAN_VER_STR
 #define _NMAKE_CLONE_VERSION_   BAN_VER_STR
 #define _RC_CLONE_VERSION_      BAN_VER_STR
+#define _WIC_VERSION_           BAN_VER_STR
+#define _WGML_VERSION_          BAN_VER_STR
 
 /*
  * Java Tools
@@ -152,3 +167,9 @@
 #define _WJDUMP_VERSION_        JAVA_BAN_VER_STR
 #define _JLIB_VERSION_          JAVA_BAN_VER_STR
 #define _JAVAC_VERSION_         JAVA_BAN_VER_STR
+
+/*
+ * Versions of Microsoft tools with OW clones are compatible
+ */
+#define _MS_CL_VERSION_         "13.0.0"
+#define _MS_LINK_VERSION_       "7.0.0"

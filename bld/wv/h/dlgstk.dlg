@@ -1,16 +1,15 @@
-
-DIALOG_STACK DIALOG 4, 14, 288, 126
+DIALOG_STACK DIALOG 20, 50, 288, 126
 STYLE DS_MODALFRAME | WS_CAPTION | WS_POPUP | WS_VISIBLE | WS_SYSMENU
-CAPTION ""
-FONT 8, "MS Sans Serif"
+CAPTION "Unexpected program behavior"
+FONT 8, "Helv"
 BEGIN
-        CONTROL "You have unwound the stack one or more levels.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 14, 276, 14
-        CONTROL "Proceeding from this point could cause unexpected program behavior.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 28, 276, 14
-        CONTROL "", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 42, 276, 14
-        CONTROL "Do you want to rewind the stack before proceeding?", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 56, 276, 14
-        CONTROL "", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 70, 276, 14
-        CONTROL "&Yes", CTL_STK_YES, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 16, 98, 44, 14
-        CONTROL "&No", CTL_STK_NO, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 100, 98, 44, 14
-        CONTROL "&Cancel Operation", CTL_STK_CANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 185, 98, 89, 14
+    CONTROL "You have unwound the stack one or more levels.",                      0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 6, 14, 276, 14
+    CONTROL "Proceeding from this point could cause unexpected program behavior.", 0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 6, 28, 276, 14
+    CONTROL "",                                                                    0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 6, 42, 276, 14
+    CONTROL "Do you want to rewind the stack before proceeding?",                  0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 6, 56, 276, 14
+    CONTROL "",                                                                    0, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 6, 70, 276, 14
+    CONTROL "&Yes",                                                                CTL_STK_YES, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 16, 98, 50, 14
+    CONTROL "&No",                                                                 CTL_STK_NO, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 100, 98, 50, 14
+    CONTROL "&Cancel Operation",                                                   CTL_STK_CANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 185, 98, 90, 14
 END
 

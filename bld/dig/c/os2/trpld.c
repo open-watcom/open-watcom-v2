@@ -31,9 +31,12 @@
 
 
 #include <string.h>
+#define INCL_DOSMODULEMGR
+#define INCL_DOSMISC
+#include <os2.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <doscalls.h>
+#include <stdio.h>
 #include "trpimp.h"
 #include "tcerr.h"
 
@@ -64,6 +67,16 @@ char TellHardMode( char hard )
     return( HardFunc( hard ) );
 }
 
+void KillTrap( void )
+{
+    FiniFunc();
+    ReqFunc = NULL;
+    InitFunc = NULL;
+    FiniFunc = NULL;
+    InfoFunc = NULL;
+    HardFunc = NULL;
+}
+
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
@@ -86,7 +99,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         unsigned        version;
         char            os2ver;
 
-        DOSGETVERSION( &version );
+        DosGetVersion( (PUSHORT)&version );
         os2ver = version >> 8;
         if( os2ver >= 20 ) {
             trpfile[len++] = '3';
@@ -97,21 +110,21 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         }
         trpfile[len] = 0;
     }
-    rc = DOSLOADMODULE( NULL, 0, trpfile, &dll );
+    rc = DosLoadModule( NULL, 0, trpfile, (PHMODULE)&dll );
     if( rc != 0 ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( DOSGETPROCADDR( dll, "#1", (unsigned long far *)&InitFunc ) != 0
-     || DOSGETPROCADDR( dll, "#2", (unsigned long far *)&FiniFunc ) != 0
-     || DOSGETPROCADDR( dll, "#3", (unsigned long far *)&ReqFunc ) != 0 ) {
+    if( DosGetProcAddr( dll, "#1", (PFN FAR *)&InitFunc ) != 0
+     || DosGetProcAddr( dll, "#2", (PFN FAR *)&FiniFunc ) != 0
+     || DosGetProcAddr( dll, "#3", (PFN FAR *)&ReqFunc ) != 0 ) {
         return( buff );
     }
-    if( DOSGETPROCADDR( dll, "#4", (unsigned long far *)&InfoFunc ) != 0 ) {
+    if( DosGetProcAddr( dll, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
         InfoFunc = NULL;
     }
-    if( DOSGETPROCADDR( dll, "#5", (unsigned long far *)&HardFunc ) != 0 ) {
+    if( DosGetProcAddr( dll, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
         HardFunc = NULL;
     }
     *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
@@ -125,15 +138,4 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     TrapVer = *trap_ver;
     return( NULL );
-}
-
-
-void KillTrap()
-{
-    FiniFunc();
-    ReqFunc = NULL;
-    InitFunc = NULL;
-    FiniFunc = NULL;
-    InfoFunc = NULL;
-    HardFunc = NULL;
 }

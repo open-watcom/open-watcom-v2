@@ -61,11 +61,15 @@ typedef struct BRI_Routines {
     void   (* free)( void * );
 } BRI_Routines;
 
+typedef struct {                // BRINF_PCH_CTL
+    unsigned bsize;             // - buffer size
+    char* buffer;               // - buffer
+} BRI_PCH_CTL;
 
 typedef struct BRI_PCHRtns {
-    uint_8      (* read1)( void * cookie );
-    uint_32     (* read4)( void * cookie );
-    void *      (* read)( void * cookie, unsigned size );
+    uint_8      (* read1)( BRI_PCH_CTL * cookie );
+    uint_32     (* read4)( BRI_PCH_CTL * cookie );
+    void *      (* read)( BRI_PCH_CTL * cookie, unsigned size );
 } BRI_PCHRtns;
 
 

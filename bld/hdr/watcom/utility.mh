@@ -1,0 +1,131 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: utility (Utility templates)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library. It
+//              defines a few useful helper templates that don't fit
+//              well in any of the other headers.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _UTILITY_INCLUDED
+#define _UTILITY_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+    namespace rel_ops {
+
+        template< class Type >
+        bool operator!=( const Type &x, const Type &y )
+        {
+            return( !( x == y ) );
+        }
+
+        template< class Type >
+        bool operator>( const Type &x, const Type &y )
+        {
+            return( y < x );
+        }
+
+        template< class Type >
+        bool operator<=( const Type &x, const Type &y )
+        {
+            return( !( y < x ) );
+        }
+
+        template< class Type >
+        bool operator>=( const Type &x, const Type &y )
+        {
+            return( !( x < y ) );
+        }
+
+    } // namespace rel_ops
+
+
+    // Pair support
+
+    template< class Type1, class Type2 >
+    struct pair {
+        typedef Type1 first_type;
+        typedef Type2 second_type;
+
+        Type1 first;
+        Type2 second;
+
+        pair( ) :
+            first( Type1( ) ), second( Type2( ) )
+        { }
+
+        pair( const Type1 &x, const Type2 &y ) :
+            first( x ), second( y )
+        { }
+
+        template< class OtherType1, class OtherType2 >
+        pair( const pair< OtherType1, OtherType2 > &other ) :
+            first( other.first ), second( other.second )
+        { }
+    };
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator==( const pair< Type1, Type2 > &x,
+                     const pair< Type1, Type2 > &y )
+    {
+        return( x.first == y.first && x.second == y.second );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator<( const pair< Type1, Type2 > &x,
+                    const pair< Type1, Type2 > &y )
+    {
+        return( x.first < y.first ||
+                ( !( y.first < x.first ) && x.second < y.second ) );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator!=( const pair< Type1, Type2 > &x,
+                     const pair< Type1, Type2 > &y )
+    {
+        return( !(x == y) );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator>( const pair< Type1, Type2 > &x,
+                    const pair< Type1, Type2 > &y )
+    {
+        return( y < x );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator>=( const pair< Type1, Type2 > &x,
+                     const pair< Type1, Type2 > &y )
+    {
+        return( !(x < y) );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    bool operator<=( const pair< Type1, Type2 > &x,
+                     const pair< Type1, Type2 > &y )
+    {
+        return( !(y < x) );
+    }
+
+    template< class Type1, class Type2 >
+    inline
+    pair< Type1, Type2 > make_pair( const Type1 &x, const Type2 &y )
+    {
+        return( pair< Type1, Type2 >( x, y ) );
+    }
+    
+} // namespace std
+
+#endif

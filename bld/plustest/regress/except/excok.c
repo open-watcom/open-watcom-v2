@@ -47,7 +47,7 @@ void test_scalars()
     test_scalar( char, 'A', "%c" );
     test_scalar( signed char, 'B', "%c" );
     test_scalar( unsigned char, 'C', "%c" );
-    test_scalar( long char, 15, "%c" );
+    test_scalar( wchar_t, 15, "%c" );
     test_scalar( signed short, 14, "%d" );
     test_scalar( unsigned short, 15, "%d" );
     test_scalar( signed int, 16, "%d" );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MultiLib library format.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 #define LIB_H
 
-#pragma pack(push,1);
+#include "pushpck1.h"
 
 #define LIBMAG          "!<mlib>\n"
 #define LIBMAG_LEN      8
@@ -70,12 +69,12 @@ typedef struct
 
 typedef struct
 {
-    unsigned char       lib_name[LIB_NAME_LEN];
+    char                lib_name[LIB_NAME_LEN];
     unsigned char       lib_date[LIB_DATE_LEN];
     unsigned char       lib_uid[LIB_UID_LEN];
     unsigned char       lib_gid[LIB_GID_LEN];
     unsigned char       lib_mode[LIB_MODE_LEN];
-    unsigned char       lib_size[LIB_SIZE_LEN];
+    char                lib_size[LIB_SIZE_LEN];
     unsigned char       lib_fmag[LIBFMAG_LEN];
 } Lib32_Hdr;
 
@@ -87,6 +86,6 @@ typedef struct
 #define LIB_LONG_NAME_END_STRING        "/\n"
 #define LIB_LONG_NAME_END_STRING_LEN    2
 
-#pragma pack(pop);
+#include "poppck.h"
 
 #endif

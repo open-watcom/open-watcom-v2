@@ -58,7 +58,7 @@ extern dos_debug        Buff;
 extern unsigned short   ThisDLLModHandle;
 extern ULONG            ExceptNum;
 
-extern pascal far Dos16SelToFlat();
+extern unsigned short pascal far Dos16SelToFlat();
 
 extern long CallDosSelToFlat( long );
 #pragma aux CallDosSelToFlat = \

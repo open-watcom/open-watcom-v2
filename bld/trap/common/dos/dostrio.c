@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS specific trap I/O.
 *
 ****************************************************************************/
 
@@ -38,36 +37,9 @@
 
 extern char RWBuff[];
 
-extern int KeyPress_pragma();
-extern int KeyGet_pragma();
+extern int KeyPress_pragma( void );
+extern int KeyGet_pragma( void );
 
-#if defined(_FMR_PC)
-#pragma aux KeyPress_pragma =   \
-    "mov    ah,07h"             \
-    "int    90h"                \
-    modify [ax bx dx];
-
-#pragma aux KeyGet_pragma =     \
-    "mov    al,01h"             \
-    "mov    ah,09h"             \
-    "int    90h"                \
-    "mov    ax,dx"              \
-    modify [ax bx dx];
-
-#elif defined(_NEC_PC)
-#pragma aux KeyPress_pragma =   \
-    "mov    ah,1 "              \
-    "int    18h"                \
-    "xor    ah,ah"              \
-    "mov    al,bh"              \
-    modify [ax bh];
-
-#pragma aux KeyGet_pragma =     \
-    "mov    ah,0"               \
-    "int    18h"                \
-    modify [ax];
-
-#else
 #pragma aux KeyPress_pragma =   \
     "mov    ah,1"               \
     "int    16h"                \
@@ -83,7 +55,16 @@ extern int KeyGet_pragma();
     "int    16h"                \
     modify [ax];
 
-#endif
+
+void Output( char *str )
+{
+    TinyWrite( TINY_ERR, str, strlen( str ) );
+}
+
+void SayGNiteGracey( int return_code )
+{
+    TinyTerminateProcess( return_code );
+}
 
 void StartupErr( char *err )
 {
@@ -92,22 +73,12 @@ void StartupErr( char *err )
     SayGNiteGracey( 1 );
 }
 
-void Output( char *str )
-{
-    TinyWrite( 2, str, strlen( str ) );
-}
-
-void SayGNiteGracey( int return_code )
-{
-    TinyTerminateProcess( return_code );
-}
-
-int KeyPress()
+int KeyPress( void )
 {
     return( KeyPress_pragma() );
 }
 
-int KeyGet()
+int KeyGet( void )
 {
     return( KeyGet_pragma() );
 }
@@ -120,7 +91,7 @@ tiny_handle_t PathOpen( char *name, unsigned name_len, char *exts )
     char        *ptr;
     char        *endptr;
     char        trpfile[256];
-    tiny_ret_t      filehndl;
+    tiny_ret_t  rc;
 
     has_ext = FALSE;
     has_path = FALSE;
@@ -144,15 +115,15 @@ tiny_handle_t PathOpen( char *name, unsigned name_len, char *exts )
         trpfile[name_len] = '\0';
     } else {
         trpfile[ name_len++ ] = '.';
-        memcpy( (char near *)&trpfile[ name_len ], exts, strlen( exts ) + 1 );
+        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
     }
     if( has_path ) {
-        filehndl = TinyOpen( trpfile, TIO_READ );
+        rc = TinyOpen( trpfile, TIO_READ );
     } else {
-        _searchenv( (char near *)trpfile, "PATH", RWBuff );
-        filehndl = TinyOpen( RWBuff, TIO_READ );
+        _searchenv( trpfile, "PATH", RWBuff );
+        rc = TinyOpen( RWBuff, TIO_READ );
     }
-    return( (filehndl < 0) ? (-1) : (tiny_handle_t)filehndl );
+    return( TINY_ERROR( rc ) ? (-1) : TINY_INFO( rc ) );
 }
 
 unsigned long GetSystemHandle( unsigned h )
@@ -169,6 +140,7 @@ unsigned FileClose( unsigned h )
 
 int WantUsage( char *ptr )
 {
+    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
     return( *ptr == '?' );
 }
 

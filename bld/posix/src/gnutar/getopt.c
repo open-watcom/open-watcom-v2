@@ -24,14 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  gnutar implementation of getopt
+*               renamed to ow_gnuopt to avoid clash with unistd.h
+*               which should be used instead
 *
 ****************************************************************************/
 
 
 /* got this off net.sources */
 #include <stdio.h>
+#include "port.h"
 
 /*
  * get option letter from argument vector
@@ -46,13 +48,10 @@ char           *optarg;                 /* argument associated with option */
 #define tell(s) fputs(*nargv,stderr);fputs(s,stderr); \
                 fputc(optopt,stderr);fputc('\n',stderr);return(BADCH);
 
-getopt(nargc, nargv, ostr)
-int             nargc;
-char          **nargv, *ostr;
+int ow_getopt(int nargc, char ** nargv, char *ostr)
 {
         static char    *place = EMSG;           /* option letter processing */
-        register char  *oli;            /* option letter list index */
-        char           *index();
+        char  *oli;            /* option letter list index */
 
         if (!*place)
         {                                                       /* update scanning pointer */

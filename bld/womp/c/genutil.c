@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic utility function primarily for console output.
 *
 ****************************************************************************/
 
@@ -233,10 +232,11 @@ void Fatal2X( unsigned msg, uint_32 firstx, uint_32 secondx ) {
 }
 
 #ifndef NDEBUG
-void InternalError( const char *file, unsigned line ) {
+int InternalError( const char *file, unsigned line ) {
 /***************************************************/
 
     PrtFmt( "Internal error in %s(%u)\n", file, line );
     exit( EXIT_FAILURE );
+	return( 0 );
 }
 #endif

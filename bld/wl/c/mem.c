@@ -24,23 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory management routines for linker.
 *
 ****************************************************************************/
 
 
-/*
-  Mem : memory management routines for linker
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
-#ifdef TRACKER
-#include "trmem.h"
+#ifdef __WATCOMC__
+    #include <malloc.h>     /* for _expand() */
+#endif
+#ifdef TRMEM
+    #include "trmem.h"
 #endif
 #include "linkstd.h"
 #include "msg.h"
@@ -50,7 +46,7 @@
 #include "reloc.h"
 #include "objcache.h"
 #include "alloc.h"
-#if _OS == _QNX
+#if defined( __QNX__ )
     #include <sys/seginfo.h>
 
     unsigned LastChanceSeg;
@@ -60,17 +56,19 @@
     static  int     Chunks;
 #endif
 
-#ifdef TRACKER
-#include "fileio.h"
+#ifdef TRMEM
+#include "ideentry.h"
 
 void    *TrHdl;
+
+static void         PrintAllMem( void );
 #endif
 
 static bool         CacheRelease( void );
 
-#ifdef TRACKER
+#ifdef TRMEM
 
-void PrintLine( void * bogus, const char *buff, unsigned len )
+void PrintLine( int *bogus, const char *buff, unsigned len )
 {
     bogus = bogus;      /* to avoid a warning */
     len = len;
@@ -78,22 +76,17 @@ void PrintLine( void * bogus, const char *buff, unsigned len )
 }
 #endif
 
-extern void LnkMemInit( void )
-/****************************/
+void LnkMemInit( void )
+/*********************/
 {
-#if  _OS == _OS2HOST
-
-    if( _osmode == OS2_MODE ) {
-        LinkState |= RUNNING_OS2_FLAG;
-    }
-#elif _OS == _QNX
+#if defined( __QNX__ )
     /* allocate some memory we can give back to the system if it runs low */
     LastChanceSeg = qnx_segment_alloc( 65000 );
 #endif
 #ifdef _INT_DEBUG
     Chunks = 0;
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
     TrHdl = _trmem_open( malloc, free, realloc, _expand,
             NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
@@ -102,46 +95,38 @@ extern void LnkMemInit( void )
 }
 
 
-extern void LnkMemFini( void )
-/****************************/
+void LnkMemFini( void )
+/*********************/
 {
 #ifdef _INT_DEBUG
     if( Chunks != 0 ) {
         DEBUG( (DBG_ALWAYS, "%d Chunks unfreed", Chunks ) );
     }
 #endif
-#ifdef TRACKER
+#ifdef TRMEM
     PrintAllMem();
     _trmem_close( TrHdl );
 #endif
 }
 
-#ifdef TRACKER
-extern void *LAlloc( unsigned size )
-/**********************************/
-{
-    extern void *DoLAlloc( unsigned, void (*)() );
-    void        (*ra)();
-
-    ra = _trmem_guess_who();
-
-    return( DoLAlloc( size, ra ) );
-}
-
-void *DoLAlloc( unsigned size, void (*ra)() )
+#ifdef TRMEM
+void *DoLAlloc( size_t size, void (*ra)( void ) )
 #else
-void *LAlloc( unsigned size )
+void *LAlloc( size_t size )
 #endif
 {
     void    *p;
 
     for( ;; ) {
-#ifdef TRACKER
+#ifdef TRMEM
         p = _trmem_alloc( size, ra, TrHdl );
 #else
         p = malloc( size );
 #endif
-        if( p != NULL ) break;
+        if( p != NULL ) {
+            memset( p, 0, size );
+            break;
+        }
         if( !FreeUpMemory() ) break;
     }
 #ifdef _INT_DEBUG
@@ -150,12 +135,24 @@ void *LAlloc( unsigned size )
     return( p );
 }
 
-extern void * ChkLAlloc( unsigned size )
-/**************************************/
+#ifdef TRMEM
+ void *LAlloc( size_t size )
+/**************************/
+{
+    void        (*ra)( void );
+
+    ra = _trmem_guess_who();
+
+    return( DoLAlloc( size, ra ) );
+}
+#endif
+
+void *ChkLAlloc( size_t size )
+/****************************/
 {
     void                *ptr;
-#ifdef TRACKER
-    void                (*ra)();
+#ifdef TRMEM
+    void                (*ra)( void );
 
     ra = _trmem_guess_who();
 
@@ -169,44 +166,12 @@ extern void * ChkLAlloc( unsigned size )
     return( ptr );
 }
 
-#if 0   // not used anymore
-#ifdef TRACKER
-void *TryAlloc( unsigned size )
-/*****************************/
-{
-    static void *DoTryAlloc( unsigned, void (*)() );
-    void        (*ra)();
 
-    ra = _trmem_guess_who();
-
-    return( DoTryAlloc( size, ra ) );
-}
-
-static void *DoTryAlloc( unsigned size, void (*ra)() )
-#else
-void *TryAlloc( unsigned size )
-#endif
-{
-    void    *p;
-
-#ifdef TRACKER
-    p = _trmem_alloc( size, ra, TrHdl );
-#else
-    p = malloc( size );
-#endif
-#ifdef _INT_DEBUG
-    if( p != NULL ) ++Chunks;
-#endif
-    return( p );
-}
-#endif
-
-
-extern void LFree( void *p )
+void LFree( void *p )
 /**************************/
 {
     if( p == NULL ) return;
-#ifdef TRACKER
+#ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
     free( p );
@@ -216,29 +181,33 @@ extern void LFree( void *p )
 #endif
 }
 
-extern void * LnkExpand( void *src, unsigned size )
-/*************************************************/
+void *LnkExpand( void *src, size_t size )
+/***************************************/
 // try to expand a block of memory
 {
-#ifdef TRACKER
-    return( _trmem_expand( src, size, _trmem_guess_who(), TrHdl ) );
+#ifdef _ZDOS
+     return ( NULL );
 #else
-    return( _expand( src, size ) );
+    #ifdef TRMEM
+        return( _trmem_expand( src, size, _trmem_guess_who(), TrHdl ) );
+    #else
+        return( _expand( src, size ) );
+    #endif
 #endif
 }
 
-extern void * LnkReAlloc( void *src, unsigned size )
-/**************************************************/
+void *LnkReAlloc( void *src, size_t size )
+/****************************************/
 // reallocate a block of memory.
 {
-    void *  dest;
-#ifdef TRACKER
-    void        (*ra)();
+    void    *dest;
+#ifdef TRMEM
+    void        (*ra)( void );
 
     ra = _trmem_guess_who(); /* must be first thing */
 #endif
-    for(;;) {
-#ifdef TRACKER
+    for( ;; ) {
+#ifdef TRMEM
         dest = _trmem_realloc( src, size, ra, TrHdl );
 #else
         dest = realloc( src, size );
@@ -255,15 +224,15 @@ extern void * LnkReAlloc( void *src, unsigned size )
  * and this function is called from permshrink
 */
 
-#ifdef TRACKER
-extern int ValidateMem( void )
-/*****************************/
+#ifdef TRMEM
+int ValidateMem( void )
+/*********************/
 {
-    return _trmem_validate_all( TrHdl );
+    return( _trmem_validate_all( TrHdl ) );
 }
 
-extern void PrintAllMem( void )
-/*****************************/
+void PrintAllMem( void )
+/**********************/
 {
     if( _trmem_prt_list( TrHdl ) == 0 ) {
         _trmem_prt_usage( TrHdl );
@@ -272,14 +241,14 @@ extern void PrintAllMem( void )
 #endif
 
 #ifndef NDEBUG
-extern void DbgZapAlloc( void *tgt, unsigned size )
-/*************************************************/
+void DbgZapAlloc( void *tgt, size_t size )
+/****************************************/
 {
     memset( tgt, 0xA5, size );
 }
 
-extern void DbgZapFreed( void *tgt, unsigned size )
-/*************************************************/
+void DbgZapFreed( void *tgt, size_t size )
+/****************************************/
 {
     memset( tgt, 0xBD, size );
 }
@@ -297,11 +266,11 @@ static bool CacheRelease( void )
     return( freed );
 }
 
-extern bool FreeUpMemory( void )
-/******************************/
+bool FreeUpMemory( void )
+/***********************/
 // make sure LnkReAlloc is kept up to date with what is put in here.
 {
-#if _OS == _QNX
+#if defined( __QNX__ )
     if( LastChanceSeg != (unsigned)-1 ) {
         /*
             If we're low on memory, the system is low on memory. Give
@@ -313,21 +282,21 @@ extern bool FreeUpMemory( void )
         _heapenable( 0 );
     }
 #endif
-    return PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs();
+    return( PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs() );
 }
 
-extern int __nmemneed( size_t amount )
-/************************************/
+int __nmemneed( size_t amount )
+/*****************************/
 {
     amount = amount;
-    return FreeUpMemory();
+    return( FreeUpMemory() );
 }
 
-#ifdef M_I86
-extern int __fmemneed( size_t amount )
-/************************************/
+#ifdef _M_I86
+int __fmemneed( size_t amount )
+/*****************************/
 {
     amount = amount;
-    return FreeUpMemory();
+    return( FreeUpMemory() );
 }
 #endif

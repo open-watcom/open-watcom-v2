@@ -1,0 +1,23 @@
+# This file contains auxiliary information used by the mksetup program. This
+# information consists of the name of the product, default installation
+# directory, program group name, and icons and INI file lines.
+[c]
+include=ccommon.inf
+
+[f77]
+include=fcommon.inf
+
+[jc]
+language=2
+IsJapanese=1
+include=ccommon.inf
+
+[jf77]
+language=2
+IsJapanese=1
+include=fcommon.inf
+
+[ac]
+include=alpha.inf
+alphahost=1
+alphatarg=1

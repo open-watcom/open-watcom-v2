@@ -41,16 +41,17 @@ _WCRTLINK int ftime( struct timeb *timeptr )
     time_t          timer;
     struct tm       *tm_ptr;
 
+    if( getclock( TIMEOFDAY, &ts ) == -1 )
+        return( -1 );
 
-    if( getclock( TIMEOFDAY, &ts ) == -1 ) return( -1 );
-
-    timer = (time_t) ts.tv_sec;
-    if( ts.tv_nsec >=  500000000L ) timer++;
+    timer = ( time_t ) ts.tv_sec;
+    if( ts.tv_nsec >= 500000000L )
+        timer++;
 
     tm_ptr = localtime( &timer );
 
     timeptr->dstflag  = tm_ptr->tm_isdst;
-    timeptr->time     = (time_t) ts.tv_sec;
+    timeptr->time     = ( time_t ) ts.tv_sec;
     timeptr->millitm  = ts.tv_nsec / 1000000;
     timeptr->timezone = timezone / 60L;
     return( 1 );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Set up sampling timer rate.
 *
 ****************************************************************************/
 
@@ -36,7 +35,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <process.h>
-//#include <malloc.h>
 #include <conio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,14 +45,11 @@
 #include "timermod.h"
 #include "wmsg.h"
 
-extern char  FAR_PTR    *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
-extern void             Output( char FAR_PTR * );
-extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
-extern void             fatal(void);
 
-void InitTimerRate()
+void InitTimerRate( void )
 {
     TimerMult = DEF_MULT;
+    TimerRestoreValue = 0;
 }
 
 void SetTimerRate( char **cmd )
@@ -62,62 +57,65 @@ void SetTimerRate( char **cmd )
     unsigned            millisec;
 
     millisec = GetNumber( MN_MILLISEC, MX_MILLISEC, cmd, 10 );
-#if defined(_NEC_PC) || defined(_FMR_PC)
-    TimerMult = millisec / MILLISEC_PER_TICK;
-    /* Make sure we round the result (i.e., 33/10->3, 35/10->4) */
-    if( ( millisec % MILLISEC_PER_TICK ) >= 5 ) {
-        ++TimerMult;
-    }
-#else
     TimerMult = MILLISEC_PER_TICK / millisec;
     if( ( MILLISEC_PER_TICK % millisec ) > ( millisec / 2 ) ) {
         ++TimerMult;
     }
-#endif
     TimerMod = TimerMult;
 }
 
-unsigned long TimerRate()
+#ifdef __NETWARE__
+extern void SetRestoreRate( char ** cmd)
 {
-#if defined(_NEC_PC) || defined(__FMR_PC)
-    /*  *10 for millisecs *1000 for microsecs */
-    return( (long)TimerMult * 10L * 1000L );
-#else
-    return( 100000000 / TICKS_PER_HUNDRED );
-#endif
+    /*
+    //  If someone codes a value of 1 then they are in HUGE trouble!
+    //  Just set to 0, which is DOS default!
+    */
+    TimerRestoreValue = GetNumber( 0, 0xFFFF, cmd, 10 );
+    if(1 == TimerRestoreValue)
+        TimerRestoreValue = 0;
 }
 
-unsigned SafeMargin()
+extern void ResolveRateDifferences(void)
+{
+    /*
+    //  On NetWare 5 and 6, the default interrupt will be at approx 145 Hz. We
+    //  should calculate this but it is quicker to just use the restore rate if
+    //  specified. We need to overhaul the sampler full stop.
+    //  It's not as if it's much use anyway. The sampling granularity, even at
+    //  the maximum of 1mS, is not enough to see what the process is doing
+    //  except at a very high level. Also you end up with loads of junk reported
+    //  when you're not even the primary application!!!!!
+    //
+    //  here we need to resolve and differences between expected operation
+    //  (18.2 ints/sec) and what we are really using as default (144/s on NW5+)
+    //  for now, I haven't decided how to do this so I'll just ignore the
+    //  problems    :)
+    */
+}
+
+#endif
+
+unsigned long TimerRate( void )
+{
+    return( 100000000 / TICKS_PER_HUNDRED );
+}
+
+unsigned SafeMargin( void )
 {
     unsigned    safe_wait;
     unsigned    margin;
 
-#if defined(_NEC_PC) || defined(_FMR_PC)
-    /* 20 secs X maximum 100 samples per sec / default rate */
-    safe_wait = (20 * 100) / TimerMult;
-    /*
-      With standard timing there are about 20 samples per second or
-      400 samples taken per 20 seconds.
-      20 sec is an arbitrary period of time considered safety margin: no
-      DOS function should take more time tying-up int21 resources.
-    */
-#else
     safe_wait = TimerMult * 300;
     /*
       With standard timing there are about 300 samples taken per 20 seconds.
       20 sec is an arbitrary period of time considered safety margin: no
       DOS function should take more time tying-up int21 resources.
     */
-#endif
     if( safe_wait > Ceiling / 2 )  safe_wait = Ceiling / 2;
     margin = Ceiling - safe_wait;
 
-#if defined(_NEC_PC) || defined(_FMR_PC)
-    /*  *10 for millisecs */
-    if( margin < (TimerMult * 10) ) {
-#else
     if( margin < (TICKS_PER_HUNDRED / 100) ) {
-#endif
         Output( MsgArray[MSG_BUFF_SMALL-ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();

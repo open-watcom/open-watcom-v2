@@ -68,7 +68,7 @@ WCLASS MRule : public WObject
         WPickList& symbols() { return _symbols; }
         void makeCommand( WString& s, WFileName* target, WVList* workFiles, WString& mask, WVList* stateList, SwMode mode, bool* browse=NULL );
         bool ismakeable() { return _commands.count() > 0; }
-        bool enumAccel( WObject *obj, bcbi fn );
+        bool enumAccel( WObject *obj, bcbk fn );
     private:
         MTool*          _tool;
         WString         _tag;

@@ -1,3 +1,0 @@
-clean : .symbolic
-        -del rm.ex?             # just in case there's a buggy rm here
-        rm -f *.?bj *.ex? *.map *.lst *.smp *.lnk *.lbc *.lib *.err

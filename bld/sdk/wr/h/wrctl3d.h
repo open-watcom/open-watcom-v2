@@ -47,21 +47,21 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WR_EXPORT   WRCtl3DInit             ( HINSTANCE );
-extern void WR_EXPORT   WRCtl3DFini             ( HINSTANCE );
+extern int      WR_EXPORT    WRCtl3DInit( HINSTANCE );
+extern void     WR_EXPORT   WRCtl3DFini( HINSTANCE );
 
-extern BOOL WR_EXPORT WRCtl3dSubclassDlg(HWND, WORD);
-extern BOOL WR_EXPORT WRCtl3dSubclassDlgEx(HWND, DWORD);
-extern WORD WR_EXPORT WRCtl3dGetVer(void);
-extern BOOL WR_EXPORT WRCtl3dEnabled(void);
-extern HBRUSH WR_EXPORT WRCtl3dCtlColor(HDC, LONG);
-extern HBRUSH WR_EXPORT WRCtl3dCtlColorEx(UINT wm, WPARAM wParam, LPARAM lParam);
-extern BOOL WR_EXPORT WRCtl3dColorChange(void);
-extern BOOL WR_EXPORT WRCtl3dSubclassCtl(HWND);
-extern LONG WR_EXPORT WRCtl3dDlgFramePaint(HWND, UINT, WPARAM, LPARAM);
-extern BOOL WR_EXPORT WRCtl3dAutoSubclass(HANDLE);
-extern BOOL WR_EXPORT WRCtl3dRegister(HANDLE);
-extern BOOL WR_EXPORT WRCtl3dUnregister(HANDLE);
-extern VOID WR_EXPORT WRCtl3dWinIniChange(void);
+extern BOOL     WR_EXPORT WRCtl3dSubclassDlg( HWND, WORD );
+extern BOOL     WR_EXPORT WRCtl3dSubclassDlgEx( HWND, DWORD );
+extern WORD     WR_EXPORT WRCtl3dGetVer( void );
+extern BOOL     WR_EXPORT WRCtl3dEnabled( void );
+extern HBRUSH   WR_EXPORT WRCtl3dCtlColor( HDC, LONG );
+extern HBRUSH   WR_EXPORT WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam );
+extern BOOL     WR_EXPORT WRCtl3dColorChange( void );
+extern BOOL     WR_EXPORT WRCtl3dSubclassCtl( HWND );
+extern LONG     WR_EXPORT WRCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
+extern BOOL     WR_EXPORT WRCtl3dAutoSubclass( HANDLE );
+extern BOOL     WR_EXPORT WRCtl3dRegister( HANDLE );
+extern BOOL     WR_EXPORT WRCtl3dUnregister( HANDLE );
+extern VOID     WR_EXPORT WRCtl3dWinIniChange( void );
 
 #endif

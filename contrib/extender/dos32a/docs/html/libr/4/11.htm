@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: D32A Library Reference</title>
+  <link rel="stylesheet" href="../../sheet.css"></head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - D32A C/C++ Run-Time Library Reference</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+4.11 - DOS/32 Advanced D32A Library function - <i>d32a_getmemblock_info()</i>
+<br></font></b></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Synopsys:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><i><blockquote>
+#include &lt;d32a.h><br>
+int d32a_getmemblock_info(char *Ptr, D32A_MEMBLOCKINFO *BlockInfo);<br>
+<br>
+typedef	struct _D32A_MEMBLOCKINFO {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unsigned long BlockBase;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unsigned long BlockSize;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unsigned long BlockHandle;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unsigned long BlockAttr;<br>
+} D32A_MEMBLOCKINFO;<br>
+</blockquote></i></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Description:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+The <i>d32a_getmemblock_info</i> function retrieves the information about
+a memory block with handle <b>Ptr</b> previously allocated with functions
+<i>d32a_malloc</i>, <i>d32a_malloc_low</i> and <i>d32a_malloc_high</i>. The information is
+then stored in the <b>BlockInfo</b> structure.
+</blockquote></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Returns:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+If successful, the <b>BlockInfo</b> structure is filled with information about
+memory block with handle <b>Ptr</b> and the function returns <b>TRUE</b>. If failed, when
+the <b>Ptr</b> handle is invalid (the block does not exists or has been previously
+freed by <i>d32a_free</i> function), the <b>BlockInfo</b> structure is not modified and
+the function returns <b>FALSE</b>.
+</blockquote></font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

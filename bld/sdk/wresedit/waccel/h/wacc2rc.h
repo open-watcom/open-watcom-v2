@@ -38,4 +38,3 @@
 extern Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append );
 
 #endif
-

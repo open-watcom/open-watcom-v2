@@ -29,24 +29,16 @@
 *
 ****************************************************************************/
 
-
-// TERMNATE.CPP -- terminate() default definition
-//              -- set_terminate, this routine is used to set the
-//                 handler to deal with termination
-//              -- the default terminate handler is abort()
-//
-// 92/07/20     -- Greg Bentz       -- defined
-// 92/11/13     -- J.W.Welch        -- use thread-specific data
-
 #include <cpplib.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <except>
+#include <except.h>
 
+namespace std {
 
-PFV set_terminate(              // SET HANDLER FOR TERMINATE
-    PFV handler )               // - handler to be used
-{
+  PFV set_terminate(              // SET HANDLER FOR TERMINATE
+      PFV handler )               // - handler to be used
+  {
     THREAD_CTL *thr;            // - thread control
     PFV previous_handler;       // - previous handler
 
@@ -54,4 +46,6 @@ PFV set_terminate(              // SET HANDLER FOR TERMINATE
     previous_handler = thr->terminate;
     thr->terminate = handler;
     return( previous_handler );
+  }
+
 }

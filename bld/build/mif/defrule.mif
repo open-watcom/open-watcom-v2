@@ -1,9 +1,28 @@
 .c.obj: $($(proj_name)_autodepends)
-        @set include=$(inc_path)
-        $(cc) $(cflags) $(extra_c_flags_$[&) $[@
+!ifeq verbose 1
+        $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+	@echo cc $@
+        @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+.cpp.obj: $($(proj_name)_autodepends)
+!ifeq verbose 1
+        $(cpp) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!else
+        @echo c++ $@
+        @$(cpp) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+!endif
+
+.asm.obj: $($(proj_name)_autodepends)
+!ifeq verbose 1
+        $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+!else
+        @echo as $@
+        @$(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+!endif
 
 !ifdef preproc_rule
 .c.lan: $($(proj_name)_autodepends)
-        @set include=$(inc_path)
-        $(cc) -p$(preproc_flags) $(cflags) $(extra_c_flags_$[&) -fo=.lan $[@
+        $(cc) -p$(preproc_flags) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=.lan $[@
 !endif

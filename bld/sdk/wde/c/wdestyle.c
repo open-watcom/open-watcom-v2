@@ -30,42 +30,41 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wde_rc.h"
 #include "wdestyle.h"
 
 typedef struct {
-    DialogStyle  style;
+    DialogStyle style;
     char        *str;
-    int          id;
-    int          id2;
+    int         id;
+    int         id2;
 } WdeWinStyle;
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static WdeWinStyle WdeStyleMap[] =
-{
-    { WS_CAPTION,       "WS_CAPTION",           IDB_WS_CAPTION          , 0 }
-,   { WS_POPUP,         "WS_POPUP",             IDB_WS_POPUP            , 0 }
-,   { WS_CHILD,         "WS_CHILD",             IDB_WS_CHILD            , 0 }
-,   { WS_CLIPSIBLINGS,  "WS_CLIPSIBLINGS",      IDB_WS_CLIPSIBLINGS     , 0 }
-,   { WS_CLIPCHILDREN,  "WS_CLIPCHILDREN",      IDB_WS_CLIPCHILDREN     , 0 }
-,   { WS_VISIBLE,       "WS_VISIBLE",           IDB_WS_VISIBLE          , 0 }
-,   { WS_DISABLED,      "WS_DISABLED",          IDB_WS_DISABLED         , 0 }
-,   { WS_MINIMIZE,      "WS_MINIMIZE",          IDB_WS_MINIMIZE         , 0 }
-,   { WS_MAXIMIZE,      "WS_MAXIMIZE",          IDB_WS_MAXIMIZE         , 0 }
-,   { WS_BORDER,        "WS_BORDER",            IDB_WS_BORDER           , 0 }
-,   { WS_DLGFRAME,      "WS_DLGFRAME",          IDB_WS_DLGFRAME         , 0 }
-,   { WS_VSCROLL,       "WS_VSCROLL",           IDB_WS_VSCROLL          , 0 }
-,   { WS_HSCROLL,       "WS_HSCROLL",           IDB_WS_HSCROLL          , 0 }
-,   { WS_SYSMENU,       "WS_SYSMENU",           IDB_WS_SYSMENU          , 0 }
-,   { WS_THICKFRAME,    "WS_THICKFRAME",        IDB_WS_THICKFRAME       , 0 }
-,   { WS_GROUP,         "WS_GROUP",             IDB_WS_GROUP            , IDB_WS_MINIMIZEBOX }
-,   { WS_TABSTOP,       "WS_TABSTOP",           IDB_WS_TABSTOP          , IDB_WS_MAXIMIZEBOX }
-,   { 0,                NULL,                   NULL                    , 0 }
+static WdeWinStyle WdeStyleMap[] = {
+    { WS_CAPTION,       "WS_CAPTION",       IDB_WS_CAPTION,         0 },
+    { WS_POPUP,         "WS_POPUP",         IDB_WS_POPUP,           0 },
+    { WS_CHILD,         "WS_CHILD",         IDB_WS_CHILD,           0 },
+    { WS_CLIPSIBLINGS,  "WS_CLIPSIBLINGS",  IDB_WS_CLIPSIBLINGS,    0 },
+    { WS_CLIPCHILDREN,  "WS_CLIPCHILDREN",  IDB_WS_CLIPCHILDREN,    0 },
+    { WS_VISIBLE,       "WS_VISIBLE",       IDB_WS_VISIBLE,         0 },
+    { WS_DISABLED,      "WS_DISABLED",      IDB_WS_DISABLED,        0 },
+    { WS_MINIMIZE,      "WS_MINIMIZE",      IDB_WS_MINIMIZE,        0 },
+    { WS_MAXIMIZE,      "WS_MAXIMIZE",      IDB_WS_MAXIMIZE,        0 },
+    { WS_BORDER,        "WS_BORDER",        IDB_WS_BORDER,          0 },
+    { WS_DLGFRAME,      "WS_DLGFRAME",      IDB_WS_DLGFRAME,        0 },
+    { WS_VSCROLL,       "WS_VSCROLL",       IDB_WS_VSCROLL,         0 },
+    { WS_HSCROLL,       "WS_HSCROLL",       IDB_WS_HSCROLL,         0 },
+    { WS_SYSMENU,       "WS_SYSMENU",       IDB_WS_SYSMENU,         0 },
+    { WS_THICKFRAME,    "WS_THICKFRAME",    IDB_WS_THICKFRAME,      0 },
+    { WS_GROUP,         "WS_GROUP",         IDB_WS_GROUP,           IDB_WS_MINIMIZEBOX },
+    { WS_TABSTOP,       "WS_TABSTOP",       IDB_WS_TABSTOP,         IDB_WS_MAXIMIZEBOX },
+    { 0,                NULL,               0,                      0 }
 };
 
 static WdeWinStyle *WdeGetWdeWinStyleFromStyle( DialogStyle style )
@@ -73,8 +72,8 @@ static WdeWinStyle *WdeGetWdeWinStyleFromStyle( DialogStyle style )
     int i;
 
     for( i = 0; WdeStyleMap[i].str != NULL; i++ ) {
-        if( ( WdeStyleMap[i].style & style ) == WdeStyleMap[i].style ) {
-            return( &(WdeStyleMap[i]) );
+        if( (WdeStyleMap[i].style & style) == WdeStyleMap[i].style ) {
+            return( &WdeStyleMap[i] );
         }
     }
 
@@ -106,79 +105,78 @@ static DialogStyle WdeGetWinStyle( HWND hDlg, DialogStyle style )
     ws = WdeGetWdeWinStyleFromStyle( style );
     if( ws != NULL ) {
         if( IsDlgButtonChecked( hDlg, ws->id ) ||
-            ( ws->id2 != 0 && IsDlgButtonChecked( hDlg, ws->id2 ) ) ) {
+            (ws->id2 != 0 && IsDlgButtonChecked( hDlg, ws->id2 )) ) {
             return( style );
         }
     }
-    return( DialogStyle ) 0;
+    return( (DialogStyle)0 );
 }
 
 WPARAM WdeGetKeys( void )
 {
-    uint_8 buf[256];
-    WPARAM new_wparam;
+    uint_8  buf[256];
+    WPARAM  new_wparam;
 
     new_wparam = 0;
 
-    GetKeyboardState ( buf );
+    GetKeyboardState( buf );
 
-    if ( buf[VK_CONTROL] & 0x80 ) {
+    if( buf[VK_CONTROL] & 0x80 ) {
         new_wparam |= MK_CONTROL;
     }
-    if ( buf[VK_SHIFT] & 0x80 ) {
+    if( buf[VK_SHIFT] & 0x80 ) {
         new_wparam |= MK_SHIFT;
     }
-    if ( buf[VK_LBUTTON] & 0x80 ) {
+    if( buf[VK_LBUTTON] & 0x80 ) {
         new_wparam |= MK_LBUTTON;
     }
-    if ( buf[VK_RBUTTON] & 0x80 ) {
+    if( buf[VK_RBUTTON] & 0x80 ) {
         new_wparam |= MK_RBUTTON;
     }
-    if ( buf[VK_MBUTTON] & 0x80 ) {
+    if( buf[VK_MBUTTON] & 0x80 ) {
         new_wparam |= MK_MBUTTON;
     }
 
-    return ( new_wparam );
+    return( new_wparam );
 }
 
-void WdeSetWinStyles ( HWND hDlg, DialogStyle style, DialogStyle mask )
+void WdeSetWinStyles( HWND hDlg, DialogStyle style, DialogStyle mask )
 {
     DialogStyle s;
-    int i;
+    int         i;
 
-    for ( i=0,s=((DialogStyle)1<<16); i<16; i++,s<<=1 ) {
-        if ( mask & s ) {
-            WdeSetWinStyle(hDlg, s, style);
+    for( i = 0, s = ((DialogStyle)1 << 16); i < 16; i++, s <<= 1 ) {
+        if( mask & s ) {
+            WdeSetWinStyle( hDlg, s, style );
         }
     }
 }
 
-void WdeGetWinStyles ( HWND hDlg, DialogStyle *style, DialogStyle mask )
+void WdeGetWinStyles( HWND hDlg, DialogStyle *style, DialogStyle mask )
 {
     DialogStyle s;
-    int i;
+    int         i;
 
-    *style &= (DialogStyle) ( 0x0000ffff | (0xffffffff^mask) );
+    *style &= (DialogStyle)(0x0000ffff | ~mask);
 
-    for ( i=0,s=((DialogStyle)1<<16); i<16; i++,s<<=1) {
-        if ( mask & s ) {
-            *style |= WdeGetWinStyle(hDlg, s);
+    for( i = 0, s = ((DialogStyle)1 << 16); i < 16; i++, s <<= 1 ) {
+        if( mask & s ) {
+            *style |= WdeGetWinStyle( hDlg, s );
         }
     }
 }
 
 #if 0
-static WdeWinStyle *WdeGetWdeWinStyleFromID    ( int );
-WdeWinStyle *WdeGetWdeWinStyleFromID ( int id )
+static WdeWinStyle *WdeGetWdeWinStyleFromID( int id )
 {
     int i;
 
-    for ( i = 0; WdeStyleMap[i].str != NULL; i++ ) {
+    for( i = 0; WdeStyleMap[i].str != NULL; i++ ) {
         if( WdeStyleMap[i].id == id ) {
-            return ( &(WdeStyleMap[i]) );
+            return( &WdeStyleMap[i] );
         }
     }
-    return ( NULL );
+    return( NULL );
 }
 #endif
 

@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default windowing - main include file.
 *
 ****************************************************************************/
-
 
 #include "variety.h"
 #ifdef __OS2__
@@ -45,7 +43,7 @@ extern  unsigned        __WinSetWindowPos(unsigned);
 #include <win1632.h>
 #endif
 #include <stdarg.h>
-#include "defwin.h"
+#include "_defwin.h"
 
 
 /*
@@ -169,9 +167,11 @@ typedef line_data _WCI86FAR *LPLDATA;
 typedef struct window_data {
     int         *handles;
     int         handle_cnt;
-    DWORD       text_color,background_color;
-    int         x1,y1,x2,y2,width,height;
-    int         xchar,ychar;
+    int         text_color;
+    int         background_color;
+    int         x1, y1, x2, y2;
+    int         width, height;
+    int         xchar, ychar;
 #ifdef _MBCS
     mb_char _WCI86FAR *image;
 #else
@@ -181,8 +181,10 @@ typedef struct window_data {
     HBRUSH      brush;
 #endif
     HWND        hwnd;
-    LPLDATA     LineHead,LineTail;
-    DWORD       LastLineNumber, CurrentLineNumber, TopLineNumber;
+    LPLDATA     LineHead, LineTail;
+    DWORD       LastLineNumber;
+    DWORD       CurrentLineNumber;
+    DWORD       TopLineNumber;
     LPLDATA     tmpbuff;
     int         buffoff;
     int         curr_pos;
@@ -206,13 +208,12 @@ typedef struct window_data {
     char        gphwin:1;
     char        no_advance:1;
     char        destroy:1;
-    char        hold7:1, hold8:1;
+    char        hold7:1;
+    char        hold8:1;
 } window_data;
 
-#include "defwin.h"
-// LPWDATA is defined in defwin.h as follows:
+// LPWDATA is defined in _defwin.h as follows:
 // typedef struct window_data _WCI86FAR *LPWDATA;
-
 typedef LPWDATA _WCI86FAR *LPLPWDATA;
 
 typedef struct {
@@ -310,7 +311,7 @@ void _WindowsKeyPush( WORD, WORD );
 void _WindowsVirtualKeyPush( WORD, WORD );
 int _KeyboardHit( BOOL );
 int _GetKeyboard( int * );
-int _GetString( LPWDATA, void *, int );
+int _GetString( LPWDATA, char *, int );
 
 /* winlines.c */
 void _AddLine( LPWDATA, const void *, unsigned );

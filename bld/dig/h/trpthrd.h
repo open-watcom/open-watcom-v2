@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Thread debugging supplementary requests.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define THREAD_SUPP_NAME                "Threads"
 
@@ -97,7 +96,7 @@ typedef struct {
 
 /* return for REQ_THREAD_GET_EXTRA is a string with the thread extra info */
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 #define TRPTHRD_H
 

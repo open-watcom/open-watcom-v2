@@ -44,7 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int WR_EXPORT WRChangeMemFlags ( HWND parent, char *name,
-                                        uint_16 *mflags, FARPROC hcb );
+extern int  WR_EXPORT WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb );
 
 #endif

@@ -55,8 +55,9 @@ void CanTInit( void ) {
     CanTReserve();
 }
 
-STATIC int freeElm( cantype *node, void *parm ) {
+STATIC int freeElm( void *_node, void *parm ) {
 
+    cantype *node = _node;
     parm = parm;
     switch( node->class ) {
     case CANT_ENUM:
@@ -435,8 +436,10 @@ cantype *CanTProcedure( type_handle ret_type, uint_8 class,
     return( type );
 }
 
-STATIC int sortStructFields( const struct_field *f1, const struct_field *f2 ) {
+STATIC int sortStructFields( const void *_f1, const void *_f2 ) {
 
+    const struct_field *f1 = _f1;
+    const struct_field *f2 = _f2;
     cantype *t1;
     cantype *t2;
 
@@ -486,8 +489,10 @@ STATIC void graphStruct( cantype *type ) {
             sizeof( struct_field ), sortStructFields );
 }
 
-STATIC int sortSignedEnum( const enum_const *c1, const enum_const *c2 ) {
+STATIC int sortSignedEnum( const void *_c1, const void *_c2 ) {
 
+    const enum_const *c1 = _c1;
+    const enum_const *c2 = _c2;
     if( (int_32)c1->value > (int_32)c2->value ) {
         return( 1 );
     } else if( (int_32)c1->value == (int_32)c2->value ) {
@@ -496,8 +501,10 @@ STATIC int sortSignedEnum( const enum_const *c1, const enum_const *c2 ) {
     return( -1 );
 }
 
-STATIC int sortUnsignedEnum( const enum_const *c1, const enum_const *c2 ) {
+STATIC int sortUnsignedEnum( const void *_c1, const void *_c2 ) {
 
+    const enum_const *c1 = _c1;
+    const enum_const *c2 = _c2;
     if( (uint_32)c1->value > (uint_32)c2->value ) {
         return( 1 );
     } else if( (uint_32)c1->value == (uint_32)c2->value ) {
@@ -602,7 +609,7 @@ void CanTMunge( void ) {
        building the graph. */
 }
 
-int CanTWalk( void *parm, int (*func)(cantype *type, void *parm ) ) {
+int CanTWalk( void *parm, int (*func)(void *type, void *parm ) ) {
 /*****************************************************************/
     return( ArrWalk( cantArr, parm, func ) );
 }

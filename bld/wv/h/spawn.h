@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Several functions taking Suicide()-using function parameters
 *
 ****************************************************************************/
 
 
-extern int Spawn( register void (*func)(void) );
-extern int SpawnP( register void (*func)(void*), void *parm );
-extern int SpawnPP( register void (*func)(void*,void*), void *p1, void *p2 );
-extern void Suicide();
+extern int Spawn( void (*func)(void) );
+extern int SpawnP( void (*func)(void*), void *parm );
+extern int SpawnPP( void (*func)(void*, void*), void *p1, void *p2 );
+extern void Suicide( void );

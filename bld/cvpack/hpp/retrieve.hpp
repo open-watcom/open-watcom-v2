@@ -47,10 +47,11 @@
 //
 // Code to indicate subsections that are not associated with a module.
 //
-static const MODULE_INDEPENDENT = 0xffff;
+static const int MODULE_INDEPENDENT = 0xffff;
 
 #define NB05 "NB05"
 #define NB09 "NB09"
+#define NB11 "NB11"
 
 //static const char* NB05 = "NB05";
 //static const char* NB09 = "NB09";
@@ -129,6 +130,9 @@ class Retriever {
         unsigned_32 TellExeLength() const {
             return _lfaBase;
         }
+        unsigned_32 TellDDEBase() const {
+            return _PEDirEntryBase;
+        }
 
         bool ReadExeCode(char* buffer) {
             if ( SeekRead(buffer,0L,_lfaBase) != _lfaBase ) {
@@ -141,6 +145,7 @@ class Retriever {
 
         ifstream        _inputFile;
         streampos       _lfaBase;
+        streampos       _PEDirEntryBase;
         Directory       _aDirectory;
         unsigned_32     _pageStartOffset;
         char*           _heapBuffer;
@@ -153,6 +158,10 @@ class Retriever {
         // Function called by the constructor to locate the base address of
         // the debugging infos.
         streampos GetBasePos();
+
+        // Function called by the constructor to locate the base address of
+        // the PE debug dir entry
+        streampos GetPEDebugDirCVEntryPos();
 
         // Function called by the constructor to locate the address of the
         // subsection directory.

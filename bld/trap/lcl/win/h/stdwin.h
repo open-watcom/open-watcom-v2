@@ -98,31 +98,30 @@ extern WORD                     DLLLoadCS;
 extern WORD                     DLLLoadIP;
 extern BOOL                     DLLLoadExpectingInt1;
 extern WORD                     CopySize;
-extern WORD                     NPXType;
+extern unsigned_8               FPUType;
 extern HWND                     DesktopWindow;
-extern HANDLE                   Instance;
-extern HANDLE                   DebuggerTask;
-extern HANDLE                   DebugeeTask;
-extern HANDLE                   DebugeeInstance;
-extern HANDLE                   TaskAtNotify;
+extern HINSTANCE                Instance;
+extern HTASK                    DebuggerTask;
+extern HTASK                    DebugeeTask;
+extern HINSTANCE                DebugeeInstance;
 extern DWORD                    WindowsFlags;
 extern struct interrupt_struct  IntResult;
 extern struct fp_state          FPResult;
 extern volatile debugger_state  DebuggerState;
-extern char                     ExtensionList[];
+extern const char __based(__segname("_CONST")) ExtensionList[];
 extern break_point              StopNewTask;
 extern DWORD                    SystemDebugState;
 extern volatile restart_opts    AppMessage;
 extern DWORD                    TerminateCSIP;
 extern HWND                     DebuggerWindow;
-extern HANDLE                   ModuleTop;
-extern HANDLE                   CurrentModule;
+extern int                      ModuleTop;
+extern int                      CurrentModule;
 extern BOOL                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;
 extern BOOL                     WDebug386;
 extern WORD                     WPCount;
-extern HANDLE                   DebugeeModule;
+extern HMODULE                  DebugeeModule;
 extern WORD                     WasInt32;
 extern void                     (FAR PASCAL *DoneWithInterrupt)( LPVOID );
 extern int                      (FAR PASCAL *GetDebugInterruptData)( LPVOID );
@@ -162,9 +161,9 @@ DWORD GetDR6( void );
 BOOL CheckWatchPoints( void );
 
 /* asyhook.c */
-extern void InitASynchHook();
-extern void FiniASynchHook();
-extern void HandleAsynch();
+extern void InitASynchHook( void );
+extern void FiniASynchHook( void );
+extern void HandleAsynch( void );
 
 /* accmap.c */
 void AddModuleLoaded( HANDLE mod, BOOL );
@@ -213,14 +212,10 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 /* misc.asm */
 #pragma aux _CopyMemory parm [cx] [dx di] [ax] [si bx] value[ax];
 extern short _CopyMemory( WORD, DWORD, WORD, DWORD );
-extern void Read8087( void far * );
-extern void Write8087( void far * );
-extern void Read80387( void far * );
-extern void Write80387( void far * );
 
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
-void FAR PASCAL UnLockInput();
+void FAR PASCAL UnLockInput( void );
 
 /* wgod.c */
 short CopyMemory( WORD dseg, DWORD doff, WORD sseg, DWORD soff, short size );

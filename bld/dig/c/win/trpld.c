@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <windows.h>
 #include <stdarg.h>
 #include <string.h>
@@ -38,25 +39,25 @@
 #include "trpimp.h"
 #include "tcerr.h"
 
-static trap_version     TRAPENTRY (TRAPENTRY*InitFunc)();
-static void             TRAPENTRY (TRAPENTRY*FiniFunc)();
-void                    TRAPENTRY (TRAPENTRY*HookFunc)();
-void                    TRAPENTRY (TRAPENTRY*InfoFunction)();
-void                    TRAPENTRY (TRAPENTRY*UnLockInput)();
-void                    TRAPENTRY (TRAPENTRY*SetHardMode)();
-static int              TRAPENTRY (TRAPENTRY*HardModeCheck)();
-static int              TRAPENTRY (TRAPENTRY*GetHwndFunc)();
+static trap_version     (TRAPENTRY*InitFunc)(char *, char *, bool);
+static void             (TRAPENTRY*FiniFunc)(void);
+void                    (TRAPENTRY*HookFunc)(LPVOID);
+void                    (TRAPENTRY*InfoFunction)(HWND);
+void                    (TRAPENTRY*UnLockInput)(void);
+void                    (TRAPENTRY*SetHardMode)(char);
+static int              (TRAPENTRY*HardModeCheck)(void);
+static int              (TRAPENTRY*GetHwndFunc)(void);
 
 extern trap_version     TrapVer;
-extern unsigned         TRAPENTRY (TRAPENTRY*ReqFunc)( unsigned, mx_entry *,
-                                        unsigned, mx_entry * );
-static HANDLE           dll;
+extern unsigned         (TRAPENTRY*ReqFunc)( unsigned, mx_entry *,
+                                             unsigned, mx_entry * );
+static HINSTANCE    dll;
 
 int HardModeRequired;
 
-HANDLE toolhelp;
+HINSTANCE toolhelp;
 
-void KillTrap()
+void KillTrap( void )
 {
     ReqFunc = NULL;
     HookFunc = NULL;
@@ -69,7 +70,7 @@ void KillTrap()
     UnLockInput = NULL;
     GetHwndFunc = NULL;
     FreeLibrary( dll );
-    if( toolhelp > 32 ) FreeLibrary( toolhelp );
+    if( (UINT)toolhelp > 32 ) FreeLibrary( toolhelp );
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -118,19 +119,19 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     dll = LoadLibrary( trpfile );
     SetErrorMode( prev );
-    if( dll < 32 ) {
-        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
+    if( (UINT)dll < 32 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
-    InitFunc = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
-    FiniFunc = GetProcAddress( dll, (LPSTR)3 );
-    ReqFunc  = (LPVOID) GetProcAddress( dll, (LPSTR)4 );
-    HookFunc = GetProcAddress( dll, (LPSTR)5 );
-    InfoFunction = GetProcAddress( dll, (LPSTR)6 );
-    HardModeCheck = GetProcAddress( dll, (LPSTR)7 );
-    SetHardMode = GetProcAddress( dll, (LPSTR)12 );
-    UnLockInput = GetProcAddress( dll, (LPSTR)13 );
-    GetHwndFunc = GetProcAddress( dll, (LPSTR)8 );
+    InitFunc = (trap_version(TRAPENTRY*)(char *, char *, bool)) GetProcAddress( dll, (LPSTR)2 );
+    FiniFunc = (void(TRAPENTRY*)(void)) GetProcAddress( dll, (LPSTR)3 );
+    ReqFunc  = (unsigned (TRAPENTRY*)(unsigned,mx_entry*,unsigned,mx_entry*)) GetProcAddress( dll, (LPSTR)4 );
+    HookFunc = (void(TRAPENTRY*)(LPVOID)) GetProcAddress( dll, (LPSTR)5 );
+    InfoFunction = (void(TRAPENTRY*)(HWND)) GetProcAddress( dll, (LPSTR)6 );
+    HardModeCheck = (int(TRAPENTRY*)(void)) GetProcAddress( dll, (LPSTR)7 );
+    SetHardMode = (void(TRAPENTRY*)(char)) GetProcAddress( dll, (LPSTR)12 );
+    UnLockInput = (void(TRAPENTRY*)(void)) GetProcAddress( dll, (LPSTR)13 );
+    GetHwndFunc = (int(TRAPENTRY*)(void)) GetProcAddress( dll, (LPSTR)8 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( InitFunc == NULL || FiniFunc == NULL || ReqFunc == NULL ||
         HookFunc == NULL || GetHwndFunc == NULL ||
@@ -150,7 +151,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     return( NULL );
 }
 
-void DoHardModeCheck()
+void DoHardModeCheck( void )
 {
     HardModeRequired = HardModeCheck();
 }

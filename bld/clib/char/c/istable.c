@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Character classification table.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "variety.h"
 #include <ctype.h>
 
-_WCRTLINK const char _HUGEDATA _IsTable[257] = {
+_WCRTDATA const unsigned char _HUGEDATA  _IsTable[257] = {
 
 #define ___0__ 0
 

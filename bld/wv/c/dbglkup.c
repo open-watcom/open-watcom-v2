@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol lookup, including some special symbols.
 *
 ****************************************************************************/
 
@@ -42,12 +41,12 @@
 #include <string.h>
 
 
-extern void             Scan(void);
-extern unsigned         ScanCmd(char *);
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern void             ReqEOC(void);
-extern void             ConfigLine(char *);
-extern char             *StrCopy(char *,char *);
+extern void             Scan( void );
+extern unsigned         ScanCmd( char * );
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern void             ReqEOC( void );
+extern void             ConfigLine( char * );
+extern char             *StrCopy( char *, char * );
 extern bool             IsInternalMod( mod_handle );
 extern bool             IsInternalModName( char *, unsigned );
 extern image_entry      *ImageEntry( mod_handle );
@@ -74,6 +73,18 @@ static  lookup      *DefLookup;
 
 static char AddTab[] = { "Add\0" };
 
+static void FreeList( lookup *curr )
+{
+    lookup *next;
+
+    while( curr != NULL ) {
+        next = curr->next;
+        _Free( curr );
+        curr = next;
+    }
+}
+
+
 /*
  * LookInit - initialize lookup
  */
@@ -96,7 +107,7 @@ static void AddLookSpec( char *start, unsigned len, bool respect, lookup *old )
 }
 
 
-void InitLook()
+void InitLook( void )
 {
     DefLookup = NULL;
     // add these in reverse order since AddLookSpec adds to the front of the list
@@ -105,22 +116,10 @@ void InitLook()
     AddLookSpec( "*", 1, FALSE, NULL );
 }
 
-void FiniLook()
+void FiniLook( void )
 {
     FreeList( DefLookup );
 }
-
-static void FreeList( lookup *curr )
-{
-    lookup *next;
-
-    while( curr != NULL ) {
-        next = curr->next;
-        _Free( curr );
-        curr = next;
-    }
-}
-
 
 /*
  * LookSet - set the default symbol lookup
@@ -136,7 +135,7 @@ void LookCaseSet( bool respect )
     _SwitchSet( SW_CASE_IGNORE, !respect );
 }
 
-void LookSet()
+void LookSet( void )
 {
     struct {
         char     *start;
@@ -226,7 +225,7 @@ void LookSet()
     }
 }
 
-void LookConf()
+void LookConf( void )
 {
     lookup *curr;
     char   *ptr;
@@ -475,7 +474,7 @@ void FreeSymHandle( sym_list *sl )
     _Free( curr );
 }
 
-void PurgeSymHandles()
+void PurgeSymHandles( void )
 {
     sym_list    *curr;
     sym_list    *next;

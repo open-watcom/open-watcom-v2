@@ -36,7 +36,7 @@
 #include "guiscale.h"
 #include "guigetx.h"
 
-bool GetExtent( gui_window * wnd, char * text, int length, gui_coord *coord )
+bool GetExtent( gui_window * wnd, const char * text, int length, gui_coord *coord )
 {
     int       my_length;
     bool      got_new;
@@ -57,7 +57,7 @@ bool GetExtent( gui_window * wnd, char * text, int length, gui_coord *coord )
     return( FALSE );
 }
 
-gui_ord GUIGetExtentX( gui_window * wnd, char * text, int length )
+gui_ord GUIGetExtentX( gui_window * wnd, const char * text, int length )
 {
     gui_coord coord;
 
@@ -67,7 +67,7 @@ gui_ord GUIGetExtentX( gui_window * wnd, char * text, int length )
     return( 0 );
 }
 
-gui_ord GUIGetExtentY( gui_window * wnd, char * text )
+gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
 {
     gui_coord coord;
 
@@ -86,11 +86,10 @@ bool GetControlInfo( gui_window * wnd, unsigned id, HWND *hwnd, WPI_PRES *dc )
             return( *dc != NULLHANDLE );
         }
     }
-    return( NULL );
-
+    return( FALSE );
 }
 
-bool GetControlExtent( gui_window * wnd, unsigned id, char * text, int length, gui_coord *coord )
+bool GetControlExtent( gui_window * wnd, unsigned id, const char *text, int length, gui_coord *coord )
 {
     int         my_length;
     WPI_PRES    dc;
@@ -119,7 +118,7 @@ bool GetControlExtent( gui_window * wnd, unsigned id, char * text, int length, g
     return( FALSE );
 }
 
-gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, char * text, int length )
+gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, int length )
 {
     gui_coord   coord;
 
@@ -129,7 +128,7 @@ gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, char * text, int le
     return( 0 );
 }
 
-gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, char * text )
+gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, const char * text )
 {
     gui_coord coord;
 

@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default DLL startup for 16-bit OS/2.
 *
 ****************************************************************************/
 
 
 #if defined(__SW_BD)
 
-
-unsigned        main() {
-/**********************/
-
+unsigned main( void )
+/*******************/
+{
     return( 1 );
 }
 #endif

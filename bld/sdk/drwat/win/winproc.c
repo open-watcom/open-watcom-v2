@@ -86,7 +86,7 @@ void SaveExtra( FILE *f )
 /*
  * WindowProc - main window message handler
  */
-LONG __export FAR PASCAL WindowProc( HWND hwnd, int msg, WORD wparam, LONG lparam )
+LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC         hdc;
     TEXTMETRIC  tm;

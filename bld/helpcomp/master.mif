@@ -1,0 +1,44 @@
+proj_name = whc
+whc_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"../h" -I$(cpp_dir)
+
+extra_cpp_flags = -xs
+
+.cpp: ../cpp
+.c: $(trmem_dir)
+
+objs =                  &
+        whc.obj         &
+        hpjread.obj     &
+        hlpdir.obj      &
+        btrees.obj      &
+        myfile.obj      &
+        baggage.obj     &
+        system.obj      &
+        font.obj        &
+        context.obj     &
+        ctxomap.obj     &
+        ttlbtree.obj    &
+        keywords.obj    &
+        scanning.obj    &
+        hcerrors.obj    &
+        mem.obj         &
+        trmem.obj       &
+        topic.obj       &
+        phrase.obj      &
+        bmx.obj         &
+        compress.obj    &
+        parsing.obj
+
+# systems where version resources must be added to .EXE
+!ifndef prebuild
+version_res_nt_386 = exever.res
+!endif
+
+!include exetarg.mif
+!include verrc.mif

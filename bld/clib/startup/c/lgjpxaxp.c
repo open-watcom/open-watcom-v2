@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of longjmpex() for Win32 on Alpha.
 *
 ****************************************************************************/
 
@@ -33,25 +32,25 @@
 #include <windows.h>
 #include <setjmpex.h>
 
-extern int _ProcSetsFP(void *);
-extern void *RtlLookupFunctionEntry(unsigned long);
-extern void  RtlUnwind(unsigned long, unsigned long, void *, unsigned long);
-extern void  RtlUnwindRfp(unsigned long, unsigned long, void *, unsigned long);
+extern int   _ProcSetsFP( void * );
+extern void  *RtlLookupFunctionEntry( unsigned long );
+extern void  RtlUnwind( unsigned long, unsigned long, void *, unsigned long );
+extern void  RtlUnwindRfp( unsigned long, unsigned long, void *, unsigned long );
 
 typedef struct
 {
-    unsigned long sp;
-    unsigned long pc;
-    unsigned long seb;
-    unsigned long type;
-    unsigned long notused[2];
-    unsigned long fp;
+    unsigned long   sp;
+    unsigned long   pc;
+    unsigned long   seb;
+    unsigned long   type;
+    unsigned long   notused[2];
+    unsigned long   fp;
 } _JUMPEXDATA;
 
-void longjmpex(jmp_buf jb, int ret)
+void longjmpex( jmp_buf jb, int ret )
 {
-    EXCEPTION_RECORD  er;
-    _JUMPEXDATA      *jd = (_JUMPEXDATA *)jb;
+    EXCEPTION_RECORD    er;
+    _JUMPEXDATA         *jd = (_JUMPEXDATA *)jb;
 
     er.ExceptionCode           = 0xE5670123;
     er.ExceptionFlags          = 0x00000002;
@@ -60,8 +59,8 @@ void longjmpex(jmp_buf jb, int ret)
     er.NumberParameters        = 1L;
     er.ExceptionInformation[0] = jd->sp;
 
-    if (!_ProcSetsFP(RtlLookupFunctionEntry(jd->pc)))
-        RtlUnwind(jd->sp, jd->pc, &er, ret);
+    if( !_ProcSetsFP( RtlLookupFunctionEntry( jd->pc ) ) )
+        RtlUnwind( jd->sp, jd->pc, &er, ret );
     else
-        RtlUnwindRfp(jd->fp, jd->pc, &er, ret);
+        RtlUnwindRfp( jd->fp, jd->pc, &er, ret );
 } /* longjmp() */

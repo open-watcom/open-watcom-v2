@@ -79,6 +79,13 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     return( ret );
 }
 
+bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
+                      char *file, char *topic )
+{
+    inst=inst;wnd=wnd;act=act;file=file;topic=topic;
+    return( FALSE );
+}
+
 bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
 {
     static char *helpfiles[2] = { NULL, NULL };

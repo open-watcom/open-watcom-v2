@@ -44,11 +44,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  Bool    WRERegisterClipFormats  ( HINSTANCE inst );
-extern  void    WREFiniClipboard        ( void );
-extern  void    WRESetCopyMenuItem      ( HWND main );
-extern  void    WRESetPasteMenuItem     ( HWND main );
-extern  Bool    WREClipCurrentResource  ( HWND main, Bool cut );
-extern  Bool    WREPasteResource        ( HWND main );
+extern Bool WRERegisterClipFormats( HINSTANCE inst );
+extern void WREFiniClipboard( void );
+extern void WRESetCopyMenuItem( HWND main );
+extern void WRESetPasteMenuItem( HWND main );
+extern Bool WREClipCurrentResource( HWND main, Bool cut );
+extern Bool WREPasteResource( HWND main );
 
 #endif

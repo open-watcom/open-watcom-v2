@@ -61,14 +61,13 @@ typedef enum {
 } addr_flags;
 
 
-typedef unsigned_16             an_formats;
 typedef enum {
-     NF_ADDR,
-     NF_NAME,
-     NF_CONS,
-     NF_BOOL,
-     NF_INS
-} an_formats_consts;
+        NF_ADDR,
+        NF_NAME,
+        NF_CONS,
+        NF_BOOL,
+        NF_INS
+} an_formats;
 
 
 typedef struct address_name {
@@ -78,8 +77,8 @@ typedef struct address_name {
         addr_class              class;
         addr_flags              flags;
         union {
-        union name              *name;
-        struct instruction      *ins;
+            union name          *name;
+            struct instruction  *ins;
         } u;
         union name              *index;
         type_length              offset;
@@ -89,8 +88,8 @@ typedef struct address_name {
 
 typedef struct bool_node {
         an_formats              format;
-        label_handle            *t;
-        label_handle            *f;
+        block_pointer           *t;
+        block_pointer           *f;
         label_handle            e;
 } bool_node;
 

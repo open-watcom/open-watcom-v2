@@ -24,17 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expand file name to a list.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "posix.h"
 #include "vi.h"
+#include "posix.h"
 
 /*
  * ExpandFileNames - take a file name, and expand it out to a list of dos
@@ -42,11 +38,12 @@
  */
 int ExpandFileNames( char *p, char ***argv )
 {
-    int         argc,i;
-    char        drive[_MAX_DRIVE],directory[_MAX_DIR],name[_MAX_FNAME];
-    char        extin[_MAX_EXT], pathin[_MAX_PATH];
-    char        *start,*new;
+    int         argc, i;
+    char        drive[_MAX_DRIVE], directory[_MAX_DIR], name[_MAX_FNAME];
+    char        extin[_MAX_EXT], pathin[FILENAME_MAX];
+    char        *start, *new;
     bool        wildcard;
+    vi_rc       rc;
 
     argc = 0;
     wildcard = FALSE;
@@ -77,8 +74,8 @@ int ExpandFileNames( char *p, char ***argv )
     /*
      * get all matches
      */
-    i = GetSortDir( start, FALSE );
-    if( i ) {
+    rc = GetSortDir( start, FALSE );
+    if( rc != ERR_NO_ERR ) {
         return( 0 );
     }
     _splitpath( start, drive, directory, name, extin );
@@ -86,13 +83,13 @@ int ExpandFileNames( char *p, char ***argv )
     /*
      * run through matches
      */
-    for( i=0;i< DirFileCount;i++ ) {
-        if( DirFiles[i]->attr & (_A_VOLID +_A_SUBDIR) ) {
+    for( i = 0; i < DirFileCount; i++ ) {
+        if( DirFiles[i]->attr & (_A_VOLID + _A_SUBDIR) ) {
             continue;
         }
         _splitpath( DirFiles[i]->name, NULL, NULL, name, extin );
         _makepath( pathin, drive, directory, name, extin );
-        *argv = MemReAlloc( *argv, (argc+1) * sizeof( char * ) );
+        *argv = MemReAlloc( *argv, (argc + 1) * sizeof( char * ) );
         new = MemAlloc( strlen( pathin ) + 1 );
         strcpy( new, pathin );
         (*argv)[argc++] = new;

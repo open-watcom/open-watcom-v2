@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of scanf() and vscanf().
 *
 ****************************************************************************/
 
@@ -38,36 +37,36 @@
 
 
 static int cget_stdin( PTR_SCNF_SPECS specs )
-    {
-        int c;
+{
+    int     c;
 
-        if( (c = __F_NAME(getc,getwc)( stdin )) == __F_NAME(EOF,WEOF) ) {
-            specs->eoinp = 1;
-        }
-        return( c );
+    if( (c = __F_NAME(getc,getwc)( stdin )) == __F_NAME(EOF,WEOF) ) {
+        specs->eoinp = 1;
     }
+    return( c );
+}
 
 
 static void uncget_stdin( int c, PTR_SCNF_SPECS specs )
-    {
-        __F_NAME(ungetc,ungetwc)( c, stdin );
-    }
+{
+    __F_NAME(ungetc,ungetwc)( c, stdin );
+}
 
 
 _WCRTLINK int __F_NAME(vscanf,vwscanf)( const CHAR_TYPE *format, va_list args )
-    {
-        auto SCNF_SPECS specs;
+{
+    SCNF_SPECS  specs;
 
-        specs.cget_rtn = cget_stdin;
-        specs.uncget_rtn = uncget_stdin;
-        return( __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args ) );
-    }
+    specs.cget_rtn = cget_stdin;
+    specs.uncget_rtn = uncget_stdin;
+    return( __F_NAME(__scnf,__wscnf)( (PTR_SCNF_SPECS)&specs, format, args ) );
+}
 
 
-_WCRTLINK int __F_NAME(scanf,wscanf)( const CHAR_TYPE *format,... )
-    {
-        va_list args;
+_WCRTLINK int __F_NAME(scanf,wscanf)( const CHAR_TYPE *format, ... )
+{
+    va_list     args;
 
-        va_start( args, format );
-        return( __F_NAME(vscanf,vwscanf)( format, args ) );
-    }
+    va_start( args, format );
+    return( __F_NAME(vscanf,vwscanf)( format, args ) );
+}

@@ -30,14 +30,12 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stdarg.h>
 #include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
 
-#include "plusplus.h"
-#include "tgtenv.h"
 #include "ppintnam.h"
 #include "errdefns.h"
 #include "memmgr.h"
@@ -53,6 +51,8 @@
 #include "preproc.h"
 #include "pcheader.h"
 #include "stats.h"
+#include "srcfile.h"
+#include "pragdefn.h"
 
 typedef enum {                  // type mangling control
     TM_INCLUDE_FIRST_DIM= 0x01, // - include first dimension in array type mangling
@@ -141,6 +141,28 @@ static uint_32 objNameHash( uint_32 h, char *s )
     return( h );
 }
 
+static char __Alphabet62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+static char *utoa62( unsigned value, char *buffer )
+{
+    char        *p = buffer;
+    char        *q;
+    unsigned    rem;
+    char        buf[ 16 ];       // only holds ASCII so 'char' is OK
+
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+        rem = value % 62;
+        value = value / 62;
+        *q = __Alphabet62[ rem ];
+        ++q;
+    } while( value != 0 );
+    while( (*p++ = *--q) )
+        ;
+    return( buffer );
+}
+
 static TYPE typeLookAhead( TYPE type, type_flag *flags, void **base )
 {
     return TypeModExtract( type
@@ -172,14 +194,14 @@ static boolean nameHasPrefix(   // TEST IF NAME HAS A PREFIX
 static void appendChar(         // APPEND A CHARACTER
     char chr )                  // - the character
 {
-    VStrConcChr( &mangled_name, chr );
+    VbufConcChr( &mangled_name, chr );
 }
 
 
 static void prependChar(         // PREPEND A CHARACTER
     char chr )                  // - the character
 {
-    VStrPrepChr( &mangled_name, chr );
+    VbufPrepChr( &mangled_name, chr );
 }
 
 
@@ -187,16 +209,16 @@ static void appendStr(          // APPEND A STRING
     char *str )                 // - the string
 {
     if( str != NULL ) {
-        VStrConcStr( &mangled_name, str );
+        VbufConcStr( &mangled_name, str );
     }
 }
 
 static void appendZZLen(        // CONCATENATE A 'ZZ' length
     unsigned len )              // - the length
 {
-    char sbuf[16];
+    char sbuf[ 60 ];
 
-    ultoa( len, sbuf, 36 );
+    utoa62( len, sbuf );
     switch( strlen( sbuf ) ){
     case 1:
         appendChar( '0' );
@@ -205,7 +227,8 @@ static void appendZZLen(        // CONCATENATE A 'ZZ' length
         appendStr( sbuf );
         break;
     default:
-        CFatal( "internal name length > 36*36" );
+        sprintf( sbuf, "internal name length=%d is > 62*62 (1)", len );
+        CFatal( sbuf );
         break;
     }
 }
@@ -225,7 +248,7 @@ static void prependStr(         // PREPEND A STRING
     char *str )                 // - the string
 {
     if( str != NULL ) {
-        VStrPrepStr( &mangled_name, str );
+        VbufPrepStr( &mangled_name, str );
     }
 }
 
@@ -233,11 +256,10 @@ static void prependLen(         // PREPEND A THE CURRENT STRING LEN
     void )
 {
     int len;
-    char sbuf[16];              // - buffer
+    char sbuf[ 60 ];           // - buffer
 
-    len = VStrLen( &mangled_name );
-    DbgAssert( len == strlen( mangled_name.buf ) );
-    ultoa( len, sbuf, 36 );
+    len = VbufLen( &mangled_name );
+    utoa62( len, sbuf );
     switch( strlen( sbuf ) ){
     case 1:
         prependStr( sbuf );
@@ -247,7 +269,8 @@ static void prependLen(         // PREPEND A THE CURRENT STRING LEN
         prependStr( sbuf );
         break;
     default:
-        CFatal( "internal name length > 36*36" );
+        sprintf( sbuf, "internal name length=%d is > 62*62 (2)", len );
+        CFatal( sbuf );
         break;
     }
 }
@@ -255,10 +278,7 @@ static void prependLen(         // PREPEND A THE CURRENT STRING LEN
 static void appendInt(          // APPEND AN INTEGER
     int val )                   // - value
 {
-    char sbuf[16];              // - buffer
-
-    ultoa( val, sbuf, 10 );
-    appendStr( sbuf );
+    VbufConcDecimal( &mangled_name, val );
 }
 
 static void appendBase36Int(    // APPEND A BASE 36 INTEGER
@@ -318,45 +338,14 @@ static void appendSymName(      // APPEND A SYMBOL's MANGLED NAME
     }
 }
 
+static void appendScopeMangling(// APPEND CLASS SCOPES
+    SCOPE scope );              // - current scope
+
 static void appendScopedSymName(// APPEND A SCOPED SYMBOL NAME
     SYMBOL sym )
 {
     appendSymName( sym );
     appendScopeMangling( sym->name->containing );
-}
-
-static void appendTypedSymName( // APPEND A SYMBOL's TYPED MANGLED NAME
-    SYMBOL sym )                // - the symbol
-{
-    appendSymName( sym );
-    appendType( sym->sym_type, sym->name->name, TM_NULL );
-}
-
-static void appendFullSymName(  // APPEND A SYMBOL's FULL MANGLED NAME
-    SYMBOL sym )                // - the symbol
-{
-    appendSymName( sym );
-    appendScopeMangling( sym->name->containing );
-    appendType( sym->sym_type, sym->name->name, TM_NULL );
-}
-
-static void appendBase32UInt(   // CONCATENATE A BASE 32 TARGET UNSIGNED LONG
-    target_ulong number )       // - the number
-{
-    char buff[16];
-
-    ultoa( number, buff, 32 );
-    appendStr( buff );
-}
-
-static void appendDelta(        // CONCATENATE A DELTA OPERATION
-    target_offset_t offset )    // - the offset
-{
-    char buff[16];
-
-    buff[0] = 'o';
-    ultoa( offset, &buff[1], 31 );
-    appendStr( buff );
 }
 
 static char *className(         // GET CLASS' NAME
@@ -375,12 +364,6 @@ static void appendClassName(    // APPEND A CLASS' NAME
     TYPE class_type )           // - the class type
 {
     appendReplName( className( class_type ) );
-}
-
-static void appendTypeFlags(    // APPEND TYPE FLAGS
-    type_flag flags )           // - the flags
-{
-    appendModifier( flags, NULL );
 }
 
 static void appendBasedMod(     // APPEND A BASED MODIFIER
@@ -463,89 +446,11 @@ static void appendModifier(     // APPEND A MODIFIER
     }
 }
 
-static void appendTemplateParm( // APPEND A TEMPLATE PARM
-    SYMBOL sym )
+static void appendTypeFlags(    // APPEND TYPE FLAGS
+    type_flag flags )           // - the flags
 {
-    target_long val;
-    char delim;
-
-    if( SymIsConstantInt( sym ) ) {
-        val = sym->u.sval;
-        appendChar( IN_TEMPARG_INT );
-        delim = IN_TEMPARG_POSITIVE_INT;
-        if( val < 0 ) {
-            delim = IN_TEMPARG_NEGATIVE_INT;
-            val = -val;
-        }
-        appendBase32UInt( val );
-        appendChar( delim );
-    } else if( SymIsTypedef( sym ) ) {
-        appendChar( IN_TEMPARG_TYPE );
-        appendType( sym->sym_type, sym->name->name, TM_INCLUDE_FIRST_DIM );
-    } else {
-        sym = SymAddressOf( sym );
-        if( sym != NULL ) {
-            appendStr( IN_MANGLE2 );
-            appendFullSymName( sym );
-        }
-    }
+    appendModifier( flags, NULL );
 }
-
-static void appendScopeMangling(// APPEND CLASS SCOPES
-    SCOPE scope )               // - current scope
-{
-    SCOPE next;
-    SYMBOL curr;
-    SYMBOL stop;
-    SYMBOL fn_symbol;
-    char buff[ 1 + sizeof( unsigned long ) * 2 + 1 ];
-
-    for(;;) {
-        if( scope == NULL ) break;
-        switch( ScopeId( scope ) ) {
-        case SCOPE_FILE:
-            appendNameSpaceName( scope );
-            break;
-        case SCOPE_CLASS:
-            appendChar( IN_CLASS_DELIM );
-            appendClassName( ScopeClass( scope ) );
-            break;
-        case SCOPE_FUNCTION:
-            fn_symbol = ScopeFunction( scope );
-            DbgAssert( fn_symbol != NULL );
-            appendChar( IN_CLASS_DELIM );
-            appendStr( IN_MANGLE2 );
-            appendTypedSymName( fn_symbol );
-            break;
-        case SCOPE_BLOCK:
-            buff[0] = '.';
-            ultoa( (unsigned long) ScopeIndex( scope ), &buff[1], 31 );
-            appendChar( IN_CLASS_DELIM );
-            appendStr( buff );
-            appendStr( IN_NAME_SUFFIX );
-            for(;;) {
-                next = scope->enclosing;
-                if( ScopeId( next ) != SCOPE_BLOCK ) break;
-                scope = next;
-                DbgAssert( ScopeId( scope ) == SCOPE_BLOCK );
-            }
-            break;
-        case SCOPE_TEMPLATE_PARM:
-            curr = NULL;
-            stop = ScopeOrderedStart( scope );
-            appendChar( IN_CLASS_DELIM );
-            appendChar( IN_CLASS_DELIM );
-            for(;;) {
-                curr = ScopeOrderedNext( stop, curr );
-                if( curr == NULL ) break;
-                appendTemplateParm( curr );
-            }
-            break;
-        }
-        scope = scope->enclosing;
-    }
-}
-
 
 static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
     TYPE type,                  // - type
@@ -559,6 +464,7 @@ static void appendTypeContinue( // APPEND A TYPE MANGLING (NO NEAR/FAR PREFIX)
 
     control |= TM_FIRST_DIM;
     while( type != NULL ) {
+        type = BoundTemplateClass( type );
         switch( type->id ) {
         case TYP_BOOL:
             appendChar( IN_BOOL );
@@ -723,16 +629,132 @@ static void appendType(         // APPEND A TYPE MANGLING
     appendTypeContinue( type, name, control );
 }
 
+static void appendTypedSymName( // APPEND A SYMBOL's TYPED MANGLED NAME
+    SYMBOL sym )                // - the symbol
+{
+    appendSymName( sym );
+    appendType( sym->sym_type, sym->name->name, TM_NULL );
+}
+
+static void appendFullSymName(  // APPEND A SYMBOL's FULL MANGLED NAME
+    SYMBOL sym )                // - the symbol
+{
+    appendSymName( sym );
+    appendScopeMangling( sym->name->containing );
+    appendType( sym->sym_type, sym->name->name, TM_NULL );
+}
+
+static void appendBase32UInt(   // CONCATENATE A BASE 32 TARGET UNSIGNED LONG
+    target_ulong number )       // - the number
+{
+    char buff[16];
+
+    ultoa( number, buff, 32 );
+    appendStr( buff );
+}
+
+static void appendDelta(        // CONCATENATE A DELTA OPERATION
+    target_offset_t offset )    // - the offset
+{
+    char buff[16];
+
+    buff[0] = 'o';
+    ultoa( offset, &buff[1], 31 );
+    appendStr( buff );
+}
+
+static void appendTemplateParm( // APPEND A TEMPLATE PARM
+    SYMBOL sym )
+{
+    target_long val;
+    char delim;
+
+    if( SymIsConstantInt( sym ) ) {
+        val = sym->u.sval;
+        appendChar( IN_TEMPARG_INT );
+        delim = IN_TEMPARG_POSITIVE_INT;
+        if( val < 0 ) {
+            delim = IN_TEMPARG_NEGATIVE_INT;
+            val = -val;
+        }
+        appendBase32UInt( val );
+        appendChar( delim );
+    } else if( SymIsTypedef( sym ) ) {
+        appendChar( IN_TEMPARG_TYPE );
+        appendType( sym->sym_type, sym->name->name, TM_INCLUDE_FIRST_DIM );
+    } else {
+        sym = SymAddressOf( sym );
+        if( sym != NULL ) {
+            appendStr( IN_MANGLE2 );
+            appendFullSymName( sym );
+        }
+    }
+}
+
+static void appendScopeMangling(// APPEND CLASS SCOPES
+    SCOPE scope )               // - current scope
+{
+    SCOPE next;
+    SYMBOL curr;
+    SYMBOL stop;
+    SYMBOL fn_symbol;
+    char buff[ 1 + sizeof( unsigned long ) * 2 + 1 ];
+
+    for(;;) {
+        if( scope == NULL ) break;
+        switch( ScopeId( scope ) ) {
+        case SCOPE_FILE:
+            appendNameSpaceName( scope );
+            break;
+        case SCOPE_CLASS:
+            appendChar( IN_CLASS_DELIM );
+            appendClassName( ScopeClass( scope ) );
+            break;
+        case SCOPE_FUNCTION:
+            fn_symbol = ScopeFunction( scope );
+            DbgAssert( fn_symbol != NULL );
+            appendChar( IN_CLASS_DELIM );
+            appendStr( IN_MANGLE2 );
+            appendTypedSymName( fn_symbol );
+            break;
+        case SCOPE_BLOCK:
+            buff[0] = '.';
+            ultoa( (unsigned long) ScopeIndex( scope ), &buff[1], 31 );
+            appendChar( IN_CLASS_DELIM );
+            appendStr( buff );
+            appendStr( IN_NAME_SUFFIX );
+            for(;;) {
+                next = scope->enclosing;
+                if( ScopeId( next ) != SCOPE_BLOCK ) break;
+                scope = next;
+                DbgAssert( ScopeId( scope ) == SCOPE_BLOCK );
+            }
+            break;
+        case SCOPE_TEMPLATE_PARM:
+            curr = NULL;
+            stop = ScopeOrderedStart( scope );
+            appendChar( IN_CLASS_DELIM );
+            appendChar( IN_CLASS_DELIM );
+            for(;;) {
+                curr = ScopeOrderedNext( stop, curr );
+                if( curr == NULL ) break;
+                appendTemplateParm( curr );
+            }
+            break;
+        }
+        scope = scope->enclosing;
+    }
+}
 
 static char *formatGlobalName(       // GET C++ GLOBAL NAME
     SYMBOL sym )                // - symbol
 {
     replicateInit();
-    VStrNull( &mangled_name );
+    VbufRewind( &mangled_name );
     appendStr( IN_MANGLE1 );
     appendStr( IN_MANGLE2 );
     appendFullSymName( sym );
-    return( mangled_name.buf );
+    return( VbufString( &mangled_name ) );
 }
 
 
@@ -837,7 +859,7 @@ static void setPrefix(          // SET A PREFIX FOR NAME
     char* last )                // - last segment of prefix
 {
     replicateInit();
-    VStrNull( &mangled_name );
+    VbufRewind( &mangled_name );
     appendStr( IN_NAME_PREFIX );
     appendStr( IN_SYM_WATCOM );
     appendStr( last );
@@ -849,8 +871,8 @@ static char* setMangling(       // SET FOR MANGLING
     char *save;                 // - saved name
 
     setPrefix( last );
-    save = strsave( mangled_name.buf );
-    VStrNull( &mangled_name );
+    save = strsave( VbufString( &mangled_name ) );
+    VbufRewind( &mangled_name );
     return save;
 }
 
@@ -860,7 +882,7 @@ static char* retMangling(       // RETURN MANGLED NAME
     prependLen();
     prependStr( save );
     CMemFree( save );
-    return( NameCreateLen( mangled_name.buf, VStrLen( &mangled_name ) ) );
+    return( NameCreateLen( VbufString( &mangled_name ), VbufLen( &mangled_name ) ) );
 }
 
 static char* mangledNameType(   // MAKE MANGLED NAME, TYPE
@@ -892,8 +914,7 @@ char *CppTypeidName(            // CREATE NAME FOR TYPEID
 
     save = setMangling( IN_TYPEID_NAME );
     appendType( type, NULL, TM_NO_INITIAL_MOD );
-    *len = VStrLen( &mangled_name );
-    DbgAssert( *len == strlen( mangled_name.buf ) );
+    *len = VbufLen( &mangled_name );
     return retMangling( save );
 }
 
@@ -901,10 +922,10 @@ char *CppGetTypeidContents(     // CREATE CONTENTS FOR TYPEID STRUCTURE
     TYPE type,                  // - typeid type
     unsigned *len )             // - addr( strlen of contents )
 {
-    VStrNull( &mangled_name );
+    VbufRewind( &mangled_name );
     appendType( type, NULL, TM_NO_INITIAL_MOD );
-    *len = VStrLen( &mangled_name );
-    return( mangled_name.buf );
+    *len = VbufLen( &mangled_name );
+    return( VbufString( &mangled_name ) );
 }
 
 char *CppVATableName(           // CREATE NAME OF VIRTUAL FN ADJUSTOR TABLE
@@ -1012,7 +1033,7 @@ char *CppStaticOnceOnlyName(    // CREATE NAME FOR ONCE ONLY CHECK OF STATICS
     void )
 {
     setPrefix( IN_NAME_STATIC_ONCE );
-    return( NameCreateLen( mangled_name.buf, VStrLen( &mangled_name ) ) );
+    return( NameCreateLen( VbufString( &mangled_name ), VbufLen( &mangled_name ) ) );
 }
 
 
@@ -1025,29 +1046,6 @@ char *CppArrayDtorName(         // CREATE NAME FOR ARRAY DTOR
     ar_type = ArrayType( ar_type );
     appendInt( ArrayTypeNumberItems( ar_type ) );
     return retMangling( save );
-}
-
-
-static char *cppPragmaMangle(   // HANDLE MANGLING REQUIRED FOR SYS-DEP PRAGMAS
-    char *name,                 // - current name
-    SYMBOL sym,                 // - symbol
-    void *pragma )              // - pragma
-{
-    TYPE fn_type;
-    target_size_t size;
-
-    if( CompFlags.use_stdcall_at_number && AddParmSize( pragma ) ) {
-        fn_type = FunctionDeclarationType( sym->sym_type );
-        if( TypeParmSize( fn_type, &size ) ) {
-            DbgVerify( name != mangled_name.buf, "passed mangled name to cppPragmaMangle" );
-            VStrNull( &mangled_name );
-            appendStr( name );
-            appendChar( '@' );
-            appendInt( size );
-            name = mangled_name.buf;
-        }
-    }
-    return( name );
 }
 
 char *CppNameTypeSig(           // NAME OF TYPE SIGNATURE
@@ -1081,12 +1079,12 @@ char *CppNameUniqueNS(          // NAME OF UNIQUE NAMESPACE
     h = TimeOfCompilation();
     appendBase36Int( h );
     src = locn->src_file;
-    h ^= *SrcFileTimeStamp( src );
+    h ^= SrcFileTimeStamp( src );
     h ^= locn->line;
     h ^= locn->column;
     primary = SrcFileEnclosingPrimary( src );
     if( primary != src ) {
-        h ^= *SrcFileTimeStamp( primary );
+        h ^= SrcFileTimeStamp( primary );
     }
     h = objNameHash( h, SrcFileFullName( primary ) );
     appendBase36Int( h );
@@ -1157,7 +1155,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
 
     ExtraRptIncrementCtr( ctr_debug_names );
     replicateInit();
-    VStrNull( &mangled_name );
+    VbufRewind( &mangled_name );
     if( CppLookupName( sym->name->name, &oper ) ) {
         switch( oper ) {
         case CO_CONVERT:
@@ -1166,8 +1164,8 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
             appendStr( "operator " );
             FormatFunctionType( SymFuncReturnType( sym ), &prefix, &suffix,
                                 0, FormatTypeDefault|FF_TYPEDEF_STOP );
-            appendStr( prefix.buf );
-            appendStr( suffix.buf );
+            appendStr( VbufString( &prefix ) );
+            appendStr( VbufString( &suffix ) );
             VbufFree( &prefix );
             VbufFree( &suffix );
         }   break;
@@ -1222,7 +1220,7 @@ char *CppNameDebug(             // TRANSLATE INTERNAL NAME TO DEBUGGER NAME
             appendStr( name );
         }
     }
-    return( mangled_name.buf );
+    return( VbufString( &mangled_name ) );
 }
 
 char *CppClassPathDebug(  //TRANSLATE INTERNAL NAME TO CLASS PREFIXED DEBUGGER NAME
@@ -1249,239 +1247,39 @@ char *CppClassPathDebug(  //TRANSLATE INTERNAL NAME TO CLASS PREFIXED DEBUGGER N
             prependStr( scope_name );
         }
     }
-    return( mangled_name.buf );
+    return( VbufString( &mangled_name ) );
 }
 
-static char *backSlashCopy(     // DO BACKSLASH ESCAPE COPY
-    char *dst,                  // - target
-    char *src )                 // - source
-{
-    while( *src != '\0' ) {
-        if( *src == '*' || *src == '^' || *src == '!' ) {
-            *dst++ = '\\';
-        }
-        *dst++ = *src++;
-    }
-    return( dst );
-}
-
-static char *allowStrictReplacement( char *patbuff )
-{
-    char *p;
-    char prev;
-
-    // mangled C++ name will be injected as the name so
-    // we only allow 'patbuff' to be a pure replacement
-    // rather than like "_*" "*_" "^" "__!"
-    if( patbuff == NULL ) {
-        return( patbuff );
-    }
-    prev = '\0';
-    for( p = patbuff; *p != '\0'; ++p ) {
-        if( prev != '\\' ) {
-            switch( *p ) {
-            case '*':
-            case '^':
-            case '!':
-                return( NULL );
-            }
-        }
-        prev = *p;
-    }
-    return( patbuff );
-}
-
-static char *objectName(        // DO CODEGEN NAME PROCESSING
-    char *patbuff,              // - pattern
-    char *sym_name )            // - mangled name
-{
-    char        *src;
-    char        *dst;
-    char        *end;
-    unsigned    namelen;
-    unsigned    length;
-
-    if( objNameBuff != NULL ) CMemFreePtr( &objNameBuff );
-    namelen = strlen( sym_name );
-    length = 1;
-    for( src = sym_name; *src != '\0'; ++src ) {
-        if( *src == '*' || *src == '^' || *src == '!' ) {
-            // add one for escape char '\'
-            namelen++;
-        }
-    }
-    for( src = patbuff; *src != '\0'; ++src ) {
-        switch( *src ) {
-        case '\\':
-            ++src;              // next character is taken literally
-            length += 2;        // keep the backslash (might be special char)
-            break;
-        case '*':
-        case '^':
-        case '!':
-            length += namelen;
-            break;
-        default:
-            ++length;
-            break;
-        }
-    }
-    objNameBuff = CMemAlloc( length );
-
-    dst = objNameBuff;
-    for( src = patbuff; *src != '\0'; ++src ) {
-        switch( *src ) {
-        case '\\':
-            *dst++ = '\\';
-            *dst++ = *++src;
-            break;
-        case '*':
-            dst = backSlashCopy( dst, sym_name );
-            break;
-        case '^':
-            end = backSlashCopy( dst, sym_name );
-            while( dst != end ) {
-                *dst = toupper( *dst );
-                ++dst;
-            }
-            break;
-        case '!':
-            end = backSlashCopy( dst, sym_name );
-            while( dst != end ) {
-                *dst = tolower( *dst );
-                ++dst;
-            }
-            break;
-        default:
-            *dst++ = *src;
-            break;
-        }
-    }
-    *dst = '\0';
-    return( objNameBuff );
-}
-
-static char *createFourCharHash( char *mangle, char *buff )
-{
-    uint_32 mangle_hash;
-    size_t num_size;
-
-    mangle_hash = objNameHash( 0, mangle );
-    mangle_hash %= 36L*36L*36L*36L;
-    ultoa( mangle_hash, buff, 36 );
-    num_size = strlen( buff );
-    DbgAssert( num_size > 0 && num_size <= MANGLED_HASH_LEN );
-    while( num_size < MANGLED_HASH_LEN ) {
-        // '_' is not part of the 0-35 digit alphabet
-        // because if we used a digit 'd' we would collide
-        // with other numbers given that we are adding the
-        // filler to the end ( nn, nnd, and nndd would produce
-        // the same four char hash string )
-        buff[ num_size ] = '_';
-        ++num_size;
-    }
-    DbgAssert( num_size == MANGLED_HASH_LEN );
-    buff[ MANGLED_HASH_LEN ] = '\0';
-    return( buff );
-}
-
-static char *reduceMangledName( char *mangle )
-{
-    auto char buff[MANGLED_HASH_LEN+1];
-
-    /* change "W?xxx" to "T?hhhhxxx" */
-    createFourCharHash( mangle, buff );
-    memmove( mangle + 2 + MANGLED_HASH_LEN, mangle + 2,
-             MANGLED_MAX_LEN - MANGLED_HASH_LEN );
-    memcpy( mangle + 2, buff, MANGLED_HASH_LEN );
-    mangle[MANGLED_MAX_LEN] = '\0';
-    mangle[0] = IN_TRUNCATE;
-    return( mangle );
-}
-
-static char *reduceNonMangledName( char *mangle )
-{
-    char *hash_name;
-    auto char buff[MANGLED_HASH_LEN+1];
-
-    /* change "xxx" to "xxxhhhh" */
-    hash_name = createFourCharHash( mangle, buff );
-    memmove( mangle + ( MANGLED_MAX_LEN - MANGLED_HASH_LEN ), buff,
-             MANGLED_HASH_LEN );
-    mangle[MANGLED_MAX_LEN] = '\0';
-    return( mangle );
-}
-
-char *CppMangleName(            // MANGLE SYMBOL NAME
-    char *patbuff,              // - control of result
+char *GetMangledName(           // MANGLE SYMBOL NAME
     SYMBOL sym )                // - symbol to mangle
 {
     char *sym_name;             // - symbol's name
     SCOPE scope;                // - scope for function
     TYPE fn_type;               // - symbol's function type
-    void *pragma;               // - function's pragma modifier
-    size_t len;                 // - mangled name length
 
     if( sym == NULL || sym->name == NULL ) {
-        sym_name = "*** NULL ***";
+        return( "*** NULL ***" );
     } else {
+        scope = SymScope( sym );
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type != NULL ) {
-            scope = SymScope( sym );
-            if( scope->id != SCOPE_FILE ) {
+            if( ( scope->id != SCOPE_FILE )
+              || LinkageIsCpp( sym ) && ( fn_type->flag & TF1_PLUSPLUS ) ) {
                 sym_name = cppFunctionName( sym );
-                patbuff = allowStrictReplacement( patbuff );
             } else {
-                if( LinkageIsCpp( sym ) && fn_type->flag & TF1_PLUSPLUS ) {
-                    sym_name = cppFunctionName( sym );
-                    patbuff = allowStrictReplacement( patbuff );
-                } else {
-                    sym_name = sym->name->name;
-                    if( patbuff == NULL ) {
-                        patbuff = CODE_OBJNAME;
-                    }
-                    pragma = fn_type->u.f.pragma;
-                    if( pragma != NULL ) {
-                        /* only done for extern "C" functions */
-                        sym_name = cppPragmaMangle( sym_name, sym, pragma );
-                    }
-                }
+                sym_name = sym->name->name;
             }
         } else {
-            scope = SymScope( sym );
-            if( scope->id != SCOPE_FILE ) {
+            if( ( scope->id != SCOPE_FILE )
+              || LinkageIsCpp( sym ) ) {
                 sym_name = cppDataName( sym );
-                patbuff = allowStrictReplacement( patbuff );
             } else {
-                if( LinkageIsCpp( sym ) ) {
-                    sym_name = cppDataName( sym );
-                    patbuff = allowStrictReplacement( patbuff );
-                } else {
-                    sym_name = sym->name->name;
-                    if( patbuff == NULL ) {
-                        patbuff = DATA_OBJNAME;
-                    }
-                }
+                sym_name = sym->name->name;
             }
-        }
-    }
-
-    // handle patbuff modifications
-    if( patbuff != NULL ) {
-        sym_name = objectName( patbuff, sym_name );
-    }
-    len = strlen( sym_name );
-    if( len > MANGLED_MAX_LEN ) {
-        CErr2p( WARN_MANGLED_NAME_TOO_LONG, sym );
-        if( memcmp( sym_name, IN_MANGLE, 2 ) == 0 ) {
-            sym_name = reduceMangledName( sym_name );
-        } else {
-            sym_name = reduceNonMangledName( sym_name );
         }
     }
     return( sym_name );
 }
-
 
 char const* CppTsName(          // MANGLED NAME FOR TYPE SIGNATURE
     TYPE type )                 // - type being signified

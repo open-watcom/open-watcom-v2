@@ -139,7 +139,7 @@ void AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid,
         }
     }
     if( process == NULL ) {
-#if (defined M_I86 || defined M_I386)
+#if defined( _M_IX86 )
         CONTEXT context;
 #endif
 
@@ -152,7 +152,7 @@ void AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid,
         } else {
             strcpy( new->procname, stats.name );
         }
-#if (defined M_I86 || defined M_I386)
+#if defined( _M_IX86 )
         context.ContextFlags = CONTEXT_SEGMENTS | CONTEXT_CONTROL;
         GetThreadContext( threadhdl, &context );
         new->SegCs = context.SegCs;
@@ -483,9 +483,9 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
 
     HWND                lb;
     BOOL                rc;
-    DWORD               curproc;
-    DWORD               topproc;
-    DWORD               tmp;
+    LRESULT             curproc;
+    LRESULT             topproc;
+    LRESULT             tmp;
     LRESULT             topindex;
     LRESULT             index;
     LRESULT             select;
@@ -548,7 +548,7 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
 /*
  * ProcPriorityDlg
  */
-BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ProcNode            *ownedinfo;
@@ -657,8 +657,9 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 /*
  * AddRunningErrMsg
  */
-void AddRunningErrMsg( ProcAttatchInfo *info ) {
+void AddRunningErrMsg( void *_info ) {
 
+    ProcAttatchInfo   *info = _info;
     char        buf[100];
     ProcStats   stats;
 
@@ -676,7 +677,7 @@ void AddRunningErrMsg( ProcAttatchInfo *info ) {
 /*
  * ProcListProc
  */
-BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                buf[200];
     char                action[ ACTION_BUFSIZE ];

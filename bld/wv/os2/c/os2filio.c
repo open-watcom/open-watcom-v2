@@ -43,20 +43,15 @@
 #define INCL_BASE
 #include <os2.h>
 
+#include "doserr.h"
+
 #define READONLY    0
 #define WRITEONLY   1
 #define READWRITE   2
 #define FROMEND     2
 
-extern char     *Format(char *,char *,... );
-extern char     *StrCopy(char *,char *);
-
-
 file_components         LclFile = { '.', { '\\', '/', ':' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
-
-extern char     **DosErrMsgs[];
-extern int      MaxDosErrMsg;
 
 void LocalErrMsg( sys_error code, char *buff )
 {
@@ -67,11 +62,7 @@ void LocalErrMsg( sys_error code, char *buff )
 
     if( DosGetMessage( NULL, 0, buff, 50, code, "OSO001.MSG",
                         &msg_len ) != 0 ) {
-        if( code > MaxDosErrMsg ) {
-            Format( buff, "error #%u", code );
-        } else {
-            StrCopy( *DosErrMsgs[ code ], buff );
-        }
+        GetDOSErrMsg( code, buff );
         return;
     }
     buff[msg_len] = '\0';

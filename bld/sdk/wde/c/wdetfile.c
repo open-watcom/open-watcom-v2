@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wrdll.h"
 #include "wdeglbl.h"
@@ -44,28 +44,27 @@
 /* static functions                                                         */
 /****************************************************************************/
 
-Bool WdeDeleteFile ( const char *name )
+Bool WdeDeleteFile( const char *name )
 {
-    return ( WRDeleteFile ( name ) );
+    return( WRDeleteFile( name ) );
 }
 
-Bool WdeFileExists ( const char *name )
+Bool WdeFileExists( const char *name )
 {
-    return ( WRFileExists ( name ) );
+    return( WRFileExists( name ) );
 }
 
-Bool WdeBackupFile ( const char *name, Bool use_rename )
+Bool WdeBackupFile( const char *name, Bool use_rename )
 {
-    return ( WRBackupFile ( name, use_rename ) );
+    return( WRBackupFile( name, use_rename ) );
 }
 
-char *WdeGetTempFileName ( const char *ext )
+char *WdeGetTempFileName( const char *ext )
 {
-    return ( WRGetTempFileName ( ext ) );
+    return( WRGetTempFileName( ext ) );
 }
 
-Bool WdeCopyFile ( const char *dest, const char *src )
+Bool WdeCopyFile( const char *dest, const char *src )
 {
-    return ( WRCopyFile ( dest, src ) );
+    return( WRCopyFile( dest, src ) );
 }
-

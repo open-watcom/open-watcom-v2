@@ -24,29 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  A simple macro preprocessor.
 *
 ****************************************************************************/
 
 
-//  PREPROC.C - A simple macro preprocessor
-//
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "preproc.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
-#include "preproc.h"
-#ifdef UNIX
+
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
     #include "rotate.h"
 #endif
 
 #ifndef SLASH_CHAR
-    #ifdef UNIX
+    #ifdef __UNIX__
         #define SLASH_CHAR      '/'
     #else
         #define SLASH_CHAR      '\\'
@@ -56,44 +51,45 @@
 #define DOS_EOF_CHAR    0x1A
 
 typedef struct cpp_info {
-        struct cpp_info *prev_cpp;
-        unsigned char   cpp_type;
-        unsigned char   processing;
+    struct cpp_info *prev_cpp;
+    unsigned char   cpp_type;
+    unsigned char   processing;
 } CPP_INFO;
 
 enum cpp_types {
-        PP_IF,
-        PP_ELIF,
-        PP_ELSE
+    PP_IF,
+    PP_ELIF,
+    PP_ELSE
 };
 
-FILELIST *PP_File;
-CPP_INFO *PPStack;
-int     NestLevel;
-int     SkipLevel;
-unsigned PPLineNumber;                  // current line number
-unsigned PPFlags;                       // pre-processor flags
-char    PP__DATE__[] = "\"Dec 31 1992\"";// value for __DATE__ macro
-char    PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
-char    *PPBufPtr;                      // block buffer pointer
-char    *PPCharPtr;                     // character pointer
-char    *PPTokenPtr;                    // pointer to next char in token
-char    *PPIncludePath;                 // include path
-MACRO_TOKEN     *PPTokenList;           // pointer to list of tokens
-MACRO_TOKEN     *PPCurToken;            // pointer to current token
-char    PPSavedChar;                    // saved char at end of token
-char    PPLineBuf[4096+2];              // line buffer
+FILELIST    *PP_File;
+CPP_INFO    *PPStack;
+int         NestLevel;
+int         SkipLevel;
+unsigned    PPLineNumber;                   // current line number
+unsigned    PPFlags;                        // pre-processor flags
+char        PP__DATE__[] = "\"Dec 31 2005\"";// value for __DATE__ macro
+char        PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
+char        *PPBufPtr;                      // block buffer pointer
+char        *PPCharPtr;                     // character pointer
+char        *PPTokenPtr;                    // pointer to next char in token
+char        *PPIncludePath;                 // include path
+MACRO_TOKEN *PPTokenList;                   // pointer to list of tokens
+MACRO_TOKEN *PPCurToken;                    // pointer to current token
+char        PPSavedChar;                    // saved char at end of token
+char        PPLineBuf[4096+2];              // line buffer
 MACRO_ENTRY *PPHashTable[HASH_SIZE];
-char    PreProcChar = '#';              // preprocessor line intro
-void (*PP_CallBack)(char *,char *,char *);// mkmk dependency callback function
+char        PreProcChar = '#';              // preprocessor line intro
+
+void (*PP_CallBack)(char *,char *,char *);  // mkmk dependency callback function
 
 
 static char *Months[] = {
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-static char DBChar[256];        // double byte character indicator table
+static char MBCharLen[256];         // multi-byte character len table
 
 static char *doStrDup( const char *str )
 {
@@ -108,6 +104,24 @@ static char *doStrDup( const char *str )
     return( ptr );
 }
 
+/* Determine whether pathname is absolute */
+int isAbsPath( const char *str )
+{
+#ifdef __UNIX__
+    // UNIX is really easy
+    return( str[0] == SLASH_CHAR );
+#else
+    // '\foo.txt' is absolute, so is 'c:\foo.txt', but 'c:foo.txt' is not
+    if( str[0] == SLASH_CHAR ) {
+        return( 1 );
+    }
+    if( str[0] != '\0' && str[1] == ':' && str[2] == SLASH_CHAR ) {
+        return( 1 );
+    }
+    return( 0 );
+#endif
+}
+
 int PP_Open( char *filename )
 {
     int         handle;
@@ -116,7 +130,7 @@ int PP_Open( char *filename )
     handle = open( filename, O_RDONLY | O_BINARY, 0 );
     if( handle != -1 ) {
         prev_file = PP_File;
-        PP_File = (FILELIST *)PP_Malloc( sizeof(FILELIST) );
+        PP_File = (FILELIST *)PP_Malloc( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
             PP_OutOfMemory();
             close( handle );
@@ -141,11 +155,14 @@ char *PP_FindInclude( char *filename, char *path, char *buffer )
     char        c;
 
     if( path != NULL ) {
-        for(;;) {
+        for( ;; ) {
             len = 0;
-            for(;;) {
+            for( ;; ) {
                 c = *path++;
                 if( c == ';' ) break;
+#ifdef __UNIX__
+                if( c == ':' ) break;
+#endif
                 if( c == '\0' ) break;
                 buffer[len++] = c;
             }
@@ -158,18 +175,42 @@ char *PP_FindInclude( char *filename, char *path, char *buffer )
     return( NULL );
 }
 
+/* Include search order is intended to be compatible with C/C++ compilers
+ * and is as follows:
+ *
+ * 1) For absolute pathnames, try only that pathname and nothing else
+ *
+ * 2) For includes in double quotes only, search current directory
+ *
+ * 3) For includes in double quotes only, search the directory
+ *    of including file
+ *
+ * 4) Search include directories specified by PPIncludePath (usually command
+ *    line -I argument(s)
+ *
+ * 5) Search INCLUDE path
+ *
+ * 6) Directory 'h' adjacent to current directory (../h)
+ *
+ * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
+ * PPGLAG_IGNORE_INCLUDE is set.
+ */
 int PP_OpenInclude( char *filename, char *delim )
 {
     char        *path;
-    auto char   buffer[258];
+    char        buffer[258];
     char        pathbuf[ _MAX_PATH ];
     char        drivebuf[ _MAX_DRIVE ];
     char        dirbuf[ _MAX_DIR ];
+    int         sys_include;
 
+    sys_include = !strcmp( delim, "<>" );
     path = filename;
-    if( ( PPFlags & PPFLAG_IGNORE_CWD ) || access( filename, R_OK ) != 0 ) {
-        path = NULL;
-        if( PP_File != NULL ) {
+    if( !isAbsPath( filename ) ) {
+        if( sys_include || (PPFlags & PPFLAG_IGNORE_CWD) || access( filename, R_OK ) != 0 ) {
+            path = NULL;
+        }
+        if( path == NULL && PP_File != NULL && !sys_include ) {
             _splitpath( PP_File->filename, drivebuf, dirbuf, NULL, NULL );
             _makepath( pathbuf, drivebuf, dirbuf, NULL, NULL );
             path = PP_FindInclude( filename, pathbuf, buffer );
@@ -177,14 +218,14 @@ int PP_OpenInclude( char *filename, char *delim )
         if( path == NULL ) {
             path = PP_FindInclude( filename, PPIncludePath, buffer );
         }
-        if( path == NULL  &&  !(PPFlags & PPFLAG_IGNORE_INCLUDE) ) {
+        if( path == NULL && !(PPFlags & PPFLAG_IGNORE_INCLUDE) ) {
             path = PP_FindInclude( filename, getenv( "INCLUDE" ), buffer );
         }
-        if( path == NULL && !( PPFlags & PPFLAG_IGNORE_CWD ) ) {
+        if( path == NULL && !(PPFlags & PPFLAG_IGNORE_CWD) ) {
             sprintf( pathbuf, "..%ch", SLASH_CHAR );
             path = PP_FindInclude( filename, pathbuf, buffer );
         }
-        if( path == NULL && !( PPFlags & PPFLAG_IGNORE_CWD ) ) {
+        if( path == NULL && !(PPFlags & PPFLAG_IGNORE_CWD) ) {
             path = filename;
         }
     }
@@ -200,29 +241,27 @@ int PP_OpenInclude( char *filename, char *delim )
     }
 }
 
-static void PP_GenLine()
+static void PP_GenLine( void )
 {
     char        *p;
     char        *fname;
+    int         i;
 
-    PPCharPtr = &PPLineBuf[1];
-    sprintf( PPCharPtr, "%cline %u \"", PreProcChar, PP_File->linenum );
-    p = PPCharPtr;
-    while( *p != '\0' ) ++p;
-    fname = PP_File->filename;
-    while( *fname != '\0' ) {
-//      24-may-94       if( *fname == '\\' )  *p++ = '\\';
-#ifndef UNIX
-        if( *fname == SLASH_CHAR )  *p++ = SLASH_CHAR;          // 14-sep-94
+    p = PPCharPtr = &PPLineBuf[1];
+    if( PPFlags & PPFLAG_EMIT_LINE ) {
+        sprintf( PPCharPtr, "%cline %u \"", PreProcChar, PP_File->linenum );
+        while( *p != '\0' ) ++p;
+        fname = PP_File->filename;
+        while( *fname != '\0' ) {
+#ifndef __UNIX__
+            if( *fname == SLASH_CHAR )  *p++ = SLASH_CHAR;          // 14-sep-94
 #endif
-        if( DBChar[*fname] )  {
-            *p = *fname;
-            p++;
-            fname++;
+            for( i = MBCharLen[(unsigned char)*fname] + 1; i > 0; --i ) {
+                *p++ = *fname++;
+            }
         }
-        *p++ = *fname++;
+        *p++ = '\"';
     }
-    *p++ = '\"';
     *p++ = '\n';
     *p = '\0';
 }
@@ -233,25 +272,25 @@ static void PP_GenError( char *msg )
     sprintf( PPCharPtr, "%cerror %s\n", PreProcChar, msg );
 }
 
-static void PP_TimeInit()
+static void PP_TimeInit( void )
 {
-    struct tm *tod;
-    auto time_t time_of_day;
+    struct tm   *tod;
+    time_t      time_of_day;
 
     time_of_day = time( &time_of_day );
     tod = localtime( &time_of_day );
     sprintf( PP__TIME__, "\"%.2d:%.2d:%.2d\"", tod->tm_hour, tod->tm_min,
                                     tod->tm_sec );
-    sprintf( PP__DATE__, "\"%3s %.2d %d\"", Months[ tod->tm_mon ],
+    sprintf( PP__DATE__, "\"%3s %2d %d\"", Months[ tod->tm_mon ],
                             tod->tm_mday, tod->tm_year + 1900 );
 }
 
-static void SetRange( int low, int high )
+static void SetRange( int low, int high, char data )
 {
     int     i;
 
     for( i = low; i <= high; ++i ) {
-        DBChar[i] = 1;
+        MBCharLen[i] = data;
     }
 }
 
@@ -259,12 +298,8 @@ void PP_SetLeadBytes( const char *bytes )
 {
     unsigned    i;
 
-    for( i=0; i < 256; i++ ) {
-        if( bytes[i] == 0 ) {
-            DBChar[i] = 0;
-        } else {
-            DBChar[i] = 1;
-        }
+    for( i = 0; i < 256; i++ ) {
+        MBCharLen[i] = bytes[i];
     }
 }
 
@@ -292,16 +327,22 @@ int PP_Init2( char *filename, unsigned flags, char *include_path,
     PP_AddMacro( "__TIME__" );
     PP_AddMacro( "__STDC__" );
     PP_TimeInit();
-    memset( DBChar, 0, 256 );                   /* 07-jul-93 */
+    memset( MBCharLen, 0, 256 );                   /* 07-jul-93 */
     if( leadbytes != NULL ) {
         PP_SetLeadBytes( leadbytes );
     } else if( flags & PPFLAG_DB_KANJI ) {
-        SetRange( 0x81, 0x9f );
-        SetRange( 0xe0, 0xfc );
+        SetRange( 0x81, 0x9f, 1 );
+        SetRange( 0xe0, 0xfc, 1 );
     } else if( flags & PPFLAG_DB_CHINESE ) {
-        SetRange( 0x81, 0xfc );
+        SetRange( 0x81, 0xfc, 1 );
     } else if( flags & PPFLAG_DB_KOREAN ) {
-        SetRange( 0x81, 0xfd );
+        SetRange( 0x81, 0xfd, 1 );
+    } else if( flags & PPFLAG_UTF8 ) {
+        SetRange( 0xc0, 0xdf, 1 );
+        SetRange( 0xe0, 0xef, 2 );
+        SetRange( 0xf0, 0xf7, 3 );
+        SetRange( 0xf8, 0xfb, 4 );
+        SetRange( 0xfc, 0xfd, 5 );
     }
     handle = PP_Open( filename );
     if( handle == -1 )  return( -1 );
@@ -314,13 +355,14 @@ int PP_Init2( char *filename, unsigned flags, char *include_path,
 void PP_Dependency_List( void (*callback)(char *,char *,char *) )
 {
     PP_CallBack = callback;
-    for(;;) {
+    for( ;; ) {
         if( PP_Char() == EOF ) break;
         PPTokenPtr = "";        // quickly skip over token
     }
 }
 
-static void PP_CloseAllFiles( void ) {
+static void PP_CloseAllFiles( void )
+{
     FILELIST    *tmp;
 
     while( PP_File != NULL ) {
@@ -332,24 +374,25 @@ static void PP_CloseAllFiles( void ) {
     }
 }
 
-void PP_Fini()
+void PP_Fini( void )
 {
     int         hash;
     MACRO_ENTRY *me;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
-        for(;;) {
+        for( ;; ) {
             me = PPHashTable[hash];
             if( me == NULL ) break;
             PPHashTable[hash] = me->next;
-            PP_Free( me->replacement_list );
+            if( me->replacement_list != NULL )
+                PP_Free( me->replacement_list );
             PP_Free( me );
         }
     }
     PP_CloseAllFiles();
 }
 
-int PP_ReadBuf()
+int PP_ReadBuf( void )
 {
     int         len;
     FILELIST    *this_file;
@@ -365,7 +408,7 @@ int PP_ReadBuf()
 
 int PP_ReadLine( char *line_generated )
 {
-    FILELIST    *this_file;
+    FILELIST            *this_file;
     int                 len;
     unsigned char       c;
 
@@ -377,9 +420,9 @@ int PP_ReadLine( char *line_generated )
     PPLineBuf[0] = '\0';
     *line_generated = 0;
     len = 1;
-    for(;;) {
-        for(;;) {
-            for(;;) {
+    for( ;; ) {
+        for( ;; ) {
+            for( ;; ) {
                 c = *PPBufPtr;
                 if( c == DOS_EOF_CHAR ) {               // 17-oct-94
                     c = '\n';
@@ -478,8 +521,7 @@ void PP_Include( char *ptr )
     if( PP_OpenInclude( filename, delim ) == -1 ) {
         filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
-        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar,
-                                filename );
+        sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
         PP_Free( filename );
     } else {
         PP_GenLine();
@@ -490,19 +532,32 @@ void PP_RCInclude( char *ptr )
 {
     char        *filename;
     char        *delim;
+    int         quoted = 0;
 
     while( *ptr == ' '  ||  *ptr == '\t' ) ++ptr;
+    if( *ptr == '\"' ) {
+        ptr++;
+        quoted = 1;
+    }
+
     filename = ptr;
     delim = "\"\"";
     ++ptr;
-    for(;;) {
-        if( *ptr == ' ' ) break;
-        if( *ptr == '\t' ) break;
-        if( *ptr == '\r' ) break;
-        if( *ptr == '\n' ) break;
-        if( *ptr == '\0' ) break;
-        ++ptr;
+    if( quoted ) {
+        while( *ptr != '\"' )
+            ptr++;
     }
+    else
+        for( ;; ) {
+            if( *ptr == ' ' ) break;
+            if( *ptr == '\t' ) break;
+            if( *ptr == '\r' ) break;
+            if( *ptr == '\n' ) break;
+            if( *ptr == '\0' ) break;
+            if( *ptr == '\"' ) break;
+            ++ptr;
+        }
+
     *ptr = '\0';
     if( PP_OpenInclude( filename, delim ) == -1 ) {
         filename = doStrDup( filename );        // want to reuse buffer
@@ -517,11 +572,11 @@ void PP_RCInclude( char *ptr )
 
 MACRO_ENTRY *PP_AddMacro( char *macro_name )
 {
-    MACRO_ENTRY *me;
-    unsigned int        hash;
-    unsigned int        size;
+    MACRO_ENTRY     *me;
+    unsigned int    hash;
+    unsigned int    size;
 
-    size = sizeof(MACRO_ENTRY) + strlen( macro_name );
+    size = sizeof( MACRO_ENTRY ) + strlen( macro_name );
     me = (MACRO_ENTRY *)PP_Malloc( size );
     if( me != NULL ) {
         hash = PP_Hash( macro_name );
@@ -557,7 +612,7 @@ char *PP_SkipComment( char *p, char *comment )
             while( *p != '\0' ) ++p;
         } else {
             p += 2;
-            for(;;) {
+            for( ;; ) {
                 if( *p == '\0' ) {
                     PPFlags |= PPFLAG_SKIP_COMMENT; // continued on next line
                     break;
@@ -587,7 +642,7 @@ char *PP_SkipWhiteSpace( char *p, char *white_space )
     char        *p2;
 
     p2 = p;
-    for(;;) {
+    for( ;; ) {
         while( *p == ' ' || *p == '\t' || *p == '\r' || *p == '\n' )  ++p;
         p = PP_SkipComment( p, white_space );
         if( *white_space == 0 ) break;
@@ -623,7 +678,7 @@ void PP_Define( char *ptr )
         if( c == '(' ) {
             me->parmcount = 1;
             ptr++;
-            for(;;) {
+            for( ;; ) {
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
                 if( *ptr == '\0' ) break;
                 if( *ptr == ')'  ) break;
@@ -644,7 +699,7 @@ void PP_Define( char *ptr )
             }
         }
         ptr = PP_SkipWhiteSpace( ptr, &white_space );
-        for(;;) {
+        for( ;; ) {
             if( *ptr == '\0' ) break;
             if( *ptr == '\n' ) break;
             p2 = PP_ScanToken( ptr, &token );
@@ -696,7 +751,7 @@ MACRO_ENTRY *PP_ScanMacroLookup( char *ptr )
 
 static void IncLevel( int value )
 {
-    CPP_INFO *cpp;
+    CPP_INFO    *cpp;
 
     cpp = (CPP_INFO *)PP_Malloc( sizeof( CPP_INFO ) );
     cpp->prev_cpp = PPStack;
@@ -740,7 +795,7 @@ void PP_Ifndef( char *ptr )
 
 int PPConstExpr( char *ptr )
 {
-    PPVALUE     value;
+    PREPROC_VALUE   value;
 
     PPTokenPtr = ptr;
     PPFlags |= PPFLAG_PREPROCESSING;
@@ -788,7 +843,7 @@ void PP_Elif( char *ptr )
     }
 }
 
-void PP_Else()
+void PP_Else( void )
 {
     if( PPStack != NULL ) {
         if( PPStack->cpp_type == PP_ELSE ) {
@@ -809,7 +864,7 @@ void PP_Else()
     }
 }
 
-void PP_Endif()
+void PP_Endif( void )
 {
     CPP_INFO    *cpp;
 
@@ -900,28 +955,17 @@ static void RCInclude( char *ptr )
 }
 
 
-int PP_Read()
+int PP_Read( void )
 {
     char        *p;
     char        line_generated;
-    char        comment;
+    char        white_space;
 
-    for(;;) {
+    for( ;; ) {
         if( PP_ReadLine( &line_generated ) == 0 )  return( 0 );
-        if( ! line_generated ) {
-            //  &&  ! (PPFlags & PPFLAG_SKIP_COMMENT) ) {
-            p = PPCharPtr;
-#if 0
-            for(;;) {
-                while( *p == ' '  ||  *p == '\t' ) ++p;
-                if( p[0] != '/' ) break;
-                if( p[1] != '*' ) break;
-                p = PP_SkipComment( p, &comment );      /* 29-oct-93 */
-            }
-#else
-            comment = 0;
-            while( *p == ' '  ||  *p == '\t' ) ++p;
-#endif
+        // don't look for preprocessor directives inside multi-line comments
+        if( !line_generated && !(PPFlags & PPFLAG_SKIP_COMMENT) ) {
+            p = PP_SkipSpace( PPCharPtr, &white_space );
             if( *p == PreProcChar ) {
                 if( PP_Sharp( p + 1 ) ) {       // if recognized
                     PPCharPtr = &PPLineBuf[1];
@@ -944,12 +988,14 @@ int PP_Read()
 char *PPScanLiteral( char *p )
 {
     char        quote_char;
+    int         i;
 
     quote_char = *p++;
-    for(;;) {
-        if( DBChar[*p] )  {
-            p += 2;             /* 07-jul-93 */
-            continue;           /* 09-jul-93 */
+    for( ;; ) {
+        i = MBCharLen[(unsigned char)*p];
+        if( i )  {
+            p += i + 1;
+            continue;
         }
         if( *p == '\0' ) break;
         if( *p == quote_char ) {
@@ -984,7 +1030,7 @@ char *PPScanHexNumber( char *p )
     char        c;
 
     p += 2;                             // skip over the "0x"
-    for(;;) {
+    for( ;; ) {
         p = PPScanDigits( p );
         c = tolower( *p );
         if( c < 'a'  ||  c > 'f' ) break;
@@ -1013,7 +1059,7 @@ char *PPScanNumber( char *p )
 
 char *PPScanOther( char *p )
 {
-    for(;;) {
+    for( ;; ) {
         if( *p == '\0' ) break;
         if( *p == '\'' ) break;
         if( *p == '\"' ) break;
@@ -1041,7 +1087,7 @@ char *PP_ScanToken( char *p, char *token )
 
     if( PPFlags & PPFLAG_SKIP_COMMENT ) {
         *token = PPT_COMMENT;
-        for(;;) {
+        for( ;; ) {
             if( *p == '\0' ) break;
             if( *p == '*'  &&  p[1] == '/' ) {
                 p += 2;
@@ -1090,6 +1136,18 @@ char *PP_ScanToken( char *p, char *token )
             c = PPT_OTHER;
         }
         break;
+    case '#':
+        if( PPFlags & PPFLAG_ASM_COMMENT ) {
+            p2 = PP_SkipComment( p, &white_space );
+            if( white_space ) {
+                c = PPT_COMMENT;
+            } else {
+                p2 = PPScanOther( p );
+                c = PPT_OTHER;
+            }
+            break;
+        }
+        // Fall through!
     default:
         if( c == PreProcChar ) {
             if( p[1] == PreProcChar ) {
@@ -1136,14 +1194,14 @@ int PP_ScanNextToken( char *token )
     return( 0 );
 }
 
-int PP_Char()
+int PP_Char( void )
 {
     MACRO_TOKEN *mtok;
     MACRO_ENTRY *me;
     char        token;
 
     if( *PPTokenPtr == '\0' ) {
-        for(;;) {
+        for( ;; ) {
             mtok = PPTokenList;
             if( mtok == NULL ) break;
             PPTokenList = mtok->next;
@@ -1157,14 +1215,18 @@ int PP_Char()
             PPTokenPtr = mtok->data;
             return( *PPTokenPtr++ );
         }
-        for(;;) {
-            for(;;) {
+        for( ;; ) {
+            for( ;; ) {
                 if( PP_ScanNextToken( &token ) == EOF )  return( EOF );
                 if( token != PPT_COMMENT )  break;
                 if( PPFlags & PPFLAG_KEEP_COMMENTS )  break;
                 if( PPSavedChar == '\0' ) {
                     PPTokenPtr = PPCharPtr;
                     return( '\n' );
+                } else {
+                    // replace comment with a space
+                    PPTokenPtr = PPCharPtr;
+                    return( ' ' );
                 }
             }
             if( token != PPT_ID )  break;
@@ -1191,7 +1253,7 @@ extern void PreprocVarInit( void )
     PP_File = NULL;
     PPStack = NULL;
     PPLineNumber = 0;
-    strcpy( PP__DATE__, "\"Dec 31 1992\"" );
+    strcpy( PP__DATE__, "\"Dec 31 2005\"" );
     strcpy( PP__TIME__, "\"12:00:00\"" );
     PPBufPtr = NULL;
     PPCharPtr = NULL;
@@ -1200,4 +1262,3 @@ extern void PreprocVarInit( void )
     memset( PPLineBuf, 0, sizeof( PPLineBuf ) );
     PreProcChar = '#';
 }
-

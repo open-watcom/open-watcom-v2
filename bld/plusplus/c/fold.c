@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stddef.h>
 #include <limits.h>
-#include <string.h>
-#include <stdlib.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "ptree.h"
 #include "cgfront.h"
@@ -45,10 +44,13 @@
 
 //-------------- Temporary Stubs -------------------------------
 
+#define TWOTO32_STRING "4294967296"
+
 static float_handle TwoTo32
     ( void )
 {
-    return BFCnvSF( "4294967296", "0" );
+    char *p = { TWOTO32_STRING };
+    return( BFCnvSF( p, p + sizeof( TWOTO32_STRING ) - 1 ) );
 }
 
 static
@@ -814,6 +816,11 @@ static PTREE foldUInt( CGOP op, PTREE left, target_ulong v2 )
     case CO_COMMA:
         v1 = v2;
         break;
+#if _CPU == 8086
+    case CO_SEG_OP:
+        v1 = (v2 << (TARGET_NEAR_POINTER * 8)) | v1;
+        break;
+#endif
     default:
         return( NULL );
     }

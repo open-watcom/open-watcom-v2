@@ -1,10 +1,2 @@
-The split of the keyword between rc1.key and rc2.key occurs at the first letter.
-If you must change the place of the split, make sure that all words with the
-same first letter occur in the same file and also change the first letter in
-the file keyword.c
-
-The current point of the split is:  <='i'   rc1.key
-				    > 'i'   rc2.key
-
 NOTE: Until inline preprocessing is in place no "line" keyword should be added
 since the HandleCPPDirective function uses Scan to find #line directives.

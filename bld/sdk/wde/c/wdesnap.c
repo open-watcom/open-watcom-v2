@@ -30,25 +30,24 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wdeopts.h"
 
 static void WdeSnapPoint( POINT *pt, unsigned vinc, unsigned hinc )
 {
-    pt->x = ((pt->x + (hinc>>1)) / hinc ) * hinc;
-    pt->y = ((pt->y + (vinc>>1)) / vinc) * vinc;
+    pt->x = ((pt->x + (hinc >> 1)) / hinc) * hinc;
+    pt->y = ((pt->y + (vinc >> 1)) / vinc) * vinc;
 }
 
 void WdeSnapPointToGrid( POINT *pt )
 {
-    unsigned hinc;
-    unsigned vinc;
+    unsigned    hinc;
+    unsigned    vinc;
 
     hinc = WdeGetOption( WdeOptReqGridX );
     vinc = WdeGetOption( WdeOptReqGridY );
 
     WdeSnapPoint( pt, vinc, hinc );
 }
-

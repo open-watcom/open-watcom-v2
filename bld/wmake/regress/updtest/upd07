@@ -11,7 +11,11 @@ once    : .symbolic
 twice   : .procedure
 
 once twice :
+!ifdef __UNIX__
+    @echo "you should get this message $^@ ($<) ($[@ $]@)"
+!else
     @echo you should get this message $^@ ($<) ($[@ $]@)
+!endif
 
 
 

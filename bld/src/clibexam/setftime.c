@@ -9,28 +9,28 @@
 #define MINUTE(t) ((t & 0x07E0) >> 5)
 #define SECOND(t) ((t & 0x001F) << 1)
 
-void main()
-  {
+void main( void )
+{
     int      handle;
-    unsigned short date, time;
+    unsigned date, time;
 
     if( _dos_open( "file", O_RDWR, &handle ) != 0 ) {
-      printf( "Unable to open file\n" );
+        printf( "Unable to open file\n" );
     } else {
-      printf( "Open succeeded\n" );
-      _dos_getftime( handle, &date, &time );
-      printf( "The file was last modified on %d/%d/%d",
-              MONTH(date), DAY(date), YEAR(date) );
-      printf( " at %.2d:%.2d:%.2d\n",
-              HOUR(time), MINUTE(time), SECOND(time) );
-      /* set the time to 12 noon */
-      time = (12 << 11) + (0 << 5) + 0;
-      _dos_setftime( handle, date, time );
-      _dos_getftime( handle, &date, &time );
-      printf( "The file was last modified on %d/%d/%d",
-              MONTH(date), DAY(date), YEAR(date) );
-      printf( " at %.2d:%.2d:%.2d\n",
-              HOUR(time), MINUTE(time), SECOND(time) );
-      _dos_close( handle );
+        printf( "Open succeeded\n" );
+        _dos_getftime( handle, &date, &time );
+        printf( "The file was last modified on %d/%d/%d",
+                MONTH(date), DAY(date), YEAR(date) );
+        printf( " at %.2d:%.2d:%.2d\n",
+                HOUR(time), MINUTE(time), SECOND(time) );
+        /* set the time to 12 noon */
+        time = (12 << 11) + (0 << 5) + 0;
+        _dos_setftime( handle, date, time );
+        _dos_getftime( handle, &date, &time );
+        printf( "The file was last modified on %d/%d/%d",
+                MONTH(date), DAY(date), YEAR(date) );
+        printf( " at %.2d:%.2d:%.2d\n",
+                HOUR(time), MINUTE(time), SECOND(time) );
+        _dos_close( handle );
     }
-  }
+}

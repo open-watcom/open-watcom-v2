@@ -1,0 +1,138 @@
+proj_name = cmdedit
+
+cmdedit_autodepends = .AUTODEPEND
+
+.EXTENSIONS:
+.EXTENSIONS: .exe .ubj .obj .cbj .cpp .c .h .asm .mif
+
+.mif: $(mif_path)
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+cmdfiles = &
+    cmdalias.$(ext) &
+    cmddata.$(ext) &
+    cmddir.$(ext) &
+    cmdedit.$(ext) &
+    cmdfile.$(ext) &
+    cmdio.$(ext) &
+    cmdmain.$(ext) &
+    cmdsave.$(ext) &
+    cmdscrn.$(ext) &
+    cmdstub.$(ext) &
+    cmdutil.$(ext)
+
+ext = obj
+dosobjs = $+ $(cmdfiles) $-
+os2objs = $+ $(cmdfiles) $-
+
+ext = ubj
+os2zuobjs = $+ $(cmdfiles) $-
+
+ext = cbj
+os2cmdshellobjs = $+ $(cmdfiles) $-
+
+!ifndef dopt
+dopt=d1
+!endif
+
+extra_a_flags = -D_MODEL=_SMALL -fo=$^@
+extra_a_flags_dos = -D_OS=_DOS
+extra_a_flags_os2 = -D_OS=_OS2
+
+.asm: ..
+.c: ..
+
+.c.ubj:
+        $(comp286) $< -w3 -oxs -d1 -fo=.ubj -zu -zq $(inc_dirs_sys) #
+
+.c.cbj:
+        $(comp286) $< -w3 -oxs -d1 -fo=.cbj -zq -D__CMDSHELL__ $(inc_dirs_sys) #
+
+lnk = tmp.lnk
+
+!ifeq host_os dos
+
+.c.obj:
+        $(comp286) $< -w3 -DDOS -oas -s -$(dopt) -zq -fo=.obj $(inc_dirs_sys) #
+
+#
+# CMDEDIT.EXE
+#
+cmdobjs = dosstart.obj $(dosobjs)
+cmdedit.exe: $(cmdobjs) makefile
+            @%write $(lnk) debug all system dos name cmdedit option dosseg lib clibs
+            @%append $(lnk) op map,verbose,symfile=cmdedit.sym
+            @for %i in ($(cmdobjs)) do @%append $(lnk) file %i
+            $(linker) @$(lnk)
+
+#
+# DCMDEDIT.EXE (debugging version)
+#
+tstobjs = dcmdedit.obj $(dosobjs)
+
+dcmdedit.exe: $(tstobjs) makefile
+            @%write $(lnk) op map system dos debug all name dcmdedit option dosseg
+            @for %i in ($(tstobjs)) do @%append $(lnk) file %i
+            $(linker) @$(lnk)
+
+!endif
+
+!ifeq host_os os2
+
+.c.obj:
+        $(comp286) $< -w3 -oxs -d1 -fo=.obj -zq $(inc_dirs_sys) #
+
+all: os2edit.dll os2edit.exe os22edit.exe
+
+#
+# OS2EDIT.DLL
+#
+cmd2objs = cmdstart.obj $(os2zuobjs)
+
+os2edit.dll: $(cmd2objs) makefile
+            @%write $(lnk) option dosseg,nocaseex name os2edit lib $(os2286), clibs
+            @%append $(lnk) system os2 dll initinstance option manyautodata
+            @%append $(lnk) option newfiles op map
+            @%append $(lnk) export OS2EDIT_
+            @for %i in ($(cmd2objs)) do @%append $(lnk) file %i
+            $(linker) @$(lnk)
+
+#
+# DOS2EDIT.EXE  (debugging version)
+#
+ts2objs = dcmdedit.obj ftos.obj $(os2objs)
+
+dos2edit.exe: $(ts2objs) makefile
+            @%write $(lnk) debug all name dos2edit system os2 pmc option dosseg
+            @%append $(lnk) lib $(os2286) option newfiles
+            @for %i in ($(ts2objs)) do @%append $(lnk) file %i
+            $(linker) @$(lnk)
+
+#
+# CMDSHELL.EXE  (feed commands to CMD.EXE)
+#
+cmdshellobjs = cmdshell.cbj ftos.cbj $(os2cmdshellobjs)
+
+cmdshell.exe: $(cmdshellobjs) makefile
+            @%write $(lnk) debug all name cmdshell system os2 pmc option dosseg
+            @%append $(lnk) lib $(os2286)
+            @for %i in ($(cmdshellobjs)) do @%append $(lnk) file %i
+            $(linker) @$(lnk)
+
+#
+# OS2EDIT.EXE
+#
+
+os2edit.exe:    os2edit.c
+        $(comp286) $< -ox -d1 -zq $(inc_dirs_sys)
+        $(linker) debug all op symfile sys os2 f os2edit
+#
+# OS22EDIT.EXE
+#
+os22edit.exe:    os22edit.c
+        $(comp286) $< -ox -d1 -zq $(inc_dirs_sys) 
+        $(linker) debug all op symfile sys os2 f os22edit
+!endif

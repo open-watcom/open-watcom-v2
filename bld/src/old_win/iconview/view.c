@@ -12,19 +12,19 @@ char     IconClass[32]="IconClass";
 
 LONG _EXPORT FAR PASCAL FrameProc( HWND, unsigned, WORD, LONG );
 LONG _EXPORT FAR PASCAL MdiIconProc( HWND, unsigned, WORD, LONG );
-static BOOL InitApplication( HANDLE );
+static BOOL InitApplication( HINSTANCE );
 static BOOL InitInstance( int );
 static void DoCmdLine( LPSTR cmdline );
 
 HWND            FrameWindow;    /* The classic MDI frame window     */
 HWND            ClientWindow;   /* And the client window attached   */
-HANDLE          Instance;       /* Convenient to have handy         */
+HINSTANCE          Instance;       /* Convenient to have handy         */
 
 /*
  * WinMain - initialization, parsing of the command line, message loop
  */
 
-int PASCAL WinMain( HANDLE hinst, HANDLE prev_inst, LPSTR cmdline, int cmdshow )
+int PASCAL WinMain( HINSTANCE hinst, HINSTANCE prev_inst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
 
@@ -114,7 +114,7 @@ static void DoCmdLine( LPSTR cmdline )
  * InitApplication - register the frame and mdi child window classes
  */
 
-static BOOL InitApplication( HANDLE inst )
+static BOOL InitApplication( HINSTANCE inst )
 {
     WNDCLASS    wc;
     BOOL        ret_code;
@@ -163,7 +163,7 @@ static BOOL InitInstance( int cmdshow )
      */
     FrameWindow = CreateWindow(
         FrameClass,             /* class */
-        "WATCOM Icon Viewer",   /* caption */
+        "Open WATCOM Icon Viewer",   /* caption */
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
@@ -251,8 +251,8 @@ LONG _EXPORT FAR PASCAL FrameProc( HWND hwnd, unsigned msg,
             DestroyWindow( hwnd );
             break;
         case IDM_ABOUT:
-            proc = MakeProcInstance( AboutProc, Instance );
-            DialogBox( Instance, "AboutBox", hwnd, proc );
+            proc = MakeProcInstance( (FARPROC)AboutProc, Instance );
+            DialogBox( Instance, "AboutBox", hwnd, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         case IDM_TILE:

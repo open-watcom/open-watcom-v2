@@ -30,45 +30,38 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include "posix.h"
 #include "vi.h"
+#include "posix.h"
 #include "source.h"
 #include "win.h"
-#ifdef __WIN__
-#include "winvi.h"
-#endif
-#include "lang.h"
 #include "fts.h"
 
 /*
  * createNewFile - create new file entry
  */
-static int createNewFile( char *name, bool same_file )
+static vi_rc createNewFile( char *name, bool same_file )
 {
-    int         i,rc,height;
+    int         height;
     window_id   cw;
     info        *tmp;
+    vi_rc       rc;
 
     /*
      * test that we can create this file
      */
     if( !same_file ) {
-        i = FileExists( name );
-        if( !( i == ERR_READ_ONLY_FILE || i==ERR_NO_ERR || i == ERR_FILE_EXISTS ) ) {
-            return( i );
+        rc = FileExists( name );
+        if( !(rc == ERR_READ_ONLY_FILE || rc == ERR_NO_ERR || rc == ERR_FILE_EXISTS) ) {
+            return( rc );
         }
     } else {
         if( name == NULL ) {
             tmp = CurrentInfo;
         } else {
-            tmp = InfoHead;
-            while( tmp != NULL ) {
+            for( tmp = InfoHead; tmp != NULL; tmp = tmp->next ) {
                 if( !strcmp( tmp->CurrentFile->name, name ) ) {
                     break;
                 }
-                tmp = tmp->next;
             }
         }
         if( tmp == NULL )  {
@@ -82,9 +75,9 @@ static int createNewFile( char *name, bool same_file )
     /*
      * get new window
      */
-    i = NewWindow2( &cw, &editw_info );
-    if( i ) {
-        return( i );
+    rc = NewWindow2( &cw, &editw_info );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 #ifdef __WIN__
     if( !strncmp( name, "untitled", 8 ) ) {
@@ -113,50 +106,50 @@ static int createNewFile( char *name, bool same_file )
         FTSRunCmds( name );
 
         CurrentFile = FileAlloc( name );
-        height = editw_info.y2-editw_info.y1+1;
+        height = editw_info.y2 - editw_info.y1 + 1;
         if( EditFlags.CRLFAutoDetect ) {
             EditFlags.WriteCRLF = FALSE;
         }
-        for(;;) {
-            i = ReadFcbData( CurrentFile );
-            if( i ) {
+        for( ;; ) {
+            rc = ReadFcbData( CurrentFile );
+            if( rc != ERR_NO_ERR ) {
                 break;
             }
             if( !CurrentFile->is_stdio ) {
                 if( EditFlags.BreakPressed || !EditFlags.ReadEntireFile ) {
-                    if( CurrentFile->fcb_tail->end_line > height ) {
+                    if( CurrentFile->fcbs.tail->end_line > height ) {
                         break;
                     }
                 }
             }
         }
-        if( i && i != ERR_FILE_NOT_FOUND && i != END_OF_FILE ) {
+        if( rc != ERR_NO_ERR && rc != ERR_FILE_NOT_FOUND && rc != END_OF_FILE ) {
             MemFree( CurrentInfo );
             CurrentInfo = tmp;
             FileFree( CurrentFile );
             CloseAWindow( cw );
-            return( i );
+            return( rc );
         }
-        if( i == ERR_FILE_NOT_FOUND ) {
+        if( rc == ERR_FILE_NOT_FOUND ) {
             rc = NEW_FILE;
             EditFlags.NewFile = TRUE;
             if( EditFlags.CRLFAutoDetect ) {
                 CurrentFile->check_for_crlf = TRUE;
             }
-        #ifdef __QNX__
+#ifdef __UNIX__
             CurrentFile->attr = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
-                                    S_IROTH | S_IWOTH ;
-        #endif
+                S_IROTH | S_IWOTH;
+#endif
         } else {
             rc = ERR_NO_ERR;
             EditFlags.NewFile = FALSE;
-            #ifdef __QNX__
+#ifdef __UNIX__
             {
                 struct stat     sb;
                 stat( name, &sb );
                 CurrentFile->attr = sb.st_mode & ~S_IFMT;
             }
-            #endif
+#endif
         }
         CurrentFile->check_readonly = TRUE;
     }
@@ -164,10 +157,11 @@ static int createNewFile( char *name, bool same_file )
     /*
      * create info entry
      */
-    CurrentLineNumber = 0;
-    ColumnDesired = CurrentColumn = 1;
-    TopOfPage = 1;
-    LeftColumn = 0;
+    CurrentPos.line = 0;
+    CurrentPos.column = 1;
+    VirtualColumnDesired = 1;
+    LeftTopPos.line = 1;
+    LeftTopPos.column = 0;
     if( !same_file ) {
         AllocateUndoStacks();
     }
@@ -189,17 +183,17 @@ static int createNewFile( char *name, bool same_file )
     /*
      * set current file info
      */
-    CurrentFcb = CurrentFile->fcb_head;
-    CurrentLine = CurrentFcb->line_head;
+    CurrentFcb = CurrentFile->fcbs.head;
+    CurrentLine = CurrentFcb->lines.head;
 
     if( EditFlags.LineNumbers ) {
         LineNumbersSetup();
     }
 
     if( tmp != NULL ) {
-        InsertLLItemAfter( &InfoTail, tmp, CurrentInfo );
+        InsertLLItemAfter( (ss **)&InfoTail, (ss *)tmp, (ss *)CurrentInfo );
     } else {
-        AddLLItemAtEnd( &InfoHead, &InfoTail, CurrentInfo );
+        AddLLItemAtEnd( (ss **)&InfoHead, (ss **)&InfoTail, (ss *)CurrentInfo );
     }
 
     return( rc );
@@ -211,11 +205,11 @@ static int      inReadHook;
 /*
  * NewFile - load up a new file
  */
-int NewFile( char *name, bool same_file )
+vi_rc NewFile( char *name, bool same_file )
 {
-    int rc;
-    int dup;
-    int oldstatus;
+    vi_rc       rc;
+    int         dup;
+    status_type oldstatus;
 
     dup = EditFlags.DuplicateFile;
     EditFlags.DuplicateFile = FALSE;
@@ -226,7 +220,7 @@ int NewFile( char *name, bool same_file )
     EditFlags.ResizeableWindow = TRUE;
 #endif
     rc = createNewFile( name, same_file );
-    if( rc && rc != NEW_FILE ) {
+    if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
         ScreenPage( -1 );
         if( !EditFlags.Starting ) {
             MoveWindowToFrontDammit( MessageWindow, TRUE );
@@ -252,7 +246,6 @@ int NewFile( char *name, bool same_file )
 #if 0
     rc = FTSRunCmds( CurrentFile->name );
     FTSRunCmds( CurrentFile->name );
-#else
 #endif
 
     /*
@@ -321,7 +314,6 @@ file *FileAlloc( char *name )
  */
 void FileFree( file *f )
 {
-
     MemFree( f->name );
     MemFree( f->home );
     MemFree( f );
@@ -333,14 +325,7 @@ void FileFree( file *f )
  */
 void FreeEntireFile( file *cfile  )
 {
-    fcb *cfcb,*tfcb;
-
-    cfcb = cfile->fcb_head;
-    while( cfcb != NULL ) {
-        tfcb = cfcb->next;
-        FreeEntireFcb( cfcb );
-        cfcb = tfcb;
-    }
+    FreeFcbList( cfile->fcbs.head );
     FileFree( cfile );
 
 } /* FreeEntireFile */

@@ -1,0 +1,20 @@
+LIBRARY WINTRUST.DLL
+EXPORTS
+OpenPersonalTrustDBDialog@4
+OpenPersonalTrustDBDialogEx@12
+WTHelperCertCheckValidSignature@4
+WTHelperCertIsSelfSigned@8
+WTHelperGetProvCertFromChain@8
+WTHelperGetProvPrivateDataFromChain@8
+WTHelperGetProvSignerDataFromChain@16
+WTHelperProvDataFromStateData@4
+WinVerifyTrust@12
+WinVerifyTrustEx@12
+WintrustAddActionID@12
+WintrustAddDefaultForUsage@8
+WintrustGetDefaultForUsage@12
+WintrustGetRegPolicyFlags@4
+WintrustLoadFunctionPointers@8
+WintrustRemoveActionID@4
+WintrustSetDefaultIncludePEPageHashes@4
+WintrustSetRegPolicyFlags@4

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _arc( short x1, short y1, short x2, short y2,
+_WCRTLINK short _WCI86FAR _CGRAPH _arc( short x1, short y1, short x2, short y2,
 /*====================*/ short x3, short y3, short x4, short y4 )
 
 /* This function draws an elliptical arc.  The virtual ellipse is defined by
@@ -67,7 +67,7 @@ Entry( _ARC, _arc ) // alternate entry-point
 #define sgn( x )    ( x == 0 ? 0 : ( x < 0 ? -1 : 1 ) )
 
 
-short _WCI86FAR _CGRAPH _getarcinfo( struct xycoord _WCI86FAR *start,
+_WCRTLINK short _WCI86FAR _CGRAPH _getarcinfo( struct xycoord _WCI86FAR *start,
 /*===========================*/ struct xycoord _WCI86FAR *end,
                                 struct xycoord _WCI86FAR *fillpoint )
 

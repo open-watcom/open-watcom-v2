@@ -5,21 +5,15 @@ FONT 8, "MS Sans Serif"
 BEGIN
     COMBOBOX        SETFS_FILETYPE, 232, 114, 60, 63, CBS_SIMPLE |
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Syntax Highlighting", SETFS_LANGUAGE, "Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 66, 75, 12
+    LTEXT           "Syntax Highlighting", SETFS_LANGUAGE, 9, 66, 75, 12
     GROUPBOX        "Language", 105, 4, 56, 100, 79
-    CONTROL         "C", SETFS_LANGUAGEC, "Button", BS_AUTORADIOBUTTON | NOT
-                    WS_VISIBLE | WS_GROUP | WS_TABSTOP, 18, 77, 28, 12
-    CONTROL         "C++", SETFS_LANGUAGECPP, "Button", BS_AUTORADIOBUTTON |
-                    NOT WS_VISIBLE | WS_TABSTOP, 18, 88, 28, 12
-    CONTROL         "Fortran", SETFS_LANGUAGEFORTRAN, "Button",
-                    BS_AUTORADIOBUTTON | NOT WS_VISIBLE | WS_TABSTOP, 18,
-                    109, 48, 12
+    COMBOBOX        SETFS_LANGUAGESELECT, 20, 78, 75, 18, CBS_DROPDOWNLIST |
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
     CONTROL         "Block preprocessor", SETFS_PPKEYWORDONLY, "Button",
                     BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,
-                    28, 100, 75, 10
+                    9, 97, 75, 10
     CONTROL         "C Indent Assist", SETFS_CMODE, "Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 121, 62, 10
+                    BS_AUTOCHECKBOX | WS_TABSTOP, 9, 108, 75, 10
     EDITTEXT        SETFS_TABAMOUNT,  159, 67, 28, 12, ES_AUTOHSCROLL
     EDITTEXT        SETFS_SHIFTWIDTH, 159, 83, 28, 12, ES_AUTOHSCROLL
     EDITTEXT        SETFS_HARDTAB,    159, 99, 28, 12, ES_AUTOHSCROLL

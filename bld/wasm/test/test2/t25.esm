@@ -1,0 +1,6 @@
+.387
+text		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:text, DS:DGROUP, SS:DGROUP
+    mov       ax,word ptr -2[bp]
+text		ENDS
+		END

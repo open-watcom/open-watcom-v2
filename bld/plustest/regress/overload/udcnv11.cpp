@@ -1,7 +1,7 @@
 #include "dump.h"
 struct B {
     B() {}
-    B( B & ) {};
+    B( const B & ) {};
 };
 
 struct D : public B {

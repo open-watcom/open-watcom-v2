@@ -39,12 +39,12 @@
 #include <io.h>
 #include "global.h"
 #include "types.h"
-#include "keywords.h"
 #include "sruinter.h"
+#include "keywords.h"
 #include "mem.h"
 #include "error.h"
 #include "options.h"
-#include "ytab.h"
+#include "ytab.gh"
 #include "list.h"
 #include "filelist.h"
 
@@ -215,20 +215,6 @@ static void genTmpFName( char *file, char *buf ) {
     }
 }
 
-void GenerateCPPFiles( sru_file *sru ) {
-/*************************************/
-
-    assert( sru );
-
-    generateLibMain();
-    if( !(Options & OPT_GEN_C_CODE) ) {
-        if( !generateHeaderFile( sru ) ) return;
-        generateCoverFile( sru );
-    }
-    generateCodeFile( sru );
-}
-
-
 static void generateLibMain( void ) {
 /*******************************/
 
@@ -254,6 +240,21 @@ static void generateLibMain( void ) {
     if( fputs( END_IF, fp ) == EOF ) Error( FILE_WRITE_ERR, fname );
     WigCloseFile( fp );
 }
+
+
+void GenerateCPPFiles( sru_file *sru ) {
+/*************************************/
+
+    assert( sru );
+
+    generateLibMain();
+    if( !(Options & OPT_GEN_C_CODE) ) {
+        if( !generateHeaderFile( sru ) ) return;
+        generateCoverFile( sru );
+    }
+    generateCodeFile( sru );
+}
+
 
 static void outInclude( FileInfo *fp ) {
 /**************************************/
@@ -643,7 +644,7 @@ static AccessInfo accessNames[] = {     ST_PROTECTED,   "protected:\n",
 };
 
 
-static outPutDataMembers( FileInfo *fpo, sru_file *sru ) {
+static void outPutDataMembers( FileInfo *fpo, sru_file *sru ) {
 /******************************************************/
 
     unsigned            i;
@@ -660,7 +661,7 @@ static outPutDataMembers( FileInfo *fpo, sru_file *sru ) {
     }
 }
 
-static dumpNewClassDef( sru_file *sru, FileInfo *fpo ) {
+static void dumpNewClassDef( sru_file *sru, FileInfo *fpo ) {
 /*******************************************************/
 
 /* declares a class */

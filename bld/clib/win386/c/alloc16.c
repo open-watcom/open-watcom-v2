@@ -36,7 +36,7 @@ DWORD AllocAlias16( void *offset )
 {
     DWORD       ptr;
 
-    if( DPMIGetAlias( (DWORD) offset, &ptr ) ) return( NULL );
+    if( DPMIGetAlias( (DWORD) offset, &ptr ) ) return( 0 );
     return( ptr );
 
 } /* AllocAlias16 */

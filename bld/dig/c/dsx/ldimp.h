@@ -32,6 +32,9 @@
 
 #include <string.h>
 #include "exephar.h"
+#ifdef __LINUX__
+#include <sys/mman.h>
+#endif    
 
 typedef struct {
     unsigned long       sig;
@@ -82,6 +85,13 @@ static imp_header *ReadInImp( int h )
         }
         hdr.num_relocs -= bunch;
     }
+#ifdef __LINUX__
+    /* On some platforms (such as AMD64 or x86 with NX bit), it is required 
+     * to map the code pages loaded from the BPD as executable, otherwise
+     * a segfault will occur when attempting to run any BPD code.
+     */
+    mprotect((void*)((u_long)imp_start & ~4095), (size+4095) & ~4095, PROT_READ | PROT_WRITE | PROT_EXEC);
+#endif    
     memset( imp_start + size, 0, bss_size );
     return( (imp_header *)imp_start );
 }

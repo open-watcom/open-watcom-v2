@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.18 - DPMI function 0201h
+- Set Real Mode Interrupt Vector</font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Sets the current virtual
+machine's real mode interrupt vector for the specified interrupt.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0201h<br>
+<b>BL</b> = interrupt number<br>
+<b>CX:DX</b> = segment:offset of real mode interrupt handler</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">CF</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> clear</font></td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) The address passed
+  in CX must be a real mode segment address, not a selector. Consequently,
+  the interrupt handler must either reside in DOS memory (ie below the 1
+  MB boundary) or the client must allocate a real mode callback address.
+  See DPMI functions 0100h and 0303h.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) If the interrupt being
+  hooked is a hardware interrupt, the memory that the interrupt handler uses
+  should be locked.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) DOS/32 Advanced DPMI
+  will temporarily disable the Null-Pointer Protection (if it was enabled)
+  in order to modify the first four interrupt vectors, INTs 00-03h. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

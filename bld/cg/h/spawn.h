@@ -24,12 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spawn()/Suicide() prototypes.
 *
 ****************************************************************************/
 
 
 #include "hostsys.h"
-extern  void            Suicide();
-extern  int             Spawn(void (*)());
+extern  void            Suicide( void );
+extern  int             Spawn(void (*)( void ));

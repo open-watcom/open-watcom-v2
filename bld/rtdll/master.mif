@@ -1,33 +1,101 @@
 proj_name=rtdll
 
-clib_host_cpu_086=i86
-clib_host_cpu_286=i86
-clib_host_cpu_287=i86
-clib_host_cpu_386=386
-clib_host_cpu_387=386
-clib_host_cpu_axp=axp
-clib_host_cpu_ppc=ppc
-host_CPU = $(clib_host_cpu_$(processor))
+rtdll_host_cpu_086=i86
+rtdll_host_cpu_286=i86
+rtdll_host_cpu_287=i86
+rtdll_host_cpu_386=386
+rtdll_host_cpu_387=386
+rtdll_host_cpu_axp=axp
+rtdll_host_cpu_ppc=ppc
+host_CPU = $(rtdll_host_cpu_$(processor))
 
-clib_host_os_generic =dos
-clib_host_os_msdos   =dos
-clib_host_os_necdos  =dos
-clib_host_os_necwin  =dos
-clib_host_os_netware =nov
-clib_host_os_os2     =os2
-clib_host_os_osi     =osi
-clib_host_os_penpoint=pen
-clib_host_os_qnx     =qnx
-clib_host_os_windows =win
-clib_host_os_winnt   =nt
-host_OS=$(clib_host_os_$(system))
-
-!ifeq component cpplib
-nlang_tools = 1
-!endif
+rtdll_host_os_generic =dos
+rtdll_host_os_msdos   =dos
+rtdll_host_os_netware =nov
+rtdll_host_os_os2     =os2
+rtdll_host_os_osi     =osi
+rtdll_host_os_qnx     =qnx
+rtdll_host_os_windows =win
+rtdll_host_os_winnt   =nt
+rtdll_host_os_linux   =linux
+host_OS=$(rtdll_host_os_$(system))
 
 !include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
-!include $(clib_dir)\flags.mif
-!include $(rtdll_dir)\dllname.mif
-!include $(rtdll_dir)\dllbase.mif
+!include $(rtdll_dir)/dllname.mif
+!include $(rtdll_dir)/dllbase.mif
+!include ../objs.mif
+
+version_res_nt_386 = version.res
+
+!ifdef profile
+rtdll_nosymfile = 1
+!else ifeq release 0
+rtdll_nosymfile = 1
+!endif
+
+!ifeq component clib
+br_suffix=1
+!else
+br_suffix=0
+!endif
+
+!ifndef patch_level
+patch_level=0
+!endif
+
+extra_l_flags_dll = option impfile=$(dllname).imp reference __DLLstart_ disable 121
+!ifeq release 0
+extra_l_flags_dll += option map,mangle,artificial,verbose
+!endif
+
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata libpath $(dev_dir)/os2api/os2386
+extra_l_flags_dll_nt = initinstance terminstance libpath $(dev_dir)/w32api/nt$(host_cpu)
+
+libflags_nt_386 = -io -ii
+libflags_nt_axp = -ic -ia
+libflags_nt_ppc = -ic -ip
+
+extra_lib_flags = -irn
+!ifeq release 1
+extra_lib_flags += -s-t-zld
+!endif
+
+$(libdllname).lib : $(dllname).lbc
+    $(librarian) $(libflags) @$(dllname).lbc
+
+$(dllname).lbc : $(dllname).imp $(rtdll_dir)/proclbc.awk $(static_objs)
+    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir:\=/)/brfunc.lst" $(dllname).imp > $@
+    @for %i in ($(static_objs)) do @%append $@ +%i
+
+!ifeq system winnt
+extra_libs = kernel32.lib user32.lib advapi32.lib
+!endif
+!ifeq component wrtlib
+!ifeq convention stack
+lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
+!else
+lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
+!endif
+!endif
+
+$(dllname).imp : $(version_res_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dllname).lnk $(__MAKEFILE__)
+    $(linker) name $(dllname).dll @$(dllname).lnk
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $(dllname).dll
+!endif
+
+$(dllname).lnk : $(dll_def) $(__MAKEFILES__)
+    %create $@
+    @%append $@ $(lflags_dll)
+    @%append $@ op map $(dllbase)
+    @for %i in ($(dll_objs)) do @%append $@ file %i
+    @for %i in ($(dll_def)) do @%append $@ export { @%i }
+    @for %i in ($(dll_libs) $(extra_libs)) do @%append $@ lib %i
+    @%append $@ $(lnk_alias)
+
+verrc_dll_skel = ../verinfo.rc
+verrc_dll      = $(dllname)
+!include verrc.mif

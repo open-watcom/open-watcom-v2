@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _getdiskfree().
 *
 ****************************************************************************/
 
@@ -34,6 +33,6 @@
 #include <dos.h>
 #include <direct.h>
 
-_WCRTLINK unsigned _getdiskfree( int dnum, struct diskfree_t *df ) {
+_WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df ) {
     return( _dos_getdiskfree( dnum, df ) );
 }

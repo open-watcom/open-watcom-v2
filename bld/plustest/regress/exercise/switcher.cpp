@@ -21,7 +21,7 @@ static int fun( S )
 
 // Test a switch in which the default can be generated internally.
 //
-foo1( int a )
+int foo1( int a )
 {
     int b = 9;
     switch( a ) {
@@ -39,7 +39,7 @@ foo1( int a )
 
 // Test a switch in which the default is present
 //
-foo2( int a )
+int foo2( int a )
 {
     int b = 9;
     switch( a ) {

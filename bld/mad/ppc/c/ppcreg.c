@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC machine register description.
 *
 ****************************************************************************/
 
@@ -38,6 +37,12 @@
 #include "madregs.h"
 
 #define BIT_OFF( who ) (offsetof( mad_registers, ppc.who ) * BITS_PER_BYTE)
+
+/* Macros to get at GP/FP registers based on their number; useful in loops */
+#define TRANS_GPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64LO32])) + (2 * idx)))
+#define TRANS_GPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.r0.u._32[I64HI32])) + (2 * idx)))
+#define TRANS_FPREG_LO( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64LO32])) + (2 * idx)))
+#define TRANS_FPREG_HI( mr, idx ) (*((unsigned_32 *)(&(mr.f0.u64.u._32[I64HI32])) + (2 * idx)))
 
 enum {
     RS_NONE,
@@ -121,6 +126,11 @@ const ppc_reg_info RegList[] = {
     #include "ppcregs.h"
 };
 
+// For 64-bit registers displayed as 32-bit - 32GPRs + sp, lr, iar, ctr, msr
+// NB: Relies on the fact that all the DWORD registers are grouped together
+// in a single block.
+static ppc_reg_info RegListHalf[32 + 5];
+
 static ppc_reg_info             **RegSubList;
 
 static const mad_toggle_strings CPUToggleList[] =
@@ -168,11 +178,112 @@ unsigned        DIGENTRY MIRegistersSize( void )
 
 mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
 {
+#if !defined( __BIG_ENDIAN__ )
+    unsigned_32     temp;
+    int             i;
+
+    // Currently harcoded for big endian targets - should be dynamic
+    // And we really ought to have a 64-bit byte swap routine...
+
+    // Convert GPRs
+    for( i = 0; i < 32; i++ ) {
+        CONV_BE_32( TRANS_GPREG_LO( mr->ppc, i ) );
+        CONV_BE_32( TRANS_GPREG_HI( mr->ppc, i ) );
+        temp = TRANS_GPREG_LO( mr->ppc, i );
+        TRANS_GPREG_LO( mr->ppc, i ) = TRANS_GPREG_HI( mr->ppc, i );
+        TRANS_GPREG_HI( mr->ppc, i ) = temp;
+    }
+    // Convert FPRs
+    for( i = 0; i < 32; i++ ) {
+        CONV_BE_32( TRANS_FPREG_LO( mr->ppc, i ) );
+        CONV_BE_32( TRANS_FPREG_HI( mr->ppc, i ) );
+        temp = TRANS_FPREG_LO( mr->ppc, i );
+        TRANS_FPREG_LO( mr->ppc, i ) = TRANS_FPREG_HI( mr->ppc, i );
+        TRANS_FPREG_HI( mr->ppc, i ) = temp;
+    }
+    // Convert special registers
+    CONV_BE_32( mr->ppc.iar.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.iar.u._32[I64HI32] );
+    temp = mr->ppc.iar.u._32[I64LO32];
+    mr->ppc.iar.u._32[I64LO32] = mr->ppc.iar.u._32[I64HI32];
+    mr->ppc.iar.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.msr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.msr.u._32[I64HI32] );
+    temp = mr->ppc.msr.u._32[I64LO32];
+    mr->ppc.msr.u._32[I64LO32] = mr->ppc.msr.u._32[I64HI32];
+    mr->ppc.msr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.ctr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.ctr.u._32[I64HI32] );
+    temp = mr->ppc.ctr.u._32[I64LO32];
+    mr->ppc.ctr.u._32[I64LO32] = mr->ppc.ctr.u._32[I64HI32];
+    mr->ppc.ctr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.lr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.lr.u._32[I64HI32] );
+    temp = mr->ppc.lr.u._32[I64LO32];
+    mr->ppc.lr.u._32[I64LO32] = mr->ppc.lr.u._32[I64HI32];
+    mr->ppc.lr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.xer );
+    CONV_BE_32( mr->ppc.cr );
+    CONV_BE_32( mr->ppc.fpscr );
+#endif
     return( MS_OK );
 }
 
 mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
 {
+#if !defined( __BIG_ENDIAN__ )
+    unsigned_32     temp;
+    int             i;
+
+    // Convert GPRs
+    for( i = 0; i < 32; i++ ) {
+        CONV_BE_32( TRANS_GPREG_LO( mr->ppc, i ) );
+        CONV_BE_32( TRANS_GPREG_HI( mr->ppc, i ) );
+        temp = TRANS_GPREG_LO( mr->ppc, i );
+        TRANS_GPREG_LO( mr->ppc, i ) = TRANS_GPREG_HI( mr->ppc, i );
+        TRANS_GPREG_HI( mr->ppc, i ) = temp;
+    }
+    // Convert FPRs
+    for( i = 0; i < 32; i++ ) {
+        CONV_BE_32( TRANS_FPREG_LO( mr->ppc, i ) );
+        CONV_BE_32( TRANS_FPREG_HI( mr->ppc, i ) );
+        temp = TRANS_FPREG_LO( mr->ppc, i );
+        TRANS_FPREG_LO( mr->ppc, i ) = TRANS_FPREG_HI( mr->ppc, i );
+        TRANS_FPREG_HI( mr->ppc, i ) = temp;
+    }
+    // Convert special registers
+    CONV_BE_32( mr->ppc.iar.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.iar.u._32[I64HI32] );
+    temp = mr->ppc.iar.u._32[I64LO32];
+    mr->ppc.iar.u._32[I64LO32] = mr->ppc.iar.u._32[I64HI32];
+    mr->ppc.iar.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.msr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.msr.u._32[I64HI32] );
+    temp = mr->ppc.msr.u._32[I64LO32];
+    mr->ppc.msr.u._32[I64LO32] = mr->ppc.msr.u._32[I64HI32];
+    mr->ppc.msr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.ctr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.ctr.u._32[I64HI32] );
+    temp = mr->ppc.ctr.u._32[I64LO32];
+    mr->ppc.ctr.u._32[I64LO32] = mr->ppc.ctr.u._32[I64HI32];
+    mr->ppc.ctr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.lr.u._32[I64LO32] );
+    CONV_BE_32( mr->ppc.lr.u._32[I64HI32] );
+    temp = mr->ppc.lr.u._32[I64LO32];
+    mr->ppc.lr.u._32[I64LO32] = mr->ppc.lr.u._32[I64HI32];
+    mr->ppc.lr.u._32[I64HI32] = temp;
+
+    CONV_BE_32( mr->ppc.xer );
+    CONV_BE_32( mr->ppc.cr );
+    CONV_BE_32( mr->ppc.fpscr );
+#endif
     return( MS_OK );
 }
 
@@ -246,9 +357,9 @@ typedef struct {
 } reg_display_entry;
 
 static const reg_display_entry CPUNumeric[] = {
-    { IDX_r0,           31, PPCT_DWORD },
-    { IDX_lr,            4, PPCT_DWORD },
-    { IDX_cr,            2, PPCT_WORD },
+    { IDX_r0,           32, PPCT_H_DWORD },
+    { IDX_lr,            4, PPCT_H_DWORD },
+    { IDX_cr,            2, PPCT_H_WORD },
     { 0,                 0, 0 }
 };
 
@@ -277,32 +388,35 @@ static mad_status       CPUGetPiece( unsigned piece,
     unsigned    idx;
 
     if( !FindEntry( CPUNumeric, piece, &idx, disp_type ) ) return( MS_FAIL );
+    *reg = &RegList[idx].info;
     if( !(MADState->reg_state[CPU_REG_SET] & CT_EXTENDED) ) {
-        if( *disp_type == PPCT_DWORD ) *disp_type = PPCT_WORD;
+        if( *disp_type == PPCT_H_DWORD ) {
+            *disp_type = PPCT_H_WORD;
+            *reg = &RegListHalf[idx - IDX_r0].info;
+        }
     }
     //NYI: if extended & ~ 64 bit mode, downshift to 32-bit display.
     //     Also, if 64 <=> 32 bit switch, tell client to redraw window
     if( !(MADState->reg_state[CPU_REG_SET] & CT_HEX) ) {
         switch( *disp_type ) {
-        case PPCT_DWORD:
-            *disp_type = PPCT_UINT64;
+        case PPCT_H_DWORD:
+            *disp_type = PPCT_H_UINT64;
             break;
-        case PPCT_WORD:
-            *disp_type = PPCT_ULONG;
+        case PPCT_H_WORD:
+            *disp_type = PPCT_H_ULONG;
             break;
         }
     }
     *descript = DescriptBuff;
     *max_descript = 0;
     *max_value = 0;
-    *reg = &RegList[idx].info;
     strcpy( DescriptBuff, (*reg)->name );
     return( MS_OK );
 }
 
 static const reg_display_entry FPUList[] = {
-    { IDX_f0,           31, PPCT_DOUBLE },
-    { IDX_fpscr,         1, PPCT_WORD },
+    { IDX_f0,           32, PPCT_H_DOUBLE },
+    { IDX_fpscr,         1, PPCT_H_WORD },
     { 0,                 0, 0 }
 };
 
@@ -318,8 +432,8 @@ static mad_status       FPUGetPiece( unsigned piece,
     if( !FindEntry( FPUList, piece, &idx, disp_type ) ) return( MS_FAIL );
     if( MADState->reg_state[FPU_REG_SET] & FT_HEX ) {
         switch( *disp_type ) {
-        case PPCT_DOUBLE:
-            *disp_type = PPCT_HDOUBLE;
+        case PPCT_H_DOUBLE:
+            *disp_type = PPCT_H_HDOUBLE;
             break;
         }
     }
@@ -332,7 +446,7 @@ static mad_status       FPUGetPiece( unsigned piece,
 }
 
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
-                                mad_registers *mr,
+                                mad_registers const *mr,
                                 unsigned piece,
                                 char **descript,
                                 unsigned *max_descript,
@@ -344,18 +458,18 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                         disp_type, max_value ) );
 }
 
-static const mad_modify_list    WordReg = { NULL, PPCT_WORD, MSTR_NIL };
-static const mad_modify_list    DWordReg = { NULL, PPCT_DWORD, MSTR_NIL };
-static const mad_modify_list    FltReg = { NULL, PPCT_DOUBLE, MSTR_NIL };
+static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MSTR_NIL };
+static const mad_modify_list    DWordReg = { NULL, PPCT_H_DWORD, MSTR_NIL };
+static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MSTR_NIL };
 
 mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
 {
     *num_possible_p = 1;
     switch( ri->type ) {
-    case PPCT_DOUBLE:
+    case PPCT_H_DOUBLE:
         *possible_p = &FltReg;
         break;
-    case PPCT_DWORD:
+    case PPCT_H_DWORD:
         //NYI: have to check for 64-bit mode
         *possible_p = &DWordReg;
         break;
@@ -377,10 +491,10 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
     if( ri->bit_start == BIT_OFF( iar ) ) {
         new_ip = old->ppc.iar;
         //NYI: 64 bit
-        new_ip.u._32[0] += sizeof( unsigned_32 );
-        if( new_ip.u._32[0] != cur->ppc.iar.u._32[0] ) {
+        new_ip.u._32[I64LO32] += sizeof( unsigned_32 );
+        if( new_ip.u._32[I64LO32] != cur->ppc.iar.u._32[I64LO32] ) {
             return( MS_MODIFIED_SIGNIFICANTLY );
-        } else if( old->ppc.iar.u._32[0] != cur->ppc.iar.u._32[0] ) {
+        } else if( old->ppc.iar.u._32[I64LO32] != cur->ppc.iar.u._32[I64LO32] ) {
             return( MS_MODIFIED );
         }
     } else {
@@ -399,22 +513,22 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers *mr, address *a )
+mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers const *mr, address *a )
 {
     unsigned    bit_start;
-    unsigned_32 *p;
+    unsigned_64 *p;
 
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
     if( bit_start == BIT_OFF( iar ) ) {
-        a->mach.offset = mr->ppc.iar.u._32[0];
+        a->mach.offset = mr->ppc.iar.u._32[I64LO32];
         return( MS_OK );
     }
     if( bit_start >= BIT_OFF( f0 ) && bit_start < (BIT_OFF( f31 ) + 64) ) {
         return( MS_FAIL );
     }
-    p = (unsigned_32 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
-    a->mach.offset = *p;
+    p = (unsigned_64 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
+    a->mach.offset = p->u._32[I64LO32];
     return( MS_OK );
 }
 
@@ -476,44 +590,44 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
     return( WR_CONTINUE );
 }
 
-void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers *mr, addr_ptr *ma )
+void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers const *mr, addr_ptr *ma )
 {
     ma->segment = 0;
     switch( sr ) {
     case MSR_IP:
-        ma->offset = mr->ppc.iar.u._32[0];
+        ma->offset = mr->ppc.iar.u._32[I64LO32];
         break;
     case MSR_SP:
-        ma->offset = mr->ppc.sp.u._32[0];
+        ma->offset = mr->ppc.sp.u._32[I64LO32];
         break;
     case MSR_FP:
         //NYI: can actually float around
-        ma->offset = mr->ppc.r31.u._32[0];
+        ma->offset = mr->ppc.r31.u._32[I64LO32];
         break;
     }
 }
 
-void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr *ma )
+void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr const *ma )
 {
     switch( sr ) {
     case MSR_IP:
-        mr->ppc.iar.u._32[0] = ma->offset;
+        mr->ppc.iar.u._32[I64LO32] = ma->offset;
         break;
     case MSR_SP:
-        mr->ppc.sp.u._32[0] = ma->offset;
+        mr->ppc.sp.u._32[I64LO32] = ma->offset;
         break;
     case MSR_FP:
         //NYI: can actually float around
-        mr->ppc.r31.u._32[0] = ma->offset;
+        mr->ppc.r31.u._32[I64LO32] = ma->offset;
         break;
     }
 }
 
-unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers *mr, mad_address_format af, unsigned max, char *buff )
+unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, unsigned max, char *buff )
 {
     unsigned    idx;
     unsigned    len;
-    char        *p;
+    char const  *p;
 
     switch( sr ) {
     case MSR_IP:
@@ -524,6 +638,9 @@ unsigned        DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers *mr
         break;
     case MSR_FP:
         idx = IDX_r31;
+        break;
+    default:
+        idx = 0;
         break;
     }
     p = RegList[idx].info.name;
@@ -629,6 +746,7 @@ mad_status RegInit()
     unsigned    i;
     unsigned    max;
     unsigned    curr;
+    unsigned    half_idx = 0;
     mad_status  ms;
 
     max = 0;
@@ -637,6 +755,14 @@ mad_status RegInit()
         case RS_DWORD:
             curr = RegList[i].info.bit_start / (sizeof(unsigned_64)*BITS_PER_BYTE);
             if( curr > max ) max = curr;
+            RegListHalf[half_idx] = RegList[i];
+#if defined( __BIG_ENDIAN__ )
+            // kludge for 64-bit registers displayed as 32-bit - need to
+            // skip 32 bits!
+            RegListHalf[half_idx].info.bit_start += 32;
+#endif
+            RegListHalf[half_idx].info.bit_size = 32;
+            ++half_idx;
             break;
         }
     }

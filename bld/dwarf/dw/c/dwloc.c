@@ -24,15 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Location expressions and location lists.
 *
 ****************************************************************************/
 
 
-/*
-    Location expressions, and location lists.
-*/
 #include <stdarg.h>
 #include <stddef.h>
 #include "dwpriv.h"
@@ -42,7 +38,7 @@
 
 
 typedef struct loc_op {
-    struct loc_op *             next;
+    struct loc_op               *next;
     uint_8                      size;
     char                        op_code;
     char                        data[1];
@@ -51,8 +47,8 @@ typedef struct loc_op {
 
 
 struct dw_loc_id {
-    loc_op *                    first;
-    loc_op *                    last;
+    loc_op                      *first;
+    loc_op                      *last;
     dw_loc_label                labels;
     uint                        num_syms;       // number of DWLocStatic's
     uint_16                     addr;
@@ -70,14 +66,14 @@ typedef struct {
 }dw_sym_reloc;
 
 typedef struct list_entry {
-    struct list_entry *         next;
+    struct list_entry           *next;
     dw_sym_handle               begin;
     dw_sym_handle               end;
     dw_loc_handle               loc;
 } list_entry;
 
 struct dw_loc_handle {
-    struct dw_loc_handle *      next;
+    struct dw_loc_handle        *next;
     enum {
         LOC_EXPR,
         LOC_LIST,
@@ -90,7 +86,7 @@ struct dw_loc_handle {
             char                expr[1];
         }                       expr;
         debug_ref               ref;
-        list_entry *            list;
+        list_entry              *list;
 
     } x;  // possible variable size so nothing can follow this
 };
@@ -158,7 +154,7 @@ static loc_op *nextOp(
     uint_8                      op_code,
     uint                        extra_size )
 {
-    loc_op *                    new;
+    loc_op                      *new;
 
     new = CLIAlloc( BASE_SIZE + extra_size );
     if( loc->first == NULL ) {
@@ -181,9 +177,9 @@ void DWENTRY DWLocReg(
     dw_loc_id                   loc,
     uint                        reg )
 {
-    char                        buf[ MAX_LEB128 ];
-    char *                      end;
-    loc_op *                    op;
+    uint_8                      buf[ MAX_LEB128 ];
+    uint_8                      *end;
+    loc_op                      *op;
 
     if( reg < 32 ) {
         op = nextOp( cli, loc, DW_OP_reg( reg ), 0 );
@@ -200,9 +196,9 @@ void DWENTRY DWLocPiece(
     dw_loc_id                   loc,
     uint                        size )
 {
-    char                        buf[ MAX_LEB128 ];
-    char *                      end;
-    loc_op *                    op;
+    uint_8                      buf[ MAX_LEB128 ];
+    uint_8                      *end;
+    loc_op                      *op;
 
     end = ULEB128( buf, size );
     op = nextOp( cli, loc, DW_OP_piece, end - buf );
@@ -216,8 +212,8 @@ void DWENTRY DWLocStatic(
     dw_loc_id                   loc,
     dw_sym_handle               sym )
 {
-    loc_op *                    op;
-    dw_sym_reloc               *reloc_info;
+    loc_op                      *op;
+    dw_sym_reloc                *reloc_info;
 
     op = nextOp( cli, loc, DW_OP_addr, sizeof( *reloc_info ) );
     ++loc->num_syms;
@@ -233,8 +229,8 @@ void DWENTRY DWLocSym(
     dw_sym_handle               sym,
     dw_relocs                   kind )
 {
-    loc_op *                    op;
-    dw_sym_reloc               *reloc_info;
+    loc_op                      *op;
+    dw_sym_reloc                *reloc_info;
 
     op = nextOp( cli, loc, DW_OP_addr, sizeof( *reloc_info ) );
     ++loc->num_syms;
@@ -259,8 +255,8 @@ void DWENTRY DWLocSegment(
     dw_loc_id                   loc,
     dw_sym_handle               sym )
 {
-    loc_op *                    op;
-    dw_sym_reloc               *reloc_info;
+    loc_op                      *op;
+    dw_sym_reloc                *reloc_info;
     int                         segment_size;
 
     op = nextOp( cli, loc, DW_OP_addr, sizeof( *reloc_info ) );
@@ -286,9 +282,9 @@ void DWENTRY DWLocConstU(
     dw_loc_id                   loc,
     dw_uconst                   value )
 {
-    char                        buf[ MAX_LEB128 ];
-    char *                      end;
-    loc_op *                    op;
+    uint_8                      buf[ MAX_LEB128 ];
+    uint_8                      *end;
+    loc_op                      *op;
 
     _Validate( loc != NULL );
 
@@ -325,9 +321,9 @@ void DWENTRY DWLocConstS(
     dw_loc_id                   loc,
     dw_sconst                   value )
 {
-    char                        buf[ MAX_LEB128 ];
-    char *                      end;
-    loc_op *                    op;
+    uint_8                      buf[ MAX_LEB128 ];
+    uint_8                      *end;
+    loc_op                      *op;
 
     _Validate( loc != NULL );
 
@@ -384,10 +380,10 @@ void DWENTRY DWLocOp(
     uint                        user_op,
     ... )
 {
-    char                        buf[ 2*MAX_LEB128 ];
-    char *                      end;
+    uint_8                      buf[ 2 * MAX_LEB128 ];
+    uint_8                      *end;
     uint_8                      op_code;
-    loc_op *                    op;
+    loc_op                      *op;
     va_list                     args;
     uint                        reg;
 
@@ -401,7 +397,7 @@ void DWENTRY DWLocOp(
     case DW_LOC_xderef_size:
     case DW_LOC_pick:
         op = nextOp( cli, loc, op_code, 1 );
-        op->data[0] = va_arg( args, uint_8 );
+        op->data[0] = (uint_8)va_arg( args, int );
         ADD_ADDR( cli, loc, 1 );
         break;
     case DW_LOC_plus_uconst:

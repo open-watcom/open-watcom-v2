@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win32 cgets() implementation.
 *
 ****************************************************************************/
 
@@ -33,15 +32,16 @@
 #include "variety.h"
 #include <windows.h>
 #include <conio.h>
+#include <unistd.h>
 #include "ntex.h"
 #include "fileacc.h"
 #include "defwin.h"
+#include "qread.h"
 
 #define BACKSPACE       8
 #define SPACE           ' '
 #define CRLF            13
 
-extern int __qread( int, char *, unsigned );
 
 _WCRTLINK char *cgets( char *buff )
 {
@@ -51,6 +51,7 @@ _WCRTLINK char *cgets( char *buff )
     HANDLE h;
     INPUT_RECORD r;
 
+#ifdef DEFAULT_WINDOWING
     if( _WindowsStdin != 0 ) {  // Default windowing...
         __qread( STDIN_FILENO, buff + 2, *buff - 1 );
         p = buff + 2;
@@ -65,6 +66,7 @@ _WCRTLINK char *cgets( char *buff )
         buff[1] = p - buff - 2;
         return( buff + 2 );
     }
+#endif
     _AccessFileH( STDIN_FILENO );
     h = __NTConsoleInput();     // obtain a console input handle
     for( p = buff + 2, len = *buff; ; ) {

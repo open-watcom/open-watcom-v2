@@ -65,7 +65,7 @@ extern  type_class_def  MapFloat( cg_type type, call_attributes attr ) {
 */
 
     attr = attr;
-    if( type == T_SINGLE ) return( FS );
+    if( type == TY_SINGLE ) return( FS );
     return( FD );
 }
 

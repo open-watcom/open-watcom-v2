@@ -34,12 +34,8 @@
 #include "uidef.h"
 
 
-void intern bfake( bptr, row, col )
-/*********************************/
-
-register        BUFFER                  *bptr;
-register        ORD                     row;
-register        ORD                     col;
+void intern bfake( BUFFER *bptr, ORD row, ORD col )
+/*************************************************/
 {
     bptr->increment = UIData->width;
     bptr->origin = UIData->screen.origin + row * UIData->screen.increment + col;

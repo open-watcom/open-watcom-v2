@@ -33,12 +33,11 @@
 #include "variety.h"
 #include <dos.h>
 
-extern  short                   DoDosCall();
-extern  short                   BDDoDosCall();
-extern  int                     _dosretax();
+extern  int             _dosretax( int ax, int carry );
 
-
-#pragma aux                     DoDosCall = \
+extern  short           DoDosCall( void *in, void *out );
+#if !defined(__BIG_DATA__)
+#pragma aux             DoDosCall = \
         0x06            /* push es      */ \
         0x55            /* push bp      */ \
         0x52            /* push dx      */ \
@@ -64,8 +63,8 @@ extern  int                     _dosretax();
         parm caller     [di] [dx] \
         value           [ax] \
         modify          [bx cx dx si di];
-
-#pragma aux               BDDoDosCall =                         \
+#else
+#pragma aux             DoDosCall =                           \
         0x1e           /* push ds */                            \
         0x06           /* push es         */                    \
         0x55           /* push bp         */                    \
@@ -95,17 +94,14 @@ extern  int                     _dosretax();
         parm caller [ si dx ] [ bx cx ]                         \
         value[ ax ]                                             \
         modify [ ax dx di ];
+#endif
 
 _WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
-    {
-        register short          status;
+{
+    register short          status;
 
-#if defined(__BIG_DATA__)
-        status = BDDoDosCall( inregs, outregs );
-#else
-        status = DoDosCall( inregs, outregs );
-#endif
-        outregs->x.cflag = status;
-        _dosretax( outregs->x.ax, status );
-        return( outregs->x.ax );
-    }
+    status = DoDosCall( inregs, outregs );
+    outregs->x.cflag = status;
+    _dosretax( outregs->x.ax, status );
+    return( outregs->x.ax );
+}

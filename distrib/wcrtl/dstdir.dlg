@@ -1,0 +1,14 @@
+name=DstDir
+condition=MakeDisks !
+static_text=
+dynamic_text=dstdir_1,"%AppName% のインストール先を指定して下さい:",IsJapanese
+edit_control=DstDir,@watcom,\
+        //1"Install %AppName% in:"\
+        //2""\
+        //0
+static_text=
+push_button=-\
+        //1"&Previous..."\
+        //2"前の(&P)..."\
+        //0,SrcIsCD
+include=ohc.dlg

@@ -43,7 +43,7 @@ _WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
 
     chk_size = (unsigned long) n * el_size;
     el_size = chk_size;
-#if defined(M_I86)
+#if defined( _M_I86 )
     if( el_size != chk_size ) {
         return( (void _WCNEAR *)NULL );
     }

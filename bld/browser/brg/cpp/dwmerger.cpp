@@ -153,7 +153,7 @@ void DwarfFileMerger::doMerge( bool quiet )
     #if INSTRUMENTS
         Log.printf( "Merging %d files:\n", _inputFiles->entries() );
         for( i = 0; i < _inputFiles->entries(); i += 1 ) {
-            Log.printf( "%16s", (*_inputFiles)[ i ]->getFileName() );
+            Log.printf( "%s\n", (*_inputFiles)[ i ]->getFileName() );
         }
         Log.printf( "\n%s", Log.timeStamp() );
         Log.startTiming();
@@ -182,7 +182,7 @@ void DwarfFileMerger::doMerge( bool quiet )
         }
 
         if( !quiet ) {
-            sprintf( message, "%%%ld done", (currSize * 100) / _totalSize );
+            sprintf( message, "%3.1f%% done", 100.0 * ( (double)currSize / (double)_totalSize ) );
             blip->end( message );
         }
     }

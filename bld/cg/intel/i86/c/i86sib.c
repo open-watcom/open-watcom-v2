@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dummy SIB implementation for i86.
 *
 ****************************************************************************/
 
 
-extern  void    BuildIndex() {
-/****************************/
+extern  void    BuildIndex( void )
+/********************************/
+{
 }

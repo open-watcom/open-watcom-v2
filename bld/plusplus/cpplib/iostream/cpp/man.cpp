@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: This master file includes the source for the manipulators.
 *
 ****************************************************************************/
-
 
 #include    "mandec.cpp"
 #include    "manendl.cpp"

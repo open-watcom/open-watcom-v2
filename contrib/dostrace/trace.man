@@ -1,0 +1,198 @@
+TRACE(1)                 Programmer's Manual             TRACE(1)
+
+
+
+NAME
+     trace - trace system calls made by a process
+
+SYNOPSIS
+     trace [-help] [-o fname] [-l len] [-p psp] [-abcefinrstvwxy]
+     [ command options ... ]
+
+DESCRIPTION
+     Trace is a system utility that produces a listing of the
+     MS-DOS requests made by a process.  It is a useful debugging
+     tool that can be used on any executable program.  Trace can
+     also be used to provide a better understanding of the inter-
+     nal workings of many programs.  A utility with the same name
+     and similar functionality is provided with SunOS.
+
+     Trace can monitor either a command passed as an argument,
+     all the resident processes in the system or a process with a
+     given program segment prefix (PSP).  In all cases it creates
+     a file (trace.log by default) where each system call and its
+     arguments made by the process(es) monitored are printed.  A
+     number of options control the detail of information printed.
+
+OPTIONS
+     -a   Monitor all system calls.  By default the following
+          functions are traced: disp_out (0x02), direct_out
+          (0x06), disp_string (0x09), flush (0x0d),
+          set_current_disk (0x0e), get_current_disk (0x19),
+          set_dta (0x1a), drive_info (0x1c), set_vector (0x25),
+          parse_name (0x29), get_date (0x2a), get_time (0x2c),
+          set_time (0x2d), get_dta (0x2f), get_version (0x30),
+          cntrl_brk (0x33), get_flag (0x34), get_vector (0x35),
+          mkdir (0x39), rmdir (0x3a), chdir (0x3b), creat (0x3c),
+          open (0x3d), close (0x3e), read (0x3f), write (0x40),
+          unlink (0x41), lseek (0x42), chmod (0x43), ioctl
+          (0x44), dup (0x45), dup2 (0x46), getcwd (0x47), alloc
+          (0x48), free (0x49), realloc (0x4a), exec (0x4b), exit
+          (0x4c), get_code (0x4d), findfirst (0x4e), findnext
+          (0x4f), set_psp (0x50), get_psp (0x51), sysvars (0x52),
+          child_psp (0x55), get/set_time (0x57),
+          get/set_alloc_str (0x58), tmpfile (0x5a).  create_new
+          (0x5b).  get_psp (0x62), open (0x6c), Functions not
+          included in the above list are printed by default using
+          their function number without their arguments.
+
+     -b   Print the interrupt branch address.  Each line is pre-
+          ceded by the address on which the MS-DOS interrupt was
+          generated.
+
+     -c   Only a summary count of all calls is produced at the
+          end of the program run.  No detailed information is
+          given.  One line is produced for each function used.
+          The line contains the function number in hexadecimal,
+          the symbolic function name and the number of times the
+          function was called.
+
+
+
+
+Printed 9/1/94           1 October 1994                         1
+
+
+
+TRACE(1)                 Programmer's Manual             TRACE(1)
+
+
+
+     -e   Trace between exec calls.  Unless this option is given,
+          monitoring is disabled until the child process ter-
+          minates, when a program performes an exec call .
+
+     -f   Calls are prefixed with the MS-DOS function call
+          number.
+
+     -h   A short help list on the program options is displayed
+          on the standard output.
+
+     -i   Calls are prefixed with the process-id of the process
+          that performed them.  This is the PSP address of the
+          program under MS-DOS.
+
+     -l L Specify the number of bytes printed for input / output
+          calls.  Up to L bytes of data will be printed.  The
+          default number is 15.
+
+     -n   Functions that are not normally printed are printed by
+          a short descriptive name rather than their function
+          number.
+
+     -o F The output file for tracing information is F instead of
+          the default trace.log.  Note that F can also be a dev-
+          ice name such as con or prn.
+
+     -p P Trace a process with process-id (PSP address) P.  This
+          is usually a terminate and stay resident (TSR) utility.
+          To obtain the PSP address of the program use a memory
+          display utility such as dosmem or mi or run trace with
+          the -i option.
+
+     -r   Produce a register dump on functions that do not have
+          their arguments printed.
+
+     -s   Print strings on various functions.  The functions
+          affected are:
+
+          + For all input/output functions follow the function
+            call with the string that was read or written.  The
+            maximum length of the string is specified with the -l
+            option.  The string is followed by an ellipsis (...)
+            if it contains more characters than the maximum
+            length.  The default length is 15 characters.  Non
+            ASCII data is not printed unless the -x option is
+            given.
+
+          + The ioctl calls that get the device mode have it
+            printed as symbolic constants.
+
+          + The get and set filemode functions have the file mode
+            printed as a string similar to that produced by the
+            Unix ls -l command.
+
+          + The directory name returned by the get current
+
+
+
+Printed 9/1/94           1 October 1994                         2
+
+
+
+TRACE(1)                 Programmer's Manual             TRACE(1)
+
+
+
+            directory function is printed.
+
+          + The files returned by the find first / find next
+            functions are printed together with their associated
+            information.
+
+     -t   Prefix all system calls with time in the form of
+          hh:mm:ss.
+
+     -v   Verbose option.  This option will produce the highest
+          amount of data. It is equivalent to specifying the
+          -aefinrstwx options.  A trace line printed using these
+          options will resemble the following:
+          22:11:56 2c40 40 2C50:4B26 write(1, 3200:923E, 1) =
+          1  "r"
+          The contents of the line are: the time, PSP address of
+          the calling process, function call number, address that
+          generated the function call, the function, its argu-
+          ments, the return value and the string written.
+
+     -w   Errors from MS-DOS functions are printed in word form
+          (i.e. symbolically) rather than as error codes.
+
+     -x   Data printed under the -s option will be printed even
+          if it is not ASCII in hexadecimal form.
+
+     -y   Close log file after every write.  Useful for debugging
+          programs that crash.
+
+SEE ALSO
+     D. Spinellis.  Trace: A tool for logging operating system
+     call transactions.  Operating Systems Review, 28(4):56-63,
+     October 1994.
+     Ralf Brown and Jim Kyle.  The PC Interrupt List.  Addison-
+     Wesley, 1991.
+
+AUTHOR
+     (C) Copyright 1991, 1994 Diomidis Spinellis.  All rights
+     reserved.
+     e-mail: dspin@leon.nrcps.ariadne-t.gr
+     snail mail: SENA S.A., Kyprou 27, GR-152 37 Filothei,
+     Greece.
+
+BUGS
+     Most FCB calls and a number of ioctl requests are not
+     decoded.
+
+     There should be an option to merge consequentive write(2)
+     requests.
+
+     The system call used by trace to get the exit code of the
+     process run is also traced.
+
+
+
+
+
+
+Printed 9/1/94           1 October 1994                         3
+
+
+

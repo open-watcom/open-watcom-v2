@@ -30,28 +30,23 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include "posix.h"
 #include "vi.h"
-#include "keys.h"
+#include "posix.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "winvi.h"
     #include "utils.h"
     #include "color.h"
     #include "font.h"
 #endif
+#include <assert.h>
 
-static window_id dirWin = NO_WINDOW;
-static int oldFilec,lastFilec;
-static int oldPage = -1;
-static int maxJ,perPage,maxPage,cPage;
-static bool hasWrapped,isDone;
-static int mouseFilec = -1;
-static char strFmt[] = " %c%S";
+static window_id    dirWin = NO_WINDOW;
+static int          oldFilec, lastFilec;
+static int          oldPage = -1;
+static int          maxJ, perPage, maxPage, cPage;
+static bool         hasWrapped, isDone;
+static int          mouseFilec = -1;
+static char         strFmt[] = " %c%S";
 
 static bool hasMouseHandler;
 
@@ -73,7 +68,7 @@ bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
         return( FALSE );
     }
 
-    mouseFilec = cPage + (win_x-1)/NAMEWIDTH + (win_y-1)*maxJ;
+    mouseFilec = cPage + (win_x - 1) / NAMEWIDTH + (win_y - 1) * maxJ;
 
     return( TRUE );
 
@@ -83,16 +78,17 @@ bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
 /*
  * appendExtra - add extra to end
  */
-static int appendExtra( char *data, int start, int max, direct_ent *fi,
-                        int len  )
+static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
+                        int len )
 {
-    int i,rc;
+    int     i;
+    vi_rc   rc;
 
-    for( i=start;i<start+len;i++ ) {
-        if( i>=max ) {
+    for( i = start; i <start + len; i++ ) {
+        if( i >= max ) {
             break;
         }
-        data[i] = fi->name[i-start];
+        data[i] = fi->name[i - start];
     }
     if( fi->attr & _A_SUBDIR ) {
         rc = ERR_NO_ERR;
@@ -107,43 +103,44 @@ static int appendExtra( char *data, int start, int max, direct_ent *fi,
 /*
  * doFileComplete - complete file name
  */
-static int doFileComplete( char *data, int start, int max, bool getnew,
-                                int key )
+static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
+                           vi_key key )
 {
-    int         i,j,k=0,newstart=-1;
-    char        buff[MAX_STR*2];
+    int         i, j, k = 0, newstart = -1;
+    char        buff[MAX_STR * 2];
+    vi_rc       rc;
 
     i = start;
-    while( !isspace( data[i] )  && i >= 0 ) {
+    while( !isspace( data[i] ) && i >= 0 ) {
         if( (data[i] == ':' || data[i] == '/' || data[i] == '\\') && newstart < 0 ) {
-            newstart = i+1;
+            newstart = i + 1;
         }
         i--;
     }
     if( newstart < 0 ) {
-        newstart = i+1;
+        newstart = i + 1;
     }
     if( getnew ) {
 
-        for( j=i+1;j<=start;j++ ) {
+        for( j = i + 1; j <= start; j++ ) {
             buff[k++] = data[j];
         }
         lastFilec = -1;
         buff[k++] = '*';
         buff[k] = 0;
-        i = GetSortDir( buff, FALSE );
-        if( i ) {
-            return( i );
+        rc = GetSortDir( buff, FALSE );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
         /*
          * remove any crap from the list
          */
-        for( i=0;i< DirFileCount;i++ ) {
+        for( i = 0; i < DirFileCount; i++ ) {
             if( !IsTextFile( DirFiles[i]->name ) ||
-                (DirFiles[i]->name[0] == '.' )) {
+                (DirFiles[i]->name[0] == '.') ) {
                 MemFree( DirFiles[i] );
-                for( j=i+1;j<DirFileCount;j++ ) {
-                    DirFiles[j-1] = DirFiles[j];
+                for( j = i + 1; j < DirFileCount; j++ ) {
+                    DirFiles[j - 1] = DirFiles[j];
                 }
                 i--;
                 DirFileCount--;
@@ -160,7 +157,7 @@ static int doFileComplete( char *data, int start, int max, bool getnew,
             ClearWindow( dirWin );
         }
         return( appendExtra( data, newstart,max, DirFiles[0],
-                        strlen(DirFiles[0]->name) ) );
+                             strlen(DirFiles[0]->name) ) );
     }
 
     /*
@@ -197,7 +194,7 @@ static int doFileComplete( char *data, int start, int max, bool getnew,
     }
 
     appendExtra( data, newstart, max, DirFiles[lastFilec],
-                        strlen(DirFiles[lastFilec]->name) );
+                 strlen( DirFiles[lastFilec]->name ) );
 
     return( ERR_NO_ERR );
 
@@ -214,7 +211,7 @@ static int calcColumns( HWND hwnd )
     w = WINDOW_FROM_ID( hwnd );
     GetClientRect( hwnd, &rect );
     columns = rect.right - rect.left;
-    columns = columns / ( NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) ) );
+    columns = columns / (NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) ));
     return( columns );
 }
 
@@ -232,12 +229,12 @@ void FileCompleteMouseClick( HWND hwnd, int x, int y, BOOL dclick )
     GetClientRect( hwnd, &rect );
     column_width = NAMEWIDTH * FontAverageWidth( WIN_FONT( w ) );
     column_height = FontHeight( WIN_FONT( w ) );
-    left_margin = ( rect.right - rect.left - column_width * columns ) >> 1;
+    left_margin = (rect.right - rect.left - column_width * columns) >> 1;
     if( x < left_margin || x + left_margin > rect.right ) {
         return;
     }
-    c = ( x - left_margin ) / column_width;
-    file = ( y / column_height ) * columns + c;
+    c = (x - left_margin) / column_width;
+    file = (y / column_height) * columns + c;
     file += cPage * perPage;
     if( dclick ) {
         isDone = TRUE;
@@ -260,11 +257,11 @@ static void parseFileName( int i, char *buffer )
         }
         MySprintf( buffer, strFmt, ch, DirFiles[i]->name );
     }
-    buffer[ NAMEWIDTH ] = 0;
+    buffer[NAMEWIDTH] = 0;
 }
 
-#define ROW( i )    ( (i) / maxJ )
-#define COL( i )    ( (i) % maxJ )
+#define ROW( i )    ((i) / maxJ)
+#define COL( i )    ((i) % maxJ)
 
 static void getBounds( int *start, int *end )
 {
@@ -290,7 +287,7 @@ void displayFiles( void )
     window      *w;
     RECT        rect;
     type_style  *style;
-    char        buffer[ _MAX_PATH ];
+    char        buffer[FILENAME_MAX];
 
     if( BAD_ID( dirWin ) ) return;
     w = WINDOW_FROM_ID( dirWin );
@@ -318,7 +315,7 @@ void displayFiles( void )
     }
 
     // assert( start <= lastFilec && lastFilec <= end );
-    rect.top = ( ROW( start ) - cPage * perPage / maxJ ) * font_height;
+    rect.top = (ROW( start ) - cPage * perPage / maxJ) * font_height;
     rect.bottom = rect.top + font_height;
     rect.left = 0;
     rect.right = left_edge;
@@ -326,7 +323,7 @@ void displayFiles( void )
     column = 0;
     for( i = start; i <= end; i++ ) {
         parseFileName( i, &buffer[0] );
-        style = ( i == lastFilec ) ? &w->info->hilight : &w->info->text;
+        style = (i == lastFilec) ? &w->info->hilight : &w->info->text;
         rect.left = column * column_width + left_edge;
         rect.right = rect.left + column_width;
         BlankRectIndirect( dirWin, style->background, &rect );
@@ -355,16 +352,16 @@ void displayFiles( void )
  */
 static void displayFiles( void )
 {
-    char        tmp[_MAX_PATH],tmp2[_MAX_PATH],dirc;
-    int         j,i,k,hilite=-1,z;
-    int         st,end,l=1;
+    char        tmp[FILENAME_MAX], tmp2[FILENAME_MAX], dirc;
+    int         j, i, k, hilite = -1, z;
+    int         st, end, l=1;
 
     tmp[0] = 0;
     j = 0;
 
     st = 0;
     end = perPage;
-    cPage = lastFilec/perPage;
+    cPage = lastFilec / perPage;
     if( cPage > 0) {
         cPage *= perPage;
         st += cPage;
@@ -375,7 +372,7 @@ static void displayFiles( void )
         hasWrapped = FALSE;
     }
 
-    for( i=st;i<end;i++ ) {
+    for( i = st; i < end; i++ ) {
 
         if( i == lastFilec ) {
             hilite = j;
@@ -388,16 +385,16 @@ static void displayFiles( void )
             } else {
                 dirc = ' ';
             }
-            MySprintf( tmp2,strFmt,dirc,DirFiles[i]->name );
-            tmp2[ NAMEWIDTH ] = 0;
+            MySprintf( tmp2, strFmt, dirc, DirFiles[i]->name );
+            tmp2[NAMEWIDTH] = 0;
         }
-        strcat( tmp,tmp2 );
+        strcat( tmp, tmp2 );
         j++;
 
-        if( j == maxJ || i == (end-1) ) {
+        if( j == maxJ || i == (end - 1) ) {
             DisplayLineInWindow( dirWin, l++, tmp );
             if( hilite >= 0 ) {
-                j = hilite*NAMEWIDTH;
+                j = hilite * NAMEWIDTH;
                 if( DirFiles[lastFilec]->attr & _A_SUBDIR ) {
                     dirc = FILE_SEP;
                 } else {
@@ -405,11 +402,11 @@ static void displayFiles( void )
                 }
                 MySprintf( tmp2, strFmt, dirc, DirFiles[lastFilec]->name );
                 z = j + strlen( tmp2 );
-                for( k=j; k<z; k++ ) {
-                    SetCharInWindowWithColor( dirWin, l-1,
-                        k+1, tmp2[k-j], &filecw_info.hilight );
+                for( k = j; k < z; k++ ) {
+                    SetCharInWindowWithColor( dirWin, l - 1,
+                        k + 1, tmp2[k - j], &filecw_info.hilight );
                 }
-               hilite = -1;
+                hilite = -1;
             }
             j = 0;
             tmp[0] = 0;
@@ -426,14 +423,14 @@ static void displayFiles( void )
 /*
  * StartFileComplete - handle file completion
  */
-int StartFileComplete( char *data, int start, int max, int what )
+vi_rc StartFileComplete( char *data, int start, int max, int what )
 {
-    int rc;
-    int maxl;
+    vi_rc   rc;
+    int     maxl;
 
     isDone = FALSE;
     rc = doFileComplete( data, start, max, TRUE, what );
-    if( rc > 0 || rc == FILE_COMPLETE ) {
+    if( rc > ERR_NO_ERR || rc == FILE_COMPLETE ) {
         return( rc );
     }
 
@@ -443,21 +440,21 @@ int StartFileComplete( char *data, int start, int max, int what )
             filecw_info.hilight.font = filecw_info.text.font;
 
         rc = NewWindow2( &dirWin, &filecw_info );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             return( rc );
         }
     }
-    WindowTitle( dirWin,"File Completion List" );
+    WindowTitle( dirWin, "File Completion List" );
 
-    #ifdef __WIN__
-        maxJ = calcColumns( dirWin );
-    #else
-        maxJ = (WindowAuxInfo( dirWin, WIND_INFO_TEXT_COLS))/NAMEWIDTH;
-    #endif
-    maxl = (WindowAuxInfo( dirWin, WIND_INFO_TEXT_LINES))-1;
-    perPage = (maxl+1)*(maxJ);
+#ifdef __WIN__
+    maxJ = calcColumns( dirWin );
+#else
+    maxJ = WindowAuxInfo( dirWin, WIND_INFO_TEXT_COLS) / NAMEWIDTH;
+#endif
+    maxl = WindowAuxInfo( dirWin, WIND_INFO_TEXT_LINES) - 1;
+    perPage = (maxl + 1) * maxJ;
     oldPage = -1;
-    maxPage = (DirFileCount + perPage - 1)/(perPage);
+    maxPage = (DirFileCount + perPage - 1) / perPage;
     displayFiles();
     PushMouseEventHandler( FileCompleteMouseHandler );
     hasMouseHandler = TRUE;
@@ -468,12 +465,12 @@ int StartFileComplete( char *data, int start, int max, int what )
 /*
  * ContinueFileComplete
  */
-int ContinueFileComplete( char *data, int start, int max, int what )
+vi_rc ContinueFileComplete( char *data, int start, int max, int what )
 {
-    int rc;
+    vi_rc   rc;
 
     rc = doFileComplete( data, start, max, FALSE, what );
-    if( rc > 0 || rc == FILE_COMPLETE ) {
+    if( rc > ERR_NO_ERR || rc == FILE_COMPLETE ) {
         return( rc );
     }
     displayFiles();

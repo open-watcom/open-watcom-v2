@@ -11,4 +11,4 @@ wreslib=wresl
 target : sample.$(ext) .SYMBOLIC
     @%null
 
-!include ..\makefile
+!include ../makefile

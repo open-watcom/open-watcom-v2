@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler test app internal header.
 *
 ****************************************************************************/
 
@@ -42,3 +41,10 @@ extern void _test_486( void );
         0x0f 0x09       /* wbinvd */ \
                         /* L1: */ \
         parm caller;
+
+void    set_false( int k );
+int     fetch( int argc, char **argv );
+void    do_it( void );
+void    dont_do_it( void );
+void    set_true( void );
+void    show_count( unsigned num );

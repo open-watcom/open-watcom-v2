@@ -46,9 +46,21 @@ WResID * WResIDFromStr( const char * newstr )
 
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in two bytes? */
-    #ifdef __386__
+#if defined( _M_I86 )
+    /* allocate the new ID */
+    // if strsize is non-zero then the memory allocated is larger
+    // than required by 1 byte
+    newid = WRESALLOC( sizeof(WResID) + strsize );
+
+    if (newid == NULL) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
+        newid->IsName = TRUE;
+        newid->ID.Name.NumChars = strsize;
+        memcpy( newid->ID.Name.Name, newstr, strsize );
+    }
+#else
     if( strsize <= 0xffff ) {
-    #endif
         /* allocate the new ID */
         // if strsize is non-zero then the memory allocated is larger
         // than required by 1 byte
@@ -61,12 +73,10 @@ WResID * WResIDFromStr( const char * newstr )
             newid->ID.Name.NumChars = strsize;
             memcpy( newid->ID.Name.Name, newstr, strsize );
         }
-    #ifdef __386__
     } else {
         WRES_ERROR( WRS_BAD_PARAMETER );
         newid = NULL;
     }
-    #endif
-
+#endif
     return( newid );
 } /* WResIDFromStr */

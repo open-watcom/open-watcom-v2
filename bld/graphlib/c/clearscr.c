@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Screen clear routine.
 *
 ****************************************************************************/
 
@@ -33,75 +32,6 @@
 #include "gdefn.h"
 #include "gbios.h"
 
-
-#if defined( _NEC_PC )
-
-void _WCI86FAR _CGRAPH _clearscreen( short area )
-/*==========================================
-
-   This routine clears either the entire screen, the current viewport, or
-   the text window depending on the parameter. */
-
-{
-    short               pix_per_col;
-    short               pix_per_row;
-
-    _InitState();
-    _CursorOff();
-    switch( area ) {
-    case _GVIEWPORT:
-        if( _GrMode ) {
-            _GrClear( _CurrState->clip.xmin, _CurrState->clip.ymin,
-                      _CurrState->clip.xmax, _CurrState->clip.ymax );
-        } else {
-            _ErrorStatus = _GRNOTINPROPERMODE;
-        }
-        break;
-    case _GWINDOW:                     /* clear current text window    */
-        if( IsTextMode ) {
-            _TxtClear( _Tx_Row_Min, _Tx_Col_Min, _Tx_Row_Max, _Tx_Col_Max );
-        } else {
-            pix_per_col = _CurrState->vc.numxpixels / _CurrState->vc.numtextcols ;
-            pix_per_row = _CurrState->vc.numypixels / _CurrState->vc.numtextrows ;
-            _GrClear( _Tx_Col_Min * pix_per_col, _Tx_Row_Min * pix_per_row,
-                      ( _Tx_Col_Max + 1 ) * pix_per_col - 1,
-                      ( _Tx_Row_Max + 1 ) * pix_per_row - 1 );
-        }
-        _settextposition( 1, 1 );
-        break;
-    case _GCLEARTEXT:                          /* clear text screen  */
-        if( IsTextMode ) {
-            _TxtClear( 0, 0, _CurrState->vc.numtextrows - 1,
-                             _CurrState->vc.numtextcols - 1 );
-            _settextposition( 1, 1 );
-        } else {
-            _ErrorStatus = _GRNOTINPROPERMODE;
-        }
-        break;
-    case _GCLEARGRAPH:                         /* clear graphic screen  */
-        if( _GrMode ) {
-            _GrClear( 0, 0, _CurrState->vc.numxpixels - 1,
-                            _CurrState->vc.numypixels - 1 );
-        } else {
-            _ErrorStatus = _GRNOTINPROPERMODE;
-        }
-        break;
-    case _GCLEARSCREEN:                        /* clear entire screen  */
-    default:                                   /* in all other cases  */
-        if( IsTextMode ) {
-            _TxtClear( 0, 0, _CurrState->vc.numtextrows - 1,
-                             _CurrState->vc.numtextcols - 1 );
-        }
-        if( _GrMode ) {
-            _GrClear( 0, 0, _CurrState->vc.numxpixels - 1,
-                            _CurrState->vc.numypixels - 1 );
-        }
-        _settextposition( 1, 1 );
-    }
-    _GrEpilog();
-}
-
-#else
 
 void _WCI86FAR _L2clearscreen( short area )
 /*====================================
@@ -134,7 +64,7 @@ void _WCI86FAR _L2clearscreen( short area )
 }
 
 
-void _WCI86FAR _CGRAPH _clearscreen( short area )
+_WCRTLINK void _WCI86FAR _CGRAPH _clearscreen( short area )
 /*==========================================
 
    This routine clears either the entire screen, the current viewport, or
@@ -168,8 +98,6 @@ void _WCI86FAR _CGRAPH _clearscreen( short area )
     _GrEpilog();
 }
 
-#endif
-
 Entry( _CLEARSCREEN, _clearscreen ) // alternate entry-point
 
 
@@ -179,7 +107,7 @@ void _GrClear( short x1, short y1, short x2, short y2 )
     Clear area of screen in graphics mode. */
 
 {
-    char                prev_mask[ MASK_LEN ];
+    unsigned char       prev_mask[ MASK_LEN ];
     short               prev_colour;
     short               prev_action;
 
@@ -204,27 +132,6 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
     function when the active page is not equal to the visual page. */
 
 {
-#if defined( _NEC_PC )
-    short               len;
-    short               i;
-    unsigned int        offset;
-    short far           *p;
-    short far           *a;
-
-    offset = 2 * ( r1 * _CurrState->vc.numtextcols + c1 ) + _CurrActivePage * 4096;
-    len = c2 - c1 + 1;
-    for( ; r1 <= r2; ++r1 ) {
-        p = MK_FP( _TextSeg, _TextOff + offset );
-        a = MK_FP( _AttrSeg, _AttrOff + offset );
-        for( i = 0; i < len; ++i ) {
-            *p = ' ';
-            *a = _CharAttr;
-            ++a;
-            ++p;
-        }
-        offset += 2 * _CurrState->vc.numtextcols;
-    }
-#else
     short               len;
     short               i;
     unsigned short      seg;
@@ -251,7 +158,6 @@ void _TxtClear( short r1, short c1, short r2, short c2 )
         }
         offset += 2 * _CurrState->vc.numtextcols;
     }
-#endif
 }
 
 #endif

@@ -45,9 +45,9 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef void (*WdeSetProc)  ( void *, HWND );
-typedef void (*WdeGetProc)  ( void *, HWND );
-typedef BOOL (*WdeHookProc) ( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+typedef void (*WdeSetProc)( void *, HWND );
+typedef void (*WdeGetProc)( void *, HWND );
+typedef BOOL (*WdeHookProc)( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 typedef struct WdeDefineObjectInfoStruct {
     OBJPTR              obj;

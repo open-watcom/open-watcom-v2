@@ -1,0 +1,15 @@
+/*
+ *  afxcmn4.inl Inline implementation of functions declared in afxcmn.h
+ *
+:include crwatcnt.sp
+ */
+
+// This file contains only those functions that require Internet Explorer 4.0 or later.
+// Do not add any functions that run on earlier versions or any functions that
+// require a later version to this file.  Doing so will break compatibility.
+
+AFX_INLINE BOOL CImageList::Create( CImageList *pImageList )
+/**********************************************************/
+{
+    return( Attach( ::ImageList_Duplicate( pImageList->GetSafeHandle() ) ) );
+}

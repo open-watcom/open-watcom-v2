@@ -24,13 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Declaration for VBUF functions.
 *
 ****************************************************************************/
 
-
-// VBUF.H -- DECLARATION FOR VBUF FUNCTIONS
 
 #ifndef _VBUF_H
 
@@ -39,13 +36,21 @@ extern "C" {
 #endif
 
 typedef struct vbuf{            // VBUF structure
-    char *buf;                  // - buffer pointer
-    size_t len;                 // - buffer size
-    size_t used;                // - amount used in buffer
+    char           *buf;        // - buffer pointer
+    size_t         len;         // - buffer size
+    size_t         used;        // - amount used in buffer
 } VBUF;
 
 // PROTOTYPES:
 
+void VbufConcVbuf               // CONCATENATE A VBUF
+    ( VBUF *vbuf1               // - VBUF structure
+    , VBUF *vbuf2 )             // - VBUF structure
+;
+void VbufConcVbufRev            // CONCATENATE A VBUF2 BACKWARDS TO VBUF1
+    ( VBUF *vbuf1               // - VBUF structure
+    , VBUF *vbuf2 )             // - VBUF structure to be concatenated backwards
+;
 void VbufConcVector             // CONCATENATE A VECTOR
     ( VBUF *vbuf                // - VBUF structure
     , size_t size               // - size of vector
@@ -57,59 +62,63 @@ void VbufFree(                  // FREE BUFFER
 void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
     VBUF *vbuf )                // - VBUF structure
 ;
+void VbufPrepVbuf               // PREPEND A VBUF TO VBUF
+    ( VBUF *vbuf1               // - VBUF structure
+    , VBUF *vbuf2 )             // - VBUF structure to be prepended
+;
 void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     VBUF *vbuf,                 // - VBUF structure
     size_t reqd )               // - required size
 ;
-void VbufUsed(                  // ENSURE BUFFER IS USED FOR A CERTAIN SIZE
+void VbufSetLen(                // SET BUFFER LENGTH
     VBUF *vbuf,                 // - VBUF structure
-    size_t used )               // - used size
+    size_t size )               // - new length
 ;
-void VStrConcChr(               // CONCATENATE CHAR TO vbuf->buf
+void VbufConcChr(               // CONCATENATE CHAR TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char chr )                  // - char to be concatenated
 ;
-void VStrConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
+void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    unsigned value )            // - value to be concatenated
+    unsigned long value )       // - value to be concatenated
 ;
-void VStrConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
+void VbufConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    int value )                 // - value to be concatenated
+    long value )                // - value to be concatenated
 ;
-#if __WATCOMC__ >= 1100
-void VStrConcI64(               // CONCATENATE I64 # TO vbuf->buf
+void VbufConcI64(               // CONCATENATE I64 # TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
-    __int64 value )             // - value to be concatenated
+    signed_64 value )           // - value to be concatenated
 ;
-#endif
-void VStrConcStr(               // CONCATENATE STRING TO vbuf->buf
+void VbufConcStr(               // CONCATENATE STRING TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated
 ;
-void VStrConcStrRev(            // CONCATENATE STRING BACKWARDS TO vbuf->buf
+void VbufConcStrRev(            // CONCATENATE STRING BACKWARDS TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated backwards
 ;
-void VStrTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
+void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM vbuf->buf
     VBUF *vbuf )                // - VBUF structure
 ;
-void VStrPrepChr(               // PREPEND CHAR TO vbuf->buf
+void VbufPrepChr(               // PREPEND CHAR TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char chr )                  // - char to be prepended
 ;
-void VStrPrepStr(               // PREPEND STRING TO vbuf->buf
+void VbufPrepStr(               // PREPEND STRING TO vbuf->buf
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be prepended
 ;
-unsigned VStrLen(               // RETURN STRLEN OF BUFFER
-    VBUF *vbuf )                // - VBUF structure
+#define VbufLen(v)              ((v)->used)                 // RETURN LENGTH OF BUFFER
 ;
-void VStrNull(                  // CLEAR BUFFER
-    VBUF *vbuf )                // - VBUF structure
+#define VbufRewind(v)           VbufSetLen(v,0)             // CLEAN BUFFER
 ;
-#define VbufOffset( v )         ((v)->used-1)
-#define VbufRemoveOffset(v,n)   ((v)->used-=(n))
+#define VbufSetPosBack(v,n)     VbufSetLen(v,(v)->used-n)   // SHORTEN BUFFER LENGTH
+;
+#define VbufBuffer(v)           ((unsigned char *)(v)->buf) // RETURN POINTER OF BUFFER
+;
+#define VbufString(v)           ((v)->buf)                  // RETURN POINTER OF BUFFER
+;
 
 #ifdef __cplusplus
 };

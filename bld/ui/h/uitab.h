@@ -35,18 +35,22 @@
 
 typedef void            a_tab_field;
 
+typedef struct vtabarea {
+        SAREA           area;
+} VTABAREA;
+
 typedef struct vtab {
-        unsigned          (*tab)();     /* is field in tab sequence ? */
-        a_tab_field     * (*next)();    /* get next VFIELD */
-        void            * parm;         /* parm for functions */
-        void            * (*mousepos)();/* mouse position function */
-        void            * mouseparm;    /* parm for mousepos function */
-        a_tab_field     * other;        /* prev VFIELD or moused but no tab */
-        a_tab_field     * curr;         /* current VFIELD */
-        a_tab_field     * first;        /* first VFIELD */
-        ORD               home;         /* home column for tab algorithm */
-        unsigned          wrap:1;       /* wrap cursor top to bottom */
-        unsigned          enter:1;      /* grab enter event as CR */
+        unsigned        (*tab)( a_tab_field *, void * );     /* is field in tab sequence ? */
+        a_tab_field     *(*next)( a_tab_field *, void * );    /* get next VFIELD */
+        void            *parm;         /* parm for functions */
+        void            *(*mousepos)( void *, ORD *, ORD * );/* mouse position function */
+        void            *mouseparm;    /* parm for mousepos function */
+        a_tab_field     *other;        /* prev VFIELD or moused but no tab */
+        a_tab_field     *curr;         /* current VFIELD */
+        a_tab_field     *first;        /* first VFIELD */
+        ORD             home;         /* home column for tab algorithm */
+        unsigned        wrap:1;       /* wrap cursor top to bottom */
+        unsigned        enter:1;      /* grab enter event as CR */
 } VTAB;
 
 EVENT uitabfilter( EVENT, VTAB * );

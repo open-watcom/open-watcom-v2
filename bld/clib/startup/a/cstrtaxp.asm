@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Alpha AXP NT 32-bit console startup code.
 ;*
 ;*****************************************************************************
 
 
-//
-// startup code for WATCOM C/C++32 under Alpha AXP
-//
 //      This must be assembled using one of the following commands:
 //              wasaxp cstrtaxp
 //

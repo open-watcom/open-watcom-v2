@@ -17,12 +17,8 @@ BEGIN
 #include "bpatch.msg"
 
 #if defined( BPATCH )
-#ifdef QNX
-#include "qpusage.rc"
-#else
-#include "opusage.rc"
-#include "opusagej.rc"
-#endif
+#include "pusage.rc"
+#include "pusagej.rc"
 #else
 #include "dusage.rc"
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definition of basic types used in generated code.
 *
 ****************************************************************************/
 
@@ -60,6 +59,9 @@ typedef enum {
 #if _TARGET & _TARG_80386
     typedef signed_32     type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
+#elif _TARGET & _TARG_IAPX86
+    typedef signed_16     type_length;
+    #define MAX_TYPE_LENGTH 0x7fff
 #elif _TARGET & _TARG_370
     typedef signed_32     type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
@@ -69,7 +71,9 @@ typedef enum {
 #elif _TARGET & _TARG_AXP
     typedef signed_32     type_length;
     #define MAX_TYPE_LENGTH 0x7fffffff
+#elif _TARGET & _TARG_MIPS
+    typedef signed_32     type_length;
+    #define MAX_TYPE_LENGTH 0x7fffffff
 #else
-    typedef signed_16     type_length;
-    #define MAX_TYPE_LENGTH 0x7fff
+    #error Unknown target
 #endif

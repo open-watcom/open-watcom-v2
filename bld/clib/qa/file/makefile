@@ -1,3 +1,3 @@
-#pmake:all clibqa file
-srcfile = $(clib_dir)\file\c\filetest.c
-!include ..\mif\master.mif
+#pmake: clibqa file
+srcfile = $(clib_dir)/file/c/filetest.c
+!include ../mif/master.mif

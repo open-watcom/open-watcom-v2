@@ -1,2 +1,9 @@
-#include "windows.h"
+#include "../../brinfo/merge/res/wresdefn.h"
+#include "wdmsg.h"
 #include "wv.rc"
+
+STRINGTABLE
+BEGIN
+    #include "usage.rc"
+    #include "usagej.rc"
+END

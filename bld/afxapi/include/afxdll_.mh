@@ -1,0 +1,30 @@
+/*
+ *  afxdll_.h   Application Framework dynamic link library (DLL) classes
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+struct AFX_EXTENSION_MODULE {
+    BOOL    bInitialized;
+    HMODULE hModule;
+    HMODULE hResource;
+};
+
+class CDynLinkLibrary : public CCmdTarget {
+public:
+    HMODULE         m_hModule;
+    HMODULE         m_hResource;
+    BOOL            m_bSystem;
+    CDynLinkLibrary *m_pNextDLL;
+
+    DECLARE_DYNAMIC( CDynLinkLibrary )
+
+public:
+    explicit CDynLinkLibrary( AFX_EXTENSION_MODULE &state, BOOL bSystem = FALSE );
+    CDynLinkLibrary( HINSTANCE hModule, HINSTANCE hResource );
+};
+
+_AFXLINK BOOL AFXAPI    AfxInitExtensionModule( AFX_EXTENSION_MODULE &state, HMODULE hModule );
+_AFXLINK void AFXAPI    AfxTermExtensionModule( AFX_EXTENSION_MODULE &state, BOOL bAll = FALSE );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implement an indexed stack of items.
 *
 ****************************************************************************/
 
@@ -71,9 +70,9 @@ static int vstkInBlk(           // TEST IF ENTRY IS WITHIN A BLOCK
 
     if( curr == NULL ) {
         retn = FALSE;
-    } else if( curr < &blk->data[0] ) {
+    } else if( curr < (void *)&blk->data[0] ) {
         retn = FALSE;
-    } else if( curr >= &blk->data[ block_size ] ) {
+    } else if( curr >= (void *)&blk->data[ block_size ] ) {
         retn = FALSE;
     } else {
         retn = TRUE;
@@ -328,7 +327,7 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
         }
         if( vstkInBlk( blk, cur, blk_size ) ) {
             cur = (char*)cur + stack->size;
-            if( cur >= &blk->data[blk_size] ) {
+            if( cur >= (void *)&blk->data[blk_size] ) {
                 blk = blk->last;
                 if( blk == NULL ) {
                     cur = NULL;

@@ -1,5 +1,5 @@
                 .286p
-code            segment
+code            segment 'CODE'
 assume          cs:code, ds:code
 
 ;

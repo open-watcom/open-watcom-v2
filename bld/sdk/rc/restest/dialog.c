@@ -81,16 +81,17 @@ BOOL CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam 
     return( TRUE );
 }
 
-void DisplayDialog( void ) {
+void DisplayDialog( void )
+{
     FARPROC     fp;
     int         ret;
     char        buf[256];
 
-    fp = MakeProcInstance( GetDialogNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)GetDialogNameDlgProc, Instance );
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
-    fp = MakeProcInstance( DispDialogDlgProc, Instance );
-    ret = DialogBox( Instance, dialogName , NULL, fp );
+    fp = MakeProcInstance( (FARPROC)DispDialogDlgProc, Instance );
+    ret = DialogBox( Instance, dialogName , NULL, (DLGPROC)fp );
     FreeProcInstance( fp );
     if( ret == -1 ) {
         sprintf( buf, "Can't Load Dialog %s", dialogName );

@@ -39,6 +39,7 @@
 #include "vergen.h"
 #include "system.h"
 #include "zoiks.h"
+#include "makeins.h"
 
 extern  void            ChangeType(instruction*,type_class_def);
 extern  name            *IntEquivalent(name*);
@@ -46,16 +47,12 @@ extern  void            DupSegOp(instruction*,instruction*,int);
 extern  name            *AllocTemp(type_class_def);
 extern  opcode_entry    *CodeTable(instruction*);
 extern  bool            SameThing(name*,name*);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  instruction     *MoveConst(unsigned_32,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  constant_defn   *GetFloat(name*,type_class_def);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  void            HalfType(instruction*);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      High16Reg(hw_reg_set);
@@ -68,17 +65,14 @@ extern  name            *AddrConst(name*,int,constant_class);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocUIntConst(uint);
 extern  name            *AllocConst(pointer);
-extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            DupSeg(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
 extern  name            *SegName(name*);
 extern  void            DelSeg(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *AllocIntConst(int);
 extern  bool            Overlaps( name *, name * );
-extern  instruction     *MakeNop();
 extern  name            *LowPart( name *, type_class_def );
 extern  name            *HighPart( name *, type_class_def );
 extern  void            CnvOpToInt( instruction *, int );
@@ -86,7 +80,7 @@ extern  void            CnvOpToInt( instruction *, int );
 extern    type_class_def        HalfClass[];
 extern    type_class_def        Unsigned[];
 
-static  bool    IndexOverlaps( instruction *ins, int i ) {
+extern  bool    IndexOverlaps( instruction *ins, int i ) {
 /********************************************************/
 
     if( ins->operands[ i ]->n.class != N_INDEXED ) return( FALSE );
@@ -167,6 +161,9 @@ extern  instruction     *rSPLITOP( instruction *ins ) {
         } else if( ins->head.opcode == OP_SUB ) {
             ins->head.opcode = OP_EXT_SUB;
         }
+/* Assign fake reduce table (from OP_EXT) to new_ins; default reduce table
+   can generate INC and DEC which'll not set condition codes
+ */
         ins->table = CodeTable( ins );
         new_ins->table = ins->table;
 
@@ -229,7 +226,7 @@ extern  instruction     *rMAKEU2( instruction *ins ) {
 
     instruction *new_ins;
     instruction *ins2;
-    name        *temp;
+    name        *temp = NULL;
 
     if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
         ChangeType( ins, WORD );
@@ -310,9 +307,9 @@ extern  instruction     *rSPLITCMP( instruction *ins ) {
 
     name                *left;
     name                *right;
-    instruction         *low;
-    instruction         *high;
-    instruction         *not_equal;
+    instruction         *low = NULL;
+    instruction         *high = NULL;
+    instruction         *not_equal = NULL;
     type_class_def      high_class;
     type_class_def      low_class;
     byte                true_idx;
@@ -426,11 +423,17 @@ extern  instruction     *rSPLITCMP( instruction *ins ) {
                         true_idx, false_idx,
                         low_class );
         break;
+    default:
+        break;
     }
     if( high != NULL ) {
-        if( not_equal != NULL ) {
-            DoNothing( not_equal );     /* don't need to redo compare,*/
-        }                               /* just want another conditional jump*/
+/*
+ * 2005-04-06 RomanT (bug #407)
+ * I removed calls do DoNothing(), it seems ok, extra jumps are perfectly
+ * optimized out in other places of compiler. Calling DoNothing() on chain
+ * of conditions to reuse existing CC flags is ugly and causes unpredictable
+ * logical faults in other places.
+ */
         DupSeg( ins, high );
         PrefixIns( ins, high );
     } else {

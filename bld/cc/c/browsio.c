@@ -34,12 +34,7 @@
 #include "exeelf.h"
 #include "iopath.h"
 #include <stdarg.h>
-#if defined(__QNX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
-#include "dw.h"
+#include <unistd.h>
 
 static uint_32          relocValues[ DW_W_MAX ];
 
@@ -64,7 +59,7 @@ static void DWSectInit( void  )
 
 #define C_DWARF_BUFSIZE 4096
 
-extern  FILE    *OpenBrowseFile();              /* ccmain */
+extern  FILE    *OpenBrowseFile( void );        /* ccmain */
 
 // -- code to generate ELF output ------------------------------------------
 //
@@ -262,7 +257,7 @@ static int createBrowseFile(FILE* browseFile,              /* target file */
 }
 //---------------------------------------------------------------------------
 
-static void dw_write( uint section, const void *block, dw_size_t len )
+static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
 /********************************************************************/
 {
     unsigned            bufnum;
@@ -318,7 +313,7 @@ static void dw_write( uint section, const void *block, dw_size_t len )
     }
 }
 
-static long dw_tell( uint section )
+static long dw_tell( dw_sectnum section )
 /*********************************/
 {
     #ifdef __DD__
@@ -329,7 +324,7 @@ static long dw_tell( uint section )
     return DWSections[section].offset;
 }
 
-static void dw_reloc( uint section, uint reloc_type, ... )
+static void dw_reloc( dw_sectnum section, dw_relocs reloc_type, ... )
 /********************************************************/
 {
     va_list         args;
@@ -371,31 +366,34 @@ static void dw_reloc( uint section, uint reloc_type, ... )
         u32_data = dw_tell( sect );
         dw_write( section, &u32_data, sizeof( u32_data ) );
         break;
+    default:
+        break;
     }
     va_end( args );
 }
 
-static void dw_seek( uint section, long offset, uint mode )
+static void dw_seek( dw_sectnum section, long offset, uint mode )
 /*********************************************************/
 {
+    unsigned long ofs = offset;
     switch( mode ) {
     case DW_SEEK_SET:
         break;
     case DW_SEEK_CUR:
-        offset = DWSections[section].offset + offset;
+        ofs = DWSections[section].offset + offset;
         break;
     case DW_SEEK_END:
-        offset = DWSections[section].length - offset;
+        ofs = DWSections[section].length - offset;
         break;
     }
     #ifdef __DD__
     printf( "DW_SEEK (%d:%d): offset: %d\n",
         section,
         DWSections[section].length,
-        offset );
+        ofs );
     #endif
-    if( DWSections[section].offset != offset ) {
-        DWSections[section].offset = offset;
+    if( DWSections[section].offset != ofs ) {
+        DWSections[section].offset = ofs;
         if( DWSections[section].offset > DWSections[section].length ) {
             DWSections[section].length = DWSections[section].offset;
         }
@@ -440,7 +438,7 @@ dw_client DwarfInit( void )
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = "WATCOM C V10";
-    memcpy( info.exception_handler, Environment, sizeof( jmp_buf ) );
+    memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
 
     relocValues[ DW_W_LOW_PC ] = 0x0;
@@ -477,7 +475,7 @@ dw_client DwarfInit( void )
     cu.model           = DW_MODEL_NONE;
     cu.inc_list        = inclist;
     cu.inc_list_len    = incsize;
-    cu.dbg_pch         = NULL;
+    cu.dbg_pch         = 0;
     DWBeginCompileUnit( client, &cu );
     CMemFree( inclist );
     DWDeclFile( client, fname );

@@ -24,20 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  This file contains prototypes and #defines used by the
+*               implementation of the iostream library.
+*               This file is not for distribution.
 *
 ****************************************************************************/
 
 
-// This file contains prototypes and #defines used by the implementation
-// of the iostream library.
-// This file is not for distribution.
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/08/29    Greg Bentz      Initial implementation.
-//
 #ifndef _IOUTIL_H_INCLUDED
 
 // function should be inlined
@@ -67,9 +60,12 @@ extern int __FlagsToBase( long __format_flags );
 
 class __WATCOM_ios {
 public:
-    static void *find_user_word( ios *pios, int index );
-    static void free_xalloc_storage( ios *pios );
-    static ios::iostate writeitem( ostream &ostrm, char const *buffer, int size, int fill_offset );
+    static void *find_user_word( std::ios *pios, int index );
+    static void free_xalloc_storage( std::ios *pios );
+    static std::ios::iostate writeitem( std::ostream &ostrm,
+                                        char const *buffer,
+                                        int size,
+                                        int fill_offset );
 };
 
 // defined in CLIB
@@ -78,8 +74,6 @@ _WCRTLINK extern int __plusplus_fstat( int handle, int *ios_mode );
 _WCRTLINK extern int __plusplus_open( const char *name, int *ios_mode, int prot );
 _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
 _WCRTLINK extern int __flush( FILE *fp );
-_WCRTLINK extern char *__clib_lltoa( signed __int64 *pv, char *buf, unsigned radix );
-_WCRTLINK extern char *__clib_ulltoa( unsigned __int64 *pv, char *buf, unsigned radix );
 };
 
 #define _IOUTIL_H_INCLUDED

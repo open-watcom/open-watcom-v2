@@ -57,7 +57,7 @@ class WFlashPage : public WWindow
         int             _idx;
         WTimer*         _flashTimer;
         void            flashTimer( WTimer* timer, DWORD );
-        void            okButton( WButton* );
+        void            okButton( WWindow * );
         WStringList     _text;
         int             _height;
         int             _width;

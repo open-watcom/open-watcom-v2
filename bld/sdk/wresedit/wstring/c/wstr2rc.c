@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdio.h>
 
 #include "wglbl.h"
@@ -40,8 +40,7 @@
 #include "wstr2rc.h"
 #include "wresall.h"
 
-static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id,
-                               FILE *fp )
+static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp )
 {
     char        *strtext;
     char        *text;
@@ -49,28 +48,28 @@ static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id,
 
     strtext = NULL;
 
-    text = WResIDNameToStr( block->block.String[ string_id & 0xf ] );
-    ok = ( text != NULL );
+    text = WResIDNameToStr( block->block.String[string_id & 0xf] );
+    ok = (text != NULL);
 
     if( ok ) {
         strtext = WConvertStringFrom( text, "\t\n\"\\", "tn\"\\" );
-        ok = ( strtext != NULL );
+        ok = (strtext != NULL);
     }
 
     if( ok ) {
-        if( block->symbol[ string_id & 0xf ] ) {
+        if( block->symbol[string_id & 0xf] ) {
             fprintf( fp, "    %s, \"%s\"\n",
-                     block->symbol[ string_id & 0xf ], strtext );
+                     block->symbol[string_id & 0xf], strtext );
         } else {
             fprintf( fp, "    %u, \"%s\"\n", string_id, strtext );
         }
     }
 
-    if( strtext ) {
+    if( strtext != NULL ) {
         WMemFree( strtext );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WMemFree( text );
     }
 
@@ -81,14 +80,13 @@ static Bool WWriteStringBlock( WStringBlock *block, FILE *fp )
 {
     int         i;
 
-    if( !block ) {
+    if( block == NULL ) {
         return( FALSE );
     }
 
-    for( i=0; i<STRTABLE_STRS_PER_BLOCK; i++ ) {
+    for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
         if( block->block.String[i] != NULL ) {
-            if( !WWriteStringEntry( block, (block->blocknum & 0xfff0) + i,
-                                    fp ) ) {
+            if( !WWriteStringEntry( block, (block->blocknum & 0xfff0) + i, fp ) ) {
                 return( FALSE );
             }
         }
@@ -103,7 +101,7 @@ Bool WWriteStringToRC( WStringEditInfo *einfo, char *file, Bool append )
     WStringBlock        *block;
     Bool                ok;
 
-    ok = ( einfo && einfo->tbl );
+    ok = (einfo != NULL && einfo->tbl != NULL);
 
     if( ok ) {
         if( append ) {
@@ -111,30 +109,29 @@ Bool WWriteStringToRC( WStringEditInfo *einfo, char *file, Bool append )
         } else {
             fp = fopen( file, "wt" );
         }
-        ok = ( fp != NULL );
+        ok = (fp != NULL);
     }
 
     if( ok ) {
         fprintf( fp, "STRINGTABLE\n" );
-        fwrite( "BEGIN\n", sizeof(char), 6, fp );
+        fwrite( "BEGIN\n", sizeof( char ), 6, fp );
     }
 
     if( ok ) {
         block = einfo->tbl->first_block;
-        while( block && ok ) {
+        while( block != NULL && ok ) {
             ok = WWriteStringBlock( block, fp );
             block = block->next;
         }
     }
 
     if( ok ) {
-        fwrite( "END\n\n", sizeof(char), 5, fp );
+        fwrite( "END\n\n", sizeof( char ), 5, fp );
     }
 
-    if( fp ) {
+    if( fp != NULL ) {
         fclose( fp );
     }
 
     return( ok );
 }
-

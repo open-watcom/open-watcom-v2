@@ -44,20 +44,20 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRENewDialogResource        ( void );
-extern Bool WREEditDialogResource       ( WRECurrentResInfo *curr );
-extern Bool WRECommitDialogSession      ( HCONV server, HCONV client );
-extern Bool WREEndEditDialogResource    ( HCONV conv );
-extern Bool WREDumpPendingDialogSession ( void );
-extern Bool WREEndAllDialogSessions     ( Bool fatal_exit );
-extern void WREEndLangDialogSession     ( WResLangNode *lnode );
-extern void WREEndResDialogSessions     ( WREResInfo *rinfo );
-extern Bool WREGetDlgSessionFileName    ( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionResName     ( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionData        ( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionIs32Bit     ( HCONV server, void **data, uint_32 *size );
-extern Bool WRESetDlgSessionResName     ( HCONV server, HDDEDATA hdata );
-extern Bool WRESetDlgSessionResData     ( HCONV server, HDDEDATA hdata );
-extern void WREShowAllDialogSessions    ( Bool show );
+extern Bool WRENewDialogResource( void );
+extern Bool WREEditDialogResource( WRECurrentResInfo *curr );
+extern Bool WRECommitDialogSession( HCONV server, HCONV client );
+extern Bool WREEndEditDialogResource( HCONV conv );
+extern Bool WREDumpPendingDialogSession( void );
+extern Bool WREEndAllDialogSessions( Bool fatal_exit );
+extern void WREEndLangDialogSession( WResLangNode *lnode );
+extern void WREEndResDialogSessions( WREResInfo *rinfo );
+extern Bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size );
+extern Bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size );
+extern Bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size );
+extern Bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size );
+extern Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata );
+extern Bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata );
+extern void WREShowAllDialogSessions( Bool show );
 
 #endif

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wremem.h"
 #include "wrewait.h"
 #include "wrdll.h"
@@ -51,21 +51,19 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool             SaveObjectsAs           ( WRECurrentResInfo *curr,
-                                                  WRSaveIntoData *idata );
-static Bool             SaveObjectsInto         ( WRECurrentResInfo *curr,
-                                                  WRSaveIntoData *idata );
-static WRSaveIntoData   *WRECreateSaveData      ( WRECurrentResInfo *curr );
-static WRSaveIntoData   *WREMakeSaveIntoNode    ( WRECurrentResInfo *curr );
-static void             WREFreeSaveIntoData     ( WRSaveIntoData *idata );
-static WRSaveIntoData   *WREAllocSaveIntoData   ( void );
+static Bool             SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata );
+static Bool             SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata );
+static WRSaveIntoData   *WRECreateSaveData( WRECurrentResInfo *curr );
+static WRSaveIntoData   *WREMakeSaveIntoNode( WRECurrentResInfo *curr );
+static void             WREFreeSaveIntoData( WRSaveIntoData *idata );
+static WRSaveIntoData   *WREAllocSaveIntoData( void );
 
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-extern char     *WREResSaveIntoTitle;
-extern char     *WREResSaveAsTitle;
-extern char     *WREResSaveMltFilter;
+extern char *WREResSaveIntoTitle;
+extern char *WREResSaveAsTitle;
+extern char *WREResSaveMltFilter;
 
 Bool SaveMultObjects( Bool save_into )
 {
@@ -80,7 +78,7 @@ Bool SaveMultObjects( Bool save_into )
 
     WREGetCurrentResource( &curr );
 
-    ok = ( curr.info && curr.type );
+    ok = (curr.info != NULL && curr.type != NULL);
 
     if( ok ) {
         if( curr.lang == NULL ) {
@@ -88,7 +86,7 @@ Bool SaveMultObjects( Bool save_into )
         } else {
             idata = WREMakeSaveIntoNode( &curr );
         }
-        ok = ( idata != NULL );
+        ok = (idata != NULL);
     }
 
     if( ok ) {
@@ -99,7 +97,7 @@ Bool SaveMultObjects( Bool save_into )
         }
     }
 
-    if( idata ) {
+    if( idata != NULL ) {
         WREFreeSaveIntoData( idata );
     }
 
@@ -110,59 +108,59 @@ Bool SaveMultObjects( Bool save_into )
 
 Bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
 {
-    Bool              ok;
-    char             *fname;
-    WRFileType        ftype;
-    WREGetFileStruct  gf;
+    Bool                ok;
+    char                *fname;
+    WRFileType          ftype;
+    WREGetFileStruct    gf;
 
     fname = NULL;
 
-    ok = ( curr && idata );
+    ok = (curr != NULL && idata != NULL);
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WREResSaveAsTitle;
-        gf.filter    = WREResSaveMltFilter;
-        gf.save_ext  = TRUE;
-        fname        = WREGetSaveFileName( &gf );
-        ok = ( fname && *fname );
+        gf.title = WREResSaveAsTitle;
+        gf.filter = WREResSaveMltFilter;
+        gf.save_ext = TRUE;
+        fname = WREGetSaveFileName( &gf );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
         ftype = WRESelectFileType( fname, curr->info->is32bit );
-        ok = ( ftype != WR_DONT_KNOW );
+        ok = (ftype != WR_DONT_KNOW);
     }
 
     if( ok ) {
         ok = WRSaveObjectAs( fname, ftype, idata );
     }
 
-    if ( fname ) {
-        WREMemFree ( fname );
+    if( fname != NULL ) {
+        WREMemFree( fname );
     }
 
-    return ( ok );
+    return( ok );
 }
 
 Bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
 {
-    Bool              ok;
-    char             *fname;
-    WREGetFileStruct  gf;
-    int               dup;
+    Bool                ok;
+    char                *fname;
+    WREGetFileStruct    gf;
+    int                 dup;
 
     fname = NULL;
-    dup   = FALSE;
+    dup = FALSE;
 
-    ok = ( curr && idata );
+    ok = (curr != NULL && idata != NULL);
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title     = WREResSaveIntoTitle;
-        gf.filter    = WREResSaveMltFilter;
-        gf.save_ext  = TRUE;
-        fname        = WREGetOpenFileName( &gf );
-        ok = ( fname && *fname );
+        gf.title = WREResSaveIntoTitle;
+        gf.filter = WREResSaveMltFilter;
+        gf.save_ext = TRUE;
+        fname = WREGetOpenFileName( &gf );
+        ok = (fname != NULL && *fname != '\0');
     }
 
     if( ok ) {
@@ -173,7 +171,7 @@ Bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
         WREDisplayErrorMsg( WRE_ERRORONDUPOBJS );
     }
 
-    if( fname ) {
+    if( fname != NULL ) {
         WREMemFree( fname );
     }
 
@@ -196,13 +194,13 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
     tcurr = *curr;
     rnode = curr->type->Head;
 
-    while( rnode ) {
+    while( rnode != NULL ) {
         lnode = rnode->Head;
-        while( lnode ) {
+        while( lnode != NULL ) {
             tcurr.res = rnode;
             tcurr.lang = lnode;
             new = WREMakeSaveIntoNode( &tcurr );
-            if( !new ) {
+            if( new == NULL ) {
                 WREFreeSaveIntoData( nodes );
                 return( NULL );
             }
@@ -224,11 +222,11 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
 {
     WRSaveIntoData      *node;
 
-    if( !curr ) {
+    if( curr == NULL ) {
         return( NULL );
     }
 
-    if( !curr->lang->Info.Length ) {
+    if( curr->lang->Info.Length == 0 ) {
         WREDisplayErrorMsg( WRE_UPDATEBEFORESAVE1 );
         return( NULL );
     }
@@ -255,7 +253,7 @@ void WREFreeSaveIntoData( WRSaveIntoData *idata )
 {
     WRSaveIntoData *next;
 
-    while( idata ) {
+    while( idata != NULL ) {
         next = idata->next;
         if( idata->data != NULL ) {
             WREMemFree( idata->data );
@@ -269,11 +267,10 @@ WRSaveIntoData *WREAllocSaveIntoData( void )
 {
     WRSaveIntoData *idata;
 
-    idata = (WRSaveIntoData *) WREMemAlloc( sizeof(WRSaveIntoData) );
-    if( idata ) {
-        memset( idata, 0, sizeof(WRSaveIntoData) );
+    idata = (WRSaveIntoData *)WREMemAlloc( sizeof( WRSaveIntoData ) );
+    if( idata != NULL ) {
+        memset( idata, 0, sizeof( WRSaveIntoData ) );
     }
 
     return( idata );
 }
-

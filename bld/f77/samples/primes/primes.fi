@@ -1,0 +1,11 @@
+c$noreference
+        integer DLG_PRIME_NUMBER
+        parameter (DLG_PRIME_NUMBER     = 100)
+        integer DLG_GENERATE_PRIMES
+        parameter (DLG_GENERATE_PRIMES  = 101)
+        integer DLG_UPPER_BOUND_TEXT
+        parameter (DLG_UPPER_BOUND_TEXT = 102)
+        integer DLG_UPPER_BOUND
+        parameter (DLG_UPPER_BOUND      = 103)
+        integer DLG_PRIME_CLOSE
+        parameter (DLG_PRIME_CLOSE      = 104)

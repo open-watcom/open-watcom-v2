@@ -24,35 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Serial link communications core.
 *
 ****************************************************************************/
 
-
-/*
- * Modified      By                Reason
- * --------      --                ------
- * 89-05-23     Steven Siu      First shot
- * 89-05-24     ditto           Make BlockSend wait forever;
- *                              try sync at max speed first, delete init_Speed()
- *                              remove use of sbuf, wbuf - rewrite BlockSend()
- *                              & BlockReceive(); CRC(); WaitByte(); etc.
- * 89-05-25     same            reinstate blkno's
- * 89-05-26     same            rewrite interrupts in assembly
- * 89-05-30     same            write routine to parse argument
- *
- *==============================================================================
- *
- * 89-05-31     Steven Siu      Initial Implementation
- * 90-03-27     John Dahms      check for <, not != in routine Wait()
- * 90-03-29     John Dahms      rewrote baud rate negotiation code
- * 90-04-25     John Dahms      tweaked, shuffled, optimized, cleaned up, etc.
- *                              (for NETWARE/386 and OS2 version)
- * 91-01-23     B.J. Stecher    got rid of NumComPorts/GetPort,
- *                              added ParsePortSpec
- * 91-01-25     B.J. Stecher    added StartBlockTrans/StopBlockTrans
- */
 
 #include "trpimp.h"
 #include "trperr.h"
@@ -61,7 +36,7 @@
 #include "serial.h"
 #include "packet.h"
 
-static int BaudCounter;            /* baud rate counter */
+static int BaudCounter;           /* baud rate counter */
 static int LastResponse = NAK;    /* last response holder */
 static int Errors = 0;            /* Errors so far */
 static int PrevErrors = 0;        /* Errors of previous BlockSend() operation */
@@ -86,23 +61,23 @@ baud_entry BaudTable[] = {
 };
 
 extern char     *ParsePortSpec( char * * );
-extern char     *InitSys();
-extern void     ResetSys();
-extern bool     Baud(int);
-extern void     ClearCom(void);
-extern int      GetByte(void);
-extern void     SendByte(int);
-extern void     DonePort(void);
-extern bool     CheckPendingError();
-extern void     ClearLastChar();
-extern void     ZeroWaitCount();
-extern unsigned WaitCount();
-extern int      WaitByte(unsigned);
-extern void     Wait(unsigned);
-extern void     StartBlockTrans(void);
-extern void     StopBlockTrans(void);
+extern char     *InitSys( void );
+extern void     ResetSys( void );
+extern bool     Baud( int );
+extern void     ClearCom( void );
+extern int      GetByte( void );
+extern void     SendByte( int );
+extern void     DonePort( void );
+extern bool     CheckPendingError( void );
+extern void     ClearLastChar( void );
+extern void     ZeroWaitCount( void );
+extern unsigned WaitCount( void );
+extern int      WaitByte( unsigned );
+extern void     Wait( unsigned );
+extern void     StartBlockTrans( void );
+extern void     StopBlockTrans( void );
 #ifdef SERVER
-extern void     ServMessage(char *);
+extern void     ServMessage( char * );
 #endif
 
 void SyncPoint( unsigned tick )
@@ -119,7 +94,7 @@ static int SenderHandshake( void )
     wait_time = WaitCount() + SYNC_TIME_OUT;   /* limit for time out */
     if( MaxBaud == MIN_BAUD ) wait_time += SEC(1);
     SendByte( SYNC_BYTE );      /* send SYNC_BYTE */
-    for(;;) {                      /* loop until ACK received or time out */
+    for( ;; ) {                 /* loop until ACK received or time out */
         reply = WaitByte( 1 );  /* get reply */
         if( reply == ACK ) break;       /* ACK received; go to next operation */
         if( reply == HI ) {             /* return HI received */
@@ -153,7 +128,7 @@ static int SetBaudSender( void )
     /* If MaxBaud == MIN_BAUD, we're talking over a modem and it might
        have buffered characters that haven't been transmitted yet. */
     if( MaxBaud == MIN_BAUD ) wait_time += SEC(2);
-    for(;;) {
+    for( ;; ) {
         if( WaitByte( 1 ) == TAK ) {
             SendByte( ACK );
             if( WaitByte( SEC(1)/2 ) == TAK ) {
@@ -205,7 +180,7 @@ static int ReceiverHandshake( void )
 
     wait_time = WaitCount() + SYNC_TIME_OUT;
     if( MaxBaud == MIN_BAUD ) wait_time += SEC(1);
-    for(;;) {               /* loop until SYNC_END received or time out */
+    for( ;; ) {             /* loop until SYNC_END received or time out */
         reply = WaitByte( 1 );             /* get character */
         if( reply == SYNC_END ) break;     /* SYNC_END received; continue */
         if( reply == SYNC_BYTE ) {         /* SYNC_BYTE received; send ACK */
@@ -285,7 +260,7 @@ static int SetBaud( int baud_index, int *sync_point_p )
 /*========================================================================*/
 
 
-bool MarchToTheSameDrummer()
+bool MarchToTheSameDrummer( void )
 {
     int got;
 
@@ -309,7 +284,7 @@ bool MarchToTheSameDrummer()
 }
 
 
-bool SetSyncTime()
+bool SetSyncTime( void )
 {
     if( MaxBaud != MIN_BAUD ) {
         if( !Baud( LOW_BAUD ) ) return( FAIL );
@@ -338,7 +313,7 @@ static int Speed( void )
 
     if( !MarchToTheSameDrummer() ) return( FAIL );
     sync_point = MAX_BAUD_SET_TICKS;
-    for(;;) {
+    for( ;; ) {
         if( SetBaud( BaudCounter, &sync_point ) ) break;
         ++BaudCounter;                /*  ... try next slower speed */
         if( BaudCounter >= MIN_BAUD ) {
@@ -455,7 +430,7 @@ static int BlockSend( unsigned num, char *p, unsigned timeout )
     crc_hi  = crc_value >> 8;          /* high 8 bits of crc_value */
 
     wait = (MaxBaud == MIN_BAUD) ? SEC(2) : SEC(1);
-    for(;;) {                   /* send block loop */
+    for( ;; ) {                 /* send block loop */
         /* send the block */
         StartBlockTrans();
         SendByte( STX );
@@ -473,7 +448,7 @@ static int BlockSend( unsigned num, char *p, unsigned timeout )
         StopBlockTrans();
 
         wait_time = WaitCount() + timeout;
-        for(;;) {               /* wait proper acknowledgement loop */
+        for( ;; ) {                 /* wait proper acknowledgement loop */
             reply = WaitByte( wait );          /* receive reply */
             if( reply == NO_DATA ) {
                 if( (timeout != FOREVER) && (WaitCount() >= wait_time) ) {
@@ -614,7 +589,7 @@ static int WaitReceive( char * err, unsigned max_len,
 
     ZeroWaitCount();
     wait_time = WaitCount() + timeout;
-    for(;;) {
+    for( ;; ) {
         data = WaitByte( 1 );
         if( data == STX ) {           /* STX received, get block */
             result = BlockReceive( err, max_len, p );
@@ -963,7 +938,7 @@ void RemoteDisco( void )
 
 /* Return:  Number of bytes received                                    */
 
-unsigned RemoteGet( void *rec, unsigned max_len )
+unsigned RemoteGet( char *rec, unsigned max_len )
 {
     unsigned timeout;             /* time limit for getting the data */
     char     err;                 /* storing the # of Errors the other side
@@ -989,7 +964,7 @@ unsigned RemoteGet( void *rec, unsigned max_len )
 /*========================================================================*/
 
 
-unsigned RemotePut( void *send, unsigned len )
+unsigned RemotePut( char *send, unsigned len )
 {
     unsigned timeout;             /* time limit for getting the data */
     int      result;              /* result of BlockSend() operation */

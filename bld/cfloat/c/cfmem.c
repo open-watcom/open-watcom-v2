@@ -130,7 +130,7 @@ extern  void    CFFree( cfloat *f ) {
 }
 
 
-extern  cf_bool CFFrlFree() {
+extern  cf_bool CFFrlFree( void ) {
 /***************************/
 
     if( cfFrlList.head != NULL ) {
@@ -140,7 +140,7 @@ extern  cf_bool CFFrlFree() {
     return( CF_FALSE );
 }
 
-extern  void    CFFini() {
+extern  void    CFFini( void ) {
 /************************/
 
     miniFrlFini( &cfFrlList );

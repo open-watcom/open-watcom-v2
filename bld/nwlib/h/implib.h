@@ -24,22 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Import library management routines.
 *
 ****************************************************************************/
 
-
-extern bool AddImport( arch_header *arch, libfile io );
-extern void CoffAddImportSymbols( arch_header *, short, long, short *, long, long *, long, char * );
-extern void CoffMKImport( arch_header *, importType, long, char * , char *, char *, long);
-extern void OmfMKImport( arch_header *arch, long ordinal, char *dll_name, char *sym_name, char * exp, importType type );
-extern void ElfMKImport( arch_header *, importType, long, char *, char *, Elf32_Export *, Elf32_Sym *, long );
-extern int CoffImportSize( importType, char *, char *, char *, long);
-extern int ElfImportSize( import_sym * );
-extern void CoffWriteImport( libfile, sym_file * );
-extern void ElfWriteImport( libfile, sym_file * );
-extern void ProcessImport( char * );
 
 #define MAX_IMPORT_STRING      (_MAX_PATH + 512 + 80)
 
@@ -82,7 +70,10 @@ extern char ElfOSInfo[];
 #define ElfBase_SIZE            0x122
 #define ElfOSInfo_SIZE          0x28
 
-#pragma pack (push, 1);
+#define ELF_IMPORT_SYM_INFO             0x10
+#define ELF_IMPORT_NAMED_SYM_INFO       0x15
+
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_32         flags;
@@ -103,7 +94,15 @@ typedef struct {
 typedef unsigned_32 Coff32_EName;
 typedef unsigned_16 Coff32_EOrd;
 
-#define ELF_IMPORT_SYM_INFO             0x10
-#define ELF_IMPORT_NAMED_SYM_INFO       0x15
+#include "poppck.h"
 
-#pragma pack (pop);
+extern bool AddImport( arch_header *arch, libfile io );
+extern void CoffAddImportSymbols( arch_header *, short, long, short *, long, long *, long, char * );
+extern void OmfMKImport( arch_header *, importType, long, char *, char *, char *, processor_type );
+extern void CoffMKImport( arch_header *, importType, long, char *, char *, char *, processor_type );
+extern void ElfMKImport( arch_header *, importType, long, char *, char *, Elf32_Export *, Elf32_Sym *, processor_type );
+extern int  CoffImportSize( import_sym * );
+extern int  ElfImportSize( import_sym * );
+extern void CoffWriteImport( libfile, sym_file * );
+extern void ElfWriteImport( libfile, sym_file * );
+extern void ProcessImport( char * );

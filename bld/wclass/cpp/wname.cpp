@@ -45,17 +45,11 @@ WEXPORT WName::WName( WWindow* parent, const WRect& r, WWindow* client,
             if( text[i] == '&' ) {
                 int key = text[i+1];
                 if( (key != '\0') && (key != '&') ) {
-                    parent->addAccelKey( key, this, (bcbi)&WName::hotKey );
+                    parent->addAccelKey( key, this, (bcbk)&WName::hotKey );
                 }
             }
         }
     }
-}
-
-
-WEXPORT WName::~WName() {
-/***********************/
-
 }
 
 
@@ -67,4 +61,14 @@ bool WName::hotKey( WKeyCode ) {
         return( TRUE );
     }
     return( FALSE );
+}
+
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WName::~WName() {
+/***********************/
+
 }

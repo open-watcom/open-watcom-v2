@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent ftell() implementaiton.
 *
 ****************************************************************************/
 
@@ -33,26 +32,31 @@
 #include "variety.h"
 #include <stdio.h>
 #include <string.h>
-#if defined(__PENPOINT__)  ||  defined(__QNX__)
 #include <unistd.h>
-#else
-#include <io.h>
-#endif
 #include "fileacc.h"
 
 
-_WCRTLINK long int ftell( FILE *fp )
-    {
-        long pos;
+#ifdef __INT64__
+_WCRTLINK long long _ftelli64( FILE *fp )
+{
+    long long   pos;
+#else
+_WCRTLINK long ftell( FILE *fp )
+{
+    long        pos;
+#endif
 
-        _ValidFile( fp, -1 );
-        if( fp->_flag & _APPEND  &&  fp->_flag & _DIRTY ) {
-            fflush( fp );   /* if data written in append mode, OS must know */
-        }
-        pos = tell( fileno( fp ) );
-        if( pos == -1 ) {
-            return( -1L );
-        }
+    _ValidFile( fp, -1 );
+    if( fp->_flag & _APPEND  &&  fp->_flag & _DIRTY ) {
+        fflush( fp );   /* if data written in append mode, OS must know */
+    }
+#ifdef __INT64__
+    pos = _telli64( fileno( fp ) );
+    if( pos != -1LL ) {
+#else
+    pos = tell( fileno( fp ) );
+    if( pos != -1L ) {
+#endif
         _AccessFile( fp );
         if( fp->_cnt != 0 ) {                   /* if something in buffer */
             if( fp->_flag & _DIRTY ) {          /* last operation was a put */
@@ -62,5 +66,6 @@ _WCRTLINK long int ftell( FILE *fp )
             }
         }
         _ReleaseFile( fp );
-        return( pos );
     }
+    return( pos );
+}

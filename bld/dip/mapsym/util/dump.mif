@@ -1,0 +1,14 @@
+proj_name = symdump
+
+symdump_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ..
+.h: ..
+
+objs = symdump.obj
+
+!include exetarg.mif

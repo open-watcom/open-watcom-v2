@@ -1,7 +1,7 @@
 #include "fail.h"
 
 
-#if ( defined(__386__) || defined(__I86__) ) && ! defined( __OS2__ )
+#if ( defined(__386__) || defined(__I86__) ) && !defined( __OS2__ ) && !defined( __LINUX__ )
 
 // verify __interrupt implies default __far
 

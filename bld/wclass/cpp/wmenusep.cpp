@@ -42,12 +42,6 @@ WEXPORT WMenuSeparator::WMenuSeparator()
 }
 
 
-WEXPORT WMenuSeparator::~WMenuSeparator() {
-/*****************************************/
-
-}
-
-
 void WMenuSeparator::attachMenu( WWindow *win, int idx ) {
 /********************************************************/
 
@@ -83,4 +77,13 @@ void WMenuSeparator::detachMenu() {
         }
     }
     setOwner( NULL );
+}
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
+
+WEXPORT WMenuSeparator::~WMenuSeparator() {
+/*****************************************/
+
 }

@@ -35,7 +35,7 @@
 
 const int POOLSIZE = 16;
 
-#pragma warning 549 5           // sizeof contains compiler genned info.
+#pragma warning 549 9           // sizeof contains compiler genned info.
 MemoryPool VariableSym::_pool( sizeof( VariableSym ), "VariableSym", POOLSIZE );
 #pragma warning 549 3
 

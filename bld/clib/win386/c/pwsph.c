@@ -34,5 +34,5 @@
 #include "cover.h"
 BOOL PASCAL _Cover_SetPenHook(HKP hkpop, LPFNRAWHOOK lpfn )
 {
-    return( SetPenHook( hkpop, SetProc( lpfn, GETPROC_PENWIN_LPFNRAWHOOK ) ) );
+    return( SetPenHook( hkpop, SetProc( (FARPROC)lpfn, GETPROC_PENWIN_LPFNRAWHOOK ) ) );
 }

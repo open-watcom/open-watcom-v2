@@ -34,6 +34,6 @@ TOGDEF(  check_stack,             TOGGLE_CHECK_STACK )
 TOGDEF( unreferenced,             TOGGLE_UNREFERENCED )
 TOGDEF( inline,                   TOGGLE_INLINE )
 TOGDEF( dump_cg,                  TOGGLE_DUMP_CG )
-#if _MACHINE == _PC
+#if ( _CPU == 8086 ) || ( _CPU == 386 )
 TOGDEF( reuse_duplicate_strings,  TOGGLE_REUSE_DUPLICATE_STRINGS )
 #endif

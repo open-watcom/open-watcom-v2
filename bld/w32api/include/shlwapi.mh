@@ -1,0 +1,1380 @@
+/*
+ *  shlwapi.h   Shell lightweight functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _INC_SHLWAPI
+#define _INC_SHLWAPI
+
+:include readonly.sp
+
+#include <objbase.h>
+#include <shtypes.h>
+
+:include cpluspro.sp
+
+/* Macros to specify shell lightweight functions */
+#define LWSTDAPI        EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
+#define LWSTDAPI_( x )  EXTERN_C DECLSPEC_IMPORT x STDAPICALLTYPE
+#define LWSTDAPIV       EXTERN_C DECLSPEC_IMPORT HRESULT STDAPIVCALLTYPE
+#define LWSTDAPIV_( x ) EXTERN_C DECLSPEC_IMPORT x STDAPIVCALLTYPE
+
+/* Forward declarations */
+typedef interface IConnectionPoint  IConnectionPoint;
+
+/* Shell lightweight primitive data types */
+typedef int     STIF_FLAGS;
+#if (_WIN32_IE >= 0x0602)
+typedef int     SRRF;
+#endif
+typedef HANDLE  HUSKEY;
+typedef HUSKEY  *PHUSKEY;
+
+/* StrToIntEx() flags */
+#define STIF_DEFAULT        0x00000000L
+#define STIF_SUPPORT_HEX    0x00000001L
+
+/* MIME type strings */
+#define SZ_CONTENTTYPE_HTMLA    "text/html"
+#define SZ_CONTENTTYPE_HTMLW    L"text/html"
+#define SZ_CONTENTTYPE_CDFA     "application/x-cdf"
+#define SZ_CONTENTTYPE_CDFW     L"application/x-cdf"
+#ifdef UNICODE
+    #define SZ_CONTENTTYPE_HTML SZ_CONTENTTYPE_HTMLW
+    #define SZ_CONTENTTYPE_CDF  SZ_CONTENTTYPE_CDFW
+#else
+    #define SZ_CONTENTTYPE_HTML SZ_CONTENTTYPE_HTMLA
+    #define SZ_CONTENTTYPE_CDF  SZ_CONTENTTYPE_CDFA
+#endif
+
+/* PathGetCharType() return flags */
+#define GCT_INVALID     0x0000
+#define GCT_LFNCHAR     0x0001
+#define GCT_SHORTCHAR   0x0002
+#define CGT_WILD        0x0004
+#define GCT_SEPARATOR   0x0008
+
+/* PathMatchSpecEx() flags */
+#if (_WIN32_IE >= 0x0700)
+    #define PMSF_NORMAL             0x00000000L
+    #define PMSF_MULTIPLE           0x00000001L
+    #define PMSF_DONT_STRIP_SPACES  0x00010000L
+#endif
+
+/* UrlEscape() flags */
+#define URL_ESCAPE_PERCENT              0x00001000L
+#define URL_ESCAPE_SEGMENT_ONLY         0x00002000L
+#define URL_FILE_USE_PATHURL            0x00010000L
+#if (_WIN32_IE >= 0x0602)
+    #define URL_DONT_UNESCAPE           0x00020000L
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    #define URL_ESCAPE_AS_UTF8          0x00040000L
+#endif
+#define URL_UNESCAPE_INPLACE            0x00100000L
+#define URL_CONVERT_IF_DOSPATH          0x00200000L
+#define URL_UNESCAPE_HIGH_ANSI_ONLY     0x00400000L
+#define URL_INTERNAL_PATH               0x00800000L
+#define URL_DONT_ESCAPE_EXTRA_INFO      0x02000000L
+#define URL_DONT_UNESCAPE_EXTRA_INFO    URL_DONT_ESCAPE_EXTRA_INFO
+#define URL_BROWSER_MODE                URL_DONT_ESCAPE_EXTRA_INFO
+#define URL_ESCAPE_SPACES_ONLY          0x04000000L
+#define URL_DONT_SIMPLIFY               0x08000000L
+#define URL_NO_META                     URL_DONT_SIMPLIFY
+#define URL_UNESCAPE                    0x10000000L
+#define URL_ESCAPE_UNSAFE               0x20000000L
+#define URL_PLUGGABLE_PROTOCOL          0x40000000L
+#define URL_WININET_COMPATIBILITY       0x80000000L
+
+/* URL part flags */
+#define URL_PARTFLAG_KEEPSCHEME 0x00000001L
+
+/* URL apply flags */
+#define URL_APPLY_DEFAULT       0x00000001L
+#define URL_APPLY_GUESSSCHEME   0x00000002L
+#define URL_APPLY_GUESSFILE     0x00000004L
+#define URL_APPLY_FORCEAPPLY    0x00000008L
+
+/* Shell registry routine flags */
+#if (_WIN32_IE >= 0x0600)
+    #define SRRF_RT_REG_NONE        0x00000001
+    #define SRRF_RT_REG_SZ          0x00000002
+    #define SRRF_RT_REG_EXPAND_SZ   0x00000004
+    #define SRRF_RT_REG_BINARY      0x00000008
+    #define SRRF_RT_REG_DWORD       0x00000010
+    #define SRRF_RT_REG_MULTI_SZ    0x00000020
+    #define SRRF_RT_REG_QWORD       0x00000040
+    #define SRRF_RT_DWORD           (SRRF_RT_REG_BINARY | SRRF_RT_REG_DWORD)
+    #define SRRF_RT_QWORD           (SRRF_RT_REG_BINARY | SRRF_RT_REG_QWORD)
+    #define SRRF_RT_ANY             0x0000FFFF
+    #define SRRF_RM_ANY             0x00000000
+    #define SRRF_RM_NORMAL          0x00010000
+    #define SRRF_RM_SAFE            0x00020000
+    #define SRRF_RM_SAFENETWORK     0x00040000
+    #define SRRF_NOEXPAND           0x10000000
+    #define SRRF_ZEROONFAILURE      0x20000000
+    #define SRRF_NOVIRT             0x40000000
+#endif
+
+/* Shell registry set flags */
+#define SHREGSET_HKCU       0x00000001
+#define SHREGSET_FORCE_HKCU 0x00000002
+#define SHREGSET_HKLM       0x00000004
+#define SHREGSET_FORCE_HKLM 0x00000008
+#define SHREGSET_DEFAULT    (SHREGSET_FORCE_HKCU | SHREGSET_FORCE_HKLM)
+
+/* Multilanguage cross code page flags */
+#if (_WIN32_IE >= 0x0501)
+    #define ML_NO_CROSSCODEPAGE     0L
+    #define ML_CROSSCODEPAGE_NT     1L
+    #define ML_CROSSCODEPAGE        2L
+    #define ML_SHELL_LANGUAGE       4L
+    #define ML_CROSSCODEPAGE_MASK   7L
+#endif
+
+/* Stopwatch modes */
+#if (_WIN32_IE < 0x0700)
+    #define SPMODE_SHELL        0x00000001L
+    #define SPMODE_DEBUGOUT     0x00000002L
+    #define SPMODE_TEST         0x00000004L
+    #define SPMODE_BROWSER      0x00000008L
+    #define SPMODE_FLUSH        0x00000010L
+    #define SPMODE_EVENT        0x00000020L
+    #define SPMODE_MSVM         0x00000040L
+    #define SPMODE_FORMATTEXT   0x00000080L
+    #define SPMODE_PROFILE      0x00000100L
+    #define SPMODE_DEBUGBREAK   0x00000200L
+    #define SPMODE_MSGTRACE     0x00000400L
+    #define SPMODE_PERFTAGS     0x00000800L
+    #define SPMODE_MEMWATCH     0x00001000L
+    #define SPMODE_DBMON        0x00002000L
+    #define SPMODE_MULTISTOP    0x00004000L
+    #define SPMODE_EVENTTRACE   0x00008000L
+#endif
+
+/* SHGetViewStatePropertyBag() flags */
+#if (_WIN32_IE >= 0x0600)
+    #define SHGVSPB_PERUSER         0x00000001L
+    #define SHGVSPB_ALLUSERS        0x00000002L
+    #define SHGVSPB_PERFOLDER       0x00000004L
+    #define SHGVSPB_ALLFOLDERS      0x00000008L
+    #define SHGVSPB_INHERIT         0x00000010L
+    #define SHGVSPB_ROAM            0x00000020L
+    #define SHGVSPB_NOAUTODEFAULTS  0x80000000L
+    #define SHGVSPB_FOLDER          (SHGVSPB_PERUSER | SHGVSPB_PERFOLDER)
+    #define SHGVSPB_FOLDERNODEFAULTS \
+        (SHGVSPB_PERUSER | SHGVSPB_PERFOLDER | SHGVSPB_NOAUTODEFAULTS)
+    #define SHGVSPB_USERDEFAULTS    (SHGVSPB_PERUSER | SHGVSPB_ALLFOLDERS)
+    #define SHGVSPB_GLOBALDEFAULTS  (SHGVSPB_ALLUSERS | SHGVSPB_ALLFOLDERS)
+#endif
+
+/* SHFormatDateTime() flags */
+#define FDTF_SHORTTIME          0x00000001L
+#define FDTF_SHORTDATE          0x00000002L
+#define FDTF_DEFAULT            (FDTF_SHORTDATE | FDTF_SHORTTIME)
+#define FDTF_LONGDATE           0x00000004L
+#define FDTF_LONGTIME           0x00000008L
+#define FDTF_RELATIVE           0x00000010L
+#define FDTF_LTRDATE            0x00000100L
+#define FDTF_RTLDATE            0x00000200L
+#define FDTF_NOAUTOREADINGORDER 0x00000400L
+
+/* IsOS() constants */
+#if (_WIN32_IE >= 0x0501)
+    #define OS_WINDOWS                  0L
+    #define OS_NT                       1L
+    #define OS_WIN95ORGREATER           2L
+    #define OS_NT4ORGREATER             3L
+    #define OS_WIN98ORGREATER           5L
+    #define OS_WIN98_GOLD               6L
+    #define OS_WIN2000ORGREATER         7L
+    #define OS_WIN2000PRO               8L
+    #define OS_WIN2000SERVER            9L
+    #define OS_WIN2000ADVSERVER         10L
+    #define OS_WIN2000DATACENTER        11L
+    #define OS_WIN2000TERMINAL          12L
+    #define OS_EMBEDDED                 13L
+    #define OS_TERMINALCLIENT           14L
+    #define OS_TERMINALREMOTEADMIN      15L
+    #define OS_WIN95_GOLD               16L
+    #define OS_MEORGREATER              17L
+    #define OS_XPORGREATER              18L
+    #define OS_HOME                     19L
+    #define OS_PROFESSIONAL             20L
+    #define OS_DATACENTER               21L
+    #define OS_ADVSERVER                22L
+    #define OS_SERVER                   23L
+    #define OS_TERMINALSERVER           24L
+    #define OS_PERSONALTERMINALSERVER   25L
+    #define OS_FASTUSERSWITCHING        26L
+    #define OS_WELCOMELOGONUI           27L
+    #define OS_DOMAINMEMBER             28L
+    #define OS_ANYSERVER                29L
+    #define OS_WOW6432                  30L
+    #define OS_WEBSERVER                31L
+    #define OS_SMALLBUSINESSSERVER      32L
+    #define OS_TABLETPC                 33L
+    #define OS_SERVERADMINUI            34L
+    #define OS_MEDIACENTER              35L
+    #define OS_APPLIANCE                36L
+#endif
+
+/* WhichPlatform() return values */
+#if (_WIN32_IE >= 0x0501)
+    #define PLATFORM_UNKNOWN        0
+    #define PLATFORM_IE3            1
+    #define PLATFORM_BROWSERONLY    1
+    #define PLATFORM_INTEGRATED     2
+#endif
+
+/* SHIsLowMemoryMachine() flags */
+#define ILMM_IE4    0L
+
+/* SHAutoComplete() flags */
+#if (_WIN32_IE >= 0x0500)
+    #define SHACF_DEFAULT               0x00000000L
+    #define SHACF_FILESYSTEM            0x00000001L
+    #define SHACF_URLHISTORY            0x00000002L
+    #define SHACF_URLMRU                0x00000004L
+    #define SHACF_URLALL                (SHACF_URLHISTORY | SHACF_URLMRU)
+    #define SHACF_USETAB                0x00000008L
+    #define SHACF_FILESYS_ONLY          0x00000010L
+#endif
+#if (_WIN32_IE >= 0x0600)
+    #define SHACF_FILESYS_DIRS          0x00000020L
+#endif
+#if (_WIN32_IE >= 0x0700)
+    #define SHACF_VIRTUAL_NAMESPACE     0x00000040L
+#endif
+#if (_WIN32_IE >= 0x0500)
+    #define SHACF_AUTOSUGGEST_FORCE_ON  0x10000000L
+    #define SHACF_AUTOSUGGEST_FORCE_OFF 0x20000000L
+    #define SHACF_AUTOAPPEND_FORCE_ON   0x40000000L
+    #define SHACF_AUTOAPPEND_FORCE_OFF  0x80000000L
+#endif
+
+/* DllGetVersion() platform identifiers */
+#define DLLVER_PLATFORM_WINDOWS 0x00000001L
+#define DLLVER_PLATFORM_NT      0x00000002L
+
+/* DllGetVersion() version number masks */
+#if (_WIN32_IE >= 0x0500)
+    #define DLLVER_MAJOR_MASK   0xFFFF000000000000LL
+    #define DLLVER_MINOR_MASK   0x0000FFFF00000000LL
+    #define DLLVER_BUILD_MASK   0x00000000FFFF0000LL
+    #define DLLVER_QFE_MASK     0x000000000000FFFFLL
+#endif
+
+/* Macro to make version numbers for DllGetVersion() */
+#define MAKEDLLVERULL( p1, p2, p3, p4 ) \
+    (((ULONGLONG)(p1) << 48) | ((ULONGLONG)(p2) << 32) | ((ULONGLONG)(p3) << 16)) | \
+    (ULONGLONG)(p4))
+
+/* QueryInterface() table macros */
+#ifndef STATIC_CAST
+    #define STATIC_CAST( x )    static_cast< x >
+#endif
+#ifndef OFFSETOFCLASS
+    #define OFFSETOFCLASS( p1, p2 ) \
+        ((DWORD)(DWORD_PTR)(STATIC_CAST( p1 * )((p2 *)8)) - 8)
+#endif
+#define QITABENTMULTI( p1, p2, p3 ) \
+    { (IID *)&IID_##p2, OFFSETOFCLASS( p3, p1 ) }
+#define QITABENTMULTI2( p1, p2, p3 ) \
+    { (IID *)&p2, OFFSETOFCLASS( p3, p1 ) }
+#define QITABENT( p1, p2 )      QITABENTMULTI( p1, p2, p2 )
+
+/* StrFormatByteSizeEx() flags */
+enum tagSFBS_FLAGS {
+    SFBS_FLAGS_ROUND_TO_NEAREST_DISPLAYED_DIGIT     = 0x0001,
+    SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS  = 0x0002
+};
+typedef int SFBS_FLAGS;
+
+/* URL schemes */
+typedef enum {
+    URL_SCHEME_INVALID          = -1,
+    URL_SCHEME_UNKNOWN          = 0,
+    URL_SCHEME_FTP              = 1,
+    URL_SCHEME_HTTP             = 2,
+    URL_SCHEME_GOPHER           = 3,
+    URL_SCHEME_MAILTO           = 4,
+    URL_SCHEME_NEWS             = 5,
+    URL_SCHEME_NNTP             = 6,
+    URL_SCHEME_TELNET           = 7,
+    URL_SCHEME_WAIS             = 8,
+    URL_SCHEME_FILE             = 9,
+    URL_SCHEME_MK               = 10,
+    URL_SCHEME_HTTPS            = 11,
+    URL_SCHEME_SHELL            = 12,
+    URL_SCHEME_SNEWS            = 13,
+    URL_SCHEME_LOCAL            = 14,
+    URL_SCHEME_JAVASCRIPT       = 15,
+    URL_SCHEME_VBSCRIPT         = 16,
+    URL_SCHEME_ABOUT            = 17,
+    URL_SCHEME_RES              = 18,
+#if (_WIN32_IE >= 0x0600)
+    URL_SCHEME_MSSHELLROOTED    = 19,
+    URL_SCHEME_MSSHEELIDLIST    = 20,
+    URL_SCHEME_MSHELP           = 21,
+#endif
+#if (_WIN32_IE >= 0x0700)
+    URL_SCHEME_MSSHELLDEVICE    = 22,
+    URL_SCHEME_WILDCARD         = 23,
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    URL_SCHEME_SEARCH_MS        = 24,
+#endif
+#if (NTDDI_VERSION >= 0x06000100)
+    URL_SCHEME_SEARCH           = 25,
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    URL_SCHEME_KNOWNFOLDER      = 26,
+#endif
+    URL_SCHEME_MAXVALUE         = 27
+} URL_SCHEME;
+
+/* URL parts */
+typedef enum {
+    URL_PART_NONE       = 0,
+    URL_PART_SCHEME     = 1,
+    URL_PART_HOSTNAME   = 2,
+    URL_PART_USERNAME   = 3,
+    URL_PART_PASSWORD   = 4,
+    URL_PART_PORT       = 5,
+    URL_PART_QUERY      = 6
+} URL_PART;
+
+/* UrlIs() constants */
+typedef enum {
+    URLIS_URL           = 0,
+    URLIS_OPAQUE        = 1,
+    URLIS_NOHISTORY     = 2,
+    URLIS_FILEURL       = 3,
+    URLIS_APPLICABLE    = 4,
+    URLIS_DIRECTORY     = 5,
+    URLIS_HASQUERY      = 6
+} URLIS;
+
+/* Parsed URL */
+#if (_WIN32_IE >= 0x0500)
+typedef struct tagPARSEDURLA {
+    DWORD   cbSize;
+    LPCSTR  pszProtocol;
+    UINT    cchProtocol;
+    LPCSTR  pszSuffix;
+    UINT    cchSuffix;
+    UINT    nScheme;
+} PARSEDURLA;
+typedef PARSEDURLA  *PPARSEDURLA;
+typedef struct tagPARSEDURLW {
+    DWORD   cbSize;
+    LPCWSTR pszProtocol;
+    UINT    cchProtocol;
+    LPCWSTR pszSuffix;
+    UINT    cchSuffix;
+    UINT    nScheme;
+} PARSEDURLW;
+typedef PARSEDURLW  *PPARSEDURLW;
+#ifdef UNICODE
+typedef PARSEDURLW  PARSEDURL;
+typedef PPARSEDURLW PPARSEDURL;
+#else
+typedef PARSEDURLA  PARSEDURL;
+typedef PPARSEDURLA PPARSEDURL;
+#endif
+#endif
+
+/* Shell registry delete flags */
+typedef enum {
+    SHREGDEL_DEFAULT    = 0x00000000,
+    SHREGDEL_HKCU       = 0x00000001,
+    SHREGDEL_HKLM       = 0x00000010,
+    SHREGDEL_BOTH       = 0x00000011
+} SHREGDEL_FLAGS;
+
+/* Shell registry enumeration flags */
+typedef enum {
+    SHREGENUM_DEFAULT   = 0x00000000,
+    SHREGENUM_HKCU      = 0x00000001,
+    SHREGENUM_HKLM      = 0x00000010,
+    SHREGENUM_BOTH      = 0x00000011
+} SHREGENUM_FLAGS;
+
+/* Association flags */
+enum {
+    ASSOCF_INIT_NOREMAPCLSID    = 0x00000001,
+    ASSOCF_INIT_BYEXENAME       = 0x00000002,
+    ASSOCF_OPEN_BYEXENAME       = 0x00000002,
+    ASSOCF_INIT_DEFAULTTOSTAR   = 0x00000004,
+    ASSOCF_INIT_DEFAULTTOFOLDER = 0x00000008,
+    ASSOCF_NOUSERSETTINGS       = 0x00000010,
+    ASSOCF_NOTRUNCATE           = 0x00000020,
+    ASSOCF_VERIFY               = 0x00000040,
+    ASSOCF_REMAPRUNDLL          = 0x00000080,
+    ASSOCF_NOFIXUPS             = 0x00000100,
+    ASSOCF_IGNOREBASECLASS      = 0x00000200,
+    ASSOCF_INIT_IGNOREUNKNOWN   = 0x00000400
+};
+typedef DWORD   ASSOCF;
+
+/* Association strings */
+typedef enum {
+    ASSOCSTR_COMMAND            = 1,
+    ASSOCSTR_EXECUTABLE         = 2,
+    ASSOCSTR_FRIENDLYDOCNAME    = 3,
+    ASSOCSTR_FRIENDLYAPPNAME    = 4,
+    ASSOCSTR_NOOPEN             = 5,
+    ASSOCSTR_SHELLNEWVALUE      = 6,
+    ASSOCSTR_DDECOMMAND         = 7,
+    ASSOCSTR_DDEIFEXEC          = 8,
+    ASSOCSTR_DDEAPPLICATION     = 9,
+    ASSOCSTR_DDETOPIC           = 10,
+    ASSOCSTR_INFOTIP            = 11,
+#if (_WIN32_IE >= 0x0600)
+    ASSOCSTR_QUICKTIP           = 12,
+    ASSOCSTR_TITLEINFO          = 13,
+    ASSOCSTR_CONTENTTYPE        = 14,
+    ASSOCSTR_DEFAULTICON        = 15,
+    ASSOCSTR_SHELLEXTENSION     = 16,
+#endif
+#if (_WIN32_IE >= 0x0800)
+    ASSOCSTR_DROPTARGET         = 17,
+    ASSOCSTR_DELEGATEEXECUTE    = 18,
+#endif
+    ASSOCSTR_MAX                = 19
+} ASSOCSTR;
+
+/* Association keys */
+typedef enum {
+    ASSOCKEY_SHELLEXECCLASS = 1,
+    ASSOCKEY_APP            = 2,
+    ASSOCKEY_CLASS          = 3,
+    ASSOCKEY_BASECLASS      = 4,
+    ASSOCKEY_MAX            = 5
+} ASSOCKEY;
+
+/* Association data values */
+typedef enum {
+    ASSOCDATA_MSIDESCRIPTOR     = 1,
+    ASSOCDATA_NOACTIVATEHANDLER = 2,
+    ASSOCDATA_QUERYCLASSSTORE   = 3,
+    ASSOCDATA_HASPERUSERASSOC   = 4,
+#if (_WIN32_IE >= 0x0600)
+    ASSOCDATA_EDITFLAGS         = 5,
+    ASSOCDATA_VALUE             = 6,
+#endif
+    ASSOCDATA_MAX               = 7
+} ASSOCDATA;
+
+/* Association enumeration values */
+typedef enum {
+    ASSOCENUM_NONE  = 0
+} ASSOCENUM;
+
+/* QueryInterface() table */
+#if (_WIN32_IE >= 0x0501)
+typedef struct {
+    const IID   *piid;
+    int         dwOffset;
+} QITAB;
+typedef QITAB       *LPQITAB;
+typedef const QITAB *LPCQITAB;
+#endif
+
+/* Shell global counters */
+typedef enum {
+    GLOBALCOUNTER_SEARCHMANAGER             = 0,
+    GLOBALCOUNTER_SEARCHOPTIONS             = 1,
+    GLOBALCOUNTER_FOLDERSETTINGSCHANGE      = 2,
+    GLOBALCOUNTER_RATING                    = 3,
+    GLOBALCOUNTER_APPROVEDSITES             = 4,
+    GLOBALCOUNTER_RESTRICTIONS              = 5,
+    GLOBALCOUNTER_SHELLSETTINGSCHANGED      = 6,
+    GLOBALCOUNTER_SYSTEMPIDLCHANGE          = 7,
+    GLOBALCOUNTER_OVERLAYMANAGER            = 8,
+    GLOBALCOUNTER_QUERYASSOCIATIONS         = 9,
+    GLOBALCOUNTER_IESESSIONS                = 10,
+    GLOBALCOUNTER_IEONLY_SESSIONS           = 11,
+    GLOBALCOUNTER_APPLICATION_DESTINATIONS  = 12,
+    GLOBALCOUNTER_BITBUCKETNUMDELETERS      = 14,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_SHARES  = 15,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_A = 16,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_B = 17,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_C = 18,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_D = 19,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_E = 20,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_F = 21,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_G = 22,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_H = 23,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_I = 24,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_J = 25,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_K = 26,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_L = 27,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_M = 28,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_N = 29,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_O = 30,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_P = 31,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_Q = 32,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_R = 33,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_S = 34,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_T = 35,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_U = 36,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_V = 37,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_W = 38,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_X = 39,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_Y = 40,
+    GLOBALCOUNTER_RECYCLEDIRTYCOUNT_DRIVE_Z = 41,
+    GLOBALCOUNTER_RECYCLEBINENUM            = 44,
+    GLOBALCOUNTER_RECYCLEBINCORRUPTED       = 45,
+    GLOBALCOUNTER_RATINGS_STATECOUNTER      = 46,
+    GLOBALCOUNTER_PRIVATE_PROFILE_CACHE     = 47,
+    GLOBALCOUNTER_INTERNETTOOLBAR_LAYOUT    = 48,
+    GLOBALCOUNTER_FOLDERDEFINITION_CACHE    = 49,
+    GLOBALCOUNTER_COMMONPLACES_LIST_CACHE   = 50,
+    GLOBALCOUNTER_PRIVATE_PROFILE_CACHE_MACHINEWIDE = 51,
+    GLOBALCOUNTER_ASSOCCHANGED              = 52,
+    GLOBALCOUNTER_MAXIMUMVALUE              = 53
+} SHGLOBALCOUNTER;
+
+/* SHCreateThread() flags */
+enum {
+    CTF_INSIST                  = 0x00000001,
+    CTF_THREAD_REF              = 0x00000002,
+    CTF_PROCESS_REF             = 0x00000004,
+    CTF_COINIT_STA              = 0x00000008,
+    CTF_COINIT                  = CTF_COINIT_STA,
+#if (_WIN32_IE >= 0x0600)
+    CTF_FREELIBANDEXIT          = 0x00000010,
+    CTF_REF_COUNTED             = 0x00000020,
+    CTF_WAIT_ALLOWCOM           = 0x00000040,
+#endif
+#if (_WIN32_IE >= 0x0700)
+    CTF_UNUSED                  = 0x00000080,
+    CTF_INHERITWOW64            = 0x00000100,
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    CTF_WAIT_NO_REENTRANCY      = 0x00000200,
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    CTF_KEYBOARD_LOCALE         = 0x00000400,
+    CTF_OLEINITIALIZE           = 0x00000800,
+    CTF_COINIT_MTA              = 0x00001000,
+    CTF_NOADDREFLIB             = 0x00002000
+#endif
+};
+typedef DWORD   SHCT_FLAGS;
+
+/* DllGetVersion() parameters */
+typedef struct _DLLVERSIONINFO {
+    DWORD   cbSize;
+    DWORD   dwMajorVersion;
+    DWORD   dwMinorVersion;
+    DWORD   dwBuildNumber;
+    DWORD   dwPlatformID;
+} DLLVERSIONINFO;
+
+/* DllGetVersion() parameters (version 2) */
+#if (_WIN32_IE >= 0x0501)
+typedef struct _DLLVERSIONINFO2 {
+    DLLVERSIONINFO  info1;
+    DWORD           dwFlags;
+    ULONGLONG       ullVersion;
+} DLLVERSIONINFO2;
+#endif
+
+/* DllGetVersion() function pointer */
+typedef HRESULT (CALLBACK *DLLGETVERSIONPROC)( DLLVERSIONINFO * );
+
+/* IQueryAssociations interface */
+#undef INTERFACE
+#define INTERFACE   IQueryAssociations
+DECLARE_INTERFACE_( IQueryAssociations, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IQueryAssociations methods */
+    STDMETHOD( Init )( THIS_ ASSOCF, LPCWSTR, HKEY, HWND ) PURE;
+    STDMETHOD( GetString )( THIS_ ASSOCF, ASSOCSTR, LPCWSTR, LPWSTR, DWORD * ) PURE;
+    STDMETHOD( GetKey )( THIS_ ASSOCF, ASSOCKEY, LPCWSTR, HKEY * ) PURE;
+    STDMETHOD( GetData )( THIS_ ASSOCF, ASSOCDATA, LPCWSTR, void *, DWORD * ) PURE;
+    STDMETHOD( GetEnum )( THIS_ ASSOCF, ASSOCENUM, LPCWSTR, REFIID, void ** ) PURE;
+};
+
+/* Undefine C object macros that conflict with functions defined below. */
+#if (_WIN32_IE >= 0x0501) && !defined( __cplusplus ) && defined( COBJMACROS )
+    #undef IStream_Read
+    #undef IStream_Write
+#endif
+
+/* Functions in SHLWAPI.DLL */
+LWSTDAPI                AssocCreate( CLSID, REFIID, void ** );
+LWSTDAPI                AssocQueryKeyA( ASSOCF, ASSOCKEY, LPCSTR, LPCSTR, HKEY * );
+LWSTDAPI                AssocQueryKeyW( ASSOCF, ASSOCKEY, LPCWSTR, LPCWSTR, HKEY * );
+LWSTDAPI                AssocQueryStringA( ASSOCF, ASSOCSTR, LPCSTR, LPCSTR, LPSTR, DWORD * );
+LWSTDAPI                AssocQueryStringByKeyA( ASSOCF, ASSOCSTR, HKEY, LPCSTR, LPSTR, DWORD * );
+LWSTDAPI                AssocQueryStringByKeyW( ASSOCF, ASSOCSTR, HKEY, LPCWSTR, LPWSTR, DWORD * );
+LWSTDAPI                AssocQueryStringW( ASSOCF, ASSOCSTR, LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
+LWSTDAPI_( BOOL )       ChrCmpIA( WORD, WORD );
+LWSTDAPI_( BOOL )       ChrCmpIW( WCHAR, WCHAR );
+LWSTDAPI_( int )        GetMenuPosFromID( HMENU, UINT );
+LWSTDAPI                HashData( LPBYTE, DWORD, LPBYTE, DWORD );
+LWSTDAPI_( BOOL )       IntlStrEqWorkerA( BOOL, LPCSTR, LPCSTR, int );
+LWSTDAPI_( BOOL )       IntlStrEqWorkerW( BOOL, LPCWSTR, LPCWSTR, int );
+LWSTDAPI_( LPSTR )      PathAddBackslashA( LPSTR );
+LWSTDAPI_( LPWSTR )     PathAddBackslashW( LPWSTR );
+LWSTDAPI_( BOOL )       PathAddExtensionA( LPSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathAddExtensionW( LPWSTR, LPCWSTR );
+LWSTDAPI_( BOOL )       PathAppendA( LPSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathAppendW( LPWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      PathBuildRootA( LPSTR, int );
+LWSTDAPI_( LPWSTR )     PathBuildRootW( LPWSTR, int );
+LWSTDAPI_( BOOL )       PathCanonicalizeA( LPSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathCanonicalizeW( LPWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      PathCombineA( LPSTR, LPCSTR, LPCSTR );
+LWSTDAPI_( LPWSTR )     PathCombineW( LPWSTR, LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        PathCommonPrefixA( LPCSTR, LPCSTR, LPSTR );
+LWSTDAPI_( int )        PathCommonPrefixW( LPCWSTR, LPCWSTR, LPWSTR );
+LWSTDAPI_( BOOL )       PathCompactPathA( HDC, LPSTR, UINT );
+LWSTDAPI_( BOOL )       PathCompactPathExA( LPSTR, LPCSTR, UINT, DWORD );
+LWSTDAPI_( BOOL )       PathCompactPathExW( LPWSTR, LPCWSTR, UINT, DWORD );
+LWSTDAPI_( BOOL )       PathCompactPathW( HDC, LPWSTR, UINT );
+LWSTDAPI                PathCreateFromUrlA( LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                PathCreateFromUrlW( LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI_( BOOL )       PathFileExistsA( LPCSTR );
+LWSTDAPI_( BOOL )       PathFileExistsW( LPCWSTR );
+LWSTDAPI_( LPSTR )      PathFindExtensionA( LPCSTR );
+LWSTDAPI_( LPWSTR )     PathFindExtensionW( LPCWSTR );
+LWSTDAPI_( LPSTR )      PathFindFileNameA( LPCSTR );
+LWSTDAPI_( LPWSTR )     PathFindFileNameW( LPCWSTR );
+LWSTDAPI_( LPSTR )      PathFindNextComponentA( LPCSTR );
+LWSTDAPI_( LPWSTR )     PathFindNextComponentW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathFindOnPathA( LPSTR, LPCSTR * );
+LWSTDAPI_( BOOL )       PathFindOnPathW( LPWSTR, LPCWSTR * );
+LWSTDAPI_( LPCSTR )     PathFindSuffixArrayA( LPCSTR, const LPCSTR *, int );
+LWSTDAPI_( LPCWSTR )    PathFindSuffixArrayW( LPCWSTR, const LPCWSTR *, int );
+LWSTDAPI_( LPSTR )      PathGetArgsA( LPCSTR );
+LWSTDAPI_( LPWSTR )     PathGetArgsW( LPCWSTR );
+LWSTDAPI_( UINT )       PathGetCharTypeA( UCHAR );
+LWSTDAPI_( UINT )       PathGetCharTypeW( WCHAR );
+LWSTDAPI_( int )        PathGetDriveNumberA( LPCSTR );
+LWSTDAPI_( int )        PathGetDriveNumberW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsContentTypeA( LPCSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathIsContentTypeW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsDirectoryA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsDirectoryEmptyA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsDirectoryEmptyW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsDirectoryW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsFileSpecA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsFileSpecW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsLFNFileSpecA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsLFNFileSpecW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsNetworkPathA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsNetworkPathW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsPrefixA( LPCSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathIsPrefixW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsRelativeA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsRelativeW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsRootA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsRootW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsSameRootA( LPCSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathIsSameRootW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsSystemFolderA( LPCSTR, DWORD );
+LWSTDAPI_( BOOL )       PathIsSystemFolderW( LPCWSTR, DWORD );
+LWSTDAPI_( BOOL )       PathIsUNCA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsUNCServerA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsUNCServerShareA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsUNCServerShareW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsUNCServerW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsUNCW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathIsURLA( LPCSTR );
+LWSTDAPI_( BOOL )       PathIsURLW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathMakePrettyA( LPSTR );
+LWSTDAPI_( BOOL )       PathMakePrettyW( LPWSTR );
+LWSTDAPI_( BOOL )       PathMakeSystemFolderA( LPCSTR );
+LWSTDAPI_( BOOL )       PathMakeSystemFolderW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathMatchSpecA( LPCSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathMatchSpecW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        PathParseIconLocationA( LPSTR );
+LWSTDAPI_( int )        PathParseIconLocationW( LPWSTR );
+LWSTDAPI_( BOOL )       PathQuoteSpacesA( LPSTR );
+LWSTDAPI_( BOOL )       PathQuoteSpacesW( LPWSTR );
+LWSTDAPI_( BOOL )       PathRelativePathToA( LPSTR, LPCSTR, DWORD, LPCSTR, DWORD );
+LWSTDAPI_( BOOL )       PathRelativePathToW( LPWSTR, LPCWSTR, DWORD, LPCWSTR, DWORD );
+LWSTDAPI_( void )       PathRemoveArgsA( LPSTR );
+LWSTDAPI_( void )       PathRemoveArgsW( LPWSTR );
+LWSTDAPI_( LPSTR )      PathRemoveBackslashA( LPSTR );
+LWSTDAPI_( LPWSTR )     PathRemoveBackslashW( LPWSTR );
+LWSTDAPI_( void )       PathRemoveBlanksA( LPSTR );
+LWSTDAPI_( void )       PathRemoveBlanksW( LPWSTR );
+LWSTDAPI_( void )       PathRemoveExtensionA( LPSTR );
+LWSTDAPI_( void )       PathRemoveExtensionW( LPWSTR );
+LWSTDAPI_( BOOL )       PathRemoveFileSpecA( LPSTR );
+LWSTDAPI_( BOOL )       PathRemoveFileSpecW( LPWSTR );
+LWSTDAPI_( BOOL )       PathRenameExtensionA( LPSTR, LPCSTR );
+LWSTDAPI_( BOOL )       PathRenameExtensionW( LPWSTR, LPCWSTR );
+LWSTDAPI_( BOOL )       PathSearchAndQualifyA( LPCSTR, LPSTR, UINT );
+LWSTDAPI_( BOOL )       PathSearchAndQualifyW( LPCWSTR, LPWSTR, UINT );
+LWSTDAPI_( void )       PathSetDlgItemPathA( HWND, int, LPCSTR );
+LWSTDAPI_( void )       PathSetDlgItemPathW( HWND, int, LPCWSTR );
+LWSTDAPI_( LPSTR )      PathSkipRootA( LPCSTR );
+LWSTDAPI_( LPWSTR )     PathSkipRootW( LPCWSTR );
+LWSTDAPI_( void )       PathStripPathA( LPSTR );
+LWSTDAPI_( void )       PathStripPathW( LPWSTR );
+LWSTDAPI_( BOOL )       PathStripToRootA( LPSTR );
+LWSTDAPI_( BOOL )       PathStripToRootW( LPWSTR );
+LWSTDAPI_( BOOL )       PathUnExpandEnvStringsA( LPCSTR, LPSTR, UINT );
+LWSTDAPI_( BOOL )       PathUnExpandEnvStringsW( LPCWSTR, LPWSTR, UINT );
+LWSTDAPI_( void )       PathUndecorateA( LPSTR );
+LWSTDAPI_( void )       PathUndecorateW( LPWSTR );
+LWSTDAPI_( BOOL )       PathUnmakeSystemFolderA( LPCSTR );
+LWSTDAPI_( BOOL )       PathUnmakeSystemFolderW( LPCWSTR );
+LWSTDAPI_( BOOL )       PathUnquoteSpacesA( LPSTR );
+LWSTDAPI_( BOOL )       PathUnquoteSpacesW( LPWSTR );
+LWSTDAPI_( LSTATUS )    SHCopyKeyA( HKEY, LPCSTR, HKEY, DWORD );
+LWSTDAPI_( LSTATUS )    SHCopyKeyW( HKEY, LPCWSTR, HKEY, DWORD );
+LWSTDAPI_( HPALETTE )   SHCreateShellPalette( HDC );
+LWSTDAPI                SHCreateStreamOnFileA( LPCSTR, DWORD, IStream ** );
+LWSTDAPI                SHCreateStreamOnFileW( LPCWSTR, DWORD, IStream ** );
+LWSTDAPI_( BOOL )       SHCreateThread( LPTHREAD_START_ROUTINE, void *, SHCT_FLAGS, LPTHREAD_START_ROUTINE );
+LWSTDAPI_( BOOL )       SHCreateThreadWithHandle( LPTHREAD_START_ROUTINE, void *, SHCT_FLAGS, LPTHREAD_START_ROUTINE, HANDLE * );
+LWSTDAPI_( LSTATUS )    SHDeleteEmptyKeyA( HKEY, LPCSTR );
+LWSTDAPI_( LSTATUS )    SHDeleteEmptyKeyW( HKEY, LPCWSTR );
+LWSTDAPI_( LSTATUS )    SHDeleteKeyA( HKEY, LPCSTR );
+LWSTDAPI_( LSTATUS )    SHDeleteKeyW( HKEY, LPCWSTR );
+LWSTDAPI_( LSTATUS )    SHDeleteValueA( HKEY, LPCSTR, LPCSTR );
+LWSTDAPI_( LSTATUS )    SHDeleteValueW( HKEY, LPCWSTR, LPCWSTR );
+LWSTDAPI_( LSTATUS )    SHEnumKeyExA( HKEY, DWORD, LPSTR, LPDWORD );
+LWSTDAPI_( LSTATUS )    SHEnumKeyExW( HKEY, DWORD, LPWSTR, LPDWORD );
+LWSTDAPI_( LSTATUS )    SHEnumValueA( HKEY, DWORD, PSTR, LPDWORD, LPDWORD, void *, LPDWORD );
+LWSTDAPI_( LSTATUS )    SHEnumValueW( HKEY, DWORD, PWSTR, LPDWORD, LPDWORD, void *, LPDWORD );
+LWSTDAPI_( int )        SHFormatDateTimeA( const FILETIME UNALIGNED *, DWORD *, LPSTR, UINT );
+LWSTDAPI_( int )        SHFormatDateTimeW( const FILETIME UNALIGNED *, DWORD *, LPWSTR, UINT );
+LWSTDAPI                SHGetInverseCMAP( BYTE *, ULONG );
+LWSTDAPI_( LSTATUS )    SHGetValueA( HKEY, LPCSTR, LPCSTR, DWORD *, void *, DWORD * );
+LWSTDAPI_( LSTATUS )    SHGetValueW( HKEY, LPCWSTR, LPCWSTR, DWORD *, void *, DWORD * );
+LWSTDAPI_( long )       SHGlobalCounterDecrement( const SHGLOBALCOUNTER );
+LWSTDAPI_( long )       SHGlobalCounterGetValue( const SHGLOBALCOUNTER );
+LWSTDAPI_( long )       SHGlobalCounterIncrement( const SHGLOBALCOUNTER );
+LWSTDAPI_( BOOL )       SHIsLowMemoryMachine( DWORD );
+LWSTDAPI_( IStream * )  SHOpenRegStream2A( HKEY, LPCSTR, LPCSTR, DWORD );
+LWSTDAPI_( IStream * )  SHOpenRegStream2W( HKEY, LPCWSTR, LPCWSTR, DWORD );
+LWSTDAPI_( IStream * )  SHOpenRegStreamA( HKEY, LPCSTR, LPCSTR, DWORD );
+LWSTDAPI_( IStream * )  SHOpenRegStreamW( HKEY, LPCWSTR, LPCWSTR, DWORD );
+LWSTDAPI_( LSTATUS )    SHQueryInfoKeyA( HKEY, LPDWORD, LPDWORD, LPDWORD, LPDWORD );
+LWSTDAPI_( LSTATUS )    SHQueryInfoKeyW( HKEY, LPDWORD, LPDWORD, LPDWORD, LPDWORD );
+LWSTDAPI_( LSTATUS )    SHQueryValueExA( HKEY, LPCSTR, DWORD *, DWORD *, void *, DWORD * );
+LWSTDAPI_( LSTATUS )    SHQueryValueExW( HKEY, LPCWSTR, DWORD *, DWORD *, void *, DWORD * );
+LWSTDAPI_( LSTATUS )    SHRegCloseUSKey( HUSKEY );
+LWSTDAPI_( LSTATUS )    SHRegCreateUSKeyA( LPCSTR, REGSAM, HUSKEY, PHUSKEY, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegCreateUSKeyW( LPCWSTR, REGSAM, HUSKEY, PHUSKEY, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegDeleteEmptyUSKeyA( HUSKEY, LPCSTR, SHREGDEL_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegDeleteEmptyUSKeyW( HUSKEY, LPCWSTR, SHREGDEL_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegDeleteUSValueA( HUSKEY, LPCSTR, SHREGDEL_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegDeleteUSValueW( HUSKEY, LPCWSTR, SHREGDEL_FLAGS );
+LWSTDAPI_( HKEY )       SHRegDuplicateHKey( HKEY );
+LWSTDAPI_( LSTATUS )    SHRegEnumUSKeyA( HUSKEY, DWORD, LPSTR, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegEnumUSKeyW( HUSKEY, DWORD, LPWSTR, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegEnumUSValueA( HUSKEY, DWORD, LPSTR, LPDWORD, LPDWORD, void *, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegEnumUSValueW( HUSKEY, DWORD, LPWSTR, LPDWORD, LPDWORD, void *, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( BOOL )       SHRegGetBoolUSValueA( LPCSTR, LPCSTR, BOOL, BOOL );
+LWSTDAPI_( BOOL )       SHRegGetBoolUSValueW( LPCWSTR, LPCWSTR, BOOL, BOOL );
+LWSTDAPI_( int )        SHRegGetIntW( HKEY, PCWSTR, int );
+LWSTDAPI_( LSTATUS )    SHRegGetPathA( HKEY, LPCSTR, LPCSTR, LPSTR, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegGetPathW( HKEY, LPCWSTR, LPCWSTR, LPWSTR, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegGetUSValueA( LPCSTR, LPCSTR, DWORD *, void *, DWORD *, BOOL, void *, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegGetUSValueW( LPCWSTR, LPCWSTR, DWORD *, void *, DWORD *, BOOL, void *, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegOpenUSKeyA( LPCSTR, REGSAM, HUSKEY, PHUSKEY, BOOL );
+LWSTDAPI_( LSTATUS )    SHRegOpenUSKeyW( LPCWSTR, REGSAM, HUSKEY, PHUSKEY, BOOL );
+LWSTDAPI_( LSTATUS )    SHRegQueryInfoUSKeyA( HUSKEY, LPDWORD, LPDWORD, LPDWORD, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegQueryInfoUSKeyW( HUSKEY, LPDWORD, LPDWORD, LPDWORD, LPDWORD, SHREGENUM_FLAGS );
+LWSTDAPI_( LSTATUS )    SHRegQueryUSValueA( HUSKEY, LPCSTR, DWORD *, void *, DWORD *, BOOL, void *, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegQueryUSValueW( HUSKEY, LPCWSTR, DWORD *, void *, DWORD *, BOOL, void *, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegSetPathA( HKEY, LPCSTR, LPCSTR, LPCSTR, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegSetPathW( HKEY, LPCWSTR, LPCWSTR, LPCWSTR, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegSetUSValueA( LPCSTR, LPCSTR, DWORD, const void *, DWORD, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegSetUSValueW( LPCWSTR, LPCWSTR, DWORD, const void *, DWORD, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegWriteUSValueA( HUSKEY, LPCSTR, DWORD, const void *, DWORD, DWORD );
+LWSTDAPI_( LSTATUS )    SHRegWriteUSValueW( HUSKEY, LPCWSTR, DWORD, const void *, DWORD, DWORD );
+LWSTDAPI_( LSTATUS )    SHSetValueA( HKEY, LPCSTR, LPCSTR, DWORD, LPCVOID, DWORD );
+LWSTDAPI_( LSTATUS )    SHSetValueW( HKEY, LPCWSTR, LPCWSTR, DWORD, LPCVOID, DWORD );
+LWSTDAPI                SHStrDupA( LPCSTR, LPWSTR * );
+LWSTDAPI                SHStrDupW( LPCWSTR, LPWSTR * );
+LWSTDAPI_( int )        StrCSpnA( LPCSTR, LPCSTR );
+LWSTDAPI_( int )        StrCSpnIA( LPCSTR, LPCSTR );
+LWSTDAPI_( int )        StrCSpnIW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        StrCSpnW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      StrCatBuffA( LPSTR, LPCSTR, int );
+LWSTDAPI_( LPWSTR )     StrCatBuffW( LPWSTR, LPCWSTR, int );
+LWSTDAPI_( LPWSTR )     StrCatW( LPWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      StrChrA( LPCSTR, WORD );
+LWSTDAPI_( LPSTR )      StrChrIA( LPCSTR, WORD );
+LWSTDAPI_( LPWSTR )     StrChrIW( LPCWSTR, WCHAR );
+LWSTDAPI_( LPWSTR )     StrChrW( LPCWSTR, WCHAR );
+LWSTDAPI_( int )        StrCmpIW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        StrCmpNA( LPCSTR, LPCSTR, int );
+LWSTDAPI_( int )        StrCmpNIA( LPCSTR, LPCSTR, int );
+LWSTDAPI_( int )        StrCmpNIW( LPCWSTR, LPCWSTR, int );
+LWSTDAPI_( int )        StrCmpNW( LPCWSTR, LPCWSTR, int );
+LWSTDAPI_( int )        StrCmpW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( LPWSTR )     StrCpyNW( LPWSTR, LPCWSTR, int );
+LWSTDAPI_( LPWSTR )     StrCpyW( LPWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      StrDupA( LPCSTR );
+LWSTDAPI_( LPWSTR )     StrDupW( LPCWSTR );
+LWSTDAPI_( LPSTR )      StrFormatByteSize64A( LONGLONG, LPSTR, UINT );
+LWSTDAPI_( LPSTR )      StrFormatByteSizeA( DWORD, LPSTR, UINT );
+LWSTDAPI                StrFormatByteSizeEx( ULONGLONG, SFBS_FLAGS, LPWSTR, UINT );
+LWSTDAPI_( LPWSTR )     StrFormatByteSizeW( LONGLONG, LPWSTR, UINT );
+LWSTDAPI_( LPSTR )      StrFormatKBSizeA( LONGLONG, LPSTR, UINT );
+LWSTDAPI_( LPWSTR )     StrFormatKBSizeW( LONGLONG, LPWSTR, UINT );
+LWSTDAPI_( int )        StrFromTimeIntervalA( LPSTR, UINT, DWORD, int );
+LWSTDAPI_( int )        StrFromTimeIntervalW( LPWSTR, UINT, DWORD, int );
+LWSTDAPI_( BOOL )       StrIsIntlEqualA( BOOL, LPCSTR, LPCSTR, int );
+LWSTDAPI_( BOOL )       StrIsIntlEqualW( BOOL, LPCWSTR, LPCWSTR, int );
+LWSTDAPI_( LPSTR )      StrNCatA( LPSTR, LPCSTR, int );
+LWSTDAPI_( LPWSTR )     StrNCatW( LPWSTR, LPCWSTR, int );
+LWSTDAPI_( LPSTR )      StrPBrkA( LPCSTR, LPCSTR );
+LWSTDAPI_( LPWSTR )     StrPBrkW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      StrRChrA( LPCSTR, LPCSTR, WORD );
+LWSTDAPI_( LPSTR )      StrRChrIA( LPCSTR, LPCSTR, WORD );
+LWSTDAPI_( LPWSTR )     StrRChrIW( LPCWSTR, LPCWSTR, WCHAR );
+LWSTDAPI_( LPWSTR )     StrRChrW( LPCWSTR, LPCWSTR, WCHAR );
+LWSTDAPI_( LPSTR )      StrRStrIA( LPCSTR, LPCSTR, LPCSTR );
+LWSTDAPI_( LPWSTR )     StrRStrIW( LPCWSTR, LPCWSTR, LPCWSTR );
+LWSTDAPI                StrRetToBufA( STRRET *, PCUITEMID_CHILD, LPSTR, UINT );
+LWSTDAPI                StrRetToBufW( STRRET *, PCUITEMID_CHILD, LPWSTR, UINT );
+LWSTDAPI                StrRetToStrA( STRRET *, PCUITEMID_CHILD, LPSTR * );
+LWSTDAPI                StrRetToStrW( STRRET *, PCUITEMID_CHILD, LPWSTR * );
+LWSTDAPI_( int )        StrSpnA( LPCSTR, LPCSTR );
+LWSTDAPI_( int )        StrSpnW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( LPSTR )      StrStrA( LPCSTR, LPCSTR );
+LWSTDAPI_( LPSTR )      StrStrIA( LPCSTR, LPCSTR );
+LWSTDAPI_( LPWSTR )     StrStrIW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( LPWSTR )     StrStrW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        StrToIntA( LPCSTR );
+LWSTDAPI_( BOOL )       StrToIntExA( LPCSTR, STIF_FLAGS, int * );
+LWSTDAPI_( BOOL )       StrToIntExW( LPCWSTR, STIF_FLAGS, int * );
+LWSTDAPI_( int )        StrToIntW( LPCWSTR );
+LWSTDAPI_( BOOL )       StrTrimA( LPSTR, LPCSTR );
+LWSTDAPI_( BOOL )       StrTrimW( LPWSTR, LPCWSTR );
+LWSTDAPI                UrlApplySchemeA( LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlApplySchemeW( LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlCanonicalizeA( LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlCanonicalizeW( LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlCombineA( LPCSTR, LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlCombineW( LPCWSTR, LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI_( int )        UrlCompareA( LPCSTR, LPCSTR, BOOL );
+LWSTDAPI_( int )        UrlCompareW( LPCWSTR, LPCWSTR, BOOL );
+LWSTDAPI                UrlCreateFromPathA( LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlCreateFromPathW( LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlEscapeA( LPCSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlEscapeW( LPCWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlFixupW( LPCWSTR, LPWSTR, DWORD );
+LWSTDAPI_( LPCSTR )     UrlGetLocationA( LPCSTR );
+LWSTDAPI_( LPCWSTR )    UrlGetLocationW( LPCWSTR );
+LWSTDAPI                UrlGetPartA( LPCSTR, LPSTR, LPDWORD, DWORD, DWORD );
+LWSTDAPI                UrlGetPartW( LPCWSTR, LPWSTR, LPDWORD, DWORD, DWORD );
+LWSTDAPI                UrlHashA( LPCSTR, LPBYTE, DWORD );
+LWSTDAPI                UrlHashW( LPCWSTR, LPBYTE, DWORD );
+LWSTDAPI_( BOOL )       UrlIsA( LPCSTR, URLIS );
+LWSTDAPI_( BOOL )       UrlIsNoHistoryA( LPCSTR );
+LWSTDAPI_( BOOL )       UrlIsNoHistoryW( LPCWSTR );
+LWSTDAPI_( BOOL )       UrlIsOpaqueA( LPCSTR );
+LWSTDAPI_( BOOL )       UrlIsOpaqueW( LPCWSTR );
+LWSTDAPI_( BOOL )       UrlIsW( LPCWSTR, URLIS );
+LWSTDAPI                UrlUnescapeA( LPSTR, LPSTR, LPDWORD, DWORD );
+LWSTDAPI                UrlUnescapeW( LPWSTR, LPWSTR, LPDWORD, DWORD );
+LWSTDAPIV_( int )       wnsprintfA( LPSTR, int, LPCSTR, ... );
+LWSTDAPIV_( int )       wnsprintfW( LPWSTR, int, LPCWSTR, ... );
+LWSTDAPI_( int )        wvnsprintfA( LPSTR, int, LPCSTR, void * );
+LWSTDAPI_( int )        wvnsprintfW( LPWSTR, int, LPCWSTR, void * );
+#if (_WIN32_IE >= 0x0500)
+LWSTDAPI_( COLORREF )   ColorAdjustLuma( COLORREF, int, BOOL );
+LWSTDAPI_( COLORREF )   ColorHLSToRGB( WORD, WORD, WORD );
+LWSTDAPI_( void )       ColorRGBToHLS( COLORREF, WORD *, WORD *, WORD * );
+LWSTDAPI                ParseURLA( LPCSTR, PARSEDURLA * );
+LWSTDAPI                ParseURLW( LPCWSTR, PARSEDURLW * );
+LWSTDAPI                SHAutoComplete( HWND, DWORD );
+LWSTDAPI                SHGetThreadRef( IUnknown ** );
+LWSTDAPI                SHSetThreadRef( IUnknown * );
+LWSTDAPI_( BOOL )       SHSkipJunction( IBindCtx *, const CLSID * );
+LWSTDAPI_( int )        StrCmpNCA( LPCSTR, LPCSTR, int );
+LWSTDAPI_( int )        StrCmpNCW( LPCWSTR, LPCWSTR, int );
+LWSTDAPI_( int )        StrCmpNICA( LPCSTR, LPCSTR, int );
+LWSTDAPI_( int )        StrCmpNICW( LPCWSTR, LPCWSTR, int );
+#endif
+#if (_WIN32_IE >= 0x0501)
+LWSTDAPI                ConnectToConnectionPoint( IUnknown *, REFIID, BOOL, IUnknown *, DWORD *, IConnectionPoint ** );
+LWSTDAPI                IStream_Read( IStream *, void *, ULONG );
+LWSTDAPI                IStream_Reset( IStream * );
+LWSTDAPI                IStream_Size( IStream *, ULARGE_INTEGER * );
+LWSTDAPI                IStream_Write( IStream *, const void *, ULONG );
+LWSTDAPI_( void )       IUnknown_AtomicRelease( void ** );
+LWSTDAPI                IUnknown_GetSite( IUnknown *, REFIID, void ** );
+LWSTDAPI                IUnknown_GetWindow( IUnknown *, HWND * );
+LWSTDAPI                IUnknown_QueryService( IUnknown *, REFGUID, REFIID, void ** );
+LWSTDAPI_( void )       IUnknown_Set( IUnknown **, IUnknown * );
+LWSTDAPI                IUnknown_SetSite( IUnknown *, IUnknown * );
+LWSTDAPI_( BOOL )       IsOS( DWORD );
+LWSTDAPI_( BOOL )       MLFreeLibrary( HMODULE );
+LWSTDAPI_( HINSTANCE )  MLLoadLibraryA( LPCSTR, HMODULE, DWORD );
+LWSTDAPI_( HINSTANCE )  MLLoadLibraryW( LPCWSTR, HMODULE, DWORD );
+LWSTDAPI                QISearch( void *, LPCQITAB, REFIID, void ** );
+LWSTDAPI_( int )        SHAnsiToAnsi( LPCSTR, LPSTR, int );
+LWSTDAPI_( int )        SHAnsiToUnicode( LPCSTR, LPWSTR, int );
+LWSTDAPI_( IStream * )  SHCreateMemStream( const BYTE *, UINT );
+LWSTDAPI_( int )        SHMessageBoxCheckA( HWND, LPCSTR, LPCSTR, UINT, int, LPCSTR );
+LWSTDAPI_( int )        SHMessageBoxCheckW( HWND, LPCWSTR, LPCWSTR, UINT, int, LPCWSTR );
+LWSTDAPI_( LRESULT )    SHSendMessageBroadcastA( UINT, WPARAM, LPARAM );
+LWSTDAPI_( LRESULT )    SHSendMessageBroadcastW( UINT, WPARAM, LPARAM );
+LWSTDAPI_( CHAR )       SHStripMneumonicA( LPSTR );
+LWSTDAPI_( WCHAR )      SHStripMneumonicW( LPWSTR );
+LWSTDAPI_( int )        SHUnicodeToAnsi( LPCWSTR, LPSTR, int );
+LWSTDAPI_( int )        SHUnicodeToUnicode( LPCWSTR, LPWSTR, int );
+LWSTDAPI_( UINT )       WhichPlatform( void );
+#endif
+#if (_WIN32_IE >= 0x0550)
+LWSTDAPI                SHLoadIndirectString( LPCWSTR, LPWSTR, UINT, void ** );
+LWSTDAPI_( DWORD )      StrCatChainW( LPWSTR, DWORD, DWORD, LPCWSTR );
+LWSTDAPI_( int )        StrCmpLogicalW( LPCWSTR, LPCWSTR );
+LWSTDAPI                StrRetToBSTR( STRRET *, PCUITEMID_CHILD, BSTR * );
+#endif
+#if (_WIN32_IE >= 0x0600)
+LWSTDAPI                IStream_ReadPidl( IStream *, PIDLIST_RELATIVE * );
+LWSTDAPI                IStream_WritePidl( IStream *, PCUIDLIST_RELATIVE );
+LWSTDAPI_( BOOL )       IsInternetESCEnabled();
+LWSTDAPI                SHCreateStreamOnFileEx( LPCWSTR, DWORD, DWORD, BOOL, IStream *, IStream ** );
+LWSTDAPI                SHGetViewStatePropertyBag( PCIDLIST_ABSOLUTE, LPCWSTR, DWORD, REFIID, void ** );
+LWSTDAPI                SHReleaseThreadRef();
+LWSTDAPI_( LPWSTR )     StrChrNIW( LPCWSTR, WCHAR, UINT );
+LWSTDAPI_( LPWSTR )     StrChrNW( LPCWSTR, WCHAR, UINT );
+LWSTDAPI_( LPWSTR )     StrStrNIW( LPCWSTR, LPCWSTR, UINT );
+LWSTDAPI_( LPWSTR )     StrStrNW( LPCWSTR, LPCWSTR, UINT );
+LWSTDAPI_( BOOL )       StrToInt64ExA( LPCSTR, STIF_FLAGS, LONGLONG * );
+LWSTDAPI_( BOOL )       StrToInt64ExW( LPCWSTR, STIF_FLAGS, LONGLONG * );
+#endif
+#if (_WIN32_IE >= 0x0601)
+LWSTDAPI_( BOOL )       AssocIsDangerous( LPCWSTR );
+#endif
+#if (_WIN32_IE >= 0x0602)
+LWSTDAPI                AssocGetPerceivedType( LPCWSTR, PERCEIVED *, PERCEIVEDFLAG *, LPWSTR * );
+LWSTDAPI_( BOOL )       IsCharSpaceA( CHAR );
+LWSTDAPI_( BOOL )       IsCharSpaceW( WCHAR );
+LWSTDAPI                SHCreateThreadRef( LONG *, IUnknown ** );
+LWSTDAPI_( LSTATUS )    SHRegGetValueA( HKEY, LPCSTR, LPCSTR, SRRF, DWORD *, void *, DWORD * );
+LWSTDAPI_( LSTATUS )    SHRegGetValueW( HKEY, LPCWSTR, LPCWSTR, SRRF, DWORD *, void *, DWORD * );
+LWSTDAPI_( int )        StrCmpCA( LPCSTR, LPCSTR );
+LWSTDAPI_( int )        StrCmpCW( LPCWSTR, LPCWSTR );
+LWSTDAPI_( int )        StrCmpICA( LPCSTR, LPCSTR );
+LWSTDAPI_( int )        StrCmpICW( LPCWSTR, LPCWSTR );
+#endif
+#if (_WIN32_IE >= 0x0603)
+LWSTDAPI                GetAcceptLanguagesA( LPSTR, LPDWORD );
+LWSTDAPI                GetAcceptLanguagesW( LPWSTR, LPDWORD );
+LWSTDAPI_( HANDLE )     SHAllocShared( const void *, DWORD, DWORD );
+LWSTDAPI_( BOOL )       SHFreeShared( HANDLE, DWORD );
+LWSTDAPI_( void * )     SHLockShared( HANDLE, DWORD );
+LWSTDAPI_( BOOL )       SHUnlockShared( void * );
+#endif
+#if (_WIN32_IE >= 0x0700)
+LWSTDAPI                IStream_Copy( IStream *, IStream *, DWORD );
+LWSTDAPI                IStream_ReadStr( IStream *, PWSTR * );
+LWSTDAPI                IStream_WriteStr( IStream *, PCWSTR );
+LWSTDAPI                PathCreateFromUrlAlloc( LPCWSTR, LPWSTR *, DWORD );
+LWSTDAPI                PathMatchSpecExA( LPCSTR, LPCSTR, DWORD );
+LWSTDAPI                PathMatchSpecExW( LPCWSTR, LPCWSTR, DWORD );
+#endif
+
+/* Functions implemented as macros */
+#define IntlStrEqNA( p1, p2, p3 )   IntlStrEqWorkerA( TRUE, p1, p2, p3 )
+#define IntlStrEqNIA( p1, p2, p3 )  IntlStrEqWorkerA( FALSE, p1, p2, p3 )
+#define IntlStrEqNIW( p1, p2, p3 )  IntlStrEqWorkerW( FALSE, p1, p2, p3 )
+#define IntlStrEqNW( p1, p2, p3 )   IntlStrEqWorkerW( TRUE, p1, p2, p3 )
+#define PathIsHTMLFileA( x )        PathIsContentTypeA( x, SZ_CONTENTTYPE_HTMLA )
+#define PathIsHTMLFileW( x )        PathIsContentTypeW( x, SZ_CONTENTTYPE_HTMLW )
+#define StrIntlEqNA( p1, p2, p3 )   StrIsIntlEqualA( TRUE, p1, p2, p3 )
+#define StrIntlEqNIA( p1, p2, p3 )  StrIsIntlEqualA( FALSE, p1, p2, p3 )
+#define StrIntlEqNIW( p1, p2, p3 )  StrIsIntlEqualW( FALSE, p1, p2, p3 )
+#define StrIntlEqNW( p1, p2, p3 )   StrIsIntlEqualW( TRUE, p1, p2, p3 )
+#define UrlEscapeInPlace( p1, p2 ) \
+    UrlUnescape( p1, NULL, NULL, p2 | URL_UNESCAPE_INPLACE )
+#define UrlEscapeSpaces( p1, p2, p3 ) \
+    UrlCanonicalize( p1, p2, p3, URL_ESCAPE_SPACES_ONLY | URL_DONT_ESCAPE_EXTRA_INFO )
+#define UrlIsFileUrlA( x )          UrlIsA( x, URLIS_FILEURL )
+#define UrlIsFileUrlW( x )          UrlIsW( x, URLIS_FILEURL )
+
+/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
+ * before being passed to any Win32 API functions.
+ */
+#define wvnsprintfA( p1, p2, p3, p4 )   wvnsprintfA( p1, p2, p3, (p4)[0] )
+#define wvnsprintfW( p1, p2, p3, p4 )   wvnsprintfW( p1, p2, p3, (p4)[0] )
+
+/* Aliases */
+#define StrCatA                     lstrcatA
+#define StrCmpA                     lstrcmpA
+#define StrCmpIA                    lstrcmpiA
+#define StrCpyA                     lstrcpyA
+#define StrCpyNA                    lstrcpynA
+#if (_WIN32_IE >= 0x0501)
+    #ifdef UNICODE
+        #define SHAnsiToTChar       SHAnsiToUnicode
+        #define SHTCharToAnsi       SHUnicodeToAnsi
+        #define SHTCharToUnicode    SHUnicodeToUnicode
+        #define SHUnicodeToTChar    SHUnicodeToUnicode
+    #else
+        #define SHAnsiToTChar       SHAnsiToAnsi
+        #define SHTCharToAnsi       SHAnsiToAnsi
+        #define SHTCharToUnicode    SHAnsiToUnicode
+        #define SHUnicodeToTChar    SHUnicodeToAnsi
+    #endif
+#endif
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define AssocQueryKey           AssocQueryKeyW
+    #define AssocQueryString        AssocQueryStringW
+    #define AssocQueryStringByKey   AssocQueryStringByKeyW
+    #define ChrCmpI                 ChrCmpIW
+    #define IntlStrEqN              IntlStrEqNW
+    #define IntlStrEqNI             IntlStrEqNIW
+    #define IsCharSpace             IsCharSpaceW
+    #define PathAddBackslash        PathAddBackslashW
+    #define PathAddExtension        PathAddExtensionW
+    #define PathAppend              PathAppendW
+    #define PathBuildRoot           PathBuildRootW
+    #define PathCanonicalize        PathCanonicalizeW
+    #define PathCombine             PathCombineW
+    #define PathCommonPrefix        PathCommonPrefixW
+    #define PathCompactPath         PathCompactPathW
+    #define PathCompactPathEx       PathCompactPathExW
+    #define PathCreateFromUrl       PathCreateFromUrlW
+    #define PathFileExists          PathFileExistsW
+    #define PathFindExtension       PathFindExtensionW
+    #define PathFindFileName        PathFindFileNameW
+    #define PathFindNextComponent   PathFindNextComponentW
+    #define PathFindOnPath          PathFindOnPathW
+    #define PathFindSuffixArray     PathFindSuffixArrayW
+    #define PathGetArgs             PathGetArgsW
+    #define PathGetCharType         PathGetCharTypeW
+    #define PathGetDriveNumber      PathGetDriveNumberW
+    #define PathIsContentType       PathIsContentTypeW
+    #define PathIsDirectory         PathIsDirectoryW
+    #define PathIsDirectoryEmpty    PathIsDirectoryEmptyW
+    #define PathIsFileSpec          PathIsFileSpecW
+    #define PathIsHTMLFile          PathIsHTMLFileW
+    #define PathIsLFNFileSpec       PathIsLFNFileSpecW
+    #define PathIsNetworkPath       PathIsNetworkPathW
+    #define PathIsPrefix            PathIsPrefixW
+    #define PathIsRelative          PathIsRelativeW
+    #define PathIsRoot              PathIsRootW
+    #define PathIsSameRoot          PathIsSameRootW
+    #define PathIsSystemFolder      PathIsSystemFolderW
+    #define PathIsUNC               PathIsUNCW
+    #define PathIsUNCServer         PathIsUNCServerW
+    #define PathIsUNCServerShare    PathIsUNCServerShareW
+    #define PathIsURL               PathIsURLW
+    #define PathMakePretty          PathMakePrettyW
+    #define PathMakeSystemFolder    PathMakeSystemFolderW
+    #define PathMatchSpec           PathMatchSpecW
+    #define PathParseIconLocation   PathParseIconLocationW
+    #define PathQuoteSpaces         PathQuoteSpacesW
+    #define PathRelativePathTo      PathRelativePathToW
+    #define PathRemoveArgs          PathRemoveArgsW
+    #define PathRemoveBackslash     PathRemoveBackslashW
+    #define PathRemoveBlanks        PathRemoveBlanksW
+    #define PathRemoveExtension     PathRemoveExtensionW
+    #define PathRemoveFileSpec      PathRemoveFileSpecW
+    #define PathRenameExtension     PathRenameExtensionW
+    #define PathSearchAndQualify    PathSearchAndQualifyW
+    #define PathSetDlgItemPath      PathSetDlgItemPathW
+    #define PathSkipRoot            PathSkipRootW
+    #define PathStripPath           PathStripPathW
+    #define PathStripToRoot         PathStripToRootW
+    #define PathUnExpandEnvStrings  PathUnExpandEnvStringsW
+    #define PathUndecorate          PathUndecorateW
+    #define PathUnmakeSystemFolder  PathUnmakeSystemFolderW
+    #define PathUnquoteSpaces       PathUnquoteSpacesW
+    #define SHCopyKey               SHCopyKeyW
+    #define SHCreateStreamOnFile    SHCreateStreamOnFileW
+    #define SHDeleteEmptyKey        SHDeleteEmptyKeyW
+    #define SHDeleteKey             SHDeleteKeyW
+    #define SHDeleteValue           SHDeleteValueW
+    #define SHEnumKeyEx             SHEnumKeyExW
+    #define SHEnumValue             SHEnumValueW
+    #define SHFormatDateTime        SHFormatDateTimeW
+    #define SHGetValue              SHGetValueW
+    #define SHOpenRegStream         SHOpenRegStreamW
+    #define SHOpenRegStream2        SHOpenRegStream2W
+    #define SHQueryInfoKey          SHQueryInfoKeyW
+    #define SHQueryValueEx          SHQueryValueExW
+    #define SHRegCreateUSKey        SHRegCreateUSKeyW
+    #define SHRegDeleteEmptyUSKey   SHRegDeleteEmptyUSKeyW
+    #define SHRegDeleteUSValue      SHRegDeleteUSValueW
+    #define SHRegEnumUSKey          SHRegEnumUSKeyW
+    #define SHRegEnumUSValue        SHRegEnumUSValueW
+    #define SHRegGetBoolUSValue     SHRegGetBoolUSValueW
+    #define SHRegGetInt             SHRegGetIntW
+    #define SHRegGetPath            SHRegGetPathW
+    #define SHRegGetUSValue         SHRegGetUSValueW
+    #define SHRegOpenUSKey          SHRegOpenUSKeyW
+    #define SHRegQueryInfoUSKey     SHRegQueryInfoUSKeyW
+    #define SHRegQueryUSValue       SHRegQueryUSValueW
+    #define SHRegSetPath            SHRegSetPathW
+    #define SHRegSetUSValue         SHRegSetUSValueW
+    #define SHRegWriteUSValue       SHRegWriteUSValueW
+    #define SHSetValue              SHSetValueW
+    #define SHStrDup                SHStrDupW
+    #define StrCSpn                 StrCSpnW
+    #define StrCSpnI                StrCSpnIW
+    #define StrCat                  StrCatW
+    #define StrCatBuff              StrCatBuffW
+    #define StrChr                  StrChrW
+    #define StrChrI                 StrChrIW
+    #define StrCmp                  StrCmpW
+    #define StrCmpC                 StrCmpCW
+    #define StrCmpI                 StrCmpIW
+    #define StrCmpIC                StrCmpICW
+    #define StrCmpN                 StrCmpNW
+    #define StrCmpNI                StrCmpNIW
+    #define StrCpy                  StrCpyW
+    #define StrCpyN                 StrCpyNW
+    #define StrDup                  StrDupW
+    #define StrFormatByteSize       StrFormatByteSizeW
+    #define StrFormatByteSize64     StrFormatByteSizeW
+    #define StrFormatKBSize         StrFormatKBSizeW
+    #define StrFromTimeInterval     StrFromTimeFromIntervalW
+    #define StrIntlEqN              StrIntlEqNW
+    #define StrIntlEqNI             StrIntlEqNIW
+    #define StrIsIntlEqual          StrIsIntlEqualW
+    #define StrNCat                 StrNCatW
+    #define StrPBrk                 StrPBrkW
+    #define StrRChr                 StrRChrW
+    #define StrRChrI                StrRChrIW
+    #define StrRStr                 StrRStrW
+    #define StrRetToBuf             StrRetToBufW
+    #define StrRetToStr             StrRetToStrW
+    #define StrSpn                  StrSpnW
+    #define StrStr                  StrStrW
+    #define StrStrI                 StrStrIW
+    #define StrToInt                StrToIntW
+    #define StrToIntEx              StrToIntExW
+    #define StrTrim                 StrTrimW
+    #define UrlApplyScheme          UrlApplySchemeW
+    #define UrlCanonicalize         UrlCanonicalizeW
+    #define UrlCombine              UrlCombineW
+    #define UrlCompare              UrlCompareW
+    #define UrlCreateFromPath       UrlCreateFromPathW
+    #define UrlEscape               UrlEscapeW
+    #define UrlFixup                UrlFixupW
+    #define UrlGetLocation          UrlGetLocationW
+    #define UrlGetPart              UrlGetPartW
+    #define UrlHash                 UrlHashW
+    #define UrlIs                   UrlIsW
+    #define UrlIsFileUrl            UrlIsFileUrlW
+    #define UrlIsOpaque             UrlIsOpaqueW
+    #define UrlUnescape             UrlUnescapeW
+    #define wnsprintf               wnsprintfW
+    #define wvnsprintf              wvnsprintfW
+    #if (_WIN32_IE >= 0x0500)
+        #define ParseURL            ParseURLW
+        #define StrCmpNC            StrCmpNCW
+        #define StrCmpNIC           StrCmpNICW
+    #endif
+    #if (_WIN32_IE >= 0x0501)
+        #define MLLoadLibrary       MLLoadLibraryW
+        #define SHMessageBoxCheck   SHMessageBoxCheckW
+        #define SHSendMessageBroadcast  SHSendMessageBroadcastW
+        #define SHStripMneumonic    SHStripMneumonicW
+    #endif
+    #if (_WIN32_IE >= 0x0600)
+        #define StrToInt64Ex        StrToInt64ExW
+    #endif
+    #if (_WIN32_IE >= 0x0602)
+        #define SHRegGetValue       SHRegGetValueW
+    #endif
+    #if (_WIN32_IE >= 0x0603)
+        #define GetAcceptLanguages  GetAcceptLanguagesW
+    #endif
+    #if (_WIN32_IE >= 0x0700)
+        #define PathMatchSpecEx     PathMatchSpecExW
+    #endif
+#else
+    #define AssocQueryKey           AssocQueryKeyA
+    #define AssocQueryString        AssocQueryStringA
+    #define AssocQueryStringByKey   AssocQueryStringByKeyA
+    #define ChrCmpI                 ChrCmpIA
+    #define IntlStrEqN              IntlStrEqNA
+    #define IntlStrEqNI             IntlStrEqNIA
+    #define IsCharSpace             IsCharSpaceA
+    #define PathAddBackslash        PathAddBackslashA
+    #define PathAddExtension        PathAddExtensionA
+    #define PathAppend              PathAppendA
+    #define PathBuildRoot           PathBuildRootA
+    #define PathCanonicalize        PathCanonicalizeA
+    #define PathCombine             PathCombineA
+    #define PathCommonPrefix        PathCommonPrefixA
+    #define PathCompactPath         PathCompactPathA
+    #define PathCompactPathEx       PathCompactPathExA
+    #define PathCreateFromUrl       PathCreateFromUrlA
+    #define PathFileExists          PathFileExistsA
+    #define PathFindExtension       PathFindExtensionA
+    #define PathFindFileName        PathFindFileNameA
+    #define PathFindNextComponent   PathFindNextComponentA
+    #define PathFindOnPath          PathFindOnPathA
+    #define PathFindSuffixArray     PathFindSuffixArrayA
+    #define PathGetArgs             PathGetArgsA
+    #define PathGetCharType         PathGetCharTypeA
+    #define PathGetDriveNumber      PathGetDriveNumberA
+    #define PathIsContentType       PathIsContentTypeA
+    #define PathIsDirectory         PathIsDirectoryA
+    #define PathIsDirectoryEmpty    PathIsDirectoryEmptyA
+    #define PathIsFileSpec          PathIsFileSpecA
+    #define PathIsHTMLFile          PathIsHTMLFileA
+    #define PathIsLFNFileSpec       PathIsLFNFileSpecA
+    #define PathIsNetworkPath       PathIsNetworkPathA
+    #define PathIsPrefix            PathIsPrefixA
+    #define PathIsRelative          PathIsRelativeA
+    #define PathIsRoot              PathIsRootA
+    #define PathIsSameRoot          PathIsSameRootA
+    #define PathIsSystemFolder      PathIsSystemFolderA
+    #define PathIsUNC               PathIsUNCA
+    #define PathIsUNCServer         PathIsUNCServerA
+    #define PathIsUNCServerShare    PathIsUNCServerShareA
+    #define PathIsURL               PathIsURLA
+    #define PathMakePretty          PathMakePrettyA
+    #define PathMakeSystemFolder    PathMakeSystemFolderA
+    #define PathParseIconLocation   PathParseIconLocationA
+    #define PathQuoteSpaces         PathQuoteSpacesA
+    #define PathRelativePathTo      PathRelativePathToA
+    #define PathRemoveArgs          PathRemoveArgsA
+    #define PathRemoveBackslash     PathRemoveBackslashA
+    #define PathRemoveBlanks        PathRemoveBlanksA
+    #define PathRemoveExtension     PathRemoveExtensionA
+    #define PathRemoveFileSpec      PathRemoveFileSpecA
+    #define PathRenameExtension     PathRenameExtensionA
+    #define PathSearchAndQualify    PathSearchAndQualifyA
+    #define PathSetDlgItemPath      PathSetDlgItemPathA
+    #define PathSkipRoot            PathSkipRootA
+    #define PathStripPath           PathStripPathA
+    #define PathStripToRoot         PathStripToRootA
+    #define PathUnExpandEnvStrings  PathUnExpandEnvStringsA
+    #define PathUndecorate          PathUndecorateA
+    #define PathUnmakeSystemFolder  PathUnmakeSystemFolderA
+    #define PathUnqouteSpaces       PathUnquoteSpacesA
+    #define SHCopyKey               SHCopyKeyA
+    #define SHCreateStreamOnFile    SHCreateStreamOnFileA
+    #define SHDeleteEmptyKey        SHDeleteEmptyKeyA
+    #define SHDeleteKey             SHDeleteKeyA
+    #define SHDeleteValue           SHDeleteValueA
+    #define SHEnumKeyEx             SHEnumKeyExA
+    #define SHEnumValue             SHEnumValueA
+    #define SHFormatDateTime        SHFormatDateTimeA
+    #define SHGetValue              SHGetValueA
+    #define SHOpenRegStream         SHOpenRegStreamA
+    #define SHOpenRegStream2        SHOpenRegStream2A
+    #define SHQueryInfoKey          SHQueryInfoKeyA
+    #define SHQueryValueEx          SHQueryValueExA
+    #define SHRegCreateUSKey        SHRegCreateUSKeyA
+    #define SHRegDeleteEmptyUSKey   SHRegDeleteEmptyUSKeyA
+    #define SHRegDeleteUSValue      SHRegDeleteUSValueA
+    #define SHRegEnumUSKey          SHRegEnumUSKeyA
+    #define SHRegEnumUSValue        SHRegEnumUSValueA
+    #define SHRegGetBoolUSValue     SHRegGetBoolUSValueA
+    #define SHRegGetPath            SHRegGetPathA
+    #define SHRegGetUSValue         SHRegGetUSValueA
+    #define SHRegOpenUSKey          SHRegOpenUSKeyA
+    #define SHRegQueryInfoUSKey     SHRegQueryInfoUSKeyA
+    #define SHRegQueryUSValue       SHRegQueryUSValueA
+    #define SHRegSetPath            SHRegSetPathA
+    #define SHRegSetUSValue         SHRegSetUSValueA
+    #define SHRegWriteUSValue       SHRegWriteUSValueA
+    #define SHSetValue              SHSetValueA
+    #define SHStrDup                SHStrDupA
+    #define StrCSpn                 StrCSpnA
+    #define StrCSpnI                StrCSpnIA
+    #define StrCat                  lstrcatA
+    #define StrCatBuff              StrCatBuffA
+    #define StrChr                  StrChrA
+    #define StrChrI                 StrChrIA
+    #define StrCmp                  lstrcmpA
+    #define StrCmpC                 StrCmpCA
+    #define StrCmpI                 lstrcmpiA
+    #define StrCmpIC                StrCmpICA
+    #define StrCmpN                 StrCmpNA
+    #define StrCmpNI                StrCmpNIA
+    #define StrCpy                  lstrcpyA
+    #define StrCpyN                 lstrcpynA
+    #define StrDup                  StrDupA
+    #define StrFromTimeInterval     StrFromTimeIntervalA
+    #define StrFormatByteSize       StrFormatByteSizeA
+    #define StrFormatByteSize64     StrFormatByteSize64A
+    #define StrFormatKBSize         StrFormatKBSizeA
+    #define StrIntlEqN              StrIntlEqNA
+    #define StrIntlEqNI             StrIntlEqNIA
+    #define StrIsIntlEqual          StrIsIntlEqualA
+    #define StrNCat                 StrNCatA
+    #define StrPBrk                 StrPBrkA
+    #define StrRChr                 StrRChrA
+    #define StrRChrI                StrRChrIA
+    #define StrRStrI                StrRStrIA
+    #define StrRetToBuf             StrRetToBufA
+    #define StrRetToStr             StrRetToStrA
+    #define StrSpn                  StrSpnA
+    #define StrStr                  StrStrA
+    #define StrStrI                 StrStrIA
+    #define StrToInt                StrToIntA
+    #define StrToIntEx              StrToIntExA
+    #define StrTrim                 StrTrimA
+    #define UrlApplyScheme          UrlApplySchemeA
+    #define UrlCanonicalize         UrlCanonicalizeA
+    #define UrlCombine              UrlCombineA
+    #define UrlCompare              UrlCompareA
+    #define UrlCreateFromPath       UrlCreateFromPathA
+    #define UrlEscape               UrlEscapeA
+    #define UrlGetLocation          UrlGetLocationA
+    #define UrlGetPart              UrlGetPartA
+    #define UrlHash                 UrlHashA
+    #define UrlIs                   UrlIsA
+    #define UrlIsFileUrl            UrlIsFileUrlA
+    #define UrlIsOpaque             UrlIsOpaqueA
+    #define UrlUnescape             UrlUnescapeA
+    #define wnsprintf               wnsprintfA
+    #define wvnsprintf              wvnsprintfA
+    #if (_WIN32_IE >= 0x0500)
+        #define ParseURL            ParseURLA
+        #define StrCmpNC            StrCmpNCA
+        #define StrCmpNIC           StrCmpNICA
+    #endif
+    #if (_WIN32_IE >= 0x0501)
+        #define MLLoadLibrary       MLLoadLibraryA
+        #define SHMessageBoxCheck   SHMessageBoxCheckA
+        #define SHSendMessageBroadcast  SHSendMessageBroadcastA
+        #define SHStripMneumonic    SHStripMneumonicA
+    #endif
+    #if (_WIN32_IE >= 0x0600)
+        #define StrToInt64Ex        StrToInt64ExA
+    #endif
+    #if (_WIN32_IE >= 0x0602)
+        #define SHRegGetValue       SHRegGetValueA
+    #endif
+    #if (_WIN32_IE >= 0x0603)
+        #define GetAcceptLanguages  GetAcceptLanguagesA
+    #endif
+    #if (_WIN32_IE >= 0x0700)
+        #define PathMatchSpecEx     PathMatchSpecExA
+    #endif
+#endif
+
+/* Aliases */
+#define StrCatN     StrNCat
+#define StrNCmp     StrCmpN
+#define StrNCmpI    StrCmpNI
+#define StrNCpy     StrCpyN
+#define StrToLong   StrToInt
+
+:include cplusepi.sp
+
+#endif /* _INC_SHLWAPI */

@@ -24,14 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macros for converting segment and offset data 
+*               into linear address and subtracting and comparing
 *
 ****************************************************************************/
 
 
-#define SUB_ADDR( l, r ) (((long)(l).seg-(long)(r).seg) * 16 + ((l).off-(r).off))
+extern segment Find16MSeg( segment );
 
-#define LESS_THAN_ADDR( l, r ) ((long)SUB_ADDR( l, r ) < 0)
+#define SUB_ADDR( l, r ) ((((offset)(l).seg-(offset)(r).seg) << FmtData.SegShift) + ((l).off-(r).off))
 
-#define MK_REAL_ADDR( seg, off )  ( ((unsigned long)(seg)<<4) + (off) )
+#define SUB_16M_ADDR( l, r ) (((offset)Find16MSeg((l).seg)-(offset)Find16MSeg((r).seg))*16+((l).off-(r).off))
+
+#define LESS_THAN_ADDR( l, r ) (MK_REAL_ADDR((l).seg,(l).off) < MK_REAL_ADDR((r).seg,(r).off))
+
+#define MK_REAL_ADDR( seg, off )  ( ((offset)(seg) << FmtData.SegShift) + (off) )

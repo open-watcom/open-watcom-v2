@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getc() - read character from stream.
 *
 ****************************************************************************/
 
@@ -35,16 +34,12 @@
 #include <stdio.h>
 
 
-#ifndef __WIDECHAR__
-    _WCRTLINK int    (getc)( FILE *fp )
+_WCRTLINK INTCHAR_TYPE __F_NAME((getc),(getwc))( FILE *fp )
+{
+    __stream_check( fp, 1 );
+#if !defined( __WIDECHAR__ ) && defined( getc )
+    return( getc( fp ) );
 #else
-    _WCRTLINK wint_t  (getwc)( FILE *fp )
+    return( __F_NAME(fgetc,fgetwc)( fp ) );
 #endif
-    {
-        __stream_check( fp, 1 );
-        #if !defined(__WIDECHAR__) && defined(getc)
-            return( getc( fp ) );
-        #else
-            return( __F_NAME(fgetc,fgetwc)(fp) );
-        #endif
-    }
+}

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include "plusplus.h"
+
 #include <limits.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "fnbody.h"
 #include "cgfront.h"
@@ -348,12 +348,16 @@ static void dataInitLabel( void )
 static void dataInitCheckHugeSegment( target_size_t position )
 /************************************************************/
 {
+    // The following is meaningless when TARGET_UINT_MAX == UINT_MAX
+    // and will cause division by zero
+#if _CPU == 8086
     target_size_t check;
 
     check = position % (TARGET_UINT_MAX+1);
     if( position > 0 && check == 0 ) {
         DgSegmentIncrement();
     }
+#endif
 }
 
 static boolean dataInitCheckHugeAlign( TYPE type )
@@ -365,9 +369,13 @@ static boolean dataInitCheckHugeAlign( TYPE type )
     TYPE            base_type;
 
     total_size = CgMemorySize( type );
+    // The following is meaningless when TARGET_UINT_MAX == UINT_MAX
+    // (but this code will only ever get called for i86 target)
+#if _CPU == 8086
     if( total_size <= (TARGET_UINT_MAX+1) ) {
         return( FALSE );
     }
+#endif
     base_type = ArrayType( type );
     while( base_type != NULL ) {
         type = base_type->of;
@@ -377,6 +385,72 @@ static boolean dataInitCheckHugeAlign( TYPE type )
     return( (TARGET_UINT_MAX+1) % base_size );
 }
 
+static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT
+    INITIALIZE_INFO* info )     // - info on current entry
+{
+    TYPE type;                  // - NULL or type of dtorable element
+
+    if( info == NULL ) {
+        type = NULL;
+    } else if( info->entry == DE_ROOT_TYPE || info->entry == DE_TYPE ) {
+        if( TypeRequiresDtoring( info->type ) ) {
+            type = info->type;
+        } else {
+            type = NULL;
+        }
+    } else {
+        type = NULL;
+    }
+    return type;
+}
+
+static void emitDtorInitSymbol( // EMIT DTOR MARKING FOR A SYMBOL
+    void )
+{
+    SYMBOL sym;                 // - symbol to be initialized
+
+    if( ! currInit->dtor_done ) {
+        _dumpDtor( "emitDtorInitSymbol -- dtor for symbol\n" );
+        sym = dtorableObjectInitSymbol();
+        currInit->dtor_done = 1;
+        _dumpDtorSymbol( sym );
+        PtdInitSymEnd( NULL, sym );
+        if( SymIsAutomatic( sym ) ) {
+            IcEmitDtorAutoSym( sym );
+        } else {
+            IcEmitDtorStaticSym( sym );
+        }
+    }
+}
+
+static void dtorableObjectEnd(  // EMIT COMPLETION FOR DTORABLE OBJECT IF REQ'D
+    INITIALIZE_INFO* info )     // - info on current entry
+{
+    TYPE type;                  // - NULL or type of dtorable element
+
+    _dumpDtorPtr( "dtorableObjectEnd( %x )\n", info );
+    type = dtorableObjectType( info );
+    if( type != NULL ) {
+        dataInitCodeFileOpen( TRUE );
+        DataDtorObjPop( NULL );
+        if( info->entry == DE_ROOT_TYPE ) {
+            emitDtorInitSymbol();
+        }
+        dataInitCodeFileClose();
+    }
+}
+
+static void dataInitPopStack( void )
+/**********************************/
+{
+    INITIALIZE_INFO *nest;
+
+    dtorableObjectEnd( currInit->nest );
+    nest = StackPop( &currInit->nest );
+    _dump( "Popped " );
+    _dumpInitInfo( nest );
+    CarveFree( carveNEST, nest );
+}
 
 static void dataInitAbandon( void )
 /*********************************/
@@ -541,26 +615,6 @@ static TYPE arrayBaseStructType( // GET STRUCT TYPE OF ARRAY BASE TYPE
     return type;
 }
 
-
-static TYPE dtorableObjectType( // GET TYPE OF DTORABLE OBJECT (AT ROOT) ELEMENT
-    INITIALIZE_INFO* info )     // - info on current entry
-{
-    TYPE type;                  // - NULL or type of dtorable element
-
-    if( info == NULL ) {
-        type = NULL;
-    } else if( info->entry == DE_ROOT_TYPE || info->entry == DE_TYPE ) {
-        if( TypeRequiresDtoring( info->type ) ) {
-            type = info->type;
-        } else {
-            type = NULL;
-        }
-    } else {
-        type = NULL;
-    }
-    return type;
-}
-
 static void dtorableObjectBeg(  // EMIT START FOR DTORABLE OBJECT IF REQ'D
     INITIALIZE_INFO* info )     // - info on current entry
 {
@@ -582,27 +636,6 @@ static void dtorableObjectBeg(  // EMIT START FOR DTORABLE OBJECT IF REQ'D
         dataInitCodeFileClose();
     }
 }
-
-
-static void emitDtorInitSymbol( // EMIT DTOR MARKING FOR A SYMBOL
-    void )
-{
-    SYMBOL sym;                 // - symbol to be initialized
-
-    if( ! currInit->dtor_done ) {
-        _dumpDtor( "emitDtorInitSymbol -- dtor for symbol\n" );
-        sym = dtorableObjectInitSymbol();
-        currInit->dtor_done = 1;
-        _dumpDtorSymbol( sym );
-        PtdInitSymEnd( NULL, sym );
-        if( SymIsAutomatic( sym ) ) {
-            IcEmitDtorAutoSym( sym );
-        } else {
-            IcEmitDtorStaticSym( sym );
-        }
-    }
-}
-
 
 static SYMBOL getCtorCalled(    // GET SCOPE-CALL TYPE FOR A CTOR
     PTREE expr )                // - expression
@@ -664,24 +697,6 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
         }
     }
     return expr;
-}
-
-
-static void dtorableObjectEnd(  // EMIT COMPLETION FOR DTORABLE OBJECT IF REQ'D
-    INITIALIZE_INFO* info )     // - info on current entry
-{
-    TYPE type;                  // - NULL or type of dtorable element
-
-    _dumpDtorPtr( "dtorableObjectEnd( %x )\n", info );
-    type = dtorableObjectType( info );
-    if( type != NULL ) {
-        dataInitCodeFileOpen( TRUE );
-        DataDtorObjPop( NULL );
-        if( info->entry == DE_ROOT_TYPE ) {
-            emitDtorInitSymbol();
-        }
-        dataInitCodeFileClose();
-    }
 }
 
 static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
@@ -805,18 +820,6 @@ static void dataInitPushStack( INITIALIZE_ENTRY entry, INITIALIZE_INFO *prev )
     _dumpInitInfo( newtop );
 }
 
-static void dataInitPopStack( void )
-/**********************************/
-{
-    INITIALIZE_INFO *nest;
-
-    dtorableObjectEnd( currInit->nest );
-    nest = StackPop( &currInit->nest );
-    _dump( "Popped " );
-    _dumpInitInfo( nest );
-    CarveFree( carveNEST, nest );
-}
-
 static void dataInitInit( INITFINI* defn )
 /****************************************/
 {
@@ -904,7 +907,6 @@ static void dataInitStartLocal( INITIALIZE_DATA *init, DECL_INFO *dinfo,
     currInit->huge_sym = 0;
     currInit->initted = initializer;
     currInit->no_size = 0;
-    currInit->const_object = 0;
     currInit->const_object = 0;
     currInit->simple_set = 0;
     currInit->use_simple = 0;
@@ -1189,148 +1191,6 @@ static void dataInitEmitExpr( PTREE node )
     dataInitCodeFileClose();
 }
 
-static void dataInitStashExpr( PTREE expr )
-/*****************************************/
-{
-    boolean         constant;
-    target_size_t   size;
-    target_size_t   offset;
-    PTREE           cexpr;
-    TYPE            type;
-
-    type = currInit->nest->type;
-    size = CgMemorySize( type );
-    constant = isDataInitConstant( expr, &cexpr, &offset );
-
-    switch( currInit->location ) {
-    case DL_INTERNAL_AUTO:
-        // make sure PTF_KEEP_MPTR_SIMPLE hasn't been used
-        DbgAssert( expr->u.subtree[0] != NULL );
-        if( currInit->auto_static ) {
-            if( constant ) {
-                currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
-                NodeFreeSearchResult( cexpr );
-                PTreeFreeSubtrees( expr );
-            } else {
-                DgPadBytes( size );
-                dataInitFlushQueue();
-                dtorableObjectCtored( currInit->nest, expr, FALSE );
-                dataInitEmitExpr( expr );
-            }
-        } else {
-            if( constant && currInit->const_int ) {
-                DgStoreConstScalar( cexpr, type, currInit->sym );
-            }
-            dataInitFlushQueue();
-            dtorableObjectCtored( currInit->nest, expr, FALSE );
-            dataInitEmitExpr( expr );
-        }
-        break;
-    case DL_INTERNAL_STATIC:
-    case DL_EXTERNAL_STATIC:
-    case DL_EXTERNAL_PUBLIC:
-        dataInitLabel();
-        if( currInit->huge_sym ) {
-            dataInitCheckHugeSegment( currInit->nest->base
-                                    + currInit->nest->offset );
-        }
-        if( constant ) {
-            if( currInit->const_int ) {
-                DbgAssert( expr->u.subtree[0] != NULL );
-                DgStoreConstScalar( cexpr, type, currInit->sym );
-            }
-            currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
-            NodeFreeSearchResult( cexpr );
-            PTreeFreeSubtrees( expr );
-            dtorableObjectCtored( currInit->nest, NULL, FALSE );
-        } else {
-            DbgAssert( expr->u.subtree[0] != NULL );
-            DgPadBytes( size );
-            dataInitFlushQueue();
-            dtorableObjectCtored( currInit->nest, expr, FALSE );
-            dataInitEmitExpr( expr );
-        }
-        break;
-    }
-    currInit->nest->offset += size;
-}
-
-void DataInitConstructorParms( PTREE expr )
-/*****************************************/
-// called for "id(expr1, expr2, expr3, ...);" cases
-{
-    if( currInit == NULL ) {
-        _fatal( "datainit: currInit null in DataInitConstructorParms" );
-        return;
-    }
-    _dumpInt( "DataInitConstructorParms: state(%d)\n", currInit->state );
-    switch( currInit->state ) {
-    case DS_CLOSE_BRACE:
-    case DS_FINISH:
-        CErr( ERR_TOO_MANY_INITIALIZERS );
-        currInit->state = DS_ERROR;
-        PTreeFreeSubtrees( expr );
-        break;
-    case DS_ERROR:
-    case DS_ABANDONED:
-    case DS_COMPLETED:
-    case DS_IGNORE:
-        PTreeFreeSubtrees( expr );
-        break;
-    case DS_OPEN_BRACE:
-        if( currInit->nest->target != DT_CLASS ) {
-            CErr( ERR_EXPECTING_BUT_FOUND_EXPRESSION, OPEN_BRACE );
-            currInit->state = DS_ERROR;
-            PTreeFreeSubtrees( expr );
-            break;
-        }
-        /* fall through */
-    case DS_EXPRESSION:
-        if( dataInitAnalyseCtor( &expr ) ) {
-            dataInitStashExpr( expr );
-            dataInitUpdateState();
-        }
-        break;
-    }
-}
-
-static boolean dataInitIsFull( INITIALIZE_INFO *nest )
-/****************************************************/
-// return TRUE if stack entry is full
-// braces and root_type are never full
-{
-    boolean retn = FALSE;
-
-    if( ( nest->entry != DE_BRACE ) && ( nest->entry != DE_ROOT_TYPE ) ) {
-        switch( nest->target ) {
-        case DT_SCALAR:
-            retn = TRUE;
-            break;
-        case DT_ARRAY:
-            if( nest->offset == nest->mem_size ) {
-                retn = TRUE;
-            }
-            break;
-        case DT_CLASS:
-            if( nest->u.c.curr == NULL ) {
-                retn = TRUE;
-            }
-            break;
-        case DT_BITFIELD:
-            // type has already been advanced to next aggregate entry
-            if( nest->type == NULL ) {
-                retn = TRUE;
-            } else if( nest->type->id != TYP_BITFIELD ) {
-                retn = TRUE;
-            } else if( nest->type->u.b.field_start == 0 ) {
-                retn = TRUE;
-            }
-            break;
-        }
-    }
-    return( retn );
-}
-
 static SYMBOL dataInitFindDefaultCtor( TYPE type )
 /************************************************/
 {
@@ -1501,6 +1361,168 @@ static void dataInitFlushQueue( void )
             dataInitRunTimeCall( start, size );
         }
     }
+}
+
+static void dataInitStashExpr( PTREE expr )
+/*****************************************/
+{
+    boolean         constant;
+    target_size_t   size;
+    target_size_t   offset;
+    PTREE           cexpr;
+    TYPE            type;
+
+    type = currInit->nest->type;
+    size = CgMemorySize( type );
+    constant = isDataInitConstant( expr, &cexpr, &offset );
+
+    switch( currInit->location ) {
+    case DL_INTERNAL_AUTO:
+        // make sure PTF_KEEP_MPTR_SIMPLE hasn't been used
+        DbgAssert( expr->u.subtree[0] != NULL );
+        if( currInit->auto_static ) {
+            if( constant ) {
+                currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
+                NodeFreeSearchResult( cexpr );
+                PTreeFreeSubtrees( expr );
+            } else {
+                DgPadBytes( size );
+                dataInitFlushQueue();
+                dtorableObjectCtored( currInit->nest, expr, FALSE );
+                dataInitEmitExpr( expr );
+            }
+        } else {
+            if( constant && currInit->const_int ) {
+                DgStoreConstScalar( cexpr, type, currInit->sym );
+            }
+            dataInitFlushQueue();
+            dtorableObjectCtored( currInit->nest, expr, FALSE );
+            dataInitEmitExpr( expr );
+        }
+        break;
+    case DL_INTERNAL_STATIC:
+    case DL_EXTERNAL_STATIC:
+    case DL_EXTERNAL_PUBLIC:
+        dataInitLabel();
+        if( currInit->huge_sym ) {
+            dataInitCheckHugeSegment( currInit->nest->base
+                                    + currInit->nest->offset );
+        }
+        if( constant ) {
+            if( currInit->const_int ) {
+                DbgAssert( expr->u.subtree[0] != NULL );
+                DgStoreConstScalar( cexpr, type, currInit->sym );
+            }
+            currInit->all_zero &= DgStoreScalar( cexpr, offset, type );
+            NodeFreeSearchResult( cexpr );
+            PTreeFreeSubtrees( expr );
+            dtorableObjectCtored( currInit->nest, NULL, FALSE );
+        } else {
+            DbgAssert( expr->u.subtree[0] != NULL );
+            DgPadBytes( size );
+            dataInitFlushQueue();
+            dtorableObjectCtored( currInit->nest, expr, FALSE );
+            dataInitEmitExpr( expr );
+        }
+        break;
+    }
+    currInit->nest->offset += size;
+}
+
+static void dataInitUpdateState( void )
+/*************************************/
+{
+    switch( currInit->state ) {
+    case DS_ERROR:
+    case DS_ABANDONED:
+    case DS_IGNORE:
+        break;
+    default:
+        if( currInit->nest->entry == DE_ROOT_TYPE ) {
+            dataInitFlushQueue();
+            currInit->state = DS_FINISH;
+        } else if( currInit->nest->entry == DE_BRACE ) {
+            currInit->state = DS_CLOSE_BRACE;
+        } else {
+            currInit->state = DS_EXPRESSION;
+        }
+    }
+}
+
+void DataInitConstructorParms( PTREE expr )
+/*****************************************/
+// called for "id(expr1, expr2, expr3, ...);" cases
+{
+    if( currInit == NULL ) {
+        _fatal( "datainit: currInit null in DataInitConstructorParms" );
+        return;
+    }
+    _dumpInt( "DataInitConstructorParms: state(%d)\n", currInit->state );
+    switch( currInit->state ) {
+    case DS_CLOSE_BRACE:
+    case DS_FINISH:
+        CErr( ERR_TOO_MANY_INITIALIZERS );
+        currInit->state = DS_ERROR;
+        PTreeFreeSubtrees( expr );
+        break;
+    case DS_ERROR:
+    case DS_ABANDONED:
+    case DS_COMPLETED:
+    case DS_IGNORE:
+        PTreeFreeSubtrees( expr );
+        break;
+    case DS_OPEN_BRACE:
+        if( currInit->nest->target != DT_CLASS ) {
+            CErr( ERR_EXPECTING_BUT_FOUND_EXPRESSION, OPEN_BRACE );
+            currInit->state = DS_ERROR;
+            PTreeFreeSubtrees( expr );
+            break;
+        }
+        /* fall through */
+    case DS_EXPRESSION:
+        if( dataInitAnalyseCtor( &expr ) ) {
+            dataInitStashExpr( expr );
+            dataInitUpdateState();
+        }
+        break;
+    }
+}
+
+static boolean dataInitIsFull( INITIALIZE_INFO *nest )
+/****************************************************/
+// return TRUE if stack entry is full
+// braces and root_type are never full
+{
+    boolean retn = FALSE;
+
+    if( ( nest->entry != DE_BRACE ) && ( nest->entry != DE_ROOT_TYPE ) ) {
+        switch( nest->target ) {
+        case DT_SCALAR:
+            retn = TRUE;
+            break;
+        case DT_ARRAY:
+            if( nest->offset == nest->mem_size ) {
+                retn = TRUE;
+            }
+            break;
+        case DT_CLASS:
+            if( nest->u.c.curr == NULL ) {
+                retn = TRUE;
+            }
+            break;
+        case DT_BITFIELD:
+            // type has already been advanced to next aggregate entry
+            if( nest->type == NULL ) {
+                retn = TRUE;
+            } else if( nest->type->id != TYP_BITFIELD ) {
+                retn = TRUE;
+            } else if( nest->type->u.b.field_start == 0 ) {
+                retn = TRUE;
+            }
+            break;
+        }
+    }
+    return( retn );
 }
 
 static void dataInitEnQueue( target_size_t start, target_size_t size )
@@ -1691,26 +1713,6 @@ static void dataInitPopNest( void )
         dataInitUpdatePrevious( currInit->nest );
     }
     dataInitPopStack();
-}
-
-static void dataInitUpdateState( void )
-/*************************************/
-{
-    switch( currInit->state ) {
-    case DS_ERROR:
-    case DS_ABANDONED:
-    case DS_IGNORE:
-        break;
-    default:
-        if( currInit->nest->entry == DE_ROOT_TYPE ) {
-            dataInitFlushQueue();
-            currInit->state = DS_FINISH;
-        } else if( currInit->nest->entry == DE_BRACE ) {
-            currInit->state = DS_CLOSE_BRACE;
-        } else {
-            currInit->state = DS_EXPRESSION;
-        }
-    }
 }
 
 static void mayNeedAutoStaticInitCopy( void )

@@ -24,31 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Base Colors constant pick file
 *
 ****************************************************************************/
 
 
-
-#ifndef _COLORS_INCLUDED
-#define _COLORS_INCLUDED
-
-#define BLACK   0
-#define BLUE    1
-#define GREEN   2
-#define CYAN    3
-#define RED     4
-#define MAGENTA 5
-#define BROWN   6
-#define WHITE   7
-#define DARK_GRAY 8
-#define LIGHT_BLUE 9
-#define LIGHT_GREEN 10
-#define LIGHT_CYAN  11
-#define LIGHT_RED   12
-#define LIGHT_MAGENTA 13
-#define YELLOW  14
-#define BRIGHT_WHITE 15
-
-#endif
+vi_pick( BLACK )
+vi_pick( BLUE )
+vi_pick( GREEN )
+vi_pick( CYAN )
+vi_pick( RED )
+vi_pick( MAGENTA )
+vi_pick( BROWN )
+vi_pick( WHITE )
+vi_pick( DARK_GRAY )
+vi_pick( LIGHT_BLUE )
+vi_pick( LIGHT_GREEN )
+vi_pick( LIGHT_CYAN )
+vi_pick( LIGHT_RED )
+vi_pick( LIGHT_MAGENTA )
+vi_pick( YELLOW )
+vi_pick( BRIGHT_WHITE )

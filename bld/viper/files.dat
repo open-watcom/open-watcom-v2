@@ -1,0 +1,50 @@
+# VIPER component of LANG11.DAT
+[ DEFAULT type="e" ]
+usr="ide.exe"       dir="binw"  cond="winhost"              where="c f77 jc jf77"
+usr="ide.exe"       dir="binp"  cond="os2host"              where="c f77 jc jf77"
+usr="ide.exe"       dir="binnt" cond="wnthost"              where="c f77 jc jf77 ac"
+usr="ide.exe"       dir="axpnt" cond="alphahost"            where="ac"
+
+usr="ide2make.exe"  dir="binw"  cond="doshost winhost |"    where="c f77 jc jf77"
+usr="ide2make.exe"  dir="binp"  cond="os2host"              where="c f77 jc jf77"
+usr="ide2make.exe"  dir="binnt" cond="wnthost"              where="c f77 jc jf77 ac"
+usr="ide2make.exe"  dir="axpnt" cond="alphahost"            where="ac"
+usr="ide2make"      dir="binl"  cond="lnxhost"              where="c f77 jc jf77"
+
+[ DEFAULT type="s" ]
+usr="idex.cfg"      dir="binw"  cond="doshost winhost |"    where="c f77 jc jf77"
+usr="idex.cfg"      dir="binp"  cond="os2host"              where="c f77 jc jf77"
+usr="idex.cfg"      dir="binnt" cond="wnthost"              where="c f77 jc jf77 ac"
+usr="idex.cfg"      dir="axpnt" cond="alphahost"            where="ac"
+usr="idex.cfg"      dir="binl"  cond="lnxhost"              where="c f77 jc jf77"
+
+[ DEFAULT dir="binw" type="s" ]
+usr="wsrv.pif"      cond="winhost wnthost os2host alphahost | | |"          where="c f77 jc jf77"
+usr="wd.pif"        cond="winhost wnthost os2host alphahost | | |"          where="c f77 jc jf77"
+
+usr="ide.cfg"       cond="doshost winhost wnthost os2host alphahost | | | |"              where="c f77 jc jf77 ac"
+usr="idedos.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | dostarg"      where="c f77 jc jf77"
+usr="idedos32.cfg"  cond="doshost winhost wnthost os2host alphahost | | | | dostarg"      where="c f77 jc jf77"
+usr="idewin.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | wintarg"      where="c f77 jc jf77"
+usr="idew386.cfg"   cond="doshost winhost wnthost os2host alphahost | | | | wintarg"      where="c f77 jc jf77"
+usr="ideos2.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | os2targ"      where="c f77 jc jf77"
+usr="ideos232.cfg"  cond="doshost winhost wnthost os2host alphahost | | | | os2targ"      where="c f77 jc jf77"
+usr="idenlm.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | nlmtarg"      where="c f77 jc jf77"
+usr="idelnx.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | lnxtarg"      where="c f77 jc jf77"
+usr="idew32.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | wnttarg"      where="c f77 jc jf77 ac"
+usr="ideaxp.cfg"    cond="doshost winhost wnthost os2host alphahost | | | | alphatarg"    where="ac"
+usr="iderdos.cfg"   cond="doshost winhost wnthost os2host alphahost | | | | rdostarg"     where="c f77 jc jf77"
+
+[ DEFAULT dir="binl" type="s" ]
+usr="ide.cfg"       cond="lnxhost"              where="c f77 jc jf77"
+usr="idedos.cfg"    cond="lnxhost dostarg"      where="c f77 jc jf77"
+usr="idedos32.cfg"  cond="lnxhost dostarg"      where="c f77 jc jf77"
+usr="idewin.cfg"    cond="lnxhost wintarg"      where="c f77 jc jf77"
+usr="idew386.cfg"   cond="lnxhost wintarg"      where="c f77 jc jf77"
+usr="ideos2.cfg"    cond="lnxhost os2targ"      where="c f77 jc jf77"
+usr="ideos232.cfg"  cond="lnxhost os2targ"      where="c f77 jc jf77"
+usr="idenlm.cfg"    cond="lnxhost nlmtarg"      where="c f77 jc jf77"
+usr="idelnx.cfg"    cond="lnxhost lnxtarg"      where="c f77 jc jf77"
+usr="idew32.cfg"    cond="lnxhost wnttarg"      where="c f77 jc jf77 ac"
+usr="ideaxp.cfg"    cond="lnxhost alphatarg"    where="ac"
+usr="iderdos.cfg"   cond="lnxhost rdostarg"     where="c f77 jc jf77"

@@ -1,0 +1,21 @@
+proj_name = wlink
+
+memory_model_i86 = s
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+objs  = &
+!ifeq host_OS os2
+spawn.obj &
+!endif
+fcenable.obj &
+mem.obj &
+records.obj
+
+.c: ../c
+
+fcenable.exe : $(objs)
+        $(linker) $(lflags) name $^@ op map file {$(objs)}
+

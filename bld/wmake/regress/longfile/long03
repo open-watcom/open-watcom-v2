@@ -1,0 +1,19 @@
+#
+#  LONGFILE TEST 03
+#  Older versions of wmake searched for 8.3 filenames when LFN search failed.
+#  Make sure LFN dependencies work properly.
+#
+
+test: .symbolic longfile.txt longfile2.txt
+    rm longfile.txt
+    rm longfile2.txt
+
+longfile.txt:
+    @echo Creating <<longfile.txt
+Long file name 1
+<< keep
+
+longfile2.txt:
+      @echo Creating <<longfile2.txt
+Long file name 2
+<< keep

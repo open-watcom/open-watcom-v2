@@ -46,14 +46,13 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern char     WMapKeyToShiftedKey     ( char );
-extern char     WMapShiftedKeyToKey     ( char );
-extern char     *WGetVKeyFromID         ( uint_16 );
-extern uint_16  WGetVKeyFromStr         ( char * );
-extern char     *WGetKeyText            ( uint_16 key, uint_16 flags );
-extern char     *WGetASCIIKeyText       ( uint_16 key );
-extern char     *WGetASCIIVKText        ( uint_16 key );
-extern Bool     WGetKeyFromText         ( char *text, uint_16 *key,
-                                          uint_16 *flags, Bool *force_ascii );
+extern char     WMapKeyToShiftedKey( char );
+extern char     WMapShiftedKeyToKey( char );
+extern char     *WGetVKeyFromID( uint_16 );
+extern uint_16  WGetVKeyFromStr( char * );
+extern char     *WGetKeyText( uint_16 key, uint_16 flags );
+extern char     *WGetASCIIKeyText( uint_16 key );
+extern char     *WGetASCIIVKText( uint_16 key );
+extern Bool     WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, Bool *force_ascii );
 
 #endif

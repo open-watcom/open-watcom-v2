@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stddef.h>
-#include <malloc.h>
-#include <string.h>
 #include "vi.h"
+#include <stddef.h>
 
 #ifndef NOEMS
 #include "dosx.h"
@@ -42,45 +39,47 @@
 #include "fcbmem.h"
 
 
-ems_struct EMSCtrl;
-static unsigned long *emsPtrs;
-static int emsRead( long, void *, int );
-static int emsWrite( long, void *, int );
+ems_struct              EMSCtrl;
+static unsigned long    *emsPtrs;
+
+static int  emsRead( long, void *, int );
+static int  emsWrite( long, void *, int );
 
 int EMSBlockTest( unsigned short blocks )
 {
     if( !EMSCtrl.inuse ) {
         return( ERR_NO_EMS_MEMORY );
     }
-    if( EMSBlocksInUse +blocks > TotalEMSBlocks ) {
+    if( EMSBlocksInUse + blocks > TotalEMSBlocks ) {
         return( ERR_NO_EMS_MEMORY );
     }
     return( ERR_NO_ERR );
 
-}
+} /* EMSBlockTest */
 
 void EMSBlockRead( long addr, void *buff, unsigned len )
 {
     emsRead( addr, buff, len );
+
 } /* EMSBlockRead */
 
-int EMSBlockWrite( long addr, void *buff, unsigned len )
+void EMSBlockWrite( long addr, void *buff, unsigned len )
 {
-    return( emsWrite( addr, buff, len ) );
+    emsWrite( addr, buff, len );
 
 } /* EMSBlockWrite */
 
 int EMSGetBlock( long *addr )
 {
     int         i;
-    long        found=NULL;
+    long        found = NULL;
 
     i = EMSBlockTest( 1 );
     if( i ) {
         return( i );
     }
     EMSBlocksInUse++;
-    for( i=0;i<TotalEMSBlocks;i++ ) {
+    for( i = 0; i < TotalEMSBlocks; i++ ) {
         if( emsPtrs[i] != NULL ) {
             found = emsPtrs[i];
             emsPtrs[i] = NULL;
@@ -97,7 +96,7 @@ int EMSGetBlock( long *addr )
  */
 int SwapToEMSMemory( fcb *fb )
 {
-    int         i,len;
+    int         i, len;
     long        found;
 
     i = EMSGetBlock( &found );
@@ -157,13 +156,13 @@ static long eMSAlloc( U_INT size )
                 }
             }
             EMSCtrl.logical = 0;
-            EMSCtrl.handles[ EMSCtrl.allocated++ ] = handle;
+            EMSCtrl.handles[EMSCtrl.allocated++] = handle;
         }
         EMSCtrl.offset = 0;
     }
     h.internal.offset = EMSCtrl.offset;
     h.internal.logical = EMSCtrl.logical;
-    h.internal.handle = EMSCtrl.handles[EMSCtrl.allocated-1];
+    h.internal.handle = EMSCtrl.handles[EMSCtrl.allocated - 1];
 
     EMSCtrl.offset += size;
 
@@ -193,7 +192,7 @@ void EMSInit( void )
     EMSCtrl.exhausted = FALSE;
     vect = DosGetVect( EMS_INTERRUPT );
     check = MK_FP( FP_SEG( vect ), EMS_INTERRUPT_OFFSET );
-    for( i=0;i<=7;i++ ) {
+    for( i = 0; i <= 7; i++ ) {
         if( check[i] != emsStr[i] ) {
             return;
         }
@@ -214,13 +213,13 @@ void EMSInit( void )
     EMSCtrl.max_logical = EMS_MAX_LOGICAL_PAGES;
     EMSCtrl.offset = 0;
     EMSCtrl.allocated = 1;
-    for( i=0; i<EMS_MAX_PHYSICAL_PAGES; i++ ) {
-        EMSCtrl.physical[ i ].used = FALSE;
+    for( i = 0; i < EMS_MAX_PHYSICAL_PAGES; i++ ) {
+        EMSCtrl.physical[i].used = FALSE;
     }
 
     emsPtrs = MemAlloc( sizeof( long ) * MaxEMSBlocks );
 
-    for( i=0;i<MaxEMSBlocks;i++ ) {
+    for( i = 0; i < MaxEMSBlocks; i++ ) {
         emsPtrs[i] = eMSAlloc( MAX_IO_BUFFER );
         if( emsPtrs[i] == NULL ) {
             break;
@@ -242,13 +241,13 @@ void EMSFini( void )
 {
     U_INT       curr;
 
-    if( ! EMSCtrl.inuse ) {
+    if( !EMSCtrl.inuse ) {
         return;
     }
     curr = EMSCtrl.allocated;
     while( curr ) {
         curr--;
-        _EMSReleaseMemory( EMSCtrl.handles[ curr ] );
+        _EMSReleaseMemory( EMSCtrl.handles[curr] );
     }
     EMSCtrl.allocated = 0;
     EMSCtrl.inuse = FALSE;
@@ -258,20 +257,20 @@ void EMSFini( void )
 /*
  * locatePhysicalPage - find a phyiscal page, given a logical one
  */
-static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char *p)
+static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char *p )
 {
-    unsigned char       i,free;
+    unsigned char       i, free;
 
     free = EMS_MAX_PHYSICAL_PAGES;
     for( i = 0; i < EMS_MAX_PHYSICAL_PAGES; ++i ) {
-        if( EMSCtrl.physical[ i ].used == 0 ) {
+        if( EMSCtrl.physical[i].used == 0 ) {
             free = i;
             continue;
         } /* if */
-        if( EMSCtrl.physical[ i ].handle != h ) {
+        if( EMSCtrl.physical[i].handle != h ) {
             continue;
         }
-        if( EMSCtrl.physical[ i ].logical == l ) {
+        if( EMSCtrl.physical[i].logical == l ) {
             *p = i;
             return( TRUE );
         }
@@ -289,7 +288,7 @@ static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char 
  */
 static void *emsAccess( ems_addr x )
 {
-    unsigned char       handle,logical,physical;
+    unsigned char       handle, logical, physical;
     U_INT               offset;
 
     if( x.external == NULL ) {
@@ -301,9 +300,9 @@ static void *emsAccess( ems_addr x )
         if( _EMSMapMemory( handle, logical, physical ) != 0 ) {
             return( NULL );
         }
-        EMSCtrl.physical[ physical ].handle = handle;
-        EMSCtrl.physical[ physical ].logical = logical;
-        EMSCtrl.physical[ physical ].used = TRUE;
+        EMSCtrl.physical[physical].handle = handle;
+        EMSCtrl.physical[physical].logical = logical;
+        EMSCtrl.physical[physical].used = TRUE;
     }
     offset = x.internal.offset;
     offset += physical * EMS_MAX_PAGE_SIZE;
@@ -316,7 +315,7 @@ static void *emsAccess( ems_addr x )
  */
 static void emsRelease( ems_addr x )
 {
-    unsigned char       handle,logical,physical;
+    unsigned char       handle, logical, physical;
 
     if( x.external == NULL ) {
         return;
@@ -326,7 +325,7 @@ static void emsRelease( ems_addr x )
     if( locatePhysicalPage( handle, logical, &physical ) == 0 ) {
         return;
     }
-    EMSCtrl.physical[ physical ].used = FALSE;
+    EMSCtrl.physical[physical].used = FALSE;
 
 } /* emsRelease */
 
@@ -343,7 +342,7 @@ static int emsRead( long addr, void *buff, int size )
     if( ptr == NULL ) {
         return( -1 );
     }
-    memcpy( buff,ptr, size );
+    memcpy( buff, ptr, size );
     emsRelease( h );
     return( size );
 
@@ -375,7 +374,7 @@ void GiveBackEMSBlock( long addr )
 {
     int i;
 
-    for( i=0;i<TotalEMSBlocks;i++ ) {
+    for( i = 0; i < TotalEMSBlocks; i++ ) {
         if( emsPtrs[i] == NULL ) {
             emsPtrs[i] = addr;
             break;
@@ -390,12 +389,11 @@ void GiveBackEMSBlock( long addr )
  */
 void EMSBlockInit( int i )
 {
-
     if( EMSCtrl.inuse ) {
         return;
     }
     MaxEMSBlocks = i;
-    MaxEMSBlocks /= (MAX_IO_BUFFER/1024);
+    MaxEMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* EMSBlockInit */
 

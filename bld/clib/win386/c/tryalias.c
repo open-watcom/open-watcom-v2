@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Automatic pointer conversion for select message parameters.
 *
 ****************************************************************************/
 
@@ -75,6 +74,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case CB_ADDSTRING:
         case CB_DIR:
         case CB_FINDSTRING:
+        case CB_FINDSTRINGEXACT:
         case CB_GETLBTEXT:
         case CB_INSERTSTRING:
         case CB_SELECTSTRING:
@@ -109,6 +109,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case LB_ADDSTRING:
         case LB_DIR:
         case LB_FINDSTRING:
+        case LB_FINDSTRINGEXACT:
         case LB_GETITEMRECT:
         case LB_GETSELITEMS:
         case LB_GETTEXT:

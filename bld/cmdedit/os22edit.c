@@ -24,19 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 2.x specific command line editing hook.
 *
 ****************************************************************************/
 
 
 #define INCL_SUB
-#include "os2.h"
+#include <os2.h>
+#include <process.h>
 
 typedef struct {
-        int     input;
-        int     output;
-        } LENGTH;
+    int input;
+    int output;
+} LENGTH;
 
 #define LINE_WIDTH 512
 

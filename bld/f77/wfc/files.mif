@@ -1,0 +1,256 @@
+!include ../tdfiles.mif
+!include ../emsfiles.mif
+!include ../i86files.mif
+!include ../386files.mif
+!include ../axpfiles.mif
+
+# system independent compile-time files
+
+comroot = &
+    argchk.obj &
+    cbsize.obj &
+    chain.obj &
+    fmemmgr.obj &
+    fmeminit.obj &
+    mkname.obj &
+    rstutils.obj &
+    subscr.obj &
+    substr.obj &
+    types.obj
+
+comovl1 = &
+    aentry.obj &
+    allocate.obj &
+    arglist.obj &
+    arutls.obj &
+    hash.obj &
+    cfmttab.obj &
+    cftable.obj &
+    cle.obj &
+    cmsgproc.obj &
+    comdump.obj &
+    comio.obj &
+    common.obj &
+    compprog.obj &
+    compstmt.obj &
+    convert.obj &
+    cpmisc.obj &
+    cpsubpgm.obj &
+    csatend.obj &
+    cscycle.obj &
+    csexit.obj &
+    csgoto.obj &
+    csguess.obj &
+    csif.obj &
+    csloops.obj &
+    csquit.obj &
+    csremblk.obj &
+    csselect.obj &
+    csutls.obj &
+    data.obj &
+    detach.obj &
+    downscan.obj &
+    dsname.obj &
+    equiv.obj &
+    error.obj &
+    external.obj &
+    fmterr.obj &
+    fmtinit.obj &
+    frl.obj &
+    iflookup.obj &
+    ifused.obj &
+    impltab.obj &
+    include.obj &
+    insert.obj &
+    intrnsc.obj &
+    ioiolist.obj &
+    iokwlist.obj &
+    ioperm.obj &
+    ioprockw.obj &
+    iostmts.obj &
+    ioutls.obj &
+    kwlist.obj &
+    kwlook.obj &
+    kwlookup.obj &
+    lex.obj &
+    namelist.obj &
+    oprtab.obj &
+    parmcode.obj &
+    parmeter.obj &
+    proctbl.obj &
+    recog.obj &
+    rstalloc.obj &
+    rstconst.obj &
+    rstdump.obj &
+    rstglist.obj &
+    rstlit.obj &
+    rstnlist.obj &
+    rstsrch.obj &
+    rststmt.obj &
+    rststruc.obj &
+    save.obj &
+    scan.obj &
+    setopn.obj &
+    showopts.obj &
+    stmtfunc.obj &
+    stmtno.obj &
+    stresolv.obj &
+    struct.obj &
+    symtab.obj &
+    union.obj &
+    upscan.obj &
+    usconst.obj &
+    usfold.obj &
+    usother.obj &
+    utility.obj &
+    volatile.obj
+
+comovl2 = &
+    errinit.obj
+
+# system independent compile-time and run-time files
+
+# "errgrp" and "errmsg" contain data that gets placed in
+# the code segment so they must be in the root
+
+comroot += &
+    errgrp.obj
+
+!ifdef incl_errmsgs
+comroot += &
+    errmsg.obj
+!endif
+
+comovl1 += &
+    blderr.obj &
+    chinese.obj &
+    csetinfo.obj &
+    dbcsutil.obj &
+    english.obj &
+    errrtns.obj &
+    errutil.obj &
+    fmtboth.obj &
+    fmtcnvt.obj &
+    fmtscan.obj &
+    hexcnv.obj &
+    japanese.obj &
+    korean.obj &
+    lexcmp.obj
+
+!ifdef incl_errmsgs
+comovl1 += errincl.obj
+!else
+comovl1 += errrsrc.obj
+!endif
+
+# system dependent compile-time files
+
+comroot += &
+    blips.obj &
+    cnvd2s.obj &
+    filescan.obj &
+    sdcio.obj &
+    tcmplx.obj
+
+comovl1 += &
+    asgnop.obj &
+    binops.obj &
+    cgformat.obj &
+    cgmagic.obj &
+    cptraps.obj &
+    csdep.obj &
+    cspawn.obj &
+    docle.obj &
+    emit.obj &
+    exprutil.obj &
+    fltused.obj &
+    galloc.obj &
+    gcnvt.obj &
+    gdata.obj &
+    gdbginfo.obj &
+    gdo.obj &
+    gio.obj &
+    global.obj &
+    gsfunc.obj &
+    gstring.obj &
+    gsublist.obj &
+    gsubprog.obj &
+    gsubscr.obj &
+    gtypes.obj &
+    ifdump.obj &
+    libsupp.obj &
+    logops.obj &
+    relops.obj &
+    sdcline.obj &
+    stkops.obj &
+    tdinit.obj &
+    upcat.obj &
+    _matherr.obj
+
+#
+# The browse generator
+#
+comovl1 += &
+    brseinfo.obj &
+    browscli.obj &
+    writ_elf.obj &
+
+comovl2 += &
+    fcalloc.obj &
+    fcbinary.obj &
+    fcbits.obj &
+    fccmplx.obj &
+    fccnvt.obj &
+    fcdbg.obj &
+    fcdo.obj &
+    fcflow.obj &
+    fcformat.obj &
+    fcio.obj &
+    fcjmptab.obj &
+    fclogic.obj &
+    fcmisc.obj &
+    fcrelops.obj &
+    fcsel.obj &
+    fcstring.obj &
+    fcstruct.obj &
+    fcsubscr.obj &
+    fcsyms.obj &
+    fctemp.obj
+
+# system dependent compile-time and run-time files
+
+comroot += &
+    poscc.obj &
+    posdel.obj &
+    posdat.obj &
+    poserr.obj &
+    posflush.obj &
+    posget.obj &
+    posopen.obj &
+    posput.obj &
+    posrew.obj &
+    posseek.obj
+
+comovl1 += &
+    btraps.obj &
+    intarith.obj &
+    sdfile.obj
+
+dbfiles = &
+    dumpnode.obj
+
+comfiles = $(comroot) $(comovl1) $(comovl2)
+
+rootfiles = $(comroot) $(tdroot) $(emsroot) $(i86root)
+ovl1files = $(comovl1) $(tdovl1) $(emsovl1) $(i86ovl1)
+ovl2files = $(comovl2) $(tdovl2) $(emsovl2) $(i86ovl2)
+
+!ifeq host_CPU axp
+fobjs = $(comfiles) $(axpfiles) $(tdfiles) $(dbfiles)
+!else
+fobjs = $(comfiles) $(386files) $(tdfiles) $(dbfiles)
+!endif
+
+!ifdef use_ems
+fobjs += $(emsfiles)
+!endif

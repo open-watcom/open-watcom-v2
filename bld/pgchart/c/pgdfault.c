@@ -128,7 +128,7 @@ static void _LegendInit( legendtype _WCI86FAR *legend )
 }
 
 
-short _WCI86FAR _CGRAPH _pg_defaultchart( chartenv _WCI86FAR *env,
+_WCRTLINK short _WCI86FAR _CGRAPH _pg_defaultchart( chartenv _WCI86FAR *env,
                                      short type, short style )
 //============================================================
 

@@ -1,0 +1,12 @@
+.387
+_data		SEGMENT	BYTE PUBLIC USE16 'data'
+    DB	56H, 34H, 12H, 0efH, 0cdH, 0abH, 9aH, 78H
+    DB	56H, 34H, 12H, 0efH, 0cdH, 0abH, 0deH, 0bcH
+    DB	9aH, 78H, 56H, 34H, 12H, 0efH, 0cdH, 0abH
+
+_data		ENDS
+_text		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
+    jmp       word ptr es:[bx]
+_text		ENDS
+		END

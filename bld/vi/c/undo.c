@@ -24,20 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Undo command processing.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
+
 /*
  * StartUndoGroupWithPosition - begin set of undos, save start position
  */
 void StartUndoGroupWithPosition( undo_stack *stack, linenum lne,
-                        linenum top, int col )
+                                 linenum top, int col )
 {
     undo        *cundo;
 
@@ -70,13 +68,13 @@ void StartUndoGroupWithPosition( undo_stack *stack, linenum lne,
         return;
     }
     cundo->data.sdata.depth = 1;
-    cundo->data.sdata.line = lne;
+    cundo->data.sdata.p.line = lne;
     cundo->data.sdata.top = top;
     cundo->data.sdata.time_stamp = ClockTicks;
     if( col == 0 ) {
-        col=1;
+        col = 1;
     }
-    cundo->data.sdata.col = col;
+    cundo->data.sdata.p.column = col;
     PushUndoStack( cundo, stack );
 
     /*
@@ -89,23 +87,24 @@ void StartUndoGroupWithPosition( undo_stack *stack, linenum lne,
     }
 
 } /* StartUndoGroupWithPosition */
+
 /*
  * UndoReplaceLines - undo the replacement of a group of lines
  */
-int UndoReplaceLines( linenum sline, linenum eline  )
+vi_rc UndoReplaceLines( linenum sline, linenum eline  )
 {
-    int i;
-    fcb *head,*tail;
+    vi_rc       rc;
+    fcb_list    fcblist;
 
     if( !EditFlags.Undo || UndoStack == NULL ) {
         return( ERR_NO_ERR );
     }
-    i = GetCopyOfLineRange( sline, eline, &head, &tail );
-    if( i ) {
-        return( i );
+    rc = GetCopyOfLineRange( sline, eline, &fcblist );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     StartUndoGroup( UndoStack );
-    UndoDeleteFcbs( sline-1, head, tail, UndoStack );
+    UndoDeleteFcbs( sline - 1, &fcblist, UndoStack );
     UndoInsert( sline, eline, UndoStack );
     EndUndoGroup( UndoStack );
     return( ERR_NO_ERR );
@@ -122,8 +121,8 @@ static void numberLines( fcb *cfcb, linenum sline )
     while( cfcb != NULL ) {
         tot = cfcb->end_line - cfcb->start_line;
         cfcb->start_line = sline;
-        cfcb->end_line = sline+tot;
-        sline += tot+1;
+        cfcb->end_line = sline + tot;
+        sline += tot + 1;
         cfcb = cfcb->next;
     }
 
@@ -132,8 +131,7 @@ static void numberLines( fcb *cfcb, linenum sline )
 /*
  * UndoDeleteFcbs - set up transaction to undo the deletion of fcbs
  */
-void UndoDeleteFcbs( linenum sline, fcb *fcbhead, fcb *fcbtail,
-                undo_stack *stack  )
+void UndoDeleteFcbs( linenum sline, fcb_list *fcblist, undo_stack *stack )
 {
     undo        *cundo;
 
@@ -152,22 +150,21 @@ void UndoDeleteFcbs( linenum sline, fcb *fcbhead, fcb *fcbtail,
     /*
      * set up start line in fcb head
      */
-    numberLines( fcbhead, sline );
+    numberLines( fcblist->head, sline );
 
     /*
      * save the data
      */
-    cundo->data.fcbs.fcb_head = fcbhead;
-    cundo->data.fcbs.fcb_tail = fcbtail;
+    cundo->data.fcbs = *fcblist;
 
 } /* UndoDeleteFcbs */
 
 /*
  * UndoInsert - set up stuff to undo the insert of a set of lines
  */
-void UndoInsert( linenum sline, linenum eline , undo_stack *stack )
+void UndoInsert( linenum sline, linenum eline, undo_stack *stack )
 {
-    undo        *top,*cundo;
+    undo        *top, *cundo;
     bool        neednew = FALSE;
 
     if( stack == NULL || stack->current < 0 || !EditFlags.Undo ) {
@@ -178,7 +175,7 @@ void UndoInsert( linenum sline, linenum eline , undo_stack *stack )
      * check if we need a new entry; ie, if this line number
      * is not part of the current sequence, allocate a new entry
      */
-    top = stack->stack[ stack->current];
+    top = stack->stack[stack->current];
     if( top->type != UNDO_INSERT_LINES ) {
         neednew = TRUE;
     } else if( top->data.del_range.end != sline - 1 ) {
@@ -210,10 +207,8 @@ void UndoInsert( linenum sline, linenum eline , undo_stack *stack )
  */
 void PatchDeleteUndo( undo_stack *stack )
 {
-    undo        *top,*next,*del,*topdel,*after,*tmp;
+    undo        *top, *next, *del, *topdel, *after, *tmp;
     bool        merge;
-    int         i;
-    fcb         *cfcb,*nfcb;
 
     /*
      * see if we can merge this with the last undo record
@@ -225,10 +220,11 @@ void PatchDeleteUndo( undo_stack *stack )
      *      - must have same start line as the first one
      * START_UNDO_GROUP
      */
-    if( stack == NULL || stack->OpenUndo <= 0 || stack->current < 0 || !EditFlags.Undo ) {
+    if( stack == NULL || stack->OpenUndo <= 0 || stack->current < 0 ||
+        !EditFlags.Undo ) {
         return;
     }
-    top = stack->stack[ stack->current];
+    top = stack->stack[stack->current];
     topdel = top->next;
     next = top->next->next->next;   /* go past first delete group */
     if( next == NULL || next->type != END_UNDO_GROUP ) {
@@ -250,7 +246,7 @@ void PatchDeleteUndo( undo_stack *stack )
      * and we can merge them.
      */
     merge = FALSE;
-    if( del->data.fcbs.fcb_head->start_line == topdel->data.fcbs.fcb_head->start_line ) {
+    if( del->data.fcbs.head->start_line == topdel->data.fcbs.head->start_line ) {
         merge = TRUE;
     }
 
@@ -263,10 +259,10 @@ void PatchDeleteUndo( undo_stack *stack )
          * from the 2nd record become the head fcbs, and
          * the fcbs from the 2nd record follow them.
          */
-        del->data.fcbs.fcb_tail->next = topdel->data.fcbs.fcb_head;
-        topdel->data.fcbs.fcb_head->prev = del->data.fcbs.fcb_tail;
-        topdel->data.fcbs.fcb_head = del->data.fcbs.fcb_head;
-        numberLines( topdel->data.fcbs.fcb_head, topdel->data.fcbs.fcb_head->start_line );
+        del->data.fcbs.tail->next = topdel->data.fcbs.head;
+        topdel->data.fcbs.head->prev = del->data.fcbs.tail;
+        topdel->data.fcbs.head = del->data.fcbs.head;
+        numberLines( topdel->data.fcbs.head, topdel->data.fcbs.head->start_line );
 
         /*
          * join the top undo sequence with the third one
@@ -288,27 +284,7 @@ void PatchDeleteUndo( undo_stack *stack )
         /*
          * merge the line data from the fcbs together
          */
-        cfcb = topdel->data.fcbs.fcb_head;
-        while( cfcb != NULL ) {
-
-            nfcb = cfcb->next;
-            if( nfcb == NULL ) {
-                break;
-            }
-            if( !cfcb->in_memory || !nfcb->in_memory ) {
-                    cfcb = nfcb;
-                    continue;
-            }
-            i = JoinFcbs( cfcb, nfcb );
-            if( i == COULD_NOT_MERGE_FCBS ) {
-                cfcb = nfcb;
-            } else {
-                DeleteLLItem( &(topdel->data.fcbs.fcb_head),
-                        &(topdel->data.fcbs.fcb_tail), nfcb );
-                FcbFree( nfcb );
-            }
-        }
-
+        MergeAllFcbs( &topdel->data.fcbs );
     }
 
 } /* PatchDeleteUndo */
@@ -318,7 +294,7 @@ void PatchDeleteUndo( undo_stack *stack )
  */
 void StartUndoGroup( undo_stack *us  )
 {
-    StartUndoGroupWithPosition( us, CurrentLineNumber, TopOfPage, CurrentColumn );
+    StartUndoGroupWithPosition( us, CurrentPos.line, LeftTopPos.line, CurrentPos.column );
 
 } /* StartUndoGroup */
 
@@ -364,16 +340,9 @@ void EndUndoGroup( undo_stack *stack )
      */
     if( stack->OpenUndo == 0 ) {
         done = FALSE;
-        while( !done ) {
-            switch( cundo->type ) {
-            case START_UNDO_GROUP:
-            case END_UNDO_GROUP:
-                break;
-            default:
+        for( ; cundo != NULL; cundo = cundo->next ) {
+            if( cundo->type != START_UNDO_GROUP && cundo->type != END_UNDO_GROUP ) {
                 done = TRUE;
-            }
-            cundo = cundo->next;
-            if( cundo == NULL ) {
                 break;
             }
         }
@@ -392,13 +361,11 @@ void TryEndUndoGroup( undo_stack *cstack )
 {
     info        *cinfo;
 
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( cstack == cinfo->UndoStack ) {
             EndUndoGroup( cstack );
             break;
         }
-        cinfo = cinfo->next;
     }
 
 } /* TryEndUndoGroup */

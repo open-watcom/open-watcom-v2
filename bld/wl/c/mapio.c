@@ -1,3 +1,4 @@
+
 /****************************************************************************
 *
 *                            Open Watcom Project
@@ -24,17 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Map file formatting routines
 *
 ****************************************************************************/
 
 
-/*
-   MAPIO : Map file formatting routines
-
-*/
-
+#include <limits.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -51,6 +48,24 @@
 #include "ring.h"
 #include "mapio.h"
 
+#include "dwarf.h"
+
+extern void *   DwarfGetLineInfo( unsigned_32 *size );
+
+typedef struct {
+    uint_32                     address;
+    uint                        file;
+    uint_32                     line;
+    uint_32                     column;
+    uint_16                     segment;
+    uint_16                     col;
+    uint_8                      is_stmt : 1;
+    uint_8                      is_32 : 1;
+    uint_8                      has_seg : 1;
+    uint_8                      basic_block : 1;
+    uint_8                      end_sequence : 1;
+} line_state_info;
+
 #undef pick
 #define pick( num, string ) string
 
@@ -58,13 +73,13 @@ static char *MsgStrings[] = {
 #include "msg.h"
 
 typedef struct symrecinfo {
-    struct symrecinfo * next;
-    symbol *            sym;
-    mod_entry *         mod;
+    struct symrecinfo   *next;
+    symbol              *sym;
+    mod_entry           *mod;
 } symrecinfo;
 
-static symrecinfo *     UndefList;
-static symrecinfo *     SymTraceList;
+static symrecinfo       *UndefList;
+static symrecinfo       *SymTraceList;
 static  int             MapCol;
 static  time_t          StartT;
 static  clock_t         ClockTicks;
@@ -72,8 +87,7 @@ static  bool            Absolute_Seg;
 static bool             Buffering;  // buffering on/off.
 static int              BufferSize;          // # of chars in buffer.
 
-
-extern void ResetMapIO( void )
+void ResetMapIO( void )
 /****************************/
 {
     MapFlags = 0;
@@ -81,7 +95,7 @@ extern void ResetMapIO( void )
     SymTraceList = NULL;
 }
 
-extern void StartTime( void )
+void StartTime( void )
 /***************************/
 {
     StartT = time( NULL );
@@ -89,22 +103,22 @@ extern void StartTime( void )
 }
 
 
-static char * PutDec( char *ptr, unsigned num )
+static char *PutDec( char *ptr, unsigned num )
 /*********************************************/
 {
-    *ptr++ = (num / 10) % 10 + '0';
+    *ptr++ = ( num / 10 ) % 10 + '0';
     *ptr++ = num % 10 + '0';
     return( ptr );
 }
 
-extern void StartMapBuffering( void )
+void StartMapBuffering( void )
 /***********************************/
 {
     Buffering = TRUE;
     BufferSize = 0;
 }
 
-extern void StopMapBuffering( void )
+void StopMapBuffering( void )
 /**********************************/
 // flush buffer & shut buffering off.
 {
@@ -115,26 +129,27 @@ extern void StopMapBuffering( void )
     BufferSize = 0;
 }
 
-extern void MapInit( void )
+void MapInit( void )
 /*************************/
 {
-    char                tim[ 8 + 1 ];
-    char                dat[ 8 + 1 ];
+    char                tim[8 + 1];
+    char                dat[8 + 1];
     char                *ptr;
     struct tm           *localt;
     char                *msg;
 
     Absolute_Seg = FALSE;
     Buffering = FALSE;  // buffering on/off.
-    if( (MapFlags & MAP_FLAG) == 0 ) return;
+    if( (MapFlags & MAP_FLAG) == 0 )
+        return;
     MapFile = QOpenRW( MapFName );
     StartMapBuffering();
     localt = localtime( &StartT );
     MapCol = 0;
-    msg = MsgStrings[ PRODUCT ];
+    msg = MsgStrings[PRODUCT];
     BufWrite( msg, strlen( msg ) );
     WriteMapNL( 1 );
-    msg = MsgStrings[ COPYRIGHT ];
+    msg = MsgStrings[COPYRIGHT];
     BufWrite( msg, strlen( msg ) );
     WriteMapNL( 1 );
     ptr = tim;
@@ -167,76 +182,62 @@ static void WriteBox( unsigned int msgnum )
     Msg_Get( msgnum, msg_buff );
     WriteMapNL( 2 );
     box_buff[0] = '+';
-    for( i = 1; i < strlen( msg_buff ) - 1; i++ ) {
-        box_buff[i] = '-';
+    for( i = 2; i < strlen( msg_buff ); i++ ) {
+        box_buff[i-1] = '-';
     }
-    box_buff[i] = '+';
-    box_buff[i+1] = '\0';
+    box_buff[i-1] = '+';
+    box_buff[i] = '\0';
     WriteMap( "%t24%s", "", box_buff );
     WriteMap( "%t24%s", "", msg_buff );
     WriteMap( "%t24%s", "", box_buff );
     WriteMapNL( 1 );
 }
 
-extern void WriteGroups( void )
+void WriteGroups( void )
 /*****************************/
 {
-    group_entry *   currgrp;
+    group_entry     *currgrp;
 
     if( Groups != NULL ) {
         WriteBox( MSG_MAP_BOX_GROUP );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_0 );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_1 );
         WriteMapNL( 1 );
-        currgrp = Groups;
-        while( currgrp != NULL ) {
+        for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
             if( !currgrp->isautogrp ) { /* if not an autogroup */
-                WriteFormat( 0, currgrp->sym->name );
+                WriteFormat( 0, "%s", currgrp->sym->name );
                 WriteFormat( 32, "%a", &currgrp->grp_addr );
                 WriteFormat( 53, "%h", currgrp->totalsize );
                 WriteMapNL( 1 );
             }
-            currgrp = currgrp->next_group;
         }
     }
 }
 
-static void WriteAbsSeg( seg_leader *leader )
-/*******************************************/
+static void WriteAbsSeg( void *_leader )
+/**************************************/
 {
+    seg_leader *leader = _leader;
+
     if( leader->info & SEG_ABSOLUTE ) {
-        WriteFormat( 0, leader->segname );
-        WriteFormat( 24, leader->class->name );
+        WriteFormat( 0, "%s", leader->segname );
+        WriteFormat( 24, "%s", leader->class->name );
         WriteFormat( 40, "%a", &leader->seg_addr );
         WriteFormat( 60, "%h", leader->size );
         WriteMapNL( 1 );
     }
 }
 
-static void WriteAbsSegs( class_entry *cl )
-/*****************************************/
-/* write absolute segment info into mapfile */
+static void WriteNonAbsSeg( void *_seg )
+/**************************************/
 {
-    WriteBox( MSG_MAP_BOX_ABS_SEG );
-    Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
-    Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
-    WriteMapNL( 1 );
-    while( cl != NULL ) {
-        if( (cl->flags & CLASS_HANDS_OFF) == 0 ) {
-            RingWalk( cl->segs, WriteAbsSeg );
-        }
-        cl = cl->next_class;
-    }
-}
+    seg_leader *seg = _seg;
 
-static void WriteNonAbsSeg( seg_leader *seg )
-/*******************************************/
-{
     if( !(seg->info & SEG_ABSOLUTE) ) {
-        WriteFormat( 0, seg->segname );
-        WriteFormat( 23, seg->class->name );
+        WriteFormat( 0, "%s", seg->segname );
+        WriteFormat( 23, "%s", seg->class->name );
         if( seg->group != NULL ) {
-            WriteFormat( 38, seg->group->sym->name );
+            WriteFormat( 38, "%s", seg->group->sym->name );
         }
         WriteFormat( 53, "%a", &seg->seg_addr );
         WriteFormat( 69, "%h", seg->size );
@@ -246,33 +247,72 @@ static void WriteNonAbsSeg( seg_leader *seg )
     }
 }
 
-extern void WriteSegs( class_entry *firstcl )
+typedef struct seg_info {
+    unsigned    idx;
+    seg_leader  *seg;
+} seg_info;
+
+static int cmp_seg( const void *a, const void *b )
+/*************************************************/
+{
+    if( ((seg_info *)a)->seg->seg_addr.seg == ((seg_info *)b)->seg->seg_addr.seg ) {
+        if( ((seg_info *)a)->seg->seg_addr.off == ((seg_info *)b)->seg->seg_addr.off )
+            return( ((seg_info *)a)->idx - ((seg_info *)b)->idx );
+        return( ((seg_info *)a)->seg->seg_addr.off - ((seg_info *)b)->seg->seg_addr.off );
+    }
+    return( ((seg_info *)a)->seg->seg_addr.seg - ((seg_info *)b)->seg->seg_addr.seg );
+}
+
+void WriteSegs( section *sect )
 /*******************************************/
 /* write segment info into mapfile */
 {
-    class_entry         *cl;
-    bool                abs;
+    class_entry     *cl;
+    unsigned        count;
+    unsigned        i;
+    seg_leader      *seg;
+    seg_info        *segs;
 
-    abs = FALSE;
-    cl = firstcl;
-    if( cl != NULL ) {
+    if( sect->classlist != NULL ) {
         WriteBox( MSG_MAP_BOX_SEGMENTS );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_0 );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL( 1 );
-        while( cl != NULL ) {
-            if( (cl->flags & CLASS_HANDS_OFF) == 0 ) {
-                RingWalk( cl->segs, WriteNonAbsSeg );
+        count = 0;
+        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
+            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
+                count += RingCount( cl->segs );
             }
-            cl = cl->next_class;
+        }
+        _ChkAlloc( segs, count * sizeof( seg_info ) );
+        count = 0;
+        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
+            if( (cl->flags & CLASS_DEBUG_INFO) == 0 ) {
+                seg = NULL;
+                while( (seg = RingStep( cl->segs, seg )) != NULL ) {
+                    segs[count].idx = count;
+                    segs[count++].seg = seg;
+                }
+            }
+        }
+        qsort( segs, count, sizeof( seg_info ), cmp_seg );
+        for( i = 0; i < count; ++i ) {
+            WriteNonAbsSeg( segs[i].seg );
         }
         if( Absolute_Seg ) {
-            WriteAbsSegs( firstcl );
+            WriteBox( MSG_MAP_BOX_ABS_SEG );
+            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
+            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
+            WriteMapNL( 1 );
+            for( i = 0; i < count; ++i ) {
+                WriteAbsSeg( segs[i].seg );
+            }
         }
+        _LnkFree( segs );
     }
 }
 
-extern void WritePubHead( void )
+void WritePubHead( void )
 /******************************/
 {
     WriteBox( MSG_MAP_BOX_MEMORY_MAP );
@@ -287,15 +327,16 @@ extern void WritePubHead( void )
     WriteMapNL( 1 );
 }
 
-extern void WritePubModHead( void )
+void WritePubModHead( void )
 /*********************************/
 {
-    char        full_name[ PATH_MAX ];
+    char        full_name[PATH_MAX];
 
-    if (CurrMod->f.source == NULL) {
-        strcpy(full_name , CurrMod->name);
+    if ( CurrMod->f.source == NULL ) {
+        strcpy( full_name , CurrMod->name );
     } else {
-        char *  path_ptr;
+        char    *path_ptr;
+
         path_ptr = CurrMod->f.source->file->prefix;
         if( path_ptr != NULL ) {
             QMakeFileName( &path_ptr, CurrMod->f.source->file->name, full_name );
@@ -306,7 +347,7 @@ extern void WritePubModHead( void )
     Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name );
 }
 
-extern void WriteOvlHead( void )
+void WriteOvlHead( void )
 /******************************/
 {
     WriteBox( MSG_MAP_BOX_OVERLAY_VECTOR );
@@ -332,32 +373,36 @@ static void WriteImports( void )
 {
     if( FmtData.type & (MK_NOVELL | MK_OS2 | MK_PE) ) {
         WriteBox( MSG_MAP_BOX_IMP_SYM );
-        if( FmtData.type & (MK_NOVELL|MK_ELF) ) {
+        if( FmtData.type & (MK_NOVELL | MK_ELF) ) {
             Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_0 );
             Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_1 );
         } else {
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_2);
-            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_3);
+            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_2 );
+            Msg_Write_Map( MSG_MAP_TITLE_IMP_SYM_3 );
         }
         WriteMapNL( 1 );
         XWriteImports();
     }
 }
 
-static void WriteVerbSeg( segdata *seg )
-/**************************************/
-// NYI: complelety broken for absolute segments
+static void WriteVerbSeg( void *_seg )
+/************************************/
+// NYI: completely broken for absolute segments
 {
+    segdata    *seg = _seg;
     char        star;
     char        bang;
     char        see;
     targ_addr   addr;
     seg_leader *leader;
 
-    if( seg->isdead ) return;
+    if( seg->isdead )
+        return;
     leader = seg->u.leader;
-    WriteFormat( 16, leader->segname );
-    WriteFormat( 38, leader->class->name );
+    if( leader->class->flags & CLASS_DEBUG_INFO )
+        return;
+    WriteFormat( 16, "%s", leader->segname );
+    WriteFormat( 38, "%s", leader->class->name );
     if( leader->info & SEG_ABSOLUTE ) {
         star = '*';
     } else {
@@ -383,32 +428,303 @@ static void WriteVerbSeg( segdata *seg )
 static void WriteVerbMod( mod_entry *mod )
 /****************************************/
 {
-    if( mod->modinfo & MOD_NEED_PASS_2 && mod->segs != NULL ) {
-        WriteFormat( 0, mod->name );
+    if( (mod->modinfo & MOD_NEED_PASS_2) && mod->segs != NULL ) {
+        WriteFormat( 0, "%s", mod->name );
+        if( strlen( mod->name ) > 15 )
+            WriteMapNL( 1 );
         Ring2Walk( mod->segs, WriteVerbSeg );
     }
 }
 
-extern void WriteModSegs( void )
+void WriteModSegs( void )
 /******************************/
 {
     WriteModSegHead();
     WalkMods( WriteVerbMod );
 }
 
-static bool CheckSymRecList( symrecinfo *info, symbol *sym )
-/**********************************************************/
+static void init_state( line_state_info *state, int default_is_stmt )
 {
-    return sym == info->sym && CurrMod == info->mod;
+    state->address = 0;
+    state->segment = 0;
+    state->file = 1;
+    state->line = 1;
+    state->column = 0;
+    state->is_stmt = default_is_stmt;
+    state->basic_block = 0;
+    state->end_sequence = 0;
+}
+
+static void dump_state( line_state_info *state )
+{
+    char str[40];
+
+    if( state->has_seg ) {
+        if( state->is_32 ) {
+            sprintf( str, "%5d %04hX:%08hX ", state->line, state->segment, state->address );
+            BufWrite( str, strlen( str ) );
+        } else {
+            sprintf( str, "%5d %04hX:%04hX ", state->line, state->segment, state->address );
+            BufWrite( str, strlen( str ) );
+        }
+    } else {
+        if( state->is_32 ) { 
+            sprintf( str, "%6d %08hX ", state->line, state->address );
+            BufWrite( str, strlen( str ) );
+        } else {
+            sprintf( str, "%6d %04hX ", state->line, state->address );
+            BufWrite( str, strlen( str ) );
+        }
+    }
+    state->col++;
+    if( state->col == 4) {
+        WriteMapNL( 1 );
+        state->col = 0;
+    }
+}
+
+uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
+{
+    uint_32     result;
+    uint        shift;
+    uint_8      byte;
+
+    result = 0;
+    shift = 0;
+    for( ;; ) {
+        byte = *input++;
+        result |= ( byte & 0x7f ) << shift;
+        if( ( byte & 0x80 ) == 0 ) break;
+        shift += 7;
+    }
+    *value = result;
+    return( (uint_8 *)input );
+}
+
+uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
+{
+    int_32      result;
+    uint        shift;
+    uint_8      byte;
+
+    result = 0;
+    shift = 0;
+    for( ;; ) {
+        byte = *input++;
+        result |= ( byte & 0x7f ) << shift;
+        shift += 7;
+        if( ( byte & 0x80 ) == 0 ) break;
+    }
+    if( ( shift < 32 ) && ( byte & 0x40 ) ) {
+        result |= - ( 1 << shift );
+    }
+    *value = result;
+    return( (uint_8 *)input );
+}
+
+void WriteMapLines( void )
+{
+    uint_8                      *input;
+    unsigned_32                 length;
+    uint_8                      *p;
+    uint                        opcode_base;
+    uint                        *opcode_lengths;
+    uint                        u;
+    uint_8                      *name;
+    uint_32                     mod_time;
+    uint_32                     file_length;
+    uint_32                     directory;
+    uint_8                      op_code;
+    uint_32                     op_len;
+    uint_32                     tmp;
+    uint                        line_range;
+    int                         line_base;
+    int_32                      itmp;
+    int                         default_is_stmt;
+    line_state_info             state;
+    uint                        min_instr;
+    uint_32                     unit_length;
+    uint_8                      *unit_base;
+
+    input = (uint_8 *)DwarfGetLineInfo( &length );
+
+    if( input == NULL || length == 0 )
+       return;
+
+    p = input;
+
+    while( p - input < length ) {
+        state.col = 0;
+        state.is_32 = 0;
+        state.has_seg = 0;
+        unit_length = GET_U32( p );
+        p += sizeof( uint_32 );
+        unit_base = p;
+
+        p += sizeof( uint_16 );
+        p += sizeof( uint_32 );
+        min_instr = *p;
+        p += 1;
+
+        default_is_stmt = *p;
+        p += 1;
+
+        line_base = *(int_8 *)p;
+        p += 1;
+
+        line_range = GET_U8( p );
+        p += 1;
+
+        opcode_base = *p;
+        p += 1;
+
+        opcode_lengths = malloc( sizeof( uint ) * opcode_base );
+        for( u = 0; u < opcode_base - 1; ++u ) {
+            opcode_lengths[ u ] = *p;
+            ++p;
+        }
+
+        if( p - input >= length ) return;
+
+        while( *p != 0 ) {
+            p += strlen( (char *)p ) + 1;
+            if( p - input >= length ) return;
+        }
+        p++;
+        while( *p != 0 ) {
+            WriteMapNL( 1 );
+            WriteMap( "Line numbers for %s", p );
+            WriteMapNL( 1 );
+            p += strlen( (char *)p ) + 1;
+            p = DecodeULEB128( p, &directory );
+            p = DecodeULEB128( p, &mod_time );
+            p = DecodeULEB128( p, &file_length );
+            if( p - input >= length ) return;
+        }
+        
+        p++;
+        init_state( &state, default_is_stmt );
+        while( p - unit_base < unit_length ) {
+            op_code = *p;
+            ++p;
+            if( op_code == 0 ) {
+                p = DecodeULEB128( p, &op_len );
+                op_code = *p;
+                ++p;
+                --op_len;
+                switch( op_code ) {
+                case DW_LNE_end_sequence:
+                    state.end_sequence = 1;
+                    init_state( &state, default_is_stmt );
+                    p+= op_len;
+                    break;
+                case DW_LNE_set_address:
+                    if( op_len == 4 ) {
+                        tmp = GET_U32( p );
+                        state.is_32 = 1;
+                    } else if( op_len == 2 ) {
+                        tmp = GET_U16( p );
+                        state.is_32 = 0;
+                    } else {
+                        tmp = 0xffffffff;
+                    }
+                    state.address = tmp;
+                    p += op_len;
+                    break;
+                case DW_LNE_set_segment:
+                    state.has_seg = 1;
+                    if( op_len == 4 ) {
+                        tmp = GET_U32( p );
+                    } else if( op_len == 2 ) {
+                        tmp = GET_U16( p );
+                    } else {
+                        tmp = 0xffffffff;
+                    }
+                    state.segment = tmp;
+                    p += op_len;
+                    break;
+                case DW_LNE_define_file:
+                    name = p;
+                    p += strlen( (char *)p ) + 1;
+                    p = DecodeULEB128( p, &directory );
+                    p = DecodeULEB128( p, &mod_time );
+                    p = DecodeULEB128( p, &file_length );
+                    WriteMap( "File:  " );
+                    WriteMap( (char *)name );
+                    break;
+                default:
+                    p += op_len;
+                    break;
+                }
+            } else if( op_code < opcode_base ) {
+                switch( op_code ) {
+                case DW_LNS_copy:
+                    dump_state( &state );
+                    state.basic_block = 0;
+                    break;
+                case DW_LNS_advance_pc:
+                    p = DecodeLEB128( p, &itmp );
+                    state.address += itmp * min_instr;
+                    break;
+                case DW_LNS_advance_line:
+                    p = DecodeLEB128( p, &itmp );
+                    state.line += itmp;
+                    break;
+                case DW_LNS_set_file:
+                    p = DecodeLEB128( p, &itmp );
+                    state.file = itmp;
+                    break;
+                case DW_LNS_set_column:
+                    p = DecodeLEB128( p, &itmp );
+                    state.column = itmp;
+                    break;
+                case DW_LNS_negate_stmt:
+                    state.is_stmt = !state.is_stmt;
+                    break;
+                case DW_LNS_set_basic_block:
+                    state.basic_block = 1;
+                    break;
+                case DW_LNS_const_add_pc:
+                    state.address += ( ( 255 - opcode_base ) / line_range ) * min_instr;
+                    break;
+                case DW_LNS_fixed_advance_pc:
+                    tmp = GET_U16( p );
+                    p += sizeof( uint_16 );
+                    state.address += tmp;
+                    break;
+                default:
+                    for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
+                        p = DecodeLEB128( p, &itmp );
+                    }
+                }
+            } else {
+                op_code -= opcode_base;
+                state.line += line_base + op_code % line_range;
+                state.address += ( op_code / line_range ) * min_instr;
+                dump_state( &state );
+                state.basic_block = 0;
+            }
+        }
+        free( opcode_lengths  );
+        WriteMapNL( 1 );
+    }    
+}
+
+static bool CheckSymRecList( void *_info, void *sym )
+/***************************************************/
+{
+    symrecinfo *info = _info;
+
+    return( ( sym == info->sym ) && ( CurrMod == info->mod ) );
 }
 
 static void AddSymRecList( symbol *sym, symrecinfo **head )
 /*********************************************************/
 {
-    symrecinfo *        info;
+    symrecinfo      *info;
 
     if( RingLookup( *head, CheckSymRecList, sym ) == NULL ) {
-        _ChkAlloc( info, sizeof(symrecinfo) );
+        _ChkAlloc( info, sizeof( symrecinfo ) );
         info->next = NULL;
         info->sym = sym;
         info->mod = CurrMod;
@@ -416,14 +732,15 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
     }
 }
 
-extern void ProcUndefined( symbol *sym )
+void ProcUndefined( symbol *sym )
 /***************************************/
 {
-    if( (LinkFlags & UNDEFS_ARE_OK) == 0 ) LinkState |= LINK_ERROR;
+    if( (LinkFlags & UNDEFS_ARE_OK) == 0 )
+        LinkState |= LINK_ERROR;
     AddSymRecList( sym, &UndefList );
 }
 
-extern void RecordTracedSym( symbol *sym )
+void RecordTracedSym( symbol *sym )
 /****************************************/
 {
     if( sym->mod != CurrMod ) {
@@ -431,10 +748,11 @@ extern void RecordTracedSym( symbol *sym )
     }
 }
 
-static void PrintUndefined( symrecinfo *info )
-/********************************************/
+static void PrintUndefined( void *_info )
+/***************************************/
 {
-    mod_entry * mod;
+    symrecinfo  *info = _info;
+    mod_entry   *mod;
 
     mod = info->mod;
     LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->file->name, mod->name,
@@ -444,13 +762,15 @@ static void PrintUndefined( symrecinfo *info )
     WriteMapNL( 1 );
 }
 
-static void PrintSymTrace( symrecinfo *info )
-/*******************************************/
+static void PrintSymTrace( void *_info )
+/**************************************/
 {
+    symrecinfo  *info = _info;
+
     LnkMsg( MAP+MSG_MOD_TRACE, "Ss", info->sym, info->mod->name );
 }
 
-extern void WriteUndefined( void )
+void WriteUndefined( void )
 /********************************/
 {
     if( SymTraceList != NULL ) {
@@ -470,7 +790,7 @@ extern void WriteUndefined( void )
     }
 }
 
-extern void FreeUndefs( void )
+void FreeUndefs( void )
 /****************************/
 {
     RingFree( &SymTraceList );
@@ -490,13 +810,13 @@ static void Write32( char *s, unsigned_32 size )
     }
 }
 
-extern void WriteLibsUsed( void )
+void WriteLibsUsed( void )
 /*******************************/
 {
-    file_list * lib;
-    char *      name;
-    char *      path_ptr;
-    char        new_name[ PATH_MAX ];
+    file_list   *lib;
+    char        *name;
+    char        *path_ptr;
+    char        new_name[PATH_MAX];
 
     if( LinkState & GENERATE_LIB_LIST ) {
         WriteBox( MSG_MAP_BOX_LIB_USED );
@@ -515,7 +835,7 @@ extern void WriteLibsUsed( void )
     }
 }
 
-extern void MapSizes( void )
+void MapSizes( void )
 /**************************/
 /*
   Write out code size to map file and print libraries used.
@@ -533,33 +853,33 @@ extern void MapSizes( void )
     Write32( msg_buff, StackSize );
     Msg_Get( MSG_MAP_MEM_SIZE, msg_buff );
     Write32( msg_buff, MemorySize() );
-    if( FmtData.type & MK_OVERLAYS && FmtData.u.dos.dynamic ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.dynamic ) {
         Msg_Get( MSG_MAP_OVL_SIZE, msg_buff );
         Write32( msg_buff, (unsigned long)AreaSize * 16 );
     }
-    if( !(FmtData.type & MK_NOVELL) && (!FmtData.dll || FmtData.type & MK_PE)){
+    if( !(FmtData.type & MK_NOVELL) && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
 }
 
-extern void EndTime( void )
+void EndTime( void )
 /*************************/
 {
-    char *      ptr;
+    char        *ptr;
     signed_16   h;
     signed_16   m;
     signed_16   s;
     signed_16   t;
-    char        tim[ 11 + 1 ];
+    char        tim[11 + 1];
 
     if( MapFlags & MAP_FLAG ) {
 
         ClockTicks = clock() - ClockTicks;
-        t = (unsigned_16)(ClockTicks % CLOCKS_PER_SEC);
+        t = (unsigned_16)( ClockTicks % CLOCKS_PER_SEC );
         ClockTicks /= CLOCKS_PER_SEC;
-        s = (unsigned_16)(ClockTicks % 60);
+        s = (unsigned_16)( ClockTicks % 60 );
         ClockTicks /= 60;
-        m = (unsigned_16)(ClockTicks % 60);
+        m = (unsigned_16)( ClockTicks % 60 );
         ClockTicks /= 60;
         h = (unsigned_16)ClockTicks;
 
@@ -578,7 +898,7 @@ extern void EndTime( void )
     }
 }
 
-extern void WriteMapNL( unsigned count )
+void WriteMapNL( unsigned count )
 /**************************************/
 {
     unsigned    len;
@@ -593,7 +913,7 @@ extern void WriteMapNL( unsigned count )
     }
 }
 
-static unsigned MapPrint( char *str, va_list * args )
+static unsigned MapPrint( char *str, va_list *args )
 /***************************************************/
 {
     char        buff[MAX_MSG_SIZE];
@@ -604,7 +924,7 @@ static unsigned MapPrint( char *str, va_list * args )
     return( len );
 }
 
-extern void DoWriteMap( char *format, va_list * arglist )
+void DoWriteMap( char *format, va_list *arglist )
 /*******************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
@@ -613,7 +933,7 @@ extern void DoWriteMap( char *format, va_list * arglist )
     }
 }
 
-extern void WriteMap( char *format, ... )
+void WriteMap( char *format, ... )
 /***************************************/
 {
     va_list arglist;
@@ -622,7 +942,7 @@ extern void WriteMap( char *format, ... )
     DoWriteMap( format, &arglist );
 }
 
-extern void WriteFormat( int col, char *str, ... )
+void WriteFormat( int col, char *str, ... )
 /************************************************/
 {
     va_list         arglist;
@@ -643,7 +963,7 @@ extern void WriteFormat( int col, char *str, ... )
     }
 }
 
-extern void BufWrite( char *buffer, int len )
+void BufWrite( char *buffer, int len )
 /*******************************************/
 // write to the map file, buffering the write if buffering is on.
 {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrcspm() - far strcspn().
 *
 ****************************************************************************/
 
@@ -33,6 +32,7 @@
 #include "variety.h"
 #include <stddef.h>
 #include <string.h>
+#include "setbits.h"
 
 /*  The strcspn function computes the length of the initial segment of the
     string pointed to by str which consists entirely of characters not from
@@ -40,21 +40,18 @@
     considered part of charset.
 */
 
-extern void __fsetbits(unsigned char _WCFAR *vec,const char _WCFAR *charset );
-
-extern const unsigned char _HUGEDATA _Bits[8];
-
 _WCRTLINK size_t _fstrcspn( const char _WCFAR *str, const char _WCFAR *charset )
 {
-    unsigned /*char*/ tc;
-    unsigned char vector[32];
-    size_t len;
+    char            tc;
+    unsigned char   vector[ CHARVECTOR_SIZE ];
+    size_t          len;
 
     __fsetbits( vector, charset );
     len = 0;
-    for( ; tc = (unsigned char) *str; ++len, ++str ) {
+    for( ; tc = *str; ++len, ++str ) {
         /* quit if we find any char in charset */
-        if( ( vector[ tc >> 3 ] & _Bits[ tc & 0x07 ] ) != 0 )  break;
+        if( GETCHARBIT( vector, tc ) != 0 )
+            break;
     }
     return( len );
 }

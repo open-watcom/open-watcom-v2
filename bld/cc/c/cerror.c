@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Error and warning message output.
 *
 ****************************************************************************/
 
@@ -34,6 +33,12 @@
 #include "iopath.h"
 #include <stdarg.h>
 
+static void PrintPostNotes( void );
+local int   MsgDisabled( int msgnum );
+
+static unsigned error_line = 0;
+static char     *error_fname = NULL;
+
 #if 0
 static char const WngLvls[] = {
 #define warn(code,level) level,
@@ -41,11 +46,14 @@ static char const WngLvls[] = {
 #undef warn
 };
 #endif
-static void CMsgInfo( cmsg_info *info, msg_codes msgnum, va_list args ){
-// fill info
+
+// fill cmsg_info struct
+static void CMsgInfo( cmsg_info *info, msg_codes msgnum, va_list args )
+{
     char        *fname;
     unsigned    line;
     char const  *msgstr;
+    int         charsWritten;
 
     info->msgnum = msgnum;
 //  CMsgSetClass( info, msgnum );
@@ -59,29 +67,29 @@ static void CMsgInfo( cmsg_info *info, msg_codes msgnum, va_list args ){
         fname = NULL;
         break;
     default:
-        if( SymLoc != NULL ) {
-            fname = SymLoc;
-            line = ErrLine;
+        if( error_fname != NULL ) {
+            fname = error_fname;
+            line = error_line;
         } else {
-            fname = ErrFName;
-            if( SrcFile == NULL ) {
-                line = SrcLineCount;
-            } else {
-                line = TokenLine;
-            }
+            fname = FileIndexToCorrectName( TokenLoc.fno );
+            line = TokenLoc.line;
         }
     }
     msgstr = CGetMsgStr( msgnum );
-    _vbprintf( info->msgtxt,MAX_MSG_LEN, msgstr, args );
+    charsWritten = _vsnprintf( info->msgtxt, MAX_MSG_LEN, msgstr, args );
+    if( charsWritten == -1 ) {  /* did we overflow? */
+        info->msgtxt[ MAX_MSG_LEN - 1 ] = '\0';
+    }
     info->line = line;
     info->fname = fname;
 }
+
 static char const *MsgClassPhrase( cmsg_class class )
 {
-    msg_codes msgcode;
-    char const *phrase;
+    msg_codes       msgcode = PHRASE_ERROR;     // just for init.
+    char const      *phrase;
 
-    switch( class ){
+    switch( class ) {
     case CMSG_INFO:
         msgcode = PHRASE_NOTE;
         break;
@@ -96,43 +104,45 @@ static char const *MsgClassPhrase( cmsg_class class )
     return( phrase );
 }
 
-void FmtCMsg( char *buff, cmsg_info *info ){
 // format message with line & file int buff
+void FmtCMsg( char *buff, cmsg_info *info )
+{
     int         len;
-    char  const *phrase;
-    char  const *code_prefix;
+    char const  *phrase;
+    char const  *code_prefix;
 
     len = 0;
     if( info->line != 0 ) {
         if( info->fname != NULL ) {
-            len += _bprintf( &buff[len], MAX_MSG_LEN-len,  "%s(%u): ",
-                      info->fname, info->line  );
+            len += _snprintf( &buff[ len ], MAX_MSG_LEN - len, "%s(%u): ",
+                              info->fname, info->line );
         }
-    }else{
-        buff[0] = '\0';
+    } else {
+        buff[ 0 ] = '\0';
     }
     code_prefix = CGetMsgPrefix( info->msgnum );
     phrase = MsgClassPhrase( info->class );
-    len += _bprintf(&buff[len], MAX_MSG_LEN-len, "%s %s%03d: ",
+    len += _snprintf( &buff[ len ], MAX_MSG_LEN - len, "%s %s%03d: ",
               phrase, code_prefix, info->msgnum );
 }
 
-static void OutMsg( cmsg_info  *info ){
 // print message to streams
-    char        pre[MAX_MSG_LEN]; //actual message text
+static void OutMsg( cmsg_info  *info )
+{
+    char        pre[ MAX_MSG_LEN ]; //actual message text
 
-    if( ErrFile == NULL ) OpenErrFile();
+    if( ErrFile == NULL )
+        OpenErrFile();
     if( CompFlags.no_conmsg == 0 ){
         ConsErrMsg( info );
     }
-    if( ErrFile ) {
+    if( ErrFile != NULL ) {
         FmtCMsg( pre, info );
         fputs( pre, ErrFile );
         fputs( info->msgtxt, ErrFile );
         fputc( '\n', ErrFile );
         CompFlags.errfile_written = 1;
     }
-    SymLoc = NULL;
 }
 
 void CErr1( int msgnum )
@@ -147,21 +157,23 @@ void CErr2( int msgnum, int p1 )
 }
 
 
-void CErr2p( int msgnum, char *p1 )
+void CErr2p( int msgnum, const char *p1 )
 {
     CErr( msgnum, p1 );
 }
 
 
-void CErr( int msgnum, ... ){
 // Output error message
-    va_list   args1;
-    cmsg_info info;
+void CErr( int msgnum, ... )
+{
+    va_list     args1;
+    cmsg_info   info;
 
-    if( CompFlags.cpp_output )  return;             /* 29-sep-90 */
+    if( CompFlags.cpp_output )
+        return;
 #if 0   //shoudn't allow an error to be disabled
-    if( MsgDisabled( msgnum ) ) {                       /* 18-jun-92 */
-        SymLoc = NULL;                          /* 27-sep-92 */
+    if( MsgDisabled( msgnum ) ) {                   /* 18-jun-92 */
+        error_fname = NULL;                              /* 27-sep-92 */
         return;
     }
 #endif
@@ -172,12 +184,14 @@ void CErr( int msgnum, ... ){
         va_end( args1 );
         OutMsg( &info );
         ++ErrCount;
+        PrintPostNotes();
     } else {
         CMsgInfo( &info, ERR_TOO_MANY_ERRORS, args1 );
         OutMsg( &info );
         va_end( args1 );
         CSuicide();
     }
+    error_fname = NULL;
 }
 
 
@@ -193,13 +207,15 @@ void CWarn2( int level, int msgnum, int p1 )
 }
 
 
-void CWarn( int level, int msgnum, ... ){
 // Out warning message
+void CWarn( int level, int msgnum, ... )
+{
     va_list     args1;
     cmsg_info   info;
 
-    if( CompFlags.cpp_output )  return;             /* 29-sep-90 */
-    if( ! MsgDisabled( msgnum ) ) {                     /* 18-jun-92 */
+    if( CompFlags.cpp_output )
+        return;
+    if( ! MsgDisabled( msgnum ) ) {                 /* 18-jun-92 */
         if( level <= WngLevel ) {
             info.class = CMSG_WARN;
             va_start( args1, msgnum );
@@ -207,9 +223,10 @@ void CWarn( int level, int msgnum, ... ){
             va_end( args1 );
             OutMsg( &info );
             ++WngCount;
+            PrintPostNotes();
         }
     }
-    SymLoc = NULL;
+    error_fname = NULL;
 }
 
 
@@ -217,77 +234,52 @@ void CInfoMsg( int msgnum, ... )
 {
     va_list     args1;
     cmsg_info   info;
-    char        pre[MAX_MSG_LEN];
 
-    if( CompFlags.cpp_output )  return;             /* 29-sep-90 */
-    if( MsgDisabled( msgnum ) ) {                       /* 18-jun-92 */
-        SymLoc = NULL;                          /* 27-sep-92 */
+    if( CompFlags.cpp_output )
+        return;
+    if( MsgDisabled( msgnum ) ) {                   /* 18-jun-92 */
+        error_fname = NULL;                              /* 27-sep-92 */
         return;
     }
     info.class = CMSG_INFO;
     va_start( args1, msgnum );
     CMsgInfo( &info, msgnum, args1 );
     va_end( args1 );
-    ConsErrMsg( &info );
-    if( ErrFile != NULL  &&  WngLevel >= 4 ) {
-        FmtCMsg( pre, &info );
-        fputs( pre, ErrFile );
-        fputs( info.msgtxt, ErrFile );
-        fputc( '\n', ErrFile );
-        CompFlags.errfile_written = 1;
-    }
+    OutMsg( &info );
 }
 
-void CNote( int msgnum, ... ){
-// Output Note
-    va_list   args1;
-    char        msgbuf[MAX_MSG_LEN];
-    char  const *msgstr;
 
-    va_start( args1, msgnum );
-    msgstr = CGetMsgStr( msgnum );
-    _vbprintf( msgbuf,MAX_MSG_LEN, msgstr, args1 );
-    NoteMsg( msgbuf );
-}
-
-void PCHNote( int msgnum, ... ){
-// Output Note
-    va_list   args1;
-    char        msgbuf[MAX_MSG_LEN];
-    char  const *msgstr;
+// Output pre-compiled header Note
+void PCHNote( int msgnum, ... )
+{
+    va_list     args1;
+    char        msgbuf[ MAX_MSG_LEN ];
+    char const  *msgstr;
 
     if( !CompFlags.no_pch_warnings ) {
         va_start( args1, msgnum );
         msgstr = CGetMsgStr( msgnum );
-        _vbprintf( msgbuf,MAX_MSG_LEN, msgstr, args1 );
+        _vsnprintf( msgbuf, MAX_MSG_LEN, msgstr, args1 );
         NoteMsg( msgbuf );
     }
 }
 
-void SetSymLoc( SYMPTR sym )
-{
-    FNAMEPTR flist;
 
-    flist = FileIndexToFName( sym->defn_file_index );
-    if( CompFlags.ef_switch_used ){
-        SymLoc = FNameFullPath( flist );
-    }else{
-        SymLoc = flist->name;
-    }
-    ErrLine = sym->d.defn_line;
+void SetErrLoc( source_loc *src_loc )
+{
+    error_fname  = FileIndexToCorrectName( src_loc->fno );
+    error_line = src_loc->line;
 }
 
 
-void SetErrLoc( char *fname, unsigned line_num )
+void InitErrLoc( void )
 {
-    SymLoc = fname;
-    ErrLine = line_num;
+    error_fname = NULL;
+    error_line = 0;
 }
 
 
-
-
-void OpenErrFile()
+void OpenErrFile( void )
 {
     char        *name;
 
@@ -303,13 +295,14 @@ void OpenErrFile()
 }
 
 
-void CSuicide()
+void CSuicide( void )
 {
-    if( Environment ) {
-        longjmp( Environment, 1 );
+    if( Environment != NULL ) {
+        longjmp( *Environment, 1 );
     }
     MyExit(1);
 }
+
 
 local int MsgDisabled( int msgnum )                     /* 18-jun-92 */
 {
@@ -320,14 +313,16 @@ local int MsgDisabled( int msgnum )                     /* 18-jun-92 */
     }
     return( 0 );
 }
+
 #if 0
 //doesn't work in general as phases are used in both errror and warnings
 static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
 {
     msgtype     kind;
     cmsg_class  class;
+
     kind = CGetMsgType( msgnum );
-    switch( kind ){
+    switch( kind ) {
     case msgtype_ERROR:
     case msgtype_ANSIERR:
         class = CMSG_ERRO;
@@ -344,17 +339,19 @@ static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
     }
     info->class = class;
 }
-static void DoMsgInfo(  msg_codes msgnum ){
+
 // fill info
-    cmsg_info  sinfo;
-    cmsg_info  *info;
-    char        pre[MAX_MSG_LEN]; //actual message text
+static void DoMsgInfo( msg_codes msgnum )
+{
+    cmsg_info   sinfo;
+    cmsg_info   *info;
+    char        pre[ MAX_MSG_LEN ]; //actual message text
     unsigned    line;
 
     info = &sinfo;
     info->msgnum = msgnum;
     CMsgSetClass( info, msgnum );
-    info->col   = 0;
+    info->col = 0;
     line = 0;
     CGetMsg( info->msgtxt, msgnum );
     info->line = line;
@@ -362,9 +359,122 @@ static void DoMsgInfo(  msg_codes msgnum ){
     FmtCMsg( pre, info );
     printf( "%s%s\n", pre,info->msgtxt );
 }
-void DumpAllMsg( void ){
+
+void DumpAllMsg( void ) {
 #define MSG_DEF( name, group, kind, level, group_index ) DoMsgInfo( name );
     MSG_DEFS
 #undef MSG_DEF
 }
 #endif
+
+/*
+ * Types of post-processing messages (informational notes)
+ */
+
+typedef enum {
+    POSTLIST_SYMBOL,     /* location of previously defined symbol */
+    POSTLIST_TWOTYPES    /* type mismatch between two types - print them */
+} postlist_type;
+
+struct ErrPostList
+{
+    struct ErrPostList  *next;
+    postlist_type       type;
+
+    union {
+        struct {            /* POSTLIST_SYMBOL */
+            char        *sym_name;
+            char        *sym_file;
+            unsigned    sym_line;
+        } s;
+        TYPEPTR types[ 2 ]; /* POSTLIST_TWOTYPES */
+    };
+};
+
+static struct ErrPostList   *PostList;
+
+static struct ErrPostList *NewPostList( postlist_type type )
+{
+    struct ErrPostList  *np;
+
+    np = CMemAlloc( sizeof( *np ) );
+    np->next = PostList;
+    np->type = type;
+    PostList = np;
+    return( np );
+}
+
+void SetDiagSymbol( SYMPTR sym, SYM_HANDLE handle )
+{
+    struct ErrPostList  *np;
+
+    np = NewPostList( POSTLIST_SYMBOL );
+    np->s.sym_name = SymName( sym, handle );
+    if( np->s.sym_name == NULL )
+        np->s.sym_name = "???";
+    np->s.sym_file = FileIndexToCorrectName( sym->src_loc.fno );
+    np->s.sym_line = sym->src_loc.line;
+}
+
+void SetDiagEnum( ENUMPTR ep )
+{
+    struct ErrPostList  *np;
+
+    np = NewPostList( POSTLIST_SYMBOL );
+    np->s.sym_name = ep->name;
+    np->s.sym_file = FileIndexToCorrectName( ep->src_loc.fno );
+    np->s.sym_line = ep->src_loc.line;
+}
+
+void SetDiagType1( TYPEPTR typ_source )
+{
+    SetDiagType2( typ_source, NULL );
+}
+
+void SetDiagType2( TYPEPTR typ_source, TYPEPTR typ_target )
+{
+    struct ErrPostList  *np;
+
+    np = NewPostList( POSTLIST_TWOTYPES );
+    np->types[ 0 ] = typ_source;
+    np->types[ 1 ] = typ_target;
+}
+
+void SetDiagPop( void )
+{
+    struct ErrPostList  *np;
+
+    np = PostList;
+    if( np != NULL ) {
+        PostList = np->next;
+        CMemFree( np );
+    }
+}
+
+static void PrintType( int msg, TYPEPTR typ )
+{
+    char    *text;
+
+    if( typ == NULL )
+        return;
+
+    text = DiagGetTypeName( typ );
+    CInfoMsg( msg, text );
+    CMemFree( text );
+}
+
+static void PrintPostNotes( void )
+{
+    while( PostList != NULL ) {
+        switch( PostList->type ) {
+        case POSTLIST_SYMBOL:
+            CInfoMsg( INFO_SYMBOL_DECLARATION, PostList->s.sym_name, PostList->s.sym_file, PostList->s.sym_line );
+            break;
+        case POSTLIST_TWOTYPES:
+            PrintType( INFO_SRC_CNV_TYPE, PostList->types[ 0 ] );
+            PrintType( INFO_TGT_CNV_TYPE, PostList->types[ 1 ] );
+            break;
+        }
+        SetDiagPop();
+    }
+}

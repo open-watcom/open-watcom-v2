@@ -36,8 +36,9 @@
 #include "rtdata.h"
 
 _WCRTLINK int ungetch( int c )
-    {
-        if( _RWD_cbyte != 0 ) return( EOF );
-        _RWD_cbyte = c;
-        return( c );
-    }
+{
+    if( _RWD_cbyte != 0 )
+        return( EOF );
+    _RWD_cbyte = c;
+    return( c );
+}

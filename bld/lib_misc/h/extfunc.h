@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Special interface for calls to non-Watcom routines from
+*               inside clib (x86 specific).
 *
 ****************************************************************************/
 
@@ -36,7 +36,7 @@
 #include "variety.h"
 
 #if defined(_M_IX86)
-    #if !defined(__WINDOWS__)
+    #if !defined(__WINDOWS__) && !(defined(__RDOSDEV__) && defined(__SW_ZDP))
         #if defined(__BIG_DATA__)
             #define __DS        ds
         #endif
@@ -101,12 +101,6 @@
     #undef __ES
     #undef __FS
     #undef __GS
-#elif defined(__AXP__)
-    // __outside_CLIB is not necessary for alpha
-#elif defined(__PPC__)
-    // __outside_CLIB is not necessary for ppc
-#else
-    #error platform not supported
 #endif
 
 #endif

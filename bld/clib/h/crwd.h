@@ -33,6 +33,6 @@
 #ifndef _CRWD_H_INCLUDED
 #define _CRWD_H_INCLUDED
 
-        extern unsigned short _HShift;
+extern unsigned char    _HShift;
 
 #endif

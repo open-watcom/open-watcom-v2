@@ -1,3 +1,0 @@
-pick( HINT_EMPTY,
-	" ",
-	" " )

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC instruction decoding.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include "walloca.h"
 #include "ppc.h"
 #include "ppctypes.h"
 #include "madregs.h"
@@ -42,7 +41,14 @@ static dis_handle DH;
 
 mad_status DisasmInit()
 {
-    if( DisInit( DISCPU_axp, &DH ) != DR_OK ) {
+    bool        swap_bytes;
+
+#ifdef __BIG_ENDIAN__
+    swap_bytes = FALSE;
+#else
+    swap_bytes = TRUE;
+#endif
+    if( DisInit( DISCPU_ppc, &DH, swap_bytes ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );
     }
     return( MS_OK );
@@ -53,7 +59,7 @@ void DisasmFini()
     DisFini( &DH );
 }
 
-dis_return DisCliGetData( void *d, unsigned off, int size, void *data )
+dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data )
 {
     mad_disasm_data     *dd = d;
     address             addr;
@@ -84,7 +90,7 @@ unsigned DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff )
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, -sizeof( ins->op[0].value ), &mti );
+        MCTypeInfoForHost( MTK_INTEGER, -(int)sizeof( ins->op[0].value ), &mti );
         max = 40;
         MCTypeToString( dd->radix, &mti, &ins->op[op].value, &max, p );
         break;
@@ -211,7 +217,7 @@ static const mad_type_handle RefTrans[] = {
 #include "refppc.h"
 };
 
-static int CTRZero( mad_registers *mr )
+static int CTRZero( mad_registers const *mr )
 {
     if( mr->ppc.ctr.u._32[I64LO32] != 1 ) return( 0 );
     if( mr->ppc.msr.u._32[I64HI32] & (1UL << MSR_H_sf) ) {
@@ -220,13 +226,13 @@ static int CTRZero( mad_registers *mr )
     return( 1 );
 }
 
-static int CRTest( mad_registers *mr, mad_disasm_data *dd )
+static int CRTest( mad_registers const *mr, mad_disasm_data *dd )
 {
     if( mr->ppc.cr & (1 << (31 - dd->ins.op[1].value)) ) return( 1 );
     return( 0 );
 }
 
-static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers *mr,
+static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers const *mr,
                         addr_off dest )
 {
     #define NOT_TAKEN   (MDC_CONDITIONAL | MDC_TAKEN_NOT)
@@ -276,9 +282,9 @@ static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers *mr,
     }
 }
 
-#define TRANS_REG( mr, r ) (*(unsigned_64 *)((unsigned_8*)(mr) + RegTrans[r]))
+#define TRANS_REG( mr, r ) (*(unsigned_64 *)((unsigned_8*)(mr) + RegTrans[r - DR_PPC_FIRST]))
 
-static unsigned TrapTest( mad_disasm_data *dd, mad_registers *mr )
+static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
 {
     unsigned_64 a;
     unsigned_64 b;
@@ -350,14 +356,14 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers *mr )
     return( bits );
 }
 
-mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers *mr )
+mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
 {
     mad_disasm_control  c;
     addr_off            v;
 
     switch( dd->ins.type ) {
     case DI_PPC_b:
-        if( dd->ins.flags & DIF_PPC_LK ) {
+        if( dd->ins.flags.u.ppc & DIF_PPC_LK ) {
             c = MDC_CALL;
         } else {
             c = MDC_JUMP;
@@ -372,7 +378,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers *mr )
             return( c | MDC_TAKEN_FORWARD );
         }
     case DI_PPC_bc:
-        if( dd->ins.flags & DIF_PPC_LK ) {
+        if( dd->ins.flags.u.ppc & DIF_PPC_LK ) {
             c = MDC_CALL;
         } else {
             c = MDC_JUMP;
@@ -383,14 +389,14 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers *mr )
         }
         return( c | Cond( dd, mr, v ) );
     case DI_PPC_bcctr:
-        if( dd->ins.flags & DIF_PPC_LK ) {
+        if( dd->ins.flags.u.ppc & DIF_PPC_LK ) {
             c = MDC_CALL;
         } else {
             c = MDC_JUMP;
         }
         return( c | Cond( dd, mr, mr->ppc.ctr.u._32[I64LO32] ) );
     case DI_PPC_bclr:
-        if( dd->ins.flags & DIF_PPC_LK ) {
+        if( dd->ins.flags.u.ppc & DIF_PPC_LK ) {
             c = MDC_CALL;
         } else {
             c = MDC_RET;
@@ -409,21 +415,23 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers *mr )
             c |= MDC_TAKEN;
         }
         return( c );
+    default:
+        break;
     }
     return( MDC_OPER | MDC_TAKEN );
 }
 
-mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *dd, mad_registers *mr )
+mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *dd, mad_registers const *mr )
 {
     return( DisasmControl( dd, mr ) );
 }
 
-mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *mr, address *next )
+mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, mad_registers const *mr, address *next )
 {
     mad_disasm_control  dc;
 
     memset( next, 0, sizeof( *next ) );
-    next->mach.offset = mr->ppc.iar.u._32[0] + sizeof( unsigned_32 );
+    next->mach.offset = mr->ppc.iar.u._32[I64LO32] + sizeof( unsigned_32 );
     dc = DisasmControl( dd, mr );
     if( (dc & MDC_TAKEN_MASK) == MDC_TAKEN_NOT ) {
         return( MS_OK );
@@ -438,7 +446,7 @@ mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registe
     return( MS_OK );
 }
 
-walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, mad_registers *mr, void *d )
+walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, mad_registers const *mr, void *d )
 {
     address             a;
     unsigned            i;
@@ -503,7 +511,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
     return( MADState->disasm_state );
 }
 
-mad_status              DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radix, mad_registers *mr, address *a )
+mad_status              DIGENTRY MIDisasmInspectAddr( char *from, unsigned len, unsigned radix, mad_registers const *mr, address *a )
 {
     char        *buff = __alloca( len * 2 );
     char        *to;

@@ -1,1 +1,0 @@
-@pnews.exe /c

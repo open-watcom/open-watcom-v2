@@ -30,19 +30,11 @@
 ;*****************************************************************************
 
 
-ifdef __386__
- include mdef.inc
-else
- include mdef.inc
-endif
+include mdef.inc
 include struct.inc
 
-    if __WASM__ ge 100
-        xref            "C",matherr
-    else
-        xref            <"C",matherr>
-    endif
-        modstart        __mtherr
+        xref        "C",matherr
+        modstart    __mtherr
 
 _DATA   segment word public 'DATA'
 _DATA   ends

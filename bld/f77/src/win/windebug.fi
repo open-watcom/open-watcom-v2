@@ -1,0 +1,15 @@
+*$noreference
+
+! Debugging Functions:
+! --------------------
+
+      external DebugBreak
+      external FatalAppExit
+      external FatalExit
+      external OutputDebugString
+      external ValidateCodeSegments
+      external ValidateFreeSpaces
+
+      integer*4 ValidateFreeSpaces
+
+*$reference

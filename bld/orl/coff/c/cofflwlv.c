@@ -24,15 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  COFF symbol table and relocations processing.
 *
 ****************************************************************************/
 
 
 #include "cofflwlv.h"
 #include "orlhash.h"
-#include <malloc.h>
+#include "walloca.h"
+#ifdef _BSD_SOURCE
+#define stricmp strcasecmp
+#endif
 
 orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {
@@ -161,10 +163,23 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
                     current->type &= ~ORL_SYM_CDAT_MASK;
                     current->type |= (aux->selection << ORL_SYM_CDAT_SHIFT)
                                         & ORL_SYM_CDAT_MASK;
+                } else {
+                    type = _CoffComplexType( current->symbol->type );
+                    if( type & IMAGE_SYM_DTYPE_FUNCTION ) {
+                        current->type |= ORL_SYM_TYPE_FUNCTION;
+                    }
                 }
                 break;
             case IMAGE_SYM_CLASS_FUNCTION:
-                current->binding = ORL_SYM_BINDING_LOCAL;
+                // The .bf, .lf and .ef symbols are not regular symbols
+                // and their values in particular must not be interpreted
+                // as offsets/addresses.
+                if( !memcmp( current->name, ".bf", 4 )
+                    || !memcmp( current->name, ".lf", 4 )
+                    || !memcmp( current->name, ".ef", 4 ) )
+                    current->binding = ORL_SYM_BINDING_NONE;
+                else
+                    current->binding = ORL_SYM_BINDING_LOCAL;
                 current->type |= ORL_SYM_TYPE_FUNC_INFO;
                 break;
             case IMAGE_SYM_CLASS_FILE:
@@ -241,6 +256,33 @@ orl_reloc_type CoffConvertRelocType( coff_file_handle coff_file_hnd, coff_reloc_
             default:
                 return( ORL_RELOC_TYPE_NONE );
         }
+    } else if( coff_file_hnd->machine_type == ORL_MACHINE_TYPE_AMD64 ) {
+        switch( coff_type ) {
+            case IMAGE_REL_AMD64_ABSOLUTE:
+                return( ORL_RELOC_TYPE_ABSOLUTE );
+            case IMAGE_REL_AMD64_REL32:              // 32-Bit PC-relative offset
+                return( ORL_RELOC_TYPE_REL_32 );
+            case IMAGE_REL_AMD64_ADDR32:
+                return( ORL_RELOC_TYPE_WORD_32 );
+            case IMAGE_REL_AMD64_ADDR32NB:
+                return( ORL_RELOC_TYPE_WORD_32_NB );
+            case IMAGE_REL_AMD64_ADDR64:
+                return( ORL_RELOC_TYPE_WORD_64 );
+            case IMAGE_REL_AMD64_REL32_1:
+                return( ORL_RELOC_TYPE_REL_32_ADJ1 );
+            case IMAGE_REL_AMD64_REL32_2:
+                return( ORL_RELOC_TYPE_REL_32_ADJ2 );
+            case IMAGE_REL_AMD64_REL32_3:
+                return( ORL_RELOC_TYPE_REL_32_ADJ3 );
+            case IMAGE_REL_AMD64_REL32_4:
+                return( ORL_RELOC_TYPE_REL_32_ADJ4 );
+            case IMAGE_REL_AMD64_REL32_5:
+                return( ORL_RELOC_TYPE_REL_32_ADJ5 );
+            case IMAGE_REL_AMD64_SECREL:
+                return( ORL_RELOC_TYPE_SEC_REL );
+            default:
+                return( ORL_RELOC_TYPE_NONE );
+        }
     } else if( coff_file_hnd->machine_type == ORL_MACHINE_TYPE_PPC601 ) {
         switch( coff_type & IMAGE_REL_PPC_TYPEMASK ) {
             case IMAGE_REL_PPC_ABSOLUTE: // NOP
@@ -281,6 +323,33 @@ orl_reloc_type CoffConvertRelocType( coff_file_handle coff_file_hnd, coff_reloc_
                 return( ORL_RELOC_TYPE_IFGLUE );
             case IMAGE_REL_PPC_IMGLUE:
                 return( ORL_RELOC_TYPE_IMGLUE );
+            default:
+                return( ORL_RELOC_TYPE_NONE );
+        }
+    } else if( coff_file_hnd->machine_type == ORL_MACHINE_TYPE_R3000
+            || coff_file_hnd->machine_type == ORL_MACHINE_TYPE_R4000 ) {
+        switch( coff_type ) {
+            case IMAGE_REL_MIPS_ABSOLUTE:   // NOP
+                return( ORL_RELOC_TYPE_ABSOLUTE );
+            case IMAGE_REL_MIPS_REFWORD:    // 32-bit address
+                return( ORL_RELOC_TYPE_WORD_32 );
+            case IMAGE_REL_MIPS_JMPADDR:    // 26-bit absolute address (j/jal)
+                return( ORL_RELOC_TYPE_WORD_26 );
+            case IMAGE_REL_MIPS_REFHI:
+                return( ORL_RELOC_TYPE_HALF_HI );
+            case IMAGE_REL_MIPS_REFLO:
+                return( ORL_RELOC_TYPE_HALF_LO );
+            case IMAGE_REL_MIPS_PAIR:
+                return( ORL_RELOC_TYPE_PAIR );
+            case IMAGE_REL_MIPS_GPREL:      // 16-bit offset from GP register
+            case IMAGE_REL_MIPS_LITERAL:
+                return( ORL_RELOC_TYPE_TOCREL_16 );
+            case IMAGE_REL_MIPS_SECREL:
+                return( ORL_RELOC_TYPE_SEC_REL );
+            case IMAGE_REL_MIPS_SECTION:
+                return( ORL_RELOC_TYPE_SEGMENT );
+            case IMAGE_REL_MIPS_REFWORDNB:  // 32-bit addr w/o image base
+                return( ORL_RELOC_TYPE_WORD_32_NB );
             default:
                 return( ORL_RELOC_TYPE_NONE );
         }
@@ -356,14 +425,14 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
     linebase = 0;
     while( numlines > 0 ) {
         if( coffline->line_number == 0 ) {
-            sym = &fhdl->symbol_handles[coffline->symbol_table_index];
-            coffline->RVA = sym->symbol->value;
+            sym = &fhdl->symbol_handles[coffline->ir.symbol_table_index];
+            coffline->ir.RVA = sym->symbol->value;
             if( sym->has_bf ) {
                 csym = (coff_sym_bfef *)(sym->symbol + sym->symbol->num_aux +2);
                 linebase = csym->linenum;
             }
         }
-        offset = coffline->RVA;
+        offset = coffline->ir.RVA;
         currline->linnum = coffline->line_number + linebase;
         currline->off = offset;
         coffline++;

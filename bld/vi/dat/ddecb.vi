@@ -70,7 +70,7 @@ elseif %1 == XTYP_REQUEST
     elseif "%b" == "EditFile"
 	takefocus
 	nextword %a %b
-	e %b
+	e "%b"
 	
 #	// no longer supported - use Locate to set cursor pos/selection
 #	nextword %a %b

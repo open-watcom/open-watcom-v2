@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Core functions of the C runtime multithread support.
 *
 ****************************************************************************/
 
@@ -45,39 +44,46 @@
 #include "exitwmsg.h"
 #include "osver.h"
 
+#if defined (_NETWARE_LIBC)
+#include "nw_libc.h"
+#endif
+
 #if defined( __QNX__ )
   #include "semaqnx.h"
   #include <sys/magic.h>
   extern thread_data *__QNXAddThread( thread_data *tdata );
 #endif
 
-extern  void            __FiniThreadProcessing(void);
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
-  extern void           (*_AccessFileH)(int);
-  extern void           (*_ReleaseFileH)(int);
-  extern void           (*_AccessIOB)(void);
-  extern void           (*_ReleaseIOB)(void);
-  extern void           (*_AccessTDList)(void);
-  extern void           (*_ReleaseTDList)(void);
+extern  void            __FiniThreadProcessing( void );
+#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
+  extern void           (*_AccessFileH)( int );
+  extern void           (*_ReleaseFileH)( int );
+  extern void           (*_AccessIOB)( void );
+  extern void           (*_ReleaseIOB)( void );
+  extern void           (*_AccessTDList)( void );
+  extern void           (*_ReleaseTDList)( void );
   #if !defined( __NETWARE__ )
-    extern void         (*_AccessNHeap)(void);
-    extern void         (*_AccessFHeap)(void);
-    extern void         (*_ReleaseNHeap)(void);
-    extern void         (*_ReleaseFHeap)(void);
+    extern void         (*_AccessNHeap)( void );
+    extern void         (*_AccessFHeap)( void );
+    extern void         (*_ReleaseNHeap)( void );
+    extern void         (*_ReleaseFHeap)( void );
   #endif
   #if defined( __NT__ )
-    extern void         (*_AccessFList)(int);
-    extern void         (*_ReleaseFList)(int);
-    extern void         (*_ThreadExitRtn)(void);
+    extern void         (*_AccessFList)( void );
+    extern void         (*_ReleaseFList)( void );
+    extern void         (*_ThreadExitRtn)( void );
     static semaphore_object FListSemaphore;
   #endif
 #endif
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
-    _WCRTLINK void (*__AccessSema4)( semaphore_object *) = &nullSema4Rtn;
-    _WCRTLINK void (*__ReleaseSema4)( semaphore_object *) = &nullSema4Rtn;
-    _WCRTLINK void (*__CloseSema4)( semaphore_object *) = &nullSema4Rtn;
+    _WCRTDATA void (*__AccessSema4)( semaphore_object *) = &nullSema4Rtn;
+    _WCRTDATA void (*__ReleaseSema4)( semaphore_object *) = &nullSema4Rtn;
+    _WCRTDATA void (*__CloseSema4)( semaphore_object *) = &nullSema4Rtn;
+    #if !defined( __NETWARE__ )
+        static void __NullAccHeapRtn( void ) {}
+    #endif
 #endif
 
 extern  int             __Sema4Fini;            // in finalizer segment
@@ -99,19 +105,21 @@ static semaphore_object FileSemaphores[ MAX_SEMAPHORE ];
 
 static semaphore_object IOBSemaphore;
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
   static semaphore_object InitSemaphore;
   static semaphore_object TDListSemaphore;
 #endif
 
 #if defined( __NT__ )
+
 #define MAX_CRITICAL_SECTION 64
 static CRITICAL_SECTION critsect_cache[MAX_CRITICAL_SECTION];
 static int critsect_next;
 static CRITICAL_SECTION **critsect_vector;
 static int critsect_vectornext;
 
-CRITICAL_SECTION *__NTGetCriticalSection( void ) {
+static CRITICAL_SECTION *__NTGetCriticalSection( void )
+{
     CRITICAL_SECTION *ptr;
 
     if( critsect_next < MAX_CRITICAL_SECTION ) {
@@ -121,13 +129,13 @@ CRITICAL_SECTION *__NTGetCriticalSection( void ) {
         ptr = lib_calloc( 1, sizeof( *ptr ) );
         if( ptr == NULL ) {
             __fatal_runtime_error(
-                "Unable to allocate semaphore data\r\n", 1 );
+                "Unable to allocate semaphore data", 1 );
         }
         critsect_vector = lib_realloc( critsect_vector,
                 (critsect_vectornext+1)*sizeof(CRITICAL_SECTION*));
         if( critsect_vector == NULL ) {
             __fatal_runtime_error(
-                "Unable to allocate semaphore data\r\n", 1 );
+                "Unable to allocate semaphore data", 1 );
         }
         critsect_vector[critsect_vectornext] = ptr;
         critsect_vectornext++;
@@ -135,13 +143,13 @@ CRITICAL_SECTION *__NTGetCriticalSection( void ) {
     InitializeCriticalSection( ptr );
     return( ptr );
 }
-__NTDeleteCriticalSection( void ) {
+static void __NTDeleteCriticalSection( void ) {
     int i;
     for( i = 0 ; i < critsect_next ; i++ ) {
         DeleteCriticalSection( &(critsect_cache[i]) );
     }
 }
-__NTFreeCriticalSection( void ) {
+static void __NTFreeCriticalSection( void ) {
     int i;
     for( i = 0 ; i < critsect_vectornext ; i++ ) {
         DeleteCriticalSection( critsect_vector[i] );
@@ -160,19 +168,25 @@ _WCRTLINK void __CloseSemaphore( semaphore_object *obj )
         // 1 is ok  // JBS I don't think so. I would mean a critical section is active.
                     // JBS For every lock, there should be an unlock.
 //      if( obj->count >= 2 ) {
-//          __fatal_runtime_error( "Semaphore locked too many times\r\n", 1 );
+//          __fatal_runtime_error( "Semaphore locked too many times", 1 );
 //      }
         if( obj->count >= 1 ) {
-            __fatal_runtime_error( "Semaphore not unlocked\r\n", 1 );
+            __fatal_runtime_error( "Semaphore not unlocked", 1 );
         }
     #endif
     #if !defined( __NT__ )
-        #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+        #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
             if( obj->initialized != 0 ) {
                 #if defined( __NETWARE__ )
                     obj->semaphore = 0;
                 #elif defined( __QNX__ )
                     __qsem_destroy( &obj->semaphore );
+                #elif defined( __LINUX__ )
+                    // TODO: Close the semaphore for Linux!
+                #elif defined( __RDOS__ )
+                    RdosDeleteSection( obj->semaphore );
+                    obj->semaphore = 0;
+                #elif defined( __RDOSDEV__ )
                 #else
                     DosCloseMutexSem( obj->semaphore );
                 #endif
@@ -193,16 +207,16 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
     TID tid;
 
     tid = GetCurrentThreadId();
-    #if defined( __NETWARE__ )
+    #if defined( _NETWARE_CLIB )
         if( tid == 0 ) return;
     #endif
     if( obj->owner != tid ) {
-        #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+        #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
             #if !defined( __NETWARE__ )
                 if( obj->initialized == 0 ) {
                     #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
                         if( obj == &InitSemaphore ) {
-                            __fatal_runtime_error( "Bad semaphore lock\r\n", 1 );
+                            __fatal_runtime_error( "Bad semaphore lock", 1 );
                         }
                     #endif
                     __AccessSemaphore( &InitSemaphore );
@@ -211,6 +225,12 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
                             obj->semaphore = __NTGetCriticalSection();
                         #elif defined( __QNX__ )
                             __qsem_init( &obj->semaphore, 1, 1 );
+                        #elif defined( __LINUX__ )
+                            // TODO: Access semaphore under Linux!
+                        #elif defined( __RDOS__ )
+                            obj->semaphore = RdosCreateSection();
+                        #elif defined( __RDOSDEV__ )
+                            RdosInitKernelSection(&obj->semaphore);
                         #else
                             DosCreateMutexSem( NULL, &obj->semaphore, 0, FALSE );
                         #endif
@@ -221,13 +241,25 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
                 }
             #endif
             #if defined( __NETWARE__ )
-                while( obj->semaphore != 0 ) ThreadSwitch();
+                while( obj->semaphore != 0 )
+                    #if defined (_NETWARE_CLIB)
+                    ThreadSwitch();
+                    #else
+                    NXThreadYield();
+                    #endif
+
                 obj->semaphore = 1;
                 obj->initialized = 1;
             #elif defined( __NT__ )
                 EnterCriticalSection( obj->semaphore );
             #elif defined( __QNX__ )
                 __qsem_wait( &obj->semaphore );
+            #elif defined( __LINUX__ )
+                // TODO: Wait for semaphore under Linux!
+            #elif defined( __RDOS__ )
+                RdosEnterSection( obj->semaphore );
+            #elif defined( __RDOSDEV__ )
+                RdosEnterKernelSection( &obj->semaphore );
             #else
                 DosRequestMutexSem( obj->semaphore, SEM_INDEFINITE_WAIT );
             #endif
@@ -244,22 +276,28 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
     TID tid;
 
     tid = GetCurrentThreadId();
-    #if defined( __NETWARE__ )
+    #if defined( _NETWARE_CLIB )
         if( tid == 0 ) return;
     #endif
     if( obj->count > 0 ) {
         if( obj->owner != tid ) {
-            __fatal_runtime_error( "Semaphore unlocked by wrong owner\r\n", 1 );
+            __fatal_runtime_error( "Semaphore unlocked by wrong owner", 1 );
         }
         if( --obj->count == 0 ) {
             obj->owner = 0;
-            #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+            #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
                 #if defined( __NETWARE__ )
                     obj->semaphore = 0;
                 #elif defined( __NT__ )
                     LeaveCriticalSection( obj->semaphore );
                 #elif defined( __QNX__ )
                     __qsem_post( &obj->semaphore );
+                #elif defined( __LINUX__ )
+                    // TODO: Relase semaphore under Linux!
+                #elif defined( __RDOS__ )
+                    RdosLeaveSection( obj->semaphore );
+                #elif defined( __RDOSDEV__ )
+                    RdosLeaveKernelSection( &obj->semaphore );
                 #else
                     DosReleaseMutexSem( obj->semaphore );
                 #endif
@@ -270,17 +308,18 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
     }
 }
 
-void    __AccessIOB()
-/*******************/
+void    __AccessIOB( void )
+/*************************/
 {
     __AccessSemaphore( &IOBSemaphore );
 }
 
-void    __ReleaseIOB()
-/********************/
+void    __ReleaseIOB( void )
+/**************************/
 {
     __ReleaseSemaphore( &IOBSemaphore );
 }
+
 
 
 void __AccessFileH( int handle )
@@ -298,61 +337,61 @@ void __ReleaseFileH( int handle )
 
 
 #if !defined( __NETWARE__ )
-void    __AccessNHeap()
-/*********************/
+void    __AccessNHeap( void )
+/***************************/
 {
     __AccessSemaphore( &NHeapSemaphore );
 }
 
-void    __ReleaseNHeap()
-/**********************/
+void    __ReleaseNHeap( void )
+/****************************/
 {
     __ReleaseSemaphore( &NHeapSemaphore );
 }
 
-void    __AccessFHeap()
-/*********************/
+void    __AccessFHeap( void )
+/***************************/
 {
     __AccessSemaphore( &FHeapSemaphore );
 }
 
-void    __ReleaseFHeap()
-/**********************/
+void    __ReleaseFHeap( void )
+/****************************/
 {
     __ReleaseSemaphore( &FHeapSemaphore );
 }
 #endif
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
 
-void    __AccessTDList()
-/*********************/
+void    __AccessTDList( void )
+/****************************/
 {
     __AccessSemaphore( &TDListSemaphore );
 }
 
-void    __ReleaseTDList()
-/**********************/
+void    __ReleaseTDList( void )
+/*****************************/
 {
     __ReleaseSemaphore( &TDListSemaphore );
 }
 
 #if defined( __NT__ )
-void    __AccessFList()
-/*********************/
+void    __AccessFList( void )
+/***************************/
 {
     __AccessSemaphore( &FListSemaphore );
 }
 
-void    __ReleaseFList()
-/**********************/
+void    __ReleaseFList( void )
+/****************************/
 {
     __ReleaseSemaphore( &FListSemaphore );
 }
 #endif
 #endif
 
-_WCRTLINK void *__MultipleThread()
+struct thread_data *__MultipleThread( void )
 {
     #if defined( __NT__ )
         /*
@@ -366,6 +405,29 @@ _WCRTLINK void *__MultipleThread()
         if( tdata == NULL ) {
             tdata = __GetThreadData();
         } else if( tdata->__resize ) {
+            tdata = __ReallocThreadData();
+        }
+        SetLastError(old);
+        return( tdata );
+    #elif defined (_NETWARE_LIBC)
+        /*
+         * Preserve old error code -- important because this code can get
+         * called from _STK.
+         */
+        int old = GetLastError();
+        int ccode = 0;
+
+        thread_data *tdata = NULL;
+
+        if(0 != (ccode = NXKeyGetValue(__NXSlotID, (void **) &tdata)))
+            tdata = NULL;
+
+        if( tdata == NULL )
+        {
+            tdata = __GetThreadData();
+        }
+        else if( tdata->__resize )
+        {
             tdata = __ReallocThreadData();
         }
         SetLastError(old);
@@ -394,12 +456,23 @@ _WCRTLINK void *__MultipleThread()
             tdata = __QNXAddThread( tdata );
         }
         return( tdata );
+    #elif defined( __LINUX__ )
+        // TODO: Init multiple threads for Linux!
+        return( NULL );
+    #elif defined( __RDOS__ )
+        thread_data *tdata;
+        tdata = (thread_data *)__tls_get_value( __TlsIndex );
+        if( tdata == NULL )
+            tdata = __GetThreadData();
+        return( tdata );
+    #elif defined( __RDOSDEV__ )
+        return( NULL );
     #else
         return( __ThreadData[GetCurrentThreadId()].data );
     #endif
 }
 
-#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
+#if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
 
 thread_data *__AllocInitThreadData( thread_data *tdata )
 /******************************************************/
@@ -419,8 +492,8 @@ void __FreeInitThreadData( thread_data *tdata )
 /******************************************************/
 {
     if( tdata != NULL ) {
-        memset( tdata, 0xdeaddead, __ThreadDataSize );
-        if( tdata->__allocated == 1 ) lib_free( tdata );
+        if( tdata->__allocated == 1 )
+            lib_free( tdata );
     }
 }
 
@@ -445,8 +518,8 @@ BOOL __NTThreadInit( void )
 }
 
 
-void __NTThreadFini( void )
-/*************************/
+static void __NTThreadFini( void )
+/********************************/
 {
     if( __TlsIndex != NO_INDEX ) {
         TlsFree( __TlsIndex );
@@ -467,7 +540,7 @@ BOOL __NTAddThread( thread_data *tdata )
         return( FALSE );
     }
     if( !__AddThreadData( tdata->thread_id, tdata ) ) {
-        lib_free( tdata );
+        __FreeInitThreadData( tdata );
         return( FALSE );
     }
     TlsSetValue( __TlsIndex, tdata );
@@ -502,9 +575,8 @@ void __NTRemoveThread( int close_handle )
     }
 }
 
-
-static void __ThreadExit()
-/************************/
+static void __ThreadExit( void )
+/******************************/
 {
     __NTRemoveThread( TRUE );
     __NTThreadFini();
@@ -519,7 +591,7 @@ int __OS2AddThread( TID tid, thread_data *tdata )
     if( tdata == NULL ) return( 0 );
     if( tid <= __MaxThreads ) {
         if( __initthread( tdata ) ) {
-            lib_free( tdata );
+            __FreeInitThreadData( tdata );
             return( 0 );
         } else {
             __ThreadData[tid].data = tdata;
@@ -528,7 +600,7 @@ int __OS2AddThread( TID tid, thread_data *tdata )
     } else {
         if( !__AddThreadData( tid, tdata ) ) {
             // unable to setup storage
-            lib_free( tdata );
+            __FreeInitThreadData( tdata );
             return( 0 );
         }
     }
@@ -580,28 +652,89 @@ void __QNXRemoveThread( void )
     }
 }
 
-#endif
+#elif defined( __LINUX__ )
 
-void __InitMultipleThread()
+thread_data *__LinuxAddThread( thread_data *tdata )
+/***********************************************/
+{
+    // TODO: Implement this for Linux!
+    return( NULL );
+}
+
+void __LinuxRemoveThread( void )
+/****************************/
+{
+    // TODO: Implement this for Linux!
+}
+
+#elif defined( __RDOS__ )
+
+int __RdosThreadInit( void )
 /*************************/
 {
+    if( __TlsIndex == NO_INDEX ) {
+        __TlsIndex = __tls_alloc();
+    }
+    if( __TlsIndex == NO_INDEX ) {
+        return( 0 );
+    }
+    __tls_set_value( __TlsIndex, NULL );
+    return( 1 );
+}
+
+#if 0
+static void __RdosThreadFini( void )
+/**********************************/
+{
+    if( __TlsIndex != NO_INDEX ) {
+        __tls_free( __TlsIndex );
+        __TlsIndex = NO_INDEX;
+    }
+}
+#endif
+
+int __RdosAddThread( thread_data *tdata )
+/**************************************/
+{
+    if( __TlsIndex == NO_INDEX ) {
+        return( 0 );
+    }
+
+    tdata = __AllocInitThreadData( tdata );
+    if( tdata == NULL ) {
+        return( 0 );
+    }
+    if( !__AddThreadData( tdata->thread_id, tdata ) ) {
+        __FreeInitThreadData( tdata );
+        return( 0 );
+    }
+    __tls_set_value( __TlsIndex, tdata );
+
+    return( 1 );
+}
+
+
+void __RdosRemoveThread( void )
+/*****************************/
+{
+    thread_data *tdata;
+    int thread_handle;
+
+    if( __TlsIndex != NO_INDEX ) {
+        tdata = __tls_get_value( __TlsIndex );
+        if( tdata == NULL ) return;
+        __RemoveThreadData( tdata->thread_id );
+        __tls_set_value( __TlsIndex, NULL );
+    }
+}
+
+#endif
+
+void __InitMultipleThread( void )
+/*******************************/
+{
     if( __GetThreadPtr != &__MultipleThread ) {
-        _AccessFileH   = &__AccessFileH;
-        _ReleaseFileH  = &__ReleaseFileH;
-        _AccessIOB     = &__AccessIOB;
-        _ReleaseIOB    = &__ReleaseIOB;
-        _AccessTDList  = &__AccessTDList;
-        _ReleaseTDList = &__ReleaseTDList;
-        __AccessSema4  = &__AccessSemaphore;
-        __ReleaseSema4 = &__ReleaseSemaphore;
-        __CloseSema4   = &__CloseSemaphore;
-        #if !defined( __NETWARE__ )
-            _AccessNHeap  = &__AccessNHeap;
-            _AccessFHeap  = &__AccessFHeap;
-            _ReleaseNHeap = &__ReleaseNHeap;
-            _ReleaseFHeap = &__ReleaseFHeap;
-        #endif
-        #if defined( __NETWARE__ )
+        #if defined( _NETWARE_CLIB )
         {
         /* __ThreadData[ 0 ] is used whenever GetThreadID() returns a pointer
            not in our __ThreadIDs list - ie. whenever it returns NULL, a
@@ -610,7 +743,7 @@ void __InitMultipleThread()
             ptr = lib_calloc( 1, __ThreadDataSize );
             if( ptr == NULL ) {
                 __fatal_runtime_error(
-                    "Unable to allocate thread-specific data\r\n", 1 );
+                    "Unable to allocate thread-specific data", 1 );
             }
             __ThreadData[ 0 ].data = ptr;
             __ThreadData[ 0 ].allocated_entry = 1;
@@ -620,12 +753,12 @@ void __InitMultipleThread()
             if( __initthread( ptr ) ) {
                 lib_free( ptr );
                 __fatal_runtime_error(
-                    "Unable to initialize thread-specific data\r\n", 1 );
+                    "Unable to initialize thread-specific data", 1 );
             }
             ptr = lib_calloc( 1, __ThreadDataSize );
             if( ptr == NULL ) {
                 __fatal_runtime_error(
-                    "Unable to allocate thread-specific data\r\n", 1 );
+                    "Unable to allocate thread-specific data", 1 );
             }
             __FirstThreadData = ptr;
             __FirstThreadData->__allocated = 1;
@@ -637,62 +770,133 @@ void __InitMultipleThread()
             if( __initthread( ptr ) ) {
                 lib_free( ptr );
                 __fatal_runtime_error(
-                    "Unable to initialize thread-specific data\r\n", 1 );
+                    "Unable to initialize thread-specific data", 1 );
             }
         }
+        #elif defined (_NETWARE_LIBC)
+            InitSemaphore.semaphore     = 0;    /* sema4 is mutex in this case */
+            InitSemaphore.initialized   = 1;
+            //_ThreadExitRtn = &__ThreadExit;   - might need this at some point??
+            // Note: __AddThreadData uses the InitSemaphore, _AccessTDList & _ReleaseTDList
+
+            __FirstThreadData->thread_id = GetCurrentThreadId();
+
+            __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
+            if(0 != NXKeySetValue(__NXSlotID, __FirstThreadData))
+            {
+                __fatal_runtime_error(
+                    "Unable to initialize thread-specific data", 1 );
+            }
         #elif defined( __NT__ )
             InitSemaphore.semaphore = __NTGetCriticalSection();
             InitSemaphore.initialized = 1;
-            _AccessFList  = &__AccessFList;
-            _ReleaseFList = &__ReleaseFList;
-            _ThreadExitRtn= &__ThreadExit;
-            // note that __AddThreadData uses the InitSemaphore
+            _ThreadExitRtn = &__ThreadExit;
+            // Note: __AddThreadData uses the InitSemaphore, _AccessTDList & _ReleaseTDList
             __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
             TlsSetValue( __TlsIndex, __FirstThreadData );
         #elif defined( __QNX__ )
             __qsem_init( &InitSemaphore.semaphore, 1, 1 );
             InitSemaphore.initialized = 1;
             // first thread data already in magic memory
+        #elif defined( __LINUX__ )
+            // TODO: Init semaphores for Linux
+        #elif defined( __RDOS__ )
+            InitSemaphore.semaphore = RdosCreateSection();
+            InitSemaphore.initialized = 1;
+            __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
+            __tls_set_value( __TlsIndex, __FirstThreadData );
+        #elif defined( __RDOSDEV__ )
+            RdosInitKernelSection( &InitSemaphore.semaphore );
+            InitSemaphore.initialized = 1;
         #else
             DosCreateMutexSem( NULL, &InitSemaphore.semaphore, 0, FALSE );
             InitSemaphore.initialized = 1;
             __ThreadData[1].data = __FirstThreadData;
             __ThreadData[1].allocated_entry = __FirstThreadData->__allocated;
         #endif
+
+        // Set these up after we have created the InitSemaphore
+        #if !defined (_THIN_LIB)
+        _AccessFileH      = &__AccessFileH;
+        _ReleaseFileH     = &__ReleaseFileH;
+        _AccessIOB        = &__AccessIOB;
+        _ReleaseIOB       = &__ReleaseIOB;
+        #endif
+        _AccessTDList     = &__AccessTDList;
+        _ReleaseTDList    = &__ReleaseTDList;
+        __AccessSema4     = &__AccessSemaphore;
+        __ReleaseSema4    = &__ReleaseSemaphore;
+        __CloseSema4      = &__CloseSemaphore;
+        #if !defined( __NETWARE__ )
+        _AccessNHeap  = &__AccessNHeap;
+        _AccessFHeap  = &__AccessFHeap;
+        _ReleaseNHeap = &__ReleaseNHeap;
+        _ReleaseFHeap = &__ReleaseFHeap;
+        #endif
+        #if defined( __NT__ )
+        _AccessFList  = &__AccessFList;
+        _ReleaseFList = &__ReleaseFList;
+        #endif
         __GetThreadPtr  = &__MultipleThread;
     }
 }
 #endif
 
-void static __FiniSema4s()              // called from finalizer
-/************************/
+static void __FiniSema4s( void )              // called from finalizer
+/******************************/
 {
     int         i;
 
     _CloseSemaphore( &IOBSemaphore );
-    for( i = 0; i < MAX_SEMAPHORE; i++ ) {              /* 17-feb-93 */
+    for( i = 0; i < MAX_SEMAPHORE; i++ )
+    {              /* 17-feb-93 */
         _CloseSemaphore( &FileSemaphores[ i ] );
     }
     #if defined( __NT__ )
-        _CloseSemaphore( &FListSemaphore );
-        __NTFreeCriticalSection();
+    _CloseSemaphore( &FListSemaphore );
+    __NTFreeCriticalSection();
     #endif
     #if !defined( __QNX__ )
-        __FiniThreadProcessing();
+    __FiniThreadProcessing();
+        #if !defined( __OS2_286__ )
+        // All thread data areas freed, including main process thread data
+        // so mark first thread data pointer null. Note that OS/2 1.x does
+        // not have __FirstThreadData at all.
+        __FirstThreadData = NULL;
+        #endif
     #endif
     #if !defined( __NETWARE__ )
-        _heapshrink();
-        _CloseSemaphore( &NHeapSemaphore );
-        _CloseSemaphore( &FHeapSemaphore );
+    _heapshrink();
+    _CloseSemaphore( &NHeapSemaphore );
+    _CloseSemaphore( &FHeapSemaphore );
     #endif
-    #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ )
-        _CloseSemaphore( &TDListSemaphore );
-        _CloseSemaphore( &InitSemaphore );
+    #if defined( __386__ ) || defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
+    _CloseSemaphore( &TDListSemaphore );
+    _CloseSemaphore( &InitSemaphore );
+
+    // After closing InitSemaphore, we need to reset the sem access routines to
+    // the dummy ones; someone may still want semaphore protection during shutdown
+    // processing but since threading is gone now, there should be no reentrancy
+    // problems
+    __AccessSema4  = &nullSema4Rtn;
+    __ReleaseSema4 = &nullSema4Rtn;
+    __CloseSema4   = &nullSema4Rtn;
+    #if !defined( __NETWARE__ )
+        _AccessNHeap  = &__NullAccHeapRtn;
+        _AccessFHeap  = &__NullAccHeapRtn;
+        _ReleaseNHeap = &__NullAccHeapRtn;
+        _ReleaseFHeap = &__NullAccHeapRtn;
+    #endif
+
         #if defined( __NT__ )
-            __NTDeleteCriticalSection();
-            __NTThreadFini();
+        __NTDeleteCriticalSection();
+        __NTThreadFini();
+        #endif
+        #if defined (_NETWARE_LIBC)
+        __LibCThreadFini();
         #endif
     #endif
 }
 
 AYI( __FiniSema4s, INIT_PRIORITY_RUNTIME )
+

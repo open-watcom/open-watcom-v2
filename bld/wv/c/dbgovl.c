@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Support for debugging overlays.
 *
 ****************************************************************************/
 
@@ -43,11 +42,11 @@ typedef struct {
     unsigned_16 spacer;         /* to make a power of two */
 } section_info;
 
-extern void     RemoteSectTblRead(void *);
-extern void     RemoteSectTblWrite(void *);
-extern bool     RemoteOvlRetAddr( address *, unsigned );
-extern bool     RemoteOvlSectPos( unsigned, mem_block * );
-extern unsigned RemoteOvlSectSize();
+extern void             RemoteSectTblRead( void * );
+extern void             RemoteSectTblWrite( void * );
+extern bool             RemoteOvlRetAddr( address *, unsigned );
+extern bool             RemoteOvlSectPos( unsigned, mem_block * );
+extern unsigned         RemoteOvlSectSize( void );
 
 extern unsigned         OvlSize;
 extern machine_state    *DbgRegs;
@@ -58,14 +57,14 @@ static unsigned         OvlCount;
 static bool             TblCacheValid;
 
 
-bool InitOvlState()
+bool InitOvlState( void )
 {
     unsigned    i;
     mem_block   where;
 
     if( OvlRemap == NULL ) {
         OvlSize = RemoteOvlSectSize();
-        OvlCount = OvlSize * 8;
+        OvlCount = ( OvlSize - 3 ) * 8;
         _Alloc( OvlRemap, OvlCount * sizeof( section_info ) );
         if( OvlRemap == NULL ) return( FALSE );
         _Alloc( TblCache, OvlSize );
@@ -83,7 +82,7 @@ bool InitOvlState()
     return( TRUE );
 }
 
-void FiniOvlState()
+void FiniOvlState( void )
 {
     _Free( TblCache );
     TblCache = NULL;
@@ -92,14 +91,14 @@ void FiniOvlState()
     OvlSize = OvlCount = 0;
 }
 
-void InvalidateTblCache()
+void InvalidateTblCache( void )
 {
     TblCacheValid = FALSE;
 }
 
 int SectIsLoaded( unsigned sect_id, int sect_map_id )
 {
-    char    *tbl;
+    byte    *tbl;
 
     if( sect_id == 0 ) return( TRUE );
     if( OvlSize == 0 ) return( FALSE );

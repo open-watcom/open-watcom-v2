@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  "Object" file access routines.
 *
 ****************************************************************************/
 
@@ -52,18 +51,22 @@ void WEXPORT WObjectFile::readEOItem()
         #endif
     } else {
         #ifdef DEBUG_WOBJFILE
-            assert( '\r' == getch() ); // CR
-            assert( '\n' == getch() ); // LF
+            int  c = getch();     // read CR or LF
+            assert( (c == '\r') || (c == '\n') );
+            if( '\r' == c )
+                assert( '\n' == getch() ); // read LF
         #else
-            getch(); // CR
-            getch(); // LF
+            if( '\r' == getch() ) // read CR or LF
+                getch();          // read LF
         #endif
     }
 }
 
 void WEXPORT WObjectFile::writeEOItem()
 {
+#ifndef __UNIX__
     putch( '\r' );
+#endif
     putch( '\n' );
 }
 
@@ -305,4 +308,3 @@ void WEXPORT WObjectFile::writeObject( unsigned long obj )
         putl( obj );
         writeEOItem();
 }
-

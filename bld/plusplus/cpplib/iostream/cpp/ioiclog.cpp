@@ -24,66 +24,46 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/09/08    Greg Bentz      Initial Implementation.
-//  93/08/31    Greg Bentz      Make cout object have ios::unitbuf set to
-//                              allow better mixing between C and C++ input
-//                              output.
-//  93/10/22    Raymond Tang    Split into seperate files.
-//  93/11/18    J.W.Welch       Small name change for multiple compilations
-//  94/04/06    Greg Bentz      combine header files
-//  95/05/05    Greg Bentz      use _HUGEDATA
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdiobuf.h>
 #endif
 #include "ioutil.h"
 
 #pragma initialize 21;
 
-// This struct is just a place holder to control the
-// initialization and finalization of clog
+// This struct is just a place holder to control the initialization and
+// finalization of clog
 struct clog_initfini {
-    clog_initfini();
-    ~clog_initfini();
+  clog_initfini();
+ ~clog_initfini();
 };
 
 // This is the definition of the predefined stream buffer:
 static stdiobuf clog_strmbuf( __get_std_stream( STDERR_FILENO ) );
 
 // This is the definition of the predefined stream:
-ostream _HUGEDATA clog( &clog_strmbuf );
+namespace std {
+  ostream _HUGEDATA clog( &clog_strmbuf );
+}
 
 // This will force the extra initialization and finalization
 static clog_initfini __standard_io_instance_clog;
 
 clog_initfini::clog_initfini() {
-    // Tie the streams together, for automatic flushing:
-    clog.tie( &cout );
+  // Tie the streams together, for automatic flushing:
+  std::clog.tie( &std::cout );
 }
 
 clog_initfini::~clog_initfini() {
-    // Flush standard io buffers:
-    clog.flush();
+  // Flush standard io buffers:
+  std::clog.flush();
 }

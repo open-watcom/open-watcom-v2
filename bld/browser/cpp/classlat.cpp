@@ -37,7 +37,7 @@
 #include "util.h"
 #include "mem.h"
 
-inline int abs( int a ) { return (a < 0) ? -1 * a : a; }
+inline int myabs( int a ) { return (a < 0) ? -1 * a : a; }
 
 DerivationPtr::DerivationPtr( ClassLattice * cls, dr_access acc,
                               dr_virtuality virt )
@@ -49,9 +49,9 @@ DerivationPtr::DerivationPtr( ClassLattice * cls, dr_access acc,
 }
 
 // make a new pointer of my type
-virtual DerivationPtr * ClassLattice::newPtr( ClassLattice * cls,
-                                        dr_access acc, dr_virtuality virt )
-//-------------------------------------------------------------------------
+DerivationPtr * ClassLattice::newPtr( ClassLattice * cls,
+                                      dr_access acc, dr_virtuality virt )
+//-----------------------------------------------------------------------
 {
     return new DerivationPtr( cls, acc, virt );
 }
@@ -86,7 +86,7 @@ ClassLattice::ClassLattice( dr_handle hdl, Module * mod, char * name,
         , _derivedsLoaded( FALSE )
         , _flatClasses( vlist )
         , _effAccess( acc )
-        , _virtual( virt )
+        , _virtual( (VirtLevel)virt )
         , _relaxedVirt(relaxVirt)
         , _level( level )
 //-------------------------------------------------------------------------
@@ -103,8 +103,10 @@ ClassLattice::ClassLattice( dr_handle hdl, Module * mod, char * name,
 ClassLattice::~ClassLattice( void )
 //---------------------------------
 {
+    int     i;
+
     WBRFree( _name );
-    for( int i = _bases.count(); i > 0; i -= 1 ) {
+    for( i = _bases.count(); i > 0; i -= 1 ) {
         delete _bases[ i - 1 ];
     }
     _bases.reset();
@@ -196,10 +198,11 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
     ClassList  adjust;
     int        levelDiff = 0;
     bool       levelSet = FALSE;
+    int        i;
 
     REQUIRE( lattTo != this, "classlattice::joinlattice -- join to myself" );
 
-    for( int i = 0; i < list->count(); i += 1 ) {
+    for( i = 0; i < list->count(); i += 1 ) {
         ClassLattice * node = (*list)[ i ];
         if( node != NULL ) {
             adjust.add( node );
@@ -295,7 +298,7 @@ ClassLattice * ClassLattice::joinTo( dr_handle hdl, dr_virtuality virt,
     }
 
     if( ret != NULL ) {
-        if( abs(ret->_level) < abs(level) ) {
+        if( myabs(ret->_level) < myabs(level) ) {
             ret->adjustLevelsUp( level - ret->_level );
         }
     }
@@ -495,11 +498,14 @@ char * ClassLattice::derivation( ClassLattice *cls )
 void ClassLattice::normalizeLevels( void )
 //----------------------------------------
 {
-    if( _flatClasses->count() == 0 ) return;
+    int     i;
+
+    if( _flatClasses->count() == 0 )
+        return;
 
     int minimum = (*_flatClasses)[ 0 ]->_level;
 
-    for( int i = _flatClasses->count(); i > 0; i -= 1 ) {
+    for( i = _flatClasses->count(); i > 0; i -= 1 ) {
         if( (*_flatClasses)[ i - 1 ]->_level < minimum ) {
             minimum = (*_flatClasses)[ i - 1 ]->_level;
         }

@@ -242,7 +242,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     unsigned            num_segs;
     unsigned            num_sects;
     byte                v2;
-    byte                *new;
+    char                *new;
 
     end = DCSeek( ii->sym_file, -(int)sizeof( header ), DIG_END );
     if( DCRead( ii->sym_file, &header, sizeof(header) ) != sizeof(header) ) {

@@ -1,0 +1,646 @@
+c$noreference
+
+c$ifdef INCL_ERRORS
+c$define INCL_SPLERRORS
+c$endif
+
+        character*11     SPL_INI_SPOOLER
+        parameter (SPL_INI_SPOOLER = 'PM_SPOOLER'//char(0))
+        character*17     SPL_INI_QUEUE
+        parameter (SPL_INI_QUEUE = 'PM_SPOOLER_QUEUE'//char(0))
+        character*19     SPL_INI_PRINTER
+        parameter (SPL_INI_PRINTER = 'PM_SPOOLER_PRINTER'//char(0))
+        character*25     SPL_INI_PRINTERDESCR
+        parameter (SPL_INI_PRINTERDESCR =
+     +                 'PM_SPOOLER_PRINTER_DESCR'//char(0))
+        character*23     SPL_INI_QUEUEDESCR
+        parameter (SPL_INI_QUEUEDESCR =
+     +                 'PM_SPOOLER_QUEUE_DESCR'//char(0))
+        character*20     SPL_INI_QUEUEDD
+        parameter (SPL_INI_QUEUEDD = 'PM_SPOOLER_QUEUE_DD'//char(0))
+        character*24     SPL_INI_QUEUEDDDATA
+        parameter (SPL_INI_QUEUEDDDATA =
+     +                 'PM_SPOOLER_QUEUE_DDDATA'//char(0))
+
+        integer  SPL_ERROR
+        parameter (SPL_ERROR = 0)
+        integer  SPL_OK
+        parameter (SPL_OK = 1)
+
+        integer  SPLC_ABORT
+        parameter (SPLC_ABORT = 1)
+        integer  SPLC_PAUSE
+        parameter (SPLC_PAUSE = 2)
+        integer  SPLC_CONTINUE
+        parameter (SPLC_CONTINUE = 3)
+
+        external SplQpOpen
+        integer*4 SplQpOpen
+
+        external SplQpPrint
+        integer*4 SplQpPrint
+
+        external SplQpClose
+        integer*4 SplQpClose
+
+        external SplQpControl
+        integer*4 SplQpControl
+
+        external SplQpQueryDt
+        integer*4 SplQpQueryDt
+
+        external SplQpInstall
+        integer*4 SplQpInstall
+
+        integer  QPDAT_ADDRESS
+        parameter (QPDAT_ADDRESS = 0)
+        integer  QPDAT_DRIVER_NAME
+        parameter (QPDAT_DRIVER_NAME = 1)
+        integer  QPDAT_DRIVER_DATA
+        parameter (QPDAT_DRIVER_DATA = 2)
+        integer  QPDAT_DATA_TYPE
+        parameter (QPDAT_DATA_TYPE = 3)
+        integer  QPDAT_COMMENT
+        parameter (QPDAT_COMMENT = 4)
+        integer  QPDAT_PROC_PARAMS
+        parameter (QPDAT_PROC_PARAMS = 5)
+        integer  QPDAT_SPL_PARAMS
+        parameter (QPDAT_SPL_PARAMS = 6)
+        integer  QPDAT_NET_PARAMS
+        parameter (QPDAT_NET_PARAMS = 7)
+        integer  QPDAT_DOC_NAME
+        parameter (QPDAT_DOC_NAME = 8)
+        integer  QPDAT_QUEUE_NAME
+        parameter (QPDAT_QUEUE_NAME = 9)
+        integer  QPDAT_TOKEN
+        parameter (QPDAT_TOKEN = 10)
+        integer  QPDAT_JOBID
+        parameter (QPDAT_JOBID = 11)
+
+        structure /SQPOPENDATA/
+            integer*4 pszLogAddress
+            integer*4 pszDriverName
+            integer*4 pdriv
+            integer*4 pszDataType
+            integer*4 pszComment
+            integer*4 pszProcParams
+            integer*4 pszSpoolParams
+            integer*4 pszNetworkParams
+            integer*4 pszDocName
+            integer*4 pszQueueName
+            integer*4 pszToken
+            integer*2 idJobId
+        end structure
+
+        integer  SPLINFO_QPERROR
+        parameter (SPLINFO_QPERROR = '00000001'x)
+        integer  SPLINFO_DDERROR
+        parameter (SPLINFO_DDERROR = '00000002'x)
+        integer  SPLINFO_SPLERROR
+        parameter (SPLINFO_SPLERROR = '00000004'x)
+        integer  SPLINFO_OTHERERROR
+        parameter (SPLINFO_OTHERERROR = '00000080'x)
+        integer  SPLINFO_INFORMATION
+        parameter (SPLINFO_INFORMATION = '00000100'x)
+        integer  SPLINFO_WARNING
+        parameter (SPLINFO_WARNING = '00000200'x)
+        integer  SPLINFO_ERROR
+        parameter (SPLINFO_ERROR = '00000400'x)
+        integer  SPLINFO_SEVERE
+        parameter (SPLINFO_SEVERE = '00000800'x)
+        integer  SPLINFO_USERINTREQD
+        parameter (SPLINFO_USERINTREQD = '00001000'x)
+
+        integer  SPLDATA_PRINTERJAM
+        parameter (SPLDATA_PRINTERJAM = '00000001'x)
+        integer  SPLDATA_FORMCHGREQD
+        parameter (SPLDATA_FORMCHGREQD = '00000002'x)
+        integer  SPLDATA_CARTCHGREQD
+        parameter (SPLDATA_CARTCHGREQD = '00000004'x)
+        integer  SPLDATA_PENCHGREQD
+        parameter (SPLDATA_PENCHGREQD = '00000008'x)
+        integer  SPLDATA_DATAERROR
+        parameter (SPLDATA_DATAERROR = '00000010'x)
+        integer  SPLDATA_UNEXPECTERROR
+        parameter (SPLDATA_UNEXPECTERROR = '00000020'x)
+        integer  SPLDATA_OTHER
+        parameter (SPLDATA_OTHER = '00008000'x)
+
+        integer  SSQL_ERROR
+        parameter (SSQL_ERROR = -1)
+
+c$ifdef INCL_SPLERRORS
+c$include pmsplerr.fi
+c$endif
+
+c$ifdef INCL_SPLDOSPRINT
+
+        integer  CNLEN
+        parameter (CNLEN = 15)
+        integer  UNLEN
+        parameter (UNLEN = 20)
+        integer  QNLEN
+        parameter (QNLEN = 12)
+        integer  PDLEN
+        parameter (PDLEN = 8)
+        integer  DTLEN
+        parameter (DTLEN = 9)
+        integer  QP_DATATYPE_SIZE
+        parameter (QP_DATATYPE_SIZE = 15)
+        integer  DRIV_DEVICENAME_SIZE
+        parameter (DRIV_DEVICENAME_SIZE = 31)
+        integer  DRIV_NAME_SIZE
+        parameter (DRIV_NAME_SIZE = 8)
+        integer  PRINTERNAME_SIZE
+        parameter (PRINTERNAME_SIZE = 32)
+        integer  FORMNAME_SIZE
+        parameter (FORMNAME_SIZE = 31)
+        integer  MAXCOMMENTSZ
+        parameter (MAXCOMMENTSZ = 48)
+
+        structure /DRIVPROPS/
+            integer*4 pszKeyName
+            integer*4 cbBuf
+            integer*4 pBuf
+        end structure
+
+        structure /PRJINFO/
+            integer*2 uJobId
+            integer*1 szUserName(UNLEN+1)
+            integer*1 pad_1
+            integer*1 szNotifyName(CNLEN+1)
+            integer*1 szDataType(DTLEN+1)
+            integer*4 pszParms
+            integer*2 uPosition
+            integer*2 fsStatus
+            integer*4 pszStatus
+            integer*4 ulSubmitted
+            integer*4 ulSize
+            integer*4 pszComment
+        end structure
+
+        structure /PRJINFO2/
+            integer*2 uJobId
+            integer*2 uPriority
+            integer*4 pszUserName
+            integer*2 uPosition
+            integer*2 fsStatus
+            integer*4 ulSubmitted
+            integer*4 ulSize
+            integer*4 pszComment
+            integer*4 pszDocument
+        end structure
+
+        structure /PRJINFO3/
+            integer*2 uJobId
+            integer*2 uPriority
+            integer*4 pszUserName
+            integer*2 uPosition
+            integer*2 fsStatus
+            integer*4 ulSubmitted
+            integer*4 ulSize
+            integer*4 pszComment
+            integer*4 pszDocument
+            integer*4 pszNotifyName
+            integer*4 pszDataType
+            integer*4 pszParms
+            integer*4 pszStatus
+            integer*4 pszQueue
+            integer*4 pszQProcName
+            integer*4 pszQProcParms
+            integer*4 pszDriverName
+            integer*4 pDriverData
+            integer*4 pszPrinterName
+        end structure
+
+        structure /PRDINFO/
+            integer*1 szName(PDLEN+1)
+            integer*1 szUserName(UNLEN+1)
+            integer*2 uJobId
+            integer*2 fsStatus
+            integer*4 pszStatus
+            integer*2 time
+        end structure
+
+        structure /PRDINFO3/
+            integer*4 pszPrinterName
+            integer*4 pszUserName
+            integer*4 pszLogAddr
+            integer*2 uJobId
+            integer*2 fsStatus
+            integer*4 pszStatus
+            integer*4 pszComment
+            integer*4 pszDrivers
+            integer*2 time
+            integer*2 usTimeOut
+        end structure
+
+        structure /PRDINFO4/
+            integer*4 pszPrinterName
+            integer*4 pszUserName
+            integer*4 pszLogAddr
+            integer*2 uJobId
+            integer*2 fsStatus
+            integer*4 pszStatus
+            integer*4 pszComment
+            integer*4 pszDrivers
+            integer*2 time
+            integer*2 usTimeOut
+            integer*4 cDriverProps
+        end structure
+
+        structure /PRQINFO/
+            integer*1 szName(QNLEN+1)
+            integer*1 pad_1
+            integer*2 uPriority
+            integer*2 uStartTime
+            integer*2 uUntilTime
+            integer*4 pszSepFile
+            integer*4 pszPrProc
+            integer*4 pszDestinations
+            integer*4 pszParms
+            integer*4 pszComment
+            integer*2 fsStatus
+            integer*2 cJobs
+        end structure
+
+        structure /PRQINFO3/
+            integer*4 pszName
+            integer*2 uPriority
+            integer*2 uStartTime
+            integer*2 uUntilTime
+            integer*2 fsType
+            integer*4 pszSepFile
+            integer*4 pszPrProc
+            integer*4 pszParms
+            integer*4 pszComment
+            integer*2 fsStatus
+            integer*2 cJobs
+            integer*4 pszPrinters
+            integer*4 pszDriverName
+            integer*4 pDriverData
+        end structure
+
+        structure /PRQINFO6/
+            integer*4 pszName
+            integer*2 uPriority
+            integer*2 uStartTime
+            integer*2 uUntilTime
+            integer*2 fsType
+            integer*4 pszSepFile
+            integer*4 pszPrProc
+            integer*4 pszParms
+            integer*4 pszComment
+            integer*2 fsStatus
+            integer*2 cJobs
+            integer*4 pszPrinters
+            integer*4 pszDriverName
+            integer*4 pDriverData
+            integer*4 pszRemoteComputerName
+            integer*4 pszRemoteQueueName
+        end structure
+
+        structure /PRIDINFO/
+            integer*2 uJobId
+            integer*1 szComputerName(CNLEN+1)
+            integer*1 szQueueName(QNLEN+1)
+            integer*1 pad_1
+        end structure
+
+        structure /PRDRIVINFO/
+            integer*1 szDrivName(DRIV_NAME_SIZE+1+
+     +                           DRIV_DEVICENAME_SIZE+1)
+        end structure
+
+        structure /PRQPROCINFO/
+            integer*1 szQProcName(QNLEN+1)
+        end structure
+
+        structure /PRPORTINFO/
+            integer*1 szPortName(PDLEN+1)
+        end structure
+
+        structure /PRPORTINFO1/
+            integer*4 pszPortName
+            integer*4 pszPortDriverName
+            integer*4 pszPortDriverPathName
+        end structure
+
+        integer  PRQ_PRIORITY_PARMNUM
+        parameter (PRQ_PRIORITY_PARMNUM = 2)
+        integer  PRQ_STARTTIME_PARMNUM
+        parameter (PRQ_STARTTIME_PARMNUM = 3)
+        integer  PRQ_UNTILTIME_PARMNUM
+        parameter (PRQ_UNTILTIME_PARMNUM = 4)
+        integer  PRQ_SEPARATOR_PARMNUM
+        parameter (PRQ_SEPARATOR_PARMNUM = 5)
+        integer  PRQ_PROCESSOR_PARMNUM
+        parameter (PRQ_PROCESSOR_PARMNUM = 6)
+        integer  PRQ_DESTINATIONS_PARMNUM
+        parameter (PRQ_DESTINATIONS_PARMNUM = 7)
+        integer  PRQ_PARMS_PARMNUM
+        parameter (PRQ_PARMS_PARMNUM = 8)
+        integer  PRQ_COMMENT_PARMNUM
+        parameter (PRQ_COMMENT_PARMNUM = 9)
+        integer  PRQ_TYPE_PARMNUM
+        parameter (PRQ_TYPE_PARMNUM = 10)
+        integer  PRQ_PRINTERS_PARMNUM
+        parameter (PRQ_PRINTERS_PARMNUM = 12)
+        integer  PRQ_DRIVERNAME_PARMNUM
+        parameter (PRQ_DRIVERNAME_PARMNUM = 13)
+        integer  PRQ_DRIVERDATA_PARMNUM
+        parameter (PRQ_DRIVERDATA_PARMNUM = 14)
+        integer  PRQ_REMOTE_COMPUTER_PARMNUM
+        parameter (PRQ_REMOTE_COMPUTER_PARMNUM = 15)
+        integer  PRQ_REMOTE_QUEUE_PARMNUM
+        parameter (PRQ_REMOTE_QUEUE_PARMNUM = 16)
+        integer  PRQ_MAXPARMNUM
+        parameter (PRQ_MAXPARMNUM = 16)
+
+        integer  PRQ_MAX_PRIORITY
+        parameter (PRQ_MAX_PRIORITY = 1)
+        integer  PRQ_DEF_PRIORITY
+        parameter (PRQ_DEF_PRIORITY = 5)
+        integer  PRQ_MIN_PRIORITY
+        parameter (PRQ_MIN_PRIORITY = 9)
+        integer  PRQ_NO_PRIORITY
+        parameter (PRQ_NO_PRIORITY = 0)
+
+        integer  PRQ_STATUS_MASK
+        parameter (PRQ_STATUS_MASK = 3)
+        integer  PRQ_ACTIVE
+        parameter (PRQ_ACTIVE = 0)
+        integer  PRQ_PAUSED
+        parameter (PRQ_PAUSED = 1)
+        integer  PRQ_ERROR
+        parameter (PRQ_ERROR = 2)
+        integer  PRQ_PENDING
+        parameter (PRQ_PENDING = 3)
+
+        integer  PRQ3_PAUSED
+        parameter (PRQ3_PAUSED = '00000001'x)
+        integer  PRQ3_PENDING
+        parameter (PRQ3_PENDING = '00000002'x)
+
+        integer  PRQ3_TYPE_RAW
+        parameter (PRQ3_TYPE_RAW = '00000001'x)
+
+        integer  PRJ_NOTIFYNAME_PARMNUM
+        parameter (PRJ_NOTIFYNAME_PARMNUM = 3)
+        integer  PRJ_DATATYPE_PARMNUM
+        parameter (PRJ_DATATYPE_PARMNUM = 4)
+        integer  PRJ_PARMS_PARMNUM
+        parameter (PRJ_PARMS_PARMNUM = 5)
+        integer  PRJ_POSITION_PARMNUM
+        parameter (PRJ_POSITION_PARMNUM = 6)
+        integer  PRJ_JOBFILEINUSE_PARMNUM
+        parameter (PRJ_JOBFILEINUSE_PARMNUM = 7)
+        integer  PRJ_COMMENT_PARMNUM
+        parameter (PRJ_COMMENT_PARMNUM = 11)
+        integer  PRJ_DOCUMENT_PARMNUM
+        parameter (PRJ_DOCUMENT_PARMNUM = 12)
+        integer  PRJ_STATUSCOMMENT_PARMNUM
+        parameter (PRJ_STATUSCOMMENT_PARMNUM = 13)
+        integer  PRJ_PRIORITY_PARMNUM
+        parameter (PRJ_PRIORITY_PARMNUM = 14)
+        integer  PRJ_PROCPARMS_PARMNUM
+        parameter (PRJ_PROCPARMS_PARMNUM = 16)
+        integer  PRJ_DRIVERDATA_PARMNUM
+        parameter (PRJ_DRIVERDATA_PARMNUM = 18)
+        integer  PRJ_MAXPARMNUM
+        parameter (PRJ_MAXPARMNUM = 18)
+
+        integer  PRJ_QSTATUS
+        parameter (PRJ_QSTATUS = '00000003'x)
+        integer  PRJ_DEVSTATUS
+        parameter (PRJ_DEVSTATUS = '00000ffc'x)
+        integer  PRJ_COMPLETE
+        parameter (PRJ_COMPLETE = '00000004'x)
+        integer  PRJ_INTERV
+        parameter (PRJ_INTERV = '00000008'x)
+        integer  PRJ_ERROR
+        parameter (PRJ_ERROR = '00000010'x)
+        integer  PRJ_DESTOFFLINE
+        parameter (PRJ_DESTOFFLINE = '00000020'x)
+        integer  PRJ_DESTPAUSED
+        parameter (PRJ_DESTPAUSED = '00000040'x)
+        integer  PRJ_NOTIFY
+        parameter (PRJ_NOTIFY = '00000080'x)
+        integer  PRJ_DESTNOPAPER
+        parameter (PRJ_DESTNOPAPER = '00000100'x)
+        integer  PRJ_DESTFORMCHG
+        parameter (PRJ_DESTFORMCHG = '00000200'x)
+        integer  PRJ_DESTCRTCHG
+        parameter (PRJ_DESTCRTCHG = '00000400'x)
+        integer  PRJ_DESTPENCHG
+        parameter (PRJ_DESTPENCHG = '00000800'x)
+        integer  PRJ_JOBFILEINUSE
+        parameter (PRJ_JOBFILEINUSE = '00004000'x)
+        integer  PRJ_DELETED
+        parameter (PRJ_DELETED = '00008000'x)
+
+        integer  PRJ_QS_QUEUED
+        parameter (PRJ_QS_QUEUED = 0)
+        integer  PRJ_QS_PAUSED
+        parameter (PRJ_QS_PAUSED = 1)
+        integer  PRJ_QS_SPOOLING
+        parameter (PRJ_QS_SPOOLING = 2)
+        integer  PRJ_QS_PRINTING
+        parameter (PRJ_QS_PRINTING = 3)
+
+        integer  PRJ_MAX_PRIORITY
+        parameter (PRJ_MAX_PRIORITY = 99)
+        integer  PRJ_MIN_PRIORITY
+        parameter (PRJ_MIN_PRIORITY = 1)
+        integer  PRJ_NO_PRIORITY
+        parameter (PRJ_NO_PRIORITY = 0)
+
+        integer  PRD_STATUS_MASK
+        parameter (PRD_STATUS_MASK = '00000003'x)
+        integer  PRD_DEVSTATUS
+        parameter (PRD_DEVSTATUS = '00000ffc'x)
+
+        integer  PRD_ACTIVE
+        parameter (PRD_ACTIVE = 0)
+        integer  PRD_PAUSED
+        parameter (PRD_PAUSED = 1)
+
+        integer  PRD_DELETE
+        parameter (PRD_DELETE = 0)
+        integer  PRD_PAUSE
+        parameter (PRD_PAUSE = 1)
+        integer  PRD_CONT
+        parameter (PRD_CONT = 2)
+        integer  PRD_RESTART
+        parameter (PRD_RESTART = 3)
+
+        integer  PRD_LOGADDR_PARMNUM
+        parameter (PRD_LOGADDR_PARMNUM = 3)
+        integer  PRD_COMMENT_PARMNUM
+        parameter (PRD_COMMENT_PARMNUM = 7)
+        integer  PRD_DRIVERS_PARMNUM
+        parameter (PRD_DRIVERS_PARMNUM = 8)
+        integer  PRD_TIMEOUT_PARMNUM
+        parameter (PRD_TIMEOUT_PARMNUM = 10)
+        integer  PRD_DRIVER_DATA_PARMNUM
+        parameter (PRD_DRIVER_DATA_PARMNUM = 11)
+
+        structure /PRINTERINFO/
+            integer*4 flType
+            integer*4 pszComputerName
+            integer*4 pszPrintDestinationName
+            integer*4 pszDescription
+            integer*4 pszLocalName
+        end structure
+
+        integer  SPL_PR_QUEUE
+        parameter (SPL_PR_QUEUE = '00000001'x)
+        integer  SPL_PR_DIRECT_DEVICE
+        parameter (SPL_PR_DIRECT_DEVICE = '00000002'x)
+        integer  SPL_PR_QUEUED_DEVICE
+        parameter (SPL_PR_QUEUED_DEVICE = '00000004'x)
+        integer  SPL_PR_LOCAL_ONLY
+        parameter (SPL_PR_LOCAL_ONLY = '00000100'x)
+
+c$endif
+
+        external SplQmOpen
+        integer*4 SplQmOpen
+
+        external SplQmStartDoc
+        integer*4 SplQmStartDoc
+
+        external SplQmWrite
+        integer*4 SplQmWrite
+
+        external SplQmEndDoc
+        integer*4 SplQmEndDoc
+
+        external SplQmClose
+        integer*4 SplQmClose
+
+        external SplQmAbort
+        integer*4 SplQmAbort
+
+        external SplQmAbortDoc
+        integer*4 SplQmAbortDoc
+
+        external SplMessageBox
+        integer*4 SplMessageBox
+
+c$ifdef INCL_SPLFSE
+
+        external PrtOpen
+        integer*4 PrtOpen
+
+        external PrtClose
+        integer*4 PrtClose
+
+        external PrtWrite
+        integer*4 PrtWrite
+
+        external PrtDevIOCtl
+        integer*4 PrtDevIOCtl
+
+        external PrtAbort
+
+c$endif
+
+        external SplStdOpen
+        integer*4 SplStdOpen
+
+        external SplStdClose
+        integer*4 SplStdClose
+
+        external SplStdStart
+        integer*4 SplStdStart
+
+        external SplStdStop
+        integer*4 SplStdStop
+
+        external SplStdDelete
+        integer*4 SplStdDelete
+
+        external SplStdGetBits
+        integer*4 SplStdGetBits
+
+        external SplStdQueryLength
+        integer*4 SplStdQueryLength
+
+        external SplCreateDevice
+        integer*4 SplCreateDevice
+
+        external SplControlDevice
+        integer*4 SplControlDevice
+
+        external SplDeleteDevice
+        integer*4 SplDeleteDevice
+
+        external SplEnumDevice
+        integer*4 SplEnumDevice
+
+        external SplQueryDevice
+        integer*4 SplQueryDevice
+
+        external SplSetDevice
+        integer*4 SplSetDevice
+
+        external SplReleaseJob
+        integer*4 SplReleaseJob
+
+        external SplDeleteJob
+        integer*4 SplDeleteJob
+
+        external SplEnumJob
+        integer*4 SplEnumJob
+
+
+        external SplQueryJob
+        integer*4 SplQueryJob
+
+        external SplHoldJob
+        integer*4 SplHoldJob
+
+        external SplSetJob
+        integer*4 SplSetJob
+
+        external SplCreateQueue
+        integer*4 SplCreateQueue
+
+        external SplReleaseQueue
+        integer*4 SplReleaseQueue
+
+        external SplDeleteQueue
+        integer*4 SplDeleteQueue
+
+        external SplEnumQueue
+        integer*4 SplEnumQueue
+
+        external SplQueryQueue
+        integer*4 SplQueryQueue
+
+        external SplHoldQueue
+        integer*4 SplHoldQueue
+
+        external SplPurgeQueue
+        integer*4 SplPurgeQueue
+
+        external SplSetQueue
+        integer*4 SplSetQueue
+
+        external SplEnumDriver
+        integer*4 SplEnumDriver
+
+        external SplEnumPort
+        integer*4 SplEnumPort
+
+        external SplEnumQueueProcessor
+        integer*4 SplEnumQueueProcessor
+
+        external SplEnumPrinter
+        integer*4 SplEnumPrinter
+
+        external SplCopyJob
+        integer*4 SplCopyJob
+
+c$reference

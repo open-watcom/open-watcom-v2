@@ -13,3 +13,5 @@ template <class T>
     };
 
 S<int> *qq;
+
+template class S<int>;

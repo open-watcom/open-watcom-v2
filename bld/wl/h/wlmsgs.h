@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message constants used with linkerr.msg and wlink.msg
 *
 ****************************************************************************/
 
@@ -57,7 +56,7 @@
 #define    MSG_CANT_HAVE_START                   22 + MSG_BASE
 #define    MSG_NO_START_ADDR                     23 + MSG_BASE
 #define    MSG_NO_OVERLAY_LOADER                 24 + MSG_BASE
-#define    MSG_SHORT_VECT_RANGE                  25 + MSG_BASE
+#define    MSG_VECT_RANGE                        25 + MSG_BASE
 #define    MSG_RESERVED_SYM_DEFINED              26 + MSG_BASE
 #define    MSG_MULT_DEF                          27 + MSG_BASE
 #define    MSG_UNDEF_REF                         28 + MSG_BASE
@@ -199,7 +198,14 @@
 #define    MSG_INC_AND_VFR_NOT_ALLOWED          164 + MSG_BASE
 #define    MSG_RESOURCE_TOO_BIG                 165 + MSG_BASE
 #define    MSG_MULT_START_ADDRS_BY              166 + MSG_BASE
-#define    MSG_MAX_ERR_MSG_NUM                  166 + MSG_BASE
+#define    MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE 167 + MSG_BASE
+#define    MSG_VXD_INCORRECT_EXPORT             168 + MSG_BASE
+#define    MSG_FIXED_LOC_BEFORE_CUR_LOC         169 + MSG_BASE
+#define    MSG_DUP_DIRECTIVE                    170 + MSG_BASE
+#define    MSG_IMPORT_LOCAL                     171 + MSG_BASE
+#define    MSG_STACK_SMALL                      172 + MSG_BASE
+#define    MSG_DEFDATA_TOO_BIG                  173 + MSG_BASE
+#define    MSG_MAX_ERR_MSG_NUM                  173 + MSG_BASE
 
 #define    MSG_FILE_REC_NAME_0                  227 + MSG_BASE
 #define    MSG_FILE_REC_NAME_1                  228 + MSG_BASE
@@ -242,9 +248,11 @@
 #define    MSG_FILE_TYPES_13                    265 + MSG_BASE
 #define    MSG_FILE_TYPES_14                    266 + MSG_BASE
 #define    MSG_FILE_TYPES_15                    267 + MSG_BASE
-#define    MSG_CREATE_TYPE_DLL                  268 + MSG_BASE
-#define    MSG_CREATE_TYPE_EXE                  269 + MSG_BASE
-#define    MSG_IS_A_EXE                         270 + MSG_BASE
+#define    MSG_FILE_TYPES_16                    268 + MSG_BASE
+#define    MSG_FILE_TYPES_17                    269 + MSG_BASE
+#define    MSG_CREATE_TYPE_DLL                  270 + MSG_BASE
+#define    MSG_CREATE_TYPE_EXE                  271 + MSG_BASE
+#define    MSG_IS_A_EXE                         272 + MSG_BASE
 
 #define    MSG_MAP_BOX_GROUP                    276 + MSG_BASE
 #define    MSG_MAP_TITLE_GROUP_0                277 + MSG_BASE
@@ -560,3 +568,84 @@
 #define    MSG_ELF_HELP_13                      597 + MSG_BASE
 #define    MSG_ELF_HELP_14                      598 + MSG_BASE
 #define    MSG_ELF_HELP_15                      599 + MSG_BASE
+
+#define    MSG_WIN_VXD_HELP_0                   600 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_1                   601 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_2                   602 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_3                   603 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_4                   604 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_5                   605 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_6                   606 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_7                   607 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_8                   608 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_9                   609 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_10                  610 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_11                  611 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_12                  612 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_13                  613 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_14                  614 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_15                  615 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_16                  616 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_17                  617 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_18                  618 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_19                  619 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_20                  620 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_21                  621 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_22                  622 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_23                  623 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_24                  624 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_25                  625 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_26                  626 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_27                  627 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_28                  628 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_29                  629 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_30                  630 + MSG_BASE
+#define    MSG_WIN_VXD_HELP_31                  631 + MSG_BASE
+#define    MSG_ZDOS_HELP_0                      632 + MSG_BASE
+#define    MSG_ZDOS_HELP_1                      633 + MSG_BASE
+#define    MSG_ZDOS_HELP_2                      634 + MSG_BASE
+#define    MSG_ZDOS_HELP_3                      635 + MSG_BASE
+#define    MSG_ZDOS_HELP_4                      636 + MSG_BASE
+#define    MSG_ZDOS_HELP_5                      637 + MSG_BASE
+#define    MSG_ZDOS_HELP_6                      638 + MSG_BASE
+#define    MSG_ZDOS_HELP_7                      639 + MSG_BASE
+#define    MSG_ZDOS_HELP_8                      640 + MSG_BASE
+#define    MSG_ZDOS_HELP_9                      641 + MSG_BASE
+#define    MSG_ZDOS_HELP_10                     642 + MSG_BASE
+#define    MSG_ZDOS_HELP_11                     643 + MSG_BASE
+#define    MSG_ZDOS_HELP_12                     644 + MSG_BASE
+#define    MSG_ZDOS_HELP_13                     645 + MSG_BASE
+#define    MSG_ZDOS_HELP_14                     646 + MSG_BASE
+#define    MSG_ZDOS_HELP_15                     647 + MSG_BASE
+#define    MSG_RAW_HELP_0                       648 + MSG_BASE
+#define    MSG_RAW_HELP_1                       649 + MSG_BASE
+#define    MSG_RAW_HELP_2                       650 + MSG_BASE
+#define    MSG_RAW_HELP_3                       651 + MSG_BASE
+#define    MSG_RAW_HELP_4                       652 + MSG_BASE
+#define    MSG_RAW_HELP_5                       653 + MSG_BASE
+#define    MSG_RAW_HELP_6                       654 + MSG_BASE
+#define    MSG_RAW_HELP_7                       655 + MSG_BASE
+#define    MSG_RAW_HELP_8                       656 + MSG_BASE
+#define    MSG_RAW_HELP_9                       657 + MSG_BASE
+#define    MSG_RAW_HELP_10                      658 + MSG_BASE
+#define    MSG_RAW_HELP_11                      659 + MSG_BASE
+#define    MSG_RAW_HELP_12                      660 + MSG_BASE
+#define    MSG_RAW_HELP_13                      661 + MSG_BASE
+#define    MSG_RAW_HELP_14                      662 + MSG_BASE
+#define    MSG_RAW_HELP_15                      663 + MSG_BASE
+#define    MSG_RDOS_HELP_0                      664 + MSG_BASE
+#define    MSG_RDOS_HELP_1                      665 + MSG_BASE
+#define    MSG_RDOS_HELP_2                      666 + MSG_BASE
+#define    MSG_RDOS_HELP_3                      667 + MSG_BASE
+#define    MSG_RDOS_HELP_4                      668 + MSG_BASE
+#define    MSG_RDOS_HELP_5                      669 + MSG_BASE
+#define    MSG_RDOS_HELP_6                      670 + MSG_BASE
+#define    MSG_RDOS_HELP_7                      671 + MSG_BASE
+#define    MSG_RDOS_HELP_8                      672 + MSG_BASE
+#define    MSG_RDOS_HELP_9                      673 + MSG_BASE
+#define    MSG_RDOS_HELP_10                     674 + MSG_BASE
+#define    MSG_RDOS_HELP_11                     675 + MSG_BASE
+#define    MSG_RDOS_HELP_12                     676 + MSG_BASE
+#define    MSG_RDOS_HELP_13                     677 + MSG_BASE
+#define    MSG_RDOS_HELP_14                     678 + MSG_BASE
+#define    MSG_RDOS_HELP_15                     679 + MSG_BASE

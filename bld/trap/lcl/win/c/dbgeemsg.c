@@ -120,7 +120,7 @@ static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
     buffer[0]=0;
     GetClassName( hwnd, buffer, sizeof( buffer ) );
     Out((OUT_SOFT,"--- Subclass (%s), id=%04x",buffer,hwnd));
-    if( GetWindowWord( hwnd, GWW_HINSTANCE ) == GetModuleHandle( "USER") ) {
+    if( GetWindowWord( hwnd, GWW_HINSTANCE ) == (WORD)GetModuleHandle( "USER") ) {
         Out((OUT_SOFT,"--- Subclass IGNORED (USER)" ));
         return( 1 );
     }
@@ -129,7 +129,7 @@ static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
         SCWindows[ SCCount ].hwnd = hwnd;
         SCWindows[ SCCount ].oldproc = fp;
         SCCount++;
-        if( do_children ) EnumChildWindows( hwnd, EnumChildProcInstance, 0 );
+        if( do_children ) EnumChildWindows( hwnd, (WNDENUMPROC)EnumChildProcInstance, 0 );
     }
     return( 1 );
 
@@ -284,9 +284,9 @@ restart_opts DebugeeWaitForMessage( void )
 
     DefaultProcInstance = (FARPROC)MakeProcInstance( (FARPROC)DefaultProc, DebugeeInstance );
 
-    EnumTaskProcInstance = MakeProcInstance( EnumTaskWindowsFunc, DebugeeInstance );
-    EnumChildProcInstance = MakeProcInstance( EnumChildWindowsFunc, DebugeeInstance );
-    EnumTaskWindows( GetCurrentTask(), EnumTaskProcInstance, 0 );
+    EnumTaskProcInstance = MakeProcInstance( (FARPROC)EnumTaskWindowsFunc, DebugeeInstance );
+    EnumChildProcInstance = MakeProcInstance( (FARPROC)EnumChildWindowsFunc, DebugeeInstance );
+    EnumTaskWindows( GetCurrentTask(), (WNDENUMPROC)EnumTaskProcInstance, 0 );
     FreeProcInstance( EnumChildProcInstance );
     FreeProcInstance( EnumTaskProcInstance );
 
@@ -295,7 +295,7 @@ restart_opts DebugeeWaitForMessage( void )
         if( msg.hwnd == NULL &&
             msg.message == WM_NULL && msg.lParam == MAGIC_COOKIE ) break;
         if( msg.hwnd != NULL ) {
-            hinst = GetWindowWord( msg.hwnd, GWW_HINSTANCE );
+            hinst = (HINSTANCE)GetWindowWord( msg.hwnd, GWW_HINSTANCE );
         } else {
             hinst = NULL;
         }

@@ -47,20 +47,21 @@
 #include "procfile.h"
 
 
-static bool ProcLibFile( file_list *lib, char *name )
-/***************************************************/
+static bool SearchAndProcLibFile( file_list *lib, char *name )
+/************************************************************/
 {
-    mod_entry *     lp;
-    mod_entry **    prev;
-    unsigned long   dummy;
+    mod_entry       *lp;
+    mod_entry       **prev;
 
+    if( !CacheOpen( lib ) )
+        return( FALSE );
     lp = SearchLib( lib, name );
     if( lp == NULL ) {
         CacheClose( lib, 1 );
         return( FALSE );
     }
     lib->status |= STAT_LIB_USED;
-    if( FmtData.type & MK_OVERLAYS && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         if( lib->status & STAT_LIB_FIXED ) {
             lp->modinfo |= MOD_FIXED;
         }
@@ -73,11 +74,9 @@ static bool ProcLibFile( file_list *lib, char *name )
         *prev = lp;
     }
     CurrMod = lp;
-    CurrMod->name = IdentifyObject( lp->f.source, &lp->location, &dummy );
-    CurrMod->modinfo |= ObjFormat & FMT_OBJ_FMT_MASK;
     ObjPass1();
-    CacheClose( lp->f.source, 1 );
-    if( FmtData.type & MK_OVERLAYS && FmtData.u.dos.distribute ) {
+    CacheClose( lib, 1 );
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         FinishArcs( lp );
     }
     if( FindLibTrace( lp ) ) {
@@ -88,38 +87,36 @@ static bool ProcLibFile( file_list *lib, char *name )
 
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
-extern bool LibFind( char *name, bool old_sym )
+bool LibFind( char *name, bool old_sym )
 /*********************************************/
 /* Search for a file in a library */
 {
-    file_list * lib;
-    bool        found;
+    file_list   *lib;
     bool        isimpsym;
 
     DEBUG(( DBG_OLD, "LibFind( %s )", name ));
-    isimpsym = FmtData.type & MK_PE &&
-                memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0;
-    found = FALSE;
+    isimpsym = (FmtData.type & MK_PE) && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0;
     for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-        if( lib->file->flags & INSTAT_IOERR ) continue;
-        if( old_sym && lib->status & STAT_OLD_LIB ) continue;
-        found = ProcLibFile( lib, name );
-        if( found ) break;
-        if( isimpsym ) {
-            found = ProcLibFile( lib, name + PREFIX_LEN );
-            if( found ) break;
+        if( lib->file->flags & INSTAT_IOERR )
+            continue;
+        if( old_sym && (lib->status & STAT_OLD_LIB) )
+            continue;
+        if( SearchAndProcLibFile( lib, name ) )
+            return( TRUE );
+        if( isimpsym && SearchAndProcLibFile( lib, name + PREFIX_LEN ) ) {
+            return( TRUE );
         }
     }
-    return found;
+    return( FALSE );
 }
 
-extern bool ModNameCompare( char *tname, char *membname )
+bool ModNameCompare( char *tname, char *membname )
 /*******************************************************/
 // check if a THEADR record name is equal to a library member name
 {
-    int     lentheadr;
-    int     lenmember;
-    char *  namestart;
+    unsigned    lentheadr;
+    unsigned    lenmember;
+    char        *namestart;
 
     namestart = RemovePath( tname, &lentheadr );
     lenmember = strlen( membname );

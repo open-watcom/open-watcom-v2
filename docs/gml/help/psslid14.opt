@@ -1,0 +1,23 @@
+( resetscreen
+( device "ps"
+( font 0 times-roman plain 2 14
+( font 1 times-roman uscore 2 14
+( font 2 times-bold plain 2 14
+( font 3 times-bold uscore 2 14
+( font 4 times-bold plain 2 16
+( font 5 courier-bold plain 2 10
+( font 6 times-bold plain 2 18
+( font 7 times-bold plain 2 14
+( font 8 times-roman plain 2 10
+( font 9 courier plain 2 14
+( format standard
+( layout "SLIDELAY.GML"
+( noinclist
+( noindex
+( noscript
+( nostatistics
+( passes 1
+( pause
+( terse
+( wait
+( warning

@@ -190,6 +190,7 @@ void GTLineOption::initialize()
 //-----------------------------
 {
     int i;
+    setSystemFont( FALSE );
     rescale();
     move( frame().r );
     centre();

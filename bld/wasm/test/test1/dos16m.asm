@@ -1,10 +1,3 @@
-; fixme: - these should be modified in the source code
-ifdef __REGISTER__
-    STACK = 0
-endif
-ifdef __STACK__
-    STACK = 1
-endif
 ifdef __386__
     ifdef __OS2__
             _OS220 = 1
@@ -363,7 +356,7 @@ not64k:                                 ; endif
         mov     ch,0
         cld                             ; set direction forward
         mov     al,' '
-        rep     scasb
+        repe    scasb
         lea     si,-1[di]
 
         mov     dx,DGROUP

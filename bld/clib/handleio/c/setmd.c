@@ -36,6 +36,7 @@
 #if defined(__NT__)
     #include <windows.h>
 #endif
+#include <unistd.h>
 #include "fcntl.h"
 #include "dos.h"
 #include "dosfunc.h"

@@ -1,0 +1,67 @@
+/*
+ *  vptype.h    Videoport types
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __IVPType__
+#define __IVPType__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Videoport format selection types */
+typedef enum _AMVP_SELECT_FORMAT_BY {
+    AMVP_DO_NOT_CARE            = 0,
+    AMVP_BEST_BANDWIDTH         = 1,
+    AMVP_INPUT_SAME_AS_OUTPUT   = 2
+} AMVP_SELECT_FORMAT_BY;
+
+/* Videoport modes */
+typedef enum _AMVP_MODE {
+    AMVP_MODE_WEAVE             = 0,
+    AMVP_MODE_BOBINTERLEAVED    = 1,
+    AMVP_MODE_BOBNONINTERLEAVED = 2,
+    AMVP_MODE_SKIPEVEN          = 3,
+    AMVP_MODE_SKIPODD           = 4
+} AMVP_MODE;
+
+/* Videoport size */
+typedef struct _AMVPSIZE {
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+} AMVPSIZE;
+typedef AMVPSIZE    *LPAMVPSIZE;
+
+/* Videoport dimension information */
+typedef struct _AMVPDIMINFO {
+    DWORD   dwFieldWidth;
+    DWORD   dwFieldHeight;
+    DWORD   dwVBIWidth;
+    DWORD   dwVBIHeight;
+    RECT    rcValidRegion;
+} AMVPDIMINFO;
+typedef AMVPDIMINFO *LPAMVPDIMINFO;
+
+/* Videoport data information */
+typedef struct _AMVPDATAINFO {
+    DWORD       dwSize;
+    DWORD       dwMicrosecondsPerField;
+    AMVPDIMINFO amvpDimInfo;
+    DWORD       dwPictAspectRatioX;
+    DWORD       dwPictAspectRatioY;
+    BOOL        bEnableDoubleClick;
+    BOOL        bEnableVACT;
+    BOOL        bDataIsInterlaced;
+    LONG        lHalfLinesOdd;
+    BOOL        bFieldPolarityInverted;
+    DWORD       dwNumLinesInVREF;
+    LONG        lHalfLinesEven;
+    DWORD       dwReserved1;
+} AMVPDATAINFO;
+typedef AMVPDATAINFO    *LPAMVPDATAINFO;
+
+:include cplusepi.sp
+
+#endif /* __IVPType__ */

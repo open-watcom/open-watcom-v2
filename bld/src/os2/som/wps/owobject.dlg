@@ -1,0 +1,24 @@
+
+#ifndef OS2_INCLUDED
+   #include <os2.h>
+#endif
+
+DLGTEMPLATE IDDLG_PAGE_WELCOME LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "", IDDLG_PAGE_WELCOME, 0, 0, 255, 165, NOT FS_DLGBORDER | WS_VISIBLE
+        PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+    BEGIN
+        GROUPBOX     "Open Watcom Sample WPS Class",  IDDLG_UNUSED,       7,   2, 245, 142
+        MLE          "",                              IDDLG_MLE_README,  15,  20, 230, 115, MLS_WORDWRAP | MLS_HSCROLL | MLS_VSCROLL | MLS_READONLY | WS_GROUP
+        LTEXT        "Testvalue:",                    IDTXT_TESTVALUE,   15,   6,  35,   8, DT_VCENTER
+        SPINBUTTON                                    IDSPB_TESTVALUE,   55,   6,  20,  12, SPBS_MASTER | SPBS_NUMERICONLY | SPBS_READONLY | WS_GROUP
+        LTEXT        "Object Id:",                    IDTXT_OBJECTID,    85,   6,  35,   8, DT_VCENTER
+
+        ENTRYFIELD   "",                              IDENT_OBJECTID,   120,   7, 120,  8, ES_READONLY
+           PRESPARAMS PP_FOREGROUNDCOLOR, 0x00000000L
+           PRESPARAMS PP_BACKGROUNDCOLORINDEX, SYSCLR_DIALOGBACKGROUND
+
+    END
+END
+
+

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler error message display routines.
 *
 ****************************************************************************/
 
@@ -40,14 +39,9 @@
 #include "msg.h"
 #include "aui.h"
 
-//#include "msg.def"
-//#include "wpmain.def"
-
 #define MAX_MSG_LEN     200
 
 extern  bint    WPWndInitDone;
-
-
 
 
 STATIC void doErr( char * msg, va_list args )
@@ -105,7 +99,6 @@ STATIC void doErr( char * msg, va_list args )
 }
 
 
-
 extern void ErrorMsg( char * msg, ... )
 /*************************************/
 {
@@ -117,7 +110,6 @@ extern void ErrorMsg( char * msg, ... )
 }
 
 
-
 extern void fatal( char * msg, ... )
 /**********************************/
 {
@@ -126,5 +118,9 @@ extern void fatal( char * msg, ... )
     va_start( args, msg );
     doErr( msg, args );
     va_end( args );
-    exit(1);
+    if( WPWndInitDone ) {
+        GUICleanup();
+        GUIMemClose();
+    }
+    exit( 1 );
 }

@@ -95,8 +95,8 @@ int SwitchIcon( an_MDI_icon *icon )
     int         ret_val;
 
     MDI_Icon = icon;
-    func = MakeProcInstance( SwitchDialogProc, Instance );
-    ret_val = DialogBox( Instance, "SwitchBox", FrameWindow, func );
+    func = MakeProcInstance( (FARPROC)SwitchDialogProc, Instance );
+    ret_val = DialogBox( Instance, "SwitchBox", FrameWindow, (DLGPROC)func );
     FreeProcInstance( func );
     return( ret_val );
 } /* SwitchIcon */

@@ -30,48 +30,7 @@
 ****************************************************************************/
 
 
-/*
- * This file is not indirected with an #include so we can compile this code
- * for multiple platforms without duplicating it in multiple files.
- */
-
-#include "variety.h"
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
 #define __INT64__
-#include "int64.h"
-#include <limits.h>
-#ifdef __QNX__
-    #include <unistd.h>
-#else
-    #include <io.h>
-#endif
-
-
-_WCRTLINK __int64 _lseeki64( int hid, __int64 _offset, int origin )
-{
-    long                rc;
-    INT_TYPE            offset = GET_INT64(_offset);
-    INT_TYPE            minoff, maxoff;
-    INT_TYPE            minusone;
-    INT_TYPE            retval;
-    INT_TYPE            negminoff, negoffset;
-    long                offset32;
-
-    /*** Fail if offset isn't in the interval [LONG_MIN,LONG_MAX] ***/
-    _clib_I32ToI64( -1L, minusone );
-    _clib_I32ToI64( LONG_MAX, maxoff );
-    if( _clib_U64Cmp( offset, maxoff )  >  0 ) {
-        RETURN_INT64(minusone);         /* offset > LONG_MAX */
-    }
-    _clib_I32ToI64( LONG_MIN, minoff );
-    _clib_I64Neg( minoff, negminoff );
-    _clib_I64Neg( offset, negoffset );
-    if( _clib_U64Cmp( offset, maxoff )  >  0 ) {
-        RETURN_INT64(minusone);         /* offset < LONG_MIN */
-    }
-
-    /*** Ok, now call lseek ***/
-    _clib_I64ToLong( offset, offset32 );
-    rc = lseek( hid, offset32, origin );
-    _clib_I32ToI64( rc, retval );
-    RETURN_INT64(retval);
-}
+#include "lseek.c"

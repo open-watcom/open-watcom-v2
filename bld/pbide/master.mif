@@ -1,0 +1,16 @@
+proj_name = pbide
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+dlldbg.exe : dlldbg.obj dlldbg.res
+        $(linker) op map $(lflags) name $^. file dlldbg.obj
+        $(rc) -k dlldbg.res $^@
+
+.c: ..
+
+extra_c_flags_win =-zW
+
+dlldbg.res : ../dlldbg.rc ../debugger.ico
+        $(rc) $(rc_flags) $[@ -fo=$@

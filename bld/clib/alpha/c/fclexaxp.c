@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Clear Alpha FP exceptions.
 *
 ****************************************************************************/
 
 
 #include "rtdata.h"
 #include "variety.h"
+#include "clearfpe.h"
 
 
 extern unsigned long _GetFPCR(void);

@@ -1,0 +1,202 @@
+-&mdash.
+-&ndash.
+ &rbl.
+!&xclm.
+!&xclam.
+"&cdq.
+"&odq.
+#&numsign.
+$&dollar.
+%&percent.
+&&amp.
+'&apos.
+'&csq.
+`&osq.
+`&grave.
+(&lpar.
+(&lparen.
+)&rpar.
+)&rparen.
+*&asterisk.
+.&period.
++&plus.
+,&comma.
+-&dash.
+-&emdash.
+-&endash.
+-&hyphen.
+-&minus.
+.&per.
+/&slash.
+/&slr.
+:&colon.
+;&semi.
+>&gt.
+>&gtsym.
+=&eq.
+=&equals.
+=&eqsym.
+<&lt.
+<&ltsym.
+@&atsign.
+{&lbrace.
+{&lbrc.
+|&splitvbar.
+|&vbar.
+|&lor.
+}&rbrace.
+}&rbrc.
+[&lbracket.
+[&lbrk.
+\&bslash.
+\&bsl.
+]&rbracket.
+]&rbrk.
+^&caret.
+^&and.
+_&us.
+~&tilde.
+~&similar.
+ &house.
+‘&Cc.
+ &ue.
+ &ea.
+ &ac.
+ &ae.
+ &ag.
+ &ao.
+ &cc.
+ &ec.
+ &ee.
+ &eg.
+ &ie.
+ &ic.
+ &ig.
+ &Ae.
+ &Ao.
+ &angstrom.
+ &Ea.
+ &aelig.
+ &AElig.
+ &oc.
+ &oe.
+ &og.
+ &uc.
+ &ug.
+ &ye.
+ &Oe.
+ &Ue.
+‘&cent.
+’&sterlin.
+&yen.
+ &fnof.
+ &aa.
+ &ia.
+ &oa.
+ &ua.
+ &nt.
+ &Nt.
+ &aus.
+ &ous.
+ &invq.
+ &lnotrev.
+ &lnot.
+ &notsym.
+ &frac12.
+ &frac14.
+ &inve.
+s&odqf.
+t&cdqf.
+ƒ¿&alpha.
+„@&Alpha.
+„B&Beta.
+ƒ¡&Gamma.
+ƒÎ&pi.
+ƒ°&Sigma.
+ƒÐ&sigma.
+ƒÊ&mu.
+ƒÑ&tau.
+„U&Phi.
+ƒ¦&Theta.
+ƒ¶&Omega.
+ƒÂ&delta.
+‡&infinity.
+ƒÓ&phi.
+ƒÃ&epsilon.
+ŠÇ&intersect.
+ŠÆ&indentical.
+}&plusmin.
+}&pm.
+†&ge.
+†&gesym.
+…&le.
+…&lesym.
+ &inttop.
+ &intbot.
+€&divide.
+ &nearly.
+‹&degree.
+‹&deg.
+E&bullet.
+D&dot.
+ŠÄ&sqrt.
+ &supn.
+ &sup2.
+¡&sqbul.
+&box14.
+&box12.
+&box34.
+&bx1012.
+&bx2021.
+&bx0021.
+&bx0012.
+&bx2022.
+&bx2020.
+&bx0022.
+&bx2002.
+&bx2001.
+&bx1002.
+&bx1210.
+&bx2120.
+&bx2200.
+&bx0220.
+&bx2202.
+&bx0222.
+&bx2220.
+&bx0202.
+&bx2222.
+&bx1202.
+&bx1201.
+&bx0212.
+&bx0121.
+&bx2100.
+&bx1200.
+&bx0210.
+&bx0120.
+&bx2121.
+&bx1212.
+&bxas.
+&bxbj.
+&bxcr.
+&bxcj.
+&bxde.
+&bxtj.
+&bxh.
+&bxll.
+&bxlr.
+&bxri.
+&bxrj.
+&bxul.
+&bxur.
+&bxv.
+¡&BOX.
+ &BOXBOT.
+ &BOXLEFT.
+ &BOXRIGHT.
+ &BOXTOP.
+«&darrow.
+ª&uarrow.
+©&larrow.
+¨&rarrow.
+>&rahead.
+&lahead.

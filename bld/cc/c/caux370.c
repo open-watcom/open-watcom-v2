@@ -31,14 +31,9 @@
 
 
 #include "cvars.h"
-#include <stdlib.h>
-#include <string.h>
 #include "cgswitch.h"
 #include "pragdefn.h"
-#include "ctokens.h"
 #include "pdefn2.h"
-#include "target.h"
-#include "cerrs.h"
 
 extern void CreateAux( char *id );
 extern int OpenSrcFile( char *filename, int delimiter );

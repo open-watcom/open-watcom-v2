@@ -1,0 +1,700 @@
+/*
+ *  ntddstor.h  Storage device I/O control codes
+ *
+:include crwatcnt.sp
+ */
+
+#ifdef DEFINE_GUID
+
+/* GUIDs */
+:include storguid.sp
+
+/* Old names for compatibility */
+:include storgold.sp
+
+#endif /* DEFINE_GUID */
+
+#ifndef _NTDDSTOR_H_
+#define _NTDDSTOR_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Primitive data types */
+typedef ULONG   DEVICE_DATA_MANAGEMENT_SET_ACTION;
+
+/* Storage device I/O control codes */
+#define IOCTL_STORAGE_BASE  FILE_DEVICE_MASS_STORAGE
+#define IOCTL_STORAGE_CHECK_VERIFY \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_CHECK_VERIFY2 \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_MEDIA_REMOVAL \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0201, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_EJECT_MEDIA \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0202, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_LOAD_MEDIA \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_LOAD_MEDIA2 \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_RESERVE \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0204, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_RELEASE \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0205, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_FIND_NEW_DEVICES \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0206, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_EJECTION_CONTROL \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0250, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_MCN_CONTROL \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0251, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_GET_MEDIA_TYPES \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0300, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_GET_MEDIA_TYPES_EX \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0301, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_GET_MEDIA_SERIAL_NUMBER \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0304, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_GET_HOTPLUG_INFO \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0305, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_SET_HOTPLUG_INFO \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0306, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_STORAGE_RESET_BUS \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_RESET_DEVICE \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_BREAK_RESERVATION \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0405, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_PERSISTENT_RESERVE_IN \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0406, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_PERSISTENT_RESERVE_OUT \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0407, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_STORAGE_GET_DEVICE_NUMBER \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0420, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_PREDICT_FAILURE \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0440, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_READ_CAPACITY \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0450, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_QUERY_PROPERTY \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0500, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define IOCTL_STORAGE_MANAGE_DATA_SET_PROPERTIES \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0501, METHOD_BUFFERED, FILE_WRITE_ACCESS )
+#define IOCTL_STORAGE_GET_BC_PROPERTIES \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0600, METHOD_BUFFERED, FILE_READ_ACCESS )
+#define IOCTL_STORAGE_ALLOCATE_BC_STREAM \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0601, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_STORAGE_FREE_BC_STREAM \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0602, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define IOCTL_STORAGE_CHECK_PRIORITY_HINT_SUPPORT \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0620, METHOD_BUFFERED, FILE_ANY_ACCESS )
+#define OBSOLETE_IOCTL_STORAGE_RESET_BUS \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+#define OBSOLETE_IOCTL_STORAGE_RESET_DEVICE \
+    CTL_CODE( IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS | \
+    FILE_WRITE_ACCESS )
+
+/* Tape statistics flags */
+#define RECOVERED_WRITES_VALID          0x00000001L
+#define UNRECOVERED_WRITES_VALID        0x00000002L
+#define RECOVERED_READS_VALID           0x00000004L
+#define UNRECOVERED_READS_VALID         0x00000008L
+#define WRITE_COMPRESSION_INFO_VALID    0x00000010L
+#define READ_COMPRESSION_INFO_VALID     0x00000020L
+
+/* TAPE_GET_STATISTICS operations */
+#define TAPE_RETURN_STATISTICS  0L
+#define TAPE_RETURN_ENV_INFO    1L
+#define TAPE_RESET_STATISTICS   2L
+
+/* Media characteristics */
+#define MEDIA_ERASEABLE         0x00000001L
+#define MEDIA_WRITE_ONCE        0x00000002L
+#define MEDIA_READ_ONLY         0x00000004L
+#define MEDIA_READ_WRITE        0x00000008L
+#define MEDIA_WRITE_PROTECTED   0x00000100L
+#define MEDIA_CURRENTLY_MOUNTED 0x80000000L
+
+/* Device data set management action flags */
+#define DeviceDsmActionFlag_NonDestructive  0x80000000L
+
+/* Macro to manipulate device data data set management action flags */
+#define IsDsmActionNonDestructive( x ) \
+    ((BOOLEAN)(((x) & DeviceDsmActionFlag_NonDestructive) != 0L))
+
+/* Device data set management actions */
+#define DeviceDsmAction_None            0L
+#define DeviceDsmAction_Trim            1L
+#define DeviceDsmAction_Notification    (2L | DeviceDsmActionFlag_NonDestructive)
+
+/* Device data set management flags */
+#define DEVICE_DSM_FLAG_ENTIRE_DATA_SET_RANGE   0x00000001L
+
+/* Device data set management notification flags */
+#define DEVICE_DSM_NOTIFY_FLAG_BEGIN    0x00000001L
+#define DEVICE_DSM_NOTIFY_FLAG_END      0x00000002L
+
+/* Storage BC version number */
+#define IOCTL_STORAGE_BC_VERSION    1L
+
+/* Storage priority hint support flags */
+#define STORAGE_PRIORITY_HINT_SUPPORTED 0x00000001L
+
+/* Storage hotplug information */
+typedef struct _STORAGE_HOTPLUG_INFO {
+    ULONG   Size;
+    BOOLEAN MediaRemovable;
+    BOOLEAN MediaHotplug;
+    BOOLEAN DeviceHotplug;
+    BOOLEAN WriteCacheEnableOverride;
+} STORAGE_HOTPLUG_INFO;
+typedef STORAGE_HOTPLUG_INFO    *PSTORAGE_HOTPLUG_INFO;
+
+/* Storage device number */
+typedef struct _STORAGE_DEVICE_NUMBER {
+    DEVICE_TYPE DeviceType;
+    ULONG       DeviceNumber;
+    ULONG       PartitionNumber;
+} STORAGE_DEVICE_NUMBER;
+typedef STORAGE_DEVICE_NUMBER   *PSTORAGE_DEVICE_NUMBER;
+
+/* Storage bus reset request */
+typedef struct _STORAGE_BUS_RESET_REQUEST {
+    UCHAR   PathId;
+} STORAGE_BUS_RESET_REQUEST;
+typedef STORAGE_BUS_RESET_REQUEST   *PSTORAGE_BUS_RESET_REQUEST;
+
+/* Storage break reservation request */
+typedef struct STORAGE_BREAK_RESERVATION_REQUEST {
+    ULONG   Length;
+    UCHAR   _unused;
+    UCHAR   PathId;
+    UCHAR   TargetId;
+    UCHAR   Lun;
+} STORAGE_BREAK_RESERVATION_REQUEST;
+typedef STORAGE_BREAK_RESERVATION_REQUEST   *PSTORAGE_BREAK_RESERVATION_REQUEST;
+
+/* IOCTL_STORAGE_MEDIA_REMOVAL parameters */
+typedef struct _PREVENT_MEDIA_REMOVAL {
+    BOOLEAN PreventMediaRemoval;
+} PREVENT_MEDIA_REMOVAL;
+typedef PREVENT_MEDIA_REMOVAL   *PPREVENT_MEDIA_REMOVAL;
+
+/* Class media change context */
+typedef struct _CLASS_MEDIA_CHANGE_CONTEXT {
+    ULONG   MediaChangeContext;
+    ULONG   NewState;
+} CLASS_MEDIA_CHANGE_CONTEXT;
+typedef CLASS_MEDIA_CHANGE_CONTEXT  *PCLASS_MEDIA_CHANGE_CONTEXT;
+
+/* Tape statistics */
+typedef struct _TAPE_STATISTICS {
+    ULONG           Version;
+    ULONG           Flags;
+    LARGE_INTEGER   RecoveredWrites;
+    LARGE_INTEGER   UnrecoveredWrites;
+    LARGE_INTEGER   RecoveredReads;
+    LARGE_INTEGER   UnrecoveredReads;
+    UCHAR           CompressionRatioReads;
+    UCHAR           CompressionRatioWrites;
+} TAPE_STATISTICS;
+typedef TAPE_STATISTICS *PTAPE_STATISTICS;
+
+/* IOCTL_TAPE_GET_STATISTICS parameters */
+typedef struct _TAPE_GET_STATISTICS {
+    ULONG   Operation;
+} TAPE_GET_STATISTICS;
+typedef TAPE_GET_STATISTICS *PTAPE_GET_STATISTICS;
+
+/* Storage media types */
+typedef enum _STORAGE_MEDIA_TYPE {
+    DDS_4mm             = 0x20,
+    MiniQic             = 0x21,
+    Travan              = 0x22,
+    QIC                 = 0x23,
+    MP_8mm              = 0x24,
+    AME_8mm             = 0x25,
+    AIT1_8mm            = 0x26,
+    DLT                 = 0x27,
+    NCTP                = 0x28,
+    IBM_3480            = 0x29,
+    IBM_3480E           = 0x2A,
+    IBM_Magstar_3590    = 0x2B,
+    IBM_Magstar_MP      = 0x2C,
+    STK_DATA_D3         = 0x2D,
+    SONY_DTF            = 0x2E,
+    DV_6mm              = 0x2F,
+    DMI                 = 0x30,
+    SONY_D2             = 0x31,
+    CLEANER_CARTRIDGE   = 0x32,
+    CD_ROM              = 0x33,
+    CD_R                = 0x34,
+    CD_RW               = 0x35,
+    DVD_ROM             = 0x36,
+    DVD_R               = 0x37,
+    DVD_RW              = 0x38,
+    MO_3_RW             = 0x39,
+    MO_5_WO             = 0x3A,
+    MO_5_RW             = 0x3B,
+    MO_5_LIMDOW         = 0x3C,
+    PC_5_WO             = 0x3D,
+    PC_5_RW             = 0x3E,
+    PD_5_RW             = 0x3F,
+    ABL_5_WO            = 0x40,
+    PINNACLE_APEX_5_RW  = 0x41,
+    SONY_12_WO          = 0x42,
+    PHILIPS_12_WO       = 0x43,
+    HITACHI_12_WO       = 0x44,
+    CYGNET_12_WO        = 0x45,
+    KODAK_14_WO         = 0x46,
+    MO_NFR_525          = 0x47,
+    NIKON_12_RW         = 0x48,
+    IOMEGA_ZIP          = 0x49,
+    IOMEGA_JAZ          = 0x4A,
+    SYQUEST_EZ135       = 0x4B,
+    SYQUEST_EZFLYER     = 0x4C,
+    SYQUEST_SYJET       = 0x4D,
+    AVATAR_F2           = 0x4E,
+    MP2_8mm             = 0x4F,
+    DST_S               = 0x50,
+    DST_M               = 0x51,
+    DST_L               = 0x52,
+    VXATape_1           = 0x53,
+    VXATape_2           = 0x54,
+#if (NTDDI_VERSION < 0x05010000)
+    STK_EAGLE           = 0x55,
+#else
+    STK_9840            = 0x55,
+#endif
+    LTO_Ultrium         = 0x56,
+    LTO_Accelis         = 0x57,
+    DVD_RAM             = 0x58,
+    ATI_8mm             = 0x59,
+    ADR_1               = 0x5A,
+    ADR_2               = 0x5B,
+    STK_9940            = 0x5C,
+    SAIT                = 0x5D,
+    VXATape             = 0x5E
+} STORAGE_MEDIA_TYPE;
+typedef STORAGE_MEDIA_TYPE  *PSTORAGE_MEDIA_TYPE;
+
+/* Storage bus types */
+typedef enum _STORAGE_BUS_TYPE {
+    BusTypeUnknown              = 0x00,
+    BusTypeScsi                 = 0x01,
+    BusTypeAtapi                = 0x02,
+    BusTypeAta                  = 0x03,
+    BusType1394                 = 0x04,
+    BusTypeSsa                  = 0x05,
+    BusTypeFibre                = 0x06,
+    BusTypeUsb                  = 0x07,
+    BusTypeRAID                 = 0x08,
+    BusTypeiScsi                = 0x09,
+    BusTypeSas                  = 0x0A,
+    BusTypeSata                 = 0x0B,
+    BusTypeSd                   = 0x0C,
+    BusTypeMmc                  = 0x0D,
+    BusTypeVirtual              = 0x0E,
+    BusTypeFileBackedVirtual    = 0x0F,
+    BusTypeMax                  = 0x10,
+    BusTypeMaxReserved          = 0x7F
+} STORAGE_BUS_TYPE;
+typedef STORAGE_BUS_TYPE    *PSTORAGE_BUS_TYPE;
+
+/* Device media information */
+typedef struct _DEVICE_MEDIA_INFO {
+    union {
+        struct {
+            LARGE_INTEGER       Cylinders;
+            STORAGE_MEDIA_TYPE  MediaType;
+            ULONG               TracksPerCylinder;
+            ULONG               SectorsPerTrack;
+            ULONG               BytesPerSector;
+            ULONG               NumberMediaSides;
+            ULONG               MediaCharacteristics;
+        } DiskInfo;
+        struct {
+            LARGE_INTEGER       Cylinders;
+            STORAGE_MEDIA_TYPE  MediaType;
+            ULONG               TracksPerCylinder;
+            ULONG               SectorsPerTrack;
+            ULONG               BytesPerSector;
+            ULONG               NumberMediaSides;
+            ULONG               MediaCharacteristics;
+        } RemovableDiskInfo;
+        struct {
+            STORAGE_MEDIA_TYPE  MediaType;
+            ULONG               MediaCharacteristics;
+            ULONG               CurrentBlockSize;
+            STORAGE_BUS_TYPE    BusType;
+            union {
+                struct {
+                    UCHAR   MediumType;
+                    UCHAR   DensityCode;
+                } ScsiInformation;
+            } BusSpecificData;
+        } TapeInfo;
+    } DeviceSpecific;
+} DEVICE_MEDIA_INFO;
+typedef DEVICE_MEDIA_INFO   *PDEVICE_MEDIA_INFO;
+
+/* Media type information */
+typedef struct _GET_MEDIA_TYPES {
+    ULONG               DeviceType;
+    ULONG               MediaInfoCount;
+    DEVICE_MEDIA_INFO   MediaInfo[1];
+} GET_MEDIA_TYPES;
+typedef GET_MEDIA_TYPES *PGET_MEDIA_TYPES;
+
+/* IOCTL_STORAGE_PREDICT_FAILURE returned data */
+typedef struct _STORAGE_PREDICT_FAILURE {
+    ULONG   PredictFailure;
+    UCHAR   VendorSpecific[512];
+} STORAGE_PREDICT_FAILURE;
+typedef STORAGE_PREDICT_FAILURE *PSTORAGE_PREDICT_FAILURE;
+
+/* Storage query types */
+typedef enum _STORAGE_QUERY_TYPE {
+    PropertyStandardQuery   = 0,
+    PropertyExistsQuery     = 1,
+    PropertyMaskQuery       = 2,
+    PropertyQueryMaxDefined = 3
+} STORAGE_QUERY_TYPE;
+typedef STORAGE_QUERY_TYPE  *PSTORAGE_QUERY_TYPE;
+
+/* Storage property identifiers */
+typedef enum _STORAGE_PROPERTY_ID {
+    StorageDeviceProperty                   = 0,
+    StorageAdapterProperty                  = 1,
+    StorageDeviceIdProperty                 = 2,
+    StorageDeviceUniqueIdProperty           = 3,
+    StorageDeviceWriteCacheProperty         = 4,
+    StorageMiniportProperty                 = 5,
+    StorageAccessAlignmentProperty          = 6,
+    StorageDeviceSeekPenaltyProperty        = 7,
+    StorageDeviceTrimProperty               = 8,
+    StorageDeviceWriteAggregationProperty   = 9
+} STORAGE_PROPERTY_ID;
+typedef STORAGE_PROPERTY_ID *PSTORAGE_PROPERTY_ID;
+
+/* Storage property query */
+typedef struct _STORAGE_PROPERTY_QUERY {
+    STORAGE_PROPERTY_ID PropertyId;
+    STORAGE_QUERY_TYPE  QueryType;
+    UCHAR               AdditionalParameters[1];
+} STORAGE_PROPERTY_QUERY;
+typedef STORAGE_PROPERTY_QUERY  *PSTORAGE_PROPERTY_QUERY;
+
+/* Storage description header */
+typedef struct _STORAGE_DESCRIPTOR_HEADER {
+    ULONG   Version;
+    ULONG   Size;
+} STORAGE_DESCRIPTOR_HEADER;
+typedef STORAGE_DESCRIPTOR_HEADER   *PSTORAGE_DESCRIPTOR_HEADER;
+
+/* Storage device descriptor */
+typedef struct _STORAGE_DEVICE_DESCRIPTOR {
+    ULONG               Version;
+    ULONG               Size;
+    UCHAR               DeviceType;
+    UCHAR               DeviceTypeModifier;
+    BOOLEAN             RemovableMedia;
+    BOOLEAN             CommandQueueing;
+    ULONG               VendorIdOffset;
+    ULONG               ProductIdOffset;
+    ULONG               ProductRevisionOffset;
+    ULONG               SerialNumberOffset;
+    STORAGE_BUS_TYPE    BusType;
+    ULONG               RawPropertiesLength;
+    UCHAR               RawDeviceProperties[1];
+} STORAGE_DEVICE_DESCRIPTOR;
+typedef STORAGE_DEVICE_DESCRIPTOR   *PSTORAGE_DEVICE_DESCRIPTOR;
+
+/* Storage adapter descriptor */
+typedef struct _STORAGE_ADAPTER_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    ULONG   MaximumTransferLength;
+    ULONG   MaximumPhysicalPages;
+    ULONG   AlignmentMask;
+    BOOLEAN AdapterUsesPio;
+    BOOLEAN AdapterScansDown;
+    BOOLEAN CommandQueueing;
+    BOOLEAN AcceleratedTransfer;
+#if (NTDDI_VERSION < 0x05010000)
+    BOOLEAN BusType;
+#else
+    UCHAR   BusType;
+#endif
+    USHORT  BusMajorVersion;
+    USHORT  BusMinorVersion;
+} STORAGE_ADAPTER_DESCRIPTOR;
+typedef STORAGE_ADAPTER_DESCRIPTOR  *PSTORAGE_ADAPTER_DESCRIPTOR;
+
+/* Storage access alignment descriptor */
+typedef struct _STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    ULONG   BytesPerCacheLine;
+    ULONG   BytesOffsetForCacheAlignment;
+    ULONG   BytesPerLogicalSector;
+    ULONG   BytesPerPhysicalSector;
+    ULONG   BytesOffsetForSectorAlignment;
+} STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR;
+typedef STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR *PSTORAGE_ACCESS_ALIGNMENT_DESCRIPTOR;
+
+/* Storage port code sets */
+typedef enum _STORAGE_PORT_CODE_SET {
+    StoragePortCodeSetReserved  = 0,
+    StoragePortCodeSetStorport  = 1,
+    StoragePortCodeSetSCSIport  = 2
+} STORAGE_PORT_CODE_SET;
+typedef STORAGE_PORT_CODE_SET   *PSTORAGE_PORT_CODE_SET;
+
+/* Storage miniport descriptor */
+typedef struct _STORAGE_MINIPORT_DESCRIPTOR {
+    ULONG                   Version;
+    ULONG                   Size;
+    STORAGE_PORT_CODE_SET   Portdriver;
+    BOOLEAN                 LUNResetSupported;
+    BOOLEAN                 TargetResetSupported;
+} STORAGE_MINIPORT_DESCRIPTOR;
+typedef STORAGE_MINIPORT_DESCRIPTOR *PSTORAGE_MINIPORT_DESCRIPTOR;
+
+/* Storage identifier code sets */
+typedef enum _STORAGE_IDENTIFIER_CODE_SET {
+    StorageIdCodeSetReserved    = 0,
+    StorageIdCodeSetBinary      = 1,
+    StorageIdCodeSetAscii       = 2,
+    StorageIdCodeSetUtf8        = 3
+} STORAGE_IDENTIFIER_CODE_SET;
+typedef STORAGE_IDENTIFIER_CODE_SET *PSTORAGE_IDENTIFIER_CODE_SET;
+
+/* Storage identifier types */
+typedef enum _STORAGE_IDENTIFIER_TYPE {
+    StorageIdTypeVendorSpecific             = 0,
+    StorageIdTypeVendorId                   = 1,
+    StorageIdTypeEUI64                      = 2,
+    StorageIdTypeFCPHName                   = 3,
+    StorageIdTypePortRelative               = 4,
+    StorageIdTypeTargetPortGroup            = 5,
+    StorageIdTypeLogicalUnitGroup           = 6,
+    StorageIdTypeMD5LogicalUnitIdentifier   = 7,
+    StorageIdTypeScsiNameString             = 8
+} STORAGE_IDENTIFIER_TYPE;
+typedef STORAGE_IDENTIFIER_TYPE *PSTORAGE_IDENTIFIER_TYPE;
+#define StorageIdTypeNAA    StorageIdTypeFCPHName
+
+/* Storage identifier NAA formats */
+typedef enum _STORAGE_ID_NAA_FORMAT {
+    StorageIdNAAFormatIEEEExtended              = 2,
+    StorageIdNAAFormatIEEERegistered            = 3,
+    StorageIdNAAFormatIEEEERegisteredExtended   = 5
+} STORAGE_ID_NAA_FORMAT;
+typedef STORAGE_ID_NAA_FORMAT   *PSTORAGE_ID_NAA_FORMAT;
+
+/* Storage association types */
+typedef enum _STORAGE_ASSOCIATION_TYPE {
+    StorageIdAssocDevice    = 0,
+    StorageIdAssocPort      = 1,
+    StorageIdAssocTarget    = 2
+} STORAGE_ASSOCIATION_TYPE;
+typedef STORAGE_ASSOCIATION_TYPE    *PSTORAGE_ASSOCIATION_TYPE;
+
+/* Storage identifier */
+typedef struct _STORAGE_IDENTIFIER {
+    STORAGE_IDENTIFIER_CODE_SET CodeSet;
+    STORAGE_IDENTIFIER_TYPE     Type;
+    USHORT                      IdentifierSize;
+    USHORT                      NextOffset;
+    STORAGE_ASSOCIATION_TYPE    Association;
+    UCHAR                       Identifier[1];
+} STORAGE_IDENTIFIER;
+typedef STORAGE_IDENTIFIER  *PSTORAGE_IDENTIFIER;
+
+/* Storage device identifier descriptor */
+typedef struct _STORAGE_DEVICE_ID_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    ULONG   NumberOfIdentifiers;
+    UCHAR   Identifiers[1];
+} STORAGE_DEVICE_ID_DESCRIPTOR;
+typedef STORAGE_DEVICE_ID_DESCRIPTOR    *PSTORAGE_DEVICE_ID_DESCRIPTOR;
+
+/* Device seek penalty descriptor */
+typedef struct _DEVICE_SEEK_PENALTY_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    BOOLEAN IncursSeekPenalty;
+} DEVICE_SEEK_PENALTY_DESCRIPTOR;
+typedef DEVICE_SEEK_PENALTY_DESCRIPTOR  *PDEVICE_SEEK_PENALTY_DESCRIPTOR;
+
+/* Device write aggregation descriptor */
+typedef struct _DEVICE_WRITE_AGGREGATION_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    BOOLEAN BenefitsFromWriteAggregation;
+} DEVICE_WRITE_AGGREGATION_DESCRIPTOR;
+typedef DEVICE_WRITE_AGGREGATION_DESCRIPTOR *PDEVICE_WRITE_AGGREGATION_DESCRIPTOR;
+
+/* Device trim descriptor */
+typedef struct _DEVICE_TRIM_DESCRIPTOR {
+    ULONG   Version;
+    ULONG   Size;
+    BOOLEAN TrimEnabled;
+} DEVICE_TRIM_DESCRIPTOR;
+typedef DEVICE_TRIM_DESCRIPTOR  *PDEVICE_TRIM_DESCRIPTOR;
+
+/* Device data set range */
+typedef struct _DEVICE_DATA_SET_RANGE {
+    LONGLONG    StartingOffset;
+    ULONGLONG   LengthInBytes;
+} DEVICE_DATA_SET_RANGE;
+typedef DEVICE_DATA_SET_RANGE   *PDEVICE_DATA_SET_RANGE;
+
+/* IOCTL_STORAGE_MANAGE_DATA_SET_ATTRIBUTES parameters */
+typedef struct _DEVICE_MANAGE_DATA_SET_ATTRIBUTES {
+    ULONG                               Size;
+    DEVICE_DATA_MANAGEMENT_SET_ACTION   Action;
+    ULONG                               Flags;
+    ULONG                               ParameterBlockOffset;
+    ULONG                               ParameterBlockLength;
+    ULONG                               DataSetRangesOffset;
+    ULONG                               DataSetRangesLength;
+} DEVICE_MANAGE_DATA_SET_ATTRIBUTES;
+typedef DEVICE_MANAGE_DATA_SET_ATTRIBUTES   *PDEVICE_MANAGE_DATA_SET_ATTRIBUTES;
+
+/* Device data set management notification parameters */
+typedef struct _DEVICE_DSM_NOTIFICATION_PARAMETERS {
+    ULONG   Size;
+    ULONG   Flags;
+    ULONG   NumFileTypeIDs;
+    GUID    FileTypeID[1];
+} DEVICE_DSM_NOTIFICATION_PARAMETERS;
+typedef DEVICE_DSM_NOTIFICATION_PARAMETERS  *PDEVICE_DSM_NOTIFICATION_PARAMETERS;
+
+/* IOCTL_STORAGE_GET_BC_PROPERTIES returned data */
+typedef struct _STORAGE_GET_BC_PROPERTIES_OUTPUT {
+    ULONG       MaximumRequestsPerPeriod;
+    ULONG       MinimumPeriod;
+    ULONGLONG   MaximumRequestSize;
+    ULONG       EstimatedTimePerRequest;
+    ULONG       NumOutStandingRequests;
+    ULONGLONG   RequestSize;
+} STORAGE_GET_BC_PROPERTIES_OUTPUT;
+typedef STORAGE_GET_BC_PROPERTIES_OUTPUT    *PSTORAGE_GET_BC_PROPERTIES_OUTPUT;
+
+/* IOCTL_STORAGE_ALLOCATE_BC_STREAM parameters */
+typedef struct _STORAGE_ALLOCATE_BC_STREAM_INPUT {
+    ULONG   Version;
+    ULONG   RequestsPerPeriod;
+    ULONG   Period;
+    BOOLEAN RetryFailures;
+    BOOLEAN Discardable;
+    BOOLEAN Reserved1[2];
+    ULONG   AccessType;
+    ULONG   AccessMode;
+} STORAGE_ALLOCATE_BC_STREAM_INPUT;
+typedef STORAGE_ALLOCATE_BC_STREAM_INPUT    *PSTORAGE_ALLOCATE_BC_STREAM_INPUT;
+
+/* IOCTL_STORAGE_ALLOCATE_BC_STREAM returned data */
+typedef struct _STORAGE_ALLOCATE_BC_STREAM_OUTPUT {
+    ULONGLONG   RequestSize;
+    ULONG       NumOutStandingRequests;
+} STORAGE_ALLOCATE_BC_STREAM_OUTPUT;
+typedef STORAGE_ALLOCATE_BC_STREAM_OUTPUT   *PSTORAGE_ALLOCATE_BC_STREAM_OUTPUT;
+
+/* Storage priority hint support information */
+typedef struct _STORAGE_PRIORITY_HINT_SUPPORT {
+    ULONG   SupportFlags;
+} STORAGE_PRIORITY_HINT_SUPPORT;
+typedef STORAGE_PRIORITY_HINT_SUPPORT   *PSTORAGE_PRIORITY_HINT_SUPPORT;
+
+/* Storage media serial number data */
+typedef struct _STORAGE_MEDIA_SERIAL_NUMBER_DATA {
+    USHORT  Reserved;
+    USHORT  SerialNumberLength;
+    UCHAR   SerialNumber[1];
+} STORAGE_MEDIA_SERIAL_NUMBER_DATA;
+typedef STORAGE_MEDIA_SERIAL_NUMBER_DATA    *PSTORAGE_MEDIA_SERIAL_NUMBER_DATA;
+
+/* Storage read capacity */
+typedef struct _STORAGE_READ_CAPACITY {
+    ULONG           Version;
+    ULONG           Size;
+    ULONG           BlockLength;
+    LARGE_INTEGER   NumberOfBlocks;
+    LARGE_INTEGER   DiskLength;
+} STORAGE_READ_CAPACITY;
+typedef STORAGE_READ_CAPACITY   *PSTORAGE_READ_CAPACITY;
+
+/* Write cache types */
+typedef enum _WRITE_CACHE_TYPE {
+    WriteCacheTypeUnknown       = 0,
+    WriteCacheTypeNone          = 1,
+    WriteCacheTypeWriteBack     = 2,
+    WriteCacheTypeWriteThrough  = 3
+} WRITE_CACHE_TYPE;
+
+/* Write cache enable values */
+typedef enum _WRITE_CACHE_ENABLE {
+    WriteCacheEnableUnknown = 0,
+    WriteCacheDisabled      = 1,
+    WriteCacheEnabled       = 2
+} WRITE_CACHE_ENABLE;
+
+/* Write cache change values */
+typedef enum _WRITE_CACHE_CHANGE {
+    WriteCacheChangeUnknown = 0,
+    WriteCacheNotChangeable = 1,
+    WriteCacheChangeable    = 2
+} WRITE_CACHE_CHANGE;
+
+/* Write through values */
+typedef enum _WRITE_THROUGH {
+    WriteThroughUnknown         = 0,
+    WriteThroughNotSupported    = 1,
+    WriteThroughSupported       = 2
+} WRITE_THROUGH;
+
+/* Storage write cache property */
+typedef struct _STORAGE_WRITE_CACHE_PROPERTY {
+    ULONG               Version;
+    ULONG               Size;
+    WRITE_CACHE_TYPE    WriteCacheType;
+    WRITE_CACHE_ENABLE  WriteCacheEnabled;
+    WRITE_CACHE_CHANGE  WriteCacheChangeable;
+    WRITE_THROUGH       WriteThroughSupported;
+    BOOLEAN             FlushCacheSupported;
+    BOOLEAN             UserDefinedPowerProtection;
+    BOOLEAN             NVCacheEnabled;
+} STORAGE_WRITE_CACHE_PROPERTY;
+typedef STORAGE_WRITE_CACHE_PROPERTY    *PSTORAGE_WRITE_CACHE_PROPERTY;
+
+/* Persistent reserve command */
+typedef struct _PERSISTENT_RESERVE_COMMAND {
+    ULONG   Version;
+    ULONG   Size;
+    union {
+        struct {
+            UCHAR   ServiceAction   : 5;
+            UCHAR   Reserved1       : 3;
+            USHORT  AllocationLength;
+        } PR_IN;
+        struct {
+            UCHAR   ServiceAction   : 5;
+            UCHAR   Reserved1       : 3;
+            UCHAR   Type            : 4;
+            UCHAR   Scope           : 4;
+            UCHAR   ParameterList[1];
+        } PR_OUT;
+    };
+} PERSISTENT_RESERVE_COMMAND;
+typedef PERSISTENT_RESERVE_COMMAND  *PPERSISTENT_RESERVE_COMMAND;
+
+:include cplusepi.sp
+
+#endif /* _NTDDSTOR_H_ */

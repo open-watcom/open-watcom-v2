@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-struct xycoord _WCI86FAR _CGRAPH _setlogorg( short x, short y )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _setlogorg( short x, short y )
 /*========================================================
 
    This routine sets the logical origin to the specified co-ordinates. */

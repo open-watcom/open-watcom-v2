@@ -24,15 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Filters and support routines for converting canonical
+*               to Microsoft.
 *
 ****************************************************************************/
 
-
-/*
-    Filters and support routines for converting canonical to Microsoft.
-*/
 
 #include <watcom.h>
 #include "womp.h"
@@ -139,7 +135,7 @@ STATIC void doConversion( void ) {
     alreadyConverted = 1;
     if( nullLname == 0 ) {
         lnames = PObjNewLnames( 1 );
-        ObjAttachData( lnames, "", 1 );
+        ObjAttachData( lnames, (uint_8 *)"", 1 );
         ObjRSeek( lnames, 1 );
         nullLname = lnames->d.lnames.first_idx;
     }

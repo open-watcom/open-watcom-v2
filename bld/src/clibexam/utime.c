@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <sys\utime.h>
+#include <sys/utime.h>
 
 void main( int argc, char *argv[] )
   {

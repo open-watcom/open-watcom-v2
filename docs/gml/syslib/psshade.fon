@@ -1,0 +1,27 @@
+:CMT.
+:CMT. This font is for the Times-Roman font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -170 -217 1024 896
+:CMT.
+
+:CMT. Definition file		      Font name
+:CMT. -------------------------------------------------
+:CMT. PSTR			      times-roman
+:CMT.eoc
+
+:FONT
+  defined_name	   = 'shadefill'
+  member_name	   = 'PSSHADE'
+  font_out_name1   = 'shade'
+  line_height	   = 1000
+  line_space	   = 113
+  scale_basis	   = 72000
+  scale_min	   = 1000
+  scale_max	   = 72000
+  char_width	   = 250
+
+:WIDTH.
+$01 250
+:eWIDTH.
+
+:eFONT.

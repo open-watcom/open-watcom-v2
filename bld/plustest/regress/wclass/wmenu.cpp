@@ -31,14 +31,14 @@ void WEXPORT WMenu::insertSeparator( WORD index )
 
 void WEXPORT WMenu::insertItem( WMenuItem* item, WORD index )
 {
-	InsertMenu( _handle, index, MF_BYPOSITION, item->id(), item->text() );
+	InsertMenu( _handle, index, MF_BYPOSITION, (UINT)item->id(), item->text() );
 	_children.add( item );
 	item->setParent( this );
 }
 
 void WEXPORT WMenu::insertItem( WPopupMenu* popup, WORD index )
 {
-	InsertMenu( _handle, index, MF_BYPOSITION|MF_POPUP, popup->handle(), popup->text() );
+	InsertMenu( _handle, index, MF_BYPOSITION|MF_POPUP, (UINT)popup->handle(), popup->text() );
 	_children.add( popup );
 	popup->setParent( this );
 }

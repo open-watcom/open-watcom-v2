@@ -36,12 +36,12 @@ extern "C" {
 unsigned pascal VxDGet( void far *rec, unsigned len );
 void pascal VxDPut( const void far *rec, unsigned len );
 char pascal VxDConnect( void );
-int pascal VxDDisconnect( void );
+int  pascal VxDDisconnect( void );
 const char * pascal VxDLink( const char far *name );
-int pascal VxDUnLink( void );
-int pascal VxDPresent( void );
-int pascal VxDPutPending( void );
-int pascal VxDRaiseInterrupt( unsigned intr );
+int  pascal VxDUnLink( void );
+int  pascal VxDPresent( void );
+int  pascal VxDPutPending( void );
+void pascal VxDRaiseInterrupt( unsigned intr );
 #ifdef __cplusplus
 }
 #endif

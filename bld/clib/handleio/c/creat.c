@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of creat().
 *
 ****************************************************************************/
 
@@ -34,43 +33,34 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <errno.h>
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "seterrno.h"
 
 
 /* file attributes */
-
 #define _A_RDONLY       0x01
-
-#ifndef __QNX__
-    typedef int mode_t;
-#endif
 
 
 _WCRTLINK int __F_NAME(creat,_wcreat)( const CHAR_TYPE *name, mode_t pmode )
-    {
+{
 #ifndef __NETWARE__
-        return( __F_NAME(open,_wopen)( name, O_RDWR|O_CREAT|O_TRUNC, pmode ) );
+    return( __F_NAME(open,_wopen)( name, O_RDWR | O_CREAT | O_TRUNC, pmode ) );
 #else
-        int             acc;
+    int             acc;
 
-        acc = O_CREAT | O_TRUNC;
-        if( ( pmode & S_IWRITE ) && ( pmode & S_IREAD ) ) {
-            acc |= O_RDWR;
-        } else if( pmode & S_IWRITE ) {
-            acc |= O_WRONLY;
-        } else if( pmode & S_IREAD ) {
-            acc |= O_RDONLY;
-        } else if( !pmode ) {
-            acc |= O_RDWR;
-        }
-        if( __F_NAME(access,_waccess)( name, 0 ) ) { /* Delete the file if it exists so that the
-            __F_NAME(remove,_wremove)( name );       creation date and time will be reset. */
-        }
-        return( __F_NAME(open,_wopen)( name, acc, pmode ) );
-#endif
+    acc = O_CREAT | O_TRUNC;
+    if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
+        acc |= O_RDWR;
+    } else if( pmode & S_IWRITE ) {
+        acc |= O_WRONLY;
+    } else if( pmode & S_IREAD ) {
+        acc |= O_RDONLY;
+    } else if( !pmode ) {
+        acc |= O_RDWR;
     }
-
+    return( __F_NAME(open,_wopen)( name, acc, pmode ) );
+#endif
+}

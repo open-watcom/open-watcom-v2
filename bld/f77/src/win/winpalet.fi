@@ -1,0 +1,66 @@
+*$noreference
+
+! Color-Palette Functions:
+! ------------------------
+
+      external AnimatePalette
+      external CreatePalette
+      external GetNearestColor
+      external GetNearestPaletteIndex
+      external GetPaletteEntries
+      external GetSystemPaletteEntries
+      external GetSystemPaletteUse
+      external RealizePalette
+      external SelectPalette
+      external SetPaletteEntries
+      external SetSystemPaletteUse
+      external UpdateColors
+      external ResizePalette
+
+      integer*2 CreatePalette
+      integer*4 GetNearestColor
+      integer*2 GetNearestPaletteIndex
+      integer*2 GetPaletteEntries
+      integer*2 GetSystemPaletteEntries
+      integer*2 GetSystemPaletteUse
+      integer*2 RealizePalette
+      integer*2 SelectPalette
+      integer*2 SetPaletteEntries
+      integer*2 SetSystemPaletteUse
+      integer*2 UpdateColors
+      integer*2 ResizePalette
+
+! Logical Palette
+
+      structure /PALETTEENTRY/
+          integer*1           peRed
+          integer*1           peGreen
+          integer*1           peBlue
+          integer*1           peFlags
+      end structure
+
+      structure /LOGPALETTE/
+          integer*2                   palVersion
+          integer*2                   palNumEntries
+          record /PALETTEENTRY/       palPalEntry(1)
+      end structure
+
+! Constants for Get/SetSystemPaletteUse()
+
+      integer SYSPAL_STATIC
+      integer SYSPAL_NOSTATIC
+
+      parameter ( SYSPAL_STATIC   = 1 )
+      parameter ( SYSPAL_NOSTATIC = 2 )
+
+! palette entry flags
+
+      integer PC_RESERVED
+      integer PC_EXPLICIT
+      integer PC_NOCOLLAPSE
+
+      parameter ( PC_RESERVED   = '01'x ) ! palette index used for animation
+      parameter ( PC_EXPLICIT   = '02'x ) ! palette index is explicit to device
+      parameter ( PC_NOCOLLAPSE = '04'x ) ! do not match color to system palette
+
+*$reference

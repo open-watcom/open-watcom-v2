@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strdup() and wcsdup().
 *
 ****************************************************************************/
 
@@ -45,8 +44,8 @@ extern size_t wcslen( const CHAR_TYPE * );
 
 _WCRTLINK CHAR_TYPE *__F_NAME(__clib_strdup,__clib_wcsdup) ( const CHAR_TYPE *str )
 {
-    CHAR_TYPE *mem;
-    int len;
+    CHAR_TYPE   *mem;
+    int         len;
 
     len = __F_NAME(strlen,wcslen)( str ) + 1;
     mem = lib_malloc( len * CHARSIZE );

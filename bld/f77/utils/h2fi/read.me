@@ -1,0 +1,38 @@
+To run the converter on all the files use:
+
+    convert path_to_h_files\ path_to_fi_files\
+    
+i.e.,
+
+    convert d:\dev\watcom\os220_h\ fi\
+    
+the trailing backslash is req'd.
+
+Pass 1 just scans for typing information.  It takes a fair amount of time
+to run.  For that reason, if the inityp.awk file is kept around, pass2 can
+be run alone.  It has the same parms as the convert.bat file.  i.e.,
+
+    pass2 d:\dev\watcom\os220_h\ fi\
+    
+The file special.awk contains hand-converted types from files.  To add
+more types (for example those which pass2.awk can't figure out) just add
+them to special.awk.  For example, to add a structure named FOO and a type
+which is a pointer to FOO, you'd add these lines:
+
+    is_a_struct[ "FOO" ] = 1;
+    is_a_reference[ "PFOO" ] = 1;
+    
+(Note there is no need to add 'conv_to_int[ "pfoo" ] = 4'.)
+An integer type would be added like so:
+
+    conv_to_int[ "WACKA" ] = 2;
+    
+Then all WACKAs become "integer*2".
+
+
+xlat.awk
+
+    This awk file can be used to see what sections of the header file
+    are between XLATOFF and XLATON.  IBM has a program which converts
+    H file to INC files for the assembler; it ignores everything between
+    XLATOFF and XLATON comments.

@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 32-bit signal handling (based on OS exception handling).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <stdio.h>
+#include <signal.h>
 #include <dos.h>
 #include <errno.h>
 #include <float.h>
@@ -41,62 +41,49 @@
 #include "rtdata.h"
 #include "errorno.h"
 #include "sigtab.h"
-#include "extfunc.h"
+#include "sigfunc.h"
 #include "fpusig.h"
 #include "seterrno.h"
 #include "rtinit.h"
-
-typedef void sig_func();
-#ifdef _M_IX86
-    #pragma aux (__outside_CLIB) sig_func;
-#endif
-
-extern  void            __terminate();
-
-extern  void            (*__abort)();
-extern  void            __null_int23_exit();
-extern  void            (*__int23_exit)();
+#include "_int23.h"
 
 unsigned        char    __ExceptionHandled;
 
 #define XCPT_FPE        -1      /* trap all floating-point exceptions */
 
-sigtab  SignalTable[] = {
-        { SIG_IGN, 0 },                                 /* unused  */
-        { SIG_DFL, 0 },                                 /* SIGABRT */
-        { SIG_IGN, XCPT_FPE },                          /* SIGFPE  */
-        { SIG_DFL, XCPT_ILLEGAL_INSTRUCTION },          /* SIGILL  */
-        { SIG_DFL, XCPT_SIGNAL },                       /* SIGINT  */
-        { SIG_DFL, XCPT_ACCESS_VIOLATION },             /* SIGSEGV */
-        { SIG_DFL, XCPT_SIGNAL },                       /* SIGTERM */
-        { SIG_DFL, XCPT_SIGNAL },                       /* SIGBREAK */
-        { SIG_IGN, 0 },                                 /* SIGUSR1 */
-        { SIG_IGN, 0 },                                 /* SIGUSR2 */
-        { SIG_IGN, 0 },                                 /* SIGUSR3 */
-        { SIG_DFL, XCPT_INTEGER_DIVIDE_BY_ZERO },       /* SIGIDIVZ */
-        { SIG_DFL, XCPT_INTEGER_OVERFLOW }              /* SIGIOVFL */
+sigtab  _SignalTable[] = {
+    { SIG_IGN, 0 },                                 /* unused  */
+    { SIG_DFL, 0 },                                 /* SIGABRT */
+    { SIG_DFL, XCPT_FPE },                          /* SIGFPE  */
+    { SIG_DFL, XCPT_ILLEGAL_INSTRUCTION },          /* SIGILL  */
+    { SIG_DFL, XCPT_SIGNAL },                       /* SIGINT  */
+    { SIG_DFL, XCPT_ACCESS_VIOLATION },             /* SIGSEGV */
+    { SIG_DFL, XCPT_SIGNAL },                       /* SIGTERM */
+    { SIG_DFL, XCPT_SIGNAL },                       /* SIGBREAK */
+    { SIG_IGN, 0 },                                 /* SIGUSR1 */
+    { SIG_IGN, 0 },                                 /* SIGUSR2 */
+    { SIG_IGN, 0 },                                 /* SIGUSR3 */
+    { SIG_DFL, XCPT_INTEGER_DIVIDE_BY_ZERO },       /* SIGIDIVZ */
+    { SIG_DFL, XCPT_INTEGER_OVERFLOW }              /* SIGIOVFL */
 };
 
-void    __sigabort() {
-/********************/
 
-    raise( SIGABRT );
-}
-
-
-_WCRTLINK int   __sigfpe_handler( int fpe ) {
-/***********************************/
-
-    sig_func *func;
+_WCRTLINK int   __sigfpe_handler( int fpe )
+/*****************************************/
+{
+    __sig_func  func;
 
     func = _RWD_sigtab[ SIGFPE ].func;
-    if( (func != SIG_IGN) && (func != SIG_DFL) && (func != SIG_ERR) ) {
+    if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
         _RWD_sigtab[ SIGFPE ].func = SIG_DFL;
-        (*func)( SIGFPE, fpe );
+        (*(__sigfpe_func)func)( SIGFPE, fpe );
+        return( 0 );
+    } else if( func == SIG_IGN ) {
         return( 0 );
     }
     return( -1 );
 }
+
 
 static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
                                   PEXCEPTIONREGISTRATIONRECORD registration,
@@ -113,8 +100,8 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
     registration = registration;
     unknown = unknown;
 
-    if( ( pxcpt->ExceptionNum >= XCPT_FLOAT_DENORMAL_OPERAND ) &&
-        ( pxcpt->ExceptionNum <= XCPT_FLOAT_UNDERFLOW ) ) {
+    if(( pxcpt->ExceptionNum >= XCPT_FLOAT_DENORMAL_OPERAND ) &&
+       ( pxcpt->ExceptionNum <= XCPT_FLOAT_UNDERFLOW )) {
         switch( pxcpt->ExceptionNum ) {
         case XCPT_FLOAT_DENORMAL_OPERAND :
             fpe = FPE_DENORMAL;
@@ -172,7 +159,7 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
         }
         _fpreset();
         __ExceptionHandled = 1;
-        if( ( __sigfpe_handler( fpe ) == 0 ) && ( __ExceptionHandled ) ) {
+        if(( __sigfpe_handler( fpe ) == 0 ) && ( __ExceptionHandled )) {
             context->ctx_env[1] &= ~( SW_BUSY | SW_XCPT_FLAGS | SW_IREQ );
             return( XCPT_CONTINUE_EXECUTION );
         }
@@ -181,18 +168,24 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
             DosAcknowledgeSignalException( pxcpt->ExceptionInfo[0] );
         }
         for( sig = 1; sig <= __SIGLAST; sig++ ) {
-            if( pxcpt->ExceptionNum == _RWD_sigtab[sig].os_sig_code ) {
-                if( sig == SIGINT || sig == SIGBREAK ) {
-                    if( pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_INTR &&
-                        pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_BREAK ) {
-                        continue;
-                    }
+            if( pxcpt->ExceptionNum == _RWD_sigtab[ sig ].os_sig_code ) {
+                if( sig == SIGINT &&
+                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_INTR ) {
+                    continue;
                 }
-                if( (_RWD_sigtab[sig].func == SIG_IGN) ) {
+                if( sig == SIGBREAK &&
+                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_BREAK ) {
+                    continue;
+                }
+                if( sig == SIGTERM &&
+                    pxcpt->ExceptionInfo[0] != XCPT_SIGNAL_KILLPROC ) {
+                    continue;
+                }
+                if( (_RWD_sigtab[ sig ].func == SIG_IGN) ) {
                     return( XCPT_CONTINUE_EXECUTION );
                 }
-                if( (_RWD_sigtab[sig].func == SIG_DFL) ||
-                    (_RWD_sigtab[sig].func == SIG_ERR) ) {
+                if( (_RWD_sigtab[ sig ].func == SIG_DFL) ||
+                    (_RWD_sigtab[ sig ].func == SIG_ERR) ) {
                     return( XCPT_CONTINUE_SEARCH );
                 }
                 __ExceptionHandled = 1;
@@ -209,47 +202,80 @@ static  ULONG   __syscall xcpt_handler( PEXCEPTIONREPORTRECORD pxcpt,
 }
 
 
-static  void    restore_handler() {
-/*********************************/
+void    __SigInit( void )
+/***********************/
+{
+
+#if defined( __SW_BM )
+    int         i;
+
+    for( i = 1; i <= __SIGLAST; ++i ) {
+        _RWD_sigtab[ i ] = _SignalTable[ i ];
+    }
+#endif
+    __XCPTHANDLER->prev_structure = NULL;
+    __XCPTHANDLER->ExceptionHandler = &xcpt_handler;
+}
+
+
+void    __SigFini( void ) {
+/**************************/
+
+#if defined( __SW_BM )
+    ULONG               nesting;
+    APIRET              rc;
+    __EXCEPTION_RECORD  *rr;
+
+    rr = __XCPTHANDLER;
+    if( rr && rr->prev_structure ) {
+        do {
+            rc = DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
+        } while( rc == NO_ERROR && nesting > 0 );
+        DosUnsetExceptionHandler( rr );
+    }
+#endif
+}
+
+
+void    __sigabort( void ) {
+/***************************/
+
+    raise( SIGABRT );
+}
+
+
+static  void    restore_handler( void )
+/*************************************/
+{
 
     __SigFini();
     __int23_exit = __null_int23_exit;
 }
 
 
-_WCRTLINK void (*signal( int sig, void (*func)(int) ))( int ) {
-/************************************************************/
+_WCRTLINK __sig_func signal( int sig, __sig_func func ) {
+/***************************************************************/
 
-    void        (*prev_func)(int);
+    __sig_func  prev_func;
     ULONG       nesting;
 
-    if( ( sig < 1 ) || ( sig > __SIGLAST ) ) {
+    if(( sig < 1 ) || ( sig > __SIGLAST )) {
         __set_errno( EINVAL );
         return( SIG_ERR );
     }
-    __abort = __sigabort;               /* change the abort rtn address */
-    if( (func != SIG_DFL) && (func != SIG_ERR) ) {
-        if( _RWD_sigtab[sig].os_sig_code != 0 ) {
-            if( sig == SIGFPE ) {
-                /* enable all interrupts, except precision exception */
-                /* - precision exceptions are very common */
-                _control87( 0, ( MCW_EM & ~EM_PRECISION ) | 0x80 );
-            }
-            if( sig == SIGBREAK ) {
-                // map SIGBREAK to SIGINT since OS/2 reports XCPT_SIGNAL_INTR
-                // when Ctrl/Break is pressed
-                sig = SIGINT;
-            }
+    _RWD_abort = __sigabort;            /* change the abort rtn address */
+    if(( func != SIG_DFL ) && ( func != SIG_ERR )) {
+        if( _RWD_sigtab[ sig ].os_sig_code != 0 ) {
             if( __XCPTHANDLER->prev_structure == NULL ) {
                 DosSetExceptionHandler( __XCPTHANDLER );
                 __int23_exit = restore_handler;
             }
-            if( _RWD_sigtab[sig].os_sig_code == XCPT_SIGNAL ) {
+            if( _RWD_sigtab[ sig ].os_sig_code == XCPT_SIGNAL ) {
                 DosSetSignalExceptionFocus( SIG_SETFOCUS, &nesting );
             }
         }
     } else {
-        if( _RWD_sigtab[sig].os_sig_code == XCPT_SIGNAL ) {
+        if( _RWD_sigtab[ sig ].os_sig_code == XCPT_SIGNAL ) {
             APIRET rc;
             do {
                 rc = DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
@@ -265,7 +291,7 @@ _WCRTLINK void (*signal( int sig, void (*func)(int) ))( int ) {
 _WCRTLINK int raise( int sig ) {
 /*****************************/
 
-    sig_func *func;
+    __sig_func  func;
 
     func = _RWD_sigtab[ sig ].func;
     switch( sig ) {
@@ -286,7 +312,7 @@ _WCRTLINK int raise( int sig ) {
     case SIGUSR3:
     case SIGIDIVZ:
     case SIGIOVFL:
-        if( (func != SIG_IGN) && (func != SIG_DFL) && (func != SIG_ERR) ) {
+        if(( func != SIG_IGN ) && ( func != SIG_DFL ) && ( func != SIG_ERR )) {
             _RWD_sigtab[ sig ].func = SIG_DFL;
             if( func ) {
                 (*func)( sig );
@@ -300,45 +326,10 @@ _WCRTLINK int raise( int sig ) {
 }
 
 
-void    __SigInit() {
-/*******************/
-
-#if defined( __SW_BM )
-    int         i;
-
-    for( i = 1; i <= __SIGLAST; ++i ) {
-        _RWD_sigtab[ i ] = SignalTable[ i ];
-    }
-#endif
-    __XCPTHANDLER->prev_structure = NULL;
-    __XCPTHANDLER->ExceptionHandler = &xcpt_handler;
-}
-
-
-void    __SigFini() {
-/*******************/
-
-#if defined( __SW_BM )
-    ULONG               nesting;
-    APIRET              rc;
-    __EXCEPTION_RECORD  *rr;
-
-    rr = __XCPTHANDLER;
-    if( rr && rr->prev_structure ) {
-        do {
-            rc = DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
-        } while( rc == NO_ERROR && nesting > 0 );
-        DosUnsetExceptionHandler( rr );
-    }
-#endif
-}
-
-extern  void    (*__sig_init_rtn)(void);
-extern  void    (*__sig_fini_rtn)(void);
-
 static void __SetSigInit( void ) {
     __sig_init_rtn = &__SigInit;
     __sig_fini_rtn = &__SigFini;
+    _RWD_FPE_handler = (FPEhandler *)__sigfpe_handler;
 }
 
 AXI( __SetSigInit, INIT_PRIORITY_LIBRARY )

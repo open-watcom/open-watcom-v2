@@ -24,54 +24,64 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _status87() and _clear87().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <math.h>
+#include <float.h>
 #include "rtdata.h"
 
-extern  void    __fclex(), __fstsw();
+extern  void        __fclex( void );
+extern  unsigned    __fstsw( void );
 
 #if defined(__386__)
-#pragma aux     __fclex = 0xdb 0xe2;
-#pragma aux     __fstsw = 0x36 0xdd 0x3f 0x9b parm caller [edi];
-                        /* fstsw ss:[edi] */
-                        /* fwait         */
+#pragma aux __fclex =               \
+                ".387"              \
+                "fnclex";
+#pragma aux __fstsw =               \
+                ".387"              \
+                "xor eax,eax"       \
+                "fnstsw ax"         \
+                value [eax];
 #else
-#pragma aux     __fclex = float 0x9b 0xdb 0xe2;
-#pragma aux     __fstsw = 0x95                  /* xchg ax,bp */\
-                          float 0x9b 0xdd 0x7e 0x00  /* fstsw 0[bp]*/\
-                          float 0x9b 0xd9 0xd0  /* fnop       */\
-                          0x95                  /* xchg ax,bp */\
-                          parm caller [ax];
+#pragma aux __fclex =               \
+                ".8087"             \
+                float "fclex";
+/* On the 287, we could use the more sensible fnstsw ax variant. */
+/* On the 8087, do it the hard way */
+#pragma aux __fstsw =               \
+                ".8087"             \
+                "push bx"           \
+                "mov bx,sp"         \
+                float "fstsw [bx]"  \
+                float "fnop"        \
+                "pop bx"            \
+                value [bx];
 #endif
 
 
-_WMRTLINK unsigned _status87()
-/******************/
+_WMRTLINK unsigned _status87( void )
+/**********************************/
 {
-    auto int status;
-
-    status = 0;
     if( _RWD_8087 ) {
-        __fstsw( &status );
+        return( __fstsw() );
+    } else {
+        return( 0 );
     }
-    return( status );
 }
 
 
-_WMRTLINK unsigned _clear87()
-/*****************/
+_WMRTLINK unsigned _clear87( void )
+/*********************************/
 {
-    register int status;
+    unsigned    status;
 
     status = 0;
     if( _RWD_8087 ) {
-        status = _status87();
+        status = __fstsw();
         __fclex();
     }
     return( status );

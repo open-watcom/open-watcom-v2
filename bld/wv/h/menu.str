@@ -1,986 +1,1043 @@
 #define MENU_STR( sym, menu, japanese_menu, help, japanese_help ) \
-	wdpick( sym, menu, japanese_menu ) \
-	wdpick( HELP_##sym, help, japanese_help )
+        wdpick( sym, menu, japanese_menu ) \
+        wdpick( HELP_##sym, help, japanese_help )
+#define TIP_MENU_STR( sym, menu, japanese_menu, help, japanese_help, tip, japanese_tip ) \
+        wdpick( sym, menu, japanese_menu ) \
+        wdpick( HELP_##sym, help, japanese_help ) \
+        wdpick( TIP_##sym, tip, japanese_tip )
 
 MENU_STR( MainMenuWindow,
-	"&Window",
-	"j&Window",
-	"Arrange window layouts",
-	"jArrange window layouts" )
+        "&Window",
+        "j&Window",
+        "Arrange window layouts.",
+        "jArrange window layouts." )
 MENU_STR( AXpplication,
-	"A&pplication",
-	"jA&pplication",
-	"Show the application's output screen and wait for a keystroke",
-	"jShow the application's output screen and wait for a keystroke" )
+        "A&pplication",
+        "jA&pplication",
+        "Show the application's output screen and wait for a keystroke.",
+        "jShow the application's output screen and wait for a keystroke." )
 MENU_STR( XTo_Log,
-	"&To Log",
-	"j&To Log",
-	"Write the active window contents to the log window",
-	"jWrite the active window contents to the log window" )
+        "&To Log",
+        "j&To Log",
+        "Write the active window contents to the log window.",
+        "jWrite the active window contents to the log window." )
 MENU_STR( To_XFile_,
-	"To &File...",
-	"jTo &File...",
-	"Write the active window contents to a file",
-	"jWrite the active window contents to a file" )
+        "To &File...",
+        "jTo &File...",
+        "Write the active window contents to a file.",
+        "jWrite the active window contents to a file." )
 MENU_STR( XZoom,
-	"&Zoom",
-	"j&Zoom",
-	"Alternate between maximized and normal sized window",
-	"jAlternate between maximized and normal sized window" )
+        "&Zoom",
+        "j&Zoom",
+        "Alternate between a maximized and normal-sized window.",
+        "jAlternate between a maximized and normal-sized window." )
 MENU_STR( XNext_Window,
-	"&Next",
-	"j&Next",
-	"Select a new current window",
-	"jSelect a new current window" )
+        "&Next",
+        "j&Next",
+        "Select a new current window.",
+        "jSelect a new current window." )
 MENU_STR( XAccelerator,
-	"&Accelerator",
-	"j&Accelerator",
-	"Show a list of all accelerators",
-	"jShow a list of all accelerators" )
+        "&Accelerator",
+        "j&Accelerator",
+        "Show a list of all accelerators.",
+        "jShow a list of all accelerators." )
 
 MENU_STR( MainMenuFile,
-	"&File",
-	"j&File",
-	"Perform file operations",
-	"jPerform file operations" )
+        "&File",
+        "j&File",
+        "Perform file operations.",
+        "jPerform file operations." )
 MENU_STR( XOpen_,
-	"&Open...",
-	"j&Open...",
-	"Start debugging a different program",
-	"jStart debugging a different program" )
+        "&Open...",
+        "j&Open...",
+        "Start debugging a different program.",
+        "jStart debugging a different program." )
 MENU_STR( XView_,
-	"&View...",
-	"j&View...",
-	"View a given file",
-	"jView a given file" )
+        "&View...",
+        "j&View...",
+        "View a given file.",
+        "jView a given file." )
 MENU_STR( XCommand_,
-	"&Command...",
-	"j&Command...",
-	"Enter a debugger command",
-	"jEnter a debugger command" )
+        "&Command...",
+        "j&Command...",
+        "Enter a debugger command.",
+        "jEnter a debugger command." )
 MENU_STR( OpXtions_,
-	"Op&tions...",
-	"jOp&tions...",
-	"Set global debugging options",
-	"jSet global debugging options" )
+        "Op&tions...",
+        "jOp&tions...",
+        "Set global debugging options.",
+        "jSet global debugging options." )
 MENU_STR( XWindow_Options_,
-	"&Window Options...",
-	"j&Window Options...",
-	"Set window options across all windows",
-	"jSet window options across all windows" )
+        "&Window Options...",
+        "j&Window Options...",
+        "Set window options across all windows.",
+        "jSet window options across all windows." )
 MENU_STR( XFont_,
-	"Change &Font...",
-	"jChange &Font...",
-	"Change the font in all windows",
-	"jChange the font in all windows" )
+        "Change &Font...",
+        "jChange &Font...",
+        "Change the font in all windows.",
+        "jChange the font in all windows." )
 MENU_STR( XSave_Setup_,
-	"&Save Setup...",
-	"j&Save Setup...",
-	"Save the current setup to a file",
-	"jSave the current setup to a file" )
+        "&Save Setup...",
+        "j&Save Setup...",
+        "Save the current setup to a file.",
+        "jSave the current setup to a file." )
 MENU_STR( XLoad_Setup_,
-	"&Load Setup...",
-	"j&Load Setup...",
-	"Load a new setup from a file",
-	"jLoad a new setup from a file" )
+        "&Load Setup...",
+        "j&Load Setup...",
+        "Load a new setup from a file.",
+        "jLoad a new setup from a file." )
 MENU_STR( Source_XPath_,
-	"Source &Path...",
-	"jSource &Path...",
-	"Set directories to be used when searching for source files",
-	"jSet directories to be used when searching for source files" )
+        "Source &Path...",
+        "jSource &Path...",
+        "Set directories to be used when searching for source files.",
+        "jSet directories to be used when searching for source files." )
 MENU_STR( SXystem,
-	"S&ystem",
-	"jS&ystem",
-	"Start an operating system shell",
-	"jStart an operating system shell" )
+        "S&ystem",
+        "jS&ystem",
+        "Start an operating system shell.",
+        "jStart an operating system shell." )
 MENU_STR( EXxit,
-	"E&xit",
-	"jE&xit",
-	"Exit from the debugger",
-	"jExit from the debugger" )
+        "E&xit",
+        "jE&xit",
+        "Exit from the debugger.",
+        "jExit from the debugger." )
 
 MENU_STR( MainMenuSearch,
-	"&Search",
-	"j&Search",
-	"Search windows and modules",
-	"jSearch windows and modules" )
+        "&Search",
+        "j&Search",
+        "Search windows and modules.",
+        "jSearch windows and modules." )
 MENU_STR( XFind_,
-	"&Find...",
-	"j&Find...",
-	"Search the current window for a given string",
-	"jSearch the current window for a given string" )
+        "&Find...",
+        "j&Find...",
+        "Search the current window for a given string.",
+        "jSearch the current window for a given string." )
 MENU_STR( XNext,
-	"&Next",
-	"j&Next",
-	"Find the next occurrence of a string",
-	"jFind the next occurrence of a string" )
+        "&Next",
+        "j&Next",
+        "Find the next occurrence of a string.",
+        "jFind the next occurrence of a string." )
 MENU_STR( XPrevious,
-	"&Previous",
-	"j&Previous",
-	"Find the previous occurrence of a string",
-	"jFind the previous occurrence of a string" )
+        "&Previous",
+        "j&Previous",
+        "Find the previous occurrence of a string.",
+        "jFind the previous occurrence of a string." )
 MENU_STR( XAll_Modules_,
-	"&All Modules...",
-	"j&All Modules...",
-	"Search all source modules in the program for a given string",
-	"jSearch all source modules in the program for a given string" )
+        "&All Modules...",
+        "j&All Modules...",
+        "Search all source modules in the program for a given string.",
+        "jSearch all source modules in the program for a given string." )
 MENU_STR( XMatch,
-	"&Match",
-	"j&Match",
-	"Match lines using keyboard input",
-	"jMatch lines using keyboard input" )
+        "&Match",
+        "j&Match",
+        "Match lines using keyboard input.",
+        "jMatch lines using keyboard input." )
 
 MENU_STR( MainMenuRun,
-	"&Run",
-	"j&Run",
-	"Control program execution",
-	"jControl program execution" )
-MENU_STR( XGo,
-	"&Go",
-	"j&Go",
-	"Resume program execution",
-	"jResume program execution" )
+        "&Run",
+        "j&Run",
+        "Control program execution.",
+        "jControl program execution." )
+TIP_MENU_STR( XGo,
+              "&Go",
+              "j&Go",
+              "Resume program execution.",
+              "jResume program execution.",
+              "Go",
+              "jGo" )
 MENU_STR( EXxecute_to_,
-	"E&xecute to...",
-	"jE&xecute to...",
-	"Execute until a given address is reached",
-	"jExecute until a given address is reached" )
+        "E&xecute to...",
+        "jE&xecute to...",
+        "Execute until a given address is reached.",
+        "jExecute until a given address is reached." )
 MENU_STR( XStep_Over,
-	"&Step Over",
-	"j&Step Over",
-	"Trace once, stepping over calls",
-	"jTrace once, stepping over calls" )
+        "&Step Over",
+        "j&Step Over",
+        "Trace once, stepping over calls.",
+        "jTrace once, stepping over calls." )
 MENU_STR( RunXTrace_Into,
-	"&Trace Into",
-	"j&Trace Into",
-	"Trace once, stepping into calls",
-	"jTrace once, stepping into calls" )
+        "&Trace Into",
+        "j&Trace Into",
+        "Trace once, stepping into calls.",
+        "jTrace once, stepping into calls." )
 MENU_STR( XNext_Sequential,
-	"&Next Sequential",
-	"j&Next Sequential",
-	"Trace until the next sequential address is reached",
-	"jTrace until the next sequential address is reached" )
+        "&Next Sequential",
+        "j&Next Sequential",
+        "Trace until the next sequential address is reached.",
+        "jTrace until the next sequential address is reached." )
 MENU_STR( XUntil_Return,
-	"&Until Return",
-	"j&Until Return",
-	"Execute until this function returns",
-	"jExecute until this function returns" )
+        "&Until Return",
+        "j&Until Return",
+        "Execute until this function returns.",
+        "jExecute until this function returns." )
 MENU_STR( SXkip_to_Cursor,
-	"S&kip to Cursor",
-	"jS&kip to Cursor",
-	"Re-position the instruction pointer at the cursor position",
-	"jRe-position the instruction pointer at the cursor position" )
+        "S&kip to Cursor",
+        "jS&kip to Cursor",
+        "Re-position the instruction pointer at the cursor position.",
+        "jRe-position the instruction pointer at the cursor position." )
 MENU_STR( XRestart,
-	"&Restart",
-	"j&Restart",
-	"Restart the program",
-	"jRestart the program" )
+        "&Restart",
+        "j&Restart",
+        "Restart the program.",
+        "jRestart the program." )
 MENU_STR( XDebug_Startup,
-	"&Debug Startup",
-	"j&Debug Startup",
-	"Restart the program and stop before any startup code (including DLLs) is executed",
-	"jRestart the program and stop before any startup code (including DLLs) is executed" )
+        "&Debug Startup",
+        "j&Debug Startup",
+        "Restart the program and stop before any startup code (including DLLs) is executed.",
+        "jRestart the program and stop before any startup code (including DLLs) is executed." )
 MENU_STR( SaXve_,
-	"Sa&ve...",
-	"jSa&ve...",
-	"Save event replay information to a file",
-	"jSave event replay information to a file" )
+        "Sa&ve...",
+        "jSa&ve...",
+        "Save event replay information to a file.",
+        "jSave event replay information to a file." )
 MENU_STR( RestXore_,
-	"Rest&ore...",
-	"jRest&ore...",
-	"Restore event replay information from a file",
-	"jRestore event replay information from a file" )
+        "Rest&ore...",
+        "jRest&ore...",
+        "Restore event replay information from a file.",
+        "jRestore event replay information from a file." )
 
 MENU_STR( MainMenuBreak,
-	"&Break",
-	"j&Break",
-	"Break point operations",
-	"jBreak point operations" )
+        "&Break",
+        "j&Break",
+        "Break point operations.",
+        "jBreak point operations." )
 MENU_STR( XToggle,
-	"&Toggle",
-	"j&Toggle",
-	  "Toggle the break point at the cursor position",
-	  "jToggle the break point at the cursor position" )
+        "&Toggle",
+        "j&Toggle",
+        "Toggle the break point at the cursor position.",
+        "jToggle the break point at the cursor position." )
 MENU_STR( XAt_Cursor,
-	"&At Cursor",
-	"j&At Cursor",
-	  "Create/Modify the break point at the cursor position",
-	  "jCreate/Modify the break point at the cursor position" )
+        "&At Cursor",
+        "j&At Cursor",
+        "Create/Modify the break point at the cursor position.",
+        "jCreate/Modify the break point at the cursor position." )
 MENU_STR( XBrkNew_,
-	"&New...",
-	"j&New...",
-	"Create a new break point",
-	"jCreate a new break point" )
+        "&New...",
+        "j&New...",
+        "Create a new break point.",
+        "jCreate a new break point." )
 MENU_STR( XOn_DLL_Load,
-	"&On Image Load...",
-	"j&On Image Load...",
-	"Stop whenever an exectuable image or DLL is dynamically loaded",
-	"jStop whenever an exectuable image or DLL is dynamically loaded" )
+        "&On Image Load...",
+        "j&On Image Load...",
+        "Stop whenever an exectuable image or DLL is dynamically loaded.",
+        "jStop whenever an exectuable image or DLL is dynamically loaded." )
 MENU_STR( On_Debug_XMessage,
-	"On Debug &Message",
-	"jOn Debug &Message",
-	"Stop whenever an debug kernel message is printed",
-	"jStop whenever an debug kernel message is printed" )
+        "On Debug &Message",
+        "jOn Debug &Message",
+        "Stop whenever an debug kernel message is printed.",
+        "jStop whenever an debug kernel message is printed." )
 MENU_STR( XView_All,
-	"&View All",
-	"j&View All",
-	"Show a list of all break points",
-	"jShow a list of all break points" )
+        "&View All",
+        "j&View All",
+        "Show a list of all break points.",
+        "jShow a list of all break points." )
 MENU_STR( XClear_All,
-	"&Clear All",
-	"j&Clear All",
-	"Delete all break points",
-	"jDelete all break points" )
+        "&Clear All",
+        "j&Clear All",
+        "Delete all break points.",
+        "jDelete all break points." )
 MENU_STR( XDisable_All,
-	"&Disable All",
-	"j&Disable All",
-	"Disable, but do not delete, all break points",
-	"jDisable, but do not delete, all break points" )
+        "&Disable All",
+        "j&Disable All",
+        "Disable, but do not delete, all break points.",
+        "jDisable, but do not delete, all break points." )
 MENU_STR( XEnable_All,
-	"&Enable All",
-	"j&Enable All",
-	"Enable all break points",
-	"jEnable all break points" )
+        "&Enable All",
+        "j&Enable All",
+        "Enable all break points.",
+        "jEnable all break points." )
 MENU_STR( XSave_,
-	"&Save...",
-	"j&Save...",
-	"Save all break points to a file",
-	"jSave all break points to a file" )
+        "&Save...",
+        "j&Save...",
+        "Save all break points to a file.",
+        "jSave all break points to a file." )
 MENU_STR( XRestore_,
-	"&Restore...",
-	"j&Restore...",
-	"Restore all break points from a file",
-	"jRestore all break points from a file" )
+        "&Restore...",
+        "j&Restore...",
+        "Restore all break points from a file.",
+        "jRestore all break points from a file." )
 
 MENU_STR( MainMenuCode,
-	"&Code",
-	"j&Code",
-	"Open a new code window",
-	"jOpen a new code window" )
+        "&Code",
+        "j&Code",
+        "Open a new code window.",
+        "jOpen a new code window." )
 MENU_STR( WindowXSource,
-	"&Source",
-	"j&Source",
-	"Show the source window",
-	"jShow the source window" )
+        "&Source",
+        "j&Source",
+        "Show the source window.",
+        "jShow the source window." )
 MENU_STR( XModules,
-	"&Modules",
-	"j&Modules",
-	"Show a list of all modules in the program",
-	"jShow a list of all modules in the program" )
+        "&Modules",
+        "j&Modules",
+        "Show a list of all modules in the program.",
+        "jShow a list of all modules in the program." )
 MENU_STR( GlobalXFunctions,
-	"&Functions",
-	"j&Functions",
-	"Show a list of all functions in the program",
-	"jShow a list of all functions in the program" )
+        "&Functions",
+        "j&Functions",
+        "Show a list of all functions in the program.",
+        "jShow a list of all functions in the program." )
 MENU_STR( XCalls,
-	"&Calls",
-	"j&Calls",
-	"Show the call history window",
-	"jShow the call history window" )
+        "&Calls",
+        "j&Calls",
+        "Show the call history window.",
+        "jShow the call history window." )
 MENU_STR( WindowXAssembly,
-	"&Assembly",
-	"j&Assembly",
-	"Show the assembly language window",
-	"jShow the assembly language window" )
+        "&Assembly",
+        "j&Assembly",
+        "Show the assembly language window.",
+        "jShow the assembly language window." )
 MENU_STR( XThreads,
-	"&Threads",
-	"j&Threads",
-	"Show the thread window",
-	"jShow the thread window" )
+        "&Threads",
+        "j&Threads",
+        "Show the thread window.",
+        "jShow the thread window." )
 MENU_STR( XImages,
-	"&Images",
-	"j&Images",
-	"Show the list of all executable images related to this process",
-	"jShow the list of all executable images related to this process" )
+        "&Images",
+        "j&Images",
+        "Show the list of all executable images related to this process.",
+        "jShow the list of all executable images related to this process." )
 MENU_STR( XReplay,
-	"&Replay",
-	"j&Replay",
-	"Show the program execution replay window",
-	"jShow the program execution replay window" )
+        "&Replay",
+        "j&Replay",
+        "Show the program execution replay window.",
+        "jShow the program execution replay window." )
 
 MENU_STR( MainMenuData,
-	"&Data",
-	"j&Data",
-	"Open a new data window",
-	"jOpen a new data window" )
+        "&Data",
+        "j&Data",
+        "Open a new data window.",
+        "jOpen a new data window." )
 MENU_STR( XWatches,
-	"&Watches",
-	"j&Watches",
-	"Show the watches window",
-	"jShow the watches window" )
+        "&Watches",
+        "j&Watches",
+        "Show the watches window.",
+        "jShow the watches window." )
 MENU_STR( XLocals,
-	"&Locals",
-	"j&Locals",
-	"Show the local variable display window",
-	"jShow the local variable display window" )
+        "&Locals",
+        "j&Locals",
+        "Show the local variable display window.",
+        "jShow the local variable display window." )
 MENU_STR( File_XVariables,
-	"File &Variables",
-	"jFile &Variables",
-	"Show the file scope variables window",
-	"jShow the file scope variables window" )
+        "File &Variables",
+        "jFile &Variables",
+        "Show the file scope variables window.",
+        "jShow the file scope variables window." )
 MENU_STR( XGlobals,
-	"&Globals",
-	"j&Globals",
-	"Show a list of all external data items the program",
-	"jShow a list of all external data items the program" )
+        "&Globals",
+        "j&Globals",
+        "Show a list of all external data items the program.",
+        "jShow a list of all external data items the program." )
 MENU_STR( XRegisters,
-	"&Registers",
-	"j&Registers",
-	"Show the contents of the CPU registers",
-	"jShow the contents of the CPU registers" )
+        "&Registers",
+        "j&Registers",
+        "Show the contents of the CPU registers.",
+        "jShow the contents of the CPU registers." )
 MENU_STR( MMXXRegisters,
-	"MM&X Registers",
-	"jMM&X Registers",
-	"Show the contents of the MMX registers",
-	"jShow the contents of the MMX registers" )
+        "MM&X Registers",
+        "jMM&X Registers",
+        "Show the contents of the MMX registers.",
+        "jShow the contents of the MMX registers." )
+MENU_STR( XMMXRegisters,
+        "XMM Registers",
+        "jXMM Registers",
+        "Show the contents of the XMM registers.",
+        "jShow the contents of the XMM registers." )
 MENU_STR( XFPU_Registers,
-	"&FPU Registers",
-	"j&FPU Registers",
-	"Show the floating point registers",
-	"jShow the floating point registers" )
+        "&FPU Registers",
+        "j&FPU Registers",
+        "Show the floating point registers.",
+        "jShow the floating point registers." )
 MENU_STR( XStack,
-	"&Stack",
-	"j&Stack",
-	"Show the stack window",
-	"jShow the stack window" )
+        "&Stack",
+        "j&Stack",
+        "Show the stack window.",
+        "jShow the stack window." )
 MENU_STR( XIO_Ports,
-	"&I/O Ports",
-	"j&I/O Ports",
-	"Show the I/O port manipulation window",
-	"jShow the I/O port manipulation window" )
+        "&I/O Ports",
+        "j&I/O Ports",
+        "Show the I/O port manipulation window.",
+        "jShow the I/O port manipulation window." )
 MENU_STR( XMemory_at_,
-	"&Memory at...",
-	"j&Memory at...",
-	"Show memory at a given address",
-	"jShow memory at a given address" )
+        "&Memory at...",
+        "j&Memory at...",
+        "Show memory at a given address.",
+        "jShow memory at a given address." )
 MENU_STR( LXog,
-	"L&og",
-	"jL&og",
-	"Show the debugging log window",
-	"jShow the debugging log window" )
+        "L&og",
+        "jL&og",
+        "Show the debugging log window.",
+        "jShow the debugging log window." )
 
 MENU_STR( MainMenuUndo,
-	"&Undo",
-	"j&Undo",
-	"Browse through the execution history",
-	"jBrowse through the execution history" )
-MENU_STR( XUndo,
-	"&Undo",
-	"j&Undo",
-	"Undo the last program execution or modification",
-	"jUndo the last program execution or modification" )
-MENU_STR( XRedo,
-	"&Redo",
-	"j&Redo",
-	"Undo the last undo",
-	"jUndo the last undo" )
-MENU_STR( UXnwind_Stack,
-	"U&nwind Stack",
-	"jU&nwind Stack",
-	"Move up the call stack",
-	"jMove up the call stack" )
-MENU_STR( RXewind_Stack,
-	"R&ewind Stack",
-	"jR&ewind Stack",
-	"Move down the call stack",
-	"jMove down the call stack" )
+        "&Undo",
+        "j&Undo",
+        "Browse through the execution history.",
+        "jBrowse through the execution history." )
+TIP_MENU_STR( XUndo,
+              "&Undo",
+              "j&Undo",
+              "Undo the last program execution or modification.",
+              "jUndo the last program execution or modification.",
+              "Undo",
+              "jUndo" )
+TIP_MENU_STR( XRedo,
+              "&Redo",
+              "j&Redo",
+              "Undo the last undo.",
+              "jUndo the last undo.",
+              "Redo",
+              "jRedo" )
+TIP_MENU_STR( UXnwind_Stack,
+              "U&nwind Stack",
+              "jU&nwind Stack",
+              "Move up the call stack.",
+              "jMove up the call stack.",
+              "Unwind Stack",
+              "jUnwind Stack" )
+TIP_MENU_STR( RXewind_Stack,
+              "R&ewind Stack",
+              "jR&ewind Stack",
+              "Move down the call stack.",
+              "jMove down the call stack.",
+              "Rewind Stack",
+              "jRewind Stack" )
 
 MENU_STR( MainMenuAction,
-	"&Action",
-	"j&Action",
-	"Perform a window specific action",
-	"jPerform a window specific action" )
+        "&Action",
+        "j&Action",
+        "Perform a window specific action.",
+        "jPerform a window specific action." )
 
 MENU_STR( MainMenuHelp,
-	"&Help",
-	"j&Help",
-	"Display debugger help",
-	"jDisplay debugger help" )
+        "&Help",
+        "j&Help",
+        "Display Open Watcom Debugger help.",
+        "jDisplay Open Watcom Debugger help." )
 MENU_STR( XContents,
-	"&Contents",
-	"j&Contents",
-	  "Show help contents",
-	  "jShow help contents" )
-MENU_STR( XOn_Help,
-	"&On Help",
-	"j&On Help",
-	  "Show Help about Help",
-	  "jShow Help about Help" )
+        "&Contents",
+        "j&Contents",
+        "List Open Watcom Debugger help topics.",
+        "jList Open Watcom Debugger help topics." )
 MENU_STR( XSearch,
-	"&Search",
-	"j&Search",
-	  "Search help for a topic",
-	  "jSearch help for a topic" )
+        "&Search for Help On...",
+        "j&Search for Help On...",
+        "Search for help on a specific topic.",
+        "jSearch for help on a speific topic." )
+MENU_STR( XOn_Help,
+        "&How to Use Help",
+        "j&How to Use Help",
+        "Display information on how to use help.",
+        "jDisplay information on how to use help." )
 MENU_STR( XAbout_,
-	"&About...",
-	"j&About...",
-	"Display program information",
-	"jDisplay program information" )
+        "&About...",
+        "j&About...",
+        "Display program information.",
+        "jDisplay program information." )
 
 // - generic popup items
 MENU_STR( XBreak_Write,
-	"&Break on Write",
-	"j&Break on Write",
-	"Stop when the selected value changes",
-	"jStop when the selected value changes" )
+        "&Break on Write",
+        "j&Break on Write",
+        "Stop when the selected value changes.",
+        "jStop when the selected value changes." )
 MENU_STR( AXddress_,
-	"A&ddress...",
-	"jA&ddress...",
-	"Position the window at a given address",
-	"jPosition the window at a given address" )
+        "A&ddress...",
+        "jA&ddress...",
+        "Position the window at a given address.",
+        "jPosition the window at a given address." )
 MENU_STR( XAssembly,
-	"&Assembly",
-	"j&Assembly",
-	"Show the assembly code associated with the selected line",
-	"jShow the assembly code associated with the selected line" )
+        "&Assembly",
+        "j&Assembly",
+        "Show the assembly code associated with the selected line.",
+        "jShow the assembly code associated with the selected line." )
 MENU_STR( XType,
-	"&Type",
-	"j&Type",
-	"Display as a different data type",
-	"jDisplay as a different data type" )
+        "&Type",
+        "j&Type",
+        "Display as a different data type.",
+        "jDisplay as a different data type." )
 MENU_STR( XShow,
-	"&Show",
-	"j&Show",
-	"",
-	"" )
+        "&Show",
+        "j&Show",
+        "",
+        "" )
 MENU_STR( XEdit,
-	"&Edit",
-	"j&Edit",
-	"",
-	"" )
+        "&Edit",
+        "j&Edit",
+        "",
+        "" )
 MENU_STR( XClass,
-	"&Class",
-	"j&Class",
-	"",
-	"" )
+        "&Class",
+        "j&Class",
+        "",
+        "" )
 MENU_STR( XOptions,
-	"&Options",
-	"j&Options",
-	"Set window options for this window only",
-	"jSet window options for this window only" )
+        "&Options",
+        "j&Options",
+        "Set window options for this window only.",
+        "jSet window options for this window only." )
 MENU_STR( XInspect,
-	"&Inspect",
-	"j&Inspect",
-	"Inspect the selected variable",
-	"jInspect the selected variable" )
+        "&Inspect",
+        "j&Inspect",
+        "Inspect the selected variable.",
+        "jInspect the selected variable." )
 MENU_STR( XBreak,
-	"&Break",
-	"j&Break",
-	"Stop when the selected value changes or the selected function is entered",
-	"jStop when the selected value changes or the selected function is entered" )
+        "&Break",
+        "j&Break",
+        "Stop when the selected value changes or the selected function is entered.",
+        "jStop when the selected value changes or the selected function is entered." )
 MENU_STR( XWatch,
-	"&Watch",
-	"j&Watch",
-	"Add the selected item to the watches window",
-	"jAdd the selected item to the watches window" )
+        "&Watch",
+        "j&Watch",
+        "Add the selected item to the watches window.",
+        "jAdd the selected item to the watches window." )
 MENU_STR( XFind,
-	"&Find",
-	"j&Find",
-	"Search the window for the selected item",
-	"jSearch the window for the selected item" )
-MENU_STR( XHome,
-	"&Home",
-	"j&Home",
-	"Move to the currently executing location",
-	"jMove to the currently executing location" )
+        "&Find",
+        "j&Find",
+        "Search the window for the selected item.",
+        "jSearch the window for the selected item." )
+TIP_MENU_STR( XHome,
+              "&Home",
+              "j&Home",
+              "Move to the currently executing location.",
+              "jMove to the currently executing location.",
+              "Home",
+              "jHome" )
 MENU_STR( XBreak_,
-	"&Break...",
-	"j&Break...",
-	"Set a break point at the selected line",
-	"jSet a break point at the selected line" )
+        "&Break...",
+        "j&Break...",
+        "Set a break point at the selected line.",
+        "jSet a break point at the selected line." )
 MENU_STR( XSource,
-	"&Source",
-	"j&Source",
-	"Show the source code associated with the selected line",
-	"jShow the source code associated with the selected line" )
+        "&Source",
+        "j&Source",
+        "Show the source code associated with the selected line.",
+        "jShow the source code associated with the selected line." )
+MENU_STR( XNoSource,
+        "&No Source",
+        "j&No Source",
+        "Do not show the source code associated with the assembly code.",
+        "jDo not show the source code associated with the assembly code." )
 MENU_STR( XTyped_Symbols,
-	"&Typed Symbols",
-	"j&Typed Symbols",
-	  "Only show symbols with type information",
-	  "jOnly show symbols with type information" )
+        "&Typed Symbols",
+        "j&Typed Symbols",
+          "Only show symbols with type information.",
+          "jOnly show symbols with type information." )
 MENU_STR( XFunctions,
-	"&Functions",
-	"j&Functions",
-	"Show all functions in the selected module",
-	"jShow all functions in the selected module" )
+        "&Functions",
+        "j&Functions",
+        "Show all functions in the selected module.",
+        "jShow all functions in the selected module." )
 MENU_STR( XModify_,
-	"&Modify...",
-	"j&Modify...",
-	"Modify the selected item",
-	"jModify the selected item" )
+        "&Modify...",
+        "j&Modify...",
+        "Modify the selected item.",
+        "jModify the selected item." )
 MENU_STR( XNew_,
-	"&New...",
-	"j&New...",
-	"Add a new item to this window",
-	"jAdd a new item to this window" )
+        "&New...",
+        "j&New...",
+        "Add a new item to this window.",
+        "jAdd a new item to this window." )
 MENU_STR( XDelete,
-	"&Delete",
-	"j&Delete",
-	"Delete the selected item from this window",
-	"jDelete the selected item from this window" )
+        "&Delete",
+        "j&Delete",
+        "Delete the selected item from this window.",
+        "jDelete the selected item from this window." )
 
 // - accelerator popup
 MENU_STR( XTDKeys,
-	"&TD keys",
-	"j&TD keys",
-	  "Use Turbo style accelerators",
-	  "jUse Turbo style accelerators" )
+        "&TD keys",
+        "j&TD keys",
+        "Use Turbo style accelerators.",
+        "jUse Turbo style accelerators." )
 MENU_STR( XWDKeys,
-	"&WD keys",
-	"j&WD keys",
-	  "Use Default accelerators",
-	  "jUse Default accelerators" )
+        "&WD keys",
+        "j&WD keys",
+        "Use default accelerators.",
+        "jUse default accelerators." )
 
 // - modules popup
 MENU_STR( XBreak_All,
-	"&Break All",
-	"j&Break All",
-	  "Set a break point at every function in this module",
-	  "jSet a break point at every function in this module" )
+        "&Break All",
+        "j&Break All",
+          "Set a break point at every function in this module.",
+          "jSet a break point at every function in this module." )
 MENU_STR( ModulesXClear_All,
-	"&Clear All",
-	"j&Clear All",
-	"Delete all break points in this module",
-	"jDelete all break points in this module" )
+        "&Clear All",
+        "j&Clear All",
+        "Delete all break points in this module.",
+        "jDelete all break points in this module." )
 MENU_STR( Show_AXll,
-	"Show A&ll",
-	"jShow A&ll",
-	"Show all source modules regardless of debugging information",
-	"jShow all source modules regardless of debugging information" )
+        "Show A&ll",
+        "jShow A&ll",
+        "Show all source modules regardless of debugging information.",
+        "jShow all source modules regardless of debugging information." )
 
 // - images popup
 MENU_STR( XNew_Symbols,
-	"&New Symbols",
-	"j&New Symbols",
-	  "Add symbolic debugging information for the selected image",
-	  "jAdd symbolic debugging information for the selected image" )
+        "&New Symbols",
+        "j&New Symbols",
+        "Add symbolic debugging information for the selected image.",
+        "jAdd symbolic debugging information for the selected image." )
 MENU_STR( XDelete_Symbols,
-	"&Delete Symbols",
-	"j&Delete Symbols",
-	  "Delete the symbolic debugging information for the selected image",
-	  "jDelete the symbolic debugging information for the selected image" )
+        "&Delete Symbols",
+        "j&Delete Symbols",
+        "Delete the symbolic debugging information for the selected image.",
+        "jDelete the symbolic debugging information for the selected image." )
 MENU_STR( ImgXModules,
-	"&Modules",
-	"j&Modules",
-	"Show all modules in the selected image",
-	"jShow all modules in the selected image" )
+        "&Modules",
+        "j&Modules",
+        "Show all modules in the selected image.",
+        "jShow all modules in the selected image." )
 MENU_STR( ImgXFunctions,
-	"&Functions",
-	"j&Functions",
-	"Show all functions in the selected image",
-	"jShow all functions in the selected image" )
+        "&Functions",
+        "j&Functions",
+        "Show all functions in the selected image.",
+        "jShow all functions in the selected image." )
 MENU_STR( ImgXGlobals,
-	"&Globals",
-	"j&Globals",
-	"Show all global variables in the selected image",
-	"jShow all global variables in the selected image" )
+        "&Globals",
+        "j&Globals",
+        "Show all global variables in the selected image.",
+        "jShow all global variables in the selected image." )
 
 
 // - threads popup
 MENU_STR( XSwitch_to,
-	"&Switch to",
-	"j&Switch to",
-	"Set the debugger to the selected thread context",
-	"jSet the debugger to the selected thread context" )
+        "&Switch to",
+        "j&Switch to",
+        "Set the debugger to the selected thread context.",
+        "jSet the debugger to the selected thread context." )
 MENU_STR( XFreeze,
-	"&Freeze",
-	"j&Freeze",
-	"Do not allow the selected thread to execute",
-	"jDo not allow the selected thread to execute" )
+        "&Freeze",
+        "j&Freeze",
+        "Do not allow the selected thread to execute.",
+        "jDo not allow the selected thread to execute." )
 MENU_STR( XThaw,
-	"&Thaw",
-	"j&Thaw",
-	"Allow the selected thread to execute",
-	"jAllow the selected thread to execute" )
+        "&Thaw",
+        "j&Thaw",
+        "Allow the selected thread to execute.",
+        "jAllow the selected thread to execute." )
+MENU_STR( XStop,
+        "S&top",
+        "jS&top",
+        "Stop thread.",
+        "jStop thread." )
+MENU_STR( XSignal_and_stop,
+        "S&ignal and stop",
+        "jS&ignal and stop",
+        "Signal and stop thread.",
+        "jSignal and stop thread." )
 
 // - toolbar menu items
 
-MENU_STR( XInto,
-	"&Into",
-	"j&Into",
-	"Execute one line, stepping into calls",
-	"jExecute one line, stepping into calls" )
-MENU_STR( XOver,
-	"&Over",
-	"j&Over",
-	"Execute one line, stepping over calls",
-	"jExecute one line, stepping over calls" )
-MENU_STR( XReturn,
-	"&Return",
-	"j&Return",
-	"Execute until the current function returns",
-	"jExecute until the current function returns" )
+TIP_MENU_STR( XInto,
+              "&Into",
+              "j&Into",
+              "Execute one line, stepping into calls.",
+              "jExecute one line, stepping into calls.",
+              "Trace Into",
+              "jTrace Into" )
+TIP_MENU_STR( XOver,
+              "&Over",
+              "j&Over",
+              "Execute one line, stepping over calls.",
+              "jExecute one line, stepping over calls.",
+              "Step Over",
+              "jStep Over" )
+TIP_MENU_STR( XReturn,
+              "&Return",
+              "j&Return",
+              "Execute until the current function returns.",
+              "jExecute until the current function returns.",
+              "Until Return",
+              "jUntil Return" )
 
 // - the watches & locals & variables popup
 MENU_STR( XEdit_,
-	"&Edit...",
-	"j&Edit...",
-	"Edit the selected expression. Type casts are allowed",
-	"jEdit the selected expression. Type casts are allowed" )
+        "&Edit...",
+        "j&Edit...",
+        "Edit the selected expression. Type casts are allowed.",
+        "jEdit the selected expression. Type casts are allowed." )
 MENU_STR( XRoot,
-	"&Root",
-	"j&Root",
-	"Move the selected item to the root of this structure/array",
-	"jMove the selected item to the root of this structure/array" )
+        "&Root",
+        "j&Root",
+        "Move the selected item to the root of this structure/array.",
+        "jMove the selected item to the root of this structure/array." )
 
 // - variable/type popup
+MENU_STR( XAllHex,
+        "A&ll Hex",
+        "jA&ll Hex",
+        "Display all sibling array entries in hexadecimal.",
+        "jDisplay all sibling array entries in hexadecimal." )
+MENU_STR( XAllDecimal,
+        "All Deci&mal",
+        "jAll Deci&mal",
+        "Display all sibling array entries in decimal.",
+        "jDisplay all sibling array entries in decimal." )
 MENU_STR( XHex,
-	"&Hex",
-	"j&Hex",
-	"",
-	"" )
+        "&Hex",
+        "j&Hex",
+        "",
+        "" )
 MENU_STR( DeXcimal,
-	"De&cimal",
-	"jDe&cimal",
-	"",
-	"" )
+        "De&cimal",
+        "jDe&cimal",
+        "",
+        "" )
 MENU_STR( CharacteXr,
-	"Characte&r",
-	"jCharacte&r",
-	"Display the selected variable as a character",
-	"jDisplay the selected variable as a character" )
+        "Characte&r",
+        "jCharacte&r",
+        "Display the selected variable as a character.",
+        "jDisplay the selected variable as a character." )
 MENU_STR( XString,
-	"&String",
-	"j&String",
-	"Display the selected variable as a character string",
-	"jDisplay the selected variable as a character string" )
+        "&String",
+        "j&String",
+        "Display the selected variable as a character string.",
+        "jDisplay the selected variable as a character string." )
 MENU_STR( XPointer,
-	"&Pointer",
-	"j&Pointer",
-	"Display the selected variable as a pointer",
-	"jDisplay the selected variable as a pointer" )
+        "&Pointer",
+        "j&Pointer",
+        "Display the selected variable as a pointer.",
+        "jDisplay the selected variable as a pointer." )
 MENU_STR( XArray,
-	"&Array...",
-	"j&Array...",
-	"Expand variable as an array with given dimensions",
-	"jExpand variable as an array with given dimensions" )
+        "&Array...",
+        "j&Array...",
+        "Expand variable as an array with given dimensions.",
+        "jExpand variable as an array with given dimensions." )
 
 // - variable/show popup
 MENU_STR( XRaw_Memory,
-	"&Raw Memory",
-	"j&Raw Memory",
-	"Display the memory associated with this variable",
-	"jDisplay the memory associated with this variable" )
+        "&Raw Memory",
+        "j&Raw Memory",
+        "Display the memory associated with this variable.",
+        "jDisplay the memory associated with this variable." )
 MENU_STR( XPointer_Memory,
-	"&Pointer Memory",
-	"j&Pointer Memory",
-	"Display the memory associated with this pointer value",
-	"jDisplay the memory associated with this pointer value" )
+        "&Pointer Memory",
+        "j&Pointer Memory",
+        "Display the memory associated with this pointer value.",
+        "jDisplay the memory associated with this pointer value." )
 MENU_STR( Pointer_XCode,
-	"Pointer &Code",
-	"jPointer &Code",
-	"Display the source or assembly associated with this pointer",
-	"jDisplay the source or assembly associated with this pointer" )
+        "Pointer &Code",
+        "jPointer &Code",
+        "Display the source or assembly associated with this pointer.",
+        "jDisplay the source or assembly associated with this pointer." )
 MENU_STR( XOn_Top_Line,
-	"&Field On Top",
-	"j&Field On Top",
-	"Display the value of this field on the top line of the structure display",
-	"Display the value of this field on the top line of the structure display" )
+        "&Field On Top",
+        "j&Field On Top",
+        "Display the value of this field on the top line of the structure display.",
+        "Display the value of this field on the top line of the structure display." )
 MENU_STR( XHide,
-	"&Hide",
-	"j&Hide",
-	"Hide the selected field",
-	"jHide the selected field" )
+        "&Hide",
+        "j&Hide",
+        "Hide the selected field.",
+        "jHide the selected field." )
 MENU_STR( XUnhide,
-	"&Unhide",
-	"j&Unhide",
-	"Un-hide field of the selected struct",
-	"jUn-hide field of the selected struct" )
+        "&Unhide",
+        "j&Unhide",
+        "Unhide field of the selected structure.",
+        "jUnhide field of the selected structre." )
 MENU_STR( VarShowXType,
-	"&Type",
-	"j&Type",
-	"Show the type of the selected item",
-	"jShow the type of the selected item" )
+        "&Type",
+        "j&Type",
+        "Show the type of the selected item.",
+        "jShow the type of the selected item." )
 
 // - variable/options popup
 MENU_STR( XWhole_Expression,
-	"&Whole Expression",
-	"j&Whole Expression",
-	"Show the entire expression on each line",
-	"jShow the entire expression on each line" )
+        "&Whole Expression",
+        "j&Whole Expression",
+        "Show the entire expression on each line.",
+        "jShow the entire expression on each line." )
 MENU_STR( VarXFunctions,
-	"Show &Functions",
-	"jShow &Functions",
-	"Show member functions in the selected class",
-	"jShow member functions in the selected class" )
+        "Show &Functions",
+        "jShow &Functions",
+        "Show member functions in the selected class.",
+        "jShow member functions in the selected class." )
 MENU_STR( XInherited,
-	"Show &Inherited",
-	"jShow &Inherited",
-	"Show inherited members in the selected class",
-	"jShow inherited members in the selected class" )
+        "Show &Inherited",
+        "jShow &Inherited",
+        "Show inherited members in the selected class.",
+        "jShow inherited members in the selected class." )
 MENU_STR( XCompiler,
-	"Show &Generated",
-	"jShow &Generated",
-	  "Show compiler generated members in the selected class",
-	  "jShow compiler generated members in the selected class" )
+        "Show &Generated",
+        "jShow &Generated",
+          "Show compiler generated members in the selected class.",
+          "jShow compiler generated members in the selected class." )
 MENU_STR( XMembers,
-	"&Expand 'this'",
-	"j&Expand 'this'",
-	"Automatically expand the 'this' pointer",
-	"jAutomatically expand the 'this' pointer" )
+        "&Expand 'this'",
+        "j&Expand 'this'",
+        "Automatically expand the 'this' pointer.",
+        "jAutomatically expand the 'this' pointer." )
+MENU_STR( XExpandAll,
+        "&Expand this node and all child nodes.",
+        "j&Expand this node and all child nodes.",
+        "",
+        "" )
 MENU_STR( XPrivate,
-	"Show &Private",
-	"jShow &Private",
-	  "Show private members in this class",
-	  "jShow private members in this class" )
+        "Show &Private",
+        "jShow &Private",
+        "Show private members in this class.",
+        "jShow private members in this class." )
 MENU_STR( PXrotected,
-	"Show P&rotected",
-	"jShow P&rotected",
-	  "Show protected members in this class",
-	  "jShow protected members in this class" )
+        "Show P&rotected",
+        "jShow P&rotected",
+        "Show protected members in this class.",
+        "jShow protected members in this class." )
 MENU_STR( XStatic,
-	"Show &Static",
-	"jShow &Static",
-	  "Show static members in this class",
-	  "jShow static members in this class" )
+        "Show &Static",
+        "jShow &Static",
+        "Show static members in this class.",
+        "jShow static members in this class." )
 
 // - the file popup
 MENU_STR( XEnter_Function,
-	"&Enter Function",
-	"j&Enter Function",
-	"Execute until the selected function is entered",
-	"jExecute until the selected function is entered" )
+        "&Enter Function",
+        "j&Enter Function",
+        "Execute until the selected function is entered.",
+        "jExecute until the selected function is entered." )
 MENU_STR( Run_to_XCursor,
-	"Run to &Cursor",
-	"jRun to &Cursor",
-	"Execute until the cursor position is reached",
-	"jExecute until the cursor position is reached" )
+        "Run to &Cursor",
+        "jRun to &Cursor",
+        "Execute until the cursor position is reached.",
+        "jExecute until the cursor position is reached." )
 
 // - the file/show popup
 MENU_STR( FileXModule_,
-	"&Module...",
-	"j&Module...",
-	"Show a given module",
-	"jShow a given module" )
+        "&Module...",
+        "j&Module...",
+        "Show a given module.",
+        "jShow a given module." )
 MENU_STR( XLine_,
-	"&Line...",
-	"j&Line...",
-	"Position the window at a given line number",
-	"jPosition the window at a given line number" )
+        "&Line...",
+        "j&Line...",
+        "Position the window at a given line number.",
+        "jPosition the window at a given line number." )
 
 // - the memory & stack popup
 MENU_STR( XNear_Follow,
-	"&Near Follow",
-	"j&Near Follow",
-	  "Follow the near pointer under the cursor",
-	  "jFollow the near pointer under the cursor" )
+        "&Near Follow",
+        "j&Near Follow",
+        "Follow the near pointer under the cursor.",
+        "jFollow the near pointer under the cursor." )
 MENU_STR( XFar_Follow,
-	"&Far Follow",
-	"j&Far Follow",
-	  "Follow the far pointer under the cursor",
-	  "jFollow the far pointer under the cursor" )
+        "&Far Follow",
+        "j&Far Follow",
+        "Follow the far pointer under the cursor.",
+        "jFollow the far pointer under the cursor." )
 MENU_STR( XSegment_Follow,
-	"&Segment Follow",
-	"j&Segment Follow",
-	  "Follow the segment under the cursor",
-	  "jFollow the segment under the cursor" )
+        "&Segment Follow",
+        "j&Segment Follow",
+        "Follow the segment under the cursor.",
+        "jFollow the segment under the cursor." )
 MENU_STR( XCursor_Follow,
-	"&Cursor Follow",
-	"j&Cursor Follow",
-	  "Make the cursor position the new starting address",
-	  "jMake the cursor position the new starting address" )
+        "&Cursor Follow",
+        "j&Cursor Follow",
+        "Make the cursor position the new starting address.",
+        "jMake the cursor position the new starting address." )
 MENU_STR( XRepeat,
-	"&Repeat",
-	"j&Repeat",
-	  "Repeat the previous follow using the same offset",
-	  "jRepeat the previous follow using the same offset" )
+        "&Repeat",
+        "j&Repeat",
+        "Repeat the previous follow using the same offset.",
+        "jRepeat the previous follow using the same offset." )
 MENU_STR( MemoryXPrevious,
-	"&Previous",
-	"j&Previous",
-	"Backout to the previous position in the follow chain",
-	"jBackout to the previous position in the follow chain" )
+        "&Previous",
+        "j&Previous",
+        "Backout to the previous position in the follow chain.",
+        "jBackout to the previous position in the follow chain." )
 MENU_STR( MemoryXHome,
-	"&Home",
-	"j&Home",
-	"Return to the home memory location",
-	"jReturn to the home memory location" )
+        "&Home",
+        "j&Home",
+        "Return to the home memory location.",
+        "jReturn to the home memory location." )
 MENU_STR( XLeft,
-	"&Left",
-	"j&Left",
-	"Move the start of the window left by one unit",
-	"jMove the start of the window left by one unit" )
+        "&Left",
+        "j&Left",
+        "Move the start of the window left by one unit.",
+        "jMove the start of the window left by one unit." )
 MENU_STR( RXight,
-	"R&ight",
-	"jR&ight",
-	"Move the start of the window right by one unit",
-	"jMove the start of the window right by one unit" )
+        "R&ight",
+        "jR&ight",
+        "Move the start of the window right by one unit.",
+        "jMove the start of the window right by one unit." )
 
 // - the memory/type popup and the IO/type popup
 MENU_STR( XByte,
-	"&Byte",
-	"j&Byte",
-	"",
-	"" )
+        "&Byte",
+        "j&Byte",
+        "",
+        "" )
 MENU_STR( XWord,
-	"&Word",
-	"j&Word",
-	"",
-	"" )
+        "&Word",
+        "j&Word",
+        "",
+        "" )
 MENU_STR( XDWord,
-	"&DWord",
-	"j&DWord",
-	"",
-	"" )
+        "&DWord",
+        "j&DWord",
+        "",
+        "" )
 MENU_STR( XChar,
-	"&Char",
-	"j&Char",
-	"",
-	"" )
+        "&Char",
+        "j&Char",
+        "",
+        "" )
 MENU_STR( XShort,
-	"&Short",
-	"j&Short",
-	"",
-	"" )
+        "&Short",
+        "j&Short",
+        "",
+        "" )
 MENU_STR( XLong,
-	"&Long",
-	"j&Long",
-	"",
-	"" )
+        "&Long",
+        "j&Long",
+        "",
+        "" )
 MENU_STR( Unsigned_ChaXr,
-	"Unsigned Cha&r",
-	"jUnsigned Cha&r",
-	"",
-	"" )
+        "Unsigned Cha&r",
+        "jUnsigned Cha&r",
+        "",
+        "" )
 MENU_STR( Unsigned_ShorXt,
-	"Unsigned Shor&t",
-	"jUnsigned Shor&t",
-	"",
-	"" )
+        "Unsigned Shor&t",
+        "jUnsigned Shor&t",
+        "",
+        "" )
 MENU_STR( Unsigned_LonXg,
-	"Unsigned Lon&g",
-	"jUnsigned Lon&g",
-	"",
-	"" )
+        "Unsigned Lon&g",
+        "jUnsigned Lon&g",
+        "",
+        "" )
 MENU_STR( _16_1X6_Pointer,
-	"16:1&6 Pointer",
-	"j16:1&6 Pointer",
-	"",
-	"" )
+        "16:1&6 Pointer",
+        "j16:1&6 Pointer",
+        "",
+        "" )
 MENU_STR( _16_X32_Pointer,
-	"16:&32 Pointer",
-	"j16:&32 Pointer",
-	"",
-	"" )
+        "16:&32 Pointer",
+        "j16:&32 Pointer",
+        "",
+        "" )
 MENU_STR( BXinary,
-	"B&inary",
-	"jB&inary",
-	"",
-	"" )
+        "B&inary",
+        "jB&inary",
+        "",
+        "" )
 MENU_STR( XFloat,
-	"&Float",
-	"j&Float",
-	"",
-	"" )
+        "&Float",
+        "j&Float",
+        "",
+        "" )
 MENU_STR( DXouble,
-	"D&ouble",
-	"jD&ouble",
-	"",
-	"" )
+        "D&ouble",
+        "jD&ouble",
+        "",
+        "" )
 
 // - the I/O ports popup
 MENU_STR( XRead,
-	"&Read",
-	"j&Read",
-	"Read the displayed value from the selected port",
-	"jRead the displayed value from the selected port" )
+        "&Read",
+        "j&Read",
+        "Read the displayed value from the selected port.",
+        "jRead the displayed value from the selected port." )
 MENU_STR( XWrite,
-	"&Write",
-	"j&Write",
-	"Write the displayed value to the selected port",
-	"jWrite the displayed value to the selected port" )
+        "&Write",
+        "j&Write",
+        "Write the displayed value to the selected port.",
+        "jWrite the displayed value to the selected port." )
 
 // - the break popup
 MENU_STR( XEnable,
-	"&Enable",
-	"j&Enable",
-	"Enable the selected break point",
-	"jEnable the selected break point" )
+        "&Enable",
+        "j&Enable",
+        "Enable the selected breakpoint.",
+        "jEnable the selected breakpoint." )
 MENU_STR( DXisable,
-	"D&isable",
-	"jD&isable",
-	"Disable the selected break point",
-	"jDisable the selected break point" )
+        "D&isable",
+        "jD&isable",
+        "Disable the selected breakpoint.",
+        "jDisable the selected breakpoint." )
 
 // - the calls popup
 MENU_STR( XUnwind,
-	"&Unwind",
-	"j&Unwind",
-	"Unwind the call stack to the selected level",
-	"jUnwind the call stack to the selected level" )
+        "&Unwind",
+        "j&Unwind",
+        "Unwind the call stack to the selected level.",
+        "jUnwind the call stack to the selected level." )
 MENU_STR( XGoto,
-	"&Goto",
-	"j&Goto",
-	"Execute until the program returns to the selected level in the call history",
-	"jExecute until the program returns to the selected level in the call history" )
+        "&Goto",
+        "j&Goto",
+        "Execute until the program returns to the selected level in the call history.",
+        "jExecute until the program returns to the selected level in the call history." )
 
 // - the registers popup
 MENU_STR( XExtended,
-	"&Extended",
-	"j&Extended",
-	"Show the extended 386 register set",
-	"jShow the extended 386 register set" )
+        "&Extended",
+        "j&Extended",
+        "Show the extended 386 register set.",
+        "jShow the extended 386 register set." )
 
 // - the assembly popup
 MENU_STR( HeXx,
-	"He&x",
-	"jHe&x",
-	"",
-	"" )
+        "He&x",
+        "jHe&x",
+        "",
+        "" )
 
 // these are gadget help strings
 
 MENU_STR( GadgetREAD,
-	"",
-	"",
-	"Read the displayed value from the port",
-	"jRead the displayed value from the port" )
+        "",
+        "",
+        "Read the displayed value from the port.",
+        "jRead the displayed value from the port." )
 MENU_STR( GadgetWRITE,
-	"",
-	"",
-	"Write the displayed value to the port",
-	"jWrite the displayed value to the port" )
+        "",
+        "",
+        "Write the displayed value to the port.",
+        "jWrite the displayed value to the port." )
 MENU_STR( GadgetCLOSE,
-	"",
-	"",
-	"Do not display fields of this structure/array",
-	"jDo not display fields of this structure/array" )
+        "",
+        "",
+        "Do not display fields of this structure/array.",
+        "jDo not display fields of this structure/array." )
 MENU_STR( GadgetOPEN,
-	"",
-	"",
-	"Display fields of this structure/array",
-	"jDisplay fields of this structure/array" )
+        "",
+        "",
+        "Display fields of this structure/array.",
+        "jDisplay fields of this structure/array." )
 MENU_STR( GadgetPOINTS,
-	"",
-	"",
-	"Follow this pointer",
-	"jFollow this pointer" )
+        "",
+        "",
+        "Follow this pointer.",
+        "jFollow this pointer." )
 MENU_STR( GadgetUNPOINTS,
-	"",
-	"",
-	"This pointer has been followed; back out",
-	"jThis pointer has been followed; back out" )
+        "",
+        "",
+        "This pointer has been followed; back out.",
+        "jThis pointer has been followed; back out." )
 MENU_STR( GadgetSOURCE,
-	"",
-	"",
-	"Show the source code associated with this line",
-	"jShow the source code associated with this line" )
+        "",
+        "",
+        "Show the source code associated with this line.",
+        "jShow the source code associated with this line." )
 MENU_STR( GadgetASSEMBLY,
-	"",
-	"",
-	"Show the assembly language associated with this line",
-	"jShow the assembly language associated with this line" )
+        "",
+        "",
+        "Show the assembly language associated with this line.",
+        "jShow the assembly language associated with this line." )
 MENU_STR( SetBreak,
-	"",
-	"",
-	"Set a break point at this line",
-	"jSet a break point at this line" )
+        "",
+        "",
+        "Set a breakpoint at this line.",
+        "jSet a breakpoint at this line." )
 MENU_STR( RemoveBreak,
-	"",
-	"",
-	"Remove this break point",
-	"jRemove this break point" )
+        "",
+        "",
+        "Remove this breakpoint.",
+        "jRemove this breakpoint." )
 MENU_STR( DisableBreak,
-	"",
-	"",
-	"Disable this break point",
-	"jDisable this break point" )
+        "",
+        "",
+        "Disable this breakpoint.",
+        "jDisable this breakpoint." )

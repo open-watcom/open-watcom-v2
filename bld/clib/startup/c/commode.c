@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  set commit mode initialization function
 *
 ****************************************************************************/
 
@@ -33,10 +32,10 @@
 #include "variety.h"
 #include "rtdata.h"
 #include "rtinit.h"
-
+#include "commode.h"
 
 /*
- * This function is actually a _WCRTLINK function.  It's prototyped
+ * __set_commode function is actually a _WCRTLINK function. It's prototyped
  * incorrectly so that this module will work correctly with both dynamic
  * and static versions of the C library.
  *
@@ -44,12 +43,9 @@
  * register calling conventions, eliminating the need to have a separate
  * object file for each.
  *
- * Similarly, it's declared _WCI86FAR so that the same object file will work
- * in any 16-bit memory model.
+ * Similarly, __set_commode is declared _WCI86FAR so that the same object
+ * file will work in any 16-bit memory model.
  */
-#pragma aux __set_commode "*_";
-extern void _WCI86FAR   __set_commode( void );
-
 
 static void do_it( void )
 {

@@ -1,0 +1,29 @@
+
+#general settings
+option quiet,alignment=4
+
+# define system alike definition to allow usage of INITINSTANCE
+option osname='OS/2 32-bit'
+libpath %WATCOM%\lib386
+libpath %WATCOM%\lib386\os2
+format os2 lx dll initinstance terminstance
+
+# general settings for WPS class DLLs
+lib somtk
+
+# data options for for WPS class DLLs
+# required only if a data segemnt exists
+segment data nonshared loadoncall
+option manyautodata
+
+# WPS class specific settings
+# keep classname in sync with the name used in IDL file
+option description 'OWObject Sample WPS Class Library'
+
+export OWObjectCClassData
+export OWObjectClassData
+export OWObjectNewClass
+export M_OWObjectCClassData
+export M_OWObjectClassData
+export M_OWObjectNewClass
+

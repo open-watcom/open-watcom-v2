@@ -1,20 +1,64 @@
-/*
- *  locale.h
+::
+:: This file generates three different headers: locale.h, clocale, and
+:: locale. The "default" wsplice operation produces locale.h, the header
+:: used in the C library. A CNAME wsplice operation produces clocale, the
+:: C++ partner to C's locale.h. A special CPPLOCALE wsplice operation
+:: generates C++'s locale header. That header is not directly related to
+:: either locale.h or clocale.
+:: (Peter Chapin)
+::
+:segment !CPPLOCALE
+/***************************************************************************
+ * FILE: locale.h/clocale (Localization)
  *
 :include crwatqnx.sp
- */
+ *
+ * Description: This header is part of the C/C++ standard library. It
+ *              declares facilities for controlling localization.
+ ***************************************************************************/
+:segment CNAME
+#ifndef _CLOCALE_INCLUDED
+#define _CLOCALE_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+:elsesegment
 #ifndef _LOCALE_H_INCLUDED
 #define _LOCALE_H_INCLUDED
+
 :include readonly.sp
+
+:: The following segment only appears in locale.h.
+#ifdef __cplusplus
+
+#include <clocale>
+
+// C99 types in locale.h.
+using std::lconv;
+
+// C99 functions in locale.h.
+using std::setlocale;
+using std::localeconv;
+
+#else /* __cplusplus not defined */
+:: End of segment that is only in locale.h
+:endsegment
+
+:include owrtlink.sp
+
+:: Only need extern "C" in clocale
+:segment CNAME
 :include cpluspro.sp
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
+:endsegment
 :include pshpackl.sp
 
+:segment !CNAME
 :include wchar_t.sp
+
+:endsegment
+:include null.sp
 
 #define LC_CTYPE        0
 #define LC_NUMERIC      1
@@ -24,6 +68,10 @@
 #define LC_MESSAGES     5
 #define LC_ALL          6
 
+:segment CNAME
+namespace std {
+
+:endsegment
 struct lconv {
         char *decimal_point;
         char *thousands_sep;
@@ -45,12 +93,45 @@ struct lconv {
         char n_sign_posn;
 };
 
-:include null.sp
-
-_WCRTLINK extern char *setlocale(int __category,const char *__locale);
+_WCRTLINK extern char    *setlocale( int __category,const char *__locale );
 _WCRTLINK extern struct lconv *localeconv(void);
 
-_WCRTLINK extern wchar_t *_wsetlocale(int __category,const wchar_t *__locale);
+:segment CNAME
+} // namespace std
+
+:endsegment
+:segment !NO_WIDECHAR
+_WCRTLINK extern wchar_t *_wsetlocale( int __category,const wchar_t *__locale );
+:endsegment
+
 :include poppack.sp
+
+:segment CNAME
 :include cplusepi.sp
+:elsesegment
+#endif /* __cplusplus not defined */
+:endsegment
+
 #endif
+:elsesegment
+///////////////////////////////////////////////////////////////////////////
+// FILE: locale (...)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _LOCALE_INCLUDED
+#define _LOCALE_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+} // namespace std
+
+#endif
+:endsegment

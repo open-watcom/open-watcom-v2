@@ -1,0 +1,20 @@
+.387
+		PUBLIC	foo
+		EXTRN	bar:BYTE
+DGROUP		GROUP	_DATA
+_DATA		SEGMENT	BYTE PUBLIC USE16 'DATA'
+    DB	62H, 65H, 66H, 6fH, 72H, 65H
+foo:
+    DB	0200H DUP(0,0,0,0,0,0,0,0)
+    DB	61H, 66H, 74H, 65H, 72H
+
+_DATA		ENDS
+_TEXT		SEGMENT	DWORD PUBLIC USE16 '_OVLCODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov         word ptr foo,cs 
+    mov         bx,word ptr foo 
+    add         bx,word ptr _DATA:bar 
+    mov         word ptr [bx],cs 
+    xor         ax,word ptr _DATA:bar 
+_TEXT		ENDS
+		END

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "plusplus.h"
+
 #include <assert.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "fnovload.h"
 #include "cgfront.h"
@@ -64,13 +64,14 @@ typedef struct                  // FNOV_INFO -- overload information
 {
     arg_list* alist;            // - argument definition
     PTREE* plist;               // - arguments used
+    PTREE templ_args;           // - explicit template arguments
+    SYMBOL distinct_check;      // - distinct check symbol
     FNOV_LIST** pcandidates;    // - hdr: candidates
     FNOV_LIST** pmatch;         // - hdr: matches
     FNOV_LIST* candfunc;        // - candidate function
     FNOV_CONTROL control;       // - control item
     FNOV_RESULT result;         // - result for candidates
     FNOV_DIAG *fnov_diag;       // - information used for diagnosis
-    uint_8 has_template :1;     // - TRUE ==> has template candidate
 } FNOV_INFO;
 
 #define CACHE_FNOVRANK_SIZE     16
@@ -96,186 +97,6 @@ static void fnovNumCandidatesSet( FNOV_DIAG *fnov_diag, FNOV_LIST *candidates )
             fnov_diag->num_candidates = RingCount( candidates );
         }
     }
-}
-
-
-//--------------------------------------------------------------------
-// FNOV_LIST Support
-//--------------------------------------------------------------------
-
-void FnovListFree( FNOV_LIST **plist )
-/************************************/
-// free memory used by list of overloaded functions
-{
-    FNOV_LIST *ptr;
-
-    RingIterBeg( *plist, ptr ) {
-        if( ptr->rankvector ) {
-            deleteRank( ptr->rankvector, ptr->num_args );
-        }
-        if( ptr->free_args ) {
-            CMemFree( ptr->alist );
-        }
-    } RingIterEnd( ptr )
-    RingCarveFree( carveFNOVLIST, plist );
-}
-
-typedef enum                // LENT -- flags for addListEntry
-{   LENT_DEFAULT    =0x00   // - default: add to candidates
-,   LENT_MATCH      =0x01   // - add to matches
-,   LENT_TPL_CHECK  =0x02   // - check for template candidate
-,   LENT_FREE_ARGS  =0x04   // - mark args to be freed
-} LENT;
-
-static void addListEntry( FNOV_CONTROL control, FNOV_INFO *info, SYMBOL sym,
-/**************************************************************************/
-    arg_list *alist, LENT flags )
-// add an entry to list of overloaded functions
-{
-    FNOV_LIST    *new;
-    FNOV_LIST    **hdr;     // - header for list addition
-
-    if( flags & LENT_MATCH ) {
-        hdr = info->pmatch;
-    } else {
-        hdr = info->pcandidates;
-    }
-    // allocate and initialize the storage
-    new = RingCarveAlloc( carveFNOVLIST, hdr );
-    new->sym  = sym;
-    new->alist = alist;
-    if( control & FNC_RANK_RETURN ) {
-        new->num_args = 1;
-    } else {
-        new->num_args = alist->num_args;
-    }
-    if( flags & LENT_FREE_ARGS ) {
-        new->free_args = TRUE;
-    } else {
-        new->free_args = FALSE;
-    }
-    new->member = ((control & FNC_MEMBER) != 0 );
-    new->stdops = ((control & FNC_STDOPS) != 0 );
-    new->rankvector = NULL;
-    initRankVector( FNC_DEFAULT, &new->thisrank, 1 );
-    new->thisrank.rank = OV_RANK_EXACT;
-    new->flags = TF1_NULL;
-    if( flags & LENT_TPL_CHECK ) {
-        if( SymIsFunctionTemplateModel( sym ) ) {
-            info->has_template = TRUE;
-        }
-    }
-}
-
-
-//--------------------------------------------------------------------
-// Diagnostic Support
-//--------------------------------------------------------------------
-
-void FnovFreeDiag( FNOV_DIAG *fnov_diag )
-{
-    if( fnov_diag != NULL ) {
-        fnov_diag->num_candidates = LIST_FREE;
-        FnovListFree( &fnov_diag->diag_ambig );
-        fnov_diag->diag_ambig = NULL;
-        FnovListFree( &fnov_diag->diag_reject );
-        fnov_diag->diag_reject = NULL;
-    }
-}
-
-static void setFnovDiagnosticAmbigList( FNOV_DIAG *fnov_diag, FNOV_LIST **ambig )
-/************************************************************************/
-{
-    if( fnov_diag == NULL ) {
-        FnovListFree( ambig );
-    } else {
-        if( fnov_diag->diag_ambig != NULL ) {
-            FnovListFree( &fnov_diag->diag_ambig );
-        }
-        fnov_diag->diag_ambig = *ambig;
-    }
-}
-
-static void setFnovDiagnosticRejectList( FNOV_DIAG *fnov_diag,
-                                         FNOV_LIST **reject )
-/***********************************************************/
-{
-    if( fnov_diag == NULL ) {
-        FnovListFree( reject );
-    } else {
-        if( fnov_diag->diag_reject != NULL ) {
-            FnovListFree( &fnov_diag->diag_reject );
-        }
-        fnov_diag->diag_reject = *reject;
-    }
-}
-
-static SYMBOL getNextDiagnosticEntry( FNOV_LIST **list )
-/******************************************************/
-{
-    SYMBOL      sym = NULL;
-    FNOV_LIST   *head;
-
-    head = RingPop( list );
-    if( head != NULL ) {
-        sym = head->sym;
-        head->next = head;
-        FnovListFree( &head );
-    }
-    return( sym );
-}
-
-SYMBOL FnovNextAmbiguousEntry( FNOV_DIAG *fnov_diag )
-/**********************************************/
-{
-    return getNextDiagnosticEntry( &fnov_diag->diag_ambig );
-}
-
-SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
-/*******************************************************************/
-{
-    SYMBOL sym;
-
-    sym = NULL;
-    if( *ptr == NULL ) {
-        if( fnov_diag != NULL && fnov_diag->diag_ambig != NULL ) {
-            sym = fnov_diag->diag_ambig->sym;
-            *ptr = fnov_diag->diag_ambig->next;
-        }
-    } else if( ( fnov_diag == NULL) || (*ptr != fnov_diag->diag_ambig) ) {
-        sym = (*ptr)->sym;
-        *ptr = (*ptr)->next;
-    }
-    return( sym );
-}
-
-SYMBOL FnovNextRejectEntry( FNOV_DIAG *fnov_diag )
-/*******************************************/
-{
-    return getNextDiagnosticEntry( &fnov_diag->diag_reject );
-}
-
-int FnovRejectParm( FNOV_DIAG *fnov_diag )
-/****************************************/
-{
-    FNOV_RANK   *rank;
-    int         index;
-    int         num_args;
-
-    if( ( fnov_diag != NULL ) && ( fnov_diag->diag_reject != NULL ) ) {
-        rank = fnov_diag->diag_reject->rankvector;
-        num_args = fnov_diag->diag_reject->num_args;
-        if( (num_args == 0) || (rank->control & FNC_RANK_RETURN) ) {
-            num_args = 1;
-        }
-        for( index = 0; index < num_args ; index++, rank++ ) {
-            if( rank->rank >= OV_RANK_NO_MATCH ) return( index );
-        }
-        if( fnov_diag->diag_reject->member != 0 ) {
-            if( fnov_diag->diag_reject->thisrank.rank >= OV_RANK_NO_MATCH ) return( -1 );
-        }
-    }
-    return( -2 );
 }
 
 
@@ -464,6 +285,184 @@ FNOV_INTRNL_CONTROL ictl, PTREE *src_ptree )
 }
 
 //--------------------------------------------------------------------
+// FNOV_LIST Support
+//--------------------------------------------------------------------
+
+void FnovListFree( FNOV_LIST **plist )
+/************************************/
+// free memory used by list of overloaded functions
+{
+    FNOV_LIST *ptr;
+
+    RingIterBeg( *plist, ptr ) {
+        if( ptr->rankvector ) {
+            deleteRank( ptr->rankvector, ptr->num_args );
+        }
+        if( ptr->free_args ) {
+            CMemFree( ptr->alist );
+        }
+    } RingIterEnd( ptr )
+    RingCarveFree( carveFNOVLIST, plist );
+}
+
+typedef enum                // LENT -- flags for addListEntry
+{   LENT_DEFAULT    =0x00   // - default: add to candidates
+,   LENT_MATCH      =0x01   // - add to matches
+,   LENT_FREE_ARGS  =0x02   // - mark args to be freed
+} LENT;
+
+static void addListEntry( FNOV_CONTROL control, FNOV_INFO *info, SYMBOL sym,
+/**************************************************************************/
+    arg_list *alist, LENT flags )
+// add an entry to list of overloaded functions
+{
+    FNOV_LIST    *new;
+    FNOV_LIST    **hdr;     // - header for list addition
+    unsigned     i;
+
+    for( i = 0; i < alist->num_args; i++ ) {
+        alist->type_list[i] = BoundTemplateClass( alist->type_list[i] );
+    }
+
+    if( flags & LENT_MATCH ) {
+        hdr = info->pmatch;
+    } else {
+        hdr = info->pcandidates;
+    }
+    // allocate and initialize the storage
+    new = RingCarveAlloc( carveFNOVLIST, hdr );
+    new->sym  = sym;
+    new->alist = alist;
+    if( control & FNC_RANK_RETURN ) {
+        new->num_args = 1;
+    } else {
+        new->num_args = alist->num_args;
+    }
+    if( flags & LENT_FREE_ARGS ) {
+        new->free_args = TRUE;
+    } else {
+        new->free_args = FALSE;
+    }
+    new->member = ((control & FNC_MEMBER) != 0 );
+    new->stdops = ((control & FNC_STDOPS) != 0 );
+    new->rankvector = NULL;
+    initRankVector( FNC_DEFAULT, &new->thisrank, 1 );
+    new->thisrank.rank = OV_RANK_EXACT;
+    new->flags = TF1_NULL;
+}
+
+
+//--------------------------------------------------------------------
+// Diagnostic Support
+//--------------------------------------------------------------------
+
+void FnovFreeDiag( FNOV_DIAG *fnov_diag )
+{
+    if( fnov_diag != NULL ) {
+        fnov_diag->num_candidates = LIST_FREE;
+        FnovListFree( &fnov_diag->diag_ambig );
+        fnov_diag->diag_ambig = NULL;
+        FnovListFree( &fnov_diag->diag_reject );
+        fnov_diag->diag_reject = NULL;
+    }
+}
+
+static void setFnovDiagnosticAmbigList( FNOV_DIAG *fnov_diag, FNOV_LIST **ambig )
+/************************************************************************/
+{
+    if( fnov_diag == NULL ) {
+        FnovListFree( ambig );
+    } else {
+        if( fnov_diag->diag_ambig != NULL ) {
+            FnovListFree( &fnov_diag->diag_ambig );
+        }
+        fnov_diag->diag_ambig = *ambig;
+    }
+}
+
+static void setFnovDiagnosticRejectList( FNOV_DIAG *fnov_diag,
+                                         FNOV_LIST **reject )
+/***********************************************************/
+{
+    if( fnov_diag == NULL ) {
+        FnovListFree( reject );
+    } else {
+        if( fnov_diag->diag_reject != NULL ) {
+            FnovListFree( &fnov_diag->diag_reject );
+        }
+        fnov_diag->diag_reject = *reject;
+    }
+}
+
+static SYMBOL getNextDiagnosticEntry( FNOV_LIST **list )
+/******************************************************/
+{
+    SYMBOL      sym = NULL;
+    FNOV_LIST   *head;
+
+    head = RingPop( list );
+    if( head != NULL ) {
+        sym = head->sym;
+        head->next = head;
+        FnovListFree( &head );
+    }
+    return( sym );
+}
+
+SYMBOL FnovNextAmbiguousEntry( FNOV_DIAG *fnov_diag )
+/**********************************************/
+{
+    return getNextDiagnosticEntry( &fnov_diag->diag_ambig );
+}
+
+SYMBOL FnovGetAmbiguousEntry( FNOV_DIAG *fnov_diag, FNOV_LIST **ptr )
+/*******************************************************************/
+{
+    SYMBOL sym;
+
+    sym = NULL;
+    if( *ptr == NULL ) {
+        if( fnov_diag != NULL && fnov_diag->diag_ambig != NULL ) {
+            sym = fnov_diag->diag_ambig->sym;
+            *ptr = fnov_diag->diag_ambig->next;
+        }
+    } else if( ( fnov_diag == NULL) || (*ptr != fnov_diag->diag_ambig) ) {
+        sym = (*ptr)->sym;
+        *ptr = (*ptr)->next;
+    }
+    return( sym );
+}
+
+SYMBOL FnovNextRejectEntry( FNOV_DIAG *fnov_diag )
+/*******************************************/
+{
+    return getNextDiagnosticEntry( &fnov_diag->diag_reject );
+}
+
+int FnovRejectParm( FNOV_DIAG *fnov_diag )
+/****************************************/
+{
+    FNOV_RANK   *rank;
+    int         index;
+    int         num_args;
+
+    if( ( fnov_diag != NULL ) && ( fnov_diag->diag_reject != NULL ) ) {
+        rank = fnov_diag->diag_reject->rankvector;
+        num_args = fnov_diag->diag_reject->num_args;
+        if( (num_args == 0) || (rank->control & FNC_RANK_RETURN) ) {
+            num_args = 1;
+        }
+        for( index = 0; index < num_args ; index++, rank++ ) {
+            if( rank->rank >= OV_RANK_NO_MATCH ) return( index );
+        }
+        if( fnov_diag->diag_reject->member != 0 ) {
+            if( fnov_diag->diag_reject->thisrank.rank >= OV_RANK_NO_MATCH ) return( -1 );
+        }
+    }
+    return( -2 );
+}
+
+//--------------------------------------------------------------------
 // General Support
 //--------------------------------------------------------------------
 
@@ -471,20 +470,20 @@ static boolean isEllipsisCandidate( TYPE type, int num_args )
 /***********************************************************/
 // determine if type is a candidate based on:
 //      type having more than zero arguments
-//      type having fewer arguments than num_args and
-//              last argument is ellipsis, or
-//      type having exactly one more argument than num_args which is ellipsis
+//      type having fewer or as many arguments as num_args+1 and
+//              last argument is ellipsis
 {
     TYPE argtype;
+    int type_args;
     arg_list *alist;
 
     type = FunctionDeclarationType( type );
     if( type != NULL ) {
         alist = TypeArgList( type );
-        if( alist->num_args != 0 ) {
-            if( ( alist->num_args < num_args )
-              ||( alist->num_args == num_args+1 ) ) {
-                argtype = alist->type_list[alist->num_args-1];
+        type_args = alist->num_args;
+        if( type_args != 0 ) {
+            if( type_args <= num_args+1 ) {
+                argtype = alist->type_list[type_args-1];
                 if( argtype->id == TYP_DOT_DOT_DOT ) {
                     return( TRUE );
                 }
@@ -501,7 +500,16 @@ static boolean isMemberCandidate( TYPE type, int num_args )
 {
     type = FunctionDeclarationType( type );
     if( type != NULL ) {
-        if( (TypeArgList( type )->num_args+1) == num_args ) {
+        arg_list *a_list = TypeArgList( type );
+
+        if( ( a_list->num_args + 1 ) == num_args ) {
+            unsigned int i = 0;
+
+            for( i = 0; i < a_list->num_args; i++ ) {
+                a_list->type_list[i] =
+                    BoundTemplateClass( a_list->type_list[i] );
+            }
+
             return( TRUE );
         }
     }
@@ -515,7 +523,16 @@ static boolean isSimpleCandidate( TYPE type, int num_args )
 {
     type = FunctionDeclarationType( type );
     if( type != NULL ) {
-        if( TypeArgList( type )->num_args == num_args ) {
+        arg_list *a_list = TypeArgList( type );
+
+        if( a_list->num_args == num_args ) {
+            unsigned int i = 0;
+
+            for( i = 0; i < a_list->num_args; i++ ) {
+                a_list->type_list[i] =
+                    BoundTemplateClass( a_list->type_list[i] );
+            }
+
             return( TRUE );
         }
     }
@@ -523,40 +540,142 @@ static boolean isSimpleCandidate( TYPE type, int num_args )
 }
 
 static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
-/****************************************************************************/
+/*************************************************************************/
 {
-    arg_list    *mock_args;
-    arg_list    *func_args;
+    SYMBOL base_sym;
+    arg_list *mock_args = NULL;
+    arg_list *func_args;
+    TYPE sym_type = sym->sym_type;
+    int num_args = ( info->alist != NULL ) ? info->alist->num_args : 0;
 
     if(( control & FNC_NO_DEALIAS ) == 0 ) {
         sym = SymDeAlias( sym );
     }
-    func_args = SymFuncArgList( sym );
+
     if( control & FNC_RANK_RETURN ) {
+        func_args = SymFuncArgList( sym );
         addListEntry( control, info, sym, func_args, LENT_DEFAULT );
+        return;
+    }
+
+    if( control & FNC_MEMBER ) {
+        if( ! isMemberCandidate( sym_type, num_args ) ) {
+            return;
+        }
     } else {
-        int num_args = info->alist->num_args;
-        TYPE sym_type = sym->sym_type;
-        if( control & FNC_MEMBER ) {
-            if( isMemberCandidate( sym_type, num_args ) ) {
-                mock_args = MakeMemberArgList( sym, num_args );
-                addListEntry( control, info, sym, mock_args, LENT_FREE_ARGS );
+        if( SymIsDefArg( sym ) && (control & FNC_EXCLUDE_DEFARG ) ) {
+            return;
+        } else if( ! isSimpleCandidate( sym_type, num_args ) ) {
+            if( (control & FNC_EXCLUDE_ELLIPSIS)
+             || !isEllipsisCandidate( sym_type, num_args ) ) {
+                return;
             }
-        } else {
-            if( !( SymIsDefArg(sym) && (control & FNC_EXCLUDE_DEFARG ) ) ) {
-                if( isSimpleCandidate( sym_type, num_args ) ) {
-                    addListEntry( control, info, sym, func_args, LENT_TPL_CHECK );
-                } else if( !(control & FNC_EXCLUDE_ELLIPSIS) ) {
-                    if( isEllipsisCandidate( sym_type, num_args ) ) {
-                        mock_args = MakeMockArgList( sym_type, num_args );
-                        addListEntry( control
-                                    , info
-                                    , sym
-                                    , mock_args
-                                    , LENT_FREE_ARGS | LENT_TPL_CHECK );
-                    }
+        }
+    }
+
+    base_sym = SymDefArgBase( sym );
+    if( SymIsFunctionTemplateModel( base_sym ) ) {
+        FN_TEMPLATE *fntempl = base_sym->u.defn;
+
+        if( ( control & FNC_ONLY_NON_TEMPLATE ) // ignore template functions
+         || ( fntempl == NULL ) ) {
+            return;
+        }
+
+        if( ! ( control & FNC_DISTINCT_CHECK ) ) {
+            SYMBOL result;
+
+            if( control & FNC_MEMBER ) {
+                // have to strip the implicit this pointer
+                mock_args = AllocArgListTemp( num_args - 1 );
+                mock_args->except_spec = info->alist->except_spec;
+                if( num_args > 1 ) {
+                    memcpy( &mock_args->type_list[0]
+                          , &info->alist->type_list[1]
+                          , sizeof( info->alist->type_list[0] ) * ( num_args - 1 ) );
+                }
+                result = TemplateFunctionGenerate( base_sym, mock_args,
+                                                   info->templ_args,
+                                                   &sym->locn->tl );
+                if( result == NULL ) {
+                    addListEntry( control, info, base_sym, mock_args,
+                                  LENT_FREE_ARGS );
+                    return;
+                }
+
+                CMemFree( mock_args );
+            } else {
+                result = TemplateFunctionGenerate( base_sym, info->alist,
+                                                   info->templ_args,
+                                                   &sym->locn->tl );
+                if( result == NULL ) {
+                    func_args = SymFuncArgList( base_sym );
+                    addListEntry( control, info, base_sym, func_args, 0 );
+                    return;
                 }
             }
+
+            sym = result;
+            sym_type = sym->sym_type;
+        } else {
+            // have to compare template parameters for function templates
+            SYMBOL old_curr = NULL, new_curr = NULL;
+            SYMBOL old_stop, new_stop;
+
+            // check that template parameters match
+            old_stop = ScopeOrderedStart( fntempl->decl_scope );
+            new_stop = ScopeOrderedStart( GetCurrScope() );
+            for(;;) {
+                old_curr = ScopeOrderedNext( old_stop, old_curr );
+                new_curr = ScopeOrderedNext( new_stop, new_curr );
+
+                if( ( old_curr == NULL ) || ( new_curr == NULL ) ) {
+                    break;
+                }
+
+                if( ! ( control & FNC_DISTINCT_CHECK ) ) {
+                    old_curr->sym_type =
+                        BindTemplateClass( old_curr->sym_type,
+                                           &old_curr->locn->tl, TRUE );
+                    new_curr->sym_type =
+                        BindTemplateClass( new_curr->sym_type,
+                                           &new_curr->locn->tl, TRUE );
+                }
+
+                if( ! TypeCompareExclude( old_curr->sym_type,
+                                          new_curr->sym_type,
+                                          TC1_NOT_ENUM_CHAR ) ) {
+                    // template parameter types don't match
+                    return;
+                }
+            }
+
+            if( ( old_curr != NULL) || ( new_curr != NULL ) ) {
+                // number of template parameters don't match
+                return;
+            }
+        }
+    } else {
+        if( control & FNC_ONLY_TEMPLATE ) {
+            // ignore non-template functions
+            return;
+        }
+    }
+
+    func_args = SymFuncArgList( sym );
+    if( control & FNC_MEMBER ) {
+        mock_args = MakeMemberArgList( sym, num_args );
+        addListEntry( control, info, sym, mock_args, LENT_FREE_ARGS );
+    } else {
+        if( isSimpleCandidate( sym_type, num_args ) ) {
+            addListEntry( control, info, sym, func_args, 0 );
+        } else {
+            mock_args = MakeMockArgList( sym_type, num_args );
+            addListEntry( control
+                        , info
+                        , sym
+                        , mock_args
+                        , LENT_FREE_ARGS );
         }
     }
 }
@@ -572,9 +691,10 @@ static void buildUdcListDiag(   // BUILD FNOV_LIST FOR USER-DEFD CONVERSIONS
     info.control = FNC_RANK_RETURN;
     info.plist = NULL;
     info.alist = NULL;
+    info.templ_args = NULL;
+    info.distinct_check = NULL;
     info.pcandidates = pcandidates;
     info.pmatch = NULL;
-    info.has_template = FALSE;
     info.fnov_diag = fnov_diag;
     processSym( FNC_RANK_RETURN, &info, sym );
 }
@@ -587,8 +707,27 @@ void BuildUdcList(              // BUILD FNOV_LIST FOR USER-DEFD CONVERSIONS
     buildUdcListDiag( pcandidates, sym, NULL );
 }
 
+void BuildCtorList(             // BUILD FNOV_LIST FOR CTOR CONVERSIONS
+/****************/
+    FNOV_LIST **pcandidates,    // - current list
+    SYMBOL sym,                 // - symbol to add
+    arg_list *alist )           // - argument list
+{
+    FNOV_INFO info;
+
+    info.control = 0;
+    info.plist = NULL;
+    info.alist = alist;
+    info.templ_args = NULL;
+    info.distinct_check = NULL;
+    info.pcandidates = pcandidates;
+    info.pmatch = NULL;
+    info.fnov_diag = NULL;
+    processSym( 0, &info, sym );
+}
+
 static void buildOverloadListFromSym( FNOV_CONTROL control,
-    FNOV_INFO *info, SYMBOL sym )
+FNOV_INFO *info, SYMBOL sym )
 /*********************************************************/
 {
     SYMBOL  ptr;
@@ -867,6 +1006,7 @@ FNOV_RANK *second, TYPE *second_type )
         // do the following comparison
     case OV_RANK_STD_CONV_VOID:
     case OV_RANK_STD_CONV:
+    case OV_RANK_STD_BOOL:
     case OV_RANK_PROMOTION:
     case OV_RANK_TRIVIAL:
         retn = compareScalar( &first->u.no_ud
@@ -887,7 +1027,7 @@ FNOV_RANK *second, TYPE *second_type )
 static OV_RESULT compareArgument(
 /*******************************/
     FNOV_RANK *first
-  , TYPE * first_type
+  , TYPE *first_type
   , FNOV_RANK *second
   , TYPE *second_type
   , FNOV_CONTROL control )
@@ -936,6 +1076,7 @@ static OV_RESULT compareArgument(
         // otherwise, do the following comparison
     case OV_RANK_STD_CONV_VOID:
     case OV_RANK_STD_CONV:
+    case OV_RANK_STD_BOOL:
     case OV_RANK_PROMOTION:
     case OV_RANK_TRIVIAL:
         retn = compareScalar( &first->u.no_ud
@@ -1033,6 +1174,16 @@ static OV_RESULT compareFunction(
             break;
         }
     }
+    if( retn == OV_CMP_SAME ) {
+        // prefer non-template functions
+        if( ( first->sym->flag & SF_TEMPLATE_FN )
+         && ! ( second->sym->flag & SF_TEMPLATE_FN ) ) {
+            retn = OV_CMP_BETTER_SECOND;
+        } else if( ! ( first->sym->flag & SF_TEMPLATE_FN )
+                && ( second->sym->flag & SF_TEMPLATE_FN ) ) {
+            retn = OV_CMP_BETTER_FIRST;
+        }
+    }
     return( retn );
 }
 
@@ -1059,24 +1210,6 @@ static boolean isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
         retn = ( entry->thisrank.rank <= level );
     }
     return( retn );
-}
-
-static void setRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
-/*************************************************************/
-// make rank = level
-{
-    int                 index;
-    FNOV_RANK           *rank;
-
-    rank = entry->rankvector;
-    index = entry->num_args;
-    for(;;) {
-        if( index == 0 ) break;
-        rank->rank = level;
-        index--;
-        rank++;
-    }
-    entry->thisrank.rank = level;
 }
 
 static boolean isReturnIdentical( TYPE sym1, TYPE sym2 )
@@ -1169,6 +1302,16 @@ FNOV_LIST **rejects, boolean *ambiguous, boolean is_ctor )
                 if( result == OV_CMP_SAME && !is_ctor ) {
                     result = compareArgument( &(*match)->thisrank, NULL
                                               , &curr->thisrank, NULL, FNC_DEFAULT );
+                }
+                if( result == OV_CMP_SAME ) {
+                    // prefer non-template functions
+                    if( ( (*match)->sym->flag & SF_TEMPLATE_FN )
+                     && ! ( curr->sym->flag & SF_TEMPLATE_FN ) ) {
+                        result = OV_CMP_BETTER_SECOND;
+                    } else if( ! ( (*match)->sym->flag & SF_TEMPLATE_FN )
+                            && ( curr->sym->flag & SF_TEMPLATE_FN ) ) {
+                        result = OV_CMP_BETTER_FIRST;
+                    }
                 }
                 switch( result ) {
                 case OV_CMP_BETTER_FIRST:
@@ -1279,23 +1422,53 @@ FNOV_RANK *bestrank, FNOV_RANK *curr_rank, boolean src_mptr )
 {
     OV_RESULT       result;
     TYPE            curr_type;
+    SYMBOL base_sym;
 
     curr_rank->rank = OV_RANK_NO_MATCH;
     curr_type = NULL;
-    if( SymIsThisFuncMember( curr ) ) {
-        if( src_mptr ) {
-            // curr is member function
-            // src can be member function
-            curr_type = MakeMemberPointerTo( SymClass( curr )
-                                           , curr->sym_type );
+
+    base_sym = SymDefArgBase( curr );
+    if( SymIsFunctionTemplateModel( base_sym ) ) {
+        FN_TEMPLATE *fntempl = base_sym->u.defn;
+        TYPE typ;
+        TOKEN_LOCN *locn;
+
+        if( fntempl != NULL ) {
+            locn = &curr->locn->tl;
+
+            typ = TypedefModifierRemoveOnly( *tgt );
+            if( PointerType( typ ) ) {
+                typ = typ->of;
+            }
+            typ = FunctionDeclarationType( TypedefModifierRemoveOnly( typ ) );
+
+            if( typ != NULL ) {
+                curr = TemplateFunctionGenerate( base_sym, typ->u.f.args,
+                                                 NULL, locn );
+            } else {
+                curr = NULL;
+            }
         }
-    } else {
-        // curr is static member function
-        // src can be static member functions
-        curr_type = curr->sym_type;
     }
+
+    if( curr != NULL ) {
+        if( SymIsThisFuncMember( curr ) ) {
+            if( src_mptr ) {
+                // curr is member function
+                // src can be member function
+                curr_type = MakeMemberPointerTo( SymClass( curr )
+                                               , curr->sym_type );
+            }
+        } else {
+            // curr is static member function
+            // src can be static member functions
+            curr_type = curr->sym_type;
+        }
+    }
+
     if( curr_type != NULL ) {
         doComputeArgRank( fsym, curr_type, *tgt, NULL, curr_rank );
+
         if( curr_rank->rank != OV_RANK_NO_MATCH ) {
             result = compareArgument( bestrank, NULL, curr_rank, NULL, FNC_DEFAULT );
             if( result == OV_CMP_BETTER_SECOND ) {
@@ -1377,6 +1550,18 @@ static boolean computeFunctionRank( FNOV_INFO* info )
     ptlist = info->plist;
     for(;;) {
         if( index == 0 ) break;
+        if( ( rank->control & FNC_MEMBER )
+         && ( index == info->alist->num_args ) ) {
+            // see 13.3.1 [over.match.funcs] (5):
+            // even if the implicit object parameter is not
+            // const-qualified, an rvalue temporary can be bound to
+            // the parameter as long as in all other respects the
+            // temporary can be converted to the type of the implicit
+            // object parameter.
+            if( TypeReference( *tgt ) && ! TypeReference( *src ) ) {
+                *src = MakeReferenceTo( *src );
+            }
+        }
         if( ptlist != NULL ) {
             sym = FunctionSymbol( *ptlist );
             if( sym != NULL ) {
@@ -1413,7 +1598,12 @@ static boolean getRank( FNOV_INFO* info )
     boolean contender;
     FNOV_LIST* candidate = info->candfunc;
 
-    if( candidate->rankvector != NULL ) {
+    if( SymIsFunctionTemplateModel( candidate->sym )
+     && !( info->control & FNC_DISTINCT_CHECK ) ) {
+        // this means that template argument deduction failed, so it
+        // can't be a contender
+        contender = FALSE;
+    } else if( candidate->rankvector != NULL ) {
         contender = TRUE;
     } else {
         FNOV_CONTROL control = info->control;
@@ -1433,9 +1623,11 @@ static boolean getRank( FNOV_INFO* info )
         if( contender && SymIsThisFuncMember( candidate->sym ) ) {
             type_flag   srcflags = info->alist->qualifier;
             type_flag   tgtflags = candidate->alist->qualifier;
-            if( !FnovCvFlagsRank( srcflags, tgtflags, &candidate->thisrank ) ) {
+            contender = !FnovCvFlagsRank( srcflags, tgtflags,
+                                          &candidate->thisrank );
+            if( contender ) {
                 FnovMemFlagsRank( srcflags, tgtflags, NULL, NULL,
-                              &candidate->thisrank );
+                                  &candidate->thisrank );
             }
         }
     }
@@ -1518,109 +1710,17 @@ static FNOV_RESULT resolveOverload( FNOV_INFO* info )
     return info->result;
 }
 
-static FNOV_RESULT genTemplateFunction( arg_list *alist, SYMBOL *psym,
-/********************************************************************/
-    TOKEN_LOCN *locn, SYMBOL *ambigs, boolean ok_if_no_exact_bind )
-{
-    FNOV_RESULT result;
-    SYMBOL sym;
-
-    sym = *psym;
-    result = TemplateFunctionGenerate( &sym, alist, locn, ambigs, ok_if_no_exact_bind );
-    if( result == FNOV_NONAMBIGUOUS ) {
-        *psym = sym;
-    }
-    return( result );
-}
-
-static SYMBOL findFunctionTemplate( FNOV_INFO *info )
-/***************************************************/
-{
-    SYMBOL sym;
-    FNOV_LIST *curr;
-
-    RingIterBeg( *info->pcandidates, curr ){
-        sym = curr->sym;
-        if( SymIsFunctionTemplateModel( sym ) ) {
-            return( sym );
-        }
-    } RingIterEnd( curr )
-#ifndef NDEBUG
-    CFatal( "can't find function template during overload" );
-#endif
-    return( NULL );
-}
-
-static TOKEN_LOCN *extractAGoodLocn( FNOV_INFO* info )
-/****************************************************/
-{
-    TOKEN_LOCN *locn;
-    PTREE *plist;
-
-    plist = info->plist;
-    /* simple for now; but who knows? */
-    if( plist == NULL ) {
-        // NYI: what location do we give to a "return foo;" when there is
-        // more than one foo (currently a NULL locn because there are no args)
-        return( NULL );
-    }
-    locn = &((*plist)->locn);
-    return( locn );
-}
-
 static FNOV_RESULT doOverload( FNOV_INFO* info )
 /**********************************************/
 {
     FNOV_RESULT result = FNOV_NO_MATCH;
     FNOV_LIST   *match = NULL;
-    TOKEN_LOCN *locn;
 
     *info->pmatch = NULL;
     if( *info->pcandidates != NULL ) {
         result = resolveOverload( info );
         if( result != FNOV_NONAMBIGUOUS
          || ! isRank( *info->pmatch, OV_RANK_SAME ) ) {
-            if( ( info->control & ( FNC_TEMPLATE | FNC_DISTINCT_CHECK ) )
-                == FNC_TEMPLATE ) {
-                SYMBOL      sym;
-                FNOV_RESULT t_result;
-                auto SYMBOL ambigs[2];
-
-                sym = findFunctionTemplate( info );
-                t_result = FNOV_NO_MATCH;
-                if( sym != NULL ) {
-                    locn = extractAGoodLocn( info );
-                    t_result = genTemplateFunction( info->alist
-                                                  , &sym
-                                                  , locn
-                                                  , ambigs
-                                                  , result == FNOV_NONAMBIGUOUS );
-                }
-                if( t_result == FNOV_NONAMBIGUOUS ) {
-                    FnovListFree( info->pmatch );
-                    addListEntry( FNC_DEFAULT
-                                , info
-                                , sym
-                                , SymFuncArgList( sym )
-                                , LENT_MATCH );
-                    addRankVector( *info->pmatch, info->control );
-                    setRank( *info->pmatch, OV_RANK_SAME );
-                    result = FNOV_NONAMBIGUOUS;
-                } else if( t_result == FNOV_AMBIGUOUS ) {
-                    FnovListFree( info->pmatch );
-                    result = FNOV_AMBIGUOUS;
-                    addListEntry( FNC_DEFAULT
-                                , info
-                                , ambigs[0]
-                                , SymFuncArgList( ambigs[0] )
-                                , LENT_MATCH );
-                    addListEntry( FNC_DEFAULT
-                                , info
-                                , ambigs[1]
-                                , SymFuncArgList( ambigs[1] )
-                                , LENT_MATCH );
-                }
-            }
             if( result != FNOV_NONAMBIGUOUS ) {
                 match = *info->pmatch;
                 *info->pmatch = NULL;
@@ -1660,22 +1760,32 @@ FNOV_DIAG * FnovInitDiag( FNOV_DIAG *fnov_diag )
 FNOV_RESULT FuncOverloadedLimitDiag( SYMBOL *resolved,
 /****************************************************************/
 SEARCH_RESULT *result_in, SYMBOL sym, arg_list *alist, PTREE *ptlist,
-FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
+FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
 // find overloaded function from sym for alist specified
 {
     FNOV_LIST   *candidates = NULL;
     FNOV_INFO   info;
     FNOV_LIST   *match;
     FNOV_RESULT result;
+    int         i;
+
+    for( i = 0; i < alist->num_args; i++ ) {
+        alist->type_list[i] = BindTemplateClass( alist->type_list[i],
+                                                 &sym->locn->tl, TRUE );
+    }
 
     *resolved = NULL;
 
     info.alist = alist;
     info.plist = ptlist;
+    info.templ_args = templ_args;
+    info.distinct_check = NULL;
     info.pcandidates = &candidates;
     info.pmatch = &match;
     info.control = control;
-    info.has_template = FALSE;
+    if( info.templ_args != NULL ) {
+        info.control |= FNC_ONLY_TEMPLATE;
+    }
     info.fnov_diag = fnov_diag;
 
     if( ( result_in == NULL) || (result_in->region == NULL) ) {
@@ -1683,12 +1793,16 @@ FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
     } else {
         buildOverloadListFromRegion( info.control, &info, result_in->region );
     }
-    if( info.has_template ) {
-        info.control |= FNC_TEMPLATE;
-    }
+
+    PTreeFreeSubtrees( templ_args );
+    info.templ_args = NULL;
+
     fnovNumCandidatesSet( info.fnov_diag, *info.pcandidates );
     result = doOverload( &info );
     if( match != NULL ) {
+        match->sym->sym_type->of =
+            BindTemplateClass( match->sym->sym_type->of, &match->sym->locn->tl,
+                               TRUE );
         *resolved = match->sym;
         FnovListFree( &match );
     }
@@ -1697,12 +1811,13 @@ FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
 
 FNOV_RESULT FuncOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *result,
 /***********************************************************************/
-SYMBOL sym, arg_list *alist, PTREE *ptlist, FNOV_DIAG *fnov_diag )
+SYMBOL sym, arg_list *alist, PTREE *ptlist, PTREE templ_args,
+FNOV_DIAG *fnov_diag )
 // find overloaded function from sym for alist specified
 {
     fnov_diag = FnovInitDiag( fnov_diag );
     return( FuncOverloadedLimitDiag( resolved, result, sym, alist, ptlist,
-                                     FNC_DEFAULT, fnov_diag ) );
+                                     FNC_DEFAULT, templ_args, fnov_diag ) );
 }
 
 FNOV_RESULT FuncOverloaded( SYMBOL *resolved, SEARCH_RESULT *result,
@@ -1710,7 +1825,7 @@ FNOV_RESULT FuncOverloaded( SYMBOL *resolved, SEARCH_RESULT *result,
 SYMBOL sym, arg_list *alist, PTREE *ptlist )
 // find overloaded function from sym for alist specified
 {
-    return( FuncOverloadedDiag( resolved, result, sym, alist, ptlist, NULL ) );
+    return( FuncOverloadedDiag( resolved, result, sym, alist, ptlist, NULL, NULL ) );
 }
 
 FNOV_RESULT UdcOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *result,
@@ -1724,7 +1839,7 @@ SYMBOL sym, TYPE type, type_flag this_qualifier, FNOV_DIAG *fnov_diag )
     InitArgList( &alist );
     alist.num_args = 1;
     alist.qualifier = this_qualifier;
-    alist.type_list[0] = type;
+    alist.type_list[0] = BindTemplateClass( type, &sym->locn->tl, TRUE );
     fnov_diag = FnovInitDiag( fnov_diag );
     return( FuncOverloadedLimitDiag( resolved
                                    , result
@@ -1732,6 +1847,7 @@ SYMBOL sym, TYPE type, type_flag this_qualifier, FNOV_DIAG *fnov_diag )
                                    , &alist
                                    , NULL
                                    , FNC_RANK_RETURN
+                                   , NULL
                                    , fnov_diag ));
 }
 
@@ -1758,13 +1874,20 @@ static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *mem
     FNOV_LIST       *candidates = NULL;
     SYMBOL          sym;
     FNOV_INFO       info;
+    int             i;
+
+    for( i = 0; i < alist->num_args; i++ ) {
+        alist->type_list[i] = BindTemplateClass( alist->type_list[i],
+                                                 NULL, TRUE );
+    }
 
     info.alist = alist;
     info.plist = ptlist;
+    info.templ_args = NULL;
+    info.distinct_check = NULL;
     info.pcandidates = &candidates;
     info.pmatch = &match;
     info.control = control;
-    info.has_template = FALSE;
     info.fnov_diag = FnovInitDiag( fnov_diag );
 
     *resolved = NULL;
@@ -1808,9 +1931,6 @@ static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *mem
         buildOverloadListFromSym( ctl, &info, stdops );
     }
 
-    if( info.has_template ) {
-        info.control |= FNC_TEMPLATE;
-    }
     result = doOverload( &info );
     if( match != NULL ) {
         *resolved = match->sym;
@@ -1852,7 +1972,6 @@ static SYMBOL findNonDefargSym( FNOV_LIST *match)
             return( curr->sym );
         }
     } RingIterEnd( curr )
-    DbgAssert( FALSE );         // should never get here
     return match->sym;
 }
 
@@ -1890,11 +2009,18 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control,
         info.alist = SymFuncArgList( new_sym );
     }
 
+    info.distinct_check = old_sym;
+    info.templ_args = NULL;
     info.plist = NULL;
     info.pcandidates = &candidates;
     info.pmatch = &match;
     info.control = control;
-    info.has_template = FALSE;
+    if( SymIsFunctionTemplateModel( old_sym )
+     || ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
+        info.control |= FNC_ONLY_TEMPLATE;
+    } else {
+        info.control |= FNC_ONLY_NON_TEMPLATE;
+    }
     info.fnov_diag = NULL;
 
     buildOverloadListFromSym( control, &info, old_sym );
@@ -1991,7 +2117,7 @@ boolean IsOverloadedFunc( SYMBOL sym )
         VBUF name;
         FormatSym( sym, &name );
         printf( "Function '%s' is%soverloaded\n",
-            name.buf,
+            VbufString( &name ),
             retn ? " " : " not " );
         VbufFree( &name );
     }
@@ -2082,7 +2208,7 @@ SYMBOL sym, SEARCH_RESULT *result ) // - function to be tested
         VBUF name;
         FormatSym( sym, &name );
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
-            name.buf,
+            VbufString( &name ),
             retn ? " " : " not " );
         VbufFree( &name );
     }

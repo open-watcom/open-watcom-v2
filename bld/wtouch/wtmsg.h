@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message output routines for wtouch.
 *
 ****************************************************************************/
 
@@ -55,7 +54,7 @@ typedef struct table_type {
     char        *msgtype;
 } TABLE_TYPE;
 
-extern int MsgInit();
+extern int MsgInit( void );
 extern int MsgGet( int resourceid, char *buffer );
 extern void MsgSubStr( int resourceid, char *buff, char *p );
-extern void MsgFini();
+extern void MsgFini( void );

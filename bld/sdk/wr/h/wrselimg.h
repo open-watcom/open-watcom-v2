@@ -50,8 +50,7 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WR_EXPORT WRFreeSelectImageInfo( WRSelectImageInfo *info );
-extern WRSelectImageInfo * WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo,
-                                                    FARPROC hcb );
+extern void                 WR_EXPORT WRFreeSelectImageInfo( WRSelectImageInfo *info );
+extern WRSelectImageInfo *  WR_EXPORT WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb );
 
 #endif

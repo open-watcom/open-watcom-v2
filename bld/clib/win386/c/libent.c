@@ -73,7 +73,7 @@ int DefineDLLEntry( int entnum, void *routine, ... )
             return( -1 );
         }
         if( num > 512 ) {
-            return( NULL ); /* ya, so its arbitrary */
+            return( 0 ); /* ya, so its arbitrary */
         }
 
     }

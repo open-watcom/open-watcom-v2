@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Overlay debugging supplementary trap requests.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 
 #include "trptypes.h"
 
-#pragma pack(push,1);
+#pragma pack( push, 1 )
 
 #define OVERLAY_SUPP_NAME               "Overlays"
 
@@ -114,7 +113,7 @@ typedef struct {
     ovl_address         ovl_addr;
 } _WCUNALIGNED ovl_get_remap_entry_ret;
 
-#pragma pack(pop);
+#pragma pack( pop )
 
 #define TRPOVL_H
 

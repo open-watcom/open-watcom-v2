@@ -1,0 +1,83 @@
+:CLFNM.WCSLink
+:CMT.========================================================================
+:LIBF fmt='hdr'.WCSLink
+:HFILE.wclcom.h
+:DVBYL.
+:DVBY.WCDLink
+:eDVBYL.
+:CLSS.
+The &cls. is the building block for all of the list classes.
+It provides the link that is used to traverse the list elements.
+The double link classes use the &cls. to implement both links.
+Since no user data is stored directly with it,
+the &cls. should only be used as a base class to derive a user defined class.
+:P.
+When creating a single linked intrusive list, the &cls. is used to derive the
+user defined class that holds the data to be inserted into the list.
+:P.
+The
+.MONO wclcom.h
+header file is included by the
+.MONO wclist.h
+header file.
+There is no need to explicitly include the
+.MONO wclcom.h
+header file unless the
+.MONO wclist.h
+header file is not included.
+No errors will result if it is included unnecessarily.
+:P.
+Note that the destructor is non-virtual so that list elements are of minimum
+size.
+Objects created as a class derived from the &cls., but destroyed while
+typed as a &obj. will not invoke the destructor of the derived class.
+:CMT. The
+:CMT. :MONO.WCIsvSList
+:CMT. and
+:CMT. :MONO.WCValSList
+:CMT. are examples of classes derived from the &cls.:PERIOD.
+:HDG.Public Member Functions
+The following public member functions are declared:
+:MFNL.
+:MFCD cd_idx='c'.WCSLink();
+:MFCD cd_idx='d'.~~WCSLink();
+:eMFNL.
+:eCLSS.
+:SALSO.
+:SAL typ='cls'.WCDLink
+:eSALSO.
+:eLIBF.
+:CMT.========================================================================
+:LIBF fmt='ctor' prot='public'.WCSLink
+:SNPL.
+:SNPFLF                    .#include <wclcom.h>
+:SNPFLF                    .public:
+:SNPCD cd_idx='c'.WCSLink();
+:eSNPL.
+:SMTICS.
+The &fn. creates an &obj.:PERIOD.
+The &fn. is used implicitly by the compiler
+when it generates a constructor for a derived class.
+:RSLTS.
+The &fn. produces an initialized &obj.:PERIOD.
+:SALSO.
+:SAL typ='dtor'.
+:eSALSO.
+:eLIBF.
+:CMT.========================================================================
+:LIBF fmt='dtor' prot='public'.~~WCSLink
+:SNPL.
+:SNPFLF                   .#include <wclcom.h>
+:SNPFLF                   .public:
+:SNPCD cd_idx='d'.~~WCSLink();
+:eSNPL.
+:SMTICS.
+The &fn. does not do anything explicit.
+The call to the &fn. is inserted implicitly by the compiler
+at the point where the object derived from &cl_name. goes out of scope.
+:RSLTS.
+The object derived from &cl_name. is destroyed.
+:SALSO.
+:SAL typ='ctor'.
+:eSALSO.
+:eLIBF.

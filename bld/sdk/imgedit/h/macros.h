@@ -30,45 +30,47 @@
 ****************************************************************************/
 
 
-#ifdef __OS2_PM__           // PM SECTION
+#if defined( __OS2_PM__ )
 
-#define IMGED_MAKEPOINT( mp1, mp2, pt )    WPI_MAKEPOINT( mp1, mp2, pt )
-#define IMGED_GET_MDI_FACTIVATE( hwnd, mp1, mp2 ) SHORT1FROMMP( mp1 )
+#define IMGED_MAKEPOINT( mp1, mp2, pt )             WPI_MAKEPOINT( mp1, mp2, pt )
+#define IMGED_GET_MDI_FACTIVATE( hwnd, mp1, mp2 )   SHORT1FROMMP( mp1 )
+
 #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECL
 #define SHIFT_UP                    IMGED_DOWN
 #define SHIFT_DOWN                  IMGED_UP
 
-#define _imged_getthebits( bits, pres, bmp, oldbmp ) bits = GetTheBits( bmp )
-#define _imged_getpixel( bits, pres, x, y ) MyGetPixel( bits, x, y )
-#define _imged_setpixel( bits, pres, x, y, clr ) MySetPixel( bits, x, y, clr )
+#define _imged_getthebits( bits, pres, bmp, oldbmp )    (bits = GetTheBits( bmp ))
+#define _imged_getpixel( bits, pres, x, y )             MyGetPixel( bits, x, y )
+#define _imged_setpixel( bits, pres, x, y, clr )        MySetPixel( bits, x, y, clr )
 #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-                                            FreeTheBits( bits, bmp, fflag )
+    FreeTheBits( bits, bmp, fflag )
 
 #else
 
-#ifdef __NT__               // NT SECTION
-#define STRETCH_COLOUR             COLORONCOLOR
-#define IMGED_MAKEPOINT( wp, lp, pt ) pt.x = (int_16)LOWORD( lp ), pt.y = (int_16)HIWORD( lp )
-
-#else                       // WINDOWS SECTION
-#define STRETCH_COLOUR             STRETCH_DELETESCANS
-#define IMGED_MAKEPOINT( wp, lp, pt ) pt = MAKEPOINT( lp )
+#ifdef __NT__
+    #define STRETCH_COLOR                   COLORONCOLOR
+    #define IMGED_MAKEPOINT( wp, lp, pt ) \
+        (pt.x = (int_16)LOWORD( lp ), pt.y = (int_16)HIWORD( lp ))
+#else
+    #define STRETCH_COLOR                   STRETCH_DELETESCANS
+    #define IMGED_MAKEPOINT( wp, lp, pt )   (pt = MAKEPOINT( lp ))
 
 #endif
 
-#define IMGED_GET_MDI_FACTIVATE( hwnd, wp, lp ) \
-                                    GET_WM_MDIACTIVATE_FACTIVATE(hwnd, wp, lp)
-#define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECC
-#define SHIFT_UP                    IMGED_UP
-#define SHIFT_DOWN                  IMGED_DOWN
+#define IMGED_GET_MDI_FACTIVATE( hwnd, wp, lp ) GET_WM_MDIACTIVATE_FACTIVATE( hwnd, wp, lp )
+#define ROTATE_COUNTERCLOCKWISE                 IMGED_ROTATECC
+#define SHIFT_UP                                IMGED_UP
+#define SHIFT_DOWN                              IMGED_DOWN
 
 #define _imged_getthebits( bits, pres, bmp, oldbmp ) \
-                                oldbmp = _wpi_selectbitmap( pres, bmp )
-#define _imged_getpixel( bits, pres, x, y ) _wpi_getpixel( pres, x, y )
-#define _imged_setpixel( bits, pres, x, y, clr ) _wpi_setpixel(pres, x, y, clr)
+    (oldbmp = _wpi_selectbitmap( pres, bmp ))
+#define _imged_getpixel( bits, pres, x, y ) \
+    _wpi_getpixel( pres, x, y )
+#define _imged_setpixel( bits, pres, x, y, clr ) \
+    _wpi_setpixel( pres, x, y, clr )
 #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-                                _wpi_getoldbitmap( pres, bmp )
+    _wpi_getoldbitmap( pres, bmp )
 
 #endif
 
-#define _imged_touch(x) (x)=(x)
+#define _imged_touch( x ) ((x) = (x))

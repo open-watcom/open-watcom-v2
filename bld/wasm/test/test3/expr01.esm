@@ -1,0 +1,13 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov         bl,byte ptr 0fH[si] 
+    mov         byte ptr 0fH[si],bl 
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+
+_DATA		ENDS
+		END

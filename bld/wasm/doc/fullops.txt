@@ -1,0 +1,168 @@
+		support
+
+abs		
+addr		no
+alias		yes
+align		yes
+.alpha		ignore
+assume		yes
+basic		?
+.break		no
+c		?
+casemap		no
+catstr		no
+.code		yes
+comm		yes
+comment		yes
+common		?
+compact		?
+.const		yes
+.continue	no
+.cref		ignore
+.data		yes
+.data?		yes
+.dosseg		yes
+dq		yes
+dt		yes
+echo		no
+else		yes
+elseif		yes
+end		yes
+endif		yes
+endp		yes
+ends		yes
+.endw		no
+eq		yes
+equ		yes
+equ2		yes
+.err		yes
+.errb		yes
+.errdef		yes
+.errdif		yes
+.errdifi	yes
+.erre		yes
+.erridn		yes
+.erridni	yes
+.errnb		yes
+.errndef	yes
+.errnz		yes
+error		?
+even		yes
+.exit		no
+export		?
+extern		yes
+externdef	yes
+extrn		yes
+.fardata	yes
+.fardata?	yes
+farstack	?
+flat		?
+for		yes
+forc		yes
+fortran		?
+ge		yes
+global		yes
+group		yes
+gt		yes
+high		no
+highword	no
+huge		?
+if		yes
+if1		yes
+if2		yes
+ifb		yes
+ifdef		yes
+ifdif		yes
+ifdifi		yes
+ife		yes
+ifidn		yes
+ifidni		yes
+ifnb		yes
+ifndef		yes
+ignore		?
+include		yes
+includelib	yes
+invoke		no
+irp		yes
+label		yes
+large		?
+le		yes
+length		yes
+lengthof	yes
+.lfcond		ignore
+.list		ignore
+.listall	ignore
+.listif		ignore
+.listmacro	ignore
+.listmacroall	ignore
+local		yes
+low		no
+lowword		no
+lroffset	no
+lt		yes
+macro		yes
+mask		no
+medium		?
+memory		?
+mod		yes
+.model		yes
+name		yes
+ne		yes
+nearstack	?
+.nocref		ignore
+.nolist		ignore
+nothing		?
+opattr		no
+option		no
+org		yes
+os_dos		?
+os_os2		?
+page		ignore
+para		?
+pascal		?
+popcontext	no
+private		?
+proc		yes
+proto		no
+public		yes
+purge		?
+pushcontext	no
+.radix		no
+readonly	?
+record		no
+.repeat		no
+.sall		ignore
+sbyte		yes
+sdword		yes
+segment		yes
+.seq		ignore
+.sfcond		ignore
+size		yes
+sizeof		yes
+small		?
+.stack		yes
+.startup	no
+stdcall		?
+struc
+struct
+subtitle
+subttl
+sword
+syscall
+textequ
+.tfcond
+this
+tiny
+title
+typedef
+union
+.until
+use16
+use32
+uses
+vararg
+watcom_c
+.while
+width
+.xcref
+.xlist

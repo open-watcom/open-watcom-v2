@@ -1,0 +1,11 @@
+# example linker initialization file.
+# remember, don't put carets (^) in these!
+system begin 386
+    option osname='ZDOS User Application'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdos
+    libfile appstart.obj
+    library clib3r.lib
+    format zdos
+end
+@%watcom%\binw\wlsystem.lnk

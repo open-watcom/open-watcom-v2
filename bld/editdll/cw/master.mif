@@ -1,0 +1,51 @@
+proj_name = editdll
+
+editdll_autodepends = .AUTODEPEND
+editdll_distrib_lib = 1
+memory_model_i86 = c
+
+sys_dll = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ..
+
+inc_dirs = -I"../.."
+
+extra_c_flags_win = -zw -zu
+
+extra_l_flags = op map, elim, verbose, static
+extra_l_flags_win = library ddeml
+extra_l_flags_win += op stack=8k, rwr
+extra_l_flags_win += segment _TEXT PRELOAD FIXED
+extra_l_flags_win += segment CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
+extra_l_flags_win += export WEP RESIDENT
+
+# systems where version resources must be added to .DLL
+version_res_nt_386 = version.res
+
+all: weditcw.dll wedit.lib .SYMBOLIC
+
+weditcw.dll : weditcw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+    $(linker) name $^@ @dll.lnk file $[@
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+
+wedit.dll : weditcw.obj dll.lnk $(version_res_$(host_os)_$(host_cpu))
+    $(linker) name $^@ @dll.lnk file $[@
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
+!endif
+
+wedit.lib : wedit.dll
+    $(librarian) $(libflags) +$[@
+    
+dll.lnk : $(__MAKEFILES__)
+    @%write  $@ $(lflags)
+    @%append $@ option description 'Open Watcom Editor DLL for Codewright'
+
+verrc_dll = weditcw
+!include verrc.mif

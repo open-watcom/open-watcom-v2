@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Clean up basic blocks in a routine.
 *
 ****************************************************************************/
 
@@ -33,8 +32,9 @@
 #include "standard.h"
 #include "coderep.h"
 #include "opcodes.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "procdef.h"
+#include "makeins.h"
 
 extern    block         *HeadBlock;
 extern    block         *BlockList;
@@ -42,16 +42,18 @@ extern    bool          BlocksUnTrimmed;
 extern    proc_def      *CurrProc;
 
 
-extern  void            TellScrapLabel(label_handle);
-extern  void            FreeIns(instruction*);
-extern  void            FreeABlock(block*);
-extern  instruction_id  Renumber(void);
+extern  void            TellScrapLabel( label_handle );
+extern  void            FreeABlock( block * );
+extern  instruction_id  Renumber( void );
 extern  void            RemoveEdge( block_edge * );
 
+/* forward declarations */
+extern  void    RemoveInputEdge( block_edge *edge );
+extern  bool    BlockTrim( void );
 
-static  instruction     *FindOneCond( block *blk ) {
-/**************************************************/
-
+static  instruction     *FindOneCond( block *blk )
+/************************************************/
+{
     instruction *ins;
     instruction *cond;
 
@@ -67,9 +69,9 @@ static  instruction     *FindOneCond( block *blk ) {
 }
 
 
-static  void    UnMarkBlocks() {
-/******************************/
-
+static  void    UnMarkBlocks( void )
+/**********************************/
+{
     block       *blk;
 
     blk = HeadBlock;
@@ -80,17 +82,16 @@ static  void    UnMarkBlocks() {
 }
 
 
-static  void    MarkReachableBlocks() {
-/*************************************/
-
+static  void    MarkReachableBlocks( void )
+/*****************************************/
 /* Written NON-Recursively for a very good reason. (stack blew up)*/
-
+{
     block       *blk;
     block       *son;
     bool        change;
     int         i;
 
-    for(;;) {
+    for( ;; ) {
         change = FALSE;
         blk = HeadBlock;
         while( blk != NULL ) {
@@ -128,9 +129,9 @@ extern  int     CountIns( block *blk )
 }
 
 
-static  bool    FindBlock( block *target ) {
-/******************************************/
-
+static  bool    FindBlock( block *target )
+/****************************************/
+{
     block       *blk;
 
     blk = HeadBlock;
@@ -142,9 +143,9 @@ static  bool    FindBlock( block *target ) {
 }
 
 
-extern  void    RemoveBlock( block *blk ) {
-/*****************************************/
-
+extern  void    RemoveBlock( block *blk )
+/***************************************/
+{
     int         i;
     unsigned    last_line;
     block       *chk;
@@ -206,15 +207,15 @@ extern  void    RemoveBlock( block *blk ) {
     }
     TellScrapLabel( blk->label );
     if( blk->dataflow != NULL ) {
-        _Free( blk->dataflow, sizeof( data_flow_def ) );
+        CGFree( blk->dataflow );
     }
     FreeABlock( blk );
 }
 
 
-extern  void    RemoveInputEdge( block_edge *edge ) {
-/***************************************************/
-
+extern  void    RemoveInputEdge( block_edge *edge )
+/*************************************************/
+{
     block       *dest;
     block_edge  *prev;
 
@@ -233,13 +234,13 @@ extern  void    RemoveInputEdge( block_edge *edge ) {
 }
 
 
-extern  void    MoveHead( block *old, block *new ) {
-/***************************************************
+extern  void    MoveHead( block *old, block *new )
+/*************************************************
 
     We're eliminating a loop header, so move it the the new
     block and point all loop_head pointers to the new block.
 */
-
+{
     block       *blk;
 
     if( !( old->class & LOOP_HEADER ) ) return;
@@ -256,9 +257,9 @@ extern  void    MoveHead( block *old, block *new ) {
 }
 
 
-static  bool    Retarget( block *blk ) {
-/**************************************/
-
+static  bool    Retarget( block *blk )
+/************************************/
+{
     block_edge  *edge;
     block_edge  *next;
     block       *target;
@@ -291,9 +292,9 @@ static  bool    Retarget( block *blk ) {
 }
 
 
-static  void    JoinBlocks( block *jump, block *target ) {
-/********************************************************/
-
+static  void    JoinBlocks( block *jump, block *target )
+/******************************************************/
+{
     block_edge          *edge;
     source_line_number  line_num;
     label_handle        label;
@@ -355,9 +356,9 @@ static  void    JoinBlocks( block *jump, block *target ) {
 }
 
 
-static  bool    SameTarget( block *blk ) {
-/****************************************/
-
+static  bool    SameTarget( block *blk )
+/**************************************/
+{
     instruction *ins;
     block       *targ1, *targ2;
 
@@ -377,16 +378,17 @@ static  bool    SameTarget( block *blk ) {
 }
 
 
-static  void    DoBlockTrim() {
-/*****************************/
-
+static  bool    DoBlockTrim( void )
+/*********************************/
+{
     block       *blk;
     block       *next;
     block       *target;
     instruction *ins;
     bool        change;
+    bool        any_change = FALSE;
 
-    for(;;) {
+    for( ;; ) {
         change = FALSE;
         MarkReachableBlocks();
         blk = HeadBlock->next_block;
@@ -429,24 +431,27 @@ static  void    DoBlockTrim() {
         UnMarkBlocks();
         if( change == FALSE ) break;
         BlocksUnTrimmed = FALSE;
+        any_change = TRUE;
     }
     if( HeadBlock != NULL ) {
         HeadBlock->id = 1;
         blk = HeadBlock;
-        for(;;) {
+        for( ;; ) {
             next = blk->next_block;
             if( next == NULL ) break;
             next->id = blk->id + 1;
             blk = next;
         }
     }
+    return( any_change );
 }
 
-extern void KillCondBlk( block *blk, instruction *ins, int dest ){
-/*************************************/
+extern void KillCondBlk( block *blk, instruction *ins, int dest )
+/***************************************************************/
 // Assume blk is a conditional with compare ins
 // Make dest the destination and delete the unused edge
 // Change blk to a JMP to dest edge
+{
     block_edge  *edge;
     block       *dest_blk;
 
@@ -466,9 +471,9 @@ extern void KillCondBlk( block *blk, instruction *ins, int dest ){
     FreeIns( ins );
 }
 
-extern  bool    DeadBlocks() {
-/****************************/
-
+extern  bool    DeadBlocks( void )
+/********************************/
+{
     block       *blk;
     instruction *ins;
     int         dest;
@@ -494,11 +499,14 @@ extern  bool    DeadBlocks() {
 }
 
 
-extern  void    BlockTrim() {
-/***************************/
+extern  bool    BlockTrim( void )
+/*******************************/
+{
+    bool    change = FALSE;
 
     if( ( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) == 0 ) {
-        DoBlockTrim();
+        change = DoBlockTrim();
         Renumber();
     }
+    return( change );
 }

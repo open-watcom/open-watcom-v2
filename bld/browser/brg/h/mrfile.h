@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Merger file class declaration.
 *
 ****************************************************************************/
 
 
-#ifndef __MRFILE_H__
-#define __MRFILE_H__
+#ifndef MRFILE_H_INCLUDED
+#define MRFILE_H_INCLUDED
 
 #include <dr.h>
 
@@ -41,7 +40,7 @@
 #include "chfile.h"
 
 
-#define MERGEFILESTRBUF 512
+#define MERGEFILESTRBUF (512 * 3)
 
 class MergeFile : public ElfFile {
 public:
@@ -90,6 +89,9 @@ inline void MergeFile::readBlock( dr_section sect, uint_32& off,
 //--------------------------------------------------------------
 // reads a block into buf and updates the offset
 {
+#ifdef DEBUG
+    InfoAssert( _drSizes[ sect ] >= off + len );
+#endif
     _file->seek( _drSections[ sect ] + off, SEEK_SET );
     _file->read( buff, len );
 

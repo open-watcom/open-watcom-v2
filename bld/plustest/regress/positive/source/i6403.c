@@ -65,10 +65,15 @@ int main() {
     if( test( CHAR_MAX, 1 ) ) _fail;
     if( test( SCHAR_MIN, 1 ) ) _fail;
     if( test( SCHAR_MAX, 1 ) ) _fail;
-    if( test( UCHAR_MAX, 2 ) ) _fail;
+    if( test( UCHAR_MAX, 1 ) ) _fail;  // UCHAR_MAX is int by promotion rules.
     if( test( SHRT_MIN, 1 ) ) _fail;
     if( test( SHRT_MAX, 1 ) ) _fail;
+#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+    // USHRT_MAX is int on 32 bit targets by promotion rules.
+    if( test( USHRT_MAX, 1 ) ) _fail;
+#else
     if( test( USHRT_MAX, 2 ) ) _fail;
+#endif
     if( test( INT_MIN, 1 ) ) _fail;
     if( test( INT_MAX, 1 ) ) _fail;
     if( test( UINT_MAX, 2 ) ) _fail;

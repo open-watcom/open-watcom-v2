@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
+_WCRTLINK short _WCI86FAR _CGRAPH _polygon( short fill, short numpts,
 /*========================*/ struct xycoord _WCI86FAR *points )
 
 /* This routine draws a polygon specified by the array points[].  It also

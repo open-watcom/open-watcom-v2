@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom style debugging information internal structures
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #define FOX2_SIGNATURE  0x8301
 #define RES_SIGNATURE   0x8302
 
-#pragma pack(1);
+#pragma pack(1)
 
 typedef struct sectheader {
     unsigned_32         mod_offset;
@@ -63,8 +62,10 @@ typedef struct debug_info {
     dbi_section     mod;
     dbi_section     global;
     dbi_section     addr;
-    virt_mem        DBIWrite;
+    virt_mem        dump_addr;
     signed_16       modnum;
+    class_entry     *LocalClass;
+    class_entry     *TypeClass;
 } debug_info;
 
 
@@ -125,4 +126,4 @@ typedef struct dbinode {
     unsigned_16         segidx;
 } dbinode;
 
-#pragma pack();
+#pragma pack()

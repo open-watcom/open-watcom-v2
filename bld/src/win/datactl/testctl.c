@@ -56,15 +56,15 @@ static dlg_data Data={
 
 static char TestCtlClass[32]="TestCtlClass";
 
-static BOOL FirstInstance( HANDLE );
-static BOOL AnyInstance( HANDLE, int, LPSTR );
+static BOOL FirstInstance( HINSTANCE );
+static BOOL AnyInstance( HINSTANCE, int, LPSTR );
 
 long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
                     int cmdshow )
 {
     MSG         msg;
@@ -79,7 +79,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
 
     if( !AnyInstance( this_inst, cmdshow, cmdline ) ) return( FALSE );
 
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, (HWND)0, 0, 0 ) ) {
 
         TranslateMessage( &msg );
         DispatchMessage( &msg );
@@ -94,7 +94,7 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
  * FirstInstance - register window class for the application,
  *                 and do any other application initialization
  */
-static BOOL FirstInstance( HANDLE this_inst )
+static BOOL FirstInstance( HINSTANCE this_inst )
 {
     WNDCLASS    wc;
     BOOL        rc;
@@ -108,7 +108,7 @@ static BOOL FirstInstance( HANDLE this_inst )
     wc.cbWndExtra = 0;
     wc.hInstance = this_inst;
     wc.hIcon = LoadIcon( this_inst, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hCursor = LoadCursor( (HINSTANCE)0, IDC_ARROW );
     wc.hbrBackground = GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName = "TestCtlMenu";
     wc.lpszClassName = TestCtlClass;
@@ -121,7 +121,7 @@ static BOOL FirstInstance( HANDLE this_inst )
  * AnyInstance - do work required for every instance of the application:
  *                create the window, initialize data
  */
-static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
+static BOOL AnyInstance( HINSTANCE this_inst, int cmdshow, LPSTR cmdline )
 {
     HWND        wind_handle;
 
@@ -132,14 +132,14 @@ static BOOL AnyInstance( HANDLE this_inst, int cmdshow, LPSTR cmdline )
      */
     wind_handle = CreateWindow(
         TestCtlClass,           /* class */
-        "WATCOM Data Control Test Program",     /* caption */
+        "Open Watcom Data Control Test Program",     /* caption */
         WS_OVERLAPPEDWINDOW,    /* style */
         CW_USEDEFAULT,          /* init. x pos */
         CW_USEDEFAULT,          /* init. y pos */
         CW_USEDEFAULT,          /* init. x size */
         CW_USEDEFAULT,          /* init. y size */
-        NULL,                   /* parent window */
-        NULL,                   /* menu handle */
+        (HWND)0,                /* parent window */
+        (HMENU)0,               /* menu handle */
         this_inst,              /* program handle */
         NULL                    /* create parms */
         );
@@ -234,15 +234,15 @@ LONG _EXPORT FAR PASCAL WindowProc( HWND window_handle, unsigned msg,
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
             inst_handle = GET_HINST( window_handle );
-            proc = MakeProcInstance( About, inst_handle );
-            DialogBox( inst_handle,"AboutBox", window_handle, proc );
+            proc = MakeProcInstance( (FARPROC)About, inst_handle );
+            DialogBox( inst_handle,"AboutBox", window_handle, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
 
         case MENU_DIALOG:
             inst_handle = GET_HINST( window_handle );
-            proc = MakeProcInstance( DataCtlProc, inst_handle );
-            DialogBox( inst_handle,"DATACTL", window_handle, proc );
+            proc = MakeProcInstance( (FARPROC)DataCtlProc, inst_handle );
+            DialogBox( inst_handle,"DATACTL", window_handle, (DLGPROC)proc );
             FreeProcInstance( proc );
             break;
         }

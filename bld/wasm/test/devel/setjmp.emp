@@ -1,0 +1,6 @@
+
+FIXUPP(9c) len:0014h, chksum:6ch(6c)
+    0002h Seg   OFFSET       Frame: GI(1)     Target: EI(1)
+    0006h Seg   OFFSET       Frame: GI(1)     Target: EI(2)
+    0009h Seg   POINTER      Frame: TARGET    Target: EI(3)
+    000eh Seg   POINTER      Frame: GI(1)     Target: EI(4)

@@ -1,0 +1,26 @@
+/*
+ *  sys/un.h      Sockets for local interprocess communication (AF_UNIX)
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_UN_H_INCLUDED
+#define _SYS_UN_H_INCLUDED
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+:include lnxkpack.sp
+
+#define UNIX_PATH_MAX   108
+
+struct sockaddr_un {
+    sa_family_t  sun_family;              /* AF_UNIX */
+    char         sun_path[UNIX_PATH_MAX]; /* pathname */
+};
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_UN_H_INCLUDED */

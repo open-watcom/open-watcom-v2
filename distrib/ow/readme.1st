@@ -1,0 +1,86 @@
+To try and create a full install from here, try:
+
+builder rel2 os_nt
+  
+use os_os2 for the OS/2 installers or os_dos or os_linux, what is appropriate
+
+General stuff.
+=================================
+
+Sample commands to create setup.inf script for C/C++:
+
+langdat c
+mksetup -i..\include -dDstDir=C:\WATCOM c filelist %RELROOT%
+
+or, on Linux
+
+langdat.exe c
+mksetup -i../include -dDstDir= c filelist $RELROOT
+
+To create F77 install script, simply replace 'c' with 'f77'. These
+details are likely to change.
+
+
+
+Variables used in install scripts
+=================================
+
+Each product has its own install script and installer. Within each
+product, a set of conditions determines which files should be installed.
+Currently defined products and conditions follow - the list is not fixed
+and may be easily expanded at any time. If you do so, please document
+the additions here.
+
+
+Products:
+---------
+
+c       - 16 and 32-bit C/C++ compiler
+jc      - Japanese C/C++ compiler
+ac      - Alpha AXP C/C++ compiler
+f77     - 16 and 32-bit FORTRAN 77 compiler
+jf77    - Japanese FORTRAN 77 compiler
+
+
+Conditions:
+-----------
+
+winhost             - Windows 3.x host
+wintarg             - Windows 3.x target
+wnthost             - Win32 host
+wnttarg             - Win32 target
+os2host             - OS/2 2.x host
+os2targ             - OS/2 2.x target
+doshost             - DOS host
+dostarg             - DOS target
+nlmtarg             - Netware target
+lnxhost             - Linux host
+lnxtarg             - Linux target
+rdoshost            - RDOS host
+rdostarg            - RDOS target
+tools16             - 16-bit development tools
+cplusplus           - C++ compiler and libs
+ms                  - 16-bit small memory model
+mc                  - 16-bit compact memory model
+mm                  - 16-bit medium memory model
+ml                  - 16-bit large memory model
+mh                  - 16-bit huge memory model
+3r                  - 32-bit register calls
+3s                  - 32-bit stack calls
+samples             - Miscellaneous sample source code
+rtsource            - Runtime startup source code
+helpfiles           - Online help files
+win16_helpfiles     - Windows 3.x help files
+win32_helpfiles     - Win32 help files
+whelp_helpfiles     - WHELP format help files
+os2_helpfiles       - OS/2 help files
+pdf_helpfiles       - PDF help files
+
+
+Types:
+------
+
+d   - DLL file
+e   - executable file
+l   - library file
+s   - supplemental file

@@ -38,11 +38,15 @@
 #include "mswitch.hpp"
 #include "wobjfile.hpp"
 #include "mtarget.hpp"
-#include <io.h>
+#include <unistd.h>
 
 extern "C" {
+#ifdef __UNIX__
+    #include <dirent.h>
+#else
     #include <dos.h>
     #include <direct.h>
+#endif
 };
 
 Define( MComponent )
@@ -89,7 +93,7 @@ void WEXPORT MComponent::readSelf( WObjectFile& p )
         p.readObject( &_filename );
     }
     _filename = p.filename();
-    _filename.toLower();
+//    _filename.toLower();
     if( p.version() < 33 ) {
         p.readObject( _target );
     }
@@ -211,11 +215,13 @@ void MComponent::getMaskItems( WVList& list )
 
 void MComponent::updateItemList( bool update )
 {
+    int     i;
+
     if( !_batchMode ) {
         _target->updateAttribs();
         MRule* nilRule = _config->nilRule();
         _items.setUpdates( FALSE );
-        for( int i=0; i<_items.count(); i++ ) {
+        for( i=0; i<_items.count(); i++ ) {
             MItem* item = (MItem*)_items[i];
             item->updateAttribs();
             item->setParent( NULL );
@@ -509,7 +515,7 @@ bool MComponent::addFromMask( WFileName& search, WString& err )
             WFileName newfile( ent->d_name );
             newfile.setDrive( search.drive() );
             newfile.setDir( search.dir() );
-            newfile.toLower();
+//            newfile.toLower();
             if( !addFromFilename( newfile, err ) ) {
                 ok = FALSE;
                 break;
@@ -600,8 +606,8 @@ void MComponent::writeTargetCD( ContFile& mak )
     if( path.match( NULL, matchDir ) ) {
         path.concat( "\\" );
     }
-
-    mak.printf( " @%s\n", path.drive() );
+    if( path.drive()[0] != '\0' && path.drive()[1] == ':' )
+        mak.printf( " @%s\n", path.drive() );
     mak.printf( " cd %s\n", (const char*)path );
 }
 

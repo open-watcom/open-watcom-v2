@@ -13,7 +13,7 @@ extern "C" int bar( void )
     return 'b';
 }
 
-#if defined( M_I86 ) || defined( M_I386 )
+#if defined( _M_IX86 )
 
 #pragma aux ack "__S__ack_v_i";
 #pragma aux foo "__S__foo_v_i";

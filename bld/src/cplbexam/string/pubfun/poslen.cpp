@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    String    s ("Watcom C++ compiler");
+    String    s ("Open Watcom C++ compiler");
     int       pos = 14;
     int       len = 4;
 

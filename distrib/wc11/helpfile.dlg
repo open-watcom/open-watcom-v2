@@ -1,0 +1,36 @@
+name=Helpfile
+static_text=\
+        //1"Select the types of online help files:"\
+        //2"オンラインヘルプ・ファイルのタイプの選択:"\
+        //0
+static_text=
+check_box=win16_helpfiles,,\
+        //1"&Windows 3.X Hosted Help Files"\
+        //2"&Windows 3.X ホスト・ヘルプファイル"\
+        //0
+check_box=win32_helpfiles,,\
+        //1"Windows 95 / Windows &NT Hosted Help files"\
+        //2"Windows 95 / Windows &NT ホスト・ヘルプファイル"\
+        //0
+check_box=os2_helpfiles,,\
+        //1"&OS/2 Hosted Help Files"\
+        //2"&OS/2 ホスト・ヘルプファイル"\
+        //0
+check_box=whelp_helpfiles,,\
+        //1"&Dos Hosted Help Files"\
+        //2"&Dos ホスト・ヘルプファイル"\
+        //0
+static_text=
+static_text=,SrcIsCD
+radio_button=helpfiles,,\
+        //1"Copy on-line help files to hard &disk"\
+        //2"オンライン・ヘルプファイルをハードディスクにコピーします (&d)"\
+        //0,SrcIsCD
+radio_button=other_dummy_1,helpfiles !,\
+        //1"&Leave on-line help files on CD-ROM"\
+        //2"オンライン・ヘルプファイルを CD-ROM に残します (&L)"\
+        //0,SrcIsCD
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _setcharspacing( short space )
+_WCRTLINK void _WCI86FAR _CGRAPH _setcharspacing( short space )
 /*==============================================
 
    This routine sets the character spacing for graphics text output. */

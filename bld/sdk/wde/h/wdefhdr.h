@@ -38,8 +38,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern OBJPTR WINEXPORT  WdeHdrCreate      ( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeHdrInit        ( Bool );
-extern void              WdeHdrFini        ( void );
+extern OBJPTR WINEXPORT  WdeHdrCreate( OBJPTR, RECT *, OBJPTR );
+extern Bool              WdeHdrInit( Bool );
+extern void              WdeHdrFini( void );
 
 #endif

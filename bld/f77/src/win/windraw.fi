@@ -1,0 +1,86 @@
+*$noreference
+
+! Owner-Draw Control Drawing Information
+
+      structure /DRAWITEMSTRUCT/
+          integer*2             CtlType
+          integer*2             CtlID
+          integer*2             itemID
+          integer*2             itemAction
+          integer*2             itemState
+          integer*2             hwndItem
+          integer*2             hDC
+          record /RECT/         rcItem
+          integer*4             itemData
+      end structure
+
+! Owner-Draw Control Dimensions
+
+      structure /MEASUREITEMSTRUCT/
+          integer*2             CtlType
+          integer*2             CtlID
+          integer*2             itemID
+          integer*2             itemWidth
+          integer*2             itemHeight
+          integer*4             itemData
+      end structure
+
+! Deleted Owner-Draw List-Box Item
+
+      structure /DELETEITEMSTRUCT/
+          integer*2             CtlType
+          integer*2             CtlID
+          integer*2             itemID
+          integer*2             hwndItem
+          integer*4             itemData
+      end structure
+
+! Owner-Draw Item-Sorting Information
+
+      structure /COMPAREITEMSTRUCT/
+          integer*2             CtlType
+          integer*2             CtlID
+          integer*2             hwndItem
+          integer*2             itemID1
+          integer*4             itemData1
+          integer*2             itemID2
+          integer*4             itemData2
+      end structure
+
+! Owner draw control types
+
+      integer ODT_MENU
+      integer ODT_LISTBOX
+      integer ODT_COMBOBOX
+      integer ODT_BUTTON
+
+      parameter ( ODT_MENU        = 1 )
+      parameter ( ODT_LISTBOX     = 2 )
+      parameter ( ODT_COMBOBOX    = 3 )
+      parameter ( ODT_BUTTON      = 4 )
+
+! Owner draw actions
+
+      integer ODA_DRAWENTIRE
+      integer ODA_SELECT
+      integer ODA_FOCUS
+
+      parameter ( ODA_DRAWENTIRE  = '0001'x )
+      parameter ( ODA_SELECT      = '0002'x )
+      parameter ( ODA_FOCUS       = '0004'x )
+
+! Owner draw state
+
+      integer ODS_SELECTED
+      integer ODS_GRAYED
+      integer ODS_DISABLED
+      integer ODS_CHECKED
+      integer ODS_FOCUS
+
+      parameter ( ODS_SELECTED    = '0001'x )
+      parameter ( ODS_GRAYED      = '0002'x )
+      parameter ( ODS_DISABLED    = '0004'x )
+      parameter ( ODS_CHECKED     = '0008'x )
+      parameter ( ODS_FOCUS       = '0010'x )
+
+*$reference

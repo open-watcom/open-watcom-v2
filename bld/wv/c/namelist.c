@@ -63,18 +63,18 @@ static void SetKey( a_symbol *sym )
     b[1] = 0;
     b[2] = 0;
     b[3] = 0;
-    SymName( ASymHdl( sym ), NULL, SN_SOURCE, b, sizeof( b ) );
+    SymName( ASymHdl( sym ), NULL, SN_SOURCE, (char *)b, sizeof( b ) );
     sym->key = ((unsigned long)tolower(b[0])<<24)+
                ((unsigned long)tolower(b[1])<<16)+
                               (tolower(b[2])<< 8)+
                                tolower(b[3]);
 }
 
-OVL_EXTERN int SymCompare( a_symbol **pa, a_symbol **pb )
+OVL_EXTERN int SymCompare( void *pa, void *pb )
 {
     char        *cmpa,*cmpb;
-    a_symbol    *a = *pa;
-    a_symbol    *b = *pb;
+    a_symbol    *a = *(a_symbol **)pa;
+    a_symbol    *b = *(a_symbol **)pb;
 
     if( a->key == 0 ) SetKey( a );
     if( b->key == 0 ) SetKey( b );
@@ -114,8 +114,9 @@ static bool CheckType( sym_handle *sym, name_list *name )
 
 
 static SYM_WALKER StickEmIn;
-static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, name_list *name )
+static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
 {
+    name_list   *name = _name;
     char        *p;
     a_symbol    *curr;
 
@@ -167,7 +168,7 @@ static void UniqList( name_list *name, bool dup_ok )
     a_symbol    **owner, *next;
     address     addr, next_addr;
 
-    owner = &name->list;
+    owner = (a_symbol **)&name->list;
     for( ;; ) {
         next = *owner;
         if( next == NULL ) break;

@@ -11,16 +11,16 @@ int main() {
     int xx;
     E i;
 
-    for( i = v0, xx=0; i != vf; ++i, ++xx ) {
+    for( i = v0, xx=0; i != vf; i = E(i + 1), ++xx ) {
 	check( i, xx, __LINE__ );
     }
-    for( i = vf, xx = 0x0f; i != v0; --i, --xx ) {
+    for( i = vf, xx = 0x0f; i != v0; i = E(i - 1), --xx ) {
 	check( i, xx, __LINE__ );
     }
-    for( i = v0, xx=0; i != vf; i+=1, xx+=1 ) {
+    for( i = v0, xx=0; i != vf; i = E(i + 1), xx+=1 ) {
 	check( i, xx, __LINE__ );
     }
-    for( i = (xx=0x0f,vf); i != v0; i-=1, xx-=1 ) {
+    for( i = (xx=0x0f,vf); i != v0; i = E(i - 1), xx-=1 ) {
 	check( i, xx, __LINE__ );
     }
     _PASS;

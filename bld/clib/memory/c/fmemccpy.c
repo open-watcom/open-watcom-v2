@@ -33,8 +33,10 @@
 #include "variety.h"
 #include <string.h>
 
-_WCRTLINK char _WCFAR *_fmemccpy( char _WCFAR *dst, const char _WCFAR *src, int c, size_t cnt )
+_WCRTLINK void _WCFAR *_fmemccpy( void _WCFAR *d, const void _WCFAR *s, int c, size_t cnt )
     {
+        char _WCFAR *dst = d;
+        const char _WCFAR *src = s;
         for(;;) {
             if( cnt == 0 ) break;
             *dst = *src;

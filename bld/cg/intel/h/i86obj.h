@@ -85,6 +85,8 @@
 #define WEAK_EXTRN_COMMENT  CMT_NP( WKEXT )
 #define LAZY_EXTRN_COMMENT  CMT_NP( LZEXT )
 
+typedef unsigned_16     omf_idx;
+
 typedef enum {
 /*  order is important -- see documentation */
 /*  on fixups */
@@ -125,10 +127,10 @@ typedef struct index_rec {
         long_offset             location;
         long_offset             max_written;
         long_offset             max_size;
-        unsigned_16             base;   /*  base for relocs */
-        unsigned_16             sidx;   /*  index for segment */
-        unsigned_16             nidx;   /*  name index for segment */
-        unsigned_16             cidx;   /*  class name index */
+        omf_idx                 base;   /*  base for relocs */
+        omf_idx                 sidx;   /*  index for segment */
+        omf_idx                 nidx;   /*  name index for segment */
+        omf_idx                 cidx;   /*  class name index */
         unsigned                big                     : 1;
         unsigned                need_base_set           : 1;
         unsigned                rom                     : 1;
@@ -146,7 +148,7 @@ typedef struct index_rec {
         unsigned_32             total_comdat_size;
         sym_handle              comdat_symbol;
         label_handle            comdat_label;
-        unsigned_16             comdat_nidx;
+        omf_idx                 comdat_nidx;
         void                    *virt_func_refs;
-        unsigned                comdat_prefix_import;
+        omf_idx                 comdat_prefix_import;
 } index_rec;

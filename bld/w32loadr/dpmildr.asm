@@ -42,7 +42,7 @@ include struct.inc
         extrn   _end            : byte
 
 DGROUP  group   _DATA
-_DATA   segment dword public 'DATA'
+_DATA   segment use16 dword public 'DATA'
 
 modesw  dd      0       ; far pointer to DPMI host's mode switch entry point
 
@@ -61,7 +61,7 @@ Jspawn_error    db "ローダー・エラー: アプリケーションを起動できません",0Dh,0Ah,
 _DATA   ends
 
 
-_TEXT   segment dword public 'CODE'
+_TEXT   segment use16 dword public 'CODE'
         assume  cs:_TEXT
         assume  ds:DGROUP
 

@@ -7,16 +7,14 @@
 //
 #ifndef _WCVBASE_H_INCLUDED
 #define _WCVBASE_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wcvbase.h is for use with C++
-#endif
+:include cpponly.sp
 
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
-
 
 // "Warning! W549: 'sizeof' operand contains compiler generated information"
 #pragma warning 549 9
@@ -207,7 +205,7 @@ WCBareVectorBase<Type>::WCBareVectorBase( size_t length ){
 
 
 template<class Type>
-virtual WCBareVectorBase<Type>::~WCBareVectorBase() {
+WCBareVectorBase<Type>::~WCBareVectorBase() {
     if( vector ) {
         base_throw_not_empty();
         // call destructors for any initialized elements

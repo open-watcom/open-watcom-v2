@@ -1,38 +1,6 @@
-;*****************************************************************************
-;*
-;*                            Open Watcom Project
-;*
-;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
-;*
-;*  ========================================================================
-;*
-;*    This file contains Original Code and/or Modifications of Original
-;*    Code as defined in and that are subject to the Sybase Open Watcom
-;*    Public License version 1.0 (the 'License'). You may not use this file
-;*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-;*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-;*    provided with the Original Code and Modifications, and is also
-;*    available at www.sybase.com/developer/opensource.
-;*
-;*    The Original Code and all software distributed under the License are
-;*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-;*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-;*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-;*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-;*    NON-INFRINGEMENT. Please see the License for the specific language
-;*    governing rights and limitations under the License.
-;*
-;*  ========================================================================
-;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
-;*
-;*****************************************************************************
-
-
     name std
 
-ifdef _386
+ifdef __386__
     _DATA segment word public 'DATA'
 else
     StdFont_DATA segment para 'FONT_DATA'
@@ -275,7 +243,7 @@ db   20,  19,  19,  16,  19, -99,  16,  19,  18,  18,  20,  16,  21,  14
 db   21,  11,  20,   9,  19,   8,  17,   7,  15,   7,  13,   8,  12,   9
 db   11,  12
 
-ifdef _386
+ifdef __386__
     _DATA ends
 else
     StdFont_DATA ends

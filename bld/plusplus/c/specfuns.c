@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "plusplus.h"
 #include "specfuns.h"
 

@@ -24,22 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Utility to compare argument strings for equality.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <string.h>
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     if( argc < 3 ) {
-        exit( 100 );
+        return( 100 );
     }
     if( strcmp( argv[1], argv[2] ) == 0 ) {
-        exit( 0 );
+        return( 0 );
     }
-    exit( 5 );
+    return( 5 );
 }

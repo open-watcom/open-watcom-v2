@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of putchar().
 *
 ****************************************************************************/
 
@@ -36,16 +35,11 @@
 
 #undef putchar
 
-
-#ifndef __WIDECHAR__
-    _WCRTLINK int    (putchar)( int c )
-#else
-    _WCRTLINK wint_t (putwchar)( wint_t c )
-#endif
-    {
+_WCRTLINK INTCHAR_TYPE __F_NAME(putchar,putwchar)( INTCHAR_TYPE c )
+{
 #ifdef putc
-        return( __F_NAME(putc,putwc)( c, stdout ) );
+    return( __F_NAME(putc,putwc)( c, stdout ) );
 #else
-        return( __F_NAME(fputc,fputwc)( c, stdout ) );
+    return( __F_NAME(fputc,fputwc)( c, stdout ) );
 #endif
-    }
+}

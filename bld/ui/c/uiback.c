@@ -33,13 +33,8 @@
 #include "uidef.h"
 
 
-#pragma off( unreferenced );
-static void backblank( area, dummy )
-#pragma on( unreferenced );
-/*********************************/
-
-register        SAREA                   area;
-register        void*                   dummy;
+static void backblank( SAREA area, void *dummy )
+/**********************************************/
 {
     register    ORD                     row;
 
@@ -49,13 +44,8 @@ register        void*                   dummy;
 }
 
 
-#pragma off( unreferenced );
-static void backfill( area, dummy )
-#pragma on( unreferenced );
-/*********************************/
-
-register        SAREA                   area;
-register        void*                   dummy;
+static void backfill( SAREA area, void *dummy )
+/*********************************************/
 {
     register    ORD                     row;
 
@@ -65,8 +55,8 @@ register        void*                   dummy;
     }
 }
 
-void uirestorebackground()
-/************************/
+void uirestorebackground( void )
+/******************************/
 {
     ATTR        hold;
 
@@ -78,8 +68,8 @@ void uirestorebackground()
 }
 
 
-void intern openbackground()
-/**************************/
+void intern openbackground( void )
+/********************************/
 {
     UIData->blank.area.row = 0;
     UIData->blank.area.col = 0;
@@ -92,15 +82,15 @@ void intern openbackground()
 }
 
 
-void intern closebackground()
-/***************************/
+void intern closebackground( void )
+/*********************************/
 {
     closewindow( &UIData->blank );
 }
 
 
-BUFFER * global uibackgroundbuffer()
-/****************************/
+BUFFER * global uibackgroundbuffer( void )
+/****************************************/
 {
     register    bool                    ok;
 
@@ -118,8 +108,8 @@ BUFFER * global uibackgroundbuffer()
     return( NULL );
 }
 
-bool global uiremovebackground()
-/****************************/
+bool global uiremovebackground( void )
+/************************************/
 {
     if( UIData->blank.type.buffer.origin != NULL ){
         bfree( &UIData->blank.type.buffer );
@@ -130,8 +120,8 @@ bool global uiremovebackground()
     return( TRUE );
 }
 
-bool global uikeepbackground()
-/****************************/
+bool global uikeepbackground( void )
+/**********************************/
 {
     register    ORD                     row;
     register    BUFFER                  *buff;

@@ -1,0 +1,14 @@
+name=axp_targ
+static_text=\
+        //1"Select the target operating systems:"\
+        //2"ターゲットOSを選択してください:"\
+        //0
+static_text=
+static_text="Windows &NT/Windows 95/Win32s on:"
+static_text=
+check_box=wnttarget,,"&Intel Target"
+check_box=alphatarget,,"Dec &Alpha Target"
+static_text=
+include=space.dlg
+static_text=
+include=ohc.dlg

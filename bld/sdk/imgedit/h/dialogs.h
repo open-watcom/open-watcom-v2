@@ -38,9 +38,10 @@
 #define SEL_BITMAP                  108
 #define SEL_ICON                    109
 #define SEL_CURSOR                  110
-#define BMP_256COLOUR               113
-#define BMP_16COLOUR                114
-#define BMP_2COLOUR                 115
+#define BMP_TRUECOLOR               112
+#define BMP_256COLOR                113
+#define BMP_16COLOR                 114
+#define BMP_2COLOR                  115
 #define BMP_HEIGHT                  119
 #define BMP_WIDTH                   120
 #define SIZE_WIDTH                  121
@@ -49,5 +50,5 @@
 #define SIZE_CLIP                   125
 
 #ifndef __NT__
-#define SS_SUNKEN                   0
+    #define SS_SUNKEN               0
 #endif

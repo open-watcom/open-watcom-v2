@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <io.h>
 #include <fcntl.h>
 

@@ -1,0 +1,387 @@
+/*
+ *  afxdtctl.inl    Inline implementation of functions declared in afxdtctl.h.
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE COLORREF CMonthCalCtrl::GetColor( int nRegion ) const
+/**************************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_GETCOLOR, nRegion, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetCurSel( CTime &refDateTime ) const
+/******************************************************************/
+{
+    SYSTEMTIME st;
+    if( !::SendMessage( m_hWnd, MCM_GETCURSEL, 0, (LPARAM)&st ) ) {
+        return( FALSE );
+    }
+    refDateTime = CTime( st ).GetTime();
+    return( TRUE );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetCurSel( LPSYSTEMTIME pDateTime ) const
+/**********************************************************************/
+{
+    ASSERT( pDateTime != NULL );
+    return( ::SendMessage( m_hWnd, MCM_GETCURSEL, 0, (LPARAM)pDateTime ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::GetFirstDayOfWeek( BOOL *pbLocal ) const
+/********************************************************************/
+{
+    DWORD dwRet = ::SendMessage( m_hWnd, MCM_GETFIRSTDAYOFWEEK, 0, 0L );
+    if( pbLocal != NULL ) {
+        *pbLocal = HIWORD( dwRet );
+    }
+    return( LOWORD( dwRet ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::GetMaxSelCount() const
+/**************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, MCM_GETMAXSELCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CMonthCalCtrl::GetMaxTodayWidth() const
+/******************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_GETMAXTODAYWIDTH, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetMinReqRect( RECT *pRect ) const
+/***************************************************************/
+{
+    ASSERT( pRect != NULL );
+    return( ::SendMessage( m_hWnd, MCM_GETMINREQRECT, 0, (LPARAM)pRect ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::GetMonthDelta() const
+/*************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, MCM_GETMONTHDELTA, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetToday( CTime &refDateTime ) const
+/*****************************************************************/
+{
+    SYSTEMTIME st;
+    if( !::SendMessage( m_hWnd, MCM_GETTODAY, 0, (LPARAM)&st ) ) {
+        return( FALSE );
+    }
+    refDateTime = CTime( st ).GetTime();
+    return( TRUE );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetToday( LPSYSTEMTIME pDateTime ) const
+/*********************************************************************/
+{
+    ASSERT( pDateTime != NULL );
+    return( ::SendMessage( m_hWnd, MCM_GETTODAY, 0, (LPARAM)pDateTime ) );
+}
+
+AFX_INLINE DWORD CMonthCalCtrl::HitTest( PMCHITTESTINFO pMCHitTest )
+/******************************************************************/
+{
+    ASSERT( pMCHitTest != NULL );
+    return( ::SendMessage( m_hWnd, MCM_HITTEST, 0, (LPARAM)pMCHitTest ) );
+}
+
+AFX_INLINE COLORREF CMonthCalCtrl::SetColor( int nRegion, COLORREF ref )
+/**********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCOLOR, nRegion, ref ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetCurSel( const CTime &refDateTime )
+/******************************************************************/
+{
+    SYSTEMTIME st;
+    refDateTime.GetAsSystemTime( st );
+    return( ::SendMessage( m_hWnd, MCM_SETCURSEL, 0, (LPARAM)&st ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetCurSel( LPSYSTEMTIME pDateTime )
+/****************************************************************/
+{
+    ASSERT( pDateTime != NULL );
+    return( ::SendMessage( m_hWnd, MCM_SETCURSEL, 0, (LPARAM)pDateTime ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetDayState( int nMonths, LPMONTHDAYSTATE pStates )
+/********************************************************************************/
+{
+    ASSERT( pStates != NULL );
+    return( ::SendMessage( m_hWnd, MCM_SETDAYSTATE, nMonths, (LPARAM)pStates ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetFirstDayOfWeek( int iDay, int *lpnOld )
+/***********************************************************************/
+{
+    DWORD dwRet = ::SendMessage( m_hWnd, MCM_SETFIRSTDAYOFWEEK, 0, iDay );
+    if( lpnOld != NULL ) {
+        *lpnOld = LOWORD( dwRet );
+    }
+    return( HIWORD( dwRet ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetMaxSelCount( int nMax )
+/*******************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETMAXSELCOUNT, nMax, 0L ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::SetMonthDelta( int iDelta )
+/*******************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, MCM_SETMONTHDELTA, iDelta, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetSelRange( const CTime &pMinRange,
+                                            const CTime &pMaxRange )
+/******************************************************************/
+{
+    SYSTEMTIME  st[2];
+    pMinRange.GetAsSystemTime( st[0] );
+    pMaxRange.GetAsSystemTime( st[1] );
+    return( ::SendMessage( m_hWnd, MCM_SETSELRANGE, 0, (LPARAM)st ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetSelRange( LPSYSTEMTIME pMinRange,
+                                            LPSYSTEMTIME pMaxRange )
+/******************************************************************/
+{
+    ASSERT( pMinRange != NULL );
+    ASSERT( pMaxRange != NULL );
+    
+    SYSTEMTIME  st[2];
+    memcpy( &st[0], pMinRange, sizeof( SYSTEMTIME ) );
+    memcpy( &st[1], pMaxRange, sizeof( SYSTEMTIME ) );
+    return( ::SendMessage( m_hWnd, MCM_SETSELRANGE, 0, (LPARAM)st ) );
+}
+
+AFX_INLINE void CMonthCalCtrl::SetToday( const CTime *pDateTime )
+/***************************************************************/
+{
+    ASSERT( pDateTime != NULL );
+    
+    SYSTEMTIME st;
+    pDateTime->GetAsSystemTime( st );
+    ::SendMessage( m_hWnd, MCM_SETTODAY, 0, (LPARAM)&st );
+}
+
+AFX_INLINE void CMonthCalCtrl::SetToday( LPSYSTEMTIME pDateTime )
+/***************************************************************/
+{
+    ASSERT( pDateTime != NULL );
+    ::SendMessage( m_hWnd, MCM_SETTODAY, 0, (LPARAM)pDateTime );
+}
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE CALID CMonthCalCtrl::GetCalID() const
+/**********************************************/
+{
+    return( (CALID)::SendMessage( m_hWnd, MCM_GETCALID, 0, 0L ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::GetCalendarBorder() const
+/*****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, MCM_GETCALENDARBORDER, 0, 0L ) );
+}
+
+AFX_INLINE int CMonthCalCtrl::GetCalendarCount() const
+/****************************************************/
+{
+    return( (int)::SendMessage( m_hWnd, MCM_GETCALENDARCOUNT, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::GetCalendarGridInfo( PMCGRIDINFO pmcGridInfo ) const
+/*********************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_GETCALENDARGRIDINFO, 0, (LPARAM)pmcGridInfo ) );
+}
+
+AFX_INLINE DWORD CMonthCalCtrl::GetCurrentView() const
+/****************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_GETCURRENTVIEW, 0, 0L ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::IsCenturyView() const
+/**************************************************/
+{
+    return( GetCurrentView() == MCMV_CENTURY );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::IsDecadeView() const
+/*************************************************/
+{
+    return( GetCurrentView() == MCMV_DECADE );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::IsMonthView() const
+/************************************************/
+{
+    return( GetCurrentView() == MCMV_MONTH );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::IsYearView() const
+/***********************************************/
+{
+    return( GetCurrentView() == MCMV_YEAR );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetCalID( CALID calid )
+/****************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCALID, (WPARAM)calid, 0L ) );
+}
+
+AFX_INLINE void CMonthCalCtrl::SetCalendarBorder( int cxyBorder )
+/***************************************************************/
+{
+    ::SendMessage( m_hWnd, MCM_SETCALENDARBORDER, TRUE, cxyBorder );
+}
+
+AFX_INLINE void CMonthCalCtrl::SetCalendarBorderDefault()
+/*******************************************************/
+{
+    ::SendMessage( m_hWnd, MCM_SETCALENDARBORDER, FALSE, 0L );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetCenturyView()
+/*********************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCURRENTVIEW, 0, MCMV_CENTURY ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetCurrentView( DWORD dwNewView )
+/**************************************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCURRENTVIEW, 0, dwNewView ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetDecadeView()
+/********************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCURRENTVIEW, 0, MCMV_DECADE ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetMonthView()
+/*******************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCURRENTVIEW, 0, MCMV_MONTH ) );
+}
+
+AFX_INLINE BOOL CMonthCalCtrl::SetYearView()
+/******************************************/
+{
+    return( ::SendMessage( m_hWnd, MCM_SETCURRENTVIEW, 0, MCMV_YEAR ) );
+}
+
+AFX_INLINE void CMonthCalCtrl::SizeRectToMin( LPRECT lpRect )
+/*************************************************************/
+{
+    ::SendMessage( m_hWnd, MCM_SIZERECTTOMIN, 0, (LPARAM)lpRect );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE COLORREF CDateTimeCtrl::GetMonthCalColor( int iColor ) const
+/*********************************************************************/
+{
+    return( ::SendMessage( m_hWnd, DTM_GETMCCOLOR, iColor, 0L ) );
+}
+
+AFX_INLINE CMonthCalCtrl *CDateTimeCtrl::GetMonthCalCtrl() const
+/**************************************************************/
+{
+    return( (CMonthCalCtrl *)CWnd::FromHandle( (HWND)::SendMessage( m_hWnd,
+        DTM_GETMONTHCAL, 0, 0L ) ) );
+}
+
+AFX_INLINE DWORD CDateTimeCtrl::GetTime( CTime &timeDest ) const
+/**************************************************************/
+{
+    SYSTEMTIME  st;
+    DWORD       dwRet = ::SendMessage( m_hWnd, DTM_GETSYSTEMTIME, 0, (LPARAM)&st );
+    timeDest = CTime( st ).GetTime();
+    return( dwRet );
+}
+
+AFX_INLINE DWORD CDateTimeCtrl::GetTime( LPSYSTEMTIME pTimeDest ) const
+/*********************************************************************/
+{
+    ASSERT( pTimeDest != NULL );
+    return( ::SendMessage( m_hWnd, DTM_GETSYSTEMTIME, 0, (LPARAM)pTimeDest ) );
+}
+
+AFX_INLINE BOOL CDateTimeCtrl::SetFormat( LPCTSTR pstrFormat )
+/************************************************************/
+{
+    return( ::SendMessage( m_hWnd, DTM_SETFORMAT, 0, (LPARAM)pstrFormat ) );
+}
+
+AFX_INLINE COLORREF CDateTimeCtrl::SetMonthCalColor( int iColor, COLORREF ref )
+/*****************************************************************************/
+{
+    return( ::SendMessage( m_hWnd, DTM_SETMCCOLOR, iColor, ref ) );
+}
+
+#if (_WIN32_IE >= 0x0400)
+
+AFX_INLINE CFont *CDateTimeCtrl::GetMonthCalFont() const
+/******************************************************/
+{
+    return( CFont::FromHandle( (HFONT)::SendMessage( m_hWnd, DTM_GETMCFONT, 0, 0L ) ) );
+}
+
+AFX_INLINE void CDateTimeCtrl::SetMonthCalFont( HFONT hFont, BOOL bRedraw )
+/*************************************************************************/
+{
+    ::SendMessage( m_hWnd, DTM_SETMCFONT, (WPARAM)hFont, bRedraw );
+}
+
+#endif // (_WIN32_IE >= 0x0400)
+
+#if (_WIN32_WINNT >= 0x0600)
+
+AFX_INLINE void CDateTimeCtrl::CloseMonthCal() const
+/**************************************************/
+{
+    ::SendMessage( m_hWnd, DTM_CLOSEMONTHCAL, 0, 0L );
+}
+
+AFX_INLINE BOOL CDateTimeCtrl::GetDateTimePickerInfo(
+    LPDATETIMEPICKERINFO pDateTimePickerInfo ) const
+/**************************************************/
+{
+    ASSERT( pDateTimePickerInfo != NULL );
+    pDateTimePickerInfo->cbSize = sizeof( DATETIMEPICKERINFO );
+    return( ::SendMessage( m_hWnd, DTM_GETDATETIMEPICKERINFO, 0,
+                           (LPARAM)pDateTimePickerInfo ) );
+}
+
+AFX_INLINE BOOL CDateTimeCtrl::GetIdealSize( LPSIZE pSize ) const
+/***************************************************************/
+{
+    ASSERT( pSize != NULL );
+    return( ::SendMessage( m_hWnd, DTM_GETIDEALSIZE, 0, (LPARAM)pSize ) );
+}
+
+AFX_INLINE DWORD CDateTimeCtrl::GetMonthCalStyle() const
+/******************************************************/
+{
+    return( ::SendMessage( m_hWnd, DTM_GETMCSTYLE, 0, 0L ) );
+}
+
+AFX_INLINE DWORD CDateTimeCtrl::SetMonthCalStyle( DWORD dwStyle )
+/***************************************************************/
+{
+    return( ::SendMessage( m_hWnd, DTM_SETMCSTYLE, 0, dwStyle ) );
+}
+
+#endif // (_WIN32_WINNT >= 0x0600)

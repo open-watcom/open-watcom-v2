@@ -10,6 +10,7 @@
 #include <i86.h>
 #include <dos.h>
 #include <stdio.h>
+#include <string.h>
 
 struct meminfo {
     unsigned LargestBlockAvail;

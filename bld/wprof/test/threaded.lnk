@@ -1,4 +1,3 @@
 OPTION map, verbose
-FORM os2
-LIBPATH f:\comp\c\lib286;f:\comp\c\lib286\os2;f:\comp\watcom\lib
+SYS os2
 FILE threaded

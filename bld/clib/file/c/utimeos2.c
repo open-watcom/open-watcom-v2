@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 implementation of utime().
 *
 ****************************************************************************/
 
@@ -33,28 +32,23 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stddef.h>
-#include <sys\types.h>
+#include <sys/types.h>
 #include <time.h>
 #include <dos.h>
 #include <wos2.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <direct.h>
-#include <sys\utime.h>
+#include <sys/utime.h>
 #include "openmode.h"
 #include "rtdata.h"
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
-    #include <stdlib.h>
-    #include "mbwcconv.h"
-#endif
 
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
 /***************************************************************************************/
 {
-    APIRET      error;
+    APIRET      rc;
     OS_UINT     actiontaken;
     FILESTATUS  stat;
     HFILE       handle;
@@ -62,17 +56,18 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     time_t      curr_time;
     struct      utimbuf time_buf;
 #ifdef __WIDECHAR__
-    char    mbPath[MB_CUR_MAX*_MAX_PATH]; /* single-byte char */
-    __filename_from_wide( mbPath, fn );
-#endif
+    char        mbPath[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    error = DosOpen( (PSZ)__F_NAME(fn,mbPath), &handle, &actiontaken, 0ul, _A_NORMAL,
+    if( wcstombs( mbPath, fn, sizeof( mbPath ) ) == -1 ) {
+        mbPath[0] = '\0';
+    }
+#endif
+    rc = DosOpen( (PSZ)__F_NAME(fn,mbPath), &handle, &actiontaken, 0ul, _A_NORMAL,
                      OPENFLAG_FAIL_IF_NOT_EXISTS | OPENFLAG_OPEN_IF_EXISTS,
                      OPENMODE_DENY_NONE | OPENMODE_ACCESS_RDWR,
                      0ul );
-    if( error != 0 ) {
-        __set_errno_dos( error );
-        return( -1 );
+    if( rc != 0 ) {
+        return( __set_errno_dos( rc ) );
     }
     if( DosQFileInfo( handle, 1, (PBYTE)&stat, sizeof( FILESTATUS ) ) != 0 ) {
         DosClose( handle );

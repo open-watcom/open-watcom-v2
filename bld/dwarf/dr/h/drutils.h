@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF reader utility functions prototypes.
 *
 ****************************************************************************/
 
@@ -45,7 +44,7 @@ typedef struct {
 } mod_scan_info;
 
 /* function prototypes */
-typedef bool (*DWRCUWLK) (dr_handle, dr_handle,mod_scan_info *, void  *);
+typedef bool (*DWRCUWLK) (dr_handle, dr_handle,mod_scan_info *, void *);
 extern long DWRInfoLength( dr_handle  );
 extern bool DWRScanCompileUnit( dr_search_context *,
                            DWRCUWLK,
@@ -61,10 +60,13 @@ extern dr_handle   DWRReadAddr( dr_handle, dr_handle );
 extern char *      DWRReadString( dr_handle, dr_handle );
 extern int         DWRReadFlag( dr_handle, dr_handle );
 extern char *      DWRCopyString( dr_handle * );
+extern char *      DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
 extern dw_atnum    DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
 extern bool        DWRSearchArray( unsigned_16 const *, unsigned_16 );
 extern unsigned    DWRGetAddrSize( dr_handle );
 extern dr_handle   DWRGetAbbrev( dr_handle * );
+extern dr_handle   DWRReadAbbrev( dr_handle );
+extern dr_handle   DWRLookupAbbrev( dr_handle entry, dr_handle abbr );
 extern void        DWRGetCompileUnitHdr( dr_handle,
                            DWRCUWLK,
                            void * );

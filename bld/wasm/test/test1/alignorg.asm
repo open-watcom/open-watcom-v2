@@ -1,7 +1,7 @@
 .386
 ;.model small
 ;.code
-_TEXT segment page use32 'code'
+_TEXT segment page use32 'CODE'
     org 1
     align 2 ; 1 byte
     org 6
@@ -20,7 +20,7 @@ _TEXT segment page use32 'code'
 ;    org $+8
     org 56
     align 16 ; 8 byte
-    mov ax, $
+    mov eax, $
 _TEXT ends
 end
 

@@ -1,0 +1,15 @@
+        integer NUM_SERIES
+        parameter (NUM_SERIES=2)
+        integer NUM_VALUES
+        parameter (NUM_VALUES=4)
+
+        integer*4 categories( NUM_VALUES )
+        integer*4 labels( NUM_SERIES )
+        real values( NUM_SERIES, NUM_VALUES )
+        real x( NUM_SERIES, NUM_VALUES )
+        real y( NUM_SERIES, NUM_VALUES )
+        integer*2 explode( NUM_VALUES )
+        record /videoconfig/ vconfig
+        integer xmax, ymax, xmid, ymid
+        common /pgdata/ categories, labels, values, x, y,
+     +         explode, vconfig, xmax, ymax, xmid, ymid

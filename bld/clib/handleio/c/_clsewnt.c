@@ -40,7 +40,7 @@
 #include "iomode.h"
 #include "seterrno.h"
 #include "defwin.h"
-
+#include "close.h"
 
 int __close( int hid )
 {
@@ -71,6 +71,6 @@ int __close( int hid )
         rc = __set_errno_nt();
     }
     __freePOSIXHandle( hid );
-    __SetIOMode( hid, 0 );
+    __SetIOMode_nogrow( hid, 0 );
     return( rc );
 }

@@ -38,3 +38,5 @@ extern void             ResolveUndefined( void );
 extern unsigned long    ObjPass1( void );
 extern void             SetupFakeModule( void );
 extern void             LinkFakeModule( void );
+extern void             ProcLocalImports( void );
+extern void             FreeLocalImports( void );

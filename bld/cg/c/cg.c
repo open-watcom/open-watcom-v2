@@ -37,19 +37,20 @@
 #include "cgdefs.h"
 #include "typclass.h"
 #include "typedef.h"
+#include "types.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "model.h"
 #include "hostsys.h"
 #include "cgstub.h"
 #include "feprotos.h"
+#include "cgmem.h"
 
 #include "stubdata.h"
 
 extern  int             TempId;
 
 extern  void            DumpTree(n *);
-extern  type_def        *TypeAddress(cg_type);
 extern  char            *CopyStr(char*,char*);
 
 extern  char            *ACopyOf(char *);
@@ -79,10 +80,6 @@ extern  void            CDefLabel(l *lb);
 extern  void            DRefLabel(l *lb);
 extern  void            DDefLabel(l *lb);
 extern  pointer         LkAddBack(sym_handle,pointer);
-extern  pointer         CGAlloc( int size );
-extern  pointer         DoCGAlloc( int size, pointer ra );
-extern  void            CGFree( pointer chunk );
-extern  void            CGFreeSize( pointer chunk, int size );
 extern  unsigned_32     BETypeLength( cg_type );
 
 /********************************************************************/
@@ -556,7 +553,7 @@ extern  n       *CGCallback( pointer func, pointer parm ) {
     call_back* cb;
 
     Action( "CGCallback" );
-    nd = NewNode( CALLBACK, T_DEFAULT );
+    nd = NewNode( CALLBACK, TY_DEFAULT );
     cb = CGAlloc( sizeof( call_back ) );
     nd->l = (n*)cb;
     cb->function = func;
@@ -598,9 +595,9 @@ static  cg_type PtrTipe( pointer s ) {
         a = 0;
     }
     if( a & FE_PROC ) {
-        return( T_CODE_PTR );
+        return( TY_CODE_PTR );
     } else {
-        return( T_POINTER );
+        return( TY_POINTER );
     }
 }
 extern  n       *CGFEName( pointer sym, cg_type t ) {

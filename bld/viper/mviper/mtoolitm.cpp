@@ -52,6 +52,9 @@ WEXPORT MToolItem::MToolItem( WTokenFile& fil, WString& tok )
     if( !fil.eol() ) {
         fil.token( _hint );
     }
+    if( !fil.eol() ) {
+        fil.token( _tip );
+    }
     fil.token( tok );   //read ahead
 }
 

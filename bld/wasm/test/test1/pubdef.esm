@@ -1,0 +1,408 @@
+.387
+.386p
+		PUBLIC	lbl290
+		PUBLIC	lbl299
+		PUBLIC	lbl298
+		PUBLIC	lbl297
+		PUBLIC	lbl296
+		PUBLIC	lbl295
+		PUBLIC	lbl294
+		PUBLIC	lbl293
+		PUBLIC	lbl292
+		PUBLIC	lbl291
+		PUBLIC	lbl280
+		PUBLIC	lbl289
+		PUBLIC	lbl288
+		PUBLIC	lbl287
+		PUBLIC	lbl286
+		PUBLIC	lbl285
+		PUBLIC	lbl284
+		PUBLIC	lbl283
+		PUBLIC	lbl282
+		PUBLIC	lbl281
+		PUBLIC	lbl270
+		PUBLIC	lbl279
+		PUBLIC	lbl278
+		PUBLIC	lbl277
+		PUBLIC	lbl276
+		PUBLIC	lbl275
+		PUBLIC	lbl274
+		PUBLIC	lbl273
+		PUBLIC	lbl272
+		PUBLIC	lbl271
+		PUBLIC	lbl260
+		PUBLIC	lbl269
+		PUBLIC	lbl268
+		PUBLIC	lbl267
+		PUBLIC	lbl266
+		PUBLIC	lbl265
+		PUBLIC	lbl264
+		PUBLIC	lbl263
+		PUBLIC	lbl262
+		PUBLIC	lbl261
+		PUBLIC	lbl250
+		PUBLIC	lbl259
+		PUBLIC	lbl258
+		PUBLIC	lbl257
+		PUBLIC	lbl256
+		PUBLIC	lbl255
+		PUBLIC	lbl254
+		PUBLIC	lbl253
+		PUBLIC	lbl252
+		PUBLIC	lbl251
+		PUBLIC	lbl240
+		PUBLIC	lbl249
+		PUBLIC	lbl248
+		PUBLIC	lbl247
+		PUBLIC	lbl246
+		PUBLIC	lbl245
+		PUBLIC	lbl244
+		PUBLIC	lbl243
+		PUBLIC	lbl242
+		PUBLIC	lbl241
+		PUBLIC	lbl230
+		PUBLIC	lbl239
+		PUBLIC	lbl238
+		PUBLIC	lbl237
+		PUBLIC	lbl236
+		PUBLIC	lbl235
+		PUBLIC	lbl234
+		PUBLIC	lbl233
+		PUBLIC	lbl232
+		PUBLIC	lbl231
+		PUBLIC	lbl220
+		PUBLIC	lbl229
+		PUBLIC	lbl228
+		PUBLIC	lbl227
+		PUBLIC	lbl226
+		PUBLIC	lbl225
+		PUBLIC	lbl224
+		PUBLIC	lbl223
+		PUBLIC	lbl222
+		PUBLIC	lbl221
+		PUBLIC	lbl210
+		PUBLIC	lbl219
+		PUBLIC	lbl218
+		PUBLIC	lbl217
+		PUBLIC	lbl216
+		PUBLIC	lbl215
+		PUBLIC	lbl214
+		PUBLIC	lbl213
+		PUBLIC	lbl212
+		PUBLIC	lbl211
+		PUBLIC	lbl200
+		PUBLIC	lbl209
+		PUBLIC	lbl208
+		PUBLIC	lbl207
+		PUBLIC	lbl206
+		PUBLIC	lbl205
+		PUBLIC	lbl204
+		PUBLIC	lbl203
+		PUBLIC	lbl202
+		PUBLIC	lbl201
+		PUBLIC	lbl90
+		PUBLIC	lbl99
+		PUBLIC	lbl98
+		PUBLIC	lbl97
+		PUBLIC	lbl96
+		PUBLIC	lbl95
+		PUBLIC	lbl94
+		PUBLIC	lbl93
+		PUBLIC	lbl92
+		PUBLIC	lbl91
+		PUBLIC	lbl80
+		PUBLIC	lbl89
+		PUBLIC	lbl88
+		PUBLIC	lbl87
+		PUBLIC	lbl86
+		PUBLIC	lbl85
+		PUBLIC	lbl84
+		PUBLIC	lbl83
+		PUBLIC	lbl82
+		PUBLIC	lbl81
+		PUBLIC	lbl70
+		PUBLIC	lbl79
+		PUBLIC	lbl78
+		PUBLIC	lbl77
+		PUBLIC	lbl76
+		PUBLIC	lbl75
+		PUBLIC	lbl74
+		PUBLIC	lbl73
+		PUBLIC	lbl72
+		PUBLIC	lbl71
+		PUBLIC	lbl60
+		PUBLIC	lbl69
+		PUBLIC	lbl68
+		PUBLIC	lbl67
+		PUBLIC	lbl66
+		PUBLIC	lbl65
+		PUBLIC	lbl64
+		PUBLIC	lbl63
+		PUBLIC	lbl62
+		PUBLIC	lbl61
+		PUBLIC	lbl50
+		PUBLIC	lbl59
+		PUBLIC	lbl58
+		PUBLIC	lbl57
+		PUBLIC	lbl56
+		PUBLIC	lbl55
+		PUBLIC	lbl54
+		PUBLIC	lbl53
+		PUBLIC	lbl52
+		PUBLIC	lbl51
+		PUBLIC	lbl40
+		PUBLIC	lbl49
+		PUBLIC	lbl48
+		PUBLIC	lbl47
+		PUBLIC	lbl46
+		PUBLIC	lbl45
+		PUBLIC	lbl44
+		PUBLIC	lbl43
+		PUBLIC	lbl42
+		PUBLIC	lbl41
+		PUBLIC	lbl30
+		PUBLIC	lbl39
+		PUBLIC	lbl38
+		PUBLIC	lbl37
+		PUBLIC	lbl36
+		PUBLIC	lbl35
+		PUBLIC	lbl34
+		PUBLIC	lbl33
+		PUBLIC	lbl32
+		PUBLIC	lbl31
+		PUBLIC	lbl20
+		PUBLIC	lbl29
+		PUBLIC	lbl28
+		PUBLIC	lbl27
+		PUBLIC	lbl26
+		PUBLIC	lbl25
+		PUBLIC	lbl24
+		PUBLIC	lbl23
+		PUBLIC	lbl22
+		PUBLIC	lbl21
+		PUBLIC	lbl10
+		PUBLIC	lbl19
+		PUBLIC	lbl18
+		PUBLIC	lbl17
+		PUBLIC	lbl16
+		PUBLIC	lbl15
+		PUBLIC	lbl14
+		PUBLIC	lbl13
+		PUBLIC	lbl12
+		PUBLIC	lbl11
+		PUBLIC	lbl00
+		PUBLIC	lbl09
+		PUBLIC	lbl08
+		PUBLIC	lbl07
+		PUBLIC	lbl06
+		PUBLIC	lbl05
+		PUBLIC	lbl04
+		PUBLIC	lbl03
+		PUBLIC	lbl02
+		PUBLIC	lbl01
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+lbl290:
+lbl299:
+lbl298:
+lbl297:
+lbl296:
+lbl295:
+lbl294:
+lbl293:
+lbl292:
+lbl291:
+lbl280:
+lbl289:
+lbl288:
+lbl287:
+lbl286:
+lbl285:
+lbl284:
+lbl283:
+lbl282:
+lbl281:
+lbl270:
+lbl279:
+lbl278:
+lbl277:
+lbl276:
+lbl275:
+lbl274:
+lbl273:
+lbl272:
+lbl271:
+lbl260:
+lbl269:
+lbl268:
+lbl267:
+lbl266:
+lbl265:
+lbl264:
+lbl263:
+lbl262:
+lbl261:
+lbl250:
+lbl259:
+lbl258:
+lbl257:
+lbl256:
+lbl255:
+lbl254:
+lbl253:
+lbl252:
+lbl251:
+lbl240:
+lbl249:
+lbl248:
+lbl247:
+lbl246:
+lbl245:
+lbl244:
+lbl243:
+lbl242:
+lbl241:
+lbl230:
+lbl239:
+lbl238:
+lbl237:
+lbl236:
+lbl235:
+lbl234:
+lbl233:
+lbl232:
+lbl231:
+lbl220:
+lbl229:
+lbl228:
+lbl227:
+lbl226:
+lbl225:
+lbl224:
+lbl223:
+lbl222:
+lbl221:
+lbl210:
+lbl219:
+lbl218:
+lbl217:
+lbl216:
+lbl215:
+lbl214:
+lbl213:
+lbl212:
+lbl211:
+lbl200:
+lbl209:
+lbl208:
+lbl207:
+lbl206:
+lbl205:
+lbl204:
+lbl203:
+lbl202:
+lbl201:
+lbl90:
+lbl99:
+lbl98:
+lbl97:
+lbl96:
+lbl95:
+lbl94:
+lbl93:
+lbl92:
+lbl91:
+lbl80:
+lbl89:
+lbl88:
+lbl87:
+lbl86:
+lbl85:
+lbl84:
+lbl83:
+lbl82:
+lbl81:
+lbl70:
+lbl79:
+lbl78:
+lbl77:
+lbl76:
+lbl75:
+lbl74:
+lbl73:
+lbl72:
+lbl71:
+lbl60:
+lbl69:
+lbl68:
+lbl67:
+lbl66:
+lbl65:
+lbl64:
+lbl63:
+lbl62:
+lbl61:
+lbl50:
+lbl59:
+lbl58:
+lbl57:
+lbl56:
+lbl55:
+lbl54:
+lbl53:
+lbl52:
+lbl51:
+lbl40:
+lbl49:
+lbl48:
+lbl47:
+lbl46:
+lbl45:
+lbl44:
+lbl43:
+lbl42:
+lbl41:
+lbl30:
+lbl39:
+lbl38:
+lbl37:
+lbl36:
+lbl35:
+lbl34:
+lbl33:
+lbl32:
+lbl31:
+lbl20:
+lbl29:
+lbl28:
+lbl27:
+lbl26:
+lbl25:
+lbl24:
+lbl23:
+lbl22:
+lbl21:
+lbl10:
+lbl19:
+lbl18:
+lbl17:
+lbl16:
+lbl15:
+lbl14:
+lbl13:
+lbl12:
+lbl11:
+lbl00:
+lbl09:
+lbl08:
+lbl07:
+lbl06:
+lbl05:
+lbl04:
+lbl03:
+lbl02:
+lbl01:
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+_DATA		ENDS
+		END

@@ -257,11 +257,11 @@ int CheckedFile::readNString( String & str )
 //------------------------------------------
 // read in a string in the form <uint_16>{<byte>}*
 {
-    const   BufLen = 255;
-    char    buffer[ BufLen + 1 ];
-    uint_16 strLen;
-    uint_16 amtRead = 0;
-    int     maxRead;
+    const int   BufLen = 255;
+    char        buffer[ BufLen + 1 ];
+    uint_16     strLen;
+    uint_16     amtRead = 0;
+    int         maxRead;
 
     str = "";       // clear string
 

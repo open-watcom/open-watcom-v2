@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  String utilities to convert filenames to more usable format.
+*               
 *
 ****************************************************************************/
 
@@ -39,18 +39,19 @@
 /*
  * Translate  foo/dir1\\dir2" \\"bar"grok  -->  "foo\\dir1\\dir2 \\"bargrok".
  */
-char *PathConvert( const char *path, char quote )
-/***********************************************/
+char *PathConvert( const char *pathname, char quote )
+/***************************************************/
 {
-    char *              out;
-    char *              p;
+    const unsigned char *path = (const unsigned char *)pathname;
+    char                *out;
+    unsigned char       *p;
     int                 quoteends;      /* quote the whole filename */
     int                 backslash = 0;  /* true if last char was a '\\' */
     int                 inquote = 0;    /* true if inside a quoted string */
 
     /*** Allocate a buffer for the new string (should be big enough) ***/
-    out = AllocMem( 2 * ( strlen(path) + 1 + 2 ) );
-    p = out;
+    out = AllocMem( 2 * ( strlen( (char *)path ) + 1 + 2 ) );
+    p = (unsigned char *)out;
 
     /*** Determine if path contains any bizarre characters ***/
     if( _mbschr( path, ' ' )  !=  NULL      ||
@@ -100,6 +101,61 @@ char *PathConvert( const char *path, char quote )
         path = _mbsinc( path );
     }
     if( quoteends )  *p++ = quote;
+    *p++ = '\0';
+
+    return( out );
+}
+
+/*
+ * Translate  foo/dir1\\dir2" \\"bar"grok  -->  foo\\dir1\\dir2 \\"bargrok.
+ */
+char *PathConvertWithoutQuotes( const char *path )
+/***********************************************/
+{
+    char *              out;
+    char *              p;
+    int                 backslash = 0;  /* true if last char was a '\\' */
+    int                 inquote = 0;    /* true if inside a quoted string */
+
+    /*** Allocate a buffer for the new string (should be big enough) ***/
+    out = AllocMem( 2 * ( strlen(path) + 1 + 2 ) );
+    p = out;
+
+    /*** Convert the path one character at a time ***/
+    while( *path != '\0' ) {
+        if( *path == '"' ) {
+            if( inquote ) {
+                if( backslash ) {
+                    *p++ = '"';         /* handle \" within a string */
+                    backslash = 0;
+                } else {
+                    inquote = 0;
+                }
+            } else {
+                inquote = 1;
+            }
+        } else if( *path == '\\' ) {
+            *p++ = '\\';
+            if( backslash ) {
+                backslash = 0;
+            } else {
+                backslash = 1;
+            }
+        } else if( *path == '/' ) {
+            if( inquote ) {
+                *p++ = '/';
+            } else {
+                *p++ = '\\';
+            }
+            backslash = 0;
+        } else {
+            /* copy an ordinary character */
+            _mbccpy( (unsigned char *)p, (unsigned char *)path );     /* copy an ordinary character */
+            p = (char *)_mbsinc( (unsigned char *)p );
+            backslash = 0;
+        }
+        path = (char *)_mbsinc( (unsigned char *)path );
+    }
     *p++ = '\0';
 
     return( out );

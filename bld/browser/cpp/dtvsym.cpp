@@ -222,7 +222,7 @@ bool DTViewSymbol::paint()
 //------------------------
 {
     WPoint loc( _fileNameR.r.x(), _fileNameR.r.y() );
-    drawText( loc, _fileText.gets(), ColorBlack, ColorLiteGray );
+    drawText( loc, _fileText.gets(), ColorBlack, backgroundColour() );
 
     return _descPaint->paint();
 }

@@ -1,0 +1,488 @@
+idata01.cpp
+a01
+non-zero
+idata01.cpp
+a02
+non-zero
+idata01.cpp
+a05
+non-zero
+idata01.cpp
+a06
+non-zero
+idata01.cpp
+a07
+non-zero
+idata01.cpp
+a08
+non-zero
+idata01.cpp
+a09
+non-zero
+idata01.cpp
+a10
+non-zero
+idata01.cpp
+a11
+non-zero
+idata01.cpp
+a12
+non-zero
+idata01.cpp
+a13
+non-zero
+idata01.cpp
+a14
+non-zero
+idata01.cpp
+a15
+non-zero
+idata01.cpp
+a16
+non-zero
+idata01.cpp
+a20
+non-zero
+idata01.cpp
+a21
+non-zero
+idata01.cpp
+a22
+non-zero
+idata01.cpp
+a23
+non-zero
+idata01.cpp
+a24
+non-zero
+idata01.cpp
+a25
+non-zero
+idata01.cpp
+a26
+non-zero
+idata01.cpp
+a27
+non-zero
+idata01.cpp
+a
+non-zero
+idata02.cpp
+a
+non-zero
+idata02.cpp
+b
+non-zero
+idata02.cpp
+c
+non-zero
+idata02.cpp
+*p0
+non-zero
+idata02.cpp
+*p1
+non-zero
+idata02.cpp
+*p2
+non-zero
+idata02.cpp
+*p3
+non-zero
+idata02.cpp
+*p4
+non-zero
+a:1 b:2 c0:3 c1:4 c2:5 c3:6 c4:7 d.di:1 d.dc:a
+idata04.cpp
+b
+non-zero
+idata05.cpp
+esca
+non-zero
+0
+1
+1
+CTOR2:0
+CTOR3:1
+CTOR1:2
+CTOR2:3
+CTOR1:4
+CTOR1:5
+idata07.cpp
+v
+non-zero
+idata08.cpp
+esca
+non-zero
+idata09.cpp
+esca
+non-zero
+idata09.cpp
+esca[0]
+non-zero
+idata09.cpp
+esca[1]
+non-zero
+idata09.cpp
+esca[2]
+non-zero
+idata10.cpp
+a
+non-zero
+0...0 1 14 0...0
+PASS line 10
+PASS line 11
+PASS line 12
+PASS line 13
+PASS line 14
+PASS line 15
+PASS line 16
+PASS line 17
+PASS line 18
+PASS line 19
+PASS line 20
+PASS line 21
+PASS line 10
+PASS line 11
+PASS line 12
+PASS line 13
+PASS line 14
+PASS line 15
+PASS line 16
+PASS line 17
+PASS line 18
+PASS line 19
+PASS line 20
+PASS line 21
+PASS line 10
+PASS line 11
+PASS line 12
+PASS line 13
+PASS line 14
+PASS line 15
+PASS line 16
+PASS line 17
+PASS line 18
+PASS line 19
+PASS line 20
+PASS line 21
+PASS line 10
+PASS line 11
+PASS line 12
+PASS line 13
+PASS line 14
+PASS line 15
+PASS line 16
+PASS line 17
+PASS line 18
+PASS line 19
+PASS line 20
+PASS line 21
+SUCCESS
+PASS line 16
+PASS line 16
+PASS line 16
+PASS line 16
+PASS line 16
+PASS line 16
+idata13.cpp
+a
+non-zero
+SUCCESS
+EP:int=1 int=2 A=9 B=4 int=5 C=[6,7,8,9,10]
+ES:int=1 int=2 A=9 B=4 int=5 C=[6,7,8,9,10]
+IA:int=11 int=12 A=182 B=15 int=16 C=[6,7,8,9,10]
+	IA2: int=317
+IS:int=17 int=19 A=400 B=21 int=22 C=[6,7,8,9,10]
+	IS2: int=317 int=[23,24,25]
+idata15.cpp
+CTOR2
+CTOR2:1
+CTOR1:2
+CTOR2
+CTOR2:1
+CTOR1:2
+CTOR1:3
+CTOR1:4
+CTOR1:5
+CTOR1:6
+CTOR1:7
+CTOR1:8
+1 1 1
+2 2 2
+1 2 3
+1 1 1
+2 2 2
+1 2 3
+1 2 3
+1 2 3
+1 2 3
+1 2 3
+1 2 3
+1 2 3
+7 7
+idata17.cpp
+a
+non-zero
+idata18.cpp
+u
+non-zero
+idata18.cpp
+v
+non-zero
+idata19.cpp
+a
+all-zero
+idata19.cpp
+a
+non-zero
+idata20.cpp
+a
+non-zero
+idata20.cpp
+b
+non-zero
+idata21.cpp
+b1
+non-zero
+idata21.cpp
+b2
+non-zero
+idata21.cpp
+a
+non-zero
+idata22.cpp
+something
+non-zero
+CTOR1
+CTOR1
+CTOR1:1
+CTOR1:2
+CTOR1:3
+CTOR1:4
+CTOR1:5
+CTOR2
+CTOR1:1
+CTOR1:2
+CTOR1:3
+CTOR1:4
+CTOR1:5
+CTOR2
+CTOR1:1
+CTOR2:2
+CTOR1:3
+CTOR1:4
+CTOR1:5
+CTOR2
+CTOR1:1
+CTOR2:2
+CTOR1:3
+CTOR2:4
+CTOR1:5
+CTOR1:6
+CTOR1:7
+CTOR1:8
+CTOR1:9
+a: 97
+b[0,0] = 97
+b[0,1] = 97
+b[1,0] = 97
+b[1,1] = 97
+b[2,0] = 97
+b[2,1] = 97
+c[0,0] = 1
+c[0,1] = 97
+c[1,0] = 97
+c[1,1] = 97
+c[2,0] = 97
+c[2,1] = 97
+d[0,0] = 1
+d[0,1] = 97
+d[1,0] = 3
+d[1,1] = 97
+d[2,0] = 97
+d[2,1] = 97
+e[0,0] = 1
+e[0,1] = 97
+e[1,0] = 3
+e[1,1] = 97
+e[2,0] = 5
+e[2,1] = 97
+e[3,0] = 97
+e[3,1] = 97
+e[4,0] = 97
+e[4,1] = 97
+idata23.cpp
+a
+non-zero
+idata23.cpp
+b
+non-zero
+idata23.cpp
+a
+non-zero
+idata23.cpp
+b
+non-zero
+idata23.cpp
+a
+non-zero
+idata23.cpp
+b
+non-zero
+idata23.cpp
+a
+non-zero
+idata23.cpp
+a
+non-zero
+0 0
+1 1 1 1
+1.000000
+1.000000
+1.000000
+2.000000
+c
+c
+c
+c
+idata27.cpp
+d
+all-zero
+idata27.cpp
+b
+all-zero
+1 3 5 7
+idata29.cpp
+a
+non-zero
+idata29.cpp
+*pa
+non-zero
+idata29.cpp
+a.a1
+non-zero
+idata29.cpp
+pa->a1
+non-zero
+idata29.cpp
+a.*pa1
+non-zero
+idata29.cpp
+pa->*pa1
+non-zero
+idata29.cpp
+a.a2
+non-zero
+idata29.cpp
+pa->a2
+non-zero
+idata29.cpp
+a.*pa2
+non-zero
+idata29.cpp
+pa->*pa2
+non-zero
+idata29.cpp
+a.a3
+non-zero
+idata29.cpp
+pa->a3
+non-zero
+idata29.cpp
+a.*pa3
+non-zero
+idata29.cpp
+pa->*pa3
+non-zero
+idata30.cpp
+pa
+non-zero
+ctor 1
+ctor 2
+ctor 3
+f1: 3
+dtor 3
+ctor 4
+f2: 4
+main: 1 2
+dtor 4
+dtor 2
+dtor 1
+f1: 3
+dtor 3
+f2: 4
+main: 1 2
+dtor 4
+dtor 2
+dtor 1
+abcd
+idata34.cpp
+p
+non-zero
+idata35.cpp
+p
+non-zero
+abcd
+idata37.cpp
+s
+non-zero
+idata38.cpp
+s1
+non-zero
+idata38.cpp
+s2
+non-zero
+idata39.cpp
+p1
+non-zero
+idata39.cpp
+p2
+non-zero
+abc
+def
+ghi
+idata40.cpp
+a
+non-zero
+idata40.cpp
+a1
+non-zero
+idata40.cpp
+a2
+non-zero
+idata40.cpp
+a3
+non-zero
+idata40.cpp
+a4
+non-zero
+idata40.cpp
+a5
+non-zero
+idata41.cpp
+p1
+all-zero
+idata41.cpp
+*p2
+non-zero
+idata41.cpp
+*p2[0]
+non-zero
+idata41.cpp
+*p2[1]
+non-zero
+idata41.cpp
+*p2[2]
+non-zero
+idata41.cpp
+a1
+all-zero
+idata41.cpp
+*a2
+non-zero
+abc
+bc
+bc
+abc
+ef
+i

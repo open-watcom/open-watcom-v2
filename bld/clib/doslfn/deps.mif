@@ -1,0 +1,50 @@
+accss.obj    : ../../../c/accss.c    ../../../../file/c/accss.c
+chdir.obj    : ../../../c/chdir.c    ../../../../direct/c/chdir.c
+chmod.obj    : ../../../c/chmod.c    ../../../../file/c/chmod.c
+creatdos.obj : ../../../c/creatdos.c ../../../../_dos/c/creatdos.c
+dir.obj      : ../../../c/dir.c      ../../../../direct/c/dir.c
+findclos.obj : ../../../c/findclos.c ../../../../file/c/findclos.c
+finddos.obj  : ../../../c/finddos.c  ../../../../_dos/c/finddos.c
+findfirs.obj : ../../../c/findfirs.c ../../../../file/c/findfirs.c
+findnext.obj : ../../../c/findnext.c ../../../../file/c/findnext.c
+fstat.obj    : ../../../c/fstat.c    ../../../../handleio/c/fstat.c
+fullpath.obj : ../../../c/fullpath.c ../../../../misc/c/fullpath.c
+gfattdos.obj : ../../../c/gfattdos.c ../../../../_dos/c/gfattdos.c
+gtcwd.obj    : ../../../c/gtcwd.c    ../../../../direct/c/gtcwd.c
+inirmlfn.obj : ../../../c/inirmlfn.c
+lfntosfn.obj : ../../../c/lfntosfn.c ../../../../misc/c/lfntosfn.c
+mkdir.obj    : ../../../c/mkdir.c    ../../../../direct/c/mkdir.c
+open.obj     : ../../../c/open.c     ../../../../handleio/c/open.c
+opendos.obj  : ../../../c/opendos.c  ../../../../_dos/c/opendos.c
+renam.obj    : ../../../c/renam.c    ../../../../file/c/renam.c
+rmdir.obj    : ../../../c/rmdir.c    ../../../../direct/c/rmdir.c
+searchen.obj : ../../../c/searchen.c ../../../../environ/c/searchen.c
+sfattdos.obj : ../../../c/sfattdos.c ../../../../_dos/c/sfattdos.c
+split2.obj   : ../../../c/split2.c   ../../../../misc/c/split2.c
+splitpat.obj : ../../../c/splitpat.c ../../../../misc/c/splitpat.c
+stat.obj     : ../../../c/stat.c     ../../../../file/c/stat.c
+tempnam.obj  : ../../../c/tempnam.c  ../../../../file/c/tempnam.c
+uaccs.obj    : ../../../c/uaccs.c    ../../../../file/c/uaccs.c      ../../../../file/c/accss.c
+uchdr.obj    : ../../../c/uchdr.c    ../../../../direct/c/uchdr.c    ../../../../direct/c/chdir.c
+uchmd.obj    : ../../../c/uchmd.c    ../../../../file/c/uchmd.c      ../../../../file/c/chmod.c
+udir.obj     : ../../../c/udir.c     ../../../../direct/c/udir.c     ../../../../direct/c/dir.c
+ufind.obj    : ../../../c/ufind.c    ../../../../_dos/c/ufind.c
+ufindfir.obj : ../../../c/ufindfir.c ../../../../file/c/ufindfir.c   ../../../../file/c/findfirs.c
+ufindnex.obj : ../../../c/ufindnex.c ../../../../file/c/ufindnex.c   ../../../../file/c/findnext.c
+ufulpath.obj : ../../../c/ufulpath.c ../../../../misc/c/ufulpath.c   ../../../../misc/c/fullpath.c
+ugtcd.obj    : ../../../c/ugtcd.c    ../../../../direct/c/ugtcd.c    ../../../../direct/c/gtcwd.c
+umkdr.obj    : ../../../c/umkdr.c    ../../../../direct/c/umkdr.c    ../../../../direct/c/mkdir.c
+unlnk.obj    : ../../../c/unlnk.c    ../../../../handleio/c/unlnk.c
+uopen.obj    : ../../../c/uopen.c    ../../../../handleio/c/uopen.c  ../../../../handleio/c/open.c
+urenm.obj    : ../../../c/urenm.c    ../../../../file/c/urenm.c      ../../../../file/c/renam.c
+urmdr.obj    : ../../../c/urmdr.c    ../../../../direct/c/urmdr.c    ../../../../direct/c/rmdir.c
+uselfn.obj   : ../../../c/uselfn.c
+usplit2.obj  : ../../../c/usplit2.c  ../../../../misc/c/usplit2.c    ../../../../misc/c/split2.c
+uspltpat.obj : ../../../c/uspltpat.c ../../../../misc/c/uspltpat.c   ../../../../misc/c/splitpat.c
+usrchen.obj  : ../../../c/usrchen.c  ../../../../environ/c/usrchen.c ../../../../environ/c/searchen.c
+ustat.obj    : ../../../c/ustat.c    ../../../../file/c/ustat.c      ../../../../file/c/stat.c
+utempnam.obj : ../../../c/utempnam.c ../../../../file/c/utempnam.c   ../../../../file/c/tempnam.c
+utime.obj    : ../../../c/utime.c    ../../../../file/c/utime.c
+uunln.obj    : ../../../c/uunln.c    ../../../../handleio/c/uunln.c  ../../../../handleio/c/unlnk.c
+uutim.obj    : ../../../c/uutim.c    ../../../../file/c/uutim.c      ../../../../file/c/utime.c
+

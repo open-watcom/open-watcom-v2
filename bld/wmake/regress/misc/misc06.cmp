@@ -1,0 +1,14 @@
+rm -f foo
+rmdir food 2> NUL
+echo foo > foo
+rm foo
+echo foo > foo
+attrib +r foo
+rm foo
+Error(E43): Deleting (foo): Permission denied
+rm -f foo
+rm -f foo
+mkdir food
+rm -f food
+Error(E43): Deleting (food): Permission denied
+rm -f -r food

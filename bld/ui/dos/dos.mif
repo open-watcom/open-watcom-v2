@@ -1,0 +1,4 @@
+
+extra_c_flags += -dCHARMAP
+
+!include ../../ui.mif

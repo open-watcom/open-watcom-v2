@@ -30,68 +30,54 @@
 ****************************************************************************/
 
 
-        /*
-         *  Type definitions for pm
-         */
 #ifdef __OS2_PM__
 
-        typedef struct {
-            BYTE        rgbBlue;
-            BYTE        rgbGreen;
-            BYTE        rgbRed;
-            BYTE        rgbReserved;
-        } RGBQUAD;
+/*
+ * Type definitions for PM
+ */
+typedef struct {
+    BYTE        rgbBlue;
+    BYTE        rgbGreen;
+    BYTE        rgbRed;
+    BYTE        rgbReserved;
+} RGBQUAD;
 
-
-
-#else
 #endif
-        /*
-         * Definitions for pm
-         */
+
 #ifdef __OS2_PM__
 
-        #define WM_QUERYENDSESSION  WM_SAVEAPPLICATION
-        #define WM_MDIACTIVATE      WM_ACTIVATE
-        #define FARstricmp      stricmp
+    /*
+     * Definitions for PM
+     */
+    #define WM_QUERYENDSESSION  WM_SAVEAPPLICATION
+    #define WM_MDIACTIVATE      WM_ACTIVATE
+    #define FARstricmp          stricmp
 
-        #define _imgwpi_issizemaximized( p1 ) FALSE
+    #define _imgwpi_issizemaximized( p1 )       FALSE
+    #define _imgwpi_issizeminimized( p1 )       FALSE
+    #define _imgwpi_issizerestored( p1 )        TRUE
+    #define _wpi_dlgreturn( flag )              return( MRFROMSHORT( flag ) )
+    #define _wpi_getcolorindex( hps, rgbclr )   GpiQueryColorIndex( hps, 0L, rgbclr )
+    #define _imgwpi_mresulttoint( mresult )     LONGFROMMR( mresult )
+    #define _imgwpi_defMDIchildproc( hw, msg, wp, lp ) \
+        _wpi_defwindowproc( hw, msg, wp, lp )
+    #define _imgwpi_defframeproc( hw, hclw, msg, wp, lp ) \
+        _wpi_defwindowproc( hw, msg, wp, lp )
 
-        #define _imgwpi_issizeminimized( p1 ) FALSE
-
-        #define _imgwpi_issizerestored( p1 ) TRUE
-
-        #define _wpi_dlgreturn(flag) return( MRFROMSHORT(flag) )
-
-        #define _wpi_getcolourindex( hps, rgbclr ) \
-                        GpiQueryColorIndex( hps, 0L, rgbclr );
-
-        #define _imgwpi_mresulttoint( mresult ) LONGFROMMR( mresult )
-
-        #define _imgwpi_defMDIchildproc( hw, msg, wp, lp ) \
-                            _wpi_defwindowproc( hw, msg, wp, lp )
-
-        #define _imgwpi_defframeproc( hw, hclw, msg, wp, lp ) \
-                            _wpi_defwindowproc( hw, msg, wp, lp )
-        /*
-         * Definitions for win
-         */
 #else
-        #define _wpi_dlgreturn(flag) return( flag )
 
-        #define _wpi_getcolourindex( hdc, rgbclr )  rgbclr
+    /*
+     * Definitions for Windows
+     */
+    #define _wpi_dlgreturn( flag )              return( flag )
+    #define _wpi_getcolorindex( hdc, rgbclr )   rgbclr
+    #define _imgwpi_mresulttoint( mresult )     mresult
+    #define _imgwpi_issizemaximized( wp )       (LOWORD( wp ) == SIZE_MAXIMIZED)
+    #define _imgwpi_issizeminimized( wp )       (LOWORD( wp ) == SIZE_MINIMIZED)
+    #define _imgwpi_issizerestored( wp )        (LOWORD( wp ) == SIZE_RESTORED)
+    #define _imgwpi_defMDIchildproc( hw, msg, wp, lp ) \
+        DefMDIChildProc( hw, msg, wp, lp )
+    #define _imgwpi_defframeproc( hw, hclw, msg, wp, lp ) \
+        DefFrameProc( hw, hclw, msg, wp, lp )
 
-        #define _imgwpi_mresulttoint( mresult ) mresult
-
-        #define _imgwpi_issizemaximized( wp ) ( LOWORD(wp) == SIZE_MAXIMIZED )
-
-        #define _imgwpi_issizeminimized( wp ) ( LOWORD(wp) == SIZE_MINIMIZED )
-
-        #define _imgwpi_issizerestored( wp ) ( LOWORD(wp) == SIZE_RESTORED )
-
-        #define _imgwpi_defMDIchildproc( hw, msg, wp, lp ) \
-                        DefMDIChildProc( hw, msg, wp, lp )
-
-        #define _imgwpi_defframeproc( hw, hclw, msg, wp, lp ) \
-                        DefFrameProc( hw, hclw, msg, wp, lp )
 #endif

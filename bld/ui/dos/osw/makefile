@@ -1,3 +1,0 @@
-MODEL = S
-
-!include ..\makefile

@@ -24,16 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object file i/o interface routines
 *
 ****************************************************************************/
 
-
-/*
-  OBJIO -- Object file i/o interface routines
-
-*/
 
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +39,7 @@
 #include "alloc.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
+#include "ideentry.h"
 #include "strtab.h"
 #include "carve.h"
 #include "permdata.h"
@@ -60,7 +55,7 @@ typedef struct {
 infilelist *    CachedLibFiles;
 infilelist *    CachedFiles;
 
-extern void ResetObjIO( void )
+void ResetObjIO( void )
 /****************************/
 {
     CachedFiles = NULL;
@@ -73,7 +68,7 @@ static infilelist * AllocEntry( char *name, path_entry *path )
     infilelist *        entry;
 
     _PermAlloc( entry, sizeof(infilelist) );
-    entry->name = StringStringTable( &PermStrings, name );
+    entry->name = AddStringStringTable( &PermStrings, name );
     entry->path_list = path;
     entry->prefix = NULL;
     entry->handle = NIL_HANDLE;
@@ -83,7 +78,7 @@ static infilelist * AllocEntry( char *name, path_entry *path )
     return entry;
 }
 
-extern infilelist * AllocFileEntry( char *name, path_entry * path )
+infilelist * AllocFileEntry( char *name, path_entry * path )
 /*****************************************************************/
 {
     infilelist *        entry;
@@ -94,7 +89,7 @@ extern infilelist * AllocFileEntry( char *name, path_entry * path )
     return entry;
 }
 
-extern infilelist * AllocUniqueFileEntry( char *name, path_entry *path )
+infilelist * AllocUniqueFileEntry( char *name, path_entry *path )
 /**********************************************************************/
 {
     infilelist *        entry;
@@ -114,7 +109,7 @@ extern infilelist * AllocUniqueFileEntry( char *name, path_entry *path )
     return entry;
 }
 
-extern bool CleanCachedHandles( void )
+bool CleanCachedHandles( void )
 /************************************/
 {
     infilelist *list;
@@ -139,26 +134,17 @@ static f_handle PathObjOpen( char * path_ptr, char *name, char *new_name,
     fp = NIL_HANDLE;
     for(;;) {
         list->prefix = path_ptr;
-        if( !QMakeFileName( &path_ptr, name, new_name ) ) break;
+        if( !QMakeFileName( &path_ptr, name, new_name ) )
+            break;
         fp = QObjOpen( new_name );
-        if( fp != NIL_HANDLE ) break;
+        if( fp != NIL_HANDLE ) {
+            break;
+        }
     }
-    return fp;
+    return( fp );
 }
 
-static f_handle TrySearchingLib( char *name, char *new_name, infilelist *list )
-/*****************************************************************************/
-{
-    f_handle            fp;
-
-    fp = NIL_HANDLE;
-    if( list->flags & INSTAT_USE_LIBPATH ) {
-        fp = PathObjOpen( GetEnvString("LIB"), name, new_name, list );
-    }
-    return fp;
-}
-
-extern bool DoObjOpen( infilelist *list )
+bool DoObjOpen( infilelist *list )
 /***************************************/
 {
     char *      name;
@@ -170,35 +156,32 @@ extern bool DoObjOpen( infilelist *list )
     bool        haspath;
 
     name = list->name;
-    if( list->handle != NIL_HANDLE ) return( TRUE );
+    if( list->handle != NIL_HANDLE )
+        return( TRUE );
     list->currpos = 0;
     haspath = QHavePath( name );
-    if( list->path_list == NULL || haspath ) {
+    if( haspath ) {                         // has path defined
         list->path_list = NULL;
         fp = QObjOpen( name );
-        if( fp == NIL_HANDLE && !haspath ) {
-            fp = TrySearchingLib( name, new_name, list );
-        }
-    } else if( list->prefix != NULL ) {
+    } else if( list->prefix != NULL ) {     // already searched path
         path_ptr = list->prefix;
         QMakeFileName( &path_ptr, name, new_name );
         fp = QObjOpen( new_name );
-    } else {
+    } else {                                // new, no searched path
         fp = NIL_HANDLE;
-        if( list->flags & LIB_SEARCH ) {
-            /* try libraries in current directory */
+        if( (list->flags & LIB_SEARCH) || list->path_list == NULL ) {
+            /* try in current directory */
             fp = QObjOpen( name );
         }
         if( fp == NIL_HANDLE ) {
-            searchpath = list->path_list;
-            for(;;) {
+            for( searchpath = list->path_list; searchpath != NULL; searchpath = searchpath->next ) {
                 fp = PathObjOpen( searchpath->name, name, new_name, list );
-                if( fp != NIL_HANDLE || !(list->flags & LIB_SEARCH) ) break;
-                searchpath = searchpath->next;
-                if( searchpath == NULL ) {
-                    fp = TrySearchingLib( name, new_name, list );
+                if( fp != NIL_HANDLE ) {
                     break;
                 }
+            }
+            if( fp == NIL_HANDLE && (list->flags & INSTAT_USE_LIBPATH) ) {
+                fp = PathObjOpen( GetEnvString("LIB"), name, new_name, list );
             }
         }
     }
@@ -207,7 +190,7 @@ extern bool DoObjOpen( infilelist *list )
             list->modtime = QFModTime( fp );
         }
         list->handle = fp;
-        return TRUE;
+        return( TRUE );
     } else if( !(list->flags & INSTAT_NO_WARNING) ) {
         err = ( list->flags & INSTAT_OPEN_WARNING ) ?
                                         WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
@@ -215,10 +198,10 @@ extern bool DoObjOpen( infilelist *list )
         list->prefix = NULL;
         list->handle = NIL_HANDLE;
     }
-    return FALSE;
+    return( FALSE );
 }
 
-extern unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )
+unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )
 /****************************************************************/
 /* align file */
 {
@@ -231,14 +214,14 @@ extern unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )
     return( modulus );
 }
 
-extern void InitTokBuff( void )
+void InitTokBuff( void )
 /*****************************/
 {
     TokSize = MAX_HEADROOM;
     _ChkAlloc( TokBuff, MAX_HEADROOM );
 }
 
-extern void FreeTokBuffs( void )
+void FreeTokBuffs( void )
 /******************************/
 {
     if( TokBuff != NULL ) {
@@ -247,14 +230,14 @@ extern void FreeTokBuffs( void )
     }
 }
 
-extern void BadObject( void )
+void BadObject( void )
 /***************************/
 {
     CurrMod->f.source->file->flags |= INSTAT_IOERR;
     LnkMsg( LOC+ERR+MSG_OBJ_FILE_ATTR, NULL );
 }
 
-extern void EarlyEOF( void )
+void EarlyEOF( void )
 /**************************/
 {
     CurrMod->f.source->file->flags |= INSTAT_IOERR;

@@ -24,20 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  New Executable (NE) format structures and constants. Used
+*               by 16-bit Windows and OS/2.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEOS2_H
 
-#if defined( __WATCOMC__ )
-#pragma pack(push,1);
-#endif
+#include "pushpck1.h"
 
-/* OS2 EXE file header and various tables */
-/* ====================================== */
+/* OS/2 EXE file header and various tables */
+/* ======================================= */
 
 typedef struct os2_exe_header {
     unsigned_16         signature;      /* signature to mark valid EXE file */
@@ -143,10 +141,10 @@ typedef struct os2_exe_header {
 #define WIN_GANGLOAD_PRESENT    0x08
 
 typedef struct segment_record {
-    unsigned_16         address;        /* segment position within file     */
-    unsigned_16         size;           /* segment length in bytes          */
-    unsigned_16         info;           /* various flags (see below)        */
-    unsigned_16         min;            /* minimum allocation (size in mem) */
+    unsigned_16         address;        /* segment position within file           */
+    unsigned_16         size;           /* segment length in bytes (size in file) */
+    unsigned_16         info;           /* various flags (see below)              */
+    unsigned_16         min;            /* minimum allocation (size in mem)       */
 } segment_record;
 
 /******************************************************************************
@@ -262,9 +260,7 @@ typedef struct resource_record {
 #define REL_IMPORTED_NAME       0x0002
 #define REL_ADDITIVE            0x0004
 
-#if defined( __WATCOMC__ )
-#pragma pack(pop);
-#endif
+#include "poppck.h"
 
 #define _EXEOS2_H
 #endif

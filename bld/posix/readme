@@ -1,62 +1,62 @@
 Building libraries:
     1) cd to the misc directory of your choice:
-    	os2v2		-- OS/2 2.0
-	nt		-- Windows NT
-	dosos2		-- DOS and OS/2 1.x bound exe's
-	dos		-- DOS-only exe's
+        os2386          -- OS/2 2.x
+        nt386           -- Windows NT on x86
+        dosos2          -- DOS and OS/2 1.x bound exe's
+        dos             -- DOS-only exe's
     2) type wmake
-    
+
 
 Steps for building all the programs at once:
 
     1) cd to the systems directory of your choice:
-    	os2v2		-- OS/2 2.0
-	nt		-- Windows NT
-	dosos2		-- DOS and OS/2 1.x bound exe's
-	dos		-- DOS-only exe's
+        os2386          -- OS/2 2.x
+        nt386           -- Windows NT on x86
+        dosos2          -- DOS and OS/2 1.x bound exe's
+        dos             -- DOS-only exe's
     2) type wmake
-    
+
 
 Steps for building a particular program
 
     1) cd to the src directory that contains the program
     2) If you wish to build for a specific target, type
-	    wmake targos=<targname>
-       where <targname> is one of os2v2, nt, dosos2, or dos.
+            wmake targos=<targname>
+       where <targname> is one of os2386, nt386, dosos2, or dos.
        If you do not specify the targos, then the makefiles try to
        guess... if you're building under
-		OS/2		the default is targos=os2v2
-		DOS		the default is targos=dosos2
-		NT		the default is targos=nt
+                OS/2            the default is targos=os2386
+                DOS             the default is targos=dosos2
+                NT              the default is targos=nt386
 
 
 Steps for adding a new program:
 
     1) Make a directory in the src directory that has the same name
-	as the program.
+        as the program.
     2) Create a makefile in this directory that is similar to the
-	makefile for one of the other programs.  The makefile must
-	define these two macros:
-	
-	    name 	-- must be the same as the directory and program name
-	    objs	-- space delimited list of object file names
-	
-	it can also define:
-	
-	    cflags	-- appended to flags specified automatically
-	
-	Then the makefile should !include $(posix_dir)\mif\makeone.mif.
+        makefile for one of the other programs.  The makefile must
+        define these two macros:
+
+            name        -- must be the same as the directory and program name
+            objs        -- space delimited list of object file names
+
+        it can also define:
+
+            cflags      -- appended to flags specified automatically
+
+        Then the makefile should !include $(posix_dir)\mif\makeone.mif.
     3) Add the program name to mif\commands.mif
 
 
 Steps for adding a new operating system:
 
     1) grep for targos in the mif subdirectory, it should be obvious what
-	needs to be changed.
+        needs to be changed.
     2) create a directory with an appropriate name
     3) copy and modify the makefile from one of the os2v2, dos, dosos2,
-	or nt directories.
-	
+        or nt directories.
+
 
 
 Notes about the programs:

@@ -1,0 +1,5 @@
+#ifndef _HPOWERNOTIFY_DEF_
+#define _HPOWERNOTIFY_DEF_
+typedef PVOID           HPOWERNOTIFY;
+typedef HPOWERNOTIFY    *PHPOWERNOTIFY;
+#endif

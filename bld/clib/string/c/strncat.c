@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strncat() and wcsncat().
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined(M_I86) && !defined(__WIDECHAR__)
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
 extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
 
@@ -89,28 +88,29 @@ extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
 /* concatenate t to the end of dst */
 
 _WCRTLINK CHAR_TYPE *__F_NAME(strncat,wcsncat) ( CHAR_TYPE *dst, const CHAR_TYPE *t, size_t n )
-    {
-#if defined(M_I86) && !defined(__WIDECHAR__)
-        if( n ) {
-            return( _fast_strncat( dst, t, n ) );
-        }
-        return( dst );
-#else
-        CHAR_TYPE *s;
-
-        #ifdef __WIDECHAR__
-            s = dst + wcslen( dst );
-        #else
-            s = memchr( dst, NULLCHAR, ~0u );
-        #endif
-        while( n != 0 ) {
-            *s = *t;
-            if( *s == NULLCHAR ) break;
-            ++s;
-            ++t;
-            --n;
-        }
-        *s = NULLCHAR;
-        return( dst );
-#endif
+{
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
+    if( n ) {
+        return( _fast_strncat( dst, t, n ) );
     }
+    return( dst );
+#else
+    CHAR_TYPE   *s;
+
+#ifdef __WIDECHAR__
+    s = dst + wcslen( dst );
+#else
+    s = memchr( dst, NULLCHAR, ~0u );
+#endif
+    while( n != 0 ) {
+        *s = *t;
+        if( *s == NULLCHAR )
+            break;
+        ++s;
+        ++t;
+        --n;
+    }
+    *s = NULLCHAR;
+    return( dst );
+#endif
+}

@@ -62,7 +62,7 @@ HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
     DWORD               alias;
     LPMMINFOLIST        curr;
 
-    alias = NULL;
+    alias = 0;
     if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST
                                 | MMIO_GETTEMP) ) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
@@ -74,7 +74,7 @@ HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
 
     rc = __mmioOpen( szFileName, lpmmioinfo, dwOpenFlags );
 
-    if( rc != NULL && alias != NULL ) {
+    if( rc != NULL && alias ) {
         curr = malloc( sizeof( mminfo_list ) );
         if( curr != NULL ) {
             curr->next = mminfoListHead;

@@ -1,0 +1,3 @@
+input:
+    test 'hi'
+    two 'hello';

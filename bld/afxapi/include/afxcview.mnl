@@ -1,0 +1,17 @@
+/*
+ *  afxcview.inl    Inline implementation of functions declared in afxcview.h
+ *
+:include crwatcnt.sp
+ */
+
+AFX_INLINE CTreeCtrl &CTreeView::GetTreeCtrl() const
+/**************************************************/
+{
+    return( *(CTreeCtrl *)this );
+}
+
+AFX_INLINE CListCtrl &CListView::GetListCtrl() const
+/**************************************************/
+{
+    return( *(CListCtrl *)this );
+}

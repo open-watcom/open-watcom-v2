@@ -65,6 +65,22 @@ extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     return( FALSE );
 }
 
+extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                                      int num_items, gui_toolbar_struct *toolbar,
+                                      bool excl, gui_colour_set *plain,
+                                      gui_colour_set *standout )
+{
+    if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
+        return( FALSE );
+    }
+    if( GUIXCreateToolBarWithTips( wnd, fixed, height, num_items, toolbar, excl,
+                                   plain, standout, NULL, TRUE ) ) {
+        GUIInitToolbarHint( wnd, num_items, toolbar );
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
 bool GUICloseToolBar( gui_window *wnd )
 {
     if( GUIXCloseToolBar( wnd ) ) {

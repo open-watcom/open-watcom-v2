@@ -1,0 +1,37 @@
+name=Help_Maintain
+dynamic_text=hmaint_1,\
+        //1"%AppName% has been found in %DstDir%."\
+        //2"%AppName% が %DstDir% に見つかりました."\
+        //0
+static_text=\
+        //1"Files will be upgraded to the latest version."\
+        //2"ファイルは最新バージョンにアップグレードされます."\
+        //0
+static_text=
+static_text=\
+        //1"You may choose the following options:"\
+        //2"以下のオプションを選択できます:"\
+        //0
+static_text=
+include=hfull.dlg
+include=hfullcd.dlg
+include=hsel.dlg
+static_text=\
+        //1"	- Any component you do not choose will be removed."\
+        //2"	- 選択しなかったコンポーネントは削除します."\
+        //0
+include=hmini.dlg
+static_text=\
+        //1"Un-Install All Components"\
+        //2"すべてのコンポーネントをアンインストールします"\
+        //0
+static_text=\
+        //1"   - All components will be removed from the hard disk."\
+        //2"   - すべてのコンポーネントはハードディスクから削除されます."\
+        //0
+dynamic_text=hmaint_2,\
+        //1"   - %AppName% will be removed from all configuration files."\
+        //2"   - %AppName% を全てのコンフィギュレーションから削除します."\
+        //0
+static_text=
+include=ok.dlg

@@ -148,9 +148,7 @@ void uisetgadgetnodraw( p_gadget g, int pos )
     setgadget( g, pos, FALSE );
 }
 
-#pragma off(unreferenced);
 void uifinigadget( p_gadget g )
-#pragma on (unreferenced);
 {
 }
 
@@ -161,7 +159,7 @@ EVENT uigadgetfilter( EVENT ev, p_gadget g )
     EVENT       newev;
     ORD         start;
     int         length;
-    int         pos;
+    int         pos = 0;
 
     if( uimouseinstalled() ) {
         uiunprotect( g->win );

@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+//#define DEBUG_TRAP
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -50,25 +51,20 @@
 #include "dbg386.h"
 #include "drset.h"
 #include "ioports.h"
-#include "squish87.h"
 #include "madregs.h"
 
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"
 
+#include "x86cpu.h"
+#include "misc7086.h"
+#include "dosredir.h"
+
 TSF32   Proc;
 char    Break;
 
-extern  char            NPXType();
-extern  void            Read8087(void *);
-extern  void            Write8087(void *);
-extern  void            Read387(void *);
-extern  void            Write387(void *);
 extern  unsigned        ExceptionText( unsigned, char * );
-extern  void            InitRedirect(void);
-extern  unsigned        X86CPUType();
-
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -78,10 +74,9 @@ struct {
     unsigned_32         start;
 }                       *ObjInfo;
 
-static int              RealNPXType;
+static unsigned_8       RealNPXType;
 #define BUFF_SIZE       256
 char                    UtilBuff[BUFF_SIZE];
-#define NIL_DOS_HANDLE  ((short)0xFFFF)
 #define IsDPMI          (_d16info.swmode == 0)
 
 typedef struct watch {
@@ -89,7 +84,7 @@ typedef struct watch {
     dword               value;
     dword               linear;
     short               dregs;
-    short               len;
+    unsigned short      len;
     dpmi_watch_handle   handle;
     dpmi_watch_handle   handle2;
 } watch;
@@ -99,34 +94,33 @@ watch   WatchPoints[ MAX_WP ];
 int     WatchCount;
 
 
-#if 0
+#ifdef DEBUG_TRAP
 #define _DBG2( x ) printf x ; fflush( stdout )
 #define _DBG1( x ) printf x ; fflush( stdout )
 #define _DBG( x ) printf x ; fflush( stdout )
-//#define _DBG1( x )
-//#define _DBG( x )
 #else
 #define _DBG2( x )
 #define _DBG1( x )
 #define _DBG( x )
 #endif
 
-#pragma aux GetMSW = 0x0f 0x01 0xe0 value [ax];
-extern unsigned short GetMSW(void);
+int SetUsrTask( void )
+{
+    return( 1 );
+}
 
-#define HAVE_EMU (GetMSW() & 0x04)
+void SetDbgTask( void )
+{
+}
 
-extern void SetUsrTask() {}
-extern void SetDbgTask() {}
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req ) {
 
-static int ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char*,int), addr48_ptr *addr, byte far *data, int req ) {
-
-    int         len;
+    unsigned short  len;
 
     _DBG(("checking %4.4x:%8.8lx for 0x%x bytes -- ",
             addr->segment, addr->offset, req ));
     if( D32AddressCheck( addr->segment, addr->offset, req, NULL ) &&
-            r( addr->offset, addr->segment, 0, (void *)data, req ) == 0 ) {
+            r( addr->offset, addr->segment, 0, data, req ) == 0 ) {
         _DBG(( "OK\n" ));
         addr->offset += req;
         return( req );
@@ -135,7 +129,7 @@ static int ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char*,int), addr48_ptr *add
     len = 0;
     while( req > 0 ) {
         if( !D32AddressCheck( addr->segment, addr->offset, 1, NULL ) ) break;
-        if( r( addr->offset, addr->segment, 0, (void *)data, 1 ) != 0 ) break;
+        if( r( addr->offset, addr->segment, 0, data, 1 ) != 0 ) break;
         ++addr->offset;
         ++data;
         ++len;
@@ -144,13 +138,12 @@ static int ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char*,int), addr48_ptr *add
     return( len );
 }
 
-
-static int ReadMemory( addr48_ptr *addr, byte far *data, int len )
+static unsigned short ReadMemory( addr48_ptr *addr, byte far *data, unsigned short len )
 {
     return( ReadWrite( D32DebugRead, addr, data, len ) );
 }
 
-static int WriteMemory( addr48_ptr *addr, byte far *data, int len )
+static unsigned short WriteMemory( addr48_ptr *addr, byte far *data, unsigned short len )
 {
     return( ReadWrite( D32DebugWrite, addr, data, len ) );
 }
@@ -168,9 +161,10 @@ unsigned ReqGet_sys_config()
     ret->sys.osminor = _osminor;
     ret->sys.cpu = X86CPUType();
     ret->sys.huge_shift = 12;
-    ret->sys.fpu = RealNPXType;
     if( !AtEnd && HAVE_EMU ) {
         ret->sys.fpu = X86_EMU;
+    } else {
+        ret->sys.fpu = RealNPXType;
     }
     ret->sys.mad = MAD_X86;
     return( sizeof( *ret ) );
@@ -265,9 +259,9 @@ unsigned ReqMachine_data()
 
 unsigned ReqChecksum_mem()
 {
-    int            len;
-    int            i;
-    int            read;
+    unsigned short      len;
+    int                 i;
+    unsigned short      read;
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
 
@@ -278,7 +272,7 @@ unsigned ReqChecksum_mem()
     len = acc->len;
     ret->result = 0;
     while( len >= BUFF_SIZE ) {
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, (byte *)&UtilBuff, BUFF_SIZE );
+        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, BUFF_SIZE );
         for( i = 0; i < read; ++i ) {
             ret->result += UtilBuff[ i ];
         }
@@ -286,7 +280,7 @@ unsigned ReqChecksum_mem()
         len -= BUFF_SIZE;
     }
     if( len != 0 ) {
-        read = ReadMemory( (addr48_ptr *)&acc->in_addr, (byte *)&UtilBuff, len );
+        read = ReadMemory( (addr48_ptr *)&acc->in_addr, &UtilBuff, len );
         if( read == len ) {
             for( i = 0; i < len; ++i ) {
                 ret->result += UtilBuff[ i ];
@@ -300,8 +294,8 @@ unsigned ReqChecksum_mem()
 unsigned ReqRead_mem()
 {
     read_mem_req        *acc;
-    void                *buff;
-    unsigned            len;
+    void                far *buff;
+    unsigned short      len;
 
     _DBG1(( "ReadMem\n" ));
     acc = GetInPtr( 0 );
@@ -343,7 +337,7 @@ unsigned ReqRead_io()
 
 unsigned ReqWrite_io()
 {
-    int              len;
+    unsigned            len;
     write_io_req        *acc;
     write_io_ret        *ret;
     void                *data;
@@ -405,35 +399,33 @@ static void WriteCPU( struct x86_cpu *r )
 
 static void ReadFPU( struct x86_fpu *r )
 {
-    if( RealNPXType != 0 || HAVE_EMU ) {
-        if( HAVE_EMU ) {
-            if( CheckWin386Debug() == WGOD_VERSION ) {
-                EMUSaveRestore( Proc.cs, r, 1 );
-            } else {
-                Read387( r );
-            }
-        } else if( _d16info.cpumod >= 3 ) {
+    if( HAVE_EMU ) {
+        if( CheckWin386Debug() == WGOD_VERSION ) {
+            EMUSaveRestore( Proc.cs, r, 1 );
+        } else {
+            Read387( r );
+        }
+    } else if( RealNPXType != X86_NO ) {
+        if( _d16info.cpumod >= 3 ) {
             Read387( r );
         } else {
             Read8087( r );
-            FPUExpand( (void *)r );
         }
     }
 }
 
 static void WriteFPU( struct x86_fpu *r )
 {
-    if( RealNPXType != 0 || HAVE_EMU ) {
-        if( HAVE_EMU ) {
-            if( CheckWin386Debug() == WGOD_VERSION ) {
-                EMUSaveRestore( Proc.cs, r, 0 );
-            } else {
-                Write387( r );
-            }
-        } else if( _d16info.cpumod >= 3 ) {
+    if( HAVE_EMU ) {
+        if( CheckWin386Debug() == WGOD_VERSION ) {
+            EMUSaveRestore( Proc.cs, r, 0 );
+        } else {
+            Write387( r );
+        }
+    } else if( RealNPXType != X86_NO ) {
+        if( _d16info.cpumod >= 3 ) {
             Write387( r );
         } else {
-            FPUContract( (void *)r );
             Write8087( r );
         }
     }
@@ -543,32 +535,31 @@ static void GetObjectInfo( char *name )
 
 unsigned ReqProg_load()
 {
-    char        *src;
-    char        *dst;
-    char        *name;
-    char        ch;
-    prog_load_ret       *ret;
-    unsigned            len;
+    char            *src;
+    char            *dst;
+    char            *name;
+    char            ch;
+    prog_load_ret   *ret;
+    unsigned        len;
 
     _DBG1(( "AccLoadProg\r\n" ));
     AtEnd = FALSE;
     dst = UtilBuff;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
-    while( *src != '\0' ) ++src;
-    ++src;
+    while( *src++ != '\0' ) {};
     len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
-    for( ;; ) {
-        if( len == 0 ) break;
-        ch = *src;
-        if( ch == '\0' ) ch = ' ';
-        *dst = ch;
-        ++src;
-        ++dst;
-        --len;
+    if( len > 126 )
+        len = 126;
+    for( ; len > 0; --len ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 1 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
     }
-    if( dst > UtilBuff ) --dst;
-
     *dst = '\0';
     _DBG1(( "about to debugload\r\n" ));
     _DBG1(( "Name :" ));
@@ -598,7 +589,7 @@ unsigned ReqProg_kill()
 
     _DBG1(( "AccKillProg\n" ));
     ret = GetOutPtr( 0 );
-    InitRedirect();
+    RedirectFini();
     AtEnd = TRUE;
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -607,10 +598,11 @@ unsigned ReqProg_kill()
 
 unsigned ReqSet_watch()
 {
-    watch       *curr;
-    set_watch_req       *acc;
-    set_watch_ret       *ret;
-    int         i,needed;
+    watch           *curr;
+    set_watch_req   *acc;
+    set_watch_ret   *ret;
+    int             i;
+    int             needed;
 
     _DBG1(( "AccSetWatch\n" ));
 
@@ -627,7 +619,7 @@ unsigned ReqSet_watch()
     curr->handle = -1;
     curr->handle2 = -1;
     curr->value = 0;
-    ReadMemory( (addr48_ptr *)&acc->watch_addr, (byte *)&curr->value, curr->len );
+    ReadMemory( (addr48_ptr *)&acc->watch_addr, (byte far *)&curr->value, curr->len );
     ++WatchCount;
     needed = 0;
     for( i = 0; i < WatchCount; ++i ) {
@@ -809,7 +801,7 @@ static bool CheckWatchPoints()
         addr.segment = wp->addr.segment;
         addr.offset = wp->addr.offset;
         val = 0;
-        if( ReadMemory( &addr, (void far *)&val, wp->len ) != wp->len ) {
+        if( ReadMemory( &addr, (byte far *)&val, wp->len ) != wp->len ) {
             return( TRUE );
         }
         if( val != wp->value ) {
@@ -846,13 +838,13 @@ static unsigned ProgRun( bool step )
                 addr.segment = Proc.cs;
                 addr.offset = Proc.eip;
 
-                if( ReadMemory( &addr, (void far *)int_buff, 3 ) == 3
+                if( ReadMemory( &addr, int_buff, 3 ) == 3
                     && int_buff[0] == 0xcd ) {
                     /* have to breakpoint across software interrupts because Intel
                         doesn't know how to design chips */
                     addr.offset = Proc.eip + 2;
                     int_buff[0] = 0xcc;
-                    WriteMemory( &addr, (void far *)int_buff, 1 );
+                    WriteMemory( &addr, int_buff, 1 );
                 } else {
                     Proc.eflags |= 0x100;
                     int_buff[0] = 0;
@@ -861,7 +853,7 @@ static unsigned ProgRun( bool step )
                 ret->conditions = DoRun();
                 if( int_buff[0] != 0 ) {
                     addr.offset = Proc.eip;
-                    WriteMemory( &addr, (void *)&int_buff[2], 1 );
+                    WriteMemory( &addr, &int_buff[2], 1 );
                 } else {
                     Proc.eflags &= ~0x100;
                 }
@@ -933,7 +925,7 @@ unsigned ReqGet_err_text()
 
 unsigned ReqGet_lib_name()
 {
-    char *ch;
+    char                *ch;
     get_lib_name_ret    *ret;
 
     ret = GetOutPtr( 0 );
@@ -973,7 +965,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
-    InitRedirect();
+    RedirectInit();
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = FALSE;

@@ -1,0 +1,12 @@
+
+FIXUPP(9c) len:0029h, chksum:24h(24)
+    001dh Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0022h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0028h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    002eh Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0033h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0039h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    003fh Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    0044h Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    004ah Seg   OFFSET       Frame: TARGET    Target: SI(1)
+    004fh Seg   OFFSET       Frame: TARGET    Target: SI(1)

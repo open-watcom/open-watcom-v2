@@ -63,20 +63,20 @@ void addSLListElem(pSLList pList, void *elem);
 void addBegSLListElem(pSLList pList, void *elem);
 
 /* Add listAdd to the beginning of pList */
-void addBegSLListSLList(pSLList pList, pSLList listAdd, void (*action)(void *));
+void addBegSLListSLList(pSLList pList, pSLList listAdd, void* (*action)(void *));
 
 /* Insert an element after current position in the list */
-insertSLListAfterCurrPosElem(pSLList pList, void *elem);
+void insertSLListAfterCurrPosElem(pSLList pList, void *elem);
 
 /* Set user data at current position to a specified value */
 void setCurrSLListPosElem(pSLList pList, void *elem);
 
 /* Get current position element of a list. Return 0 iff end of list is reached*/
-int getCurrSLListPosElem(pSLList pList, void **pElem);
+int getCurrSLListPosElem(pSLList pList, void *pElem);
 
 /* Unqueue (delete) element from the beginning of list. Place the deleted
 element into element. Return 0 iff list is empty. */
-int unqueSLListElem(pSLList pList, void **element);
+int unqueSLListElem(pSLList pList, void *pElem);
 
 /* Increment current position */
 void incCurrSLListPos(pSLList pList);
@@ -89,7 +89,7 @@ return (new) userData from list. */
 void forAllInSLList(pSLList pList, void (func)(void**));
 
 /* Delete a list, deallocating all of the space. */
-void zapSLList(pSLList pList, void* (zapElem)(void*));
+void zapSLList(pSLList pList, void (zapElem)(void*));
 
 
 

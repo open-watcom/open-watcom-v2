@@ -32,7 +32,7 @@
 
 #include "cover.h"
 
-BOOL PASCAL _Cover_EnumTaskWindows( HANDLE task, FARPROC p, DWORD param )
+BOOL PASCAL _Cover_EnumTaskWindows( HANDLE task, FARPROC p, LONG param )
 {
     return( EnumTaskWindows( task, SetProc( p, GETPROC_ENUMTASKWINDOWS ),
                 param ) );

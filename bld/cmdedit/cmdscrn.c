@@ -32,11 +32,11 @@
 
 #include "cmdedit.h"
 
-void FlipScreenCursor() {
-/******************/
-
+void FlipScreenCursor( void )
+/***************************/
+{
     char        buffer[2];
-    int length;
+    int         length;
 
     length = 2;
     VioReadCellStr( (char PASPTR *)&buffer, (int PASPTR *)&length,
@@ -47,9 +47,9 @@ void FlipScreenCursor() {
 }
 
 
-void ReadScreen( int next_line ) {
-/***************************/
-
+void ReadScreen( int next_line )
+/******************************/
+{
     int len;
 
     len = SCREEN_WIDTH - (StartCol+ColOffset);
@@ -74,9 +74,9 @@ void ReadScreen( int next_line ) {
 }
 
 
-void RightScreen() {
-/*************/
-
+void RightScreen( void )
+/**********************/
+{
     if( RowOffset == 0 ) return;
     if( StartCol+ColOffset == (SCREEN_WIDTH-1) ) return;
     FlipScreenCursor();
@@ -86,9 +86,9 @@ void RightScreen() {
 }
 
 
-void LeftScreen() {
-/************/
-
+void LeftScreen( void )
+/*********************/
+{
     if( RowOffset == 0 ) return;
     if( StartCol+ColOffset == 0 ) return;
     FlipScreenCursor();
@@ -98,9 +98,9 @@ void LeftScreen() {
 }
 
 
-void UpScreen() {
-/**********/
-
+void UpScreen( void )
+/*******************/
+{
     if( RowOffset != 0 ) {
         FlipScreenCursor();
     }
@@ -122,9 +122,9 @@ void UpScreen() {
 }
 
 
-void DownScreen() {
-/************/
-
+void DownScreen( void )
+/*********************/
+{
     if( RowOffset != 0 ) {
         FlipScreenCursor();
         RowOffset++;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  NetWare trap file startup.
 *
 ****************************************************************************/
 
@@ -183,9 +182,12 @@ size_t strlen( const char *str )
     return( len );
 }
 
-char * memcpy( char *dst, const char *src, size_t len )
+void * memcpy( void *_dst, const void * _src, size_t len )
 {
+    char *dst = _dst;
+    const char *src = _src;
     char *p = dst;
+
     while( len != 0 ) {
         *p = *src;
         ++p;
@@ -195,8 +197,11 @@ char * memcpy( char *dst, const char *src, size_t len )
     return( dst );
 }
 
-int memcmp( char *a, char *b, size_t len )
+int memcmp( const void *a_in, const void *b_in, size_t len )
 {
+    const char *a = a_in;
+    const char *b = b_in;
+
     while( len != 0 ) {
         if( *a - *b != 0 ) return( *a - *b );
         ++a;
@@ -233,7 +238,7 @@ int toupper( int c )
 
 static char *args[] = { "", 0 };
 
-static void CloseAllScreens()
+static void CloseAllScreens( void )
 {
     if( screenID ) CloseScreen( screenID );
     screenID = 0;
@@ -259,7 +264,7 @@ int _Check( void )
 }
 
 
-void    MainHelper()
+void    MainHelper( void )
 {
     if( OpenScreen( TRP_The_WATCOM_Debugger, ScreenTag, &screenID ) != 0 ) {
         screenID = 0;
@@ -309,13 +314,14 @@ LONG _Prelude(
 #ifdef DEBUG_ME
     if( cmdLineP[0] == '?' || ( cmdLineP[0] == '-' && cmdLineP[1] == 'h' ) ) {
         OutputToScreen( systemConsoleScreen, "Use -d[options]\r\n" );
+        OutputToScreen( systemConsoleScreen, "  options are:\r\n" );
         OutputToScreen( systemConsoleScreen, "      b = initial break\r\n" );
         OutputToScreen( systemConsoleScreen, "      a = all\r\n" );
         OutputToScreen( systemConsoleScreen, "      t = threads\r\n" );
         OutputToScreen( systemConsoleScreen, "      d = debug regs\r\n" );
         OutputToScreen( systemConsoleScreen, "      e = events\r\n" );
         OutputToScreen( systemConsoleScreen, "      i = IO\r\n" );
-        OutputToScreen( systemConsoleScreen, "      i = IPX\r\n" );
+        OutputToScreen( systemConsoleScreen, "      x = network events\r\n" );
         OutputToScreen( systemConsoleScreen, "      m = misc\r\n" );
         OutputToScreen( systemConsoleScreen, "      r = requests\r\n" );
         OutputToScreen( systemConsoleScreen, "      o = errors\r\n" );
@@ -370,25 +376,25 @@ LONG _Prelude(
 //    OutputToScreen( systemConsoleScreen, "transport time = %8x \r\n", trtime );
 
 
-    Command = cmdLineP;
+    Command = (char *)cmdLineP;
     MyNLMHandle = NLMHandle;
-    ScreenTag = AllocateResourceTag( MyNLMHandle, "Debug server screens",
+    ScreenTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server screens",
                                      ScreenSignature );
-    AllocTag = AllocateResourceTag( MyNLMHandle, "Debug server work area",
+    AllocTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server work area",
                                     AllocSignature );
-    SemaphoreTag = AllocateResourceTag( MyNLMHandle, "Debug server semaphores",
+    SemaphoreTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server semaphores",
                                   SemaphoreSignature );
-    ProcessTag = AllocateResourceTag( MyNLMHandle, "Debug server processes",
+    ProcessTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debug server processes",
                                    ProcessSignature );
-    TimerTag = AllocateResourceTag( MyNLMHandle, "Debugger time out",
+    TimerTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger time out",
                                    TimerSignature );
-    InterruptTag = AllocateResourceTag( MyNLMHandle, "Debugger interrupts",
+    InterruptTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger interrupts",
                                    InterruptSignature );
-    SocketTag = AllocateResourceTag( MyNLMHandle, "Debugger IPX socket",
+    SocketTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"Debugger IPX socket",
                                    SocketSignature );
-    DebugTag = AllocateResourceTag( MyNLMHandle, "WVIDEO Debugger",
+    DebugTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"WVIDEO Debugger",
                                    DebuggerSignature );
-    BreakTag = AllocateResourceTag( MyNLMHandle, "WVIDEO Break Points",
+    BreakTag = AllocateResourceTag( MyNLMHandle, (BYTE *)"WVIDEO Break Points",
                                    BreakpointSignature );
     CMakeProcess( 50, &MainHelper, &stack[ sizeof( stack ) ],
                     sizeof( stack ), "WATCOM Debugger Server", ProcessTag );

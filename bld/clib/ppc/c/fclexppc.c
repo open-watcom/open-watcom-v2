@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include "rtdata.h"
+#include "clearfpe.h"
 
 void _ClearFPE(void)
 {

@@ -1,6 +1,6 @@
 WdeSymbols DIALOG 10, 20, 240, 190
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "WATCOM Dialog Editor Symbols"
+CAPTION "Open Watcom Dialog Editor Symbols"
 FONT 8, "MS Sans Serif"
 BEGIN
         CONTROL "Symbol:",            IDB_NOINPUT, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE, 10, 10, 30, 8

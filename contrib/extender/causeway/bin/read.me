@@ -1,0 +1,320 @@
+
+Notes On CauseWay for Watcom C++ and Assembly Language
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+This READ.ME file contains important information about CauseWay
+for Watcom C++ and Assembly Language which does not appear in
+the CauseWay User's Manual.
+
+CauseWay Files
+==============
+
+The following files should be on your system disk:
+
+    MAKEFILE - Watcom make file for DOS DLL example.
+
+    ALIASSEL.ASM - Assembly language example source file using
+                   CauseWay services.
+
+    CALLBACK.ASM - Assembly language example source file using
+                   CauseWay services.
+
+    DOSSHELL.ASM - Assembly language example source file using
+                   CauseWay services.
+
+    INTASM.ASM - Assembly language example source file for calling
+                 real mode interrupt that uses segment:offset
+                 pointer to a memory buffer.
+
+    MULTFLAT.ASM - Flat model source file using CauseWay
+                   services.
+
+    MULTNEAR.ASM - Near model source file using CauseWay
+                   services.
+
+    SCREEN32.ASM - Flat or Near model assembly language example
+                   source file.
+
+    SHOWEVAR.ASM - Assembly language example source file for WARPWRAP.
+
+    TIMER.ASM - Assembly language example source file using
+                CauseWay services.
+
+    VERSION.ASM - Assembly language example source file using
+                  CauseWay services.
+
+    VESA.ASM - Source code to Watcom VESA.OBJ VESA support
+               module.
+
+    _MAYDAY.C - Watcom C source file for SetDump and UserErrTerm
+                example.
+
+    CROAK1.C - Watcom C source file for UserDump example.
+
+    CROAK2.C - Watcom C source file for UserDump example.
+
+    CROAK2.C - Watcom C source file for UserDump example.
+
+    DLL.C - Watcom C source file for DOS DLL example.
+
+    DLLTEST.C - Watcom C source file for DOS DLL example.
+
+    INTC.C - Watcom C example source file for calling real mode
+             interrupt that uses segment:offset pointer to a
+             memory buffer.
+
+    TESTTERM.C - Watcom C source file for SetDump and
+                 UserErrTerm example.
+
+    WMAPCWD.C - WMAPCWD utility source, WLINK MAP to
+                CWD-readable MAP converter.
+
+    CWD.CFG - CWD CauseWay debugger example configuration file.
+
+    CWHELP.CFG - Support file for debugging CauseWay with
+                 Watcom's WD debugger.
+
+    MSLINK.DEF - Example configuration file for WL32.
+
+    RTLINK.DEF - Example configuration file for WL32.
+
+    WARPLINK.DEF - Example configuration file for WL32.
+
+    WARPWRAP.DEF - Example definitions file for WARPWRAP.
+
+    CWC.EXE - CauseWay file compressor.
+
+    CWD.EXE - CauseWay symbolic debugger startup executable.
+
+    CWDSTUB.EXE - Watcom C++ support file for CauseWay DOS DLLs.
+
+    CWHELP.EXE - Support file for debugging with Watcom's WD
+                 debugger. (Version 11.0+)
+
+    CWHELP10.EXE - Support file for debugging with Watcom's WD
+                 debugger. (Version 10.6 and less, rename to CWHELP.EXE)
+
+    CWSTUB.EXE - Watcom C++ support file for CauseWay.
+
+    LE23P.EXE - File converter from Watcom LE-format file to
+                native CauseWay 3P-format file
+
+    WL32.EXE - CauseWay protected mode linker.
+
+    WMAPCWD.EXE - WMAPCWD utility, WLINK MAP to CWD-readable
+                  MAP converter.
+
+    WW.EXE - CauseWay environment variable burn-in utility.
+
+    DLLFUNC.H - Watcom C++ DOS DLL example header file.
+
+    CW.INC - CauseWay assembly language include file containing
+             the CauseWay API.
+
+    CWSYSTEM.LNK - Watcom C++ linker setup file.
+
+    DLLR.LNK - Watcom C++ link file for DOS DLL example.
+
+    DLLS.LNK - Watcom C++ link file for DOS DLL example.
+
+    DLLTEST.LNK - Watcom C++ link file for DOS DLL example.
+
+    READ.ME  - This file.
+
+    CWAPI.OBJ - Watcom C++ OBJ file for DOS DLL example.
+
+    DLLFUNC.OBJ - Watcom C++ OBJ file for DOS DLL example.
+
+    DLLR105A.OBJ - Watcom C++ startup code for DOS DLLs,
+                   register-based calling convention, version
+                   10.5a and above.
+
+    DLLS105A.OBJ - Watcom C++ startup code for DOS DLLs,
+                   stack-based calling convention, version
+                   10.5a and above.
+
+    DLLSTRTR.OBJ - Watcom C++ startup code for DOS DLLs,
+                   register-based calling convention, version
+                   10.5 and previous.
+
+    DLLSTRTS.OBJ - Watcom C++ startup code for DOS DLLs,
+                   stack-based calling convention, version
+                   10.5 and previous.
+
+    KBHITR.OBJ - Watcom optimized kbhit replacement,
+                 register-based calling convention.
+
+    KBHITS.OBJ - Watcom optimized kbhit replacement,
+                 stack-based calling convention.
+
+    SHOWEVAR.OBJ - Example binary file for WARPWRAP.
+
+    VESA.OBJ - Watcom C++ linkable VESA support module.
+
+    CWD.OVL - Support code file for CWD, the CauseWay debugger.
+
+    CW.TRP - Support file for debugging with Watcom's WD
+             debugger. (Version 11.0+)
+
+    CW10.TRP - Support file for debugging with Watcom's WD
+             debugger. (Version 10.6 and less, rename to CW.TRP)
+
+    VESA.TXT - VESA.OBJ documentation, Watcom C++ VESA support
+               using CauseWay.
+
+    WMAPCWD.TXT - WMAPCWD utility documentation, WLINK MAP to
+                  CWD-readable MAP converter.
+
+    DEXDLL.ZIP - Zipped set of files, expanded demonstration of
+	             using DOS DLLs with calls to and from the DLL,
+                 including variables.
+
+    WATSWAP.ZIP - Zipped set of files on optional linkable
+                  memory swapper routine, including
+                  documentation and demonstration files.
+
+
+Feature Additions, Changes, and Corrections
+===========================================
+
+December 1999
+
+Fixed an error in CauseWay's API for GetMem and GetMem32 and
+DPMI emulation when reporting total available memory ([E]CX =
+-1) in straight DOS environments.  The return value would be
+doubled if no conventional/DOS memory was available, i.e. the
+program consumed all conventional memory when loading or all
+spare conventional memory was reserved by the SET
+CAUSEWAY=LOWMEM:nnn setting.  This only affected the value
+reported, the actual value was still used properly by CauseWay
+itself.
+
+Added support to returning a more accurate total available
+memory value when using EMM386 NOVCPI setting in straight DOS
+environments.  For reasons known only to Microsoft, EMM386 still
+acts as as VCPI host even when NOVCPI is set, although no memory
+is then available via that API.  As a result, the total
+available memory report was not seeing memory available via XMS
+allocations (since VCPI takes precedence).  This problem did not
+affect actual CauseWay usage of available memory which still
+made XMS allocations where possible, only the available memory
+value returned from the total memory call was reduced.
+
+Added workaround for weird bug in some machines due to unknown
+agent (Windows? AMI BIOS?) where a CauseWay application in
+AUTOEXEC.BAT which uses DOS function 8 to get a keystroke when
+no other application in AUTOEXEC.BAT gets a keystroke will cause
+failure in Windows 95 and 98 after boot-up when subsequently
+opening a DOS box.  This is still problematic with
+CWC-compressed programs.  The workaround is code added to
+CauseWay startup procedure which simply checks for a keystroke
+via DOS function 0Bh 127 times and ends out early if a key was
+pressed -- the added overhead should be a few milli- or
+microseconds.  Honestly, we have no idea why this clears up the
+problem, although A20 line or keyboard port influence are
+suspects.  CauseWay itself does not process DOS function 8
+requests, passing them down to and back up from the real mode
+(DOS) handler.
+
+October 1999
+
+Added internal support for XMS version 3.0 specification to
+allow XMS-based environments (i.e. HIMEM.SYS loaded without
+EMM386 EMS emulation turned on under pure DOS environments) to
+access more than 64M physical memory.
+
+Fixed an obscure bug in WL32.EXE that caused a GPF when linking
+approximately one in every gazillion times, technically
+speaking.
+
+February 1999
+
+Sybase has provided us with the information and files necessary to support
+trap files under version 11.0 of Watcom C/C++, an action we appreciate
+and for which we thank them.  Version 11.0 users may use the updated CW.TRP
+and CWHELP.EXE file.  Users of versions prior to 11.0 should continue to use
+their old version of CW.TRP and CWHELP.EXE, or they can rename the CW10.TRP
+and CWHELP10.EXE in this current release of CauseWay to CW.TRP and CWHELP.EXE.
+
+Added BIG1 setting support to CAUSEWAY environment variable.  The BIG1
+setting forces CauseWay to use an alternate method to determine available
+extended memory under RAW memory environments (no DPMI host, no HIMEM.SYS
+loaded), allowing CauseWay to see more than 64M of memory on machines
+which do not support more than 64M under the original INT 15h method.
+This method uses INT 15h function 0e801h to determine available extended
+memory, falling back to the original function if 0e801h fails.  Note that
+old machines may not support this function and there is a slight chance
+that some older machines may not work if the BIG1 setting is used.
+
+May 1998
+
+An error was uncovered in Windows NT which resulted in
+application failure when using the CWSWAPR and CWSWAPS swapper
+routines.  NT's implementation of DPMI is faulty (it does not
+properly set the FS register on simulate real mode call
+function), leading to failure of the swapper code.  New code was
+added to swapper routines to work around this NT bug, and the
+swapper now works properly under Windows NT.
+
+Added a NOEX setting to the CAUSEWAY environment variable, e.g.
+SET CAUSEWAY=NOEX.  This parameter forces CauseWay to not patch
+the INT 21h, function 4bh (EXEC) vector to turn off CauseWay's
+INT 31h extensions when the EXEC function is called.  CauseWay
+normally turns off support of its INT 31h extensions on an EXEC
+call to be well-behaved and avoid conflicts with other extenders
+or programs which may add their own extensions to INT 31h.
+However, if your CauseWay-extended application shells out to DOS
+and passes the shelled-to application a callback address
+pointing to a routine within the parent CauseWay application,
+the callback will not work properly if the protected mode code
+uses the CauseWay extensions.  With the NOEX setting present,
+CauseWay still supports its INT 31h extensions for those
+users who need to operate with callbacks in this fashion.  Be
+aware that when the NOEX setting is present, CauseWay is less
+"well-behaved" about other programs which might add their own
+INT 31h extensions.
+
+CauseWay properly works with the CAUSEWAY environment variable
+NAME parameter even if your temporary directory setting has a
+trailing backslash.
+
+CWD.OVL adds a setting in the register display window which
+displays FPU values, if FPU is present.  Press F5 in the
+register display window to toggle FPU display on and off.
+CWD.OVL no longer sign-extends 32-bit addresses on the CPU
+display.
+
+
+Known Problems And Incompatibilities
+====================================
+
+Windows 95 network printing under CauseWay may wait until
+timeout (generally 60 to 90 seconds) or program exit before
+printing.  This is not an issue with Novell's version of the
+network printer.  Although Microsoft support states the problem
+occurs due to a MS-DOS program which does not release the
+printer port, this is not the case with CauseWay which does not
+perform printer-specific setup.  The compatibility error lies
+somewhere in Microsoft's code conflicting with CauseWay's 32-bit
+DOS extender running in protected mode.  However, the posted
+Microsoft workaround for programs which do capture the printer
+port appears to work with CauseWay.  To implement the
+workaround, adding the following lines to the appropriate
+sections of the SYSTEM.INI file:
+
+[Network]
+PrintBufTime=10
+
+{IFSMGR]
+PrintBufTime=10
+
+Add the sections to SYSTEM.INI if they do not already exist.
+Setting values are in seconds.  If the settings are too low,
+printouts may fail, and you should try increasing the settings
+until correct printing again occurs.
+
+Another workaround is to simply send  another job to the printer
+which simply consists of the printer reset command (or similar
+innocuous command).  This flushes the pending job immediately.
+
+Last updated 01/09/2000

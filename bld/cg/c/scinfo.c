@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction scoring helper functions.
 *
 ****************************************************************************/
 
@@ -37,13 +36,8 @@
 #include "zoiks.h"
 #include "model.h"
 
-extern  void            FreeScListEntry(score_list*);
-extern  void            RegAdd(score*,int,int);
-extern  score_list      *NewScListEntry();
 extern  pointer         Copy(pointer,pointer,uint);
 
-extern  int     ScoreCount;
-extern  score_reg       **ScoreList;
 extern  proc_def        *CurrProc;
 
 static  pointer SegConstSymbol;/*no other pointer points to here*/
@@ -61,6 +55,8 @@ static  bool    ScoreSame( score_info *x, score_info *y ) {
      && x->symbol.t->v.id == y->symbol.t->v.id ) return( TRUE );
     if( x->class == N_VOLATILE ) return( FALSE );
     if( x->class == N_INITIAL ) return( FALSE );
+    if( x->class == N_INDEXED
+     && x->scale != y->scale ) return( FALSE );
     if( x->symbol.p == y->symbol.p ) return( TRUE );
     return( FALSE );
 }
@@ -80,12 +76,14 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
     if( x->class == N_INDEXED && x->base == NULL ) {
         switch( y->class ) {
         case N_MEMORY:
-            if( _IsModel( RELAX_ALIAS ) ) return( FALSE );
+            if( _IsModel( RELAX_ALIAS ) )
+            return( FALSE );
             /* fall through */
         case N_INDEXED:
             return( TRUE );
         case N_TEMP:
-            if( y->symbol.v->usage & USE_ADDRESS ) return( TRUE );
+            if( y->symbol.v->usage & USE_ADDRESS )
+            return( TRUE );
             return( FALSE );
         }
     }
@@ -99,17 +97,21 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         switch( y->class ) {
         case N_TEMP:
             if( x->base->n.class == N_TEMP ) {
-                if( y->symbol.t->v.id == x->base->t.v.id ) return( TRUE );
+                if( y->symbol.t->v.id == x->base->t.v.id )
+            return( TRUE );
             }
             break;
         case N_MEMORY:
             if( x->base->n.class == N_MEMORY ) {
-                if( y->symbol.p == x->base->v.symbol ) return( TRUE );
+                if( y->symbol.p == x->base->v.symbol )
+            return( TRUE );
             }
             break;
         case N_INDEXED:
-            if( y->base == NULL ) return( TRUE );
-            if( y->base->n.class != x->base->n.class ) return( FALSE );
+            if( y->base == NULL )
+            return( TRUE );
+            if( y->base->n.class != x->base->n.class )
+            return( FALSE );
             switch( x->base->n.class ) {
             case N_TEMP:
                 return( y->base->t.v.id == x->base->t.v.id );
@@ -130,61 +132,36 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
     if( info->class == N_VOLATILE ) return( FALSE );
     curr = *p->list;
     for(;;) {
-        if( curr == NULL ) break;
+        if( curr == NULL )
+        break;
         if( ScoreSame( &curr->info, info ) != FALSE
-         && curr->info.offset == info->offset ) return( TRUE );
+         && curr->info.offset == info->offset )
+        return( TRUE );
         curr = curr->next;
     }
     return( FALSE );
 }
 
 
-static  void    ScoreAdd( score *p, int i, score_info *info ) {
-/*************************************************************/
-
-    if( _IsModel( SUPER_OPTIMAL ) ) {
-        score       *first;
-        score       *curr;
-
-        if( info->class == N_INDEXED ) {
-            first = &p[ info->index_reg ];
-            curr = first;
-            for(;;) {
-                info->index_reg = ScoreList[ curr->index ]->reg_name->reg_index;
-                if( ScoreLookup( &p[ i ], info ) == FALSE ) {
-                    ScoreInsert( p, i, info );
-                }
-                curr = curr->next_reg;
-                if( curr == first ) break;
-            }
-        } else {
-            if( ScoreLookup( &p[ i ], info ) == FALSE ) {
-                ScoreInsert( p, i, info );
-            }
-        }
-    } else {
-        if( ScoreLookup( &p[ i ], info ) == FALSE ) {
-            ScoreInsert( p, i, info );
-        }
-    }
-}
-
-
 extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
 /*******************************************************************/
 
-    if( ScoreLookup( &p[ index ], info ) ) return( TRUE );
+    if( ScoreLookup( &p[ index ], info ) )
+        return( TRUE );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         bool        is_equal;
         type_length half_size;
 
         entry = ScoreList[  index  ];
-        if( entry->high == NO_INDEX || entry->low == NO_INDEX ) return( FALSE );
+        if( entry->high == NO_INDEX || entry->low == NO_INDEX )
+        return( FALSE );
             /*  See if low parts & high parts of register pair contain*/
             /*  the right information*/
-        if( info->class == N_CONSTANT ) return( FALSE );
-        if( ScoreLookup( &p[  entry->low  ], info ) == FALSE ) return( FALSE );
+        if( info->class == N_CONSTANT )
+        return( FALSE );
+        if( ScoreLookup( &p[  entry->low  ], info ) == FALSE )
+        return( FALSE );
         half_size = entry->size / 2;
         info->offset += half_size;
         is_equal = ScoreLookup( &p[  entry->high  ], info );
@@ -201,18 +178,53 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     score_list  *new;
     int         j;
 
-    if( info->class == N_VOLATILE ) return;
-    if( HW_Ovlap( ScoreList[ i ]->reg, CurrProc->state.unalterable ) ) return;
+    if( info->class == N_VOLATILE )
+        return;
+    if( HW_Ovlap( ScoreList[ i ]->reg, CurrProc->state.unalterable ) )
+        return;
     new = NewScListEntry();
     Copy( info, &new->info, sizeof( score_info ) );
     new->next = *p[ i ].list;
     *p[ i ].list = new;
     j = ScoreCount;
     for(;;) {
-       if( --j < 0 ) return;
-       if( ( j != i ) && ( ScoreEqual( p, j, info ) != FALSE ) ) break;
+       if( --j < 0 )
+           return;
+       if( ( j != i ) && ( ScoreEqual( p, j, info ) != FALSE ) )
+           break;
     }
     RegAdd( p, i, j );
+}
+
+
+static  void    ScoreAdd( score *p, int i, score_info *info ) {
+/*************************************************************/
+
+    if( _IsModel( SUPER_OPTIMAL ) ) {
+        score       *first;
+        score       *curr;
+
+        if( (info->class == N_INDEXED) && (info->index_reg != NO_INDEX) ) {
+            first = &p[ info->index_reg ];
+            curr = first;
+            for(;;) {
+                info->index_reg = ScoreList[ curr->index ]->reg_name->r.reg_index;
+                if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+                    ScoreInsert( p, i, info );
+                }
+                curr = curr->next_reg;
+                if( curr == first ) break;
+            }
+        } else {
+            if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+                ScoreInsert( p, i, info );
+            }
+        }
+    } else {
+        if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+            ScoreInsert( p, i, info );
+        }
+    }
 }
 
 
@@ -253,9 +265,12 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
 
     if( op->n.class == N_INDEXED
      && op->i.index_flags ==( X_FAKE_BASE | X_BASE_IS_INDEX) ) {
-        op = op->i.base; /* track memory locatio */
+        op = op->i.base; /* track memory location */
     }
     info->class = op->n.class;
+    info->scale = 0;
+    info->base  = NULL;
+    info->index_reg = NO_INDEX;
     switch( op->n.class ) {
     case N_CONSTANT:
         switch( op->c.const_type ) {
@@ -286,17 +301,13 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
             _Zoiks( ZOIKS_046 );
             break;
         }
-        info->index_reg = NO_INDEX;
-        info->base = NULL;
         break;
     case N_TEMP:
         if( op->v.usage & VAR_VOLATILE ) {
             info->class = N_VOLATILE;
         }
-        info->symbol.t = op;
+        info->symbol.t = &(op->t);
         info->offset = op->v.offset;
-        info->index_reg = NO_INDEX;
-        info->base = NULL;
         break;
     case N_MEMORY:
         if( op->v.usage & VAR_VOLATILE ) {
@@ -304,8 +315,6 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         }
         info->symbol.p = op->v.symbol;
         info->offset = op->v.offset;
-        info->index_reg = NO_INDEX;
-        info->base = NULL;
         break;
     case N_INDEXED:
         if( op->i.index_flags & X_VOLATILE ) {
@@ -315,6 +324,7 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         info->offset = op->i.constant;
         info->index_reg = op->i.index->r.reg_index;
         info->base = op->i.base;
+    info->scale = op->i.scale;
         break;
     }
 }
@@ -360,7 +370,8 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
             owner = scoreboard->list;
             for(;;) {
                 curr = *owner;
-                if( curr == NULL ) break;
+                if( curr == NULL )
+            break;
                 /*   Currently looking at memory from*/
                 /*   curr->info+offset to curr->info+offset+entry->size*/
                 /*   If the names 'info' and 'curr' match, then have an*/

@@ -1,0 +1,20 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: valarray (...)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _VALARRAY_INCLUDED
+#define _VALARRAY_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+namespace std {
+
+} // namespace std
+
+#endif

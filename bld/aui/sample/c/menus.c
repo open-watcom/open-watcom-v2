@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  AUI sample program's menus.
 *
 ****************************************************************************/
 
@@ -33,19 +32,19 @@
 #include "app.h"
 
 
-extern int DlgSearch(a_window*,void*);
-extern int DlgOptions();
+extern int DlgSearch( a_window *, void * );
+extern int DlgOptions( void );
 void *SrchHistory;
 
-extern a_window *W1Open();
-extern a_window *W2Open();
-extern a_window *W3Open();
-extern a_window *W4Open();
-extern a_window *W5Open();
-extern a_window *W6Open();
-extern a_window *W7Open();
-extern a_window *W8Open();
-extern void DlgCmd();
+extern a_window *W1Open( void );
+extern a_window *W2Open( void );
+extern a_window *W3Open( void );
+extern a_window *W4Open( void );
+extern a_window *W5Open( void );
+extern a_window *W6Open( void );
+extern a_window *W7Open( void );
+extern a_window *W8Open( void );
+extern void DlgCmd( void );
 extern void Password( char *, char *, int );
 extern gui_colour_set WndColours[];
 
@@ -130,7 +129,7 @@ static char *FmtNum( void *handle, int i )
 }
 
 
-void TimeIt()
+void TimeIt( void )
 {
     extern wnd_attr     WndPlainAttr;
     char        buff[80];
@@ -154,7 +153,7 @@ void TimeIt()
     }
 }
 
-static void GetPassword()
+static void GetPassword( void )
 {
     char        buff[80];
 
@@ -171,7 +170,7 @@ static gui_toolbar_struct ToolBar[] = {
 {"5", BITMAP_FIVE,      MENU_OPEN5, "Open window number 5" },
 };
 
-void OpenTools()
+void OpenTools( void )
 {
     WndCreateToolBar( 867, TRUE, ArraySize( ToolBar ), ToolBar );
 }
@@ -302,4 +301,3 @@ extern bool     WndMainMenuProc( a_window *wnd, unsigned id )
     }
     return( TRUE );
 }
-

@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent tmpfile() implementation.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "rtinit.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -39,35 +39,33 @@
 #include <string.h>
 #include <process.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include "rtdata.h"
 #include "tmpfname.h"
 #include "seterrno.h"
 #include "openmode.h"
 
-#if defined(__PENPOINT__)
- #define OPEN_MODE O_RDWR | O_CREAT
- #define PMODE ( S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH )
-#else
- #define OPEN_MODE O_RDWR | O_CREAT | O_BINARY
- #define PMODE ( S_IREAD | S_IWRITE )
-#endif
+#define OPEN_MODE   (O_RDWR | O_CREAT | O_BINARY)
+#define PMODE       (S_IREAD | S_IWRITE)
 
 /* Netware doesn't define these */
 /* Symbolic constants for the access() function */
 
-#if !defined(F_OK)
+#if !defined( F_OK )
 #define R_OK    4       /*  Test for read permission    */
 #define W_OK    2       /*  Test for write permission   */
 #define X_OK    1       /*  Test for execute permission */
 #define F_OK    0       /*  Test for existence of file  */
 #endif
 
-void __MkTmpFile( char *buf, int num );
+extern void     __MkTmpFile( char *buf, int num );
+extern void     __RmTmpFile( FILE *fp );
+extern void     (*__RmTmpFileFn)( FILE *fp );
 
 char __tmpfnext = _TMP_INIT_CHAR;
 
-_WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
+_WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
 {
     int         hdl;
     int         old_errno;
@@ -80,10 +78,9 @@ _WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
 
     old_errno = _RWD_errno;
     suffix1 = 0;
-    for(;;) {
-
+    for( ;; ) {
         // Part I
-        for(;;) {
+        for( ;; ) {
             __MkTmpFile( name1, suffix1 );
             // if a file by this name does not exist
             if( access( name1, F_OK ) != 0 ) {
@@ -103,7 +100,7 @@ _WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
 
         // Part II
         /* we now have a empty file. Let's try to rename it
-           rename should be an indivisable operation in the operating system
+           rename should be an atomic operation in the operating system
            so if it succeeds we can be sure no one else has this file.
            Consider the following sequence:
 
@@ -118,8 +115,10 @@ _WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
                   with task1.
          */
         suffix2 = _RWD_tmpfnext;    // only one of these per process
-        for(;;) {
-            if( suffix2 == suffix1 ) suffix2++;
+        for( ;; ) {
+            if( suffix2 == suffix1 ) {
+                suffix2++;
+            }
             __MkTmpFile( name2, suffix2 );
 
             if( rename( name1, name2 ) == 0 ) { // if rename worked
@@ -137,9 +136,7 @@ _WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
                 our_errno = errno;
                 remove( name2 );
                 __set_errno( our_errno );
-#if !defined(__PENPOINT__)
                 return( NULL );
-#endif
             }
             // The rename didn't work or we couldn't open the renamed file.
             // One of two possibilities:
@@ -152,9 +149,24 @@ _WCRTLINK FILE *tmpfile(void)           /* create a temporary file */
 
             // Must be case (1). Try another "to" name.
             ++suffix2;
-            if( suffix2 == 0 ) suffix2 = _TMP_INIT_CHAR;
+            if( suffix2 == 0 ) {
+                suffix2 = _TMP_INIT_CHAR;
+            }
             _RWD_tmpfnext = suffix2;    // update for all processes
         }
     }
 }
 
+/* tmpfil() pulls in a lot of overhead that many programs do not need. But */
+/* since temp files are removed on program shutdown, the code to remove    */
+/* them would always get linked in even if the program never heard of temp */
+/* files. Since we know that temporary files can _only_ be created through */
+/* tmpfile(), we can have a dummy __RmTmpFile() by default and use the     */
+/* real thing only if tmpfil() was called.                                 */
+void __Init_Tmpfl( void )
+{
+    // Just assign the function address
+    __RmTmpFileFn = __RmTmpFile;
+}
+
+AXI( __Init_Tmpfl, INIT_PRIORITY_RUNTIME )

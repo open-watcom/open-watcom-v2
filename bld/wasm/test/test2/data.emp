@@ -1,0 +1,27 @@
+
+FIXUPP(9c) len:0012h, chksum:6ah(6a)
+    0025h Seg   BASE         Frame: GI(1)     Target: SI(2)
+    0027h Seg   BASE         Frame: TARGET    Target: SI(1)
+    0031h Seg   BASE         Frame: TARGET    Target: GI(1)
+    0033h Seg   BASE         Frame: TARGET    Target: GI(1)
+
+FIXUPP386(9d) len:0026h, chksum:cbh(cb)
+    000dh Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0011h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0015h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    0019h Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+    001dh Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0021h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0029h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    002dh Seg   OFFSET386    Frame: TARGET    Target: SI(1)
+
+FIXUPP(9c) len:0011h, chksum:6bh(6b)
+    0016h Seg   BASE         Frame: TARGET    Target: GI(1)
+    001ah Seg   BASE         Frame: TARGET    Target: GI(1)
+    001dh Seg   BASE         Frame: TARGET    Target: GI(1)
+    0023h Seg   BASE         Frame: TARGET    Target: GI(1)
+
+FIXUPP386(9d) len:0010h, chksum:42h(42)
+    0005h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    000bh Seg   OFFSET386    Frame: GI(1)     Target: SI(2)
+    0010h Seg   OFFSET386    Frame: GI(1)     Target: SI(2)

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default profiler color scheme.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include "aui.h"
 #include "wpaui.h"
 
-extern gui_colour_set WndColours[] = {
+gui_colour_set WndColours[] = {
 
     { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
     { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
@@ -49,6 +48,7 @@ extern gui_colour_set WndColours[] = {
     { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
     { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
     { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
+    { GUI_BLACK,        GUIEX_WND_BKGRND },     /* GUI_CONTROL_BACKGROUND */
     { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* WPA_PLAIN    */
     { GUI_BRIGHT_WHITE, GUI_BLACK },            /* WPA_TABSTOP */
     { GUI_BRIGHT_WHITE, GUI_RED },              /* WPA_SELECTED */
@@ -63,44 +63,13 @@ extern gui_colour_set WndColours[] = {
     { GUI_BRIGHT_RED,   GUI_BRIGHT_WHITE },     /* WPA_CLEAR_EXTRA    */
 };
 
-#if defined(__DOS__)
-extern gui_colour_set NecColours[] = {
+int          WndNumColours = WPA_NUMBER_OF_COLOURS;
 
-    { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
-    { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
-    { GUI_GREY,         GUI_BLUE },             /* GUI_MENU_GRAYED */
-    { GUI_BRIGHT_WHITE, GUI_BLACK },            /* GUI_MENU_ACTIVE    */
-    { GUI_BRIGHT_YELLOW,GUI_BLACK },            /* GUI_MENU_ACTIVE_STANDOUT */
-    { GUI_BLACK,        GUI_BRIGHT_WHITE },     /* GUI_BACKGROUND */
-    { GUI_BRIGHT_YELLOW,GUI_BLUE },             /* GUI_MENU_FRAME */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_TITLE_INACTIVE    */
-    { GUI_BLUE,         GUI_CYAN },             /* GUI_FRAME_ACTIVE    */
-    { GUI_GREY,         GUI_BRIGHT_WHITE },     /* GUI_FRAME_INACTIVE    */
-    { GUI_BRIGHT_WHITE, GUI_RED },              /* GUI_ICON    */
-    { GUI_GREY,         GUI_BLACK },            /* GUI_MENU_GRAYED_ACTIVE */
-    { GUI_GREY,         GUI_CYAN },             /* GUI_FRAME_RESIZE    */
-    { GUI_WHITE,        GUI_NORMAL },     /* WPA_PLAIN    */
-    { GUI_RED,          GUI_NORMAL },            /* WPA_TABSTOP */
-    { GUI_WHITE,        GUI_REVERSE },              /* WPA_SELECTED */
-    { GUI_GREEN,        GUI_NORMAL },     /* WPA_STANDOUT */
-    { GUI_BLUE,         GUI_NORMAL },     /* WPA_HOTSPOT */
-    { GUI_GREEN,        GUI_REVERSE },            /* WPA_STANDOUT_TABSTOP */
-    { GUI_WHITE,        GUI_NORMAL },             /* WPA_STATUS_LINE */
-    { GUI_RED,          GUI_REVERSE },       /* WPA_ABS_BAR */
-    { GUI_GREEN,        GUI_REVERSE },     /* WPA_REL_BAR */
-    { GUI_WHITE,        GUI_BLACK },     /* WPA_PLAIN_INACTIVE    */
-    { GUI_RED,          GUI_NORMAL },     /* WPA_OVERVIEW_NAME  */
-    { GUI_RED,          GUI_NORMAL },     /* WPA_CLEAR_EXTRA    */
-};
-#endif
-
-extern int          WndNumColours = WPA_NUMBER_OF_COLOURS;
-
-extern wnd_attr     WndPlainAttr = WPA_PLAIN;
-extern wnd_attr     WndTabStopAttr = WPA_TABSTOP;
-extern wnd_attr     WndSelectedAttr = WPA_SELECTED;
-extern wnd_attr     WndCursorAttr = WPA_SELECTED;
-extern wnd_attr     WndStatusColour = WPA_STATUS_LINE;
+wnd_attr    WndPlainAttr = WPA_PLAIN;
+wnd_attr    WndTabStopAttr = WPA_TABSTOP;
+wnd_attr    WndSelectedAttr = WPA_SELECTED;
+wnd_attr    WndCursorAttr = WPA_SELECTED;
+wnd_attr    WndStatusColour = WPA_STATUS_LINE;
 
 wnd_update_list     WndFlags = 0;
 gui_window_styles   WndStyle = GUI_PLAIN+GUI_GMOUSE;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Remote access core - trap file interface.
 *
 ****************************************************************************/
 
@@ -45,12 +44,12 @@
 #include "mad.h"
 #include "dui.h"
 
-extern void             FiniSuppServices();
-extern void             InitSuppServices();
-extern void             RestoreHandlers();
-extern void             GrabHandlers();
-extern int              SameAddrSpace(address ,address );
-extern void             SectLoad(unsigned int );
+extern void             FiniSuppServices( void );
+extern void             InitSuppServices( void );
+extern void             RestoreHandlers( void );
+extern void             GrabHandlers( void );
+extern int              SameAddrSpace( address, address );
+extern void             SectLoad( unsigned int );
 extern void             FreeThreads( void );
 extern void             RemapSection( unsigned, unsigned );
 extern void             CheckForNewThreads( bool );
@@ -63,16 +62,16 @@ extern void             InitLC( location_context *new, bool use_real_regs );
 extern dtid_t           RemoteSetThread( dtid_t );
 extern void             RemoteSectTblRead( void * );
 extern void             RemoteSectTblWrite( void * );
-extern void             CheckMADChange(void);
+extern void             CheckMADChange( void );
 #if defined(__GUI__) && defined(__OS2__)
-extern unsigned         OnAnotherThread( unsigned(*)(), unsigned, void*, unsigned, void* );
+extern unsigned         OnAnotherThread( unsigned(*)(), unsigned, void *, unsigned, void * );
 #else
 #define                 OnAnotherThread( a,b,c,d,e ) a( b,c,d,e )
 #endif
 
 extern unsigned         MaxPacketLen;
 extern unsigned         TaskId;
-extern machine_state   *DbgRegs;
+extern machine_state    *DbgRegs;
 extern system_config    SysConfig;
 extern address          NilAddr;
 extern struct location_context Context;
@@ -96,7 +95,7 @@ typedef struct {
 } machine_data_cache;
 
 static cache_block              Cache;
-static machine_data_cache       *MData;
+static machine_data_cache       *MData = NULL;
 
 static bool IsInterrupt( addr_ptr *addr, unsigned size )
 {
@@ -133,18 +132,27 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
 
         int_tbl = IsInterrupt( &(acc.mem_addr), size );
         if( int_tbl ) RestoreHandlers();
+        CONV_LE_32( acc.mem_addr.offset );
+        CONV_LE_16( acc.mem_addr.segment );
+        CONV_LE_16( acc.len );
         got = TrapAccess( 1, &in, 1, &out );
         if( int_tbl ) GrabHandlers();
 
         left -= got;
         if( left == 0 ) break;
         if( got != piece ) break;
-        acc.mem_addr.offset += piece;
+    addr.mach.offset += piece;
+        acc.mem_addr = addr.mach;
         ptr = (char *)ptr + piece;
     }
     return( size - left );
 }
 
+void FiniCache( void )
+{
+    _Free( Cache.data );
+    Cache.data = NULL;
+}
 
 void InitCache( address addr, unsigned size )
 {
@@ -159,13 +167,7 @@ void InitCache( address addr, unsigned size )
     Cache.len = MemRead( addr, ptr, size );
 }
 
-void FiniCache()
-{
-    _Free( Cache.data );
-    Cache.data = NULL;
-}
-
-bool HaveCache()
+bool HaveCache( void )
 {
     return( Cache.data != NULL );
 }
@@ -221,13 +223,17 @@ unsigned ProgPoke( address addr, void *data, unsigned len )
 
         int_tbl = IsInterrupt( &(acc.mem_addr), len );
         if( int_tbl ) RestoreHandlers();
+        CONV_LE_32( acc.mem_addr.offset );
+        CONV_LE_16( acc.mem_addr.segment );
         TrapAccess( 2, &in, 1, &out );
+        CONV_LE_16( ret.len );
         if( int_tbl ) GrabHandlers();
 
         left -= ret.len;
         if( left == 0 ) break;
         if( ret.len != piece ) break;
-        acc.mem_addr.offset += piece;
+    addr.mach.offset += piece;
+        acc.mem_addr = addr.mach;
         data = (char *)data + piece;
     }
     return( len - left );
@@ -296,7 +302,7 @@ static void ReadRegs( machine_state *state )
     }
 }
 
-void ReadDbgRegs()
+void ReadDbgRegs( void )
 {
     ReadRegs( DbgRegs );
     InitLC( &Context, TRUE );
@@ -315,13 +321,15 @@ static void WriteRegs( machine_state *state )
     in[1].ptr = &state->mr;
     in[1].len = CurrRegSize;
     TrapAccess( 2, &in, 0, NULL );
-    if( ms != MS_OK ) MADRegistersHost( &state->mr );
+    // Always convert regs back to host format; might be more
+    // efficient to create a local copy instead
+    MADRegistersHost( &state->mr );
     if( state->ovl != NULL ) {
         RemoteSectTblWrite( state->ovl );
     }
 }
 
-void WriteDbgRegs()
+void WriteDbgRegs( void )
 {
     WriteRegs( DbgRegs );
 }
@@ -335,6 +343,12 @@ unsigned int ArgsLen( char *args )
         args++;
     }
     return( len );
+}
+
+void ClearMachineDataCache( void )
+{
+    MData->addr = NilAddr;
+    MData->end  = 0;
 }
 
 /*
@@ -358,6 +372,8 @@ unsigned DoLoad( char *args, unsigned long *phandle )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     ret.flags = 0;      /* in case of error */
+    ret.mod_handle = 0;
+    ret.task_id = 0;
     RestoreHandlers();
     FiniSuppServices();
     OnAnotherThread( TrapAccess, 2, &in, 1, &out );
@@ -392,7 +408,7 @@ unsigned DoLoad( char *args, unsigned long *phandle )
 }
 
 
-bool KillProgOvlay()
+bool KillProgOvlay( void )
 {
     prog_kill_req       acc;
     prog_kill_ret       ret;
@@ -403,6 +419,7 @@ bool KillProgOvlay()
     RestoreHandlers();
     FiniSuppServices();
     OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    CONV_LE_32( ret.err );
     InitSuppServices();
     _SwitchOff( SW_HAVE_TASK );
     GrabHandlers();
@@ -423,6 +440,11 @@ unsigned MakeProgRun( bool single )
     RestoreHandlers();
     DUIExitCriticalSection();
     OnAnotherThread( TrapSimpAccess, sizeof( acc ), &acc, sizeof( ret ), &ret );
+    CONV_LE_32( ret.stack_pointer.offset );
+    CONV_LE_16( ret.stack_pointer.segment );
+    CONV_LE_32( ret.program_counter.offset );
+    CONV_LE_16( ret.program_counter.segment );
+    CONV_LE_16( ret.conditions );
     DUIEnterCriticalSection();
     GrabHandlers();
     if( ret.conditions & COND_CONFIG ) {
@@ -470,21 +492,28 @@ void RemoteMapAddr( addr_ptr *addr, addr_off *lo_bound,
     acc.req = REQ_MAP_ADDR;
     acc.in_addr = *addr;
     acc.handle = handle;
+    CONV_LE_32( acc.in_addr.offset );
+    CONV_LE_16( acc.in_addr.segment );
+    CONV_LE_32( acc.handle );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+    CONV_LE_32( ret.out_addr.offset );
+    CONV_LE_16( ret.out_addr.segment );
+    CONV_LE_32( ret.lo_bound );
+    CONV_LE_32( ret.hi_bound );
     *addr = ret.out_addr;
     *lo_bound = ret.lo_bound;
     *hi_bound = ret.hi_bound;
 }
 
-void RemoteSetUserScreen()
+void RemoteSetUserScreen( void )
 {
-    set_user_screen_req acc;
+    set_user_screen_req         acc;
 
     acc.req = REQ_SET_USER_SCREEN;
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-void RemoteSetDebugScreen()
+void RemoteSetDebugScreen( void )
 {
     set_debug_screen_req        acc;
 
@@ -499,6 +528,7 @@ unsigned RemoteReadUserKey( unsigned wait )
 
     acc.req = REQ_READ_USER_KEYBOARD;
     acc.wait = wait;
+    CONV_LE_16( acc.wait );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.key );
 }
@@ -519,7 +549,9 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_
     out[1].ptr = ptr;
     out[1].len = buff_len;
     ret.handle = 0;
+    CONV_LE_32( acc.handle );
     TrapAccess( 1, &in, 2, &out );
+    CONV_LE_32( ret.handle );
     return( ret.handle );
 }
 
@@ -597,6 +629,8 @@ dword RemoteSetBreak( address addr )
     acc.req = REQ_SET_BREAK;
     AddrFix( &addr );
     acc.break_addr = addr.mach;
+    CONV_LE_32( acc.break_addr.offset );
+    CONV_LE_16( acc.break_addr.segment );
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
     return( ret.old );
 }
@@ -609,6 +643,8 @@ void RemoteRestoreBreak( address addr, dword value )
     AddrFix( &addr );
     acc.break_addr = addr.mach;
     acc.old = value;
+    CONV_LE_32( acc.break_addr.offset );
+    CONV_LE_16( acc.break_addr.segment );
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
@@ -652,12 +688,14 @@ void RemoteSplitCmd( char *cmd, char **end, char **parm )
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     TrapAccess( 2, &in, 1, &out );
+    CONV_LE_16( ret.cmd_end );
+    CONV_LE_16( ret.parm_start );
     *end = &cmd[ ret.cmd_end ];
     *parm = &cmd[ ret.parm_start ];
 }
 
 
-void CheckSegAlias()
+void CheckSegAlias( void )
 {
     get_next_alias_req  acc;
     get_next_alias_ret  ret;
@@ -666,38 +704,40 @@ void CheckSegAlias()
     acc.seg = 0;
     for( ;; ) {
         ret.seg = 0;
+        CONV_LE_16( acc.seg );
         TrapSimpAccess( sizeof( acc ), &acc, sizeof( ret ), &ret );
+        CONV_LE_16( ret.seg );
+        CONV_LE_16( ret.alias );
         if( ret.seg == 0 ) break;
         AddAliasInfo( ret.seg, ret.alias );
         acc.seg = ret.seg;
     }
 }
 
-void GetSysConfig()
+void GetSysConfig( void )
 {
     get_sys_config_req  acc;
 
     acc.req = REQ_GET_SYS_CONFIG;
     TrapSimpAccess( sizeof( acc ), &acc, sizeof( SysConfig ), &SysConfig );
+    CONV_LE_16( SysConfig.mad );
 }
 
-void ClearMachineDataCache()
+bool InitCoreSupp( void )
 {
-    MData->addr = NilAddr;
-    MData->end  = 0;
+    if( MData == NULL ) {
+        _Alloc( MData, sizeof( *MData ) );
+        MData->len = sizeof( MData->data );
+        ClearMachineDataCache();
+        GetSysConfig();
+        CheckMADChange();
+        return( TRUE );
+    } else {
+        return( FALSE );
+    }
 }
 
-bool InitCoreSupp()
-{
-    _Alloc( MData, sizeof( *MData ) );
-    MData->len = sizeof( MData->data );
-    ClearMachineDataCache();
-    GetSysConfig();
-    CheckMADChange();
-    return( TRUE );
-}
-
-void FiniCoreSupp()
+void FiniCoreSupp( void )
 {
     _Free( MData );
     MData = NULL;

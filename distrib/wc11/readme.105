@@ -1,0 +1,133 @@
+WATCOM C/C++ Version 10.5 - README
+----------------------------------
+
+Welcome to WATCOM C/C++ version 10.5.  This README provides helpful hints
+found during testing as well as updated information that was not available
+at the time the documentation was produced.
+
+Note: %DstDir% represents the directory in which WATCOM C/C++ was installed.
+      %WinSysDir% represents your Windows 3.x system directory.
+   
+1.  When debugging a 32-bit Phar Lap, TNT or DOS/4GW application, make sure
+    that "run386.exe", "tnt.exe", or "dos4gw.exe" respectively, are in your
+    path.  Failure to do so, may cause your computer to hang.
+   
+2. When using the GUI debugger to debug Windows 3.x applications, certain
+   Windows applications may cause the debugger to behave in an unpredictable
+   way.  Typically, this occurs when debugging certain messages in window
+   callback functions.  For example, hitting a breakpoint in a window
+   function that is processing a WM_INITDIALOG message will crash the system.
+   If this happens, the character-mode version of the debugger should be
+   used.
+   
+3. When debugging the Windows 3.x MFC 2.5 samples contained in
+   "%DstDir%\src\mfc\v25" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v25\*.cpp
+	
+   Similarly, when debugging the Windows NT MFC 3.0 samples contained in
+   "%DstDir%\src\mfc\v30" enter the following in the source path to see the
+   MFC source in the debugger source window.
+   
+   	%DstDir%\src\mfc\v30\*.cpp
+   
+   The source path can be changed by selecting "Source Path" in the "File"
+   menu.
+
+4. In order to use CodeWright with our IDE, you will need to change the
+   "cwright.ini" file.  This file contains the following line.
+
+	;LibPreload=cwdde.dll
+
+   Uncomment this line by removing the ';' character.  This is required to
+   enable communication between the IDE and CodeWright when "weditcw.dll"
+   is selected as the editor interface DLL from the IDE.
+    
+5. If you choose to not install help files onto your hard disk, you will not
+   be able to get help on the C library or MFC library from the editor.
+    
+6. Parallel remote debug servers do not work in an OS/2 session.  They can
+   be used in an OS/2 DOS session.
+    
+7. When configuring the browser to use the CodeWright editor interface, you
+   must specify "weditcw.dll" as the editor DLL, save the new options, exit
+   the browser, and restart the browser.  Failure to do this will cause an
+   exception to occur in the CodeWright interface DLL.
+   
+8. If you have installed the Win32 SDK and MFC help files onto your hard disk,
+   there will be duplicate help files for Win32 and OLE.  You can delete
+   "win32.hlp" and "ole.hlp" form the %DstDir%\binnt directory and reference
+   the Win32 and OLE help from the MFC help.
+   
+9. Under OS/2, if you are debugging a DOS application from the IDE, you
+   must ensure that %DstDir%\binw is in your DOS path so that when the IDE
+   starts a DOS session to debug your application, the remote server can find
+   its support files.
+   
+10. Under OS/2, you must ensure that the "Comet cursor" desktop setting is
+    disabled if you want to debug PM applications.  By default, this setting
+    is disabled.
+    
+   
+Using Blue Sky Visual Programmer 2.0
+------------------------------------
+
+The following outlines the steps required to create a Visual Programmer
+application.
+
+1. Run the Watcom IDE.
+
+2. From the File menu, select the New project menu item.
+
+3. The "Project Filename" dialog will appear.  Choose a project file name and
+   directory.
+   
+	Example: c:\tmp\test.wpj
+	
+   Press <OK>.
+
+4. The "New Target" dialog will appear.   
+   Click the "MFC - 32-bit (3.0)" button or the "MFC - 16-bit (2.5)" button to
+   choose the target type.
+   Type the target file name.  This is the name of the executable you want to
+   build.
+   
+	Example: c:\tmp\test.exe
+	
+   Press <OK>.
+    
+5. Run Visual programmer by selecting the Visual Programmer option from the
+   Targets menu.
+    
+6. The Visual Programmer "New" dialog will appear.  Select an application
+   template as a starting place for your application.  The working directory
+   and file name are determined by the target location specified in the
+   Watcom IDE.  Press <OK> when you are done.
+    
+7. Use Visual Programmer to develop the application.    
+
+   See Visual Programmer Help for more details.
+	
+   Be sure to try out the "Quick Run" option.  This tests the appearance of
+   the program without actually having to generate any code.
+    
+8. Return to the IDE by pressing the <Return to Watcom IDE> toolbar button.
+   Do not shut down Visual programmer until you have finished generating code.
+
+9. Press the <Make the Current Target> toolbar button or, from the Target
+   menu, select the Make option.
+    
+10. A Visual Programmer Message box will prompt you:
+
+    "Save and Generate code for current design"
+    
+    Press <Yes>.  This is the same as choosing the V.P. "Save & Generate code"
+    option.
+
+11. The Visual Programmer window will come to the front and the application
+    code will generated.
+
+12. The IDE window will then come back to the front and will finish the 
+    process of compiling and linking the program to create the executable
+    file.

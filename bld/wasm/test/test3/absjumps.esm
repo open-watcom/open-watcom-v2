@@ -1,0 +1,127 @@
+.387
+.386p
+_text16a		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$1:
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+_text16a		ENDS
+_text16b		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_text16b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$3:
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+_text16b		ENDS
+_text32a		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32a, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$5:
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+_text32a		ENDS
+_text32b		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_text32b, DS:DGROUP, SS:DGROUP
+    nop         
+    nop         
+    nop         
+L$7:
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    jmp         far ptr 0c8H
+    jmp         far ptr L$1
+    jmp         far ptr L$3
+    jmp         far ptr L$5
+    jmp         far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+	; The label referred to here is an undefined location
+    call        far ptr 0c8H
+    call        far ptr L$1
+    call        far ptr L$3
+    call        far ptr L$5
+    call        far ptr L$7
+_text32b		ENDS
+		END

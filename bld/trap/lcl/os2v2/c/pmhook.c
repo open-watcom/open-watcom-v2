@@ -24,34 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message queue hook for PM app debugging.
 *
 ****************************************************************************/
 
 
-#define INCL_WINWINDOWMGR
 #define INCL_BASE
-#define INCL_DOSDEVICES
-#define INCL_DOSMEMMGR
-#define INCL_DOSSIGNALS
-#define INCL_DOSSESSIONMGR
-#define INCL_DOSPROCESS
 #define INCL_WIN
 #define INCL_GPI
 #define INCL_WINHOOKS
 #include <os2.h>
-#include "pmhook.h" //
-
-HMODULE ThisDLLModHandle;
+#include "pmhook.h"
 
 typedef struct {
     HMQ         hmq;
     HWND        hwnd;
 } hmq_redirect;
-
-#pragma aux small_code "_*_";
-int small_code;
 
 #define NUM_REDIRS      100
 
@@ -61,7 +49,8 @@ static hmq_redirect *FindHmqRedirect( HMQ hmq )
     static hmq_redirect redir[NUM_REDIRS];
 
     for( i = 0; i < NUM_REDIRS; ++i ) {
-        if( redir[i].hmq == hmq ) return( &redir[i] );
+        if( redir[i].hmq == hmq )
+            return( &redir[i] );
     }
     return( NULL );
 }
@@ -70,41 +59,45 @@ static hmq_redirect *NewHmqRedirect( HMQ hmq )
 {
     hmq_redirect        *redir;
 
-    redir = FindHmqRedirect( NULL );
-    if( redir == NULL ) return( NULL );
+    redir = FindHmqRedirect( NULLHANDLE );
+    if( redir == NULL )
+        return( NULL );
     redir->hmq = hmq;
     return( redir );
 }
 
 static void FreeHmqRedirect( hmq_redirect *redir )
 {
-    redir->hmq = NULL;
+    redir->hmq = NULLHANDLE;
 }
 
-VOID __saveregs EXPENTRY SendMsgHookProc( HAB hab, PSMHSTRUCT smh, BOOL it )
+VOID EXPENTRY SendMsgHookProc( HAB hab, PSMHSTRUCT smh, BOOL it )
 {
     hmq_redirect *redir;
     HMQ         hmq;
 
     it=it; hab=hab;
     hmq = (HMQ)WinQueryWindowULong( smh->hwnd, QWL_HMQ );
-    if( hmq == NULL ) return;
+    if( hmq == NULLHANDLE )
+        return;
     redir = FindHmqRedirect( hmq );
-    if( redir == NULL ) return;
+    if( redir == NULL )
+        return;
     smh->hwnd = redir->hwnd;
 }
 
-VOID __saveregs EXPENTRY SetHmqDebugee( HMQ hmq, HWND hwnd )
+VOID EXPENTRY SetHmqDebugee( HMQ hmq, HWND hwnd )
 {
     hmq_redirect *redir;
 
     redir = FindHmqRedirect( hmq );
     if( redir == NULL ) {
         redir = NewHmqRedirect( hmq );
-        if( redir == NULL ) return;
+        if( redir == NULL )
+            return;
     }
     redir->hwnd = hwnd;
-    if( hwnd == NULL ) {
+    if( hwnd == NULLHANDLE ) {
         FreeHmqRedirect( redir );
     }
 }

@@ -40,7 +40,6 @@
 extern bool             IsThdCurr( thread_state *thd );
 extern void             MakeThdCurr( thread_state * );
 extern void             RemoteThdName( dtid_t, char * );
-extern void             FormThdState( thread_state *, char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
 extern char             *CnvULongHex( unsigned long value, char *p );
 extern void             DbgUpdate( update_list );
@@ -104,7 +103,22 @@ static void     TrdMenuItem( a_window *wnd, unsigned id, int row, int piece )
         if( thd == NULL ) {
             WndMenuGrayAll( wnd );
         } else {
-            WndMenuEnableAll( wnd );
+            switch( thd->state ) {
+            case THD_THAW:
+            case THD_FREEZE:
+                WndMenuEnable( wnd, MENU_THREAD_FREEZE, TRUE );
+                WndMenuEnable( wnd, MENU_THREAD_THAW, TRUE );
+                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, TRUE );
+                break;
+            case THD_DEBUG:
+                WndMenuEnable( wnd, MENU_THREAD_FREEZE, FALSE );
+                WndMenuEnable( wnd, MENU_THREAD_THAW, FALSE );
+                WndMenuEnable( wnd, MENU_THREAD_CHANGE_TO, TRUE );
+                break;
+            default:
+                WndMenuGrayAll( wnd );
+                break;
+            }                    
         }
         return;
     case MENU_THREAD_FREEZE:
@@ -114,8 +128,13 @@ static void     TrdMenuItem( a_window *wnd, unsigned id, int row, int piece )
         if( thd->state == THD_FREEZE ) thd->state = THD_THAW;
         break;
     case MENU_THREAD_CHANGE_TO:
-        MakeThdCurr( thd );
-        break;
+        switch( thd->state ) {
+        case THD_THAW:
+        case THD_FREEZE:
+        case THD_DEBUG:    
+            MakeThdCurr( thd );
+            break;
+        }
     }
     DbgUpdate( UP_THREAD_STATE );
 }
@@ -193,6 +212,24 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
                     break;
                 case THD_FREEZE:
                     line->text = LIT( Frozen );
+                    break;
+                case THD_WAIT:
+                    line->text = LIT( Wait );
+                    break;  
+                case THD_SIGNAL:
+                    line->text = LIT( Signal );
+                    break;  
+                case THD_KEYBOARD:
+                    line->text = LIT( Keyboard );
+                    break;  
+                case THD_BLOCKED:
+                    line->text = LIT( Blocked );
+                    break;  
+                case THD_RUN:
+                    line->text = LIT( Executing );
+                    break;  
+                case THD_DEBUG:
+                    line->text = LIT( Debug );
                     break;
                 case THD_DEAD:
                     line->text = LIT( Dead );

@@ -1,0 +1,61 @@
+/*
+ *  mpegtype.h  MPEG data types
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __MPEGTYPE__
+#define __MPEGTYPE__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* ActiveMovie MPEG audio dual modes */
+#define AM_MPEG_AUDIO_DUAL_MERGE    0L
+#define AM_MPEG_AUDIO_DUAL_LEFT     1L
+#define AM_MPEG_AUDIO_DUAL_RIGHT    2L
+
+/* ActiveMovie MPEG stream type */
+typedef struct tagAM_MPEGSTREAMTYPE {
+    DWORD           dwStreamId;
+    DWORD           dwReserved;
+    AM_MEDIA_TYPE   mt;
+    BYTE            bFormat[1];
+} AM_MPEGSTREAMTYPE;
+
+/* ActiveMovie MPEG system type */
+typedef struct tagAM_MPEGSYSTEMTYPE {
+    DWORD               dwBitRate;
+    DWORD               cStreams;
+    AM_MPEGSTREAMTYPE   Streams[1];
+} AM_MPEGSYSTEMTYPE;
+
+/* IMpegAudioDecoder interface */
+#undef INTERFACE
+#define INTERFACE   IMpegAudioDecoder
+DECLARE_INTERFACE_( IMpegAudioDecoder, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IMpegAudioDecoder methods */
+    STDMETHOD( get_FrequencyDivider )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_FrequencyDivider )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_DecoderAccuracy )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_DecoderAccuracy )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_Stereo )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_Stereo )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_DecoderWordSize )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_DecoderWordSize )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_IntegerDecode )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_IntegerDecode )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_DualMode )( THIS_ unsigned long * ) PURE;
+    STDMETHOD( put_DualMode )( THIS_ unsigned long ) PURE;
+    STDMETHOD( get_AudioFormat )( THIS_ MPEG1WAVEFORMAT * ) PURE;
+};
+
+:include cplusepi.sp
+
+#endif /* __MPEGTYPE__ */

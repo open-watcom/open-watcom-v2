@@ -1,0 +1,15 @@
+#
+# Macro Test # 8
+# Nested macro substitution
+#
+temp0 = HELLO
+temp0 = $(temp0) # Used to result in excessive nesting failure.
+temp1 = $(temp0)
+temp2 =
+temp3 = $(temp2)
+all: .symbolic
+   # [] used in place of "" as UNIX strips out the quotes
+   @echo temp0 substituted is [$(temp0:LLO=0)]
+   @echo temp1 substituted is [$(temp1:LLO=1)]
+   @echo temp2 substituted is [$(temp2:LLO=2)]
+   @echo temp3 substituted is [$(temp3:LLO=3)]

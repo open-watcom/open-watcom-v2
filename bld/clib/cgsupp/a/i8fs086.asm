@@ -43,9 +43,9 @@
 include mdef.inc
 include struct.inc
 
-        xref    __U4FS
-
         modstart        i8fs086
+
+        xref    __U4FS
 
         xdefp   __I8FS
         defp    __I8FS
@@ -67,7 +67,7 @@ include struct.inc
         sbb     bx,0FFFFH       ; :
         not     ax              ; :
         sbb     ax,0FFFFH       ; :
-        call    __U8FS          ; convert as unsigned 64-bit
+        lcall   __U8FS          ; convert as unsigned 64-bit
         or      dh,80h          ; set sign bit
         ret                     ; return
         endproc __I8FS

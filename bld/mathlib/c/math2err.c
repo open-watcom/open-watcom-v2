@@ -33,35 +33,35 @@
 #include "variety.h"
 #include <math.h>
 #include "mathcode.h"
-#undef  __func__
-#define __func__
+#undef  __math_func__
+#define __math_func__
 #include "mathcode.h"
 
 _WMRTLINK double __math1err( unsigned int err_info, double *arg1 )
-    {
-        return( __math2err( err_info, arg1, arg1 ) );
-    }
+{
+    return( __math2err( err_info, arg1, arg1 ) );
+}
 
 _WMRTLINK double __math2err( unsigned int err_info, double *arg1, double *arg2 )
-    {
-        int     why;
-        auto struct exception exc;
+{
+    int                 why;
+    struct exception    exc;
 
-        exc.arg1 = *arg1;
-        exc.arg2 = *arg2;
-        if(      err_info & M_DOMAIN   ) { why = DOMAIN;   }
-        else if( err_info & M_SING     ) { why = SING;     }
-        else if( err_info & M_OVERFLOW ) { why = OVERFLOW; }
-        else if( err_info & M_UNDERFLOW) { why = UNDERFLOW;}
-        else if( err_info & M_PLOSS    ) { why = PLOSS;    }
-        else if( err_info & M_TLOSS    ) { why = TLOSS;    }
-        exc.type = why;
-        exc.name = MathFuncNames[ (err_info & FUNC_MASK) - 1 ];
-        if(      err_info & V_NEG_HUGEVAL ) { exc.retval = - HUGE_VAL; }
-        else if( err_info & V_ZERO        ) { exc.retval = 0.0;        }
-        else if( err_info & V_ONE         ) { exc.retval = 1.0;        }
-        else if( err_info & V_HUGEVAL     ) { exc.retval = HUGE_VAL;   }
-        else  /* PLOSS from sin,cos,tan */  { exc.retval = *arg2;      }
+    exc.arg1 = *arg1;
+    exc.arg2 = *arg2;
+    if(      err_info & M_DOMAIN   ) { why = DOMAIN;   }
+    else if( err_info & M_SING     ) { why = SING;     }
+    else if( err_info & M_OVERFLOW ) { why = OVERFLOW; }
+    else if( err_info & M_UNDERFLOW) { why = UNDERFLOW;}
+    else if( err_info & M_PLOSS    ) { why = PLOSS;    }
+    else if( err_info & M_TLOSS    ) { why = TLOSS;    }
+    exc.type = why;
+    exc.name = MathFuncNames[ (err_info & FUNC_MASK) - 1 ];
+    if(      err_info & V_NEG_HUGEVAL ) { exc.retval = - HUGE_VAL; }
+    else if( err_info & V_ZERO        ) { exc.retval = 0.0;        }
+    else if( err_info & V_ONE         ) { exc.retval = 1.0;        }
+    else if( err_info & V_HUGEVAL     ) { exc.retval = HUGE_VAL;   }
+    else  /* PLOSS from sin,cos,tan */  { exc.retval = *arg2;      }
 
-        return( _matherr( &exc ) );
-    }
+    return( _matherr( &exc ) );
+}

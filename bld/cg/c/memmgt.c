@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal memory management with optional tracking.
 *
 ****************************************************************************/
 
@@ -40,13 +39,14 @@
 #include "cg.h"
 #include "spawn.h"
 #include "memout.h"
+#include "cgmem.h"
 #if _HOST_MEMORY & _FULL_TRACKING
     #include "trmem.h"
 #endif
 
 extern    int   InOptimizer;
 
-extern  void            CalcMemLimit();
+extern  void            CalcMemLimit( void );
 extern  void            FatalError(char *);
 extern  bool            GetEnvVar(char*,char*,int);
 
@@ -72,9 +72,9 @@ static void Prt( int * handle, const char * buff, size_t len )
 static          uint    Chunks;
 #endif
 
-extern  void    CGMemInit() {
-/***************************/
-
+extern  void    CGMemInit( void )
+/*******************************/
+{
     _SysReInit();
     MemOut = MO_FATAL;
     #if _HOST_MEMORY & _FULL_TRACKING
@@ -88,9 +88,9 @@ extern  void    CGMemInit() {
     CalcMemLimit();
 }
 
-extern  void    CGMemFini() {
-/***************************/
-
+extern  void    CGMemFini( void )
+/*******************************/
+{
     #if _HOST_MEMORY & _FULL_TRACKING
         {
             char        buff[80];
@@ -109,9 +109,9 @@ extern  void    CGMemFini() {
 }
 
 
-extern  mem_out_action    SetMemOut( mem_out_action what ) {
-/***********************************************************/
-
+extern  mem_out_action    SetMemOut( mem_out_action what )
+/********************************************************/
+{
     mem_out_action      old;
 
     old = MemOut;
@@ -119,13 +119,13 @@ extern  mem_out_action    SetMemOut( mem_out_action what ) {
     return( old );
 }
 
-extern  pointer CGAlloc( int size ) {
-/***********************************/
-
+extern  pointer CGAlloc( unsigned size )
+/**************************************/
+{
     pointer     chunk;
 
     _MemLow;
-    for(;;) {
+    for( ;; ) {
         #if _HOST_MEMORY & _FULL_TRACKING
             chunk = _trmem_alloc( size, _trmem_guess_who(), Handle );
         #else
@@ -149,23 +149,9 @@ extern  pointer CGAlloc( int size ) {
 }
 
 
-extern  void    CGFree( pointer chunk ) {
-/***************************************/
-
-    #if _HOST_MEMORY & _FULL_TRACKING
-        _trmem_free( chunk, _trmem_guess_who(), Handle );
-    #else
-        #if _HOST_MEMORY & _CHUNK_TRACKING
-            --Chunks;
-        #endif
-        _SysFree( chunk );
-    #endif
-}
-
-extern  void    CGFreeSize( pointer chunk, int size ) {
-/*****************************************************/
-
-    size = size;
+extern  void    CGFree( pointer chunk )
+/*************************************/
+{
     #if _HOST_MEMORY & _FULL_TRACKING
         _trmem_free( chunk, _trmem_guess_who(), Handle );
     #else
@@ -178,9 +164,9 @@ extern  void    CGFreeSize( pointer chunk, int size ) {
 
 
 #if _HOST_MEMORY & _FULL_TRACKING
-extern  void    DumpMem() {
-/*************************/
-
+extern  void    DumpMem( void )
+/*****************************/
+{
     _trmem_prt_usage( Handle );
 }
 #endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE driver library interface.
 *
 ****************************************************************************/
 
@@ -33,10 +32,16 @@
 #ifndef __IDEDRV_H__
 #define __IDEDRV_H__
 
-#if defined(__QNX__)
-#define errout  stderr
-#else
-#define errout  stdout
+#if defined( CHAIN_CALLBACK )
+#define IdeDrvExecDLL           _IdeDrvExecDLL
+#define IdeDrvExecDLLArgv       _IdeDrvExecDLLArgv
+#define IdeDrvInit              _IdeDrvInit
+#define IdeDrvPrintError        _IdeDrvPrintError
+#define IdeDrvUnloadDLL         _IdeDrvUnloadDLL
+#define IdeDrvStopRunning       _IdeDrvStopRunning
+#define IdeDrvChainCallbacks    _IdeDrvChainCallbacks
+#define IdeDrvGetCallbacks      _IdeDrvGetCallbacks
+#define IdeDrvSetCallbacks      _IdeDrvSetCallbacks
 #endif
 
 #define __IDEDRV \
@@ -62,10 +67,10 @@ __IDEDRV
 typedef struct {                // IDEDRV structure
     char const *dll_name;       // * dll name
     char const *ent_name;       // * NULL or entry name
-    unsigned long ide_handle;   // # handle, when WATCOM IDE
+    void *ide_handle;           // # handle, when WATCOM IDE
     unsigned long drv_status;   // # status: from IDEDRV (IDEDRV_STATUS)
     unsigned long dll_status;   // # status: from DLL
-    unsigned long dll_handle;   // $ handle for a loaded DLL
+    void *dll_handle;           // $ handle for a loaded DLL
     unsigned loaded         :1; // # TRUE ==> dll is loaded
 
                                 // * filled in by caller
@@ -76,27 +81,27 @@ typedef struct {                // IDEDRV structure
 // PROTOTYPES
 
 int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
-    ( IDEDRV* inf               // - driver control information
+    ( IDEDRV *inf               // - driver control information
     , char const *cmd_line )    // - command line
 ;
 int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
-    ( IDEDRV* inf               // - driver control information
+    ( IDEDRV *inf               // - driver control information
     , int argc                  // - # of arguments
     , char **argv )             // - argument vector
 ;
 void IdeDrvInit                 // INITIALIZE IDEDRV INFORMATION
-    ( IDEDRV* inf               // - information
+    ( IDEDRV *inf               // - information
     , char const *dll_name      // - dll name
     , char const *ent_name )    // - entry name
 ;
 int IdeDrvPrintError            // UNLOAD THE DLL
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 ;
 int IdeDrvUnloadDLL             // UNLOAD THE DLL
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 ;
 int IdeDrvStopRunning           // SIGNAL A BREAK
-    ( IDEDRV* inf )             // - driver control information
+    ( IDEDRV *inf )             // - driver control information
 ;
 
 void IdeDrvChainCallbacks       // SET CALLBACKS FOR DLL CALLLING A DLL

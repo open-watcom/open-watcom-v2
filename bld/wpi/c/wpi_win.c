@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  The Windows version of WPI.
 *
 ****************************************************************************/
 
@@ -82,7 +81,7 @@ WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC new )
 
 BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                       unsigned attr_flags, unsigned id,
-                      HMENU popup, char *text, BOOL by_position )
+                      HMENU popup, const char *text, BOOL by_position )
 {
     if( !hmenu ) {
         return( FALSE );
@@ -97,7 +96,7 @@ BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
 
 BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
                       unsigned attr_flags, unsigned id,
-                      HMENU popup, char *text )
+                      HMENU popup, const char *text )
 {
     return( AppendMenu( hmenu, menu_flags | attr_flags | MF_BYPOSITION,
                         ( (menu_flags & MF_POPUP) ? (UINT)popup : (UINT)id ),
@@ -123,7 +122,7 @@ void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state, unsigned *menu_flags,
 
 BOOL _wpi_modifymenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                       unsigned attr_flags, unsigned new_id,
-                      HMENU new_popup, char *new_text, BOOL by_position )
+                      HMENU new_popup, const char *new_text, BOOL by_position )
 {
     if( !hmenu ) {
         return( FALSE );
@@ -136,7 +135,7 @@ BOOL _wpi_modifymenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                         new_text ) );
 }
 
-BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, char *text, BOOL by_position )
+BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text, BOOL by_position )
 {
     WPI_MENUSTATE       state;
     HMENU               popup;
@@ -144,7 +143,7 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, char *text, BOOL by_position )
     if( !_wpi_getmenustate( hmenu, id, (WPI_MENUSTATE *)&state, by_position ) ) {
         return( FALSE );
     }
-    popup = (HMENU)NULL;
+    popup = (HMENU)NULLHANDLE;
     if( state & MF_POPUP ) {
         if( !by_position ) {
             return( FALSE );
@@ -152,12 +151,12 @@ BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, char *text, BOOL by_position )
         popup = _wpi_getsubmenu( hmenu, id );
     }
     state = MF_STRING | ((by_position) ? MF_BYPOSITION : MF_BYCOMMAND);
-    if( popup != (HMENU)NULL ) {
+    if( popup != (HMENU)NULLHANDLE ) {
         state |= MF_POPUP;
     }
     return(
         ModifyMenu( hmenu, id, state,
-                    (popup != (HMENU)NULL) ? (UINT)popup : (UINT)id,
+                    (popup != (HMENU)NULLHANDLE) ? (UINT)popup : (UINT)id,
                     text ) );
 }
 
@@ -337,7 +336,7 @@ void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
     thread_id = thread_id;              // not used in windows
 
     for( ;; ) {
-        _wpi_getmessage( NULL, msg, NULL, NULL, NULL );
+        _wpi_getmessage( NULL, msg, (HWND)NULLHANDLE, 0, 0 );
 
         if( _wpi_ismessage( (*msg), WM_QUIT ) ) {
             break;
@@ -395,7 +394,7 @@ void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     bmih->biClrImportant = important;
 } /* _wpi_setbmphdrvalues */
 
-void _wpi_gettextextent( WPI_PRES pres, LPSTR string, int len_string,
+void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
                                                     int *width, int *height )
 /***************************************************************************/
 {
@@ -453,20 +452,3 @@ int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1,
 
     return( FALSE );
 } /* _wpi_dlg_command */
-
-int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
-                                            int *pix_size, int *match_num )
-/*************************************************************************/
-{
-    int                 logpixelsy;
-    int                 pointsize;
-
-    *pix_size = _wpi_metricheight( *tm ) - _wpi_metricileading( *tm );
-    *match_num = 0;
-
-    logpixelsy = GetDeviceCaps( pres, LOGPIXELSY );
-    pointsize = (int)((float)( (float)( (*pix_size) * 72.0 ) /
-                                                (float)logpixelsy ) + .5 );
-    return( pointsize );
-} /* _wpi_getmetricpointsize */
-

@@ -42,8 +42,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern  int     WRLoadResourceFrom_RC   ( WRInfo *info );
-extern  int     WRLoadResourceFromRES   ( WRInfo * );
-extern  int     WRLoadResDirFromRES     ( WRInfo *, int  * );
+extern int  WRLoadResourceFrom_RC( WRInfo *info );
+extern int  WRLoadResourceFromRES( WRInfo * );
+extern int  WRLoadResDirFromRES( WRInfo *, int * );
 
 #endif

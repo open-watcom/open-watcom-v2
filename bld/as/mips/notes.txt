@@ -1,0 +1,63 @@
+
+ MIPS assembler notes
+ ====================
+
+ The MIPS architecture has a truly "reduced" instruction set - small, simple
+and straightforward. However the MIPS assembler has some features (and hence
+complexity) not seen on x86.
+
+ First is the use of pseudo-ops. For instance, there is no "move" instruction
+for copying contents of a register into another. However, this can be easily
+achieved via degenerate forms of instructions such as "or" and "add" (on
+MIPS, both "add rd,rs,$0" and "or rd,rs,$0" will move contents of register
+rs to register rd). This is typical of RISC architectures and both Alpha AXP
+and PowerPC use this concept (PowerPC architecture calls this "simplified
+mnemonics"). Pseudo-ops are usually also used and recognized by disassemblers.
+Note that pseudo-ops are really just pseudonyms - certain encodings of some
+instructions have their specialized names, usually with fewer operands.
+
+ Second, and less common, is the use of synthetic instructions. Synthetic
+instructions are similar to macros in that they expand to multiple CPU
+machine instructions. MIPS assemblers primarily use synthetic instructions
+to augment the operand and addressing modes of the CPU. For instance since
+each instruction is strictly 32 bits long, there is not enough space for
+a 32-bit immediate operand; the "load immediate" instruction ("li") only
+takes a 16-bit operand. On the CPU level it is therefore possible to do
+"li rd,0x1234" but not "li rd,0x12345" in order to load a constant into
+register rd. However the assembler will expand the latter into a sequence
+of two instructions: "lui rd,0x1" (load immediate into upper 16 bits)
+followed by "li rd,0x2345".
+
+ Some synthetic instructions are slightly more involved and use a temporary
+register. Register 1 (also called $at, for "assembler temporary") is reserved
+for assembler use, a luxury that comes with having 32 general-purpose
+registers. Use of this register is controlled by directives ".set at" (which
+is the default) and ".set noat". Analogous feature can be found in the Alpha
+architecture, which is heavily inspired by MIPS, but not in PowerPC.
+
+ Note that synthetic instructions are usually not recognized by disassemblers.
+While this is not technically impossible, it is undesirable as one or more
+instructions would "disappear" from the disassembled instruction stream.
+
+ The most unique and least useful feature is branch delay slots. Due to
+the pipelined nature of MIPS CPUs, most control transfer instructions (jumps
+and branches) take effect with a delay of one instruction. This means that
+the instruction right after a jump will be executed *before* the jump. For
+example, given a sequence of two instructions "jalr rt" (jump and link to
+destination in register rt, equivalent to "call" on x86) followed by "break"
+(breakpoint), the breakpoint will be executed before the call, not after.
+
+ This obviously makes life difficult for both assemblers/compilers and
+debuggers. Assemblers may attempt to reorder instructions or at the very
+least must insert "nop" instructions where appropriate. Reordering is
+controlled by ".set reorder" (which is the default) and ".set noreorder".
+Needless to say, instructions in delay slots are problematic if an
+exception occurs and "nop" padding is safest.
+
+ The final feature not familiar to x86 programmers is register $0 or $zero.
+This register is hardwired to zero and cannot be written. Hence any
+instruction whose destination is $zero is effectively a no-op, and to load
+a zero constant into register rd one may simply do "move rd, $zero". The
+"zero sink" feature is also found in the Alpha architecture; PowerPC treats
+register r0 as constant zero when it is used as a source operand of certain
+instructions, but the register is still writable and not hardwired to zero.

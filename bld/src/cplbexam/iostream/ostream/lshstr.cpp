@@ -2,7 +2,7 @@
 
 void main( void ) {
 
-    char    *c = "Watcom C/C++ compiler.\0";
+    char    *c = "Open Watcom C/C++ compiler.\0";
 
     cout << c << endl;
 }

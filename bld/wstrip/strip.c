@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Executable strip utility.
 *
 ****************************************************************************/
 
@@ -39,14 +38,15 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#if defined(__QNX__)
 #include <utime.h>
-#else
-#include <sys/utime.h>
-#endif
 #include <unistd.h>
 #include <fcntl.h>
-#include <share.h>
+#if defined( __WATCOMC__ )
+    #include <share.h>
+#else
+    #include "clibext.h"
+#endif
+#include "watcom.h"
 #include "machtype.h"
 #include "dbginfo.h"
 #include "cv4.h"
@@ -54,7 +54,7 @@
 
 #include "wstrip.h"
 
-#pragma pack (1);
+#pragma pack (1)
 
 typedef struct WResHeader {
     uint_32     Magic[ 2 ]; /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -74,7 +74,7 @@ typedef struct WResHeader {
 
 
 #define NULLCHAR        '\0'
-#ifdef __QNX__
+#ifdef __UNIX__
     #define PATH_SEP '/'
     #define CASE_PATH_SEP case'/'
     #define PATH_LIST_SEP ':'
@@ -107,22 +107,22 @@ static void StripInfo( void );
 
 void    Fatal( int, char * );
 int     Msg_Get( int resourceid, char *buffer );
-int     Msg_Init();
-int     Msg_Fini();
+int     Msg_Init( void );
+int     Msg_Fini( void );
 void    Usage( void );
-void    Banner(void);
+void    Banner( void );
 
 
 static char *Buffer;
 
 static char *ExtLst[] = {
-#ifdef __QNX__
+#ifdef __UNIX__
         "", ".qnx",
 #endif
         ".exe", ".dll",
         ".exp", ".rex",
         ".nlm", ".dsk", ".lan", ".nam",
-#ifndef __QNX__
+#ifndef __UNIX__
         ".qnx", "",
 #endif
         NULL };
@@ -144,6 +144,11 @@ int nodebug_ok;
 int res = 0;
 unsigned bufsize;
 
+#ifndef __WATCOMC__
+    #undef sopen
+    #define sopen(w,x,y,z) open(w,x,z)
+#endif
+
 int main( int argc, char *argv[] )
 {
     size_t              size;
@@ -159,14 +164,21 @@ int main( int argc, char *argv[] )
     struct utimbuf      uptime;
     int                 has_ext;
 
+#ifndef __WATCOMC__
+    _argv = argv;
+    _argc = argc;
+#endif
+
     if( Msg_Init() != EXIT_SUCCESS ) {
+#ifndef BOOTSTRAP
         return( EXIT_FAILURE );
+#endif
     }
     add_file = 0;
     j = argc-1;
     while( j > 0 ) {
         if( argv[j][0] == '-'
-#ifndef __QNX__
+#ifndef __UNIX__
             || argv[j][0] == '/'
 #endif
           ) {
@@ -250,7 +262,11 @@ int main( int argc, char *argv[] )
         StripInfo();
     }
     /* make sure that size of output file is correct */
+#ifdef __WATCOMC__
     chsize( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
+#else
+    ftruncate( fout.h, lseek( fout.h, 0L, SEEK_CUR ) );
+#endif
 
     close( fin.h );
     close( fout.h );
@@ -345,7 +361,7 @@ static void StripInfo()
     }
 
     if( finfo.name[0] != '\0' && info.type != WRAP_NONE ) {
-#ifdef __QNX__
+#ifdef __UNIX__
         if( strcmp( finfo.name, fout.name ) == 0 ) {
             strcat( finfo.name, (res ? ResExt : SymExt) );
         }
@@ -392,7 +408,7 @@ static int Suffix( char *fname, char *suff )
         --scan;
         if( scan <= fname ) break;
         if( *scan == '/' ) break;
-#if !defined( __QNX__ )
+#if !defined( __UNIX__ )
         if( *scan == '\\' ) break;
 #endif
         if( *scan == '.' ) return( 0 ); /* already has an extension */

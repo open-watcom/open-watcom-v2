@@ -195,7 +195,7 @@ static int SemWriteMenuItem( FullMenuItem *item, int islastitem,
                              int *err_code, uint_16 tokentype )
 /****************************************************************/
 {
-    int     error;
+    int     error = 0;
 
     if( item->IsPopup ) {
         SemCheckMenuItemPopup( item, tokentype );
@@ -295,7 +295,7 @@ void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
 {
     MenuHeader      head;
     ResLocation     loc;
-    int             error;
+    int             error = 0;
     int             err_code;
     uint_8          headerdata[ RES_HEADER_SIZE ];
 
@@ -313,6 +313,8 @@ void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             ResPadDWord( CurrResFile.handle );
             loc.start = SemStartResource();
             error = ResWriteMenuExHeader( &head, CurrResFile.handle, headerdata );
+        } else {
+            loc.start = 0;      // Is this valid?
         }
         if(error) {
             err_code = LastWresErr();

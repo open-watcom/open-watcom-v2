@@ -1,0 +1,20 @@
+#include "macro.h"
+#include "wreslang.h"
+
+#define MSG_LANG_BASE 0
+#if _CPU == 8086
+  #include "errmsgi.rc"
+  #undef MSG_LANG_BASE
+  #define MSG_LANG_BASE (RLE_JAPANESE*MSG_LANG_SPACING)
+  #include "jerrmsgi.rc"
+#elif _CPU == 386
+  #include "errmsg3.rc"
+  #undef MSG_LANG_BASE
+  #define MSG_LANG_BASE (RLE_JAPANESE*MSG_LANG_SPACING)
+  #include "jerrmsg3.rc"
+#else
+  #include "errmsgr.rc"
+  #undef MSG_LANG_BASE
+  #define MSG_LANG_BASE (RLE_JAPANESE*MSG_LANG_SPACING)
+  #include "jerrmsgr.rc"
+#endif

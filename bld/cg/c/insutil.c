@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction data manipulation routines.
 *
 ****************************************************************************/
 
@@ -36,8 +35,8 @@
 #include "opcodes.h"
 #include "pattern.h"
 #include "procdef.h"
-#include "sysmacro.h"
 #include "zoiks.h"
+#include "makeins.h"
 
 typedef enum {
         CB_FOR_INS1             = 0x01,
@@ -54,24 +53,139 @@ extern    block         *HeadBlock;
 extern    conflict_node *ConfList;
 extern    bool          HaveLiveInfo;
 
-extern  void            FreeIns(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  int             CountIns(block*);
+extern  instruction_id  Renumber( void );
 
 #define MAX_CONF_INFO   (2*( MAX_OPS_PER_INS+1 )+1)
 static  int             CurrInfo;
 static  conflict_info   ConflictInfo[ MAX_CONF_INFO ];
 
 
-extern  void    PrefixIns( instruction *ins, instruction *pref ) {
+static void RenumFrom( instruction *ins ) {
+/*****************************************/
+
+    block               *blk;
+    instruction_id      id;
+
+    if( ins->head.opcode == OP_BLOCK ) {
+        Renumber();
+    } else {
+        id = ins->id;
+        ins = ins->head.next;
+        for( ;; ) {
+            while( ins->head.opcode != OP_BLOCK ) {
+                ++id;
+                if( ins->id > id ) return;
+                ins->id = id;
+                ins = ins->head.next;
+            }
+            blk = _BLOCK( ins )->next_block;
+            if( blk == NULL ) break;
+            ins = blk->ins.hd.next;
+        }
+    }
+}
+
+
+static  conflict_info   *AddConfInfo( conflict_node *conf ) {
+/***********************************************************/
+
+    conflict_info       *info;
+
+    if( conf->state & CONF_VISITED ) {
+        info = &ConflictInfo[ 0 ];
+        for( info = &ConflictInfo[ 0 ];; ++info ) {
+            if( info->conf == conf ) return( info );
+        }
+    } else {
+        info = &ConflictInfo[ CurrInfo++ ];
+        info->conf = conf;
+        conf->state |= CONF_VISITED;
+    }
+    return( info );
+}
+
+
+static  void    FindNameConf( name *name, instruction *ins,
+                              instruction *other, conflict_bits for_which ) {
+/***********************************************************************/
+
+    conflict_node       *conf;
+    conflict_info       *info;
+
+    if( name->n.class == N_INDEXED ) {
+        name = name->i.index;
+    }
+    if( name->n.class == N_TEMP ) {
+        name = DeAlias( name );
+    } else if( name->n.class != N_MEMORY ) {
+        return;
+    }
+    conf = name->v.conflict;
+    info = NULL;
+    while( conf != NULL && info == NULL ) {
+        if( conf->ins_range.first == ins
+         || conf->ins_range.first == other
+         || conf->ins_range.last == ins
+         || conf->ins_range.last == other ) {
+            info = AddConfInfo( conf );
+            info->flags |= for_which;
+        }
+        conf = conf->next_for_name;
+    }
+}
+
+
+static  void    FindAllConflicts( instruction *ins,
+                                 instruction *other, conflict_bits for_which ) {
+/***************************************************************************/
+
+    int         i;
+
+    i = ins->num_operands;
+    while( --i >= 0 ) {
+        FindNameConf( ins->operands[ i ], ins, other, for_which );
+    }
+    if( ins->result != NULL ) {
+        FindNameConf( ins->result, ins, other, for_which );
+    }
+}
+
+
+static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
+/************************************************************************/
+
+    int                 i;
+    conflict_info       *info;
+
+    for( i = 0; i < MAX_CONF_INFO; ++i ) {
+        ConflictInfo[ i ].conf = NULL;
+        ConflictInfo[ i ].flags = CB_NONE;
+    }
+    CurrInfo = 0;
+    FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
+    FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
+    for( info = ConflictInfo; info->conf != NULL; ++info ) {
+        info->conf->state &= ~CONF_VISITED;
+    }
+}
+
+
+extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum ) {
 /*****************************************************************/
 
     conflict_info       *info;
     conflict_node       *conf;
+    block               *blk;
+    instruction         *next;
 
 /*   Link the new instruction into the instruction ring*/
+/*   If renum = true, assign id and renumber. renum can be false only */
+/*   if you're going to call Renumber() manually. */
 
+    _INS_NOT_BLOCK( pref );
     pref->head.prev = ins->head.prev;
     pref->head.prev->head.next = pref;
     pref->head.next = ins;
@@ -79,17 +193,43 @@ extern  void    PrefixIns( instruction *ins, instruction *pref ) {
     if( ins->head.opcode != OP_BLOCK ) {
         pref->head.line_num = ins->head.line_num;
         ins->head.line_num = 0;
-    } else {
-        pref->head.line_num = 0;
-    }
-    pref->id = ins->id;
-    if( ins->head.opcode != OP_BLOCK ) {
+
         pref->stk_entry = ins->stk_entry;
         pref->stk_exit = ins->stk_entry;
         // pref->s.stk_extra = ins->s.stk_extra;
         pref->sequence = ins->sequence;
+
+        pref->id = ins->id;
+    } else {
+        pref->head.line_num = 0;
+
+        if ( renum ) {
+             /*
+             * Oops. There is no id in OP_BLOCK and assigned id will be invalid.
+             * This condition happens sometimes in loop optimizer.
+             * NOTE: this case can be a bug. It means that we're trying to add
+             * last instruction to the block. But other code can expect that
+             * last instruction is NOP, but it'll not.
+             * Currently we'll try to find next instruction with valid id.
+             */
+            next = ins;
+            for (;;) {
+                blk = _BLOCK( next )->next_block;
+                if( blk == NULL ) {
+                    Zoiks( ZOIKS_141 );
+                    break;
+                }
+                next = blk->ins.hd.next;
+                if ( next->head.opcode != OP_BLOCK ) break;
+            }
+            pref->id = next->id;
+        }
     }
-    RenumFrom( pref );
+
+    if ( renum ) {
+        RenumFrom( pref );
+    }
+
     if( HaveLiveInfo ) {
 
 /*      move the first/last pointers of any relevant conflict nodes */
@@ -123,6 +263,13 @@ extern  void    PrefixIns( instruction *ins, instruction *pref ) {
 }
 
 
+extern  void    PrefixIns( instruction *ins, instruction *pref ) {
+/****************************************************************/
+
+    PrefixInsRenum( ins, pref, TRUE );
+}
+
+
 extern  void    SuffixIns( instruction *ins, instruction *suff ) {
 /****************************************************************/
 
@@ -136,6 +283,12 @@ extern  void    SuffixIns( instruction *ins, instruction *suff ) {
     suff->head.prev = ins;
     ins->head.next = suff;
     suff->head.line_num = 0;
+    _INS_NOT_BLOCK( suff );
+    /*
+     * A little dirty, but check of OP_BLOCK can be skipped - in this case
+     * we'll just Renumber() everything from scratch.
+     */
+    /* _INS_NOT_BLOCK( ins ); */
     suff->id = ins->id;
     if( ins->head.opcode == OP_NOP ) {
         /* get rid of the little bugger so it doesn't mess up our optimizing */
@@ -216,6 +369,8 @@ extern  void    ReplIns( instruction *ins, instruction *new ) {
     // new->s.stk_extra = ins->s.stk_extra;
     new->sequence = ins->sequence;
 
+    _INS_NOT_BLOCK( new );
+    _INS_NOT_BLOCK( ins );
     new->head.line_num = ins->head.line_num;
     new->id = ins->id;
     new->head.state = INS_NEEDS_WORK;
@@ -230,6 +385,19 @@ extern  void    ReplIns( instruction *ins, instruction *new ) {
 
 /*      move the first/last pointers of any relevant conflict nodes */
 
+/*
+ * !!! BUG BUG !!!
+ * Moving/changing egde of conflict with CONFLICT_ON_HOLD flag set
+ * to non-conflicting instruction can cause famous bug 352. If new instruction
+ * should be also replaced, codegen will not notice that it's a part of
+ * any conflict and will not update egde. Event worse, if replaced instruction
+ * is replaced again, this case will be completely missed by conflict manager.
+ * At least, compiler can Zoiks now.
+ *
+ * This problem may also exist in other instruction modification functions.
+ * It must be fixed in more correct way if somebody ever understand
+ * how all this stuff works.
+ */
         MakeConflictInfo( ins, new );
         for( info = ConflictInfo; info->conf != NULL; ++info ) {
             if( info->flags & CB_FOR_INS1 ) {
@@ -270,9 +438,9 @@ extern  void    ReplIns( instruction *ins, instruction *new ) {
 }
 
 
-extern  instruction_id  Renumber() {
-/**********************************/
-
+extern  instruction_id  Renumber( void )
+/**************************************/
+{
     block               *blk;
     instruction         *ins;
     instruction_id      id;
@@ -307,111 +475,6 @@ extern  instruction_id  Renumber() {
     return( id );
 }
 
-
-static void RenumFrom( instruction *ins ) {
-/*****************************************/
-
-    block               *blk;
-    instruction_id      id;
-
-    if( ins->head.opcode == OP_BLOCK ) {
-        Renumber();
-    } else {
-        id = ins->id;
-        ins = ins->head.next;
-        for( ;; ) {
-            while( ins->head.opcode != OP_BLOCK ) {
-                ++id;
-                if( ins->id > id ) return;
-                ins->id = id;
-                ins = ins->head.next;
-            }
-            blk = _BLOCK( ins )->next_block;
-            if( blk == NULL ) break;
-            ins = blk->ins.hd.next;
-        }
-    }
-}
-
-static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
-/************************************************************************/
-
-    int                 i;
-    conflict_info       *info;
-
-    for( i = 0; i < MAX_CONF_INFO; ++i ) {
-        ConflictInfo[ i ].conf = NULL;
-        ConflictInfo[ i ].flags = CB_NONE;
-    }
-    CurrInfo = 0;
-    FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
-    FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
-    for( info = ConflictInfo; info->conf != NULL; ++info ) {
-        info->conf->state &= ~CONF_VISITED;
-    }
-}
-
-static  void    FindAllConflicts( instruction *ins,
-                                 instruction *other, conflict_bits for_which ) {
-/***************************************************************************/
-
-    int         i;
-
-    i = ins->num_operands;
-    while( --i >= 0 ) {
-        FindNameConf( ins->operands[ i ], ins, other, for_which );
-    }
-    if( ins->result != NULL ) {
-        FindNameConf( ins->result, ins, other, for_which );
-    }
-}
-
-static  conflict_info   *AddConfInfo( conflict_node *conf ) {
-/***********************************************************/
-
-    conflict_info       *info;
-
-    if( conf->state & CONF_VISITED ) {
-        info = &ConflictInfo[ 0 ];
-        for( info = &ConflictInfo[ 0 ];; ++info ) {
-            if( info->conf == conf ) return( info );
-        }
-    } else {
-        info = &ConflictInfo[ CurrInfo++ ];
-        info->conf = conf;
-        conf->state |= CONF_VISITED;
-    }
-    return( info );
-}
-
-static  void    FindNameConf( name *name, instruction *ins,
-                              instruction *other, conflict_bits for_which ) {
-/***********************************************************************/
-
-    conflict_node       *conf;
-    conflict_info       *info;
-
-    if( name->n.class == N_INDEXED ) {
-        name = name->i.index;
-    }
-    if( name->n.class == N_TEMP ) {
-        name = DeAlias( name );
-    } else if( name->n.class != N_MEMORY ) {
-        return;
-    }
-    conf = name->v.conflict;
-    info = NULL;
-    while( conf != NULL && info == NULL ) {
-        if( conf->ins_range.first == ins
-         || conf->ins_range.first == other
-         || conf->ins_range.last == ins
-         || conf->ins_range.last == other ) {
-            info = AddConfInfo( conf );
-            info->flags |= for_which;
-        }
-        conf = conf->next_for_name;
-    }
-}
 
 extern  void            ClearInsBits( instruction_flags mask ) {
 /**************************************************************/

@@ -1,0 +1,58 @@
+*$noreference
+
+! Dialog-Box Functions:
+! ---------------------
+
+      external CheckDlgButton
+      external CheckRadioButton
+      external CreateDialog
+      external CreateDialogIndirect
+      external CreateDialogIndirectParam
+      external CreateDialogParam
+      external DialogBox
+      external DialogBoxIndirect
+      external DialogBoxIndirectParam
+      external DialogBoxParam
+      external DlgDirList
+      external DlgDirListComboBox
+      external DlgDirSelect
+      external DlgDirSelectComboBox
+      external EndDialog
+      external GetDialogBaseUnits
+      external GetDlgCtrlID
+      external GetDlgItem
+      external GetDlgItemInt
+      external GetDlgItemText
+      external GetNextDlgGroupItem
+      external GetNextDlgTabItem
+      external IsDialogMessage
+      external IsDlgButtonChecked
+      external MapDialogRect
+      external SendDlgItemMessage
+      external SetDlgItemInt
+      external SetDlgItemText
+
+      integer*2 CreateDialog
+      integer*2 CreateDialogIndirect
+      integer*2 CreateDialogParam
+      integer*2 CreateDialogIndirectParam
+      integer*2 DialogBox
+      integer*2 DialogBoxIndirect
+      integer*2 DialogBoxIndirectParam
+      integer*2 DialogBoxParam
+      integer*2 DlgDirList
+      integer*2 DlgDirListComboBox
+      integer*2 DlgDirSelect
+      integer*2 DlgDirSelectComboBox
+      integer*4 GetDialogBaseUnits
+      integer*2 GetDlgCtrlID
+      integer*2 GetDlgItem
+      integer*2 GetDlgItemInt
+      integer*2 GetDlgItemText
+      integer*2 GetNextDlgGroupItem
+      integer*2 GetNextDlgTabItem
+      integer*2 IsDialogMessage
+      integer*2 IsDlgButtonChecked
+      integer*4 SendDlgItemMessage
+
+*$reference

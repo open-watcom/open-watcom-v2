@@ -66,7 +66,7 @@ static int DoFreeSeg( __segment seg )
     #if defined(__WINDOWS_286__)
         HANDLE hmem;
 
-        hmem = GlobalHandle( seg );
+        hmem = (HANDLE)GlobalHandle( seg );
         if( hmem == NULL ) {
             return( -1 );
         }
@@ -124,7 +124,7 @@ int __DoFreeSeg(__segment first)
 #ifdef __OS2__
         DosSizeSeg(first, &size);
 #else
-        size = GlobalSize(first);
+        size = GlobalSize((HGLOBAL)first);
 #endif
         segments = (size + 65535L) >> 16;
         last = first + (__segment)((segments - 1L) << _RWD_HShift);

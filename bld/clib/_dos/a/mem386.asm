@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS memory management routines for 32-bit DOS.
 ;*
 ;*****************************************************************************
 
@@ -39,65 +38,58 @@ include struct.inc
         modstart dosmem
 
         defp    _dos_allocmem
-        if __WASM__ ge 100
-            xdefp   "C",_dos_allocmem
-        else
-            xdefp   <"C",_dos_allocmem>
-        endif
+        xdefp   "C",_dos_allocmem
 ;
-;       unsigned _dos_allocmem( unsigned size, unsigned short *segment );
+;       unsigned _dos_allocmem( unsigned size, unsigned *segment );
 ;
         push    EBX             ; save EBX
         push    EDX             ; save EDX
 ifdef __STACK__
         mov     EAX,12[ESP]     ; get size
         mov     EDX,16[ESP]     ; get pointer to segment
+        push    EDX             ; workaround for EDX getting trashed
+                                ; under DOS/4GW on NT
 endif
         mov     EBX,EAX         ; get # of paragraphs wanted
         mov     AH,48h          ; allocate memory
         int     21h             ; ...
-        xchg    EBX,EDX         ; get pointer for result
         _if     nc              ; if no error
-          mov   EDX,EAX         ; - get segment of allocated memory
+          mov   EBX,EAX         ; - get segment of allocated memory
           sub   EAX,EAX         ; - indicate no error
         _else                   ; else
           call  __doserror_     ; - set error code
         _endif                  ; endif
-        mov     [EBX],DX        ; store size of largest block or segment
         pop     EDX             ; restore EDX
+        mov     [EDX],EBX       ; store size of largest block or segment
+ifdef __STACK__
+        pop     EDX             ; restore EDX
+endif
         pop     EBX             ; restore EBX
         ret                     ; return to caller
         endproc _dos_allocmem
+
         defp    _dos_freemem
-        if __WASM__ ge 100
-            xdefp   "C",_dos_freemem
-        else
-            xdefp   <"C",_dos_freemem>
-        endif
+        xdefp   "C",_dos_freemem
 ;
-;       unsigned _dos_freemem( unsigned short segment );
+;       unsigned _dos_freemem( unsigned segment );
 ;
 ifdef __STACK__
         mov     EAX,4[ESP]      ; get segment
 endif
         push    ES              ; save ES
-        mov     ES,AX           ; get segment to be freed
+        mov     ES,EAX          ; get segment to be freed
         mov     AH,49h          ; free allocated memory
         int     21h             ; ...
         call    __doserror_     ; set return code
         pop     ES              ; restore ES
         ret                     ; return to caller
         endproc _dos_freemem
+
         defp    _dos_setblock
-        if __WASM__ ge 100
-            xdefp   "C",_dos_setblock
-        else
-            xdefp   <"C",_dos_setblock>
-        endif
+        xdefp   "C",_dos_setblock
 ;
 ;       unsigned _dos_setblock( unsigned size,
-;                               unsigned short segment,
-;                               unsigned  *maxsize );
+;                               unsigned segment, unsigned *maxsize );
 ;
 ;
 ifdef __STACK__
@@ -109,7 +101,7 @@ ifdef __STACK__
 endif
         push    ES              ; save ES
         push    EBX             ; save pointer to maxsize
-        mov     ES,DX           ; get segment to be modified
+        mov     ES,EDX          ; get segment to be modified
         mov     EBX,EAX         ; get new size
         mov     AH,4Ah          ; modify allocated memory
         int     21h             ; ...

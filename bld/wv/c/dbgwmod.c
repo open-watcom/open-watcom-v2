@@ -93,6 +93,40 @@ static int ModNumRows( a_window *wnd )
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }
 
+static void ModCalcIndent( a_window *wnd )
+{
+    gui_ord     extent,max_extent;
+    int         i,size;
+    mod_window  *mod = WndMod( wnd );
+
+    size = ModListNumRows( ModList( mod ) );
+    max_extent = 0;
+    for( i = 0; i < size; ++i ) {
+        ModListName( ModList( mod ), i, TxtBuff );
+        extent = WndExtentX( wnd, TxtBuff );
+        if( extent > max_extent ) max_extent = extent;
+    }
+    mod->max_modlen = max_extent + WndMidCharX( wnd );
+    WndNoSelect( wnd );
+    WndRepaint( wnd );
+}
+
+static void     ModInit( a_window *wnd )
+{
+    mod_window  *mod = WndMod( wnd );
+    int         size;
+
+    ModListFree( ModList( mod ) );
+    ModListAddModules( ModList( mod ), mod->handle, mod->all_modules );
+    WndFree( mod->info );
+    mod->info = NULL;
+    size = sizeof( modinfo ) * ModListNumRows( ModList( mod ) );
+    if( size != 0 ) {
+        mod->info = WndAlloc( size );
+        memset( mod->info, 0, size );
+    }
+    ModCalcIndent( wnd );
+}
 
 static  WNDMENU ModMenuItem;
 static void     ModMenuItem( a_window *wnd, unsigned id, int row, int piece )
@@ -202,43 +236,6 @@ static  bool    ModGetLine( a_window *wnd, int row, int piece,
         return( FALSE );
     }
 }
-
-
-static void     ModInit( a_window *wnd )
-{
-    mod_window  *mod = WndMod( wnd );
-    int         size;
-
-    ModListFree( ModList( mod ) );
-    ModListAddModules( ModList( mod ), mod->handle, mod->all_modules );
-    WndFree( mod->info );
-    mod->info = NULL;
-    size = sizeof( modinfo ) * ModListNumRows( ModList( mod ) );
-    if( size != 0 ) {
-        mod->info = WndAlloc( size );
-        memset( mod->info, 0, size );
-    }
-    ModCalcIndent( wnd );
-}
-
-static void ModCalcIndent( a_window *wnd )
-{
-    gui_ord     extent,max_extent;
-    int         i,size;
-    mod_window  *mod = WndMod( wnd );
-
-    size = ModListNumRows( ModList( mod ) );
-    max_extent = 0;
-    for( i = 0; i < size; ++i ) {
-        ModListName( ModList( mod ), i, TxtBuff );
-        extent = WndExtentX( wnd, TxtBuff );
-        if( extent > max_extent ) max_extent = extent;
-    }
-    mod->max_modlen = max_extent + WndMidCharX( wnd );
-    WndNoSelect( wnd );
-    WndRepaint( wnd );
-}
-
 
 static void ModSetCurrent( a_window *wnd )
 {

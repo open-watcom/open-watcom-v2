@@ -30,50 +30,37 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
-#include <ctype.h>
 #include "vi.h"
-#include "keys.h"
+#include <setjmp.h>
 #include "source.h"
 #include "win.h"
 #ifdef __WIN__
-#include "winrtns.h"
+    #include "winrtns.h"
 #endif
+#include <assert.h>
 
 static event *nextEvent( void )
 {
     LastEvent = GetNextEvent( TRUE );
-    return( &EventList[ LastEvent ] );
+    return( &EventList[LastEvent] );
 }
 
 static void defaultRange( range *range )
 {
-    range->start.line = CurrentLineNumber;
-    range->start.column = CurrentColumn;
-    range->end.line = CurrentLineNumber;
-    range->end.column = CurrentColumn;
+    range->start = CurrentPos;
+    range->end = CurrentPos;
     range->line_based = FALSE;
-    /*
-     * we don't fill in hi_start and hi-end - assume that if a routine
-     * is going to modify range->highlight then it had better set those
-     * other values to something as well.
-     */
     range->highlight = FALSE;
     range->fix_range = FALSE;
-
-} /* defaultRange */
+}
 
 /*
  * doOperator - process an operator event
  */
-static int doOperator( event *ev )
+static vi_rc doOperator( event *ev )
 {
     event       *next;
-    int         rc;
+    vi_rc       rc;
     long        count;
     range       range;
     int         next_type;
@@ -89,7 +76,7 @@ static int doOperator( event *ev )
         next = nextEvent();
         // a count is the only thing allowed to interfere between an op and
         // its argument so we just keep chewing...
-        if( next != &EventList[ '0' ] ) {
+        if( next != &EventList['0'] ) {
             while( next->b.is_number ) {
                 if( EditFlags.Modeless ) {
                     next->alt_rtn.old();
@@ -113,7 +100,7 @@ static int doOperator( event *ev )
     if( next_type == EVENT_OP ) {
         // op/op only valid when ops are equal
         if( next == ev ) {
-            rc = GetLineRange( &range, count, CurrentLineNumber );
+            rc = GetLineRange( &range, count, CurrentPos.line );
         }
     } else {
         // it had better be a move operation
@@ -124,12 +111,12 @@ static int doOperator( event *ev )
              * - even better kludge: if we are currently on white
              *   space, then treat 'cw' as 'cw'. arrrrr. cge.
              */
-            if( (ev == &EventList[ 'c' ] || ev == &EventList[ VI_KEY(ALT_F1) ]) &&
+            if( ( ev == &EventList['c'] || ev == &EventList[VI_KEY( ALT_F1 )] ) &&
                         LastEvent == 'w' ) {
                 EditFlags.IsChangeWord = TRUE;
                 if( CurrentLine != NULL ) {
-                    if( !isspace( CurrentLine->data[CurrentColumn-1] ) ) {
-                        next = &EventList[ 'e' ];
+                    if( !isspace( CurrentLine->data[CurrentPos.column - 1] ) ) {
+                        next = &EventList['e'];
                         range.fix_range = FALSE;
                     }
                 }
@@ -174,10 +161,10 @@ static int doOperator( event *ev )
 /*
  * DoMove - handle a movement command
  */
-int DoMove( event *ev )
+vi_rc DoMove( event *ev )
 {
     range       range;
-    int         rc;
+    vi_rc       rc;
     int         curcol;
     int         type;
 
@@ -190,8 +177,8 @@ int DoMove( event *ev )
         type = ev->b.type;
     }
     if( rc == ERR_NO_ERR ) {
-        curcol = CurrentColumn;
-        if( range.start.line != CurrentLineNumber ) {
+        curcol = CurrentPos.column;
+        if( range.start.line != CurrentPos.line ) {
             if( type == EVENT_REL_MOVE ) {
                 GoToLineRelCurs( range.start.line );
             } else {
@@ -223,14 +210,14 @@ static void ensureCursorDisplayed( void )
 
     if( ( EditFlags.Modeless == TRUE ) && ( CurrentFile != NULL ) ) {
         len = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-        if( CurrentLineNumber < TopOfPage ||
-            CurrentLineNumber > TopOfPage + len - 1 ) {
-                SetCurrentLine( CurrentLineNumber );
+        if( CurrentPos.line < LeftTopPos.line ||
+            CurrentPos.line > LeftTopPos.line + len - 1 ) {
+            SetCurrentLine( CurrentPos.line );
         }
 
-        wc = VirtualCursorPosition() - LeftColumn;
+        wc = VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column;
         if( !ColumnInWindow( wc, &diff ) ) {
-            SetCurrentColumn( CurrentColumn );
+            SetCurrentColumn( CurrentPos.column );
         }
     }
 }
@@ -238,13 +225,13 @@ static void ensureCursorDisplayed( void )
 /*
  * DoLastEvent - process the last keystroke event
  */
-int DoLastEvent( void )
+vi_rc DoLastEvent( void )
 {
     event       *event;
-    int         rc;
+    vi_rc       rc;
     bool        keep_sel;
 
-    if( LastEvent >= EventCount ) {
+    if( LastEvent >= MAX_EVENTS ) {
         return( InvalidKey() );
     } else {
         if( !EditFlags.InsertModeActive || EditFlags.Modeless ) {
@@ -253,7 +240,7 @@ int DoLastEvent( void )
                     return( DoKeyMap( LastEvent ) );
                 }
             }
-            event = &EventList[ LastEvent ];
+            event = &EventList[LastEvent];
             keep_sel = event->b.keep_selection;
             if( event->b.keep_selection_maybe ) {
                 if( SelRgn.selected ) {
@@ -320,7 +307,7 @@ int DoLastEvent( void )
 /*
  * DoneLastEvent - finished with the last event
  */
-void DoneLastEvent( int rc, bool is_dotmode )
+void DoneLastEvent( vi_rc rc, bool is_dotmode )
 {
     if( !EditFlags.InsertModeActive ) {
         /*
@@ -357,7 +344,7 @@ void DoneLastEvent( int rc, bool is_dotmode )
  */
 void EditMain( void )
 {
-    int         rc;
+    vi_rc       rc;
     char        *msg;
     bool        doclear;
 
@@ -366,13 +353,13 @@ void EditMain( void )
      */
     while( TRUE ) {
 
-    #if 0
-    #ifdef __WIN__
+#if 0
+#ifdef __WIN__
         PushMode();
         UpdateFiles();
         PopMode();
-    #endif
-    #endif
+#endif
+#endif
         if( !EditFlags.InsertModeActive || EditFlags.Modeless ) {
             if( EditFlags.Modeless ) {
                 UpdateEditStatus();
@@ -392,9 +379,9 @@ void EditMain( void )
                 }
             } else {
                 DCUpdateAll();
-                #ifdef __WIN__
-                    SetWindowCursorForReal();
-                #endif
+#ifdef __WIN__
+                SetWindowCursorForReal();
+#endif
                 LastEvent = GetNextEvent( TRUE );
             }
             EditFlags.NoCapsLock = FALSE;
@@ -408,9 +395,9 @@ void EditMain( void )
                 if( EditFlags.AutoMessageClear ) {
                     ClearWindow( MessageWindow );
                 }
-                #ifndef __WIN__
-                    ResetDisplayLine();
-                #endif
+#ifndef __WIN__
+                ResetDisplayLine();
+#endif
             }
         } else {
             // Cannot do a RestoreInfo while we are in insert mode
@@ -418,25 +405,25 @@ void EditMain( void )
             // do something stupid on us... PushMode/PopMode solution
             // not working yet... this needs a little work
             DCUpdate();
-            #ifdef __WIN__
-                SetWindowCursorForReal();
-            #endif
+#ifdef __WIN__
+            SetWindowCursorForReal();
+#endif
             LastEvent = GetNextEvent( TRUE );
         }
 
         rc = DoLastEvent();
 
-        if( EditFlags.ReadOnlyError && rc <= 0 ) {
+        if( EditFlags.ReadOnlyError && rc <= ERR_NO_ERR ) {
             EditFlags.ReadOnlyError = FALSE;
             rc = ERR_READ_ONLY_FILE_MODIFIED;
         }
-        if( rc > 0 ) {
+        if( rc > ERR_NO_ERR ) {
             msg = GetErrorMsg( rc );
         }
 
         DoneLastEvent( rc, FALSE );
 
-        if( rc > 0 ) {
+        if( rc > ERR_NO_ERR ) {
             Error( msg );
         }
 
@@ -447,7 +434,7 @@ void EditMain( void )
 /*
  * AbsoluteNullResponse - give no response
  */
-int AbsoluteNullResponse( void )
+vi_rc AbsoluteNullResponse( void )
 {
     return( ERR_NO_ERR );
 }
@@ -455,7 +442,7 @@ int AbsoluteNullResponse( void )
 /*
  * NullResponse - give null response for keystroke
  */
-int NullResponse( void )
+vi_rc NullResponse( void )
 {
     if( !EditFlags.EscapeMessage ) {
         ClearWindow( MessageWindow );
@@ -467,7 +454,7 @@ int NullResponse( void )
 
 } /* NullResponse */
 
-static window_id        repeatWindow=-1;
+static window_id        repeatWindow = (window_id)-1;
 
 /*
  * KillRepeatWindow - just like it says
@@ -485,7 +472,7 @@ void KillRepeatWindow( void )
  */
 void DoneRepeat( void )
 {
-    RepeatDigits=0;
+    RepeatDigits = 0;
     if( !EditFlags.MemorizeMode ) {
         DotDigits = 0;
     }
@@ -533,27 +520,27 @@ extern void UpdateRepeatString( char *str );
 /*
  * DoDigit - process a digit typed in
  */
-int DoDigit( void )
+vi_rc DoDigit( void )
 {
-    int i;
+    vi_rc   rc;
 
     if( LastEvent == '0' && RepeatDigits == 0 ) {
-        LeftColumn = 0;
+        LeftTopPos.column = 0;
         GoToColumnOK( 1 );
         DCDisplayAllLines();
         return( ERR_NO_ERR );
     }
 
-    if( RepeatDigits == MAX_REPEAT_STRING-1 ) {
+    if( RepeatDigits == MAX_REPEAT_STRING - 1 ) {
         DoneRepeat();
         return( ERR_REPEAT_STRING_TOO_LONG );
     }
 
     if( repeatWindow == (window_id)-1 && EditFlags.RepeatInfo ) {
-        i = NewWindow2( &repeatWindow, &repcntw_info );
-        if( i ) {
+        rc = NewWindow2( &repeatWindow, &repcntw_info );
+        if( rc != ERR_NO_ERR ) {
             DoneRepeat();
-            return( i );
+            return( rc );
         }
         WindowTitle( repeatWindow, "Repeat Count" );
     }
@@ -570,7 +557,7 @@ int DoDigit( void )
 /*
  * InvalidKey - process invalid keystroke
  */
-int InvalidKey( void )
+vi_rc InvalidKey( void )
 {
     Error( GetErrorMsg( ERR_INVALID_KEY ), LastEvent );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -604,7 +591,7 @@ void Modified( bool f )
 void ResetDisplayLine( void )
 {
     if( EditFlags.ResetDisplayLine ) {
-        memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len+1 );
+        memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len + 1 );
         WorkLine->len = CurrentLine->len;
         DisplayWorkLine( FALSE );
         DCUpdate();

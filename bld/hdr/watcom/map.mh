@@ -1,0 +1,236 @@
+///////////////////////////////////////////////////////////////////////////
+// FILE: map (std::map definition)
+//
+:keep CPP_HDR
+:include crwatcnt.sp
+//
+// Description: This header is part of the C++ standard library.
+///////////////////////////////////////////////////////////////////////////
+#ifndef _MAP_INCLUDED
+#define _MAP_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+#ifndef __RBTREE_H_INCLUDED
+ #include <_rbtree.h>
+#endif
+
+#ifndef _UTILITY_INCLUDED
+ #include <utility>
+#endif
+
+#ifndef _MEMORY_INCLUDED
+ #include <memory>
+#endif
+
+#ifndef _ITERATOR_INCLUDED
+ #include <iterator>
+#endif
+
+#ifndef _FUNCTIONAL_INCLUDED
+ #include <function>
+#endif
+
+namespace std {
+
+/* ==================================================================
+ * class map
+ */
+template< class Key,
+          class Type,
+          class Compare = less< Key >,
+          class Allocator = allocator< pair< const Key, Type > >,
+          class Implementation = _ow::RedBlackTree< Key, Compare, Allocator,
+                                                    _ow::TreePairWrapper< Key, Type > > >
+class map : public Implementation{
+public:
+    typedef Key                                     key_type;
+    typedef Type                                    mapped_type;
+    typedef pair<const Key, Type>                   value_type;
+    typedef Compare                                 key_compare;
+    typedef Allocator                               allocator_type;
+    typedef typename Allocator::reference           reference;
+    typedef typename Allocator::const_reference     const_reference;
+    typedef typename Allocator::pointer             pointer;
+    typedef typename Allocator::const_pointer       const_pointer;
+
+    class value_compare : public binary_function< value_type, value_type, bool >{
+        friend class map;
+        protected:
+            Compare comp;
+            value_compare(Compare c) : comp(c){}
+        public:
+            bool operator()(const value_type& x, const value_type& y) const{
+                return comp(x.first, y.first);
+            }
+    };
+
+public:
+    //ctors
+    explicit map( const Compare& comp = Compare(),
+                  const Allocator& = Allocator() );
+
+    template< class InputIterator >
+    map( InputIterator first,
+         InputIterator last,
+         Compare const & c, //= Compare(),
+         Allocator const & a )// = Allocator() )
+            : Implementation( first, last, c, a )
+            { }
+
+    map( map const & x ) : Implementation( x ) { };
+
+    ~map(){}
+
+    map& operator=( map const & x ){Implementation::operator=( x ); return( *this );}
+
+    //element access (not in common with set)
+    Type& operator[](Key const &);
+
+    //iterators
+    //typedef Implementation::iterator iterator;
+    //typedef something const_iterator;
+    //typedef something size_type;
+    //typedef something difference_type;
+    //typedef std::reverse_iterator<iterator>         reverse_iterator;
+    //typedef std::reverse_iterator<const_iterator>   const_reverse_iterator;
+
+    /* ---------------------------------------------------------------
+     * This is the interface defined in 14482 standard
+     * it is inherited from the implementation
+     * included here for reference
+    iterator begin();
+    const_iterator begin() const;
+    iterator end();
+    const_iterator end() const;
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
+
+    bool empty() const;
+    size_type size() const;
+    size_type max_size() const;
+
+    Type& operator[](const key_type& x);
+    pair<iterator,bool> insert(const value_type& v);
+    iterator insert(iterator position, const value_type& x);
+    template <class InputIterator>
+        void insert(InputIterator first, InputIterator last);
+    void erase(iterator position);
+    void erase(iterator first, iterator last);
+    size_type erase(const key_type& x);
+    void swap(map<Key,Type,Compare,Allocator>&);
+    void clear();
+
+    key_compare key_comp() const;
+    value_compare value_comp() const;
+
+    iterator find(const key_type& k);
+    const_terator find(const key_type& x) const;
+    size_type count(const key_type& x) const;
+    iterator lower_bound(const key_type& x):
+    const_iterator lower_bound(const key_type& x)const;
+    iterator upper_bound(const key_type& x);
+    const_iterator upper_bound(const key_type& x) const;
+    pair<iterato,iterator> equal_range(const key_type& x);
+    pair<const_iterator,const_iterator> equal_range(const key_type& x) const;
+    */
+
+}; //end template class map
+
+/* ==================================================================
+ * map member functions
+ */
+/* ------------------------------------------------------------------
+ * ctors
+ */
+template <class Key, class Type, class Compare, class Allocator, class Implementation>
+map<Key,Type,Compare,Allocator,Implementation>::map(
+    const Compare& c,
+    const Allocator& a ) : Implementation( c, a )
+{
+    //cout<<"explicit map::ctor\n";
+}
+/* ------------------------------------------------------------------
+ * operator[]
+ * element access
+ */
+template< class Key, class Type, class Compare, class Allocator, class Implementation >
+Type&
+map< Key, Type, Compare, Allocator, Implementation >::operator[](Key const& k)
+{
+    iterator it=( insert( value_type( k, Type() ) ) ).first;
+    return (*it).second;
+}
+
+
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator==(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator!=(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator<(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator>(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator>=(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+template<class Key, class Type, class Compare, class Allocator>
+    bool operator<=(const map<Key,Type,Compare,Allocator>& x,
+                    const map<Key,Type,Compare,Allocator>& y);
+//specialized algo
+template<class Key, class Type, class Compare, class Allocator>
+    void swap(map<Key,Type,Compare,Allocator>& x,
+              map<Key,Type,Compare,Allocator>& y);
+
+/* ==================================================================
+ * class multimap
+ */
+template< class Key,
+          class Type,
+          class Compare = less< Key >,
+          class Allocator = allocator< pair< const Key, Type > >,
+          class Implementation = _ow::MultiListRBTree< Key, Compare, Allocator,
+                                        _ow::ListTreePairWrapper<Key, Type> > >
+class multimap : public Implementation{
+public:
+    typedef Key                                     key_type;
+    typedef Type                                    mapped_type;
+    typedef pair<const Key, Type>                   value_type;
+    typedef Compare                                 key_compare;
+    typedef Allocator                               allocator_type;
+    typedef typename Allocator::reference           reference;
+    typedef typename Allocator::const_reference     const_reference;
+    typedef typename Allocator::pointer             pointer;
+    typedef typename Allocator::const_pointer       const_pointer;
+
+    class value_compare : public binary_function< value_type, value_type, bool >{
+        friend class multimap;
+        protected:
+            Compare comp;
+            value_compare(Compare c) : comp(c){}
+        public:
+            bool operator()(const value_type& x, const value_type& y) const{
+                return comp(x.first, y.first);
+            }
+    };
+
+    explicit multimap( const Compare& c = Compare(),
+                       const Allocator& a = Allocator() ) : Implementation( c, a ) {}
+
+    multimap( multimap const & that ) : Implementation(that) {}
+    ~multimap() {}
+    multimap& operator=( multimap const & x ){Implementation::operator=( x ); return( *this );}
+
+}; //end template class multimap
+
+} // namespace std
+
+#endif

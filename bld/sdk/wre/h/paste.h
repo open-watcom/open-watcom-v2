@@ -34,4 +34,3 @@
 #define IDM_PASTE_NAME        301
 #define IDM_PASTE_RENAME      302
 #define IDM_PASTE_REPLACE     303
-

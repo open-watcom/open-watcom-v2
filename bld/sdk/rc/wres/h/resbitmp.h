@@ -35,10 +35,7 @@
 
 #include "watcom.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct BitmapInfoHeader {
     uint_32     Size;
     uint_32     Width;
@@ -51,10 +48,7 @@ typedef struct BitmapInfoHeader {
     uint_32     ClrUsed;
     uint_32     ClrImportant;
 } BitmapInfoHeader;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *, WResFileID );
 

@@ -1,7 +1,7 @@
 /*================================================================\
 |                                                                 |
 |      OS/2 Physical Device Driver Example Code                   |
-|                  for Watcom C/C++ 10.x                          |
+|                  for Open Watcom C/C++                          |
 |                                                                 |
 |  STRATINI.C (Discardable portion of driver)                     |
 |                                                                 |
@@ -11,7 +11,7 @@
 |  IBM Personal Systems Developer magazine.                       |
 |                                                                 |
 |                                                                 |
-|  Adapted for Watcom C/C++ 10.x by WATCOM International Corp.    |
+|  Adapted for Open Watcom C/C++                                  |
 |  Original Author: Rick Fishman                                  |
 |                   Code Blazers, Inc.                            |
 |                   4113 Apricot                                  |
@@ -38,7 +38,7 @@ extern USHORT  OffFinalDS;
 
 static char CopyRightMsg[] = {
     "\r\nHigh Resolution Timer - Version 1.0\r\n"
-    "Adapted for Watcom C/C++ by WATCOM International Corp.\r\n"
+    "Adapted for Open Watcom C/C++\r\n"
     "from 'An OS/2 High Resolution Software Timer'\r\n"
     "IBM Personal Systems Developer (Fall 1991)\r\n"
     "Courtesy of Code Blazers, Inc. 1991\r\n\n"

@@ -9,22 +9,15 @@
 #
 
 make_lib = 1
-!include $(posix_dir)\mif\targos.mif
-!include $(posix_dir)\mif\common.mif
-!include $(posix_dir)\mif\lib.mif
+!include $(posix_dir)/mif/targos.mif
+!include $(posix_dir)/mif/common.mif
+!include $(posix_dir)/mif/lib.mif
 
 #
 #       define the main target
 #
-lib=posix$(model).lbc
-posix$(model).lib : $(libobjs) $(lib)
-        $(librarian) /b posix$(model).lib @$(lib)
+posix.lib : $(libobjs)
+        $(librarian) $(libflags) $<
 
-#
-#       create the lbc file
-#
-$(lib) : makefile $(posix_dir)\mif\lib.mif
-        %create $(LIB)
-        @for %i in ($(LIBOBJS)) do @%append $(lib) -+%i
-
-!include $(posix_dir)\mif\clean.mif
+clean : .symbolic
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym

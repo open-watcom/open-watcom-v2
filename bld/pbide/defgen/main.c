@@ -43,7 +43,7 @@ BOOL            ErrorHasOccured;
 static char     outName[ _MAX_FNAME + _MAX_EXT  ];
 static char     nuoName[ _MAX_FNAME + max( _MAX_EXT, 3 ) ];
 
-extern yyparse();
+extern int yyparse( void );
 
 static void SetExtension( char *buf, char *file, char *ext ) {
     char        dir[ _MAX_DIR ];

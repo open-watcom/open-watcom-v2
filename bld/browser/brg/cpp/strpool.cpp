@@ -74,6 +74,7 @@ char * StringPool::alloc( unsigned len )
     if( _currPos + len >= _endOfCurrBlock ) {
         grow();
     }
+    ASSERTION( len < _blockSize );
     ASSERTION( _currPos + len < _endOfCurrBlock );
 
     ret = _currPos;

@@ -24,8 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  These are the assembler codes for the instructions listed
+*               in g.h
+*               NB. If you add instructions to this list, then you *must*
+*               also change g.h to match - these tables match those enums
 *
 ****************************************************************************/
 
@@ -134,24 +136,24 @@ static opcode G8Opcodes[] = {
  0xf8d8, 0xf0d8, 0xf0de, 0xf8de, 0xf0dc, 0xf8dc, 0x38d8, 0x30d8};/* OP_DIV*/
 
 static opcode G9Opcodes[] = {
-/*  MFLD   RFLD   IFLD   MFST   RFST   IFST   FCHS   FRNDINT FLDZ  FLD1*/
-  0x00d9,0xc0d9,0x28df,0x18d9,0xd8dd,0x38df,0xe0d9,0xfcd9,0xeed9,0xe8d9,
+/*  MFLD   RFLD   IFLD   MFST MFSTRND  RFST   IFST   FCHS   FRNDINT FLDZ  FLD1*/
+  0x00d9,0xc0d9,0x28df,0x18d9,0x18d9,0xd8dd,0x38df,0xe0d9,0xfcd9,0xeed9,0xe8d9,
 /*  FINIT  FCOMPP MCOMP  RCOMP  MCOM   RCOM   MFSTNP RFSTNP FTST*/
   0xe3db,0xd9de,0x18d8,0xd8d8,0x10d8,0xd0d8,0x10d9,0xd0dd,0xe4d9 };
 
 static opcode_defs NoIndex[] = {
         OP_NOP };               /* i.e. will match anything*/
 
-extern pccode_def PCCodeTable[] = {
+pccode_def PCCodeTable[] = {
 
-/* low    width                  opcode_table    opcode_list     flags*/
-G_GROUP1,G_GROUP2-G_GROUP1,     &G1Opcodes,     &G1Index,   BYTE_WORD,
-G_GROUP2,G_GROUP3-G_GROUP2,     &G2Opcodes,     &G2Index,   BYTE_OPCODE,
-G_GROUP3,G_GROUP4-G_GROUP3,     &G3Opcodes,     &G3Index,BYTE_WORD|SIGN_UNSIGN,
-G_GROUP4,G_GROUP5-G_GROUP4,     &G4Opcodes,     &G4Index,SIGN_UNSIGN|BYTE_WORD,
-G_GROUP5,G_GROUP6-G_GROUP5,     &G5Opcodes,     &NoIndex,   BYTE_WORD,
-G_GROUP6,G_GROUP7-G_GROUP6,     &G6Opcodes,     &NoIndex,   0,
-G_GROUP7,G_GROUP8-G_GROUP7,     &G7Opcodes,     &NoIndex,   BYTE_OPCODE,
-G_GROUP8,G_GROUP9-G_GROUP8,     &G8Opcodes,     &G8Index,   NEED_WAIT,
-G_GROUP9,G_OTHER-G_GROUP9,      &G9Opcodes,     &NoIndex,   NEED_WAIT,
-G_OTHER, 0,                     NULL,           NULL,       0 };
+/* low     width                 opcode_table   opcode_list     flags*/
+{G_GROUP1,G_GROUP2-G_GROUP1,     G1Opcodes,     G1Index,   BYTE_WORD},
+{G_GROUP2,G_GROUP3-G_GROUP2,     G2Opcodes,     G2Index,   BYTE_OPCODE},
+{G_GROUP3,G_GROUP4-G_GROUP3,     G3Opcodes,     G3Index,   BYTE_WORD|SIGN_UNSIGN},
+{G_GROUP4,G_GROUP5-G_GROUP4,     G4Opcodes,     G4Index,   SIGN_UNSIGN|BYTE_WORD},
+{G_GROUP5,G_GROUP6-G_GROUP5,     G5Opcodes,     NoIndex,   BYTE_WORD},
+{G_GROUP6,G_GROUP7-G_GROUP6,     G6Opcodes,     NoIndex,   0},
+{G_GROUP7,G_GROUP8-G_GROUP7,     G7Opcodes,     NoIndex,   BYTE_OPCODE},
+{G_GROUP8,G_GROUP9-G_GROUP8,     G8Opcodes,     G8Index,   NEED_WAIT},
+{G_GROUP9,G_OTHER-G_GROUP9,      G9Opcodes,     NoIndex,   NEED_WAIT},
+{G_OTHER, 0,                     NULL,          NULL,      0 }};

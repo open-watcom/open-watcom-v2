@@ -1,0 +1,33 @@
+DLGINCLUDE 2 "RULES.H"
+
+DLGTEMPLATE RES_RULES_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "Rules", 99, 12, -60, 126, 150, WS_VISIBLE, FCF_SYSMENU |
+            FCF_TITLEBAR
+    BEGIN
+        LTEXT           "Births", 109, 13, 140, 34, 7
+        LTEXT           "Deaths", 110, 69, 140, 34, 7
+        CHECKBOX        "0", BM_BIRTH_0, 13, 127, 40, 10
+        CHECKBOX        "1", BM_BIRTH_1, 13, 117, 40, 10
+        CHECKBOX        "2", BM_BIRTH_2, 13, 107, 40, 10
+        CHECKBOX        "0", BM_DEATH_0, 69, 127, 40, 10
+        CHECKBOX        "1", BM_DEATH_1, 69, 117, 40, 10
+        CHECKBOX        "2", BM_DEATH_2, 69, 107, 40, 10
+        CHECKBOX        "3", BM_DEATH_3, 69, 97, 40, 10
+        CHECKBOX        "4", BM_DEATH_4, 69, 87, 40, 10
+        CHECKBOX        "5", BM_DEATH_5, 69, 77, 40, 10
+        CHECKBOX        "6", BM_DEATH_6, 69, 67, 40, 10
+        CHECKBOX        "7", BM_DEATH_7, 69, 57, 40, 10
+        CHECKBOX        "3", BM_BIRTH_3, 13, 97, 40, 10
+        CHECKBOX        "4", BM_BIRTH_4, 13, 87, 40, 10
+        CHECKBOX        "5", BM_BIRTH_5, 13, 77, 40, 10
+        CHECKBOX        "6", BM_BIRTH_6, 13, 67, 40, 10
+        CHECKBOX        "7", BM_BIRTH_7, 13, 57, 40, 10
+        CHECKBOX        "8", BM_BIRTH_8, 13, 47, 40, 10
+        CHECKBOX        "8", BM_DEATH_8, 69, 47, 40, 10
+        DEFPUSHBUTTON   "OK", IDOK, 4, 2, 44, 17
+        PUSHBUTTON      "Cancel", IDCANCEL, 74, 2, 44, 17
+        PUSHBUTTON      "Immortal", BM_DEATH_NEVER, 13, 22, 44, 17
+        PUSHBUTTON      "Default", BM_BIRTH_DEFAULT, 66, 23, 44, 17
+    END
+END

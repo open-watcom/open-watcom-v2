@@ -79,3 +79,5 @@ SLMAC( gthread32,      GTHREAD32,    0x020e )
 SLMAC( procref,        PROCREF,      0x0400 )
 SLMAC( dataref,        DATAREF,      0x0401 )
 SLMAC( align,          ALIGN,        0x0402 )
+/* Codeview 5.0 Symbols */
+SLMAC( pub32_new,      PUB32_NEW,    0x1009 )

@@ -1,25 +1,24 @@
-extra_l_flags = option map
-extra_l_flags += option symfile
+extra_l_flags = option map, symfile
 
 extra_l_flags_os2_386 = op newfiles,stack=20k
 extra_l_flags_os2_i86 = op newfiles,stack=1k
-extra_l_flags_os2 = $(extra_l_flags_$(host_CPU))
+extra_l_flags_os2 = $(extra_l_flags_$(host_cpu))
 
-lflags_win_i86 = sys windows font mem
-#extra_l_flags_win_i86 = op nocache,symfile lib windows,commdlg,toolhelp,ddeml,shell,$(sdk_dir)\misc\ctl3d,$(datactl_dir)\ctl op stack=16000,heaps=1k
-extra_l_flags_win_i86 = op nocache,symfile lib windows,commdlg,toolhelp,ddeml,shell,$(datactl_dir)\ctl op stack=16000,heaps=1k
-!ifeq release 1
-extra_l_flags_win += op rwr
-!endif
+lflags_win_i86 += font mem
+extra_l_flags_win_i86 = op nocache,symfile,rwr lib windows,commdlg,toolhelp,ddeml,shell op stack=16000,heaps=1k
 extra_l_flags_win_386 = lib win386$(BETA),clib3r op stack=40k
-extra_l_flags_win = $(extra_l_flags_win_$(host_CPU))
+extra_l_flags_win = $(extra_l_flags_win_$(host_cpu))
 
 !ifdef sys_windowed
-! ifeq host_CPU 386
-extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k lib $(datactl_dir)\nt\ctl.lib
+! ifeq host_cpu 386
+extra_l_flags_nt = op stack=100k,heap=8k commit heap=4k
+!ifdef __LINUX__
+extra_l_flags_nt += alias "_WinMain='_WinMain@16'"
+!else
 extra_l_flags_nt += alias _WinMain='_WinMain@16'
+!endif
 ! else
-extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k lib $(datactl_dir)\axp\ctl.lib lib shell32.lib op caseexact
+extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k
 ! endif
 !else
 extra_l_flags_nt = runtime console op stack=20k
@@ -27,17 +26,26 @@ extra_l_flags_nt = runtime console op stack=20k
 
 extra_l_flags_qnx = op stack=2k,priv=3
 
-!ifdef is286
-extra_l_flags_dos_i86 = op stack=1k
-!else ifdef vroomed
-extra_l_flags_dos_i86 = op dynamic,stack=1k,area=50k
+!ifdef bootstrap
+libs = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
 !else
-extra_l_flags_dos_i86 = op stack=1k
+!ifeq host_os linux
+libs = $(ncurses_dir)/linux$(host_cpu)/ncurses.lib $(ui_dir)/unix/linux$(host_cpu)/ui.lib
+extra_l_flags_linux = lib $(ncurses_dir)/linux$(host_cpu)/ncurses.lib lib $(ui_dir)/unix/linux$(host_cpu)/ui.lib
+!endif
+!endif
+!ifdef sys_windowed
+libs += $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
+libs += $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
+extra_l_flags += lib $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
+extra_l_flags += lib $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
 !endif
 
-lflags_dos_386 = sys pharlap
-extra_l_flags_dos_386 = runtime maxreal=640k runtime unpriv op offset=4k,stack=10k
+extra_l_flags_dos_i86 = op stack=1k
+
+# lflags_dos_386 = sys pharlap
+# extra_l_flags_dos_386 = runtime maxreal=640k runtime unpriv op offset=4k,stack=10k
 # lflags_dos_386 = sys dos4g
 # extra_l_flags_dos_386 =
 
-extra_l_flags_dos = $(extra_l_flags_dos_$(host_CPU))
+extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))

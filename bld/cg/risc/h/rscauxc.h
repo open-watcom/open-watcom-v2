@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Front End callback types (RISC).
 *
 ****************************************************************************/
 
@@ -42,6 +41,8 @@
         __UNUSED_AUX_CLASS_29,
         IMPORT_NAME,
         NEXT_IMPORT,
+        IMPORT_NAME_S,
+        NEXT_IMPORT_S,
         IMPORT_TYPE,
 #define IMPORT_IS_WEAK              0
 #define IMPORT_IS_LAZY              1
@@ -55,3 +56,8 @@
         VIRT_FUNC_NEXT_REFERENCE,
         EXCEPTION_HANDLER,
         EXCEPTION_DATA,
+        NEXT_ALIAS,
+        ALIAS_NAME,
+        ALIAS_SYMBOL,
+        ALIAS_SUBST_NAME,
+        ALIAS_SUBST_SYMBOL,

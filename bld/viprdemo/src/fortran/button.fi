@@ -4,7 +4,7 @@ c$noreference
 c$ifdef __OS2__
 
 c$pragma aux measure_button parm (value,value,value)
-    integer measure_button
+        integer measure_button
 
 c$pragma aux draw_button parm (value,value)
 
@@ -34,7 +34,7 @@ c                 reference far,reference far )
 c$endif
 c$endif
 
-    external measure_button
-    external draw_button
-    external add_button
+        external measure_button
+        external draw_button
+        external add_button
 c$reference

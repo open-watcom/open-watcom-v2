@@ -1,0 +1,12 @@
+*$noreference
+
+! Environment Functions:
+! ----------------------
+
+      external GetEnvironment
+      external SetEnvironment
+
+      integer*2 GetEnvironment
+      integer*2 SetEnvironment
+
+*$reference

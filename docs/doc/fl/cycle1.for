@@ -1,0 +1,16 @@
+      CHARACTER RECORD(80)
+      LOOP : RDREC
+	  READ(5,100) RECORD
+	  AT END, STOP
+	  DO I = 1, 80
+	      IF( RECORD(I) .LT. '0'
+     +		    .OR. RECORD(I) .GT. '9' )THEN
+		  PRINT *, 'INVALID RECORD'
+		  CYCLE : RDREC
+	      ENDIF
+	  END DO
+	  WRITE(6,101) RECORD
+      END LOOP
+100   FORMAT(80A1)
+101   FORMAT(1X,80A1)
+      END

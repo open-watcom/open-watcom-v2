@@ -36,12 +36,6 @@
 #include "heap.h"
 #include "heapacc.h"
 
-// From: nexpand.c
-extern int __HeapManager_expand( __segment seg,
-                                 unsigned offset,
-                                 size_t req_size,
-                                 size_t *growth_size );
-
 _WCRTLINK void __based(void) *_bexpand( __segment seg,
                               void __based(void) *mem,
                               size_t req_size )

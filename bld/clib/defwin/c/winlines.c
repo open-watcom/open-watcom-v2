@@ -543,7 +543,7 @@ void _SaveAllLines( LPWDATA w )
     _AccessWinLines();
     f = fopen( fname, "w" );
     if( f == NULL ) {
-        MessageBox( NULL, fname,"Error opening file", MB_OK );
+        MessageBox( (HWND)NULL, fname,"Error opening file", MB_OK );
         return;
     }
     ld = w->LineHead;
@@ -557,7 +557,7 @@ void _SaveAllLines( LPWDATA w )
     }
     fclose( f );
     _ReleaseWinLines();
-    MessageBox( NULL,fname,"Data saved to file", MB_OK );
+    MessageBox( (HWND)NULL, fname, "Data saved to file", MB_OK );
 
 } /* _SaveAllLines */
 
@@ -596,7 +596,7 @@ void _CopyAllLines( LPWDATA w )
      */
     data = GlobalAlloc( GMEM_MOVEABLE, len + 1 );
     if( data == NULL ) {
-        MessageBox( NULL, "Out of Memory","Copy to Clipboard", MB_OK );
+        MessageBox( (HWND)NULL, "Out of Memory","Copy to Clipboard", MB_OK );
         _ReleaseWinLines();
         return;
     }

@@ -4,16 +4,18 @@ static pixels           SelectStartX, SelectStartY;
 static pixels           SelectEndX, SelectEndY;
 static BOOL             RegionIsSelected = FALSE;
 
+static void XORSelectedRegion( void );
 
-extern BOOL SelectOn()
-/********************/
+
+extern BOOL SelectOn( void )
+/**************************/
 {
     return( RegionIsSelected );
 }
 
 
-extern void SelectOff()
-/**********************
+extern void SelectOff( void )
+/****************************
 
     Turn off the selected region, if there is one
 */
@@ -62,8 +64,8 @@ extern void GetSelectedCoords( pixels *x1, pixels *x2, pixels *y1, pixels *y2 )
 }
 
 
-extern void FlipSelect()
-/***********************
+extern void FlipSelect( void )
+/*****************************
 
     Flip the selected region highlight. (Turn on if off and vice-versa)
 */
@@ -74,8 +76,8 @@ extern void FlipSelect()
 }
 
 
-static void XORSelectedRegion()
-/**************************
+static void XORSelectedRegion( void )
+/************************************
 
     XOR the select rectangle with a black pen
 */

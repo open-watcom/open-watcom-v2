@@ -29,12 +29,11 @@
 *
 ****************************************************************************/
 
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "util.h"
-#if defined( UNIX )
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
 #include "clibext.h"
 #include "strings.h"
 #endif

@@ -2,10 +2,10 @@ C++ Debugging tools
 ===================
 
 
-(1) functions callable from wvideo:
-    ------------------------------
+(1) functions callable from wd:
+    ---------------------------
 
-    - these may be found by examining DBG.H
+    - these may be found by examining dbg.h
 
 
 (2) pragmas enabling debugging information:
@@ -16,15 +16,35 @@ C++ Debugging tools
     - disabled by: #pragma off ( option ... option )
 
     - the following options have been defined:
-        - dump_scopes:  dump full symbol table at end of compilation
-        - dump_tokens:  dump tokens as they are scanned
-        - dump_parse:   dump parsing information
-        - dump_emit_ic: dump intermediate code written to temp. file
-        - dump_exec_ic: dump intermediate code read from temp. file
-        - dump_ptree:   dump parse trees
+        - dump_scopes:      dump full symbol table at end of compilation
+        - dump_tokens:      dump tokens as they are scanned
+        - dump_parse:       dump parsing information
+        - dump_emit_ic:     dump intermediate code written to temp file
+        - dump_exec_ic:     dump intermediate code read from temp file
+        - dump_ptree:       dump parse trees
+        - dump_types:       dump type information as it is built
+        - dump_memory:      dump unfreed memory at end of compilation
+        - dump_rank:        dump ranking information for overloads
+        - dump_init:        dump data initialization steps
+        - dump_cdopt:       dump cdopt caches at end of compilation
+        - dump_labels:      dump front-end label processing
+        - dump_mptr:        dump member pointer analysis
+        - dump_mtokens:     dump macro structures
+        - dump_names:       dump names table at end of compilation
+        - dump_data_dtor:   dump data destruction information
+        - dump_stab:        dump state tables
+        - dump_blk_posn:    dump block positions
+        - dump_auto_rel:    dump auto symbol relocations
+        - dump_cg:          dump codegen calls
+        - dump_hash:        dump hashtab statistics for scopes
+        - dump_dups:        dump resolution of PT_DUPs
+        - dump_using_dir:   dump 'using' directives
+        - dump_member_ptr:  dump member pointer conversion analysis
+        - dump_vftables:    dump vftable construction
 
-        - dump_full:    equivalent to specifying all of above
-        - dump_partial: equivalent to specifying all of above, except
-                dump_parse
+        - auxinfo:          dump FEAuxInfo requests
+        - callgraph:        dump call graph analysis
+        - cdopt:            dump cdopt algorithm progress
+        - extref:           dump special external reference processing
 
-        - dump_lines:   dumps each line as the '\n' is encountered
+        - print_ptree:      pretty-prints parse trees (very cute!)

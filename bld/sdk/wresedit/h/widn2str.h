@@ -33,7 +33,6 @@
 #ifndef WIDN2STR_INCLUDED
 #define WIDN2STR_INCLUDED
 
-extern  char    *WResIDNameToStr( WResIDName *name );
+extern char *WResIDNameToStr( WResIDName *name );
 
 #endif
-

@@ -102,14 +102,16 @@ typedef struct {
     unsigned SW_CHECK_SOURCE_EXISTS     : 1;
     unsigned SW_CONTINUE_UNEXPECTED_BREAK:1;
     unsigned SW_KEEP_HEAP_ENABLED       : 1;
+    unsigned SW_BREAK_ON_WRITE          : 1;
+    unsigned SW_DONT_EXPAND_HEX         : 1;    /* If set, display hex in shortest form - 0xf rather than 0x000f, etc */
 } dbg_switches;
 
 extern dbg_switches DbgSwitches;
 
-#define _SwitchOn( switch )     ((DbgSwitches.switch) = 1)
-#define _SwitchOff( switch )    ((DbgSwitches.switch) = 0)
-#define _SwitchToggle( switch ) ((DbgSwitches.switch) = !(DbgSwitches.switch))
-#define _SwitchSet( switch, i ) ((DbgSwitches.switch) = ( (i) != 0 ) )
+#define _SwitchOn( switch )     ( ( DbgSwitches.switch ) = 1 )
+#define _SwitchOff( switch )    ( ( DbgSwitches.switch ) = 0)
+#define _SwitchToggle( switch ) ( ( DbgSwitches.switch ) = !( DbgSwitches.switch ) )
+#define _SwitchSet( switch, i ) ( ( DbgSwitches.switch ) = ( ( i ) != 0 ) )
 
-#define _IsOn( switch )         ((DbgSwitches.switch)!=0)
-#define _IsOff( switch )        ((DbgSwitches.switch)==0)
+#define _IsOn( switch )         ( ( DbgSwitches.switch ) != 0 )
+#define _IsOff( switch )        ( ( DbgSwitches.switch ) == 0 )

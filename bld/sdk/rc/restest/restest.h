@@ -24,18 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource test internal interface.
 *
 ****************************************************************************/
 
 
-#include<stdarg.h>
+#include <stdarg.h>
 
 #define MAIN_CLASS      "ResTestClass"
 #define MENU_CLASS      "MenuWindowClass"
 
-extern HANDLE           Instance;
+extern HINSTANCE        Instance;
 extern HWND             MainHwnd;
 extern HWND             AccelHwnd;
 extern HACCEL           Accel;

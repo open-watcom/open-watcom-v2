@@ -1,0 +1,13 @@
+DLGINCLUDE 1 "RULES.H"
+
+DLGTEMPLATE RES_ABOUT_DLG LOADONCALL MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG  "About Life", RES_ABOUT_DLG, 12, -9, 167, 99, WS_VISIBLE,
+            FCF_SYSMENU | FCF_TITLEBAR
+    BEGIN
+        CTEXT           "WATCOM Life for OS2 2.0", 302, 14, 83, 141, 10,
+                        DT_VCENTER
+        CTEXT           "Version 1.0", 303, 42, 66, 85, 9, DT_VCENTER
+        DEFPUSHBUTTON   "OK", IDOK, 64, 39, 40, 14
+    END
+END

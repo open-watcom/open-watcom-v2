@@ -35,11 +35,7 @@
 include mdef.inc
 include struct.inc
 
-        if __WASM__ ge 100
-            xref    "C",__set_errno_dos
-        else
-            xref    <"C",__set_errno_dos>
-        endif
+        xref    "C",__set_errno_dos
         modstart doserror
 
         xdefp   __doserror_

@@ -37,11 +37,14 @@
 #include "model.h"
 #include "addrname.h"
 #include "procdef.h"
-#include "sysmacro.h"
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
 #include "feprotos.h"
+#include "types.h"
+#include "addrfold.h"
+#include "makeins.h"
+#include "display.h"
 
 static    pointer       *AddrNameFrl;
 
@@ -53,31 +56,34 @@ extern    block         *CurrBlock;
 extern  type_class_def  TypeClass(type_def*);
 extern  name            *SAllocTemp(type_class_def,type_length);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  type_def        *TypeAddress(cg_type);
 extern  name            *AllocConst(pointer);
-extern  void            FreeIns(instruction*);
 extern  void            AddIns(instruction*);
-extern  name            *MakeDisplay(name*,int);
 extern  name            *BGNewTemp(type_def*);
-extern  an              AddrName(name*,type_def*);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
 extern  name            *SAllocMemory(pointer,type_length,cg_class,type_class_def,type_length);
 extern  name            *AllocTemp(type_class_def);
 extern  void            AllocALocal(name*);
 extern  byte            *Copy(void*,void*,uint);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  void            BGDone(an);
-extern  name            *Points(an ,type_def *);
-extern  name            *GetValue(an ,name *);
 extern  cg_type         NamePtrType( name *op );
 extern  name            *AllocRegName( hw_reg_set );
 
-extern  an      NewAddrName() {
-/*****************************/
 
+static  void    CopyAddr( an src, an dst )
+/****************************************/
+{
+    an  link;
+
+    link = dst->link;
+    Copy( src, dst, sizeof( address_name ) );
+    dst->link = link;
+}
+
+
+extern  an      NewAddrName( void )
+/*********************************/
+{
     an  addr;
 
     addr = AllocFrl( &AddrNameFrl, sizeof( address_name ) );
@@ -95,9 +101,9 @@ extern  an      NewAddrName() {
 }
 
 
-extern  an      MakeTypeTempAddr( name *op, type_def *tipe ) {
-/**************************************************************/
-
+extern  an      MakeTypeTempAddr( name *op, type_def *tipe )
+/**********************************************************/
+{
     an          addr;
 
     addr = NewAddrName();
@@ -109,31 +115,71 @@ extern  an      MakeTypeTempAddr( name *op, type_def *tipe ) {
 }
 
 
-extern  an      MakeTempAddr( name *op, type_def *tipe ) {
-/**********************************************************/
+extern  an      MakeTempAddr( name *op, type_def *tipe )
+/******************************************************/
+{
     tipe = tipe;
-    return( MakeTypeTempAddr( op, TypeAddress( T_NEAR_POINTER ) ) );
+    return( MakeTypeTempAddr( op, TypeAddress( TY_NEAR_POINTER ) ) );
 }
 
 
-extern  void    InitMakeAddr() {
-/******************************/
-
+extern  void    InitMakeAddr( void )
+/**********************************/
+{
     InitFrl( &AddrNameFrl );
     AddrList = NULL;
 }
 
 
-extern  name    *GenIns( an addr ) {
-/**********************************/
-
+extern  name    *GenIns( an addr )
+/********************************/
+{
     return( GetValue( addr, NULL ) );
 }
 
 
-extern  void    NamesCrossBlocks() {
-/**********************************/
+extern  void    AddrFree( an node )
+/*********************************/
+{
+    an  *owner;
 
+    owner = &AddrList;
+    for( ;; ) {
+        if( *owner == node ) {
+            *owner = node->link;
+            break;
+        }
+        owner = &(*owner)->link;
+    }
+    if( node->format == NF_INS ) {
+        FreeIns( node->u.ins );
+    }
+    FrlFreeSize( &AddrNameFrl, (pointer *)node, sizeof( address_name ) );
+}
+
+
+extern  void    InsToAddr( an addr )
+/**********************************/
+{
+    an          new;
+    instruction *ins;
+
+    if( addr->format == NF_INS ) {
+        ins = addr->u.ins;
+        ins->result = BGNewTemp( addr->tipe );
+        new = AddrName( ins->result, addr->tipe );
+        new->flags = addr->flags;
+        new->base = addr->base;
+        new->alignment = addr->alignment;
+        CopyAddr( new, addr );
+        AddrFree( new );
+    }
+}
+
+
+extern  void    NamesCrossBlocks( void )
+/**************************************/
+{
     an          addr;
     an          new;
     an          next;
@@ -170,36 +216,16 @@ extern  void    NamesCrossBlocks() {
 }
 
 
-extern  bool    AddrFrlFree() {
-/*****************************/
-
+extern  bool    AddrFrlFree( void )
+/*********************************/
+{
     return( FrlFreeAll( &AddrNameFrl, sizeof( address_name ) ) );
 }
 
 
-extern  void    AddrFree( an node ) {
-/***********************************/
-
-    an  *owner;
-
-    owner = &AddrList;
-    for(;;) {
-        if( *owner == node ) {
-            *owner = node->link;
-            break;
-        }
-        owner = &(*owner)->link;
-    }
-    if( node->format == NF_INS ) {
-        FreeIns( node->u.ins );
-    }
-    FrlFreeSize( &AddrNameFrl, (pointer *)node, sizeof( address_name ) );
-}
-
-
-static  name    *Display( sym_handle symbol, int level ) {
-/********************************************************/
-
+static  name    *Display( sym_handle symbol, int level )
+/******************************************************/
+{
     proc_def    *proc;
     name        *op;
     name        *names;
@@ -222,9 +248,9 @@ static  name    *Display( sym_handle symbol, int level ) {
 }
 
 
-extern  an      MakeGets( an dst, an src, type_def *tipe ) {
-/**********************************************************/
-
+extern  an      MakeGets( an dst, an src, type_def *tipe )
+/********************************************************/
+{
     name                *dst_name;
     name                *src_name;
     instruction         *ins;
@@ -239,7 +265,8 @@ extern  an      MakeGets( an dst, an src, type_def *tipe ) {
         src->format = NF_ADDR;  /*% so instruction doesn't get freed!*/
     } else {
         src_name = GetValue( src, dst_name );
-        if( src_name != dst_name ) {
+        if( src_name != dst_name ||
+         (( src_name->n.class == N_MEMORY ) && ( src_name->v.usage & VAR_VOLATILE )) ) {
             class = TypeClass( tipe );
             src_name = GenIns( src );
             if( dst_name->n.class == N_INDEXED &&
@@ -261,16 +288,16 @@ extern  an      MakeGets( an dst, an src, type_def *tipe ) {
 }
 
 
-extern  an      MakeConst( pointer cf, type_def *tipe ) {
-/*******************************************************/
-
+extern  an      MakeConst( pointer cf, type_def *tipe )
+/*****************************************************/
+{
     return( AddrName( AllocConst( cf ), tipe ) );
 }
 
 
-extern  an      MakePoints( an name, type_def *tipe ) {
-/*****************************************************/
-
+extern  an      MakePoints( an name, type_def *tipe )
+/***************************************************/
+{
     an  new;
 
     new = AddrName( Points( name, tipe ), tipe );
@@ -278,9 +305,9 @@ extern  an      MakePoints( an name, type_def *tipe ) {
     return( new );
 }
 
-extern  an      RegName( hw_reg_set reg, type_def *tipe ) {
-/*********************************************************/
-
+extern  an      RegName( hw_reg_set reg, type_def *tipe )
+/*******************************************************/
+{
     an  addr;
 
     addr = NewAddrName();
@@ -290,9 +317,9 @@ extern  an      RegName( hw_reg_set reg, type_def *tipe ) {
     return( addr );
 }
 
-extern  an      InsName( instruction *ins, type_def *tipe ) {
-/***********************************************************/
-
+extern  an      InsName( instruction *ins, type_def *tipe )
+/*********************************************************/
+{
     an  addr;
 
     addr = NewAddrName();
@@ -302,9 +329,9 @@ extern  an      InsName( instruction *ins, type_def *tipe ) {
     return( addr );
 }
 
-extern  name    *LoadTemp( name *temp, type_class_def class ) {
-/***************************************/
-
+extern  name    *LoadTemp( name *temp, type_class_def class )
+/***********************************************************/
+{
     instruction *ins;
 
     ins = MakeMove( temp, AllocTemp( class ), class );
@@ -314,9 +341,9 @@ extern  name    *LoadTemp( name *temp, type_class_def class ) {
 }
 
 
-static  name    *Temporary( name *temp, type_def *tipe ) {
-/********************************************************/
-
+static  name    *Temporary( name *temp, type_def *tipe )
+/******************************************************/
+{
     if( temp->n.class != N_TEMP ) {
         temp = LoadTemp( temp, TypeClass( tipe ) /*temp->n.name_class*/ );
     }
@@ -324,9 +351,9 @@ static  name    *Temporary( name *temp, type_def *tipe ) {
 }
 
 
-extern  an      AddrEval( an addr ) {
-/***********************************/
-
+extern  an      AddrEval( an addr )
+/*********************************/
+{
     an  new;
 
     new = AddrName( Temporary( GenIns( addr ), addr->tipe ), addr->tipe );
@@ -335,9 +362,9 @@ extern  an      AddrEval( an addr ) {
 }
 
 
-extern  void    MoveAddress(  an src,  an  dest ) {
-/*************************************************/
-
+extern  void    MoveAddress(  an src,  an  dest )
+/***********************************************/
+{
     dest->format = src->format;
     dest->class = src->class;
     dest->u.name  = src->u.name;
@@ -346,9 +373,9 @@ extern  void    MoveAddress(  an src,  an  dest ) {
 }
 
 
-extern  void    Convert( an addr, type_class_def class ) {
-/********************************************************/
-
+extern  void    Convert( an addr, type_class_def class )
+/******************************************************/
+{
     instruction *ins;
 
     if( addr->offset != 0 ) {
@@ -366,9 +393,9 @@ extern  void    Convert( an addr, type_class_def class ) {
 }
 
 
-extern  bool    PointLess( an l_addr, an r_addr ) {
-/*************************************************/
-
+extern  bool    PointLess( an l_addr, an r_addr )
+/***********************************************/
+{
     if( l_addr->class != CL_POINTER && r_addr->class != CL_POINTER )
         return( FALSE );
     if( l_addr->offset != 0 || r_addr->offset != 0 ) return( FALSE );
@@ -376,9 +403,9 @@ extern  bool    PointLess( an l_addr, an r_addr ) {
 }
 
 
-extern  an      AddrToIns( an addr ) {
-/************************************/
-
+extern  an      AddrToIns( an addr )
+/**********************************/
+{
     instruction *ins;
     an          new;
 
@@ -396,28 +423,9 @@ extern  an      AddrToIns( an addr ) {
 }
 
 
-extern  void    InsToAddr( an addr ) {
-/************************************/
-
-    an          new;
-    instruction *ins;
-
-    if( addr->format == NF_INS ) {
-        ins = addr->u.ins;
-        ins->result = BGNewTemp( addr->tipe );
-        new = AddrName( ins->result, addr->tipe );
-        new->flags = addr->flags;
-        new->base = addr->base;
-        new->alignment = addr->alignment;
-        CopyAddr( new, addr );
-        AddrFree( new );
-    }
-}
-
-
-extern  an      AddrDuplicate( an node ) {
-/****************************************/
-
+extern  an      AddrDuplicate( an node )
+/**************************************/
+{
     an          new;
     name        *op;
 
@@ -428,9 +436,9 @@ extern  an      AddrDuplicate( an node ) {
     return( new );
 }
 
-extern  an      AddrCopy( an node ) {
-/***********************************/
-
+extern  an      AddrCopy( an node )
+/*********************************/
+{
     an  new;
 
     InsToAddr( node );
@@ -440,17 +448,17 @@ extern  an      AddrCopy( an node ) {
 }
 
 
-extern  an      AddrSave( an node ) {
-/***********************************/
-
+extern  an      AddrSave( an node )
+/*********************************/
+{
     InsToAddr( node );
     return( node );
 }
 
 
-extern  void    AddrDemote( an node ) {
-/*************************************/
-
+extern  void    AddrDemote( an node )
+/***********************************/
+{
     node->flags |= ADDR_DEMOTED;
     if( node->format == NF_INS ) {
         node->u.ins->ins_flags |= INS_DEMOTED;
@@ -458,18 +466,9 @@ extern  void    AddrDemote( an node ) {
 }
 
 
-static  void    CopyAddr( an src, an dst ) {
-/******************************************/
-
-    an  link;
-
-    link = dst->link;
-    Copy( src, dst, sizeof( address_name ) );
-    dst->link = link;
-}
-extern  name    *MaybeTemp( name *op, type_class_def kind ) {
-/*************************************************************/
-
+extern  name    *MaybeTemp( name *op, type_class_def kind )
+/*********************************************************/
+{
     if( op == NULL ) {
         op = AllocTemp( kind );
     }
@@ -477,9 +476,9 @@ extern  name    *MaybeTemp( name *op, type_class_def kind ) {
 }
 
 
-extern  void    CheckPointer( an addr ) {
-/***************************************/
-
+extern  void    CheckPointer( an addr )
+/*************************************/
+{
     InsToAddr( addr );
     if( addr->format == NF_NAME
      && ( addr->tipe->attr & TYPE_POINTER ) ) {
@@ -492,9 +491,9 @@ extern  void    CheckPointer( an addr ) {
 }
 
 
-extern  void    FixCodePtr( an addr ) {
-/*************************************/
-
+extern  void    FixCodePtr( an addr )
+/***********************************/
+{
     instruction *ins;
 
     if( addr->format == NF_INS ) {
@@ -504,22 +503,22 @@ extern  void    FixCodePtr( an addr ) {
 }
 
 
-extern  bool    NeedPtrConvert( an addr, type_def * tipe ) {
+extern  bool    NeedPtrConvert( an addr, type_def * tipe )
 /********************************************************/
-
+{
     if( addr->format != NF_ADDR ) return( TRUE );
     if( addr->class == CL_ADDR_GLOBAL || addr->class == CL_ADDR_TEMP ) {
-        if( tipe->refno == T_NEAR_POINTER ) return( FALSE );
-        if( tipe->refno == T_LONG_POINTER ) return( FALSE );
-        if( tipe->refno == T_HUGE_POINTER ) return( FALSE );
+        if( tipe->refno == TY_NEAR_POINTER ) return( FALSE );
+        if( tipe->refno == TY_LONG_POINTER ) return( FALSE );
+        if( tipe->refno == TY_HUGE_POINTER ) return( FALSE );
     }
     return( TRUE );
 }
 
 
-extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr ) {
-/***************************************************************************/
-
+extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
+/*************************************************************************/
+{
     name                *new;
     type_class_def      class;
 
@@ -550,9 +549,9 @@ extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr ) {
 }
 
 
-extern  an      MakeAddrName( cg_class class, sym_handle sym, type_def *tipe ) {
-/**************************************************************************/
-
+extern  an      MakeAddrName( cg_class class, sym_handle sym, type_def *tipe )
+/****************************************************************************/
+{
     an          addr;
     fe_attr     attr;
     int         level;

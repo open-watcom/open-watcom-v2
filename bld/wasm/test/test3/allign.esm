@@ -1,0 +1,35 @@
+.387
+.386p
+		PUBLIC	myFunc32
+		PUBLIC	myFunc16
+_TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_TEXT32, DS:DGROUP, SS:DGROUP
+myFunc32:
+    push        ebp
+    mov         ebp,esp
+    sub         esp,28H
+    mov         word ptr -4[ebp],5656H
+    mov         byte ptr -8[ebp],5
+    mov         byte ptr -14H[ebp],5
+    mov         dword ptr -18H[ebp],5
+    mov         byte ptr -1cH[ebp],5
+    mov         byte ptr -28H[ebp],5
+    leave       
+    ret         
+_TEXT32		ENDS
+_TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+myFunc16:
+    push        bp
+    mov         bp,sp
+    sub         sp,1eH
+    mov         word ptr -2[bp],5656H
+    mov         byte ptr -6[bp],5
+    mov         byte ptr -10H[bp],5
+    mov         dword ptr -14H[bp],5
+    mov         byte ptr -16H[bp],5
+    mov         byte ptr -1eH[bp],5
+    leave       
+    ret         
+_TEXT16		ENDS
+		END

@@ -24,12 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump internal optimizer data.
 *
 ****************************************************************************/
 
 
+#include "cgdefs.h"
 #include "optwif.h"
 #include "dump.h"
 #include "opcodes.h"
@@ -44,25 +44,14 @@ extern  bool            AskIfRTLabel( label_handle );
 extern  bool            AskIfCommonLabel( label_handle );
 extern  char            *AskRTName( int );
 
-extern  ins_entry       *FirstIns;
+static  void            DoData( oc_entry *instr );
+static  void            DoLabel( oc_handle *instr );
+static  void            DoRef( oc_handle *instr );
 
 static char * Names[] = {
-    "OC_DEAD   ",
-    "OC_INFO   ",
-    "OC_CODE   ",
-    "OC_DATA   ",
-    "OC_RCODE  ",
-    "OC_BDATA  ",
-    "OC_LABEL  ",
-    "OC_LREF   ",
-    "OC_CALL   ",
-    "OC_CALLI  ",
-    "OC_JCOND  ",
-    "OC_JCONDI ",
-    "OC_JMP    ",
-    "OC_JMPI   ",
-    "OC_RET    ",
-    "OC_IDATA  ",
+#define pick_class(x) #x ,
+#include "occlasss.h"
+#undef pick_class
     ""
 };
 
@@ -105,49 +94,13 @@ static char * Conds[] = {
     "jge  ",
     ""
 };
+
 static  char    *CondName( oc_jcond *oc ) {
 /*****************************************/
 
     return( Conds[ oc->cond - FIRST_CONDITION ] );
 }
 #endif
-
-extern  void    DumpOpt() {
-/*************************/
-
-    DownOpt( FirstIns, -1 );
-}
-
-
-extern  void    UpOpt( ins_entry *ins, uint last ) {
-/**************************************************/
-
-    uint        size;
-
-    size = last;
-    for(;;) {
-        if( size == 0 ) break;
-        ins = ins->ins.prev;
-        if( ins == NULL ) break;
-        --size;
-    }
-    DownOpt( ins, last+1 );
-}
-
-
-extern  void    DownOpt( ins_entry *instr, uint num ) {
-/*****************************************************/
-
-    DumpLiteral( "--------<Queue>-------" );
-    DumpNL();
-    for(;;) {
-        if( instr == NULL ) break;
-        if( num == 0 ) break;
-        DumpOc( instr );
-        --num;
-        instr = instr->ins.next;
-    }
-}
 
 static  bool    LblName( code_lbl *lbl ) {
 /*****************************************/
@@ -172,83 +125,6 @@ static  bool    LblName( code_lbl *lbl ) {
 }
 
 
-
-extern  void    DumpOc( ins_entry *ins ) {
-/****************************************/
-
-    DumpPtr( ins );
-    DumpLiteral( " " );
-    DumpString(  Names[ _Class( ins ) ] );
-    if( _Class( ins ) != OC_INFO ) {
-        CheckAttr( ins->oc.oc_entry.class );
-    }
-    switch( _Class( ins ) ) {
-    case OC_INFO:
-        DoInfo ( &ins->oc );
-        break;
-    case OC_CODE:
-        DoData ( &ins->oc );
-        break;
-    case OC_DATA:
-        DoData ( &ins->oc );
-        break;
-    case OC_IDATA:
-        DoData( &ins->oc );
-        break;
-    case OC_BDATA:
-        DoData ( &ins->oc );
-        break;
-    case OC_LABEL:
-        DoLabel( &ins->oc );
-        break;
-    case OC_LREF:
-        DumpLiteral( "dw   " );
-        DoRef  ( &ins->oc );
-        break;
-    case OC_CALL:
-        DumpLiteral( "call " );
-        DoRef  ( &ins->oc );
-        break;
-    case OC_CALLI:
-        DoData ( &ins->oc );
-        break;
-    case OC_JCOND:
-        DumpString( CondName( &ins->oc.oc_jcond ) );
-        DoRef( &ins->oc );
-        break;
-    case OC_JCONDI:
-        DoData( &ins->oc );
-        break;
-    case OC_JMP:
-        DumpLiteral( "jmp  " );
-        DoRef  ( &ins->oc );
-        break;
-    case OC_JMPI:
-        DoData ( &ins->oc );
-        break;
-    case OC_RET:
-        DumpInt( ins->oc.oc_ret.pops );
-        DumpNL();
-        break;
-#if _TARGET & _TARG_RISC
-    case OC_RCODE:
-        DumpPtr( (pointer)ins->oc.oc_rins.opcode );
-        if( _HasReloc( &ins->oc.oc_rins ) ) {
-            DumpLiteral( " [ " );
-            LblName( ins->oc.oc_rins.sym );
-            DumpLiteral( "," );
-            DumpInt( ins->oc.oc_rins.reloc );
-            DumpLiteral( " ] " );
-        }
-        break;
-#endif
-    default:
-        DumpLiteral( "*** unknown class ***" );
-        break;
-    }
-    DumpNL();
-}
-
 static  void    CheckAttr( oc_class cl ) {
 /****************************************/
 
@@ -265,6 +141,7 @@ static  void    CheckAttr( oc_class cl ) {
         DumpLiteral( "floating " );
     }
 }
+
 
 static  void    DoInfo( any_oc *oc ) {
 /**************************************/
@@ -284,7 +161,7 @@ static  void    DoInfo( any_oc *oc ) {
     case INFO_DEAD_JMP:
         DumpLiteral( "DEAD  " );
         DumpLiteral( "jmp  " );
-        DoRef( oc );
+        DoRef( &(oc->oc_handle) );
         break;
     case INFO_DBG_RTN_BEG:
         DumpLiteral( "RTN BEGIN " );
@@ -324,6 +201,85 @@ static  void    DoInfo( any_oc *oc ) {
     }
 }
 
+
+extern  void    DumpOc( ins_entry *ins ) {
+/****************************************/
+
+    DumpPtr( ins );
+    DumpLiteral( " " );
+    DumpString(  Names[ _Class( ins ) ] );
+    DumpLiteral( " " );
+    if( _Class( ins ) != OC_INFO ) {
+        CheckAttr( ins->oc.oc_entry.class );
+    }
+    switch( _Class( ins ) ) {
+    case OC_INFO:
+        DoInfo ( &ins->oc );
+        break;
+    case OC_CODE:
+        DoData ( &ins->oc.oc_entry );
+        break;
+    case OC_DATA:
+        DoData ( &ins->oc.oc_entry );
+        break;
+    case OC_IDATA:
+        DoData( &ins->oc.oc_entry );
+        break;
+    case OC_BDATA:
+        DoData ( &ins->oc.oc_entry );
+        break;
+    case OC_LABEL:
+        DoLabel( &ins->oc.oc_handle );
+        break;
+    case OC_LREF:
+        DumpLiteral( "dw   " );
+        DoRef  ( &ins->oc.oc_handle );
+        break;
+    case OC_CALL:
+        DumpLiteral( "call " );
+        DoRef  ( &ins->oc.oc_handle );
+        break;
+    case OC_CALLI:
+        DoData ( &ins->oc.oc_entry );
+        break;
+    case OC_JCOND:
+        DumpString( CondName( &ins->oc.oc_jcond ) );
+        DoRef( &ins->oc.oc_handle );
+        break;
+    case OC_JCONDI:
+        DoData( &ins->oc.oc_entry );
+        break;
+    case OC_JMP:
+        DumpLiteral( "jmp  " );
+        DoRef  ( &ins->oc.oc_handle );
+        break;
+    case OC_JMPI:
+        DoData ( &ins->oc.oc_entry );
+        break;
+    case OC_RET:
+        DumpInt( ins->oc.oc_ret.pops );
+        DumpNL();
+        break;
+#if _TARGET & _TARG_RISC
+    case OC_RCODE:
+        DumpPtr( (pointer)ins->oc.oc_rins.opcode );
+        if( _HasReloc( &ins->oc.oc_rins ) ) {
+            DumpLiteral( " [ " );
+            LblName( ins->oc.oc_rins.sym );
+            DumpLiteral( "," );
+            DumpInt( ins->oc.oc_rins.reloc );
+            DumpLiteral( " ] " );
+        }
+        break;
+#endif
+    default:
+        DumpLiteral( "*** unknown class ***" );
+        break;
+    }
+    DumpNL();
+}
+
+
 static  void    DoData( oc_entry *instr ) {
 /*****************************************/
 
@@ -332,9 +288,11 @@ static  void    DoData( oc_entry *instr ) {
     len = 0;
     while( len < instr->reclen - sizeof( oc_header ) ) {
         DumpByte( instr->data[ len ] );
+        DumpLiteral( " " );
         ++len;
     }
 }
+
 
 static  void    DoLabel( oc_handle *instr ) {
 /*******************************************/
@@ -360,11 +318,13 @@ static  void    DoLabel( oc_handle *instr ) {
 #endif
 }
 
+
 static  void    DoRef( oc_handle *instr ) {
 /*****************************************/
 
     LblName( instr->handle );
 }
+
 
 extern  void    DumpLbl( code_lbl *lbl ) {
 /****************************************/
@@ -428,4 +388,42 @@ extern  void    DumpLbl( code_lbl *lbl ) {
         }
     }
     DumpNL();
+}
+
+
+extern  void    DownOpt( ins_entry *instr, uint num ) {
+/*****************************************************/
+
+    DumpLiteral( "--------<Queue>-------" );
+    DumpNL();
+    for(;;) {
+        if( instr == NULL ) break;
+        if( num == 0 ) break;
+        DumpOc( instr );
+        --num;
+        instr = instr->ins.next;
+    }
+}
+
+
+extern  void    UpOpt( ins_entry *ins, uint last ) {
+/**************************************************/
+
+    uint        size;
+
+    size = last;
+    for(;;) {
+        if( size == 0 ) break;
+        ins = ins->ins.prev;
+        if( ins == NULL ) break;
+        --size;
+    }
+    DownOpt( ins, last+1 );
+}
+
+
+extern  void    DumpOpt() {
+/*************************/
+
+    DownOpt( FirstIns, -1 );
 }

@@ -1,0 +1,30 @@
+pfx__          =$(cpplib_dir)
+__ifx__        =$(system).386/$(model)_$(dllname_$(convention))mt$(dllname_profile)$(dllname_debug)
+
+dll_libs = $+ &
+    $(pfx__)/$(__ifx__).dll/plbxmt3$(dllname_$(convention)).lib &
+    $(clib_dir)/rtdll/$(system).386/$(subdir)/clb$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(mathlib_dir)/rtdll/$(system).387/$(subdir)/mt7$(dllname_$(convention))dll$(dllname_profile)$(dllname_debug).lib &
+    $(pfx__)/$(__ifx__)/plbxmt3$(dllname_$(convention)).lib &
+    $-
+
+dll_def = $+ &
+    $(pfx__)/runtime/nt386.def &
+    $(pfx__)/$(__ifx__).dll/exportx.def &
+    $-
+
+dll_objs = $+ &
+    $(clib_dir)/startup/library/$(system).386/$(subdir)/clibdwnt.obj &
+    $-
+
+targdir = $(pfx__)/runtime/$(__ifx__).dll/
+!include $(pfx__)/runtime/static.mif
+objs = $+ $(static_objs) $-
+targdir = $(pfx__)/iostream/$(__ifx__).dll/
+!include $(pfx__)/iostream/static.mif
+objs += $+ $(static_objs) $-
+targdir =
+static_objs = $+ $(objs) $-
+
+pfx__          =
+__ifx__        =

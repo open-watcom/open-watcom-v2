@@ -24,15 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Segment definitions for Open Watcom C/C++16.
 ;*
 ;*****************************************************************************
 
 
-;
-; segment definitions for WATCOM C/C++16
-;
         name    sgdef086
 
         assume  nothing

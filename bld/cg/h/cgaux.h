@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Aux pragma flags and data shared between cg and front ends.
 *
 ****************************************************************************/
 
@@ -85,6 +84,7 @@ typedef enum  {
 #define HAS_VARARGS             0x00000010L
 #define PARMS_STACK_RESERVE     0x00000020L
 #define SETJMP_KLUGE            0x00000040L
+#define PARMS_PREFER_REGS       0x00000080L
 #define LAST_AUX_ATTRIBUTE      0x00000080L
 
 #define _TARG_AUX_SHIFT         8
@@ -93,7 +93,7 @@ typedef enum  {
     #error too many attributes
 #endif
 
-typedef unsigned long call_class;
+typedef unsigned long long call_class;
 typedef unsigned long byte_seq_len;
 
 #include "cgauxa.h"
@@ -103,7 +103,7 @@ typedef unsigned long byte_seq_len;
 #include "cgnoalgn.h"
 typedef struct byte_seq {
         byte_seq_len    length;
-        char            data[];
+        byte            data[];
 } byte_seq;
 #include "cgrealgn.h"
 

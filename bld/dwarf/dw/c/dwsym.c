@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage subroutines and lexical blocks.
 *
 ****************************************************************************/
 
@@ -205,7 +204,6 @@ dw_handle DWENTRY DWBeginSubroutine(
 
     _Validate( name != NULL );
     call_type = call_type;
-    frame_base_loc = frame_base_loc;
     new = GetHandle( cli );
     if( flags & DW_FLAG_DECLARATION ){
         abbrev = AB_SUBROUTINE_DECL;
@@ -217,7 +215,7 @@ dw_handle DWENTRY DWBeginSubroutine(
         if( member_hdl ) abbrev |= AB_MEMBER;
         if( segment ) abbrev |= AB_SEGMENT;
     }
-    if( return_type != NULL ){
+    if( return_type != 0 ){
         abbrev |= AB_TYPE;
     }
     StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
@@ -278,6 +276,12 @@ dw_handle DWENTRY DWBeginSubroutine(
     }
     /* AT_address_class */
     Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
+    /* AT_frame_base */
+    if( frame_base_loc != NULL ){
+        EmitLocExpr( cli, DW_DEBUG_INFO, sizeof( uint_8),frame_base_loc );
+    }else{
+        EmitLocExprNull( cli, DW_DEBUG_INFO, sizeof( uint_8) );
+    }
     EndDIE( cli );
     StartChildren( cli );
     return( new );
@@ -300,7 +304,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
     abbrev = AB_ENTRY_POINT;
     if( segment ) abbrev |= AB_SEGMENT;
     if( return_addr_loc ) abbrev |= AB_RETURN_ADDR;
-    if( return_type != NULL ){
+    if( return_type != 0 ){
         abbrev |= AB_TYPE;
     }
     StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
@@ -446,7 +450,7 @@ dw_handle DWENTRY DWFormalParameter(
     dw_size_t                   len;
 
     new = LabelNewHandle( cli );
-    _Validate( parm_type !=NULL );
+    _Validate( parm_type != 0 );
     va_start( args, default_value_type );
     abbrev = default_value_type == DW_DEFAULT_NONE ? AB_FORMAL_PARAMETER
         : AB_FORMAL_PARAMETER_WITH_DEFAULT;
@@ -554,7 +558,7 @@ dw_handle DWENTRY DWVariable(
     abbrev_code                 abbrev;
 
     start_scope = start_scope;
-    _Validate( type !=NULL );
+    _Validate( type != 0 );
     _Validate( name !=NULL );
     new = LabelNewHandle( cli );
     abbrev = AB_VARIABLE;
@@ -606,7 +610,7 @@ dw_handle DWENTRY DWConstant(
     abbrev_code                 abbrev;
 
     start_scope = start_scope;
-    _Validate( type != NULL );
+    _Validate( type != 0 );
     _Validate( name != NULL );
     new = LabelNewHandle( cli );
     abbrev = AB_CONSTANT;

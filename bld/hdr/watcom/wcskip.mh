@@ -7,11 +7,10 @@
 //
 #ifndef _WCSKIP_H_INCLUDED
 #define _WCSKIP_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wcskip.h is for use with C++
-#endif
+:include cpponly.sp
 
 //
 // Skip Lists are a probabilistic alternative to balanced trees, as
@@ -19,17 +18,17 @@
 // William Pugh in 1987.
 //
 
-
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
+
 #ifndef _WCSBASE_H_INCLUDED
  #include <wcsbase.h>
 #endif
-
 
 //
 // WCValSkipList - the skip list value class which allows duplicates
@@ -328,7 +327,7 @@ WCbool WCValSkipListDict<Key, Value>::findKeyAndValue( const Key &search
 
 template<class Key, class Value>
 void WCValSkipListDict<Key, Value>
-                ::forAll( register void(*user_fn)( Key, Value, void * )
+                ::forAll( void(*user_fn)( Key, Value, void * )
                         , void * data) const {
     register node_ptr curr;
 

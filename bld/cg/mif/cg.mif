@@ -4,7 +4,7 @@ gbit_size = 128
 lbit_size = 32
 dbit_size = 256
 
-bit_sets = $(cg_dir)\h\gbit.gh $(cg_dir)\h\lbit.gh $(cg_dir)\h\dbit.gh
+bit_sets = gbit.gh lbit.gh dbit.gh
 
 cg_objs = &
     addrcnst.obj &
@@ -96,7 +96,7 @@ cg_objs = &
     scthrash.obj &
     scutil.obj &
     sczero.obj &
-    sortlist.obj &
+    cgsrtlst.obj &
     spawn.obj &
     split.obj &
     splitvar.obj &
@@ -105,7 +105,6 @@ cg_objs = &
     tree.obj &
     treeconv.obj &
     treefold.obj &
-    typeinit.obj &
     typemap.obj &
     types.obj &
     u32moddi.obj &
@@ -141,10 +140,11 @@ cg_stub_objs = &
     stubs.obj &
     stubutil.obj
 
-pre_obj_deps    = global.chk $(bit_sets) $(cg_dir)\h\cgprotos.gh $(cg_dir)\h\feprotos.gh
+pre_obj_deps    = $(bit_sets) cgprotos.gh feprotos.gh
 
-include_path    = $+$(include_path)$-;$(cg_dir)\h;$(watcom_dir)\h;$(cfloat_dir)\h;$(comp_cfg_dir)\h
-src_path        = $+$(src_path)$-;$(cg_dir)\c;$(watcom_dir)\c
+include_path    = $+$(include_path)$-;$(cg_dir)/h;$(watcom_dir)/h;$(cfloat_dir)/h;$(comp_cfg_dir)/h
+inc_dirs       += -I"$(cg_dir)/h" -I"$(cfloat_dir)/h" -I"$(comp_cfg_dir)/h"
+src_path        = $+$(src_path)$-;$(cg_dir)/c;$(watcom_dir)/c
 
-asm_include     = $+$(asm_include)$-;$(cg_dir)\a
-asm_path        = $+$(asm_path)$-;$(cg_dir)\a
+asm_include     = $+$(asm_include)$-;$(cg_dir)/a
+asm_path        = $+$(asm_path)$-;$(cg_dir)/a

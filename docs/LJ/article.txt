@@ -1,0 +1,258 @@
+
+
+Introduction
+-------------
+
+Open Watcom is the open source version of the commercial Watcom system that was well known in
+the 1990s. Like its predecessor, Open Watcom provides compilers for FORTRAN77, C, and C++. It
+also provides a rich collection of related tools such as an assembler, a debugger, a linker, an
+editor, and a simple IDE to name just a few. In addition, Open Watcom provides good cross
+platform support for Windows, OS/2, DOS, and their variations. Indeed, Open Watcom is one of the
+few actively maintained C/C++ compilers that can still generate 16 bit x86 code for DOS or
+embedded targets.
+
+The Open Watcom community has been working on adding Linux to the list of supported systems.
+Right now you can create Linux executables using Open Watcom on a Windows, OS/2, or even a DOS
+system. It is also possible to create Windows, OS/2, or DOS executables on a Linux system.
+However, Open Watcom's Linux port still requires a lot of work before it will be fully mature.
+In this article I hope to describe the current state of Open Watcom on Linux and how you can get
+your hands on the source code of the system to start playing with it.
+
+It is our hope that ultimately Open Watcom will become a viable alternative to gcc on Linux.
+Because of Open Watcom's tradition of being as self contained as possible, it provides its own
+libraries and an independent, self-consistent tool set with all the advantages (and
+disadvantages) pertaining.
+
+
+History
+-------
+
+Open Watcom's history is long. It dates back to a FORTRAN compiler created by a group of
+undergraduate students at the University of Waterloo in the 1960s. In the late 1980s a C
+compiler was also created. The first commercial PC version of Watcom, version 6.0, was released
+in 1988. The Watcom product was popular in the mid-1990s, especially with game developers,
+because of the fast code that it generated compared to other compilers of that time. A
+corresponding C++ compiler was released with version 9.5 in 1993, and the three languages have
+been a part of the system ever since.
+
+The last commercial version of Watcom, version 11.0, was released in 1997/1998. Sybase, the
+owner of the system at the time, announced in 1999 that Watcom would be moved to "end of life"
+status and no longer available as a commercial product. However, in 2000 Sybase released the
+Watcom system as an open source product and thus Open Watcom was born. SciTech Software used the
+Perforce source code management system to maintain and host the Open Watcom code base until
+2007; Perforce Software has provided hosting for the project since then.
+
+Releasing the Watcom source openly was feasible because it had relatively few dependencies on
+third party components. Most of the tools and libraries used during the build of Open Watcom are
+part of Open Watcom. This made the open source version relatively self contained. Yet a
+considerable amount of work was still necessary before Open Watcom could compile its own source
+code. Certain parts of Open Watcom, such as the port to QNX, are still not functional because of
+missing proprietary libraries. It wasn't until version 1.1 before the system could reasonably
+build itself.
+
+At the time of this writing, the current version of Open Watcom is 1.7a. In the years since it
+has been opened, progress has been made on updating the C compiler to the C99 standard and the
+C++ compiler to the C++98 standard. Each release brings Open Watcom incrementally closer to
+these goals as well as fixes numerous bugs in the previous release. In addition, the tools and
+libraries have been enhanced. For example, Open Watcom supports the "Safer C" extensions to the
+standard C library (ISO/IEC TR 24731, "Extensions to the C Library, Part I: Bounds-checking
+interfaces")[can this be a footnote?] and provides a partially complete, fresh implementation of
+the C++ Standard Template Library.
+
+
+What Works, What Doesn't
+-------------------------
+
+Currently Open Watcom is immature on Linux. The system can be both compiled using the Linux
+version of Open Watcom, for example as generated on a Windows machine, and bootstrapped from
+gcc. However, the build process, and especially the bootstrap process, is a bit delicate. Work
+is underway to make the Open Watcom source more portable specifically to allow reliable
+bootstrapping not only on Linux, but other *nixes as well.
+
+Open Watcom uses its own C and C++ run time libraries and thus does not need to interact with
+glibc. While this is nice in some respects, it clearly would be useful for it to have the
+ability to use standard Linux shared libraries. The object file format used by the compilers
+(OMF) is unusual on Linux systems. The Open Watcom linker is able to read this format and write
+ELF executables, but can not at this time create or use ELF shared objects. This means that Open
+Watcom programs are somewhat isolated and are not able to tap into important shared libraries
+such as those for the X Window System. Currently on Linux the entire source code for a program
+must be compiled with Open Watcom.
+
+On Windows and OS/2 Open Watcom provides a collection of GUI based tools. This is accomplished
+by using an Open Watcom specific cross platform GUI library that has been ported to the
+supported graphical systems. However, at the time of this writing, none of the GUI tools work on
+Linux. To fix this, one approach would be to port the current cross platform GUI library to a
+Linux graphical tool kit such as GTK. However, it has been suggested that such a port would be
+difficult due to the current Windows and OS/2 assumptions made in the GUI library. The Open
+Watcom wiki discusses these matters in more detail.
+
+Despite the limitations there is much that does work. Essentially all of the command line tools
+work. In addition a text mode ("TUI" style interface) version of the debugger and editor works.
+The language required standard libraries are provided, to the extent they are provided on any
+platform, and enough Linux specific functionality is available to write some useful programs.
+
+
+Cross Compiling to Linux
+------------------------
+
+Before discussing cross compilation, I should introduce a bit of terminology. The system on
+which you run the Open Watcom tools is the "host system." The system for which you are
+generating programs is the "target system." Finally if you build the compiler from source, the
+system on which you do this is the "build system."
+
+I will talk a little about how to build Open Watcom on Linux shortly. However, you don't
+actually need to build the compiler if you just want to experiment with Open Watcom's support
+for Linux. Instead you can cross compile to the Linux target from any of the supported host
+systems. Proceed as follows:
+
+1. From the Open Watcom web site download the latest installer for either Windows or OS/2.
+
+2. During installation you will be prompted for which hosts you want to install. Ordinarily you
+only need a single host, and usually that's the same as the system on which you are installing.
+You can install multiple hosts if you intend to dual-boot your machine, or if you intend to make
+the installation visible to other operating systems in some other way, such as over a network or
+in a virtual machine.
+
+3. Later in the installation you will be prompted for which targets you want to install. Each
+host can generate all possible targets so the host and target questions are independent. For
+our purposes you will want to select at least the experimental Linux target.
+
+When the installation finishes you are ready to cross compile to Linux from your Windows or OS/2
+system. To make a rudimentary test, enter the classic program shown in Listing 1. Compile it
+with the 32 bit generating C compiler as follows
+
+wcc386 -i=C:\WATCOM\lh -bt=linux hello.c
+
+The -bt option specifies the "build type." By default wcc386 assumes you are targeting the same
+system as your host. You need to override this default for cross compilations. You also need to
+explicitly specify the path to the Linux library headers. The result of the above command is an
+OMF object file named hello.obj. Next link this object file against the Linux version of the run
+time library as follows
+
+wlink sys linux file hello.obj
+
+The Open Watcom linker's command line is a collection of keywords followed by arguments for
+those keywords. The command above specifies that you are trying to build a Linux executable from
+the given object file. The result of this command is a file named hello.elf. To run it, just
+copy this file to your favorite Linux system and give yourself execute permission to it.
+
+You can also use the Open Watcom IDE (a thin graphical wrapper around the command line tools) to
+cross compile to Linux by simply selecting the "Linux" target type when defining your project.
+The IDE takes care of all the necessary compiler and linker options.
+
+Notice that because Open Watcom provides its own run time library and tools, it is not necessary
+to install any GNU-like tools or libraries on the host system. Furthermore since Open Watcom
+currently only uses static linking when building Linux executables, the final program is
+entirely self-contained and independent of the libraries that are present on the Linux machine
+where it runs.
+
+
+Building Open Watcom for Linux
+------------------------------
+
+If your nearest Windows machine is in the dumpster out back, you might want to build the
+experimental Linux host natively on your Linux box. The most well tested way to generate the
+Linux host is actually to cross compile it from a Windows or OS/2 machine. However, here I will
+describe how to bootstrap Open Watcom on a Linux system using gcc.
+
+The first step is, of course, getting the source code itself. The Open Watcom project uses the
+Perforce source code management system. Since you might not be familiar with Perforce, I will
+give detailed instructions on how to use Perforce to access the Open Watcom source repository.
+Although Perforce is a commercial product, qualified open source projects can use the server for
+free. In addition client programs can be downloaded for free from the Perforce web site. Both
+Windows and Linux clients are supported. Although Perforce provides a graphical client for their
+system, using the command line client (P4) is often more convenient and that is the approach I
+describe here.
+
+Once you have downloaded and installed a Perforce client for your system you will need to
+configure some environment variables as shown in Listing 2. These settings direct the client to
+the Open Watcom repository (or "depot" in Perforce terms). Each working copy of the source code
+(or "client workspace" in Perforce terms) is identified by the P4CLIENT environment variable.
+The name of your workspace is up to you, but it must be unique on the server. Use a name in the
+form shown in the listing; for example, PeterC_DEVBOX_Linux. If everyone uses this form
+uniqueness is virtually guaranteed since it is highly unlikely that another person using your
+name would also choose the same names and operating systems for his or her machines. Execute the
+command 'p4 info' to check your connection to the server. You should see some information about
+the server and not, for example, error messages.
+
+Next you need to define the mapping from files in the depot to locations on your machine. This
+is called the "client mapping" and it is part of the definition of your client workspace.
+Execute the command 'p4 client' to load the current definition (a default) into your editor of
+choice. It is essential to change two fields. The first names the location of the source tree
+root. The other specifies how a particular view of the source is mapped into your client
+workspace.
+
+Root: /home/pchapin/OW
+View: //depot/openwatcom/... //PeterC_DEVBOX_Linux/...
+
+When you exit your editor p4 will update the definition of your client workspace on the server.
+Finally download the head revision with the command 'p4 sync'.
+
+Once you have the source you need to adjust one file before attempting a bootstrap build. In the
+root of the source tree, copy the file setvars.sh to setvars and edit the file to reflect your
+configuration. Note especially the setting of the OWROOT environment variable. This variable
+should contain the absolute path of the root of the source tree. Next execute the build.sh shell
+script to bootstrap the Linux compilers using gcc.
+
+The Linux bootstrap build of Open Watcom is not as well tested or as refined as the build
+procedure on Windows or OS/2. However, if it completes successfully you will have a rel2
+directory beneath the source tree root containing the native Linux version of Open Watcom. Only
+a subset of the entire system is built this way; specifically only the Linux host and target are
+generated.
+
+If you want to build the entire system using the freshly created tools, you should source
+setvars into a shell, which adds the Linux host just created to the path (among other things).
+Then change into the bld directory beneath the source tree and execute the command 'builder
+rel2'. Note that even this does not build the documentation. This is because some of the
+documentation generation tools are DOS programs, and executing DOS programs on Linux requires
+extra steps that have not been automated. There is work on correcting this by creating Linux
+versions of the necessary tools, but that work is not yet completed.
+
+Once the system has been built you might want to run some regression tests. The tests are driven
+by wmake, Open Watcom's make utility, and must be run separately for each subproject. For
+example, to run the C compiler regression tests, change to the bld/ctest/regress directory and
+execute wmake. The C++ compiler regression tests are in bld/plustest/regress.
+
+
+Using Open Watcom on Linux
+--------------------------
+
+Once the build is complete, you can copy the rel2 directory anywhere on your system and set up
+the environment variables as shown in Listing 3. Since you are now using native compilers you
+can use the Open Watcom compile and link utility to build simple programs easily. For example
+issuing the following command on your Linux system builds the simple hello program I discussed
+before.
+
+wcl386 hello.c
+
+Note that the text mode version of the Open Watcom debugger is available on Linux. Compile your
+program with the -d2 option and then run wd to launch it. In addition wmake can be used to
+coordinate the construction of larger programs, and Open Watcom's editor (a vi clone) can be
+used for preparing source files.
+
+You might also find the owcc utility interesting. This program is a front end that is intended
+to provide a GNU-like interface to the Open Watcom compilers. The idea is to make the Open
+Watcom compilers sufficiently compatible with gcc so that one can easily switch to Open Watcom
+in gcc enabled makefiles. Open Watcom provides a Microsoft nmake emulation for similar reasons.
+
+
+The Future
+----------
+
+We believe the future of Open Watcom on Linux is bright. Although not yet usable for serious
+programming in the Linux environment, Open Watcom already has many of the necessary pieces ready
+to support such programming. With a bit more tender loving care, Open Watcom could become a
+viable alternative to gcc. When this happens, Linux developers will have more choices. That is,
+after all, what open source software is all about.
+
+For more information about the current state of Open Watcom on Linux we invite you to review the
+wiki and participate in the newsgroups. We look forward to talking with you!
+
+
+Resources
+---------
+
+Open Watcom wiki web site: http://www.openwatcom.org.
+Perforce web site: http://www.perforce.com.
+Open Watcom newsgroups: news.openwatcom.org.
+

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of btom().
 *
 ****************************************************************************/
 
@@ -60,7 +59,7 @@
 *               character is treated as one character.
 **/
 
-_WCRTLINK size_t btom( const JCHAR *s, int nb )
+_WCRTLINK size_t btom( const JCHAR *s, size_t nb )
 {
     size_t count;
     const JCHAR *ss;

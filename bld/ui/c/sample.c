@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sample app for the ui library.
 *
 ****************************************************************************/
 
@@ -33,19 +32,19 @@
 #define TRUE    1
 #define FALSE   0
 
-#ifdef UNIX
+#ifdef __UNIX__
 #include <stdlib.h>
 #endif
 #include <stdio.h>
 #include <string.h>
-#ifndef UNIX
+#ifndef __UNIX__
 #include <process.h>
 #endif
 #include "stdui.h"
 #include "uimenu.h"
 #include "uivedit.h"
 #include "uigchar.h"
-#ifdef UNIX
+#ifdef __UNIX__
 #include "uidef.h"
 #include "uivirt.h"
 #endif
@@ -105,20 +104,20 @@ static MENUITEM editmenu[] = {
 };
 
 static MENUITEM barmenu[] = {
-        { "File",     EV_NO_EVENT,      0 },
-        { "Edit",     EV_NO_EVENT,      1 },
+        { "File",               EV_NO_EVENT,      0 },
+        { "Edit",               EV_NO_EVENT,      1 },
         { "LongMenuItem_1",     EV_NO_EVENT,      1 },
         { "LongMenuItem_2",     EV_NO_EVENT,      1 },
         { "LongMenuItem_3",     EV_NO_EVENT,      1 },
         { "LongMenuItem_4",     EV_NO_EVENT,      1 },
         { "LongMenuItem_5",     EV_NO_EVENT,      1 },
-        { "MidFile",     EV_NO_EVENT,      2 },
+        { "MidFile",            EV_NO_EVENT,      2 },
         { "LongMenuItem_6",     EV_NO_EVENT,      1 },
         { "LongMenuItem_7",     EV_NO_EVENT,      1 },
         { "LongMenuItem_8",     EV_NO_EVENT,      1 },
         { "LongMenuItem_9",     EV_NO_EVENT,      1 },
-        { "Go!",      EV_GO,            0 },
-        { "File",     EV_NO_EVENT,      2 },
+        { "Go!",                EV_GO,            0 },
+        { "File",               EV_NO_EVENT,      2 },
         NULL
 };
 
@@ -194,10 +193,6 @@ static EVENT oplist[] = {
         EV_ESCAPE,
         EV_NO_EVENT
 };
-
-#ifndef UNIX
-extern  void                system();
-#endif
 
 typedef struct an_event_string{
     EVENT       ev;
@@ -284,7 +279,7 @@ int             BandOn = 0;
         FlipCharacterMap();
 #else
     if( uistart() ) {
-#ifdef UNIX
+#ifdef __UNIX__
         _initmouse( 2 );
 #else
         initmouse( 2 );
@@ -328,11 +323,11 @@ int             BandOn = 0;
                         uispawnstart();
                         uiblankscreen();
                         printf( "Type exit to return\n" );
-                        #if defined( QNX ) || defined( UNIX )
-                            system( "" );
-                        #elif defined( __WINDOWS__ )
-//                          do nothing
-                        #else
+#if defined( __QNX__ ) || defined( __UNIX__ )
+                        system( "" );
+#elif defined( __WINDOWS__ )
+                        // do nothing
+#else
                         {
                             char *command;
 
@@ -342,7 +337,7 @@ int             BandOn = 0;
                             }
                             system( command );
                         }
-                        #endif
+#endif
                         uispawnend();
 //                      uibackground( "wf.img" );
                         area.row = 0;
@@ -418,7 +413,7 @@ int             BandOn = 0;
         FlipCharacterMap();
         uifinigmouse();
 #else
-#ifdef UNIX
+#ifdef __UNIX__
         _finimouse();
 #else
         finimouse();

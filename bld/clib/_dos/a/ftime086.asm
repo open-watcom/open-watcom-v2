@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Implementation of _dos_get/setftime() for 16-bit DOS.
 ;*
 ;*****************************************************************************
 
@@ -39,15 +38,11 @@ include struct.inc
         modstart dosftime
 
         defp    _dos_getftime
-        if __WASM__ ge 100
-            xdefp   "C",_dos_getftime
-        else
-            xdefp   <"C",_dos_getftime>
-        endif
+        xdefp   "C",_dos_getftime
 ;
 ;       unsigned _dos_getftime( int handle,
-;                               unsigned short *date,
-;                               unsigned short *time );
+;                               unsigned *date,
+;                               unsigned *time );
 ;
         push    BP              ; save BP
         mov     BP,SP           ; get access to parms
@@ -96,16 +91,13 @@ else
         ret                     ; return to caller
 endif
         endproc _dos_getftime
+
         defp    _dos_setftime
-        if __WASM__ ge 100
-            xdefp   "C",_dos_setftime
-        else
-            xdefp   <"C",_dos_setftime>
-        endif
+        xdefp   "C",_dos_setftime
 ;
 ;       unsigned _dos_setftime( int handle,
-;                               unsigned short date,
-;                               unsigned short time );
+;                               unsigned date,
+;                               unsigned time );
 ;
         push    CX              ; save CX
         mov     CX,BX           ; get time

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 dynamic dialog creation functions.
 *
 ****************************************************************************/
 
@@ -50,7 +49,7 @@ static TEMPLATE_HANDLE PMAddControl        ( TEMPLATE_HANDLE data, long style,
                                              char *text, PVOID presparms,
                                              ULONG presparmslen,
                                              PVOID ctldata, ULONG ctldatlen );
-static int          PMDynamicDialogBox     ( PVOID fn, HWND hwnd,
+static int          PMDynamicDialogBox     ( PFNWP fn, HWND hwnd,
                                              TEMPLATE_HANDLE data,
                                              PVOID dlgdata );
 
@@ -294,7 +293,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data,
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, (PFNWP)fn, (PDLGTEMPLATE)data,
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data,
                            dlgdata );
     if ( !handle ) {
         return( 0 );
@@ -330,7 +329,12 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
             buf[0] = '\0';
             sprintf( buf, "%d.%s", pointsize, typeface );
             bufsize = strlen(buf);
-            psize = sizeof(PRESPARAMS) + bufsize;
+            /* This convoluted calculation makes sure we get the right size
+             * regardless of structure packing.
+             */
+            psize = sizeof(PRESPARAMS) - sizeof(PARAM)
+                    + sizeof(BYTE) + 2 * sizeof(ULONG)
+                    + bufsize;
             pdata = (PRESPARAMS *) PMmalloc( psize );
             if( pdata ) {
                 pdata->cb = psize - sizeof(ULONG);

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Open Watcom Debugger certificate of authenticity.
 *
 ****************************************************************************/
 
@@ -33,14 +32,21 @@
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgmem.h"
+#include <string.h>
+
 #define _BETASTR_ " Beta "
 #include "banner.h"
-#include <string.h>
+
+#ifdef _BANEXTRA
+    #undef  _BANEXTRA
+    #define _BANEXTRA _BANEXSHORT
+#endif
 
 char *AboutMessage[] = {
     "", // constructed
     banner2( "1987" ),
     banner3,
+    banner3a,
 #ifdef D32_NAME
     "",
     D32_NAME " " D32_VERSION,

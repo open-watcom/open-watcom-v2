@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Assembler internal memory allocation interface.
 *
 ****************************************************************************/
 
@@ -37,8 +36,8 @@ extern pointer  AsMemAlloc( mem_size );
 extern void     AsMemFree( pointer );
 extern pointer  AsMemRealloc( pointer, mem_size );
 
-extern void     AsMemInit();
-extern void     AsMemFini();
+extern void     AsMemInit( void );
+extern void     AsMemFini( void );
 
 #define MemAlloc                AsMemAlloc
 #define MemFree                 AsMemFree

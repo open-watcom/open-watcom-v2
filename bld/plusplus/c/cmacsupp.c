@@ -24,17 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Create and add data to a macro.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
+#include "plusplus.h"
+
 #include <stdarg.h>
 
-#include "plusplus.h"
 #include "preproc.h"
 
 
@@ -59,6 +57,21 @@ void MacroOffsetAddChar(                // MacroOffset: ADD A CHARACTER
     }
     va_end( args );
     *mlen = clen;
+}
+
+
+void MacroOffsetAddMemNoCopy(      // MacroOffset: ADD A SEQUENCE OF BYTES
+    unsigned *mlen,                // - Macro Offset Length
+    const char *buff,              // - bytes to be added
+    unsigned len )                 // - number of bytes
+{
+    unsigned clen;
+
+    clen = *mlen;
+    MacroOverflow( clen + len, 0 );
+    memset( MacroOffset, 0, clen );
+    memcpy( MacroOffset + clen, buff, len );
+    *mlen += len;
 }
 
 

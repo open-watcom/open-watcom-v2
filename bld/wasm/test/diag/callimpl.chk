@@ -1,0 +1,4 @@
+callimpl.asm(18): Note! N604: Far call is converted to near call.
+callimpl.asm(58): Note! N604: Far call is converted to near call.
+callimpl.asm(82): Note! N604: Far call is converted to near call.
+callimpl.asm(122): Note! N604: Far call is converted to near call.

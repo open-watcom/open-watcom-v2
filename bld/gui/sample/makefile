@@ -5,9 +5,9 @@ LNK=sample.lnk
 source_dir = $(guidir)\sample\c
 name = sample
 !ifeq type win
-rcopt += -q -i=$(guidir)\$(type);$(sdk_dir)\misc
+rcopt += -i=$(guidir)\$(type);$(sdk_dir)\misc
 !else
-rcopt += -q -i=$(guidir)\$(type);$(sdk_dir)\misc;$(guidir)\win
+rcopt += -i=$(guidir)\$(type);$(sdk_dir)\misc;$(guidir)\win
 !endif
 
 .before
@@ -38,7 +38,7 @@ cflags = $(commonflags) -d2
 !endif
 
 !ifeq sys nlm
-cflags += /4s/zq/s$(deffp)/dNLM
+cflags += /4s/zq/s$(deffp)
 !endif
 
 compile = $($(compiler)) $(cflags) $[*
@@ -143,19 +143,19 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
 !else ifeq os pm
         $(lang_root)\binp\rc -p -x $(rcname).res $(name).exe
 !else
-        $(rc) -k $(rcopt) $(sysdep)
+        $(rc) $(rcopt) -k $(sysdep)
 !endif
 !ifneq os w386
-        copy/b $(name).exe+$(name).sym
+        copy /b $(name).exe+$(name).sym
 !endif
 !else
 !ifeq sys pharlap
         !$(pharlap)bind386 $(pharlap)run386b sample
 !endif
 !ifeq ext qnx
-        wstrip /q /a /r sample.qnx . $(rcname).res
+        wstrip -q -a -r sample.qnx . $(rcname).res
 !else
-        wstrip /q /a /r sample.exe . $(rcname).res
+        wstrip -q -a -r sample.exe . $(rcname).res
 !endif
 !endif
 
@@ -181,10 +181,11 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
 .c.pp:
         $(ppcompile)
 
-$(rcname).res : ..\$(rcname).rc ..\$(rcname).dlg
+$(rcname).res : ../$(rcname).rc ../$(rcname).dlg
 !ifeq os pm
         @set oinc=$(%include)
-        set include=$(watcom_dir)\os220_h;$(%include)
+        #set include=$(watcom_dir)\os220_h;$(%include)
+        set include=$(watcom_os220_h);$(%include)
         copy $(sdk_dir)\misc\closebmp.bmp
         wcc -p -i..;..\h;$(guidir)\$(type) ..\$(rcname).rc -fo=tmp.rc
         @%write $(rcname).rc $#include <os2.h>
@@ -192,14 +193,15 @@ $(rcname).res : ..\$(rcname).rc ..\$(rcname).dlg
         del tmp.rc
         set opath=$(%path)
         set path=$(lang_root)\binp
-        @$(lang_root)\binp\rc -r $(rcname).rc
+        #@$(lang_root)\binp\rc -r $(rcname).rc
+        rc -r $(rcname).rc
         del $(rcname).rc
         set path=$(%opath)
         @set include=$(%oinc)
         del closebmp.bmp
 !else
-        $(rc) -r $(rcopt)  ..\$(rcname).rc
-        copy ..\$(rcname).res
+        $(rc) $(rcopt) -r $[@ -fo=$^@
+#        copy ..\$(rcname).res
 !endif
 
 sample.obj: sample.c sample.h dlgstat.h dlgdynam.h

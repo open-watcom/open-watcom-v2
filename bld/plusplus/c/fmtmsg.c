@@ -30,8 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdarg.h>
 #include "plusplus.h"
+
+#include <stdarg.h>
+
 #include "srcfile.h"
 #include "vbuf.h"
 #include "dbg.h"
@@ -39,12 +41,13 @@
 #include "fmtsym.h"
 #include "fmtmsg.h"
 #include "errdefns.h"
+#include "template.h"
 
 static void leading( VBUF *pbuf, char lead, int len )
 /***************************************************/
 {
     while( len-- > 0 ) {
-        VStrConcChr( pbuf, lead );
+        VbufConcChr( pbuf, lead );
     }
 }
 
@@ -63,7 +66,7 @@ static boolean formatClassForSym( SYMBOL sym, VBUF *buf )
         if( name == NULL ) {
             retn = FALSE;
         } else {
-            VStrConcStr( buf, info->name );
+            VbufConcStr( buf, info->name );
             retn = TRUE;
         }
     }
@@ -99,62 +102,62 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             case '9':   /* %09d */
                 len = sticpy( local_buf, va_arg( arg, int ) ) - local_buf;
                 leading( pbuf, '0', ( cfmt - '0' ) - len );
-                VStrConcStr( pbuf, local_buf );
+                VbufConcStr( pbuf, local_buf );
                 break;
             case 'c':   /* %c */
-                VStrConcChr( pbuf, va_arg( arg, char ) );
+                VbufConcChr( pbuf, va_arg( arg, char ) );
                 break;
             case 's':   /* %s */
-                VStrConcStr( pbuf, va_arg( arg, char * ) );
+                VbufConcStr( pbuf, va_arg( arg, char * ) );
                 break;
             case 'u':   /* %u */
-                VStrConcDecimal( pbuf, va_arg( arg, unsigned int ) );
+                VbufConcDecimal( pbuf, va_arg( arg, unsigned int ) );
                 break;
             case 'd':   /* %d */
-                VStrConcInteger( pbuf, va_arg( arg, int ) );
+                VbufConcInteger( pbuf, va_arg( arg, int ) );
                 break;
             case 'L':   /* token location */
             {   TOKEN_LOCN *locn;
                 locn = va_arg( arg, TOKEN_LOCN * );
                 if( locn == NULL ) {
-                    VStrConcStr( pbuf, "by compiler" );
+                    VbufConcStr( pbuf, "by compiler" );
                 } else {
                     char *src_file = SrcFileName( locn->src_file );
                     if( src_file == NULL ) {
-                        VStrConcStr( pbuf, "on the command line" );
+                        VbufConcStr( pbuf, "on the command line" );
                     } else {
                         if( ( CompFlags.ew_switch_used )
                           &&( locn->src_file == SrcFileTraceBackFile() ) ) {
-                            VStrConcStr( pbuf, "at: " );
+                            VbufConcStr( pbuf, "at: " );
                         } else {
-                            VStrConcStr( pbuf, "in: " );
-                            VStrConcStr( pbuf, SrcFileName( locn->src_file ) );
+                            VbufConcStr( pbuf, "in: " );
+                            VbufConcStr( pbuf, SrcFileName( locn->src_file ) );
                         }
-                        VStrConcChr( pbuf, '(' );
-                        VStrConcInteger( pbuf, locn->line );
+                        VbufConcChr( pbuf, '(' );
+                        VbufConcInteger( pbuf, locn->line );
                         if( locn->column ) {
                             if( CompFlags.ew_switch_used ) {
-                                VStrConcChr( pbuf, ',' );
-                                VStrConcInteger( pbuf, locn->column );
+                                VbufConcChr( pbuf, ',' );
+                                VbufConcInteger( pbuf, locn->column );
                             } else {
-                                VStrConcStr( pbuf, ") (col " );
-                                VStrConcInteger( pbuf, locn->column );
+                                VbufConcStr( pbuf, ") (col " );
+                                VbufConcInteger( pbuf, locn->column );
                             }
                         }
-                        VStrConcChr( pbuf, ')' );
+                        VbufConcChr( pbuf, ')' );
                     }
                 }
             }   break;
             case 'N':   /* name */
                 FormatName( va_arg( arg, char * ), &prefix );
-                VStrConcStr( pbuf, prefix.buf );
+                VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
                 break;
             case 'F':   /* symbol name (decorated) */
             {   SYMBOL      sym;
                 sym = va_arg( arg, SYMBOL );
                 FormatSym( sym, &prefix );
-                VStrConcStr( pbuf, prefix.buf );
+                VbufConcVbuf( pbuf, &prefix );
                 VbufFree( &prefix );
             }   break;
             case 'S':   /* symbol name (abbreviated) */
@@ -163,15 +166,15 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                 char *name;
                 sym = va_arg( arg, SYMBOL );
                 if( sym == NULL ) {
-                    VStrConcStr( pbuf, "module data" );
+                    VbufConcStr( pbuf, "module data" );
                 } else {
                     if( formatClassForSym( sym, pbuf ) ) {
-                        VStrConcStr( pbuf, "::" );
+                        VbufConcStr( pbuf, "::" );
                     }
                     if( SymIsCtor( sym ) ) {
                         formatClassForSym( sym, pbuf );
                     } else if( SymIsDtor( sym ) ) {
-                        VStrConcChr( pbuf, '~' );
+                        VbufConcChr( pbuf, '~' );
                         formatClassForSym( sym, pbuf );
                     } else {
                         sn = sym->name;
@@ -187,7 +190,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                         }
 #endif
                         if( name == CppConversionName() ) {
-                            VStrConcStr( pbuf, "operator " );
+                            VbufConcStr( pbuf, "operator " );
                             FormatType( SymFuncReturnType( sym )
                                       , &prefix
                                       , &suffix );
@@ -195,7 +198,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                         } else {
                             FormatName( name, &prefix );
                         }
-                        VStrConcStr( pbuf, prefix.buf );
+                        VbufConcVbuf( pbuf, &prefix );
                         VbufFree( &prefix );
                     }
                     if( sym->flag2 & SF2_TOKEN_LOCN ) {
@@ -211,20 +214,54 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                     type = refed;
                 }
                 FormatType( type, &prefix, &suffix );
-                VStrConcStr( pbuf, prefix.buf );
-                VStrConcStr( pbuf, suffix.buf );
+                VbufConcVbuf( pbuf, &prefix );
+                VbufConcVbuf( pbuf, &suffix );
                 VbufFree( &prefix );
                 VbufFree( &suffix );
-                VStrTruncWhite( pbuf );
+                VbufTruncWhite( pbuf );
                 if( NULL != refed ) {
-                    VStrConcStr( pbuf, " (lvalue)" );
+                    VbufConcStr( pbuf, " (lvalue)" );
                 }
             }   break;
+            case 'P':   /* PTREE list */
+            {   const PTREE p = va_arg( arg, PTREE );
+
+                FormatPTreeList( p, &prefix );
+                VbufConcVbuf( pbuf, &prefix );
+                VbufFree( &prefix );
+            }   break;
+            case 'I':   /* PTREE id */
+            {   const PTREE p = va_arg( arg, PTREE );
+
+                FormatPTreeId( p, &prefix );
+                VbufConcVbuf( pbuf, &prefix );
+                VbufFree( &prefix );
+            }   break;
+            case 'M':   /* template info */
+            {   TEMPLATE_INFO * const tinfo = va_arg( arg, TEMPLATE_INFO * );
+                const SYMBOL sym = tinfo->sym;
+
+                FormatTemplateInfo( tinfo, &prefix );
+                VbufConcVbuf( pbuf, &prefix );
+                VbufFree( &prefix );
+                if( sym->flag2 & SF2_TOKEN_LOCN ) {
+                    DbgVerify( retn_symbol == NULL, "too many symbols" );
+                    retn_symbol = sym;
+                }
+            }   break;
+            case 'C':   /* template specialisation */
+            {   TEMPLATE_SPECIALIZATION * const tspec =
+                    va_arg( arg, TEMPLATE_SPECIALIZATION * );
+
+                FormatTemplateSpecialization( tspec, &prefix );
+                VbufConcVbuf( pbuf, &prefix );
+                VbufFree( &prefix );
+            }   break;
             default:
-                VStrConcChr( pbuf, cfmt );
+                VbufConcChr( pbuf, cfmt );
             }
         } else {
-            VStrConcChr( pbuf, cfmt );
+            VbufConcChr( pbuf, cfmt );
         }
         fmt++;
         cfmt = *fmt;

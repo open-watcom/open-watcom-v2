@@ -1,0 +1,143 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.31 - DPMI function 0500h
+- Get Free Memory Information </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns information about
+the amount of available physical memory, linear address space, and disk
+space for page swapping. Since DPMI clients will often run in multitasking
+environments, the information returned by this function should only be considered
+as advisory.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0500h<br>
+<b>ES:EDI</b> = selector:offset of 48-byte buffer</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><b><font size=-1 face="Verdana, Arial, Helvetica">CF</font></b><font
+ size=-1 face="Verdana, Arial, Helvetica"> clear<br>
+the buffer is filled in with the following information:</font></p>
+
+<p><table width="80%" border="0" cellspacing="0" cellpadding="4" height=
+"339">
+<tr>
+<td height="33" bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Offset</font></b></td>
+<td bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Length</font></b></td>
+<td bgcolor="#dcdcdc">&nbsp;<b><font size=-1 face="Verdana, Arial, Helvetica">Contents</font></b></td></tr>
+<tr>
+<td height="33" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">00h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Largest available free
+block in bytes</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">04h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Maximum unlocked page
+allocation in pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">08h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Maximum locked page
+allocation in pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">0Ch</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Linear address space
+size in pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">10h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Total number of unlocked
+pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">14h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Total number of free
+pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">18h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Total number of physical
+pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">1Ch</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Free linear address
+space in pages</font></td></tr>
+<tr>
+<td height="34" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">20h</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">4</font></td>
+<td bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Size of paging file/partition
+in pages</font></td></tr>
+<tr>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">24h</font></td>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">0Ch</font></td>
+<td height="1" bgcolor="#e4e4e4">&nbsp;<font size=-1 face="Verdana, Arial, Helvetica">Reserved, all bytes
+set to 0FFh</font></td></tr>
+</table>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes:</font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) Only the first field
+  of the returned structure is guaranteed to contain a valid value. Any fields
+  that are not supported by the DPMI host will be set by the host to -1 (0FFFFFFFFh)
+  to indicate that the information is not available.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) The field at buffer
+  offset 00h specifies the largest block of contiguous linear memory in bytes
+  that could be allocated if the memory were to be allocated and left unlocked.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) The field at buffer
+  offset 04h specifies the largest number of pages that could be allocated
+  (the value at offset 00h divided by the page size).</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) The field at buffer
+  offset 08h specifies the largest block of memory in pages that could be
+  allocated and then locked.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">e) The field at buffer
+  offset 0Ch specifies the size of the total linear address space in pages.
+  This value includes all linear address space that has already been allocated.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">f) The field at buffer
+  offset 10h specifies the total number of pages that are currently unlocked
+  and could be paged out. This value also contains any free pages.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">g) The field at buffer
+  offset 14h specifies the number of physical pages that currently are not
+  in use.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">h) The field at offset
+  18h specifies the total number of physical pages that the DPMI host manages.
+  This value includes all free, locked, and unlocked physical pages.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">i) The field at offset
+  20h specifies the size of the DPMI host's paging partition or file in pages.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">j) The size of the pages
+  used by the DPMI host can be obtained with the Get Page Size DPMI function
+  0604h.</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

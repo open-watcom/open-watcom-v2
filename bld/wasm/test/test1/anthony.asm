@@ -11,7 +11,7 @@ _TEXT           SEGMENT DWORD PUBLIC USE32 'CODE'
                 PUBLIC  __STqOVERFLOW_
 L1:             mov     word ptr L3,ss
                 ret
-__CHK:          xchg    eax,dword ptr +4H[esp]
+__CHK:          xchg    eax,dword ptr [esp+4H]
                 push    eax
                 call    near ptr __STK
                 call    __STK
@@ -26,7 +26,7 @@ __CHK:          xchg    eax,dword ptr +4H[esp]
                 stosd
                 pop     edi
                 pop     ecx
-                mov     eax,dword ptr +4H[esp]
+                mov     eax,dword ptr [esp+4H]
                 ret     0004H
 __GRO:          ret     0004H
 __STK:          cmp     eax,esp

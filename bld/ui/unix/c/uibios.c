@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS emulation routines for UNIX platforms.
 *
 ****************************************************************************/
 
@@ -33,13 +32,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-#ifndef HP
-    #include <curses.h>
-    #include <termio.h>
-#else
-    #include <stdarg.h>
-    #include <curses.h>
-#endif
+#include <stdarg.h>
+#include <curses.h>
 #include <term.h>
 #include <signal.h>
 #include <unistd.h>
@@ -52,7 +46,7 @@
 extern PossibleDisplay DisplayList[];
 char    *UITermType;    /* global so that the debugger can get at it */
 
-bool global uiset80col()
+bool global uiset80col( void )
 {
     return( TRUE );
 }
@@ -64,7 +58,7 @@ unsigned global uiclockdelay( unsigned milli )
     return( milli );
 }
 
-char *GetTermType()
+char *GetTermType( void )
 {
     if( UITermType == NULL ) {
         UITermType = getenv( "TERM" );
@@ -75,7 +69,7 @@ char *GetTermType()
     return( UITermType );
 }
 
-int intern initbios()
+int intern initbios( void )
 {
     PossibleDisplay             *curr;
     int                         error;
@@ -111,13 +105,13 @@ int intern initbios()
     return( _uibiosinit() );
 }
 
-void intern finibios()
+void intern finibios( void )
 {
     _uibiosfini();
     del_curterm( cur_term );
 }
 
-static unsigned RefreshForbid= 0;
+static unsigned RefreshForbid = 0;
 
 void forbid_refresh( void )
 {
@@ -142,22 +136,22 @@ void intern physupdate( SAREA *area )
     }
 }
 
-
-#if defined( QNX_DEBUG )
+#if defined( UI_DEBUG )
 #include <stdio.h>
 #include <stdarg.h>
-void QNXDebugPrintf(const char *f, ...)
+void UIDebugPrintf( const char *f, ... )
 {
-static FILE *file = 0;
-        va_list vargs;
-        if (!file) {
-                if ((file=fopen("QNX.Debug","w")) == 0) {
-                        return;
-                }
+    static FILE     *file = 0;
+    va_list         vargs;
+
+    if (!file) {
+        if( (file = fopen( "UI.Debug", "w" )) == 0 ) {
+            return;
         }
-        va_start(vargs, f);
-        vfprintf(file, f, vargs);
-        putc('\n',file);
-        fflush( file );
+    }
+    va_start( vargs, f );
+    vfprintf( file, f, vargs );
+    putc( '\n', file );
+    fflush( file );
 }
 #endif

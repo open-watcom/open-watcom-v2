@@ -1,0 +1,85 @@
+[Application]
+AppName=WATCOM SQL Client for Windows
+DstDir=C:\WSQL
+DefPMGroup=wsql.grp, WATCOM SQL
+DoLicense=1
+AutoOptionsDialog=0
+SpaceNeeded=10
+DoCopyFiles=1
+DoModifyAuto=1
+DoCreateIcons=1
+Patch=0
+
+[Dialog]
+name=Welcome
+static_text="@ will install this application into the following"
+static_text="directory, which it will create on your hard disk."
+static_text=
+static_text="If you want to install the application in a different"
+static_text="directory and/or drive, type the name of the directory"
+static_text="below:"
+static_text=
+edit_control=DstDir,c:\wsql,"Copy files to:"
+static_text=
+push_button=OK
+push_button=Options
+push_button=Cancel
+
+[Dialog]
+name=Options
+static_text="Select which operations you would like"
+static_text="the installation program to perform:"
+static_text=
+check_box=DoCopyFiles,1,"Install the software"
+check_box=DoModifyAuto,1,"Modify AUTOEXEC.BAT and CONFIG.SYS"
+check_box=DoCreateIcons,1,"Create program group/folder and icons"
+static_text=
+push_button=OK
+
+[Dirs]
+; ************************************************************************
+; The list of installation directories: 
+; #=<directory>,[<destination-variable-name>],<space-needed>
+; The variables can be used in an edit-control in a dialog to be
+; set to the target directory by the user.  Note that DstDir is
+; the variable name used by the default dialog.
+; ************************************************************************
+1=.,DstDir, 10
+2=h,DstDir, 5
+3=.,NLMDir, 4
+
+
+[Files]
+wsqldde.exe, wsqldde, 1, 1, Y, .
+dbclienw.exe, dbclienw, 2, 1, Y, .
+isqlw.exe, isqlw, 1, 1, Y, .
+odbcadm.exe, odbcadme, 1, 1, Y, .
+
+[Disks]
+1=Disk 1
+
+[PM Info]
+wsqldde.exe,    ,DDE Server
+dbclienw.exe,   ,Database Client
+isqlw.exe,      ,ISQL
+odbcadm.exe,    ,ODBC Administrator
+
+[Profile]
+ODBC Drivers,   WATCOM SQL,        Installed,                      odbcinst.ini
+WATCOM SQL,     driver,            %root%\wsqlodbc.dll,            odbcinst.ini
+WATCOM SQL,     setup,             %root%\wsqlodbc.dll,            odbcinst.ini
+ODBC Data Sources, sample_server,  WATCOM SQL,                     odbc.ini
+sample_server,  driver,            %root%\wsqlodbc.dll,            odbc.ini
+sample_server,  description,       WATCOM SQL Client/Server,       odbc.ini
+sample_server,  Database,              place_server_name_here,         odbc.ini
+sample_server,  Start,             dbclienw %d,                    odbc.ini
+
+[Autoexec]
+PATH=%root%
+WSQL=%root%
+
+[Config]
+FILES=20
+BUFFERS=30
+
+

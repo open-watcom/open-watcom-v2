@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Main debugger window.
 *
 ****************************************************************************/
 
@@ -40,26 +39,26 @@
 #include <string.h>
 
 
-extern unsigned int     OptExpr(unsigned int );
-extern void             ReqEOC(void);
-extern void             Scan(void);
-extern unsigned int     ScanCmd(char *);
-extern bool             ScanEOC(void);
-extern unsigned         NewCurrRadix(unsigned);
-extern char             *Format(char *,char *,... );
-extern void             ConfigLine(char *);
-extern char             *StrCopy(char*,char*);
-extern char             *GetCmdEntry(char*,int,char*);
-extern bool             WndDlgTxt(char*);
-extern wnd_class        ReqWndName();
-extern void             WndToolOpen(gui_ord,bool);
-extern void             WndToolClose(void);
-extern char             *DupStrLen(char*,unsigned);
-extern bool             ScanItem(bool ,char **,unsigned int *);
+extern unsigned int     OptExpr( unsigned int );
+extern void             ReqEOC( void );
+extern void             Scan( void );
+extern unsigned int     ScanCmd( char * );
+extern bool             ScanEOC( void );
+extern unsigned         NewCurrRadix( unsigned );
+extern char             *Format( char *, char *, ... );
+extern void             ConfigLine( char * );
+extern char             *StrCopy( char *, char * );
+extern char             *GetCmdEntry( char *, int, char * );
+extern bool             WndDlgTxt( char * );
+extern wnd_class        ReqWndName( void );
+extern void             WndToolOpen( gui_ord, bool );
+extern void             WndToolClose( void );
+extern char             *DupStrLen( char *, unsigned );
+extern bool             ScanItem( bool, char **, unsigned int * );
 extern char             *GetCmdName( int );
-extern void             PushInpStack(void *,bool (*)(),bool );
-extern void             TypeInpStack(input_type);
-extern bool             HookPendingPush();
+extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             TypeInpStack( input_type );
+extern bool             HookPendingPush( void );
 
 extern a_window         *WndMain;
 extern gui_coord        WndScreen;
@@ -120,7 +119,7 @@ static int      range( int x, int min_x, int max_x, int default_x )
     return( x );
 }
 
-static char     GetOption()
+static char     GetOption( void )
 {
     char        optn;
 
@@ -150,7 +149,7 @@ extern  char    *GetWndFont( a_window *wnd )
 
 static void SetFont( wnd_class class, char *font )
 {
-    WndFree( WndFontInfo[ class ] );
+    GUIMemFree( WndFontInfo[ class ] );
     WndFontInfo[ class ] = font;
 }
 
@@ -167,12 +166,12 @@ extern  void    WndFontHook( a_window *wnd )
 }
 
 
-gui_coord *WndMainClientSize()
+gui_coord *WndMainClientSize( void )
 {
     return( _IsOn( SW_DETACHABLE_WINDOWS ) ? &WndScale : &WndMax );
 }
 
-void WndMainResized()
+void WndMainResized( void )
 {
     a_window    *wnd;
     gui_rect    rect;
@@ -198,13 +197,13 @@ extern  void    WndResizeHook( a_window *wnd )
 }
 
 
-void InitFont()
+void InitFont( void )
 {
     WndFontInfo[ WND_ALL ] = WndGetFontInfo( WndMain );
 }
 
 
-void FiniFont()
+void FiniFont( void )
 {
     int         i;
 
@@ -213,7 +212,20 @@ void FiniFont()
     }
 }
 
-void ProcFont()
+static char *GUIDupStrLen( char *str, unsigned len )
+{
+    char        *dup;
+
+    dup = GUIMemAlloc( len + 1 );
+    if( dup != NULL ) {
+        memcpy( dup, str, len );
+        dup[len] = '\0';
+    }
+    return( dup );
+}
+
+
+void ProcFont( void )
 {
     wnd_class class;
     char        *start;
@@ -228,7 +240,7 @@ void ProcFont()
             SetFont( i, NULL );
         }
     }
-    SetFont( class, DupStrLen( start, len ) );
+    SetFont( class, GUIDupStrLen( start, len ) );
     _SwitchOn( SW_PENDING_REPAINT );
 }
 
@@ -249,7 +261,7 @@ static void PrintFont( wnd_class class, char *def )
 }
 
 
-void ConfigFont()
+void ConfigFont( void )
 {
     int         class;
 
@@ -261,7 +273,7 @@ void ConfigFont()
 }
 
 
-void FontChange()
+void FontChange( void )
 {
     int         i;
     char        *text;
@@ -392,7 +404,7 @@ static void ProcTool( void )
 }
 
 
-static void ProcStatus()
+static void ProcStatus( void )
 {
     char        optn;
 
@@ -425,7 +437,7 @@ OVL_EXTERN bool DoneRefresh( void *dummy, inp_rtn_action action )
 }
 
 
-static void PushRefresh()
+static void PushRefresh( void )
 {
     PushInpStack( NULL, DoneRefresh, FALSE );
     TypeInpStack( INP_NO_CMD );
@@ -472,7 +484,7 @@ static  void    PrintPosition( int option, int class,
 }
 
 
-void ConfigDisp()
+void ConfigDisp( void )
 {
 
     a_window    *wnd, *scan;

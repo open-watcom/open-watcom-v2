@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent implementation of _putw().
 *
 ****************************************************************************/
 
@@ -38,7 +37,7 @@ _WCRTLINK int _putw( int binint, FILE *fp )
 {
     size_t              rc;
 
-    rc = fwrite( &binint, sizeof(int), 1, fp );
+    rc = fwrite( &binint, sizeof( int ), 1, fp );
     if( rc > 0 ) {
         return( binint );
     } else {

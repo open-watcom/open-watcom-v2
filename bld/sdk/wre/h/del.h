@@ -31,4 +31,3 @@
 
 
 #define IDM_DELNAME        300
-

@@ -55,7 +55,7 @@ static int SortBySize( LOCALENTRY **t1, LOCALENTRY **t2 ) {
 
 static int SortByHandle( LOCALENTRY **t1, LOCALENTRY **t2 ) {
 
-    return( ( *t1 )->hHandle - ( *t2 )->hHandle );
+    return( (UINT)(( *t1 )->hHandle) - (UINT)(( *t2 )->hHandle ));
 }
 
 void SortLocalHeapList( HWND hwnd, WORD type ) {

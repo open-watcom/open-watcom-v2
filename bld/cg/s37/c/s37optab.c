@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction opcode/type matrix to select generate tables.
 *
 ****************************************************************************/
 
@@ -43,7 +42,7 @@
 table_def _FAR OpTable[(XX+1)*(LAST_OP-FIRST_OP+1)] = {
 /******************************************************
     for each opcode/type, indicate which generate table to use.
-    See S37TABLE.C
+    See s37table.c
 */
 
 /*U1   I1    U2    I2    U4    I4    CP    PT    FS    FD    XX*/
@@ -81,7 +80,7 @@ _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_LOG10 */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_SINH */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_TANH */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_PTR_TO_NATIVE */
-_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_PTR_TO_FORIEGN */
+_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_PTR_TO_FOREIGN */
 _____,_____,_____,_____,_____,_____,_____,_____,_____,_____,_____,/*OP_SLACK*/
 CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,__X__,CVT  ,CVT  ,CVT  ,CVT  ,/*OP_CONVERT*/
 CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,CVT  ,__X__,CVT  ,CVT  ,CVT  ,__X__,/*OP_ROUND*/

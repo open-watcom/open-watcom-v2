@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Drawing routines for Windows.
 *
 ****************************************************************************/
 
@@ -258,7 +257,7 @@ LRESULT CALLBACK main_proc(
 
         case IDM_EXIT:
             PostQuitMessage( 0 );
-            return( NULL );
+            return( FALSE );
 
         case IDM_ROTATE_LEFT:
             add_wrap( THREE_D_HORZ_ANGLE, -15, 0, 360 );
@@ -331,7 +330,7 @@ LRESULT CALLBACK main_proc(
 
     case WM_DESTROY:
         PostQuitMessage( 0 );
-        return( 0 );
+        return( FALSE );
 
     case WM_PAINT:
         draw_stuff( hwnd );
@@ -349,7 +348,7 @@ LRESULT CALLBACK main_proc(
                                 GET_WM_COMMAND_MPS( IDM_ROTATE_LEFT, 0, 0 ) );
             }
         }
-        return( 0 );
+        return( FALSE );
 
     case WM_SIZE:
         if( wparam != SIZEICONIC ) {
@@ -358,7 +357,7 @@ LRESULT CALLBACK main_proc(
             GetClientRect( hwnd, &Draw_area );
             Draw_area.left = old_left;
             InvalidateRect( hwnd, NULL, TRUE );
-            return( 0 );
+            return( FALSE );
         }
         break;
 
@@ -414,7 +413,7 @@ BOOL init_app( HANDLE inst )
     /* Fill in window class structure with parameters that describe the       */
     /* main window.                                                           */
 
-    wc.style = NULL;
+    wc.style = 0;
     wc.lpfnWndProc = (WNDPROC) MakeProcInstance( (FARPROC) main_proc, inst );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -433,8 +432,8 @@ BOOL init_app( HANDLE inst )
 
 int PASCAL WinMain(
 /*****************/
-    HANDLE              inst,
-    HANDLE              prev_inst,
+    HINSTANCE           inst,
+    HINSTANCE           prev_inst,
     LPSTR               cmd_line,
     int                 show
 ) {
@@ -464,7 +463,7 @@ int PASCAL WinMain(
 
     /* Acquire and dispatch messages until a WM_QUIT message is received. */
 
-    while( GetMessage(&msg, NULL, NULL, NULL) ) {
+    while( GetMessage(&msg, NULL, 0, 0) ) {
         // if( TranslateAccelerators( Main_wnd, haccel, &msg ) ) continue;
         TranslateMessage(&msg);
         DispatchMessage(&msg);

@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-gui_ord GUIGetExtentX( gui_window * wnd, char * text, int length )
+gui_ord GUIGetExtentX( gui_window * wnd, const char * text, int length )
 {
     gui_coord coord;
 
@@ -51,7 +51,7 @@ gui_ord GUIGetExtentX( gui_window * wnd, char * text, int length )
     }
 }
 
-gui_ord GUIGetExtentY( gui_window * wnd, char * text )
+gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
 {
     gui_coord coord;
 
@@ -63,13 +63,13 @@ gui_ord GUIGetExtentY( gui_window * wnd, char * text )
     return( coord.y );
 }
 
-gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, char * text, int length )
+gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, int length )
 {
     id=id;
     return( GUIGetExtentX( wnd, text, length ) );
 }
 
-gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, char * text )
+gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, const char * text )
 {
     id=id;
     return( GUIGetExtentY( wnd, text ) );

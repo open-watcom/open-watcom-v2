@@ -1,0 +1,24 @@
+( device "ps"
+( font 0 times-roman plain 2 10
+( font 1 times-italic plain 2 10
+( font 2 times-bold plain 2 10
+( font 3 times-bold uline 2 10
+( font 4 courier-bold plain 2 12
+( font 5 times-italic plain 2 10
+( font 6 courier-bold plain 2 12
+( font 7 times-bolditalic plain 2 10
+( font 8 courier plain 2 12
+( font 9 times-roman plain 1 8
+( font 10 times-bold plain 2 16
+( font 11 times-bold plain 2 12
+( format standard
+( inclist
+( index
+( layout "dpypaper"
+( noscript
+( pause
+( statistics
+( verbose
+( wait
+( warning
+( script

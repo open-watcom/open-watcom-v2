@@ -1,8 +1,0 @@
-#
-# Dependencies for source in $(fe_misc_dir).
-#
-optencod.exe : $(fe_misc_dir)\c\optencod.c
-        $(bld_cl) -i$(fe_misc_dir)\h;$(watcom_dir)\h $[@
-
-.c.obj :  .AUTODEPEND
-        $(mstools_compile) $(targdef) $[@

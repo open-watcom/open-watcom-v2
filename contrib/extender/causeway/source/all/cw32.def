@@ -1,0 +1,10 @@
+
+IMPORT	__cwAPI_FindModule	CAUSEWAY_KERNAL.__cwAPI_FindModule
+IMPORT	__cwAPI_FindFunction	CAUSEWAY_KERNAL.__cwAPI_FindFunction
+
+IMPORT	__cwAPI_GetMemLinear32	CAUSEWAY_KERNAL.__cwAPI_GetMemLinear32
+IMPORT	__cwAPI_ResMemLinear32	CAUSEWAY_KERNAL.__cwAPI_ResMemLinear32
+IMPORT	__cwAPI_RelMemLinear32	CAUSEWAY_KERNAL.__cwAPI_RelMemLinear32
+
+
+

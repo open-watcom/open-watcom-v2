@@ -96,7 +96,7 @@ typedef struct expr_tree {
 #define BINARY_LEFT( x )        ((x)->u.left)
 #define BINARY_RIGHT( x )       ((x)->v.right)
 
-extern expr_tree        *AsETReloc( asm_reloc_type, void * );
+extern expr_tree        *AsETReloc( asm_reloc_type, sym_handle );
 extern expr_tree        *AsETNumLabelReloc( asm_reloc_type, int_32 );
 extern expr_tree        *AsETConst( signed_32 );
 extern expr_tree        *AsETFPConst( double );

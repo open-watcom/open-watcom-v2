@@ -5,4 +5,4 @@ test: .SYMBOLIC test.exe
 
 objects = main.obj excarea.obj
 
-!include ..\cppexamp.mif
+!include ../cppexamp.mif

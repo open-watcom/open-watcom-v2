@@ -1,5 +1,5 @@
 #include "fail.h"
-#if defined( M_I86 ) || defined( M_I386 )
+#if defined( _M_IX86 )
 
 #include <stdio.h>
 

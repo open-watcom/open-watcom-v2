@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generate line information.
 *
 ****************************************************************************/
-
 
 
 #include "dwpriv.h"
@@ -38,11 +36,11 @@
 unsigned DWENTRY DWLineGen(
     dw_linenum_delta    line_incr,
     dw_addr_delta       addr_incr,
-    char *              buf )
+    uint_8              *buf )
 {
     uint                opcode;
     unsigned            size;
-    char *              end;
+    uint_8              *end;
     dw_addr_delta       addr;
 
     size = 0;

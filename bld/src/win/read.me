@@ -1,45 +1,45 @@
 In the directories below this one you will find the following
-windows examples:
+Windows examples:
 
-ALARM		-a clock program
-DATACTL		-a demonstration of various types of dialog controls
-EDIT		-a simple editor that demonstrates the use of 
-		 an edit control
-GENERIC		-a generic windows application
-HELPEX		-a demonstration of the use of context sensitive help
-ICONVIEW	-a program that lets you view .ico files
-LIFE		-an entertaining game that demonstrates the use of bitmaps
-		 and common dialogs
-SHOOTGAL	-a simple game
-WATZEE		-another simple game
+ALARM       -a clock program
+DATACTL     -a demonstration of various types of dialog controls
+EDIT        -a simple editor that demonstrates the use of
+             an edit control
+GENERIC     -a generic windows application
+HELPEX      -a demonstration of the use of context sensitive help
+ICONVIEW    -a program that lets you view .ico files
+LIFE        -an entertaining game that demonstrates the use of bitmaps
+             and common dialogs
+SHOOTGAL    -a simple game
+WATZEE      -another simple game
 
 Below the directory that contains each example are the directories
-where the examples are built.  There are 3 build directories for
+where the examples are built. There are 3 build directories for
 each example:
 
-WIN32	-build a win32 version of the example here for Windows NT or Win32s
-WIN386	-build a 32-bit version of the example here that can be run under
-	 16-bit Windows using the WATCOM Windows Supervisor.
-WIN16	-build a 16-bit version of the example here to run under Windows.
+WIN32   -build a Win32 version of the example here for Windows NT or Win32s
+WIN386  -build a 32-bit version of the example here that can be run under
+         16-bit Windows using the Open Watcom Windows Supervisor.
+WIN16   -build a 16-bit version of the example here to run under Windows 3.x.
 
-In this directory is a file called win1632.h that contains several 
+In this directory is a file called win1632.h that contains several
 useful macros that allow you to write code that can be compiled
-for both the WIN16 (Windows) and WIN32 (NT) API sets.  
+for both the Win16 (Windows 3.x) and Win32 (Windows NT) API sets.
 
 In addition to using these macros some code in the examples is
 conditionally included using statements like:
 
-#ifdef __NT__		/* for WIN32 specific code */
-#ifdef __WINDOWS_386__	/* for 32 bit windows specific code */
+#ifdef __NT__           /* for Win32 specific code */
+#ifdef __WINDOWS_386__  /* for 32-bit Windows specific code */
 
 There are some functions that are for the 32-bit windows environment
 that are macroed away in other environments:
 
 AllocAlias16 - gets a 16-bit far pointer to some 32-bit memory
-	       (just returns the pointer in 16-bit code)
-	       
+                (just returns the pointer in 16-bit code)
+    
 FreeAlias16  - releases the 16-bit far pointer obtained by AllocAlias16
-	       (does nothing in 16-bit code)
-	       
+                (does nothing in 16-bit code)
+    
 GetProc16    - gets a special 16-bit thunk that points at 32-bit callbacks
-	       (just returns the callback address in 16-bit code)
+                (just returns the callback address in 16-bit code)

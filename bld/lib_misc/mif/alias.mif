@@ -1,24 +1,12 @@
 .extensions:
-.extensions: .mif .lst .exe .obj .c .h
+.extensions: .mif .lst .obj .c .h
 
-..\objs.mif : aliases.lst aliasgen.exe
-    if exist ..\objs.mif erase ..\objs.mif
-    if exist ..\a\*.asm erase ..\a\*.asm
-    aliasgen aliases.lst ..\a\ ..\objs.mif
-
-src = $(lib_misc_dir)\c\aliasgen.c
-
-aliasgen.exe : $(src)
-    $(bld_cl) $(src) $(wcl_util_opts)
+../objs.mif : aliases.lst
+    rm -f ../objs.mif ../a/*.asm
+    aliasgen aliases.lst ../a/ ../objs.mif
 
 clean : .symbolic
-    @if exist aliasgen.exe @erase aliasgen.exe
-    @if exist ..\a\*.asm @erase ..\a\*.asm
-    @if exist ..\objs.mif @erase ..\objs.mif
+    rm -f *.?bj *.err ../a/*.asm ../objs.mif
 
-#
-# list of projects required to build the alias sub-component
-#
-project : .symbolic
-    pexist lib_misc
-
+realclean : .symbolic clean
+    rm -f ../objs.mif ../a/*.asm

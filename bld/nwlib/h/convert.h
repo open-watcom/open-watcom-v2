@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern char *GetARName( ar_header *header, arch_header *arch );
+extern char *GetARName( libfile io, ar_header *header, arch_header *arch );
 extern char *GetFFName( arch_header *arch );
 extern void GetARHeaderValues( ar_header *header, arch_header * arch );
 extern void CreateARHeader( ar_header *ar, arch_header * arch );

@@ -32,39 +32,28 @@
 
 #include "variety.h"
 #include "widechar.h"
-#include "mbwcconv.h"
-#include <stdlib.h>
+#include <unistd.h>
 #include <wos2.h>
 #include "seterrno.h"
+
+
+_WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
+{
+    APIRET  rc;
 #ifdef __WIDECHAR__
-    #include <mbstring.h>
-#endif
+    char    mbFilename[MB_CUR_MAX * _MAX_PATH];     /* single-byte char */
 
-
-_WCRTLINK int __F_NAME(unlink,_wunlink)( CHAR_TYPE *filename )
-    {
-        APIRET  rc;
-#ifdef __WIDECHAR__
-        char    mbFilename[MB_CUR_MAX*_MAX_PATH];   /* single-byte char */
-#endif
-
-        #ifdef __WIDECHAR__
-            __filename_from_wide( mbFilename, filename );
-            #if defined(__386__) || defined(__PPC__)
-                rc = DosDelete( mbFilename );
-            #else
-                rc = DosDelete( mbFilename, 0 );
-            #endif
-        #else
-            #if defined(__386__) || defined(__PPC__)
-                rc = DosDelete( filename );
-            #else
-                rc = DosDelete( filename, 0 );
-            #endif
-        #endif
-
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );            /* indicate no error */
+    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == -1 ) {
+        mbFilename[0] = '\0';
     }
+#endif
+#ifdef _M_I86
+    rc = DosDelete( (PSZ)__F_NAME(filename,mbFilename), 0 );
+#else
+    rc = DosDelete( __F_NAME(filename,mbFilename) );
+#endif
+    if( rc != 0 ) {
+        return( __set_errno_dos( rc ) );
+    }
+    return( 0 );            /* indicate no error */
+}

@@ -1,0 +1,22 @@
+proj_name = vi
+
+name = vi
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+# This makefile is to build internal utils, only used for the build process itself.
+# Therefore it should run only if the OS you are running it on equals the intended
+# host. E.g. if we are building on OS/2 we don't need to build utils for NT or DOS,
+# even if we are building 'all'. We do need a 'clean' target, though .
+
+all: parsectl.exe parsedyn.exe
+
+.c: ..
+
+parsectl.exe : parsectl.obj
+        $(linker) $(lflags) name $^@ op map file { $< }
+
+parsedyn.exe : parsedyn.obj
+        $(linker) $(lflags) name $^@ op map file { $< }

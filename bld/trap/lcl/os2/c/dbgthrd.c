@@ -67,7 +67,7 @@ static char     stack2[STACK_SIZE];
 extern unsigned int Call32BitDosDebug( dos_debug far *buff );
 extern void WakeThreads( PID );
 extern void WakeOneThread( PID, TID );
-extern void SetBrkPending();
+extern void SetBrkPending( void );
 
 
 #define MAX_PAINTS      100
@@ -83,7 +83,7 @@ VOID StopApplication( VOID )
     DosExit( 0, 0 );
 }
 
-static void CantDoIt()
+static void CantDoIt( void )
 {
      WinMessageBox( HWND_DESKTOP, HwndDebugger,
         TRP_WIN_no_can_do,

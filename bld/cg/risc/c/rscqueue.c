@@ -153,8 +153,12 @@ static  void    doInfo( any_oc *oc ) {
         if( _IsModel( DBG_LOCALS ) ) {
             DbgRtnEnd( oc->oc_debug.ptr, AskLocation() );
         }
-        lc = AskLocation();
-        OutPDataRec( procLabel, lc - procStart, prologueEnd - procStart );
+        if( _IsModel( OBJ_COFF ) ) {
+            // Only emit .pdata section into COFF objects; there might be some
+            // better mechanism to decide whether .pdata should be emitted.
+            lc = AskLocation();
+            OutPDataRec( procLabel, lc - procStart, prologueEnd - procStart );
+        }
         break;
     }
 }
@@ -175,8 +179,11 @@ extern  void    OutputOC( any_oc *oc ) {
     case OC_RCODE:
         if( _HasReloc( &oc->oc_rins ) ) {
             OutReloc( oc->oc_rins.sym, oc->oc_rins.reloc, 0 );
-            if( oc->oc_rins.reloc == OWL_RELOC_HALF_HI ) {
-                OutReloc( oc->oc_rins.sym, OWL_RELOC_PAIR, 0 );
+            if( _IsModel( OBJ_COFF ) ) {
+                // ELF doesn't do pair relocs, just don't emit them
+                if( oc->oc_rins.reloc == OWL_RELOC_HALF_HI ) {
+                    OutReloc( oc->oc_rins.sym, OWL_RELOC_PAIR, 0 );
+                }
             }
         }
         ObjBytes( (char *)&oc->oc_rins.opcode, oc->oc_entry.objlen );

@@ -35,10 +35,7 @@
 
 #include "resfmt.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct MResResourceHeader {
     ResNameOrOrdinal       *Type;
     ResNameOrOrdinal       *Name;
@@ -54,9 +51,6 @@ typedef struct M32ResResourceHeader {
     MResResourceHeader      *head16;
     uint_32                  HeaderSize;
 } M32ResResourceHeader;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 #endif

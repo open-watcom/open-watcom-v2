@@ -24,18 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Interface to the trmem memory allocation tracker and
+*               validator.
 *
 ****************************************************************************/
 
 
 #ifndef _TRMEM_H_INCLUDED
-#define _TRMEM_H_INCLUDED   1
-/*
-    This file defines the interface with the trmem memory allocation
-    tracker and validator.
-*/
+#define _TRMEM_H_INCLUDED
+
 #include <stddef.h>
 
 typedef struct _trmem_internal *_trmem_hdl;
@@ -44,7 +41,7 @@ typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)
 
 /* generic pointer to code with realloc signature */
-typedef void (*_trmem_realloc_who)(void*,size_t);
+typedef void *(*_trmem_realloc_who)(void*,size_t);
 #define _TRMEM_NO_REALLOC ((_trmem_realloc_who)0)
 
 /*
@@ -101,8 +98,8 @@ _trmem_hdl _trmem_open(
     void (*__free)(void*),
     void * (*__realloc)(void*,size_t),
     void * (*__expand)(void*,size_t),
-    void *__prt_parm,
-    void (*__prt_line)( void *__prt_parm, const char *__buf, size_t __len ),
+    int *__prt_parm,
+    void (*__prt_line)( int *__prt_parm, const char *__buf, size_t __len ),
     unsigned __flags
 );
 
@@ -125,6 +122,7 @@ void *_trmem_alloc( size_t, _trmem_who, _trmem_hdl );
 void _trmem_free( void *, _trmem_who, _trmem_hdl );
 void *_trmem_realloc( void *, size_t, _trmem_who, _trmem_hdl );
 void *_trmem_expand( void *, size_t, _trmem_who, _trmem_hdl );
+char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl );
 size_t _trmem_msize( void *, _trmem_hdl );
 
 

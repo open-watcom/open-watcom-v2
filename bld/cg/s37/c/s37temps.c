@@ -35,8 +35,8 @@
 #include "procdef.h"
 #include "cfloat.h"
 #include "opcodes.h"
-#include "sysmacro.h"
-
+#include "cgmem.h"
+#include "makeins.h"
 #include "s37temps.def"
 
 extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
@@ -45,12 +45,10 @@ extern  void            PropLocal(name*);
 extern  name            *AllocAddrConst(name*,int,constant_class,type_class_def);
 extern  cfloat          *CFCnvU32F(unsigned_32);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *DeAlias(name*);
 extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      DisplayReg(void);
 extern  void            FindReferences();
@@ -370,7 +368,7 @@ static  void    FixFarLocalRefs( type_length size ) {
 
     i = size / _4K;
     offset_size = (i+1) * sizeof( name** );
-    _Alloc( offsets, offset_size );
+    offsets = CGAlloc( offset_size );
     while( i >= 0 ) {
         offsets[ i ] = NULL;
         --i;
@@ -390,7 +388,7 @@ static  void    FixFarLocalRefs( type_length size ) {
         }
         blk = blk->next_block;
     }
-    _Free( offsets, offset_size );
+    CGFree( offsets );
 }
 
 

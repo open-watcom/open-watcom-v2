@@ -61,12 +61,12 @@ static int OpenFiles( WResFileID * fileid1, WResFileID * fileid2 )
 
     error = (!WResIsWResFile( *fileid1 ));
     if (error) {
-        printf( "File %s is not a WATCOM .RES file\n",
+        printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName1 );
     } else {
         error = (!WResIsWResFile( *fileid2 ));
         if (error) {
-            printf( "File %s is not a WATCOM .RES file\n",
+            printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName2 );
         }
     }

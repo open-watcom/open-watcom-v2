@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Conversion of floating-point values to strings.
 *
 ****************************************************************************/
 
@@ -34,18 +33,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <float.h>
 #include "xfloat.h"
 
 #define NDIG            8
-
-// this is defined in float.h
-#if LDBL_DIG == 15
-#undef LDBL_DIG
-#define LDBL_DIG        20
-#else
-#error LDBL_DIG has changed from 15
-#endif
 
 // this is defined in float.h
 #if LDBL_MAX_10_EXP == 308
@@ -55,14 +45,19 @@
 #error LDBL_MAX_10_EXP has changed from 308
 #endif
 
+/* We must use more than DBL_DIG/LDBL_DIG, otherwise we lose precision! */
+#define DBL_CVT_DIGITS      20
+#define LDBL_CVT_DIGITS     23
+
 // this manufactures a value from macros defined in float.h
 #define __local_glue( __x, __y ) __x ## __y
 #define local_glue( __x, __y ) __local_glue( __x, __y )
 #define ONE_TO_DBL_MAX_10_EXP local_glue( 1e, DBL_MAX_10_EXP )
+#define ONE_TO_DBL_MIN_10_EXP 1e307
 
-char _WCNEAR *Fmt8Digits(unsigned long value, char *p);
 
-#if defined(__386__)
+#if defined( __386__ )
+ char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
  #pragma aux    Fmt8Digits = \
                 "       push    ecx"\
                 "       push    edx"\
@@ -106,7 +101,8 @@ char _WCNEAR *Fmt8Digits(unsigned long value, char *p);
                 "       mov     al,0"\
                 "       mov     [ebx],al"\
                 parm caller [eax] [ebx] value [ebx];
-#elif defined(M_I86)
+#elif defined( _M_I86 )
+ char _WCNEAR *Fmt8Digits( unsigned long value, char *p );
  #pragma aux    Fmt8Digits = \
                 "       push    cx"\
                 "       call    fmt8"\
@@ -143,15 +139,16 @@ char _WCNEAR *Fmt8Digits(unsigned long value, char *p);
                 parm caller [dx ax] [bx] value [bx];
 #else
 static unsigned long IntPow10[] = {
-        1,
-        10,
-        100,
-        1000,
-        10000,
-        100000,
-        1000000,
-        10000000,
+    1,
+    10,
+    100,
+    1000,
+    10000,
+    100000,
+    1000000,
+    10000000,
 };
+
 static char _WCNEAR *Fmt8Digits( unsigned long value, char *p )
 {
     int                 i;
@@ -199,18 +196,20 @@ static long_double LDPowTable[] = {
     { 0x00000000, 0x80000000, 0x7FFF }, // infinity
 };
 
-static void CalcScaleFactor( long_double _WCNEAR *factor, int n )
+static void CalcScaleFactor( ld_arg factor, int n )
 {
     long_double *pow;
     long_double tmp;
 
-    if( n >= 8192 ) n = 8192;           // set to infinity multiplier
+    if( n >= 8192 ) {
+        n = 8192;               // set to infinity multiplier
+    }
     for( pow = LDPowTable; n > 0; n >>= 1, ++pow ) {
         if( n & 1 ) {
             tmp.exponent  = pow->exponent;
             tmp.high_word = pow->high_word;
             tmp.low_word  = pow->low_word;
-            __FLDM( factor, (long_double _WCNEAR *)&tmp, factor );
+            __FLDM( factor, &tmp, factor );
         }
     }
 }
@@ -220,27 +219,28 @@ static void _do_LDScale10x( long_double _WCNEAR *ld, int scale )
     long_double factor;
 
     if( scale != 0 ) {
-        #if defined(_LONG_DOUBLE_) && defined(__FPI__)
-            unsigned short _8087cw = __Get87CW();
-            __Set87CW( _8087cw | 0x0300 ); // make sure extended precision
-        #endif
+#if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
+        unsigned short _8087cw = __Get87CW();
+        __Set87CW( _8087cw | _PC_64 ); // make sure extended precision is on
+#endif
         factor.exponent  = 0x3FFF;              // set factor = 1.0
         factor.high_word = 0x80000000;
         factor.low_word  = 0x00000000;
         if( scale < 0 ) {
-            CalcScaleFactor( (long_double _WCNEAR *)&factor, -scale );
-            __FLDD( ld, (long_double _WCNEAR *)&factor, ld );
+            CalcScaleFactor( &factor, -scale );
+            __FLDD( ld, &factor, ld );
         } else {
-            CalcScaleFactor( (long_double _WCNEAR *)&factor, scale );
-            __FLDM( ld, (long_double _WCNEAR *)&factor, ld );
+            CalcScaleFactor( &factor, scale );
+            __FLDM( ld, &factor, ld );
         }
-        #if defined(_LONG_DOUBLE_) && defined(__FPI__)
-            __Set87CW( _8087cw );       // restore control word
-        #endif
+#if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
+        __Set87CW( _8087cw );       // restore control word
+#endif
     }
 }
 
-void _LDScale10x( long_double _WCNEAR *ld, int scale ) {
+void _LDScale10x( ld_arg ld, int scale )
+{
     if( scale > LDBL_MAX_10_EXP ) {
         _do_LDScale10x( ld, LDBL_MAX_10_EXP );
         scale -= LDBL_MAX_10_EXP;
@@ -254,7 +254,7 @@ void _LDScale10x( long_double _WCNEAR *ld, int scale ) {
 #else           /* 'long double' is same as 'double' */
 
 static double Pow10Table[] = {
-        1e1, 1e2, 1e4, 1e8, 1e16, 1e32, 1e64, 1e128, 1e256,
+    1e1, 1e2, 1e4, 1e8, 1e16, 1e32, 1e64, 1e128, 1e256,
 };
 
 void _LDScale10x( long_double *ld, int scale )
@@ -268,11 +268,12 @@ void _LDScale10x( long_double *ld, int scale )
         if( scale < 0 ) n = -n;
         if( n > DBL_MAX_10_EXP ) {
             if( scale < 0 ) {
-                ld->value /= ONE_TO_DBL_MAX_10_EXP;
+                ld->value /= ONE_TO_DBL_MIN_10_EXP;
+                n += DBL_MIN_10_EXP;
             } else {
                 ld->value *= ONE_TO_DBL_MAX_10_EXP;
+                n -= DBL_MAX_10_EXP;
             }
-            n -= DBL_MAX_10_EXP;
         }
         factor = 1.0;
         for( pow = Pow10Table; n > 0; n >>= 1, ++pow ) {
@@ -290,252 +291,6 @@ void _LDScale10x( long_double *ld, int scale )
 
 #endif
 
-#define STK_BUF_SIZE    64              // size of stack buffer required
-                                        // if long double and NO_TRUNC is on.
-
-_WMRTLINK void __LDcvt( long_double *pld, CVT_INFO *cvt, char *buf )
-{
-    int         i;
-    int         n;
-    int         nsig;
-    int         xexp;
-    char        *p;
-    char        drop;
-    long        value;
-    long_double ld;
-    auto char   stkbuf[STK_BUF_SIZE];
-    int         maxsize;
-    #if defined(_LONG_DOUBLE_) && defined(__FPI__)
-        unsigned short _8087cw = __Get87CW();
-        __Set87CW( _8087cw | 0x0300 );  // make sure extended precision
-    #endif
-
-    cvt->sign = 0;
-    #ifdef _LONG_DOUBLE_
-        ld.exponent  = pld->exponent;
-        ld.high_word = pld->high_word;
-        ld.low_word  = pld->low_word;
-        if( ld.exponent & 0x8000 )  cvt->sign = -1;
-        ld.exponent &= 0x7FFF;          // make number positive
-    #else
-        ld.value = pld->value;
-        if( ld.word[1] & 0x80000000 )  cvt->sign = -1;
-        ld.word[1] &= 0x7FFFFFFF;               // make number positive
-    #endif
-    cvt->n1  = 0;
-    cvt->nz1 = 0;
-    cvt->n2  = 0;
-    cvt->nz2 = 0;
-    cvt->decimal_place = 0;
-    value = 0;
-    switch( __LDClass( &ld ) ) {
-    case __ZERO:
-    case __DENORMAL:
-        cvt->sign = 0;                  // force sign to +0.0
-        xexp = 0;
-        break;
-    case __NAN:
-        buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n'; buf[3] = '\0';
-        cvt->n1 = 3;
-        goto end_cvt;
-    case __INFINITY:
-        buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f'; buf[3] = '\0';
-        cvt->n1 = 3;
-        goto end_cvt;
-    case __NONZERO:
-        // what if number is denormal?  should normalize it
-/*
-    Estimate the position of the decimal point by estimating 1 + log10(x).
-    Compute approximate value of log10(x) by multiplying the exponent
-    by 30103 and dividing by 100000, since log10(x) = log2(x) * log10(2)
-    where log10(2) = .30103 approximately.
-*/
-        #ifdef _LONG_DOUBLE_
-            xexp = ld.exponent - 0x3FFE;
-        #else
-            xexp = (ld.word[1] >> 20) - 0x3FE;
-        #endif
-        xexp = xexp * 30103L / 100000L;
-        xexp -= NDIG/2;
-        if( xexp != 0 ) {
-            if( xexp < 0 ) {                    // must scale up
-                xexp = - ((-xexp + (NDIG/2-1)) & ~(NDIG/2-1));
-                _LDScale10x( (long_double _WCNEAR *)&ld, -xexp );
-            } else /*if( xexp > 0 )*/ {         // must scale down
-                #ifdef _LONG_DOUBLE_
-                if( ld.exponent < E8_EXP ||
-                   (ld.exponent == E8_EXP && ld.high_word < E8_HIGH) ) {
-                    // number is < 1e8
-                    xexp = 0;
-                } else if( ld.exponent < E16_EXP ||
-                   ((ld.exponent == E16_EXP &&
-                   (ld.high_word <  E16_HIGH ||
-                   (ld.high_word == E16_HIGH && ld.low_word < E16_LOW)))) ) {
-                    // number is < 1e16
-                    long_double tmp;
-                    long_double tmp2;
-
-                    tmp.exponent  = E8_EXP;             // tmp = 1e8L
-                    tmp.high_word = E8_HIGH;
-                    tmp.low_word  = E8_LOW;
-                    __FLDD( (long_double _WCNEAR *)&ld,
-                            (long_double _WCNEAR *)&tmp,
-                            (long_double _WCNEAR *)&tmp2 );
-                    value = __LDI4( (long_double _WCNEAR *)&tmp2 );
-                    __I4LD( value, (long_double _WCNEAR *)&tmp2 );
-                    __FLDM( (long_double _WCNEAR *)&tmp2,
-                            (long_double _WCNEAR *)&tmp,
-                            (long_double _WCNEAR *)&tmp );
-                    __FLDS( (long_double _WCNEAR *)&ld,
-                            (long_double _WCNEAR *)&tmp,
-                            (long_double _WCNEAR *)&ld );
-                    xexp = 8;
-                #else
-                    if( ld.value < 1e8 ) {
-                        xexp = 0;
-                    } else if( ld.value < 1e16 ) {
-                        value = (long)(ld.value / 1e8);
-                        ld.value -= (double)value * 1e8;
-                        xexp = 8;
-                #endif
-                } else {                // scale number down
-                    xexp &= ~(NDIG/2-1);
-                    _LDScale10x( (long_double _WCNEAR *)&ld, -xexp );
-                }
-            }
-        }
-        break;
-    }
-    if( cvt->flags & F_FMT ) {
-        n = cvt->ndigits + xexp + 2 + NDIG;
-        if( cvt->scale > 0 ) {
-            n += cvt->scale;
-        }
-    } else {
-        n = cvt->ndigits + 3 + NDIG/2;
-    }
-
-    maxsize = DBL_DIG;
-    #ifdef _LONG_DOUBLE_
-        if( cvt->flags & LONG_DOUBLE ) {        // number is long double
-            maxsize = LDBL_DIG;
-        }
-    #endif
-    if( cvt->flags & NO_TRUNC ) {
-        maxsize *= 2;
-    }
-    maxsize += (NDIG / 2);
-    if( n > maxsize ) {
-        n = maxsize;
-    }
-
-    // convert ld into string of digits
-    // put in leading '0' in case we round 99...99 to 100...00
-    stkbuf[0] = '0';
-    stkbuf[1] = '\0';
-    p = &stkbuf[1];
-    i = 0;
-    while( n > 0 ) {
-#ifdef _LONG_DOUBLE_
-        n -= NDIG;
-        if( value == 0 ) {
-            if( (ld.exponent & 0x7FFF) == 0 ) break;
-            value = __LDI4( (long_double _WCNEAR *)&ld );
-            if( n > 0 ) {
-                long_double     tmp;
-
-                __I4LD( value, (long_double _WCNEAR *)&tmp );
-                __FLDS( (long_double _WCNEAR *)&ld,
-                        (long_double _WCNEAR *)&tmp,
-                        (long_double _WCNEAR *)&ld );
-                tmp.exponent  = E8_EXP;         // tmp = 1e8L
-                tmp.high_word = E8_HIGH;
-                tmp.low_word  = E8_LOW;
-                __FLDM( (long_double _WCNEAR *)&ld,
-                        (long_double _WCNEAR *)&tmp,
-                        (long_double _WCNEAR *)&ld );
-            }
-        }
-#else
-        n -= NDIG;
-        if( value == 0 ) {
-            if( (ld.word[1] & 0x7FF00000) == 0 ) break;
-            value = ld.value;
-            if( n > 0 ) {
-                ld.value = (ld.value - (double)value) * 1e8;
-            }
-        }
-#endif
-        p = Fmt8Digits( value, p );
-        i += 8;
-        value = 0;
-    }
-    n = i;                              // get number of characters in buf
-    p = &stkbuf[1];
-    xexp += NDIG - 1;
-    while( *p == '0' ) {                // skip over leading zeros
-        --n;
-        --xexp;
-        ++p;
-    }
-    nsig = cvt->ndigits;
-    if( cvt->flags & F_FMT ) {
-        xexp += cvt->scale;
-        nsig += xexp + 1;
-    } else if( cvt->flags & E_FMT ) {
-        if( cvt->scale > 0 ) {
-            ++nsig;
-        } else {
-            nsig += cvt->scale;
-        }
-        xexp = xexp + 1 - cvt->scale;
-    }
-    if( nsig >= 0 ) {           // round and strip trailing zeros
-        if( nsig > n )  nsig = n;
-
-        maxsize = DBL_DIG;
-        #ifdef _LONG_DOUBLE_
-            if( cvt->flags & LONG_DOUBLE ) {    // number is long double
-                maxsize = LDBL_DIG;
-            }
-        #endif
-        if( cvt->flags & NO_TRUNC ) {
-            maxsize *= 2;
-        }
-        if( nsig > maxsize ) {
-            nsig = maxsize + 1;
-        }
-
-        drop = '0';
-        if( n > nsig && p[nsig] >= '5' )  drop = '9';
-        i = nsig;
-        while( p[--i] == drop )  --nsig;
-        if( drop == '9' ) ++p[i];               // round up
-        if( i < 0 ) {           // repeating 9's rounded up to 10000...
-            --p;
-            ++nsig;
-            ++xexp;
-        }
-    }
-    if( nsig <= 0 ) {
-        nsig = 1;
-        xexp = 0;                               // 21-apr-95
-        stkbuf[0] = '0';
-        cvt->sign = 0;
-        p = stkbuf;
-    }
-    if( (cvt->flags & F_FMT) || ((cvt->flags & G_FMT) &&
-        ((xexp >= -4 && xexp < cvt->ndigits) || (cvt->flags & F_CVT)) ) ) {
-        DoFFormat( cvt, p, nsig, xexp, buf );   // 'F' format
-    } else {                            // 'E' format
-        DoEFormat( cvt, p, nsig, xexp, buf );
-    }
-end_cvt:;
-#if defined(_LONG_DOUBLE_) && defined(__FPI__)
-    __Set87CW( _8087cw );               // restore old control word
-#endif
-}
-
 static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
 {
     int         i;
@@ -545,9 +300,13 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
     ++xexp;
     i = 0;
     if( cvt->flags & G_FMT ) {
-        if( nsig < ndigits && !(cvt->flags & F_DOT) ) ndigits = nsig;
+        if( nsig < ndigits && !(cvt->flags & F_DOT) ) {
+            ndigits = nsig;
+        }
         ndigits -= xexp;
-        if( ndigits < 0 )  ndigits = 0;
+        if( ndigits < 0 ) {
+            ndigits = 0;
+        }
     }
     if( xexp <= 0 ) {   // digits only to right of '.'
         if( !(cvt->flags & F_CVT) ) {
@@ -557,12 +316,16 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
             }
         }
         cvt->n1 = i;
-        if( ndigits < -xexp )  xexp = - ndigits;
+        if( ndigits < -xexp ) {
+            xexp = - ndigits;
+        }
         cvt->decimal_place = xexp;
         cvt->nz1 = -xexp;
 //      for( n = -xexp; n > 0; --n ) buf[i++] = '0';
         ndigits += xexp;
-        if( ndigits < nsig )  nsig = ndigits;
+        if( ndigits < nsig ) {
+            nsig = ndigits;
+        }
         memcpy( &buf[i], p, nsig );
         i += nsig;
         cvt->n2 = nsig;
@@ -595,7 +358,9 @@ static void DoFFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         } else if( buf[0] == '0' ) {    // ecvt or fcvt with 0.0
             cvt->decimal_place = 0;
         }
-        if( ndigits < nsig )  nsig = ndigits;
+        if( ndigits < nsig ) {
+            nsig = ndigits;
+        }
         memcpy( &buf[i], p + xexp, nsig );
         i += nsig;
         cvt->n1 = i;
@@ -626,15 +391,21 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         // so decrement ndigits to get number of digits after decimal place
 /* JBS 25-may-98  - changed to model what DoFFormat did */
 //      if( nsig < ndigits )  ndigits = nsig;
-        if( nsig < ndigits && !(cvt->flags & F_DOT) ) ndigits = nsig;
+        if( nsig < ndigits && !(cvt->flags & F_DOT) ) {
+            ndigits = nsig;
+        }
         --ndigits;
-        if( ndigits < 0 ) ndigits = 0;
+        if( ndigits < 0 ) {
+            ndigits = 0;
+        }
     }
     if( cvt->scale <= 0 ) {
         buf[i++] = '0';
     } else {
         n = cvt->scale;
-        if( n > nsig ) n = nsig;
+        if( n > nsig ) {
+            n = nsig;
+        }
         memcpy( &buf[i], p, n );        // put in leading digits
         i += n;
         p += n;
@@ -657,7 +428,9 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         i += n;
     }
     if( ndigits > 0 ) {                 // put in fraction digits
-        if( ndigits < nsig )  nsig = ndigits;
+        if( ndigits < nsig ) {
+            nsig = ndigits;
+        }
         if( nsig != 0 ) {
             memcpy( &buf[i], p, nsig );
             i += nsig;
@@ -666,7 +439,9 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
         cvt->nz1 = ndigits - nsig;
 //      for( n = cvt->ndigits - nsig; n > 0; --n ) buf[i++] = '0';
     }
-    if( cvt->expchar != '\0' ) buf[i++] = cvt->expchar;
+    if( cvt->expchar != '\0' ) {
+        buf[i++] = cvt->expchar;
+    }
     if( xexp >= 0 ) {
         buf[i++] = '+';
     } else {
@@ -723,4 +498,261 @@ static void DoEFormat( CVT_INFO *cvt, char *p, int nsig, int xexp, char *buf )
     buf[i++] = xexp + '0';
     cvt->n2 = i - cvt->n1;
     buf[i] = '\0';
+}
+
+#define STK_BUF_SIZE    64              // size of stack buffer required
+                                        // if long double and NO_TRUNC is on.
+
+/* NB: Just like _EFG_Format(), the following assumes ASCII character  encoding */
+
+_WMRTLINK void __LDcvt( long_double *pld, CVT_INFO *cvt, char *buf )
+{
+    int         i;
+    int         n;
+    int         nsig;
+    int         xexp;
+    char        *p;
+    char        drop;
+    long        value;
+    long_double ld;
+    auto char   stkbuf[STK_BUF_SIZE];
+    int         maxsize;
+#if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
+    unsigned short _8087cw = __Get87CW();
+    __Set87CW( _8087cw | _PC_64 );  // make sure extended precision is used
+#endif
+
+    cvt->sign = 0;
+#ifdef _LONG_DOUBLE_
+    ld.exponent  = pld->exponent;
+    ld.high_word = pld->high_word;
+    ld.low_word  = pld->low_word;
+    if( ld.exponent & 0x8000 ) {
+        cvt->sign = -1;
+    }
+    ld.exponent &= 0x7FFF;          // make number positive
+#else
+    ld.value = pld->value;
+    if( ld.word[1] & 0x80000000 ) {
+        cvt->sign = -1;
+    }
+    ld.word[1] &= 0x7FFFFFFF;               // make number positive
+#endif
+    cvt->n1  = 0;
+    cvt->nz1 = 0;
+    cvt->n2  = 0;
+    cvt->nz2 = 0;
+    cvt->decimal_place = 0;
+    value = 0;
+    switch( __LDClass( &ld ) ) {
+    case __ZERO:
+    case __DENORMAL:
+        cvt->sign = 0;                  // force sign to +0.0
+        xexp = 0;
+        break;
+    case __NAN:
+        buf[0] = 'n'; buf[1] = 'a'; buf[2] = 'n'; buf[3] = '\0';
+        goto nan_inf;
+    case __INFINITY:
+        buf[0] = 'i'; buf[1] = 'n'; buf[2] = 'f'; buf[3] = '\0';
+nan_inf:
+        if( cvt->flags & IN_CAPS ) {
+            unsigned long _WCUNALIGNED  *text;
+
+            /* Uppercase entire four-char ASCII string in one go */
+            text = (unsigned long *)buf;
+            *text &= ~0x20202020;
+        }
+        cvt->flags |= IS_INF_NAN;   /* may need special handling */
+        cvt->n1 = 3;
+        goto end_cvt;
+    case __NONZERO:
+        // what if number is denormal?  should normalize it
+/*
+    Estimate the position of the decimal point by estimating 1 + log10(x).
+    Compute approximate value of log10(x) by multiplying the exponent
+    by 30103 and dividing by 100000, since log10(x) = log2(x) * log10(2)
+    where log10(2) = .30103 approximately.
+*/
+#ifdef _LONG_DOUBLE_
+        xexp = ld.exponent - 0x3FFE;
+#else
+        xexp = (ld.word[1] >> 20) - 0x3FE;
+#endif
+        xexp = xexp * 30103L / 100000L;
+        xexp -= NDIG / 2;
+        if( xexp != 0 ) {
+            if( xexp < 0 ) {                    // must scale up
+                xexp = - ((-xexp + (NDIG / 2 - 1)) & ~(NDIG / 2 - 1));
+                _LDScale10x( &ld, -xexp );
+            } else /*if( xexp > 0 )*/ {         // must scale down
+#ifdef _LONG_DOUBLE_
+                if( ld.exponent < E8_EXP ||
+                   (ld.exponent == E8_EXP && ld.high_word < E8_HIGH) ) {
+                    // number is < 1e8
+                    xexp = 0;
+                } else if( ld.exponent < E16_EXP ||
+                   ((ld.exponent == E16_EXP &&
+                   (ld.high_word <  E16_HIGH ||
+                   (ld.high_word == E16_HIGH && ld.low_word < E16_LOW)))) ) {
+                    // number is < 1e16
+                    long_double tmp;
+                    long_double tmp2;
+
+                    tmp.exponent  = E8_EXP;             // tmp = 1e8L
+                    tmp.high_word = E8_HIGH;
+                    tmp.low_word  = E8_LOW;
+                    __FLDD( &ld, &tmp, &tmp2 );
+                    value = __LDI4( &tmp2 );
+                    __I4LD( value, &tmp2 );
+                    __FLDM( &tmp2, &tmp, &tmp );
+                    __FLDS( &ld, &tmp, &ld );
+                    xexp = 8;
+#else
+                if( ld.value < 1e8 ) {
+                    xexp = 0;
+                } else if( ld.value < 1e16 ) {
+                    value = (long)(ld.value / 1e8);
+                    ld.value -= (double)value * 1e8;
+                    xexp = 8;
+#endif
+                } else {                // scale number down
+                    xexp &= ~(NDIG / 2 - 1);
+                    _LDScale10x( &ld, -xexp );
+                }
+            }
+        }
+        break;
+    }
+    if( cvt->flags & F_FMT ) {
+        n = cvt->ndigits + xexp + 2 + NDIG;
+        if( cvt->scale > 0 ) {
+            n += cvt->scale;
+        }
+    } else {
+        n = cvt->ndigits + 4 + NDIG / 2;    // need at least this for rounding
+    }
+
+    maxsize = DBL_CVT_DIGITS;
+#ifdef _LONG_DOUBLE_
+    if( cvt->flags & LONG_DOUBLE ) {        // number is long double
+        maxsize = LDBL_CVT_DIGITS;
+    }
+#endif
+    if( cvt->flags & NO_TRUNC ) {
+        maxsize *= 2;
+    }
+    maxsize += (NDIG / 2);
+    if( n > maxsize ) {
+        n = maxsize;
+    }
+
+    // convert ld into string of digits
+    // put in leading '0' in case we round 99...99 to 100...00
+    stkbuf[0] = '0';
+    stkbuf[1] = '\0';
+    p = &stkbuf[1];
+    i = 0;
+    while( n > 0 ) {
+        n -= NDIG;
+        if( value == 0 ) {
+#ifdef _LONG_DOUBLE_
+            if( (ld.exponent & 0x7FFF) == 0 )
+                break;
+            value = __LDI4( &ld );
+            if( n > 0 ) {
+                long_double     tmp;
+
+                __I4LD( value, &tmp );
+                __FLDS( &ld, &tmp, &ld );
+                tmp.exponent  = E8_EXP;         // tmp = 1e8L
+                tmp.high_word = E8_HIGH;
+                tmp.low_word  = E8_LOW;
+                __FLDM( &ld, &tmp, &ld );
+            }
+#else
+            if( (ld.word[1] & 0x7FF00000) == 0 )
+                break;
+            value = ld.value;
+            if( n > 0 ) {
+                ld.value = (ld.value - (double)value) * 1e8;
+            }
+#endif
+        }
+        p = Fmt8Digits( value, p );
+        i += 8;
+        value = 0;
+    }
+    n = i;                              // get number of characters in buf
+    p = &stkbuf[1];
+    xexp += NDIG - 1;
+    while( *p == '0' ) {                // skip over leading zeros
+        --n;
+        --xexp;
+        ++p;
+    }
+    nsig = cvt->ndigits;
+    if( cvt->flags & F_FMT ) {
+        xexp += cvt->scale;
+        nsig += xexp + 1;
+    } else if( cvt->flags & E_FMT ) {
+        if( cvt->scale > 0 ) {
+            ++nsig;
+        } else {
+            nsig += cvt->scale;
+        }
+        xexp = xexp + 1 - cvt->scale;
+    }
+    if( nsig >= 0 ) {           // round and strip trailing zeros
+        if( nsig > n ) {
+            nsig = n;
+        }
+
+        maxsize = DBL_CVT_DIGITS;
+#ifdef _LONG_DOUBLE_
+        if( cvt->flags & LONG_DOUBLE ) {    // number is long double
+            maxsize = LDBL_CVT_DIGITS;
+        }
+#endif
+        if( cvt->flags & NO_TRUNC ) {
+            maxsize *= 2;
+        }
+        if( nsig > maxsize ) {
+            nsig = maxsize;
+        }
+
+        drop = '0';
+        if( n > nsig && p[nsig] >= '5' ) {
+            drop = '9';
+        }
+        i = nsig;
+        while( p[--i] == drop ) {
+            --nsig;
+        }
+        if( drop == '9' ) {
+            ++p[i];             // round up
+        }
+        if( i < 0 ) {           // repeating 9's rounded up to 10000...
+            --p;
+            ++nsig;
+            ++xexp;
+        }
+    }
+    if( nsig <= 0 ) {
+        nsig = 1;
+        xexp = 0;                               // 21-apr-95
+        stkbuf[0] = '0';
+        cvt->sign = 0;
+        p = stkbuf;
+    }
+    if( (cvt->flags & F_FMT) || ((cvt->flags & G_FMT) &&
+        ((xexp >= -4 && xexp < cvt->ndigits) || (cvt->flags & F_CVT)) ) ) {
+        DoFFormat( cvt, p, nsig, xexp, buf );
+    } else {
+        DoEFormat( cvt, p, nsig, xexp, buf );
+    }
+end_cvt:;
+#if defined( _LONG_DOUBLE_ ) && defined( __FPI__ )
+    __Set87CW( _8087cw );               // restore old control word
+#endif
 }

@@ -1,0 +1,8 @@
+.387
+_text		SEGMENT	BYTE PUBLIC USE16 'code'
+		ASSUME CS:_text, DS:DGROUP, SS:DGROUP
+    cmp         byte ptr es:[49H],bl
+    cmp         byte ptr es:[49H],bl
+    mov         word ptr es:[bx],40H
+_text		ENDS
+		END

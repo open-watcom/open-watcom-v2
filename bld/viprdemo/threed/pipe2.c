@@ -322,16 +322,16 @@ static void compute_extents(
 
 static int compare_zmin(
 /**********************/
-    rend_obj **     obj1,
-    rend_obj **     obj2
+    const rend_obj **     obj1,
+    const rend_obj **     obj2
 ) {
     visible_info *  vis1;
     visible_info *  vis2;
     float           zmin1;
     float           zmin2;
 
-    vis1 = _rend_obj_get_vis( *obj1 );
-    vis2 = _rend_obj_get_vis( *obj2 );
+    vis1 = _rend_obj_get_vis( (rend_obj *)(*obj1) );
+    vis2 = _rend_obj_get_vis( (rend_obj *)(*obj2) );
     zmin1 = vis1->min.p[2];
     zmin2 = vis2->min.p[2];
 

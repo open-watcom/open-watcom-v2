@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS .COM executable stack size control.
 *
 ****************************************************************************/
 
 
 /*
- * This variable controls the size of stack for the program.
+ * This variable controls the size of stack for the program. It is
+ * only used for DOS .COM executables, but is provided in other clib
+ * versions for compatibility.
  */
 
 unsigned int    _stacksize = 2048;

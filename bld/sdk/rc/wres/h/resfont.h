@@ -35,10 +35,7 @@
 
 #include "watcom.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct FontInfo {
     uint_16         dfVersion;
     uint_32         dfSize;
@@ -76,10 +73,7 @@ typedef struct FontDirEntry {
     FontInfo        Info;
     char            DevAndFaceName[ 1 ];
 } FontDirEntry;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 /* NOTE: The StructSize field is not acutally part of the directory entry and */
 /* is not output to the disk. It is used during output to allow the chars in */

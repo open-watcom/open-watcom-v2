@@ -617,7 +617,7 @@ Appendix A: Viper and Batch Viper configuration file (viper.cfg)
     according to the associated description.  Such character strings must
     be enclosed in quotation marks if they contain spaces or commas.
 
-    1) Tool statement------------------------------------------------------------------------
+    1) Tool statement--------------------------------------------------------
 
     *Tool tooltag toolname
 	*IncludeTool tooltag

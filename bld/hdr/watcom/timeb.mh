@@ -3,18 +3,19 @@
  *
 :include crwat.sp
  */
-#ifndef __TIMEB_H_INCLUDED
-#define __TIMEB_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
+#ifndef _SYS_TIMEB_H_INCLUDED
+#define _SYS_TIMEB_H_INCLUDED
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
 
 :include timet.sp
 
 :include pshpackl.sp
+
 struct timeb {
     time_t              time;           /* seconds since Jan 1, 1970 UTC */
     unsigned short      millitm;        /* milliseconds */
@@ -27,10 +28,12 @@ struct _timeb {
     short               timezone;       /* difference in minutes from UTC */
     short               dstflag;        /* nonzero if daylight savings time */
 };
+
 :include poppack.sp
 
 _WCRTLINK extern int ftime( struct timeb *__timeptr );
 _WCRTLINK extern int _ftime( struct _timeb *__timeptr );
 
 :include cplusepi.sp
+
 #endif

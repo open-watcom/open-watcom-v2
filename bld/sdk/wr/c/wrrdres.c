@@ -40,7 +40,6 @@
 #include "wrstrdup.h"
 #include "wrinfoi.h"
 #include "wridfile.h"
-#include "wrcmsg.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -56,14 +55,14 @@ static int loadResDirFromRES( WRInfo *info, char *filename, int *is_wres )
     int         dup_discarded;
     int         ok;
 
-    ok = ( ( file_handle = ResOpenFileRO( filename ) ) != -1 );
+    ok = ((file_handle = ResOpenFileRO( filename )) != -1);
 
-    if ( ok ) {
+    if( ok ) {
         *is_wres = WResIsWResFile( file_handle );
     }
 
     if( ok ) {
-        ok = ( ( info->dir = WResInitDir() ) != NULL );
+        ok = ((info->dir = WResInitDir()) != NULL);
     }
 
     if( ok ) {
@@ -87,7 +86,7 @@ int WRLoadResDirFromRES( WRInfo *info, int *is_wres )
 
 int WRLoadResourceFromRES( WRInfo *info )
 {
-    WResTargetOS        TargetOS;
+    WResTargetOS        target_os;
     WRFileType          target;
     int                 is_wres;
     int                 ok;
@@ -95,21 +94,21 @@ int WRLoadResourceFromRES( WRInfo *info )
     ok = WRLoadResDirFromRES( info, &is_wres );
 
     if( ok ) {
-        TargetOS = WResGetTargetOS ( info->dir );
+        target_os = WResGetTargetOS( info->dir );
         target = WR_INVALID_FILE;
-        switch( TargetOS ) {
-            case WRES_OS_WIN16:
-                target = WR_WIN16M_RES;
-                if( is_wres ) {
-                    target = WR_WIN16W_RES;
-                }
-                break;
-            case WRES_OS_WIN32:
-                target = WR_WINNTM_RES;
-                if( is_wres ) {
-                    target = WR_WINNTW_RES;
-                }
-                break;
+        switch( target_os ) {
+        case WRES_OS_WIN16:
+            target = WR_WIN16M_RES;
+            if( is_wres ) {
+                target = WR_WIN16W_RES;
+            }
+            break;
+        case WRES_OS_WIN32:
+            target = WR_WINNTM_RES;
+            if( is_wres ) {
+                target = WR_WINNTW_RES;
+            }
+            break;
         }
         if( target == WR_INVALID_FILE ) {
             WRDisplayErrorMsg( WR_INVALIDFILE );
@@ -133,19 +132,19 @@ int WRLoadResourceFromRES( WRInfo *info )
 
 int WRLoadResourceFrom_RC( WRInfo *info )
 {
-    WResTargetOS        TargetOS;
+    WResTargetOS        target_os;
     WRFileType          target;
     char                fn_path[_MAX_PATH];
     int                 is_wres;
     int                 ok;
 
-    ok = ( info && info->file_name );
+    ok = (info != NULL && info->file_name != NULL);
 
     if( ok ) {
         WRGetInternalRESName( info->file_name, fn_path );
     }
 
-    #ifndef __NT__
+#ifndef __NT__
     if( ok ) {
         target = WRIdentifyFile( fn_path );
         ok = !WRIs32Bit( target );
@@ -153,28 +152,28 @@ int WRLoadResourceFrom_RC( WRInfo *info )
             WRDisplayErrorMsg( WR_NOLOAD32IN16 );
         }
     }
-    #endif
+#endif
 
     if( ok ) {
         ok = loadResDirFromRES( info, fn_path, &is_wres );
     }
 
     if( ok ) {
-        TargetOS = WResGetTargetOS ( info->dir );
+        target_os = WResGetTargetOS( info->dir );
         target = WR_INVALID_FILE;
-        switch( TargetOS ) {
-            case WRES_OS_WIN16:
-                target = WR_WIN16M_RES;
-                if( is_wres ) {
-                    target = WR_WIN16W_RES;
-                }
-                break;
-            case WRES_OS_WIN32:
-                target = WR_WINNTM_RES;
-                if( is_wres ) {
-                    target = WR_WINNTW_RES;
-                }
-                break;
+        switch( target_os ) {
+        case WRES_OS_WIN16:
+            target = WR_WIN16M_RES;
+            if( is_wres ) {
+                target = WR_WIN16W_RES;
+            }
+            break;
+        case WRES_OS_WIN32:
+            target = WR_WINNTM_RES;
+            if( is_wres ) {
+                target = WR_WINNTW_RES;
+            }
+            break;
         }
         info->internal_type = target;
         if( target == WR_INVALID_FILE ) {
@@ -185,9 +184,8 @@ int WRLoadResourceFrom_RC( WRInfo *info )
 
     if( ok ) {
         info->internal_filename = WRStrDup( fn_path );
-        ok = ( info->internal_filename != NULL );
+        ok = (info->internal_filename != NULL);
     }
 
     return( ok );
 }
-

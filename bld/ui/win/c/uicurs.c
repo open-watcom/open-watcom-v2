@@ -81,7 +81,7 @@ extern void VIDSetCurTyp( unsigned, unsigned );
 0X86 0XE0       /* xchg   ah,al                         */      \
         parm caller [ dx ] value [ ax ];
 
-extern unsigned         VIDGetCurTyp();
+extern unsigned         VIDGetCurTyp( unsigned );
 
 enum {
         BD_SEG          = 0x40,
@@ -105,7 +105,7 @@ static unsigned InsCur;
 
 static char OldRow, OldCol, OldTyp;
 
-void uiinitcursor()
+void uiinitcursor( void )
 {
     OldTyp = C_OFF;
     if( UIData->height == 25 ) {
@@ -133,16 +133,16 @@ void uisetcursor( ORD row, ORD col, int typ, int attr )
 }
 
 
-void uioffcursor()
+void uioffcursor( void )
 {
     OldTyp = C_OFF;
     VIDSetCurTyp( VIDPort, NoCur );
 }
 
-void uiswapcursor()
+void uiswapcursor( void )
 {
 }
 
-void uifinicursor()
+void uifinicursor( void )
 {
 }

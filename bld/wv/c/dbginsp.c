@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Inspect a symbol.
 *
 ****************************************************************************/
 
@@ -50,21 +49,21 @@ search_result           LineCue( mod_handle, cue_file_id,
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern mod_handle       LookupModName( mod_handle, char *, unsigned );
-extern void             NormalExpr(void);
-extern bool             WndVarAdd(a_window*,char*,unsigned,bool);
+extern void             NormalExpr( void );
+extern bool             WndVarAdd( a_window *, char *, unsigned, bool );
 extern WNDOPEN          WndVarOpen;
-extern a_window         *DoWndAsmOpen(address addr, bool track);
+extern a_window         *DoWndAsmOpen( address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool );
 extern a_window         *DoWndMemOpen( address, mad_type_handle );
 extern a_window         *DoWndIOOpen( address*, mad_type_handle );
 extern a_window         *DoWndFuncOpen( bool global, mod_handle mod );
-extern void             DupStack(void);
+extern void             DupStack( void );
 extern  a_window        *DoWndFileOpen( char *name, void *viewhndl,
                                     cue_handle *, bool track, bool erase,
                                     wnd_class class );
-extern void             *FOpenSource(char *,mod_handle,cue_file_id);
-extern void             *OpenSrcFile(cue_handle *);
-extern void             DoWndBinOpen(char*,handle);
+extern void             *FOpenSource( char *, mod_handle, cue_file_id );
+extern void             *OpenSrcFile( cue_handle * );
+extern void             DoWndBinOpen( char *, handle );
 extern a_window         *DoWndModOpen( mod_handle handle );
 extern a_window         *DoWndGlobOpen( mod_handle handle );
 extern void             MemSetLength( a_window *wnd, unsigned size );
@@ -76,7 +75,7 @@ extern void             FuncNewMod( a_window *wnd, mod_handle mod );
 extern void             GlobNewMod( a_window *wnd, mod_handle mod );
 extern void             MemNewAddr( a_window *wnd, address addr );
 extern void             IONewAddr( a_window *wnd, address *addr, int type );
-extern void             WndSetOpenNoShow();
+extern void             WndSetOpenNoShow( void );
 extern void             ModNewHandle( a_window *wnd, mod_handle handle );
 extern bool             SrcHasFileOpen( a_window *wnd );
 extern void             Warn( char *p );
@@ -88,6 +87,7 @@ extern bool             FindFirstCue( mod_handle mod, cue_handle *ch );
 extern stack_entry      *ExprSP;
 extern WNDOPEN          *WndOpenTab[];
 extern address          NilAddr;
+
 
 static a_window *WndFindExisting( wnd_class class )
 {
@@ -115,8 +115,9 @@ typedef struct cue_mod {
     bool        found;
 } cue_mod;
 
-static walk_result CheckFirstFile( cue_handle *ch, cue_mod *d )
+static walk_result CheckFirstFile( cue_handle *ch, void *_d )
 {
+    cue_mod     *d = _d;
     char        *buff;
     unsigned    len;
 
@@ -129,8 +130,9 @@ static walk_result CheckFirstFile( cue_handle *ch, cue_mod *d )
     return( WR_STOP );
 }
 
-static walk_result CheckOneMod( mod_handle mh, cue_mod *d )
+static walk_result CheckOneMod( mod_handle mh, void *_d )
 {
+    cue_mod     *d = _d;
     d->mod = mh;
     if( ModHasInfo( mh, HK_CUE ) == DS_OK ) {
         WalkFileList( mh, CheckFirstFile, d );
@@ -147,22 +149,6 @@ static mod_handle       FindFileMod( char *file )
     d.file = file;
     WalkModList( NO_MOD, CheckOneMod, &d );
     return( d.found ? d.mod : NO_MOD );
-}
-
-address ModFirstAddr( mod_handle mod )
-{
-    address     addr;
-    DIPHDL( cue, ch );
-
-    if( FindFirstCue( mod, ch ) ) {
-        addr = CueAddr( ch );
-    } else {
-        addr = NilAddr;
-    }
-    if( IS_NIL_ADDR( addr ) ) {
-        addr = ModAddr( mod );
-    }
-    return( addr );
 }
 
 extern void WndFileInspect( char *file, bool binary )

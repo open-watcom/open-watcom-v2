@@ -38,5 +38,5 @@
 #define ID_GETALL                   107
 #define ID_CLOSE                    103
 #ifndef IDCLOSE
-#define IDCLOSE                     201
+    #define IDCLOSE                 201
 #endif

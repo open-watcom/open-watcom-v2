@@ -1,0 +1,8 @@
+#include "resource.h"
+#define ICON_SETUP  1
+
+ICON ICON_SETUP "../res/os2/setup.ico"
+
+#include "splash.rc"
+
+#include "gui.rc"

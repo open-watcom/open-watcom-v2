@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include "winvi.h"
+#include "vi.h"
 #include "util.h"
 #include "source.h"
 
-int UtilUpdateBoolean( BOOL old, BOOL val, char *name )
+vi_rc UtilUpdateBoolean( BOOL old, BOOL val, char *name )
 {
-    char    cmd[ MAX_SRC_LINE ] = "set ";
+    char    cmd[MAX_SRC_LINE] = "set ";
     if( old == val ) {
         return( ERR_NO_ERR );
     }
@@ -48,9 +47,9 @@ int UtilUpdateBoolean( BOOL old, BOOL val, char *name )
     return( RunCommandLine( cmd ) );
 }
 
-int UtilUpdateInt( int old, int val, char *name )
+vi_rc UtilUpdateInt( int old, int val, char *name )
 {
-    char    cmd[ MAX_SRC_LINE ];
+    char    cmd[MAX_SRC_LINE];
     if( old == val ) {
         return( ERR_NO_ERR );
     }
@@ -58,9 +57,9 @@ int UtilUpdateInt( int old, int val, char *name )
     return( RunCommandLine( cmd ) );
 }
 
-int UtilUpdateChar( char old, char val, char *name )
+vi_rc UtilUpdateChar( char old, char val, char *name )
 {
-    char    cmd[ MAX_SRC_LINE ];
+    char    cmd[MAX_SRC_LINE];
     if( old == val ) {
         return( ERR_NO_ERR );
     }
@@ -68,9 +67,9 @@ int UtilUpdateChar( char old, char val, char *name )
     return( RunCommandLine( cmd ) );
 }
 
-int UtilUpdateStr( char *old, char *val, char *name )
+vi_rc UtilUpdateStr( char *old, char *val, char *name )
 {
-    char    cmd[ MAX_SRC_LINE ];
+    char    cmd[MAX_SRC_LINE];
     if( !strcmp( old, val ) ) {
         return( ERR_NO_ERR );
     }

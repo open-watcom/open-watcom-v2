@@ -1,0 +1,255 @@
+! Include file for printer driver initialization using ExtDeviceMode()
+! and DeviceCapabilities().
+
+! size of a device name string
+
+      integer CCHDEVICENAME
+
+      parameter ( CCHDEVICENAME = 32 )
+
+! current version of specification
+
+      integer DM_SPECVERSION
+
+      parameter ( DM_SPECVERSION = '300'x )
+
+! field selection bits
+
+      integer DM_ORIENTATION
+      integer DM_PAPERSIZE
+      integer DM_PAPERLENGTH
+      integer DM_PAPERWIDTH
+      integer DM_SCALE
+      integer DM_COPIES
+      integer DM_DEFAULTSOURCE
+      integer DM_PRINTQUALITY
+      integer DM_COLOR
+      integer DM_DUPLEX
+
+      parameter ( DM_ORIENTATION      = '0000001'x )
+      parameter ( DM_PAPERSIZE        = '0000002'x )
+      parameter ( DM_PAPERLENGTH      = '0000004'x )
+      parameter ( DM_PAPERWIDTH       = '0000008'x )
+      parameter ( DM_SCALE            = '0000010'x )
+      parameter ( DM_COPIES           = '0000100'x )
+      parameter ( DM_DEFAULTSOURCE    = '0000200'x )
+      parameter ( DM_PRINTQUALITY     = '0000400'x )
+      parameter ( DM_COLOR            = '0000800'x )
+      parameter ( DM_DUPLEX           = '0001000'x )
+
+! orientation selections
+
+      integer DMORIENT_PORTRAIT
+      integer DMORIENT_LANDSCAPE
+
+      parameter ( DMORIENT_PORTRAIT   = 1 )
+      parameter ( DMORIENT_LANDSCAPE  = 2 )
+
+! paper selections
+
+      integer DMPAPER_LETTER
+      integer DMPAPER_LETTERSMALL
+      integer DMPAPER_TABLOID
+      integer DMPAPER_LEDGER
+      integer DMPAPER_LEGAL
+      integer DMPAPER_STATEMENT
+      integer DMPAPER_EXECUTIVE
+      integer DMPAPER_A3
+      integer DMPAPER_A4
+      integer DMPAPER_A4SMALL
+      integer DMPAPER_A5
+      integer DMPAPER_B4
+      integer DMPAPER_B5
+      integer DMPAPER_FOLIO
+      integer DMPAPER_QUARTO
+      integer DMPAPER_10X14
+      integer DMPAPER_11X17
+      integer DMPAPER_NOTE
+      integer DMPAPER_ENV_9
+      integer DMPAPER_ENV_10
+      integer DMPAPER_ENV_11
+      integer DMPAPER_ENV_12
+      integer DMPAPER_ENV_14
+      integer DMPAPER_CSHEET
+      integer DMPAPER_DSHEET
+      integer DMPAPER_ESHEET
+      integer DMPAPER_LAST
+
+      integer DMPAPER_FIRST
+      integer DMPAPER_USER
+
+      parameter ( DMPAPER_LETTER      = 1 )       ! Letter 8 1/2 x 11 in
+      parameter ( DMPAPER_LETTERSMALL = 2 )       ! Letter Small 8 1/2 x 11 in
+      parameter ( DMPAPER_TABLOID     = 3 )       ! Tabloid 11 x 17 in
+      parameter ( DMPAPER_LEDGER      = 4 )       ! Ledger 17 x 11 in
+      parameter ( DMPAPER_LEGAL       = 5 )       ! Legal 8 1/2 x 14 in
+      parameter ( DMPAPER_STATEMENT   = 6 )       ! Statement 5 1/2 x 8 1/2 in
+      parameter ( DMPAPER_EXECUTIVE   = 7 )       ! Executive"7 1/2 x 10 in
+      parameter ( DMPAPER_A3          = 8 )       ! A3 297 x 420 mm
+      parameter ( DMPAPER_A4          = 9 )       ! A4 210 x 297 mm
+      parameter ( DMPAPER_A4SMALL     = 10 )      ! A4 Small 210 x 297 mm
+      parameter ( DMPAPER_A5          = 11 )      ! A5 148 x 210 mm
+      parameter ( DMPAPER_B4          = 12 )      ! B4 250 x 354
+      parameter ( DMPAPER_B5          = 13 )      ! B5 182 x 257 mm
+      parameter ( DMPAPER_FOLIO       = 14 )      ! Folio 8 1/2 x 13 in
+      parameter ( DMPAPER_QUARTO      = 15 )      ! Quarto 215 x 275 mm
+      parameter ( DMPAPER_10X14       = 16 )      ! 10x14 in
+      parameter ( DMPAPER_11X17       = 17 )      ! 11x17 in
+      parameter ( DMPAPER_NOTE        = 18 )      ! Note 8 1/2 x 11 in
+      parameter ( DMPAPER_ENV_9       = 19 )      ! Envelope #9 3 7/8 x 8 7/8
+      parameter ( DMPAPER_ENV_10      = 20 )      ! Envelope #10 4 1/8 x 9 1/2
+      parameter ( DMPAPER_ENV_11      = 21 )      ! Envelope #11 4 1/2 x 10 3/8
+      parameter ( DMPAPER_ENV_12      = 22 )      ! Envelope #12 4 \276 x 11
+      parameter ( DMPAPER_ENV_14      = 23 )      ! Envelope #14 5 x 11 1/2
+      parameter ( DMPAPER_CSHEET      = 24 )      ! C size sheet
+      parameter ( DMPAPER_DSHEET      = 25 )      ! D size sheet
+      parameter ( DMPAPER_ESHEET      = 26 )      ! E size sheet
+      parameter ( DMPAPER_LAST        = DMPAPER_ESHEET )
+
+      parameter ( DMPAPER_FIRST       = DMPAPER_LETTER )
+      parameter ( DMPAPER_USER        = 256 )
+
+! bin selections
+
+      integer DMBIN_UPPER
+      integer DMBIN_ONLYONE
+      integer DMBIN_LOWER
+      integer DMBIN_MIDDLE
+      integer DMBIN_MANUAL
+      integer DMBIN_ENVELOPE
+      integer DMBIN_ENVMANUAL
+      integer DMBIN_AUTO
+      integer DMBIN_TRACTOR
+      integer DMBIN_SMALLFMT
+      integer DMBIN_LARGEFMT
+      integer DMBIN_LARGECAPACITY
+      integer DMBIN_CASSETTE
+      integer DMBIN_LAST
+
+      integer DMBIN_FIRST
+      integer DMBIN_USER
+
+      parameter ( DMBIN_UPPER         = 1 )
+      parameter ( DMBIN_ONLYONE       = 1 )
+      parameter ( DMBIN_LOWER         = 2 )
+      parameter ( DMBIN_MIDDLE        = 3 )
+      parameter ( DMBIN_MANUAL        = 4 )
+      parameter ( DMBIN_ENVELOPE      = 5 )
+      parameter ( DMBIN_ENVMANUAL     = 6 )
+      parameter ( DMBIN_AUTO          = 7 )
+      parameter ( DMBIN_TRACTOR       = 8 )
+      parameter ( DMBIN_SMALLFMT      = 9 )
+      parameter ( DMBIN_LARGEFMT      = 10 )
+      parameter ( DMBIN_LARGECAPACITY = 11 )
+      parameter ( DMBIN_CASSETTE      = 14 )
+      parameter ( DMBIN_LAST          = DMBIN_CASSETTE )
+
+      parameter ( DMBIN_FIRST         = DMBIN_UPPER )
+      parameter ( DMBIN_USER          = 256 ) ! device specific bins start here
+
+! print qualities
+
+      integer DMRES_DRAFT
+      integer DMRES_LOW
+      integer DMRES_MEDIUM
+      integer DMRES_HIGH
+
+      parameter ( DMRES_DRAFT         = -1 )
+      parameter ( DMRES_LOW           = -2 )
+      parameter ( DMRES_MEDIUM        = -3 )
+      parameter ( DMRES_HIGH          = -4 )
+
+! color enable/disable for color printers
+
+      integer DMCOLOR_MONOCHROME
+      integer DMCOLOR_COLOR
+
+      parameter ( DMCOLOR_MONOCHROME  = 1 )
+      parameter ( DMCOLOR_COLOR       = 2 )
+
+! duplex enable
+
+      integer DMDUP_SIMPLEX
+      integer DMDUP_VERTICAL
+      integer DMDUP_HORIZONTAL
+
+      parameter ( DMDUP_SIMPLEX    = 1 )
+      parameter ( DMDUP_VERTICAL   = 2 )
+      parameter ( DMDUP_HORIZONTAL = 3 )
+
+      structure /DEVMODE/
+          integer*1     dmDeviceName(CCHDEVICENAME)
+          integer*2     dmSpecVersion
+          integer*2     dmDriverVersion
+          integer*2     dmSize
+          integer*2     dmDriverExtra
+          integer*4     dmFields
+          integer*2     dmOrientation
+          integer*2     dmPaperSize
+          integer*2     dmPaperLength
+          integer*2     dmPaperWidth
+          integer*2     dmScale
+          integer*2     dmCopies
+          integer*2     dmDefaultSource
+          integer*2     dmPrintQuality
+          integer*2     dmColor
+          integer*2     dmDuplex
+      end structure
+
+! mode selections for the device mode function
+
+      integer DM_UPDATE
+      integer DM_COPY
+      integer DM_PROMPT
+      integer DM_MODIFY
+
+      integer DM_IN_BUFFER
+      integer DM_IN_PROMPT
+      integer DM_OUT_BUFFER
+      integer DM_OUT_DEFAULT
+
+      parameter ( DM_UPDATE           = 1 )
+      parameter ( DM_COPY             = 2 )
+      parameter ( DM_PROMPT           = 4 )
+      parameter ( DM_MODIFY           = 8 )
+
+      parameter ( DM_IN_BUFFER        = DM_MODIFY )
+      parameter ( DM_IN_PROMPT        = DM_PROMPT )
+      parameter ( DM_OUT_BUFFER       = DM_COPY )
+      parameter ( DM_OUT_DEFAULT      = DM_UPDATE )
+
+! device capabilities indices
+
+      integer DC_FIELDS
+      integer DC_PAPERS
+      integer DC_PAPERSIZE
+      integer DC_MINEXTENT
+      integer DC_MAXEXTENT
+      integer DC_BINS
+      integer DC_DUPLEX
+      integer DC_SIZE
+      integer DC_EXTRA
+      integer DC_VERSION
+      integer DC_DRIVER
+
+      parameter ( DC_FIELDS           = 1 )
+      parameter ( DC_PAPERS           = 2 )
+      parameter ( DC_PAPERSIZE        = 3 )
+      parameter ( DC_MINEXTENT        = 4 )
+      parameter ( DC_MAXEXTENT        = 5 )
+      parameter ( DC_BINS             = 6 )
+      parameter ( DC_DUPLEX           = 7 )
+      parameter ( DC_SIZE             = 8 )
+      parameter ( DC_EXTRA            = 9 )
+      parameter ( DC_VERSION          = 10 )
+      parameter ( DC_DRIVER           = 11 )
+
+! export ordinal definitions
+
+      integer PROC_EXTDEVICEMODE
+      integer PROC_DEVICECAPABILITIES
+      integer PROC_OLDDEVICEMODE
+
+      parameter ( PROC_EXTDEVICEMODE      = 90 )
+      parameter ( PROC_DEVICECAPABILITIES = 91 )
+      parameter ( PROC_OLDDEVICEMODE      = 13 )

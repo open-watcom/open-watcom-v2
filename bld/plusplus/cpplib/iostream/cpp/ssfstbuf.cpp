@@ -24,55 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-//  93/11/12    Raymond Tang    Let the end of reserve area be the end of get
-//                              area.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
 #include <string.h>
-#include <strstrea.h>
+#include <strstrea>
 #endif
 #include "ioutil.h"
 
-void strstreambuf::__strstreambuf( char *ptr, int size, char *pstart ) {
-/**********************************************************************/
-// Initialize a streambuf.
-// If "ptr" is NULL, then leave the streambuf as a dynamic strstreambuf
-// with no pre-allocated buffer.
-// Otherwise, create a static (non-dynamic) streambuf using the specified area.
-// If size > 0, it is the size of the streambuf area.
-// If size = 0, "ptr" points to a C-string whose length determines the size
-//              of the streambuf area.
-// If size < 0, "ptr" points to an "unlimited" streambuf area. (!)
-// If pstart = NULL, this is an input-only streambuf.
-// Otherwise, it partitions the ptr/size area into a get area
-// (from ptr to pstart-1), and a put area (from pstart to ptr+size-1).
+namespace std {
 
+  // Initialize a strstreambuf. If "ptr" is NULL, then leave the
+  // streambuf as a dynamic strstreambuf with no pre-allocated buffer.
+  // Otherwise, create a static (non-dynamic) streambuf using the
+  // specified area.
+  //
+  // If size > 0, it is the size of the streambuf area.
+  // If size = 0, "ptr" points to a C-string whose length determines the size
+  //              of the streambuf area.
+  // If size < 0, "ptr" points to an "unlimited" streambuf area. (!)
+  // If pstart = NULL, this is an input-only streambuf.
+  //
+  // Otherwise, it partitions the ptr/size area into a get area (from
+  // ptr to pstart-1), and a put area (from pstart to ptr+size-1).
+
+  void strstreambuf::__strstreambuf( char *ptr, int size, char *pstart ) {
     char *get;
     char *eget;
     char *put;
@@ -115,4 +96,7 @@ void strstreambuf::__strstreambuf( char *ptr, int size, char *pstart ) {
     if( pstart > put ) {
         pbump( pstart - put );
     }
+  }
+
 }
+

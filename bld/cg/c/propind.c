@@ -125,7 +125,20 @@ static  bool    DoProp( block *blk ) {
     while( ins->head.opcode != OP_BLOCK ) {
         if( ins->head.opcode == OP_ADD || ins->head.opcode == OP_SUB ) {
             op = ins->operands[ 1 ];
+
+            /*
+             * 2004-11-04  RomanT
+             *
+             *    Improper swapping of operands confuses codegen which
+             * expecting to see known types on left and right side of ins.
+             *    I took check for _IsPointer from "foldins.c" which
+             * performing similar tasks. It fixed far pointers in "-ot -ol+"
+             * mode. If problems will appear again, paragraph below can be
+             * safely commented out (with possible cost of code quality).
+             */
+
             if( ins->head.opcode == OP_ADD &&
+                !_IsPointer( ins->type_class ) &&  /* 2004-11-04  RomanT */
                 ( op->n.class != N_CONSTANT ||
                 op->c.const_type != CONS_ABSOLUTE ) ) {
                 if( ins->operands[ 0 ]->n.class != N_CONSTANT ||
@@ -137,6 +150,7 @@ static  bool    DoProp( block *blk ) {
                     op = ins->operands[ 1 ];
                 }
             }
+
             if( op->n.class == N_CONSTANT &&
                 op->c.const_type == CONS_ABSOLUTE &&
                 ins->result == ins->operands[ 0 ] ) {

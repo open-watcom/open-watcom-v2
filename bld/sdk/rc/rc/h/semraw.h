@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Semantic actions for processing raw resource data.
 *
 ****************************************************************************/
 
@@ -34,15 +33,16 @@
 #define SEMRAW_INCLUDED
 
 #include "watcom.h"
-#include "types.h"
+#include "rctypes.h"
 
 #define MAX_DATA_NODES     100
 
 typedef struct RawDataItem {
     uint_8      IsString;
-    uint_8      LongString;
+    uint_8      LongItem;
     uint_16     StrLen;
     uint_8      TmpStr;
+    uint_8      WriteNull;
     union {
         char    *String;
         uint_32  Num;

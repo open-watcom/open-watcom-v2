@@ -24,38 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _rotr().
 *
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include <stdlib.h>
 #include <limits.h>
 
-#undef  _rotr
-
 extern unsigned int __rotr( unsigned int value, unsigned int shift );
 
-#if defined(__AXP__)
-#elif defined(__PPC__)
-#elif defined(__386__)
+#if defined(__386__)
 #pragma aux __rotr = "ror eax,cl" parm [eax] [ecx] value [eax] modify [ecx];
-#else
+#elif defined( _M_I86 )
 #pragma aux __rotr = "ror ax,cl" parm [ax] [cx] value [ax] modify [cx];
 #endif
 
 _WCRTLINK unsigned int _rotr( unsigned int value, unsigned int shift )
 {
-    #if defined(__AXP__) || defined(__PPC__)
-        unsigned int tmp;
-        tmp = value;
-        value = value >> shift;
-        tmp = tmp << ((sizeof(tmp)*CHAR_BIT)-shift);
-        value = value | tmp;
-        return( value );
-    #else
-        return( __rotr( value, shift ) );
-    #endif
+#if defined( _M_IX86 )
+    return( __rotr( value, shift ) );
+#else
+    unsigned int    tmp;
+
+    tmp = value;
+    value = value >> shift;
+    tmp = tmp << ((sizeof( tmp ) * CHAR_BIT) - shift);
+    value = value | tmp;
+    return( value );
+#endif
 }

@@ -24,19 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Calling convention for fill function.
 *
 ****************************************************************************/
 
 
-/*  Use PASCAL pragma to define our convention for calling the zap and
-    fill style routine. */
-
-#define FILL_FUNC pascal
-
 #if defined ( __386__ )
-    #pragma aux pascal "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
+    #pragma aux FILL_FUNC "*" parm caller [es edi] [eax] [ebx] [ecx] [edx];
 #else
-    #pragma aux pascal "*" parm caller [es di] [ax] [bx] [cx] [dx];
+    #pragma aux FILL_FUNC "*" parm caller [es di] [ax] [bx] [cx] [dx];
 #endif
+
+typedef void fill_fn( char far *, int, int, int, int );
+
+#pragma aux (FILL_FUNC) fill_fn;

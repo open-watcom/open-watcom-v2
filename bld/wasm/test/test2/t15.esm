@@ -1,0 +1,11 @@
+.387
+		EXTRN	start:BYTE
+flora		SEGMENT	PARA PRIVATE USE16 'code'
+		ASSUME CS:flora, DS:DGROUP, SS:DGROUP
+    mov       ax,24H
+    mov       ax,24H
+    mov       ax,1b0H
+    mov       ax,24H
+    mov       ax,4
+flora		ENDS
+		END

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Process the 'call' command.
 *
 ****************************************************************************/
 
@@ -45,35 +44,35 @@
 
 
 extern tokens       CurrToken;
-extern char        *TxtBuff;
+extern char         *TxtBuff;
 extern stack_entry  *ExprSP;
 
 
-extern void Scan(void);
-extern char *ScanPos(void);
-extern unsigned int ScanCmd(char *);
-extern char *ReScan(char *);
-extern bool ScanEOC(void);
-extern void Recog(unsigned int );
-extern void ReqEOC(void);
-extern void CallExpr( address *);
-extern void ChkPrintList(void);
-extern void DoPrintList(bool );
-extern char *GetCmdEntry(char *,int ,char *);
-extern void ConfigLine(char *);
-extern char *StrCopy(char const *,char *);
-extern void PushSym(void *);
-extern void FreezeRegs(void);
-extern void SwapStack(int );
-extern bool PerformExplicitCall(address , mad_string ,unsigned int );
-extern void NormalExpr(void);
-extern void UnFreezeRegs(void);
-extern void PopEntry(void);
-extern void FreePgmStack(bool );
-extern void     PushLocation( location_list *, type_info * );
-extern void     ParseRegSet( bool, location_list *, type_info * );
-extern void     LocationCreate( location_list *, location_type, void * );
-extern mad_string       ScanCall(void);
+extern void         Scan( void );
+extern char         *ScanPos( void );
+extern unsigned int ScanCmd( char * );
+extern char         *ReScan( char * );
+extern bool         ScanEOC( void );
+extern void         Recog( unsigned int );
+extern void         ReqEOC( void );
+extern void         CallExpr( address *);
+extern void         ChkPrintList( void );
+extern void         DoPrintList( bool );
+extern char         *GetCmdEntry( char *, int, char * );
+extern void         ConfigLine( char * );
+extern char         *StrCopy( char const *, char * );
+extern void         PushSym( void * );
+extern void         FreezeRegs( void );
+extern void         SwapStack( int );
+extern bool         PerformExplicitCall( address, mad_string, unsigned int );
+extern void         NormalExpr( void );
+extern void         UnFreezeRegs( void );
+extern void         PopEntry( void );
+extern void         FreePgmStack( bool );
+extern void         PushLocation( location_list *, type_info * );
+extern void         ParseRegSet( bool, location_list *, type_info * );
+extern void         LocationCreate( location_list *, location_type, void * );
+extern mad_string   ScanCall( void );
 
 
 #define MAX_PARMS       10
@@ -87,7 +86,7 @@ static char             *DefReturn;
  * InitCall - initialize default call attributes
  */
 
-static void FreeParms()
+static void FreeParms( void )
 {
     int         i;
 
@@ -97,7 +96,7 @@ static void FreeParms()
     }
 }
 
-void FiniCall()
+void FiniCall( void )
 {
     _Free( DefReturn );
     DefReturn = NULL;
@@ -124,7 +123,7 @@ static void GetLocation( location_list *ll, type_info *ti )
  * CallSet - set default call attributes
  */
 
-static void DoCallSet()
+static void DoCallSet( void )
 {
     mad_string          ctype;
     int                 parm;
@@ -201,13 +200,13 @@ static void DoCallSet()
     DefCallType = ctype;
 }
 
-void CallSet()
+void CallSet( void )
 {
     DoCallSet();
     _SwitchOn( SW_HAVE_SET_CALL );
 }
 
-void CallConf()
+void CallConf( void )
 {
     char        *ptr;
     unsigned    i;
@@ -246,7 +245,7 @@ void CallConf()
  * CallResults -- print out result of user call
  */
 
-OVL_EXTERN void CallResults()
+OVL_EXTERN void CallResults( void )
 {
     if( CurrToken != T_DIV ) {
         DoPrintList( FALSE );
@@ -258,7 +257,7 @@ OVL_EXTERN void CallResults()
  * ProcCall -- process call immediate command
  */
 
-void ProcCall()
+void ProcCall( void )
 {
     mad_string          ctype;
     int                 parm;

@@ -42,7 +42,7 @@ extern char             *Format( char *buff, char *fmt, ... );
 
 extern char             *TxtBuff;
 
-OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, bool *param )
+OVL_EXTERN bool AynEvent( gui_window * gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;
     unsigned    id;

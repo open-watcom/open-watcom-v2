@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Execution sampler I/O routines.
 *
 ****************************************************************************/
 
@@ -35,6 +34,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include "sample.h"
+#include "wmsg.h"
 #include "smpstuff.h"
 
 static  long    SampOffset;
@@ -75,7 +75,7 @@ int SampSeek( unsigned long loc )
     return( 0 );
 }
 
-int SampClose()
+int SampClose( void )
 {
     SampOffset = 0;
     return( SysClose( SampleHandle ) );

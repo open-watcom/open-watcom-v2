@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <ctype.h>
 #include "plusplus.h"
+
+#include <ctype.h>
+
 #include "errdefns.h"
 #include "memmgr.h"
 #include "hfile.h"

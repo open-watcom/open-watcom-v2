@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ORL test program - useful to identify object files.
 *
 ****************************************************************************/
 
@@ -33,18 +32,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include "trmemcvr.h"
 #include "orl.h"
 
-#define MAX_SECS    255
 
-extern getopt(int, char **, char *);
-extern int      optind;
-extern char     *optarg;
+#define MAX_SECS    255
 
 typedef struct _dump_options {
     int         header;
@@ -77,62 +73,71 @@ static char *machType[] = {
     "DEC Alpha",
     "MIPS R3000",
     "MIPS R4000",
-    "PPC601"
+    "PowerPC 601",
+    "Intel 8086",
+    "AMD64",
+    "SPARC V8+"
 };
 
 orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 /****************************************************/
 {
     orl_symbol_type                     type;
-    char *                              name;
+    char                                *name;
     orl_sec_handle                      sec;
 
     name = ORLSymbolGetName( symbol );
     //printf( "handle = %x", symbol );
-    printf("%-25s:", name );
-    printf(" %4.4x ", ORLSymbolGetValue( symbol ) );
+    printf( "%-25s:", name ? name : "" );
+    printf( " %4.4x ", ORLSymbolGetValue( symbol ) );
     switch( ORLSymbolGetBinding( symbol ) ) {
         case ORL_SYM_BINDING_NONE:
-            printf("n/a ");
+            printf( "n/a " );
             break;
         case ORL_SYM_BINDING_LOCAL:
-            printf("locl");
+            printf( "locl" );
             break;
         case ORL_SYM_BINDING_WEAK:
-            printf("weak");
+            printf( "weak" );
             break;
         case ORL_SYM_BINDING_GLOBAL:
-            printf("glbl");
+            printf( "glbl" );
+            break;
+        case ORL_SYM_BINDING_LAZY:
+            printf( "lazy" );
+            break;
+        case ORL_SYM_BINDING_ALIAS:
+            printf( "alis" );
             break;
     }
-    printf(" ");
+    printf( " " );
     type = ORLSymbolGetType( symbol );
     if( type & ORL_SYM_TYPE_DEBUG ) {
-        printf("debug");
+        printf( "debug" );
     } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
-        printf("undef");
+        printf( "undef" );
     } else if( type & ORL_SYM_TYPE_COMMON ) {
-        printf("comm ");
+        printf( "comm " );
     } else if( type & ORL_SYM_TYPE_ABSOLUTE ) {
-        printf("abs  ");
+        printf( "abs  " );
     } else {
-        printf("     ");
+        printf( "     " );
     }
     printf( " " );
     if( type & ORL_SYM_TYPE_OBJECT ) {
-        printf("obj ");
+        printf( "obj " );
     } else if( type & ORL_SYM_TYPE_FUNCTION ) {
-        printf("func");
+        printf( "func" );
     } else if( type & ORL_SYM_TYPE_SECTION ) {
-        printf("sect");
+        printf( "sect" );
     } else if( type & ORL_SYM_TYPE_FILE ) {
-        printf("file");
+        printf( "file" );
     } else {
-        printf("none");
+        printf( "none" );
     }
     sec = ORLSymbolGetSecHandle( symbol );
     if( sec ) {
-        printf( " (in '%s')", ORLSecGetName( sec ), sec );
+        printf( " (in '%s')", ORLSecGetName( sec ) );
     }
     printf( "\n" );
     return( ORL_OKAY );
@@ -145,6 +150,7 @@ static char *relocTypes[] = {
     "WORD32",           // a direct ref to a 32-bit address
     "WORD32NB",         // a direct ref to a 32-bit address (no base added)
     "HALFHI",           // ref to high half of 32-bit address
+    "HALFHA",           // ref to high half of 32-bit address adjusted for signed low half
     "HALFLO",           // ref to low half of 32-bit address
     "PAIR",             // reloc connecting a HALF_HI and HALF_LO
     "JUMP",             // ref to the part of a 32-bit address valid for jump
@@ -156,25 +162,52 @@ static char *relocTypes[] = {
     "SEGMENT",          // 16-bit segment relocation
     "WORD14",           // a direct ref to a 14-bit address shifted 2
     "WORD24",           // a direct ref to a 24-bit address shifted 2
+    "WORD26",           // a direct ref to a 28-bit address shifted 2
     "REL14",            // relative ref to a 14-bit address shifted 2
     "REL24",            // relative ref to a 24-bit address shifted 2
     "REL32",            // relative ref to a 32-bit address
+    "REL32NOA",         // relative ref to a 32-bit address without -4 adjustment
+    "TOCREL16",         // relative ref to a 16-bit offset from TOC base
+    "TOCREL14",         // relative ref to a 14-bit offset from TOC base shl 2
+    "TOCVREL16",        // like TOCREL16, data explicitly defined in .tocd
+    "TOCVREL14",        // like TOCREL14, data explicitly defined in .tocd
+    "GOT32",            // direct ref to 32-bit offset from GOT base
+    "GOT16",            // direct ref to 16-bit offset from GOT base
+    "GOT16HI",          // direct ref to hi 16 bits of offset from GOT base
+    "GOT16HA",          // ditto adjusted for signed low 16 bits
+    "GOT16LO",          // direct ref to lo 16 bits of offset from GOT base
+    "PLTREL24",         // relative ref to 24-bit offset from PLT base
+    "PLTREL32",         // relative ref to 32-bit offset from PLT base
+    "PLT32",            // direct ref to 32-bit offset from PLT base
+    "PLT16HI",          // direct ref to hi 16 bits of offset from PLT base
+    "PLT16HA",          // ditto adjusted for signed low 16 bits
+    "PLT16LO",          // direct ref to lo 16 bits of offset from PLT base
+    "IFGLUE",           // substitute TOC restore instruction iff symbol is glue code
+    "IMGLUE",           // symbol is glue code; VA is TOC restore instruction
+    "OFS8LO",           // low byte of 16-bit offset
+    "REL8LO",           // low byte of 16-bit relative reference
+    "OFS16SEG",         // 16:16 segment:offset
+    "REL16SEG",         // relative reference 16:16 segment:offset
+    "OFS8HI",           // high byte of 16-bit offset
+    "REL8HI",           // high byte of 16-bit relative reference
+    "OFS32SEG",         // 16:32 segment:offset
+    "REL32SEG",         // relative reference 16:32 segment:offset
 };
 
 orl_return PrintRelocInfo( orl_reloc *reloc )
 /*******************************************/
 {
-    printf(" tag=%8.8x ", reloc->offset );
+    printf( " tag=%8.8x ", reloc->offset );
     if( reloc->type < sizeof( relocTypes ) / sizeof( *relocTypes ) ) {
         printf( "%-8s", relocTypes[reloc->type] );
     } else {
         printf( "??? (%2.2x)", reloc->type );
     }
-    printf(" addend=%8.8x ", reloc->addend );
+    printf( " addend=%8.8x ", reloc->addend );
     if( reloc->symbol ) {
-        printf(" [%s]\n", ORLSymbolGetName( reloc->symbol ) );
+        printf( " [%s]\n", ORLSymbolGetName( reloc->symbol ) );
     } else {
-        printf("\n");
+        printf( "\n" );
     }
     return( ORL_OKAY );
 }
@@ -182,7 +215,7 @@ orl_return PrintRelocInfo( orl_reloc *reloc )
 orl_return PrintSecInfo( orl_sec_handle o_shnd )
 /**********************************************/
 {
-    char *                      buf;
+    char                        *buf;
     int                         loop;
     int                         loop2;
     orl_sec_size                size;
@@ -194,152 +227,153 @@ orl_return PrintSecInfo( orl_sec_handle o_shnd )
     int                         sep;
     int                         segname_printed = 0;
 
+    size = 0;   // just because gcc is a little retarded
     sectionFound = 1;
     if( dump.sections || dump.sec_contents ) {
         buf = ORLSecGetName( o_shnd );
-        printf("[%s]\n", buf );
+        printf( "[%s]\n", buf );
         segname_printed = 1;
         size = ORLSecGetSize( o_shnd );
     }
     if( dump.sections ) {
-        //printf("\nSection Handle:\t0x%x\n", o_shnd );
-        printf("Size=%8.8x ", size );
+        //printf( "\nSection Handle:\t0x%x\n", o_shnd );
+        printf( "Size=%8.8x ", size );
         sec_type = ORLSecGetType( o_shnd );
-        printf("Align=%4.4x ", ORLSecGetAlignment( o_shnd ) );
-        //printf("Section Type:\t%d\n", sec_type );
+        printf( "Align=%4.4x ", ORLSecGetAlignment( o_shnd ) );
+        //printf( "Section Type:\t%d\n", sec_type );
         printf( "(" );
         switch( sec_type ) {
             case ORL_SEC_TYPE_NONE:
-                printf("sec_type_none");
+                printf( "sec_type_none" );
                 break;
             case ORL_SEC_TYPE_NO_BITS:
-                printf("no bits");
+                printf( "no bits" );
                 break;
             case ORL_SEC_TYPE_PROG_BITS:
-                printf("program bits");
+                printf( "program bits" );
                 break;
             case ORL_SEC_TYPE_SYM_TABLE:
-                printf("symbol table");
+                printf( "symbol table" );
                 break;
             case ORL_SEC_TYPE_DYN_SYM_TABLE:
-                printf("dynamic symbol table");
+                printf( "dynamic symbol table" );
                 break;
             case ORL_SEC_TYPE_STR_TABLE:
-                printf("string table");
+                printf( "string table" );
                 break;
             case ORL_SEC_TYPE_RELOCS:
-                printf("relocs");
+                printf( "relocs" );
                 break;
             case ORL_SEC_TYPE_RELOCS_EXPADD:
-                printf("relocs with explicit addends");
+                printf( "relocs with explicit addends" );
                 break;
             case ORL_SEC_TYPE_HASH:
-                printf("hash table");
+                printf( "hash table" );
                 break;
             case ORL_SEC_TYPE_DYNAMIC:
-                printf("dynamic linking information");
+                printf( "dynamic linking information" );
                 break;
             case ORL_SEC_TYPE_NOTE:
-                printf("note or comment");
+                printf( "note or comment" );
                 break;
             default:
-                printf("unknown type? %s",sec_type);
+                printf( "unknown type? %s", sec_type );
                 break;
         }
-        printf(") ");
+        printf( ") " );
         sec_flags = ORLSecGetFlags( o_shnd );
-        printf("ORL_flags=0x%x\n", sec_flags );
+        printf( "ORL_flags=0x%x\n", sec_flags );
         sep = 0;
         if( sec_flags ) printf( " " );
         if( sec_flags & ORL_SEC_FLAG_EXEC ) {
-            printf("executable code");
+            printf( "executable code" );
             sep++;
         }
         if( sec_flags & ORL_SEC_FLAG_INITIALIZED_DATA ) {
             if( sep++ ) printf( ", " );
-            printf("initialized data");
+            printf( "initialized data" );
         }
         if( sec_flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
             if( sep++ ) printf( ", " );
-            printf("uninitialized data");
+            printf( "uninitialized data" );
         }
         if( sec_flags & ORL_SEC_FLAG_GROUPED ) {
             if( sep++ ) printf( ", " );
-            printf("grouped section");
+            printf( "grouped section" );
         }
         if( sec_flags & ORL_SEC_FLAG_NO_PADDING ) {
             if( sep++ ) printf( ", " );
-            printf("no padding to next boundary");
+            printf( "no padding to next boundary" );
         }
         if( sec_flags & ORL_SEC_FLAG_OVERLAY ) {
             if( sep++ ) printf( ", " );
-            printf("contains an overlay");
+            printf( "contains an overlay" );
         }
         if( sec_flags & ORL_SEC_FLAG_REMOVE ) {
             if( sep++ ) printf( ", " );
-            printf("remove at link-time");
+            printf( "remove at link-time" );
         }
         if( sec_flags & ORL_SEC_FLAG_COMDAT ) {
             if( sep++ ) printf( ", " );
-            printf("communal data");
+            printf( "communal data" );
         }
         if( sec_flags & ORL_SEC_FLAG_DISCARDABLE ) {
             if( sep++ ) printf( ", " );
-            printf("discardable");
+            printf( "discardable" );
         }
         if( sec_flags & ORL_SEC_FLAG_NOT_CACHED ) {
             if( sep++ ) printf( ", " );
-            printf("cannot be cached");
+            printf( "cannot be cached" );
         }
         if( sec_flags & ORL_SEC_FLAG_NOT_PAGEABLE) {
             if( sep++ ) printf( ", " );
-            printf("not pageable");
+            printf( "not pageable" );
         }
         if( sec_flags & ORL_SEC_FLAG_SHARED ) {
             if( sep++ ) printf( ", " );
-            printf("shared in memory");
+            printf( "shared in memory" );
         }
         if( sec_flags & ORL_SEC_FLAG_EXECUTE_PERMISSION ) {
             if( sep++ ) printf( ", " );
-            printf("execute permission");
+            printf( "execute permission" );
         }
         if( sec_flags & ORL_SEC_FLAG_READ_PERMISSION ) {
             if( sep++ ) printf( ", " );
-            printf("read permission");
+            printf( "read permission" );
         }
         if( sec_flags & ORL_SEC_FLAG_WRITE_PERMISSION) {
             if( sep++ ) printf( ", " );
-            printf("write permission");
+            printf( "write permission" );
         }
         if( sep ) printf( "\n" );
     }
     if( dump.sec_contents ) {
-        if( ORLSecGetContents( o_shnd, &buf ) == ORL_OKAY ) {
-            printf("Contents:\n");
+        if( ORLSecGetContents( o_shnd, (unsigned_8 **)&buf ) == ORL_OKAY ) {
+            printf( "Contents:\n" );
             for( loop = 0; loop < size; loop += 16 ) {
                 printf( "0x%8.8x: ", loop );
                 for( loop2 = 0; loop2 < 16; loop2++ ) {
                     if( loop + loop2 < size ) {
-                        printf("%2.2x ", buf[loop+loop2] );
+                        printf( "%2.2x ", buf[loop+loop2] );
                     } else {
-                        printf("   ");
+                        printf( "   " );
                     }
                     if( loop2 == 7 ) {
-                        printf(" ");
+                        printf( " " );
                     }
                 }
-                printf(" ");
+                printf( " " );
                 for( loop2 = 0; loop2 < 16 && loop + loop2 < size; loop2++ ) {
                     if( buf[loop+loop2] >= 32 && buf[loop+loop2] <= 122 ) {
-                        printf("%c", buf[loop+loop2]);
+                        printf( "%c", buf[loop+loop2] );
                     } else {
-                        printf(".");
+                        printf( "." );
                     }
                     if( loop2 == 7 ) {
-                        printf(" ");
+                        printf( " " );
                     }
                 }
-                printf("\n");
+                printf( "\n" );
             }
         }
     }
@@ -348,7 +382,7 @@ orl_return PrintSecInfo( orl_sec_handle o_shnd )
         if( reloc_section ) {
             if( !segname_printed++ ) {
                 buf = ORLSecGetName( o_shnd );
-                printf("[%s]\n", buf );
+                printf( "[%s]\n", buf );
             }
             printf( "Relocs in [%s], ", ORLSecGetName( reloc_section ) );
             symbol_table = ORLSecGetSymbolTable( reloc_section );
@@ -363,7 +397,7 @@ orl_return PrintSecInfo( orl_sec_handle o_shnd )
             } else {
                 printf( "symtab=none, strtab=none.\n" );
             }
-            //printf("Relocs:\n");
+            //printf( "Relocs:\n" );
             ORLRelocSecScan( reloc_section, &PrintRelocInfo );
         }
     }
@@ -374,25 +408,25 @@ orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
 /****************************************************/
 {
     if( dump.symbols ) {
-        printf("\nSymbol table\n");
-        printf("~~~~~~~~~~~~\n");
+        printf( "\nSymbol table\n" );
+        printf( "~~~~~~~~~~~~\n" );
         ORLSymbolSecScan( orl_sec_hnd, &PrintSymbolInfo );
     }
     return( ORL_OKAY );
 }
 
-static void * objRead( void *hdl, int len )
-/*****************************************/
+static void * objRead( void *hdl, size_t len )
+/********************************************/
 {
     buff_list   ptr;
 
     ptr = TRMemAlloc( sizeof( *buffList ) + len - 1 );
     ptr->next = buffList;
-    buffList = ptr;
     if( read( (int)hdl, ptr->buff, len ) != len ) {
         TRMemFree( ptr );
         return( NULL );
     }
+    buffList = ptr;
     return( ptr->buff );
 }
 
@@ -414,8 +448,8 @@ void freeBuffList( void )
     }
 }
 
-void main( int argc, char *argv[] )
-/*********************************/
+int main( int argc, char *argv[] )
+/********************************/
 {
     orl_handle                  o_hnd;
     orl_file_handle             o_fhnd;
@@ -431,20 +465,20 @@ void main( int argc, char *argv[] )
     int                         num_secs = 0;
 
     if( argc < 2 ) {
-        printf("Usage:  objread [-ahrsSx] [-o<section>] <objfile>\n");
-        printf("Where <objfile> is a Coff or Elf object file\n");
-        printf("objread reads and dumps an object using ORL\n");
-        printf("Options: -a     dumps all information (except hex dump)\n");
-        printf("         -h     dumps file header information\n");
-        printf("         -r     dumps relocation information\n");
-        printf("         -s     dumps symbol table\n");
-        printf("         -S     dumps section information\n");
-        printf("         -x     get hex dump of section content\n");
-        printf("         -o     only scan <section> for info\n");
-        return;
+        printf( "Usage:  objread [-ahrsSx] [-o<section>] <objfile>\n" );
+        printf( "Where <objfile> is a COFF, ELF or OMF object file\n" );
+        printf( "objread reads and dumps an object using ORL\n" );
+        printf( "Options: -a     dumps all information (except hex dump)\n" );
+        printf( "         -h     dumps file header information\n" );
+        printf( "         -r     dumps relocation information\n" );
+        printf( "         -s     dumps symbol table\n" );
+        printf( "         -S     dumps section information\n" );
+        printf( "         -x     get hex dump of section content\n" );
+        printf( "         -o     only scan <section> for info\n" );
+        return( 1 );
     }
-    while ((c = getopt(argc, argv, "axhrsSo:")) != EOF) {
-        switch (c) {
+    while( (c = getopt( argc, argv, "axhrsSo:" )) != EOF ) {
+        switch( c ) {
             case 'a':
                 dump.relocs++;
                 dump.header++;
@@ -481,8 +515,8 @@ void main( int argc, char *argv[] )
 
     file = open( argv[optind], O_BINARY | O_RDONLY );
     if( file == -1 ) {
-        printf("Error opening file.\n");
-        return;
+        printf( "Error opening file.\n" );
+        return( 2 );
     }
     TRMemOpen();
     funcs.read = &objRead;
@@ -491,13 +525,13 @@ void main( int argc, char *argv[] )
     funcs.free = &TRMemFree;
     o_hnd = ORLInit( &funcs );
     if( o_hnd == NULL ) {
-        printf("Got NULL orl_handle.\n");
-        return;
+        printf( "Got NULL orl_handle.\n" );
+        return( 2 );
     }
     type = ORLFileIdentify( o_hnd, (void *)file );
     if( type == ORL_UNRECOGNIZED_FORMAT ) {
-        printf( "The object file is not in either ELF or COFF format." );
-        return;
+        printf( "The object file is not in either ELF, COFF or OMF format." );
+        return( 1 );
     }
     switch( type ) {
     case ORL_ELF:
@@ -506,18 +540,21 @@ void main( int argc, char *argv[] )
     case ORL_COFF:
         printf( "COFF" );
         break;
+    case ORL_OMF:
+        printf( "OMF" );
+        break;
     default:
-        printf( "?" );
+        printf( "Unknown" );
         break;
     }
     printf( " object file.\n" );
     o_fhnd = ORLFileInit( o_hnd, (void *)file, type );
     if( o_fhnd == NULL ) {
-        printf("Got NULL orl_file_handle.\n");
-        return;
+        printf( "Got NULL orl_file_handle.\n" );
+        return( 2 );
     }
     if( dump.header ) {
-        printf("File %s:\n", argv[optind] );
+        printf( "File %s:\n", argv[optind] );
         machine_type = ORLFileGetMachineType( o_fhnd );
         printf( "Machine Type: " );
         if( machine_type >= ( sizeof( machType ) / sizeof( *machType ) ) ) {
@@ -527,25 +564,25 @@ void main( int argc, char *argv[] )
             printf( "%s", machType[ machine_type ] );
         }
         file_type = ORLFileGetType( o_fhnd );
-        printf(" (", file_type );
+        printf( " (" );
         switch( file_type ) {
             case ORL_FILE_TYPE_NONE:
-                printf("file_type_none");
+                printf( "file_type_none" );
                 break;
             case ORL_FILE_TYPE_OBJECT:
-                printf("object file");
+                printf( "object file" );
                 break;
             case ORL_FILE_TYPE_EXECUTABLE:
-                printf("executable");
+                printf( "executable" );
                 break;
             case ORL_FILE_TYPE_SHARED_OBJECT:
-                printf("shared object");
+                printf( "shared object" );
                 break;
             case ORL_FILE_TYPE_DLL:
-                printf("DLL");
+                printf( "DLL" );
                 break;
             default:
-                printf("unknown file type?");
+                printf( "unknown file type?" );
                 break;
         }
         printf( ")\n" );
@@ -553,40 +590,44 @@ void main( int argc, char *argv[] )
         //printf(" File flags=0x%x\n", file_flags );
         sep = 0;
         if( file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
-            printf("line number info stripped");
+            printf( "line number info stripped" );
             sep = 1;
         }
         if( file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
             if( sep++ ) printf( ", " );
-            printf("relocs stripped");
+            printf( "relocs stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
             if( sep++ ) printf( ", " );
-            printf("local symbols stripped");
+            printf( "local symbols stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
             if( sep++ ) printf( ", " );
-            printf("debug info stripped");
+            printf( "debug info stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
             if( sep++ ) printf( ", " );
-            printf("for 16-bit machine");
+            printf( "for 16-bit machine" );
         }
         if( file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
             if( sep++ ) printf( ", " );
-            printf("for 32-bit machine");
+            printf( "for 32-bit machine" );
+        }
+        if( file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+            if( sep++ ) printf( ", " );
+            printf( "for 64-bit machine" );
         }
         if( file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
             if( sep++ ) printf( ", " );
-            printf("little-endian byte order");
+            printf( "little-endian byte order" );
         }
         if( file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
             if( sep++ ) printf( ", " );
-            printf("big-endian byte order");
+            printf( "big-endian byte order" );
         }
         if( file_flags & ORL_FILE_FLAG_SYSTEM ) {
             if( sep++ ) printf( ", " );
-            printf("system file");
+            printf( "system file" );
         }
         if( sep ) printf( "\n" );
     }
@@ -602,28 +643,29 @@ void main( int argc, char *argv[] )
         }
     } else {
         if( ORLFileScan( o_fhnd, NULL, &PrintSecInfo ) != ORL_OKAY ) {
-            printf("Error occured in scanning file.\n");
-            return;
+            printf( "Error occured in scanning file.\n" );
+            return( 2 );
         }
     }
     if( ORLFileScan( o_fhnd, ".symtab", &PrintSymTable ) != ORL_OKAY ) {
-        printf("Error occured in scanning file for symbol table\n");
-        return;
+        printf( "Error occured in scanning file for symbol table\n" );
+        return( 2 );
     }
     if( ORLFileFini( o_fhnd ) != ORL_OKAY ) {
-        printf("Error calling ORLFileFini.\n");
-        return;
+        printf( "Error calling ORLFileFini.\n" );
+        return( 2 );
     }
     if( close( file ) == -1 ) {
-        printf("Error closing file.\n");
-        return;
+        printf( "Error closing file.\n" );
+        return( 2 );
     }
     if( ORLFini( o_hnd ) != ORL_OKAY ) {
-        printf("Error calling ORLFini.\n");
+        printf( "Error calling ORLFini.\n" );
     }
     freeBuffList();
-    #ifdef TRMEM
+#ifdef TRMEM
     TRMemPrtList();
-    #endif
+#endif
     TRMemClose();
+    return( 0 );
 }

@@ -1,0 +1,4 @@
+name=Help_OtherMakeDisks
+include=hother1.dlg
+static_text=
+include=ok.dlg

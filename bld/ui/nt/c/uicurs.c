@@ -107,7 +107,7 @@ void global uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void global uisetcursor( unsigned row, unsigned col, int typ, int attr )
+void global uisetcursor( ORD row, ORD col, int typ, int attr )
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

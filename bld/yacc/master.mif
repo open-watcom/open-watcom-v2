@@ -1,0 +1,32 @@
+proj_name = yacc
+yacc_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"$(yacc_dir)/h"
+
+.c: ../c
+
+objs =                  &
+        bitsets.obj     &
+        buildpro.obj    &
+        default.obj     &
+        defshift.obj    &
+        dont_opt.obj    &
+        elimunit.obj    &
+        fpopen.obj      &
+        genfast.obj     &
+        gensupp.obj     &
+        gentable.obj    &
+        getname.obj     &
+        lalr1.obj       &
+        lr0.obj         &
+        parse.obj       &
+        sentence.obj    &
+        used.obj        &
+        yacc.obj
+# genc.obj, genobj.obj, and recover.obj are unused
+
+!include exetarg.mif

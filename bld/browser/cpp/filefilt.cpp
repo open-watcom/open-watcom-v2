@@ -294,9 +294,9 @@ void FileFilter::write( CheckedFile & file )
     for( i = 0; i < numPatterns; i += 1 ) {
         FFiltPattern * pat = (*_patterns)[ i ];
 
-        type = pat->_type;
+        type = (uint_8)pat->_type;
 
-        file.write( &type, sizeof( uint_8 ) );
+        file.write( &type, sizeof( type ) );
         file.writeNString( pat->_pattern );
     }
 }

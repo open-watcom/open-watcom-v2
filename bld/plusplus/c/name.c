@@ -24,18 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Symbol name management.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include <stdio.h>
+#include <limits.h>
+
 #include "errdefns.h"
 #include "memmgr.h"
 #include "name.h"
@@ -48,7 +46,7 @@
 #include "pragdefn.h"
 #endif
 
-#pragma pack(1);
+#pragma pack( 1 )
 typedef struct name NAME;
 struct name {
     NAME                *next;
@@ -56,7 +54,7 @@ struct name {
     name_hash_t         hash;
     char                name[1];
 };
-#pragma pack();
+#pragma pack()
 
 #define NAME_TABLE_HASH NAME_HASH
 

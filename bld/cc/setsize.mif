@@ -1,4 +1,0 @@
-!ifdef on_build_machine
-        @%make all.osz
-        objsetsz all.osz
-!endif

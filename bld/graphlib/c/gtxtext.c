@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-void _WCI86FAR _CGRAPH _gettextextent( short x, short y, char _WCI86FAR * str,
+_WCRTLINK void _WCI86FAR _CGRAPH _gettextextent( short x, short y, char _WCI86FAR * str,
 /*=============================*/ struct xycoord _WCI86FAR * concat,
                                   struct xycoord _WCI86FAR * extent )
 

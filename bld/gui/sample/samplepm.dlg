@@ -1,0 +1,201 @@
+DLGTEMPLATE 100
+BEGIN
+    DIALOG "GUI Test Dialog #100", 100, 23, 118, 304, 96, WS_VISIBLE
+                , FCF_TITLEBAR
+                 | WS_VISIBLE | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "10.System"
+
+    BEGIN
+            CONTROL             "Push", 101, 18, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Push", 102, 126, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Push", 103, 225, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "This is some stupid text. More stupid text. Shows how neat this is.", 104, 9, 82, 280, 8, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 105, 9, 62, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 106, 9, 55, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 107, 9, 48, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 108, 9, 68, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+    //          "Radio", 105, 0, 96, 0, 0, WS_VISIBLE
+    //          "Radio", 106, 0, 96, 0, 0, WS_VISIBLE
+    //          "Radio", 107, 0, 96, 0, 0, WS_VISIBLE
+    //          "Radio", 108, 0, 96, 0, 0, WS_VISIBLE
+            CONTROL             "Check", 110, 70, 68, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 111, 70, 62, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 112, 70, 55, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 113, 70, 48, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "", 116, 9, 19, 272, 10, WC_ENTRYFIELD
+                 , ES_LEFT | WS_VISIBLE | WS_TABSTOP
+            CONTROL             "Type Goop in here", 118, 9, 37, 72, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "", 119, 126, 43, 56, 33, WC_LISTBOX
+                 , WS_VISIBLE | WS_TABSTOP
+            CONTROL             "", 120, 201, 36, 56, 40, WC_COMBOBOX
+                 , CBS_DROPDOWN | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+    END
+END
+
+DLGTEMPLATE 101
+BEGIN
+    DIALOG "GUI Test Dialog #101", 101, 18, 128, 324, 82, WS_VISIBLE
+                , FCF_TITLEBAR
+                 | WS_VISIBLE | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "10.System"
+
+    BEGIN
+            CONTROL             "Push", 122, 136, 4, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Some Controls may not be handled correctly", 124, 3, 74, 267, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Group", 125, 4, 36, 75, 33, WC_BUTTON
+                 , WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Frame", 126, 89, 36, 42, 26, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, RGB_BLACK
+            PRESPARAMS PP_FOREGROUNDCOLOR, RGB_BLACK
+            CONTROL             "DefaultIcon", 127, 145, 52, 23, 15, WC_STATIC
+                 , SS_ICON | WS_VISIBLE | DT_MNEMONIC
+    //          "", 128, 0, 82, 0, 0, WS_VISIBLE
+    //          "", 129, 0, 82, 0, 0, WS_VISIBLE
+            CONTROL             "Group Box", 130, 10, 21, 43, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Static", 131, 93, 22, 23, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Icon", 132, 150, 40, 23, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Horizontal Scroll Bar", 133, 178, 30, 82, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Vertical Scroll Bar", 133, 244, 9, 70, 6, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+    END
+END
+
+DLGTEMPLATE 200
+BEGIN
+    DIALOG "Dialog", 200, 23, 102, 306, 112, WS_VISIBLE
+                , FCF_TITLEBAR
+                 | WS_VISIBLE | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+
+    BEGIN
+            CONTROL             "OK", 100, 12, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Cancel", 101, 219, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Group", 102, 9, 52, 63, 54, WC_BUTTON
+                 , WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 103, 16, 91, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 104, 16, 70, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 105, 16, 80, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 106, 16, 59, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Group", 107, 83, 52, 59, 52, WC_BUTTON
+                 , WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Check", 108, 89, 87, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 109, 88, 69, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 110, 86, 57, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Test GUI stuff. This uses really neat res dialog stuff", 112, 162, 93, 117, 14, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Frame", 113, 91, 4, 105, 40, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, RGB_BLACK
+            PRESPARAMS PP_FOREGROUNDCOLOR, RGB_BLACK
+            CONTROL             "Frame", 114, 99, 10, 85, 27, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, 0x00C0C0C0L
+            PRESPARAMS PP_FOREGROUNDCOLOR, 0x00C0C0C0L
+            CONTROL             "Frame", 115, 112, 16, 58, 14, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, RGB_WHITE
+            PRESPARAMS PP_FOREGROUNDCOLOR, RGB_WHITE
+            CONTROL             "Frame", 116, 118, 20, 43, 7, WC_STATIC
+                 , SS_BKGNDRECT | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, 0x00C0C0C0L
+            PRESPARAMS PP_FOREGROUNDCOLOR, 0x00C0C0C0L
+            CONTROL             "", 117, 0, 30, 83, 12, WC_ENTRYFIELD
+                 , ES_LEFT | WS_VISIBLE | WS_TABSTOP
+            CONTROL             "", 118, 153, 52, 56, 33, WC_LISTBOX
+                 , WS_VISIBLE | WS_TABSTOP
+            CONTROL             "", 119, 218, 49, 56, 36, WC_COMBOBOX
+                 , CBS_DROPDOWN | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "", 120, 219, 32, 56, 8, WC_SCROLLBAR
+                 , SBS_HORZ | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "", 121, 285, 4, 11, 33, WC_SCROLLBAR
+                 , SBS_VERT | WS_VISIBLE | DT_MNEMONIC
+    END
+END
+
+DLGTEMPLATE 201
+BEGIN
+    DIALOG "Dialog", 201, 23, 102, 306, 112, WS_VISIBLE
+                , FCF_TITLEBAR
+                 | WS_VISIBLE | FCF_SYSMENU
+    PRESPARAMS PP_FONTNAMESIZE, "8.Helv"
+
+    BEGIN
+            CONTROL             "OK", 100, 12, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Cancel", 101, 219, 5, 46, 11, WC_BUTTON
+                 , BS_PUSHBUTTON | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Group", 102, 9, 52, 63, 54, WC_BUTTON
+                 , WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 103, 16, 91, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 104, 16, 70, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 105, 16, 80, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Radio", 106, 16, 59, 46, 8, WC_BUTTON
+                 , BS_AUTORADIOBUTTON | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Group", 107, 83, 52, 59, 52, WC_BUTTON
+                 , WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Check", 108, 89, 87, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 109, 88, 69, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Check", 110, 86, 57, 46, 8, WC_BUTTON
+                 , BS_AUTOCHECKBOX | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+            CONTROL             "Test GUI stuff. This uses really neat res dialog stuff", 112, 162, 93, 117, 14, WC_STATIC
+                 , SS_TEXT | DT_LEFT | WS_VISIBLE | DT_MNEMONIC
+            CONTROL             "Frame", 113, 91, 4, 105, 40, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, RGB_BLACK
+            PRESPARAMS PP_FOREGROUNDCOLOR, RGB_BLACK
+            CONTROL             "Frame", 114, 99, 10, 85, 27, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, 0x00C0C0C0L
+            PRESPARAMS PP_FOREGROUNDCOLOR, 0x00C0C0C0L
+            CONTROL             "Frame", 115, 112, 16, 58, 14, WC_STATIC
+                 , SS_BKGNDFRAME | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, RGB_WHITE
+            PRESPARAMS PP_FOREGROUNDCOLOR, RGB_WHITE
+            CONTROL             "Frame", 116, 118, 20, 43, 7, WC_STATIC
+                 , SS_BKGNDRECT | WS_VISIBLE | DT_MNEMONIC
+            PRESPARAMS PP_BACKGROUNDCOLOR, 0x00C0C0C0L
+            PRESPARAMS PP_FOREGROUNDCOLOR, 0x00C0C0C0L
+            CONTROL             "", 117, 0, 30, 83, 12, WC_ENTRYFIELD
+                 , ES_LEFT | WS_VISIBLE | WS_TABSTOP
+            CONTROL             "", 118, 153, 52, 56, 33, WC_LISTBOX
+                 , WS_VISIBLE | WS_TABSTOP
+            CONTROL             "", 119, 218, 49, 56, 36, WC_COMBOBOX
+                 , CBS_DROPDOWN | WS_VISIBLE | WS_TABSTOP | DT_MNEMONIC
+    //          "", 120, 0, 112, 0, 0, WS_VISIBLE
+    //          "", 121, 0, 112, 0, 0, WS_VISIBLE
+    END
+END

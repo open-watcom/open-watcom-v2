@@ -24,11 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX rev utility
+*               Reverses character order of files
 *
 ****************************************************************************/
-
 
 
 #include <stdlib.h>
@@ -45,7 +44,7 @@
 
 char *OptEnvVar="rev";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: rev [-?X] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : reverse character order of specified files",

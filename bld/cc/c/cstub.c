@@ -50,7 +50,7 @@ void EmitQuads()
 void StaticInit( sym )
         register SYMPTR sym;
     {
-        InitSymData( sym->sym_type );
+        InitSymData( sym->sym_type, sym->sym_type );
     }
 
 void EmitStrPtr( str )

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX expand utility
+*               Expands tabs to spaces
 *
 ****************************************************************************/
 
@@ -43,7 +43,7 @@
 
 char *OptEnvVar="expand";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: expand [-?X] [-number[,number...]] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : files to expand",

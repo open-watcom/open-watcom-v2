@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Trap module loader for 32-bit OS/2.
 *
 ****************************************************************************/
 
@@ -34,44 +33,54 @@
 #define  INCL_DOSMISC
 #include <os2.h>
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include "trpimp.h"
 #include "tcerr.h"
 
-static trap_version     (TRAPENTRY *InitFunc)(char *,char *, bool);
-static void             (TRAPENTRY *FiniFunc)(void);
-static unsigned_16      (TRAPENTRY *InfoFunc)(HAB, HWND);
-static char             (TRAPENTRY *HardFunc)(char);
+static trap_version     (TRAPENTRY *InitFunc)( char *,char *, bool );
+static void             (TRAPENTRY *FiniFunc)( void );
+static unsigned_16      (TRAPENTRY *InfoFunc)( HAB, HWND );
+static char             (TRAPENTRY *HardFunc)( char );
 
 extern trap_version     TrapVer;
-extern unsigned         (TRAPENTRY *ReqFunc)(unsigned, mx_entry *,
-                                             unsigned, mx_entry *);
+extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
+                                              unsigned, mx_entry * );
 
-bool IsTrapFilePumpingMessageQueue()
+bool IsTrapFilePumpingMessageQueue( void )
 {
-    return (InfoFunc != NULL);
+    return( InfoFunc != NULL );
 }
 
-void TellHandles(HAB hab, HWND hwnd)
+void TellHandles( HAB hab, HWND hwnd )
 {
-    if (InfoFunc == NULL)
+    if( InfoFunc == NULL )
         return;
 
-    InfoFunc(hab, hwnd);
+    InfoFunc( hab, hwnd );
 }
 
-
-char TellHardMode(char hard)
+char TellHardMode( char hard )
 {
-    if (HardFunc == NULL)
-        return  0;
+    if( HardFunc == NULL )
+        return( 0 );
 
-    return HardFunc(hard);
+    return( HardFunc( hard ) );
 }
 
-char *LoadTrap(char *trapbuff, char *buff, trap_version *trap_ver)
+void KillTrap( void )
+{
+    FiniFunc();
+    ReqFunc  = NULL;
+    InitFunc = NULL;
+    FiniFunc = NULL;
+    InfoFunc = NULL;
+    HardFunc = NULL;
+}
+
+char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                trpfile[CCHMAXPATH];
     int                 len;
@@ -82,11 +91,11 @@ char *LoadTrap(char *trapbuff, char *buff, trap_version *trap_ver)
     char                trpname[CCHMAXPATH] = "";
     char                trppath[CCHMAXPATH] = "";
 
-    if (trapbuff == NULL)
+    if( trapbuff == NULL )
         trapbuff = "std";
 
     ptr = trapbuff;
-    while (*ptr != '\0' && *ptr != ';') {
+    while( *ptr != '\0' && *ptr != ';' ) {
         ++ptr;
     }
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
@@ -97,51 +106,40 @@ char *LoadTrap(char *trapbuff, char *buff, trap_version *trap_ver)
     /* To prevent conflicts with the 16-bit DIP DLLs, the 32-bit versions have the "D32"
      * extension. We will search for them along the PATH (not in LIBPATH);
      */
-    strcpy(trpname, trpfile);
-    strcat(trpname, ".D32");
-    if (DosSearchPath(SEARCH_IGNORENETERRS | SEARCH_ENVIRONMENT | SEARCH_CUR_DIRECTORY,
-            "PATH", trpname, trppath, sizeof(trppath)) != 0) {
-        strcpy(buff, TC_ERR_CANT_LOAD_TRAP);
-        return buff;
-        }
+    strcpy( trpname, trpfile );
+    strcat( trpname, ".D32" );
+    _searchenv( trpname, "PATH", trppath );
+    if( trppath[0] == '\0' ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpname );
+        return( buff );
+    }
 
-    rc = DosLoadModule(NULL, 0, trppath, &hmodDll);
-    if (rc != 0) {
-        strcpy(buff, TC_ERR_CANT_LOAD_TRAP);
-        return buff;
+    rc = DosLoadModule( NULL, 0, trppath, &hmodDll );
+    if( rc != 0 ) {
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trppath );
+        return( buff );
     }
-    strcpy(buff, TC_ERR_WRONG_TRAP_VERSION);
-    if (DosQueryProcAddr(hmodDll, 1, NULL, (PFN*)&InitFunc) != 0
-     || DosQueryProcAddr(hmodDll, 2, NULL, (PFN*)&FiniFunc) != 0
-     || DosQueryProcAddr(hmodDll, 3, NULL, (PFN*)&ReqFunc) != 0) {
-        return buff;
+    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( DosQueryProcAddr( hmodDll, 1, NULL, (PFN*)&InitFunc ) != 0
+     || DosQueryProcAddr( hmodDll, 2, NULL, (PFN*)&FiniFunc ) != 0
+     || DosQueryProcAddr( hmodDll, 3, NULL, (PFN*)&ReqFunc ) != 0 ) {
+        return( buff );
     }
-    if (DosQueryProcAddr(hmodDll, 4, NULL, (PFN*)&InfoFunc) != 0) {
+    if( DosQueryProcAddr( hmodDll, 4, NULL, (PFN*)&InfoFunc ) != 0 ) {
         InfoFunc = NULL;
     }
-    if (DosQueryProcAddr(hmodDll, 5, NULL, (PFN*)&HardFunc) != 0 ) {
+    if( DosQueryProcAddr( hmodDll, 5, NULL, (PFN*)&HardFunc ) != 0 ) {
         HardFunc = NULL;
     }
-    *trap_ver = InitFunc(parm, trpfile, trap_ver->remote);
-    if (trpfile[0] != '\0') {
-        strcpy(buff, (char *)trpfile);
-        return buff;
+    *trap_ver = InitFunc( parm, trpfile, trap_ver->remote );
+    if( trpfile[0] != '\0' ) {
+        strcpy( buff, (char *)trpfile );
+        return( buff );
     }
-    if (!TrapVersionOK(*trap_ver)) {
+    if( !TrapVersionOK( *trap_ver ) ) {
         KillTrap();
-        return buff;
+        return( buff );
     }
     TrapVer = *trap_ver;
-    return NULL;
-}
-
-
-void KillTrap()
-{
-    FiniFunc();
-    ReqFunc  = NULL;
-    InitFunc = NULL;
-    FiniFunc = NULL;
-    InfoFunc = NULL;
-    HardFunc = NULL;
+    return( NULL );
 }

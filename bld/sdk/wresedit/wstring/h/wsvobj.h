@@ -46,8 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WSaveObject ( WStringEditInfo *, Bool, Bool );
-extern Bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table,
-                          char **file_name, Bool prompt );
+extern Bool WSaveObject( WStringEditInfo *, Bool, Bool );
+extern Bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name, Bool prompt );
 
 #endif

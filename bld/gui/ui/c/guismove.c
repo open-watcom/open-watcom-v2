@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Window moving and resizing.
 *
 ****************************************************************************/
 
@@ -187,7 +186,7 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
  * MoveResizeCancel -- cancel a move or resize
  */
 
-void MoveResizeCancel()
+void MoveResizeCancel( void )
 {
     uimenudisable( FALSE );
     uibandfini();

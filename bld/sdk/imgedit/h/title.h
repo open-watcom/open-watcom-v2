@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern void        DisplayTitleScreen( HINSTANCE, HWND, UINT, char * );
+extern void DisplayTitleScreen( HINSTANCE, HWND, UINT, char * );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Error message output.
 *
 ****************************************************************************/
 
@@ -43,36 +42,35 @@
 #include <string.h>
 
 
-
 extern   char   *TxtBuff;
 
 extern tokens           CurrToken;
 extern input_stack      *InpStack;
 extern int              ScanSavePtr;
 
-extern char             *StrCopy(char *,char *);
-extern char             *FmtStr(char *,char *,va_list);
-extern char             *Format(char *,char *,... );
-extern char             *ScanPos(void);
-extern void             Scan(void);
-extern unsigned int     ScanLen(void);
-extern void             ScanExpr(void *);
-extern void             ExprPurge(void);
-extern void             Ring(void);
-extern void             DUIFlushKeys(void);
-extern bool             PurgeInpStack(void);
-extern void             UnFreezeRegs(void);
-extern void             DUIWndDebug();
-extern void             CmdError();
-extern void             CaptureError();
-extern void             BrkCmdError();
-extern void             RestoreRadix();
-extern void             PurgeSymHandles();
+extern char             *StrCopy( char *, char * );
+extern char             *FmtStr( char *, char *, va_list );
+extern char             *Format( char *, char *, ... );
+extern char             *ScanPos( void );
+extern void             Scan( void );
+extern unsigned int     ScanLen( void );
+extern void             ScanExpr( void * );
+extern void             ExprPurge( void );
+extern void             Ring( void );
+extern void             DUIFlushKeys( void );
+extern bool             PurgeInpStack( void );
+extern void             UnFreezeRegs( void );
+extern void             DUIWndDebug( void );
+extern void             CmdError( void );
+extern void             CaptureError( void );
+extern void             BrkCmdError( void );
+extern void             RestoreRadix( void );
+extern void             PurgeSymHandles( void );
 extern void             DlgCmd( void );
 extern bool             SetProgStartHook( bool );
 extern void             StartupErr( char * );
-extern void             Suicide();
-extern void             ProcInput(void);
+extern void             Suicide( void );
+extern void             ProcInput( void );
 
 /*
  * Error - output error message and suicide

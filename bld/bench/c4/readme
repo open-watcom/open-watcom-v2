@@ -1,0 +1,57 @@
+                    FHOURSTONES 1.0
+
+
+This benchmark is distilled from my pet application `c4', a connect-4
+solver.  It features a streamlined implementation of exhaustive
+alpha-beta search using the history heuristic and a space optimized
+hashtable.
+
+Some technical bits:
+Of the full 49 bit lock that describes a connect-4 position, only 32 are
+stored in the hashtable entry while the remaining 17 are subsumed in the
+hash-address. To also accomodate 8 fold probing, a minimum of a million
+hash table entries are required. The benchmark uses just over 5Mb, 
+unlikely to fit into any sort of cache in the foreseeable future. This
+makes the Fhourstones measure relatively immune to huge cache sizes.
+
+The potentially expensive modulo operations are implemented with repeated
+table lookup. The use of small integer sizes is available as an option.
+
+Although this benchmark, like nsieve, emphasizes random access
+performance, it also exercises standard scalar performance; the recursive
+alpha-beta calls, incremental threat table computations, history table
+updates, and move-reordering represent a fair mix of scalar operations.
+
+The benchmark input is a relatively difficult 12-ply position.
+The output should look like:
+
+Fhourstones 1.0
+options:    small ints
+Solving 12-ply position after 444333377755 . . .
+score = 7 (+)  work = 21
+3871322 pos / 98.7 sec = 39.2 Kpos/sec
+store rate = 0.914
+- 0.211  < 0.422  = 0.059  > 0.054  + 0.254
+ 56765  376940  173046  174816  121323   70603   38079   19252
+  9741    4853    2393    1147     537     291     116      54
+    30      16       3       2       3       1       0       0
+     0       0       0       0       0       0       0       0
+
+The first line identifies the benchmark and version number. Line 2 shows
+which program-specific options are active.  Currently, two are supported:
+-DSMALL makes the program use chars and shorts in moderately sized arrays
+of small integers, while -DMOD64 computes the modulo hash function
+directly with 64 bit integers.  The latter is only advised on machines
+with hardware integer divide (64/64->64) or multiply (64x64->128). The 3rd
+line says which position is being solved (input ends with =), or tested
+for a 1st player win (+) or for a 2nd player win (-). Due to the
+transposition table and history heuristic, the reduced searches are not
+necessarily faster.  The next line indicates the score of the position and
+a logarithmic measure of difficulty on a scale from 0 to 31. The fifth
+line shows the machine performance; of all the output, only the last 2
+numbers on this line should differ from the above output.  The store rate
+gives the percentage of positions actually entered in the transposition
+table versus those offered to it.  The rest of the output shows the final
+distribution of positions in the transposition table with respect to score
+(line 7) and work (lines 8-11).
+

@@ -24,21 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CodeView source line cues.
 *
 ****************************************************************************/
 
 
-#include <malloc.h>
 #include <stddef.h>
 #include <string.h>
+#include "walloca.h"
 #include "cvinfo.h"
 
-
-/*
-        Stuff for source line cues
-*/
 
 typedef struct {
     unsigned_32 start;
@@ -74,8 +69,8 @@ walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
     file_off = __alloca( file_tab_size );
     memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
     ic->im = im;
-    ic->pair = 0;
     for( i = 0; i < file_tab_count; ++i ) {
+        ic->pair = 0;
         ic->file = cde->lfo + file_off[i];
         fp = VMBlock( ii, ic->file, sizeof( *fp ) );
         if( fp == NULL ) return( WR_FAIL );
@@ -379,34 +374,85 @@ unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
     return( hi_idx );
 }
 
+search_result SearchFile( imp_image_handle              *ii,
+                          address                       addr,
+                          imp_cue_handle                *ic,
+                          virt_mem                      file_base,
+                          cv_directory_entry            *cde,
+                          addr_off                      *best_offset)
+{
+    cv_sst_src_module_file_table        *fp;
+    cv_sst_src_module_line_number       *lp;
+    virt_mem                            line_base;
+    off_range                           *ranges;
+    unsigned_32                         *lines;
+    unsigned                            num_segs;
+    unsigned                            seg_idx;
+    address                             curr_addr;
+    unsigned                            pair;
+
+    fp = VMBlock( ii, file_base, sizeof( *fp ) );
+    if( fp == NULL ) return( SR_NONE );
+    num_segs = fp->cSeg;
+    fp = VMBlock( ii, file_base, sizeof( *fp )
+            + num_segs * (sizeof( unsigned_32 ) + sizeof( off_range ) ) );
+    if( fp == NULL ) return( SR_NONE );
+    ranges = __alloca( num_segs * sizeof( *ranges ) );
+    lines  = __alloca( num_segs * sizeof( *lines ) );
+    memcpy( lines, &fp->baseSrcLn[0], num_segs * sizeof( *lines ) );
+    memcpy( ranges, &fp->baseSrcLn[num_segs], num_segs * sizeof( *ranges ) );
+    for( seg_idx = 0; seg_idx < num_segs; ++seg_idx ) {
+        line_base = lines[seg_idx] + cde->lfo;
+        lp = VMBlock( ii, line_base, sizeof( *lp ) );
+        if( lp == NULL ) return( SR_NONE );
+        curr_addr.mach.segment = lp->Seg;
+        curr_addr.mach.offset  = 0;
+        MapLogical( ii, &curr_addr );
+        if( DCSameAddrSpace( curr_addr, addr ) != DS_OK ) continue;
+        if( (ranges[seg_idx].start != 0 || ranges[seg_idx].end != 0)
+          && (addr.mach.offset < ranges[seg_idx].start + curr_addr.mach.offset
+          /* The next condition is commented out. Digital Mars tools are known to
+           * emit buggy CV4 data where the upper range does not cover all code,
+           * causing us to fail finding last addresses within a module.
+           */
+          /*|| addr.mach.offset > ranges[seg_idx].end + curr_addr.mach.offset */ ) ) {
+            continue;
+        }
+        pair = SearchOffsets( ii, line_base +
+            offsetof( cv_sst_src_module_line_number, offset[0] ),
+            lp->cPair, addr.mach.offset, best_offset, curr_addr.mach.offset );
+        if( pair != NO_IDX ) {
+            ic->file = file_base;
+            ic->line = line_base;
+            ic->pair = pair;
+            if( *best_offset == addr.mach.offset ) return( SR_EXACT );
+        }
+    }
+    /* We abuse the SR_FAIL return code to really mean SR_CONTINUE (ie. continue
+     * searching other files). A SR_CONTINUE code is not defined because it does
+     * not make sense as a return value for DIPImpAddrCue()
+     */
+    return( SR_FAIL );
+}
+
 search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
     cv_directory_entry                  *cde;
     cv_sst_src_module_header            *hdr;
-    cv_sst_src_module_file_table        *fp;
-    cv_sst_src_module_line_number       *lp;
-    off_range                           *ranges;
     unsigned_32                         *files;
-    unsigned_32                         *lines;
-    virt_mem                            line_base;
     virt_mem                            file_base;
     unsigned                            num_files;
-    unsigned                            num_segs;
     unsigned                            file_idx;
-    unsigned                            seg_idx;
-    address                             curr_addr;
     addr_off                            best_offset;
-    unsigned                            pair;
     unsigned                            file_tab_size;
+    search_result                       rc;
 
     cde = FindDirEntry( ii, im, sstSrcModule );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_NONE );
     ic->im = im;
-    ranges = __alloca( hdr->cSeg * sizeof( *ranges ) );
-    lines  = __alloca( hdr->cSeg * sizeof( *lines ) );
     num_files = hdr->cFile;
     file_tab_size = num_files * sizeof( unsigned_32 );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) + file_tab_size );
@@ -415,37 +461,8 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
     best_offset = (addr_off)-1UL;
     for( file_idx = 0; file_idx < num_files; ++file_idx ) {
         file_base = files[file_idx] + cde->lfo;
-        fp = VMBlock( ii, file_base, sizeof( *fp ) );
-        if( fp == NULL ) return( SR_NONE );
-        num_segs = fp->cSeg;
-        fp = VMBlock( ii, file_base, sizeof( *fp )
-                + num_segs * (sizeof( unsigned_32 ) + sizeof( off_range ) ) );
-        if( fp == NULL ) return( SR_NONE );
-        memcpy( lines, &fp->baseSrcLn[0], num_segs * sizeof( *lines ) );
-        memcpy( ranges, &fp->baseSrcLn[num_segs], num_segs * sizeof( *ranges ) );
-        for( seg_idx = 0; seg_idx < num_segs; ++seg_idx ) {
-            line_base = lines[seg_idx] + cde->lfo;
-            lp = VMBlock( ii, line_base, sizeof( *lp ) );
-            if( lp == NULL ) return( SR_NONE );
-            curr_addr.mach.segment = lp->Seg;
-            curr_addr.mach.offset  = 0;
-            MapLogical( ii, &curr_addr );
-            if( DCSameAddrSpace( curr_addr, addr ) != DS_OK ) continue;
-            if( (ranges[seg_idx].start != 0 || ranges[seg_idx].end != 0)
-              && (addr.mach.offset < ranges[seg_idx].start + curr_addr.mach.offset
-              || addr.mach.offset > ranges[seg_idx].end + curr_addr.mach.offset) ) {
-                continue;
-            }
-            pair = SearchOffsets( ii, line_base +
-                offsetof( cv_sst_src_module_line_number, offset[0] ),
-                lp->cPair, addr.mach.offset, &best_offset, curr_addr.mach.offset );
-            if( pair != NO_IDX ) {
-                ic->file = file_base;
-                ic->line = line_base;
-                ic->pair = pair;
-                if( best_offset == addr.mach.offset ) return( SR_EXACT );
-            }
-        }
+        rc = SearchFile( ii, addr, ic, file_base, cde, &best_offset );
+        if( rc != SR_FAIL ) return( rc );   /* see comment in SearchFile above */
     }
     if( best_offset == (addr_off)-1UL ) return( SR_NONE );
     return( SR_CLOSEST );

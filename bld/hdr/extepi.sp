@@ -1,0 +1,1 @@
+#endif /* extensions enabled */

@@ -1,23 +1,26 @@
 dig_os_nt       = nt
 dig_os_dos      = dsx
-dig_os_os2      = os2
+dig_os_os2      = os2v2
 dig_os_qnx      = qnx
 dig_os_win      = win
+dig_os_linux    = linux
+dig_os_bsd      = bsd
+dig_os_osx      = osx
 
-dig_os          = $(dig_os_$(host_OS))
+dig_os          = $(dig_os_$(host_os))
 
-!include $(dig_dir)\mif\dipcli.mif
-!include $(dig_dir)\mif\madcli.mif
+!include $(dig_dir)/mif/dipcli.mif
+!include $(dig_dir)/mif/madcli.mif
 
 srcmgt_obj = srcmgt.obj
 
-!ifndef on_build_machine
+!ifeq release 0
 debug_objs = dumpmem.obj
 !endif
 
 !ifdef wprof_trmem
-trmem_objs = $(trmem_dir)\dos\trmemcvr.obj &
-             $(trmem_dir)\dos\trmem.obj
+trmem_objs = $(trmem_dir)/dos/trmemcvr.obj &
+             $(trmem_dir)/dos/trmem.obj
 !endif
 
 objs = $(trmem_objs) $(debug_objs) $(srcmgt_obj) &

@@ -221,10 +221,10 @@ BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam,
         info = (LocalMonInfo *)( ( (CREATESTRUCT *)lparam )->lpCreateParams );
         SetWindowLong( hwnd, 0, (DWORD)info );
         if( !SetTimer( hwnd, MONITOR_TIMER, REFRESH_TIME, NULL ) ) {
-            msgtitle = AllocRCString( STR_MONITOR_LCL_HEAP );
+            msgtitle = HWAllocRCString( STR_MONITOR_LCL_HEAP );
             RCMessageBox( NULL, STR_CANT_OPEN_LCL_MONITOR, msgtitle,
                         MB_OK | MB_TASKMODAL | MB_ICONINFORMATION );
-            FreeRCString( msgtitle );
+            HWFreeRCString( msgtitle );
             DestroyWindow( hwnd );
         }
         GetMonitorInfo( info );
@@ -299,12 +299,12 @@ void BeginMonitor( heap_list *item ) {
     char                *msgtitle;
 
     if( !LabelsInitialized ) {
-        MonitorLabels[ STATIC_SIZE ] = GetRCString( STR_STATIC_DATA );
-        MonitorLabels[ STACK_SIZE ] = GetRCString( STR_STACK_ALLOCATED );
-        MonitorLabels[ FIXED_SIZE ] = GetRCString( STR_FIXED_HEAP );
-        MonitorLabels[ MOVE_SIZE ] = GetRCString( STR_MOVEABLE_HEAP );
-        MonitorLabels[ FREE_SIZE ] = GetRCString( STR_FREE_HEAP );
-        MonitorLabels[ OTHER_SIZE ] = GetRCString( STR_MONITOR_UNKNOWN );
+        MonitorLabels[ STATIC_SIZE ] = HWGetRCString( STR_STATIC_DATA );
+        MonitorLabels[ STACK_SIZE ] = HWGetRCString( STR_STACK_ALLOCATED );
+        MonitorLabels[ FIXED_SIZE ] = HWGetRCString( STR_FIXED_HEAP );
+        MonitorLabels[ MOVE_SIZE ] = HWGetRCString( STR_MOVEABLE_HEAP );
+        MonitorLabels[ FREE_SIZE ] = HWGetRCString( STR_FREE_HEAP );
+        MonitorLabels[ OTHER_SIZE ] = HWGetRCString( STR_MONITOR_UNKNOWN );
         LabelsInitialized = TRUE;
     }
     if( Brushes.use_cnt == 0 ) {
@@ -339,10 +339,10 @@ void BeginMonitor( heap_list *item ) {
         Instance,                       /* Program instance handle */
         info );                         /* Create parameters */
     if( hwnd == NULL ) {
-        msgtitle = AllocRCString( STR_MONITOR_LCL_HEAP );
+        msgtitle = HWAllocRCString( STR_MONITOR_LCL_HEAP );
         RCMessageBox( NULL, STR_CANT_OPEN_LCL_MONITOR, HeapWalkName,
                     MB_OK | MB_TASKMODAL | MB_ICONINFORMATION );
-        FreeRCString( msgtitle );
+        HWFreeRCString( msgtitle );
     }
     ShowWindow( hwnd, SW_SHOWNORMAL );
     UpdateWindow( hwnd );

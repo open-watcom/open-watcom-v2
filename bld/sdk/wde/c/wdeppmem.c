@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocation client routines for preprocessor.
 *
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 
 #include "wrdll.h"
@@ -39,25 +38,9 @@
 #include "wdestken.h"
 #include "wdedebug.h"
 
-void *PP_Malloc( unsigned size )
-{
-    void        *p;
-
-    p = WdeMemAlloc ( size );
-    if( p == NULL ) {
-        PP_OutOfMemory();
-    }
-    return( p );
-}
-
-void PP_Free( void *p )
-{
-    WdeMemFree ( p );
-}
-
-
 static jmp_buf Env;
-void PP_OutOfMemory()
+
+void PP_OutOfMemory( void )
 {
     if( WdePopEnv( &Env ) ) {
         longjmp( Env, 1 );
@@ -67,3 +50,18 @@ void PP_OutOfMemory()
     }
 }
 
+void *PP_Malloc( unsigned size )
+{
+    void        *p;
+
+    p = WdeMemAlloc( size );
+    if( p == NULL ) {
+        PP_OutOfMemory();
+    }
+    return( p );
+}
+
+void PP_Free( void *p )
+{
+    WdeMemFree( p );
+}

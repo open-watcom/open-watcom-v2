@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Service thread for local debugging with GUI debugger.
 *
 ****************************************************************************/
 
@@ -34,63 +33,55 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include <ctype.h>
-#include <dos.h>
 #include "srvcdbg.h"
 #include "stdnt.h"
 #include "trperr.h"
+
 
 typedef enum {
     CTL_START,
     CTL_STOP,
     CTL_WAIT,
-    CTL_CONTINUE,
-} ctl_request;
+    CTL_CONTINUE
+}   ctl_request;
 
-struct {
+static struct {
     // control overhead
-    ctl_request         request;
-    HANDLE              requestsem;
-    HANDLE              requestdonesem;
-    HANDLE              hThread;
-    BOOL                on_control_thread;
-    BOOL                control_thread_running;
+    ctl_request request;
+    HANDLE      requestsem;
+    HANDLE      requestdonesem;
+    HANDLE      hThread;
+    BOOL        on_control_thread;
+    BOOL        control_thread_running;
+    BOOL        req_done;
 
     // CTL_*
-    BOOL                rc;
+    BOOL        rc;
 
     // CTL_START
-    DWORD               pid;
-    DWORD               flags;
-    char                *name;
+    DWORD       pid;
+    DWORD       flags;
+    char        *name;
 
     // CTL_CONTINUE
-    DWORD               how;
-    DWORD               err;
+    DWORD       how;
+    DWORD       err;
 
-} Shared;
+}               Shared;
 
-#if 0
-#define MAX_PAINTS      100
-struct {
-    RECT        rect;
-    HWND        hwnd;
-}               paints[MAX_PAINTS];
-#endif
 
-static void CantDoIt()
+static void CantDoIt( void )
 {
     if( PendingProgramInterrupt ) {
-        if( MessageBox( NULL, TRP_WIN_wanna_kill, TRP_The_WATCOM_Debugger,
-                    MB_SYSTEMMODAL+MB_YESNO+MB_ICONQUESTION ) == IDYES ) {
+        if( MessageBox( 0, TRP_WIN_wanna_kill, TRP_The_WATCOM_Debugger,
+                    MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
             Terminate();
         }
-    } else if( MessageBox( NULL, TRP_WIN_wanna_interrupt, TRP_The_WATCOM_Debugger,
-                    MB_SYSTEMMODAL+MB_YESNO+MB_ICONQUESTION ) == IDYES ) {
+    } else if( MessageBox( 0, TRP_WIN_wanna_interrupt, TRP_The_WATCOM_Debugger,
+                  MB_SYSTEMMODAL + MB_YESNO + MB_ICONQUESTION ) == IDYES ) {
         InterruptProgram();
     }
 }
-
 
 /*
  * DoContinueDebugEvent
@@ -98,11 +89,18 @@ static void CantDoIt()
 static BOOL DoContinueDebugEvent( DWORD continue_how )
 {
     SetLastError( 0 );
-    if( !DidWaitForDebugEvent ) return( FALSE );
+    if( !DidWaitForDebugEvent ) {
+        return( FALSE );
+    }
     return( ContinueDebugEvent( DebugeePid, LastDebugEventTid, continue_how ) );
-} /* DoContinueDebugEvent */
+}
 
-static bool DoOneControlRequest()
+static void StopDebuggee( void );
+static void RequestDone( void );
+static BOOL StartDebuggee( void );
+static BOOL DoWaitForDebugEvent( void );
+
+static bool DoOneControlRequest( void )
 {
     Shared.on_control_thread = TRUE;
     if( Shared.request == CTL_STOP ) {
@@ -127,24 +125,14 @@ static bool DoOneControlRequest()
 
 #define MAX_HWNDS 40 // maximum number of hwnds in the debugger
 static HWND InvalidHWNDs[MAX_HWNDS];
-static int NumInvalid = 0;
+static int  NumInvalid = 0;
 
-static void RecordPaint( HWND hwnd )
+
+// NB: ProcessQueuedRepains() currently doesn't do anything useful
+void ProcessQueuedRepaints( void )
 {
-    int i;
-
-    for( i = 0; i < NumInvalid; ++i ) {
-        if( InvalidHWNDs[i] == hwnd ) return;
-    }
-    if( NumInvalid == MAX_HWNDS ) return;
-    InvalidHWNDs[NumInvalid] = hwnd;
-    ++NumInvalid;
-}
-
-void ProcessQueuedRepaints()
-{
-    int i;
-    RECT r;
+    int     i;
+    RECT    r;
 
     for( i = 0; i < NumInvalid; ++i ) {
         GetWindowRect( InvalidHWNDs[i], &r );
@@ -155,11 +143,10 @@ void ProcessQueuedRepaints()
 
 static void ControlReq( ctl_request req )
 {
-    MSG msg;
-    HWND        hwnd;
-    BOOL        is_dbg_wnd;
-    char        buff[10];
-    int         num_paints;
+    MSG     msg;
+    HWND    hwnd;
+    BOOL    is_dbg_wnd;
+    char    buff[10];
 
     Shared.request = req;
     if( !Shared.control_thread_running ) {
@@ -167,12 +154,15 @@ static void ControlReq( ctl_request req )
         return;
     }
     ReleaseSemaphore( Shared.requestsem, 1, NULL );
-    if( !IsWindow( DebuggerWindow ) ) DebuggerWindow = NULL;
+    if( !IsWindow( DebuggerWindow ) ) {
+        DebuggerWindow = NULL;
+    }
     if( DebuggerWindow == NULL ) {
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     } else {
-        num_paints = 0;
-        while( GetMessage( &msg, NULL, 0, 0 ) ) {
+        while( !Shared.req_done ) { 
+            if ( !GetMessage( &msg, NULL, 0, 0 ) )
+                break;    // break on WM_QUIT, when Windows requests this. (If ever)
             hwnd = msg.hwnd;
             is_dbg_wnd = FALSE;
             while( hwnd ) {
@@ -182,9 +172,8 @@ static void ControlReq( ctl_request req )
                 }
                 hwnd = GetParent( hwnd );
             }
-            GetClassName( msg.hwnd, buff, sizeof( buff )-1 );
+            GetClassName( msg.hwnd, buff, sizeof( buff ) - 1 );
             if( !is_dbg_wnd || strcmp( buff, "WTool" ) == 0 ) {
-                if( msg.hwnd == NULL && msg.message == WM_QUIT ) break;
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );
             } else {
@@ -194,17 +183,18 @@ static void ControlReq( ctl_request req )
                         InterruptProgram();
                     }
                     break;
+                case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger
+                      if( msg.wParam == VK_F10 && !strcmp( buff, "GUIClass" ) ) {
+                        break;
+                      }
+                      /* Allow someone to press ALT+TAB to get focus! */
+                      if( msg.wParam == VK_MENU ){
+                        break;
+                      }
+                      // fall through!
                 case WM_COMMAND:
                     CantDoIt();
                     break;
-                case WM_PAINT:
-                {
-                    PAINTSTRUCT ps;
-                    RecordPaint( msg.hwnd );
-                    BeginPaint( msg.hwnd, &ps );
-                    EndPaint( msg.hwnd, &ps );
-                    break;
-                }
                 case WM_LBUTTONDOWN:
                 case WM_RBUTTONDOWN:
                 case WM_MBUTTONDOWN:
@@ -212,44 +202,55 @@ static void ControlReq( ctl_request req )
                     break;
                 case WM_MOUSEMOVE:
                     break;
+                case WM_PAINT:
+                    // WM_PAINT must be sent to the target window in order
+                    // to remove it from the queue 
+                    DefWindowProc( msg.hwnd, msg.message, msg.wParam, msg.lParam );
+                    break;
                 default:
-                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam, msg.lParam );
+                    DefWindowProc( DebuggerWindow, msg.message, msg.wParam,
+                        msg.lParam );
                 }
             }
         }
-        ProcessQueuedRepaints();
+        Shared.req_done = FALSE;    // Reset  
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
     }
 }
 
-void RequestDone()
+static void RequestDone( void )
 {
-    if( !Shared.control_thread_running ) return;
+    if( !Shared.control_thread_running ) {
+        return;
+    }
     Shared.on_control_thread = FALSE;
-    if( !IsWindow( DebuggerWindow ) ) DebuggerWindow = NULL;
+    if( !IsWindow( DebuggerWindow ) ) {
+        DebuggerWindow = NULL;
+    }
     if( DebuggerWindow == NULL ) {
         ReleaseSemaphore( Shared.requestdonesem, 1, NULL );
     } else {
-        PostMessage( DebuggerWindow, WM_QUIT, 0, 0 );
+        Shared.req_done = TRUE; 
+        // Notify that something has happened, avoid delay
+        PostMessage( DebuggerWindow, WM_NULL, 0, 0 ); 
         WaitForSingleObject( Shared.requestdonesem, INFINITE );
     }
 }
 
-DWORD WINAPI ControlFunc( void *parm )
+static DWORD WINAPI ControlFunc( void *parm )
 {
     parm = parm;
     for( ;; ) {
         WaitForSingleObject( Shared.requestsem, INFINITE );
-        if( !DoOneControlRequest() ) break;
+        if( !DoOneControlRequest() ) {
+            break;
+        }
     }
     return( 0 ); // thread over!
 }
 
 #pragma library(advapi32)
-BOOL
-MyDebugActiveProcess (
-    DWORD dwPidToDebug
-    )
+static BOOL MyDebugActiveProcess( DWORD dwPidToDebug )
 {
     HANDLE              Token;
     PTOKEN_PRIVILEGES   NewPrivileges;
@@ -259,16 +260,14 @@ MyDebugActiveProcess (
     BOOL                b;
     BOOLEAN             fRc;
     LUID                LuidPrivilege;
+    size_t              extras;
 
     //
     // Make sure we have access to adjust and to get the old token privileges
     //
-    if (!OpenProcessToken( GetCurrentProcess(),
-                           TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
-                           &Token)) {
-
+    if( !OpenProcessToken( GetCurrentProcess(),
+                           TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token ) ) {
         goto done;
-
     }
 
     cbNeeded = 0;
@@ -277,12 +276,13 @@ MyDebugActiveProcess (
     // Initialize the privilege adjustment structure
     //
 
-    LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &LuidPrivilege );
+    LookupPrivilegeValue( NULL, SE_DEBUG_NAME, &LuidPrivilege );
 
-    NewPrivileges = (PTOKEN_PRIVILEGES)calloc(1,sizeof(TOKEN_PRIVILEGES)+
-                                              (1 - ANYSIZE_ARRAY) * sizeof(LUID_AND_ATTRIBUTES));
-    if (NewPrivileges == NULL) {
-        CloseHandle(Token);
+    extras = ( 1 - ANYSIZE_ARRAY ) * sizeof( LUID_AND_ATTRIBUTES );
+    NewPrivileges = calloc( 1, sizeof( TOKEN_PRIVILEGES ) + extras );
+                                                  
+    if( NewPrivileges == NULL ) {
+        CloseHandle( Token );
         goto done;
     }
 
@@ -295,82 +295,83 @@ MyDebugActiveProcess (
     //
 
     pbOldPriv = OldPriv;
-    fRc = AdjustTokenPrivileges( Token,
-                                 FALSE,
-                                 NewPrivileges,
-                                 1024,
-                                 (PTOKEN_PRIVILEGES)pbOldPriv,
-                                 &cbNeeded );
+    fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, 1024,
+            ( PTOKEN_PRIVILEGES )pbOldPriv, &cbNeeded );
 
-    if (!fRc) {
+    if( !fRc ) {
 
         //
         // If the stack was too small to hold the privileges
         // then allocate off the heap
         //
-        if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-
-            pbOldPriv = calloc(1,cbNeeded);
-            if (pbOldPriv == NULL) {
-                CloseHandle(Token);
+        if( GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
+            pbOldPriv = calloc( 1, cbNeeded );
+            if( pbOldPriv == NULL ) {
+                CloseHandle( Token );
                 goto done;
             }
 
-            fRc = AdjustTokenPrivileges( Token,
-                                         FALSE,
-                                         NewPrivileges,
-                                         cbNeeded,
-                                         (PTOKEN_PRIVILEGES)pbOldPriv,
-                                         &cbNeeded );
+            fRc = AdjustTokenPrivileges( Token, FALSE, NewPrivileges, cbNeeded,
+                    ( PTOKEN_PRIVILEGES )pbOldPriv, &cbNeeded );
         }
     }
 
-    b = DebugActiveProcess(dwPidToDebug);
+    b = DebugActiveProcess( dwPidToDebug );
 
     CloseHandle( Token );
 
     return( b );
-done:;
+done:
+    ;
     return( DebugActiveProcess( dwPidToDebug ) );
 }
 
+static int match( const char *p, const char *criterion )
+{
+    int result;
+
+    result = strnicmp( p + 1, criterion, strlen( criterion ) ) == 0;
+    return( result );
+}
 
 void ParseServiceStuff( char *name,
-                        char *(*pdll_name),
-                        char *(*pservice_name),
-                        char *(*pdll_destination),
-                        char *(*pservice_parm) )
+    char **pdll_name, char **pservice_name,
+    char **pdll_destination, char **pservice_parm )
 {
-    char *p;
-    (*pdll_name) = ""; (*pservice_name) = ""; (*pdll_destination) = ""; (*pservice_parm) = "";
+    char        *p;
+
+    ( *pdll_name ) = "";
+    ( *pservice_name ) = "";
+    ( *pdll_destination ) = "";
+    ( *pservice_parm ) = "";
     while( ( p = strrchr( name, LOAD_PROG_CHR_DELIM ) ) != NULL ) {
-        if( strnicmp( p+1, LOAD_PROG_STR_DLLNAME, strlen( LOAD_PROG_STR_DLLNAME ) ) == 0 ) {
+        if( match( p, LOAD_PROG_STR_DLLNAME ) ) {
             *p = '\0';
-            (*pdll_name) = p + strlen( LOAD_PROG_STR_DLLNAME ) + 1;
-            if( (*pdll_name)[0] == '"' ) {
-                (*pdll_name)[strlen((*pdll_name))-1]='\0';
-                (*pdll_name)++;
+            ( *pdll_name ) = p + strlen( LOAD_PROG_STR_DLLNAME ) + 1;
+            if( ( *pdll_name )[0] == '"' ) {
+                ( *pdll_name )[strlen( *pdll_name ) - 1]= '\0';
+                ( *pdll_name )++;
             }
-        } else if( strnicmp( p+1, LOAD_PROG_STR_SERVICE, strlen( LOAD_PROG_STR_SERVICE ) ) == 0 ) {
+        } else if( match( p, LOAD_PROG_STR_SERVICE ) ) {
             *p = '\0';
-            (*pservice_name) = p + strlen( LOAD_PROG_STR_SERVICE ) + 1;
-            if( (*pservice_name)[0] == '"' ) {
-                (*pservice_name)[strlen((*pservice_name))-1]='\0';
-                (*pservice_name)++;
+            ( *pservice_name ) = p + strlen( LOAD_PROG_STR_SERVICE ) + 1;
+            if( ( *pservice_name )[0] == '"' ) {
+                ( *pservice_name )[strlen( *pservice_name ) - 1]= '\0';
+                ( *pservice_name )++;
             }
-        } else if( strnicmp( p+1, LOAD_PROG_STR_SERVICEPARM, strlen( LOAD_PROG_STR_SERVICEPARM ) ) == 0 ) {
+        } else if( match( p, LOAD_PROG_STR_SERVICEPARM ) ) {
             *p = '\0';
-            (*pservice_parm) = p + strlen( LOAD_PROG_STR_SERVICEPARM ) + 1;
-            if( (*pservice_parm)[0] == '"' ) {
-                (*pservice_parm)[strlen((*pservice_parm))-1]='\0';
-                (*pservice_parm)++;
+            ( *pservice_parm ) = p + strlen( LOAD_PROG_STR_SERVICEPARM ) + 1;
+            if( ( *pservice_parm )[0] == '"' ) {
+                ( *pservice_parm )[strlen( *pservice_parm ) - 1]= '\0';
+                ( *pservice_parm )++;
             }
-        } else if( strnicmp( p+1, LOAD_PROG_STR_COPYDIR, strlen( LOAD_PROG_STR_COPYDIR ) ) == 0 ) {
+        } else if( match( p, LOAD_PROG_STR_COPYDIR ) ) {
             *p = '\0';
-            (*pdll_destination) = p + strlen( LOAD_PROG_STR_COPYDIR ) + 1;
-            if( (*pdll_destination)[0] == '"' ) {
-                (*pdll_destination)[strlen((*pdll_destination))-1]='\0';
-                (*pdll_destination)++;
+            ( *pdll_destination ) = p + strlen( LOAD_PROG_STR_COPYDIR ) + 1;
+            if( ( *pdll_destination )[0] == '"' ) {
+                ( *pdll_destination )[strlen( *pdll_destination ) - 1]= '\0';
+                ( *pdll_destination )++;
             }
         } else {
             break;
@@ -378,8 +379,9 @@ void ParseServiceStuff( char *name,
     }
 }
 
-typedef long (__stdcall * SELECTPROCESS)( char *name );
-BOOL StartDebuggee()
+typedef long( __stdcall *SELECTPROCESS ) ( char *name );
+
+static BOOL StartDebuggee( void )
 {
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
@@ -387,16 +389,20 @@ BOOL StartDebuggee()
     DWORD               oldErrorMode = SetErrorMode( 0 );
     HMODULE             mod;
     SELECTPROCESS       select;
-    char                *dll_name, *service_name, *dll_destination, *service_parm;
+    char                *dll_name;
+    char                *service_name;
+    char                *dll_destination;
+    char                *service_parm;
     SC_HANDLE           service_manager;
     SC_HANDLE           service;
     SERVICE_STATUS      status;
-    int                 i;
+    DWORD               i;
     char                buff[_MAX_PATH];
     char                fname[_MAX_FNAME];
     char                ext[_MAX_EXT];
 
-    ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
+    ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination,
+        &service_parm );
     service = NULL;
     service_manager = NULL;
     if( service_name[0] ) {
@@ -409,17 +415,24 @@ BOOL StartDebuggee()
     }
     if( service_manager != NULL ) {
         ENUM_SERVICE_STATUS *eenum = NULL;
-        DWORD bytesNeeded, servicesReturned, resumeHandle = 0;
-        EnumServicesStatus( service_manager, SERVICE_WIN32+SERVICE_DRIVER,
-                            SERVICE_ACTIVE+SERVICE_INACTIVE,
+        DWORD               bytesNeeded;
+        DWORD               servicesReturned;
+        DWORD               resumeHandle = 0;
+
+        EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER,
+                            SERVICE_ACTIVE + SERVICE_INACTIVE,
                             NULL, 0, &bytesNeeded, &servicesReturned,
                             &resumeHandle );
         if( servicesReturned == 0 ) {
             eenum = calloc( 1, bytesNeeded );
-            EnumServicesStatus( service_manager, SERVICE_WIN32+SERVICE_DRIVER,
-                                SERVICE_ACTIVE+SERVICE_INACTIVE,
-                                eenum, bytesNeeded, &bytesNeeded, &servicesReturned,
-                                &resumeHandle );
+            if( eenum == NULL ) {
+                rc = FALSE;
+                goto failed;
+            }
+            EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER,
+                                SERVICE_ACTIVE + SERVICE_INACTIVE,
+                                eenum, bytesNeeded, &bytesNeeded,
+                                &servicesReturned, &resumeHandle );
             for( i = 0; i < servicesReturned; ++i ) {
                 strlwr( eenum[i].lpServiceName );
                 strlwr( eenum[i].lpDisplayName );
@@ -452,11 +465,10 @@ BOOL StartDebuggee()
                     goto done;
                 }
             }
-
-
         }
-done:;
-        service = OpenService( service_manager, service_name, SERVICE_ALL_ACCESS );
+    done:
+        service = OpenService( service_manager, service_name,
+            SERVICE_ALL_ACCESS );
         if( service == NULL ) {
             AddMessagePrefix( "Unable to open the specified service", 0 );
             rc = FALSE;
@@ -470,16 +482,19 @@ done:;
             i = 0;
             for( ;; ) {
                 if( i == 40 ) {
-                    AddMessagePrefix( "Unable to stop the specified service", 0 );
+                    AddMessagePrefix( "Unable to stop the specified service",
+                        0 );
                     Shared.err = ERROR_SERVICE_REQUEST_TIMEOUT;
                     goto failed;
                 }
                 if( !QueryServiceStatus( service, &status ) ) {
-                    AddMessagePrefix( "Unable to stop the specified service", 0 );
+                    AddMessagePrefix( "Unable to stop the specified service",
+                        0 );
                     rc = FALSE;
                     goto failed;
                 }
-                if( status.dwCurrentState == SERVICE_STOPPED ) break;
+                if( status.dwCurrentState == SERVICE_STOPPED )
+                    break;
                 Sleep( 500 );
                 ++i;
             }
@@ -495,10 +510,12 @@ done:;
             strcat( buff, "\\" );
         }
         strcat( buff, "." );
-        if( FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE && ( dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) ) {
-            _splitpath( dll_name, NULL, NULL, fname, ext );
-            _makepath( buff, NULL, dll_destination, fname, ext );
-            dll_destination = buff;
+        if( FindFirstFile( buff, &dat ) != INVALID_HANDLE_VALUE ) {
+           if( dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
+                _splitpath( dll_name, NULL, NULL, fname, ext );
+                _makepath( buff, NULL, dll_destination, fname, ext );
+                dll_destination = buff;
+            }
         }
         if( !CopyFile( dll_name, dll_destination, FALSE ) ) {
             AddMessagePrefix( "Unable to copy '", 3000 );
@@ -522,15 +539,14 @@ done:;
                 AddMessagePrefix( "Unable to start the specified service", 0 );
                 Shared.err = ERROR_SERVICE_REQUEST_TIMEOUT;
                 goto failed;
-                break;
             }
             if( !QueryServiceStatus( service, &status ) ) {
                 AddMessagePrefix( "Unable to start the specified service", 0 );
                 rc = FALSE;
                 goto failed;
-                break;
             }
-            if( status.dwCurrentState == SERVICE_RUNNING ) break;
+            if( status.dwCurrentState == SERVICE_RUNNING )
+                break;
             Sleep( 500 );
             ++i;
         }
@@ -544,19 +560,19 @@ done:;
     if( Shared.pid == -1 ) {
         mod = LoadLibrary( "PView.dll" );
         if( mod != NULL ) {
-            select = (SELECTPROCESS)GetProcAddress( mod, "_SelectProcess@4" );
+            select = ( SELECTPROCESS )GetProcAddress( mod, "_SelectProcess@4" );
             if( select != NULL ) {
                 if( Shared.name == NULL || Shared.name[0] == '\0' ) {
-                    Shared.pid = (*select)( "" );
+                    Shared.pid = ( *select ) ( "" );
                 } else {
                     i = 0;
                     for( ;; ) {
                         if( i == 10 ) {
-                            Shared.pid = (*select)( "" );
+                            Shared.pid = ( *select ) ( "" );
                             break;
                         }
-                        Shared.pid = (*select)( Shared.name );
-                        if( Shared.pid != NULL && Shared.pid != -1 ) {
+                        Shared.pid = ( *select ) ( Shared.name );
+                        if( Shared.pid != 0 && Shared.pid != -1 ) {
                             break;
                         }
                         Sleep( 500 );
@@ -567,7 +583,7 @@ done:;
         }
         CloseHandle( mod );
     }
-    if( Shared.pid != NULL && Shared.pid != -1 ) {
+    if( Shared.pid != 0 && Shared.pid != -1 ) {
         rc = MyDebugActiveProcess( Shared.pid );
         if( IsWOW ) {
             /*
@@ -584,7 +600,7 @@ done:;
                                 "wowdeb.exe",   /* command line */
                                 NULL,           /* process attributes */
                                 NULL,           /* thread attributes */
-                                FALSE,          /* inherit handles */
+                                TRUE,           /* inherit handles */
                                 0,              /* creation flags */
                                 NULL,           /* environment block */
                                 NULL,           /* starting directory */
@@ -592,10 +608,10 @@ done:;
                                 &pinfo          /* process info */
                                 );
             rc = CreateProcess( NULL,           /* application name */
-                                Shared.name,           /* command line */
+                                Shared.name,    /* command line */
                                 NULL,           /* process attributes */
                                 NULL,           /* thread attributes */
-                                FALSE,          /* inherit handles */
+                                TRUE,           /* inherit handles */
                                 0,              /* creation flags */
                                 NULL,           /* environment block */
                                 NULL,           /* starting directory */
@@ -609,28 +625,28 @@ done:;
         sinfo.cb = sizeof( sinfo );
         sinfo.wShowWindow = SW_NORMAL;
         rc = CreateProcess( NULL,               /* application name */
-                            Shared.name,               /* command line */
+                            Shared.name,        /* command line */
                             NULL,               /* process attributes */
                             NULL,               /* thread attributes */
-                            FALSE,              /* inherit handles */
-                            Shared.flags,           /* creation flags */
+                            TRUE,              /* inherit handles */
+                            Shared.flags,       /* creation flags */
                             NULL,               /* environment block */
                             NULL,               /* starting directory */
                             &sinfo,             /* startup info */
                             &pinfo              /* process info */
                             );
     }
-failed:;
+failed:
     SetErrorMode( oldErrorMode );
     Shared.pid = pinfo.dwProcessId;
     return( rc );
 }
 
-BOOL DoWaitForDebugEvent( void )
+static BOOL DoWaitForDebugEvent( void )
 {
-    BOOL        done;
-    DWORD       code;
-    BOOL        rc;
+    BOOL    done;
+    DWORD   code;
+    BOOL    rc;
 
     done = FALSE;
 
@@ -643,7 +659,7 @@ BOOL DoWaitForDebugEvent( void )
 
             if( DebugEvent.dwDebugEventCode == EXCEPTION_DEBUG_EVENT ) {
                 code = DebugEvent.u.Exception.ExceptionRecord.ExceptionCode;
-    #ifdef WOW
+#ifdef WOW
                 if( code == STATUS_VDM_EVENT ) {
                     BOOL    vdmrc;
 
@@ -652,16 +668,16 @@ BOOL DoWaitForDebugEvent( void )
                         UseVDMStuff = TRUE;
                         done = TRUE;
                     } else {
-                        SetDebugeeTid();
+                        LastDebugEventTid = DebugEvent.dwThreadId;
                         DoContinueDebugEvent( DBG_CONTINUE );
                     }
-                /*
-                 * sometimes, we seem to get crap back, so the thing to do
-                 * is to ignore it.  When all else fails, punt.
-                 */
+                    /*
+                     * sometimes, we seem to get crap back, so the thing to do
+                     * is to ignore it.  When all else fails, punt.
+                     */
                 } else
-    #endif
-                       {
+#endif
+                {
                     switch( code ) {
                     case STATUS_DATATYPE_MISALIGNMENT:
                     case STATUS_BREAKPOINT:
@@ -687,11 +703,12 @@ BOOL DoWaitForDebugEvent( void )
                         done = TRUE;
                         break;
                     default:
-                        if( ( code & ERROR_SEVERITY_ERROR ) == ERROR_SEVERITY_ERROR ) {
+                        if( ( code & ERROR_SEVERITY_ERROR ) ==
+                                ERROR_SEVERITY_ERROR ) {
                             done = TRUE;
                             break;
                         }
-                        SetDebugeeTid();
+                        LastDebugEventTid = DebugEvent.dwThreadId;
                         DoContinueDebugEvent( DBG_EXCEPTION_NOT_HANDLED );
                         break;
                     }
@@ -705,13 +722,11 @@ BOOL DoWaitForDebugEvent( void )
         }
     }
     return( rc );
-} /* DoWaitForDebugEvent */
+}
 
-
-StopDebuggee()
+static void StopDebuggee( void )
 {
-
-    if( DebugeePid != NULL && (IsWOW || !DebugeeEnded) ) {
+    if( DebugeePid && ( IsWOW || !DebugeeEnded ) ) {
         /*
          * we must process debug events until the process is actually
          * terminated
@@ -722,12 +737,14 @@ StopDebuggee()
             DoWaitForDebugEvent();
             DoContinueDebugEvent( DBG_CONTINUE );
         } else {
-            HANDLE      hp;
+            HANDLE  hp;
+
             hp = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
             if( hp != NULL ) {
                 TerminateProcess( hp, 0 );
                 CloseHandle( hp );
-                while( !(DebugExecute( 0, NULL, FALSE ) & COND_TERMINATE) ) {}
+                while( !( DebugExecute( 0, NULL, FALSE ) & COND_TERMINATE ) ) {
+                }
                 /*
                  * we must continue the final debug event for everything to
                  * be truly clean and wonderful
@@ -737,7 +754,7 @@ StopDebuggee()
         }
         Slaying = FALSE;
     }
-    DebugeePid = NULL;
+    DebugeePid = 0;
 }
 
 // end of seperate thread
@@ -754,9 +771,11 @@ DWORD StartControlThread( char *name, DWORD *pid, DWORD cr_flags )
 
         Shared.requestsem = CreateSemaphore( NULL, 0, 1, NULL );
         Shared.requestdonesem = CreateSemaphore( NULL, 0, 1, NULL );
-        Shared.hThread = CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE)ControlFunc, NULL, 0, &tid );
-        if (Shared.hThread == NULL) {
-            MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger, MB_APPLMODAL+MB_OK );
+        Shared.hThread = CreateThread( NULL, 0,
+            ( LPTHREAD_START_ROUTINE )ControlFunc, NULL, 0, &tid );
+        if( Shared.hThread == NULL ) {
+            MessageBox( NULL, "Error creating thread!", TRP_The_WATCOM_Debugger,
+                MB_APPLMODAL + MB_OK );
         }
         Shared.control_thread_running = TRUE;
     }
@@ -788,7 +807,7 @@ void MyContinueDebugEvent( int continue_how )
     ControlReq( CTL_CONTINUE );
 }
 
-void StopControlThread()
+void StopControlThread( void )
 {
     ControlReq( CTL_STOP );
     if( Shared.control_thread_running ) {

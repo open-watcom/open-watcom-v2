@@ -62,7 +62,7 @@ void near *lmem_alloc(
 
     mem_hld = LocalAlloc( LMEM_MOVEABLE, size );
 
-    if( mem_hld != NULL ) {
+    if( mem_hld ) {
         mem = LocalLock( mem_hld );
         if( mem != NULL ) {
             return( mem );
@@ -76,24 +76,22 @@ void near *lmem_alloc(
 void near *lmem_realloc(
 /**********************/
 
-    void                *fptr,
+    void                *mem,
     unsigned            size
 ) {
 #ifdef PLAT_OS2
-    return( realloc( fptr, (size_t) size ) );
+    return( realloc( mem, (size_t) size ) );
 #else
     HANDLE              hld;
     void near           *ptr;
 
-    ptr = (void near *) fptr;
+    if( mem != NULL ) {
+        hld = _wpi_getlocalhdl( mem );
 
-    if( ptr != NULL ) {
-        hld = LocalHandle( (unsigned int ) ptr );
-
-        if( hld != NULL ) {
+        if( hld ) {
             LocalUnlock( hld );
             hld = LocalReAlloc( hld, size, LMEM_MOVEABLE );
-            if( hld != NULL ) {
+            if( hld ) {
                 ptr = LocalLock( hld );
                 return( ptr );
             }
@@ -115,12 +113,12 @@ void lmem_free(
 #ifdef PLAT_OS2
     free( mem );
 #else
-    HANDLE      hld;
+    HLOCAL      hld;
 
     if( LOWORD(mem) != 0 ) {
         hld = _wpi_getlocalhdl( mem );
 
-        if( hld != NULL ) {
+        if( hld ) {
             LocalUnlock( hld );
             LocalFree( hld );
         }

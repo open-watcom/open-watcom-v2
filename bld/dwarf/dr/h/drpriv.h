@@ -24,20 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Private DWARF reading library definitions.
 *
 ****************************************************************************/
 
 
-/*
- * definitions used in the dwarf reading library that are private to the
- * library
-*/
-
 #include "dr.h"
-#include "drrtns.h"
 #include "virtmem.h"
+#include "drrtns.h"
 
 #ifndef FALSE
 #define FALSE (1==0)
@@ -75,27 +69,25 @@ typedef struct {
 } sect_info;
 
 typedef struct COMPUNIT_INFO {
-    struct COMPUNIT_INFO *      next;
+    struct COMPUNIT_INFO        *next;
     dr_handle                   start;
+    dr_handle                   end;
     file_table                  filetab;
+    unsigned                    numabbrevs;
+    dr_handle                   abbrev_start;   // offset into abbrev section
+    dr_handle                   *abbrevs;       // variable length array
+    unsigned                    *abbrev_refs;   // abbrevs reference counter
 } compunit_info;
-
-#if 0
-typedef struct {
-} cache_info;
-#endif
 
 struct dr_dbg_info {
     struct dr_dbg_info *next;
     void *              file;   // task's file information.
     sect_info           sections[DR_DEBUG_NUM_SECTS];
     compunit_info       compunit;
-//  cache_info          cache;
-    unsigned            numabbrevs;
-    dr_handle          *abbrevs;     // variable length array.
     compunit_info       *last_ccu;
     unsigned_8          addr_size;
-    unsigned_8          old_version;
+    unsigned_8          wat_version;// compatibility flag for non-standard data
+    unsigned_8          byte_swap;
 };
 
 extern struct dr_dbg_info * DWRCurrNode;
@@ -104,3 +96,12 @@ extern struct dr_dbg_info * DWRCurrNode;
 #define ABBREV_TABLE_GUESS 500
 #define ABBREV_TABLE_INCREMENT 100
 
+#ifdef __BIG_ENDIAN__
+    #define SWAP_16     CONV_LE_16
+    #define SWAP_32     CONV_LE_32
+    #define SWAP_64     CONV_LE_64
+#else
+    #define SWAP_16     CONV_BE_16
+    #define SWAP_32     CONV_BE_32
+    #define SWAP_64     CONV_BE_64
+#endif

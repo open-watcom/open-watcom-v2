@@ -1,0 +1,19 @@
+c$noreference
+
+        integer  PIP_MF
+        parameter (PIP_MF = 1)
+        integer  PIP_PIF
+        parameter (PIP_PIF = 2)
+
+        integer  PIC_PIFTOMET
+        parameter (PIC_PIFTOMET = 0)
+        integer  PIC_SSTOFONT
+        parameter (PIC_SSTOFONT = 2)
+
+        external PicPrint
+        integer*4 PicPrint
+
+        external PicIchg
+        integer*4 PicIchg
+
+c$reference

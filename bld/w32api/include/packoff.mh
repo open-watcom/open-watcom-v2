@@ -1,0 +1,9 @@
+/*
+ *  packoff.h   Disable structure packing
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+#pragma pack()

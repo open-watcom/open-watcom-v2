@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Header for tar.c and family
 *
 ****************************************************************************/
 
@@ -51,7 +50,14 @@
 #define MSDOS 1
 #endif
 
-uprintf(int, char *, ... );
+/* from TAR.C */
+extern void    names_notfound( void );
+extern int     name_match( register char *p );
+extern void    name_gather( void );
+extern char    *name_next( void );
+extern void    name_close( void );
+extern int     convmode( char * s );
+extern char    *fixname( char *s );
 
 /*
  * Kludge for handling systems that can't cope with multiple
@@ -223,10 +229,7 @@ TAR_EXTERN char         read_error_flag;
 /*
  * Declarations of functions available to the world.
  */
-union record *findrec();
-void userec();
-union record *endofrecs();
-void anno();
+
 #define  annorec(stream, msg)   anno(stream, msg, 0)    /* Cur rec */
 #define annofile(stream, msg)   anno(stream, msg, 1)    /* Saved rec */
 
@@ -240,8 +243,12 @@ void anno();
  * Unix names/macros that aren't defined in MSC
  */
 #define O_NDELAY        0
-#define major(n)        n
-#define minor(n)        0
+#ifndef major
+    #define major(n)        n
+#endif
+#ifndef minor
+    #define minor(n)        0
+#endif
 
 /*
  * the following bits of a file's mode are forced reset in an archive file

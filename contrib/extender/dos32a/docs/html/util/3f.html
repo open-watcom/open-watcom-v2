@@ -1,0 +1,262 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Utility Programs</title>
+  <link rel="stylesheet" href="../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - Utility Programs</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+3.6 - SUNSYS Setup - DOS Extender Configuration Window
+<br></font></b></p>
+
+
+<img src="../../img/w6.png" alt="DOS Extender Configuration Window - example">
+<table width="100%">
+<tr>
+	<td width="100%" bgcolor="#dcdcdc">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	<b>DOS Extender Configuration Window</b><br>
+	</font></td>
+</tr>
+<tr>
+	<td width="100%" bgcolor="#eeeeee">
+	<font size=-1 face="Verdana, Arial, Helvetica">
+	In DOS Extender Configuration Window you will be able to modify
+	the configuration of DOS/32 Advanced DOS Extender.
+	The values shown in this window will affect your DOS/32 Advanced
+	programs no matter under what system software they run.
+	</font></td>
+</tr>
+</table>
+
+
+<p><br></p>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Report Warnings</b> <i>Default: ON</i><br>
+When turned on, the DOS Extender  will report any encountered warnings to
+the  user. When turned off, only fatal and run-time errors will be displayed
+on the screen.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Sound Alert on Run-Time Errors</b> <i>Default: ON</i><br>
+When turned on, the run-time errors will be accompanied by a tone from the
+PC  speaker,  to indicate that the program  had crashed. This way, even when
+the  machine  state has been corrupted so that it cannot be restored, and no
+report can be written on the screen, you will still be
+informed  of  an  error  in the  program.  Note  that  only run-time errors,
+(exceptions  for example) will be accompanied by a tone, on fatal errors and
+warnings the computer will stay quiet (as my hamster was when it died).
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Restore Real Mode INTs on Exit</b> <i>Default: ON</i><br>
+When turned on, the whole real mode interrupt table (all 256 vectors) will
+be  saved upon the DOS Extender's startup, and  restored on exit. Note that the DOS Extender
+will  not restore the real mode IRQs possibly installed by your program
+separately from the real mode interrupt
+vectors,  so  you must turn on this option  if you are installing an IRQ and
+are  not  planning  to restore it, or  if  you  are having trouble with
+protected mode applications which on exit reboot the computer.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Report Modified Real Mode INTs</b> <i>Default: ON</i><br>
+This  option controls whether the real  mode  interrupt vectors are to be
+reported  when  modified by a protected mode  program  upon its exit to DOS.
+When  turned on, the modified interrupts will  be reported to the user as a
+warning 9001. Note
+that  many protected mode programs install their own IRQ handlers,
+which  causes  DOS/32  Advanced  DOS Extender  to  install   real mode IRQ
+callbacks  for  those,  but  when   returning  to  DOS, the programs do not
+restore  the  installed interrupts. The examples of such interrupts
+are  INT 08h, INT 09h, and INTs 1Bh, 23h and 24h.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Object Loading Scheme</b> <i>Default: #4</i><br>
+This  option  gives you the ability  to  manually control how the Objects
+(parts  of  your  protected mode program)  are    loaded into memory when
+DOS/32  Advanced  starts  your  program.  There  are  four different schemes
+available:
+</font></p>
+
+<blockquote>
+<table>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	#1:
+	</font>
+	</td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	Load the both 16-bit and 32-bit Objects into the conventional (DOS) memory first, when not
+	enough DOS memory, load them into extended (High) memory.
+	</font>
+	</td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	#2:
+	</font>
+	</td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	Load the 16-bit Objects into conventional (DOS) memory, when not enough, start loading them
+	into extended memory. The 32-bit Objects are loaded into extended memory only.
+	</font>
+	</td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	#3:
+	</font>
+	</td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	Load the both 16-bit and 32-bit Objects into conventional (DOS) memory, when not enough
+	report an error and exit.
+	</font>
+	</td>
+</tr>
+<tr>
+	<td bgcolor="#dcdcdc"><font size=-1 face="Verdana, Arial, Helvetica">
+	#4:
+	</font>
+	</td>
+	<td bgcolor="#e4e4e4"><font size=-1 face="Verdana, Arial, Helvetica">
+	Load the both 16-bit and 32-bit Objects into extended memory, when not
+	enough report an error and exit (DOS/4GW compatible).
+	</font>
+	</td>
+</tr>
+</table>
+</blockquote>
+
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+    Note  that  when the Objects are loaded  using scheme #2, the 16-bit ones
+will  be loaded into conventional (DOS) memory by default, and there will be
+no  need  in  copying  them from the extended  memory  to  DOS memory to make it
+possible  for the real mode DOS to get an  access  to them. However you have to
+check  if the Objects are really loaded low,  as if there was not enough DOS
+memory, they will be loaded high anyway.
+
+    The  scheme  #4 is DOS/4GW compatible:  all the Objects are loaded
+high,  and you will have to copy the 16-bit ones into DOS memory and allocate
+16-bit selectors for them manually.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Object Alignment when Loaded High</b> <i>Default: PARA</i><br>
+This option defines the alignment of the Objects that are loaded high, ie
+into extended memory. The default setting is PARA, paragraph alignment which
+is  16 bytes. Optionally you can change  it to PAGE, page alignment which is
+4096  bytes. Note that DOS/4GW always uses PAGE alignment when
+loading  Objects,  but the PARA alignment is  much more efficient as it does
+not  create  large  empty  spaces between  allocated  memory  blocks.  It is
+recommended  that  you always use the  PARA  alignment as most programs will
+work  fine  no  matter what alignment you  choose,  and  it will by the rule
+increase  the  amount of free extended  memory  available for your protected
+mode program. Also note that Objects that are loaded low, ie in the conventional
+memory, will always be PARA aligned.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Clear Screen on Run-Time Errors</b> <i>Default: OFF</i><br>
+This option controls whether the screen is to be cleared and the DOS text
+mode  (BIOS videomode 03h) is to be set whenever an exception is encountered
+in  your program. When turned off, and  an exception occurs while the screen
+is  in the BIOS-not-supported videomode (for  example so called mode-x), you
+will be most likely seeing garbage.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Start Full-Screen under Windows</b> <i>Default: OFF</i><br>
+When this option is turned on,  and your program is running under Windows
+(v3.x and 4.x) the DOS Extender will automatically switch the application to
+the  full-screen mode if the program was started from a DOS-box window. Note
+that  if  your application is already  running  full-screen this option will
+have no effect on the program.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Install Null-Pointer Protection</b> <i>Default: OFF</i><br>
+When turned on, the DOS  Extender will install a Null-Pointer protection,
+which  will  write-protect the first sixteen  bytes  at the beginning of the
+memory  (at  absolute address 0:00000000h).
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Show Copyright Banner at Startup</b> <i>Default: ON</i><br>
+With this option you can disable the copyright banner which is by default
+shown at DOS Extender's startup.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Configure Using Environment</b> <i>Default: ON</i><br>
+When  turned  on,  the environment  variable,  <b>DOS32A</b>,  will be carefully
+examined  by the DOS Extender and  if it contains any important information,
+the  DOS Extender will configure itself according to what it read. Note that
+the DOS Extender will in the first place configure itself using the built-in
+values  that  are  placed in a special  header  inside  every copy of DOS/32
+Advanced.  Only  in  the second place will  it  read  the environment and if
+<b>DOS32A</b>  environment  variable  is  defined, the  values  read  from  it will
+override  the  built-in  settings. You
+can think of built-in configuration as of "local", and of <b>DOS32A</b> environment
+configuration as of "global".
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>Start Extender in Verbose Mode</b> <i>Default: OFF</i><br>
+This option will allow you to see what is going on while the DOS Extender
+is  loading  your program. This can be  useful when you need to know exactly
+how  much memory there is available, where in memory the DOS Extender loaded
+your  application's Objects, and what startup conditions there were when the
+program was started.
+</font></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">
+<b>DOS Transfer Buffer Size</b> <i>Default: 8KB</i><br>
+This option specifies the size of  the DOS Transfer Buffer in bytes. This
+buffer will be used by the DOS Extender when moving data from protected mode
+memory to DOS memory and back. Note that some of the DOS extended functions will
+require  this buffer to be at least  4KB large. Also, the internal to DOS/32
+Advanced  value is stored in paragraphs, rather  than in bytes as shown, and
+thus  the entered numbers will be truncated by 16, (Buffer Size AND 0xFFF0).
+The maximum size of the buffer is 64KB.<br>
+<br>
+    Note  that  when  using DOS/32  Advanced  Linear  Compressed native file
+format (the LC-style executable file format), the buffer size is required to
+be at least 8KB.
+</font></p>
+
+
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

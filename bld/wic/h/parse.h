@@ -32,3 +32,4 @@
 
 void preparseInterface(pToken t);
 void cparseInterface(void);
+int preparse( void );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Front End callback types (x86).
 *
 ****************************************************************************/
 
@@ -35,8 +34,10 @@ CODE_GROUP,
 FREE_AUX_REQ1,
 DATA_GROUP,
 IMPORT_NAME,
+IMPORT_NAME_S,
 LIBRARY_NAME,
 NEXT_IMPORT,
+NEXT_IMPORT_S,
 NEXT_LIBRARY,
 STRETURN_REG,
 USED_8087,
@@ -62,3 +63,8 @@ CLASS_APPENDED_NAME,
 P5_PROF_DATA,
 P5_PROF_SEG,
 P5_CHIP_BUG_SYM,
+NEXT_ALIAS,
+ALIAS_NAME,
+ALIAS_SYMBOL,
+ALIAS_SUBST_NAME,
+ALIAS_SUBST_SYMBOL,

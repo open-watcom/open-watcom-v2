@@ -1,3 +1,0 @@
-MODEL = L
-
-!include ..\makefile

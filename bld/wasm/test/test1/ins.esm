@@ -1,0 +1,35 @@
+.387
+.386p
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    insb      
+    insw      
+    insd      
+    rep insb 
+    rep insw 
+    rep insd 
+    insb      
+    insw      
+    insd      
+    rep insb 
+    rep insw 
+    rep insd 
+    insb      
+    insw      
+    insd      
+    rep insb 
+    rep insw 
+    rep insd 
+    ins       byte ptr [di],dx
+    ins       word ptr [di],dx
+    ins       dword ptr [di],dx
+    rep ins  byte ptr [di],dx
+    rep ins  word ptr [di],dx
+    rep ins  dword ptr [di],dx
+_TEXT		ENDS
+_DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0
+
+_DATA		ENDS
+		END

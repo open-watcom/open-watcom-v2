@@ -98,7 +98,7 @@ int mywrite( int handle, char *buff, int len )
     return( bytes_written );
 }
 
-void mysnooze()
+void mysnooze( void )
 {
     DosSleep( 100 );
 }

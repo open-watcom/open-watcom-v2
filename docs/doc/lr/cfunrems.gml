@@ -1,0 +1,9 @@
+.dm fdbeg   delete
+.dm fdend   delete
+.dm fd      delete
+.dm dfbeg   delete
+.dm dfend   delete
+.dm df      delete
+.dm sfbeg   delete
+.dm sfend   delete
+.dm sf      delete

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C++ runtime multi-threaded support initialization.
 *
 ****************************************************************************/
 
@@ -34,8 +33,10 @@
 #include "cpplib.h"
 #include "rtinit.h"
 
+/* This code may be called before stack checking is set up! */
+#pragma off( check_stack )
+
 extern "C"
-_WPRTLINK
 void CPPLIB(multi_thread_init)( // MULTI-THREAD INITIALIZATION
     void )
 {

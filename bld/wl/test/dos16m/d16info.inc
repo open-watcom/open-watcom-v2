@@ -1,0 +1,35 @@
+d16info	struc
+version		dw	?
+passdn0		dw	?
+passdn255	dw	?
+PassupIntP	dd	?
+xfer_buff	dd	?
+xfer_bsize	dw	?
+delay_286	dw	?
+delay_386	dw	?
+switch_control	dw	?
+D16MStkP	dd	?
+D16ToRMP	dd	?
+D16ToPMP	dd	?
+D16rmInP	dd	?
+bannerp		dw	?
+D16rdata	dw	?
+versionp	dd	?
+swmode		db	?
+cpumod		db	?
+copyright	dw	?
+dbginfop	dw	?
+D16_intno	db	?
+A20		db	?
+A20_rigor	db	?
+A20_orig	db	?
+last_delseg	dw	?
+tsp_ptr		dd	?
+has_87		db	?
+slow_A20	db	?
+MSW_bits	dw	?
+package_info_p	dd	?
+machine_type	db	?
+miscellaneous	db	?
+xbufadj		dw	?
+d16info	ends

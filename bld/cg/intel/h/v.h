@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Intel x86 instruction verification codes.
 *
 ****************************************************************************/
 
@@ -87,3 +86,5 @@ _V_( V_CONSTTEMP ),
 _V_( V_INTCOMP ),
 _V_( V_80386 ),
 _V_( V_SWAP_GOOD_386 ),
+_V_( V_SHIFT2BIG ),
+_V_( V_CDQ ),

@@ -70,9 +70,9 @@ MergeInfoPP::~MergeInfoPP()
     int i;
 
     Log.printf( "\nMergeInfoPP\n-----------\n" );
-    Log.printf( "   _requests:           %u entries\n", _numFiles );
+    Log.printf( "       _requests: %5u entries\n", _numFiles );
     for( i = 0; i < _numFiles; i += 1 ) {
-        Log.printf( "       [ %3d ]:         %u entries\n", i, _reqCount[ i ] );
+        Log.printf( "         [ %3d ]: %5u entries\n", i, _reqCount[ i ] );
     }
     #endif
 

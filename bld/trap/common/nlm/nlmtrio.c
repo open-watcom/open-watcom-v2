@@ -40,6 +40,9 @@
 #include "nw3to4.h"
 
 #include <ecb.h>
+#if defined ( __NW50__ )
+void  NXVmExit( int status ) ;
+#endif
 
 extern struct ScreenStruct                     *screenID;
 extern struct LoadDefinitionStruct             *MyNLMHandle;
@@ -51,18 +54,22 @@ void Output( char *str )
     SetInputToOutputCursorPosition( screenID );
 }
 
-void StartupErr( char *err )
-{
-    OutputToScreen( systemConsoleScreen, "%s\r\n", err );
-    SayGNiteGracey( 1 );
-}
-
 
 void SayGNiteGracey( int return_code )
 {
     return_code = return_code;
     KillMe( MyNLMHandle );
+#if defined ( __NW50__ )
+    NXVmExit(return_code);
+#else
     CDestroyProcess( CGetMyProcessID() );
+#endif
+}
+
+void StartupErr( char *err )
+{
+    OutputToScreen( systemConsoleScreen, "%s\r\n", err );
+    SayGNiteGracey( 1 );
 }
 
 int KeyPress()

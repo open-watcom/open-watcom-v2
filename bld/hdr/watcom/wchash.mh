@@ -6,28 +6,30 @@
 //
 #ifndef _WCHASH_H_INCLUDED
 #define _WCHASH_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error wchash.h is for use with C++
-#endif
+:include cpponly.sp
 
 #ifndef _WCDEFS_H_INCLUDED
  #include <wcdefs.h>
 #endif
+
 #ifndef _WCEXCEPT_H_INCLUDED
  #include <wcexcept.h>
 #endif
+
 #ifndef _WCLIST_H_INCLUDED
  #include <wclist.h>
 #endif
+
 #ifndef _WCLISTIT_H_INCLUDED
  #include <wclistit.h>
 #endif
+
 #ifndef _WCHBASE_H_INCLUDED
  #include <wchbase.h>
 #endif
-
 
 :include undefnew.sp
 
@@ -292,7 +294,7 @@ WCbool WCValHashTable<Type>::find( const Type &search
 
 
 template <class Type>
-void WCValHashTable<Type>::forAll( register void (*user_fn)(Type, void*)
+void WCValHashTable<Type>::forAll( void (*user_fn)(Type, void*)
                                  , void *data ) const {
     WCIsvSListIter<BaseHashLink> iter;
     HashLink *link;
@@ -695,8 +697,8 @@ WCbool WCValHashDict<Key, Value>::findKeyAndValue( const Key &search
 
 
 template <class Key, class Value>
-void WCValHashDict<Key, Value>::forAll( register void (*user_fn)(Key, Value
-                                                                , void*)
+void WCValHashDict<Key, Value>::forAll( void (*user_fn)(Key, Value
+                                                        , void*)
                                       , void *data ) const {
     WCIsvSListIter<BaseHashLink> iter;
     HashLink *link;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strcpy() and wcscpy().
 *
 ****************************************************************************/
 
@@ -40,7 +39,8 @@
 
 extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
 #if defined(__386__)
- #pragma aux __strcpy = \
+ #if defined(__SMALL_DATA__)
+  #pragma aux __strcpy = \
         "       push    eax"      \
         "L1:    mov     cl,[edx]" \
         "       mov     [eax],cl" \
@@ -54,7 +54,38 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
         "       jne     L1"       \
         "L2:    pop     eax"      \
         parm [eax] [edx] value [eax] modify exact [eax edx ecx];
-#elif defined(M_I86)
+ #else  // compact or large
+  #pragma aux __strcpy = \
+        "       push    ds"       \
+        "       push    edi"       \
+        "       mov     ds,edx"    \
+        "       test    esi,1"     \
+        "       je      L1"       \
+        "       lodsb"            \
+        "       stosb"            \
+        "       cmp     al,0"     \
+        "       je      L3"       \
+        "L1:    mov     ax,[esi]"  \
+        "       test    al,al"    \
+        "       je      L2"       \
+        "       stosw"            \
+        "       test    ah,ah"    \
+        "       je      L3"       \
+        "       mov     ax,2[esi]" \
+        "       test    al,al"    \
+        "       je      L2"       \
+        "       stosw"            \
+        "       add     esi,4"     \
+        "       test    ah,ah"    \
+        "       jne     L1"       \
+        "       je      L3"       \
+        "L2:    stosb"            \
+        "L3:    pop     eax"       \
+        "       mov     edx,es"    \
+        "       pop     ds"       \
+        parm [es edi] [edx esi] value [dx eax] modify exact [esi edi];
+ #endif
+#elif defined( _M_I86 )
  #if defined(__SMALL_DATA__)
   #pragma aux __strcpy = \
         "       push    di"       \
@@ -115,12 +146,8 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
         "       pop     ds"       \
         parm [es di] [dx si] value [dx ax] modify exact [si di];
  #endif
-#elif defined(__AXP__)
- // no pragma
-#elif defined(__PPC__)
- // no pragma
 #else
- #error platform not supported
+ /* currently no pragma for non-x86 */
 #endif
 
 
@@ -131,14 +158,15 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strcpy,wcscpy)( CHAR_TYPE *s, const CHAR_TYPE *t )
 #endif
-    {
-
+{
 #if !defined(__WIDECHAR__) && defined(_M_IX86)
-        return( __strcpy( s, t ) );
+    return( __strcpy( s, t ) );
 #else
-        CHAR_TYPE *dst;
-        dst = s;
-        while( *dst++ = *t++ );
-        return( s );
+    CHAR_TYPE *dst;
+
+    dst = s;
+    while( *dst++ = *t++ )
+        ;
+    return( s );
 #endif
-    }
+}

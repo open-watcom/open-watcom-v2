@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS 32-bit AutoCAD ADS startup code.
 ;*
 ;*****************************************************************************
 
@@ -38,8 +37,6 @@
 ;%                                                                 %
 ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ;
-; startup code for WATCOM C/C++32 Version 10.0
-;
 ;       This must be assembled using one of the following commands:
 ;               wasm adstart -fo=adsstart.obj -dADS -3s
 ;               wasm adstart -fo=adifstrt.obj -dPADI -3s
@@ -49,6 +46,8 @@
 
 .387
 .386p
+
+include xinit.inc
 
 comment @
         Modified for AutoLISP and protect mode ADI
@@ -125,23 +124,22 @@ endif   ; ACAD
         extrn   _edata          : byte          ; end of DATA (start of BSS)
         extrn   _end            : byte          ; end of BSS (start of STACK)
 
-        extrn   _dynend         : dword
-        extrn   _curbrk         : dword
-        extrn   _psp            : word
-        extrn   _osmajor        : byte
-        extrn   _osminor        : byte
-        extrn   _STACKLOW       : dword
-        extrn   _STACKTOP       : dword
-        extrn   _child          : dword
-        extrn  __no87           : word
-        extrn   _Extender       : byte
-        extrn   _ExtenderSubtype: byte
-        extrn   _Envptr         : dword
-        extrn   _Envseg         : word
-        extrn   __FPE_handler   : dword
-        extrn  ___FPE_handler   : dword
-        extrn   _LpCmdLine      : dword
-        extrn   _LpPgmName      : dword
+        extrn   "C",_dynend         : dword
+        extrn   "C",_curbrk         : dword
+        extrn   "C",_psp            : word
+        extrn   "C",_osmajor        : byte
+        extrn   "C",_osminor        : byte
+        extrn   "C",_STACKLOW       : dword
+        extrn   "C",_STACKTOP       : dword
+        extrn   "C",_child          : dword
+        extrn   __no87              : byte
+        extrn   "C",__uselfn        : byte
+        extrn   "C",_Extender       : byte
+        extrn   "C",_ExtenderSubtype: byte
+        extrn   "C",_Envptr         : fword
+        extrn   "C",__FPE_handler   : dword
+        extrn   "C",_LpCmdLine      : dword
+        extrn   "C",_LpPgmName      : dword
 
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
@@ -250,13 +248,14 @@ _cstart_ proc near
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++32 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      " All rights reserved."
+include msgrt32.inc
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
 ConsoleName     db      "con",00h
+NewLine         db      0Dh,0Ah
 
         dd      ___begtext      ; make sure dead code elimination
                                 ; doesn't kill BEGTEXT
@@ -357,7 +356,7 @@ know_extender:                          ; endif
         mov     cl,es:[edi-1]           ; get length of command
         cld                             ; set direction forward
         mov     al,' '
-        rep     scasb
+        repe    scasb
         lea     esi,-1[edi]
         mov     edi,edx
         mov     bx,es
@@ -384,19 +383,18 @@ noparm: sub     al,al
           jmp   short haveenv           ; else
 pharlap:mov   dx,ENV_SEG                ; - PharLap environment segment
 haveenv:                                ; endif
-        mov     es: _Envseg,dx          ; save segment of environment area
+        mov     es:word ptr _Envptr+4,dx ; save segment of environment area
         mov     ds,dx                   ; get segment addr of environment area
-        sub     ebp,ebp                 ; assume "no87" env. var. not present
+        sub     ebp,ebp                 ; assume "NO87" env. var. not present
         sub     esi,esi                 ; offset 0
-        mov     es: _Envptr,esi         ; save offset of environment area
+        mov     es:dword ptr _Envptr,esi ; save offset of environment area
 L1:     mov     eax,[esi]               ; get first 4 characters
-        or      eax,20202020h           ; map to lower case
-        ;cmp    eax,'78on'              ; check for "no87"
+        or      eax,2020h               ; map to lower case
         cmp     eax,37386f6eh           ; check for "no87"
         jne     short L2                ; skip if not "no87"
         cmp     byte ptr 4[esi],'='     ; make sure next char is "="
         jne     short L2                ; no
-        inc     ebp                     ; - indicate "no87" was present
+        inc     ebp                     ; - indicate "NO87" was present
 L2:     cmp     byte ptr [esi],0        ; end of string ?
         lodsb
         jne     L2                      ; until end of string
@@ -419,12 +417,14 @@ L3:     cmp     byte ptr [esi],0        ; end of pgm name ?
         assume  ds:DGROUP
 if      ACAD
  ifdef   EADI
-        mov     bp,1                    ; force "no87" env. var as present
+        mov     bp,1                    ; force "NO87" env. var as present
  endif
 endif   ; ACAD
-        mov     __no87,bp               ; set state of "no87" environment var
+        mov     eax,ebp
+        mov     __no87,al               ; set state of "NO87" environment var
+        and     __uselfn,ah             ; set "LFN" support status
 
-        mov      _STACKLOW,edi          ; save low address of stack
+        mov     _STACKLOW,edi           ; save low address of stack
 
 if      ACAD
 
@@ -582,12 +582,16 @@ L4:     lodsb                           ; get char
         dec     ecx                     ; . . .
         mov     ah,040h                 ; write out the string
         int     021h                    ; . . .
+        mov     edx, offset NewLine     ; write out the new line
+        mov     ecx, sizeof NewLine     ; . . .
+        mov     ah,040h                 ; . . .
+        int     021h                    ; . . .
         pop     eax                     ; get return code
 ok:
 
         push    eax                     ; save return code
         mov     eax,00h                 ; run finalizers
-        mov     edx,0fh                 ; less than exit
+        mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     eax                     ; restore return code
 

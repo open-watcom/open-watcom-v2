@@ -1,0 +1,22 @@
+220d219
+< return from "unexpected" function!
+223d221
+< return from "terminate" function!
+225d222
+< no handler active to catch thrown object!
+227d223
+< throw during construction of exception!
+229d224
+< no memory left to handle thrown exception!
+231d225
+< no handler active to catch thrown object!
+233d226
+< no handler active to catch thrown object!
+235d227
+< violation of function exception specification!
+237d228
+< throw while "terminate" function active!
+239d229
+< violation of function exception specification!
+241d230
+< throw while "terminate" function active!

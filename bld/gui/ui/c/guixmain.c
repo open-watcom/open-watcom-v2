@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Mainline for applications using GUI library.
 *
 ****************************************************************************/
 
@@ -47,14 +46,8 @@
 #include "guizlist.h"
 #include "guideath.h"
 #include "guidead.h"
-#ifdef UNIX
-    #include "clibext.h"
-    #include "stdtypes.h"
-    #ifdef HP
-        #include <termios.h>
-    #else
-        #include <termio.h>
-    #endif
+#ifdef __UNIX__
+    #include <termios.h>
 #endif
 
 extern int GUIXMain( int argc, char * argv[] );
@@ -68,12 +61,12 @@ bool GUIMainTouched = FALSE;
 #include "win1632.h"
 #include <dos.h>
 
-int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
+extern char **_argv;
+extern int  _argc;
+
+int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPSTR lpCmdLine, int nShowCmd )
 {
-    extern char **_argv;
-    extern int  _argc;
-
     hInstance = hInstance;
     hPrevInstance = hPrevInstance;
     lpCmdLine = lpCmdLine;
@@ -82,17 +75,19 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     return( GUIXMain( _argc, _argv ) );
 }
 #else
-#ifdef UNIX
-    char **             _argv;
-    int                 _argc;
 
-    a_bool              In_raw_mode = FALSE;
+#if !defined(__WATCOMC__)
+    #include "clibext.h"
+#endif
+
+#ifdef __UNIX__
+    bool                In_raw_mode = FALSE;
     struct termios      Saved_terminal_configuration;
 #endif
 
 int main( int argc, char *argv[] )
 {
-#ifdef UNIX
+#if !defined(__WATCOMC__)
     _argv = argv;
     _argc = argc;
 #endif

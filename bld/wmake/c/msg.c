@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message formatting and output for wmake.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <conio.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -47,12 +45,8 @@
 #include "mstream.h"
 #include "mtypes.h"
 
-STATIC const char *logName;
-STATIC int logFH;
-
-#if defined( __WINDOWS__ )
-extern void Output( char * );
-#endif
+STATIC const char   *logName;
+STATIC int          logFH;
 
 typedef union msg_arg {
     UINT16      ui16;
@@ -62,8 +56,8 @@ typedef union msg_arg {
     char FAR    *cfp;
 } MSG_ARG;
 
-STATIC MSG_ARG ArgValue[2];
-STATIC USEARGVALUE = 0; /* set to non_zero if ArgValue is used */
+STATIC MSG_ARG  ArgValue[2];
+STATIC int      USEARGVALUE = 0;    /* set to non_zero if ArgValue is used */
 
 /*
  * now we do some pre-processor magic, and build msgText[]
@@ -73,6 +67,55 @@ STATIC USEARGVALUE = 0; /* set to non_zero if ArgValue is used */
 
 STATIC const char FAR * const FAR msgText[] = {
 #include "msg.h"
+
+
+STATIC void reOrder( va_list args, char *paratype )
+/*************************************************/
+{
+    int         i;
+
+    for( i = 1; i >= 0 && *paratype != '\0'; --i ) {
+        switch( *paratype++ ) {
+        case 'D':
+        case 'd':
+        case 'x':
+            ArgValue[i].ui16 = (UINT16)va_arg( args, unsigned );
+            break;
+        case 'C':
+        case 'c':
+        case 'M':
+            ArgValue[i].i = (UINT16)va_arg( args, unsigned );
+            break;
+        case 'E':
+        case 's':
+        case '1':
+        case '2':
+            ArgValue[i].cp = va_arg( args, char * );
+            break;
+        case 'F':
+            ArgValue[i].cfp = va_arg( args, char FAR * );
+            break;
+        case 'l':
+            ArgValue[i].ui32 = va_arg( args, UINT32 );
+            break;
+        }
+    }
+}
+
+
+STATIC void positnArg( va_list args, UINT16 size )
+/*************************************************
+ * the reordered parameter are passed to FmtStr as a union of 4 bytes.
+ * so we have to take two more bytes out for int, char *, etc, when we use
+ * va_arg().
+ */
+{
+    UINT16      i; /* to avoid a compiler warning */
+
+    if( USEARGVALUE && ( size < (UINT16)sizeof(MSG_ARG) ) ) {
+        i = (UINT16)va_arg( args, unsigned );
+    }
+}
 
 
 /*
@@ -86,7 +129,7 @@ STATIC char *strApp( char *dest, const char *src )
 {
     assert( dest != NULL && src != NULL );
 
-    while( *dest = *src ) {
+    while( (*dest = *src) ) {
         ++dest;
         ++src;
     }
@@ -95,10 +138,11 @@ STATIC char *strApp( char *dest, const char *src )
 
 
 STATIC char *strDec( char *dest, UINT16 num )
+/*******************************************/
 {
     char    *orig;
     char    *str;
-    div_t    res;
+    div_t   res;
 
     assert( dest != NULL );
 
@@ -118,12 +162,14 @@ STATIC char *strDec( char *dest, UINT16 num )
     return( dest );
 }
 
+
 #ifdef CACHE_STATS
 STATIC char *strDecL( char *dest, UINT32 num )
+/********************************************/
 {
     char    *orig;
     char    *str;
-    ldiv_t   res;
+    ldiv_t  res;
 
     assert( dest != NULL );
 
@@ -153,7 +199,7 @@ STATIC char *strHex( char *dest, UINT16 num )
 
     assert( dest != NULL );
 
-    digits = ( num > 0xff ) ? 4 : 2;
+    digits = (num > 0xff) ? 4 : 2;
 
     dest += digits;
     str = dest;
@@ -208,12 +254,12 @@ STATIC char *strDec5( char *dest, UINT16 num )
 
     temp = dest + 4;
     res.quot = num;
-    while (temp >= dest) {
+    while( temp >= dest ) {
         res = div( res.quot, 10 );
         *temp = res.rem + '0';
         --temp;
     }
-    return( dest + 5);
+    return( dest + 5 );
 }
 
 
@@ -248,9 +294,11 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
     assert( buff != NULL && src != NULL );
 
     dest = buff;
-    for(;;) {
+    for( ;; ) {
         ch = *src++;
-        if( ch == NULLCHAR ) break;
+        if( ch == NULLCHAR ) {
+            break;
+        }
         if( ch != '%' ) {
             *dest++ = ch;
         } else {
@@ -258,12 +306,12 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
             switch( ch ) {
                 /* case statements are sorted in ascii order */
             case 'D' :
-                dest = strDec2( dest, va_arg( args, UINT16 ) );
-                positnArg( args, (UINT16)sizeof(UINT16) );
+                dest = strDec2( dest, (UINT16)va_arg( args, unsigned ) );
+                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'C' :
                 ch = va_arg( args, int );
-                positnArg( args, (UINT16)sizeof(int) );
+                positnArg( args, (UINT16)sizeof( int ) );
                 if( isprint( ch ) ) {
                     *dest++ = ch;
                 } else {
@@ -273,12 +321,12 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
             case 'E' :
                 *dest++ = '(';
                 dest = strApp( dest, va_arg( args, char * ) );
-                positnArg( args, (UINT16)sizeof(char *) );
+                positnArg( args, (UINT16)sizeof( char * ) );
                 *dest++ = ')';
                 break;
             case 'F' :
                 dest = fStrApp( dest, va_arg( args, char FAR * ) );
-                positnArg( args, (UINT16)sizeof(char FAR *) );
+                positnArg( args, (UINT16)sizeof( char FAR * ) );
                 break;
             case 'L' :
                 *dest = NULLCHAR;
@@ -286,40 +334,44 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 break;
             case 'M' :
                 MsgGet( va_arg( args, int ), msgbuff );
-                positnArg( args, (UINT16)sizeof(int) );
+                positnArg( args, (UINT16)sizeof( int ) );
                 dest = fStrApp( dest, msgbuff );
                 break;
             case 'Z' :
-                MsgGet( SYS_ERR_0+errno , msgbuff );
+#if defined( __DOS__ )
+                MsgGet( SYS_ERR_0 + errno, msgbuff );
+#else
+                strcpy( msgbuff, strerror( errno ) );
+#endif
                 dest = strApp( dest, msgbuff );
                 break;
             case 'c' :
                 *dest++ = va_arg( args, int );
-                positnArg( args, (UINT16)sizeof(int) );
+                positnArg( args, (UINT16)sizeof( int ) );
                 break;
             case 'd' :
-                dest = strDec( dest, va_arg( args, UINT16 ) );
-                positnArg( args, (UINT16)sizeof(UINT16) );
+                dest = strDec( dest, (UINT16)va_arg( args, unsigned ) );
+                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
 #ifdef CACHE_STATS
             case 'l' :
                 dest = strDecL( dest, va_arg( args, UINT32 ) );
-                positnArg( args, (UINT16)sizeof(UINT32) );
+                positnArg( args, (UINT16)sizeof( UINT32 ) );
                 break;
 #endif
             case 's' :
             case '1' :
             case '2' :
                 dest = strApp( dest, va_arg( args, char * ) );
-                positnArg( args, (UINT16)sizeof(char *) );
+                positnArg( args, (UINT16)sizeof( char * ) );
                 break;
             case 'u' :
-                dest = strDec5( dest, va_arg( args, UINT16 ) );
-                positnArg( args, (UINT16)sizeof(UINT16) );
+                dest = strDec5( dest, (UINT16)va_arg( args, unsigned ) );
+                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'x' :
-                dest = strHex( dest, va_arg( args, UINT16 ) );
-                positnArg( args, (UINT16)sizeof(UINT16) );
+                dest = strHex( dest, (UINT16)va_arg( args, unsigned ) );
+                positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             default :
                 *dest++ = ch;
@@ -332,7 +384,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
 }
 
 
-extern size_t FmtStr( char *buff, const char *fmt, ... )
+size_t FmtStr( char *buff, const char *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
@@ -345,44 +397,38 @@ extern size_t FmtStr( char *buff, const char *fmt, ... )
     return( doFmtStr( buff, fmt, args ) );
 }
 
-STATIC void logWrite( const char *buff, size_t len )
-{
-    if( logName == NULL ) return;
-    if( logFH == -1 ) {
-        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT,
-            S_IWRITE | S_IREAD );
-        if( logFH == -1 ) {
-            const char *fname;
 
-            fname = logName;
-            logName = NULL;     /* recursion protection */
-            PrtMsg( WRN| UNABLE_TO_INCLUDE, fname );
-            return;
-        }
+STATIC void logWrite( const char *buff, size_t len )
+/**************************************************/
+{
+    if( logFH != -1 ) {
+        write( logFH, buff, len );
     }
-    write( logFH, buff, len );
 }
 
+
+#ifdef __WATCOMC__
 #pragma on (check_stack);
-extern void PrtMsg( enum MsgClass num, ... )
+#endif
+void PrtMsg( enum MsgClass num, ... )
 /*******************************************
  * report a message with various format options
  */
 {
     va_list         args;
-    char            buff[ 1024 ];
-    enum MsgClass   pref;
+    char            buff[1024];
+    enum MsgClass   pref = M_ERROR;
     unsigned        len;
     unsigned        class;
     const char      *fname;
     UINT16          fline;
     int             fh;
-    char            wefchar;    /* W, E, or F */
+    char            wefchar = 'F';    /* W, E, or F */
     char            *str;
     char            msgbuff[MAX_RESOURCE_SIZE];
     char            *paratype;
 
-    if( !Glob.debug && ( num & DBG ) ) {
+    if( !Glob.debug && (num & DBG) ) {
         return;
     }
 
@@ -441,16 +487,7 @@ extern void PrtMsg( enum MsgClass num, ... )
         if( fh == STDERR ) {
             logWrite( buff, len );
         }
-#if defined( __WINDOWS__ )
-        if( fh == STDERR || fh == STDOUT ) {
-            buff[len] = 0;
-            Output( buff );
-        } else {
-            write( fh, buff, len );
-        }
-#else
         write( fh, buff, len );
-#endif
     }
 
     va_start( args, num );
@@ -460,15 +497,7 @@ extern void PrtMsg( enum MsgClass num, ... )
         if( fh == STDERR ) {
             logWrite( str, strlen( str ) );
         }
-#if defined( __WINDOWS__ )
-        if( fh == STDERR || fh == STDOUT ) {
-            Output( str );
-        } else {
-            write( fh, str, strlen( str ) );
-        }
-#else
         write( fh, str, strlen( str ) );
-#endif
         len = 0;
     } else {                    /* print a formatted string */
         if( ( num & NUM_MSK ) >= END_OF_RESOURCE_MSG ) {
@@ -484,148 +513,86 @@ extern void PrtMsg( enum MsgClass num, ... )
         }
     }
     if( !(num & NEOL) ) {
-        buff[ len++ ] = EOL;
+        buff[len++] = EOL;
     }
     if( fh == STDERR ) {
         logWrite( buff, len );
     }
-#if defined( __WINDOWS__ )
-    if( fh == STDERR || fh == STDOUT ) {
-        buff[len] = 0;
-        Output( buff );
-    } else {
-        write( fh, buff, len );
-    } /* if */
-#else
     write( fh, buff, len );
-#endif
-    if ( !Glob.microsoft && ( num == ( CANNOT_NEST_FURTHER | FTL | LOC ) ||
-                              num == ( IGNORE_OUT_OF_PLACE_M | ERR | LOC ))){
+    if( !Glob.microsoft && ( num == ( CANNOT_NEST_FURTHER | FTL | LOC ) ||
+                             num == ( IGNORE_OUT_OF_PLACE_M | ERR | LOC ))) {
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
     }
     if( class == ( FTL & CLASS_MSK ) ) {
-        ExitSafe( EXIT_FATAL );
+        exit( ExitSafe( EXIT_FATAL ) );
     }
 }
+#ifdef __WATCOMC__
 #pragma off(check_stack);
+#endif
 
 
-extern void Usage( void )
+void Usage( void )
 /***********************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
-    int         previous_null = 0;
     int         i;
 
     for( i = USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[ 0 ] == '.' ) && ( msgbuff[ 1 ] == 0 ) ) break;
-        if( previous_null ) {
-            if( msgbuff[0] != '\0' ) {
-                waitForKey();
-                PrtMsg( INF|PRNTSTR, msgbuff );
-                previous_null = 0;
-            } else break;
-        } else if( msgbuff[0] == '\0' ) {
-            previous_null = 1;
-        } else {
-            PrtMsg( INF|PRNTSTR, msgbuff );
+        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) {
+            break;
         }
+        PrtMsg( INF | PRNTSTR, msgbuff );
     }
-    ExitSafe( EXIT_OK );
+    exit( ExitSafe( EXIT_OK ) );
 }
 
 
-static void waitForKey( void )
-/****************************/
-{
-    char                c;
-
-    PrtMsg( INF|PRESS_KEY );
-    c = getch();
-}
-
-
+#ifdef __WATCOMC__
 #pragma on (check_stack);
-extern BOOLEAN GetYes( enum MsgClass querymsg )
+#endif
+BOOLEAN GetYes( enum MsgClass querymsg )
 /**********************************************
  * ask question, and return true if user responds 'y', else false
  * You should phrase the question such that the default action is the least
  * damaging (ie: the 'no' action is least damaging).
  */
 {
-    char    buf[ LINE_BUFF ];
+    char    buf[LINE_BUFF];
 
-    PrtMsg( INF| NEOL| STRING_YES_NO, querymsg );
+    PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
     if( read( STDIN, buf, LINE_BUFF ) == 0 ) {
         return( FALSE );
     }
 
-    return( toupper( buf[ 0 ] ) == YES_CHAR );
+    return( toupper( buf[0] ) == YES_CHAR );
 }
+#ifdef __WATCOMC__
 #pragma off(check_stack);
+#endif
 
-extern void LogInit( const char *name )
+
+void LogInit( const char *name )
 /**************************************
  * assumes name points to static memory
  */
 {
     logName = name;
     logFH = -1;
+    if( name != NULL ) {
+        logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT,
+                  S_IWRITE | S_IREAD );
+    }
+    return;
 }
 
-extern void LogFini( void )
+
+void LogFini( void )
 /*************************/
 {
     if( logFH != -1 ) {
         close( logFH );
-    }
-}
-
-static void reOrder( va_list args, char *paratype )
-/*************************************************/
-{
-    int         i;
-
-    for( i = 1; i >= 0 && *paratype != '\0'; --i ) {
-        switch( *paratype++ ) {
-        case 'D':
-        case 'd':
-        case 'x':
-            ArgValue[i].ui16 = va_arg( args, UINT16 );
-            break;
-        case 'C':
-        case 'c':
-        case 'M':
-            ArgValue[i].i = va_arg( args, UINT16 );
-            break;
-        case 'E':
-        case 's':
-        case '1':
-        case '2':
-            ArgValue[i].cp = va_arg( args, char * );
-            break;
-        case 'F':
-            ArgValue[i].cfp = va_arg( args, char FAR * );
-            break;
-        case 'l':
-            ArgValue[i].ui32 = va_arg( args, UINT32 );
-            break;
-        }
-    }
-}
-
-void positnArg( va_list args, UINT16 size )
-/******************************************
- * the reordered parameter are passed to FmtStr as a union of 4 bytes.
- * so we have to take two more bytes out for int, char *, etc, when we use
- * va_arg().
- */
-{
-    UINT16      i; /* to avoid a compiler warning */
-
-    if( USEARGVALUE && ( size < (UINT16)sizeof(MSG_ARG) ) ) {
-        i = va_arg( args, UINT16 );
     }
 }

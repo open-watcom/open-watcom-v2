@@ -32,7 +32,7 @@
 
     name font8x8
 
-ifdef _386
+ifdef __386__
     _DATA segment word public 'DATA'
 else
     Font8x8_DATA segment para 'FONT_DATA'
@@ -385,7 +385,7 @@ __8x8Font label byte        ; FONT_ENTRY structure
     DD      0               ; long        bitmap_offset;
     DW      0               ; short       bitmap_size;
 
-ifdef _386
+ifdef __386__
     _DATA ends
 else
     Font8x8_DATA ends

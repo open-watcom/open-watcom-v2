@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Top level include for assembler.
 *
 ****************************************************************************/
 
@@ -39,6 +38,8 @@
 #include "watcom.h"
 #include "bool.h"
 #include "asmem.h"
+
+#include "as_arch.h"
 
 #include "owl.h"
 

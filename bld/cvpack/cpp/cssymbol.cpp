@@ -362,6 +362,15 @@ SymbolStruct* CSPub32::Construct( const char* ptr )
                          GetVarLength(*(unsigned_8 *)ptr,sizeof(cs_pub32)));
 }
 
+SymbolStruct* CSPub32_new::Construct( const char* ptr )
+/*************************************************/
+{
+    return new CSPub32_new ( * (s_common *) ptr,
+                         * (cs_pub32_new *) (ptr+sizeof(s_common)),
+                         ptr + sizeof(s_pub32_new),
+                         GetVarLength(*(unsigned_8 *)ptr,sizeof(cs_pub32_new)));
+}
+
 SymbolStruct* CSLProc32::Construct( const char* ptr )
 /***************************************************/
 {
@@ -599,6 +608,12 @@ void CSPub32::DerivedPut( ExeMaker& eMaker ) const
 /************************************************/
 {
     eMaker.DumpToExe(&_pub32,sizeof(cs_pub32));
+}
+
+void CSPub32_new::DerivedPut( ExeMaker& eMaker ) const
+/************************************************/
+{
+    eMaker.DumpToExe(&_pub32_new,sizeof(cs_pub32_new));
 }
 
 void CSLProc32::DerivedPut( ExeMaker& eMaker ) const

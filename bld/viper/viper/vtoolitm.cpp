@@ -32,12 +32,17 @@
 
 #include "vtoolitm.hpp"
 
-WEXPORT VToolItem::VToolItem( ToolType typ, int toolId, WObject *client, cbtbi pick, const char *htext )
-    : WToolBarItem( "", toolId, client, pick, htext )
+WEXPORT VToolItem::VToolItem( ToolType typ, int toolId, WObject *client, cbtbi pick,
+                              const char *htext, const char *tip )
+    : WToolBarItem( "", toolId, client, pick, htext, tip )
     , _toolId( toolId )
     , _toolType( typ )
 {
 }
+
+// Complain about defining trivial destructor inside class
+// definition only for warning levels above 8 
+#pragma warning 656 9
 
 WEXPORT VToolItem::~VToolItem()
 {

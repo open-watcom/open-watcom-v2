@@ -133,8 +133,8 @@ FARPROC fp;
     if( CFont != NULL ) DeleteObject( CFont );
     CFont = NULL;
 
-    fp = MakeProcInstance( GetFont, ed->inst );
-    if( DialogBox( ed->inst, "GetFont", ed->hwnd, fp ) ) {
+    fp = MakeProcInstance( (FARPROC)GetFont, ed->inst );
+    if( DialogBox( ed->inst, "GetFont", ed->hwnd, (DLGPROC)fp ) ) {
         if( ed->font != NULL ) DeleteObject( ed->font );
         ed->font = CFont;
         SendMessage( ed->editwnd, WM_SETFONT, ed->font, TRUE );
@@ -206,7 +206,7 @@ void GetAllFonts( LPEDATA ed )
         tmp = next;
     }
 
-    fp = MakeProcInstance( EnumFontsProc, ed->inst );
+    fp = MakeProcInstance( (FARPROC)EnumFontsProc, ed->inst );
     hdc = GetDC( ed->hwnd );
     EnumFonts( hdc, (LPSTR) NULL, fp,
                 (LPSTR) PASS_WORD_AS_POINTER( FONT_DATA ) );

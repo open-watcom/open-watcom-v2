@@ -33,82 +33,85 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern    code_lbl     *Handles;
-
 extern  void            GenKillLabel(pointer);
 
 
-extern  void    TellOptimizerByPassed() {
-/***************************************/
-
+extern  void    TellOptimizerByPassed( void )
+/*******************************************/
 /* tell the optimizer we're going around it so it won't flush while we're*/
 /* in the object file generator and zap our static variables*/
-
+{
   optbegin
 }
 
 
-extern  void    TellByPassOver() {
-/********************************/
-
+extern  void    TellByPassOver( void )
+/************************************/
+{
   optend
+}
 
 
-extern  void    TellAddress( code_lbl *lbl, offset addr ) {
-/**********************************************************/
-
+extern  void    TellAddress( code_lbl *lbl, offset addr )
+/*******************************************************/
+{
   optbegin
     _ValidLbl( lbl );
     lbl->lbl.address = addr;
   optend
+}
 
 
-extern  void    TellDonePatch( code_lbl *lbl ) {
-/***********************************************/
-
+extern  void    TellDonePatch( code_lbl *lbl )
+/********************************************/
+{
   optbegin
     _ValidLbl( lbl );
     lbl->lbl.patch = NULL;
   optend
+}
 
 
-extern  void    TellReachedLabel( code_lbl *lbl ) {
-/*************************************************/
-
+extern  void    TellReachedLabel( code_lbl *lbl )
+/***********************************************/
+{
   optbegin
     _ValidLbl( lbl );
     _SetStatus( lbl, REACHED );
   optend
+}
 
-extern  void    TellProcLabel( code_lbl *lbl ) {
-/**********************************************/
-
+extern  void    TellProcLabel( code_lbl *lbl )
+/********************************************/
+{
     _ValidLbl( lbl );
     _SetStatus( lbl, PROC );
 }
 
-extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl ) {
-/**************************************************************/
-
+extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )
+/************************************************************/
+{
   optbegin
     _ValidLbl( lbl );
     lbl->lbl.sym = (sym_handle) hdl;
     _SetStatus( lbl, COMMON_LBL );
   optend
+}
 
 
-extern  void    TellKeepLabel( code_lbl *lbl ) {
-/***********************************************/
-
+extern  void    TellKeepLabel( code_lbl *lbl )
+/********************************************/
+{
   optbegin
     _ValidLbl( lbl );
     _SetStatus( lbl, KEEPLABEL );
   optend
+}
 
 
-extern  void    TellNoSymbol( code_lbl *lbl ) {
-/**********************************************/
-
+extern  void    TellNoSymbol( code_lbl *lbl )
+/*******************************************/
+{
   optbegin
     if( lbl != NULL ) {
         _ValidLbl( lbl );
@@ -118,10 +121,11 @@ extern  void    TellNoSymbol( code_lbl *lbl ) {
         }
     }
   optend
+}
 
-static  void    ReallyScrapLabel( code_lbl *lbl ) {
-/************************************************/
-
+static  void    ReallyScrapLabel( code_lbl *lbl )
+/***********************************************/
+{
     code_lbl   **owner;
 
   optbegin
@@ -132,35 +136,38 @@ static  void    ReallyScrapLabel( code_lbl *lbl ) {
         owner = &(*owner)->lbl.link;
     }
     *owner = lbl->lbl.link;
-    _Free( lbl, sizeof( code_lbl ) );
+    CGFree( lbl );
   optend
+}
 
 
-extern  void    TellScrapLabel( code_lbl *lbl ) {
-/************************************************/
-
+extern  void    TellScrapLabel( code_lbl *lbl )
+/*********************************************/
+{
   optbegin
     /* data labels in the code segment can't get freed until the end */
     if( _TstStatus( lbl, CODELABEL ) ) {
         ReallyScrapLabel( lbl );
     }
   optend
+}
 
 
-extern  void    TellCondemnedLabel( code_lbl *lbl ) {
-/****************************************************/
-
+extern  void    TellCondemnedLabel( code_lbl *lbl )
+/*************************************************/
+{
   optbegin
     _ValidLbl( lbl );
     _SetStatus( lbl, CONDEMNED );
   optend
+}
 
 
-static  code_lbl       *NextCondemned( code_lbl *lbl ) {
-/********************************************************/
-
+static  code_lbl       *NextCondemned( code_lbl *lbl )
+/****************************************************/
+{
   optbegin
-    for(;;) {
+    for( ;; ) {
         if( lbl == NULL ) break;
         if( _TstStatus( lbl, CONDEMNED ) ) {
             _ClrStatus( lbl, CONDEMNED );
@@ -172,9 +179,9 @@ static  code_lbl       *NextCondemned( code_lbl *lbl ) {
 }
 
 
-extern  void    TellBeginExecutions() {
-/*************************************/
-
+extern  void    TellBeginExecutions( void )
+/*****************************************/
+{
     code_lbl   *dead;
 
   optbegin
@@ -184,11 +191,12 @@ extern  void    TellBeginExecutions() {
         GenKillLabel( dead );
     }
   optend
+}
 
 
-extern  void    TellFreeAllLabels() {
-/***********************************/
-
+extern  void    TellFreeAllLabels( void )
+/***************************************/
+{
     bool        unfreed;
 
   optbegin
@@ -206,14 +214,15 @@ extern  void    TellFreeAllLabels() {
         ReallyScrapLabel( Handles );
     }
   optend
+}
 
 
-extern  void    TellUnreachLabels() {
-/************************************
+extern  void    TellUnreachLabels( void )
+/****************************************
     Mark all the labels that have come out of the control flow queue as
     unreachable by a short jump.
 */
-
+{
   code_lbl      *lbl;
 
   optbegin
@@ -223,12 +232,11 @@ extern  void    TellUnreachLabels() {
         }
     }
   optend
+}
 
-extern  void    KillLblRedirects() {
-/***********************************
-
-*/
-
+extern  void    KillLblRedirects( void )
+/**************************************/
+{
   code_lbl      *lbl;
 
   optbegin
@@ -239,4 +247,4 @@ extern  void    KillLblRedirects() {
 #endif
     TellUnreachLabels();        // a little too conservative - stop gap
   optend
-
+}

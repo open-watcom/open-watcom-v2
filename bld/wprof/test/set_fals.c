@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler test app, Part VI.
 *
 ****************************************************************************/
 
@@ -38,7 +37,7 @@ extern char flags[SIZE+1];
 extern int count, niter, iter;
 
 
-set_false( k )
+void set_false( k )
 {
     int f;
 

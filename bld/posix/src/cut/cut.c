@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX cut utility
+*               Cuts files
 *
 ****************************************************************************/
 
@@ -45,7 +45,7 @@
 
 char *OptEnvVar="cut";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: cut -f|c list [-d char] [-?Xs] [@env] [files...]",
     "\tenv                : environment variable to expand",
     "\tfiles              : files to cut",

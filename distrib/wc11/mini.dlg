@@ -1,0 +1,4 @@
+radio_button=MinimalInstall,false,\
+        //1"&Minimal CD-ROM installation"\
+        //2"最小 CD-ROM インストール (&M)"\
+        //0,SrcIsCD

@@ -1,0 +1,20 @@
+[ DEFAULT ]
+[ INCLUDE <DEVDIR>/src/clibexam/files.dat ]
+[ INCLUDE <DEVDIR>/src/cplbexam/files.dat ]
+[ INCLUDE <DEVDIR>/src/cppexamp/files.dat ]
+[ INCLUDE <DEVDIR>/src/dll/files.dat ]
+[ INCLUDE <DEVDIR>/src/goodies/files.dat ]
+[ INCLUDE <DEVDIR>/src/win/files.dat ]
+[ INCLUDE <DEVDIR>/src/startup/files.dat ]
+[ INCLUDE <DEVDIR>/src/misc/files.dat ]
+[ INCLUDE <DEVDIR>/src/os2/files.dat ]
+[ INCLUDE <DEVDIR>/src/directx/files.dat ]
+
+# CPPLIB/CONTAIN source code
+[ DEFAULT type="s" dir="src/cpplib/contain" cond="rtsource" where="c f77 ac" ]
+usr="wchash.cpp"
+usr="wclist.cpp"
+usr="wcskip.cpp"
+usr="wcexcept.cpp"
+
+#[ INCLUDE <DEVDIR>/src/p16/files.dat ]

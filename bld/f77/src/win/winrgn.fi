@@ -1,0 +1,57 @@
+*$noreference
+
+! Region Functions:
+! -----------------
+
+      external CombineRgn
+      external CreateEllipticRgn
+      external CreateEllipticRgnIndirect
+      external CreatePolygonRgn
+      external CreatePolyPolygonRgn
+      external CreateRectRgn
+      external CreateRectRgnIndirect
+      external CreateRoundRectRgn
+      external EqualRgn
+      external FillRgn
+      external FrameRgn
+      external GetRgnBox
+      external InvertRgn
+      external OffsetRgn
+      external PaintRgn
+      external PtInRegion
+      external RectInRegion
+      external SetRectRgn
+
+      integer*2 CombineRgn
+      integer*2 CreateEllipticRgn
+      integer*2 CreateEllipticRgnIndirect
+      integer*2 CreatePolygonRgn
+      integer*2 CreatePolyPolygonRgn
+      integer*2 CreateRectRgn
+      integer*2 CreateRectRgnIndirect
+      integer*2 CreateRoundRectRgn
+      integer*2 EqualRgn
+      integer*2 FillRgn
+      integer*2 FrameRgn
+      integer*2 GetRgnBox
+      integer*2 InvertRgn
+      integer*2 OffsetRgn
+      integer*2 PaintRgn
+      integer*2 PtInRegion
+      integer*2 RectInRegion
+
+! CombineRgn() Styles
+
+      integer RGN_AND
+      integer RGN_OR
+      integer RGN_XOR
+      integer RGN_DIFF
+      integer RGN_COPY
+
+      parameter ( RGN_AND             = 1 )
+      parameter ( RGN_OR              = 2 )
+      parameter ( RGN_XOR             = 3 )
+      parameter ( RGN_DIFF            = 4 )
+      parameter ( RGN_COPY            = 5 )
+
+*$reference

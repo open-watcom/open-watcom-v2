@@ -53,7 +53,11 @@
 
 extern void _wpi_setpoint( WPI_POINT *pt, int x, int y );
 
+#ifdef __NT__
+    #define _wpi_moveto( pres, point ) MoveToEx( pres, (point)->x, (point)->y, NULL )
+#else
     #define _wpi_moveto( pres, point ) MoveTo( pres, (point)->x, (point)->y )
+#endif
 
     #define _wpi_movetoex( pres, point, extra ) \
         MoveToEx( pres, (point)->x, (point)->y, extra )
@@ -287,14 +291,14 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
     #define _wpi_makeprocinstance( proc, inst ) MakeProcInstance( proc, inst )
 
     #define _wpi_makeenumprocinstance( proc, inst ) \
-                                    MakeProcInstance( (FARPROC)proc, inst )
+                                    (WPI_ENUMPROC)MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_makelineddaprocinstance( proc, inst ) \
-                                    MakeProcInstance( (FARPROC)proc, inst )
+                                    (WPI_LINEDDAPROC)MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
 
-    #define _wpi_freeprocinstance( proc ) FreeProcInstance( proc )
+    #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
     #define _wpi_getclassproc( class ) (class)->lpfnWndProc
 
@@ -321,7 +325,7 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
     #define _wpi_enddialog( hwnd, result ) EndDialog( hwnd, result )
 
     #define _wpi_dialogbox( parent, proc, inst, res_id, data ) \
-        DialogBoxParam( inst, res_id, parent, proc, (DWORD)(LPSTR) (data) )
+        DialogBoxParam( inst, res_id, parent, (DLGPROC)proc, (DWORD)(LPARAM)(data) )
 
     #define _wpi_setstretchbltmode( mem, mode ) SetStretchBltMode( mem, mode )
 
@@ -442,8 +446,11 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 
     #define _wpi_deletebrush( brush )  DeleteObject( brush )
 
-    #define _wpi_setbrushorigin( pres, pt ) \
-                                        SetBrushOrg( pres, (pt)->x, (pt)->y )
+#ifdef __NT__
+    #define _wpi_setbrushorigin( pres, pt ) SetBrushOrgEx( pres, (pt)->x, (pt)->y, NULL )
+#else
+    #define _wpi_setbrushorigin( pres, pt ) SetBrushOrg( pres, (pt)->x, (pt)->y )
+#endif
 
     #define _wpi_setlogbrushsolid( plogbrush ) (plogbrush)->lbStyle = BS_SOLID
 
@@ -582,8 +589,16 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
 
     #define _wpi_f_getoldfont( hdc, oldfont ) SelectObject( hdc, oldfont )
 
+#ifdef __NT__
+    #define _wpi_f_getsystemfont( hdc, font ) \
+        GetObject( \
+            GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
+            DEFAULT_GUI_FONT : SYSTEM_FONT ) \
+            , sizeof( *(font) ), (font) )
+#else
     #define _wpi_f_getsystemfont( hdc, font ) \
         GetObject( GetStockObject( SYSTEM_FONT ), sizeof( *(font) ), (font) )
+#endif
 
     #define _wpi_f_createfont( font ) \
                 CreateFontIndirect( font )
@@ -701,7 +716,7 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
         EnumFonts( pres, (LPSTR)facename, (FARPROC)(proc), (LPSTR)(data) )
 
     #define _wpi_enumchildwindows( hwnd, proc, lp ) \
-                EnumChildWindows( (HWND)(hwnd), (FARPROC)(proc), (LONG)(lp) )
+                EnumChildWindows( (HWND)(hwnd), (WNDENUMPROC)(proc), (LPARAM)(lp) )
 
     #define _wpi_getnextwindow( hwnd ) GetNextWindow( hwnd, GW_HWNDNEXT )
 
@@ -817,7 +832,13 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
 
     #define _wpi_restorepres( pres, pres_id ) RestoreDC( pres, pres_id )
 
+#ifdef __NT__
+    #define _wpi_getsystemfont() \
+        GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
+        DEFAULT_GUI_FONT : SYSTEM_FONT )
+#else
     #define _wpi_getsystemfont() GetStockObject( SYSTEM_FONT )
+#endif
 
     #define _wpi_wmgetfont( hwnd, font_hld ) \
         font_hld = _wpi_sendmessage( hwnd, WM_GETFONT, NULL, NULL );
@@ -852,7 +873,7 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
 
     #define _wpi_ptvisible( pres, pt ) PtVisible( pres, pt )
 
-extern void _wpi_gettextextent( WPI_PRES pres, LPSTR string, int len_string,
+extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
                                                     int *width, int *height );
 
     #define _wpi_arc( pres, x1, y1, x2, y2, x3, y3, x4, y4 ) \
@@ -922,9 +943,13 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPSTR string, int len_string,
 
     #define _wpi_unrealizeobject( hobj ) UnrealizeObject( hobj )
 
-    #define _wpi_getlocalhdl( mem ) LocalHandle( LOWORD( mem ) )
-
-    #define _wpi_getglobalhdl( mem ) GlobalHandle( HIWORD( mem ) )
+#ifdef __NT__
+    #define _wpi_getlocalhdl( mem ) LocalHandle( mem )
+    #define _wpi_getglobalhdl( mem ) GlobalHandle( mem )
+#else
+    #define _wpi_getlocalhdl( mem ) LocalHandle( (void NEAR*)LOWORD( mem ) )
+    #define _wpi_getglobalhdl( mem ) (HGLOBAL)LOWORD(GlobalHandle( (UINT)HIWORD( mem ) ))
+#endif
 
     #define _wpi_getmenu( hframe ) GetMenu( hframe )
 
@@ -1078,11 +1103,11 @@ extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newcursor );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned id,
-                             HMENU popup, char *text, BOOL by_position );
+                             HMENU popup, const char *text, BOOL by_position );
 
 extern BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
                              unsigned attr_flags, unsigned id,
-                             HMENU popup, char *text );
+                             HMENU popup, const char *text );
 
 extern BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
                                BOOL by_position );
@@ -1101,7 +1126,8 @@ extern void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state,
 
 extern BOOL _wpi_modifymenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,
-                             HMENU new_popup, char *new_text, BOOL by_position );
+                             HMENU new_popup, const char *new_text,
+                             BOOL by_position );
 
     #define _wpi_createmenu() CreateMenu()
 
@@ -1123,7 +1149,7 @@ extern BOOL _wpi_setmenu( HWND hwnd, HMENU hmenu );
                        ((fenabled) ? MF_ENABLED : MF_GRAYED ) | \
                        ((by_position) ? MF_BYPOSITION : MF_BYCOMMAND) )
 
-extern BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, char *text,
+extern BOOL _wpi_setmenutext( HMENU hmenu, unsigned id, const char *text,
                               BOOL by_position );
 
 extern BOOL _wpi_getmenutext( HMENU hmenu, unsigned id, char *text, int ctext,
@@ -1144,7 +1170,7 @@ extern BOOL _wpi_getmenutext( HMENU hmenu, unsigned id, char *text, int ctext,
 
     #define _wpi_menutext2win( ptext ) // do nothing
 
-    #define _wpi_menutext2pm( ptext ) ptext
+    #define _wpi_menutext2pm( ptext ) (char *)ptext
 
     #define _wpi_freemenutext( ptext ) // do nothing
 

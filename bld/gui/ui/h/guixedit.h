@@ -32,5 +32,5 @@
 
 #ifndef _GUIXEDIT_H_
 #define _GUIXEDIT_H_
-extern bool GUISetEditText( an_edit_control *edit_control, char *text );
+extern bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data );
 #endif // _GUIXEDIT_H_

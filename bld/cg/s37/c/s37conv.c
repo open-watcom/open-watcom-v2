@@ -39,14 +39,12 @@
 #include "rtclass.h"
 #include "vergen.h"
 #include "model.h"
-
+#include "makeins.h"
 #include "s37conv.def"
 
 
-extern  name    *       AllocTemp(type_class_def);
-extern  instruction*    MakeUnary(opcode_defs,name*,name*,type_class_def);
+extern  name            *AllocTemp(type_class_def);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction*    MakeMove(name*,name*,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  instruction     *rMAKECALL( instruction *ins );
 

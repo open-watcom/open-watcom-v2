@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <limits.h>
 #include "wreglbl.h"
@@ -38,7 +38,7 @@
 #include "wremain.h"
 #include "wremem.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wrehints.h"
 #include "wrelist.h"
 #include "wretoolb.h"
@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WREToolBarHook ( HWND, UINT, WPARAM, LPARAM );
+extern BOOL WREToolBarHook( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -62,24 +62,24 @@ extern BOOL WREToolBarHook ( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WREToolBar *WREFindToolBar         ( HWND );
-static WREToolBar *WREAllocToolBar        ( void );
-static void        WREAddToolBar          ( WREToolBar * );
-static void        WRERemoveToolBar       ( WREToolBar * );
+static WREToolBar   *WREFindToolBar( HWND );
+static WREToolBar   *WREAllocToolBar( void );
+static void         WREAddToolBar( WREToolBar * );
+static void         WRERemoveToolBar( WREToolBar * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static LIST       *WREToolBarList      = NULL;
+static LIST         *WREToolBarList     = NULL;
 
-WREToolBar *WRECreateToolBar ( WREToolBarInfo *info, HWND parent )
+WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
 {
     WREToolBar  *tbar;
     int         i;
     HMENU       sys_menu;
     char        *text;
 
-    if( !info ) {
+    if( info == NULL ) {
         return( NULL );
     }
 
@@ -88,150 +88,145 @@ WREToolBar *WRECreateToolBar ( WREToolBarInfo *info, HWND parent )
         return( NULL );
     }
 
-    tbar->info   = info;
+    tbar->info = info;
     tbar->parent = parent;
-    tbar->tbar   = (toolbar) ToolBarInit ( parent );
+    tbar->tbar = (toolbar)ToolBarInit( parent );
 
-    ToolBarDisplay ( tbar->tbar, &info->dinfo );
+    ToolBarDisplay( tbar->tbar, &info->dinfo );
 
-    for ( i = 0; i < info->num_items; i++ ) {
-        ToolBarAddItem ( tbar->tbar, &info->items[i] );
+    for( i = 0; i < info->num_items; i++ ) {
+        ToolBarAddItem( tbar->tbar, &info->items[i] );
     }
 
-    tbar->win = ToolBarWindow ( tbar->tbar );
+    tbar->win = ToolBarWindow( tbar->tbar );
 
     if( (info->dinfo.style & TOOLBAR_FLOAT_STYLE) == TOOLBAR_FLOAT_STYLE ) {
-        sys_menu = GetSystemMenu ( tbar->win, FALSE );
-        i = GetMenuItemCount ( sys_menu );
-        for ( ; i>0; i-- ) {
-            DeleteMenu ( sys_menu, i, MF_BYPOSITION );
+        sys_menu = GetSystemMenu( tbar->win, FALSE );
+        i = GetMenuItemCount( sys_menu );
+        for( ; i > 0; i-- ) {
+            DeleteMenu( sys_menu, i, MF_BYPOSITION );
         }
         text = WREAllocRCString( WRE_SYSMENUMOVE );
-        AppendMenu( sys_menu, MF_STRING , SC_MOVE,  (text) ? text : "Move" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
+        if( text != NULL ) {
             WREFreeRCString( text );
         }
         text = WREAllocRCString( WRE_SYSMENUSIZE );
-        AppendMenu( sys_menu, MF_STRING , SC_SIZE,  (text) ? text : "Size" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
+        if( text != NULL ) {
             WREFreeRCString( text );
         }
         text = WREAllocRCString( WRE_SYSMENUHIDE );
-        AppendMenu( sys_menu, MF_STRING , SC_CLOSE, (text) ? text : "Hide" );
-        if( text ) {
+        AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
+        if( text != NULL ) {
             WREFreeRCString( text );
         }
     }
 
-    ShowWindow ( tbar->win, SW_SHOWNORMAL );
+    ShowWindow( tbar->win, SW_SHOWNORMAL );
 
-    UpdateWindow ( tbar->win );
+    UpdateWindow( tbar->win );
 
-    WREAddToolBar ( tbar );
+    WREAddToolBar( tbar );
 
-    return ( tbar );
+    return( tbar );
 }
 
-BOOL WREToolBarHook ( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+BOOL WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WREToolBar  *tbar;
-    int          bstate;
-    Bool         ret;
+    int         bstate;
+    Bool        ret;
 
-    if ( !( tbar = WREFindToolBar ( hwnd ) ) || ( tbar->win == NULL ) ) {
+    if( (tbar = WREFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         return( FALSE );
     }
 
     ret = FALSE;
 
     switch( msg ) {
+    case WM_USER:
+        if( lParam ) {
+            WRESetStatusText( NULL, "", TRUE );
+        } else {
+            WREDisplayHint( wParam );
+        }
+        if( lParam ) {
+            bstate = BUTTON_UP;
+        } else {
+            bstate = BUTTON_DOWN;
+        }
+        WRESetToolBarItemState( tbar, wParam, bstate );
+        break;
 
-        case WM_USER:
-            if ( lParam ) {
-                WRESetStatusText ( NULL, "", TRUE );
-            } else {
-                WREDisplayHint ( wParam );
-            }
-            if ( lParam ) {
-                bstate = BUTTON_UP;
-            } else {
-                bstate = BUTTON_DOWN;
-            }
-            WRESetToolBarItemState ( tbar, wParam, bstate );
-            break;
+    case WM_SIZE:
+        if( wParam != SIZE_MAXIMIZED && wParam != SIZE_MINIMIZED ) {
+            GetWindowRect( hwnd, &tbar->last_pos );
+        }
+        break;
 
-        case WM_SIZE:
-            if ( ( wParam != SIZE_MAXIMIZED ) &&
-                 ( wParam != SIZE_MINIMIZED ) ) {
-                GetWindowRect ( hwnd, &tbar->last_pos );
-            }
-            break;
+    case WM_MOVE:
+        if( !IsZoomed( hwnd ) ) {
+            GetWindowRect( hwnd, &tbar->last_pos );
+        }
+        break;
 
-        case WM_MOVE:
-            if ( !IsZoomed ( hwnd ) ) {
-                GetWindowRect ( hwnd, &tbar->last_pos );
-            }
-            break;
+    case WM_GETMINMAXINFO:
+        minmax = (MINMAXINFO *)lParam;
+        minmax->ptMinTrackSize.x = 2 * GetSystemMetrics( SM_CXFRAME ) +
+                                   tbar->info->dinfo.border_size.x +
+                                   tbar->info->dinfo.button_size.x - 1;
+        minmax->ptMinTrackSize.y = 2 * GetSystemMetrics( SM_CYFRAME ) +
+                                   tbar->info->dinfo.border_size.y +
+                                   GetSystemMetrics( SM_CYCAPTION ) +
+                                   tbar->info->dinfo.button_size.y - 1;
+        break;
 
-        case WM_GETMINMAXINFO:
-            minmax = (MINMAXINFO *) lParam;
-            minmax->ptMinTrackSize.x =
-                2 * GetSystemMetrics(SM_CXFRAME) +
-                tbar->info->dinfo.border_size.x +
-                tbar->info->dinfo.button_size.x - 1;
-            minmax->ptMinTrackSize.y =
-                2 * GetSystemMetrics(SM_CYFRAME) +
-                tbar->info->dinfo.border_size.y +
-                GetSystemMetrics(SM_CYCAPTION) +
-                tbar->info->dinfo.button_size.y - 1;
-            break;
-
-        case WM_DESTROY:
-            WRECloseToolBar ( tbar );
-            break;
-
+    case WM_DESTROY:
+        WRECloseToolBar( tbar );
+        break;
     }
 
-    return ( ret );
+    return( ret );
 }
 
-WREToolBar *WREFindToolBar ( HWND win )
+WREToolBar *WREFindToolBar( HWND win )
 {
     WREToolBar *tbar;
     LIST       *tlist;
 
-    for ( tlist = WREToolBarList; tlist; tlist = ListNext ( tlist ) ) {
-        tbar = ListElement ( tlist );
-        if ( tbar->win == win ) {
-            return ( tbar );
+    for( tlist = WREToolBarList; tlist != NULL; tlist = ListNext( tlist ) ) {
+        tbar = ListElement( tlist );
+        if( tbar->win == win ) {
+            return( tbar );
         }
     }
 
-    return ( NULL );
+    return( NULL );
 }
 
-Bool WRECloseToolBar ( WREToolBar *tbar )
+Bool WRECloseToolBar( WREToolBar *tbar )
 {
-    if ( tbar ) {
-        tbar->win = (HWND) NULL;
-        WRERemoveToolBar ( tbar );
-        WREFreeToolBar ( tbar );
+    if( tbar != NULL ) {
+        tbar->win = (HWND)NULL;
+        WRERemoveToolBar( tbar );
+        WREFreeToolBar( tbar );
     }
 
     return( TRUE );
 }
 
-void WREFreeToolBarInfo ( WREToolBarInfo *info )
+void WREFreeToolBarInfo( WREToolBarInfo *info )
 {
-    if ( info ) {
-        if ( info->items ) {
-            WREMemFree ( info->items );
+    if( info != NULL ) {
+        if( info->items != NULL ) {
+            WREMemFree( info->items );
         }
-        if ( info->dinfo.background ) {
-            DeleteObject ( info->dinfo.background );
+        if( info->dinfo.background != NULL ) {
+            DeleteObject( info->dinfo.background );
         }
-        WREMemFree ( info );
+        WREMemFree( info );
     }
 }
 
@@ -239,13 +234,13 @@ WREToolBarInfo *WREAllocToolBarInfo( int num )
 {
     WREToolBarInfo *info;
 
-    info = (WREToolBarInfo *) WREMemAlloc( sizeof (WREToolBarInfo) );
+    info = (WREToolBarInfo *)WREMemAlloc( sizeof( WREToolBarInfo ) );
 
-    if( info ) {
-        memset( info, 0, sizeof ( WREToolBarInfo ) );
-        info->items = (TOOLITEMINFO *) WREMemAlloc ( sizeof(TOOLITEMINFO) * num );
-        if( info->items ) {
-            memset( info->items, 0, sizeof(TOOLITEMINFO) * num );
+    if( info != NULL ) {
+        memset( info, 0, sizeof( WREToolBarInfo ) );
+        info->items = (TOOLITEMINFO *)WREMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        if( info->items != NULL ) {
+            memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
             WREMemFree( info );
@@ -256,59 +251,58 @@ WREToolBarInfo *WREAllocToolBarInfo( int num )
     return( info );
 }
 
-WREToolBar *WREAllocToolBar ( void )
+WREToolBar *WREAllocToolBar( void )
 {
     WREToolBar *tbar;
 
-    tbar = (WREToolBar *) WREMemAlloc ( sizeof ( WREToolBar ) );
-    if ( tbar ) {
-        memset ( tbar, 0, sizeof ( WREToolBar ) );
+    tbar = (WREToolBar *)WREMemAlloc( sizeof( WREToolBar ) );
+    if( tbar != NULL ) {
+        memset( tbar, 0, sizeof( WREToolBar ) );
     }
 
-    return ( tbar );
+    return( tbar );
 }
 
-void WREFreeToolBar ( WREToolBar *tbar )
+void WREFreeToolBar( WREToolBar *tbar )
 {
-    if ( tbar ) {
-        WREMemFree ( tbar );
+    if( tbar != NULL ) {
+        WREMemFree( tbar );
     }
 }
 
-void WREAddToolBar ( WREToolBar *tbar )
+void WREAddToolBar( WREToolBar *tbar )
 {
-    WREInsertObject ( &WREToolBarList, (void *)tbar );
+    WREInsertObject( &WREToolBarList, (void *)tbar );
 }
 
-void WREDestroyToolBar ( WREToolBar *tbar )
+void WREDestroyToolBar( WREToolBar *tbar )
 {
-    ToolBarDestroy ( tbar->tbar );
+    ToolBarDestroy( tbar->tbar );
 }
 
-void WRERemoveToolBar ( WREToolBar *tbar )
+void WRERemoveToolBar( WREToolBar *tbar )
 {
-    ListRemoveElt ( &WREToolBarList, (void *)tbar );
+    ListRemoveElt( &WREToolBarList, (void *)tbar );
 }
 
-void WREShutdownToolBars ( void )
+void WREShutdownToolBars( void )
 {
     WREToolBar  *tbar;
     LIST        *tlist;
 
-    tlist = WREListCopy ( WREToolBarList );
-    for ( ; tlist; tlist = ListConsume ( tlist ) ) {
-        tbar = ListElement ( tlist );
-        ToolBarDestroy ( tbar->tbar );
+    tlist = WREListCopy( WREToolBarList );
+    for( ; tlist; tlist = ListConsume( tlist ) ) {
+        tbar = ListElement( tlist );
+        ToolBarDestroy( tbar->tbar );
     }
-    ToolBarFini ( NULL );
+    ToolBarFini( NULL );
 
-    ListFree ( WREToolBarList );
+    ListFree( WREToolBarList );
 }
 
-void WRESetToolBarItemState ( WREToolBar *tbar, UINT id, UINT state )
+void WRESetToolBarItemState( WREToolBar *tbar, UINT id, UINT state )
 {
-    if ( tbar /*&& ( ToolBarGetState ( tbar->tbar, id ) != state )*/ ) {
-        ToolBarSetState ( tbar->tbar, id, state );
+    if( tbar != NULL /* && ToolBarGetState( tbar->tbar, id ) != state */ ) {
+        ToolBarSetState( tbar->tbar, id, state );
     }
 }
-

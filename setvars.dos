@@ -1,0 +1,79 @@
+@echo off
+REM *****************************************************************
+REM SETVARS.BAT - DOS version
+REM *****************************************************************
+REM NOTE: Do not use this batch file directly, but copy it and
+REM       modify it as necessary for your own use!!
+
+REM Setup environment variables for Perforce
+set P4PORT=perforce.openwatcom.org:3488
+set P4USER=YourName
+set P4CLIENT=YOURCLIENT
+set P4PASSWD=YourPassword
+
+REM Change this to point to your Open Watcom source tree
+set OWROOT=d:\ow
+
+REM Change this to point to your existing Open Watcom installation
+set WATCOM=c:\c\ow10
+
+REM placeholder
+REM placeholder
+
+REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
+set GHOSTSCRIPTPATH=c:\gs\gs7.04
+
+REM Modifications beyond this point should not be necessary
+
+REM Set this variable to 1 to get debug build
+set DEBUG_BUILD=0
+
+REM Set this variable to 1 to get default windowing support in clib
+set DEFAULT_WINDOWING=0
+
+REM Set this variable to 0 to suppress documentation build
+set DOC_BUILD=1
+
+REM Documentation related variables
+REM set appropriate variables to blank for help compilers which you haven't installed
+rem set WIN95HC=hcrtf
+rem set HHC=hhc
+
+REM Set up default path information variable
+if "%DEFPATH%" == "" set DEFPATH=%PATH%
+
+REM Subdirectory to be used for bootstrapping
+set OBJDIR=bootstrp
+
+REM Subdirectory to be used for building prerequisite utilities
+set PREOBJDIR=prebuild
+
+REM Set the version numbers
+set BLD_VER=17
+set BLD_VER_STR=1.7
+
+REM Stuff for the Open Watcom build environment
+set BUILD_PLATFORM=dos386
+set BUILDER_CTL=lang.ctl
+set DEVDIR=%OWROOT%\bld
+REM Subdirectory to be used for bootstrapping/prebuild binaries
+set OWBINDIR=%DEVDIR%\build\bin
+set RELROOT=%OWROOT%\rel2
+set DWATCOM=%WATCOM%
+set INCLUDE=%WATCOM%\h;%WATCOM%\h\win
+set EDPATH=%WATCOM%\eddat
+set PATH=%OWBINDIR%;%OWROOT%\bat;%WATCOM%\binw;%DOC_ROOT%\cmds;%DEFPATH%
+
+echo Open Watcom compiler build environment
+
+REM OS specifics
+
+cd %DEVDIR%
+
+set DOS4G=quiet
+
+REM Change the default command prompt
+prompt $p$g
+
+REM Make the window bigger
+mode 80,50

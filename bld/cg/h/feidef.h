@@ -34,7 +34,7 @@
 #define _FEIDEF_H_INCLUDED
 
 typedef struct fe_interface {
-    #define CGCALLBACKDEF( a, b, c ) b _CGDLLEXPORT (*##a)##c;
+    #define CGCALLBACKDEF( a, b, c ) b _CGCALLBACKAPI (*##a)##c;
     #include "cgfertns.h"
     #undef  CGCALLBACKDEF
 } fe_interface;

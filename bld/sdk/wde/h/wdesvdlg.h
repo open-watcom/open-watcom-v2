@@ -45,9 +45,8 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern Bool WdeSaveRC( char *filename, WdeResInfo *res_info );
-extern Bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo,
-                               WdeResDlgItem *ditem, Bool append );
-extern Bool WdeSaveResInfoToRC  ( char *filename, WdeResInfo *rinfo, Bool append );
+extern Bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem, Bool append );
+extern Bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, Bool append );
 extern Bool WdeSetMemFlagsText( uint_16 flags, char **text );
 extern Bool WdeSetWindowFlagText( unsigned long flags, char **text );
 extern Bool WdeSetDialogFlagText( unsigned long flags, char **text );

@@ -1,0 +1,1321 @@
+/*
+ *  windns.h    Win32 DNS functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _WINDNS_INCLUDED_
+#define _WINDNS_INCLUDED_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* DNS primitive data types */
+typedef unsigned __int64    QWORD;
+typedef unsigned __int64    *PQWORD;
+typedef LONG                DNS_STATUS;
+typedef LONG                *PDNS_STATUS;
+typedef DWORD               IP4_ADDRESS;
+typedef DWORD               *PIP4_ADDRESS;
+
+/* IP address size constants */
+#define SIZEOF_IP4_ADDRESS                  4
+#define IP4_ADDRESS_STRING_LENGTH           16
+#define IP4_ADDRESS_STRING_BUFFER_LENGTH    16
+#define IP6_ADDRESS_STRING_LENGTH           65
+#define IP6_ADDRESS_STRING_BUFFER_LENGTH    65
+#define DNS_ADDRESS_STRING_LENGTH           IP6_ADDRESS_STRING_LENGTH
+
+/* Macros to do inline byte swapping */
+#define INLINE_WORD_FLIP( p1, p2 ) \
+    { \
+        WORD _x = (p2); \
+        (p1) = (_x << 8) | (_x >> 8); \
+    }
+#define INLINE_HTONS( p1, p2 )  INLINE_WORD_FLIP( p1, p2 )
+#define INLINE_NTOHS( p1, p2 )  INLINE_WORD_FLIP( p1, p2 )
+#define INLINE_DWORD_FLIP( p1, p2 ) \
+    { \
+        DWORD _x = (p2); \
+        (p1) = ((_x << 8) & 0x00FF0000L) | (_x << 24) | ((_x) >> 8) & 0x0000FF00L) | \
+            (_x >> 24); \
+    }
+#define INLINE_NTOHL( p1, p2 )  INLINE_DWORD_FLIP( p1, p2 )
+#define INLINE_HTONL( p1, p2 )  INLINE_DWORD_FLIP( p1, p2 )
+#define INLINE_WRITE_FLIPPED_WORD( p1, p2 ) \
+    INLINE_WORD_FLIP( *((UNALIGNED WORD *)(p1)), p2 )
+#define INLINE_WRITE_FLIPPED_DWORD( p1, p2 ) \
+    INLINE_DWORD_FLIP( *((UNALIGNED DWORD *)(p1)), p2 )
+
+/* Basic DNS constants */
+#define DNS_PORT_HOST_ORDER                     0x0035
+#define DNS_PORT_NET_ORDER                      0x3500
+#define DNS_RFC_MAX_UDP_PACKET_LENGTH           512
+#define DNS_MAX_NAME_LENGTH                     255
+#define DNS_MAX_LABEL_LENGTH                    63
+#define DNS_MAX_NAME_BUFFER_LENGTH              256
+#define DNS_MAX_LABEL_BUFFER_LENGTH             64
+#define DNS_IP4_REVERSE_DOMAIN_STRING_A         "in-addr.arpa."
+#define DNS_IP4_REVERSE_DOMAIN_STRING_W         L"in-addr.arpa."
+#define DNS_MAX_IP4_REVERSE_NAME_LENGTH         (IP4_ADDRESS_STRING_LENGTH + 15)
+#define DNS_IP6_REVERSE_DOMAIN_STRING_A         "ip6.arpa."
+#define DNS_IP6_REVERSE_DOMAIN_STRING_W         L"ip6.arpa."
+#define DNS_MAX_IP6_REVERSE_NAME_LENGTH         75
+#define DNS_MAX_REVERSE_NAME_LENGTH             DNS_MAX_IP6_REVERSE_NAME_LENGTH
+#define DNS_MAX_IP4_REVERSE_NAME_BUFFER_LENGTH  DNS_MAX_IP4_REVERSE_NAME_LENGTH
+#define DNS_MAX_IP6_REVERSE_NAME_BUFFER_LENGTH  DNS_MAX_IP6_REVERSE_NAME_LENGTH
+#define DNS_MAX_REVERSE_NAME_BUFFER_LENGTH      DNS_MAX_REVERSE_NAME_LENGTH
+#define DNS_MAX_TEXT_STRING_LENGTH              255
+#ifdef UNICODE
+    #define DNS_IP4_REVERSE_DOMAIN_STRING       DNS_IP4_REVERSE_DOMAIN_STRING_W
+    #define DNS_IP6_REVERSE_DOMAIN_STRING       DNS_IP6_REVERSE_DOMAIN_STRING_W
+#else
+    #define DNS_IP4_REVERSE_DOMAIN_STRING       DNS_IP4_REVERSE_DOMAIN_STRING_A
+    #define DNS_IP6_REVERSE_DOMAIN_STRING       DNS_IP6_REVERSE_DOMAIN_STRING_A
+#endif
+
+/* DNS query types */
+#define DNS_OPCODE_QUERY            0
+#define DNS_OPCODE_IQUERY           1
+#define DNS_OPCODE_SERVER_STATUS    2
+#define DNS_OPCODE_UNKNOWN          3
+#define DNS_OPCODE_NOTIFY           4
+#define DNS_OPCODE_UPDATE           5
+
+/* DNS response codes */
+#define DNS_RCODE_NOERROR           0
+#define DNS_RCODE_FORMERR           1
+#define DNS_RCODE_SERVFAIL          2
+#define DNS_RCODE_NXDOMAIN          3
+#define DNS_RCODE_NOTIMPL           4
+#define DNS_RCODE_REFUSED           5
+#define DNS_RCODE_YXDOMAIN          6
+#define DNS_RCODE_YXRRSET           7
+#define DNS_RCODE_NXRRSET           8
+#define DNS_RCODE_NOTAUTH           9
+#define DNS_RCODE_NOTZONE           10
+#define DNS_RCODE_MAX               15
+#define DNS_RCODE_BADVERS           16
+#define DNS_RCODE_BADSIG            16
+#define DNS_RCODE_BADKEY            17
+#define DNS_RCODE_BADTIME           18
+#define DNS_RCODE_NO_ERROR          DNS_RCODE_NOERROR
+#define DNS_RCODE_FORMAT_ERROR      DNS_RCODE_FORMERR
+#define DNS_RCODE_SERVER_FAILURE    DNS_RCODE_SERVFAIL
+#define DNS_RCODE_NAME_ERROR        DNS_RCODE_NXDOMAIN
+#define DNS_RCODE_NOT_IMPLEMENTED   DNS_RCODE_NOTIMPL
+
+/* DNS classes */
+#define DNS_CLASS_INTERNET  0x0001
+#define DNS_CLASS_CSNET     0x0002
+#define DNS_CLASS_CHAOS     0x0003
+#define DNS_CLASS_HESIOD    0x0004
+#define DNS_CLASS_NONE      0x00FE
+#define DNS_CLASS_ALL       0x00FF
+#define DNS_CLASS_ANY       0x00FF
+#define DNS_RCLASS_INTERNET 0x0100
+#define DNS_RCLASS_CSNET    0x0200
+#define DNS_RCLASS_CHAOS    0x0300
+#define DNS_RCLASS_HESIOD   0x0400
+#define DNS_RCLASS_NONE     0xFE00
+#define DNS_RCLASS_ALL      0xFF00
+#define DNS_RCLASS_ANY      0xFF00
+
+/* DNS record types */
+#define DNS_TYPE_ZERO       0x0000
+#define DNS_TYPE_A          0x0001
+#define DNS_TYPE_NS         0x0002
+#define DNS_TYPE_MD         0x0003
+#define DNS_TYPE_MF         0x0004
+#define DNS_TYPE_CNAME      0x0005
+#define DNS_TYPE_SOA        0x0006
+#define DNS_TYPE_MB         0x0007
+#define DNS_TYPE_MG         0x0008
+#define DNS_TYPE_MR         0x0009
+#define DNS_TYPE_NULL       0x000A
+#define DNS_TYPE_WKS        0x000B
+#define DNS_TYPE_PTR        0x000C
+#define DNS_TYPE_HINFO      0x000D
+#define DNS_TYPE_MINFO      0x000E
+#define DNS_TYPE_MX         0x000F
+#define DNS_TYPE_TEXT       0x0010
+#define DNS_TYPE_RP         0x0011
+#define DNS_TYPE_AFSDB      0x0012
+#define DNS_TYPE_X25        0x0013
+#define DNS_TYPE_ISDN       0x0014
+#define DNS_TYPE_RT         0x0015
+#define DNS_TYPE_NSAP       0x0016
+#define DNS_TYPE_NSAPPTR    0x0017
+#define DNS_TYPE_SIG        0x0018
+#define DNS_TYPE_KEY        0x0019
+#define DNS_TYPE_PX         0x001A
+#define DNS_TYPE_GPOS       0x001B
+#define DNS_TYPE_AAAA       0x001C
+#define DNS_TYPE_LOC        0x001D
+#define DNS_TYPE_NXT        0x001E
+#define DNS_TYPE_EID        0x001F
+#define DNS_TYPE_NIMLOC     0x0020
+#define DNS_TYPE_SRV        0x0021
+#define DNS_TYPE_ATMA       0x0022
+#define DNS_TYPE_NAPTR      0x0023
+#define DNS_TYPE_KX         0x0024
+#define DNS_TYPE_CERT       0x0025
+#define DNS_TYPE_A6         0x0026
+#define DNS_TYPE_DNAME      0x0027
+#define DNS_TYPE_SINK       0x0028
+#define DNS_TYPE_OPT        0x0029
+#define DNS_TYPE_DS         0x002B
+#define DNS_TYPE_RRSIG      0x002E
+#define DNS_TYPE_NSEC       0x002F
+#define DNS_TYPE_DNSKEY     0x0030
+#define DNS_TYPE_DHCID      0x0031
+#define DNS_TYPE_UINFO      0x0064
+#define DNS_TYPE_UID        0x0065
+#define DNS_TYPE_GID        0x0066
+#define DNS_TYPE_UNSPEC     0x0067
+#define DNS_TYPE_ADDRS      0x00F8
+#define DNS_TYPE_TKEY       0x00F9
+#define DNS_TYPE_TSIG       0x00FA
+#define DNS_TYPE_IXFR       0x00FB
+#define DNS_TYPE_AXFR       0x00FC
+#define DNS_TYPE_MAILB      0x00FD
+#define DNS_TYPE_MAILA      0x00FE
+#define DNS_TYPE_ALL        0x00FF
+#define DNS_TYPE_ANY        0x00FF
+#define DNS_TYPE_WINS       0xFF01
+#define DNS_TYPE_WINSR      0xFF02
+#define DNS_TYPE_NBSTAT     DNS_TYPE_WINSR
+#define DNS_RTYPE_A         0x0100
+#define DNS_RTYPE_NS        0x0200
+#define DNS_RTYPE_MD        0x0300
+#define DNS_RTYPE_MF        0x0400
+#define DNS_RTYPE_CNAME     0x0500
+#define DNS_RTYPE_SOA       0x0600
+#define DNS_RTYPE_MB        0x0700
+#define DNS_RTYPE_MG        0x0800
+#define DNS_RTYPE_MR        0x0900
+#define DNS_RTYPE_NULL      0x0A00
+#define DNS_RTYPE_WKS       0x0B00
+#define DNS_RTYPE_PTR       0x0C00
+#define DNS_RTYPE_HINFO     0x0D00
+#define DNS_RTYPE_MINFO     0x0E00
+#define DNS_RTYPE_MX        0x0F00
+#define DNS_RTYPE_TEXT      0x1000
+#define DNS_RTYPE_RP        0x1100
+#define DNS_RTYPE_AFSDB     0x1200
+#define DNS_RTYPE_X25       0x1300
+#define DNS_RTYPE_ISDN      0x1400
+#define DNS_RTYPE_RT        0x1500
+#define DNS_RTYPE_NSAP      0x1600
+#define DNS_RTYPE_NSAPPTR   0x1700
+#define DNS_RTYPE_SIG       0x1800
+#define DNS_RTYPE_KEY       0x1900
+#define DNS_RTYPE_PX        0x1A00
+#define DNS_RTYPE_GPOS      0x1B00
+#define DNS_RTYPE_AAAA      0x1C00
+#define DNS_RTYPE_LOC       0x1D00
+#define DNS_RTYPE_NXT       0x1E00
+#define DNS_RTYPE_EID       0x1F00
+#define DNS_RTYPE_NIMLOC    0x2000
+#define DNS_RTYPE_SRV       0x2100
+#define DNS_RTYPE_ATMA      0x2200
+#define DNS_RTYPE_NAPTR     0x2300
+#define DNS_RTYPE_KX        0x2400
+#define DNS_RTYPE_CERT      0x2500
+#define DNS_RTYPE_A6        0x2600
+#define DNS_RTYPE_DNAME     0x2700
+#define DNS_RTYPE_SINK      0x2800
+#define DNS_RTYPE_OPT       0x2900
+#define DNS_RTYPE_DS        0x2B00
+#define DNS_RTYPE_RRSIG     0x2E00
+#define DNS_RTYPE_NSEC      0x2F00
+#define DNS_RTYPE_DNSKEY    0x3000
+#define DNS_RTYPE_DHCID     0x3100
+#define DNS_RTYPE_UINFO     0x6400
+#define DNS_RTYPE_UID       0x6500
+#define DNS_RTYPE_GID       0x6600
+#define DNS_RTYPE_UNSPEC    0x6700
+#define DNS_RTYPE_TKEY      0xF900
+#define DNS_RTYPE_TSIG      0xFA00
+#define DNS_RTYPE_IXFR      0xFB00
+#define DNS_RTYPE_AXFR      0xFC00
+#define DNS_RTYPE_MAILB     0xFD00
+#define DNS_RTYPE_MAILA     0xFE00
+#define DNS_RTYPE_ALL       0xFF00
+#define DNS_RTYPE_ANY       0xFF00
+#define DNS_RTYPE_WINS      0x01FF
+#define DNS_RTYPE_WINSR     0x02FF
+
+/* ATM address types */
+#ifndef ATM_E164
+    #define DNS_ATMA_FORMAT_E164        1
+    #define DNS_ATMA_FORMAT_AESA        2
+    #define DNS_ATMA_MAX_ADDR_LENGTH    20
+#else
+    #define DNS_ATMA_FORMAT_E164        ATM_E164
+    #define DNS_ATMA_FORMAT_AESA        ATM_AESA
+    #define DNS_ATMA_MAX_ADDR_LENGTH    ATM_ADDR_SIZE
+#endif
+#define DNS_ATMA_AESA_ADDR_LENGTH       20
+#define DNS_ATMA_MAX_RECORD_LENGTH      (DNS_ATMA_MAX_ADDR_LENGTH + 1)
+
+/* DNSSEC algorithms */
+#define DNSSEC_ALGORITHM_RSAMD5     1
+#define DNSSEC_ALGORITHM_RSASHA1    5
+#define DNSSEC_ALGORITHM_NULL       253
+#define DNSSEC_ALGORITHM_PRIVATE    254
+
+/* DNSSEC protocols */
+#define DNSSEC_PROTOCOL_NONE    0
+#define DNSSEC_PROTOCOL_TLS     1
+#define DNSSEC_PROTOCOL_EMAIL   2
+#define DNSSEC_PROTOCOL_DNSSEC  3
+#define DNSSEC_PROTOCOL_IPSEC   4
+
+/* DNSSEC key flags */
+#define DNSSEC_KEY_FLAG_NOAUTH  0x0001
+#define DNSSEC_KEY_FLAG_NOCONF  0x0002
+#define DNSSEC_KEY_FLAG_FLAG2   0x0004
+#define DNSSEC_KEY_FLAG_EXTEND  0x0008
+#define DNSSEC_KEY_FLAG_FLAG4   0x0010
+#define DNSSEC_KEY_FLAG_FLAG5   0x0020
+#define DNSSEC_KEY_FLAG_USER    0x0000
+#define DNSSEC_KEY_FLAG_ZONE    0x0040
+#define DNSSEC_KEY_FLAG_HOST    0x0080
+#define DNSSEC_KEY_FLAG_NTPE3   0x00C0
+#define DNSSEC_KEY_FLAG_FLAG8   0x0100
+#define DNSSEC_KEY_FLAG_FLAG9   0x0200
+#define DNSSEC_KEY_FLAG_FLAG10  0x0400
+#define DNSSEC_KEY_FLAG_FLAG11  0x0800
+#define DNSSEC_KEY_FLAG_SIG0    0x0000
+#define DNSSEC_KEY_FLAG_SIG1    0x1000
+#define DNSSEC_KEY_FLAG_SIG2    0x2000
+#define DNSSEC_KEY_FLAG_SIG3    0x3000
+#define DNSSEC_KEY_FLAG_SIG4    0x4000
+#define DNSSEC_KEY_FLAG_SIG5    0x5000
+#define DNSSEC_KEY_FLAG_SIG6    0x6000
+#define DNSSEC_KEY_FLAG_SIG7    0x7000
+#define DNSSEC_KEY_FLAG_SIG8    0x8000
+#define DNSSEC_KEY_FLAG_SIG9    0x9000
+#define DNSSEC_KEY_FLAG_SIG10   0xA000
+#define DNSSEC_KEY_FLAG_SIG11   0xB000
+#define DNSSEC_KEY_FLAG_SIG12   0xC000
+#define DNSSEC_KEY_FLAG_SIG13   0xD000
+#define DNSSEC_KEY_FLAG_SIG14   0xE000
+#define DNSSEC_KEY_FLAG_SIG15   0xF000
+
+/* DNS TKEY modes */
+#define DNS_TKEY_MODE_SERVER_ASSIGN     1
+#define DNS_TKEY_MODE_DIFFIE_HELLMAN    2
+#define DNS_TKEY_MODE_GSS               3
+#define DNS_TKEY_MODE_RESOLVER_ASSIGN   4
+
+/* DNS WINS flags */
+#define DNS_WINS_FLAG_SCOPE 0x80000000
+#define DNS_WINS_FLAG_LOCAL 0x00010000
+
+/* Macros to check alignment */
+#define IS_WORD_ALIGNED( x )    (!((UINT_PTR)(x) & (UINT_PTR)1))
+#define IS_DWORD_ALIGNED( x )   (!((UINT_PTR)(x) & (UINT_PTR)3))
+#define IS_QWORD_ALIGNED( x )   (!((UINT_PTR)(x) & (UINT_PTR)4))
+
+/* DNS configuration flags */
+#define DNS_CONFIG_FLAG_ALLOC   0x00000001L
+
+/* DNS record flags */
+#define DNSREC_SECTION      0x00000003L
+#define DNSREC_QUESTION     0x00000000L
+#define DNSREC_ANSWER       0x00000001L
+#define DNSREC_AUTHORITY    0x00000002L
+#define DNSREC_ADDITIONAL   0x00000003L
+#define DNSREC_ZONE         0x00000000L
+#define DNSREC_PREREQ       0x00000001L
+#define DNSREC_UPDATE       0x00000002L
+#define DNSREC_DELETE       0x00000004L
+#define DNSREC_NOEXIST      0x00000004L
+
+/* DnsQuery() flags */
+#define DNS_QUERY_STANDARD                  0x00000000L
+#define DNS_QUERY_ACCEPT_TRUNCATED_RESPONSE 0x00000001L
+#define DNS_QUERY_USE_TCP_ONLY              0x00000002L
+#define DNS_QUERY_NO_RECURSION              0x00000004L
+#define DNS_QUERY_BYPASS_CACHE              0x00000008L
+#define DNS_QUERY_NO_WIRE_QUERY             0x00000010L
+#define DNS_QUERY_NO_LOCAL_NAME             0x00000020L
+#define DNS_QUERY_NO_HOSTS_FILE             0x00000040L
+#define DNS_QUERY_NO_NETBT                  0x00000080L
+#define DNS_QUERY_WIRE_ONLY                 0x00000100L
+#define DNS_QUERY_RETURN_MESSAGE            0x00000200L
+#define DNS_QUERY_MULTICAST_ONLY            0x00000400L
+#define DNS_QUERY_NO_MULTICAST              0x00000800L
+#define DNS_QUERY_TREAT_AS_FQDN             0x00001000L
+#define DNS_QUERY_APPEND_MULTILABEL         0x00800000L
+#define DNS_QUERY_DONT_RESET_TTL_VALUES     0x00100000L
+#define DNS_QUERY_CACHE_ONLY                DNS_QUERY_NO_WIRE_QUERY
+
+/* DNS update flags */
+#define DNS_UPDATE_SECURITY_USE_DEFAULT     0x00000000L
+#define DNS_UPDATE_SECURITY_OFF             0x00000010L
+#define DNS_UPDATE_SECURITY_ON              0x00000020L
+#define DNS_UPDATE_SECURITY_ONLY            0x00000100L
+#define DNS_UPDATE_CACHE_SECURITY_CONTEXT   0x00000200L
+#define DNS_UPDATE_TEST_USE_LOCAL_SYS_ACCT  0x00000400L
+#define DNS_UPDATE_FORCE_SECURITY_NEGO      0x00000800L
+#define DNS_UPDATE_TRY_ALL_MASTER_SERVERS   0x00001000L
+#define DNS_UPDATE_SKIP_NO_UPDATE_ADAPTERS  0x00002000L
+#define DNS_UPDATE_REMOTE_SERVER            0x00004000L
+
+/* DNS server validation error codes */
+#define DNS_VALSVR_ERROR_INVALID_ADDR   0x01
+#define DNS_VALSVR_ERROR_INVALID_NAME   0x02
+#define DNS_VALSVR_ERROR_UNREACHABLE    0x03
+#define DNS_VALSVR_ERROR_NO_RESPONSE    0x04
+#define DNS_VALSVR_ERROR_NO_AUTH        0x05
+#define DNS_VALSVR_ERROR_REFUSED        0x06
+#define DNS_VALSVR_ERROR_NO_TCP         0x10
+#define DNS_VALSVR_ERROR_UNKNOWN        0xFF
+
+/* IP address array */
+typedef struct _IP4_ARRAY {
+    DWORD       AddrCount;
+    IP4_ADDRESS AddrArray[1];
+} IP4_ARRAY;
+typedef IP4_ARRAY   *PIP4_ARRAY;
+
+/* IPv6 address */
+typedef union {
+    DWORD       IP6Dword[4];
+    WORD        IP6Word[8];
+    BYTE        IP6Byte[16];
+#ifdef IN6_ADDR
+    IN6_ADDR    In6;
+#endif
+} IP6_ADDRESS;
+typedef IP6_ADDRESS *PIP6_ADDRESS;
+
+/* DNS header */
+typedef struct _DNS_HEADER {
+    WORD    Xid;
+    BYTE    RecursionDesired    : 1;
+    BYTE    Truncation          : 1;
+    BYTE    Authoritative       : 1;
+    BYTE    Opcode              : 4;
+    BYTE    IsResponse          : 1;
+    BYTE    ResponseCode        : 4;
+    BYTE    CheckingDisabled    : 1;
+    BYTE    AuthenticatedData   : 1;
+    BYTE    Reserved            : 1;
+    BYTE    RecursionAvailable  : 1;
+    WORD    QuestionCount;
+    WORD    AnswerCount;
+    WORD    NameServerCount;
+    WORD    AdditionalCount;
+} DNS_HEADER;
+typedef DNS_HEADER  *PDNS_HEADER;
+
+/* DNS header extension */
+typedef struct _DNS_HEADER_EXT {
+    WORD    Reserved    : 15;
+    WORD    DnssecOk    : 1;
+    BYTE    chRcode;
+    BYTE    chVersion;
+} DNS_HEADER_EXT;
+typedef DNS_HEADER_EXT  *PDNS_HEADER_EXT;
+
+/* DNS wire question */
+typedef struct _DNS_WIRE_QUESTION {
+    WORD    QuestionType;
+    WORD    QuestionClass;
+} DNS_WIRE_QUESTION;
+typedef DNS_WIRE_QUESTION   *PDNS_WIRE_QUESTION;
+
+/* DNS wire record */
+typedef struct _DNS_WIRE_RECORD {
+    WORD    RecordType;
+    WORD    RecordClass;
+    DWORD   TimeToLive;
+    WORD    DataLength;
+} DNS_WIRE_RECORD;
+typedef DNS_WIRE_RECORD *PDNS_WIRE_RECORD;
+
+/* Macros to manipulate DNS headers */
+#define DNS_HEADER_FLAGS( x )           (*((PDWORD)(x) + 1))
+#define DNS_BYTE_FLIP_HEADER_COUNTS( x ) \
+    { \
+        PDNS_HEADER _y = (x); \
+        INLINE_HTONS( _y->Xid, _y->Xid ); \
+        INLINE_HTONS( _y->QuestionCount, _y->QuestionCount ); \
+        INLINE_HTONS( _y->AnswerCount, _y->AnswerCount ); \
+        INLINE_HTONS( _y->NameServerCount, _y->NameServerCount ); \
+        INLINE_HTONS( _y->AdditionalCount, _y->AdditionalCount ); \
+    }
+#define DNS_OFFSET_TO_QUESTION_NAME     sizeof( DNS_HEADER )
+#define DNS_COMPRESSED_QUESTION_NAME    0xC00C
+#define DNS_QUESTION_NAME_FROM_HEADER( x ) \
+    ((PCHAR)((PDNS_HEADER)(x) + 1))
+#define DNS_ANSWER_FROM_QUESTION( x ) \
+    ((PCHAR)((PDNS_QUESTION)(x) + 1))
+
+/* DNS configuration types */
+typedef enum {
+    DnsConfigPrimaryDomainName_W                = 0,
+    DnsConfigPrimaryDomainName_A                = 1,
+    DnsConfigPrimaryDomainName_UTF8             = 2,
+    DnsConfigAdapterDomainName_W                = 3,
+    DnsConfigAdapterDomainName_A                = 4,
+    DnsConfigAdapterDomainName_UTF8             = 5,
+    DnsConfigDnsServerList                      = 6,
+    DnsConfigSearchList                         = 7,
+    DnsConfigAdapterInfo                        = 8,
+    DnsConfigPrimaryHostNameRegistrationEnabled = 9,
+    DnsConfigAdapterHostNameRegistrationEnabled = 10,
+    DnsConfigAddressRegistrationMaxCount        = 11,
+    DnsConfigHostName_W                         = 12,
+    DnsConfigHostName_A                         = 13,
+    DnsConfigHostName_UTF8                      = 14,
+    DnsConfigFullHostName_W                     = 15,
+    DnsConfigFullHostName_A                     = 16,
+    DnsConfigFullHostName_UTF8                  = 17
+} DNS_CONFIG_TYPE;
+
+/* DNS data */
+typedef struct {
+    IP4_ADDRESS IpAddress;
+} DNS_A_DATA;
+typedef DNS_A_DATA  *PDNS_A_DATA;
+
+/* DNS pointer data */
+typedef struct {
+    PSTR    pNameHost;
+} DNS_PTR_DATAA;
+typedef DNS_PTR_DATAA   *PDNS_PTR_DATAA;
+typedef struct {
+    PWSTR   pNameHost;
+} DNS_PTR_DATAW;
+typedef DNS_PTR_DATAW   *PDNS_PTR_DATAW;
+#ifdef UNICODE
+typedef DNS_PTR_DATAW   DNS_PTR_DATA;
+typedef PDNS_PTR_DATAW  PDNS_PTR_DATA;
+#else
+typedef DNS_PTR_DATAA   DNS_PTR_DATA;
+typedef PDNS_PTR_DATAA  PDNS_PTR_DATA;
+#endif
+
+/* DNS SOA data */
+typedef struct {
+    PSTR    pNamePrimaryServer;
+    PSTR    pNameAdministrator;
+    DWORD   dwSerialNo;
+    DWORD   dwRefresh;
+    DWORD   dwRetry;
+    DWORD   dwExpire;
+    DWORD   dwDefaultTtl;
+} DNS_SOA_DATAA;
+typedef DNS_SOA_DATAA   *PDNS_SOA_DATAA;
+typedef struct {
+    PWSTR   pNamePrimaryServer;
+    PWSTR   pNameAdministrator;
+    DWORD   dwSerialNo;
+    DWORD   dwRefresh;
+    DWORD   dwRetry;
+    DWORD   dwExpire;
+    DWORD   dwDefaultTtl;
+} DNS_SOA_DATAW;
+typedef DNS_SOA_DATAW   *PDNS_SOA_DATA_W;
+#ifdef UNICODE
+typedef DNS_SOA_DATAW   DNS_SOA_DATA;
+typedef PDNS_SOA_DATAW  PDNS_SOA_DATA;
+#else
+typedef DNS_SOA_DATAA   DNS_SOA_DATA;
+typedef PDNS_SOA_DATAA  PDNS_SOA_DATA;
+#endif
+
+/* DNS mailbox information data */
+typedef struct {
+    PSTR    pNameMailbox;
+    PSTR    pNameErrorsMailbox;
+} DNS_MINFO_DATAA;
+typedef DNS_MINFO_DATAA     *PDNS_MINFO_DATAA;
+typedef struct {
+    PWSTR   pNameMailbox;
+    PWSTR   pNameErrorsMailbox;
+} DNS_MINFO_DATAW;
+typedef DNS_MINFO_DATAW     *PDNS_MINFO_DATAW;
+#ifdef UNICODE
+typedef DNS_MINFO_DATAW     DNS_MINFO_DATA;
+typedef PDNS_MINFO_DATAW    PDNS_MINFO_DATA;
+#else
+typedef DNS_MINFO_DATAA     DNS_MINFO_DATA;
+typedef PDNS_MINFO_DATAA    PDNS_MINFO_DATA;
+#endif
+
+/* DNS MX data */
+typedef struct {
+    PSTR    pNameExchange;
+    WORD    wPreference;
+    WORD    Pad;
+} DNS_MX_DATAA;
+typedef DNS_MX_DATAA    *PDNS_MX_DATAA;
+typedef struct {
+    PWSTR   pNameExchange;
+    WORD    wPreference;
+    WORD    Pad;
+} DNS_MX_DATAW;
+typedef DNS_MX_DATAW    *PDNS_MX_DATAW;
+#ifdef UNICODE
+typedef DNS_MX_DATAW    DNS_MX_DATA;
+typedef PDNS_MX_DATAW   PDNS_MX_DATA;
+#else
+typedef DNS_MX_DATAA    DNS_MX_DATA;
+typedef PDNS_MX_DATAA   PDNS_MX_DATA;
+#endif
+
+/* DNS text data */
+typedef struct {
+    DWORD   dwStringCount;
+    PSTR    pStringArray[1];
+} DNS_TXT_DATAA;
+typedef DNS_TXT_DATAA   *PDNS_TXT_DATAA;
+typedef struct {
+    DWORD   dwStringCount;
+    PWSTR   pStringArray[1];
+} DNS_TXT_DATAW;
+typedef DNS_TXT_DATAW   *PDNS_TXT_DATAW;
+#ifdef UNICODE
+typedef DNS_TXT_DATAW   DNS_TXT_DATA;
+typedef PDNS_TXT_DATAW  PDNS_TXT_DATA;
+#else
+typedef DNS_TXT_DATAA   DNS_TXT_DATA;
+typedef PDNS_TXT_DATAA  PDNS_TXT_DATA;
+#endif
+
+/* DNS null data */
+typedef struct {
+    DWORD   dwByteCount;
+    BYTE    Data[1];
+} DNS_NULL_DATA;
+
+/* DNS workstation data */
+typedef struct {
+    IP4_ADDRESS IpAddress;
+    UCHAR       chProtocol;
+    BYTE        BitMask[1];
+} DNS_WKS_DATA;
+typedef DNS_WKS_DATA    *PDNS_WKS_DATA;
+
+/* DNS AAAA data */
+typedef struct {
+    IP6_ADDRESS Ip6Address;
+} DNS_AAAA_DATA;
+typedef DNS_AAAA_DATA   *PDNS_AAAA_DATA;
+
+/* DNS signature data */
+typedef struct {
+    WORD    wTypeCovered;
+    BYTE    chAlgorithm;
+    BYTE    chLabelCount;
+    DWORD   dwOriginalTtl;
+    DWORD   dwExpiration;
+    DWORD   dwTimeSigned;
+    WORD    wKeyTag;
+    WORD    wSignatureLength;
+    PSTR    pNameSigner;
+    BYTE    Signature[1];
+} DNS_SIG_DATAA;
+typedef DNS_SIG_DATAA       *PDNS_SIG_DATAA;
+typedef DNS_SIG_DATAA       DNS_RRSIG_DATAA;
+typedef DNS_SIG_DATAA       *PDNS_RRSIG_DATAA;
+typedef struct {
+    WORD    wTypeCovered;
+    BYTE    chAlgorithm;
+    BYTE    chLabelCount;
+    DWORD   dwOriginalTtl;
+    DWORD   dwExpiration;
+    DWORD   dwTimeSigned;
+    WORD    wKeyTag;
+    WORD    wSignatureLength;
+    PWSTR   pNameSigner;
+    BYTE    Signature[1];
+} DNS_SIG_DATAW;
+typedef DNS_SIG_DATAW       *PDNS_SIG_DATAW;
+typedef DNS_SIG_DATAW       DNS_RRSIG_DATAW;
+typedef DNS_SIG_DATAW       *PDNS_RRSIG_DATAW;
+#ifdef UNICODE
+typedef DNS_SIG_DATAW       DNS_SIG_DATA;
+typedef PDNS_SIG_DATAW      PDNS_SIG_DATA;
+typedef DNS_RRSIG_DATAW     DNS_RRSIG_DATA;
+typedef PDNS_RRSIG_DATAW    PDNS_RRSIG_DATA;
+#else
+typedef DNS_SIG_DATAA       DNS_SIG_DATA;
+typedef PDNS_SIG_DATAA      PDNS_SIG_DATA;
+typedef DNS_RRSIG_DATAA     DNS_RRSIG_DATA;
+typedef PDNS_RRSIG_DATAA    PDNS_RRSIG_DATA;
+#endif
+
+/* DNS key data */
+typedef struct {
+    WORD    wFlags;
+    BYTE    chProtocol;
+    BYTE    chAlgorithm;
+    WORD    wKeyLength;
+    WORD    wPad;
+    BYTE    Key[1];
+} DNS_KEY_DATA;
+typedef DNS_KEY_DATA    *PDNS_KEY_DATA;
+typedef DNS_KEY_DATA    DNS_DNSKEY_DATA;
+typedef DNS_KEY_DATA    *PDNS_DNSKEY_DATA;
+
+/* DNS DHCID data */
+typedef struct {
+    DWORD   dwByteCount;
+    BYTE    DHCID[1];
+} DNS_DHCID_DATA;
+typedef DNS_DHCID_DATA  *PDNS_DHCID_DATA;
+
+/* DNS NSEC data */
+typedef struct {
+    PSTR    pNextDomainName;
+    WORD    wTypeBitMapsLength;
+    WORD    wPad;
+    BYTE    TypeBitMaps[1];
+} DNS_NSEC_DATAA;
+typedef DNS_NSEC_DATAA  *PDNS_NSEC_DATAA;
+typedef struct {
+    PWSTR   pNextDomainName;
+    WORD    wTypeBitMapsLength;
+    WORD    wPad;
+    BYTE    TypeBitMaps[1];
+} DNS_NSEC_DATAW;
+typedef DNS_NSEC_DATAW  *PDNS_NSEC_DATAW;
+
+/* DNS DS data */
+typedef struct {
+    WORD    wKeyTag;
+    BYTE    chAlgorithm;
+    BYTE    chDigestType;
+    WORD    wDigestLength;
+    WORD    wPad;
+    BYTE    Digest[1];
+} DNS_DS_DATA;
+typedef DNS_DS_DATA *PDNS_DS_DATA;
+
+/* DNS option data */
+typedef struct {
+    WORD    wDataLength;
+    WORD    wPad;
+    BYTE    Data[1];
+} DNS_OPT_DATA;
+typedef DNS_OPT_DATA    *PDNS_OPT_DATA;
+
+/* DNS location data */
+typedef struct {
+    WORD    wVersion;
+    WORD    wSize;
+    WORD    wHorPrec;
+    WORD    wVerPrec;
+    DWORD   dwLatitude;
+    DWORD   dwLongitude;
+    DWORD   dwAltitude;
+} DNS_LOC_DATA;
+typedef DNS_LOC_DATA    *PDNS_LOC_DATA;
+
+/* DNS NXT data */
+typedef struct {
+    PSTR    pNameNext;
+    WORD    wNumTypes;
+    WORD    wTypes[1];
+} DNS_NXT_DATAA;
+typedef DNS_NXT_DATAA   *PDNS_NXT_DATAA;
+typedef struct {
+    PWSTR   pNameNext;
+    WORD    wNumTypes;
+    WORD    wTypes[1];
+} DNS_NXT_DATAW;
+typedef DNS_NXT_DATAW   *PDNS_NXT_DATAW;
+#ifdef UNICODE
+typedef DNS_NXT_DATAW   DNS_NXT_DATA;
+typedef PDNS_NXT_DATAW  PDNS_NXT_DATA;
+#else
+typedef DNS_NXT_DATAA   DNS_NXT_DATA;
+typedef PDNS_NXT_DATAA  PDNS_NXT_DATA;
+#endif
+
+/* DNS server data */
+typedef struct {
+    PSTR    pNameTarget;
+    WORD    wPriority;
+    WORD    wWeight;
+    WORD    wPort;
+    WORD    Pad;
+} DNS_SRV_DATAA;
+typedef DNS_SRV_DATAA   *PDNS_SRV_DATAA;
+typedef struct {
+    PWSTR   pNameTarget;
+    WORD    wPriority;
+    WORD    wWeight;
+    WORD    wPort;
+    WORD    Pad;
+} DNS_SRV_DATAW;
+typedef DNS_SRV_DATAW   *PDNS_SRV_DATAW;
+#ifdef UNICODE
+typedef DNS_SRV_DATAW   DNS_SRV_DATA;
+typedef PDNS_SRV_DATAW  PDNS_SRV_DATA;
+#else
+typedef DNS_SRV_DATAA   DNS_SRV_DATA;
+typedef PDNS_SRV_DATAA  PDNS_SRV_DATA;
+#endif
+
+/* DNS NAPTR data */
+typedef struct {
+    WORD    wOrder;
+    WORD    wPreference;
+    PSTR    pFlags;
+    PSTR    pService;
+    PSTR    pRegularExpression;
+    PSTR    pReplacement;
+} DNS_NAPTR_DATAA;
+typedef DNS_NAPTR_DATAA     *PDNS_NAPTR_DATAA;
+typedef struct {
+    WORD    wOrder;
+    WORD    wPreference;
+    PWSTR   pFlags;
+    PWSTR   pService;
+    PWSTR   pRegularExpression;
+    PWSTR   pReplacement;
+} DNS_NAPTR_DATAW;
+typedef DNS_NAPTR_DATAW     *PDNS_NAPTR_DATAW;
+#ifdef UNICODE
+typedef DNS_NAPTR_DATAW     DNS_NAPTR_DATA;
+typedef PDNS_NAPTR_DATAW    PDNS_NAPTR_DATA;
+#else
+typedef DNS_NAPTR_DATAA     DNS_NAPTR_DATA;
+typedef PDNS_NAPTR_DATAA    PDNS_NAPTR_DATA;
+#endif
+
+/* DNS ATM address data */
+typedef struct {
+    BYTE    AddressType;
+    BYTE    Address[DNS_ATMA_MAX_ADDR_LENGTH];
+} DNS_ATMA_DATA;
+typedef DNS_ATMA_DATA   *PDNS_ATMA_DATA;
+
+/* DNS TKEY data */
+typedef struct {
+    PSTR    pNameAlgorithm;
+    PBYTE   pAlgorithmPacket;
+    PBYTE   pKey;
+    PBYTE   pOtherData;
+    DWORD   dwCreateTime;
+    DWORD   dwExpireTime;
+    WORD    wMode;
+    WORD    wError;
+    WORD    wKeyLength;
+    WORD    wOtherLength;
+    UCHAR   cAlgNameLength;
+    BOOL    bPacketPointers;
+} DNS_TKEY_DATAA;
+typedef DNS_TKEY_DATAA  *PDNS_TKEY_DATAA;
+typedef struct {
+    PWSTR   pNameAlogirthm;
+    PBYTE   pAlgorithmPacket;
+    PBYTE   pKey;
+    PBYTE   pOtherData;
+    DWORD   dwCreateTime;
+    DWORD   dwExpireTime;
+    WORD    wMode;
+    WORD    wError;
+    WORD    wKeyLength;
+    WORD    wOtherLength;
+    UCHAR   cAlgNameLength;
+    BOOL    bPacketPointers;
+} DNS_TKEY_DATAW;
+typedef DNS_TKEY_DATAW  *PDNS_TKEY_DATAW;
+#ifdef UNICODE
+typedef DNS_TKEY_DATAW  DNS_TKEY_DATA;
+typedef PDNS_TKEY_DATAW PDNS_TKEY_DATA;
+#else
+typedef DNS_TKEY_DATAA  DNS_TKEY_DATA;
+typedef PDNS_TKEY_DATAA PDNS_TKEY_DATA;
+#endif
+
+/* DNS TSIG data */
+typedef struct {
+    PSTR        pNameAlgorithm;
+    PBYTE       pAlgorithmPacket;
+    PBYTE       pSignature;
+    PBYTE       pOtherData;
+    LONGLONG    i64CreateTime;
+    WORD        wFudgeTime;
+    WORD        wOriginalXid;
+    WORD        wError;
+    WORD        wSigLength;
+    WORD        wOtherLength;
+    UCHAR       cAlgNameLength;
+    BOOL        bPacketPointers;
+} DNS_TSIG_DATAA;
+typedef DNS_TSIG_DATAA  *PDNS_TSIG_DATAA;
+typedef struct {
+    PWSTR       pNameAlgorithm;
+    PBYTE       pAlgorithmPacket;
+    PBYTE       pSignature;
+    PBYTE       pOtherData;
+    LONGLONG    i64CreateTime;
+    WORD        wFudgeTime;
+    WORD        wOriginalXid;
+    WORD        wError;
+    WORD        wSigLength;
+    WORD        wOtherLength;
+    UCHAR       cAlgNameLength;
+    BOOL        bPacketPointers;
+} DNS_TSIG_DATAW;
+typedef DNS_TSIG_DATAW  *PDNS_TSIG_DATAW;
+#ifdef UNICODE
+typedef DNS_TSIG_DATAW  DNS_TSIG_DATA;
+typedef PDNS_TSIG_DATAW PDNS_TSIG_DATA;
+#else
+typedef DNS_TSIG_DATAA  DNS_TSIG_DATA;
+typedef PDNS_TSIG_DATAA PDNS_TSIG_DATA;
+#endif
+
+/* DNS WINS data */
+typedef struct {
+    DWORD       dwMappingFlag;
+    DWORD       dwLookupTimeout;
+    DWORD       dwCacheTimeout;
+    DWORD       cWinsServerCount;
+    IP4_ADDRESS WinsServers[1];
+} DNS_WINS_DATA;
+typedef DNS_WINS_DATA   *PDNS_WINS_DATA;
+
+/* DNS WINSR data */
+typedef struct {
+    DWORD   dwMappingFlag;
+    DWORD   dwLookupTimeout;
+    DWORD   dwCacheTimeout;
+    PSTR    pNameResultDomain;
+} DNS_WINSR_DATAA;
+typedef DNS_WINSR_DATAA     *PDNS_WINSR_DATAA;
+typedef struct {
+    DWORD   dwMappingFlag;
+    DWORD   dwLookupTimeout;
+    DWORD   dwCacheTimeout;
+    PWSTR   pNameResultDomain;
+} DNS_WINSR_DATAW;
+typedef DNS_WINSR_DATAW     *PDNS_WINSR_DATAW;
+#ifdef UNICODE
+typedef DNS_WINSR_DATAW     DNS_WINSR_DATA;
+typedef PDNS_WINSR_DATAW    PDNS_WINSR_DATA;
+#else
+typedef DNS_WINSR_DATAA     DNS_WINSR_DATA;
+typedef PDNS_WINSR_DATAA    PDNS_WINSR_DATA;
+#endif
+
+/* DNS record flags */
+typedef struct _DnsRecordFlags {
+    DWORD   Section     : 2;
+    DWORD   Delete      : 1;
+    DWORD   CharSet     : 2;
+    DWORD   Unused      : 3;
+    DWORD   Reserved    : 24;
+} DNS_RECORD_FLAGS;
+
+/* DNS sections */
+typedef enum _DnsSection {
+    DnsSectionQuestion  = 0,
+    DnsSectionAnswer    = 1,
+    DnsSectionAuthority = 2,
+    DnsSectionAddtional = 3
+} DNS_SECTION;
+#define DnsSectionZone      DnsSectionQuestion
+#define DnsSectionPrereq    DnsSectionAnswer
+#define DnsSectionUpdate    DnsSectionAuthority
+
+/* DNS record */
+typedef struct _DnsRecordA {
+    struct _DnsRecordA  *pNext;
+    PSTR                pName;
+    WORD                wType;
+    WORD                wDataLength;
+    union {
+        DWORD               DW;
+        DNS_RECORD_FLAGS    S;
+    } Flags;
+    DWORD               dwTtl;
+    DWORD               dwReserved;
+    union {
+        DNS_A_DATA      A;
+        DNS_SOA_DATAA   SOA;
+        DNS_SOA_DATAA   Soa;
+        DNS_PTR_DATAA   PTR;
+        DNS_PTR_DATAA   Ptr;
+        DNS_PTR_DATAA   NS;
+        DNS_PTR_DATAA   Ns;
+        DNS_PTR_DATAA   CNAME;
+        DNS_PTR_DATAA   Cname;
+        DNS_PTR_DATAA   DNAME;
+        DNS_PTR_DATAA   Dname;
+        DNS_PTR_DATAA   MB;
+        DNS_PTR_DATAA   Mb;
+        DNS_PTR_DATAA   MD;
+        DNS_PTR_DATAA   Md;
+        DNS_PTR_DATAA   MF;
+        DNS_PTR_DATAA   Mf;
+        DNS_PTR_DATAA   MG;
+        DNS_PTR_DATAA   Mg;
+        DNS_PTR_DATAA   MR;
+        DNS_PTR_DATAA   Mr;
+        DNS_MINFO_DATAA MINFO;
+        DNS_MINFO_DATAA Minfo;
+        DNS_MINFO_DATAA RP;
+        DNS_MINFO_DATAA Rp;
+        DNS_MX_DATAA    MX;
+        DNS_MX_DATAA    Mx;
+        DNS_MX_DATAA    AFSDB;
+        DNS_MX_DATAA    Afsdb;
+        DNS_MX_DATAA    RT;
+        DNS_MX_DATAA    Rt;
+        DNS_TXT_DATAA   HINFO;
+        DNS_TXT_DATAA   Hinfo;
+        DNS_TXT_DATAA   ISDN;
+        DNS_TXT_DATAA   Isdn;
+        DNS_TXT_DATAA   TXT;
+        DNS_TXT_DATAA   Txt;
+        DNS_TXT_DATAA   X25;
+        DNS_NULL_DATA   Null;
+        DNS_WKS_DATA    WKS;
+        DNS_WKS_DATA    Wks;
+        DNS_AAAA_DATA   AAAA;
+        DNS_KEY_DATA    KEY;
+        DNS_KEY_DATA    Key;
+        DNS_SIG_DATAA   SIG;
+        DNS_SIG_DATAA   Sig;
+        DNS_ATMA_DATA   ATMA;
+        DNS_ATMA_DATA   Atma;
+        DNS_NXT_DATAA   NXT;
+        DNS_NXT_DATAA   Nxt;
+        DNS_SRV_DATAA   SRV;
+        DNS_SRV_DATAA   Srv;
+        DNS_NAPTR_DATAA NAPTR;
+        DNS_NAPTR_DATAA Naptr;
+        DNS_OPT_DATA    OPT;
+        DNS_OPT_DATA    Opt;
+        DNS_DS_DATA     DS;
+        DNS_DS_DATA     Ds;
+        DNS_RRSIG_DATAA RRSIG;
+        DNS_RRSIG_DATAA Rrsig;
+        DNS_NSEC_DATAA  NSEC;
+        DNS_NSEC_DATAA  Nsec;
+        DNS_DNSKEY_DATA DNSKEY;
+        DNS_DNSKEY_DATA Dnskey;
+        DNS_TKEY_DATAA  TKEY;
+        DNS_TKEY_DATAA  Tkey;
+        DNS_TSIG_DATAA  TSIG;
+        DNS_TSIG_DATAA  Tsig;
+        DNS_WINS_DATA   WINS;
+        DNS_WINS_DATA   Wins;
+        DNS_WINSR_DATAA WINSR;
+        DNS_WINSR_DATAA WinsR;
+        DNS_WINSR_DATAA NBSTAT;
+        DNS_WINSR_DATAA Nbstat;
+        DNS_DHCID_DATA  DHCID;
+    } Data;
+} DNS_RECORDA;
+typedef DNS_RECORDA     *PDNS_RECORDA;
+typedef struct _DnsRecordW {
+    struct _DnsRecordW  *pNext;
+    PWSTR               pName;
+    WORD                wType;
+    WORD                wDataLength;
+    union {
+        DWORD               DW;
+        DNS_RECORD_FLAGS    S;
+    } Flags;
+    DWORD               dwTtl;
+    DWORD               dwReserved;
+    union {
+        DNS_A_DATA      A;
+        DNS_SOA_DATAW   SOA;
+        DNS_SOA_DATAW   Soa;
+        DNS_PTR_DATAW   PTR;
+        DNS_PTR_DATAW   Ptr;
+        DNS_PTR_DATAW   NS;
+        DNS_PTR_DATAW   Ns;
+        DNS_PTR_DATAW   CNAME;
+        DNS_PTR_DATAW   Cname;
+        DNS_PTR_DATAW   DNAME;
+        DNS_PTR_DATAW   Dname;
+        DNS_PTR_DATAW   MB;
+        DNS_PTR_DATAW   Mb;
+        DNS_PTR_DATAW   MD;
+        DNS_PTR_DATAW   Md;
+        DNS_PTR_DATAW   MF;
+        DNS_PTR_DATAW   Mf;
+        DNS_PTR_DATAW   MG;
+        DNS_PTR_DATAW   Mg;
+        DNS_PTR_DATAW   MR;
+        DNS_PTR_DATAW   Mr;
+        DNS_MINFO_DATAW MINFO;
+        DNS_MINFO_DATAW Minfo;
+        DNS_MINFO_DATAW RP;
+        DNS_MINFO_DATAW Rp;
+        DNS_MX_DATAW    MX;
+        DNS_MX_DATAW    Mx;
+        DNS_MX_DATAW    AFSDB;
+        DNS_MX_DATAW    Afsdb;
+        DNS_MX_DATAW    RT;
+        DNS_MX_DATAW    Rt;
+        DNS_TXT_DATAW   HINFO;
+        DNS_TXT_DATAW   Hinfo;
+        DNS_TXT_DATAW   ISDN;
+        DNS_TXT_DATAW   Isdn;
+        DNS_TXT_DATAW   TXT;
+        DNS_TXT_DATAW   Txt;
+        DNS_TXT_DATAW   X25;
+        DNS_NULL_DATA   Null;
+        DNS_WKS_DATA    WKS;
+        DNS_WKS_DATA    Wks;
+        DNS_AAAA_DATA   AAAA;
+        DNS_KEY_DATA    KEY;
+        DNS_KEY_DATA    Key;
+        DNS_SIG_DATAW   SIG;
+        DNS_SIG_DATAW   Sig;
+        DNS_ATMA_DATA   ATMA;
+        DNS_ATMA_DATA   Atma;
+        DNS_NXT_DATAW   NXT;
+        DNS_NXT_DATAW   Nxt;
+        DNS_SRV_DATAW   SRV;
+        DNS_SRV_DATAW   Srv;
+        DNS_NAPTR_DATAW NAPTR;
+        DNS_NAPTR_DATAW Naptr;
+        DNS_OPT_DATA    OPT;
+        DNS_OPT_DATA    Opt;
+        DNS_DS_DATA     DS;
+        DNS_DS_DATA     Ds;
+        DNS_RRSIG_DATAW RRSIG;
+        DNS_RRSIG_DATAW Rrsig;
+        DNS_NSEC_DATAW  NSEC;
+        DNS_NSEC_DATAW  Nsec;
+        DNS_DNSKEY_DATA DNSKEY;
+        DNS_DNSKEY_DATA Dnskey;
+        DNS_TKEY_DATAW  TKEY;
+        DNS_TKEY_DATAW  Tkey;
+        DNS_TSIG_DATAW  TSIG;
+        DNS_TSIG_DATAW  Tsig;
+        DNS_WINS_DATA   WINS;
+        DNS_WINS_DATA   Wins;
+        DNS_WINSR_DATAW WINSR;
+        DNS_WINSR_DATAW WinsR;
+        DNS_WINSR_DATAW NBSTAT;
+        DNS_WINSR_DATAW Nbstat;
+        DNS_DHCID_DATA  DHCID;
+    } Data;
+} DNS_RECORDW;
+typedef DNS_RECORDW     *PDNS_RECORDW;
+#ifdef UNICODE
+typedef DNS_RECORDW     DNS_RECORD;
+typedef PDNS_RECORDW    PDNS_RECORD;
+#else
+typedef DNS_RECORDA     DNS_RECORD;
+typedef PDNS_RECORDA    PDNS_RECORD;
+#endif
+
+/* DNS record option */
+typedef struct _DnsRecordOptA {
+    struct _DnsRecordA  *pNext;
+    PSTR                pName;
+    WORD                wType;
+    WORD                wDataLength;
+    union {
+        DWORD               DW;
+        DNS_RECORD_FLAGS    S;
+    } Flags;
+    DNS_HEADER_EXT      ExtHeader;
+    WORD                wPayloadSize;
+    WORD                wReserved;
+    union {
+        DNS_OPT_DATA    OPT;
+        DNS_OPT_DATA    Opt;
+    } Data;
+} DNS_RECORD_OPTA;
+typedef DNS_RECORD_OPTA     *PDNS_RECORD_OPTA;
+typedef struct _DnsRecordOptW {
+    struct _DnsRecordW  *pNext;
+    PWSTR               pName;
+    WORD                wType;
+    WORD                wDataLength;
+    union {
+        DWORD               DW;
+        DNS_RECORD_FLAGS    S;
+    } Flags;
+    DNS_HEADER_EXT      ExtHeader;
+    WORD                wPayloadSize;
+    WORD                wReserved;
+    union {
+        DNS_OPT_DATA    OPT;
+        DNS_OPT_DATA    Opt;
+    } Data;
+} DNS_RECORD_OPTW;
+typedef DNS_RECORD_OPTW     *PDNS_RECORD_OPTW;
+#ifdef UNICODE
+typedef DNS_RECORD_OPTW     DNS_RECORD_OPT;
+typedef PDNS_RECORD_OPTW    PDNS_RECORD_OPT;
+#else
+typedef DNS_RECORD_OPTA     DNS_RECORD_OPT;
+typedef PDNS_RECORD_OPTA    PDNS_RECORD_OPT;
+#endif
+
+/* DNS record set */
+typedef struct _DnsRRSet {
+    PDNS_RECORD pFirstRR;
+    PDNS_RECORD pLastRR;
+} DNS_RRSET;
+typedef DNS_RRSET   *PDNS_RRSET;
+
+/* Macros to manipulate DNS record sets */
+#define DNS_RRSET_INIT( x ) \
+    { \
+        PDNS_RRSET _x = &(x); \
+        _x->pFirstRR = NULL; \
+        _x->pLastRR = (PDNS_RECORD)&_x->pFirstRR; \
+    }
+#define DNS_RRSET_ADD( x, p ) \
+    { \
+        PDNS_RRSET _x = &(x); \
+        PDNS_RECORD _y = p; \
+        _x->pLastRR->pNext = _y; \
+        _x->pLastRR = _y; \
+    }
+#define DNS_RRSET_TERMINATE( x ) \
+    { \
+        PDNS_RRSET _x = &(x); \
+        _x->pLastRR->pNext = NULL; \
+    }
+
+/* DNS proxy completion routine */
+typedef VOID (WINAPI *DNS_PROXY_COMPLETION_ROUTINE)( void *, DNS_STATUS );
+
+/* DNS proxy information types */
+typedef enum DNS_PROXY_INFORMATION_TYPE {
+    DNS_PROXY_INFORMATION_DIRECT            = 0,
+    DNS_PROXY_INFORMATION_DEFAULT_SETTINGS  = 1,
+    DNS_PROXY_INFORMATION_PROXY_NAME        = 2,
+    DNS_PROXY_INFORMATION_DOES_NOT_EXIST    = 3
+} DNS_PROXY_INFORMATION_TYPE;
+
+/* DNS proxy information */
+typedef struct DNS_PROXY_INFORMATION {
+    ULONG                       version;
+    DNS_PROXY_INFORMATION_TYPE  proxyInformationType;
+    PWSTR                       proxyName;
+} DNS_PROXY_INFORMATION;
+
+/* DNS character set */
+typedef enum _DNS_CHARSET {
+    DnsCharSetUnknown   = 0,
+    DnsCharSetUnicode   = 1,
+    DnsCharSetUtf8      = 2,
+    DnsCharSetAnsi      = 3
+} DNS_CHARSET;
+
+/* DNS free types */
+typedef enum {
+    DnsFreeFlat                 = 0,
+    DnsFreeRecordList           = 1,
+    DnsFreeParsedMessageFields  = 2
+} DNS_FREE_TYPE;
+#define DnsFreeRecordListDeep   DnsFreeRecordList
+
+/* DNS name formats */
+typedef enum _DNS_NAME_FORMAT {
+    DnsNameDomain           = 0,
+    DnsNameDomainLabel      = 1,
+    DnsNameHostnameFull     = 2,
+    DnsNameHostnameLabel    = 3,
+    DnsNameWildcard         = 4,
+    DnsNameSrvRecord        = 5,
+    DnsNameValidateTld      = 6
+} DNS_NAME_FORMAT;
+
+/* DNS message buffer */
+typedef struct _DNS_MESSAGE_BUFFER {
+    DNS_HEADER  MessageHead;
+    CHAR        MessageBody[1];
+} DNS_MESSAGE_BUFFER;
+typedef DNS_MESSAGE_BUFFER  *PDNS_MESSAGE_BUFFER;
+
+/* Functions in DNSAPI.DLL */
+DNS_STATUS WINAPI   DnsAcquireContextHandle_A( DWORD, PVOID, PHANDLE );
+DNS_STATUS WINAPI   DnsAcquireContextHandle_W( DWORD, PVOID, PHANDLE );
+DNS_STATUS WINAPI   DnsExtractRecordsFromMessage_UTF8( PDNS_MESSAGE_BUFFER, WORD, PDNS_RECORD * );
+DNS_STATUS WINAPI   DnsExtractRecordsFromMessage_W( PDNS_MESSAGE_BUFFER, WORD, PDNS_RECORD * );
+VOID WINAPI         DnsFree( PVOID, DNS_FREE_TYPE );
+VOID WINAPI         DnsFreeProxyName( PWSTR );
+DWORD WINAPI        DnsGetProxyInformation( PCWSTR, DNS_PROXY_INFORMATION *, DNS_PROXY_INFORMATION *, DNS_PROXY_COMPLETION_ROUTINE, void * );
+DNS_STATUS WINAPI   DnsModifyRecordsInSet_A( PDNS_RECORD, PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+DNS_STATUS WINAPI   DnsModifyRecordsInSet_UTF8( PDNS_RECORD, PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+DNS_STATUS WINAPI   DnsModifyRecordsInSet_W( PDNS_RECORD, PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+BOOL WINAPI         DnsNameCompare_A( PCSTR, PCSTR );
+BOOL WINAPI         DnsNameCompare_W( PCWSTR, PCWSTR );
+DNS_STATUS WINAPI   DnsQueryConfig( DNS_CONFIG_TYPE, DWORD, PCWSTR, PVOID, PVOID, PDWORD );
+DNS_STATUS WINAPI   DnsQuery_A( PCSTR, WORD, DWORD, PVOID, PDNS_RECORD *, PVOID * );
+DNS_STATUS WINAPI   DnsQuery_UTF8( PCSTR, WORD, DWORD, PVOID, PDNS_RECORD *, PVOID * );
+DNS_STATUS WINAPI   DnsQuery_W( PCWSTR, WORD, DWORD, PVOID, PDNS_RECORD *, PVOID * );
+BOOL WINAPI         DnsRecordCompare( PDNS_RECORD, PDNS_RECORD );
+PDNS_RECORD WINAPI  DnsRecordCopyEx( PDNS_RECORD, DNS_CHARSET, DNS_CHARSET );
+BOOL WINAPI         DnsRecordSetCompare( PDNS_RECORD, PDNS_RECORD, PDNS_RECORD *, PDNS_RECORD * );
+PDNS_RECORD WINAPI  DnsRecordSetCopyEx( PDNS_RECORD, DNS_CHARSET, DNS_CHARSET );
+PDNS_RECORD WINAPI  DnsRecordSetDetach( PDNS_RECORD );
+VOID WINAPI         DnsReleaseContextHandle( HANDLE );
+DNS_STATUS WINAPI   DnsReplaceRecordSetA( PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+DNS_STATUS WINAPI   DnsReplaceRecordSetUTF8( PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+DNS_STATUS WINAPI   DnsReplaceRecordSetW( PDNS_RECORD, DWORD, HANDLE, PVOID, PVOID );
+DNS_STATUS WINAPI   DnsValidateName_A( PCSTR, DNS_NAME_FORMAT );
+DNS_STATUS WINAPI   DnsValidateName_UTF8( PCSTR, DNS_NAME_FORMAT );
+DNS_STATUS WINAPI   DnsValidateName_W( PCWSTR, DNS_NAME_FORMAT );
+BOOL WINAPI         DnsWriteQuestionToBuffer_UTF8( PDNS_MESSAGE_BUFFER, PDWORD, PCSTR, WORD, WORD, BOOL );
+BOOL WINAPI         DnsWriteQuestionToBuffer_W( PDNS_MESSAGE_BUFFER, PDWORD, PCWSTR, WORD, WORD, BOOL );
+#ifdef _WS2DEF_
+DNS_STATUS WINAPI   DnsValidateServerStatus( PSOCKADDR, PCWSTR, PDWORD );
+#endif
+#if (_WIN32_WINNT < 0x0501)
+VOID WINAPI         DnsRecordListFree( PDNS_RECORD, DNS_FREE_TYPE );
+#endif
+
+/* Functions implemented as macros */
+#ifdef UNICODE
+    #define DnsRecordCopy( x ) \
+        DnsRecordCopyEx( x, DnsCharSetUnicode, DnsCharSetUnicode )
+    #define DnsRecordSetCopy( x ) \
+        DnsRecordSetCopyEx( x, DnsCharSetUnicode, DnsCharSetUnicode )
+#else
+    #define DnsRecordCopy( x ) \
+        DnsRecordCopyEx( x, DnsCharSetAnsi, DnsCharSetAnsi )
+    #define DnsRecordSetCopy( x ) \
+        DnsRecordSetCopyEx( x, DnsCharSetAnsi, DnsCharSetAnsi )
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+    #define DnsRecordListFree( x, p ) \
+        DnsFree( x, DnsFreeRecordList )
+#endif
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define DnsAcquireContextHandle DnsAcquireContextHandle_W
+    #define DnsModifyRecordsInSet   DnsModifyRecordsInSet_W
+    #define DnsNameCompare          DnsNameCompare_W
+    #define DnsQuery                DnsQuery_W
+    #define DnsReplaceRecordSet     DnsReplaceRecordSetW
+    #define DnsValidateName         DnsValidateName_W
+#else
+    #define DnsAcquireContextHandle DnsAcquireContextHandle_A
+    #define DnsModifyRecordsInSet   DnsModifyRecordsInSet_A
+    #define DnsNameCompare          DnsNameCompare_A
+    #define DnsQuery                DnsQuery_A
+    #define DnsReplaceRecordSet     DnsReplaceRecordSetA
+    #define DnsValidateName         DnsValidateName_A
+#endif
+
+:include cplusepi.sp
+
+#endif /* _WINDNS_INCLUDED_ */

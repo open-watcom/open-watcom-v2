@@ -48,9 +48,9 @@ struct wndprocs {
     unsigned short      proctype;       // PROC_16 or PROC_32
 };
 
-void *SetProc( LPVOID fp, int type );
-BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam );
-void *RealProcAddr( FARPROC fp );
+extern void *SetProc( FARPROC fp, int type );
+extern BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam );
+extern void *RealProcAddr( FARPROC fp );
 extern DWORD _WCFAR *_DataSelectorSizeAddr;
 #ifdef INCLUDE_PENWIN_H
 extern void __InitPenWinRC( LPRC lprc );

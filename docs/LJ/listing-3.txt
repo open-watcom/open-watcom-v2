@@ -1,0 +1,7 @@
+export P4PORT=perforce.openwatcom.com:3488
+export P4USER=anonymous
+export P4PASSWD=anonymous 
+export P4CLIENT=YOURNAME_YOURMACHINE_YOUROS
+export P4EDITOR=vi
+
+Caption: Environment variables for building Open Watcom

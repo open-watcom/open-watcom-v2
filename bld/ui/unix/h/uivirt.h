@@ -44,36 +44,36 @@
 
 
 typedef struct Display {
-        int (*init)();  /* setup */
-        int (*fini)();  /* tear down */
+        int (*init)( void );  /* setup */
+        int (*fini)( void );  /* tear down */
         int (*update)(SAREA *area);     /* change screen */
         int (*refresh)(int noopt);      /* force redraw of screen */
         /*- cursor */
         int (*getcur)(ORD *row, ORD *col, int *type, int *attr);
         int (*setcur)(ORD row, ORD col, int type, int attr);
-        EVENT   (*event)();
+        EVENT   (*event)( void );
 } Display;
 
 
 typedef struct Keyboard {
-        int (*init)();  /* set initial modes, etc... */
-        int (*fini)();  /* restore saved modes, etc... */
-        void (*arm)();  /* arm for next character */
-        int (*save)();  /* save current mode, restore original mode */
-        int (*restore)();       /* set into raw mode */
-        int (*flush)(); /* clear look-ahead */
-        int (*stop)();  /* clear look-ahead, disable keyboard events */
-        int (*shift_state)();   /* shift status */
+        int (*init)( void );  /* set initial modes, etc... */
+        int (*fini)( void );  /* restore saved modes, etc... */
+        void (*arm)( void );  /* arm for next character */
+        int (*save)( void );  /* save current mode, restore original mode */
+        int (*restore)( void );       /* set into raw mode */
+        int (*flush)( void ); /* clear look-ahead */
+        int (*stop)( void );  /* clear look-ahead, disable keyboard events */
+        int (*shift_state)( void );   /* shift status */
         int (*un_event)(EVENT event); /* allow modify of next event */
 } Keyboard;
 
 typedef struct Mouse {
-        int     (*init)(int install);
-        int     (*fini)();
-        int     (*set_speed)(int speed);
-        int     (*stop)();      /* clear input, disable events */
-        int     (*check)(unsigned short *status, unsigned short *row,
-                         unsigned short *col, unsigned long *time);
+        int     (*init)( int install );
+        int     (*fini)( void );
+        int     (*set_speed)( int speed );
+        int     (*stop)( void );      /* clear input, disable events */
+        int     (*check)( unsigned short *status, MOUSEORD *row,
+                         MOUSEORD *col, unsigned long *time );
 } Mouse;
 
 typedef struct {

@@ -54,7 +54,6 @@ static          DESCMENU                Describe[ MAX_MENUS ];
 static          int                     NumMenus        = 0;
 
 static          UI_WINDOW               BarWin;
-//static                int                     NumPopups       = 0;
 
 static          EVENT                   menu_list[]      = {
                 EV_FIRST_EDIT_CHAR, EV_LAST_EDIT_CHAR,
@@ -85,10 +84,8 @@ extern void uisetbetweentitles( int between )
     BetweenTitles = between;
 }
 
-extern char uialtchar( ev )
-/*************************/
-
-register        EVENT                   ev;
+extern char uialtchar( EVENT ev )
+/*******************************/
 {
     if( ( ev >= EV_ALT_Q ) && ( ev <= EV_ALT_M ) ) {
         return( alt[ ev - EV_ALT_Q ] );
@@ -98,15 +95,9 @@ register        EVENT                   ev;
 }
 
 
-static void mstring( bptr, row, col, attr, string, len )
-/******************************************************/
-
-register        BUFFER                  *bptr;
-register        ORD                     row;
-register        ORD                     col;
-register        ATTR                    attr;
-register        char                    __FAR *string;
-register        int                     len;
+static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr,
+                             const char __FAR *string, int len )
+/**************************************************************/
 {
     SAREA       area;
 
@@ -118,16 +109,9 @@ register        int                     len;
     physupdate( &area );
 }
 
-static void mfill( bptr, row, col, attr, ch, len, height )
-/********************************************************/
-
-register        BUFFER                  *bptr;
-register        ORD                     row;
-register        ORD                     col;
-register        ATTR                    attr;
-register        char                    ch;
-register        int                     len;
-register        int                     height;
+static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr,
+                               char ch, int len, int height )
+/***********************************************************/
 {
     SAREA       area;
 
@@ -143,11 +127,8 @@ register        int                     height;
     physupdate( &area );
 }
 
-static void menutitle( menu, current )
-/************************************/
-
-    register    int                     menu;
-    register    bool                    current;
+static void menutitle( int menu, bool current )
+/*********************************************/
 {
     register    DESCMENU*               desc;
     register    MENUITEM*               mptr;
@@ -184,13 +165,8 @@ static void menutitle( menu, current )
              chattr, &mptr->name[ ( mptr->flags & ITEM_CHAR_OFFSET ) ], 1 );
 }
 
-void global uidisplayitem( menu, desc, item, curr )
-/*************************************************/
-
-register        MENUITEM*               menu;
-register        DESCMENU*               desc;
-register        int                     item;
-register        bool                    curr;
+void global uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
+/******************************************************************************/
 {
     bool                    active;
     ORD                     choffset;
@@ -308,10 +284,7 @@ register        bool                    curr;
 }
 
 
-extern void uidrawmenu( menu, desc, curr )
-register        MENUITEM*       menu;
-register        DESCMENU*       desc;
-register        int             curr;
+extern void uidrawmenu( MENUITEM *menu, DESCMENU *desc, int curr )
 {
     register    int             item;
 
@@ -326,31 +299,22 @@ register        int             curr;
     permit_refresh();
 }
 
-void global uiclosepopup( window )
-register        UI_WINDOW*      window;
+void global uiclosepopup( UI_WINDOW *window )
 {
     closewindow( window );
     window->update = NULL;
-//    NumPopups--;
 }
 
-void global uiopenpopup( desc, window )
-register        DESCMENU*       desc;
-register        UI_WINDOW*      window;
+void global uiopenpopup( DESCMENU *desc, UI_WINDOW *window )
 {
     window->area = desc->area;
     window->priority = P_DIALOGUE;
     window->update = NULL;
     window->parm = NULL;
     openwindow( window );
-//    NumPopups++;
 }
 
-static int process_char( ch, desc, menu, select )
-    int                 ch;
-    DESCMENU**          desc;
-    int                 *menu;
-    int                 *select;
+static int process_char( int ch, DESCMENU **desc, int *menu, bool *select )
 {
     register    int                     index;
     register    MENUITEM*               itemptr;
@@ -429,14 +393,11 @@ static EVENT createpopup( DESCMENU *desc, EVENT *newevent )
 }
 
 
-EVENT intern process_menuevent( vptr, ev )
-/****************************************/
-
-    register    VSCREEN*                vptr;
-                EVENT                   ev;
+EVENT intern process_menuevent( VSCREEN *vptr, EVENT ev )
+/*******************************************************/
 {
     register    int                     index;
-    register    int                     oldmenu;
+    register    int                     oldmenu = 0;
     register    EVENT                   itemevent;
     auto        EVENT                   newevent;
     auto        DESCMENU*               desc;
@@ -644,10 +605,8 @@ EVENT intern process_menuevent( vptr, ev )
     return( newevent );
 }
 
-EVENT uigeteventfrompos( row, col )
-/********************************/
-    ORD         row;
-    ORD         col;
+EVENT uigeteventfrompos( ORD row, ORD col )
+/*****************************************/
 {
     unsigned            index;
     DESCMENU*           desc;
@@ -665,10 +624,8 @@ EVENT uigeteventfrompos( row, col )
     return( EV_NO_EVENT );
 }
 
-void intern menuevent( vptr )
-/***************************/
-
-register        VSCREEN*                vptr;
+void intern menuevent( VSCREEN *vptr )
+/************************************/
 {
     register    EVENT                   newevent;
     register    EVENT                   ev;
@@ -722,11 +679,8 @@ register        VSCREEN*                vptr;
 }
 
 
-void global uidescmenu( iptr, desc )
-/**********************************/
-
-register        MENUITEM*               iptr;
-register        DESCMENU*               desc;
+void global uidescmenu( MENUITEM *iptr, DESCMENU *desc )
+/******************************************************/
 {
     register    int                     item;
     register    int                     len;
@@ -784,9 +738,7 @@ register        DESCMENU*               desc;
     }
 }
 
-static void descmenu( menu, desc )
-register        int                     menu;
-register        DESCMENU*               desc;
+static void descmenu( int menu, DESCMENU *desc )
 {
     MENUITEM*           nptr;
     MENUITEM*           iptr;
@@ -817,7 +769,7 @@ register        DESCMENU*               desc;
     MENU_SET_ROW( desc, desc->area.row - 1 );
 }
 
-void uimenutitlebar()
+void uimenutitlebar( void )
 {
     register    int                     menu;
 
@@ -828,11 +780,8 @@ void uimenutitlebar()
     permit_refresh();
 }
 
-static void drawbar( area, dummy )
-/********************************/
-
-register        SAREA                   area;
-register        void*                   dummy;
+static void drawbar( SAREA area, void *dummy )
+/********************************************/
 {
     forbid_refresh();
     dummy = dummy;
@@ -860,10 +809,8 @@ bool uienablemenuitem( unsigned menu, unsigned item, bool enable )
 }
 
 
-void global uimenuindicators( status )
-/************************************/
-
-register        bool                    status;
+void global uimenuindicators( bool status )
+/*****************************************/
 {
     Menu->indicators = status;
 }
@@ -873,7 +820,6 @@ register        bool                    status;
  */
 void global uisetmenudesc( void )
 /*******************************/
-
 {
     register int  count;
 
@@ -883,10 +829,8 @@ void global uisetmenudesc( void )
     }
 }
 
-VBARMENU* global uimenubar( bar )
-/*******************************/
-
-register        VBARMENU*               bar;
+VBARMENU* global uimenubar( VBARMENU *bar )
+/*****************************************/
 {
     register    int                     count;
     register    MENUITEM*               menus;
@@ -931,21 +875,21 @@ register        VBARMENU*               bar;
     return( prevMenu );
 }
 
-bool global uimenuson()
-/*********************/
+bool global uimenuson( void )
+/***************************/
 {
     return( Menu != NULL );
 }
 
-unsigned global uimenuheight()
-/****************************/
+unsigned global uimenuheight( void )
+/**********************************/
 {
     if( Menu == NULL ) return( 0 );
     return( MENU_GET_ROW( &Describe[ NumMenus - 1 ] ) + 1 );
 }
 
 void global uimenudisable( bool disabled )
-/*********************/
+/****************************************/
 {
     if ( uimenuson() ) {
         Menu->disabled = disabled;
@@ -953,40 +897,34 @@ void global uimenudisable( bool disabled )
 }
 
 bool global uimenuisdisabled( void )
-/*********************/
+/**********************************/
 {
     return( uimenuson() && Menu->disabled );
 }
 
 bool global uimenugetaltpressed( void )
-/*********************/
+/*************************************/
 {
     return( uimenuson() && Menu->altpressed );
 }
 
 void global uimenusetaltpressed( bool altpressed )
-/*********************/
+/************************************************/
 {
     if ( uimenuson() ) {
         Menu->altpressed = altpressed;
     }
 }
 
-void global uinomenus()
-/*********************/
+void global uinomenus( void )
+/***************************/
 {
     uimenubar( NULL );
 }
 
 
-#pragma off(unreferenced);
-void global uimenus( menus, items, hot )
-#pragma on(unreferenced);
-/**************************************/
-
-register        MENUITEM                *menus;
-register        MENUITEM                **items;
-register        EVENT                   hot;
+void global uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
+/*****************************************************************/
 {
     register    int                     index;
 
@@ -999,8 +937,8 @@ register        EVENT                   hot;
     uimenubar( &MenuList );
 }
 
-void global uiactivatemenus()
-/***************************/
+void global uiactivatemenus( void )
+/*********************************/
 {
     if( Menu != NULL ) {
         if( !Menu->active ){
@@ -1010,8 +948,8 @@ void global uiactivatemenus()
     }
 }
 
-void global uiignorealt()
-/***************************/
+void global uiignorealt( void )
+/*****************************/
 {
     if( Menu != NULL ) {
         Menu->ignorealt = TRUE;

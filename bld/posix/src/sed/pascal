@@ -1,0 +1,10 @@
+{ this is a test }
+x := y
+begin
+end
+if (x>=y)
+x<>y
+x or y
+procedure foo();
+function fie(abc,def,gef): integer;
+

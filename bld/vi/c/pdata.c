@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 
 /*
  * command line tokens
  */
-char near ParseClTokens[] = {
-    #define PICK( a,b ) a
+char _NEAR ParseClTokens[] = {
+    #define PICK( a, b ) a
     #include "cmds.h"
     "\0"
 };
@@ -45,8 +44,8 @@ char near ParseClTokens[] = {
 /*
  * Set tokens (values)
  */
-char near SetTokens1[] = {
-    #define PICK( a,b,c ) a
+char _NEAR SetTokens1[] = {
+    #define PICK( a, b, c ) a
     #include "setnb.h"
     "\0"
 };
@@ -54,14 +53,14 @@ char near SetTokens1[] = {
 /*
  * Set tokens (booleans)
  */
-char near SetTokens2[] = {
-    #define PICK( a,b,c,d,e ) a
+char _NEAR SetTokens2[] = {
+    #define PICK( a, b, c, d, e ) a
     #include "setb.h"
     "\0"
 };
 
-char near SetTokens2a[] = {
-    #define PICK( a,b,c,d,e ) b
+char _NEAR SetTokens2a[] = {
+    #define PICK( a, b, c, d, e ) b
     #include "setb.h"
     "\0"
 };

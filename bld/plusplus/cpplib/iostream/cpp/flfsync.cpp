@@ -24,39 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/19    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/03/22    Greg Bentz      modify filebuf::open() and filebuf::attach()
-//                              to assume ios::binary unless ios::text is
-//                              found in the fstat() so that QNX is supported.
-//  93/07/22    Greg Bentz      Make sure overflow() function sets up the
-//                              put area
-//  93/09/13    Greg Bentz      filebuf::~filebuf() must close if !__attached
-//  93/10/15    Greg Bentz      let __plusplus_open() determine if default
-//                              file mode is TEXT or BINARY
-//  93/10/15    Raymond Tang    Modify filebuf::open() to return NULL if both
-//                              ios::noreplace and ios::nocreate are specified
-//  93/10/22    Raymond Tang    Split into separate files.
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
@@ -64,16 +34,18 @@
 #include "variety.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <fstream.h>
+#include <fstream>
 #endif
 #include "ioutil.h"
 
-int filebuf::sync() {
-/*******************/
-// Synchronize the output of this stream with the underlying
-// C standard I/O.
-// Only one of input flushing or output flushing can happen since
-// input is flushed when output is started and vice versa.
+namespace std {
+
+  // Synchronize the output of this stream with the underlying C
+  // standard I/O. Only one of input flushing or output flushing can
+  // happen since input is flushed when output is started and vice
+  // versa.
+
+  int filebuf::sync() {
 
     __lock_it( __b_lock );
 
@@ -85,10 +57,9 @@ int filebuf::sync() {
         return( __NOT_EOF );
     }
 
-    // Flush any input characters.
-    // Back up the file so that a new read of the actual file will start
-    // where we are now. Beware of "new-line to CR/LF" translation issues
-    // when handling a text file:
+    // Flush any input characters. Back up the file so that a new read
+    // of the actual file will start where we are now. Beware of
+    // "new-line to CR/LF" translation issues when handling a text file:
     if( in_avail() ) {
         char *cptr;
         int   offset;
@@ -110,4 +81,7 @@ int filebuf::sync() {
         setg( NULL, NULL, NULL );
     }
     return( __NOT_EOF );
+  }
+
 }
+

@@ -24,33 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation for (_w)putenv().
 *
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <mbstring.h>
 #include <errno.h>
+#ifdef __WIDECHAR__
+    #include <wctype.h>
+#endif
 #ifdef __NT__
     #include <windows.h>
     #include "libwin32.h"
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #include <rdos.h>
 #endif
 #include "liballoc.h"
 #include "rtdata.h"
 #include "seterrno.h"
-#ifdef __WIDECHAR__
-    #include "wenviron.h"
-#endif
-
-
-extern int __putenv( const char *env_string );
-extern int __wputenv( const wchar_t *env_string );
+#include "_environ.h"
 
 
 // _wpetenv and putenv are implemented this way so that each can call the
@@ -61,231 +57,114 @@ extern int __wputenv( const wchar_t *env_string );
 // it calls call __create_wide_environment, causing similar bad things.
 _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 {
-#ifdef __WIDECHAR__
-    char *              otherStr;
+#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+  #ifdef __WIDECHAR__
+    char                *otherStr;
     const size_t        charsize = sizeof(wchar_t);
     const size_t        fact = MB_CUR_MAX;
-#else
-    wchar_t *           otherStr;
+  #else
+    wchar_t             *otherStr;
     const size_t        charsize = MB_CUR_MAX;
     const size_t        fact = 1;
-#endif
+  #endif
     size_t              otherStrLen;
-    int                 rc;
-#ifdef __NT__
-    CHAR_TYPE *         name;
-    CHAR_TYPE *         value;
-    CHAR_TYPE *         p;
-    size_t              len;
-    BOOL                osRc;
 #endif
+#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    CHAR_TYPE           *name;
+    CHAR_TYPE           *value;
+    CHAR_TYPE           *p;
+    size_t              len;
+  #if defined( __NT__ )
+    BOOL                osRc;
+  #else
+    int                 handle;
+  #endif
 
     /*** Update the process environment if using Win32 ***/
-    #ifdef __NT__
-        /*** Validate the input string ***/
-        p = __F_NAME(_mbschr,wcschr)( env_string, __F_NAME('=',L'=') );
-        if( p == NULL )  return( -1 );        /* must have form name=value */
-        if( p == env_string )  return( -1 );  /* must have form name=value */
+    /*** Validate the input string ***/
+    p = _TCSCHR( env_string, STRING( '=' ) );
+    if( p == NULL || p == env_string )
+        return( -1 );       /* must have form name=value */
 
-        /*** Extract the variable name ***/
-        len = p - env_string;
-        name = lib_malloc( (len+1) * CHARSIZE );
-        if( name == NULL )  return( -1 );
-        memcpy( name, env_string, len*CHARSIZE );
-        name[len] = NULLCHAR;
+    /*** Extract the variable name ***/
+    len = p - env_string;
+    name = lib_malloc( ( len + 1 ) * CHARSIZE );
+    if( name == NULL )
+        return( -1 );
+    memcpy( name, env_string, len * CHARSIZE );
+    name[len] = NULLCHAR;
 
-        /*** Extract the new value, if any ***/
-        p++;                            /* point past the '=' */
-        len = __F_NAME(_mbslen,wcslen)( p );
-        if( len != 0 ) {
-            value = lib_malloc( (len+1) * CHARSIZE );
-            if( value == NULL ) {
-                lib_free( name );
-                return( -1 );
-            }
-            memcpy( value, p, len*CHARSIZE );
-            value[len] = NULLCHAR;
-        } else {
-            value = NULL;               /* don't need a buffer to delete */
-        }
-
-        /*** Tell the OS about the change ***/
-        #ifdef __WIDECHAR__
-            osRc = __lib_SetEnvironmentVariableW( name, value );
-        #else
-            osRc = SetEnvironmentVariableA( name, value );
-        #endif
-        lib_free( name );
-        lib_free( value );
-        if( osRc == FALSE ) {
-            if( value == NULL ) {
-                // we couldn't find the envvar but since we are deleting it,
-                // the putenv() is successful
-                return 0;
-            }
+    /*** Extract the new value, if any ***/
+    p++;                                    /* point past the '=' */
+    len = _TCSLEN( p );
+    if( len != 0 ) {
+        value = lib_malloc( ( len + 1 ) * CHARSIZE );
+        if( value == NULL ) {
+            lib_free( name );
             return( -1 );
         }
-    #endif
+        memcpy( value, p, len * CHARSIZE );
+        value[len] = NULLCHAR;
+    } else {
+        value = NULL;               /* don't need a buffer to delete */
+    }
+  #ifdef __NT__
+    /*** Tell the OS about the change ***/
+    osRc = __F_NAME(SetEnvironmentVariableA,__lib_SetEnvironmentVariableW)( name, value );
+  #elif defined( __RDOS__ )
+    handle = RdosOpenProcessEnv();
+    RdosDeleteEnvVar( handle, name );
+    RdosAddEnvVar( handle, name, value );
+    RdosCloseEnv( handle );        
+  #elif defined( __RDOSDEV__ )
+    handle = RdosOpenSysEnv();
+    RdosDeleteEnvVar( handle, name );
+    RdosAddEnvVar( handle, name, value );
+    RdosCloseEnv( handle );        
+  #endif
+    lib_free( name );
+    lib_free( value );
+  #ifdef __NT__
+    if( osRc == FALSE ) {
+        if( value == NULL ) {
+            // we couldn't find the envvar but since we are deleting it,
+            // the putenv() is successful
+            return( 0 );
+        }
+        return( -1 );
+    }
+  #endif
+#endif
 
     /*** Update the (__WIDECHAR__ ? wide : MBCS) environment ***/
-    #ifdef __WIDECHAR__
-        if( _RWD_wenviron == NULL )  __create_wide_environment();
-    #endif
-    if( __F_NAME(__putenv,__wputenv)( env_string )  !=  0 )  return( -1 );
+#ifdef __WIDECHAR__
+    if( _RWD_wenviron == NULL ) {
+        __create_wide_environment();
+    }
+#endif
+
+#if defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    return( __F_NAME(__putenv,__wputenv)( env_string ) );
+#else
+    if( __F_NAME(__putenv,__wputenv)( env_string ) != 0 )
+        return( -1 );
 
     /*** Update the other environment ***/
-    #ifndef __WIDECHAR__
-        if( _RWD_wenviron == NULL )  return( 0 );  // _wenviron uninitialized
-    #endif
-    otherStrLen = __F_NAME(_mbslen,wcslen)(env_string) + 1;
+  #ifndef __WIDECHAR__
+    if( _RWD_wenviron == NULL )
+        return( 0 );    // _wenviron uninitialized
+  #endif
+    otherStrLen = _TCSLEN( env_string ) + 1;
     otherStr = lib_malloc( otherStrLen * charsize );
     if( otherStr == NULL ) {
         __set_errno( ENOMEM );
         return( -1 );
     }
-    if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen*fact )  ==  -1 ) {
+    if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen * fact ) == -1 ) {
         lib_free( otherStr );
         __set_errno( ERANGE );
         return( -1 );
     }
-    rc = __F_NAME(__wputenv,__putenv)( otherStr );
-    return( rc );
+    return( __F_NAME(__wputenv,__putenv)( otherStr ) );
+#endif
 }
-
-
-int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
-    {
-#ifdef __NETWARE__
-
-        env_string = env_string;
-        return( -1 );
-#else
-
-        const CHAR_TYPE **envp;
-        int index;
-        const CHAR_TYPE *p;
-        int delete_var;
-
-        if( env_string == NULL ) return( -1 );
-        if( *env_string != __F_NAME('\0',L'\0') ) { // handle =NAME=STRING
-            for( p=env_string+1; *p; ++p ) {        // (used under NT)
-                if( *p == __F_NAME('=',L'=') ) break;
-            }
-        }
-        if( *p == __F_NAME('\0',L'\0') )  return( -1 ); /* <name> with no '=' is illegal */
-        delete_var = p[ 1 ] == __F_NAME('\0',L'\0');
-        envp = (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron);
-        if( envp == NULL ) {
-            if( delete_var ) return( 0 );
-            #ifdef __WIDECHAR__
-                envp = lib_malloc( 2 * sizeof(CHAR_TYPE*) );
-            #else
-                envp = lib_malloc( 2 * sizeof(CHAR_TYPE*) + sizeof(char) );
-            #endif
-            if( envp == NULL ) return( -1 );
-            envp[ 0 ] = NULL;                   /* fill in below */
-            envp[ 1 ] = NULL;
-            __F_NAME(_RWD_environ,_RWD_wenviron) = (CHAR_TYPE**) envp;
-            #ifndef __WIDECHAR__
-                _RWD_env_mask = (char *) &envp[ 2 ];
-            #endif
-            index = 0;
-        } else {
-            index = findenv( env_string, delete_var );
-            if( delete_var ) return( 0 );
-            if( index <= 0 ) {                  /* name not found */
-                index = - index;
-                #ifdef __WIDECHAR__
-                    /* wide environment doesn't use alloc'd mask */
-                    envp = lib_realloc( envp, (index+2) * sizeof(CHAR_TYPE*) );
-                    if( envp == NULL ) return( -1 );
-                    memcpy( envp, _RWD_wenviron, index * sizeof(CHAR_TYPE*) );
-                #else
-                    if( _RWD_env_mask == NULL ) {
-                        envp = lib_malloc( (index+2) * sizeof(CHAR_TYPE*) +
-                                       (index+1) * sizeof(char) );
-                        if( envp == NULL ) return( -1 );
-                        memcpy( envp, _RWD_environ, index * sizeof(CHAR_TYPE*) );
-                        _RWD_env_mask = (char *) &envp[ index + 2 ];
-                        memset( _RWD_env_mask, 0, (index+1) * sizeof(char) );
-                    } else {
-                        envp = lib_realloc( envp, (index+2) * sizeof(CHAR_TYPE*)
-                                                + (index+1) * sizeof(char) );
-                        if( envp == NULL ) return( -1 );
-                        memmove( &envp[ index + 2 ], _RWD_env_mask,
-                                    index * sizeof(char) );
-                        _RWD_env_mask = (char *) &envp[ index + 2 ];
-                    }
-                #endif
-                envp[ index + 1 ] = NULL;
-                __F_NAME(_RWD_environ,_RWD_wenviron) = (CHAR_TYPE**) envp;
-            } else {                            /* name found */
-                index--;
-            }
-        }
-        envp[ index ] = env_string;
-        #ifndef __WIDECHAR__
-            _RWD_env_mask[ index ] = 0;     /* indicate not alloc'd */
-        #endif
-        return( 0 );
-#endif
-    }
-
-
-#ifndef __NETWARE__
-static int findenv( const CHAR_TYPE *env_string, int delete_var )
-    {
-        CHAR_TYPE **envp, **tmp_envp;
-        const CHAR_TYPE *p1, *p2, *env_str;
-        int index1;
-    #ifndef __WIDECHAR__
-        int index2;
-        char *envm;
-    #endif
-
-        for( envp=__F_NAME(_RWD_environ,_RWD_wenviron); p1=*envp; ++envp ) {
-            for( p2 = env_string; *p2; ++p1, ++p2 ) {
-#ifdef __QNX__
-                if( *p1 != *p2 ) break;
-#else
-                /* case independent search */
-                #ifdef __WIDECHAR__
-                    if( towupper( *p1 ) != towupper( *p2 ) )  break;
-                #else
-                    if( toupper( *p1 ) != toupper( *p2 ) )  break;
-                #endif
-#endif
-                if( *p1 == __F_NAME('=',L'=') ) {
-                    index1 = envp - __F_NAME(_RWD_environ,_RWD_wenviron);
-                    if( delete_var ) {
-                        env_str = *envp;
-                        tmp_envp = envp;        /* delete entry */
-                        for( ; *tmp_envp; ++tmp_envp ) {
-                            *tmp_envp = *(tmp_envp+1);
-                        }
-                        #ifdef __WIDECHAR__
-                            lib_free( (void*)env_str );
-                        #else
-                            if( _RWD_env_mask != NULL ) {
-                                if( _RWD_env_mask[ index1 ] != 0 ) {
-                                    lib_free( (void*)env_str );
-                                }
-                                envm = (char *)(tmp_envp);
-                                index2 = tmp_envp - _RWD_environ;
-                                memmove( envm, _RWD_env_mask, index2 * sizeof(char) );
-                                _RWD_env_mask = envm;
-                                for( ; index1 < index2; index1++ ) {
-                                    envm[ index1 ] = envm[ index1 + 1 ];
-                                }
-                            }
-                        #endif
-                        return( 0 );            /* pretend it wasn't found */
-                    } else {
-                        return( index1 + 1 );   /* return index origin 1 */
-                    }
-                }
-            }
-        }
-        return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );/* not found */
-    }
-#endif

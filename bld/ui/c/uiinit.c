@@ -31,15 +31,18 @@
 
 
 #include "uidef.h"
-#ifdef UNIX
+#ifdef __UNIX__
 #include "uivirt.h"
 #endif
 #include "uiforce.h"
+#include "stdui.h"
 
-void intern DBCSCharacterMap();
+void intern DBCSCharacterMap( void );
 
 bool global uistart( void )
+/*************************/
 {
+    UIMemOpen();
     if( initbios() ) {
         DBCSCharacterMap();
         /* need for LUI and DUI apps to avoid divide by zero    */
@@ -54,17 +57,15 @@ bool global uistart( void )
     return( FALSE );
 }
 
-bool global uiinit( mouse )
-/*************************/
-
-register    int     mouse;
+bool global uiinit( int mouse )
+/*****************************/
 {
     register int initialized;
 
     initialized = uistart();
 
     if( initialized ) {
-#ifdef UNIX
+#ifdef __UNIX__
         _initmouse( mouse );
 #else
         initmouse( mouse );
@@ -80,20 +81,21 @@ void global uistop( void )
     finibios();
 }
 
-void global uifini()
-/******************/
+void global uifini( void )
+/************************/
 {
-#ifdef UNIX
+#ifdef __UNIX__
     _finimouse();
 #else
     finimouse();
 #endif
     uistop();
+    UIMemClose();
 }
 
 
-void global uiswap()
-/******************/
+void global uiswap( void )
+/************************/
 {
     uiswapcursor();
     uiswapmouse();

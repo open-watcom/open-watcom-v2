@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stddef.h>
-#include <malloc.h>
 #include "vi.h"
+#include <stddef.h>
 
 #ifndef NOXTD
 
@@ -46,7 +44,7 @@ extern xtd_struct XMemCtrl;
 /*
  * XMemIntHandler - extended memory interrupt handler
  */
-interrupt XMemIntHandler( volatile union INTPACK r )
+void interrupt XMemIntHandler( volatile union INTPACK r )
 {
     if( r.h.ah != XMEM_MEMORY_SIZE ) {
         _chain_intr( XMemCtrl.xtd_vector );

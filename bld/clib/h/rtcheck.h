@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Perform runtime file handle checks.
 *
 ****************************************************************************/
 
@@ -38,13 +37,14 @@
 #include "seterrno.h"
 
 
-#if ( defined(__NT__) || defined(__RUNTIME_HANDLE_CHECKS__) ) \
-    && ( !defined(__NETWARE__) && !defined(__QNX__) && !defined(__OSI__) )
+#if ( defined(__NT__) || defined(__RUNTIME_HANDLE_CHECKS__) )   \
+    && ( !defined(__NETWARE__) && !defined(__UNIX__)            \
+    && !defined(__OSI__) )
 
     extern unsigned __NFiles;
 
     #define __handle_check( __h, __r )                          \
-                    if( (__h) < 0  ||  (__h) > __NFiles ) {     \
+                    if( (__h) < 0  ||  (__h) >= __NFiles ) {     \
                         __set_errno( EBADF );                   \
                         return( __r );                          \
                     }
@@ -57,3 +57,4 @@
 
 
 #endif
+

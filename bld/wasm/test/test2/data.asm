@@ -39,7 +39,7 @@ foo:    mov ax, a
         mov ax, dgroup
         mov ax, seg dgroup
 
-;       mov eax, dgroup
+        mov eax, dgroup
         mov ax, seg dgroup
         xor ax, ax
 end

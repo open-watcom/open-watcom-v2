@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Emit CodeView symbol information.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@
 #include "pattern.h"
 #include "procdef.h"
 #include "cgdefs.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "symdbg.h"
 #include "model.h"
 #include "ocentry.h"
@@ -45,18 +44,17 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
 #include <stdlib.h>
 #include "cvdbg.h"
-#define BY_CG
 #include "feprotos.h"
 #include "cgprotos.h"
 
 extern  void            FEPtrBaseOffset(sym_handle,offset);
-extern  type_def        *TypeAddress(cg_type);
 extern  seg_id          AskOP(void);
 extern  bck_info        *BENewBack(sym_handle);
 extern  void            BEFreeBack(bck_info*);
@@ -69,10 +67,9 @@ extern  seg_id          AskCodeSeg();
 extern  segment_id      AskSegID(pointer,cg_class);
 extern  sym_handle      AskForLblSym(label_handle);
 extern  void            SetBigLocation( long_offset loc );
-extern  long_offset     AskBigLocation();
-extern  offset          AskMaxSize();
+extern  long_offset     AskBigLocation(void);
+extern  offset          AskMaxSize(void);
 extern  offset          AskAddress(label_handle);
-extern  bool            NeedBaseSet();
 extern  void            DataInt(short_offset);
 extern  void            DataLong( long );
 extern  char            GetMemModel( void );
@@ -81,7 +78,6 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
-#define global
 extern  void            DataBytes(unsigned_32,byte*);
 extern  void            DoBigLblPtr(sym_handle);
 extern  void            DBLocFini( dbg_loc loc );
@@ -93,11 +89,15 @@ extern  void            CVEndType( cv_out *out );
 extern  sym_handle      LocSimpStatic(dbg_loc);
 extern  type_length     NewBase(name*);
 
-extern    source_line_number    SrcLine;
-extern    proc_def              *CurrProc;
-extern    uint                  TypeIdx;
-global    seg_id                CVSyms;
-global    seg_id                CVTypes;
+extern  source_line_number  SrcLine;
+extern  proc_def            *CurrProc;
+extern  uint                TypeIdx;
+
+// global variables
+seg_id                  CVSyms;
+seg_id                  CVTypes;
+
+static  void             DumpLocals( dbg_local *local );
 
 typedef struct block_patch {
     struct block_patch  *link;
@@ -108,9 +108,9 @@ typedef struct block_patch {
 
 
 struct sf_info {
- char       size;
- s_values   code;
-}sf_info;
+    char       size;
+    s_values   code;
+} sf_info;
 
 static struct sf_info SInfo[SG_LAST] = {
     #define SLMAC( n, N, c )    { sizeof( s_##n ), c },
@@ -118,15 +118,17 @@ static struct sf_info SInfo[SG_LAST] = {
     #undef SLMAC
 };
 
-static  void    NewBuff( cv_out *out, seg_id seg ) {
-/**************************************/
+static  void    NewBuff( cv_out *out, seg_id seg )
+/************************************************/
+{
     out->ptr = &out->buff[0];
     out->beg = &out->buff[0];
     out->seg = seg;
 }
 
-static void BuffPatchSet( seg_id seg, dbg_patch_handle *patch ) {
-/***********************************************************************/
+static void BuffPatchSet( seg_id seg, dbg_patch_handle *patch )
+/*************************************************************/
+{
     long_offset         off;
     seg_id              old;
 
@@ -137,25 +139,28 @@ static void BuffPatchSet( seg_id seg, dbg_patch_handle *patch ) {
    patch->offset = off;
 }
 
-static  void    BuffWrite( cv_out *out, void *to ){
-/*********************************************/
+static  void    BuffWrite( cv_out *out, void *to )
+/************************************************/
+{
     int     len;
     seg_id  old;
 
-    len = (char *)to - out->beg;
+    len = (byte *)to - out->beg;
     old = SetOP( out->seg );
     DataBytes( len, out->beg );
     out->beg = to;
     SetOP( old );
 }
 
-static  void   BuffSkip( cv_out *out, void *to ){
-/*********************************************/
+static  void   BuffSkip( cv_out *out, void *to )
+/**********************************************/
+{
     out->beg = to;
 }
 
-static  void    BuffEnd( cv_out *out ){
-/*********************************************/
+static  void    BuffEnd( cv_out *out )
+/************************************/
+{
     int     len;
     seg_id  old;
 
@@ -165,8 +170,9 @@ static  void    BuffEnd( cv_out *out ){
     SetOP( old );
 }
 
-static  void  *StartSym( cv_out *out, sg_index what ){
-    s_common *ptr;
+static  void  *StartSym( cv_out *out, sg_index what )
+{
+    s_common    *ptr;
 
     ptr = (s_common *)out->beg;
     out->ptr += SInfo[what].size;
@@ -175,11 +181,12 @@ static  void  *StartSym( cv_out *out, sg_index what ){
     return( ptr );
 }
 
-static  void    EndSym( cv_out *out ) {
-/*********************************************/
+static  void    EndSym( cv_out *out )
+/***********************************/
+{
     int         len;
-    s_common   *com;
-    char       *ptr;
+    s_common    *com;
+    byte        *ptr;
 
     com = (s_common *) out->beg; /* assume ptr marks end of a sym */
     ptr = out->ptr;
@@ -195,9 +202,10 @@ static  void    EndSym( cv_out *out ) {
     com->length  = len-sizeof( com->length );  /*don't count length field */
 }
 
-extern  void    CVInitDbgInfo(){
-/******************************/
+extern  void    CVInitDbgInfo( void )
+/***********************************/
 /* called after ObjInit */
+{
     TypeIdx   = CV_FIRST_USER_TYPE-1;
 }
 
@@ -213,7 +221,9 @@ static struct lang_map LangNames[MAX_LANG] = {
     {LANG_FORTRAN, "FORTRAN"},
     {LANG_FORTRAN, "FORTRAN77"},
 };
-static int SetLang( void ){
+
+static int SetLang( void )
+{
     int     ret;
     char    *name;
     int     index;
@@ -230,8 +240,9 @@ static int SetLang( void ){
 }
 
 
-static  void    InitSegBck( void ){
-/*********************************/
+static  void    InitSegBck( void )
+/********************************/
+{
     seg_id       old;
 
     if( _IsModel( DBG_LOCALS ) ) {
@@ -246,13 +257,14 @@ static  void    InitSegBck( void ){
 }
 
 
-extern  void    CVObjInitInfo( void ) {
-/**************************************/
+extern  void    CVObjInitInfo( void )
+/***********************************/
 /* called by objinit to init segments and for codeview */
+{
     cv_out      out[1];
     cs_objname  *optr;
     cs_compile  *cptr;
-    char       *name;
+    char        *name;
 
     InitSegBck();
     if( _IsModel( DBG_LOCALS ) ) {
@@ -310,18 +322,22 @@ extern  void    CVObjInitInfo( void ) {
 }
 
 
-extern  void    CVFiniDbgInfo() {
+extern  void    CVFiniDbgInfo( void )
+/***********************************/
+{
 }
 
 
-extern  void    CVObjFiniDbgInfo() {
-/******************************/
+extern  void    CVObjFiniDbgInfo( void )
+/**************************************/
+{
 }
 
 
 
-static  void    SymReloc(  seg_id seg,  sym_handle sym, offset lc ){
-/*****************************************/
+static  void    SymReloc(  seg_id seg,  sym_handle sym, offset lc )
+/*****************************************************************/
+{
     seg_id      old;
 
     old = SetOP( seg );
@@ -329,21 +345,23 @@ static  void    SymReloc(  seg_id seg,  sym_handle sym, offset lc ){
     SetOP( old );
 }
 
-static void LabelReloc( seg_id seg, bck_info *bck, long disp ){
-/*************************************************************/
+static void LabelReloc( seg_id seg, bck_info *bck, long disp )
+/************************************************************/
+{
     type_def   *ptr_type;
     seg_id      id;
     seg_id      old;
 
     old = SetOP( seg );
     id = AskSegID( bck, CG_BACK );
-    ptr_type = TypeAddress( T_LONG_POINTER );
+    ptr_type = TypeAddress( TY_LONG_POINTER );
     BackPtr( bck, id, disp, ptr_type );
     SetOP( old );
 }
 
-extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe ) {
-/*** Put a back sym out*************************************************************/
+extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe )
+/*** Put a back sym out*********************************************************/
+{
     cs_ldata    *ptr;
     void        *ptr1;
 
@@ -364,9 +382,10 @@ extern  void    CVOutBck( cv_out *out, bck_info *bck, offset add, dbg_type tipe 
 }
 
 static  void FrameVar( cv_out  *out,  char        *nm,
-                       dbg_type tipe, long        disp ){
-/***  local rel to  frame  **************************************/
+                       dbg_type tipe, long        disp )
+/***  local rel to  frame  ****************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
+{
 //#if _TARGET &( _TARG_IAPX86 | _TARG_80386 )
     cs_bprel   *ptr;
 
@@ -388,11 +407,12 @@ static  void FrameVar( cv_out  *out,  char        *nm,
 #endif
 }
 
-extern  void    CVOutSym( cv_out *out, sym_handle sym ) {
-/*** Put a sym in out **********************************/
+extern  void    CVOutSym( cv_out *out, sym_handle sym )
+/*** Put a sym in out ********************************/
+{
     dbg_type    tipe;
     fe_attr     attr;
-    char       *nm;
+    char        *nm;
 
     attr = FEAttr( sym );
     tipe = FEDbgType( sym );
@@ -401,9 +421,9 @@ extern  void    CVOutSym( cv_out *out, sym_handle sym ) {
         cs_gdata     *ptr;
         sg_index    kind;
 
-        if( attr & FE_GLOBAL ){
+        if( attr & FE_GLOBAL ) {
             kind = SG_GDATA;
-        }else{
+        } else {
             kind = SG_LDATA;
         }
         ptr = StartSym(  out, kind );
@@ -412,13 +432,14 @@ extern  void    CVOutSym( cv_out *out, sym_handle sym ) {
         ptr->type = tipe;
         CVPutStr( out, nm );
         EndSym( out );
-    }else{
+    } else {
         FrameVar( out, nm, tipe, 0 );
     }
 }
 
-extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem ) {
-/**********************************************************/
+extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem )
+/******************************************************************/
+{
     dbg_type    tipe;
     cv_out      out[1];
     fe_attr     attr;
@@ -430,9 +451,9 @@ extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem ) {
     tipe = FEDbgType( sym );
     NewBuff( out, CVSyms );
     attr = FEAttr( sym );
-    if( attr & FE_GLOBAL ){
+    if( attr & FE_GLOBAL ) {
         kind = SG_GDATA;
-    }else{
+    } else {
         kind = SG_LDATA;
     }
     ptr = StartSym(  out, kind );
@@ -441,7 +462,7 @@ extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem ) {
     ptr->type = tipe;
     if( mem ){
         name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
-    }else{
+    } else {
         name = FEName( sym );
     }
     CVPutStr( out, name );
@@ -457,8 +478,9 @@ extern  void    CVGenStatic( sym_handle sym, dbg_loc loc, bool mem ) {
 }
 
 
-extern  void    CVTypedef( char *nm, dbg_type tipe ){
-/*** emit UDT***************************************/
+extern  void    CVTypedef( char *nm, dbg_type tipe )
+/*** emit UDT**************************************/
+{
     cv_out      out[1];
     cs_udt       *ptr;
 
@@ -468,11 +490,11 @@ extern  void    CVTypedef( char *nm, dbg_type tipe ){
     CVPutStr( out, nm );
     EndSym( out );
     BuffEnd( out );
-
 }
 
-extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe ) {
-/*** Put a const sym to out***************************************************/
+extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe )
+/*** Put a const sym to out**************************************************/
+{
     cs_constant *ptr;
     void        *ptr1;
 
@@ -488,8 +510,9 @@ extern  void    CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe ) {
     BuffEnd( out );
 }
 
-extern  void    CVSymIConst( char *nm, long val, dbg_type tipe ){
-/*** emit UDT***************************************/
+extern  void    CVSymIConst( char *nm, long val, dbg_type tipe )
+/*** emit UDT**************************************************/
+{
     cv_out      out[1];
     cs_constant *ptr;
 
@@ -503,8 +526,9 @@ extern  void    CVSymIConst( char *nm, long val, dbg_type tipe ){
 
 }
 
-extern  void    CVSymIConst64( char *nm, signed_64 val, dbg_type tipe ){
-/*** emit UDT***************************************/
+extern  void    CVSymIConst64( char *nm, signed_64 val, dbg_type tipe )
+/*** emit UDT*********************************************************/
+{
     cv_out      out[1];
     cs_constant *ptr;
 
@@ -517,26 +541,29 @@ extern  void    CVSymIConst64( char *nm, signed_64 val, dbg_type tipe ){
     BuffEnd( out );
 
 }
-extern  void    CVSetBase() {
-/****************************/
+
+extern  void    CVSetBase( void )
+/*******************************/
 /* don't know about this yet */
+{
 }
 
 /**/
 /* Coming out of optimizer queue*/
 /**/
 
-extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
+extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc )
+/*************************************************/
+{
     rtn = rtn;
     lc  = lc;
 }
 
 static dbg_patch_handle RtnPatch[1];
 
-static  name    *LocSymBP( dbg_loc loc ) {
-/***************************************/
-
+static  name    *LocSymBP( dbg_loc loc )
+/**************************************/
+{
     if( loc == NULL ) return( NULL );
     if( (loc->class & 0xf0) != LOC_BP_OFFSET ){
         return( NULL );
@@ -545,10 +572,10 @@ static  name    *LocSymBP( dbg_loc loc ) {
 }
 
 
-static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym ) {
-/********************************************/
+static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym )
+/***************************************************************/
 // unlink dbg_local with sym from owner
-
+{
     dbg_local           *curr;
 
     while( (curr = *owner) != NULL ) {
@@ -561,11 +588,11 @@ static  dbg_local *UnLinkLoc( dbg_local **owner, sym_handle sym ) {
     return( curr );
 }
 
-static  void DumpParms( dbg_local   *parm,
-                         dbg_local   **locals ){
-    dbg_local  *alt;
+static  void DumpParms( dbg_local *parm, dbg_local **locals )
+{
+    dbg_local   *alt;
     cv_out      out[1];
-    dbg_local  *junk;
+    dbg_local   *junk;
 
     while( parm != NULL ) {  /* find and unlink from locals */
         alt = UnLinkLoc( locals, parm->sym );
@@ -587,15 +614,15 @@ static  void DumpParms( dbg_local   *parm,
                 }
             }
             DBLocFini( alt->loc );
-           _Free( alt, sizeof( dbg_local ) );
+           CGFree( alt );
         }
         DBLocFini( parm->loc );
         junk = parm;
         parm = parm->link;
-        _Free( junk, sizeof( dbg_local ) );
+        CGFree( junk );
     }
 //#if _TARGET & _TARG_AXP
-#if 0 // seems like it screws CPACK on intel
+#if 0 // seems like it screws CVPACK on intel
     NewBuff( out, CVSyms );
     StartSym(  out, SG_ENDARG );
     EndSym( out );
@@ -603,8 +630,9 @@ static  void DumpParms( dbg_local   *parm,
 #endif
 }
 
-extern  void    CVProEnd( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
+extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
+/*************************************************/
+{
     sym_handle          sym;
     dbg_type            tipe;
     fe_attr             attr;
@@ -643,7 +671,7 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc ) {
 #endif
     if( rtn->obj_type != DBG_NIL_TYPE ) {
         name = FEAuxInfo( sym, CLASS_APPENDED_NAME );
-    }else{
+    } else {
         name = FEName( sym );
     }
     CVPutStr( out, name );
@@ -661,23 +689,24 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc ) {
     DumpLocals( rtn->blk->locals );
 }
 
-extern  void    CVBlkBeg( dbg_block *blk, offset lc ) {
-/****************************************************/
+extern  void    CVBlkBeg( dbg_block *blk, offset lc )
+/***************************************************/
+{
     block_patch        *patch;
     dbg_patch_handle   *handle;
-    cv_out          out[1];
-    offset          start;
-    sym_handle      sym;
-    cs_block        *ptr;
-    char           *nm;
+    cv_out             out[1];
+    offset             start;
+    sym_handle         sym;
+    cs_block           *ptr;
+    byte               *nm;
 
 
-    _Alloc( patch, sizeof( block_patch ) );
+    patch = CGAlloc( sizeof( block_patch ) );
     blk->patches = patch;
     NewBuff( out, CVSyms );
     ptr = StartSym(  out, SG_BLOCK );
-    ptr->pParent = NULL;
-    ptr->pEnd = NULL;
+    ptr->pParent = 0;
+    ptr->pEnd = 0;
     ptr->length = 0;
     ptr->offset = 0;
     ptr->segment = 0;
@@ -695,8 +724,9 @@ extern  void    CVBlkBeg( dbg_block *blk, offset lc ) {
     DumpLocals( blk->locals );
 }
 
-extern  void    CVBlkEnd( dbg_block *blk, offset lc ) {
-/****************************************************/
+extern  void    CVBlkEnd( dbg_block *blk, offset lc )
+/***************************************************/
+{
     fsize               length;
     long_offset         here;
     seg_id              old;
@@ -708,24 +738,26 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc ) {
     here = AskBigLocation();
     SetBigLocation( handle->offset + offsetof( s_block, f.length ) );
     length = lc - blk->start;
-    DataBytes( sizeof( fsize ), (char *)&length );
+    DataBytes( sizeof( fsize ), (byte *)&length );
     SetBigLocation( here );
     SetOP( old );
     NewBuff( out, CVSyms );
     StartSym(  out, SG_END );
     EndSym( out );
     BuffEnd( out );
-   _Free( blk->patches, sizeof( block_patch ) );
+   CGFree( blk->patches );
 }
 
-extern  void    CVEpiBeg( dbg_rtn *blk, offset lc ) {
-/****************************************************/
+extern  void    CVEpiBeg( dbg_rtn *blk, offset lc )
+/*************************************************/
+{
     blk = blk;
     lc  = lc;
 }
 
-extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc ) {
-/****************************************************/
+extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )
+/*************************************************/
+{
     cv_out              out[1];
     fsize               proc_length;
     fsize               debug_end;
@@ -738,10 +770,10 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc ) {
     here = AskBigLocation();
     SetBigLocation( handle->offset + offsetof( s_gproc, f.proc_length ) );
     proc_length = lc - rtn->blk->start;
-    DataBytes( sizeof( fsize ), (char *)&proc_length );
+    DataBytes( sizeof( fsize ), (byte *)&proc_length );
     SetBigLocation( handle->offset+ offsetof( s_gproc, f.debug_end ) );
     debug_end   = rtn->epi_start - rtn->blk->start;
-    DataBytes( sizeof( fsize ), (char*)&debug_end );
+    DataBytes( sizeof( fsize ), (byte *)&debug_end );
     SetBigLocation( here );
     SetOP( old );
     NewBuff( out, CVSyms );
@@ -751,9 +783,9 @@ extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc ) {
 }
 
 
-
-static  void    DumpLocals( dbg_local *local ) {
-/*************************************************/
+static  void    DumpLocals( dbg_local *local )
+/********************************************/
+{
     dbg_local  *old;
     type_length offset;
     cv_out      out[1];
@@ -784,13 +816,15 @@ static  void    DumpLocals( dbg_local *local ) {
         DBLocFini( local->loc );
         old = local;
         local = local->link;
-        _Free( old, sizeof( dbg_local ) );
+        CGFree( old );
     }
 
 }
 
-extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe ) {
-/*** Put a local back sym out*******************************************/
+
+extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe )
+/*** Put a local back sym out**********************************************/
+{
     type_length offset;
     void        *ptr1;
 

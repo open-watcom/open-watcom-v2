@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Convert a multibyte character to a wide character.
 *
 ****************************************************************************/
 
@@ -42,10 +41,6 @@
 
 
 
-/****
-***** Convert a multibyte character to a wide character.
-****/
-
 _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *ch, size_t n )
 {
 #ifdef __NT__
@@ -56,7 +51,7 @@ _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *c
 
     /*** Catch special cases ***/
     if( ch == NULL )  return( 0 );
-    if( n <= 0 )  return( -1 );
+    if( n == 0 )  return( -1 );
     if( *ch == '\0' ) {
         if( pwc != NULL )  *pwc = L'\0';
         return( 0 );

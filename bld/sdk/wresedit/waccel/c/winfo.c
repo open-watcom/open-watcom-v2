@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include "wglbl.h"
 #include "wmem.h"
@@ -57,30 +57,29 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WAccelInfo * WINEXPORT WAccAllocAccelInfo ( void )
+WAccelInfo * WINEXPORT WAccAllocAccelInfo( void )
 {
     WAccelInfo *info;
 
-    info = (WAccelInfo *) WMemAlloc ( sizeof(WAccelInfo) );
+    info = (WAccelInfo *)WMemAlloc( sizeof( WAccelInfo ) );
 
-    memset ( info, 0, sizeof(WAccelInfo) );
+    memset( info, 0, sizeof( WAccelInfo ) );
 
-    return ( info );
+    return( info );
 }
 
-void WINEXPORT WAccFreeAccelInfo ( WAccelInfo *info )
+void WINEXPORT WAccFreeAccelInfo( WAccelInfo *info )
 {
-    if ( info ) {
-        if ( info->res_name ) {
-            WMemFree ( info->res_name );
+    if( info != NULL ) {
+        if( info->res_name != NULL ) {
+            WMemFree( info->res_name );
         }
-        if ( info->file_name ) {
-            WMemFree ( info->file_name );
+        if( info->file_name != NULL ) {
+            WMemFree( info->file_name );
         }
-        if ( info->data ) {
-            WMemFree ( info->data );
+        if( info->data != NULL ) {
+            WMemFree( info->data );
         }
-        WMemFree ( info );
+        WMemFree( info );
     }
 }
-

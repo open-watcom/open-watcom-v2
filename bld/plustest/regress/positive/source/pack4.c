@@ -3,11 +3,11 @@
 // 95/04/20 -- J.W.Welch        -- conditionals for different systems
 
 #if __WATCOMC__ > 1060
-    #if defined( M_ALPHA )
+    #if defined( __ALPHA__ )
         #define DEF_PACK_AMT 8
-    #elif defined( M_I86 )
+    #elif defined( _M_I86 )
         #define DEF_PACK_AMT 2
-    #elif defined( M_I386 )
+    #elif defined( __386__ )
 	#if __WATCOM_REVISION__ >= 8
 	    #define DEF_PACK_AMT 8
 	#else

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module level structures and function prototypes.
 *
 ****************************************************************************/
 
@@ -41,8 +40,9 @@ typedef struct mod_blk{
 
 typedef enum {
     VER_NONE,
-    VER_V1,
-    VER_V2,
+    VER_V1,     /* Watcom 10.x */
+    VER_V2,     /* Watcom 11.0 and early Open Watcom */
+    VER_V3,     /* Open Watcom 1.4 and newer */
     VER_ERROR,
 }df_ver;
 

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-
 #ifndef _MOUSE_INCLUDED
 #define _MOUSE_INCLUDED
 
@@ -41,28 +40,28 @@
 #define MOUSE_ANY_BUTTON_DOWN           0x07
 
 /* mouse events */
-#define MOUSE_PRESS     0
-#define MOUSE_RELEASE   1
-#define MOUSE_DCLICK    2
-#define MOUSE_HOLD      3
-#define MOUSE_DRAG      4
-#define MOUSE_REPEAT    5
-
-#define MOUSE_PRESS_R   6
-#define MOUSE_RELEASE_R 7
-#define MOUSE_DCLICK_R  8
-#define MOUSE_HOLD_R    9
-#define MOUSE_DRAG_R    10
-#define MOUSE_REPEAT_R  11
-
-#define MOUSE_PRESS_M   12
-#define MOUSE_RELEASE_M 13
-#define MOUSE_DCLICK_M  14
-#define MOUSE_HOLD_M    15
-#define MOUSE_DRAG_M    16
-#define MOUSE_REPEAT_M  17
-
-#define MOUSE_MOVE      20
+typedef enum vi_mouse_event {
+    MOUSE_NONE = -1,
+    MOUSE_PRESS,
+    MOUSE_RELEASE,
+    MOUSE_DCLICK,
+    MOUSE_HOLD,
+    MOUSE_DRAG,
+    MOUSE_REPEAT,
+    MOUSE_PRESS_R,
+    MOUSE_RELEASE_R,
+    MOUSE_DCLICK_R,
+    MOUSE_HOLD_R,
+    MOUSE_DRAG_R,
+    MOUSE_REPEAT_R,
+    MOUSE_PRESS_M,
+    MOUSE_RELEASE_M,
+    MOUSE_DCLICK_M,
+    MOUSE_HOLD_M,
+    MOUSE_DRAG_M,
+    MOUSE_REPEAT_M,
+    MOUSE_MOVE
+} vi_mouse_event;
 
 typedef bool (*mouse_callback)( window_id, int, int );
 
@@ -72,25 +71,25 @@ typedef struct mouse_hook {
 } mouse_hook;
 
 /* hdlmouse.c */
-int HandleMouseEvent( void );
+extern vi_rc        HandleMouseEvent( void );
 
 /* mouse.c */
-int GetMouseEvent( void );
-void RedrawMouse( int row, int col );
-int DisplayMouse( int flag );
+extern vi_mouse_event GetMouseEvent( void );
+extern void         RedrawMouse( int row, int col );
+extern bool         DisplayMouse( bool flag );
 
 /* mouseev.c */
-window_id GetMousePosInfo( int *win_x, int *win_y );
-bool TestMouseEvent( bool );
-void PushMouseEventHandler( mouse_callback cb );
-void PopMouseEventHandler( void );
+extern window_id    GetMousePosInfo( int *win_x, int *win_y );
+extern bool         TestMouseEvent( bool );
+extern void         PushMouseEventHandler( mouse_callback cb );
+extern void         PopMouseEventHandler( void );
 
 /* system dependant, <sys>mouse.c */
-void SetMouseSpeed( int speed );
-void SetMousePosition( int row, int col );
-void ShowMouse( int on );
-void PollMouse( int *status, int *row, int *col );
-void InitMouse( void );
-void FiniMouse( void );
+extern void         SetMouseSpeed( int speed );
+extern void         SetMousePosition( int row, int col );
+extern void         ShowMouse( int on );
+extern void         PollMouse( int *status, int *row, int *col );
+extern void         InitMouse( void );
+extern void         FiniMouse( void );
 
 #endif

@@ -39,3 +39,4 @@
         GENERATE_PROLOG_HOOKS          = 0x0100,
         GENERATE_EPILOG_HOOKS          = 0x0200,
         GENERATE_TOUCH_STACK           = 0x0400,
+        GENERATE_RDOSDEV_PROLOG        = 0x0800,

@@ -1,7 +1,7 @@
 #if !defined( ARCH ) || ( ARCH != 386 )
     #error system dependent test for 386
 #else
-
+#pragma warning 933 11
 #pragma aux goes_byebye aborts;
 #pragma aux also_goes_byebye aborts;
 

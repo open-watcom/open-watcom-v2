@@ -24,11 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  The type_def typedef.
 *
 ****************************************************************************/
 
+#ifndef TYPEDEF_H
+#define TYPEDEF_H
+
+#include "cgdefs.h"
 
 typedef enum {
         TYPE_FLOAT      = 0x01,
@@ -38,10 +41,12 @@ typedef enum {
 } type_attr;
 
 typedef struct type_def {
-        int             refno;
+        cg_type         refno;
         type_length     length;
         type_attr       attr;
-#if _TARGET & ( _TARG_PPC | _TARG_AXP )
+#if _TARGET & _TARG_RISC
         type_length     align;
 #endif
 } type_def;
+
+#endif

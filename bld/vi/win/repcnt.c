@@ -24,15 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Repeat count window.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdarg.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
@@ -50,7 +47,7 @@ window RepeatCountWindow = {
 LONG WINEXP RepeatWindowProc( HWND, unsigned, UINT, LONG );
 
 static char     *className = "RepeatWindow";
-static char     repString[ MAX_STR ];
+static char     repString[MAX_STR];
 static HWND     repeatWindow;
 
 static BOOL Init( window *w, void *parm )
@@ -60,15 +57,15 @@ static BOOL Init( window *w, void *parm )
     parm = parm;
     w = w;
 
-    repString[ 0 ] = 0;
+    repString[0] = 0;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (LPVOID) RepeatWindowProc;
+    wc.lpfnWndProc = (WNDPROC)RepeatWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LPVOID );
     wc.hInstance = InstanceHandle;
-    wc.hIcon = LoadIcon( (HINSTANCE) NULL, IDI_APPLICATION );
-    wc.hCursor = LoadCursor( (HINSTANCE) NULL, IDC_ARROW );
+    wc.hIcon = LoadIcon( (HINSTANCE)NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
@@ -103,7 +100,7 @@ static void drawRepeatString( void )
     FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &RepeatCountWindow ) ) );
     TextReleaseDC( repeatWindow, hdc );
     WriteString( repeatWindow, 0, rect.top, WIN_STYLE( &RepeatCountWindow ),
-                repString );
+                 repString );
 
 } /* drawRepeatString */
 
@@ -124,10 +121,10 @@ LONG WINEXP RepeatWindowProc( HWND hwnd, unsigned msg, UINT w, LONG l )
             drawRepeatString();
         }
         EndPaint( hwnd, &ps );
-        return( TRUE );
+        return( 0 );
     case WM_SETFOCUS:
         SetFocus( Root );
-        return( TRUE );
+        return( 0 );
     }
     return( DefWindowProc( hwnd, msg, w, l ) );
 
@@ -147,11 +144,11 @@ window_id NewRepeatCountWindow( void )
     p.y = size->top;
     ClientToScreen( Root, &p );
 
-    repString[ 0 ] = 0;
+    repString[0] = 0;
     repeatWindow = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,
-        Root, (HMENU) NULL, InstanceHandle, NULL );
+        Root, (HMENU)NULLHANDLE, InstanceHandle, NULL );
     ShowWindow( repeatWindow, SW_SHOWNORMAL );
     UpdateWindow( repeatWindow );
     return( repeatWindow );

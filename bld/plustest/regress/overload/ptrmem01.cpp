@@ -7,6 +7,9 @@ int huge c;
 
 void f1( int near * ) GOOD;
 void f1( int far * ) GOOD;
+#ifdef _M_I86
+void f1( int huge * ) GOOD;
+#endif
 
 void g1( void )
 {
@@ -17,6 +20,9 @@ void g1( void )
 
 void f2( int near & ) GOOD;
 void f2( int huge & ) GOOD;
+#ifdef _M_I86
+void f2( int far & ) GOOD;
+#endif
 
 void g2( void )
 {
@@ -28,6 +34,10 @@ void g2( void )
 int main( void ) {
     g1();
     g2();
-    CHECK_GOOD( 82 );
+#ifdef _M_I86
+    CHECK_GOOD( 95 );
+#else
+    CHECK_GOOD( 91 );
+#endif
     return errors != 0;
 }

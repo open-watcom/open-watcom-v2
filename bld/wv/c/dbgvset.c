@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Management of program variables display settings.
 *
 ****************************************************************************/
 
@@ -49,11 +48,11 @@ extern tokens           CurrToken;
 
 extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );
-extern char             *GetCmdEntry(char *,int ,char *);
-extern void             Scan(void);
+extern char             *GetCmdEntry( char *, int, char * );
+extern void             Scan( void );
 extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
-extern unsigned int     ScanCmd(char *);
-extern void             ReqEOC(void);
+extern unsigned int     ScanCmd( char * );
+extern void             ReqEOC( void );
 
 static char TypeSettings[] = {
     "Ontop\0"
@@ -221,23 +220,28 @@ char *Attributes( type_display *curr, char *p )
     return( p );
 }
 
-static void ScanLeftBrace()
-/*************************/
+static void oops( void )
+{
+    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SET ) );
+}
+
+static void ScanLeftBrace( void )
+/*******************************/
 {
     if( CurrToken != T_LEFT_BRACE ) oops();
     Scan();
 }
 
-static bool ScanRightBrace()
-/*************************/
+static bool ScanRightBrace( void )
+/********************************/
 {
     if( CurrToken != T_RIGHT_BRACE ) return( FALSE );
     Scan();
     return( TRUE );
 }
 
-static char *ScanName()
-/********************/
+static char *ScanName( void )
+/***************************/
 {
     char        *start;
     unsigned    len;
@@ -248,11 +252,6 @@ static char *ScanName()
     return( TxtBuff );
 }
 
-
-static void oops()
-{
-    Error( ERR_LOC, LIT( ERR_BAD_OPTION ), GetCmdName( CMD_SET ) );
-}
 
 static int ScanAttribute( type_display *type, int token )
 {
@@ -338,8 +337,8 @@ static int ScanAttribute( type_display *type, int token )
 }
 
 
-void TypeSet()
-/************/
+void TypeSet( void )
+/******************/
 {
     type_display        *parent;
     type_display        *field;
@@ -364,8 +363,8 @@ void TypeSet()
     ReqEOC();
 }
 
-void TypeConf()
-/*************/
+void TypeConf( void )
+/*******************/
 {
     type_display *curr;
     type_display *fcurr;

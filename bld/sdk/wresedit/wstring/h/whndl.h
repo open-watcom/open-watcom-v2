@@ -43,11 +43,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WStringHandle    WRegisterEditSession   ( WStringEditInfo * );
-extern int              WUnRegisterEditSession ( WStringHandle );
-extern WStringEditInfo *WGetEditSessionInfo    ( WStringHandle );
-extern WStringHandle    WGetEditSessionHandle  ( WStringEditInfo *info );
-extern int              WIsValidHandle         ( WStringHandle );
-extern int              WIsStringDialogMessage ( MSG *msg, HACCEL acel_table );
+extern WStringHandle    WRegisterEditSession( WStringEditInfo * );
+extern int              WUnRegisterEditSession( WStringHandle );
+extern WStringEditInfo  *WGetEditSessionInfo( WStringHandle );
+extern WStringHandle    WGetEditSessionHandle( WStringEditInfo *info );
+extern int              WIsValidHandle( WStringHandle );
+extern int              WIsStringDialogMessage( MSG *msg, HACCEL acel_table );
 
 #endif

@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _rectangle( short fill, short x1, short y1,
+_WCRTLINK short _WCI86FAR _CGRAPH _rectangle( short fill, short x1, short y1,
 /*==========================*/ short x2, short y2 )
 
 /* This routine draws of fills a rectangle whose opposite corners are

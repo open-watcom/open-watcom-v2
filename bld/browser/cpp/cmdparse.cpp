@@ -360,7 +360,7 @@ void CommandParser::addFile( const char * fname )
     setExtension( file, ".mbr" );
 
     // FIXME -- these error messages have to do something smarter!
-    if( strchr( file, '?' ) != NULL | strchr( file, '*' ) != NULL ) {
+    if( ( strchr( file, '?' ) != NULL ) || ( strchr( file, '*' ) != NULL ) ) {
 
         _splitpath( file, dirName.drive, dirName.dir,
                     dirName.fname, dirName.ext );

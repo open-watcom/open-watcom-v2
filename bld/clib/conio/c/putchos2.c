@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  OS/2 putch() implementation.
 *
 ****************************************************************************/
 
@@ -42,12 +41,16 @@ _WCRTLINK int putch( int c )
         char    ch;
 
         ch = c;
+#ifdef DEFAULT_WINDOWING
         if( _WindowsPutch != 0 ) {      // Default windowing
             LPWDATA     res;
             res = _WindowsIsWindowedHandle( STDOUT_FILENO );
             _WindowsPutch( res, c );
         } else {
+#endif
             VioWrtTTY( &ch, 1, 0 );
+#ifdef DEFAULT_WINDOWING
         }
+#endif
         return( c );
     }

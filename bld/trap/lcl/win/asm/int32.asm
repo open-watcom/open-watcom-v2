@@ -112,7 +112,7 @@ _TEXT segment word public 'CODE' use16
 
 assume cs:_TEXT
 
-applds     dw      DGROUP
+;applds     dw      DGROUP
 
 public ReflectInt1Int3_
 ReflectInt1Int3_ PROC
@@ -177,7 +177,7 @@ PUBLIC GetIDTSel_
         mov     _IDTSel,ax
 
         mov     bx,_IDTSel              ; set up the LDT entry
-        mov     ax,SEG _idt             ;    to be the IDT entry
+        mov     ax,ds                   ;    to be the IDT entry
         mov     es,ax                   ;       to give us access to
         mov     ax,0ch                  ;           the IDT
         xor     edi,edi

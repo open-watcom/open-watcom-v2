@@ -1,352 +1,363 @@
-IMGEDMENU MENU
+"IMGEDMENU" MENU
 BEGIN
     POPUP sp( "&File",
-	      "&File" ) 
+              "&File" ) 
     BEGIN
-	MENUITEM sp( "&New ...\tF2",
-		     "&New ...\tF2" ), IMGED_NEW
-	MENUITEM sp( "&Open ...\tShift+F2",
-		     "&Open ...\tShift+F2" ), IMGED_OPEN
-	MENUITEM sp( "&Save\tF3",
-		     "&Save\tF3" ), IMGED_SAVE
-	MENUITEM sp( "Save &As ...\tShift+F3",
-		     "Save &As ...\tShift+F3" ), IMGED_SAVE_AS
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Close\tShift+F10",
-		     "&Close\tShift+F10" ), IMGED_CLOSE
-	MENUITEM sp( "C&lose All\tCtrl+F10",
-		     "C&lose All\tCtrl+F10" ), IMGED_CLOSEALL
-	MENUITEM SEPARATOR
-	MENUITEM sp( "E&xit\tAlt+F4",
-		     "E&xit\tAlt+F4" ), IMGED_EXIT
+        MENUITEM sp( "&New...\tCtrl+N",
+                     "&New...\tCtrl+N" ), IMGED_NEW
+        MENUITEM sp( "&Open...\tCtrl+O",
+                     "&Open...\tCtrl+O" ), IMGED_OPEN
+        MENUITEM sp( "&Save\tCtrl+S",
+                     "&Save\tCtrl+S" ), IMGED_SAVE
+        MENUITEM sp( "Save &As...\tF12",
+                     "Save &As...\tF12" ), IMGED_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Close\tShift+F10",
+                     "&Close\tShift+F10" ), IMGED_CLOSE
+        MENUITEM sp( "C&lose All\tCtrl+F10",
+                     "C&lose All\tCtrl+F10" ), IMGED_CLOSEALL
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit\tAlt+F4",
+                     "E&xit\tAlt+F4" ), IMGED_EXIT
     END
     POPUP sp( "&Edit",
-	      "&Edit" )
+              "&Edit" )
     BEGIN
-    	MENUITEM sp( "&Undo\tCtrl+U",
-		     "&Undo\tCtrl+U" ), IMGED_UNDO
-    	MENUITEM sp( "&Redo\tCtrl+R",
-		     "&Redo\tCtrl+R" ), IMGED_REDO
-	MENUITEM sp( "R&estore",
-		     "R&estore" ), IMGED_REST
-	MENUITEM SEPARATOR
-	MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" ), IMGED_CUT
-	MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" ), IMGED_COPY
-	MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" ), IMGED_PASTE
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Snap Bitmap",
-		     "&Snap Bitmap" ), IMGED_SNAP
-	MENUITEM sp( "C&lear\tDel",
-		     "C&lear\tDel" ), IMGED_CLEAR
-	MENUITEM SEPARATOR
-	POPUP sp( "S&hift",
-		  "S&hift" )
-	BEGIN
-	    MENUITEM sp( "&Right\tShift+Right",
-			 "&Right\tShift+Right" ), IMGED_RIGHT
-	    MENUITEM sp( "&Left\tShift+Left",
-			 "&Left\tShift+Left" ), IMGED_LEFT
-	    MENUITEM sp( "&Up\tShift+Up",
-			 "&Up\tShift+Up" ), IMGED_UP
-	    MENUITEM sp( "&Down\tShift+Down",
-			 "&Down\tShift+Down" ), IMGED_DOWN
-	END
-	POPUP sp( "&Flip",
-		  "&Flip" )
-	BEGIN
-	    MENUITEM sp( "Over &Horizontal axis",
-			 "Over &Horizontal axis" ), IMGED_FLIPHORZ
-	    MENUITEM sp( "Over &Vertical axis",
-			 "Over &Vertical axis" ), IMGED_FLIPVERT
-	END
-	POPUP sp( "R&otate",
-		  "R&otate" )
-	BEGIN
-	    MENUITEM sp( "&Counter Clockwise",
-			 "&Counter Clockwise" ), IMGED_ROTATECC
-	    MENUITEM sp( "C&lockwise",
-			 "C&lockwise" ), IMGED_ROTATECL
-	END
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Add an Icon ...",
-		     "&Add an Icon ..." ), IMGED_NEWIMG
-	MENUITEM sp( "Select &Icon Image ...",
-		     "Select &Icon Image ..." ), IMGED_SELIMG
-	MENUITEM sp( "&Delete an Icon ...",
-		     "&Delete an Icon ..." ), IMGED_DELIMG
+        MENUITEM sp( "&Undo\tCtrl+Z",
+                     "&Undo\tCtrl+Z" ), IMGED_UNDO
+        MENUITEM sp( "&Redo\tCtrl+Y",
+                     "&Redo\tCtrl+Y" ), IMGED_REDO
+        MENUITEM sp( "R&estore",
+                     "R&estore" ), IMGED_REST
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Cu&t\tCtrl+X",
+                     "Cu&t\tCtrl+X" ), IMGED_CUT
+        MENUITEM sp( "&Copy\tCtrl+C",
+                     "&Copy\tCtrl+C" ), IMGED_COPY
+        MENUITEM sp( "&Paste\tCtrl+V",
+                     "&Paste\tCtrl+V" ), IMGED_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Snap Bitmap",
+                     "&Snap Bitmap" ), IMGED_SNAP
+        MENUITEM sp( "C&lear\tDel",
+                     "C&lear\tDel" ), IMGED_CLEAR
+        MENUITEM SEPARATOR
+        POPUP sp( "S&hift",
+                  "S&hift" )
+        BEGIN
+            MENUITEM sp( "&Right\tShift+Right",
+                         "&Right\tShift+Right" ), IMGED_RIGHT
+            MENUITEM sp( "&Left\tShift+Left",
+                         "&Left\tShift+Left" ), IMGED_LEFT
+            MENUITEM sp( "&Up\tShift+Up",
+                         "&Up\tShift+Up" ), IMGED_UP
+            MENUITEM sp( "&Down\tShift+Down",
+                         "&Down\tShift+Down" ), IMGED_DOWN
+        END
+        POPUP sp( "&Flip",
+                  "&Flip" )
+        BEGIN
+            MENUITEM sp( "Over &Horizontal Axis",
+                         "Over &Horizontal Axis" ), IMGED_FLIPHORZ
+            MENUITEM sp( "Over &Vertical Axis",
+                         "Over &Vertical Axis" ), IMGED_FLIPVERT
+        END
+        POPUP sp( "R&otate",
+                  "R&otate" )
+        BEGIN
+            MENUITEM sp( "&Counterclockwise",
+                         "&Counterclockwise" ), IMGED_ROTATECC
+            MENUITEM sp( "C&lockwise",
+                         "C&lockwise" ), IMGED_ROTATECL
+        END
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Add an Icon...",
+                     "&Add an Icon..." ), IMGED_NEWIMG
+        MENUITEM sp( "Select &Icon Image...",
+                     "Select &Icon Image..." ), IMGED_SELIMG
+        MENUITEM sp( "&Delete an Icon...",
+                     "&Delete an Icon..." ), IMGED_DELIMG
     END
     POPUP sp( "&Options",
-	      "&Options" )
+              "&Options" )
     BEGIN
-	MENUITEM sp( "&Current Settings ...\tCtrl+S",
-		     "&Current Settings ...\tCtrl+S" ), IMGED_SETTINGS
-	MENUITEM SEPARATOR
-    	MENUITEM sp( "&Grid\tCtrl+G",
-		     "&Grid\tCtrl+G" ), IMGED_GRID
-	MENUITEM sp( "&Keep Grid Square\tCtrl+K",
-		     "&Keep Grid Square\tCtrl+K" ), IMGED_SQUARE
-	MENUITEM sp( "&Maximize Current Image\tCtrl+M",
-		     "&Maximize Current Image\tCtrl+M" ), IMGED_MAXIMIZE
-	MENUITEM SEPARATOR
-	POPUP sp( "&Brush Size",
-		  "&Brush Size" )
-	BEGIN
-	    MENUITEM sp( "&2x2\tCtrl+2",
-			 "&2x2\tCtrl+2" ), IMGED_2x2
-	    MENUITEM sp( "&3x3\tCtrl+3",
-			 "&3x3\tCtrl+3" ), IMGED_3x3
-	    MENUITEM sp( "&4x4\tCtrl+4",
-			 "&4x4\tCtrl+4" ), IMGED_4x4
-	    MENUITEM sp( "&5x5\tCtrl+5",
-			 "&5x5\tCtrl+5" ), IMGED_5x5
-	END
-	MENUITEM sp( "Change &Image Size ...",
-		     "Change &Image Size ..." ), IMGED_SIZE
-	MENUITEM SEPARATOR
-	MENUITEM sp( "Show &Tool Window\tF6",
-		     "Show &Tool Window\tF6" ), IMGED_TOOLBAR
-	MENUITEM sp( "Show Color &Palette\tF7",
-		     "Show Color &Palette\tF7" ), IMGED_COLOUR
-	MENUITEM sp( "Show &View Window(s)\tF8",
-		     "Show &View Window(s)\tF8" ), IMGED_VIEW
+        MENUITEM sp( "&Current Settings...\tCtrl+S",
+                     "&Current Settings...\tCtrl+S" ), IMGED_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Grid\tCtrl+G",
+                     "&Grid\tCtrl+G" ), IMGED_GRID
+        MENUITEM sp( "&Keep Grid Square\tCtrl+K",
+                     "&Keep Grid Square\tCtrl+K" ), IMGED_SQUARE
+        MENUITEM sp( "&Maximize Current Image\tCtrl+M",
+                     "&Maximize Current Image\tCtrl+M" ), IMGED_MAXIMIZE
+        MENUITEM SEPARATOR
+        POPUP sp( "&Brush Size",
+                  "&Brush Size" )
+        BEGIN
+            MENUITEM sp( "&2x2\tCtrl+2",
+                         "&2x2\tCtrl+2" ), IMGED_2x2
+            MENUITEM sp( "&3x3\tCtrl+3",
+                         "&3x3\tCtrl+3" ), IMGED_3x3
+            MENUITEM sp( "&4x4\tCtrl+4",
+                         "&4x4\tCtrl+4" ), IMGED_4x4
+            MENUITEM sp( "&5x5\tCtrl+5",
+                         "&5x5\tCtrl+5" ), IMGED_5x5
+        END
+        MENUITEM sp( "Change &Image Size ...",
+                     "Change &Image Size ..." ), IMGED_SIZE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Show &Tool Window\tF6",
+                     "Show &Tool Window\tF6" ), IMGED_TOOLBAR
+        MENUITEM sp( "Show Color &Palette\tF7",
+                     "Show Color &Palette\tF7" ), IMGED_COLOR
+        MENUITEM sp( "Show &View Window(s)\tF8",
+                     "Show &View Window(s)\tF8" ), IMGED_VIEW
     END
     POPUP sp( "&Palette",
-	      "&Palette" )
+              "&Palette" )
     BEGIN
-    	MENUITEM sp( "&Edit Current Color ...",
-		     "&Edit Current Color ..." ), IMGED_CEDIT
-	MENUITEM sp( "&Reset Current Palette",
-		     "&Reset Current Palette" ), IMGED_CRESET
-	MENUITEM sp( "&Set Screen Color ...",
-		     "&Set Screen Color ..." ), IMGED_CSCREEN
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Load Color Palette ...",
-		     "&Load Color Palette ..." ), IMGED_LCOLOUR
-	MENUITEM sp( "Sa&ve Color Palette ...",
-		     "Sa&ve Color Palette ..." ), IMGED_SCOLOUR
-	MENUITEM sp( "Res&tore Color Palette",
-		     "Res&tore Color Palette" ), IMGED_RCOLOUR
+        MENUITEM sp( "&Edit Current Color...",
+                     "&Edit Current Color..." ), IMGED_CEDIT
+        MENUITEM sp( "&Reset Current Palette",
+                     "&Reset Current Palette" ), IMGED_CRESET
+        MENUITEM sp( "&Set Screen Color...",
+                     "&Set Screen Color..." ), IMGED_CSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Load Color Palette...",
+                     "&Load Color Palette..." ), IMGED_LCOLOR
+        MENUITEM sp( "Sa&ve Color Palette...",
+                     "Sa&ve Color Palette..." ), IMGED_SCOLOR
+        MENUITEM sp( "Res&tore Color Palette",
+                     "Res&tore Color Palette" ), IMGED_RCOLOR
     END
     POPUP sp( "&Tools",
-	      "&Tools" )
+              "&Tools" )
     BEGIN
-    	MENUITEM sp( "&Pencil",
-		     "&Pencil" ), IMGED_FREEHAND
-	MENUITEM sp( "&Line",
-		     "&Line" ), IMGED_LINE
-	POPUP sp( "&Ellipse",
-		  "&Ellipse" )
-	BEGIN
-	    MENUITEM sp( "&Outline",
-			 "&Outline" ), IMGED_CIRCLEO
-	    MENUITEM sp( "&Solid",
-			 "&Solid" ), IMGED_CIRCLEF
-	END
-	POPUP sp( "&Rectangle",
-		  "&Rectangle" )
-	BEGIN
-	    MENUITEM sp( "&Outline",
-			 "&Outline" ), IMGED_RECTO
-	    MENUITEM sp( "&Solid",
-			 "&Solid" ), IMGED_RECTF
-	END
-	MENUITEM sp( "&Fill",
-		     "&Fill" ), IMGED_FILL
-	MENUITEM sp( "&Brush",
-		     "&Brush" ), IMGED_BRUSH
-	MENUITEM sp( "&Select Region",
-		     "&Select Region" ), IMGED_CLIP
-	MENUITEM sp( "&Hot Spot",
-		     "&Hot Spot" ), IMGED_HOTSPOT
+        MENUITEM sp( "&Pencil",
+                     "&Pencil" ), IMGED_FREEHAND
+        MENUITEM sp( "&Line",
+                     "&Line" ), IMGED_LINE
+        POPUP sp( "&Ellipse",
+                  "&Ellipse" )
+        BEGIN
+            MENUITEM sp( "&Outline",
+                         "&Outline" ), IMGED_CIRCLEO
+            MENUITEM sp( "&Solid",
+                         "&Solid" ), IMGED_CIRCLEF
+        END
+        POPUP sp( "&Rectangle",
+                  "&Rectangle" )
+        BEGIN
+            MENUITEM sp( "&Outline",
+                         "&Outline" ), IMGED_RECTO
+            MENUITEM sp( "&Solid",
+                         "&Solid" ), IMGED_RECTF
+        END
+        MENUITEM sp( "&Fill",
+                     "&Fill" ), IMGED_FILL
+        MENUITEM sp( "&Brush",
+                     "&Brush" ), IMGED_BRUSH
+        MENUITEM sp( "&Select Region",
+                     "&Select Region" ), IMGED_CLIP
+        MENUITEM sp( "&Hot Spot",
+                     "&Hot Spot" ), IMGED_HOTSPOT
     END
     POPUP sp( "&Windows",
-	      "&Windows" )
+              "&Windows" )
     BEGIN
-    	MENUITEM sp( "&Arrange Icons",
-		     "&Arrange Icons" ), IMGED_ARRANGE
-    	MENUITEM sp( "&Tile Windows\tShift+F4",
-		     "&Tile Windows\tShift+F4" ), IMGED_TILE
-    	MENUITEM sp( "&Cascade Windows\tShift+F5",
-		     "&Cascade Windows\tShift+F5" ), IMGED_CASCADE
+        MENUITEM sp( "&Arrange Icons",
+                     "&Arrange Icons" ), IMGED_ARRANGE
+        MENUITEM sp( "&Tile Windows\tShift+F4",
+                     "&Tile Windows\tShift+F4" ), IMGED_TILE
+        MENUITEM sp( "&Cascade Windows\tShift+F5",
+                     "&Cascade Windows\tShift+F5" ), IMGED_CASCADE
     END
     POPUP sp( "&Help",
-	      "&Help" )
+              "&Help" )
     BEGIN
-	MENUITEM sp( "&Help ...",
-		     "&Help ..." ), IMGED_HELP
-	MENUITEM sp( "&About ...",
-		     "&About ..." ), IMGED_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" ), IMGED_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ), IMGED_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ), IMGED_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." ), IMGED_ABOUT
     END
 END
 
-IMGEDDDEMENU MENU
+"IMGEDDDEMENU" MENU
 BEGIN
     POPUP sp( "&File",
-	      "&File" ) 
+              "&File" ) 
     BEGIN
-	MENUITEM sp( "C&lear\tDel",
-		     "C&lear\tDel" ), IMGED_CLEAR
-	MENUITEM sp( "&Update\tF3",
-		     "&Update\tF3" ), IMGED_DDE_UPDATE_PRJ
-	MENUITEM sp( "Save &As ...\tShift+F3",
-		     "Save &As ...\tShift+F3" ), IMGED_SAVE_AS
-	MENUITEM SEPARATOR
-	MENUITEM sp( "E&xit\tAlt+F4",
-		     "E&xit\tAlt+F4" ), IMGED_EXIT
+        MENUITEM sp( "C&lear\tDel",
+                     "C&lear\tDel" ), IMGED_CLEAR
+        MENUITEM sp( "&Update\tF3",
+                     "&Update\tF3" ), IMGED_DDE_UPDATE_PRJ
+        MENUITEM sp( "Save &As ...\tShift+F3",
+                     "Save &As ...\tShift+F3" ), IMGED_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "E&xit\tAlt+F4",
+                     "E&xit\tAlt+F4" ), IMGED_EXIT
     END
     POPUP sp( "&Edit",
-	      "&Edit" )
+              "&Edit" )
     BEGIN
-    	MENUITEM sp( "&Undo\tCtrl+U",
-		     "&Undo\tCtrl+U" ), IMGED_UNDO
-    	MENUITEM sp( "&Redo\tCtrl+R",
-		     "&Redo\tCtrl+R" ), IMGED_REDO
-	MENUITEM SEPARATOR
-	MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" ), IMGED_CUT
-	MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" ), IMGED_COPY
-	MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" ), IMGED_PASTE
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Snap Bitmap",
-		     "&Snap Bitmap" ), IMGED_SNAP
-	MENUITEM SEPARATOR
-	POPUP sp( "S&hift",
-		  "S&hift" )
-	BEGIN
-	    MENUITEM sp( "&Right\tShift+Right",
-			 "&Right\tShift+Right" ), IMGED_RIGHT
-	    MENUITEM sp( "&Left\tShift+Left",
-			 "&Left\tShift+Left" ), IMGED_LEFT
-	    MENUITEM sp( "&Up\tShift+Up",
-			 "&Up\tShift+Up" ), IMGED_UP
-	    MENUITEM sp( "&Down\tShift+Down",
-			 "&Down\tShift+Down" ), IMGED_DOWN
-	END
-	POPUP sp( "&Flip",
-		  "&Flip" )
-	BEGIN
-	    MENUITEM sp( "Over &Horizontal axis",
-			 "Over &Horizontal axis" ), IMGED_FLIPHORZ
-	    MENUITEM sp( "Over &Vertical axis",
-			 "Over &Vertical axis" ), IMGED_FLIPVERT
-	END
-	POPUP sp( "R&otate",
-		  "R&otate" )
-	BEGIN
-	    MENUITEM sp( "&Counter Clockwise",
-			 "&Counter Clockwise" ), IMGED_ROTATECC
-	    MENUITEM sp( "C&lockwise",
-			 "C&lockwise" ), IMGED_ROTATECL
-	END
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Add an Icon ...",
-		     "&Add an Icon ..." ), IMGED_NEWIMG
-	MENUITEM sp( "Select &Icon Image ...",
-		     "Select &Icon Image ..." ), IMGED_SELIMG
-	MENUITEM sp( "&Delete an Icon ...",
-		     "&Delete an Icon ..." ), IMGED_DELIMG
+        MENUITEM sp( "&Undo\tCtrl+U",
+                     "&Undo\tCtrl+U" ), IMGED_UNDO
+        MENUITEM sp( "&Redo\tCtrl+R",
+                     "&Redo\tCtrl+R" ), IMGED_REDO
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Cu&t\tCtrl+X",
+                     "Cu&t\tCtrl+X" ), IMGED_CUT
+        MENUITEM sp( "&Copy\tCtrl+C",
+                     "&Copy\tCtrl+C" ), IMGED_COPY
+        MENUITEM sp( "&Paste\tCtrl+V",
+                     "&Paste\tCtrl+V" ), IMGED_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Snap Bitmap",
+                     "&Snap Bitmap" ), IMGED_SNAP
+        MENUITEM SEPARATOR
+        POPUP sp( "S&hift",
+                  "S&hift" )
+        BEGIN
+            MENUITEM sp( "&Right\tShift+Right",
+                         "&Right\tShift+Right" ), IMGED_RIGHT
+            MENUITEM sp( "&Left\tShift+Left",
+                         "&Left\tShift+Left" ), IMGED_LEFT
+            MENUITEM sp( "&Up\tShift+Up",
+                         "&Up\tShift+Up" ), IMGED_UP
+            MENUITEM sp( "&Down\tShift+Down",
+                         "&Down\tShift+Down" ), IMGED_DOWN
+        END
+        POPUP sp( "&Flip",
+                  "&Flip" )
+        BEGIN
+            MENUITEM sp( "Over &Horizontal Axis",
+                         "Over &Horizontal Axis" ), IMGED_FLIPHORZ
+            MENUITEM sp( "Over &Vertical Axis",
+                         "Over &Vertical Axis" ), IMGED_FLIPVERT
+        END
+        POPUP sp( "R&otate",
+                  "R&otate" )
+        BEGIN
+            MENUITEM sp( "&Counterclockwise",
+                         "&Counterclockwise" ), IMGED_ROTATECC
+            MENUITEM sp( "C&lockwise",
+                         "C&lockwise" ), IMGED_ROTATECL
+        END
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Add an Icon...",
+                     "&Add an Icon..." ), IMGED_NEWIMG
+        MENUITEM sp( "Select &Icon Image...",
+                     "Select &Icon Image..." ), IMGED_SELIMG
+        MENUITEM sp( "&Delete an Icon...",
+                     "&Delete an Icon..." ), IMGED_DELIMG
     END
     POPUP sp( "&Options",
-	      "&Options" )
+              "&Options" )
     BEGIN
-	MENUITEM sp( "&Current Settings ...\tCtrl+S",
-		     "&Current Settings ...\tCtrl+S" ), IMGED_SETTINGS
-	MENUITEM SEPARATOR
-    	MENUITEM sp( "&Grid\tCtrl+G",
-		     "&Grid\tCtrl+G" ), IMGED_GRID
-	MENUITEM sp( "&Keep Grid Square\tCtrl+K",
-		     "&Keep Grid Square\tCtrl+K" ), IMGED_SQUARE
-	MENUITEM sp( "&Maximize Current Image\tCtrl+M",
-		     "&Maximize Current Image\tCtrl+M" ), IMGED_MAXIMIZE
-	MENUITEM SEPARATOR
-	POPUP sp( "&Brush Size",
-		  "&Brush Size" )
-	BEGIN
-	    MENUITEM sp( "&2x2\tCtrl+2",
-			 "&2x2\tCtrl+2" ), IMGED_2x2
-	    MENUITEM sp( "&3x3\tCtrl+3",
-			 "&3x3\tCtrl+3" ), IMGED_3x3
-	    MENUITEM sp( "&4x4\tCtrl+4",
-			 "&4x4\tCtrl+4" ), IMGED_4x4
-	    MENUITEM sp( "&5x5\tCtrl+5",
-			 "&5x5\tCtrl+5" ), IMGED_5x5
-	END
-	MENUITEM sp( "Change &Image Size ...",
-		     "Change &Image Size ..." ), IMGED_SIZE
-	MENUITEM SEPARATOR
-	MENUITEM sp( "Show &Tool Window\tF6",
-		     "Show &Tool Window\tF6" ), IMGED_TOOLBAR
-	MENUITEM sp( "Show Color &Palette\tF7",
-		     "Show Color &Palette\tF7" ), IMGED_COLOUR
-	MENUITEM sp( "Show &View Window(s)\tF8",
-		     "Show &View Window(s)\tF8" ), IMGED_VIEW
+        MENUITEM sp( "&Current Settings...\tCtrl+S",
+                     "&Current Settings...\tCtrl+S" ), IMGED_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Grid\tCtrl+G",
+                     "&Grid\tCtrl+G" ), IMGED_GRID
+        MENUITEM sp( "&Keep Grid Square\tCtrl+K",
+                     "&Keep Grid Square\tCtrl+K" ), IMGED_SQUARE
+        MENUITEM sp( "&Maximize Current Image\tCtrl+M",
+                     "&Maximize Current Image\tCtrl+M" ), IMGED_MAXIMIZE
+        MENUITEM SEPARATOR
+        POPUP sp( "&Brush Size",
+                  "&Brush Size" )
+        BEGIN
+            MENUITEM sp( "&2x2\tCtrl+2",
+                         "&2x2\tCtrl+2" ), IMGED_2x2
+            MENUITEM sp( "&3x3\tCtrl+3",
+                         "&3x3\tCtrl+3" ), IMGED_3x3
+            MENUITEM sp( "&4x4\tCtrl+4",
+                         "&4x4\tCtrl+4" ), IMGED_4x4
+            MENUITEM sp( "&5x5\tCtrl+5",
+                         "&5x5\tCtrl+5" ), IMGED_5x5
+        END
+        MENUITEM sp( "Change &Image Size ...",
+                     "Change &Image Size ..." ), IMGED_SIZE
+        MENUITEM SEPARATOR
+        MENUITEM sp( "Show &Tool Window\tF6",
+                     "Show &Tool Window\tF6" ), IMGED_TOOLBAR
+        MENUITEM sp( "Show Color &Palette\tF7",
+                     "Show Color &Palette\tF7" ), IMGED_COLOR
+        MENUITEM sp( "Show &View Window(s)\tF8",
+                     "Show &View Window(s)\tF8" ), IMGED_VIEW
     END
     POPUP sp( "&Palette",
-	      "&Palette" )
+              "&Palette" )
     BEGIN
-    	MENUITEM sp( "&Edit Current Color ...",
-		     "&Edit Current Color ..." ), IMGED_CEDIT
-	MENUITEM sp( "&Reset Current Palette",
-		     "&Reset Current Palette" ), IMGED_CRESET
-	MENUITEM sp( "&Set Screen Color ...",
-		     "&Set Screen Color ..." ), IMGED_CSCREEN
-	MENUITEM SEPARATOR
-	MENUITEM sp( "&Load Color Palette ...",
-		     "&Load Color Palette ..." ), IMGED_LCOLOUR
-	MENUITEM sp( "Sa&ve Color Palette ...",
-		     "Sa&ve Color Palette ..." ), IMGED_SCOLOUR
-	MENUITEM sp( "Res&tore Color Palette",
-		     "Res&tore Color Palette" ), IMGED_RCOLOUR
+        MENUITEM sp( "&Edit Current Color...",
+                     "&Edit Current Color..." ), IMGED_CEDIT
+        MENUITEM sp( "&Reset Current Palette",
+                     "&Reset Current Palette" ), IMGED_CRESET
+        MENUITEM sp( "&Set Screen Color...",
+                     "&Set Screen Color..." ), IMGED_CSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&Load Color Palette...",
+                     "&Load Color Palette..." ), IMGED_LCOLOR
+        MENUITEM sp( "Sa&ve Color Palette...",
+                     "Sa&ve Color Palette..." ), IMGED_SCOLOR
+        MENUITEM sp( "Res&tore Color Palette",
+                     "Res&tore Color Palette" ), IMGED_RCOLOR
     END
     POPUP sp( "&Tools",
-	      "&Tools" )
+              "&Tools" )
     BEGIN
-    	MENUITEM sp( "&Pencil",
-		     "&Pencil" ), IMGED_FREEHAND
-	MENUITEM sp( "&Line",
-		     "&Line" ), IMGED_LINE
-	POPUP sp( "&Ellipse",
-		  "&Ellipse" )
-	BEGIN
-	    MENUITEM sp( "&Outline",
-			 "&Outline" ), IMGED_CIRCLEO
-	    MENUITEM sp( "&Solid",
-			 "&Solid" ), IMGED_CIRCLEF
-	END
-	POPUP sp( "&Rectangle",
-		  "&Rectangle" )
-	BEGIN
-	    MENUITEM sp( "&Outline",
-			 "&Outline" ), IMGED_RECTO
-	    MENUITEM sp( "&Solid",
-			 "&Solid" ), IMGED_RECTF
-	END
-	MENUITEM sp( "&Fill",
-		     "&Fill" ), IMGED_FILL
-	MENUITEM sp( "&Brush",
-		     "&Brush" ), IMGED_BRUSH
-	MENUITEM sp( "&Select Region",
-		     "&Select Region" ), IMGED_CLIP
-	MENUITEM sp( "&Hot Spot",
-		     "&Hot Spot" ), IMGED_HOTSPOT
+        MENUITEM sp( "&Pencil",
+                     "&Pencil" ), IMGED_FREEHAND
+        MENUITEM sp( "&Line",
+                     "&Line" ), IMGED_LINE
+        POPUP sp( "&Ellipse",
+                  "&Ellipse" )
+        BEGIN
+            MENUITEM sp( "&Outline",
+                         "&Outline" ), IMGED_CIRCLEO
+            MENUITEM sp( "&Solid",
+                         "&Solid" ), IMGED_CIRCLEF
+        END
+        POPUP sp( "&Rectangle",
+                  "&Rectangle" )
+        BEGIN
+            MENUITEM sp( "&Outline",
+                         "&Outline" ), IMGED_RECTO
+            MENUITEM sp( "&Solid",
+                         "&Solid" ), IMGED_RECTF
+        END
+        MENUITEM sp( "&Fill",
+                     "&Fill" ), IMGED_FILL
+        MENUITEM sp( "&Brush",
+                     "&Brush" ), IMGED_BRUSH
+        MENUITEM sp( "&Select Region",
+                     "&Select Region" ), IMGED_CLIP
+        MENUITEM sp( "&Hot Spot",
+                     "&Hot Spot" ), IMGED_HOTSPOT
     END
     POPUP sp( "&Windows",
-	      "&Windows" )
+              "&Windows" )
     BEGIN
-	MENUITEM SEPARATOR
+        MENUITEM SEPARATOR
     END
     POPUP sp( "&Help",
-	      "&Help" )
+              "&Help" )
     BEGIN
-	MENUITEM sp( "&Help ...",
-		     "&Help ..." ), IMGED_HELP
-	MENUITEM sp( "&About ...",
-		     "&About ..." ), IMGED_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" ), IMGED_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ), IMGED_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ), IMGED_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." ), IMGED_ABOUT
     END
 END
-

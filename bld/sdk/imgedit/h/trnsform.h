@@ -30,31 +30,35 @@
 ****************************************************************************/
 
 
-    // The Windows side
 #ifndef __OS2_PM__
 
-#define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECC
-#define SHIFT_UP                    IMGED_UP
-#define SHIFT_DOWN                  IMGED_DOWN
+    /*
+     * Definitions for Windows
+     */
+    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECC
+    #define SHIFT_UP                    IMGED_UP
+    #define SHIFT_DOWN                  IMGED_DOWN
 
-#define _imged_getthebits( bits, pres, bmp, oldbmp ) \
-                                oldbmp = _wpi_selectbitmap( pres, bmp )
-#define _imged_getpixel( bits, pres, x, y ) _wpi_getpixel( pres, x, y )
-#define _imged_setpixel( bits, pres, x, y, clr ) _wpi_setpixel(pres, x, y, clr)
-#define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-                                _wpi_getoldbitmap( pres, bmp )
+    #define _imged_getthebits( bits, pres, bmp, oldbmp ) \
+        (oldbmp = _wpi_selectbitmap( pres, bmp ))
+    #define _imged_getpixel( bits, pres, x, y )         _wpi_getpixel( pres, x, y )
+    #define _imged_setpixel( bits, pres, x, y, clr )    _wpi_setpixel( pres, x, y, clr )
+    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
+        _wpi_getoldbitmap( pres, bmp )
 
-    // The PM side
 #else
 
-#define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECL
-#define SHIFT_UP                    IMGED_DOWN
-#define SHIFT_DOWN                  IMGED_UP
+    /*
+     * Definitions for PM
+     */
+    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECL
+    #define SHIFT_UP                    IMGED_DOWN
+    #define SHIFT_DOWN                  IMGED_UP
 
-#define _imged_getthebits( bits, pres, bmp, oldbmp ) bits = GetTheBits( bmp )
-#define _imged_getpixel( bits, pres, x, y ) MyGetPixel( bits, x, y )
-#define _imged_setpixel( bits, pres, x, y, clr ) MySetPixel( bits, x, y, clr )
-#define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-                                            FreeTheBits( bits, bmp, fflag )
+    #define _imged_getthebits( bits, pres, bmp, oldbmp )    (bits = GetTheBits( bmp ))
+    #define _imged_getpixel( bits, pres, x, y )             MyGetPixel( bits, x, y )
+    #define _imged_setpixel( bits, pres, x, y, clr )        MySetPixel( bits, x, y, clr )
+    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
+        FreeTheBits( bits, bmp, fflag )
 
 #endif

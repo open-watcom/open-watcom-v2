@@ -31,30 +31,26 @@
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "conflict.h"
 #include "pattern.h"
 #include "tables.h"
 #include "opcodes.h"
-#include "sysmacro.h"
 #include "regset.h"
 #include "model.h"
 #include "feprotos.h"
 #include <assert.h>
+#include "makeins.h"
 
 extern  block               *HeadBlock;
 extern  conflict_node       *ConfList;
 extern  opcode_defs         String[];
 
 extern  void            SuffixIns(instruction*,instruction*);
-extern  bool            FPIsStack(name*);
-extern  void            FPSetStack(name*);
 extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  name            *AllocTemp(type_class_def);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *IndexToTemp( instruction *, name * );
@@ -151,7 +147,7 @@ static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_de
         if( attr & FE_THREAD_DATA ) {
             // this is for the kooky expansion in axpenc.c - we have
             // to call rdteb, which destroys R0
-            ins->zap = AllocRegName( HW_R0 );
+            ins->zap = &AllocRegName( HW_R0 )->r;
         }
     }
     op = ScaleIndex( temp, NULL, 0, class, memory->n.size, 0, flags );

@@ -1,0 +1,707 @@
+c$noreference
+
+        structure /RECT1S/
+            integer*2 xLeft
+            integer*2 yBottom
+            integer*2 xRight
+            integer*2 yTop
+        end structure
+
+        structure /ODPOINT/
+            integer*1 dx
+            integer*1 dy
+        end structure
+
+        structure /SIZES/
+            integer*2 cx
+            integer*2 cy
+        end structure
+
+        structure /SWPUSHORT/
+            integer*1 HiByte
+            integer*1 LoByte
+        end structure
+
+        logical BYTE_ORDER
+        external BYTE_ORDER
+
+        logical SHORT_ORDER
+        external SHORT_ORDER
+
+        structure /ORDER/
+            integer*1 idCode
+            integer*1 uchData
+        end structure
+
+        integer  GBAR_RESERVED
+        parameter (GBAR_RESERVED = '00000080'x)
+        integer  GBAR_BOUNDARY
+        parameter (GBAR_BOUNDARY = '000000C0'x)
+        integer  GBAR_NOBOUNDARY
+        parameter (GBAR_NOBOUNDARY = '00000080'x)
+        integer  GBAR_WINDING
+        parameter (GBAR_WINDING = '000000A0'x)
+        integer  GBAR_ALTERNATE
+        parameter (GBAR_ALTERNATE = '00000080'x)
+
+        integer  GSCR_PRECISION
+        parameter (GSCR_PRECISION = '0000000F'x)
+
+        logical LONG_ORDER
+        external LONG_ORDER
+
+        integer  LORDER_ML
+        parameter (LORDER_ML = 253)
+        structure /LORDER/
+            integer*1 idCode
+            integer*1 uchLength
+            integer*1 uchData(LORDER_ML)
+        end structure
+
+        integer  GCCHST_MC
+        parameter (GCCHST_MC = 255)
+
+        integer  GCHST_SMC
+        parameter (GCHST_SMC = 251)
+        integer  GCHST_LMC
+        parameter (GCHST_LMC = 247)
+
+        integer  GCCHSTM_MC
+        parameter (GCCHSTM_MC = 255)
+
+        integer  GCHSTM_SMC
+        parameter (GCHSTM_SMC = 251)
+        integer  GCHSTM_LMC
+        parameter (GCHSTM_LMC = 247)
+
+        integer  GCOMT_ML
+        parameter (GCOMT_ML = 255)
+
+        integer  GIMD_ML
+        parameter (GIMD_ML = 255)
+
+        integer  GCBEZ_SMB
+        parameter (GCBEZ_SMB = 21)
+        integer  GCBEZ_LMB
+        parameter (GCBEZ_LMB = 10)
+
+        integer  GBEZ_SMB
+        parameter (GBEZ_SMB = 20)
+        integer  GBEZ_LMB
+        parameter (GBEZ_LMB = 10)
+
+        integer  GCFLT_SMP
+        parameter (GCFLT_SMP = 63)
+        integer  GCFLT_LMP
+        parameter (GCFLT_LMP = 31)
+
+        integer  GFLT_SMP
+        parameter (GFLT_SMP = 62)
+        integer  GFLT_LMP
+        parameter (GFLT_LMP = 30)
+
+        integer  GCLINE_SMP
+        parameter (GCLINE_SMP = 63)
+        integer  GCLINE_LMP
+        parameter (GCLINE_LMP = 31)
+
+        integer  GLINE_SMP
+        parameter (GLINE_SMP = 62)
+        integer  GLINE_LMP
+        parameter (GLINE_LMP = 30)
+
+        integer  GCMRK_SMP
+        parameter (GCMRK_SMP = 63)
+        integer  GCMRK_LMP
+        parameter (GCMRK_LMP = 31)
+
+        integer  GMRK_SMP
+        parameter (GMRK_SMP = 62)
+        integer  GMRK_LMP
+        parameter (GMRK_LMP = 30)
+
+        integer  GCRLINE_MP
+        parameter (GCRLINE_MP = 127)
+
+        integer  GRLINE_SMP
+        parameter (GRLINE_SMP = 125)
+        integer  GRLINE_LMP
+        parameter (GRLINE_LMP = 123)
+
+        integer  SECOL_DEFAULT0
+        parameter (SECOL_DEFAULT0 = '00000000'x)
+        integer  SECOL_DEFAULT1
+        parameter (SECOL_DEFAULT1 = '0000FF00'x)
+        integer  SECOL_NEUTRAL
+        parameter (SECOL_NEUTRAL = '0000FF07'x)
+        integer  SECOL_RESET
+        parameter (SECOL_RESET = '0000FF08'x)
+
+        structure /ORDERS_GCARC/
+            record /POINTS/ ptInter
+            record /POINTS/ ptEnd
+        end structure
+
+        structure /ORDERL_GCARC/
+            record /POINTL/ ptInter
+            record /POINTL/ ptEnd
+        end structure
+
+        integer  GBEL_DL
+        parameter (GBEL_DL = 251)
+        structure /ORDER_GBEL/
+            integer*4 lElementType
+            integer*1 achDesc(GBEL_DL)
+        end structure
+
+        structure /ORDER_GCBIMG/
+            integer*1 uchFormat
+            integer*1 uchReserved
+            record /SWPUSHORT/ cx
+            record /SWPUSHORT/ cy
+        end structure
+
+        structure /ORDER_GBPTH/
+            integer*2 usReserved
+            integer*4 idPath
+        end structure
+
+        structure /ORDERS_GCBOX/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTS/ ptCorner
+            integer*2 hAxis
+            integer*2 vAxis
+        end structure
+
+        structure /ORDERL_GCBOX/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTL/ ptCorner
+            integer*4 hAxis
+            integer*4 vAxis
+        end structure
+
+        integer  GCBOX_FILL
+        parameter (GCBOX_FILL = '00000040'x)
+        integer  GCBOX_BOUNDARY
+        parameter (GCBOX_BOUNDARY = '00000020'x)
+
+        structure /ORDER_GCALLS/
+            integer*2 sReserved
+            integer*4 idSegment
+        end structure
+
+        structure /ORDER_GFPTH/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 idPath
+        end structure
+
+        integer  GFPTH_ALTERNATE
+        parameter (GFPTH_ALTERNATE = '00000000'x)
+        integer  GFPTH_WINDING
+        parameter (GFPTH_WINDING = '00000040'x)
+        integer  GFPTH_MODIFY
+        parameter (GFPTH_MODIFY = '00000020'x)
+
+        structure /ORDER_GOPTH/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 idPath
+        end structure
+
+        structure /ORDER_GMPTH/
+            integer*1 uchMode
+            integer*1 uchReserved
+            integer*4 idPath
+        end structure
+
+        integer  GMPTH_STROKE
+        parameter (GMPTH_STROKE = '00000006'x)
+
+        structure /ORDERS_GCPARC/
+            record /POINTS/ ptCenter
+            integer*2 ufx88Multiplier
+            integer*4 usStartAngle
+            integer*4 usSweepAngle
+        end structure
+
+        structure /ORDERL_GCPARC/
+            record /POINTL/ ptCenter
+            integer*4 ufxMultiplier
+            integer*4 usStartAngle
+            integer*4 usSweepAngle
+        end structure
+
+        structure /ORDER_GSCPTH/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 idPath
+        end structure
+
+        integer  GSCPTH_ALTERNATE
+        parameter (GSCPTH_ALTERNATE = '00000000'x)
+        integer  GSCPTH_WINDING
+        parameter (GSCPTH_WINDING = '00000040'x)
+        integer  GSCPTH_RESET
+        parameter (GSCPTH_RESET = '00000000'x)
+        integer  GSCPTH_INTERSECT
+        parameter (GSCPTH_INTERSECT = '00000020'x)
+
+        structure /ORDERS_GSAP/
+            integer*2 p
+            integer*2 q
+            integer*2 r
+            integer*2 s
+        end structure
+
+        structure /ORDERL_GSAP/
+            integer*4 p
+            integer*4 q
+            integer*4 r
+            integer*4 s
+        end structure
+
+        structure /ORDER_GSBICOL/
+            integer*1 fbFlags
+            integer*1 auchColor(3)
+        end structure
+
+        integer  SICOL_SPECIFY
+        parameter (SICOL_SPECIFY = '00000000'x)
+        integer  SICOL_SPECIAL
+        parameter (SICOL_SPECIAL = '00000040'x)
+        integer  SICOL_DEFAULT
+        parameter (SICOL_DEFAULT = '00000080'x)
+        integer  SICOL_BLACK
+        parameter (SICOL_BLACK = 1)
+        integer  SICOL_WHITE
+        parameter (SICOL_WHITE = 2)
+        integer  SICOL_ONES
+        parameter (SICOL_ONES = 4)
+        integer  SICOL_ZEROES
+        parameter (SICOL_ZEROES = 5)
+
+        structure /ORDERS_GSCC/
+            integer*2 cxInt
+            integer*2 cyInt
+            integer*2 cxFract
+            integer*2 cyFract
+            integer*1 fbFlags
+            integer*1 uchReserved
+        end structure
+
+        structure /ORDERL_GSCC/
+            integer*4 cxInt
+            integer*4 cyInt
+            integer*2 cxFract
+            integer*2 cyFract
+            integer*1 fbFlags
+            integer*1 uchReserved
+        end structure
+
+        integer  GSCC_ZERODEF
+        parameter (GSCC_ZERODEF = '00000000'x)
+        integer  GSCC_ZEROZERO
+        parameter (GSCC_ZEROZERO = '00000080'x)
+
+        structure /ORDERS_GSMC/
+            integer*2 cx
+            integer*2 cy
+            integer*1 fbFlags
+            integer*1 uchReserved
+        end structure
+
+        structure /ORDERL_GSMC/
+            integer*4 cx
+            integer*4 cy
+            integer*1 fbFlags
+            integer*1 uchReserved
+        end structure
+
+        integer  GSMC_ZERODEF
+        parameter (GSMC_ZERODEF = '00000000'x)
+        integer  GSMC_ZEROZERO
+        parameter (GSMC_ZEROZERO = '00000080'x)
+
+        structure /ORDERS_GSPRP/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTS/ ptPos
+        end structure
+
+        structure /ORDERL_GSPRP/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTL/ ptPos
+        end structure
+
+        integer  GSPRP_DEFAULT
+        parameter (GSPRP_DEFAULT = '00000080'x)
+        integer  GSPRP_SPECIFY
+        parameter (GSPRP_SPECIFY = '00000000'x)
+
+        integer  GSIA_VL
+        parameter (GSIA_VL = 3)
+        structure /ORDER_GSIA/
+            integer*1 uchAttrType
+            integer*1 uchPrimType
+            integer*1 fbFlags
+            integer*1 auchValue(GSIA_VL)
+        end structure
+
+        integer  GSIA_COLOR
+        parameter (GSIA_COLOR = '00000001'x)
+        integer  GSIA_BCOLOR
+        parameter (GSIA_BCOLOR = '00000002'x)
+        integer  GSIA_MIX
+        parameter (GSIA_MIX = '00000003'x)
+        integer  GSIA_BMIX
+        parameter (GSIA_BMIX = '00000004'x)
+        integer  GSIA_LINE
+        parameter (GSIA_LINE = '00000001'x)
+        integer  GSIA_CHAR
+        parameter (GSIA_CHAR = '00000002'x)
+        integer  GSIA_MARKER
+        parameter (GSIA_MARKER = '00000003'x)
+        integer  GSIA_PATTERN
+        parameter (GSIA_PATTERN = '00000004'x)
+        integer  GSIA_IMAGE
+        parameter (GSIA_IMAGE = '00000005'x)
+        integer  GSIA_SPECIFY
+        parameter (GSIA_SPECIFY = '00000000'x)
+        integer  GSIA_SPECIAL
+        parameter (GSIA_SPECIAL = '00000040'x)
+        integer  GSIA_DEFAULT
+        parameter (GSIA_DEFAULT = '00000080'x)
+        integer  GSIA_BLACK
+        parameter (GSIA_BLACK = 1)
+        integer  GSIA_WHITE
+        parameter (GSIA_WHITE = 2)
+        integer  GSIA_ONES
+        parameter (GSIA_ONES = 4)
+        integer  GSIA_ZEROES
+        parameter (GSIA_ZEROES = 5)
+
+        integer  GSTM_ML
+        parameter (GSTM_ML = 16)
+        structure /ORDERS_GSTM/
+            integer*1 uchReserved
+            integer*1 fbFlags
+            integer*2 fsMask
+            integer*2 asMatrix(GSTM_ML)
+        end structure
+
+        structure /ORDERL_GSTM/
+            integer*1 uchReserved
+            integer*1 fbFlags
+            integer*2 fsMask
+            integer*4 alMatrix(GSTM_ML)
+        end structure
+
+        integer  GSTM_M11
+        parameter (GSTM_M11 = '00008000'x)
+        integer  GSTM_M12
+        parameter (GSTM_M12 = '00004000'x)
+        integer  GSTM_M13
+        parameter (GSTM_M13 = '00002000'x)
+        integer  GSTM_M14
+        parameter (GSTM_M14 = '00001000'x)
+        integer  GSTM_M21
+        parameter (GSTM_M21 = '00000800'x)
+        integer  GSTM_M22
+        parameter (GSTM_M22 = '00000400'x)
+        integer  GSTM_M23
+        parameter (GSTM_M23 = '00000200'x)
+        integer  GSTM_M24
+        parameter (GSTM_M24 = '00000100'x)
+        integer  GSTM_M31
+        parameter (GSTM_M31 = '00000080'x)
+        integer  GSTM_M32
+        parameter (GSTM_M32 = '00000040'x)
+        integer  GSTM_M33
+        parameter (GSTM_M33 = '00000020'x)
+        integer  GSTM_M34
+        parameter (GSTM_M34 = '00000010'x)
+        integer  GSTM_M41
+        parameter (GSTM_M41 = '00000008'x)
+        integer  GSTM_M42
+        parameter (GSTM_M42 = '00000004'x)
+        integer  GSTM_M43
+        parameter (GSTM_M43 = '00000002'x)
+        integer  GSTM_M44
+        parameter (GSTM_M44 = '00000001'x)
+
+        integer  GSTM_UNITY
+        parameter (GSTM_UNITY = '00000000'x)
+        integer  GSTM_AFTER
+        parameter (GSTM_AFTER = '00000001'x)
+        integer  GSTM_BEFORE
+        parameter (GSTM_BEFORE = '00000002'x)
+        integer  GSTM_OVERWRITE
+        parameter (GSTM_OVERWRITE = '00000003'x)
+
+        integer  GSTV_OVERWRITE
+        parameter (GSTV_OVERWRITE = '00000000'x)
+        integer  GSTV_AFTER
+        parameter (GSTV_AFTER = '00000004'x)
+
+        integer  GSSB_ML
+        parameter (GSSB_ML = 4)
+        structure /ORDERS_GSSB/
+            integer*1 fbFlags
+            integer*1 fbMask
+            integer*2 alMatrix(GSSB_ML)
+        end structure
+
+        structure /ORDERL_GSSB/
+            integer*1 fbFLags
+            integer*1 fbMask
+            integer*4 alMatrix(GSSB_ML)
+        end structure
+
+        integer  GSSB_XLEFT
+        parameter (GSSB_XLEFT = '00000020'x)
+        integer  GSSB_XRIGHT
+        parameter (GSSB_XRIGHT = '00000010'x)
+        integer  GSSB_YBOTTOM
+        parameter (GSSB_YBOTTOM = '00000008'x)
+        integer  GSSB_YTOP
+        parameter (GSSB_YTOP = '00000004'x)
+
+        integer  GSVW_INTERSECT
+        parameter (GSVW_INTERSECT = '00000000'x)
+        integer  GSVW_REPLACE
+        parameter (GSVW_REPLACE = '00000080'x)
+
+        integer  GSGCH_ML
+        parameter (GSGCH_ML = 254)
+        structure /ORDER_GSGCH/
+            integer*1 uchIdent
+            integer*1 auchData(GSGCH_ML)
+        end structure
+
+        structure /ORDERS_GSSLW/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*2 LineWidth
+        end structure
+
+        structure /ORDERL_GSSLW/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 LineWidth
+        end structure
+
+        integer  GSSLW_DEFAULT
+        parameter (GSSLW_DEFAULT = '00000080'x)
+        integer  GSSLW_SPECIFY
+        parameter (GSSLW_SPECIFY = '00000000'x)
+
+        integer  GCSFLT_SMF
+        parameter (GCSFLT_SMF = 21)
+        integer  GSFLT_SMF
+        parameter (GSFLT_SMF = 20)
+
+        structure /ORDERS_GCSFLT/
+            record /POINTS/ apt(2*GCSFLT_SMF)
+            integer*4 afxSharpness(GCSFLT_SMF)
+        end structure
+
+        integer  GCSFLT_LMF
+        parameter (GCSFLT_LMF = 12)
+        integer  GSFLT_LMF
+        parameter (GSFLT_LMF = 12)
+
+        structure /ORDERL_GCSFLT/
+            record /POINTL/ apt(2*GCSFLT_SMF)
+            integer*4 afxSharpness(GCSFLT_SMF)
+        end structure
+
+        structure /ORDERS_GBBLT/
+            integer*2 fsFlags
+            integer*2 usMix
+            integer*4 hbmSrc
+            integer*4 lOptions
+            record /RECT1S/ rcsTargetRect
+            record /RECTL/ rclSourceRect
+        end structure
+
+        structure /ORDERL_GBBLT/
+            integer*2 fsFlags
+            integer*2 usMix
+            integer*4 hbmSrc
+            integer*4 lOptions
+            record /RECTL/ rclTargetRect
+            record /RECTL/ rclSourceRect
+        end structure
+
+        structure /ORDER_GSCE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 ufxextra
+        end structure
+
+        structure /ORDER_GPSCE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 ufxextra
+        end structure
+
+        structure /ORDER_GSCBE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 ufxextra
+        end structure
+
+        structure /ORDER_GPSCBE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            integer*4 ufxextra
+        end structure
+
+        integer  GESCP_ML
+        parameter (GESCP_ML = 253)
+        structure /ORDER_GESCP/
+            integer*1 uchType
+            integer*1 uchIdent
+            integer*1 auchData(GESCP_ML)
+        end structure
+
+        integer  GESCP_REG
+        parameter (GESCP_REG = '00000080'x)
+
+        integer  GEBB_REGID
+        parameter (GEBB_REGID = '00000002'x)
+
+        integer  ETYPE_GEBB
+        parameter (ETYPE_GEBB = '800200D5'x)
+
+        integer  GEBB_LMP
+        parameter (GEBB_LMP = 29)
+        structure /ORDERL_GEBB/
+            integer*1 fbFlags
+            integer*2 usMix
+            integer*1 cPoints
+            integer*4 hbmSrc
+            integer*4 lReserved
+            integer*4 lOptions
+            record /POINTL/ aptPoints(GEBB_LMP)
+        end structure
+
+        integer  GEPEL_REGID
+        parameter (GEPEL_REGID = '00000001'x)
+
+        integer  ETYPE_GEPEL
+        parameter (ETYPE_GEPEL = '800100D5'x)
+
+        integer  GEDB_REGID
+        parameter (GEDB_REGID = '00000004'x)
+
+        integer  ETYPE_GEDB
+        parameter (ETYPE_GEDB = '800400D5'x)
+
+        structure /ORDERL_GEDB/
+            integer*2 fsFlags
+            integer*2 usMix
+            integer*4 pBits
+            integer*4 pbmi
+            integer*4 lOptions
+            record /RECTL/ rclTargetRect
+            record /RECTL/ rclSourceRect
+        end structure
+
+        integer  GEFF_REGID
+        parameter (GEFF_REGID = '00000003'x)
+
+        integer  ETYPE_GEFF
+        parameter (ETYPE_GEFF = '800300D5'x)
+
+        structure /ORDERL_GEFF/
+            integer*1 fsFlags
+            integer*1 auchColor(3)
+        end structure
+
+        integer  ETYPE_LINEBUNDLE
+        parameter (ETYPE_LINEBUNDLE = '0000FD01'x)
+        integer  ETYPE_CHARBUNDLE
+        parameter (ETYPE_CHARBUNDLE = '0000FD02'x)
+        integer  ETYPE_MARKERBUNDLE
+        parameter (ETYPE_MARKERBUNDLE = '0000FD03'x)
+        integer  ETYPE_AREABUNDLE
+        parameter (ETYPE_AREABUNDLE = '0000FD04'x)
+        integer  ETYPE_IMAGEBUNDLE
+        parameter (ETYPE_IMAGEBUNDLE = '0000FD05'x)
+
+        logical VLONG_ORDER
+        external VLONG_ORDER
+
+        integer  VORDER_ML
+        parameter (VORDER_ML = 65531)
+        structure /VORDER/
+            integer*1 idCode
+            integer*1 uchQualifier
+            record /SWPUSHORT/ uchLength
+            integer*1 uchData(VORDER_ML)
+        end structure
+
+        integer  ETYPE_GCCHSTE
+        parameter (ETYPE_GCCHSTE = '0000FEB0'x)
+        integer  ETYPE_GCHSTE
+        parameter (ETYPE_GCHSTE = '0000FEF0'x)
+
+        structure /ORDERS_GCCHSTE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTS/ ptRect(2)
+            record /SWPUSHORT/ cchString
+            integer*1 achString(1)
+            integer*2 adx(1)
+        end structure
+
+        structure /ORDERL_GCCHSTE/
+            integer*1 fbFlags
+            integer*1 uchReserved
+            record /POINTL/ ptRect(2)
+            record /SWPUSHORT/ cchString
+            integer*1 achString(1)
+            integer*4 adx(1)
+        end structure
+
+        integer  GCCHSTE_DRAWRECT
+        parameter (GCCHSTE_DRAWRECT = '00000080'x)
+        integer  GCCHSTE_NORECT
+        parameter (GCCHSTE_NORECT = '00000000'x)
+        integer  GCCHSTE_CLIP
+        parameter (GCCHSTE_CLIP = '00000040'x)
+        integer  GCCHSTE_NOCLIP
+        parameter (GCCHSTE_NOCLIP = '00000000'x)
+        integer  GCCHSTE_DEEMPHASIZE
+        parameter (GCCHSTE_DEEMPHASIZE = '00000020'x)
+        integer  GCCHSTE_NODEEMPHASIZE
+        parameter (GCCHSTE_NODEEMPHASIZE = '00000000'x)
+        integer  GCCHSTE_LEAVEPOS
+        parameter (GCCHSTE_LEAVEPOS = '00000010'x)
+        integer  GCCHSTE_MOVEPOS
+        parameter (GCCHSTE_MOVEPOS = '00000000'x)
+        integer  GCCHSTE_UNDERSCORE
+        parameter (GCCHSTE_UNDERSCORE = '00000008'x)
+        integer  GCCHSTE_NOUNDERSCORE
+        parameter (GCCHSTE_NOUNDERSCORE = '00000000'x)
+        integer  GCCHSTE_STRIKEOUT
+        parameter (GCCHSTE_STRIKEOUT = '00000004'x)
+        integer  GCCHSTE_NOSTRIKEOUT
+        parameter (GCCHSTE_NOSTRIKEOUT = '00000000'x)
+
+        integer  GEESCP_ML
+        parameter (GEESCP_ML = 65533)
+        structure /ORDER_GEESCP/
+            integer*1 uchType
+            integer*1 uchIdent
+            integer*1 auchData(GEESCP_ML)
+        end structure
+
+c$include pmocodes.fi
+
+c$reference

@@ -1,50 +1,76 @@
-//
-//  typeinfo.h  Type Information
+///////////////////////////////////////////////////////////////////////////
+// FILE: typeinfo.h/typeinfo (RTTI support)
 //
 :keep CPP_HDR
 :include crwat.sp
 //
+// Description: This header is part of the C++ standard library. It
+//              defines some classes and exceptions that pertain to
+//              run time type identification support.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
 #ifndef _TYPEINFO_H_INCLUDED
 #define _TYPEINFO_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error typeinfo.h is for use with C++
+#ifndef _TYPEINFO_INCLUDED
+ #include <typeinfo>
+#endif
+using std::type_info;
+using std::bad_cast;
+using std::bad_typeid;
+
+// All included names should also be in the global namespace.
+#ifndef _EXCEPTION_H_INCLUDED
+ #include <exceptio.h>
 #endif
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
+#endif
+:elsesegment
+#ifndef _TYPEINFO_INCLUDED
+#define _TYPEINFO_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
+
+#ifndef _EXCEPTION_INCLUDED
+ #include <exceptio>
 #endif
 
-#include <exceptio.h>
+namespace std {
 
-class _WPRTLINK type_info {
-public:
+  class _WPRTLINK type_info {
+  public:
     ~type_info();
     bool operator ==( type_info const & ) const;
     bool operator !=( type_info const & ) const;
     bool before( type_info const & ) const;
     const char *name() const;
     const char *raw_name() const;
-private:
+  private:
     type_info( type_info const & );
     type_info & operator =( type_info const & );
     mutable void const *__data;
     char const __raw[1];
-};
+  };
 
-class _WPRTLINK bad_cast : public exception {
-public:
-    bad_cast( string const& what_arg ) _WCTHROWS(())
-        : exception( what_arg ) {
-    }
-};
+  class _WPRTLINK bad_cast : public exception {
+  public:
+    bad_cast( ) _WCTHROWS()
+        : exception( "invalid dynamic cast" ) { }
+  };
 
-class _WPRTLINK bad_typeid : public exception {
-public:
-    bad_typeid( string const& what_arg ) _WCTHROWS(())
-        : exception( what_arg ) {
-    }
-};
+  class _WPRTLINK bad_typeid : public exception {
+  public:
+    bad_typeid( ) _WCTHROWS()
+        : exception( "bad typeid expression" ) { }
+  };
+
+} // namespace std
 
 #endif
+:endsegment

@@ -1,0 +1,26 @@
+proj_name = res2res
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include wres.mif
+
+inc_dirs = -I"../h" -I"$(wres_dir)/h" -I"$(trmem_dir)"
+
+.c: ../c;$(trmem_dir);$(watcom_dir)/c
+
+objs =             &
+        bincpy.obj &
+        convert.obj &
+        layer0.obj &
+        m2wres.obj &
+        param.obj &
+        res2res.obj &
+        w2mres.obj
+
+objs += trmemcvr.obj trmem.obj
+
+libs = $(wres_lib)
+
+!include exetarg.mif

@@ -2,7 +2,7 @@
 #include "life.h"
 #include "bitmap.h"
 
-static HBITMAP          CellBitMap = NULL;
+static HBITMAP          CellBitMap;
 static HDC              MemoryDC;
 
 extern void InitBitMap()
@@ -19,7 +19,8 @@ extern void InitBitMap()
 extern void FiniBitMap()
 /**********************/
 {
-    if( CellBitMap != NULL ) DeleteObject( CellBitMap );
+    if( CellBitMap != (HBITMAP)0 )
+        DeleteObject( CellBitMap );
 }
 
 
@@ -33,8 +34,10 @@ extern void LoadNewBitmap()
 
     bit_map = RequestBitmapFile();
     FlushMouse();
-    if( bit_map == NULL ) return;
-    if( CellBitMap != NULL ) DeleteObject( CellBitMap );
+    if( bit_map == (HBITMAP)0 )
+        return;
+    if( CellBitMap != (HBITMAP)0 )
+        DeleteObject( CellBitMap );
     CellBitMap = bit_map;
     NewBitMap();
 }

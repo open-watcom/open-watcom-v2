@@ -35,6 +35,6 @@
 BOOL PASCAL _Cover_NotifyRegister(HTASK hTask, LPFNNOTIFYCALLBACK lpfn,
                                 WORD wFlags)
 {
-    return( NotifyRegister( hTask, SetProc( lpfn, GETPROC_TOOLHELP_NOTIFY ),
+    return( NotifyRegister( hTask, SetProc( (FARPROC)lpfn, GETPROC_TOOLHELP_NOTIFY ),
                 wFlags ) );
 }

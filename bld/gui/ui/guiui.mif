@@ -1,0 +1,107 @@
+type=ui
+
+wv_sysobjs = &
+          guismove.obj &
+          guigmous.obj &
+          guiflush.obj &
+          guicursr.obj &
+          guixhot.obj  &
+          guihelp.obj  &
+          guienum.obj  &
+          guistat.obj  &
+          uimenucr.obj &
+          guixscal.obj &
+          guistub.obj  &
+          guitool.obj  &
+          guismetr.obj &
+          guifdlg.obj  &
+          guidrawr.obj &
+          guiicon.obj  &
+          guifocus.obj &
+          guistext.obj &
+          guiximdi.obj &
+          guixmdi.obj  &
+          guixhook.obj &
+          guigtext.obj &
+          guimapky.obj &
+          guidoscr.obj &
+          guilistb.obj &
+          guihotsp.obj &
+          guicontr.obj &
+          guigetpt.obj &
+          guikey.obj   &
+          guigadgt.obj &
+          guixdraw.obj &
+          guistrin.obj &
+          guitextm.obj &
+          guixmain.obj &
+          guixsys.obj  &
+          guixloop.obj &
+          guidirty.obj &
+          guisstyl.obj &
+          guirange.obj &
+          guisize.obj  &
+          guimouse.obj &
+          guithumb.obj &
+          guidrow.obj  &
+          guigscrl.obj &
+          guirect.obj  &
+          guisysme.obj &
+          guiarect.obj &
+          guicrect.obj &
+          guidrect.obj &
+          guiwhole.obj &
+          guifront.obj &
+          guiscrol.obj &
+          guifloat.obj &
+          guimenu.obj  &
+          guixedit.obj &
+          guixdisp.obj &
+          guixdlg.obj  &
+          guixtent.obj &
+          guixinit.obj &
+          guidrawt.obj &
+          guignval.obj &
+          guicheck.obj &
+          guixaddt.obj &
+          guixutil.obj &
+          guirfrsh.obj &
+          guixwind.obj &
+          guicolor.obj &
+          guigetnr.obj &
+          guidbclk.obj &
+          guispawn.obj &
+          guiuiev.obj  &
+          guisicon.obj &
+          guixbar.obj  &
+          guildstr.obj &
+          guirdlg.obj  &
+          guirmenu.obj &
+          guiclen.obj  &
+	  guidrain.obj &
+
+help_objext=obj
+
+!include $(help_dir)/help.mif
+
+wv_sysobjs += $(help_objs)
+
+!ifeq release 0
+wv_sysobjs += uibarf.obj
+!endif
+
+sys_hooks = &
+          guisysin.obj &
+          guisysfi.obj &
+          uidchfld.obj &
+
+sysobjs = $(wv_sysobjs) $(sys_hooks) $(sys_dep_objs)
+
+extra_c_flags += -I"$(sdk_dir)/rc/wres/h"
+
+!ifndef bootstrap
+# memory tracker cover routines
+extra_c_flags_helpmem = $(trmem_cover_cflags) -fh=$^&.pch
+!endif
+
+!include ../../master.mif

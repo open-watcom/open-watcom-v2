@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Expand instructions so that machine code can be generated.
 *
 ****************************************************************************/
 
@@ -40,7 +39,7 @@
 #include "hostsys.h"
 #include "zoiks.h"
 
-extern  void            EXBlip();
+extern  void            EXBlip(void);
 extern  instruction     *Reduce(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  int             NumOperands(instruction*);
@@ -58,9 +57,9 @@ extern    op_regs       RegList[];
 extern    reg_list      *RegSets[];
 
 static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
-                                   bool has_index ) {
-/***************************************************/
-
+                                   bool has_index )
+/*********************************************************************/
+{
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
 
@@ -73,7 +72,7 @@ static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
         HW_TurnOn( zap_all, *zap );
         ++zap;
     }
-    ins->zap = AllocRegName( zap_all );
+    ins->zap = (register_name *) AllocRegName( zap_all );
     if( has_index || ins->num_operands > NumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
@@ -83,9 +82,9 @@ static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
 }
 
 
-static  bool    VerifyRegs( instruction *ins, operand_types ops ) {
-/*****************************************************************/
-
+static  bool    VerifyRegs( instruction *ins, operand_types ops )
+/***************************************************************/
+{
 #define _Any( ops, mul )        ( ( ops & (ANY*mul) ) == (ANY*mul) )
 
     opcode_entry        *try;
@@ -175,9 +174,9 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops ) {
 }
 
 
-static  operand_types   ClassifyOps( instruction *ins, bool *has_index ) {
-/************************************************************************/
-
+static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
+/**********************************************************************/
+{
     name                *name;
     operand_types       ops;
     int                 num_operands;
@@ -289,9 +288,9 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index ) {
 }
 
 
-extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index ) {
-/**************************************************************************/
-
+extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
+/************************************************************************/
+{
     opcode_entry        *try;
     operand_types       ops;
     unsigned            verify;
@@ -324,9 +323,9 @@ extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index ) {
 }
 
 
-extern  void    FixGenEntry( instruction *ins ) {
-/***********************************************/
-
+extern  void    FixGenEntry( instruction *ins )
+/*********************************************/
+{
 /* update the instruction to reflect new instruction needs*/
 
     opcode_entry        *old;
@@ -341,9 +340,9 @@ extern  void    FixGenEntry( instruction *ins ) {
 }
 
 
-extern  instruction     *PostExpandIns( instruction *ins ) {
-/******************************************************/
-
+extern  instruction     *PostExpandIns( instruction *ins )
+/********************************************************/
+{
     opcode_entry        *try;
     bool                has_index;
 
@@ -355,9 +354,9 @@ extern  instruction     *PostExpandIns( instruction *ins ) {
 }
 
 
-extern  instruction     *ExpandIns( instruction *ins ) {
-/******************************************************/
-
+extern  instruction     *ExpandIns( instruction *ins )
+/****************************************************/
+{
     opcode_entry        *try;
     bool                has_index;
 
@@ -366,9 +365,9 @@ extern  instruction     *ExpandIns( instruction *ins ) {
 }
 
 
-extern  int     ExpandOps( bool keep_on_truckin ) {
-/*************************************************/
-
+extern  int     ExpandOps( bool keep_on_truckin )
+/***********************************************/
+{
     block       *blk;
     instruction *ins;
     int         unknowns;

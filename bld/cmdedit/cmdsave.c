@@ -32,13 +32,13 @@
 
 #include "cmdedit.h"
 
-extern void     PutNL();
-extern void     RestoreLine();
+extern void     PutNL( void );
+extern void     RestoreLine( void );
 extern void     PutString( char far * str );
 extern void     RestorePrompt( char PASPTR *line );
-extern void     SaveLine();
+extern void     SaveLine( void );
 extern void     SavePrompt( char PASPTR *line );
-extern int      PutMore();
+extern int      PutMore( void );
 
 #define _ModIndex( ind, adj )   (ind += adj, ind &= (SAVE_SIZE-1));
 
@@ -163,10 +163,8 @@ extern void InitSave( char far *name )
 }
 
 
-void near SaveByte( ch )
-    register int ch;    /* must be an int (consider OS/2) */
+void near SaveByte( int ch )    /* must be an int (consider OS/2) */
 {
-
     if( FirstFree == FirstCmd ) {
         _ModIndex( FirstCmd, SaveArea[ FirstCmd ] + 2 );
     }
@@ -175,11 +173,9 @@ void near SaveByte( ch )
 }
 
 
-static void near SaveIt( cmd, len )
-    register char *cmd;
-    register unsigned  len;
+static void near SaveIt( char *cmd, unsigned len )
 {
-    register unsigned  save_len;
+    unsigned    save_len;
 
     CurrCmd = FirstFree;
     save_len = len;
@@ -314,9 +310,9 @@ int NextCmd( cmd )
     return( len );
 }
 
-void ListCommands() {
-/*******************/
-
+void ListCommands( void )
+/***********************/
+{
     int         i;
     char        prompt[ 80 ];
     int         prevs;
@@ -346,9 +342,9 @@ void ListCommands() {
 }
 
 
-void RetrieveACommand( int (* advance)(char *) ) {
-/************************************************/
-
+void RetrieveACommand( int (* advance)(char *) )
+/**********************************************/
+{
     MaxCursor = advance( Line );
     FirstNextOrPrev = 0;
     Cursor = MaxCursor;

@@ -1,0 +1,191 @@
+c$noreference
+
+        structure /FOCAMETRICS/
+            integer*4 ulIdentity
+            integer*4 ulSize
+            character*32 szFamilyname
+            character*32 szFacename
+            integer*2 usRegistryId
+            integer*2 usCodePage
+            integer*2 yEmHeight
+            integer*2 yXHeight
+            integer*2 yMaxAscender
+            integer*2 yMaxDescender
+            integer*2 yLowerCaseAscent
+            integer*2 yLowerCaseDescent
+            integer*2 yInternalLeading
+            integer*2 yExternalLeading
+            integer*2 xAveCharWidth
+            integer*2 xMaxCharInc
+            integer*2 xEmInc
+            integer*2 yMaxBaselineExt
+            integer*2 sCharSlope
+            integer*2 sInlineDir
+            integer*2 sCharRot
+            integer*2 usWeightClass
+            integer*2 usWidthClass
+            integer*2 xDeviceRes
+            integer*2 yDeviceRes
+            integer*2 usFirstChar
+            integer*2 usLastChar
+            integer*2 usDefaultChar
+            integer*2 usBreakChar
+            integer*2 usNominalPointSize
+            integer*2 usMinimumPointSize
+            integer*2 usMaximumPointSize
+            integer*2 fsTypeFlags
+            integer*2 fsDefn
+            integer*2 fsSelectionFlags
+            integer*2 fsCapabilities
+            integer*2 ySubscriptXSize
+            integer*2 ySubscriptYSize
+            integer*2 ySubscriptXOffset
+            integer*2 ySubscriptYOffset
+            integer*2 ySuperscriptXSize
+            integer*2 ySuperscriptYSize
+            integer*2 ySuperscriptXOffset
+            integer*2 ySuperscriptYOffset
+            integer*2 yUnderscoreSize
+            integer*2 yUnderscorePosition
+            integer*2 yStrikeoutSize
+            integer*2 yStrikeoutPosition
+            integer*2 usKerningPairs
+            integer*2 sFamilyClass
+            integer*4 pszDeviceNameOffset
+        end structure
+
+        structure /FONTFILEMETRICS/
+            integer*4 ulIdentity
+            integer*4 ulSize
+            character*32 szFamilyname
+            character*32 szFacename
+            integer*2 usRegistryId
+            integer*2 usCodePage
+            integer*2 yEmHeight
+            integer*2 yXHeight
+            integer*2 yMaxAscender
+            integer*2 yMaxDescender
+            integer*2 yLowerCaseAscent
+            integer*2 yLowerCaseDescent
+            integer*2 yInternalLeading
+            integer*2 yExternalLeading
+            integer*2 xAveCharWidth
+            integer*2 xMaxCharInc
+            integer*2 xEmInc
+            integer*2 yMaxBaselineExt
+            integer*2 sCharSlope
+            integer*2 sInlineDir
+            integer*2 sCharRot
+            integer*2 usWeightClass
+            integer*2 usWidthClass
+            integer*2 xDeviceRes
+            integer*2 yDeviceRes
+            integer*2 usFirstChar
+            integer*2 usLastChar
+            integer*2 usDefaultChar
+            integer*2 usBreakChar
+            integer*2 usNominalPointSize
+            integer*2 usMinimumPointSize
+            integer*2 usMaximumPointSize
+            integer*2 fsTypeFlags
+            integer*2 fsDefn
+            integer*2 fsSelectionFlags
+            integer*2 fsCapabilities
+            integer*2 ySubscriptXSize
+            integer*2 ySubscriptYSize
+            integer*2 ySubscriptXOffset
+            integer*2 ySubscriptYOffset
+            integer*2 ySuperscriptXSize
+            integer*2 ySuperscriptYSize
+            integer*2 ySuperscriptXOffset
+            integer*2 ySuperscriptYOffset
+            integer*2 yUnderscoreSize
+            integer*2 yUnderscorePosition
+            integer*2 yStrikeoutSize
+            integer*2 yStrikeoutPosition
+            integer*2 usKerningPairs
+            integer*2 sFamilyClass
+            integer*4 ulReserved
+            record /PANOSE/ panose
+        end structure
+
+        structure /FONTDEFINITIONHEADER/
+            integer*4 ulIdentity
+            integer*4 ulSize
+            integer*2 fsFontdef
+            integer*2 fsChardef
+            integer*2 usCellSize
+            integer*2 xCellWidth
+            integer*2 yCellHeight
+            integer*2 xCellIncrement
+            integer*2 xCellA
+            integer*2 xCellB
+            integer*2 xCellC
+            integer*2 pCellBaseOffset
+        end structure
+
+        integer  FONTDEFFONT1
+        parameter (FONTDEFFONT1 = '00000047'x)
+        integer  FONTDEFFONT2
+        parameter (FONTDEFFONT2 = '00000042'x)
+        integer  FONTDEFFONT3
+        parameter (FONTDEFFONT3 = '00000042'x)
+        integer  FONTDEFCHAR1
+        parameter (FONTDEFCHAR1 = '00000081'x)
+        integer  FONTDEFCHAR2
+        parameter (FONTDEFCHAR2 = '00000081'x)
+        integer  FONTDEFCHAR3
+        parameter (FONTDEFCHAR3 = '000000b8'x)
+        integer  SPACE_UNDEF
+        parameter (SPACE_UNDEF = '00008000'x)
+
+        structure /FONTSIGNATURE/
+            integer*4 ulIdentity
+            integer*4 ulSize
+            integer*1 achSignature(12)
+        end structure
+
+        structure /ADDITIONALMETRICS/
+            integer*4 ulIdentity
+            integer*4 ulSize
+            record /PANOSE/ panose
+        end structure
+
+        structure /FOCAFONT/
+            record /FONTSIGNATURE/ fsSignature
+            record /FOCAMETRICS/ fmMetrics
+            record /FONTDEFINITIONHEADER/ fdDefinitions
+        end structure
+
+        integer  FONT_SIGNATURE
+        parameter (FONT_SIGNATURE = 'fffffffe'x)
+        integer  FONT_METRICS
+        parameter (FONT_METRICS = '00000001'x)
+        integer  FONT_DEFINITION
+        parameter (FONT_DEFINITION = '00000002'x)
+        integer  FONT_KERNPAIRS
+        parameter (FONT_KERNPAIRS = '00000003'x)
+        integer  FONT_ADDITIONALMETRICS
+        parameter (FONT_ADDITIONALMETRICS = '00000004'x)
+        integer  FONT_ENDRECORD
+        parameter (FONT_ENDRECORD = 'ffffffff'x)
+
+        integer  QUERY_PUBLIC_FONTS
+        parameter (QUERY_PUBLIC_FONTS = '00000001'x)
+        integer  QUERY_PRIVATE_FONTS
+        parameter (QUERY_PRIVATE_FONTS = '00000002'x)
+
+        integer  CDEF_GENERIC
+        parameter (CDEF_GENERIC = '00000001'x)
+        integer  CDEF_BOLD
+        parameter (CDEF_BOLD = '00000002'x)
+        integer  CDEF_ITALIC
+        parameter (CDEF_ITALIC = '00000004'x)
+        integer  CDEF_UNDERSCORE
+        parameter (CDEF_UNDERSCORE = '00000008'x)
+        integer  CDEF_STRIKEOUT
+        parameter (CDEF_STRIKEOUT = '00000010'x)
+        integer  CDEF_OUTLINE
+        parameter (CDEF_OUTLINE = '00000020'x)
+
+c$reference

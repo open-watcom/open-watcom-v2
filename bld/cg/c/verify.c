@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic instruction operand verification routines.
 *
 ****************************************************************************/
 
@@ -74,7 +73,7 @@ static  bool    NextCmp( instruction *ins ) {
 
     next = ins->head.next;
     if( !_OpIsCondition( next->head.opcode ) ) return( FALSE );
-    if( next->table == &DoNop ) return( TRUE );
+    if( next->table == DoNop ) return( TRUE );
     if( next->u.gen_table == NULL ) return( FALSE );
     if( next->u.gen_table->generate != G_NO ) return( FALSE );
     return( TRUE );
@@ -183,23 +182,41 @@ extern  bool    OtherVerify( vertype kind, instruction *ins,
     case V_CMPFALSE:
         if( ins->result != NULL ) return ( FALSE );
         if( NextCmp( ins ) ) return( FALSE );
-        if( ins->head.opcode == OP_CMP_LESS ) {
-            return( IsMin( op2, ins->type_class ) );
-        } else if( ins->head.opcode == OP_CMP_GREATER ) {
-            return( IsMax( op2, ins->type_class ) );
-        } else if( ins->head.opcode == OP_BIT_TEST_TRUE ) {
-            return( OtherVerify( V_OP2ZERO, ins, op1, op2, result ) );
+        if( op1 == op2 ) {
+            if( ins->head.opcode == OP_CMP_NOT_EQUAL
+             || ins->head.opcode == OP_CMP_GREATER
+             || ins->head.opcode == OP_CMP_LESS ) {
+                return( TRUE );
+            }
+        }
+        if( op2->n.class == N_CONSTANT ) {
+            if( ins->head.opcode == OP_CMP_LESS ) {
+                return( IsMin( op2, ins->type_class ) );
+            } else if( ins->head.opcode == OP_CMP_GREATER ) {
+                return( IsMax( op2, ins->type_class ) );
+            } else if( ins->head.opcode == OP_BIT_TEST_TRUE ) {
+                return( OtherVerify( V_OP2ZERO, ins, op1, op2, result ) );
+            }
         }
         break;
     case V_CMPTRUE:
         if( ins->result != NULL ) return ( FALSE );
         if( NextCmp( ins ) ) return( FALSE );
-        if( ins->head.opcode == OP_CMP_GREATER_EQUAL ) {
-            return( IsMin( op2, ins->type_class ) );
-        } else if( ins->head.opcode == OP_CMP_LESS_EQUAL ) {
-            return( IsMax( op2, ins->type_class ) );
-        } else if( ins->head.opcode == OP_BIT_TEST_FALSE ) {
-            return( OtherVerify( V_OP2ZERO, ins, op1, op2, result ) );
+        if( op1 == op2 ) {
+            if( ins->head.opcode == OP_CMP_EQUAL
+             || ins->head.opcode == OP_CMP_GREATER_EQUAL
+             || ins->head.opcode == OP_CMP_LESS_EQUAL ) {
+                return( TRUE );
+            }
+        }
+        if( op2->n.class == N_CONSTANT ) {
+            if( ins->head.opcode == OP_CMP_GREATER_EQUAL ) {
+                return( IsMin( op2, ins->type_class ) );
+            } else if( ins->head.opcode == OP_CMP_LESS_EQUAL ) {
+                return( IsMax( op2, ins->type_class ) );
+            } else if( ins->head.opcode == OP_BIT_TEST_FALSE ) {
+                return( OtherVerify( V_OP2ZERO, ins, op1, op2, result ) );
+            }
         }
         break;
     case V_OFFSETZERO:
@@ -280,6 +297,11 @@ extern  bool    OtherVerify( vertype kind, instruction *ins,
         if( ins->head.opcode == OP_CMP_EQUAL
          || ins->head.opcode == OP_CMP_NOT_EQUAL
          || ins->type_class == U4 ) return( TRUE );
+        break;
+    case V_SHIFT2BIG:
+        /* check if shift amount is equal to or greater than register width */
+        if( op2->c.const_type == CONS_ABSOLUTE
+         && op2->c.int_value >= REG_SIZE * 8 ) return( TRUE );
         break;
     default:
         _Zoiks( ZOIKS_053 );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF informational functions prototypes.
 *
 ****************************************************************************/
 
@@ -35,10 +34,9 @@ extern char            *DRGetProducer( dr_handle );
 extern dr_model         DRGetMemModelAT( dr_handle );
 extern dr_language      DRGetLanguage( void );
 extern char *           DRGetName( dr_handle );
-extern unsigned         DRGetNameBuff( dr_handle entry, char *buff, unsigned length  );
-extern unsigned DRGetScopedNameBuff( dr_handle entry,
-                                     char     *buff,
-                                     unsigned  max  );
+extern unsigned         DRGetNameBuff( dr_handle entry, char *buff, unsigned length );
+extern unsigned         DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max );
+extern unsigned         DRGetCompDirBuff( dr_handle entry, char *buff, unsigned length );
 extern long             DRGetColumn( dr_handle );
 extern long             DRGetLine( dr_handle );
 extern char *           DRGetFileName( dr_handle );
@@ -48,7 +46,7 @@ extern dr_access        DRGetAccess( dr_handle );
 extern int              DRIsMemberStatic( dr_handle );
 extern int              DRIsFunc( dr_handle );
 extern int              DRIsParm( dr_handle entry );
-extern int              DRIsFunctionStatic( dr_handle );
+extern int              DRIsStatic( dr_handle );
 extern int              DRIsArtificial( dr_handle );
 extern int              DRIsSymDefined( dr_handle );
 extern dr_virtuality    DRGetVirtuality( dr_handle );

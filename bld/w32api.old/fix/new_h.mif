@@ -1,0 +1,2 @@
+include/$(file) : $(file) ../fix/readonly.h
+    cat $[@ $]@ > $@

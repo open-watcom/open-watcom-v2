@@ -39,7 +39,7 @@
  * GUIGetTextExtentX -- get the width of the given text
  */
 
-UINT GUIGetTextExtentX( gui_window *wnd, char *str, int cnt )
+UINT GUIGetTextExtentX( gui_window *wnd, const char *str, int cnt )
 {
     int width, height;
 
@@ -52,7 +52,7 @@ UINT GUIGetTextExtentX( gui_window *wnd, char *str, int cnt )
  * GUIGetTextExtentY -- get the extent of the given text
  */
 
-UINT GUIGetTextExtentY( gui_window *wnd, char *str, int cnt )
+UINT GUIGetTextExtentY( gui_window *wnd, const char *str, int cnt )
 {
     int width, height;
 
@@ -65,7 +65,7 @@ UINT GUIGetTextExtentY( gui_window *wnd, char *str, int cnt )
  * GUIGetTextExtent -- get the width & height of the given text
  */
 
-void GUIGetTextExtent( gui_window *wnd, char *str, int cnt, int *width, int *height )
+void GUIGetTextExtent( gui_window *wnd, const char *str, int cnt, int *width, int *height )
 {
     _wpi_gettextextent( wnd->hdc, str, cnt, width, height );
 }

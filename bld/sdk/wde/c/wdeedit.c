@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <string.h>
 #include <mbstring.h>
 #include <stdlib.h>
@@ -43,15 +43,15 @@
 #include "wdefbase.h"
 #include "wdefont.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wdeedit.h"
 #include "wdectl3d.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern LRESULT WINEXPORT WdeEditWndProc  ( HWND, UINT, WPARAM, LPARAM );
-extern LRESULT WINEXPORT WdeFormsWndProc ( HWND, UINT, WPARAM, LPARAM );
+extern LRESULT WINEXPORT WdeEditWndProc( HWND, UINT, WPARAM, LPARAM );
+extern LRESULT WINEXPORT WdeFormsWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -60,48 +60,48 @@ extern LRESULT WINEXPORT WdeFormsWndProc ( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  HFONT   WdeEditFont     = NULL;
-static  HBRUSH  WdeFormsBrush   = NULL;
-static  HBRUSH  WdeEditBrush    = NULL;
+static HFONT    WdeEditFont     = NULL;
+static HBRUSH   WdeFormsBrush   = NULL;
+static HBRUSH   WdeEditBrush    = NULL;
 
-Bool WdeSetEditMode ( WdeResInfo *info, Bool new_mode )
+Bool WdeSetEditMode( WdeResInfo *info, Bool new_mode )
 {
     Bool old_mode;
 
-    if ( info ) {
-        old_mode       = info->editting;
+    if( info != NULL ) {
+        old_mode = info->editting;
         info->editting = new_mode;
     } else {
-        old_mode       = FALSE;
+        old_mode = FALSE;
     }
 
-    return ( old_mode );
+    return( old_mode );
 }
 
-HWND WdeGetFormsWindowHandle ( WdeResInfo *info )
+HWND WdeGetFormsWindowHandle( WdeResInfo *info )
 {
-    if ( info ) {
-        return ( info->forms_win );
+    if( info != NULL ) {
+        return( info->forms_win );
     } else {
-        info = WdeGetCurrentRes ();
-        if ( info ) {
-            return ( info->edit_win );
+        info = WdeGetCurrentRes();
+        if( info != NULL ) {
+            return( info->edit_win );
         } else {
-            return ( NULL );
+            return( NULL );
         }
     }
 }
 
-HWND WdeGetEditWindowHandle ( WdeResInfo *info )
+HWND WdeGetEditWindowHandle( WdeResInfo *info )
 {
-    if ( info ) {
-        return ( info->edit_win );
+    if( info != NULL ) {
+        return( info->edit_win );
     } else {
-        info = WdeGetCurrentRes ();
-        if ( info ) {
-            return ( info->edit_win );
+        info = WdeGetCurrentRes();
+        if( info ) {
+            return( info->edit_win );
         } else {
-            return ( NULL );
+            return( NULL );
         }
     }
 }
@@ -117,16 +117,16 @@ void WdeInitEditClass( void )
     WdeEditBrush = GetStockObject( WHITE_BRUSH );
 
     /* create a transparent brush */
-    memset( &lbrush, 0, sizeof(LOGBRUSH) );
+    memset( &lbrush, 0, sizeof( LOGBRUSH ) );
     lbrush.lbStyle = BS_HOLLOW;
     WdeFormsBrush = CreateBrushIndirect( &lbrush );
 
     if( WdeEditFont == NULL ) {
         use_default = TRUE;
         text = WdeAllocRCString( WDE_EDITWINDOWFONT );
-        if( text ) {
-            cp = _mbschr( text, '.' );
-            if( cp ) {
+        if( text != NULL ) {
+            cp = (char *)_mbschr( (unsigned char const *)text, '.' );
+            if( cp != NULL ) {
                 *cp = '\0';
                 cp++;
                 point_size = atoi( cp );
@@ -140,7 +140,7 @@ void WdeInitEditClass( void )
             WdeEditFont = WdeGetFont( text, point_size, FW_BOLD );
         }
 
-        if( text ) {
+        if( text != NULL ) {
             WdeFreeRCString( text );
         }
     }
@@ -160,16 +160,16 @@ Bool WdeRegisterEditClass( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
-    /* fill in the WINDOW CLASS structure for the edit window */
-    wc.style         = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
-    wc.lpfnWndProc   = WdeEditWndProc;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = sizeof(WdeResInfo *);
-    wc.hInstance     = app_inst;
-    wc.hIcon         = NULL;
-    wc.hCursor       = NULL;
+    /* fill in the window class structure for the edit window */
+    wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
+    wc.lpfnWndProc = WdeEditWndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = sizeof( WdeResInfo * );
+    wc.hInstance = app_inst;
+    wc.hIcon = NULL;
+    wc.hCursor = NULL;
     wc.hbrBackground = WdeEditBrush;
-    wc.lpszMenuName  = NULL;
+    wc.lpszMenuName = NULL;
     wc.lpszClassName = "WdeEditClass";
 
     /* register the edit window class */
@@ -178,16 +178,16 @@ Bool WdeRegisterEditClass( HINSTANCE app_inst )
         return( FALSE );
     }
 
-    /* fill in the WINDOW CLASS structure for the edit window */
-    wc.style         = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
-    wc.lpfnWndProc   = WdeFormsWndProc;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = sizeof (WdeResInfo *);
-    wc.hInstance     = app_inst;
-    wc.hIcon         = NULL;
-    wc.hCursor       = NULL;
+    /* fill in the window class structure for the edit window */
+    wc.style = CS_DBLCLKS | CS_VREDRAW | CS_HREDRAW;
+    wc.lpfnWndProc = WdeFormsWndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = sizeof( WdeResInfo * );
+    wc.hInstance = app_inst;
+    wc.hIcon = NULL;
+    wc.hCursor = NULL;
     wc.hbrBackground = WdeFormsBrush;
-    wc.lpszMenuName  = NULL;
+    wc.lpszMenuName = NULL;
     wc.lpszClassName = "WdeFormsClass";
 
     /* register the edit window class */
@@ -199,116 +199,109 @@ Bool WdeRegisterEditClass( HINSTANCE app_inst )
     return( TRUE );
 }
 
-void WdeDestroyEditWindows ( WdeResInfo *info )
+void WdeDestroyEditWindows( WdeResInfo *info )
 {
     HWND win;
 
-    if ( info ) {
-        if ( info->edit_win != NULL ) {
+    if( info != NULL ) {
+        if( info->edit_win != NULL ) {
             win = info->edit_win;
             info->edit_win = NULL;
-            DestroyWindow ( win );
+            DestroyWindow( win );
         }
 
-        if ( info->forms_win != NULL ) {
+        if( info->forms_win != NULL ) {
             win = info->forms_win;
             info->forms_win = NULL;
-            DestroyWindow ( win );
+            DestroyWindow( win );
         }
     }
 }
 
-Bool WdeCreateEditWindows ( WdeResInfo *info )
+Bool WdeCreateEditWindows( WdeResInfo *info )
 {
     RECT      rect;
     HINSTANCE app_inst;
 
-    if ( !info || ( info->res_win == NULL ) ) {
-        return ( FALSE );
+    if( info == NULL || info->res_win == NULL ) {
+        return( FALSE );
     }
 
     app_inst = WdeGetAppInstance();
 
-    GetClientRect ( info->res_win, &rect );
+    GetClientRect( info->res_win, &rect );
 
-    info->forms_win =
-        CreateWindow ( "WdeFormsClass", NULL,
-                       WS_CHILD | WS_VISIBLE, // | WS_HSCROLL | WS_VSCROLL,
-                       0, 0,
-                       (rect.right  - rect.left),
-                       (rect.bottom - rect.top),
-                       info->res_win, (HMENU) NULL, app_inst, NULL);
+    info->forms_win = CreateWindow( "WdeFormsClass", NULL, WS_CHILD | WS_VISIBLE,
+                                    0, 0, rect.right - rect.left, rect.bottom - rect.top,
+                                    info->res_win, (HMENU)NULL, app_inst, NULL );
 
-    if ( info->forms_win == NULL ) {
-        WdeWriteTrail ("WdeCreateEditWindow: failed to create forms window!");
-        return ( FALSE );
+    if( info->forms_win == NULL ) {
+        WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
+        return( FALSE );
     }
 
-    GetClientRect ( info->forms_win, &rect );
+    GetClientRect( info->forms_win, &rect );
 
-    info->edit_win =
-        CreateWindow ( "WdeEditClass", NULL, WS_CHILD | WS_VISIBLE, 0, 0,
-                       (rect.right  - rect.left), (rect.bottom - rect.top),
-                       info->res_win, (HMENU) NULL, app_inst, NULL );
+    info->edit_win = CreateWindow( "WdeEditClass", NULL, WS_CHILD | WS_VISIBLE, 0, 0,
+                                   rect.right - rect.left, rect.bottom - rect.top,
+                                   info->res_win, (HMENU)NULL, app_inst, NULL );
 
-    if ( info->edit_win == NULL ) {
-        WdeWriteTrail ("WdeCreateEditWindow: failed to create forms window!");
-        return ( FALSE );
+    if( info->edit_win == NULL ) {
+        WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
+        return( FALSE );
     }
 
-    SetWindowLong ( info->edit_win, 0, (LONG) info );
-    SetWindowLong ( info->forms_win, 0, (LONG) info );
+    SetWindowLong( info->edit_win, 0, (LONG)info );
+    SetWindowLong( info->forms_win, 0, (LONG)info );
 
-    SetWindowPos ( info->forms_win, HWND_TOPMOST, 0,0,0,0,
-                   SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 Bool WdeResizeEditWindows( WdeResInfo *info )
 {
     RECT rect;
 
-    if( !info || ( info->res_win == NULL ) ||
-        ( info->forms_win == NULL ) || ( info->edit_win == NULL ) ) {
+    if( info == NULL || info->res_win == NULL ||
+        info->forms_win == NULL || info->edit_win == NULL ) {
         return( FALSE );
     }
 
     GetClientRect( info->res_win, &rect );
 
-    MoveWindow( info->forms_win, 0, 0, ( rect.right  - rect.left ),
-                ( rect.bottom - rect.top ), TRUE );
+    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left,
+                rect.bottom - rect.top, TRUE );
 
     WdeCheckBaseScrollbars( TRUE );
 
     GetClientRect( info->forms_win, &rect );
 
-    MoveWindow( info->edit_win, 0, 0, (rect.right  - rect.left),
-                (rect.bottom - rect.top), TRUE );
+    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left,
+                rect.bottom - rect.top, TRUE );
 
     return( TRUE );
 }
 
-HFONT WdeGetEditFont ( void )
+HFONT WdeGetEditFont( void )
 {
-    return ( WdeEditFont );
+    return( WdeEditFont );
 }
 
-LRESULT WdePassToEdit ( UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo *info;
 
-    info = WdeGetCurrentRes ();
+    info = WdeGetCurrentRes();
 
-    if ( info && ( info->forms_win != NULL ) ) {
-        return ( SendMessage ( info->forms_win, message, wParam, lParam ) );
+    if( info != NULL && info->forms_win != NULL ) {
+        return( SendMessage( info->forms_win, message, wParam, lParam ) );
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
 
-LRESULT WINEXPORT WdeEditWndProc( HWND hWnd, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HWND        hwin;
     uint_32     styles;
@@ -316,71 +309,70 @@ LRESULT WINEXPORT WdeEditWndProc( HWND hWnd, UINT message,
 
 #if 0
     if( WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return ( FALSE );
+        return( FALSE );
     }
 #endif
 
     switch( message ) {
-        case WM_KEYUP:
-        case WM_KEYDOWN:
-            WdePassToEdit( message, wParam, lParam );
-            break;
+    case WM_KEYUP:
+    case WM_KEYDOWN:
+        WdePassToEdit( message, wParam, lParam );
+        break;
 #ifdef __NT__
-        case WM_CTLCOLORSTATIC:
-            hwin = (HWND) lParam;
-            styles = GetWindowLong ( hwin, GWL_STYLE );
-            if ( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+    case WM_CTLCOLORSTATIC:
+        hwin = (HWND)lParam;
+        styles = GetWindowLong( hwin, GWL_STYLE );
+        if ( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+            break;
+        }
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORSCROLLBAR:
+        result = (LRESULT)WdeCtl3dCtlColorEx( message, wParam, lParam );
+        if( result == (HBRUSH)NULL ) {
+            SetTextColor( (HDC)wParam, 0 );
+            SetBkColor( (HDC)wParam, RGB( 255, 255, 255 ) );
+            result = (LRESULT)WdeEditBrush;
+        }
+        return( result );
+#else
+    case WM_CTLCOLOR:
+        switch( HIWORD( lParam ) ) {
+        case CTLCOLOR_STATIC:
+            hwin = (HWND)LOWORD( lParam );
+            styles = GetWindowLong( hwin, GWL_STYLE );
+            if( (styles & SS_SIMPLE) == SS_SIMPLE ) {
                 break;
             }
-        case WM_CTLCOLORLISTBOX:
-        case WM_CTLCOLORBTN:
-        case WM_CTLCOLORSCROLLBAR:
+        case CTLCOLOR_LISTBOX:
+        case CTLCOLOR_BTN:
+        case CTLCOLOR_SCROLLBAR:
             result = (LRESULT)WdeCtl3dCtlColorEx( message, wParam, lParam );
             if( result == (HBRUSH)NULL ) {
-                SetTextColor ( (HDC) wParam, 0 );
-                SetBkColor ( (HDC) wParam, RGB( 255, 255, 255 ) );
-                result = (LRESULT) WdeEditBrush;
+                SetTextColor( (HDC)wParam, 0 );
+                SetBkColor( (HDC)wParam, RGB( 255, 255, 255 ) );
+                result = (LRESULT)WdeEditBrush;
             }
             return( result );
-#else
-        case WM_CTLCOLOR:
-            switch ( HIWORD(lParam) ) {
-                case CTLCOLOR_STATIC:
-                    hwin = (HWND) LOWORD(lParam);
-                    styles = GetWindowLong ( hwin, GWL_STYLE );
-                    if ( (styles & SS_SIMPLE) == SS_SIMPLE ) {
-                        break;
-                    }
-                case CTLCOLOR_LISTBOX:
-                case CTLCOLOR_BTN:
-                case CTLCOLOR_SCROLLBAR:
-                    result = (LRESULT)WdeCtl3dCtlColorEx( message, wParam, lParam );
-                    if( result == (HBRUSH)NULL ) {
-                        SetTextColor ( (HDC) wParam, NULL);
-                        SetBkColor ( (HDC) wParam, RGB( 255, 255, 255 ) );
-                        result = (LRESULT) WdeEditBrush;
-                    }
-                    return( result );
-            }
-            break;
+        }
+        break;
 #endif
     }
 
-    return ( DefWindowProc ( hWnd, message, wParam, lParam ) );
+    return( DefWindowProc( hWnd, message, wParam, lParam ) );
 }
 
-LRESULT WINEXPORT WdeFormsWndProc( HWND hWnd, UINT message,
-                                   WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo *info;
     LRESULT     result;
 
-    info = (WdeResInfo *) GetWindowLong( hWnd, 0 );
+    info = (WdeResInfo *)GetWindowLong( hWnd, 0 );
     result = FALSE;
 
-    if( info && info->editting && ( info->forms_win != (HWND)NULL ) ) {
+    if( info != NULL && info->editting && info->forms_win != (HWND)NULL ) {
         InitState( info->forms_win );
-        result = ( FMEditWndProc( hWnd, message, wParam, lParam ) );
+        result = FMEditWndProc( hWnd, message, wParam, lParam );
         if( message == WM_ERASEBKGND ) {
             SendMessage( info->edit_win, message, wParam, lParam );
             result = TRUE;
@@ -393,4 +385,3 @@ LRESULT WINEXPORT WdeFormsWndProc( HWND hWnd, UINT message,
 
     return( result );
 }
-

@@ -24,73 +24,47 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS 16-bit startup code.
 ;*
 ;*****************************************************************************
 
 
-;
-; startup code for WATCOM C/C++16 under MS-DOS
-;
 ;       This must be assembled using one of the following commands:
-;               wasm cstrt086 -bt=DOS -ms -0r -d__TINY__
+;               wasm cstrt086 -bt=DOS -mt -0r       (tiny model)
 ;               wasm cstrt086 -bt=DOS -ms -0r
 ;               wasm cstrt086 -bt=DOS -mm -0r
 ;               wasm cstrt086 -bt=DOS -mc -0r
 ;               wasm cstrt086 -bt=DOS -ml -0r
 ;               wasm cstrt086 -bt=DOS -mh -0r
 ;
+
 include mdef.inc
+include xinit.inc
+include exitwmsg.inc
+
+; PSP offsets
+MEMTOP      equ 2
+ENVIRON     equ 2Ch
+CMDLDATA    equ 81h
+
+FLG_NO87    equ 1
+FLG_LFN     equ 100h
+
 .286p
+
         name    cstart
 
         assume  nothing
 
-if _MODEL and _BIG_CODE
-        extrn   __CMain                 : far
-        extrn   __InitRtns              : far
-        extrn   __FiniRtns              : far
-        extrn   __fatal_runtime_error_  : far
-else
-        extrn   __CMain                 : near
-        extrn   __InitRtns              : near
-        extrn   __FiniRtns              : near
-        extrn   __fatal_runtime_error_  : near
-endif
-        extrn   _edata                  : byte  ; end of DATA (start of BSS)
-        extrn   _end                    : byte  ; end of BSS (start of STACK)
 
-        extrn   "C",_curbrk             : word
-        extrn   "C",_psp                : word
-        extrn   "C",_osmajor            : byte
-        extrn   "C",_osminor            : byte
-        extrn   __osmode                : byte
-        extrn   __HShift                : byte
-        extrn   "C",_STACKLOW           : word
-        extrn   "C",_STACKTOP           : word
-        extrn   "C",_cbyte              : word
-        extrn   "C",_child              : word
-        extrn   __no87                  : word
-        extrn   __FPE_handler           : word
-        extrn  ___FPE_handler           : word
-        extrn   "C",_LpCmdLine          : word
-        extrn   "C",_LpPgmName          : word
-        extrn   __get_ovl_stack         : word
-        extrn   __restore_ovl_stack     : word
-        extrn   __close_ovl_file        : word
-        extrn   __DOSseg__              : byte
-
-ifdef __TINY__
-        extrn   __stacksize             : word
+if _MODEL and _TINY
  DGROUP group _TEXT,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS
 else
  DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 endif
 
-ife _MODEL and _BIG_CODE
+if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
 
-ifndef __TINY__
 ; this guarantees that no function pointer will equal NULL
 ; (WLINK will keep segment 'BEGTEXT' in front)
 ; This segment must be at least 4 bytes in size to avoid confusing the
@@ -114,18 +88,27 @@ ___begtext label byte
 BEGTEXT  ends
 
 endif
-endif
 
 _TEXT   segment word public 'CODE'
 
-ifndef __TINY__
+if _MODEL and _BIG_CODE
+        extrn   __CMain                 : far
+        extrn   __InitRtns              : far
+        extrn   __FiniRtns              : far
+else
+        extrn   __CMain                 : near
+        extrn   __InitRtns              : near
+        extrn   __FiniRtns              : near
+endif
+
+if ( _MODEL and _TINY ) eq 0
 FAR_DATA segment byte public 'FAR_DATA'
 FAR_DATA ends
 endif
 
         assume  ds:DGROUP
 
-ifndef __TINY__
+if ( _MODEL and _TINY ) eq 0
         INIT_VAL        equ 0101h
         NUM_VAL         equ 16
 
@@ -163,6 +146,29 @@ YIE     ends
 
 _DATA   segment word public 'DATA'
 
+        extrn   "C",_curbrk             : word
+        extrn   "C",_psp                : word
+        extrn   "C",_osmajor            : byte
+        extrn   "C",_osminor            : byte
+        extrn   "C",_osmode             : byte
+        extrn   "C",_HShift             : byte
+        extrn   "C",_STACKLOW           : word
+        extrn   "C",_STACKTOP           : word
+        extrn   "C",_cbyte              : word
+        extrn   "C",_child              : word
+        extrn   __no87                  : byte
+        extrn   "C",__uselfn            : byte
+        extrn   "C",__FPE_handler       : dword
+        extrn   "C",_LpCmdLine          : dword
+        extrn   "C",_LpPgmName          : dword
+        extrn   __get_ovl_stack         : word
+        extrn   __restore_ovl_stack     : word
+        extrn   __close_ovl_file        : word
+        extrn   __DOSseg__              : byte
+if _MODEL and _TINY
+        extrn   __stacksize             : word
+endif
+
 if _MODEL and _BIG_CODE
 ;       Variables filled in by Microsoft Overlay Manager
 ;       These are here for people who want to link with Microsoft Linker
@@ -181,9 +187,13 @@ DATA    segment word public 'DATA'
 DATA    ends
 
 _BSS    segment word public 'BSS'
+
+        extrn   _edata                  : byte  ; end of DATA (start of BSS)
+        extrn   _end                    : byte  ; end of BSS (start of STACK)
+
 _BSS    ends
 
-ifndef __TINY__
+if ( _MODEL and _TINY ) eq 0
 STACK_SIZE      equ     800h
 
 STACK   segment para stack 'STACK'
@@ -197,40 +207,41 @@ endif
 
         assume  cs:_TEXT
 
-ifdef __TINY__
+if _MODEL and _TINY
         org     0100h
 endif
 
- _cstart_ proc near
+_cstart_ proc near
         jmp     around
 
 ;
 ; copyright message
 ;
-        db      "WATCOM C/C++16 Run-Time system. "
-        db      "(c) Copyright by Sybase, Inc. 1988-2000."
-        db      ' All rights reserved.'
+include msgrt16.inc
+include msgcpyrt.inc
+
 ;
 ; miscellaneous code-segment messages
 ;
-ifndef __TINY__
+if ( _MODEL and _TINY ) eq 0
 
-NullAssign      db      0dh,0ah,'*** NULL assignment detected',0dh,0ah,0
+NullAssign      db      '*** NULL assignment detected',0
 
 endif
 
-NoMemory        db      'Not enough memory',0dh,0ah,0
-
+NoMemory        db      'Not enough memory',0
 ConsoleName     db      'con',00h
+NewLine         db      0Dh,0Ah
 
-ife _MODEL and _BIG_CODE
-ifndef __TINY__
+if ( _MODEL and ( _TINY or _BIG_CODE )) eq 0
                 dw      ___begtext      ; make sure dead code elimination
-endif                                   ; doesn't kill BEGTEXT segment
+                                        ; doesn't kill BEGTEXT segment
 endif
 
 around: sti                             ; enable interrupts
-ifdef __TINY__
+if _MODEL and _TINY
+        assume  ds:DGROUP
+
         mov     cx,cs
 else
         mov     cx,DGROUP               ; get proper stack segment
@@ -242,11 +253,11 @@ endif
         mov     bx,offset DGROUP:_end   ; get bottom of stack
         add     bx,0Fh                  ; ...
         and     bl,0F0h                 ; ...
-        mov     es:_STACKLOW,bx ; ...
-        mov     es:_psp,ds              ; save segment address of PSP
+        mov     _STACKLOW,bx            ; ...
+        mov     _psp,ds                 ; save segment address of PSP
 
-ifdef __TINY__
-        mov     ax,es:__stacksize       ; get size of stack required
+if _MODEL and _TINY
+        mov     ax,__stacksize          ; get size of stack required
         cmp     ax,0800h                ; make sure stack size is at least
         jae     ss_ok                   ; 2048 bytes
         mov     ax,0800h                ; - set stack size to 2048 bytes
@@ -258,7 +269,7 @@ endif
         and     bl,0F0h                 ; ...
         mov     ss,cx                   ; set stack segment
         mov     sp,bx                   ; set sp relative to DGROUP
-        mov     es:_STACKTOP,bx ; set stack top
+        mov     _STACKTOP,bx            ; set stack top
 
         mov     dx,bx                   ; make sure enough memory for stack
         shr     dx,1                    ; calc # of paragraphs needed
@@ -268,9 +279,9 @@ endif
 ;
 ;  check to see if running in protect-mode (Ergo 286 DPMI DOS-extender)
 ;
-        cmp     byte ptr es:__osmode,0  ; if not protect-mode
+        cmp     byte ptr _osmode,0      ; if not protect-mode
         jne     mem_setup               ; then it is real-mode
-        mov     cx,ds:2h                ; get highest segment address
+        mov     cx,ds:[MEMTOP]          ; get highest segment address
         mov     ax,es                   ; point to data segment
         sub     cx,ax                   ; calc # of paragraphs available
         cmp     dx,cx                   ; compare with what we need
@@ -279,7 +290,7 @@ _Not_Enough_Memory_:
         mov     bx,1                    ; - set exit code
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
-        call    __fatal_runtime_error_  ; - display msg and exit
+        call    __fatal_runtime_error   ; - display msg and exit
 enuf_mem:                               ; endif
 
         mov     ax,es                   ; point to data segment
@@ -300,10 +311,10 @@ enuf_mem:                               ; endif
         jne     not64k                  ; if 64K
         mov     bx,0fffeh               ; - set _curbrk to 0xfffe
 not64k:                                 ; endif
-        mov     es:_curbrk,bx           ; set top of memory owned by process
+        mov     _curbrk,bx              ; set top of memory owned by process
         mov     bx,dx                   ; get # of paragraphs in data segment
         add     bx,ax                   ; plus start of data segment
-        mov     ax,es:_psp              ; get segment addr of PSP
+        mov     ax,_psp                 ; get segment addr of PSP
         mov     es,ax                   ; place in ES
 ;
 ;       free up memory beyond the end of the stack in small data models
@@ -318,23 +329,23 @@ mem_setup:
 ;
         mov     di,ds                   ; point es to PSP
         mov     es,di                   ; ...
-        mov     di,81H                  ; DOS command buffer _psp:80
+        mov     di,CMDLDATA             ; DOS command buffer _psp:80
         mov     cl,-1[di]               ; get length of command
         mov     ch,0
         cld                             ; set direction forward
         mov     al,' '
-        rep     scasb
+        repe    scasb
         lea     si,-1[di]
 
-ifdef __TINY__
+if _MODEL and _TINY
         mov     dx,cs
 else
         mov     dx,DGROUP
 endif
         mov     es,dx                   ; es:di is destination
-        mov     di,es:_STACKLOW
-        mov     es:_LpCmdLine+0,di      ; stash lpCmdLine pointer
-        mov     es:_LpCmdLine+2,es      ; ...
+        mov     di,_STACKLOW
+        mov     word ptr _LpCmdLine+0,di ; stash lpCmdLine pointer
+        mov     word ptr _LpCmdLine+2,es ; ...
         je      noparm
         inc     cx
         rep     movsb
@@ -348,54 +359,62 @@ noparm: sub     al,al
 ;
         mov     ah,30h
         int     21h
-        mov     es:_osmajor,al
-        mov     es:_osminor,ah
+        mov     _osmajor,al
+        mov     _osminor,ah
         mov     cx,di                   ; remember address of pgm name
         cmp     al,3                    ; if DOS version 3 or higher
         jb      nopgmname               ; then
 ;
 ;       copy the program name into bottom of stack
 ;
-        mov     ds,ds:2ch               ; get segment addr of environment area
+        mov     ds,ds:[ENVIRON]         ; get segment addr of environment area
         sub     si,si                   ; offset 0
-        xor     bp,bp                   ; no87 not present!
-L0:     mov     ax,[si]                 ; get first part of environment var
+        mov     bp,FLG_LFN              ; NO87 not present and LFN=N not present!
+L1:     mov     ax,[si]                 ; get first part of environment var
         or      ax,2020H                ; lower case
         cmp     ax,"on"                 ; if first part is 'NO'
-        jne     L1                      ; - then
-        mov     ax,2[si]                ; - get second part
-        cmp     ax,"78"                 ; - if second part is '87'
-        jne     L1                      ; - then
-        inc     bp                      ; - - set bp to indicate NO87
-L1:     cmp     byte ptr [si],0         ; end of string ?
+        jne     L2                      ; then
+        cmp     word ptr [si+2],"78"    ; if second part is '87'
+        jne     L3                      ; then
+        cmp     byte ptr [si+4],"="     ; if third part is '='
+        jne     L3                      ; then
+        or      bp,FLG_NO87             ; set bp to indicate NO87
+        jmp     L3                      ; -
+L2:     cmp     ax,"fl"                 ; if first part is 'LF'
+        jne     L4                      ; then
+        mov     ax,2[si]                ; get second part
+        or      al,20h                  ; lower case
+        cmp     ax,"=n"                 ; if second part is 'N='
+        jne     L4                      ; then
+        mov     al,4[si]                ; get third part
+        or      al,20h                  ; lower case
+        cmp     al,"n"                  ; if third part is 'N'
+        jne     L4                      ; then
+        and     bp,not FLG_LFN          ; set bp to indicate no LFN
+L3:     add     si,5                    ; skip 'NO87=' or 'LFN=N'
+L4:     cmp     byte ptr [si],0         ; end of string ?
         lodsb
-        jne     L1                      ; until end of string
+        jne     L4                      ; until end of string
         cmp     byte ptr [si],0         ; end of all strings ?
-        jne     L0                      ; if not, then skip next string
+        jne     L1                      ; if not, then skip next string
         lodsb
         inc     si                      ; - point to program name
         inc     si                      ; - . . .
-L2:     cmp     byte ptr [si],0         ; - end of pgm name ?
+L5:     cmp     byte ptr [si],0         ; - end of pgm name ?
         movsb                           ; - copy a byte
-        jne     L2                      ; - until end of pgm name
+        jne     L5                      ; - until end of pgm name
 nopgmname:                              ; endif
-        mov     si,cx                   ; save address of pgm name
-        mov     es:_LpPgmName+0,si      ; stash LpPgmName pointer
-        mov     es:_LpPgmName+2,es      ; ...
-
-        mov     ax,es:_psp              ; get segment addr of PSP
-        mov     es,ax                   ; place in ES
-        mov     bx,sp                   ; end of stack in data segment
 
         assume  ds:DGROUP
-ifdef __TINY__
-        mov     dx,cs
-else
-        mov     dx,DGROUP
-endif
+
         mov     ds,dx
-        mov     es,dx
-        mov     __no87,bp               ; set state of "NO87" environment var
+        mov     si,cx                   ; save address of pgm name
+        mov     word ptr _LpPgmName+0,si ; stash LpPgmName pointer
+        mov     word ptr _LpPgmName+2,es ; ...
+        mov     bx,sp                   ; end of stack in data segment
+        mov     ax,bp
+        mov     __no87,al               ; set state of "NO87" environment var
+        and     __uselfn,ah             ; set "LFN" support status
         mov     _STACKLOW,di            ; save low address of stack
 
         mov     cx,offset DGROUP:_end   ; end of _BSS segment (start of STACK)
@@ -421,8 +440,8 @@ if _MODEL and _BIG_CODE
 endif
         ; DON'T MODIFY BP FROM THIS POINT ON!
         mov     ax,offset __null_FPE_rtn; initialize floating-point exception
-        mov     ___FPE_handler,ax       ; ... handler address
-        mov     ___FPE_handler+2,cs     ; ...
+        mov     word ptr __FPE_handler,ax       ; ... handler address
+        mov     word ptr __FPE_handler+2,cs     ; ...
 
         mov     ax,0FFh                 ; run all initalizers
         call    __InitRtns              ; call initializer routines
@@ -433,7 +452,7 @@ _cstart_ endp
 
 __exit  proc near
         public  "C",__exit
-ifdef __TINY__
+if _MODEL and _TINY
         jmp     ok
 else
         push    ax
@@ -465,10 +484,8 @@ __do_exit_with_msg__:
         push    bx                      ; save return code
         push    ax                      ; save address of msg
         push    dx                      ; . . .
-ifndef __TINY__
-        mov     dx,_TEXT
-        mov     ds,dx
-endif
+        mov     di,cs
+        mov     ds,di
         mov     dx,offset ConsoleName
         mov     ax,03d01h               ; write-only access to screen
         int     021h
@@ -477,13 +494,18 @@ endif
         pop     dx                      ; . . .
         mov     si,dx                   ; get address of msg
         cld                             ; make sure direction forward
-L3:     lodsb                           ; get char
+L6:     lodsb                           ; get char
         cmp     al,0                    ; end of string?
-        jne     L3                      ; no
+        jne     L6                      ; no
         mov     cx,si                   ; calc length of string
         sub     cx,dx                   ; . . .
         dec     cx                      ; . . .
         mov     ah,040h                 ; write out the string
+        int     021h                    ; . . .
+        mov     ds,di
+        mov     dx,offset NewLine       ; write out the new line
+        mov     cx,sizeof NewLine       ; . . .
+        mov     ah,040h                 ; . . .
         int     021h                    ; . . .
         pop     ax                      ; restore return code
 ok:
@@ -502,7 +524,7 @@ no_ovl:                                 ; endif
 endif
         push    ax                      ; save return code
         mov     ax,00h                  ; run finalizers
-        mov     dx,0fh                  ; less than exit
+        mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FiniRtns              ; do finalization
         pop     ax                      ; restore return code
         mov     ah,04cH                 ; DOS call to exit with return code
@@ -516,7 +538,7 @@ __exit  endp
 public  __GETDS
 __GETDS proc    near
         push    ax                      ; save ax
-ifdef __TINY__
+if _MODEL and _TINY
 ;       can't have segment fixups in the TINY memory model
         mov     ax,cs                   ; DS=CS
 else

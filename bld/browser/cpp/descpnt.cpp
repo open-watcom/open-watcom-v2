@@ -67,11 +67,11 @@ void DescriptionPart::paint( WBRWindow * prnt, bool sel )
             bg = ColorBlack;
         } else {
             fg = ColorBlue;
-            bg = ColorLiteGray;
+            bg = prnt->backgroundColour();
         }
     } else {
         fg = ColorBlack;
-        bg = ColorLiteGray;
+        bg = prnt->backgroundColour();
     }
 
     prnt->drawText( WPoint( _rect.x(), _rect.y() ),

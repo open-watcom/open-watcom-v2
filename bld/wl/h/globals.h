@@ -74,7 +74,7 @@ GLOB section *      NonSect;        /* non-overlay-class section            */
 GLOB char *         OvlFName;       /* points to file name for overlays     */
 GLOB path_entry *   Path;           /* path for object files                */
 GLOB path_entry *   LibPath;        /* path for library files               */
-GLOB byte *         TokBuff;        // Multi-purpose large buffer
+GLOB char *         TokBuff;        // Multi-purpose large buffer
 GLOB unsigned       TokSize;        // size of above buffer
 GLOB offset         PackCodeLimit;  // Maximum size of a packed code seg
 GLOB offset         PackDataLimit;  // Maximum size of a packed data seg

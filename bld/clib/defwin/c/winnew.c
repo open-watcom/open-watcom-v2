@@ -63,7 +63,7 @@ unsigned _NewWindow( char *name, ... )
         0,                                  /* width.                     */
         0,                                  /* height.                    */
         _MainWindow,                        /* parent                     */
-        NULL,                               /* menu handle                */
+        (HMENU)NULL,                        /* menu handle                */
         _MainWindowData->inst,              /* owner of window            */
         NULL                                /* extra data pointer         */
     );

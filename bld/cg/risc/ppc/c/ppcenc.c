@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC instruction encoding.
 *
 ****************************************************************************/
 
@@ -46,6 +45,7 @@
 #include "procdef.h"
 #include "cgaux.h"
 #include "ppcenc.h"
+#include "ppcgen.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -53,9 +53,10 @@ extern void DumpInsOnly( instruction * );
 extern void DumpString( char * );
 extern void DumpPtr( pointer );
 extern void DumpInt( int );
-extern void DumpNL(void);
-extern void DumpGen(struct opcode_entry*);
+extern void DumpNL( void );
+extern void DumpGen( struct opcode_entry * );
 extern void DumpPtr( void *ptr );
+extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( char *buffer, int size );
 extern uint_8           RegTrans( hw_reg_set );
@@ -66,24 +67,21 @@ extern hw_reg_set       StackReg( void );
 extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( code_lbl * );
-extern  void            DbgBlkBeg( dbg_block *blk, offset lc );
-extern  void            DbgBlkEnd( dbg_block *blk, offset lc );
-extern  offset          AskLocation();
-extern  void            OutLineNum( unsigned_16 line, bool label_line );
-extern void             EmitDbgInfo(instruction*);
-extern pointer          FEAuxInfo(pointer*,aux_class);
-extern  code_lbl        *GetWeirdPPCDotDotLabel( code_lbl * );
+extern void             DbgBlkBeg( dbg_block *blk, offset lc );
+extern void             DbgBlkEnd( dbg_block *blk, offset lc );
+extern offset           AskLocation( void );
+extern void             OutLineNum( unsigned_16 line, bool label_line );
+extern void             EmitDbgInfo( instruction * );
+extern pointer          FEAuxInfo( pointer *, aux_class );
+extern code_lbl         *GetWeirdPPCDotDotLabel( code_lbl * );
+extern  void            GenCondJump( instruction *cond );
 
 extern type_class_def   Unsigned[];
 extern type_length      TypeClassSize[];
 extern proc_def         *CurrProc;
 
-typedef uint_32         ppc_ins;
-typedef uint_32         opcode;
-typedef uint_32         reg_index;
-
 #define _NameReg( op )                  ( (op)->r.arch_index )
-#define _IsSigned( type )               ( Unsigned[ type ] != type )
+#define _IsSigned( type )               ( Unsigned[type] != type )
 #define _Emit( ins )                    ObjBytes( (char *)&(ins), sizeof( ppc_ins ) )
 
 #define ZERO_SINK       0
@@ -161,61 +159,67 @@ static  opcode  BinaryImmedOpcodes[] = {
         0,                      /* OP_FMOD */
 };
 
-static  opcode  *FindOpcodes( instruction *ins ) {
-/************************************************/
 
+static  opcode  *FindOpcodes( instruction *ins )
+/**********************************************/
+{
     opcode      *opcodes;
 
     if( _IsFloating( ins->type_class ) ) {
-        opcodes = &FPOpcodes[ ins->head.opcode - FIRST_BINARY_OP ][ 0 ];
+        opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
     } else {
-        opcodes = &BinaryOpcodes[ ins->head.opcode - FIRST_BINARY_OP ][ _IsSigned( ins->type_class ) ][ 0 ];
+        opcodes = &BinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
     }
     return( opcodes );
 }
 
-static  opcode  *FindImmedOpcodes( instruction *ins ) {
-/*********************************************************/
 
+static  opcode  *FindImmedOpcodes( instruction *ins )
+/***************************************************/
+{
     opcode      *opcodes;
 
-    opcodes = &BinaryImmedOpcodes[ ins->head.opcode - FIRST_BINARY_OP ];
+    opcodes = &BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     if( *opcodes == 0 ) {
         _Zoiks( ZOIKS_091 );
     }
     return( opcodes );
 }
 
-extern  void    GenFPOPINS( opcode op1, opcode op2, reg_index a, reg_index c, reg_index d ) {
-//*******************************************************************************************
 
+extern  void    GenFPOPINS( opcode op1, opcode op2, reg_index a, reg_index c, reg_index d )
+//*****************************************************************************************
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Op2( op2 );
     _Emit( encoding );
 }
 
-extern  void    GenOPINS( opcode op1, opcode op2, reg_index a, reg_index b, reg_index s ) {
-//*****************************************************************************************
 
+extern  void    GenOPINS( opcode op1, opcode op2, reg_index a, reg_index b, reg_index s )
+//***************************************************************************************
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Op2( op2 );
     _Emit( encoding );
 }
 
-extern  void    GenOPIMM( opcode op1, reg_index d, reg_index a, signed_16 immed ) {
-//*********************************************************************************
 
+extern  void    GenOPIMM( opcode op1, reg_index d, reg_index a, signed_16 immed )
+//*******************************************************************************
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
     _Emit( encoding );
 }
 
-extern  void    GenMTSPR( reg_index d, uint_32 spr, bool from ) {
-//***************************************************************
 
+extern  void    GenMTSPR( reg_index d, uint_32 spr, bool from )
+//*************************************************************
+{
     ppc_ins             encoding;
 
     encoding = _Op1( 31 ) | _Op2( 467 );
@@ -226,18 +230,20 @@ extern  void    GenMTSPR( reg_index d, uint_32 spr, bool from ) {
     _Emit( encoding );
 }
 
-extern  void    GenMEMINS( opcode op, reg_index d, reg_index i, signed_16 displacement ) {
-/****************************************************************************************/
 
+extern  void    GenMEMINS( opcode op, reg_index d, reg_index i, signed_16 displacement )
+/**************************************************************************************/
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
     _Emit( encoding );
 }
 
-extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute ) {
-/*******************************************************************************/
 
+extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute )
+/*****************************************************************************/
+{
     ppc_ins             encoding;
     int_32              loc;
 
@@ -247,9 +253,10 @@ extern  void    GenBRANCH( opcode op, pointer label, bool link, bool absolute ) 
     _Emit( encoding );
 }
 
-extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label ) {
-/***************************************************************************/
 
+extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label )
+/*************************************************************************/
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _S( bo ) | _A( bi );
@@ -257,39 +264,44 @@ extern  void    GenCONDBR( opcode op, opcode bo, opcode bi, pointer label ) {
     _Emit( encoding );
 }
 
-extern  void    GenCMP( opcode op, opcode op2, reg_index a, reg_index b ) {
-/*************************************************************************/
 
+extern  void    GenCMP( opcode op, opcode op2, reg_index a, reg_index b )
+/***********************************************************************/
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _A( a ) | _B( b ) | _Op2( op2 );
     _Emit( encoding );
 }
 
-extern  void    GenCMPIMM( opcode op, reg_index a, signed_16 imm ) {
-/******************************************************************/
 
+extern  void    GenCMPIMM( opcode op, reg_index a, signed_16 imm )
+/****************************************************************/
+{
     ppc_ins             encoding;
 
     encoding = _Op1( op ) | _A( a ) | _SignedImmed( imm );
     _Emit( encoding );
 }
 
-extern  void    GenRAWINS( uint_32 encoding ) {
-/*********************************************/
 
+extern  void    GenRAWINS( uint_32 encoding )
+/*******************************************/
+{
     _Emit( encoding );
 }
 
-static  pointer symLabel( name *mem ) {
-/*************************************/
 
+static  pointer symLabel( name *mem )
+/***********************************/
+{
     return( AskForSymLabel( mem->v.symbol, mem->m.memory_type ) );
 }
 
-extern  type_length     TempLocation( name *temp ) {
-/**************************************************/
 
+extern  type_length     TempLocation( name *temp )
+/************************************************/
+{
     name                *base;
     type_length         offset;
 
@@ -305,25 +317,22 @@ extern  type_length     TempLocation( name *temp ) {
     return( offset + temp->t.location + temp->v.offset - base->v.offset );
 }
 
-static  void    doCall( instruction *ins ) {
-/******************************************/
 
-    pointer     sym;
-    byte_seq    *code;
-    ppc_ins     encoding;
-    code_lbl    *lbl;
+static  void    doCall( instruction *ins )
+/****************************************/
+{
+    pointer         sym;
+    risc_byte_seq   *code;
+    ppc_ins         encoding;
+    code_lbl        *lbl;
 
     code = code;
-    sym = ins->operands[ CALL_OP_ADDR ]->v.symbol;
-#if 0
+    sym = ins->operands[CALL_OP_ADDR]->v.symbol;
     code = FEAuxInfo( sym, CALL_BYTES );
     if( code != NULL ) {
         ObjBytes( code->data, code->length );
     } else {
-#else
-    {
-#endif
-        lbl = symLabel( ins->operands[ CALL_OP_ADDR ] );
+        lbl = symLabel( ins->operands[CALL_OP_ADDR] );
         lbl = GetWeirdPPCDotDotLabel( lbl );
         GenBRANCH( 18, lbl, TRUE, FALSE );
         encoding = 0x60000000;  // ..znop for linker thunk
@@ -332,9 +341,10 @@ static  void    doCall( instruction *ins ) {
     }
 }
 
-static  void    getMemEncoding( name *mem, reg_index *index, int_16 *offset ) {
-/*****************************************************************************/
 
+static  void    getMemEncoding( name *mem, reg_index *index, int_16 *offset )
+/***************************************************************************/
+{
     switch( mem->n.class ) {
     case N_INDEXED:
         assert( mem->i.index->n.class == N_REGISTER );
@@ -356,6 +366,7 @@ static  void    getMemEncoding( name *mem, reg_index *index, int_16 *offset ) {
         break;
     }
 }
+
 
 static  opcode  loadOpcodes[] = {
     34,                 /* U1 */
@@ -390,9 +401,9 @@ static  opcode  storeOpcodes[] = {
 };
 
 
-static  void    doLoadStore( instruction *ins, bool load ) {
-/**********************************************************/
-
+static  void    doLoadStore( instruction *ins, bool load )
+/********************************************************/
+{
     name        *mem;
     name        *reg;
     opcode      op;
@@ -400,60 +411,64 @@ static  void    doLoadStore( instruction *ins, bool load ) {
     int_16      offset;
 
     if( load ) {
-        mem = ins->operands[ 0 ];
+        mem = ins->operands[0];
         reg = ins->result;
-        op = loadOpcodes[ ins->type_class ];
+        op = loadOpcodes[ins->type_class];
     } else {
-        reg = ins->operands[ 0 ];
+        reg = ins->operands[0];
         mem = ins->result;
-        op = storeOpcodes[ ins->type_class ];
+        op = storeOpcodes[ins->type_class];
     }
+    assert( op != 0 );
     assert( reg->n.class == N_REGISTER );
     getMemEncoding( mem, &index, &offset );
     GenMEMINS( op, RegTrans( reg->r.reg ), index, offset );
 }
 
-static  void    doSign( instruction *ins ) {
-/******************************************/
 
+static  void    doSign( instruction *ins )
+/****************************************/
+{
     switch( ins->base_type_class ) {
     case U1:
     case I1:
         // extsb
-        GenOPINS( 31, 954, _NameReg( ins->result ), 0, _NameReg( ins->operands[ 0 ] ) );
+        GenOPINS( 31, 954, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
         break;
     case U2:
     case I2:
         // extsh
-        GenOPINS( 31, 922, _NameReg( ins->result ), 0, _NameReg( ins->operands[ 0 ] ) );
+        GenOPINS( 31, 922, _NameReg( ins->result ), 0, _NameReg( ins->operands[0] ) );
         break;
     default:
         _Zoiks( ZOIKS_091 );
     }
 }
 
-static  void    doZero( instruction *ins ) {
-/******************************************/
 
+static  void    doZero( instruction *ins )
+/****************************************/
+{
     switch( ins->base_type_class ) {
     case U1:
     case I1:
         // andi op1,0x00ff -> res
-        GenOPIMM( 28, _NameReg( ins->operands[ 0 ] ), _NameReg( ins->result ), 0x00ff );
+        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), 0x00ff );
         break;
     case U2:
     case I2:
         // andi op1,0xffff -> res
-        GenOPIMM( 28, _NameReg( ins->operands[ 0 ] ), _NameReg( ins->result ), 0xffff );
+        GenOPIMM( 28, _NameReg( ins->operands[0] ), _NameReg( ins->result ), 0xffff );
         break;
     default:
         _Zoiks( ZOIKS_091 );
     }
 }
 
-static  void    GenCallIndirect( instruction *call ) {
-/****************************************************/
 
+static  void    GenCallIndirect( instruction *call )
+/**************************************************/
+{
     reg_index   src;
     reg_index   reg;
     reg_index   mem_index;
@@ -464,9 +479,9 @@ static  void    GenCallIndirect( instruction *call ) {
 
     reg = VOLATILE_REG; /* use the volatile scratch reg if possible */
     src = VOLATILE_REG;
-    addr = call->operands[ CALL_OP_ADDR ];
-    ldw = loadOpcodes[ U4 ];
-    stw = storeOpcodes[ U4 ];
+    addr = call->operands[CALL_OP_ADDR];
+    ldw = loadOpcodes[U4];
+    stw = storeOpcodes[U4];
     GenMEMINS( stw, TOC_REG, STACK_REG, 4 );
     switch( addr->n.class ) {
     case N_REGISTER:
@@ -485,9 +500,10 @@ static  void    GenCallIndirect( instruction *call ) {
     GenMEMINS( ldw, TOC_REG, STACK_REG, 4 );
 }
 
-static  void    GenVaStart( instruction *ins ) {
-/**********************************************/
 
+static  void    GenVaStart( instruction *ins )
+/********************************************/
+{
     opcode      stb;
     opcode      stw;
     opcode      li;
@@ -495,12 +511,12 @@ static  void    GenVaStart( instruction *ins ) {
     reg_index   tmp;
     reg_index   stack;
 
-    assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-    reg = _NameReg( ins->operands[ 0 ] );
+    assert( ins->operands[0]->n.class == N_REGISTER );
+    reg = _NameReg( ins->operands[0] );
     tmp = VOLATILE_REG;
     stack = RegTrans( FrameReg() );
-    stb = storeOpcodes[ U1 ];
-    stw = storeOpcodes[ U4 ];
+    stb = storeOpcodes[U1];
+    stw = storeOpcodes[U4];
     li = 14;    // addi
     GenOPIMM( li, tmp, ZERO_SINK, CurrProc->state.parm.gr );
     GenMEMINS( stb, tmp, reg, 0 );
@@ -512,30 +528,34 @@ static  void    GenVaStart( instruction *ins ) {
     GenMEMINS( stw, tmp, reg, 8 );
 }
 
-static  void    DbgBlkInfo( instruction *ins ) {
-/***********************************************/
+
+static  void    DbgBlkInfo( instruction *ins )
+/********************************************/
+{
     offset lc;
 
     lc = AskLocation();
     if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
-        DbgBlkBeg( (dbg_block *)ins->operands[ 0 ], lc );
+        DbgBlkBeg( (dbg_block *)ins->operands[0], lc );
     } else {
-        DbgBlkEnd( (dbg_block *)ins->operands[ 0 ], lc );
+        DbgBlkEnd( (dbg_block *)ins->operands[0], lc );
     }
 }
 
-extern  void    GenRET() {
-/************************/
 
+extern  void    GenRET( void )
+/****************************/
+{
    ppc_ins      encoding;
 
    encoding = 0x4e800020;       // FIXME - need linkage docs
    _Emit( encoding );
 }
 
-static  void    Encode( instruction *ins ) {
-/******************************************/
 
+static  void    Encode( instruction *ins )
+/****************************************/
+{
     reg_index           a;      // usually used for the result
     reg_index           b;
     reg_index           s;
@@ -550,14 +570,14 @@ static  void    Encode( instruction *ins ) {
     switch( ins->u.gen_table->generate ) {
     case G_MOVE_FP:
         assert( ins->result->n.class == N_REGISTER );
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        GenOPINS( 63, 72, 0, _NameReg( ins->operands[ 0 ] ), _NameReg( ins->result ) );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        GenOPINS( 63, 72, 0, _NameReg( ins->operands[0] ), _NameReg( ins->result ) );
         break;
     case G_MOVE:
         // or op, op -> dst
         assert( ins->result->n.class == N_REGISTER );
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        b = _NameReg( ins->operands[ 0 ] );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        b = _NameReg( ins->operands[0] );
         GenOPINS( 31, 444, _NameReg( ins->result ), b, b );
         break;
     case G_LOAD:
@@ -568,24 +588,24 @@ static  void    Encode( instruction *ins ) {
         doCall( ins );
         break;
     case G_LEA_HIGH:
-        assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
-        assert( ins->operands[ 0 ]->c.const_type == CONS_HIGH_ADDR );
+        assert( ins->operands[0]->n.class == N_CONSTANT );
+        assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[ 0 ]->c.int_value & 0xffff );
+        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[ 0 ]->c.int_value );
+        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
         break;
     case G_LEA:
-        assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
+        assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        switch( ins->operands[ 0 ]->c.const_type ) {
+        switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // addi rd, imm(r0)
-            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[ 0 ]->c.int_value );
+            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -596,17 +616,17 @@ static  void    Encode( instruction *ins ) {
         }
         break;
     case G_LOAD_ADDR:
-        switch( ins->operands[ 0 ]->n.class ) {
+        switch( ins->operands[0]->n.class ) {
         case N_INDEXED:
         case N_TEMP:
             assert( ins->result->n.class == N_REGISTER );
-            getMemEncoding( ins->operands[ 0 ], &mem_index, &mem_offset );
+            getMemEncoding( ins->operands[0], &mem_index, &mem_offset );
             // addi rd,off(ri|sp)
             GenOPIMM( 14, _NameReg( ins->result ), mem_index, mem_offset );
             break;
         case N_MEMORY:
             assert( ins->result->n.class == N_REGISTER );
-            OutReloc( symLabel( ins->operands[ 0 ] ), PPC_RELOC_TOC_OFFSET, 2 );
+            OutReloc( symLabel( ins->operands[0] ), PPC_RELOC_TOC_OFFSET, 2 );
             GenMEMINS( 32, _NameReg( ins->result ), TOC_REG, 0 );
             break;
         default:
@@ -614,25 +634,25 @@ static  void    Encode( instruction *ins ) {
         }
         break;
     case G_BINARY_FP:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         if( ins->head.opcode == OP_MUL ) {
             ops = FindOpcodes( ins );
-            GenFPOPINS( ops[ 0 ], ops[ 1 ],
-                        _NameReg( ins->operands[ 0 ] ),
-                        _NameReg( ins->operands[ 1 ] ),
+            GenFPOPINS( ops[0], ops[1],
+                        _NameReg( ins->operands[0] ),
+                        _NameReg( ins->operands[1] ),
                         _NameReg( ins->result ) );
             break;
         }
         /* fall through */
     case G_BINARY:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         ops = FindOpcodes( ins );
-        a = _NameReg( ins->operands[ 0 ] );
-        b = _NameReg( ins->operands[ 1 ] );
+        a = _NameReg( ins->operands[0] );
+        b = _NameReg( ins->operands[1] );
         s = _NameReg( ins->result );
         if( ins->head.opcode == OP_SUB && ins->u.gen_table->generate == G_BINARY ) {
             /* someone sucks - it's not me */
@@ -640,96 +660,96 @@ static  void    Encode( instruction *ins ) {
             a = b;
             b = temp;
         }
-        GenOPINS( ops[ 0 ], ops[ 1 ], a, b, s );
+        GenOPINS( ops[0], ops[1], a, b, s );
         break;
     case G_BINARYS:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         ops = FindOpcodes( ins );
-        s = _NameReg( ins->operands[ 0 ] );
-        b = _NameReg( ins->operands[ 1 ] );
+        s = _NameReg( ins->operands[0] );
+        b = _NameReg( ins->operands[1] );
         a = _NameReg( ins->result );
-        GenOPINS( ops[ 0 ], ops[ 1 ], a, b, s );
+        GenOPINS( ops[0], ops[1], a, b, s );
         break;
     case G_BINARYS_IMM:
     case G_BINARY_IMM:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_CONSTANT );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // rlwinm dst,src,n,0,31-n
-            op2 = 31 - _FiveBits( ins->operands[ 1 ]->c.int_value );
-            b = _FiveBits( ins->operands[ 1 ]->c.int_value );
-            GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[ 0 ] ) );
+            op2 = 31 - _FiveBits( ins->operands[1]->c.int_value );
+            b = _FiveBits( ins->operands[1]->c.int_value );
+            GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 GenOPINS( 31, 824, _NameReg( ins->result ),
-                    ins->operands[ 1 ]->c.int_value, _NameReg( ins->operands[ 0 ] ) );
+                    ins->operands[1]->c.int_value, _NameReg( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
-                b = _FiveBits( ins->operands[ 1 ]->c.int_value );
+                b = _FiveBits( ins->operands[1]->c.int_value );
                 op2 = ( b << 5 ) | 31;
                 b = 32 - b;
-                GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[ 0 ] ) );
+                GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
             }
             break;
         default:
             ops = FindImmedOpcodes( ins );
             if( ins->u.gen_table->generate == G_BINARYS_IMM ) {
-                s = _NameReg( ins->operands[ 0 ] );
+                s = _NameReg( ins->operands[0] );
                 a = _NameReg( ins->result );
             } else {
                 s = _NameReg( ins->result );
-                a = _NameReg( ins->operands[ 0 ] );
+                a = _NameReg( ins->operands[0] );
             }
-            GenOPIMM( ops[ 0 ], s, a, ins->operands[ 1 ]->c.int_value );
+            GenOPIMM( ops[0], s, a, ins->operands[1]->c.int_value );
             break;
         }
         break;
     case G_CMP_FP:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_REGISTER );
-        GenCMP( 63, 32, _NameReg( ins->operands[ 0 ] ), _NameReg( ins->operands[ 1 ] ) );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_REGISTER );
+        GenCMP( 63, 32, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
         break;
     case G_CMP:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_REGISTER );
         op2 = 32;
         if( _IsSigned( ins->type_class ) ) {
             op2 = 0;
         }
-        GenCMP( 31, op2, _NameReg( ins->operands[ 0 ] ), _NameReg( ins->operands[ 1 ] ) );
+        GenCMP( 31, op2, _NameReg( ins->operands[0] ), _NameReg( ins->operands[1] ) );
         break;
     case G_CMP_I:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
-        assert( ins->operands[ 1 ]->n.class == N_CONSTANT );
+        assert( ins->operands[0]->n.class == N_REGISTER );
+        assert( ins->operands[1]->n.class == N_CONSTANT );
         op1 = 10;
         if( _IsSigned( ins->type_class ) ) {
             op1 = 11;
         }
-        GenCMPIMM( op1, _NameReg( ins->operands[ 0 ] ), ins->operands[ 1 ]->c.int_value );
+        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.int_value );
         break;
     case G_SIGN:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         doSign( ins );
         break;
     case G_ZERO:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
         doZero( ins );
         break;
     case G_FREGTOMI4:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_TEMP || ins->result->n.class == N_INDEXED );
         break;
     case G_UNARY:
-        assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+        assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->result->n.class == N_REGISTER );
-        a = _NameReg( ins->operands[ 0 ] );
+        a = _NameReg( ins->operands[0] );
         s = _NameReg( ins->result );
         switch( ins->head.opcode ) {
         case OP_NEGATE:
@@ -750,7 +770,9 @@ static  void    Encode( instruction *ins ) {
         GenVaStart( ins );
         break;
     case G_NO:
+        return;
     case G_UNKNOWN:
+        _Zoiks( ZOIKS_097 );
         break;
     case G_DEBUG:
         DbgBlkInfo( ins );
@@ -767,9 +789,10 @@ static  void    Encode( instruction *ins ) {
     }
 }
 
-extern  void    GenObjCode( instruction *ins )  {
-/********************************************/
 
+extern  void    GenObjCode( instruction *ins )
+/********************************************/
+{
     Encode( ins );
     if( ins->u.gen_table->generate == G_CMP ||
         ins->u.gen_table->generate == G_CMP_I ||
@@ -780,11 +803,11 @@ extern  void    GenObjCode( instruction *ins )  {
 
 #define MAX_ALIGNMENT   16
 
-static char Zeros[ MAX_ALIGNMENT ];
+static char Zeros[MAX_ALIGNMENT];
 
-extern  void    CodeLabel( label_handle label, unsigned alignment ) {
-/*******************************************************************/
-
+extern  void    CodeLabel( label_handle label, unsigned alignment )
+/*****************************************************************/
+{
     offset      loc;
     offset      modulus;
 
@@ -792,7 +815,7 @@ extern  void    CodeLabel( label_handle label, unsigned alignment ) {
     loc = AskLocation();
     modulus = loc % alignment;
     if( modulus != 0 ) {
-        ObjBytes( &Zeros[ 0 ], alignment - modulus );
+        ObjBytes( &Zeros[0], alignment - modulus );
     }
     OutLabel( label );
     if( _IsTargetModel( ASM_OUTPUT ) ) {
@@ -803,9 +826,10 @@ extern  void    CodeLabel( label_handle label, unsigned alignment ) {
     }
 }
 
-extern  void    CodeLineNum( cg_linenum line, bool label ) {
-/**********************************************/
 
+extern  void    CodeLineNum( cg_linenum line, bool label )
+/********************************************************/
+{
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "Source Line: " );
         DumpInt( line );
@@ -815,9 +839,9 @@ extern  void    CodeLineNum( cg_linenum line, bool label ) {
 }
 
 
-extern  void    GenJumpLabel( pointer label ) {
-/**********************************************/
-
+extern  void    GenJumpLabel( pointer label )
+/*******************************************/
+{
     GenBRANCH( 18, label, FALSE, FALSE );
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "JMP L" );
@@ -844,13 +868,13 @@ static  opcode  BranchOpcodes[][2] = {
     { INVERT, LT },                     /* OP_CMP_GREATER_EQUAL */
 };
 
-extern  void    GenJumpIf( instruction *ins, pointer label ) {
-/************************************************************/
-
+extern  void    GenJumpIf( instruction *ins, pointer label )
+/**********************************************************/
+{
     opcode      *ops;
 
-    ops = &BranchOpcodes[ ins->head.opcode - FIRST_COMPARISON ][ 0 ]; // fixme - floating point
-    GenCONDBR( 16, ops[ 0 ], ops[ 1 ], label );
+    ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
+    GenCONDBR( 16, ops[0], ops[1], label );
     if( _IsTargetModel( ASM_OUTPUT ) ) {
         DumpString( "Jcc L" );
         DumpPtr( label );
@@ -859,9 +883,9 @@ extern  void    GenJumpIf( instruction *ins, pointer label ) {
 }
 
 
-extern  void    GenKillLabel( code_lbl *lbl ) {
-/*********************************************/
-
+extern  void    GenKillLabel( code_lbl *lbl )
+/*******************************************/
+{
     _ValidLbl( lbl );
     if( _TstStatus( lbl, CODELABEL ) == FALSE ) return;
     // if( _TstStatus( lbl, OWL_OWNED ) != FALSE ) return;
@@ -869,47 +893,50 @@ extern  void    GenKillLabel( code_lbl *lbl ) {
 }
 
 
-extern  void    GenCallLabel( pointer label ) {
-/**********************************************/
-
+extern  void    GenCallLabel( pointer label )
+/*******************************************/
+{
 }
 
 
-extern  void    GenLabelReturn() {
-/**********************************************/
-
+extern  void    GenLabelReturn( void )
+/************************************/
+{
 }
 
 
-extern  byte    ReverseCondition( byte cond ) {
-/*********************************************/
-
+extern  byte    ReverseCondition( byte cond )
+/*******************************************/
+{
     return( cond );
 }
 
-extern  label_handle    LocateLabel( instruction *ins, int index ) {
-/******************************************************************/
 
+extern  label_handle    LocateLabel( instruction *ins, int index )
+/****************************************************************/
+{
     if( index == NO_JUMP ) return( NULL );
-    for(;;) {
+    for( ;; ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) break;
     }
-    return( _BLOCK( ins )->edge[  index  ].destination );
+    return( _BLOCK( ins )->edge[index].destination );
 }
 
-static  block   *InsBlock( instruction *ins ) {
-/*********************************************/
 
+static  block   *InsBlock( instruction *ins )
+/*******************************************/
+{
     while( ins->head.opcode != OP_BLOCK ) {
         ins = ins->head.next;
     }
     return( _BLOCK( ins ) );
 }
 
-extern  void    GenCondJump( instruction *cond ) {
-/************************************************/
 
+extern  void    GenCondJump( instruction *cond )
+/**********************************************/
+{
     label_handle        dest_false;
     label_handle        dest_true;
     block               *blk;
@@ -923,4 +950,25 @@ extern  void    GenCondJump( instruction *cond ) {
     if( dest_false != blk->next_block->label ) {
         GenJumpLabel( dest_false );
     }
+}
+
+
+extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
+/************************************************************************/
+{
+#if 0
+
+    // copy & paste from AXP cg
+    oc_riscins          oc;
+
+    oc.op.objlen = 4;
+    oc.op.class = OC_RCODE;
+    oc.op.reclen = sizeof( oc_riscins );
+    oc.opcode = ins;
+    oc.sym = sym;
+    oc.reloc = type;
+    InputOC( (any_oc *)&oc );
+#else
+    _Zoiks( ZOIKS_091 );
+#endif
 }

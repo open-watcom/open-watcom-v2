@@ -30,13 +30,14 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include "ldstr.h"
 
 static char     *ErrorMsgTitle  = NULL;
 
 /*
- * WImgEditError - Displays the error message.
+ * WImgEditError - display the error message
  *                 errno - determines the string to go with the error
  *                 fname - if a file name goes with the error message
  */
@@ -58,7 +59,7 @@ void WImgEditError( DWORD error, LPSTR fname )
         IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
-    case WIE_ERR_TOO_MANY_COLOURS:
+    case WIE_ERR_TOO_MANY_COLORS:
         PrintHintTextByID( WIE_ERR_INVALIDBITMAPFILE, fname );
         IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
         break;
@@ -157,36 +158,56 @@ void WImgEditError( DWORD error, LPSTR fname )
     default:
         break;
     }
+
 } /* WImgEditError */
 
+/*
+ * IEAllocRCString
+ */
 char *IEAllocRCString( DWORD id )
 {
     return( AllocRCString( id ) );
-}
 
+} /* IEAllocRCString */
+
+/*
+ * IEFreeRCString
+ */
 void IEFreeRCString( char *str )
 {
     FreeRCString( str );
-}
 
+} /* IEFreeRCString */
+
+/*
+ * IECopyRCString
+ */
 DWORD IECopyRCString( DWORD id, char *buf, DWORD bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
-}
 
+} /* IECopyRCString */
+
+/*
+ * IEInitDisplayError
+ */
 void IEInitDisplayError( HINSTANCE inst )
 {
     SetInstance( inst );
-}
 
+} /* IEInitDisplayError */
+
+/*
+ * IEPrintErrorMsg
+ */
 void IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style )
 {
     char        *text;
 
-    if( msg ) {
-        if( fname ) {
-            text = (char *)MemAlloc( strlen(msg) + strlen( fname ) + 1 );
-            if( text ) {
+    if( msg != NULL ) {
+        if( fname != NULL ) {
+            text = (char *)MemAlloc( strlen( msg ) + strlen( fname ) + 1 );
+            if( text != NULL ) {
                 sprintf( text, msg, fname );
                 _wpi_messagebox( HMainWindow, text, title, style );
                 MemFree( text );
@@ -195,8 +216,12 @@ void IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style )
             _wpi_messagebox( HMainWindow, msg, title, style );
         }
     }
-}
 
+} /* IEPrintErrorMsg */
+
+/*
+ * IEPrintErrorMsgByID
+ */
 void IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style )
 {
     char        *title_str;
@@ -212,15 +237,19 @@ void IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style )
 
     IEPrintErrorMsg( title_str, msg_str, fname, style );
 
-    if( msg_str ) {
+    if( msg_str != NULL ) {
         IEFreeRCString( msg_str );
     }
 
-    if( ( title != -1 ) && title_str ) {
+    if( title != -1 && title_str != NULL ) {
         IEFreeRCString( title_str );
     }
-}
 
+} /* IEPrintErrorMsgByID */
+
+/*
+ * IEDisplayErrorMsg
+ */
 void IEDisplayErrorMsg( DWORD title, DWORD msg, UINT style )
 {
     char        *title_str;
@@ -231,22 +260,30 @@ void IEDisplayErrorMsg( DWORD title, DWORD msg, UINT style )
         title_str = IEAllocRCString( title );
     }
 
-    if( !RCMessageBox( HMainWindow , msg, title_str, style ) ) {
-        MessageBeep(-1);
+    if( !RCMessageBox( HMainWindow, msg, title_str, style ) ) {
+        MessageBeep( -1 );
     }
 
-    if( ( title != -1 ) && title_str ) {
+    if( title != -1 && title_str != NULL ) {
         IEFreeRCString( title_str );
     }
-}
 
+} /* IEDisplayErrorMsg */
+
+/*
+ * IEFiniErrors
+ */
 void IEFiniErrors( void )
 {
     if( ErrorMsgTitle != NULL ) {
         IEFreeRCString( ErrorMsgTitle );
     }
-}
 
+} /* IEFiniErrors */
+
+/*
+ * IEInitErrors
+ */
 BOOL IEInitErrors( HINSTANCE inst )
 {
     IEInitDisplayError( inst );
@@ -255,5 +292,5 @@ BOOL IEInitErrors( HINSTANCE inst )
         return( FALSE );
     }
     return( TRUE );
-}
 
+} /* IEInitErrors */

@@ -71,10 +71,10 @@ void CreateListBox( HWND parent, ListBoxInfo *info, WORD type  )
     PositionListBox( info, parent );
     if( type == GLOBAL_LB ) {
         info->box = CreateTextBox( Instance, parent, GetMonoFont(),
-                                    HEAPEX_LIST, GetGlobalTextItem, 0 );
+                                    (HMENU)HEAPEX_LIST, GetGlobalTextItem, 0 );
     } else {
         info->box = CreateTextBox( Instance, parent, GetMonoFont(),
-                                HEAPEX_LIST, GetLocalTextItem, LIST_NOSELECT );
+                                (HMENU)HEAPEX_LIST, GetLocalTextItem, LIST_NOSELECT );
     }
 } /* CreateListBox */
 
@@ -109,12 +109,12 @@ BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
  *                 to allow it to be created on the fly
  */
 
-void InitPaintProc() {
+void InitPaintProc( void ) {
 
-    PaintFP = MakeProcInstance( PaintAll, Instance );
+    PaintFP = MakeProcInstance( (FARPROC)PaintAll, Instance );
 }
 
-void FiniPaintProc() {
+void FiniPaintProc( void ) {
     FreeProcInstance( PaintFP );
 }
 
@@ -123,10 +123,10 @@ void FiniPaintProc() {
  *                font has been dumped
  */
 
-void PaintAllWindows() {
+void PaintAllWindows( void ) {
 
     HTASK       task;
 
     task = GetCurrentTask();
-    EnumTaskWindows( task, PaintFP, NULL );
+    EnumTaskWindows( task, (WNDENUMPROC)PaintFP, 0 );
 }

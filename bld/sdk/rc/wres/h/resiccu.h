@@ -35,10 +35,7 @@
 
 #include "watcom.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef struct IconCurDirHeader {
     uint_16     Reserved;       /* must be 0 */
     uint_16     Type;           /* 1 for icons, 2 for cursors */
@@ -74,10 +71,7 @@ typedef struct CurHotspot {
     int_16      X;          /* these are signed quantities */
     int_16      Y;
 } CurHotspot;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 extern int ResWriteIconCurDirHeader( const IconCurDirHeader *, WResFileID );
 extern int ResWriteIconDirEntry( const IconDirEntry *, WResFileID );

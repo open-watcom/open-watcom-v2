@@ -44,7 +44,7 @@ extern int      __mbinit( int codepage );
 
 
 /* Current code page */
-#if !defined(__QNX__)
+#if !defined(__UNIX__)
     extern unsigned int __MBCodePage;
     #define _MB_CODE_PAGE_DEFINED
 #endif

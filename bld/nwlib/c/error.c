@@ -24,26 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Message output for librarian.
 *
 ****************************************************************************/
 
 
-#include <wlib.h>
-jmp_buf Env;
+#include "wlib.h"
+
+#if defined( INCL_MSGTEXT )
+
+static char *msg_text_array[] = {
+    #include "incltext.gh"
+};
+
+void InitMsg( void ) {}
+
+void MsgGet( int resourceid, char *buffer )
+{
+    strcpy( buffer, msg_text_array[ resourceid ] );
+}
+
+void FiniMsg( void ) {}
+
+#else
+
+#include <wresset2.h>   /* for FileShift */
 
 #define NIL_HANDLE      ((int)-1)
-#define NULLCHAR        '\0'
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
 static  unsigned        MsgShift;
-extern  long            FileShift;
 
-
-
-static long res_seek( int handle, long position, int where )
+static off_t res_seek( WResFileID handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -56,7 +69,7 @@ static long res_seek( int handle, long position, int where )
 
 WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGlobal );
 
-void InitMsg()
+void InitMsg( void )
 {
     int initerror;
 
@@ -86,12 +99,12 @@ void InitMsg()
 void MsgGet( int resourceid, char *buffer )
 {
     if( LoadString( &hInstance, resourceid + MsgShift,
-                (LPSTR) buffer, 128 ) != 0 ) {
-        buffer[0] = '\0';
+                (LPSTR)buffer, 128 ) != 0 ) {
+        buffer[ 0 ] = '\0';
     }
 }
 
-void FiniMsg()
+void FiniMsg( void )
 {
     if( Res_Flag == EXIT_SUCCESS ) {
         if( CloseResFile( &hInstance ) != -1 ) {
@@ -101,3 +114,4 @@ void FiniMsg()
         }
     }
 }
+#endif

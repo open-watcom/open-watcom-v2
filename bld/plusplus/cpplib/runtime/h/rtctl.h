@@ -24,12 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run-time control information
 *
 ****************************************************************************/
-
 
 #ifndef __RTCTL_H__
 #define __RTCTL_H__
 
+struct _RTCTL                   // RUN-TIME CONTROL
+{   THREAD_CTL* thr;            // - thread pointer
+    RW_DTREG* rw;               // - R/W block
+    RO_DTREG* ro;               // - R/O block
+
+    _RTCTL()                    // - default constructor
+        : thr( PgmThread() )
+    {
+    }
+
+    _RTCTL( THREAD_CTL* thrp )  // - constructor( thread-ptr )
+        : thr( thrp )
+    {
+    }
+
+    _RTCTL* setRwRo             // - set RW, RO fields
+        ( RW_DTREG* rwp )       // - - initial RW ptr.
+    {
+        rw = rwp;
+        ro = rwp->base.ro;
+        return this;
+    }
+};
+
+
+#endif

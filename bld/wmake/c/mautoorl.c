@@ -24,16 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Autodepend section processing using ORL.
 *
 ****************************************************************************/
 
 
-#if !defined( __I86__ )
+#if !defined( _M_I86 ) && !defined( BOOTSTRAP )
+
 #include "make.h"
-#include "mcache.h"
-#include "memory.h"
+#include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
@@ -43,41 +42,41 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <assert.h>
 
 typedef struct orl_info {
     int                 handle;
     orl_file_handle     file;
-    char                *buffer;
+    uint_8              *buffer;
     DepInfo             *curr;
-} orl_info;
+}                       orl_info;
 
-static orl_info                 orlInfo;
-static orl_sec_handle           orlDependsInfo;
-static orl_handle               orlHandle;
-static char                     *orlBuffer;
-static int                      orlFilePosition;
-static int                      orlFileSize;
+static orl_info         orlInfo;
+static orl_sec_handle   orlDependsInfo;
+static orl_handle       orlHandle;
+static char             *orlBuffer;
+static size_t           orlFilePosition;
+static size_t           orlFileSize;
 
 // note: this should match name in rscobj.c in codegen
-static const char               *dependSectionName = ".depend";
+static const char       *dependSectionName = ".depend";
 
-static fpos_t fileSize( int handle )
+
+static size_t fileSize( int file_descriptor )
 {
-    fpos_t              old;
-    fpos_t              size;
+    long    old;
+    size_t  size;
 
-    old = tell( handle );
-    lseek( handle, 0, SEEK_END );
-    size = tell( handle );
-    lseek( handle, SEEK_SET, old );
+    old = tell( file_descriptor );
+    lseek( file_descriptor, 0, SEEK_END );
+    size = tell( file_descriptor );
+    lseek( file_descriptor, old, SEEK_SET );
     if( size == 0 ) {
         // MallocSafe returns NULL for size == 0
         ++size;
     }
     return( size );
 }
+
 
 static void bufferInit( void )
 /****************************/
@@ -87,33 +86,35 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-static void *orlRead( void *handle, int bytes )
-/*********************************************/
-{
-    int                 n;
-    int                 old_pos;
 
+static void *orlRead( void *file_handle, size_t bytes )
+/*****************************************************/
+{
+    size_t  n;
+    size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = fileSize( (int)handle );
+        orlFileSize = fileSize( (int)file_handle );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = read( (int)handle, orlBuffer, orlFileSize );
+        n = read( (int)file_handle, orlBuffer, orlFileSize );
         if( n != orlFileSize ) {
             return( NULL );
         }
     }
-    if( orlFilePosition < orlFileSize ) {
+    if( (orlFilePosition + bytes) <= orlFileSize ) {
         old_pos = orlFilePosition;
         orlFilePosition += bytes;
-        return( &orlBuffer[ old_pos ] );
+        return( &orlBuffer[old_pos] );
     }
     return( NULL );
 }
 
-static long int orlSeek( void *handle, long int offset, int mode )
-/****************************************************************/
+
+static size_t orlSeek( void *file_handle, size_t offset, int mode )
+/*****************************************************************/
 {
+    (void)file_handle; // Unused
     switch( mode ) {
     case SEEK_SET:
         orlFilePosition = offset;
@@ -122,24 +123,30 @@ static long int orlSeek( void *handle, long int offset, int mode )
         orlFilePosition += offset;
         break;
     case SEEK_END:
-        assert( 0 );            // not used by ORL - cheesy, I know
-        break;
+        abort();       // not used by ORL - cheesy, I know
     }
     return( orlFilePosition );
 }
 
-void AutoORLInit()
-/****************/
+
+static void AutoORLInit( void )
+/*****************************/
 {
-    static orl_funcs    funcs = { orlRead, orlSeek, MallocSafe, FreeSafe };
+    static orl_funcs    funcs = {
+        orlRead,
+        (long (*)( void *, long, int ))orlSeek, // cast as specified externally
+        MallocSafe,
+        FreeSafe
+    };
 
     orlHandle = ORLInit( &funcs );
 }
 
-static orl_return findDependInfo( orl_sec_handle section ) {
-/**********************************************************/
 
-    char                *name;
+static orl_return findDependInfo( orl_sec_handle section )
+/********************************************************/
+{
+    char    *name;
 
     name = ORLSecGetName( section );
     if( !strcmp( name, dependSectionName ) ) {
@@ -149,10 +156,11 @@ static orl_return findDependInfo( orl_sec_handle section ) {
     return( ORL_TRUE );
 }
 
-static char *orlGetDependsInfo( orl_file_handle file )
-/****************************************************/
+
+static uint_8 *orlGetDependsInfo( orl_file_handle file )
+/******************************************************/
 {
-    char                *buffer;
+    uint_8  *buffer;
 
     orlDependsInfo = NULL;
     buffer = NULL;
@@ -163,23 +171,24 @@ static char *orlGetDependsInfo( orl_file_handle file )
     return( buffer );
 }
 
-orl_info *AutoORLFileInit( char *name )
-/*************************************/
+
+static handle AutoORLFileInit( const char *name )
+/***********************************************/
 {
-    orl_file_format     type;
-    orl_file_handle     file;
-    int                 handle;
-    char                *buffer;
+    orl_file_format type;
+    orl_file_handle file;
+    int             file_handle;
+    uint_8          *buffer;
 
     bufferInit();
-    handle = open( name, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
-        orlInfo.handle = handle;
-        type = ORLFileIdentify( orlHandle, (void *)handle );
+    file_handle = open( name, O_RDONLY | O_BINARY );
+    if( file_handle != -1 ) {
+        orlInfo.handle = file_handle;
+        type = ORLFileIdentify( orlHandle, (void *)file_handle );
         switch( type ) {
         case ORL_COFF:
         case ORL_ELF:
-            file = ORLFileInit( orlHandle, (void *)handle, type );
+            file = ORLFileInit( orlHandle, (void *)file_handle, type );
             if( file != NULL ) {
                 orlInfo.file = file;
                 buffer = orlGetDependsInfo( file );
@@ -188,40 +197,52 @@ orl_info *AutoORLFileInit( char *name )
                     return( &orlInfo );
                 }
             }
+            break;
+        case ORL_OMF:
+        case ORL_UNRECOGNIZED_FORMAT:
+            break;
         }
         if( orlBuffer != NULL ) {
             FreeSafe( orlBuffer );
             orlBuffer = NULL;
         }
-        close( handle );
+        close( file_handle );
     }
     return( NULL );
 }
 
-orl_info *AutoORLFirstDep( orl_info *hdl )
-/****************************************/
+
+static dep_handle AutoORLFirstDep( handle hdl )
+/*********************************************/
 {
-    hdl->curr = (DepInfo *)hdl->buffer;
-    if( hdl->curr->len != 0 ) {
+    orl_info *hndl = hdl;
+
+    hndl->curr = (void *)hndl->buffer;
+    if( hndl->curr->len != 0 ) {
         return( hdl );
     }
     return( NULL );
 }
 
-void AutoORLTransDep( orl_info *hdl, char **name, time_t *stamp )
-/***************************************************************/
+
+static void AutoORLTransDep( dep_handle hdl, char **name, time_t *stamp )
+/***********************************************************************/
 {
-    *name = hdl->curr->name;
-    *stamp = hdl->curr->time;
+    DepInfo *curr = ((orl_info *)hdl)->curr;
+
+    *name = curr->name;
+    *stamp = curr->time;
 }
 
-orl_info *AutoORLNextDep( orl_info *hdl )
-/***************************************/
+
+static dep_handle AutoORLNextDep( dep_handle hndl )
+/*************************************************/
 {
     DepInfo     *p;
+    orl_info    *hdl = hndl;
 
     p = hdl->curr;
-    p = (DepInfo *)( (char *)p + sizeof( DepInfo ) + p->len - 1 );
+    p = (void *)((char *)p + sizeof( DepInfo ) + p->len - 1);
     if( p->len == 0 ) {
         hdl->curr = NULL;
         return( NULL );
@@ -230,28 +251,32 @@ orl_info *AutoORLNextDep( orl_info *hdl )
     return( hdl );
 }
 
-void AutoORLFileFini( orl_info *hdl )
-/***********************************/
+
+static void AutoORLFileFini( handle hdl )
+/***************************************/
 {
-    ORLFileFini( hdl->file );
-    close( hdl->handle );
+    ORLFileFini( ((orl_info*)hdl)->file );
+    close( ((orl_info*)hdl)->handle );
     FreeSafe( orlBuffer );
     orlBuffer = NULL;
 }
 
-void AutoORLFini()
-/****************/
+
+static void AutoORLFini( void )
+/*****************************/
 {
     ORLFini( orlHandle );
 }
 
+
 const auto_dep_info ORLAutoDepInfo = {
     AutoORLInit,
-    (handle (*) (const char*))AutoORLFileInit,
+    AutoORLFileInit,
     AutoORLFirstDep,
     AutoORLTransDep,
     AutoORLNextDep,
     AutoORLFileFini,
     AutoORLFini,
 };
+
 #endif

@@ -1,0 +1,79 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.34 - DPMI function 0503h
+- Resize Memory Block </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Changes the size of a
+memory block that was previously allocated with the Allocate Memory Block
+function 0501h.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0503h<br>
+<b>BX:CX</b> = new size of block (bytes, must be nonzero)<br>
+<b>SI:DI</b> = memory block handle</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>BX:CX</b> = new linear address of memory block<br>
+<b>SI:DI</b> = new handle for memory block</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8012h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - linear memory unavailable<br>
+  <b>8013h</b> - physical memory unavailable<br>
+  <b>8014h</b> - backing store unavailable<br>
+  <b>8016h</b> - handle unavailable<br>
+  <b>8021h</b> - invalid value (BX:CX = 0)<br>
+  <b>8023h</b> - invalid handle (in SI:DI)</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) After this function
+  returns, the previous handle for the memory block is invalid and should
+  not be used.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) The linear address
+  and handle of the memory block may change as a result of this call.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">c) It is the client's
+  responsibility to update any descriptors that map the memory block with
+  the new linear address after resizing the block.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">d) This function returns
+  an error if the client attempts to resize a memory block to zero bytes.
+  </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

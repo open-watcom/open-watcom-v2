@@ -1,7 +1,0 @@
-r ..\wstrip.msg
-g!/^pick/d
-set magic
-%s/^.*\( (A-Z0-9_]*).*$/#define \
-%s/^.*\( ([A-Z0-9_]*).*$/#define \1 (MSG_RC_BASE+0x\#)/
-w!msg.gh
-q!

@@ -1,0 +1,16 @@
+!include $(bench_dir)\mif\bench.mif
+
+.c: $(bench_dir)\flops
+.h: $(bench_dir)\flops
+
+extra_cflags = -I$(bench_dir)\flops -I$(bench_dir)\support
+
+obj_files = flops.obj
+
+run: flops.exe .SYMBOLIC
+	flops
+    
+build: flops.exe .SYMBOLIC
+
+flops.exe : $(obj_files)
+	$(deflink)

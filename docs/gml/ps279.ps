@@ -1,0 +1,25 @@
+/showobj save def
+%% normally xo=8.5 and yo=11
+/xo 7 def
+/yo 9 def
+/sx 5.4 xo div def
+/sy 8.5 yo div def
+/xoff 1.75 xo 8.5 div mul def
+/yoff 2 yo 11 div mul def
+/oshow {showpage} bind def
+/showflag 1 def
+/showflip 1 def
+/xyit {8.75 72 mul .5 72 mul translate
+90 rotate
+sx sy scale
+xoff neg 72 mul yoff neg 72 mul translate} bind def
+xyit
+/showpage { showflag 1 eq
+  { xo xoff add -.5 add 72 mul yoff 72 mul moveto
+    0 yo 72 mul rlineto closepath stroke
+    xo 72 mul 0 translate /showflag 2 def }
+  { oshow /showflag 1 def /showflip showflip 1 eq {8.5 36 mul 11 36 mul
+    translate 180 rotate -8.5 36 mul -11 36 mul translate 2 }
+    {1} ifelse def xyit } ifelse
+  } def
+/showfinish { showflag 2 eq {oshow} if } def

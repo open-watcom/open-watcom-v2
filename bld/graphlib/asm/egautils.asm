@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  Graphics library EGA specific code.
 ;*
 ;*****************************************************************************
 
@@ -35,7 +34,7 @@ include graph.inc
         extrn   __PlotAct : word
         extrn   __Transparent : word
 
-        modstart egautils
+        modstart egautils,WORD
 
         xdefp   _EGAMoveUpHi_
         xdefp   _EGAMoveUpLo_
@@ -108,7 +107,7 @@ MonoTab db      00000000B       ; black
 ;
 ;   Movement primitives
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -118,39 +117,39 @@ MonoTab db      00000000B       ; black
 
         db      E_EGAMoveUpHi-_EGAMoveUpHi_
 _EGAMoveUpHi_:
-        sub     edi,80          ; move up in 640 pixel wide mode
+        sub     _edi,80          ; move up in 640 pixel wide mode
 E_EGAMoveUpHi:
         ret
 
         db      E_EGAMoveDownHi-_EGAMoveDownHi_
 _EGAMoveDownHi_:
-        add     edi,80          ; move down in 640 pixel wide mode
+        add     _edi,80          ; move down in 640 pixel wide mode
 E_EGAMoveDownHi:
         ret
 
         db      E_EGAMoveUpLo-_EGAMoveUpLo_
 _EGAMoveUpLo_:
-        sub     edi,40          ; move up in 320 pixel wide mode
+        sub     _edi,40          ; move up in 320 pixel wide mode
 E_EGAMoveUpLo:
         ret
 
         db      E_EGAMoveDownLo-_EGAMoveDownLo_
 _EGAMoveDownLo_:
-        add     edi,40          ; move down in 320 pixel wide mode
+        add     _edi,40          ; move down in 320 pixel wide mode
 E_EGAMoveDownLo:
         ret
 
         db      E_EGAMoveLeft-_EGAMoveLeft_
 _EGAMoveLeft_:                  ; move left 1 pixel
         rol     ch,1
-        sbb     edi,0
+        sbb     _edi,0
 E_EGAMoveLeft:
         ret
 
         db      E_EGAMoveRight-_EGAMoveRight_
 _EGAMoveRight_:                 ; move right 1 pixel
         ror     ch,1
-        adc     edi,0
+        adc     _edi,0
 E_EGAMoveRight:
         ret
 
@@ -158,7 +157,7 @@ E_EGAMoveRight:
 ;
 ;   Plotting primitive
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour
 ;               CH          mask
 ;
@@ -166,15 +165,15 @@ E_EGAMoveRight:
 
         db      E_EGARep-_EGARep_
 _EGARep_:
-        push    edx
+        push    _edx
         mov     cl,al           ; copy colour
         mov     al,EGAMASK
-        mov     edx,GRADDR
+        mov     _edx,GRADDR
         mov     ah,ch           ; mask
         out     dx,ax           ; set the set/reset register to colour
         mov     al,cl           ; get colour back
-        xchg    cl,es:[edi]     ; read to latch data, output data
-        pop     edx
+        xchg    cl,es:[_edi]     ; read to latch data, output data
+        pop     _edx
 E_EGARep:
         ret
 
@@ -182,7 +181,7 @@ E_EGARep:
 ;
 ;   GetDot routines
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               CL          bit position
 ;
 ;   Output      AX          colour of pixel at location
@@ -190,37 +189,37 @@ E_EGARep:
 ;=========================================================================
 
 _EGAGetDotMono_:        ; for mono ega cards with > 64K
-        push    ebx
-        mov     ebx,0202h       ; bh = first bit plane, bl = increment
-        _jmp    GetDotCommon
+        push    _ebx
+        mov     _ebx,0202h       ; bh = first bit plane, bl = increment
+        jmp     GetDotCommon
 
 _EGAGetDotEO_:          ; even/odd modes
-        push    ebx
-        mov     ebx,0202h       ; bh = first bit plane, bl = increment
-        test    edi,1           ; if odd plane
+        push    _ebx
+        mov     _ebx,0202h       ; bh = first bit plane, bl = increment
+        test    _edi,1           ; if odd plane
         _if     ne              ; then
           inc     bh            ; - use planes 3 & 1 instead of 2 & 0
         _endif                  ; endif
-        _jmp    GetDotCommon
+        jmp     GetDotCommon
 
 _EGAGetDot_:
-        push    ebx
-        mov     ebx,0301h       ; bh = first bit plane, bl = increment
+        push    _ebx
+        mov     _ebx,0301h       ; bh = first bit plane, bl = increment
 GetDotCommon:
-        push    edx             ; save dx
-        mov     edx,GRADDR      ; load graphics register
+        push    _edx             ; save dx
+        mov     _edx,GRADDR      ; load graphics register
         mov     ch,80h          ; prepare bit mask
         shr     ch,cl           ; . . .
         mov     al,RMSEL        ; select read map select register
         out     dx,al           ; . . .
-        inc     edx             ; point to data register
+        inc     _edx             ; point to data register
 
         xor     cl,cl           ; colour = 0
         mov     al,bh           ; plane = first bit plane
         _loop                   ; loop
           shl     cl,1          ; - move colour bit over
           out     dx,al         ; - select plane
-          test    ch,es:[edi]   ; - if bit is on in byte
+          test    ch,es:[_edi]   ; - if bit is on in byte
           _if     ne            ; - then
             or      cl,1        ; - - set bit in pixel
           _endif                ; - endif
@@ -229,86 +228,86 @@ GetDotCommon:
 
         mov     al,cl           ; get colour in AX
         xor     ah,ah           ; clear high byte
-        pop     edx             ; restore dx
-        pop     ebx             ; and bx
+        pop     _edx             ; restore dx
+        pop     _ebx             ; and bx
         ret
 
 ;=========================================================================
 ;
 ;   PixCopy routines
 ;
-;   Input       ES:EDI,DH   screen memory
-;               SI:EAX,DL   buffer to copy from
+;   Input       ES:_EDI,DH   screen memory
+;               SI:_EAX,DL   buffer to copy from
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
 
 _EGAPixCopyEO_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         docall  pcopy_common
         mov     ah,0100B        ; plane mask
         _loop
           mov     al,ah
-          test    edi,1         ; if odd address, shift mask left 1
+          test    _edi,1         ; if odd address, shift mask left 1
           _if     ne
             shl     al,1
           _endif
-          push    ecx           ; save offsets
-          push    ebp           ; put count on stack
-          push    edi           ; put dest addr on stack
-          push    esi           ; put scr addr on stack
+          push    _ecx           ; save offsets
+          push    _ebp           ; put count on stack
+          push    _edi           ; put dest addr on stack
+          push    _esi           ; put scr addr on stack
           docall  start_put
           mov     ch,dh
           _loop                 ; main loop transferring full bytes
             mov     al,ah       ; get mask
-            test    edi,1       ; if odd address, shift mask over 1
+            test    _edi,1       ; if odd address, shift mask over 1
             _if     ne
               shl     al,1
             _endif
-            mov     edx,SEQADDR+1
+            mov     _edx,SEQADDR+1
             out     dx,al       ; set bit mask reg
             mov     dh,ch
-            mov     dl,[esi]    ; get next byte
-            inc     esi         ; increment through source buffer
+            mov     dl,[_esi]    ; get next byte
+            inc     _esi         ; increment through source buffer
             mov     ch,dl
-            shl     edx,cl      ; do bit offset
-            sub     ebp,8       ; 8 pixels/byte
-            cmp     ebp,8
+            shl     _edx,cl      ; do bit offset
+            sub     _ebp,8       ; 8 pixels/byte
+            cmp     _ebp,8
             _quif   l
-            xchg    dh,es:[edi] ; write out byte (need to xchg to load latches)
-            inc     edi         ; increment through screen memory
+            xchg    dh,es:[_edi] ; write out byte (need to xchg to load latches)
+            inc     _edi         ; increment through screen memory
           _endloop
           docall  finish_put
-          pop     esi           ; restore src
-          add     esi,ebx       ; add offset to next plane
-          pop     edi           ; restore destination
-          pop     ebp           ; restore count
-          pop     ecx           ; restore offsets
+          pop     _esi           ; restore src
+          add     _esi,_ebx       ; add offset to next plane
+          pop     _edi           ; restore destination
+          pop     _ebp           ; restore count
+          pop     _ecx           ; restore offsets
           shr     ah,1          ; next bit plane
           shr     ah,1
         _until  e
 done_pixcopy:
-        mov     edx,SEQADDR     ; set map mask register to all planes
+        mov     _edx,SEQADDR     ; set map mask register to all planes
         mov     ah,0Fh
         mov     al,MAPMASK
         out     dx,ax
         pop     ds
-        pop     ebp
+        pop     _ebp
         ret
 
 _EGAPixCopyMono_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         docall  pcopy_common
         mov     al,0100B        ; set map mask to start at bit plane 2
         docall  put_bitplane
         mov     al,0001B        ; then do bit plane 0
         docall  put_bitplane
-        _jmp    done_pixcopy
+        jmp     done_pixcopy
 
 _EGAPixCopy_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         docall  pcopy_common
         mov     ah,1000B        ; set map mask to start at bit plane 3
@@ -317,134 +316,134 @@ _EGAPixCopy_:
           docall  put_bitplane
           shr     ah,1          ; next bit plane
         _until  c
-        _jmp    done_pixcopy
+        jmp     done_pixcopy
 
 pcopy_common:
         mov     ds,si           ; get source in ds:si
-        mov     esi,eax
-        mov     ebp,ecx         ; save count
+        mov     _esi,_eax
+        mov     _ebp,_ecx         ; save count
         mov     cl,dh           ; move dest bit offset
         mov     ch,dl           ; move src bit offset
-        mov     edx,GRADDR      ; get graphics address
+        mov     _edx,GRADDR      ; get graphics address
         mov     al,MODEREG      ; set write mode
         mov     ah,READ_MODE_0+WRITE_MODE_0
         out     dx,ax
         mov     al,EGAMASK
         out     dx,al           ; select mask register
-        mov     edx,SEQADDR
+        mov     _edx,SEQADDR
         mov     al,MAPMASK      ; select sequencer map mask register
         out     dx,al
         ret
 
 put_bitplane:
-        push    ecx             ; save offsets
-        push    ebp             ; put count on stack
-        push    edi             ; put dest addr on stack
-        push    esi             ; put scr addr on stack
+        push    _ecx             ; save offsets
+        push    _ebp             ; put count on stack
+        push    _edi             ; put dest addr on stack
+        push    _esi             ; put scr addr on stack
         docall  start_put
         cmp     cl,0
         _if     e
-          mov     ecx,ebp
-          and     ebp,111B      ; bp mod 8
-          shr     ecx,1         ; divide count by 8 pixels per byte
-          shr     ecx,1
-          shr     ecx,1
-          dec     ecx
+          mov     _ecx,_ebp
+          and     _ebp,111B      ; bp mod 8
+          shr     _ecx,1         ; divide count by 8 pixels per byte
+          shr     _ecx,1
+          shr     _ecx,1
+          dec     _ecx
           jle     short finished ; quit if count is zero
-          dec     esi           ; back up 1
+          dec     _esi           ; back up 1
           cmp     word ptr ss:__PlotAct,0
           _if     e             ; if plot action is replace
-            repe    movsb
+            rep     movsb
           _else
 transfer_bytes:
-            mov     al,[esi]
-            inc     esi
-            xchg    al,es:[edi]
-            inc     edi
+            mov     al,[_esi]
+            inc     _esi
+            xchg    al,es:[_edi]
+            inc     _edi
             loop    transfer_bytes ; until --cx = 0
           _endif
-          or      ebp,ebp       ; if more pixels to go
+          or      _ebp,_ebp       ; if more pixels to go
           _if     ne
-            mov     dh,[esi]    ; - load into dh for finish_put()
+            mov     dh,[_esi]    ; - load into dh for finish_put()
           _endif
         _else
           _loop                 ; main loop transferring full bytes
-            mov     al,[esi]     ; get next byte
-            inc     esi
+            mov     al,[_esi]     ; get next byte
+            inc     _esi
             mov     dl,al
-            shl     edx,cl      ; do bit offset
-            sub     ebp,8       ; 8 pixels/byte
-            cmp     ebp,8
+            shl     _edx,cl      ; do bit offset
+            sub     _ebp,8       ; 8 pixels/byte
+            cmp     _ebp,8
             jl      short finished
-            xchg    dh,es:[edi] ; write out byte (need to xchg to load latches)
-            inc     edi         ; increment through screen memory
+            xchg    dh,es:[_edi] ; write out byte (need to xchg to load latches)
+            inc     _edi         ; increment through screen memory
             mov     dh,al
           _endloop
         _endif
 finished:
         docall  finish_put
-        pop     esi             ; restore src
-        add     esi,ebx         ; add offset to next plane
-        pop     edi             ; restore destination
-        pop     ebp             ; restore count
-        pop     ecx             ; restore offsets
+        pop     _esi             ; restore src
+        add     _esi,_ebx         ; add offset to next plane
+        pop     _edi             ; restore destination
+        pop     _ebp             ; restore count
+        pop     _ecx             ; restore offsets
         ret
 
 start_put:
-        mov     edx,SEQADDR+1
+        mov     _edx,SEQADDR+1
         out     dx,al           ; set bit plane mask reg
         mov     al,0ffh         ; compose bit mask in al
         shr     al,cl           ; shift mask by dest offset
         mov     dl,cl           ; add cl to bp by moving to dx
         xor     dh,dh
-        add     ebp,edx
-        cmp     ebp,8
+        add     _ebp,_edx
+        cmp     _ebp,8
         _if     l               ; if only one byte to write,
-          xchg    ecx,ebp       ; then move # of pixels to cl and
+          xchg    _ecx,_ebp       ; then move # of pixels to cl and
           mov     ch,0ffh       ; build end mask in ch
           shr     ch,cl
           not     ch
           and     al,ch         ; combine end of mask with beginning
-          mov     ecx,ebp       ; restore offsets
-          mov     ebp,8         ; write only this pixel
+          mov     _ecx,_ebp       ; restore offsets
+          mov     _ebp,8         ; write only this pixel
         _endif
-        mov     edx,GRADDR+1    ; set MASK reg
+        mov     _edx,GRADDR+1    ; set MASK reg
         out     dx,al
-        mov     dh,[esi]        ; get first byte
-        inc     esi             ; increment src ptr
-        mov     dl,[esi]        ; get second byte
-        push    edx             ; save 2 bytes from src
+        mov     dh,[_esi]        ; get first byte
+        inc     _esi             ; increment src ptr
+        mov     dl,[_esi]        ; get second byte
+        push    _edx             ; save 2 bytes from src
         xchg    cl,ch
-        shl     edx,cl           ; calculate bit offsets
+        shl     _edx,cl           ; calculate bit offsets
         xchg    cl,ch
-        shr     edx,cl
-        xchg    dh,es:[edi]     ; load latches and write first byte
-        inc     edi             ; increment dest ptr
-        mov     edx,GRADDR+1    ; set full mask
+        shr     _edx,cl
+        xchg    dh,es:[_edi]     ; load latches and write first byte
+        inc     _edi             ; increment dest ptr
+        mov     _edx,GRADDR+1    ; set full mask
         mov     al,0ffh
         out     dx,al
-        pop     edx             ; restore 2 first bytes
+        pop     _edx             ; restore 2 first bytes
         xchg    cl,ch
         sub     cl,ch           ; calculate new offset
         _if     l
           add     cl,8          ; src - dest + 8
         _else
-          inc     esi           ; increment src ptr
+          inc     _esi           ; increment src ptr
           mov     dh,dl         ; place second byte into first
         _endif
         ret                     ; dh contains next byte
 
 finish_put:
-        or      ebp,ebp
+        or      _ebp,_ebp
         _if     ne              ; if any pixels left
-          mov     ecx,ebp       ; then move # of pixels to cl
+          mov     _ecx,_ebp       ; then move # of pixels to cl
           mov     al,0ffh       ; and make mask for end in ah
           shr     al,cl
           not     al
           mov     ch,dh         ; move last byte to ch
           mov     dx,GRADDR+1
           out     dx,al
-          xchg    ch,es:[edi]   ; load latches and write last byte
+          xchg    ch,es:[_edi]   ; load latches and write last byte
         _endif
         ret
 
@@ -452,52 +451,52 @@ finish_put:
 ;
 ;   ReadRow routines
 ;
-;   Input       ES:EDI      buffer to copy into
-;               SI:EAX,DL   screen memory
+;   Input       ES:_EDI      buffer to copy into
+;               SI:_EAX,DL   screen memory
 ;               CX          number of pixels to copy
 ;
 ;=========================================================================
 
 _EGAReadRowEO_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         call    get_common
         mov     ah,2            ; plane number
         _loop
-          push  ebp             ; push count
-          push  esi             ; push source
+          push  _ebp             ; push count
+          push  _esi             ; push source
           xor   al,al
-          ror   esi,1
+          ror   _esi,1
           adc   al,ah
-          rol   esi,1
+          rol   _esi,1
           out   dx,al           ; out plane # to RMSEL reg
-          mov   bh,[esi]        ; get first byte
-          inc   esi
+          mov   bh,[_esi]        ; get first byte
+          inc   _esi
           _loop
             xor     al,al
-            ror     esi,1           ; see if on even or odd byte
+            ror     _esi,1           ; see if on even or odd byte
             adc     al,ah
             out     dx,al           ; out plane # to RMSEL reg
-            rol     esi,1
-            mov     bl,[esi]        ; get byte from screen
-            inc     esi             ; increment source ptr
+            rol     _esi,1
+            mov     bl,[_esi]        ; get byte from screen
+            inc     _esi             ; increment source ptr
             mov     ch,bl           ; save byte
-            shl     ebx,cl
-            mov     es:[edi],bh     ; move shifted byte into buffer
+            shl     _ebx,cl
+            mov     es:[_edi],bh     ; move shifted byte into buffer
             mov     bh,ch
-            inc     edi             ; increment through buffer
-            sub     ebp,8           ; number of pixels/byte
+            inc     _edi             ; increment through buffer
+            sub     _ebp,8           ; number of pixels/byte
           _until    le
-          pop   esi
-          pop   ebp
+          pop   _esi
+          pop   _ebp
           sub   ah,2
         _until  l
         pop     ds
-        pop     ebp
+        pop     _ebp
         ret
 
 _EGAReadRowMono_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         docall  get_common
         mov     al,2            ; get bit plane 2
@@ -505,11 +504,11 @@ _EGAReadRowMono_:
         mov     al,0            ; and bit plane 0
         docall  get_bitplane
         pop     ds
-        pop     ebp
+        pop     _ebp
         ret
 
 _EGAReadRow_:
-        push    ebp             ; save registers
+        push    _ebp             ; save registers
         push    ds
         docall  get_common
         mov     bl,3            ; start on bit plane 3
@@ -519,55 +518,55 @@ _EGAReadRow_:
           dec       bl
         _until   l
         pop     ds
-        pop     ebp
+        pop     _ebp
         ret
 
 get_common:
         mov     ds,si           ; get source in ds:si
-        mov     esi,eax
-        mov     ebp,ecx         ; save count in bp
+        mov     _esi,_eax
+        mov     _ebp,_ecx         ; save count in bp
         mov     cl,dl           ; move source bit offset (i.e. which pixel)
-        mov     edx,GRADDR
+        mov     _edx,GRADDR
         mov     al,RMSEL
         out     dx,al           ; select read map sel register
-        inc     edx             ; point to GRADDR+1
+        inc     _edx             ; point to GRADDR+1
         ret
 
 get_bitplane:
-        push    ebp             ; push count
-        push    esi             ; push source
+        push    _ebp             ; push count
+        push    _esi             ; push source
         out     dx,al           ; out plane # to RMSEL reg
         or      cl,cl
         _if     e               ; if no offset
-          mov     ecx,ebp
-          add     ecx,7
-          shr     ecx,1
-          shr     ecx,1
-          shr     ecx,1
-          repe    movsb         ; copy cx bytes from ds:si to es:di
+          mov     _ecx,_ebp
+          add     _ecx,7
+          shr     _ecx,1
+          shr     _ecx,1
+          shr     _ecx,1
+          rep     movsb         ; copy cx bytes from ds:si to es:di
         _else
-          mov     ah,[esi]       ; get first byte at ds:si into ah
-          inc     esi
+          mov     ah,[_esi]       ; get first byte at ds:si into ah
+          inc     _esi
           _loop
-            mov     al,[esi]
-            inc     esi
+            mov     al,[_esi]
+            inc     _esi
             mov     bh,al
-            shl     eax,cl
-            mov     es:[edi],ah ; copy byte in al to es:di
-            inc     edi
+            shl     _eax,cl
+            mov     es:[_edi],ah ; copy byte in al to es:di
+            inc     _edi
             mov     ah,bh
-            sub     ebp,8       ; number of pixels/byte
+            sub     _ebp,8       ; number of pixels/byte
           _until  le
         _endif
-        pop     esi
-        pop     ebp
+        pop     _esi
+        pop     _ebp
         ret
 
 ;=========================================================================
 ;
 ;   Zap routines
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BX          not used
 ;               CX          number of pixels to fill
@@ -576,12 +575,12 @@ get_bitplane:
 
 _EGAZapEO_:
 _EGAZapMono_:
-        mov     ebx,offset MonoTab
+        mov     _ebx,offset MonoTab
         xlat    cs:MonoTab
 
 _EGAZap_:
         mov     bh,dh           ; save dest bit #
-        mov     edx,GRADDR
+        mov     _edx,GRADDR
         or      bh,bh
         _if     ne              ; if doesn't start on byte boundary
           xchg    bh,cl         ; - save low portion of count, and get bit #
@@ -597,15 +596,15 @@ bitlup:                         ; - loop
           mov     al,EGAMASK
           out     dx,ax         ; - set mask
           mov     al,bh         ; - replace colour
-          xchg    bh,es:[edi]   ; - read to latches, write first byte of colour
-          inc     edi           ; - next byte
+          xchg    bh,es:[_edi]   ; - read to latches, write first byte of colour
+          inc     _edi           ; - next byte
         _endif
 
         mov     bh,al           ; save colour
         mov     bl,cl           ; save low portion of count
-        shr     ecx,1           ; convert count to byte count
-        shr     ecx,1
-        shr     ecx,1
+        shr     _ecx,1           ; convert count to byte count
+        shr     _ecx,1
+        shr     _ecx,1
         _if     ne              ; not 0 byte?
           mov     al,EGAMASK
           mov     ah,0ffh       ; unmask all bytes
@@ -618,8 +617,8 @@ bitlup:                         ; - loop
           _else                 ; else xor,or,and
 zap_bytes:
             mov     al,bh
-            xchg    al,es:[edi] ; here the latches must be read in
-            inc     edi
+            xchg    al,es:[_edi] ; here the latches must be read in
+            inc     _edi
             loop    zap_bytes   ; until --cx=0
           _endif
         _endif
@@ -632,7 +631,7 @@ zap_bytes:
           shr     ah,cl
           not     ah            ; ah now contains last byte mask
           out     dx,ax         ; set it
-          xchg    bh,es:[edi]   ; - latch data, write out new data
+          xchg    bh,es:[_edi]   ; - latch data, write out new data
         _endif
         mov     dh,bl           ; bit #
         ret
@@ -641,7 +640,7 @@ zap_bytes:
 ;
 ;   Fill routines
 ;
-;   Input       ES:EDI,DH   screen memory
+;   Input       ES:_EDI,DH   screen memory
 ;               AL          colour (unmasked)
 ;               BH,BL       mask offset, fill mask
 ;               CX          number of pixels to fill
@@ -650,17 +649,17 @@ zap_bytes:
 
 _EGAFillEO_:
 _EGAFillMono_:
-        push    ebx
-        mov     ebx,offset MonoTab   ; translate colour
+        push    _ebx
+        mov     _ebx,offset MonoTab   ; translate colour
         xlat    cs:MonoTab
-        pop     ebx
+        pop     _ebx
 
 _EGAFill_:
-        push    ebp
+        push    _ebp
         mov     ah,dh           ; put the bit position in ah to free dx
         mov     bh,al           ; save colour in bh
-        mov     ebp,ecx         ; place count in bp
-        mov     edx,GRADDR      ; load graphics register address
+        mov     _ebp,_ecx         ; place count in bp
+        mov     _edx,GRADDR      ; load graphics register address
         or      ah,ah           ; check for byte boundary
         _if     ne              ; if doesn't start on byte boundary
           mov     cl,ah         ; - prepare to shift
@@ -669,7 +668,7 @@ _EGAFill_:
           xor     ah,ah         ; - build mask of wanted bits in ah
           _loop                 ; - loop
             or      ah,al       ; - - put bit in
-            dec     ebp         ; - - count--
+            dec     _ebp         ; - - count--
             _quif   e           ; - - quif count == 0
             shr     al,1        ; - - move to next bit
           _until  c             ; - until last bit shifted out
@@ -678,7 +677,7 @@ _EGAFill_:
           and     ah,bl         ; - and bit mask with the fill mask
           out     dx,ax         ; - set mask
           mov     al,bh         ; - get colour
-          xchg    al,es:[edi]   ; - read to latches, write first byte of colour
+          xchg    al,es:[_edi]   ; - read to latches, write first byte of colour
           cmp     word ptr ss:__Transparent,0     ; - check for transparency
           _if     e             ; transparent mode is on
             mov     al,EGAMASK  ;
@@ -688,70 +687,70 @@ _EGAFill_:
             not     ah          ; - - reverse it again
             out     dx,ax       ; - - set mask
             xor     al,al       ; - - background colour
-            xchg    al,es:[edi] ; - - set the 0 bits in the fill mask to 0
+            xchg    al,es:[_edi] ; - - set the 0 bits in the fill mask to 0
           _endif
-          inc   edi             ; - next byte
+          inc   _edi             ; - next byte
         _endif
 
         mov     ah,bl           ; get the fill mask
-        mov     ecx,ebp         ; get count
-        shr     ecx,1           ; convert pixel count to byte count
-        shr     ecx,1
-        shr     ecx,1
+        mov     _ecx,_ebp         ; get count
+        shr     _ecx,1           ; convert pixel count to byte count
+        shr     _ecx,1
+        shr     _ecx,1
         _if     ne              ; not 0 byte?
           cmp     word ptr ss:__Transparent,0
           _if e
-            push    edi         ; save screen ptr
-            push    ecx         ; save count
-            push    eax         ; save fill mask in ah
+            push    _edi         ; save screen ptr
+            push    _ecx         ; save count
+            push    _eax         ; save fill mask in ah
             not     ah          ; set the 0 bits to colour 0 first
             mov     al,EGAMASK
             out     dx,ax       ; set mask for the 0 bits
 fill_tbytes:
             xor     al,al       ; background color
-            xchg    al,es:[edi] ; here the latches must be read in
-            inc     edi
+            xchg    al,es:[_edi] ; here the latches must be read in
+            inc     _edi
             loop    fill_tbytes ; until --cx=0
-            pop     eax         ; restore fill mask
-            pop     ecx         ; restore count
-            pop     edi         ; restore screen ptr
+            pop     _eax         ; restore fill mask
+            pop     _ecx         ; restore count
+            pop     _edi         ; restore screen ptr
           _endif
           mov     al,EGAMASK
           out     dx,ax         ; set mask for the 1 bits
 fill_bytes:
           mov     al,bh         ; get colour
-          xchg    al,es:[edi]   ; here the latches must be read in
-          inc     edi
+          xchg    al,es:[_edi]   ; here the latches must be read in
+          inc     _edi
           loop    fill_bytes    ; until --cx=0
         _endif
 
-        and     ebp,0111B       ; convert to bit count
+        and     _ebp,0111B       ; convert to bit count
         _if     ne              ; more bits to do
           mov     al,EGAMASK
-          mov     ecx,ebp
+          mov     _ecx,_ebp
           mov     ch,0ffh       ; build a new mask
           shr     ch,cl         ; shift the fill mask by the count
           not     ch            ; last byte mask
           and     ah,ch         ; ah now contains last fill style mask
           out     dx,ax         ; set it
-          xchg    bh,es:[edi]    ; - latch data, write out new data
+          xchg    bh,es:[_edi]    ; - latch data, write out new data
           cmp     word ptr ss:__Transparent,0
           _if     e
             not     ah
             and     ah,ch
             out     dx,ax
             xor     al,al
-            xchg    al,es:[edi]
+            xchg    al,es:[_edi]
           _endif
         _endif
-        pop     ebp
+        pop     _ebp
         ret
 
 ;=========================================================================
 ;
 ;   Scan routines
 ;
-;   Input       ES:EDI      screen memory
+;   Input       ES:_EDI      screen memory
 ;               AL          colour mask
 ;               CH          mask (CL may be bits per pixel)
 ;               BX          starting x-coordinate
@@ -764,7 +763,7 @@ fill_bytes:
 
 _EGAScanLeftEO_:
         mov     cl,dl           ; save border flag in ah into cl
-        mov     edx,GRADDR
+        mov     _edx,GRADDR
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
@@ -773,17 +772,17 @@ _EGAScanLeftEO_:
         out     dx,ax           ; select read mode
         mov     al,DONTCARE
         out     dx,al           ; set colour don't care reg
-        inc     edx
+        inc     _edx
 
         mov     al,0101B        ; set don't care reg for even
-        test    edi,1           ; or odd address
+        test    _edi,1           ; or odd address
         _if     ne
           shl     al,1
         _endif
         out     dx,al
 
-        inc     ebx
-        mov     ah,es:[edi]     ; get starting byte
+        inc     _ebx
+        mov     ah,es:[_edi]     ; get starting byte
         _loop
           test    ah,ch         ; test if pixel is set
           _if     e             ; bit is not set
@@ -793,16 +792,16 @@ _EGAScanLeftEO_:
             or      cl,cl       ; quit loop if paint until
             je      short done_EGAEOscanleft
           _endif
-          dec     ebx           ; move to next pixel
-          cmp     esi,ebx       ; check for viewport boundary
+          dec     _ebx           ; move to next pixel
+          cmp     _esi,_ebx       ; check for viewport boundary
           _quif   ge
           rol     ch,1          ; rotate mask for new pixel
           _if     c
-            dec     edi         ; look at next byte
+            dec     _edi         ; look at next byte
             not     al          ; reset register for even/odd address
             and     al,0Fh
             out     dx,al
-            mov     ah,es:[edi]
+            mov     ah,es:[_edi]
           _endif
         _endloop
 done_EGAEOscanleft:
@@ -816,20 +815,20 @@ _EGAScanLeft_:
         mov     cl,1111B        ; want all planes in compare
 
 EGAScanLeft:
-        push    edx             ; save border flag in dl
-        mov     edx,GRADDR
+        push    _edx             ; save border flag in dl
+        mov     _edx,GRADDR
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
         mov     ah,READ_MODE_1+WRITE_MODE_2
         mov     al,MODEREG
         out     dx,ax           ; select read mode
-        mov     ah,cl           ; set desired planes
+        mov     ah,cl           ; set d_esired planes
         mov     al,DONTCARE
         out     dx,ax           ; set colour don't care reg
-        pop     eax             ; restor border flag in al
-        inc     ebx
-        mov     ah,es:[edi]     ; get starting byte
+        pop     _eax             ; restor border flag in al
+        inc     _ebx
+        mov     ah,es:[_edi]     ; get starting byte
         _loop
           test    ah,ch         ; test if pixel is set
           _if     e             ; bit is not set
@@ -839,13 +838,13 @@ EGAScanLeft:
             or      al,al       ; quit loop if paint until
             je      short done_EGAscanleft
           _endif
-          dec     ebx           ; move to next pixel
-          cmp     esi,ebx       ; check for viewport boundary
+          dec     _ebx           ; move to next pixel
+          cmp     _esi,_ebx       ; check for viewport boundary
           _quif   ge
           rol     ch,1          ; rotate mask for new pixel
           _if     c
-            dec     edi         ; look at next byte
-            mov     ah,es:[edi]
+            dec     _edi         ; look at next byte
+            mov     ah,es:[_edi]
           _endif
         _endloop
 done_EGAscanleft:
@@ -853,7 +852,7 @@ done_EGAscanleft:
 
 _EGAScanRightEO_:
         mov     cl,dl           ; save border flag in ah into cl
-        mov     edx,GRADDR
+        mov     _edx,GRADDR
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
@@ -862,9 +861,9 @@ _EGAScanRightEO_:
         out     dx,ax           ; select read mode
         mov     al,DONTCARE
         out     dx,al           ; set colour don't care reg
-        inc     edx
+        inc     _edx
         mov     al,0101B        ; set don't care reg for even
-        test    edi,1           ; or odd address
+        test    _edi,1           ; or odd address
         _if     ne
           shl     al,1
         _endif
@@ -875,7 +874,7 @@ _EGAScanRightEO_:
         neg     ch              ; example : 00000100 -> 00000111
         not     ch
         _loop                   ; line up with byte boundary
-          dec   ebx
+          dec   _ebx
           shl   al,1
         _until  c
 
@@ -884,31 +883,31 @@ _EGAScanRightEO_:
         _if     ne
           not     al
         _endif
-        mov     ah,es:[edi]         ; get starting byte
+        mov     ah,es:[_edi]         ; get starting byte
         xor     ah,al
         and     ah,ch               ; border condition true in first byte
         jne     short done_EGAEOscanright
         mov     ch,al               ; border flag condition now in ch
         xor     ah,ch               ; do this in case clipping region cuts out
-        sub     esi,8               ; we're done the first byte
+        sub     _esi,8               ; we're done the first byte
         mov     cl,01010101B        ; set up the Even/Odd flag once
-        test    edi,1
+        test    _edi,1
         _if     ne
           shl     cl,1
         _endif
         _loop
-          cmp     esi,ebx           ; check for clip region
+          cmp     _esi,_ebx           ; check for clip region
           _quif   l
-          add     ebx,8             ; we're done another byte (8 pixels)
-          inc     edi               ; go to next byte on screen
+          add     _ebx,8             ; we're done another byte (8 pixels)
+          inc     _edi               ; go to next byte on screen
           rol     cl,1              ; address goes Even/Odd/Even/Odd/...
           mov     al,cl
           and     al,00Fh           ; keep only the 4 bottom bits
           out     dx,al             ; set don't care register
-          mov     ah,es:[edi]
+          mov     ah,es:[_edi]
           cmp     ch,ah
         _until  ne
-        add     esi,8
+        add     _esi,8
         xor     ah,ch               ; reverse result if scan while colour
 done_EGAEOscanright:
         jmp     short done_EGAscanright   ; check the last byte and return
@@ -921,27 +920,27 @@ _EGAScanRight_:
         mov     cl,1111B        ; want all planes in compare
 
 EGAScanRight:
-        push    edx              ; save border flag in dl
-        mov     edx,GRADDR
+        push    _edx              ; save border flag in dl
+        mov     _edx,GRADDR
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
         mov     ah,READ_MODE_1+WRITE_MODE_2
         mov     al,MODEREG
         out     dx,ax           ; select read mode
-        mov     ah,cl           ; set desired planes
+        mov     ah,cl           ; set d_esired planes
         mov     al,DONTCARE
         out     dx,ax           ; set colour don't care reg
-        pop     edx             ; restor border flag in dl
+        pop     _edx             ; restor border flag in dl
         mov     dh,ch           ; build an extended right mask for 1st byte
         shl     dh,1
         neg     dh              ; example : 00000100 -> 00000111
         not     dh
         _loop                   ; line up with byte boundary
-          dec   ebx
+          dec   _ebx
           shl   ch,1
         _until  c
-        mov     ah,es:[edi]     ; load first byte
+        mov     ah,es:[_edi]     ; load first byte
         xor     al,al           ; build scan byte mask
         or      dl,dl           ; if( border_flag != 0 )
         _if     ne
@@ -949,23 +948,23 @@ EGAScanRight:
         _endif
         and     ah,dh               ; border condition true in first byte
         jne     short done_EGAscanright
-        mov     ecx,esi             ; convert the pixel count inside
-        sub     ecx,ebx             ; the viewport to a byte count
-        dec     ecx                 ; in order to scan full bytes
+        mov     _ecx,_esi             ; convert the pixel count inside
+        sub     _ecx,_ebx             ; the viewport to a byte count
+        dec     _ecx                 ; in order to scan full bytes
         and     cl,0F8h
-        add     ebx,ecx
-        shr     ecx,1
-        shr     ecx,1
-        shr     ecx,1
+        add     _ebx,_ecx
+        shr     _ecx,1
+        shr     _ecx,1
+        shr     _ecx,1
         jle     short done_EGAscanright   ; less than 8 pixels to scan
-        inc     edi
+        inc     _edi
         repe    scasb
-        shl     ecx,1
-        shl     ecx,1
-        shl     ecx,1
-        sub     ebx,ecx
-        dec     edi
-        mov     ah,es:[edi]
+        shl     _ecx,1
+        shl     _ecx,1
+        shl     _ecx,1
+        sub     _ebx,_ecx
+        dec     _edi
+        mov     ah,es:[_edi]
         or      dl,dl
         _if     ne
           not     ah
@@ -975,9 +974,9 @@ done_EGAscanright:
         _loop
           shl     ah,1
           _quif   c
-          cmp     esi,ebx
+          cmp     _esi,_ebx
           _quif   le
-          inc     ebx
+          inc     _ebx
         _endloop
         ret
 

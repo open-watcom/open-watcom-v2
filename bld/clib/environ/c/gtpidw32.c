@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getpid() for Win386.
 *
 ****************************************************************************/
 
@@ -35,7 +34,8 @@
 #include <stdlib.h>
 
 extern unsigned short _pid;
-_WCRTLINK int getpid()
+
+_WCRTLINK int getpid( void )
 {
-        return( _pid );
+    return( _pid );
 }

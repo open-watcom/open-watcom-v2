@@ -24,48 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:
 *
 ****************************************************************************/
-
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// %     Copyright (C) 1992, by WATCOM International Inc.  All rights    %
-// %     reserved.  No part of this software may be reproduced or        %
-// %     used in any form or by any means - graphic, electronic or       %
-// %     mechanical, including photocopying, recording, taping or        %
-// %     information storage and retrieval systems - except with the     %
-// %     written permission of WATCOM International Inc.                 %
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-//  Modified    By              Reason
-//  ========    ==              ======
-//  92/02/10    Steve McDowell  Initial implementation.
-//  92/02/28    ...             Modified to delay allocation of buffers
-//                              until overflow/underflow called.
-//  92/09/08    Greg Bentz      Cleanup.
-//  93/10/21    Raymond Tang    Split into separate files.
-//  93/11/05    Greg Bentz      seekoff with ios::in|ios::out is allowed
-//                              and will return the position of the put ptr
-//  93/11/16    Greg Bentz      no longer assumes that get area and put area
-//                              do not overlap
-//  94/04/06    Greg Bentz      combine header files
 
 #ifdef __SW_FH
 #include "iost.h"
 #else
 #include "variety.h"
-#include <strstrea.h>
+#include <strstrea>
 #endif
 #include "ssfhdr.h"
 
-streampos strstreambuf::seekoff( streamoff offset, ios::seekdir direction,
-/************************************************************************/
-    int mode ) {
-// Position either the get and/or put pointer to the specified position.
-// Note that seekpos also works because the default virtual function for
-// seekpos calls seekoff, which will come here.
+namespace std {
+
+  // Position either the get and/or put pointer to the specified
+  // position. Note that seekpos also works because the default virtual
+  // function for seekpos calls seekoff, which will come here.
+
+  streampos strstreambuf::seekoff( streamoff offset,
+                                   ios::seekdir direction,
+                                   int mode ) {
 
     streampos  newpos;
     char      *endget;
@@ -111,4 +90,7 @@ streampos strstreambuf::seekoff( streamoff offset, ios::seekdir direction,
         }
     }
     return( newpos );
+  }
+
 }
+

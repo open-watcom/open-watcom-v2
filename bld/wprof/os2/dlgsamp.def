@@ -1,4 +1,0 @@
-//#line "..\c\dlgsamp.c" 47
-extern void DlgOpenSample(void);
-//#line "..\c\dlgsamp.c" 63
-extern bint WPSampFound(void);

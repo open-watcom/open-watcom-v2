@@ -41,25 +41,25 @@
 _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, int pmode )
 {
     BOOL        rc;
-    long        attr;
+    DWORD       attr;
 
-    #ifdef __WIDECHAR__
-        attr = __lib_GetFileAttributesW( pathname );
-    #else
-        attr = __lib_GetFileAttributesA( pathname );
-    #endif
-    if( attr == 0xFFFFFFFF ) {
+#ifdef __WIDECHAR__
+    attr = __lib_GetFileAttributesW( pathname );
+#else
+    attr = __lib_GetFileAttributesA( pathname );
+#endif
+    if( attr == INVALID_FILE_ATTRIBUTES ) {
         return( __set_errno_nt() );
     }
     attr &= ~FILE_ATTRIBUTE_READONLY;
     if( !( pmode & S_IWRITE ) ) {
         attr |= FILE_ATTRIBUTE_READONLY;
     }
-    #ifdef __WIDECHAR__
-        rc = __lib_SetFileAttributesW( pathname, attr );
-    #else
-        rc = SetFileAttributesA( pathname, attr );
-    #endif
+#ifdef __WIDECHAR__
+    rc = __lib_SetFileAttributesW( pathname, attr );
+#else
+    rc = SetFileAttributesA( pathname, attr );
+#endif
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }

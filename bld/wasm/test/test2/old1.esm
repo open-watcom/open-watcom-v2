@@ -1,0 +1,42 @@
+.387
+DGROUP		GROUP	_DATA,STACK,_BSS,CONST
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    jmp         L$1
+    xor         ax,ax
+L$1:
+    xor         bx,bx
+L$2:
+    inc         bx
+    cmp         bx,word ptr DGROUP:L$3
+    jge         L$2
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+L$3:
+    DB	0aH, 0
+
+_DATA		ENDS
+STACK		SEGMENT	PARA STACK USE16 'STACK'
+    ORG 0
+    ORG 400H
+STACK		ENDS
+
+_BSS		SEGMENT	WORD PUBLIC USE16 'BSS'
+    ORG 0
+    ORG 4
+_BSS		ENDS
+
+CONST		SEGMENT	WORD PUBLIC USE16 'CONST'
+    DB	68H, 65H, 6cH, 6cH, 6fH
+
+CONST		ENDS
+maaak		SEGMENT	PARA PRIVATE USE16 'FAR_DATA'
+    DB	2, 0
+
+maaak		ENDS
+kaaam		SEGMENT	PARA PRIVATE USE16 'FAR_BSS'
+    ORG 0
+    ORG 2
+kaaam		ENDS
+
+		END

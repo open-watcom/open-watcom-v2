@@ -43,26 +43,24 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define BITMAP_TYPE             ( (((WORD)'M')<<8)+'B' )
+#define BITMAP_TYPE             ((((WORD)'M') << 8) + 'B')
 #define ICON_FILE_TYPE          1
 #define CURSOR_FILE_TYPE        2
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WRFileType WRIdentifyRESFile   ( const char * );
-static WRFileType WRIdentifyEXEFile   ( int, int );
+static WRFileType WRIdentifyRESFile( const char * );
+static WRFileType WRIdentifyEXEFile( int, int );
 static WRFileType WRIdentifyWinBMPFile( const char * );
 static WRFileType WRIdentifyWinICOFile( const char * );
-static WRFileType IDIconOrCursor      ( FILE * );
-static WRFileType WRIdentifyWinRCFile ( const char * );
+static WRFileType IDIconOrCursor( FILE * );
+static WRFileType WRIdentifyWinRCFile( const char * );
 
 int WR_EXPORT WRIs32Bit( WRFileType ftype )
 {
-    if( ( ftype == WR_WINNTM_RES ) ||
-        ( ftype == WR_WINNTW_RES ) ||
-        ( ftype == WR_WINNT_EXE ) ||
-        ( ftype == WR_WINNT_DLL ) ) {
+    if( ftype == WR_WINNTM_RES || ftype == WR_WINNTW_RES ||
+        ftype == WR_WINNT_EXE || ftype == WR_WINNT_DLL ) {
         return( TRUE );
     }
     return( FALSE );
@@ -70,28 +68,28 @@ int WR_EXPORT WRIs32Bit( WRFileType ftype )
 
 WRFileType WR_EXPORT WRIdentifyFile( const char *file )
 {
-    WRFileType ftype;
-    char       ext[_MAX_EXT];
-    int        fh;
-    int       ok;
+    WRFileType  ftype;
+    char        ext[_MAX_EXT];
+    int         fh;
+    int         ok;
 
     fh = -1;
 
-    ok = ( file != NULL );
+    ok = (file != NULL);
 
-    if ( ok ) {
-        _splitpath ( file, NULL, NULL, NULL, ext );
-        if( !stricmp ( ext, ".bmp" ) ) {
+    if( ok ) {
+        _splitpath( file, NULL, NULL, NULL, ext );
+        if( !stricmp( ext, ".bmp" ) ) {
             ftype = WRIdentifyWinBMPFile( file );
         } else if( !stricmp( ext, ".cur" ) ) {
-            ftype =  WRIdentifyWinICOFile( file );
+            ftype = WRIdentifyWinICOFile( file );
         } else if( !stricmp( ext, ".ico" ) ) {
-            ftype =  WRIdentifyWinICOFile( file );
+            ftype = WRIdentifyWinICOFile( file );
         } else if( !stricmp( ext, ".dlg" ) ) {
-            //ftype =  WRIdentifyWinRCFile( file );
+            //ftype = WRIdentifyWinRCFile( file );
             ftype = WR_WIN_RC_DLG;
         } else if( !stricmp( ext, ".rc" ) ) {
-            ftype =  WRIdentifyWinRCFile( file );
+            ftype = WRIdentifyWinRCFile( file );
         } else if( !stricmp( ext, ".str" ) ) {
             ftype = WR_WIN_RC_STR;
         } else if( !stricmp( ext, ".mnu" ) ) {
@@ -99,78 +97,79 @@ WRFileType WR_EXPORT WRIdentifyFile( const char *file )
         } else if( !stricmp( ext, ".acc" ) ) {
             ftype = WR_WIN_RC_ACCEL;
         } else if( !stricmp( ext, ".res" ) ) {
-            ftype = WRIdentifyRESFile ( file );
+            ftype = WRIdentifyRESFile( file );
         } else if( !stricmp( ext, ".exe" ) ) {
-            ok = ( ( fh = ResOpenFileRO ( file ) ) != -1 );
+            ok = ((fh = ResOpenFileRO( file )) != -1);
             if( ok ) {
-                ftype = WRIdentifyEXEFile ( fh, FALSE );
+                ftype = WRIdentifyEXEFile( fh, FALSE );
             }
         } else if( !stricmp( ext, ".dll" ) ) {
-            ok = ( ( fh = ResOpenFileRO ( file ) ) != -1 );
+            ok = ((fh = ResOpenFileRO( file )) != -1);
             if ( ok ) {
-                ftype = WRIdentifyEXEFile ( fh, TRUE );
+                ftype = WRIdentifyEXEFile( fh, TRUE );
             }
         } else {
             ok = FALSE;
         }
     }
 
-    if ( fh != -1 ) {
-        ResCloseFile ( fh );
+    if( fh != -1 ) {
+        ResCloseFile( fh );
     }
 
-    if ( ok ) {
-        return ( ftype );
+    if( ok ) {
+        return( ftype );
     } else {
-        return ( WR_INVALID_FILE );
+        return( WR_INVALID_FILE );
     }
 }
 
-WRFileType WRIdentifyRESFile ( const char *file )
+WRFileType WRIdentifyRESFile( const char *file )
 {
-    WRFileType ftype;
-    WRInfo     info;
-    int       is_wres;
-    int       ok;
+    WRFileType  ftype;
+    WRInfo      info;
+    int         is_wres;
+    int         ok;
 
-    memset ( &info, 0, sizeof(WRInfo) );
+    memset( &info, 0, sizeof( WRInfo ) );
 
-    info.file_name = (char *) file;
+    info.file_name = (char *)file;
 
-    ok = WRLoadResDirFromRES ( &info, &is_wres );
+    ok = WRLoadResDirFromRES( &info, &is_wres );
 
-    if ( ok ) {
-        switch ( WResGetTargetOS ( info.dir ) ) {
-            case WRES_OS_WIN16:
-                if ( is_wres ) {
-                    ftype = WR_WIN16W_RES;
-                } else {
-                    ftype = WR_WIN16M_RES;
-                }
-                break;
-            case WRES_OS_WIN32:
-                if ( is_wres ) {
-                    ftype = WR_WINNTW_RES;
-                } else {
-                    ftype = WR_WINNTM_RES;
-                }
-                break;
-            default:
-                ftype = WR_INVALID_FILE;
+    if( ok ) {
+        switch( WResGetTargetOS( info.dir ) ) {
+        case WRES_OS_WIN16:
+            if( is_wres ) {
+                ftype = WR_WIN16W_RES;
+            } else {
+                ftype = WR_WIN16M_RES;
+            }
+            break;
+        case WRES_OS_WIN32:
+            if( is_wres ) {
+                ftype = WR_WINNTW_RES;
+            } else {
+                ftype = WR_WINNTM_RES;
+            }
+            break;
+        default:
+            ftype = WR_INVALID_FILE;
+            break;
         }
-        if ( info.dir ) {
+        if( info.dir != NULL ) {
             WResFreeDir( info.dir );
         }
     }
 
-    if ( ok ) {
-        return ( ftype );
+    if( ok ) {
+        return( ftype );
     } else {
-        return ( WR_INVALID_FILE );
+        return( WR_INVALID_FILE );
     }
 }
 
-WRFileType WRIdentifyEXEFile ( int fh, int is_dll )
+WRFileType WRIdentifyEXEFile( int fh, int is_dll )
 {
     os2_exe_header  os2_hdr;
     pe_header       pe_hdr;
@@ -178,15 +177,15 @@ WRFileType WRIdentifyEXEFile ( int fh, int is_dll )
 
     ftype = WR_INVALID_FILE;
 
-    if ( WRReadWin16ExeHeader ( fh, &os2_hdr ) != 0 ) {
-        if ( is_dll ) {
+    if( WRReadWin16ExeHeader( fh, &os2_hdr ) != 0 ) {
+        if( is_dll ) {
             ftype = WR_WIN16_DLL;
         } else {
             ftype = WR_WIN16_EXE;
         }
     } else {
-        if ( WRReadWinNTExeHeader ( fh, &pe_hdr ) != 0 ) {
-            if ( is_dll ) {
+        if( WRReadWinNTExeHeader( fh, &pe_hdr ) != 0 ) {
+            if( is_dll ) {
                 ftype = WR_WINNT_DLL;
             } else {
                 ftype = WR_WINNT_EXE;
@@ -194,7 +193,7 @@ WRFileType WRIdentifyEXEFile ( int fh, int is_dll )
         }
     }
 
-    return ( ftype );
+    return( ftype );
 }
 
 WRFileType WRIdentifyWinBMPFile( const char *file_name )
@@ -219,9 +218,9 @@ WRFileType WRIdentifyWinBMPFile( const char *file_name )
     }
 
     fread( &size, sizeof( size ), 1, fp );
-    core = ( size == sizeof( BITMAPCOREHEADER ) );
+    core = (size == sizeof( BITMAPCOREHEADER ));
 
-    if (!core) {
+    if( !core ) {
         ftype = WR_WIN_BITMAP;
     }
 
@@ -260,12 +259,12 @@ WRFileType IDIconOrCursor( FILE *fp )
     fread( &w, sizeof( w ), 1, fp );
 
     switch( w ) {
-        case ICON_FILE_TYPE:
-            ftype = WR_WIN_ICON;
-            break;
-        case CURSOR_FILE_TYPE:
-            ftype = WR_WIN_CURSOR;
-            break;
+    case ICON_FILE_TYPE:
+        ftype = WR_WIN_ICON;
+        break;
+    case CURSOR_FILE_TYPE:
+        ftype = WR_WIN_CURSOR;
+        break;
     }
 
     return( ftype );
@@ -276,4 +275,3 @@ WRFileType WRIdentifyWinRCFile( const char *file_name )
     _wtouch( file_name );
     return( WR_WIN_RC );
 }
-

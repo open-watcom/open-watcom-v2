@@ -29,11 +29,11 @@
 *
 ****************************************************************************/
 
-
 #include "variety.h"
 #include <time.h>
 #include "rtdata.h"
 
-_WCRTLINK long (*__get_timezone_ptr()) {
-    return &timezone;
+_WCRTLINK long *__get_timezone_ptr( void )
+{
+    return( &timezone );
 }

@@ -24,12 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PE Dump Utility formatting routines.
 *
 ****************************************************************************/
 
-
+#include "banner.h"
 #include "format.h"
 #include "param.h"
 #include "read.h"
@@ -43,10 +42,98 @@ extern const char *dll_flags_labels[];
 extern const char *obj_flags_labels[];
 extern const char *hdr_flags_labels[];
 
+const unsigned_32 cpu_masks_table[] = {
+    7,          /* number of masks in table */
+    PE_CPU_UNKNOWN,
+    PE_CPU_386,
+    PE_CPU_I860,
+    PE_CPU_MIPS_R3000,
+    PE_CPU_MIPS_R4000,
+    PE_CPU_ALPHA,
+    PE_CPU_POWERPC
+};
+
+const unsigned_32 hdr_masks_table[] = {
+    15,         /* number of masks in table */
+    PE_FLG_PROGRAM,
+    PE_FLG_RELOCS_STRIPPED,
+    PE_FLG_IS_EXECUTABLE,
+    PE_FLG_LINNUM_STRIPPED,
+    PE_FLG_LOCALS_STRIPPED,
+    PE_FLG_MINIMAL_OBJ,
+    PE_FLG_UPDATE_OBJ,
+    PE_FLG_16BIT_MACHINE,
+    PE_FLG_REVERSE_BYTE_LO,
+    PE_FLG_32BIT_MACHINE,
+    PE_FLG_FIXED,
+    PE_FLG_FILE_PATCH,
+    PE_FLG_FILE_SYSTEM,
+    PE_FLG_LIBRARY,
+    PE_FLG_REVERSE_BYTE_HI
+};
+
+const unsigned_32 ss_masks_table[] = {
+    7,          /* number of masks in table */
+    PE_SS_UNKNOWN,
+    PE_SS_NATIVE,
+    PE_SS_WINDOWS_GUI,
+    PE_SS_WINDOWS_CHAR,
+    PE_SS_OS2_CHAR,
+    PE_SS_POSIX_CHAR,
+    PE_SS_PL_DOSSTYLE
+};
+
+const unsigned_32 dll_masks_table[] = {
+    4,          /* number of masks in table */
+    PE_DLL_PERPROC_INIT,
+    PE_DLL_PERPROC_TERM,
+    PE_DLL_PERTHRD_INIT,
+    PE_DLL_PERTHRD_TERM
+};
+
+const unsigned_32 obj_masks_table[] = {
+    29,         /* number of masks in table */
+    PE_OBJ_DUMMY,
+    PE_OBJ_NOLOAD,
+    PE_OBJ_GROUPED,
+    PE_OBJ_NOPAD,
+    PE_OBJ_TYPE_COPY,
+    PE_OBJ_CODE,
+    PE_OBJ_INIT_DATA,
+    PE_OBJ_UNINIT_DATA,
+    PE_OBJ_OTHER,
+    PE_OBJ_LINK_INFO,
+    PE_OBJ_OVERLAY,
+    PE_OBJ_REMOVE,
+    PE_OBJ_COMDAT,
+    PE_OBJ_ALIGN_1,
+    PE_OBJ_ALIGN_2,
+    PE_OBJ_ALIGN_4,
+    PE_OBJ_ALIGN_8,
+    PE_OBJ_ALIGN_16,
+    PE_OBJ_ALIGN_32,
+    PE_OBJ_ALIGN_64,
+    PE_OBJ_DISCARDABLE,
+    PE_OBJ_NOT_CACHED,
+    PE_OBJ_NOT_PAGABLE,
+    PE_OBJ_SHARED,
+    PE_OBJ_EXECUTABLE,
+    PE_OBJ_READABLE,
+    PE_OBJ_WRITABLE,
+    PE_OBJ_ALIGN_MASK,
+    PE_OBJ_ALIGN_SHIFT
+};
+
 #define printYes( x )   printf( "%s= %s\n", x, LBL_YES )
 #define printNo( x )    printf( "%s= %s\n", x, LBL_NO )
 
 int indentLevel = 0;
+
+/* forward declarations */
+void printHexDump( long int addr, size_t length, ExeFile *exeFile,
+                   Parameters *param );
+void printHexBytes( long int addr, size_t length, ExeFile *exeFile );
+
 
 void indentMore( int level )
 /***************************/
@@ -501,7 +588,6 @@ void printHexLine( long int lower, long int upper, ExeFile *exeFile,
     long int    prevPos;
     unsigned_8  buffer;
     long int    i;
-    long int    j;
 
     prevPos = ftell( exeFile->file );
     if( fseek( exeFile->file, ( lower / 16L ) * 16L, SEEK_SET ) ) {
@@ -510,18 +596,18 @@ void printHexLine( long int lower, long int upper, ExeFile *exeFile,
         return;
     }
 
-    for( j = 0; j < 16; j++ ) {
+    for( i = 0; i < 16; i++ ) {
         if( fread( &buffer, sizeof( unsigned_8 ),
                    1, exeFile->file ) != 1 ) {
             printf( ERR_FORMAT_CANNOT_DUMP_HEX );
             printf( "\n" );
             return;
         }
-        if( j == 8 && splitAtEight ) {
+        if( i == 8 && splitAtEight ) {
             printf( " " );
         }
-        if( j + lower < upper ) {
-            if( j < lower % 16L ) {
+        if( i + lower < upper ) {
+            if( i < lower % 16L ) {
                 printf( emptyMask );
             } else {
                 if( !testPrintable || isPrintable( buffer ) ) {

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of yn() Bessel function.
 *
 ****************************************************************************/
 
@@ -38,22 +37,22 @@
 
 _WMRTLINK double yn( int n, double x )
 /**************************/
-    {
-        int     j;
-        double  by, bym, byp, tox;
+{
+    int     j;
+    double  by, bym, byp, tox;
 
-        if( x < 0.0 ) {
-//            return _matherr( DOMAIN, "yn", &x, &x, - HUGE_VAL );
-            return __math1err( FUNC_YN | M_DOMAIN | V_NEG_HUGEVAL, &x );
-        }
-        bym = y0( x );
-        if( n == 0 ) return( bym );
-        tox = PDIV( 2.0 , x );
-        by = y1( x );
-        for( j = 1; j < n; j++ ) {
-            byp = j * tox * by - bym;
-            bym = by;
-            by = byp;
-        }
-        return( by );
+    if( x < 0.0 ) {
+        return __math1err( FUNC_YN | M_DOMAIN | V_NEG_HUGEVAL, &x );
     }
+    bym = y0( x );
+    if( n == 0 )
+        return( bym );
+    tox = PDIV( 2.0, x );
+    by = y1( x );
+    for( j = 1; j < n; j++ ) {
+        byp = j * tox * by - bym;
+        bym = by;
+        by = byp;
+    }
+    return( by );
+}

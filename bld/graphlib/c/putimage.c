@@ -34,7 +34,7 @@
 #include "picdef.h"
 
 
-void _WCI86FAR _CGRAPH _putimage( short x, short y, char _WCI86HUGE * image,
+_WCRTLINK void _WCI86FAR _CGRAPH _putimage( short x, short y, char _WCI86HUGE * image,
 /*==========================================*/ short dispmode )
 
 /* This routine retrieves an picture stored at image and places it on the
@@ -162,7 +162,7 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dis
         size = (long) ( picture->picheight ) * line_len;
         NegImage( &picture->buffer, size );
     }
-    _L1PutPic( x, y, line_len, image );
+    _L1PutPic( x, y, line_len, (struct picture _WCI86HUGE *)image );
     if( dispmode == _GPRESET ) {
         NegImage( &picture->buffer, size );
     }

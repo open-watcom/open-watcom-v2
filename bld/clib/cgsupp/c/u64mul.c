@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  64-bit integer multiplication.
 *
 ****************************************************************************/
 
@@ -39,17 +38,5 @@
 
 _WCRTLINK void __U64Mul( const UINT64_TYPE *a, const UINT64_TYPE *b, UINT64_TYPE *res )
 {
-    UINT64_TYPE         tmp_a;
-    UINT64_TYPE         tmp_b;
-
-    tmp_a = *a;
-    tmp_b = *b;
-
-    res->u._32[I64LO32] = 0;
-    res->u._32[I64HI32] = 0;
-    while( tmp_b.u._32[I64LO32] != 0 || tmp_b.u._32[0] != 0 ) {
-        if( tmp_b.u._32[I64LO32] & 1 ) __U64Add( &tmp_a, res, res );
-        __U64Shift( &tmp_a, -1, &tmp_a );
-        __U64Shift( &tmp_b, 1, &tmp_b );
-    }
+    *res = *a * *b;
 }

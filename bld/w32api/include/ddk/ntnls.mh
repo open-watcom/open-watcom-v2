@@ -1,0 +1,45 @@
+/*
+ *  ntnls.h     NT National Language Support definitions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _NTNLS_
+#define _NTNLS_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+/* Maximum lead bytes */
+#define MAXIMUM_LEADBYTES   12
+
+/* Code page table information */
+typedef struct _CPTABLEINFO {
+    USHORT  CodePage;
+    USHORT  MaximumCharacterSize;
+    USHORT  DefaultChar;
+    USHORT  UniDefaultChar;
+    USHORT  TransDefaultChar;
+    USHORT  TransUniDefaultChar;
+    USHORT  DBCSCodePage;
+    UCHAR   LeadByte[MAXIMUM_LEADBYTES];
+    PUSHORT MultiByteTable;
+    PVOID   WideCharTable;
+    PUSHORT DBCSRanges;
+    PUSHORT DBCSOffsets;
+} CPTABLEINFO;
+typedef CPTABLEINFO *PCPTABLEINFO;
+
+/* NLS table information */
+typedef struct _NLSTABLEINFO {
+    CPTABLEINFO OemTableInfo;
+    CPTABLEINFO AnsiTableInfo;
+    PUSHORT     UpperCaseTable;
+    PUSHORT     LowerCaseTable;
+} NLSTABLEINFO;
+typedef NLSTABLEINFO    *PNLSTABLEINFO;
+
+:include cplusepi.sp
+
+#endif /* _NTNLS_ */

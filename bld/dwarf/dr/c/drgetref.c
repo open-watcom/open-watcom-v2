@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Processing of .WATCOM_references section (for browser).
 *
 ****************************************************************************/
 
@@ -40,80 +39,92 @@ typedef enum {
     REFERREDBY = 0x02
 } ReferWhich;
 
-static dr_handle ScopeLastNameable( dr_scope_stack *, char ** );
-static void      ScopePush( dr_scope_stack *, dr_handle );
-static dr_handle ScopePop( dr_scope_stack * );
-static void References( ReferWhich, dr_handle,
-        void *, bool (*DoCallback)(dr_ref_info *, void *),
-        void *, bool (*callback)(dr_handle,dr_ref_info *,char *,void *));
-
 typedef struct {
     dr_handle entry;
 } ToData;
-
-static bool ToHook( dr_ref_info * reg, void * data )
-/**************************************************/
-{
-    ToData * info = (ToData *) data;
-    return( (reg->scope.free > 0)
-            && reg->scope.stack[ reg->scope.free - 1 ] == info->entry );
-}
-
-extern void DRRefersTo( dr_handle entry, void * data,
-            bool (*callback)( dr_handle, dr_ref_info *,char*,void * ) )
-/*********************************************************************/
-{
-    ToData info;
-    info.entry = entry;
-    References( REFERSTO, entry, &info, ToHook, data, callback );
-}
 
 typedef struct {
     dr_handle entry;
 } ByData;
 
-static bool ByHook( dr_ref_info * registers, void * data )
-/********************************************************/
-{
-    return (registers->dependent == ((ByData*)data)->entry );
-}
-
-extern void DRReferredToBy( dr_handle entry, void * data,
-        bool (*callback)(dr_handle,dr_ref_info *,char *,void *))
-/**************************************************************/
-{
-    ByData info;
-    info.entry = entry;
-    References( REFERREDBY, entry, &info, ByHook, data, callback );
-}
-
 typedef struct {
     dr_sym_type search;
 } RefData;
 
-static bool RefHook( dr_ref_info * reg, void * data )
-/***************************************************/
-{
-    RefData * info = (RefData *) data;
+#define SCOPE_GUESS 0x50
 
-    return( DRGetSymType( reg->dependent ) == info->search );
+static void ScopePush( dr_scope_stack * stack, dr_handle entry )
+/**************************************************************/
+{
+    if( stack->stack == NULL ) {
+        stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( dr_handle ) );
+    }
+    if( stack->free >= stack->size ) {
+        stack->size += SCOPE_GUESS;
+        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
+    }
+
+    stack->stack[ stack->free ] = entry;
+    stack->free += 1;
 }
 
-extern void DRReferencedSymbols( dr_sym_type search, void * data,
-    bool (*callback)(dr_handle,dr_ref_info *,char*,void *))
-/*************************************************************/
+static dr_handle ScopePop( dr_scope_stack * stack )
+/*************************************************/
 {
-    RefData info;
-    info.search = search;
+    if( stack->free <= 0 ) {
+        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+    }
 
-    References( REFERREDBY, 0L, &info, RefHook, data, callback );
+    stack->free -= 1;
+    return( stack->stack[ stack->free ] );
 }
 
-static void References( ReferWhich which, dr_handle entry, void * data1,
-        bool (*DoCallback)(dr_ref_info * reg, void *),
-        void * data2,
-        bool (*callback)(dr_handle,dr_ref_info *,char *,void *))
-/***************************************************************************/
+static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
+/************************************************************************/
+{
+    int         i;
+    dr_handle   tmp_entry;
+    dr_handle   abbrev;
+
+    for( i = scope->free; i > 0; i -= 1 ) {
+        tmp_entry = scope->stack[ i - 1 ];
+
+        abbrev = DWRVMReadULEB128( &tmp_entry );
+        if( abbrev != 0 ) {
+            abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
+            DWRVMSkipLEB128( &abbrev );
+            abbrev += sizeof( unsigned_8 );
+
+            *name = DWRGetName( abbrev, tmp_entry );
+            if( *name != NULL ) {
+                return( scope->stack[ i - 1 ] );
+            }
+        }
+    }
+    return( 0 );
+}
+
+static bool ToHook( dr_ref_info *reg, void *data )
+/************************************************/
+{
+    ToData  *info = (ToData *)data;
+
+    return( (reg->scope.free > 0)
+            && reg->scope.stack[ reg->scope.free - 1 ] == info->entry );
+}
+
+static bool ByHook( dr_ref_info * registers, void * data )
+/********************************************************/
+{
+    return( registers->dependent == ((ByData*)data)->entry );
+}
+
+
+static void References( ReferWhich which, dr_handle entry, void *data1,
+        bool (*DoCallback)(dr_ref_info *reg, void *),
+        void *data2,
+        bool (*callback)(dr_handle,dr_ref_info *, char *, void *))
+/*********************************************************************/
 {
     dr_handle   loc;
     dr_handle   end;
@@ -149,7 +160,7 @@ static void References( ReferWhich which, dr_handle entry, void * data1,
             break;
 
         case REF_SET_FILE:
-            registers.file = DWRFindFileName( DWRVMReadULEB128( &loc ), loc );
+            registers.file = DWRFindFileName( DWRVMReadULEB128( &loc ), infoOffset );
             break;
 
         case REF_SET_LINE:
@@ -189,11 +200,12 @@ static void References( ReferWhich which, dr_handle entry, void * data1,
 
             quit = FALSE; /* don't terminate */
             if( DoCallback( &registers, data1 ) || inScope ) {
-                char * name = NULL;
+                char    *name = NULL;
+
                 owning_node = ScopeLastNameable( &registers.scope, &name );
 
                 /* make sure that there is something nameable on the stack */
-                if( owning_node != 0L ) {
+                if( owning_node != 0 ) {
                     quit = !callback( owning_node, &registers, name, data2 );
                 }
             }
@@ -204,55 +216,38 @@ static void References( ReferWhich which, dr_handle entry, void * data1,
     DWRFREE( registers.scope.stack );
 }
 
-static dr_handle ScopeLastNameable( dr_scope_stack * scope, char ** name )
+extern void DRRefersTo( dr_handle entry, void *data,
+            bool (*callback)( dr_handle, dr_ref_info *, char *, void * ) )
 /************************************************************************/
 {
-    int         i;
-    dr_handle   tmp_entry;
-    dr_handle   abbrev;
-
-    for( i = scope->free; i > 0; i -= 1 ) {
-        tmp_entry = scope->stack[ i - 1 ];
-
-        abbrev = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev != 0 ) {
-            abbrev = DWRCurrNode->abbrevs[ abbrev ];
-            DWRVMSkipLEB128( &abbrev );
-            abbrev += sizeof( unsigned_8 );
-
-            *name = DWRGetName( abbrev, tmp_entry );
-            if( *name != NULL ) {
-                return scope->stack[ i - 1 ];
-            }
-        }
-    }
-    return 0L;
+    ToData info;
+    info.entry = entry;
+    References( REFERSTO, entry, &info, ToHook, data, callback );
 }
 
-#define SCOPE_GUESS 0x50
-
-static void ScopePush( dr_scope_stack * stack, dr_handle entry )
-/**************************************************************/
+extern void DRReferredToBy( dr_handle entry, void * data,
+        bool (*callback)(dr_handle, dr_ref_info *, char *, void *) )
+/******************************************************************/
 {
-    if( stack->stack == NULL ) {
-        stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( dr_handle ) );
-    }
-    if( stack->free >= stack->size ) {
-        stack->size += SCOPE_GUESS;
-        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( dr_handle ) );
-    }
-
-    stack->stack[ stack->free ] = entry;
-    stack->free += 1;
+    ByData info;
+    info.entry = entry;
+    References( REFERREDBY, entry, &info, ByHook, data, callback );
 }
 
-static dr_handle ScopePop( dr_scope_stack * stack )
-/*************************************************/
+static bool RefHook( dr_ref_info * reg, void * data )
+/***************************************************/
 {
-    if( stack->free <= 0 ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
-    }
+    RefData * info = (RefData *) data;
 
-    stack->free -= 1;
-    return stack->stack[ stack->free ];
+    return( DRGetSymType( reg->dependent ) == info->search );
+}
+
+extern void DRReferencedSymbols( dr_sym_type search, void * data,
+    bool (*callback)(dr_handle,dr_ref_info *,char*,void *))
+/*************************************************************/
+{
+    RefData info;
+    info.search = search;
+
+    References( REFERREDBY, 0L, &info, RefHook, data, callback );
 }

@@ -35,7 +35,7 @@
 #include "cgstd.h"
 
 
-void MacroAdd( MEPTR mentry, char *buf, int len, enum macro_flags flags )
+void MacroAdd( MEPTR mentry, char *buf, int len, macro_flags mflags )
 {
     unsigned    size;
 
@@ -45,11 +45,11 @@ void MacroAdd( MEPTR mentry, char *buf, int len, enum macro_flags flags )
     }
     mentry->macro_len = size + len;
     MacroOverflow( size + len, 0 );
-    MacroCopy( (char *)mentry, MacroOffset, size );     /* 01-apr-94 */
+    MacroCopy( mentry, MacroOffset, size );     /* 01-apr-94 */
     if( len != 0 ) {
         MacroCopy( buf, MacroOffset + size, len );
     }
-    MacLkAdd( mentry, size + len, flags );
+    MacLkAdd( mentry, size + len, mflags );
     CMemFree( mentry );
 }
 
@@ -57,11 +57,12 @@ void MacroAdd( MEPTR mentry, char *buf, int len, enum macro_flags flags )
 void AllocMacroSegment( unsigned minimum )
 {
     struct macro_seg_list *msl;
+    unsigned amount;
 
-    minimum = minimum;
-    MacroSegment = FEmalloc( 0x8000 );
+    amount = (minimum + 0x8000) & ~0x7fff;
+    MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
-    MacroLimit = MacroOffset + 0x7FFE;
+    MacroLimit = MacroOffset + amount - 2;
     if( MacroSegment == 0 ) {                   /* 16-aug-93 */
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
@@ -73,11 +74,11 @@ void AllocMacroSegment( unsigned minimum )
 }
 
 
-void FreeMacroSegments()
+void FreeMacroSegments( void )
 {
     struct macro_seg_list *msl;
 
-    for( ; msl = MacSegList; ) {
+    for( ; (msl = MacSegList) != NULL; ) {
         FEfree( (void *)(msl->segment) );
         MacSegList = msl->next;
         CMemFree( msl );
@@ -85,7 +86,7 @@ void FreeMacroSegments()
 }
 
 
-void MacroCopy( MPTR_T mptr, MACADDR_T offset, unsigned amount )
+void MacroCopy( void *mptr, MACADDR_T offset, unsigned amount )
 {
     memcpy( offset, mptr, amount );
 }
@@ -106,34 +107,35 @@ void MacroOverflow( unsigned amount_needed, unsigned amount_used )
 }
 
 
-local MEPTR *MacroLkUp( char *name, MEPTR *lnk )
+local MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 {
     int         len;
     MEPTR       mentry;
 
     len = strlen( name ) + 1;
     while( (mentry = *lnk) != NULL ) {
-        if( NameCmp( mentry->macro_name, name, len ) == 0 ) break;
+        if( NameCmp( mentry->macro_name, name, len ) == 0 )
+            break;
         lnk = &mentry->next_macro;
     }
     return( lnk );
 }
 
 
-void MacLkAdd( MEPTR mentry, int len, enum macro_flags flags )
+void MacLkAdd( MEPTR mentry, int len, macro_flags mflags )
 {
     MEPTR       old_mentry, *lnk;
-    enum macro_flags  old_flags;
+    macro_flags old_mflags;
 
-    MacroCopy( (char *)mentry, MacroOffset, offsetof(MEDEFN,macro_name) + 1 );
+    MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) + 1 );
     mentry = (MEPTR)MacroOffset;
     CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
     lnk  = &MacHash[ MacHashValue ];
     lnk = MacroLkUp( mentry->macro_name, lnk );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
-        old_flags = old_mentry->macro_flags;
-        if( old_flags & MACRO_CAN_BE_REDEFINED ){//delete old entry
+        old_mflags = old_mentry->macro_flags;
+        if( old_mflags & MFLAG_CAN_BE_REDEFINED ){//delete old entry
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) != 0 ) {
@@ -145,7 +147,7 @@ void MacLkAdd( MEPTR mentry, int len, enum macro_flags flags )
         mentry->next_macro = MacHash[ MacHashValue ];
         MacHash[ MacHashValue ] = mentry;
         MacroOffset += _RoundUp( len, sizeof(int) );
-        mentry->macro_flags = InitialMacroFlag | flags;
+        mentry->macro_flags = InitialMacroFlag | mflags;
     }
 }
 
@@ -168,20 +170,23 @@ int MacroCompare( MEPTR m1, MEPTR m2 )
     char        *p1;
     char        *p2;
 
-    if( m1->macro_len  != m2->macro_len )   return( -1 );
-    if( m1->macro_defn != m2->macro_defn )  return( -1 );
-    if( m1->parm_count != m2->parm_count )  return( -1 );
+    if( m1->macro_len != m2->macro_len )
+        return( -1 );
+    if( m1->macro_defn != m2->macro_defn )
+        return( -1 );
+    if( m1->parm_count != m2->parm_count )
+        return( -1 );
     p1 = (char *)m1 + offsetof(MEDEFN,macro_name);
     p2 = (char *)m2 + offsetof(MEDEFN,macro_name);
     return( memcmp( p1, p2, m1->macro_len - offsetof(MEDEFN,macro_name) ) );
 }
 
 
-MEPTR MacroLookup()
+MEPTR MacroLookup( const char *buf )
 {
     MEPTR       mentry, *lnk;
 
-    lnk = MacroLkUp( Buffer, &MacHash[ MacHashValue ] );
+    lnk = MacroLkUp( buf, &MacHash[ MacHashValue ] );
     mentry = *lnk;
     return( mentry );
 }

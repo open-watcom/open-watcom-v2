@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-
 #include "plusplus.h"
 #include "preproc.h"
 #include "errdefns.h"
@@ -130,6 +127,24 @@ static void CSkip( void )
 {
 }
 
+static void IncLevel( int value )
+{
+    struct cpp_info *cpp;
+
+    cpp = VstkPush( &vstkPp );
+    pp_stack = cpp;
+    SrcFileGetTokenLocn( &cpp->locn );
+    cpp->cpp_type = PRE_IF;
+    cpp->processing = 0;
+    if( NestLevel == SkipLevel ) {
+        if( value ) {
+            ++SkipLevel;
+            cpp->processing = 1;
+        }
+    }
+    ++NestLevel;
+}
+
 static void CSkipIf( void )
 {
     IncLevel( 0 );
@@ -147,10 +162,11 @@ static void CInclude( void )
     struct {
         unsigned in_macro : 1;
     } flags;
-    auto char buf[_MAX_PATH];
+
+    auto char   buf[_MAX_PATH];
 
     SrcFileGuardStateSig();
-    InitialMacroFlag = 0;
+    InitialMacroFlag = MFLAG_NONE;
     flags.in_macro = 0;
     if( CompFlags.use_macro_tokens ) {
         flags.in_macro = 1;
@@ -181,7 +197,9 @@ static void CInclude( void )
     } else {
         CErr1( ERR_INVALID_INCLUDE );
     }
-    if( CurToken != T_EOF )  NextToken();
+    if( CurToken != T_EOF ) {
+        NextToken();
+    }
 }
 
 static void CDefine( void )
@@ -190,7 +208,7 @@ static void CDefine( void )
 
     define_macro = MacroScan( MSCAN_DEFINE );
     if( define_macro != NULL ) {
-        define_macro->macro_flags |= MACRO_USER_DEFINED;
+        define_macro->macro_flags |= MFLAG_USER_DEFINED;
     }
 }
 
@@ -200,7 +218,8 @@ static unsigned addParmName( MAC_PARM **h, boolean add_name )
     size_t len;
     size_t len_1;
     MAC_PARM *parm_name;
-
+    if( CurToken == T_DOT_DOT_DOT )
+        strcpy( Buffer, "__VA_ARGS__" );
     len = strlen( Buffer );
     len_1 = len + 1;
     index = 0;
@@ -237,9 +256,11 @@ static boolean skipEqualOK( void )
         NextToken();
         break;
     case T_SHARP :
+    case T_ALT_SHARP :
         NextToken();
         break;
     case T_SHARP_SHARP :
+    case T_ALT_SHARP_SHARP :
         CurToken = T_SHARP;     // strip # from ##
         break;
     case T_NULL :
@@ -265,10 +286,16 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     unsigned parm_index;
     unsigned prev_token;
     unsigned prev_non_ws_token;
+    unsigned has_var_args = 0;
 
     // MacroOverflow was called for the name of the macro + mentry already
     mentry = (MEPTR) MacroOffset;
     DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void*) mentry ) );
+    if( parm_cnt < 0 )
+    {
+        has_var_args = 1;
+        parm_cnt = -parm_cnt;
+    }
     mentry->parm_count = parm_cnt;
     mentry->macro_defn = mlen;
     prev_token = T_NULL;
@@ -290,7 +317,8 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
                 }
             }
         }
-        if( CurToken == T_SHARP_SHARP ) {
+        if( ( CurToken == T_SHARP_SHARP )
+          || ( CurToken == T_ALT_SHARP_SHARP ) ) {
             CErr1( ERR_MISPLACED_SHARP_SHARP );
             NextToken();
         }
@@ -299,6 +327,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
         if( CurToken == T_NULL ) break;
         switch( CurToken ) {
           case T_SHARP:
+          case T_ALT_SHARP:
             /* if it is a function-like macro definition */
             if( parm_cnt != 0 ) {
                 CurToken = T_MACRO_SHARP;
@@ -306,6 +335,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
             MacroOffsetAddChar( &mlen, 1, CurToken );
             break;
           case T_SHARP_SHARP:
+          case T_ALT_SHARP_SHARP:
             CurToken = T_MACRO_SHARP_SHARP;
             MacroOffsetAddChar( &mlen, 1, CurToken );
             break;
@@ -317,7 +347,10 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
           case T_ID:
             parm_index = findParmName( parm_names );
             if( parm_index != 0 ) {
-                CurToken = T_MACRO_PARM;
+                if( has_var_args && parm_index == ( parm_cnt - 1 ) )
+                    CurToken = T_MACRO_VAR_PARM;
+                else
+                    CurToken = T_MACRO_PARM;
                 MacroOffsetAddChar( &mlen, 2, CurToken, parm_index - 1 );
             } else {
                 MacroOffsetAddChar( &mlen, 1, CurToken );
@@ -348,7 +381,9 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
             break;
         }
         if( CurToken != T_WHITE_SPACE ) {
-            if( prev_non_ws_token == T_MACRO_SHARP && CurToken != T_MACRO_PARM ) {
+            if( prev_non_ws_token == T_MACRO_SHARP && 
+                CurToken != T_MACRO_VAR_PARM &&
+                CurToken != T_MACRO_PARM ) {
                 CErr1( ERR_MUST_BE_MACRO_PARM );
             }
             prev_non_ws_token = CurToken;
@@ -367,7 +402,10 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     mentry = (MEPTR) MacroOffset;       // MacroOffset could have changed
     TokenLocnAssign( mentry->defn, *locn );
     mentry->macro_len = mlen;
+    if( has_var_args )
+        InitialMacroFlag |= MFLAG_HAS_VAR_ARGS;
     mptr = MacroDefine( mentry, mlen, name_len );
+    InitialMacroFlag &= ~MFLAG_HAS_VAR_ARGS;
     BrinfDeclMacro( mptr );
     if( ! ( defn & MSCAN_MANY ) ) {
         while( CurToken == T_WHITE_SPACE ) {
@@ -384,7 +422,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 {
-    int parm_cnt;               // - parameter count
+    int parm_cnt, parm_end;     // - parameter count, end found
     unsigned name_len;          // - length of macro name
     MEPTR mptr;                 // - final macro defn
     MAC_PARM *parm_names;       // - macro parm names
@@ -403,7 +441,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     name_len = TokenLen;
     mlen = offsetof( MEDEFN, macro_name );
     parm_names = NULL;
-    MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
+    MacroOffsetAddMemNoCopy( &mlen, Buffer, TokenLen + 1 );
     if( CurrChar == '(' ) {         /* parms present */
         if( ! ( defn & MSCAN_MANY ) ) {
             BadCmdLine( ERR_INVALID_OPTION );
@@ -412,9 +450,15 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
         NextToken();                /* grab the '(' */
         NextToken();
         parm_cnt = 0;               /* 0 ==> () following */
+        parm_end = 0;
         for( ;; ) {
             if( CurToken == T_RIGHT_PAREN ) break;
-            if( CurToken != T_ID ) {
+            if( parm_end ) {
+                Expecting( ")" );
+                return( NULL );
+            }
+            if( CurToken != T_ID &&
+                CurToken != T_DOT_DOT_DOT) {
                 Expecting( "identifier" );
                 return( NULL );
             }
@@ -422,6 +466,8 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
                 CErr2p( ERR_DUPLICATE_MACRO_PARM, Buffer );
             } else {
                 ++parm_cnt;
+                if( CurToken == T_DOT_DOT_DOT )
+                    parm_end = 1; // can have no further tokens
                 MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             NextToken();
@@ -433,12 +479,13 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             MustRecog( T_COMMA );
         }
     } else {
+        parm_end = 0;
         parm_cnt = -1;          /* -1 ==> no () following */
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
     mptr = grabTokens( &parm_names
-                     , parm_cnt + 1
+                     , parm_end?-(parm_cnt + 1):(parm_cnt + 1)
                      , defn
                      , name_len
                      , mlen
@@ -447,6 +494,13 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
 
     RingFree( &parm_names );
     return( mptr );
+}
+
+static void ChkEOL( void )
+{
+    if( CurToken != T_NULL && CurToken != T_EOF ) {
+        Expecting( "end of line" );
+    }
 }
 
 static void ppIf( int value )    // PREPROCESSOR IF
@@ -503,7 +557,7 @@ static void CIf( void )
 
 static void CElif( void )
 {
-    int value;
+    int         value;
 
     SrcFileGuardPpElse();
     PPState = PPS_EOL | PPS_NO_LEX_ERRORS;
@@ -528,24 +582,6 @@ static void CElif( void )
             }
         }
     }
-}
-
-static void IncLevel( int value )
-{
-    struct cpp_info *cpp;
-
-    cpp = VstkPush( &vstkPp );
-    pp_stack = cpp;
-    SrcFileGetTokenLocn( &cpp->locn );
-    cpp->cpp_type = PRE_IF;
-    cpp->processing = 0;
-    if( NestLevel == SkipLevel ) {
-        if( value ) {
-            ++SkipLevel;
-            cpp->processing = 1;
-        }
-    }
-    ++NestLevel;
 }
 
 static void wantEOL( void )
@@ -616,17 +652,10 @@ static void CUnDef( void )
     ChkEOL();
 }
 
-static void ChkEOL( void )
-{
-    if( CurToken != T_NULL && CurToken != T_EOF ) {
-        Expecting( "end of line" );
-    }
-}
-
 static void CLine( void )
 {
-    int adjust;
-    LINE_NO line;
+    int         adjust;
+    LINE_NO     line;
 
     PPState = PPS_EOL | PPS_NO_LEX_ERRORS;
     NextToken();
@@ -634,18 +663,22 @@ static void CLine( void )
         line = U32Fetch( Constant64 ); // side effects of NextToken
         NextToken();
         if( CurToken == T_NULL ) {
-            SrcFileAlias( SrcFileNameCurrent(), line, 0 );
+            if( CompFlags.cpp_ignore_line == 0 ) {
+                SrcFileAlias( SrcFileNameCurrent(), line, 0 );
+            }
         } else if( CurToken != T_STRING ) {
             Expecting( "string" );
         } else {
-            if( CurrChar == '\n' ) {
-                // line # has already been incremented
-                adjust = 0;
-            } else {
-                // line # will be incremented
-                adjust = -1;
+            if( CompFlags.cpp_ignore_line == 0 ) {
+                if( CurrChar == '\n' ) {
+                    // line # has already been incremented
+                    adjust = 0;
+                } else {
+                    // line # will be incremented
+                    adjust = -1;
+                }
+                SrcFileAlias( Buffer, line, adjust );
             }
-            SrcFileAlias( Buffer, line, adjust );
             NextToken();        // may clobber Buffer's contents
             ChkEOL();           // will increment line # if CurToken != T_NULL
         }
@@ -719,7 +752,8 @@ static void preProcStmt( void )
 int ChkControl(                 // CHECK AND PROCESS DIRECTIVES
     int expanding )
 {
-    int lines_skipped;
+    int         lines_skipped;
+    ppstate_t   save_ppstate;
 
     while( CurrChar == '\n' ) {
         SrcFileCurrentLocation();
@@ -728,13 +762,26 @@ int ChkControl(                 // CHECK AND PROCESS DIRECTIVES
             CSuicide();
         }
         lines_skipped = 0;
+        save_ppstate = PPState;
         for(;;) {
             if( CompFlags.cpp_output )  PrtChar( '\n' );
             NextChar();
-            if( CurrChar != PreProcChar ) {
+            // look for a #-char or the corresponding digraph (%:)
+            if( CurrChar != PreProcChar && CurrChar != '%' ) {
                 SkipAhead();
             }
             if( CurrChar == LCHR_EOF ) break;
+
+            if( CurrChar == '%' ) {
+                NextChar();
+                if( CurrChar == ':' ) {
+                    // replace the digraph (%:) with the preproc-char
+                    CurrChar = PreProcChar;
+                } else {
+                    GetNextCharUndo( CurrChar );
+                    CurrChar = '%';
+                }
+            }
             PPState = PPS_EOL | PPS_NO_EXPAND | PPS_NO_LEX_ERRORS;
             if( CurrChar == PreProcChar ) {
                 preProcStmt();
@@ -742,13 +789,13 @@ int ChkControl(                 // CHECK AND PROCESS DIRECTIVES
                 NextToken();
                 flush2EOL();
             }
+            PPState = save_ppstate;
             if( NestLevel == SkipLevel ) break;
             if( CurrChar == LCHR_EOF ) break;
             if( CurrChar == '\n' ) {
                 lines_skipped = 1;
             }
         }
-        PPState = PPS_NORMAL;
         if( CompFlags.cpp_output ) {
             if( lines_skipped ) {
                 EmitLine( SrcFileLine(), SrcFileNameCurrent() );

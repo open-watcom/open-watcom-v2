@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _grtext_w( double x, double y, char _WCI86FAR *string )
+_WCRTLINK short _WCI86FAR _CGRAPH _grtext_w( double x, double y, char _WCI86FAR *string )
 /*===================================================================
 
    This routine prints a text string using the current text settings.
@@ -54,7 +54,7 @@ short _WCI86FAR _CGRAPH _grtext_w( double x, double y, char _WCI86FAR *string )
 Entry( _GRTEXT_W, _grtext_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _grtext_w_87( double x, double y, char _WCI86FAR *string )
+_WCRTLINK short _WCI86FAR _CGRAPH _grtext_w_87( double x, double y, char _WCI86FAR *string )
 /*====================================================================*/
 
 {

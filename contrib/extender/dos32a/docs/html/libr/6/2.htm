@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: D32A Library Reference</title>
+  <link rel="stylesheet" href="../../sheet.css"></head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender - D32A C/C++ Run-Time Library Reference</font></i></b></center></p>
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><br><b><font face="Verdana, Arial, Helvetica">
+6.02 - DOS/32 Advanced D32A Library function - <i>d32a_int86pm()</i>
+<br></font></b></p>
+
+
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Synopsys:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><i><blockquote>
+#include &lt;d32a.h><br>
+void d32a_int86pm(int IntNum, D32A_REGS *InRegs, D32A_REGS *OutRegs);
+</blockquote></i></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Description:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+The <i>d32a_int86pm</i> function issues a software interrupt <b>IntNum</b> in the
+Protected Mode. Before the interrupt, the 32-bit CPU registers are loaded
+from the structure located by <b>InRegs</b>. When the interrupt is completed, the
+structure <b>OutRegs</b> is filled with the contents of the CPU registers. The
+following CPU registers are passed to the interrupt handler: EAX, EBX, ECX,
+EDX, ESI, EDI, EBP, Eflags. Please note that the interrupt <b>IntNum</b> is
+executed in the Protected Mode if a protected mode handler for this
+interrupt is installed. Otherwise, the interrupt <b>IntNum</b> will be reflected to
+the Real Mode by the DOS Extender, where it will be handled by a Real Mode
+interrupt handler.
+</blockquote></font></p>
+<p><br></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote><b>Returns:</b></blockquote></font></p>
+<p><font size=-1 face="Verdana, Arial, Helvetica"><blockquote>
+The <b>OutRegs</b> structure is filled with contents of the CPU registers when
+the interrupt <b>IntNum</b> completes. This function does not return any value.
+</blockquote></font></p>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

@@ -1,0 +1,23 @@
+#
+# Miscellaneous Tests
+#
+#  set tests
+#  
+#
+
+# Slurp PATH into an internal var
+TPATH=-.$+$(%PATH)$-.-
+
+.before
+    @set PATH=-.$(%PATH).-      # Try modifying PATH
+    @set WMK_TST_PATH=C:\Program Files (x86)\watcom   # Contains shell metas
+    @!set VAR_ISNT_SET=test     # Forcing shell exec makes this a no-op
+
+all: .symbolic
+    @echo .$(%WMK_TST_PATH).    # Shell or not, the results
+    @!echo .$(%WMK_TST_PATH).   # must be identical in both cases
+    @echo .$(%VAR_ISNT_SET).    # Must be empty
+    @set PATH=$(%WMK_TST_PATH)  # Try modifying path
+
+.after
+    @echo .-$(%PATH)-.          # Make sure PATH was modified

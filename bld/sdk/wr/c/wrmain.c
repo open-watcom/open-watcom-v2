@@ -60,7 +60,6 @@
 #include "wrdmsgi.h"
 #include "bitmap.h"
 #include "wricon.h"
-#include "wrcmsg.h"
 #include "wrctl3d.h"
 #include "jdlg.h"
 
@@ -76,13 +75,11 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 static int  WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, int * );
-static int  WREDoSaveObjectAs  ( WRInfo *info, WRSaveIntoData *idata );
-static int  WREDoSaveImageAs   ( WRInfo *info, WRSaveIntoData *idata,
-                                 int is_icon );
-static int  WREDoSaveImageInto ( WRInfo *info, WRSaveIntoData *idata,
-                                 int *dup, int is_icon );
-static int  WRTestReplace      ( WRInfo *, WRSaveIntoData * );
-static int  WQueryMergeStrings ( WResID * );
+static int  WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
+static int  WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon );
+static int  WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_icon );
+static int  WRTestReplace( WRInfo *, WRSaveIntoData * );
+static int  WQueryMergeStrings( WResID * );
 static int  WQueryReplaceObject( void );
 
 /****************************************************************************/
@@ -97,56 +94,57 @@ static int              ref_count = 0;
 
 
 /* set the WRES library to use compatible functions */
-WResSetRtns(open,close,read,write,lseek,tell,WRWResMemAlloc,WRWResMemFree);
+WResSetRtns( open, close, read, write, lseek, tell, WRWResMemAlloc, WRWResMemFree );
 
 #ifdef __NT__
-int WR_EXPORT LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
-{
-    _wtouch(lpReserved);
 
-    switch ( dwReason ) {
-        case DLL_PROCESS_ATTACH:
-            WRInstance = inst;
-            WRInitRcGlobal( inst );
-            ref_count = 0;
-            break;
-        case DLL_PROCESS_DETACH:
-            break;
-        case DLL_THREAD_ATTACH:
-        case DLL_THREAD_DETACH:
+int WINAPI LibMain( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+{
+    _wtouch( lpReserved );
+
+    switch( dwReason ) {
+    case DLL_PROCESS_ATTACH:
+        WRInstance = inst;
+        WRInitRcGlobal( inst );
+        ref_count = 0;
+        break;
+    case DLL_PROCESS_DETACH:
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
         /* do nothing here */
-            break;
+        break;
     }
-
-    return ( TRUE );
-}
-
-#else
-
-int WR_EXPORT WEP( int parm )
-{
-    _wtouch(parm);
 
     return( TRUE );
 }
 
-int WR_EXPORT LibMain( HANDLE inst, WORD dataseg,
-                       WORD heapsize, LPSTR cmdline )
-{
-    _wtouch(dataseg);
-    _wtouch(heapsize);
-    _wtouch(cmdline);
+#else
 
-    __win_alloc_flags   = GMEM_MOVEABLE | GMEM_SHARE;
+int WINAPI LibMain( HINSTANCE inst, WORD dataseg, WORD heapsize, LPSTR cmdline )
+{
+    _wtouch( dataseg );
+    _wtouch( heapsize );
+    _wtouch( cmdline );
+
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 
     WRInstance = inst;
     WRInitRcGlobal( inst );
 
-    ref_count           = 0;
+    ref_count = 0;
 
     return( TRUE );
 }
+
+int WINAPI WEP( int parm )
+{
+    _wtouch( parm );
+
+    return( TRUE );
+}
+
 #endif
 
 HINSTANCE WRGetInstance( void )
@@ -156,7 +154,7 @@ HINSTANCE WRGetInstance( void )
 
 void WR_EXPORT WRInit( void )
 {
-    if( !ref_count ) {
+    if( ref_count == 0 ) {
         WRDialogMsgInit();
         WRCtl3DInit( WRInstance );
         WRMemOpen();
@@ -169,25 +167,23 @@ void WR_EXPORT WRInit( void )
 void WR_EXPORT WRFini( void )
 {
     ref_count--;
-    if( !ref_count ) {
+    if( ref_count == 0 ) {
         WRDialogMsgFini();
         WRCtl3DFini( WRInstance );
         JDialogFini();
-#if 1
         WRMemPrtList();
-#endif
         WRMemClose();
     }
 }
 
-WRInfo * WR_EXPORT WRLoadResource ( const char *name, WRFileType type )
+WRInfo * WR_EXPORT WRLoadResource( const char *name, WRFileType type )
 {
     WRInfo  *info;
     int     ret;
 
     info = WRAllocWRInfo();
 
-    if( !info ) {
+    if( info == NULL ) {
         return( NULL );
     }
 
@@ -195,67 +191,67 @@ WRInfo * WR_EXPORT WRLoadResource ( const char *name, WRFileType type )
         type = WRIdentifyFile( name );
     }
 
-    #ifndef __NT__
-        if( WRIs32Bit( type ) ) {
-            WRDisplayErrorMsg( WR_NOLOAD32IN16 );
-            WRFreeWRInfo( info );
-            return( NULL );
-        }
-    #endif
+#ifndef __NT__
+    if( WRIs32Bit( type ) ) {
+        WRDisplayErrorMsg( WR_NOLOAD32IN16 );
+        WRFreeWRInfo( info );
+        return( NULL );
+    }
+#endif
 
     info->file_type = type;
-    if( !( info->file_name = WRStrDup( name ) ) ) {
+    if( (info->file_name = WRStrDup( name )) == NULL ) {
         WRFreeWRInfo( info );
         return( NULL );
     }
 
     switch( type ) {
-        case WR_WIN_BITMAP:
-            ret = WRLoadBitmapFile( info );
-            break;
+    case WR_WIN_BITMAP:
+        ret = WRLoadBitmapFile( info );
+        break;
 
-        case WR_WIN_ICON:
-            ret = WRLoadIconFile( info );
-            break;
+    case WR_WIN_ICON:
+        ret = WRLoadIconFile( info );
+        break;
 
-        case WR_WIN_CURSOR:
-            ret = WRLoadCursorFile( info );
-            break;
+    case WR_WIN_CURSOR:
+        ret = WRLoadCursorFile( info );
+        break;
 
-        case WR_WINNTM_RES:
-        case WR_WIN16M_RES:
-        case WR_WINNTW_RES:
-        case WR_WIN16W_RES:
-            ret = WRLoadResourceFromRES( info );
-            break;
+    case WR_WINNTM_RES:
+    case WR_WIN16M_RES:
+    case WR_WINNTW_RES:
+    case WR_WIN16W_RES:
+        ret = WRLoadResourceFromRES( info );
+        break;
 
-        case WR_WIN16_EXE:
-        case WR_WIN16_DLL:
-            ret = WRLoadResourceFromWin16EXE ( info );
-            break;
+    case WR_WIN16_EXE:
+    case WR_WIN16_DLL:
+        ret = WRLoadResourceFromWin16EXE( info );
+        break;
 
-        case WR_WINNT_EXE:
-        case WR_WINNT_DLL:
-            ret = WRLoadResourceFromWinNTEXE ( info );
-            break;
+    case WR_WINNT_EXE:
+    case WR_WINNT_DLL:
+        ret = WRLoadResourceFromWinNTEXE( info );
+        break;
 
-        case WR_WIN_RC:
-        case WR_WIN_RC_STR:
-        case WR_WIN_RC_MENU:
-        case WR_WIN_RC_ACCEL:
-        case WR_WIN_RC_DLG:
-            ret = WRLoadResourceFrom_RC( info );
-            break;
+    case WR_WIN_RC:
+    case WR_WIN_RC_STR:
+    case WR_WIN_RC_MENU:
+    case WR_WIN_RC_ACCEL:
+    case WR_WIN_RC_DLG:
+        ret = WRLoadResourceFrom_RC( info );
+        break;
 
-        case WR_INVALID_FILE:
-            ret = FALSE;
-            break;
+    case WR_INVALID_FILE:
+        ret = FALSE;
+        break;
 
-        case WR_DONT_KNOW:
-        default:
-            ret = FALSE;
-            WRDisplayErrorMsg( WR_BADFILETYPE );
-            break;
+    case WR_DONT_KNOW:
+    default:
+        ret = FALSE;
+        WRDisplayErrorMsg( WR_BADFILETYPE );
+        break;
     }
 
     if( ret ) {
@@ -266,31 +262,31 @@ WRInfo * WR_EXPORT WRLoadResource ( const char *name, WRFileType type )
         }
     }
 
-    if ( !ret ) {
-        WRFreeWRInfo ( info );
-        return ( NULL );
+    if( !ret ) {
+        WRFreeWRInfo( info );
+        return( NULL );
     }
 
-    return ( info );
+    return( info );
 }
 
-int WR_EXPORT WRSaveResource ( WRInfo *info, int backup )
+int WR_EXPORT WRSaveResource( WRInfo *info, int backup )
 {
     int     ret;
-    char   *tmp;
-    char   *name;
+    char    *tmp;
+    char    *name;
     char    ext[_MAX_EXT];
 
-    if( !info->save_name ) {
+    if( info->save_name == NULL ) {
         return( FALSE );
     }
 
-    #ifndef __NT__
-        if( WRIs32Bit( info->save_type ) ) {
-            WRDisplayErrorMsg( WR_NOSAVE32IN16 );
-            return( FALSE );
-        }
-    #endif
+#ifndef __NT__
+    if( WRIs32Bit( info->save_type ) ) {
+        WRDisplayErrorMsg( WR_NOSAVE32IN16 );
+        return( FALSE );
+    }
+#endif
 
     if( info->internal_filename != NULL ) {
         name = info->internal_filename;
@@ -299,11 +295,11 @@ int WR_EXPORT WRSaveResource ( WRInfo *info, int backup )
     }
 
     /* if the save and file names are the same then use a tmp file */
-    if( name && !stricmp( name, info->save_name ) ) {
+    if( name != NULL && !stricmp( name, info->save_name ) ) {
         tmp = info->save_name;
-        _splitpath ( info->save_name, NULL, NULL, NULL, ext );
-        info->save_name = WRGetTempFileName ( ext );
-        if( !info->save_name ) {
+        _splitpath( info->save_name, NULL, NULL, NULL, ext );
+        info->save_name = WRGetTempFileName( ext );
+        if( info->save_name == NULL ) {
             info->save_name = tmp;
             return( FALSE );
         }
@@ -312,56 +308,56 @@ int WR_EXPORT WRSaveResource ( WRInfo *info, int backup )
     }
 
     switch( info->save_type ) {
-        case WR_WIN_BITMAP:
-            ret = WRSaveBitmapResource( info, backup );
-            break;
+    case WR_WIN_BITMAP:
+        ret = WRSaveBitmapResource( info, backup );
+        break;
 
-        case WR_WIN_ICON:
-            ret = WRSaveIconResource( info, backup );
-            break;
+    case WR_WIN_ICON:
+        ret = WRSaveIconResource( info, backup );
+        break;
 
-        case WR_WIN_CURSOR:
-            ret = WRSaveCursorResource( info, backup );
-            break;
+    case WR_WIN_CURSOR:
+        ret = WRSaveCursorResource( info, backup );
+        break;
 
-        case WR_WIN_RC:
-        case WR_WIN_RC_STR:
-        case WR_WIN_RC_MENU:
-        case WR_WIN_RC_ACCEL:
-        case WR_WIN_RC_DLG:
-            ret = WRSaveResourceTo_RC( info, backup );
-            break;
+    case WR_WIN_RC:
+    case WR_WIN_RC_STR:
+    case WR_WIN_RC_MENU:
+    case WR_WIN_RC_ACCEL:
+    case WR_WIN_RC_DLG:
+        ret = WRSaveResourceTo_RC( info, backup );
+        break;
 
-        case WR_WIN16M_RES:
-        case WR_WIN16W_RES:
-        case WR_WINNTM_RES:
-        case WR_WINNTW_RES:
-            ret = WRSaveResourceToRES ( info, backup );
-            break;
+    case WR_WIN16M_RES:
+    case WR_WIN16W_RES:
+    case WR_WINNTM_RES:
+    case WR_WINNTW_RES:
+        ret = WRSaveResourceToRES( info, backup );
+        break;
 
-        case WR_WIN16_EXE:
-        case WR_WIN16_DLL:
-            ret = WRSaveResourceToWin16EXE ( info, backup );
-            break;
+    case WR_WIN16_EXE:
+    case WR_WIN16_DLL:
+        ret = WRSaveResourceToWin16EXE( info, backup );
+        break;
 
-        case WR_WINNT_EXE:
-        case WR_WINNT_DLL:
-            ret = WRSaveResourceToWinNTEXE ( info, backup );
-            break;
+    case WR_WINNT_EXE:
+    case WR_WINNT_DLL:
+        ret = WRSaveResourceToWinNTEXE( info, backup );
+        break;
 
-        case WR_DONT_KNOW:
-        case WR_INVALID_FILE:
-        default:
-            WRDisplayErrorMsg( WR_BADSAVETYPE );
-            ret = FALSE;
-            break;
+    case WR_DONT_KNOW:
+    case WR_INVALID_FILE:
+    default:
+        WRDisplayErrorMsg( WR_BADSAVETYPE );
+        ret = FALSE;
+        break;
     }
 
-    if( ret && info->dir ) {
+    if( ret != NULL && info->dir != NULL ) {
         ret = WRRelinkInfo( info );
     }
 
-    if( tmp ) {
+    if( tmp != NULL ) {
         ret = ret && WRRenameFile( tmp, info->save_name );
         WRMemFree( info->save_name );
         info->save_name = tmp;
@@ -377,7 +373,7 @@ int WR_EXPORT WRUpdateTmp( WRInfo *info )
     WRFileType  ttype;
     char        ext[_MAX_EXT];
 
-    if( !info || !info->file_name ) {
+    if( info == NULL || info->file_name == NULL ) {
         return( FALSE );
     }
 
@@ -402,56 +398,56 @@ int WR_EXPORT WRUpdateTmp( WRInfo *info )
         info->save_type = info->file_type;
     }
     info->save_name = WRGetTempFileName( ext );
-    if ( !info->save_name ) {
+    if( info->save_name == NULL ) {
         info->save_name = tsave;
         info->save_type = ttype;
-        return ( FALSE );
+        return( FALSE );
     }
 
-    switch ( info->save_type ) {
-        case WR_WIN_BITMAP:
-            ret = WRSaveBitmapResource( info, FALSE );
-            break;
+    switch( info->save_type ) {
+    case WR_WIN_BITMAP:
+        ret = WRSaveBitmapResource( info, FALSE );
+        break;
 
-        case WR_WIN_ICON:
-            ret = WRSaveIconResource( info, FALSE );
-            break;
+    case WR_WIN_ICON:
+        ret = WRSaveIconResource( info, FALSE );
+        break;
 
-        case WR_WIN_CURSOR:
-            ret = WRSaveCursorResource( info, FALSE );
-            break;
+    case WR_WIN_CURSOR:
+        ret = WRSaveCursorResource( info, FALSE );
+        break;
 
-        case WR_WIN16M_RES:
-        case WR_WIN16W_RES:
-        case WR_WINNTM_RES:
-        case WR_WINNTW_RES:
-            ret = WRSaveResourceToRES ( info, FALSE );
-            break;
+    case WR_WIN16M_RES:
+    case WR_WIN16W_RES:
+    case WR_WINNTM_RES:
+    case WR_WINNTW_RES:
+        ret = WRSaveResourceToRES( info, FALSE );
+        break;
 
-        case WR_WIN16_EXE:
-        case WR_WIN16_DLL:
-            ret = WRSaveResourceToWin16EXE ( info, FALSE );
-            break;
+    case WR_WIN16_EXE:
+    case WR_WIN16_DLL:
+        ret = WRSaveResourceToWin16EXE( info, FALSE );
+        break;
 
-        case WR_WINNT_EXE:
-        case WR_WINNT_DLL:
-            ret = WRSaveResourceToWinNTEXE ( info, FALSE );
-            break;
+    case WR_WINNT_EXE:
+    case WR_WINNT_DLL:
+        ret = WRSaveResourceToWinNTEXE( info, FALSE );
+        break;
 
-        case WR_WIN_RC:
-        case WR_WIN_RC_STR:
-        case WR_WIN_RC_MENU:
-        case WR_WIN_RC_ACCEL:
-        case WR_WIN_RC_DLG:
-            ret = FALSE;
-            break;
+    case WR_WIN_RC:
+    case WR_WIN_RC_STR:
+    case WR_WIN_RC_MENU:
+    case WR_WIN_RC_ACCEL:
+    case WR_WIN_RC_DLG:
+        ret = FALSE;
+        break;
 
-        case WR_DONT_KNOW:
-        case WR_INVALID_FILE:
-        default:
-            WRDisplayErrorMsg( WR_BADSAVETYPE );
-            ret = FALSE;
-            break;
+    case WR_DONT_KNOW:
+    case WR_INVALID_FILE:
+    default:
+        WRDisplayErrorMsg( WR_BADSAVETYPE );
+        ret = FALSE;
+        break;
     }
 
     if( ret ) {
@@ -472,44 +468,38 @@ int WR_EXPORT WRUpdateTmp( WRInfo *info )
     return( ret );
 }
 
-int WR_EXPORT WRSaveObjectAs ( const char *file, WRFileType file_type,
-                               WRSaveIntoData *idata )
+int WR_EXPORT WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
 {
-    WRInfo       *info;
-    long          type;
-    int           ok;
+    WRInfo      *info;
+    long        type;
+    int         ok;
 
     info = NULL;
 
-    ok = ( file && idata->type && idata->name && idata->data &&
-           ( ( file_type == WR_WIN_BITMAP ) ||
-             ( file_type == WR_WIN_CURSOR ) ||
-             ( file_type == WR_WIN_ICON ) ||
-             ( file_type == WR_WIN_RC ) ||
-             ( file_type == WR_WIN_RC_STR ) ||
-             ( file_type == WR_WIN_RC_MENU ) ||
-             ( file_type == WR_WIN_RC_ACCEL ) ||
-             ( file_type == WR_WIN_RC_DLG ) ||
-             ( file_type == WR_WIN16M_RES ) ||
-             ( file_type == WR_WIN16W_RES ) ||
-             ( file_type == WR_WINNTM_RES ) ||
-             ( file_type == WR_WINNTW_RES ) ) );
+    ok = (file != NULL && idata->type != NULL && idata->name != NULL &&
+          idata->data != NULL &&
+          (file_type == WR_WIN_BITMAP || file_type == WR_WIN_CURSOR ||
+           file_type == WR_WIN_ICON || file_type == WR_WIN_RC ||
+           file_type == WR_WIN_RC_STR || file_type == WR_WIN_RC_MENU ||
+           file_type == WR_WIN_RC_ACCEL || file_type == WR_WIN_RC_DLG ||
+           file_type == WR_WIN16M_RES || file_type == WR_WIN16W_RES ||
+           file_type == WR_WINNTM_RES || file_type == WR_WINNTW_RES));
 
-    if ( ok ) {
-        info = WRAllocWRInfo ();
-        ok = ( info != NULL );
+    if( ok ) {
+        info = WRAllocWRInfo();
+        ok = (info != NULL);
     }
 
-    if ( ok ) {
-        ok = ( ( info->dir = WResInitDir() ) != NULL );
+    if( ok ) {
+        ok = ((info->dir = WResInitDir()) != NULL);
     }
 
-    if ( ok ) {
+    if( ok ) {
         info->save_type = file_type;
-        info->save_name = (char *) file;
+        info->save_name = (char *)file;
     }
 
-    while( ok && idata ) {
+    while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
         if( type == (long)RT_GROUP_ICON ) {
             ok = WREDoSaveImageAs( info, idata, TRUE );
@@ -521,41 +511,40 @@ int WR_EXPORT WRSaveObjectAs ( const char *file, WRFileType file_type,
         idata = idata->next;
     }
 
-    if ( ok ) {
+    if( ok ) {
         ok = WRSaveResource( info, TRUE );
     }
 
-    if ( info ) {
+    if( info != NULL ) {
         info->save_name = NULL;
         WRCleanDir( info->dir );
-        WRFreeWRInfo ( info );
+        WRFreeWRInfo( info );
     }
 
-    return ( ok );
+    return( ok );
 }
 
-int WR_EXPORT WRSaveObjectInto ( const char *file, WRSaveIntoData *idata,
-                                 int *dup )
+int WR_EXPORT WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
 {
-    WRInfo       *info;
-    char         *tmp_file;
-    char          ext[_MAX_EXT];
-    long          type;
-    int           ok;
+    WRInfo      *info;
+    char        *tmp_file;
+    char        ext[_MAX_EXT];
+    long        type;
+    int         ok;
 
-    info        = NULL;
-    tmp_file    = NULL;
+    info = NULL;
+    tmp_file = NULL;
 
-    ok = ( file && idata && dup );
+    ok = (file != NULL && idata != NULL && dup != NULL);
 
     if( ok ) {
         info = WRLoadResource( file, WR_DONT_KNOW );
-        ok = ( info != NULL );
+        ok = (info != NULL);
     }
 
     if( ok ) {
         _splitpath( info->file_name, NULL, NULL, NULL, ext );
-        ok = ( ( tmp_file = WRGetTempFileName ( ext ) ) != NULL );
+        ok = ((tmp_file = WRGetTempFileName( ext )) != NULL);
     }
 
     if( ok ) {
@@ -564,12 +553,12 @@ int WR_EXPORT WRSaveObjectInto ( const char *file, WRSaveIntoData *idata,
     }
 
     // loop thru all of the data
-    while( ok && idata ) {
+    while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
         if( type == (long)RT_GROUP_ICON ) {
-            ok = WREDoSaveImageInto ( info, idata, dup, TRUE );
+            ok = WREDoSaveImageInto( info, idata, dup, TRUE );
         } else if( type == (long)RT_GROUP_CURSOR ) {
-            ok = WREDoSaveImageInto ( info, idata, dup, FALSE );
+            ok = WREDoSaveImageInto( info, idata, dup, FALSE );
         } else {
             ok = WREDoSaveObjectInto( info, idata, dup );
         }
@@ -584,13 +573,13 @@ int WR_EXPORT WRSaveObjectInto ( const char *file, WRSaveIntoData *idata,
         ok = WRRenameFile( info->file_name, info->save_name );
     }
 
-    if( info ) {
+    if( info != NULL ) {
         info->save_name = NULL;
         WRCleanDir( info->dir );
         WRFreeWRInfo( info );
     }
 
-    if( tmp_file ) {
+    if( tmp_file != NULL ) {
         WRMemFree( tmp_file );
     }
 
@@ -600,14 +589,14 @@ int WR_EXPORT WRSaveObjectInto ( const char *file, WRSaveIntoData *idata,
 int WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
                                 WResLangType *lang, void *data )
 {
-    WResLangNode *lnode;
-    int           ok;
+    WResLangNode    *lnode;
+    int             ok;
 
-    ok = ( dir && type && name && lang && data );
+    ok = (dir != NULL && type != NULL && name != NULL && lang != NULL && data != NULL);
 
     if( ok ) {
         lnode = WRFindLangNode( dir, type, name, lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -620,26 +609,26 @@ int WR_EXPORT WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
 WResLangNode * WR_EXPORT WRFindLangNode( WResDir dir, WResID *type,
                                          WResID *name, WResLangType *lang )
 {
-    WResTypeNode *tnode;
-    WResResNode  *rnode;
-    WResLangNode *lnode;
-    int           ok;
+    WResTypeNode    *tnode;
+    WResResNode     *rnode;
+    WResLangNode    *lnode;
+    int             ok;
 
-    ok = ( dir && type && name && lang );
+    ok = (dir != NULL && type != NULL && name != NULL && lang != NULL);
 
     if( ok ) {
         tnode = WRFindTypeNodeFromWResID( dir, type );
-        ok = ( tnode != NULL );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
         rnode = WRFindResNodeFromWResID( tnode, name );
-        ok = ( rnode != NULL );
+        ok = (rnode != NULL);
     }
 
     if( ok ) {
         lnode = WRFindLangNodeFromLangType( rnode, lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( !ok ) {
@@ -653,8 +642,8 @@ int WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
 {
     int           ok;
 
-    ok = ( info && info->dir && idata && idata->type && idata->name &&
-           idata->data );
+    ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
+          idata->name != NULL && idata->data != NULL);
 
     if( ok ) {
         ok = !WResAddResource( idata->type, idata->name, idata->MemFlags, 0,
@@ -677,13 +666,12 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     WResLangNode        *lnode;
 
     data = NULL;
-    ok = ( info && info->dir && idata && idata->type && idata->name &&
-           idata->data && idata->info );
+    ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
+          idata->name != NULL && idata->data != NULL && idata->info != NULL);
 
     if( ok ) {
-        lnode = WRFindLangNode( idata->info->dir, idata->type,
-                                idata->name, &idata->lang );
-        ok = ( lnode != NULL );
+        lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -700,9 +688,8 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     }
 
     if( ok ) {
-        lnode = WRFindLangNode( info->dir, idata->type,
-                                idata->name, &idata->lang );
-        ok = ( lnode != NULL );
+        lnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -727,8 +714,8 @@ int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, int *dup )
 
     replace_nixed = FALSE;
 
-    ok = ( info && idata && idata->type && idata->name && idata->data
-           && dup );
+    ok = (info != NULL && idata != NULL && idata->type != NULL && idata->name != NULL &&
+          idata->data != NULL && dup != NULL);
 
     if( ok ) {
         ok = WRTestReplace( info, idata );
@@ -753,8 +740,7 @@ int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, int *dup )
     return( ok );
 }
 
-int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata,
-                        int *dup, int is_icon )
+int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_icon )
 {
     BYTE                *data;
     uint_32             size;
@@ -764,8 +750,8 @@ int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata,
 
     replace_nixed = FALSE;
     data = NULL;
-    ok = ( info && info->dir && idata && idata->type && idata->name &&
-           idata->data && idata->info && dup );
+    ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
+          idata->name != NULL && idata->data != NULL && idata->info != NULL && dup != NULL);
 
     if( ok ) {
         ok = WRTestReplace( info, idata );
@@ -773,9 +759,8 @@ int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata,
     }
 
     if( ok ) {
-        lnode = WRFindLangNode( idata->info->dir, idata->type,
-                                idata->name, &idata->lang );
-        ok = ( lnode != NULL );
+        lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -793,9 +778,8 @@ int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata,
     }
 
     if( ok ) {
-        lnode = WRFindLangNode( info->dir, idata->type,
-                                idata->name, &idata->lang );
-        ok = ( lnode != NULL );
+        lnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -831,11 +815,11 @@ int WQueryReplaceObject( void )
 
     ret = MessageBox( HWND_DESKTOP, text, title, style );
 
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 
-    if( text ) {
+    if( text != NULL ) {
         WRFreeRCString( text );
     }
 
@@ -860,18 +844,17 @@ int WQueryMergeStrings( WResID *rname )
     title = WRAllocRCString( WR_COPYRESINTO );
     text = WRAllocRCString( WR_REPLACESTR );
 
-    if( text ) {
-        str = (char *)WRMemAlloc( strlen(text) + 1 + 10 ); // space for 10 digits
-        if( str ) {
+    if( text != NULL ) {
+        str = (char *)WRMemAlloc( strlen( text ) + 1 + 10 ); // space for 10 digits
+        if( str != NULL ) {
             sprintf( str, text, rname->ID.Num );
-            ret = MessageBox ( HWND_DESKTOP, str, title, style );
+            ret = MessageBox( HWND_DESKTOP, str, title, style );
             WRMemFree( str );
         }
         WRFreeRCString( text );
     }
 
-
-    if( title ) {
+    if( title != NULL ) {
         WRFreeRCString( title );
     }
 
@@ -885,22 +868,22 @@ int WQueryMergeStrings( WResID *rname )
 // this function returns TRUE if the save into may continue
 int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 {
-    WResTypeNode *tnode;
-    WResResNode  *rnode;
-    WResLangNode *lnode;
-    long          type;
-    void         *data;
-    int           size;
-    int           strings;
+    WResTypeNode    *tnode;
+    WResResNode     *rnode;
+    WResLangNode    *lnode;
+    long            type;
+    void            *data;
+    int             size;
+    int             strings;
 
-    if( !info || !info->dir || !idata || !idata->type ||
-        !idata->name ) {
+    if( info == NULL || info->dir == NULL || idata == NULL || idata->type == NULL ||
+        idata->name == NULL ) {
         return( FALSE );
     }
 
     type = WResIDToNum( idata->type );
 
-    strings = ( type == (long)RT_STRING );
+    strings = (type == (long)RT_STRING);
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {
@@ -921,17 +904,16 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         if( !WQueryMergeStrings( idata->name ) ) {
             return( FALSE );
         }
-        data = WRLoadResData( info->file_name, lnode->Info.Offset,
-                              lnode->Info.Length );
+        data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
         if( !WRMergeStringData( &data, &size, idata->data, idata->size,
-                                WRIs32Bit( info->save_type), TRUE ) ) {
-            if( data ) {
+                                WRIs32Bit( info->save_type ), TRUE ) ) {
+            if( data != NULL ) {
                 WRMemFree( data );
             }
             return( FALSE );
         }
-        if( idata->data ) {
+        if( idata->data != NULL ) {
             WRMemFree( idata->data );
         }
         idata->data = data;
@@ -942,7 +924,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         }
     }
 
-    if( ( type == (long)RT_GROUP_ICON ) || ( type == (long)RT_GROUP_CURSOR ) ) {
+    if( type == (long)RT_GROUP_ICON || type == (long)RT_GROUP_CURSOR ) {
         if( !WRDeleteGroupImages( info, lnode, type ) ) {
             return( FALSE );
         }
@@ -954,4 +936,3 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     return( TRUE );
 }
-

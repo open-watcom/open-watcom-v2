@@ -112,7 +112,7 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
     unsigned            max;
     mad_type_info       mti;
     int                 sign = 0;
-    unsigned long       mask;
+    unsigned long       *plong;
 
     MADTypeInfo( th, &mti );
     switch( mti.b.kind ) {
@@ -120,8 +120,8 @@ unsigned GetMADMaxFormatWidth( mad_type_handle th )
     case MTK_INTEGER:
         memset( &tmp, -1, sizeof( tmp ) );
         if( mti.i.nr != MNR_UNSIGNED ) {
-            mask = 1L << mti.i.sign_pos;
-            tmp.ud &= ~mask;
+            plong = (unsigned long *)tmp.ar + mti.i.sign_pos / 32;
+            *plong &= ( 1L << ( mti.i.sign_pos % 32 ) ) - 1;
             ++sign;
         }
         break;

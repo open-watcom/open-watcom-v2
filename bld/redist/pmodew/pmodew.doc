@@ -1,0 +1,2167 @@
+------------------------------------------------------------------------------
+---------------------- PMODE For Watcom C/C++ - v1.33 ------------------------
+------------------------------------------------------------------------------
+
+  This is the documentation for PMODE for Watcom C/C++ - v1.33, henceforth
+referred to as PMODE/W. PMODE/W is Copyright (c) 1994-1997, Charles Scheffold
+and Thomas Pytel. All rights reserved.
+
+Contents:
+---------
+
+1 - Overview
+    1.0  - Legal disclaimer
+    1.1  - Description
+    1.2  - Usage
+    1.3  - Performance and compatibility
+    1.4  - PMODE/W protected mode
+    1.5  - PMODE/W execution
+    1.6  - Terms for non-commercial use
+    1.7  - Licensing PMODE/W for commercial use
+    1.8  - Contact information
+
+2 - Supported DPMI INT 31h functions
+    2.0  - Function 0000h - Allocate Descriptors
+    2.1  - Function 0001h - Free Descriptor
+    2.2  - Function 0002h - Segment to Descriptor
+    2.3  - Function 0003h - Get Selector Increment Value
+    2.4  - Function 0006h - Get Segment Base Address
+    2.5  - Function 0007h - Set Segment Base Address
+    2.6  - Function 0008h - Set Segment Limit
+    2.7  - Function 0009h - Set Descriptor Access Rights
+    2.8  - Function 000Ah - Create Alias Descriptor
+    2.9  - Function 000Bh - Get Descriptor
+    2.10 - Function 000Ch - Set Descriptor
+    2.11 - Function 0100h - Allocate DOS Memory Block
+    2.12 - Function 0101h - Free DOS Memory Block
+    2.13 - Function 0102h - Resize DOS Memory Block
+    2.14 - Function 0200h - Get Real Mode Interrupt Vector
+    2.15 - Function 0201h - Set Real Mode Interrupt Vector
+    2.16 - Function 0202h - Get Processor Exception Handler Vector
+    2.17 - Function 0203h - Set Processor Exception Handler Vector
+    2.18 - Function 0204h - Get Protected Mode Interrupt Vector
+    2.19 - Function 0205h - Set Protected Mode Interrupt Vector
+    2.20 - Function 0300h - Simulate Real Mode Interrupt
+    2.21 - Function 0301h - Call Real Mode Procedure With Far Return Frame
+    2.22 - Function 0302h - Call Real Mode Procedure With IRET Frame
+    2.23 - Function 0303h - Allocate Real Mode Callback Address
+    2.24 - Function 0304h - Free Real Mode Callback Address
+    2.25 - Function 0305h - Get State Save/Restore Addresses
+    2.26 - Function 0306h - Get Raw Mode Switch Addresses
+    2.27 - Function 0400h - Get Version
+    2.28 - Function 0500h - Get Free Memory Information
+    2.29 - Function 0501h - Allocate Memory Block
+    2.30 - Function 0502h - Free Memory Block
+    2.31 - Function 0503h - Resize Memory Block
+    2.32 - Function 0800h - Physical Address Mapping
+    2.33 - Function 0801h - Free Physical Address Mapping
+    2.34 - Function 0900h - Get and Disable Virtual Interrupt State
+    2.35 - Function 0901h - Get and Enable Virtual Interrupt State
+    2.36 - Function 0902h - Get Virtual Interrupt State
+    2.37 - Function EEFFh - Get DOS Extender Information
+
+3 - Supported DOS extended INT 21h functions
+    3.0  - Function 09h - Write String to Standard Output
+    3.1  - Function 1Ah - Set Disk Transfer Area
+    3.2  - Function 1Bh - Get Allocation Information for Default Drive
+    3.3  - Function 1Ch - Get Allocation Information for Specific Drive
+    3.4  - Function 1Fh - Get Drive Parameter Block for Default Drive
+    3.5  - Function 25h - Set Interrupt Vector
+    3.6  - Function 2Fh - Get Disk Transfer Area
+    3.7  - Function 32h - Get Drive Parameter Block for Specific Drive
+    3.8  - Function 34h - Get Address of InDOS Flag
+    3.9  - Function 35h - Get Interrupt Vector
+    3.10 - Function 39h - Create Subdirectory
+    3.11 - Function 3Ah - Remove Subdirectory
+    3.12 - Function 3Bh - Set Directory
+    3.13 - Function 3Ch - Create File
+    3.14 - Function 3Dh - Open File
+    3.15 - Function 3Fh - Read From File
+    3.16 - Function 40h - Write to File
+    3.17 - Function 41h - Delete File
+    3.18 - Function 43h - Get/Set File Attributes
+    3.19 - Function 47h - Get Directory Path
+    3.20 - Function 48h - Allocate Memory Block
+    3.21 - Function 49h - Free Memory Block
+    3.22 - Function 4Ah - Resize Memory Block
+    3.23 - Function 4Bh - Sub-Function 00h - Load and Execute Program
+    3.24 - Function 4Eh - Search for First Filename Match
+    3.25 - Function 4Fh - Search for Next Filename Match
+    3.26 - Function 56h - Rename File
+    3.27 - Function 62h - Get PSP Address
+
+4 - Supported mouse extended INT 33h functions
+    4.0  - Function 0009h - Define Graphics Cursor
+    4.1  - Function 000Ch - Define Interrupt Subroutine Parameters
+    4.2  - Function 0016h - Save Driver State
+    4.3  - Function 0017h - Restore Driver State
+
+------------------------------------------------------------------------------
+------------------------------ 1 - Overview ----------------------------------
+------------------------------------------------------------------------------
+
+  This section will give you all the information you will need to plug PMODE/W
+right into your Watcom C/C++ protected mode programs. All of the other things
+you need to be aware of about using PMODE/W commercially and non-commercially
+are also in this section. Specific information on INT 31h and INT 21h DOS
+extended services supported by PMODE/W is in the following sections. Please
+note that we have tested this extender with Watcom C/C++ versions 9.5, 10.0,
+10.5, and 10.6.
+
+1.0 - Legal disclaimer:
+-----------------------
+
+  We exclude any and all implied warranties, including warranties of
+merchantability and fitness for a particular purpose. We make no warranty or
+representation, either express or implied, with respect to PMODE/W, its
+quality, performance, merchantability, or fitness for a particular purpose.
+We shall have no liability for special, incidental, or consequential damages
+arising out of or resulting from the use, misuse, or modification of PMODE/W.
+
+  All trademarks used in this documentation are property of their respective
+owners.
+
+1.1 - Description:
+------------------
+
+  PMODE/W is a DOS extender for the Watcom C/C++ package. It allows DOS
+programs to run in full 32 bit protected mode, with access to all memory
+available in the system. PMODE/W basically extends the DOS environment to
+protected mode and provides a simple interface to the real mode DOS system
+services for your code. PMODE/W takes care of all aspects of running the
+system in protected mode and maintaining compatibility with the underlying
+real mode software. PMODE/W deals with low level necessities such as
+descriptor tables, memory management, IRQ and interrupt redirection,
+real/protected mode translation functions, exception handling, and other
+miscellaneous aspects of running in protected mode. Your code does not need to
+deal with specific aspects of different systems, such as XMS/EMS/VCPI/DPMI
+availability. PMODE/W will run on top of almost any system and provide common
+protected mode services to your program through the DPMI interface
+specification, as well as most standard DOS functions extended for protected
+mode use.
+
+  PMODE/W replaces DOS/4GW extender in the Watcom C/C++ package. Whereas
+DOS/4GW requires a stub and an large external extender, PMODE/W is the stub
+and extender in one. The generated executable contains the PMODE/W extender
+within it as the stub. When run, PMODE/W will take care of setting up the
+system and executing the protected mode portion of the program. PMODE/W has
+the added advantage of allowing you to compress you protected mode programs.
+PMODE/W is also completely interchangeable with DOS/4GW. You may plug PMODE/W
+into almost any Watcom C/C++ programs without worry. So long as the program
+does not use any DOS/4GW specific functions, the code will work fine. This
+allows you to switch directly back to DOS/4GW if for any reason you are not
+satisfied with PMODE/W. This also allows you to debug PMODE/W programs unsing
+the Watcom debugger, as any uncompressed PMODE/W executable can be run with
+DOS/4GW simply by executing it with DOS4GW.EXE.
+
+  Several years have gone into the development of PMODE/W. It is now a fairly
+mature DOS extender, and has gone through its fair share of bugs and
+incompatibilities. It is at this point, a very stable protected mode system.
+Great pains have gone into the optimization and testing of PMODE/W. Our major
+goals have been speed, size, and stability. We now feel that we have achieved
+a good deal of those things. But don't take our word for it, try it yourself,
+as you can do that very easily before you actually decide to buy PMODE/W. Just
+plug PMODE/W into any popular program out there which uses DOS/4GW.
+
+  To sum it up, if you are looking for a good solid, stable, and fast
+extender, PMODE/W may be just what you need.
+
+Here are the advantages of PMODE/W:
+
+) No external extender required (everything needed to execute is in the EXE).
+) Small size (less than 12k for the entire extender program).
+) Compression of protected mode executables.
+) Low extended memory overhead.
+) Does not require ANY extended memory to load OR execute.
+) Fast execution.
+) Free for non-commercial use.
+
+1.2 - Usage:
+------------
+
+  The following main files should be present in your PMODE/W archive:
+
+) FILE_ID.DIZ   - BBS description file.
+) UPDATES.DOC   - Information about updates/bug fixes.
+) PMODEW.DOC    - The documentation you are now reading.
+) PMODEW.EXE    - The actual PMODE/W DOS extender.
+) PMODEW.FAQ    - Frequently asked questions.
+) PMODEW.LNK    - Example linker initialization file for PMODE/W.
+) PMWSETUP.EXE  - PMODE/W parameter setup utility.
+) PMWBIND.EXE   - PMODE/W bind utility.
+) PMWLITE.EXE   - PMODE/W protected mode executable compression utility.
+) PMWVER.COM    - PMODE/W version check utility.
+) UTILS.DOC     - Documentation on PMWSETUP, PMWBIND, PMWLITE, and PMWVER.
+) EXAMPLES.ZIP  - Example files.
+
+  You will probably want to add a new system, PMODE/W, to your WLSYSTEM.LNK
+file. All you need to do in this case is add the contents of PMODEW.LNK to
+your WLSYSTEM.LNK file, this will add the system 'pmodew' to your Watcom C/C++
+setup. You may also just compile to a 'dos4g' system but replace the stub with
+PMODEW.EXE.
+
+1.3 - Performance and compatibility:
+------------------------------------
+
+  Our major concerns in developing PMODE/W were speed, size, and stability.
+PMODE/W itself was written entirely in assembly. When running under PMODE/W,
+your code will be running at a privilege level of zero, the highest and
+fastest. PMODE/W does not virtualize what it does not need to, and does not
+invoke any protected mode mechanism that is slow. For example, if the system
+is running clean or under XMS, PMODE/W does not turn on paging. Under a memory
+manager which provides both VCPI and DPMI services, PMODE/W will opt for VCPI
+protected mode which is significantly faster than DPMI. When PMODE/W makes
+calls to real mode, it switches the system into actual real mode rather than
+the slower V86 mode (when it can, under VCPI this is not possible, control
+must be passed back to the VCPI server). In terms of speed, when your code is
+running under PMODE/W, it is running as fast as the system will allow.
+
+  In terms of size on disk, we need say no more than for you to look at the
+size of the PMODE/W executable and compare it to other extenders. In terms of
+memory size, you may do tests yourself to confirm that PMODE/W does indeed
+suck up a lot less memory at run-time than the competition. In fact, PMODE/W
+will run even if there is absolutely no extended memory in the system
+(assuming of course there is enough low memory for the program). To be fair,
+we must say we squished the PMODE/W executable with our own compression
+program written expressly for the purpose, this though demonstrates the extent
+we took most of our optimizations to.
+
+  As for compatibility, PMODE/W is almost fully compatible with DOS/4GW as far
+as Watcom C/C++ is concerned. PMODE/W extends only those DOS functions
+required by the Watcom C/C++ libraries, though this is a good deal of them.
+The exception is BIOS INT 13h functions, which PMODE/W does not extend.
+PMODE/W also provides a subset of DPMI 0.9 INT 31h functions in protected
+mode. We do not emulate DOS/4GW though, as none of its API functions are
+duplicated by PMODE/W. PMODE/W will run under a clean system, XMS, VCPI, or
+DPMI. Though you should be aware that under a DPMI system, PMODE/W will not be
+providing the DPMI functions, but rather the actual DPMI host in the system
+will. You should also be aware that PMODE/W will leave the A20 line enabled
+when calling real mode. Disabling the A20 for real mode is not really
+necessary, it is a big slowdown during mode switches to have to enable/disable
+the A20, so PMODE/W avoids it.
+
+1.4 - PMODE/W protected mode:
+-----------------------------
+
+  When run under a clean system, XMS, or VCPI, PMODE/W has control of
+protected mode. In this case, it can set up the system to run as fast as
+possible under the various conditions. Under DPMI, the DPMI host of the system
+will have full protected mode control and PMODE/W will install its DOS
+extensions on top of that. If the system provides both VCPI and DPMI services,
+PMODE/W will use the VCPI services for faster execution, unless instructed not
+to by the setup program. When PMODE/W does have protected mode control under
+clean/XMS/VCPI, it runs all code at a privilege level of zero. In addition,
+under a clean or XMS system, paging will not be enabled. This is only a minor
+speed increase, but there is no real need to manage paging.
+
+  PMODE/W provides a subset of DPMI 0.9 function calls and general
+functionality when a DPMI host is not present. PMODE/W will pass any software
+interrupts from protected mode to their default real mode handlers, provided
+no protected mode handlers have been installed for them, just as DPMI will.
+The general registers will be passed on to the real mode handler, but the
+segment registers can not be as they have different meanings in real mode and
+protected mode. The flags will be passed back from the real mode handler. This
+provides a simple interface to all real mode interrupt routines which do not
+take parameters in the segment registers, for example, INT 16h function 00h.
+
+  Any IRQs that occur in protected mode and have not been hooked by a
+protected mode handler will be sent on to their real mode handlers. If an IRQ
+occurs in real mode, and a protected mode handler has hooked that IRQ, it will
+be sent to the protected mode handler first. The protected mode handler may
+chain to the real mode handler for that IRQ by calling the previous protected
+mode handler for that IRQ. This behavior is in accordance with the DPMI
+standard. If you hook a protected mode IRQ (INT 31h function 0205h), then hook
+the same IRQ in real mode (INT 31h function 0201h), the protected mode handler
+will be called if the IRQ occurs in protected mode, and the real mode handler
+will handle the IRQs if they occur in real mode. Setting up two handlers like
+this assures minimal latency. This means a handler will get control when the
+IRQ occurs as soon as physically possible. PMODE/W does have to intervene in
+the IRQ process, however, when the low 8 IRQs are mapped to INTs 08h-15h to
+differentiate IRQs from CPU exceptions.
+
+  In accordance with DPMI specifications, PMODE/W will pass up software
+interrupts 1ch (BIOS timer tick), 23h (DOS CTRL+C), and 24h (DOS critical
+error) from real mode to protected mode. This means that those interrupts can
+be hooked directly in protected mode without having to set up a callback
+mechanism yourself. PMODE/W will also pass interrupt 1bh (BIOS CTRL+BREAK)
+from real mode up to protected mode. This is not a DPMI requirement, but it is
+necessary for the sake of compatibility with DOS/4GW.
+
+  Another departure by PMODE/W from official DPMI specifications is in
+extended memory allocation. DPMI documentation states that the block of
+extended memory allocated through function 0501h is guaranteed at least
+paragraph alignment. The PMODE/W DPMI implementation will enforce only DWORD
+alignment.
+
+1.5 - PMODE/W execution:
+------------------------
+
+  When a PMODE/W executable is run, PMODE/W will attempt to switch the system
+into protected mode and load the protected mode portion of the same
+executable. If there is some error, not enough memory, or a system
+incompatibility, PMODE/W will exit with an error message. If loading was
+successful, PMODE/W will pass execution control on to the program. PMODE/W
+will load any 16 bit code and data into low memory, but 32 bit code and data
+may be loaded into low or extended memory depending on avaliability.
+
+  There are a number of modifiable parameters in the PMODE/W extender
+executable that affect protected mode execution. For the most part, these
+parameters deal with memory. PMODE/W allocates one large block of extended
+memory for its pool from which it provides memory to its client program. There
+is a maximum value for the extended memory to be allocated. By default, the
+maximum is all of the extended memory in the system. The maximum value
+reflects the size of the block you want PMODE/W to take from the system, not
+necessarily the size of the largest block available to the default C/C++
+malloc functions. You may set the maximum to zero to indicate you do not want
+PMODE/W to allocate ANY extended memory. The amount of memory that you allow
+PMODE/W to allocate from the system determines how much extended memory will
+be left to other if you shell out of your PMODE/W program.
+
+  Another variable specifies the amount of low memory for PMODE/W to TRY to
+keep free. If PMODE/W can, it will accommodate this value by loading 32 bit
+code and data into extended memory. If there is not enough extended memory
+available for this, 32 bit code and data will be loaded into low memory
+anyway. If PMODE/W can not keep this much low memory free, it will not exit
+with an error message. Setting this parameter to a high value will, in effect,
+duplicate the DOS/4GW behavior of loading all 32 bit code and data into
+extended memory. If you do not necessarily need any extra low memory free
+during the execution of your program, you may set this value to zero.
+
+  There is a group of parameters that specify the number and size of nested
+mode switch stacks. Whenever you make a call to real mode, or a callback or
+IRQ is passed from real mode to its routine in protected mode, a nested stack
+is used. These parameters have meaning only if the program is not run under a
+DPMI system. If a DPMI host is in place when the program is run, it provides
+its own nested stacks for mode switches. The number of nested stacks directly
+affects the number of nested mode switches your program can make using the
+various mode switch methods. The size of both the real mode and protected mode
+nested stacks can also be specified. By default, these values are high enough
+for normal operation. However, if you intend to use a lot of stack variables
+in a protected mode IRQ handler, or a lot of recursive calls, you may need to
+increase the size of the protected mode nested stacks. The more nested stacks
+you specify, and the larger they are, the more low memory is needed by PMODE/W
+during execution.
+
+  Another group of variables that has meaning only under clean/XMS/VCPI
+execution specify the number of selectors and DPMI callbacks you want PMODE/W
+to make available. The more selectors and callbacks you ask for, the more low
+memory is used by PMODE/W, though the amount of low memory used for each is
+quite low so that large numbers of each can be specified. There will usually
+be a little less than the number of selectors and callbacks you request
+available to your program due to the protected mode system and C/C++ code
+using some of them. For this reason you should request 20h-40h more selectors
+and 2-4 more callbacks than you will need in your program.
+
+  There are four other miscellaneous parameters that can be set. There is a
+maximum number of page tables to use under a VCPI system. Each page table
+allocated requires 4k of low memory to be used by PMODE/W and maps 4M of
+memory. This directly affects the maximum amount of extended memory available
+under a VCPI system. This parameter is only the maximum number of page tables
+to allow. At run-time, only as many page tables will be allocated as are
+needed. Under a clean/XMS system, no page tables are required, so this
+parameter has no meaning. But under VCPI, you may want to restrict the number
+of page tables to save low memory if you do not need more than a certain
+amount of extended memory. This puts a maximum ceiling on extended memory
+under VCPI which may be lower than the maximum actually specified in the other
+variable. The second parameter specifies the order of DPMI and VCPI detection.
+By default, VCPI will be checked before DPMI, but you may set DPMI to be
+checked before VCPI so that under a system which supports both VCPI and DPMI,
+DPMI will be used. The third variable specifies how many pages to reserve for
+physical address mapping calls (INT 31h function 0800h) under VCPI. Under XMS
+or a clean system, paging is not enabled, and PMODE/W does not need pages for
+physical address mapping. Each page will allow you to map up to 4M of address
+space and takes up 4k of extended memory. So for example, if you intend to map
+a 2M frame buffer of a video card, you will need only one page. You may set
+this parameter to zero if you do not intend to map any physical addresses.
+The fourth parameter specifies whether PMODE/W displays its banner at startup.
+This may be desirable to indicate that the program is indeed running, and has
+not crashed, as allocating memory from certain VCPI servers can be a slow
+process.
+
+1.6 - Terms for non-commercial use:
+-----------------------------------
+
+  You are hereby permitted to use this DOS extender in any and all
+non-commercial and non-shareware software programs free of any financial
+obligation to us, provided that if the program is distributed, it is
+distributed to the public, free of any charge for the program itself. There is
+no restriction on what kind of reselling of the above mentioned program is
+done (shareware houses, CD-ROMs, etc...), as long as the program is available
+to the public with no financial obligation to the author(s). The only thing we
+ask in this case is that you credit us in your production for the DOS
+extender. It would also be nice, but not necessary, if you dropped us a note
+informing us of your use of PMODE/W in some production.
+
+1.7 - Licensing PMODE/W for commercial use:
+-------------------------------------------
+
+  If you wish to use PMODE/W in a commercial, shareware, or any program which
+is to be sold or has attached to it an obligation to buy something, you MUST
+purchase a commercial distribution license. This license will allow royalty
+free distribution of any and all applications using PMODE/W created and owned
+by the holder of the license. A separate license is NOT required for each
+application in which PMODE/W is used. This license is non-transferrable (you
+cannot sell, give, loan, or otherwise transfer it to someone else).
+
+  The license fee is $500 U.S. for commercial or shareware programs. Once
+purchased, this license is valid for any and all programs created and owned by
+the person or company purchasing the license until the end of time. The
+license is a one time fee, with no restrictions on how many programs PMODE/W
+can be used in. There is a special discount available to students on PMODE/W.
+The license can be purchased by university students for $100 U.S.
+
+1.8 - Contact information:
+--------------------------
+
+  If you are interested in licensing PMODE/W for a commercial or shareware
+program, you may contact us in the following manner:
+
+) Send mail to:
+
+    Ryan Cramer
+    8300 Riding Ridge Place
+    McLean, VA  22102
+    USA
+
+) Send E-mail to:
+
+    rcramer1@osf1.gmu.edu
+
+) On the World Wide Web:
+
+    http://www.di.net/pmw (Official page)
+    http://www.dorsai.org/~daredevi/pmw (Latest version download only)
+
+) Drop a note to the sysop on the Data Connection BBS at:
+
+    +1-703-506-8598
+    +1-703-847-0861
+
+) For technical questions, drop a note to the following address:
+
+    daredevi@dorsai.org
+
+------------------------------------------------------------------------------
+------------------- 2 - Supported DPMI INT 31h functions ---------------------
+------------------------------------------------------------------------------
+
+  PMODE/W duplicates a subset of DPMI protected mode functions. These
+functions are available ONLY in protected through INT 31h. They provide
+descriptor services, extended memory services, interrupt services, translation
+services, and some other miscellaneous things. A function is called by setting
+AX to the function code, setting any other registers for the function, and
+executing INT 31h. Upon return, the carry flag will be clear if the function
+was successful. If the carry flag is set, the function failed. All other
+registers are preserved unless otherwise specified. In addition to the
+functions listed here, functions 0600h, 0601h, 0702h, and 0703h will return
+with the carry flag clear to stay compatible with code that uses those
+particular DPMI functions.
+
+2.0 - Function 0000h - Allocate Descriptors:
+--------------------------------------------
+
+  Allocates one or more descriptors in the client's descriptor table. The
+descriptor(s) allocated must be initialized by the application with other
+function calls.
+
+In:
+  AX     = 0000h
+  CX     = number of descriptors to allocate
+
+Out:
+  if successful:
+    carry flag clear
+    AX	   = base selector
+
+  if failed:
+    carry flag set
+
+Notes:
+) If more that one descriptor was requested, the function returns a base
+  selector referencing the first of a contiguous array of descriptors. The
+  selector values for subsequent descriptors in the array can be calculated
+  by adding the value returned by INT 31h function 0003h.
+
+) The allocated descriptor(s) will be set to expand-up writeable data, with
+  the present bit set and a base and limit of zero. The privilege level of the
+  descriptor(s) will match the client's code segment privilege level.
+
+2.1 - Function 0001h - Free Descriptor:
+---------------------------------------
+
+  Frees a descriptor.
+
+In:
+  AX     = 0001h
+  BX     = selector for the descriptor to free
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) Each descriptor allocated with INT 31h function 0000h must be freed
+  individually with the function. Even if it was previously allocated as part
+  of a contiguous array of descriptors.
+
+) Under DPMI 1.0/VCPI/XMS/raw, any segment registers which contain the
+  selector being freed are zeroed by this function.
+
+2.2 - Function 0002h - Segment to Descriptor:
+---------------------------------------------
+
+  Converts a real mode segment into a protected mode descriptor.
+
+In:
+  AX     = 0002h
+  BX     = real mode segment
+
+Out:
+  if successful:
+    carry flag clear
+    AX     = selector
+
+  if failed:
+    carry flag set
+
+Notes:
+) Multiple calls for the same real mode segment return the same selector.
+
+) The returned descriptor should never be modified or freed.
+
+2.3 - Function 0003h - Get Selector Increment Value:
+----------------------------------------------------
+
+  The Allocate Descriptors function (0000h) can allocate an array of
+contiguous descriptors, but only return a selector for the first descriptor.
+The value returned by this function can be used to calculate the selectors for
+subsequent descriptors in the array.
+
+In:
+  AX     = 0003h
+
+Out:
+  always successful:
+    carry flag clear
+    AX	   = selector increment value
+
+Notes:
+) The increment value is always a power of two.
+
+2.4 - Function 0006h - Get Segment Base Address:
+------------------------------------------------
+
+  Returns the 32bit linear base address from the descriptor table for the
+specified segment.
+
+In:
+  AX     = 0006h
+  BX     = selector
+
+Out:
+  if successful:
+    carry flag clear
+    CX:DX  = 32bit linear base address of segment
+
+  if failed:
+    carry flag set
+
+Notes:
+) Client programs must use the LSL instruction to query the limit for a
+  descriptor.
+
+2.5 - Function 0007h - Set Segment Base Address:
+------------------------------------------------
+
+  Sets the 32bit linear base address field in the descriptor for the specified
+segment.
+
+In:
+  AX     = 0007h
+  BX     = selector
+  CX:DX  = 32bit linear base address of segment
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) Under DPMI 1.0/VCPI/XMS/raw, any segment register which contains the
+  selector specified in register BX will be reloaded. DPMI 0.9 may do this,
+  but it is not guaranteed.
+
+) We hope you have enough sense not to try to modify your current CS or SS
+  descriptor.
+
+2.6 - Function 0008h - Set Segment Limit:
+-----------------------------------------
+
+  Sets the limit field in the descriptor for the specified segment.
+
+In:
+  AX     = 0008h
+  BX     = selector
+  CX:DX  = 32bit segment limit
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) The value supplied to the function in CX:DX is the byte length of the
+  segment-1.
+
+) Segment limits greater than or equal to 1M must be page aligned. That is,
+  they must have the low 12 bits set.
+
+) This function has an implicit effect on the "G" bit in the segment's
+  descriptor.
+
+) Client programs must use the LSL instruction to query the limit for a
+  descriptor.
+
+) Under DPMI 1.0/VCPI/XMS/raw, any segment register which contains the
+  selector specified in register BX will be reloaded. DPMI 0.9 may do this,
+  but it is not guaranteed.
+
+) We hope you have enough sense not to try to modify your current CS or SS
+  descriptor.
+
+2.7 - Function 0009h - Set Descriptor Access Rights:
+----------------------------------------------------
+
+  Modifies the access rights field in the descriptor for the specified
+segment.
+
+In:
+  AX     = 0009h
+  BX     = selector
+  CX     = access rights/type word
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) The access rights/type word passed to the function in CX has the following
+  format:
+
+    Bit: 15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0
+       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+       | G |B/D| 0 | ? |       ?       | 1 |  DPL  | 1 |C/D|E/C|W/R| A |
+       +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+    G   - 0=byte granular, 1=page granular
+    B/D - 0=default 16bit, 1=default 32bit
+    DPL - must be equal to caller's CPL
+    C/D - 0=data, 1=code
+    E/C - data: 0=expand-up, 1=expand-down
+          code: must be 0 (non-conforming)
+    W/R - data: 0=read, 1=read/write
+          code: must be 1 (readable)
+    A   - 0=not accessed, 1=accessed
+    0   - must be 0
+    1   - must be 1
+    ?   - ignored
+
+) Client programs should use the LAR instruction to examine the access rights
+  of a descriptor.
+
+) Under DPMI 1.0/VCPI/XMS/raw, any segment register which contains the
+  selector specified in register BX will be reloaded. DPMI 0.9 may do this,
+  but it is not guaranteed.
+
+) We hope you have enough sense not to try to modify your current CS or SS
+  descriptor.
+
+2.8 - Function 000Ah - Create Alias Descriptor:
+-----------------------------------------------
+
+  Creates a new data descriptor that has the same base and limit as the
+specified descriptor.
+
+In:
+  AX     = 000ah
+  BX     = selector
+
+Out:
+  if successful:
+    carry flag clear
+    AX	   = data selector (alias)
+
+  if failed:
+    carry flag set
+
+Notes:
+) The selector supplied to the function may be either a data descriptor or
+  a code descriptor. The alias descriptor created is always an expand-up
+  writeable data segment.
+
+) The descriptor alias returned by this function will not track changes to the
+  original descriptor.
+
+2.9 - Function 000Bh - Get Descriptor:
+--------------------------------------
+
+  Copies the descriptor table entry for the specified selector into an 8 byte
+buffer.
+
+In:
+  AX     = 000bh
+  BX     = selector
+  ES:EDI = selector:offset of 8 byte buffer
+
+Out:
+  if successful:
+    carry flag clear
+    buffer pointed to by ES:EDI contains descriptor
+
+  if failed:
+    carry flag set
+
+2.10 - Function 000Ch - Set Descriptor:
+---------------------------------------
+
+  Copies the contents of an 8 byte buffer into the descriptor for the
+specified selector.
+
+In:
+  AX     = 000ch
+  BX     = selector
+  ES:EDI = selector:offset of 8 byte buffer containing descriptor
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+) The descriptors access rights/type word at offset 5 within the descriptor
+  follows the same format and restrictions as the access rights/type parameter
+  CX to the Set Descriptor Access Rights function (0009h).
+
+) Under DPMI 1.0/VCPI/XMS/raw, any segment register which contains the
+  selector specified in register BX will be reloaded. DPMI 0.9 may do this,
+  but it is not guaranteed.
+
+) We hope you have enough sense not to try to modify your current CS or SS
+  descriptor or the descriptor of the buffer.
+
+2.11 - Function 0100h - Allocate DOS Memory Block:
+--------------------------------------------------
+
+  Allocates low memory through DOS function 48h and allocates it a descriptor.
+
+In:
+  AX     = 0100h
+  BX     = paragraphs to allocate
+
+Out:
+  if successful:
+    carry flag clear
+    AX	   = real mode segment address
+    DX	   = protected mode selector for memory block
+
+  if failed:
+    carry flag set
+    AX	   = DOS error code
+    BX	   = size of largest available block
+
+2.12 - Function 0101h - Free DOS Memory Block:
+----------------------------------------------
+
+  Frees a low memory block previously allocated by function 0100h.
+
+In:
+  AX     = 0101h
+  DX     = protected mode selector for memory block
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    AX	   = DOS error code
+
+2.13 - Function 0102h - Resize DOS Memory Block:
+------------------------------------------------
+
+  Resizes a low memory block previously allocated by function 0100h
+
+In:
+  AX     = 0102h
+  BX     = new block size in paragraphs
+  DX     = protected mode selector for memory block
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    AX	   = DOS error code
+    BX	   = size of largest available block
+
+2.14 - Function 0200h - Get Real Mode Interrupt Vector:
+-------------------------------------------------------
+
+  Returns the real mode segment:offset for the specified interrupt vector.
+
+In:
+  AX     = 0200h
+  BL     = interrupt number
+
+Out:
+  always successful:
+    carry flag clear
+    CX:DX  = segment:offset of real mode interrupt handler
+
+Notes:
+) The value returned in CX is a real mode segment address, not a protected
+  mode selector.
+
+2.15 - Function 0201h - Set Real Mode Interrupt Vector:
+-------------------------------------------------------
+
+  Sets the real mode segment:offset for the specified interrupt vector.
+
+In:
+  AX     = 0201h
+  BL     = interrupt number
+  CX:DX  = segment:offset of real mode interrupt handler
+
+Out:
+  always successful:
+    carry flag clear
+
+Notes:
+) The value passed in CX must be a real mode segment address, not a protected
+  mode selector. Consequently, the interrupt handler must either reside in
+  DOS memory (below the 1M boundary) or the client must allocate a real mode
+  callback address.
+
+2.16 - Function 0202h - Get Processor Exception Handler Vector:
+---------------------------------------------------------------
+
+  Returns the address of the current protected mode exception handler for the
+specified exception number.
+
+In:
+  AX     = 0202h
+  BL     = exception number (00h-1fh)
+
+Out:
+  if successful:
+    carry flag clear
+    CX:EDX = selector:offset of exception handler
+
+  if failed:
+    carry flag set
+
+Notes:
+) PMODE/W handles exceptions under clean/XMS/VCPI environments. Under a DPMI
+  environment, exception handling is provided by the DPMI host.
+
+) PMODE/W only traps exceptions 0 through 14. The default behavior is to
+  terminate execution and do a debug dump. PMODE/W will terminate on
+  exceptions 0, 1, 2, 3, 4, 5, and 7, instead of passing them down to the
+  real mode handlers as DPMI specifications state.
+
+2.17 - Function 0203h - Set Processor Exception Handler Vector:
+---------------------------------------------------------------
+
+  Sets the address of a handler for a CPU exception or fault, allowing a
+protected mode application to intercept processor exceptions.
+
+In:
+  AX     = 0203h
+  BL     = exception number (00h-1fh)
+  CX:EDX = selector:offset of exception handler
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) PMODE/W handles exceptions under clean/XMS/VCPI environments. Under a DPMI
+  environment, exception handling is provided by the DPMI host.
+
+) PMODE/W only traps exceptions 0 through 14. The default behavior is to
+  terminate execution and do a debug dump. PMODE/W will terminate on
+  exceptions 0, 1, 2, 3, 4, 5, and 7, instead of passing them down to the
+  real mode handlers as DPMI specifications state.
+
+) If you wish to hook one of the low 8 interrupts, you must hook it as an
+  exception. It will not be called if you hook it with function 0205h.
+
+2.18 - Function 0204h - Get Protected Mode Interrupt Vector:
+------------------------------------------------------------
+
+  Returns the address of the current protected mode interrupt handler for the
+specified interrupt.
+
+In:
+  AX     = 0204h
+  BL     = interrupt number
+
+Out:
+  always successful:
+    carry flag clear
+    CX:EDX = selector:offset of protected mode interrupt handler
+
+Notes:
+) The value returned in CX is a valid protected mode selector, not a real mode
+  segment address.
+
+2.19 - Function 0205h - Set Protected Mode Interrupt Vector:
+------------------------------------------------------------
+
+  Sets the address of the protected mode interrupt handler for the specified
+interrupt.
+
+In:
+  AX     = 0205h
+  BL     = interrupt number
+  CX:EDX = selector offset of protected mode interrupt handler
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) The value passed in CX must be a valid protected mode selector, not a real
+  mode segment address.
+
+) If you wish to hook one of the low 8 interrupts, you must hook it as an
+  exception. It will not be called if you hook it with function 0205h.
+
+2.20 - Function 0300h - Simulate Real Mode Interrupt:
+-----------------------------------------------------
+
+  Simulates an interrupt in real mode. The function transfers control to the
+address specified by the real mode interrupt vector. The real mode handler
+must return by executing an IRET.
+
+In:
+  AX     = 0300h
+  BL     = interrupt number
+  BH     = must be 0
+  CX     = number of words to copy from the protected mode stack to the real
+           mode stack
+  ES:EDI = selector:offset of real mode register data structure in the
+           following format:
+
+           Offset  Length  Contents
+           00h     4       EDI
+           04h     4       ESI
+           08h     4       EBP
+           0ch     4       reserved, ignored
+           10h     4       EBX
+           14h     4       EDX
+           18h     4       ECX
+           1ch     4       EAX
+           20h     2       CPU status flags
+           22h     2       ES
+           24h     2       DS
+           26h     2       FS
+           28h     2       GS
+           2ah     2       IP (reserved, ignored)
+           2ch     2       CS (reserved, ignored)
+           2eh     2       SP
+           30h     2       SS
+
+Out:
+  if successful:
+    carry flag clear
+    ES:EDI = selector offset of modified real mode register data structure
+
+  if failed:
+    carry flag set
+
+Notes:
+) The CS:IP in the real mode register data structure is ignored by this
+  function. The appropriate interrupt handler will be called based on the
+  value passed in BL.
+
+) If the SS:SP fields in the real mode register data structure are zero, a
+  real mode stack will be provided by the host. Otherwise the real mode SS:SP
+  will be set to the specified values before the interrupt handler is called.
+
+) The flags specified in the real mode register data structure will be put on
+  the real mode interrupt handler's IRET frame. The interrupt handler will be
+  called with the interrupt and trace flags clear.
+
+) Values placed in the segment register positions of the data structure must
+  be valid for real mode. That is, the values must be paragraph addresses, not
+  protected mode selectors.
+
+) The target real mode handler must return with the stack in the same state
+  as when it was called. This means that the real mode code may switch stacks
+  while it is running, but must return on the same stack that it was called
+  on and must return with an IRET.
+
+) When this function returns, the real mode register data structure will
+  contain the values that were returned by the real mode interrupt handler.
+  The CS:IP and SS:SP values will be unmodified in the data structure.
+
+) It is the caller's responsibility to remove any parameters that were pushed
+  on the protected mode stack.
+
+2.21 - Function 0301h - Call Real Mode Procedure With Far Return Frame:
+-----------------------------------------------------------------------
+
+  Simulates a FAR CALL to a real mode procedure. The called procedure must
+return by executing a RETF instruction.
+
+In:
+  AX     = 0301h
+  BH     = must be 0
+  CX     = number of words to copy from the protected mode stack to the real
+           mode stack
+  ES:EDI = selector:offset of real mode register data structure in the
+           following format:
+
+           Offset  Length  Contents
+           00h     4       EDI
+           04h     4       ESI
+           08h     4       EBP
+           0ch     4       reserved, ignored
+           10h     4       EBX
+           14h     4       EDX
+           18h     4       ECX
+           1ch     4       EAX
+           20h     2       CPU status flags
+           22h     2       ES
+           24h     2       DS
+           26h     2       FS
+           28h     2       GS
+           2ah     2       IP
+           2ch     2       CS
+           2eh     2       SP
+           30h     2       SS
+
+Out:
+  if successful:
+    carry flag clear
+    ES:EDI = selector offset of modified real mode register data structure
+
+  if failed:
+    carry flag set
+
+Notes:
+) The CS:IP in the real mode register data structure specifies the address of
+  the real mode procedure to call.
+
+) If the SS:SP fields in the real mode register data structure are zero, a
+  real mode stack will be provided by the host. Otherwise the real mode SS:SP
+  will be set to the specified values before the procedure is called.
+
+) Values placed in the segment register positions of the data structure must
+  be valid for real mode. That is, the values must be paragraph addresses, not
+  protected mode selectors.
+
+) The target real mode procedure must return with the stack in the same state
+  as when it was called. This means that the real mode code may switch stacks
+  while it is running, but must return on the same stack that it was called
+  on and must return with a RETF and should not clear the stack of any
+  parameters that were passed to it on the stack.
+
+) When this function returns, the real mode register data structure will
+  contain the values that were returned by the real mode procedure. The CS:IP
+  and SS:SP values will be unmodified in the data structure.
+
+) It is the caller's responsibility to remove any parameters that were pushed
+  on the protected mode stack.
+
+2.22 - Function 0302h - Call Real Mode Procedure With IRET Frame:
+-----------------------------------------------------------------
+
+  Simulates a FAR CALL with flags pushed on the stack to a real mode routine.
+The real mode procedure must return by executing an IRET instruction or a
+RETF 2.
+
+In:
+  AX     = 0302h
+  BH     = must be 0
+  CX     = number of words to copy from the protected mode stack to the real
+           mode stack
+  ES:EDI = selector:offset of real mode register data structure in the
+           following format:
+
+           Offset  Length  Contents
+           00h     4       EDI
+           04h     4       ESI
+           08h     4       EBP
+           0ch     4       reserved, ignored
+           10h     4       EBX
+           14h     4       EDX
+           18h     4       ECX
+           1ch     4       EAX
+           20h     2       CPU status flags
+           22h     2       ES
+           24h     2       DS
+           26h     2       FS
+           28h     2       GS
+           2ah     2       IP
+           2ch     2       CS
+           2eh     2       SP
+           30h     2       SS
+
+Out:
+  if successful:
+    carry flag clear
+    ES:EDI = selector offset of modified real mode register data structure
+
+  if failed:
+    carry flag set
+
+Notes:
+) The CS:IP in the real mode register data structure specifies the address of
+  the real mode procedure to call.
+
+) If the SS:SP fields in the real mode register data structure are zero, a
+  real mode stack will be provided by the host. Otherwise the real mode SS:SP
+  will be set to the specified values before the procedure is called.
+
+) The flags specified in the real mode register data structure will be put on
+  the real mode procedure's IRET frame. The procedure will be called with the
+  interrupt and trace flags clear.
+
+) Values placed in the segment register positions of the data structure must
+  be valid for real mode. That is, the values must be paragraph addresses, not
+  protected mode selectors.
+
+) The target real mode procedure must return with the stack in the same state
+  as when it was called. This means that the real mode code may switch stacks
+  while it is running, but must return on the same stack that it was called
+  on and must return with an IRET or discard the flags from the stack with a
+  RETF 2 and should not clear the stack of any parameters that were passed to
+  it on the stack.
+
+) When this function returns, the real mode register data structure will
+  contain the values that were returned by the real mode procedure. The CS:IP
+  and SS:SP values will be unmodified in the data structure.
+
+) It is the caller's responsibility to remove any parameters that were pushed
+  on the protected mode stack.
+
+2.23 - Function 0303h - Allocate Real Mode Callback Address:
+------------------------------------------------------------
+
+  Returns a unique real mode segment:offset, known as a "real mode callback",
+that will transfer control from real mode to a protected mode procedure.
+Callback addresses obtained with this function can be passed by a protected
+mode program to a real mode application, interrupt handler, device driver,
+TSR, etc... so that the real mode program can call procedures within the
+protected mode program.
+
+In:
+  AX     = 0303h
+  DS:ESI = selector:offset of protected mode procedure to call
+  ES:EDI = selector:offset of 32h byte buffer for real mode register data
+           structure to be used when calling the callback routine.
+
+Out:
+  if successful:
+    carry flag clear
+    CX:DX  = segment:offset of real mode callback
+
+  if failed:
+    carry flag set
+
+Notes:
+) A descriptor may be allocated for each callback to hold the real mode SS
+  descriptor. Real mode callbacks are a limited system resource. A client
+  should release a callback that it is no longer using.
+
+2.24 - Function 0304h - Free Real Mode Callback Address:
+--------------------------------------------------------
+
+  Releases a real mode callback address that was previously allocated with the
+Allocate Real Mode Callback Address function (0303h).
+
+In:
+  AX     = 0304h
+  CX:DX  = segment:offset of real mode callback to be freed
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) Real mode callbacks are a limited system resource. A client should release
+  any callback that it is no longer using.
+
+2.25 - Function 0305h - Get State Save/Restore Addresses:
+---------------------------------------------------------
+
+  Returns the address of two procedures used to save and restore the state of
+the current task's registers in the mode (protected or real) which is not
+currently executing.
+
+In:
+  AX     = 0305h
+
+Out:
+  always successful:
+    carry flag clear
+    AX	   = size of buffer in bytes required to save state
+    BX:CX  = segment:offset of real mode routine used to save/restore state
+    SI:EDI = selector:offset of protected mode routine used to save/restore
+	     state
+
+Notes:
+) The real mode segment:offset returned by this function should be called
+  only in real mode to save/restore the state of the protected mode registers.
+  The protected mode selector:offset returned by this function should be
+  called only in protected mode to save/restore the state of the real mode
+  registers.
+
+) Both of the state save/restore procedures are entered by a FAR CALL with the
+  following parameters:
+
+  AL       = 0 to save state
+           = 1 to restore state
+  ES:(E)DI = (selector or segment):offset of state buffer
+
+  The state buffer must be at least as large as the value returned in AX by
+  INT 31h function 0305h. The state save/restore procedures do not modify any
+  registers. DI must be used for the buffer offset in real mode, EDI must be
+  used in protected mode.
+
+) Some DPMI hosts and VCPI/XMS/raw will not require the state to be saved,
+  indicating this by returning a buffer size of zero in AX. In such cases,
+  that addresses returned by this function can still be called, although they
+  will simply return without performing any useful function.
+
+) Clients do not need to call the state save/restore procedures before using
+  INT 31h function 0300h, 0301h, or 0302h. The state save/restore procedures
+  are provided for clients that use the raw mode switch services only.
+
+2.26 - Function 0306h - Get Raw Mode Switch Addresses:
+------------------------------------------------------
+
+  Returns addresses that can be called for low level mode switching.
+
+In:
+  AX     = 0306h
+
+Out:
+  always successful:
+    carry flag clear
+    BX:CX  = segment:offset of real to protected mode switch procedure
+    SI:EDI = selector:offset of protected to real mode switch procedure
+
+Notes:
+) The real mode segment:offset returned by this function should be called
+  only in real mode to switch to protected mode. The protected mode
+  selector:offset returned by this function should be called only in protected
+  mode to switch to real mode.
+
+) The mode switch procedures are entered by a FAR JMP to the appropriate
+  address with the following parameters:
+
+  AX    = new DS
+  CX    = new ES
+  DX    = new SS
+  (E)BX = new (E)SP
+  SI    = new CS
+  (E)DI = new (E)IP
+
+  The processor is placed into the desired mode, and the DS, ES, SS, (E)SP,
+  CS, and (E)IP registers are updated with the specific values. In other
+  words, execution of the client continues in the requested mode at the
+  address provided in registers SI:(E)DI. The values specified to be placed
+  into the segment registers must be appropriate for the destination mode.
+  That is, segment addresses for real mode, and selectors for protected mode.
+
+  The values in EAX, EBX, ECX, EDX, ESI, and EDI after the mode switch are
+  undefined. EBP will be preserved across the mode switch call so it can be
+  used as a pointer. FS and GS will contain zero after the mode switch.
+
+  If interrupts are disabled when the mode switch procedure is invoked, they
+  will not be re-enabled by the host (even temporarily).
+
+) It is up to the client to save and restore the state of the task when using
+  this function to switch modes. This requires the state save/restore
+  procedures whose addresses can be obtained with INT 31h function 0305h.
+
+2.27 - Function 0400h - Get Version:
+------------------------------------
+
+  Returns the version of the DPMI Specification implemented by the DPMI host.
+The client can use this information to determine what functions are available.
+
+In:
+  AX     = 0400h
+
+Out:
+  always successful:
+    carry flag clear
+    AH     = DPMI major version as a binary number (VCPI/XMS/raw returns 00h)
+    AL     = DPMI minor version as a binary number (VCPI/XMS/raw returns 5ah)
+    BX	   = flags:
+	     Bits    Significance
+             0       0 = host is 16bit (PMODE/W never runs under one of these)
+		     1 = host is 32bit
+	     1	     0 = CPU returned to V86 mode for reflected interrupts
+		     1 = CPU returned to real mode for reflected interrupts
+	     2	     0 = virtual memory not supported
+		     1 = virtual memory supported
+	     3-15    reserved
+    CL	   = processor type:
+	     03h = 80386
+	     04h = 80486
+	     05h = 80586
+	     06h-ffh = reserved
+    DH	   = current value of master PIC base interrupt (low 8 IRQs)
+    DL	   = current value of slave PIC base interrupt (high 8 IRQs)
+
+Notes:
+) The major and minor version numbers are binary, not BCD. So a DPMI 0.9
+  implementation would return AH as 0 and AL as 5ah (90).
+
+2.28 - Function 0500h - Get Free Memory Information:
+----------------------------------------------------
+
+  Returns information about the amount of available memory. Since DPMI clients
+could be running in a multitasking environment, the information returned by
+this function should be considered advisory.
+
+In:
+  AX     = 0500h
+  ES:EDI = selector:offset of 48 byte buffer
+
+Out:
+  if successful:
+    carry flag clear
+    buffer is filled with the following information:
+
+      Offset  Length  Contents
+      00h     4       Largest available free block in bytes
+      04h     2ch     Other fields only supplied by DPMI
+
+  if failed:
+    carry flag set
+
+Notes:
+) Only the first field of the structure is guaranteed to contain a valid
+  value. Any fields that are not supported by the host will be set to -1
+  (0ffffffffh) to indicate that the information is not available.
+
+2.29 - Function 0501h - Allocate Memory Block:
+----------------------------------------------
+
+  Allocates a block of extended memory.
+
+In:
+  AX     = 0501h
+  BX:CX  = size of block in bytes (must be non-zero)
+
+Out:
+  if successful:
+    carry flag clear
+    BX:CX  = linear address of allocated memory block
+    SI:DI  = memory block handle (used to resize and free block)
+
+  if failed:
+    carry flag set
+
+Notes:
+) The allocated block is guaranteed to have at least dword alignment.
+
+) This function does not allocate any descriptors for the memory block. It is
+  the responsibility of the client to allocate and initialize any descriptors
+  needed to access the memory with additional function calls.
+
+2.30 - Function 0502h - Free Memory Block:
+------------------------------------------
+
+  Frees a memory block previously allocated with the Allocate Memory Block
+function (0501h).
+
+In:
+  AX     = 0502h
+  SI:DI  = memory block handle
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) No descriptors are freed by this call. It is the client's responsibility to
+  free any descriptors that it previously allocated to map the memory block.
+  Descriptors should be freed before memory blocks.
+
+2.31 - Function 0503h - Resize Memory Block:
+--------------------------------------------
+
+  Changes the size of a memory block previously allocated with the Allocate
+Memory Block function (0501h).
+
+In:
+  AX     = 0503h
+  BX:CX  = new size of block in bytes (must be non-zero)
+  SI:DI  = memory block handle
+
+Out:
+  if successful:
+    carry flag clear
+    BX:CX  = new linear address of memory block
+    SI:DI  = new memory block handle
+
+  if failed:
+    carry flag set
+
+Notes:
+) After this function returns successfully, the previous handle for the memory
+  block is invalid and should not be used anymore.
+
+) It is the client's responsibility to update any descriptors that map the
+  memory block with the new linear address after resizing the block.
+
+2.32 - Function 0800h - Physical Address Mapping:
+-------------------------------------------------
+
+  Converts a physical address into a linear address. This functions allows the
+client to access devices mapped at a specific physical memory address.
+Examples of this are the frame buffers of certain video cards in extended
+memory.
+
+In:
+  AX     = 0800h
+  BX:CX  = physical address of memory
+  SI:DI  = size of region to map in bytes
+
+Out:
+  if successful:
+    carry flag clear
+    BX:CX  = linear address that can be used to access the physical memory
+
+  if failed:
+    carry flag set
+
+Notes:
+) It is the caller's responsibility to allocate and initialize a descriptor
+  for access to the memory.
+
+) Clients should not use this function to access memory below the 1 MB
+  boundary.
+
+2.33 - Function 0801h - Free Physical Address Mapping:
+------------------------------------------------------
+
+  Releases a mapping of physical to linear addresses that was previously
+obtained with function 0800h.
+
+In:
+  AX     = 0801h
+  BX:CX  = linear address returned by physical address mapping call
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) The client should call this function when it is finished using a device
+  previously mapped to linear addresses with function 0801h.
+
+2.34 - Function 0900h - Get and Disable Virtual Interrupt State:
+----------------------------------------------------------------
+
+  Disables the virtual interrupt flag and returns the previous state of it.
+
+In:
+  AX     = 0900h
+
+Out:
+  always successful:
+    carry flag clear
+    AL	   = 0 if virtual interrupts were previously disabled
+    AL	   = 1 if virtual interrupts were previously enabled
+
+Notes:
+) AH is not changed by this function. Therefore the previous state can be
+  restored by simply executing another INT 31h.
+
+) A client that does not need to know the prior interrupt state can execute
+  the CLI instruction rather than calling this function. The instruction may
+  be trapped by a DPMI host and should be assumed to be very slow.
+
+2.35 - Function 0901h - Get and Enable Virtual Interrupt State:
+---------------------------------------------------------------
+
+  Enables the virtual interrupt flag and returns the previous state of it.
+
+In:
+  AX     = 0901h
+
+Out:
+  always successful:
+    carry flag clear
+    AL	   = 0 if virtual interrupts were previously disabled
+    AL	   = 1 if virtual interrupts were previously enabled
+
+Notes:
+) AH is not changed by this function. Therefore the previous state can be
+  retstored by simply executing another INT 31h.
+
+) A client that does not need to know the prior interrupt state can execute
+  the STI instruction rather than calling this function. The instruction may
+  be trapped by a DPMI host and should be assumed to be very slow.
+
+2.36 - Function 0902h - Get Virtual Interrupt State:
+----------------------------------------------------
+
+  Returns the current state of the virtual interrupt flag.
+
+In:
+  AX     = 0902h
+
+Out:
+  always successful:
+    carry flag clear
+    AL	   = 0 if virtual interrupts are disabled
+    AL	   = 1 if virtual interrupts are enabled
+
+Notes:
+) This function should be used in preference to the PUSHF instruction to
+  examine the interrupt flag, because the PUSHF instruction returns the
+  physical interrupt flag rather than the virtualized interrupt flag. On some
+  DPMI hosts, the physical interrupt flag will always be enabled, even when
+  the hardware interrupts are not being passed through to the client.
+
+2.37 - Function EEFFh - Get DOS Extender Information:
+-----------------------------------------------------
+
+  Returns information about the DOS extender.
+
+In:
+  AX     = EEFFh
+
+Out:
+  if successful:
+    carry flag clear
+    EAX    = 'PMDW' (504D4457h)
+    ES:EBX = selector:offset of ASCIIZ copyright string
+    CH     = protected mode system type (0=raw, 1=XMS, 2=VCPI, 3=DPMI)
+    CL     = processor type (3=386, 4=486, 5=586)
+    DH     = extender MAJOR version (binary)
+    DL     = extender MINOR version (binary)
+
+  if failed:
+    carry flag set
+
+Notes:
+) In PMODE/W's implementation of this function, the value returned in ES is
+  equivalent to the 4G data selector returned in DS at startup.
+
+) This function is always successful under PMODE/W.
+
+------------------------------------------------------------------------------
+-------------- 3 - Supported DOS extended INT 21h functions ------------------
+------------------------------------------------------------------------------
+
+  For the most part, PMODE/W extends only the most widely used DOS functions.
+The term "extend" means to extend real mode 16:16 pointers which have a limit
+of 1MB into the full protected mode range of 16:32 pointers with a range of
+4GB. Since DOS can only address memory under 1MB, we must buffer any data that
+is to be passed to or from DOS in low memory. Only DOS functions which use
+16:16 pointers or segment registers need to be extended. This means that DOS
+functions that are not listed here can still be used provided they don't make
+use of those kinds of parameters. Examples of such functions are INT 21h
+AH=30h or INT 21h AH=2, etc. The following is a detailed list of all functions
+extended by PMODE/W. All segment registers used as parameters must be valid
+protected mode selectors. Any functions that are not listed here will be
+passed on to the real mode INT 21h handler without any buffering or
+modification. This and the other sections on interrupts are provided as
+reference as to how PMODE/W deals with these interrupts. It is assumed the
+reader is familiar with the normal real mode operation of these functions.
+
+3.0 - Function 09h - Write String to Standard Output:
+-----------------------------------------------------
+
+In:
+  AH     = 09h
+  DS:EDX -> '$' terminated string to write
+
+Out:
+  always successful
+
+3.1 - Function 1Ah - Set Disk Transfer Area:
+--------------------------------------------
+
+In:
+  AH	 = 1Ah
+  DS:EDX -> buffer for DTA
+
+Out:
+  always successful
+
+Notes:
+) PMODE/W keeps an internal DTA buffer in low memory that is used to buffer
+  any functions which use the DTA. After calling the real mode DOS function,
+  the data will be transfered into the buffer specified by DS:EDX.
+
+3.2 - Function 1Bh - Get Allocation Information for Default Drive:
+------------------------------------------------------------------
+
+In:
+  AH     = 1Bh
+
+Out:
+  always successful:
+    AL     = sectors per cluster
+    ECX    = bytes per sector
+    EDX    = total number of clusters
+    DS:EBX -> media ID byte
+
+Notes:
+) This functions simply converts the real mode segment:offset returned by DOS
+  to a protected mode selector:offset.
+
+3.3 - Function 1Ch - Get Allocation Information for Specific Drive:
+-------------------------------------------------------------------
+
+In:
+  AH     = 1Ch
+  DL     = drive number
+
+Out:
+  if successful:
+    AL     = sectors per cluster
+    ECX    = bytes per sector
+    EDX    = total number of clusters
+    DS:EBX -> media ID byte
+
+  if failed:
+    AL     = FFh (invalid drive)
+
+Notes:
+) This functions simply converts the real mode segment:offset returned by DOS
+  to a protected mode selector:offset.
+
+3.4 - Function 1Fh - Get Drive Parameter Block for Default Drive:
+-----------------------------------------------------------------
+
+In:
+  AH     = 1Fh
+
+Out:
+  if successful:
+    AL     = 0
+    DS:EBX -> drive parameter block
+
+  if failed:
+    AL     = FFh (invalid drive)
+
+Notes:
+) This functions simply converts the real mode segment:offset returned by DOS
+  to a protected mode selector:offset.
+
+3.5 - Function 25h - Set Interrupt Vector:
+------------------------------------------
+
+In:
+  AH	 = 25h
+  AL	 = interrupt number
+  DS:EDX -> interrupt routine
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) This function is equivalent to INT 31h function 0205h.
+
+3.6 - Function 2Fh - Get Disk Transfer Area:
+--------------------------------------------
+
+In:
+  AH	 = 2Fh
+
+Out:
+  always successful:
+    ES:EBX -> DTA
+
+Notes:
+) This function will return the value that was previously set by function 1Ah
+  or the default buffer if function 1Ah was not called.
+
+3.7 - Function 32h - Get Drive Parameter Block for Specific Drive:
+------------------------------------------------------------------
+
+In:
+  AH     = 32h
+  DL     = drive number
+
+Out:
+  if successful:
+    AL     = 0
+    DS:EBX -> drive parameter block
+
+  if failed:
+    AL     = FFh (invalid drive)
+
+Notes:
+) This functions simply converts the real mode segment:offset returned by DOS
+  to a protected mode selector:offset.
+
+3.8 - Function 34h - Get Address of InDOS Flag:
+-----------------------------------------------
+
+In:
+  AH = 34h
+
+Out:
+  always successful:
+    ES:EBX -> InDOS flag
+
+Notes:
+) This functions simply converts the real mode segment:offset returned by DOS
+  to a protected mode selector:offset.
+
+3.9 - Function 35h - Get Interrupt Vector:
+------------------------------------------
+
+In:
+  AH	 = 35h
+  AL	 = interrupt number
+
+Out:
+  always successful:
+    ES:EBX -> interrupt routine
+
+Notes:
+) This function is equivalent to INT 31h function 0204h.
+
+3.10 - Function 39h - Create Subdirectory:
+------------------------------------------
+
+In:
+  AH	 = 39h
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.11 - Function 3Ah - Remove Subdirectory:
+------------------------------------------
+
+In:
+  AH	 = 3Ah
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.12 - Function 3Bh - Set Directory:
+------------------------------------
+
+In:
+  AH	 = 3Bh
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.13 - Function 3Ch - Create File:
+----------------------------------
+
+In:
+  AH	 = 3Ch
+  CX	 = attribute
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+    EAX = handle
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.14 - Function 3Dh - Open File:
+--------------------------------
+
+In:
+  AH	 = 3Dh
+  AL	 = open code
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+    EAX = handle
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.15 - Function 3Fh - Read From File:
+-------------------------------------
+
+In:
+  AH	 = 3Fh
+  BX	 = file handle
+  ECX	 = number of bytes to read
+  DS:EDX -> buffer to read to
+
+Out:
+  if successful:
+    carry flag clear
+    EAX = number of bytes read
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.16 - Function 40h - Write To File:
+------------------------------------
+
+In:
+  AH	 = 40h
+  BX	 = file handle
+  ECX	 = number of bytes to write
+  DS:EDX -> buffer to write from
+
+Out:
+  if successful:
+    carry flag clear
+    EAX = number of bytes written
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.17 - Function 41h - Delete File:
+----------------------------------
+
+In:
+  AH	 = 41h
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.18 - Function 43h - Get/Set File Attributes:
+----------------------------------------------
+
+In:
+  AH	 = 43h
+  AL	 = function code
+  CX	 = desired attributes
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+    CX = current attributes
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.19 - Function 47h - Get Directory Path:
+-----------------------------------------
+
+In:
+  AH	 = 47h
+  DL	 = drive number
+  DS:ESI -> buffer for path
+
+Out:
+  if successful:
+    carry flag clear
+    buffer pointer to by DS:ESI is filled with the path
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.20 - Function 48h - Allocate Memory Block:
+--------------------------------------------
+
+In:
+  AH	 = 48h
+  BX	 = paragraphs to allocate
+
+Out:
+  if successful:
+    carry flag clear
+    EAX = selector for memory block
+
+  if failed:
+    carry flag set
+    EAX = error code
+    EBX = maximum paragraphs available
+
+Notes:
+) This function allocates ONLY DOS memory below 1MB.
+
+) This function is equivalent to INT 31h function 0100h.
+
+3.21 - Function 49h - Free Memory Block:
+----------------------------------------
+
+In:
+  AH	 = 49h
+  ES	 = selector for memory block
+
+Out:
+  if successful:
+    carry flag clear
+    ES = NULL selector (zeroed to prevent loading an invalid selector)
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+Notes:
+) This function is equivalent to INT 31h function 0101h.
+
+3.22 - Function 4Ah - Resize Memory Block:
+------------------------------------------
+
+In:
+  AH	 = 4Ah
+  BX	 = total paragraphs to allocate
+  ES	 = selector
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+    EBX = maximum paragraphs available for specified memory block
+
+Notes:
+) This function is equivalent to INT 31h function 0102h.
+
+3.23 - Function 4Bh - Sub-Function 00h - Load and Execute Program:
+------------------------------------------------------------------
+
+In:
+  AH	 = 4Bh
+  AL	 = 00h
+  DS:EDX -> path name
+  ES:EBX -> parameter block
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+
+Notes:
+) In order to overcome DOS's inability to access data over 1 MB, the
+  environment specified in the parameter block will be copied into an
+  intermediate buffer before being passed on to DOS. The buffer will be
+  allocated through DOS function 48h and freed through 49h when the program
+  is done executing. There must be enough available low memory to hold the
+  environment data or an error will occur. Keep this in mind when passing
+  an environment using spawnle() and related functions.
+
+3.24 - Function 4Eh - Search for First Filename Match:
+------------------------------------------------------
+
+In:
+  AH	 = 4Eh
+  CX	 = file attribute
+  DS:EDX -> ASCIIZ path name
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+Notes:
+) PMODE/W keeps an internal DTA buffer in low memory that is used to buffer
+  any functions which use the DTA. After calling the real mode DOS function,
+  the data will be transfered into the buffer specified by function 1Ah or
+  the default buffer if function 1Ah was not called.
+
+3.25 - Function 4Fh - Search for Next Filename Match:
+-----------------------------------------------------
+
+In:
+  AH	 = 4Fh
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+Notes:
+) PMODE/W keeps an internal DTA buffer in low memory that is used to buffer
+  any functions which use the DTA. After calling the real mode DOS function,
+  the data will be transfered into the buffer specified by function 1Ah or
+  the default buffer if function 1Ah was not called.
+
+3.26 - Function 56h - Rename File:
+----------------------------------
+
+In:
+  AH	 = 56h
+  DS:EDX -> old filename
+  ES:EDI -> new filename
+
+Out:
+  if successful:
+    carry flag clear
+
+  if failed:
+    carry flag set
+    EAX = error code
+
+3.27 - Function 62h - Get PSP Address
+-----------------------------------------------------
+
+In:
+  AH     = 62h
+
+Out:
+  always successful:
+    BX = PSP Selector
+
+Notes:
+) This function returns the protected mode PSP selector. Use INT 21h/AH=51h if
+  you require a real mode segment address.
+
+------------------------------------------------------------------------------
+--------------- 4 - Supported mouse extended INT 33h functions ---------------
+------------------------------------------------------------------------------
+
+  The mouse functions are technically not part of Watcom C/C++ support because
+they are not used by any of the libraries. But we extend the most popular
+functions because they are so widely used. The functions that need to be
+extended are those that require addresses to be passed in segment registers.
+All other mouse functions not listed here will work if they do not take
+segment registers as parameters. This means that in addition to the functions
+listed here, functions like 0000h, 0001h, 0002h, etc... will work. But
+functions like 0012h and 0018h will not work directly from protected mode
+because they pass or return segment registers as parameters or require low
+memory buffering. You may still use those functions, but you must call them
+through DPMI and make sure that any code or data they use resides in low
+memory and the code is real mode code (like DPMI callback if you wish to pass
+control on to protected mode code from there).
+
+4.0 - Function 0009h - Define Graphics Cursor:
+----------------------------------------------
+
+In:
+  AX     = 0009h
+  BX     = column of cursor hot spot in bitmap
+  CX     = row of cursor hot spot in bitmap
+  ES:EDX -> mask bitmap
+
+Out:
+  always successful
+
+4.1 - Function 000Ch - Define Interrupt Subroutine Parameters:
+--------------------------------------------------------------
+
+In:
+  AX     = 000Ch
+  CX     = call mask
+  ES:EDX -> FAR routine
+
+Out:
+  always successful
+
+Notes:
+) This function will use a DPMI real mode callback to pass control from real
+  mode to your protected mode interrupt subroutine.
+
+) Calling this function with a FAR routine of 0000:00000000 is analogous to
+  calling the real mode mouse driver with an address of 0000:0000 which will
+  undefine the interrupt subroutine.
+
+4.2 - Function 0016h - Save Driver State:
+-----------------------------------------
+
+In:
+  AX     = 0016h
+  BX     = size of buffer
+  ES:EDX -> buffer for driver state
+
+Out:
+  always successful
+
+4.3 - Function 0017h - Restore Driver State:
+--------------------------------------------
+
+In:
+  AX     = 0017h
+  BX     = size of buffer
+  ES:EDX -> buffer containing saved state
+
+Out:
+  always successful
+
+------------------------------------------------------------------------------
+------------------------ End of PMODE/W Documentation ------------------------
+------------------------------------------------------------------------------
+

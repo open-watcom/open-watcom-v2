@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Editor configuration header.
 *
 ****************************************************************************/
 
@@ -33,42 +32,52 @@
 #ifndef __CONTROL_INCLUDED__
 #define __CONTROL_INCLUDED__
 
-#ifdef __V__
-#define __286__
+#if defined( __OS2__ ) && defined( __386__ )
+  #define __OS2V2__
 #endif
-#if defined(__OS2__) && defined(__386__)
-#define __OS2V2__
-#endif
-#if defined(__WINDOWS__)
-#define NOXMS
-#define NOEMS
-#define NOXTD
-#define _FAR
-#define __WIN__
-#elif defined(__OS2__) || defined(__QNX__) || defined(__NT__)
-#define NOXMS
-#define NOEMS
-#define NOXTD
-#define _FAR
-#ifndef __WIN__
-#define __VIO__
-#endif
+
+#if defined( __WINDOWS__ )
+  #define NOXMS
+  #define NOEMS
+  #define NOXTD
+  #define _FAR
+  #define __WIN__
+#elif defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
+  #define NOXMS
+  #define NOEMS
+  #define NOXTD
+  #define _FAR
+  #ifndef __WIN__
+    #define __VIO__
+  #endif
 #elif defined( __386__ )
-#define NOXMS
-#define NOEMS
-#define NOXTD
-#if !defined( __4G__ )
-#define _FAR    __far
-#else
-#define _FAR
+  #define NOXMS
+  #define NOEMS
+  #define NOXTD
+  #if !defined( __4G__ )
+    #define _FAR    __far
+  #else
+    #define _FAR
+  #endif
+#elif defined( __286__ )
+  #define _FAR
+#elif defined( __86__ )
+  #define NOXMS
+  #define NOXTD
+  #define _FAR
 #endif
-#elif defined(__286__)
-//#define __IDE__
-#define _FAR
-#elif defined(__86__)
-#define NOXMS
-#define NOXTD
-#define _FAR
+
+#if defined( _M_I86 )
+  #define _NEAR near
+#else
+  #define _NEAR
+#endif
+
+#ifndef max
+  #define max(a,b)  (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef min
+  #define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
 #endif

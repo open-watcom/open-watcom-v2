@@ -34,9 +34,9 @@
 #include "cplx.h"
 
 
-_WMRTLINK complex _IF_C8Mul( single a, single b, single c, single d ) {
-//====================================================================
-
+_WMRTLINK complex _IF_C8Mul( single a, single b, single c, single d )
+//===================================================================
+{
 // Return the real part of the result of multiplying two complex numbers.
 // ( a, b ) * ( c, d ) = ( ac-bd, bc+ad )
 

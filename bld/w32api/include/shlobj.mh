@@ -1,0 +1,3280 @@
+/*
+ *  shlobj.h    Shell object interfaces and functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _SHLOBJ_H_
+#define _SHLOBJ_H_
+
+:include readonly.sp
+
+#include <ole2.h>
+#include <prsht.h>
+#include <commctrl.h>
+#include <shlguid.h>
+#include <shtypes.h>
+#include <shobjidl.h>
+
+:include cpluspro.sp
+
+/* Macro to specify shell folder functions */
+#define SHFOLDERAPI EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
+
+/* Macros to specify shell document functions */
+#define SHDOCAPI        EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
+#define SHDOCAPI_( x )  EXTERN_C DECLSPEC_IMPORT x STDAPICALLTYPE
+
+/* Forward declarations */
+typedef interface IShellFolderViewCB    IShellFolderViewCB;
+#if (NTDDI_VERSION >= 0x05010000)
+typedef interface IEnumPrivacyRecords   IEnumPrivacyRecords;
+#endif
+
+/* Property sheet extension array handle data type */
+DECLARE_HANDLE( HPSXA );
+
+/* IExtractIcon::GetIconLocation() flags */
+#define GIL_OPENICON    0x0001
+#define GIL_FORSHELL    0x0002
+#define GIL_ASYNC       0x0020
+#define GIL_DEFAULTICON 0x0040
+#define GIL_FORSHORTCUT 0x0080
+#define GIL_CHECKSHIELD 0x0200
+
+/* IExtractIcon::GetIconLocation() flags */
+#define GIL_SIMULATEDOC     0x0001
+#define GIL_PERINSTANCE     0x0002
+#define GIL_PERCLASS        0x0004
+#define GIL_NOTFILENAME     0x0008
+#define GIL_DONTCACHE       0x0010
+#define GIL_SHIELD          0x0200
+#define GIL_FORCENOSHIELD   0x0400
+
+/* IShellIconOverlayIdentifier indices */
+#define ISIOI_ICONFILE  0x00000001
+#define ISIOI_ICONINDEX 0x00000002
+
+/* IShellIconOverlayManager indices */
+#define SIOM_OVERLAYINDEX       1
+#define SIOM_ICONINDEX          2
+#define SIOM_RESERVED_SHARED    0
+#define SIOM_RESERVED_LINK      1
+#define SIOM_RESERVED_SLOWFILE  2
+#define SIOM_RESERVED_DEFAULT   3
+
+/* IShellIconOverlay indices */
+#define OI_DEFAULT  0x00000000
+#define OI_ASYNC    0xFFFFEEEE
+
+/* SHGetIconOverlayIndex() overlay identifiers */
+#define IDO_SHGIOI_SHARE    0x0FFFFFFF
+#define IDO_SHGIOI_LINK     0x0FFFFFFE
+#define IDO_SHGIOI_SLOWFILE 0x0FFFFFFD
+#define IDO_SHGIOI_DEFAULT  0x0FFFFFFC
+
+/* NT console properties signatures */
+#if (_WIN32_IE >= 0x0400)
+    #define EXP_SZ_LINK_SIG         0xA0000001L
+    #define NT_CONSOLE_PROPS_SIG    0xA0000002L
+    #define NT_FE_CONSOLE_PROPS_SIG 0xA0000004L
+    #define EXP_SPECIAL_FOLDER_SIG  0xA0000005L
+#endif
+#if (_WIN32_IE >= 0x0500)
+    #define EXP_DARWIN_ID_SIG       0xA0000006L
+#endif
+#if (_WIN32_IE >= 0x0400)
+    #define EXP_SZ_ICON_SIG         0xA0000007L
+#endif
+#if (_WIN32_IE >= 0x0400) && (NTDDI_VERSION >= 0x06000000)
+    #define EXP_PROPERTYSTORAGE_SIG 0xA0000009L
+#endif
+
+/* IFileViewer show information flags */
+#if (NTDDI_VERSION < 0x05000000)
+    #define FVSIF_RECT      0x00000001L
+    #define FVSIF_PINNED    0x00000002L
+    #define FVSIF_NEWFAILED 0x08000000L
+    #define FVSIF_CANVIEWIT 0x40000000L
+    #define FVSIF_NEWFILE   0x80000000L
+#endif
+
+/* Shell menu item and control identifiers */
+#define FCIDM_SHVIEWFIRST           0x0000
+#define FCIDM_SHVIEWLAST            0x7FFF
+#define FCIDM_BROWSERFIRST          0xA000
+#define FCIDM_BROWSERLAST           0xBF00
+#define FCIDM_GLOBALFIRST           0x8000
+#define FCIDM_GLOBALLAST            0x9FFF
+#define FCIDM_MENU_FILE             (FCIDM_GLOBALFIRST + 0x0000)
+#define FCIDM_MENU_EDIT             (FCIDM_GLOBALFIRST + 0x0040)
+#define FCIDM_MENU_VIEW             (FCIDM_GLOBALFIRST + 0x0080)
+#define FCIDM_MENU_VIEW_SEP_OPTIONS (FCIDM_GLOBALFIRST + 0x0081)
+#define FCIDM_MENU_TOOLS            (FCIDM_GLOBALFIRST + 0x00C0)
+#define FCIDM_MENU_TOOLS_SEP_GOTO   (FCIDM_GLOBALFIRST + 0x00C1)
+#define FCIDM_MENU_HELP             (FCIDM_GLOBALFIRST + 0x0100)
+#define FCIDM_MENU_FIND             (FCIDM_GLOBALFIRST + 0x0140)
+#define FCIDM_MENU_EXPLORE          (FCIDM_GLOBALFIRST + 0x0150)
+#define FCIDM_MENU_FAVORITES        (FCIDM_GLOBALFIRST + 0x0170)
+#define FCIDM_TOOLBAR               (FCIDM_BROWSERFIRST + 0)
+#define FCIDM_STATUS                (FCIDM_BROWSERFIRST + 1)
+
+/* Shell cursor identifiers */
+#if (_WIN32_IE >= 0x0400)
+    #define IDC_OFFLINE_HAND        103
+#endif
+#if (_WIN32_IE >= 0x0700)
+    #define IDC_PANTOOL_HAND_OPEN   104
+    #define IDC_PANTOOL_HAND_CLOSED 105
+#endif
+
+/* Shell status bar panes */
+#define PANE_NONE           0xFFFFFFFF
+#define PANE_ZONE           1
+#define PANE_OFFLINE        2
+#define PANE_PRINTER        3
+#define PANE_SSL            4
+#define PANE_NAVIGATION     5
+#define PANE_PROGRESS       6
+#if (_WIN32_IE >= 0x0600)
+    #define PANE_PRIVACY    7
+#endif
+
+/* SHOpenFolderAndSelectItem() flags */
+#if (NTDDI_VERSION >= 0x06000000)
+    #define OFASI_EDIT          0x00000001L
+    #define OFASI_OPENDESKTOP   0x00000002L
+#endif
+
+/* Special folders registry path */
+#define REGSTR_PATH_SPECIAL_FOLDERS \
+    REGSTR_PATH_EXPLORER TEXT("\\Shell Folders")
+
+/* Special folder identifiers */
+#define CSIDL_DESKTOP                   0x0000
+#define CSIDL_INTERNET                  0x0001
+#define CSIDL_PROGRAMS                  0x0002
+#define CSIDL_CONTROLS                  0x0003
+#define CSIDL_PRINTERS                  0x0004
+#define CSIDL_PERSONAL                  0x0005
+#define CSIDL_FAVORITES                 0x0006
+#define CSIDL_STARTUP                   0x0007
+#define CSIDL_RECENT                    0x0008
+#define CSIDL_SENDTO                    0x0009
+#define CSIDL_BITBUCKET                 0x000A
+#define CSIDL_STARTMENU                 0x000B
+#define CSIDL_MYDOCUMENTS               CSIDL_PERSONAL
+#define CSIDL_MYMUSIC                   0x000D
+#define CSIDL_MYVIDEO                   0x000E
+#define CSIDL_DESKTOPDIRECTORY          0x0010
+#define CSIDL_DRIVES                    0x0011
+#define CSIDL_NETWORK                   0x0012
+#define CSIDL_NETHOOD                   0x0013
+#define CSIDL_FONTS                     0x0014
+#define CSIDL_TEMPLATES                 0x0015
+#define CSIDL_COMMON_STARTMENU          0x0016
+#define CSIDL_COMMON_PROGRAMS           0x0017
+#define CSIDL_COMMON_STARTUP            0x0018
+#define CSIDL_COMMON_DESKTOPDIRECTORY   0x0019
+#define CSIDL_APPDATA                   0x001A
+#define CSIDL_PRINTHOOD                 0x001B
+#ifndef CSIDL_LOCAL_APPDATA
+    #define CSIDL_LOCAL_APPDATA         0x001C
+#endif
+#define CSIDL_ALTSTARTUP                0x001D
+#define CSIDL_COMMON_ALTSTARTUP         0x001E
+#define CSIDL_COMMON_FAVORITES          0x001F
+#ifndef _SHFOLDER_H_
+    #define CSIDL_INTERNET_CACHE        0x0020
+    #define CSIDL_COOKIES               0x0021
+    #define CSIDL_HISTORY               0x0022
+    #define CSIDL_COMMON_APPDATA        0x0023
+    #define CSIDL_WINDOWS               0x0024
+    #define CSIDL_SYSTEM                0x0025
+    #define CSIDL_PROGRAM_FILES         0x0026
+    #define CSIDL_MYPICTURES            0x0027
+#endif
+#define CSIDL_PROFILE                   0x0028
+#define CSIDL_SYSTEMX86                 0x0029
+#define CSIDL_PROGRAMFILESX86           0x002A
+#ifndef _SHFOLDER_H_
+    #define CSIDL_PROGRAM_FILES_COMMON  0x002B
+#endif
+#define CSIDL_PROGRAM_FILES_COMMONX86   0x002C
+#define CSIDL_COMMON_TEMPLATES          0x002D
+#ifndef _SHFOLDER_H_
+    #define CSIDL_COMMON_DOCUMENTS      0x002E
+    #define CSIDL_COMMON_ADMINTOOLS     0x002F
+    #define CSIDL_ADMINTOOLS            0x0030
+#endif
+#define CSIDL_CONNECTIONS               0x0031
+#define CSIDL_COMMON_MUSIC              0x0035
+#define CSIDL_COMMON_PICTURES           0x0036
+#define CSIDL_COMMON_VIDEO              0x0037
+#define CSIDL_RESOURCES                 0x0038
+#ifndef _SHFOLDER_H_
+    #define CSIDL_RESOURCES_LOCALIZED   0x0039
+#endif
+#define CSIDL_COMMON_OEM_LINKS          0x003A
+#define CSIDL_CDBURN_AREA               0x003B
+#define CSIDL_COMPUTERSNEARME           0x003D
+#if (NTDDI_VERSION >= 0x05010000)
+    #define CSIDL_FLAG_PER_USER_INIT    0x0800
+    #define CSIDL_FLAG_NO_ALIAS         0x1000
+#endif
+#define CSIDL_FLAG_DONT_UNEXPAND        0x2000
+#define CSIDL_FLAG_DONT_VERIFY          0x4000
+#ifndef _SHFOLDER_H_
+    #define CSIDL_FLAG_CREATE           0x8000
+#endif
+#define CSIDL_FLAG_MASK                 0xFF00
+
+/* Folder custom settings */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define FCS_READ        0x00000001L
+    #define FCS_FORCEWRITE  0x00000002L
+    #define FCS_WRITE       (FCS_READ | FCS_FORCEWRITE)
+#endif
+
+/* Folder custom settings flags */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define FCS_FLAG_DRAGDROP   2
+#endif
+
+/* Folder custom settings masks */
+#if (NTDDI_VERSION >= 0x05000000)
+    #define FCSM_VIEWID             0x00000001L
+    #define FCSM_WEBVIEWTEMPLATE    0x00000002L
+    #define FCSM_INFOTIP            0x00000004L
+    #define FCSM_CLSID              0x00000008L
+    #define FCSM_ICONFILE           0x00000010L
+    #define FCSM_LOGO               0x00000020L
+    #define FCSM_FLAGS              0x00000040L
+#endif
+
+/* SHBrowseForFolder() flags */
+#define BIF_RETURNONLYFSDIRS    0x00000001
+#define BIF_DONTGOBELOWDOMAIN   0x00000002
+#define BIF_STATUSTEXT          0x00000004
+#define BIF_RETURNFSANCESTORS   0x00000008
+#define BIF_EDITBOX             0x00000010
+#define BIF_VALIDATE            0x00000020
+#define BIF_NEWDIALOGSTYLE      0x00000040
+#define BIF_USENEWUI            (BIF_NEWDIALOGSTYLE | BIF_EDITBOX)
+#define BIF_BROWSEINCLUDEURLS   0x00000080
+#define BIF_UAHINT              0x00000100
+#define BIF_NONEWFOLDERBUTTON   0x00000200
+#define BIF_NOTRANSLATETARGETS  0x00000400
+#define BIF_BROWSEFORCOMPUTER   0x00001000
+#define BIF_BROWSEFORPRINTER    0x00002000
+#define BIF_BROWSEINCLUDEFILES  0x00004000
+#define BIF_SHAREABLE           0x00008000
+#define BIF_BROWSEFILEJUNCTIONS 0x00010000
+
+/* SHBrowseForFolder() callback messages */
+#define BFFM_INITIALIZED        1
+#define BFFM_SELCHANGED         2
+#define BFFM_VALIDATEFAILEDA    3
+#define BFFM_VALIDATEFAILEDW    4
+#define BFFM_IUNKNOWN           5
+#ifdef UNICODE
+    #define BFFM_VALIDATEFAILED BFFM_VALIDATEFAILEDW
+#else
+    #define BFFM_VALIDATEFAILED BFFM_VALIDATEFAILEDA
+#endif
+
+/* SHBrowseForFolder() messages */
+#define BFFM_SETSTATUSTEXTA     (WM_USER + 100)
+#define BFFM_ENABLEOK           (WM_USER + 101)
+#define BFFM_SETSELECTIONA      (WM_USER + 102)
+#define BFFM_SETSELECTIONW      (WM_USER + 103)
+#define BFFM_SETSTATUSTEXTW     (WM_USER + 104)
+#define BFFM_SETOKTEXT          (WM_USER + 105)
+#define BFFM_SETEXPANDED        (WM_USER + 106)
+#ifdef UNICODE
+    #define BFFM_SETSTATUSTEXT  BFFM_SETSTATUSTEXTW
+    #define BFFM_SETSELECTION   BFFM_SETSELECTIONW
+#else
+    #define BFFM_SETSTATUSTEXT  BFFM_SETSTATUSTEXTA
+    #define BFFM_SETSELECTION   BFFM_SETSELECTIONA
+#endif
+
+/* IShellFolder bind strings */
+#define STR_PARSE_WITH_PROPERTIES   L"ParseWithProperties"
+#define STR_PARSE_PARTIAL_IDLIST    L"ParseOriginalItem"
+
+/* IProgressDialog::StartProgressDialog() flags */
+#define PROGDLG_NORMAL              0x00000000L
+#define PROGDLG_MODAL               0x00000001L
+#define PROGDLG_AUTOTIME            0x00000002L
+#define PROGDLG_NOTIME              0x00000004L
+#define PROGDLG_NOMINIMIZE          0x00000008L
+#define PROGDLG_NOPROGRESSBAR       0x00000010L
+#if (_WIN32_IE >= 0x0700)
+    #define PROGDLG_MARQUEEPROGRESS 0x00000020L
+    #define PROGDLG_NOCANCEL        0x00000040L
+#endif
+
+/* Timer actions */
+#define PDTIMER_RESET       0x00000001L
+#if (_WIN32_IE >= 0x0700)
+    #define PDTIMER_PAUSE   0x00000002L
+    #define PDTIMER_RESUME  0x00000003L
+#endif
+
+/* IDockingWindowFrame::RemoveToolbar() flags */
+#define DWFRF_NORMAL            0x0000
+#define DWFRF_DELETECONFIGDATA  0x0001
+
+/* IDockingWindowFrame::AddToolbar() flags */
+#define DWFAF_HIDDEN    0x0001
+#define DWFAF_GROUP1    0x0002
+#define DWFAF_GROUP2    0x0004
+#define DWFAF_AUTOHIDE  0x0010
+
+/* Shell image storage capability flags */
+#if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
+    #define SHIMSTCAPFLAG_LOCKABLE  0x0001
+    #define SHIMSTCAPFLAG_PURGEABLE 0x0002
+#endif
+
+/* Shell folder band masks */
+#if (_WIN32_IE >= 0x0400)
+    #define ISFB_MASK_STATE         0x00000001
+    #define ISFB_MASK_BKCOLOR       0x00000002
+    #define ISFB_MASK_VIEWMODE      0x00000004
+    #define ISFB_MASK_SHELLFOLDER   0x00000008
+    #define ISFB_MASK_IDLIST        0x00000010
+    #define ISFB_MASK_COLORS        0x00000020
+#endif
+
+/* Shell folder band states */
+#if (_WIN32_IE >= 0x0400)
+    #define ISFB_STATE_DEFAULT      0x00000000
+    #define ISFB_STATE_DEBOSSED     0x00000001
+    #define ISFB_STATE_ALLOWRENAME  0x00000002
+    #define ISFB_STATE_NOSHOWTEXT   0x00000004
+    #define ISFB_STATE_CHANNELBAR   0x00000010
+    #define ISFB_STATE_QLINKSMODE   0x00000020
+    #define ISFB_STATE_FULLOPEN     0x00000040
+    #define ISFB_STATE_NONAMESORT   0x00000080
+    #define ISFB_STATE_BTNMINSIZE   0x00000100
+#endif
+
+/* Shell folder band view modes */
+#if (_WIN32_IE >= 0x0400)
+    #define ISFBVIEWMODE_SMALLICONS 0x0001
+    #define ISFBVIEWMODE_LARGEICONS 0x0002
+    #if (_WIN32_IE < 0x0700)
+        #define ISFBVIEWMODE_LOGOS  0x0003
+    #endif
+#endif
+
+/* IDeskBarClient::GetSize() flags */
+#if (_WIN32_IE >= 0x0400)
+    #define DBC_GS_IDEAL    0L
+    #define DBC_GS_SIZEDOWN 1L
+#endif
+
+/* Desk bar client states */
+#if (_WIN32_IE >= 0x0400)
+    #define DBC_HIDE        0L
+    #define DBC_SHOW        1L
+    #define DBC_SHOWOBSCURE 2L
+#endif
+
+/* Component position special value */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define COMPONENT_TOP   0x3FFFFFFF
+    #endif
+#endif
+
+/* Component types */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define COMP_TYPE_HTMLDOC   0
+        #define COMP_TYPE_PICTURE   1
+        #define COMP_TYPE_WEBSITE   2
+        #define COMP_TYPE_CONTROL   3
+        #define COMP_TYPE_CFHTML    4
+        #define COMP_TYPE_MAX       4
+    #endif
+#endif
+
+/* Component item states */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define IS_NORMAL               0x00000001L
+        #define IS_FULLSCREEN           0x00000002L
+        #define IS_SPLIT                0x00000004L
+        #define IS_VALIDSIZESTATEBITS \
+            (IS_NORMAL | IS_SPLIT | IS_FULLSCREEN)
+        #define IS_VALIDSTATEBITS \
+            (IS_NORMAL | IS_SPLIT | IS_FULLSCREEN | 0xC0000000L)
+    #endif
+#endif
+
+/* IActiveDesktop::ApplyChanges() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define AD_APPLY_SAVE               0x00000001L
+        #define AD_APPLY_HTMLGEN            0x00000002L
+        #define AD_APPLY_REFRESH            0x00000004L
+        #define AD_APPLY_ALL \
+            (AD_APPLY_SAVE | AD_APPLY_HTMLGEN | AD_APPLY_REFRESH)
+        #define AD_APPLY_FORCE              0x00000008L
+        #define AD_APPLY_BUFFERED_REFRESH   0x00000010L
+        #define AD_APPLY_DYNAMICREFRESH     0x00000020L
+    #endif
+#endif
+
+/* IActiveDesktop::GetWallpaper() flags */
+#if (NTDDI_VERSION >= 0x06000000) && (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define AD_GETWP_BMP            0x00000000L
+        #define AD_GETWP_IMAGE          0x00000001L
+        #define AD_GETWP_LAST_APPLIED   0x00000002L
+    #endif
+#endif
+
+/* Wallpaper styles */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define WPSTYLE_CENTER          0
+        #define WPSTYLE_TILE            1
+        #define WPSTYLE_STRETCH         2
+        #if (NTDDI_VERSION >= 0x06010000)
+            #define WPSTYLE_KEEPASPECT  3
+            #define WPSTYLE_CROPTOFIT   4
+            #define WPSTYLE_MAX         5
+        #else
+            #define WPSTYLE_MAX         3
+        #endif
+    #endif
+#endif
+
+/* IActiveDesktop::ModifyComponent() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define COMP_ELEM_TYPE          0x00000001L
+        #define COMP_ELEM_CHECKED       0x00000002L
+        #define COMP_ELEM_DIRTY         0x00000004L
+        #define COMP_ELEM_NOSCROLL      0x00000008L
+        #define COMP_ELEM_POS_LEFT      0x00000010L
+        #define COMP_ELEM_POS_TOP       0x00000020L
+        #define COMP_ELEM_SIZE_WIDTH    0x00000040L
+        #define COMP_ELEM_SIZE_HEIGHT   0x00000080L
+        #define COMP_ELEM_POS_ZINDEX    0x00000100L
+        #define COMP_ELEM_SOURCE        0x00000200L
+        #define COMP_ELEM_FRIENDLYNAME  0x00000400L
+        #define COMP_ELEM_SUBSCRIBEDURL 0x00000800L
+        #define COMP_ELEM_ORIGINAL_CSI  0x00001000L
+        #define COMP_ELEM_RESTORED_CSI  0x00002000L
+        #define COMP_ELEM_CURITEMSTATE  0x00004000L
+        #define COMP_ELEM_ALL \
+            (COMP_ELEM_TYPE | COMP_ELEM_CHECKED | COMP_ELEM_DIRTY | \
+            COMP_ELEM_NOSCROLL | COMP_ELEM_POS_LEFT | COMP_ELEM_SIZE_WIDTH | \
+            COMP_ELEM_SIZE_HEIGHT | COMP_ELEM_POS_ZINDEX | COMP_ELEM_SOURCE | \
+            COMP_ELEM_FRIENDLYNAME | COMP_ELEM_POS_TOP | COMP_ELEM_SUBSCRIBEDURL | \
+            COMP_ELEM_ORIGINAL_CSI | COMP_ELEM_RESTORED_CSI | COMP_ELEM_CURITEMSTATE)
+    #endif
+#endif
+
+/* IActiveDesktop::AddUrl() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define ADDURL_SILENT   0x00000001L
+    #endif
+#endif
+
+/* Component default positions */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define COMPONENT_DEFAULT_LEFT  0xFFFF
+        #define COMPONENT_DEFAULT_TOP   0xFFFF
+    #endif
+#endif
+
+/* IActiveDesktopP::SetSafeMode() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define SSM_CLEAR   0x00000000L
+        #define SSM_SET     0x00000001L
+        #define SSM_REFRESH 0x00000002L
+        #define SSM_UPDATE  0x00000004L
+    #endif
+#endif
+
+/* IActiveDesktopP::SetScheme() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define SCHEME_DISPLAY  0x00000001L
+        #define SCHEME_EDIT     0x00000002L
+        #define SCHEME_LOCAL    0x00000004L
+        #define SCHEME_GLOBAL   0x00000008L
+        #define SCHEME_REFRESH  0x00000010L
+        #define SCHEME_UPDATE   0x00000020L
+        #define SCHEME_CREATE   0x00000080L
+    #endif
+#endif
+
+/* IADesktopP2::GetADObjectFlags() flags */
+#if (_WIN32_IE >= 0x0400)
+    #ifdef _WININET_
+        #define GADOF_DIRTY 0x00000001L
+    #endif
+#endif
+
+/* Shell column information maximum string lengths */
+#if (_WIN32_IE >= 0x0500)
+    #define MAX_COLUMN_NAME_LEN 80
+    #define MAX_COLUMN_DESC_LEN 128
+#endif
+
+/* Shell column data flags */
+#if (_WIN32_IE >= 0x0500)
+    #define SHCDF_UPDATEITEM    0x00000001L
+#endif
+
+/* Shell clipboard format strings */
+#define CFSTR_SHELLIDLIST           TEXT("Shell IDList Array")
+#define CFSTR_SHELLIDLISTOFFSET     TEXT("Shell Object Offsets")
+#define CFSTR_NETRESOURCES          TEXT("Net Resource")
+#define CFSTR_FILEDESCRIPTORA       TEXT("FileGroupDescriptor")
+#define CFSTR_FILEDESCRIPTORW       TEXT("FileGroupDescriptorW")
+#define CFSTR_FILECONTENTS          TEXT("FileContents")
+#define CFSTR_FILENAMEA             TEXT("FileName")
+#define CFSTR_FILENAMEW             TEXT("FileNameW")
+#define CFSTR_PRINTERGROUP          TEXT("PrinterFriendlyName")
+#define CFSTR_FILENAMEMAPA          TEXT("FileNameMap")
+#define CFSTR_FILENAMEMAPW          TEXT("FileNameMapW")
+#define CFSTR_SHELLURL              TEXT("UniformResourceLocator")
+#define CFSTR_INETURLA              CFSTR_SHELLURL
+#define CFSTR_INETURLW              TEXT("UniformResourceLocatorW")
+#define CFSTR_PREFERREDDROPEFFECT   TEXT("Preferred DropEffect")
+#define CFSTR_PERFORMEDDROPEFFECT   TEXT("Performed DropEffect")
+#define CFSTR_PASTESUCCEEDED        TEXT("Paste Succeeded")
+#define CFSTR_INDRAGLOOP            TEXT("InShellDragLoop")
+#define CFSTR_MOUNTEDVOLUME         TEXT("MountedVolume")
+#define CFSTR_PERSISTEDDATAOBJECT   TEXT("PersistedDataObject")
+#define CFSTR_TARGETCLSID           TEXT("TargetCLSID")
+#define CFSTR_LOGICALPERFORMEDDROPEFFECT    TEXT("Logical Performed DropEffect")
+#define CFSTR_AUTOPLAY_SHELLIDLISTS TEXT("Autoplay Enumerated IDList Array")
+#define CFSTR_UNTRUSTEDDRAGDROP     TEXT("UntrustedDragDrop")
+#define CFSTR_FILE_ATTRIBUTES_ARRAY TEXT("File Attributes Array")
+#define CFSTR_INVOKECOMMAND_DROPPARAM   TEXT("InvokeCommand DropParam")
+#define CFSTR_SHELLDROPHANDLER      TEXT("DropHandlerCLSID")
+#define CFSTR_DROPDESCRIPTION       TEXT("DropDescription")
+#ifdef UNICODE
+    #define CFSTR_FILEDESCRIPTOR    CFSTR_FILEDESCRIPTORW
+    #define CFSTR_FILENAME          CFSTR_FILENAMEW
+    #define CFSTR_FILENAMEMAP       CFSTR_FILENAMEMAPW
+    #define CFSTR_INETURL           CFSTR_INETURLW
+#else
+    #define CFSTR_FILEDESCRIPTOR    CFSTR_FILEDESCRIPTORA
+    #define CFSTR_FILENAME          CFSTR_FILENAMEA
+    #define CFSTR_FILENAMEMAP       CFSTR_FILENAMEMAPA
+    #define CFSTR_INETURL           CFSTR_INETURLA
+#endif
+
+/* Shell data/view aspects */
+#define DVASPECT_SHORTNAME  2
+#define DVASPECT_COPY       3
+#define DVASPECT_LINK       4
+
+/* Shell change notification return flags */
+#define SHCNRF_InterruptLevel       0x0001
+#define SHCNRF_ShellLevel           0x0002
+#define SHCNRF_RecursiveInterrupt   0x1000
+#define SHCNRF_NewDelivery          0x8000
+
+/* Shell change notification events */
+#define SHCNE_RENAMEITEM            0x00000001L
+#define SHCNE_CREATE                0x00000002L
+#define SHCNE_DELETE                0x00000004L
+#define SHCNE_MKDIR                 0x00000008L
+#define SHCNE_RMDIR                 0x00000010L
+#define SHCNE_MEDIAINSERTED         0x00000020L
+#define SHCNE_MEDIAREMOVED          0x00000040L
+#define SHCNE_DRIVEREMOVED          0x00000080L
+#define SHCNE_DRIVEADD              0x00000100L
+#define SHCNE_NETSHARE              0x00000200L
+#define SHCNE_NETUNSHARE            0x00000400L
+#define SHCNE_ATTRIBUTES            0x00000800L
+#define SHCNE_UPDATEDIR             0x00001000L
+#define SHCNE_UPDATEITEM            0x00002000L
+#define SHCNE_SERVERDISCONNECT      0x00004000L
+#define SHCNE_UPDATEIMAGE           0x00008000L
+#define SHCNE_DRIVEADDGUI           0x00010000L
+#define SHCNE_RENAMEFOLDER          0x00020000L
+#define SHCNE_FREESPACE             0x00040000L
+#if (_WIN32_IE >= 0x0400)
+    #define SHCNE_EXTENDED_EVENT    0x04000000L
+#endif
+#define SHCNE_ASSOCCHANGED          0x08000000L
+#define SHCNE_DISKEVENTS            0x0002381FL
+#define SHCNE_GLOBALEVENTS          0x0C0581E0L
+#define SHCNE_ALLEVENTS             0x7FFFFFFFL
+#define SHCNE_INTERRUPT             0x80000000L
+
+/* Shell change notification extended events */
+#if (_WIN32_IE >= 0x0400)
+    #define SHCNEE_ORDERCHANGED     2L
+    #define SHCNEE_MSI_CHANGE       4L
+    #define SHCNEE_MSI_UNINSTALL    5L
+#endif
+
+/* Shell change notification flags */
+#define SHCNF_IDLIST            0x00000000
+#define SHCNF_PATHA             0x00000001
+#define SHCNF_PRINTERA          0x00000002
+#define SHCNF_DWORD             0x00000003
+#define SHCNF_PATHW             0x00000005
+#define SHCNF_PRINTERW          0x00000006
+#define SHCNF_TYPE              0x000000FF
+#define SHCNF_FLUSH             0x00001000
+#define SHCNF_FLUSHNOWAIT       0x00003000
+#define SHCNF_NOTIFYRECURSIVE   0x00010000
+#ifdef UNICODE
+    #define SHCNF_PATH          SHCNF_PATHW
+    #define SHCNF_PRINTER       SHCNF_PRINTERW
+#else
+    #define SHCNF_PATH          SHCNF_PATHA
+    #define SHCNF_PRINTER       SHCNF_PRINTERA
+#endif
+
+/* IQueryInfo::GetInfoTip() flags */
+#define QITIPF_DEFAULT          0x00000000L
+#define QITIPF_USENAME          0x00000001L
+#define QITIPF_LINKNOTARGET     0x00000002L
+#define QITIPF_LINKUSETARGET    0x00000004L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define QITIPF_USESLOWTIP   0x00000008L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define QITIPF_SINGLELINE   0x00000010L
+#endif
+
+/* IQueryInfo::GetInfoFlags() flags */
+#define QIF_CACHED              0x00000001L
+#define QIF_DONTEXPANDFOLDER    0x00000002L
+
+/* SHGetDataFromIDList() formats */
+#define SHGDFIL_FINDDATA        1
+#define SHGDFIL_NETRESOURCE     2
+#define SHGDFIL_DESCRIPTIONID   3
+
+/* Shell description identifiers */
+#define SHGDID_ROOT_REGITEM             1L
+#define SHGDID_FS_FILE                  2L
+#define SHGDID_FS_DIRECTORY             3L
+#define SHGDID_FS_OTHER                 4L
+#define SHGDID_COMPUTER_DRIVE35         5L
+#define SHGDID_COMPUTER_DRIVE525        6L
+#define SHGDID_COMPUTER_REMOVABLE       7L
+#define SHGDID_COMPUTER_FIXED           8L
+#define SHGDID_COMPUTER_NETDRIVE        9L
+#define SHGDID_COMPUTER_CDROM           10L
+#define SHGDID_COMPUTER_RAMDISK         11L
+#define SHGDID_COMPUTER_OTHER           12L
+#define SHGDID_NET_DOMAIN               13L
+#define SHGDID_NET_SERVER               14L
+#define SHGDID_NET_SHARE                15L
+#define SHGDID_NET_RESTOFNET            16L
+#define SHGDID_NET_OTHER                17L
+#if (NTDDI_VERSION >= 0x05010000)
+    #define SHGDID_COMPUTER_IMAGING     18L
+    #define SHGDID_COMPUTER_AUDIO       19L
+    #define SHGDID_COMPUTER_SHAREDDOCS  20L
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define SHGDID_MOBILE_DEVICE        21L
+#endif
+
+/* Path resolve flags */
+#define PRF_VERIFYEXISTS            0x0001
+#define PRF_TRYPROGRAMEXTENSIONS    (0x0002 | PRF_VERIFYEXISTS)
+#define PRF_FIRSTDIRDEF             0x0004
+#define PRF_DONTFINDLNK             0x0008
+#if (NTDDI_VERSION >= 0x05010200)
+    #define PRF_REQUIREABSOLUTE     0x0010
+#endif
+
+/* Number of points for automatic scrolling */
+#define NUM_POINTS  3
+
+/* Cabinet state version number */
+#define CABINETSTATE_VERSION    2
+
+/* PathCleanupSpec() return flags */
+#define PCS_REPLACEDCHAR    0x00000001
+#define PCS_REMOVEDCHAR     0x00000002
+#define PCS_TRUNCATED       0x00000004
+#define PCS_PATHTOOLING     0x00000008
+#define PCS_FATAL           0x80000000
+
+/* Shell_MergeMenus() flags */
+#define MM_ADDSEPARATOR     0x00000001L
+#define MM_SUBMENUSHAVEIDS  0x00000002L
+#define MM_DONTREMOVESEPS   0x00000004L
+
+/* SHObjectProperties() object types */
+#define SHOP_PRINTERNAME    0x00000001L
+#define SHOP_FILEPATH       0x00000002L
+#define SHOP_VOLUMEGRID     0x00000004L
+
+/* SHFormatDrive() format identifier special value */
+#define SHFMT_ID_DEFAULT    0xFFFF
+
+/* SHFormatDrive() options */
+#define SHFMT_OPT_FULL      0x0001
+#define SHFMT_OPT_SYSONLY   0x0002
+
+/* SHFormatDrive() return values */
+#define SHFMT_ERROR     0xFFFFFFFFL
+#define SHFMT_CANCEL    0xFFFFFFFEL
+#define SHFMT_NOFORMAT  0xFFFFFFFDL
+
+/* PathProcessCommand() flags */
+#if (NTDDI_VERSION < 0x06000000)
+    #define PPCF_ADDQUOTES          0x00000001
+    #define PPCF_ADDARGUMENTS       0x00000003
+    #define PPCF_NODIRECTORIES      0x00000010
+    #define PPCF_FORCEQUALITY       0x00000040
+    #define PPCF_LONGESTPOSSIBLE    0x00000080
+#endif
+
+/* SHValidateUNC() flags */
+#define VALIDATEUNC_CONNECT     0x0001
+#define VALIDATEUNC_NOUI        0x0002
+#define VALIDATEUNC_PRINT       0x0004
+#if (NTDDI_VERSION >= 0x06000000)
+    #define VALIDATEUNC_PERSIST 0x0008
+    #define VALIDATEUNC_VALID   0x000F
+#else
+    #define VALIDATEUNC_VALID   0x0007
+#endif
+
+/* PIF manager flags */
+#define OPENPROPS_NONE          0x0000
+#define OPENPROPS_INHIBITPIF    0x8000
+#define GETPROPS_NONE           0x0000
+#define SETPROPS_NONE           0x0000
+#define CLOSEPROPS_NONE         0x0000
+#define CLOSEPROPS_DISCARD      0x0001
+
+/* PIF string lengths */
+#define PIFNAMESIZE     30
+#define PIFSTARTLOCSIZE 63
+#define PIFDEFPATHSIZE  64
+#define PIFPARAMSSIZE   64
+#define PIFSHPROGSIZE   64
+#define PIFSHDATASIZE   64
+#define PIFDEFFILESIZE  80
+#define PIFMAXFILEPATH  260
+
+/* QCM information placement flags */
+#define QCMINFO_PLACE_BEFORE    0
+#define QCMINFO_PLACE_AFTER     1
+
+/* Toolbar information flags */
+#define TBIF_APPEND             0x00000000
+#define TBIF_PREPEND            0x00000001
+#define TBIF_REPLACE            0x00000002
+#define TBIF_DEFAULT            0x00000000
+#define TBIF_INTERNETBAR        0x00010000
+#define TBIF_STANDARDTOOLBAR    0x00020000
+#define TBIF_NOTOOLBAR          0x00030000
+
+/* Shell folder view callback messages */
+#define SFVM_MERGEMENU          1
+#define SFVM_INVOKECOMMAND      2
+#define SFVM_GETHELPTEXT        3
+#define SFVM_GETTOOLTIPTEXT     4
+#define SFVM_GETBUTTONINFO      5
+#define SFVM_GETBUTTONS         6
+#define SFVM_INITMENUPOPUP      7
+#define SFVM_FSNOTIFY           14
+#define SFVM_WINDOWCREATED      15
+#define SFVM_GETDETAILSOF       23
+#define SFVM_COLUMNCLICK        24
+#define SFVM_QUERYFSNOTIFY      25
+#define SFVM_DEFITEMCOUNT       26
+#define SFVM_DEFVIEWMODE        27
+#define SFVM_UNMERGEMENU        28
+#define SFVM_UPDATESTATUSBAR    31
+#define SFVM_BACKGROUNDENUM     32
+#define SFVM_DIDDRAGDROP        36
+#define SFVM_SETISFV            39
+#define SFVM_THISIDLIST         41
+#define SFVM_ADDPROPERTYPAGES   47
+#define SFVM_BACKGROUNDENUMDONE 48
+#define SFVM_GETNOTIFY          49
+#define SFVM_GETSORTDEFAULTS    53
+#define SFVM_SIZE               57
+#define SFVM_GETZONE            58
+#define SFVM_GETPANE            59
+#define SFVM_GETHELPTOPIC       63
+#define SFVM_GETANIMATION       68
+
+/* IShellFolderView::SetObjectCount() flags */
+#define SFVSOC_INVALIDATE_ALL   0x00000001L
+#define SFVSOC_NOSCROLL         LVSICF_NOSCROLL
+
+/* IShellFolderView::SelectItems() selection types */
+#define SFVS_SELECT_NONE        0x00000000L
+#define SFVS_SELECT_ALLITEMS    0x00000001L
+#define SFVS_SELECT_INVERT      0x00000002L
+
+/* Default folder menu callback messages */
+#define DFM_MERGECONTEXTMENU        1
+#define DFM_INVOKECOMMAND           2
+#define DFM_GETHELPTEXT             5
+#define DFM_WM_MEASUREITEM          6
+#define DFM_WM_DRAWITEM             7
+#define DFM_WM_INITMENUPOPUP        8
+#define DFM_VALIDATECMD             9
+#define DFM_MERGECONTEXTMENU_TOP    10
+#define DFM_GETHELPTEXTW            11
+#define DFM_INVOKECOMMANDEX         12
+#define DFM_MAPCOMMANDNAME          13
+#define DFM_GETDEFSTATICID          14
+#define DFM_GETVERBW                15
+#define DFM_GETVERBA                16
+#define DFM_MERGECONTEXTMENU_BOTTOM 17
+#define DFM_MODIFYQCMFLAGS          18
+
+/* DFM_INVOKECOMMAND commands */
+#define DFM_CMD_DELETE          ((UINT)-1)
+#define DFM_CMD_MOVE            ((UINT)-2)
+#define DFM_CMD_COPY            ((UINT)-3)
+#define DFM_CMD_LINK            ((UINT)-4)
+#define DFM_CMD_PROPERTIES      ((UINT)-5)
+#define DFM_CMD_NEWFOLDER       ((UINT)-6)
+#define DFM_CMD_PASTE           ((UINT)-7)
+#define DFM_CMD_VIEWLIST        ((UINT)-8)
+#define DFM_CMD_VIEWDETAILS     ((UINT)-9)
+#define DFM_CMD_PASTELINK       ((UINT)-10)
+#define DFM_CMD_PASTESPECIAL    ((UINT)-11)
+#define DFM_CMD_MODALPROP       ((UINT)-12)
+#define DFM_CMD_RENAME          ((UINT)-13)
+
+/* Shell folder view messages */
+#define SFVM_REARRANGE          0x00000001
+#define SFVM_ADDOBJECT          0x00000003
+#define SFVM_REMOVEOBJECT       0x00000006
+#define SFVM_UPDATEOBJECT       0x00000007
+#define SFVM_GETSELECTEDOBJECTS 0x00000009
+#define SFVM_SETITEMPOS         0x0000000E
+#define SFVM_SETCLIPBOARD       0x00000010
+#define SFVM_SETPOINTS          0x00000017
+
+/* Internet shortcut property identifiers */
+#define PID_IS_URL          2
+#define PID_IS_NAME         4
+#define PID_IS_WORKINGDIR   5
+#define PID_IS_HOTKEY       6
+#define PID_IS_SHOWCMD      7
+#define PID_IS_ICONINDEX    8
+#define PID_IS_ICONFILE     9
+#define PID_IS_WHATSNEW     10
+#define PID_IS_AUTHOR       11
+#define PID_IS_DESCRIPTION  12
+#define PID_IS_COMMENT      13
+
+/* Internet site property identifiers */
+#define PID_INTSITE_WHATSNEW        2
+#define PID_INTSITE_AUTHOR          3
+#define PID_INTSITE_VISIT           4
+#define PID_INTSITE_LASTMOD         5
+#define PID_INTSITE_VISITCOUNT      6
+#define PID_INTSITE_DESCRIPTION     7
+#define PID_INTSITE_COMMENT         8
+#define PID_INTSITE_FLAGS           9
+#define PID_INTSITE_CONTENTLEN      10
+#define PID_INTSITE_CONTENTCODE     11
+#define PID_INTSITE_RECURSE         12
+#define PID_INTSITE_WATCH           13
+#define PID_INTSITE_SUBSCRIPTION    14
+#define PID_INTSITE_URL             15
+#define PID_INTSITE_TITLE           16
+#define PID_INTSITE_CODEPAGE        18
+#define PID_INTSITE_TRACKING        19
+#define PID_INTSITE_ICONINDEX       20
+#define PID_INTSITE_ICONFILE        21
+
+/* PID_IS_FLAGS flags */
+#define PIDISF_RECENTLYCHANGED  0x00000001
+#define PIDISF_CACHEDSTICKY     0x00000002
+#define PIDISF_CACHEIMAGES      0x00000010
+#define PIDISF_FOLLOWALLLINKS   0x00000020
+
+/* PID_INTSITE_WATCH values */
+#define PIDISM_GLOBAL       0
+#define PIDISM_WATCH        1
+#define PIDISM_DONTWATCH    2
+
+/* Shell state version numbers */
+#define SHELLSTATEVERSION_IE4   9
+#define SHELLSTATEVERSION_WIN2K 10
+
+/* Shell setting flags */
+#define SSF_SHOWALLOBJECTS          0x00000001
+#define SSF_SHOWEXTENSIONS          0x00000002
+#define SSF_HIDDENFILEEXTS          0x00000004
+#define SSF_SERVERADMINUI           0x00000004
+#define SSF_SHOWCOMPCOLOR           0x00000008
+#define SSF_SORTCOLUMNS             0x00000010
+#define SSF_SHOWSYSFILES            0x00000020
+#define SSF_DOUBLECLICKINWEBVIEW    0x00000080
+#define SSF_SHOWATTRIBCOL           0x00000100
+#define SSF_DESKTOPHTML             0x00000200
+#define SSF_WIN95CLASSIC            0x00000400
+#define SSF_DONTPRETTYPATH          0x00000800
+#define SSF_MAPNETDRVBUTTON         0x00001000
+#define SSF_SHOWINFOTIP             0x00002000
+#define SSF_HIDEICONS               0x00004000
+#define SSF_NOCONFIRMRECYCLE        0x00008000
+#define SSF_FILTER                  0x00010000
+#define SSF_WEBVIEW                 0x00020000
+#define SSF_SHOWSUPERHIDDEN         0x00040000
+#define SSF_SEPPROCESS              0x00080000
+#if (NTDDI_VERSION >= 0x05010000)
+    #define SSF_NONETCRAWLING       0x00100000
+    #define SSF_STARTPANELON        0x00200000
+    #define SSF_SHOWSTARTPAGE       0x00400000
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    #define SSF_AUTOCHECKSELECT     0x00800000
+    #define SSF_ICONSONLY           0x01000000
+    #define SSF_SHOWTYPEOVERLAY     0x02000000
+#endif
+
+/* SHPathPrepareForWrite() flags */
+#define SHPPFW_NONE                 0x00000000
+#define SHPPFW_DIRCREATE            0x00000001
+#define SHPPFW_ASKDIRCREATE         0x00000002
+#define SHPPFW_IGNOREFILENAME       0x00000004
+#define SHPPFW_NOWRITECHECK         0x00000008
+#if (NTDDI_VERSION >= 0x05010000)
+    #define SHPPFW_MEDIACHECKONLY   0x00000010
+#endif
+#define SHPPFW_DEFAULT              SHPPFW_DIRCREATE
+
+/* Shell link data flags */
+#if (_WIN32_IE >= 0x0400)
+typedef enum {
+    SLDF_DEFAULT                            = 0x00000000,
+    SLDF_HAS_ID_LIST                        = 0x00000001,
+    SLDF_HAS_LINK_INFO                      = 0x00000002,
+    SLDF_HAS_NAME                           = 0x00000004,
+    SLDF_HAS_RELPATH                        = 0x00000008,
+    SLDF_HAS_WORKINGDIR                     = 0x00000010,
+    SLDF_HAS_ARGS                           = 0x00000020,
+    SLDF_HAS_ICONLOCATION                   = 0x00000040,
+    SLDF_UNICODE                            = 0x00000080,
+    SLDF_FORCE_NO_LINKINFO                  = 0x00000100,
+    SLDF_HAS_EXP_SZ                         = 0x00000200,
+    SLDF_RUN_IN_SEPARATE                    = 0x00000400,
+#if (NTDDI_VERSION < 0x06000000)
+    SLDF_HAS_LOGO3ID                        = 0x00000800,
+#endif
+    SLDF_HAS_DARWINID                       = 0x00001000,
+    SLDF_RUNAS_USER                         = 0x00002000,
+    SLDF_HAS_EXP_ICON_SZ                    = 0x00004000,
+#if (NTDDI_VERSION >= 0x05010000)
+    SLDF_NO_PIDL_ALIAS                      = 0x00008000,
+    SLDF_FORCE_UNCNAME                      = 0x00010000,
+    SLDF_RUN_WITH_SHIMLAYER                 = 0x00020000,
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+    SLDF_FORCE_NO_LINKTRACK                 = 0x00040000,
+    SLDF_ENABLE_TARGET_METADATA             = 0x00080000,
+    SLDF_DISABLE_LINK_PATH_TRACKING         = 0x00100000,
+    SLDF_DISABLE_KNOWNFOLDER_RELATIVE_TRACKING  = 0x00200000,
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+    SLDF_NO_KF_ALIAS                        = 0x00400000,
+    SLDF_ALLOW_LINK_TO_LINK                 = 0x00800000,
+    SLDF_UNALIAS_ON_SAVE                    = 0x01000000,
+    SLDF_PREFER_ENVIRONMENT_PATH            = 0x02000000,
+    SLDF_KEEP_LOCAL_IDLIST_FOR_UNC_TARGET   = 0x04000000,
+    SLDF_VALID                              = 0x07FFF7FF,
+#elif (NTDDI_VERSION >= 0x06000000)
+    SLDF_VALID                              = 0x003FF7FF,
+#endif
+    SLDF_RESERVED                           = 0x80000000
+} SHELL_LINK_DATA_FLAGS;
+#endif
+
+/* Data block header */
+#if (_WIN32_IE >= 0x0400)
+typedef struct tagDATABLOCKHEADER {
+    DWORD   cbSize;
+    DWORD   dwSignature;
+} DATABLOCK_HEADER;
+typedef DATABLOCK_HEADER    *LPDATABLOCK_HEADER;
+typedef DATABLOCK_HEADER    *LPDBLIST;
+#endif
+
+/* NT console properties */
+#if (_WIN32_IE >= 0x0400)
+typedef struct {
+#ifdef __cplusplus
+    DATABLOCK_HEADER    dbh;
+#else
+    DATABLOCK_HEADER;
+#endif
+    WORD                wFillAttribute;
+    WORD                wPopupFillAttribute;
+    COORD               dwScreenBufferSize;
+    COORD               dwWindowSize;
+    COORD               dwWindowOrigin;
+    DWORD               nFont;
+    DWORD               nInputBufferSize;
+    COORD               dwFontSize;
+    UINT                uFontFamily;
+    UINT                uFontWeight;
+    WCHAR               FaceName[LF_FACESIZE];
+    UINT                uCursorSize;
+    BOOL                bFullScreen;
+    BOOL                bQuickEdit;
+    BOOL                bInsertMode;
+    BOOL                bAutoPosition;
+    UINT                uHistoryBufferSize;
+    UINT                uNumberOfHistoryBuffers;
+    BOOL                bHistoryNoDup;
+    COLORREF            ColorTable[16];
+} NT_CONSOLE_PROPS;
+typedef NT_CONSOLE_PROPS    *LPNT_CONSOLE_PROPS;
+#endif
+
+/* NT FE console properties */
+#if (_WIN32_IE >= 0x0400)
+typedef struct {
+#ifdef __cplusplus
+    DATABLOCK_HEADER    dbh;
+#else
+    DATABLOCK_HEADER;
+#endif
+    UINT                uCodePage;
+} NT_FE_CONSOLE_PROPS;
+typedef NT_FE_CONSOLE_PROPS *PNT_FE_CONSOLE_PROPS;
+#endif
+
+/* Darwin link */
+#if (_WIN32_IE >= 0x0500)
+typedef struct {
+#ifdef __cplusplus
+    DATABLOCK_HEADER    dbh;
+#else
+    DATABLOCK_HEADER;
+#endif
+    CHAR                szDarwinID[MAX_PATH];
+    WCHAR               wszDarwinID[MAX_PATH];
+} EXP_DARWIN_LINK;
+typedef EXP_DARWIN_LINK *LPEXP_DARWIN_LINK;
+#endif
+
+/* Special folder */
+#if (_WIN32_IE >= 0x0400)
+typedef struct {
+    DWORD   cbSize;
+    DWORD   dwSignature;
+    DWORD   idSpecialFolder;
+    DWORD   cbOffset;
+} EXP_SPECIAL_FOLDER;
+typedef EXP_SPECIAL_FOLDER  *LPEXP_SPECIAL_FOLDER;
+#endif
+
+/* String link */
+#if (_WIN32_IE >= 0x0400)
+typedef struct {
+    DWORD   cbSize;
+    DWORD   dwSignature;
+    CHAR    szTarget[MAX_PATH];
+    WCHAR   wszTarget[MAX_PATH];
+} EXP_SZ_LINK;
+typedef EXP_SZ_LINK *LPEXP_SZ_LINK;
+#endif
+
+/* Property storage */
+#if (_WIN32_IE >= 0x0400) && (NTDDI_VERSION >= 0x06000000)
+typedef struct {
+    DWORD   cbSize;
+    DWORD   dwSignature;
+    BYTE    abPropertyStorage[1];
+} EXP_PROPERTYSTORAGE;
+#endif
+
+/* IFileViewer show information */
+#if (NTDDI_VERSION < 0x05000000)
+#include <pshpack8.h>
+typedef struct {
+    DWORD       cbSize;
+    HWND        hwndOwner;
+    int         iShow;
+    DWORD       dwFlags;
+    RECT        rect;
+    IUnknown    *punkRel;
+    OLECHAR     strNewFile[MAX_PATH];
+} FVSHOWINFO;
+typedef FVSHOWINFO  *LPFVSHOWINFO;
+#include <poppack.h>
+#endif
+
+/* SHGetPathFromIDListEx() flags */
+#if (NTDDI_VERSION >= 0x06000000)
+enum tagGPFIDL_FLAGS {
+    GPFIDL_DEFAULT      = 0x0000,
+    GPFIDL_ALTNAME      = 0x0001,
+    GPFIDL_UNCPRINTER   = 0x0002
+};
+typedef int GPFIDL_FLAGS;
+#endif
+
+/* SHGetFolderPath() types */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef enum {
+    SHGFP_TYPE_CURRENT  = 0,
+    SHGFP_TYPE_DEFAULT  = 1
+} SHGFP_TYPE;
+#endif
+
+/* Known folder flags */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef enum {
+    KF_FLAG_DEFAULT             = 0x00000000,
+    KF_FLAG_CREATE              = 0x00008000,
+    KF_FLAG_DONT_VERIFY         = 0x00004000,
+    KF_FLAG_DONT_UNEXPAND       = 0x00002000,
+    KF_FLAG_NO_ALIAS            = 0x00001000,
+    KF_FLAG_INIT                = 0x00000800,
+    KF_FLAG_DEFAULT_PATH        = 0x00000400,
+    KF_FLAG_NOT_PARENT_RELATIVE = 0x00000200,
+    KF_FLAG_SIMPLE_IDLIST       = 0x00000100,
+    KF_FLAG_ALIAS_ONLY          = 0x80000000
+} KNOWN_FOLDER_FLAG;
+#endif
+
+/* Folder custom settings */
+#if (NTDDI_VERSION >= 0x06000000)
+#include <pshpack8.h>
+typedef struct {
+    DWORD       dwSize;
+    DWORD       dwMask;
+    SHELLVIEWID *pvid;
+    LPWSTR      pszWebViewTemplate;
+    DWORD       cchWebViewTemplate;
+    LPWSTR      pszWebViewTemplateVersion;
+    LPWSTR      pszInfoTip;
+    DWORD       cchInfoTip;
+    CLSID       *pclsid;
+    DWORD       dwFlags;
+    LPWSTR      pszIconFile;
+    DWORD       cchIconFile;
+    int         iIconIndex;
+    LPWSTR      pszLogo;
+    DWORD       cchLogo;
+} SHFOLDERCUSTOMSETTINGS;
+typedef SHFOLDERCUSTOMSETTINGS  *LPSHFOLDERCUSTOMSETTINGS;
+#include <poppack.h>
+#endif
+
+/* SHBrowseForFolder() callback */
+typedef int (CALLBACK *BFFCALLBACK)( HWND, UINT, LPARAM, LPARAM );
+
+/* SHBrowseForFolder() parameters */
+#include <pshpack8.h>
+typedef struct _browseinfoA {
+    HWND                hwndOwner;
+    PCIDLIST_ABSOLUTE   pidlRoot;
+    LPSTR               pszDisplayName;
+    LPCSTR              lpszTitle;
+    UINT                ulFlags;
+    BFFCALLBACK         lpfn;
+    LPARAM              lParam;
+    int                 iImage;
+} BROWSEINFOA;
+typedef BROWSEINFOA     *PBROWSEINFOA;
+typedef BROWSEINFOA     *LPBROWSEINFOA;
+typedef struct _browseinfoW {
+    HWND                hwndOwner;
+    PCIDLIST_ABSOLUTE   pidlRoot;
+    LPWSTR              pszDisplayName;
+    LPCWSTR             lpszTitle;
+    UINT                ulFlags;
+    BFFCALLBACK         lpfn;
+    LPARAM              lParam;
+    int                 iImage;
+} BROWSEINFOW;
+typedef BROWSEINFOW     *PBROWSEINFOW;
+typedef BROWSEINFOW     *LPBROWSEINFOW;
+#ifdef UNICODE
+typedef BROWSEINFOW     BROWSEINFO;
+typedef PBROWSEINFOW    PBROWSEINFO;
+typedef LPBROWSEINFOW   LPBROWSEINFO;
+#else
+typedef BROWSEINFOA     BROWSEINFO;
+typedef PBROWSEINFOA    PBROWSEINFO;
+typedef LPBROWSEINFOA   LPBROWSEINFO;
+#endif
+#include <poppack.h>
+
+/* Internet shortcut command identifier */
+#if (_WIN32_IE >= 0x0501)
+enum {
+    ISHCUTCMDID_DOWNLOADICON        = 0,
+#if (_WIN32_IE >= 0x0700)
+    ISHCUTCMDID_INTSHORTCUTCREATE   = 1,
+    ISHCUTCMDID_COMMITHISTORY       = 2,
+    ISHCUTCMDID_SETUSERAWURL        = 3
+#else
+    ISHCUTCMDID_INTSHORTCUTCREATE   = 1
+#endif
+};
+#define CMDID_INTSHORTCUTCREATE ISHCUTCMDID_INTSHORTCUTCREATE
+#endif
+
+/* Autocomplete list options */
+typedef enum _tagAUTOCOMPLETELISTOPTIONS {
+    ACLO_NONE               = 0,
+    ACLO_CURRENTDIR         = 1,
+    ACLO_MYCOMPUTER         = 2,
+    ACLO_DESKTOP            = 4,
+    ACLO_FAVORITES          = 8,
+#if (_WIN32_IE >= 0x0600)
+    ACLO_FILESYSONLY        = 16,
+#if (_WIN32_IE >= 0x0700)
+    ACLO_FILESYSDIRS        = 32,
+    ACLO_VIRTUALNAMESPACE   = 64,
+#else
+    ACLO_FILESYSDIRS        = 32
+#endif
+#else
+    ACLO_FILESYSONLY        = 16
+#endif
+} AUTOCOMPLETELISTOPTIONS;
+
+/* IEnumShellImageStore data */
+#if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
+#include <pshpack8.h>
+typedef struct _EnumImageStoreDATAtag {
+    WCHAR       szPath[MAX_PATH];
+    FILETIME    ftTimeStamp;
+} ENUMSHELLIMAGESTOREDATA;
+typedef ENUMSHELLIMAGESTOREDATA *PENUMSHELLIMAGESTOREDATA;
+#include <poppack.h>
+#endif
+
+/* Shell folder band information */
+#if (_WIN32_IE >= 0x0400)
+#include <pshpack8.h>
+typedef struct {
+    DWORD               dwMask;
+    DWORD               dwStateMask;
+    DWORD               dwState;
+    COLORREF            crBkgnd;
+    COLORREF            crBtnLt;
+    COLORREF            crBtnDk;
+    WORD                wViewMode;
+    WORD                wAlign;
+    IShellFolder        *psf;
+    PIDLIST_ABSOLUTE    pidl;
+} BANDINFOSFB;
+typedef BANDINFOSFB *PBANDINFOSFB;
+#include <poppack.h>
+#endif
+
+/* Command target identifiers */
+#if (_WIN32_IE >= 0x0400)
+enum {
+    SFBID_PIDLCHANGED   = 0
+};
+#endif
+
+/* Desk bar client identifiers */
+#if (_WIN32_IE >= 0x0400)
+enum {
+    DBCID_EMPTY         = 0,
+    DBCID_ONDRAG        = 1,
+    DBCID_CLSIDOFBAR    = 2,
+    DBCID_RESIZE        = 3,
+    DBCID_GETBAR        = 4
+};
+#endif
+
+/* Wallpaper option */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagWALLPAPEROPT {
+    DWORD   dwSize;
+    DWORD   dwStyle;
+} WALLPAPEROPT;
+typedef WALLPAPEROPT        *LPWALLPAPEROPT;
+typedef const WALLPAPEROPT  *LPCWALLPAPEROPT;
+#endif
+#endif
+
+/* Components options */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagCOMPONENTSOPT {
+    DWORD   dwSize;
+    BOOL    fEnableComponents;
+    BOOL    fActiveDesktop;
+} COMPONENTSOPT;
+typedef COMPONENTSOPT       *LPCOMPONENTSOPT;
+typedef const COMPONENTSOPT *LPCCOMPONENTSOPT;
+#endif
+#endif
+
+/* Component position */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagCOMPPOS {
+    DWORD   dwSize;
+    int     iLeft;
+    int     iTop;
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+    int     izIndex;
+    BOOL    fCanResize;
+    BOOL    fCanResizeX;
+    BOOL    fCanResizeY;
+    int     iPreferredLeftPercent;
+    int     iPreferredTopPercent;
+} COMPPOS;
+typedef COMPPOS         *LPCOMPPOS;
+typedef const COMPPOS   *LPCCOMPPOS;
+#endif
+#endif
+
+/* Component state information */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagCOMPSTATEINFO {
+    DWORD   dwSize;
+    int     iLeft;
+    int     iTop;
+    DWORD   dwWidth;
+    DWORD   dwHeight;
+    DWORD   dwItemState;
+} COMPSTATEINFO;
+typedef COMPSTATEINFO       *LPCOMPSTATEINFO;
+typedef const COMPSTATEINFO *LPCCOMPSTATEINFO;
+#endif
+#endif
+
+/* Component (Internet Explorer 4.0 version) */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagIE4COMPONENT {
+    DWORD   dwSize;
+    DWORD   dwID;
+    int     iComponentType;
+    BOOL    fChecked;
+    BOOL    fDirty;
+    BOOL    fNoScroll;
+    COMPPOS cpPos;
+    WCHAR   wszFriendlyName[MAX_PATH];
+    WCHAR   wszSource[INTERNET_MAX_URL_LENGTH];
+    WCHAR   wszSubscribedURL[INTERNET_MAX_URL_LENGTH];
+} IE4COMPONENT;
+typedef IE4COMPONENT        *LPIE4COMPONENT;
+typedef const IE4COMPONENT  *LPCIE4COMPONENT;
+#endif
+#endif
+
+/* Component */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+typedef struct _tagCOMPONENT {
+    DWORD           dwSize;
+    DWORD           dwID;
+    int             iComponentType;
+    BOOL            fChecked;
+    BOOL            fDirty;
+    BOOL            fNoScroll;
+    COMPPOS         cpPos;
+    WCHAR           wszFriendlyName[MAX_PATH];
+    WCHAR           wszSource[INTERNET_MAX_URL_LENGTH];
+    WCHAR           wszSubscribedURL[INTERNET_MAX_URL_LENGTH];
+    DWORD           dwCurItemState;
+    COMPSTATEINFO   csiOriginal;
+    COMPSTATEINFO   csiRestored;
+} COMPONENT;
+typedef COMPONENT       *LPCOMPONENT;
+typedef const COMPONENT *LPCCOMPONENT;
+#endif
+#endif
+
+/* IActiveDesktop::AddDesktopWithUI() flags */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+enum _tagDTI_ADTIWUI {
+    DTI_ADDUI_DEFAULT       = 0x00000000,
+    DTI_ADDUI_DISPSUBWIZARD = 0x00000001,
+    DTI_ADDUI_POSITIONITEM  = 0x00000002
+};
+#endif
+#endif
+
+/* Shell column information */
+#if (_WIN32_IE >= 0x0500)
+#include <pshpack1.h>
+typedef struct {
+    SHCOLUMNID  scid;
+    VARTYPE     vt;
+    DWORD       fmt;
+    UINT        cChars;
+    DWORD       csFlags;
+    WCHAR       wszTitle[MAX_COLUMN_NAME_LEN];
+    WCHAR       wszDescription[MAX_COLUMN_DESC_LEN];
+} SHCOLUMNINFO;
+typedef SHCOLUMNINFO        *LPSHCOLUMNINFO;
+typedef const SHCOLUMNINFO  *LPCSHCOLUMNINFO;
+#include <poppack.h>
+#endif
+
+/* Shell column initialization information */
+#if (_WIN32_IE >= 0x0500)
+#include <pshpack8.h>
+typedef struct {
+    ULONG   dwFlags;
+    ULONG   dwReserved;
+    WCHAR   wszFolder[MAX_PATH];
+} SHCOLUMNINIT;
+typedef SHCOLUMNINIT        *LPSHCOLUMNINIT;
+typedef const SHCOLUMNINIT  *LPCSHCOLUMNINIT;
+#include <poppack.h>
+#endif
+
+/* Shell column data */
+#if (_WIN32_IE >= 0x0500)
+#include <pshpack8.h>
+typedef struct {
+    ULONG   dwFlags;
+    DWORD   dwFileAttributes;
+    ULONG   dwReserved;
+    WCHAR   *pwszExt;
+    WCHAR   wszFile[MAX_PATH];
+} SHCOLUMNDATA;
+typedef SHCOLUMNDATA        *LPSHCOLUMNDATA;
+typedef const SHCOLUMNDATA  *LPCSHCOLUMNDATA;
+#include <poppack.h>
+#endif
+
+/* Network resource array */
+#include <pshpack8.h>
+typedef struct _NRESARRAY {
+    UINT        cItems;
+    NETRESOURCE nr[1];
+} NRESARRAY;
+typedef NRESARRAY   *LPNRESARRAY;
+#include <poppack.h>
+
+/* Clipboard item identifier list */
+typedef struct _IDA {
+    UINT    cidl;
+    UINT    aoffset[1];
+} CIDA;
+typedef CIDA    *LPIDA;
+
+/* File descriptor flags */
+typedef enum {
+    FD_CLSID        = 0x00000001,
+    FD_SIZEPOINT    = 0x00000002,
+    FD_ATTRIBUTES   = 0x00000004,
+    FD_CREATETIME   = 0x00000008,
+    FD_ACCESSTIME   = 0x00000010,
+    FD_WRITESTIME   = 0x00000020,
+    FD_FILESIZE     = 0x00000040,
+    FD_PROGRESSUI   = 0x00004000,
+#if (NTDDI_VERSION >= 0x06000000)
+    FD_LINKUI       = 0x00008000,
+    FD_UNICODE      = 0x80000000
+#else
+    FD_LINKUI       = 0x00008000
+#endif
+} FD_FLAGS;
+
+/* File descriptor */
+typedef struct _FILEDESCRIPTORA {
+    DWORD       dwFlags;
+    CLSID       clsid;
+    SIZEL       sizel;
+    POINTL      pointl;
+    DWORD       dwFileAttributes;
+    FILETIME    ftCreationTime;
+    FILETIME    ftLastAccessTime;
+    FILETIME    ftLastWriteTime;
+    DWORD       nFileSizeHigh;
+    DWORD       nFileSizeLow;
+    CHAR        cFileName[MAX_PATH];
+} FILEDESCRIPTORA;
+typedef FILEDESCRIPTORA     *LPFILEDESCRIPTORA;
+typedef struct _FILEDESCRIPTORW {
+    DWORD       dwFlags;
+    CLSID       clsid;
+    SIZEL       sizel;
+    POINTL      pointl;
+    DWORD       dwFileAttributes;
+    FILETIME    ftCreationTime;
+    FILETIME    ftLastAccessTime;
+    FILETIME    ftLastWriteTime;
+    DWORD       nFileSizeHigh;
+    DWORD       nFileSizeLow;
+    WCHAR       cFileName[MAX_PATH];
+} FILEDESCRIPTORW;
+typedef FILEDESCRIPTORW     *LPFILEDESCRIPTORW;
+#ifdef UNICODE
+typedef FILEDESCRIPTORW     FILEDESCRIPTOR;
+typedef LPFILEDESCRIPTORW   LPFILEDESCRIPTOR;
+#else
+typedef FILEDESCRIPTORA     FILEDESCRIPTOR;
+typedef LPFILEDESCRIPTORA   LPFILEDESCRIPTOR;
+#endif
+
+/* File group descriptor */
+typedef struct _FILEGROUPDESCRIPTORA {
+    UINT            cItems;
+    FILEDESCRIPTORA fgd[1];
+} FILEGROUPDESCRIPTORA;
+typedef FILEGROUPDESCRIPTORA    *LPFILEGROUPDESCRIPTORA;
+typedef struct _FILEGROUPDESCRIPTORW {
+    UINT            cItems;
+    FILEDESCRIPTORW fgd[1];
+} FILEGROUPDESCRIPTORW;
+typedef FILEGROUPDESCRIPTORW    *LPFILEGROUPDESCRIPTORW;
+#ifdef UNICODE
+typedef FILEGROUPDESCRIPTORW    FILEGROUPDESCRIPTOR;
+typedef LPFILEGROUPDESCRIPTORW  LPFILEGROUPDESCRIPTOR;
+#else
+typedef FILEGROUPDESCRIPTORA    FILEGROUPDESCRIPTOR;
+typedef LPFILEGROUPDESCRIPTORA  LPFILEGROUPDESCRIPTOR;
+#endif
+
+/* Drop files */
+typedef struct _DROPFILES {
+    DWORD   pFiles;
+    POINT   pt;
+    BOOL    fNC;
+    BOOL    fWide;
+} DROPFILES;
+typedef DROPFILES   *LPDROPFILES;
+
+/* File attributes array */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct {
+    UINT    cItems;
+    DWORD   dwSumFileAttributes;
+    DWORD   dwProductFileAttributes;
+    DWORD   rgdwFileAttributes[1];
+} FILE_ATTRIBUTES_ARRAY;
+#endif
+
+/* Drop image types */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef enum {
+    DROPIMAGE_INVALID   = -1,
+    DROPIMAGE_NONE      = 0,
+    DROPIMAGE_COPY      = DROPEFFECT_COPY,
+    DROPIMAGE_MOVE      = DROPEFFECT_MOVE,
+    DROPIMAGE_LINK      = DROPEFFECT_LINK,
+    DROPIMAGE_LABEL     = 6,
+    DROPIMAGE_WARNING   = 7,
+    DROPIMAGE_NOIMAGE   = 8
+} DROPIMAGETYPE;
+#endif
+
+/* Drop description */
+#if (NTDDI_VERSION >= 0x06000000)
+typedef struct {
+    DROPIMAGETYPE   type;
+    WCHAR           szMessage[MAX_PATH];
+    WCHAR           szInsert[MAX_PATH];
+} DROPDESCRIPTION;
+#endif
+
+/* Shell change notification entry */
+typedef struct _SHChangeNotifyEntry {
+    PCIDLIST_ABSOLUTE   pidl;
+    BOOL                fRecursive;
+} SHChangeNotifyEntry;
+
+/* SHAddToRecentDocs() flags */
+typedef enum {
+    SHARD_PIDL              = 0x00000001,
+    SHARD_PATHA             = 0x00000002,
+#if (NTDDI_VERSION >= 0x06010000)
+    SHARD_PATHW             = 0x00000003,
+    SHARD_APPIDINFO         = 0x00000004,
+    SHARD_APPIDINFOIDLIST   = 0x00000005,
+    SHARD_LINK              = 0x00000006,
+    SHARD_APPIDINFOLINK     = 0x00000007,
+    SHARD_SHELLITEM         = 0x00000008
+#else
+    SHARD_PATHW             = 0x00000003
+#endif
+} SHARD;
+#ifdef UNICODE
+    #define SHARD_PATH  SHARD_PATHW
+#else
+    #define SHARD_PATH  SHARD_PATHA
+#endif
+
+/* SHAddToRecentDocs() application identifier information */
+#if (NTDDI_VERSION >= 0x06010000)
+typedef struct SHARDAPPIDINFO {
+    IShellItem  *psi;
+    PCWSTR      pszAppID;
+} SHARDAPPIDINFO;
+#endif
+
+/* SHAddToRecentDocs() application identifier information identifier list */
+#if (NTDDI_VERSION >= 0x06010000)
+typedef struct SHARDAPPIDINFOIDLIST {
+    PCIDLIST_ABSOLUTE   pidl;
+    PCWSTR              pszAppID;
+} SHARDAPPIDINFOIDLIST;
+#endif
+
+/* SHAddToRecentDocs() application identifier information link */
+#if (NTDDI_VERSION >= 0x06010000)
+typedef struct SHARDAPPIDINFOLINK {
+    IShellLink  *psl;
+    PCWSTR      pszAppID;
+} SHARDAPPIDINFOLINK;
+#endif
+
+/* Shell change DWORD as identifier list entry */
+typedef struct _SHChangeDWORDAsIDList {
+    USHORT  cb;
+    DWORD   dwItem1;
+    DWORD   dwItem2;
+    USHORT  cbZero;
+} SHChangeDWORDAsIDList;
+typedef SHChangeDWORDAsIDList   *LPSHChangeDWORDAsIDList;
+
+/* Shell change update image identifier list entry */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _SHChangeUpdateImageIDList {
+    USHORT  cb;
+    int     iIconIndex;
+    int     iCurIndex;
+    UINT    uFlags;
+    DWORD   dwProcessID;
+    WCHAR   szName[MAX_PATH];
+    USHORT  cbZero;
+} SHChangeUpdateImageIDList;
+typedef SHChangeUpdateImageIDList   *LPSHChangeUpdateImageIDList;
+#endif
+
+/* Shell change product key as identifier list entry */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef struct _SHChangeProductKeyAsIDList {
+    USHORT  cb;
+    WCHAR   wszProductKey[39];
+    USHORT  cbZero;
+} SHChangeProductKeyAsIDList;
+typedef SHChangeProductKeyAsIDList  *LPSHChangeProductKeyAsIDList;
+#endif
+
+/* SHChangeNotifyRegisterThread() status values */
+typedef enum {
+    SCNRT_ENABLE    = 0,
+    SCNRT_DISABLE   = 1
+} SCNRT_STATUS;
+
+/* Shell description identifier */
+#include <pshpack8.h>
+typedef struct _SHDESCRIPTIONID {
+    DWORD   dwDescriptionId;
+    CLSID   clsid;
+} SHDESCRIPTIONID;
+typedef SHDESCRIPTIONID *LPSHDESCRIPTIONID;
+#include <poppack.h>
+
+/* Automatic scrolling data */
+typedef struct {
+    int     iNextSample;
+    DWORD   dwLastScroll;
+    BOOL    bFull;
+    POINT   pts[NUM_POINTS];
+    DWORD   dwTimes[NUM_POINTS];
+} AUTO_SCROLL_DATA;
+
+/* Cabinet state */
+typedef struct {
+    WORD    cLength;
+    WORD    nVersion;
+    BOOL    fFullPathTitle              : 1;
+    BOOL    fSaveLocalView              : 1;
+    BOOL    fNotShell                   : 1;
+    BOOL    fSimpleDefault              : 1;
+    BOOL    fDontShowDescBar            : 1;
+    BOOL    fNewWindowMode              : 1;
+    BOOL    fShowCompColor              : 1;
+    BOOL    fDontPrettyNames            : 1;
+    BOOL    fAdminsCreateCommonGroups   : 1;
+    UINT    fUnusedFlags                : 7;
+    UINT    fMenuEnumFilter;
+} CABINETSTATE;
+typedef CABINETSTATE    *LPCABINETSTATE;
+
+/* Shell restrictions */
+typedef enum RESTRICTIONS {
+    REST_NONE                       = 0x00000000,
+    REST_NORUN                      = 0x00000001,
+    REST_NOCLOSE                    = 0x00000002,
+    REST_NOSAVESET                  = 0x00000004,
+    REST_NOFILEMENU                 = 0x00000008,
+    REST_NOSETFOLDERS               = 0x00000010,
+    REST_NOSETTASKBAR               = 0x00000020,
+    REST_NODESKTOP                  = 0x00000040,
+    REST_NOFIND                     = 0x00000080,
+    REST_NODRIVES                   = 0x00000100,
+    REST_NODRIVEAUTORUN             = 0x00000200,
+    REST_NODRIVETYPEAUTORUN         = 0x00000400,
+    REST_NONETHOOD                  = 0x00000800,
+    REST_STARTBANNER                = 0x00001000,
+    REST_RESTRICTRUN                = 0x00002000,
+    REST_NOPRINTERTABS              = 0x00004000,
+    REST_NOPRINTERDELETE            = 0x00008000,
+    REST_NOPRINTERADD               = 0x00010000,
+    REST_NOSTARTMENUSUBFOLDERS      = 0x00020000,
+    REST_MYDOCSONNET                = 0x00040000,
+    REST_NOEXITTODOS                = 0x00080000,
+    REST_ENFORCESHELLEXTSECURITY    = 0x00100000,
+    REST_LINKRESOLVEIGNORELINKINFO  = 0x00200000,
+    REST_NOCOMMONGROUPS             = 0x00400000,
+    REST_SEPARATEDESKTOPPROCESS     = 0x00800000,
+    REST_NOWEB                      = 0x01000000,
+    REST_NOTRAYCONTEXTMENU          = 0x02000000,
+    REST_NOVIEWCONTEXTMENU          = 0x04000000,
+    REST_NONETCONNECTDISCONNECT     = 0x08000000,
+    REST_STARTMENULOGOFF            = 0x10000000,
+    REST_NOSETTINGSASSIST           = 0x20000000,
+    REST_NOINTERNETICON             = 0x40000001,
+    REST_NORECENTDOCSHISTORY        = 0x40000002,
+    REST_NORECENTDOCSMENU           = 0x40000003,
+    REST_NOACTIVEDESKTOP            = 0x40000004,
+    REST_NOACTIVEDESKTOPCHANGES     = 0x40000005,
+    REST_NOFAVORITESMENU            = 0x40000006,
+    REST_CLEARRECENTDOCSONEXIT      = 0x40000007,
+    REST_CLASSICSHELL               = 0x40000008,
+    REST_NOCUSTOMIZEWEBVIEW         = 0x40000009,
+    REST_NOHTMLWALLPAPER            = 0x40000010,
+    REST_NOCHANGINGWALLPAPER        = 0x40000011,
+    REST_NODESKCOMP                 = 0x40000012,
+    REST_NOADDDESKCOMP              = 0x40000013,
+    REST_NODELDESKCOMP              = 0x40000014,
+    REST_NOCLOSEDESKCOMP            = 0x40000015,
+    REST_NOCLOSE_DRAGDROPBAND       = 0x40000016,
+    REST_NOMOVINGBAND               = 0x40000017,
+    REST_NOEDITDESKCOMP             = 0x40000018,
+    REST_NORESOLVESEARCH            = 0x40000019,
+    REST_NORESOLVETRACK             = 0x4000001A,
+    REST_FORCECOPYACLWITHFILE       = 0x4000001B,
+#if (NTDDI_VERSION < 0x06000000)
+    REST_NOLOGO3CHANNELNOTIFY       = 0x4000001C,
+#endif
+    REST_NOFORGETSOFTWAREUPDATE     = 0x4000001D,
+    REST_NOSETACTIVEDESKTOP         = 0x4000001E,
+    REST_NOUPDATEWINDOWS            = 0x4000001F,
+    REST_NOCHANGESTARTMENU          = 0x40000020,
+    REST_NOFOLDEROPTIONS            = 0x40000021,
+    REST_HASFINDCOMPUTERS           = 0x40000022,
+    REST_INTELLIMENUS               = 0x40000023,
+    REST_RUNDLGMEMCHECKBOX          = 0x40000024,
+    REST_ARP_ShowPostSetup          = 0x40000025,
+    REST_NOCSC                      = 0x40000026,
+    REST_NOCONTROLPANEL             = 0x40000027,
+    REST_ENUMWORKGROUP              = 0x40000028,
+    REST_ARP_NOARP                  = 0x40000029,
+    REST_ARP_NOREMOVEPAGE           = 0x4000002A,
+    REST_ARP_NOADDPAGE              = 0x4000002B,
+    REST_ARP_NOWINSETUPPAGE         = 0x4000002C,
+    REST_GREYMSIADS                 = 0x4000002D,
+    REST_NOCHANGEMAPPEDDRIVELABEL   = 0x4000002E,
+    REST_NOCHANGEMAPPEDDRIVECOMMENT = 0x4000002F,
+    REST_MaxRecentDocs              = 0x40000030,
+    REST_NONETWORKCONNECTIONS       = 0x40000031,
+    REST_FORCESTARTMENULOGOFF       = 0x40000032,
+    REST_NOWEBVIEW                  = 0x40000033,
+    REST_NOCUSTOMIZETHISFOLDER      = 0x40000034,
+    REST_NOENCRYPTION               = 0x40000035,
+    REST_DONTSHOWSUPERHIDDEN        = 0x40000037,
+    REST_NOSHELLSEARCHBUTTON        = 0x40000038,
+    REST_NOHARDWARETAB              = 0x40000039,
+    REST_NORUNASINSTALLPROMPT       = 0x4000003A,
+    REST_PROMPTRUNASINSTALLNETPATH  = 0x4000003B,
+    REST_NOMANAGEMYCOMPUTERVERB     = 0x4000003C,
+    REST_DISALLOWRUN                = 0x4000003E,
+    REST_NOWELCOMESCREEN            = 0x4000003F,
+    REST_RESTRICTCPL                = 0x40000040,
+    REST_DISALLOWCPL                = 0x40000041,
+    REST_NOSMBALLOONTIP             = 0x40000042,
+    REST_NOSMHELP                   = 0x40000043,
+    REST_NOWINKEYS                  = 0x40000044,
+    REST_NOENCRYPTONMOVE            = 0x40000045,
+    REST_NOLOCALMACHINERUN          = 0x40000046,
+    REST_NOCURRENTUSERRUN           = 0x40000047,
+    REST_NOLOCALMACHINERUNONCE      = 0x40000048,
+    REST_NOCURRENTUSERRUNONCE       = 0x40000049,
+    REST_FORCEACTIVEDESKTOPON       = 0x4000004A,
+    REST_NOVIEWONDRIVE              = 0x4000004C,
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_NONETCRAWL                 = 0x4000004D,
+    REST_NOSHAREDDOCUMENTS          = 0x4000004E,
+#endif
+    REST_NOSMMYDOCS                 = 0x4000004F,
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_NOSMMYPICS                 = 0x40000050,
+    REST_ALLOWBITBUCKDRIVES         = 0x40000051,
+    REST_NOLEGACYSHELLMODE          = 0x40000052,
+    REST_NOCONTROLPANELBARRIACDE    = 0x40000053,
+    REST_NOSTARTPAGE                = 0x40000054,
+    REST_NOAUTOTRAYNOTIFY           = 0x40000055,
+    REST_NOTASKGROUPING             = 0x40000056,
+    REST_NOCDBURNING                = 0x40000057,
+#endif
+#if (NTDDI_VERSION >= 0x05000300)
+    REST_MYCOMPNOPROP               = 0x40000058,
+    REST_MYDOCSNOPROP               = 0x40000059,
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_NOSTARTPANEL               = 0x4000005A,
+    REST_NODISPLAYAPPEARANCEPAGE    = 0x4000005B,
+    REST_NOTHEMESTAB                = 0x4000005C,
+    REST_NOVISUALSTYLECHOICE        = 0x4000005D,
+    REST_NOSIZECHOICE               = 0x4000005E,
+    REST_NOCOLORCHOICE              = 0x4000005F,
+    REST_SETVISUALSTYLE             = 0x40000060,
+#endif
+#if (NTDDI_VERSION >= 0x05000300)
+    REST_STARTRUNNOHOMEPATH         = 0x40000061,
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_NOUSERNAMEINSTARTPANEL     = 0x40000062,
+    REST_NOMYCOMPUTERICON           = 0x40000063,
+    REST_NOSMNETWORKPLACES          = 0x40000064,
+    REST_NOSMPINNEDLIST             = 0x40000065,
+    REST_NOSMMYMUSIC                = 0x40000066,
+    REST_NOSMEJECTPC                = 0x40000067,
+    REST_NOSMMOREPROGRAMS           = 0x40000068,
+    REST_NOSMMFUPROGRAMS            = 0x40000069,
+    REST_NOTRAYITEMSDISPLAY         = 0x4000006A,
+    REST_NOTOOLBARSONTASKBAR        = 0x4000006B,
+#endif
+#if (NTDDI_VERSION >= 0x05000300)
+    REST_NOSMCONFIGUREPROGRAMS      = 0x4000006F,
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_HIDECLOCK                  = 0x40000070,
+    REST_NOLOWDISKSPACECHECKS       = 0x40000071,
+#endif
+#if (NTDDI_VERSION >= 0x05000400)
+    REST_NOENTIRENETWORK            = 0x40000072,
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+    REST_NODESKTOPCLEANUP           = 0x40000073,
+    REST_BITBUCKNUKEONDELETE        = 0x40000074,
+    REST_BITBUCKCONFIRMDELETE       = 0x40000075,
+    REST_BITBUCKNOPROP              = 0x40000076,
+    REST_NODISPBACKGROUND           = 0x40000077,
+    REST_NODISPSCREENSAVEPG         = 0x40000078,
+    REST_NODISPSETTINGSPG           = 0x40000079,
+    REST_NODISPSCREENSAVEPREVIEW    = 0x4000007A,
+    REST_NODISPLAYCPL               = 0x4000007B,
+    REST_HIDERUNASVERB              = 0x4000007C,
+    REST_NOTHUMBNAILCACHE           = 0x4000007D,
+#endif
+#if (NTDDI_VERSION >= 0x05010100)
+    REST_NOSTRCMPLOGICAL            = 0x4000007E,
+    REST_NOPUBLISHWIZARD            = 0x4000007F,
+    REST_NOONLINEPRINTSWIZARD       = 0x40000080,
+    REST_NOWEBSERVICES              = 0x40000081,
+#endif
+#if (NTDDI_VERSION >= 0x05000300)
+    REST_ALLOWUNHASHEDWEBVIEW       = 0x40000082,
+#endif
+    REST_ALLOWLEGACYWEBVIEW         = 0x40000083,
+#if (NTDDI_VERSION >= 0x05000300)
+    REST_REVERTWEBVIEWSECURITY      = 0x40000084,
+#endif
+#if (NTDDI_VERSION >= 0x05000400)
+    REST_INHERITCONSOLEHANDLES      = 0x40000086,
+#endif
+#if (NTDDI_VERSION >= 0x05010200) && (NTDDI_VERSION < 0x06000000)
+    REST_SORTMAXITEMCOUNT           = 0x40000087,
+#endif
+#if (NTDDI_VERSION >= 0x05010200)
+    REST_NOREMOTERECURSIVEEVENTS    = 0x40000089,
+    REST_NOREMOTECHANGENOTIFY       = 0x40000091,
+#if (NTDDI_VERSION < 0x06000000)
+    REST_NOSIMPLENETIDLIST          = 0x40000092,
+#endif
+    REST_NOENUMENTIRENETWORK        = 0x40000093,
+#if (NTDDI_VERSION < 0x06000000)
+    REST_NODETAILSTHUMBNAILONNETWORK    = 0x40000094,
+#endif
+    REST_NOINTERNETOPENWITH         = 0x40000095,
+#endif
+#if (NTDDI_VERSION >= 0x05010200)
+    REST_DONTRETRYBADNETNAME        = 0x4000009B,
+    REST_ALLOWFILECLSIDJUNCTIONS    = 0x4000009C,
+    REST_NOUPNPINSTALL              = 0x4000009D,
+#endif
+    REST_ARP_DONTGROUPPATCHES       = 0x400000AC,
+    REST_ARP_NOCHOOSEPROGRAMSPAGE   = 0x400000AD,
+    REST_NODISCONNECT               = 0x41000001,
+    REST_NOSECURITY                 = 0x41000002,
+#if (NTDDI_VERSION >= 0x05010200)
+    REST_NOFILEASSOCIATE            = 0x41000003,
+    REST_ALLOWCOMMENTTOGGLE         = 0x41000004,
+#if (NTDDI_VERSION < 0x06000000)
+    REST_USEDESKTOPINICACHE         = 0x41000005,
+#endif
+#else
+    REST_NOFILEASSOCIATE            = 0x41000003
+#endif
+} RESTRICTIONS;
+
+/* SHOpenWithDialog() flags */
+enum tagOPEN_AS_INFO_FLAGS {
+    OAIF_ALLOW_REGISTRATION = 0x00000001,
+    OAIF_REGISTER_EXT       = 0x00000002,
+    OAIF_EXEC               = 0x00000004,
+#if (NTDDI_VERSION >= 0x06000000)
+    OAIF_FORCE_REGISTRATION = 0x00000008,
+    OAIF_HIDE_REGISTRATION  = 0x00000020,
+    OAIF_URL_PROTOCOL       = 0x00000040
+#else
+    OAIF_FORCE_REGISTRATION = 0x00000008
+#endif
+};
+typedef int OPEN_AS_INFO_FLAGS;
+
+/* SHOpenWithDialog() parameters */
+#include <pshpack8.h>
+typedef struct _openasinfo {
+    LPCWSTR             pcszFile;
+    LPCWSTR             pcszClass;
+    OPEN_AS_INFO_FLAGS  oaifInFlags;
+} OPENASINFO;
+typedef OPENASINFO  *POPENASINFO;
+#include <poppack.h>
+
+/* PIF information */
+typedef struct PROPPRG {
+    WORD    flPrg;
+    WORD    flPrgInit;
+    CHAR    achTitle[PIFNAMESIZE];
+    CHAR    achCmdLine[PIFSTARTLOCSIZE + PIFPARAMSSIZE + 1];
+    CHAR    achWorkDir[PIFDEFPATHSIZE];
+    WORD    wHotKey;
+    CHAR    achIconFile[PIFDEFFILESIZE];
+    WORD    wIconIndex;
+    DWORD   dwEnhModeFlags;
+    DWORD   dwRealModeFlags;
+    CHAR    achOtherFile[PIFDEFFILESIZE];
+    CHAR    achPIFFile[PIFMAXFILEPATH];
+} PROPPRG;
+typedef UNALIGNED PROPPRG       *PPROPPRG;
+typedef UNALIGNED PROPPRG       *LPPROPPRG;
+typedef const UNALIGNED PROPPRG *LPCPROPPRG;
+
+/* Icon sizes */
+enum {
+    BMICON_LARGE    = 0,
+    BMICON_SMALL    = 1
+};
+
+/* The following structures get eight-byte packing. */
+#include <pshpack8.h>
+
+/* QCM information identifier map placement */
+typedef struct _QCMINFO_IDMAP_PLACEMENT {
+    UINT    id;
+    UINT    fFlags;
+} QCMINFO_IDMAP_PLACEMENT;
+
+/* QCM information identifier map */
+typedef struct _QCMINFO_IDMAP {
+    UINT                    nMaxIds;
+    QCMINFO_IDMAP_PLACEMENT pIdList[1];
+} QCMINFO_IDMAP;
+
+/* QCM information */
+typedef struct _QCMINFO {
+    HMENU               hmenu;
+    UINT                indexMenu;
+    UINT                idCmdFirst;
+    UINT                idCmdLast;
+    const QCMINFO_IDMAP *pIdMap;
+} QCMINFO;
+typedef QCMINFO *LPQCMINFO;
+
+/* Toolbar information */
+typedef struct _TBINFO {
+    UINT    cbuttons;
+    UINT    uFlags;
+} TBINFO;
+typedef TBINFO  *LPTBINFO;
+
+/* Details information */
+typedef struct _DETAILSINFO {
+    PCUITEMID_CHILD pidl;
+    int             fmt;
+    int             cxChar;
+    STRRET          str;
+    int             iImage;
+} DETAILSINFO;
+typedef DETAILSINFO *PDETAILSINFO;
+
+/* Property page data */
+typedef struct _SFVM_PROPPAGE_DATA {
+    DWORD                   dwReserved;
+    LPFNADDPROPSHEETPAGE    pfn;
+    LPARAM                  lParam;
+} SFVM_PROPPAGE_DATA;
+
+/* Help topic data */
+typedef struct _SFVM_HELPTOPIC_DATA {
+    WCHAR   wszHelpFile[MAX_PATH];
+    WCHAR   wszHelpTopic[MAX_PATH];
+} SFVM_HELPTOPIC_DATA;
+
+/* Item spacing */
+typedef struct _ITEMSPACING {
+    int cxSmall;
+    int cySmall;
+    int cxLarge;
+    int cyLarge;
+} ITEMSPACING;
+
+/* SHCreateShellFolderView parameters */
+typedef struct _SFV_CREATE {
+    UINT                cbSize;
+    IShellFolder        *pshf;
+    IShellView          *psvOuter;
+    IShellFolderViewCB  *psfvcb;
+} SFV_CREATE;
+
+/* Folder menu callback */
+typedef HRESULT (CALLBACK *LPFNDFMCALLBACK)( IShellFolder *, HWND, IDataObject *, UINT, WPARAM, LPARAM );
+
+/* Default context menu */
+typedef struct {
+    HWND                    hwnd;
+    IContextMenuCB          *pcmcb;
+    PCIDLIST_ABSOLUTE       pidlFolder;
+    IShellFolder            *psf;
+    UINT                    cidl;
+    PCUITEMID_CHILD_ARRAY   apidl;
+    IUnknown                *punkAssociationInfo;
+    UINT                    cKeys;
+    const HKEY              *aKeys;
+} DEFCONTEXTMENU;
+
+/* DFM_INVOKECOMMANDEX parameters */
+typedef struct {
+    DWORD                   cbSize;
+    DWORD                   fMask;
+    LPARAM                  lParam;
+    UINT                    idCmdFirst;
+    UINT                    idDefMax;
+    LPCMINVOKECOMMANDINFO   pici;
+#if (NTDDI_VERSION >= 0x06000000)
+    IUnknown                *punkSite;
+#endif
+} DFMICS;
+typedef DFMICS  *PDFMICS;
+
+/* View callback */
+typedef HRESULT (CALLBACK *LPFNVIEWCALLBACK)( IShellView *, IShellFolder *, HWND, UINT, WPARAM, LPARAM );
+
+/* SHCreateShellFolderViewEx() parameters */
+typedef struct _CSFV {
+    UINT                cbSize;
+    IShellFolder        *pshf;
+    IShellView          *psvOuter;
+    PCIDLIST_ABSOLUTE   pidl;
+    LONG                lEvents;
+    LPFNVIEWCALLBACK    pfnCallback;
+    FOLDERVIEWMODE      fvm;
+} CSFV;
+typedef CSFV    *LPCSFV;
+
+/* SFVM_SETITEMPOS parameters */
+typedef struct _SFV_SETITEMPOS {
+    PCUITEMID_CHILD pidl;
+    POINT           pt;
+} SFV_SETITEMPOS;
+typedef SFV_SETITEMPOS          *LPSFV_SETITEMPOS;
+typedef const SFV_SETITEMPOS    *LPCSFV_SETITEMPOS;
+
+/* Revert to default packing. */
+#include <poppack.h>
+
+/* Shell state */
+typedef struct {
+    BOOL    fShowAllObjects         : 1;
+    BOOL    fShowExtensions         : 1;
+    BOOL    fNoConfirmRecycle       : 1;
+    BOOL    fShowSysFiles           : 1;
+    BOOL    fShowCompColor          : 1;
+    BOOL    fDoubleClickInWebView   : 1;
+    BOOL    fDesktopHTML            : 1;
+    BOOL    fWin95Classic           : 1;
+    BOOL    fDontPrettyPath         : 1;
+    BOOL    fShowAttribCol          : 1;
+    BOOL    fMapNetDrvBtn           : 1;
+    BOOL    fShowInfoTip            : 1;
+    BOOL    fHideIcons              : 1;
+    BOOL    fWebView                : 1;
+    BOOL    fFilter                 : 1;
+    BOOL    fShowSuperHidden        : 1;
+    BOOL    fNoNetCrawling          : 1;
+    DWORD   dwWin95Unused;
+    UINT    uWin95Unused;
+    LONG    lParamSort;
+    int     iSortDirection;
+    UINT    version;
+    UINT    uNotUsed;
+    BOOL    fSepProcess         : 1;
+    BOOL    fStartPanelOn       : 1;
+    BOOL    fShowStartPage      : 1;
+    BOOL    fAutoCheckSelect    : 1;
+    BOOL    fIconsOnly          : 1;
+    BOOL    fShowTypeOverlay    : 1;
+    UINT    fSpareFlags         : 11;
+} SHELLSTATEA;
+typedef SHELLSTATEA     *LPSHELLSTATEA;
+typedef struct {
+    BOOL    fShowAllObjects         : 1;
+    BOOL    fShowExtensions         : 1;
+    BOOL    fNoConfirmRecycle       : 1;
+    BOOL    fShowSysFiles           : 1;
+    BOOL    fShowCompColor          : 1;
+    BOOL    fDoubleClickInWebView   : 1;
+    BOOL    fDesktopHTML            : 1;
+    BOOL    fWin95Classic           : 1;
+    BOOL    fDontPrettyPath         : 1;
+    BOOL    fShowAttribCol          : 1;
+    BOOL    fMapNetDrvBtn           : 1;
+    BOOL    fShowInfoTip            : 1;
+    BOOL    fHideIcons              : 1;
+    BOOL    fWebView                : 1;
+    BOOL    fFilter                 : 1;
+    BOOL    fShowSuperHidden        : 1;
+    BOOL    fNoNetCrawling          : 1;
+    DWORD   dwWin95Unused;
+    UINT    uWin95Unused;
+    LONG    lParamSort;
+    int     iSortDirection;
+    UINT    version;
+    UINT    uNotUsed;
+    BOOL    fSepProcess         : 1;
+    BOOL    fStartPanelOn       : 1;
+    BOOL    fShowStartPage      : 1;
+    BOOL    fAutoCheckSelect    : 1;
+    BOOL    fIconsOnly          : 1;
+    BOOL    fShowTypeOverlay    : 1;
+    UINT    fSpareFlags         : 11;
+} SHELLSTATEW;
+typedef SHELLSTATEW     *LPSHELLSTATEW;
+#ifdef UNICODE
+typedef SHELLSTATEW     SHELLSTATE;
+typedef LPSHELLSTATEW   LPSHELLSTATE;
+#else
+typedef SHELLSTATEA     SHELLSTATE;
+typedef LPSHELLSTATEA   LPSHELLSTATE;
+#endif
+
+/* Shell flag state */
+typedef struct {
+    BOOL    fShowAllObjects         : 1;
+    BOOL    fShowExtensions         : 1;
+    BOOL    fNoConfirmRecycle       : 1;
+    BOOL    fShowSysFiles           : 1;
+    BOOL    fShowCompColor          : 1;
+    BOOL    fDoubleClickInWebView   : 1;
+    BOOL    fDesktopHTML            : 1;
+    BOOL    fWin95Classic           : 1;
+    BOOL    fDontPrettyPath         : 1;
+    BOOL    fShowAttribCol          : 1;
+    BOOL    fMapNetDrvBtn           : 1;
+    BOOL    fShowInfoTip            : 1;
+    BOOL    fHideIcons              : 1;
+#if (NTDDI_VERSION >= 0x06000000)
+    BOOL    fAutoCheckSelect        : 1;
+    BOOL    fIconsOnly              : 1;
+    UINT    fRestFlags              : 1;
+#else
+    UINT    fRestFlags              : 3;
+#endif
+} SHELLFLAGSTATE;
+typedef SHELLFLAGSTATE  *LPSHELLFLAGSTATE;
+
+/* Shell menu file name */
+#include <pshpack8.h>
+typedef struct tagAASHELLMENUFILENAME {
+    SHORT   cbTotal;
+    BYTE    rgbReserved[12];
+    WCHAR   szFileName[1];
+} AASHELLMENUFILENAME;
+typedef AASHELLMENUFILENAME *LPAASHELLMENUFILENAME;
+#include <poppack.h>
+
+/* Shell menu item */
+#include <pshpack8.h>
+typedef struct tagAASHELLMENUITEM {
+    void                    *lpReserved1;
+    int                     iReserved;
+    UINT                    uiReserved;
+    LPAASHELLMENUFILENAME   lpName;
+    LPWSTR                  psz;
+} AASHELLMENUITEM;
+typedef AASHELLMENUITEM *LPAASHELLMENUITEM;
+#include <poppack.h>
+
+/* Internet Explorer shortcut flags */
+#if (_WIN32_IE >= 0x0700)
+typedef enum tagIESHORTCUTFLAGS {
+    IESHORTCUT_NEWBROWSER       = 0x00000001,
+    IESHORTCUT_OPENNEWTAB       = 0x00000002,
+    IESHORTCUT_FORCENAVIGATE    = 0x00000004,
+    IESHORTCUT_BACKGROUNDTAB    = 0x00000008
+} IESHORTCUTFLAGS;
+#endif
+
+/* IExtractIcon interface */
+#undef INTERFACE
+#define INTERFACE   IExtractIconA
+DECLARE_INTERFACE_( IExtractIconA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IExtractIconA methods */
+    STDMETHOD( GetIconLocation )( THIS_ UINT, LPSTR, UINT, int *, UINT * ) PURE;
+    STDMETHOD( Extract )( THIS_ LPCSTR, UINT, HICON *, HICON *, UINT ) PURE;
+};
+typedef IExtractIconA           *LPEXTRACTICONA;
+#undef INTERFACE
+#define INTERFACE   IExtractIconW
+DECLARE_INTERFACE_( IExtractIconW, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IExtractIconW methods */
+    STDMETHOD( GetIconLocation )( THIS_ UINT, LPWSTR, UINT, int *, UINT * ) PURE;
+    STDMETHOD( Extract )( THIS_ LPCWSTR, UINT, HICON *, HICON *, UINT ) PURE;
+};
+typedef IExtractIconW           *LPEXTRACTICONW;
+#ifdef UNICODE
+    #define IExtractIcon        IExtractIconW
+    #define IExtractIconVtbl    IExtractIconWVtbl
+    #define LPEXTRACTICON       LPEXTRACTICONW
+#else
+    #define IExtractIcon        IExtractIconA
+    #define IExtractIconVtbl    IExtractIconAVtbl
+    #define LPEXTRACTICON       LPEXTRACTICONA
+#endif
+
+/* IShellIconOverlayIdentifier interface */
+#undef INTERFACE
+#define INTERFACE   IShellIconOverlayIdentifier
+DECLARE_INTERFACE_( IShellIconOverlayIdentifier, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellIconOverlayIdentifier methods */
+    STDMETHOD( IsMemberOf )( THIS_ LPCWSTR, DWORD ) PURE;
+    STDMETHOD( GetOverlayInfo )( THIS_ LPWSTR, int, int *, DWORD * ) PURE;
+    STDMETHOD( GetPriority )( THIS_ int * ) PURE;
+};
+
+/* IShellIconOverlayManager interface */
+#undef INTERFACE
+#define INTERFACE   IShellIconOverlayManager
+DECLARE_INTERFACE_( IShellIconOverlayManager, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellIconOverlayManager methods */
+    STDMETHOD( GetFileOverlayInfo )( THIS_ LPCWSTR, DWORD, int *, DWORD ) PURE;
+    STDMETHOD( GetReservedOverlayInfo )( THIS_ LPCWSTR, DWORD, int *, DWORD, int ) PURE;
+    STDMETHOD( RefreshOverlayImages )( THIS_ DWORD ) PURE;
+    STDMETHOD( LoadNonloadedOverlayIdentifiers )( THIS ) PURE;
+    STDMETHOD( OverlayIndexFromImageIndex )( THIS_ int, int *, BOOL ) PURE;
+};
+
+/* IShellIconOverlay interface */
+#undef INTERFACE
+#define INTERFACE   IShellIconOverlay
+DECLARE_INTERFACE_( IShellIconOverlay, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellIconOverlay methods */
+    STDMETHOD( GetOverlayIndex )( THIS_ PCUITEMID_CHILD, int * ) PURE;
+    STDMETHOD( GetOverlayIconIndex )( THIS_ PCUITEMID_CHILD, int * ) PURE;
+};
+
+/* IShellExecuteHook interface */
+#ifdef _INC_SHELLAPI
+#undef INTERFACE
+#define INTERFACE   IShellExecuteHookA
+DECLARE_INTERFACE_( IShellExecuteHookA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellExecuteHookA methods */
+    STDMETHOD( Execute )( THIS_ LPSHELLEXECUTEINFOA ) PURE;
+};
+#undef INTERFACE
+#define INTERFACE   IShellExecuteHookW
+DECLARE_INTERFACE_( IShellExecuteHookW, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellExecuteHookW methods */
+    STDMETHOD( Execute )( THIS_ LPSHELLEXECUTEINFOW ) PURE;
+};
+#ifdef UNICODE
+    #define IShellExecuteHook       IShellExecuteHookW
+    #define IShellExecuteHookVtbl   IShellExecuteHookWVtbl
+#else
+    #define IShellExecuteHook       IShellExecuteHookA
+    #define IShellExecuteHookVtbl   IShellExecuteHookAVtbl
+#endif
+#endif
+
+/* IURLSearchHook interface */
+#undef INTERFACE
+#define INTERFACE   IURLSearchHook
+DECLARE_INTERFACE_( IURLSearchHook, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IURLSearchHook methods */
+    STDMETHOD( Translate )( THIS_ LPWSTR, DWORD ) PURE;
+};
+
+/* ISearchContext interface */
+#undef INTERFACE
+#define INTERFACE   ISearchContext
+DECLARE_INTERFACE_( ISearchContext, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* ISearchContext methods */
+    STDMETHOD( GetSearchUrl )( THIS_ BSTR * ) PURE;
+    STDMETHOD( GetSearchText )( THIS_ BSTR * ) PURE;
+    STDMETHOD( GetSearchStyle )( THIS_ DWORD * ) PURE;
+};
+
+/* IURLSearchHook2 interface */
+#undef INTERFACE
+#define INTERFACE   IURLSearchHook2
+DECLARE_INTERFACE_( IURLSearchHook2, IURLSearchHook ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IURLSearchHook methods */
+    STDMETHOD( Translate )( THIS_ LPWSTR, DWORD ) PURE;
+
+    /* IURLSearchHook2 methods */
+    STDMETHOD( TranslateWithSearchContext )( THIS_ LPWSTR, DWORD, ISearchContext * ) PURE;
+};
+
+/* INewShortcutHook interface */
+#undef INTERFACE
+#define INTERFACE   INewShortcutHookA
+DECLARE_INTERFACE_( INewShortcutHookA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* INewShortcutHookA methods */
+    STDMETHOD( SetReferent )( THIS_ LPCSTR, HWND ) PURE;
+    STDMETHOD( GetReferent )( THIS_ LPSTR, int ) PURE;
+    STDMETHOD( SetFolder )( THIS_ LPCSTR ) PURE;
+    STDMETHOD( GetFolder )( THIS_ LPSTR, int ) PURE;
+    STDMETHOD( GetName )( THIS_ LPSTR, int ) PURE;
+    STDMETHOD( GetExtension )( THIS_ LPSTR, int ) PURE;
+};
+#undef INTERFACE
+#define INTERFACE   INewShortcutHookW
+DECLARE_INTERFACE_( INewShortcutHookW, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* INewShortcutHookW methods */
+    STDMETHOD( SetReferent )( THIS_ LPCWSTR, HWND ) PURE;
+    STDMETHOD( GetReferent )( THIS_ LPWSTR, int ) PURE;
+    STDMETHOD( SetFolder )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( GetFolder )( THIS_ LPWSTR, int ) PURE;
+    STDMETHOD( GetName )( THIS_ LPWSTR, int ) PURE;
+    STDMETHOD( GetExtension )( THIS_ LPWSTR, int ) PURE;
+};
+#ifdef UNICODE
+    #define INewShortcutHook        INewShortcutHookW
+    #define INewShortcutHookVtbl    INewShortcutHookWVtbl
+#else
+    #define INewShortcutHook        INewShortcutHookA
+    #define INewShortcutHookVtbl    INewShortcutHookAVtbl
+#endif
+
+/* ICopyHook interface */
+#undef INTERFACE
+#define INTERFACE   ICopyHookA
+DECLARE_INTERFACE_( ICopyHookA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* ICopyHookA methods */
+    STDMETHOD_( UINT, CopyCallback )( THIS_ HWND, UINT, UINT, LPCSTR, DWORD, LPCSTR, DWORD ) PURE;
+};
+typedef ICopyHookA  *LPCOPYHOOKA;
+#undef INTERFACE
+#define INTERFACE   ICopyHookW
+DECLARE_INTERFACE_( ICopyHookW, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* ICopyHookW methods */
+    STDMETHOD_( UINT, CopyCallback )( THIS_ HWND, UINT, UINT, LPCWSTR, DWORD, LPCWSTR, DWORD ) PURE;
+};
+typedef ICopyHookW  *LPCOPYHOOKW;
+#ifdef UNICODE
+    #define ICopyHook       ICopyHookW
+    #define ICopyHookVtbl   ICopyHookWVtbl
+    #define LPCOPYHOOK      LPCOPYHOOKW
+#else
+    #define ICopyHook       ICopyHookA
+    #define ICopyHookVtbl   ICopyHookAVtbl
+    #define LPCOPYHOOK      LPCOPYHOOKA
+#endif
+
+/* IFileViewerSite interface */
+#if (NTDDI_VERSION < 0x05000000)
+#undef INTERFACE
+#define INTERFACE   IFileViewerSite
+DECLARE_INTERFACE_( IFileViewerSite, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IFileViewerSite methods */
+    STDMETHOD( SetPinnedWindow )( THIS_ HWND ) PURE;
+    STDMETHOD( GetPinnedWindow )( THIS_ HWND * ) PURE;
+};
+typedef IFileViewerSite *LPFILEVIEWERSITE;
+#endif
+
+/* IFileViewer interface */
+#if (NTDDI_VERSION < 0x05000000)
+#undef INTERFACE
+#define INTERFACE   IFileViewerA
+DECLARE_INTERFACE_( IFileViewerA, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IFileViewerA methods */
+    STDMETHOD( ShowInitialize )( THIS_ LPFILEVIEWERSITE ) PURE;
+    STDMETHOD( Show )( THIS_ LPFVSHOWINFO ) PURE;
+    STDMETHOD( PrintTo )( THIS_ LPSTR, BOOL ) PURE;
+};
+typedef IFileViewerA            *LPFILEVIEWERA;
+#undef INTERFACE
+#define INTERFACE   IFileViewerW
+DECLARE_INTERFACE_( IFileViewerW, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IFileViewerW methods */
+    STDMETHOD( ShowInitialize )( THIS_ LPFILEVIEWERSITE ) PURE;
+    STDMETHOD( Show )( THIS_ LPFVSHOWINFO ) PURE;
+    STDMETHOD( PrintTo )( THIS_ LPWSTR, BOOL ) PURE;
+};
+typedef IFileViewerW            *LPFILEVIEWERW;
+#ifdef UNICODE
+    #define IFileViewer         IFileViewerW
+    #define LPFILEVIEWER        LPFILEVIEWERW
+#else
+    #define IFileViewer         IFileViewerA
+    #define LPFILEVIEWER        LPFILEVIEWERA
+#endif
+#endif
+
+/* IShellDetails interface */
+#undef INTERFACE
+#define INTERFACE   IShellDetails
+DECLARE_INTERFACE_( IShellDetails, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellDetails methods */
+    STDMETHOD( GetDetailsOf )( THIS_ PCUITEMID_CHILD, UINT, SHELLDETAILS * ) PURE;
+    STDMETHOD( ColumnClick )( THIS_ UINT ) PURE;
+};
+
+/* IObjMgr interface */
+#undef INTERFACE
+#define INTERFACE   IObjMgr
+DECLARE_INTERFACE_( IObjMgr, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IObjMgr methods */
+    STDMETHOD( Append )( THIS_ IUnknown * ) PURE;
+    STDMETHOD( Remove )( THIS_ IUnknown * ) PURE;
+};
+
+/* ICurrentWorkingDirectory interface */
+#undef INTERFACE
+#define INTERFACE   ICurrentWorkingDirectory
+DECLARE_INTERFACE_( ICurrentWorkingDirectory, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* ICurrentWorkingDirectory methods */
+    STDMETHOD( GetDirectory )( THIS_ LPWSTR, DWORD ) PURE;
+    STDMETHOD( SetDirectory )( THIS_ LPCWSTR ) PURE;
+};
+
+/* IACList interface */
+#undef INTERFACE
+#define INTERFACE   IACList
+DECLARE_INTERFACE_( IACList, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IACList methods */
+    STDMETHOD( Expand )( THIS_ LPCWSTR ) PURE;
+};
+
+/* IACList2 interface */
+#undef INTERFACE
+#define INTERFACE   IACList2
+DECLARE_INTERFACE_( IACList2, IACList ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IACList methods */
+    STDMETHOD( Expand )( THIS_ LPCWSTR ) PURE;
+
+    /* IACList2 methods */
+    STDMETHOD( SetOptions )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetOptions )( THIS_ DWORD * ) PURE;
+};
+
+/* IProgressDialog interface */
+#undef INTERFACE
+#define INTERFACE   IProgressDialog
+DECLARE_INTERFACE_( IProgressDialog, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IProgressDialog methods */
+    STDMETHOD( StartProgressDialog )( THIS_ HWND, IUnknown *, DWORD, LPCVOID ) PURE;
+    STDMETHOD( StopProgressDialog )( THIS ) PURE;
+    STDMETHOD( SetTitle )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( SetAnimation )( THIS_ HINSTANCE, UINT ) PURE;
+    STDMETHOD_( BOOL, HasUserCancelled )( THIS ) PURE;
+    STDMETHOD( SetProgress )( THIS_ DWORD, DWORD ) PURE;
+    STDMETHOD( SetProgress64 )( THIS_ ULONGLONG, ULONGLONG ) PURE;
+    STDMETHOD( SetLine )( THIS_ DWORD, LPCWSTR, BOOL, LPCVOID ) PURE;
+    STDMETHOD( SetCancelMsg )( THIS_ LPCWSTR, LPCVOID ) PURE;
+    STDMETHOD( Timer )( THIS_ DWORD, LPCVOID ) PURE;
+};
+
+/* IDockingWindowSite interface */
+#undef INTERFACE
+#define INTERFACE   IDockingWindowSite
+DECLARE_INTERFACE_( IDockingWindowSite, IOleWindow ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IOleWindow methods */
+    STDMETHOD( GetWindow )( THIS_ HWND * ) PURE;
+    STDMETHOD( ContextSensitiveHelp )( THIS_ BOOL ) PURE;
+
+    /* IDockingWindowSite methods */
+    STDMETHOD( GetBorderDW )( THIS_ IUnknown *, LPRECT ) PURE;
+    STDMETHOD( RequestBorderSpaceDW )( THIS_ IUnknown *, LPCBORDERWIDTHS ) PURE;
+    STDMETHOD( SetBorderSpaceDW )( THIS_ IUnknown *, LPCBORDERWIDTHS ) PURE;
+};
+
+/* IDockingWindowFrame interface */
+#undef INTERFACE
+#define INTERFACE   IDockingWindowFrame
+DECLARE_INTERFACE_( IDockingWindowFrame, IOleWindow ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IOleWindow methods */
+    STDMETHOD( GetWindow )( THIS_ HWND * ) PURE;
+    STDMETHOD( ContextSensitiveHelp )( THIS_ BOOL ) PURE;
+
+    /* IDockingWindowFrame methods */
+    STDMETHOD( AddToolbar )( THIS_ IUnknown *, LPCWSTR, DWORD ) PURE;
+    STDMETHOD( RemoveToolbar )( THIS_ IUnknown *, DWORD ) PURE;
+    STDMETHOD( FindToolbar )( THIS_ LPCWSTR, REFIID, void ** ) PURE;
+};
+
+/* IThumbnailCapture interface */
+#if (_WIN32_IE >= 0x0400)
+#undef INTERFACE
+#define INTERFACE   IThumbnailCapture
+DECLARE_INTERFACE_( IThumbnailCapture, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IThumbnailCapture methods */
+    STDMETHOD( CaptureThumbnail )( THIS_ const SIZE *, IUnknown *, HBITMAP * ) PURE;
+};
+typedef IThumbnailCapture   *LPTHUMBNAILCAPTURE;
+#endif
+
+/* IEnumShellImageStore interface */
+#if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
+#undef INTERFACE
+#define INTERFACE   IEnumShellImageStore
+DECLARE_INTERFACE_( IEnumShellImageStore, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IEnumShellImageStore methods */
+    STDMETHOD( Reset )( THIS ) PURE;
+    STDMETHOD( Next )( THIS_ ULONG, PENUMSHELLIMAGESTOREDATA *, ULONG * ) PURE;
+    STDMETHOD( Skip )( THIS_ ULONG ) PURE;
+    STDMETHOD( Clone )( THIS_ IEnumShellImageStore ** ) PURE;
+};
+typedef IEnumShellImageStore    *LPENUMSHELLIMAGESTORE;
+#endif
+
+/* IShellImageStore interface */
+#if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
+#undef INTERFACE
+#define INTERFACE   IShellImageStore
+DECLARE_INTERFACE_( IShellImageStore, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellImageStore methods */
+    STDMETHOD( Open )( THIS_ DWORD, DWORD * ) PURE;
+    STDMETHOD( Create )( THIS_ DWORD, DWORD * ) PURE;
+    STDMETHOD( ReleaseLock )( THIS_ const DWORD * ) PURE;
+    STDMETHOD( Close )( THIS_ const DWORD * ) PURE;
+    STDMETHOD( Commit )( THIS_ const DWORD * ) PURE;
+    STDMETHOD( IsLocked )( THIS ) PURE;
+    STDMETHOD( GetMode )( THIS_ DWORD * ) PURE;
+    STDMETHOD( GetCapabilities )( THIS_ DWORD * ) PURE;
+    STDMETHOD( AddEntry )( THIS_ LPCWSTR, const FILETIME *, DWORD, HBITMAP ) PURE;
+    STDMETHOD( GetEntry )( THIS_ LPCWSTR, DWORD, HBITMAP * ) PURE;
+    STDMETHOD( DeleteEntry )( THIS_ LPCWSTR ) PURE;
+    STDMETHOD( IsEntryInStore )( THIS_ LPCWSTR, FILETIME * ) PURE;
+    STDMETHOD( Enum )( THIS_ LPENUMSHELLIMAGESTORE * ) PURE;
+};
+typedef IShellImageStore    *LPSHELLIMAGESTORE;
+#endif
+
+/* IShellFolderBand interface */
+#if (_WIN32_IE >= 0x0400)
+#undef INTERFACE
+#define INTERFACE   IShellFolderBand
+DECLARE_INTERFACE_( IShellFolderBand, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellFolderBand methods */
+    STDMETHOD( InitializeSFB )( THIS_ IShellFolder *, PCIDLIST_ABSOLUTE ) PURE;
+    STDMETHOD( SetBandInfoSFB )( THIS_ PBANDINFOSFB ) PURE;
+    STDMETHOD( GetBandInfoSFB )( THIS_ PBANDINFOSFB ) PURE;
+};
+#endif
+
+/* IDeskBarClient interface */
+#if (_WIN32_IE >= 0x0400)
+#undef INTERFACE
+#define INTERFACE   IDeskBarClient
+DECLARE_INTERFACE_( IDeskBarClient, IOleWindow ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+    
+    /* IOleWindow methods */
+    STDMETHOD( GetWindow )( THIS_ HWND * ) PURE;
+    STDMETHOD( ContextSensitiveHelp )( THIS_ BOOL ) PURE;
+
+    /* IDeskBarClient methods */
+    STDMETHOD( SetDeskBarSite )( THIS_ IUnknown * ) PURE;
+    STDMETHOD( SetModeDBC )( THIS_ DWORD ) PURE;
+    STDMETHOD( UIActivateDBC )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetSize )( THIS_ DWORD, LPRECT ) PURE;
+};
+#endif
+
+/* IActiveDesktop interface */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+#undef INTERFACE
+#define INTERFACE   IActiveDesktop
+DECLARE_INTERFACE_( IActiveDesktop, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IActiveDesktop methods */
+    STDMETHOD( ApplyChanges )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetWallpaper )( THIS_ LPWSTR, UINT, DWORD ) PURE;
+    STDMETHOD( SetWallpaper )( THIS_ LPCWSTR, DWORD ) PURE;
+    STDMETHOD( GetWallpaperOptions )( THIS_ LPWALLPAPEROPT, DWORD ) PURE;
+    STDMETHOD( SetWallpaperOptions )( THIS_ LPCWALLPAPEROPT, DWORD ) PURE;
+    STDMETHOD( GetPattern )( THIS_ LPWSTR, UINT, DWORD ) PURE;
+    STDMETHOD( SetPattern )( THIS_ LPCWSTR, DWORD ) PURE;
+    STDMETHOD( GetDesktopItemOptions )( THIS_ LPCOMPONENTSOPT, DWORD ) PURE;
+    STDMETHOD( SetDesktopItemOptions )( THIS_ LPCCOMPONENTSOPT, DWORD ) PURE;
+    STDMETHOD( AddDesktopItem )( THIS_ LPCCOMPONENT, DWORD ) PURE;
+    STDMETHOD( AddDesktopItemWithUI )( THIS_ HWND, LPCOMPONENT, DWORD ) PURE;
+    STDMETHOD( ModifyDesktopItem )( THIS_ LPCCOMPONENT, DWORD ) PURE;
+    STDMETHOD( RemoveDesktopItem )( THIS_ LPCCOMPONENT, DWORD ) PURE;
+    STDMETHOD( GetDesktopItemCount )( THIS_ LPINT, DWORD ) PURE;
+    STDMETHOD( GetDesktopItem )( THIS_ int, LPCOMPONENT, DWORD ) PURE;
+    STDMETHOD( GetDesktopItemByID )( THIS_ ULONG_PTR, LPCOMPONENT, DWORD ) PURE;
+    STDMETHOD( GenerateDesktopItemHtml )( THIS_ LPCWSTR, LPCOMPONENT, DWORD ) PURE;
+    STDMETHOD( AddUrl )( THIS_ HWND, LPCWSTR, LPCOMPONENT, DWORD ) PURE;
+    STDMETHOD( GetDesktopItemBySource )( THIS_ LPCWSTR, LPCOMPONENT, DWORD ) PURE;
+};
+typedef IActiveDesktop  *LPACTIVEDESKTOP;
+#endif
+#endif
+
+/* IActiveDesktopP interface */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+#undef INTERFACE
+#define INTERFACE   IActiveDesktopP
+DECLARE_INTERFACE_( IActiveDesktopP, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IActiveDesktopP methods */
+    STDMETHOD( SetSafeMode )( THIS_ DWORD ) PURE;
+    STDMETHOD( EnsureUpdateHTML )( THIS ) PURE;
+    STDMETHOD( SetScheme )( THIS_ LPCWSTR, DWORD ) PURE;
+    STDMETHOD( GetScheme )( THIS_ LPWSTR, DWORD *, DWORD ) PURE;
+};
+typedef IActiveDesktopP *LPACTIVEDESKTOPP;
+#endif
+#endif
+
+/* IADesktopP2 interface */
+#if (_WIN32_IE >= 0x0400)
+#ifdef _WININET_
+#undef INTERFACE
+#define INTERFACE   IADesktopP2
+DECLARE_INTERFACE_( IADesktopP2, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IADesktopP2 methods */
+    STDMETHOD( ReReadWallpaper )( THIS ) PURE;
+    STDMETHOD( GetADObjectFlags )( THIS_ DWORD *, DWORD ) PURE;
+    STDMETHOD( UpdateAllDesktopSubscriptions )( THIS ) PURE;
+    STDMETHOD( MakeDynamicChanges )( THIS_ IOleObject * ) PURE;
+};
+typedef IADesktopP2 *LPADESKTOPP2;
+#endif
+#endif
+
+/* IColumnProvider interface */
+#if (_WIN32_IE >= 0x0500)
+#undef INTERFACE
+#define INTERFACE   IColumnProvider
+DECLARE_INTERFACE_( IColumnProvider, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IColumnProvider methods */
+    STDMETHOD( Initialize )( THIS_ LPCSHCOLUMNINIT ) PURE;
+    STDMETHOD( GetColumnInfo )( THIS_ DWORD, SHCOLUMNINFO * ) PURE;
+    STDMETHOD( GetItemData )( THIS_ LPCSHCOLUMNID, LPCSHCOLUMNDATA, VARIANT * ) PURE;
+};
+#endif
+
+/* IShellChangeNotify interface */
+#undef INTERFACE
+#define INTERFACE   IShellChangeNotify
+DECLARE_INTERFACE_( IShellChangeNotify, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellChangeNotify methods */
+    STDMETHOD( OnChange )( THIS_ LONG, PCIDLIST_ABSOLUTE, PCIDLIST_ABSOLUTE ) PURE;
+};
+
+/* IQueryInfo interface */
+#undef INTERFACE
+#define INTERFACE   IQueryInfo
+DECLARE_INTERFACE_( IQueryInfo, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IQueryInfo methods */
+    STDMETHOD( GetInfoTip )( THIS_ DWORD, WCHAR ** ) PURE;
+    STDMETHOD( GetInfoFlags )( THIS_ DWORD * ) PURE;
+};
+
+/* IDefViewFrame interface */
+#if (NTDDI_VERSION >= 0x05000000) && (NTDDI_VERSION < 0x06000000)
+#undef INTERFACE
+#define INTERFACE   IDefViewFrame
+DECLARE_INTERFACE_( IDefViewFrame, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDefViewFrame methods */
+    STDMETHOD( GetWindowLV )( THIS_ HWND * ) PURE;
+    STDMETHOD( ReleaseWindowLV )( THIS ) PURE;
+    STDMETHOD( GetShellFolder )( THIS_ IShellFolder ** ) PURE;
+};
+#endif
+
+/* IDocViewSite interface */
+#undef INTERFACE
+#define INTERFACE   IDocViewSite
+DECLARE_INTERFACE_( IDocViewSite, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IDocViewSite methods */
+    STDMETHOD( OnSetTitle )( THIS_ VARIANTARG * ) PURE;
+};
+
+/* IInitializeObject interface */
+#undef INTERFACE
+#define INTERFACE   IInitializeObject
+DECLARE_INTERFACE_( IInitializeObject, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IInitializeObject methods */
+    STDMETHOD( Initialize )( THIS ) PURE;
+};
+
+/* IBanneredBar interface */
+#undef INTERFACE
+#define INTERFACE   IBanneredBar
+DECLARE_INTERFACE_( IBanneredBar, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IBanneredBar methods */
+    STDMETHOD( SetIconSize )( THIS_ DWORD ) PURE;
+    STDMETHOD( GetIconSize )( THIS_ DWORD * ) PURE;
+    STDMETHOD( SetBitmap )( THIS_ HBITMAP ) PURE;
+    STDMETHOD( GetBitmap )( THIS_ HBITMAP * ) PURE;
+};
+
+/* IShellFolderViewCB interface */
+#undef INTERFACE
+#define INTERFACE   IShellFolderViewCB
+DECLARE_INTERFACE_( IShellFolderViewCB, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellFolderViewCB methods */
+    STDMETHOD( MessageSFVCB )( THIS_ UINT, WPARAM, LPARAM ) PURE;
+};
+
+/* IShellFolderView interface */
+#undef INTERFACE
+#define INTERFACE   IShellFolderView
+DECLARE_INTERFACE_( IShellFolderView, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* IShellFolderView methods */
+    STDMETHOD( Rearrange )( THIS_ LPARAM ) PURE;
+    STDMETHOD( GetArrangeParam )( THIS_ LPARAM * ) PURE;
+    STDMETHOD( ArrangeGrid )( THIS ) PURE;
+    STDMETHOD( AutoArrange )( THIS ) PURE;
+    STDMETHOD( GetAutoArrange )( THIS ) PURE;
+    STDMETHOD( AddObject )( THIS_ PUITEMID_CHILD, UINT * ) PURE;
+    STDMETHOD( GetObject )( THIS_ PITEMID_CHILD *, UINT ) PURE;
+    STDMETHOD( RemoveObject )( THIS_ PUITEMID_CHILD, UINT * ) PURE;
+    STDMETHOD( GetObjectCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( SetObjectCount )( THIS_ UINT, UINT ) PURE;
+    STDMETHOD( UpdateObject )( THIS_ PUITEMID_CHILD, PUITEMID_CHILD, UINT * ) PURE;
+    STDMETHOD( RefreshObject )( THIS_ PUITEMID_CHILD, UINT * ) PURE;
+    STDMETHOD( SetRedraw )( THIS_ BOOL ) PURE;
+    STDMETHOD( GetSelectedCount )( THIS_ UINT * ) PURE;
+    STDMETHOD( GetSelectedObjects )( THIS_ PCUITEMID_CHILD **, UINT * ) PURE;
+    STDMETHOD( IsDropOnSource )( THIS_ IDropTarget * ) PURE;
+    STDMETHOD( GetDragPoint )( THIS_ POINT * ) PURE;
+    STDMETHOD( GetDropPoint )( THIS_ POINT * ) PURE;
+    STDMETHOD( MoveIcons )( THIS_ IDataObject * ) PURE;
+    STDMETHOD( SetItemPos )( THIS_ PCUITEMID_CHILD, POINT * ) PURE;
+    STDMETHOD( IsBkDropTarget )( THIS_ IDropTarget * ) PURE;
+    STDMETHOD( SetClipboard )( THIS_ BOOL ) PURE;
+    STDMETHOD( SetPoints )( THIS_ IDataObject * ) PURE;
+    STDMETHOD( GetItemSpacing )( THIS_ ITEMSPACING * ) PURE;
+    STDMETHOD( SetCallback )( THIS_ IShellFolderViewCB *, IShellFolderViewCB ** ) PURE;
+    STDMETHOD( Select )( THIS_ UINT ) PURE;
+    STDMETHOD( QuerySupport )( THIS_ UINT * ) PURE;
+    STDMETHOD( SetAutomationObject )( THIS_ IDispatch * ) PURE;
+};
+
+/* INamedPropertyBag interface */
+#undef INTERFACE
+#define INTERFACE   INamedPropertyBag
+DECLARE_INTERFACE_( INamedPropertyBag, IUnknown ) {
+    /* IUnknown methods */
+    STDMETHOD( QueryInterface )( THIS_ REFIID, void ** ) PURE;
+    STDMETHOD_( ULONG, AddRef )( THIS ) PURE;
+    STDMETHOD_( ULONG, Release )( THIS ) PURE;
+
+    /* INamedPropertyBag methods */
+    STDMETHOD( ReadPropertyNPB )( THIS_ LPCWSTR, LPCWSTR, PROPVARIANT * ) PURE;
+    STDMETHOD( WritePropertyNPB )( THIS_ LPCWSTR, LPCWSTR, PROPVARIANT * ) PURE;
+    STDMETHOD( RemovePropertyNPB )( THIS_ LPCWSTR, LPCWSTR ) PURE;
+};
+
+/* Functions in SHELL32.DLL */
+SHSTDAPI                        CDefFolderMenu_Create2( PCIDLIST_ABSOLUTE, HWND, UINT, PCUITEMID_CHILD_ARRAY, IShellFolder *, LPFNDFMCALLBACK, UINT, const HKEY *, IContextMenu ** );
+SHSTDAPI                        CIDLData_CreateFromIDArray( PCIDLIST_ABSOLUTE, UINT, PCUIDLIST_RELATIVE_ARRAY, IDataObject ** );
+SHSTDAPI_( BOOL )               DAD_AutoScroll( HWND, AUTO_SCROLL_DATA *, const POINT * );
+SHSTDAPI_( BOOL )               DAD_DragEnterEx( HWND, POINT );
+SHSTDAPI_( BOOL )               DAD_DragEnterEx2( HWND, POINT, IDataObject * );
+SHSTDAPI_( BOOL )               DAD_DragLeave( void );
+SHSTDAPI_( BOOL )               DAD_DragMove( POINT );
+SHSTDAPI_( BOOL )               DAD_SetDragImage( HIMAGELIST, POINT * );
+SHSTDAPI_( BOOL )               DAD_ShowDragImage( BOOL );
+SHSTDAPI_( int )                DriveType( int );
+SHSTDAPI_( BOOL )               GetFileNameFromBrowse( HWND, LPWSTR, UINT, LPCWSTR, LPCWSTR, LPCWSTR, LPCWSTR );
+SHSTDAPI_( PIDLIST_RELATIVE )   ILAppendID( PIDLIST_RELATIVE, LPCSHITEMID, BOOL );
+SHSTDAPI_( PIDLIST_RELATIVE )   ILClone( PCUIDLIST_RELATIVE );
+SHSTDAPI_( PITEMID_CHILD )      ILCloneFirst( PCUIDLIST_RELATIVE );
+SHSTDAPI_( PIDLIST_ABSOLUTE )   ILCombine( PCIDLIST_ABSOLUTE, PCUIDLIST_RELATIVE );
+SHSTDAPI_( PUIDLIST_RELATIVE )  ILFindChild( PCIDLIST_ABSOLUTE, PCIDLIST_ABSOLUTE );
+SHSTDAPI_( PUITEMID_CHILD )     ILFindLastID( PCUIDLIST_RELATIVE );
+SHSTDAPI_( void )               ILFree( PIDLIST_RELATIVE );
+SHSTDAPI_( PUIDLIST_RELATIVE )  ILGetNext( PCUIDLIST_RELATIVE );
+SHSTDAPI_( UINT )               ILGetSize( PCUIDLIST_RELATIVE );
+SHSTDAPI_( BOOL )               ILIsEqual( PCIDLIST_ABSOLUTE, PCIDLIST_ABSOLUTE );
+SHSTDAPI_( BOOL )               ILIsParent( PCIDLIST_ABSOLUTE, PCIDLIST_ABSOLUTE, BOOL );
+SHSTDAPI                        ILLoadFromStream( IStream *, PIDLIST_RELATIVE * );
+SHSTDAPI_( BOOL )               ILRemoveLastID( PUIDLIST_RELATIVE );
+SHSTDAPI                        ILSaveToStream( IStream *, PCUIDLIST_RELATIVE );
+SHSTDAPI_( int )                IsNetDrive( int );
+SHSTDAPI_( BOOL )               IsUserAnAdmin( void );
+SHSTDAPI_( IStream * )          OpenRegStream( HKEY, LPCWSTR, LPCWSTR, DWORD );
+SHSTDAPI_( int )                PathCleanupSpec( LPCWSTR, LPWSTR );
+SHSTDAPI_( void )               PathGetShortPath( LPWSTR );
+SHSTDAPI_( BOOL )               PathIsExe( LPCWSTR );
+SHSTDAPI_( BOOL )               PathIsSlowA( LPCSTR, DWORD );
+SHSTDAPI_( BOOL )               PathIsSlowW( LPCWSTR, DWORD );
+SHSTDAPI_( BOOL )               PathMakeUniqueName( LPWSTR, UINT, LPCWSTR, LPCWSTR, LPCWSTR );
+SHSTDAPI_( void )               PathQualify( LPWSTR );
+SHSTDAPI_( int )                PathResolve( LPWSTR, PZPCWSTR, UINT );
+SHSTDAPI_( BOOL )               PathYetAnotherMakeUniqueName( LPWSTR, LPCWSTR, LPCWSTR, LPCWSTR );
+SHSTDAPI_( int )                PickIconDlg( HWND, LPWSTR, UINT, int * );
+SHSTDAPI_( HANDLE )             PifMgr_CloseProperties( HANDLE, UINT );
+SHSTDAPI_( int )                PifMgr_GetProperties( HANDLE, LPCSTR, void *, int, UINT );
+SHSTDAPI_( HANDLE )             PifMgr_OpenProperties( LPCWSTR, LPCWSTR, UINT, UINT );
+SHSTDAPI_( int )                PifMgr_SetProperties( HANDLE, LPCSTR, const void *, int, UINT );
+SHSTDAPI_( BOOL )               ReadCabinetState( CABINETSTATE *, int );
+SHSTDAPI_( int )                RealDriveType( int, BOOL );
+SHSTDAPI_( int )                RestartDialog( HWND, LPCWSTR, DWORD );
+SHSTDAPI_( UINT )               SHAddFromPropSheetExtArray( HPSXA, LPFNADDPROPSHEETPAGE, LPARAM );
+SHSTDAPI_( void )               SHAddToRecentDocs( UINT, LPCVOID );
+SHSTDAPI_( void * )             SHAlloc( SIZE_T );
+SHSTDAPI                        SHBindToParent( PCIDLIST_ABSOLUTE, REFIID, void **, PCUITEMID_CHILD * );
+SHSTDAPI_( PIDLIST_ABSOLUTE )   SHBrowseForFolderA( LPBROWSEINFOA );
+SHSTDAPI_( PIDLIST_ABSOLUTE )   SHBrowseForFolderW( LPBROWSEINFOW );
+SHSTDAPI                        SHCLSIDFromString( LPCWSTR, CLSID * );
+SHSTDAPI                        SHCoCreateInstance( LPCWSTR, const CLSID *, IUnknown *, REFIID, void ** );
+SHSTDAPI_( HANDLE )             SHChangeNotification_Lock( HANDLE, DWORD, PIDLIST_ABSOLUTE **, LONG * );
+SHSTDAPI_( BOOL )               SHChangeNotification_Unlock( HANDLE );
+SHSTDAPI_( void )               SHChangeNotify( LONG, UINT, LPCVOID, LPCVOID );
+SHSTDAPI_( BOOL )               SHChangeNotifyDeregister( unsigned long );
+SHSTDAPI_( ULONG )              SHChangeNotifyRegister( HWND, int, LONG, UINT, int, const SHChangeNotifyEntry * );
+SHSTDAPI_( PIDLIST_ABSOLUTE )   SHCloneSpecialIDList( HWND, int, BOOL );
+SHSTDAPI_( int )                SHCreateDirectory( HWND, LPCWSTR );
+SHSTDAPI_( int )                SHCreateDirectoryExA( HWND, LPCSTR, const SECURITY_ATTRIBUTES * );
+SHSTDAPI_( int )                SHCreateDirectoryExW( HWND, LPCWSTR, const SECURITY_ATTRIBUTES * );
+SHSTDAPI_( HPSXA )              SHCreatePropSheetExtArray( HKEY, LPCWSTR, UINT );
+SHSTDAPI                        SHCreateQueryCancelAutoPlayMoniker( IMoniker ** );
+SHSTDAPI                        SHCreateShellFolderView( const SFV_CREATE *, IShellView ** );
+SHSTDAPI                        SHCreateShellFolderViewEx( LPCSFV, IShellView ** );
+SHSTDAPI                        SHCreateStdEnumFmtEtc( UINT, const FORMATETC [], IEnumFORMATETC ** );
+SHSTDAPI                        SHDefExtractIconA( LPCSTR, int, UINT, HICON *, HICON *, UINT );
+SHSTDAPI                        SHDefExtractIconW( LPCWSTR, int, UINT, HICON *, HICON *, UINT );
+SHSTDAPI_( void )               SHDestroyPropSheetExtArray( HPSXA );
+SHSTDAPI                        SHDoDragDrop( HWND, IDataObject *, IDropSource *, DWORD, DWORD * );
+SHSTDAPI_( BOOL )               SHFindFiles( PCIDLIST_ABSOLUTE, PCIDLIST_ABSOLUTE );
+SHSTDAPI_( IContextMenu * )     SHFind_InitMenuPopup( HMENU, HWND, UINT, UINT );
+SHSTDAPI                        SHFormatDrive( HWND, UINT, UINT, UINT );
+SHSTDAPI_( void )               SHFree( void * );
+SHSTDAPI                        SHGetDataFromIDListA( IShellFolder *, PCUITEMID_CHILD, int, void *, int );
+SHSTDAPI                        SHGetDataFromIDListW( IShellFolder *, PCUITEMID_CHILD, int, void *, int );
+SHSTDAPI                        SHGetDesktopFolder( IShellFolder ** );
+SHSTDAPI_( int )                SHGetIconOverlayIndexA( LPCSTR, int );
+SHSTDAPI_( int )                SHGetIconOverlayIndexW( LPCWSTR, int );
+SHSTDAPI                        SHGetInstanceExplorer( IUnknown ** );
+SHSTDAPI                        SHGetMalloc( IMalloc ** );
+SHSTDAPI_( BOOL )               SHGetPathFromIDListA( PCIDLIST_ABSOLUTE, LPSTR );
+SHSTDAPI_( BOOL )               SHGetPathFromIDListW( PCIDLIST_ABSOLUTE, LPWSTR );
+SHSTDAPI_( void )               SHGetSetSettings( LPSHELLSTATE, DWORD, BOOL );
+SHSTDAPI_( void )               SHGetSettings( SHELLFLAGSTATE *, DWORD );
+SHSTDAPI                        SHGetSpecialFolderLocation( HWND, int, PIDLIST_ABSOLUTE * );
+SHSTDAPI_( BOOL )               SHGetSpecialFolderPathA( HWND, LPSTR, int, BOOL );
+SHSTDAPI_( BOOL )               SHGetSpecialFolderPathW( HWND, LPWSTR, int, BOOL );
+SHSTDAPI                        SHILCreateFromPath( LPCWSTR, PIDLIST_ABSOLUTE *, DWORD * );
+SHSTDAPI                        SHLoadInProc( REFCLSID );
+SHSTDAPI_( int )                SHMapPIDLToSystemImageListIndex( IShellFolder *, PCUITEMID_CHILD, int * );
+SHSTDAPI_( BOOL )               SHObjectProperties( HWND, DWORD, PCWSTR, PCWSTR );
+SHSTDAPI_( BOOL )               SHOpenPropSheetW( LPCWSTR, HKEY [], UINT, const CLSID *, IDataObject *, IShellBrowser *, LPCWSTR );
+SHSTDAPI                        SHPathPrepareForWriteA( HWND, IUnknown *, LPCSTR, DWORD );
+SHSTDAPI                        SHPathPrepareForWriteW( HWND, IUnknown *, LPCWSTR, DWORD );
+SHSTDAPI                        SHPropStgCreate( IPropertySetStorage *, REFFMTID, const CLSID *, DWORD, DWORD, DWORD, IPropertyStorage **, UINT * );
+SHSTDAPI                        SHPropStgReadMultiple( IPropertyStorage *, UINT, ULONG, const PROPSPEC [], PROPVARIANT [] );
+SHSTDAPI                        SHPropStgWriteMultiple( IPropertyStorage *, UINT *, ULONG, const PROPSPEC [], PROPVARIANT [], PROPID );
+SHSTDAPI_( UINT )               SHReplaceFromPropSheetExtArray( HPSXA, UINT, LPFNADDPROPSHEETPAGE, LPARAM );
+SHSTDAPI_( DWORD )              SHRestricted( RESTRICTIONS );
+SHSTDAPI_( BOOL )               SHRunControlPanel( LPCWSTR, HWND );
+SHSTDAPI_( void )               SHSetInstanceExplorer( IUnknown * );
+SHSTDAPI_( LRESULT )            SHShellFolderView_Message( HWND, UINT, LPARAM );
+SHSTDAPI                        SHStartNetConnectionDialogW( HWND, LPCWSTR, DWORD );
+SHSTDAPI_( BOOL )               SHValidateUNC( HWND, LPWSTR, UINT );
+SHSTDAPI_( BOOL )               Shell_GetImageLists( HIMAGELIST *, HIMAGELIST * );
+SHSTDAPI_( UINT )               Shell_MergeMenus( HMENU, HMENU, UINT, UINT, UINT, ULONG );
+SHSTDAPI_( BOOL )               SignalFileOpen( PCIDLIST_ABSOLUTE );
+SHSTDAPI_( BOOL )               Win32DeleteFile( LPCWSTR );
+SHSTDAPI_( BOOL )               WriteCabinetState( CABINETSTATE * );
+#if (_WIN32_IE >= 0x0400)
+SHSTDAPI_( PIDLIST_ABSOLUTE )   ILCreateFromPathA( LPCSTR );
+SHSTDAPI_( PIDLIST_ABSOLUTE )   ILCreateFromPathW( LPCWSTR );
+SHSTDAPI                        SHGetRealIDL( IShellFolder *, PCUITEMID_CHILD, PITEMID_CHILD * );
+#endif
+#if (NTDDI_VERSION < 0x06000000)
+SHSTDAPI_( LONG )               PathProcessCommand( LPCWSTR, LPWSTR, int, DWORD );
+SHSTDAPI                        SHLoadOLE( LPARAM );
+#endif
+#if (NTDDI_VERSION >= 0x05000000)
+SHSTDAPI_( void )               SHFlushSFCache( void );
+SHSTDAPI                        SHGetFolderLocation( HWND, int, HANDLE, DWORD, PIDLIST_ABSOLUTE * );
+SHSTDAPI_( int )                SHHandleUpdateImage( PCIDLIST_ABSOLUTE );
+SHSTDAPI                        SHMultiFileProperties( IDataObject *, DWORD );
+SHSTDAPI                        SHSetFolderPathA( int, HANDLE, DWORD, LPCSTR );
+SHSTDAPI                        SHSetFolderPathW( int, HANDLE, DWORD, LPCWSTR );
+SHSTDAPI_( void )               SHUpdateImageA( LPCSTR, int, UINT, int );
+SHSTDAPI_( void )               SHUpdateImageW( LPCWSTR, int, UINT, int );
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+SHSTDAPI_( int )                RestartDialogEx( HWND, LPCWSTR, DWORD, DWORD );
+SHSTDAPI                        SHCreateFileExtractIconW( LPCWSTR, DWORD, REFIID, void ** );
+SHSTDAPI                        SHCreateShellItem( PCIDLIST_ABSOLUTE, IShellFolder *, PCUITEMID_CHILD, IShellItem ** );
+SHSTDAPI                        SHGetAttributesFromDataObject( IDataObject *, DWORD, DWORD *, UINT * );
+SHSTDAPI                        SHGetFolderPathAndSubDirA( HWND, int, HANDLE, DWORD, LPCSTR, LPSTR );
+SHSTDAPI                        SHGetFolderPathAndSubDirW( HWND, int, HANDLE, DWORD, LPCWSTR, LPWSTR );
+SHSTDAPI                        SHLimitInputEdit( HWND, IShellFolder * );
+SHSTDAPI                        SHOpenFolderAndSelectItems( PCIDLIST_ABSOLUTE, UINT, PCUITEMID_CHILD_ARRAY, DWORD );
+SHSTDAPI                        SHParseDisplayName( PCWSTR, IBindCtx *, PIDLIST_ABSOLUTE *, SFGAOF, SFGAOF * );
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+SHSTDAPI                        AssocGetDetailsOfPropKey( IShellFolder *, PCUITEMID_CHILD, const PROPERTYKEY *, VARIANT *, BOOL * );
+SHSTDAPI                        ILLoadFromStreamEx( IStream *, PIDLIST_RELATIVE * );
+SHSTDAPI                        SHBindToFolderIDListParent( IShellFolder *, PCUIDLIST_RELATIVE, REFIID, void **, PCUITEMID_CHILD * );
+SHSTDAPI                        SHBindToFolderIDListParentEx( IShellFolder *, PCUIDLIST_RELATIVE, IBindCtx *, REFIID, void **, PCUITEMID_CHILD * );
+SHSTDAPI                        SHBindToObject( IShellFolder *, PCUIDLIST_RELATIVE, IBindCtx *, REFIID, void ** );
+SHSTDAPI_( void )               SHChangeNotifyRegisterThread( SCNRT_STATUS );
+SHSTDAPI                        SHCreateDataObject( PCIDLIST_ABSOLUTE, UINT, PCUITEMID_CHILD_ARRAY, IDataObject *, REFIID, void ** );
+SHSTDAPI                        SHCreateDefaultContextMenu( const DEFCONTEXTMENU *, REFIID, void ** );
+SHSTDAPI                        SHGetKnownFolderIDList( REFKNOWNFOLDERID, DWORD, HANDLE, PIDLIST_ABSOLUTE * );
+SHSTDAPI                        SHGetKnownFolderPath( REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR * );
+SHSTDAPI_( BOOL )               SHGetPathFromIDListEx( PCIDLIST_ABSOLUTE, PWSTR, DWORD, GPFIDL_FLAGS );
+SHSTDAPI                        SHGetSetFolderCustomSettings( LPSHFOLDERCUSTOMSETTINGS, LPCWSTR, DWORD );
+SHSTDAPI                        SHOpenWithDialog( HWND, const OPENASINFO * );
+SHSTDAPI                        SHSetKnownFolderPath( REFKNOWNFOLDERID, DWORD, HANDLE, PCWSTR );
+SHSTDAPI_( int )                Shell_GetCachedImageIndexA( LPCSTR, int, UINT );
+SHSTDAPI_( int )                Shell_GetCachedImageIndexW( LPCWSTR, int, UINT );
+#endif
+#if (NTDDI_VERSION >= 0x06010000)
+SHSTDAPI                        SHGetKnownFolderItem( REFKNOWNFOLDERID, KNOWN_FOLDER_FLAG, HANDLE, REFIID, void ** );
+SHSTDAPI                        StgMakeUniqueName( IStorage *, PCWSTR, DWORD, REFIID, void ** );
+#endif
+
+/* Functions in SHDOCVW.DLL */
+#if (_WIN32_IE >= 0x0600)
+SHDOCAPI            DoPrivacyDlg( HWND, LPCWSTR, IEnumPrivacyRecords *, BOOL );
+SHDOCAPI_( BOOL )   ImportPrivacySettings( LPCWSTR, BOOL *, BOOL * );
+#endif
+
+/* Functions in SHFOLDER.DLL */
+#if (NTDDI_VERSION >= 0x05000000)
+SHFOLDERAPI SHGetFolderPathA( HWND, int, HANDLE, DWORD, LPSTR );
+SHFOLDERAPI SHGetFolderPathW( HWND, int, HANDLE, DWORD, LPWSTR );
+#endif
+
+/* Functions implemented as macros */
+#define ShellFolderView_ReArrange( x, p ) \
+    (BOOL)SHShellFolderView_Message( x, SFVM_REARRANGE, p )
+#define ShellFolderView_AddObject( x, p ) \
+    (LPARAM)SHShellFolderView_Message( x, SFVM_ADDOBJECT, (LPARAM)(p) )
+#define ShellFolderView_RemoveObject( x, p ) \
+    (LPARAM)SHShellFolderView_Message( x, SFVM_REMOVEOBJECT, (LPARAM)(p) )
+#define ShellFolderView_UpdateObject( x, p ) \
+    (LPARAM)SHShellFolderView_Message( x, SFVM_UPDATEOBJECT, (LPARAM)(p) )
+#define ShellFolderView_GetSelectedObjects( x, p ) \
+    (LPARAM)SHShellFolderView_Message( x, SFVM_GETSELECTEDOBJECTS, (LPARAM)(p) )
+#define ShellFolderView_SetItemPos( x, p1, p2, p3 ) \
+    { \
+        SFV_SETITEMPOS _params; \
+        SHShellFolderView_Message( x, SFVM_SETITEMPOS, (LPARAM)(LPSFV_SETITEMPOS)&_params ); \
+    }
+#define ShellFolderView_SetClipboard( x, p ) \
+    (void)SHShellFolderView_Message( x, SFVM_SETCLIPBOARD, (LPARAM)(DWORD)(p) )
+#define ShellFolderView_SetPoints( x, p ) \
+    (void)SHShellFolderView_Message( x, SFVM_SETPOINTS, (LPARAM)(p) )
+
+/* Map generic function names to the appropriate ANSI or Unicode version. */
+#ifdef UNICODE
+    #define PathIsSlow                      PathIsSlowW
+    #define SHBrowseForFolder               SHBrowseForFolderW
+    #define SHCreateDirectoryEx             SHCreateDirectoryExW
+    #define SHDefExtractIcon                SHDefExtractIconW
+    #define SHGetDataFromIDList             SHGetDataFromIDListW
+    #define SHGetIconOverlayIndex           SHGetIconOverlayIndexW
+    #define SHGetPathFromIDList             SHGetPathFromIDListW
+    #define SHGetSpecialFolderPath          SHGetSpecialFolderPathW
+    #define SHOpenPropSheet                 SHOpenPropSheetW
+    #define SHPathPrepareForWrite           SHPathPrepareForWriteW
+    #define SHStartNetConnectionDialog      SHStartNetConnectionDialogW
+    #define Shell_GetCachedImageIndex       Shell_GetCachedImageIndexW
+    #if (_WIN32_IE >= 0x0400)
+        #define ILCreateFromPath            ILCreateFromPathW
+    #endif
+    #if (NTDDI_VERSION >= 0x05000000)
+        #define SHGetFolderPath             SHGetFolderPathW
+        #define SHSetFolderPath             SHSetFolderPathW
+        #define SHUpdateImage               SHUpdateImageW
+    #endif
+    #if (NTDDI_VERSION >= 0x05010000)
+        #define SHCreateFileExtractIcon     SHCreateFileExtractIconW
+        #define SHGetFolderPathAndSubDir    SHGetFolderPathAndSubDirW
+    #endif
+#else
+    #define PathIsSlow                      PathIsSlowA
+    #define SHBrowseForFolder               SHBrowseForFolderA
+    #define SHCreateDirectoryEx             SHCreateDirectoryExA
+    #define SHDefExtractIcon                SHDefExtractIconA
+    #define SHGetDataFromIDList             SHGetDataFromIDListA
+    #define SHGetIconOverlayIndex           SHGetIconOverlayIndexA
+    #define SHGetPathFromIDList             SHGetPathFromIDListA
+    #define SHGetSpecialFolderPath          SHGetSpecialFolderPathA
+    #define SHPathPrepareForWrite           SHPathPrepareForWriteA
+    #define Shell_GetCachedImageIndex       Shell_GetCachedImageIndexA
+    #if (_WIN32_IE >= 0x0400)
+        #define ILCreateFromPath            ILCreateFromPathA
+    #endif
+    #if (NTDDI_VERSION >= 0x05000000)
+        #define SHGetFolderPath             SHGetFolderPathA
+        #define SHSetFolderPath             SHSetFolderPathA
+        #define SHUpdateImage               SHUpdateImageA
+    #endif
+    #if (NTDDI_VERSION >= 0x05010000)
+        #define SHGetFolderPathAndSubDir    SHGetFolderPathAndSubDirA
+    #endif
+#endif
+
+:include cplusepi.sp
+
+#endif /* _SHLOBJ_H_ */

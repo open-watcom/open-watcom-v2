@@ -24,24 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C++ compiler top level driver.
 *
 ****************************************************************************/
 
+#include "plusplus.h"
 
-#include <string.h>
 #include <signal.h>
-#include <process.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <setjmp.h>
 #include <unistd.h>
 #include <limits.h>
-#include <fcntl.h>
-#include <malloc.h>
 
-#include "plusplus.h"
+#include "walloca.h"
 #include "scan.h"
 #include "memmgr.h"
 #include "stats.h"
@@ -63,7 +58,10 @@
 #include "cgback.h"
 #include "cusage.h"
 #include "brinfo.h"
-#include "idedrv.h"
+#include "errout.h"
+#include "autodep.h"
+#include "swchar.h"
+#include "ialias.h"
 
 #ifndef NDEBUG
 #include <stdio.h>
@@ -95,7 +93,7 @@ static struct {                     // flags:
 };
 
 
-static void CloseFiles()
+static void CloseFiles( void )
 {
     if( CppFile != NULL ) {
         fflush( CppFile );
@@ -108,7 +106,7 @@ static void CloseFiles()
 }
 
 
-static void resetHandlers()
+static void resetHandlers( void )
 {
     CloseFiles();
 }
@@ -147,11 +145,14 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 
 
 int OpenSrcFile(                // OPEN A SOURCE FILE
-    char * filename,            // - file name
+    const char * filename,      // - file name
     boolean is_lib )            // - TRUE ==> is <file>
 {
     boolean     retn;           // - return: TRUE ==> opened ok
     int         save;           // - saved pre-proc status
+
+    // See if there's an alias for this file name
+    filename = IAliasLookup( filename, is_lib );
 
     if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
         PpStartFile();
@@ -174,9 +175,11 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
             }
             CompFlags.cpp_output = 0;
         }
-        CErr2p( ERR_CANT_OPEN_FILE, filename );
+        if( !CompFlags.ignore_fnf ) {
+            CErr2p( ERR_CANT_OPEN_FILE, filename );
+        }
         CompFlags.cpp_output = save;
-        retn = FALSE;
+        retn = CompFlags.ignore_fnf;
     }
     return retn;
 }
@@ -230,7 +233,7 @@ static void openForceIncludeFile( void )
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    InitialMacroFlag = 0;
+    InitialMacroFlag = MFLAG_NONE;
     OpenSrcFile( ForceInclude, FALSE );
     CMemFreePtr( &ForceInclude );
 }
@@ -258,6 +261,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     Environment = env;
     if( setjmp( env ) ) {   /* if fatal error has occurred */
         exit_status |= WPP_FATAL;
+        IAliasFini();
         CtxSetContext( CTX_FINI );
     } else {
         ScanInit();
@@ -280,6 +284,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             CompFlags.cmdline_error = TRUE;
             exit_status |= WPP_ERRORS;
         } else {
+            ErrFileErase();
             if( ! CompFlags.quiet_mode ) {
                 if( CompFlags.batch_file_processing
                  || CompInfo.compfile_max != 1 ) {
@@ -292,26 +297,46 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.cmdline_error = TRUE;
             }
             PTypeCheckInit();       /* must come after command line parsing */
-            ErrFileOpen();          /* open error file just in case */
             if( CompFlags.cpp_output ) {
                 PpOpen();           /* must be before OpenPgmFile() */
             } else {
                 BrinfInit( TRUE );  /* must be before OpenPgmFile() */
             }
-            OpenPgmFile();
-            CtxSetContext( CTX_SOURCE );
-            CompFlags.srcfile_compiled = TRUE;
-            ExitPointAcquire( cpp_preproc );
             if( CompFlags.cpp_output ) {
+                CtxSetContext( CTX_SOURCE );
+                ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_preproc_only );
-                if( ForceInclude ) {
-                    openForceIncludeFile();
+                CompFlags.ignore_fnf = TRUE;
+                CompFlags.cpp_output = FALSE;
+                if( !CompFlags.disable_ialias ) {
+                    OpenSrcFile( "_ialias.h", TRUE );
+                    PpParse();
+                    SrcFileClose( TRUE );
                 }
+                CompFlags.cpp_output = TRUE;
+                CompFlags.ignore_fnf = FALSE;
+                if( ForceInclude ) {
+                    EmitLineNL( 1, WholeFName );
+                    openForceIncludeFile();
+                    PpParse();
+                    SrcFileClose( TRUE );
+                }
+                OpenPgmFile();
                 PpParse();
             } else {
+                OpenPgmFile();
+                CtxSetContext( CTX_SOURCE );
+                CompFlags.srcfile_compiled = TRUE;
+                ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_object );
                 ExitPointAcquire( cpp_analysis );
                 CgFrontModInitInit();       // must be before pchdr read point
+                CompFlags.watch_for_pcheader = FALSE;
+                CompFlags.ignore_fnf = TRUE;
+                if( !CompFlags.disable_ialias ) {
+                    OpenSrcFile( "_ialias.h", TRUE );
+                }
+                CompFlags.ignore_fnf = FALSE;
                 if( CompFlags.use_pcheaders ) {
                     // getting the first token should involve opening
                     // the first #include if there are no definitions
@@ -327,8 +352,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.watch_for_pcheader = FALSE;
                 CompFlags.external_defn_found = 0;
                 ParseDecls();
-                CtxSetContext( CTX_FUNC_GEN );
-                RtnGenerate();
                 CtxSetContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
@@ -340,9 +363,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                         DumpHashStats();
                     }
                 #endif
-                if( CompFlags.external_defn_found == 0 ) {
-                    CErr1( ANSIERR_NO_EXTERNAL_DEFNS_FOUND );
-                }
                 PragmaExtrefsValidate();
                 BrinfWrite();
                 ExitPointRelease( cpp_analysis );
@@ -358,7 +378,14 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     DwarfBrowseEmit();
                     ScopeCreatePCHDebugSym(); // must be done before cg dwarf init
                     CgBackEnd();
+                    if( CompFlags.generate_auto_depend ) {
+                        AdOpen();
+                        AdDump();
+                        AdClose( FALSE );
+                    }
                 }
+                else
+                    AdClose( TRUE );
                 CtxSetContext( CTX_FINI );
                 ExitPointRelease( cpp_object );
             }
@@ -366,6 +393,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     }
     exit_status = makeExitStatus( exit_status );
     CgFrontFini();
+    IAliasFini();
     CloseFiles();
     ExitPointRelease( cpp_front_end );
     return exit_status;
@@ -424,20 +452,17 @@ static int front_end(           // FRONT-END PROCESSING
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );
             IoSuppSetLineBuffering( errout, 256 );
-            #if ( defined(stdaux) || defined(stdprn) ) && ! defined(__NT__)
+            #if defined(__DOS__)
             if( ! CompFlags.dll_subsequent ) {
-            #if defined(stdaux)
                 SrcFileFClose( stdaux );
-            #endif
-            #if defined(stdprn)
                 SrcFileFClose( stdprn );
-            #endif
             }
             #endif
         }
         CppAtExit( &resetHandlers );
         SwitchChar = _dos_switch_char();
         PpInit();
+        IAliasInit();
         exit_status = doCCompile( argv );
         CtxSetContext( CTX_FINI );
         ExitPointRelease( cpp );
@@ -501,11 +526,29 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 }
 
 
+static void reallocTokens( void )   // ALLOCATE STORAGE FOR TOKENS
+{                                   // - tokens need to be writable
+#ifndef __WATCOMC__
+    int i;
+
+    /* Quick hack: The tokens need to be writable, but string literals
+     * often aren't. For Watcom we use -zc switch, otherwise allocate
+     * writable storage manually.
+     * NB: We might want to only copy the tokens that actually need
+     * to be writable.
+     */
+    for( i = 0; i < T_LAST_TOKEN; ++i ) {
+        Tokens[i] = strdup( Tokens[i] );
+    }
+#endif
+}
+
+
 #ifndef NDEBUG
 #define ZAP_NUM 20
 #define ZAP_SIZE 1024
 #define ZAP_CHAR 0xA7
-static void stackZap()          // ZAP 20K OF STACK TO 0xA7
+static void stackZap( void )        // ZAP 20K OF STACK TO 0xA7
 {
     int i;
     char *stack;
@@ -545,6 +588,7 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
     DbgHeapInit();
+    reallocTokens();
     if( dll_data->cmd_line != NULL ) {
         char* vect[4];
         unsigned i = 1;
@@ -566,7 +610,7 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
         if( input[0] == '\0' && output[0] == '\0' ) {
             new_argv = &(dll_data->argv[1]);
         } else {
-            new_argv = _alloca(( dll_data->argc + 2 ) * sizeof( char * ));
+            new_argv = alloca(( dll_data->argc + 2 ) * sizeof( char * ));
             if( new_argv != NULL ) {
                 char **s = &(dll_data->argv[1]);
                 char **d = new_argv;

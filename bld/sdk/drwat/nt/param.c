@@ -41,8 +41,9 @@
 /*
  * AppDebuggerErrMsg
  */
-void AppDebuggerErrMsg( ProcAttatchInfo *info ) {
+void AppDebuggerErrMsg( void *_info ) {
 
+    ProcAttatchInfo *info = _info;
     char        buf[100];
     ProcStats   stats;
 

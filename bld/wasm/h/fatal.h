@@ -29,46 +29,18 @@
 *
 ****************************************************************************/
 
+#ifndef _FATAL_H_
+#define _FATAL_H_
 
-#ifndef FATAL_H
-#include "asmerr.h"
-
-#ifdef _ASM_FATAL_FIX_
-  #undef _ASM_FATAL_FIX_
-  #undef fix
-  #define fix( cmd, number, msg, act, ret )     { number, msg, act, ret }
-
-  typedef void (*err_act)();
-
-  typedef struct {
-      int       num;            // index
-      int       message;        // message displayed
-      err_act   action;         // function to call, if any
-      int       ret;            // exit code
-  } Msg_Struct;
-
-
-  extern const Msg_Struct Fatal_Msg[] = {
-#else
-  #define FATAL_H
-  #undef fix
-  #define fix( cmd, number, msg, act, ret ) cmd
-
-  /* number = number of arguments that follow; ret = return value */
-
-  extern void   Fatal( unsigned msg, ... );
-  extern void   AsmShutDown( void );
-
-  enum {
-#endif
-
-fix( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, 0 ),
-fix( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, 1 ),
-fix( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, 1 ),
-fix( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, 1 ),
-fix( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, 1 ),
-fix( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, 1 ),
-
+enum {
+#undef pick
+#define pick( cmd, number, msg, act, ret )  cmd
+#include "fatald.h"
 };
+
+/* number = number of arguments that follow; ret = return value */
+
+extern void   Fatal( unsigned msg, ... );
+extern void   AsmShutDown( void );
 
 #endif

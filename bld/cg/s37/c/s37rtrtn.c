@@ -39,18 +39,14 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "seldef.h"
-
+#include "makeins.h"
 #include "s37rtrtn.def"
 
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
 extern  name            *AllocIntConst(int);
-extern  instruction     *NewIns(int);
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
-extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  label_handle    RTLabel(int);
 extern  void            AddIns(instruction*);
 extern  seg_id          AskBackSeg(void);

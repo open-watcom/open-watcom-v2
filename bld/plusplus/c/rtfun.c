@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "plusplus.h"
 #include "cgfront.h"
 #include "rtfuncod.h"
@@ -67,7 +65,7 @@ static SYMBOL rtSymbolLookup(   // LOOKUP RUN-TIME SYMBOL IN FILE SCOPE
     SEARCH_RESULT *result;      // - lookup result
     SYMBOL sym;                 // - symbol for lookup
 
-    result = ScopeFindNaked( InternalScope, name );
+    result = ScopeFindNaked( GetInternalScope(), name );
     if( result == NULL ) {
         sym = NULL;
     } else {
@@ -120,7 +118,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
     } else {
         sym_type = GetBasicType( TYP_SINT );
     }
-    sym = SymCreate( sym_type, SC_EXTERN, flags, name, InternalScope );
+    sym = SymCreate( sym_type, SC_EXTERN, flags, name, GetInternalScope() );
     LinkageSet( sym, "C" );
     return sym;
 }
@@ -129,7 +127,7 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
 boolean RunTimeIsThrow(         // TEST IF FUNCTION IS A C++ THROW
     SYMBOL func )               // - function symbol
 {
-    return InternalScope == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0;
+    return GetInternalScope() == SymScope( func ) && ( func->flag & SF_IS_THROW ) != 0;
 }
 
 

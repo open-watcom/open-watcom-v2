@@ -32,7 +32,7 @@
 
 #include "cover.h"
 
-FARPROC PASCAL _Cover_SetWindowsHook( int type, FARPROC p )
+FARPROC PASCAL _Cover_SetWindowsHook( short type, FARPROC p )
 {
-    return( SetWindowsHook( type, SetProc( p, GETPROC_SETWINDOWSHOOK ) ) );
+    return( (FARPROC)SetWindowsHook( type, SetProc( p, GETPROC_SETWINDOWSHOOK ) ) );
 }

@@ -1,0 +1,45 @@
+proj_name = restest
+
+restest_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.suffixes : .rc .res
+
+inc_dirs = -I..
+
+.c: ..
+.rc: ..
+
+ntobjs = msgtbl.nbj
+			  
+objs =              &
+        restest.obj &
+        resproc.obj &
+        verinfo.obj &
+        string.obj  &
+	menu.obj    &
+	dialog.obj  &
+	data.obj    &
+	cursor.obj  &
+	icon.obj    &
+	accel.obj   &
+	bitmap.obj
+
+!ifeq host_os nt
+objs += msgtbl.obj
+libs = version.lib
+!else
+libs = ver.lib
+!endif
+
+extra_l_flags = opt map
+
+$(proj_name).exe : $(objs) $(proj_name).res
+        $(linker) $(lflags) name $^. file { $(objs) } lib { $(libs) }
+	$(rc) $(proj_name).res
+
+$(proj_name).res : $(proj_name).rc
+        $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $< -fo=$@

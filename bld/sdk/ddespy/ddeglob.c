@@ -24,23 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Globals for the DDE Spy.
 *
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "wddespy.h"
 
 HANDLE          Instance;
 HWND            DDEMainWnd;
 DWORD           DDEInstId;
-BOOL            Monitoring[ DDE_MON_LAST - DDE_MON_FIRST + 1 ];
-WndConfigInfo   Tracking[ NO_TRK_WND ];
+BOOL            Monitoring[DDE_MON_LAST - DDE_MON_FIRST + 1];
+WndConfigInfo   Tracking[NO_TRK_WND];
 WndConfigInfo   MainWndConfig;
 DDEConfigInfo   ConfigInfo;
 AliasHdl        HwndAlias;
 AliasHdl        ConvAlias;
 AliasHdl        TaskAlias;
 char            *AppName;
-

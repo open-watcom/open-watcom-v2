@@ -1,0 +1,53 @@
+:CMT. This device definition is to be used with the related driver
+:CMT. and font definitions to test the action of gendev and wgml.
+
+:CMT. Definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. TEST02                          test02
+
+:CMT. Corresponding driver
+:CMT. definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. TDRV02                          testdrv02
+
+:CMT. Font definition files used      Font name
+:CMT. ------------------------------------------------------
+:CMT. TFON00                          tfon00
+:CMT. TFON01                          tfon01
+:CMT. TFON02                          tfon02
+:CMT. TFON03                          tfon03
+:CMT. TFON04                          tfon04
+:CMT. TFON05                          tfon05
+:CMT. TFON06                          tfon06
+:CMT. TFON07                          tfon07
+:CMT. TFON08                          tfon08
+:CMT. TFON09                          tfon09
+:CMT.
+
+:DEVICE
+   defined_name          = 'test02'
+   member_name           = 'test02'
+   driver_name           = 'testdrv02'
+   output_name           = ''
+   output_suffix         = 'tx2'
+   page_width            = 80
+   page_depth            = 66
+   horizontal_base_units = 10
+   vertical_base_units   = 6
+
+:INCLUDE file='dev01.inc'.
+
+:INCLUDE file='dev02.inc'.
+
+:INCLUDE file='dev03.inc'.
+
+:INCLUDE file='dev04.inc'.
+
+:INCLUDE file='dev05.inc'.
+
+:INCLUDE file='dev06.inc'.
+
+:INCLUDE file='dev07.inc'.
+
+:eDEVICE.
+

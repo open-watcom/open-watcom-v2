@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <ddeml.h>
 #include <io.h>
 #include <stdio.h>
@@ -45,7 +45,7 @@
 #include "wremem.h"
 #include "wrememf.h"
 #include "wremsg.h"
-#include "wremsgs.h"
+#include "rcstr.gh"
 #include "wrenames.h"
 #include "wreopts.h"
 #include "wreres.h"
@@ -77,6 +77,8 @@
 
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "aboutdlg.h"
+#include "ldstr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -89,27 +91,31 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern int PASCAL        WinMain        ( HINSTANCE, HINSTANCE, LPSTR, int);
-extern LRESULT WINEXPORT WREMainWndProc ( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WREAbout       ( HWND, WORD, WPARAM, LPARAM );
+extern int PASCAL        WinMain( HINSTANCE, HINSTANCE, LPSTR, int);
+extern LRESULT WINEXPORT WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
+extern Bool WINEXPORT    WRESplash( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WREInit                   ( HINSTANCE );
-static Bool     WREInitInst               ( HINSTANCE );
-static Bool     WREWasAcceleratorHandled  ( MSG * );
-static HWND     WRECreateMDIClientWindow  ( HWND, HINSTANCE );
-static LRESULT  WREHandleMDIArrangeEvents ( WORD );
-static void     WREUpdateScreenPosOpt     ( void );
-static Bool     WRECleanup                ( Bool );
-static Bool     WREProcessArgs            ( char **, int );
-static void     WREDisplayAboutBox        ( HINSTANCE, HWND, UINT );
-static void     WREHideSessions           ( Bool show );
+static Bool     WREInit( HINSTANCE );
+static Bool     WREInitInst( HINSTANCE );
+static Bool     WREWasAcceleratorHandled( MSG * );
+static HWND     WRECreateMDIClientWindow( HWND, HINSTANCE );
+static LRESULT  WREHandleMDIArrangeEvents( WORD );
+static void     WREUpdateScreenPosOpt( void );
+static Bool     WRECleanup( Bool );
+static Bool     WREProcessArgs( char **, int );
+static void     WREDisplaySplashScreen( HINSTANCE, HWND, UINT );
+static void     WREHideSessions( Bool show );
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
+
+#ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -127,17 +133,18 @@ static char      WREMainClass[]      = "WREMainClass";
 Bool WRECreateNewFiles  = FALSE;
 Bool WRENoInterface     = FALSE;
 
-extern Bool        WRERemoveResource          ( WREResInfo * );
+extern Bool WRERemoveResource( WREResInfo * );
 extern Bool pleaseOpenFile( UINT msg );
+Bool WREIsEditWindowDialogMessage( MSG *msg );
 
 /* set the WRES library to use compatible functions */
-WResSetRtns(open,close,read,write,lseek,tell,WREMemAlloc,WREMemFree);
+WResSetRtns( open, close, read, write, lseek, tell, WREMemAlloc, WREMemFree );
 
 static void peekArgs( char **argv, int argc )
 {
     int  i;
 
-    for( i = 1; i<argc; i++ ) {
+    for( i = 1; i < argc; i++ ) {
         if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
             //WRECreateNewFiles = TRUE;
         } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
@@ -173,9 +180,7 @@ static void startEditors( void )
         num_types = res_info->info->dir->NumTypes;
     }
 
-    if( ( ftype != WR_WIN_RC_STR ) &&
-        ( ftype != WR_WIN_RC_MENU ) &&
-        ( ftype != WR_WIN_RC_ACCEL ) ) {
+    if( ftype != WR_WIN_RC_STR && ftype != WR_WIN_RC_MENU && ftype != WR_WIN_RC_ACCEL ) {
         if( WRENoInterface ) {
             if( !editor_started ) {
                 WREDisplayErrorMsg( WRE_INVALIDINPUTFILE );
@@ -195,7 +200,7 @@ static void startEditors( void )
         } else if( ftype == WR_WIN_RC_ACCEL ) {
             type = (uint_16)RT_ACCELERATOR;
         }
-        if( type && WREFindTypeNode( res_info->info->dir, type, NULL ) ) {
+        if( type != 0 && WREFindTypeNode( res_info->info->dir, type, NULL ) ) {
             ret = WRESetResNamesFromType( res_info, type, FALSE, NULL, 0 );
             if( ret ) {
                 editor_started = WREHandleResEdit();
@@ -217,14 +222,12 @@ static void startEditors( void )
             PostMessage( WREMainWin, WM_CLOSE, 0, 0 );
         }
     }
-
-    return;
 }
 
 extern Bool WREIsResInfoWinMsg( LPMSG pmsg );
 
-int PASCAL WinMain ( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
-                     LPSTR     lpszCmdLine,  int       nCmdShow)
+int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
+                    LPSTR lpszCmdLine, int nCmdShow )
 {
     extern char **_argv;
     extern int  _argc;
@@ -232,10 +235,10 @@ int PASCAL WinMain ( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     Bool        ret;
 
     /* touch unused vars to get rid of warning */
-    _wre_touch(lpszCmdLine);
-    _wre_touch(nCmdShow);
+    _wre_touch( lpszCmdLine );
+    _wre_touch( nCmdShow );
 #ifdef __NT__
-    _wre_touch(hinstPrevious);
+    _wre_touch( hinstPrevious );
 #endif
 
     WRInit();
@@ -251,7 +254,7 @@ int PASCAL WinMain ( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 
     /* is this the first instance of the application? */
 #ifndef __NT__
-    if( hinstPrevious == NULL) {
+    if( hinstPrevious == NULL ) {
 #endif
         /* if so call the routine to initialize the application */
         if( !WREInit( hinstCurrent ) ) {
@@ -301,37 +304,37 @@ int PASCAL WinMain ( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 }
 
 /* Function to initialize the first instance of WRE */
-Bool WREInit ( HINSTANCE app_inst )
+Bool WREInit( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
     /* fill in the WINDOW CLASS structure for the main window */
-    wc.style         = CS_DBLCLKS;
-    wc.lpfnWndProc   = WREMainWndProc;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = 0;
-    wc.hInstance     = app_inst;
-    wc.hIcon         = LoadIcon ( app_inst, "WREIcon" );
-    wc.hCursor       = LoadCursor ( (HINSTANCE) NULL, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-    wc.lpszMenuName  = "WREMenu";
+    wc.style = CS_DBLCLKS;
+    wc.lpfnWndProc = WREMainWndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = app_inst;
+    wc.hIcon = LoadIcon( app_inst, "APPLICON" );
+    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = "WREMenu";
     wc.lpszClassName = WREMainClass;
 
     /* register the main window class */
-    if ( !RegisterClass ( &wc ) ) {
-        return ( FALSE );
+    if( !RegisterClass( &wc ) ) {
+        return( FALSE );
     }
 
     /* register the res MDI window class */
-    if ( !WRERegisterResClass ( app_inst ) ) {
-        return ( FALSE );
+    if( !WRERegisterResClass( app_inst ) ) {
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 /* Function to initialize all instances of WRE */
-Bool WREInitInst ( HINSTANCE app_inst )
+Bool WREInitInst( HINSTANCE app_inst )
 {
     RECT        r, screen, t;
     char        *title;
@@ -374,19 +377,17 @@ Bool WREInitInst ( HINSTANCE app_inst )
     /* attempt to create the main application window */
     style = WS_OVERLAPPEDWINDOW;
     if( IsRectEmpty( &r ) ) {
-        WREMainWin =
-            CreateWindow( WREMainClass, title, style,
-                          CW_USEDEFAULT, CW_USEDEFAULT,
-                          CW_USEDEFAULT, CW_USEDEFAULT,
-                          (HWND) NULL, (HMENU) NULL, app_inst, NULL );
+        WREMainWin = CreateWindow( WREMainClass, title, style,
+                                   CW_USEDEFAULT, CW_USEDEFAULT,
+                                   CW_USEDEFAULT, CW_USEDEFAULT,
+                                   (HWND)NULL, (HMENU)NULL, app_inst, NULL );
     } else {
-        WREMainWin =
-            CreateWindow( WREMainClass, title, style,
-                          r.left, r.top, r.right - r.left, r.bottom - r.top,
-                          (HWND) NULL, (HMENU) NULL, app_inst, NULL );
+        WREMainWin = CreateWindow( WREMainClass, title, style,
+                                   r.left, r.top, r.right - r.left, r.bottom - r.top,
+                                   (HWND)NULL, (HMENU)NULL, app_inst, NULL );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WREFreeRCString( title );
     }
 
@@ -396,7 +397,7 @@ Bool WREInitInst ( HINSTANCE app_inst )
         return( FALSE );
     }
 
-    WREMDIWin = WRECreateMDIClientWindow ( WREMainWin, app_inst );
+    WREMDIWin = WRECreateMDIClientWindow( WREMainWin, app_inst );
 
     /* attempt to create the main application ribbon */
     if( !WRECreateRibbon( WREMainWin ) ) {
@@ -409,7 +410,7 @@ Bool WREInitInst ( HINSTANCE app_inst )
         return( FALSE );
     }
 
-    WREMenu = GetMenu ( WREMainWin );
+    WREMenu = GetMenu( WREMainWin );
     if( WREMenu != (HMENU)NULL ) {
         EnableMenuItem( WREMenu, IDM_CUT, MF_GRAYED );
         EnableMenuItem( WREMenu, IDM_COPY, MF_GRAYED );
@@ -425,20 +426,20 @@ Bool WREInitInst ( HINSTANCE app_inst )
 
     /* if the window was created Show and Update it */
     if( !WRENoInterface ) {
-        if ( WREGetOption ( WREOptScreenMax ) ) {
-            ShowWindow ( WREMainWin, SW_SHOWMAXIMIZED );
+        if( WREGetOption( WREOptScreenMax ) ) {
+            ShowWindow( WREMainWin, SW_SHOWMAXIMIZED );
         } else {
-            ShowWindow ( WREMainWin, SW_SHOWNORMAL );
+            ShowWindow( WREMainWin, SW_SHOWNORMAL );
         }
-        UpdateWindow ( WREMainWin );
+        UpdateWindow( WREMainWin );
 
-        WREDisplayAboutBox ( WREInst, WREMainWin, 1250 );
+        WREDisplaySplashScreen( WREInst, WREMainWin, 1250 );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-Bool WREIsEditWindowDialogMessage ( MSG *msg )
+Bool WREIsEditWindowDialogMessage( MSG *msg )
 {
     int ret;
 
@@ -446,20 +447,19 @@ Bool WREIsEditWindowDialogMessage ( MSG *msg )
     ret |= WMenuIsDlgMsg( msg );
     ret |= WStringIsDlgMsg( msg );
 
-    return( (Bool) ret );
+    return( (Bool)ret );
 }
 
-Bool WREWasAcceleratorHandled ( MSG *msg )
+Bool WREWasAcceleratorHandled( MSG *msg )
 {
-
-    if ( !TranslateMDISysAccel ( WREMDIWin, msg ) &&
-         !TranslateAccelerator ( WREMainWin, WREAccel, msg ) ) {
-        return ( FALSE );
+    if( !TranslateMDISysAccel( WREMDIWin, msg ) &&
+        !TranslateAccelerator( WREMainWin, WREAccel, msg ) ) {
+        return( FALSE );
     }
-    return ( TRUE );
+    return( TRUE );
 }
 
-HWND WRECreateMDIClientWindow ( HWND win, HINSTANCE app_inst )
+HWND WRECreateMDIClientWindow( HWND win, HINSTANCE app_inst )
 {
     CLIENTCREATESTRUCT ccs;
     RECT               rect;
@@ -469,25 +469,23 @@ HWND WRECreateMDIClientWindow ( HWND win, HINSTANCE app_inst )
 
     ribbon_depth = WREGetRibbonHeight();
 
-    stat_depth = WREGetStatusDepth ();
+    stat_depth = WREGetStatusDepth();
 
-    GetClientRect ( win, &rect);
+    GetClientRect( win, &rect );
 
-    ccs.hWindowMenu  = GetSubMenu ( GetMenu ( win ), 3 );
+    ccs.hWindowMenu = GetSubMenu( GetMenu( win ), 3 );
     ccs.idFirstChild = WRE_MDI_FIRST;
 
     /* attempt to create the main application edit window */
     client = CreateWindow( "MDIClient", "",
-                           WS_CLIPCHILDREN | WS_CHILD | WS_VISIBLE |
-                               WS_HSCROLL | WS_VSCROLL,
+                           WS_CLIPCHILDREN | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL,
                            0, ribbon_depth,
-                           ( rect.right  - rect.left ),
-                           ( rect.bottom -
-                                ( rect.top + stat_depth + ribbon_depth ) ),
-                           win, (HMENU) NULL, app_inst, &ccs );
+                           rect.right - rect.left,
+                           rect.bottom - (rect.top + stat_depth + ribbon_depth),
+                           win, (HMENU)NULL, app_inst, &ccs );
 
     /* if the window could not be created return FALSE */
-    if( client == NULL) {
+    if( client == NULL ) {
         WREDisplayErrorMsg( WRE_MOCREATEMDICLIENT );
         return( FALSE );
     }
@@ -519,335 +517,352 @@ void WREEnableMenus( Bool enable )
     }
 }
 
-HMENU WREGetMenuHandle ( void )
+HMENU WREGetMenuHandle( void )
 {
-    return ( WREMenu );
+    return( WREMenu );
 }
 
-HWND WREGetMDIWindowHandle ( void )
+HWND WREGetMDIWindowHandle( void )
 {
-    return ( WREMDIWin );
+    return( WREMDIWin );
 }
 
-HWND WREGetMainWindowHandle ( void )
+HWND WREGetMainWindowHandle( void )
 {
-    return ( WREMainWin );
+    return( WREMainWin );
 }
 
-HINSTANCE WREGetAppInstance ( void )
+HINSTANCE WREGetAppInstance( void )
 {
-    return ( WREInst );
+    return( WREInst );
 }
 
-LRESULT WINEXPORT WREMainWndProc( HWND hWnd, UINT message,
-                                  WPARAM wParam, LPARAM lParam )
+LRESULT WINEXPORT WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU       menu;
     LRESULT     ret;
     Bool        pass_to_def;
-    WREResInfo *res_info;
+    WREResInfo  *res_info;
     WORD        wp;
+    about_info  ai;
 
-    if( WRECleanupStarted && ( message != WM_CLOSE ) ) {
-        if ( message == WM_DESTROY ) {
-            PostQuitMessage(0);
+    if( WRECleanupStarted && message != WM_CLOSE ) {
+        if( message == WM_DESTROY ) {
+            PostQuitMessage( 0 );
         }
-        return ( DefFrameProc( hWnd, WREMDIWin, message, wParam, lParam ) );
+        return( DefFrameProc( hWnd, WREMDIWin, message, wParam, lParam ) );
     }
 
     pass_to_def = TRUE;
-    ret         = FALSE;
-    res_info    = WREGetCurrentRes ();
-    menu        = WREGetMenuHandle ();
+    ret = FALSE;
+    res_info = WREGetCurrentRes();
+    menu = WREGetMenuHandle();
 
-    switch (message) {
+    switch( message ) {
+    case WM_DESTROYCLIPBOARD:
+        WRForgetBitmapName();
+        break;
 
-        case WM_DESTROYCLIPBOARD:
-            WRForgetBitmapName();
-            break;
+    case WM_INITMENU:
+        if( wParam == (WPARAM)GetMenu( hWnd ) ) {
+            WRESetCopyMenuItem( hWnd );
+            WRESetPasteMenuItem( hWnd );
+        }
+        break;
 
-        case WM_INITMENU:
-            if( wParam == (WPARAM) GetMenu(hWnd) ) {
-                WRESetCopyMenuItem( hWnd );
-                WRESetPasteMenuItem( hWnd );
-            }
-            break;
+    case WM_MENUSELECT:
+        WREHandleMenuSelect( wParam, lParam );
+        break;
 
-        case WM_MENUSELECT:
-            WREHandleMenuSelect ( wParam, lParam );
-            break;
+    case WM_MOVE:
+        if( IsZoomed( hWnd ) ) {
+            WRESetOption( WREOptScreenMax, TRUE );
+        } else if( !IsIconic( hWnd ) ) {
+            WREUpdateScreenPosOpt();
+            WRESetOption( WREOptScreenMax, FALSE );
+        }
+        break;
 
-        case WM_MOVE:
-            if ( IsZoomed ( hWnd ) ) {
-                WRESetOption ( WREOptScreenMax, TRUE );
-            } else if ( !IsIconic ( hWnd ) ) {
-                WREUpdateScreenPosOpt ();
-                WRESetOption ( WREOptScreenMax, FALSE );
-            }
-            break;
+    case WM_SIZE:
+        if( wParam == SIZE_MAXIMIZED ) {
+            WRESetOption( WREOptScreenMax, TRUE );
+        } else if( wParam == SIZE_MINIMIZED ) {
+            WREHideSessions( FALSE );
+            WREIsMinimized = TRUE;
+        } else {
+            WREUpdateScreenPosOpt();
+            WRESetOption( WREOptScreenMax, FALSE );
+        }
+        if( wParam != SIZE_MINIMIZED && WREIsMinimized ) {
+            WREHideSessions( TRUE );
+            BringWindowToTop( hWnd );
+            WREIsMinimized = FALSE;
+        }
+        WREResizeWindows();
+        pass_to_def = FALSE;
+        break;
 
-        case WM_SIZE:
-            if( wParam == SIZE_MAXIMIZED ) {
-                WRESetOption( WREOptScreenMax, TRUE );
-            } else if( wParam == SIZE_MINIMIZED ) {
-                WREHideSessions( FALSE );
-                WREIsMinimized = TRUE;
-            } else {
-                WREUpdateScreenPosOpt ();
-                WRESetOption( WREOptScreenMax, FALSE );
-            }
-            if( wParam != SIZE_MINIMIZED && WREIsMinimized ) {
-                WREHideSessions( TRUE );
-                BringWindowToTop( hWnd );
-                WREIsMinimized = FALSE;
-            }
-            WREResizeWindows();
+    case ACCEL_I_HAVE_CLOSED:
+        WREEndEditAccelResource( (WAccelHandle)lParam );
+        if( WRENoInterface ) {
+            WRERemoveResource( res_info );
+        }
+        pass_to_def = FALSE;
+        break;
+
+    case ACCEL_PLEASE_SAVEME:
+        WRESaveEditAccelResource( (WAccelHandle)lParam );
+        pass_to_def = FALSE;
+        break;
+
+    case MENU_I_HAVE_CLOSED:
+        WREEndEditMenuResource( (WMenuHandle)lParam );
+        if( WRENoInterface ) {
+            WRERemoveResource( res_info );
+        }
+        pass_to_def = FALSE;
+        break;
+
+    case MENU_PLEASE_SAVEME:
+        WRESaveEditMenuResource( (WMenuHandle)lParam );
+        pass_to_def = FALSE;
+        break;
+
+    case STRING_I_HAVE_CLOSED:
+        WREEndEditStringResource( (WStringHandle)lParam );
+        if( WRENoInterface ) {
+            WRERemoveResource( res_info );
+        }
+        pass_to_def = FALSE;
+        break;
+
+    case STRING_PLEASE_SAVEME:
+        WRESaveEditStringResource( (WStringHandle)lParam );
+        pass_to_def = FALSE;
+        break;
+
+    case ACCEL_PLEASE_OPENME:
+    case MENU_PLEASE_OPENME:
+    case STRING_PLEASE_OPENME:
+        ret = pleaseOpenFile( message );
+        pass_to_def = FALSE;
+        break;
+
+    case WM_COMMAND:
+        wp = LOWORD( wParam );
+        switch( wp ) {
+        case IDM_OPTIONS:
             pass_to_def = FALSE;
             break;
 
-        case ACCEL_I_HAVE_CLOSED:
-            WREEndEditAccelResource( (WAccelHandle) lParam );
-            if( WRENoInterface ) {
-                WRERemoveResource( res_info );
+        case IDM_LOAD_SYMBOLS:
+            WRELoadResourceSymbols( res_info );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_EDIT_SYMBOLS:
+            WREEditResourceSymbols( res_info );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_SAVE_SYMBOLS:
+            WREResourceSaveSymbols( res_info );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_NEW:
+            WRECreateNewResource( NULL );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_OPEN:
+            WREOpenResource( NULL );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_SAVE:
+            WRESaveResource( res_info, FALSE );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_SAVEAS:
+            WRESaveResource( res_info, TRUE );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_DELETE:
+            WREDeleteCurrResource( FALSE );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_PASTE:
+            WREPasteResource( hWnd );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_CUT:
+            WREClipCurrentResource( hWnd, TRUE );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_COPY:
+            WREClipCurrentResource( hWnd, FALSE );
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_NEW_CURSOR:
+            WRENewImageResource( CursorService, (uint_16)RT_GROUP_CURSOR );
+            break;
+
+        case IDM_NEW_BITMAP:
+            WRENewImageResource( BitmapService, (uint_16)RT_BITMAP );
+            break;
+
+        case IDM_NEW_ICON:
+            WRENewImageResource( IconService, (uint_16)RT_GROUP_ICON );
+            break;
+
+        case IDM_NEW_DIALOG:
+            WRENewDialogResource();
+            break;
+
+        case IDM_NEW_FONT:
+        case IDM_NEW_RCDATA:
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_NEW_ACCELERATOR:
+            WRENewAccelResource();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_NEW_MENU:
+            WRENewMenuResource();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_NEW_STRING:
+            WRENewStringResource();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_RES_SAVEAS:
+        case IDM_RES_SAVE_INTO:
+            if( res_info != NULL ) {
+                if( res_info->current_type == (uint_16)RT_STRING ) {
+                    SaveMultObjects( wp == IDM_RES_SAVE_INTO );
+                } else {
+                    SaveObject( wp == IDM_RES_SAVE_INTO );
+                }
             }
             pass_to_def = FALSE;
             break;
 
-        case ACCEL_PLEASE_SAVEME:
-            WRESaveEditAccelResource( (WAccelHandle) lParam );
+        case IDM_RES_EDIT:
+            WREHandleResEdit();
             pass_to_def = FALSE;
             break;
 
-        case MENU_I_HAVE_CLOSED:
-            WREEndEditMenuResource( (WMenuHandle) lParam );
-            if( WRENoInterface ) {
-                WRERemoveResource( res_info );
-            }
+        case IDM_RES_MEM_FLAGS:
+            WREChangeMemFlags();
             pass_to_def = FALSE;
             break;
 
-        case MENU_PLEASE_SAVEME:
-            WRESaveEditMenuResource( (WMenuHandle) lParam );
+        case IDM_RES_RENAME:
+            WRERenameResource();
             pass_to_def = FALSE;
             break;
 
-        case STRING_I_HAVE_CLOSED:
-            WREEndEditStringResource( (WStringHandle) lParam );
-            if( WRENoInterface ) {
-                WRERemoveResource( res_info );
-            }
+        case IDM_MDI_CASCADE:
+        case IDM_MDI_TILEV:
+        case IDM_MDI_TILEH:
+        case IDM_MDI_ARRANGE:
+            WREHandleMDIArrangeEvents( wp );
             pass_to_def = FALSE;
             break;
 
-        case STRING_PLEASE_SAVEME:
-            WRESaveEditStringResource( (WStringHandle) lParam );
-            pass_to_def = FALSE;
-            break;
-
-        case ACCEL_PLEASE_OPENME:
-        case MENU_PLEASE_OPENME:
-        case STRING_PLEASE_OPENME:
-            ret = pleaseOpenFile( message );
-            pass_to_def = FALSE;
-            break;
-
-        case WM_COMMAND:
-            wp = LOWORD(wParam);
-            switch ( wp ) {
-
-                case IDM_OPTIONS:
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_LOAD_SYMBOLS:
-                    WRELoadResourceSymbols( res_info );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_EDIT_SYMBOLS:
-                    WREEditResourceSymbols( res_info );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_SAVE_SYMBOLS:
-                    WREResourceSaveSymbols( res_info );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_NEW:
-                    WRECreateNewResource( NULL );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_OPEN:
-                    WREOpenResource ( NULL );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_SAVE:
-                    WRESaveResource ( res_info, FALSE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_SAVEAS:
-                    WRESaveResource ( res_info, TRUE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_DELETE:
-                    WREDeleteCurrResource( FALSE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_PASTE:
-                    WREPasteResource( hWnd );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_CUT:
-                    WREClipCurrentResource( hWnd, TRUE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_COPY:
-                    WREClipCurrentResource( hWnd, FALSE );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_NEW_CURSOR:
-                    WRENewImageResource( CursorService, (uint_16)RT_GROUP_CURSOR );
-                    break;
-
-                case IDM_NEW_BITMAP:
-                    WRENewImageResource( BitmapService, (uint_16)RT_BITMAP );
-                    break;
-
-                case IDM_NEW_ICON:
-                    WRENewImageResource( IconService, (uint_16)RT_GROUP_ICON );
-                    break;
-
-                case IDM_NEW_DIALOG:
-                    WRENewDialogResource();
-                    break;
-
-                case IDM_NEW_FONT:
-                case IDM_NEW_RCDATA:
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_NEW_ACCELERATOR:
-                    WRENewAccelResource();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_NEW_MENU:
-                    WRENewMenuResource();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_NEW_STRING:
-                    WRENewStringResource();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_RES_SAVEAS:
-                case IDM_RES_SAVE_INTO:
-                    if( res_info != NULL ) {
-                        if( res_info->current_type == (uint_16)RT_STRING ) {
-                            SaveMultObjects( wp == IDM_RES_SAVE_INTO );
-                        } else {
-                            SaveObject ( wp == IDM_RES_SAVE_INTO );
-                        }
-                    }
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_RES_EDIT:
-                    WREHandleResEdit();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_RES_MEM_FLAGS:
-                    WREChangeMemFlags ();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_RES_RENAME:
-                    WRERenameResource ( );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_MDI_CASCADE:
-                case IDM_MDI_TILEV:
-                case IDM_MDI_TILEH:
-                case IDM_MDI_ARRANGE:
-                    WREHandleMDIArrangeEvents ( wp );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_EXIT:
-                    /* clean up before we exit */
-                    PostMessage( WREMainWin, WM_CLOSE, 0, 0 );
-                    break;
-
-                case IDM_SHOW_RIBBON:
-                    WREShowRibbon ( menu );
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_HELP:
-                    WREHelpRoutine();
-                    pass_to_def = FALSE;
-                    break;
-
-                case IDM_ABOUT:
-                    WREDisplayAboutBox ( WREInst, WREMainWin, 0 );
-                    pass_to_def = FALSE;
-                    break;
-            }
-            break;
-
-        case WM_DESTROY:
-            WWinHelp( WREMainWin, "resedt.hlp", HELP_QUIT, 0 );
-            PostQuitMessage(0);
-            break;
-
-        case WRE_FATAL_EXIT:
-            WREFatalExit = TRUE;
-            WREQueryKillApp ( TRUE );
+        case IDM_EXIT:
+            /* clean up before we exit */
             PostMessage( WREMainWin, WM_CLOSE, 0, 0 );
             break;
 
-        case WM_ENDSESSION:
-            if ( !wParam ) {
-                WREFatalExit = FALSE;
-            }
-            break;
-
-        case WM_QUERYENDSESSION:
-            if ( ret = WREQueryKillApp ( FALSE ) ) {
-                WREFatalExit = TRUE;
-            }
+        case IDM_SHOW_RIBBON:
+            WREShowRibbon( menu );
             pass_to_def = FALSE;
             break;
 
-        case WM_CLOSE:
-            /* clean up before we exit */
-            if( WRECleanupStarted ) {
-                pass_to_def = FALSE;
-                break;
-            }
-            WRECleanupStarted  = TRUE;
-            if( !WRECleanup( WREFatalExit ) ) {
-                WRECleanupStarted  = FALSE;
-                pass_to_def = FALSE;
-            }
+        case IDM_HELP:
+            WREHelpRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_HELP_SEARCH:
+            WREHelpSearchRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_HELP_ON_HELP:
+            WREHelpOnHelpRoutine();
+            pass_to_def = FALSE;
+            break;
+
+        case IDM_ABOUT:
+            ai.owner = hWnd;
+            ai.inst = WREInst;
+            ai.name = AllocRCString( WRE_ABOUT_NAME );
+            ai.version = banner1p2( _RESEDIT_VERSION_ );
+            ai.first_cr_year = AllocRCString( WRE_ABOUT_COPYRIGHT_YEAR );
+            ai.title = AllocRCString( WRE_ABOUT_TITLE );
+            DoAbout( &ai );
+            FreeRCString( ai.name );
+            FreeRCString( ai.first_cr_year );
+            FreeRCString( ai.title );
+            pass_to_def = FALSE;
+            break;
+        }
+        break;
+
+    case WM_DESTROY:
+        WWinHelp( WREMainWin, "resedt.hlp", HELP_QUIT, 0 );
+        PostQuitMessage( 0 );
+        break;
+
+    case WRE_FATAL_EXIT:
+        WREFatalExit = TRUE;
+        WREQueryKillApp( TRUE );
+        PostMessage( WREMainWin, WM_CLOSE, 0, 0 );
+        break;
+
+    case WM_ENDSESSION:
+        if( !wParam ) {
+            WREFatalExit = FALSE;
+        }
+        break;
+
+    case WM_QUERYENDSESSION:
+        if( ret = WREQueryKillApp( FALSE ) ) {
+            WREFatalExit = TRUE;
+        }
+        pass_to_def = FALSE;
+        break;
+
+    case WM_CLOSE:
+        /* clean up before we exit */
+        if( WRECleanupStarted ) {
+            pass_to_def = FALSE;
+            break;
+        }
+        WRECleanupStarted = TRUE;
+        if( !WRECleanup( WREFatalExit ) ) {
+            WRECleanupStarted = FALSE;
+            pass_to_def = FALSE;
+        }
     }
 
-    if ( pass_to_def ) {
+    if( pass_to_def ) {
         ret = DefFrameProc( hWnd, WREMDIWin, message, wParam, lParam );
     }
-    return ( ret );
+    return( ret );
 }
 
 void WREHideSessions( Bool show )
@@ -866,12 +881,12 @@ Bool WREHandleResEdit( void )
         return( TRUE );
     }
 
-    ok = WREGetCurrentResource ( &curr );
+    ok = WREGetCurrentResource( &curr );
 
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
-        ok = ( curr.info && curr.type &&
-                 ( curr.info->current_type == (uint_16)RT_STRING ) );
+        ok = (curr.info != NULL && curr.type != NULL &&
+              curr.info->current_type == (uint_16)RT_STRING);
     }
 
     if( ok ) {
@@ -893,48 +908,48 @@ Bool WREHandleResEdit( void )
         }
     }
 
-    return ( ok );
+    return( ok );
 }
 
-LRESULT WREHandleMDIArrangeEvents ( WORD w )
+LRESULT WREHandleMDIArrangeEvents( WORD w )
 {
-    UINT   msg;
-    WPARAM wp;
+    UINT    msg;
+    WPARAM  wp;
 
     wp = 0;
-    switch ( w ) {
-        case IDM_MDI_CASCADE:
-            msg = WM_MDICASCADE;
-            break;
+    switch( w ) {
+    case IDM_MDI_CASCADE:
+        msg = WM_MDICASCADE;
+        break;
 
-        case IDM_MDI_TILEV:
-            msg = WM_MDITILE;
-            wp = MDITILE_VERTICAL;
-            break;
+    case IDM_MDI_TILEV:
+        msg = WM_MDITILE;
+        wp = MDITILE_VERTICAL;
+        break;
 
-        case IDM_MDI_TILEH:
-            msg = WM_MDITILE;
-            wp = MDITILE_HORIZONTAL;
-            break;
+    case IDM_MDI_TILEH:
+        msg = WM_MDITILE;
+        wp = MDITILE_HORIZONTAL;
+        break;
 
-        case IDM_MDI_ARRANGE:
-            msg = WM_MDIICONARRANGE;
-            break;
+    case IDM_MDI_ARRANGE:
+        msg = WM_MDIICONARRANGE;
+        break;
 
-        default:
-            return ( FALSE );
+    default:
+        return( FALSE );
     }
 
-    return ( SendMessage ( WREMDIWin, msg, wp, 0 ) );
+    return( SendMessage( WREMDIWin, msg, wp, 0 ) );
 }
 
-void WREUpdateScreenPosOpt ( void )
+void WREUpdateScreenPosOpt( void )
 {
     RECT        rect;
 
-    GetWindowRect ( WREMainWin, &rect );
+    GetWindowRect( WREMainWin, &rect );
 
-    WRESetScreenPosOption ( &rect );
+    WRESetScreenPosOption( &rect );
 }
 
 void WREResizeWindows( void )
@@ -949,23 +964,20 @@ void WREResizeWindows( void )
         GetClientRect( WREMainWin, &rect );
         WREResizeStatusWindows( &rect );
         WREResizeRibbon( &rect );
-        MoveWindow( WREMDIWin, 0, ribbon_depth,
-                    ( rect.right  - rect.left ),
-                    ( rect.bottom -
-                        ( rect.top + stat_depth + ribbon_depth ) ), TRUE );
+        MoveWindow( WREMDIWin, 0, ribbon_depth, rect.right - rect.left,
+                    rect.bottom - (rect.top + stat_depth + ribbon_depth), TRUE );
     }
 }
 
 Bool WRECleanup( Bool fatal_exit )
 {
     /* clean up before we exit */
-
     if( !WREEndAllStringSessions( fatal_exit ) ||
-        !WREEndAllMenuSessions  ( fatal_exit ) ||
-        !WREEndAllAccelSessions ( fatal_exit ) ||
-        !WREEndAllImageSessions ( fatal_exit ) ||
+        !WREEndAllMenuSessions( fatal_exit ) ||
+        !WREEndAllAccelSessions( fatal_exit ) ||
+        !WREEndAllImageSessions( fatal_exit ) ||
         !WREEndAllDialogSessions( fatal_exit ) ) {
-        return ( FALSE );
+        return( FALSE );
     }
 
     if( fatal_exit || WREQueryKillApp( FALSE ) ) {
@@ -976,18 +988,18 @@ Bool WRECleanup( Bool fatal_exit )
 
     WRESetOption( WREOptScreenMax, IsZoomed( WREMainWin ) );
 
-    WREFiniHints           ();
-    WREOptsShutdown        ();
-    WREDestroyRibbon       ();
-    WREDestroyStatusLine   ();
-    WREShutdownRibbon      ();
-    WREFiniTypeNames       ();
-    WREFiniTotalText       ();
-    WREFiniResources       ();
-    WREShutdownToolBars    ();
-    WREFiniClipboard       ();
-    WRECtl3DFini           ( WREInst );
-    WREFreeFileFilter      ();
+    WREFiniHints();
+    WREOptsShutdown();
+    WREDestroyRibbon();
+    WREDestroyStatusLine();
+    WREShutdownRibbon();
+    WREFiniTypeNames();
+    WREFiniTotalText();
+    WREFiniResources();
+    WREShutdownToolBars();
+    WREFiniClipboard();
+    WRECtl3DFini( WREInst );
+    WREFreeFileFilter();
     JDialogFini();
 
     return( TRUE );
@@ -995,12 +1007,12 @@ Bool WRECleanup( Bool fatal_exit )
 
 Bool WREProcessArgs( char **argv, int argc )
 {
-    int  i;
-    Bool ok;
+    int     i;
+    Bool    ok;
 
     ok = TRUE;
 
-    for( i = 1; i<argc; i++ ) {
+    for( i = 1; i < argc; i++ ) {
         if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
             WRECreateNewFiles = TRUE;
         } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
@@ -1009,7 +1021,7 @@ Bool WREProcessArgs( char **argv, int argc )
             if( WRFileExists( argv[i] ) ) {
                 ok = WREOpenResource( argv[i] ) && ok;
             } else if( WRECreateNewFiles ) {
-                ok = ( WRECreateNewResource( argv[i] ) != NULL ) && ok;
+                ok = (WRECreateNewResource( argv[i] ) != NULL && ok);
             } else {
                 ok = FALSE;
             }
@@ -1024,21 +1036,19 @@ Bool WREProcessArgs( char **argv, int argc )
 }
 
 #include "wrwresid.h"
-extern  WResID *        WR_EXPORT WRMem2WResID  ( void *data, int is32bit );
-extern  int             WR_EXPORT WRWResID2Mem  ( WResID *name, void **data,
-                                                  uint_32 *size, int is32bit );
-void WREDisplayAboutBox ( HINSTANCE inst, HWND parent, UINT msecs )
+extern WResID * WR_EXPORT WRMem2WResID( void *data, int is32bit );
+extern int      WR_EXPORT WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit );
+
+void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
     FARPROC     lpProcAbout;
 
-    lpProcAbout = MakeProcInstance ( (FARPROC) WREAbout, WREInst );
-    JDialogBoxParam( inst, "WREAboutBox", parent, (DLGPROC) lpProcAbout,
-                     (LPARAM) &msecs  );
-    FreeProcInstance ( lpProcAbout );
+    lpProcAbout = MakeProcInstance( (FARPROC)WRESplash, WREInst );
+    JDialogBoxParam( inst, "WRESplashScreen", parent, (DLGPROC)lpProcAbout, (LPARAM)&msecs );
+    FreeProcInstance( lpProcAbout );
 }
 
-Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
-                         WPARAM wParam, LPARAM lParam )
+Bool WINEXPORT WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
     HDC         dc, tdc;
@@ -1046,132 +1056,134 @@ Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
     HWND        w666;
     RECT        rect, arect;
     PAINTSTRUCT ps;
-    WORD        w;
-    char        *title;
+#ifdef __NT__
+    HINSTANCE   hInstUser;
+    PFNLI       pfnLoadImage;
+#endif
 
     static BITMAP    bm;
     static HBITMAP   logo;
     static HBRUSH    brush;
     static COLORREF  color;
 
-    switch ( message ) {
+    switch( message ) {
+    case WM_SYSCOLORCHANGE:
+        WRECtl3dColorChange();
+        break;
 
-        case WM_SYSCOLORCHANGE:
-            WRECtl3dColorChange ();
-            break;
+    case WM_DESTROY:
+        if( logo != NULL ) {
+            DeleteObject( logo );
+        }
+        if( brush != NULL ) {
+            DeleteObject( brush );
+        }
+        break;
 
-        case WM_DESTROY:
-            if ( logo ) {
-                DeleteObject ( logo );
+    case WM_INITDIALOG:
+        msecs = *(UINT *)lParam;
+        if( msecs != 0 ) {
+            timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
+            if( timer != 0 ) {
+                SetWindowLong( hDlg, DWL_USER, (LONG)timer );
             }
-            if ( brush ) {
-                DeleteObject ( brush );
-            }
-            break;
+        }
 
-        case WM_INITDIALOG:
-            msecs = *((UINT *)lParam);
-            if( msecs ) {
-                timer = SetTimer ( hDlg, ABOUT_TIMER, msecs, NULL );
-                if( timer ) {
-                    SetWindowLong( hDlg, DWL_USER, (LONG) timer );
-                    ShowWindow( GetDlgItem( hDlg, IDOK ), SW_HIDE );
-                    title = WREAllocRCString( WRE_APPNAME );
-                    SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM) title );
-                    if( title ) {
-                        WREFreeRCString( title );
-                    }
-                }
-            }
-
+#ifdef __NT__
+        hInstUser = GetModuleHandle( "USER32.DLL" );
+        pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+        if( pfnLoadImage != NULL ) {
+            logo = pfnLoadImage( WREInst, "AboutLogo", IMAGE_BITMAP, 0, 0,
+                                 LR_LOADMAP3DCOLORS );
+        } else {
+#endif
             logo = LoadBitmap( WREInst, "AboutLogo" );
+#ifdef __NT__
+        }
+#endif
 
-            /*
-            color = RGB(128,128,128);
-            */
-            color = GetSysColor ( COLOR_BTNFACE );
-            brush = CreateSolidBrush ( color );
+        //color = RGB( 128, 128, 128 );
+        color = GetSysColor( COLOR_BTNFACE );
+        brush = CreateSolidBrush( color );
 
-            GetObject ( logo, sizeof(BITMAP), &bm );
-            return( TRUE );
+        GetObject( logo, sizeof( BITMAP ), &bm );
+        return( TRUE );
 
 #if 0
 #ifdef __NT__
-        case WM_CTLCOLORSTATIC:
-            if ( brush ) {
-                dc = (HDC) wParam;
-                SetBkColor ( dc, color );
-                return ( (LRESULT) brush );
-            }
-            break;
+    case WM_CTLCOLORSTATIC:
+        if( brush != NULL ) {
+            dc = (HDC)wParam;
+            SetBkColor( dc, color );
+            return( (LRESULT)brush );
+        }
+        break;
 #else
-        case WM_CTLCOLOR:
-            if ( brush ) {
-                dc = (HDC) wParam;
-                if ( HIWORD(lParam) == CTLCOLOR_STATIC ) {
-                    SetBkColor ( dc, color );
-                }
-                return ( (LRESULT) brush );
+    case WM_CTLCOLOR:
+        if( brush != NULL ) {
+            dc = (HDC)wParam;
+            if( HIWORD( lParam ) == CTLCOLOR_STATIC ) {
+                SetBkColor( dc, color );
             }
-            break;
+            return( (LRESULT)brush );
+        }
+        break;
 #endif
 
-        case WM_ERASEBKGND:
-            if ( brush ) {
-                GetClientRect( hDlg, &rect );
-                UnrealizeObject( brush );
-                FillRect( (HDC)wParam, &rect, brush );
-                return ( TRUE );
-            }
-            break;
+    case WM_ERASEBKGND:
+        if( brush != NULL ) {
+            GetClientRect( hDlg, &rect );
+            UnrealizeObject( brush );
+            FillRect( (HDC)wParam, &rect, brush );
+            return( TRUE );
+        }
+        break;
 #endif
 
-        case WM_PAINT:
-            dc = BeginPaint ( hDlg, &ps );
-            if ( dc ) {
-                w666 = GetDlgItem ( hDlg, 666 );
-                GetClientRect ( w666, &rect );
-                GetClientRect ( hDlg, &arect );
-                start = ( arect.right - arect.left - bm.bmWidth ) / 2;
-                MapWindowPoints ( w666, hDlg, (POINT *) &rect, 2 );
-                tdc = CreateCompatibleDC ( dc );
-                old = SelectObject ( tdc, logo );
-                BitBlt ( dc, start, rect.top + 20, bm.bmWidth, bm.bmHeight,
-                         tdc, 0, 0, SRCCOPY );
-                SelectObject ( tdc, old );
-                DeleteDC ( tdc );
-                EndPaint ( hDlg, &ps );
-            }
-            break;
+    case WM_PAINT:
+        dc = BeginPaint( hDlg, &ps );
+        if( dc != NULL ) {
+            w666 = GetDlgItem( hDlg, 666 );
+            GetClientRect( w666, &rect );
+            GetClientRect( hDlg, &arect );
+            start = (arect.right - arect.left - bm.bmWidth) / 2;
+            MapWindowPoints( w666, hDlg, (POINT *)&rect, 2 );
+            tdc = CreateCompatibleDC( dc );
+            old = SelectObject( tdc, logo );
+            BitBlt( dc, start, rect.top + 20, bm.bmWidth, bm.bmHeight, tdc, 0, 0, SRCCOPY );
+            SelectObject( tdc, old );
+            DeleteDC( tdc );
+            EndPaint( hDlg, &ps );
+        }
+        break;
 
-        case WM_TIMER:
-            timer = (UINT) GetWindowLong ( hDlg, DWL_USER );
-            if ( timer ) {
-                KillTimer ( hDlg, timer );
-            }
-            EndDialog ( hDlg, TRUE );
-            return ( TRUE );
-            break;
-
-        case WM_COMMAND:
-            w = LOWORD(wParam);
-            if ( ( w == IDOK ) || ( w == IDCANCEL ) ) {
-                timer = (UINT) GetWindowLong ( hDlg, DWL_USER );
-                if ( timer ) {
-                    KillTimer ( hDlg, timer );
-                }
-                EndDialog(hDlg, TRUE);
-                return ( TRUE );
-            }
-            break;
-
+    case WM_TIMER:
+        timer = (UINT)GetWindowLong( hDlg, DWL_USER );
+        if( timer != 0 ) {
+            KillTimer( hDlg, timer );
+        }
+        EndDialog( hDlg, TRUE );
+        return( TRUE );
     }
 
-    return ( FALSE );
+    return( FALSE );
 }
 
 void CALLBACK WREHelpRoutine( void )
 {
-    WWinHelp( WREMainWin, "resedt.hlp", HELP_CONTENTS, 0 );
+    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_CONTENTS, 0 ) ) {
+        WWinHelp( WREMainWin, "resedt.hlp", HELP_CONTENTS, 0 );
+    }
 }
 
+void CALLBACK WREHelpSearchRoutine( void )
+{
+    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_PARTIALKEY, (DWORD)"" ) ) {
+        WWinHelp( WREMainWin, "resedt.hlp", HELP_PARTIALKEY, (DWORD)"" );
+    }
+}
+
+void CALLBACK WREHelpOnHelpRoutine( void )
+{
+    WWinHelp( WREMainWin, "winhelp.hlp", HELP_HELPONHELP, 0 );
+}

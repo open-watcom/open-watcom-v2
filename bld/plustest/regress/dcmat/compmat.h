@@ -1,7 +1,7 @@
 #ifndef _complexMatrix_h
 #define _complexMatrix_h 1
 
-#include "doubMat.h"
+#include "doubmat.h"
 #include <complex.h>
 typedef Complex complex;
 

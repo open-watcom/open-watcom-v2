@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strstr() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -45,19 +44,19 @@ CHAR_TYPE *__F_NAME(strstr,wcsstr)( const CHAR_TYPE *str,
     CHAR_TYPE           ch;
 
     substrLen = __F_NAME(strlen,wcslen)( substr );
-    if( substrLen == 0 )  return( (CHAR_TYPE*)str );
+    if( substrLen == 0 )
+        return( (CHAR_TYPE*)str );
 
     strLen = __F_NAME(strlen,wcslen)( str );
     maxi = strLen - substrLen + 1;
     ch = substr[0];
 
-    for( i=0; i<maxi; i++ ) {
+    for( i = 0; i < maxi; i++ ) {
         if( str[i] == ch ) {
-            if( !__F_NAME(strncmp,wcsncmp)( str+i, substr, substrLen ) ) {
-                return( (CHAR_TYPE*)str+i );
+            if( !__F_NAME(strncmp,wcsncmp)( str + i, substr, substrLen ) ) {
+                return( (CHAR_TYPE*)str + i );
             }
         }
     }
-
     return( NULL );
 }

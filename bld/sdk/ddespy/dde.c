@@ -24,64 +24,71 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DDE Spy main module.
 *
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "wddespy.h"
 #include "jdlg.h"
 
 #define MAIN_CLASS      "WDDE_MAIN_CLASS"
 
 /*
- * FirstInstInit - register classes and do other initializiation that
+ * firstInstInit - register classes and do other initializiation that
  *                 is only done by the first instance of the spy
  */
-static BOOL FirstInstInit() {
+static BOOL firstInstInit( void )
+{
     WNDCLASS    wc;
 
     /* main window */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) DDEMainWndProc;
+    wc.lpfnWndProc = (LPVOID)DDEMainWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = Instance;
     wc.hIcon = LoadIcon( Instance, "APPLICON" );
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hbrBackground = NULL;
     wc.lpszMenuName = "DDEMENU";
     wc.lpszClassName = MAIN_CLASS;
-    if( !RegisterClass( &wc ) ) return( FALSE );
+    if( !RegisterClass( &wc ) ) {
+        return( FALSE );
+    }
 
     /* tracking windows */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) DDETrackingWndProc;
+    wc.lpfnWndProc = (LPVOID)DDETrackingWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = Instance;
     wc.hIcon = NULL /* LoadIcon( Instance, "HEAPICON" ) */;
-    wc.hCursor = LoadCursor( NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+    wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = TRACKING_CLASS;
-    if( !RegisterClass( &wc ) ) return( FALSE );
+    if( !RegisterClass( &wc ) ) {
+        return( FALSE );
+    }
     RegPushWin( Instance );
     return( TRUE );
-}
+
+} /* firstInstInit */
 
 /*
- * EveryInstInit - do initialization required by every instance of the spy
+ * everyInstInit - do initialization required by every instance of the spy
  */
-static BOOL EveryInstInit( int cmdshow ) {
-
+static BOOL everyInstInit( int cmdshow )
+{
     MemStart();
     JDialogInit();
     ReadConfig();
 #ifndef NOUSE3D
-    Ctl3dRegister( Instance );
-    Ctl3dAutoSubclass( Instance );
+    CvrCtl3DInit( Instance );
+    CvrCtl3dRegister( Instance );
+    CvrCtl3dAutoSubclass( Instance );
 #endif
     HintWndInit( Instance, NULL, 0 );
 
@@ -96,18 +103,26 @@ static BOOL EveryInstInit( int cmdshow ) {
         NULL,                   /* Parent window handle */
         NULL,                   /* Window menu handle */
         Instance,               /* Program instance handle */
-        NULL);                  /* Create parameters */
+        NULL );                 /* Create parameters */
 
-    if( DDEMainWnd == NULL ) return( FALSE );
-    if( !CreateTrackWind() ) return( FALSE );
-    InitTrackWind( DDEMainWnd );
+    if( DDEMainWnd == NULL ) {
+        return( FALSE );
+    }
+    if( !CreateTrackWnd() ) {
+        return( FALSE );
+    }
+    InitTrackWnd( DDEMainWnd );
 
     ShowWindow( DDEMainWnd, cmdshow );
     UpdateWindow( DDEMainWnd );
     return( TRUE );
-}
 
-int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
+} /* everyInstInit */
+
+/*
+ * WinMain - entry point for the application
+ */
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
 
@@ -116,23 +131,28 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     SetInstance( Instance );
 
     if( !InitGblStrings() ) {
-        MessageBox( NULL, "Unable to find string resources", AppName,
-                        MB_OK );
+        MessageBox( NULL, "Unable to find string resources", AppName, MB_OK );
         return( 0 );
     }
     if( previnst == NULL ) {
-        if( !FirstInstInit() ) return( 0 );
+        if( !firstInstInit() ) {
+            return( 0 );
+        }
     }
-    if( !EveryInstInit( cmdshow ) ) return( 0 );
+    if( !everyInstInit( cmdshow ) ) {
+        return( 0 );
+    }
 
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        TranslateMessage( &msg );
+        DispatchMessage( &msg );
     }
     DdeUninitialize( DDEInstId );
     JDialogFini();
 #ifndef NOUSE3D
-    Ctl3dUnregister( Instance );
+    CvrCtl3dUnregister( Instance );
+    CvrCtl3DFini( Instance );
 #endif
     return( 1 );
-}
+
+} /* WinMain */

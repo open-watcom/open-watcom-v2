@@ -1,3 +1,4 @@
+#include <os2.h>
 #include "wv.rc"
 
 ICON 1 "../zapant.ico"

@@ -36,17 +36,17 @@
 #include "dbgerr.h"
 #include "trpfile.h"
 
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern cmd_list         *AllocCmdList(char *,unsigned int );
-extern void             FreeCmdList(cmd_list *);
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
-extern char             *ReScan(char*);
-extern void             ReqEOC(void);
-extern void             PushInpStack(void *,bool (*)(),bool );
-extern void             StdOutNew();
-extern char             *CnvULongHex(unsigned long,char *);
+extern char             *ReScan( char * );
+extern void             ReqEOC( void );
+extern void             PushInpStack( void *, bool (*)(), bool );
+extern void             StdOutNew( void );
+extern char             *CnvULongHex( unsigned long, char * );
 extern char             *CnvULongDec( unsigned long value, char *buff );
-extern void             TypeInpStack(input_type);
+extern void             TypeInpStack( input_type );
 
 extern unsigned         TaskId;
 extern file_components  RemFile;
@@ -56,7 +56,8 @@ static char             FileName[PREFIX_LEN+8+1+3+1] = { '@', 'r' };
 static unsigned         FileNum = 0;
 static bool             CaptureOk;
 
-extern void CaptureError()
+
+extern void CaptureError( void )
 {
     CaptureOk = FALSE;
 }
@@ -84,7 +85,7 @@ OVL_EXTERN bool DoneCapture( cmd_list *cmds, inp_rtn_action action )
 }
 
 
-extern void ProcCapture()
+extern void ProcCapture( void )
 {
     cmd_list    *cmds;
     char        *start;

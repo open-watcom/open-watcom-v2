@@ -24,22 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Edit window implementation.
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
+#include "vi.h"
 #include <limits.h>
-#include "winvi.h"
 #include "winaux.h"
 #include "win.h"
 #include "font.h"
 #include "color.h"
 #include "utils.h"
-#include "keys.h"
 // #include "mdisim.h"
 #include "watcom.h"
 
@@ -73,13 +69,13 @@ static BOOL Init( window *w, void *parm )
     parm = parm;
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    wc.lpfnWndProc = (LPVOID) EditWindowProc;
+    wc.lpfnWndProc = (WNDPROC)EditWindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LPVOID ) * WIN_LAST;
     wc.hInstance = InstanceHandle;
     wc.hIcon = LoadIcon( InstanceHandle, "WATCOMICON" );
-    wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_IBEAM );
-    wc.hbrBackground = (HBRUSH)NULL;
+    wc.hCursor = LoadCursor( (HINSTANCE)NULLHANDLE, IDC_IBEAM );
+    wc.hbrBackground = (HBRUSH)NULLHANDLE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = EditWindowClassName;
     return( RegisterClass( &wc ) );
@@ -91,7 +87,7 @@ static BOOL Init( window *w, void *parm )
  */
 DWORD GetEditStyle( bool is_max )
 {
-    DWORD style = NULL;
+    DWORD style = 0;
     is_max = is_max;
 
     style |= WS_HSCROLL;
@@ -114,8 +110,8 @@ void SetWindowTitle( HWND hwnd )
     if( cinfo != NULL ) {
         if( cinfo->CurrentFile != NULL ) {
             if( cinfo->CurrentFile->dup_count > 0 ) {
-                MySprintf( buff,"%s [%d]", cinfo->CurrentFile->name,
-                                    cinfo->DuplicateID );
+                MySprintf( buff, "%s [%d]", cinfo->CurrentFile->name,
+                           cinfo->DuplicateID );
                  SetWindowText( cinfo->CurrentWindow, buff );
             } else {
                 SetWindowText( cinfo->CurrentWindow, cinfo->CurrentFile->name );
@@ -130,27 +126,28 @@ void SetWindowTitle( HWND hwnd )
  */
 window_id NewEditWindow( void )
 {
-    HWND        edit;
-    RECT        rect;
-    DWORD       style;
-    window_data *wd;
+    HWND            edit;
+    RECT            rect;
+    DWORD           style;
+    window_data     *wd;
     MDICREATESTRUCT mdinew;
 
     if( BAD_ID( EditContainer ) ) {
         return( NO_WINDOW );
     }
     style = GetEditStyle( FALSE );
+    ResizeRoot();
     GetClientRect( EditContainer, &rect );
 
     mdinew.szClass = EditWindowClassName;
     mdinew.szTitle = "Edit Buffer";
     mdinew.hOwner = InstanceHandle;
-    mdinew.x = rect.top ;
-    mdinew.y = rect.left ;
-    mdinew.cx = rect.right- rect.left ;
-    mdinew.cy = rect.bottom - rect.top ;
+    mdinew.x = rect.top;
+    mdinew.y = rect.left;
+    mdinew.cx = rect.right - rect.left;
+    mdinew.cy = rect.bottom - rect.top;
     mdinew.style = style;
-    mdinew.lParam = NULL;
+    mdinew.lParam = 0;
 
     edit =(HWND)SendMessage( EditContainer, WM_MDICREATE, 0, (LONG)(&mdinew) );
 
@@ -175,25 +172,23 @@ static void doPaint( window *w, RECT *r, window_data *wd )
     int         max_lines;
 
     new_info = wd->info;
-    if( new_info != NULL ) {
-        old_info = CurrentInfo;
-        if( new_info != old_info ) {
-            SaveCurrentInfo();
-            RestoreInfo( new_info );
-        }
-        height = FontHeight( WIN_FONT( w ) );
-        start = r->top / height;
-        stop = ( r->bottom + height - 1 ) / height;
-        max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-        if( stop + 1 > max_lines ) {
-            stop = max_lines - 1;
-        }
-        DCInvalidateSomeLines( start, stop );
-        DCDisplaySomeLines( start, stop );
-        DCUpdate();
-        if( new_info != old_info ) {
-            RestoreInfo( old_info );
-        }
+    old_info = CurrentInfo;
+    if( new_info != old_info ) {
+        SaveCurrentInfo();
+        RestoreInfo( new_info );
+    }
+    height = FontHeight( WIN_FONT( w ) );
+    start = r->top / height;
+    stop = (r->bottom + height - 1) / height;
+    max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    if( stop + 1 > max_lines ) {
+        stop = max_lines - 1;
+    }
+    DCInvalidateSomeLines( start, stop );
+    DCDisplaySomeLines( start, stop );
+    DCUpdate();
+    if( new_info != old_info ) {
+        RestoreInfo( old_info );
     }
 
 } /* doPaint */
@@ -215,6 +210,7 @@ static void activateWindow( HWND hwnd )
     if( cinfo != NULL ) {
         BringUpFile( cinfo, TRUE );
     }
+
 } /* activateWindow */
 
 /*
@@ -269,6 +265,7 @@ static void cancelDrag( void )
         hasCapture = FALSE;
         ReleaseCapture();
     }
+
 } /* cancelDrag */
 
 /*
@@ -276,10 +273,10 @@ static void cancelDrag( void )
  */
 static bool isMouseButtonDown( void )
 {
-    if( ( GetKeyState( VK_LBUTTON ) & ~0x01 ) != 0 ) {
+    if( (GetKeyState( VK_LBUTTON ) & ~0x01) != 0 ) {
         return( TRUE );
     }
-    if( ( GetKeyState( VK_RBUTTON ) & ~0x01 ) != 0 ) {
+    if( (GetKeyState( VK_RBUTTON ) & ~0x01) != 0 ) {
         return( TRUE );
     }
     return( FALSE );
@@ -291,8 +288,8 @@ static bool isMouseButtonDown( void )
  */
 static bool jumpToCoord( int row, int col )
 {
-    GoToLineRelCurs( TopOfPage + row - 1 );
-    col = RealCursorPosition( col + LeftColumn );
+    GoToLineRelCurs( LeftTopPos.line + row - 1 );
+    col = RealColumnOnCurrentLine( col + LeftTopPos.column );
     GoToColumnOnCurrentLine( col );
     return( TRUE );
 
@@ -304,7 +301,7 @@ static bool jumpToCoord( int row, int col )
 static void regionSelected( HWND id, int x, int y, BOOL dclick, bool popMenu )
 {
     int         row, col;
-    int         tmp;
+    vi_key      tmp;
 
     MyKillCaret( id );
     ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
@@ -375,7 +372,7 @@ static void mouseButtonDown( HWND id, int x, int y, BOOL shift )
             SetCapture( id );
             hasCapture = TRUE;
         }
-        if (EditFlags.WasOverstrike ) {
+        if( EditFlags.WasOverstrike ) {
             /*  dragging always based on middle of chars
             */
             ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
@@ -454,6 +451,7 @@ static void leftButtonUp( HWND id, int x, int y, BOOL shift )
     MouseX = MouseY = 0;
 
     MyRaiseCaret( id );
+
 } /* leftButtonUp */
 
 /*
@@ -463,6 +461,7 @@ static void rightButtonUp( HWND id, int x, int y, BOOL dclick )
 {
     cancelDrag();
     regionSelected( id, x, y, dclick, TRUE );
+
 } /* rightButtonUp */
 
 /*
@@ -472,6 +471,7 @@ static void leftButtonDoubleClick( HWND id, int x, int y, BOOL dclick )
 {
     cancelDrag();
     regionSelected( id, x, y, dclick, FALSE );
+
 } /* leftButtonDoubleClick */
 
 typedef void (*func)( HWND, int, int, BOOL );
@@ -523,8 +523,8 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
      * windows takes a stupid 16-bit int.
      */
     int wlines;
-    int min,max,pos;
-    int newtop,newlast;
+    int min, max, pos;
+    int newtop, newlast;
 
     if( BAD_ID( id ) ) {
         return;
@@ -539,10 +539,10 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
 
     /* Reduce number of redraws by checking current range and position
     */
-    GetScrollRange( id, SB_VERT, &min, &max );
+    GetScrollRange( id, SB_VERT, (LPINT)&min, (LPINT)&max );
 
-    newlast = last/VScrollBarScale;
-    newtop = top/VScrollBarScale;
+    newlast = last / VScrollBarScale;
+    newtop = top / VScrollBarScale;
 
     if( newlast > 1 ) {
         /* have enough lines to set position normally
@@ -563,6 +563,7 @@ void PositionVerticalScrollThumb( window_id id, linenum top, linenum last )
         SetScrollRange( id, SB_VERT, 1, 2, FALSE );
         SetScrollPos( id, SB_VERT, 2, TRUE );
     }
+
 } /* PositionVerticalScrollThumb */
 
 
@@ -578,6 +579,7 @@ void PositionHorizontalScrollThumb( window_id id, int left )
     // must reset range every time (size changes -> mdisim trashes it)
     SetScrollRange( id, SB_HORZ, 1, HScrollBarScale, FALSE );
     SetScrollPos( id, SB_HORZ, left, TRUE );
+
 } /* PositionHorizontalScrollThumb */
 
 /*
@@ -589,9 +591,9 @@ void EditDrawScrollBars( HWND hwnd )
 
     wd = DATA_FROM_ID( hwnd );
     if( wd->info != NULL ) {
-        PositionVerticalScrollThumb( hwnd, wd->info->TopOfPage,
-                    wd->info->CurrentFile->fcb_tail->end_line );
-        PositionHorizontalScrollThumb( hwnd, wd->info->LeftColumn );
+        PositionVerticalScrollThumb( hwnd, wd->info->LeftTopPos.line,
+                                     wd->info->CurrentFile->fcbs.tail->end_line );
+        PositionHorizontalScrollThumb( hwnd, wd->info->LeftTopPos.column );
     }
 
 } /* EditDrawScrollBars */
@@ -610,22 +612,22 @@ static void doVScroll( HWND hwnd, UINT wparam, LONG lparam )
     lparam = lparam;            // Shut up the compiler for the NT version
     wd = DATA_FROM_ID( hwnd );
 
-    oldTopOfPage = TopOfPage;
+    oldTopOfPage = LeftTopPos.line;
     EditFlags.ScrollCommand = TRUE;
     switch( GET_WM_VSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
-        newTopOfPage = TopOfPage - 1;
+        newTopOfPage = LeftTopPos.line - 1;
         if( EditFlags.JumpyScroll ) {
-            newTopOfPage = TopOfPage - SCROLL_VLINE;
+            newTopOfPage = LeftTopPos.line - SCROLL_VLINE;
         }
         MoveScreenML( newTopOfPage );
         break;
     case SB_LINEDOWN:
-        newTopOfPage = TopOfPage + 1;
+        newTopOfPage = LeftTopPos.line + 1;
         if( EditFlags.JumpyScroll ) {
-            newTopOfPage = TopOfPage + SCROLL_VLINE;
+            newTopOfPage = LeftTopPos.line + SCROLL_VLINE;
         }
-        scrollAmount = newTopOfPage - TopOfPage;
+        scrollAmount = newTopOfPage - LeftTopPos.line;
         MoveScreenML( newTopOfPage );
         break;
     case SB_PAGEUP:
@@ -635,26 +637,25 @@ static void doVScroll( HWND hwnd, UINT wparam, LONG lparam )
         MoveScreenDownPageML();
         break;
     case SB_THUMBTRACK:
-        MoveScreenML( GET_WM_VSCROLL_POS( wparam, lparam )
-                        * VScrollBarScale );
+        MoveScreenML( GET_WM_VSCROLL_POS( wparam, lparam ) * VScrollBarScale );
         break;
     }
     EditFlags.ScrollCommand = FALSE;
 
     text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-    diff = TopOfPage - oldTopOfPage;
+    diff = LeftTopPos.line - oldTopOfPage;
     if( diff != 0 ){
         if( abs( diff ) > text_lines / 2 ) {
             //  faster to redraw whole screen
             DCInvalidateAllLines();
-            GoToLineNoRelCurs( TopOfPage );
+            GoToLineNoRelCurs( LeftTopPos.line );
             DCDisplayAllLines();
             DCUpdate();
         } else {
             //  faster to shift screen up and redraw rest
             // but its difficult to figure out how!
             DCInvalidateAllLines();
-            GoToLineNoRelCurs( TopOfPage );
+            GoToLineNoRelCurs( LeftTopPos.line );
             DCDisplayAllLines();
             DCUpdate();
         }
@@ -676,16 +677,16 @@ static void doHScroll( HWND hwnd, UINT wparam, LONG lparam )
     EditFlags.ScrollCommand = TRUE;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
-        newLeftColumn = LeftColumn - 1;
+        newLeftColumn = LeftTopPos.column - 1;
         if( EditFlags.JumpyScroll ) {
-            newLeftColumn = LeftColumn - SCROLL_HLINE;
+            newLeftColumn = LeftTopPos.column - SCROLL_HLINE;
         }
         MoveScreenLeftRightML( newLeftColumn );
         break;
     case SB_LINEDOWN:
-        newLeftColumn = LeftColumn + 1;
+        newLeftColumn = LeftTopPos.column + 1;
         if( EditFlags.JumpyScroll ) {
-            newLeftColumn = LeftColumn + SCROLL_HLINE;
+            newLeftColumn = LeftTopPos.column + SCROLL_HLINE;
         }
         MoveScreenLeftRightML( newLeftColumn );
         break;
@@ -707,7 +708,8 @@ static void doHScroll( HWND hwnd, UINT wparam, LONG lparam )
     SetWindowCursor();
     SetWindowCursorForReal();
 
-    PositionHorizontalScrollThumb( hwnd, LeftColumn );
+    PositionHorizontalScrollThumb( hwnd, LeftTopPos.column );
+
 } /* doHScroll */
 
 /*
@@ -732,18 +734,22 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         data = MemAlloc( sizeof( window_data ) );
         SetWindowLong( hwnd, WIN_WINDOW * MAGIC_SIZE, (LONG)(LPVOID)(&EditWindow) );
         SetWindowLong( hwnd, WIN_DATA * MAGIC_SIZE, (LONG)(LPVOID)data );
-        break;
+        return( 0 );
     case WM_PAINT:
         if( GetUpdateRect( hwnd, &rect, FALSE ) ) {
             data = DATA_FROM_ID( hwnd );
             hdc = BeginPaint( hwnd, &ps );
-            doPaint( w, &rect, data );
+            if( data->info != NULL ) {
+                doPaint( w, &rect, data );
+            } else {
+                BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
+            }
             EndPaint( hwnd, &ps );
             if( IntersectRect( &rect, &rect, &data->extra ) ) {
-                BlankRectIndirect( hwnd, SEType[ SE_WHITESPACE ].background, &rect );
+                BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
             }
         }
-        break;
+        return( 0 );
     case WM_MOUSEACTIVATE:
         if( hwnd != CurrentWindow ) {
             UnselectRegion();
@@ -752,7 +758,7 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         return( MA_ACTIVATE );
 
     case WM_MDIACTIVATE:
-        if( wparam == FALSE ){
+        if( wparam == FALSE ) {
             // losing focus
             cancelDrag();
             killsel = TRUE;
@@ -782,19 +788,19 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
                 SetWindowCursorForReal();
             }
         }
-        break;
+        return( 0 );
     case WM_LBUTTONDBLCLK:
         doubleClickPending = TRUE;
-        break;
+        return( 0 );
     case WM_RBUTTONUP:
         mouseEvent( hwnd, lparam, FALSE, rightButtonUp );
-        break;
+        return( 0 );
     case WM_RBUTTONDOWN:
         mouseEvent( hwnd, lparam, wparam & MK_SHIFT, rightButtonDown );
-        break;
+        return( 0 );
     case WM_LBUTTONDOWN:
         mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonDown );
-        break;
+        return( 0 );
     case WM_LBUTTONUP:
         if( doubleClickPending ) {
             mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonUp );
@@ -803,55 +809,54 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         } else {
             mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonUp );
         }
-        break;
+        return( 0 );
     case WM_MOUSEMOVE:
         mouseMove( hwnd, (int)(signed_16) LOWORD( lparam ),
-                        (int)(signed_16) HIWORD( lparam ), FALSE );
-        break;
+                   (int)(signed_16) HIWORD( lparam ), FALSE );
+        return( 0 );
     case WM_ERASEBKGND:
         return( TRUE );
     case WM_SYSCHAR:
     case WM_SYSKEYUP:
         return( SendMessage( Root, msg, wparam, lparam ) );
     case WM_SYSKEYDOWN:
+        if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
+            return( 0 );
+        }
+        return( SendMessage( Root, msg, wparam, lparam ) );
     case WM_KEYDOWN:
         if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
-            return( FALSE );
+            return( 0 );
         }
-        if( msg == WM_KEYDOWN ) {
-            return( DefMDIChildProc( hwnd, msg, wparam, lparam ) );
-        } else {
-            return( SendMessage( Root, msg, wparam, lparam ) );
-        }
+        break;
     case WM_VSCROLL:
         doVScroll( hwnd, wparam, lparam );
-        break;
+        return( 0 );
     case WM_HSCROLL:
         doHScroll( hwnd, wparam, lparam );
-        break;
+        return( 0 );
     case WM_CLOSE:
-        if( EditFlags.HoldEverything ) {
-            break;
+        if( !EditFlags.HoldEverything ) {
+            PushMode();
+            data = DATA_FROM_ID( hwnd );
+            SendMessage( EditContainer, WM_MDIRESTORE, (UINT)hwnd, 0L );
+            BringUpFile( data->info, TRUE );
+            if( NextFile() > ERR_NO_ERR ) {
+                FileExitOptionSaveChanges( CurrentFile );
+            }
+            PopMode();
         }
-        PushMode();
-        data = DATA_FROM_ID( hwnd );
-        SendMessage( EditContainer, WM_MDIRESTORE, (UINT)hwnd, 0L );
-        BringUpFile( data->info, TRUE );
-        if( NextFile() > 0 ) {
-            FileExitOptionSaveChanges( CurrentFile );
-        }
-        PopMode();
-        break;
+        return( 0 );
     case WM_TIMER:
         sendDragMessage( hwnd );
-        break;
+        return( 0 );
     case WM_DESTROY:
         data = DATA_FROM_ID( hwnd );
         MemFree( data );
-        break;
+        return( 0 );
     case WM_KILLFOCUS:
         DoneCurrentInsert( TRUE );
-        return( DefMDIChildProc( hwnd, msg, wparam, lparam ) );
+        break;
     case WM_SIZE:
         data = DATA_FROM_ID( hwnd );
         DCResize( data->info );
@@ -864,26 +869,26 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
                 }
                 if( cinfo == sinfo ) {
                     SetFocus( Root );
-                    break;
+                    return( 0 );
                 }
                 if( IsIconic( cinfo->CurrentWindow ) ) {
                     cinfo = cinfo->next;
                 } else {
                     SaveInfo( sinfo );
                     BringUpFile( cinfo, FALSE );
-                    break;
+                    return( 0 );
                 }
             }
         }
         /* either way we remember to reset extra */
         GetClientRect( hwnd, &data->extra );
         data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-                            FontHeight( WIN_FONT( &EditWindow ) );
-    // explicit fall through
+                                         FontHeight( WIN_FONT( &EditWindow ) );
+        break;
     default:
-        return( DefMDIChildProc( hwnd, msg, wparam, lparam ) );
+        break;
     }
-    return( 0 );
+    return( DefMDIChildProc( hwnd, msg, wparam, lparam ) );
 
 } /* EditWindowProc */
 
@@ -898,7 +903,7 @@ BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
     l = l;
     class[0] = 0;
     GetClassName( hwnd, class, sizeof( class ) );
-    class[sizeof(class)-1] = 0;
+    class[sizeof( class ) - 1] = 0;
     if( stricmp( EditWindowClassName, class ) ) {
         return( TRUE );
     }
@@ -906,7 +911,7 @@ BOOL CALLBACK ResizeExtra( HWND hwnd, LPARAM l )
     data = DATA_FROM_ID( hwnd );
     GetClientRect( hwnd, &data->extra );
     data->extra.top = WindowAuxInfo( hwnd, WIND_INFO_TEXT_LINES ) *
-        FontHeight( WIN_FONT( &EditWindow ) );
+                                     FontHeight( WIN_FONT( &EditWindow ) );
 
     return( TRUE );
 

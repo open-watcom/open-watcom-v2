@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Determines type sizes/limits for 32 bit platform
 *
 ****************************************************************************/
 
@@ -45,6 +44,15 @@
 #define TARGET_UINT     4
 #define TARGET_FLOAT    4
 #define TARGET_DOUBLE   8
+#define TARGET_LDOUBLE     10
+#define TARGET_FCOMPLEX     8
+#define TARGET_DCOMPLEX    16
+#define TARGET_LDCOMPLEX   20
+#define TARGET_FIMAGINARY   4
+#define TARGET_DIMAGINARY   8
+#define TARGET_LDIMAGINARY 10
+#define TARGET_BOOL     1
+#define TARGET_WCHAR    2
 #define TARGET_BITS     32
 
 #define TARGET_INT_MAX  2147483647

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <ctype.h>
-#include <string.h>
 #include <banner.h>
 
-#include "plusplus.h"
 #include "errdefns.h"
 #include "memmgr.h"
 #include "preproc.h"
@@ -52,7 +52,7 @@
 #include "vstk.h"
 #include "vbuf.h"
 
-#include "cmdlnprs.gh"
+#include "cmdlnpr1.gh"
 #include "cmdlnsys.h"
 
 static  RINGNAMECTL undef_names =       // #UNDEF NAMES LIST
@@ -76,7 +76,7 @@ void BadCmdLine(                // SIGNAL CMD-LINE ERROR
     CmdLnCtxInfo();
 }
 
-static void CmdLnWarn(          // ISSUE WARNING FOR A SWITCH
+void CmdLnWarn(                 // ISSUE WARNING FOR A SWITCH
     unsigned message )          // - message code
 {
     CErr1( message );
@@ -180,9 +180,7 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     void )
 {
     static char *mac_table[] =  // - predefined macros
-    { "_far16=__far16"
-    , "_Far16=__far16"
-    , "near=__near"
+    { "near=__near"
     , "far=__far"
     , "huge=__huge"
     , "cdecl=__cdecl"
@@ -191,6 +189,7 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     , "interrupt=__interrupt"
     , "_near=__near"
     , "_far=__far"
+    , "_far16=__far16"
     , "_huge=__huge"
     , "_cdecl=__cdecl"
     , "_pascal=__pascal"
@@ -203,16 +202,10 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     , "_self=__self"
     , "_segname=__segname"
     , "_segment=__segment"
-    , "_syscall=_Syscall"
-    , "__syscall=_Syscall"
-    , "_System=_Syscall"
-    , "_Cdecl=__cdecl"
-    , "_Pascal=__pascal"
-    , "__inline=inline"
-    , "_inline=inline"
+    , "_syscall=__syscall"
+    , "_inline=__inline"
     , "_stdcall=__stdcall"
-    , "_fastcall="
-    , "__fastcall="
+    , "_fastcall=__fastcall"
     , "_asm=__asm"
     , "_emit=__emit"
     , NULL
@@ -281,6 +274,8 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         defineStringMacro( "NO_EXT_KEYS" );
     }
     defineKeywordMacros();
+    defineStringMacro( "_WCHAR_T_DEFINED" );
+    defineStringMacro( "_STDWCHAR_T_DEFINED" );
     if( CompFlags.signed_char ) {
         defineStringMacro( "__CHAR_SIGNED__" );              /* 20-apr-90 */
     }
@@ -291,6 +286,9 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         defineStringMacro( "_CPPRTTI" );
     }
     defineFeatureMacros();
+    if( ! CompFlags.no_alternative_tokens ) {
+        DefineAlternativeTokens();
+    }
     PreDefineStringMacro( "__WATCOMC__=" BANSTR( _BANVER ) );
     PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" BANSTR( _BANVER ) );
     // #if __WATCOM_REVISION__ >= 8
@@ -322,9 +320,12 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     CompFlags.extensions_enabled = 1;
     CompFlags.emit_library_names = 1;
     CompFlags.emit_dependencies = 1;
+    CompFlags.emit_targimp_symbols = 1;
     CompFlags.check_truncated_fnames = 1;
     CompFlags.inline_functions = 1;
-    PragInitDefaultInfo();
+
+    SetAuxWatcallInfo();
+
     HeadPacks = NULL;
     HeadEnums = NULL;
     FreePrags = NULL;

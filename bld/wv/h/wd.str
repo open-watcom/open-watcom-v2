@@ -66,16 +66,16 @@ wdpick( Macro_Type,
        "jAction type" )
 
 wdpick( mac_popup_menu,
-	"Popup Menu",
-	"jPopup Menu" )
+        "Popup Menu",
+        "jPopup Menu" )
 
 wdpick( mac_main_menu,
-	"Main Menu",
-	"jMain Menu" )
+        "Main Menu",
+        "jMain Menu" )
 
 wdpick( mac_command_string,
-	"Command",
-	"jCommand" )
+        "Command",
+        "jCommand" )
 
 wdpick( Mac_Window,
        "Window",
@@ -139,8 +139,8 @@ wdpick( Breakpoint_File_Name,
        "jEnter Breakpoint File Name" ) //dlgfile
 
 wdpick( Configuration_File_Name,
-	"Enter Configuration File Name",
-	"jEnter Configuration File Name" ) //dlgfile
+        "Enter Configuration File Name",
+        "jEnter Configuration File Name" ) //dlgfile
 
 wdpick( Symbol_File,
        "Enter Symbol File Name",
@@ -162,12 +162,12 @@ wdpick( DLL_Name,
 
 
 wdpick( The_WATCOM_Debugger,
-       "The Watcom Debugger",
-       "jThe Watcom Debugger" )//dbgmain
+       "Open Watcom Debugger",
+       "jOpen Watcom Debugger" )//dbgmain
 
 wdpick( About_The_WATCOM_Debugger,
-       "About The Watcom Debugger",
-       "jAbout The Watcom Debugger" )//dlgabout
+       "About Open Watcom Debugger",
+       "jAbout Open Watcom Debugger" )//dlgabout
 
 wdpick( GoWhere,
        "Execute to address",
@@ -327,6 +327,10 @@ wdpick( WindowMMX,
        "MMX",
        "jMMX" )
 
+wdpick( WindowXMM,
+       "XMM",
+       "jXMM" )
+
 
 // shown in the source or assembly window when the source file cannot be opened
 
@@ -339,8 +343,8 @@ wdpick( No_Source_Line,
 // these compose the title line in the images window
 
 wdpick( Debug_Information_Type,
-	"Debug Information Type",
-	"jDebug Information Type" )//dbgwimg
+        "Debug Information Type",
+        "jDebug Information Type" )//dbgwimg
 
 wdpick( Debug_Information,
        "Debug Information",

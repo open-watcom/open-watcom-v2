@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous remote access routines (via trap file).
 *
 ****************************************************************************/
 
@@ -38,19 +37,30 @@
 #include "dbglit.h"
 #include "dbgio.h"
 
-extern void RestoreHandlers();
-extern void GrabHandlers();
-extern void StartupErr(char *);
-//extern void TrapErrTranslate( char *, int );
-extern void             FiniCoreSupp(void);
-extern bool             InitCoreSupp(void);
-extern bool             InitFileSupp(void);
-extern bool             InitFileInfoSupp(void);
-extern bool             InitEnvSupp(void);
-extern bool             InitOvlSupp(void);
-extern bool             InitThreadSupp(void);
+
+extern void             RestoreHandlers( void );
+extern void             GrabHandlers( void );
+extern void             StartupErr( char * );
+//extern void             TrapErrTranslate( char *, int );
+extern void             FiniCoreSupp( void );
+extern bool             InitCoreSupp( void );
+extern bool             InitFileSupp( void );
+extern bool             InitFileInfoSupp( void );
+extern bool             InitEnvSupp( void );
+extern bool             InitOvlSupp( void );
+extern bool             InitThreadSupp( void );
+extern bool             InitRunThreadSupp( void );
+extern bool             InitCapabilities( void );
+extern bool             InitAsyncSupp( void );
 extern void             StartupErr( char *err );
 extern char             *DupStr( char * );
+
+#ifdef ENABLE_TRAP_LOGGING
+extern int              OpenTrapTraceFile( const char *path, bool flush_flag );
+extern int              CloseTrapTraceFile( void );
+extern char             *TrpDebugFile;
+extern bool             TrpDebugFileFlush;
+#endif
 
 extern system_config    SysConfig;
 extern char             *TxtBuff;
@@ -61,28 +71,37 @@ unsigned int            MaxPacketLen;
 //NYI: We don't know the size of the incoming err msg.
 #define MAX_ERR_MSG_SIZE        (TXT_LEN/2)
 
-static void TrapFailed()
+#if !defined( BUILD_RFX )
+
+static void TrapFailed( void )
 {
+    KillTrap();
     StartupErr( LIT( ERR_REMOTE_LINK_BROKEN ) );
 }
 
-void InitSuppServices()
+void InitSuppServices( void )
 {
-    InitCoreSupp();
-    InitFileSupp();
-    InitFileInfoSupp();
-    InitEnvSupp();
-    InitThreadSupp();
-    InitOvlSupp();
+    if( InitCoreSupp() ) {
+        InitFileSupp();
+        InitFileInfoSupp();
+        InitEnvSupp();
+        InitThreadSupp();
+        InitRunThreadSupp();
+        InitOvlSupp();
+        InitAsyncSupp();
+        InitCapabilities();
+    }
 }
 
-void FiniSuppServices()
+void FiniSuppServices( void )
 {
     FiniCoreSupp();
 }
 
+#endif
+
 static bool InitTrapError;
-InitTrap( char *trap_file )
+void InitTrap( char *trap_file )
 {
     mx_entry            in[1];
     mx_entry            out[2];
@@ -92,18 +111,28 @@ InitTrap( char *trap_file )
     trap_version        ver;
     char                buff[ TXT_LEN ];
 
+#ifdef ENABLE_TRAP_LOGGING
+    if( TrpDebugFile )
+        OpenTrapTraceFile( TrpDebugFile, TrpDebugFileFlush );
+#endif
 
 /* Don't use TxtBuff except for error -- it may have a Finger message in it */
 
+#if !defined( BUILD_RFX )
     TrapSetFailCallBack( TrapFailed );
+#endif
     InitTrapError = FALSE;
     RestoreHandlers();
     ver.remote = FALSE;
+#if !defined( BUILD_RFX )
     if( stricmp( trap_file, "dumb" ) == 0 ) {
         error = LoadDumbTrap( &ver );
     } else {
+#endif
         error = LoadTrap( trap_file, buff, &ver );
+#if !defined( BUILD_RFX )
     }
+#endif
     GrabHandlers();
     if( error != NULL ) {
         strcpy( buff, error );
@@ -113,6 +142,7 @@ InitTrap( char *trap_file )
     in_mx.req = REQ_CONNECT;
     in_mx.ver.major = TRAP_MAJOR_VERSION;
     in_mx.ver.minor = TRAP_MINOR_VERSION;
+    in_mx.ver.remote = FALSE;
     in[0].ptr = &in_mx;
     in[0].len = sizeof( in_mx );
     out[0].ptr = &out_mx;
@@ -127,9 +157,11 @@ InitTrap( char *trap_file )
         InitTrapError = TRUE;
         StartupErr( buff );
     }
+#if !defined( BUILD_RFX )
     if( !InitTrapError ) {
         InitSuppServices();
     }
+#endif
     if( ver.remote ) {
         _SwitchOn( SW_REMOTE_LINK );
     } else {
@@ -151,13 +183,13 @@ trap_shandle GetSuppId( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, &in, 1, &out );
     if( ret.err != 0 ) return( 0 );
     return( ret.id );
 }
 
 
-void RemoteSuspend()
+void RemoteSuspend( void )
 {
     suspend_req         acc;
 
@@ -165,7 +197,7 @@ void RemoteSuspend()
     TrapSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }
 
-void RemoteResume()
+void RemoteResume( void )
 {
     resume_req          acc;
 
@@ -183,7 +215,7 @@ void RemoteErrMsg( sys_error err, char *msg )
 //    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
 }
 
-void FiniTrap()
+void FiniTrap( void )
 {
     disconnect_req      in_mx;
 
@@ -192,9 +224,15 @@ void FiniTrap()
     RestoreHandlers();
     KillTrap();
     GrabHandlers();
+#if !defined( BUILD_RFX )
     FiniSuppServices();
+#endif
+#ifdef ENABLE_TRAP_LOGGING
+    CloseTrapTraceFile();
+#endif
 }
 
+#if 0
 bool ReInitTrap( char *trap_file )
 /********************************/
 {
@@ -203,3 +241,4 @@ bool ReInitTrap( char *trap_file )
     InitTrap( trap_file );
     return( !InitTrapError );
 }
+#endif

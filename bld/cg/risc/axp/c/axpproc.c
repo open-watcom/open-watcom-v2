@@ -24,20 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Alpha AXP procedure prolog/epilog generation.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
+#include "cgdefs.h"
 #include "coderep.h"
 #include "opcodes.h"
 #include "procdef.h"
 #include "symdbg.h"
 #include "offset.h"
 #include "pattern.h"
-#include "sysmacro.h"
+#include "cgmem.h"
 #include "model.h"
 #include "regset.h"
 #include "rttable.h"
@@ -46,25 +46,24 @@
 #include "axpencod.h"
 #include "feprotos.h"
 
+extern  uint_32         CountBits( uint_32 );
 extern  seg_id          SetOP( seg_id );
 extern  seg_id          AskCodeSeg( void );
 extern  unsigned        DepthAlign( unsigned );
 extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  void            CodeLabel( label_handle, unsigned );
-extern  hw_reg_set      *GPRegs();
-extern  hw_reg_set      *FPRegs();
-extern  hw_reg_set      *ParmRegs();
-extern  hw_reg_set      SaveRegs();
+extern  hw_reg_set      *GPRegs( void );
+extern  hw_reg_set      *FPRegs( void );
+extern  hw_reg_set      *ParmRegs( void );
+extern  hw_reg_set      SaveRegs( void );
 extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenOPINS( uint_8, uint_8, uint_8, uint_8, uint_8 );
-extern  pointer         CGAlloc( int );
-extern  void            CGFree( pointer );
-extern  hw_reg_set      StackReg();
-extern  hw_reg_set      ScratchReg();
-extern  hw_reg_set      VarargsHomePtr();
-extern  void            GenRET();
+extern  hw_reg_set      StackReg( void );
+extern  hw_reg_set      ScratchReg( void );
+extern  hw_reg_set      VarargsHomePtr( void );
+extern  void            GenRET( void );
 extern  sym_handle      AskForLblSym( label_handle );
-extern  offset          AskLocation();
+extern  offset          AskLocation( void );
 extern  void            OutFuncStart( label_handle label, offset start, int line );
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
@@ -76,10 +75,10 @@ extern  label_handle    RTLabel( int );
 extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            FactorInt32( signed_32, signed_16 *, signed_16 *, signed_16 * );
-extern  void            EmitRtnBeg();
-extern  void            EmitProEnd();
-extern  void            EmitEpiBeg();
-extern  void            EmitRtnEnd();
+extern  void            EmitRtnBeg( void );
+extern  void            EmitProEnd( void );
+extern  void            EmitEpiBeg( void );
+extern  void            EmitRtnEnd( void );
 extern  void            EmitFuncStart( label_handle, cg_linenum );
 extern  void            TellKeepLabel( label_handle );
 extern  void            TellProcLabel( label_handle );
@@ -89,10 +88,10 @@ extern  proc_def        *CurrProc;
 extern  block           *HeadBlock;
 extern  type_length     MaxStack;
 
-static  void    CalcUsedRegs() {
-/******************************/
 
-
+static  void    calcUsedRegs( void )
+/**********************************/
+{
     block       *blk;
     instruction *ins;
     name        *result;
@@ -110,7 +109,7 @@ static  void    CalcUsedRegs() {
             if( result != NULL && result->n.class == N_REGISTER ) {
                 HW_TurnOn( used, result->r.reg );
             }
-            /* place holder for big label doesn't really zap anything*/
+            /* placeholder for big label doesn't really zap anything */
             if( ins->head.opcode != OP_NOP ) {
                 HW_TurnOn( used, ins->zap->reg );
             }
@@ -124,15 +123,17 @@ static  void    CalcUsedRegs() {
     HW_TurnOn( CurrProc->state.used, used );
 }
 
-extern  void    AddCacheRegs() {
-/******************************/
+
+extern  void    AddCacheRegs( void )
+/**********************************/
+{
 }
 
 #define _unused( x )    ( (x) = (x) )
 
-static  void    initParmCache( stack_record *pc, type_length *offset ) {
-/**********************************************************************/
-
+static  void    initParmCache( stack_record *pc, type_length *offset )
+/********************************************************************/
+{
     pc->start = *offset;
     pc->size = MaxStack;
     if( MaxStack > 0 ) {
@@ -140,41 +141,47 @@ static  void    initParmCache( stack_record *pc, type_length *offset ) {
     }
 }
 
-static  void    emitParmCacheProlog( stack_record *pc ) {
-/*******************************************************/
 
+static  void    emitParmCacheProlog( stack_record *pc )
+/*****************************************************/
+{
     _unused( pc );
 }
 
-static  void    emitParmCacheEpilog( stack_record *pc ) {
-/*******************************************************/
 
+static  void    emitParmCacheEpilog( stack_record *pc )
+/*****************************************************/
+{
     _unused( pc );
 }
 
-static  void    initLocals( stack_record *locals, type_length *offset ) {
-/***********************************************************************/
 
+static  void    initLocals( stack_record *locals, type_length *offset )
+/*********************************************************************/
+{
     locals->start = *offset;
     locals->size = CurrProc->locals.size;
     *offset += locals->size;
 }
 
-static  void    emitLocalProlog( stack_record *locals ) {
-/*******************************************************/
 
+static  void    emitLocalProlog( stack_record *locals )
+/*****************************************************/
+{
     _unused( locals );
 }
 
-static  void    emitLocalEpilog( stack_record *locals ) {
-/*******************************************************/
 
+static  void    emitLocalEpilog( stack_record *locals )
+/*****************************************************/
+{
     _unused( locals );
 }
 
-static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl ) {
-/*************************************************************/
 
+static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl )
+/***********************************************************/
+{
     hw_reg_set          *curr;
     uint_32             result;
 
@@ -187,44 +194,22 @@ static  uint_32 registerMask( hw_reg_set rs, hw_reg_set *rl ) {
     return( result );
 }
 
-static  uint_32 countBits( uint_32 value ) {
-/******************************************/
 
-    uint_32             r, l;
-
-    r = ( value      ) & 0x55555555;
-    l = ( value >> 1 ) & 0x55555555;
-    value = r + l;
-    r = ( value      ) & 0x33333333;
-    l = ( value >> 2 ) & 0x33333333;
-    value = r + l;
-    r = ( value      ) & 0x0f0f0f0f;
-    l = ( value >> 4 ) & 0x0f0f0f0f;
-    value = r + l;
-    r = ( value      ) & 0x00ff00ff;
-    l = ( value >> 8 ) & 0x00ff00ff;
-    value = r + l;
-    r = ( value       ) & 0x0000ffff;
-    l = ( value >> 16 ) & 0x0000ffff;
-    value = r + l;
-    return( value );
-}
-
-static  void    initSavedRegs( stack_record *saved_regs, type_length *offset ) {
-/******************************************************************************/
-
+static  void    initSavedRegs( stack_record *saved_regs, type_length *offset )
+/****************************************************************************/
+{
     unsigned            num_regs;
     hw_reg_set          saved;
 
-    CalcUsedRegs();
+    calcUsedRegs();
     saved = SaveRegs();
     if( FEAttr( AskForLblSym( CurrProc->label ) ) & FE_VARARGS ) {
         HW_TurnOn( saved, VarargsHomePtr() );
     }
     CurrProc->targ.gpr_mask = registerMask( saved, GPRegs() );
     CurrProc->targ.fpr_mask = registerMask( saved, FPRegs() );
-    num_regs  = countBits( CurrProc->targ.gpr_mask );
-    num_regs += countBits( CurrProc->targ.fpr_mask );
+    num_regs  = CountBits( CurrProc->targ.gpr_mask );
+    num_regs += CountBits( CurrProc->targ.fpr_mask );
     saved_regs->size = num_regs * REG_SIZE;
     saved_regs->start = *offset;
     *offset += saved_regs->size;
@@ -242,21 +227,24 @@ static  void    initSavedRegs( stack_record *saved_regs, type_length *offset ) {
 #define RT_PARM1        1
 #define RT_RET_REG      0
 
-static  void    genMove( uint_32 src, uint_32 dst ) {
-/***************************************************/
 
+static  void    genMove( uint_32 src, uint_32 dst )
+/*************************************************/
+{
     GenOPINS( 0x11, 0x20, AXP_ZERO_SINK, src, dst );
 }
 
-static  void    genLea( uint_32 src, signed_16 disp, uint_32 dst ) {
-/******************************************************************/
 
+static  void    genLea( uint_32 src, signed_16 disp, uint_32 dst )
+/****************************************************************/
+{
     GenMEMINS( LEA_OPCODE, dst, src, disp );
 }
 
-static  uint_32 addressableRegion( stack_record *region, type_length *offset ) {
-/******************************************************************************/
 
+static  uint_32 addressableRegion( stack_record *region, type_length *offset )
+/****************************************************************************/
+{
     if( region->start > AXP_MAX_OFFSET ) {
         *offset = 0;
         GenLOADS32( region->start, AXP_GPR_SCRATCH );
@@ -269,9 +257,10 @@ static  uint_32 addressableRegion( stack_record *region, type_length *offset ) {
     }
 }
 
-static  void    saveReg( uint_32 reg, uint_32 index, type_length offset, bool fp ) {
-/**********************************************************************************/
 
+static  void    saveReg( uint_32 reg, uint_32 index, type_length offset, bool fp )
+/********************************************************************************/
+{
     uint_8              opcode;
 
     opcode = STORE_QUADWORD;
@@ -281,9 +270,10 @@ static  void    saveReg( uint_32 reg, uint_32 index, type_length offset, bool fp
     GenMEMINS( opcode, index, reg, offset );
 }
 
-static  void    loadReg( uint_32 reg, uint_32 index, type_length offset, bool fp ) {
-/**********************************************************************************/
 
+static  void    loadReg( uint_32 reg, uint_32 index, type_length offset, bool fp )
+/********************************************************************************/
+{
     uint_8              opcode;
 
     opcode = LOAD_QUADWORD;
@@ -293,10 +283,11 @@ static  void    loadReg( uint_32 reg, uint_32 index, type_length offset, bool fp
     GenMEMINS( opcode, index, reg, offset );
 }
 
-static  void    saveRegSet( uint_32 index_reg,
-                        uint_32 reg_set, type_length offset, bool fp ) {
-/**********************************************************************/
 
+static  void    saveRegSet( uint_32 index_reg,
+                        uint_32 reg_set, type_length offset, bool fp )
+/********************************************************************/
+{
     uint_32     index;
     uint_32     high_bit;
 
@@ -312,10 +303,11 @@ static  void    saveRegSet( uint_32 index_reg,
     }
 }
 
-static  void    loadRegSet( uint_32 index_reg,
-                        uint_32 reg_set, type_length offset, bool fp ) {
-/**********************************************************************/
 
+static  void    loadRegSet( uint_32 index_reg,
+                        uint_32 reg_set, type_length offset, bool fp )
+/********************************************************************/
+{
     uint_32     index;
 
     index = 0;
@@ -329,34 +321,37 @@ static  void    loadRegSet( uint_32 index_reg,
     }
 }
 
-static  void    emitSavedRegsProlog( stack_record *saved_regs ) {
-/***************************************************************/
 
+static  void    emitSavedRegsProlog( stack_record *saved_regs )
+/*************************************************************/
+{
     type_length         offset;
     uint_32             index_reg;
 
     index_reg = addressableRegion( saved_regs, &offset );
     offset += saved_regs->size;
     saveRegSet( index_reg, CurrProc->targ.gpr_mask, offset, FALSE );
-    offset -= countBits( CurrProc->targ.gpr_mask ) * REG_SIZE;
+    offset -= CountBits( CurrProc->targ.gpr_mask ) * REG_SIZE;
     saveRegSet( index_reg, CurrProc->targ.fpr_mask, offset, TRUE );
 }
 
-static  void    emitSavedRegsEpilog( stack_record *saved_regs ) {
-/***************************************************************/
 
+static  void    emitSavedRegsEpilog( stack_record *saved_regs )
+/*************************************************************/
+{
     type_length         offset;
     uint_32             index_reg;
 
     index_reg = addressableRegion( saved_regs, &offset );
     loadRegSet( index_reg, CurrProc->targ.fpr_mask, offset, TRUE );
-    offset += countBits( CurrProc->targ.fpr_mask ) * REG_SIZE;
+    offset += CountBits( CurrProc->targ.fpr_mask ) * REG_SIZE;
     loadRegSet( index_reg, CurrProc->targ.gpr_mask, offset, FALSE );
 }
 
-static  void    initVarargs( stack_record *varargs, type_length *offset ) {
-/*************************************************************************/
 
+static  void    initVarargs( stack_record *varargs, type_length *offset )
+/***********************************************************************/
+{
     sym_handle          sym;
     fe_attr             attr;
 
@@ -370,9 +365,10 @@ static  void    initVarargs( stack_record *varargs, type_length *offset ) {
     }
 }
 
-static  void    emitVarargsProlog( stack_record *varargs ) {
-/**********************************************************/
 
+static  void    emitVarargsProlog( stack_record *varargs )
+/********************************************************/
+{
     type_length         offset;
     uint_32             index_reg;
 
@@ -385,16 +381,18 @@ static  void    emitVarargsProlog( stack_record *varargs ) {
     }
 }
 
-static  void    emitVarargsEpilog( stack_record *varargs ) {
-/**********************************************************/
 
+static  void    emitVarargsEpilog( stack_record *varargs )
+/********************************************************/
+{
     // NB see FrameSaveEpilog below
     _unused( varargs );
 }
 
-static  void    initFrameSave( stack_record *fs, type_length *offset ) {
-/**********************************************************************/
 
+static  void    initFrameSave( stack_record *fs, type_length *offset )
+/********************************************************************/
+{
     fs->start = *offset;
     fs->size = 0;
     if( CurrProc->targ.base_is_fp ) {
@@ -403,9 +401,10 @@ static  void    initFrameSave( stack_record *fs, type_length *offset ) {
     }
 }
 
-static  void    emitFrameSaveProlog( stack_record *fs ) {
-/*******************************************************/
 
+static  void    emitFrameSaveProlog( stack_record *fs )
+/*****************************************************/
+{
     uint_32     index_reg;
     type_length offset;
 
@@ -415,13 +414,14 @@ static  void    emitFrameSaveProlog( stack_record *fs ) {
     }
 }
 
-static  void    emitFrameSaveEpilog( stack_record *fs ) {
-/*******************************************************/
 
+static  void    emitFrameSaveEpilog( stack_record *fs )
+/*****************************************************/
+{
     uint_32     index_reg;
     type_length offset;
 
-    // NB This instruction must immediately preceed the
+    // NB This instruction must immediately precede the
     // stack restoration instruction - which means that the
     // varargs epilog above must be empty
     if( fs->size != 0 ) {
@@ -430,46 +430,51 @@ static  void    emitFrameSaveEpilog( stack_record *fs ) {
     }
 }
 
-static  void    initSlop( stack_record *slop, type_length *offset ) {
-/*******************************************************************/
 
+static  void    initSlop( stack_record *slop, type_length *offset )
+/*****************************************************************/
+{
     type_length         off;
 
     off = *offset;
     slop->start = off;
     slop->size = 0;
-    if( off & ( STACK_ALIGNMENT - 1 ) ) {
-        slop->size = STACK_ALIGNMENT - ( off & ( STACK_ALIGNMENT - 1 ) );
+    if( off & (STACK_ALIGNMENT - 1) ) {
+        slop->size = STACK_ALIGNMENT - (off & (STACK_ALIGNMENT - 1));
         *offset += slop->size;
     }
 }
 
-static  void    emitSlopProlog( stack_record *fs ) {
-/**************************************************/
 
+static  void    emitSlopProlog( stack_record *fs )
+/************************************************/
+{
     _unused( fs );
 }
 
-static  void    emitSlopEpilog( stack_record *fs ) {
-/**************************************************/
 
+static  void    emitSlopEpilog( stack_record *fs )
+/************************************************/
+{
     _unused( fs );
 }
 
-static  signed_32 frameSize( stack_map *map ) {
-/*********************************************/
 
+static  signed_32 frameSize( stack_map *map )
+/*******************************************/
+{
     signed_32           size;
 
     size = map->slop.size + map->varargs.size + map->frame_save.size + map->saved_regs.size +
                 map->locals.size + map->parm_cache.size;
-    assert( ( size & ( STACK_ALIGNMENT - 1 ) ) == 0 );
+    assert( (size & (STACK_ALIGNMENT - 1)) == 0 );
     return( size );
 }
 
-static  void    initStackLayout( stack_map *map ) {
-/*************************************************/
 
+static  void    initStackLayout( stack_map *map )
+/***********************************************/
+{
     type_length         offset;
 
     offset = 0;
@@ -481,25 +486,31 @@ static  void    initStackLayout( stack_map *map ) {
     initVarargs( &map->varargs, &offset );
 }
 
-static  void    SetupVarargsReg( stack_map *map ) {
-/*************************************************/
 
+static  void    SetupVarargsReg( stack_map *map )
+/***********************************************/
+{
     if( map->varargs.size != 0 ) {
         type_length     offset;
 
         offset = map->varargs.start + 6 * REG_SIZE;
+        // Skip hidden parameter in first register
+        if( CurrProc->targ.return_points != NULL ) {
+            offset += REG_SIZE;
+        }
         if( offset > AXP_MAX_OFFSET ) {
             GenLOADS32( offset, VARARGS_PTR );
             GenOPINS( 0x10, 0x00, AXP_STACK_REG, VARARGS_PTR, VARARGS_PTR );
         } else {
-            genLea( AXP_STACK_REG, map->varargs.start + 6 * REG_SIZE, VARARGS_PTR );
+            genLea( AXP_STACK_REG, offset, VARARGS_PTR );
         }
     }
 }
 
-static  void    emitProlog( stack_map *map ) {
-/********************************************/
 
+static  void    emitProlog( stack_map *map )
+/******************************************/
+{
     type_length         frame_size;
 
     frame_size = frameSize( map );
@@ -543,9 +554,10 @@ static  void    emitProlog( stack_map *map ) {
     }
 }
 
-static  void    emitEpilog( stack_map *map ) {
-/********************************************/
 
+static  void    emitEpilog( stack_map *map )
+/******************************************/
+{
     type_length         frame_size;
 
     if( map->frame_save.size != 0 ) {
@@ -570,9 +582,10 @@ static  void    emitEpilog( stack_map *map ) {
     }
 }
 
-extern  void    GenProlog() {
-/***************************/
 
+extern  void    GenProlog( void )
+/*******************************/
+{
     seg_id              old;
     label_handle        label;
 
@@ -586,7 +599,7 @@ extern  void    GenProlog() {
     CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.hd.line_num );
     if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
         // DbgRtnBeg( CurrProc->targ.debug, lc );
-        EmitRtnBeg( label, HeadBlock->ins.hd.line_num );
+        EmitRtnBeg( /*label, HeadBlock->ins.hd.line_num*/ );
     }
     // keep stack aligned
     CurrProc->locals.size = _RoundUp( CurrProc->locals.size, REG_SIZE );
@@ -601,9 +614,9 @@ extern  void    GenProlog() {
 }
 
 
-extern  void    GenEpilog() {
-/***************************/
-
+extern  void    GenEpilog( void )
+/*******************************/
+{
     seg_id              old;
 
     old = SetOP( AskCodeSeg() );
@@ -616,33 +629,38 @@ extern  void    GenEpilog() {
 }
 
 
-extern  int     AskDisplaySize( int level ) {
-/*******************************************/
-
+extern  int     AskDisplaySize( int level )
+/*****************************************/
+{
     level = level;
     return( 0 );
 }
 
-extern  void    InitStackDepth( block *blk ) {
-/********************************************/
+
+extern  void    InitStackDepth( block *blk )
+/******************************************/
+{
     blk = blk;
 }
 
-extern  type_length     PushSize( type_length len ) {
-/***************************************************/
 
+extern  type_length     PushSize( type_length len )
+/*************************************************/
+{
     if( len < REG_SIZE ) return( REG_SIZE );
     return( len );
 }
 
-extern  type_length     NewBase( name *op ) {
-/*******************************************/
 
+extern  type_length     NewBase( name *op )
+/*****************************************/
+{
     return( TempLocation( op ) );
 }
 
-extern  int     ParmsAtPrologue( void ) {
-/***************************************/
 
+extern  int     ParmsAtPrologue( void )
+/*************************************/
+{
     return( 0 );
 }

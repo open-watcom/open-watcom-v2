@@ -24,22 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Compiler usage information output routines.
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
 
-#if _OS == _QNX
-#include <stdlib.h>
-
-extern char **_argv;
-
-void CCusage()
+static char const *NextUsage( char const *p )
 {
-    print_usage( _argv );
+    while( *p ) {
+        ++p;
+    }
+    return( p + 1 );
+}
+
+
+#if defined( __UNIX__ )
+
+void CCusage( void )
+{
+    char const  *p;
+
+    p = UsageText();
+    while( *p != '\0' ) {
+        ConsMsg( p );
+        p= NextUsage( p );
+    }
 }
 
 #else
@@ -48,49 +59,42 @@ void CCusage()
 #include <unistd.h>
 
 
- #ifdef __OSI__
-   extern       char    *_Copyright;
- #endif
+#ifdef __OSI__
+    extern       char    *_Copyright;
+#endif
 
 
-static char const *NextUsage( char const *p ) {
-    while( *p ) {
-        ++p;
-    }
-    return( p + 1 );
-}
-
-void CCusage()
-{
-    char const  * p;
-    unsigned    count;
-
-    count = 0;
-    #ifdef __OSI__
-        if( _Copyright != NULL ) {
-            ConsMsg( _Copyright );
-            count = 1;
-        }
-    #endif
-    p = UsageText();
-    while( *p != '\0' ) {
-        if( ++count > 20 ) {
-            Wait_for_return();
-            count = 0;
-        }
-        ConsMsg( p );
-        p= NextUsage( p );
-    }
-}
-
-
-local void Wait_for_return()
+local void Wait_for_return( void )
 {
     if( ConTTY() ) {
         char const *press;
         press =  CGetMsgStr( PHRASE_PRESS_RETURN );
         ConsMsg( press );
         getch();
+    }
+}
+
+
+void CCusage( void )
+{
+    char const  *p;
+    unsigned    count;
+
+    count = 2;
+#ifdef __OSI__
+    if( _Copyright != NULL ) {
+        ConsMsg( _Copyright );
+        count = 1;
+    }
+#endif
+    p = UsageText();
+    while( *p != '\0' ) {
+        if( ++count > 21 ) {
+            Wait_for_return();
+            count = 0;
+        }
+        ConsMsg( p );
+        p= NextUsage( p );
     }
 }
 

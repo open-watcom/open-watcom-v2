@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <malloc.h>
 #include "vi.h"
+#include <malloc.h>
 #include "source.h"
 #include "stack.h"
 
@@ -46,7 +44,7 @@ void main( int argc, char *argv[] )
     argc = argc;
     EXEName = argv[-1];
     InitialStack();
-    VarAddGlobal( "OS", "qnx" );
+    VarAddGlobalStr( "OS", "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
     FinalStack();

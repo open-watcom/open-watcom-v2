@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module to initialize errno access.
 *
 ****************************************************************************/
 
@@ -35,6 +34,6 @@
 
 extern void __initerrno( void );
 
-_WCRTLINK unsigned errno;
+_WCRTDATA unsigned  errno;
 
 AXI( __initerrno, INIT_PRIORITY_LIBRARY )

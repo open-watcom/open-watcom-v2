@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Variables window (Locals/Watches).
 *
 ****************************************************************************/
 
@@ -46,56 +45,56 @@
 #include <limits.h>
 #include <string.h>
 
-extern char             *ScanPos(void);
-extern void             ReqEOC(void);
-extern void             ChkExpr(void);
+extern char             *ScanPos( void );
+extern void             ReqEOC( void );
+extern void             ChkExpr( void );
 extern void             StartPrintBuff( char *buff, int len );
-extern void             EndPrintBuff();
-extern void             PrintChar();
-extern void             PrintString();
-extern void             ForcePrintString();
-extern char             *ReScan(char *);
-extern void             NormalExpr(void);
+extern void             EndPrintBuff( void );
+extern void             PrintChar( void );
+extern void             PrintString( void );
+extern void             ForcePrintString( void );
+extern char             *ReScan( char * );
+extern void             NormalExpr( void );
 extern void             EvalLValExpr( int );
-extern void             ExprValue(stack_entry *);
-extern void             PopEntry(void);
-extern void             DupStack(void);
+extern void             ExprValue( stack_entry * );
+extern void             PopEntry( void );
+extern void             DupStack( void );
 extern void             SwapStack( int entry );
-extern void             ExprPurge(void);
-extern bool             TokenName(unsigned int ,char **,unsigned int *);
-extern void             SetTokens(bool );
-extern void             DoPlus(void);
-extern void             DoPoints(type_kind );
-extern void             DoAssign();
-extern char             *CnvLongDec(long,char*);
-extern void             Scan(void);
-extern bool             ScanEOC(void);
-extern int              AddrComp(address,address);
-extern bool             DlgVarExpand(dlg_var_expand *);
-extern bool             DlgAnyExpr(char *,char*,unsigned);
+extern void             ExprPurge( void );
+extern bool             TokenName( unsigned int, char **, unsigned int * );
+extern void             SetTokens( bool );
+extern void             DoPlus( void );
+extern void             DoPoints( type_kind );
+extern void             DoAssign( void );
+extern char             *CnvLongDec( long, char * );
+extern void             Scan( void );
+extern bool             ScanEOC( void );
+extern int              AddrComp( address, address );
+extern bool             DlgVarExpand( dlg_var_expand * );
+extern bool             DlgAnyExpr( char *, char *, unsigned );
 extern WNDOPEN          WndVarOpen;
-extern void             WndVarNewWindow( char *);
-extern void             WndVarInspect( char *);
-extern void             DlgNewWithSym(char*title,char*buff,int len);
-extern char             *StrCopy(char*,char*);
-extern void             BreakOnExprSP(char*);
-extern unsigned         NewCurrRadix(unsigned int );
-extern void             FreezeInpStack();
-extern void             PopInpStack();
-extern void             FreezeStack();
+extern void             WndVarNewWindow( char * );
+extern void             WndVarInspect( char * );
+extern void             DlgNewWithSym( char *title, char *buff, int len );
+extern char             *StrCopy( char *, char * );
+extern void             BreakOnExprSP( char * );
+extern unsigned         NewCurrRadix( unsigned int );
+extern void             FreezeInpStack( void );
+extern void             PopInpStack( void );
+extern void             FreezeStack( void );
 extern void             UnFreezeStack( bool );
-extern void             PrintValue();
-extern char             *DupStr(char*);
+extern void             PrintValue( void );
+extern char             *DupStr( char * );
 extern void             WndInspectExprSP( char *item );
 extern char             *CnvNearestAddr( address, char *, unsigned );
 extern char             *GetCmdName( int );
-extern void             Warn(char *);
+extern void             Warn( char * );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             DUIMsgBox( char *text );
 
 extern tokens           CurrToken;
-extern unsigned char  CurrRadix;
+extern unsigned char    CurrRadix;
 
 extern char             *TxtBuff;
 extern stack_entry      *ExprSP;
@@ -180,7 +179,7 @@ extern  bool    WndVarAdd( a_window *wnd, char *name,
 {
     var_node    *v;
 
-    v = VarAdd( WndVarInfo( wnd ), name, len, expand, FALSE );
+    v = VarAdd1( WndVarInfo( wnd ), name, len, expand, FALSE );
     VarRepaint( wnd );
     return( v != NULL );
 }
@@ -192,6 +191,7 @@ static int VarNumRows( a_window *wnd )
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
+static void     VarMenuItem( a_window *wnd, unsigned id, int row, int piece );
 
 static  WNDMODIFY VarModify;
 static  void    VarModify( a_window *wnd, int row, int piece )
@@ -252,6 +252,33 @@ static  void    VarModify( a_window *wnd, int row, int piece )
             WndRowDirty( wnd, row );
             DbgFree( value );
             DbgFree( name );
+        }
+        break;
+    }
+    VarDoneRow( &var->i );
+    VarOldErrState();
+}
+
+static  void    ExpandRowIfPossible( a_window *wnd, int row, int piece )
+{
+    var_node            *v;
+    type_kind           class;
+    var_window          *var = WndVar( wnd );
+    bool                followable;
+
+    VarErrState();
+    VarKillExprSPCache( &var->i );
+    v = VarFindRow( &var->i, row );
+
+    followable = VarGetStackClass( &class );
+    switch( piece ) {
+    case VAR_PIECE_GADGET:
+    case VAR_PIECE_NAME:
+        if( VarExpandable( class ) || followable || v->expand != NULL ) {
+            VarExpandRowNoCollapse( &var->i, v, row );
+            /* We do NOT want to set current or induce a repaint yet */
+            /* WndNewCurrent( wnd, row, VAR_PIECE_NAME ); */
+            /* VarRepaint( wnd ); */
         }
         break;
     }
@@ -347,10 +374,16 @@ static void VarInitPopup( a_window *wnd, var_window *var, var_node *v )
             if( !VarExpandable( class ) ) {
                 WndMenuEnable( wnd, MENU_VAR_MODIFY, TRUE );
                 WndMenuEnable( wnd, MENU_VAR_BREAK, TRUE );
+                WndMenuEnable( wnd, MENU_VAR_ALLHEX, VarParentIsArray( v ) );
+                WndMenuEnable( wnd, MENU_VAR_ALLDECIMAL, VarParentIsArray( v ) );
                 WndMenuEnable( wnd, MENU_VAR_HEX, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_DECIMAL, !pointer );
                 WndMenuEnable( wnd, MENU_VAR_CHAR, !pointer );
-            }
+            } 
+        }
+        /* Enable even if already expanded */
+        if( VarExpandable( class ) ) {
+            WndMenuEnable( wnd, MENU_VAR_EXPAND_ALL, TRUE );
         }
         if( VarDisplayIsStruct( v ) ) {
             WndMenuEnable( wnd, MENU_VAR_SHOW_CODE, TRUE );
@@ -436,8 +469,16 @@ static void     VarMenuItem( a_window *wnd, unsigned id, int row, int piece )
         VarDisplaySetHex( v );
         VarRepaint( wnd );
         break;
+    case MENU_VAR_ALLHEX:
+        VarDisplaySetArrayHex( v->parent );
+        VarRepaint( wnd );
+        break;
     case MENU_VAR_DECIMAL:
         VarDisplaySetDecimal( v );
+        VarRepaint( wnd );
+        break;
+    case MENU_VAR_ALLDECIMAL:
+        VarDisplaySetArrayDec( v->parent );
         VarRepaint( wnd );
         break;
     case MENU_VAR_CHAR:
@@ -536,6 +577,57 @@ static void     VarMenuItem( a_window *wnd, unsigned id, int row, int piece )
         VarRepaint( wnd );
         VarDeExpand( v );
         VarDelete( &var->i, v );
+        break;
+    case MENU_VAR_EXPAND_ALL:
+        {
+            int expand_row = row;
+            int num_rows = VarNumRows( wnd );
+            var_node * v_sibling = NULL;
+            
+            /*
+             *  If we are a root node, then we have no sibling. If we have a parent, then we may have a sibling but we may
+             *  also by the last leaf node of our parent so we need to check out to see who our parents next sibling is and
+             *  stop there.
+             */
+            if( v->parent ) {
+                var_node * v_iter = v->parent->expand;
+                
+                while( v_iter ) {
+                    
+                    if( v_iter == v ){
+                        v_sibling = v_iter->next;
+                        break;   
+                    }
+                    v_iter = v_iter->next;   
+                }
+                
+                if( NULL == v_sibling ) {   /* last element, but may be more following. track grandparent */
+                    if( v->parent->parent ) {
+                        var_node * v_iter = v->parent->parent->expand;
+                
+                        while( v_iter ) {
+                            if( v_iter == v->parent ) {
+                                v_sibling = v_iter->next;
+                                break;   
+                            }
+                            v_iter = v_iter->next;   
+                        }
+                    }
+                }    
+            }
+            
+            for( ; expand_row < num_rows; expand_row++ ) {
+                
+                var_node * v_next = VarFindRowNode( &var->i, expand_row );
+                if( v_next == v_sibling )
+                    break;
+                    
+                ExpandRowIfPossible( wnd, expand_row, VAR_PIECE_GADGET );
+                num_rows = VarNumRows( wnd );
+            }
+        }
+        VarRepaint( wnd );
+        break;
     }
     if( need_reset ) VarOldErrState();
     VarDoneRow( &var->i );
@@ -558,62 +650,6 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->name_end = name_len + line->indent;
     var->i.name_end_row = row;
 }
-
-
-var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdepth, int *pinherit )
-{
-    var_node    *row_v;
-    var_node    *v;
-
-    if( piece >= VAR_PIECE_LAST ) return( NULL );
-    if( VarFirstNode( i ) == NULL ) return( NULL );
-    if( row >= VarRowTotal( i ) ) return( NULL );
-    row_v = VarFindRowNode( i, row );
-    if( !row_v->value_valid ) {
-        VarSetValue( row_v, LIT( Quest_Marks ) );
-        row_v->value_valid = FALSE;
-    }
-    if( !row_v->gadget_valid ) {
-        VarSetGadget( row_v, VARGADGET_NONE );
-        row_v->gadget_valid = FALSE;
-    }
-    v = row_v;
-    if( piece == VAR_PIECE_NAME ||
-        ( piece == VAR_PIECE_GADGET && row_v->gadget_valid ) ||
-        ( piece == VAR_PIECE_VALUE && row_v->value_valid ) ) {
-        VarError = FALSE;
-    } else if( !_IsOn( SW_TASK_RUNNING ) ) {
-        if( row == i->exprsp_cacherow && i->exprsp_cache != NULL ) {
-            VarError = FALSE;
-            v = i->exprsp_cache;
-        } else if( row == i->exprsp_cacherow && i->exprsp_cache_is_error ) {
-            VarError = TRUE;
-            v = NULL;
-        } else {
-            VarErrState();
-            v = VarFindRow( i, row );
-            VarOldErrState();
-            i->exprsp_cacherow = row;
-            i->exprsp_cache = v;
-            i->exprsp_cache_is_error = VarError;
-        }
-        if( v == NULL ) {
-            if( !VarError ) return( NULL );
-            v = row_v;
-        }
-        VarNodeInvalid( v );
-        VarErrState();
-        ExprValue( ExprSP );
-        VarSetGadget( v, VarGetGadget( v ) );
-        VarSetOnTop( v, VarGetOnTop( v ) );
-        VarSetValue( v, VarGetValue( i, v ) );
-        VarOldErrState();
-        VarDoneRow( i );
-    }
-    VarGetDepths( i, v, pdepth, pinherit );
-    return( v );
-}
-
 
 static WNDGETLINE VarGetLine;
 static  bool    VarGetLine( a_window *wnd, int row, int piece,
@@ -728,7 +764,7 @@ static  void    VarEndPaint( a_window *wnd, int row, int piece )
 }
 
 
-void VarSaveWndToScope( a_window *wnd )
+void VarSaveWndToScope( void *wnd )
 {
     var_window  *var = WndVar( wnd );
 
@@ -736,7 +772,7 @@ void VarSaveWndToScope( a_window *wnd )
     WndGetCurrent( wnd, &curr_row( var->i.s ), &curr_piece( var->i.s ) );
 }
 
-void VarRestoreWndFromScope( a_window *wnd )
+void VarRestoreWndFromScope( void *wnd )
 {
     var_window  *var = WndVar( wnd );
 
@@ -848,7 +884,7 @@ static bool VarDoAll( bool (*rtn)(var_info *, void *), void *cookie )
 }
 
 
-bool VarInfoRelease()
+bool VarInfoRelease( void )
 {
     return( VarDoAll( VarDeleteAScope, NULL ) );
 }
@@ -860,7 +896,7 @@ void VarUnMapScopes( image_entry *image )
 }
 
 
-void VarFreeScopes()
+void VarFreeScopes( void )
 {
     VarDoAll( VarDeleteAllScopes, NULL );
 }
@@ -888,7 +924,7 @@ void VarReMapScopes( image_entry *image )
 }
 
 
-void VarChangeOptions()
+void VarChangeOptions( void )
 {
     VarDisplaySetHidden( NULL, VARNODE_CODE, !_IsOn( SW_VAR_SHOW_CODE ) );
     VarDisplaySetHidden( NULL, VARNODE_INHERIT, !_IsOn( SW_VAR_SHOW_INHERIT ) );
@@ -928,30 +964,30 @@ static  a_window        *DoWndVarOpen( var_type vtype )
 }
 
 extern WNDOPEN WndVarOpen;
-extern a_window *WndVarOpen()
+extern a_window *WndVarOpen( void )
 {
     return( DoWndVarOpen( VAR_VARIABLE ) );
 }
 
 extern WNDOPEN WndWatOpen;
-extern a_window *WndWatOpen()
+extern a_window *WndWatOpen( void )
 {
     return( DoWndVarOpen( VAR_WATCH ) );
 }
 
 extern WNDOPEN WndLclOpen;
-extern a_window *WndLclOpen()
+extern a_window *WndLclOpen( void )
 {
     return( DoWndVarOpen( VAR_LOCALS ) );
 }
 
 extern WNDOPEN WndFSVOpen;
-extern a_window *WndFSVOpen()
+extern a_window *WndFSVOpen( void )
 {
     return( DoWndVarOpen( VAR_FILESCOPE ) );
 }
 
-OVL_EXTERN      void DoGraphicDisplay()
+OVL_EXTERN  void    DoGraphicDisplay( void )
 {
     char        *name;
     unsigned    len;
@@ -972,7 +1008,7 @@ OVL_EXTERN      void DoGraphicDisplay()
     ReqEOC();
 }
 
-void GraphicDisplay()
+void GraphicDisplay( void )
 {
     Spawn( DoGraphicDisplay );
 }

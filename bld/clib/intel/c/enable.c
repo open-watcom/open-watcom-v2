@@ -30,13 +30,15 @@
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
+#include <i86.h>
 
-extern  void    __sti();
+extern  void    __sti( void );
 #pragma aux     __sti = 0xfb;
 
 
-_WCRTLINK void _enable()                /* enable interrupts */
-    {
-        __sti();
-    }
+_WCRTLINK void _enable( void )                /* enable interrupts */
+{
+    __sti();
+}

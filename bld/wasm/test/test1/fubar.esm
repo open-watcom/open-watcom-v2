@@ -1,0 +1,61 @@
+.387
+DGROUP		GROUP	_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+    mov         ax,1 
+    mov         ax,1 
+    mov         ax,1 
+    mov         ax,2 
+    mov         ax,2 
+    mov         ax,2 
+    mov         ax,2 
+    mov         ax,4 
+    mov         ax,4 
+    mov         ax,4 
+    mov         ax,8 
+    mov         ax,8 
+    mov         ax,10H 
+    mov         ax,10H 
+    mov         ax,16H 
+    mov         ax,16H 
+    mov         ax,1 
+    mov         ax,1 
+    mov         ax,2 
+    mov         ax,2 
+    mov         ax,4 
+    mov         ax,8 
+    mov         ax,6 
+    mov         ax,0aH 
+    mov         bx,1 
+    mov         bx,1 
+    mov         bx,1 
+    mov         bx,2 
+    mov         bx,2 
+    mov         bx,2 
+    mov         bx,4 
+    mov         bx,4 
+    mov         bx,2 
+    mov         bx,2 
+    mov         bx,1 
+    mov         bx,2 
+    mov         cx,8 
+    mov         cx,20H 
+    mov         cx,2 
+    mov         cx,8 
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0, 2, 0, 0, 0
+    DB	0, 0, 0, 0, 0, 0, 0, 2
+    DB	0, 0, 0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 4, 0, 0, 0, 2
+    DB	0, 0, 0, 4, 0, 0, 0, 2
+    DB	0, 0, 0, 4, 0, 0, 0, 2
+    DB	0, 0, 0
+
+_DATA		ENDS
+		END

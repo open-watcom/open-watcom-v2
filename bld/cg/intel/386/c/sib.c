@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  SIB helper routines.
 *
 ****************************************************************************/
 
@@ -40,17 +39,17 @@ typedef enum {
     MODIFIES_REG        = 2,
 } mod_info;
 
-extern  hw_reg_set      Low64Reg(hw_reg_set);
-extern  hw_reg_set      High64Reg(hw_reg_set);
-extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
-extern  bool            FoldIntoIndex(instruction*);
-extern  void            UpdateLive(instruction*,instruction*);
+extern  hw_reg_set      Low64Reg( hw_reg_set );
+extern  hw_reg_set      High64Reg( hw_reg_set );
+extern  bool            IsIndexReg( hw_reg_set, type_class_def, bool );
+extern  bool            FoldIntoIndex( instruction * );
+extern  void            UpdateLive( instruction *, instruction * );
 
 extern  block           *HeadBlock;
 
-static  bool    InsIsCandidate( instruction *ins ) {
-/**************************************************/
-
+static  bool    InsIsCandidate( instruction *ins ) 
+/************************************************/
+{
     name    *reg;
 
     reg = ins->result;
@@ -63,9 +62,9 @@ static  bool    InsIsCandidate( instruction *ins ) {
 }
 
 
-extern  void    BuildIndex() {
-/****************************/
-
+extern  void    BuildIndex( void ) 
+/********************************/
+{
     block       *blk;
     instruction *ins;
     instruction *next;
@@ -89,9 +88,10 @@ extern  void    BuildIndex() {
     }
 }
 
-static  bool    LivesAfterIns( instruction * ins, name * reg ) {
-/**************************************************************/
 
+static  bool    LivesAfterIns( instruction *ins, name *reg )
+/**********************************************************/
+{
     name        *res;
     hw_reg_set  live_later;
 
@@ -106,9 +106,9 @@ static  bool    LivesAfterIns( instruction * ins, name * reg ) {
 }
 
 
-static bool BadUse( name *reg, name *test, name **pindex, bool * is_base ) {
+static bool BadUse( name *reg, name *test, name **pindex, bool * is_base )
 /************************************************************************/
-
+{
     hw_reg_set  idx_name;
     hw_reg_set  base_name;
 
@@ -139,9 +139,9 @@ static bool BadUse( name *reg, name *test, name **pindex, bool * is_base ) {
 
 
 static  mod_info        Modifies( instruction *next, name *reg,
-                                  hw_reg_set base_reg, hw_reg_set other_reg ) {
-/*****************************************************************************/
-
+                                  hw_reg_set base_reg, hw_reg_set other_reg )
+/***************************************************************************/
+{
     mod_info    modifies;
 
     modifies = MODIFIES_NOTHING;
@@ -174,16 +174,16 @@ extern  instruction     *SIBPossibleIndex( instruction *ins, name *reg,
                                            bool *pbase,
                                            hw_reg_set base_reg,
                                            hw_reg_set other_reg,
-                                           bool *dies, bool *pmodifies ) {
-/*****************************************************************************/
-
-    instruction *next;
-    int         i;
-    mod_info    modifies;
+                                           bool *dies, bool *pmodifies )
+/**********************************************************************/
+{
+    instruction     *next;
+    int             i;
+    mod_info        modifies;
 
     next = ins->head.next;
     /* moving forward, ... */
-    for(;;) {
+    for( ;; ) {
         if( next->head.opcode == OP_BLOCK ) return( NULL );
         if( !HW_Ovlap( next->head.live.regs, reg->r.reg ) ) return( NULL );
         *pindex = NULL;

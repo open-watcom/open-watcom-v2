@@ -24,13 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WPROF's birth certificate.
 *
 ****************************************************************************/
 
 
 #include "banner.h"
+
+#ifdef _BANEXTRA
+    #undef  _BANEXTRA
+    #define _BANEXTRA _BANEXSHORT
+#endif
 
 char *AboutMessage[] = {
     "",
@@ -38,6 +42,7 @@ char *AboutMessage[] = {
     banner2p1( "1987" ),
     banner2p2(),
     banner3,
+    banner3a,
 #ifdef D32_NAME
     "",
     D32_NAME " " D32_VERSION,

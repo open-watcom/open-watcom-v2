@@ -4,7 +4,7 @@
 comp_sys = /bt=os2
 link_sys = os2v2
 
-!include ..\makefile
+!include ../makefile
 
 msgstrm.exe : $(OBJS) makefile msgstrm.lnk
     $(linker) @msgstrm

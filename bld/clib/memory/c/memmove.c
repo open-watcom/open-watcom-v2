@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of memmove().
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(__386__)
+#if defined(__386__) && defined(__SMALL_DATA__)
 extern  void    movefwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
 #pragma aux     movefwd =  \
         0x06            /* push es   */\
@@ -65,8 +64,43 @@ extern  void    movebwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len
         0xfc            /* cld */\
         parm [dx edi] [esi] [ecx] \
         modify exact [edi esi ecx];
+#define HAVE_MOVEFWBW
 
-#elif defined(M_I86) && defined(__SMALL_DATA__)
+#elif defined(__386__) && defined(__BIG_DATA__)
+
+extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
+#pragma aux     movefwd =  \
+        0x1e            /* push ds */ \
+        0x8e 0xda       /* mov ds,dx */ \
+        0x51            /* push ecx  */\
+        0xc1 0xe9 0x02  /* shr ecx,2 */\
+        0xf3 0xa5       /* rep movsd */\
+        0x59            /* pop ecx   */\
+        0x83 0xe1 0x03  /* and ecx,3 */\
+        0xf3 0xa4       /* rep movsb */\
+        0x1f            /* pop ds */ \
+        parm [es edi] [dx esi] [ecx] \
+        modify exact [edi esi ecx];
+extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
+#pragma aux     movebwd =  \
+        0x1e            /* push ds */ \
+        0x8e 0xda       /* mov ds,dx */ \
+        0xfd            /* std */\
+        0x4e            /* dec esi */\
+        0x4f            /* dec edi */\
+        0xd1 0xe9       /* shr ecx,1 */\
+        0x66 0xf3 0xa5  /* rep movsw */\
+        0x11 0xc9       /* adc ecx,ecx */\
+        0x46            /* inc esi */\
+        0x47            /* inc edi */\
+        0x66 0xf3 0xa4  /* rep movsb */\
+        0x1f            /* pop ds */ \
+        0xfc            /* cld */\
+        parm [es edi] [dx esi] [ecx] \
+        modify exact [edi esi ecx];
+#define HAVE_MOVEFWBW
+
+#elif defined( _M_I86 ) && defined(__SMALL_DATA__)
 extern  void    movebwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len);
 #pragma aux     movebwd =  \
         0xfd            /* std */\
@@ -90,7 +124,9 @@ extern  void    movefwd( char _WCFAR *dst, const char _WCNEAR *src, unsigned len
         0xf3 0xa4       /* rep movsb */\
         parm [es di] [si] [cx] \
         modify exact [di si cx];
-#elif defined(M_I86) && defined(__BIG_DATA__)
+#define HAVE_MOVEFWBW
+
+#elif defined( _M_I86 ) && defined(__BIG_DATA__)
 extern  void    movebwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len);
 #pragma aux     movebwd =  \
         0x1e            /* push ds */ \
@@ -120,47 +156,46 @@ extern  void    movefwd( char _WCFAR *dst, const char _WCFAR *src, unsigned len)
         0x1f            /* pop ds */ \
         parm [es di] [dx si] [cx] \
         modify exact [di si cx];
-#elif defined(__AXP__) || defined(__PPC__)
-// no pragma for these ones
+#define HAVE_MOVEFWBW
+
 #else
-#error unrecognized platform
+// no pragma for non-x86
 #endif
 
 
-_WCRTLINK void *memmove( char *to, const char *from, size_t len )
-    {
-#if defined(__HUGE__) || defined(__AXP__) || defined(__PPC__)
-        char *          toStart = to;
-#endif
+_WCRTLINK void *memmove( void *toStart, const void *fromStart, size_t len )
+{
+    const char      *from = fromStart;
+    char            *to = toStart;
 
-        if( from == to ) {
-            return( to );
-        }
-        if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
-#if defined(__HUGE__) || defined(__AXP__) || defined(__PPC__)
-            to += len;
-            from += len;
-            while( len != 0 ) {
-                *--to = *--from;
-                len--;
-            }
-#else
-            movebwd(( to + len ) - 1, ( from + len ) - 1, len );
-#endif
-        } else {
-#if defined(__AXP__) || defined(__PPC__)
-            while( len != 0 ) {
-                *to++ = *from++;
-                len--;
-            }
-#else
-            movefwd( to, from, len );
-#endif
-        }
-
-#if defined(__HUGE__) || defined(__AXP__) || defined(__PPC__)
-        return( toStart );
-#else
+    if( from == to ) {
         return( to );
+    }
+    if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/
+#if defined( __HUGE__ ) || !defined( HAVE_MOVEFWBW )
+        to += len;
+        from += len;
+        while( len != 0 ) {
+            *--to = *--from;
+            len--;
+        }
+#else
+        movebwd(( to + len ) - 1, ( from + len ) - 1, len );
+#endif
+    } else {
+#if !defined( HAVE_MOVEFWBW )
+        while( len != 0 ) {
+            *to++ = *from++;
+            len--;
+        }
+#else
+        movefwd( to, from, len );
 #endif
     }
+
+#if defined(__HUGE__) || !defined( HAVE_MOVEFWBW )
+    return( toStart );
+#else
+    return( to );
+#endif
+}

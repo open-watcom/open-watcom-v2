@@ -1,0 +1,155 @@
+c$ifdef INCL_WINSTDDLGS
+c$define INCL_WINSTDFILE
+c$define INCL_WINSTDFONT
+c$define INCL_WINSTDSPIN
+c$define INCL_WINSTDDRAG
+c$define INCL_WINSTDCNR
+c$define INCL_WINSTDSLIDER
+c$define INCL_WINSTDVALSET
+c$define INCL_WINSTDBOOK
+c$endif
+
+c$ifdef INCL_WINSTDCNR
+c$define INCL_WINSTDDRAG
+c$endif
+
+c$ifdef INCL_WINSTDVALSET
+c$define INCL_WINSTDDRAG
+c$endif
+
+c$pragma aux (__syscall) WinFileDlg parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDefFileDlgProc parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) WinFreeFileDlgList parm( reference )
+
+c$pragma aux (__syscall) WinFontDlg parm( value*4, \
+c		value*4, \
+c		reference )
+
+c$pragma aux (__syscall) WinDefFontDlgProc parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+
+c$pragma aux (__syscall) DrgAcceptDroppedFiles parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgAllocDraginfo parm( value*4 )
+   
+c$pragma aux (__syscall) DrgAllocDragtransfer parm( value*4 )
+   
+c$pragma aux (__syscall) DrgDrag parm( value*4, \
+c		reference, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgDragFiles parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgPostTransferMsg parm( value*4, \
+c		value*4, \
+c		reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgQueryDragitem parm( reference, \
+c		value*4, \
+c		reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgQueryDragitemCount parm( reference )
+   
+c$pragma aux (__syscall) DrgQueryDragitemPtr parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgQueryNativeRMF parm( reference, \
+c		value*4, \
+c		reference )
+   
+c$pragma aux (__syscall) DrgQueryNativeRMFLen parm( reference )
+   
+c$pragma aux (__syscall) DrgQueryStrName parm( value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgQueryStrNameLen parm( value*4 )
+   
+c$pragma aux (__syscall) DrgQueryTrueType parm( reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgQueryTrueTypeLen parm( reference )
+   
+c$pragma aux (__syscall) DrgSendTransferMsg parm( value*4, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgSetDragitem parm( reference, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgSetDragImage parm( reference, \
+c		reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgVerifyTypeSet parm( reference, \
+c		value*4, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgAccessDraginfo parm( reference )
+   
+c$pragma aux (__syscall) DrgAddStrHandle parm( value*4 )
+   
+c$pragma aux (__syscall) DrgDeleteDraginfoStrHandles parm( reference )
+   
+c$pragma aux (__syscall) DrgDeleteStrHandle parm( value*4 )
+   
+c$pragma aux (__syscall) DrgFreeDraginfo parm( reference )
+   
+c$pragma aux (__syscall) DrgFreeDragtransfer parm( reference )
+   
+c$pragma aux (__syscall) DrgGetPS parm( value*4 )
+   
+c$pragma aux (__syscall) DrgPushDraginfo parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgReleasePS parm( value*4 )
+   
+c$pragma aux (__syscall) DrgSetDragPointer parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgVerifyNativeRMF parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgVerifyRMF parm( reference, \
+c		value*4, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgVerifyTrueType parm( reference, \
+c		value*4 )
+   
+c$pragma aux (__syscall) DrgVerifyType parm( reference, \
+c		value*4 )

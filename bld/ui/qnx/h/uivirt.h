@@ -44,36 +44,36 @@
 
 
 typedef struct Display {
-        int (*init)();  /* setup */
-        int (*fini)();  /* tear down */
-        int (*update)(SAREA *area);     /* change screen */
-        int (*refresh)(int noopt);      /* force redraw of screen */
+        int   (*init)( void );          /* setup */
+        int   (*fini)( void );          /* tear down */
+        int   (*update)( SAREA *area ); /* change screen */
+        int   (*refresh)( int noopt );  /* force redraw of screen */
         /*- cursor */
-        int (*getcur)(ORD *row, ORD *col, int *type, int *attr);
-        int (*setcur)(ORD row, ORD col, int type, int attr);
-        EVENT   (*event)();
+        int   (*getcur)( ORD *row, ORD *col, int *type, int *attr );
+        int   (*setcur)( ORD row, ORD col, int type, int attr );
+        EVENT (*event)( void );
 } Display;
 
 
 typedef struct Keyboard {
-        int (*init)();  /* set initial modes, etc... */
-        int (*fini)();  /* restore saved modes, etc... */
-        void (*arm)();  /* arm for next character */
-        int (*save)();  /* save current mode, restore original mode */
-        int (*restore)();       /* set into raw mode */
-        int (*flush)(); /* clear look-ahead */
-        int (*stop)();  /* clear look-ahead, disable keyboard events */
-        int (*shift_state)();   /* shift status */
-        int (*un_event)(EVENT event); /* allow modify of next event */
+        int  (*init)( void );       /* set initial modes, etc... */
+        int  (*fini)( void );       /* restore saved modes, etc... */
+        void (*arm)( void );        /* arm for next character */
+        int  (*save)( void );       /* save current mode, restore original mode */
+        int  (*restore)( void );    /* set into raw mode */
+        int  (*flush)( void );      /* clear look-ahead */
+        int  (*stop)( void );       /* clear look-ahead, disable keyboard events */
+        int  (*shift_state)( void );/* shift status */
+        int  (*un_event)( EVENT event ); /* allow modify of next event */
 } Keyboard;
 
 typedef struct Mouse {
-        int     (*init)(int install);
-        int     (*fini)();
-        int     (*set_speed)(int speed);
-        int     (*stop)();      /* clear input, disable events */
-        int     (*check)(unsigned short *status, unsigned short *row,
-                         unsigned short *col, unsigned long *time);
+        int (*init)( int install );
+        int (*fini)( void );
+        int (*set_speed)( int speed );
+        int (*stop)( void );        /* clear input, disable events */
+        int (*check)( unsigned short *status, unsigned short *row,
+                         unsigned short *col, unsigned long *time );
 } Mouse;
 
 typedef struct {
@@ -83,7 +83,7 @@ typedef struct {
 } VirtDisplay;
 
 typedef struct {
-    bool        (*check)(void);
+    bool        (*check)( void );
     VirtDisplay virt;
 } PossibleDisplay;
 
@@ -93,29 +93,29 @@ extern VirtDisplay      UIVirt;
  * convenient naming, and easier changes later...
  */
 
-#define _uibiosinit   (*UIVirt.disp->init)
-#define _uibiosfini   (*UIVirt.disp->fini)
-#define _physupdate   (*UIVirt.disp->update)
-#define _ui_refresh   (*UIVirt.disp->refresh)
-#define _uigetcursor  (*UIVirt.disp->getcur)
-#define _uisetcursor  (*UIVirt.disp->setcur)
-#define _uievent      (*UIVirt.disp->event)
+#define _uibiosinit     (*UIVirt.disp->init)
+#define _uibiosfini     (*UIVirt.disp->fini)
+#define _physupdate     (*UIVirt.disp->update)
+#define _ui_refresh     (*UIVirt.disp->refresh)
+#define _uigetcursor    (*UIVirt.disp->getcur)
+#define _uisetcursor    (*UIVirt.disp->setcur)
+#define _uievent        (*UIVirt.disp->event)
 
-#define _initkeyboard (*UIVirt.keyb->init)
-#define _finikeyboard (*UIVirt.keyb->fini)
-#define _armkeyboard (*UIVirt.keyb->arm)
-#define _savekeyb     (*UIVirt.keyb->save)
-#define _restorekeyb  (*UIVirt.keyb->restore)
-#define _flushkey     (*UIVirt.keyb->flush)
-#define _stopkeyb     (*UIVirt.keyb->stop)
-#define _uicheckshift (*UIVirt.keyb->shift_state)
-#define _checkshift   _uicheckshift
+#define _initkeyboard   (*UIVirt.keyb->init)
+#define _finikeyboard   (*UIVirt.keyb->fini)
+#define _armkeyboard    (*UIVirt.keyb->arm)
+#define _savekeyb       (*UIVirt.keyb->save)
+#define _restorekeyb    (*UIVirt.keyb->restore)
+#define _flushkey       (*UIVirt.keyb->flush)
+#define _stopkeyb       (*UIVirt.keyb->stop)
+#define _uicheckshift   (*UIVirt.keyb->shift_state)
+#define _checkshift     _uicheckshift
 #define _uishiftrelease (*UIVirt.keyb->un_event)
 
-#define _initmouse            (*UIVirt.mouse->init)
-#define _finimouse            (*UIVirt.mouse->fini)
-#define _checkmouse           (*UIVirt.mouse->check)
-#define _stopmouse            (*UIVirt.mouse->stop)
-#define _uimousespeed         (*UIVirt.mouse->set_speed)
+#define _initmouse      (*UIVirt.mouse->init)
+#define _finimouse      (*UIVirt.mouse->fini)
+#define _checkmouse     (*UIVirt.mouse->check)
+#define _stopmouse      (*UIVirt.mouse->stop)
+#define _uimousespeed   (*UIVirt.mouse->set_speed)
 
 #endif

@@ -37,7 +37,7 @@
 #include    "charmap.h"
 #include    "uigchar.h"
 
-static char UiMapChar[] = {
+static unsigned char UiMapChar[] = {
     0xC6,       /* UI_RADIO_LEFT        */
     0xEA,       /* UI_RADIO_RIGHT       */
     0xC7,       /* UI_RADIO_FULL        */
@@ -121,7 +121,7 @@ static void MapCharacter( char ch, unsigned char data[16] )
     }
 }
 
-bool UIMapCharacters( char mapchar[], char mapdata[][16] )
+bool UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] )
 {
     int         i;
 
@@ -141,7 +141,7 @@ bool UIMapCharacters( char mapchar[], char mapdata[][16] )
     return( FALSE );
 }
 
-bool FlipCharacterMap()
+bool FlipCharacterMap( void )
 {
     ATTR        old;
     ATTR        new;

@@ -24,52 +24,46 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macro preprocessor for wmake (handles !ifdef and the like).
 *
 ****************************************************************************/
 
 
-#include <io.h>
-#include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
-#include <direct.h>
 
-#include "macros.h"
 #include "massert.h"
-#include "make.h"
-#include "memory.h"
-#include "misc.h"
+#include "mtypes.h"
+#include "mstream.h"
 #include "mlex.h"
+#include "macros.h"
+#include "make.h"
+#include "mexec.h"
+#include "mmemory.h"
+#include "mmisc.h"
 #include "mparse.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "mstream.h"
-#include "mtypes.h"
 
 /*
- * This module presents a stream of characters to mlex.c.  Stripped from
- * the stream are all comments, and preprocessing directives.  Preprocessing
- * directives are handled invisibly to mlex.c.  This module also handles
- * line continuation.
+ * This module presents a stream of characters to mlex.c.  Stripped from the
+ * stream are comments, and preprocessing directives.  Preprocessing directives
+ * are handled invisibly to mlex.c.  Also handles line continuation.
  *
  */
 
-#define MAX_PRE_TOK     8       /* chars needed for maximum keyword */
-#define INCLUDE      "INCLUDE"  /* include directory for include file
-                                    search*/
+#define MAX_PRE_TOK     8       // chars needed for maximum keyword
+#define INCLUDE      "INCLUDE"  // include directory for include file search
 
 
-enum directiveTok {             /* must be kept in sync with directives */
-    D_BLANK = -1,               /* a blank line */
+enum directiveTok {             // must be kept in sync with directives
+    D_BLANK = -1,               // a blank line
     D_DEFINE,
     D_ELSE,
     D_ENDIF,
     D_ERROR,
-    D_IF,   /* New Directive for MS Compatability adds binary and
-             string operations present in NMAKE */
+    D_IF,   // MS Compatibility Directive.  NMAKE binary and string operations.
     D_IFDEF,
     D_IFEQ,
     D_IFEQI,
@@ -84,7 +78,7 @@ enum directiveTok {             /* must be kept in sync with directives */
     D_MAX
 };
 
-STATIC const char * const directives[] = {   /* table must be sorted */
+STATIC const char * const directives[] = {   // table must be lexically sorted.
     "define",
     "else",
     "endif",
@@ -102,34 +96,39 @@ STATIC const char * const directives[] = {   /* table must be sorted */
     "message",
     "undef"
 };
-#define NUM_DIRECT    ( sizeof( directives ) / sizeof( char * ) )
+#define NUM_DIRECT      (sizeof( directives ) / sizeof( char * ))
 
-#define MAX_DIR_LEN     8           /* num chars incl null-terminator */
+#define MAX_DIR_LEN     8       // num chars incl null-terminator
 
-/*
-    atStartOfLine == EOL if we are at the start of a line... otherwise
-    it can have any other value.  This is a slight optimization for the
-    critical code in PreGetCH().  DJG
-*/
-STATIC char     atStartOfLine;
+STATIC char     atStartOfLine;  /* EOL at the start of a line...
+ * This is a slight optimization for the critical code in PreGetCH().  DJG
+ */
 STATIC STRM_T   lastChar;
-STATIC BOOLEAN  doingPreProc;   /* are we doing some preprocessing? */
+STATIC BOOLEAN  doingPreProc;   // are we doing some preprocessing?
 
 
 /*
  * MS Compatability extension to add the if (expression) functionality
  */
- // directory separators
-#define isdir(_c) ((_c) == '/' || (_c) == BACKSLASH || (_c) == COLON)
 
-
-
-STATIC int_32 makeHexNumber (char* inString,
-                             int*  stringLength);
 STATIC void doElIf( BOOLEAN (*logical)(void), enum directiveTok tok );
 
-STATIC char* currentPtr;        // Pointer to current start in string
-STATIC TOKEN_TYPE currentToken; // Contains the information for the current token
+// local functions
+STATIC void parseExpr ( DATAVALUE *leftVal, char *inString );
+STATIC void logorExpr ( DATAVALUE *leftVal );
+STATIC void logandExpr( DATAVALUE *leftVal );
+STATIC void bitorExpr ( DATAVALUE *leftVal );
+STATIC void bitxorExpr( DATAVALUE *leftVal );
+STATIC void bitandExpr( DATAVALUE *leftVal );
+STATIC void equalExpr ( DATAVALUE *leftVal );
+STATIC void relateExpr( DATAVALUE *leftVal );
+STATIC void shiftExpr ( DATAVALUE *leftVal );
+STATIC void addExpr   ( DATAVALUE *leftVal );
+STATIC void multExpr  ( DATAVALUE *leftVal );
+STATIC void unaryExpr ( DATAVALUE *leftVal );
+
+STATIC char         *currentPtr;    // Pointer to current start in string
+STATIC TOKEN_TYPE   currentToken;   // Contains information for current token
 
 
 /*
@@ -153,14 +152,14 @@ struct nestIf {
     BIT elseFound : 1;
 };
 
-#define MAX_NEST    32                  /* maximum depth of if nesting */
+#define MAX_NEST    32                  // maximum depth of if nesting
 
-STATIC struct nestIf nest[ MAX_NEST ];  /* stack for nesting */
-STATIC size_t nestLevel;                /* items on stack */
-STATIC struct nestIf curNest;           /* current skip info */
+STATIC struct nestIf nest[MAX_NEST];    // stack for nesting
+STATIC size_t nestLevel;                // items on stack
+STATIC struct nestIf curNest;           // current skip info
 
 
-extern void PreProcInit( void )
+void PreProcInit( void )
 /*****************************/
 {
     StreamInit();
@@ -168,15 +167,15 @@ extern void PreProcInit( void )
     atStartOfLine = EOL;
     doingPreProc = FALSE;
 
-
     curNest.skip2endif = FALSE;
     curNest.skip = FALSE;
     curNest.elseFound = FALSE;
     nestLevel = 0;
+    lastChar = 0;
 }
 
 
-extern void PreProcFini( void )
+void PreProcFini( void )
 /*****************************/
 {
     StreamFini();
@@ -193,7 +192,9 @@ STATIC STRM_T eatWhite( void )
     STRM_T  t;
 
     t = PreGetCH();
-    while( isws( t ) ) t = PreGetCH();
+    while( isws( t ) ) {
+        t = PreGetCH();
+    }
 
     return( t );
 }
@@ -209,13 +210,17 @@ STATIC STRM_T eatToEOL( void )
     STRM_T  t;
 
     t = PreGetCH();
-    while( t != EOL && t != STRM_END ) t = PreGetCH();
+    while( t != EOL && t != STRM_END ) {
+        t = PreGetCH();
+    }
 
     return( t );
 }
 
 
+#ifdef __WATCOMC__
 #pragma on (check_stack);
+#endif
 STATIC int getPreTok( void )
 /***************************
  * pre:     the '!' has been eaten by caller
@@ -225,7 +230,7 @@ STATIC int getPreTok( void )
  */
 {
     TOKEN_T t;
-    char    tok[ MAX_PRE_TOK ];
+    char    tok[MAX_PRE_TOK];
     int     pos;
     char    **key;
     char    *tmp;               /* to pass tok buf to bsearch */
@@ -239,30 +244,29 @@ STATIC int getPreTok( void )
 
     pos = 0;
     while( isalpha( t ) && ( pos < MAX_PRE_TOK - 1 ) ) {
-        tok[ pos++ ] = t;
+        tok[pos++] = t;
         t = PreGetCH();
         // MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
         // similar for other types of if preprocessor directives
-        if (pos == 4) {
+        if( pos == 4 ) {
             tok[pos] = NULLCHAR;
-            if (strcmpi(directives[D_ELSE],tok) == 0)
-            {
+            if( strcmpi( directives[D_ELSE], tok ) == 0 ) {
                 break;
             }
         }
     }
-    tok[ pos ] = NULLCHAR;
+    tok[pos] = NULLCHAR;
 
     UnGetCH( t );
     UnGetCH( eatWhite() );
 
     tmp = tok;
     key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ),
-           (int (*) (const void*,const void*)) KWCompare );
+           (int (*)( const void *, const void * )) KWCompare );
 
     if( key == NULL ) {
         if( !curNest.skip ) {
-            PrtMsg( ERR|LOC| UNK_PREPROC_DIRECTIVE, tok );
+            PrtMsg( ERR | LOC | UNK_PREPROC_DIRECTIVE, tok );
         }
         return( D_BLANK );
     }
@@ -272,7 +276,9 @@ STATIC int getPreTok( void )
 
     return( key - (char **)directives );
 }
+#ifdef __WATCOMC__
 #pragma off(check_stack);
+#endif
 
 
 STATIC BOOLEAN ifDef( void )
@@ -282,14 +288,14 @@ STATIC BOOLEAN ifDef( void )
  * returns: TRUE if macro is defined, FALSE otherwise
  */
 {
-    char        *name;
-    char        *value;
-    BOOLEAN     ret;
+    char    *name;
+    char    *value;
+    BOOLEAN ret;
 
     assert( !curNest.skip2endif );
 
     name = DeMacro( MAC_PUNC );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -298,7 +304,7 @@ STATIC BOOLEAN ifDef( void )
 
     value = GetMacroValue( name );
     ret = value != NULL;
-    if (value != NULL) {
+    if( value != NULL ) {
         FreeSafe( value );
     }
     FreeSafe( name );
@@ -320,47 +326,32 @@ STATIC void chopTrailWS( char *str )
  */
 {
     char    *p;
-    char    *last;  /* last non-whitespace char */
 
-    last = NULL;
-    p = str;
-    while( *p ) {
-        if( !isws( *p ) ) {
-            last = p;
-        }
-        ++p;
-    }
-    if( last != NULL ) {
-        last[1] = NULLCHAR;
+    for( p = str + strlen( str ) - 1; p >= str && isws( *p ); --p ) {
+        *p = NULLCHAR;
     }
 }
 
-// process the operands found in %f
-STATIC BOOLEAN ifOpProcess( void )
-{
 
-    char* test;
-    DATAVALUE temp;
+STATIC BOOLEAN ifOp( void )
+/**************************
+ * MS Compatability  -
+ * Allows for NMAKE compatability in binary and string operators
+ * process the operands found in !if
+ */
+{
+    char        *test;
+    DATAVALUE   temp;
 
     assert( !curNest.skip2endif );
 
     test = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
-    parseExpr(&temp,test);
+    parseExpr( &temp, test );
 
     FreeSafe( test );
-    return ((BOOLEAN) temp.data.number);
-}
-
-
-/* MS Compatability  -
- * Allows for NMAKE compatability in binary and string operators
- */
-STATIC BOOLEAN ifOp( void )
-{
-    return( ifOpProcess() );
-
+    return( (BOOLEAN)temp.data.number );
 }
 
 
@@ -374,7 +365,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     char        *name;
     char        *test;
     char        *value;
-    char        *beg;
+    char const  *beg;
 
     assert( !curNest.skip2endif );
 
@@ -383,7 +374,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 
     name = DeMacro( MAC_PUNC );
     test = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -392,28 +383,27 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     }
 
     value = WrnGetMacroValue( name );
+
+    FreeSafe( name );               /* don't need name any more */
+
     if( value == NULL ) {
-        FreeSafe( name );
         FreeSafe( test );
         return;
     }
 
-    FreeSafe( name );               /* don't need name any more */
-
     UnGetCH( EOL );
     InsString( value, TRUE );
     value = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
+
+    chopTrailWS( test );            /* chop trailing ws */
 
     beg = SkipWS( test );           /* find first non-ws */
-
-    chopTrailWS( beg );             /* chop trailing ws */
 
     *v1 = value;
     *v2 = StrDupSafe( beg );        /* 18-nov-91 */
     FreeSafe( test );
 }
-
 
 
 STATIC BOOLEAN ifEq( void )
@@ -423,9 +413,9 @@ STATIC BOOLEAN ifEq( void )
  * returns: TRUE if macro equals text, FALSE otherwise
  */
 {
-    BOOLEAN ret;
-    char const *v1;
-    char *v2;
+    BOOLEAN     ret;
+    char const  *v1;
+    char        *v2;
 
     ifEqProcess( &v1, &v2 );
     if( v1 == NULL ) {
@@ -433,12 +423,11 @@ STATIC BOOLEAN ifEq( void )
     }
     ret = strcmp( v1, v2 ) == 0;
 
-    FreeSafe( (void *) v1 );
+    FreeSafe( (void *)v1 );
     FreeSafe( v2 );
 
     return( ret );
 }
-
 
 
 STATIC BOOLEAN ifEqi( void )
@@ -448,9 +437,9 @@ STATIC BOOLEAN ifEqi( void )
  * returns: TRUE if macro equals text (case independence), FALSE otherwise
  */
 {
-    BOOLEAN ret;
-    char const *v1;
-    char *v2;
+    BOOLEAN     ret;
+    char const  *v1;
+    char        *v2;
 
     ifEqProcess( &v1, &v2 );
     if( v1 == NULL ) {
@@ -458,7 +447,7 @@ STATIC BOOLEAN ifEqi( void )
     }
     ret = stricmp( v1, v2 ) == 0;
 
-    FreeSafe( (void *) v1 );
+    FreeSafe( (void *)v1 );
     FreeSafe( v2 );
 
     return( ret );
@@ -484,34 +473,32 @@ STATIC void bangIf( BOOLEAN (*logical)(void), enum directiveTok tok )
  * pre:
  * post:    nestLevel > old(nestLevel); skip if false logical, or currently
  *          skipping; !elseFound
- * aborts:  if nestLevel == MAX_NEST
+ * aborts:  if nestLevel >= MAX_NEST
  */
 {
-    if( nestLevel == MAX_NEST ) {
-        PrtMsg( FTL|LOC| IF_NESTED_TOO_DEEP );
+    if( nestLevel >= MAX_NEST ) {
+        PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
     }
 
-    /* save old nesting on the stack */
-    nest[ nestLevel++ ] = curNest;
+    nest[nestLevel++] = curNest; // save old nesting on the stack
 
-        /* remember that curNest still contains info from previous level */
-    curNest.skip2endif = curNest.skip || curNest.skip2endif;
+        // remember that curNest still contains info from previous level
+    curNest.skip2endif = (curNest.skip || curNest.skip2endif);
     curNest.skip = FALSE;
     curNest.elseFound = FALSE;
 
-    if( !curNest.skip2endif ) {
-        /* it is ok to interpret arguments to if */
+    if( !curNest.skip2endif ) { // ok to interpret if arguments?
         curNest.skip = !logical();
     } else {
-        /* this entire block is to be skipped, don't interpret args to if */
+        // this block is to be skipped, don't interpret args to if
         curNest.skip = TRUE;
-        (void) eatToEOL();
+        (void)eatToEOL();
     }
 
     if( curNest.skip ) {
-        PrtMsg( DBG|INF|LOC| SKIPPING_BLOCK, directives[ tok ] );
+        PrtMsg( DBG | INF | LOC | SKIPPING_BLOCK, directives[tok] );
     } else {
-        PrtMsg( DBG|INF|LOC| ENTERING_BLOCK, directives[ tok ] );
+        PrtMsg( DBG | INF | LOC | ENTERING_BLOCK, directives[tok] );
     }
 }
 
@@ -523,14 +510,14 @@ STATIC void bangEndIf( void )
  * aborts:  if not nested
  */
 {
-    PrtMsg( DBG|INF|LOC| AT_ENDIF );
+    PrtMsg( DBG | INF | LOC | AT_ENDIF );
 
     if( nestLevel == 0 ) {
-        PrtMsg( FTL|LOC| UNMATCHED_WITH_IF, directives[ D_ENDIF ] );
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
     }
-    curNest = nest[ --nestLevel ];
+    curNest = nest[--nestLevel];
 
-    (void) eatToEOL();
+    (void)eatToEOL();
 }
 
 
@@ -543,15 +530,13 @@ STATIC void doElse( void )
  */
 {
     if( nestLevel == 0 ) {
-        PrtMsg( FTL|LOC| UNMATCHED_WITH_IF, directives[ D_ELSE ] );
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
     }
 
     if( curNest.elseFound ) {
-        PrtMsg( WRN|LOC| SKIPPING_AFTER_ELSE, directives[ D_ELSE ],
-            directives[ D_ELSE ] );
-        /* we have to set these because we may not have been skipping the
-         * previous block
-         */
+        PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, directives[D_ELSE],
+            directives[D_ELSE] );
+        // must set these because we may not have been skipping previous block
         curNest.skip2endif = TRUE;
         curNest.skip = TRUE;
         return;
@@ -559,30 +544,28 @@ STATIC void doElse( void )
     curNest.elseFound = TRUE;
 
     if( !curNest.skip2endif ) {
-        /* check if we're not skipping. if !skip then we should skip the
-         * else part
-         */
+        // check we're not skipping. if !skip then we should skip the else part.
         if( !curNest.skip ) {
-            /* skip to the end - we've done a block in this nesting */
+            // skip to the end - we've done a block in this nesting
             curNest.skip = TRUE;
             curNest.skip2endif = TRUE;
         } else {
-            /* we still haven't done a block in this nesting, so do the
-             * else portion
-             */
+            // we still haven't done block in this nesting, do the else portion
             curNest.skip = FALSE;
         }
     }
 
     if( curNest.skip ) {
-        PrtMsg( DBG|INF|LOC| SKIPPING_BLOCK, directives[ D_ELSE ] );
+        PrtMsg( DBG | INF | LOC | SKIPPING_BLOCK, directives[D_ELSE] );
     } else {
-        PrtMsg( DBG|INF|LOC| ENTERING_BLOCK, directives[ D_ELSE ] );
+        PrtMsg( DBG | INF | LOC | ENTERING_BLOCK, directives[D_ELSE] );
     }
 }
 
 
+#ifdef __WATCOMC__
 #pragma on (check_stack);
+#endif
 STATIC void doElIf( BOOLEAN (*logical)(void), enum directiveTok tok )
 /********************************************************************
  * post:    skip if !logical || skip2endif
@@ -590,51 +573,47 @@ STATIC void doElIf( BOOLEAN (*logical)(void), enum directiveTok tok )
  * errors:  if elseFound
  */
 {
-    char buf[ MAX_DIR_LEN * 2 ];
+    char    buf[MAX_DIR_LEN * 2];
 
-    FmtStr( buf, "%s %s", directives[ D_ELSE ], directives[ tok ] );
+    FmtStr( buf, "%s %s", directives[D_ELSE], directives[tok] );
 
     if( nestLevel == 0 ) {
-        PrtMsg( FTL|LOC| UNMATCHED_WITH_IF, buf );
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
     }
 
     if( curNest.elseFound ) {
-        PrtMsg( WRN|LOC| SKIPPING_AFTER_ELSE, buf, directives[ D_ELSE ] );
-        /* we have to set these because we may not have been skipping the
-         * previous block
-         */
+        PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, buf, directives[D_ELSE] );
+        // must set these because we may not have been skipping previous block
         curNest.skip2endif = TRUE;
         curNest.skip = TRUE;
-        (void) eatToEOL();
+        (void)eatToEOL();
         return;
     }
 
     if( !curNest.skip2endif ) {
-        /* check if we're not skipping. if !skip then we should skip the
-         * else if part
-         */
+        // check we're not skipping. if !skip, we should skip the else if part
         if( !curNest.skip ) {
-            /* skip to the end - we've done a block in this nesting */
+            // skip to the end - we've done a block in this nesting
             curNest.skip = TRUE;
             curNest.skip2endif = TRUE;
-            (void) eatToEOL();
+            (void)eatToEOL();
         } else {
-            /* we still haven't done a block in this nesting, so try this
-             * logical
-             */
+            // we still haven't done block in this nesting, try this logical.
             curNest.skip = !logical();
         }
     } else {
-        (void) eatToEOL();
+        (void)eatToEOL();
     }
 
     if( curNest.skip ) {
-        PrtMsg( DBG|INF|LOC| SKIPPING_BLOCK, buf );
+        PrtMsg( DBG | INF | LOC | SKIPPING_BLOCK, buf );
     } else {
-        PrtMsg( DBG|INF|LOC| ENTERING_BLOCK, buf );
+        PrtMsg( DBG | INF | LOC | ENTERING_BLOCK, buf );
     }
 }
+#ifdef __WATCOMC__
 #pragma off(check_stack);
+#endif
 
 
 STATIC void bangElse( void )
@@ -644,12 +623,12 @@ STATIC void bangElse( void )
  * aborts:  if illegal directive
  */
 {
-    enum directiveTok tok;
+    enum directiveTok   tok;
 
     tok = getPreTok();
     switch( tok ) {
     case D_BLANK:
-        (void) eatToEOL();
+        (void)eatToEOL();
         doElse();
         break;
     case D_IFDEF:   doElIf( ifDef,  D_IFDEF );  break;
@@ -660,9 +639,9 @@ STATIC void bangElse( void )
     case D_IFNEQ:   doElIf( ifNEq,  D_IFNEQ );  break;
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
-        (void) eatToEOL();
-        PrtMsg( FTL|LOC| NOT_ALLOWED_AFTER_ELSE, directives[ tok ],
-            directives[ D_ELSE ] );
+        (void)eatToEOL();
+        PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok],
+            directives[D_ELSE] );
     }
 }
 
@@ -680,47 +659,51 @@ STATIC void bangDefine( void )
     name = DeMacro( MAC_PUNC );    /* decode name */
 
     if( !IsMacroName( name ) ) {
-        (void) eatToEOL();
+        (void)eatToEOL();
     } else {
         DefMacro( name );
     }
     FreeSafe( name );
 }
 
+
 static char *skipWhileWS( char *p )
+/*********************************/
 {
-    for( ; *p != '\0'; ++p ) {
-        if( ! isws( *p ) ) break;
+    while( isws( *p ) ) {
+        ++p;
     }
     return( p );
 }
+
 
 static char *skipUntilWS( char *p )
+/*********************************/
 {
-    for( ; *p != '\0'; ++p ) {
-        if( isws( *p ) ) break;
+    while( *p != '\0' && !isws( *p ) ) {
+        ++p;
     }
     return( p );
 }
 
 
-// !inject <text> <mac-name1> <mac-name2> ... <mac-nameN>
 STATIC void bangInject( void )
 /*****************************
+ * !inject <text> <mac-name1> <mac-name2> ... <mac-nameN>
  * post:    atStartOfLine == EOL
  * errors:  none
  */
 {
-    char *text;
-    char *contents;
-    char *end_contents;
-    char *curr;
-    char *mac_name;
-    char *value;
+    char    *text;
+    char    *contents;
+    char    *end_contents;
+    char    *curr;
+    char    *mac_name;
+    char    *value;
 
     assert( !curNest.skip );
     text = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
     contents = skipWhileWS( text );
     if( *contents == '\0' ) {
         FreeSafe( text );
@@ -733,7 +716,7 @@ STATIC void bangInject( void )
     }
     *end_contents = '\0';
     curr = end_contents + 1;
-    for(;;) {
+    for( ;; ) {
         curr = skipWhileWS( curr );
         if( *curr == '\0' ) break;
         mac_name = curr;
@@ -758,24 +741,24 @@ STATIC void bangInject( void )
 }
 
 
-// !loaddll <cmd-name> <dll-name> [<entry-pt>]
 STATIC void bangLoadDLL( void )
 /******************************
+ * !loaddll <cmd-name> <dll-name> [<entry-pt>]
  * post:    atStartOfLine == EOL
  * errors:  none
  */
 {
-    char *text;
-    char *cmd_name;
-    char *end_cmd_name;
-    char *dll_name;
-    char *end_dll_name;
-    char *ent_name;
-    char *end_ent_name;
+    char    *text;
+    char    *cmd_name;
+    char    *end_cmd_name;
+    char    *dll_name;
+    char    *end_dll_name;
+    char    *ent_name;
+    char    *end_ent_name;
 
     assert( !curNest.skip );
     text = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
     cmd_name = skipWhileWS( text );
     if( *cmd_name == '\0' ) {
         FreeSafe( text );
@@ -823,13 +806,13 @@ STATIC void bangUnDef( void )
  * errors:  if env_variable || !IsMacroName || not-defined
  */
 {
-    char        *name;
-    char        *value;
+    char    *name;
+    char    *value;
 
     assert( !curNest.skip );
 
     name = DeMacro( MAC_PUNC );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -838,7 +821,7 @@ STATIC void bangUnDef( void )
 
     value = GetMacroValue( name );
     if( value == NULL ) {
-        PrtMsg( DBG|WRN|LOC| TRYING_UNDEF_UNDEF, directives[ D_UNDEF ] );
+        PrtMsg( WRN | LOC | TRYING_UNDEF_UNDEF, directives[D_UNDEF] );
         FreeSafe( name );
         return;
     }
@@ -848,38 +831,41 @@ STATIC void bangUnDef( void )
     FreeSafe( value );
 }
 
-STATIC char* formatLongFileName(char* text) {
 
-    char* ret;
-    char* currentRet;
-    char* currentTxt;
+STATIC char *formatLongFileName( char *text )
+/*******************************************/
+{
+    char    *ret;
+    char    *currentRet;
+    char    *currentTxt;
 
-    assert(text != NULL);
-    ret = StrDupSafe(text);
+    assert( text != NULL );
+    ret = StrDupSafe( text );
     currentRet = ret;
     currentTxt = text;
 
-    if (currentTxt[0] == DOUBLEQUOTE) {
+    if( currentTxt[0] == DOUBLEQUOTE ) {
         ++currentTxt;
     }
-    while (*currentTxt != NULLCHAR && *currentTxt != DOUBLEQUOTE) {
-        if (*currentTxt == '\\') {
-            if (*(currentTxt +1) == DOUBLEQUOTE) {
+    while( *currentTxt != NULLCHAR && *currentTxt != DOUBLEQUOTE ) {
+        if( *currentTxt == '\\' ) {
+            if( *(currentTxt + 1) == DOUBLEQUOTE ) {
                 ++currentTxt;
             }
         }
         *(currentRet++) = *(currentTxt++);
     }
-    *(currentRet) = NULLCHAR;
-    if (*currentTxt == DOUBLEQUOTE) {
-        if (*(currentTxt + 1) != NULLCHAR) {
-            PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
-            FreeSafe(ret);
-            return(NULL);
+    *currentRet = NULLCHAR;
+    if( *currentTxt == DOUBLEQUOTE ) {
+        if( *(currentTxt + 1) != NULLCHAR ) {
+            PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
+            FreeSafe( ret );
+            return( NULL );
         }
     }
-    return(ret);
+    return( ret );
 }
+
 
 STATIC void bangInclude( void )
 /******************************
@@ -891,84 +877,89 @@ STATIC void bangInclude( void )
 {
     char    *text;
     char    *temp = NULL;
+#ifdef __WATCOMC__
     char    *current;
-    char    full_path[ _MAX_PATH ];
+    char    full_path[_MAX_PATH];
     RET_T   ret;
+#endif
 
     assert( !curNest.skip );
 
     text = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
-
-    if (*text == LESSTHAN) {
+#ifdef __WATCOMC__
+    if( *text == LESSTHAN ) {
         current = text;
-        while (*current != GREATERTHAN && *current != NULLCHAR) {
+        while( *current != GREATERTHAN && *current != NULLCHAR ) {
             ++current;
         }
-        if (*current == GREATERTHAN) {
+        if( *current == GREATERTHAN ) {
             *current = NULLCHAR;
             temp = text;
-            text = formatLongFileName(temp+1);
-            if (text == NULL) {
+            text = formatLongFileName( temp + 1 );
+            if( text == NULL ) {
                 FreeSafe( temp );
                 return;
             }
-            for(;;) {
-                if (*current == NULLCHAR) {
-                    _searchenv(text,INCLUDE,full_path);
+            for( ;; ) {
+                if( *current == NULLCHAR ) {
+                    _searchenv( text, INCLUDE, full_path );
                     ret = RET_ERROR;
-                    if (*full_path != NULLCHAR) {
+                    if( *full_path != NULLCHAR ) {
                         ret = InsFile( full_path, FALSE );
                     }
-                    if (ret == RET_ERROR) {
-                        PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
+                    if( ret == RET_ERROR ) {
+                        PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     }
                     break;
                 }
                 // check if there are any trailing characters if there are
                 // then error
-                if (!isws(*current)) {
-                    PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
+                if( !isws( *current ) ) {
+                    PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     break;
                 }
                 ++current;
             }
         } else {
-              PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
+              PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
-    } else {
+    } else
+#endif
+    {
         temp = text;
-        text = formatLongFileName(text);
-        if (text == NULL) {
+        text = formatLongFileName( text );
+        if( text == NULL ) {
             FreeSafe( temp );
             return;
         }
         if( InsFile( text, FALSE ) != RET_SUCCESS ) {
-            PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
+            PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
     }
     FreeSafe( temp );
     FreeSafe( text );
 }
 
+
 STATIC void bangMessage( void )
-/****************************
+/******************************
  * post:    atStartOfLine == EOL
  */
 {
-    char *text;
+    char    *text;
 
     assert( !curNest.skip );
 
     text = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     chopTrailWS( text );
 
-    PrtMsg(PRNTSTR, text );
+    PrtMsg( PRNTSTR, text );
     FreeSafe( text );
 }
 
@@ -978,17 +969,17 @@ STATIC void bangError( void )
  * post:    atStartOfLine == EOL
  */
 {
-    char *text;
+    char    *text;
 
     assert( !curNest.skip );
 
     text = DeMacro( EOL );
-    (void) eatToEOL();
+    (void)eatToEOL();
 
     chopTrailWS( text );
 
-    PrtMsg( ERR|LOC|NEOL| USER_ERROR );
-    PrtMsg( ERR|PRNTSTR, text );
+    PrtMsg( ERR | LOC | NEOL | USER_ERROR );
+    PrtMsg( ERR | PRNTSTR, text );
     FreeSafe( text );
 }
 
@@ -998,12 +989,12 @@ STATIC void handleBang( void )
  * post:    atStartOfLine == EOL
  */
 {
-    enum directiveTok tok;
+    enum directiveTok   tok;
 
     tok = getPreTok();
+    /* these are executed regardless of skip */
     switch( tok ) {
-                    /* these are executed regardless of skip */
-    case D_BLANK:   (void) eatToEOL();          break;
+    case D_BLANK:   (void)eatToEOL();           break;
     case D_ELSE:    bangElse();                 break;
     case D_ENDIF:   bangEndIf();                break;
     case D_IF:      bangIf( ifOp,   D_IF );     break;
@@ -1015,7 +1006,7 @@ STATIC void handleBang( void )
     case D_IFNEQI:  bangIf( ifNEqi, D_IFNEQI ); break;
     default:
         if( !curNest.skip ) {
-                    /* these are only executed if !skip */
+            /* these are only executed if !skip */
             switch( tok ) {
             case D_DEFINE:  bangDefine();       break;
             case D_ERROR:   bangError();        break;
@@ -1024,16 +1015,46 @@ STATIC void handleBang( void )
             case D_INJECT:  bangInject();       break;
             case D_LOADDLL: bangLoadDLL();      break;
             case D_UNDEF:   bangUnDef();        break;
+            default:
+                break;
             }
         } else {
-                    /* otherwise, we just eat it up */
-            (void) eatToEOL();
+            (void)eatToEOL(); /* otherwise, we just eat it up */
         }
     }
 }
 
 
-extern STRM_T PreGetCH( void )
+static int PreTestString( const char *str )
+/******************************************
+ * Test if 'str' is the next sequence of characters in stream.
+ * If not, push back any characters read.
+ */
+{
+    const char  *s = str;
+    STRM_T      t;
+    int         rc = FALSE;
+
+    for( ;; ) {
+        t = GetCHR();
+        if( t != *s ) {
+            UnGetCH( t );
+            while( s-- > str ) {
+                UnGetCH( *s );
+            }
+            break;
+        }
+        ++s;
+        if( *s == '\0' ) {
+            rc = TRUE;
+            break;
+        }
+    }
+    return( rc );
+}
+
+
+STRM_T PreGetCH( void )
 /*****************************
  * returns: next character of input that is not a preprocessor directive
  * errors:  if an EOF occurs while nested
@@ -1048,18 +1069,26 @@ extern STRM_T PreGetCH( void )
         return( t );
     }
 
-    for(;;) {
-        if(( atStartOfLine == EOL  && !doingPreProc )  ||
-             t == TMP_EOL && !doingPreProc) {
-            if (t == TMP_EOL) {
+    for( ;; ) {
+        if( !doingPreProc && (atStartOfLine == EOL || t == TMP_EOL) ) {
+            if( t == TMP_EOL ) {
                 // Throw away the unwanted TMP character
                 t = GetCHR();
-                if (t != BANG) {
+                if( t != BANG ) {
                     UnGetCH( t );
                     t = TMP_EOL;
                 }
             }
             doingPreProc = TRUE;
+
+            if( Glob.microsoft || Glob.posix ) {
+                /* Check for NMAKE and UNIX compatible 'include' directive */
+                if( t == 'i' && PreTestString( "nclude " ) ) {
+                    UnGetCH( eatWhite() );
+                    bangInclude();
+                    t = GetCHR();
+                }
+            }
             while( t == BANG ) {
                 handleBang();
 
@@ -1077,25 +1106,22 @@ extern STRM_T PreGetCH( void )
 
         skip = curNest.skip && !doingPreProc;
 
-        if( t == TMP_EOL) {
+        if( t == TMP_EOL ) {
             t = GetCHR();
         }
-        if( t == COMMENT && lastChar != DOLLAR ) {
+        if( t == COMMENT && lastChar != DOLLAR && inlineLevel == 0 ) {
             t = GetCHR();
-            while( t != EOL && t != STRM_END ) t = GetCHR();
-            if (temp == TMP_EOL) {
+            while( t != EOL && t != STRM_END ) {
+                t = GetCHR();
+            }
+            if( temp == TMP_EOL ) {
                 t = TMP_EOL;
             }
             /* we already have next char in t */
             continue;
         }
 
-
         if( t == STRM_END ) {
-            if( nestLevel > 0 ) {
-                PrtMsg( WRN| EOF_BEFORE_ENDIF, directives[ D_ENDIF ] );
-                nestLevel = 0;          /* reset nesting level */
-            }
             curNest.skip = FALSE;       /* so we don't skip a later file */
             curNest.skip2endif = FALSE;
 
@@ -1106,36 +1132,35 @@ extern STRM_T PreGetCH( void )
 
         if( inlineLevel > 0 ) {   // We are currently defining an inline file
             lastChar = t;         // ignore all special characters ie {nl}
-            if ( skip ) {
+            if( skip ) {
                 t = GetCHR();
                 continue;
             }
-            return (t);
+            return( t );
         } else {
-            if (Glob.microsoft && t == MS_LINECONT) {
+            if( Glob.microsoft && t == MS_LINECONT ) {
                 t = GetCHR();
-                if (t == EOL) {
+                if( t == EOL ) {
                     lastChar = SPACE;
-                    if ( skip ) {
+                    if( skip ) {
                         t = TMP_EOL;
                         continue;
                     }
                     // place holder for temporary EOL
                     // this is to be able to implement the
                     // bang statements after line continues
-                    UnGetCH(TMP_EOL);
-                    return (SPACE);
+                    UnGetCH( TMP_EOL );
+                    return( SPACE );
                 } else {
                     lastChar = MS_LINECONT;
-                    if ( skip ) {
+                    if( skip ) {
                         t = GetCHR();
                         continue;
                     }
-                    UnGetCH(t);
-                    return (MS_LINECONT);
+                    UnGetCH( t );
+                    return( MS_LINECONT );
                 }
             }
-
 
             if( t != LINECONT ) {
                 if( t != UNIX_LINECONT || !Glob.unix ) {
@@ -1149,10 +1174,15 @@ extern STRM_T PreGetCH( void )
                 t = GetCHR();
                 if( t != EOL ) {
                     lastChar = UNIX_LINECONT;
-                    if( skip ) continue;        /* already have next char */
+                    if( skip ) {
+                        continue;       /* already have next char */
+                    }
                     UnGetCH( t );
                     return( UNIX_LINECONT );
                 } else {
+                    if( skip ) {
+                        continue;       /* already have next char */
+                    }
                     UnGetCH( TMP_EOL );
                 }
             } else {
@@ -1161,10 +1191,15 @@ extern STRM_T PreGetCH( void )
                     lastChar == '[' || lastChar == ']' ) {
                            /* nope... restore state */
                     lastChar = LINECONT;
-                    if( skip ) continue;        /* already have next char */
+                    if( skip ) {
+                        continue;       /* already have next char */
+                    }
                     UnGetCH( t );
                     return( LINECONT );
                 } else {
+                    if( skip ) {
+                        continue;       /* already have next char */
+                    }
                     UnGetCH( TMP_EOL );
                 }
             }
@@ -1174,24 +1209,10 @@ extern STRM_T PreGetCH( void )
 }
 
 
-// Finds the next character that has no white space
-STATIC char* removeWhiteSP(char* inString)
+STATIC void makeToken( enum Tokens type, TOKEN_TYPE *current, int *index )
+/************************************************************************/
 {
-    int index = 0;
-
-    while (inString[index] == SPACE ||
-           inString[index] == TAB)
-    {
-        ++index;
-    }
-    return (inString + index);
-}
-
-STATIC void makeToken(enum Tokens        type,
-                      TOKEN_TYPE*        current,
-                      int*               index) {
-
-    switch (type) {
+    switch( type ) {
         case OP_COMPLEMENT:
         case OP_LOG_NEGATION:
         case OP_ADD:
@@ -1225,16 +1246,44 @@ STATIC void makeToken(enum Tokens        type,
     }
 
     current->type = type;
-
 }
 
-STATIC void makeNumberToken (char*       inString,
-                             TOKEN_TYPE* current,
-                             int*        index) {
-    int_32      value;
-    char*       currentChar;
-    char        c;
-    int         hexLength;
+
+STATIC int_32 makeHexNumber( char *inString, int *stringLength )
+/**************************************************************/
+{
+    int_32  value;
+    char    c;
+    char    *currentChar;
+
+    value = 0;
+    currentChar = inString;
+    for( ;; ) {
+        c = currentChar[0];
+        if( c >= '0' && c <= '9' ) {
+            c = c - '0';
+        } else if( c >= 'a' && c <= 'f' ) {
+            c = c - 'a' + 10;
+        } else if( c >= 'A' && c <= 'F' ) {
+            c = c - 'A' + 10;
+        } else {
+            break;
+        }
+        value = value * 16 + c;
+        ++currentChar;
+    }
+    *stringLength = currentChar - inString;
+    return( value );
+}
+
+
+STATIC void makeNumberToken( char *inString, TOKEN_TYPE *current, int *index )
+/****************************************************************************/
+{
+    int_32  value;
+    char    *currentChar;
+    char    c;
+    int     hexLength;
 
     currentChar = inString;
     value       = 0;
@@ -1245,7 +1294,7 @@ STATIC void makeNumberToken (char*       inString,
         c = currentChar[0];
         if( c == 'x'  ||  c == 'X' ) {          // hex number
             ++currentChar;
-            value = makeHexNumber(currentChar,&hexLength);
+            value = makeHexNumber( currentChar, &hexLength );
             currentChar += hexLength;
         } else {                                // octal number
             while( c >= '0'  &&  c <= '7' ) {
@@ -1261,64 +1310,33 @@ STATIC void makeNumberToken (char*       inString,
             c = currentChar[0];
         }
     }
-    current->data.number= value;
-    current->type= OP_INTEGER;
+    current->data.number = value;
+    current->type = OP_INTEGER;
 
     *index = currentChar - inString;
-
 }
 
-STATIC int_32 makeHexNumber (char* inString,
-                             int*  stringLength)
+
+STATIC void makeStringToken( char *inString, TOKEN_TYPE *current, int *index )
+/****************************************************************************/
 {
-    int_32     value;
-    char       c;
-    char*      currentChar;
+    int inIndex;
+    int currentIndex;
 
-    value = 0;
-    currentChar = inString;
-    while (1) {
-        c = currentChar[0];
-        if ( c >= '0' && c <= '9') {
-            c = c - '0';
-        } else if (c >= 'a' && c <= 'f' ) {
-            c = c - 'a' + 10;
-        } else if (c >= 'A' && c <= 'F' ) {
-            c = c - 'A' + 10;
-        } else {
-            break;
-        }
-        value = value * 16 + c;
-        ++currentChar;
-    }
-    *stringLength = currentChar - inString;
-    return (value);
-
-}
-
-STATIC void makeStringToken (char*       inString,
-                             TOKEN_TYPE* current,
-                             int*        index) {
-
-    int      inIndex;
-    int      currentIndex;
-
-    inIndex      = 1;   // skip initial DOUBLEQUOTE
-    currentIndex = 0;
-    current->type= OP_STRING;
-    while (1)
-    {
-        if (inString[inIndex] == DOUBLEQUOTE) {
-            //skip the second double quote
+    inIndex       = 1;   // skip initial DOUBLEQUOTE
+    currentIndex  = 0;
+    current->type = OP_STRING;
+    for( ;; ) {
+        if( inString[inIndex] == DOUBLEQUOTE ) {
+            // skip the second double quote
             ++inIndex;
             break;
         }
-        if (currentIndex >= MAX_STRING)
-        {
+        if( currentIndex >= MAX_STRING ) {
             current->type = OP_ENDOFSTRING;
             break;
         }
-        switch  (inString[inIndex]) {
+        switch( inString[inIndex] ) {
             // error did not find closing quotation
             case NULLCHAR :
             case EOL:
@@ -1326,232 +1344,317 @@ STATIC void makeStringToken (char*       inString,
                 current->type = OP_ERROR;
                 break;
             default:
-            current->data.string[currentIndex] = inString[inIndex];
-
+                current->data.string[currentIndex] = inString[inIndex];
         }
 
-        if (current->type == OP_ERROR) {
+        if( current->type == OP_ERROR ) {
             break;
         }
         ++inIndex;
         ++currentIndex;
-
     }
 
     current->data.string[currentIndex] = NULLCHAR;
     *index = inIndex;
 }
 
-STATIC void makeAlphaToken(char*       inString,
-                           TOKEN_TYPE* current,
-                           int*        index) {
+STATIC void makeAlphaToken( char *inString, TOKEN_TYPE *current, int *index )
+/***************************************************************************/
+{
+    char const  *r;
+    char        *pwrite;
+    char const  *pwritelast;
 
-    int      inIndex;
-    int      currentIndex;
+    r = inString;
+    pwrite = current->data.string;
+    pwritelast = pwrite + sizeof( current->data.string ) - 1;
+    current->type = OP_STRING;
 
-    inIndex      = 0;
-    currentIndex = 0;
-    current->type= OP_STRING;
+    // Note that in this case we are looking at a string that has no quotations
+    // nmake gives expected error with exists(a(b) but also with exists("a(b")
+    while( *r != PAREN_RIGHT && *r != PAREN_LEFT && !isws( *r ) ) {
+        if( pwrite >= pwritelast ) {
+            // VC++ 6 nmake allows 512 or more bytes here. We limit to 255.
+            current->type = OP_ENDOFSTRING; // This truncates.
+            break;
+        }
+        *pwrite++ = *r++;
+    }
 
-    // Note that in this case we are looking at a string that has no
-    // quotations
-    while ( inString[inIndex]!= PAREN_RIGHT &&
-            inString[inIndex]!= PAREN_LEFT  &&
-            !isws(inString[inIndex]) ) {
+    *pwrite = NULLCHAR;
+    *index = r - inString;
+}
 
-        if (currentIndex >= MAX_STRING)
-        {
+
+
+STATIC char *probeToken( char *probe )
+/*************************************
+ * Taking a peek at the next "token"
+ */
+{
+    while( isws( *probe ) ) {
+        ++probe;
+    }
+    return( probe );
+}
+
+
+STATIC BOOLEAN IsMacro( char const *name )
+/****************************************/
+{
+    char    *value;
+
+    // Seemingly redundant but GetMacroValue() needs plausible name
+    if( !IsMacroName( name ) ) {
+       return( FALSE );
+    }
+    value = GetMacroValue( name );
+
+    if( value == NULL ) {
+        return( FALSE );
+    }
+    FreeSafe( value );
+    return( TRUE );
+}
+
+
+STATIC BOOLEAN name2function( TOKEN_TYPE const *current, char const *criterion,
+    BOOLEAN (*action)( const char * ) , BOOLEAN (**pquestion)( const char * ) )
+/*****************************************************************************/
+{
+    if( strcmpi( current->data.string, criterion ) != 0 ) {
+        return( FALSE );
+    }
+    *pquestion = action;
+    return( TRUE );
+}
+
+STATIC void makeFuncToken( char *inString, TOKEN_TYPE *current, int *index )
+/***************************************************************************
+ * parses only to get alphanumeric characters for special functions
+ * ie. EXIST, defined.  if special characters are needed enclose in quotes
+ */
+{
+    char    *probe;
+
+    makeAlphaToken( inString, current, index );
+    // check that the next token is a '(', swallow it, and check we have more.
+    probe = probeToken( currentPtr + *index );
+    if( *probe != PAREN_LEFT
+    || (probe = probeToken( probe + 1), *probe == NULLCHAR) ) {
+        current->type = OP_ERROR;
+    } else {
+        BOOLEAN (*is)( const char * );
+
+        if( name2function( current, DEFINED, IsMacro,   &is )
+        ||  name2function( current, EXIST,   existFile, &is )
+        ||  name2function( current, EXISTS,  existFile, &is ) ) {
+            if( *probe == DOUBLEQUOTE ) {   // Get macro or file name
+                makeStringToken( probe, current, index );
+            } else {
+                makeAlphaToken( probe, current, index );
+            }
+            probe += *index;
+            if( current->type == OP_STRING ) {
+                probe = probeToken( probe );
+                if( *probe != PAREN_RIGHT ) {
+                    current->type = OP_ERROR;
+                } else {
+                    current->type          = OP_INTEGER;
+                    current->data.number   = is( current->data.string );
+                    ++probe;    // Swallow OP_PAREN_RIGHT
+                    *index = probe - currentPtr;
+                }
+            }
+        } else {
+            current->type = OP_ERROR;
+        }
+    }
+}
+
+STATIC void makeCmdToken( char *inString, TOKEN_TYPE *current, int *index )
+/**************************************************************************
+ * get a command token enclosed in square brackets; very basic - a right
+ * square bracket terminates command regardless of quoting
+ */
+{
+    int     inIndex;
+    int     currentIndex;
+
+    inIndex       = 1;   // skip opening bracket
+    currentIndex  = 0;
+    current->type = OP_SHELLCMD;
+    for( ;; ) {
+        if( inString[inIndex] == BRACKET_RIGHT ) {
+            // skip the closing bracket
+            ++inIndex;
+            break;
+        }
+        if( currentIndex >= MAX_STRING ) {
             current->type = OP_ENDOFSTRING;
             break;
         }
-        current->data.string[currentIndex] = inString[inIndex];
+        switch( inString[inIndex] ) {
+            // error did not find closing quotation
+            case NULLCHAR :
+            case EOL:
+            case COMMENT:
+                current->type = OP_ERROR;
+                break;
+            default:
+                current->data.string[currentIndex] = inString[inIndex];
+        }
 
+        if( current->type == OP_ERROR ) {
+            break;
+        }
         ++inIndex;
         ++currentIndex;
     }
-
 
     current->data.string[currentIndex] = NULLCHAR;
     *index = inIndex;
 }
 
+STATIC void ScanToken( char *inString, TOKEN_TYPE *current, int *tokenLength )
+/****************************************************************************/
+{
+    char    *currentString;
+    int     index = 0;
 
-STATIC void ScanToken (char *             inString,
-                      TOKEN_TYPE*        current,
-                      int *              tokenLength) {
+    currentString = SkipWS( inString );
 
-    char   *currentString;
-    int    index = 0;
-
-    currentString = removeWhiteSP (inString);
-
-    if (currentString[index] != EOL ||
+    if( currentString[index] != EOL ||
         currentString[index] != NULLCHAR ||
-        currentString[index] != COMMENT)
-    {
-        switch (currentString[index]) {
-            case COMPLEMENT:     makeToken(OP_COMPLEMENT,
-                                           current,
-                                           &index);
-                                 break;
-            case ADD:            makeToken(OP_ADD,
-                                           current,
-                                           &index);
-                                 break;
-            case SUBTRACT:       makeToken(OP_SUBTRACT,
-                                           current,
-                                           &index);
-                                 break;
-            case MULTIPLY:       makeToken(OP_MULTIPLY,
-                                           current,
-                                           &index);
-                                 break;
-            case DIVIDE:         makeToken(OP_DIVIDE,
-                                           current,
-                                           &index);
-                                 break;
-            case MODULUS:        makeToken(OP_MODULUS,
-                                           current,
-                                           &index);
-                                 break;
-            case BIT_XOR:        makeToken(OP_BIT_XOR,
-                                           current,
-                                           &index);
-                                 break;
-            case PAREN_LEFT:     makeToken(OP_PAREN_LEFT,
-                                           current,
-                                           &index);
-                                 break;
-            case PAREN_RIGHT:    makeToken(OP_PAREN_RIGHT,
-                                           current,
-                                           &index);
-                                 break;
-            case LOG_NEGATION:
-                switch (currentString[index+1]) {
-                   case EQUAL:   makeToken(OP_INEQU,
-                                           current,
-                                           &index);
-                                 break;
-                   default:      makeToken(OP_LOG_NEGATION,
-                                           current,
-                                           &index);
-                                 break;
-                }
-                break;
-            case BIT_AND:
-                switch (currentString[index+1]) {
-                   case BIT_AND: makeToken(OP_LOG_AND,
-                                           current,
-                                           &index);
-                                 break;
-                   default:      makeToken(OP_BIT_AND,
-                                           current,
-                                           &index);
-                                 break;
-                }
-                break;
-            case BIT_OR:
-                switch (currentString[index+1]) {
-                   case BIT_OR:  makeToken(OP_LOG_OR,
-                                           current,
-                                           &index);
-                                 break;
-                   default:      makeToken(OP_BIT_OR,
-                                           current,
-                                           &index);
-                                 break;
-                }
-                break;
-            case LESSTHAN:
-                switch (currentString[index+1]) {
-                   case LESSTHAN: makeToken(OP_SHIFT_LEFT,
-                                            current,
-                                            &index);
-                                  break;
-                   case EQUAL:    makeToken(OP_LESSEQU,
-                                            current,
-                                            &index);
-                                  break;
-                   default:       makeToken(OP_LESSTHAN,
-                                            current,
-                                            &index);
-                                  break;
-                }
-                break;
-            case GREATERTHAN:
-                switch (currentString[index+1]) {
-                   case GREATERTHAN: makeToken(OP_SHIFT_RIGHT,
-                                               current,
-                                               &index);
-                                     break;
-                   case EQUAL:       makeToken(OP_GREATEREQU,
-                                               current,
-                                               &index);
-                                     break;
-                   default:          makeToken(OP_GREATERTHAN,
-                                               current,
-                                               &index);
-                                     break;
-                }
-                break;
+        currentString[index] != COMMENT ) {
+        switch( currentString[index] ) {
+        case COMPLEMENT:
+            makeToken( OP_COMPLEMENT, current, &index );
+            break;
+        case ADD:
+            makeToken( OP_ADD, current, &index );
+            break;
+        case SUBTRACT:
+            makeToken( OP_SUBTRACT, current, &index );
+            break;
+        case MULTIPLY:
+            makeToken( OP_MULTIPLY, current, &index );
+            break;
+        case DIVIDE:
+            makeToken( OP_DIVIDE, current, &index );
+            break;
+        case MODULUS:
+            makeToken( OP_MODULUS, current, &index );
+            break;
+        case BIT_XOR:
+            makeToken( OP_BIT_XOR, current, &index );
+            break;
+        case PAREN_LEFT:
+            makeToken( OP_PAREN_LEFT, current, &index );
+            break;
+        case PAREN_RIGHT:
+            makeToken( OP_PAREN_RIGHT, current, &index );
+            break;
+        case LOG_NEGATION:
+            switch( currentString[index + 1] ) {
             case EQUAL:
-                switch (currentString[index+1]) {
-                    case EQUAL: makeToken(OP_EQUAL,
-                                          current,
-                                          &index);
-                                break;
-                    default:
-                         makeToken(OP_ERROR,
-                                   current,
-                                   &index);
-                         break;
-
-                }
-                break;
-            case DOUBLEQUOTE: makeStringToken(currentString,
-                                              current,
-                                              &index);
+                makeToken( OP_INEQU, current, &index );
                 break;
             default:
-                if (currentString[index] >= '0' &&
-                    currentString[index] <= '9') {
-                    makeNumberToken(currentString,
-                                    current,
-                                    &index);
-                } else {
-                    // parses only to get alphanumeric characters for
-                    // purpose of getting special functions ie. EXIST,
-                    // defined
-                    // if special characters are needed
-                    // enclose in quotes
-                    makeAlphaToken(currentString,
-                                   current,
-                                   &index);
-                }
+                makeToken( OP_LOG_NEGATION, current, &index );
+                break;
+            }
+            break;
+        case BIT_AND:
+            switch( currentString[index + 1] ) {
+            case BIT_AND:
+                makeToken( OP_LOG_AND, current, &index );
+                break;
+            default:
+                makeToken( OP_BIT_AND, current, &index );
+                break;
+            }
+            break;
+        case BIT_OR:
+            switch( currentString[index + 1] ) {
+            case BIT_OR:
+                makeToken( OP_LOG_OR, current, &index );
+                break;
+            default:
+                makeToken( OP_BIT_OR, current, &index );
+                break;
+            }
+            break;
+        case LESSTHAN:
+            switch( currentString[index + 1] ) {
+            case LESSTHAN:
+                makeToken( OP_SHIFT_LEFT, current, &index );
+                break;
+            case EQUAL:
+                makeToken( OP_LESSEQU, current, &index );
+                break;
+            default:
+                makeToken( OP_LESSTHAN, current, &index );
+                break;
+            }
+            break;
+        case GREATERTHAN:
+            switch( currentString[index + 1] ) {
+            case GREATERTHAN:
+                makeToken( OP_SHIFT_RIGHT, current, &index );
+                break;
+            case EQUAL:
+                makeToken( OP_GREATEREQU, current, &index );
+                break;
+            default:
+                makeToken( OP_GREATERTHAN, current, &index );
+                break;
+            }
+            break;
+        case EQUAL:
+            switch( currentString[index + 1] ) {
+            case EQUAL:
+                makeToken( OP_EQUAL, current, &index );
+                break;
+            default:
+                makeToken( OP_ERROR, current, &index );
                 break;
 
+            }
+            break;
+        case DOUBLEQUOTE:
+            makeStringToken( currentString, current, &index );
+            break;
+        case BRACKET_LEFT:
+            makeCmdToken( currentString, current, &index );
+            break;
+        default:
+            if( currentString[index] >= '0' && currentString[index] <= '9') {
+                makeNumberToken( currentString, current, &index );
+            } else {
+                makeFuncToken( currentString, current, &index );
+            }
+            break;
         }
-    }
-    else
-    {
-        makeToken(OP_ENDOFSTRING,
-                  current,
-                  &index);
+    } else {
+        makeToken( OP_ENDOFSTRING, current, &index );
     }
 
     *tokenLength = index + (currentString - inString);
-
 }
 
 
-// Get the next token
-STATIC void nextToken() {
+STATIC void nextToken( void )
+/****************************
+ * Get the next token
+ */
+{
     int tokenLength;
 
-    if (*currentPtr != NULLCHAR) {
-        ScanToken(currentPtr,&currentToken,&tokenLength);
+    if( *currentPtr != NULLCHAR ) {
+        ScanToken( currentPtr, &currentToken, &tokenLength );
         currentPtr += tokenLength;
-        while (isws(*currentPtr)) {
+        while( isws( *currentPtr ) ) {
             ++currentPtr;
         }
     } else {
@@ -1560,161 +1663,152 @@ STATIC void nextToken() {
 }
 
 
-// Taking a peek at the next token
-STATIC enum Tokens preToken() {
-    int tokenLength;
-    DATAVALUE nextToken;
-
-    if (*currentPtr != NULLCHAR) {
-        ScanToken(currentPtr,&nextToken,&tokenLength);
-    } else {
-        nextToken.type = OP_ERROR;  // no more tokens
-    }
-    return (nextToken.type);
-}
-
-
-/*
+STATIC void parseExpr( DATAVALUE *leftVal, char *inString )
+/**********************************************************
  * Calls functions that parses and evaluates the given expression
  * contained in global variables currentPtr (pointer to the string to be
  * parsed)
  */
-STATIC void parseExpr (DATAVALUE* leftVal, char* inString) {
-
-    assert(inString != NULL && leftVal != NULL);
+{
+    assert( inString != NULL && leftVal != NULL );
     currentPtr = inString;
     nextToken();
-    logorExpr(leftVal);
-    if (leftVal->type != OP_INTEGER) {
-        PrtMsg( ERR|LOC| PARSE_IFEXPR);
+    logorExpr( leftVal );
+    if( leftVal->type != OP_INTEGER ) {
+        PrtMsg( ERR | LOC | PARSE_IFEXPR );
     }
 }
 
 
-STATIC void logorExpr (DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
+STATIC void logorExpr( DATAVALUE *leftVal )
+/*****************************************/
+{
+    DATAVALUE   rightVal;
 
-    logandExpr(leftVal);
-    while (currentToken.type == OP_LOG_OR &&
-           leftVal->type      != OP_ERROR) {
-        if (leftVal->type     != OP_INTEGER) {
+    logandExpr( leftVal );
+    while( currentToken.type == OP_LOG_OR && leftVal->type != OP_ERROR) {
+        if( leftVal->type != OP_INTEGER ) {
             leftVal->type = OP_ERROR;
             break;
         }
         nextToken();
-        logandExpr(&rightVal);
-        if (rightVal.type == OP_INTEGER) {
-            leftVal->data.number = (leftVal->data.number ||
-                                    rightVal.data.number);
+        logandExpr( &rightVal );
+        if( rightVal.type == OP_INTEGER ) {
+            leftVal->data.number = leftVal->data.number || rightVal.data.number;
         } else {
             leftVal->type = OP_ERROR;
         }
     }
 }
 
-STATIC void logandExpr (DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
 
-    bitorExpr(leftVal);
-    while (currentToken.type == OP_LOG_AND &&
-           leftVal->type      != OP_ERROR) {
-        if (leftVal->type     != OP_INTEGER) {
+STATIC void logandExpr( DATAVALUE *leftVal )
+/******************************************/
+{
+    DATAVALUE   rightVal;
+
+    bitorExpr( leftVal );
+    while( currentToken.type == OP_LOG_AND && leftVal->type != OP_ERROR) {
+        if( leftVal->type != OP_INTEGER ) {
             leftVal->type = OP_ERROR;
             break;
         }
         nextToken();
-        bitorExpr(&rightVal);
-        if (rightVal.type == OP_INTEGER) {
-            leftVal->data.number = leftVal->data.number &&
-                                   rightVal.data.number;
+        bitorExpr( &rightVal );
+        if( rightVal.type == OP_INTEGER ) {
+            leftVal->data.number = leftVal->data.number && rightVal.data.number;
         } else {
             leftVal->type = OP_ERROR;
         }
     }
 }
 
-STATIC void bitorExpr (DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
 
-    bitxorExpr(leftVal);
-    while (currentToken.type == OP_BIT_OR &&
-           leftVal->type      != OP_ERROR) {
-        if (leftVal->type     != OP_INTEGER) {
+STATIC void bitorExpr( DATAVALUE *leftVal )
+/*****************************************/
+{
+    DATAVALUE   rightVal;
+
+    bitxorExpr( leftVal );
+    while( currentToken.type == OP_BIT_OR && leftVal->type != OP_ERROR) {
+        if( leftVal->type != OP_INTEGER ) {
             leftVal->type = OP_ERROR;
             break;
         }
         nextToken();
-        bitxorExpr(&rightVal);
-        if (rightVal.type == OP_INTEGER) {
-            leftVal->data.number = leftVal->data.number |
-                                   rightVal.data.number;
-        } else {
-            leftVal->type = OP_ERROR;
-        }
-
-    }
-}
-
-STATIC void bitxorExpr (DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
-
-    bitandExpr(leftVal);
-    while (currentToken.type == OP_BIT_XOR &&
-           leftVal->type      != OP_ERROR) {
-        if (leftVal->type     != OP_INTEGER) {
-            leftVal->type = OP_ERROR;
-            break;
-        }
-        nextToken();
-        bitandExpr(&rightVal);
-        if (rightVal.type == OP_INTEGER) {
-            leftVal->data.number = leftVal->data.number ^
-                                   rightVal.data.number;
+        bitxorExpr( &rightVal );
+        if( rightVal.type == OP_INTEGER ) {
+            leftVal->data.number = leftVal->data.number | rightVal.data.number;
         } else {
             leftVal->type = OP_ERROR;
         }
     }
 }
 
-STATIC void bitandExpr (DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
 
-    equalExpr(leftVal);
-    while (currentToken.type == OP_BIT_AND &&
-           leftVal->type      != OP_ERROR) {
-        if (leftVal->type     != OP_INTEGER) {
+STATIC void bitxorExpr( DATAVALUE *leftVal )
+/******************************************/
+{
+    DATAVALUE   rightVal;
+
+    bitandExpr( leftVal );
+    while( currentToken.type == OP_BIT_XOR && leftVal->type != OP_ERROR) {
+        if( leftVal->type != OP_INTEGER ) {
             leftVal->type = OP_ERROR;
             break;
         }
         nextToken();
-        equalExpr(&rightVal);
-        if (rightVal.type == OP_INTEGER) {
-            leftVal->data.number = leftVal->data.number &
-                                   rightVal.data.number;
+        bitandExpr( &rightVal );
+        if( rightVal.type == OP_INTEGER ) {
+            leftVal->data.number = leftVal->data.number ^ rightVal.data.number;
         } else {
             leftVal->type = OP_ERROR;
         }
     }
 }
 
-STATIC void equalExpr(DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
 
-    relateExpr(leftVal);
-    while (leftVal->type == OP_INTEGER ||
-           leftVal->type == OP_STRING) {
-        if (currentToken.type == OP_EQUAL) {
+STATIC void bitandExpr( DATAVALUE *leftVal )
+/******************************************/
+{
+    DATAVALUE   rightVal;
+
+    equalExpr( leftVal );
+    while( currentToken.type == OP_BIT_AND && leftVal->type != OP_ERROR) {
+        if( leftVal->type != OP_INTEGER ) {
+            leftVal->type = OP_ERROR;
+            break;
+        }
+        nextToken();
+        equalExpr( &rightVal );
+        if( rightVal.type == OP_INTEGER ) {
+            leftVal->data.number = leftVal->data.number & rightVal.data.number;
+        } else {
+            leftVal->type = OP_ERROR;
+        }
+    }
+}
+
+
+STATIC void equalExpr( DATAVALUE *leftVal )
+/*****************************************/
+{
+    DATAVALUE   rightVal;
+
+    relateExpr( leftVal );
+    while( leftVal->type == OP_INTEGER || leftVal->type == OP_STRING ) {
+        if( currentToken.type == OP_EQUAL ) {
             nextToken();
-            relateExpr(&rightVal);
-            if (leftVal->type == rightVal.type) {
-                switch (leftVal->type) {
+            relateExpr( &rightVal );
+            if( leftVal->type == rightVal.type ) {
+                switch( leftVal->type ) {
                 case OP_INTEGER:
-                    leftVal->data.number = (leftVal->data.number ==
-                                           rightVal.data.number);
+                    leftVal->data.number =
+                        (leftVal->data.number == rightVal.data.number);
                     break;
                 case OP_STRING:
-                    leftVal->data.number = (strcmp(leftVal->data.string,
-                                             rightVal.data.string) == 0);
+                    leftVal->data.number =
+                        !strcmp( leftVal->data.string, rightVal.data.string );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
@@ -1724,18 +1818,18 @@ STATIC void equalExpr(DATAVALUE* leftVal) {
             } else {
                 leftVal->type = OP_ERROR;
             }
-        } else if (currentToken.type == OP_INEQU) {
+        } else if( currentToken.type == OP_INEQU ) {
             nextToken();
-            relateExpr(&rightVal);
-            if (leftVal->type == rightVal.type) {
-                switch (leftVal->type) {
+            relateExpr( &rightVal );
+            if( leftVal->type == rightVal.type ) {
+                switch( leftVal->type ) {
                 case OP_INTEGER:
-                    leftVal->data.number = (leftVal->data.number !=
-                                           rightVal.data.number);
+                    leftVal->data.number =
+                        (leftVal->data.number != rightVal.data.number);
                     break;
                 case OP_STRING:
-                    leftVal->data.number = (strcmp(leftVal->data.string,
-                                             rightVal.data.string) != 0);
+                    leftVal->data.number =
+                        !!strcmp( leftVal->data.string, rightVal.data.string );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
@@ -1751,62 +1845,50 @@ STATIC void equalExpr(DATAVALUE* leftVal) {
     }
 }
 
-STATIC void relateExpr(DATAVALUE* leftVal) {
-    DATAVALUE rightVal;
 
-    shiftExpr(leftVal);
-    while (leftVal->type      != OP_ERROR &&
-           leftVal->type      != OP_STRING) {
-        if (leftVal->type     != OP_INTEGER) {
+STATIC void relateExpr( DATAVALUE *leftVal )
+/******************************************/
+{
+    DATAVALUE   rVal;
+
+    shiftExpr( leftVal );
+    while( leftVal->type != OP_ERROR && leftVal->type != OP_STRING ) {
+        if( leftVal->type != OP_INTEGER ) {
             leftVal->type = OP_ERROR;
             break;
         }
-        if (currentToken.type == OP_LESSTHAN) {
+        if( currentToken.type == OP_LESSTHAN ) {
             nextToken();
-            shiftExpr(&rightVal);
-            if (rightVal.type == OP_INTEGER) {
-                leftVal->data.number = leftVal->data.number <
-                                       rightVal.data.number;
+            shiftExpr( &rVal );
+            if( rVal.type == OP_INTEGER ) {
+                leftVal->data.number = leftVal->data.number < rVal.data.number;
             }
             else {
                 leftVal->type = OP_ERROR;
             }
-        } else if (currentToken.type == OP_LESSTHAN) {
+        } else if( currentToken.type == OP_LESSEQU ) {
             nextToken();
-            shiftExpr(&rightVal);
-            if (rightVal.type == OP_INTEGER) {
-                leftVal->data.number = leftVal->data.number <
-                                       rightVal.data.number;
+            shiftExpr( &rVal );
+            if( rVal.type == OP_INTEGER ) {
+                leftVal->data.number = leftVal->data.number <= rVal.data.number;
             }
             else {
                 leftVal->type = OP_ERROR;
             }
-        } else if (currentToken.type == OP_LESSEQU) {
+        } else if( currentToken.type == OP_GREATERTHAN ) {
             nextToken();
-            shiftExpr(&rightVal);
-            if (rightVal.type == OP_INTEGER) {
-                leftVal->data.number = leftVal->data.number <=
-                                       rightVal.data.number;
+            shiftExpr( &rVal );
+            if( rVal.type == OP_INTEGER ) {
+                leftVal->data.number = leftVal->data.number > rVal.data.number;
             }
             else {
                 leftVal->type = OP_ERROR;
             }
-        } else if (currentToken.type == OP_GREATERTHAN) {
+        } else if( currentToken.type == OP_GREATEREQU ) {
             nextToken();
-            shiftExpr(&rightVal);
-            if (rightVal.type == OP_INTEGER) {
-                leftVal->data.number = leftVal->data.number >
-                                       rightVal.data.number;
-            }
-            else {
-                leftVal->type = OP_ERROR;
-            }
-        } else if (currentToken.type == OP_GREATEREQU) {
-            nextToken();
-            shiftExpr(&rightVal);
-            if (rightVal.type == OP_INTEGER) {
-                leftVal->data.number = leftVal->data.number >=
-                                       rightVal.data.number;
+            shiftExpr( &rVal );
+            if( rVal.type == OP_INTEGER ) {
+                leftVal->data.number = leftVal->data.number >= rVal.data.number;
             }
             else {
                 leftVal->type = OP_ERROR;
@@ -1814,66 +1896,70 @@ STATIC void relateExpr(DATAVALUE* leftVal) {
         } else {
             break;
         }
-
     }
 }
 
-STATIC void shiftExpr(DATAVALUE* leftValue) {
-    DATAVALUE rightValue;
-    addExpr (leftValue);
-    while (leftValue->type != OP_ERROR &&
-           leftValue->type != OP_STRING) {
-        if (leftValue->type != OP_INTEGER) {
+
+STATIC void shiftExpr( DATAVALUE *leftValue )
+/*******************************************/
+{
+    DATAVALUE   rightValue;
+    unsigned_32 *leftNumber;
+
+    addExpr( leftValue );
+    leftNumber = (void *)&leftValue->data.number;
+    while( leftValue->type != OP_ERROR && leftValue->type != OP_STRING ) {
+        if( leftValue->type != OP_INTEGER ) {
             leftValue->type = OP_ERROR;
             break;
         }
-        if (currentToken.type == OP_SHIFT_LEFT) {
+        if( currentToken.type == OP_SHIFT_LEFT ) {
             nextToken();
-            addExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
-                leftValue->data.number <<= rightValue.data.number;
+            addExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
+                *leftNumber <<= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
             }
-
-        } else if (currentToken.type == OP_SHIFT_RIGHT) {
+        } else if( currentToken.type == OP_SHIFT_RIGHT ) {
             nextToken();
-            addExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
-                leftValue->data.number >>= rightValue.data.number;
+            addExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
+                *leftNumber >>= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
             }
         } else {
             break;
         }
-
-
     }
 }
 
-STATIC void addExpr(DATAVALUE* leftValue) {
-    DATAVALUE rightValue;
-    multExpr (leftValue);
-    while (leftValue->type != OP_ERROR &&
-           leftValue->type != OP_STRING) {
-        if (leftValue->type != OP_INTEGER) {
+
+STATIC void addExpr( DATAVALUE *leftValue )
+/*****************************************/
+{
+    DATAVALUE   rightValue;
+
+    multExpr( leftValue );
+    while( leftValue->type != OP_ERROR && leftValue->type != OP_STRING) {
+        if( leftValue->type != OP_INTEGER) {
             leftValue->type = OP_ERROR;
             break;
         }
-        if (currentToken.type == OP_ADD) {
+        if( currentToken.type == OP_ADD ) {
             nextToken();
-            multExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
+            multExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
                 leftValue->data.number += rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
             }
 
-        } else if (currentToken.type == OP_SUBTRACT) {
+        } else if( currentToken.type == OP_SUBTRACT ) {
             nextToken();
-            multExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
+            multExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
                 leftValue->data.number -= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
@@ -1881,40 +1967,42 @@ STATIC void addExpr(DATAVALUE* leftValue) {
         } else {
             break;
         }
-
-
     }
 }
-STATIC void multExpr(DATAVALUE* leftValue) {
-    DATAVALUE rightValue;
-    unaryExpr (leftValue);
-    while (leftValue->type != OP_ERROR &&
-           leftValue->type != OP_STRING) {
-        if (leftValue->type != OP_INTEGER) {
+
+
+STATIC void multExpr( DATAVALUE *leftValue )
+/******************************************/
+{
+    DATAVALUE   rightValue;
+
+    unaryExpr( leftValue );
+    while( leftValue->type != OP_ERROR && leftValue->type != OP_STRING ) {
+        if( leftValue->type != OP_INTEGER ) {
             leftValue->type = OP_ERROR;
             break;
         }
-        if (currentToken.type == OP_MULTIPLY) {
+        if( currentToken.type == OP_MULTIPLY ) {
             nextToken();
-            unaryExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
+            unaryExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
                 leftValue->data.number *= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
             }
 
-        } else if (currentToken.type == OP_DIVIDE) {
+        } else if( currentToken.type == OP_DIVIDE ) {
             nextToken();
-            unaryExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
+            unaryExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
                 leftValue->data.number /= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
             }
-        } else if (currentToken.type == OP_MODULUS) {
+        } else if( currentToken.type == OP_MODULUS ) {
             nextToken();
-            unaryExpr(&rightValue);
-            if (rightValue.type == OP_INTEGER) {
+            unaryExpr( &rightValue );
+            if( rightValue.type == OP_INTEGER ) {
                 leftValue->data.number %= rightValue.data.number;
             } else {
                 leftValue->type = OP_ERROR;
@@ -1925,35 +2013,37 @@ STATIC void multExpr(DATAVALUE* leftValue) {
     }
 }
 
-// This function is to determine whether or not a particular
-// filename / directory exists  (for use with EXIST())
-extern BOOLEAN existFile(char *inPath) {
-     if (access(inPath, F_OK) == 0 ) {
-         return (TRUE);
+
+BOOLEAN existFile( char const *inPath )
+/*********************************************
+ * This function is to determine whether or not a particular
+ * filename / directory exists  (for use with EXIST())
+ */
+{
+     if( access( inPath, F_OK ) == 0 ) {
+         return( TRUE );
      }
-     return (FALSE);
+     return( FALSE );
 }
 
 
-// handles the unary expressions, strings and numbers
-// identifies the logical functions EXIST and DEFINED
-STATIC void unaryExpr (DATAVALUE* leftValue) {
-
-    enum Tokens type;
-    char        *value;
-
-    switch (currentToken.type) {
+STATIC void unaryExpr( DATAVALUE *leftValue )
+/********************************************
+ * handles the unary expressions, strings and numbers
+ */
+{
+    switch( currentToken.type ) {
     case OP_ADD:
         nextToken();
-        unaryExpr(leftValue);
-        if (leftValue->type != OP_INTEGER) {
+        unaryExpr( leftValue );
+        if( leftValue->type != OP_INTEGER ) {
             leftValue->type = OP_ERROR;
         }
         break;
     case OP_SUBTRACT:
         nextToken();
-        unaryExpr(leftValue);
-        if (leftValue->type == OP_INTEGER) {
+        unaryExpr( leftValue );
+        if( leftValue->type == OP_INTEGER ) {
             leftValue->data.number = - leftValue->data.number;
         } else {
             leftValue->type = OP_ERROR;
@@ -1961,8 +2051,8 @@ STATIC void unaryExpr (DATAVALUE* leftValue) {
         break;
     case OP_LOG_NEGATION:
         nextToken();
-        unaryExpr(leftValue);
-        if (leftValue->type == OP_INTEGER) {
+        unaryExpr( leftValue );
+        if( leftValue->type == OP_INTEGER ) {
             leftValue->data.number = !(leftValue->data.number);
         } else {
             leftValue->type = OP_ERROR;
@@ -1970,92 +2060,51 @@ STATIC void unaryExpr (DATAVALUE* leftValue) {
         break;
     case OP_COMPLEMENT:
         nextToken();
-        unaryExpr(leftValue);
-        if (leftValue->type == OP_INTEGER) {
-            leftValue->data.number = ~(leftValue->data.number);
+        unaryExpr( leftValue );
+        if( leftValue->type == OP_INTEGER ) {
+            unsigned_32 *leftNumber;
+
+            leftNumber = (void *)&leftValue->data.number;
+            *leftNumber = ~*leftNumber;
         } else {
             leftValue->type = OP_ERROR;
         }
         break;
     case OP_PAREN_LEFT:
         nextToken();
-        logorExpr(leftValue);
-        if (currentToken.type == OP_PAREN_RIGHT) {
+        logorExpr( leftValue );
+        if( currentToken.type == OP_PAREN_RIGHT ) {
             nextToken();
         } else {
             leftValue->type = OP_ERROR;
         }
         break;
     case OP_STRING:
-        // check to see if the next token is a parenthesis
-        // without changing the value of currentToken
-        if (preToken() == OP_PAREN_LEFT) {
-            if (strcmpi(currentToken.data.string,
-                DEFINED) == 0) {
-                type = OP_DEFINED;
-            } else if (strcmpi(currentToken.data.string,
-                EXIST) == 0) {
-                type = OP_EXIST;
-            } else {
-                leftValue->type = OP_ERROR;
-                break;
-            }
-            nextToken();
-            nextToken();
-            if (currentToken.type == OP_STRING) {
-                if (preToken()== OP_PAREN_RIGHT) {
-                    switch (type) {
-                        // Check if macro is defined
-                    case OP_DEFINED:
-                        if( !IsMacroName( currentToken.data.string)) {
-                            leftValue->type        = OP_INTEGER;
-                            leftValue->data.number = FALSE;
-                        } else {
-                            leftValue->type        = OP_INTEGER;
-                            value = GetMacroValue(currentToken.data.string);
-                            if (value != NULL) {
-                                leftValue->data.number = TRUE;
-                                FreeSafe( value );
-                            } else {
-                                leftValue->data.number = FALSE;
-                            }
-
-                        }
-                        break;
-                    case OP_EXIST:
-                        // check if the input file is defined
-                        leftValue->type = OP_INTEGER;
-                        leftValue->data.number =
-                                        existFile(currentToken.data.string);
-                        break;
-                    default:
-                        leftValue->type = OP_ERROR;
-                        break;
-                    }
-                    nextToken();
-                    nextToken();
-                } else {
-                    currentToken.type = OP_ERROR;
-                }
-            } else {
-                leftValue->type = OP_ERROR;
-            }
-        // If the following token is not an open parenthesis then
-        // the string is just a normal string
-        //
-        } else {
-            leftValue->type        = currentToken.type;
-            strcpy(leftValue->data.string,currentToken.data.string);
-            nextToken();
-        }
+        leftValue->type = currentToken.type;
+        strcpy( leftValue->data.string, currentToken.data.string );
+        nextToken();
         break;
     case OP_INTEGER:
         leftValue->type        = currentToken.type;
         leftValue->data.number = currentToken.data.number;
         nextToken();
         break;
+    case OP_SHELLCMD:
+        leftValue->type        = OP_INTEGER;
+        PrtMsg( DBG | INF | EXECING_CMD, currentToken.data.string );
+        leftValue->data.number = ExecCommand( currentToken.data.string );
+        PrtMsg( DBG | INF | CMD_RETCODE, leftValue->data.number );
+        nextToken();
+        break;
     default:
         leftValue->type        = OP_ERROR;
         // error
     }
+}
+
+
+size_t GetNestLevel( void )
+/*************************/
+{
+    return( nestLevel );
 }

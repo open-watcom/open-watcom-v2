@@ -44,10 +44,10 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    WdeSelect = 0
-,   WdeSetOrder
-,   WdeSetTabs
-,   WdeSetGroups
+    WdeSelect = 0,
+    WdeSetOrder,
+    WdeSetTabs,
+    WdeSetGroups
 } WdeOrderMode;
 
 typedef struct {
@@ -78,19 +78,19 @@ extern char WdeTagClass[];
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WdeFreeOrderedList       ( LIST * );
-extern LIST    *WdeCopyOrderedList       ( LIST * );
-extern Bool     WdeAddOrderedEntry       ( LIST **, OBJPTR );
-extern Bool     WdeRemoveOrderedEntry    ( LIST *, OBJPTR );
-extern Bool     WdeCleanOrderedList      ( LIST ** );
-extern Bool     WdeGetNextChild          ( LIST **, OBJPTR *, Bool );
-extern void     WdeFiniOrderStuff        ( void );
-extern Bool     WdeRegisterTagClass      ( HINSTANCE );
-extern void     WdeTagPressed            ( WdeSetOrderStruct * );
-extern void     WdeDestroyTag            ( HWND tag );
-extern HWND     WdeCreateTag             ( HWND, WdeSetOrderStruct * );
-extern void     WdeReorderTags           ( WdeSetOrderLists *, Bool );
-extern LIST    *WdeFindOrderedEntry      ( LIST *, OBJPTR );
-extern WdeSetOrderStruct *WdeGetTagInfo  ( HWND );
+extern void WdeFreeOrderedList( LIST * );
+extern LIST *WdeCopyOrderedList( LIST * );
+extern Bool WdeAddOrderedEntry( LIST **, OBJPTR );
+extern Bool WdeRemoveOrderedEntry( LIST *, OBJPTR );
+extern Bool WdeCleanOrderedList( LIST ** );
+extern Bool WdeGetNextChild( LIST **, OBJPTR *, Bool );
+extern void WdeFiniOrderStuff( void );
+extern Bool WdeRegisterTagClass( HINSTANCE );
+extern void WdeTagPressed( WdeSetOrderStruct * );
+extern void WdeDestroyTag( HWND tag );
+extern HWND WdeCreateTag( HWND, WdeSetOrderStruct * );
+extern void WdeReorderTags( WdeSetOrderLists *, Bool );
+extern LIST *WdeFindOrderedEntry( LIST *, OBJPTR );
+extern WdeSetOrderStruct    *WdeGetTagInfo( HWND );
 
 #endif

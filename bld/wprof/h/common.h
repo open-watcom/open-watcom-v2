@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Common includes and definitions for profiler.
 *
 ****************************************************************************/
 
@@ -35,7 +34,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "watcom.h"
-#include "targetos.h"
 #include "bool.h"
 
 #define STATIC          static
@@ -48,9 +46,9 @@ typedef int             file_handle;
 typedef void *          pointer;
 
 /* use this for boolean parameters and return values */
-typedef enum { B_FALSE = (0==1), B_TRUE = (0==0) } bint;
+typedef enum { P_FALSE = (0==1), P_TRUE = (0==0) } bint;
 
-#if _OS == _OS_QNX
+#if defined(__UNIX__)
 #define PATH_DELIM      ':'
 #define ALLFILES        "All Files\0*\0"
 #else
@@ -59,6 +57,7 @@ typedef enum { B_FALSE = (0==1), B_TRUE = (0==0) } bint;
 #endif
 
 #if defined(__LARGE__)
+#include <malloc.h>
 #define _MALLOC     _fmalloc
 #define _REALLOC    _frealloc
 #define _FREE       _ffree

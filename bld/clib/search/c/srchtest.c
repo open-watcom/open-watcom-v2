@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of C library search functions.
 *
 ****************************************************************************/
 
@@ -63,35 +62,41 @@ unsigned int warnings, failures, tests;
 void Status_Print( )
 /*******************/
 {
-        /* Print the number of warnings/failures. */
+    /* Print the number of warnings/failures. */
 
-        printf( "   Tests: %d\n", tests );
-        printf( "Warnings: %d\n", warnings );
-        printf( "Failures: %d\n", failures );
+    printf( "   Tests: %d\n", tests );
+    printf( "Warnings: %d\n", warnings );
+    printf( "Failures: %d\n", failures );
 }
 
 /*** Comparison routines ***/
 
-int floatcmp( float *a, float *b )
+int floatcmp( void const *_a, void const *_b )
 {
-        if( *a == *b ) {
-                return 0;
-        } else if( *a < *b ) {
-                return -1;
-        } else {
-                return 1;
-        }
+    float *a = (float *)_a;
+    float *b = (float *)_b;
+
+    if( *a == *b ) {
+        return 0;
+    } else if( *a < *b ) {
+        return -1;
+    } else {
+        return 1;
+    }
 }
 
-int longintcmp( unsigned long int *a, unsigned long int *b )
+int longintcmp( void const *_a, void const *_b )
 {
-        if( (*a) == (*b) ) {
-                return 0;
-        } else if( (*a) < (*b) ) {
-                return -1;
-        } else {
-                return 1;
-        }
+    unsigned long int *a = (unsigned long int *)_a;
+    unsigned long int *b = (unsigned long int *)_b;
+
+    if( (*a) == (*b) ) {
+        return 0;
+    } else if( (*a) < (*b) ) {
+        return -1;
+    } else {
+        return 1;
+    }
 }
 
 /*** Test Routines ***/
@@ -100,113 +105,103 @@ int longintcmp( unsigned long int *a, unsigned long int *b )
 int test_qsort_fl_arr( )
 /**********************/
 {
-        float  test[ QSORT_SIZE ];
-        int    i;
+    float  test[ QSORT_SIZE ];
+    int    i;
 
-        srand( 0 );
-        for( i = 0; i < QSORT_SIZE; i++ ) {   /* Create test data */
-                test[i] = rand( );
-        }
+    srand( 0 );
+    for( i = 0; i < QSORT_SIZE; i++ ) {   /* Create test data */
+        test[i] = rand( );
+    }
 
-        qsort( test, QSORT_SIZE, sizeof( float ), floatcmp ); /* Sort the data */
+    qsort( test, QSORT_SIZE, sizeof( float ), floatcmp ); /* Sort the data */
 
-        EXPECT( QSORT_SIZE - 1 > 0 );
-        for( i = 0; i < QSORT_SIZE - 1; i++ ) {   /* Check the order */
-                VERIFY( test[i] <= test[i+1] );
-        }
+    #if !( QSORT_SIZE - 1 > 0 )
+        #error  QSORT_SIZE too small
+    #endif
+    for( i = 0; i < QSORT_SIZE - 1; i++ ) {   /* Check the order */
+        VERIFY( test[i] <= test[i+1] );
+    }
 
-        /* Verify the sort */
-        return 1;
+    /* Verify the sort */
+    return 1;
 }
 
 int test_qsort( )
 /***************/
 {
-        test_qsort_fl_arr( );
+    test_qsort_fl_arr( );
 
-        return 1;
+    return 1;
 }
 
 int test_bsearch( )
 /*****************/
 {
-        int i;
-        unsigned long int list[ LIST_SIZE ], cur;
+    int i;
+    unsigned long int list[ LIST_SIZE ], cur;
 
-        EXPECT( LIST_SIZE < 4000 ); /* to prevent overflows in test data */
+    /* prevent overflows in test data */
+    #if !( LIST_SIZE < 4000 )
+        #error LIST_SIZE too large
+    #endif
 
-        /* Create the search list */
-        for( i = 0; i < LIST_SIZE; i++ ) {
-                list[i] = i*i;
-        }
+    /* Create the search list */
+    for( i = 0; i < LIST_SIZE; i++ ) {
+        list[i] = i*i;
+    }
 
-        /* Test bsearch */
-        for( i = 0; i < LIST_SIZE; i++ ) {
-                cur = list[i];
-                VERIFY( list[i] == i*i );
-                VERIFY( bsearch( &cur,
-                                  list,
-                                  LIST_SIZE,
-                                                  sizeof( unsigned long int),
-                                                  longintcmp ) == &list[i] );
-        }
+    /* Test bsearch */
+    for( i = 0; i < LIST_SIZE; i++ ) {
+        cur = list[i];
+        VERIFY( list[i] == i*i );
+        VERIFY( bsearch( &cur, list, LIST_SIZE,
+            sizeof( unsigned long int), longintcmp ) == &list[i] );
+    }
 
-        return 1;
+    return 1;
 }
 
 int test_lfind_lsearch( )
 /***********************/
 {
-        int i;
-        unsigned num;
-        unsigned long int list[ LIST_SIZE + 1 ], cur;
+    int i;
+    unsigned num;
+    unsigned long int list[ LIST_SIZE + 1 ], cur;
 
-        srand( 0 );
+    srand( 0 );
 
-        /* Create the search list */
-        for( i = 0; i < LIST_SIZE; i++ ) {
-                list[i] = abs( (rand() * rand()) % 1000000000 );
-        }
+    /* Create the search list */
+    for( i = 0; i < LIST_SIZE; i++ ) {
+        list[i] = abs( (rand() * rand()) % 1000000000 );
+    }
 
-        num = LIST_SIZE;
+    num = LIST_SIZE;
 
-        for( i = 0; i < LIST_SIZE; i++ ) {
-                cur = list[i];
-                /* test bsearch */
+    for( i = 0; i < LIST_SIZE; i++ ) {
+        cur = list[i];
+        /* test bsearch */
 
-                VERIFY( (unsigned long int*)(lfind( &cur,
-                               list,
-                               &num,
-                                           sizeof( unsigned long int ),
-                                       longintcmp )) == (&list[i]) );
+        VERIFY( (unsigned long int*)(lfind( &cur, list, &num,
+            sizeof( unsigned long int ), longintcmp )) == (&list[i]) );
 
-            /* test lsearch */
+        /* test lsearch */
 
-                VERIFY( (unsigned long int *)lsearch( &cur,
-                                 list,
-                                 &num,
-                                             sizeof( unsigned long int ),
-                                             longintcmp ) == (void *)(&list[i]) );
-        }
+        VERIFY( (unsigned long int *)lsearch( &cur, list, &num,
+            sizeof( unsigned long int ), longintcmp ) == (void *)(&list[i]) );
+    }
 
-        cur = 2000000001;
+    cur = 2000000001;
 
-        /* test of bsearch */
-    EXPECT( lfind( &cur,
-                       list,
-                       &num,
-                                   sizeof( unsigned long int ),
-                                   longintcmp ) == NULL );
+    /* test of bsearch */
+    EXPECT( lfind( &cur, list, &num,
+        sizeof( unsigned long int ), longintcmp ) == NULL );
 
         /* test of lsearch */
-    EXPECT( lsearch( &cur,
-                         list,
-                         &num,
-                                     sizeof( unsigned long int ),
-                                     longintcmp ) == &list[ LIST_SIZE ] );
+    EXPECT( lsearch( &cur, list, &num,
+        sizeof( unsigned long int ), longintcmp ) == &list[ LIST_SIZE ] );
 
-        EXPECT( num == (LIST_SIZE + 1) );
-        return 1;
+    EXPECT( num == (LIST_SIZE + 1) );
+    return 1;
 }
 
 int main( int argc, char *argv[] )
@@ -221,15 +216,15 @@ int main( int argc, char *argv[] )
         }
     #endif
 
-        /****  Start of Tests  ****/
+    /****  Start of Tests  ****/
 
-        test_bsearch( );
-        test_lfind_lsearch( );
-        test_qsort( );
+    test_bsearch( );
+    test_lfind_lsearch( );
+    test_qsort( );
 
-        /****  End of Tests  ****/
+    /****  End of Tests  ****/
 
-        //Status_Print( );
+    //Status_Print( );
 
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
     #ifdef __SW_BW
@@ -241,4 +236,3 @@ int main( int argc, char *argv[] )
     #endif
     return( 0 );
 }
-

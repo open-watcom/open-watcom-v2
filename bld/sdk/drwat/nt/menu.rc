@@ -17,8 +17,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM sp( "Continue &Exceptions",
                      "Continue &Exceptions" ), MENU_EXCEPTION_CONTINUE
-        MENUITEM sp( "Show &DIP status...",
-                     "Show &DIP status..." ), MENU_SHOW_DIP_STATUS
+        MENUITEM sp( "Show &DIP Status...",
+                     "Show &DIP Status..." ), MENU_SHOW_DIP_STATUS
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
                      "E&xit" ), MENU_EXIT
@@ -51,11 +51,11 @@ BEGIN
     BEGIN
         MENUITEM sp( "&Contents",
                      "&Contents" ), MENU_HELP_CONTENTS
-        MENUITEM sp( "&Search for help on...",
-                     "&Search for help on..." ), MENU_HELP_SRCH
+        MENUITEM sp( "&Search for Help on...",
+                     "&Search for Help on..." ), MENU_HELP_SRCH
         MENUITEM SEPARATOR
-        MENUITEM sp( "&How to use help",
-                     "&How to use help" ), MENU_HELP_ON_HELP
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ), MENU_HELP_ON_HELP
         MENUITEM SEPARATOR
         MENUITEM sp( "&About...",
                      "&About..." ), MENU_ABOUT

@@ -71,3 +71,13 @@ void poo()          // should not cause errors
     r = ( __typeof(r) )p;
     r = ( __typeof(r) )q;
 }
+
+void foofoo()
+{
+    p = static_cast< char * >( q );
+    q = static_cast< unsigned char * >( p );
+    p = static_cast< char * >( r );
+    q = static_cast< unsigned char * >( r );
+    r = static_cast< signed char * >( p );
+    r = static_cast< signed char * >( q );
+}

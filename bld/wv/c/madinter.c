@@ -266,9 +266,6 @@ void ReportMADFailure( mad_status ms )
     case MS_UNREGISTERED_MAD:
         Error( ERR_NONE, LIT( LMS_UNREGISTERED_MAD ), old );
         break;
-    case MS_INVALID_MAD:
-        Error( ERR_NONE, LIT( LMS_INVALID_MAD ), buff );
-        break;
     case MS_INVALID_MAD_VERSION:
         Error( ERR_NONE, LIT( LMS_INVALID_MAD_VERSION ), buff );
         break;
@@ -284,6 +281,10 @@ void ReportMADFailure( mad_status ms )
         break;
     case MS_NO_MEM:
         Error( ERR_NONE, LIT( ERR_NO_MEMORY ) );
+        break;
+    case MS_INVALID_MAD:
+    default:
+        Error( ERR_NONE, LIT( LMS_INVALID_MAD ), buff );
         break;
     }
     _SwitchOff( SW_ERROR_RETURNS );

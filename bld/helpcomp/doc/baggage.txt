@@ -1,0 +1,20 @@
+BAGGAGE IN WINHELP FILES
+========================
+
+Any 'baggage' files specified in the [BAGGAGE] section of a .HPJ file will
+be copied at compile time and stored in the .HLP file as an internal file.
+The only change made to the file will be to prepend the standard 9-byte
+internal file header (see whifs.txt).  In addition, the baggage file will
+be listed in the directory file under the name by which it was specified
+in the .HPJ file, minus the path.
+
+That is, if the [BAGGAGE] section of a .HPJ file is as follows:
+
+	[BAGGAGE]
+	c:\dos\command.com
+	E:\OS2\MDOS\WINOS2\WINMINE.EXE
+	
+Then both command.com and the Win-OS/2 version of MineSweeper will be copied
+into the help file (why you'd want them there, I'll never know), and in the
+directory file will contain, among other things, entries for "command.com"
+and "WINMINE.EXE".  Note that the case of the letters is preserved.

@@ -1,6 +1,6 @@
 #include <fstream.h>
-#include <sys\types.h>                     //
-#include <sys\stat.h>                      // C library
+#include <sys/types.h>                     //
+#include <sys/stat.h>                      // C library
 #include <fcntl.h>                         //
 
 void main( void ) {

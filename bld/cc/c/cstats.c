@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Print module compilation statistics.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include "cvars.h"
 
 
-void InitStats()
+void InitStats( void )
 {
     CompFlags.stats_printed = 0;
     CompFlags.extra_stats_wanted = 0;
@@ -48,27 +47,20 @@ void InitStats()
     EnumCount = 0;
     TagCount = 0;
     FieldCount = 0;
-#ifndef NEWCFE
-    QuadIndex = 0;
-    LeafIndex = 0;
-#endif
     TypeCount = 0;
     TmpSymCount = 0;
     LitPoolSize = 0;
     LitCount = 0;
-    ReclaimCount = 0;
     /* still useful for internal debugging */
-    AllocCount = 0;
-    FreeCount = 0;
     FuncCount = 0;
 }
 
-void PrintStats()
+void PrintStats( void )
 {
     FCB         *nest_fcb;
     char        *fname;
-    char  msgbuf[MAX_MSG_LEN];
-    int   len;
+    char        msgbuf[MAX_MSG_LEN];
+    int         len;
 
     if( ! CompFlags.stats_printed ) {
         len = 0;
@@ -79,10 +71,10 @@ void PrintStats()
             nest_fcb = SrcFile;
             if( nest_fcb != NULL ) {
                 while( nest_fcb->prev_file != NULL ) {
-                    IncLineCount += nest_fcb->src_line;
+                    IncLineCount += nest_fcb->src_line_cnt;
                     nest_fcb = nest_fcb->prev_file;
                 }
-                SrcLineCount = nest_fcb->src_line;
+                SrcLineCount = nest_fcb->src_line_cnt;
             }
         }
         len += sprintf( &msgbuf[len], "%u lines, ", SrcLineCount );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wremem.h"
 #include "wretoolb.h"
@@ -65,10 +65,11 @@ Bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
 {
     Bool   ok;
 
-    ok = ( curr && curr->info && tname && rname && lang );
+    ok = (curr != NULL && curr->info != NULL && tname != NULL && rname != NULL &&
+          lang != NULL);
 
-    if( ok && !curr->info->info->dir ) {
-        ok = ( ( curr->info->info->dir = WResInitDir() ) != NULL );
+    if( ok && !curr->info->info->dir != NULL ) {
+        ok = ((curr->info->info->dir = WResInitDir()) != NULL);
     }
 
     if( ok ) {
@@ -77,7 +78,7 @@ Bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
     }
 
     if( ok ) {
-        ok = ( !dup || ( dup && !*dup ) );
+        ok = (dup == NULL || (dup != NULL && !*dup));
     }
 
     if( ok ) {
@@ -91,19 +92,18 @@ Bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
 
     if( ok && new_type ) {
         curr->type = WREFindTypeNodeFromWResID( curr->info->info->dir, tname );
-        ok = ( curr->type != NULL );
+        ok = (curr->type != NULL);
     }
 
     if( ok ) {
         curr->res = WREFindResNodeFromWResID( curr->type, rname );
-        ok = ( curr->res != NULL );
+        ok = (curr->res != NULL);
     }
 
     if( ok ) {
         curr->lang = WREFindLangNodeFromLangType( curr->res, lang );
-        ok = ( curr->lang != NULL );
+        ok = (curr->lang != NULL);
     }
 
     return( ok );
 }
-

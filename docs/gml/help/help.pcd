@@ -1,0 +1,95 @@
+:CMT. This device definition is used for printers supporting
+:CMT. the American Standards Association (ASA) carriage control
+:CMT. characters.
+:CMT. The printers must support the triple spacing control character (-).
+:CMT. These carriage control characters are often associated with
+:CMT. FORTRAN.
+
+:CMT. Definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. HELP                            help
+
+:CMT. Corresponding driver
+:CMT. definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. HELPDRV                         helpdrv
+
+:CMT. Font definition files used      Font name
+:CMT. ------------------------------------------------------
+:CMT. MONO01                          mono01
+:CMT.eoc
+
+:DEVICE
+   defined_name          = 'help'
+   member_name           = 'help'
+   driver_name           = 'helpdrv'
+   output_suffix         = 'lis'
+   output_name           = ''
+   page_width            = 132
+   page_depth            = 66
+   horizontal_base_units = 10
+   vertical_base_units   = 6
+
+:DEVICEFONT
+   fontname     = 'mono01'
+   fontswitch   = ""
+   fontpause    = ""
+   resident     = no
+:eDEVICEFONT.
+
+:DEFAULTFONT
+   font         = 0
+   fontname     = 'mono01'
+   fontstyle    = plain
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 1
+   fontname     = 'mono01'
+   fontstyle    = uline
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 2
+   fontname     = 'mono01'
+   fontstyle    = bold
+:eDEFAULTFONT.
+
+:DEFAULTFONT
+   font         = 3
+   fontname     = 'mono01'
+   fontstyle    = ulbold
+:eDEFAULTFONT.
+
+:cmt.:RULE
+:cmt.   font         = "mono01"
+:cmt.   rule_value   = '-'
+:cmt.:eRULE.
+
+:BOX
+   font            = "mono01"
+   horizontal_line = $C4
+   vertical_line   = $B3
+   top_left        = $DA
+   top_right       = $BF
+   bottom_left     = $C0
+   bottom_right    = $D9
+   top_join        = $C2
+   bottom_join     = $C1
+   left_join       = $C3
+   right_join      = $B4
+   inside_join     = $C5
+:eBOX.
+
+:PAGESTART
+   x_start = 0
+   y_start = 1
+:ePAGESTART.
+
+:INTRANS.
+  b $20
+  ( $5B
+  ) $5D
+:eINTRANS.
+
+:eDEVICE.

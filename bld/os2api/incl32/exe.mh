@@ -1,0 +1,49 @@
+/*
+ *  exe.h       DOS executable (MZ) format.
+ *
+:include crwatcnt.sp
+*/
+
+#ifndef __EXE__
+#define __EXE__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#define EXEID   0x5a4d
+
+#ifndef BYTE
+typedef unsigned char   BYTE;
+#endif
+
+#ifndef WORD
+typedef unsigned short  WORD;
+#endif
+
+typedef WORD    bbmask;
+
+struct exe {
+    WORD    eid;
+    WORD    elast;
+    WORD    epagsiz;
+    WORD    erelcnt;
+    WORD    ehdrsiz;
+    WORD    eminfre;
+    WORD    emaxfre;
+    WORD    eiSS;
+    WORD    eiSP;
+    WORD    enegsum;
+    WORD    eiIP;
+    WORD    eiCS;
+    WORD    ereloff;
+    WORD    eovlnum;
+    WORD    ever;
+    WORD    dumy;
+    bbmask  ebb;
+    WORD    dumy2[7];
+};
+
+:include cplusepi.sp
+
+#endif

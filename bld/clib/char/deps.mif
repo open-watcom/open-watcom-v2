@@ -1,14 +1,31 @@
-uisalpha.obj : ..\..\..\c\uisalpha.c ..\..\..\c\isalpha.c
-uisascii.obj : ..\..\..\c\uisascii.c ..\..\..\c\isascii.c
-uiscntrl.obj : ..\..\..\c\uiscntrl.c ..\..\..\c\iscntrl.c
-uisdigit.obj : ..\..\..\c\uisdigit.c ..\..\..\c\isdigit.c
-uisgraph.obj : ..\..\..\c\uisgraph.c ..\..\..\c\isgraph.c
-uislower.obj : ..\..\..\c\uislower.c ..\..\..\c\islower.c
-uisprint.obj : ..\..\..\c\uisprint.c ..\..\..\c\isprint.c
-uispunct.obj : ..\..\..\c\uispunct.c ..\..\..\c\ispunct.c
-uisspace.obj : ..\..\..\c\uisspace.c ..\..\..\c\isspace.c
-uisupper.obj : ..\..\..\c\uisupper.c ..\..\..\c\isupper.c
-uisxdig.obj  : ..\..\..\c\uisxdig.c  ..\..\..\c\isxdigit.c
-utolower.obj : ..\..\..\c\utolower.c ..\..\..\c\tolower.c
-utoupper.obj : ..\..\..\c\utoupper.c ..\..\..\c\toupper.c
-uisalnum.obj : ..\..\..\c\uisalnum.c ..\..\..\c\isalnum.c
+isalnum.obj  : ../../../c/isalnum.c  ../../../h/istable.h
+isalpha.obj  : ../../../c/isalpha.c  ../../../h/istable.h
+iscntrl.obj  : ../../../c/iscntrl.c  ../../../h/istable.h
+iscsym.obj   : ../../../c/iscsym.c   ../../../h/istable.h
+iscsymf.obj  : ../../../c/iscsymf.c  ../../../h/istable.h
+isdigit.obj  : ../../../c/isdigit.c  ../../../h/istable.h
+isgraph.obj  : ../../../c/isgraph.c  ../../../h/istable.h
+islower.obj  : ../../../c/islower.c  ../../../h/istable.h
+isprint.obj  : ../../../c/isprint.c  ../../../h/istable.h
+ispunct.obj  : ../../../c/ispunct.c  ../../../h/istable.h
+isspace.obj  : ../../../c/isspace.c  ../../../h/istable.h
+isupper.obj  : ../../../c/isupper.c  ../../../h/istable.h
+isxdigit.obj : ../../../c/isxdigit.c ../../../h/istable.h
+
+uisalnum.obj : ../../../c/uisalnum.c ../../../c/isalnum.c  ../../../h/istable.h
+uisalpha.obj : ../../../c/uisalpha.c ../../../c/isalpha.c  ../../../h/istable.h
+uisascii.obj : ../../../c/uisascii.c ../../../c/isascii.c
+uiscntrl.obj : ../../../c/uiscntrl.c ../../../c/iscntrl.c  ../../../h/istable.h
+uiscsym.obj  : ../../../c/uiscsym.c  ../../../c/iscsym.c   ../../../h/istable.h
+uiscsymf.obj : ../../../c/uiscsymf.c ../../../c/iscsymf.c  ../../../h/istable.h
+uisdigit.obj : ../../../c/uisdigit.c ../../../c/isdigit.c  ../../../h/istable.h
+uisgraph.obj : ../../../c/uisgraph.c ../../../c/isgraph.c  ../../../h/istable.h
+uislower.obj : ../../../c/uislower.c ../../../c/islower.c  ../../../h/istable.h
+uisprint.obj : ../../../c/uisprint.c ../../../c/isprint.c  ../../../h/istable.h
+uispunct.obj : ../../../c/uispunct.c ../../../c/ispunct.c  ../../../h/istable.h
+uisspace.obj : ../../../c/uisspace.c ../../../c/isspace.c  ../../../h/istable.h
+uisupper.obj : ../../../c/uisupper.c ../../../c/isupper.c  ../../../h/istable.h
+uisxdig.obj  : ../../../c/uisxdig.c  ../../../c/isxdigit.c ../../../h/istable.h
+utolower.obj : ../../../c/utolower.c ../../../c/tolower.c
+utoupper.obj : ../../../c/utoupper.c ../../../c/toupper.c
+uisalnum.obj : ../../../c/uisalnum.c ../../../c/isalnum.c

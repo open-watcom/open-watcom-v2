@@ -34,7 +34,7 @@
 #define _GUICONTR_H_
 
 struct gui_control {
-    gui_control_class   class;
+    gui_control_class   control_class;
     unsigned            id;
     gui_control         *sibling;
     gui_window          *parent;

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Establish common stuff for a target environment for
+*               language-related processors.
 *
 ****************************************************************************/
 
@@ -33,17 +33,14 @@
 #ifndef __LANGENV_H__
 #define __LANGENV_H__
 
-// LangEnv.h -- establish common stuff for a target environment for
-//              language-related processors
-//
 // This file uses __TGT_SYS to figure out the required target.
 //
-//      LangEnvD.h contains the possible values.
+//      langenvd.h contains the possible values.
 //
 //      __TGT_SYS_X86 is the default
 //
 
-#include "LangEnvD.h"
+#include "langenvd.h"
 
 #ifndef __TGT_SYS
     #define __TGT_SYS __TGT_SYS_X86
@@ -77,7 +74,7 @@
     #define TS_DATA_MANGLE      "_*"
     #define TS_CODE_MANGLE      "*_"
 
-#elif __TGT_SYS == __TGT_SYS_AXP_NT || __TGT_SYS == __TGT_SYS_PPC_NT
+#elif __TGT_SYS == __TGT_SYS_AXP_NT || __TGT_SYS == __TGT_SYS_PPC_NT || __TGT_SYS == __TGT_SYS_MIPS
 
     #define TS_SEG_CODE     ".text"
     #define TS_SEG_CONST    ".const"

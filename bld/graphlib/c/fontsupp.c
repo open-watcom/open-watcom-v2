@@ -24,41 +24,41 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Font file support (Windows .fon files, bitmap or vector).
 *
 ****************************************************************************/
 
 
 #include <string.h>
 #include "gdefn.h"
+#include "fontsupp.h"
 #if !defined( _DEFAULT_WINDOWS )
 #include "dotfunc.h"
 
 
-typedef struct font_entry {
-    short               type;       // 0 == bitmap, 1 == vector
-    short               ascent;     // distance from top to baseline (in pixels)
-    short               width;      // character width in pixels, 0 == proportional
-    short               height;     // character height in pixels
-    short               avgwidth;   // average character width
-    short               firstchar;
-    short               lastchar;
-    char                filename[ 81 ];
-    char                facename[ 32 ];
-    char                filler;
-    short               version;
-    char _WCI86FAR           *glyph_table;
-    char _WCI86FAR           *bitmap_table;
-    long                start_offset;
-    long                glyph_offset;
-    long                bitmap_offset;
-    unsigned short      bitmap_size;
+typedef _Packed struct font_entry {
+    short                   type;       // 0 == bitmap, 1 == vector
+    short                   ascent;     // distance from top to baseline (in pixels)
+    short                   width;      // character width in pixels, 0 == proportional
+    short                   height;     // character height in pixels
+    short                   avgwidth;   // average character width
+    short                   firstchar;
+    short                   lastchar;
+    char                    filename[ 81 ];
+    char                    facename[ 32 ];
+    char                    filler;
+    short                   version;
+    char _WCI86FAR          *glyph_table;
+    char _WCI86FAR          *bitmap_table;
+    long                    start_offset;
+    long                    glyph_offset;
+    long                    bitmap_offset;
+    unsigned short          bitmap_size;
     struct font_entry _WCI86FAR  *link;
 } FONT_ENTRY;
 
 
-typedef struct windows_font {
+typedef _Packed struct windows_font {
     short               dfVersion;
     long                dfSize;
     char                dfCopyright[ 60 ];
@@ -79,8 +79,8 @@ typedef struct windows_font {
     char                dfPitchAndFamily;
     short               dfAvgWidth;
     short               dfMaxWidth;
-    char                dfFirstChar;
-    char                dfLastChar;
+    unsigned char       dfFirstChar;
+    unsigned char       dfLastChar;
     char                dfDefaultChar;
     char                dfBreakChar;
     short               dfWidthBytes;
@@ -143,14 +143,15 @@ static short            _YVecDir = 0;
   #include <fcntl.h>
   #include <malloc.h>
   #if !defined( __386__ )
-    #include <sys\slib16.h>
+    #include <sys/slib16.h>
   #endif
   #define tiny_ret_t                    int
   #define tiny_handle_t                 int
   #define TINY_ERROR( rc )              ( rc < 0 )
+  #define TINY_OK( rc )                 ( rc >= 0 )
   #define TINY_INFO( rc )               ( rc )
   #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
-  #define TinySeek( f, o, p )           ( ( lseek( f, o, SEEK_SET ) == -1 ) ? -1 : 0 )
+  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1 ) ? -1 : 0 )
   #define TinyRead( f, b, l )           read( f, b, l )
   #define MyTinyFarRead( f, b, l )      read( f, b, l )
   #define TinyClose( f )                close( f )
@@ -161,13 +162,14 @@ static short            _YVecDir = 0;
   #else
     #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
   #endif
+  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
 #endif
 
 
 #if !defined( _DEFAULT_WINDOWS )
 
 static void _WCI86FAR *Alloc( unsigned short size )
-//============================================
+//=================================================
 
 {
 #if defined( __QNX__ )
@@ -214,14 +216,13 @@ static void Free( void _WCI86FAR *p )
 
 
 static short seek_and_read( tiny_handle_t handle, long offset,
-/*==============================*/ void _WCI86FAR *buf, unsigned short len )
-
+                     void _WCI86FAR *buf, unsigned short len )
+/*===========================================================*/
 {
     tiny_ret_t          rc;
     short               rlen;
 
-    rc = TinySeek( handle, offset, TIO_SEEK_START );
-    if( TINY_ERROR( rc ) ) {
+    if( TINY_ERROR( FontSeekSet( handle, offset ) ) ) {
         _ErrorStatus = _GRINVALIDFONTFILE;
         TinyClose( handle );
         return( 0 );
@@ -260,8 +261,7 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
         return( 0 );
     }
     // read facename, can't use seek_and_read, since it might be at end of file
-    rc = TinySeek( handle, offset + w_font.dfFace, TIO_SEEK_START );
-    if( TINY_ERROR( rc ) ) {
+    if( TINY_ERROR( FontSeekSet( handle, offset + w_font.dfFace ) ) ) {
         _ErrorStatus = _GRINVALIDFONTFILE;
         TinyClose( handle );
         return( 0 );
@@ -407,7 +407,7 @@ static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 }
 
 
-short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
+_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 //=======================================================
 
 {
@@ -486,7 +486,7 @@ short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
                 return( -2 );   // bad font file or out of memory
             }
             rc = TinyFindNext();
-        } while( !TINY_ERROR( rc ) );
+        } while( TINY_OK( rc ) );
     }
 #endif
     count = 0;
@@ -499,7 +499,7 @@ short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 Entry( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _unregisterfonts( void )
+_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
 //========================================
 
 {
@@ -646,7 +646,7 @@ This function tells if the current font is a stock font.*/
 }
 
 
-short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
+_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 //=======================================================
 
 {
@@ -659,7 +659,7 @@ short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
 Entry( _REGISTERFONTS, _registerfonts ) // alternate entry-point
 
 
-void _WCI86FAR _CGRAPH _unregisterfonts( void )
+_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
 //========================================
 
 {
@@ -704,7 +704,7 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 #endif
 
 
-short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
+_WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 //===========================================
 
 {
@@ -929,13 +929,13 @@ Entry( _SETFONT, _setfont ) // alternate entry-point
 
 
 #if !defined( _DEFAULT_WINDOWS )
-static short _charwidth( char ch )
+static short _charwidth( short ch )
 //================================
 
 {
     short               width;
     short               glyph_width;
-    short _WCI86FAR          *glyph;
+    short _WCI86FAR     *glyph;
 
     if( ch >= _CurFont->firstchar && ch <= _CurFont->lastchar ) {
         ch -= _CurFont->firstchar;
@@ -958,7 +958,7 @@ static short _charwidth( char ch )
 #endif
 
 
-short _WCI86FAR _CGRAPH _getfontinfo( struct _fontinfo _WCI86FAR *font )
+_WCRTLINK short _WCI86FAR _CGRAPH _getfontinfo( struct _fontinfo _WCI86FAR *font )
 //============================================================
 
 {
@@ -1007,7 +1007,7 @@ short _WCI86FAR _CGRAPH _getfontinfo( struct _fontinfo _WCI86FAR *font )
 Entry( _GETFONTINFO, _getfontinfo ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _getgtextextent( unsigned char _WCI86FAR *text )
+_WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
 //============================================================
 
 /*  Calculates the width of 'text' in pixels.  */
@@ -1027,7 +1027,7 @@ short _WCI86FAR _CGRAPH _getgtextextent( unsigned char _WCI86FAR *text )
 #else
     width = 0;
     while( *text != '\0' ) {
-        width += _charwidth( *text );
+        width += _charwidth( (unsigned char)*text );
         ++text;
     }
 #endif
@@ -1037,7 +1037,7 @@ short _WCI86FAR _CGRAPH _getgtextextent( unsigned char _WCI86FAR *text )
 Entry( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
 
 
-struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
 //=================================================
 
 {
@@ -1051,7 +1051,7 @@ struct xycoord _WCI86FAR _CGRAPH _getgtextvector( void )
 Entry( _GETGTEXTVECTOR, _getgtextvector ) // alternate entry-point
 
 
-struct xycoord _WCI86FAR _CGRAPH _setgtextvector( short x, short y )
+_WCRTLINK struct xycoord _WCI86FAR _CGRAPH _setgtextvector( short x, short y )
 //=============================================================
 
 {
@@ -1100,7 +1100,7 @@ static void _outdot( short x, short y )
 
 {
     gr_device _FARD     *dev_ptr;
-    void DOT_FUNC       (near *putdot)();
+    put_dot_fn near     *putdot;
 
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
         dev_ptr = _CurrState->deviceptr;
@@ -1113,12 +1113,12 @@ static void _outdot( short x, short y )
 }
 
 
-char _WCI86FAR *_getbitmap( char ch, short _WCI86FAR *width )
+char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width )
 //=================================================
 
 {
     long                offset;
-    short _WCI86FAR          *glyph;
+    short _WCI86FAR     *glyph;
 
     ch -= _CurFont->firstchar;
     glyph = (short _WCI86FAR *) ( _CurFont->glyph_table + ch * GlyphWidth( _CurFont ) );
@@ -1133,15 +1133,15 @@ char _WCI86FAR *_getbitmap( char ch, short _WCI86FAR *width )
 }
 
 
-static struct xycoord _outbitchar( short x0, short y0, char ch )
+static struct xycoord _outbitchar( short x0, short y0, short ch )
 //==============================================================
 
 {
     short               x, y;
     short               width;
     short               height;
-    char                mask;
-    char _WCI86FAR           *bits;
+    int                 mask;
+    char _WCI86FAR      *bits;
     short               column;
     short               row;
     struct xycoord      pos;
@@ -1175,7 +1175,7 @@ static struct xycoord _outbitchar( short x0, short y0, char ch )
 }
 
 
-static struct xycoord _outstrokechar( float x0, float y0, char ch )
+static struct xycoord _outstrokechar( float x0, float y0, short ch )
 //=================================================================
 
 {
@@ -1232,7 +1232,7 @@ static struct xycoord _outstrokechar( float x0, float y0, char ch )
 #endif
 
 
-void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
+_WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
 //===========================================
 
 {
@@ -1254,7 +1254,7 @@ void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     int                 escape;
   #endif
 #else
-    char                ch;
+    short               ch;
 #endif
     struct xycoord      pos;
 
@@ -1341,7 +1341,7 @@ void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
 
 #else
     while( *str != '\0' ) {
-        ch = *str;
+        ch = (unsigned char)*str;
         if( ch >= _CurFont->firstchar && ch <= _CurFont->lastchar ) {
             if( _CurFont->type == _BITMAP ) {
                 pos = _outbitchar( pos.xcoord, pos.ycoord, ch );

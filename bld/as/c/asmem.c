@@ -30,16 +30,58 @@
 ****************************************************************************/
 
 
+#include "as.h"
 #ifdef _STANDALONE_
 #include "trmem.h"
 #include "trmemcvr.h"
-#endif
-#include "as.h"
-
-#ifndef _STANDALONE_
+#else
 extern void *AsmAlloc( unsigned amount );
 extern void AsmFree( void *ptr );
 #endif
 
 #ifdef _STANDALONE_
-void MemInit() {
+void MemInit( void ) {
+//**************
+
+    TRMemOpen();
+}
+#endif
+
+pointer MemAlloc( mem_size size ) {
+//*********************************
+
+#ifdef _STANDALONE_
+    return( TRMemAlloc( size ) );
+#else
+    return( AsmAlloc( size ) );
+#endif
+}
+
+#ifdef _STANDALONE_
+pointer MemRealloc( pointer p, mem_size size ) {
+//**********************************************
+
+    return( TRMemRealloc( p, size ) );
+}
+#endif
+
+void MemFree( pointer p ) {
+//*************************
+
+#ifdef _STANDALONE_
+    TRMemFree( p );
+#else
+    AsmFree( p );
+#endif
+}
+
+#ifdef _STANDALONE_
+void MemFini( void ) {
+//**************
+
+#ifdef TRMEM
+    TRMemPrtList();
+#endif
+    TRMemClose();
+}
+#endif

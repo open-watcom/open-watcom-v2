@@ -1,506 +1,530 @@
-WdeMenu MENU
+"WdeMenu" MENU
 BEGIN
     POPUP      sp( "&File",
-		   "&File" )
+                   "&File" )
     BEGIN
         MENUITEM sp( "&New",
-		     "&New" )              IDM_NEW_RES
+                     "&New" )                      IDM_NEW_RES
         MENUITEM sp( "&Open...",
-		     "&Open..." )          IDM_OPEN_RES
+                     "&Open..." )                  IDM_OPEN_RES
         MENUITEM SEPARATOR
 #ifndef __NT__
         POPUP    sp( "Load &Custom Library",
-		     "Load &Custom Library" )
-	BEGIN
+                     "Load &Custom Library" )
+        BEGIN
 #ifdef __NT__
             MENUITEM sp( "&NT...",
-			 "&NT..." )                IDM_MS_CUSTOM
+                         "&NT..." )                IDM_MS_CUSTOM
 #else
             MENUITEM sp( "&Microsoft...",
-			 "&Microsoft..." )         IDM_MS_CUSTOM
+                         "&Microsoft..." )         IDM_MS_CUSTOM
             MENUITEM sp( "&Borland...",
-			 "&Borland..." )           IDM_BOR_CUSTOM
+                         "&Borland..." )           IDM_BOR_CUSTOM
 #endif
-	END
+        END
 #endif
         MENUITEM sp( "Load &Library...",
-		     "Load &Library..." )          IDM_LOADLIB
+                     "Load &Library..." )          IDM_LOADLIB
 #ifndef __NT__
         MENUITEM sp( "Select Custom &1...",
-		     "Select Custom &1..." )       IDM_SELCUST1
+                     "Select Custom &1..." )       IDM_SELCUST1
         MENUITEM sp( "Select Custom &2...",
-		     "Select Custom &2..." )       IDM_SELCUST2
+                     "Select Custom &2..." )       IDM_SELCUST2
 #endif
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-		     "E&xit" )                     IDM_EXIT
+                     "E&xit" )                     IDM_EXIT
     END
     POPUP      sp( "&Window",
-		   "&Window" )
+                   "&Window" )
     BEGIN
         MENUITEM sp( "Show &Toolbox",
-		     "Show &Toolbox" ),            IDM_SHOW_TOOLS
+                     "Show &Toolbox" ),            IDM_SHOW_TOOLS
         MENUITEM sp( "Show Tool&bar",
-		     "Show Tool&bar" ),            IDM_SHOW_RIBBON
+                     "Show Tool&bar" ),            IDM_SHOW_RIBBON
     END
     POPUP      sp( "&Help",
-		   "&Help" )
+                   "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-		     "&Help" ),                    IDM_HELP
-        MENUITEM sp( "&About the Editor...",
-		     "&About the Editor..." ),     IDM_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" ),                IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ),   IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ),         IDM_HELP_ON_HELP
+        MENUITEM sp( "&About...",
+                     "&About..." ),                IDM_ABOUT
     END
 END
 
-WdeResMenu MENU
+"WdeResMenu" MENU
 BEGIN
     POPUP      sp( "&File",
-		   "&File" )
+                   "&File" )
     BEGIN
         MENUITEM sp( "&New",
-		     "&New" )              IDM_NEW_RES
+                     "&New" )                      IDM_NEW_RES
         MENUITEM sp( "&Open...",
-		     "&Open..." )          IDM_OPEN_RES
+                     "&Open..." )                  IDM_OPEN_RES
         MENUITEM sp( "&Save",
-		     "&Save" )             IDM_SAVE_RES
+                     "&Save" )                     IDM_SAVE_RES
         MENUITEM sp( "Save &As...",
-		     "Save &As..." )       IDM_SAVEAS_RES
+                     "Save &As..." )               IDM_SAVEAS_RES
         MENUITEM SEPARATOR
 #ifndef __NT__
         POPUP    sp( "Load &Custom Library",
-		     "Load &Custom Library" )
-	BEGIN
+                     "Load &Custom Library" )
+        BEGIN
 #ifdef __NT__
             MENUITEM sp( "&NT...",
-			 "&NT..." )                IDM_MS_CUSTOM
+                         "&NT..." )                IDM_MS_CUSTOM
 #else
             MENUITEM sp( "&Microsoft...",
-			 "&Microsoft..." )         IDM_MS_CUSTOM
+                         "&Microsoft..." )         IDM_MS_CUSTOM
             MENUITEM sp( "&Borland...",
-			 "&Borland..." )           IDM_BOR_CUSTOM
+                         "&Borland..." )           IDM_BOR_CUSTOM
 #endif
-	END
+        END
 #endif
         MENUITEM sp( "Load &Library...",
-		     "Load &Library..." )          IDM_LOADLIB
+                     "Load &Library..." )          IDM_LOADLIB
 #ifndef __NT__
         MENUITEM sp( "Select Custom &1...",
-		     "Select Custom &1..." )       IDM_SELCUST1
+                     "Select Custom &1..." )       IDM_SELCUST1
         MENUITEM sp( "Select Custom &2...",
-		     "Select Custom &2..." )       IDM_SELCUST2
+                     "Select Custom &2..." )       IDM_SELCUST2
 #endif
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-		     "E&xit" )                     IDM_EXIT
+                     "E&xit" )                     IDM_EXIT
     END
     POPUP      sp( "&Edit",
-		   "&Edit" )
+                   "&Edit" )
     BEGIN
         MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" )              IDM_CUTOBJECT
+                     "Cu&t\tCtrl+X" )              IDM_CUTOBJECT
         MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" )             IDM_COPYOBJECT
+                     "&Copy\tCtrl+C" )             IDM_COPYOBJECT
         MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" )            IDM_PASTEOBJECT
+                     "&Paste\tCtrl+V" )            IDM_PASTEOBJECT
         MENUITEM sp( "&Delete\tDel",
-		     "&Delete\tDel" )              IDM_DELETEOBJECT
+                     "&Delete\tDel" )              IDM_DELETEOBJECT
         MENUITEM SEPARATOR
         POPUP    sp( "&Align",
-		     "&Align" )
+                     "&Align" )
         BEGIN
-            MENUITEM sp( "&LEFT",
-			 "&LEFT" )                 IDM_FMLEFT
+            MENUITEM sp( "&Left",
+                         "&Left" )                 IDM_FMLEFT
             MENUITEM SEPARATOR
-            MENUITEM sp( "&RIGHT",
-			 "&RIGHT" )                IDM_FMRIGHT
+            MENUITEM sp( "&Right",
+                         "&Right" )                IDM_FMRIGHT
             MENUITEM SEPARATOR
-            MENUITEM sp( "&TOP",
-			 "&TOP" )                  IDM_FMTOP
+            MENUITEM sp( "&Top",
+                         "&Top" )                  IDM_FMTOP
             MENUITEM SEPARATOR
-            MENUITEM sp( "&BOTTOM",
-			 "&BOTTOM" )               IDM_FMBOTTOM
+            MENUITEM sp( "&Bottom",
+                         "&Bottom" )               IDM_FMBOTTOM
             MENUITEM SEPARATOR
-            MENUITEM sp( "&HCENTER",
-			 "&HCENTER" )              IDM_FMHCENTRE
+            MENUITEM sp( "&H Center",
+                         "&H Center" )             IDM_FMHCENTRE
             MENUITEM SEPARATOR
-            MENUITEM sp( "&VCENTER",
-			 "&VCENTER" )              IDM_FMVCENTRE
+            MENUITEM sp( "&V Center",
+                         "&V Center" )             IDM_FMVCENTRE
         END
         POPUP    sp( "&Same Size",
-		     "&Same Size" )
+                     "&Same Size" )
         BEGIN
             MENUITEM sp( "Same &Width",
-			 "Same &Width" )           IDM_SAME_WIDTH
+                         "Same &Width" )           IDM_SAME_WIDTH
             MENUITEM SEPARATOR
             MENUITEM sp( "Same &Height",
-			 "Same &Height" )          IDM_SAME_HEIGHT
+                         "Same &Height" )          IDM_SAME_HEIGHT
             MENUITEM SEPARATOR
             MENUITEM sp( "Same &Size",
-			 "Same &Size" )            IDM_SAME_SIZE
+                         "Same &Size" )            IDM_SAME_SIZE
+        END
+        POPUP    sp( "Space E&venly",
+                     "Space E&venly" )
+        BEGIN
+            MENUITEM sp( "&Horizontally",
+                         "&Horizontally" )         IDM_SPACE_HORZ
+            MENUITEM sp( "&Vertically",
+                         "&Vertically" )           IDM_SPACE_VERT
         END
         MENUITEM sp( "Size to Text\tF7",
-		     "Size to Text\tF7" )          IDM_SIZETOTEXT
+                     "Size to Text\tF7" )          IDM_SIZETOTEXT
         MENUITEM sp( "Goto Ob&ject",
-		     "Goto Ob&ject" )              IDM_GOTO_OBJECT
+                     "Goto Ob&ject" )              IDM_GOTO_OBJECT
         MENUITEM SEPARATOR
         MENUITEM sp( "D&efine...",
-		     "D&efine..." )                IDM_DEFINEOBJECT
+                     "D&efine..." )                IDM_DEFINEOBJECT
         MENUITEM SEPARATOR
         MENUITEM sp( "&Options...",
-		     "&Options..." ),              IDM_OPTIONS
+                     "&Options..." ),              IDM_OPTIONS
         MENUITEM SEPARATOR
         POPUP    sp( "S&ymbols",
-		     "S&ymbols" )
-	BEGIN
-	    MENUITEM sp( "&Load Symbols...",
-			 "&Load Symbols..." )      IDM_LOAD_SYMBOLS
-	    MENUITEM sp( "&Edit Symbols...",
-			 "&Edit Symbols..." )      IDM_VIEW_SYMBOLS
-	    MENUITEM sp( "&Write Symbols...",
-			 "&Write Symbols..." )     IDM_WRITE_SYMBOLS
-	END
+                     "S&ymbols" )
+        BEGIN
+            MENUITEM sp( "&Load Symbols...",
+                         "&Load Symbols..." )      IDM_LOAD_SYMBOLS
+            MENUITEM sp( "&Edit Symbols...",
+                         "&Edit Symbols..." )      IDM_VIEW_SYMBOLS
+            MENUITEM sp( "&Write Symbols...",
+                         "&Write Symbols..." )     IDM_WRITE_SYMBOLS
+        END
         MENUITEM SEPARATOR
         MENUITEM sp( "Select Dialog...\tCtrl+D",
-		     "Select Dialog...\tCtrl+D" ), IDM_SELECT_DIALOG
+                     "Select Dialog...\tCtrl+D" ), IDM_SELECT_DIALOG
         MENUITEM sp( "Hide Dialog\tCtrl+H",
-		     "Hide Dialog\tCtrl+H" ),      IDM_HIDE_DIALOG
+                     "Hide Dialog\tCtrl+H" ),      IDM_HIDE_DIALOG
         MENUITEM sp( "Clear Resource",
-		     "Clear Resource" ),           IDM_DDE_CLEAR
+                     "Clear Resource" ),           IDM_DDE_CLEAR
     END
     POPUP      sp( "&Dialog",
-		   "&Dialog" )
+                   "&Dialog" )
     BEGIN
         MENUITEM sp( "&Test Mode\tCtrl+T",
-		     "&Test Mode\tCtrl+T" ),       IDM_TEST_MODE
+                     "&Test Mode\tCtrl+T" ),       IDM_TEST_MODE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Revert Dialog",
-		     "&Revert Dialog" )           IDM_DIALOG_RESTORE
+                     "&Revert Dialog" )            IDM_DIALOG_RESTORE
         MENUITEM SEPARATOR
         MENUITEM sp( "&New",
-		     "&New" )                      IDM_DIALOG_NEW
+                     "&New" )                      IDM_DIALOG_NEW
         MENUITEM sp( "&Save",
-		     "&Save" )                     IDM_DIALOG_SAVE
+                     "&Save" )                     IDM_DIALOG_SAVE
         MENUITEM sp( "Save &As...",
-		     "Save &As..." )               IDM_DIALOG_SAVEAS
+                     "Save &As..." )               IDM_DIALOG_SAVEAS
         MENUITEM sp( "&Copy To...",
-		     "&Copy To..." )               IDM_DIALOG_SAVEINTO
+                     "&Copy To..." )               IDM_DIALOG_SAVEINTO
         MENUITEM SEPARATOR
         MENUITEM sp( "Set &Order",
-		     "Set &Order" )                IDM_SET_ORDER
+                     "Set &Order" )                IDM_SET_ORDER
         MENUITEM sp( "Set &Tabs",
-		     "Set &Tabs" )                 IDM_SET_TABS
+                     "Set &Tabs" )                 IDM_SET_TABS
         MENUITEM sp( "Set &Groups",
-		     "Set &Groups" )               IDM_SET_GROUPS
+                     "Set &Groups" )               IDM_SET_GROUPS
     END
     POPUP      sp( "&Tools",
-		   "&Tools" )
+                   "&Tools" )
     BEGIN
         MENUITEM sp( "&Select Mode",
-		     "&Select Mode" )              IDM_SELECT_MODE
+                     "&Select Mode" )              IDM_SELECT_MODE
         MENUITEM sp( "&Sticky Tools",
-		     "&Sticky Tools" )             IDM_STICKY_TOOLS
+                     "&Sticky Tools" )             IDM_STICKY_TOOLS
         MENUITEM SEPARATOR
         MENUITEM sp( "&Dialog",
-		     "&Dialog" )                   IDM_DIALOG_TOOL
+                     "&Dialog" )                   IDM_DIALOG_TOOL
         MENUITEM SEPARATOR
         MENUITEM sp( "&Push Button",
-		     "&Push Button" )              IDM_PBUTTON_TOOL
+                     "&Push Button" )              IDM_PBUTTON_TOOL
         MENUITEM sp( "&Check Box",
-		     "&Check Box" )                IDM_CBUTTON_TOOL
+                     "&Check Box" )                IDM_CBUTTON_TOOL
         MENUITEM sp( "&Radio Button",
-		     "&Radio Button" )             IDM_RBUTTON_TOOL
+                     "&Radio Button" )             IDM_RBUTTON_TOOL
         MENUITEM sp( "&Text",
-		     "&Text" )                     IDM_TEXT_TOOL
+                     "&Text" )                     IDM_TEXT_TOOL
         MENUITEM sp( "&Group Box",
-		     "&Group Box" )                IDM_GBUTTON_TOOL
+                     "&Group Box" )                IDM_GBUTTON_TOOL
         MENUITEM sp( "&Frame",
-		     "&Frame" )                    IDM_FRAME_TOOL
+                     "&Frame" )                    IDM_FRAME_TOOL
         MENUITEM sp( "&Icon",
-		     "&Icon" )                     IDM_ICON_TOOL
+                     "&Icon" )                     IDM_ICON_TOOL
         MENUITEM sp( "&Edit",
-		     "&Edit" )                     IDM_EDIT_TOOL
+                     "&Edit" )                     IDM_EDIT_TOOL
         MENUITEM sp( "&List Box",
-		     "&List Box" )                 IDM_LISTBOX_TOOL
+                     "&List Box" )                 IDM_LISTBOX_TOOL
         MENUITEM sp( "Combo &Box",
-		     "Combo &Box" )                IDM_COMBOBOX_TOOL
+                     "Combo &Box" )                IDM_COMBOBOX_TOOL
         MENUITEM sp( "&H Scrollbar",
-		     "&H Scrollbar" )              IDM_HSCROLL_TOOL
+                     "&H Scrollbar" )              IDM_HSCROLL_TOOL
         MENUITEM sp( "&V Scrollbar",
-		     "&V Scrollbar" )              IDM_VSCROLL_TOOL
+                     "&V Scrollbar" )              IDM_VSCROLL_TOOL
         MENUITEM sp( "&Size Box",
-		     "&Size Box" )                 IDM_SIZEBOX_TOOL
+                     "&Size Box" )                 IDM_SIZEBOX_TOOL
         MENUITEM SEPARATOR
-	POPUP      sp( "&Common Controls",
-		       "&Common Controls" )
-	BEGIN
-	    MENUITEM sp( "&Animation",
-			 "&Animation" ),           IDM_ANIMATE_TOOL
-	    MENUITEM sp( "&List View",
-			 "&List View" ),           IDM_LISTVIEW_TOOL
-	    MENUITEM sp( "&Tree View",
-			 "&Tree View" ),           IDM_TREEVIEW_TOOL
-	    MENUITEM sp( "&Tab Control",
-			 "&Tab Control" ),         IDM_TABCNTL_TOOL
-	    MENUITEM sp( "&Up/Down",
-			 "&Up/Down" ),             IDM_UPDOWN_TOOL
-	    MENUITEM sp( "&Trackbar",
-			 "&Trackbar" ),            IDM_TRACKBAR_TOOL
-	    MENUITEM sp( "&Progress",
-			 "&Progress" ),            IDM_PROGRESS_TOOL
-	    MENUITEM sp( "&Hotkey",
-			 "&Hotkey" ),              IDM_HOTKEY_TOOL
-	    MENUITEM sp( "&Header",
-			 "&Header" ),              IDM_HEADER_TOOL
-	    MENUITEM sp( "&Status Bar",
-			 "&Status Bar" ),          IDM_STATUSBAR_TOOL
-	END
+        POPUP      sp( "&Common Controls",
+                       "&Common Controls" )
+        BEGIN
+            MENUITEM sp( "&Animation",
+                         "&Animation" ),           IDM_ANIMATE_TOOL
+            MENUITEM sp( "&List View",
+                         "&List View" ),           IDM_LISTVIEW_TOOL
+            MENUITEM sp( "&Tree View",
+                         "&Tree View" ),           IDM_TREEVIEW_TOOL
+            MENUITEM sp( "&Tab Control",
+                         "&Tab Control" ),         IDM_TABCNTL_TOOL
+            MENUITEM sp( "&Up/Down",
+                         "&Up/Down" ),             IDM_UPDOWN_TOOL
+            MENUITEM sp( "&Trackbar",
+                         "&Trackbar" ),            IDM_TRACKBAR_TOOL
+            MENUITEM sp( "&Progress Bar",
+                         "&Progress Bar" ),        IDM_PROGRESS_TOOL
+            MENUITEM sp( "&Hot Key",
+                         "&Hot Key" ),             IDM_HOTKEY_TOOL
+            MENUITEM sp( "&Header",
+                         "&Header" ),              IDM_HEADER_TOOL
+            MENUITEM sp( "&Status Bar",
+                         "&Status Bar" ),          IDM_STATUSBAR_TOOL
+        END
 #ifndef __NT__
         MENUITEM SEPARATOR
         MENUITEM sp( "Custom 1",
-		     "Custom 1" )                  IDM_CUSTOM1_TOOL
+                     "Custom 1" )                  IDM_CUSTOM1_TOOL
         MENUITEM sp( "Custom 2",
-		     "Custom 2" )                  IDM_CUSTOM2_TOOL
+                     "Custom 2" )                  IDM_CUSTOM2_TOOL
 #endif
     END
     POPUP      sp( "&Window",
-		   "&Window" )
+                   "&Window" )
     BEGIN
         MENUITEM sp( "&Cascade",
-		     "&Cascade" ),                 IDM_MDI_CASCADE
+                     "&Cascade" ),                 IDM_MDI_CASCADE
         MENUITEM sp( "Tile &Vertically",
-		     "Tile &Vertically" ),         IDM_MDI_TILEV
+                     "Tile &Vertically" ),         IDM_MDI_TILEV
         MENUITEM sp( "Tile &Horizontally",
-		     "Tile &Horizontally" ),       IDM_MDI_TILEH
+                     "Tile &Horizontally" ),       IDM_MDI_TILEH
         MENUITEM sp( "&Arrange Icons",
-		     "&Arrange Icons" ),           IDM_MDI_ARRANGE
+                     "&Arrange Icons" ),           IDM_MDI_ARRANGE
         MENUITEM SEPARATOR
         MENUITEM sp( "Show &Toolbox",
-		     "Show &Toolbox" ),            IDM_SHOW_TOOLS
+                     "Show &Toolbox" ),            IDM_SHOW_TOOLS
         MENUITEM sp( "Show Tool&bar",
-		     "Show Tool&bar" ),            IDM_SHOW_RIBBON
+                     "Show Tool&bar" ),            IDM_SHOW_RIBBON
     END
     POPUP      sp( "&Help",
-		   "&Help" )
+                   "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-		     "&Help" ),                    IDM_HELP
-        MENUITEM sp( "&About the Editor...",
-		     "&About the Editor..." ),     IDM_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" ),                IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ),   IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ),         IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." ),                IDM_ABOUT
     END
 END
 
-WdeDDEMenu MENU
+"WdeDDEMenu" MENU
 BEGIN
     POPUP      sp( "&File",
-		   "&File" )
+                   "&File" )
     BEGIN
         MENUITEM sp( "Clear Resource",
-		     "Clear Resource" )            IDM_DDE_CLEAR
+                     "Clear Resource" )            IDM_DDE_CLEAR
         MENUITEM SEPARATOR
         MENUITEM sp( "&Update",
-		     "&Update" )           IDM_DDE_UPDATE_PRJ
+                     "&Update" )                   IDM_DDE_UPDATE_PRJ
         MENUITEM sp( "Save &As...",
-		     "Save &As..." )               IDM_DIALOG_SAVEAS
+                     "Save &As..." )               IDM_DIALOG_SAVEAS
         MENUITEM SEPARATOR
 #ifndef __NT__
         POPUP    sp( "Load &Custom Library",
-		     "Load &Custom Library" )
-	BEGIN
+                     "Load &Custom Library" )
+        BEGIN
 #ifdef __NT__
             MENUITEM sp( "&NT...",
-			 "&NT..." )                IDM_MS_CUSTOM
+                         "&NT..." )                IDM_MS_CUSTOM
 #else
             MENUITEM sp( "&Microsoft...",
-			 "&Microsoft..." )         IDM_MS_CUSTOM
+                         "&Microsoft..." )         IDM_MS_CUSTOM
             MENUITEM sp( "&Borland...",
-			 "&Borland..." )           IDM_BOR_CUSTOM
+                         "&Borland..." )           IDM_BOR_CUSTOM
 #endif
-	END
+        END
 #endif
         MENUITEM sp( "Load &Library...",
-		     "Load &Library..." )          IDM_LOADLIB
+                     "Load &Library..." )          IDM_LOADLIB
 #ifndef __NT__
         MENUITEM sp( "Select Custom &1...",
-		     "Select Custom &1..." )       IDM_SELCUST1
+                     "Select Custom &1..." )       IDM_SELCUST1
         MENUITEM sp( "Select Custom &2...",
-		     "Select Custom &2..." )       IDM_SELCUST2
+                     "Select Custom &2..." )       IDM_SELCUST2
 #endif
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
-		     "E&xit" )                     IDM_EXIT
+                     "E&xit" )                     IDM_EXIT
     END
     POPUP      sp( "&Edit",
-		   "&Edit" )
+                   "&Edit" )
     BEGIN
         MENUITEM sp( "Cu&t\tCtrl+X",
-		     "Cu&t\tCtrl+X" )              IDM_CUTOBJECT
+                     "Cu&t\tCtrl+X" )              IDM_CUTOBJECT
         MENUITEM sp( "&Copy\tCtrl+C",
-		     "&Copy\tCtrl+C" )             IDM_COPYOBJECT
+                     "&Copy\tCtrl+C" )             IDM_COPYOBJECT
         MENUITEM sp( "&Paste\tCtrl+V",
-		     "&Paste\tCtrl+V" )            IDM_PASTEOBJECT
+                     "&Paste\tCtrl+V" )            IDM_PASTEOBJECT
         MENUITEM sp( "&Delete\tDel",
-		     "&Delete\tDel" )              IDM_DELETEOBJECT
+                     "&Delete\tDel" )              IDM_DELETEOBJECT
         MENUITEM SEPARATOR
         POPUP    sp( "&Align",
-		     "&Align" )
+                     "&Align" )
         BEGIN
             MENUITEM sp( "&LEFT",
-			 "&LEFT" )                 IDM_FMLEFT
+                         "&LEFT" )                 IDM_FMLEFT
             MENUITEM SEPARATOR
             MENUITEM sp( "&RIGHT",
-			 "&RIGHT" )                IDM_FMRIGHT
+                         "&RIGHT" )                IDM_FMRIGHT
             MENUITEM SEPARATOR
             MENUITEM sp( "&TOP",
-			 "&TOP" )                  IDM_FMTOP
+                         "&TOP" )                  IDM_FMTOP
             MENUITEM SEPARATOR
             MENUITEM sp( "&BOTTOM",
-			 "&BOTTOM" )               IDM_FMBOTTOM
+                         "&BOTTOM" )               IDM_FMBOTTOM
             MENUITEM SEPARATOR
             MENUITEM sp( "&HCENTER",
-			 "&HCENTER" )              IDM_FMHCENTRE
+                         "&HCENTER" )              IDM_FMHCENTRE
             MENUITEM SEPARATOR
             MENUITEM sp( "&VCENTER",
-			 "&VCENTER" )              IDM_FMVCENTRE
+                         "&VCENTER" )              IDM_FMVCENTRE
         END
         POPUP    sp( "&Same Size",
-		     "&Same Size" )
+                     "&Same Size" )
         BEGIN
             MENUITEM sp( "Same &Width",
-			 "Same &Width" )           IDM_SAME_WIDTH
+                         "Same &Width" )           IDM_SAME_WIDTH
             MENUITEM SEPARATOR
             MENUITEM sp( "Same &Height",
-			 "Same &Height" )          IDM_SAME_HEIGHT
+                         "Same &Height" )          IDM_SAME_HEIGHT
             MENUITEM SEPARATOR
             MENUITEM sp( "Same &Size",
-			 "Same &Size" )            IDM_SAME_SIZE
+                         "Same &Size" )            IDM_SAME_SIZE
         END
         MENUITEM sp( "Size to Text\tF7",
-		     "Size to Text\tF7" )          IDM_SIZETOTEXT
+                     "Size to Text\tF7" )          IDM_SIZETOTEXT
         MENUITEM sp( "Goto Ob&ject",
-		     "Goto Ob&ject" )              IDM_GOTO_OBJECT
+                     "Goto Ob&ject" )              IDM_GOTO_OBJECT
         MENUITEM SEPARATOR
         MENUITEM sp( "D&efine...",
-		     "D&efine..." )                IDM_DEFINEOBJECT
+                     "D&efine..." )                IDM_DEFINEOBJECT
         MENUITEM SEPARATOR
         MENUITEM sp( "&Options...",
-		     "&Options..." ),              IDM_OPTIONS
+                     "&Options..." ),              IDM_OPTIONS
         MENUITEM SEPARATOR
         POPUP    sp( "S&ymbols",
-		     "S&ymbols" )
-	BEGIN
-	    MENUITEM sp( "&Load Symbols...",
-			 "&Load Symbols..." )      IDM_LOAD_SYMBOLS
-	    MENUITEM sp( "&Edit Symbols...",
-			 "&Edit Symbols..." )      IDM_VIEW_SYMBOLS
-	    MENUITEM sp( "&Write Symbols...",
-			 "&Write Symbols..." )     IDM_WRITE_SYMBOLS
-	END
+                     "S&ymbols" )
+        BEGIN
+            MENUITEM sp( "&Load Symbols...",
+                         "&Load Symbols..." )      IDM_LOAD_SYMBOLS
+            MENUITEM sp( "&Edit Symbols...",
+                         "&Edit Symbols..." )      IDM_VIEW_SYMBOLS
+            MENUITEM sp( "&Write Symbols...",
+                         "&Write Symbols..." )     IDM_WRITE_SYMBOLS
+        END
     END
     POPUP      sp( "&Dialog",
-		   "&Dialog" )
+                   "&Dialog" )
     BEGIN
         MENUITEM sp( "&Test Mode\tCtrl+T",
-		     "&Test Mode\tCtrl+T" ),       IDM_TEST_MODE
+                     "&Test Mode\tCtrl+T" ),       IDM_TEST_MODE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Revert Dialog",
-		     "&Revert Dialog" )           IDM_DIALOG_RESTORE
+                     "&Revert Dialog" )           IDM_DIALOG_RESTORE
         MENUITEM SEPARATOR
         MENUITEM sp( "&Copy To...",
-		     "&Copy To..." )               IDM_DIALOG_SAVEINTO
+                     "&Copy To..." )               IDM_DIALOG_SAVEINTO
         MENUITEM SEPARATOR
         MENUITEM sp( "Set &Order",
-		     "Set &Order" )                IDM_SET_ORDER
+                     "Set &Order" )                IDM_SET_ORDER
         MENUITEM sp( "Set &Tabs",
-		     "Set &Tabs" )                 IDM_SET_TABS
+                     "Set &Tabs" )                 IDM_SET_TABS
         MENUITEM sp( "Set &Groups",
-		     "Set &Groups" )               IDM_SET_GROUPS
+                     "Set &Groups" )               IDM_SET_GROUPS
     END
     POPUP      sp( "&Tools",
-		   "&Tools" )
+                   "&Tools" )
     BEGIN
         MENUITEM sp( "&Select Mode",
-		     "&Select Mode" )              IDM_SELECT_MODE
+                     "&Select Mode" )              IDM_SELECT_MODE
         MENUITEM sp( "&Sticky Tools",
-		     "&Sticky Tools" )             IDM_STICKY_TOOLS
+                     "&Sticky Tools" )             IDM_STICKY_TOOLS
         MENUITEM SEPARATOR
         MENUITEM sp( "&Dialog",
-		     "&Dialog" )                   IDM_DIALOG_TOOL
+                     "&Dialog" )                   IDM_DIALOG_TOOL
         MENUITEM SEPARATOR
         MENUITEM sp( "&Push Button",
-		     "&Push Button" )              IDM_PBUTTON_TOOL
+                     "&Push Button" )              IDM_PBUTTON_TOOL
         MENUITEM sp( "&Check Box",
-		     "&Check Box" )                IDM_CBUTTON_TOOL
+                     "&Check Box" )                IDM_CBUTTON_TOOL
         MENUITEM sp( "&Radio Button",
-		     "&Radio Button" )             IDM_RBUTTON_TOOL
+                     "&Radio Button" )             IDM_RBUTTON_TOOL
         MENUITEM sp( "&Text",
-		     "&Text" )                     IDM_TEXT_TOOL
+                     "&Text" )                     IDM_TEXT_TOOL
         MENUITEM sp( "&Group Box",
-		     "&Group Box" )                IDM_GBUTTON_TOOL
+                     "&Group Box" )                IDM_GBUTTON_TOOL
         MENUITEM sp( "&Frame",
-		     "&Frame" )                    IDM_FRAME_TOOL
+                     "&Frame" )                    IDM_FRAME_TOOL
         MENUITEM sp( "&Icon",
-		     "&Icon" )                     IDM_ICON_TOOL
+                     "&Icon" )                     IDM_ICON_TOOL
         MENUITEM sp( "&Edit",
-		     "&Edit" )                     IDM_EDIT_TOOL
+                     "&Edit" )                     IDM_EDIT_TOOL
         MENUITEM sp( "&List Box",
-		     "&List Box" )                 IDM_LISTBOX_TOOL
+                     "&List Box" )                 IDM_LISTBOX_TOOL
         MENUITEM sp( "Combo &Box",
-		     "Combo &Box" )                IDM_COMBOBOX_TOOL
+                     "Combo &Box" )                IDM_COMBOBOX_TOOL
         MENUITEM sp( "&H Scrollbar",
-		     "&H Scrollbar" )              IDM_HSCROLL_TOOL
+                     "&H Scrollbar" )              IDM_HSCROLL_TOOL
         MENUITEM sp( "&V Scrollbar",
-		     "&V Scrollbar" )              IDM_VSCROLL_TOOL
+                     "&V Scrollbar" )              IDM_VSCROLL_TOOL
         MENUITEM sp( "&Size Box",
-		     "&Size Box" )                 IDM_SIZEBOX_TOOL
+                     "&Size Box" )                 IDM_SIZEBOX_TOOL
         MENUITEM SEPARATOR
-	POPUP      sp( "&Common Controls",
-		       "&Common Controls" )
-	BEGIN
-	    MENUITEM sp( "&Animation",
-			 "&Animation" ),           IDM_ANIMATE_TOOL
-	    MENUITEM sp( "&List View",
-			 "&List View" ),           IDM_LISTVIEW_TOOL
-	    MENUITEM sp( "&Tree View",
-			 "&Tree View" ),           IDM_TREEVIEW_TOOL
-	    MENUITEM sp( "&Tab Control",
-			 "&Tab Control" ),         IDM_TABCNTL_TOOL
-	    MENUITEM sp( "&Up/Down",
-			 "&Up/Down" ),             IDM_UPDOWN_TOOL
-	    MENUITEM sp( "&Trackbar",
-			 "&Trackbar" ),            IDM_TRACKBAR_TOOL
-	    MENUITEM sp( "&Progress",
-			 "&Progress" ),            IDM_PROGRESS_TOOL
-	    MENUITEM sp( "&Hotkey",
-			 "&Hotkey" ),              IDM_HOTKEY_TOOL
-	    MENUITEM sp( "&Header",
-			 "&Header" ),              IDM_HEADER_TOOL
-	    MENUITEM sp( "&Status Bar",
-			 "&Status Bar" ),          IDM_STATUSBAR_TOOL
-	END
+        POPUP      sp( "&Common Controls",
+                       "&Common Controls" )
+        BEGIN
+            MENUITEM sp( "&Animation",
+                         "&Animation" ),           IDM_ANIMATE_TOOL
+            MENUITEM sp( "&List View",
+                         "&List View" ),           IDM_LISTVIEW_TOOL
+            MENUITEM sp( "&Tree View",
+                         "&Tree View" ),           IDM_TREEVIEW_TOOL
+            MENUITEM sp( "&Tab Control",
+                         "&Tab Control" ),         IDM_TABCNTL_TOOL
+            MENUITEM sp( "&Up/Down",
+                         "&Up/Down" ),             IDM_UPDOWN_TOOL
+            MENUITEM sp( "&Trackbar",
+                         "&Trackbar" ),            IDM_TRACKBAR_TOOL
+            MENUITEM sp( "&Progress Bar",
+                         "&Progress Bar" ),        IDM_PROGRESS_TOOL
+            MENUITEM sp( "&Hot Key",
+                         "&Hot Key" ),             IDM_HOTKEY_TOOL
+            MENUITEM sp( "&Header",
+                         "&Header" ),              IDM_HEADER_TOOL
+            MENUITEM sp( "&Status Bar",
+                         "&Status Bar" ),          IDM_STATUSBAR_TOOL
+        END
 #ifndef __NT__
         MENUITEM SEPARATOR
         MENUITEM sp( "Custom 1",
-		     "Custom 1" )                  IDM_CUSTOM1_TOOL
+                     "Custom 1" )                  IDM_CUSTOM1_TOOL
         MENUITEM sp( "Custom 2",
-		     "Custom 2" )                  IDM_CUSTOM2_TOOL
+                     "Custom 2" )                  IDM_CUSTOM2_TOOL
 #endif
     END
     POPUP      sp( "&Window",
-		   "&Window" )
+                   "&Window" )
     BEGIN
         MENUITEM sp( "Show &Toolbox",
-		     "Show &Toolbox" ),            IDM_SHOW_TOOLS
+                     "Show &Toolbox" ),            IDM_SHOW_TOOLS
         MENUITEM sp( "Show Tool&bar",
-		     "Show Tool&bar" ),            IDM_SHOW_RIBBON
+                     "Show Tool&bar" ),            IDM_SHOW_RIBBON
     END
     POPUP      sp( "&Help",
-		   "&Help" )
+                   "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-		     "&Help" ),                    IDM_HELP
-        MENUITEM sp( "&About the Editor...",
-		     "&About the Editor..." ),     IDM_ABOUT
+        MENUITEM sp( "&Contents",
+                     "&Contents" ),                IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ),   IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" ),         IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&About...",
+                     "&About..." ),                IDM_ABOUT
     END
 END
-

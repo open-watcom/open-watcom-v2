@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debug Information Processor (DIP) manager.
 *
 ****************************************************************************/
 
 
 #include <string.h>
-#include <malloc.h>
 #include <limits.h>
+#include "walloca.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
@@ -92,7 +91,7 @@ struct sym_handle {
 #define MK_MH( ii, sm )         ((unsigned_32)((ii)+1) << 16 | (sm))
 #define MH_IMAGE( mh )          ((unsigned)((mh)>>16)-1)
 #define MH_SMOD( mh )           ((unsigned)((mh)&0xffff))
-#define II2IH( ii )             (ActProc==NULL?NULL:ActProc->ih_map[ii])
+#define II2IH( ii )             ((ActProc==NULL)||(ActProc->map_entries<=ii)?NULL:ActProc->ih_map[ii])
 #define MH2IH( mh )             (((mh&0xffff0000)==0)?NULL:II2IH(MH_IMAGE(mh)))
 
 #define NO_IMAGE_IDX    ((unsigned)-1)
@@ -118,6 +117,7 @@ char DIPDefaults[] = {
     "dwarf\0"
     "watcom\0"
     "codeview\0"
+    "mapsym\0"
     "export\0"
     "\0"
 };
@@ -288,7 +288,7 @@ dip_status DIPMoreMem( unsigned amount )
     return( DS_FAIL );
 }
 
-void DIPCancel()
+void DIPCancel( void )
 {
     unsigned            i;
     image_handle        *ih;
@@ -328,6 +328,30 @@ unsigned FindImageMapSlot( process_info *p )
     p->ih_map = new;
     for( j = i; j < new_num; ++j ) new[j] = NULL;
     return( i );
+}
+
+static void DIPCleanupInfo( process_info *p, image_handle *ih )
+{
+    image_handle        **owner;
+    image_handle        *curr;
+
+    DIPCliImageUnload( MK_MH( ih->index, 0 ) );
+    ih->dip->unload_info( IMP_HDL( ih, image ) );
+    p->ih_map[ih->index] = NULL;
+    owner = &p->ih_list;
+    for( ;; ) {
+        curr = *owner;
+        if( curr == ih ) break;
+        owner = &curr->next;
+    }
+    *owner = ih->next;
+    if( p->ih_add == &ih->next ) {
+        p->ih_add = owner;
+    }
+    if( ih->index == p->last_addr_mod_found ) {
+        p->last_addr_mod_found = NO_IMAGE_IDX;
+    }
+    DIGCliFree( ih );
 }
 
 static void CleanupProcess( process_info *p, int unload )
@@ -482,30 +506,6 @@ void DIPMapInfo( mod_handle mh, void *d )
     LoadingImageIdx = NO_IMAGE_IDX;
 }
 
-static void DIPCleanupInfo( process_info *p, image_handle *ih )
-{
-    image_handle        **owner;
-    image_handle        *curr;
-
-    DIPCliImageUnload( MK_MH( ih->index, 0 ) );
-    ih->dip->unload_info( IMP_HDL( ih, image ) );
-    p->ih_map[ih->index] = NULL;
-    owner = &p->ih_list;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == ih ) break;
-        owner = &curr->next;
-    }
-    *owner = ih->next;
-    if( p->ih_add == &ih->next ) {
-        p->ih_add = owner;
-    }
-    if( ih->index == p->last_addr_mod_found ) {
-        p->last_addr_mod_found = NO_IMAGE_IDX;
-    }
-    DIGCliFree( ih );
-}
-
 void DIPUnloadInfo( mod_handle mh )
 {
     image_handle *ih;
@@ -645,7 +645,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
 {
     image_handle        *ih;
     sym_handle          *sh = __alloca( DIPHandleSize( HK_SYM ) );
-    image_idx           ii;
+    image_idx           ii = 0;
     imp_mod_handle      im;
     mod_handle          mh;
     type_handle         *it;
@@ -939,8 +939,8 @@ dip_status TypeRelease( type_handle *th )
     }
 }
 
-dip_status TypeFreeAll()
-/**********************/
+dip_status TypeFreeAll( void )
+/****************************/
 {
     image_handle        *ih;
 
@@ -1173,8 +1173,8 @@ dip_status SymRelease( sym_handle *sh )
     }
 }
 
-dip_status SymFreeAll()
-/*********************/
+dip_status SymFreeAll( void )
+/***************************/
 {
     image_handle        *ih;
 

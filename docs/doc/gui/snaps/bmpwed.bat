@@ -1,0 +1,14 @@
+bmp2eps VI0.BMP VI0.PS /h 300
+bmp2eps VI1.BMP VI1.PS /h 300
+bmp2eps VI2.BMP VI2.PS /h 300
+bmp2eps VI3.BMP VI3.PS /h 300
+bmp2eps VI4.BMP VI4.PS /h 300
+bmp2eps VI5.BMP VI5.PS /h 300
+bmp2eps VI6.BMP VI6.PS /h 300
+bmp2eps VI7.BMP VI7.PS /h 300
+bmp2eps VI8.BMP VI8.PS /h 300
+bmp2eps VI9.BMP VI9.PS /h 300
+bmp2eps VI10.BMP VI10.PS /h 250
+bmp2eps VI10.BMP VI10.PS /w 525
+bmp2eps VI11.BMP VI11.PS /h 300
+bmp2eps VI12.BMP VI12.PS /h 300

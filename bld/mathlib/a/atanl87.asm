@@ -31,19 +31,18 @@
 
 
 ifdef __386__
- include mdef.inc
  .387
 else
- include mdef.inc
  .8087
 endif
+include mdef.inc
 include struct.inc
-include math387.inc
+include math87.inc
+
+        modstart        atanl87
 
         xref            IF@DATAN
         xref            IF@DATAN2
-
-        modstart        atanl87
 
         xdefp   atanl_  ; long double atanl( long double x )
         xdefp   atan2l_ ; long double atan2l( long double y, long double x )

@@ -35,10 +35,8 @@
 
 extern          EVENT                   Event;
 
-EVENT global uivget( vptr )
-/*************************/
-
-register        VSCREEN*                vptr;
+EVENT global uivget( VSCREEN *vptr )
+/**********************************/
 {
     register    EVENT                   ev;
 
@@ -48,10 +46,8 @@ register        VSCREEN*                vptr;
 }
 
 
-EVENT global uivgetevent( vptr )
-/******************************/
-
-register        VSCREEN*                vptr;
+EVENT global uivgetevent( VSCREEN *vptr )
+/***************************************/
 {
     register    EVENT                   ev;
 
@@ -65,16 +61,16 @@ register        VSCREEN*                vptr;
 }
 
 
-void global uiungetevent()
-/************************/
+void global uiungetevent( void )
+/******************************/
 {
     if( Event < EV_NO_EVENT ) {
         Event = -Event;
     }
 }
 
-void global uiflushevent()
-/************************/
+void global uiflushevent( void )
+/******************************/
 {
     Event = EV_NO_EVENT;
     uiflush();

@@ -1,19 +1,17 @@
-#include "msg.gh"
 #include "wreslang.h"
+#include "errnum.h"
 
 STRINGTABLE
 BEGIN
 
-#undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string1
-
-#include "../wlib.msg"
-
+#include "wlibmsg.gh"
 #undef pick
+
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string2
-
-#include "../wlib.msg"
+#include "wlibmsg.gh"
+#undef pick
 
 END

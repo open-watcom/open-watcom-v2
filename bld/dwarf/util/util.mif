@@ -1,0 +1,35 @@
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include $(orl_dir)/client.mif
+
+.c: ../c;$(trmem_dir)
+.h: ../h;$(trmem_dir)
+
+obj             = .obj
+exe             = .exe
+
+inc_dirs = -I"$(dwarfdir)/dr/h" -I"$(dwarfdir)/dw/h" -I"$(orl_dir)/h" -I"$(trmem_dir)" -I"../h"
+
+!ifeq release 0
+extra_c_flags_test      = -of+
+extra_c_flags_trmemcvr  = -dTRMEM -of+
+extra_c_flags_trmem     = -dTRMEM -of+
+!endif
+
+extra_l_flags           = library $(orl_lib)
+
+test_objs       =   dwdump$(obj) &
+                    testdump$(obj) &
+                    trmemcvr$(obj)
+!ifeq release 0
+test_objs       +=  trmem$(obj)
+!endif
+
+dwdump$(exe) : $(test_objs) $(orl_lib)
+!ifdef bootstrap
+        $(cc) -o $^@ $(test_objs) $(orl_lib) $(clib_dir)/$(%OBJDIR)/libwatcom.a
+!else
+        $(linker) $(lflags) name $@ file { $(test_objs) }
+!endif

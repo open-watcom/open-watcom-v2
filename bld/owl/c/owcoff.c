@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  COFF output routines.
 *
 ****************************************************************************/
 
@@ -37,11 +36,12 @@
 
 #define FIRST_USER_SECTION              0
 
-// must correspond to owl_cpu enums in owl.h - first entry is for POWER PC
+// must correspond to owl_cpu enums in owl.h - first entry is for PowerPC
 static uint_16 cpuTypes[] = {
     IMAGE_FILE_MACHINE_POWERPC,
     IMAGE_FILE_MACHINE_ALPHA,
-    IMAGE_FILE_MACHINE_R4000 };
+    IMAGE_FILE_MACHINE_R4000,
+    IMAGE_FILE_MACHINE_I386};
 
 #define _OWLIndexToCOFFIndex( x )       ( (x) + FIRST_USER_SECTION )
 #define _OWLStringIndexToCOFFStringIndex( x )   ( (x) + 4 )
@@ -426,7 +426,7 @@ static image_sym_class storageClass( owl_sym_linkage kind ) {
         ret = IMAGE_SYM_CLASS_EXTERNAL;
         break;
     case OWL_SYM_WEAK:
-        ret = IMAGE_SYM_CLASS_EXTERNAL;
+        ret = IMAGE_SYM_CLASS_WEAK_EXTERNAL;
         break;
     default:
         assert( 0 );
@@ -563,3 +563,258 @@ static void doEfRecord( _WCUNALIGNED coff_symbol *buffer,
 
 static void formatFunctionSymbol( owl_symbol_info *symbol,
                                         _WCUNALIGNED coff_symbol *buffer) {
+//*************************************************************************
+
+    _WCUNALIGNED coff_sym_func  *aux;
+    owl_func_info               *info;
+    owl_func_file               *curr;
+
+    buffer->name.non_name.zeros = 0;
+    buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+    buffer->value = symbol->offset;
+    buffer->sec_num = _CoffSectionIndex( symbol->section->index );
+    buffer->type = _CoffSymType( IMAGE_SYM_DTYPE_FUNCTION, IMAGE_SYM_TYPE_NULL );
+    buffer->storage_class = storageClass( symbol->linkage );
+    buffer->num_aux = 0;
+    info = symbol->x.func;
+    if( info != NULL ){
+        owl_symbol_index index;
+
+        buffer->num_aux = 1;
+        aux = (_WCUNALIGNED coff_sym_func *)( buffer + 1 );
+        index = symbol->index+2;
+        aux->bf = index;
+        aux->size = info->end - info->start;
+        aux->linenum = functionLineNumOffset( symbol );
+        aux->next_func = 0;
+        if( lastFunc != NULL ) {
+            *lastFunc = symbol->index;
+        }
+        lastFunc = &aux->next_func;
+        // emit .bf,.lf and .ef and whatnot
+        buffer += 2;
+        doBfRecord( buffer, symbol, info );
+        buffer += 2;
+        index += 2;
+        curr = info->head;
+        while( curr != NULL ){
+            unsigned num;
+
+            doLfRecord( buffer, symbol->section->index, curr->num_lines );
+            index += 1;
+            buffer += 1;
+            num = doFileRecord( buffer, index, curr->name );
+            buffer += num;
+            index += num;
+            curr = curr->next;
+        }
+        doLfRecord( buffer, symbol->section->index, info->num_lines );
+        buffer += 1;
+        doEfRecord( buffer, symbol->section->index, info );
+    }
+}
+
+static void formatOneSymbol( owl_symbol_info *symbol,
+                                _WCUNALIGNED coff_symbol *buffer ) {
+//******************************************************************
+
+    switch( symbol->type ) {
+    case OWL_TYPE_SECTION:
+        formatSectionSymbol( symbol, buffer );
+        break;
+    case OWL_TYPE_FILE:
+        formatFileSymbol( symbol, buffer );
+        break;
+    case OWL_TYPE_FUNCTION:
+        formatFunctionSymbol( symbol, buffer );
+        break;
+    case OWL_TYPE_OBJECT:
+        buffer->name.non_name.zeros = 0;
+        buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+        buffer->value = symbol->offset;
+        buffer->sec_num = ( ( symbol->section != NULL ) ? _CoffSectionIndex(symbol->section->index) : IMAGE_SYM_UNDEFINED );
+        buffer->type = _CoffSymType( complexType[ symbol->type ], IMAGE_SYM_DTYPE_NULL );
+        buffer->storage_class = storageClass( symbol->linkage );
+        buffer->num_aux = 0;
+        if( symbol->linkage == OWL_SYM_WEAK ){
+            coff_sym_weak    *aux;
+
+            buffer->num_aux = 1;
+            aux = (coff_sym_weak *)( buffer + 1 );
+            aux->tag_index = symbol->x.alt_sym->index;
+            if( symbol->flags & OWL_SYM_ALIAS ) {
+                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_ALIAS;
+            } else if( symbol->flags & OWL_SYM_LAZY ) {
+                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_LIBRARY;
+            } else {
+                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY;
+            }
+        }
+        break;
+    default:
+        assert( 0 );
+    }
+}
+
+static void formatComdatSymbol( owl_symbol_handle symbol,
+                                        _WCUNALIGNED coff_symbol *buffer ) {
+//**************************************************************************
+
+    buffer->name.non_name.zeros = 0;
+    buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+    buffer->value = 0;
+    buffer->sec_num = IMAGE_SYM_UNDEFINED;
+    buffer->type = IMAGE_SYM_DTYPE_NULL;
+    buffer->storage_class = storageClass( symbol->linkage );
+    buffer->num_aux = 0;
+}
+
+static void emitSymbolTable( owl_file_handle file ) {
+//***************************************************
+
+    unsigned            count;
+    coff_offset         symbol_table_size;
+    owl_symbol_info     *symbol;
+    coff_symbol         *symbol_buffer;
+
+    symbol_table_size = numSymbols( file ) * sizeof( coff_symbol );
+    if( symbol_table_size != 0 ) {
+        lastFunc = NULL;
+        lastBf = NULL;
+        lastFile = NULL;
+        symbol_buffer = _ClientAlloc( file, symbol_table_size );
+    #if 1
+        memset( symbol_buffer, 0, symbol_table_size );
+    #else
+        memset( symbol_buffer, 0xBB, symbol_table_size );
+    #endif
+        count = 0;
+        for( symbol = file->symbol_table->head; symbol != NULL; symbol = symbol->next ) {
+            if( symbol->flags & OWL_SYM_DEAD ) continue;
+            formatOneSymbol( symbol, &symbol_buffer[ count ] );
+            count += numAuxSymbols( symbol ) + 1;
+            if( symComdat( symbol ) ) {
+                formatComdatSymbol( symbol, &symbol_buffer[ count ] );
+                count += 1;
+            }
+        }
+        _ClientWrite( file, (const char *)symbol_buffer, symbol_table_size );
+        _ClientFree( file, symbol_buffer );
+    }
+}
+
+static void prepareStringTable( owl_file_handle file ) {
+//******************************************************
+
+    unsigned            size;
+
+    // we need to emit the string table to a buffer so that we can get offsets via OWLStringOffset
+    // this will be freed in emitStringTable below
+    size = OWLStringTableSize( file->string_table );
+    file->x.coff.string_table = _ClientAlloc( file, sizeof( coff_string_table ) + size - 1 );
+    file->x.coff.string_table->size = size + 4;
+    OWLStringEmit( file->string_table, file->x.coff.string_table->buffer );
+}
+
+static void emitStringTable( owl_file_handle file ) {
+//***************************************************
+
+    _ClientWrite( file, (const char *)file->x.coff.string_table, sizeof( coff_string_table ) + file->x.coff.string_table->size - 5 );
+    _ClientFree( file, file->x.coff.string_table );
+}
+
+static void emitReloc( owl_file_handle file, owl_reloc_info *reloc, _WCUNALIGNED coff_reloc *buffer ) {
+//*****************************************************************************************************
+
+    buffer->offset = reloc->location;
+    buffer->sym_tab_index = symRelocRefIndex( reloc->symbol );
+    buffer->type = CoffRelocType( reloc->type, file->info->cpu );
+}
+
+static void emitSectionPadding( owl_section_info *curr ) {
+//********************************************************
+
+    char                *buffer;
+    owl_offset          padding;
+
+    padding = curr->x.coff.alignment_padding;
+    if( padding != 0 ) {
+        buffer = _ClientAlloc( curr->file, padding );
+        memset( buffer, 0, padding );
+        _ClientWrite( curr->file, buffer, padding );
+        _ClientFree( curr->file, buffer );
+    }
+}
+
+static void emitSectionData( owl_file_handle file ) {
+//****************************************************
+
+    owl_section_info    *curr;
+    owl_offset          relocs_size;
+    owl_reloc_info      *reloc;
+    coff_reloc          *next_reloc;
+    coff_reloc          *reloc_buffer;
+
+    for( curr = file->sections; curr != NULL; curr = curr->next ) {
+        emitSectionPadding( curr );
+        if( !_OwlSectionBSS( curr ) ) {
+            OWLBufferEmit( curr->buffer );
+        }
+        if( curr->first_reloc != NULL ) {
+            relocs_size = sizeof( coff_reloc ) * curr->num_relocs;
+            reloc_buffer = _ClientAlloc( file, relocs_size );
+            next_reloc = reloc_buffer;
+            for( reloc = curr->first_reloc; reloc != NULL; reloc = reloc->next ) {
+                emitReloc( file, reloc, next_reloc );
+                next_reloc++;
+            }
+            _ClientWrite( file, (const char *)reloc_buffer, relocs_size );
+            _ClientFree( file, reloc_buffer );
+        }
+        // now emit linenumbers
+        if( curr->num_linenums != 0 ) {
+            OWLBufferEmit( curr->linenum_buffer );
+        }
+    }
+}
+
+static void prepareExportSection( owl_file_handle file ) {
+//********************************************************
+
+    owl_section_handle  directive;
+    owl_symbol_handle   sym;
+    char                *export_name;
+    const char          *export_string = " -export:";
+
+    directive = NULL;
+    for( sym = file->symbol_table->head; sym != NULL; sym = sym->next ) {
+        if( sym->flags & OWL_SYM_DEAD ) continue;
+        if( sym->flags & OWL_SYM_EXPORT ) {
+            if( directive == NULL ) {
+                directive = OWLSectionInit( file, ".drectve", OWL_SECTION_INFO, 1 );
+            }
+            export_name = &sym->name->text[ 0 ];
+            OWLEmitData( directive, export_string, strlen( export_string ) );
+            OWLEmitData( directive, export_name, strlen( export_name ) );
+        }
+    }
+    if( directive != NULL ) {
+        OWLEmitData( directive, "", 1 );
+        OWLSectionFini( directive );
+    }
+}
+
+void COFFFileEmit( owl_file_handle file ) {
+//*****************************************
+
+    prepareExportSection( file );
+    prepareStringTable( file );
+    calcNumSymbols( file );
+    calcSectionOffsets( file );
+    calcLineNumSymbolIndices( file );
+    emitFileHeader( file );
+    emitSectionHeaders( file );
+    emitSectionData( file );
+    emitSymbolTable( file );
+    emitStringTable( file );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of flushall() - flush all streams.
 *
 ****************************************************************************/
 
@@ -34,33 +33,31 @@
 #include <stdio.h>
 #include "rtdata.h"
 #include "fileacc.h"
+#include "flush.h"
 
-extern  int     __flush( FILE * );
-
-_WCRTLINK int flushall( void )
-    {
-        return( __flushall( ~0 ) );     /* flush all files */
-    }
-
-/* __fill_buffer calls this routine with _ISTTY mask */
 
 int __flushall( int mask )
-    {
-        __stream_link   *link;
-        FILE            *fp;
-        int             number_of_open_files;
+{
+    __stream_link   *link;
+    FILE            *fp;
+    int             number_of_open_files;
 
-        _AccessIOB();
-        number_of_open_files = 0;
-        for( link = _RWD_ostream; link != NULL; link = link->next ) {
-            fp = link->stream;
-            if( fp->_flag & mask ) {      /* if file is a candidate */
-                ++number_of_open_files;
-                if( fp->_flag & _DIRTY ) {
-                    __flush( fp );
-                }
+    _AccessIOB();
+    number_of_open_files = 0;
+    for( link = _RWD_ostream; link != NULL; link = link->next ) {
+        fp = link->stream;
+        if( fp->_flag & mask ) {      /* if file is a candidate */
+            ++number_of_open_files;
+            if( fp->_flag & _DIRTY ) {
+                __flush( fp );
             }
         }
-        _ReleaseIOB();
-        return( number_of_open_files );
     }
+    _ReleaseIOB();
+    return( number_of_open_files );
+}
+
+_WCRTLINK int flushall( void )
+{
+    return( __flushall( ~0 ) );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of itoa()/utoa() - convert int to string.
 *
 ****************************************************************************/
 
@@ -34,10 +33,13 @@
 #include "widechar.h"
 #include <stdlib.h>
 
-static const char _WCI86FAR Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+extern const char __based(__segname("_CONST")) __Alphabet[];
 
-unsigned __udiv( unsigned, unsigned _WCNEAR * );
-#if defined(__386__)
+typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
+
+#if defined(__WATCOMC__)
+unsigned __udiv( unsigned, uint_stk_ptr );
+#if defined(__386__) && defined(__SMALL_DATA__)
     #pragma aux __udiv = \
         "xor edx,edx" \
         "div dword ptr [ebx]" \
@@ -45,7 +47,15 @@ unsigned __udiv( unsigned, unsigned _WCNEAR * );
         parm caller [eax] [ebx] \
         modify exact [eax edx] \
         value [edx];
-#elif defined(M_I86) && defined(__BIG_DATA__)
+#elif defined( __386__ ) && defined(__BIG_DATA__)
+    #pragma aux __udiv = \
+        "xor edx,edx" \
+        "div dword ptr ss:[ebx]" \
+        "mov ss:[ebx],eax" \
+        parm caller [eax] [ebx] \
+        modify exact [eax edx] \
+        value [edx];
+#elif defined( _M_I86 ) && defined(__BIG_DATA__)
     #pragma aux __udiv = \
         "xor dx,dx" \
         "div word ptr ss:[bx]" \
@@ -53,7 +63,7 @@ unsigned __udiv( unsigned, unsigned _WCNEAR * );
         parm caller [ax] [bx] \
         modify exact [ax dx] \
         value [dx];
-#elif defined(M_I86) && defined(__SMALL_DATA__)
+#elif defined( _M_I86 ) && defined(__SMALL_DATA__)
     #pragma aux __udiv = \
         "xor dx,dx" \
         "div word ptr [bx]" \
@@ -61,52 +71,47 @@ unsigned __udiv( unsigned, unsigned _WCNEAR * );
         parm caller [ax] [bx] \
         modify exact [ax dx] \
         value [dx];
-#elif defined(__AXP__)
-    // no pragma
-#elif defined(__PPC__)
-    // no pragma
-#else
-    #error missing __udiv #pragma
 #endif
-
+#endif /* __WATCOMC__ */
 
 _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, int radix )
-    {
-        CHAR_TYPE *p = buffer;
-        char *q;
-        unsigned rem;
-        unsigned quot;
-        auto char buf[34];      // only holds ASCII so 'char' is OK
+{
+    CHAR_TYPE   *p = buffer;
+    char        *q;
+    unsigned    rem;
+    unsigned    quot;
+    char        buf[34];    // only holds ASCII so 'char' is OK
 
-        buf[0] = '\0';
-        q = &buf[1];
-        do {
-            #if defined(__AXP__) || defined(__PPC__)
-                rem = value % radix;
-                quot = value / radix;
-            #else
-                quot = radix;
-                rem = __udiv( value, (unsigned _WCNEAR *) &quot );
-            #endif
-            *q = Alphabet[ rem ];
-            ++q;
-            value = quot;
-        } while( value != 0 );
-        while( *p++ = (CHAR_TYPE)*--q );
-        return( buffer );
-    }
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+#if defined(_M_IX86) && defined(__WATCOMC__)
+        quot = radix;
+        rem = __udiv( value, &quot );
+#else
+        rem = value % radix;
+        quot = value / radix;
+#endif
+        *q = __Alphabet[rem];
+        ++q;
+        value = quot;
+    } while( value != 0 );
+    while( (*p++ = (CHAR_TYPE)*--q) )
+        ;
+    return( buffer );
+}
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(itoa,_itow)( int value, CHAR_TYPE *buffer, int radix )
-    {
-        register CHAR_TYPE *p = buffer;
+{
+    CHAR_TYPE   *p = buffer;
 
-        if( radix == 10 ) {
-            if( value < 0 ) {
-                *p++ = '-';
-                value = - value;
-            }
+    if( radix == 10 ) {
+        if( value < 0 ) {
+            *p++ = '-';
+            value = - value;
         }
-        __F_NAME(utoa,_utow)( value, p, radix );
-        return( buffer );
     }
+    __F_NAME(utoa,_utow)( value, p, radix );
+    return( buffer );
+}

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of fgetpos() - return stream position.
 *
 ****************************************************************************/
 
@@ -37,7 +36,7 @@
 
 _WCRTLINK int fgetpos( FILE *fp, fpos_t *pos )
 {
-        _ValidFile( fp, -1 );
-        *pos = ftell( fp );
-        return( *pos == -1L );
+    _ValidFile( fp, -1 );
+    *pos = ftell( fp );
+    return( *pos == -1L );
 }

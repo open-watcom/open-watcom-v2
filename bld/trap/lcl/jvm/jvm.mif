@@ -1,4 +1,4 @@
-!include $(trap_dir)\lcl\lcl.mif
+!include $(trap_dir)/lcl/lcl.mif
 
 jvmx_trap_objs = &
         $(std_objs) &

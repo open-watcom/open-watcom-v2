@@ -35,10 +35,7 @@
 
 #include "watcom.h"
 
-#if !defined( NATURAL_PACK )
-#include "pshpk1.h"
-#endif
-
+#include "pushpck1.h"
 typedef union ResNameOrOrdinal {
     struct Ordinal {
         uint_8  fFlag;
@@ -46,10 +43,7 @@ typedef union ResNameOrOrdinal {
     } ord;
     char        name[ 1 ];          /* '\0' terminated */
 } _WCUNALIGNED ResNameOrOrdinal;
-
-#if !defined( NATURAL_PACK )
-#include "poppk.h"
-#endif
+#include "poppck.h"
 
 extern ResNameOrOrdinal * ResNumToNameOrOrd( uint_16 num );
 extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string );

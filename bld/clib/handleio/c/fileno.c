@@ -24,18 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Return the underlying file handle from a stream buffer 
+*               block. Usually implemented as a macro in stdio.h unless the
+*               stream internals are obscured. 
+*               NOTE: We have to define special versions for Netware as the 
+*               thin libraries obtain their stream support from the O/S.
 *
 ****************************************************************************/
-
 
 #include "variety.h"
 #include <stdio.h>
 #include "fileacc.h"
+
+#if defined (__NETWARE__) && defined (_THIN_LIB)
+
+#undef  _fileno
+#undef  fileno
+/*
+ *  Thin libraries can't call _ValidFile as this is not supported by the Novell CLIB/LIBC
+ */
+_WCRTLINK int _fileno(FILE * pf)
+{
+    return(fileno(pf));
+}
+
+#else
 
 _WCRTLINK int (fileno)( FILE *fp )
 {
     _ValidFile( fp, -1 );
     return( fp->_handle );
 }
+
+#endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC MAD internal types.
 *
 ****************************************************************************/
 
@@ -78,7 +77,10 @@ struct mad_trace_data {
 };
 
 struct mad_call_up_data {
-    unsigned_8          dummy;
+    addr_off            sp;             /* Stack pointer (r1) */
+    addr_off            fp;             /* Frame pointer (r31) */
+    addr_off            lr;             /* Link register (return address) */
+    int                 first_frame;    /* True if lowest (innermost) frame */
 };
 
 typedef struct mad_type_data {
@@ -97,7 +99,7 @@ extern const mad_type_data      TypeArray[];
 
 extern mad_status               DisasmInit( void );
 extern void                     DisasmFini( void );
-extern mad_disasm_control       DisasmControl( mad_disasm_data *, mad_registers * );
+extern mad_disasm_control       DisasmControl( mad_disasm_data *, mad_registers const * );
 extern mad_status               DisasmOne( mad_disasm_data *dd, address *a, int adj );
 
 extern mad_status               RegInit( void );

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build environment and arguments for new process.
 *
 ****************************************************************************/
 
@@ -43,14 +42,15 @@
 #include "msdos.h"
 #include "rtdata.h"
 #include "seterrno.h"
+#include "_process.h"
 
 #ifdef __WIDECHAR__
 extern _WCRTLINK void   __create_wide_environment( void );
 #endif
 
 
-static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src ) {
-
+static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
+{
     while( *dest = *src ) {
         ++dest;
         ++src;
@@ -59,38 +59,37 @@ static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src ) {
 }
 
 
-int __F_NAME(__cenvarg,__wcenvarg)( argv, envp, envptr, envstrings, envseg, cmdline_len, exec )
+int __F_NAME(__cenvarg,__wcenvarg)(
 /*
  *  Build environment and command line for new process.  Length of environment
  *  (in bytes) is returned on success.  -1 is returned on failure.
  */
-    CHAR_TYPE           *argv[];        /* i: arguments for new process */
-    CHAR_TYPE           *envp[];        /* i: env strings for new process */
-    CHAR_TYPE           **envptr;       /* o: allocated memory for env */
-    CHAR_TYPE           **envstrings;   /* o: pointer to environment strings */
-    unsigned            *envseg;        /* o: start of env (on para boundary) */
-    size_t              *cmdline_len;   /* o: size required to hold cmd line */
-    int                 exec;           /* i: TRUE if for exec */
+    const CHAR_TYPE     *const argv[],  /* i: arguments for new process */
+    const CHAR_TYPE     *const envp[],  /* i: env strings for new process */
+    CHAR_TYPE           **envptr,       /* o: allocated memory for env */
+    CHAR_TYPE           **envstrings,   /* o: pointer to environment strings */
+    unsigned            *envseg,        /* o: start of env (on para boundary) */
+    size_t              *cmdline_len,   /* o: size required to hold cmd line */
+    int                 exec )          /* i: TRUE if for exec */
 {
     unsigned            length;
     unsigned            oamblksiz;
     CHAR_TYPE           *p;
-    CHAR_TYPE           **envv;
+    CHAR_TYPE _WCNEAR   *np;
     unsigned            len;
-    CHAR_TYPE           *arg;
+    int                 i;
 
     if( envp == NULL ){
-        #ifdef __WIDECHAR__
-            if( _RWD_wenviron == NULL )  __create_wide_environment();
-            envp = _RWD_wenviron;
-        #else
-            envp = _RWD_environ;
-        #endif
+#ifdef __WIDECHAR__
+        if( _RWD_wenviron == NULL )
+            __create_wide_environment();
+#endif
+        envp = (const CHAR_TYPE * const *)__F_NAME(_RWD_environ,_RWD_wenviron);
     }
     length = 0;
     if( envp != NULL ){
-        for( envv = envp; *envv != NULL; ++envv ){
-            length += __F_NAME(strlen,wcslen)( *envv ) + 1;
+        for( i = 0; envp[i] != NULL; i++ ) {
+            length += __F_NAME(strlen,wcslen)( envp[i] ) + 1;
         }
     }
     ++length; /* trailing \0 for env */
@@ -102,8 +101,8 @@ int __F_NAME(__cenvarg,__wcenvarg)( argv, envp, envptr, envstrings, envseg, cmdl
 
     oamblksiz = _RWD_amblksiz;
     _RWD_amblksiz = 16; /* force allocation in 16 byte increments */
-    p = lib_nmalloc( length*sizeof(CHAR_TYPE) );
-    if( (void _WCNEAR *)p == NULL ){            /* 03-aug-88 */
+    p = np = lib_nmalloc( length*sizeof(CHAR_TYPE) );
+    if( np == NULL ){   /* 03-aug-88 */
         p = lib_malloc( length*sizeof(CHAR_TYPE) );
         if( p == NULL ){
             __set_errno( ENOMEM );
@@ -114,25 +113,25 @@ int __F_NAME(__cenvarg,__wcenvarg)( argv, envp, envptr, envstrings, envseg, cmdl
     }
     _RWD_amblksiz = oamblksiz;
     *envptr = p;
-#if defined(__386__) || defined(__AXP__) || defined(__OS2__) || defined(__PPC__)
-    *envseg = 0;
-#else
-#if defined(__SMALL_DATA__)
+#if defined( _M_I86 ) && defined( __DOS__ )
+  #if defined(__SMALL_DATA__)
     p = (char *) (((unsigned) p + 15) & 0xfff0);
-#else           /* large data models */         /* 12-aug-88 */
+  #else           /* large data models */         /* 12-aug-88 */
     p = MK_FP( FP_SEG(p), (( FP_OFF(p) + 15) & 0xfff0) );
-#endif
+  #endif
     {
         CHAR_TYPE _WCFAR *temp;
 
         temp = p;
         *envseg = FP_SEG( temp ) + FP_OFF( temp )/16;
     }
+#else
+    *envseg = 0;
 #endif
     *envstrings = p;            /* save ptr to env strings. 07-oct-92 */
     if( envp != NULL ){
-        for( envv = envp; *envv != NULL; ++envv ){
-            p = stpcpy( p, *envv ) + 1;
+        for( i = 0; envp[i] != NULL; ++i ){
+            p = stpcpy( p, envp[i] ) + 1;
         }
     }
     *p++ = '\0';
@@ -141,16 +140,21 @@ int __F_NAME(__cenvarg,__wcenvarg)( argv, envp, envptr, envstrings, envseg, cmdl
     }
 
     len = 0;
-    if( argv[0] != NULL ){
-        for( ++argv; (arg = *argv) != NULL; ++argv ){
+    if( argv[0] != NULL ) {
+        for( i = 1; argv[i] != NULL; ++i ){
             if( len != 0 ) ++len;       /* plus 1 for blank separator */
-            len += __F_NAME(strlen,wcslen)( arg );
+            len += __F_NAME(strlen,wcslen)( argv[i] );
         }
     }
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __NT__ )
+    // we are going to add quotes around program name (argv[0])
+    len += _MAX_PATH2 + 3;
+#elif defined( __OS2__ )
+    len += _MAX_PATH2 + 1;
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     len += _MAX_PATH2 + 1;
 #else
-    if( len > 126 ){
+    if( len > 126 ) {
         __set_errno( E2BIG );
         __set_doserrno( E_badenv );
         lib_free( *envptr );
@@ -160,12 +164,12 @@ int __F_NAME(__cenvarg,__wcenvarg)( argv, envp, envptr, envstrings, envseg, cmdl
 #endif
     *cmdline_len = len;
 
-    return( length/16 );
+    return( length / 16 );
 }
 
 
-void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, CHAR_TYPE *argv[], CHAR_TYPE *buffer,
-                                       int just_args )
+void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const argv[],
+                                      CHAR_TYPE *buffer, int just_args )
 {
 /*
  * path is the name of the program we are about to spawn
@@ -178,27 +182,35 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, CHAR_TYPE *argv[], CHAR_
 
     CHAR_TYPE *p;
 
-    if( just_args ) {
-        p = buffer;
-    } else {
+    p = buffer;
+    if( ! just_args ) {
 #if defined( __OS2__ )
         path = path;
         /* OS/2 wants:  argv[0] '\0' arguments '\0' '\0'
            IMPORTANT: it is vital that there are 2 trailing '\0's
            for DosExecPgm()
          */
-        p = stpcpy( buffer, argv[0] ) + 1;
+	p = stpcpy( p, argv[0] ) + 1;
 #elif defined( __NT__ )
-        /* NT wants: path ' ' arguments '\0' */
-        p = stpcpy( buffer, path );
-        *p++ = ' ';
+	/* NT wants: "path" ' ' arguments '\0'
+	   IMPORTANT: use of quotation marks fixes misparsing of spacey
+	   file names like "c:\program files\common\tool.exe". Also overcomes
+	   bug in WinXP SP2 (beta).
+	*/
+	if( path[0] != '"' ) *p++ = '"';
+	p = stpcpy( p, path );
+	if( path[0] != '"' ) *p++ = '"';
+	*p++ = ' ';
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+        /* RDOS wants: arguments '\0' */
+        path = path;
 #else
         path = path;
         /* DOS wants: len_byte arguments '\r' */
-        p = buffer + 1;
+        p++;
 #endif
     }
-    if( argv[0] != NULL ){
+    if( argv[0] != NULL ) {
         ++argv;
         if( *argv != NULL ) {
             for(;;) {
@@ -213,6 +225,8 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, CHAR_TYPE *argv[], CHAR_
     *p++ = 0;
     *p = 0;
 #elif defined( __NT__ )
+    *p = 0;
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     *p = 0;
 #else
     if( just_args ) {

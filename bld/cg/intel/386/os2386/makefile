@@ -1,6 +1,6 @@
-#pmake: all build os_os2 cpu_386 i386 intel
+#pmake: build os_os2 cpu_386 386 intel target_386
 
-host_OS         = os2
-host_CPU        = 386
+host_OS = os2
+host_CPU = 386
 
-!include ..\mif\master.mif
+!include ../mif/master.mif

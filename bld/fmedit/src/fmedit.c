@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Main Form Editor module.
 *
 ****************************************************************************/
 
@@ -54,38 +53,33 @@
 #include "eatom.def"
 #include "oitem.def"
 #include "align.def"
+#include "space.def"
 #include "clip.def"
 
-void WINEXP CloseFormEdit( HANDLE wnd )
-/*************************************/
-
-/* close the editting window */
-
-  {
+void WINEXP CloseFormEdit( HWND wnd )
+/***********************************/
+{
+    /* close the editing window */
     if( InitState( wnd ) ) {
         DestroyMainObject();
         FreeState();
     }
-  }
+}
 
 void WINEXP CloseFormEditID( STATE_HDL hdl )
 /******************************************/
-
-/* close the editting window given a state handle */
-
-  {
+{
+    /* close the editing window given a state handle */
     if( InitStateFormID( hdl ) ) {
         DestroyMainObject();
         FreeState();
     }
-  }
+}
 
-void WINEXP ResetFormEdit( HANDLE wnd )
-/*************************************/
-
-/* close the editting window */
-
-  {
+void WINEXP ResetFormEdit( HWND wnd )
+/***********************************/
+{
+    /* close the editing window */
     if( InitState( wnd ) ) {
         ResetCurrObject( FALSE );
         DestroyMainObject();
@@ -94,23 +88,21 @@ void WINEXP ResetFormEdit( HANDLE wnd )
         InvalidateRect( wnd, NULL, TRUE );
         InitScroll( GetScrollConfig(), wnd );
     }
-  }
+}
 
 STATE_HDL WINEXP InitFormEdit( CREATE_TABLE objtable )
 /****************************************************/
-
-  {
+{
     NewState();
     CreateCurrObject();
     InitializeObjects( objtable );
     return( GetCurrFormID() );
-  }
+}
 
-void WINEXP SetFormEditWnd( STATE_HDL st, HANDLE wnd, int bitmap,
-                            SCR_CONFIG scroll  )
-/****************************************************************/
-
-  {
+void WINEXP SetFormEditWnd( STATE_HDL st, HWND wnd, int bitmap,
+                            SCR_CONFIG scroll )
+/*********************************************/
+{
     InitStateFormID( st );
     SetStateWnd( wnd );
     if( wnd != NULL ) {
@@ -119,16 +111,14 @@ void WINEXP SetFormEditWnd( STATE_HDL st, HANDLE wnd, int bitmap,
         ShowWindow( wnd, SW_SHOW );
         InitScroll( scroll, wnd );
     }
-  }
+}
 
 
-void WINEXP OpenFormEdit( HANDLE wnd, CREATE_TABLE objtable,
+void WINEXP OpenFormEdit( HWND wnd, CREATE_TABLE objtable,
                           int bitmap, SCR_CONFIG scroll )
-/***********************************************************/
-
-/* Saves instance handle and creates main window */
-
-  {
+/*******************************************************/
+{
+    /* Saves instance handle and creates main window */
     NewState();
     SetStateWnd( wnd );
     CreateCurrObject();
@@ -138,243 +128,24 @@ void WINEXP OpenFormEdit( HANDLE wnd, CREATE_TABLE objtable,
     InitEditMenu( wnd, bitmap );
     ShowWindow( wnd, SW_SHOW );
     InitScroll( scroll, wnd );
-  }
+}
 
 
-int WINEXP WEP( int parm )
-/************************/
-
-/* terminate the DLL */
-
-  {
-    parm = parm;
-    return( 1 );
-  }
-
-
-BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
-                            WPARAM wparam, LPARAM lparam )
-/****************************************************/
-
-/* processes messages */
-
-  {
-    FARPROC        procaddr;
-    HANDLE         inst;
-    POINT          point;
-    POINT          offset;
-    BOOL           frommenu;
-
-    if( !InitState( wnd ) ) {
-        return( FALSE );
-    }
-    inst = GetInst();
-    switch( message ) {
-    case WM_COMMAND :
-        switch( LOWORD(wparam) ) {
-        case IDM_DELETEOBJECT :
-            frommenu = TRUE;
-            ExecuteCurrObject( DESTROY, &frommenu, NULL );
-            SetCurrObject( GetMainObject() );
-            break;
-        case IDM_CUTOBJECT :
-            CutObjects();
-            SetCurrObject( GetMainObject() );
-            break;
-        case IDM_PASTEOBJECT :
-            if( FMPasteValid() ) {
-                SetCapture( wnd );
-                SetState( PASTE_PENDING );
-            }
-            break;
-        case IDM_ESCAPE :
-            switch( GetState() ) {
-            case PASTE_PENDING:
-                ReleaseCapture();
-                SetDefState();
-                break;
-            case MOVING:
-                AbortMoveOperation();
-                SetState( ACTION_ABORTED );
-                break;
-            case SIZING:
-                AbortResize();
-                SetState( ACTION_ABORTED );
-                break;
-            }
-            break;
-        case IDM_COPYOBJECT :
-            CopyObjects();
-            break;
-        case IDM_GRID :
-            procaddr = MakeProcInstance( (FARPROC)FMGrid, inst );
-            DialogBox( inst, "GridBox", wnd, procaddr );
-            FreeProcInstance( procaddr );
-            InheritState( wnd );
-            break;
-        case IDM_FMLEFT :
-        case IDM_FMHCENTRE :
-        case IDM_FMRIGHT :
-        case IDM_FMTOP :
-        case IDM_FMVCENTRE :
-        case IDM_FMBOTTOM :
-            Align( wparam );
-            break;
-        default :
-            return( FALSE );
-            break;
-        }
-        break;
-#if 0
-    case WM_ERASEBKGND :
-        /* do nothing */
-        break;
-#endif
-
-    case WM_LBUTTONDOWN :
-    case WM_MBUTTONDOWN :
-    case WM_RBUTTONDOWN :
-        MAKE_POINT( point, lparam );
-        GetOffset( &offset );
-        point.x += offset.x;
-        point.y += offset.y;
-        ProcessButtonDown( point, LOWORD(wparam), NULL );
-        break;
-    case WM_LBUTTONUP :
-    case WM_MBUTTONUP :
-    case WM_RBUTTONUP :
-        MAKE_POINT( point, lparam );
-        OffsetPoint( &point );
-        ProcessButtonUp( point );
-        break;
-    case WM_LBUTTONDBLCLK :
-    case WM_MBUTTONDBLCLK :
-    case WM_RBUTTONDBLCLK :
-        MAKE_POINT( point, lparam );
-        OffsetPoint( &point );
-        ProcessDBLCLK( point );
-        break;
-    case WM_MOUSEMOVE :
-        SetStateCursor( GetState() );
-        MAKE_POINT( point, lparam );
-        OffsetPoint( &point );
-        ProcessMouseMove( point );
-        break;
-    case WM_VSCROLL :
-        VerticalScroll( wparam, lparam, wnd );
-        break;
-    case WM_HSCROLL :
-        HorizontalScroll( wparam, lparam, wnd );
-        break;
-    case WM_KEYDOWN:
-        return( ProcessKeyDown( wparam ) );
-        break;
-    case WM_KEYUP:
-        return( ProcessKeyUp( wparam ) );
-    case WM_PAINT :
-        DoPainting();
-        break;
-    case WM_SIZE :
-        ScrollResize( wnd, lparam );
-        break;
-    case WM_SETFOCUS :
-        UpdateWindow( wnd );
-        break;
-    default:
-        return( FALSE );
-        break;
-    }
-    return( TRUE );
-  }
-
-#ifdef __NT__
-int WINIEXP LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
-/* Initializes window data and registers window class */
-
-  {
-    lpReserved = lpReserved;     /* avoid warning */
-
-    switch ( dwReason ) {
-        case DLL_PROCESS_ATTACH:
-            SetInst( inst );
-            InitClipboard();
-            InitCursors();
-            InitEAtom();
-            InitCurrItem();
-            InitOItem();
-            break;
-        case DLL_PROCESS_DETACH:
-            WEP( 1 ); /* 1 as parm was chosen arbitrarily */
-            break;
-        case DLL_THREAD_ATTACH:
-        case DLL_THREAD_DETACH:
-        /* do nothing here */
-            break;
-    }
-
-    return ( 1 );
-  }
-
-/*************************************************/
-#else
-int WINIEXP LibMain( HANDLE inst, WORD dataseg,
-                     WORD heapsize, LPSTR cmdline )
-/*************************************************/
-/* Initializes window data and registers window class */
-
-  {
-    dataseg = dataseg;              /* ref'd to avoid warnings */
-    heapsize = heapsize;            /* ref'd to avoid warnings */
-    cmdline = cmdline;              /* ref'd to avoid warnings */
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-
-    SetInst( inst );
-    InitClipboard();
-    InitCursors();
-    InitEAtom();
-    InitCurrItem();
-    InitOItem();
-    return( TRUE );
-  }
-#endif
-
-
-
-static void OffsetPoint( POINT * point )
-/**************************************/
-
-/* offset point according to scroling info */
-
-  {
+static void OffsetPoint( POINT *point )
+/*************************************/
+{
+    /* offset point according to scrolling info */
     POINT offset;
 
     GetOffset( &offset );
     point->x += offset.x;
     point->y += offset.y;
-  }
+}
 
-BOOL WINEXP ObjectPress( OBJPTR obj, POINT * pt, WORD wparam, HWND wnd )
-/**********************************************************************/
-
-/* The application is telling us that the object obj got a button down
- * on it.
- */
-
-  {
-    if( InitState( wnd ) ) {
-        ProcessButtonDown( *pt, wparam & MK_SHIFT, obj );
-        return( TRUE );
-    }
-    return( FALSE );
-  }
-
-static void CutObjects()
-/**********************/
-
-/* Cut the current objects */
-
-  {
+static void CutObjects( void )
+/****************************/
+{
+    /* Cut the current objects */
     CURROBJPTR  currobj;
     OBJPTR      saveobj;
     CURROBJPTR  nextobj;
@@ -395,16 +166,14 @@ static void CutObjects()
             }
         }
     }
-  }
+}
 
-static void CopyObjects()
-/***********************/
-
-/* Copy the current objects */
-
-  {
-    CURROBJPTR currobj;
-    OBJPTR     copyobj;
+static void CopyObjects( void )
+/*****************************/
+{
+    /* Copy the current objects */
+    CURROBJPTR  currobj;
+    OBJPTR      copyobj;
     OBJPTR      appobj;
 
     FMNewClipboard();
@@ -421,4 +190,211 @@ static void CopyObjects()
         }
         currobj = GetNextECurrObject( currobj );
     }
-  }
+}
+
+
+BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
+                           WPARAM wparam, LPARAM lparam )
+/*******************************************************/
+{
+    /* processes messages */
+    FARPROC        procaddr;
+    HANDLE         inst;
+    POINT          point;
+    POINT          offset;
+    BOOL           frommenu;
+
+    if( !InitState( wnd ) ) {
+        return( FALSE );
+    }
+    inst = GetInst();
+    switch( message ) {
+    case WM_COMMAND:
+        switch( LOWORD( wparam ) ) {
+        case IDM_DELETEOBJECT:
+            frommenu = TRUE;
+            ExecuteCurrObject( DESTROY, &frommenu, NULL );
+            SetCurrObject( GetMainObject() );
+            break;
+        case IDM_CUTOBJECT:
+            CutObjects();
+            SetCurrObject( GetMainObject() );
+            break;
+        case IDM_PASTEOBJECT:
+            if( FMPasteValid() ) {
+                SetCapture( wnd );
+                SetState( PASTE_PENDING );
+            }
+            break;
+        case IDM_ESCAPE:
+            switch( GetState() ) {
+            case PASTE_PENDING:
+                ReleaseCapture();
+                SetDefState();
+                break;
+            case MOVING:
+                AbortMoveOperation();
+                SetState( ACTION_ABORTED );
+                break;
+            case SIZING:
+                AbortResize();
+                SetState( ACTION_ABORTED );
+                break;
+            }
+            break;
+        case IDM_COPYOBJECT:
+            CopyObjects();
+            break;
+        case IDM_GRID:
+            procaddr = MakeProcInstance( (FARPROC)FMGrid, inst );
+            DialogBox( inst, "GridBox", wnd, (DLGPROC)procaddr );
+            FreeProcInstance( procaddr );
+            InheritState( wnd );
+            break;
+        case IDM_FMLEFT:
+        case IDM_FMHCENTRE:
+        case IDM_FMRIGHT:
+        case IDM_FMTOP:
+        case IDM_FMVCENTRE:
+        case IDM_FMBOTTOM:
+            Align( wparam );
+            break;
+        case IDM_SPACE_HORZ:
+        case IDM_SPACE_VERT:
+            Space( wparam );
+            break;
+        default:
+            return( FALSE );
+        }
+        break;
+#if 0
+    case WM_ERASEBKGND:
+        /* do nothing */
+        break;
+#endif
+
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+        MAKE_POINT( point, lparam );
+        GetOffset( &offset );
+        point.x += offset.x;
+        point.y += offset.y;
+        ProcessButtonDown( point, LOWORD( wparam ), NULL );
+        break;
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+        MAKE_POINT( point, lparam );
+        OffsetPoint( &point );
+        ProcessButtonUp( point );
+        break;
+    case WM_LBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+        MAKE_POINT( point, lparam );
+        OffsetPoint( &point );
+        ProcessDBLCLK( point );
+        break;
+    case WM_MOUSEMOVE:
+        SetStateCursor( GetState() );
+        MAKE_POINT( point, lparam );
+        OffsetPoint( &point );
+        ProcessMouseMove( point );
+        break;
+    case WM_VSCROLL:
+        VerticalScroll( wparam, lparam, wnd );
+        break;
+    case WM_HSCROLL:
+        HorizontalScroll( wparam, lparam, wnd );
+        break;
+    case WM_KEYDOWN:
+        return( ProcessKeyDown( wparam ) );
+        break;
+    case WM_KEYUP:
+        return( ProcessKeyUp( wparam ) );
+    case WM_PAINT:
+        DoPainting();
+        break;
+    case WM_SIZE:
+        ScrollResize( wnd, lparam );
+        break;
+    case WM_SETFOCUS:
+        UpdateWindow( wnd );
+        break;
+    default:
+        return( FALSE );
+    }
+    return( TRUE );
+}
+
+#ifdef __NT__
+
+int WINAPI LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+{
+    /* Initializes window data and registers window class */
+    lpReserved = lpReserved;     /* avoid warning */
+
+    switch( dwReason ) {
+    case DLL_PROCESS_ATTACH:
+        SetInst( inst );
+        InitClipboard();
+        InitCursors();
+        InitEAtom();
+        InitCurrItem();
+        InitOItem();
+        break;
+    case DLL_PROCESS_DETACH:
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+        /* do nothing here */
+        break;
+    }
+
+    return ( 1 );
+}
+
+#else
+
+int WINAPI LibMain( HINSTANCE inst, WORD dataseg,
+                    WORD heapsize, LPSTR cmdline )
+/************************************************/
+{
+    /* Initializes window data and registers window class */
+    dataseg = dataseg;              /* ref'd to avoid warnings */
+    heapsize = heapsize;            /* ref'd to avoid warnings */
+    cmdline = cmdline;              /* ref'd to avoid warnings */
+    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
+
+    SetInst( inst );
+    InitClipboard();
+    InitCursors();
+    InitEAtom();
+    InitCurrItem();
+    InitOItem();
+    return( TRUE );
+}
+
+int WINAPI WEP( int parm )
+/************************/
+{
+    /* terminate the DLL */
+    parm = parm;
+    return( 1 );
+}
+
+#endif
+
+BOOL WINEXP ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
+/*********************************************************************/
+{
+    /* The application is telling us that the object obj got a button down
+     * on it.
+     */
+    if( InitState( wnd ) ) {
+        ProcessButtonDown( *pt, wparam & MK_SHIFT, obj );
+        return( TRUE );
+    }
+    return( FALSE );
+}

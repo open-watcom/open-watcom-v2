@@ -1,0 +1,231 @@
+#
+# awaiting bug fixes
+#
+# fm257.$(ext) &        # requires operator input - not really a failure
+
+#
+# special options
+#
+#opt_fm001 = -XTRAOPT
+
+!ifneq arch i86
+opt_link_opt32 = option stack=128k
+!endif
+
+!ifeq arch axp
+# AXP specific
+!endif
+
+!ifeq arch 386
+# 386 specific
+!endif
+
+!ifeq arch i86
+# i86 specific
+!endif
+
+#
+# tests temporarily excluded from alpha
+#
+bad_on_axp = &
+
+
+positive_tests = &
+    fm001.$(ext) &
+    fm002.$(ext) &
+    fm003.$(ext) &
+    fm004.$(ext) &
+    fm005.$(ext) &
+    fm006.$(ext) &
+    fm007.$(ext) &
+    fm008.$(ext) &
+    fm009.$(ext) &
+    fm010.$(ext) &
+    fm011.$(ext) &
+    fm012.$(ext) &
+    fm013.$(ext) &
+    fm014.$(ext) &
+    fm016.$(ext) &
+    fm017.$(ext) &
+    fm018.$(ext) &
+    fm019.$(ext) &
+    fm020.$(ext) &
+    fm021.$(ext) &
+    fm022.$(ext) &
+    fm023.$(ext) &
+    fm024.$(ext) &
+    fm025.$(ext) &
+    fm026.$(ext) &
+    fm028.$(ext) &
+    fm030.$(ext) &
+    fm031.$(ext) &
+    fm032.$(ext) &
+    fm033.$(ext) &
+    fm034.$(ext) &
+    fm035.$(ext) &
+    fm036.$(ext) &
+    fm037.$(ext) &
+    fm038.$(ext) &
+    fm039.$(ext) &
+    fm040.$(ext) &
+    fm041.$(ext) &
+    fm042.$(ext) &
+    fm043.$(ext) &
+    fm044.$(ext) &
+    fm045.$(ext) &
+    fm050.$(ext) &
+    fm056.$(ext) &
+    fm060.$(ext) &
+    fm061.$(ext) &
+    fm062.$(ext) &
+    fm080.$(ext) &
+    fm097.$(ext) &
+    fm098.$(ext) &
+    fm099.$(ext) &
+    fm100.$(ext) &
+    fm101.$(ext) &
+    fm102.$(ext) &
+    fm103.$(ext) &
+    fm104.$(ext) &
+    fm105.$(ext) &
+    fm106.$(ext) &
+    fm107.$(ext) &
+    fm108.$(ext) &
+    fm109.$(ext) &
+    fm110.$(ext) &
+    fm111.$(ext) &
+    fm200.$(ext) &
+    fm201.$(ext) &
+    fm202.$(ext) &
+    fm203.$(ext) &
+    fm204.$(ext) &
+    fm205.$(ext) &
+    fm251.$(ext) &
+    fm252.$(ext) &
+    fm253.$(ext) &
+    fm254.$(ext) &
+    fm255.$(ext) &
+    fm256.$(ext) &
+    fm258.$(ext) &
+    fm259.$(ext) &
+    fm260.$(ext) &
+    fm261.$(ext) &
+    fm300.$(ext) &
+    fm301.$(ext) &
+    fm302.$(ext) &
+    fm306.$(ext) &
+    fm307.$(ext) &
+    fm308.$(ext) &
+    fm311.$(ext) &
+    fm317.$(ext) &
+    fm328.$(ext) &
+    fm351.$(ext) &
+    fm352.$(ext) &
+    fm353.$(ext) &
+    fm354.$(ext) &
+    fm355.$(ext) &
+    fm356.$(ext) &
+    fm357.$(ext) &
+    fm359.$(ext) &
+    fm360.$(ext) &
+    fm361.$(ext) &
+    fm362.$(ext) &
+    fm363.$(ext) &
+    fm364.$(ext) &
+    fm368.$(ext) &
+    fm369.$(ext) &
+    fm370.$(ext) &
+    fm371.$(ext) &
+    fm372.$(ext) &
+    fm373.$(ext) &
+    fm374.$(ext) &
+    fm375.$(ext) &
+    fm376.$(ext) &
+    fm377.$(ext) &
+    fm378.$(ext) &
+    fm379.$(ext) &
+    fm401.$(ext) &
+    fm402.$(ext) &
+    fm403.$(ext) &
+    fm404.$(ext) &
+    fm405.$(ext) &
+    fm406.$(ext) &
+    fm407.$(ext) &
+    fm411.$(ext) &
+    fm413.$(ext) &
+    fm500.$(ext) &
+    fm503.$(ext) &
+    fm506.$(ext) &
+    fm509.$(ext) &
+    fm514.$(ext) &
+    fm517.$(ext) &
+    fm520.$(ext) &
+    fm700.$(ext) &
+    fm701.$(ext) &
+    fm710.$(ext) &
+    fm711.$(ext) &
+    fm715.$(ext) &
+    fm718.$(ext) &
+    fm719.$(ext) &
+    fm722.$(ext) &
+    fm800.$(ext) &
+    fm801.$(ext) &
+    fm802.$(ext) &
+    fm803.$(ext) &
+    fm804.$(ext) &
+    fm805.$(ext) &
+    fm806.$(ext) &
+    fm807.$(ext) &
+    fm808.$(ext) &
+    fm809.$(ext) &
+    fm810.$(ext) &
+    fm811.$(ext) &
+    fm812.$(ext) &
+    fm813.$(ext) &
+    fm814.$(ext) &
+    fm815.$(ext) &
+    fm816.$(ext) &
+    fm817.$(ext) &
+    fm818.$(ext) &
+    fm819.$(ext) &
+    fm820.$(ext) &
+    fm821.$(ext) &
+    fm822.$(ext) &
+    fm823.$(ext) &
+    fm824.$(ext) &
+    fm825.$(ext) &
+    fm826.$(ext) &
+    fm827.$(ext) &
+    fm828.$(ext) &
+    fm829.$(ext) &
+    fm830.$(ext) &
+    fm831.$(ext) &
+    fm832.$(ext) &
+    fm833.$(ext) &
+    fm834.$(ext) &
+    fm900.$(ext) &
+    fm901.$(ext) &
+    fm903.$(ext) &
+    fm905.$(ext) &
+    fm906.$(ext) &
+    fm907.$(ext) &
+    fm908.$(ext) &
+    fm909.$(ext) &
+    fm910.$(ext) &
+    fm912.$(ext) &
+    fm914.$(ext) &
+    fm915.$(ext) &
+    fm916.$(ext) &
+    fm917.$(ext) &
+    fm919.$(ext) &
+    fm920.$(ext) &
+    fm921.$(ext) &
+    fm922.$(ext) &
+    fm923.$(ext)
+
+ext = $(ext_$(arch))
+!ifeq arch axp
+positive_exes = $+ $(positive_tests) $-
+!else
+positive_exes = $+ $(positive_tests) $(bad_on_axp) $-
+!endif

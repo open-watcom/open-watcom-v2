@@ -633,7 +633,7 @@ global EVENT uicreatesubpopupinarea( MENUITEM *menu, DESCMENU *desc, bool left,
                                return_inside, return_exclude, TRUE ) );
 }
 
-global EVENT uicreatepopup( ORD row, ORD col, MENUITEM *menu, int left, int right,
+global EVENT uicreatepopup( ORD row, ORD col, MENUITEM *menu, bool left, bool right,
                             EVENT curr_item )
 {
     DESCMENU    desc;

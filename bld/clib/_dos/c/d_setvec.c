@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Set DOS interrupt vector.
 *
 ****************************************************************************/
 
@@ -33,50 +32,55 @@
 #include "variety.h"
 #include <stddef.h>
 #include <dos.h>
+
+
 #if defined(__386__)
- #if defined(__WINDOWS_386__)
-  #include "tinyio.h"
- #else
-  #include "extender.h"
-  extern  void pharlap_setvect( unsigned, void (interrupt _WCFAR *)());
-  #pragma aux  pharlap_setvect =  0x1e   /* push ds   */\
-                               0x8e 0xd9 /* mov ds,cx */\
-                               0x88 0xc1 /* mov cl,al */\
-                               0xb0 0x04 /* mov al,04 */\
-                               0xb4 0x25 /* mov ah,25 */\
-                               0xcd 0x21 /* int 21h   */\
-                               0x1f      /* pop ds    */\
-                        parm caller [al] [cx edx];
+  #if defined(__WINDOWS_386__)
+    #include "tinyio.h"
+  #else
+    #include "extender.h"
+    extern  void pharlap_setvect( unsigned, void (__interrupt _WCFAR *)());
+    #pragma aux  pharlap_setvect = \
+        "push ds"           \
+        "mov ds,ecx"        \
+        "mov cl,al"         \
+        "mov al,04"         \
+        "mov ah,25h"        \
+        "int 21h"           \
+        "pop ds"            \
+        parm caller [al] [cx edx];
 
-  extern  void os386_setvect( unsigned, void (interrupt _WCFAR *)());
-  #pragma aux  os386_setvect =  0x1e      /* push ds   */\
-                               0x8e 0xd9 /* mov ds,cx */\
-                               0xb4 0x25 /* mov ah,25 */\
-                               0xcd 0x21 /* int 21h   */\
-                               0x1f      /* pop ds    */\
-                        parm caller [al] [cx edx];
- #endif
+    extern  void dos4g_setvect( unsigned, void (__interrupt _WCFAR *)());
+    #pragma aux  dos4g_setvect = \
+        "push ds"           \
+        "mov ds,ecx"        \
+        "mov ah,25h"        \
+        "int 21h"           \
+        "pop ds"            \
+        parm caller [al] [cx edx];
+    #endif
 #else
- extern  void _setvect( unsigned, void (interrupt _WCFAR *)());
- #pragma aux     _setvect =    0x1e      /* push ds   */\
-                               0x8e 0xd9 /* mov ds,cx */\
-                               0xb4 0x25 /* mov ah,25 */\
-                               0xcd 0x21 /* int 21h   */\
-                               0x1f      /* pop ds    */\
-                        parm caller [ax] [cx dx];
+    extern  void _setvect( unsigned, void (__interrupt _WCFAR *)());
+    #pragma aux  _setvect = \
+        "push ds"           \
+        "mov ds,cx"         \
+        "mov ah,25h"        \
+        "int 21h"           \
+        "pop ds"            \
+        parm caller [ax] [cx dx];
 #endif
 
-_WCRTLINK void _dos_setvect( int intnum, void (interrupt _WCFAR *func)() )
-    {
+_WCRTLINK void _dos_setvect( unsigned intnum, void (__interrupt _WCFAR *func)() )
+{
 #if defined(__WINDOWS_386__)
-        TinySetVect( intnum, (void _WCNEAR *) func );
+    TinySetVect( intnum, (void _WCNEAR *) func );
 #elif defined(__386__)
-        if( _IsPharLap() ) {
-            pharlap_setvect( intnum, func );
-        } else {        /* os386 or DOS4G */
-            os386_setvect( intnum, func );
-        }
-#else
-        _setvect( intnum, func );
-#endif
+    if( _IsPharLap() ) {
+        pharlap_setvect( intnum, func );
+    } else {        /* DOS/4G style */
+        dos4g_setvect( intnum, func );
     }
+#else
+    _setvect( intnum, func );
+#endif
+}

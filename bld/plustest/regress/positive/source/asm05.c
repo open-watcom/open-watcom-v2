@@ -1,10 +1,14 @@
 #include "fail.h"
 
-#if __WATCOM_REVISION >= 8 && defined(__386__)
+#if __WATCOM_REVISION__ >= 8 && defined(__386__)
 // bug in codegen with long code bursts that have relocs
 void foo()
 {
    long SrcPitch             = 0; 
+
+#if __WATCOM_CPLUSPLUS__ > 1220
+_asm .MMX
+#endif
 
 _asm                 
    {

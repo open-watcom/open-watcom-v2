@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#define REP_FIND        102
-#define REP_REPLACE     110
+#define REP_FIND                102
+#define REP_REPLACE             110
 #define REP_CASE_SENSITIVE      101
 #define REP_REGULAR_EXPRESSIONS 103
 #define REP_LISTBOX             104

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  "Human readable" PowerPC type definitions.
 *
 ****************************************************************************/
 
@@ -35,6 +34,7 @@
 #define defining_enums
 enum {
 #endif
+    /* Target byte order */
     /* integers */
     pick( BYTE,         BYTE,           1, U1 )
     pick( HWORD,        HWORD,          1, U2 )
@@ -55,6 +55,29 @@ enum {
     pick( FLOAT,        FLOAT,          0, F4 )
     pick( DOUBLE,       DOUBLE,         0, F8 )
     pick( HDOUBLE,      NIL,            1, F8 )
+    /* customs */
+
+    /* Host byte order */
+    /* integers */
+    pick( H_BYTE,       BYTE,           1, H_U1 )
+    pick( H_HWORD,      HWORD,          1, H_U2 )
+    pick( H_WORD,       WORD,           1, H_U4 )
+    pick( H_DWORD,      DWORD,          1, H_U8 )
+    pick( H_CHAR,       CHAR,           0, H_I1 )
+    pick( H_SHORT,      SHORT,          0, H_I2 )
+    pick( H_LONG,       LONG,           0, H_I4 )
+    pick( H_INT64,      INT64,          0, H_I8 )
+    pick( H_UCHAR,      UCHAR,          0, H_U1 )
+    pick( H_USHORT,     USHORT,         0, H_U2 )
+    pick( H_ULONG,      ULONG,          0, H_U4 )
+    pick( H_UINT64,     UNSIGNED64,     0, H_U8 )
+    /* addresses */
+    pick( H_N32_PTR,    N32_PTR,        1, H_N32 )
+//    pick( H_N64_PTR,  N64_PTR,        1, H_N64 )
+    /* floats */
+    pick( H_FLOAT,      FLOAT,          0, H_F4 )
+    pick( H_DOUBLE,     DOUBLE,         0, H_F8 )
+    pick( H_HDOUBLE,    NIL,            1, H_F8 )
     /* customs */
 
 #if defined(defining_enums)

@@ -33,10 +33,10 @@
 #include "uidef.h"
 
 
-void uistartevent()
+void uistartevent( void )
 {
 }
 
-void uidoneevent()
+void uidoneevent( void )
 {
 }

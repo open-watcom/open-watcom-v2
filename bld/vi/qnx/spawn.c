@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
-#include <i86.h>
 #include "vi.h"
+#include <malloc.h>
+#include <i86.h>
 #include "fcbmem.h"
 
 char near *near ExeExtensions[] = {""};

@@ -1,0 +1,10 @@
+.387
+		EXTRN	extprocn:BYTE
+DGROUP		GROUP	_DATA
+extprocf_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:extprocf_TEXT, DS:DGROUP, SS:DGROUP
+    jmp         far ptr extprocn
+extprocf_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

@@ -14,6 +14,6 @@ int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow
     previnst = previnst;
     cmdline = cmdline;
     cmdshow = cmdshow;
-    MessageBox( NULL, "Hello World", "WATCOM Example", MB_OK );
+    MessageBox( NULL, "Hello World", "Open Watcom Example", MB_OK );
     return( 0 );
 }

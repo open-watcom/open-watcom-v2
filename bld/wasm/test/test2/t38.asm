@@ -16,11 +16,11 @@ start:  xor ax, ax
 dude:   xor ax, ax
         jmp far ptr sam
         mov ax, seg foo
-        mov ax, offset foo
+        mov eax, offset foo
         mov ax, seg sam
-        mov ax, offset sam
+        mov eax, offset sam
 foo:    and ax,ax
-        ;jne foo
+        jne foo
         jmp bar
         jmp far ptr sam
         xor bx, bx

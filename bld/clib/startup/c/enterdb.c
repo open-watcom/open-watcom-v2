@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Routine to enter debugger if running under its control.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include "exitwmsg.h"
 #include "enterdb.h"
 
-_WCRTLINK char volatile __WD_Present = 0;
+_WCRTDATA char volatile __WD_Present = 0;
 
 _WCRTLINK int __EnterWVIDEO( char _WCFAR *string ) // this really needs to be far
 {

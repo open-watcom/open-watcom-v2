@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Non-exhaustive test of the C library DOS functions.
 *
 ****************************************************************************/
 
@@ -52,7 +51,7 @@
     #define NUM_PARA            2047
     #define SIZE_PARA           16
 #endif
-#define INTERRUPT_TIME          2       // seconds
+#define INTERRUPT_TIME          1       // seconds
 #define TICK_COUNT              (INTERRUPT_TIME * 18)
 #ifdef __SW_BW
     #include <wdefwin.h>
@@ -68,6 +67,8 @@
 #define HOUR(t)                 ((t & 0xF800) >> 11)
 #define MINUTE(t)               ((t & 0x07E0) >> 5)
 #define SECOND(t)               ((t & 0x001F) << 1 )
+
+#define LFN_FNAME               "Long File Name.with.long.extension"
 
 #if defined(__OS2__) \
  || defined(__NT__) \
@@ -150,7 +151,7 @@ void TestMemoryOperations( void )
     void                *segment;
     char                *cptr;
     #else
-    unsigned short      segment;
+    unsigned            segment;
     char __far          *cptr;
     #endif
     unsigned            ctr;
@@ -198,7 +199,7 @@ void TestFileOperations( void )
     struct find_t       fileinfo;
     unsigned long       flag;
     unsigned            attribute;
-    unsigned short      date,time;
+    unsigned            date,time;
     char                buffer[] = "This is a test for _dos_write().";
     char                tmpbuff[80];
     unsigned            len;
@@ -214,6 +215,27 @@ void TestFileOperations( void )
             printf( "an existing file\n" );
         }
         _dos_close( fh[0] );
+    }
+    NowTest( "_dos_setfileattr()" ) ;
+    if( _dos_getfileattr( "not_exst.fil", &attribute ) == 0 ) {
+        printf( "_dos_getfileattr() failed.\n" );
+        PROG_ABORT( __LINE__ );
+    }
+    if( _dos_getfileattr( "tmpfile", &attribute ) != 0 ) {
+        printf( "_dos_getfileattr() failed.\n" );
+        PROG_ABORT( __LINE__ );
+    }
+    if( _dos_setfileattr( "tmpfile", attribute & ~_A_ARCH ) != 0 ) {
+        printf( "_dos_setfileattr() failed.\n" );
+        PROG_ABORT( __LINE__ );
+    }
+    if( _dos_getfileattr( "tmpfile", &attribute ) != 0 ) {
+        printf( "_dos_getfileattr() failed.\n" );
+        PROG_ABORT( __LINE__ );
+    }
+    if( ( attribute & _A_ARCH ) == _A_ARCH ) {
+        printf( "_dos_setfileattr() failed.\n" );
+        PROG_ABORT( __LINE__ );
     }
     if( verbose ) printf( "Creating %u temporary files...", MAX_OPEN );
     strcpy( str, "_tmpfile." );
@@ -373,6 +395,60 @@ void TestDiskOperations( void )
     if( verbose ) printf( "the current drive is %c:\n", 'A' + drive - 1 );
 }
 
+void TestLFNAndDOSInterrupts( void )
+{
+    char            upname[_MAX_FNAME];
+    struct find_t   findresult; /* Struct to hold findfirst information */
+    int             handle;     /* File handle for _dos_open */
+    unsigned        finderror;  /* The return value of findfirst/next */
+    unsigned        attr;       /* File attributes */
+#ifdef __WATCOM_LFN__
+    int             handle2;    /* Handle for the Long Filename */
+
+    _dos_creat( LFN_FNAME, _A_NORMAL, &handle2 );   /* Create a LFN */
+    _dos_setfileattr( LFN_FNAME, _A_HIDDEN );       /* Give Hidden attr */
+#endif
+    finderror = _dos_findfirst( "*.*", _A_RDONLY | _A_HIDDEN | _A_SYSTEM |
+                    _A_SUBDIR | _A_ARCH, &findresult );
+    while( finderror == 0 ) {
+        if( verbose ) {
+            printf( "Found file: %s", findresult.name );
+            strupr( strcpy( upname, findresult.name ) );
+            if( strchr( findresult.name, ' ' ) != NULL ||
+                strlen( findresult.name ) > 12 ||
+                strcmp( findresult.name, upname ) != 0) {
+                printf( ", a long filename" );
+            }
+            printf( "\n" );
+        }
+        /* Don't attempt to open "." and "..", it won't work */
+        if( !strcmp( findresult.name, "." ) && !strcmp( findresult.name, ".." ) ) {
+            if( _dos_open( findresult.name, O_RDONLY, &handle ) != 0 ) {
+                printf( "_dos_open() failed for %s\n", findresult.name );
+                PROG_ABORT( __LINE__ );
+            }
+        }
+        if( _dos_getfileattr( findresult.name, &attr ) != 0 ) {
+            printf( "Could not get attributes for %s\n", findresult.name );
+            PROG_ABORT( __LINE__ );
+        } else if( verbose ) {
+            printf( "The attributes for %s are:\n", findresult.name );
+            if( attr & _A_NORMAL ) printf( "Normal\n" );
+            if( attr & _A_RDONLY ) printf( "Read Only\n" );
+            if( attr & _A_HIDDEN ) printf( "Hidden\n" );
+            if( attr & _A_SYSTEM ) printf( "System\n" );
+            if( attr & _A_SUBDIR ) printf( "Directory\n" );
+            if( attr & _A_ARCH   ) printf( "Archive\n" );
+        }
+        finderror = _dos_findnext( &findresult );
+    }
+    _dos_findclose( &findresult );
+#ifdef __WATCOM_LFN__
+    _dos_close( handle2 );
+    unlink( LFN_FNAME );
+#endif
+}
+
 #ifdef DO_INTERRUPT
 void __interrupt __far timer_rtn( void )
 {
@@ -390,7 +466,7 @@ void TestInterruptOperations( void )
     NowTest( "_dos_getvect(), _dos_setvect(), and _chain_intr()" );
     if( verbose ) {
         printf( "Looping until the interrupt occurs in " );
-        printf( "%d seconds.\n", INTERRUPT_TIME );
+        printf( "%d second(s).\n", INTERRUPT_TIME );
     }
     fflush( stdout );
     prev_int_1c = _dos_getvect( 0x1c );
@@ -402,33 +478,34 @@ void TestInterruptOperations( void )
 
 int main( int argc, char *argv[] )
 {
-    #ifdef __SW_BW
-        FILE *my_stdout;
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
-    if( argc > 1 ) verbose = 1;
+#ifdef __SW_BW
+    FILE *my_stdout;
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( -1 );
+    }
+#endif
+    if( argc > 1 )
+        verbose = 1;
     runtime = getenv( "RUNTIME" );
-    if( runtime == 0 ) runtime = "";
+    if( runtime == 0 )
+        runtime = "";
     TestDateTimeOperations();   // This should go first
     TestFileOperations();
-    #if !( defined(__WINDOWS__) || defined(__WINDOWS_386__) )
+#if !( defined(__WINDOWS__) || defined(__WINDOWS_386__) )
     TestMemoryOperations();
-    #endif
+#endif
     TestDiskOperations();
-    #ifdef DO_INTERRUPT
+    TestLFNAndDOSInterrupts();
+#ifdef DO_INTERRUPT
     TestInterruptOperations();
-    #endif
+#endif
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
-    #ifdef __SW_BW
-    {
-        fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
-        fclose( my_stdout );
-        _dwShutDown();
-    }
-    #endif
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", strlwr( argv[0] ) );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
     return( 0 );
 }

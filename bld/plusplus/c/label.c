@@ -212,14 +212,14 @@ static SYMBOL scopeDcledSymbol( // GET LAST DCL'ED DTORABLE SYMBOL FOR A SCOPE
 static SYMBOL currDtorSymbol(   // GET LAST DTORABLE SYMBOL FOR CurrScope
     void )
 {
-    return scopeDtorSymbol( CurrScope );
+    return scopeDtorSymbol( GetCurrScope() );
 }
 
 
 static SYMBOL currDcledSymbol(  // GET LAST DTORABLE DCL'ED SYMBOL, CurrScope
     void )
 {
-    return scopeDcledSymbol( CurrScope );
+    return scopeDcledSymbol( GetCurrScope() );
 }
 
 
@@ -262,7 +262,7 @@ static boolean labelMarkDtorSym(// MARK A SYMBOL FOR DTORing
             dtor->flag |= SF_ADDR_TAKEN;
             if( ! SymIsModuleDtorable( sym ) ) {
                 blk->sym_dtored = sym;
-                blk->scope->dtor_reqd = TRUE;
+                blk->scope->s.dtor_reqd = TRUE;
                 ScopeKeep( blk->scope );
             }
             retn = TRUE;
@@ -282,7 +282,7 @@ void LabelDeclInited(           // SIGNAL NEXT INITIALIZATION IN BLOCK
     BLK_INIT *blk;              // - current initialization block
 
     if( SymRequiresDtoring( sym ) && ! SymRequiresCtoring( sym ) ) {
-        CurrScope->dtor_naked = TRUE;
+        GetCurrScope()->s.dtor_naked = TRUE;
     }
     blk = labelFindBlk( SymScope( sym ) );
     if( SymIsInitialized( sym ) ) {
@@ -320,8 +320,8 @@ static void labelCurrPosn(      // SET LABEL POSITION IN CURRENT SCOPE
 {
     BLK_INIT *blk;              // - current initialization block
 
-    ScopeKeep( CurrScope );
-    blk = labelFindBlk( CurrScope );
+    ScopeKeep( GetCurrScope() );
+    blk = labelFindBlk( GetCurrScope() );
     posn->sym = blkDcledSymbol( blk );
     posn->scope = blk->scope;
     posn->var_no = blk->var_no;
@@ -554,7 +554,7 @@ void LabelGotoBwd(              // CHECK A GOTO (BACKWARDS)
         if( tgt_dtor != currDcledSymbol() ) {
             CgFrontCodePtr( IC_DESTRUCT_VAR, tgt_dtor );
         } else {
-            BLK_INIT *src_blk = labelFindBlk( CurrScope );
+            BLK_INIT *src_blk = labelFindBlk( GetCurrScope() );
             if( popsTryCatch( src_blk, blk ) ) {
                 ScopeKeep( blk->scope );
                 CgFrontCodePtr( IC_TRY_CATCH_DONE, blk->scope );
@@ -604,7 +604,7 @@ void LabelSwitchBeg(            // START OF A SWITCH STATEMENT
 {
     BLK_INIT* blk;              // - block for switch/try
 
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     labelCurrPosn( &blk->switch_posn );
 }
 
@@ -620,7 +620,7 @@ void LabelReturn(               // RETURN STATEMENT PROCESSING
     void )
 {
     if( NULL != currDtorSymbol()
-     || popsCatch( labelFindBlk( CurrScope )
+     || popsCatch( labelFindBlk( GetCurrScope() )
                  , labelFindBlk( ScopeFunctionScopeInProgress() ) ) ) {
         if( FunctionBodyCtor() ) {
             CgFrontCode( IC_CTOR_COMPLETE );
@@ -690,7 +690,7 @@ void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
 
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     if( dead_code ) {
         blk->dead_zap = TRUE;
         CgFrontCode( IC_BLOCK_DEAD );
@@ -710,21 +710,21 @@ void LabelBlockClose(           // CLOSE CURRENT BLOCK SCOPE
     boolean  blk_end;           // - emit IC_BLOCK_END
 
     blk_end = FALSE;
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     enclosing = blk->containing;
-    if( CurrScope->keep || blk->catch_blk ) {
+    if( GetCurrScope()->s.keep || blk->catch_blk ) {
         if( blk->open_zap ) {
-            CgFrontZapPtr( blk->open_ins, IC_BLOCK_OPEN, CurrScope );
+            CgFrontZapPtr( blk->open_ins, IC_BLOCK_OPEN, GetCurrScope() );
             blk_end = TRUE;
         } else if( blk->dead_zap ) {
-            CgFrontZapPtr( blk->open_ins, IC_BLOCK_DEAD, CurrScope );
+            CgFrontZapPtr( blk->open_ins, IC_BLOCK_DEAD, GetCurrScope() );
             blk_end = TRUE;
         }
         if( ! dead_code ) {
-            CgFrontCodePtr( IC_BLOCK_CLOSE, CurrScope );
+            CgFrontCodePtr( IC_BLOCK_CLOSE, GetCurrScope() );
         }
         if( blk_end ) {
-            CgFrontCodePtr( IC_BLOCK_END, CurrScope );
+            CgFrontCodePtr( IC_BLOCK_END, GetCurrScope() );
         }
     } else {
         if( enclosing != NULL ) {
@@ -762,11 +762,11 @@ void LabelBlkTry(               // INDICATE TRY BLOCK
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
 
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     blk->try_blk = TRUE;
-    CurrScope->try_catch = TRUE;
+    GetCurrScope()->s.try_catch = TRUE;
     blk->locn = *posn;
-    ScopeKeep( CurrScope );
+    ScopeKeep( GetCurrScope() );
     CgFrontCodePtr( IC_SET_TRY_STATE, try_var );
 }
 
@@ -784,12 +784,12 @@ void LabelBlkCatch(             // INDICATE CATCH BLOCK
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
 
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     blk->catch_blk = TRUE;
     blk->try_id = try_id;
-    CurrScope->try_catch = TRUE;
+    GetCurrScope()->s.try_catch = TRUE;
     blk->locn = *posn;
-    ScopeKeep( CurrScope );
+    ScopeKeep( GetCurrScope() );
     CgFrontCode( IC_SET_CATCH_STATE );
 }
 
@@ -814,7 +814,7 @@ void LabelExprEnd(              // END OF REGION FOR TEMPORARIES (AFTER CGDONE)
     BLK_INIT* blk;              // - current BLK_INIT
     SCOPE scope;                // - current scope
 
-    blk = labelFindBlk( CurrScope );
+    blk = labelFindBlk( GetCurrScope() );
     if( expr_dtor_bound != blkDtorSymbol( blk )
      || labelFlags.has_newctor
      || labelFlags.has_setjmp ) {

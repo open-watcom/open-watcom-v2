@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Processing of pop-up menu for source file view.
 *
 ****************************************************************************/
 
@@ -45,34 +44,34 @@
 #include <string.h>
 #include <limits.h>
 
-extern bool             ScanItem(bool ,char **,unsigned int *);
-extern void             ReqEOC(void);
+extern bool             ScanItem( bool, char **, unsigned int * );
+extern void             ReqEOC( void );
 extern bool             ScanSelectedExpr( char * );
 extern void             BreakOnSelected( char *item );
 
-extern char             *StrCopy(char*,char*);
+extern char             *StrCopy( char *, char * );
 extern a_window         *WndFileInspect( char *file, bool binary );
-extern void             *OpenSrcFile(cue_handle * );
-extern int              FReadLine(void   *,int ,int ,char *,int );
-extern void             FDoneSource(void         *);
-extern char             *ScanPos(void);
-extern unsigned int     ScanCmd(char *);
-extern void             Scan(void);
-extern char             *ReScan(char *);
-extern unsigned long    FSize(void*);
-extern unsigned long    FLastOffset(void*);
-extern brk              *FindBreakByLine( mod_handle, cue_file_id, unsigned );
+extern void             *OpenSrcFile( cue_handle * );
+extern int              FReadLine( void *, int, int, char *, int );
+extern void             FDoneSource( void * );
+extern char             *ScanPos( void );
+extern unsigned int     ScanCmd( char * );
+extern void             Scan( void );
+extern char             *ReScan( char * );
+extern unsigned long    FSize( void * );
+extern unsigned long    FLastOffset( void * );
+extern brkp             *FindBreakByLine( mod_handle, cue_file_id, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
-extern void             *AddBreak(address);
-extern bool             DlgBreak(address);
-extern void             WndInspect(char*);
-extern a_window         *WndAsmInspect(address);
-extern int              DlgSearch(a_window*,void*);
-extern bool             DlgLongExpr(char*title,long*value);
+extern void             *AddBreak( address );
+extern bool             DlgBreak( address );
+extern void             WndInspect( char * );
+extern a_window         *WndAsmInspect( address );
+extern int              DlgSearch( a_window *, void * );
+extern bool             DlgLongExpr( char *title, long *value );
 extern void             GoToAddr( address addr );
-extern void             ToggleBreak(address);
-extern void             SetCodeDot(address);
-extern address          GetCodeDot(void);
+extern void             ToggleBreak( address );
+extern void             SetCodeDot( address );
+extern address          GetCodeDot( void );
 extern a_window         *WndClassInspect( wnd_class class );
 extern void             WndVarInspect( char * );
 extern void             AsmMoveDot( a_window *, address );
@@ -84,25 +83,25 @@ extern void             StepIntoFunction( char * );
 extern bool             FirstLinInfo( mod_handle, address *, unsigned * );
 extern int              FCurrLine( struct browser *hndl );
 extern int              FileIsRemote( struct browser *hndl );
-extern unsigned         NewCurrRadix(unsigned int );
-extern bool             DbgWndSearch(a_window *,bool,int);
-extern char             *DupStr(char*);
-extern char             *Format(char *,char *,... );
+extern unsigned         NewCurrRadix( unsigned int );
+extern bool             DbgWndSearch( a_window *, bool, int );
+extern char             *DupStr( char * );
+extern char             *Format( char *, char *, ... );
 extern bool             DlgCodeAddr( char *title, address *value );
 extern void             WndSrcInspect( address addr );
 extern bool             DlgModName( char *title, mod_handle *mod );
 extern void             WndModInspect( mod_handle mod );
-extern a_window         *AsmWndFind( a_window* asm, address addr,bool track );
+extern a_window         *AsmWndFind( a_window *asw, address addr, bool track );
 extern a_window         *DoWndSrcOpen( cue_handle *, bool track );
-extern unsigned         ExprSize(stack_entry*);
+extern unsigned         ExprSize( stack_entry * );
 extern void             EvalLValExpr( int );
-extern void             PopEntry(void);
+extern void             PopEntry( void );
 extern char             *ModImageName( mod_handle handle );
 extern char             *FGetName( void *viewhndl );
 extern unsigned         ModName( mod_handle mh, char *result, unsigned max );
 extern a_window         *WndNewSrcInspect( address addr );
 extern int              AddrComp( address a, address b );
-extern void             GoHome(void);
+extern void             GoHome( void );
 extern void             DbgUpdate( update_list );
 
 extern char             *TxtBuff;
@@ -127,7 +126,7 @@ static gui_menu_struct FileMenu[] = {
 };
 
 typedef struct {
-    void         *      viewhndl;
+    void                *viewhndl;
     unsigned long       size;
     unsigned            active;
     mod_handle          mod;
@@ -137,7 +136,7 @@ typedef struct {
     unsigned long       range;
     address             dotaddr;
     char                *name;
-    a_window            *asm;
+    a_window            *asw;
     unsigned            eof;
     unsigned            track : 1;
     unsigned            erase : 1;
@@ -151,7 +150,12 @@ enum {
     PIECE_SOURCE
 };
 
-extern  void    SrcNewAsmNotify( a_window *asm, mod_handle mod, bool track )
+extern  void    SrcJoinAsm( a_window *wnd, a_window *asw )
+{
+    WndFile( wnd )->asw = asw;
+}
+
+extern  void    SrcNewAsmNotify( a_window *asw, mod_handle mod, bool track )
 {
     file_window *file;
     a_window    *wnd;
@@ -161,23 +165,17 @@ extern  void    SrcNewAsmNotify( a_window *asm, mod_handle mod, bool track )
         file = WndFile( wnd );
         if( track != file->track ) continue;
         if( mod != file->mod ) continue;
-        if( file->asm != NULL ) continue;
-        AsmJoinSrc( asm, wnd );
-        SrcJoinAsm( wnd, asm );
+        if( file->asw != NULL ) continue;
+        AsmJoinSrc( asw, wnd );
+        SrcJoinAsm( wnd, asw );
         break;
     }
-}
-
-
-extern  void    SrcJoinAsm( a_window *wnd, a_window *asm )
-{
-    WndFile( wnd )->asm = asm;
 }
 
 extern  void    SrcFreeAsm( a_window *wnd )
 {
     if( wnd == NULL ) return;
-    WndFile( wnd )->asm = NULL;
+    WndFile( wnd )->asw = NULL;
 }
 
 #ifdef DEADCODE
@@ -265,9 +263,13 @@ static void     FileMenuItem( a_window *wnd, unsigned id, int row, int piece )
         WndMenuEnable( wnd, MENU_FILE_STEP_INTO, file->mod != NO_MOD && has_popitem );
         WndMenuEnable( wnd, MENU_FILE_BREAK, has_popitem );
         WndMenuEnable( wnd, MENU_FILE_RUN, has_addr );
+        WndMenuEnable( wnd, MENU_FILE_SKIP_TO_CURSOR, has_addr );
         break;
     case MENU_FILE_RUN:
         GoToAddr( addr );
+        break;
+    case MENU_FILE_SKIP_TO_CURSOR:
+        SkipToAddr( addr );
         break;
     case MENU_FILE_BREAK:
         BreakOnSelected( WndPopItem( wnd ) );
@@ -300,7 +302,7 @@ static void     FileMenuItem( a_window *wnd, unsigned id, int row, int piece )
         DbgWndSearch( wnd, FALSE, DlgSearch( wnd, SrchHistory ) );
         break;
     case MENU_FILE_ASSEMBLY:
-        AsmWndFind( file->asm, addr, file->track );
+        AsmWndFind( file->asw, addr, file->track );
         break;
     case MENU_FILE_LINE:
         GotoLine( wnd );
@@ -386,6 +388,18 @@ static  void    FileModify( a_window *wnd, int row, int piece )
     }
 }
 
+static void FileSetDotAddr( a_window *wnd, address addr )
+{
+    file_window *file = WndFile( wnd );
+
+    if( AddrComp( file->dotaddr, addr ) == 0 ) return;
+    file->dotaddr = addr;
+    if( IS_NIL_ADDR( addr ) ) return;
+    if( wnd == WndFindActive() ) {
+        AsmMoveDot( file->asw, addr );
+        SetCodeDot( addr );
+    }
+}
 
 static  WNDNOTIFY       FileNotify;
 static void FileNotify( a_window *wnd, wnd_row row, int piece )
@@ -415,7 +429,7 @@ bool FileOpenGadget( a_window *wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-void FileBreakGadget( a_window *wnd, wnd_line_piece *line, bool curr, brk *bp )
+void FileBreakGadget( a_window *wnd, wnd_line_piece *line, bool curr, brkp *bp )
 {
     if( curr ) {
         if( bp == NULL ) {
@@ -444,7 +458,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
     int         len;
     file_window *file = WndFile( wnd );
     address     addr;
-    brk         *bp;
+    brkp        *bp;
     bool        curr;
     DIPHDL( cue, ch );
 
@@ -517,7 +531,7 @@ static void SeekToTheEnd( file_window *file )
 }
 
 
-static unsigned ActiveLine()
+static unsigned ActiveLine( void )
 {
     DIPHDL( cue, ch );
 
@@ -629,22 +643,6 @@ static void FileTrack( a_window *wnd, cue_handle *ch )
     WndRowDirty( wnd, active );
     file->active = active;
 }
-
-
-
-static void FileSetDotAddr( a_window *wnd, address addr )
-{
-    file_window *file = WndFile( wnd );
-
-    if( AddrComp( file->dotaddr, addr ) == 0 ) return;
-    file->dotaddr = addr;
-    if( IS_NIL_ADDR( addr ) ) return;
-    if( wnd == WndFindActive() ) {
-        AsmMoveDot( file->asm, addr );
-        SetCodeDot( addr );
-    }
-}
-
 
 extern  bool    SrcMoveDot( a_window *wnd, address addr )
 {
@@ -802,13 +800,13 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         ActiveWindowLevel = SOURCE;
         if( IS_NIL_ADDR( file->dotaddr ) ) return( TRUE );
         SetCodeDot( file->dotaddr );
-        AsmMoveDot( file->asm, file->dotaddr );
+        AsmMoveDot( file->asw, file->dotaddr );
         return( TRUE );
     case GUI_INIT_WINDOW:
         file->active = NOT_ACTIVE;
         file->rows = 0;
         file->rows_offset = 0;
-        file->asm = NULL;
+        file->asw = NULL;
         SeekToTheEnd( file );
         FileNewIP( wnd );
         DbgUpdate( UP_OPEN_CHANGE );
@@ -821,7 +819,7 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
             if( file->name ) FileRemove( file->name, 0 );
         }
         WndFree( file->name );
-        AsmFreeSrc( file->asm );
+        AsmFreeSrc( file->asw );
         WndFree( file );
         DbgUpdate( UP_OPEN_CHANGE );
         return( TRUE );
@@ -928,7 +926,7 @@ extern a_window *DoWndSrcOpen( cue_handle *ch, bool track )
 
 
 extern WNDOPEN WndSrcOpen;
-extern a_window *WndSrcOpen()
+extern a_window *WndSrcOpen( void )
 {
     mod_handle  mod;
     address     addr;
@@ -945,7 +943,7 @@ extern a_window *WndSrcOpen()
 }
 
 
-void ProcView()
+void ProcView( void )
 {
     char                *start;
     unsigned            len;

@@ -24,37 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Determine the flavour du jour of editor.
 *
 ****************************************************************************/
 
 
-#include "control.h"
-#if defined(__WINDOWS_386__)
-char TITLE[] = "vi/win386";
-#elif defined(__WINDOWS__)
-char TITLE[] = "vi/win";
-#elif defined(__OS2V2__)
-char TITLE[] = "vi/os2v2";
-#elif defined(__OS2__)
-char TITLE[] = "vi/os2";
-#elif defined(__NT__)
-#if defined(__WIN__)
-char TITLE[] = "vi/ntwin";
+#include "vi.h"
+
+#if defined( __WINDOWS_386__ )
+  #define TT "vi/win386"
+#elif defined( __WINDOWS__ )
+  #define TT "vi/win"
+#elif defined( __OS2V2__ )
+  #define TT "vi/os2v2"
+#elif defined( __OS2__ )
+  #define TT "vi/os2"
+#elif defined( __NT__ )
+  #if defined( __WIN__ )
+    #define TT "vi/ntwin"
+  #else
+    #define TT "vi/nt"
+  #endif
+#elif defined( __PHAR__ ) || defined( __4G__ )
+  #define TT "vi/386"
+#elif defined( __QNX__ )
+  #define TT "vi/qnx"
+#elif defined( __LINUX__ )
+  #define TT "vi/linux"
+#elif defined( __UNIX__ )
+  #define TT "vi/unix"
+#elif defined( __286__ )
+  #define TT "vi/286"
 #else
-char TITLE[] = "vi/nt";
+  #define TT "vi/86"
 #endif
-#elif defined(__PHAR__)
-char TITLE[] = "vi/386";
-#elif defined(__QNX__)
-char TITLE[] = "vi/qnx";
-#elif defined(__286__)
-#if defined(__V__)
-char TITLE[] = "vi/286v";
-#else
-char TITLE[] = "vi/286";
-#endif
-#else
-char TITLE[] = "vi/86";
-#endif
+
+char _NEAR TITLE[] = TT;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of strchr() and wcsrchr().
 *
 ****************************************************************************/
 
@@ -36,7 +35,7 @@
 #include <string.h>
 #include "riscstr.h"
 
-#if defined(M_I86) && !defined(__WIDECHAR__)
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
 
 extern  char *_fast_strrchr( const char _WCFAR *, char );
 
@@ -87,21 +86,22 @@ extern  char *_fast_strrchr( const char _WCFAR *, char );
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple_wcsrchr( const CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__simple_wcsrchr( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strrchr,wcsrchr)( const CHAR_TYPE *s, int c )
+ _WCRTLINK CHAR_TYPE *__F_NAME(strrchr,wcsrchr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif
-    {
-#if defined(M_I86) && !defined(__WIDECHAR__)
-        return( _fast_strrchr( s, c ) );
+{
+#if defined( _M_I86 ) && !defined(__WIDECHAR__)
+    return( _fast_strrchr( s, c ) );
 #else
-        CHAR_TYPE *p;
-        CHAR_TYPE cc = c;
+    CHAR_TYPE   *p;
+    CHAR_TYPE   cc = c;
 
-        p = NULL;       /* assume c will not be found */
-        do {
-            if( *s == cc ) p = (CHAR_TYPE *)s;
-        } while( *s++ != NULLCHAR );
-        return( p );
+    p = NULL;       /* assume c will not be found */
+    do {
+        if( *s == cc )
+            p = (CHAR_TYPE *)s;
+    } while( *s++ != NULLCHAR );
+    return( p );
 #endif
-    }
+}

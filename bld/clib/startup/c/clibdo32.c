@@ -24,18 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Default DLL init/term routines for 32-bit OS/2.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 
-unsigned __dll_initialize( void ) {
+unsigned __dll_initialize( void )
+{
     return( 1 );
 }
 
-unsigned __dll_terminate( void ) {
+unsigned __dll_terminate( void )
+{
     return( 1 );
 }

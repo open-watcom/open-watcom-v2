@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Segment register optimizations.
 *
 ****************************************************************************/
 
@@ -45,17 +44,20 @@ extern  proc_def        *CurrProc;
 extern  block           *HeadBlock;
 extern  byte            OptForSize;
 
-extern  void            QuickSave(hw_reg_set,opcode_defs);
-extern  void            GenRegMove(hw_reg_set,hw_reg_set);
-extern  void            GenRegXor(hw_reg_set,hw_reg_set);
-extern  void            GenRegNeg(hw_reg_set);
-extern  bool            SegIsSS(name*);
-extern  bool            CanZapBP();
-extern  int             NumOperands(instruction*);
+extern  void            QuickSave( hw_reg_set, opcode_defs );
+extern  void            GenRegMove( hw_reg_set, hw_reg_set );
+extern  void            GenRegXor( hw_reg_set, hw_reg_set );
+extern  void            GenRegNeg( hw_reg_set );
+extern  bool            SegIsSS( name * );
+extern  bool            CanZapBP( void );
+extern  int             NumOperands( instruction * );
 
+/* forward declarations */
+static  int     Overs( name *op );
+static  int     CountSegOvers( void );
 
-extern  void    InitZeroPage() {
-/*******************************
+extern  void    InitZeroPage( void )
+/***********************************
     Decide what type of "zeropage" scheme we should use (if it's worthwhile).
     This is sort of a misleading name, carried over from the days of the 6809.
     What it is is cheap addressing to the stack segment. We'll set BP to zero
@@ -63,7 +65,7 @@ extern  void    InitZeroPage() {
     use _x[bp+di] or _x[bp+si]. This generates the code to initialize
     the "zeropage" register, as well as pushing it to save it.
 */
-
+{
     ZPageType = ZP_USES_SS;
     if( _IsTargetModel( FLOATING_DS ) && OptForSize > 50 ) {
         if( !HW_COvlap( CurrProc->state.used, HW_DS ) ) {
@@ -106,11 +108,11 @@ extern  void    InitZeroPage() {
 }
 
 
-extern  void    FiniZeroPage() {
-/*******************************
+extern  void    FiniZeroPage( void )
+/***********************************
     Pop the "zeropage" register.
 */
-
+{
     switch( ZPageType ) {
     case ZP_USES_SS:
         /* nothing*/
@@ -131,12 +133,11 @@ extern  void    FiniZeroPage() {
     ZPageType = ZP_USES_SS;
 }
 
-static  int     CountSegOvers() {
-/********************************
+static  int     CountSegOvers( void )
+/************************************
     Count the number of SS: overrides in the routine.
 */
-
-
+{
     block       *blk;
     instruction *ins;
     int         i;
@@ -167,11 +168,11 @@ static  int     CountSegOvers() {
 }
 
 
-static  int     Overs( name *op ) {
-/**********************************
+static  int     Overs( name *op )
+/********************************
     return the number of SS: overrides associated with "op" (0 or 1)
 */
-
+{
     name        *base;
     name        *index;
 

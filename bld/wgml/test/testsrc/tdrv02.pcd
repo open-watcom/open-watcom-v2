@@ -1,0 +1,29 @@
+:CMT. This device definition is used solely for determining the format
+:CMT. of the resulting .COP file.
+
+:CMT. Definition file                 Driver name
+:CMT. ------------------------------------------------------
+:CMT. TDRV02                          testdrv02
+
+:CMT. Corresponding device
+:CMT. definition file                 Device name
+:CMT. ------------------------------------------------------
+:CMT. TEST02                          test02
+:CMT.
+
+:DRIVER
+   member_name  = 'tdrv02'
+   fill_char    = '.'
+   defined_name = 'testdrv02'
+   rec_spec     = '(t:80)'
+
+:INCLUDE file='drv01.inc'
+
+:INCLUDE file='drv02.inc'
+
+:INCLUDE file='drv03.inc'
+
+:INCLUDE file='drv04.inc'
+
+:eDRIVER.
+

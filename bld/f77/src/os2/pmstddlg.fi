@@ -1,0 +1,1862 @@
+c$noreference
+
+c$ifdef INCL_WINSTDDLGS
+c$define INCL_WINSTDFILE
+c$define INCL_WINSTDFONT
+c$define INCL_WINSTDSPIN
+c$define INCL_WINSTDDRAG
+c$define INCL_WINSTDCNR
+c$define INCL_WINSTDSLIDER
+c$define INCL_WINSTDVALSET
+c$define INCL_WINSTDBOOK
+c$endif
+
+c$ifdef INCL_WINSTDCNR
+c$define INCL_WINSTDDRAG
+c$endif
+
+c$ifdef INCL_WINSTDVALSET
+c$define INCL_WINSTDDRAG
+c$endif
+
+c$ifdef INCL_WINSTDFILE
+
+        integer  FDS_CENTER
+        parameter (FDS_CENTER = '00000001'x)
+        integer  FDS_CUSTOM
+        parameter (FDS_CUSTOM = '00000002'x)
+        integer  FDS_FILTERUNION
+        parameter (FDS_FILTERUNION = '00000004'x)
+        integer  FDS_HELPBUTTON
+        parameter (FDS_HELPBUTTON = '00000008'x)
+        integer  FDS_APPLYBUTTON
+        parameter (FDS_APPLYBUTTON = '00000010'x)
+        integer  FDS_PRELOAD_VOLINFO
+        parameter (FDS_PRELOAD_VOLINFO = '00000020'x)
+        integer  FDS_MODELESS
+        parameter (FDS_MODELESS = '00000040'x)
+        integer  FDS_INCLUDE_EAS
+        parameter (FDS_INCLUDE_EAS = '00000080'x)
+        integer  FDS_OPEN_DIALOG
+        parameter (FDS_OPEN_DIALOG = '00000100'x)
+        integer  FDS_SAVEAS_DIALOG
+        parameter (FDS_SAVEAS_DIALOG = '00000200'x)
+        integer  FDS_MULTIPLESEL
+        parameter (FDS_MULTIPLESEL = '00000400'x)
+        integer  FDS_ENABLEFILELB
+        parameter (FDS_ENABLEFILELB = '00000800'x)
+
+        integer  FDS_EFSELECTION
+        parameter (FDS_EFSELECTION = 0)
+        integer  FDS_LBSELECTION
+        parameter (FDS_LBSELECTION = 1)
+
+        integer  FDS_SUCCESSFUL
+        parameter (FDS_SUCCESSFUL = 0)
+        integer  FDS_ERR_DEALLOCATE_MEMORY
+        parameter (FDS_ERR_DEALLOCATE_MEMORY = 1)
+        integer  FDS_ERR_FILTER_TRUNC
+        parameter (FDS_ERR_FILTER_TRUNC = 2)
+        integer  FDS_ERR_INVALID_DIALOG
+        parameter (FDS_ERR_INVALID_DIALOG = 3)
+        integer  FDS_ERR_INVALID_DRIVE
+        parameter (FDS_ERR_INVALID_DRIVE = 4)
+        integer  FDS_ERR_INVALID_FILTER
+        parameter (FDS_ERR_INVALID_FILTER = 5)
+        integer  FDS_ERR_INVALID_PATHFILE
+        parameter (FDS_ERR_INVALID_PATHFILE = 6)
+        integer  FDS_ERR_OUT_OF_MEMORY
+        parameter (FDS_ERR_OUT_OF_MEMORY = 7)
+        integer  FDS_ERR_PATH_TOO_LONG
+        parameter (FDS_ERR_PATH_TOO_LONG = 8)
+        integer  FDS_ERR_TOO_MANY_FILE_TYPES
+        parameter (FDS_ERR_TOO_MANY_FILE_TYPES = 9)
+        integer  FDS_ERR_INVALID_VERSION
+        parameter (FDS_ERR_INVALID_VERSION = 10)
+        integer  FDS_ERR_INVALID_CUSTOM_HANDLE
+        parameter (FDS_ERR_INVALID_CUSTOM_HANDLE = 11)
+        integer  FDS_ERR_DIALOG_LOAD_ERROR
+        parameter (FDS_ERR_DIALOG_LOAD_ERROR = 12)
+        integer  FDS_ERR_DRIVE_ERROR
+        parameter (FDS_ERR_DRIVE_ERROR = 13)
+
+        integer  FDM_FILTER
+        parameter (FDM_FILTER = WM_USER + 40)
+        integer  FDM_VALIDATE
+        parameter (FDM_VALIDATE = WM_USER + 41)
+        integer  FDM_ERROR
+        parameter (FDM_ERROR = WM_USER + 42)
+
+        structure /FILEDLG/
+            integer*4 cbSize
+            integer*4 fl
+            integer*4 ulUser
+            integer*4 lReturn
+            integer*4 lSRC
+            integer*4 pszTitle
+            integer*4 pszOKButton
+            integer*4 pfnDlgProc
+            integer*4 pszIType
+            integer*4 papszITypeList
+            integer*4 pszIDrive
+            integer*4 papszIDriveList
+            integer*4 hMod
+            integer*1 szFullFile(CCHMAXPATH)
+            integer*4 papszFQFilename
+            integer*4 ulFQFCount
+            integer*2 usDlgId
+            integer*2 x
+            integer*2 y
+            integer*2 sEAType
+        end structure
+
+        external WinFileDlg
+        integer*4 WinFileDlg
+
+        external WinDefFileDlgProc
+        integer*4 WinDefFileDlgProc
+
+        external WinFreeFileDlgList
+        integer*4 WinFreeFileDlgList
+
+        integer  DID_FILE_DIALOG
+        parameter (DID_FILE_DIALOG = 256)
+        integer  DID_FILENAME_TXT
+        parameter (DID_FILENAME_TXT = 257)
+        integer  DID_FILENAME_ED
+        parameter (DID_FILENAME_ED = 258)
+        integer  DID_DRIVE_TXT
+        parameter (DID_DRIVE_TXT = 259)
+        integer  DID_DRIVE_CB
+        parameter (DID_DRIVE_CB = 260)
+        integer  DID_FILTER_TXT
+        parameter (DID_FILTER_TXT = 261)
+        integer  DID_FILTER_CB
+        parameter (DID_FILTER_CB = 262)
+        integer  DID_DIRECTORY_TXT
+        parameter (DID_DIRECTORY_TXT = 263)
+        integer  DID_DIRECTORY_LB
+        parameter (DID_DIRECTORY_LB = 264)
+        integer  DID_FILES_TXT
+        parameter (DID_FILES_TXT = 265)
+        integer  DID_FILES_LB
+        parameter (DID_FILES_LB = 266)
+        integer  DID_HELP_PB
+        parameter (DID_HELP_PB = 267)
+        integer  DID_APPLY_PB
+        parameter (DID_APPLY_PB = 268)
+        integer  DID_OK_PB
+        parameter (DID_OK_PB = DID_OK)
+        integer  DID_CANCEL_PB
+        parameter (DID_CANCEL_PB = DID_CANCEL)
+
+        integer  IDS_FILE_ALL_FILES_SELECTOR
+        parameter (IDS_FILE_ALL_FILES_SELECTOR = 1000)
+        integer  IDS_FILE_BACK_CUR_PATH
+        parameter (IDS_FILE_BACK_CUR_PATH = 1001)
+        integer  IDS_FILE_BACK_PREV_PATH
+        parameter (IDS_FILE_BACK_PREV_PATH = 1002)
+        integer  IDS_FILE_BACK_SLASH
+        parameter (IDS_FILE_BACK_SLASH = 1003)
+        integer  IDS_FILE_BASE_FILTER
+        parameter (IDS_FILE_BASE_FILTER = 1004)
+        integer  IDS_FILE_BLANK
+        parameter (IDS_FILE_BLANK = 1005)
+        integer  IDS_FILE_COLON
+        parameter (IDS_FILE_COLON = 1006)
+        integer  IDS_FILE_DOT
+        parameter (IDS_FILE_DOT = 1007)
+        integer  IDS_FILE_DRIVE_LETTERS
+        parameter (IDS_FILE_DRIVE_LETTERS = 1008)
+        integer  IDS_FILE_FWD_CUR_PATH
+        parameter (IDS_FILE_FWD_CUR_PATH = 1009)
+        integer  IDS_FILE_FWD_PREV_PATH
+        parameter (IDS_FILE_FWD_PREV_PATH = 1010)
+        integer  IDS_FILE_FORWARD_SLASH
+        parameter (IDS_FILE_FORWARD_SLASH = 1011)
+        integer  IDS_FILE_PARENT_DIR
+        parameter (IDS_FILE_PARENT_DIR = 1012)
+        integer  IDS_FILE_Q_MARK
+        parameter (IDS_FILE_Q_MARK = 1013)
+        integer  IDS_FILE_SPLAT
+        parameter (IDS_FILE_SPLAT = 1014)
+        integer  IDS_FILE_SPLAT_DOT
+        parameter (IDS_FILE_SPLAT_DOT = 1015)
+        integer  IDS_FILE_SAVEAS_TITLE
+        parameter (IDS_FILE_SAVEAS_TITLE = 1016)
+        integer  IDS_FILE_SAVEAS_FILTER_TXT
+        parameter (IDS_FILE_SAVEAS_FILTER_TXT = 1017)
+        integer  IDS_FILE_SAVEAS_FILENM_TXT
+        parameter (IDS_FILE_SAVEAS_FILENM_TXT = 1018)
+        integer  IDS_FILE_DUMMY_FILE_NAME
+        parameter (IDS_FILE_DUMMY_FILE_NAME = 1019)
+        integer  IDS_FILE_DUMMY_FILE_EXT
+        parameter (IDS_FILE_DUMMY_FILE_EXT = 1020)
+        integer  IDS_FILE_DUMMY_DRIVE
+        parameter (IDS_FILE_DUMMY_DRIVE = 1021)
+        integer  IDS_FILE_DUMMY_ROOT_DIR
+        parameter (IDS_FILE_DUMMY_ROOT_DIR = 1022)
+        integer  IDS_FILE_PATH_PTR
+        parameter (IDS_FILE_PATH_PTR = 1023)
+        integer  IDS_FILE_VOLUME_PREFIX
+        parameter (IDS_FILE_VOLUME_PREFIX = 1024)
+        integer  IDS_FILE_VOLUME_SUFFIX
+        parameter (IDS_FILE_VOLUME_SUFFIX = 1025)
+        integer  IDS_FILE_PATH_PTR2
+        parameter (IDS_FILE_PATH_PTR2 = 1026)
+        integer  IDS_FILE_INVALID_CHARS
+        parameter (IDS_FILE_INVALID_CHARS = 1027)
+
+        integer  IDS_FILE_BAD_DRIVE_NAME
+        parameter (IDS_FILE_BAD_DRIVE_NAME = 1100)
+        integer  IDS_FILE_BAD_DRIVE_OR_PATH_NAME
+        parameter (IDS_FILE_BAD_DRIVE_OR_PATH_NAME = 1101)
+        integer  IDS_FILE_BAD_FILE_NAME
+        parameter (IDS_FILE_BAD_FILE_NAME = 1102)
+        integer  IDS_FILE_BAD_FQF
+        parameter (IDS_FILE_BAD_FQF = 1103)
+        integer  IDS_FILE_BAD_NETWORK_NAME
+        parameter (IDS_FILE_BAD_NETWORK_NAME = 1104)
+        integer  IDS_FILE_BAD_SUB_DIR_NAME
+        parameter (IDS_FILE_BAD_SUB_DIR_NAME = 1105)
+        integer  IDS_FILE_DRIVE_NOT_AVAILABLE
+        parameter (IDS_FILE_DRIVE_NOT_AVAILABLE = 1106)
+        integer  IDS_FILE_FQFNAME_TOO_LONG
+        parameter (IDS_FILE_FQFNAME_TOO_LONG = 1107)
+        integer  IDS_FILE_OPEN_DIALOG_NOTE
+        parameter (IDS_FILE_OPEN_DIALOG_NOTE = 1108)
+        integer  IDS_FILE_PATH_TOO_LONG
+        parameter (IDS_FILE_PATH_TOO_LONG = 1109)
+        integer  IDS_FILE_SAVEAS_DIALOG_NOTE
+        parameter (IDS_FILE_SAVEAS_DIALOG_NOTE = 1110)
+
+        integer  IDS_FILE_DRIVE_DISK_CHANGE
+        parameter (IDS_FILE_DRIVE_DISK_CHANGE = 1120)
+        integer  IDS_FILE_DRIVE_NOT_READY
+        parameter (IDS_FILE_DRIVE_NOT_READY = 1122)
+        integer  IDS_FILE_DRIVE_LOCKED
+        parameter (IDS_FILE_DRIVE_LOCKED = 1123)
+        integer  IDS_FILE_DRIVE_NO_SECTOR
+        parameter (IDS_FILE_DRIVE_NO_SECTOR = 1124)
+        integer  IDS_FILE_DRIVE_SOME_ERROR
+        parameter (IDS_FILE_DRIVE_SOME_ERROR = 1125)
+        integer  IDS_FILE_DRIVE_INVALID
+        parameter (IDS_FILE_DRIVE_INVALID = 1126)
+        integer  IDS_FILE_INSERT_DISK_NOTE
+        parameter (IDS_FILE_INSERT_DISK_NOTE = 1127)
+        integer  IDS_FILE_OK_WHEN_READY
+        parameter (IDS_FILE_OK_WHEN_READY = 1128)
+
+c$endif
+
+c$ifdef INCL_WINSTDFONT
+
+        structure /FONTDLG/
+            integer*4 cbSize
+            integer*4 hpsScreen
+            integer*4 hpsPrinter
+            integer*4 pszTitle
+            integer*4 pszPreview
+            integer*4 pszPtSizeList
+            integer*4 pfnDlgProc
+            integer*4 pszFamilyname
+            integer*4 fxPointSize
+            integer*4 fl
+            integer*4 flFlags
+            integer*4 flType
+            integer*4 flTypeMask
+            integer*4 flStyle
+            integer*4 flStyleMask
+            integer*4 clrFore
+            integer*4 clrBack
+            integer*4 ulUser
+            integer*4 lReturn
+            integer*4 lSRC
+            integer*4 lEmHeight
+            integer*4 lXHeight
+            integer*4 lExternalLeading
+            integer*4 hMod
+            record /FATTRS/ fAttrs
+            integer*2 sNominalPointSize
+            integer*2 usWeight
+            integer*2 usWidth
+            integer*2 x
+            integer*2 y
+            integer*2 usDlgId
+            integer*2 usFamilyBufLen
+            integer*2 usReserved
+        end structure
+
+        integer  FNTS_CENTER
+        parameter (FNTS_CENTER = '00000001'x)
+        integer  FNTS_CUSTOM
+        parameter (FNTS_CUSTOM = '00000002'x)
+        integer  FNTS_OWNERDRAWPREVIEW
+        parameter (FNTS_OWNERDRAWPREVIEW = '00000004'x)
+        integer  FNTS_HELPBUTTON
+        parameter (FNTS_HELPBUTTON = '00000008'x)
+        integer  FNTS_APPLYBUTTON
+        parameter (FNTS_APPLYBUTTON = '00000010'x)
+        integer  FNTS_RESETBUTTON
+        parameter (FNTS_RESETBUTTON = '00000020'x)
+        integer  FNTS_MODELESS
+        parameter (FNTS_MODELESS = '00000040'x)
+        integer  FNTS_INITFROMFATTRS
+        parameter (FNTS_INITFROMFATTRS = '00000080'x)
+        integer  FNTS_BITMAPONLY
+        parameter (FNTS_BITMAPONLY = '00000100'x)
+        integer  FNTS_VECTORONLY
+        parameter (FNTS_VECTORONLY = '00000200'x)
+        integer  FNTS_FIXEDWIDTHONLY
+        parameter (FNTS_FIXEDWIDTHONLY = '00000400'x)
+        integer  FNTS_PROPORTIONALONLY
+        parameter (FNTS_PROPORTIONALONLY = '00000800'x)
+        integer  FNTS_NOSYNTHESIZEDFONTS
+        parameter (FNTS_NOSYNTHESIZEDFONTS = '00001000'x)
+
+        integer  FNTF_NOVIEWSCREENFONTS
+        parameter (FNTF_NOVIEWSCREENFONTS = 1)
+        integer  FNTF_NOVIEWPRINTERFONTS
+        parameter (FNTF_NOVIEWPRINTERFONTS = 2)
+        integer  FNTF_SCREENFONTSELECTED
+        parameter (FNTF_SCREENFONTSELECTED = 4)
+        integer  FNTF_PRINTERFONTSELECTED
+        parameter (FNTF_PRINTERFONTSELECTED = 8)
+
+        integer  CLRC_FOREGROUND
+        parameter (CLRC_FOREGROUND = 1)
+        integer  CLRC_BACKGROUND
+        parameter (CLRC_BACKGROUND = 2)
+
+        integer  FNTI_BITMAPFONT
+        parameter (FNTI_BITMAPFONT = '00000001'x)
+        integer  FNTI_VECTORFONT
+        parameter (FNTI_VECTORFONT = '00000002'x)
+        integer  FNTI_FIXEDWIDTHFONT
+        parameter (FNTI_FIXEDWIDTHFONT = '00000004'x)
+        integer  FNTI_PROPORTIONALFONT
+        parameter (FNTI_PROPORTIONALFONT = '00000008'x)
+        integer  FNTI_SYNTHESIZED
+        parameter (FNTI_SYNTHESIZED = '00000010'x)
+        integer  FNTI_DEFAULTLIST
+        parameter (FNTI_DEFAULTLIST = '00000020'x)
+        integer  FNTI_FAMILYNAME
+        parameter (FNTI_FAMILYNAME = '00000100'x)
+        integer  FNTI_STYLENAME
+        parameter (FNTI_STYLENAME = '00000200'x)
+        integer  FNTI_POINTSIZE
+        parameter (FNTI_POINTSIZE = '00000400'x)
+
+        integer  FNTS_SUCCESSFUL
+        parameter (FNTS_SUCCESSFUL = 0)
+        integer  FNTS_ERR_INVALID_DIALOG
+        parameter (FNTS_ERR_INVALID_DIALOG = 3)
+        integer  FNTS_ERR_ALLOC_SHARED_MEM
+        parameter (FNTS_ERR_ALLOC_SHARED_MEM = 4)
+        integer  FNTS_ERR_INVALID_PARM
+        parameter (FNTS_ERR_INVALID_PARM = 5)
+        integer  FNTS_ERR_OUT_OF_MEMORY
+        parameter (FNTS_ERR_OUT_OF_MEMORY = 7)
+        integer  FNTS_ERR_INVALID_VERSION
+        parameter (FNTS_ERR_INVALID_VERSION = 10)
+        integer  FNTS_ERR_DIALOG_LOAD_ERROR
+        parameter (FNTS_ERR_DIALOG_LOAD_ERROR = 12)
+
+        integer  FNTM_FACENAMECHANGED
+        parameter (FNTM_FACENAMECHANGED = WM_USER + 50)
+        integer  FNTM_POINTSIZECHANGED
+        parameter (FNTM_POINTSIZECHANGED = WM_USER + 51)
+        integer  FNTM_STYLECHANGED
+        parameter (FNTM_STYLECHANGED = WM_USER + 52)
+        integer  FNTM_COLORCHANGED
+        parameter (FNTM_COLORCHANGED = WM_USER + 53)
+        integer  FNTM_UPDATEPREVIEW
+        parameter (FNTM_UPDATEPREVIEW = WM_USER + 54)
+        integer  FNTM_FILTERLIST
+        parameter (FNTM_FILTERLIST = WM_USER + 55)
+
+        structure /STYLECHANGE/
+            integer*2 usWeight
+            integer*2 usWeightOld
+            integer*2 usWidth
+            integer*2 usWidthOld
+            integer*4 flType
+            integer*4 flTypeOld
+            integer*4 flTypeMask
+            integer*4 flTypeMaskOld
+            integer*4 flStyle
+            integer*4 flStyleOld
+            integer*4 flStyleMask
+            integer*4 flStyleMaskOld
+        end structure
+
+        external WinFontDlg
+        integer*4 WinFontDlg
+
+        external WinDefFontDlgProc
+        integer*4 WinDefFontDlgProc
+
+        integer  DID_FONT_DIALOG
+        parameter (DID_FONT_DIALOG = 300)
+        integer  DID_NAME
+        parameter (DID_NAME = 301)
+        integer  DID_STYLE
+        parameter (DID_STYLE = 302)
+        integer  DID_DISPLAY_FILTER
+        parameter (DID_DISPLAY_FILTER = 303)
+        integer  DID_PRINTER_FILTER
+        parameter (DID_PRINTER_FILTER = 304)
+        integer  DID_SIZE
+        parameter (DID_SIZE = 305)
+        integer  DID_SAMPLE
+        parameter (DID_SAMPLE = 306)
+        integer  DID_OUTLINE
+        parameter (DID_OUTLINE = 307)
+        integer  DID_UNDERSCORE
+        parameter (DID_UNDERSCORE = 308)
+        integer  DID_STRIKEOUT
+        parameter (DID_STRIKEOUT = 309)
+        integer  DID_HELP_BUTTON
+        parameter (DID_HELP_BUTTON = 310)
+        integer  DID_APPLY_BUTTON
+        parameter (DID_APPLY_BUTTON = 311)
+        integer  DID_RESET_BUTTON
+        parameter (DID_RESET_BUTTON = 312)
+        integer  DID_OK_BUTTON
+        parameter (DID_OK_BUTTON = DID_OK)
+        integer  DID_CANCEL_BUTTON
+        parameter (DID_CANCEL_BUTTON = DID_CANCEL)
+        integer  DID_NAME_PREFIX
+        parameter (DID_NAME_PREFIX = 313)
+        integer  DID_STYLE_PREFIX
+        parameter (DID_STYLE_PREFIX = 314)
+        integer  DID_SIZE_PREFIX
+        parameter (DID_SIZE_PREFIX = 315)
+        integer  DID_SAMPLE_GROUPBOX
+        parameter (DID_SAMPLE_GROUPBOX = 316)
+        integer  DID_EMPHASIS_GROUPBOX
+        parameter (DID_EMPHASIS_GROUPBOX = 317)
+
+        integer  IDS_FONT_SAMPLE
+        parameter (IDS_FONT_SAMPLE = 350)
+        integer  IDS_FONT_BLANK
+        parameter (IDS_FONT_BLANK = 351)
+        integer  IDS_FONT_KEY_0
+        parameter (IDS_FONT_KEY_0 = 352)
+        integer  IDS_FONT_KEY_9
+        parameter (IDS_FONT_KEY_9 = 353)
+        integer  IDS_FONT_KEY_SEP
+        parameter (IDS_FONT_KEY_SEP = 354)
+        integer  IDS_FONT_DISP_ONLY
+        parameter (IDS_FONT_DISP_ONLY = 355)
+        integer  IDS_FONT_PRINTER_ONLY
+        parameter (IDS_FONT_PRINTER_ONLY = 356)
+        integer  IDS_FONT_COMBINED
+        parameter (IDS_FONT_COMBINED = 357)
+        integer  IDS_FONT_WEIGHT1
+        parameter (IDS_FONT_WEIGHT1 = 358)
+        integer  IDS_FONT_WEIGHT2
+        parameter (IDS_FONT_WEIGHT2 = 359)
+        integer  IDS_FONT_WEIGHT3
+        parameter (IDS_FONT_WEIGHT3 = 360)
+        integer  IDS_FONT_WEIGHT4
+        parameter (IDS_FONT_WEIGHT4 = 361)
+        integer  IDS_FONT_WEIGHT5
+        parameter (IDS_FONT_WEIGHT5 = 362)
+        integer  IDS_FONT_WEIGHT6
+        parameter (IDS_FONT_WEIGHT6 = 363)
+        integer  IDS_FONT_WEIGHT7
+        parameter (IDS_FONT_WEIGHT7 = 364)
+        integer  IDS_FONT_WEIGHT8
+        parameter (IDS_FONT_WEIGHT8 = 365)
+        integer  IDS_FONT_WEIGHT9
+        parameter (IDS_FONT_WEIGHT9 = 366)
+        integer  IDS_FONT_WIDTH1
+        parameter (IDS_FONT_WIDTH1 = 367)
+        integer  IDS_FONT_WIDTH2
+        parameter (IDS_FONT_WIDTH2 = 368)
+        integer  IDS_FONT_WIDTH3
+        parameter (IDS_FONT_WIDTH3 = 369)
+        integer  IDS_FONT_WIDTH4
+        parameter (IDS_FONT_WIDTH4 = 370)
+        integer  IDS_FONT_WIDTH5
+        parameter (IDS_FONT_WIDTH5 = 371)
+        integer  IDS_FONT_WIDTH6
+        parameter (IDS_FONT_WIDTH6 = 372)
+        integer  IDS_FONT_WIDTH7
+        parameter (IDS_FONT_WIDTH7 = 373)
+        integer  IDS_FONT_WIDTH8
+        parameter (IDS_FONT_WIDTH8 = 374)
+        integer  IDS_FONT_WIDTH9
+        parameter (IDS_FONT_WIDTH9 = 375)
+        integer  IDS_FONT_OPTION0
+        parameter (IDS_FONT_OPTION0 = 376)
+        integer  IDS_FONT_OPTION1
+        parameter (IDS_FONT_OPTION1 = 377)
+        integer  IDS_FONT_OPTION2
+        parameter (IDS_FONT_OPTION2 = 378)
+        integer  IDS_FONT_OPTION3
+        parameter (IDS_FONT_OPTION3 = 379)
+        integer  IDS_FONT_POINT_SIZE_LIST
+        parameter (IDS_FONT_POINT_SIZE_LIST = 380)
+
+c$endif
+
+c$ifdef INCL_WINSTDSPIN
+
+        integer  SPBS_ALLCHARACTERS
+        parameter (SPBS_ALLCHARACTERS = '00000000'x)
+        integer  SPBS_NUMERICONLY
+        parameter (SPBS_NUMERICONLY = '00000001'x)
+        integer  SPBS_READONLY
+        parameter (SPBS_READONLY = '00000002'x)
+
+        integer  SPBS_MASTER
+        parameter (SPBS_MASTER = '00000010'x)
+        integer  SPBS_SERVANT
+        parameter (SPBS_SERVANT = '00000000'x)
+
+        integer  SPBS_JUSTDEFAULT
+        parameter (SPBS_JUSTDEFAULT = '00000000'x)
+        integer  SPBS_JUSTLEFT
+        parameter (SPBS_JUSTLEFT = '00000008'x)
+        integer  SPBS_JUSTRIGHT
+        parameter (SPBS_JUSTRIGHT = '00000004'x)
+        integer  SPBS_JUSTCENTER
+        parameter (SPBS_JUSTCENTER = '0000000C'x)
+
+        integer  SPBS_NOBORDER
+        parameter (SPBS_NOBORDER = '00000020'x)
+
+        integer  SPBS_FASTSPIN
+        parameter (SPBS_FASTSPIN = '00000100'x)
+
+        integer  SPBS_PADWITHZEROS
+        parameter (SPBS_PADWITHZEROS = '00000080'x)
+
+        integer  SPBN_UPARROW
+        parameter (SPBN_UPARROW = '0000020A'x)
+        integer  SPBN_DOWNARROW
+        parameter (SPBN_DOWNARROW = '0000020B'x)
+        integer  SPBN_ENDSPIN
+        parameter (SPBN_ENDSPIN = '0000020C'x)
+        integer  SPBN_CHANGE
+        parameter (SPBN_CHANGE = '0000020D'x)
+        integer  SPBN_SETFOCUS
+        parameter (SPBN_SETFOCUS = '0000020E'x)
+        integer  SPBN_KILLFOCUS
+        parameter (SPBN_KILLFOCUS = '0000020F'x)
+
+        integer  SPBM_OVERRIDESETLIMITS
+        parameter (SPBM_OVERRIDESETLIMITS = '00000200'x)
+        integer  SPBM_QUERYLIMITS
+        parameter (SPBM_QUERYLIMITS = '00000201'x)
+        integer  SPBM_SETTEXTLIMIT
+        parameter (SPBM_SETTEXTLIMIT = '00000202'x)
+        integer  SPBM_SPINUP
+        parameter (SPBM_SPINUP = '00000203'x)
+        integer  SPBM_SPINDOWN
+        parameter (SPBM_SPINDOWN = '00000204'x)
+        integer  SPBM_QUERYVALUE
+        parameter (SPBM_QUERYVALUE = '00000205'x)
+
+        integer  SPBQ_UPDATEIFVALID
+        parameter (SPBQ_UPDATEIFVALID = 0)
+        integer  SPBQ_ALWAYSUPDATE
+        parameter (SPBQ_ALWAYSUPDATE = 1)
+        integer  SPBQ_DONOTUPDATE
+        parameter (SPBQ_DONOTUPDATE = 3)
+
+        integer  SPBM_SETARRAY
+        parameter (SPBM_SETARRAY = '00000206'x)
+        integer  SPBM_SETLIMITS
+        parameter (SPBM_SETLIMITS = '00000207'x)
+        integer  SPBM_SETCURRENTVALUE
+        parameter (SPBM_SETCURRENTVALUE = '00000208'x)
+        integer  SPBM_SETMASTER
+        parameter (SPBM_SETMASTER = '00000209'x)
+
+c$endif
+
+c$ifdef INCL_WINSTDDRAG
+
+        integer  PMERR_NOT_DRAGGING
+        parameter (PMERR_NOT_DRAGGING = '00001f00'x)
+        integer  PMERR_ALREADY_DRAGGING
+        parameter (PMERR_ALREADY_DRAGGING = '00001f01'x)
+
+        integer  MSGF_DRAG
+        parameter (MSGF_DRAG = '00000010'x)
+
+        integer  WM_DRAGFIRST
+        parameter (WM_DRAGFIRST = '00000310'x)
+        integer  WM_DRAGLAST
+        parameter (WM_DRAGLAST = '0000032f'x)
+
+        integer  DM_DROP
+        parameter (DM_DROP = '0000032f'x)
+        integer  DM_DRAGOVER
+        parameter (DM_DRAGOVER = '0000032e'x)
+        integer  DM_DRAGLEAVE
+        parameter (DM_DRAGLEAVE = '0000032d'x)
+        integer  DM_DROPHELP
+        parameter (DM_DROPHELP = '0000032c'x)
+        integer  DM_ENDCONVERSATION
+        parameter (DM_ENDCONVERSATION = '0000032b'x)
+        integer  DM_PRINT
+        parameter (DM_PRINT = '0000032a'x)
+        integer  DM_RENDER
+        parameter (DM_RENDER = '00000329'x)
+        integer  DM_RENDERCOMPLETE
+        parameter (DM_RENDERCOMPLETE = '00000328'x)
+        integer  DM_RENDERPREPARE
+        parameter (DM_RENDERPREPARE = '00000327'x)
+        integer  DM_DRAGFILECOMPLETE
+        parameter (DM_DRAGFILECOMPLETE = '00000326'x)
+        integer  DM_EMPHASIZETARGET
+        parameter (DM_EMPHASIZETARGET = '00000325'x)
+        integer  DM_DRAGERROR
+        parameter (DM_DRAGERROR = '00000324'x)
+        integer  DM_FILERENDERED
+        parameter (DM_FILERENDERED = '00000323'x)
+        integer  DM_RENDERFILE
+        parameter (DM_RENDERFILE = '00000322'x)
+        integer  DM_DRAGOVERNOTIFY
+        parameter (DM_DRAGOVERNOTIFY = '00000321'x)
+
+        character*15     DRT_ASM
+        parameter (DRT_ASM = 'Assembler Code'//char(0))
+        character*11     DRT_BASIC
+        parameter (DRT_BASIC = 'BASIC Code'//char(0))
+        character*12     DRT_BINDATA
+        parameter (DRT_BINDATA = 'Binary Data'//char(0))
+        character*7      DRT_BITMAP
+        parameter (DRT_BITMAP = 'Bitmap'//char(0))
+        character*7      DRT_C
+        parameter (DRT_C = 'C Code'//char(0))
+        character*11     DRT_COBOL
+        parameter (DRT_COBOL = 'COBOL Code'//char(0))
+        character*21     DRT_DLL
+        parameter (DRT_DLL = 'Dynamic Link Library'//char(0))
+        character*17     DRT_DOSCMD
+        parameter (DRT_DOSCMD = 'DOS Command File'//char(0))
+        character*11     DRT_EXE
+        parameter (DRT_EXE = 'Executable'//char(0))
+        character*13     DRT_FORTRAN
+        parameter (DRT_FORTRAN = 'FORTRAN Code'//char(0))
+        character*5      DRT_ICON
+        parameter (DRT_ICON = 'Icon'//char(0))
+        character*8      DRT_LIB
+        parameter (DRT_LIB = 'Library'//char(0))
+        character*9      DRT_METAFILE
+        parameter (DRT_METAFILE = 'Metafile'//char(0))
+        character*18     DRT_OS2CMD
+        parameter (DRT_OS2CMD = 'OS/2 Command File'//char(0))
+        character*12     DRT_PASCAL
+        parameter (DRT_PASCAL = 'Pascal Code'//char(0))
+        character*14     DRT_RESOURCE
+        parameter (DRT_RESOURCE = 'Resource File'//char(0))
+        character*11     DRT_TEXT
+        parameter (DRT_TEXT = 'Plain Text'//char(0))
+        character*8      DRT_UNKNOWN
+        parameter (DRT_UNKNOWN = 'Unknown'//char(0))
+
+        integer  DOR_NODROP
+        parameter (DOR_NODROP = '00000000'x)
+        integer  DOR_DROP
+        parameter (DOR_DROP = '00000001'x)
+        integer  DOR_NODROPOP
+        parameter (DOR_NODROPOP = '00000002'x)
+        integer  DOR_NEVERDROP
+        parameter (DOR_NEVERDROP = '00000003'x)
+
+        integer  DO_COPYABLE
+        parameter (DO_COPYABLE = '00000001'x)
+        integer  DO_MOVEABLE
+        parameter (DO_MOVEABLE = '00000002'x)
+        integer  DO_LINKABLE
+        parameter (DO_LINKABLE = '00000004'x)
+
+        integer  DC_OPEN
+        parameter (DC_OPEN = '00000001'x)
+        integer  DC_REF
+        parameter (DC_REF = '00000002'x)
+        integer  DC_GROUP
+        parameter (DC_GROUP = '00000004'x)
+        integer  DC_CONTAINER
+        parameter (DC_CONTAINER = '00000008'x)
+        integer  DC_PREPARE
+        parameter (DC_PREPARE = '00000010'x)
+        integer  DC_REMOVEABLEMEDIA
+        parameter (DC_REMOVEABLEMEDIA = '00000020'x)
+
+        integer  DO_DEFAULT
+        parameter (DO_DEFAULT = '0000BFFE'x)
+        integer  DO_UNKNOWN
+        parameter (DO_UNKNOWN = '0000BFFF'x)
+        integer  DO_COPY
+        parameter (DO_COPY = '00000010'x)
+        integer  DO_MOVE
+        parameter (DO_MOVE = '00000020'x)
+        integer  DO_LINK
+        parameter (DO_LINK = '00000018'x)
+
+        integer  DMFL_TARGETSUCCESSFUL
+        parameter (DMFL_TARGETSUCCESSFUL = '00000001'x)
+        integer  DMFL_TARGETFAIL
+        parameter (DMFL_TARGETFAIL = '00000002'x)
+        integer  DMFL_NATIVERENDER
+        parameter (DMFL_NATIVERENDER = '00000004'x)
+        integer  DMFL_RENDERRETRY
+        parameter (DMFL_RENDERRETRY = '00000008'x)
+        integer  DMFL_RENDEROK
+        parameter (DMFL_RENDEROK = '00000010'x)
+        integer  DMFL_RENDERFAIL
+        parameter (DMFL_RENDERFAIL = '00000020'x)
+
+        integer  DRG_ICON
+        parameter (DRG_ICON = '00000001'x)
+        integer  DRG_BITMAP
+        parameter (DRG_BITMAP = '00000002'x)
+        integer  DRG_POLYGON
+        parameter (DRG_POLYGON = '00000004'x)
+        integer  DRG_STRETCH
+        parameter (DRG_STRETCH = '00000008'x)
+        integer  DRG_TRANSPARENT
+        parameter (DRG_TRANSPARENT = '00000010'x)
+        integer  DRG_CLOSED
+        parameter (DRG_CLOSED = '00000020'x)
+
+        integer  DME_IGNOREABORT
+        parameter (DME_IGNOREABORT = 1)
+        integer  DME_IGNORECONTINUE
+        parameter (DME_IGNORECONTINUE = 2)
+        integer  DME_REPLACE
+        parameter (DME_REPLACE = 3)
+        integer  DME_RETRY
+        parameter (DME_RETRY = 4)
+
+        integer  DF_MOVE
+        parameter (DF_MOVE = '00000001'x)
+        integer  DF_SOURCE
+        parameter (DF_SOURCE = '00000002'x)
+        integer  DF_SUCCESSFUL
+        parameter (DF_SUCCESSFUL = '00000004'x)
+
+        integer  DFF_MOVE
+        parameter (DFF_MOVE = 1)
+        integer  DFF_COPY
+        parameter (DFF_COPY = 2)
+        integer  DFF_DELETE
+        parameter (DFF_DELETE = 3)
+
+        structure /DRAGITEM/
+            integer*4 hwndItem
+            integer*4 ulItemID
+            integer*4 hstrType
+            integer*4 hstrRMF
+            integer*4 hstrContainerName
+            integer*4 hstrSourceName
+            integer*4 hstrTargetName
+            integer*2 cxOffset
+            integer*2 cyOffset
+            integer*2 fsControl
+            integer*2 fsSupportedOps
+        end structure
+
+        structure /DRAGINFO/
+            integer*4 cbDraginfo
+            integer*2 cbDragitem
+            integer*2 usOperation
+            integer*4 hwndSource
+            integer*2 xDrop
+            integer*2 yDrop
+            integer*2 cditem
+            integer*2 usReserved
+        end structure
+
+        structure /DRAGIMAGE/
+            integer*2 cb
+            integer*2 cptl
+            integer*4 hImage
+            record /SIZEL/ sizlStretch
+            integer*4 fl
+            integer*2 cxOffset
+            integer*2 cyOffset
+        end structure
+
+        structure /DRAGTRANSFER/
+            integer*4 cb
+            integer*4 hwndClient
+            integer*4 pditem
+            integer*4 hstrSelectedRMF
+            integer*4 hstrRenderToName
+            integer*4 ulTargetInfo
+            integer*2 usOperation
+            integer*2 fsReply
+        end structure
+
+        structure /RENDERFILE/
+            integer*4 hwndDragFiles
+            integer*4 hstrSource
+            integer*4 hstrTarget
+            integer*2 fMove
+            integer*2 usRsvd
+        end structure
+
+        external DrgAcceptDroppedFiles
+        integer*4 DrgAcceptDroppedFiles
+
+        external DrgAllocDraginfo
+        integer*4 DrgAllocDraginfo
+
+        external DrgAllocDragtransfer
+        integer*4 DrgAllocDragtransfer
+
+        external DrgDrag
+        integer*4 DrgDrag
+
+        external DrgDragFiles
+        integer*4 DrgDragFiles
+
+        external DrgPostTransferMsg
+        integer*4 DrgPostTransferMsg
+
+        external DrgQueryDragitem
+        integer*4 DrgQueryDragitem
+
+        external DrgQueryDragitemCount
+        integer*4 DrgQueryDragitemCount
+
+        external DrgQueryDragitemPtr
+        integer*4 DrgQueryDragitemPtr
+
+        external DrgQueryNativeRMF
+        integer*4 DrgQueryNativeRMF
+
+        external DrgQueryNativeRMFLen
+        integer*4 DrgQueryNativeRMFLen
+
+        external DrgQueryStrName
+        integer*4 DrgQueryStrName
+
+        external DrgQueryStrNameLen
+        integer*4 DrgQueryStrNameLen
+
+        external DrgQueryTrueType
+        integer*4 DrgQueryTrueType
+
+        external DrgQueryTrueTypeLen
+        integer*4 DrgQueryTrueTypeLen
+
+        external DrgSendTransferMsg
+        integer*4 DrgSendTransferMsg
+
+        external DrgSetDragitem
+        integer*4 DrgSetDragitem
+
+        external DrgSetDragImage
+        integer*4 DrgSetDragImage
+
+        external DrgVerifyTypeSet
+        integer*4 DrgVerifyTypeSet
+
+        external DrgAccessDraginfo
+        integer*4 DrgAccessDraginfo
+
+        external DrgAddStrHandle
+        integer*4 DrgAddStrHandle
+
+        external DrgDeleteDraginfoStrHandles
+        integer*4 DrgDeleteDraginfoStrHandles
+
+        external DrgDeleteStrHandle
+        integer*4 DrgDeleteStrHandle
+
+        external DrgFreeDraginfo
+        integer*4 DrgFreeDraginfo
+
+        external DrgFreeDragtransfer
+        integer*4 DrgFreeDragtransfer
+
+        external DrgGetPS
+        integer*4 DrgGetPS
+
+        external DrgPushDraginfo
+        integer*4 DrgPushDraginfo
+
+        external DrgReleasePS
+        integer*4 DrgReleasePS
+
+        external DrgSetDragPointer
+        integer*4 DrgSetDragPointer
+
+        external DrgVerifyNativeRMF
+        integer*4 DrgVerifyNativeRMF
+
+        external DrgVerifyRMF
+        integer*4 DrgVerifyRMF
+
+        external DrgVerifyTrueType
+        integer*4 DrgVerifyTrueType
+
+        external DrgVerifyType
+        integer*4 DrgVerifyType
+
+c$endif
+
+c$ifdef INCL_WINSTDCNR
+
+        integer  PMERR_NOFILTERED_ITEMS
+        parameter (PMERR_NOFILTERED_ITEMS = '00001f02'x)
+        integer  PMERR_COMPARISON_FAILED
+        parameter (PMERR_COMPARISON_FAILED = '00001f03'x)
+        integer  PMERR_RECORD_CURRENTLY_INSERTED
+        parameter (PMERR_RECORD_CURRENTLY_INSERTED = '00001f04'x)
+        integer  PMERR_FI_CURRENTLY_INSERTED
+        parameter (PMERR_FI_CURRENTLY_INSERTED = '00001f05'x)
+
+        integer  CCS_EXTENDSEL
+        parameter (CCS_EXTENDSEL = '00000001'x)
+        integer  CCS_MULTIPLESEL
+        parameter (CCS_MULTIPLESEL = '00000002'x)
+        integer  CCS_SINGLESEL
+        parameter (CCS_SINGLESEL = '00000004'x)
+        integer  CCS_AUTOPOSITION
+        parameter (CCS_AUTOPOSITION = '00000008'x)
+        integer  CCS_VERIFYPOINTERS
+        parameter (CCS_VERIFYPOINTERS = '00000010'x)
+        integer  CCS_READONLY
+        parameter (CCS_READONLY = '00000020'x)
+        integer  CCS_MINIRECORDCORE
+        parameter (CCS_MINIRECORDCORE = '00000040'x)
+
+        integer  CV_TEXT
+        parameter (CV_TEXT = '00000001'x)
+        integer  CV_NAME
+        parameter (CV_NAME = '00000002'x)
+        integer  CV_ICON
+        parameter (CV_ICON = '00000004'x)
+        integer  CV_DETAIL
+        parameter (CV_DETAIL = '00000008'x)
+        integer  CV_FLOW
+        parameter (CV_FLOW = '00000010'x)
+        integer  CV_MINI
+        parameter (CV_MINI = '00000020'x)
+        integer  CV_TREE
+        parameter (CV_TREE = '00000040'x)
+
+        integer  CA_CONTAINERTITLE
+        parameter (CA_CONTAINERTITLE = '00000200'x)
+        integer  CA_TITLESEPARATOR
+        parameter (CA_TITLESEPARATOR = '00000400'x)
+        integer  CA_TITLELEFT
+        parameter (CA_TITLELEFT = '00000800'x)
+        integer  CA_TITLERIGHT
+        parameter (CA_TITLERIGHT = '00001000'x)
+        integer  CA_TITLECENTER
+        parameter (CA_TITLECENTER = '00002000'x)
+        integer  CA_OWNERDRAW
+        parameter (CA_OWNERDRAW = '00004000'x)
+        integer  CA_DETAILSVIEWTITLES
+        parameter (CA_DETAILSVIEWTITLES = '00008000'x)
+        integer  CA_ORDEREDTARGETEMPH
+        parameter (CA_ORDEREDTARGETEMPH = '00010000'x)
+        integer  CA_DRAWBITMAP
+        parameter (CA_DRAWBITMAP = '00020000'x)
+        integer  CA_DRAWICON
+        parameter (CA_DRAWICON = '00040000'x)
+        integer  CA_TITLEREADONLY
+        parameter (CA_TITLEREADONLY = '00080000'x)
+        integer  CA_OWNERPAINTBACKGROUND
+        parameter (CA_OWNERPAINTBACKGROUND = '00100000'x)
+        integer  CA_MIXEDTARGETEMPH
+        parameter (CA_MIXEDTARGETEMPH = '00200000'x)
+        integer  CA_TREELINE
+        parameter (CA_TREELINE = '00400000'x)
+
+        integer  CID_LEFTCOLTITLEWND
+        parameter (CID_LEFTCOLTITLEWND = '00007FF0'x)
+        integer  CID_RIGHTCOLTITLEWND
+        parameter (CID_RIGHTCOLTITLEWND = '00007FF1'x)
+        integer  CID_BLANKBOX
+        parameter (CID_BLANKBOX = '00007FF2'x)
+        integer  CID_HSCROLL
+        parameter (CID_HSCROLL = '00007FF3'x)
+        integer  CID_RIGHTHSCROLL
+        parameter (CID_RIGHTHSCROLL = '00007FF4'x)
+        integer  CID_CNRTITLEWND
+        parameter (CID_CNRTITLEWND = '00007FF5'x)
+        integer  CID_LEFTDVWND
+        parameter (CID_LEFTDVWND = '00007FF7'x)
+        integer  CID_RIGHTDVWND
+        parameter (CID_RIGHTDVWND = '00007FF8'x)
+        integer  CID_VSCROLL
+        parameter (CID_VSCROLL = '00007FF9'x)
+        integer  CID_MLE
+        parameter (CID_MLE = '00007FFA'x)
+
+        structure /TREEITEMDESC/
+            integer*4 hbmExpanded
+            integer*4 hbmCollapsed
+            integer*4 hptrExpanded
+            integer*4 hptrCollapsed
+        end structure
+
+        structure /FIELDINFO/
+            integer*4 cb
+            integer*4 flData
+            integer*4 flTitle
+            integer*4 pTitleData
+            integer*4 offStruct
+            integer*4 pUserData
+            integer*4 pNextFieldInof
+            integer*4 cxWidth
+        end structure
+
+        structure /RECORDCORE/
+            integer*4 cb
+            integer*4 flRecordAttr
+            record /POINTL/ ptlIcon
+            integer*4 preccNextRecord
+            integer*4 pszIcon
+            integer*4 hptrIcon
+            integer*4 hptrMiniIcon
+            integer*4 hbmBitmap
+            integer*4 hbmMiniBitmap
+            integer*4 pTreeItemDesc
+            integer*4 pszText
+            integer*4 pszName
+            integer*4 pszTree
+        end structure
+
+        structure /MINIRECORDCORE/
+            integer*4 cb
+            integer*4 flRecordAttr
+            record /POINTL/ ptlIcon
+            integer*4 preccNextRecord
+            integer*4 pszIcon
+            integer*4 hptrIcon
+        end structure
+
+        structure /CNRINFO/
+            integer*4 cb
+            integer*4 pSortRecord
+            integer*4 pFieldInfoLast
+            integer*4 pFieldInfoObject
+            integer*4 pszCnrTitle
+            integer*4 flWindowAttr
+            record /POINTL/ ptlOrigin
+            integer*4 cDelta
+            integer*4 cRecords
+            record /SIZEL/ slBitmapOrIcon
+            record /SIZEL/ slTreeBitmapOrIcon
+            integer*4 hbmExpanded
+            integer*4 hbmCollapsed
+            integer*4 hptrExpanded
+            integer*4 hptrCollapsed
+            integer*4 cyLineSpacing
+            integer*4 cxTreeIndent
+            integer*4 cxTreeLine
+            integer*4 cFields
+            integer*4 xVertSplitbar
+        end structure
+
+        structure /CDATE/
+            integer*1 day
+            integer*1 month
+            integer*2 year
+        end structure
+
+        structure /CTIME/
+            integer*1 hours
+            integer*1 minutes
+            integer*1 seconds
+            integer*1 ucReserved
+        end structure
+
+        integer  CFA_LEFT
+        parameter (CFA_LEFT = '00000001'x)
+        integer  CFA_RIGHT
+        parameter (CFA_RIGHT = '00000002'x)
+        integer  CFA_CENTER
+        parameter (CFA_CENTER = '00000004'x)
+        integer  CFA_TOP
+        parameter (CFA_TOP = '00000008'x)
+        integer  CFA_VCENTER
+        parameter (CFA_VCENTER = '00000010'x)
+        integer  CFA_BOTTOM
+        parameter (CFA_BOTTOM = '00000020'x)
+        integer  CFA_INVISIBLE
+        parameter (CFA_INVISIBLE = '00000040'x)
+        integer  CFA_BITMAPORICON
+        parameter (CFA_BITMAPORICON = '00000100'x)
+        integer  CFA_SEPARATOR
+        parameter (CFA_SEPARATOR = '00000200'x)
+        integer  CFA_HORZSEPARATOR
+        parameter (CFA_HORZSEPARATOR = '00000400'x)
+
+        integer  CFA_STRING
+        parameter (CFA_STRING = '00000800'x)
+        integer  CFA_OWNER
+        parameter (CFA_OWNER = '00001000'x)
+        integer  CFA_DATE
+        parameter (CFA_DATE = '00002000'x)
+        integer  CFA_TIME
+        parameter (CFA_TIME = '00004000'x)
+        integer  CFA_FIREADONLY
+        parameter (CFA_FIREADONLY = '00008000'x)
+        integer  CFA_FITITLEREADONLY
+        parameter (CFA_FITITLEREADONLY = '00010000'x)
+        integer  CFA_ULONG
+        parameter (CFA_ULONG = '00020000'x)
+
+        integer  CRA_SELECTED
+        parameter (CRA_SELECTED = '00000001'x)
+        integer  CRA_TARGET
+        parameter (CRA_TARGET = '00000002'x)
+        integer  CRA_CURSORED
+        parameter (CRA_CURSORED = '00000004'x)
+        integer  CRA_INUSE
+        parameter (CRA_INUSE = '00000008'x)
+        integer  CRA_FILTERED
+        parameter (CRA_FILTERED = '00000010'x)
+        integer  CRA_DROPONABLE
+        parameter (CRA_DROPONABLE = '00000020'x)
+        integer  CRA_RECORDREADONLY
+        parameter (CRA_RECORDREADONLY = '00000040'x)
+        integer  CRA_EXPANDED
+        parameter (CRA_EXPANDED = '00000080'x)
+        integer  CRA_COLLAPSED
+        parameter (CRA_COLLAPSED = '00000100'x)
+
+        integer  CM_ALLOCDETAILFIELDINFO
+        parameter (CM_ALLOCDETAILFIELDINFO = '00000330'x)
+        integer  CM_ALLOCRECORD
+        parameter (CM_ALLOCRECORD = '00000331'x)
+        integer  CM_ARRANGE
+        parameter (CM_ARRANGE = '00000332'x)
+        integer  CM_ERASERECORD
+        parameter (CM_ERASERECORD = '00000333'x)
+        integer  CM_FILTER
+        parameter (CM_FILTER = '00000334'x)
+        integer  CM_FREEDETAILFIELDINFO
+        parameter (CM_FREEDETAILFIELDINFO = '00000335'x)
+        integer  CM_FREERECORD
+        parameter (CM_FREERECORD = '00000336'x)
+        integer  CM_HORZSCROLLSPLITWINDOW
+        parameter (CM_HORZSCROLLSPLITWINDOW = '00000337'x)
+        integer  CM_INSERTDETAILFIELDINFO
+        parameter (CM_INSERTDETAILFIELDINFO = '00000338'x)
+        integer  CM_INSERTRECORD
+        parameter (CM_INSERTRECORD = '00000339'x)
+        integer  CM_INVALIDATEDETAILFIELDINFO
+        parameter (CM_INVALIDATEDETAILFIELDINFO = '0000033a'x)
+        integer  CM_INVALIDATERECORD
+        parameter (CM_INVALIDATERECORD = '0000033b'x)
+        integer  CM_PAINTBACKGROUND
+        parameter (CM_PAINTBACKGROUND = '0000033c'x)
+        integer  CM_QUERYCNRINFO
+        parameter (CM_QUERYCNRINFO = '0000033d'x)
+        integer  CM_QUERYDETAILFIELDINFO
+        parameter (CM_QUERYDETAILFIELDINFO = '0000033e'x)
+        integer  CM_QUERYDRAGIMAGE
+        parameter (CM_QUERYDRAGIMAGE = '0000033f'x)
+        integer  CM_QUERYRECORD
+        parameter (CM_QUERYRECORD = '00000340'x)
+        integer  CM_QUERYRECORDEMPHASIS
+        parameter (CM_QUERYRECORDEMPHASIS = '00000341'x)
+        integer  CM_QUERYRECORDFROMRECT
+        parameter (CM_QUERYRECORDFROMRECT = '00000342'x)
+        integer  CM_QUERYRECORDRECT
+        parameter (CM_QUERYRECORDRECT = '00000343'x)
+        integer  CM_QUERYVIEWPORTRECT
+        parameter (CM_QUERYVIEWPORTRECT = '00000344'x)
+        integer  CM_REMOVEDETAILFIELDINFO
+        parameter (CM_REMOVEDETAILFIELDINFO = '00000345'x)
+        integer  CM_REMOVERECORD
+        parameter (CM_REMOVERECORD = '00000346'x)
+        integer  CM_SCROLLWINDOW
+        parameter (CM_SCROLLWINDOW = '00000347'x)
+        integer  CM_SEARCHSTRING
+        parameter (CM_SEARCHSTRING = '00000348'x)
+        integer  CM_SETCNRINFO
+        parameter (CM_SETCNRINFO = '00000349'x)
+        integer  CM_SETRECORDEMPHASIS
+        parameter (CM_SETRECORDEMPHASIS = '0000034a'x)
+        integer  CM_SORTRECORD
+        parameter (CM_SORTRECORD = '0000034b'x)
+        integer  CM_OPENEDIT
+        parameter (CM_OPENEDIT = '0000034c'x)
+        integer  CM_CLOSEEDIT
+        parameter (CM_CLOSEEDIT = '0000034d'x)
+        integer  CM_COLLAPSETREE
+        parameter (CM_COLLAPSETREE = '0000034e'x)
+        integer  CM_EXPANDTREE
+        parameter (CM_EXPANDTREE = '0000034f'x)
+        integer  CM_QUERYRECORDINFO
+        parameter (CM_QUERYRECORDINFO = '00000350'x)
+
+        integer  CN_DRAGAFTER
+        parameter (CN_DRAGAFTER = 101)
+        integer  CN_DRAGLEAVE
+        parameter (CN_DRAGLEAVE = 102)
+        integer  CN_DRAGOVER
+        parameter (CN_DRAGOVER = 103)
+        integer  CN_DROP
+        parameter (CN_DROP = 104)
+        integer  CN_DROPHELP
+        parameter (CN_DROPHELP = 105)
+        integer  CN_ENTER
+        parameter (CN_ENTER = 106)
+        integer  CN_INITDRAG
+        parameter (CN_INITDRAG = 107)
+        integer  CN_EMPHASIS
+        parameter (CN_EMPHASIS = 108)
+        integer  CN_KILLFOCUS
+        parameter (CN_KILLFOCUS = 109)
+        integer  CN_SCROLL
+        parameter (CN_SCROLL = 110)
+        integer  CN_QUERYDELTA
+        parameter (CN_QUERYDELTA = 111)
+        integer  CN_SETFOCUS
+        parameter (CN_SETFOCUS = 112)
+        integer  CN_REALLOCPSZ
+        parameter (CN_REALLOCPSZ = 113)
+        integer  CN_BEGINEDIT
+        parameter (CN_BEGINEDIT = 114)
+        integer  CN_ENDEDIT
+        parameter (CN_ENDEDIT = 115)
+        integer  CN_COLLAPSETREE
+        parameter (CN_COLLAPSETREE = 116)
+        integer  CN_EXPANDTREE
+        parameter (CN_EXPANDTREE = 117)
+        integer  CN_HELP
+        parameter (CN_HELP = 118)
+        integer  CN_CONTEXTMENU
+        parameter (CN_CONTEXTMENU = 119)
+
+        structure /CNRDRAGINIT/
+            integer*4 hwndCnr
+            integer*4 pRecord
+            integer*4 x
+            integer*4 y
+            integer*4 cx
+            integer*4 cy
+        end structure
+
+        structure /FIELDINFOINSERT/
+            integer*4 cb
+            integer*4 pFieldInfoOrder
+            integer*4 fInvalidateFieldInfo
+            integer*4 cFieldInfoInsert
+        end structure
+
+        structure /RECORDINSERT/
+            integer*4 cb
+            integer*4 pRecordOrder
+            integer*4 pRecordParent
+            integer*4 fInvalidateRecord
+            integer*4 zOrder
+            integer*4 cRecordsInsert
+        end structure
+
+        structure /QUERYRECFROMRECT/
+            integer*4 cb
+            record /RECTL/ rect
+            integer*4 fsSearch
+        end structure
+
+        structure /QUERYRECORDRECT/
+            integer*4 cb
+            integer*4 pRecord
+            integer*4 fRightSplitWindow
+            integer*4 fsExtent
+        end structure
+
+        structure /SEARCHSTRING/
+            integer*4 cb
+            integer*4 pszSearch
+            integer*4 fsPrefix
+            integer*4 fsCaseSensitive
+            integer*4 usView
+        end structure
+
+c$ifdef INCL_WINSTDDRAG
+
+        structure /CNRDRAGINFO/
+            integer*4 pDragInfo
+            integer*4 pRecord
+        end structure
+
+c$endif
+
+        structure /NOTIFYRECORDEMPHASIS/
+            integer*4 hwndCnr
+            integer*4 pRecord
+            integer*4 fEmphasisMask
+        end structure
+
+        structure /NOTIFYRECORDENTER/
+            integer*4 hwndCnr
+            integer*4 fKey
+            integer*4 pRecord
+        end structure
+
+        structure /NOTIFYDELTA/
+            integer*4 hwndCnr
+            integer*4 fDelta
+        end structure
+
+        structure /NOTIFYSCROLL/
+            integer*4 hwndCnr
+            integer*4 lScrollInc
+            integer*4 fScroll
+        end structure
+
+        structure /CNREDITDATA/
+            integer*4 cb
+            integer*4 hwndCnr
+            integer*4 pRecord
+            integer*4 pFieldInfo
+            integer*4 ppszText
+            integer*4 cbText
+            integer*4 id
+        end structure
+
+        structure /OWNERBACKGROUND/
+            integer*4 hwnd
+            integer*4 hps
+            record /RECTL/ rclBackground
+            integer*4 idWindow
+        end structure
+
+        structure /CNRDRAWITEMINFO/
+            integer*4 pRecord
+            integer*4 pFieldInfo
+        end structure
+
+        integer  CMA_TOP
+        parameter (CMA_TOP = '00000001'x)
+        integer  CMA_BOTTOM
+        parameter (CMA_BOTTOM = '00000002'x)
+        integer  CMA_LEFT
+        parameter (CMA_LEFT = '00000004'x)
+        integer  CMA_RIGHT
+        parameter (CMA_RIGHT = '00000008'x)
+
+        integer  CMA_FIRST
+        parameter (CMA_FIRST = '00000010'x)
+        integer  CMA_LAST
+        parameter (CMA_LAST = '00000020'x)
+        integer  CMA_END
+        parameter (CMA_END = '00000040'x)
+        integer  CMA_PREV
+        parameter (CMA_PREV = '00000080'x)
+        integer  CMA_NEXT
+        parameter (CMA_NEXT = '00000100'x)
+
+        integer  CMA_HORIZONTAL
+        parameter (CMA_HORIZONTAL = '00000200'x)
+        integer  CMA_VERTICAL
+        parameter (CMA_VERTICAL = '00000400'x)
+        integer  CMA_ICON
+        parameter (CMA_ICON = '00000800'x)
+        integer  CMA_TEXT
+        parameter (CMA_TEXT = '00001000'x)
+        integer  CMA_PARTIAL
+        parameter (CMA_PARTIAL = '00002000'x)
+        integer  CMA_COMPLETE
+        parameter (CMA_COMPLETE = '00004000'x)
+
+        integer  CMA_PARENT
+        parameter (CMA_PARENT = '00000001'x)
+        integer  CMA_FIRSTCHILD
+        parameter (CMA_FIRSTCHILD = '00000002'x)
+        integer  CMA_LASTCHILD
+        parameter (CMA_LASTCHILD = '00000004'x)
+
+        integer  CMA_CNRTITLE
+        parameter (CMA_CNRTITLE = '00000001'x)
+        integer  CMA_DELTA
+        parameter (CMA_DELTA = '00000002'x)
+        integer  CMA_FLWINDOWATTR
+        parameter (CMA_FLWINDOWATTR = '00000004'x)
+        integer  CMA_LINESPACING
+        parameter (CMA_LINESPACING = '00000008'x)
+        integer  CMA_PFIELDINFOLAST
+        parameter (CMA_PFIELDINFOLAST = '00000010'x)
+
+        integer  CMA_PSORTRECORD
+        parameter (CMA_PSORTRECORD = '00000020'x)
+        integer  CMA_PTLORIGIN
+        parameter (CMA_PTLORIGIN = '00000040'x)
+        integer  CMA_SLBITMAPORICON
+        parameter (CMA_SLBITMAPORICON = '00000080'x)
+        integer  CMA_XVERTSPLITBAR
+        parameter (CMA_XVERTSPLITBAR = '00000100'x)
+        integer  CMA_PFIELDINFOOBJECT
+        parameter (CMA_PFIELDINFOOBJECT = '00000200'x)
+
+        integer  CMA_TREEICON
+        parameter (CMA_TREEICON = '00000400'x)
+        integer  CMA_TREEBITMAP
+        parameter (CMA_TREEBITMAP = '00000800'x)
+        integer  CMA_CXTREEINDENT
+        parameter (CMA_CXTREEINDENT = '00001000'x)
+        integer  CMA_CXTREELINE
+        parameter (CMA_CXTREELINE = '00002000'x)
+        integer  CMA_SLTREEBITMAPORICON
+        parameter (CMA_SLTREEBITMAPORICON = '00004000'x)
+
+        integer  CMA_ITEMORDER
+        parameter (CMA_ITEMORDER = '00000001'x)
+        integer  CMA_WINDOW
+        parameter (CMA_WINDOW = '00000002'x)
+        integer  CMA_WORKSPACE
+        parameter (CMA_WORKSPACE = '00000004'x)
+        integer  CMA_ZORDER
+        parameter (CMA_ZORDER = '00000008'x)
+
+        integer  CMA_DELTATOP
+        parameter (CMA_DELTATOP = '00000001'x)
+        integer  CMA_DELTABOT
+        parameter (CMA_DELTABOT = '00000002'x)
+        integer  CMA_DELTAHOME
+        parameter (CMA_DELTAHOME = '00000004'x)
+        integer  CMA_DELTAEND
+        parameter (CMA_DELTAEND = '00000008'x)
+
+        integer  CMA_NOREPOSITION
+        parameter (CMA_NOREPOSITION = '00000001'x)
+        integer  CMA_REPOSITION
+        parameter (CMA_REPOSITION = '00000002'x)
+        integer  CMA_TEXTCHANGED
+        parameter (CMA_TEXTCHANGED = '00000004'x)
+        integer  CMA_ERASE
+        parameter (CMA_ERASE = '00000008'x)
+
+        integer  CMA_FREE
+        parameter (CMA_FREE = '00000001'x)
+        integer  CMA_INVALIDATE
+        parameter (CMA_INVALIDATE = '00000002'x)
+
+c$endif
+
+c$ifdef INCL_WINSTDSLIDER
+
+        integer  SLM_ADDDETENT
+        parameter (SLM_ADDDETENT = '00000369'x)
+        integer  SLM_QUERYDETENTPOS
+        parameter (SLM_QUERYDETENTPOS = '0000036a'x)
+        integer  SLM_QUERYSCALETEXT
+        parameter (SLM_QUERYSCALETEXT = '0000036b'x)
+        integer  SLM_QUERYSLIDERINFO
+        parameter (SLM_QUERYSLIDERINFO = '0000036c'x)
+        integer  SLM_QUERYTICKPOS
+        parameter (SLM_QUERYTICKPOS = '0000036d'x)
+        integer  SLM_QUERYTICKSIZE
+        parameter (SLM_QUERYTICKSIZE = '0000036e'x)
+        integer  SLM_REMOVEDETENT
+        parameter (SLM_REMOVEDETENT = '0000036f'x)
+        integer  SLM_SETSCALETEXT
+        parameter (SLM_SETSCALETEXT = '00000370'x)
+        integer  SLM_SETSLIDERINFO
+        parameter (SLM_SETSLIDERINFO = '00000371'x)
+        integer  SLM_SETTICKSIZE
+        parameter (SLM_SETTICKSIZE = '00000372'x)
+        integer  SLN_CHANGE
+        parameter (SLN_CHANGE = 1)
+        integer  SLN_SLIDERTRACK
+        parameter (SLN_SLIDERTRACK = 2)
+        integer  SLN_SETFOCUS
+        parameter (SLN_SETFOCUS = 3)
+        integer  SLN_KILLFOCUS
+        parameter (SLN_KILLFOCUS = 4)
+
+        structure /SLDCDATA/
+            integer*4 cbSize
+            integer*2 usScale1Increments
+            integer*2 usScale1Spacing
+            integer*2 usScale2Increments
+            integer*2 usScale2Spacing
+        end structure
+
+        integer  SLS_HORIZONTAL
+        parameter (SLS_HORIZONTAL = '00000000'x)
+        integer  SLS_VERTICAL
+        parameter (SLS_VERTICAL = '00000001'x)
+        integer  SLS_CENTER
+        parameter (SLS_CENTER = '00000000'x)
+        integer  SLS_BOTTOM
+        parameter (SLS_BOTTOM = '00000002'x)
+        integer  SLS_TOP
+        parameter (SLS_TOP = '00000004'x)
+        integer  SLS_LEFT
+        parameter (SLS_LEFT = '00000002'x)
+        integer  SLS_RIGHT
+        parameter (SLS_RIGHT = '00000004'x)
+        integer  SLS_SNAPTOINCREMENT
+        parameter (SLS_SNAPTOINCREMENT = '00000008'x)
+        integer  SLS_BUTTONSBOTTOM
+        parameter (SLS_BUTTONSBOTTOM = '00000010'x)
+        integer  SLS_BUTTONSTOP
+        parameter (SLS_BUTTONSTOP = '00000020'x)
+        integer  SLS_BUTTONSLEFT
+        parameter (SLS_BUTTONSLEFT = '00000010'x)
+        integer  SLS_BUTTONSRIGHT
+        parameter (SLS_BUTTONSRIGHT = '00000020'x)
+        integer  SLS_OWNERDRAW
+        parameter (SLS_OWNERDRAW = '00000040'x)
+        integer  SLS_READONLY
+        parameter (SLS_READONLY = '00000080'x)
+        integer  SLS_RIBBONSTRIP
+        parameter (SLS_RIBBONSTRIP = '00000100'x)
+        integer  SLS_HOMEBOTTOM
+        parameter (SLS_HOMEBOTTOM = '00000000'x)
+        integer  SLS_HOMETOP
+        parameter (SLS_HOMETOP = '00000200'x)
+        integer  SLS_HOMELEFT
+        parameter (SLS_HOMELEFT = '00000000'x)
+        integer  SLS_HOMERIGHT
+        parameter (SLS_HOMERIGHT = '00000200'x)
+        integer  SLS_PRIMARYSCALE1
+        parameter (SLS_PRIMARYSCALE1 = '00000000'x)
+        integer  SLS_PRIMARYSCALE2
+        parameter (SLS_PRIMARYSCALE2 = '00000400'x)
+
+        integer  SMA_SCALE1
+        parameter (SMA_SCALE1 = '00000001'x)
+        integer  SMA_SCALE2
+        parameter (SMA_SCALE2 = '00000002'x)
+        integer  SMA_SHAFTDIMENSIONS
+        parameter (SMA_SHAFTDIMENSIONS = '00000000'x)
+        integer  SMA_SHAFTPOSITION
+        parameter (SMA_SHAFTPOSITION = '00000001'x)
+        integer  SMA_SLIDERARMDIMENSIONS
+        parameter (SMA_SLIDERARMDIMENSIONS = '00000002'x)
+        integer  SMA_SLIDERARMPOSITION
+        parameter (SMA_SLIDERARMPOSITION = '00000003'x)
+        integer  SMA_BUTTONDIMENSIONS
+        parameter (SMA_BUTTONDIMENSIONS = '00000004'x)
+        integer  SMA_RANGEVALUE
+        parameter (SMA_RANGEVALUE = '00000000'x)
+        integer  SMA_INCREMENTVALUE
+        parameter (SMA_INCREMENTVALUE = '00000001'x)
+        integer  SMA_SETALLTICKS
+        parameter (SMA_SETALLTICKS = '0000FFFF'x)
+
+        integer  SDA_RIBBONSTRIP
+        parameter (SDA_RIBBONSTRIP = '00000001'x)
+        integer  SDA_SLIDERSHAFT
+        parameter (SDA_SLIDERSHAFT = '00000002'x)
+        integer  SDA_BACKGROUND
+        parameter (SDA_BACKGROUND = '00000003'x)
+        integer  SDA_SLIDERARM
+        parameter (SDA_SLIDERARM = '00000004'x)
+
+        integer  PMERR_UPDATE_IN_PROGRESS
+        parameter (PMERR_UPDATE_IN_PROGRESS = '00001f06'x)
+        integer  SLDERR_INVALID_PARAMETERS
+        parameter (SLDERR_INVALID_PARAMETERS = -1)
+
+c$endif
+
+c$ifdef INCL_WINSTDVALSET
+
+        integer  VM_QUERYITEM
+        parameter (VM_QUERYITEM = '00000375'x)
+        integer  VM_QUERYITEMATTR
+        parameter (VM_QUERYITEMATTR = '00000376'x)
+        integer  VM_QUERYMETRICS
+        parameter (VM_QUERYMETRICS = '00000377'x)
+        integer  VM_QUERYSELECTEDITEM
+        parameter (VM_QUERYSELECTEDITEM = '00000378'x)
+        integer  VM_SELECTITEM
+        parameter (VM_SELECTITEM = '00000379'x)
+        integer  VM_SETITEM
+        parameter (VM_SETITEM = '0000037a'x)
+        integer  VM_SETITEMATTR
+        parameter (VM_SETITEMATTR = '0000037b'x)
+        integer  VM_SETMETRICS
+        parameter (VM_SETMETRICS = '0000037c'x)
+        integer  VM_SETCOLORMASK
+        parameter (VM_SETCOLORMASK = '0000037d'x)
+
+        integer  VN_SELECT
+        parameter (VN_SELECT = 120)
+        integer  VN_ENTER
+        parameter (VN_ENTER = 121)
+        integer  VN_DRAGLEAVE
+        parameter (VN_DRAGLEAVE = 122)
+        integer  VN_DRAGOVER
+        parameter (VN_DRAGOVER = 123)
+        integer  VN_DROP
+        parameter (VN_DROP = 124)
+        integer  VN_DROPHELP
+        parameter (VN_DROPHELP = 125)
+        integer  VN_INITDRAG
+        parameter (VN_INITDRAG = 126)
+        integer  VN_SETFOCUS
+        parameter (VN_SETFOCUS = 127)
+        integer  VN_KILLFOCUS
+        parameter (VN_KILLFOCUS = 128)
+        integer  VN_HELP
+        parameter (VN_HELP = 129)
+
+        structure /VSCDATA/
+            integer*4 cbSize
+            integer*2 usRowCount
+            integer*2 usColumnCount
+        end structure
+
+        structure /VSDRAGINIT/
+            integer*4 hwnd
+            integer*4 x
+            integer*4 y
+            integer*4 cx
+            integer*4 cy
+            integer*2 usRow
+            integer*2 usColumn
+        end structure
+
+c$ifdef INCL_WINSTDDRAG
+
+        structure /VSDRAGINFO/
+            integer*4 pDragInfo
+            integer*2 usRow
+            integer*2 usColumn
+        end structure
+
+c$endif
+
+        structure /VSTEXT/
+            integer*4 pszItemText
+            integer*4 ulBufLen
+        end structure
+
+        integer  VS_BITMAP
+        parameter (VS_BITMAP = '00000001'x)
+        integer  VS_ICON
+        parameter (VS_ICON = '00000002'x)
+        integer  VS_TEXT
+        parameter (VS_TEXT = '00000004'x)
+        integer  VS_RGB
+        parameter (VS_RGB = '00000008'x)
+        integer  VS_COLORINDEX
+        parameter (VS_COLORINDEX = '00000010'x)
+        integer  VS_BORDER
+        parameter (VS_BORDER = '00000020'x)
+        integer  VS_ITEMBORDER
+        parameter (VS_ITEMBORDER = '00000040'x)
+        integer  VS_SCALEBITMAPS
+        parameter (VS_SCALEBITMAPS = '00000080'x)
+        integer  VS_RIGHTTOLEFT
+        parameter (VS_RIGHTTOLEFT = '00000100'x)
+
+        integer  VIA_BITMAP
+        parameter (VIA_BITMAP = '00000001'x)
+        integer  VIA_ICON
+        parameter (VIA_ICON = '00000002'x)
+        integer  VIA_TEXT
+        parameter (VIA_TEXT = '00000004'x)
+        integer  VIA_RGB
+        parameter (VIA_RGB = '00000008'x)
+        integer  VIA_COLORINDEX
+        parameter (VIA_COLORINDEX = '00000010'x)
+        integer  VIA_OWNERDRAW
+        parameter (VIA_OWNERDRAW = '00000020'x)
+        integer  VIA_DISABLED
+        parameter (VIA_DISABLED = '00000040'x)
+        integer  VIA_DRAGGABLE
+        parameter (VIA_DRAGGABLE = '00000080'x)
+        integer  VIA_DROPONABLE
+        parameter (VIA_DROPONABLE = '00000100'x)
+
+        integer  VMA_ITEMSIZE
+        parameter (VMA_ITEMSIZE = '00000001'x)
+        integer  VMA_ITEMSPACING
+        parameter (VMA_ITEMSPACING = '00000002'x)
+
+        integer  VSERR_INVALID_PARAMETERS
+        parameter (VSERR_INVALID_PARAMETERS = -1)
+
+c$endif
+
+c$ifdef INCL_WINSTDBOOK
+
+        integer  BKM_CALCPAGERECT
+        parameter (BKM_CALCPAGERECT = '00000353'x)
+        integer  BKM_DELETEPAGE
+        parameter (BKM_DELETEPAGE = '00000354'x)
+        integer  BKM_INSERTPAGE
+        parameter (BKM_INSERTPAGE = '00000355'x)
+        integer  BKM_INVALIDATETABS
+        parameter (BKM_INVALIDATETABS = '00000356'x)
+        integer  BKM_TURNTOPAGE
+        parameter (BKM_TURNTOPAGE = '00000357'x)
+        integer  BKM_QUERYPAGECOUNT
+        parameter (BKM_QUERYPAGECOUNT = '00000358'x)
+        integer  BKM_QUERYPAGEID
+        parameter (BKM_QUERYPAGEID = '00000359'x)
+        integer  BKM_QUERYPAGEDATA
+        parameter (BKM_QUERYPAGEDATA = '0000035a'x)
+        integer  BKM_QUERYPAGEWINDOWHWND
+        parameter (BKM_QUERYPAGEWINDOWHWND = '0000035b'x)
+        integer  BKM_QUERYTABBITMAP
+        parameter (BKM_QUERYTABBITMAP = '0000035c'x)
+        integer  BKM_QUERYTABTEXT
+        parameter (BKM_QUERYTABTEXT = '0000035d'x)
+        integer  BKM_SETDIMENSIONS
+        parameter (BKM_SETDIMENSIONS = '0000035e'x)
+        integer  BKM_SETPAGEDATA
+        parameter (BKM_SETPAGEDATA = '0000035f'x)
+        integer  BKM_SETPAGEWINDOWHWND
+        parameter (BKM_SETPAGEWINDOWHWND = '00000360'x)
+        integer  BKM_SETSTATUSLINETEXT
+        parameter (BKM_SETSTATUSLINETEXT = '00000361'x)
+        integer  BKM_SETTABBITMAP
+        parameter (BKM_SETTABBITMAP = '00000362'x)
+        integer  BKM_SETTABTEXT
+        parameter (BKM_SETTABTEXT = '00000363'x)
+        integer  BKM_SETNOTEBOOKCOLORS
+        parameter (BKM_SETNOTEBOOKCOLORS = '00000364'x)
+        integer  BKM_QUERYPAGESTYLE
+        parameter (BKM_QUERYPAGESTYLE = '00000365'x)
+        integer  BKM_QUERYSTATUSLINETEXT
+        parameter (BKM_QUERYSTATUSLINETEXT = '00000366'x)
+
+        integer  BKN_PAGESELECTED
+        parameter (BKN_PAGESELECTED = 130)
+        integer  BKN_NEWPAGESIZE
+        parameter (BKN_NEWPAGESIZE = 131)
+        integer  BKN_HELP
+        parameter (BKN_HELP = 132)
+        integer  BKN_PAGEDELETED
+        parameter (BKN_PAGEDELETED = 133)
+
+        integer  BKA_ALL
+        parameter (BKA_ALL = '00000001'x)
+        integer  BKA_SINGLE
+        parameter (BKA_SINGLE = '00000002'x)
+        integer  BKA_TAB
+        parameter (BKA_TAB = '00000004'x)
+
+        integer  BKA_LAST
+        parameter (BKA_LAST = '00000002'x)
+        integer  BKA_FIRST
+        parameter (BKA_FIRST = '00000004'x)
+        integer  BKA_NEXT
+        parameter (BKA_NEXT = '00000008'x)
+        integer  BKA_PREV
+        parameter (BKA_PREV = '00000010'x)
+        integer  BKA_TOP
+        parameter (BKA_TOP = '00000020'x)
+
+        integer  BKA_MAJORTAB
+        parameter (BKA_MAJORTAB = '00000001'x)
+        integer  BKA_MINORTAB
+        parameter (BKA_MINORTAB = '00000002'x)
+        integer  BKA_PAGEBUTTON
+        parameter (BKA_PAGEBUTTON = '00000100'x)
+
+        integer  BKA_STATUSTEXTON
+        parameter (BKA_STATUSTEXTON = '00000001'x)
+        integer  BKA_MAJOR
+        parameter (BKA_MAJOR = '00000040'x)
+        integer  BKA_MINOR
+        parameter (BKA_MINOR = '00000080'x)
+        integer  BKA_AUTOPAGESIZE
+        parameter (BKA_AUTOPAGESIZE = '00000100'x)
+        integer  BKA_END
+        parameter (BKA_END = '00000200'x)
+
+        integer  BKA_TEXT
+        parameter (BKA_TEXT = '00000400'x)
+        integer  BKA_BITMAP
+        parameter (BKA_BITMAP = '00000800'x)
+
+        integer  BKS_BACKPAGESBR
+        parameter (BKS_BACKPAGESBR = '00000001'x)
+        integer  BKS_BACKPAGESBL
+        parameter (BKS_BACKPAGESBL = '00000002'x)
+        integer  BKS_BACKPAGESTR
+        parameter (BKS_BACKPAGESTR = '00000004'x)
+        integer  BKS_BACKPAGESTL
+        parameter (BKS_BACKPAGESTL = '00000008'x)
+
+        integer  BKS_MAJORTABRIGHT
+        parameter (BKS_MAJORTABRIGHT = '00000010'x)
+        integer  BKS_MAJORTABLEFT
+        parameter (BKS_MAJORTABLEFT = '00000020'x)
+        integer  BKS_MAJORTABTOP
+        parameter (BKS_MAJORTABTOP = '00000040'x)
+        integer  BKS_MAJORTABBOTTOM
+        parameter (BKS_MAJORTABBOTTOM = '00000080'x)
+
+        integer  BKS_SQUARETABS
+        parameter (BKS_SQUARETABS = '00000100'x)
+        integer  BKS_ROUNDEDTABS
+        parameter (BKS_ROUNDEDTABS = '00000200'x)
+        integer  BKS_POLYGONTABS
+        parameter (BKS_POLYGONTABS = '00000400'x)
+
+        integer  BKS_STATUSTEXTLEFT
+        parameter (BKS_STATUSTEXTLEFT = '00001000'x)
+        integer  BKS_STATUSTEXTRIGHT
+        parameter (BKS_STATUSTEXTRIGHT = '00002000'x)
+        integer  BKS_STATUSTEXTCENTER
+        parameter (BKS_STATUSTEXTCENTER = '00004000'x)
+
+        integer  BKS_TABTEXTLEFT
+        parameter (BKS_TABTEXTLEFT = '00010000'x)
+        integer  BKS_TABTEXTRIGHT
+        parameter (BKS_TABTEXTRIGHT = '00020000'x)
+        integer  BKS_TABTEXTCENTER
+        parameter (BKS_TABTEXTCENTER = '00040000'x)
+
+        integer  BKA_BACKGROUNDPAGECOLORINDEX
+        parameter (BKA_BACKGROUNDPAGECOLORINDEX = '00000001'x)
+        integer  BKA_BACKGROUNDPAGECOLOR
+        parameter (BKA_BACKGROUNDPAGECOLOR = '00000002'x)
+        integer  BKA_BACKGROUNDMAJORCOLORINDEX
+        parameter (BKA_BACKGROUNDMAJORCOLORINDEX = '00000003'x)
+        integer  BKA_BACKGROUNDMAJORCOLOR
+        parameter (BKA_BACKGROUNDMAJORCOLOR = '00000004'x)
+        integer  BKA_BACKGROUNDMINORCOLORINDEX
+        parameter (BKA_BACKGROUNDMINORCOLORINDEX = '00000005'x)
+        integer  BKA_BACKGROUNDMINORCOLOR
+        parameter (BKA_BACKGROUNDMINORCOLOR = '00000006'x)
+        integer  BKA_FOREGROUNDMAJORCOLORINDEX
+        parameter (BKA_FOREGROUNDMAJORCOLORINDEX = '00000007'x)
+        integer  BKA_FOREGROUNDMAJORCOLOR
+        parameter (BKA_FOREGROUNDMAJORCOLOR = '00000008'x)
+        integer  BKA_FOREGROUNDMINORCOLORINDEX
+        parameter (BKA_FOREGROUNDMINORCOLORINDEX = '00000009'x)
+        integer  BKA_FOREGROUNDMINORCOLOR
+        parameter (BKA_FOREGROUNDMINORCOLOR = '0000000A'x)
+
+        integer  BOOKERR_INVALID_PARAMETERS
+        parameter (BOOKERR_INVALID_PARAMETERS = -1)
+
+        structure /BOOKTEXT/
+            integer*4 pString
+            integer*4 textLen
+        end structure
+
+        structure /DELETENOTIFY/
+            integer*4 hwndBook
+            integer*4 hwndPage
+            integer*4 ulAppPageData
+            integer*4 hbmTab
+        end structure
+
+        structure /PAGESELECTNOTIFY/
+            integer*4 hwndBook
+            integer*4 ulPageIdCur
+            integer*4 ulPageIdNew
+        end structure
+
+c$endif
+
+c$reference

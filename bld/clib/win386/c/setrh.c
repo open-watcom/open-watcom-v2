@@ -34,6 +34,6 @@
 
 FARPROC PASCAL _Cover_SetResourceHandler( HANDLE inst, LPSTR type, FARPROC p )
 {
-    return( SetResourceHandler( inst, type,
+    return( (FARPROC)SetResourceHandler( inst, type,
                 SetProc( p, GETPROC_SETRESOURCEHANDLER ) ) );
 }

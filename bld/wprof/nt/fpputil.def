@@ -1,4 +1,0 @@
-//#line "g:\bld\wdisasm\c\fpputil.c" 17
-extern ins_name GetFppCode(void);
-//#line "g:\bld\wdisasm\c\fpputil.c" 125
-extern void GetFppOp(void);

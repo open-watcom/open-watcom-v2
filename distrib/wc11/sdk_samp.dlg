@@ -1,0 +1,57 @@
+name=dsdk_samp
+any_check=sdk_samp
+static_text=\
+        //1"Select NT 4.0 SDK Samples"\
+        //2"Select NT 4.0 SDK サンプル"\
+        //0
+check_box=sdk_samp_directx,,\
+	//1"DirectX"\
+	//2"DirectX"\
+	//0
+check_box=sdk_samp_fareast,,\
+	//1"FarEast"\
+	//2"FarEast"\
+	//0
+check_box=sdk_samp_frmwork,,\
+	//1"frmwork"\
+	//2"frmwork"\
+	//0
+check_box=sdk_samp_mapi,,\
+	//1"mapi"\
+	//2"mapi"\
+	//0
+check_box=sdk_samp_mm,,\
+	//1"Multi Media(mm)"\
+	//2"マルチメディア(mm)"\
+	//0
+check_box=sdk_samp_ole,,\
+	//1"OLE"\
+	//2"OLE"\
+	//0
+check_box=sdk_samp_opengl,,\
+	//1"opengl"\
+	//2"opengl"\
+	//0
+check_box=sdk_samp_rpc,,\
+	//1"rpc"\
+	//2"rpc"\
+	//0
+check_box=sdk_samp_sdktools,,\
+	//1"sdktools"\
+	//2"sdktools"\
+	//0
+check_box=sdk_samp_tp4,,\
+	//1"tp4"\
+	//2"tp4"\
+	//0
+check_box=sdk_samp_win32,,\
+	//1"win32"\
+	//2"win32"\
+	//0
+check_box=sdk_samp_win16,,\
+	//1"win16"\
+	//2"win16"\
+	//0
+include=space.dlg
+static_text=
+include=oc.dlg

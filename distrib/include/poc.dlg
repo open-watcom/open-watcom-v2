@@ -1,0 +1,3 @@
+include=previous.dlg
+include=next.dlg
+include=cancel.dlg

@@ -1,0 +1,106 @@
+! ADSCODES.FI - Definitions of the AutoCAD function request and result
+!               codes used by ADS programs.
+
+*$noreference
+
+
+!  AutoCAD to ADS program request type codes
+
+        integer RQSAVE
+        integer RQEND
+        integer RQQUIT
+        integer RQCFG
+
+        parameter ( RQSAVE = 14 )       ! ACAD is saving the drawing
+        parameter ( RQEND  = 15 )       ! ACAD is ending the drawing editor
+        parameter ( RQQUIT = 16 )       ! ACAD quits
+        parameter ( RQCFG  = 22 )       ! AutoCAD is returning from CONFIG
+
+! The following are LISP to Application ONLY request codes.  They form
+! the interface for ADS
+        integer RQXLOAD
+        integer RQXUNLD
+        integer RQSUBR
+
+        parameter ( RQXLOAD = 100 )     ! Load external functions
+        parameter ( RQXUNLD = 101 )     ! UN-Load application
+        parameter ( RQSUBR  = 102 )     ! External subroutine request
+
+!  ADS program to AutoCAD result type codes
+
+        integer RSRSLT
+        integer RSERR
+
+        parameter ( RSRSLT = 1 )        ! Result returned
+        parameter ( RSERR  = 3 )        ! Error in evaluation -- no result
+
+!  Result value type codes
+
+    ! These are used in the resbuf.  These ARE NOT the same
+    !  as the group codes used in the entity access routines, and sould
+    !  not be confused with those.  The same result buffer IS used for
+    !  entity records, however, in which case the restype field may take
+    !  on many more values than those listed here.
+
+        integer RTNONE
+        integer RTREAL
+        integer RTPOINT
+        integer RTSHORT
+        integer RTANG
+        integer RTSTR
+        integer RTENAME
+        integer RTPICKS
+        integer RTORINT
+        integer RT3DPOINT
+        integer RTLONG
+        integer RTVOID
+        integer RTLB
+        integer RTLE
+        integer RTDOTE
+        integer RTNIL
+        integer RTDXF0
+        integer RTT
+
+        parameter ( RTNONE    = 5000 )  ! No result
+        parameter ( RTREAL    = 5001 )  ! Real number
+        parameter ( RTPOINT   = 5002 )  ! 2D point X and Y only
+        parameter ( RTSHORT   = 5003 )  ! Short integer
+        parameter ( RTANG     = 5004 )  ! Angle
+        parameter ( RTSTR     = 5005 )  ! String
+        parameter ( RTENAME   = 5006 )  ! Entity name
+        parameter ( RTPICKS   = 5007 )  ! Pick set
+        parameter ( RTORINT   = 5008 )  ! Orientation
+        parameter ( RT3DPOINT = 5009 )  ! 3D point - X, Y, and Z
+        parameter ( RTLONG    = 5010 )  ! Long integer
+        parameter ( RTVOID    = 5014 )  ! Blank symbol
+        parameter ( RTLB      = 5016 )  ! list begin
+        parameter ( RTLE      = 5017 )  ! list end
+        parameter ( RTDOTE    = 5018 )  ! dotted pair
+        parameter ( RTNIL     = 5019 )  ! nil
+        parameter ( RTDXF0    = 5020 )  ! DXF code 0 for ads_buildlist only
+        parameter ( RTT       = 5021 )  ! T atom
+
+! The following RT codes are for the ADS program interface.
+! They are used to signal success or failure (error) of the
+! ADS library functions.  RTFAIL in particular means that
+! the link has failed (most likely because AutoLISP has
+! died or exited), and the application should cleanup and exit.
+
+        integer RTNORM
+
+        parameter ( RTNORM  = 5100 )    ! Request succeeded
+
+! Various error codes returned to ADS application by library
+        integer RTERROR
+        integer RTCAN
+        integer RTREJ
+        integer RTFAIL
+        integer RTKWORD
+
+        parameter ( RTERROR  = -5001 )  ! Some other error
+        parameter ( RTCAN    = -5002 )  ! User cancelled request -- Ctl-C
+        parameter ( RTREJ    = -5003 )  ! AutoCAD rejected request -- invalid
+        parameter ( RTFAIL   = -5004 )  ! Link failure -- Lisp probably died
+        parameter ( RTKWORD  = -5005 )  ! Keyword returned from getxxx() routine
+
+*$reference

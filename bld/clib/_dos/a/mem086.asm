@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  DOS memory management routines for 16-bit DOS.
 ;*
 ;*****************************************************************************
 
@@ -39,13 +38,9 @@ include struct.inc
         modstart dosmem
 
         defp    _dos_allocmem
-        if __WASM__ ge 100
-            xdefp   "C",_dos_allocmem
-        else
-            xdefp   <"C",_dos_allocmem>
-        endif
+        xdefp   "C",_dos_allocmem
 ;
-;       unsigned _dos_allocmem( unsigned size, unsigned short *segment );
+;       unsigned _dos_allocmem( unsigned size, unsigned *segment );
 ;
         push    BX              ; save BX
         push    DX              ; save DX
@@ -72,14 +67,11 @@ endif
         pop     BX              ; restore BX
         ret                     ; return to caller
         endproc _dos_allocmem
+
         defp    _dos_freemem
-        if __WASM__ ge 100
-            xdefp   "C",_dos_freemem
-        else
-            xdefp   <"C",_dos_freemem>
-        endif
+        xdefp   "C",_dos_freemem
 ;
-;       unsigned _dos_freemem( unsigned short segment );
+;       unsigned _dos_freemem( unsigned segment );
 ;
         push    ES              ; save ES
         mov     ES,AX           ; get segment to be freed
@@ -89,16 +81,12 @@ endif
         pop     ES              ; restore ES
         ret                     ; return to caller
         endproc _dos_freemem
+
         defp    _dos_setblock
-        if __WASM__ ge 100
-            xdefp   "C",_dos_setblock
-        else
-            xdefp   <"C",_dos_setblock>
-        endif
+        xdefp   "C",_dos_setblock
 ;
 ;       unsigned _dos_setblock( unsigned size,
-;                               unsigned short segment,
-;                               unsigned  *maxsize );
+;                               unsigned segment, unsigned *maxsize );
 ;
 ;
         push    ES              ; save ES

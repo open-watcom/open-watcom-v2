@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Window class definition.
 *
 ****************************************************************************/
-
 
 #include <ctype.h>
 
@@ -44,35 +42,38 @@
 #include "wbaritem.hpp"
 #include "wmetrics.hpp"
 
+/***************************************************************************/
+
 WObjectMap      WWindow::_idMap;
 WObjectMap      WWindow::_toolBarIdMap;
 WObjectMap      WWindow::_popupIdMap;
 unsigned        WWindow::_idMaster = 1;
 
-WCLASS AccelKey : public WObject {
-    public:
-        AccelKey( WKeyCode key, WObject* client, bcbi callback );
-        ~AccelKey() {}
-        bool callClient( WKeyCode kc ) { return( (_client->*_callback)( kc ) ); }
+/***************************************************************************/
 
-        WKeyCode        _key;
-        WObject*        _client;
-        bcbi            _callback;
+WCLASS AccelKey : public WObject {
+public:
+    AccelKey( WKeyCode key, WObject* client, bcbk callback );
+    ~AccelKey( void ) {}
+
+    bool callClient( WKeyCode kc ) { return( (_client->*_callback)( kc ) ); }
+
+    WKeyCode _key;
+    WObject  *_client;
+    bcbk     _callback;
 };
 
-
-AccelKey::AccelKey( WKeyCode key, WObject* client, bcbi callback )
+AccelKey::AccelKey( WKeyCode key, WObject* client, bcbk callback )
     : _key( key )
     , _client( client )
-    , _callback( callback ) {
-/***************************/
-
+    , _callback( callback )
+{
 }
 
+/***************************************************************************/
 
-bool WEXPORT WWindow::processMsg( gui_event msg, void *parm ) {
-/*************************************************************/
-
+bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
+{
     gui_point           point;
     gui_coord           size;
     unsigned            control_id;
@@ -189,7 +190,11 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm ) {
         return( TRUE );
     }
     case GUI_MOVE:
-        moved( 0, 0 );
+        // BobP removed because it caused size problems
+        // * could not move window to second monitor
+        // * Window would jump
+        // * project window would shrink
+        //moved( 0, 0 );
         enumChildren();
         return( TRUE );
     case GUI_RESIZE: {
@@ -317,16 +322,16 @@ extern "C" bool WinProc( gui_window *hwin, gui_event msg, void *parm ) {
 }
 
 
-virtual bool WWindow::mouseMove( int, int, WMouseKeyFlags ) {
-/***********************************************************/
+bool WWindow::mouseMove( int, int, WMouseKeyFlags ) {
+/***************************************************/
 
     GUISetMouseCursor( _currCursor );
     return( FALSE );
 }
 
 
-void WWindow::makeWindow( const char *text, WStyle style ) {
-/**********************************************************/
+void WWindow::makeWindow( const char *text, WStyle style, WExStyle exstyle ) {
+/****************************************************************************/
 
     gui_create_info     create_info;
     unsigned long       gui_style;
@@ -344,6 +349,7 @@ void WWindow::makeWindow( const char *text, WStyle style ) {
     create_info.rect.height = r.h();
     create_info.scroll = _WStyleToScrollStyle( style );
     gui_style = GUI_INIT_INVISIBLE | GUI_VISIBLE | _WStyleToCreateStyle( style );
+    gui_style |= exstyle;
     create_info.style = (gui_create_styles)gui_style;
     create_info.parent = hparent;
     create_info.num_menus = 0;
@@ -374,7 +380,7 @@ WEXPORT WWindow::WWindow( WWindow *parent )
 
 }
 
-WEXPORT WWindow::WWindow( const char *text, WStyle style )
+WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
     : _painting( FALSE )
     , _firstDirtyRow( 0 )
     , _numDirtyRows( 0 )
@@ -387,11 +393,12 @@ WEXPORT WWindow::WWindow( const char *text, WStyle style )
 /*********************/
 
     WSystemMetrics::defaultRectangle( _autosize );
-    makeWindow( text, style );
+    makeWindow( text, style, exstyle );
 }
 
 
-WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style )
+WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style,
+                          WExStyle exstyle )
     : _painting( FALSE )
     , _firstDirtyRow( 0 )
     , _numDirtyRows( 0 )
@@ -404,12 +411,12 @@ WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style )
 /*********************/
 
     WSystemMetrics::defaultRectangle( _autosize );
-    makeWindow( text, style );
+    makeWindow( text, style, exstyle );
 }
 
 
 WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
-                          WStyle style )
+                          WStyle style, WExStyle exstyle )
     : _painting( FALSE )
     , _firstDirtyRow( 0 )
     , _numDirtyRows( 0 )
@@ -422,7 +429,7 @@ WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text,
     , _handle( NULL ) {
 /*********************/
 
-    makeWindow( text, style );
+    makeWindow( text, style, exstyle );
 }
 
 
@@ -607,14 +614,14 @@ AccelKey *WWindow::findAccelKey( WKeyCode key ) {
 }
 
 
-void WEXPORT WWindow::addAccelKey( WKeyCode key, WObject* client, bcbi cb ) {
+void WEXPORT WWindow::addAccelKey( WKeyCode key, WObject* client, bcbk cb ) {
 /***************************************************************************/
 
     _accelKeys.add( new AccelKey( key, client, cb ) );
 }
 
 
-void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbi cb ) {
+void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbk cb ) {
 /**********************************************************************/
 
     WKeyCode    kc;
@@ -750,8 +757,8 @@ void WEXPORT WWindow::removePopup( WPopupMenu *pop ) {
 }
 
 
-void WEXPORT WWindow::shrink( int wBorder, int hBorder ) {
 /********************************************************/
+void WEXPORT WWindow::shrink( int wBorder, int hBorder ) {
 
     if( _children.count() > 0 ) {
         WRect wr;
@@ -778,9 +785,8 @@ void WEXPORT WWindow::shrink( int wBorder, int hBorder ) {
     }
 }
 
-
-void WEXPORT WWindow::shrink() {
 /******************************/
+void WEXPORT WWindow::shrink() {
 
     WPoint      avg;
     WPoint      max;
@@ -788,11 +794,17 @@ void WEXPORT WWindow::shrink() {
     textMetrics( avg, max );
     shrink( avg.y(), avg.x() );
 }
-
-
+//
+// updateAutosize()
+//
+// When       Who      Why
+// ========== ======= ==================================
+// 06-29-2007 BobP    This code causes the x,y window position
+//                    to jump around.  Also, the project window
+//                    redraws incorrectly.  I don't believe this
+//                    code is needed
+//
 bool WEXPORT WWindow::updateAutosize() {
-/**************************************/
-
     WRect       rect;
     WRect       prect;
     bool        move;
@@ -804,6 +816,7 @@ bool WEXPORT WWindow::updateAutosize() {
     if( parent() ) {
         parent()->getClientRect( prect );
     }
+    
     if( _autosize.x() >= 0 ) {
         if( rect.x() < 0 ) {
             // don't let the x co-ordinate change sign in case
@@ -830,6 +843,7 @@ bool WEXPORT WWindow::updateAutosize() {
             _autosize.y( rect.y() );
         }
     }
+ 
     if( _autosize.w() >= 0 ) {
         _autosize.w( rect.w() + w_adjust );
     }
@@ -839,28 +853,22 @@ bool WEXPORT WWindow::updateAutosize() {
     return( move );
 }
 
-
+//
 void WEXPORT WWindow::moved( int, int ) {
-/***************************************/
 
-    if( updateAutosize() ) {
+    //if( updateAutosize() ) {
         // Don't let the window be moved to a location that
         // causes the x and/or y co-ordinates to change from
         // a positive value to a negative value
-        autosize();
-    }
+    //    autosize();
+    //}
 }
-
-
 void WEXPORT WWindow::resized( int, int ) {
-/*****************************************/
 
-    updateAutosize();
+    //updateAutosize();
 }
-
 
 void WEXPORT WWindow::size( WOrdinal w, WOrdinal h ) {
-/****************************************************/
 
     _autosize.w( w );
     _autosize.h( h );
@@ -869,7 +877,6 @@ void WEXPORT WWindow::size( WOrdinal w, WOrdinal h ) {
 
 
 void WEXPORT WWindow::move( WOrdinal x, WOrdinal y ) {
-/****************************************************/
 
     _autosize.x( x );
     _autosize.y( y );
@@ -878,12 +885,10 @@ void WEXPORT WWindow::move( WOrdinal x, WOrdinal y ) {
 
 
 void WEXPORT WWindow::move( const WRect& r ) {
-/********************************************/
 
     _autosize = r;
     autosize();
 }
-
 
 void WEXPORT WWindow::getRectangle( WRect& r, bool absolute ) {
 /*************************************************************/
@@ -952,9 +957,8 @@ void WWindow::show( WWindowState state ) {
 }
 
 
-void WWindow::autoPosition( WRect& cRect ) {
 /******************************************/
-
+void WWindow::autoPosition( WRect& cRect ) {
 // Automatically reposition the given co-ordinates for a window relative
 // to its parent window.
 
@@ -973,7 +977,6 @@ void WWindow::autoPosition( WRect& cRect ) {
     |         |                     |          |
     +------------------------------------------+
 */
-
     WRect pRect;
     if( _parent != NULL ) {
         _parent->getClientRect( pRect );
@@ -1008,9 +1011,7 @@ void WWindow::autoPosition( WRect& cRect ) {
     if( cRect.y() < 0 ) cRect.y( 0 );
 }
 
-
 void WEXPORT WWindow::autosize() {
-/********************************/
 
     if( (_handle == NULL) || isIconic() ) return;
     WRect cRect;
@@ -1022,7 +1023,6 @@ void WEXPORT WWindow::autosize() {
     c.height = cRect.h();
     GUIResizeWindow( _handle, &c );
 }
-
 
 bool WEXPORT WWindow::keyDown( WKeyCode key, WKeyState ) {
 /********************************************************/
@@ -1190,8 +1190,8 @@ void WEXPORT WWindow::scrollWindow( WScrollBar sb, int scroll_size ) {
 }
 
 
-virtual bool WEXPORT WWindow::scrollPosChanged( WScrollBar ) {
-/************************************************************/
+bool WEXPORT WWindow::scrollPosChanged( WScrollBar ) {
+/****************************************************/
 
     return( FALSE );
 }

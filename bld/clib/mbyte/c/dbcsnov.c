@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dummy __IsDBCS definition for NetWare.
 *
 ****************************************************************************/
 
@@ -34,4 +33,4 @@
 #include <mbstring.h>
 
 
-_WCRTLINK int                   __IsDBCS = 0;
+_WCRTDATA int                   __IsDBCS = 0;

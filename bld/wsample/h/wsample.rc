@@ -8,12 +8,12 @@ BEGIN
 #define pick( code, string1, string2 )  \
         (code+RLE_ENGLISH*MSG_LANG_SPACING), string2
 
-#include "..\h\wsample.msg"
+#include "../h/wsample.msg"
 
 #undef pick
 #define pick( code, string1, string2 )  \
         (code+RLE_JAPANESE*MSG_LANG_SPACING), string1
 
-#include "..\h\wsample.msg"
+#include "../h/wsample.msg"
 
 END

@@ -33,11 +33,11 @@
 #include "windows.h"
 #include "trpimp.h"
 
-HANDLE  Instance;
-HWND    DesktopWindow;
-DWORD   WindowsFlags;
+HINSTANCE  Instance;
+HWND       DesktopWindow;
+DWORD      WindowsFlags;
 
-int PASCAL LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     dataseg=dataseg;heap=heap;cmdline=cmdline;
     Instance=hmod;
@@ -46,7 +46,7 @@ int PASCAL LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int far PASCAL WEP( int res )
+int WINAPI WEP( int res )
 {
     res = res;
     return( 1 );

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
+
+#include "compcfg.h"
+
 #include "cgfront.h"
 #include "codegen.h"
 #include "rtfuncod.h"
@@ -43,7 +43,6 @@
 #include "vstk.h"
 #include "name.h"
 #include "pcheader.h"
-#include "langenv.h"
 
 
 static SYMBOL module_init_func; // function to perform module-initialization
@@ -168,7 +167,7 @@ static SCOPE moduleInitSave(     // SAVE ENVIRONMENT BEFORE MOD-INIT.
 {
     SCOPE save_scope;
 
-    save_scope = CurrScope;
+    save_scope = GetCurrScope();
     LabelSwitchFunc( &module_fd.label_mem );
     return( save_scope );
 }
@@ -177,14 +176,14 @@ static SCOPE moduleInitSave(     // SAVE ENVIRONMENT BEFORE MOD-INIT.
 static void moduleInitRestore(  // RESTORE ENVIRONMENT AFTER MOD-INIT.
     SCOPE scope )               // - scope to restore to
 {
-    CurrScope = scope;
+    SetCurrScope(scope);
     LabelSwitchFunc( &module_fd.label_mem );
 }
 
 SCOPE ModuleFnScope(            // SCOPE MOD-INIT FN IS DEF'D IN
     void )
 {
-    return FileScope;
+    return GetFileScope();
 }
 
 
@@ -202,11 +201,11 @@ void ModuleInitInit(            // START MODULE-INITIALIZATION FUNCTION
                                     , 0
                                     , CppSpecialName( SPECIAL_INIT_FUNCTION ) );
     module_init_func = module_init;
-    CurrScope = FileScope;
+    SetCurrScope(GetFileScope());
     ScopeBeginFunction( module_init );
     FunctionBodyStartup( module_init, &module_fd, FUNC_NULL );
     module_fd.retn_opt = FALSE;
-    module_init_scope = CurrScope;
+    module_init_scope = GetCurrScope();
     ScopeKeep( module_init_scope );
     moduleInitRestore( curr_scope );
 }
@@ -225,7 +224,7 @@ SCOPE ModuleInitResume(         // RESUME MODULE-INITIALIZATION FUNCTION
     SCOPE curr_scope;
 
     curr_scope = moduleInitSave();
-    CurrScope = module_init_scope;
+    SetCurrScope(module_init_scope);
     return( curr_scope );
 }
 

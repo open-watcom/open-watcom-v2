@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 
 #include "wdeglbl.h"
 #include "wdemem.h"
@@ -61,29 +61,24 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL    WINEXPORT WdeTabCDispatcher  ( ACTION, WdeTabCObject *, void *,
-                                              void *);
-extern LRESULT WINEXPORT WdeTabCSuperClassProc ( HWND, UINT, WPARAM, LPARAM);
+extern BOOL    WINEXPORT WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
+extern LRESULT WINEXPORT WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeTabC             ( OBJPTR, RECT *, OBJPTR, DialogStyle,
-                                          char *, OBJ_ID );
-static OBJPTR   WdeTCCreate             ( OBJPTR, RECT *, OBJPTR,
-                                          OBJ_ID, WdeDialogBoxControl *);
-static BOOL     WdeTabCDestroy          ( WdeTabCObject *, BOOL *, void *);
-static BOOL     WdeTabCValidateAction   ( WdeTabCObject *, ACTION *, void *);
-static BOOL     WdeTabCCopyObject       ( WdeTabCObject *, WdeTabCObject **,
-                                          WdeTabCObject *);
-static BOOL     WdeTabCIdentify         ( WdeTabCObject *, OBJ_ID *, void *);
-static BOOL     WdeTabCGetWndProc       ( WdeTabCObject *, WNDPROC *, void *);
-static BOOL     WdeTabCGetWindowClass   ( WdeTabCObject *, char **, void *);
-static BOOL     WdeTabCDefine           ( WdeTabCObject *, POINT *, void *);
-static void     WdeTabCSetDefineInfo    ( WdeDefineObjectInfo *, HWND );
-static void     WdeTabCGetDefineInfo    ( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeTabCDefineHook       ( HWND, WORD, WPARAM, LPARAM,
-                                          DialogStyle );
+static OBJPTR   WdeMakeTabC( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeTCCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static BOOL     WdeTabCDestroy( WdeTabCObject *, BOOL *, void * );
+static BOOL     WdeTabCValidateAction( WdeTabCObject *, ACTION *, void * );
+static BOOL     WdeTabCCopyObject( WdeTabCObject *, WdeTabCObject **, WdeTabCObject * );
+static BOOL     WdeTabCIdentify( WdeTabCObject *, OBJ_ID *, void * );
+static BOOL     WdeTabCGetWndProc( WdeTabCObject *, WNDPROC *, void * );
+static BOOL     WdeTabCGetWindowClass( WdeTabCObject *, char **, void * );
+static BOOL     WdeTabCDefine( WdeTabCObject *, POINT *, void * );
+static void     WdeTabCSetDefineInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeTabCGetDefineInfo( WdeDefineObjectInfo *, HWND );
+static BOOL     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -93,30 +88,29 @@ static FARPROC                  WdeTabCDispatch;
 static WdeDialogBoxControl      *WdeDefaultTabC = NULL;
 static int                      WdeTabCWndExtra;
 static WNDPROC                  WdeOriginalTabCProc;
-//static WNDPROC                        WdeTabCProc;
+//static WNDPROC                WdeTabCProc;
 
 #define WWC_TABCONTROL   WC_TABCONTROL
 
 static DISPATCH_ITEM WdeTabCActions[] = {
-    { DESTROY           ,  WdeTabCDestroy               }
-,   { COPY              ,  WdeTabCCopyObject            }
-,   { VALIDATE_ACTION   ,  WdeTabCValidateAction        }
-,   { IDENTIFY          ,  WdeTabCIdentify              }
-,   { GET_WINDOW_CLASS  ,  WdeTabCGetWindowClass        }
-,   { DEFINE            ,  WdeTabCDefine                }
-,   { GET_WND_PROC      ,  WdeTabCGetWndProc            }
+    { DESTROY,          (BOOL (*)( OBJPTR, void *, void * ))WdeTabCDestroy          },
+    { COPY,             (BOOL (*)( OBJPTR, void *, void * ))WdeTabCCopyObject       },
+    { VALIDATE_ACTION,  (BOOL (*)( OBJPTR, void *, void * ))WdeTabCValidateAction   },
+    { IDENTIFY,         (BOOL (*)( OBJPTR, void *, void * ))WdeTabCIdentify         },
+    { GET_WINDOW_CLASS, (BOOL (*)( OBJPTR, void *, void * ))WdeTabCGetWindowClass   },
+    { DEFINE,           (BOOL (*)( OBJPTR, void *, void * ))WdeTabCDefine           },
+    { GET_WND_PROC,     (BOOL (*)( OBJPTR, void *, void * ))WdeTabCGetWndProc       }
 };
 
-#define MAX_ACTIONS      (sizeof(WdeTabCActions)/sizeof (DISPATCH_ITEM))
+#define MAX_ACTIONS     (sizeof( WdeTabCActions ) / sizeof( DISPATCH_ITEM ))
 
-OBJPTR WINEXPORT WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle)
+OBJPTR WINEXPORT WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeTabC( parent, obj_rect, handle,
-                              0, "", TABCNTL_OBJ ) );
+        return( WdeMakeTabC( parent, obj_rect, handle, 0, "", TABCNTL_OBJ ) );
     } else {
         return( WdeTCCreate( parent, obj_rect, NULL, TABCNTL_OBJ,
-                             (WdeDialogBoxControl *) handle) );
+                             (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -131,84 +125,80 @@ OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     SETCTL_TEXT( WdeDefaultTabC, ResStrToNameOrOrd( text ) );
     SETCTL_ID( WdeDefaultTabC, WdeGetNextControlID() );
 
-    WdeChangeSizeToDefIfSmallRect ( parent, id, obj_rect );
+    WdeChangeSizeToDefIfSmallRect( parent, id, obj_rect );
 
-    new = WdeTCCreate ( parent, obj_rect, handle, id, WdeDefaultTabC );
+    new = WdeTCCreate( parent, obj_rect, handle, id, WdeDefaultTabC );
 
-    WdeMemFree( GETCTL_TEXT(WdeDefaultTabC) );
+    WdeMemFree( GETCTL_TEXT( WdeDefaultTabC ) );
     SETCTL_TEXT( WdeDefaultTabC, NULL );
 
-    return ( new );
+    return( new );
 }
 
 OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info)
+                    OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeTabCObject *new;
 
-    WdeDebugCreate("TabC", parent, obj_rect, handle);
+    WdeDebugCreate( "TabC", parent, obj_rect, handle );
 
-    if ( parent == NULL ) {
-        WdeWriteTrail("WdeTabCCreate: TabC has no parent!");
-        return ( NULL );
+    if( parent == NULL ) {
+        WdeWriteTrail( "WdeTabCCreate: TabC has no parent!" );
+        return( NULL );
     }
 
-    new = (WdeTabCObject *) WdeMemAlloc ( sizeof(WdeTabCObject) );
-    if ( new == NULL ) {
-        WdeWriteTrail("WdeTabCCreate: Object malloc failed");
-        return ( NULL );
+    new = (WdeTabCObject *)WdeMemAlloc( sizeof( WdeTabCObject ) );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeTabCCreate: Object malloc failed" );
+        return( NULL );
     }
 
     new->dispatcher = WdeTabCDispatch;
-
     new->object_id = id;
-
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         new->object_handle = new;
     } else {
         new->object_handle = handle;
     }
 
-    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle);
+    new->control = Create( CONTROL_OBJ, parent, obj_rect, new->object_handle );
 
-    if (new->control == NULL) {
-        WdeWriteTrail("WdeTabCCreate: CONTROL_OBJ not created!");
-        WdeMemFree ( new );
-        return ( NULL );
+    if( new->control == NULL ) {
+        WdeWriteTrail( "WdeTabCCreate: CONTROL_OBJ not created!" );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL) ) {
-        WdeWriteTrail("WdeTabCCreate: SET_OBJECT_INFO failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+        WdeWriteTrail( "WdeTabCCreate: SET_OBJECT_INFO failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    if (!Forward ( (OBJPTR)new->object_handle, CREATE_WINDOW,
-                   NULL, NULL) ) {
-        WdeWriteTrail("WdeTabCCreate: CREATE_WINDOW failed!");
-        Destroy ( new->control, FALSE );
-        WdeMemFree ( new );
-        return ( NULL );
+    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+        WdeWriteTrail( "WdeTabCCreate: CREATE_WINDOW failed!" );
+        Destroy( new->control, FALSE );
+        WdeMemFree( new );
+        return( NULL );
     }
 
-    return ( new );
+    return( new );
 }
 
-BOOL WINEXPORT WdeTabCDispatcher ( ACTION act, WdeTabCObject *obj,
-                                     void *p1, void *p2)
+BOOL WINEXPORT WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
-    WdeDebugDispatch("TabC", act, obj, p1, p2);
+    WdeDebugDispatch( "TabC", act, obj, p1, p2 );
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == act ) {
-            return( (WdeTabCActions[i].rtn)( obj, p1, p2 ) );
+            return( WdeTabCActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return (Forward ((OBJPTR)obj->control, act, p1, p2));
+    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
 Bool WdeTabCInit( Bool first )
@@ -222,26 +212,26 @@ Bool WdeTabCInit( Bool first )
 
     if( first ) {
 #if 0
-        if ( wc.style & CS_GLOBALCLASS ) {
+        if( wc.style & CS_GLOBALCLASS ) {
             wc.style ^= CS_GLOBALCLASS;
         }
-        if ( wc.style & CS_PARENTDC ) {
+        if( wc.style & CS_PARENTDC ) {
             wc.style ^= CS_PARENTDC;
         }
-        wc.style |= ( CS_HREDRAW | CS_VREDRAW );
-        wc.hInstance     = WdeApplicationInstance;
+        wc.style |= CS_HREDRAW | CS_VREDRAW;
+        wc.hInstance = WdeApplicationInstance;
         wc.lpszClassName = "wdeedit";
-        wc.cbWndExtra  += sizeof( OBJPTR );
-        //wc.lpfnWndProc      = WdeTabCSuperClassProc;
+        wc.cbWndExtra += sizeof( OBJPTR );
+        //wc.lpfnWndProc = WdeTabCSuperClassProc;
         if( !RegisterClass( &wc ) ) {
-            WdeWriteTrail("WdeTabCInit: RegisterClass failed.");
+            WdeWriteTrail( "WdeTabCInit: RegisterClass failed." );
         }
 #endif
     }
 
-    WdeDefaultTabC = WdeAllocDialogBoxControl ();
-    if( !WdeDefaultTabC ) {
-        WdeWriteTrail ("WdeTabCInit: Alloc of control failed!");
+    WdeDefaultTabC = WdeAllocDialogBoxControl();
+    if( WdeDefaultTabC == NULL ) {
+        WdeWriteTrail( "WdeTabCInit: Alloc of control failed!" );
         return( FALSE );
     }
 
@@ -254,256 +244,254 @@ Bool WdeTabCInit( Bool first )
     SETCTL_SIZEW( WdeDefaultTabC, 0 );
     SETCTL_SIZEH( WdeDefaultTabC, 0 );
     SETCTL_TEXT( WdeDefaultTabC, NULL );
-    SETCTL_CLASSID( WdeDefaultTabC, WdeStrDup( WWC_TABCONTROL ) );
+    SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
 
-    WdeTabCDispatch = MakeProcInstance((FARPROC)WdeTabCDispatcher,
-                                           WdeGetAppInstance());
+    WdeTabCDispatch = MakeProcInstance( (FARPROC)WdeTabCDispatcher,
+                                        WdeGetAppInstance() );
     return( TRUE );
 }
 
-void WdeTabCFini ( void )
+void WdeTabCFini( void )
 {
-    WdeFreeDialogBoxControl ( &WdeDefaultTabC );
-    FreeProcInstance        ( WdeTabCDispatch );
+    WdeFreeDialogBoxControl( &WdeDefaultTabC );
+    FreeProcInstance( WdeTabCDispatch );
 }
 
-BOOL WdeTabCDestroy ( WdeTabCObject *obj, BOOL *flag, void *p2 )
+BOOL WdeTabCDestroy( WdeTabCObject *obj, BOOL *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    if ( !Forward ( obj->control, DESTROY, flag, NULL ) ) {
-        WdeWriteTrail("WdeTabCDestroy: Control DESTROY failed");
-        return ( FALSE );
+    if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
+        WdeWriteTrail( "WdeTabCDestroy: Control DESTROY failed" );
+        return( FALSE );
     }
 
     WdeMemFree( obj );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeTabCValidateAction ( WdeTabCObject *obj, ACTION *act, void *p2 )
+BOOL WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
-    for ( i = 0; i < MAX_ACTIONS; i++ ) {
+    for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == *act ) {
-            return ( TRUE );
+            return( TRUE );
         }
     }
 
-    return ( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeTabCCopyObject ( WdeTabCObject *obj, WdeTabCObject **new,
-                           WdeTabCObject *handle )
+BOOL WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *handle )
 {
-    if (new == NULL) {
-        WdeWriteTrail("WdeTabCCopyObject: Invalid new object!");
-        return ( FALSE );
+    if( new == NULL ) {
+        WdeWriteTrail( "WdeTabCCopyObject: Invalid new object!" );
+        return( FALSE );
     }
 
-    *new = (WdeTabCObject *) WdeMemAlloc ( sizeof(WdeTabCObject) );
+    *new = (WdeTabCObject *)WdeMemAlloc( sizeof( WdeTabCObject ) );
 
-    if ( *new == NULL ) {
-        WdeWriteTrail("WdeTabCCopyObject: Object malloc failed");
-        return ( FALSE );
+    if( *new == NULL ) {
+        WdeWriteTrail( "WdeTabCCopyObject: Object malloc failed" );
+        return( FALSE );
     }
 
-    (*new)->dispatcher    = obj->dispatcher;
-    (*new)->object_id     = obj->object_id;
+    (*new)->dispatcher = obj->dispatcher;
+    (*new)->object_id = obj->object_id;
 
-    if ( handle ==  NULL ) {
+    if( handle == NULL ) {
         (*new)->object_handle = *new;
     } else {
         (*new)->object_handle = handle;
     }
 
-    if (!CopyObject(obj->control, &((*new)->control), (*new)->object_handle)) {
-        WdeWriteTrail("WdeTabCCopyObject: Control not created!");
-        WdeMemFree ( (*new) );
-        return ( FALSE );
+    if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
+        WdeWriteTrail( "WdeTabCCopyObject: Control not created!" );
+        WdeMemFree( *new );
+        return( FALSE );
     }
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeTabCIdentify ( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
+BOOL WdeTabCIdentify( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(p2);
+    _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 BOOL WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *proc = WdeTabCSuperClassProc;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeTabCGetWindowClass ( WdeTabCObject *obj, char **class, void *p2 )
+BOOL WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
-    _wde_touch(obj);
-    _wde_touch(p2);
+    _wde_touch( obj );
+    _wde_touch( p2 );
 
     *class = WWC_TABCONTROL;
 
-    return ( TRUE );
+    return( TRUE );
 }
 
-BOOL WdeTabCDefine ( WdeTabCObject *obj, POINT *pnt, void *p2 )
+BOOL WdeTabCDefine( WdeTabCObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(pnt);
-    _wde_touch(p2);
+    _wde_touch( pnt );
+    _wde_touch( p2 );
 
-    o_info.obj       = obj->object_handle;
-    o_info.obj_id    = obj->object_id;
-    o_info.mask      = WS_VISIBLE | WS_DISABLED |
-                        WS_TABSTOP | WS_GROUP | WS_BORDER;
-    o_info.set_func  = WdeTabCSetDefineInfo;
-    o_info.get_func  = WdeTabCGetDefineInfo;
+    o_info.obj = obj->object_handle;
+    o_info.obj_id = obj->object_id;
+    o_info.mask = WS_VISIBLE | WS_DISABLED | WS_TABSTOP | WS_GROUP | WS_BORDER;
+    o_info.set_func = (WdeSetProc)WdeTabCSetDefineInfo;
+    o_info.get_func = (WdeGetProc)WdeTabCGetDefineInfo;
     o_info.hook_func = WdeTabCDefineHook;
-    o_info.win       = NULL;
+    o_info.win = NULL;
 
-    return ( WdeControlDefine ( &o_info ) );
+    return( WdeControlDefine( &o_info ) );
 }
 
-void WdeTabCSetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeTabCSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask;
 
     // set the tab control options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
-    if ( mask & TCS_FORCEICONLEFT ) {
-        CheckDlgButton ( hDlg, IDB_TCS_FORCEICONLEFT, 1);
+    if( mask & TCS_FORCEICONLEFT ) {
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
     }
-    if ( mask & TCS_FORCELABELLEFT ) {
-        CheckDlgButton ( hDlg, IDB_TCS_FORCELABELLEFT, 1);
+    if( mask & TCS_FORCELABELLEFT ) {
+        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 1 );
         // insist on FORCEICONLEFT and FIXEDWIDTH and disable FORCEICONLEFT
-        CheckDlgButton ( hDlg, IDB_TCS_FORCEICONLEFT, 1);
-        CheckDlgButton ( hDlg, IDB_TCS_FIXEDWIDTH, 1);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), FALSE);
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, 1 );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
     }
-    if ( mask & TCS_BUTTONS ) {
-        CheckDlgButton ( hDlg, IDB_TCS_BUTTONS, 1);
+    if( mask & TCS_BUTTONS ) {
+        CheckDlgButton( hDlg, IDB_TCS_BUTTONS, 1 );
     } else {
-        CheckDlgButton ( hDlg, IDB_TCS_TABS, 1);
+        CheckDlgButton( hDlg, IDB_TCS_TABS, 1 );
     }
-    if ( mask & TCS_RAGGEDRIGHT ) {
-        CheckDlgButton ( hDlg, IDB_TCS_RAGGEDRIGHT, 1);
+    if( mask & TCS_RAGGEDRIGHT ) {
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
     } else {
-        CheckDlgButton ( hDlg, IDB_TCS_RIGHTJUSTIFY, 1);
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 1 );
     }
-    if ( mask & TCS_MULTILINE ) {
-        CheckDlgButton ( hDlg, IDB_TCS_MULTILINE, 1);
+    if( mask & TCS_MULTILINE ) {
+        CheckDlgButton( hDlg, IDB_TCS_MULTILINE, 1 );
     } else {
-        CheckDlgButton ( hDlg, IDB_TCS_SINGLELINE, 1);
+        CheckDlgButton( hDlg, IDB_TCS_SINGLELINE, 1 );
         // force raggedright on and disable both it and right justify
-        CheckDlgButton ( hDlg, IDB_TCS_RAGGEDRIGHT, 1);
-        CheckDlgButton ( hDlg, IDB_TCS_RIGHTJUSTIFY, 0);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), FALSE);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), FALSE);
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
     }
-    if ( mask & TCS_FIXEDWIDTH ) {
-        CheckDlgButton ( hDlg, IDB_TCS_FIXEDWIDTH, 1);
+    if( mask & TCS_FIXEDWIDTH ) {
+        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, 1 );
         // force raggedright on and disable both it and right justify
-        CheckDlgButton ( hDlg, IDB_TCS_RAGGEDRIGHT, 1);
-        CheckDlgButton ( hDlg, IDB_TCS_RIGHTJUSTIFY, 0);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), FALSE);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), FALSE);
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
     } else {
         // turn off FORCE ... LEFT controls and disable them
-        CheckDlgButton ( hDlg, IDB_TCS_FORCEICONLEFT, 0);
-        CheckDlgButton ( hDlg, IDB_TCS_FORCELABELLEFT, 0);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), FALSE);
-        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCELABELLEFT), FALSE);
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 0 );
+        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 0 );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
+        EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), FALSE );
     }
-    if ( mask & TCS_FOCUSONBUTTONDOWN ) {
-        CheckDlgButton ( hDlg, IDB_TCS_FOCUSONBUTTONDOWN, 1);
+    if( mask & TCS_FOCUSONBUTTONDOWN ) {
+        CheckDlgButton( hDlg, IDB_TCS_FOCUSONBUTTONDOWN, 1 );
     }
-    if ( mask & TCS_OWNERDRAWFIXED ) {
-        CheckDlgButton ( hDlg, IDB_TCS_OWNERDRAWFIXED, 1);
+    if( mask & TCS_OWNERDRAWFIXED ) {
+        CheckDlgButton( hDlg, IDB_TCS_OWNERDRAWFIXED, 1 );
     }
-    if ( mask & TCS_TOOLTIPS ) {
-        CheckDlgButton ( hDlg, IDB_TCS_TOOLTIPS, 1);
+    if( mask & TCS_TOOLTIPS ) {
+        CheckDlgButton( hDlg, IDB_TCS_TOOLTIPS, 1 );
     }
-    if ( mask & TCS_FOCUSNEVER ) {
-        CheckDlgButton ( hDlg, IDB_TCS_FOCUSNEVER, 1);
+    if( mask & TCS_FOCUSNEVER ) {
+        CheckDlgButton( hDlg, IDB_TCS_FOCUSNEVER, 1 );
     }
 
     // set the extended style controls only
     WdeEXSetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-void WdeTabCGetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
+void WdeTabCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask = 0;
 
     // get the tab control settings
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_FORCEICONLEFT ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_FORCEICONLEFT ) ) {
         mask |= TCS_FORCEICONLEFT;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_FORCELABELLEFT ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_FORCELABELLEFT ) ) {
         mask |= TCS_FORCELABELLEFT;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_BUTTONS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_BUTTONS ) ) {
         mask |= TCS_BUTTONS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_MULTILINE ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_MULTILINE ) ) {
         mask |= TCS_MULTILINE;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_RAGGEDRIGHT ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_RAGGEDRIGHT ) ) {
         mask |= TCS_RAGGEDRIGHT;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_FIXEDWIDTH ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_FIXEDWIDTH ) ) {
         mask |= TCS_FIXEDWIDTH;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_FOCUSONBUTTONDOWN ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_FOCUSONBUTTONDOWN ) ) {
         mask |= TCS_FOCUSONBUTTONDOWN;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_OWNERDRAWFIXED ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_OWNERDRAWFIXED ) ) {
         mask |= TCS_OWNERDRAWFIXED;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_TOOLTIPS ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_TOOLTIPS ) ) {
         mask |= TCS_TOOLTIPS;
     }
-    if ( IsDlgButtonChecked ( hDlg, IDB_TCS_FOCUSNEVER ) ) {
+    if( IsDlgButtonChecked( hDlg, IDB_TCS_FOCUSNEVER ) ) {
         mask |= TCS_FOCUSNEVER;
     }
 
     SETCTL_STYLE( o_info->info.c.info,
-                  ( GETCTL_STYLE(o_info->info.c.info) & 0xffff0000 ) | mask );
+                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
-    WdeEXGetDefineInfo ( o_info, hDlg );
+    WdeEXGetDefineInfo( o_info, hDlg );
 #else
-    _wde_touch(o_info);
-    _wde_touch(hDlg);
+    _wde_touch( o_info );
+    _wde_touch( hDlg );
 #endif
 }
 
-BOOL WdeTabCDefineHook( HWND hDlg, WORD message,
+BOOL WdeTabCDefineHook( HWND hDlg, UINT message,
                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
@@ -511,90 +499,85 @@ BOOL WdeTabCDefineHook( HWND hDlg, WORD message,
     WORD wp;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch(mask);
-    _wde_touch(lParam);
+    _wde_touch( mask );
+    _wde_touch( lParam );
 
     processed = FALSE;
 
-    if ( ( message == WM_COMMAND ) &&
-         ( GET_WM_COMMAND_CMD(wParam,lParam) == BN_CLICKED ) ) {
-        wp = LOWORD ( wParam );
-        switch ( wp ) {
-           case IDB_TCS_FIXEDWIDTH:
-                if (IsDlgButtonChecked(hDlg,IDB_TCS_FIXEDWIDTH)) {
-                    // force raggedright on and disable both controls
-                    CheckDlgButton ( hDlg, IDB_TCS_RAGGEDRIGHT, 1);
-                    CheckDlgButton ( hDlg, IDB_TCS_RIGHTJUSTIFY, 0);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), FALSE);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), FALSE);
-                    // enable the FORCE...LEFT controls
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), TRUE);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCELABELLEFT), TRUE);
-                } else {
-                    // enable RAGGEDRIGHT and RIGHTJUSTIFY controls
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), TRUE);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), TRUE);
-                    // disable the FORCE...LEFT controls
-                    CheckDlgButton ( hDlg, IDB_TCS_FORCEICONLEFT, 0);
-                    CheckDlgButton ( hDlg, IDB_TCS_FORCELABELLEFT, 0);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), FALSE);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCELABELLEFT), FALSE);
-                }
-                processed = TRUE;
-                break;
+    if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
+        wp = LOWORD( wParam );
+        switch( wp ) {
+        case IDB_TCS_FIXEDWIDTH:
+            if( IsDlgButtonChecked( hDlg, IDB_TCS_FIXEDWIDTH ) ) {
+                // force raggedright on and disable both controls
+                CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
+                CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
+                // enable the FORCE...LEFT controls
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), TRUE );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), TRUE );
+            } else {
+                // enable RAGGEDRIGHT and RIGHTJUSTIFY controls
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), TRUE );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), TRUE );
+                // disable the FORCE...LEFT controls
+                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 0 );
+                CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 0 );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), FALSE );
+            }
+            processed = TRUE;
+            break;
 
-           case IDB_TCS_FORCELABELLEFT:
-                if (IsDlgButtonChecked(hDlg, IDB_TCS_FORCELABELLEFT)) {
-                    // turn on FORCEICONLEFT as well, and disable it
-                    CheckDlgButton ( hDlg, IDB_TCS_FORCEICONLEFT, 1);
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), FALSE);
-                } else {
-                    // enable the FORCEICONLEFT control
-                    EnableWindow ( GetDlgItem(hDlg, IDB_TCS_FORCEICONLEFT), TRUE);
-                }
-                processed = TRUE;
-                break;
+       case IDB_TCS_FORCELABELLEFT:
+            if( IsDlgButtonChecked( hDlg, IDB_TCS_FORCELABELLEFT ) ) {
+                // turn on FORCEICONLEFT as well, and disable it
+                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
+            } else {
+                // enable the FORCEICONLEFT control
+                EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), TRUE );
+            }
+            processed = TRUE;
+            break;
 
-           case IDB_TCS_MULTILINE:
-           case IDB_TCS_SINGLELINE:
-                if (!IsDlgButtonChecked(hDlg,IDB_TCS_FIXEDWIDTH)) {
-                    if (IsDlgButtonChecked(hDlg, IDB_TCS_MULTILINE)) {
-                        // enable the RAGGEDRIGHT and RIGHTJUSTIFY control
-                        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), TRUE);
-                        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), TRUE);
-                    } else {
-                        // force RAGGEDRIGHT and disable it and RIGHTJUSTIFY
-                        CheckDlgButton ( hDlg, IDB_TCS_RAGGEDRIGHT, 1);
-                        CheckDlgButton ( hDlg, IDB_TCS_RIGHTJUSTIFY, 0);
-                        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RAGGEDRIGHT), FALSE);
-                        EnableWindow ( GetDlgItem(hDlg, IDB_TCS_RIGHTJUSTIFY), FALSE);
-                    }
+       case IDB_TCS_MULTILINE:
+       case IDB_TCS_SINGLELINE:
+            if( !IsDlgButtonChecked( hDlg, IDB_TCS_FIXEDWIDTH ) ) {
+                if( IsDlgButtonChecked( hDlg, IDB_TCS_MULTILINE ) ) {
+                    // enable the RAGGEDRIGHT and RIGHTJUSTIFY control
+                    EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), TRUE );
+                    EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), TRUE );
+                } else {
+                    // force RAGGEDRIGHT and disable it and RIGHTJUSTIFY
+                    CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
+                    CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+                    EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
+                    EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
                 }
-                processed = TRUE;
-                break;
+            }
+            processed = TRUE;
+            break;
         }
     }
 
     return( processed );
 #else
-    _wde_touch(hDlg);
-    _wde_touch(message);
-    _wde_touch(wParam);
-    _wde_touch(lParam);
-    _wde_touch(mask);
-    return ( FALSE );
+    _wde_touch( hDlg );
+    _wde_touch( message );
+    _wde_touch( wParam );
+    _wde_touch( lParam );
+    _wde_touch( mask );
+    return( FALSE );
 #endif
 }
 
 LRESULT WINEXPORT WdeTabCSuperClassProc( HWND hWnd, UINT message,
-                                         WPARAM wParam,
-                                         LPARAM lParam )
+                                         WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return( CallWindowProc( WdeOriginalTabCProc,
-                                 hWnd, message, wParam, lParam ) );
+        return( CallWindowProc( WdeOriginalTabCProc, hWnd, message, wParam, lParam ) );
     }
     return( FALSE );
 }
-
-

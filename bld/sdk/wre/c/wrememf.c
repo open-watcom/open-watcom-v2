@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wremem.h"
@@ -89,7 +89,7 @@ Bool WREChangeMemFlags( void )
 
     if( ok ) {
         cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = ( cb != (FARPROC)NULL );
+        ok = (cb != (FARPROC)NULL);
     }
 
     if( ok ) {
@@ -105,10 +105,9 @@ Bool WREChangeMemFlags( void )
         FreeProcInstance( (FARPROC)cb );
     }
 
-    if( name ) {
+    if( name != NULL ) {
         WREMemFree( name );
     }
 
     return( ok );
 }
-

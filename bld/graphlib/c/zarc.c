@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _arc_w( double x1, double y1, double x2, double y2,
+_WCRTLINK short _WCI86FAR _CGRAPH _arc_w( double x1, double y1, double x2, double y2,
 /*======================*/ double x3, double y3, double x4, double y4 )
 
 /* This function draws an elliptical arc in window coordinates. The virtual
@@ -61,7 +61,7 @@ short _WCI86FAR _CGRAPH _arc_w( double x1, double y1, double x2, double y2,
 Entry( _ARC_W, _arc_w ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _arc_wxy( struct _wxycoord _WCI86FAR * p1,
+_WCRTLINK short _WCI86FAR _CGRAPH _arc_wxy( struct _wxycoord _WCI86FAR * p1,
 /*========================*/ struct _wxycoord _WCI86FAR * p2,
                              struct _wxycoord _WCI86FAR * p3,
                              struct _wxycoord _WCI86FAR * p4 )
@@ -80,7 +80,7 @@ short _WCI86FAR _CGRAPH _arc_wxy( struct _wxycoord _WCI86FAR * p1,
 Entry( _ARC_WXY, _arc_wxy ) // alternate entry-point
 
 
-short _WCI86FAR _CGRAPH _arc_w_87( double x1, double y1, double x2, double y2,
+_WCRTLINK short _WCI86FAR _CGRAPH _arc_w_87( double x1, double y1, double x2, double y2,
 /*=========================*/ double x3, double y3, double x4, double y4 )
 
 {

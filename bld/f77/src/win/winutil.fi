@@ -1,0 +1,31 @@
+*$noreference
+
+! Utility Functions:
+! ------------------
+
+      external MulDiv
+      external wvsprintf
+      external wsprintf
+
+      integer*2 MulDiv
+      integer*2 wvsprintf
+      integer*2 wsprintf
+
+! These functions are defined by pragmas:
+! ---------------------------------------
+
+      integer*4 MAKELONG
+      integer*2 LOWORD, HIWORD
+      integer*1 LOBYTE, HIBYTE
+
+      integer*4 RGB
+      integer*4 PALETTERGB
+      integer*4 PALETTEINDEX
+
+      integer*1 GetRValue
+      integer*1 GetGValue
+      integer*1 GetBValue
+
+      integer*4 MAKEINTRESOURCE
+
+*$reference

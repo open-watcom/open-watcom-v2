@@ -1,33 +1,59 @@
-//
-//  strstrea.h  String streams
+///////////////////////////////////////////////////////////////////////////
+// FILE: strstrea/strstrea.h (strstream support)
 //
 :keep CPP_HDR
 :include crwat.sp
 //
-#ifndef _STRSTREAM_H_INCLUDED
-#define _STRSTREAM_H_INCLUDED
+// Description: This header is part of the C++ standard library. It
+//              defines the necessary classes for strstream support.
+///////////////////////////////////////////////////////////////////////////
+:segment !CNAME
+#ifndef _STRSTREA_H_INCLUDED
+#define _STRSTREA_H_INCLUDED
+
 :include readonly.sp
 
-#ifndef __cplusplus
-#error strstrea.h is for use with C++
+#ifndef _STRSTREA_INCLUDED
+ #include <strstrea>
 #endif
+using std::strstreambuf;
+using std::strstreambase;
+using std::istrstream;
+using std::ostrstream;
+using std::strstream;
 
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
+// All included names should also be in the global namespace.
 #ifndef _IOSTREAM_H_INCLUDED
  #include <iostream.h>
 #endif
 
-// **************************** STRSTREAMBUF *********************************
+#endif
+:elsesegment
+#ifndef _STRSTREA_INCLUDED
+#define _STRSTREA_INCLUDED
+
+:include readonly.sp
+
+:include cpponly.sp
+
+:include owrtlink.sp
+
+#ifndef _IOSTREAM_INCLUDED
+ #include <iostream>
+#endif
+
+namespace std {
+
+  // **************************** STRSTREAMBUF *******************************
+
 :include pshpackl.sp
-class _WPRTLINK strstreambuf : public streambuf {
-public:
+  class _WPRTLINK strstreambuf : public streambuf {
+  public:
     strstreambuf();
     strstreambuf( int __allocation_size );
     strstreambuf( void *(*__alloc_fn)( long ), void (*__free_fn)( void * ) );
     strstreambuf( char *__str, int __size, char *__pstart = NULL );
-    ~strstreambuf();
+   ~strstreambuf();
 
     int   alloc_size_increment( int __increment );
     void  freeze( int __freeze = 1 );
@@ -41,10 +67,10 @@ public:
                                 ios::openmode __mode );
     virtual int        sync();
 
-protected:
+  protected:
     virtual int doallocate();
 
-private:
+  private:
     void  __strstreambuf( char *, int, char * );
 
     void *(*__alloc_fn)( long );
@@ -54,66 +80,71 @@ private:
     unsigned  __frozen    : 1;
     unsigned  __dynamic   : 1;
     unsigned  __unlimited : 1;
-};
+  };
 :include poppack.sp
 
-inline strstreambuf::strstreambuf() {
+  inline strstreambuf::strstreambuf() {
     __strstreambuf( NULL, 0, NULL );
-}
+  }
 
-inline strstreambuf::strstreambuf( char *__ptr, int __size, char *__pstart ) {
+  inline strstreambuf::strstreambuf( char *__ptr,
+                                     int __size,
+                                     char *__pstart ) {
     __strstreambuf( __ptr, __size, __pstart );
-}
+  }
 
-inline int strstreambuf::alloc_size_increment( int __increment ) {
+  inline int strstreambuf::alloc_size_increment( int __increment ) {
     __lock_it( __b_lock );
     int __old_allocation_size = __allocation_size;
     __allocation_size        += __increment;
     return( __old_allocation_size );
-}
+  }
 
-inline void strstreambuf::freeze( int __freeze ) {
+  inline void strstreambuf::freeze( int __freeze ) {
     __frozen = __freeze ? 1 : 0;
-}
+  }
 
-// **************************** STRSTREAMBASE ********************************
+  // **************************** STRSTREAMBASE ******************************
+
 :include pshpackl.sp
-class _WPRTLINK strstreambase : public virtual ios {
-public:
+  class _WPRTLINK strstreambase : public virtual ios {
+  public:
     strstreambuf *rdbuf() const;
 
-protected:
+  protected:
     strstreambase();
     strstreambase( char *__str, int __size, char *__pstart = NULL );
     ~strstreambase();
 
-private:
+  private:
     strstreambuf __strstrmbuf;
-};
+  };
 :include poppack.sp
 
-inline strstreambuf *strstreambase::rdbuf() const {
+  inline strstreambuf *strstreambase::rdbuf() const {
     return( (strstreambuf *) ios::rdbuf() );
-}
+  }
 
-// ***************************** ISTRSTREAM **********************************
+  // ***************************** ISTRSTREAM ********************************
+
 :include pshpackl.sp
-class _WPRTLINK istrstream : public strstreambase, public istream {
-public:
+  class _WPRTLINK istrstream : public strstreambase, public istream {
+  public:
     istrstream(          char *__str );
     istrstream(   signed char *__str );
     istrstream( unsigned char *__str );
     istrstream(          char *__str, int __size );
     istrstream(   signed char *__str, int __size );
     istrstream( unsigned char *__str, int __size );
-    ~istrstream();
-};
+   ~istrstream();
+  };
 :include poppack.sp
 
-// ***************************** OSTRSTREAM **********************************
+  // ***************************** OSTRSTREAM ********************************
+
 :include pshpackl.sp
-class _WPRTLINK ostrstream : public strstreambase, public ostream {
-public:
+  class _WPRTLINK ostrstream : public strstreambase, public ostream {
+  public:
     ostrstream();
     ostrstream( char          *__str,
                 int            __size,
@@ -128,23 +159,24 @@ public:
 
     int   pcount() const;
     char *str();
-};
+  };
 :include poppack.sp
 
-inline char *ostrstream::str() {
+  inline char *ostrstream::str() {
     __lock_it( __i_lock );
     return( rdbuf()->str() );
-}
+  }
 
-inline int ostrstream::pcount() const {
+  inline int ostrstream::pcount() const {
     __lock_it( __i_lock );
     return( rdbuf()->out_waiting() );
-}
+  }
 
-// ***************************** STRSTREAM ***********************************
+  // ***************************** STRSTREAM *********************************
+
 :include pshpackl.sp
-class _WPRTLINK strstream : public strstreambase, public iostream {
-public:
+  class _WPRTLINK strstream : public strstreambase, public iostream {
+  public:
     strstream();
     strstream( char          *__str,
                int            __size,
@@ -158,12 +190,15 @@ public:
     ~strstream();
 
     char *str();
-};
+  };
 :include poppack.sp
 
-inline char *strstream::str() {
+  inline char *strstream::str() {
     __lock_it( __i_lock );
     return( rdbuf()->str() );
-}
+  }
+
+} // namespace std
 
 #endif
+:endsegment

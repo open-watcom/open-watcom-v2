@@ -1,0 +1,32 @@
+c$pragma aux MAKEULONG = "shl eax,16" \
+c			 "mov ax,dx" \
+c	parm ( value*2, value*2 ) [dx] [ax] value [eax] modify exact [eax]
+
+c$pragma aux (MAKEULONG) MAKELONG
+
+c$pragma aux MAKEUSHORT =
+c	parm ( value*1, value*1 ) [al] [ah] value [ax] modify exact []
+
+c$pragma aux (MAKEUSHORT) MAKESHORT
+
+c$pragma aux LOUCHAR =
+c	parm ( value*2 ) [ax] value [al] modify exact []
+
+c$pragma aux HIUCHAR = 
+c	parm ( value*2 ) [ax] value [ah] modify exact []
+
+c$pragma aux (LOUCHAR) LOBYTE
+
+c$pragma aux (HIUCHAR) HIBYTE
+
+c$pragma aux LOUSHORT = \
+c	parm ( value*4 ) [eax] value [ax] modify exact []
+
+c$pragma aux HIUSHORT = "shr eax,16" \
+c	parm ( value*4 ) [eax] value [ax] modify exact [eax]
+
+c$pragma aux (MAKEULONG) MAKEERRORID
+
+c$pragma aux (LOUSHORT) ERRORIDERROR
+
+c$pragma aux (HIUSHORT) ERRORIDSEV

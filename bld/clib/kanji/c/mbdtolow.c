@@ -32,9 +32,10 @@
 
 #include "variety.h"
 #include <mbctype.h>
+#include <mbstring.h>
 
 
-_WCRTLINK int _mbdtolower( unsigned int ch )
+_WCRTLINK unsigned int _mbdtolower( unsigned int ch )
 {
     return( _ismbdupper( ch )  ?  ( ch + 0x21 )  :  ch );
 }

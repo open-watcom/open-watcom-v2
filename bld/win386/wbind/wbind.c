@@ -24,33 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WBIND for the Win386 extender.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <io.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <fcntl.h>
-#include <malloc.h>
 #include <errno.h>
 #include <string.h>
+#ifdef __WATCOMC__
 #include <process.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#endif
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "banner.h"
-#include <win16.h>
-#include "..\h\winext.h"
 #include "watcom.h"
 #include "exedos.h"
 #include "exeos2.h"
+#include "exephar.h"
 
-#ifdef _DOS
- #include <dos.h>
-#endif
 #undef _WBIND_VERSION_
 #define _WBIND_VERSION_ "2.3"
 
@@ -59,7 +55,6 @@
 #define FALSE 0
 #define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
-
 #define RC_STR          "wrc"
 
 static int quietFlag=FALSE;
@@ -124,6 +119,7 @@ static void doBanner( void )
     myPrintf( "%s\n", banner1w( "Win386 Bind Utility",_WBIND_VERSION_ ) );
     myPrintf( "%s\n", banner2( "1991" ) );
     myPrintf( "%s\n", banner3 );
+    myPrintf( "%s\n", banner3a );
     myPrintf("\n");
 }
 
@@ -133,7 +129,7 @@ static void doUsage( char *str )
     quietFlag = FALSE;
     doBanner();
     if( str != NULL ) {
-        printf("Error - %s\n\n", str );
+        printf( "Error - %s\n\n", str );
     }
 
     printf("Usage:  wbind [file] [-udnq] [-D \"<desc>\"] [-s <supervisor>] [-R <rc options>]\n" );
@@ -174,44 +170,6 @@ static void errPrintf( char *str, ... )
 
 static long CopyFile( int in, int out, char *infile, char *outfile )
 {
-#ifdef _DOS
-    unsigned    bufsize;
-    unsigned    size;
-    unsigned    len;
-    unsigned    rc;
-    unsigned short seg;
-    long        totalsize;
-    void __far  *buff;
-
-    bufsize = IO_BUFF;
-    if( _dos_allocmem( (bufsize+15) >> 4, &seg ) != 0 ) {
-        bufsize = seg << 4;
-        if( _dos_allocmem( bufsize >> 4, &seg ) != 0 ) {
-            doError("Out of memory!");
-        }
-    }
-    buff = MK_FP( seg, 0 );
-    totalsize = 0L;
-    for(;;) {
-        rc = _dos_read( in, buff, bufsize, &size );
-        if( size == 0 ) {
-            break;
-        }
-
-        if( rc != 0 ) {
-            doError( "Error reading file \"%s\"", infile );
-        }
-        rc = _dos_write( out, buff, size, &len );
-        if( len != size ) {
-            doError( "Error writing file \"%s\"", outfile );
-        }
-        totalsize += len;
-        if( (unsigned) size != bufsize ) {
-            break;
-        }
-    }
-    _dos_freemem( seg );
-#else
     unsigned    size;
     unsigned    len;
     unsigned    bufsize;
@@ -221,7 +179,7 @@ static long CopyFile( int in, int out, char *infile, char *outfile )
     buff = myAlloc( IO_BUFF );
     bufsize = IO_BUFF;
     totalsize = 0L;
-    for(;;) {
+    for( ;; ) {
         size = read( in, buff, bufsize );
         if( size == 0 ) {
             break;
@@ -240,7 +198,6 @@ static long CopyFile( int in, int out, char *infile, char *outfile )
         }
     }
     free( buff );
-#endif
     return( totalsize );
 }
 
@@ -253,7 +210,11 @@ void FindExtender( char *extname, char *winext )
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
             strcpy( winext, watcom );
+#if defined( __UNIX__ )
+            strcat( winext, "/binw/" );
+#else
             strcat( winext, "\\binw\\" );
+#endif
             strcat( winext, extname );
             if( access( winext, R_OK ) == -1 ) {
                 winext[0] = '\0';               // indicate file not found
@@ -265,29 +226,50 @@ void FindExtender( char *extname, char *winext )
     }
 }
 
-main( int argc, char *argv[] )
+#ifndef __WATCOMC__
+#define P_WAIT 0
+int spawnvp( int mode, const char *cmd, const char * const *args )
 {
-    int         in,out,i,rcparm=0,pcnt;
-    int         Rflag=FALSE,nflag=FALSE;
-    int         uflag=FALSE;
-    int         dllflag=FALSE;
-    char        *wext=NULL;
-    long        tsize=0;
-    char        drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-    char        rex[_MAX_PATH];
-    char        exe[_MAX_PATH];
-    char        dll[_MAX_PATH];
-    char        res[_MAX_PATH];
-    char        winext[_MAX_PATH];
-    char        rc[256];
-    long        totalsize;
-    char        **arglist;
-    char        *path = NULL;
-    int         currarg,len;
-    rex_exe     re;
-    long        exelen;
-    char        *desc=NULL;
+    pid_t       pid;
+    int         status;
+
+    pid = fork();
+    if( pid == -1 )
+        return( -1 );
+    if( pid == 0 ) {
+        execvp( cmd, (char * const *)args );
+        _exit( 127 );
+    }
+    if( waitpid( pid, &status, 0 ) == -1 ) {
+        status = -1;
+    }
+    return( status );
+}
+#endif
+
+int main( int argc, char *argv[] )
+{
+    int             in, out, i, rcparm = 0, pcnt;
+    int             Rflag = FALSE, nflag = FALSE;
+    int             uflag = FALSE;
+    int             dllflag = FALSE;
+    char            *wext = NULL;
+    long            tsize = 0;
+    char            drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME];
+    char            ext[_MAX_EXT];
+    char            rex[_MAX_PATH];
+    char            exe[_MAX_PATH];
+    char            dll[_MAX_PATH];
+    char            res[_MAX_PATH];
+    char            winext[_MAX_PATH];
+    char            rc[256];
+    long            totalsize;
+    const char      **arglist;
+    char            *path = NULL;
+    int             currarg,len;
+    simple_header   re;
+    long            exelen;
+    char            *desc = NULL;
 
     /*
      * get parms
@@ -297,7 +279,11 @@ main( int argc, char *argv[] )
     }
     currarg=1;
     while( currarg < argc ) {
+#ifdef __UNIX__
+        if( argv[ currarg ][0] == '-' ) {
+#else
         if( argv[ currarg ][0] == '/' || argv[ currarg ][0] == '-' ) {
+#endif
             len = strlen( argv[ currarg ] );
             for( i=1; i<len; i++ ) {
                 switch( argv[ currarg ][i] ) {
@@ -351,9 +337,6 @@ main( int argc, char *argv[] )
      * get files to use
      */
     _splitpath( path, drive, dir, fname, ext );
-    strlwr( drive );
-    strlwr( dir );
-    strlwr( fname );
     _makepath( rex, drive, dir, fname, ".rex" );
     if( dllflag ) {
         _makepath( dll, drive, dir, fname, ".dll" );
@@ -377,17 +360,17 @@ main( int argc, char *argv[] )
             doError( "Could not open %s", rex );
         }
         lseek( in, MAGIC_OFFSET, SEEK_SET );
-        read( in, &exelen, sizeof( DWORD ) );
+        read( in, &exelen, sizeof( unsigned_32 ) );
         lseek( in, exelen, SEEK_SET );
-        read( in, &re, sizeof( rex_exe ) );
-        if( !(re.sig[0] == 'M' && re.sig[1] == 'Q') ) {
-            doError( "Not a bound WATCOM 32-bit Windows application" );
+        read( in, &re, sizeof( re ) );
+        if( re.signature != ('M' & ('Q' << 8)) ) {
+            doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
         lseek( in, exelen, SEEK_SET );
         CopyFile( in, out, path, rex );
         close( in );
         close( out );
-        myPrintf( ".REX file %s created", rex );
+        myPrintf( ".rex file %s created", rex );
         exit( 0 );
     }
 
@@ -400,7 +383,6 @@ main( int argc, char *argv[] )
     } else {
         strcpy( winext, wext );
     }
-    strlwr( winext );
     if( dllflag ) {
         myPrintf("Loading 32-bit Windows DLL Supervisor \"%s\"\n",winext );
     } else {
@@ -430,7 +412,7 @@ main( int argc, char *argv[] )
      * run the resource compiler
      */
     if( !nflag ) {
-        myPrintf("Invoking the resource compiler...\n");
+        myPrintf( "Invoking the resource compiler...\n" );
         if( Rflag ) {
             strcpy( rc, RC_STR );
             arglist = myAlloc( sizeof(char *) *(argc-rcparm +3) );
@@ -455,20 +437,20 @@ main( int argc, char *argv[] )
             remove( exe );
             switch( errno ) {
             case E2BIG:
-                doError( "Argument list too big. WRC step failed." );
+                doError( "Argument list too big. Resource compiler step failed." );
                 break;
             case ENOENT:
-                doError( "Could not find WRC.EXE." );
+                doError( "Could not find wrc.exe." );
                 break;
             case ENOMEM:
-                doError( "Not enough memory. WRC step failed." );
+                doError( "Not enough memory. Resource compiler step failed." );
                 break;
             }
-            doError( "Unknown error %d, WRC step failed.", errno );
+            doError( "Unknown error %d, resource compiler step failed.", errno );
         }
         if( i != 0 ) {
             remove( exe );
-            errPrintf( "WRC failed, return code = %d\n", i );
+            errPrintf( "Resource compiler failed, return code = %d\n", i );
             exit( i );
         }
     }
@@ -511,6 +493,5 @@ main( int argc, char *argv[] )
                 tsize,totalsize, tsize+totalsize );
     }
 
-    exit( 0 );
-
+    return( 0 );
 } /* main */

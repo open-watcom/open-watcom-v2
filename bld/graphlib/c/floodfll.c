@@ -33,7 +33,7 @@
 #include "gdefn.h"
 
 
-short _WCI86FAR _CGRAPH _floodfill( short x, short y, short stop_color )
+_WCRTLINK short _WCI86FAR _CGRAPH _floodfill( short x, short y, short stop_color )
 /*=================================================================
 
    This function fills an area starting at ( x, y ), in viewport coordinates,

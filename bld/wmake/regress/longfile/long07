@@ -1,0 +1,38 @@
+#
+#  LONGFILE TEST 07
+#
+#  Test that path with last character in search path being
+#  backslash works.
+#
+
+.EXTENSIONS: .out .txt
+
+TESTPATH=testpath\
+FILES=myfile.out "my second file.out"
+
+.txt: $(TESTPATH)
+
+.txt.out:
+    cp -s "$[@" "$^@"
+
+test: .symbolic create $(FILES) clean    
+
+create: .symbolic
+    -mkdir testpath
+    @echo Creating <<"testpath\myfile.txt"
+OK
+<< keep
+    @echo Creating <<"testpath\my second file.txt"
+OK
+<< keep
+
+myfile.out: $(TESTPATH)myfile.txt
+
+"my second file.out": $(TESTPATH)"my second file.txt"
+
+clean: .symbolic
+    -rm.exe testpath\myfile.txt
+    -rm.exe "testpath\my second file.txt"
+    -rm.exe myfile.out
+    -rm.exe "my second file.out"
+    -rmdir testpath

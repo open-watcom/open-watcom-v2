@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>DOS/32 Advanced DOS Extender - Documentation: Programmer's Reference []</title>
+  <link rel="stylesheet" href="../../sheet.css">
+</head>
+<body bgcolor="#ffffff" link="#0000f0" alink="#f00000" vlink="#700070">
+
+<table cellpadding="0" cellspacing="0" border="0" width="660"><tr><td>
+
+
+
+<p>&nbsp;</p>
+
+<p><center><b><i><font color="#990000" size=+2>DOS/32 Advanced DOS Extender
+- Programmer's Reference</font></i></b></center></p>
+
+<p><center><hr width="90%" size="1"></center></p>
+
+<p><b><font face="Verdana, Arial, Helvetica">2.26 - DPMI function 0303h
+- Allocate Real Mode Callback Address </font></b></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">Returns a unique real
+mode segment:offset, known as a &quot;real mode callback&quot; that will
+transfer control from real mode to a protected mode procedure. Callback
+addresses obtained with this function can be passed by a protected mode
+program to a real mode application, interrupt handler, device driver, or
+TSR, so that the real mode program can call procedures within the protected
+mode program or notify the protected mode program of an event.</font></p>
+
+<p>&nbsp;</p>
+
+<p><center><table width="90%" border="1" cellspacing="0" cellpadding="4">
+<tr>
+<td width="10%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">In:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#eeeeee"><b><font size=-1 face="Verdana, Arial, Helvetica">AX</font></b><font size=-1
+ face="Verdana, Arial, Helvetica"> = 0303h<br>
+<b>DS:ESI </b>= selector:offset of protected mode procedure to call<br>
+<b>ES:EDI </b>= selector:offset of 32h-byte buffer for real mode register
+data structure to be used when calling callback routine.</font></td></tr>
+<tr>
+<td width="10%" valign="TOP" bgcolor="#dedede"><b><font size=-1 face="Verdana, Arial, Helvetica">Out:</font></b></td>
+<td width="90%" valign="TOP" bgcolor="#dedede"><p><font size=-1 face="Verdana, Arial, Helvetica">if successful:<br>
+<b>CF</b> clear<br>
+<b>CX:DX</b> = segment:offset of real mode callback</font></p>
+
+<p><font size=-1 face="Verdana, Arial, Helvetica">if failed:<br>
+<b>CF</b> set<br>
+<b>AX</b> = error code</font></p>
+
+<blockquote>
+  <p><b><font size=-1 face="Verdana, Arial, Helvetica">8015h</font></b><font
+   size=-1 face="Verdana, Arial, Helvetica"> - callback unavailable</font></blockquote>
+</td></tr>
+</table>
+</center></p>
+
+<p><b><font size=-1 face="Verdana, Arial, Helvetica">Notes: </font></b></p>
+
+<blockquote>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">a) A descriptor may be
+  allocated for each callback to hold the real mode SS descriptor. Real mode
+  callbacks are a limited system resource. A client should use the Free Real
+  Mode Callback Address DPMI function 0304h to release a callback that it
+  is no longer using.</font></p>
+  <p><font size=-1 face="Verdana, Arial, Helvetica">b) The contents of the
+  real mode register data structure is not valid after the function call,
+  but only at the time of the actual callback. </font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+<p><center><hr width="90%" size="1"></center></p>
+<p><center><font size=-2 face="Verdana, Arial, Helvetica">Copyright &copy; DOS/32 Advanced Team 1996-2002<br>All Rights Reserved</font></center>
+</td></tr></table>
+</body>
+</html>

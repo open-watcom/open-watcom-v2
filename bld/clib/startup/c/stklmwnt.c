@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Stack limit setup for Win32.
 *
 ****************************************************************************/
 
@@ -35,13 +34,13 @@
 #include <stdlib.h>
 #include <windows.h>
 
-void __init_stack_limits( unsigned *stacklow, unsigned *stacktop ) {
-
-    unsigned low;
-    unsigned top;
-
-    int dummy;
+void __init_stack_limits( unsigned *stacklow, unsigned *stacktop )
+{
+    unsigned                    low;
+    unsigned                    top;
+    int                         dummy;
     MEMORY_BASIC_INFORMATION    mbi;
+
     VirtualQuery( &dummy, &mbi, sizeof( mbi ) );
 
     top = ((unsigned)mbi.BaseAddress) + mbi.RegionSize;

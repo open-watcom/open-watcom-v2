@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Set active drive (OS/2 version).
 *
 ****************************************************************************/
 
@@ -36,21 +35,22 @@
 
 
 _WCRTLINK void _dos_setdrive( unsigned drivenum, unsigned *drives )
-    {
-        OS_UINT drive_number;
-        ULONG   logical_drives;
-        unsigned count;
+{
+    OS_UINT     drive_number;
+    ULONG       logical_drives;
+    unsigned    count;
 
 #if defined(__WARP__)
-        DosQueryCurrentDisk( &drive_number, &logical_drives );
-        DosSetDefaultDisk( drivenum );
+    DosQueryCurrentDisk( &drive_number, &logical_drives );
+    DosSetDefaultDisk( drivenum );
 #else
-        DosQCurDisk( &drive_number, &logical_drives );
-        DosSelectDisk( drivenum );
+    DosQCurDisk( &drive_number, &logical_drives );
+    DosSelectDisk( drivenum );
 #endif
-        for( count = 0; logical_drives != 0; ) {
-            if( logical_drives & 1 )  ++count;
-            logical_drives >>= 1;
-        }
-        *drives = count;
+    for( count = 0; logical_drives != 0; ) {
+        if( logical_drives & 1 )
+            ++count;
+        logical_drives >>= 1;
     }
+    *drives = count;
+}

@@ -1,0 +1,28 @@
+LIBRARY     COMMDLG
+EXPORTS
+    GETOPENFILENAME                @1
+    GETSAVEFILENAME                @2
+    CHOOSECOLOR                    @5
+    FILEOPENDLGPROC                @6
+    FILESAVEDLGPROC                @7
+    COLORDLGPROC                   @8
+    LOADALTERBITMAP                @9
+    FINDTEXT                       @11
+    REPLACETEXT                    @12
+    FINDTEXTDLGPROC                @13
+    REPLACETEXTDLGPROC             @14
+    CHOOSEFONT                     @15
+    FORMATCHARDLGPROC              @16
+    FONTSTYLEENUMPROC              @18
+    FONTFAMILYENUMPROC             @19
+    PRINTDLG                       @20
+    PRINTDLGPROC                   @21
+    PRINTSETUPDLGPROC              @22
+    EDITINTEGERONLY                @23
+    WANTARROWS                     @25
+    COMMDLGEXTENDEDERROR           @26
+    GETFILETITLE                   @27
+    WEP                            @28
+    DWLBSUBCLASS                   @29
+    DWUPARROWHACK                  @30
+    DWOKSUBCLASS                   @31

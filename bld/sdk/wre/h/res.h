@@ -35,4 +35,3 @@
 #define IDM_RNTYPETEXT  303
 #define IDM_RNTYPE      304
 #define IDM_RNTOTALTEXT 305
-

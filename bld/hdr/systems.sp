@@ -1,7 +1,6 @@
 :remove DOS
 :remove QNX
+:remove LINUX
 :remove NETWARE
-:remove PENPOINT
 :remove UNICODE
-:remove QNX_OR_PENPOINT
 :remove NEC

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Object file output structures and functions.
 *
 ****************************************************************************/
 
@@ -56,8 +55,8 @@ extern owl_offset ObjAlign( owl_section_handle section, uint_8 alignment );
 //extern owl_offset ObjTellOffset( owl_section_handle section );
 extern void ObjEmitReloc( owl_section_handle section, void *target, owl_reloc_type type, bool do_align, bool named_sym );
 extern void ObjDirectEmitReloc( owl_section_handle section, owl_offset offset, void *target, owl_reloc_type type, bool named_sym );
-extern void ObjRelocsFini();
-extern void ObjFini();
+extern void ObjRelocsFini( void );
+extern void ObjFini( void );
 extern sym_obj_hdl ObjSymbolInit( char *name );
 #else
 extern void AsiObjInit( void );
@@ -76,8 +75,8 @@ extern owl_offset AsiObjAlign( uint_8 alignment );
 //extern owl_offset AsiObjTellOffset( void );
 extern void AsiObjEmitReloc( void *target, owl_reloc_type type, bool do_align, bool named_sym );
 extern void AsiObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type type, bool named_sym );
-extern void AsiObjRelocsFini();
-extern void AsiObjFini();
+extern void AsiObjRelocsFini( void );
+extern void AsiObjFini( void );
 extern sym_obj_hdl AsiObjSymbolInit( char *name );
 
 #define CurrAlignment                   AsCurrAlignment

@@ -24,15 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Sample window #2.
 *
 ****************************************************************************/
 
 
 
 /*
- * IMPORTANT NOTE: This is a very wierd window. The NextRow routine
+ * IMPORTANT NOTE: This is a very weird window. The NextRow routine
  *                 is only needed if you want to have tabstops in
  *                 your title line. If not, there's a much easier way
  *                 to have a title. See window 4b.
@@ -42,7 +41,7 @@
 #include "app.h"
 #include "auipvt.h"
 
-extern void W1Open();
+extern void W1Open( void );
 
 typedef struct {
     int         top;

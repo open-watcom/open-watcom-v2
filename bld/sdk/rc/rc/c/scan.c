@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Lexical scanner, Windows RC version.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "varstr.h"
-#include "types.h"
+#include "rctypes.h"
 #include "global.h"
 #include "rcio.h"
 #include "rcmem.h"
@@ -42,17 +41,16 @@
 #include "scan.h"
 #include "keyword.h"
 #include "depend.h"
-//#include "rcdll.h"
 #include "errprt.h"
 
 #ifdef SCANDEBUG
 
 #define DEBUGPUTS(s) PutScanString(s);
 
-static void PutScanString( const char * string )
+static void PutScanString( const char *string )
 {
     if( CmdLineParms.DebugScanner && string != NULL ) {
-        RcFprintf( stdout, NULL, "%s\n", string );
+        RcMsgFprintf( stdout, NULL, "%s\n", string );
     }
 } /* PutScanString */
 
@@ -66,8 +64,9 @@ static void PutScanString( const char * string )
 static int      _next;
 static int      LookAhead;
 static int      longString;
+static int      newLineInString = 0;
 
-static int ScanDFA( ScanValue * value );
+static int ScanDFA( ScanValue *value );
 
 static void GetNextChar( void )
 {
@@ -96,7 +95,7 @@ static void CharInit( void )
 #define change_state(s) goto s
 #define enter_start_state CharInit()
 
-static void AddDigitToInt( long * value, int base, int newchar )
+static void AddDigitToInt( long *value, int base, int newchar )
 {
     int     newdigit;
 
@@ -109,8 +108,8 @@ static void AddDigitToInt( long * value, int base, int newchar )
     *value = *value * base + newdigit;
 } /* AddDigitToInt */
 
-static int ScanCPPDirective( ScanValue * value )
-/**********************************************/
+static int ScanCPPDirective( ScanValue *value )
+/*********************************************/
 /* This function takes the correct action for the #line directive and returns */
 /* the token following the preprocessor stuff. It uses Scan to do it's */
 /* scanning. DON'T call this function from within Scan or the functions it */
@@ -184,13 +183,15 @@ static int ScanDFA( ScanValue * value )
 /*************************************/
 {
     long                newint;     /* these are used to accumulate parts of */
-    VarString *         newstring;  /* a new value */
+    VarString           *newstring; /* a new value */
     int                 token;
 #ifdef SCANDEBUG
     char                debugstring[10];
 #endif
     char                *stringFromFile;
+    int                 i;
 
+    value->intinfo.type  = SCAN_INT_TYPE_DEFAULT;
     value->string.string = NULL;
     longString = FALSE;
 
@@ -216,6 +217,7 @@ static int ScanDFA( ScanValue * value )
         } else switch (LookAhead) {
             case '"':
                 newstring = VarStringStart();  /* don't include the " */
+                newLineInString = 0; /* reset newline in string status */
                 do_transition( S_STRING );
             case '.':
                 newstring = VarStringStart();
@@ -250,7 +252,6 @@ static int ScanDFA( ScanValue * value )
             case ';':           do_transition( S_COMMENT );
             case '\\':
                 newstring = VarStringStart();
-                VarStringAddChar( newstring, '\\' );
                 VarStringAddChar( newstring, LookAhead );
                 do_transition( S_DOS_FILENAME );
             default:
@@ -282,11 +283,11 @@ static int ScanDFA( ScanValue * value )
 
     state(S_LPAREN):
         DEBUGPUTS( "(" )
-        return(Y_LPAREN);
+        return( Y_LPAREN );
 
     state(S_RPAREN):
         DEBUGPUTS( ")" )
-        return(Y_RPAREN);
+        return( Y_RPAREN );
 
     state( S_LSQ_BRACKET ):
         DEBUGPUTS( "[" )
@@ -298,43 +299,43 @@ static int ScanDFA( ScanValue * value )
 
     state(S_LBRACE):
         DEBUGPUTS( "{" )
-        return(Y_LBRACE);
+        return( Y_LBRACE );
 
     state(S_RBRACE):
         DEBUGPUTS( "}" )
-        return(Y_RBRACE);
+        return( Y_RBRACE );
 
     state(S_PLUS):
         DEBUGPUTS( "+" )
-        return(Y_PLUS);
+        return( Y_PLUS );
 
     state(S_MINUS):
         DEBUGPUTS( "-" )
-        return(Y_MINUS);
+        return( Y_MINUS );
 
     state(S_BITNOT):
         DEBUGPUTS( "~" )
-        return(Y_BITNOT);
+        return( Y_BITNOT );
 
     state(S_NOT):
         if( LookAhead == '=' ) {
             do_transition( S_NE );
         } else {
             DEBUGPUTS( "!" )
-            return(Y_NOT);
+            return( Y_NOT );
         }
 
     state(S_TIMES):
         DEBUGPUTS( "*" )
-        return(Y_TIMES);
+        return( Y_TIMES );
 
     state(S_DIVIDE):
         DEBUGPUTS( "/" )
-        return(Y_DIVIDE);
+        return( Y_DIVIDE );
 
     state(S_MOD):
         DEBUGPUTS( "%" )
-        return(Y_MOD);
+        return( Y_MOD );
 
     state(S_GT):
         switch (LookAhead) {
@@ -342,7 +343,7 @@ static int ScanDFA( ScanValue * value )
         case '=':       do_transition( S_GE );
         default:
             DEBUGPUTS( ">" )
-            return(Y_GT);
+            return( Y_GT );
         }
 
     state(S_LT):
@@ -351,7 +352,7 @@ static int ScanDFA( ScanValue * value )
         case '=':       do_transition( S_LE );
         default:
             DEBUGPUTS( "<" )
-            return(Y_LT);
+            return( Y_LT );
         }
 
     state(S_EQ):
@@ -367,73 +368,88 @@ static int ScanDFA( ScanValue * value )
             do_transition( S_AND );
         } else {
             DEBUGPUTS( "&" )
-            return(Y_BITAND);
+            return( Y_BITAND );
         }
 
     state(S_BITXOR):
         DEBUGPUTS( "^" )
-        return(Y_BITXOR);
+        return( Y_BITXOR );
 
     state(S_BITOR):
         if( LookAhead == '|' ) {
             do_transition( S_OR );
         } else {
             DEBUGPUTS( "|" )
-            return(Y_BITOR);
+            return( Y_BITOR );
         }
 
     state(S_QUESTION):
         DEBUGPUTS( "?" )
-        return(Y_QUESTION);
+        return( Y_QUESTION );
 
     state(S_COLON):
         DEBUGPUTS( ":" )
-        return(Y_COLON);
+        return( Y_COLON );
 
     state(S_COMMA):
         DEBUGPUTS( "," )
-        return(Y_COMMA);
+        return( Y_COMMA );
 
     state(S_NE):
         DEBUGPUTS( "!=" )
-        return(Y_NE);
+        return( Y_NE );
 
     state(S_SHIFTR):
         DEBUGPUTS( ">>" )
-        return(Y_SHIFTR);
+        return( Y_SHIFTR );
 
     state(S_GE):
         DEBUGPUTS( ">=" )
-        return(Y_GE);
+        return( Y_GE );
 
     state(S_SHIFTL):
         DEBUGPUTS( "<<" )
-        return(Y_SHIFTL);
+        return( Y_SHIFTL );
 
     state(S_LE):
         DEBUGPUTS( "<=" )
-        return(Y_LE);
+        return( Y_LE );
 
     state(S_ENDEQ):
         DEBUGPUTS( "==" )
-        return(Y_EQ);
+        return( Y_EQ );
 
     state(S_AND):
         DEBUGPUTS( "&&" )
-        return(Y_AND);
+        return( Y_AND );
 
     state(S_OR):
         DEBUGPUTS( "||" )
-        return(Y_OR);
+        return( Y_OR );
 
     state(S_STRING):
-        /* handle double-byte characters */
-        if( CharSet[ LookAhead ] == DB_CHAR ) {
+        /* handle multi-byte characters */
+        i = CharSetLen[LookAhead];
+        if( i ) {
             VarStringAddChar( newstring, LookAhead );
-            GetNextChar();
-            VarStringAddChar( newstring, LookAhead );
+            for( ; i > 0; --i ) {
+                GetNextChar();
+                VarStringAddChar( newstring, LookAhead );
+            }
             do_transition( S_STRING );
         }
+
+        // if newline in string was detected, remove all whitespace from
+        // begining of the next line
+        if( newLineInString ) {
+            if ( isspace( LookAhead ) ) {
+                do_transition( S_STRING );
+            } else {
+                // non whitespace was detected, reset newline flag, so whitespaces are treated normally
+                newLineInString = 0;
+            }
+        }
+
         switch (LookAhead) {
         case '"':           do_transition( S_STRINGEND );
         case '\\':          do_transition( S_ESCAPE_CHAR );
@@ -443,12 +459,13 @@ static int ScanDFA( ScanValue * value )
                 DEBUGPUTS( "STRING" )
                 return( Y_STRING );
             } else {
-                RcError( ERR_RUNAWAY_STRING );
-                ErrorHasOccured = TRUE;
-                value->string.string = VarStringEnd( newstring,
-                            &(value->string.length) );
-                DEBUGPUTS( value->string.string )
-                return( Y_SCAN_ERROR );
+                // MSVC's RC uses this obscure way of handling newline in strings and we follow.
+                // First store <space> and then <newline character>. Then on next line, all white
+                // spaces from begining of line is removed
+                VarStringAddChar( newstring, ' ' );
+                VarStringAddChar( newstring, LookAhead );
+                newLineInString = 1;
+                do_transition( S_STRING );
             }
         default:
             VarStringAddChar( newstring, LookAhead );
@@ -569,7 +586,7 @@ static int ScanDFA( ScanValue * value )
                 value->string.lstring = FALSE;
             }
             DEBUGPUTS( value->string.string )
-            return(Y_STRING);
+            return( Y_STRING );
         }
 
     state(S_DECIMAL):
@@ -588,12 +605,14 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_LONGSUFFIX):
         VarStringAddChar( newstring, LookAhead );
+        value->intinfo.type |= SCAN_INT_TYPE_LONG;
         if( toupper(LookAhead) == 'U' ) {
+            value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
             do_transition( S_ENDINT );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -602,12 +621,14 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_UNSIGNEDSUFFIX):
         VarStringAddChar( newstring, LookAhead );
+        value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
         if( toupper(LookAhead) == 'L' ) {
+            value->intinfo.type |= SCAN_INT_TYPE_LONG;
             do_transition( S_ENDINT );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -616,7 +637,7 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_ENDINT):
@@ -628,7 +649,7 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_HEXSTART):
@@ -653,7 +674,7 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
             value->intinfo.str = VarStringEnd( newstring, NULL );
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_OCT):
@@ -676,7 +697,7 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_HEX):
@@ -695,7 +716,7 @@ static int ScanDFA( ScanValue * value )
             value->intinfo.val = newint;
             value->intinfo.str = VarStringEnd( newstring, NULL );
             DEBUGPUTS( ltoa( newint, debugstring, 10 ) )
-            return(Y_INTEGER);
+            return( Y_INTEGER );
         }
 
     state(S_NAME):
@@ -735,8 +756,8 @@ static int ScanDFA( ScanValue * value )
         }
 } /* ScanDFA */
 
-extern int Scan( ScanValue * value )
-/**********************************/
+extern int Scan( ScanValue *value )
+/*********************************/
 {
     int     token;
 
@@ -756,10 +777,10 @@ extern void ScanInitStatics( void )
     longString = 0;
 }
 
-extern char *FindAndReplace( char* stringFromFile, FRStrings *frStrings )
+extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
 /***********************************************************************/
 {
-    char                *replacedString;
+    char                *replacedString = NULL;
     char                *foundString;
     int                 lenOfStringFromFile;
     int                 lenOfFindString;
@@ -825,43 +846,12 @@ extern char *FindAndReplace( char* stringFromFile, FRStrings *frStrings )
         }
         frStrings =  frStrings->next;
     }
+
     if( replacedString != NULL ) {
         RcMemFree( stringFromFile );
-        return replacedString;
+        return( replacedString );
     } else {
         RcMemFree( replacedString );
-        return stringFromFile;
+        return( stringFromFile );
     }
 }
-
-#if 0
-static void prependToString( ScanValue *value, char *stringFromFile )
-/******************************************************************/
-{
-
-    int                 lenOfPrependString=0;
-    int                 lenOfStringFromFile;
-
-    lenOfStringFromFile = value->string.length;
-    if( CmdLineParms.Prepend == TRUE ) {
-        if( strcmp( stringFromFile, "" ) != 0 ) {
-            lenOfPrependString =  strlen( CmdLineParms.PrependString );
-            value->string.string = RcMemMalloc( lenOfStringFromFile
-                                   + lenOfPrependString + 1);
-            strcpy( value->string.string, CmdLineParms.PrependString );
-        } else {
-            // in this case the lenOfPrependString is zero, so the
-            // strcpy will not fail.
-            value->string.string = RcMemMalloc( lenOfStringFromFile + 1 );
-        }
-        strcpy( &value->string.string[ lenOfPrependString ], stringFromFile );
-        value->string.length = lenOfStringFromFile + lenOfPrependString;
-    }
-    else {
-        value->string.string = RcMemMalloc( ( lenOfStringFromFile+1 ) );
-        strcpy( value->string.string, stringFromFile );
-        value->string.length = lenOfStringFromFile;
-    }
-    RcMemFree( stringFromFile );
-}
-#endif

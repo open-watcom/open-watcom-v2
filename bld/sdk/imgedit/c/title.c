@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "precomp.h"
 #include "imgedit.h"
 #include <io.h>
 #include "iemem.h"
@@ -41,8 +42,12 @@
 static HINSTANCE        wMainInst = NULL;
 static char             *appName;
 
+#ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
+
 /*
- * wTitle - The callback function for the displaying of the title screen.
+ * wTitle - callback function for the displaying of the title screen
  */
 BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
@@ -52,6 +57,10 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
     HWND         w666;
     RECT         rect, arect;
     PAINTSTRUCT  ps;
+#ifdef __NT__
+    HINSTANCE    hInstUser;
+    PFNLI        pfnLoadImage;
+#endif
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -59,97 +68,107 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
     static COLORREF  color;
 
     switch ( message ) {
-        case WM_INITDIALOG:
-            SetWindowText( hwnd, appName );
-            msecs = *((UINT *)lparam);
-            if ( msecs ) {
-                timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
-                if ( timer ) {
-                    SetWindowLong( hwnd, DWL_USER, (LONG)timer );
-                    SendMessage( hwnd, WM_SETTEXT, 0, (LPARAM)IEAppTitle );
-                }
+    case WM_INITDIALOG:
+        SetWindowText( hwnd, appName );
+        msecs = *((UINT *)lparam);
+        if( msecs != 0 ) {
+            timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
+            if( timer ) {
+                SetWindowLong( hwnd, DWL_USER, (LONG)timer );
             }
-
-            logo = LoadBitmap ( wMainInst, "APPLBITMAP" );
-            color = RGB( 192, 192, 192);
-            brush = CreateSolidBrush ( color );
-
-            GetObject ( logo, sizeof(BITMAP), &bm );
-            return( TRUE );
+        }
 
 #ifdef __NT__
-        case WM_CTLCOLORSTATIC:
-            if ( brush ) {
-                dc = (HDC)wparam;
-                SetBkColor( dc, color );
-                return( (LRESULT) brush );
-            }
-            break;
-#else
-        case WM_CTLCOLOR:
-            if ( brush ) {
-                dc = (HDC) wparam;
-                if ( HIWORD(lparam) == CTLCOLOR_STATIC ) {
-                    SetBkColor( dc, color );
-                }
-                return( (LRESULT) brush );
-            }
-            break;
+        hInstUser = GetModuleHandle( "USER32.DLL" );
+        pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+        if( pfnLoadImage != NULL ) {
+            logo = pfnLoadImage( wMainInst, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
+                                 LR_LOADMAP3DCOLORS );
+        } else {
+#endif
+            logo = LoadBitmap( wMainInst, "APPLBITMAP" );
+#ifdef __NT__
+        }
 #endif
 
-        case WM_ERASEBKGND:
-            if ( brush ) {
-                GetClientRect( hwnd, &rect );
-                UnrealizeObject( brush );
-                FillRect( (HDC)wparam, &rect, brush );
-                return ( TRUE );
-            }
-            break;
+        color = GetSysColor( COLOR_BTNFACE );
+        brush = CreateSolidBrush( color );
 
-        case WM_PAINT:
-            dc = BeginPaint( hwnd, &ps );
-            if ( dc ) {
-                w666 = GetDlgItem ( hwnd, 666 );
-                GetClientRect ( w666, &rect );
-                GetClientRect ( hwnd, &arect );
-                start = ( arect.right - arect.left - bm.bmWidth ) / 2;
-                MapWindowPoints( w666, hwnd, (POINT *)&rect, 2 );
-                tdc = CreateCompatibleDC( dc );
-                old = SelectObject( tdc, logo );
-                BitBlt( dc, start, rect.top + 5, bm.bmWidth, bm.bmHeight,
-                         tdc, 0, 0, SRCCOPY );
-                SelectObject ( tdc, old );
-                DeleteDC ( tdc );
-                EndPaint ( hwnd, &ps );
-            }
-            break;
+        GetObject( logo, sizeof( BITMAP ), &bm );
+        return( TRUE );
 
-        case WM_TIMER:
-            timer = (UINT) GetWindowLong( hwnd, DWL_USER );
-            if ( timer ) {
-                KillTimer( hwnd, timer );
+#ifdef __NT__
+    case WM_CTLCOLORSTATIC:
+        if( brush != NULL ) {
+            dc = (HDC)wparam;
+            SetBkColor( dc, color );
+            return( (LRESULT)brush );
+        }
+        break;
+#else
+    case WM_CTLCOLOR:
+        if( brush != NULL ) {
+            dc = (HDC)wparam;
+            if( HIWORD( lparam ) == CTLCOLOR_STATIC ) {
+                SetBkColor( dc, color );
             }
-            EndDialog( hwnd, TRUE );
-            return ( TRUE );
-            break;
+            return( (LRESULT)brush );
+        }
+        break;
+#endif
 
-        case WM_DESTROY:
-            if ( logo ) {
-                DeleteObject( logo );
-            }
-            if ( brush ) {
-                DeleteObject( brush );
-            }
-            break;
+    case WM_ERASEBKGND:
+        if( brush != NULL ) {
+            GetClientRect( hwnd, &rect );
+            UnrealizeObject( brush );
+            FillRect( (HDC)wparam, &rect, brush );
+            return( TRUE );
+        }
+        break;
 
-        default:
-            return( FALSE );
+    case WM_PAINT:
+        dc = BeginPaint( hwnd, &ps );
+        if( dc != NULL ) {
+            w666 = GetDlgItem( hwnd, 666 );
+            GetClientRect( w666, &rect );
+            GetClientRect( hwnd, &arect );
+            start = (arect.right - arect.left - bm.bmWidth) / 2;
+            MapWindowPoints( w666, hwnd, (POINT *)&rect, 2 );
+            tdc = CreateCompatibleDC( dc );
+            old = SelectObject( tdc, logo );
+            BitBlt( dc, start, rect.top + 5, bm.bmWidth, bm.bmHeight, tdc, 0, 0, SRCCOPY );
+            SelectObject( tdc, old );
+            DeleteDC( tdc );
+            EndPaint( hwnd, &ps );
+        }
+        break;
+
+    case WM_TIMER:
+        timer = (UINT)GetWindowLong( hwnd, DWL_USER );
+        if( timer ) {
+            KillTimer( hwnd, timer );
+        }
+        EndDialog( hwnd, TRUE );
+        return( TRUE );
+
+    case WM_DESTROY:
+        if( logo != NULL ) {
+            DeleteObject( logo );
+        }
+        if( brush != NULL ) {
+            DeleteObject( brush );
+        }
+        break;
+
+    default:
+        return( FALSE );
     }
-    return ( FALSE );
+    return( FALSE );
+
 } /* wTitle */
 
 /*
- * DisplayTitleScreen - displays the title screen on startup
+ * DisplayTitleScreen - display the title screen on startup
  */
 void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name )
 {
@@ -157,13 +176,13 @@ void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name
     int         len;
 
     len = strlen( app_name );
-    appName = MemAlloc( len+1 );
+    appName = MemAlloc( len + 1 );
     strcpy( appName, app_name );
 
     wMainInst = inst;
     fp = MakeProcInstance( (FARPROC)wTitle, inst );
-    JDialogBoxParam(inst, "WTitleScreen", parent, (DLGPROC)fp, (LPARAM)&msecs);
-    FreeProcInstance ( fp );
+    JDialogBoxParam( inst, "WTitleScreen", parent, (DLGPROC)fp, (LPARAM)&msecs );
+    FreeProcInstance( fp );
     MemFree( appName );
-}
 
+} /* DisplayTitleScreen */

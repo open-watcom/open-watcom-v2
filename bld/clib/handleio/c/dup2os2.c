@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include <unistd.h>
 #include "fileacc.h"
 #include "iomode.h"
 #include <wos2.h>

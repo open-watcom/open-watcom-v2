@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "plusplus.h"
 #include "errdefns.h"
 #include "ppops.h"
@@ -104,7 +101,6 @@ static void fmtSymOpName( SYMBOL sym, VBUF *pvbuf )
     TYPE type;
 
     VbufInit( pvbuf );
-    VStrNull( pvbuf );
     type = FunctionDeclarationType( sym->sym_type );
     if( type != NULL ) {
         FormatFunctionType( type->of
@@ -112,13 +108,9 @@ static void fmtSymOpName( SYMBOL sym, VBUF *pvbuf )
                           , &suffix
                           , 0
                           , FormatTypeDefault | FF_TYPEDEF_STOP );
-        if( suffix.buf != NULL ) {
-            VStrConcStrRev( pvbuf, suffix.buf );
-        }
-        VStrTruncWhite( pvbuf );
-        if( prefix.buf != NULL ) {
-            VStrConcStrRev( pvbuf, prefix.buf );
-        }
+        VbufConcVbufRev( pvbuf, &suffix );
+        VbufTruncWhite( pvbuf );
+        VbufConcVbufRev( pvbuf, &prefix );
         VbufFree( &prefix );
         VbufFree( &suffix );
     }
@@ -140,8 +132,8 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
         switch( oper ) {
         case CO_CONVERT:
             if( sym == NULL ) {
-                VStrConcStrRev( pvbuf, operatorSuffix );
-                VStrConcStrRev( pvbuf, operatorUnknown );
+                VbufConcStrRev( pvbuf, operatorSuffix );
+                VbufConcStrRev( pvbuf, operatorUnknown );
             } else {
                 fmtSymOpName( sym, &op_name );
                 fmtSymFunction( sym
@@ -149,14 +141,10 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
                               , &suffix
                               , (FormatTypeDefault & ~FF_USE_VOID)
                                                    | FF_DROP_RETURN );
-                if( suffix.buf != NULL ) {
-                    VStrConcStrRev( pvbuf, suffix.buf );
-                }
-                VStrConcStr( pvbuf, op_name.buf );
-                VStrConcStrRev( pvbuf, operatorPrefix );
-                if( prefix.buf != NULL ) {
-                    VStrConcStrRev( pvbuf, prefix.buf );
-                }
+                VbufConcVbufRev( pvbuf, &suffix );
+                VbufConcVbuf( pvbuf, &op_name );
+                VbufConcStrRev( pvbuf, operatorPrefix );
+                VbufConcVbufRev( pvbuf, &prefix );
                 VbufFree( &op_name );
                 VbufFree( &prefix );
                 VbufFree( &suffix );
@@ -164,59 +152,47 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
             break;
         case CO_CTOR:
             if( sym == NULL ) {
-                VStrConcStrRev( pvbuf, constructorName );
+                VbufConcStrRev( pvbuf, constructorName );
             } else {
                 ctordtor = TRUE;
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
-                if( suffix.buf != NULL ) {
-                    VStrConcStrRev( pvbuf, suffix.buf );
-                }
+                VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
-                    VStrConcStrRev( pvbuf, name );
+                    VbufConcStrRev( pvbuf, name );
                 }
-                if( prefix.buf != NULL ) {
-                    VStrConcStrRev( pvprefix, prefix.buf );
-                }
+                VbufConcVbufRev( pvprefix, &prefix );
                 VbufFree( &prefix );
                 VbufFree( &suffix );
             }
             break;
         case CO_DTOR:
             if( sym == NULL ) {
-                VStrConcStrRev( pvbuf, destructorName );
+                VbufConcStrRev( pvbuf, destructorName );
             } else {
                 ctordtor = TRUE;
                 name = SimpleTypeName( ScopeClass( SymScope( sym ) ) );
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault );
-                if( suffix.buf != NULL ) {
-                    VStrConcStrRev( pvbuf, suffix.buf );
-                }
+                VbufConcVbufRev( pvbuf, &suffix );
                 if( name != NULL ) {
-                    VStrConcStrRev( pvbuf, name );
+                    VbufConcStrRev( pvbuf, name );
                 }
-                VStrConcStrRev( pvbuf, dtorPrefix );
-                if( prefix.buf != NULL ) {
-                    VStrConcStrRev( pvprefix, prefix.buf );
-                }
+                VbufConcStrRev( pvbuf, dtorPrefix );
+                VbufConcVbufRev( pvprefix, &prefix );
                 VbufFree( &prefix );
                 VbufFree( &suffix );
             }
             break;
         default:
             if( sym == NULL ) {
-                VStrConcStrRev( pvbuf, fmtSymCgop( oper ) );
-                VStrConcStrRev( pvbuf, operatorPrefix );
+                VbufConcStrRev( pvbuf, fmtSymCgop( oper ) );
+                VbufConcStrRev( pvbuf, operatorPrefix );
             } else {
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault | control );
-                if( suffix.buf != NULL ) {
-                    VStrConcStrRev( pvbuf, suffix.buf );
-                }
-                VStrConcStrRev( pvbuf, fmtSymCgop( oper ) );
-                VStrConcStrRev( pvbuf, operatorPrefix );
-                if( prefix.buf != NULL ) {
-                    VStrConcStrRev( pvprefix, prefix.buf );
-                }
+                VbufConcVbufRev( pvbuf, &suffix );
+                VbufConcStrRev( pvbuf, fmtSymCgop( oper ) );
+                VbufConcStrRev( pvbuf, operatorPrefix );
+                VbufConcVbufRev( pvprefix, &prefix );
                 VbufFree( &prefix );
                 VbufFree( &suffix );
             }
@@ -224,7 +200,7 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
         }
     } else {
         if( sym == NULL ) {
-            VStrConcStrRev( pvbuf, name );
+            VbufConcStrRev( pvbuf, name );
         } else {
             if( SymIsFunction( sym ) ) {
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault | control );
@@ -234,19 +210,17 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
                 VbufInit( &prefix );
                 VbufInit( &suffix );
             }
-            if( suffix.buf != NULL ) {
-                VStrConcStrRev( pvbuf, suffix.buf );
-            }
-            VStrConcStrRev( pvbuf, name );
-            if( prefix.buf != NULL ) {
-                VStrConcStrRev( pvprefix, prefix.buf );
-            }
+            VbufConcVbufRev( pvbuf, &suffix );
+            VbufConcStrRev( pvbuf, name );
+            VbufConcVbufRev( pvprefix, &prefix );
             VbufFree( &prefix );
             VbufFree( &suffix );
         }
     }
     return( ctordtor );
 }
+
+static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function );
 
 static void formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
 /*************************************************************************/
@@ -255,7 +229,6 @@ static void formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
     boolean ctordtor;
 
     VbufInit( &prefix );
-    VStrNull( &prefix );
     if( sym->name == NULL ) {
         ctordtor = fmtSymName( sym, NULL, &prefix, pvbuf, control );
     } else {
@@ -264,17 +237,72 @@ static void formatScopedSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
     if( !SymIsAnonymous( sym ) ) {
         fmtSymScope( SymScope( sym ), pvbuf, TRUE );
     }
-    if( !ctordtor && prefix.buf != NULL ) {
-        VStrConcStr( pvbuf, prefix.buf );
+    if( !ctordtor ) {
+        VbufConcVbuf( pvbuf, &prefix );
     }
     VbufFree( &prefix );
 }
 
 static void makeUnknownTemplate( VBUF *parms )
 {
-    VStrConcStr( parms, templateParmStart );
-    VStrConcStr( parms, templateParmUnknown );
-    VStrConcStr( parms, templateParmStop );
+    VbufConcStr( parms, templateParmStart );
+    VbufConcStr( parms, templateParmUnknown );
+    VbufConcStr( parms, templateParmStop );
+}
+
+void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
+/***********************************************************/
+{
+    SYMBOL stop;
+    SYMBOL curr;
+    SYMBOL sym;
+    char *delim;
+    TYPE type;
+    auto VBUF sym_parm;
+    auto VBUF type_parm_prefix;
+    auto VBUF type_parm_suffix;
+
+    VbufInit( parms );
+    if( parm_scope == NULL ) {
+        makeUnknownTemplate( parms );
+        return;
+    }
+    delim = templateParmStart;
+    curr = NULL;
+    stop = ScopeOrderedStart( parm_scope );
+    for(;;) {
+        curr = ScopeOrderedNext( stop, curr );
+        if( curr == NULL ) break;
+        VbufConcStr( parms, delim );
+        type = curr->sym_type;
+        if( SymIsConstantInt( curr ) ) {
+            if( UnsignedIntType( type ) ) {
+                VbufConcDecimal( parms, curr->u.uval );
+            } else {
+                VbufConcInteger( parms, curr->u.sval );
+            }
+        } else if( SymIsTypedef( curr ) ) {
+            FormatType( type, &type_parm_prefix, &type_parm_suffix );
+            VbufTruncWhite( &type_parm_prefix );
+            VbufTruncWhite( &type_parm_suffix );
+            VbufConcVbuf( parms, &type_parm_prefix );
+            VbufConcVbuf( parms, &type_parm_suffix );
+            VbufFree( &type_parm_prefix );
+            VbufFree( &type_parm_suffix );
+        } else {
+            sym = SymAddressOf( curr );
+            if( sym != NULL ) {
+                FormatSym( sym, &sym_parm );
+                VbufConcVbuf( parms, &sym_parm );
+                VbufFree( &sym_parm );
+            }
+        }
+        delim = templateParmNext;
+    }
+    if( delim == templateParmStart ) {
+        VbufConcStr( parms, templateParmStart );
+    }
+    VbufConcStr( parms, templateParmStop );
 }
 
 void FormatUnboundTemplateParms( VBUF *parms, TYPE type )
@@ -286,58 +314,10 @@ void FormatUnboundTemplateParms( VBUF *parms, TYPE type )
 void FormatTemplateParms( VBUF *parms, TYPE class_type )
 /******************************************************/
 {
-    SYMBOL stop;
-    SYMBOL curr;
-    SYMBOL sym;
     SCOPE parm_scope;
-    char *delim;
-    TYPE type;
-    auto VBUF sym_parm;
-    auto VBUF type_parm_prefix;
-    auto VBUF type_parm_suffix;
-    auto char buff[32];
 
-    VbufInit( parms );
-    VStrNull( parms );
     parm_scope = TemplateClassParmScope( class_type );
-    if( parm_scope == NULL ) {
-        makeUnknownTemplate( parms );
-        return;
-    }
-    delim = templateParmStart;
-    curr = NULL;
-    stop = ScopeOrderedStart( parm_scope );
-    for(;;) {
-        curr = ScopeOrderedNext( stop, curr );
-        if( curr == NULL ) break;
-        VStrConcStr( parms, delim );
-        type = curr->sym_type;
-        if( SymIsConstantInt( curr ) ) {
-            if( UnsignedIntType( type ) ) {
-                ultoa( curr->u.uval, buff, 10 );
-            } else {
-                ltoa( curr->u.sval, buff, 10 );
-            }
-            VStrConcStr( parms, buff );
-        } else if( SymIsTypedef( curr ) ) {
-            FormatType( type, &type_parm_prefix, &type_parm_suffix );
-            VStrTruncWhite( &type_parm_prefix );
-            VStrTruncWhite( &type_parm_suffix );
-            VStrConcStr( parms, type_parm_prefix.buf );
-            VStrConcStr( parms, type_parm_suffix.buf );
-            VbufFree( &type_parm_prefix );
-            VbufFree( &type_parm_suffix );
-        } else {
-            sym = SymAddressOf( curr );
-            if( sym != NULL ) {
-                FormatSym( sym, &sym_parm );
-                VStrConcStr( parms, sym_parm.buf );
-                VbufFree( &sym_parm );
-            }
-        }
-        delim = templateParmNext;
-    }
-    VStrConcStr( parms, templateParmStop );
+    FormatTemplateParmScope( parms, parm_scope );
 }
 
 static void fmtTemplateParms( VBUF *pvbuf, TYPE class_type )
@@ -345,7 +325,7 @@ static void fmtTemplateParms( VBUF *pvbuf, TYPE class_type )
     auto VBUF parms;
 
     FormatTemplateParms( &parms, class_type );
-    VStrConcStrRev( pvbuf, parms.buf );
+    VbufConcVbufRev( pvbuf, &parms );
     VbufFree( &parms );
 }
 
@@ -362,30 +342,29 @@ static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
         case SCOPE_FILE:
             scope_name = ScopeNameSpaceFormatName( scope );
             if( scope_name != NULL ) {
-                VStrConcStrRev( pvbuf, scopeSep );
-                VStrConcStrRev( pvbuf, scope_name );
+                VbufConcStrRev( pvbuf, scopeSep );
+                VbufConcStrRev( pvbuf, scope_name );
             }
             break;
         case SCOPE_CLASS:
             class_type = ScopeClass( scope );
             scope_name = SimpleTypeName( class_type );
             if( scope_name != NULL ) {
-                VStrConcStrRev( pvbuf, scopeSep );
+                VbufConcStrRev( pvbuf, scopeSep );
                 if( class_type->flag & TF1_INSTANTIATION ) {
                     fmtTemplateParms( pvbuf, class_type );
                 }
-                VStrConcStrRev( pvbuf, scope_name );
+                VbufConcStrRev( pvbuf, scope_name );
             }
             break;
         case SCOPE_FUNCTION:
             if( include_function ) {
                 VbufInit( &prefix );
-                VStrNull( &prefix );
                 sym = ScopeFunction( scope );
                 formatScopedSym( sym, &prefix, FF_NULL );
-                if( prefix.buf != NULL ) {
-                    VStrConcStrRev( &prefix, functionDelim );
-                    VStrPrepStr( pvbuf, prefix.buf );
+                if( VbufLen( &prefix ) > 0 ) {
+                    VbufConcStrRev( &prefix, functionDelim );
+                    VbufPrepVbuf( pvbuf, &prefix );
                 }
                 VbufFree( &prefix );
             }
@@ -394,11 +373,12 @@ static void fmtSymScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
         case SCOPE_TEMPLATE_DECL:
         case SCOPE_TEMPLATE_INST:
         case SCOPE_TEMPLATE_PARM:
+        case SCOPE_TEMPLATE_SPEC_PARM:
             break;
         case SCOPE_MAX:
         default:
-            VStrConcStrRev( pvbuf, scopeSep );
-            VStrConcStrRev( pvbuf, scopeError );
+            VbufConcStrRev( pvbuf, scopeSep );
+            VbufConcStrRev( pvbuf, scopeError );
             break;
         }
         scope = scope->enclosing;
@@ -411,20 +391,18 @@ void FormatScope( SCOPE scope, VBUF *pvbuf, boolean include_function )
 //                  - else terminate scope resolution at function
 {
     VbufInit( pvbuf );
-    VStrNull( pvbuf );
     fmtSymScope( scope, pvbuf, include_function );
-    strrev( pvbuf->buf );
+    strrev( VbufString( pvbuf ) );
 }
 
 static void doFormatSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
 {
     VbufInit( pvbuf );
-    VStrNull( pvbuf );
     if( sym == NULL ) {
-        VStrConcStr( pvbuf, nullSymbol );
+        VbufConcStr( pvbuf, nullSymbol );
     } else {
         formatScopedSym( sym, pvbuf, control );
-        strrev( pvbuf->buf );
+        strrev( VbufString( pvbuf ) );
     }
 }
 
@@ -459,13 +437,11 @@ void FormatName( char *name, VBUF *pvbuf )
     boolean ctordtor;
 
     VbufInit( pvbuf );
-    VStrNull( pvbuf );
     VbufInit( &prefix );
-    VStrNull( &prefix );
     ctordtor = fmtSymName( NULL, name, &prefix, pvbuf, FF_NULL );
-    if( !ctordtor && prefix.buf != NULL ) {
-        VStrConcStr( pvbuf, prefix.buf );
+    if( !ctordtor ) {
+        VbufConcVbuf( pvbuf, &prefix );
     }
     VbufFree( &prefix );
-    strrev( pvbuf->buf );
+    strrev( VbufString( pvbuf ) );
 }

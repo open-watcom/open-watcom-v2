@@ -1,0 +1,345 @@
+/*
+ *  objbase.h   Component Object Model (COM) base functions
+ *
+:include crwatcnt.sp
+ */
+
+#include <rpc.h>
+#include <rpcndr.h>
+
+#ifndef _OBJBASE_H_
+#define _OBJBASE_H_
+
+:include readonly.sp
+
+#include <stdlib.h>
+
+/* Macros to specify OLE functions */
+#define WINOLEAPI       EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
+#define WINOLEAPI_( x ) EXTERN_C DECLSPEC_IMPORT x STDAPICALLTYPE
+
+:include intrface.sp
+#define DECLARE_INTERFACE_IID( x, p )               DECLARE_INTERFACE( x )
+#define DECLARE_INTERFACE_IID_( x, p1, p2 )         DECLARE_INTERFACE( x, p1 )
+#define BEGIN_INTERFACE
+#define END_INTERFACE
+
+/* The following headers, whose Microsoft versions are MIDL-generated, depend upon the
+ * above macros, so they need to be included here instead of at the beginning of the
+ * file.
+ */
+#include <wtypes.h>
+#include <unknwn.h>
+#include <objidl.h>
+#include <cguid.h>
+#include <urlmon.h>
+#include <propidl.h>
+
+/* Huge specifier */
+#define HUGEP
+
+/* Storage format data type */
+typedef DWORD   STGFMT;
+
+/* Class context values */
+#define CLSCTX_INPROC   (CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER)
+#if (_WIN32_WINNT >= 0x0400)
+    #define CLSCTX_ALL \
+        (CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | \
+        CLSCTX_REMOTE_SERVER)
+    #define CLSCTX_SERVER \
+        (CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER)
+#else
+    #define CLSCTX_ALL \
+        (CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CTX_LOCAL_SERVER)
+    #define CLSCTX_SERVER \
+        (CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER)
+#endif
+
+/* Maximum storage name length */
+#define CWCSTORAGENAME  32
+
+/* Storage modes */
+#define STGM_DIRECT             0x00000000L
+#define STGM_TRANSACTED         0x00010000L
+#define STGM_SIMPLE             0x08000000L
+#define STGM_READ               0x00000000L
+#define STGM_WRITE              0x00000001L
+#define STGM_READWRITE          0x00000002L
+#define STGM_SHARE_DENY_NONE    0x00000040L
+#define STGM_SHARE_DENY_READ    0x00000030L
+#define STGM_SHARE_DENY_WRITE   0x00000020L
+#define STGM_SHARE_EXCLUSIVE    0x00000010L
+#define STGM_PRIORITY           0x00040000L
+#define STGM_DELETEONRELEASE    0x04000000L
+#if (WINVER >= 0x0400)
+    #define STGM_NOSCRATCH      0x00100000L
+#endif
+#define STGM_CREATE             0x00001000L
+#define STGM_CONVERT            0x00020000L
+#define STGM_FAILIFTHERE        0x00000000L
+#define STGM_NOSNAPSHOT         0x00200000L
+#if (_WIN32_WINNT >= 0x0500)
+    #define STGM_DIRECT_SWMR    0x00400000L
+#endif
+
+/* Asynchronous modes */
+#define ASYNC_MODE_COMPATIBILITY    0x00000001L
+#define ASYNC_MODE_DEFAULT          0x00000000L
+
+/* Storage layout type special value */
+#define STGTY_REPEAT    0x00000100L
+
+/* Storage layout byte count special value */
+#define STG_TOEND   0xFFFFFFFFL
+
+/* Storage layouts */
+#define STG_LAYOUT_SEQUENTIAL   0x00000000L
+#define STG_LAYOUT_INTERLEAVED  0x00000001L
+
+/* Storage format values */
+#define STGFMT_STORAGE  0L
+#define STGFMT_NATIVE   1L
+#define STGFMT_FILE     2L
+#define STGFMT_ANY      4L
+#define STGFMT_DOCFILE  5L
+#define STGFMT_DOCUMENT 0L
+
+/* COM access rights */
+#if (_WIN32_WINNT >= 0x0400)
+    #define COM_RIGHTS_EXECUTE          1
+    #define COM_RIGHTS_EXECUTE_LOCAL    2
+    #define COM_RIGHTS_EXECUTE_REMOTE   4
+    #define COM_RIGHTS_ACTIVATE_LOCAL   8
+    #define COM_RIGHTS_ACTIVATE_REMOTE  16
+#endif
+
+/* Storage options version number */
+#if (_WIN32_WINNT >= 0x0501)
+    #define STGOPTIONS_VERSION  2
+#elif (_WIN32_WINNT >= 0x0500)
+    #define STGOPTIONS_VERSION  1
+#else
+    #define STGOPTIONS_VERSION  0
+#endif
+
+/* Registration contexts */
+typedef enum tagREGCLS {
+    REGCLS_SINGLEUSE        = 0,
+    REGCLS_MULTIPLEUSE      = 1,
+    REGCLS_MULTI_SEPARATE   = 2,
+    REGCLS_SUSPENDED        = 4,
+    REGCLS_SURROGATE        = 8
+} REGCLS;
+
+/* CoInitialize() flags */
+typedef enum tagCOINIT {
+#if (_WIN32_WINNT >= 0x0400)
+    COINIT_APARTMENTTHREADED    = 0x00000002,
+    COINIT_MULTITHREADED        = 0x00000000,
+    COINIT_DISABLE_OLE1DDE      = 0x00000004,
+    COINIT_SPEED_OVER_MEMORY    = 0x00000008
+#else
+    COINIT_APARTMENTTHREADED    = 0x00000002
+#endif
+} COINIT;
+
+/* COM security descriptors */
+#if (_WIN32_WINNT >= 0x0501)
+typedef enum tagCOMSD {
+    SD_LAUNCHPERMISSIONS    = 0,
+    SD_ACCESSPERMISSIONS    = 1,
+    SD_LAUNCHRESTRICTIONS   = 2,
+    SD_ACCESSRESTRICTIONS   = 3
+} COMSD;
+#endif
+
+/* Public OLE TLS data */
+#if (_WIN32_WINNT >= 0x0500)
+typedef struct tagSOleTlsDataPublic {
+    void    *pvReserved0[2];
+    DWORD   dwReserved0[3];
+    void    *pvReserved1[1];
+    DWORD   dwReserved1[3];
+    void    *pvReserved2[4];
+    DWORD   dwReserved2[1];
+    void    *pCurrentCtx;
+} SOleTlsDataPublic;
+#endif
+
+/* CoGetStdMarshalEx() flags */
+typedef enum tagSTDMSHLFLAGS {
+    SMEXF_SERVER    = 0x00000001,
+    SMEXF_HANDLER   = 0x00000002
+} STDMSHLFLAGS;
+
+/* COM wait flags */
+#if (_WIN32_WINNT >= 0x0400)
+typedef enum tagCOWAIT_FLAGS {
+    COWAIT_WAITALL          = 1,
+    COWAIT_ALERTABLE        = 2,
+    COWAIT_INPUTAVAILABLE   = 4
+} COWAIT_FLAGS;
+#endif
+
+/* Storage options */
+typedef struct tagSTGOPTIONS {
+    USHORT      usVersion;
+    USHORT      reserved;
+    ULONG       ulSectorSize;
+#if (STGOPTIONS_VERSION >= 2)
+    const WCHAR *pwcsTemplateFile;
+#endif
+} STGOPTIONS;
+
+/* Pointers to functions exported by COM servers */
+typedef HRESULT (STDAPICALLTYPE *LPFNCANUNLOADNOW)( void );
+typedef HRESULT (STDAPICALLTYPE *LPFNGETCLASSOBJECT)( REFCLSID, REFIID, LPVOID * );
+
+/* Functions exported by COM servers */
+STDAPI  DllCanUnloadNow( void );
+STDAPI  DllGetClassObject( REFCLSID, REFIID, LPVOID * );
+
+/* Functions in OLE32.DLL */
+WINOLEAPI               BindMoniker( LPMONIKER, DWORD, REFIID, LPVOID * );
+WINOLEAPI               CLSIDFromProgID( LPCOLESTR, LPCLSID );
+WINOLEAPI               CLSIDFromProgIDEx( LPCOLESTR, LPCLSID );
+WINOLEAPI               CLSIDFromString( LPOLESTR, LPCLSID );
+WINOLEAPI_( ULONG )     CoAddRefServerProcess( void );
+WINOLEAPI_( DWORD )     CoBuildVersion( VOID );
+WINOLEAPI               CoCreateFreeThreadedMarshaler( LPUNKNOWN, LPUNKNOWN * );
+WINOLEAPI               CoCreateGuid( GUID * );
+WINOLEAPI               CoCreateInstance( REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID * );
+WINOLEAPI               CoDisconnectObject( LPUNKNOWN, DWORD );
+WINOLEAPI_( BOOL )      CoDosDateTimeToFileTime( WORD, WORD, FILETIME * );
+WINOLEAPI               CoFileTimeNow( FILETIME * );
+WINOLEAPI_( BOOL )      CoFileTimeToDosDateTime( FILETIME *, LPWORD, LPWORD );
+WINOLEAPI_( void )      CoFreeAllLibraries( void );
+WINOLEAPI_( void )      CoFreeLibrary( HINSTANCE );
+WINOLEAPI_( void )      CoFreeUnusedLibraries( void );
+WINOLEAPI               CoGetClassObject( REFCLSID, DWORD, LPVOID, REFIID, LPVOID * );
+WINOLEAPI_( DWORD )     CoGetCurrentProcess( void );
+WINOLEAPI               CoGetInterfaceAndReleaseStream( LPSTREAM, REFIID, LPVOID * );
+WINOLEAPI               CoGetMalloc( DWORD, LPMALLOC * );
+WINOLEAPI               CoGetMarshalSizeMax( ULONG *, REFIID, LPUNKNOWN, DWORD, LPVOID, DWORD );
+WINOLEAPI               CoGetObject( LPCWSTR, BIND_OPTS *, REFIID, void ** );
+WINOLEAPI               CoGetObjectContext( REFIID, LPVOID * );
+WINOLEAPI               CoGetPSClsid( REFIID, CLSID * );
+WINOLEAPI               CoGetStandardMarshal( REFIID, LPUNKNOWN, DWORD, LPVOID, DWORD, LPMARSHAL * );
+WINOLEAPI               CoGetStdMarshalEx( LPUNKNOWN, DWORD, LPUNKNOWN * );
+WINOLEAPI               CoGetTreatAsClass( REFCLSID, LPCLSID );
+WINOLEAPI               CoInitialize( LPVOID );
+WINOLEAPI               CoInstall( IBindCtx *, DWORD, uCLSSPEC *, QUERYCONTEXT *, LPWSTR );
+WINOLEAPI_( BOOL )      CoIsHandlerConnected( LPUNKNOWN );
+WINOLEAPI_( BOOL )      CoIsOle1Class( REFCLSID );
+WINOLEAPI_( HINSTANCE ) CoLoadLibrary( LPOLESTR, BOOL );
+WINOLEAPI               CoLockObjectExternal( LPUNKNOWN, BOOL, BOOL );
+WINOLEAPI               CoMarshalHresult( LPSTREAM, HRESULT );
+WINOLEAPI               CoMarshalInterThreadInterfaceInStream( REFIID, LPUNKNOWN, LPSTREAM * );
+WINOLEAPI               CoMarshalInterface( LPSTREAM, REFIID, LPUNKNOWN, DWORD, LPVOID, DWORD );
+WINOLEAPI               CoRegisterClassObject( REFCLSID, LPUNKNOWN, DWORD, DWORD, LPDWORD );
+WINOLEAPI               CoRegisterMallocSpy( LPMALLOCSPY );
+WINOLEAPI               CoRegisterMessageFilter( LPMESSAGEFILTER, LPMESSAGEFILTER * );
+WINOLEAPI               CoRegisterPSClsid( REFIID, REFCLSID );
+WINOLEAPI               CoRegisterSurrogate( LPSURROGATE );
+WINOLEAPI               CoReleaseMarshalData( LPSTREAM );
+WINOLEAPI_( ULONG )     CoReleaseServerProcess( void );
+WINOLEAPI               CoResumeClassObjects( void );
+WINOLEAPI               CoRevokeClassObject( DWORD );
+WINOLEAPI               CoRevokeMallocSpy( void );
+WINOLEAPI               CoSuspendClassObjects( void );
+WINOLEAPI_( LPVOID )    CoTaskMemAlloc( SIZE_T );
+WINOLEAPI_( void )      CoTaskMemFree( LPVOID );
+WINOLEAPI_( LPVOID )    CoTaskMemRealloc( LPVOID, SIZE_T );
+WINOLEAPI               CoTreatAsClass( REFCLSID, REFCLSID );
+WINOLEAPI_( void )      CoUninitialize( void );
+WINOLEAPI               CoUnmarshalHresult( LPSTREAM, HRESULT * );
+WINOLEAPI               CoUnmarshalInterface( LPSTREAM, REFIID, LPVOID * );
+WINOLEAPI               CreateAntiMoniker( LPMONIKER * );
+WINOLEAPI               CreateBindCtx( DWORD, LPBC * );
+WINOLEAPI               CreateClassMoniker( REFCLSID, LPMONIKER * );
+WINOLEAPI               CreateDataAdviseHolder( LPDATAADVISEHOLDER * );
+WINOLEAPI               CreateDataCache( LPUNKNOWN, REFCLSID, REFIID, LPVOID * );
+WINOLEAPI               CreateFileMoniker( LPCOLESTR, LPMONIKER * );
+WINOLEAPI               CreateGenericComposite( LPMONIKER, LPMONIKER, LPMONIKER * );
+WINOLEAPI               CreateItemMoniker( LPCOLESTR, LPCOLESTR, LPMONIKER * );
+WINOLEAPI               CreateObjrefMoniker( LPUNKNOWN, LPMONIKER * );
+WINOLEAPI               CreatePointerMoniker( LPUNKNOWN, LPMONIKER * );
+WINOLEAPI               CreateStdProgressIndicator( HWND, LPCOLESTR, IBindStatusCallback *, IBindStatusCallback ** );
+WINOLEAPI               GetClassFile( LPCOLESTR, CLSID * );
+WINOLEAPI               GetRunningObjectTable( DWORD, LPRUNNINGOBJECTTABLE * );
+WINOLEAPI               IIDFromString( LPOLESTR, LPIID );
+WINOLEAPI               MkParseDisplayName( LPBC, LPCOLESTR, ULONG *, LPMONIKER * );
+WINOLEAPI               MonikerCommonPrefixWith( LPMONIKER, LPMONIKER, LPMONIKER * );
+WINOLEAPI               MonikerRelativePathTo( LPMONIKER, LPMONIKER, LPMONIKER *, BOOL );
+WINOLEAPI               ProgIDFromCLSID( REFCLSID, LPOLESTR * );
+WINOLEAPI               StgCreateDocfile( const WCHAR *, DWORD, DWORD, IStorage ** );
+WINOLEAPI               StgCreateDocfileOnILockBytes( ILockBytes *, DWORD, DWORD, IStorage ** );
+WINOLEAPI               StgCreateStorageEx( const WCHAR *, DWORD, DWORD, DWORD, STGOPTIONS *, PSECURITY_DESCRIPTOR, REFIID, void ** );
+WINOLEAPI               StgGetIFillLockBytesOnFile( OLECHAR const *, IFillLockBytes ** );
+WINOLEAPI               StgGetIFillLockBytesOnILockBytes( ILockBytes *, IFillLockBytes ** );
+WINOLEAPI               StgIsStorageFile( const WCHAR * );
+WINOLEAPI               StgIsStorageILockBytes( ILockBytes * );
+WINOLEAPI               StgOpenAsyncDocfileOnIFillLockBytes( IFillLockBytes *, DWORD, DWORD, IStorage ** );
+WINOLEAPI               StgOpenStorage( const WCHAR *, IStorage *, DWORD, SNB, DWORD, IStorage ** );
+WINOLEAPI               StgOpenStorageEx( const WCHAR *, DWORD, DWORD, DWORD, STGOPTIONS *, PSECURITY_DESCRIPTOR, REFIID, void ** );
+WINOLEAPI               StgOpenStorageOnILockBytes( ILockBytes *, IStorage *, DWORD, SNB, DWORD, IStorage ** );
+WINOLEAPI               StgSetTimes( const WCHAR *, const FILETIME *, const FILETIME *, const FILETIME * );
+WINOLEAPI               StringFromCLSID( REFCLSID, LPOLESTR * );
+WINOLEAPI_( int )       StringFromGUID2( REFGUID, LPOLESTR, int );
+WINOLEAPI               StringFromIID( REFIID, LPOLESTR * );
+#if (_WIN32_WINNT >= 0x0400)
+WINOLEAPI               CoCopyContext( IUnknown *, IUnknown ** );
+WINOLEAPI               CoCreateInstanceEx( REFCLSID, IUnknown *, DWORD, COSERVERINFO *, DWORD, MULTI_QI * );
+WINOLEAPI               CoGetCallContext( REFIID, void ** );
+WINOLEAPI               CoGetCallerTID( LPDWORD );
+WINOLEAPI               CoGetCurrentLogicalThreadId( GUID * );
+WINOLEAPI               CoGetInstanceFromFile( COSERVERINFO *, CLSID *, IUnknown *, DWORD, DWORD, OLECHAR *, DWORD, MULTI_QI * );
+WINOLEAPI               CoGetInstanceFromIStorage( COSERVERINFO *, CLSID *, IUnknown *, DWORD, IStorage *, DWORD, MULTI_QI * );
+WINOLEAPI               CoImpersonateClient( void );
+WINOLEAPI               CoInitializeEx( LPVOID, DWORD );
+WINOLEAPI               CoInitializeSecurity( PSECURITY_DESCRIPTOR, LONG, SOLE_AUTHENTICATION_SERVICE *, void *, DWORD, DWORD, void *, DWORD, void * );
+WINOLEAPI               CoQueryAuthenticationServices( DWORD *, SOLE_AUTHENTICATION_SERVICE ** );
+WINOLEAPI               CoQueryClientBlanket( DWORD *, DWORD *, OLECHAR **, DWORD *, DWORD *, RPC_AUTHZ_HANDLE *, DWORD * );
+WINOLEAPI               CoQueryProxyBlanket( IUnknown *, DWORD *, DWORD *, OLECHAR **, DWORD *, DWORD *, RPC_AUTH_IDENTITY_HANDLE *, DWORD * );
+WINOLEAPI               CoRegisterChannelHook( REFGUID, IChannelHook * );
+WINOLEAPI               CoRevertToSelf( void );
+WINOLEAPI               CoSetProxyBlanket( IUnknown *, DWORD, DWORD, OLECHAR *, DWORD, DWORD, RPC_AUTH_IDENTITY_HANDLE, DWORD );
+WINOLEAPI               CoSwitchCallContext( IUnknown *, IUnknown ** );
+WINOLEAPI               CoWaitForMultipleHandles( DWORD, DWORD, ULONG, LPHANDLE, LPDWORD );
+#endif
+#if (_WIN32_WINNT >= 0x0500)
+WINOLEAPI               CoAllowSetForegroundWindow( IUnknown *, LPVOID );
+WINOLEAPI               CoCancelCall( DWORD, ULONG );
+WINOLEAPI               CoEnableCallCancellation( LPVOID );
+WINOLEAPI               CoDisableCallCancellation( LPVOID );
+WINOLEAPI               CoGetCancelObject( DWORD, REFIID, void ** );
+WINOLEAPI               CoSetCancelObject( IUnknown * );
+WINOLEAPI               CoTestCancel( void );
+WINOLEAPI               DcomChannelSetHResult( LPVOID, ULONG *, HRESULT );
+#endif
+#if (_WIN32_WINNT >= 0x0501)
+WINOLEAPI_( void )      CoFreeUnusedLibrariesEx( DWORD, DWORD );
+WINOLEAPI               CoGetContextToken( ULONG_PTR * );
+WINOLEAPI               CoGetSystemSecurityPermissions( COMSD, PSECURITY_DESCRIPTOR * );
+WINOLEAPI               CoInvalidateRemoteMachineBindings( LPOLESTR );
+WINOLEAPI               CoRegisterInitializeSpy( LPINITIALIZESPY, ULARGE_INTEGER * );
+WINOLEAPI               CoRevokeInitializeSpy( ULARGE_INTEGER );
+#endif
+#if (_WIN32_WINNT >= 0x0600)
+WINOLEAPI               CoDisconnectContext( DWORD );
+#endif
+#if (_WIN32_WINNT >= 0x0601)
+WINOLEAPI               CoGetApartmentType( APTTYPE *, APTTYPEQUALIFIER * );
+#endif
+
+/* Functions in DFLAYOUT.DLL */
+WINOLEAPI   StgOpenLayoutDocfile( OLECHAR const *, DWORD, DWORD, IStorage ** );
+
+/* Functions implemented as macros */
+#define LISet32( x, p ) \
+    ((x).HighPart = ((LONG)(p)) < 0 ? -1 : 0, (x).LowPart = (p))
+#define ULISet32( x, p ) \
+    ((x).HighPart = 0, (x).LowPart = (p))
+
+#endif /* _OBJBASE_H_ */

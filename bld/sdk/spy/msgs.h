@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spy message dialog identifiers.
 *
 ****************************************************************************/
 
@@ -44,6 +43,7 @@
 #define SPYMSG_UNKNOWN     113
 #define SPYMSG_USER        114
 #define SPYMSG_WINDOW      115
+#define SPYMSG_CONTROLS    116
 #define SPYMSG_ALLCLEAR    120
 #define SPYMSG_ALLSET      121
 #define SPYMSG_RANGE_0     122

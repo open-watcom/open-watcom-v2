@@ -75,18 +75,18 @@ static int GetSignedParm( op_code operation )
 }
 
 
-int SSLWalk( char *table, unsigned start, void **stk_bot, unsigned stk_size )
+int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_size )
 {
-    op_code     operation;
-    unsigned    num_items;
-    signed int  disp;
-    char        *addr;
-    void        **stk_ptr;
-    void        **stk_end;
-    unsigned    result;
-    unsigned    parm;
-    unsigned    wanted;
-    unsigned    token;
+    op_code         operation;
+    unsigned        num_items;
+    signed int      disp;
+    unsigned char   *addr;
+    void            **stk_ptr;
+    void            **stk_end;
+    unsigned        result;
+    unsigned        parm;
+    unsigned        wanted;
+    unsigned        token;
 
     stk_ptr = stk_bot;
     stk_end = stk_bot + stk_size;

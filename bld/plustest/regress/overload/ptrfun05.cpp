@@ -8,8 +8,8 @@ struct S {
     int moo( int ) { GOOD; return 0; }; 	// (3)
 
     static int goo( double ) { return 0; }; 	// (4)
-    extra();
-    extra2();
+    void extra();
+    void extra2();
     static int data1;
     double data2;
     double data3;
@@ -49,7 +49,7 @@ double S::*darr[2] = { &S::data2, &S::data3 };
 //   pointer
 ///  individual
 //// using &
-int S::extra(void) // need to be in scope of S to just use goo and &goo
+void S::extra(void) // need to be in scope of S to just use goo and &goo
 {
 int (*f5)(double) = &goo; // not overloaded (4)
 int (*f6)(double) = &foo; // overloaded (2)

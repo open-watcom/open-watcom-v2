@@ -35,7 +35,9 @@
     #include <windows.h>
 #else
     #ifndef PROLOG
-    #include "prolog.h"
+    typedef unsigned char BYTE;
+    typedef unsigned short WORD;
+    /*#include "prolog.h"*/
     #endif
 #endif
 
@@ -164,9 +166,9 @@ extern int _SPXGetConnectionStatus(WORD,CSB*);
     extern BYTE SPXInitialize(BYTE*,BYTE*,WORD*,WORD*);
     #define _SPXInitialize(a,b,c,d,e,f) \
                     SPXInitialize(c,d,e,f)
-    extern void SAPWaitESR( void );
-    extern void SAPBroadESR( void );
-    extern void ServRespESR( void );
+    extern void far SAPWaitESR( void );
+    extern void far SAPBroadESR( void );
+    extern void far ServRespESR( void );
 #else
 
     extern void __far __pascal SAPWaitESR( void );

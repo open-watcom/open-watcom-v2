@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <jctype.h>
 #include <mbstring.h>
+#include <mbctype.h>
 #include "mbchar.h"
 
 

@@ -24,16 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Master GUI library include file.
 *
 ****************************************************************************/
 
 
 #include "bool.h"
-#ifdef UNIX
+#ifndef __WATCOMC__
     #include "clibext.h"
 #endif
+
+#include "guimem.h"
 
 typedef int gui_ord;
 
@@ -115,6 +116,7 @@ typedef struct gui_point {
 typedef struct gui_window gui_window;
 
 typedef enum {
+    GUI_BAD_CLASS = -1,
     GUI_PUSH_BUTTON,
     GUI_DEFPUSH_BUTTON,
     GUI_RADIO_BUTTON,
@@ -146,8 +148,9 @@ typedef enum {
     GUI_ICON,
     GUI_MENU_GRAYED_ACTIVE,
     GUI_FRAME_RESIZE,
+    GUI_CONTROL_BACKGROUND,
     GUI_FIRST_ATTR = GUI_MENU_PLAIN,
-    GUI_LAST_ATTR  = GUI_FRAME_RESIZE,
+    GUI_LAST_ATTR  = GUI_CONTROL_BACKGROUND,
     GUI_FIRST_UNUSED = GUI_LAST_ATTR + 1,
     GUI_NUM_ATTRS = GUI_LAST_ATTR + 1
 } gui_attr;
@@ -193,6 +196,7 @@ typedef struct gui_toolbar_struct {
     gui_bitmap          bitmap;
     int                 id;
     char                *hinttext;
+    char                *tip;
 } gui_toolbar_struct;
 
 typedef struct gui_menu_struct {
@@ -205,6 +209,7 @@ typedef struct gui_menu_struct {
 } gui_menu_struct;
 
 typedef enum {
+        GUI_BAD_COLOUR = -1,
         GUI_BLACK,
         GUI_BLUE,
         GUI_GREEN,
@@ -221,14 +226,14 @@ typedef enum {
         GUI_BRIGHT_MAGENTA,
         GUI_BRIGHT_YELLOW,
         GUI_BRIGHT_WHITE,
+        GUIEX_DLG_BKGRND,
+        GUIEX_WND_BKGRND,
+        GUIEX_HIGHLIGHT,
+        GUIEX_HIGHLIGHTTEXT,
+        GUI_NUM_COLOURS,
         GUI_FIRST_COLOUR = GUI_BLACK,
-        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE,
-        GUI_NUM_COLOURS = GUI_LAST_COLOUR + 1
+        GUI_LAST_COLOUR = GUIEX_HIGHLIGHTTEXT
 } gui_colour;
-
-#define GUI_NORMAL GUI_BLACK            // for NEC PC
-#define GUI_REVERSE GUI_WHITE           // for NEC PC
-#define GUI_YELLOW GUI_BROWN            // for NEC PC
 
 typedef struct gui_colour_set {
     gui_colour fore;
@@ -267,23 +272,24 @@ typedef enum gui_scroll_styles {
 } gui_scroll_styles;
 
 typedef enum gui_create_styles {
-    GUI_NONE            = 0x0000,
-    GUI_HSCROLL_EVENTS  = 0x0001,
-    GUI_VSCROLL_EVENTS  = 0x0002,
-    GUI_CURSOR          = 0x0004,
-    GUI_RESIZEABLE      = 0x0008,
-    GUI_MAXIMIZE        = 0x0010,
-    GUI_MINIMIZE        = 0x0020,
-    GUI_CLOSEABLE       = 0x0040,
-    GUI_SYSTEM_MENU     = 0x0080,
-    GUI_VISIBLE         = 0x0100,
-    GUI_DIALOG_LOOK     = 0x0200,
-    GUI_INIT_INVISIBLE  = 0x0400,
-    GUI_CHANGEABLE_FONT = 0x0800,
-    GUI_POPUP           = 0x1000,
-    GUI_INIT_MAXIMIZED  = 0x2000,
-    GUI_INIT_MINIMIZED  = 0x4000,
-    GUI_NOFRAME         = 0x8000,
+    GUI_NONE            = 0x00000000,
+    GUI_HSCROLL_EVENTS  = 0x00000001,
+    GUI_VSCROLL_EVENTS  = 0x00000002,
+    GUI_CURSOR          = 0x00000004,
+    GUI_RESIZEABLE      = 0x00000008,
+    GUI_MAXIMIZE        = 0x00000010,
+    GUI_MINIMIZE        = 0x00000020,
+    GUI_CLOSEABLE       = 0x00000040,
+    GUI_SYSTEM_MENU     = 0x00000080,
+    GUI_VISIBLE         = 0x00000100,
+    GUI_DIALOG_LOOK     = 0x00000200,
+    GUI_INIT_INVISIBLE  = 0x00000400,
+    GUI_CHANGEABLE_FONT = 0x00000800,
+    GUI_POPUP           = 0x00001000,
+    GUI_INIT_MAXIMIZED  = 0x00002000,
+    GUI_INIT_MINIMIZED  = 0x00004000,
+    GUI_NOFRAME         = 0x00008000,
+    GUI_3D_BORDER       = 0x00010000,
     GUI_SCROLL_EVENTS   = GUI_HSCROLL_EVENTS | GUI_VSCROLL_EVENTS,
     GUI_GADGETS         = GUI_CURSOR | GUI_RESIZEABLE | GUI_MINIMIZE |
                           GUI_MAXIMIZE | GUI_CLOSEABLE | GUI_SYSTEM_MENU,
@@ -291,23 +297,25 @@ typedef enum gui_create_styles {
 } gui_create_styles;
 
 typedef enum gui_control_styles {
-    GUI_NOSTYLE                         = 0x00,
-    GUI_CHECKED                         = 0x01,
-    GUI_TAB_GROUP                       = 0x02,
-    GUI_AUTOMATIC                       = 0x04,
-    GUI_GROUP                           = 0x08,
-    GUI_FOCUS                           = 0x10,
-    GUI_CONTROL_INIT_INVISIBLE          = 0x20,
-    GUI_CONTROL_LEFTNOWORDWRAP          = 0x40,
-    GUI_CONTROL_NOPREFIX                = 0x80,
-    GUI_CONTROL_CENTRE                  = 0x100,
-    GUI_CONTROL_NOINTEGRALHEIGHT        = 0x200,
-    GUI_CONTROL_SORTED                  = 0x400,
-    GUI_CONTROL_MULTILINE               = 0x800,
-    GUI_CONTROL_WANTRETURN              = 0x1000,
-    GUI_EDIT_INVISIBLE                  = 0x2000,
-    GUI_CONTROL_3STATE                  = 0x4000,
-    GUI_CONTROL_WANTKEYINPUT            = 0x8000
+    GUI_NOSTYLE                         = 0x00000000,
+    GUI_CHECKED                         = 0x00000001,
+    GUI_TAB_GROUP                       = 0x00000002,
+    GUI_AUTOMATIC                       = 0x00000004,
+    GUI_GROUP                           = 0x00000008,
+    GUI_FOCUS                           = 0x00000010,
+    GUI_CONTROL_INIT_INVISIBLE          = 0x00000020,
+    GUI_CONTROL_LEFTNOWORDWRAP          = 0x00000040,
+    GUI_CONTROL_NOPREFIX                = 0x00000080,
+    GUI_CONTROL_CENTRE                  = 0x00000100,
+    GUI_CONTROL_NOINTEGRALHEIGHT        = 0x00000200,
+    GUI_CONTROL_SORTED                  = 0x00000400,
+    GUI_CONTROL_MULTILINE               = 0x00000800,
+    GUI_CONTROL_WANTRETURN              = 0x00001000,
+    GUI_EDIT_INVISIBLE                  = 0x00002000,
+    GUI_CONTROL_3STATE                  = 0x00004000,
+    GUI_CONTROL_WANTKEYINPUT            = 0x00008000,
+    GUI_CONTROL_READONLY                = 0x00010000,
+    GUI_CONTROL_BORDER                  = 0x00020000
 } gui_control_styles;
 
 typedef enum gui_line_styles {
@@ -332,7 +340,7 @@ typedef struct gui_resource {
 } gui_resource;
 
 typedef struct gui_control_info {
-   gui_control_class    control_class;
+    gui_control_class   control_class;
     char                *text;
     gui_rect            rect;
     gui_window          *parent;
@@ -585,13 +593,6 @@ typedef struct gui_timer_event {
 
 #define GUI_GET_SCROLL( param, scroll ) ( scroll = *( int * )param )
 
-extern void *GUIAlloc( unsigned );
-extern void GUIFree( void * );
-extern void *GUIRealloc( void *ptr, unsigned size );
-extern void GUIMemOpen();
-extern void GUIMemClose( void );
-extern void GUIMemPrtUsage( void );
-
 /* Initialization Functions */
 
 extern bool GUIWndInit( unsigned rate, gui_window_styles style );
@@ -606,8 +607,8 @@ extern void GUISetScale( gui_rect *screen );
 extern void GUIGetScale( gui_rect *screen );
 extern void GUIGetScreen( gui_rect *rect );
 extern void GUISetDClickRate( unsigned rate );
-extern void GUISetCharacter( gui_draw_char draw_char, char new_char );
-extern char GUIGetCharacter( gui_draw_char draw_char );
+extern void GUISetCharacter( gui_draw_char draw_char, int new_char );
+extern int  GUIGetCharacter( gui_draw_char draw_char );
 extern bool GUIIsInit( void );
 extern void GUISetF10Menus( bool setting );
 extern void GUICleanup( void );
@@ -708,14 +709,14 @@ extern bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
 extern bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
 extern bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
                          gui_line_styles style, gui_ord thickness, gui_rgb rgb );
-extern void GUIDrawText( gui_window *wnd, char *text, int length,
+extern void GUIDrawText( gui_window *wnd, const char *text, int length,
                          gui_ord row, gui_ord indent, gui_attr attr );
-extern void GUIDrawTextPos( gui_window *wnd, char *text, int length,
+extern void GUIDrawTextPos( gui_window *wnd, const char *text, int length,
                             gui_coord *pos, gui_attr attr );
-extern void GUIDrawTextExtent( gui_window *wnd, char *text, int length,
+extern void GUIDrawTextExtent( gui_window *wnd, const char *text, int length,
                                gui_ord row, gui_ord indent, gui_attr attr,
                                gui_ord extentx );
-extern void GUIDrawTextExtentPos( gui_window *wnd, char *text, int length,
+extern void GUIDrawTextExtentPos( gui_window *wnd, const char *text, int length,
                                gui_coord *pos, gui_attr attr, gui_ord extentx );
 extern void GUIDrawTextRGB( gui_window *wnd, char *text, int length,
                             gui_ord row, gui_ord indent,
@@ -739,17 +740,17 @@ extern bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
 
 /* Text Functions */
 
-extern bool GUISetWindowText( gui_window * wnd, char * data );
+extern bool GUISetWindowText( gui_window * wnd, const char * data );
 extern int GUIGetWindowTextLength( gui_window *wnd );
 extern int GUIGetWindowText( gui_window *wnd, char *data, int max_length );
 extern gui_ord GUIGetRow( gui_window * wnd, gui_point *pos );
 extern gui_ord GUIGetCol( gui_window * wnd, char *text, gui_point *pos );
 extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
                                 char * string, int mouse_x );
-extern gui_ord GUIGetExtentX( gui_window *wnd, char * text, int length );
-extern gui_ord GUIGetExtentY( gui_window *wnd, char * text );
-extern gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, char * text, int length );
-extern gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, char * text );
+extern gui_ord GUIGetExtentX( gui_window *wnd, const char * text, int length );
+extern gui_ord GUIGetExtentY( gui_window *wnd, const char * text );
+extern gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, int length );
+extern gui_ord GUIGetControlExtentY( gui_window * wnd, unsigned id, const char * text );
 extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
 extern void GUIGetPoint( gui_window* wnd, gui_ord extent, gui_ord row,
@@ -764,8 +765,8 @@ extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
                                gui_mouse_track track, int *curr_item );
 extern bool GUIEnableMenuItem( gui_window *wnd, int id, bool enabled, bool floating );
 extern bool GUICheckMenuItem( gui_window *wnd, int id, bool check, bool floating );
-extern bool GUISetMenuText( gui_window *wnd, int id, char *text, bool floating );
-extern bool GUISetHintText( gui_window *wnd, int id, char *hinttext );
+extern bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating );
+extern bool GUISetHintText( gui_window *wnd, int id, const char *hinttext );
 
 extern bool GUIEnableMDIMenus( bool enable );
 extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
@@ -793,6 +794,10 @@ extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                               int num_items, gui_toolbar_struct *toolbar,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout );
+extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                                      int num_items, gui_toolbar_struct *toolbar,
+                                      bool excl, gui_colour_set *plain,
+                                      gui_colour_set *standout );
 extern bool GUICloseToolBar( gui_window *wnd );
 extern bool GUIHasToolBar( gui_window *wnd );
 extern bool GUIChangeToolBar( gui_window *wnd );
@@ -804,7 +809,7 @@ extern bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
                                    gui_colour_set *colour );
 extern bool GUICloseStatusWindow( gui_window *wnd );
 extern bool GUIHasStatus( gui_window *wnd );
-extern bool GUIDrawStatusText( gui_window *wnd, char *text );
+extern bool GUIDrawStatusText( gui_window *wnd, const char *text );
 extern bool GUIClearStatusText( gui_window *wnd );
 extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 
@@ -817,6 +822,7 @@ extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 extern gui_help_instance GUIHelpInit( gui_window *wnd, char *file, char *title );
 extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file );
 extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic );
+extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, char *file, char *topic );
 
 // the obsolete, crotchety old guard
 // please use the above functions instead
@@ -920,7 +926,7 @@ extern int GUIGetCurrSelect( gui_window *wnd, unsigned id );
 extern bool GUISetCurrSelect( gui_window *wnd, unsigned id, int choice );
 extern char *GUIGetListItem( gui_window *wnd, unsigned id, int choice );
 
-extern bool GUISetText( gui_window *wnd, unsigned id, char *text );
+extern bool GUISetText( gui_window *wnd, unsigned id, const char *text );
 extern bool GUIClearText( gui_window *wnd, unsigned id );
 extern char * GUIGetText( gui_window *wnd, unsigned id );
 extern bool GUISelectAll( gui_window *wnd, unsigned id, bool select );
@@ -937,6 +943,7 @@ extern bool GUISetChecked( gui_window *wnd, unsigned id, unsigned check );
 
 extern void GUIGetKeyState( gui_keystate *state );
 extern void GUIFlushKeys( void );
+extern void GUIDrainEvents( void );
 extern void GUISetExtra( gui_window *wnd, void *extra );
 extern void *GUIGetExtra( gui_window *wnd );
 extern void GUIGetClientRect( gui_window *wnd, gui_rect *client );

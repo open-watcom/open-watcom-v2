@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal OS/2 2.x trap file routines.
 *
 ****************************************************************************/
 
@@ -36,113 +35,12 @@
 #define NIL_DOS_HANDLE  ((HFILE)0xFFFF)
 typedef enum { USER_SCREEN, DEBUG_SCREEN } scrtype;
 
-/*
- * from BSEDOS16.H, OS/2 2.0
- */
-typedef struct _NEWSTARTDATA {  /* stdata */
-    USHORT  Length;
-    USHORT  Related;
-    USHORT  FgBg;
-    USHORT  TraceOpt;
-    PSZ     PgmTitle;
-    PSZ     PgmName;
-    PBYTE   PgmInputs;
-    PBYTE   TermQ;
-    PBYTE   Environment;
-    USHORT  InheritOpt;
-    USHORT  SessionType;
-    PSZ     IconFile;
-    ULONG   PgmHandle;
-    USHORT  PgmControl;
-    USHORT  InitXPos;
-    USHORT  InitYPos;
-    USHORT  InitXSize;
-    USHORT  InitYSize;
-    USHORT  Reserved;
-    PSZ     ObjectBuffer;
-    ULONG   ObjectBuffLen;
-} NEWSTARTDATA;
-#define SSF_TYPE_DEFAULT        0
-#define SSF_TYPE_FULLSCREEN     1
-#define SSF_TYPE_WINDOWABLEVIO  2
-#define SSF_TYPE_PM             3
-#define SSF_TYPE_VDM            4
-#define SSF_TYPE_GROUP          5
-#define SSF_TYPE_DLL            6
-#define SSF_TYPE_WINDOWEDVDM    7
-#define SSF_TYPE_PDD            8
-#define SSF_TYPE_VDD            9
-
-
-/* Global Information Segment */
-
-typedef struct __GINFOSEG {      /* gis */
-    ULONG   time;
-    ULONG   msecs;
-    UCHAR   hour;
-    UCHAR   minutes;
-    UCHAR   seconds;
-    UCHAR   hundredths;
-    USHORT  timezone;
-    USHORT  cusecTimerInterval;
-    UCHAR   day;
-    UCHAR   month;
-    USHORT  year;
-    UCHAR   weekday;
-    UCHAR   uchMajorVersion;
-    UCHAR   uchMinorVersion;
-    UCHAR   chRevisionLetter;
-    UCHAR   sgCurrent;
-    UCHAR   sgMax;
-    UCHAR   cHugeShift;
-    UCHAR   fProtectModeOnly;
-    USHORT  pidForeground;
-    UCHAR   fDynamicSched;
-    UCHAR   csecMaxWait;
-    USHORT  cmsecMinSlice;
-    USHORT  cmsecMaxSlice;
-    USHORT  bootdrive;
-    UCHAR   amecRAS[32];
-    UCHAR   csgWindowableVioMax;
-    UCHAR   csgPMMax;
-} __GINFOSEG;
-
-/* Local Information Segment */
-
-typedef struct __LINFOSEG {      /* lis */
-    PID     pidCurrent;
-    PID     pidParent;
-    USHORT  prtyCurrent;
-    TID     tidCurrent;
-    USHORT  sgCurrent;
-    UCHAR   rfProcStatus;
-    UCHAR   dummy1;
-    BOOL    fForeground;
-    UCHAR   typeProcess;
-    UCHAR   dummy2;
-    SEL     selEnvironment;
-    USHORT  offCmdLine;
-    USHORT  cbDataSegment;
-    USHORT  cbStack;
-    USHORT  cbHeap;
-    HMODULE hmod;
-    SEL     selDS;
-} __LINFOSEG;
-
-/* Process Type codes (local information segment typeProcess field)           */
-
-#define _PT_FULLSCREEN              0 /* Full screen application               */
-#define _PT_REALMODE                1 /* Real mode process                     */
-#define _PT_WINDOWABLEVIO           2 /* VIO windowable application            */
-#define _PT_PM                      3 /* Presentation Manager application      */
-#define _PT_DETACHED                4 /* Detached application                  */
-
-char            *StrCopy( char *, char * );
+char        *StrCopy( char *, char * );
 long        OpenFile( char *, USHORT, int );
 void        RestoreScreen( void );
 long        TryPath( char *, char *, char * );
 long        FindFilePath( char *, char *, char * );
-char            *AddDriveAndPath( char *, char * );
+char        *AddDriveAndPath( char *, char * );
 void        MergeArgvArray( char *, char *, unsigned );
 long        TaskOpenFile( char *name, int mode, int flags );
 HFILE       TaskDupFile( HFILE old, HFILE new );

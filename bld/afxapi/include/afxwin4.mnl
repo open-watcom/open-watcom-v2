@@ -1,0 +1,67 @@
+/*
+ *  afxwin4.inl Inline implementation of functions declared in afxwin.h
+ *
+:include crwatcnt.sp
+ */
+
+// This file contains only those functions that require Windows 2000 or later.
+// Do not add any functions that run on earlier versions or any functions that
+// require a later version to this file.  Doing so will break compatibility.
+
+AFX_INLINE BOOL CDC::GetCharABCWidthsI( UINT giFirst, UINT cgi, LPWORD pgi,
+                                        LPABC lpabc ) const
+/*********************************************************/
+{
+    return( ::GetCharABCWidthsI( m_hAttribDC, giFirst, cgi, pgi, lpabc ) );
+}
+
+AFX_INLINE BOOL CDC::GetCharWidthI( UINT giFirst, UINT cgi, LPWORD pgi,
+                                    LPINT lpBuffer ) const
+/********************************************************/
+{
+    return( ::GetCharWidthI( m_hAttribDC, giFirst, cgi, pgi, lpBuffer ) );
+}
+
+AFX_INLINE COLORREF CDC::GetDCBrushColor() const
+/**********************************************/
+{
+    return( ::GetDCBrushColor( m_hAttribDC ) );
+}
+
+AFX_INLINE COLORREF CDC::GetDCPenColor() const
+/********************************************/
+{
+    return( ::GetDCPenColor( m_hAttribDC ) );
+}
+
+AFX_INLINE BOOL CDC::GetTextExtentExPointI( LPWORD pgiIn, int cgi, int nMaxExtent,
+                                            LPINT lpnFit, LPINT alpDx,
+                                            LPSIZE lpSize ) const
+/***************************************************************/
+{
+    return( ::GetTextExtentExPointI( m_hAttribDC, pgiIn, cgi, nMaxExtent, lpnFit, alpDx,
+                                     lpSize ) );
+}
+
+AFX_INLINE BOOL CDC::GetTextExtentPointI( LPWORD pgiIn, int cgi, LPSIZE lpSize ) const
+/************************************************************************************/
+{
+    return( ::GetTextExtentPointI( m_hAttribDC, pgiIn, cgi, lpSize ) );
+}
+
+AFX_INLINE BOOL CWnd::SetLayeredWindowAttributes( COLORREF crKey, BYTE bAlpha,
+                                                  DWORD dwFlags )
+/***************************************************************/
+{
+    return( ::SetLayeredWindowAttributes( m_hWnd, crKey, bAlpha, dwFlags ) );
+}
+
+AFX_INLINE BOOL CWnd::UpdateLayeredWindow( CDC *pDCDst, POINT *pptDst, SIZE *psize,
+                                           CDC *pDCSrc, POINT *pptSrc, COLORREF crKey,
+                                           BLENDFUNCTION *pblend, DWORD dwFlags )
+/*******************************************************************************/
+{
+    return( ::UpdateLayeredWindow( m_hWnd, pDCDst->GetSafeHdc(), pptDst, psize,
+                                   pDCSrc->GetSafeHdc(), pptSrc, crKey, pblend,
+                                   dwFlags ) );
+}

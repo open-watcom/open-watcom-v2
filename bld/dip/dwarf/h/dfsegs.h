@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dwarf segment information data structures and functions.
 *
 ****************************************************************************/
 
@@ -34,6 +33,10 @@
 
 enum {
     SEG_PER_BLK = 256,
+};
+
+enum {
+    OFF_PER_BLK = 256,
 };
 
 typedef struct{
@@ -49,19 +52,19 @@ struct seg_blk_head{
 typedef
     seg_blk_head    *(*seg_alloc)( void );
 typedef
-    void            (*seg_init)( seg_entry *new );
+    void            (*seg_init)( void *new );
 typedef struct {
     seg_alloc   alloc;
     seg_init    init;
 }seg_ctl;
 
 typedef
-    int         (*SEGWLK)( void *, seg_entry * );
-extern  int  SegWalk( seg_list *ctl, SEGWLK wlk, void * d );
-extern  seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg );
-extern  seg_entry *FindMapSeg( seg_list *list, word seg );
-extern  seg_entry *FindRealSeg( seg_list *ctl, word seg );
+    int         (*SEGWLK)( void *, void * );
+extern int  SegWalk( seg_list *ctl, SEGWLK wlk, void * d );
+extern seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg );
+extern seg_entry *FindMapSeg( seg_list *list, word seg );
+extern seg_entry *FindRealSeg( seg_list *ctl, word seg );
 extern void AddSegReal( seg_list  *ctl, void *d );
-extern  void SortSegReal( seg_list *ctl );
-extern void  InitSegList( seg_list *ctl, unsigned_16 item_size );
+extern void SortSegReal( seg_list *ctl );
+extern void InitSegList( seg_list *ctl, unsigned_16 item_size );
 extern void FiniSegList( seg_list *ctl );

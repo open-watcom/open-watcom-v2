@@ -1,0 +1,18 @@
+/*
+ *  utils.h     Declaration of the rexec function.
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _UTILS_H_
+#define _UTILS_H_
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+int _System rexec(char **, int, char *, char *, char *, int *);
+
+:include cplusepi.sp
+
+#endif

@@ -32,24 +32,21 @@
 
 include mdef.inc
 
-        if __WASM__ ge 100
-            xref    "C",__chk8087
-        else
-            xref    <"C",__chk8087>
-        endif
+        modstart    _8087
 
-        name    _8087
+        xref    "C",__chk8087
 
-_DATA   segment dword public 'DATA'
+datasegment
         public  __8087
         public  __real87
-        extrn   __no87 :word
-__8087   db     0                 ; 0 => no 8087, otherwise 8087 present
-__real87 db     0                 ; 0 => no 8087, otherwise 8087 present
-_DATA   ends
+        extrn   __no87 :byte
+__8087          db  0   ; 0 => no 8087 and no EMU, otherwise 8087 or EMU present
+__real87        db  0   ; 0 => no real 8087 is used, otherwise real 8087 is used
+enddata
 
 include xinit.inc
 
-        xinit   __chk8087,2
+        xinit   __chk8087,INIT_PRIORITY_FPU + 3
 
+        endmod
         end

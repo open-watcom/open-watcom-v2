@@ -1,0 +1,59 @@
+COMPRESSION IN WINHELP FILES
+============================
+
+In Windows 3.1 helpfiles, the actual help text (stored in the |TOPIC file)
+is usually compressed two ways:  first with phrase replacement, then with
+a simplified LZ77 algorithm.  Note that the level of compression used in
+a help file is given in the |SYSTEM internal file; see system.txt.
+
+Phrase Replacement
+------------------
+
+When reading the help text in the |TOPIC file, if WinHelp sees a byte in the
+range 0x01 to 0x0E, it is interpreted as the first byte of a two byte
+phrase index.  The phrase index refers to one of the phrases in the |Phrases
+internal file (see phrases.txt).  However, the index of the phrase to be
+substituted is stored in an unusual way: high-byte first, then low-byte, not
+using the last bit. That is, the formula for the index of the phrase given
+the two-byte code X,Y is:   (((X-1)*265)+Y)/2.  Because of the restriction on
+the first byte mentioned above, this implies a maximum of 1,280 phrases in
+the |Phrases table.
+
+In addition, the last bit has a special meaning:  if the last bit is one
+(that is, if Y is odd) then a space is to be inserted immediately after
+the phrase to be substituted.  Otherwise, no space.
+
+Compression a-la LZ77
+---------------------
+
+Microsoft's version of the LZ77 compression algorithm is fairly simple; the
+following description is from the decompresser's point of view.
+
+A compressed block of data is divided into smaller blocks of between 9 and
+17 bytes.  The first byte of data is a bitmask saying which of the rest of
+the bytes are plain data and which are two-byte codes.  Bit 0 of the bitmask
+refers to the byte immediately following the bitmask.  In each bit, 0 means
+a plain byte while 1 means a code.
+
+A two-byte code is interpreted as a reference to a string of bytes that
+occur somewhere in the preceeding uncompressed text.  The code has the
+following structure:
+	Bits		Meaning
+	-----------------------
+	0-11		Distance back in the uncompressed text, minus 1
+	12-15		Length of the string to substitute, minus 3
+	
+The 'minuses' are there because a zero distance would be meaningless, and
+referring to a length 2 string would be pointless.
+
+For example if a block of compressed text began as follows:
+
+  00 46 69 72 73 74 20 48 65 08 6C 70 20 0A 20 .......
+  ^^                         ^^          ^^^^^
+  bitmask                    bitmask     code
+  
+Since the first byte is '00', the next 8 bytes are plain text. (ASCII for
+"First He", in this case)  The next byte after that is '08', so '6C', '70',
+and '20' are plain bytes while '0A 20' is a code.  Translated, '0A 20' means
+11 places back and a length of 5, so the text "First" would be inserted at
+that point.

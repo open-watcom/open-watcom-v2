@@ -1,0 +1,19 @@
+; This file is maintained by WMAKE. Do not modify this file directly.
+
+[Options]
+COMPRESS=TRUE
+WARNING=3
+CONTENTS=table_of_contents
+Title=Sybase Java Compiler Diagnostic Messages Help
+BMROOT=..\..\java;..\..\gml;..\..
+OLDKEYPHRASE=YES
+ROOT=.
+[Config]
+BrowseButtons()
+CreateButton( "btn_index", "&Index", "JumpId( `wjcerrs.hlp', `index_of_topics' )" )
+CreateButton( "btn_up", "&Up", "Contents()" )
+[Files]
+wjcerrs.rtf
+[MAP]
+#include <wjcerrs.hh>
+; end of HPJ file

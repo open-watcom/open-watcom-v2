@@ -1,0 +1,15 @@
+c$noreference
+
+! rxsutils.fi -- Useful REXX stuff.
+
+        include 'rexxsaa.fi'
+
+        integer INVALID_ROUTINE, VALID_ROUTINE
+        parameter (INVALID_ROUTINE = 40, VALID_ROUTINE = 0)
+
+        external CopyResult
+
+        integer strlen
+        external strlen
+
+c$reference

@@ -31,48 +31,48 @@
 
 
 /* fcbblock.c */
-void GiveBackBlock( long, char * );
-bool GetNewBlock( long *, char *, int );
-int MakeWriteBlock( fcb * );
+void    GiveBackBlock( long, unsigned char * );
+bool    GetNewBlock( long *, unsigned char *, int );
+int     MakeWriteBlock( fcb * );
 
 /* fcbdisk.c */
-int SwapToMemoryFromDisk( fcb * );
-int SwapToDisk( fcb * );
-void GiveBackSwapBlock( long );
-void SwapFileClose( void );
-void SwapBlockInit( int );
+vi_rc   SwapToMemoryFromDisk( fcb * );
+vi_rc   SwapToDisk( fcb * );
+void    GiveBackSwapBlock( long );
+void    SwapFileClose( void );
+void    SwapBlockInit( int );
 
 /* fcbems.c */
-int EMSBlockTest( unsigned short );
-void EMSBlockRead( long, void *, unsigned );
-int EMSBlockWrite( long , void *, unsigned );
-int EMSGetBlock( long * );
-int SwapToEMSMemory( fcb * );
-int SwapToMemoryFromEMSMemory( fcb * );
-void EMSInit( void );
-void EMSFini( void );
-void GiveBackEMSBlock( long );
-void EMSBlockInit( int );
+int     EMSBlockTest( unsigned short );
+void    EMSBlockRead( long, void *, unsigned );
+void    EMSBlockWrite( long , void *, unsigned );
+int     EMSGetBlock( long * );
+int     SwapToEMSMemory( fcb * );
+int     SwapToMemoryFromEMSMemory( fcb * );
+void    EMSInit( void );
+void    EMSFini( void );
+void    GiveBackEMSBlock( long );
+void    EMSBlockInit( int );
 
 /* fcbswap.c */
-void SwapFcb( fcb * );
-int RestoreToNormalMemory( fcb *, int );
+void    SwapFcb( fcb * );
+vi_rc   RestoreToNormalMemory( fcb *, int );
 
 /* fcbxmem.c */
-int SwapToExtendedMemory( fcb * );
-int SwapToMemoryFromExtendedMemory( fcb * );
-void XMemInit( void );
-void XMemFini( void );
-void GiveBackXMemBlock( long );
+int     SwapToExtendedMemory( fcb * );
+int     SwapToMemoryFromExtendedMemory( fcb * );
+void    XMemInit( void );
+void    XMemFini( void );
+void    GiveBackXMemBlock( long );
 
 /* fcbxms.c */
-int XMSBlockTest( unsigned short );
-void XMSBlockRead( long, void *, unsigned );
-int XMSBlockWrite( long , void *, unsigned );
-int XMSGetBlock( long * );
-int SwapToXMSMemory( fcb * );
-int SwapToMemoryFromXMSMemory( fcb * );
-void XMSInit( void );
-void XMSFini( void );
-void GiveBackXMSBlock( long );
-void XMSBlockInit( int );
+int     XMSBlockTest( unsigned short );
+void    XMSBlockRead( long, void *, unsigned );
+void    XMSBlockWrite( long , void *, unsigned );
+int     XMSGetBlock( long * );
+int     SwapToXMSMemory( fcb * );
+int     SwapToMemoryFromXMSMemory( fcb * );
+void    XMSInit( void );
+void    XMSFini( void );
+void    GiveBackXMSBlock( long );
+void    XMSBlockInit( int );

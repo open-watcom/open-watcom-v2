@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF format definitions, including Watcom specifics.
 *
 ****************************************************************************/
 
@@ -33,19 +32,20 @@
 #ifndef _DWARF_H_INCLUDED_
 #define _DWARF_H_INCLUDED_
 
-#pragma pack(push, 1);
+#include "pushpck1.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* DWARF definitions
-
+/*
    All informations are derived from DWARF Debugging Information Format ( by
    Unix International Programming Languages SIG, Version 2, Draft 6, dated
    April 12, 1993 )
 
 */
+
+#define DWARF_IMPL_VERSION  2   /* uint_16 */
 
 /*
     IMPORTANT:
@@ -198,7 +198,14 @@ typedef enum {
     DW_LNE_end_sequence = 1,
     DW_LNE_set_address,
     DW_LNE_define_file,
+#if 1
+    /*
+    //  Carl Young - 2004-07-05
+    //  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
+    //  may yet add more extended instructions which will screw us over using enumeration value 4!
+    */
     DW_LNE_set_segment
+#endif
 }dw_lne;
 
 /* Macinfo type encodings: figure 36 */
@@ -331,5 +338,5 @@ typedef struct {
 #ifdef __cplusplus
 };
 #endif
-#pragma pack (pop);
+#include "poppck.h"
 #endif

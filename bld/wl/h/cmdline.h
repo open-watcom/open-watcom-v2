@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for command parser functions
 *
 ****************************************************************************/
 
@@ -42,7 +41,8 @@ extern bool             ProcXDbg( void );
 extern bool             ProcIntDbg( void );
 
 extern void             InitCmdFile( void );
-extern char *           GetNextLink( void );
+extern void             SetSegMask(void);
+extern char             *GetNextLink( void );
 extern void             DoCmdFile( char * );
 extern void             Syntax( void );
 extern void             FreePaths( void );
@@ -53,10 +53,11 @@ extern void             AddFmtLibPaths( void );
 extern bool             HintFormat( exe_format );
 extern void             DecideFormat( void );
 extern void             FreeFormatStuff( void );
-extern void             AddCommentLib( char *, int, unsigned char );
+extern void             AddCommentLib( char *, unsigned, lib_priority );
 extern void             ExecSystem( char * );
 extern void             PruneSystemList( void );
 extern void             BurnSystemList( void );
-extern void             AddLibPaths( char *, int, bool );
+extern void             AddLibPaths( char *, unsigned, bool );
 extern void             AddEnvPaths( char * );
-extern file_list *      AddObjLib( char *, unsigned char );
+extern file_list        *AddObjLib( char *, lib_priority );
+extern int              DoBuffCmdParse( char *cmd );

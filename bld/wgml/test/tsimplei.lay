@@ -1,0 +1,83 @@
+:cmt. layout for tsimple.gml
+:layout
+:P
+        line_indent = 5
+        pre_skip = 1
+:banner
+ place = bottom
+ docsect =head0
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = bottom
+ docsect =abstract
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = bottom
+ docsect = preface
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = top
+ docsect = toc
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = top
+ docsect = figlist
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = top
+ docsect = index
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = top
+ docsect = letter
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+ place = topodd
+ docsect = letlast
+:banregion
+        refnum = 1
+:ebanregion
+:ebanner
+:banner
+        left_adjust = 0
+        right_adjust = 0
+        depth = 3
+        place = topodd
+        docsect = body
+:BANREGION
+        indent = 0
+        hoffset = left
+        width = extend
+        voffset = 2
+        depth = 1
+        font = 2
+        refnum = 1
+        region_position = left
+        pouring = last
+        script_format = yes
+        contents = '/&$amp.date./- &amp.$ll. -- C E N T E R ----/ Page &$amp.$pgnuma./'
+:eBANREGION
+:ebanner
+:convert file="tsimple.lay"
+:elayout

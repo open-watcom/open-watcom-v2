@@ -249,7 +249,7 @@ static int getDeclTypeSize(pDeclInfo decl, DeclType type) {
     case DT_STRUCT_DEF:
         return 0;
     case DT_ENUM_DEF:
-        return NULL;
+        return 0;
     case DT_INVALID:
         return 0;
     case DT_FUNC:
@@ -398,7 +398,9 @@ static void _expandPushDeclInfo(int fileNum, pDeclInfo decl,
     }
 }
 
-static void _expandPushEnumElem(int fileNum, pEnumElem elem) {
+static void _expandPushEnumElem(int fileNum, void *_elem) {
+    pEnumElem elem = _elem;
+
     assert(elem->expression != NULL);
     pushPrintStack(fileNum, TREE, elem->expression);
     pushPrintStack(fileNum, OUNIT, createOUnitText("EQU", NULL));
@@ -409,7 +411,8 @@ static void _expandPushEnumElem(int fileNum, pEnumElem elem) {
     }
 }
 
-static void _expandPushArray(int fileNum, pArrList arrList) {
+static void _expandPushArray(int fileNum, void *_arrList) {
+    pArrList arrList = _arrList;
     pArrElem elem, dummy;
     if (!getCurrSLListPosElem(arrList, &elem)) {
         assert(0);
@@ -425,11 +428,15 @@ static void _expandPushArray(int fileNum, pArrList arrList) {
     pushPrintStack(fileNum, TREE, elem->constExpr);
 }
 
-static void _expandPushToken(int fileNum, pToken token) {
+static void _expandPushToken(int fileNum, void *_token) {
+    pToken token = _token;
+
     pushPrintStack(fileNum, OUNIT, createOUnitFromTok(token));
 }
 
-static void _expandPushLogEntry(int fileNum, pToken logEntry) {
+static void _expandPushLogEntry(int fileNum, void *_logEntry) {
+    pToken logEntry = _logEntry;
+
     _expandPushToken(fileNum, logEntry);
     pushPrintStack( fileNum, OUNIT, createOUnitNewline());
 }

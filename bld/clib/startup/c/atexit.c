@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Module for adding functions to the atexit() list, as well
+*               invoking the functions on library shutdown.
 *
 ****************************************************************************/
 
@@ -39,37 +39,39 @@
 
 #define EXIT_LIMIT      32
 
-static  void    (* _HUGEDATA _ExitList[EXIT_LIMIT])();
+static  void    (* _HUGEDATA _ExitList[EXIT_LIMIT])( void );
 static  int     _ExitCount;
 
-int atexit( void (*func)(void) )
-    {
-        if( _ExitCount < EXIT_LIMIT ) {
-            _ExitList[ _ExitCount++ ] = func;
-            return( 0 );                /* indicate added successfully */
-        }
-        return( -1 );                   /* indicate no room */
+_WRTLFCONV int atexit( void (*func)( void ) )
+{
+    if( _ExitCount < EXIT_LIMIT ) {
+        _ExitList[ _ExitCount++ ] = func;
+        return( 0 );                /* indicate added successfully */
     }
+    return( -1 );                   /* indicate no room */
+}
 
-typedef void exit_fn();
+typedef void exit_fn( void );
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) exit_fn;
 #endif
 
-static void _Full_at_exit_rtn()
-    {
-        int count;
-        exit_fn *func;
+static void _Full_at_exit_rtn( void )
+{
+    int         count;
+    exit_fn     *func;
 
-        count = _ExitCount;
-        if( count == ( EXIT_LIMIT + 1 ) ) return;/*already done once*/
-        _ExitCount = EXIT_LIMIT + 1;/* prevent others being registered */
-        /* call functions in reverse order of their registration */
-        while( count != 0 ) {
-            --count;
-            func = _ExitList[ count ];
-            (*func)();                 /* invoke user exit routine */
-        }
+    count = _ExitCount;
+    if( count == ( EXIT_LIMIT + 1 ) ) {
+        return;                     /* already done once */
     }
+    _ExitCount = EXIT_LIMIT + 1;    /* prevent others being registered */
+    /* call functions in reverse order of their registration */
+    while( count != 0 ) {
+        --count;
+        func = _ExitList[ count ];
+        (*func)();                 /* invoke user exit routine */
+    }
+}
 
-AYI( _Full_at_exit_rtn, INIT_PRIORITY_PROGRAM+32 );
+AYI( _Full_at_exit_rtn, INIT_PRIORITY_PROGRAM + 32 );

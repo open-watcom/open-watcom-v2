@@ -1,188 +1,128 @@
 proj_name = wspy
 name = wspy
-sys_windowed = 1
 
-!ifeq host_OS nt
-wspy_dll_prefix = nt
-!else
-wspy_dll_prefix = w
+!ifndef wspy_autodepends
+wspy_autodepends = .AUTODEPEND
 !endif
 
-dllname = $(wspy_dll_prefix)spyhk
+sys_windowed = 1
 
 !include cproj.mif
-#!include deftarg.mif
+!include deftarg.mif
 !include defrule.mif
 
-wspy_obj_dir            = $+ $(%cdrive):$(%cwd) $-
+.EXTENSIONS: .res .rc
 
-msgh            = rcstr.h
-mastermsg       = rcstr.msg
-msgfiles        = $(wspy_dir)\spy.msg $(sdk_dir)\misc\savelbox.msg &
-                  $(sdk_dir)\misc\log.msg $(sdk_dir)\misc\about.msg &
-                  $(sdk_dir)\misc\hint.msg
-
-# Got rid of "-we" switch because FreeProcInstance() gives warning.
-cflags_all      = -zq -w4
+!ifeq host_os nt
+dllname = ntspyhk
+!else
+dllname = wspyhk
+!endif
 
 objs_win = spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
            spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj &
-           spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj &
-           savelbox.obj toolbr.obj font.obj fontstr.obj mem.obj log.obj &
-           mark.obj about.obj ldstr.obj mstatwnd.obj hint.obj wwinhelp.obj &
-           jdlg.obj
+           spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj
 
-objs_nt  =  spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
-            spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj spyzord.obj &
-            spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj &
-            savelbox.obj toolbr.obj font.obj fontstr.obj mem.obj log.obj &
-            mark.obj about.obj desknt.obj ldstr.obj mstatwnd.obj hint.obj &
-            wwinhelp.obj jdlg.obj
+objs_nt =  spy.obj spyglob.obj spybox.obj spyproc.obj spymsgs.obj &
+           spyfilt.obj spypick.obj spymdlgs.obj spyarray.obj spyzord.obj &
+           spymisc.obj spycfg.obj spylog.obj spytool.obj spysel.obj
 
-objs = $(objs_$(host_OS))
+objs = $(objs_$(host_os))
 
 dllobjs = spydll.obj
 
-# Overriding the default rc_flags_$(host_OS) here
-rc_flags_nt = -bt=nt -d__NT__
-rc_flags_win = -bt=windows
+extra_c_flags     += -s -fh
+extra_c_flags_i86 += -zu -2 -zW
+extra_c_flags_386 += -4
+!ifeq host_os win
+extra_c_flags_spydll = -bd -mc -fh=spydll.pch
+!else ifeq host_os nt
+extra_c_flags_spydll = -bd -fh=spydll.pch
+!endif
 
-resinc          = -i=$(sdk_dir)\misc
-resincj         = -i=$(sdk_dir)\misc
-rcopts1         = -r -i=$(sdk_dir)\misc -zk0
-rcopts2         = -k -ad
-
-resources = $(wspy_dir)\$(name).rc $(wspy_dir)\10spy.ico &
-            $(wspy_dir)\msgs.dlg $(wspy_dir)\winpick.dlg &
-            $(wspy_dir)\msgsel.dlg $(sdk_dir)\misc\about.dlg &
-            $(wspy_dir)\peekmsg.dlg $(wspy_dir)\selwin.dlg &
-            $(wspy_dir)\peekwin.dlg $(sdk_dir)\misc\log.rc $(mastermsg)
-resources_nt  = spymsgnt.dlg
-resources_win = spymsgs.dlg
-
-extra_c_flags_mem = -dNO_WPI
-
-extra_c_flags     += -s
-extra_c_flags_i86 += -fpc -zu -2 -zW
-extra_c_flags_386 += -fpc -4
-
-cflagswindll      = -mc
-cflagsntdll       = -bd
-
-!ifneq release 1
+!ifeq release 0
 wspy_non_release_option = option rwr
 dll_debug_all           = debug all
 dll_debug_axp           = debug codeview
 !endif
 
-extra_l_flags_win = option stack=9k option heapsize=2k &
-                    lib windows.lib lib commdlg.lib lib toolhelp.lib &
-                    lib $(dllname).lib lib $(sdk_dir)\misc\ctl3d.lib
-extra_l_flags_nt  = option stack=64k option heapsize=2k &
-                    lib $(dllname).lib
-extra_l_flags_nt_axp = lib ctl3d32.lib
+extra_l_flags_win = option stack=9k, heapsize=2k lib $(dllname).lib
+
+extra_l_flags_nt  = option stack=100k option heapsize=2k lib $(dllname).lib
 
 extra_l_flags     = option map
-!ifeq host_CPU  386
+!ifeq host_cpu  386
 # To maintain cross-version linkability
-extra_l_flags    += alias '_WinMain'='_WinMain@16'
+extra_l_flags_nt  += alias '_WinMain'='_WinMain@16'
 !endif
 
-wspy_dll_lflags_wini86 = $(dll_debug_$(host_CPU)) &
+wspy_dll_lflags_wini86 = $(dll_debug_$(host_cpu)) &
                          system windows_dll font mem name $(dllname).dll &
                          $(wspy_non_release_option) &
                          lib windows.lib &
-                         exp WEP.1 resident &
-                         option map option stack=2k &
+                         option map, rwr &
                          segment CLASS 'CODE' PRELOAD FIXED &
-                         libfile libentry.obj file { $(dllobjs) }
-
-wspy_dll_lflags_nt386  = $(dll_debug_$(host_CPU)) &
-                         system nt_dll initglobal name $(dllname).dll &
-                         libpath d:\utils\watcom\lib &
-                         library nt option map &
+                         export WEP RESIDENT &
                          file { $(dllobjs) }
 
-wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_CPU)) &
-                         system ntaxp_dll initglobal name $(dllname).dll &
-                         libpath d:\utils\watcom\lib &
+wspy_dll_lflags_nt386  = $(dll_debug_$(host_cpu)) &
+                         system nt_dll initglobal name $(dllname).dll &
                          option map &
                          file { $(dllobjs) }
 
-inc_dirs        = $(wspy_dir);$(sdk_dir)\misc;$(watcom_dir)\h
+wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
+                         system ntaxp_dll initglobal name $(dllname).dll &
+                         option map &
+                         file { $(dllobjs) }
 
-.before:
-        @set INCLUDE=$(inc_path)
+.c: $(wspy_dir);$(sdk_dir)/misc
+.h: $(wspy_dir);$(sdk_dir)/misc
 
-.c: $(wspy_dir);$(sdk_dir)\misc
-.h: $(wspy_dir);$(sdk_dir)\misc
+inc_dirs = -I"$(wspy_dir)" -I"$(commonui_dir)/$(host_os)$(host_cpu)"
+inc_dirs += -I"$(commonui_dir)/h" -I"$(wpi_dir)/h"
 
-wspy_to_build_win = $(msgh) spymsgs.dlg spymsg.h $(dllname).dll $(name).exe
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
 
-wspy_to_build_nt = $(msgh) spymsgnt.dlg spymsgnt.h $(dllname).dll $(name).exe
+xlibs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib &
+        $(commonui_dir)/$(host_os)$(host_cpu)/commonui.lib
 
-all : $(wspy_to_build_$(host_OS)) .SYMBOLIC
-        @%null
-
-$(name).exe : $(objs) $(name).res $(dllname).lib
-        $(linker) $(lflags) name $(name).exe file { $(objs) }
-!ifeq host_CPU axp
-!ifndef on_build_machine
+$(name).exe : rcstr.gh $(objs) $(name).res $(dllname).lib $(xlibs) $(version_res_$(host_os)_$(host_cpu))
+        %create $^&.lnk
+        @%append $^&.lnk $(lflags)
+        @%append $^&.lnk file { $(objs) }
+        @%append $^&.lnk lib { $(xlibs) }
+        $(linker) name $^@ @$^&.lnk
+!ifeq host_cpu axp
+!ifeq release 0
         cvpack $(name).exe
-        wstrip $(name).exe $(name).exe $(name).sym
+        wstrip -q $(name).exe $(name).exe $(name).sym
 !endif
 !endif
-        $(RC) $(rc_flags) $(rcopts2) $(name).res
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(name).res $^@
+!endif
+!ifeq host_cpu axp
+!ifeq release 0
+        wstrip -q -a wspy.exe . wspy.sym
+!endif
+!endif
 
-$(msgh) : $(mastermsg)
-        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
+rcstr.gh : rcstrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
 
-$(mastermsg) : $(msgfiles)
-        $(cc) -zk0 -p -i=$(sdk_dir)\misc $(wspy_dir)\spy.msg -fo=$(mastermsg)
-
-spymsgs.dlg spymsg.h: spyarray.h
-        cd $(wspy_dir)\utils
-        wmake -h
-        cd $(wspy_obj_dir)
-        $(wspy_dir)\utils\mkdlg spymsgs.dlg spymsg.h
-
-spymsgnt.dlg spymsgnt.h: spyarray.h
-        cd $(wspy_dir)\utils
-        wmake -h defines=-dNT_MSGS
-        cd $(wspy_obj_dir)
-        $(wspy_dir)\utils\mkdlg spymsgnt.dlg spymsgnt.h
-
-$(name).res : $(resources) $(resources_$(host_OS))
-    $(RC) $(rc_flags) $(rcopts1) $(wspy_dir)\$(name).rc -fo=.\$^.
-
-spydll.obj : spydll.c
-        @set include=$(inc_path)
-        $(cc) $(cflags) $(cflags$(host_OS)dll) $[@
+rcstrmsg.gh : $(wspy_dir)/spy.msg
+        $(c_pp) -zk0 $(inc_path) $[@ >$^@
 
 $(dllname).lib : $(dllname).dll
-        if exist $(dllname).lib erase $(dllname).lib > NUL
-        $(librarian) $(dllname).lib +$(dllname).dll
+        $(librarian) $(libflags) +$[@
 
 $(dllname).dll : $(dllobjs)
-        $(linker) $(wspy_dll_lflags_$(host_OS)$(host_CPU))
-        #-@erase $(dllname).lib > NUL
-        #$(librarian) $(dllname).lib +$(dllname).dll
+        $(linker) $(wspy_dll_lflags_$(host_os)$(host_cpu))
 
-clean: .SYMBOLIC .EXPLICIT
-        @if exist *.?bj @del *.?bj
-        @if exist *.lnk @del *.lnk
-        @if exist *.exe @del *.exe
-        @if exist *.lib @del *.lib
-        @if exist *.res @del *.res
-        @if exist *.clb @del *.clb
-        @if exist *.err @del *.err
-        @if exist *.dll @del *.dll
-        @if exist *.map @del *.map
-        @if exist *.sym @del *.sym
-        @if exist $(msgh) @del $(msgh)
-        @if exist $(mastermsg) @del $(mastermsg)
-        @if exist spymsg*.dlg @del spymsg*.dlg
-        @if exist spymsg*.h @del spymsg*.h
-        @cd $(wspy_dir)\utils
-        @wmake -h clean
-        @cd $(wspy_obj_dir)
+$(name).res: ../$(name).rc .AUTODEPEND
+        $(rc) $(rc_flags) -ad -zk0 $(inc_path) $[@ -fo=$^@
+
+!include verrc.mif

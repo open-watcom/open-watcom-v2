@@ -1,20 +1,22 @@
-all : .symbolic wstub.exe wstubq.exe
-        @%null
-wstub.exe : wstub.obj
-        wlink file wstub option quiet sys dos op map
-wstubq.exe : wstubq.obj
-        wlink file wstubq option quiet sys dos op map
-wstub.obj : wstub.c
-        $(comp286) wstub /oaxs /zq
-wstubq.obj : wstub.c
-        $(comp286) wstub /oaxs /zq /dQUIET=1 /fo=wstubq
+#pmake: build os_dos os_win cpu_i86 cpu_386
 
-clean : .symbolic
-        @if exist *.?bj del *.?bj
-        @if exist *.exe del *.exe
-        @if exist *.lst del *.lst
-        @if exist *.err del *.err
-        @if exist *.map del *.map
-        @if exist *.dmp del *.dmp
-        @if exist *.sym del *.sym
-        @if exist *.tmp del *.tmp
+host_os  = dos
+host_cpu = i86
+
+memory_model_i86 = s
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+all : wstub.exe wstubq.exe
+
+!ifeq release 1
+extra_c_flags = -oaxs
+!endif
+
+wstub.exe : wstub.obj
+        $(linker) $(lflags) file $[@
+
+wstubq.exe : wstubq.obj
+        $(linker) $(lflags) file $[@

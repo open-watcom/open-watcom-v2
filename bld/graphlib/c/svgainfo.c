@@ -42,14 +42,9 @@
 #if defined( __QNX__ )
 extern unsigned         LoadSegLimit( unsigned );
   #if defined( __386__ )
-    #if ( __WATCOMC__ >= 1000 )         // V10.0 or better
-        #define LSL     "lsl eax,dx"
-    #else
-        #define LSL     "lsl eax,edx"
-    #endif
     #pragma aux         LoadSegLimit = \
                         ".386p" \
-                        LSL \
+                        "lsl eax,dx" \
                         parm caller [edx] value [eax];
   #else
     #pragma aux         LoadSegLimit = \
@@ -60,13 +55,49 @@ extern unsigned         LoadSegLimit( unsigned );
 #endif
 
 
-short _SuperVGAType()
+static int TestForVESA( void )
+//======================
+{
+    short               val;
+#if defined( __386__ ) && !defined( __QNX__ )
+    char far            *buf;
+    RM_ALLOC            mem;
+    int                 is_vesa;
+#else
+    char                buf[ 256 ];
+#endif
+
+#if defined( __386__ ) && !defined( __QNX__ )
+    if( _RMAlloc( 256, &mem ) ) {
+        buf = mem.pm_ptr;
+        val = _RMInterrupt( 0x10, 0x4f00, 0, 0, 0, mem.rm_seg, 0 );
+        if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
+                             buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
+            is_vesa = TRUE;
+        } else {
+            is_vesa = FALSE;
+        }
+        _RMFree( &mem );
+        return( is_vesa );
+    }
+#else
+    val = GetVESAInfo( 0x4f00, 0, &buf );
+    if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
+                         buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
+        return( TRUE );
+    }
+#endif
+    return( FALSE );
+}
+
+
+short _SuperVGAType( void )
 //===================
 
 {
     char                dcc;
-    char far            *p;
-    char far            *s;
+    unsigned char far   *p;
+    unsigned char far   *s;
     short               len;
     short               val;
     char                id;
@@ -223,42 +254,6 @@ short _SuperVGAType()
 
     return( _SV_NONE );
 }
-
-static int TestForVESA()
-//======================
-{
-    short               val;
-#if defined( __386__ ) && !defined( __QNX__ )
-    char far            *buf;
-    RM_ALLOC            mem;
-    int                 is_vesa;
-#else
-    char                buf[ 256 ];
-#endif
-
-#if defined( __386__ ) && !defined( __QNX__ )
-    if( _RMAlloc( 256, &mem ) ) {
-        buf = mem.pm_ptr;
-        val = _RMInterrupt( 0x10, 0x4f00, 0, 0, 0, mem.rm_seg, 0 );
-        if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
-                             buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
-            is_vesa = TRUE;
-        } else {
-            is_vesa = FALSE;
-        }
-        _RMFree( &mem );
-        return( is_vesa );
-    }
-#else
-    val = GetVESAInfo( 0x4f00, 0, &buf );
-    if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
-                         buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
-        return( TRUE );
-    }
-#endif
-    return( FALSE );
-}
-
 
 // Entry-point for FORTRAN to set _SVGAType variable
 

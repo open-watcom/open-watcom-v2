@@ -33,14 +33,14 @@
 #include <string.h>
 #include "trpimp.h"
 
-static mx_entry        TRAPFAR *Out_Mx_Ptr;
+mx_entry TRAPFAR    *Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
 extern unsigned (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
                                         unsigned, mx_entry * );
 
-static unsigned ReqConnect()
+unsigned ReqConnect( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -48,12 +48,12 @@ static unsigned ReqConnect()
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqSimpleStub()
+unsigned ReqSimpleStub( void )
 {
     return( 0 );
 }
 
-static unsigned ReqGet_supplementary_service(void)
+unsigned ReqGet_supplementary_service(void)
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -62,7 +62,7 @@ static unsigned ReqGet_supplementary_service(void)
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqMap_addr( void )
+unsigned ReqMap_addr( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -73,7 +73,7 @@ static unsigned ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqChecksum_mem( void )
+unsigned ReqChecksum_mem( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -81,7 +81,7 @@ static unsigned ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqProg_load( void )
+unsigned ReqProg_load( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -89,7 +89,7 @@ static unsigned ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqProg_kill( void )
+unsigned ReqProg_kill( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -97,7 +97,7 @@ static unsigned ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqSet_watch( void )
+unsigned ReqSet_watch( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -106,7 +106,7 @@ static unsigned ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqSet_break( void )
+unsigned ReqSet_break( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -114,7 +114,7 @@ static unsigned ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqGet_next_alias( void )
+unsigned ReqGet_next_alias( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -123,7 +123,7 @@ static unsigned ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqRead_user_keyboard( void )
+unsigned ReqRead_user_keyboard( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -131,7 +131,7 @@ static unsigned ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqGet_lib_name( void )
+unsigned ReqGet_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -139,7 +139,7 @@ static unsigned ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqRedirect_stdin( void  )
+unsigned ReqRedirect_stdin( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -147,7 +147,7 @@ static unsigned ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-static unsigned ReqRedirect_stdout( void  )
+unsigned ReqRedirect_stdout( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -156,7 +156,7 @@ static unsigned ReqRedirect_stdout( void  )
 }
 
 
-static unsigned ReqSplit_cmd( void )
+unsigned ReqSplit_cmd( void )
 {
     OUTPTR( split_cmd_ret, ret );
 

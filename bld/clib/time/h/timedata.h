@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Specification of <time.h> internal interfaces.
 *
 ****************************************************************************/
-
 
 #ifndef TIMEDATA_H_INCLUDED
 #define TIMEDATA_H_INCLUDED
@@ -36,22 +34,23 @@
 #include "variety.h"
 #include <time.h>
 
-#ifndef __PENPOINT__
-  extern int       __dst_adjust;
-  extern struct tm __start_dst; /* start of daylight savings */
-  extern struct tm __end_dst;   /* end of daylight savings */
-#endif
+extern int              __dst_adjust;
+extern struct tm        __start_dst; /* start of daylight savings */
+extern struct tm        __end_dst;   /* end of daylight savings */
 
 #define SECONDS_FROM_1900_TO_1970       2208988800UL
-#define SECONDS_PER_DAY                 (24*60*60UL)
-#define DAYS_FROM_1900_TO_1970          ((long)(SECONDS_FROM_1900_TO_1970/SECONDS_PER_DAY))
+#define SECONDS_PER_DAY                 ( 24 * 60 * 60UL )
+#define DAYS_FROM_1900_TO_1970          ( ( long ) ( SECONDS_FROM_1900_TO_1970 / SECONDS_PER_DAY ) )
 
-extern struct tm *__brktime( unsigned long, time_t, long, struct tm *);
-extern int        __leapyear( unsigned );
-extern int        __isindst( struct tm * );
-extern int        __getctime( struct tm * );
+extern struct tm        *__brktime( unsigned long, time_t, long, struct tm * );
+extern time_t           __local_mktime( const struct tm *, long *, long * );
+extern int              __leapyear( unsigned );
+extern int              __isindst( struct tm * );
+extern int              __getctime( struct tm * );
+extern int              __read_tzfile( const char *tz );
+extern void             __check_tzfile( time_t t, struct tm *timep );
 
-extern short const __diyr[];    /* days in normal year array */
-extern short const __dilyr[];   /* days in leap year array */
+extern short const __based(__segname("_CONST"))        __diyr[];  /* days in normal year array */
+extern short const __based(__segname("_CONST"))        __dilyr[]; /* days in leap year array */
 
 #endif

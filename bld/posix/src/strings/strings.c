@@ -43,7 +43,7 @@ char *OptEnvVar = "STRINGS";
 
 #define STATIC
 
-STATIC char *usageTxt[] = {
+STATIC const char *usageTxt[] = {
     "Usage: strings [-?xX] [-num] [files...]",
     "\tfiles         : files to display the printable strings from",
     "\tOptions: -?   : display this message",

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Microsoft RC clone tool.
 *
 ****************************************************************************/
 
@@ -59,51 +58,6 @@
 #define RC_SUCCESS              0
 #define RC_NOACTION             (-1)
 #define RC_ERROR                (-2)
-
-
-/*
- * Program entry point.
- */
-void main( int argc, char *argv[] )
-/*********************************/
-{
-    OPT_STORAGE         cmdOpts;
-    CmdLine *           cmdLine;
-    int                 itemsParsed;
-    int                 rc = RC_NOACTION;
-
-    /*** Initialize ***/
-    SetBannerFuncError( BannerMessage );
-    cmdLine = InitCmdLine( RC_NUM_SECTIONS );
-    SetDefaultFile( TYPE_RC_FILE, "rc" );
-    AllowTypeFile( TYPE_RC_FILE, TYPE_INVALID_FILE );
-
-    /*** Parse the command line and translate to Watcom options ***/
-    InitParse( &cmdOpts );
-    itemsParsed = do_parsing( &cmdOpts );
-    if( itemsParsed==0 || cmdOpts.help ) {
-        PrintHelpMessage();
-        exit( EXIT_SUCCESS );
-    }
-    OptionsTranslate( &cmdOpts, cmdLine );
-
-    /*** Spawn the compiler ***/
-    rc = res_compile( &cmdOpts, cmdLine );
-    switch( rc ) {
-      case RC_ERROR:
-        exit( EXIT_FAILURE );
-        break;
-      case RC_NOACTION:
-        FatalError( "Nothing to do!" );
-        break;
-      case RC_SUCCESS:
-        FiniParse( &cmdOpts );
-        exit( EXIT_SUCCESS );
-        break;
-      default:
-        Zoinks();
-    }
-}
 
 
 /*
@@ -181,4 +135,49 @@ static int res_compile( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         }
     }
     return( RC_SUCCESS );
+}
+
+
+/*
+ * Program entry point.
+ */
+void main( int argc, char *argv[] )
+/*********************************/
+{
+    OPT_STORAGE         cmdOpts;
+    CmdLine *           cmdLine;
+    int                 itemsParsed;
+    int                 rc = RC_NOACTION;
+
+    /*** Initialize ***/
+    SetBannerFuncError( BannerMessage );
+    cmdLine = InitCmdLine( RC_NUM_SECTIONS );
+    SetDefaultFile( TYPE_RC_FILE, "rc" );
+    AllowTypeFile( TYPE_RC_FILE, TYPE_INVALID_FILE );
+
+    /*** Parse the command line and translate to Watcom options ***/
+    InitParse( &cmdOpts );
+    itemsParsed = do_parsing( &cmdOpts );
+    if( itemsParsed==0 || cmdOpts.help ) {
+        PrintHelpMessage();
+        exit( EXIT_SUCCESS );
+    }
+    OptionsTranslate( &cmdOpts, cmdLine );
+
+    /*** Spawn the compiler ***/
+    rc = res_compile( &cmdOpts, cmdLine );
+    switch( rc ) {
+      case RC_ERROR:
+        exit( EXIT_FAILURE );
+        break;
+      case RC_NOACTION:
+        FatalError( "Nothing to do!" );
+        break;
+      case RC_SUCCESS:
+        FiniParse( &cmdOpts );
+        exit( EXIT_SUCCESS );
+        break;
+      default:
+        Zoinks();
+    }
 }

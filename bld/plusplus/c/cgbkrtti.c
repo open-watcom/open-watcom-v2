@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
+#include "plusplus.h"
+
 #include <stddef.h>
 
-#include "plusplus.h"
 #include "cgback.h"
 #include "cgbackut.h"
 #include "ring.h"
@@ -115,8 +116,8 @@ static void doRttiGen( RTTI_CLASS *r )
                 leap_control |= RL_LAST;
             }
             leap_control &= RL_RUNTIME;
-            DGInteger( leap->vb_index, T_UINT_2 );
-            DGInteger( leap_control, T_UINT_2 );
+            DGInteger( leap->vb_index, TY_UINT_2 );
+            DGInteger( leap_control, TY_UINT_2 );
             DgOffset( leap->offset );
             dropTypeidRef( leap->type );
             leap_control = RL_NULL;

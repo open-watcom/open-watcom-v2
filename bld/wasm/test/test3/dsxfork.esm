@@ -1,0 +1,179 @@
+.387
+.386p
+		PUBLIC	RedirectInOut_
+		PUBLIC	RestoreInOut_
+		PUBLIC	_fork_
+		EXTRN	__psp:BYTE
+		EXTRN	DOSEnvFind_:BYTE
+		EXTRN	RestoreHandlers_:BYTE
+		EXTRN	GrabHandlers_:BYTE
+DGROUP		GROUP	CONST,_BSS
+CONST		SEGMENT	BYTE PUBLIC USE32 'DATA'
+L$1:
+    DB	43H, 4fH, 4dH, 53H, 50H, 45H, 43H, 0
+L$2:
+    DB	43H, 4fH, 4eH, 0
+
+CONST		ENDS
+_BSS		SEGMENT	BYTE PUBLIC USE32 'BSS'
+    ORG 0
+L$3    LABEL	BYTE
+    ORG 2
+L$4    LABEL	BYTE
+    ORG 4
+L$5    LABEL	BYTE
+    ORG 6
+_BSS		ENDS
+
+_TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+RedirectInOut_:
+    push        edx
+    push        ecx
+    push        ebx
+    mov         ebx,0
+    mov         ah,45H
+    int         21H
+    jb          L$6
+    mov         word ptr DGROUP:L$3,ax
+    mov         ebx,1
+    mov         ah,45H
+    int         21H
+    jb          L$6
+    mov         word ptr DGROUP:L$4,ax
+    mov         edx,offset DGROUP:L$2
+    mov         ax,3d02H
+    int         21H
+    jb          L$6
+    mov         word ptr DGROUP:L$5,ax
+    movzx       ebx,ax
+    mov         ecx,0
+    mov         ah,46H
+    int         21H
+    jb          L$6
+    mov         ecx,1
+    mov         ah,46H
+    int         21H
+    jb          L$6
+    mov         ah,3eH
+    int         21H
+    jb          L$6
+    mov         ax,0
+L$6:
+    cwde        
+    clc         
+    pop         ebx
+    pop         ecx
+    pop         edx
+    ret         
+RestoreInOut_:
+    push        ecx
+    push        ebx
+    movzx       ebx,word ptr DGROUP:L$3
+    mov         ecx,0
+    mov         ah,46H
+    int         21H
+    jb          L$7
+    mov         ah,3eH
+    int         21H
+    jb          L$7
+    movzx       ebx,word ptr DGROUP:L$4
+    mov         ecx,1
+    mov         ah,46H
+    int         21H
+    jb          L$7
+    mov         ah,3eH
+    int         21H
+    jb          L$7
+    mov         ax,0
+L$7:
+    cwde        
+    clc         
+    pop         ebx
+    pop         ecx
+    ret         
+load_and_exec_:
+    push        ebp
+    push        edi
+    push        esi
+    push        edx
+    push        ecx
+    push        ebx
+    push        es
+    mov         ebp,esp
+    sub         esp,edx
+    dec         esp
+    mov         edi,esp
+    mov         ax,ss
+    mov         es,ax
+    mov         esi,ebx
+    mov         ecx,edx
+    rep movsb   
+    mov         byte ptr es:[edi],0dH
+    test        edx,edx
+    je          L$8
+    mov         ecx,edx
+    mov         ax,3700H
+    int         21H
+    pushw       2043H
+    mov         bl,cl
+    add         bl,3
+    mov         bh,dl
+    push        bx
+    jmp         L$9
+L$8:
+    dec         esp
+    mov         byte ptr [esp],0
+L$9:
+    mov         edi,esp
+    sub         esp,18H
+    mov         ebx,esp
+    mov         dword ptr ss:[ebx],0
+    mov         word ptr ss:4[ebx],0
+    mov         dword ptr ss:6[ebx],edi
+    mov         word ptr ss:0aH[ebx],ss
+    mov         ax,word ptr DGROUP:__psp
+    mov         dword ptr ss:0cH[ebx],5cH
+    mov         word ptr ss:10H[ebx],ax
+    mov         dword ptr ss:12H[ebx],6cH
+    mov         word ptr ss:16H[ebx],ax
+    mov         eax,offset DGROUP:L$1
+    call        near ptr DOSEnvFind_
+    mov         edx,eax
+    mov         ax,4b00H
+    int         21H
+    jb          L$10
+    mov         ax,0
+L$10:
+    cwde        
+    clc         
+    mov         esp,ebp
+    pop         es
+    pop         ebx
+    pop         ecx
+    pop         edx
+    pop         esi
+    pop         edi
+    pop         ebp
+    ret         
+_fork_:
+    push        ebx
+    mov         ebx,eax
+    call        near ptr RestoreHandlers_
+    call        near ptr RedirectInOut_
+    test        eax,eax
+    jne         L$11
+    call        near ptr load_and_exec_
+    call        near ptr RestoreInOut_
+L$11:
+    push        eax
+    call        near ptr GrabHandlers_
+    pop         eax
+    test        eax,eax
+    je          L$12
+    or          eax,0ffff0000H
+L$12:
+    pop         ebx
+    ret         
+_TEXT		ENDS
+		END

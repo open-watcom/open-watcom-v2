@@ -30,13 +30,8 @@
 ****************************************************************************/
 
 
-// the following is a temporary measure to get around the fact
-// that winreg.h defines a type called ppvalue
-#define _WINREG_
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <win1632.h>
+#include "precomp.h"
+#include "win1632.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -51,7 +46,7 @@
 #include "wdestat.h"
 #include "wdesdup.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.h"
+#include "rcstr.gh"
 #include "wdefutil.h"
 #include "wdewait.h"
 #include "wdestken.h"
@@ -79,11 +74,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeResourceViewHash        ( WdeResInfo * );
-static Bool WdeResourceLoadHash        ( WdeResInfo * );
-static Bool WdeResourceWriteHash       ( WdeResInfo * );
-static void WdeAddSymbols              ( WdeHashTable * );
-static char *WdeLoadSymbols            ( WdeHashTable **, char *, Bool );
+static Bool WdeResourceViewHash( WdeResInfo * );
+static Bool WdeResourceLoadHash( WdeResInfo * );
+static Bool WdeResourceWriteHash( WdeResInfo * );
+static void WdeAddSymbols( WdeHashTable * );
+static char *WdeLoadSymbols( WdeHashTable **, char *, Bool );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -104,11 +99,11 @@ static Bool WdeViewSymbols( WdeHashTable **table, HWND parent )
     Bool                ok;
 
     cb = NULL;
-    ok = ( table != NULL );
+    ok = (table != NULL);
 
     if( ok ) {
         cb = MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
-        ok = ( cb != (FARPROC)NULL );
+        ok = (cb != (FARPROC)NULL);
     }
 
     if( ok ) {
@@ -123,23 +118,22 @@ static Bool WdeViewSymbols( WdeHashTable **table, HWND parent )
     return( ok );
 }
 
-Bool WdeResourceHashTableAction ( WdeResInfo *info, int action )
+Bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 {
     Bool ret;
 
     ret = FALSE;
 
     switch( action ) {
-        case VIEW_HASH:
-            ret = WdeResourceViewHash( info );
-            break;
-        case LOAD_HASH:
-            ret = WdeResourceLoadHash( info );
-            break;
-        case WRITE_HASH:
-            ret = WdeResourceWriteHash( info );
-            break;
-
+    case VIEW_HASH:
+        ret = WdeResourceViewHash( info );
+        break;
+    case LOAD_HASH:
+        ret = WdeResourceLoadHash( info );
+        break;
+    case WRITE_HASH:
+        ret = WdeResourceWriteHash( info );
+        break;
     }
 
     return( ret );
@@ -149,25 +143,25 @@ Bool WdeResourceViewHash( WdeResInfo *info )
 {
     BOOL    no_hash;
     BOOL    ret;
-    OBJPTR obj;
+    OBJPTR  obj;
 
-    if( !info->hash_table ) {
+    if( info->hash_table == NULL ) {
         InitState( info->forms_win );
         no_hash = TRUE;
         info->hash_table = WdeInitHashTable();
     }
 
-    ret = ( WdeViewSymbols( &(info->hash_table), info->edit_win ) );
+    ret = WdeViewSymbols( &info->hash_table, info->edit_win );
 
     if( !WdeNumInHashTable( info->hash_table ) ) {
         WdeFreeHashTable( info->hash_table );
         info->hash_table = NULL;
     }
 
-    if( ret && ( obj = GetMainObject() ) ) {
+    if( ret && (obj = GetMainObject()) != NULL ) {
         WdeTouchHashTable( info->hash_table );
-        Forward ( obj, RESOLVE_HELPSYMBOL, &ret, NULL ); /* JPK */
-        Forward ( obj, RESOLVE_SYMBOL, &ret, NULL );
+        Forward( obj, RESOLVE_HELPSYMBOL, &ret, NULL ); /* JPK */
+        Forward( obj, RESOLVE_SYMBOL, &ret, NULL );
     }
 
     if( ret ) {
@@ -177,7 +171,7 @@ Bool WdeResourceViewHash( WdeResInfo *info )
         }
     }
 
-    return ( ret );
+    return( ret );
 }
 
 Bool WdeResourceLoadHash( WdeResInfo *info )
@@ -187,17 +181,17 @@ Bool WdeResourceLoadHash( WdeResInfo *info )
     Bool        from_id;
     char        *include;
 
-    include = WdeLoadSymbols( &(info->hash_table), NULL, TRUE );
+    include = WdeLoadSymbols( &info->hash_table, NULL, TRUE );
     if( include == NULL ) {
         return( FALSE );
     }
 
-    if( info->sym_name ) {
+    if( info->sym_name != NULL ) {
         WdeMemFree( info->sym_name );
     }
     info->sym_name = include;
 
-    if( obj = GetMainObject() ) {
+    if( (obj = GetMainObject()) != NULL ) {
         b = TRUE;
         from_id = TRUE;
         Forward( obj, RESOLVE_HELPSYMBOL, &b, &from_id ); /* JPK */
@@ -211,7 +205,7 @@ Bool WdeResourceLoadHash( WdeResInfo *info )
 
     WdeSetResModified( info, TRUE );
 
-    return ( TRUE );
+    return( TRUE );
 }
 
 Bool WdeResourceWriteHash( WdeResInfo *info )
@@ -231,34 +225,33 @@ Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     type = NULL;
     res = NULL;
     str = NULL;
-    ok= ( rinfo && include );
-
+    ok = (rinfo != NULL && include != NULL);
 
     if( ok ) {
         if( rinfo->info->dir == NULL ) {
             rinfo->info->dir = WResInitDir();
-            ok = ( rinfo->info->dir != NULL );
+            ok = (rinfo->info->dir != NULL);
         }
     }
 
     if( ok ) {
         WdeDeleteDLGInclude( rinfo );
         type = WResIDFromNum( (uint_16)RT_RCDATA );
-        ok = ( type != NULL );
+        ok = (type != NULL);
     }
 
     if( ok ) {
         res = WResIDFromStr( "DLGINCLUDE" );
-        ok = ( res != NULL );
+        ok = (res != NULL);
     }
 
     if( ok ) {
         str = WdeStrDup( include );
-        ok = ( str != NULL );
+        ok = (str != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
         ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE,
@@ -294,28 +287,27 @@ Bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
     WResLangType        lang;
     Bool                ok;
 
-    ok = ( rinfo != NULL );
+    ok = (rinfo != NULL);
 
     if( ok ) {
         tnode = WRFindTypeNode( rinfo->info->dir, (uint_16)RT_RCDATA, NULL );
-        ok = ( tnode != NULL );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
         rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = ( rnode != NULL );
+        ok = (rnode != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
-        ok = WRRemoveLangNodeFromDir( rinfo->info->dir, &tnode,
-                                      &rnode, &lnode );
+        ok = WRRemoveLangNodeFromDir( rinfo->info->dir, &tnode, &rnode, &lnode );
     }
 
     return( ok );
@@ -331,23 +323,23 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     Bool                ok;
 
     include = NULL;
-    ok = ( rinfo != NULL );
+    ok = (rinfo != NULL);
 
     if( ok ) {
         tnode = WRFindTypeNode( rinfo->info->dir, (uint_16)RT_RCDATA, NULL );
-        ok = ( tnode != NULL );
+        ok = (tnode != NULL);
     }
 
     if( ok ) {
         rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = ( rnode != NULL );
+        ok = (rnode != NULL);
     }
 
     if( ok ) {
-        lang.lang    = DEF_LANG;
+        lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        ok = (lnode != NULL);
     }
 
     if( ok ) {
@@ -386,12 +378,12 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
     include = NULL;
 
-    if( !rinfo || !rinfo->info->file_name ) {
-        return ( FALSE );
+    if( rinfo == NULL || rinfo->info->file_name == NULL ) {
+        return( FALSE );
     }
 
     include = WdeFindDLGInclude( rinfo );
-    if( include && !WdeFileExists( include ) ) {
+    if( include != NULL && !WdeFileExists( include ) ) {
         WdeMemFree( include );
         include = NULL;
     }
@@ -410,8 +402,8 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     ret = TRUE;
 
     if( WdeFileExists( fn_path ) ) {
-        include = WdeLoadSymbols( &(rinfo->hash_table), fn_path, prompt );
-        ret = ( include != NULL );
+        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt );
+        ret = (include != NULL);
         if( ret ) {
             if( rinfo->sym_name != NULL ) {
                 WdeMemFree( rinfo->sym_name );
@@ -443,7 +435,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
     pop_env = FALSE;
     name = NULL;
 
-    ok = ( table != NULL );
+    ok = (table != NULL);
 
     if( ok ) {
         WdeSetStatusText( NULL, " ", FALSE );
@@ -451,24 +443,23 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
     }
 
     if( ok ) {
-        if( !file_name || prompt ) {
+        if( file_name == NULL || prompt ) {
             gf.file_name = file_name;
-            gf.title     = WdeLoadHeaderTitle;
-            gf.filter    = WdeSymSaveFilter;
+            gf.title = WdeLoadHeaderTitle;
+            gf.filter = WdeSymSaveFilter;
             name = WdeGetOpenFileName( &gf );
         } else {
             name = WdeStrDup( file_name );
         }
-        ok = ( name != NULL );
+        ok = (name != NULL);
     }
 
     WdeSetWaitCursor( TRUE );
 
     if( ok ) {
+        flags = PPFLAG_EMIT_LINE;
         if( WdeGetOption( WdeOptIgnoreInc ) ) {
-            flags = PPFLAG_IGNORE_INCLUDE;
-        } else {
-            flags = 0;
+            flags |= PPFLAG_IGNORE_INCLUDE;
         }
         inc_path = WdeGetIncPathOption();
 
@@ -477,14 +468,14 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
             ok = FALSE;
             PP_Fini();
         } else {
-            ok = ( pop_env = WdePushEnv( &SymEnv ) );
+            ok = (pop_env = WdePushEnv( &SymEnv ));
         }
     }
 
     if( ok ) {
         ok = !PP_Init( name, flags, inc_path );
         if( !ok ) {
-            WdeWriteTrail("WdeLoadSymbols: Unable to open header file!" );
+            WdeWriteTrail( "WdeLoadSymbols: Unable to open header file!" );
             WdeDisplayErrorMsg( WDE_NOLOADHEADERFILE );
         }
     }
@@ -498,7 +489,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
             c = PP_Char();
             if( pp_count == MAX_PP_CHARS ) {
                 busy_count++;
-                busy_str[0] = WdeBusyChars[busy_count%4];
+                busy_str[0] = WdeBusyChars[busy_count % 4];
                 WdeSetStatusText( NULL, busy_str, TRUE );
                 pp_count = 0;
             }
@@ -517,7 +508,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
     }
 
     if( !ok ) {
-        if( name ) {
+        if( name != NULL ) {
             WdeMemFree( name );
             name = NULL;
         }
@@ -525,18 +516,18 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
 
     WdeSetWaitCursor( FALSE );
 
-    WdeSetStatusReadyText( );
+    WdeSetStatusReadyText();
 
     return( name );
 }
 
 Bool WdeWriteSymbols( WdeHashTable *table, char **file_name, Bool prompt )
 {
-    char             *name;
-    WdeGetFileStruct  gf;
+    char                *name;
+    WdeGetFileStruct    gf;
 
-    if( !table || !file_name ) {
-        return ( FALSE );
+    if( table == NULL || file_name == NULL ) {
+        return( FALSE );
     }
 
     if( WRIsDefaultHashTable( table ) ) {
@@ -546,13 +537,13 @@ Bool WdeWriteSymbols( WdeHashTable *table, char **file_name, Bool prompt )
     WdeSetStatusText( NULL, "", FALSE );
     WdeSetStatusByID( WDE_WRITINGSYMBOLS, -1 );
 
-    if( prompt || !*file_name ) {
+    if( prompt || *file_name == '\0' ) {
         gf.file_name = *file_name;
-        gf.title     = WdeWriteHeaderTitle;
-        gf.filter    = WdeSymSaveFilter;
+        gf.title = WdeWriteHeaderTitle;
+        gf.filter = WdeSymSaveFilter;
         name = WdeGetSaveFileName( &gf );
-        if( !name ) {
-            return ( FALSE );
+        if( name == NULL ) {
+            return( FALSE );
         }
         if( *file_name != NULL ) {
             WdeMemFree( *file_name );
@@ -566,7 +557,7 @@ Bool WdeWriteSymbols( WdeHashTable *table, char **file_name, Bool prompt )
         WdeMakeHashTableClean( table );
     }
 
-    WdeSetStatusReadyText( );
+    WdeSetStatusReadyText();
 
     return( TRUE );
 }
@@ -576,7 +567,7 @@ void WdeAddSymbols( WdeHashTable *table )
     int                 hash;
     MACRO_ENTRY         *me;
     char                *endptr;
-    PPVALUE             val;
+    PREPROC_VALUE       val;
     WdeHashValue        value;
     void                *vp;
     Bool                dup;
@@ -584,8 +575,8 @@ void WdeAddSymbols( WdeHashTable *table )
     unsigned            busy_count;
     char                busy_str[2];
 
-    if ( table == NULL ) {
-        WdeWriteTrail ( "WdeAddSymbols: unexpected NULL hash table.");
+    if( table == NULL ) {
+        WdeWriteTrail( "WdeAddSymbols: unexpected NULL hash table.");
         return;
     }
 
@@ -596,20 +587,19 @@ void WdeAddSymbols( WdeHashTable *table )
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         for( me = PPHashTable[hash]; me; me = me->next ) {
-            if( me->parmcount == 0  &&  me->replacement_list != NULL ) {
+            if( me->parmcount == 0 && me->replacement_list != NULL ) {
                 if( PPEvalExpr( me->replacement_list, &endptr, &val ) ) {
                     if( *endptr == '\0' ) {
                         if( val.type == PPTYPE_SIGNED ) {
-                            value = (WdeHashValue) val.val.ivalue;
+                            value = (WdeHashValue)val.val.ivalue;
                         } else {
-                            value = (WdeHashValue) val.val.uvalue;
+                            value = (WdeHashValue)val.val.uvalue;
                         }
-                        vp = (void *)
-                            WdeAddHashEntry ( table, me->name, value, &dup );
+                        vp = (void *)WdeAddHashEntry( table, me->name, value, &dup );
                         add_count++;
                         if( add_count == MAX_SYM_ADDS ) {
                             busy_count++;
-                            busy_str[0] = WdeBusyChars[busy_count%4];
+                            busy_str[0] = WdeBusyChars[busy_count % 4];
                             WdeSetStatusText( NULL, busy_str, TRUE );
                             add_count = 0;
                         }
@@ -619,4 +609,3 @@ void WdeAddSymbols( WdeHashTable *table )
         }
     }
 }
-

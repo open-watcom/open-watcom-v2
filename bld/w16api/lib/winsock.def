@@ -1,0 +1,54 @@
+LIBRARY WINSOCK
+EXPORTS
+    ACCEPT                   @1
+    BIND                     @2
+    CLOSESOCKET              @3
+    CONNECT                  @4
+    GETPEERNAME              @5
+    GETSOCKNAME              @6
+    GETSOCKOPT               @7
+    HTONL                    @8
+    HTONS                    @9
+    INET_ADDR                @10
+    INET_NTOA                @11
+    IOCTLSOCKET              @12
+    LISTEN                   @13
+    NTOHL                    @14
+    NTOHS                    @15
+    RECV                     @16
+    RECVFROM                 @17
+    SELECT                   @18
+    SEND                     @19
+    SENDTO                   @20
+    SETSOCKOPT               @21
+    SHUTDOWN                 @22
+    SOCKET                   @23
+
+    GETHOSTBYADDR            @51
+    GETHOSTBYNAME            @52
+    GETPROTOBYNAME           @53
+    GETPROTOBYNUMBER         @54
+    GETSERVBYNAME            @55
+    GETSERVBYPORT            @56
+    GETHOSTNAME              @57
+
+    WSAASYNCSELECT           @101
+    WSAASYNCGETHOSTBYADDR    @102
+    WSAASYNCGETHOSTBYNAME    @103
+    WSAASYNCGETPROTOBYNUMBER @104
+    WSAASYNCGETPROTOBYNAME   @105
+    WSAASYNCGETSERVBYPORT    @106
+    WSAASYNCGETSERVBYNAME    @107
+    WSACANCELASYNCREQUEST    @108
+    WSASETBLOCKINGHOOK       @109
+    WSAUNHOOKBLOCKINGHOOK    @110
+    WSAGETLASTERROR          @111
+    WSASETLASTERROR          @112
+    WSACANCELBLOCKINGCALL    @113
+    WSAISBLOCKING            @114
+    WSASTARTUP               @115
+    WSACLEANUP               @116
+
+    __WSAFDISSET             @151
+
+    WEP                      @500

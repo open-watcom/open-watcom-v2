@@ -11,14 +11,14 @@
     386table.obj &
     386tls.obj  &
     386type.obj &
-    387wait.obj &
     i86enc32.obj &
     rtcall.obj &
-    sib.obj
+    sib.obj &
+    i87wait.obj
 
 
-include_path    = $(cg_dir)\intel\386\h
-src_path        = $(cg_dir)\intel\386\c
+include_path    = $(cg_dir)/intel/386/h
+src_path        = $(cg_dir)/intel/386/c
 
 asm_path        =
 asm_include     =

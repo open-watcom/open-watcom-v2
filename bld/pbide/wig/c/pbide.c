@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+#if defined( __WINDOWS__ ) && defined( __DLL__ )
+#pragma library( "ddeml.lib" );
+#endif
 
 #include <windows.h>
 #include <ddeml.h>
@@ -38,8 +41,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <direct.h>
-#include <sys\types.h>
-#include <sys\stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <io.h>
 #include "pbide.h"
 #include "global.h"
@@ -67,7 +70,6 @@ extern int Wigmain( int argc, char **argv );
 
 #ifdef __NT__
 
-
 int __stdcall DLLMain( long hdll, long reason, long reserved )
 {
     say( "DLLMain", NULL );
@@ -93,7 +95,7 @@ int __stdcall DLLMain( long hdll, long reason, long reserved )
 
 #else
 
-int IDE_EXPORT LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     hmod = hmod;
     dataseg = dataseg;
@@ -102,7 +104,7 @@ int IDE_EXPORT LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int IDE_EXPORT WEP( int res )
+int WINAPI WEP( int res )
 {
     res = res;
     return( 1 );
@@ -282,7 +284,7 @@ static BOOL changeIDEProject( char *dllname )
     int         err_rc;
 
     err = FALSE;
-    ddeinst = NULL;
+    ddeinst = 0;
     conv = NULL;
     rc = DdeInitialize( &ddeinst, DdeProc,
                         APPCMD_CLIENTONLY | CBF_SKIP_ALLNOTIFICATIONS, 0L );

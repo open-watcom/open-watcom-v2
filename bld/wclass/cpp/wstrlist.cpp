@@ -32,3 +32,5 @@
 
 #define __WStringObjectList__
 #include "wstrlist.hpp"
+
+template class WStringObjectList<WString>;

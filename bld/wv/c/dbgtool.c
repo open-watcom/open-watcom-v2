@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger toolbar.
 *
 ****************************************************************************/
 
@@ -34,31 +33,37 @@
 #include "dbgwind.h"
 #include "rcdef.h"
 
-extern bool SysGUI();
+extern bool SysGUI( void );
 
 #include "menudef.h"
 static gui_toolbar_struct ToolBar[] = {
-{ "",  BITMAP_GO,    MENU_TOOL_GO,              MENU_LIT( HELP_XGo ) },
-{ "",  BITMAP_OVER,  MENU_TOOL_TRACE_OVER,      MENU_LIT( HELP_XOver ) },
-{ "",  BITMAP_INTO,  MENU_TOOL_STEP_INTO,       MENU_LIT( HELP_XInto ) },
-{ "",  BITMAP_RETURN,MENU_TOOL_RETURN_TO_CALLER,MENU_LIT( HELP_XReturn ) },
-{ "",  BITMAP_BACK,  MENU_TOOL_UNDO,         MENU_LIT( HELP_XUndo ) },
-{ "",  BITMAP_FOR,   MENU_TOOL_REDO,         MENU_LIT( HELP_XRedo ) },
-{ "",  BITMAP_UP,    MENU_TOOL_UP_STACK,        MENU_LIT( HELP_UXnwind_Stack ) },
-{ "",  BITMAP_DOWN,  MENU_TOOL_DOWN_STACK,      MENU_LIT( HELP_RXewind_Stack ) },
-{ "",  BITMAP_HOME,  MENU_TOOL_HOME,            MENU_LIT( HELP_XHome ) },
+    { "", BITMAP_GO, MENU_TOOL_GO, MENU_LIT( HELP_XGo ), MENU_LIT( TIP_XGo ) },
+    { "", BITMAP_OVER, MENU_TOOL_TRACE_OVER, MENU_LIT( HELP_XOver ),
+      MENU_LIT( TIP_XOver ) },
+    { "", BITMAP_INTO, MENU_TOOL_STEP_INTO, MENU_LIT( HELP_XInto ),
+      MENU_LIT( TIP_XInto ) },
+    { "", BITMAP_RETURN, MENU_TOOL_RETURN_TO_CALLER, MENU_LIT( HELP_XReturn ),
+      MENU_LIT( TIP_XReturn ) },
+    { "", BITMAP_BACK, MENU_TOOL_UNDO, MENU_LIT( HELP_XUndo ), MENU_LIT( TIP_XUndo ) },
+    { "", BITMAP_FOR, MENU_TOOL_REDO, MENU_LIT( HELP_XRedo ), MENU_LIT( TIP_XRedo ) },
+    { "", BITMAP_UP, MENU_TOOL_UP_STACK, MENU_LIT( HELP_UXnwind_Stack ),
+      MENU_LIT( TIP_UXnwind_Stack ) },
+    { "", BITMAP_DOWN, MENU_TOOL_DOWN_STACK, MENU_LIT( HELP_RXewind_Stack ),
+      MENU_LIT( TIP_RXewind_Stack ) },
+    { "",  BITMAP_HOME, MENU_TOOL_HOME, MENU_LIT( HELP_XHome ), MENU_LIT( TIP_XHome ) }
 };
 
-void    InitToolBar()
+void    InitToolBar( void )
 {
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
         ToolBar[i].hinttext = WndLoadString( (int)ToolBar[i].hinttext );
+        ToolBar[i].tip = WndLoadString( (int)ToolBar[i].tip );
     }
 }
 
-void    FiniToolBar()
+void    FiniToolBar( void )
 {
     int         i;
 
@@ -70,11 +75,11 @@ void    FiniToolBar()
 void    WndToolOpen( gui_ord height, bool fixed )
 {
     if( SysGUI() ) {
-        WndCreateToolBar( height, fixed, ArraySize(ToolBar), &ToolBar );
+        WndCreateToolBarWithTips( height, fixed, ArraySize(ToolBar), ToolBar );
     }
 }
 
-void    WndToolClose()
+void    WndToolClose( void )
 {
     if( SysGUI() ) {
         WndCloseToolBar();

@@ -1,0 +1,290 @@
+.387
+.386p
+		PUBLIC	__Far16Func2
+		PUBLIC	__Far16Func
+		PUBLIC	__Far16Pascal2
+		PUBLIC	__Far16Pascal
+		PUBLIC	__Far16Cdecl2
+		PUBLIC	__Far16Cdecl
+		PUBLIC	__FlatToFar16
+		PUBLIC	__Far16ToFlat
+		EXTRN	DosFlatToSel:BYTE
+		EXTRN	DosSelToFlat:BYTE
+_TEXT16		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT16, DS:DGROUP, SS:DGROUP
+p16Func0:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    call        dword ptr [bp]
+    jmp         far ptr L$1
+p16Cdecl0:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    call        dword ptr [bp]
+    jmp         far ptr L$5
+p16Pascal0:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    push        ax
+    call        dword ptr [bp]
+    jmp         far ptr L$3
+p16Func1:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    call        dword ptr [bp]
+    jmp         far ptr L$2
+p16Cdecl1:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    call        dword ptr [bp]
+    jmp         far ptr L$6
+p16Pascal1:
+    mov         cx,ss
+    mov         ds,cx
+    mov         es,cx
+    push        ax
+    call        dword ptr [bp]
+    jmp         far ptr L$4
+_TEXT16		ENDS
+_TEXT		SEGMENT	WORD PUBLIC USE32 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+__Far16Func2:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Func0
+L$1:
+    lss         esp,fword ptr 4[ebp]
+    rol         eax,10H
+    mov         ax,dx
+    rol         eax,10H
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    ret         
+__Far16Func:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Func1
+L$2:
+    lss         esp,fword ptr 4[ebp]
+    rol         eax,10H
+    mov         ax,dx
+    rol         eax,10H
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    ret         
+__Far16Pascal2:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    mov         eax,ebx
+    call        near ptr DosFlatToSel
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Pascal0
+L$3:
+    lss         esp,fword ptr 4[ebp]
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    ret         
+__Far16Pascal:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    mov         eax,ebx
+    call        near ptr DosFlatToSel
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Pascal1
+L$4:
+    lss         esp,fword ptr 4[ebp]
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    ret         
+__Far16Cdecl2:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Cdecl0
+L$5:
+    lss         esp,fword ptr 4[ebp]
+    rol         eax,10H
+    mov         ax,ds
+    rol         eax,10H
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    call        near ptr DosSelToFlat
+    ret         
+__Far16Cdecl:
+    push        ebp
+    push        edi
+    push        ebx
+    push        edx
+    push        es
+    push        ds
+    mov         ebp,esp
+    push        ss
+    push        ebp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         ecx,3
+    and         cl,0fcH
+    xor         ebp,ebp
+    mov         bp,cx
+    sub         esp,ecx
+    mov         edi,esp
+    shr         ecx,1
+    rep movsw  
+    mov         eax,esp
+    call        near ptr DosFlatToSel
+    push        eax
+    add         bp,ax
+    lss         sp,dword ptr [esp]
+    jmp         far ptr p16Cdecl1
+L$6:
+    lss         esp,fword ptr 4[ebp]
+    rol         eax,10H
+    mov         ax,ds
+    rol         eax,10H
+    pop         ds
+    pop         es
+    pop         edx
+    pop         ebx
+    pop         edi
+    pop         ebp
+    call        near ptr DosSelToFlat
+    ret         
+__FlatToFar16:
+    or          eax,eax
+    jne         DosFlatToSel
+    ret         
+__Far16ToFlat:
+    or          eax,eax
+    jne         DosSelToFlat
+    ret         
+_TEXT		ENDS
+		END

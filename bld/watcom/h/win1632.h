@@ -40,7 +40,6 @@
 #define GET_CLASS_STYLE(hwnd)   GetClassLong( hwnd, GCL_STYLE )
 
 #define __FAR
-#define HOOKPROC        PROC
 #define WINMAINENTRY    WINAPI
 #define GET_EM_SETSEL_MPS(iStart, iEnd) (UINT)(iStart), (LONG)(iEnd)
 #define GET_WM_COMMAND_CMD(wp, lp)      HIWORD(wp)
@@ -95,14 +94,14 @@
 #define GET_WM_MDIACTIVATE_HWNDACTIVATE(wp, lp)  (HWND)HIWORD(lp)
 #define GET_WM_MDIACTIVATE_HWNDDEACTIVATE(wp, lp)  (HWND)LOWORD(lp)
 #define GET_WM_VSCROLL_POS( wp, lp )    LOWORD(lp)
-#define GET_WM_VSCROLL_HWND( wp, lp )   HIWORD(lp)
+#define GET_WM_VSCROLL_HWND( wp, lp )   (HWND)HIWORD(lp)
 #define GET_WM_VSCROLL_CODE( wp, lp )   (wp)
 #define GET_WM_HSCROLL_POS( wp, lp )    LOWORD(lp)
-#define GET_WM_HSCROLL_HWND( wp, lp )   HIWORD(lp)
+#define GET_WM_HSCROLL_HWND( wp, lp )   (HWND)HIWORD(lp)
 #define GET_WM_HSCROLL_CODE( wp, lp )   (wp)
-#define SET_HBRBACKGROUND( hw, br ) (HBRUSH) SetClassWord( hw, GCW_HBRBACKGROUND, br )
-#define SET_HICON( hw, ic ) (HICON) SetClassWord( hw, GCW_HICON, ic )
-#define SET_CLASSCURSOR(hwnd, cur) (WORD)SetClassWord( hwnd, GCW_HCURSOR, cur )
+#define SET_HBRBACKGROUND( hw, br ) (HBRUSH) SetClassWord( hw, GCW_HBRBACKGROUND, (WORD)br )
+#define SET_HICON( hw, ic ) (HICON) SetClassWord( hw, GCW_HICON, (WORD)ic )
+#define SET_CLASSCURSOR(hwnd, cur) (WORD)SetClassWord( hwnd, GCW_HCURSOR, (WORD)cur )
 #define MAKE_POINT( p, pnt ) p = MAKEPOINT( pnt )
 #define GET_WM_MENUSELECT_HMENU(wp,lp) (HMENU)HIWORD(lp)
 #define GET_WM_MENUSELECT_ITEM(wp,lp) (wp)
@@ -127,7 +126,7 @@
 #undef CALLBACK
 #if defined( __WINDOWS_386__ )
 #define CALLBACK        APIENTRY
-#elif defined( UNIX )
+#elif defined( __UNIX__ )
 #define CALLBACK
 #else
 #define CALLBACK        __export APIENTRY

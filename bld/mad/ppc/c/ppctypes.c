@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PowerPC machine type handling.
 *
 ****************************************************************************/
 
@@ -37,32 +36,71 @@
 
 #define D       MAD_DEFAULT_HANDLING
 
+// NYI: Hardcoded to big endian, should be dynamic
+#define TARG_ENDIAN         ME_BIG
+
+/* Register contents are kept in host format; hence we must not convert
+ * them again and use special types for them.
+ */
+#ifdef __BIG_ENDIAN__
+    #define HOST_ENDIAN     ME_BIG
+#else
+    #define HOST_ENDIAN     ME_LITTLE
+#endif
+
 static const mad_type_info_integer      U1 =
-    { MTK_INTEGER, D,  8, 7, MNR_UNSIGNED,  ME_LITTLE };
+    { MTK_INTEGER, D,  8, 7, MNR_UNSIGNED,  TARG_ENDIAN };
 static const mad_type_info_integer      U2 =
-    { MTK_INTEGER, D, 16, 15, MNR_UNSIGNED,  ME_LITTLE };
+    { MTK_INTEGER, D, 16, 15, MNR_UNSIGNED,  TARG_ENDIAN };
 static const mad_type_info_integer      U4 =
-    { MTK_INTEGER, D, 32, 31, MNR_UNSIGNED,  ME_LITTLE };
+    { MTK_INTEGER, D, 32, 31, MNR_UNSIGNED,  TARG_ENDIAN };
 static const mad_type_info_integer      U8 =
-    { MTK_INTEGER, D, 64, 63, MNR_UNSIGNED,  ME_LITTLE };
+    { MTK_INTEGER, D, 64, 63, MNR_UNSIGNED,  TARG_ENDIAN };
 static const mad_type_info_integer      I1 =
-    { MTK_INTEGER, D,  8,  7, MNR_TWOS_COMP, ME_LITTLE };
+    { MTK_INTEGER, D,  8,  7, MNR_TWOS_COMP, TARG_ENDIAN };
 static const mad_type_info_integer      I2 =
-    { MTK_INTEGER, D, 16, 15, MNR_TWOS_COMP, ME_LITTLE };
+    { MTK_INTEGER, D, 16, 15, MNR_TWOS_COMP, TARG_ENDIAN };
 static const mad_type_info_integer      I4 =
-    { MTK_INTEGER, D, 32, 31, MNR_TWOS_COMP, ME_LITTLE };
+    { MTK_INTEGER, D, 32, 31, MNR_TWOS_COMP, TARG_ENDIAN };
 static const mad_type_info_integer      I8 =
-    { MTK_INTEGER, D, 64, 63, MNR_TWOS_COMP, ME_LITTLE };
+    { MTK_INTEGER, D, 64, 63, MNR_TWOS_COMP, TARG_ENDIAN };
 
 static const mad_type_info_address N32 =
-    { MTK_ADDRESS, D, 32, 0, MNR_UNSIGNED, ME_LITTLE, 0, 0 };
+    { MTK_ADDRESS, D, 32, 0, MNR_UNSIGNED, TARG_ENDIAN, 0, 0 };
 //static const mad_type_info_address N64 =
-//    { MTK_ADDRESS, D, 64, 0, MNR_UNSIGNED, ME_LITTLE, 0, 0 };
+//    { MTK_ADDRESS, D, 64, 0, MNR_UNSIGNED, TARG_ENDIAN, 0, 0 };
 
 static const mad_type_info_float F4 =
-    { MTK_FLOAT, D, 32, 31, MNR_SIGN_MAG, ME_LITTLE,   127, 23, 2, 1, MTK_INTEGER, D,  8,  7, MNR_UNSIGNED, ME_LITTLE };
+    { MTK_FLOAT, D, 32, 31, MNR_SIGN_MAG, TARG_ENDIAN,   127, 23, 2, 1, MTK_INTEGER, D,  8,  7, MNR_UNSIGNED, TARG_ENDIAN };
 static const mad_type_info_float F8 =
-    { MTK_FLOAT, D, 64, 63, MNR_SIGN_MAG, ME_LITTLE,  1023, 52, 2, 1, MTK_INTEGER, D, 11, 10, MNR_UNSIGNED, ME_LITTLE };
+    { MTK_FLOAT, D, 64, 63, MNR_SIGN_MAG, TARG_ENDIAN,  1023, 52, 2, 1, MTK_INTEGER, D, 11, 10, MNR_UNSIGNED, TARG_ENDIAN };
+
+static const mad_type_info_integer      H_U1 =
+    { MTK_INTEGER, D,  8, 7, MNR_UNSIGNED,  HOST_ENDIAN };
+static const mad_type_info_integer      H_U2 =
+    { MTK_INTEGER, D, 16, 15, MNR_UNSIGNED,  HOST_ENDIAN };
+static const mad_type_info_integer      H_U4 =
+    { MTK_INTEGER, D, 32, 31, MNR_UNSIGNED,  HOST_ENDIAN };
+static const mad_type_info_integer      H_U8 =
+    { MTK_INTEGER, D, 64, 63, MNR_UNSIGNED,  HOST_ENDIAN };
+static const mad_type_info_integer      H_I1 =
+    { MTK_INTEGER, D,  8,  7, MNR_TWOS_COMP, HOST_ENDIAN };
+static const mad_type_info_integer      H_I2 =
+    { MTK_INTEGER, D, 16, 15, MNR_TWOS_COMP, HOST_ENDIAN };
+static const mad_type_info_integer      H_I4 =
+    { MTK_INTEGER, D, 32, 31, MNR_TWOS_COMP, HOST_ENDIAN };
+static const mad_type_info_integer      H_I8 =
+    { MTK_INTEGER, D, 64, 63, MNR_TWOS_COMP, HOST_ENDIAN };
+
+static const mad_type_info_address H_N32 =
+    { MTK_ADDRESS, D, 32, 0, MNR_UNSIGNED, HOST_ENDIAN, 0, 0 };
+//static const mad_type_info_address H_N64 =
+//    { MTK_ADDRESS, D, 64, 0, MNR_UNSIGNED, HOST_ENDIAN, 0, 0 };
+
+static const mad_type_info_float H_F4 =
+    { MTK_FLOAT, D, 32, 31, MNR_SIGN_MAG, HOST_ENDIAN,   127, 23, 2, 1, MTK_INTEGER, D,  8,  7, MNR_UNSIGNED, HOST_ENDIAN };
+static const mad_type_info_float H_F8 =
+    { MTK_FLOAT, D, 64, 63, MNR_SIGN_MAG, HOST_ENDIAN,  1023, 52, 2, 1, MTK_INTEGER, D, 11, 10, MNR_UNSIGNED, HOST_ENDIAN };
 
 #undef D
 
@@ -104,7 +142,7 @@ void            DIGENTRY MITypeInfo( mad_type_handle th, mad_type_info *ti )
     memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
 }
 
-mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af, mad_registers *mr, address *ap )
+mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af, mad_registers const *mr, address const *ap )
 {
     if( tk & MAS_IO ) {
         return( MAD_NIL_TYPE_HANDLE );
@@ -142,6 +180,8 @@ mad_type_handle DIGENTRY MITypeForDIPType( const type_info *ti )
             return( ti->modifier == TM_SIGNED ? PPCT_SHORT : PPCT_USHORT );
         case 4:
             return( ti->modifier == TM_SIGNED ? PPCT_LONG : PPCT_ULONG );
+        case 8:
+            return( ti->modifier == TM_SIGNED ? PPCT_INT64 : PPCT_UINT64 );
         }
         break;
     case TK_REAL:

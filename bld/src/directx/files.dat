@@ -1,0 +1,34 @@
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx" ]
+usr="readme.txt"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/c/d3d" ]
+usr="d3d.c"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/c/dinput" ]
+usr="dinput.c"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/c/dshow" ]
+usr="dshow.c"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/c/dsound" ]
+usr="dsound.c"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/cpp/d3d" ]
+usr="d3d.cpp"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/cpp/dinput" ]
+usr="dinput.cpp"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/cpp/dshow" ]
+usr="dshow.cpp"
+usr="makefile"
+
+[ DEFAULT type="s" cond="samples" where="c ac" dir="samples/directx/cpp/dsound" ]
+usr="dsound.cpp"
+usr="makefile"

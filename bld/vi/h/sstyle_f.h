@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-void GetFORTRANBlock( ss_block *, char *, int );
-void InitFORTRANFlags( linenum );
-void GetFORTRANFlags( ss_flags_f * );
-void InitFORTRANFlagsGivenValues( ss_flags_f * );
-void InitFORTRANLine( char *, linenum );
+void    GetFORTRANBlock( ss_block *, char *, int );
+void    InitFORTRANFlags( linenum );
+void    GetFORTRANFlags( ss_flags_f * );
+void    InitFORTRANFlagsGivenValues( ss_flags_f * );
+void    InitFORTRANLine( char *, linenum );

@@ -1,22 +1,21 @@
-host_OS = nt
-host_CPU = axp
+#pmake: os_nt cpu_axp
+
+host_os  = nt
+host_cpu = axp
 
 OBJECTS = batserv.obj batpipe.obj
 TESTOBJ = tst.obj
 
 .mif : $(mif_path)
-.c : ..;..\..\os2
+.c : ..;../../os2
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-inc_dirs = $(watcom_dir)\h;..\..\h
+inc_dirs = -I"../../h"
 
 extra_l_flags = op stack=32K
-
-.before:
-        set INCLUDE=$(inc_path);
 
 batserv.exe : $(OBJECTS)
         $(linker) $(lflags) name batserv file {$(OBJECTS)}

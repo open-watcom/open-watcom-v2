@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  External disassembler routines.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 /*
         Disassembler routines
 */
-extern dis_return       DisInit( dis_cpu, dis_handle * );
+extern dis_return       DisInit( dis_cpu, dis_handle *, bool );
 extern unsigned         DisInsNameMax( dis_handle * );
 extern unsigned         DisInsSizeInc( dis_handle * );
 extern void             DisDecodeInit( dis_handle *, dis_dec_ins * );
@@ -46,6 +45,6 @@ extern void             DisFini( dis_handle * );
 /*
         Client routines
 */
-extern dis_return DisCliGetData( void *d, unsigned off, int size, void *data );
+extern dis_return DisCliGetData( void *d, unsigned off, unsigned size, void *data );
 extern unsigned DisCliGetAlign( void *d, unsigned off, unsigned align );
 extern unsigned DisCliValueString( void *d, dis_dec_ins *, unsigned op, char *buff );

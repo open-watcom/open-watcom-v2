@@ -1,0 +1,138 @@
+proj_name = sample
+name = sample
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+LNK=sample.lnk
+
+!ifeq type win
+rcopt += -I"$(guidir)/$(type)" -I"$(guidir)/h" -I"$(sdk_dir)/misc" $(inc_dirs_sys)
+!else
+rcopt += -I"$(guidir)/$(type)" -I"$(sdk_dir)/misc" -I"$(guidir)/win" -I"$(guidir)/h" -I"$(lang_root)/h/win"
+!endif
+
+inc_dirs = -I"$(guidir)/h" -I"$(guidir)/$(type)/h"
+
+objs =                  &
+        dlgstat.obj     &
+        dlgdynam.obj    &
+        dlgtest.obj     &
+        sampdef.obj     &
+        sample.obj
+
+!ifndef ext
+ext = exe
+!endif
+
+!ifeq type win
+uilib =
+guilib = $(guidir)/win/$(host_os)$(host_cpu)/gui.lib
+!else
+uilib = $(uidir)/$(os)/$(host_os)$(host_cpu)/ui.lib
+guilib = $(guidir)/ui/$(host_os)$(host_cpu)/gui.lib
+!endif
+
+
+!ifeq type win
+!ifeq os pm
+rcname=$(name)pm
+!else
+rcname=$(name)
+!endif
+!else
+rcname=$(name)
+!endif
+
+!ifeq sys nlm
+
+$(LNK): $(__makefiles__)
+        @%append $(LNK) debug novell
+        @%append $(LNK) name sample
+        @%append $(LNK) module clib
+        @%append $(LNK) format novell 'sample nlm'
+        @%append $(LNK) libpath %WATCOM%\lib386
+        @%append $(LNK) libpath %WATCOM%\lib386\netware
+        @%append $(LNK) import @%WATCOM%\novi\clib.imp
+        @%append $(LNK) import @$(uidir)\$(os)\uinlm.imp
+        set lib=$(watcomlib);$(%lib)
+
+!else
+
+$(LNK): $(__makefiles__)
+        @%write $(LNK) sys $(sys)
+!ifndef axp
+        @%append $(LNK) debug all
+!else
+        @%append $(LNK) debug codeview
+!endif
+        @%append $(LNK) option map $(extra_option)
+        @%append $(LNK) name sample
+!ifeq type win
+        @%append $(LNK) option symfile=$(name).sym
+!endif
+!ifdef watcomlib
+        @%append $(LNK) libpath $(watcomlib)
+!endif
+        @%append $(LNK) libpath $(sdk_dir)\misc
+        @%append $(LNK) library $(guilib)
+!ifneq type win
+        @%append $(LNK) library $(uilib)
+!endif
+!ifdef extra_lib
+        @%append $(LNK) library $(extra_lib)
+!endif
+!ifdef wreslib
+        @%append $(LNK) library $(wreslib)
+!endif
+        @for %i in ($(objs)) do @%append $(LNK) file %i
+!ifneq type win
+!ifeq sys windows
+        @%append $(LNK) import DEATH GDI.121 import RESURRECTION GDI.122
+!endif
+!endif
+
+!endif
+
+###############
+sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
+        $(linker) @$(LNK)
+!ifeq type win
+!ifeq os w386
+        wbind $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
+!else
+        $(rc) $(rcname).res $@
+!endif
+!else
+!ifeq sys pharlap
+        !$(pharlap)bind386 $(pharlap)run386b sample
+!endif
+        wstrip -q -a -r $@ . $(rcname).res
+!endif
+
+################
+pmsample.$(ext) : pmsample.obj $(guilib) $(uilib) $(LNK)
+        @%append $(LNK) file pmsample.obj
+        $(linker) @$(LNK)
+
+################
+samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
+        @%append $(LNK) file samp2.obj
+        $(linker) @$(LNK)
+
+.c:     $(guidir)/sample/c;$(os_source_dir);$(os_extra_dir)
+.h:     ../h
+
+$(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh
+!ifeq type win
+        $(rc) $(rc_flags) $(rcopt) $[@ -fo=$^@
+!else
+        $(rc_aui) $(rcopt) $[@ -fo=$^@
+!endif
+
+./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
+        $(bld_cl) -i"$(gui_dir)/h" $(wcl_util_opts) $[@
+
+_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
+        $[@ $^@ $(gui_msg_id_modifier)

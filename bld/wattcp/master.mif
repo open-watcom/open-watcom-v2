@@ -1,0 +1,85 @@
+#
+# Makefile for Waterloo TCP/IP kernel (Watcom 16-bit large model version)
+#
+
+proj_name = wattcp
+
+!ifndef wattcp_autodepends
+wattcp_autodepends = .AUTODEPEND
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+objs = asmpkt.obj   asmpkt4.obj   &
+       chksum0.obj  cpumodel.obj  &
+       wdpmi.obj    language.obj  &
+       bsdname.obj  tftp.obj      &
+       btree.obj    fragment.obj  &
+       misc.obj     netback.obj   &
+       pcarp.obj    pcrarp.obj    &
+       pcbootp.obj  pcdhcp.obj    &
+       pcbsd.obj    pcbuf.obj     &
+       pcconfig.obj pcdbug.obj    &
+       pcicmp.obj   pcigmp.obj    &
+       pcintr.obj   pcmulti.obj   &
+       pcping.obj   pcpkt.obj     &
+       pcrecv.obj   pcsed.obj     &
+       pcslip.obj   pcstat.obj    &
+       pctcp.obj    pc_cbrk.obj   &
+       qmsg.obj     sock_sel.obj  &
+       sock_dbu.obj sock_ini.obj  &
+       sock_prn.obj sock_scn.obj  &
+       oldstuff.obj sock_in.obj   &
+       strings.obj  udp_dom.obj   &
+       udp_nds.obj  version.obj   &
+       gettod.obj   getopt.obj    &
+       crit.obj     country.obj   &
+       crc.obj      pcpkt32.obj   &
+       pcqueue.obj  lookup.obj    &
+       loopback.obj wattcpd.obj   &
+       fortify.obj  w32pcap.obj   &
+       accept.obj   bind.obj      &
+       close.obj    connect.obj   &
+       gethost.obj  getname.obj   &
+       getnet.obj   getprot.obj   &
+       getput.obj   getserv.obj   &
+       geteth.obj   ioctl.obj     &
+       fcntl.obj    listen.obj    &
+       netaddr.obj  receive.obj   &
+       select.obj   bsddbug.obj   &
+       socket.obj   sockopt.obj   &
+       transmit.obj nsapaddr.obj  &
+       presaddr.obj neterr.obj    &
+       signal.obj   shutdown.obj  &
+       stream.obj   syslog.obj    &
+       syslog2.obj  printk.obj    &
+       nettime.obj  ip_out.obj    &
+       tcp_fsm.obj  poll.obj      &
+       timer.obj    chksum.obj    &
+       adr2asc.obj  linkaddr.obj  &
+       ports.obj    sock_io.obj   &
+       echo.obj     res_comp.obj  &
+       res_data.obj res_debu.obj  &
+       res_init.obj res_loc.obj   &
+       res_mkqu.obj res_quer.obj  &
+       res_send.obj asc2adr.obj   &
+       profile.obj  settod.obj    &
+       pppoe.obj
+
+def_fpu_flags_dos_i86 = -fpc
+
+extra_c_flags = -zm -s
+
+extra_c_flags_language = -wcd=202
+
+inc_dirs = -I"$(contrib_dir)/wattcp/inc"
+
+.c : $(contrib_dir)/wattcp/src
+.asm : $(contrib_dir)/wattcp/src
+
+wattcpwl.lib: $(objs) $(__MAKEFILES__)
+    @%create $^&.lbc
+    @for %f in ($(objs)) do @%append $^&.lbc +- %f
+    $(librarian) $(libflags) @$^&.lbc

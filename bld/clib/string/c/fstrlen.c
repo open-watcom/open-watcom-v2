@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of _fstrlen() - far strlen().
 *
 ****************************************************************************/
 
@@ -36,14 +35,15 @@
 #undef  _fstrlen
 
 _WCRTLINK size_t _fstrlen( const char _WCFAR *s )       /* return length of string s */
-    {
+{
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fstrlen( s ) );
+    return( _inline__fstrlen( s ) );
 #else
-        char _WCFAR *p;
-        p = s;
-        while( *p != '\0' )
-            ++p;
-        return( p - s );
+    const char _WCFAR   *p;
+
+    p = s;
+    while( *p != '\0' )
+        ++p;
+    return( p - s );
 #endif
-    }
+}

@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Memory allocation routines for profiler.
 *
 ****************************************************************************/
 
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "common.h"
@@ -40,127 +39,29 @@
 #include "trmemcvr.h"
 #endif
 
-//#include "memutil.def"
-//#include "msg.def"
-#ifdef TRMEM
-//#include "dumpmem.def"
-#endif
+
 extern void fatal(char *msg,... );
 
 
-STATIC * profTryAlloc( size_t );
-STATIC * profTryRealloc( void *, size_t );
+
 #ifdef TRMEM
-STATIC void profMemCheck( char * );
+STATIC void profMemCheck( char *msg )
+/***********************************/
+{
+    if( !WalkMem() ) {
+        fatal( LIT( Assertion_Failed ), msg );
+    }
+}
 #endif
 
 
 
-void * ProfAlloc( size_t size )
-/****************************/
+STATIC void *profTryAlloc( size_t size )
+/**************************************/
 {
     void *  mem;
 
-    mem = profTryAlloc( size );
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
-
-
-
-void ProfFree( void * ptr )
-/*************************/
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    TRMemFree( ptr );
-#else
-    _FREE( ptr );
-#endif
-}
-
-
-
-void * ProfRealloc( void * p, size_t new_size )
-/*********************************************/
-{
-    void *  new;
-
-    new = profTryRealloc( p, new_size );
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-
-
-
-void * ProfCAlloc( size_t size )
-/******************************/
-{
-    void *  new;
-
-    new = ProfAlloc( size );
-    memset( new, 0, size );
-    return( new );
-}
-
-
-
-extern void * WndAlloc( unsigned size )
-/*************************************/
-{
-    return( ProfAlloc( size ) );
-}
-
-
-
-extern void * WndRealloc( void * chunk, unsigned size )
-/*****************************************************/
-{
-    return( ProfRealloc( chunk, size ) );
-}
-
-
-
-extern void WndFree( void * chunk )
-/*********************************/
-{
-    ProfFree( chunk );
-}
-
-
-
-extern void WndNoMemory()
-/***********************/
-{
-    fatal( LIT( Memfull  ));
-}
-
-
-
-extern void WndMemInit()
-/**********************/
-{
-}
-
-
-
-extern void WndMemFini()
-/**********************/
-{
-}
-
-
-
-STATIC * profTryAlloc( size_t size )
-/**********************************/
-{
-    void *  mem;
-
-    for(;;) {
+    for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
         mem = TRMemAlloc( size );
@@ -175,12 +76,12 @@ STATIC * profTryAlloc( size_t size )
 
 
 
-STATIC * profTryRealloc( void * p, size_t new_size )
-/**************************************************/
+STATIC void *profTryRealloc( void *p, size_t new_size )
+/*****************************************************/
 {
-    void *  new;
+    void    *new;
 
-    for(;;) {
+    for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
         new = TRMemRealloc( p, new_size );
@@ -195,12 +96,99 @@ STATIC * profTryRealloc( void * p, size_t new_size )
 
 
 
+void *ProfAlloc( size_t size )
+/****************************/
+{
+    void    *mem;
+
+    mem = profTryAlloc( size );
+    if( mem == NULL ) {
+        fatal( LIT( Memfull ) );
+    }
+    return( mem );
+}
+
+
+
+void ProfFree( void *ptr )
+/************************/
+{
 #ifdef TRMEM
-STATIC void profMemCheck( char * msg )
+    profMemCheck( "ProfFree" );
+    TRMemFree( ptr );
+#else
+    _FREE( ptr );
+#endif
+}
+
+
+
+void *ProfRealloc( void *p, size_t new_size )
+/*******************************************/
+{
+    void    *new;
+
+    new = profTryRealloc( p, new_size );
+    if( new == NULL ) {
+        fatal( LIT( Memfull_Realloc  ));
+    }
+    return( new );
+}
+
+
+
+void *ProfCAlloc( size_t size )
+/*****************************/
+{
+    void    *new;
+
+    new = ProfAlloc( size );
+    memset( new, 0, size );
+    return( new );
+}
+
+
+
+extern void *WndAlloc( unsigned size )
 /************************************/
 {
-    if( !WalkMem() ) {
-        fatal( LIT( Assertion_Failed ), msg );
-    }
+    return( ProfAlloc( size ) );
 }
-#endif
+
+
+
+extern void *WndRealloc( void *chunk, unsigned size )
+/***************************************************/
+{
+    return( ProfRealloc( chunk, size ) );
+}
+
+
+
+extern void WndFree( void *chunk )
+/********************************/
+{
+    ProfFree( chunk );
+}
+
+
+
+extern void WndNoMemory( void )
+/*****************************/
+{
+    fatal( LIT( Memfull  ));
+}
+
+
+
+extern void WndMemInit( void )
+/****************************/
+{
+}
+
+
+
+extern void WndMemFini( void )
+/****************************/
+{
+}

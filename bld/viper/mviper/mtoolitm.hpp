@@ -53,11 +53,13 @@ WCLASS MToolItem : public WObject
         ToolType toolType() { return _toolType; }
         const WString& actionName() { return _actionName; }
         const WString& hint() { return _hint; }
+        const WString& tip() { return _tip; }
     private:
         int             _toolId;
         ToolType        _toolType;
         WString         _actionName;
         WString         _hint;
+        WString         _tip;
 };
 
 #endif

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX chmod utility
+*               Changes file mode (attributes)
 *
 ****************************************************************************/
 
@@ -43,7 +43,7 @@
 
 char *OptEnvVar = "chmod";
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: chmod [-?X] -|+[ahsr] [@env] [files...]",
     "\tenv         : environment variable to expand",
     "\tfiles       : files to modify the attributes of",

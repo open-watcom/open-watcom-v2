@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Include file for aui library sample application.
 *
 ****************************************************************************/
 
@@ -33,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#ifndef UNIX
+#ifndef __UNIX__
 #include <process.h>
 #endif
 #include "aui.h"

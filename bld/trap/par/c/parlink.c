@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Parallel link remote communications core.
 *
 ****************************************************************************/
 
@@ -208,15 +207,17 @@ typedef enum { FALSE, TRUE } bool;
         extern unsigned outp( unsigned, unsigned );
         extern unsigned inp( unsigned );
 #elif defined(__OS2__)
-    #define inp input_port
-    #define outp output_port
-    extern unsigned far outp( unsigned, unsigned );
-    extern unsigned far inp( unsigned );
-#elif defined(__OS2V2__)
-    #define inp input_port
-    #define outp output_port
-    extern unsigned short __far16 _pascal outp(unsigned short, unsigned short);
-    extern unsigned short __far16 _pascal inp(unsigned short);
+    #if defined(__386__)
+        #define inp input_port
+        #define outp output_port
+        extern unsigned short __far16 _pascal outp(unsigned short, unsigned short);
+        extern unsigned short __far16 _pascal inp(unsigned short);
+    #else
+        #define inp input_port
+        #define outp output_port
+        extern unsigned far outp( unsigned, unsigned );
+        extern unsigned far inp( unsigned );
+    #endif
 #elif defined(__NETWARE__)
     #pragma aux inp =                                   \
     0xec                /* in   al,dx                           */      \
@@ -289,14 +290,14 @@ void _outp( int port, char x )
     #define dbgrtn(x)
 #endif
 
-extern int              NumPrinters(void);
-extern unsigned         PrnAddress(int);
-extern unsigned         AccessPorts(unsigned,unsigned);
-extern void             FreePorts(unsigned,unsigned);
-extern void             NothingToDo(void);
-extern unsigned long    Ticks();
-extern char             *InitSys();
-extern void             FiniSys();
+extern int              NumPrinters( void );
+extern unsigned         PrnAddress( int );
+extern unsigned         AccessPorts( unsigned, unsigned );
+extern void             FreePorts( unsigned, unsigned );
+extern void             NothingToDo( void );
+extern unsigned long    Ticks( void );
+extern char             *InitSys( void );
+extern void             FiniSys( void );
 
 static unsigned DataPort;
 static unsigned CtlPort1;
@@ -314,20 +315,14 @@ static  bool    TwidleOn;
 // #define WATCOM_VAL      TWIDLE_ON
 
 #define WATCOM_VAL      0x1A
-#if !defined(_FMR)
 #define TWIDLE_ON       WATCOM_VAL
 #define TWIDLE_OFF      ( WATCOM_VAL & 0xFD )
-#endif
 
 /*
  * The Fujitsu FMR link looks like a busted WATCOM cable
  * in which RaiseCtl1()/LowerCtl1() cannot be performed
  */
 #define FMR_VAL         0x2A
-#if defined(_FMR)
-#define TWIDLE_ON       FMR_VAL
-#define TWIDLE_OFF      ( FMR_VAL & 0xFD )
-#endif
 
 /*
  * How the LAPLINK_VAL calculation works:
@@ -369,44 +364,25 @@ static  bool    TwidleOn;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#if defined(_FMR)
-#define Ctl1Hi()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) == 0 )
-#define Ctl1Lo()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) != 0 )
-/* on FMR we can detect Ctl1Hi/Lo but can't Raise/Lower Ctl1 as on IBM PC */
-#else
 #define Ctl1Hi()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) != 0 )
 #define Ctl1Lo()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) == 0 )
 #define RaiseCtl1()     ( Wait(),_outp( CtlPort2, PC_CTL1 | 0x04 ) )
 #define LowerCtl1()     ( Wait(),_outp( CtlPort2, 0x04 ) )
-#endif
 
 #define Ctl2Hi()        ( ( Wait(),_inp( CtlPort1 ) & PC_CTL2 ) != 0 )
 #define Ctl2Lo()        ( ( Wait(),_inp( CtlPort1 ) & PC_CTL2 ) == 0 )
 #define RaiseCtl2()     ( Wait(),_outp( DataPort, PC_CTL2 ) )
 #define LowerCtl2()     ( Wait(),_outp( DataPort, 0x00 ) )
 
-#if !defined(_FMR)
 #define ReadData()      ( ( ( Wait(),_inp( CtlPort1 ) ^ 0x80 ) & 0xF8 ) \
                         | ( ( Wait(),_inp( CtlPort2 ) ^ 0x03 ) & 0x07 ) )
-#endif
 #define WriteData(data) ( Wait(),_outp( DataPort, data ) )
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /* Can't use CtlPort2 & 0x08 (line disabled) */
-#if !defined(_FMR)
 #define FM_Ctl1Hi()     ( ( Wait(),_inp( CtlPort1 ) & FM_CTL1 ) != 0 )
 #define FM_Ctl1Lo()     ( ( Wait(),_inp( CtlPort1 ) & FM_CTL1 ) == 0 )
-#else
-#define FM_RaiseCtl1()  ( Wait(),_outp( DataPort, FM_CTL1 ) )
-#define FM_LowerCtl1()  ( Wait(),_outp( DataPort, 0x00 ) )
-                        /* Note: LowerCtl2 same as FM_LowerCtl1 */
-
-#define ReadData()      ( ( ( Wait(),_inp( CtlPort1 ) ^ 0x20 ) & 0xF8 ) \
-                        | ( ( Wait(),_inp( CtlPort2 ) ^ 0x08 ) & 0x07 ) )
-/* write the data and raise control line 1 */
-#define FM_WriteData(data) ( Wait(),_outp( DataPort, data | FM_CTL1 ) )
-#endif
 
 /********************** LAPLINK CABLE MACROS **************************/
 #define LL_Ctl1Hi()     ( ( Wait(),_inp( CtlPort1 ) & 0x80 ) == 0 )
@@ -476,7 +452,6 @@ static int DataGet( unsigned long wait )
             TWIDDLE_THUMBS;
         }
         break;
-#if !defined(_FMR)
     case FMR_VAL:
         /* We're talking to the FMR which can't RaiseCtl1/LowerCtl1 */
         /* get the low nibble */
@@ -544,7 +519,6 @@ static int DataGet( unsigned long wait )
             TWIDDLE_THUMBS;
         }
         break;
-#endif
     }
     return( data );
 }
@@ -558,32 +532,6 @@ static int DataPut( char data, unsigned long wait )
     dbgrtn( "\r\n-DataPut-" );
     switch( CableType ) {
     case WATCOM_VAL:
-#if defined(_FMR)
-        /* We're talking to the PC/AT but we can't RaiseCtl1/LowerCtl1 */
-        /* send low nibble */
-        while( Ctl2Lo() ) {             /* wait till he's ready to read */
-            TWIDDLE_THUMBS;
-        }
-        FM_WriteData( data & 0x0f );    /* write the data */
-        /* FM_RaiseCtl1(); */           /* and tell him the data's there */
-        while( Ctl2Hi() ) {             /* wait till he got the bits */
-            TWIDDLE_THUMBS;
-        }
-
-/*?*/   FM_LowerCtl1();                 /* clear control line */
-        /* send high nibble */
-        while( Ctl2Lo() ) {             /* wait till he's ready to read */
-            TWIDDLE_THUMBS;
-        }
-
-        FM_WriteData( data >> 4 );      /* write the data */
-        /* FM_RaiseCtl1(); */           /* and tell him the data's there */
-        while( Ctl2Hi() ) {             /* wait till he got the bits */
-            TWIDDLE_THUMBS;
-        }
-        FM_LowerCtl1();                 /* clear control line */
-        break;
-#else
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -594,8 +542,6 @@ static int DataPut( char data, unsigned long wait )
         }
         LowerCtl1();                    /* clear control line */
         break;
-#endif
-#if !defined(_FMR)
     case FMR_VAL:
         /* We're talking to the FMR which can RaiseCtl2/LowerCtl2 */
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
@@ -652,41 +598,38 @@ static int DataPut( char data, unsigned long wait )
         }
         FD_LowerCtl1();                 /* clear control line */
         break;
-#endif
     }
     return( 0 );
 }
 
 #pragma off(unreferenced);
-unsigned RemoteGet( void *rec, unsigned len )
+unsigned RemoteGet( char *rec, unsigned len )
 #pragma on(unreferenced);
 {
     unsigned    get_len;
     unsigned    i;
-    char        *ptr;
 
     get_len = DataGet( RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGet( KEEP );
     }
     i = get_len;
-    for( ptr = rec; i != 0; --i, ++ptr ) {
-        *ptr = DataGet( KEEP );
+    for( ; i != 0; --i, ++rec ) {
+        *rec = DataGet( KEEP );
     }
     return( get_len );
 }
 
-unsigned RemotePut( void *snd, unsigned len )
+unsigned RemotePut( char *snd, unsigned len )
 {
     unsigned    count;
-    char        *ptr;
 
     if( len >= 0x80 ) {
         DataPut( (len >> 8) | 0x80, RELINQUISH );
     }
     DataPut( len & 0xff, RELINQUISH );
-    for( count = len, ptr = snd; count != 0; --count, ++ptr ) {
-        DataPut( *ptr, KEEP );
+    for( count = len; count != 0; --count, ++snd ) {
+        DataPut( *snd, KEEP );
     }
     return( len );
 }
@@ -695,8 +638,8 @@ unsigned RemotePut( void *snd, unsigned len )
  * Synch - see if server and client are ready
  */
 
-static bool Synch() {
-
+static bool Synch( void )
+{
     dbgrtn( "\r\n-Synch-" );
     switch( CableType ) {
     case WATCOM_VAL:
@@ -718,8 +661,8 @@ static bool Synch() {
 
 
 
-static bool CountTwidle() {
-
+static bool CountTwidle( void )
+{
     char                type;
 
     dbgrtn( "\r\n-CountTwidle-" );
@@ -797,15 +740,14 @@ static bool Twidle( bool check ) {
         }
     }
     return( FALSE );
-
 }
 
 /*
  * LineTest - make sure that all lines are working
  */
 
-static bool LineTest() {
-
+static bool LineTest( void )
+{
     unsigned            send;
     unsigned long       time;
 #ifdef SERVER
@@ -869,14 +811,8 @@ char RemoteConnect( void )
 
     switch( CableType ) {
     case WATCOM_VAL:
-#if defined(_FMR)
-        FM_LowerCtl1();
-        /* LowerCtl2(); */
-#else
         LowerCtl1();
         LowerCtl2();
-#endif
-#if !defined(_FMR)
     case FMR_VAL:
         LowerCtl1();
         LowerCtl2();
@@ -886,7 +822,6 @@ char RemoteConnect( void )
     case DUTCHMAN_VAL:
         FD_LowerCtl1();
         break;
-#endif
     }
 #ifdef SERVER
     if( !got_twidles ) {
@@ -970,13 +905,8 @@ char *RemoteLink( char *name, char server )
         }
         DataPort = PrnAddress( printer );
     }
-#if defined(_FMR)
-    CtlPort1 = DataPort;
-    CtlPort2 = CtlPort1 + 2;
-#else
     CtlPort1 = DataPort + 1;
     CtlPort2 = CtlPort1 + 1;
-#endif
 
     if( !AccessPorts( DataPort, CtlPort2 ) ) {
         return( TRP_ERR_cannot_access_parallel_ports );

@@ -1,0 +1,26 @@
+#define         MSG_BASE        0
+
+#include "wgmlmsgs.gh"
+#include "wreslang.h"
+/*#include "rcmsg.gh"*/
+
+STRINGTABLE
+BEGIN
+
+#undef pick
+#define pick( code, e_string, j_string )  \
+        (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
+
+#include "wgmlerr.msg"
+#include "wgml.msg"
+/*#include "rc.msg"*/
+
+#undef pick
+#define pick( code, e_string, j_string )  \
+        (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
+
+#include "wgmlerr.msg"
+#include "wgml.msg"
+/*#include "rc.msg"    */
+
+END

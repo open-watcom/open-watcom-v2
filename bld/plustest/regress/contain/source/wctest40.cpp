@@ -2,11 +2,10 @@
 // cannot delete items allocated from the stack
 
 
-extern "C" {
-        #include <stdio.h>
-        #include <stdlib.h>
-        #include <time.h>
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include <wclistit.h>
 #include <iostream.h>
 
@@ -17,7 +16,7 @@ class test : public WCDLink
                 int a;
                 int b;
         test(int a1, int b1) { a = a1; b = b1; }
-        print() { cout << this->a << " " << this->b << endl; }
+        void print() { cout << this->a << " " << this->b << endl; }
 };
 
 template <class T> class linklist {
@@ -308,13 +307,13 @@ tmp->print();
         }
 };
 
-cmppkey(test *t1, test *t2) {
+int cmppkey(test *t1, test *t2) {
         if (t1->a < t2->a) return(-1);
         if (t1->a > t2->a) return(1);
         return(0);
 }       
 
-cmpskey(test *t1, test *t2) {
+int cmpskey(test *t1, test *t2) {
         if (t1->b < t2->b) return(-1);
         if (t1->b > t2->b) return(1);
         return(0);

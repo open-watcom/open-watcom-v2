@@ -24,37 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX du utility
+*               Displays directory disk space usage
 *
 ****************************************************************************/
 
 
-/*
-  DU.C - perform unix-like du function.
-
-   Date         By              Reason
-   ====         ==              ======
-   26-jun-89
-    ...
-   24-aug-91    Craig Eisler    original development
-   28-jan-92    Craig Eisler    fixed up how file/dir names are handled
-   27-feb-92    G.R.Bentz       added patch for invocation in root directory
-   25-mar-92    Craig Eisler    NT port
-   19-jun-92    Craig Eisler    use GetOpt
-   07-jul-92    D.J.Gaudet      HPFS support
-   11-may-93    Greg Bentz      zero length files take no space
-   28-aug-93    John Irving     use ExpandEnv
-   18-nov-94    Dave McKee      added -b, -f, and -s switches.
-
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <direct.h>
 #include <string.h>
 #include <ctype.h>
 #include <dos.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include "misc.h"
 #include "getopt.h"
 #include "fnutils.h"
@@ -77,7 +59,7 @@ char    sflag=FALSE;
 void    DoDU( char *, unsigned long *, unsigned long * );
 void    fmtPrint( unsigned long );
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "Usage: du [-?abs] [@env] [dirs]",
     "\tenv         : environment variable to expand",
     "\tdirs        : directories to calculate usage on",
@@ -93,7 +75,7 @@ static char *usageMsg[] = {
 /*
  * start of mainline
  */
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
     int         i,ch,j;
     unsigned long   csum=0,ssum=0;
@@ -150,7 +132,7 @@ main( int argc, char *argv[] )
         fmtPrint( csum );
         printf( " %s\n", argv[i] );
     }
-
+    return( 0 );
 } /* main */
 
 typedef struct ack {

@@ -1,1 +1,1 @@
-and eax,0ffffH
+ and eax,0ffffH

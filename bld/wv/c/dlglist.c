@@ -63,7 +63,7 @@ static void AddText( gui_window *gui, char *add )
         text = GUIGetListItem( gui, CTL_LIST_LIST, i );
         if( text != NULL ) {
             dup = strcmp( add, text ) == 0;
-            WndFree( text );
+            GUIMemFree( text );
             if( dup ) break;
         }
     }
@@ -84,7 +84,6 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
     case GUI_DESTROY:
         WndFree( dlg->title );
         return( TRUE );
-        break;
     case GUI_INIT_DIALOG:
         GUISetWindowText( gui, dlg->title );
         GUIClearList( gui, CTL_LIST_LIST );
@@ -117,9 +116,8 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
         case CTL_LIST_ADD:
         case CTL_LIST_OK:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
-            if( TxtBuff[0] != '\0' ) {
+            if( TxtBuff[0] != '\0' )
                 AddText( gui, TxtBuff );
-            }
             SelectListLast( gui );
             GUIClearText( gui, CTL_LIST_EDIT );
             GUISetFocus( gui, CTL_LIST_EDIT );
@@ -128,8 +126,10 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
             size = GUIGetListSize( gui, CTL_LIST_LIST );
             for( i = 0; i < size; ++i ) {
                 text = GUIGetListItem( gui, CTL_LIST_LIST, i );
-                if( text != NULL ) dlg->add( text );
-                WndFree( text );
+                if( text != NULL ) {
+                    dlg->add( text );
+                    GUIMemFree( text );
+                }
             }
             /* fall through */
         case CTL_LIST_CANCEL:
@@ -137,7 +137,8 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
             break;
         case CTL_LIST_BROWSE:
             GUIDlgBuffGetText( gui, CTL_LIST_EDIT, TxtBuff, TXT_LEN );
-            if( !AllBrowse( TxtBuff ) ) return( TRUE );
+            if( !AllBrowse( TxtBuff ) )
+                return( TRUE );
             GUISetText( gui, CTL_LIST_EDIT, TxtBuff );
             GUISetFocus( gui, CTL_LIST_EDIT );
             return( TRUE );
@@ -149,7 +150,7 @@ static bool SourceEvent( gui_window * gui, gui_event gui_ev, void * param )
 }
 
 void DlgList( char *title, void (*clear)(void), void (*add)(char*),
-                           void *(*next)(void*), char *(*name)(void*) )
+                           char_ring *(*next)(char_ring*), char *(*name)(char_ring*) )
 {
     dlg_list dlg;
     dlg.clear = clear;

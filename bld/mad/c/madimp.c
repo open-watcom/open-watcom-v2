@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MAD imports interface.
 *
 ****************************************************************************/
 
@@ -34,16 +33,6 @@
 #include "madimp.h"
 
 mad_client_routines     *MadClient;
-
-//NYI: can be removed once all the clients are updated
-mad_status      DIGENTRY old_MICallUpStackLevel( const address *startp,
-                                unsigned rtn_characteristics,
-                                long return_disp,
-                                const mad_registers *in,
-                                address *execution,
-                                address *frame,
-                                address *stack,
-                                mad_registers **out );
 
 mad_imp_routines        MadImpInterface = {
     MAD_MAJOR,
@@ -99,7 +88,7 @@ mad_imp_routines        MadImpInterface = {
     MICallBuildFrame,
     MICallReturnReg,
     MICallParmRegList,
-    old_MICallUpStackLevel,
+    NULL,
 
     MIDisasmDataSize,
     MIDisasmNameMax,
@@ -128,8 +117,16 @@ mad_imp_routines        MadImpInterface = {
 };
 
 
-#if defined(__386__)
+#if defined( __386__ )
+
+#if defined( __WATCOMC__ )
 #pragma aux MADLOAD "*"
+
+/* WD looks for this symbol to determine module bitness */
+int __nullarea;
+#pragma aux __nullarea "*";
+#endif
+
 #elif defined( __WINDOWS__)
 
 #include <stdlib.h>
@@ -141,7 +138,7 @@ mad_imp_routines        MadImpInterface = {
 typedef void (DIGENTRY INTER_FUNC)();
 
 static HANDLE TaskId;
-static HANDLE ThisInst;
+static HINSTANCE ThisInst;
 
 extern mad_imp_routines *MADLOAD( mad_status *, mad_client_routines * );
 
@@ -158,7 +155,7 @@ void DIGENTRY MADUNLOAD()
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
 
-int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
+int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -194,22 +191,20 @@ int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
     }
     link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADLOAD, this_inst );
     link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADUNLOAD, this_inst );
-    while( GetMessage( &msg, NULL, NULL, NULL ) ) {
+    while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
 
     return( 0 );
 }
-#elif defined(M_I86)
+#elif defined( _M_I86 )
 #pragma aux MADLOAD "*" loadds
-#elif defined(__AXP__)
-  /* nothing to do */
 #else
-#error MADIMP.C not configured for system
+/* nothing to do for Alpha, PowerPC etc. */
 #endif
 
-#if defined(__DOS__) || defined(__QNX__)
+#if defined( __DOS__ ) || defined( __UNIX__ )
     const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
 #endif
 
@@ -338,19 +333,4 @@ mad_status      MCTypeToString( unsigned radix, const mad_type_info *mti, const 
 void            MCStatus( mad_status ms )
 {
     MCNotify( MNT_ERROR, &ms );
-}
-
-//NYI: can be removed once all the clients are updated
-mad_status      DIGENTRY old_MICallUpStackLevel( const address *startp,
-                                unsigned rtn_characteristics,
-                                long return_disp,
-                                const mad_registers *in,
-                                address *execution,
-                                address *frame,
-                                address *stack,
-                                mad_registers **out )
-{
-    return( MadImpInterface.MICallUpStackLevel( NULL, startp,
-                rtn_characteristics, return_disp, in,
-                execution, frame, stack, out ) );
 }

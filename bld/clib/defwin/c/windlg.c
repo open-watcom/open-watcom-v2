@@ -62,7 +62,6 @@ static itemdata _getint[] = {
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
 
 
-char *ultoa( unsigned long int __value, char *__buf, int __radix );
 /*
  * _GetIntervalBox - control dialog for getting interval
  */

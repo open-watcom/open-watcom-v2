@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  'About' dialog for wprof.
 *
 ****************************************************************************/
 
@@ -38,8 +37,11 @@
 #include "guidlg.h"
 #include "msg.h"
 
-//#include "aboutmsg.def"
-//#include "memutil.def"
+#ifdef _BANEXTRA
+    #undef  _BANEXTRA
+    #define _BANEXTRA _BANEXSHORT
+#endif
+
 extern void *ProfAlloc(size_t size);
 extern void ProfFree(void *ptr);
 
@@ -47,10 +49,10 @@ extern char     *AboutMessage[];
 extern int      AboutSize;
 
 STATIC bool aboutEventProc( a_window *, gui_event, void * );
-STATIC int AboutNumRows( a_window * );
-STATIC bint aboutGetLine( a_window *, int, int, wnd_line_piece * );
+STATIC int  AboutNumRows( a_window * );
+STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 
-static a_window *   aboutWindow = NULL;
+static a_window     *aboutWindow = NULL;
 static bint         aboutOn = TRUE;
 
 
@@ -73,8 +75,8 @@ wnd_info AboutInfo = {
 
 
 
-extern void AboutOpen()
-/*********************/
+extern void AboutOpen( void )
+/***************************/
 {
     if( aboutWindow == NULL ) {
         aboutWindow = WndCreate(
@@ -90,8 +92,8 @@ extern void AboutOpen()
 
 
 
-extern void AboutClose()
-/**********************/
+extern void AboutClose( void )
+/****************************/
 {
     a_window *  wnd;
 
@@ -121,27 +123,27 @@ STATIC int AboutNumRows( a_window * wnd )
 
 
 
-STATIC bint aboutGetLine( a_window * wnd, int row, int piece,
+STATIC bool aboutGetLine( a_window * wnd, wnd_row row, int piece,
                                       wnd_line_piece * line )
 /***********************************************************/
 {
 //    gui_coord           size;
 
     wnd=wnd;
-    if( piece != 0 || !aboutOn ) return( B_FALSE );
+    if( piece != 0 || !aboutOn ) return( P_FALSE );
     if( row >= AboutSize ) {
 /* the following code fragment was ripped from the debugger */
 /* Something like this can be done for the splash page?? */
-//        if( row > AboutSize || !GUIIsGUI() ) return( B_FALSE );
+//        if( row > AboutSize || !GUIIsGUI() ) return( P_FALSE );
 //    WndSetGadgetLine( wnd, line, GADGET_SPLASH, MaxGadgetLength );
 //        WndGetGadgetSize( GADGET_SPLASH, &size );
 //        line->indent = ( WndWidth( wnd ) - size.x ) / 2;
-//        return( B_TRUE );
-        return( B_FALSE );
+//        return( P_TRUE );
+        return( P_FALSE );
     }
     line->text = AboutMessage[ row ];
     line->indent = ( WndWidth( wnd ) - WndExtentX( wnd, line->text ) ) / 2;
-    return( B_TRUE );
+    return( P_TRUE );
 }
 
 
@@ -163,10 +165,10 @@ STATIC bool aboutEventProc( a_window * wnd, gui_event gui_ev, void * parm )
 
 
 
-extern void AboutSetOff()
-/***********************/
+extern void AboutSetOff( void )
+/*****************************/
 {
-    aboutOn = B_FALSE;
+    aboutOn = P_FALSE;
     if( aboutWindow != NULL ) {
         WndZapped( aboutWindow );
     }
@@ -174,11 +176,11 @@ extern void AboutSetOff()
 
 
 
-extern void DlgAbout()
-/********************/
+extern void DlgAbout( void )
+/**************************/
 {
-    char *      about_data;
-    char *      about_rover;
+    char        *about_data;
+    char        *about_rover;
     int         about_len;
     int         index;
 

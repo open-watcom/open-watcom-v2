@@ -29,29 +29,18 @@
 *
 ****************************************************************************/
 
-
-// TERMNATE.CPP -- terminate() default definition
-//              -- set_terminate, this routine is used to set the
-//                 handler to deal with termination
-//              -- the default terminate handler is abort()
-//
-// 92/07/20     -- Greg Bentz       -- defined
-// 92/11/11     -- J.W.Welch        -- get handler from thread-specific data
-// 94/10/14     -- J.W.Welch        -- use PgmThread
-// 94/11/18     -- J.W.Welch        -- include rtexcept
-// 95/09/05     -- J.W.Welch        -- optimized a bit
-
 #include "cpplib.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include "rtexcept.h"
-#include <except>
+#include <except.h>
 #include "rtmsgs.h"
 
+namespace std {
 
-_WPRTLINK
-void terminate( void )          // HANDLE TERMINATE
-{
+  _WPRTLINK
+  void terminate( void )          // HANDLE TERMINATE
+  {
     PFV handler;                // - NULL or handler set by "set_terminate"
     THREAD_CTL *thr;            // - thread ptr
     char* msg;                  // - error message
@@ -69,4 +58,6 @@ void terminate( void )          // HANDLE TERMINATE
         msg = RTMSG_RET_TERMIN;
     }
     CPPLIB(fatal_runtime_error)( msg, 1 );
+  }
+
 }

@@ -81,13 +81,9 @@ static void Do_Demo1()
 
     _setcolor( BorderColour );
     _rectangle( _GBORDER, 0, 0, VC.numxpixels - 1, VC.numypixels - 1 );
-#if defined( _98RES16COLOR )
-    FadeColors();
-#else
     if( VC.adapter > _MCGA ) {
         FadeColors();
     }
-#endif
 }
 
 
@@ -111,9 +107,9 @@ static void DrawText( short width, short y )
     int                 xc;
 
     xc = VC.numxpixels / 2;
-    _setcharsize( width, width * 3 / 2 );
+    _setcharsize( width * 3 / 2, width );
     _settextalign( _CENTER, _BOTTOM );
-    _grtext( xc, y, "WATCOM C" );
+    _grtext( xc, y, "Open Watcom C" );
     _setcharsize( width, width );
     _settextalign( _CENTER, _TOP );
     _grtext( xc, VC.numypixels - y, "GRAPHICS" );
@@ -128,9 +124,6 @@ static int InitScreen( void )
 {
     int                 mode;
 
-#if defined( _98RES16COLOR )
-    mode = _MAXCOLORMODE;
-#else
     _getvideoconfig( &VC );
     switch( VC.adapter ) {
     case _VGA :
@@ -156,7 +149,6 @@ static int InitScreen( void )
     default :
         return( 0 );          /* report insufficient hardware */
     }
-#endif
 
     if( _setvideomode( mode ) == 0 ) {
         return( 0 );
@@ -171,29 +163,17 @@ static int InitScreen( void )
         TextColour2 = 3;
         BorderColour = 2;
     }
-#if defined( _98RES16COLOR )
-    /* set up new colours */
-    _remappalette( TextColour, _98BLUE );       /* light blue */
-    _remappalette( TextColour2, _98BLUE );      /* light blue */
-    _remappalette( BorderColour, _98BLACK );    /* black      */
-#else
     if( VC.adapter >= _MCGA ) {
         /* set up new colours */
         _remappalette( TextColour, 0x3f0000 );  /* light blue */
         _remappalette( TextColour2, 0x3f0000 ); /* light blue */
         _remappalette( BorderColour, _BLACK );  /* black      */
     }
-#endif
     return( 1 );
 }
 
 
-#if defined( _98RES16COLOR )
-  #define _MAX 15   // 4 colour bits
-#else
-  #define _MAX 63   // 6 colour bits
-#endif
-
+#define _MAX 63   // 6 colour bits
 
 static void FadeColors( void )
 /*============================
@@ -212,9 +192,7 @@ static void FadeColors( void )
         _remappalette( TextColour, blue );
         _remappalette( TextColour2, blue + green );
         _remappalette( BorderColour, red );
-#if defined( _98RES16COLOR )
         delay( 125 );
-#endif
     }
 }
 

@@ -1,0 +1,165 @@
+# WGML object files
+#
+# common objects       wgml.obj is kept separate
+#
+common_objs =  &
+        wgmlsupp.obj &
+        findfile.obj &
+        gargutil.obj &
+        gdata.obj    &
+        gdeflay.obj  &
+        gdocpage.obj &
+        gdummy.obj   &
+        gerror.obj   &
+        gerrorxx.obj &
+        getnum.obj   &
+        gmacdict.obj &
+        gmemory.obj  &
+        goptions.obj &
+        gpagegeo.obj &
+        gprocess.obj &
+        gproctxt.obj &
+        grefdict.obj &
+        gresrch.obj  &
+        gscan.obj    &
+        gsymvar.obj  &
+        gsyssym.obj  &
+        gtxtpool.obj &
+        gutil.obj    &
+        wgmlmsg.obj
+ 
+#
+# output device related
+#
+dev_objs =  &
+        copdev.obj   &
+        copdir.obj   &
+        copdrv.obj   &
+        copfiles.obj &
+        copfon.obj   &
+        copfunc.obj  &
+        cophdr.obj   &
+        devfuncs.obj &
+        outbuff.obj
+ 
+#
+# gml tag related
+#
+gml_objs =  &
+        gaddress.obj &
+        gauthor.obj  &
+        gbanner.obj  &
+        gbinclud.obj &
+        gcmt.obj     &
+        gdate.obj    &
+        gdocnum.obj  &
+        gdocsect.obj &
+        ggraphic.obj &
+        ghx.obj      &
+        ghpxsf.obj   &
+        ginclude.obj &
+        gnestut.obj  &
+        gpb.obj      &
+        gppcnote.obj &
+        gset.obj     &
+        gtagdict.obj &
+        gtagutil.obj &
+        gtitle.obj   &
+        gusertag.obj &
+        gxl.obj      &
+        gxmp.obj     &
+        gxxref.obj
+ 
+#
+# layout tag scanning related
+#
+lay_objs =  &
+        glabsprf.obj &
+        gladdres.obj &
+        glappndx.obj &
+        glauthor.obj &
+        glayout.obj  &
+        glayutil.obj &
+        glbandef.obj &
+        glbanner.obj &
+        glbanreg.obj &
+        glbodbck.obj &
+        glconvrt.obj &
+        gldd.obj     &
+        gldate.obj   &
+        gldeflt.obj  &
+        gldocnum.obj &
+        glfig.obj    &
+        glfigcap.obj &
+        glfigdsc.obj &
+        glfiglst.obj &
+        glflpgn.obj  &
+        glfn.obj     &
+        glheadng.obj &
+        glhx.obj     &
+        glindex.obj  &
+        glix.obj     &
+        glixhead.obj &
+        gllp.obj     &
+        gllq.obj     &
+        glnote.obj   &
+        glpage.obj   &
+        glpc.obj     &
+        gltitle.obj  &
+        gltitlep.obj &
+        gltoc.obj    &
+        gltochx.obj  &
+        gltocpgn.obj &
+        glwidow.obj  &
+        glxl.obj     &
+        glxmp.obj    &
+        glxxfont.obj
+ 
+#
+# script control word or function related
+#
+scr_objs =  &
+        gsbr.obj     &
+        gscofoju.obj &
+        gsct.obj     &
+        gsdccw.obj   &
+        gsetvar.obj  &
+        gsfc2d.obj   &
+        gsfc2x.obj   &
+        gsfd2c.obj   &
+        gsfdelst.obj &
+        gsfindex.obj &
+        gsfinsrt.obj &
+        gsfleft.obj  &
+        gsflngth.obj &
+        gsflowup.obj &
+        gsfmin.obj   &
+        gsfright.obj &
+        gsfstrip.obj &
+        gsfsubst.obj &
+        gsftrans.obj &
+        gsfuncs.obj  &
+        gsfunelu.obj &
+        gsfveclp.obj &
+        gsfwidth.obj &
+        gsfwordx.obj &
+        gsga.obj     &
+        gsgoto.obj   &
+        gsgt.obj     &
+        gsifdoel.obj &
+        gsimbed.obj  &
+        gsin.obj     &
+        gsix.obj     &
+        gsli.obj     &
+        gsmacro.obj  &
+        gspacp.obj   &
+        gspe.obj     &
+        gspu.obj     &
+        gssk.obj     &
+        gstb.obj     &
+        gstitr.obj   &
+        gsty.obj     &
+        gsus.obj
+ 
+objs = wgml.obj $(common_objs) $(scr_objs) $(gml_objs) $(lay_objs) $(dev_objs)
+ 

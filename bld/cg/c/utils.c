@@ -24,34 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Generic utility functions for cg.
 *
 ****************************************************************************/
 
 
 #include "standard.h"
 
-#if defined(__386__) || defined(M_I86)
+#if defined( _M_IX86 ) && defined(__WATCOMC__)
 
 #include "cypfunc.h"
 
 extern  byte    *Copy( byte *x, byte *y, uint len ) {
 /***************************************************/
 
-    return(  CypCopy( x, y, len ) );
+    return( CypCopy( x, y, len ) );
 }
 
 extern  bool    Equal( char *src, char *dst, int length ) {
 /*********************************************************/
 
-    return( CypEqual( src, dst, length ) );
+    return( CypEqual( (byte *)src, (byte *)dst, length ) );
 }
 
 extern  char    *CopyStr( char *src, char *dst ) {
 /************************************************/
 
-    return( CypCopy( src, dst, CypLength( src ) + 1 ) - 1 );
+    return( (char *)CypCopy( (byte *)src, (byte *)dst, CypLength( src ) + 1 ) - 1 );
 }
 
 extern  uint    Length( char *string ) {
@@ -97,26 +96,16 @@ extern  uint    Length( char *string ) {
 
 #endif
 
-extern  uint_32 CountBits( uint_32 value ) {
-/******************************************/
+extern  uint_32 CountBits( uint_32 value )
+/****************************************/
+{
+    uint_32     temp;
 
-    uint_32             r, l;
-
-    r = ( value      ) & 0x55555555;
-    l = ( value >> 1 ) & 0x55555555;
-    value = r + l;
-    r = ( value      ) & 0x33333333;
-    l = ( value >> 2 ) & 0x33333333;
-    value = r + l;
-    r = ( value      ) & 0x0f0f0f0f;
-    l = ( value >> 4 ) & 0x0f0f0f0f;
-    value = r + l;
-    r = ( value      ) & 0x00ff00ff;
-    l = ( value >> 8 ) & 0x00ff00ff;
-    value = r + l;
-    r = ( value       ) & 0x0000ffff;
-    l = ( value >> 16 ) & 0x0000ffff;
-    value = r + l;
-    return( value );
+    value = value - ((value >> 1) & 0x55555555);
+    temp  = ((value >> 2) & 0x33333333);
+    value = (value & 0x33333333) + temp;
+    value = (value + (value >> 4)) & 0x0F0F0F0F;
+    value = value + (value << 8);
+    value = value + (value << 16);
+    return( value >> 24 );
 }
-

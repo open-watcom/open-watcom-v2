@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern int GetConsoleWidth();
-extern int GetConsoleHeight();
+extern int GetConsoleWidth( void );
+extern int GetConsoleHeight( void );

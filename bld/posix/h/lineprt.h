@@ -24,15 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Specifies lineprt module interfaces
 *
 ****************************************************************************/
 
-
-extern void PrintALine(char *,... );
-extern void PrintALineThenDrop(char *,... );
-extern void DropPrintALine(char *,... );
-extern void DropALineDammit(void );
-extern void DropALine(void );
-extern void StartPrint(void );
+extern void PrintALine( char *, ... );
+extern void PrintALineThenDrop( char *, ... );
+extern void DropPrintALine( char *, ... );
+extern void DropALineDammit( void );
+extern void DropALine( void );
+extern void StartPrint( void );

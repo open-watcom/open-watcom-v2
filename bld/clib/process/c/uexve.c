@@ -47,6 +47,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 #include "exwc2mb.h"
+#include "_process.h"
 
 
 _WCRTLINK int _wexecve( const wchar_t *path, const wchar_t *const argv[],

@@ -1,0 +1,461 @@
+/*
+ *  uuids.h     DirectShow GUIDs
+ *
+:include crwatcnt.sp
+ */
+
+:include readonly.sp
+
+/* GUID aliases */
+#define MEDIATYPE_NULL      GUID_NULL
+#define MEDIASUBTYPE_NULL   GUID_NULL
+
+/* GUIDs */
+EXTERN_C const GUID     MEDIASUBTYPE_None;
+EXTERN_C const GUID     MEDIATYPE_Video;
+EXTERN_C const GUID     MEDIATYPE_Audio;
+EXTERN_C const GUID     MEDIATYPE_Text;
+EXTERN_C const GUID     MEDIATYPE_Midi;
+EXTERN_C const GUID     MEDIATYPE_Stream;
+EXTERN_C const GUID     MEDIATYPE_Interleaved;
+EXTERN_C const GUID     MEDIATYPE_File;
+EXTERN_C const GUID     MEDIATYPE_ScriptCommand;
+EXTERN_C const GUID     MEDIATYPE_AUXLine21Data;
+EXTERN_C const GUID     MEDIATYPE_AUXTeletextPage;
+EXTERN_C const GUID     MEDIATYPE_CC_CONTAINER;
+EXTERN_C const GUID     MEDIATYPE_DTVCCData;
+EXTERN_C const GUID     MEDIATYPE_MSTVCaption;
+EXTERN_C const GUID     MEDIATYPE_VBI;
+EXTERN_C const GUID     MEDIASUBTYPE_DVB_SUBTITLES;
+EXTERN_C const GUID     MEDIASUBTYPE_ISDB_CAPTIONS;
+EXTERN_C const GUID     MEDIASUBTYPE_ISDB_SUPERIMPOSE;
+EXTERN_C const GUID     MEDIATYPE_Timecode;
+EXTERN_C const GUID     MEDIATYPE_LMRT;
+EXTERN_C const GUID     MEDIATYPE_URL_STREAM;
+EXTERN_C const GUID     MEDIASUBTYPE_CLPL;
+EXTERN_C const GUID     MEDIASUBTYPE_YUYV;
+EXTERN_C const GUID     MEDIASUBTYPE_IYUV;
+EXTERN_C const GUID     MEDIASUBTYPE_YVU9;
+EXTERN_C const GUID     MEDIASUBTYPE_Y411;
+EXTERN_C const GUID     MEDIASUBTYPE_Y41P;
+EXTERN_C const GUID     MEDIASUBTYPE_YUY2;
+EXTERN_C const GUID     MEDIASUBTYPE_YVYU;
+EXTERN_C const GUID     MEDIASUBTYPE_UYVY;
+EXTERN_C const GUID     MEDIASUBTYPE_Y211;
+EXTERN_C const GUID     MEDIASUBTYPE_CLJR;
+EXTERN_C const GUID     MEDIASUBTYPE_IF09;
+EXTERN_C const GUID     MEDIASUBTYPE_CPLA;
+EXTERN_C const GUID     MEDIASUBTYPE_MJPG;
+EXTERN_C const GUID     MEDIASUBTYPE_TVMJ;
+EXTERN_C const GUID     MEDIASUBTYPE_WAKE;
+EXTERN_C const GUID     MEDIASUBTYPE_CFCC;
+EXTERN_C const GUID     MEDIASUBTYPE_IJPG;
+EXTERN_C const GUID     MEDIASUBTYPE_Plum;
+EXTERN_C const GUID     MEDIASUBTYPE_DVCS;
+EXTERN_C const GUID     MEDIASUBTYPE_H264;
+EXTERN_C const GUID     MEDIASUBTYPE_DVSD;
+EXTERN_C const GUID     MEDIASUBTYPE_MDVF;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB1;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB4;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB8;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB565;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB555;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB24;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB32;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB1555;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB4444;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB32;
+EXTERN_C const GUID     MEDIASUBTYPE_A2R10G10B10;
+EXTERN_C const GUID     MEDIASUBTYPE_A2B10G10R10;
+EXTERN_C const GUID     MEDIASUBTYPE_AYUV;
+EXTERN_C const GUID     MEDIASUBTYPE_AI44;
+EXTERN_C const GUID     MEDIASUBTYPE_IA44;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB32_D3D_DX7_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB16_D3D_DX7_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB32_D3D_DX7_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB4444_D3D_DX7_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB1555_D3D_DX7_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB32_D3D_DX9_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_RGB16_D3D_DX9_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB32_D3D_DX9_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB4444_D3D_DX9_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_ARGB1555_D3D_DX9_RT;
+EXTERN_C const GUID     MEDIASUBTYPE_YV12;
+EXTERN_C const GUID     MEDIASUBTYPE_NV12;
+EXTERN_C const GUID     MEDIASUBTYPE_NV11;
+EXTERN_C const GUID     MEDIASUBTYPE_P208;
+EXTERN_C const GUID     MEDIASUBTYPE_P210;
+EXTERN_C const GUID     MEDIASUBTYPE_P216;
+EXTERN_C const GUID     MEDIASUBTYPE_P010;
+EXTERN_C const GUID     MEDIASUBTYPE_P016;
+EXTERN_C const GUID     MEDIASUBTYPE_Y210;
+EXTERN_C const GUID     MEDIASUBTYPE_Y216;
+EXTERN_C const GUID     MEDIASUBTYPE_P408;
+EXTERN_C const GUID     MEDIASUBTYPE_NV24;
+EXTERN_C const GUID     MEDIASUBTYPE_IMC1;
+EXTERN_C const GUID     MEDIASUBTYPE_IMC2;
+EXTERN_C const GUID     MEDIASUBTYPE_IMC3;
+EXTERN_C const GUID     MEDIASUBTYPE_IMC4;
+EXTERN_C const GUID     MEDIASUBTYPE_S340;
+EXTERN_C const GUID     MEDIASUBTYPE_S342;
+EXTERN_C const GUID     MEDIASUBTYPE_Overlay;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1Packet;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1Payload;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1AudioPayload;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1SystemStream;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1System;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1VideoCD;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1Video;
+EXTERN_C const GUID     MEDIASUBTYPE_MPEG1Audio;
+EXTERN_C const GUID     MEDIASUBTYPE_Avi;
+EXTERN_C const GUID     MEDIASUBTYPE_Asf;
+EXTERN_C const GUID     MEDIASUBTYPE_QTMovie;
+EXTERN_C const GUID     MEDIASUBTYPE_QTRpza;
+EXTERN_C const GUID     MEDIASUBTYPE_QTSmc;
+EXTERN_C const GUID     MEDIASUBTYPE_QTRle;
+EXTERN_C const GUID     MEDIASUBTYPE_QTJpeg;
+EXTERN_C const GUID     MEDIASUBTYPE_PCMAudio_Obsolete;
+EXTERN_C const GUID     MEDIASUBTYPE_PCM;
+EXTERN_C const GUID     MEDIASUBTYPE_WAVE;
+EXTERN_C const GUID     MEDIASUBTYPE_AU;
+EXTERN_C const GUID     MEDIASUBTYPE_AIFF;
+EXTERN_C const GUID     MEDIASUBTYPE_dvsd;
+EXTERN_C const GUID     MEDIASUBTYPE_dvhd;
+EXTERN_C const GUID     MEDIASUBTYPE_dvsl;
+EXTERN_C const GUID     MEDIASUBTYPE_dv25;
+EXTERN_C const GUID     MEDIASUBTYPE_dv50;
+EXTERN_C const GUID     MEDIASUBTYPE_dvh1;
+EXTERN_C const GUID     MEDIASUBTYPE_Line21_BytePair;
+EXTERN_C const GUID     MEDIASUBTYPE_Line21_GOPPacket;
+EXTERN_C const GUID     MEDIASUBTYPE_Line21_VBIRawData;
+EXTERN_C const GUID     MEDIASUBTYPE_708_608Data;
+EXTERN_C const GUID     MEDIASUBTYPE_DtvCcData;
+EXTERN_C const GUID     MEDIASUBTYPE_CC_CONTAINER;
+EXTERN_C const GUID     MEDIASUBTYPE_TELETEXT;
+EXTERN_C const GUID     MEDIASUBTYPE_VBI;
+EXTERN_C const GUID     MEDIASUBTYPE_WSS;
+EXTERN_C const GUID     MEDIASUBTYPE_XDS;
+EXTERN_C const GUID     MEDIASUBTYPE_VPS;
+EXTERN_C const GUID     MEDIASUBTYPE_DRM_Audio;
+EXTERN_C const GUID     MEDIASUBTYPE_IEEE_FLOAT;
+EXTERN_C const GUID     MEDIASUBTYPE_DOLBY_AC3_SPDIF;
+EXTERN_C const GUID     MEDIASUBTYPE_RAW_SPORT;
+EXTERN_C const GUID     MEDIASUBTYPE_SPDIF_TAG_241h;
+EXTERN_C const GUID     MEDIASUBTYPE_DssVideo;
+EXTERN_C const GUID     MEDIASUBTYPE_DssAudio;
+EXTERN_C const GUID     MEDIASUBTYPE_VPVideo;
+EXTERN_C const GUID     MEDIASUBTYPE_VPVBI;
+EXTERN_C const CLSID    CLSID_CaptureGraphBuilder;
+EXTERN_C const CLSID    CLSID_CaptureGraphBuilder2;
+EXTERN_C const CLSID    CLSID_ProtoFilterGraph;
+EXTERN_C const CLSID    CLSID_SystemClock;
+EXTERN_C const CLSID    CLSID_FilterMapper;
+EXTERN_C const CLSID    CLSID_FilterGraph;
+EXTERN_C const CLSID    CLSID_FilterGraphNoThread;
+EXTERN_C const CLSID    CLSID_FilterGraphPrivateThread;
+EXTERN_C const CLSID    CLSID_MPEG1Doc;
+EXTERN_C const CLSID    CLSID_FileSource;
+EXTERN_C const CLSID    CLSID_MPEG1PacketPlayer;
+EXTERN_C const CLSID    CLSID_MPEG1Splitter;
+EXTERN_C const CLSID    CLSID_CMpegVideoCodec;
+EXTERN_C const CLSID    CLSID_CMpegAudioCodec;
+EXTERN_C const CLSID    CLSID_TextRender;
+EXTERN_C const CLSID    CLSID_InfTee;
+EXTERN_C const CLSID    CLSID_AviSplitter;
+EXTERN_C const CLSID    CLSID_AviReader;
+EXTERN_C const CLSID    CLSID_VfwCapture;
+EXTERN_C const CLSID    CLSID_CaptureProperties;
+EXTERN_C const CLSID    CLSID_FGControl;
+EXTERN_C const CLSID    CLSID_MOVReader;
+EXTERN_C const CLSID    CLSID_QuickTimeParser;
+EXTERN_C const CLSID    CLSID_QTDec;
+EXTERN_C const CLSID    CLSID_AVIDoc;
+EXTERN_C const CLSID    CLSID_VideoRenderer;
+EXTERN_C const CLSID    CLSID_Colour;
+EXTERN_C const CLSID    CLSID_Dither;
+EXTERN_C const CLSID    CLSID_ModexRenderer;
+EXTERN_C const CLSID    CLSID_AudioRender;
+EXTERN_C const CLSID    CLSID_AudioProperties;
+EXTERN_C const CLSID    CLSID_DSoundRender;
+EXTERN_C const CLSID    CLSID_AudioRecord;
+EXTERN_C const CLSID    CLSID_AudioInputMixerProperties;
+EXTERN_C const CLSID    CLSID_AVIDec;
+EXTERN_C const CLSID    CLSID_AVIDraw;
+EXTERN_C const CLSID    CLSID_ACMWrapper;
+EXTERN_C const CLSID    CLSID_AsyncReader;
+EXTERN_C const CLSID    CLSID_URLReader;
+EXTERN_C const CLSID    CLSID_PersistMonikerPID;
+EXTERN_C const CLSID    CLSID_AVICo;
+EXTERN_C const CLSID    CLSID_FileWriter;
+EXTERN_C const CLSID    CLSID_AviDest;
+EXTERN_C const CLSID    CLSID_AviMuxProptyPage;
+EXTERN_C const CLSID    CLSID_AviMuxProptyPage1;
+EXTERN_C const CLSID    CLSID_AVIMIDIRender;
+EXTERN_C const CLSID    CLSID_WMAsfReader;
+EXTERN_C const CLSID    CLSID_WMAsfWriter;
+EXTERN_C const CLSID    CLSID_MPEG2Demultiplexer;
+EXTERN_C const CLSID    CLSID_MPEG2Demultiplexer_NoClock;
+EXTERN_C const CLSID    CLSID_MMSPLITTER;
+EXTERN_C const CLSID    CLSID_StreamBufferSink;
+EXTERN_C const CLSID    CLSID_SBE2Sink;
+EXTERN_C const CLSID    CLSID_StreamBufferSource;
+EXTERN_C const CLSID    CLSID_StreamBufferConfig;
+EXTERN_C const CLSID    CLSID_StreamBufferPropertyHandler;
+EXTERN_C const CLSID    CLSID_StreamBufferThumbnailHandler;
+EXTERN_C const CLSID    CLSID_Mpeg2VideoStreamAnalyzer;
+EXTERN_C const CLSID    CLSID_StreamBufferRecordingAttributes;
+EXTERN_C const CLSID    CLSID_StreamBufferComposeRecording;
+EXTERN_C const CLSID    CLSID_SBE2File;
+EXTERN_C const CLSID    CLSID_DVVideoCodec;
+EXTERN_C const CLSID    CLSID_DVVideoEnc;
+EXTERN_C const CLSID    CLSID_DVSplitter;
+EXTERN_C const CLSID    CLSID_DVMux;
+EXTERN_C const CLSID    CLSID_SeekingPassThru;
+EXTERN_C const CLSID    CLSID_Line21Decoder;
+EXTERN_C const CLSID    CLSID_Line21Decoder2;
+EXTERN_C const CLSID    CLSID_CCAFilter;
+EXTERN_C const CLSID    CLSID_OverlayMixer;
+EXTERN_C const CLSID    CLSID_VBISurfaces;
+EXTERN_C const CLSID    CLSID_WSTDecoder;
+EXTERN_C const CLSID    CLSID_MjpegDec;
+EXTERN_C const CLSID    CLSID_MJPGEnc;
+EXTERN_C const CLSID    CLSID_SystemDeviceEnum;
+EXTERN_C const CLSID    CLSID_CDeviceMoniker;
+EXTERN_C const CLSID    CLSID_VideoInputDeviceCategory;
+EXTERN_C const CLSID    CLSID_CVidCapClassManager;
+EXTERN_C const CLSID    CLSID_LegacyAmFilterCategory;
+EXTERN_C const CLSID    CLSID_CQzFilterClassManager;
+EXTERN_C const CLSID    CLSID_VideoCompressorCategory;
+EXTERN_C const CLSID    CLSID_CIcmCoClassManager;
+EXTERN_C const CLSID    CLSID_AudioCompressionCategory;
+EXTERN_C const CLSID    CLSID_CAcmCoClassManager;
+EXTERN_C const CLSID    CLSID_AudioInputDeviceCategory;
+EXTERN_C const CLSID    CLSID_CWaveinClassManager;
+EXTERN_C const CLSID    CLSID_AudioRendererCategory;
+EXTERN_C const CLSID    CLSID_CWaveOutClassManager;
+EXTERN_C const CLSID    CLSID_MidiRendererCategory;
+EXTERN_C const CLSID    CLSID_CMidiOutClassManager;
+EXTERN_C const CLSID    CLSID_TransmitCategory;
+EXTERN_C const CLSID    CLSID_DeviceControlCategory;
+EXTERN_C const CLSID    CLSID_ActiveMovieCategories;
+EXTERN_C const CLSID    CLSID_DVDHWDecodersCategory;
+EXTERN_C const CLSID    CLSID_MediaEncoderCategory;
+EXTERN_C const CLSID    CLSID_MediaMultiplexerCategory;
+EXTERN_C const CLSID    CLSID_FilterMapper2;
+EXTERN_C const CLSID    CLSID_MemoryAllocator;
+EXTERN_C const CLSID    CLSID_MediaPropertyBag;
+EXTERN_C const CLSID    CLSID_DvdGraphBuilder;
+EXTERN_C const CLSID    CLSID_DVDNavigator;
+EXTERN_C const CLSID    CLSID_DVDState;
+EXTERN_C const CLSID    CLSID_SmartTee;
+EXTERN_C const CLSID    CLSID_DtvCcFilter;
+EXTERN_C const CLSID    CLSID_CaptionsFilter;
+EXTERN_C const CLSID    CLSID_SubtitlesFilter;
+EXTERN_C const CLSID    CLSID_DirectShowPluginControl;
+EXTERN_C const GUID     FORMAT_None;
+EXTERN_C const GUID     FORMAT_VideoInfo;
+EXTERN_C const GUID     FORMAT_VideoInfo2;
+EXTERN_C const GUID     FORMAT_WaveFormatEx;
+EXTERN_C const GUID     FORMAT_MPEGVideo;
+EXTERN_C const GUID     FORMAT_MPEGStreams;
+EXTERN_C const GUID     FORMAT_DvInfo;
+EXTERN_C const GUID     FORMAT_525WSS;
+EXTERN_C const CLSID    CLSID_DirectDrawProperties;
+EXTERN_C const CLSID    CLSID_PerformanceProperties;
+EXTERN_C const CLSID    CLSID_QualityProperties;
+EXTERN_C const IID      IID_IBaseVideoMixer;
+EXTERN_C const IID      IID_IDirectDrawVideo;
+EXTERN_C const IID      IID_IQualProp;
+EXTERN_C const CLSID    CLSID_VPObject;
+EXTERN_C const IID      IID_IVPObject;
+EXTERN_C const IID      IID_IVPControl;
+EXTERN_C const CLSID    CLSID_VPVBIObject;
+EXTERN_C const IID      IID_IVPVBIObject;
+EXTERN_C const IID      IID_IVPConfig;
+EXTERN_C const IID      IID_IVPNotify;
+EXTERN_C const IID      IID_IVPNotify2;
+EXTERN_C const IID      IID_IVPVBIConfig;
+EXTERN_C const IID      IID_IVPVBINotify;
+EXTERN_C const IID      IID_IMixerPinConfig;
+EXTERN_C const IID      IID_IMixerPinConfig2;
+#ifndef __DDRAW_INCLUDED__
+EXTERN_C const CLSID    CLSID_DirectDraw;
+EXTERN_C const CLSID    CLSID_DirectDrawClipper;
+EXTERN_C const IID      IID_IDirectDraw;
+EXTERN_C const IID      IID_IDirectDraw2;
+EXTERN_C const IID      IID_IDirectDrawSurface;
+EXTERN_C const IID      IID_IDirectDrawSurface2;
+EXTERN_C const IID      IID_IDirectDrawSurface3;
+EXTERN_C const IID      IID_IDirectDrawSurface4;
+EXTERN_C const IID      IID_IDirectDrawSurface7;
+EXTERN_C const IID      IID_IDirectDrawPalette;
+EXTERN_C const IID      IID_IDirectDrawClipper;
+EXTERN_C const IID      IID_IDirectDrawColorControl;
+#endif
+#ifndef __DVP_INCLUDED__
+EXTERN_C const IID      IID_IDDVideoPortContainer;
+#endif
+#ifndef __DDKM_INCLUDED__
+EXTERN_C const IID      IID_IDirectDrawKernel;
+EXTERN_C const IID      IID_IDirectDrawSurfaceKernel;
+#endif
+EXTERN_C const CLSID    CLSID_ModexProperties;
+EXTERN_C const IID      IID_IFullScreenVideo;
+EXTERN_C const IID      IID_IFullScreenVideoEx;
+EXTERN_C const CLSID    CLSID_DVDecPropertiesPage;
+EXTERN_C const CLSID    CLSID_DVEncPropertiesPage;
+EXTERN_C const CLSID    CLSID_DVMuxPropertyPage;
+EXTERN_C const IID      IID_IAMDirectSound;
+EXTERN_C const IID      IID_IMpegAudioDecoder;
+EXTERN_C const IID      IID_IAMLine21Decoder;
+EXTERN_C const IID      IID_IAMWstDecoder;
+EXTERN_C const CLSID    CLSID_WstDecoderPropertyPage;
+EXTERN_C const GUID     FORMAT_AnalogVideo;
+EXTERN_C const GUID     MEDIATYPE_AnalogVideo;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_NTSC_M;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_B;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_D;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_G;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_H;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_I;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_M;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_N;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_PAL_N_COMBO;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_B;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_D;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_G;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_H;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_K;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_K1;
+EXTERN_C const GUID     MEDIASUBTYPE_AnalogVideo_SECAM_L;
+EXTERN_C const GUID     MEDIATYPE_AnalogAudio;
+EXTERN_C const GUID     FORMAT_CAPTIONED_H264VIDEO;
+EXTERN_C const GUID     FORMAT_CC_CONTAINER;
+EXTERN_C const GUID     CAPTION_FORMAT_ATSC;
+EXTERN_C const GUID     CAPTION_FORMAT_DVB;
+EXTERN_C const GUID     CAPTION_FORMAT_DIRECTV;
+EXTERN_C const GUID     CAPTION_FORMAT_ECHOSTAR;
+EXTERN_C const GUID     FORMAT_CAPTIONED_MPEG2VIDEO;
+EXTERN_C const GUID     TIME_FORMAT_NONE;
+EXTERN_C const GUID     TIME_FORMAT_FRAME;
+EXTERN_C const GUID     TIME_FORMAT_BYTE;
+EXTERN_C const GUID     TIME_FORMAT_SAMPLE;
+EXTERN_C const GUID     TIME_FORMAT_FIELD;
+EXTERN_C const GUID     TIME_FORMAT_MEDIA_TIME;
+EXTERN_C const GUID     AMPROPSETID_Pin;
+EXTERN_C const GUID     PIN_CATEGORY_CAPTURE;
+EXTERN_C const GUID     PIN_CATEGORY_PREVIEW;
+EXTERN_C const GUID     PIN_CATEGORY_ANALOGVIDEOIN;
+EXTERN_C const GUID     PIN_CATEGORY_VBI;
+EXTERN_C const GUID     PIN_CATEGORY_VIDEOPORT;
+EXTERN_C const GUID     PIN_CATEGORY_NABTS;
+EXTERN_C const GUID     PIN_CATEGORY_EDS;
+EXTERN_C const GUID     PIN_CATEGORY_TELETEXT;
+EXTERN_C const GUID     PIN_CATEGORY_CC;
+EXTERN_C const GUID     PIN_CATEGORY_STILL;
+EXTERN_C const GUID     PIN_CATEGORY_TIMECODE;
+EXTERN_C const GUID     PIN_CATEGORY_VIDEOPORT_VBI;
+EXTERN_C const GUID     LOOK_UPSTREAM_ONLY;
+EXTERN_C const GUID     LOOK_DOWNSTREAM_ONLY;
+EXTERN_C const CLSID    CLSID_TVTunerFilterPropertyPage;
+EXTERN_C const CLSID    CLSID_CrossbarFilterPropertyPage;
+EXTERN_C const CLSID    CLSID_TVAudioFilterPropertyPage;
+EXTERN_C const CLSID    CLSID_VideoProcAmpPropertyPage;
+EXTERN_C const CLSID    CLSID_CameraControlPropertyPage;
+EXTERN_C const CLSID    CLSID_AnalogVideoDecoderPropertyPage;
+EXTERN_C const CLSID    CLSID_VideoStreamConfigPropertyPage;
+EXTERN_C const CLSID    CLSID_AudioRendererAdvancedProperties;
+EXTERN_C const CLSID    CLSID_VideoMixingRenderer;
+EXTERN_C const CLSID    CLSID_VideoRendererDefault;
+EXTERN_C const CLSID    CLSID_AllocPresenter;
+EXTERN_C const CLSID    CLSID_AllocPresenterDDXclMode;
+EXTERN_C const CLSID    CLSID_VideoPortManager;
+EXTERN_C const CLSID    CLSID_VideoMixingRenderer9;
+EXTERN_C const CLSID    CLSID_EnhancedVideoRenderer;
+EXTERN_C const CLSID    CLSID_MFVideoMixer9;
+EXTERN_C const CLSID    CLSID_MFVideoPresenter9;
+EXTERN_C const CLSID    CLSID_EVRTearlessWindowPresenter9;
+EXTERN_C const CLSID    CLSID_EVRPlaybackPipelineOptimizer;
+EXTERN_C const GUID     EVRConfig_ForceBob;
+EXTERN_C const GUID     EVRConfig_AllowDropToBob;
+EXTERN_C const GUID     EVRConfig_ForceThrottle;
+EXTERN_C const GUID     EVRConfig_AllowDropToThrottle;
+EXTERN_C const GUID     EVRConfig_ForceHalfInterlace;
+EXTERN_C const GUID     EVRConfig_AllowDropToHalfInterlace;
+EXTERN_C const GUID     EVRConfig_ForceScaling;
+EXTERN_C const GUID     EVRConfig_AllowScaling;
+EXTERN_C const GUID     EVRConfig_ForceBatching;
+EXTERN_C const GUID     EVRconfig_AllowBatching;
+EXTERN_C const CLSID    CLSID_NetworkProvider;
+EXTERN_C const CLSID    CLSID_ATSCNetworkProvider;
+EXTERN_C const CLSID    CLSID_ATSCNetworkPropertyPage;
+EXTERN_C const CLSID    CLSID_DVBSNetworkProvider;
+EXTERN_C const CLSID    CLSID_DVBTNetworkProvider;
+EXTERN_C const CLSID    CLSID_DVBCNetworkProvider;
+EXTERN_C const GUID     DSATTRIB_UDCRTag;
+EXTERN_C const GUID     DSATTRIB_PicSampleSeq;
+EXTERN_C const GUID     DSATTRIB_OptionalVideoAttributes;
+EXTERN_C const GUID     DSATTRIB_CC_CONTAINER_INFO;
+EXTERN_C const GUID     DSATTRIB_TRANSPORT_PROPERTIES;
+EXTERN_C const GUID     DSATTRIB_PBDATAG_ATTRIBUTE;
+EXTERN_C const GUID     DSATTRIB_CAPTURE_STREAMTIME;
+EXTERN_C const GUID     DSATTRIB_DSHOW_STREAM_DESC;
+EXTERN_C const GUID     DSATTRIB_SAMPLE_LIVE_STREAM_TIME;
+EXTERN_C const GUID     UUID_UdriTagTables;
+EXTERN_C const GUID     UUID_WMDRMTagTables;
+EXTERN_C const CLSID    CLSID_DShowTVEFilter;
+EXTERN_C const CLSID    CLSID_TVEFilterTuneProperties;
+EXTERN_C const CLSID    CLSID_TVEFilterCCProperties;
+EXTERN_C const CLSID    CLSID_TVEFilterStatsProperties;
+EXTERN_C const CLSID    CLSID_IVideoEncoderProxy;
+EXTERN_C const CLSID    CLSID_ICodecAPIProxy;
+EXTERN_C const CLSID    CLSID_IVideoEncoderCodecAPIProxy;
+#ifndef __ENCODER_API_GUIDS__
+#define __ENCODER_API_GUIDS__
+EXTERN_C const GUID     ENCAPIPARAM_BITRATE;
+EXTERN_C const GUID     ENCAPIPARAM_PEAK_BITRATE;
+EXTERN_C const GUID     ENCAPIPARAM_BITRATE_MODE;
+EXTERN_C const GUID     ENCAPIPARAM_SAP_MODE;
+EXTERN_C const GUID     CODECAPI_CHANGELISTS;
+EXTERN_C const GUID     CODECAPI_VIDEO_ENCODER;
+EXTERN_C const GUID     CODECAPI_AUDIO_ENCODER;
+EXTERN_C const GUID     CODECAPI_SETALLDEFAULTS;
+EXTERN_C const GUID     CODECAPI_ALLSETTINGS;
+EXTERN_C const GUID     CODECAPI_SUPPORTSEVENTS;
+EXTERN_C const GUID     CODECAPI_CURRENTCHANGELIST;
+EXTERN_C const CLSID    CLSID_SBE2MediaTypeProfile;
+EXTERN_C const CLSID    CLSID_SBE2FileScan;
+#endif
+EXTERN_C const GUID     CODECAPI_AVDecMmcssClass;
+
+/* Media subtype testing macros */
+#define MEDIASUBTYPE_HASALPHA( x ) \
+    (((x).subtype == MEDIASUBTYPE_ARGB4444) || ((x).subtype == MEDIASUBTYPE_ARGB32) || \
+    ((x).subtype == MEDIASUBTYPE_AYUV) || ((x).subtype == MEDIASUBTYPE_AI44) || \
+    ((x).subtype == MEDIASUBTYPE_IA44) || ((x).subtype == MEDIASUBTYPE_ARGB1555) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX9_RT))
+#define MEDIASUBTYPE_HASALPHA7( x ) \
+    (((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX7_RT))
+#define MEDIASUBTYPE_D3D_DX7_RT( x ) \
+    (((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_RGB32_D3D_DX7_RT) || \
+    ((x).subtype == MEDIASUBTYPE_RGB16_D3D_DX7_RT))
+#define MEDIASBTYPE_HASALPHA9( x ) \
+    (((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX9_RT))
+#define MEDIASUBTYPE_D3D_DX9_RT( x ) \
+    (((x).subtype == MEDIASUBTYPE_ARGB32_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB4444_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_ARGB1555_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_RGB32_D3D_DX9_RT) || \
+    ((x).subtype == MEDIASUBTYPE_RGB16_D3D_DX9_RT))

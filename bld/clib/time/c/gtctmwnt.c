@@ -29,11 +29,9 @@
 *
 ****************************************************************************/
 
-
 #include "variety.h"
 #include <windows.h>
 #include <time.h>
-#include <dos.h>
 #include "timedata.h"
 
 int __getctime( struct tm *t )
@@ -41,12 +39,12 @@ int __getctime( struct tm *t )
     SYSTEMTIME  st;
 
     GetLocalTime( &st );
-    t->tm_year = st.wYear - 1900;
-    t->tm_mon  = st.wMonth - 1;
-    t->tm_mday = st.wDay;
-    t->tm_hour = st.wHour;
-    t->tm_min  = st.wMinute;
-    t->tm_sec  = st.wSecond;
+    t->tm_year  = st.wYear - 1900;
+    t->tm_mon   = st.wMonth - 1;
+    t->tm_mday  = st.wDay;
+    t->tm_hour  = st.wHour;
+    t->tm_min   = st.wMinute;
+    t->tm_sec   = st.wSecond;
     t->tm_isdst = -1;
     return( st.wMilliseconds );
 }

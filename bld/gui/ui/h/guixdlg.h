@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library dialog routines.
 *
 ****************************************************************************/
 
@@ -58,8 +57,8 @@ extern bool GUIDeleteField( gui_window *wnd, unsigned id );
 extern a_list *GUIGetList( VFIELD *field );
 extern unsigned GUIGetControlId( gui_window *wnd, VFIELD *field );
 extern EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dialog, gui_window *wnd );
-extern void GUIPushControlEvents();
-extern void GUIPopControlEvents();
+extern void GUIPushControlEvents( void );
+extern void GUIPopControlEvents( void );
 extern void GUIFreeDialog( a_dialog *dialog, VFIELD *fields, char *title,
                            bool colours_set, bool is_dialog );
 

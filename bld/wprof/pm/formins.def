@@ -1,2 +1,0 @@
-//#line "g:\bld\wdisasm\c\formins.c" 220
-extern void FormatIns(char *buf,instruction *curr_ins,form_option format);

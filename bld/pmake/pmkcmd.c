@@ -24,36 +24,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Standalone pmake utility.
 *
 ****************************************************************************/
 
 
-#include <process.h>
 #include <unistd.h>
-#include <signal.h>
-#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <direct.h>
 #include <assert.h>
-#include <dos.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include "pmake.h"
-
-#if defined(__OS2__) || defined(__NT__)
-    #define TMPBAT "tmp.cmd"
+#ifdef __UNIX__
+    #include <sys/stat.h>
+  #ifdef __WATCOMC__
+    #include <process.h>
+  #endif
 #else
-    #define TMPBAT "tmp.bat"
+    #include <direct.h>
+    #include <process.h>
+    #include <dos.h>
+#endif
+#include "watcom.h"
+#include "pmake.h"
+#if !defined( __WATCOMC__ )
+    #include "clibext.h"
 #endif
 
+#if defined( __OS2__ )
+#define TMPBAT "tmp.cmd"
+#elif defined( __UNIX__ )
+#define TMPBAT "./tmp.sh"
+#else
+#define TMPBAT "tmp.bat"
+#endif
 
 static char     buffer[512];
 
-void WriteCmdFile( pmake_data *data )
+void PMakeOutput( char *out )
+{
+    puts( out );
+}
+
+static void WriteCmdFile( pmake_data *data )
 {
     FILE        *fp;
     pmake_list  *curr;
@@ -64,8 +76,14 @@ void WriteCmdFile( pmake_data *data )
             TMPBAT, strerror( errno ) );
         exit( EXIT_FAILURE );
     }
+#ifdef __UNIX__
+    fprintf( fp, "#!/bin/sh\n" );
+    fprintf( fp, "rm "TMPBAT"\n" );
+    fchmod( fileno( fp ), 0777 );
+#else
     fprintf( fp, "@echo off\n" );
-    for( curr = data->dir_list; curr != NULL ; curr = curr->next ) {
+#endif
+    for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         if( curr->dir_name[0] != '\0' ) {
             fprintf( fp, "cd %s\n", curr->dir_name );
             if( data->display ) {
@@ -84,9 +102,77 @@ void WriteCmdFile( pmake_data *data )
     }
 }
 
-char *Help[] = {
-"Usage: PMAKE [options] [targ_list] [make options]",
-"     Execute 'wmake.exe' in each subdirectory of the current working",
+static int RunCommand( const char *cmd )
+{
+    char        *cmdnam;
+    char        *sp;
+    const char  **argv;
+    int         i;
+
+    cmdnam = strdup( cmd );
+    argv = malloc( strlen( cmd ) * sizeof( char * ) );
+    i = 0;
+    for( sp = cmdnam; sp != NULL; ) {
+        while( *sp != '\0' && *sp == ' ' )
+            ++sp;
+        argv[i++] = sp;
+        sp = strchr( sp, ' ' );
+        if( sp != NULL ) {
+            *sp = '\0';
+            sp++;
+        }
+    }
+    argv[i] = NULL;
+    i = spawnvp( P_WAIT, cmdnam, argv );
+    free( cmdnam );
+    free( argv );
+    return( i );
+}
+
+static int DoPMake( pmake_data *data )
+{
+    pmake_list  *curr;
+    int         res;
+    char        cmd[256];
+
+    res = 0;
+    for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
+        res = chdir( curr->dir_name );
+        if( res != 0 ) {
+            break;
+        }
+        if( data->display ) {
+            fputs( "==== ", stdout );
+            puts( curr->dir_name );
+        }
+        PMakeCommand( data, cmd );
+        res = RunCommand( cmd );
+        if( data->ignore_err == 0 && res != 0 ) {
+            break;
+        }
+    }
+    return( res );
+}
+
+static int ProcPMake( pmake_data  *data )
+{
+    int         res;
+    char        save[_MAX_PATH];
+
+    if( data->want_help || data->signaled ) {
+        PMakeCleanup( data );
+        return( 2 );
+    }
+    getcwd( save, sizeof( save ) );
+    res = DoPMake( data );
+    chdir( save );
+    PMakeCleanup( data );
+    return( res );
+}
+
+char    *Help[] = {
+"Usage: pmake [options] [targ_list] [make options]",
+"     Execute 'wmake' in each subdirectory of the current working",
 "     directory that has a makefile which contains the specified ",
 "     'targ_list' in the format: '#pmake[/<priority>]: <target>*'",
 "",
@@ -94,6 +180,7 @@ char *Help[] = {
 "     -b create batch file -- without executing, file is " TMPBAT,
 "     -d display -- display progress in batch file",
 "     -ffilename -- use specified filename for makefile",
+"     -i ignore -- ignore commands return code",
 "     -ln level n -- only descend n directory levels, n defaults to 1",
 "     -mfile -- use specified file for make command",
 "     -o optimize -- minimize cd commands",
@@ -128,15 +215,23 @@ void PrintHelp( void )
 {
     int         i;
 
-    for( i = 0; Help[i] != NULL; ++i ) puts( Help[i] );
+    for( i = 0; Help[i] != NULL; ++i )
+        puts( Help[i] );
     exit( EXIT_FAILURE );
 }
 
-char                    CmdBuff[512];
+char    CmdBuff[512];
 
+#if !defined( __WATCOMC__ )
+int main( int argc, char **argv )
+{
+    _argv = argv;
+    _argc = argc;
+#else
 int main( void )
 {
-    pmake_data *data;
+#endif
+    pmake_data  *data;
 
     getcmd( CmdBuff );
     data = PMakeBuild( CmdBuff );
@@ -146,26 +241,15 @@ int main( void )
     if( data->want_help ) {
         PrintHelp();
     }
-    WriteCmdFile( data );
+    /* If -b was given, only write out a batch file. By default,
+     * execute the commands directly.
+     */
+    if( data->batch ) {
+        WriteCmdFile( data );
+    } else {
+        ProcPMake( data );
+    }
 
     PMakeCleanup( data );
-
-    if( !data->batch ) {
-        if( system( TMPBAT ) ) {
-            printf( "PMAKE: error during attempt to run %s: %s\n",
-                TMPBAT, strerror( errno ) );
-            return( EXIT_FAILURE );
-        }
-        if( remove( TMPBAT ) ) {
-            printf( "PMAKE: unable to remove %s: %s\n",
-                TMPBAT, strerror( errno ) );
-            return( EXIT_FAILURE );
-        }
-    }
     return( EXIT_SUCCESS );
-}
-
-void PMakeOutput( char *out )
-{
-    puts( out );
 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Runtime support routines list for i86.
 *
 ****************************************************************************/
 
@@ -51,12 +50,12 @@ typedef enum {
         C4TO1,
         C4TO2,
         C8TO4,
-        EXT1,
-        EXT2,
-        EXT4,
-        S_EXT1,
-        S_EXT2,
-        S_EXT4,
+        S1TO2,
+        S2TO4,
+        S4TO8,
+        Z1TO2,
+        Z2TO4,
+        Z4TO8,
         EXT_PT,
 
 /*  beginning of runtime routine */

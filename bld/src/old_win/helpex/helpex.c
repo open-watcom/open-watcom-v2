@@ -26,7 +26,7 @@
 #include "helpids.h"
 char       _class[64];
 HWND       hWnd;               /* Handle to main window */
-HANDLE     hInst;              /* Handle to instance data*/
+HINSTANCE  hInst;              /* Handle to instance data*/
 BOOL       bHelp = FALSE;      /* Help mode flag; TRUE = "ON"*/
 HCURSOR    hHelpCursor;        /* Cursor displayed when in help mode*/
 char       szHelpFileName[EXE_NAME_MAX_SIZE+1];    /* Help file name*/
@@ -44,8 +44,8 @@ void MakeHelpPathName(char*);  /* Function deriving help file path */
 ****************************************************************************/
 
 int PASCAL WinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
-HANDLE hInstance;
-HANDLE hPrevInstance;
+HINSTANCE hInstance;
+HINSTANCE hPrevInstance;
 LPSTR  lpCmdLine;
 int    nCmdShow;
 {
@@ -82,7 +82,7 @@ int    nCmdShow;
 ****************************************************************************/
 
 BOOL InitApplication(hInstance)
-HANDLE hInstance;
+HINSTANCE hInstance;
 {
    WNDCLASS wc;
 
@@ -114,7 +114,7 @@ HANDLE hInstance;
 ****************************************************************************/
 
 BOOL InitInstance(hInstance, nCmdShow)
-HANDLE hInstance;
+HINSTANCE hInstance;
 int    nCmdShow;
 {
 
@@ -250,11 +250,11 @@ LONG       lParam;
                    break;
 
                case IDM_ABOUT:
-                   lpProcAbout = MakeProcInstance(About, hInst);
+                   lpProcAbout = MakeProcInstance((FARPROC)About, hInst);
                    DialogBox(hInst,
                        "AboutBox",
                        hWnd,
-                       lpProcAbout);
+                       (DLGPROC)lpProcAbout);
                    FreeProcInstance(lpProcAbout);
                    break;
 

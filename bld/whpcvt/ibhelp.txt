@@ -1,0 +1,89 @@
+The DOS help file format:
+
+
+_GOAL_SYMBOL_ 	:= 	_TOPIC_ _TOPIC_*
+
+_TOPIC 		:= 	_HEADING_ _TEXT_
+
+_HEADING 	:= 	_TITLE_
+		|   	_TITLE_ _HEADER_FOOTER_
+
+_TITLE		:=	::::_TOPIC_NAME_ _MAX_ROW_ _MAX_COL_ _CR_
+		|	::::_TOPIC_NAME_ _MAX_ROW_ _MAX_COL_ _ROW_ _COL_ _CR_
+		|	::::_TOPIC_NAME_ _MAX_ROW_ _MAX_COL_ _ROW_ _COL_ _LINE_ _CR_
+
+_TOPIC_NAME_	:=	"_BUTTON_NAME_"
+	   	|	_NON_SPACE_*
+
+_MAX_COL_	:=	_DEC_CONST_
+
+_MAX_ROW_	:=	_DEC_CONST_
+
+_COL_		:=	_DEC_CONST_
+
+_ROW_		:=	_DEC_CONST_
+
+_LINE_		:=	_DEC_CONST_
+
+
+_HEADER_FOOTER_	:=	_HEADER_
+		|	_FOOTER_
+		|	_HEADER_ _FOOTER_
+
+_HEADER_	:=	:h _CR_ _BUTTONS_ _CR_:eh _CR_
+
+_TRAILER_	:=	:t _CR_ _BUTTONS_ _CR_:et _CR_
+
+_BUTTONS_	:=	_BUTTON_ _BUTTON_*
+
+_BUTTON_	:=	<_BUTTON_NAME_>
+
+_CR_		:=	\n
+
+
+// these META SYMBOLS not described in strictly BNF for clearity sake
+
+_TEXT_		:=	(see the NOTES section for a description)
+
+_DEC_CONST_	:=	(a 3 digit decimal constant )
+
+_BUTTON_NAME_	:=	(any sequence of 1 or more printable ASCII character)
+
+_NON_SPACE_	:=	(any sequence of 1 or more printable non-space ASCII character)
+
+NOTES
+
+1) all _TOPIC_NAME_ tokens must be unique
+
+2) the ::::, :h, :eh, :t, :et delimiters must begin in column 0
+
+3) The Maximum allowable length for any line in a help file 199 characters.
+
+4) The characters < and > are special characters and must only be used
+   to define points that the user can click on to advance to a new topic.
+   To insert one of these characters in the help file text prefix them
+   with  as follows < or >.
+
+5) For each hot point defined using the <> characters the text enclosed
+   in the brackets must match a _TOPIC_NAME_ defined elsewhere in the file.
+
+6) _TEXT_ is the help text.  It is displayed by the help facility
+	in the same form as it appears in the help file.  That is to
+	say, no line breaking etc. occurs.  _TEXT_ may be any sequence
+	of printable ASCII characters.
+
+The help text may contain the following special sequences:
+
+(NOTE:  is the ASCII character 0x1B )
+
+uText enclosed in these delimiters is hilitedw
+bText enclosed in these delimiters is hilitedp
+
+At present the uw and the bp produce the same results but this may
+change.  Consider uw to denote underlining and bp to denote bolding.
+
+If the text contains a construct of the form:
+
+<some text> then the text will appear hilited and enclosed in angle brackets.
+If the user clicks on this text the help topic of the same name will be
+displayed.

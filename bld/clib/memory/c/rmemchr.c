@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RISC style memchr().
 *
 ****************************************************************************/
 
@@ -44,7 +43,7 @@ void *memchr( const void *buf, int c, size_t n )
     INT                 cShl8, cShl16, cShl24;
     char *              bufP = (char*)buf;
 
-    if( n <= 0 )  return( NULL );
+    if( n == 0 )  return( NULL );
 
     /*** Scan any bytes up to a 4-byte alignment ***/
     while( offset != 0  &&  n >= 1 ) {

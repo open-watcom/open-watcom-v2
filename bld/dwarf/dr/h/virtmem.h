@@ -24,14 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF reader library virtual memory interface.
 *
 ****************************************************************************/
 
 
 extern void      DWRVMInit( void );
 extern void      DWRVMDestroy( void );
+extern void      DWRVMReset( void );
 extern int       DWRVMSectDone( dr_handle base, unsigned_32 size );
 
 // DWRCurrNode must be set for alloc, free
@@ -48,8 +48,6 @@ extern unsigned  DWRGetStrBuff(  dr_handle drstr, char *buf, unsigned max );
 
 #define DWRVMRead( __hdl, __blk, __len ) ( (void) memcpy( (void *) __blk, (const void *) __hdl, (unsigned) __len ) )
 #define DWRVMReadByte( __hdl )           ( *((unsigned_8 *) (__hdl)) )
-#define DWRVMReadWord( __hdl )           ( *((unsigned_16 _WCUNALIGNED *) (__hdl)) )
-#define DWRVMReadDWord( __hdl )          ( *((unsigned_32 _WCUNALIGNED *) (__hdl)) )
 #define DWRVMReadSLEB128( __hdlp )       ( (signed_32)  ReadLEB128( (dr_handle *) (__hdlp), TRUE ) )
 #define DWRVMSkipLEB128( __hdl )                        \
          { unsigned_8 *p = (unsigned_8 *)*(__hdl);      \
@@ -57,7 +55,8 @@ extern unsigned  DWRGetStrBuff(  dr_handle drstr, char *buf, unsigned max );
                 *(__hdl) = (dr_handle)p;                \
          }
 
-
+extern unsigned_16      DWRVMReadWord( dr_handle );
+extern unsigned_32      DWRVMReadDWord( dr_handle );
 extern unsigned_32      ReadLEB128( dr_handle *, bool );
 
 #if   0  // defined(__386__)   need to figure out

@@ -1,0 +1,23 @@
+name=dmfc41SMP
+any_check=mfc41samp
+static_text=\
+        //1"Select MFC 4.1 Samples:"\
+        //2"MFC 4.1 サンプルを選択してください:"\
+        //0
+static_text=
+check_box=         mfc41bin,,\
+        //1"&Include sample program executables"\
+        //2"サンプル・プログラムの実行可能ファイルを含めます (&I)"\
+        //0
+check_box=mfc41samp_advanced,,"advanced"
+check_box=mfc41samp_appwiz,,"appwiz"
+check_box=mfc41samp_controls,,"controls"
+check_box=mfc41samp_database,,"database"
+check_box=mfc41samp_general,,"general"
+check_box=mfc41samp_internet,,"internet"
+check_box=mfc41samp_ole,,"ole"
+check_box=mfc41samp_tutorial,,"tutorial"
+check_box=mfc41samp_utility,,"utility"
+include=space.dlg
+static_text=
+include=oc.dlg

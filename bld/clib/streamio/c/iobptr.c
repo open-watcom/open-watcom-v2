@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Accessor function for __iob array.
 *
 ****************************************************************************/
 
@@ -34,6 +33,8 @@
 #include <stdio.h>
 #include "rtdata.h"
 
-_WCRTLINK FILE (*__get_iob_ptr())[] {
-    return &__iob;
+
+_WCRTLINK FILE (*__get_iob_ptr( void ))[]
+{
+    return( &__iob );
 }
